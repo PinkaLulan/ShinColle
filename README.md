@@ -1,0 +1,4 @@
+ShinColle
+=========
+
+Shinkeiseikan Collection
