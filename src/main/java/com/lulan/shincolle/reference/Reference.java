@@ -1,7 +1,7 @@
 package com.lulan.shincolle.reference;
 
 public class Reference {
-	//這邊主要放置各種常用參考 ex:string,number...
+	//這邊主要放置各種常用參考, 主要為path, package
 	public static final String MOD_ID = "ShinColle";
 	public static final String MOD_ID_LOW = MOD_ID.toLowerCase();
 	public static final String MOD_NAME = "Shinkeiseikan Collection";

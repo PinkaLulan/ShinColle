@@ -1,7 +1,11 @@
 package com.lulan.shincolle.proxy;
 
 public interface IProxy {
-	//public abstract void doSomethingClient(); 以下建立一些methods
+	//key binding
 	public abstract void registerKeyBindings();
+	//render
+	public abstract void registerRender();
+	//packet channel
+	public abstract void registerChannel();
 
 }

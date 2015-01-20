@@ -2,6 +2,7 @@ package com.lulan.shincolle.client.gui;
 
 import org.lwjgl.opengl.GL11;
 
+import com.lulan.shincolle.inventory.ContainerSmallShipyard;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 

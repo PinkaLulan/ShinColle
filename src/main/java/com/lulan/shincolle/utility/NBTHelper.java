@@ -3,7 +3,7 @@ package com.lulan.shincolle.utility;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-/** Pahimar's nbt helper 加上部分註解說明
+/** Pahimar's NBT helper for ITEMSTACK
 *除了原本NBTTagCompound提供的取值跟設值方法外, 增加了檢查tag是否為null, 若為null則給預設值
 *stackTagCompound -> 為 整個nbt data集合 只能用於不可堆疊的物品
 *一旦一個物品加上了nbt data 該物品就不能跟其他同名物品堆疊了 (除非是用指令直接叫出一疊具有相同nbt data的物品)

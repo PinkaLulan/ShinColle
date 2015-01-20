@@ -4,6 +4,7 @@ import java.util.Random;
 
 import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.handler.GuiHandler;
+import com.lulan.shincolle.reference.GUIs;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.utility.LogHelper;
@@ -12,13 +13,16 @@ import com.lulan.shincolle.utility.ParticleHelper;
 import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
@@ -26,6 +30,8 @@ import net.minecraft.world.World;
 
 public class BlockSmallShipyard extends BasicBlockContainer {
 
+	public Random rand = new Random();
+	public static boolean keepInventory = false;
 	private static final double[] smoke1 = new double[] {0.72, 1.1, 0.55};	//主煙囪 粒子位置
 	private static final double[] smoke2 = new double[] {0.22, 0.8, 0.7};	//中煙囪 粒子位置
 	private static final double[] smoke3 = new double[] {0.47, 0.6, 0.25};	//小煙囪 粒子位置
@@ -34,15 +40,9 @@ public class BlockSmallShipyard extends BasicBlockContainer {
 	public BlockSmallShipyard() {
 		super(); //不指定型態 預設即為rock
 		this.setBlockName("BlockSmallShipyard");
-		this.setHardness(50F);
+		this.setHardness(10F);
 	    this.setHarvestLevel("pickaxe", 3);
-	}
-	
-	//此方塊不需要icon
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void registerBlockIcons(IIconRegister iconRegister) {
-//		this.blockIcon = iconRegister.registerIcon(Reference.MOD_ID+":"+"debugFront");
+	    this.setLightLevel(4);
 	}
 	
 	//非標準方形方塊  要傳-1表示用自己的render
@@ -68,6 +68,48 @@ public class BlockSmallShipyard extends BasicBlockContainer {
 		return new TileEntitySmallShipyard();
 	}
 	
+	//打掉方塊後, 掉落其內容物
+	@Override
+	public void breakBlock(World world, int x, int y, int z, Block block, int meta) {
+		if(!keepInventory) {
+			TileEntitySmallShipyard tileentity = (TileEntitySmallShipyard)world.getTileEntity(x, y, z);
+		
+			//抓到tile entity後, 掃描全部slot內容物, 然後做成entity掉落出來
+			if(tileentity != null) {
+				for(int i = 0; i < tileentity.getSizeInventory(); i++) {  //check all slots
+					ItemStack itemstack = tileentity.getStackInSlot(i);
+		
+					if(itemstack != null) {
+						float f = this.rand.nextFloat() * 0.8F + 0.1F;  //設定要隨機噴出的range
+						float f1 = this.rand.nextFloat() * 0.8F + 0.1F;
+						float f2 = this.rand.nextFloat() * 0.8F + 0.1F;
+		
+						while(itemstack.stackSize > 0) {
+							int j = this.rand.nextInt(21) + 10;
+							//如果物品超過一個隨機數量, 會分更多疊噴出
+							if(j > itemstack.stackSize) {  
+								j = itemstack.stackSize;
+							}
+		
+							itemstack.stackSize -= j;
+							//將item做成entity, 生成到世界上
+							EntityItem item = new EntityItem(world, (double)((float)x + f), (double)((float)y + f1), (double)((float)z + f2), new ItemStack(itemstack.getItem(), j, itemstack.getItemDamage()));
+							//如果有NBT tag, 也要複製到物品上
+							if(itemstack.hasTagCompound()) {
+								item.getEntityItem().setTagCompound((NBTTagCompound)itemstack.getTagCompound().copy());
+							}
+		
+						world.spawnEntityInWorld(item);	//生成entity
+						}
+					}
+				}	
+				world.func_147453_f(x, y, z, block);	//???
+			}
+		}
+		//呼叫原先的breakBlock, 會把tile entity移除掉
+		super.breakBlock(world, x, y, z, block, meta);
+	}
+	
 	/**右鍵點到方塊時呼叫此方法
 	 * 參數: world,方塊x,y,z,玩家,玩家面向,玩家點到的x,y,z
 	 */	
@@ -80,7 +122,7 @@ public class BlockSmallShipyard extends BasicBlockContainer {
     		TileEntitySmallShipyard entity = (TileEntitySmallShipyard) world.getTileEntity(x, y, z);
     		
     		if (entity != null) {	//開啟方塊GUI 參數:玩家,mod instance,gui ID,world,座標xyz
-    			FMLNetworkHandler.openGui(player, ShinColle.instance, GuiHandler.guiIDSmallShipyard, world, x, y, z);
+    			FMLNetworkHandler.openGui(player, ShinColle.instance, GUIs.SMALLSHIPYARD, world, x, y, z);
     		}
     		return true;
     	}
@@ -88,29 +130,6 @@ public class BlockSmallShipyard extends BasicBlockContainer {
     		return false;
     	}
     }
-	
-//	//原本meta:0~3為non-active狀態+朝向   增加4~7代表active狀態＋朝向
-//	@Override
-//	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack itemstack) {
-//		super.onBlockPlacedBy(world, x, y, z, entity, itemstack);  //先跑一次取得metadata
-//		
-//		int orgMeta = world.getBlockMetadata(x, y, z);
-//				
-//		if(world.rand.nextInt(2)>0) {	//debug 
-//			if (orgMeta == 0) {
-//			    world.setBlockMetadataWithNotify(x, y, z, 4, 2);
-//			}     
-//			if (orgMeta == 1) {
-//				world.setBlockMetadataWithNotify(x, y, z, 5, 2);
-//			}      
-//			if (orgMeta == 2) {
-//				world.setBlockMetadataWithNotify(x, y, z, 6, 2);      	
-//			}       
-//			if (orgMeta == 3) {
-//				world.setBlockMetadataWithNotify(x, y, z, 7, 2);
-//			}
-//		}
-//    }
 	
 	//spawn particle: largesmoke, posX, posY, posZ, motionX, motionY, motionZ
 	@Override

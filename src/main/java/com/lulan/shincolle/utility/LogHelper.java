@@ -2,6 +2,7 @@ package com.lulan.shincolle.utility;
 
 import org.apache.logging.log4j.Level;
 
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.Reference;
 
 import cpw.mods.fml.common.FMLLog;
@@ -26,7 +27,9 @@ public class LogHelper {
 	public static void warn(Object object) { log(Level.WARN,object); }
 	
 	//info: 紀錄提示訊息
-	public static void info(Object object) { log(Level.INFO,object); }
+	public static void info(Object object) { 
+		if(ConfigHandler.debugMode) log(Level.INFO,object); 
+	}
 	
 	//debug: 紀錄debug訊息
 	public static void debug(Object object) { log(Level.DEBUG,object); }

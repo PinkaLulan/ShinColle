@@ -1,8 +1,12 @@
 package com.lulan.shincolle.model;
 
 
+import java.util.Random;
+
 import org.lwjgl.opengl.GL11;
 
+import com.lulan.shincolle.reference.AttrID;
+import com.lulan.shincolle.reference.AttrValues;
 import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.client.Minecraft;
@@ -11,6 +15,7 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MathHelper;
+
 import com.lulan.shincolle.entity.EntityDestroyerI;
 
 public class ModelDestroyerI extends ModelBase {
@@ -18,12 +23,8 @@ public class ModelDestroyerI extends ModelBase {
 	public ModelRenderer PBack;
 	public ModelRenderer PNeck;
 	public ModelRenderer PHead;
-	public ModelRenderer PEyeLightLeft1;
-	public ModelRenderer PEyeLightRight1;
-	public ModelRenderer PEyeLightLeft2;
-	public ModelRenderer PEyeLightRight2;
-	public ModelRenderer PEyeLightLeft3;
-	public ModelRenderer PEyeLightRight3;
+	public ModelRenderer[] PEyeLightL = new ModelRenderer[3];
+	public ModelRenderer[] PEyeLightR = new ModelRenderer[3];
 	public ModelRenderer PJawBottom;
 	public ModelRenderer PBody;
 	public ModelRenderer PLegLeft;
@@ -39,9 +40,6 @@ public class ModelDestroyerI extends ModelBase {
 	
 	private static final int cooldown = 300;
 	public float scale = 1F;			//預設大小為1.0倍
-	public boolean onEmotion = false;	//是否正在表情中
-	public int cdEmotion = cooldown;	//表情cooldown
-    public int remainEmotion = 0;		//表情剩餘時間
 	
     public ModelDestroyerI() {
     textureWidth = 256;
@@ -52,12 +50,12 @@ public class ModelDestroyerI extends ModelBase {
     setTextureOffset("PNeck.NeckNeck", 128, 28);
     setTextureOffset("PNeck.NeckBody", 0, 70);
     setTextureOffset("PHead.Head", 0, 0);
-    setTextureOffset("PEyeLightLeft1.LeftEye1", 138, 64);
-    setTextureOffset("PEyeLightRight1.RightEye1", 138, 64);
-    setTextureOffset("PEyeLightLeft2.LeftEye2", 138, 84);
-    setTextureOffset("PEyeLightRight2.RightEye2", 138, 84);
-    setTextureOffset("PEyeLightLeft3.LeftEye3", 138, 104);
-    setTextureOffset("PEyeLightRight3.RightEye3", 138, 104);
+    setTextureOffset("PEyeLightL0.LEye", 138, 64);
+    setTextureOffset("PEyeLightR0.REye", 138, 64);
+    setTextureOffset("PEyeLightL1.LEye", 138, 84);
+    setTextureOffset("PEyeLightR1.REye", 138, 84);
+    setTextureOffset("PEyeLightL2.LEye", 138, 104);
+    setTextureOffset("PEyeLightR2.REye", 138, 104);
     setTextureOffset("PHead.ToothTopMid", 96, 0);
     setTextureOffset("PHead.ToothTopRight", 128, 54);
     setTextureOffset("PHead.ToothTopLeft", 128, 54);
@@ -100,18 +98,21 @@ public class ModelDestroyerI extends ModelBase {
       PHead.addBox("ToothTopRight", 0F, 20F, -10F, 18, 6, 4);
       PHead.addBox("ToothTopLeft", 0F, 20F, 6F, 18, 6, 4);
       PHead.addBox("JawTop", -3F, 20F, -11F, 22, 2, 22);
-    PEyeLightLeft1 = new ModelRenderer(this, "PEyeLightLeft1");
-    PEyeLightRight1 = new ModelRenderer(this, "PEyeLightRight1");
-    PEyeLightLeft1.addBox("LeftEye1", -3F, 0F, 16.1F, 24, 20, 0);
-    PEyeLightRight1.addBox("RightEye1", -3F, 0F, -16.1F, 24, 20, 0);
-    PEyeLightLeft2 = new ModelRenderer(this, "PEyeLightLeft2");
-    PEyeLightRight2 = new ModelRenderer(this, "PEyeLightRight2");
-    PEyeLightLeft2.addBox("LeftEye2", -3F, 0F, 16.1F, 24, 20, 0).isHidden = true;
-    PEyeLightRight2.addBox("RightEye2", -3F, 0F, -16.1F, 24, 20, 0).isHidden = true;
-    PEyeLightLeft3 = new ModelRenderer(this, "PEyeLightLeft3");
-    PEyeLightRight3 = new ModelRenderer(this, "PEyeLightRight3");
-    PEyeLightLeft3.addBox("LeftEye3", -3F, 0F, 16.1F, 24, 20, 0).isHidden = true;
-    PEyeLightRight3.addBox("RightEye3", -3F, 0F, -16.1F, 24, 20, 0).isHidden = true;
+      
+    //3 emotion eye
+    PEyeLightL[0] = new ModelRenderer(this, "PEyeLightL0");
+    PEyeLightR[0] = new ModelRenderer(this, "PEyeLightR0");
+    PEyeLightL[0].addBox("LEye", -3F, 0F, 16.1F, 24, 20, 0);
+    PEyeLightR[0].addBox("REye", -3F, 0F, -16.1F, 24, 20, 0);
+    PEyeLightL[1] = new ModelRenderer(this, "PEyeLightL1");
+    PEyeLightR[1] = new ModelRenderer(this, "PEyeLightR1");
+    PEyeLightL[1].addBox("LEye", -3F, 0F, 16.1F, 24, 20, 0).isHidden = true;
+    PEyeLightR[1].addBox("REye", -3F, 0F, -16.1F, 24, 20, 0).isHidden = true;
+    PEyeLightL[2] = new ModelRenderer(this, "PEyeLightL2");
+    PEyeLightR[2] = new ModelRenderer(this, "PEyeLightR2");
+    PEyeLightL[2].addBox("LEye", -3F, 0F, 16.1F, 24, 20, 0).isHidden = true;
+    PEyeLightR[2].addBox("REye", -3F, 0F, -16.1F, 24, 20, 0).isHidden = true;
+    
     PJawBottom = new ModelRenderer(this, "PJawBottom");
     PJawBottom.setRotationPoint(-6F, 18F, 0F);
     setRotation(PJawBottom, 0F, 0F, -0.2F);
@@ -121,12 +122,12 @@ public class ModelDestroyerI extends ModelBase {
       PJawBottom.addBox("ToothBottomRight", -1F, 7.5F, -9F, 4, 10, 3);
       PJawBottom.addBox("ToothBottomMid", -1F, 14.5F, -6F, 4, 3, 12);
       PHead.addChild(PJawBottom);
-      PHead.addChild(PEyeLightLeft1);
-      PHead.addChild(PEyeLightRight1);
-      PHead.addChild(PEyeLightLeft2);
-      PHead.addChild(PEyeLightRight2);
-      PHead.addChild(PEyeLightLeft3);
-      PHead.addChild(PEyeLightRight3);
+      PHead.addChild(PEyeLightL[0]);
+      PHead.addChild(PEyeLightR[0]);
+      PHead.addChild(PEyeLightL[1]);
+      PHead.addChild(PEyeLightR[1]);
+      PHead.addChild(PEyeLightL[2]);
+      PHead.addChild(PEyeLightR[2]);
       PNeck.addChild(PHead);
       PBack.addChild(PNeck);
     PBody = new ModelRenderer(this, "PBody");
@@ -220,84 +221,94 @@ public class ModelDestroyerI extends ModelBase {
   public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity) {
     super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
 
-    float angelZ = MathHelper.cos(f2*0.125F);
+    float angleZ = MathHelper.cos(f2*0.125F);
+       
+    EntityDestroyerI ent = (EntityDestroyerI)entity;
     
-    //依照emotion rand 隨機抽取顯示的表情, face: (normal)64 (-_-)84 (cry)104
-    //setTextureOffset("PHead.EyeLightLeft", 138, 64);
-    //setTextureOffset("PHead.EyeLightRight", 138, 64);
-    int emotionRand;
-   
-    if(onEmotion) {
-    	MotionBlink();
-    }
-    else {
-    	cdEmotion--;
-    	
-    	if(cdEmotion < 0) {  		
-    		emotionRand = entity.worldObj.rand.nextInt(100);
-    		LogHelper.info("DEBUG : rand "+emotionRand);
-    		
-    		if(emotionRand > 50) {
-    			LogHelper.info("DEBUG : into emo!");
-    			MotionBlink();
-    		}
-    		else {
-    			cdEmotion = cooldown;
-    		}
-    	}
-    }
+    rollEmotion(ent);
+    
+    motionLeg(f,f1);
+    
+    motionWatch(f3,f4,angleZ);	//include watch head & normal head
+    
+    motionTail(angleZ);
 
-    //移動雙腳 此模型方向設錯 因此改成轉Z
-    PLegRight.rotateAngleZ = MathHelper.cos(f * 0.6662F) * 1.4F * f1 - 0.6F;
-    PLegLeft.rotateAngleZ = MathHelper.cos(f * 0.6662F + 3.1415927F) * 1.4F * f1 - 0.6F;
-    PLegRightEnd.rotateAngleZ = MathHelper.sin(f * 0.6662F) * f1 - 0.4F;
-    PLegLeftEnd.rotateAngleZ = MathHelper.sin(f * 0.6662F + 3.1415927F) * f1 - 0.4F;
-    
-    //移動頭部 使其看人  轉動角度太小時則忽略不轉
-    if(MathHelper.abs(f4) > 1) {
-	    PNeck.rotateAngleY = f3 / 128F;	//左右角度 角度轉成rad 即除以57.29578
-	    PNeck.rotateAngleZ = f4 / 110F; //上下角度
-	    PHead.rotateAngleY = f3 / 128F;
-	    PHead.rotateAngleZ = f4 / 110F;
-	    PTail.rotateAngleY = f3 / 128F;	//尾巴以反方向擺動
-    }
-    else {
-    	PNeck.rotateAngleY = 0;			//左右角度 角度轉成rad 即除以57.29578
-	    PNeck.rotateAngleZ = 0.2F; 		//上下角度
-	    PHead.rotateAngleY = 0;
-	    PHead.rotateAngleZ = angelZ * 0.2F + 0.3F;
-	    PTail.rotateAngleY = 0;  	
-    }
-    
-    //常時擺動尾巴跟下巴
-    PTail.rotateAngleZ = angelZ * 0.2F;
-    PTailEnd.rotateAngleZ = angelZ * 0.3F;
-    PJawBottom.rotateAngleZ = -angelZ * 0.1F - 0.3F;
   }
+  
+  	//常時擺動尾巴跟下巴
+  	private void motionTail(float angleZ) { 	
+  	    PTail.rotateAngleZ = angleZ * 0.2F;
+  	    PTailEnd.rotateAngleZ = angleZ * 0.3F;
+  	    PJawBottom.rotateAngleZ = angleZ * 0.2F -0.3F;
+  	}
 
-    //眨眼動作
-	private void MotionBlink() {
-		if(!onEmotion) {	//表情cd到了, 可以做表情
-			remainEmotion = 101;	//倒數開始5 sec
-			onEmotion = true;
+	//雙腳移動計算
+  	private void motionLeg(float f, float f1) {
+		//移動雙腳 此模型方向設錯 因此改成轉Z
+	    PLegRight.rotateAngleZ = MathHelper.cos(f * 0.6662F) * 1.4F * f1 - 0.6F;
+	    PLegLeft.rotateAngleZ = MathHelper.cos(f * 0.6662F + 3.1415927F) * 1.4F * f1 - 0.6F;
+	    PLegRightEnd.rotateAngleZ = MathHelper.sin(f * 0.6662F) * f1 - 0.4F;
+	    PLegLeftEnd.rotateAngleZ = MathHelper.sin(f * 0.6662F + 3.1415927F) * f1 - 0.4F;	
+	}
+
+  	//頭部看人轉動計算
+	private void motionWatch(float f3, float f4, float angleZ) {
+		//移動頭部 使其看人  轉動角度太小時則忽略不轉
+	    if(MathHelper.abs(f4) > 0.5) {
+		    PNeck.rotateAngleY = f3 / 160F;		//左右角度 角度轉成rad 即除以57.29578
+		    PNeck.rotateAngleZ = f4 / 130F; 	//上下角度
+		    PHead.rotateAngleY = f3 / 160F;
+		    PHead.rotateAngleZ = f4 / 130F;
+		    PTail.rotateAngleY = f3 / -130F;	//尾巴以反方向擺動
+	    }
+	    else {
+	    	PNeck.rotateAngleY = 0;			//左右角度 角度轉成rad 即除以57.29578
+		    PNeck.rotateAngleZ = 0.2F; 		//上下角度
+		    PHead.rotateAngleY = 0;
+		    PHead.rotateAngleZ = angleZ * 0.15F + 0.2F;
+		    PTail.rotateAngleY = 0;  	
+	    }	
+	}
+
+	//隨機抽取顯示的表情 
+    private void rollEmotion(EntityDestroyerI ent) {
+    	
+    	switch(ent.EntityState[AttrID.Emotion]) {
+    	case AttrValues.Emotion.BLINK:	//blink
+    		EmotionBlink(ent);
+    		break;
+    	default:						//normal, other
+    		setFace(0);
+    		if(ent.ticksExisted % 120 == 0) {  	//roll emotion (3 times) every 6 sec
+        		int emotionRand = ent.rand.nextInt(100);   		
+        		if(emotionRand > 70) {
+        			EmotionBlink(ent);
+        		}
+        	}
+    		break;
+    	}	
+    }
+
+	//眨眼動作
+	private void EmotionBlink(EntityDestroyerI ent) {
+		if(ent.EntityState[AttrID.Emotion] == AttrValues.Emotion.NORMAL) {	//要在沒表情狀態才做表情
+			ent.StartEmotion = ent.ticksExisted;			//取得entity目前的時間
+			ent.EntityState[AttrID.Emotion] = AttrValues.Emotion.BLINK;		//標記表情為blink
 		}	
-		else {
-			remainEmotion--;
-			
-			switch(remainEmotion) {
-			case 99:
-				setFace(2);
-				break;
-			case 54:
-				setFace(1);
-				break;
-			case 17:
-				setFace(2);
-				break;
+		else {			
+			switch(ent.ticksExisted - ent.StartEmotion) {
 			case 1:
+				setFace(2);
+				break;
+			case 18:
 				setFace(1);
-				onEmotion = false;
-				cdEmotion = cooldown;
+				break;
+			case 35:
+				setFace(2);
+				break;
+			case 41:
+				setFace(1);
+				ent.EntityState[AttrID.Emotion] = AttrValues.Emotion.NORMAL;
 				break;
 			}
 		}
@@ -307,28 +318,28 @@ public class ModelDestroyerI extends ModelBase {
 	private void setFace(int emo) {
 		switch(emo) {
 		case 1:
-			PEyeLightLeft1.isHidden = false;
-			PEyeLightRight1.isHidden = false;
-			PEyeLightLeft2.isHidden = true;
-			PEyeLightRight2.isHidden = true;
-			PEyeLightLeft3.isHidden = true;
-			PEyeLightRight3.isHidden = true;
+			PEyeLightL[0].isHidden = false;
+			PEyeLightR[0].isHidden = false;
+			PEyeLightL[1].isHidden = true;
+			PEyeLightR[1].isHidden = true;
+			PEyeLightL[2].isHidden = true;
+			PEyeLightR[2].isHidden = true;
 			break;
 		case 2:
-			PEyeLightLeft1.isHidden = true;
-			PEyeLightRight1.isHidden = true;
-			PEyeLightLeft2.isHidden = false;
-			PEyeLightRight2.isHidden = false;
-			PEyeLightLeft3.isHidden = true;
-			PEyeLightRight3.isHidden = true;
+			PEyeLightL[0].isHidden = true;
+			PEyeLightR[0].isHidden = true;
+			PEyeLightL[1].isHidden = false;
+			PEyeLightR[1].isHidden = false;
+			PEyeLightL[2].isHidden = true;
+			PEyeLightR[2].isHidden = true;
 			break;
 		case 3:
-			PEyeLightLeft1.isHidden = true;
-			PEyeLightRight1.isHidden = true;
-			PEyeLightLeft2.isHidden = true;
-			PEyeLightRight2.isHidden = true;
-			PEyeLightLeft3.isHidden = false;
-			PEyeLightRight3.isHidden = false;
+			PEyeLightL[0].isHidden = true;
+			PEyeLightR[0].isHidden = true;
+			PEyeLightL[1].isHidden = true;
+			PEyeLightR[1].isHidden = true;
+			PEyeLightL[2].isHidden = false;
+			PEyeLightR[2].isHidden = false;
 			break;
 		default:
 			break;

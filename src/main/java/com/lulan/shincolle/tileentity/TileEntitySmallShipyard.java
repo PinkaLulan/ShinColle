@@ -20,7 +20,7 @@ import net.minecraft.util.MathHelper;
 
 public class TileEntitySmallShipyard extends BasicTileEntity implements ISidedInventory {
 
-	private ItemStack slots[];	//0:grudge 1:abyss 2:ammo 3:poly 4:fuel 5:output
+	private ItemStack slots[] = new ItemStack[6];	//0:grudge 1:abyss 2:ammo 3:poly 4:fuel 5:output
 
 	/** Fuel Cost = BaseCost + CostPerMaterial * ( TotalMaterialAmount - minAmount * 4 )
 	 *  Total Build Time = FuelCost / buildSpeed
@@ -37,9 +37,7 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ISidedIn
 	private static final int[] slots_all = new int[] {0, 1, 2, 3, 4, 5};  //dont care side
 
 	
-	public TileEntitySmallShipyard() {	
-		slots = new ItemStack[6];	
-	}
+	public TileEntitySmallShipyard() {}
 
 	//設定空間格數, 各格子用途:0:grudge 1:abyss 2:ammo 3:poly 4:fuel 5:output
 	@Override
@@ -134,45 +132,45 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ISidedIn
 	
 	//讀取nbt資料
 	@Override
-    public void readFromNBT(NBTTagCompound nbt1) {
-        super.readFromNBT(nbt1);	//從nbt讀取方塊的xyz座標
+    public void readFromNBT(NBTTagCompound compound) {
+        super.readFromNBT(compound);	//從nbt讀取方塊的xyz座標
 
-        NBTTagList list = nbt1.getTagList("Items", 10);	//抓nbt tag: Items (此為類型10:TagCompound)
-        slots = new ItemStack[this.getSizeInventory()];
+        NBTTagList list = compound.getTagList("Items", 10);	//抓nbt tag: Items (此為類型10:TagCompound)
         
         for(int i=0; i<list.tagCount(); i++) {			//將tag列出的所有物品抓出來
-            NBTTagCompound nbt2 = list.getCompoundTagAt(i);
-            byte j = nbt2.getByte("Slot");
+            NBTTagCompound item = list.getCompoundTagAt(i);
+            byte sid = item.getByte("Slot");
             
-            if (j>=0 && j<slots.length) {	//讀取nbt紀錄的物品, 生成到各slot中 
-            	slots[j] = ItemStack.loadItemStackFromNBT(nbt2);
+            if (sid>=0 && sid<slots.length) {	//讀取nbt紀錄的物品, 生成到各slot中 
+            	slots[sid] = ItemStack.loadItemStackFromNBT(item);
             }
         }
 
-        consumedPower = nbt1.getInteger("consumedPower");
-        remainedPower = nbt1.getInteger("remainedPower");
-        goalPower = nbt1.getInteger("goalPower");
+        consumedPower = compound.getInteger("consumedPower");
+        remainedPower = compound.getInteger("remainedPower");
+        goalPower = compound.getInteger("goalPower");
     }
 	
 	//將資料寫進nbt
-	public void writeToNBT(NBTTagCompound nbt1) {
-		super.writeToNBT(nbt1);
+	@Override
+	public void writeToNBT(NBTTagCompound compound) {
+		super.writeToNBT(compound);
 		
 		NBTTagList list = new NBTTagList();
-		
+
 		for(int i=0; i<slots.length; i++) {		//將slots[]資料寫進nbt
 			if (slots[i] != null) {
-				NBTTagCompound nbt2 = new NBTTagCompound();
-				nbt2.setByte("Slot", (byte)i);	//在tag: Slot下儲存資料i
-				slots[i].writeToNBT(nbt2);		//在tag: Slot下儲存slots[i]資料
-				list.appendTag(nbt2);			//增加下一個欄位
+				NBTTagCompound item = new NBTTagCompound();
+				item.setByte("Slot", (byte)i);	//在tag: Slot下儲存資料i
+				slots[i].writeToNBT(item);		//在tag: Slot下儲存slots[i]資料
+				list.appendTag(item);			//增加下一個欄位
 			}
 		}
 		
-		nbt1.setTag("Items", list);
-		nbt1.setInteger("consumedPower", consumedPower);
-		nbt1.setInteger("remainedPower", remainedPower);
-		nbt1.setInteger("goalPower", goalPower);
+		compound.setTag("Items", list);
+		compound.setInteger("consumedPower", consumedPower);
+		compound.setInteger("remainedPower", remainedPower);
+		compound.setInteger("goalPower", goalPower);
 	}
 	
 	//判定物品是否能放入該格子, 用於canExtractItem等方法
@@ -217,7 +215,7 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ISidedIn
 	
 	//建造ship方法
 	public void buildShip() {
-		int[] matAmount = new int[4];
+		byte[] matAmount = new byte[4];
 		//取得四樣材料數量
 		matAmount = SmallRecipes.getMaterialAmount(slots);
 
@@ -247,7 +245,7 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ISidedIn
 	
 	//取得建造花費
 	public void getGoalPower() {
-		int[] itemAmount = new int[4];	
+		byte[] itemAmount = new byte[4];	
 		//計算材料量
 		itemAmount = SmallRecipes.getMaterialAmount(slots);		
 		//依照材料量計算goalPower, 若材料沒達minAmount則goalPower會得到0

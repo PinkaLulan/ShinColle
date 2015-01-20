@@ -1,15 +1,19 @@
 package com.lulan.shincolle;
 
 
-import com.lulan.shincolle.handler.ConfigurationHandler;
+import net.minecraftforge.common.MinecraftForge;
+
+import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.handler.EVENT_BUS_EventHandler;
 import com.lulan.shincolle.handler.GuiHandler;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModEntity;
+import com.lulan.shincolle.init.ModEvents;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.init.ModTileEntity;
 import com.lulan.shincolle.init.ModWorldGen;
 import com.lulan.shincolle.init.Recipes;
-import com.lulan.shincolle.proxy.ClientProxy;
+import com.lulan.shincolle.proxy.IProxy;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.LogHelper;
 
@@ -30,50 +34,56 @@ public class ShinColle {
 	
 	//proxy for client/server event
 	@SidedProxy(clientSide = Reference.CLIENT_PROXY, serverSide = Reference.SERVER_PROXY)
-	public static ClientProxy clientProxy;
+	public static IProxy proxy;
+	
 	
 	//pre initial: load config, block/item/entity/render init, event handler init
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {		
 		//config inti
-		ConfigurationHandler.init(event.getSuggestedConfigurationFile());	//load config file
-		//item init
+		ConfigHandler.init(event.getSuggestedConfigurationFile());	//load config file
+
 		ModItems.init();
-		//block init
+
 		ModBlocks.init();
-		//entity init
+
 		ModEntity.init();
-		//keybinding init
-	//	clientProxy.registerKeyBindings();
-		//render init
-		clientProxy.registerRender();
+		//keybinding register
+	//	proxy.registerKeyBindings();
+		//render register
+		proxy.registerRender();
 		
-	//	LogHelper.info("preInit complete.");	//debug
+		LogHelper.info("preInit complete.");	//debug
 	}
 	
 	//initial: recipe/tileentity/gui/worldgen init, event handler regist, create data handler, request mod interact
 	//         AND oreDictionary registr
 	@Mod.EventHandler
 	public void Init(FMLInitializationEvent event) {
-		//登錄以下handler到event handler中 使其能接收event
-		FMLCommonHandler.instance().bus().register(new ConfigurationHandler());	 //config event handler
-	//	FMLCommonHandler.instance().bus().register(new KeyInputEventHandler());  //key event handler
+		//GUI register
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
-		//recipe init
+		//Packet channel register
+		proxy.registerChannel();
+		
+		ModEvents.init();
+		
 		Recipes.init();
-		//tile entity init
+
 		ModTileEntity.init();
-		//worldgen init
+
 		ModWorldGen.init();
 		
 		LogHelper.info("Init complete.");	//debug	
+		
+		//Waila tooltip provider (NYI)
+        //FMLInterModComms.sendMessage("Waila", "register", "com.lulan.shincolle.waila.WailaDataProvider.callbackRegister");
 	}
 	
 	//post initial: mod interact
 	@Mod.EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
 		
-	//	LogHelper.info("postInit complete.");	//debug
+		LogHelper.info("postInit complete.");	//debug
 		
 		/*
 		for(String oreName : OreDictionary.getOreNames()) {	//list all oreDictionary  (DEBUG)

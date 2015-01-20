@@ -1,6 +1,7 @@
 package com.lulan.shincolle.item;
 
 import java.util.List;
+import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
@@ -23,7 +24,10 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 
+import com.lulan.shincolle.crafting.ShipCalc;
 import com.lulan.shincolle.creativetab.CreativeTabSC;
+import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.reference.AttrID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.LogHelper;
 
@@ -35,6 +39,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 *  metadata:0: all small ship, 1: all large ship 2+:specific ship for debug
 **/
 public class ShipSpawnEgg extends Item {
+	
+	Random rand;
 	
 	@SideOnly(Side.CLIENT)
     private IIcon[] iconEgg = new IIcon[3];	//egg icon
@@ -51,6 +57,7 @@ public class ShipSpawnEgg extends Item {
         this.setHasSubtypes(true);	//true for enable metadata
         this.setCreativeTab(CreativeTabSC.SC_TAB);
         this.maxStackSize = 1;
+        rand = new Random();
         
     }
   	
@@ -110,9 +117,9 @@ public class ShipSpawnEgg extends Item {
   		case 0:	//small egg
   			return "shincolle:EntityDestroyerI";
   		case 1:	//large egg
-  			return "Creeper";
+  			return "shincolle:EntityDestroyerI";
   		default:
-  			return "Sheep";		//default is sheep!
+  			return "shincolle:EntityDestroyerI";		//default is sheep!
   		}
   		
   	}
@@ -122,7 +129,6 @@ public class ShipSpawnEgg extends Item {
      * the last three parameters.
      * Parameters: world, metadata, x, y, z
      */
-  	// NYI: NBT data setting ON item use
   	private Entity spawnEntity(World parWorld,int meta, double parX, double parY, double parZ) {
          	
         if (!parWorld.isRemote) {	// never spawn entity on client side 
@@ -142,6 +148,29 @@ public class ShipSpawnEgg extends Item {
         
         return entityToSpawn;
     }
+  	
+  	/**CALC ENTITY RANDOM BONUS ATTRIBUTE
+  	 * calc materials amount and random gen the bonus attributes
+  	 * bonus  +0    +1    +2    +3
+	 * HP    1     2     3     4	 per 1  level (max +600)
+	 * ATK   1     2     3     4     per 3  level (max +200)
+	 * DEF   0.15  0.3   0.45  0.6   per 5  level (max +18)
+	 * SPD   0.02  0.04  0.06  0.08  per 10 level (max +1.2)
+	 * MOV   0.01  0.02  0.03  0.04  per 10 level (max +0.6)
+	 * HIT   1     1.5   2     2.5   per 10 level (max +37.5)  
+	 * 
+	 * @parm spawn egg item, player, entity
+	 */
+  	private void initEntityAttribute(ItemStack itemstack, EntityPlayer player, BasicEntityShip entity) {
+  		//set owner
+  		((BasicEntityShip)entity).setOwner(player.getDisplayName());
+  		//calc HP ATK DEF SPD MOV HIT bonus point
+  		byte[] bonuspoint = new byte[6];	 
+  		bonuspoint = ShipCalc.getBonusPoints(itemstack);
+  		
+
+  		
+  	}
   	
   	/** VANILLA SPAWN EGG onItemUse event (use item to block)
      * Callback for item usage. If the item does something special on right clicking, he will have one of those. Return
@@ -165,12 +194,21 @@ public class ShipSpawnEgg extends Item {
             }
             
             //spawn entity in front of player (1 block)
-            Entity entity = spawnEntity(par3World, par1ItemStack.getItemDamage(), par4 + 0.5D, par5 + d0, par6 + 0.5D);
+            BasicEntityShip entity = (BasicEntityShip) spawnEntity(par3World, par1ItemStack.getItemDamage(), par4 + 0.5D, par5 + d0, par6 + 0.5D);
 
             if (entity != null) {
+            	//calc bonus point, set custom name and owner name
+            	initEntityAttribute(par1ItemStack, par2EntityPlayer, entity);
+            	
+            	
+            	
+            	
+            	
+            	
+            	
             	//for egg with nameTag
-                if (entity instanceof EntityLivingBase && par1ItemStack.hasDisplayName()) {
-                    ((EntityLiving)entity).setCustomNameTag(par1ItemStack.getDisplayName());
+                if (par1ItemStack.hasDisplayName()) {
+                    entity.setCustomNameTag(par1ItemStack.getDisplayName());    
                 }
                 //if creative mode = item not consume
                 if (!par2EntityPlayer.capabilities.isCreativeMode)
@@ -213,12 +251,19 @@ public class ShipSpawnEgg extends Item {
                     }
 
                     if (par2World.getBlock(i, j, k) instanceof BlockLiquid) {
-                        Entity entity = spawnEntity(par2World, par1ItemStack.getItemDamage(), i, j, k);
+                    	BasicEntityShip entity = (BasicEntityShip) spawnEntity(par2World, par1ItemStack.getItemDamage(), i, j, k);
 
                         if (entity != null) {
+                        	
+                        	
+                        	
+                        	
+                        	
+                        	
+                        	
                         	//for egg with nameTag
                             if (entity instanceof EntityLivingBase && par1ItemStack.hasDisplayName()) {
-                                ((EntityLiving)entity).setCustomNameTag(par1ItemStack.getDisplayName());
+                                entity.setCustomNameTag(par1ItemStack.getDisplayName());
                             }
                             //if creative mode = item not consume
                             if (!par3EntityPlayer.capabilities.isCreativeMode) {

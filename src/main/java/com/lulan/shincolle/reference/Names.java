@@ -7,4 +7,10 @@ public final class Names {
 		public static final String CATEGORY = "keys.shincolle.category";
 		public static final String REPAIR = "keys.shincolle.repair";
 	}
+	
+	public static final class Packets {
+		public static final byte TEST = 0;
+		public static final byte ENTITY_SYNC = 1;
+	}
+
 }

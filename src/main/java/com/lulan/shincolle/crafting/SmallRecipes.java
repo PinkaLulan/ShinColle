@@ -17,24 +17,23 @@ import net.minecraft.tileentity.TileEntityFurnace;
  */	
 public class SmallRecipes {
 	
-	private static final int minAmount = 16;		//material min amount
+	private static final byte minAmount = 16;		//material min amount
 	private static final int basePower = 57600;		//base cost power
 	private static final int powerPerMat = 2100;	//cost per item
 	
-	public SmallRecipes() {		
-	}
+	public SmallRecipes() {}
 		
 	//檢查材料是否能夠建造
-	public static boolean canRecipeBuild(int[] matAmount) {
+	public static boolean canRecipeBuild(byte[] matAmount) {
 		return matAmount[0]>=minAmount && matAmount[1]>=minAmount && matAmount[2]>=minAmount && matAmount[3]>=minAmount;
 	}
 	
 	//計算總共需要的燃料
-	public static int calcGoalPower(int[] matAmount) {
+	public static int calcGoalPower(byte[] matAmount) {
 		int extraAmount;
 		
 		if(canRecipeBuild(matAmount)) {
-			extraAmount = matAmount[0] + matAmount[1] + matAmount[2] + matAmount[3] - minAmount * 4;
+			extraAmount = (int) matAmount[0] + (int) matAmount[1] + (int) matAmount[2] + (int) matAmount[3] - (int)(minAmount) * 4;
 			return basePower + powerPerMat * extraAmount;
 		}
 		
@@ -51,9 +50,9 @@ public class SmallRecipes {
 	}
 	
 	//判定材料種類: 0:grudge 1:abyss 2:ammo 3:poly 4:fuel -1:other
-	public static int getMaterialID(ItemStack itemstack) {
+	public static byte getMaterialID(ItemStack itemstack) {
 		Item item = itemstack.getItem();
-		int itemID = -1;
+		byte itemID = -1;
 		
 		if(item == ModItems.Grudge) itemID = 0;
 		if(item == ModItems.Abyssium) itemID = 1;
@@ -66,12 +65,12 @@ public class SmallRecipes {
 	
 	//取得四樣材料個數with null check
 	//itemstack:0:grudge 1:abyss 2:ammo 3:poly 4:fuel 5:output
-	public static int[] getMaterialAmount(ItemStack[] item) {
-		int[] itemAmount = new int[4];
+	public static byte[] getMaterialAmount(ItemStack[] item) {
+		byte[] itemAmount = new byte[4];
 		
 		for(int i=0; i<4; i++) {	//取得item 0~3的資料, 即四樣材料資料
 			if(item[i] != null) {	//加上null判斷以免NPE
-				itemAmount[i] = item[i].stackSize;
+				itemAmount[i] = (byte) item[i].stackSize;
 			}
 			else {
 				itemAmount[i] = 0;
@@ -82,17 +81,15 @@ public class SmallRecipes {
 	}
 	
 	//將材料數量寫進itemstack回傳
-	public static ItemStack getBuildResult(int[] matAmount) {
+	public static ItemStack getBuildResult(byte[] matAmount) {
 		//檢查四個材料數量是否都超過最小值
 		ItemStack buildResult = new ItemStack(ModItems.ShipSpawnEgg);
 		buildResult.setItemDamage(0);
 		buildResult.stackTagCompound = new NBTTagCompound();
-		buildResult.stackTagCompound.setInteger("Grudge", matAmount[0]);
-		buildResult.stackTagCompound.setInteger("Abyssium", matAmount[1]);
-		buildResult.stackTagCompound.setInteger("Ammo", matAmount[2]);
-		buildResult.stackTagCompound.setInteger("Polymetal", matAmount[3]);
-		
-		if(matAmount[0] == 30) buildResult.setItemDamage(2);	//for debug
+		buildResult.stackTagCompound.setByte("Grudge", matAmount[0]);
+		buildResult.stackTagCompound.setByte("Abyssium", matAmount[1]);
+		buildResult.stackTagCompound.setByte("Ammo", matAmount[2]);
+		buildResult.stackTagCompound.setByte("Polymetal", matAmount[3]);
 		
 		return buildResult;
 	}

@@ -5,6 +5,7 @@ import net.minecraft.item.Item;
 import com.lulan.shincolle.item.Abyssium;
 import com.lulan.shincolle.item.Ammo;
 import com.lulan.shincolle.item.BasicItem;
+import com.lulan.shincolle.item.BasicEquip;
 import com.lulan.shincolle.item.BucketRepair;
 import com.lulan.shincolle.item.Grudge;
 import com.lulan.shincolle.item.HeavyAmmo;
@@ -25,6 +26,8 @@ public class ModItems {
 	public static final BasicItem Polymetal = new Polymetal();
 	public static final ShipSpawnEgg ShipSpawnEgg = new ShipSpawnEgg();
 	
+	public static final BasicItem BasicEquip = new BasicEquip();	//debug
+	
 
 	//登錄item到遊戲中 (在pre init階段登錄)
 	public static void init() {
@@ -36,6 +39,8 @@ public class ModItems {
 		GameRegistry.registerItem(HeavyAmmo, "HeavyAmmo");
 		GameRegistry.registerItem(Polymetal, "Polymetal");
 		GameRegistry.registerItem(ShipSpawnEgg, "ShipSpawnEgg");
+		
+		GameRegistry.registerItem(BasicEquip, "BasicEquip");
 		
 	}
 	

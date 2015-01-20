@@ -41,14 +41,11 @@ abstract public class BasicBlockContainer extends BlockContainer {
 		return String.format("tile.%s%s", Reference.MOD_ID_LOW+":", getUnwrappedUnlocalizedName(super.getUnlocalizedName()));
 	}
 	
-//	//方塊圖示登錄
-//	//取出方塊名稱(不含mod名稱)作為參數丟給icon register來登錄icon
-//	//注意icon只在client端才需要執行
-//	@Override
-//	@SideOnly(Side.CLIENT)
-//	public void registerBlockIcons(IIconRegister iconRegister) {
-//		blockIcon = iconRegister.registerIcon(String.format("%s", getUnwrappedUnlocalizedName(this.getUnlocalizedName())));
-//	}
+	//不給icon, 全都用custom render block
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void registerBlockIcons(IIconRegister iconRegister) {
+	}
 	
 	//new tile entity instance in child class 
 	abstract public TileEntity createNewTileEntity(World world, int i);

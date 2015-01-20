@@ -31,6 +31,7 @@ public class ClientProxy extends CommonProxy {
 	}
 	
 	//µn¿ý¼Ò«¬render
+	@Override
 	public void registerRender() {
 		
 		TileEntitySpecialRenderer tesrBlockSmallShipyard = new RenderSmallShipyard();
