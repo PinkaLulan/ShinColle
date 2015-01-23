@@ -48,12 +48,12 @@ public class ProcessPacketClientSide {
 					foundEntityShip.ShipLevel = bbis.readShort();
 					foundEntityShip.Kills = bbis.readInt();
 					
-					foundEntityShip.AttrBonusShort[AttrID.HP] = bbis.readShort();
-					foundEntityShip.AttrBonusShort[AttrID.ATK] = bbis.readShort();
-					foundEntityShip.AttrBonusShort[AttrID.DEF] = bbis.readShort();
-					foundEntityShip.AttrBonusFloat[AttrID.SPD] = bbis.readFloat();
-					foundEntityShip.AttrBonusFloat[AttrID.MOV] = bbis.readFloat();
-					foundEntityShip.AttrBonusFloat[AttrID.HIT] = bbis.readFloat();
+					foundEntityShip.AttrEquipShort[AttrID.HP] = bbis.readShort();
+					foundEntityShip.AttrEquipShort[AttrID.ATK] = bbis.readShort();
+					foundEntityShip.AttrEquipShort[AttrID.DEF] = bbis.readShort();
+					foundEntityShip.AttrEquipFloat[AttrID.SPD] = bbis.readFloat();
+					foundEntityShip.AttrEquipFloat[AttrID.MOV] = bbis.readFloat();
+					foundEntityShip.AttrEquipFloat[AttrID.HIT] = bbis.readFloat();
 					
 					foundEntityShip.AttrFinalShort[AttrID.HP] = bbis.readShort();
 					foundEntityShip.AttrFinalShort[AttrID.ATK] = bbis.readShort();
@@ -65,6 +65,13 @@ public class ProcessPacketClientSide {
 					foundEntityShip.EntityState[AttrID.State] = bbis.readByte();
 					foundEntityShip.EntityState[AttrID.Emotion] = bbis.readByte();
 					foundEntityShip.EntityState[AttrID.SwimType] = bbis.readByte();
+					
+					foundEntityShip.BonusPoint[0] = bbis.readByte();
+					foundEntityShip.BonusPoint[1] = bbis.readByte();
+					foundEntityShip.BonusPoint[2] = bbis.readByte();
+					foundEntityShip.BonusPoint[3] = bbis.readByte();
+					foundEntityShip.BonusPoint[4] = bbis.readByte();
+					foundEntityShip.BonusPoint[5] = bbis.readByte();
 				}
 				break;
 			}//end switch

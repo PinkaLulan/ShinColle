@@ -8,32 +8,32 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 /**SHIP DATA <br>
- * attribute array (for performance) <br> <br>
+ * attribute array (no map for performance) <br> <br>
  * 
- * AttrBonusShort: 0:ShipBonusHP 1:ShipBonusATK 2:ShipBonusDEF <br>
- * AttrBonusFloat: 0:ShipBonusSPD 1:ShipBonusMOV 2:ShipBonusHIT <br>
+ * AttrEquipShort: 0:ShipEquipHP 1:ShipEquipATK 2:ShipEquipDEF <br>
+ * AttrEquipFloat: 0:ShipEquipSPD 1:ShipEquipMOV 2:ShipEquipHIT <br>
  * AttrFinalShort: 0:ShipFinalHP 1:ShipFinalATK 2:ShipFinalDEF <br>
  * AttrFinalFloat: 0:ShipFinalSPD 1:ShipFinalMOV 2:ShipFinalHIT <br>
  * EntityState: 0:State 1:Emotion 2:SwimType <br> <br>
  * 
- * Final HP = (Base + Bonus * Level) * config HP scale <br>
- * Final ATK = Base + Bonus * ceil(Level / 3) + Eqiuip <br>
- * Final DEF = Base + Bonus * ceil(Level / 5) + Eqiuip <br>
- * Final AttackSpeed/MovementSpeed = Base + Bonus * ceil(Level / 10) <br>
- * Final Attack Range = Base + HIT + ceil(Level / 10) <br>
- * KB resistance = Base + ceil(Level / 10) * 0.04	<br><br>
+ * Final HP = (Base + Bonus * Level * typeModify) * config HP scale (type modify excluding base value) <br>
+ * Final ATK = Base + (Bonus * Level / 3 + Eqiuip) * typeModify (type modify including equip value)<br>
+ * Final DEF = Base + (Bonus * Level / 5 * 0.15 + Eqiuip) * typeModify <br>
+ * Final AttackSpeed/MovementSpeed = Base + (Bonus * Level / 10 * 0.02 + equip) * typeModify <br>
+ * Final Attack Range = Base + (Bonus * Level / 10 * 0.01 + equip) * typeModify <br>
+ * KB resistance = Level / 10 * 0.04 <br><br>
  * 
- * 1 HP/ATK = 0.5 Heart , 1 DEF = 4% Reduction , 0.1 MOV = blocks/sec	<br>
+ * 1 HP/ATK = 0.5 Heart , 1 DEF = 4% Reduction , 0.1 MOV = blocks/sec?	<br>
  * 2 SPD = 2 hits/sec , 1 HIT = +1 Range	<br><br>
  * 
  * (NYI) Hit Rate for Hit AI	<br><br>
  * 
- * Bonus: grudge    -> HP ATK DEF SPD MOV HIT	<br>
- *        abyssium  -> HP DEF					<br>
- *        ammo      -> ATK SPD					<br>
- * 		  polymetal -> MOV HIT					<br><br>
+ * Material Bonus: Grudge    -> HP ATK DEF SPD MOV HIT	<br>
+ *                 Abyssium  -> HP DEF					<br>
+ *                 Ammo      -> ATK SPD					<br>
+ * 		           Polymetal -> MOV HIT					<br><br>
  * 
- * base rate: {64,16,4,1}  material amount = 16	<br>
+ * base rate: {64,16,4,1}  <br>
  * +3 rate: base + amount * 0.25				<br>
  * +2 rate: base + amount * 0.375				<br>
  * +1 rate: base + amount * 0.75				<br>
@@ -48,7 +48,7 @@ import net.minecraft.nbt.NBTTagCompound;
  * DEF   0.15  0.3   0.45  0.6   per 5  level (max +18)
  * SPD   0.02  0.04  0.06  0.08  per 10 level (max +1.2)
  * MOV   0.01  0.02  0.03  0.04  per 10 level (max +0.6)
- * HIT   1     1.5   2     2.5   per 10 level (max +37.5)  
+ * HIT   0.8   1.6   2.4   3.2   per 10 level (max +48) 
  * 
  */
 public class ShipCalc {
@@ -122,6 +122,8 @@ public class ShipCalc {
 		int bonus2 = (int)(rate[0]+rate[1]);
 		int bonus1 = (int)(rate[0]);
 		
+		LogHelper.info("DEBUG : roll bonus ranNum : "+ranNum);
+		
 		if(ranNum > bonus3) {
 			return 3;
 		}
@@ -136,10 +138,5 @@ public class ShipCalc {
 		}
 	}
 	
-	//in: bonus point		out: bonus value
-	public static float calcBonusValue(byte point) {
-		
-		return 0F;
-	}
 
 }

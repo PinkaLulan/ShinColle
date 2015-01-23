@@ -24,7 +24,7 @@ public class createPacketS2C {
 	/**ENTITY SYNC PACKET <br>
 	 * 用於同步server跟client的entity資料 <br>
 	 * Format: PacketID + EntityID + ShipLevel + Kills + 
-	 *         AttrBonus[] + AttrFinal[] + EntityState[]
+	 *         AttrBonus[] + AttrFinal[] + EntityState[] + BonusPoint[]
 	 * 
 	 */
 	public static FMLProxyPacket createEntityPacket(Entity parEntity) throws IOException {
@@ -42,12 +42,12 @@ public class createPacketS2C {
 			bbos.writeShort(entity.ShipLevel);
 			bbos.writeInt(entity.Kills);
 			
-			bbos.writeShort(entity.AttrBonusShort[AttrID.HP]);
-			bbos.writeShort(entity.AttrBonusShort[AttrID.ATK]);
-			bbos.writeShort(entity.AttrBonusShort[AttrID.DEF]);
-			bbos.writeFloat(entity.AttrBonusFloat[AttrID.SPD]);
-			bbos.writeFloat(entity.AttrBonusFloat[AttrID.MOV]);
-			bbos.writeFloat(entity.AttrBonusFloat[AttrID.HIT]);
+			bbos.writeShort(entity.AttrEquipShort[AttrID.HP]);
+			bbos.writeShort(entity.AttrEquipShort[AttrID.ATK]);
+			bbos.writeShort(entity.AttrEquipShort[AttrID.DEF]);
+			bbos.writeFloat(entity.AttrEquipFloat[AttrID.SPD]);
+			bbos.writeFloat(entity.AttrEquipFloat[AttrID.MOV]);
+			bbos.writeFloat(entity.AttrEquipFloat[AttrID.HIT]);
 			
 			bbos.writeShort(entity.AttrFinalShort[AttrID.HP]);
 			bbos.writeShort(entity.AttrFinalShort[AttrID.ATK]);
@@ -59,6 +59,13 @@ public class createPacketS2C {
 			bbos.writeByte(entity.EntityState[AttrID.State]);
 			bbos.writeByte(entity.EntityState[AttrID.Emotion]);
 			bbos.writeByte(entity.EntityState[AttrID.SwimType]);
+			
+			bbos.writeByte(entity.BonusPoint[0]);
+			bbos.writeByte(entity.BonusPoint[1]);
+			bbos.writeByte(entity.BonusPoint[2]);
+			bbos.writeByte(entity.BonusPoint[3]);
+			bbos.writeByte(entity.BonusPoint[4]);
+			bbos.writeByte(entity.BonusPoint[5]);			
 		}
 
 		// put payload into a packet  

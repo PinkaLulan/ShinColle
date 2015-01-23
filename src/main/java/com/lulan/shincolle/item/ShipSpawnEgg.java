@@ -119,7 +119,7 @@ public class ShipSpawnEgg extends Item {
   		case 1:	//large egg
   			return "shincolle:EntityDestroyerI";
   		default:
-  			return "shincolle:EntityDestroyerI";		//default is sheep!
+  			return "shincolle:EntityDestroyerI";
   		}
   		
   	}
@@ -151,24 +151,27 @@ public class ShipSpawnEgg extends Item {
   	
   	/**CALC ENTITY RANDOM BONUS ATTRIBUTE
   	 * calc materials amount and random gen the bonus attributes
-  	 * bonus  +0    +1    +2    +3
-	 * HP    1     2     3     4	 per 1  level (max +600)
-	 * ATK   1     2     3     4     per 3  level (max +200)
-	 * DEF   0.15  0.3   0.45  0.6   per 5  level (max +18)
-	 * SPD   0.02  0.04  0.06  0.08  per 10 level (max +1.2)
-	 * MOV   0.01  0.02  0.03  0.04  per 10 level (max +0.6)
-	 * HIT   1     1.5   2     2.5   per 10 level (max +37.5)  
-	 * 
 	 * @parm spawn egg item, player, entity
 	 */
   	private void initEntityAttribute(ItemStack itemstack, EntityPlayer player, BasicEntityShip entity) {
   		//set owner
-  		((BasicEntityShip)entity).setOwner(player.getDisplayName());
+  		entity.setOwner(player.getDisplayName());
+  		
   		//calc HP ATK DEF SPD MOV HIT bonus point
   		byte[] bonuspoint = new byte[6];	 
   		bonuspoint = ShipCalc.getBonusPoints(itemstack);
   		
-
+  		//set bonus point
+  		entity.BonusPoint[0] = bonuspoint[0];
+  		entity.BonusPoint[1] = bonuspoint[1];
+  		entity.BonusPoint[2] = bonuspoint[2];
+  		entity.BonusPoint[3] = bonuspoint[3];
+  		entity.BonusPoint[4] = bonuspoint[4];
+  		entity.BonusPoint[5] = bonuspoint[5];
+  		
+  		//calc ship attribute and save to nbt: hp atk def ...
+  		LogHelper.info("DEBUG : spawn egg set ship attribute");
+  		entity.setShipAttributes(entity.ShipID);
   		
   	}
   	
@@ -177,13 +180,13 @@ public class ShipSpawnEgg extends Item {
      * True if something happen and false if it don't. This is for ITEMS, not BLOCKS
      */
     @Override
-    public boolean onItemUse(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, World par3World, int par4, int par5, int par6, int par7, float par8, float par9, float par10) {
+    public boolean onItemUse(ItemStack itemstack, EntityPlayer player, World world, int par4, int par5, int par6, int par7, float par8, float par9, float par10) {
         
-    	if (par3World.isRemote) {	//client side
+    	if (world.isRemote) {	//client side
             return true;
         }
         else {						//server side
-            Block block = par3World.getBlock(par4, par5, par6);		//get spawn position
+            Block block = world.getBlock(par4, par5, par6);		//get spawn position
             par4 += Facing.offsetsXForSide[par7];
             par5 += Facing.offsetsYForSide[par7];
             par6 += Facing.offsetsZForSide[par7];
@@ -194,26 +197,20 @@ public class ShipSpawnEgg extends Item {
             }
             
             //spawn entity in front of player (1 block)
-            BasicEntityShip entity = (BasicEntityShip) spawnEntity(par3World, par1ItemStack.getItemDamage(), par4 + 0.5D, par5 + d0, par6 + 0.5D);
+            BasicEntityShip entity = (BasicEntityShip) spawnEntity(world, itemstack.getItemDamage(), par4 + 0.5D, par5 + d0, par6 + 0.5D);
 
             if (entity != null) {
             	//calc bonus point, set custom name and owner name
-            	initEntityAttribute(par1ItemStack, par2EntityPlayer, entity);
-            	
-            	
-            	
-            	
-            	
-            	
-            	
+            	initEntityAttribute(itemstack, player, entity);
+         	
             	//for egg with nameTag
-                if (par1ItemStack.hasDisplayName()) {
-                    entity.setCustomNameTag(par1ItemStack.getDisplayName());    
+                if (itemstack.hasDisplayName()) {
+                    entity.setCustomNameTag(itemstack.getDisplayName());    
                 }
                 //if creative mode = item not consume
-                if (!par2EntityPlayer.capabilities.isCreativeMode)
+                if (!player.capabilities.isCreativeMode)
                 {
-                    --par1ItemStack.stackSize;
+                    --itemstack.stackSize;
                 }
             }
 
@@ -225,16 +222,16 @@ public class ShipSpawnEgg extends Item {
      * Called whenever this item is equipped and the right mouse button is pressed. Args: itemStack, world, entityPlayer
      */
     @Override
-    public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer) {
+    public ItemStack onItemRightClick(ItemStack itemstack, World world, EntityPlayer player) {
         
-    	if (par2World.isRemote) {	//client side
-            return par1ItemStack;
+    	if (world.isRemote) {	//client side
+            return itemstack;
         }
         else {						//server side
-            MovingObjectPosition movingobjectposition = getMovingObjectPositionFromPlayer(par2World, par3EntityPlayer, true);
+            MovingObjectPosition movingobjectposition = getMovingObjectPositionFromPlayer(world, player, true);
 
             if (movingobjectposition == null) {
-                return par1ItemStack;
+                return itemstack;
             }
             else {
                 if (movingobjectposition.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
@@ -242,38 +239,34 @@ public class ShipSpawnEgg extends Item {
                     int j = movingobjectposition.blockY;
                     int k = movingobjectposition.blockZ;
 
-                    if (!par2World.canMineBlock(par3EntityPlayer, i, j, k)) {
-                        return par1ItemStack;
+                    if (!world.canMineBlock(player, i, j, k)) {
+                        return itemstack;
                     }
 
-                    if (!par3EntityPlayer.canPlayerEdit(i, j, k, movingobjectposition.sideHit, par1ItemStack)) {
-                        return par1ItemStack;
+                    if (!player.canPlayerEdit(i, j, k, movingobjectposition.sideHit, itemstack)) {
+                        return itemstack;
                     }
 
-                    if (par2World.getBlock(i, j, k) instanceof BlockLiquid) {
-                    	BasicEntityShip entity = (BasicEntityShip) spawnEntity(par2World, par1ItemStack.getItemDamage(), i, j, k);
+                    if (world.getBlock(i, j, k) instanceof BlockLiquid) {
+                    	BasicEntityShip entity = (BasicEntityShip) spawnEntity(world, itemstack.getItemDamage(), i, j, k);
 
                         if (entity != null) {
-                        	
-                        	
-                        	
-                        	
-                        	
-                        	
+                        	//calc bonus point, set custom name and owner name
+                        	initEntityAttribute(itemstack, player, entity);    	
                         	
                         	//for egg with nameTag
-                            if (entity instanceof EntityLivingBase && par1ItemStack.hasDisplayName()) {
-                                entity.setCustomNameTag(par1ItemStack.getDisplayName());
+                            if (entity instanceof EntityLivingBase && itemstack.hasDisplayName()) {
+                                entity.setCustomNameTag(itemstack.getDisplayName());
                             }
                             //if creative mode = item not consume
-                            if (!par3EntityPlayer.capabilities.isCreativeMode) {
-                                --par1ItemStack.stackSize;
+                            if (!player.capabilities.isCreativeMode) {
+                                --itemstack.stackSize;
                             }
                         }
                     }
                 }
 
-                return par1ItemStack;
+                return itemstack;
             }//end else
         }
     }
@@ -290,10 +283,10 @@ public class ShipSpawnEgg extends Item {
     		material[3] = itemstack.stackTagCompound.getInteger("Polymetal");          
         }
     	
-    	list.add(EnumChatFormatting.YELLOW + "" + material[0] + " Grudge");
+    	list.add(EnumChatFormatting.WHITE + "" + material[0] + " Grudge");
         list.add(EnumChatFormatting.RED + "" + material[1] + " Abyssium");
-        list.add(EnumChatFormatting.AQUA + "" + material[2] + " Ammo");
-        list.add(EnumChatFormatting.WHITE + "" + material[3] + " Polymetal");
+        list.add(EnumChatFormatting.GREEN + "" + material[2] + " Ammo");
+        list.add(EnumChatFormatting.AQUA + "" + material[3] + " Polymetal");
     }
     
    

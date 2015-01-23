@@ -14,18 +14,18 @@ public class ProcessPacketServerSide {
 	public ProcessPacketServerSide() {}
 
 	public static void processPacketOnServer(ByteBuf parBB, Side parSide, EntityPlayerMP parPlayer) throws IOException {
-		if (parSide == Side.SERVER) {
-			ByteBufInputStream bbis = new ByteBufInputStream(parBB);
-			
-			//read packet ID
-			int packetTypeID = bbis.readInt();
-			switch (packetTypeID) {
-			case 0:
-				break;
-			}
-
-			bbis.close();   
-		}
+//		if (parSide == Side.SERVER) {
+//			ByteBufInputStream bbis = new ByteBufInputStream(parBB);
+//			
+//			//read packet ID
+//			int packetTypeID = bbis.readInt();
+//			switch (packetTypeID) {
+//			case 0:
+//				break;
+//			}
+//
+//			bbis.close();   
+//		}
 	}
 	
 	

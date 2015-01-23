@@ -33,6 +33,7 @@ public class EVENT_BUS_EventHandler {
 	@SubscribeEvent
 	public void onEntityConstructing(EntityConstructing event) {
 	    if(event.entity instanceof BasicEntityShip) {
+	    	LogHelper.info("DEBUG : get entity construct event");
 	        event.entity.registerExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME, new ExtendShipProps());
 	    }
 	}

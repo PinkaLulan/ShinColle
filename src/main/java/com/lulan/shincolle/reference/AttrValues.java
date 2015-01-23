@@ -1,150 +1,84 @@
 package com.lulan.shincolle.reference;
 
 public class AttrValues {
-		
-	public static final class BaseHP {		//store in BYTE, assign to SHORT/FLOAT/DOUBLE
-		public static final byte Destroyer = 40;	
-		public static final byte Fortress = 40;
-		public static final byte LightCruiser = 40;
-		
-		public static final byte Battleship = 40;
-		public static final byte Carrier = 40;
-		public static final byte HeavyCruiser = 40;
-		public static final byte Submarine = 40;
-		public static final byte Transport = 40;		
-		
-		public static final byte AircraftCarrierHime = 120;
-		public static final byte AirfieldHime = 120;
-		public static final byte ArmoredCarrierHime = 120;
-		public static final byte AnchorageHime = 120;
-		public static final byte BattleshipHime = 120;
-		public static final byte DestroyerHime = 120;	
-		public static final byte HarbourHime = 120;
-		public static final byte IsolatedHime = 120;
-		public static final byte MidwayHime = 120;
-		public static final byte NorthernHime = 120;
-		public static final byte SouthernHime = 120;	
-	}
+	/**Array ID
+	 * 0:DeI   1:DeRO  2:DeHA  3:DeNI  4:LCHO  5:LCHE  6:LCTO  7:LCTSU
+	 * 8:TCCHI 9:HCRI  10:HCNE 11:CaNU 12:CaWO 13:BaRU 14:BaTA 15:BaRE
+	 * 16:TrWA 17:SuKA 18:SuYO 19:SuSO 20:CaH  21:AFH  22:ArmH 23:AncH
+	 * 24:EscF 25:FloF 26:BaH  27:DeH  28:HbH  29:IsH  30:MidH 31:NorH 32:SouH
+	 */
 	
-	public static final class BaseATK {		
-		public static final byte Destroyer = 4;	
-		public static final byte Fortress = 4;
-		public static final byte LightCruiser = 4;
-		
-		public static final byte Battleship = 4;
-		public static final byte Carrier = 4;
-		public static final byte HeavyCruiser = 4;
-		public static final byte Submarine = 4;
-		public static final byte Transport = 4;		
-		
-		public static final byte AircraftCarrierHime = 40;
-		public static final byte AirfieldHime = 40;
-		public static final byte ArmoredCarrierHime = 40;
-		public static final byte AnchorageHime = 40;
-		public static final byte BattleshipHime = 40;
-		public static final byte DestroyerHime = 40;	
-		public static final byte HarbourHime = 40;
-		public static final byte IsolatedHime = 40;
-		public static final byte MidwayHime = 40;
-		public static final byte NorthernHime = 40;
-		public static final byte SouthernHime = 40;
-	}
+	public static final byte[] BaseHP = 
+		{20, 40, 40, 40, 40, 40, 40, 40,
+		 40, 40, 40, 40, 40, 40, 40, 40,
+		 40, 40, 40, 40, 40, 40, 40, 40,
+		 40, 40, 40, 40, 40, 40, 40, 40, 40 };
 	
-	public static final class BaseDEF {
-		public static final byte Destroyer = 0;	
-		public static final byte Fortress = 0;
-		public static final byte LightCruiser = 0;
-		
-		public static final byte Battleship = 0;
-		public static final byte Carrier = 0;
-		public static final byte HeavyCruiser = 0;
-		public static final byte Submarine = 0;
-		public static final byte Transport = 0;		
-		
-		public static final byte AircraftCarrierHime = 0;
-		public static final byte AirfieldHime = 0;
-		public static final byte ArmoredCarrierHime = 0;
-		public static final byte AnchorageHime = 0;
-		public static final byte BattleshipHime = 0;
-		public static final byte DestroyerHime = 0;	
-		public static final byte HarbourHime = 0;
-		public static final byte IsolatedHime = 0;
-		public static final byte MidwayHime = 0;
-		public static final byte NorthernHime = 0;
-		public static final byte SouthernHime = 0;
-	}
+	public static final byte[] BaseATK = 
+		{4, 4, 4, 4, 4, 4, 4, 4,
+		 4, 4, 4, 4, 4, 4, 4, 4,
+		 4, 4, 4, 4, 4, 4, 4, 4,
+		 4, 4, 4, 4, 4, 4, 4, 4, 4};
+
+	public static final byte[] BaseDEF = 
+		{0, 0, 0, 0, 0, 0, 0, 0,
+		 0, 0, 0, 0, 0, 0, 0, 0,
+		 0, 0, 0, 0, 0, 0, 0, 0,
+		 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+	public static final float[] BaseSPD = 
+		{1F, 1F, 1F, 1F, 1F, 1F, 1F, 1F,
+		 1F, 1F, 1F, 1F, 1F, 1F, 1F, 1F,
+		 1F, 1F, 1F, 1F, 1F, 1F, 1F, 1F,
+		 1F, 1F, 1F, 1F, 1F, 1F, 1F, 1F, 1f};
+
+	public static final float[] BaseMOV = 
+		{0.45F, 0.45F, 0.45F, 0.45F, 0.45F, 0.45F, 0.45F, 0.45F,
+		 0.45F, 0.45F, 0.45F, 0.45F, 0.45F, 0.45F, 0.45F, 0.45F,
+		 0.45F, 0.45F, 0.45F, 0.45F, 0.45F, 0.45F, 0.45F, 0.45F,
+		 0.45F, 0.45F, 0.45F, 0.45F, 0.45F, 0.45F, 0.45F, 0.45F, 0.45F};
+
+	public static final float[] BaseHIT = 
+		{1F, 1F, 1F, 1F, 1F, 1F, 1F, 1F,
+		 1F, 1F, 1F, 1F, 1F, 1F, 1F, 1F,
+		 1F, 1F, 1F, 1F, 1F, 1F, 1F, 1F,
+		 1F, 1F, 1F, 1F, 1F, 1F, 1F, 1F, 1f};
 	
-	public static final class BaseSPD {	
-		public static final float Destroyer = 1F;	
-		public static final float Fortress = 1F;
-		public static final float LightCruiser = 1F;
-		
-		public static final float Battleship = 1F;
-		public static final float Carrier = 1F;
-		public static final float HeavyCruiser = 1F;
-		public static final float Submarine = 1F;
-		public static final float Transport = 1F;		
-		
-		public static final float AircraftCarrierHime = 1F;
-		public static final float AirfieldHime = 1F;
-		public static final float ArmoredCarrierHime = 1F;
-		public static final float AnchorageHime = 1F;
-		public static final float BattleshipHime = 1F;
-		public static final float DestroyerHime = 1F;	
-		public static final float HarbourHime = 1F;
-		public static final float IsolatedHime = 1F;
-		public static final float MidwayHime = 1F;
-		public static final float NorthernHime = 1F;
-		public static final float SouthernHime = 1F;	
-	}
+	public static final float[] ModHP = 
+		{0.3F, 1F, 1F, 1F, 1F, 1F, 1F, 1F,
+		 1F,   1F, 1F, 1F, 1F, 1F, 1F, 1F,
+		 1F,   1F, 1F, 1F, 1F, 1F, 1F, 1F,
+		 1F,   1F, 1F, 1F, 1F, 1F, 1F, 1F, 1f};
 	
-	public static final class BaseMOV {	
-		public static final float Destroyer = 0.45F;	
-		public static final float Fortress = 0.45F;
-		public static final float LightCruiser = 0.45F;
-		
-		public static final float Battleship = 0.4F;
-		public static final float Carrier = 0.4F;
-		public static final float HeavyCruiser = 0.4F;
-		public static final float Submarine = 0.4F;
-		public static final float Transport = 0.4F;		
-		
-		public static final float AircraftCarrierHime = 0.35F;
-		public static final float AirfieldHime = 0.35F;
-		public static final float ArmoredCarrierHime = 0.35F;
-		public static final float AnchorageHime = 0.35F;
-		public static final float BattleshipHime = 0.35F;
-		public static final float DestroyerHime = 0.35F;	
-		public static final float HarbourHime = 0.35F;
-		public static final float IsolatedHime = 0.35F;
-		public static final float MidwayHime = 0.35F;
-		public static final float NorthernHime = 0.35F;
-		public static final float SouthernHime = 0.35F;	
-	}
+	public static final float[] ModATK = 
+		{0.25F, 1F, 1F, 1F, 1F, 1F, 1F, 1F,
+		 1F,    1F, 1F, 1F, 1F, 1F, 1F, 1F,
+		 1F,    1F, 1F, 1F, 1F, 1F, 1F, 1F,
+		 1F,    1F, 1F, 1F, 1F, 1F, 1F, 1F, 1f};
 	
-	public static final class BaseHIT {	
-		public static final float Destroyer = 1F;	
-		public static final float Fortress = 1F;
-		public static final float LightCruiser = 1F;
-		
-		public static final float Battleship = 1F;
-		public static final float Carrier = 1F;
-		public static final float HeavyCruiser = 1F;
-		public static final float Submarine = 1F;
-		public static final float Transport = 1F;		
-		
-		public static final float AircraftCarrierHime = 1F;
-		public static final float AirfieldHime = 1F;
-		public static final float ArmoredCarrierHime = 1F;
-		public static final float AnchorageHime = 1F;
-		public static final float BattleshipHime = 1F;
-		public static final float DestroyerHime = 1F;	
-		public static final float HarbourHime = 1F;
-		public static final float IsolatedHime = 1F;
-		public static final float MidwayHime = 1F;
-		public static final float NorthernHime = 1F;
-		public static final float SouthernHime = 1F;	
-	}
+	public static final float[] ModDEF = 
+		{0.2F, 1F, 1F, 1F, 1F, 1F, 1F, 1F,
+		 1F,   1F, 1F, 1F, 1F, 1F, 1F, 1F,
+		 1F,   1F, 1F, 1F, 1F, 1F, 1F, 1F,
+		 1F,   1F, 1F, 1F, 1F, 1F, 1F, 1F, 1f};
+	
+	public static final float[] ModSPD = 
+		{1F,   1F, 1F, 1F, 1F, 1F, 1F, 1F,
+		 1F,   1F, 1F, 1F, 1F, 1F, 1F, 1F,
+		 1F,   1F, 1F, 1F, 1F, 1F, 1F, 1F,
+		 1F,   1F, 1F, 1F, 1F, 1F, 1F, 1F, 1f};
+	
+	public static final float[] ModMOV = 
+		{1F,   1F, 1F, 1F, 1F, 1F, 1F, 1F,
+		 1F,   1F, 1F, 1F, 1F, 1F, 1F, 1F,
+		 1F,   1F, 1F, 1F, 1F, 1F, 1F, 1F,
+		 1F,   1F, 1F, 1F, 1F, 1F, 1F, 1F, 1f};
+	
+	public static final float[] ModHIT = 
+		{0.25F, 1F, 1F, 1F, 1F, 1F, 1F, 1F,
+		 1F,   1F, 1F, 1F, 1F, 1F, 1F, 1F,
+		 1F,   1F, 1F, 1F, 1F, 1F, 1F, 1F,
+		 1F,   1F, 1F, 1F, 1F, 1F, 1F, 1F, 1f};
 	
 	public static final class Emotion {
 		public static final byte NORMAL = 0;			//µLªí±¡

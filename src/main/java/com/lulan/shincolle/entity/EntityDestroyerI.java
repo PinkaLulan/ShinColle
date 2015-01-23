@@ -35,51 +35,40 @@ import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 
 public class EntityDestroyerI extends BasicEntityShip {
 	
+	public boolean isKisaragi;
+	
 	public EntityDestroyerI(World world) {
 		super(world);
 		this.setSize(0.9F, 1.4F);	//碰撞大小 跟模型大小無關
 		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle:EntityDestroyerI.name"));
 		this.ShipType = AttrValues.ShipType.DESTROYER;
+		this.ShipID = AttrID.DestroyerI;
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);
-			
+		LogHelper.info("DEBUG : entity class get ExtEntityProps");	
 		//for attribute calc
 		rand = new Random();
-		ShipLevel = 1;				//ship level
-		Kills = 0;					//kill mobs (= exp)
-		ShipType = 11;				//ship type
-		//AttrBonusShort: 0:ShipBonusHP 1:ShipBonusATK 2:ShipBonusDEF
-		AttrBonusShort = new short[] {1, 1, 0};
-		//AttrBonusFloat: 0:ShipBonusSPD 1:ShipBonusMOV 2:ShipBonusHIT
-		AttrBonusFloat = new float[] {0F, 0F, 0F};
-		//AttrFinalShort: 0:ShipFinalHP 1:ShipFinalATK 2:ShipFinalDEF
-		AttrFinalShort = new short[3];
-		//AttrFinalFloat: 0:ShipFinalSPD 1:ShipFinalMOV 2:ShipFinalHIT
-		AttrFinalFloat = new float[3];
-		//EntityState: 0:State 1:Emotion 2:SwimType
-		EntityState = new byte[] {0, 0, 0};
-		//for AI
-		StartEmotion = 0;			//表情開始時間
-		BlockUnderName = "";		//腳下方塊名稱, 不需要存NBT
+		this.TypeModify[AttrID.HP] = AttrValues.ModHP[AttrID.DestroyerI];
+		this.TypeModify[AttrID.ATK] = AttrValues.ModATK[AttrID.DestroyerI];
+		this.TypeModify[AttrID.DEF] = AttrValues.ModDEF[AttrID.DestroyerI];
+		this.TypeModify[AttrID.SPD+3] = AttrValues.ModSPD[AttrID.DestroyerI];
+		this.TypeModify[AttrID.MOV+3] = AttrValues.ModMOV[AttrID.DestroyerI];
+		this.TypeModify[AttrID.HIT+3] = AttrValues.ModHIT[AttrID.DestroyerI];
 		
-//		this.initBasicAttr();
+		//Kisaragi test, reroll when relogin or server restart
+		if(rand.nextInt(100)> 90) {
+			isKisaragi = true;
+		}
+		else {
+			isKisaragi = false;
+		}
 		
-//		setAttrFinal(AttrFinalShort, AttrFinalFloat);
-		
-		//參數: AI優先度, AI(AI參數)
+		//AI: AI優先度, AI(AI參數)
 	//	this.tasks.addTask(0, new EntityAIWander(this, 1.0D));
-		this.tasks.addTask(1, new EntityAIWatchClosest2(this, EntityPlayer.class, 5F, 2F));
+		this.tasks.addTask(1, new EntityAIWatchClosest2(this, EntityPlayer.class, 3F, 2F));
 	//	this.tasks.addTask(2, new EntityAIPanic(this, 2F));
 	//	this.tasks.addTask(3, new EntityAILookIdle(this));
-	}	
-
-	//mob state init
-	protected void applyEntityAttributes() {
-		super.applyEntityAttributes();
-		
-		getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(4);
-		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.35);
 	}
-	
+
 	//平常音效
 	protected String getLivingSound() {
         return Reference.MOD_ID+":ship-say";
@@ -103,17 +92,10 @@ public class EntityDestroyerI extends BasicEntityShip {
 	
 	@Override
 	public boolean interact(EntityPlayer player) {	
-//		//debug test
-//		AttrFinalShort[AttrID.HP] += 1;
-//		double nowhp = getEntityAttribute(SharedMonsterAttributes.maxHealth).getAttributeValue();
-//		getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(AttrFinalShort[AttrID.HP]);
-//		setAttrFinal(AttrFinalShort, AttrFinalFloat);
-		
 		LogHelper.info("DEBUG : attr final hp "+this.AttrFinalShort[AttrID.HP]);
-		LogHelper.info("DEBUG : attr bonus hp "+this.AttrBonusShort[AttrID.HP]);
-		LogHelper.info("DEBUG : attr base hp "+AttrValues.BaseHP.Destroyer);
-		
-		
+		LogHelper.info("DEBUG : attr equip hp "+this.AttrEquipShort[AttrID.HP]);
+		LogHelper.info("DEBUG : attr base hp "+getEntityAttribute(SharedMonsterAttributes.maxHealth));
+				
 		//shift+right click時打開GUI
 		LogHelper.info("DEBUG : get ownerName "+this.getOwnerName());
 		if (player.isSneaking() ) {  

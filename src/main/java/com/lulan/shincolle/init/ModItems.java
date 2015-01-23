@@ -5,7 +5,9 @@ import net.minecraft.item.Item;
 import com.lulan.shincolle.item.Abyssium;
 import com.lulan.shincolle.item.Ammo;
 import com.lulan.shincolle.item.BasicItem;
-import com.lulan.shincolle.item.BasicEquip;
+import com.lulan.shincolle.item.EquipSingleCannon;
+import com.lulan.shincolle.item.EquipTwinCannon;
+import com.lulan.shincolle.item.EquipTripleCannon;
 import com.lulan.shincolle.item.BucketRepair;
 import com.lulan.shincolle.item.Grudge;
 import com.lulan.shincolle.item.HeavyAmmo;
@@ -18,29 +20,36 @@ import cpw.mods.fml.common.registry.GameRegistry;
 @GameRegistry.ObjectHolder(Reference.MOD_ID)	//登錄object holder使mod的物件容易流通 其他人可以直接讀取該物件
 public class ModItems {
 
+	//spawn egg
+	public static final ShipSpawnEgg ShipSpawnEgg = new ShipSpawnEgg();
+	//materials
 	public static final BasicItem Abyssium = new Abyssium();
 	public static final BasicItem Ammo = new Ammo();
 	public static final BasicItem BucketRepair = new BucketRepair();
 	public static final BasicItem Grudge = new Grudge();
 	public static final BasicItem HeavyAmmo = new HeavyAmmo();
 	public static final BasicItem Polymetal = new Polymetal();
-	public static final ShipSpawnEgg ShipSpawnEgg = new ShipSpawnEgg();
-	
-	public static final BasicItem BasicEquip = new BasicEquip();	//debug
+	//equip	
+	public static final BasicItem EquipSingleCannon = new EquipSingleCannon();
+	public static final BasicItem EquipTwinCannon = new EquipTwinCannon();
+	public static final BasicItem EquipTripleCannon = new EquipTripleCannon();
 	
 
 	//登錄item到遊戲中 (在pre init階段登錄)
 	public static void init() {
-		//items
+		//spawn egg
+		GameRegistry.registerItem(ShipSpawnEgg, "ShipSpawnEgg");
+		//materials
 		GameRegistry.registerItem(Abyssium, "Abyssium");
 		GameRegistry.registerItem(Ammo, "Ammo");
 		GameRegistry.registerItem(BucketRepair, "BucketRepair");
 		GameRegistry.registerItem(Grudge, "Grudge");
 		GameRegistry.registerItem(HeavyAmmo, "HeavyAmmo");
 		GameRegistry.registerItem(Polymetal, "Polymetal");
-		GameRegistry.registerItem(ShipSpawnEgg, "ShipSpawnEgg");
-		
-		GameRegistry.registerItem(BasicEquip, "BasicEquip");
+		//equip		
+		GameRegistry.registerItem(EquipSingleCannon, "EquipSingleCannon");
+		GameRegistry.registerItem(EquipTwinCannon, "EquipTwinCannon");
+		GameRegistry.registerItem(EquipTripleCannon, "EquipTripleCannon");
 		
 	}
 	

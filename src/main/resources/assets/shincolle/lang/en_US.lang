@@ -21,6 +21,17 @@ item.shincolle:Grudge.name=Grudge
 item.shincolle:HeavyAmmo.name=Heavy Grudgeful Ammo
 item.shincolle:Polymetal.name=Polymetallic Nodules
 
+# Equip
+item.shincolle:EquipSingleCannon.name=5-Inch Single Cannon
+item.shincolle:EquipSingleCannon1.name=6-Inch Single Cannon
+item.shincolle:EquipTwinCannon.name=5-Inch Twin Cannon
+item.shincolle:EquipTwinCannon1.name=6-Inch Twin Rapid-Fire Cannon
+item.shincolle:EquipTwinCannon2.name=12.5-Inch Twin Secondary Cannon
+item.shincolle:EquipTwinCannon3.name=14-Inch Twin Cannon
+item.shincolle:EquipTwinCannon4.name=16-Inch Twin Cannon
+item.shincolle:EquipTripleCannon.name=8-Inch Triple Cannon
+item.shincolle:EquipTripleCannon1.name=16-Inch Triple Cannon
+
 % Spawn Egg
 item.shincolle:smallegg.name=Construct Small Seikan
 item.shincolle:largeegg.name=Construct Large Seikan
@@ -29,4 +40,5 @@ item.shincolle:debugegg.name=Debug Spawn Egg
 # Entity
 entity.shincolle:EntityDestroyerI.name=Destroyer I-Class
 
-# GUI
+
+

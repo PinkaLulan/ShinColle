@@ -37,6 +37,11 @@ public class ModelDestroyerI extends ModelBase {
 	public ModelRenderer PTailRight;
 	public ModelRenderer PTailRightEnd;
 	public ModelRenderer PTailEnd;
+	//add Kisaragi
+	public ModelRenderer PKisaragi00;
+	public ModelRenderer PKisaragi01;
+	public ModelRenderer PKisaragi02;
+	public ModelRenderer PKisaragi03;
 	
 	private static final int cooldown = 300;
 	public float scale = 1F;			//預設大小為1.0倍
@@ -76,6 +81,11 @@ public class ModelDestroyerI extends ModelBase {
     setTextureOffset("PTailRight.TailRightFront", 128, 28);
     setTextureOffset("PTailRightEnd.TailRightEnd", 128, 36);
     setTextureOffset("PTailEnd.TailEnd", 128, 26);
+    //add Kisaragi
+    setTextureOffset("PKisaragi00.k00", 66, 102);
+    setTextureOffset("PKisaragi01.k01", 114, 102);
+    setTextureOffset("PKisaragi02.k02", 92, 102);
+    setTextureOffset("PKisaragi03.k03", 92, 102);
     
     PBack = new ModelRenderer(this, "PBack");
     PBack.setRotationPoint(-8F, -16F, 0F);
@@ -113,6 +123,23 @@ public class ModelDestroyerI extends ModelBase {
     PEyeLightL[2].addBox("LEye", -3F, 0F, 16.1F, 24, 20, 0).isHidden = true;
     PEyeLightR[2].addBox("REye", -3F, 0F, -16.1F, 24, 20, 0).isHidden = true;
     
+    //add Kisaragi
+    PKisaragi00 = new ModelRenderer(this, "PKisaragi00");
+    PKisaragi01 = new ModelRenderer(this, "PKisaragi01");
+    PKisaragi02 = new ModelRenderer(this, "PKisaragi02");
+    PKisaragi03 = new ModelRenderer(this, "PKisaragi03");
+    PKisaragi00.setRotationPoint(-7F, -9F, 14F);
+    PKisaragi01.setRotationPoint(-7F, -9F, 14F);
+    PKisaragi02.setRotationPoint(-7F, -9F, 14F);
+    PKisaragi03.setRotationPoint(-7F, -9F, 14F);
+    PKisaragi00.addBox("k00", 0F, 0F, 0F, 8, 8, 5);
+    PKisaragi01.addBox("k01", -2F, -16F, 1F, 8, 20, 3);
+    PKisaragi02.addBox("k02", -7F, -17F, 0.8F, 8, 18, 3);
+    PKisaragi03.addBox("k03", -9F, -18F, 0.6F, 8, 18, 3);
+    setRotation(PKisaragi01, 0F, 0F, -0.524F);
+    setRotation(PKisaragi02, 0F, 0F, -1.396F);
+    setRotation(PKisaragi03, 0F, 0F, -2.094F);
+    
     PJawBottom = new ModelRenderer(this, "PJawBottom");
     PJawBottom.setRotationPoint(-6F, 18F, 0F);
     setRotation(PJawBottom, 0F, 0F, -0.2F);
@@ -128,6 +155,10 @@ public class ModelDestroyerI extends ModelBase {
       PHead.addChild(PEyeLightR[1]);
       PHead.addChild(PEyeLightL[2]);
       PHead.addChild(PEyeLightR[2]);
+      PHead.addChild(PKisaragi00);
+      PHead.addChild(PKisaragi01);
+      PHead.addChild(PKisaragi02);
+      PHead.addChild(PKisaragi03);
       PNeck.addChild(PHead);
       PBack.addChild(PNeck);
     PBody = new ModelRenderer(this, "PBody");
@@ -225,6 +256,8 @@ public class ModelDestroyerI extends ModelBase {
        
     EntityDestroyerI ent = (EntityDestroyerI)entity;
     
+    isKisaragi(ent);
+    
     rollEmotion(ent);
     
     motionLeg(f,f1);
@@ -235,7 +268,23 @@ public class ModelDestroyerI extends ModelBase {
 
   }
   
-  	//常時擺動尾巴跟下巴
+  	private void isKisaragi(EntityDestroyerI ent) {
+		if(ent.isKisaragi) {
+			PKisaragi00.isHidden = false;
+			PKisaragi01.isHidden = false;
+			PKisaragi02.isHidden = false;
+			PKisaragi03.isHidden = false;
+		}
+		else {
+			PKisaragi00.isHidden = true;
+			PKisaragi01.isHidden = true;
+			PKisaragi02.isHidden = true;
+			PKisaragi03.isHidden = true;
+		}
+	
+  	}
+
+	//常時擺動尾巴跟下巴
   	private void motionTail(float angleZ) { 	
   	    PTail.rotateAngleZ = angleZ * 0.2F;
   	    PTailEnd.rotateAngleZ = angleZ * 0.3F;
@@ -298,16 +347,16 @@ public class ModelDestroyerI extends ModelBase {
 		else {			
 			switch(ent.ticksExisted - ent.StartEmotion) {
 			case 1:
-				setFace(2);
+				setFace(1);
 				break;
 			case 18:
-				setFace(1);
+				setFace(0);
 				break;
 			case 35:
-				setFace(2);
+				setFace(1);
 				break;
 			case 41:
-				setFace(1);
+				setFace(0);
 				ent.EntityState[AttrID.Emotion] = AttrValues.Emotion.NORMAL;
 				break;
 			}
@@ -317,7 +366,7 @@ public class ModelDestroyerI extends ModelBase {
 	//設定顯示的臉型
 	private void setFace(int emo) {
 		switch(emo) {
-		case 1:
+		case 0:
 			PEyeLightL[0].isHidden = false;
 			PEyeLightR[0].isHidden = false;
 			PEyeLightL[1].isHidden = true;
@@ -325,7 +374,7 @@ public class ModelDestroyerI extends ModelBase {
 			PEyeLightL[2].isHidden = true;
 			PEyeLightR[2].isHidden = true;
 			break;
-		case 2:
+		case 1:
 			PEyeLightL[0].isHidden = true;
 			PEyeLightR[0].isHidden = true;
 			PEyeLightL[1].isHidden = false;
@@ -333,7 +382,7 @@ public class ModelDestroyerI extends ModelBase {
 			PEyeLightL[2].isHidden = true;
 			PEyeLightR[2].isHidden = true;
 			break;
-		case 3:
+		case 2:
 			PEyeLightL[0].isHidden = true;
 			PEyeLightR[0].isHidden = true;
 			PEyeLightL[1].isHidden = true;
