@@ -57,10 +57,10 @@ public class ModelDestroyerI extends ModelBase {
     setTextureOffset("PHead.Head", 0, 0);
     setTextureOffset("PEyeLightL0.LEye", 138, 64);
     setTextureOffset("PEyeLightR0.REye", 138, 64);
-    setTextureOffset("PEyeLightL1.LEye", 138, 84);
-    setTextureOffset("PEyeLightR1.REye", 138, 84);
-    setTextureOffset("PEyeLightL2.LEye", 138, 104);
-    setTextureOffset("PEyeLightR2.REye", 138, 104);
+    setTextureOffset("PEyeLightL1.LEye", 138, 85);
+    setTextureOffset("PEyeLightR1.REye", 138, 85);
+    setTextureOffset("PEyeLightL2.LEye", 138, 106);
+    setTextureOffset("PEyeLightR2.REye", 138, 106);
     setTextureOffset("PHead.ToothTopMid", 96, 0);
     setTextureOffset("PHead.ToothTopRight", 128, 54);
     setTextureOffset("PHead.ToothTopLeft", 128, 54);
@@ -112,16 +112,16 @@ public class ModelDestroyerI extends ModelBase {
     //3 emotion eye
     PEyeLightL[0] = new ModelRenderer(this, "PEyeLightL0");
     PEyeLightR[0] = new ModelRenderer(this, "PEyeLightR0");
-    PEyeLightL[0].addBox("LEye", -3F, 0F, 16.1F, 24, 20, 0);
-    PEyeLightR[0].addBox("REye", -3F, 0F, -16.1F, 24, 20, 0);
+    PEyeLightL[0].addBox("LEye", -3F, 0F, 15.1F, 24, 20, 1);
+    PEyeLightR[0].addBox("REye", -3F, 0F, -16.1F, 24, 20, 1);
     PEyeLightL[1] = new ModelRenderer(this, "PEyeLightL1");
     PEyeLightR[1] = new ModelRenderer(this, "PEyeLightR1");
-    PEyeLightL[1].addBox("LEye", -3F, 0F, 16.1F, 24, 20, 0).isHidden = true;
-    PEyeLightR[1].addBox("REye", -3F, 0F, -16.1F, 24, 20, 0).isHidden = true;
+    PEyeLightL[1].addBox("LEye", -3F, 0F, 15.1F, 24, 20, 1).isHidden = true;
+    PEyeLightR[1].addBox("REye", -3F, 0F, -16.1F, 24, 20, 1).isHidden = true;
     PEyeLightL[2] = new ModelRenderer(this, "PEyeLightL2");
     PEyeLightR[2] = new ModelRenderer(this, "PEyeLightR2");
-    PEyeLightL[2].addBox("LEye", -3F, 0F, 16.1F, 24, 20, 0).isHidden = true;
-    PEyeLightR[2].addBox("REye", -3F, 0F, -16.1F, 24, 20, 0).isHidden = true;
+    PEyeLightL[2].addBox("LEye", -3F, 0F, 15.1F, 24, 20, 1).isHidden = true;
+    PEyeLightR[2].addBox("REye", -3F, 0F, -16.1F, 24, 20, 1).isHidden = true;
     
     //add Kisaragi
     PKisaragi00 = new ModelRenderer(this, "PKisaragi00");
@@ -231,15 +231,18 @@ public class ModelDestroyerI extends ModelBase {
   }
   
   public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-	super.render(entity, f, f1, f2, f3, f4, f5);
 	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
 	
 	// Scale, Translate, Rotate
 	// GL11.glScalef(this.scale, this.scale, this.scale);
+//	GL11.glEnable(GL11.GL_BLEND);			//開啟透明度模式
+//	GL11.glColor4f(0.5F, 0.50F, 0.5F, 1.0F);	//設定四色比例
 	GL11.glScalef(0.5F, 0.45F, 0.4F);	//debug用
 	GL11.glTranslatef(0F, 2F, 0F);		//大小0.45時設2.3   大小0.3時設3
 	GL11.glRotatef(90F, 0F, 1F, 0F);	//此模型頭部方向錯誤 因此render時調整回來
+	
 	PBack.render(f5);
+//	GL11.glDisable(GL11.GL_BLEND);		//關閉透明度模式
   }
   
   private void setRotation(ModelRenderer model, float x, float y, float z) {
@@ -302,8 +305,8 @@ public class ModelDestroyerI extends ModelBase {
 
   	//頭部看人轉動計算
 	private void motionWatch(float f3, float f4, float angleZ) {
-		//移動頭部 使其看人  轉動角度太小時則忽略不轉
-	    if(MathHelper.abs(f4) > 0.5) {
+		//移動頭部 使其看人, 不看人時持續擺動頭部
+	    if(f4 != 0) {
 		    PNeck.rotateAngleY = f3 / 160F;		//左右角度 角度轉成rad 即除以57.29578
 		    PNeck.rotateAngleZ = f4 / 130F; 	//上下角度
 		    PHead.rotateAngleY = f3 / 160F;

@@ -30,7 +30,7 @@ public class SlotShipInventory extends Slot {
 		if(itemstack != null) {
 			Item item = itemstack.getItem();
 			
-			if(slotIndex<5) {	//只有equip item可以塞進equip slot
+			if(slotIndex < ContainerShipInventory.SLOTS_EQUIP) {	//只有equip item可以塞進equip slot
 				if(item instanceof BasicEquip) {
 					return true;
 				}

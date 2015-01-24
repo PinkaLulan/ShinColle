@@ -10,7 +10,8 @@ import net.minecraft.nbt.NBTTagList;
 //此class已跟extend entity prop合併, 待刪除中
 public class ShipInventory implements IInventory {
 
-	private ItemStack[] slots = new ItemStack[23];		//0~4:equip 5~22:inventory
+	//0~5:equip 6~23:inventory
+	private ItemStack[] slots = new ItemStack[ContainerShipInventory.SLOTS_TOTAL];		
 	private static final String tagName = "ShipInv";	//ship inventory nbt tag
 	
 	

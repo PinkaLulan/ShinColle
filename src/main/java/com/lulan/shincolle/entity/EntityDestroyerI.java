@@ -54,13 +54,6 @@ public class EntityDestroyerI extends BasicEntityShip {
 		this.TypeModify[AttrID.MOV+3] = AttrValues.ModMOV[AttrID.DestroyerI];
 		this.TypeModify[AttrID.HIT+3] = AttrValues.ModHIT[AttrID.DestroyerI];
 		
-		//Kisaragi test, reroll when relogin or server restart
-		if(rand.nextInt(100)> 90) {
-			isKisaragi = true;
-		}
-		else {
-			isKisaragi = false;
-		}
 		
 		//AI: AI優先度, AI(AI參數)
 	//	this.tasks.addTask(0, new EntityAIWander(this, 1.0D));
@@ -95,7 +88,18 @@ public class EntityDestroyerI extends BasicEntityShip {
 		LogHelper.info("DEBUG : attr final hp "+this.AttrFinalShort[AttrID.HP]);
 		LogHelper.info("DEBUG : attr equip hp "+this.AttrEquipShort[AttrID.HP]);
 		LogHelper.info("DEBUG : attr base hp "+getEntityAttribute(SharedMonsterAttributes.maxHealth));
-				
+			
+		//debug test
+		ShipLevel += 1;
+		setShipLevel(ShipLevel, false);
+		
+		//Kisaragi test
+		if(isKisaragi) {
+			isKisaragi = false;
+		}
+		else {
+			isKisaragi = true;
+		}
 		//shift+right click時打開GUI
 		LogHelper.info("DEBUG : get ownerName "+this.getOwnerName());
 		if (player.isSneaking() ) {  

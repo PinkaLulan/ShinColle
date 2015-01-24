@@ -1,5 +1,6 @@
 package com.lulan.shincolle.entity;
 
+import com.lulan.shincolle.inventory.ContainerShipInventory;
 import com.lulan.shincolle.reference.AttrID;
 import com.lulan.shincolle.utility.LogHelper;
 
@@ -20,8 +21,8 @@ import net.minecraftforge.common.IExtendedEntityProperties;
 public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 
 	public static final String SHIP_EXTPROP_NAME = "ShipExtProps";
-	private static final String tagName = "ShipInv";	//ship inventory nbt tag
-    private ItemStack[] slots = new ItemStack[23];		//0~4:equip 5~22:inventory
+	public static final String tagName = "ShipInv";	//ship inventory nbt tag
+    private ItemStack[] slots = new ItemStack[ContainerShipInventory.SLOTS_TOTAL];
     private BasicEntityShip entity;
     private World world;
 

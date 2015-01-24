@@ -6,7 +6,7 @@ keys.shincolle.repair=Repair
 itemGroup.shincolle=Shin Colle
 
 # Block
-tile.shincolle:BlockDesk.name=Admiral's Desk
+tile.shincolle:BlockDesk.name=Abyssal Node
 tile.shincolle:BlockPolymetalOre.name=Polymetallic Ore
 tile.shincolle:BlockSmallShipyard.name=Abyssal Hydrothermal Vent
 
@@ -32,7 +32,7 @@ item.shincolle:EquipTwinCannon4.name=16-Inch Twin Cannon
 item.shincolle:EquipTripleCannon.name=8-Inch Triple Cannon
 item.shincolle:EquipTripleCannon1.name=16-Inch Triple Cannon
 
-% Spawn Egg
+# Spawn Egg
 item.shincolle:smallegg.name=Construct Small Seikan
 item.shincolle:largeegg.name=Construct Large Seikan
 item.shincolle:debugegg.name=Debug Spawn Egg
@@ -40,5 +40,10 @@ item.shincolle:debugegg.name=Debug Spawn Egg
 # Entity
 entity.shincolle:EntityDestroyerI.name=Destroyer I-Class
 
-
+# GUI
+gui.shincolle:firepower=Firepower
+gui.shincolle:armor=Armor
+gui.shincolle:movespeed=Move Speed
+gui.shincolle:attackspeed=Reload Speed
+gui.shincolle:range=Range
 

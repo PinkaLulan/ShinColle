@@ -123,7 +123,12 @@ public abstract class BasicEntityShip extends EntityTameable {
 	 */	
 	//called when entity level up
 	public void setShipLevel(short par1, boolean sync) {
-		ShipLevel = par1;
+		if(par1 < 151) {
+			ShipLevel = par1;
+		}
+		else {	//max level = 150
+			ShipLevel = 150;
+		}	
 		setShipAttributes(ShipID);
 		if (sync && !worldObj.isRemote) {
 			createPacketS2C.sendS2CEntitySync(this);     
