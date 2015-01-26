@@ -1,5 +1,6 @@
 package com.lulan.shincolle.utility;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 
 /**粒子特效處理class
@@ -7,7 +8,9 @@ import net.minecraft.world.World;
  */
 public class ParticleHelper {
 	
-	/**in:原始座標, 邊長, 以及要轉的面向 	out:轉完的新位置
+	private static World world;
+	/**ROTATE PARTICLE POSITION (NxNxN)
+	 * in:原始座標, 邊長, 以及要轉的面向 	out:轉完的新位置
 	 * 現階段沒有做上下翻轉, 所以y值不會變動
 	 * f = face = 0,4:north  1,5:east  2,6:south  3,7:west
 	 */
@@ -41,5 +44,58 @@ public class ParticleHelper {
 			
 		return newParm;
 	}
-
+	
+	/**SPAWN ATTACK PARTICLE 
+	 * 
+	 */
+	public static void spawnAttackParticle(Entity target, byte type) {
+		//get target position
+		if(target != null) {
+			double tarX = target.posX;
+			double tarY = target.posY;
+			double tarZ = target.posZ;
+			world = target.worldObj;
+			
+			//spawn particle
+			switch(type) {
+			case 0:	//explode
+				world.spawnParticle("explode", tarX, tarY+2, tarZ, 0.0D, 0.0D, 0.0D);
+				break;
+			case 1: //largeexplode
+				world.spawnParticle("largeexplode", tarX, tarY+2, tarZ, 0.0D, 0.0D, 0.0D);
+				break;
+			case 2: //hugeexplosion
+				world.spawnParticle("hugeexplosion", tarX, tarY+1, tarZ, 0.0D, 0.0D, 0.0D);
+				break;
+			case 3: //crit
+				world.spawnParticle("crit", tarX, tarY+2, tarZ, 0.0D, 0.0D, 0.0D);
+				break;
+			case 4: //magicCrit
+				world.spawnParticle("magicCrit", tarX, tarY+2, tarZ, 0.0D, 0.0D, 0.0D);
+				break;
+			case 5: //smoke
+				world.spawnParticle("smoke", tarX, tarY+2, tarZ, 0.0D, 0.0D, 0.0D);
+				break;
+			case 6: //largesmoke
+				world.spawnParticle("largesmoke", tarX, tarY+2, tarZ, 0.0D, 0.0D, 0.0D);
+				break;
+			case 7: //angryVillager
+				world.spawnParticle("angryVillager", tarX, tarY+1, tarZ, 0.0D, 0.0D, 0.0D);
+				break;
+			case 8: //flame
+				world.spawnParticle("flame", tarX, tarY+2, tarZ, 0.0D, 0.0D, 0.0D);
+				break;
+			case 9: //lava+explode
+				world.spawnParticle("largeexplode", tarX, tarY+1.5, tarZ, 0.0D, 0.0D, 0.0D);
+				for(int i=0;i<5;i++) {
+					world.spawnParticle("lava", tarX, tarY+1, tarZ, 0.0D, 0.0D, 0.0D);
+				}			
+				break;
+			default:
+				break;		
+			}
+		}		
+	}
+	
+	
 }

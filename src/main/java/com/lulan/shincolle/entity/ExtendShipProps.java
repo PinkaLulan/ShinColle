@@ -22,7 +22,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 
 	public static final String SHIP_EXTPROP_NAME = "ShipExtProps";
 	public static final String tagName = "ShipInv";	//ship inventory nbt tag
-    private ItemStack[] slots = new ItemStack[ContainerShipInventory.SLOTS_TOTAL];
+    public ItemStack[] slots = new ItemStack[ContainerShipInventory.SLOTS_TOTAL];
     private BasicEntityShip entity;
     private World world;
 
@@ -212,12 +212,12 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 	}
 
 	@Override
-	public void markDirty() {}	//no need for entity
-
-	@Override
 	public boolean isUseableByPlayer(EntityPlayer p_70300_1_) {
 		return true;
 	}
+	
+	@Override
+	public void markDirty() {}
 
 	@Override
 	public void openInventory() {}
@@ -229,6 +229,6 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 	public boolean isItemValidForSlot(int p_94041_1_, ItemStack p_94041_2_) {
 		return true;
 	}
-	
+
 
 }

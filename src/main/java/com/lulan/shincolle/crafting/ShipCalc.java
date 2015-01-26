@@ -117,23 +117,30 @@ public class ShipCalc {
 	
 	//roll +0~+3 according to rate
 	private static byte rollBonusValue(float[] rate) {
-		int ranNum = rand.nextInt(100) + 1;		//random 1~100
-		int bonus3 = (int)(rate[0]+rate[1]+rate[2]);
-		int bonus2 = (int)(rate[0]+rate[1]);
-		int bonus1 = (int)(rate[0]);
+		float ranNum = (float)(rand.nextInt(100) + 1)/100F;		//random 0.01~1.00
+		float bonus3 = rate[0]+rate[1]+rate[2];
+		float bonus2 = rate[0]+rate[1];
+		float bonus1 = rate[0];
 		
 		LogHelper.info("DEBUG : roll bonus ranNum : "+ranNum);
+		LogHelper.info("DEBUG : rate3 : "+bonus3);
+		LogHelper.info("DEBUG : rate2 : "+bonus2);
+		LogHelper.info("DEBUG : rate1 : "+bonus1);
 		
 		if(ranNum > bonus3) {
+			LogHelper.info("DEBUG : get bonus point : 3");
 			return 3;
 		}
 		else if(ranNum > bonus2) {
+			LogHelper.info("DEBUG : get bonus point : 2");
 			return 2;
 		}
 		else if(ranNum > bonus1) {
+			LogHelper.info("DEBUG : get bonus point : 1");
 			return 1;
 		}
 		else {
+			LogHelper.info("DEBUG : get bonus point : 0");
 			return 0;
 		}
 	}

@@ -163,7 +163,7 @@ public class BlockSmallShipyard extends BasicBlockContainer {
 				//主煙囪特效
 				world.spawnParticle("smoke", (double)x+smokeR1[0], (double)y+smokeR1[1], (double)z+smokeR1[2], 0.0D, 0D, 0.0D);
 				world.spawnParticle("smoke", (double)x+smokeR1[0], (double)y+smokeR1[1]+0.1D, (double)z+smokeR1[2], 0.0D, 0.005D, 0.0D);
-				world.spawnParticle("smoke", (double)x+smokeR1[0], (double)y+smokeR1[1]+0.2D, (double)z+smokeR1[2], 0.0D, 0.01D, 0.0D);				//中煙囪特效
+				world.spawnParticle("smoke", (double)x+smokeR1[0], (double)y+smokeR1[1]+0.2D, (double)z+smokeR1[2], 0.0D, 0.01D, 0.0D);
 				//中煙囪特效
 				world.spawnParticle("smoke", (double)x+smokeR2[0], (double)y+smokeR2[1], (double)z+smokeR2[2], 0.0D, 0D, 0.0D);
 				world.spawnParticle("smoke", (double)x+smokeR2[0], (double)y+smokeR2[1]+0.1D, (double)z+smokeR2[2], 0.0D, 0.01D, 0.0D);

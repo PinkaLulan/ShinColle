@@ -11,6 +11,7 @@ public final class Names {
 	public static final class Packets {
 		public static final byte TEST = 0;
 		public static final byte ENTITY_SYNC = 1;
+		public static final byte PARTICLE_ATK = 2;
 	}
 
 }

@@ -12,6 +12,7 @@ import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
@@ -27,7 +28,7 @@ public class EVENT_BUS_EventHandler {
 	        ItemStack drop = new ItemStack(ModItems.Grudge, 1);
 	        event.drops.add(new EntityItem(event.entity.worldObj, event.entity.posX, event.entity.posY, event.entity.posZ, drop));
 	    }
-	} 
+	}
 	
 	//add ship extend props to entity
 	@SubscribeEvent

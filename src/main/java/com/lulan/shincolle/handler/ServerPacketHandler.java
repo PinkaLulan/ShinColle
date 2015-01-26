@@ -30,7 +30,7 @@ public class ServerPacketHandler {
 		// if you want the server (the configurationManager is useful as it has player lists and such
 		// you can use something like: MinecraftServer server MinecraftServer.getServer();
 		if (channelName.equals(CommonProxy.channelName)) {
-			LogHelper.info("Server received packet from player = "+thePlayer.getEntityId());
+			LogHelper.info("DEBUG : Server received packet from player = " + thePlayer.getEntityId());
 			ProcessPacketServerSide.processPacketOnServer(event.packet.payload(), event.packet.getTarget(), thePlayer);
 		}
 	}

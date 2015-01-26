@@ -27,19 +27,19 @@ public class AttrValues {
 		 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 	public static final float[] BaseSPD = 
-		{1F, 1F, 1F, 1F, 1F, 1F, 1F, 1F,
-		 1F, 1F, 1F, 1F, 1F, 1F, 1F, 1F,
-		 1F, 1F, 1F, 1F, 1F, 1F, 1F, 1F,
-		 1F, 1F, 1F, 1F, 1F, 1F, 1F, 1F, 1f};
+		{0.4F, 0.4F, 0.4F, 0.4F, 0.4F, 0.4F, 0.4F, 0.4F,
+		 0.4F, 0.4F, 0.4F, 0.4F, 0.4F, 0.4F, 0.4F, 0.4F,
+		 0.4F, 0.4F, 0.4F, 0.4F, 0.4F, 0.4F, 0.4F, 0.4F,
+		 0.4F, 0.4F, 0.4F, 0.4F, 0.4F, 0.4F, 0.4F, 0.4F, 0.4F};
 
 	public static final float[] BaseMOV = 
-		{0.45F, 0.45F, 0.45F, 0.45F, 0.45F, 0.45F, 0.45F, 0.45F,
-		 0.45F, 0.45F, 0.45F, 0.45F, 0.45F, 0.45F, 0.45F, 0.45F,
-		 0.45F, 0.45F, 0.45F, 0.45F, 0.45F, 0.45F, 0.45F, 0.45F,
-		 0.45F, 0.45F, 0.45F, 0.45F, 0.45F, 0.45F, 0.45F, 0.45F, 0.45F};
+		{0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F,
+		 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F,
+		 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F,
+		 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F};
 
 	public static final float[] BaseHIT = 
-		{1F, 1F, 1F, 1F, 1F, 1F, 1F, 1F,
+		{6F, 1F, 1F, 1F, 1F, 1F, 1F, 1F,
 		 1F, 1F, 1F, 1F, 1F, 1F, 1F, 1F,
 		 1F, 1F, 1F, 1F, 1F, 1F, 1F, 1F,
 		 1F, 1F, 1F, 1F, 1F, 1F, 1F, 1F, 1f};
@@ -57,7 +57,7 @@ public class AttrValues {
 		 1F,    1F, 1F, 1F, 1F, 1F, 1F, 1F, 1f};
 	
 	public static final float[] ModDEF = 
-		{0.2F, 1F, 1F, 1F, 1F, 1F, 1F, 1F,
+		{0.3F, 1F, 1F, 1F, 1F, 1F, 1F, 1F,
 		 1F,   1F, 1F, 1F, 1F, 1F, 1F, 1F,
 		 1F,   1F, 1F, 1F, 1F, 1F, 1F, 1F,
 		 1F,   1F, 1F, 1F, 1F, 1F, 1F, 1F, 1f};

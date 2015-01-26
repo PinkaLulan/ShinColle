@@ -3,8 +3,7 @@
         "category": "hostile", "replace": true, "sounds": [
             "sonnnanjanai_01",
             "nyaanyaa_01",
-            "osooi_01",
-            "tontonton_02"           
+            "osooi_01"          
         ]
     },
     
@@ -21,6 +20,24 @@
             "mada_01",
             "doushite_01", 
             "gomennasai_03"
+        ]
+    },
+    
+    "ship-firesmall": {
+        "category": "hostile", "replace": true, "sounds": [
+            "fire_01",
+            "fire_02",
+            "fire_03"       
+        ]
+    },
+    
+    "ship-hitsmall": {
+        "category": "hostile", "replace": true, "sounds": [
+            "tontonton_02",
+            "melee_01",
+            "melee_02",
+            "melee_03",  
+            "melee_04"   
         ]
     }
 }

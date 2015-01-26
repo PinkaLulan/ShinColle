@@ -5,7 +5,6 @@ import org.lwjgl.opengl.GL12;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.inventory.ContainerShipInventory;
-import com.lulan.shincolle.inventory.ShipInventory;
 import com.lulan.shincolle.reference.AttrID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
@@ -32,7 +31,7 @@ import net.minecraft.util.StatCollector;
  *           
  * Color note:gold:16766720 gray:4210752 dark-gray:3158064 white:16777215 green:65280
  *            yellow:16776960 orange:16753920 red:16711680 cyan:65535
- *            magenta:16711935
+ *            magenta:16711935 pink:16751103
  */
 public class GuiShipInventory extends GuiContainer {
 
@@ -172,8 +171,8 @@ public class GuiShipInventory extends GuiContainer {
 		this.fontRendererObj.drawStringWithShadow("HP", 132, 6, 65535);
 		this.fontRendererObj.drawString(I18n.format("gui.shincolle:firepower"), 87, 21, 3158064);
 		this.fontRendererObj.drawString(I18n.format("gui.shincolle:armor"), 87, 41, 3158064);
-		this.fontRendererObj.drawString(I18n.format("gui.shincolle:movespeed"), 87, 61, 3158064);
-		this.fontRendererObj.drawString(I18n.format("gui.shincolle:attackspeed"), 87, 81, 3158064);
+		this.fontRendererObj.drawString(I18n.format("gui.shincolle:attackspeed"), 87, 61, 3158064);
+		this.fontRendererObj.drawString(I18n.format("gui.shincolle:movespeed"), 87, 81, 3158064);
 		this.fontRendererObj.drawString(I18n.format("gui.shincolle:range"), 87, 101, 3158064);
 		
 		//draw attribute value 
@@ -214,8 +213,8 @@ public class GuiShipInventory extends GuiContainer {
 		
 		//draw armor
 		color = pickBonusColor(entity.BonusPoint[AttrID.DEF]);
-		this.fontRendererObj.drawStringWithShadow(String.valueOf(defBase), 87, 51, color);
-		this.fontRendererObj.drawStringWithShadow("+"+String.valueOf(defEqip), 120, 51, 65280);
+		this.fontRendererObj.drawStringWithShadow(String.valueOf(defBase)+"%", 87, 51, color);
+		this.fontRendererObj.drawStringWithShadow("+"+String.valueOf(defEqip)+"%", 120, 51, 65280);
 		
 		//draw attack speed
 		color = pickBonusColor(entity.BonusPoint[AttrID.SPD+3]);
@@ -243,7 +242,7 @@ public class GuiShipInventory extends GuiContainer {
 		case 2:
 			return 16753920;	//orange
 		default:
-			return 16711680;	//red
+			return 16724787;	//red
 		}
 	}
 	

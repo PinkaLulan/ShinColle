@@ -332,7 +332,7 @@ public class ModelDestroyerI extends ModelBase {
     	default:						//normal, other
     		setFace(0);
     		if(ent.ticksExisted % 120 == 0) {  	//roll emotion (3 times) every 6 sec
-        		int emotionRand = ent.rand.nextInt(100);   		
+        		int emotionRand = ent.getRNG().nextInt(100);   		
         		if(emotionRand > 70) {
         			EmotionBlink(ent);
         		}

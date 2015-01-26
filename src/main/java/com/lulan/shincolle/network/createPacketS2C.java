@@ -21,14 +21,13 @@ public class createPacketS2C {
 	public createPacketS2C() {
 	}
 
-	/**ENTITY SYNC PACKET <br>
-	 * 用於同步server跟client的entity資料 <br>
+	/**ENTITY SYNC PACKET
+	 * 用於同步server跟client的entity資料
 	 * Format: PacketID + EntityID + ShipLevel + Kills + 
 	 *         AttrBonus[] + AttrFinal[] + EntityState[] + BonusPoint[]
 	 * 
 	 */
-	public static FMLProxyPacket createEntityPacket(Entity parEntity) throws IOException {
-		LogHelper.info("Sending Entity Sync Packet on Server Side");
+	public static FMLProxyPacket createEntitySyncPacket(Entity parEntity) throws IOException {
 		//建立packet傳輸stream
 		ByteBufOutputStream bbos = new ByteBufOutputStream(Unpooled.buffer());
 		
@@ -75,15 +74,49 @@ public class createPacketS2C {
   
 		return thePacket;
 	}
+	
+	/**ATTACK PARTICLE(SMALL) PACKET
+	 * 發送特效封包, 使被攻擊的entity發出particle, 普通攻擊適用
+	 * Format: PacketID + TargetEntityID + ParticleID
+	 */
+	public static FMLProxyPacket createAttackSmallParticlePacket(Entity target, int type) throws IOException {
+		//建立packet傳輸stream
+		ByteBufOutputStream bbos = new ByteBufOutputStream(Unpooled.buffer());
+		
+		//Packet ID (會放在封包頭以辨識封包類型)
+		bbos.writeByte(Names.Packets.PARTICLE_ATK);
+		//Entity ID (用於辨識entity是那一隻)
+		bbos.writeInt(target.getEntityId());
+		//以下寫入要傳送的資料
+		bbos.writeByte((byte)type);
+
+		// put payload into a packet  
+		FMLProxyPacket thePacket = new FMLProxyPacket(bbos.buffer(), CommonProxy.channelName);
+		// don't forget to close stream to avoid memory leak
+		bbos.close();
+  
+		return thePacket;
+	}
  
-	// send to all player on the server
+	//send to all player on the server
 	public static void sendToAll(FMLProxyPacket parPacket) {
       CommonProxy.channel.sendToAll(parPacket);
 	}
 
+	//send entity sync packet
 	public static void sendS2CEntitySync(Entity parEntity) {
     	try {
-    		sendToAll(createEntityPacket(parEntity));
+    		sendToAll(createEntitySyncPacket(parEntity));
+    	} 
+    	catch (IOException e) {
+    		e.printStackTrace();
+    	}
+	}
+	
+	//send attack particle packet
+	public static void sendS2CAttackParticle(Entity parEntity, int type) {
+    	try {
+    		sendToAll(createAttackSmallParticlePacket(parEntity, type));
     	} 
     	catch (IOException e) {
     		e.printStackTrace();

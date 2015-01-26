@@ -10,6 +10,7 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.reference.AttrID;
 import com.lulan.shincolle.reference.Names;
 import com.lulan.shincolle.utility.LogHelper;
+import com.lulan.shincolle.utility.ParticleHelper;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -28,6 +29,9 @@ public class ProcessPacketClientSide {
 
 	@SideOnly(Side.CLIENT)
 	public static void processPacketOnClient(ByteBuf parBB, Side parSide) throws IOException {
+		int entityID;
+		Entity foundEntity;
+		
 		if (parSide == Side.CLIENT) {
 			LogHelper.info("DEBUG : recv packet (client side)");
 
@@ -37,10 +41,10 @@ public class ProcessPacketClientSide {
 			//read packet ID
 			int packetTypeID = bbis.readByte();
 			switch (packetTypeID) {
-			case Names.Packets.ENTITY_SYNC:
+			case Names.Packets.ENTITY_SYNC:  //entity sync packet
 				//read entity ID
-				int entityID = bbis.readInt();
-				Entity foundEntity = getEntityByID(entityID, theWorld);
+				entityID = bbis.readInt();
+				foundEntity = getEntityByID(entityID, theWorld);
 
 				if (foundEntity instanceof BasicEntityShip) {
 					BasicEntityShip foundEntityShip = (BasicEntityShip)foundEntity;
@@ -74,6 +78,16 @@ public class ProcessPacketClientSide {
 					foundEntityShip.BonusPoint[5] = bbis.readByte();
 				}
 				break;
+			case Names.Packets.PARTICLE_ATK:  //attack particle
+				//read entity ID
+				entityID = bbis.readInt();
+				foundEntity = getEntityByID(entityID, theWorld);
+				//read particle type
+				byte particleType = bbis.readByte();
+				//spawn particle
+				ParticleHelper.spawnAttackParticle(foundEntity, particleType);			
+				break;
+				
 			}//end switch
 		bbis.close();   
 		}
