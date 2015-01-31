@@ -154,11 +154,11 @@ public class GuiShipInventory extends GuiContainer {
 		int hpMax = (int)entity.getMaxHealth();
 		int color = 0;
 		
-		String strATK = String.valueOf(this.entity.AttrFinalShort[AttrID.ATK]);
-		String strDEF = String.valueOf(this.entity.AttrFinalShort[AttrID.DEF])+"%";
-		String strSPD = String.format("%.2f", this.entity.AttrFinalFloat[AttrID.SPD]);
-		String strMOV = String.format("%.2f", this.entity.AttrFinalFloat[AttrID.MOV]);
-		String strHIT = String.format("%.2f", this.entity.AttrFinalFloat[AttrID.HIT]);
+		String strATK = String.valueOf(this.entity.ArrayFinal[AttrID.ATK]);
+		String strDEF = String.valueOf(this.entity.ArrayFinal[AttrID.DEF])+"%";
+		String strSPD = String.format("%.2f", this.entity.ArrayFinal[AttrID.SPD]);
+		String strMOV = String.format("%.2f", this.entity.ArrayFinal[AttrID.MOV]);
+		String strHIT = String.format("%.2f", this.entity.ArrayFinal[AttrID.HIT]);
 		
 		//draw attribute name 
 		this.fontRendererObj.drawStringWithShadow("Level", 196, 6, 65535);
@@ -209,15 +209,15 @@ public class GuiShipInventory extends GuiContainer {
 		this.fontRendererObj.drawStringWithShadow(strDEF, 151-this.fontRendererObj.getStringWidth(strDEF), 51, color);
 		
 		//draw attack speed
-		color = pickBonusColor(entity.BonusPoint[AttrID.SPD+3]);
+		color = pickBonusColor(entity.BonusPoint[AttrID.SPD]);
 		this.fontRendererObj.drawStringWithShadow(strSPD, 151-this.fontRendererObj.getStringWidth(strSPD), 71, color);
 		
 		//draw movement speed
-		color = pickBonusColor(entity.BonusPoint[AttrID.MOV+3]);
+		color = pickBonusColor(entity.BonusPoint[AttrID.MOV]);
 		this.fontRendererObj.drawStringWithShadow(strMOV, 151-this.fontRendererObj.getStringWidth(strMOV), 91, color);
 				
 		//draw range
-		color = pickBonusColor(entity.BonusPoint[AttrID.HIT+3]);
+		color = pickBonusColor(entity.BonusPoint[AttrID.HIT]);
 		this.fontRendererObj.drawStringWithShadow(strHIT, 151-this.fontRendererObj.getStringWidth(strHIT), 111, color);
 	}
 

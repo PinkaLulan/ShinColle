@@ -3,15 +3,13 @@ package com.lulan.shincolle.reference;
 //for array ID
 public class AttrID {
 
-	//Attr Short
+	//Array ID
 	public static final byte HP = 0;
 	public static final byte ATK = 1;
 	public static final byte DEF = 2;
-	
-	//Attr Float
-	public static final byte SPD = 0;	//+3 in TypeModify array
-	public static final byte MOV = 1;
-	public static final byte HIT = 2;
+	public static final byte SPD = 3;
+	public static final byte MOV = 4;
+	public static final byte HIT = 5;
 	
 	//EntityState
 	public static final byte State = 0;

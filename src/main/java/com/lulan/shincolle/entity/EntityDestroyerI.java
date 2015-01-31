@@ -66,7 +66,8 @@ public class EntityDestroyerI extends BasicEntitySmallShip {
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		
 		this.setTypeModify();	
-		this.setAIList();					
+		this.setAIList();
+		this.setAITargetList();
 	}
 	
 	public void setAIList() {
@@ -87,13 +88,6 @@ public class EntityDestroyerI extends BasicEntitySmallShip {
 		this.tasks.addTask(24, new EntityAIWander(this, 0.8D));
 		this.tasks.addTask(25, new EntityAILookIdle(this));
 		
-		//target AI
-	//	this.targetTasks.addTask(1, new EntityAIOwnerPointTarget(this));
-		this.targetTasks.addTask(2, new EntityAIOwnerHurtByTarget(this));
-        this.targetTasks.addTask(3, new EntityAIOwnerHurtTarget(this));
-		this.targetTasks.addTask(4, new EntityAIHurtByTarget(this, false));
-		this.targetTasks.addTask(5, new EntityAIInRangeTarget(this, EntityLiving.class, 0.4F, 1));
-
 /* 		//switch AI method
 		this.tasks.removeTask(this.aiAttackOnCollide);
         this.tasks.removeTask(this.aiArrowAttack);
@@ -107,6 +101,13 @@ public class EntityDestroyerI extends BasicEntitySmallShip {
         {
             this.tasks.addTask(4, this.aiAttackOnCollide);
         }*/
+	}
+	
+	public void setAITargetList() {	
+		//target AI
+	//NYI:	this.targetTasks.addTask(1, new EntityAIOwnerPointTarget(this));
+		this.targetTasks.addTask(2, new EntityAIOwnerHurtByTarget(this));
+		this.targetTasks.addTask(3, new EntityAIInRangeTarget(this, EntityLiving.class, 0.4F, 1));
 	}
 
 	//平常音效

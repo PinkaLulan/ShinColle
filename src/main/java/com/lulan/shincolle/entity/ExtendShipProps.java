@@ -49,20 +49,20 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		nbtExt.setInteger("Kills", this.entity.Kills);
 		//save AttrEquip
 		nbtExt.setTag("Equip", nbtExt_add1);
-		nbtExt_add1.setShort("HP", this.entity.AttrEquipShort[AttrID.HP]);
-		nbtExt_add1.setShort("ATK", this.entity.AttrEquipShort[AttrID.ATK]);
-		nbtExt_add1.setShort("DEF", this.entity.AttrEquipShort[AttrID.DEF]);
-		nbtExt_add1.setFloat("SPD", this.entity.AttrEquipFloat[AttrID.SPD]);
-		nbtExt_add1.setFloat("MOV", this.entity.AttrEquipFloat[AttrID.MOV]);
-		nbtExt_add1.setFloat("HIT", this.entity.AttrEquipFloat[AttrID.HIT]);
+		nbtExt_add1.setFloat("HP", this.entity.ArrayEquip[AttrID.HP]);
+		nbtExt_add1.setFloat("ATK", this.entity.ArrayEquip[AttrID.ATK]);
+		nbtExt_add1.setFloat("DEF", this.entity.ArrayEquip[AttrID.DEF]);
+		nbtExt_add1.setFloat("SPD", this.entity.ArrayEquip[AttrID.SPD]);
+		nbtExt_add1.setFloat("MOV", this.entity.ArrayEquip[AttrID.MOV]);
+		nbtExt_add1.setFloat("HIT", this.entity.ArrayEquip[AttrID.HIT]);
 		//save AttrFinal
 		nbtExt.setTag("Final", nbtExt_add2);
-		nbtExt_add2.setShort("HP", this.entity.AttrFinalShort[AttrID.HP]);
-		nbtExt_add2.setShort("ATK", this.entity.AttrFinalShort[AttrID.ATK]);
-		nbtExt_add2.setShort("DEF", this.entity.AttrFinalShort[AttrID.DEF]);
-		nbtExt_add2.setFloat("SPD", this.entity.AttrFinalFloat[AttrID.SPD]);
-		nbtExt_add2.setFloat("MOV", this.entity.AttrFinalFloat[AttrID.MOV]);
-		nbtExt_add2.setFloat("HIT", this.entity.AttrFinalFloat[AttrID.HIT]);
+		nbtExt_add2.setFloat("HP", this.entity.ArrayFinal[AttrID.HP]);
+		nbtExt_add2.setFloat("ATK", this.entity.ArrayFinal[AttrID.ATK]);
+		nbtExt_add2.setFloat("DEF", this.entity.ArrayFinal[AttrID.DEF]);
+		nbtExt_add2.setFloat("SPD", this.entity.ArrayFinal[AttrID.SPD]);
+		nbtExt_add2.setFloat("MOV", this.entity.ArrayFinal[AttrID.MOV]);
+		nbtExt_add2.setFloat("HIT", this.entity.ArrayFinal[AttrID.HIT]);
 		//save EntityState
 		nbtExt.setTag("State", nbtExt_add3);	
 		nbtExt_add3.setByte("State", this.entity.EntityState[AttrID.State]);
@@ -105,20 +105,20 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		entity.Kills = nbt_tag.getShort("Kills");
 		//load Attr Equip
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Equip");
-		entity.AttrEquipShort[AttrID.HP] = nbt_load.getShort("HP");
-		entity.AttrEquipShort[AttrID.ATK] = nbt_load.getShort("ATK");
-		entity.AttrEquipShort[AttrID.DEF] = nbt_load.getShort("DEF");
-		entity.AttrEquipFloat[AttrID.SPD] = nbt_load.getFloat("SPD");
-		entity.AttrEquipFloat[AttrID.MOV] = nbt_load.getFloat("MOV");
-		entity.AttrEquipFloat[AttrID.HIT] = nbt_load.getFloat("HIT");
+		entity.ArrayEquip[AttrID.HP] = nbt_load.getFloat("HP");
+		entity.ArrayEquip[AttrID.ATK] = nbt_load.getFloat("ATK");
+		entity.ArrayEquip[AttrID.DEF] = nbt_load.getFloat("DEF");
+		entity.ArrayEquip[AttrID.SPD] = nbt_load.getFloat("SPD");
+		entity.ArrayEquip[AttrID.MOV] = nbt_load.getFloat("MOV");
+		entity.ArrayEquip[AttrID.HIT] = nbt_load.getFloat("HIT");
 		//load Attr Final
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Final");
-		entity.AttrFinalShort[AttrID.HP] = nbt_load.getShort("HP");
-		entity.AttrFinalShort[AttrID.ATK] = nbt_load.getShort("ATK");
-		entity.AttrFinalShort[AttrID.DEF] = nbt_load.getShort("DEF");
-		entity.AttrFinalFloat[AttrID.SPD] = nbt_load.getFloat("SPD");
-		entity.AttrFinalFloat[AttrID.MOV] = nbt_load.getFloat("MOV");
-		entity.AttrFinalFloat[AttrID.HIT] = nbt_load.getFloat("HIT");
+		entity.ArrayFinal[AttrID.HP] = nbt_load.getFloat("HP");
+		entity.ArrayFinal[AttrID.ATK] = nbt_load.getFloat("ATK");
+		entity.ArrayFinal[AttrID.DEF] = nbt_load.getFloat("DEF");
+		entity.ArrayFinal[AttrID.SPD] = nbt_load.getFloat("SPD");
+		entity.ArrayFinal[AttrID.MOV] = nbt_load.getFloat("MOV");
+		entity.ArrayFinal[AttrID.HIT] = nbt_load.getFloat("HIT");
 		//load entity state
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("State");
 		entity.EntityState[AttrID.State] = nbt_load.getByte("State");
@@ -148,8 +148,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		//set new value and send sync nbt packet to client
 		if(!world.isRemote) {
 			entity.setAttrEquip();
-		}
-		LogHelper.info("DEBUG : ExtEntityProps set ship attribute");	
+		}	
 		LogHelper.info("DEBUG : load entity ExtNBT data on id: "+entity.getEntityId());
 	}
 

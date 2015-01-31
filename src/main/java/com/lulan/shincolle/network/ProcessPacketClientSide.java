@@ -63,19 +63,19 @@ public class ProcessPacketClientSide {
 					foundEntityShip.ShipLevel = bbis.readShort();
 					foundEntityShip.Kills = bbis.readInt();
 					
-					foundEntityShip.AttrEquipShort[AttrID.HP] = bbis.readShort();
-					foundEntityShip.AttrEquipShort[AttrID.ATK] = bbis.readShort();
-					foundEntityShip.AttrEquipShort[AttrID.DEF] = bbis.readShort();
-					foundEntityShip.AttrEquipFloat[AttrID.SPD] = bbis.readFloat();
-					foundEntityShip.AttrEquipFloat[AttrID.MOV] = bbis.readFloat();
-					foundEntityShip.AttrEquipFloat[AttrID.HIT] = bbis.readFloat();
+					foundEntityShip.ArrayEquip[AttrID.HP] = bbis.readFloat();
+					foundEntityShip.ArrayEquip[AttrID.ATK] = bbis.readFloat();
+					foundEntityShip.ArrayEquip[AttrID.DEF] = bbis.readFloat();
+					foundEntityShip.ArrayEquip[AttrID.SPD] = bbis.readFloat();
+					foundEntityShip.ArrayEquip[AttrID.MOV] = bbis.readFloat();
+					foundEntityShip.ArrayEquip[AttrID.HIT] = bbis.readFloat();
 					
-					foundEntityShip.AttrFinalShort[AttrID.HP] = bbis.readShort();
-					foundEntityShip.AttrFinalShort[AttrID.ATK] = bbis.readShort();
-					foundEntityShip.AttrFinalShort[AttrID.DEF] = bbis.readShort();
-					foundEntityShip.AttrFinalFloat[AttrID.SPD] = bbis.readFloat();
-					foundEntityShip.AttrFinalFloat[AttrID.MOV] = bbis.readFloat();
-					foundEntityShip.AttrFinalFloat[AttrID.HIT] = bbis.readFloat();
+					foundEntityShip.ArrayFinal[AttrID.HP] = bbis.readFloat();
+					foundEntityShip.ArrayFinal[AttrID.ATK] = bbis.readFloat();
+					foundEntityShip.ArrayFinal[AttrID.DEF] = bbis.readFloat();
+					foundEntityShip.ArrayFinal[AttrID.SPD] = bbis.readFloat();
+					foundEntityShip.ArrayFinal[AttrID.MOV] = bbis.readFloat();
+					foundEntityShip.ArrayFinal[AttrID.HIT] = bbis.readFloat();
 					
 					foundEntityShip.EntityState[AttrID.State] = bbis.readByte();
 					foundEntityShip.EntityState[AttrID.Emotion] = bbis.readByte();

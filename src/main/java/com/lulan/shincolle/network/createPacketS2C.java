@@ -41,19 +41,19 @@ public class createPacketS2C {
 			bbos.writeShort(entity.ShipLevel);
 			bbos.writeInt(entity.Kills);
 			
-			bbos.writeShort(entity.AttrEquipShort[AttrID.HP]);
-			bbos.writeShort(entity.AttrEquipShort[AttrID.ATK]);
-			bbos.writeShort(entity.AttrEquipShort[AttrID.DEF]);
-			bbos.writeFloat(entity.AttrEquipFloat[AttrID.SPD]);
-			bbos.writeFloat(entity.AttrEquipFloat[AttrID.MOV]);
-			bbos.writeFloat(entity.AttrEquipFloat[AttrID.HIT]);
+			bbos.writeFloat(entity.ArrayEquip[AttrID.HP]);
+			bbos.writeFloat(entity.ArrayEquip[AttrID.ATK]);
+			bbos.writeFloat(entity.ArrayEquip[AttrID.DEF]);
+			bbos.writeFloat(entity.ArrayEquip[AttrID.SPD]);
+			bbos.writeFloat(entity.ArrayEquip[AttrID.MOV]);
+			bbos.writeFloat(entity.ArrayEquip[AttrID.HIT]);
 			
-			bbos.writeShort(entity.AttrFinalShort[AttrID.HP]);
-			bbos.writeShort(entity.AttrFinalShort[AttrID.ATK]);
-			bbos.writeShort(entity.AttrFinalShort[AttrID.DEF]);
-			bbos.writeFloat(entity.AttrFinalFloat[AttrID.SPD]);
-			bbos.writeFloat(entity.AttrFinalFloat[AttrID.MOV]);
-			bbos.writeFloat(entity.AttrFinalFloat[AttrID.HIT]);
+			bbos.writeFloat(entity.ArrayFinal[AttrID.HP]);
+			bbos.writeFloat(entity.ArrayFinal[AttrID.ATK]);
+			bbos.writeFloat(entity.ArrayFinal[AttrID.DEF]);
+			bbos.writeFloat(entity.ArrayFinal[AttrID.SPD]);
+			bbos.writeFloat(entity.ArrayFinal[AttrID.MOV]);
+			bbos.writeFloat(entity.ArrayFinal[AttrID.HIT]);
 			
 			bbos.writeByte(entity.EntityState[AttrID.State]);
 			bbos.writeByte(entity.EntityState[AttrID.Emotion]);
