@@ -5,9 +5,7 @@ import net.minecraft.item.Item;
 import com.lulan.shincolle.item.Abyssium;
 import com.lulan.shincolle.item.Ammo;
 import com.lulan.shincolle.item.BasicItem;
-import com.lulan.shincolle.item.EquipSingleCannon;
-import com.lulan.shincolle.item.EquipTwinCannon;
-import com.lulan.shincolle.item.EquipTripleCannon;
+import com.lulan.shincolle.item.EquipCannon;
 import com.lulan.shincolle.item.BucketRepair;
 import com.lulan.shincolle.item.Grudge;
 import com.lulan.shincolle.item.HeavyAmmo;
@@ -30,9 +28,7 @@ public class ModItems {
 	public static final BasicItem HeavyAmmo = new HeavyAmmo();
 	public static final BasicItem Polymetal = new Polymetal();
 	//equip	
-	public static final BasicItem EquipSingleCannon = new EquipSingleCannon();
-	public static final BasicItem EquipTwinCannon = new EquipTwinCannon();
-	public static final BasicItem EquipTripleCannon = new EquipTripleCannon();
+	public static final BasicItem EquipCannon = new EquipCannon();
 	
 
 	//登錄item到遊戲中 (在pre init階段登錄)
@@ -47,9 +43,7 @@ public class ModItems {
 		GameRegistry.registerItem(HeavyAmmo, "HeavyAmmo");
 		GameRegistry.registerItem(Polymetal, "Polymetal");
 		//equip		
-		GameRegistry.registerItem(EquipSingleCannon, "EquipSingleCannon");
-		GameRegistry.registerItem(EquipTwinCannon, "EquipTwinCannon");
-		GameRegistry.registerItem(EquipTripleCannon, "EquipTripleCannon");
+		GameRegistry.registerItem(EquipCannon, "EquipCannon");
 		
 	}
 	

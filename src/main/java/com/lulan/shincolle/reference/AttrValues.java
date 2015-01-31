@@ -1,7 +1,7 @@
 package com.lulan.shincolle.reference;
 
 public class AttrValues {
-	/**Array ID
+	/**SHIP ARRAY ID
 	 * 0:DeI   1:DeRO  2:DeHA  3:DeNI  4:LCHO  5:LCHE  6:LCTO  7:LCTSU
 	 * 8:TCCHI 9:HCRI  10:HCNE 11:CaNU 12:CaWO 13:BaRU 14:BaTA 15:BaRE
 	 * 16:TrWA 17:SuKA 18:SuYO 19:SuSO 20:CaH  21:AFH  22:ArmH 23:AncH
@@ -33,16 +33,16 @@ public class AttrValues {
 		 0.4F, 0.4F, 0.4F, 0.4F, 0.4F, 0.4F, 0.4F, 0.4F, 0.4F};
 
 	public static final float[] BaseMOV = 
-		{0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F,
+		{0.36F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F,
 		 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F,
 		 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F,
 		 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F};
 
 	public static final float[] BaseHIT = 
-		{6F, 1F, 1F, 1F, 1F, 1F, 1F, 1F,
-		 1F, 1F, 1F, 1F, 1F, 1F, 1F, 1F,
-		 1F, 1F, 1F, 1F, 1F, 1F, 1F, 1F,
-		 1F, 1F, 1F, 1F, 1F, 1F, 1F, 1F, 1f};
+		{5F, 10F, 10F, 10F, 10F, 10F, 10F, 10F,
+		 10F, 10F, 10F, 10F, 10F, 10F, 10F, 10F,
+		 10F, 10F, 10F, 10F, 10F, 10F, 10F, 10F,
+		 10F, 10F, 10F, 10F, 10F, 10F, 10F, 10F, 10f};
 	
 	public static final float[] ModHP = 
 		{0.3F, 1F, 1F, 1F, 1F, 1F, 1F, 1F,
@@ -63,7 +63,7 @@ public class AttrValues {
 		 1F,   1F, 1F, 1F, 1F, 1F, 1F, 1F, 1f};
 	
 	public static final float[] ModSPD = 
-		{1F,   1F, 1F, 1F, 1F, 1F, 1F, 1F,
+		{0.5F,   1F, 1F, 1F, 1F, 1F, 1F, 1F,
 		 1F,   1F, 1F, 1F, 1F, 1F, 1F, 1F,
 		 1F,   1F, 1F, 1F, 1F, 1F, 1F, 1F,
 		 1F,   1F, 1F, 1F, 1F, 1F, 1F, 1F, 1f};
@@ -79,6 +79,29 @@ public class AttrValues {
 		 1F,   1F, 1F, 1F, 1F, 1F, 1F, 1F,
 		 1F,   1F, 1F, 1F, 1F, 1F, 1F, 1F,
 		 1F,   1F, 1F, 1F, 1F, 1F, 1F, 1F, 1f};
+	
+	/**EQUIP ARRAY ID
+	 * 0:5SigC 1:6SigC 2:5TwnC 3:6TwnC 4:12.5TwnC 5:14TwnC 6:16TwnC 
+	 * 7:8TriC 8:16TriC
+	 */
+	public static final float[] EquipHP = 
+		{0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F};
+	
+	public static final float[] EquipATK = 
+		{2F, 3F, 3F, 4F, 8F, 12F, 14F, 9F, 18F};
+	
+	public static final float[] EquipDEF = 
+		{0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F};
+	
+	public static final float[] EquipSPD = 
+		{0F, 0F, 0.2F, 0.4F, 0.2F, 0.2F, 0.2F, 0.4F, 0.4F};
+	
+	public static final float[] EquipMOV = 
+		{0F, 0F, -0.04F, -0.04F, -0.08F, -0.08F, -0.08F, -0.12F, -0.12F};
+	
+	public static final float[] EquipHIT = 
+		{1F, 1F, 1F, 1F, 2F, 3F, 4F, 3F, 4F};
+	
 	
 	public static final class Emotion {
 		public static final byte NORMAL = 0;			//µLªí±¡

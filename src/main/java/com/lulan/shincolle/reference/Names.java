@@ -12,6 +12,7 @@ public final class Names {
 		public static final byte TEST = 0;
 		public static final byte ENTITY_SYNC = 1;
 		public static final byte PARTICLE_ATK = 2;
+		public static final byte PARTICLE_ATK2 = 3;
 	}
 
 }

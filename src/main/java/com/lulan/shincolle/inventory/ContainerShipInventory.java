@@ -89,7 +89,7 @@ public class ContainerShipInventory extends Container {
             if(slotid < 6) {  		//click equip slot
             	if(!this.mergeItemStack(itemstack1, 6, 60, true)) { //take out equip
                 	return null;
-                }
+                }	
                 slot.onSlotChange(itemstack1, itemstack); //若物品成功搬動過, 則呼叫slot change事件
             }
             else {					//slot is ship or player inventory (5~58)
@@ -102,7 +102,7 @@ public class ContainerShipInventory extends Container {
                         }
             		}  
             		else {			//non-equip, put into player inventory (23~58)
-            			if(!this.mergeItemStack(itemstack1, 24, 60, false)) {
+            			if(!this.mergeItemStack(itemstack1, 24, 60, true)) {
             				return null;
             			}
             		}

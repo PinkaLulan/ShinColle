@@ -31,6 +31,14 @@
         ]
     },
     
+    "ship-fireheavy": {
+        "category": "hostile", "replace": true, "sounds": [
+            "fireheavy_01",
+            "fireheavy_02",
+            "fireheavy_03"       
+        ]
+    },
+    
     "ship-hitsmall": {
         "category": "hostile", "replace": true, "sounds": [
             "tontonton_02",

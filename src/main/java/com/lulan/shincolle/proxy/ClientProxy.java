@@ -1,14 +1,18 @@
 package com.lulan.shincolle.proxy;
 
+import net.minecraft.client.renderer.entity.RenderFireball;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.client.settings.KeyBindings;
+import com.lulan.shincolle.entity.EntityAbyssMissile;
 import com.lulan.shincolle.entity.EntityDestroyerI;
 import com.lulan.shincolle.init.ModBlocks;
+import com.lulan.shincolle.model.ModelAbyssMissile;
 import com.lulan.shincolle.model.ModelDestroyerI;
+import com.lulan.shincolle.render.RenderAbyssMissile;
 import com.lulan.shincolle.render.RenderDestroyerI;
 import com.lulan.shincolle.render.RenderSmallShipyard;
 import com.lulan.shincolle.render.RenderSmallShipyardItem;
@@ -37,8 +41,11 @@ public class ClientProxy extends CommonProxy {
 		TileEntitySpecialRenderer tesrBlockSmallShipyard = new RenderSmallShipyard();
 		
 		//entity render
-		RenderingRegistry.registerEntityRenderingHandler(EntityDestroyerI.class, new RenderDestroyerI(new ModelDestroyerI(), 0));
+		RenderingRegistry.registerEntityRenderingHandler(EntityDestroyerI.class, new RenderDestroyerI(new ModelDestroyerI(), 0.3F));	
 		
+		//projectile render
+		RenderingRegistry.registerEntityRenderingHandler(EntityAbyssMissile.class, new RenderAbyssMissile(new ModelAbyssMissile(), 0.75F));
+
 		//block tile entity render
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySmallShipyard.class, tesrBlockSmallShipyard);
 	

@@ -8,12 +8,18 @@ import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIAttackOnCollide;
+import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
+import net.minecraft.entity.ai.EntityAIOpenDoor;
+import net.minecraft.entity.ai.EntityAIOwnerHurtByTarget;
+import net.minecraft.entity.ai.EntityAIOwnerHurtTarget;
 import net.minecraft.entity.ai.EntityAIPanic;
+import net.minecraft.entity.ai.EntityAIRestrictOpenDoor;
 import net.minecraft.entity.ai.EntityAITargetNonTamed;
 import net.minecraft.entity.ai.EntityAIWander;
+import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.ai.EntityAIWatchClosest2;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.IMob;
@@ -31,6 +37,7 @@ import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.ShinColle;
+import com.lulan.shincolle.ai.EntityAIInRangeTarget;
 import com.lulan.shincolle.ai.EntityAIRangeAttack;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
@@ -58,27 +65,48 @@ public class EntityDestroyerI extends BasicEntitySmallShip {
 		this.ShipID = AttrID.DestroyerI;
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		
-		//for attribute calc
-		this.TypeModify[AttrID.HP] = AttrValues.ModHP[AttrID.DestroyerI];
-		this.TypeModify[AttrID.ATK] = AttrValues.ModATK[AttrID.DestroyerI];
-		this.TypeModify[AttrID.DEF] = AttrValues.ModDEF[AttrID.DestroyerI];
-		this.TypeModify[AttrID.SPD+3] = AttrValues.ModSPD[AttrID.DestroyerI];
-		this.TypeModify[AttrID.MOV+3] = AttrValues.ModMOV[AttrID.DestroyerI];
-		this.TypeModify[AttrID.HIT+3] = AttrValues.ModHIT[AttrID.DestroyerI];
-			
-		//AI: AI優先度, AI(AI參數)
+		this.setTypeModify();	
+		this.setAIList();					
+	}
+	
+	public void setAIList() {
+		this.getNavigator().setEnterDoors(true);
+		
 		//use range attack (light)
-		this.tasks.addTask(0, new EntityAIRangeAttack(this));
+		this.tasks.addTask(2, new EntityAIRangeAttack(this));
+		
 		//use melee attack
-		this.tasks.addTask(1, new EntityAIAttackOnCollide(this, 1D, true));
-		this.tasks.addTask(2, new EntityAIMoveTowardsTarget(this, 1D, 32.0F));
+		this.tasks.addTask(3, new EntityAIAttackOnCollide(this, 1D, true));
+		this.tasks.addTask(4, new EntityAIMoveTowardsTarget(this, 1D, 60.0F));
 		
-	//	this.tasks.addTask(0, new EntityAIWander(this, 1.0D));
-		this.tasks.addTask(5, new EntityAIWatchClosest2(this, EntityPlayer.class, 3F, 2F));
-	//	this.tasks.addTask(3, new EntityAIPanic(this, 1F));
-	//	this.tasks.addTask(3, new EntityAILookIdle(this));
+		//idle AI
+		//moving
+        this.tasks.addTask(21, new EntityAIRestrictOpenDoor(this));
+		this.tasks.addTask(22, new EntityAIOpenDoor(this, true));
+		this.tasks.addTask(23, new EntityAIWatchClosest(this, EntityPlayer.class, 5F));
+		this.tasks.addTask(24, new EntityAIWander(this, 0.8D));
+		this.tasks.addTask(25, new EntityAILookIdle(this));
 		
-		this.targetTasks.addTask(0, new EntityAINearestAttackableTarget(this, EntityLiving.class, 0, true));
+		//target AI
+	//	this.targetTasks.addTask(1, new EntityAIOwnerPointTarget(this));
+		this.targetTasks.addTask(2, new EntityAIOwnerHurtByTarget(this));
+        this.targetTasks.addTask(3, new EntityAIOwnerHurtTarget(this));
+		this.targetTasks.addTask(4, new EntityAIHurtByTarget(this, false));
+		this.targetTasks.addTask(5, new EntityAIInRangeTarget(this, EntityLiving.class, 0.4F, 1));
+
+/* 		//switch AI method
+		this.tasks.removeTask(this.aiAttackOnCollide);
+        this.tasks.removeTask(this.aiArrowAttack);
+        ItemStack itemstack = this.getHeldItem();
+
+        if (itemstack != null && itemstack.getItem() == Items.bow)
+        {
+            this.tasks.addTask(4, this.aiArrowAttack);
+        }
+        else
+        {
+            this.tasks.addTask(4, this.aiAttackOnCollide);
+        }*/
 	}
 
 	//平常音效
@@ -120,8 +148,8 @@ public class EntityDestroyerI extends BasicEntitySmallShip {
 		
 		
 		//debug test
-		setShipLevel((short)(ShipLevel+1), false);
-		
+		setShipLevel((short)(ShipLevel+1));
+
 		
 		//shift+right click時打開GUI
 		if (player.isSneaking() && player.getDisplayName().equals(this.getOwnerName())) {  

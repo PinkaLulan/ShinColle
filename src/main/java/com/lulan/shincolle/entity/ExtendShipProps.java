@@ -146,8 +146,10 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		}
 		
 		//set new value and send sync nbt packet to client
-		LogHelper.info("DEBUG : ExtEntityProps set ship attribute");
-		entity.setShipAttributes(entity.ShipID);
+		if(!world.isRemote) {
+			entity.setAttrEquip();
+		}
+		LogHelper.info("DEBUG : ExtEntityProps set ship attribute");	
 		LogHelper.info("DEBUG : load entity ExtNBT data on id: "+entity.getEntityId());
 	}
 
@@ -193,6 +195,9 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		//若手上物品超過該格子限制數量, 則只能放進限制數量
 		if (itemstack != null && itemstack.stackSize > getInventoryStackLimit()) {
 			itemstack.stackSize = getInventoryStackLimit();
+		}
+		if(!world.isRemote) {
+			this.entity.setAttrEquip();  //update equip and attribute value
 		}
 	}
 

@@ -42,10 +42,8 @@ public class GuiShipInventory extends GuiContainer {
 	private static final ResourceLocation guiNameicon = new ResourceLocation(Reference.TEXTURES_GUI+"GuiNameIcon.png");
 	//ship type icon array
 	private static final short[][] shipTypeIcon = {
-		{41,0}, {41,0}, {41,0}, {41,0}, {41,29}, {41,29}, {41,29}, {41,29},
-		{41,87}, {41,58}, {41,58}, {70,58}, {70,29}, {70,0}, {70,0}, {70,0},
-		{12,74}, {99,0}, {99,0}, {99,0}, {70,87}, {70,87}, {70,87}, {70,87},
-		{99,29}, {99,29}, {70,87}, {70,87}, {70,87}, {70,87}, {70,87}, {70,87}, {70,87}};
+		{41,0}, {41,29}, {41,58}, {41,87}, {70,58}, {70,29}, {70,0}, {12,74}, {99,0},
+		{70,87}, {70,87}, {99,29}};
 	//ship name icon array
 	private static final short[][] shipNameIcon = {
 		{128,0}, {139,0}, {150,0}, {161,0}, {172,0}, {183,0}, {194,0}, {205,0},
@@ -89,11 +87,11 @@ public class GuiShipInventory extends GuiContainer {
         Minecraft.getMinecraft().getTextureManager().bindTexture(guiNameicon);
         if(entity.ShipLevel > 75) {
         	drawTexturedModalRect(guiLeft+157, guiTop+18, 0, 0, 40, 42);
-        	drawTexturedModalRect(guiLeft+159, guiTop+22, shipTypeIcon[entity.ShipID][0], shipTypeIcon[entity.ShipID][1], 28, 28);
+        	drawTexturedModalRect(guiLeft+159, guiTop+22, shipTypeIcon[entity.ShipType][0], shipTypeIcon[entity.ShipType][1], 28, 28);
         }
         else {
         	drawTexturedModalRect(guiLeft+157, guiTop+18, 0, 43, 30, 30);
-        	drawTexturedModalRect(guiLeft+157, guiTop+18, shipTypeIcon[entity.ShipID][0], shipTypeIcon[entity.ShipID][1], 28, 28);
+        	drawTexturedModalRect(guiLeft+157, guiTop+18, shipTypeIcon[entity.ShipType][0], shipTypeIcon[entity.ShipType][1], 28, 28);
         }
         
         //draw left bottom name
@@ -154,17 +152,13 @@ public class GuiShipInventory extends GuiContainer {
 		String shiplevel = String.valueOf(entity.ShipLevel);
 		int hpCurrent = MathHelper.ceiling_float_int(entity.getHealth());
 		int hpMax = (int)entity.getMaxHealth();
-		short atkEqip = entity.AttrEquipShort[AttrID.ATK];
-		short atkBase = (short) (entity.AttrFinalShort[AttrID.ATK] - atkEqip);
-		short defEqip = (short) entity.AttrEquipShort[AttrID.DEF];
-		short defBase = (short) (entity.AttrFinalShort[AttrID.DEF] - defEqip);
-		float spdEqip = entity.AttrEquipFloat[AttrID.SPD];
-		float spdBase = entity.AttrFinalFloat[AttrID.SPD] - spdEqip;
-		float movEqip = entity.AttrEquipFloat[AttrID.MOV];
-		float movBase = entity.AttrFinalFloat[AttrID.MOV] - movEqip;
-		float hitEqip = entity.AttrEquipFloat[AttrID.HIT];
-		float hitBase = entity.AttrFinalFloat[AttrID.HIT] - hitEqip;
 		int color = 0;
+		
+		String strATK = String.valueOf(this.entity.AttrFinalShort[AttrID.ATK]);
+		String strDEF = String.valueOf(this.entity.AttrFinalShort[AttrID.DEF])+"%";
+		String strSPD = String.format("%.2f", this.entity.AttrFinalFloat[AttrID.SPD]);
+		String strMOV = String.format("%.2f", this.entity.AttrFinalFloat[AttrID.MOV]);
+		String strHIT = String.format("%.2f", this.entity.AttrFinalFloat[AttrID.HIT]);
 		
 		//draw attribute name 
 		this.fontRendererObj.drawStringWithShadow("Level", 196, 6, 65535);
@@ -208,28 +202,23 @@ public class GuiShipInventory extends GuiContainer {
 				
 		//draw firepower
 		color = pickBonusColor(entity.BonusPoint[AttrID.ATK]);
-		this.fontRendererObj.drawStringWithShadow(String.valueOf(atkBase), 87, 31, color);
-		this.fontRendererObj.drawStringWithShadow("+"+String.valueOf(atkEqip), 120, 31, 65280);
+		this.fontRendererObj.drawStringWithShadow(strATK, 151-this.fontRendererObj.getStringWidth(strATK), 31, color);
 		
 		//draw armor
 		color = pickBonusColor(entity.BonusPoint[AttrID.DEF]);
-		this.fontRendererObj.drawStringWithShadow(String.valueOf(defBase)+"%", 87, 51, color);
-		this.fontRendererObj.drawStringWithShadow("+"+String.valueOf(defEqip)+"%", 120, 51, 65280);
+		this.fontRendererObj.drawStringWithShadow(strDEF, 151-this.fontRendererObj.getStringWidth(strDEF), 51, color);
 		
 		//draw attack speed
 		color = pickBonusColor(entity.BonusPoint[AttrID.SPD+3]);
-		this.fontRendererObj.drawStringWithShadow(String.format("%.2f", spdBase), 87, 71, color);
-		this.fontRendererObj.drawStringWithShadow("+"+String.format("%.2f", spdEqip), 120, 71, 65280);
+		this.fontRendererObj.drawStringWithShadow(strSPD, 151-this.fontRendererObj.getStringWidth(strSPD), 71, color);
 		
 		//draw movement speed
 		color = pickBonusColor(entity.BonusPoint[AttrID.MOV+3]);
-		this.fontRendererObj.drawStringWithShadow(String.format("%.2f", movBase), 87, 91, color);
-		this.fontRendererObj.drawStringWithShadow("+"+String.format("%.2f", movEqip), 120, 91, 65280);
+		this.fontRendererObj.drawStringWithShadow(strMOV, 151-this.fontRendererObj.getStringWidth(strMOV), 91, color);
 				
 		//draw range
 		color = pickBonusColor(entity.BonusPoint[AttrID.HIT+3]);
-		this.fontRendererObj.drawStringWithShadow(String.format("%.2f", hitBase), 87, 111, color);
-		this.fontRendererObj.drawStringWithShadow("+"+String.format("%.2f", hitEqip), 120, 111, 65280);
+		this.fontRendererObj.drawStringWithShadow(strHIT, 151-this.fontRendererObj.getStringWidth(strHIT), 111, color);
 	}
 
 	//0:white 1:yellow 2:orange 3:red

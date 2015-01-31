@@ -24,14 +24,24 @@ import cpw.mods.fml.relauncher.SideOnly;
  * SYNC PACKET: for ExtendEntityProps, client should not send sync-packet back to server
  */
 public class ProcessPacketClientSide { 
+	//for entity sync
+	private static int packetTypeID;
+	private static int entityID;
+	private static Entity foundEntity;
+	//for particle position
+	private static byte particleType;
+	private static float posX;
+	private static float posY;
+	private static float posZ;
+	private static float lookX;
+	private static float lookY;
+	private static float lookZ;
 	
 	public ProcessPacketClientSide() {}
 
 	@SideOnly(Side.CLIENT)
 	public static void processPacketOnClient(ByteBuf parBB, Side parSide) throws IOException {
-		int entityID;
-		Entity foundEntity;
-		
+			
 		if (parSide == Side.CLIENT) {
 			LogHelper.info("DEBUG : recv packet (client side)");
 
@@ -39,7 +49,8 @@ public class ProcessPacketClientSide {
 			ByteBufInputStream bbis = new ByteBufInputStream(parBB);
    
 			//read packet ID
-			int packetTypeID = bbis.readByte();
+			packetTypeID = bbis.readByte();
+			
 			switch (packetTypeID) {
 			case Names.Packets.ENTITY_SYNC:  //entity sync packet
 				//read entity ID
@@ -78,14 +89,29 @@ public class ProcessPacketClientSide {
 					foundEntityShip.BonusPoint[5] = bbis.readByte();
 				}
 				break;
+				
 			case Names.Packets.PARTICLE_ATK:  //attack particle
 				//read entity ID
 				entityID = bbis.readInt();
 				foundEntity = getEntityByID(entityID, theWorld);
 				//read particle type
-				byte particleType = bbis.readByte();
+				particleType = bbis.readByte();
 				//spawn particle
 				ParticleHelper.spawnAttackParticle(foundEntity, particleType);			
+				break;
+				
+			case Names.Packets.PARTICLE_ATK2:  //attack particle at custom position
+				//read position + look vector
+				posX = bbis.readFloat();
+				posY = bbis.readFloat();
+				posZ = bbis.readFloat();
+				lookX = bbis.readFloat();
+				lookY = bbis.readFloat();
+				lookZ = bbis.readFloat();
+				//read particle type
+				particleType = bbis.readByte();
+				//spawn particle
+				ParticleHelper.spawnAttackParticleCustomVector((double)posX, (double)posY, (double)posZ, (double)lookX, (double)lookY, (double)lookZ, particleType);			
 				break;
 				
 			}//end switch

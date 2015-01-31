@@ -97,6 +97,34 @@ public class createPacketS2C {
   
 		return thePacket;
 	}
+	
+	/**ATTACK PARTICLE(SMALL) PACKET
+	 * 發送特效封包, 使目標地點+位移方向發出特效
+	 * Format: PacketID + posX + posY + posZ + lookX + lookY + lookZ + type
+	 */
+	public static FMLProxyPacket createCustomPosAttackParticlePacket(double posX, double posY, double posZ, double lookX, double lookY, double lookZ, int type) throws IOException {
+		//建立packet傳輸stream
+		ByteBufOutputStream bbos = new ByteBufOutputStream(Unpooled.buffer());
+		
+		//Packet ID (會放在封包頭以辨識封包類型)
+		bbos.writeByte(Names.Packets.PARTICLE_ATK2);
+		//position and look vector
+		bbos.writeFloat((float)posX);
+		bbos.writeFloat((float)posY);
+		bbos.writeFloat((float)posZ);
+		bbos.writeFloat((float)lookX);
+		bbos.writeFloat((float)lookY);
+		bbos.writeFloat((float)lookZ);
+		//以下寫入要傳送的資料
+		bbos.writeByte((byte)type);
+
+		// put payload into a packet  
+		FMLProxyPacket thePacket = new FMLProxyPacket(bbos.buffer(), CommonProxy.channelName);
+		// don't forget to close stream to avoid memory leak
+		bbos.close();
+  
+		return thePacket;
+	}
  
 	//send to all player on the server
 	public static void sendToAll(FMLProxyPacket parPacket) {
@@ -106,6 +134,7 @@ public class createPacketS2C {
 	//send entity sync packet
 	public static void sendS2CEntitySync(Entity parEntity) {
     	try {
+    		LogHelper.info("DEBUG : send SYNC packet to client");
     		sendToAll(createEntitySyncPacket(parEntity));
     	} 
     	catch (IOException e) {
@@ -122,4 +151,14 @@ public class createPacketS2C {
     		e.printStackTrace();
     	}
 	}
+	
+	//send attack particle at custom position packet
+		public static void sendS2CAttackParticle2(double posX, double posY, double posZ, double lookX, double lookY, double lookZ, int type) {
+	    	try {
+	    		sendToAll(createCustomPosAttackParticlePacket(posX, posY, posZ, lookX, lookY, lookZ, type));
+	    	} 
+	    	catch (IOException e) {
+	    		e.printStackTrace();
+	    	}
+		}
 }

@@ -1,5 +1,8 @@
 package com.lulan.shincolle.utility;
 
+import java.util.Random;
+
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 
@@ -8,7 +11,8 @@ import net.minecraft.world.World;
  */
 public class ParticleHelper {
 	
-	private static World world;
+	private static World world = Minecraft.getMinecraft().theWorld;
+	private static Random rand = new Random();
 	/**ROTATE PARTICLE POSITION (NxNxN)
 	 * in:原始座標, 邊長, 以及要轉的面向 	out:轉完的新位置
 	 * 現階段沒有做上下翻轉, 所以y值不會變動
@@ -45,57 +49,92 @@ public class ParticleHelper {
 		return newParm;
 	}
 	
-	/**SPAWN ATTACK PARTICLE 
-	 * 
+	/**SPAWN ATTACK PARTICLE WITH CUSTOM POSITION
+	 * @parm posX, posY, posZ, lookX, lookY, lookZ, type
+	 */
+	public static void spawnAttackParticleCustomVector(double posX, double posY, double posZ, double lookX, double lookY, double lookZ, byte type) {
+		//spawn particle
+		spawnAttackParticleAt(posX, posY, posZ, lookX, lookY, lookZ, type);
+	}
+	
+	/**SPAWN ATTACK PARTICLE
+	 * @parm entity, type
 	 */
 	public static void spawnAttackParticle(Entity target, byte type) {
+		//target look
+		double lookX = 0;
+		double lookY = 0;
+		double lookZ = 0;
+		
 		//get target position
 		if(target != null) {
-			double tarX = target.posX;
-			double tarY = target.posY;
-			double tarZ = target.posZ;
-			world = target.worldObj;
-			
-			//spawn particle
-			switch(type) {
-			case 0:	//explode
-				world.spawnParticle("explode", tarX, tarY+2, tarZ, 0.0D, 0.0D, 0.0D);
-				break;
-			case 1: //largeexplode
-				world.spawnParticle("largeexplode", tarX, tarY+2, tarZ, 0.0D, 0.0D, 0.0D);
-				break;
-			case 2: //hugeexplosion
-				world.spawnParticle("hugeexplosion", tarX, tarY+1, tarZ, 0.0D, 0.0D, 0.0D);
-				break;
-			case 3: //crit
-				world.spawnParticle("crit", tarX, tarY+2, tarZ, 0.0D, 0.0D, 0.0D);
-				break;
-			case 4: //magicCrit
-				world.spawnParticle("magicCrit", tarX, tarY+2, tarZ, 0.0D, 0.0D, 0.0D);
-				break;
-			case 5: //smoke
-				world.spawnParticle("smoke", tarX, tarY+2, tarZ, 0.0D, 0.0D, 0.0D);
-				break;
-			case 6: //largesmoke
-				world.spawnParticle("largesmoke", tarX, tarY+2, tarZ, 0.0D, 0.0D, 0.0D);
-				break;
-			case 7: //angryVillager
-				world.spawnParticle("angryVillager", tarX, tarY+1, tarZ, 0.0D, 0.0D, 0.0D);
-				break;
-			case 8: //flame
-				world.spawnParticle("flame", tarX, tarY+2, tarZ, 0.0D, 0.0D, 0.0D);
-				break;
-			case 9: //lava+explode
-				world.spawnParticle("largeexplode", tarX, tarY+1.5, tarZ, 0.0D, 0.0D, 0.0D);
-				for(int i=0;i<5;i++) {
-					world.spawnParticle("lava", tarX, tarY+1, tarZ, 0.0D, 0.0D, 0.0D);
-				}			
-				break;
-			default:
-				break;		
+			if(target.getLookVec() != null) {
+				lookX = target.getLookVec().xCoord;
+				lookY = target.getLookVec().yCoord;
+				lookZ = target.getLookVec().zCoord;
 			}
+			//spawn particle
+			spawnAttackParticleAt(target.posX, target.posY, target.posZ, lookX, lookY, lookZ, type);
 		}		
 	}
 	
+	/**Spawn particle at xyz position
+	 * @parm world, posX, posY, posZ, particleID
+	 */
+	public static void spawnAttackParticleAt(double posX, double posY, double posZ, double lookX, double lookY, double lookZ, byte type) {
+		//get target position
+		double ran1 = 0D;
+		double ran2 = 0D;
+		
+		//spawn particle
+		switch(type) {
+		case 0:	//explode
+			world.spawnParticle("explode", posX, posY+2, posZ, 0.0D, 0.0D, 0.0D);
+			break;
+		case 1: //largeexplode
+			world.spawnParticle("largeexplode", posX, posY+2, posZ, 0.0D, 0.0D, 0.0D);
+			break;
+		case 2: //hugeexplosion
+			world.spawnParticle("hugeexplosion", posX, posY+1, posZ, 0.0D, 0.0D, 0.0D);
+			for(int i=0;i<20;i++) {
+				ran1 = rand.nextFloat() * 6F - 3F;
+				ran2 = rand.nextFloat() * 6F - 3F;
+				world.spawnParticle("lava", posX+ran1, posY+1, posZ+ran2, 0D, 0D, 0D);
+			}
+			break;
+		case 3: //crit
+			world.spawnParticle("crit", posX, posY+2, posZ, 0.0D, 0.0D, 0.0D);
+			break;
+		case 4: //magicCrit
+			world.spawnParticle("magicCrit", posX, posY+2, posZ, 0.0D, 0.0D, 0.0D);
+			break;
+		case 5: //smoke
+			world.spawnParticle("smoke", posX, posY+2, posZ, 0.0D, 0.0D, 0.0D);
+			break;
+		case 6: //largesmoke
+			for(int i=0; i<20; i++) {
+				ran1 = rand.nextFloat() - 0.5F;
+				world.spawnParticle("largesmoke", posX+lookX-0.5D+0.05D*i, posY+0.8D+ran1, posZ+lookZ-0.5D+0.05D*i, lookX*0.2D, 0.05D, lookZ*0.2D);
+			}	
+			break;
+		case 7: //angryVillager
+			world.spawnParticle("angryVillager", posX, posY+1, posZ, 0.0D, 0.0D, 0.0D);
+			break;
+		case 8: //flame
+			world.spawnParticle("flame", posX, posY+2, posZ, 0.0D, 0.0D, 0.0D);
+			break;
+		case 9: //lava + largeexplode
+			world.spawnParticle("largeexplode", posX, posY+1.5, posZ, 0.0D, 0.0D, 0.0D);
+			for(int i=0; i<12; i++) {
+				ran1 = rand.nextFloat() * 3F - 1.5F;
+				ran2 = rand.nextFloat() * 3F - 1.5F;
+				world.spawnParticle("lava", posX+ran1, posY+1, posZ+ran2, 0D, 0D, 0D);
+			}			
+			break;
+		default:
+			break;		
+		}	
+	}
+
 	
 }
