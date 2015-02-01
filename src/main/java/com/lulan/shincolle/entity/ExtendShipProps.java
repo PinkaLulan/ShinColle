@@ -42,40 +42,34 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		NBTTagCompound nbtExt_add1 = new NBTTagCompound();
 		NBTTagCompound nbtExt_add2 = new NBTTagCompound();
 		NBTTagCompound nbtExt_add3 = new NBTTagCompound();
-		NBTTagCompound nbtExt_add4 = new NBTTagCompound();
 
 		//save values to NBT
-		nbtExt.setShort("Level", this.entity.ShipLevel);
-		nbtExt.setInteger("Kills", this.entity.Kills);
-		//save AttrEquip
-		nbtExt.setTag("Equip", nbtExt_add1);
-		nbtExt_add1.setFloat("HP", this.entity.ArrayEquip[AttrID.HP]);
-		nbtExt_add1.setFloat("ATK", this.entity.ArrayEquip[AttrID.ATK]);
-		nbtExt_add1.setFloat("DEF", this.entity.ArrayEquip[AttrID.DEF]);
-		nbtExt_add1.setFloat("SPD", this.entity.ArrayEquip[AttrID.SPD]);
-		nbtExt_add1.setFloat("MOV", this.entity.ArrayEquip[AttrID.MOV]);
-		nbtExt_add1.setFloat("HIT", this.entity.ArrayEquip[AttrID.HIT]);
+		nbtExt.setShort("Level", this.entity.getShipLevel());
+		nbtExt.setInteger("Kills", this.entity.getKills());
+		nbtExt.setInteger("Exp", this.entity.getExpCurrent());
+		nbtExt.setInteger("NumAmmoL", this.entity.getNumAmmoLight());
+		nbtExt.setInteger("NumAmmoH", this.entity.getNumAmmoHeavy());
 		//save AttrFinal
-		nbtExt.setTag("Final", nbtExt_add2);
-		nbtExt_add2.setFloat("HP", this.entity.ArrayFinal[AttrID.HP]);
-		nbtExt_add2.setFloat("ATK", this.entity.ArrayFinal[AttrID.ATK]);
-		nbtExt_add2.setFloat("DEF", this.entity.ArrayFinal[AttrID.DEF]);
-		nbtExt_add2.setFloat("SPD", this.entity.ArrayFinal[AttrID.SPD]);
-		nbtExt_add2.setFloat("MOV", this.entity.ArrayFinal[AttrID.MOV]);
-		nbtExt_add2.setFloat("HIT", this.entity.ArrayFinal[AttrID.HIT]);
+		nbtExt.setTag("Final", nbtExt_add1);
+		nbtExt_add1.setFloat("HP", this.entity.getFinalHP());
+		nbtExt_add1.setFloat("ATK", this.entity.getFinalATK());
+		nbtExt_add1.setFloat("DEF", this.entity.getFinalDEF());
+		nbtExt_add1.setFloat("SPD", this.entity.getFinalSPD());
+		nbtExt_add1.setFloat("MOV", this.entity.getFinalMOV());
+		nbtExt_add1.setFloat("HIT", this.entity.getFinalHIT());
 		//save EntityState
-		nbtExt.setTag("State", nbtExt_add3);	
-		nbtExt_add3.setByte("State", this.entity.EntityState[AttrID.State]);
-		nbtExt_add3.setByte("Emotion", this.entity.EntityState[AttrID.Emotion]);
-		nbtExt_add3.setByte("SwimType", this.entity.EntityState[AttrID.SwimType]);
+		nbtExt.setTag("State", nbtExt_add2);	
+		nbtExt_add2.setByte("State", this.entity.getEntityState());
+		nbtExt_add2.setByte("Emotion", this.entity.getEntityEmotion());
+		nbtExt_add2.setByte("SwimType", this.entity.getEntitySwinType());
 		//save BonusPoint
-		nbtExt.setTag("Point", nbtExt_add4);	
-		nbtExt_add4.setByte("HP", this.entity.BonusPoint[0]);
-		nbtExt_add4.setByte("ATK", this.entity.BonusPoint[1]);
-		nbtExt_add4.setByte("DEF", this.entity.BonusPoint[2]);
-		nbtExt_add4.setByte("SPD", this.entity.BonusPoint[3]);
-		nbtExt_add4.setByte("MOV", this.entity.BonusPoint[4]);
-		nbtExt_add4.setByte("HIT", this.entity.BonusPoint[5]);
+		nbtExt.setTag("Point", nbtExt_add3);	
+		nbtExt_add3.setByte("HP", this.entity.getBonusHP());
+		nbtExt_add3.setByte("ATK", this.entity.getBonusATK());
+		nbtExt_add3.setByte("DEF", this.entity.getBonusDEF());
+		nbtExt_add3.setByte("SPD", this.entity.getBonusSPD());
+		nbtExt_add3.setByte("MOV", this.entity.getBonusMOV());
+		nbtExt_add3.setByte("HIT", this.entity.getBonusHIT());
 		
 		//save inventory
 		NBTTagList list = new NBTTagList();
@@ -101,37 +95,32 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		NBTTagCompound nbt_load = new NBTTagCompound();
 
 		//load values to entity
-		entity.ShipLevel = nbt_tag.getShort("Level");
-		entity.Kills = nbt_tag.getShort("Kills");
-		//load Attr Equip
-		nbt_load = (NBTTagCompound) nbt_tag.getTag("Equip");
-		entity.ArrayEquip[AttrID.HP] = nbt_load.getFloat("HP");
-		entity.ArrayEquip[AttrID.ATK] = nbt_load.getFloat("ATK");
-		entity.ArrayEquip[AttrID.DEF] = nbt_load.getFloat("DEF");
-		entity.ArrayEquip[AttrID.SPD] = nbt_load.getFloat("SPD");
-		entity.ArrayEquip[AttrID.MOV] = nbt_load.getFloat("MOV");
-		entity.ArrayEquip[AttrID.HIT] = nbt_load.getFloat("HIT");
+		entity.setShipLevel(nbt_tag.getShort("Level"), false);
+		entity.setKills(nbt_tag.getInteger("Kills"));
+		entity.setExpCurrent(nbt_tag.getInteger("Exp"));
+		entity.setNumAmmoLight(nbt_tag.getInteger("NumAmmoL"));
+		entity.setNumAmmoHeavy(nbt_tag.getInteger("NumAmmoH"));
 		//load Attr Final
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Final");
-		entity.ArrayFinal[AttrID.HP] = nbt_load.getFloat("HP");
-		entity.ArrayFinal[AttrID.ATK] = nbt_load.getFloat("ATK");
-		entity.ArrayFinal[AttrID.DEF] = nbt_load.getFloat("DEF");
-		entity.ArrayFinal[AttrID.SPD] = nbt_load.getFloat("SPD");
-		entity.ArrayFinal[AttrID.MOV] = nbt_load.getFloat("MOV");
-		entity.ArrayFinal[AttrID.HIT] = nbt_load.getFloat("HIT");
+		entity.setFinalHP(nbt_load.getFloat("HP"));
+		entity.setFinalATK(nbt_load.getFloat("ATK"));
+		entity.setFinalDEF(nbt_load.getFloat("DEF"));
+		entity.setFinalSPD(nbt_load.getFloat("SPD"));
+		entity.setFinalMOV(nbt_load.getFloat("MOV"));
+		entity.setFinalHIT(nbt_load.getFloat("HIT"));
 		//load entity state
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("State");
-		entity.EntityState[AttrID.State] = nbt_load.getByte("State");
-		entity.EntityState[AttrID.Emotion] = nbt_load.getByte("Emotion");
-		entity.EntityState[AttrID.SwimType] = nbt_load.getByte("SwimType");
+		entity.setEntityState(nbt_load.getByte("State"), false);
+		entity.setEntityEmotion(nbt_load.getByte("Emotion"), false);
+		entity.setEntitySwimType(nbt_load.getByte("SwimType"), false);
 		//load bonus point
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Point");
-		entity.BonusPoint[0] = nbt_load.getByte("HP");
-		entity.BonusPoint[1] = nbt_load.getByte("ATK");
-		entity.BonusPoint[2] = nbt_load.getByte("DEF");
-		entity.BonusPoint[3] = nbt_load.getByte("SPD");
-		entity.BonusPoint[4] = nbt_load.getByte("MOV");
-		entity.BonusPoint[5] = nbt_load.getByte("HIT");
+		entity.setBonusHP(nbt_load.getByte("HP"));
+		entity.setBonusATK(nbt_load.getByte("ATK"));
+		entity.setBonusDEF(nbt_load.getByte("DEF"));
+		entity.setBonusSPD(nbt_load.getByte("SPD"));
+		entity.setBonusMOV(nbt_load.getByte("MOV"));
+		entity.setBonusHIT(nbt_load.getByte("HIT"));
 		
 		//load inventory
 		NBTTagList list = nbt.getTagList(tagName, 10);
@@ -145,10 +134,10 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 			}
 		}
 		
-		//set new value and send sync nbt packet to client
-		if(!world.isRemote) {
-			entity.setAttrEquip();
-		}	
+		//calc equip and attribute
+		entity.setExpNext();	//for gui display
+		entity.setEquipAndUpdateState();	
+		LogHelper.info("DEBUG : nbt exp"+entity.getShipLevel()+" "+entity.getExpNext());
 		LogHelper.info("DEBUG : load entity ExtNBT data on id: "+entity.getEntityId());
 	}
 
@@ -196,7 +185,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 			itemstack.stackSize = getInventoryStackLimit();
 		}
 		if(!world.isRemote) {
-			this.entity.setAttrEquip();  //update equip and attribute value
+			this.entity.setEquipAndUpdateState();;  //update equip and attribute value
 		}
 	}
 

@@ -21,10 +21,10 @@ public class AttrValues {
 		 4, 4, 4, 4, 4, 4, 4, 4, 4};
 
 	public static final byte[] BaseDEF = 
-		{0, 0, 0, 0, 0, 0, 0, 0,
-		 0, 0, 0, 0, 0, 0, 0, 0,
-		 0, 0, 0, 0, 0, 0, 0, 0,
-		 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		{10, 10, 10, 10, 10, 10, 10, 10,
+		 10, 10, 10, 10, 10, 10, 10, 10,
+		 10, 10, 10, 10, 10, 10, 10, 10,
+		 10, 10, 10, 10, 10, 10, 10, 10, 10};
 
 	public static final float[] BaseSPD = 
 		{0.4F, 0.4F, 0.4F, 0.4F, 0.4F, 0.4F, 0.4F, 0.4F,
@@ -33,13 +33,13 @@ public class AttrValues {
 		 0.4F, 0.4F, 0.4F, 0.4F, 0.4F, 0.4F, 0.4F, 0.4F, 0.4F};
 
 	public static final float[] BaseMOV = 
-		{0.36F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F,
+		{0.4F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F,
 		 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F,
 		 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F,
 		 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F, 0.3F};
 
 	public static final float[] BaseHIT = 
-		{5F, 10F, 10F, 10F, 10F, 10F, 10F, 10F,
+		{6F, 10F, 10F, 10F, 10F, 10F, 10F, 10F,
 		 10F, 10F, 10F, 10F, 10F, 10F, 10F, 10F,
 		 10F, 10F, 10F, 10F, 10F, 10F, 10F, 10F,
 		 10F, 10F, 10F, 10F, 10F, 10F, 10F, 10F, 10f};
@@ -57,7 +57,7 @@ public class AttrValues {
 		 1F,    1F, 1F, 1F, 1F, 1F, 1F, 1F, 1f};
 	
 	public static final float[] ModDEF = 
-		{0.3F, 1F, 1F, 1F, 1F, 1F, 1F, 1F,
+		{0.5F, 1F, 1F, 1F, 1F, 1F, 1F, 1F,
 		 1F,   1F, 1F, 1F, 1F, 1F, 1F, 1F,
 		 1F,   1F, 1F, 1F, 1F, 1F, 1F, 1F,
 		 1F,   1F, 1F, 1F, 1F, 1F, 1F, 1F, 1f};
@@ -81,8 +81,7 @@ public class AttrValues {
 		 1F,   1F, 1F, 1F, 1F, 1F, 1F, 1F, 1f};
 	
 	/**EQUIP ARRAY ID
-	 * 0:5SigC 1:6SigC 2:5TwnC 3:6TwnC 4:12.5TwnC 5:14TwnC 6:16TwnC 
-	 * 7:8TriC 8:16TriC
+	 * 0:5SigC 1:6SigC 2:5TwnC 3:6TwnC 4:12.5TwnC 5:14TwnC 6:16TwnC 7:8TriC 8:16TriC
 	 */
 	public static final float[] EquipHP = 
 		{0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F};

@@ -60,33 +60,44 @@ public class ProcessPacketClientSide {
 				if (foundEntity instanceof BasicEntityShip) {
 					BasicEntityShip foundEntityShip = (BasicEntityShip)foundEntity;
 					//read packet data
-					foundEntityShip.ShipLevel = bbis.readShort();
-					foundEntityShip.Kills = bbis.readInt();
+					foundEntityShip.setShipLevel(bbis.readShort(), false);
+					foundEntityShip.setKills(bbis.readInt());
+					foundEntityShip.setExpCurrent(bbis.readInt());
+					foundEntityShip.setNumAmmoLight(bbis.readInt());
+					foundEntityShip.setNumAmmoHeavy(bbis.readInt());
 					
-					foundEntityShip.ArrayEquip[AttrID.HP] = bbis.readFloat();
-					foundEntityShip.ArrayEquip[AttrID.ATK] = bbis.readFloat();
-					foundEntityShip.ArrayEquip[AttrID.DEF] = bbis.readFloat();
-					foundEntityShip.ArrayEquip[AttrID.SPD] = bbis.readFloat();
-					foundEntityShip.ArrayEquip[AttrID.MOV] = bbis.readFloat();
-					foundEntityShip.ArrayEquip[AttrID.HIT] = bbis.readFloat();
+					foundEntityShip.setFinalHP(bbis.readFloat());
+					foundEntityShip.setFinalATK(bbis.readFloat());
+					foundEntityShip.setFinalDEF(bbis.readFloat());
+					foundEntityShip.setFinalSPD(bbis.readFloat());
+					foundEntityShip.setFinalMOV(bbis.readFloat());
+					foundEntityShip.setFinalHIT(bbis.readFloat());
 					
-					foundEntityShip.ArrayFinal[AttrID.HP] = bbis.readFloat();
-					foundEntityShip.ArrayFinal[AttrID.ATK] = bbis.readFloat();
-					foundEntityShip.ArrayFinal[AttrID.DEF] = bbis.readFloat();
-					foundEntityShip.ArrayFinal[AttrID.SPD] = bbis.readFloat();
-					foundEntityShip.ArrayFinal[AttrID.MOV] = bbis.readFloat();
-					foundEntityShip.ArrayFinal[AttrID.HIT] = bbis.readFloat();
+					foundEntityShip.setEntityState(bbis.readByte(), false);
+					foundEntityShip.setEntityEmotion(bbis.readByte(), false);
+					foundEntityShip.setEntitySwimType(bbis.readByte(), false);					
 					
-					foundEntityShip.EntityState[AttrID.State] = bbis.readByte();
-					foundEntityShip.EntityState[AttrID.Emotion] = bbis.readByte();
-					foundEntityShip.EntityState[AttrID.SwimType] = bbis.readByte();
-					
-					foundEntityShip.BonusPoint[0] = bbis.readByte();
-					foundEntityShip.BonusPoint[1] = bbis.readByte();
-					foundEntityShip.BonusPoint[2] = bbis.readByte();
-					foundEntityShip.BonusPoint[3] = bbis.readByte();
-					foundEntityShip.BonusPoint[4] = bbis.readByte();
-					foundEntityShip.BonusPoint[5] = bbis.readByte();
+					foundEntityShip.setBonusHP(bbis.readByte());
+					foundEntityShip.setBonusATK(bbis.readByte());
+					foundEntityShip.setBonusDEF(bbis.readByte());
+					foundEntityShip.setBonusSPD(bbis.readByte());
+					foundEntityShip.setBonusMOV(bbis.readByte());
+					foundEntityShip.setBonusHIT(bbis.readByte());
+				}
+				break;
+				
+			case Names.Packets.STATE_SYNC:  //entity sync packet
+				//read entity ID
+				entityID = bbis.readInt();
+				foundEntity = getEntityByID(entityID, theWorld);
+
+				if (foundEntity instanceof BasicEntityShip) {
+					BasicEntityShip foundEntityShip = (BasicEntityShip)foundEntity;
+					//read packet data	
+					foundEntityShip.setEntityState(bbis.readByte(), false);
+					foundEntityShip.setEntityEmotion(bbis.readByte(), false);
+					foundEntityShip.setEntitySwimType(bbis.readByte(), false);					
+
 				}
 				break;
 				
@@ -120,15 +131,13 @@ public class ProcessPacketClientSide {
 	}
  
 	//get entity by ID
-	public static Entity getEntityByID(int entityID, World world) {         
-		for(Object o: world.getLoadedEntityList()) {                        
-			if(((Entity)o).getEntityId() == entityID) {                                
-				LogHelper.info("Found the entity by ID");                                
-				return ((Entity)o);                        
-			}                
-		}                
-		return null;        
-	} 
-	
-	
+	public static Entity getEntityByID(int entityID, World world) {
+		for(Object obj: world.getLoadedEntityList()) {
+			if(((Entity)obj).getEntityId() == entityID) {
+				return ((Entity)obj);
+			}
+		}
+		return null;
+	}
+
 }

@@ -32,13 +32,13 @@ public class ContainerShipInventory extends Container {
 		
 		//ship equip = 0~5
 		for(i=0; i<6; i++) {
-			this.addSlotToContainer(new SlotShipInventory(entity1.ExtProps, i, 66, 18+i*18));
+			this.addSlotToContainer(new SlotShipInventory(entity1.getExtProps(), i, 66, 18+i*18));
 		}
 		
 		//ship inventory = 6~23
 		for(i=0; i<6; i++) {
 			for(j=0; j<3; j++) {
-				this.addSlotToContainer(new SlotShipInventory(entity1.ExtProps, j+i*3+6, 8+j*18, 18+i*18));
+				this.addSlotToContainer(new SlotShipInventory(entity1.getExtProps(), j+i*3+6, 8+j*18, 18+i*18));
 			}
 		}
 		

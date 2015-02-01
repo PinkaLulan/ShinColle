@@ -41,9 +41,15 @@ item.shincolle:debugegg.name=Debug Spawn Egg
 entity.shincolle:EntityDestroyerI.name=Destroyer I-Class
 
 # GUI
+gui.shincolle:level=Level
+gui.shincolle:hp=HP
 gui.shincolle:firepower=Firepower
 gui.shincolle:armor=Armor
-gui.shincolle:movespeed=Move Speed
-gui.shincolle:attackspeed=Reload Speed
+gui.shincolle:movespeed=Move SPD
+gui.shincolle:attackspeed=Reload SPD
 gui.shincolle:range=Range
+gui.shincolle:kills=Kills
+gui.shincolle:exp=Experience
+gui.shincolle:ammolight=Light Ammo
+gui.shincolle:ammoheavy=Heavy Ammo
 

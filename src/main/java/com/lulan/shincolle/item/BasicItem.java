@@ -27,7 +27,7 @@ public class BasicItem extends Item {
 	//格式為item.MOD名稱:物品名稱.name
 	@Override
 	public String getUnlocalizedName() {
-		return String.format("item.%s%s", Reference.MOD_ID_LOW+":", getUnwrappedUnlocalizedName(super.getUnlocalizedName()));
+		return String.format("item.%s%s", Reference.MOD_ID+":", getUnwrappedUnlocalizedName(super.getUnlocalizedName()));
 	}
 	
 	//同getUnlocalizedName() 此為加上itemstack版本
@@ -36,10 +36,10 @@ public class BasicItem extends Item {
 	public String getUnlocalizedName(ItemStack itemstack) {
 		int meta = itemstack.getItemDamage();
 		if(meta>0) {
-			return String.format("item.%s%s", Reference.MOD_ID_LOW+":", getUnwrappedUnlocalizedName(super.getUnlocalizedName())+meta);
+			return String.format("item.%s%s", Reference.MOD_ID+":", getUnwrappedUnlocalizedName(super.getUnlocalizedName())+meta);
 		}
 		else {
-			return String.format("item.%s%s", Reference.MOD_ID_LOW+":", getUnwrappedUnlocalizedName(super.getUnlocalizedName()));
+			return String.format("item.%s%s", Reference.MOD_ID+":", getUnwrappedUnlocalizedName(super.getUnlocalizedName()));
 		}		
 	}
 	

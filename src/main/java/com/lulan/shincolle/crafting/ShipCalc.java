@@ -18,7 +18,7 @@ import net.minecraft.nbt.NBTTagCompound;
  * 
  * Final HP = (Base + Bonus * Level * typeModify) * config HP scale (type modify excluding base value) <br>
  * Final ATK = Base + (Bonus * Level / 3 + Eqiuip) * typeModify (type modify including equip value)<br>
- * Final DEF = Base + (Bonus * Level / 5 * 0.15 + Eqiuip) * typeModify <br>
+ * Final DEF = Base + (Bonus * Level / 3 * 0.4 + Eqiuip) * typeModify <br>
  * Final AttackSpeed/MovementSpeed = Base + (Bonus * Level / 10 * 0.02 + equip) * typeModify <br>
  * Final Attack Range = Base + (Bonus * Level / 10 * 0.01 + equip) * typeModify <br>
  * KB resistance = Level / 10 * 0.04 <br><br>

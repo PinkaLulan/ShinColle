@@ -105,7 +105,7 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ISidedIn
 	//GUI顯示的名稱, 有custom name則用, 不然就用預設名稱
 	@Override
 	public String getInventoryName() {
-		return this.hasCustomInventoryName() ? this.customName : "container."+Reference.MOD_ID_LOW+":SmallShipyard";
+		return this.hasCustomInventoryName() ? this.customName : "container."+Reference.MOD_ID+":SmallShipyard";
 	}
 
 	//每格可放的最大數量上限

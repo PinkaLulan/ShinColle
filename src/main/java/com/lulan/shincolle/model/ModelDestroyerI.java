@@ -18,6 +18,10 @@ import net.minecraft.util.MathHelper;
 
 import com.lulan.shincolle.entity.EntityDestroyerI;
 
+/**Created in 2015/1/9
+ * 注意: model class內所有方法都是fps 60模式
+ *      也就是全部方法一秒都會call 60次, 跟entity內部一秒是20次的時間變化速度不同
+ */
 public class ModelDestroyerI extends ModelBase {
     //fields
 	public ModelRenderer PBack;
@@ -43,13 +47,21 @@ public class ModelDestroyerI extends ModelBase {
 	public ModelRenderer PKisaragi02;
 	public ModelRenderer PKisaragi03;
 	
-	private static final int cooldown = 300;
-	public float scale = 1F;			//預設大小為1.0倍
+	private int EntityEmotion;	//目前表情
+	private int EntityFace;		//目前使用的頭部model
+	private int EmotionTime;	//目前表情
+	public float Scale;			//預設大小為1.0倍
 	
-    public ModelDestroyerI() {
+  public ModelDestroyerI() {
+
+    EntityEmotion = 0;
+    EntityFace = 0;
+    Scale = 1F;
+    EmotionTime = 0;
+
     textureWidth = 256;
     textureHeight = 128;
-    
+
     setTextureOffset("PBack.Back", 128, 8);
     setTextureOffset("PNeck.NeckBack", 128, 0);
     setTextureOffset("PNeck.NeckNeck", 128, 28);
@@ -272,7 +284,7 @@ public class ModelDestroyerI extends ModelBase {
   }
   
   	private void isKisaragi(EntityDestroyerI ent) {
-		if(ent.isKisaragi) {
+		if(ent.getEntityState() == 1) {
 			PKisaragi00.isHidden = false;
 			PKisaragi01.isHidden = false;
 			PKisaragi02.isHidden = false;
@@ -323,44 +335,45 @@ public class ModelDestroyerI extends ModelBase {
 	}
 
 	//隨機抽取顯示的表情 
-    private void rollEmotion(EntityDestroyerI ent) {
-    	
-    	switch(ent.EntityState[AttrID.Emotion]) {
+    private void rollEmotion(EntityDestroyerI ent) {   	
+    	switch(ent.getEntityEmotion()) {
     	case AttrValues.Emotion.BLINK:	//blink
     		EmotionBlink(ent);
     		break;
-    	default:						//normal, other
-    		setFace(0);
-    		if(ent.ticksExisted % 120 == 0) {  	//roll emotion (3 times) every 6 sec
-        		int emotionRand = ent.getRNG().nextInt(100);   		
-        		if(emotionRand > 70) {
+    	default:						//normal face
+    		setFace(0); 			    //reset face to 0
+    		//roll emotion (3 times) every 6 sec
+    		//1 tick in entity = 3 tick in model class (20 vs 60 fps)
+    		if(ent.ticksExisted % 120 == 0) {  			
+        		int emotionRand = ent.getRNG().nextInt(10);   		
+        		if(emotionRand > 7) {
         			EmotionBlink(ent);
-        		}
+        		} 		
         	}
     		break;
     	}	
     }
 
-	//眨眼動作
+	//眨眼動作, this emotion is CLIENT ONLY, no sync packet required
 	private void EmotionBlink(EntityDestroyerI ent) {
-		if(ent.EntityState[AttrID.Emotion] == AttrValues.Emotion.NORMAL) {	//要在沒表情狀態才做表情
-			ent.StartEmotion = ent.ticksExisted;			//取得entity目前的時間
-			ent.EntityState[AttrID.Emotion] = AttrValues.Emotion.BLINK;		//標記表情為blink
-		}	
-		else {			
-			switch(ent.ticksExisted - ent.StartEmotion) {
+		if(ent.getEntityEmotion() == AttrValues.Emotion.NORMAL) {	//要在沒表情狀態才做表情		
+			ent.setStartEmotion(ent.ticksExisted);		//表情開始時間
+			ent.setEntityEmotion(AttrValues.Emotion.BLINK, false);	//標記表情為blink
+		}
+		else {
+			switch(ent.ticksExisted - ent.getStartEmotion()) {
 			case 1:
 				setFace(1);
 				break;
-			case 18:
+			case 35:
 				setFace(0);
 				break;
-			case 35:
+			case 45:
 				setFace(1);
 				break;
-			case 41:
+			case 60:
 				setFace(0);
-				ent.EntityState[AttrID.Emotion] = AttrValues.Emotion.NORMAL;
+				ent.setEntityEmotion(AttrValues.Emotion.NORMAL, false);
 				break;
 			}
 		}

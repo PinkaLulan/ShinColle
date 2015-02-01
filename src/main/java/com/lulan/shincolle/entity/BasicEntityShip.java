@@ -42,35 +42,41 @@ import net.minecraftforge.common.IExtendedEntityProperties;
  */
 public abstract class BasicEntityShip extends EntityTameable implements IEntityShip {
 
-	public ExtendShipProps ExtProps;		//entity額外NBT紀錄
+	protected ExtendShipProps ExtProps;	//entity額外NBT紀錄
 	//for attribute calc
-	public short ShipLevel;				//ship level
-	public int Kills;					//kill mobs (= exp)
-	public byte ShipType;				//ship type
-	public byte ShipID;
+	protected short ShipLevel;			//ship level
+	protected int Kills;					//kill mobs
+	protected int ExpCurrent;				//total number of attacks = experience
+	protected int ExpNext;				//exp require for next level
+	protected byte ShipType;				//ship type
+	protected byte ShipID;
 	//for AI calc
-	public int StartEmotion;			//表情開始時間
-	public String BlockUnderName;		//腳下方塊名稱, 不需要存NBT
-	public ItemStack ammotype;	//for inventory check
-	public boolean hasAmmo;				//檢查有無彈藥
-	public boolean hasHeavyAmmo;		//檢查有無重型彈藥
+	protected int StartEmotion;			//表情開始時間
+	protected String BlockUnderName;		//腳下方塊名稱, 不需要存NBT
+	protected boolean hasAmmoLight;		//檢查有無彈藥
+	protected boolean hasAmmoHeavy;		//檢查有無重型彈藥
+	protected int NumAmmoLight;			//彈藥存量
+	protected int NumAmmoHeavy;			//重型彈藥存量
+	protected boolean isMarried;			//是否已婚
 	//equip states: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT
-	public float[] ArrayEquip;
+	protected float[] ArrayEquip;
 	//final states: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT
-	public float[] ArrayFinal;
+	protected float[] ArrayFinal;
 	//EntityState: 0:State 1:Emotion 2:SwimType
-	public byte[] EntityState;
+	protected byte[] EntityState;
 	//BonusPoint: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT
-	public byte[] BonusPoint;
+	protected byte[] BonusPoint;
 	//TypeModify: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT
-	public float[] TypeModify;
+	protected float[] TypeModify;
 	
 	
 	public BasicEntityShip(World world) {
 		super(world);
 		//init value
 		ShipLevel = 1;				//ship level
-		Kills = 0;					//kill mobs (= exp)
+		Kills = 0;					//kill mobs
+		ExpCurrent = 0;				//current exp
+		ExpNext = 40;				//lv1 -> lv2 exp
 		//equip states: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT
 		ArrayEquip = new float[] {0F, 0F, 0F, 0F, 0F, 0F};
 		//final states: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT
@@ -82,11 +88,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		//TypeModify: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT
 		TypeModify = new float[] {1F, 1F, 1F, 1F, 1F, 1F};
 		//for AI
-		hasAmmo = false;			//ammo check
-		hasHeavyAmmo = false;
+		hasAmmoLight = false;			//ammo check
+		hasAmmoHeavy = false;
+		NumAmmoLight = 0;
+		NumAmmoHeavy = 0;
 		StartEmotion = 0;			//表情開始時間
 		BlockUnderName = "";		//腳下方塊名稱, 不需要存NBT
-
 	}
 	
 	@Override
@@ -123,15 +130,141 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 	   targetTasks.taskEntries.clear();
 	}
 	
+	//getter
+	public ExtendShipProps getExtProps() {
+		return ExtProps;
+	}
+	public short getShipLevel() {
+		return ShipLevel;
+	}
+	public int getKills() {
+		return Kills;
+	}
+	public int getExpCurrent() {
+		return ExpCurrent;
+	}
+	public int getExpNext() {
+		return ExpNext;
+	}
+	public byte getShipType() {
+		return ShipType;
+	}
+	public byte getShipID() {
+		return ShipID;
+	}
+	public int getStartEmotion() {
+		return StartEmotion;
+	}
+	public String getBlockUnderName() {
+		return BlockUnderName;
+	}
+	public boolean hasAmmoLight() {
+		return hasAmmoLight;
+	}
+	public boolean hasAmmoHeavy() {
+		return hasAmmoHeavy;
+	}
+	public int getNumAmmoLight() {
+		return NumAmmoLight;
+	}
+	public int getNumAmmoHeavy() {
+		return NumAmmoHeavy;
+	}
+	public boolean isMarried() {
+		return isMarried;
+	}
+	public float getEquipHP() {
+		return ArrayEquip[AttrID.HP];
+	}
+	public float getEquipATK() {
+		return ArrayEquip[AttrID.ATK];
+	}
+	public float getEquipDEF() {
+		return ArrayEquip[AttrID.DEF];
+	}
+	public float getEquipSPD() {
+		return ArrayEquip[AttrID.SPD];
+	}
+	public float getEquipMOV() {
+		return ArrayEquip[AttrID.MOV];
+	}
+	public float getEquipHIT() {
+		return ArrayEquip[AttrID.HIT];
+	}
+	public float getFinalHP() {
+		return ArrayFinal[AttrID.HP];
+	}
+	public float getFinalATK() {
+		return ArrayFinal[AttrID.ATK];
+	}
+	public float getFinalDEF() {
+		return ArrayFinal[AttrID.DEF];
+	}
+	public float getFinalSPD() {
+		return ArrayFinal[AttrID.SPD];
+	}
+	public float getFinalMOV() {
+		return ArrayFinal[AttrID.MOV];
+	}
+	public float getFinalHIT() {
+		return ArrayFinal[AttrID.HIT];
+	}
+	public byte getEntityState() {
+		return EntityState[AttrID.State];
+	}
+	public byte getEntityEmotion() {
+		return EntityState[AttrID.Emotion];
+	}
+	public byte getEntitySwinType() {
+		return EntityState[AttrID.SwimType];
+	}
+	public byte getBonusHP() {
+		return BonusPoint[AttrID.HP];
+	}
+	public byte getBonusATK() {
+		return BonusPoint[AttrID.ATK];
+	}
+	public byte getBonusDEF() {
+		return BonusPoint[AttrID.DEF];
+	}
+	public byte getBonusSPD() {
+		return BonusPoint[AttrID.SPD];
+	}
+	public byte getBonusMOV() {
+		return BonusPoint[AttrID.MOV];
+	}
+	public byte getBonusHIT() {
+		return BonusPoint[AttrID.HIT];
+	}
+	public float getTypeModifyHP() {
+		return TypeModify[AttrID.HP];
+	}
+	public float getTypeModifyATK() {
+		return TypeModify[AttrID.ATK];
+	}
+	public float getTypeModifyDEF() {
+		return TypeModify[AttrID.DEF];
+	}
+	public float getTypeModifySPD() {
+		return TypeModify[AttrID.SPD];
+	}
+	public float getTypeModifyMOV() {
+		return TypeModify[AttrID.MOV];
+	}
+	public float getTypeModifyHIT() {
+		return TypeModify[AttrID.HIT];
+	}
+	
+	//setter	
 	//setting attributes, called at load nbt data & init mob
-	public void setShipAttributes(byte id) {
+	public void calcShipAttributes(byte id) {
 		//init or renew bonus value, for short value: discard decimal
 		//HP = (base + (point + 1) * level * typeModify) * config HP ratio
 		ArrayFinal[AttrID.HP] = ((float)AttrValues.BaseHP[id] + (float)(BonusPoint[AttrID.HP]+1) * (float)ShipLevel * TypeModify[AttrID.HP]) * ConfigHandler.hpRatio; 
 		//ATK = base + ((point + 1) * level / 3 + equip) * typeModify
 		ArrayFinal[AttrID.ATK] = (float)AttrValues.BaseATK[id] + ((float)(BonusPoint[AttrID.ATK]+1) * (((float)ShipLevel)/3F) + ArrayEquip[AttrID.ATK]) * TypeModify[AttrID.ATK];
-		//DEF = base + ((point + 1) * level / 5 * 0.6 + equip) * typeModify
-		ArrayFinal[AttrID.DEF] = (float)AttrValues.BaseDEF[id] + ((float)(BonusPoint[AttrID.DEF]+1) * (((float)ShipLevel)/5F) * 0.6F + ArrayEquip[AttrID.DEF]) * TypeModify[AttrID.DEF];
+		//DEF = base + ((point + 1) * level / 3 * 0.4 + equip) * typeModify
+		ArrayFinal[AttrID.DEF] = (float)AttrValues.BaseDEF[id] + ((float)(BonusPoint[AttrID.DEF]+1) * (((float)ShipLevel)/3F) * 0.4F + ArrayEquip[AttrID.DEF]) * TypeModify[AttrID.DEF];
 		//SPD = base + ((point + 1) * level / 10 * 0.02 + equip) * typeModify
 		ArrayFinal[AttrID.SPD] = AttrValues.BaseSPD[id] + ((float)(BonusPoint[AttrID.SPD]+1) * (((float)ShipLevel)/10F) * 0.02F + ArrayEquip[AttrID.SPD]) * TypeModify[AttrID.SPD];
 		//MOV = base + ((point + 1) * level / 10 * 0.01 + equip) * typeModify
@@ -139,10 +272,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		//HIT = base + ((point + 1) * level / 10 * 0.8 + equip) * typeModify
 		ArrayFinal[AttrID.HIT] = AttrValues.BaseHIT[id] + ((float)(BonusPoint[AttrID.HIT]+1) * (((float)ShipLevel)/10F) * 0.8F + ArrayEquip[AttrID.HIT]) * TypeModify[AttrID.HIT];
 		//KB Resistance = Level / 10 * 0.04
-		float resisKB = (((float)ShipLevel)/10F) * 0.04F;
+		float resisKB = (((float)ShipLevel)/10F) * 0.067F;
 		
 		if(ArrayFinal[AttrID.SPD] > 2F) {
-			ArrayFinal[AttrID.SPD] = 2F;	//delay < 0.5sec is meaningless
+			ArrayFinal[AttrID.SPD] = 2F;	//min attack delay = 0.5 sec
 		}
 		if(ArrayFinal[AttrID.SPD] < 0F) {
 			ArrayFinal[AttrID.SPD] = 0F;
@@ -156,44 +289,116 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		
 		//set attribute by final value
 		/**
-		 * DO NOT set ATTACK DAMAGE to non-EntityMob!!!!!
+		 * DO NOT SET ATTACK DAMAGE to non-EntityMob!!!!!
 		 */
 		getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(ArrayFinal[AttrID.HP]);
 		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(ArrayFinal[AttrID.MOV]);
 		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(ArrayFinal[AttrID.HIT]+12); //此為找目標範圍
 		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(resisKB);
 			
-		//reset target AI (update hit range)
-		clearAITargetTasks();
-		setAITargetList();
+		//for server side
+		if(!worldObj.isRemote) {			
+			clearAITargetTasks();	//reset target AI (update hit range)
+			setAITargetList();	
+			sendSyncPacket();		//sync nbt data
+		}			
+	}
+	
+	//set exp value, no sync or update (for client load nbt data, gui display)
+	public void setExpCurrent(int par1) {
+		ExpCurrent = par1;
+	}
+	
+	//set next exp value, no sync or update (for client load nbt data, gui display)
+	public void setExpNext() {
+		ExpNext = ShipLevel * 20 + 20;
+	}
 		
-		sendSyncPacket();	//sync nbt data
+	//called when entity exp++
+	public void addShipExp(int exp) {
+		int CapLevel = isMarried ? 150 : 100;
+		
+		if(ShipLevel != CapLevel) {	//level is not cap level
+			ExpCurrent += exp;
+			if(ExpCurrent >= ExpNext) {
+				ExpCurrent -= ExpNext;	//level up
+				ExpNext = (ShipLevel + 1) * 20 + 20;
+				setShipLevel(++ShipLevel, true);
+			}
+		}	
 	}
 	
 	//called when entity level up
-	public void setShipLevel(short par1) {
-		//update level
+	public void setShipLevel(short par1, boolean update) {
+		//set level
 		if(par1 < 151) {
 			ShipLevel = par1;
 		}
-		else {	//max level = 150
-			ShipLevel = 150;
-		}
-		
 		//update attributes
-		setShipAttributes(ShipID);
+		if(update) { calcShipAttributes(ShipID); }
 	}
 	
 	//called when a mob die near the entity
-	public void setKills(int par1, boolean sync) {
-		Kills = par1;		
-
-		//calc exp for level up
-		
+	public void addKills() {
+		Kills++;
+	}
+	
+	//called when load nbt data
+	public void setKills(int par1) {
+		Kills = par1;
+	}
+	
+	//called when load nbt data
+	public void setNumAmmoLight(int par1) {
+		NumAmmoLight = par1;
+	}
+	
+	//called when load nbt data
+	public void setNumAmmoHeavy(int par1) {
+		NumAmmoHeavy = par1;
+	}
+	
+	//ship attribute setter, sync packet in method: calcShipAttributes 
+	public void setFinalHP(float par1) {
+		ArrayFinal[AttrID.HP] = par1;
+	}
+	public void setFinalATK(float par1) {
+		ArrayFinal[AttrID.ATK] = par1;
+	}
+	public void setFinalDEF(float par1) {
+		ArrayFinal[AttrID.DEF] = par1;
+	}
+	public void setFinalSPD(float par1) {
+		ArrayFinal[AttrID.SPD] = par1;
+	}
+	public void setFinalMOV(float par1) {
+		ArrayFinal[AttrID.MOV] = par1;
+	}
+	public void setFinalHIT(float par1) {
+		ArrayFinal[AttrID.HIT] = par1;
+	}
+	public void setBonusHP(byte par1) {
+		BonusPoint[AttrID.HP] = par1;
+	}
+	public void setBonusATK(byte par1) {
+		BonusPoint[AttrID.ATK] = par1;
+	}
+	public void setBonusDEF(byte par1) {
+		BonusPoint[AttrID.DEF] = par1;
+	}
+	public void setBonusSPD(byte par1) {
+		BonusPoint[AttrID.SPD] = par1;
+	}
+	public void setBonusMOV(byte par1) {
+		BonusPoint[AttrID.MOV] = par1;
+	}
+	public void setBonusHIT(byte par1) {
+		BonusPoint[AttrID.HIT] = par1;
 	}
 	
 	//called when entity equip changed
-	public void setAttrEquip() {
+	//this method get equip state from slots, no input parm
+	public void setEquipAndUpdateState() {
 		ItemStack itemstack = null;
 		float[] equipStat = {0F,0F,0F,0F,0F,0F};
 		ArrayEquip[AttrID.HP] = 0F;
@@ -217,13 +422,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 			}
 		}
 		//update value
-		if(!this.worldObj.isRemote) {
-			setShipAttributes(this.ShipID);
-		}
+		calcShipAttributes(this.ShipID);
 	}
 	
 	//called when entity spawn, set the type modify
-	public void setTypeModify() {
+	public void initTypeModify() {
 		TypeModify[AttrID.HP] = AttrValues.ModHP[ShipID];
 		TypeModify[AttrID.ATK] = AttrValues.ModATK[ShipID];
 		TypeModify[AttrID.DEF] = AttrValues.ModDEF[ShipID];
@@ -232,15 +435,30 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		TypeModify[AttrID.HIT] = AttrValues.ModHIT[ShipID];
 	}
 
-	//called when entity AI/HP change
-	public void setEntityState(byte[] par1, boolean sync) {
+	public void setEntityState(int par1, boolean sync) {
+		EntityState[AttrID.State] = (byte)par1;	
 		if(sync && !worldObj.isRemote) {
-			EntityState[AttrID.State] = par1[AttrID.State];
-			EntityState[AttrID.Emotion] = par1[AttrID.Emotion];
-			EntityState[AttrID.SwimType] = par1[AttrID.SwimType];
-				
-			createPacketS2C.sendS2CEntitySync(this);     
+			createPacketS2C.sendS2CEntityStateSync(this);    
 		}
+	}
+	
+	public void setEntityEmotion(int par1, boolean sync) {
+		EntityState[AttrID.Emotion] = (byte)par1;		
+		if(sync && !worldObj.isRemote) {
+			createPacketS2C.sendS2CEntityStateSync(this);    
+		}
+	}
+	
+	public void setEntitySwimType(int par1, boolean sync) {
+		EntityState[AttrID.SwimType] = (byte)par1;			
+		if(sync && !worldObj.isRemote) {
+			createPacketS2C.sendS2CEntityStateSync(this);    
+		}   
+	}
+	
+	//emotion start time (CLIENT ONLY), called from model class
+	public void setStartEmotion(int par1) {
+		StartEmotion = par1;
 	}
 	
 	//manual send sync packet
@@ -300,28 +518,37 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
         super.onLivingUpdate();
         
         //server side check
-        if((!this.worldObj.isRemote)) {
+        if((!worldObj.isRemote)) {
+        	//sync client when server start after 1 sec
+        	if(ticksExisted == 20) {
+        		sendSyncPacket();
+        	}
+        	    	
         	//check ammo every 100 ticks
-        	if(this.ticksExisted % 100 == 0) {
+        	if(ticksExisted % 100 == 0) {
         		//set air value
-        		if(this.isInWater()) {
-                	this.setAir(300);
+        		if(isInWater()) {
+                	setAir(300);
                 }
         		
 	        	//set ammo flag to default
-	        	this.hasAmmo = false;
-	        	this.hasHeavyAmmo = false;
-	        	
-	        	//search ship inventory
+	        	hasAmmoLight = false;
+	        	hasAmmoHeavy = false;	        	
+	        	//check ammo number
+	        	if(getNumAmmoLight() > 0) { hasAmmoLight = true; }
+	        	if(getNumAmmoHeavy() > 0) { hasAmmoHeavy = true; }	        	
+	        	//check ship inventory
+	        	ItemStack SlotItem = null;
 	        	for(int i=ContainerShipInventory.SLOTS_EQUIP; i<ContainerShipInventory.SLOTS_TOTAL; i++) {
-	    			ammotype = this.ExtProps.slots[i];
+	        		SlotItem = this.ExtProps.slots[i];
 	        		
-	    			if(ammotype != null) {
-	    				if(ammotype.getItem() == ModItems.Ammo) this.hasAmmo = true;
-	    				if(ammotype.getItem() == ModItems.HeavyAmmo) this.hasHeavyAmmo = true;
-	    			}		
-	    		}	        	
-        	}     	
+	    			if(SlotItem != null) {
+	    				if(SlotItem.getItem() == ModItems.Ammo) { hasAmmoLight = true; }
+	    				if(SlotItem.getItem() == ModItems.HeavyAmmo) { hasAmmoHeavy = true; }
+	    			}
+	    		}
+	        	
+        	}//end every 100 ticks        	
         }//end if(server side)
         
     }
@@ -334,13 +561,16 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		//set knockback value (testing)
 		float kbValue = 0.15F;
 		
+		//experience++
+		this.addShipExp(1);
+				
 	    //將atk跟attacker傳給目標的attackEntityFrom方法, 在目標class中計算傷害
 	    //並且回傳是否成功傷害到目標
 	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this), atk);
 
 	    //play entity attack sound
         if(this.getRNG().nextInt(10) > 6) {
-        	this.playSound(Reference.MOD_ID_LOW+":ship-hitsmall", 1.0F, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        	this.playSound(Reference.MOD_ID+":ship-hitsmall", 1.0F, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         }
 	    
 	    //if attack success
@@ -369,15 +599,18 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		//set knockback value (testing)
 		float kbValue = 0.05F;
 		
+		//experience++
+		this.addShipExp(2);
+
 		//play cannon fire sound at attacker
-        this.playSound(Reference.MOD_ID_LOW+":ship-firesmall", 0.4F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        this.playSound(Reference.MOD_ID+":ship-firesmall", 0.4F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         //play entity attack sound
         if(this.getRNG().nextInt(10) > 7) {
-        	this.playSound(Reference.MOD_ID_LOW+":ship-hitsmall", 1F, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        	this.playSound(Reference.MOD_ID+":ship-hitsmall", 1F, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         }
         
         //light ammo -1
-        if(!decrAmmo(0)) {		//not enough ammo
+        if(!decrAmmoNum(0)) {		//not enough ammo
         	atk = atk * 0.125F;	//reduce damage to 12.5%
         }
 
@@ -424,15 +657,18 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		//飛彈是否採用直射
 		boolean isDirect = true;
 		
+		//experience++
+		this.addShipExp(16);
+	
 		//play cannon fire sound at attacker
-        this.playSound(Reference.MOD_ID_LOW+":ship-fireheavy", 0.4F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        this.playSound(Reference.MOD_ID+":ship-fireheavy", 0.4F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         //play entity attack sound
         if(this.getRNG().nextInt(10) > 7) {
-        	this.playSound(Reference.MOD_ID_LOW+":ship-hitsmall", 1F, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        	this.playSound(Reference.MOD_ID+":ship-hitsmall", 1F, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         }
         
         //heavy ammo -1
-        if(!decrAmmo(1)) {		//not enough ammo
+        if(!decrAmmoNum(1)) {		//not enough ammo
         	atk = atk * 0.25F;	//reduce damage to 25%
         }
         
@@ -455,9 +691,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 	
 	//be attacked method, 包括其他entity攻擊, anvil攻擊, arrow攻擊, fall damage都使用此方法 
 	@Override
-    public boolean attackEntityFrom(DamageSource attacker, float atk) {
-		LogHelper.info("DEBUG : source "+attacker.getSourceOfDamage());
-		
+    public boolean attackEntityFrom(DamageSource attacker, float atk) {	
 		//進行def計算
         float reduceAtk = atk * (1F - this.ArrayFinal[AttrID.DEF] / 100F);
         //無敵的entity傷害無效
@@ -477,8 +711,44 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
         }
     }
 	
-	//decresse ammo amount with type, return true or false(not enough item)
-	private boolean decrAmmo(int type) {
+	//decrese ammo number with type, or find ammo item from inventory
+	private boolean decrAmmoNum(int type) {
+		switch(type) {
+		case 0:  //use 1 light ammo
+			if(NumAmmoLight > 0) { 
+				--NumAmmoLight;
+				return true;
+			}
+			else {
+				if(decrAmmoItem(0)) {  //find ammo item
+					NumAmmoLight += 29;
+					return true;
+				}
+				else {				   //no ammo
+					return false;
+				}
+			}
+		case 1:  //use 1 heavy ammo
+			if(NumAmmoHeavy > 0) { 
+				--NumAmmoHeavy;
+				return true;
+			}
+			else {
+				if(decrAmmoItem(1)) {  //find ammo item
+					NumAmmoHeavy += 14;
+					return true;
+				}
+				else {				   //no ammo
+					return false;
+				}
+			}
+		}
+		
+		return false;	//unknow attack type
+	}
+	
+	//decrese ammo amount with type, return true or false(not enough item)
+	private boolean decrAmmoItem(int type) {
 		boolean isEnoughAmmo = true;
 		int ammonum = 0;
 		Item ammotype = null;
@@ -491,14 +761,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 			break;
 		case 1: //use 1 heavy ammo
 			ammonum = 1;
-			ammotype = ModItems.HeavyAmmo;
-			break;
-		case 2: //use 2 light ammo
-			ammonum = 2;
-			ammotype = ModItems.Ammo;
-			break;
-		case 3: //use 2 heavy ammo
-			ammonum = 2;
 			ammotype = ModItems.HeavyAmmo;
 			break;
 		}

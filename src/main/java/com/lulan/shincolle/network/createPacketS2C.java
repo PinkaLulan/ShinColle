@@ -38,33 +38,54 @@ public class createPacketS2C {
 		//以下寫入要傳送的資料
 		if (parEntity instanceof BasicEntityShip) {
 			BasicEntityShip entity = (BasicEntityShip)parEntity;
-			bbos.writeShort(entity.ShipLevel);
-			bbos.writeInt(entity.Kills);
+			bbos.writeShort(entity.getShipLevel());
+			bbos.writeInt(entity.getKills());
+			bbos.writeInt(entity.getExpCurrent());
+			bbos.writeInt(entity.getNumAmmoLight());
+			bbos.writeInt(entity.getNumAmmoHeavy());
 			
-			bbos.writeFloat(entity.ArrayEquip[AttrID.HP]);
-			bbos.writeFloat(entity.ArrayEquip[AttrID.ATK]);
-			bbos.writeFloat(entity.ArrayEquip[AttrID.DEF]);
-			bbos.writeFloat(entity.ArrayEquip[AttrID.SPD]);
-			bbos.writeFloat(entity.ArrayEquip[AttrID.MOV]);
-			bbos.writeFloat(entity.ArrayEquip[AttrID.HIT]);
+			bbos.writeFloat(entity.getFinalHP());
+			bbos.writeFloat(entity.getFinalATK());
+			bbos.writeFloat(entity.getFinalDEF());
+			bbos.writeFloat(entity.getFinalSPD());
+			bbos.writeFloat(entity.getFinalMOV());
+			bbos.writeFloat(entity.getFinalHIT());
 			
-			bbos.writeFloat(entity.ArrayFinal[AttrID.HP]);
-			bbos.writeFloat(entity.ArrayFinal[AttrID.ATK]);
-			bbos.writeFloat(entity.ArrayFinal[AttrID.DEF]);
-			bbos.writeFloat(entity.ArrayFinal[AttrID.SPD]);
-			bbos.writeFloat(entity.ArrayFinal[AttrID.MOV]);
-			bbos.writeFloat(entity.ArrayFinal[AttrID.HIT]);
+			bbos.writeByte(entity.getEntityState());
+			bbos.writeByte(entity.getEntityEmotion());
+			bbos.writeByte(entity.getEntitySwinType());
 			
-			bbos.writeByte(entity.EntityState[AttrID.State]);
-			bbos.writeByte(entity.EntityState[AttrID.Emotion]);
-			bbos.writeByte(entity.EntityState[AttrID.SwimType]);
-			
-			bbos.writeByte(entity.BonusPoint[0]);
-			bbos.writeByte(entity.BonusPoint[1]);
-			bbos.writeByte(entity.BonusPoint[2]);
-			bbos.writeByte(entity.BonusPoint[3]);
-			bbos.writeByte(entity.BonusPoint[4]);
-			bbos.writeByte(entity.BonusPoint[5]);			
+			bbos.writeByte(entity.getBonusHP());
+			bbos.writeByte(entity.getBonusATK());
+			bbos.writeByte(entity.getBonusDEF());
+			bbos.writeByte(entity.getBonusSPD());
+			bbos.writeByte(entity.getBonusMOV());
+			bbos.writeByte(entity.getBonusHIT());			
+		}
+
+		// put payload into a packet  
+		FMLProxyPacket thePacket = new FMLProxyPacket(bbos.buffer(), CommonProxy.channelName);
+		// don't forget to close stream to avoid memory leak
+		bbos.close();
+  
+		return thePacket;
+	}
+	
+	//sync entity state only (no attribute or ship inventory)
+	public static FMLProxyPacket createEntityStateSyncPacket(Entity parEntity) throws IOException {
+		//建立packet傳輸stream
+		ByteBufOutputStream bbos = new ByteBufOutputStream(Unpooled.buffer());
+		
+		//Packet ID (會放在封包頭以辨識封包類型)
+		bbos.writeByte(Names.Packets.STATE_SYNC);
+		//Entity ID (用於辨識entity是那一隻)
+		bbos.writeInt(parEntity.getEntityId());
+		//以下寫入要傳送的資料
+		if (parEntity instanceof BasicEntityShip) {
+			BasicEntityShip entity = (BasicEntityShip)parEntity;	
+			bbos.writeByte(entity.getEntityState());
+			bbos.writeByte(entity.getEntityEmotion());
+			bbos.writeByte(entity.getEntitySwinType());		
 		}
 
 		// put payload into a packet  
@@ -131,11 +152,22 @@ public class createPacketS2C {
       CommonProxy.channel.sendToAll(parPacket);
 	}
 
-	//send entity sync packet
+	//send entity attribute sync packet
 	public static void sendS2CEntitySync(Entity parEntity) {
     	try {
     		LogHelper.info("DEBUG : send SYNC packet to client");
     		sendToAll(createEntitySyncPacket(parEntity));
+    	} 
+    	catch (IOException e) {
+    		e.printStackTrace();
+    	}
+	}
+	
+	//send entity state sync packet
+	public static void sendS2CEntityStateSync(Entity parEntity) {
+    	try {
+    		LogHelper.info("DEBUG : send State SYNC packet to client");
+    		sendToAll(createEntityStateSyncPacket(parEntity));
     	} 
     	catch (IOException e) {
     		e.printStackTrace();

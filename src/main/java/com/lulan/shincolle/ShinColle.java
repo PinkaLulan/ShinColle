@@ -1,6 +1,10 @@
 package com.lulan.shincolle;
 
 
+import java.util.Iterator;
+import java.util.Map;
+
+import net.minecraft.entity.EntityList;
 import net.minecraftforge.common.MinecraftForge;
 
 import com.lulan.shincolle.handler.ConfigHandler;
@@ -12,7 +16,7 @@ import com.lulan.shincolle.init.ModEvents;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.init.ModTileEntity;
 import com.lulan.shincolle.init.ModWorldGen;
-import com.lulan.shincolle.init.Recipes;
+import com.lulan.shincolle.init.ModRecipes;
 import com.lulan.shincolle.proxy.IProxy;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.LogHelper;
@@ -67,7 +71,7 @@ public class ShinColle {
 		
 		ModEvents.init();
 		
-		Recipes.init();
+		ModRecipes.init();
 
 		ModTileEntity.init();
 
@@ -83,13 +87,24 @@ public class ShinColle {
 	@Mod.EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
 		
-		LogHelper.info("postInit complete.");	//debug
+		/*
+		//list all entity
+		Iterator iter = EntityList.classToStringMapping.entrySet().iterator();
+		while(iter.hasNext()) {
+			Map.Entry entry = (Map.Entry)iter.next();
+		    Object key = entry.getKey();
+		    Object val = entry.getValue();
+		    LogHelper.info("DEBUG : list entity class: "+key+" , "+val);
+		}
+		*/
 		
 		/*
 		for(String oreName : OreDictionary.getOreNames()) {	//list all oreDictionary  (DEBUG)
 			LogHelper.info(oreName);
 		}
 		*/
+		
+		LogHelper.info("postInit complete.");	//debug
 	}
 	
 

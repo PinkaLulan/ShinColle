@@ -10,7 +10,7 @@ import net.minecraft.item.Item;
 //建立mod的creative tab
 public class CreativeTabSC {
 		
-	public static final CreativeTabs SC_TAB = new CreativeTabs(Reference.MOD_ID_LOW) {
+	public static final CreativeTabs SC_TAB = new CreativeTabs(Reference.MOD_ID) {
 		//tab的icon
 		@Override
 		public Item getTabIconItem() {

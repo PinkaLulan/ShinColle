@@ -38,7 +38,7 @@ abstract public class BasicBlockContainer extends BlockContainer {
 	//格式為tile.MOD名稱:方塊名稱.name
 	@Override
 	public String getUnlocalizedName() {
-		return String.format("tile.%s%s", Reference.MOD_ID_LOW+":", getUnwrappedUnlocalizedName(super.getUnlocalizedName()));
+		return String.format("tile.%s%s", Reference.MOD_ID+":", getUnwrappedUnlocalizedName(super.getUnlocalizedName()));
 	}
 	
 	//不給icon, 全都用custom render block

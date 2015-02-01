@@ -12,7 +12,7 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 
 public abstract class CommonProxy implements IProxy {
 	
-	public static final String channelName = Reference.MOD_ID_LOW;
+	public static final String channelName = Reference.MOD_ID;
 	public static FMLEventChannel channel;
 	
 	

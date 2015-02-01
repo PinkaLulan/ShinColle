@@ -41,6 +41,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ShipSpawnEgg extends Item {
 	
 	Random rand;
+	private static final int ShipNumber = 2;
 	
 	@SideOnly(Side.CLIENT)
     private IIcon[] iconEgg = new IIcon[3];	//egg icon
@@ -69,13 +70,11 @@ public class ShipSpawnEgg extends Item {
   		
   		switch(metaid) {
   		case 0:	  //small ship
-  			return String.format("item."+Reference.MOD_ID_LOW+":smallegg");
+  			return String.format("item."+Reference.MOD_ID+":smallegg");
   		case 1:   //large ship
-  			return String.format("item."+Reference.MOD_ID_LOW+":largeegg");
-  		case 2:   //destroyer
-  			return String.format("item."+Reference.MOD_ID_LOW+":debugegg");
+  			return String.format("item."+Reference.MOD_ID+":largeegg");
   		default:  //default case = debug ship
-  			return String.format("item."+Reference.MOD_ID_LOW+":debugegg");
+  			return String.format("item."+Reference.MOD_ID+":debugegg");
   		}		
   	}
   	
@@ -92,7 +91,7 @@ public class ShipSpawnEgg extends Item {
   	@Override
   	@SideOnly(Side.CLIENT)
   	public IIcon getIconFromDamage(int meta) {
-  	    if (meta > 3) meta = 2;		//(meta>=2) -> debug egg
+  	    if (meta > 2) meta = 2;		//(meta>=2) -> debug egg
   	    
   	    return iconEgg[meta];
   	}
@@ -101,7 +100,7 @@ public class ShipSpawnEgg extends Item {
   	@Override
   	@SideOnly(Side.CLIENT)
   	public void getSubItems(Item item, CreativeTabs tab, List list) {
-  	    for (int i=0; i<3; i++) {
+  	    for (int i=0; i<ShipNumber+2; i++) {
   	        list.add(new ItemStack(item, 1, i));
   	    }
   	}
@@ -115,11 +114,13 @@ public class ShipSpawnEgg extends Item {
   	private String getEntityToSpawnName(int meta) {
   		switch(meta) {
   		case 0:	//small egg
-  			return "shincolle:EntityDestroyerI";
+  			return "shincolle.EntityDestroyerI";
   		case 1:	//large egg
-  			return "shincolle:EntityDestroyerI";
+  			return "shincolle.EntityDestroyerI";
+  		case 2:	//Destroyer I
+  			return "shincolle.EntityDestroyerI";
   		default:
-  			return "shincolle:EntityDestroyerI";
+  			return "shincolle.EntityDestroyerI";
   		}
   		
   	}
@@ -162,16 +163,16 @@ public class ShipSpawnEgg extends Item {
   		bonuspoint = ShipCalc.getBonusPoints(itemstack);
   		
   		//set bonus point
-  		entity.BonusPoint[0] = bonuspoint[0];
-  		entity.BonusPoint[1] = bonuspoint[1];
-  		entity.BonusPoint[2] = bonuspoint[2];
-  		entity.BonusPoint[3] = bonuspoint[3];
-  		entity.BonusPoint[4] = bonuspoint[4];
-  		entity.BonusPoint[5] = bonuspoint[5];
+  		entity.setBonusHP(bonuspoint[AttrID.HP]);
+  		entity.setBonusATK(bonuspoint[AttrID.ATK]);
+  		entity.setBonusDEF(bonuspoint[AttrID.DEF]);
+  		entity.setBonusSPD(bonuspoint[AttrID.SPD]);
+  		entity.setBonusMOV(bonuspoint[AttrID.MOV]);
+  		entity.setBonusHIT(bonuspoint[AttrID.HIT]);
   		
   		//calc ship attribute and save to nbt: hp atk def ...
   		LogHelper.info("DEBUG : spawn egg set ship attribute");
-  		entity.setShipAttributes(entity.ShipID);
+  		entity.calcShipAttributes(entity.getShipID());
   		
   	}
   	

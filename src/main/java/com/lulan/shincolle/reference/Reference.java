@@ -2,8 +2,7 @@ package com.lulan.shincolle.reference;
 
 public class Reference {
 	//這邊主要放置各種常用參考, 主要為path, package
-	public static final String MOD_ID = "ShinColle";
-	public static final String MOD_ID_LOW = MOD_ID.toLowerCase();
+	public static final String MOD_ID = "shincolle";
 	public static final String MOD_NAME = "Shinkeiseikan Collection";
 	public static final String MOD_VERSION = "1.7.10-1.0";
 	public static final String CLIENT_PROXY = "com.lulan.shincolle.proxy.ClientProxy";

@@ -22,6 +22,7 @@ import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.ai.EntityAIWatchClosest2;
 import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.passive.EntityCow;
 import net.minecraft.entity.passive.EntitySheep;
@@ -53,9 +54,7 @@ import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 
 public class EntityDestroyerI extends BasicEntitySmallShip {
-	
-	public boolean isKisaragi;
-	
+
 	
 	public EntityDestroyerI(World world) {
 		super(world);
@@ -65,7 +64,7 @@ public class EntityDestroyerI extends BasicEntitySmallShip {
 		this.ShipID = AttrID.DestroyerI;
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		
-		this.setTypeModify();	
+		this.initTypeModify();	
 		this.setAIList();
 		this.setAITargetList();
 	}
@@ -107,23 +106,23 @@ public class EntityDestroyerI extends BasicEntitySmallShip {
 		//target AI
 	//NYI:	this.targetTasks.addTask(1, new EntityAIOwnerPointTarget(this));
 		this.targetTasks.addTask(2, new EntityAIOwnerHurtByTarget(this));
-		this.targetTasks.addTask(3, new EntityAIInRangeTarget(this, EntityLiving.class, 0.4F, 1));
+		this.targetTasks.addTask(3, new EntityAIInRangeTarget(this, 0.4F, 1));
 	}
 
 	//平常音效
 	protected String getLivingSound() {
-        return Reference.MOD_ID_LOW+":ship-say";
+        return Reference.MOD_ID+":ship-say";
     }
 	
 	//受傷音效
     protected String getHurtSound() {
     	
-        return Reference.MOD_ID_LOW+":ship-hurt";
+        return Reference.MOD_ID+":ship-hurt";
     }
 
     //死亡音效
     protected String getDeathSound() {
-    	return Reference.MOD_ID_LOW+":ship-death";
+    	return Reference.MOD_ID+":ship-death";
     }
 
     //音效大小
@@ -138,18 +137,18 @@ public class EntityDestroyerI extends BasicEntitySmallShip {
 		//use item on entity
 		if(itemstack != null) {
 			if(itemstack.getItem() == Items.cake) {  //change Kisaragi mode
-				if(isKisaragi) {
-					isKisaragi = false;
+				if(getEntityState() == 1) {
+					setEntityState(0, true);
 				}
 				else {
-					isKisaragi = true;
+					setEntityState(1, true);
 				}
 			}
 		}
 		
 		
 		//debug test
-		setShipLevel((short)(ShipLevel+1));
+		setShipLevel((short) (ShipLevel+1), true);
 
 		
 		//shift+right click時打開GUI
