@@ -112,6 +112,9 @@ public class ProcessPacketClientSide {
 				break;
 				
 			case Names.Packets.PARTICLE_ATK2:  //attack particle at custom position
+				//read entity id
+				entityID = bbis.readInt();
+				foundEntity = getEntityByID(entityID, theWorld);
 				//read position + look vector
 				posX = bbis.readFloat();
 				posY = bbis.readFloat();
@@ -122,7 +125,7 @@ public class ProcessPacketClientSide {
 				//read particle type
 				particleType = bbis.readByte();
 				//spawn particle
-				ParticleHelper.spawnAttackParticleCustomVector((double)posX, (double)posY, (double)posZ, (double)lookX, (double)lookY, (double)lookZ, particleType);			
+				ParticleHelper.spawnAttackParticleCustomVector(foundEntity, (double)posX, (double)posY, (double)posZ, (double)lookX, (double)lookY, (double)lookZ, particleType);			
 				break;
 				
 			}//end switch
@@ -133,7 +136,7 @@ public class ProcessPacketClientSide {
 	//get entity by ID
 	public static Entity getEntityByID(int entityID, World world) {
 		for(Object obj: world.getLoadedEntityList()) {
-			if(((Entity)obj).getEntityId() == entityID) {
+			if(entityID != -1 && ((Entity)obj).getEntityId() == entityID) {
 				return ((Entity)obj);
 			}
 		}

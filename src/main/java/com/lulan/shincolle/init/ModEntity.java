@@ -13,6 +13,7 @@ import net.minecraft.item.Item;
 import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.entity.EntityAbyssMissile;
 import com.lulan.shincolle.entity.EntityDestroyerI;
+import com.lulan.shincolle.entity.EntityHeavyCruiserRi;
 import com.lulan.shincolle.entity.EntityTest;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.LogHelper;
@@ -27,6 +28,7 @@ public class ModEntity {
 		
 		//register ship entity
 		createEntity(EntityDestroyerI.class, "EntityDestroyerI", modEntityID++);
+		createEntity(EntityHeavyCruiserRi.class, "EntityHeavyCruiserRi", modEntityID++);
 				
 		//register projectile entity
 		createProjectileEntity(EntityAbyssMissile.class, "EntityAbyssMissile", modEntityID++);

@@ -100,9 +100,10 @@ public class ShipSpawnEgg extends Item {
   	@Override
   	@SideOnly(Side.CLIENT)
   	public void getSubItems(Item item, CreativeTabs tab, List list) {
-  	    for (int i=0; i<ShipNumber+2; i++) {
-  	        list.add(new ItemStack(item, 1, i));
-  	    }
+  		list.add(new ItemStack(item, 1, 0));
+  		list.add(new ItemStack(item, 1, 1));
+  		list.add(new ItemStack(item, 1, AttrID.DestroyerI+2));
+  		list.add(new ItemStack(item, 1, AttrID.HeavyCruiserRI+2));
   	}
   	
   	/** Get entity name from metadata
@@ -117,8 +118,10 @@ public class ShipSpawnEgg extends Item {
   			return "shincolle.EntityDestroyerI";
   		case 1:	//large egg
   			return "shincolle.EntityDestroyerI";
-  		case 2:	//Destroyer I
+  		case AttrID.DestroyerI+2:
   			return "shincolle.EntityDestroyerI";
+  		case AttrID.HeavyCruiserRI+2:
+  			return "shincolle.EntityHeavyCruiserRi";
   		default:
   			return "shincolle.EntityDestroyerI";
   		}

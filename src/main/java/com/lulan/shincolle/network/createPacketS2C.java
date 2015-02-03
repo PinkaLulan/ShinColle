@@ -123,12 +123,14 @@ public class createPacketS2C {
 	 * 發送特效封包, 使目標地點+位移方向發出特效
 	 * Format: PacketID + posX + posY + posZ + lookX + lookY + lookZ + type
 	 */
-	public static FMLProxyPacket createCustomPosAttackParticlePacket(double posX, double posY, double posZ, double lookX, double lookY, double lookZ, int type) throws IOException {
+	public static FMLProxyPacket createCustomPosAttackParticlePacket(int entityID, double posX, double posY, double posZ, double lookX, double lookY, double lookZ, int type) throws IOException {
 		//建立packet傳輸stream
 		ByteBufOutputStream bbos = new ByteBufOutputStream(Unpooled.buffer());
 		
 		//Packet ID (會放在封包頭以辨識封包類型)
 		bbos.writeByte(Names.Packets.PARTICLE_ATK2);
+		//entity ID (為發送方設定, 設為-1則表示不找entity)
+		bbos.writeInt(entityID);
 		//position and look vector
 		bbos.writeFloat((float)posX);
 		bbos.writeFloat((float)posY);
@@ -185,9 +187,9 @@ public class createPacketS2C {
 	}
 	
 	//send attack particle at custom position packet
-		public static void sendS2CAttackParticle2(double posX, double posY, double posZ, double lookX, double lookY, double lookZ, int type) {
+		public static void sendS2CAttackParticle2(int entityID, double posX, double posY, double posZ, double lookX, double lookY, double lookZ, int type) {
 	    	try {
-	    		sendToAll(createCustomPosAttackParticlePacket(posX, posY, posZ, lookX, lookY, lookZ, type));
+	    		sendToAll(createCustomPosAttackParticlePacket(entityID, posX, posY, posZ, lookX, lookY, lookZ, type));
 	    	} 
 	    	catch (IOException e) {
 	    		e.printStackTrace();

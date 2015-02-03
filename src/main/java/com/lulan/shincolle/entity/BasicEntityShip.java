@@ -45,19 +45,19 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 	protected ExtendShipProps ExtProps;	//entity額外NBT紀錄
 	//for attribute calc
 	protected short ShipLevel;			//ship level
-	protected int Kills;					//kill mobs
-	protected int ExpCurrent;				//total number of attacks = experience
+	protected int Kills;				//kill mobs
+	protected int ExpCurrent;			//total number of attacks = experience
 	protected int ExpNext;				//exp require for next level
-	protected byte ShipType;				//ship type
+	protected byte ShipType;			//ship type
 	protected byte ShipID;
 	//for AI calc
 	protected int StartEmotion;			//表情開始時間
-	protected String BlockUnderName;		//腳下方塊名稱, 不需要存NBT
+	protected String BlockUnderName;	//腳下方塊名稱, 不需要存NBT
 	protected boolean hasAmmoLight;		//檢查有無彈藥
 	protected boolean hasAmmoHeavy;		//檢查有無重型彈藥
 	protected int NumAmmoLight;			//彈藥存量
 	protected int NumAmmoHeavy;			//重型彈藥存量
-	protected boolean isMarried;			//是否已婚
+	protected boolean isMarried;		//是否已婚
 	//equip states: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT
 	protected float[] ArrayEquip;
 	//final states: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT
@@ -92,7 +92,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		hasAmmoHeavy = false;
 		NumAmmoLight = 0;
 		NumAmmoHeavy = 0;
-		StartEmotion = 0;			//表情開始時間
+		StartEmotion = -1;			//表情開始時間
 		BlockUnderName = "";		//腳下方塊名稱, 不需要存NBT
 	}
 	
@@ -295,9 +295,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(ArrayFinal[AttrID.MOV]);
 		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(ArrayFinal[AttrID.HIT]+12); //此為找目標範圍
 		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(resisKB);
-			
+		//for new ship
+		if(this.getHealth() == 20F) this.setHealth(this.getMaxHealth());
+		
 		//for server side
-		if(!worldObj.isRemote) {			
+		if(!worldObj.isRemote) {
 			clearAITargetTasks();	//reset target AI (update hit range)
 			setAITargetList();	
 			sendSyncPacket();		//sync nbt data
@@ -335,7 +337,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 			ShipLevel = par1;
 		}
 		//update attributes
-		if(update) { calcShipAttributes(ShipID); }
+		if(update) { 
+			calcShipAttributes(ShipID); 
+			this.setHealth(this.getMaxHealth());
+		}
 	}
 	
 	//called when a mob die near the entity
@@ -443,7 +448,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 	}
 	
 	public void setEntityEmotion(int par1, boolean sync) {
-		EntityState[AttrID.Emotion] = (byte)par1;		
+		EntityState[AttrID.Emotion] = (byte)par1;
 		if(sync && !worldObj.isRemote) {
 			createPacketS2C.sendS2CEntityStateSync(this);    
 		}
@@ -562,7 +567,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		float kbValue = 0.15F;
 		
 		//experience++
-		this.addShipExp(1);
+		addShipExp(1);
 				
 	    //將atk跟attacker傳給目標的attackEntityFrom方法, 在目標class中計算傷害
 	    //並且回傳是否成功傷害到目標
@@ -601,6 +606,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		
 		//experience++
 		this.addShipExp(2);
+		
+		//set model attack motion ticks
+      	this.attackTime = 40;
 
 		//play cannon fire sound at attacker
         this.playSound(Reference.MOD_ID+":ship-firesmall", 0.4F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
@@ -641,7 +649,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
         	//send packet to client for display partical effect  
         	createPacketS2C.sendS2CAttackParticle(target, 9);	//目標中彈特效  
         	if(this.getLookVec() != null) {  					//發射者煙霧特效
-        		createPacketS2C.sendS2CAttackParticle2(this.posX, this.posY, this.posZ, lookX, lookY, lookZ, 6);		
+        		createPacketS2C.sendS2CAttackParticle2(this.getEntityId(), this.posX, this.posY, this.posZ, lookX, lookY, lookZ, 6);		
         	}
         }
 
@@ -659,6 +667,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		
 		//experience++
 		this.addShipExp(16);
+		
+		//set model attack motion ticks
+      	this.attackTime = 40;
 	
 		//play cannon fire sound at attacker
         this.playSound(Reference.MOD_ID+":ship-fireheavy", 0.4F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
@@ -691,9 +702,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 	
 	//be attacked method, 包括其他entity攻擊, anvil攻擊, arrow攻擊, fall damage都使用此方法 
 	@Override
-    public boolean attackEntityFrom(DamageSource attacker, float atk) {	
+    public boolean attackEntityFrom(DamageSource attacker, float atk) {		
 		//進行def計算
         float reduceAtk = atk * (1F - this.ArrayFinal[AttrID.DEF] / 100F);
+        
         //無敵的entity傷害無效
 		if(this.isEntityInvulnerable()) {	
             return false;

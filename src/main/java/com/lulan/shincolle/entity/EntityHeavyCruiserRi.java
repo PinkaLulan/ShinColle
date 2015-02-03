@@ -33,6 +33,9 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
@@ -53,20 +56,20 @@ import com.lulan.shincolle.utility.LogHelper;
 import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 
-public class EntityDestroyerI extends BasicEntitySmallShip {
-
+public class EntityHeavyCruiserRi extends BasicEntitySmallShip {
 	
-	public EntityDestroyerI(World world) {
+	public EntityHeavyCruiserRi(World world) {
 		super(world);
-		this.setSize(0.9F, 1.4F);	//碰撞大小 跟模型大小無關
-		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle:EntityDestroyerI.name"));
-		this.ShipType = AttrValues.ShipType.DESTROYER;
-		this.ShipID = AttrID.DestroyerI;
+		this.setSize(0.9F, 1.9F);	//碰撞大小 跟模型大小無關
+		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle:EntityHeavyCruiserRi.name"));
+		this.ShipType = AttrValues.ShipType.HEAVY_CRUISER;
+		this.ShipID = AttrID.HeavyCruiserRI;
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		
 		this.initTypeModify();	
 		this.setAIList();
 		this.setAITargetList();
+		
 	}
 	
 	public void setAIList() {
@@ -129,6 +132,42 @@ public class EntityDestroyerI extends BasicEntitySmallShip {
     protected float getSoundVolume() {
         return 0.4F;
     }
+
+    @Override
+    public void onLivingUpdate() {
+    	//check server side
+    	if(!this.worldObj.isRemote) {
+    		if(this.ticksExisted % 40 == 0) {
+	    		if(this.getHealth()/this.getMaxHealth() < 0.5F) {
+	    			this.setEntityEmotion(AttrValues.Emotion.T_T, true);  			
+	    		}
+	    		else {	//back to normal face
+	    			if(this.getEntityEmotion() == AttrValues.Emotion.T_T) {
+	    				this.setEntityEmotion(AttrValues.Emotion.NORMAL, true);
+	    			}
+	    		}
+    		}
+    		//check every 5 sec
+    		if(this.ticksExisted % 100 == 0) {
+	    		//apply potion effect in the night
+	        	if (!this.worldObj.isDaytime()) {	
+        			this.addPotionEffect(new PotionEffect(Potion.moveSpeed.id, 300, 2));
+        			this.addPotionEffect(new PotionEffect(Potion.jump.id, 300, 2));
+        		} 		
+        	}
+    	}
+    	
+    	super.onLivingUpdate();
+    }
+    
+    //this method work in server side
+    @Override
+    public boolean attackEntityFrom(DamageSource attacker, float atk) {		
+    	//set hurt face
+		this.setEntityEmotion(AttrValues.Emotion.O_O, true);
+  	
+    	return super.attackEntityFrom(attacker, atk);
+    }
 	
 	@Override
 	public boolean interact(EntityPlayer player) {	
@@ -136,7 +175,7 @@ public class EntityDestroyerI extends BasicEntitySmallShip {
 		
 		//use item on entity
 		if(itemstack != null) {
-			if(itemstack.getItem() == Items.cake) {  //change Kisaragi mode
+			if(itemstack.getItem() == Items.cake) {  //change equip mode
 				if(getEntityState() == 1) {
 					setEntityState(0, true);
 				}
@@ -178,3 +217,4 @@ public class EntityDestroyerI extends BasicEntitySmallShip {
 	
 
 }
+

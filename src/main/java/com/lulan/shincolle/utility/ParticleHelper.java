@@ -4,6 +4,7 @@ import java.util.Random;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.world.World;
 
 /**粒子特效處理class
@@ -52,15 +53,21 @@ public class ParticleHelper {
 	/**SPAWN ATTACK PARTICLE WITH CUSTOM POSITION
 	 * @parm posX, posY, posZ, lookX, lookY, lookZ, type
 	 */
-	public static void spawnAttackParticleCustomVector(double posX, double posY, double posZ, double lookX, double lookY, double lookZ, byte type) {
+	public static void spawnAttackParticleCustomVector(Entity target, double posX, double posY, double posZ, double lookX, double lookY, double lookZ, byte type) {
+		if(target != null && target instanceof EntityLivingBase) {
+			((EntityLivingBase) target).attackTime = 30;
+		}
+		
 		//spawn particle
 		spawnAttackParticleAt(posX, posY, posZ, lookX, lookY, lookZ, type);
 	}
 	
 	/**SPAWN ATTACK PARTICLE
+	 * spawn particle and set attack time for model rendering
 	 * @parm entity, type
 	 */
 	public static void spawnAttackParticle(Entity target, byte type) {
+
 		//target look
 		double lookX = 0;
 		double lookY = 0;

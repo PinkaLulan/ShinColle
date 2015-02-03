@@ -9,13 +9,16 @@ import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.client.settings.KeyBindings;
 import com.lulan.shincolle.entity.EntityAbyssMissile;
 import com.lulan.shincolle.entity.EntityDestroyerI;
+import com.lulan.shincolle.entity.EntityHeavyCruiserRi;
 import com.lulan.shincolle.entity.EntityTest;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.model.ModelAbyssMissile;
 import com.lulan.shincolle.model.ModelDestroyerI;
 import com.lulan.shincolle.model.ModelEntityTest;
+import com.lulan.shincolle.model.ModelHeavyCruiserRi;
 import com.lulan.shincolle.render.RenderAbyssMissile;
 import com.lulan.shincolle.render.RenderDestroyerI;
+import com.lulan.shincolle.render.RenderHeavyCruiserRi;
 import com.lulan.shincolle.render.RenderSmallShipyard;
 import com.lulan.shincolle.render.RenderSmallShipyardItem;
 import com.lulan.shincolle.render.RenderTest;
@@ -45,6 +48,7 @@ public class ClientProxy extends CommonProxy {
 		
 		//entity render
 		RenderingRegistry.registerEntityRenderingHandler(EntityDestroyerI.class, new RenderDestroyerI(new ModelDestroyerI(), 0.3F));
+		RenderingRegistry.registerEntityRenderingHandler(EntityHeavyCruiserRi.class, new RenderHeavyCruiserRi(new ModelHeavyCruiserRi(), 1F));
 		RenderingRegistry.registerEntityRenderingHandler(EntityTest.class, new RenderTest(new ModelEntityTest(), 1F));
 		
 		//projectile render
