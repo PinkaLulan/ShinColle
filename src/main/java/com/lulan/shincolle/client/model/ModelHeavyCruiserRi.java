@@ -1,4 +1,4 @@
-package com.lulan.shincolle.model;
+package com.lulan.shincolle.client.model;
 
 import org.lwjgl.opengl.GL11;
 
@@ -53,6 +53,9 @@ public class ModelHeavyCruiserRi extends ModelBase {
     public ModelRenderer Face4;
     public ModelRenderer ShoesRight;
     public ModelRenderer ShoesLeft;
+    
+    public int HeadCooldown = 0;
+    public boolean HeadTilt = false;
 
     public ModelHeavyCruiserRi() {
         this.textureWidth = 128;
@@ -125,7 +128,7 @@ public class ModelHeavyCruiserRi extends ModelBase {
         this.setRotateAngle(ArmRight, 0.0F, 0.0F, 0.2617993877991494F);
         this.Neck = new ModelRenderer(this, 68, 2);
         this.Neck.setRotationPoint(0.0F, -13.0F, 0.0F);
-        this.Neck.addBox(-7F, 0.0F, -7F, 14, 3, 14, 0.0F);
+        this.Neck.addBox(-7F, 0F, -7F, 14, 3, 14, 0.0F);
         this.ShoesRight = new ModelRenderer(this, 50, 51);
         this.ShoesRight.setRotationPoint(0.0F, 0.0F, 0.0F);
         this.ShoesRight.addBox(-4.0F, 17.0F, -4.0F, 8, 9, 8, 0.0F);
@@ -281,7 +284,7 @@ public class ModelHeavyCruiserRi extends ModelBase {
   	    //移動頭部 使其看人, 不看人時持續擺動頭部
 	    this.Neck.rotateAngleY = f3 / 57.29578F;	//左右角度 角度轉成rad 即除以57.29578
 	    this.Neck.rotateAngleX = f4 / 57.29578F; 	//上下角度
-	       
+	    
 	    //正常站立動作
 	    GL11.glTranslatef(0F, 1.5F, 0F);
 	    this.Cloak.rotateAngleX = angleZ * 0.2F + 1F;	    
@@ -304,6 +307,30 @@ public class ModelHeavyCruiserRi extends ModelBase {
   			addk1 -= 0.4F;
 			addk2 -= 0.4F;
   		}
+	    else {
+	    	//頭部傾斜動作, 只在奔跑以外時roll
+		    if(--this.HeadCooldown < 0) {
+		    	this.HeadCooldown = 360;	//cd = 6sec
+		    	
+		    	if(ent.getRNG().nextInt(3) > 1) {
+		    		this.HeadTilt = true;    		
+		    	}
+		    	else {
+		    		this.HeadTilt = false;
+		    	}
+		    }
+	    }
+	    
+	    if(this.HeadTilt) {    	
+	    	if(this.Neck.rotateAngleZ > -0.24F) {
+	    		this.Neck.rotateAngleZ -= 0.03F;
+	    	}
+	    }
+	    else {
+	    	if(this.Neck.rotateAngleZ < 0F) {
+	    		this.Neck.rotateAngleZ += 0.03F;
+	    	}
+	    }
   		
 	    if(ent.isSneaking()) {		//潛行動作
   			this.ArmLeft.rotateAngleX = 0.7F;

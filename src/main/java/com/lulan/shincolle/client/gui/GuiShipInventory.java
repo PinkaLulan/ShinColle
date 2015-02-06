@@ -3,8 +3,8 @@ package com.lulan.shincolle.client.gui;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
+import com.lulan.shincolle.client.inventory.ContainerShipInventory;
 import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.inventory.ContainerShipInventory;
 import com.lulan.shincolle.reference.AttrID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
@@ -250,7 +250,7 @@ public class GuiShipInventory extends GuiContainer {
 			this.fontRendererObj.drawStringWithShadow(strHIT, 145-this.fontRendererObj.getStringWidth(strHIT), 111, color);
 			break;
 			}
-		case 1:	{	//page 2: exp, kills, ...etc
+		case 1:	{	//page 2: exp, kills, L&H ammo, fuel
 			//draw string
 			this.fontRendererObj.drawString(I18n.format("gui.shincolle:kills"), 87, 21, pickColor(5));
 			this.fontRendererObj.drawString(I18n.format("gui.shincolle:exp"), 87, 41, pickColor(5));
@@ -269,7 +269,7 @@ public class GuiShipInventory extends GuiContainer {
 						
 			break;
 			}
-		case 2: {	//page 3: NYI
+		case 2: {	//page 3: owner name
 			break;
 			}			
 		}//end page switch

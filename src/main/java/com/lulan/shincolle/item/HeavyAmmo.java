@@ -5,5 +5,4 @@ public class HeavyAmmo extends BasicItem {
 		super();
 		this.setUnlocalizedName("HeavyAmmo");
 	}
-
 }

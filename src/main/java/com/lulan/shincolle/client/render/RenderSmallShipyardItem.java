@@ -1,8 +1,8 @@
-package com.lulan.shincolle.render;
+package com.lulan.shincolle.client.render;
 
 import org.lwjgl.opengl.GL11;
 
-import com.lulan.shincolle.model.ModelSmallShipyard;
+import com.lulan.shincolle.client.model.ModelSmallShipyard;
 import com.lulan.shincolle.reference.Reference;
 
 import net.minecraft.client.Minecraft;

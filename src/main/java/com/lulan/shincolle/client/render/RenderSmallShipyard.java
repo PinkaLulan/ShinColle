@@ -1,4 +1,4 @@
-package com.lulan.shincolle.render;
+package com.lulan.shincolle.client.render;
 
 import org.lwjgl.opengl.GL11;
 
@@ -9,7 +9,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 
 import com.lulan.shincolle.block.BlockSmallShipyard;
-import com.lulan.shincolle.model.ModelSmallShipyard;
+import com.lulan.shincolle.client.model.ModelSmallShipyard;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.LogHelper;
 

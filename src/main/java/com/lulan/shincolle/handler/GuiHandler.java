@@ -2,10 +2,10 @@ package com.lulan.shincolle.handler;
 
 import com.lulan.shincolle.client.gui.GuiShipInventory;
 import com.lulan.shincolle.client.gui.GuiSmallShipyard;
+import com.lulan.shincolle.client.inventory.ContainerShipInventory;
+import com.lulan.shincolle.client.inventory.ContainerSmallShipyard;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.EntityDestroyerI;
-import com.lulan.shincolle.inventory.ContainerShipInventory;
-import com.lulan.shincolle.inventory.ContainerSmallShipyard;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.reference.GUIs;

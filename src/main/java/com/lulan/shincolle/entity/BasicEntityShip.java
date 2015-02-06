@@ -6,12 +6,12 @@ import java.util.UUID;
 
 import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.ai.EntityAIShipSit;
+import com.lulan.shincolle.client.inventory.ContainerShipInventory;
 import com.lulan.shincolle.client.particle.EntityFXSpray;
 import com.lulan.shincolle.crafting.EquipCalc;
 import com.lulan.shincolle.entity.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
-import com.lulan.shincolle.inventory.ContainerShipInventory;
 import com.lulan.shincolle.network.createPacketS2C;
 import com.lulan.shincolle.reference.AttrID;
 import com.lulan.shincolle.reference.AttrValues;

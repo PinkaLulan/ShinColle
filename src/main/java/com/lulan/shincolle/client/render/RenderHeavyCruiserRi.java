@@ -1,4 +1,4 @@
-package com.lulan.shincolle.render;
+package com.lulan.shincolle.client.render;
 
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.LogHelper;

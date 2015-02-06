@@ -1,4 +1,4 @@
-package com.lulan.shincolle.render;
+package com.lulan.shincolle.client.render;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -10,8 +10,8 @@ import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 
+import com.lulan.shincolle.client.model.ModelAbyssMissile;
 import com.lulan.shincolle.entity.EntityAbyssMissile;
-import com.lulan.shincolle.model.ModelAbyssMissile;
 import com.lulan.shincolle.reference.Reference;
 
 

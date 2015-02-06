@@ -1,4 +1,4 @@
-package com.lulan.shincolle.inventory;
+package com.lulan.shincolle.client.inventory;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;

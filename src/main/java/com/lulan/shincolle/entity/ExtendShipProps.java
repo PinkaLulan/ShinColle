@@ -1,6 +1,6 @@
 package com.lulan.shincolle.entity;
 
-import com.lulan.shincolle.inventory.ContainerShipInventory;
+import com.lulan.shincolle.client.inventory.ContainerShipInventory;
 import com.lulan.shincolle.reference.AttrID;
 import com.lulan.shincolle.utility.LogHelper;
 

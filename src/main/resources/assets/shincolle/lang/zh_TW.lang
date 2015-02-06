@@ -6,8 +6,11 @@ keys.shincolle.repair=修復
 itemGroup.shincolle=Shin Colle
 
 # Block
+tile.shincolle:BlockAbyssium.name=深海金屬磚
 tile.shincolle:BlockDesk.name=深海節點
-tile.shincolle:BlockPolymetalOre.name=多金屬結核礦
+tile.shincolle:BlockGrudge.name=怨念團塊
+tile.shincolle:BlockPolymetal.name=多金屬磚
+tile.shincolle:BlockPolymetalOre.name=多金屬礦
 tile.shincolle:BlockSmallShipyard.name=深海熱泉
 
 # Container
@@ -16,9 +19,11 @@ container.shincolle:SmallShipyard=深海熱泉
 # Item
 item.shincolle:Abyssium.name=深海金屬
 item.shincolle:Ammo.name=怨念彈
+item.shincolle:AmmoContainer.name=怨念彈集裝箱
 item.shincolle:BucketRepair.name=修復桶
 item.shincolle:Grudge.name=怨念
 item.shincolle:HeavyAmmo.name=重型怨念彈
+item.shincolle:HeavyAmmoContainer.name=重型怨念彈集裝箱
 item.shincolle:Polymetal.name=多金屬結核
 
 # Equip

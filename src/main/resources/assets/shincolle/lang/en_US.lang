@@ -6,7 +6,10 @@ keys.shincolle.repair=Repair
 itemGroup.shincolle=Shin Colle
 
 # Block
+tile.shincolle:BlockAbyssium.name=Abyssium Block
 tile.shincolle:BlockDesk.name=Abyssal Node
+tile.shincolle:BlockGrudge.name=Grudge Lump
+tile.shincolle:BlockPolymetal.name=Polymetallic Block
 tile.shincolle:BlockPolymetalOre.name=Polymetallic Ore
 tile.shincolle:BlockSmallShipyard.name=Abyssal Hydrothermal Vent
 
@@ -16,9 +19,11 @@ container.shincolle:SmallShipyard=Abyssal Hydrothermal Vent
 # Item
 item.shincolle:Abyssium.name=Abyssium Ingot
 item.shincolle:Ammo.name=Grudgeful Ammo
+item.shincolle:AmmoContainer.name=Grudgeful Ammo Container
 item.shincolle:BucketRepair.name=Repair Bucket
 item.shincolle:Grudge.name=Grudge
 item.shincolle:HeavyAmmo.name=Heavy Grudgeful Ammo
+item.shincolle:HeavyAmmoContainer.name=Heavy Grudgeful Ammo Container
 item.shincolle:Polymetal.name=Polymetallic Nodules
 
 # Equip

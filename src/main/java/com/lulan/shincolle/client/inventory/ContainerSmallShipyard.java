@@ -1,4 +1,4 @@
-package com.lulan.shincolle.inventory;
+package com.lulan.shincolle.client.inventory;
 
 import com.lulan.shincolle.crafting.SmallRecipes;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
