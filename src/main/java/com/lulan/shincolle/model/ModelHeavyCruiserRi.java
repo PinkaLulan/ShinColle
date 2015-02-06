@@ -12,7 +12,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.MathHelper;
 
 /**
- * HeavyCruiserRi - PinkaLulan
+ * HeavyCruiserRi - PinkaLulan 2015/2/3
  * Created using Tabula 4.1.1
  */
 public class ModelHeavyCruiserRi extends ModelBase {
@@ -236,10 +236,7 @@ public class ModelHeavyCruiserRi extends ModelBase {
     	GL11.glPushMatrix();
     	GL11.glEnable(GL11.GL_BLEND);			//開啟透明度模式
     	GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-   // 	GL11.glColor4f(1F, 1F, 1F, 1F);			//RGBA
-    	GL11.glScalef(0.5F, 0.5F, 0.5F);
-    	GL11.glTranslatef(0F, 1.5F, 0F);		//大小0.45時設2.3   大小0.3時設3
-    	
+    	GL11.glScalef(0.5F, 0.5F, 0.5F); 	
     	
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
     	
@@ -274,60 +271,95 @@ public class ModelHeavyCruiserRi extends ModelBase {
     //雙腳移動計算
   	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, EntityHeavyCruiserRi ent) {   
   		float angleZ = MathHelper.cos(f2*0.08F);
-  		//leg move motion
-  		this.LegLeft.rotateAngleX = MathHelper.cos(f * 0.6662F) * 1.4F * f1;
-	  	this.LegRight.rotateAngleX = MathHelper.cos(f * 0.6662F + 3.1415927F) * 1.4F * f1;
-	  	//idle motion
-	  	this.Cloak.rotateAngleX = angleZ * 0.2F + 1F;	    
+  		float addk1 = 0;
+  		float addk2 = 0;
+  		
+  		//leg move parm
+  		addk1 = MathHelper.cos(f * 0.6662F) * 1.4F * f1;
+	  	addk2 = MathHelper.cos(f * 0.6662F + 3.1415927F) * 1.4F * f1;
+
+  	    //移動頭部 使其看人, 不看人時持續擺動頭部
+	    this.Neck.rotateAngleY = f3 / 57.29578F;	//左右角度 角度轉成rad 即除以57.29578
+	    this.Neck.rotateAngleX = f4 / 57.29578F; 	//上下角度
+	       
+	    //正常站立動作
+	    GL11.glTranslatef(0F, 1.5F, 0F);
+	    this.Cloak.rotateAngleX = angleZ * 0.2F + 1F;	    
   	    this.BoobL.rotateAngleX = -angleZ * 0.06F - 0.73F;
   	    this.BoobR.rotateAngleX = -angleZ * 0.06F - 0.73F;
 	  	this.ArmLeft.rotateAngleZ = angleZ * -0.15F - 0.3F;
   	    this.ArmRight.rotateAngleZ = angleZ * 0.15F + 0.3F; 
-  	    //移動頭部 使其看人, 不看人時持續擺動頭部
-	    this.Neck.rotateAngleY = f3 / 57.29578F;		//左右角度 角度轉成rad 即除以57.29578
-	    this.Neck.rotateAngleX = f4 / 57.29578F; 	//上下角度
-	       
+	    this.ArmLeft.rotateAngleX = 0F;
+		this.ArmRight.rotateAngleX = 0F;
+		this.BodyMain.rotateAngleX = 0F; 			
+		this.LegLeft.rotateAngleZ = 0.087F;
+		this.LegRight.rotateAngleZ = -0.087F;
+		this.LegLeft.rotateAngleY = 0F;
+		this.LegRight.rotateAngleY = 0F;    
+	    
 	    if(ent.isSprinting() || f1 > 0.6F) {	//奔跑動作
   			this.ArmLeft.rotateAngleX = 1F;
   			this.ArmRight.rotateAngleX = 1F;
   			this.BodyMain.rotateAngleX = 0.5F;
-  			this.LegLeft.rotateAngleX -= 0.4F;
-			this.LegRight.rotateAngleX -= 0.4F;
+  			addk1 -= 0.4F;
+			addk2 -= 0.4F;
   		}
-  		else if(ent.isSneaking()) {		//潛行動作
+  		
+	    if(ent.isSneaking()) {		//潛行動作
   			this.ArmLeft.rotateAngleX = 0.7F;
   			this.ArmRight.rotateAngleX = 0.7F;
   			this.BodyMain.rotateAngleX = 0.5F;
-  			this.LegLeft.rotateAngleX -= 0.6F;
-			this.LegRight.rotateAngleX -= 0.6F;
+  			addk1 -= 0.6F;
+			addk2 -= 0.6F;
   		}
-  		else if(ent.isSitting() || ent.isRiding()) {  //騎乘動作
-			this.ArmLeft.rotateAngleX = -1.2F;
-  			this.ArmRight.rotateAngleX = -1.2F;
-  			this.ArmLeft.rotateAngleZ = 0.5F;
-  			this.ArmRight.rotateAngleZ = -0.5F;
-			this.BodyMain.rotateAngleX = 0.3F;
-			this.LegLeft.rotateAngleX = -1.8F;
-			this.LegRight.rotateAngleX = -1.8F;
-			this.LegLeft.rotateAngleZ = 1.2F;
-			this.LegRight.rotateAngleZ = -1.2F;
+  		
+	    if(ent.isSitting() || ent.isRiding()) {  //騎乘動作 			
+  			if(ent.getEntityEmotion() == AttrValues.Emotion.BORED) {
+		    	GL11.glTranslatef(0F, 1.4F, 0F);
+				this.ArmLeft.rotateAngleX = 0.6F;
+	  			this.ArmRight.rotateAngleX = 0.6F;
+	  			this.ArmLeft.rotateAngleZ = -0.6F;
+	  			this.ArmRight.rotateAngleZ = 0.6F;
+				this.BodyMain.rotateAngleX = -0.6F;
+				this.Neck.rotateAngleX -= 0.35F;
+				addk1 = -2F;
+				addk2 = -2F;		
+				this.LegLeft.rotateAngleZ = 1.2F;
+				this.LegRight.rotateAngleZ = -1.2F;
+				this.LegLeft.rotateAngleY = -0.75F;
+				this.LegRight.rotateAngleY = 0.75F;
+  			}
+  			else {
+  				GL11.glTranslatef(0F, 1.4F, 0F);
+  				this.ArmLeft.rotateAngleX = -0.6F;
+  	  			this.ArmRight.rotateAngleX = -0.6F;
+  	  			this.ArmLeft.rotateAngleZ = 0.5F;
+  	  			this.ArmRight.rotateAngleZ = -0.5F;
+  				this.BodyMain.rotateAngleX = 0.3F;
+  				this.Neck.rotateAngleX -= 0.35F;
+  				addk1 = -2F;
+  				addk2 = -2F;
+  				this.LegLeft.rotateAngleY = 0.15F;
+  				this.LegRight.rotateAngleY = -0.15F;
+  				this.LegLeft.rotateAngleZ = 1.2F;
+  				this.LegRight.rotateAngleZ = -1.2F; 				
+  			}			
   		}
-  		else {
-  			this.ArmLeft.rotateAngleX = 0F;
-  			this.ArmRight.rotateAngleX = 0F;
-  			this.BodyMain.rotateAngleX = 0F;
-  			this.LegLeft.rotateAngleZ = 0.087F;
-			this.LegRight.rotateAngleZ = -0.087F;
-  		}		
+	    
+	    //leg motion
+	    this.LegLeft.rotateAngleX = addk1;
+	    this.LegRight.rotateAngleX = addk2;
 	    
 	    //攻擊時順便將左手指向對方	    
 	    if(ent.attackTime > 0) {
 	    	this.ArmLeft.rotateAngleX = f4 / 57.29578F - 1.5F;
+	    	this.ArmRight.rotateAngleZ = 0.7F; 
+	    	this.ArmRight.rotateAngleX = 0.4F; 
 	    }
 	}
     
     private void showEquip(EntityHeavyCruiserRi ent) {
-		if(ent.getEntityState() == 1) {
+		if(ent.getEntityState() >= AttrValues.State.EQUIP) {
 			this.EquipBase.isHidden = false;
 			this.EquipLeftBase.isHidden = false;
 			this.EquipRightBase.isHidden = false;
@@ -351,6 +383,8 @@ public class ModelHeavyCruiserRi extends ModelBase {
     		break;
     	case AttrValues.Emotion.O_O:
     		EmotionStaring(ent);
+			break;
+    	case AttrValues.Emotion.BORED:
 			break;
     	default:						//normal face
     		//reset face to 0

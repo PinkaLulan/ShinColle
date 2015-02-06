@@ -33,6 +33,8 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
@@ -40,6 +42,8 @@ import net.minecraft.world.World;
 import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.ai.EntityAIInRangeTarget;
 import com.lulan.shincolle.ai.EntityAIRangeAttack;
+import com.lulan.shincolle.ai.EntityAIShipFloating;
+import com.lulan.shincolle.ai.EntityAIShipSit;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.inventory.ContainerShipInventory;
@@ -64,26 +68,30 @@ public class EntityDestroyerI extends BasicEntitySmallShip {
 		this.ShipID = AttrID.DestroyerI;
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		
-		this.initTypeModify();	
-		this.setAIList();
-		this.setAITargetList();
+		this.initTypeModify();
 	}
 	
+	@Override
 	public void setAIList() {
-		this.getNavigator().setEnterDoors(true);
+		super.setAIList();
+		
+		//floating on water
+		this.tasks.addTask(1, new EntityAIShipSit(this, this.getOwner()));
+		this.tasks.addTask(2, new EntityAIShipFloating(this));		
 		
 		//use range attack (light)
-		this.tasks.addTask(2, new EntityAIRangeAttack(this));
+		this.tasks.addTask(11, new EntityAIRangeAttack(this));
 		
 		//use melee attack
-		this.tasks.addTask(3, new EntityAIAttackOnCollide(this, 1D, true));
-		this.tasks.addTask(4, new EntityAIMoveTowardsTarget(this, 1D, 64F));
+		this.tasks.addTask(12, new EntityAIAttackOnCollide(this, 1D, true));
+		this.tasks.addTask(13, new EntityAIMoveTowardsTarget(this, 1D, 64F));
 		
 		//idle AI
 		//moving
-        this.tasks.addTask(21, new EntityAIRestrictOpenDoor(this));
-		this.tasks.addTask(22, new EntityAIOpenDoor(this, true));
+//      this.tasks.addTask(21, new EntityAIRestrictOpenDoor(this));
+//		this.tasks.addTask(22, new EntityAIOpenDoor(this, true));
 		this.tasks.addTask(23, new EntityAIWatchClosest(this, EntityPlayer.class, 5F));
+		this.tasks.addTask(23, new EntityAIWatchClosest(this, BasicEntityShip.class, 7F));
 		this.tasks.addTask(24, new EntityAIWander(this, 0.8D));
 		this.tasks.addTask(25, new EntityAILookIdle(this));
 		
@@ -106,7 +114,8 @@ public class EntityDestroyerI extends BasicEntitySmallShip {
 		//target AI
 	//NYI:	this.targetTasks.addTask(1, new EntityAIOwnerPointTarget(this));
 		this.targetTasks.addTask(2, new EntityAIOwnerHurtByTarget(this));
-		this.targetTasks.addTask(3, new EntityAIInRangeTarget(this, 0.4F, 1));
+		this.targetTasks.addTask(3, new EntityAIOwnerHurtTarget(this));
+		this.targetTasks.addTask(4, new EntityAIInRangeTarget(this, 0.4F, 1));
 	}
 
 	//平常音效
@@ -129,52 +138,6 @@ public class EntityDestroyerI extends BasicEntitySmallShip {
     protected float getSoundVolume() {
         return 0.4F;
     }
-	
-	@Override
-	public boolean interact(EntityPlayer player) {	
-		ItemStack itemstack = player.inventory.getCurrentItem();  //get item in hand
-		
-		//use item on entity
-		if(itemstack != null) {
-			if(itemstack.getItem() == Items.cake) {  //change Kisaragi mode
-				if(getEntityState() == 1) {
-					setEntityState(0, true);
-				}
-				else {
-					setEntityState(1, true);
-				}
-			}
-		}
-		
-		
-		//debug test
-		setShipLevel((short) (ShipLevel+1), true);
 
-		
-		//shift+right click時打開GUI
-		if (player.isSneaking() && player.getDisplayName().equals(this.getOwnerName())) {  
-			int eid = this.getEntityId();
-			//player.openGui vs FMLNetworkHandler ?
-		//	player.openGui(ShinColle.instance, GUIs.SHIPINVENTORY, this.worldObj, eid, 0, 0);
-    		FMLNetworkHandler.openGui(player, ShinColle.instance, GUIs.SHIPINVENTORY, this.worldObj, this.getEntityId(), 0, 0);
-    		return true;
-		}
-		
-		super.interact(player);
-    	return false;	
-	}
-	
-	//get block under entity
-	public String getBlockUnder(Entity entity) {
-	    int blockX = MathHelper.floor_double(entity.posX);
-	    int blockY = MathHelper.floor_double(entity.boundingBox.minY)-1;
-	    int blockZ = MathHelper.floor_double(entity.posZ);
-	    
-	    BlockUnderName = entity.worldObj.getBlock(blockX, blockY, blockZ).getLocalizedName();   
-	    
-	    return BlockUnderName;
-	}
-
-	
 
 }

@@ -12,8 +12,4 @@ public abstract class BasicEntitySmallShip extends BasicEntityShip {
 		super(world);
 	}
 
-	@Override
-	abstract public void setAIList();
-
-
 }

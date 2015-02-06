@@ -1,8 +1,12 @@
 package com.lulan.shincolle.entity;
 
+import java.util.Iterator;
 import java.util.Random;
 import java.util.UUID;
 
+import com.lulan.shincolle.ShinColle;
+import com.lulan.shincolle.ai.EntityAIShipSit;
+import com.lulan.shincolle.client.particle.EntityFXSpray;
 import com.lulan.shincolle.crafting.EquipCalc;
 import com.lulan.shincolle.entity.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
@@ -11,26 +15,34 @@ import com.lulan.shincolle.inventory.ContainerShipInventory;
 import com.lulan.shincolle.network.createPacketS2C;
 import com.lulan.shincolle.reference.AttrID;
 import com.lulan.shincolle.reference.AttrValues;
+import com.lulan.shincolle.reference.GUIs;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.LogHelper;
 
+import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.EntityAISit;
 import net.minecraft.entity.boss.IBossDisplayData;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityLargeFireball;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.pathfinding.PathEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
@@ -43,6 +55,7 @@ import net.minecraftforge.common.IExtendedEntityProperties;
 public abstract class BasicEntityShip extends EntityTameable implements IEntityShip {
 
 	protected ExtendShipProps ExtProps;	//entity額外NBT紀錄
+	
 	//for attribute calc
 	protected short ShipLevel;			//ship level
 	protected int Kills;				//kill mobs
@@ -52,12 +65,14 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 	protected byte ShipID;
 	//for AI calc
 	protected int StartEmotion;			//表情開始時間
-	protected String BlockUnderName;	//腳下方塊名稱, 不需要存NBT
-	protected boolean hasAmmoLight;		//檢查有無彈藥
-	protected boolean hasAmmoHeavy;		//檢查有無重型彈藥
+	protected boolean HasAmmoLight;		//檢查有無彈藥
+	protected boolean HasAmmoHeavy;		//檢查有無重型彈藥
 	protected int NumAmmoLight;			//彈藥存量
 	protected int NumAmmoHeavy;			//重型彈藥存量
-	protected boolean isMarried;		//是否已婚
+	protected double ShipDepth;			//水深, 用於水中高度判定
+	protected boolean CanFloatUp;		//是否有空氣方塊可以上浮
+	protected boolean IsMarried;		//是否已婚
+	protected boolean IsFollowing;		//是否正在跟隨
 	//equip states: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT
 	protected float[] ArrayEquip;
 	//final states: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT
@@ -88,17 +103,26 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		//TypeModify: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT
 		TypeModify = new float[] {1F, 1F, 1F, 1F, 1F, 1F};
 		//for AI
-		hasAmmoLight = false;			//ammo check
-		hasAmmoHeavy = false;
+		HasAmmoLight = false;		//ammo check
+		HasAmmoHeavy = false;
 		NumAmmoLight = 0;
 		NumAmmoHeavy = 0;
 		StartEmotion = -1;			//表情開始時間
-		BlockUnderName = "";		//腳下方塊名稱, 不需要存NBT
+		IsMarried = false;
+		IsFollowing = false;
+		ShipDepth = 0D;
+		CanFloatUp = false;
+		this.isImmuneToFire = true;
 	}
 	
 	@Override
 	public boolean isAIEnabled() {
 		return true;
+	}
+	
+	@Override
+	public float getEyeHeight() {
+		return this.height * 1F;
 	}
 
 	@Override
@@ -106,16 +130,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		return null;
 	}
 	
-	public void setOwner(String string) {
-		 this.dataWatcher.updateObject(17, string);
-	}
-	
-	public String getOwnerName() {
-		 return this.dataWatcher.getWatchableObjectString(17);
-	}
-	
 	//setup AI
-	abstract protected void setAIList();
+	protected void setAIList() {
+		this.getNavigator().setEnterDoors(true);
+		this.getNavigator().setAvoidsWater(false);
+		this.getNavigator().setCanSwim(true);
+	}
 	
 	//setup target AI
 	abstract protected void setAITargetList();
@@ -155,14 +175,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 	public int getStartEmotion() {
 		return StartEmotion;
 	}
-	public String getBlockUnderName() {
-		return BlockUnderName;
-	}
 	public boolean hasAmmoLight() {
-		return hasAmmoLight;
+		return HasAmmoLight;
 	}
 	public boolean hasAmmoHeavy() {
-		return hasAmmoHeavy;
+		return HasAmmoHeavy;
 	}
 	public int getNumAmmoLight() {
 		return NumAmmoLight;
@@ -170,8 +187,17 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 	public int getNumAmmoHeavy() {
 		return NumAmmoHeavy;
 	}
+	public double getShipDepth() {
+		return ShipDepth;
+	}
 	public boolean isMarried() {
-		return isMarried;
+		return IsMarried;
+	}
+	public boolean isFollowing() {
+		return IsFollowing;
+	}
+	public boolean CanFloatUp() {
+		return CanFloatUp;
 	}
 	public float getEquipHP() {
 		return ArrayEquip[AttrID.HP];
@@ -255,6 +281,43 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		return TypeModify[AttrID.HIT];
 	}
 	
+	//replace isInWater, check water block with NO extend AABB
+	private void checkDepth() {
+		Block BlockCheck = checkBlockWithOffset(0);
+		
+		if(BlockCheck == Blocks.water || BlockCheck == Blocks.lava) {
+			ShipDepth = 1;
+			for(int i=1; (this.posY+i)<255D; i++) {
+				BlockCheck = checkBlockWithOffset(i);
+				if(BlockCheck == Blocks.water || BlockCheck == Blocks.lava) {
+					ShipDepth++;
+				}
+				else {
+					if(BlockCheck == Blocks.air) {
+						CanFloatUp = true;
+					}
+					else {
+						CanFloatUp = false;
+					}
+					break;
+				}
+			}		
+			ShipDepth = ShipDepth - (this.posY - (int)this.posY);
+		}
+		else {
+			ShipDepth = 0;
+		}
+	}
+	
+	//check block from entity posY + offset
+	public Block checkBlockWithOffset(int par1) {
+		int blockX = MathHelper.floor_double(this.posX);
+	    int blockY = MathHelper.floor_double(this.boundingBox.minY);
+	    int blockZ = MathHelper.floor_double(this.posZ);
+	    
+	    return this.worldObj.getBlock(blockX, blockY + par1, blockZ);
+	}
+	
 	//setter	
 	//setting attributes, called at load nbt data & init mob
 	public void calcShipAttributes(byte id) {
@@ -268,21 +331,24 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		//SPD = base + ((point + 1) * level / 10 * 0.02 + equip) * typeModify
 		ArrayFinal[AttrID.SPD] = AttrValues.BaseSPD[id] + ((float)(BonusPoint[AttrID.SPD]+1) * (((float)ShipLevel)/10F) * 0.02F + ArrayEquip[AttrID.SPD]) * TypeModify[AttrID.SPD];
 		//MOV = base + ((point + 1) * level / 10 * 0.01 + equip) * typeModify
-		ArrayFinal[AttrID.MOV] = AttrValues.BaseMOV[id] + ((float)(BonusPoint[AttrID.MOV]+1) * (((float)ShipLevel)/10F) * 0.01F + ArrayEquip[AttrID.MOV]) * TypeModify[AttrID.MOV];
+		ArrayFinal[AttrID.MOV] = AttrValues.BaseMOV[id] + ((float)(BonusPoint[AttrID.MOV]+1) * (((float)ShipLevel)/10F) * 0.01F) * TypeModify[AttrID.MOV] + ArrayEquip[AttrID.MOV];
 		//HIT = base + ((point + 1) * level / 10 * 0.8 + equip) * typeModify
 		ArrayFinal[AttrID.HIT] = AttrValues.BaseHIT[id] + ((float)(BonusPoint[AttrID.HIT]+1) * (((float)ShipLevel)/10F) * 0.8F + ArrayEquip[AttrID.HIT]) * TypeModify[AttrID.HIT];
 		//KB Resistance = Level / 10 * 0.04
 		float resisKB = (((float)ShipLevel)/10F) * 0.067F;
-		
+
+		if(ArrayFinal[AttrID.DEF] > 95F) {
+			ArrayFinal[AttrID.DEF] = 95F;	//max def = 95%
+		}
 		if(ArrayFinal[AttrID.SPD] > 2F) {
 			ArrayFinal[AttrID.SPD] = 2F;	//min attack delay = 0.5 sec
 		}
 		if(ArrayFinal[AttrID.SPD] < 0F) {
 			ArrayFinal[AttrID.SPD] = 0F;
 		}
-		if(ArrayFinal[AttrID.MOV] > 1F) {
-			ArrayFinal[AttrID.MOV] = 1F;	//move speed > 1 is buggy
-		}
+//		if(ArrayFinal[AttrID.MOV] > 1.2F) {
+//			ArrayFinal[AttrID.MOV] = 1.2F;	//move speed > 1.2 is buggy
+//		}
 		if(ArrayFinal[AttrID.MOV] < 0F) {
 			ArrayFinal[AttrID.MOV] = 0F;
 		}
@@ -293,7 +359,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		 */
 		getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(ArrayFinal[AttrID.HP]);
 		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(ArrayFinal[AttrID.MOV]);
-		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(ArrayFinal[AttrID.HIT]+12); //此為找目標範圍
+		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(ArrayFinal[AttrID.HIT]+16); //此為找目標, 路徑的範圍
 		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(resisKB);
 		//for new ship
 		if(this.getHealth() == 20F) this.setHealth(this.getMaxHealth());
@@ -318,7 +384,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		
 	//called when entity exp++
 	public void addShipExp(int exp) {
-		int CapLevel = isMarried ? 150 : 100;
+		int CapLevel = IsMarried ? 150 : 100;
 		
 		if(ShipLevel != CapLevel) {	//level is not cap level
 			ExpCurrent += exp;
@@ -353,6 +419,16 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		Kills = par1;
 	}
 	
+	//NYI
+	public void setMarried(boolean par1) {
+		IsMarried = par1;
+	}
+	
+	//called in AI
+	public void setFollowing(boolean par1) {
+		IsFollowing = par1;
+	}
+
 	//called when load nbt data
 	public void setNumAmmoLight(int par1) {
 		NumAmmoLight = par1;
@@ -475,7 +551,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 	
 	//right click on ship
 	@Override
-	public boolean interact(EntityPlayer player) {	
+	public boolean interact(EntityPlayer player) {		
 		ItemStack itemstack = player.inventory.getCurrentItem();  //get item in hand
 		
 		//如果已經被綑綁, 再點一下可以解除綑綁
@@ -483,10 +559,61 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
             this.clearLeashed(true, !player.capabilities.isCreativeMode);
             return true;
         }
+	
+		//shift+right click時打開GUI
+		if(player.isSneaking() && player.getUniqueID().equals(this.getOwner().getUniqueID())) {  
+			int eid = this.getEntityId();
+			//player.openGui vs FMLNetworkHandler ?
+		//	player.openGui(ShinColle.instance, GUIs.SHIPINVENTORY, this.worldObj, eid, 0, 0);
+    		FMLNetworkHandler.openGui(player, ShinColle.instance, GUIs.SHIPINVENTORY, this.worldObj, this.getEntityId(), 0, 0);
+    		return true;
+		}
 		
-		//use repair bucket
+		//click ship without shift = sit
+		if(!this.worldObj.isRemote && !player.isSneaking() && player.getUniqueID().equals(this.getOwner().getUniqueID())) {			
+            this.setSitting(!this.isSitting());
+            this.isJumping = false;
+            this.setPathToEntity((PathEntity)null);
+            this.setTarget((Entity)null);
+            this.setAttackTarget((EntityLivingBase)null);
+        }
+		
+		//use item
 		if(itemstack != null) {
-			if(itemstack.getItem() == ModItems.BucketRepair) {	//使用修復桶
+			//use cake to change state
+			if(itemstack.getItem() == Items.cake) {
+				int ShipState = getEntityState() - AttrValues.State.EQUIP;
+				
+				switch(getEntityState()) {
+				case AttrValues.State.NORMAL:			//原本不顯示, 改為顯示
+					setEntityState(AttrValues.State.EQUIP, true);
+					break;
+				case AttrValues.State.NORMAL_MINOR:
+					setEntityState(AttrValues.State.EQUIP_MINOR, true);
+					break;
+				case AttrValues.State.NORMAL_MODERATE:
+					setEntityState(AttrValues.State.EQUIP_MODERATE, true);
+					break;
+				case AttrValues.State.NORMAL_HEAVY:
+					setEntityState(AttrValues.State.EQUIP_HEAVY, true);
+					break;
+				case AttrValues.State.EQUIP:			//原本顯示裝備, 改為不顯示
+					setEntityState(AttrValues.State.NORMAL, true);
+					break;
+				case AttrValues.State.EQUIP_MINOR:
+					setEntityState(AttrValues.State.NORMAL_MINOR, true);
+					break;
+				case AttrValues.State.EQUIP_MODERATE:
+					setEntityState(AttrValues.State.NORMAL_MODERATE, true);
+					break;
+				case AttrValues.State.EQUIP_HEAVY:
+					setEntityState(AttrValues.State.NORMAL_HEAVY, true);
+					break;			
+				}
+			}
+			
+			//use repair bucket
+			if(itemstack.getItem() == ModItems.BucketRepair) {	
 				//hp不到max hp時可以使用bucket
 				if(this.getHealth() < this.getMaxHealth()) {
 	                if (!player.capabilities.isCreativeMode) {  //stack-1 in non-creative mode
@@ -494,10 +621,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 	                }
 	
 	                if(this instanceof BasicEntitySmallShip) {
-	                	this.heal(this.getMaxHealth() * 0.1F);	 //1 bucket = 10% hp for small ship
+	                	this.heal(this.getMaxHealth() * 0.1F);	//1 bucket = 10% hp for small ship
 	                }
 	                else {
-	                	this.heal(this.getMaxHealth() * 0.05F);	 //1 bucket = 5% hp for large ship
+	                	this.heal(this.getMaxHealth() * 0.05F);	//1 bucket = 5% hp for large ship
 	                }
 	                
 	                if (itemstack.stackSize <= 0) {  //物品用完時要設定為null清空該slot
@@ -507,49 +634,110 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 	                return true;
 	            }			
 			}	
+			
 			//use lead
-			else if(itemstack.getItem() == Items.lead && this.allowLeashing()) {
+			if(itemstack.getItem() == Items.lead && this.allowLeashing()) {	
 				this.setLeashedToEntity(player, true);
 				return true;
 	        }
+			
 		}
 
 		return false;
 	}
 	
+	//update entity position
+	@Override
+	public void onUpdate() {
+		super.onUpdate();
+		
+		this.checkDepth();	//check depth every tick
+		
+		//在液體中維持高度, 水中自然下降速度為0.02
+		Block CheckBlock = checkBlockWithOffset(0);
+		if(CheckBlock == Blocks.water || CheckBlock == Blocks.lava) {
+			this.motionY += 0.02D;
+			
+			if(this.worldObj.isRemote) {
+				//有移動時, 產生水花特效
+				//(注意此entity因為設為非高速更新, client端不會更新motionX等數值, 需自行計算)
+				double motX = this.posX - this.prevPosX;
+				double motZ = this.posZ - this.prevPosZ;
+				double parH = this.posY - (int)this.posY;
+				
+				EntityFX particleSpray = new EntityFXSpray(worldObj, 
+				          this.posX + motX*1.5D, this.posY + 0.5D, this.posZ + motZ*1.5D, 
+				          -motX*0.5D, 0D, -motZ*0.5D,
+				          1F, 1F, 1F, 1F);
+				    
+				if(motX != 0 || motZ != 0) {
+					Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray);
+				}			
+			}
+		}
+	}
+
 	//check entity state every tick
 	@Override
 	public void onLivingUpdate() {
-        super.onLivingUpdate();
-        
+        super.onLivingUpdate();  
+
         //server side check
         if((!worldObj.isRemote)) {
-        	//sync client when server start after 1 sec
-        	if(ticksExisted == 20) {
-        		sendSyncPacket();
+        	//sync client and reset AI after server start 2 sec
+        	if(ticksExisted == 40) {
+        		clearAITargetTasks();	//reset AI for get owner after loading NBT data
+        		setAIList();
+        		setAITargetList();
+        		sendSyncPacket();		//sync packet to client
         	}
+        	
+        	//由血量決定cry emotion
+        	if(this.ticksExisted % 40 == 0) {
+	    		if(this.getHealth()/this.getMaxHealth() < 0.5F) {
+	    			if(this.getEntityEmotion() != AttrValues.Emotion.T_T) {
+	    				this.setEntityEmotion(AttrValues.Emotion.T_T, true);
+	    			}			
+	    		}
+	    		else {	//back to normal face
+	    			if(this.getEntityEmotion() == AttrValues.Emotion.T_T) {
+	    				this.setEntityEmotion(AttrValues.Emotion.NORMAL, true);
+	    			}
+	    		}
+    		}
         	    	
         	//check ammo every 100 ticks
         	if(ticksExisted % 100 == 0) {
+        		//roll bored emtion when sitting
+        		if(this.isSitting() && this.getRNG().nextInt(3) > 1) {	//30% for bored
+	    			if(this.getEntityEmotion() != AttrValues.Emotion.BORED) {
+	    				this.setEntityEmotion(AttrValues.Emotion.BORED, true);
+	    			}
+	    		}
+	    		else {	//back to normal face
+	    			if(this.getEntityEmotion() == AttrValues.Emotion.BORED) {
+	    				this.setEntityEmotion(AttrValues.Emotion.NORMAL, true);
+	    			}
+	    		}
+        		
         		//set air value
-        		if(isInWater()) {
+        		if(this.getAir() < 120) {
                 	setAir(300);
                 }
         		
-	        	//set ammo flag to default
-	        	hasAmmoLight = false;
-	        	hasAmmoHeavy = false;	        	
-	        	//check ammo number
-	        	if(getNumAmmoLight() > 0) { hasAmmoLight = true; }
-	        	if(getNumAmmoHeavy() > 0) { hasAmmoHeavy = true; }	        	
+        		//check ammo number
+	        	HasAmmoLight = false;
+	        	HasAmmoHeavy = false;
+	        	if(getNumAmmoLight() > 0) { HasAmmoLight = true; }
+	        	if(getNumAmmoHeavy() > 0) { HasAmmoHeavy = true; }	        	
 	        	//check ship inventory
 	        	ItemStack SlotItem = null;
 	        	for(int i=ContainerShipInventory.SLOTS_EQUIP; i<ContainerShipInventory.SLOTS_TOTAL; i++) {
 	        		SlotItem = this.ExtProps.slots[i];
 	        		
 	    			if(SlotItem != null) {
-	    				if(SlotItem.getItem() == ModItems.Ammo) { hasAmmoLight = true; }
-	    				if(SlotItem.getItem() == ModItems.HeavyAmmo) { hasAmmoHeavy = true; }
+	    				if(SlotItem.getItem() == ModItems.Ammo) { HasAmmoLight = true; }
+	    				if(SlotItem.getItem() == ModItems.HeavyAmmo) { HasAmmoHeavy = true; }
 	    			}
 	    		}
 	        	
@@ -606,9 +794,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		
 		//experience++
 		this.addShipExp(2);
-		
-		//set model attack motion ticks
-      	this.attackTime = 40;
 
 		//play cannon fire sound at attacker
         this.playSound(Reference.MOD_ID+":ship-firesmall", 0.4F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
@@ -667,9 +852,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		
 		//experience++
 		this.addShipExp(16);
-		
-		//set model attack motion ticks
-      	this.attackTime = 40;
 	
 		//play cannon fire sound at attacker
         this.playSound(Reference.MOD_ID+":ship-fireheavy", 0.4F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
@@ -704,23 +886,33 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 	@Override
     public boolean attackEntityFrom(DamageSource attacker, float atk) {		
 		//進行def計算
-        float reduceAtk = atk * (1F - this.ArrayFinal[AttrID.DEF] / 100F);
+        float reduceAtk = atk * (1F - this.ArrayFinal[AttrID.DEF] / 100F);    
+        if(atk < 0) { atk = 0; }
         
         //無敵的entity傷害無效
 		if(this.isEntityInvulnerable()) {	
             return false;
         }
-		else if(attacker.getSourceOfDamage() != null  && attacker.getSourceOfDamage().equals(this)) {  //不會對自己造成傷害
-			return false;
-		}
-        else {
-            Entity entity = attacker.getEntity();
-            this.aiSit.setSitting(false);
+		else if(attacker.getSourceOfDamage() != null) { 
+			//不會對自己造成傷害
+			if(attacker.getSourceOfDamage().equals(this)) {  
+				return false;
+			}
+			
+			//若攻擊方同樣為ship, 則傷害-95% (使ship vs ship能打久一點)
+			if(attacker.getSourceOfDamage() instanceof BasicEntityShip) {
+				reduceAtk *= 0.05F;
+			}
+
+			//取消坐下動作
+            this.setSitting(false);
    
             //執行父class的被攻擊判定, 包括重置love時間, 計算火毒抗性, 計算鐵砧/掉落傷害, 
             //hurtResistantTime(0.5sec無敵時間)計算, 
             return super.attackEntityFrom(attacker, reduceAtk);
         }
+		
+		return false;
     }
 	
 	//decrese ammo number with type, or find ammo item from inventory

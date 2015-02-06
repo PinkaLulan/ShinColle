@@ -102,19 +102,16 @@ public class ModelDestroyerI extends ModelBase {
     PBack = new ModelRenderer(this, "PBack");
     PBack.setRotationPoint(-8F, -16F, 0F);
     setRotation(PBack, 0F, 0F, -0.31F);
-    PBack.mirror = true;
       PBack.addBox("Back", -12F, -10F, -12F, 28, 20, 24);
     PNeck = new ModelRenderer(this, "PNeck");
     PNeck.setRotationPoint(15F, 0F, 0F);
     setRotation(PNeck, 0F, 0F, 0.2F);
-    PNeck.mirror = true;
       PNeck.addBox("NeckBack", -3F, -11F, -13F, 30, 26, 26);
       PNeck.addBox("NeckNeck", 6F, 15F, -10F, 21, 4, 20);
       PNeck.addBox("NeckBody", -8F, 7F, -9F, 18, 14, 18);
     PHead = new ModelRenderer(this, "PHead");
     PHead.setRotationPoint(26F, 0F, 0F);
     setRotation(PHead, 0F, 0F, 0.3F);
-    PHead.mirror = true;
       PHead.addBox("Head", -3F, -12F, -16F, 32, 32, 32);
       PHead.addBox("ToothTopMid", 14.5F, 20F, -6F, 4, 6, 12);
       PHead.addBox("ToothTopRight", 0F, 20F, -10F, 18, 6, 4);
@@ -155,7 +152,6 @@ public class ModelDestroyerI extends ModelBase {
     PJawBottom = new ModelRenderer(this, "PJawBottom");
     PJawBottom.setRotationPoint(-6F, 18F, 0F);
     setRotation(PJawBottom, 0F, 0F, -0.2F);
-    PJawBottom.mirror = true;
       PJawBottom.addBox("JawBottom", -3F, 0F, -10F, 3, 18, 20);
       PJawBottom.addBox("ToothBottomLeft", -1F, 7.5F, 6F, 4, 10, 3);
       PJawBottom.addBox("ToothBottomRight", -1F, 7.5F, -9F, 4, 10, 3);
@@ -175,30 +171,20 @@ public class ModelDestroyerI extends ModelBase {
       PBack.addChild(PNeck);
     PBody = new ModelRenderer(this, "PBody");
     PBody.setRotationPoint(0F, 0F, 0F);
-//    setRotation(PBody, 0F, 0F, 0F);
-    PBody.mirror = true;
       PBody.addBox("Body", -10F, 10F, -11F, 24, 16, 22);
     PLegLeft = new ModelRenderer(this, "PLegLeft");
     PLegLeft.setRotationPoint(-3F, 24F, 6F);
-//    setRotation(PLegLeft, 0F, 0F, 0F);
-    PLegLeft.mirror = true;
       PLegLeft.addBox("LegLeftFront", -3F, -4F, -1F, 8, 14, 8);
     PLegLeftEnd = new ModelRenderer(this, "PLegLeftEnd");
     PLegLeftEnd.setRotationPoint(1F, 8F, 4F);
-//    setRotation(PLegLeftEnd, 0F, 0F, 14F);
-    PLegLeftEnd.mirror = true;
       PLegLeftEnd.addBox("LegLeftEnd", -12F, -3F, -4F, 12, 6, 6);
       PLegLeft.addChild(PLegLeftEnd);
       PBody.addChild(PLegLeft);
     PLegRight = new ModelRenderer(this, "PLegRight");
     PLegRight.setRotationPoint(-3F, 24F, -8F);
- //   setRotation(PLegRight, 0F, 0F, 0F);
-    PLegRight.mirror = true;
       PLegRight.addBox("LegRightFront", -3F, -4F, -5F, 8, 14, 8);
     PLegRightEnd = new ModelRenderer(this, "PLegRightEnd");
     PLegRightEnd.setRotationPoint(1F, 8F, -1F);
- //   setRotation(PLegRightEnd, 0F, 0F, 14F);
-    PLegRightEnd.mirror = true;
       PLegRightEnd.addBox("LegRightEnd", -12F, -3F, -3F, 12, 6, 6);
       PLegRight.addChild(PLegRightEnd);
       PBody.addChild(PLegRight);
@@ -206,37 +192,31 @@ public class ModelDestroyerI extends ModelBase {
     PTail = new ModelRenderer(this, "PTail");
     PTail.setRotationPoint(-12F, -2F, 0F);
     setRotation(PTail, 0F, 0F, 0.25F);
-    PTail.mirror = true;
       PTail.addBox("TailBack", -22F, -6F, -10F, 26, 16, 20);
       PTail.addBox("TailBody", -8F, 2F, -8F, 18, 18, 14);
     PTailLeft = new ModelRenderer(this, "PTailLeft");
     PTailLeft.setRotationPoint(-12F, 4F, 8F);
     setRotation(PTailLeft, 0.5F, 0F, 0.25F);
-    PTailLeft.mirror = true;
       PTailLeft.addBox("TailLeftFront", -8F, -4F, 0F, 12, 18, 6);
     PTailLeftEnd = new ModelRenderer(this, "PTailLeftEnd");
     PTailLeftEnd.setRotationPoint(0F, 9F, 5F);
    setRotation(PTailLeftEnd, 0F, 0F, -0.4F);
-    PTailLeftEnd.mirror = true;
       PTailLeftEnd.addBox("TailLeftEnd", -24F, -4F, -2F, 24, 12, 4);
       PTailLeft.addChild(PTailLeftEnd);
       PTail.addChild(PTailLeft);
     PTailRight = new ModelRenderer(this, "PTailRight");
     PTailRight.setRotationPoint(-12F, 4F, -8F);
     setRotation(PTailRight, -0.5F, 0F, 0.25F);
-    PTailRight.mirror = true;
       PTailRight.addBox("TailRightFront", -8F, -4F, -6F, 12, 18, 6);
     PTailRightEnd = new ModelRenderer(this, "PTailRightEnd");
     PTailRightEnd.setRotationPoint(0F, 9F, -5F);
     setRotation(PTailRightEnd, 0F, 0F, -0.4F);
-    PTailRightEnd.mirror = true;
       PTailRightEnd.addBox("TailRightEnd", -24F, -4F, -2F, 24, 12, 4);
       PTailRight.addChild(PTailRightEnd);
       PTail.addChild(PTailRight);
     PTailEnd = new ModelRenderer(this, "PTailEnd");
     PTailEnd.setRotationPoint(-22F, 2F, 0F);
     setRotation(PTailEnd, 0F, 0F, 0.3F);
-    PTailEnd.mirror = true;
       PTailEnd.addBox("TailEnd", -20F, -6F, -8F, 24, 10, 16);
       PTail.addChild(PTailEnd);
       PBack.addChild(PTail);
@@ -248,13 +228,15 @@ public class ModelDestroyerI extends ModelBase {
 	// Scale, Translate, Rotate
 	// GL11.glScalef(this.scale, this.scale, this.scale);
 //	GL11.glEnable(GL11.GL_BLEND);			//開啟透明度模式
-//	GL11.glColor4f(0.5F, 0.50F, 0.5F, 1.0F);	//設定四色比例
-	GL11.glScalef(0.5F, 0.45F, 0.4F);	//debug用
-	GL11.glTranslatef(0F, 2F, 0F);		//大小0.45時設2.3   大小0.3時設3
+//	GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+	GL11.glPushMatrix();
+	GL11.glScalef(0.5F, 0.45F, 0.45F);	//debug用
 	GL11.glRotatef(90F, 0F, 1F, 0F);	//此模型頭部方向錯誤 因此render時調整回來
 	
 	PBack.render(f5);
+	
 //	GL11.glDisable(GL11.GL_BLEND);		//關閉透明度模式
+	GL11.glPopMatrix();
   }
   
   private void setRotation(ModelRenderer model, float x, float y, float z) {
@@ -271,20 +253,27 @@ public class ModelDestroyerI extends ModelBase {
        
     EntityDestroyerI ent = (EntityDestroyerI)entity;
     
-    isKisaragi(ent);
-    
-    rollEmotion(ent);
-    
-    motionLeg(f,f1);
-    
+    isKisaragi(ent);   
+    rollEmotion(ent);    
     motionWatch(f3,f4,angleZ);	//include watch head & normal head
     
-    motionTail(angleZ);
+    if(ent.isSitting()) {
+    	motionSit(ent, angleZ);
+    }
+    else {
+    	motionLeg(f,f1);
+    	motionTail(angleZ);
+    	
+    	//reset sit pose
+    	PBack.rotateAngleZ = -0.31F;
+    	GL11.glTranslatef(0F, 0.8F, 0F);
+    }   
 
   }
-  
-  	private void isKisaragi(EntityDestroyerI ent) {
-		if(ent.getEntityState() == 1) {
+
+
+	private void isKisaragi(EntityDestroyerI ent) {
+		if(ent.getEntityState() >= AttrValues.State.EQUIP) {
 			PKisaragi00.isHidden = false;
 			PKisaragi01.isHidden = false;
 			PKisaragi02.isHidden = false;
@@ -297,6 +286,36 @@ public class ModelDestroyerI extends ModelBase {
 			PKisaragi03.isHidden = true;
 		}
 	
+  	}
+	
+	//坐下動作
+  	private void motionSit(EntityDestroyerI ent, float angleZ) {		
+  		if(ent.getEntityEmotion() == AttrValues.Emotion.BORED) {
+  			GL11.glTranslatef(0F, 0.9F, 0F);	//1.4
+  			PBack.rotateAngleZ = 0.6F;
+  	  		PNeck.rotateAngleZ = -0.25F;
+  	  	    PHead.rotateAngleZ = -0.3F;
+  	    	PLegRight.rotateAngleZ = -1F;
+  		    PLegLeft.rotateAngleZ = -1F;
+  		    PLegRightEnd.rotateAngleZ = -1.1F;
+  		    PLegLeftEnd.rotateAngleZ = -1.1F;
+  		    PTail.rotateAngleZ = -0.6F;
+  	  	    PTailEnd.rotateAngleZ = -0.6F;
+  	  	    PJawBottom.rotateAngleZ = -0.7F; 	  	    
+  		}
+  		else {
+  			GL11.glTranslatef(0F, 1.4F, 0F);	//1.4
+  			PBack.rotateAngleZ = -0.8F;
+  	  		PNeck.rotateAngleZ = -0.3F;
+  	    	PLegRight.rotateAngleZ = -0.8F;
+  		    PLegLeft.rotateAngleZ = -0.8F;
+  		    PLegRightEnd.rotateAngleZ = -1.4F;
+  		    PLegLeftEnd.rotateAngleZ = -1.4F;
+  		    PTail.rotateAngleZ = 0.4F;
+  	  	    PTailEnd.rotateAngleZ = angleZ * 0.2F + 0.4F;
+  	  	    PJawBottom.rotateAngleZ = angleZ * 0.05F -0.3F;
+  	  	    PHead.rotateAngleZ = angleZ * 0.02F + 0.4F;
+  		}
   	}
 
 	//常時擺動尾巴跟下巴
@@ -339,6 +358,12 @@ public class ModelDestroyerI extends ModelBase {
     	switch(ent.getEntityEmotion()) {
     	case AttrValues.Emotion.BLINK:	//blink
     		EmotionBlink(ent);
+    		break;
+    	case AttrValues.Emotion.T_T:	//cry
+    		setFace(2);
+    		break;
+    	case AttrValues.Emotion.BORED:	//cry
+    		setFace(1);
     		break;
     	default:						//normal face
     		setFace(0); 			    //reset face to 0

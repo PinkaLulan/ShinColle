@@ -108,6 +108,9 @@ public class EntityAIInRangeTarget extends EntityAITarget {
     }
 
     public boolean shouldExecute() {
+    	//if sitting -> false
+    	if(this.host.isSitting()) return false;
+    	
     	//entity list < range1
         List list1 = this.taskOwner.worldObj.selectEntitiesWithinAABB(this.targetClass, 
         		this.taskOwner.boundingBox.expand(this.range1, this.range1 * 0.3D, this.range1), this.targetSelector);

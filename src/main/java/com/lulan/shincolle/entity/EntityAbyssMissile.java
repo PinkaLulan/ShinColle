@@ -229,14 +229,8 @@ public class EntityAbyssMissile extends Entity {
     	//server side
     	if(!this.worldObj.isRemote) {  		
             if(entityHit != null) {	//撞到entity引起爆炸
-            	if(entityHit instanceof BasicEntityShip) {
-            		//ship類型對飛彈減傷90%
-                	isTargetHurt = entityHit.attackEntityFrom(DamageSource.causeMobDamage(this.hostEntity), this.atk * 0.1F);
-            	}
-            	else {
-            		//設定該entity受到的傷害
-                	isTargetHurt = entityHit.attackEntityFrom(DamageSource.causeMobDamage(this.hostEntity), this.atk);
-            	}
+        		//設定該entity受到的傷害
+            	isTargetHurt = entityHit.attackEntityFrom(DamageSource.causeMobDamage(this.hostEntity), this.atk);
 
         	    //if attack success
         	    if(isTargetHurt) {

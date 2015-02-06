@@ -52,10 +52,11 @@ public class AttrID {
 	public static final byte BattleshipHime = 26;
 	public static final byte DestroyerHime = 27;
 	public static final byte HarbourHime = 28;
-	public static final byte IsolatedHime = 29;
+	public static final byte IsolatedOni = 29;
 	public static final byte MidwayHime = 30;
 	public static final byte NorthernHime = 31;
 	public static final byte SouthernHime = 32;
+	public static final byte ACWaterOni = 33;
 	
 		
 }

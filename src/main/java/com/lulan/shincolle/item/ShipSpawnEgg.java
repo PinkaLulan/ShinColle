@@ -17,6 +17,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.pathfinding.PathEntity;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Facing;
 import net.minecraft.util.IIcon;
@@ -158,8 +159,11 @@ public class ShipSpawnEgg extends Item {
 	 * @parm spawn egg item, player, entity
 	 */
   	private void initEntityAttribute(ItemStack itemstack, EntityPlayer player, BasicEntityShip entity) {
-  		//set owner
-  		entity.setOwner(player.getDisplayName());
+  		//set init AI value and owner
+  		entity.setTamed(true);
+  		entity.setPathToEntity((PathEntity)null);
+  		entity.setAttackTarget((EntityLivingBase)null);
+  		entity.func_152115_b(player.getUniqueID().toString());	//set owner uuid
   		
   		//calc HP ATK DEF SPD MOV HIT bonus point
   		byte[] bonuspoint = new byte[6];	 
