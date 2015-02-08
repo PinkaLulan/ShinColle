@@ -1,0 +1,41 @@
+package com.lulan.shincolle.ai;
+
+import com.lulan.shincolle.entity.BasicEntityShip;
+
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.passive.EntityTameable;
+
+/**SIT AI FOR SHIP
+ * 可以在液體中坐下
+ */
+public class EntityAIShipSit extends EntityAIBase
+{
+    private EntityTameable theEntity;
+    private boolean isSitting;
+
+    public EntityAIShipSit(BasicEntityShip entity) {
+        this.theEntity = entity;
+        this.setMutexBits(5);
+    }
+
+    public boolean shouldExecute() {
+        EntityLivingBase entitylivingbase = this.theEntity.getOwner();
+        //必須是主人 & 主人沒有AI target & 該生物為坐下狀態
+        return entitylivingbase == null ? true : 
+        	(entitylivingbase.getAITarget() != null ? false : this.isSitting);
+    }
+
+    public void startExecuting() {
+        this.theEntity.getNavigator().clearPathEntity();
+        this.theEntity.setSitting(true);
+    }
+
+    public void resetTask() {
+        this.theEntity.setSitting(false);
+    }
+
+    public void setSitting(boolean p_75270_1_) {
+        this.isSitting = p_75270_1_;
+    }
+}

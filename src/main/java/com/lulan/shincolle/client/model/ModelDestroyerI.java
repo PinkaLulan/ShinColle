@@ -360,6 +360,8 @@ public class ModelDestroyerI extends ModelBase {
     		EmotionBlink(ent);
     		break;
     	case AttrValues.Emotion.T_T:	//cry
+    	case AttrValues.Emotion.O_O:
+    	case AttrValues.Emotion.HUNGRY:
     		setFace(2);
     		break;
     	case AttrValues.Emotion.BORED:	//cry

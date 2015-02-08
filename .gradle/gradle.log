@@ -1,0 +1,40 @@
+The assetDir is deprecated!  Use runDir instead! runDir set to eclipse//..The assetDir is deprecated!  Use runDir instead! runDir set to eclipse//..
+
+****************************
+ Powered By MCP:             
+ http://mcp.ocean-labs.de/   
+ Searge, ProfMobius, Fesh0r, 
+ R4wk, ZeuX, IngisKahn, bspkrs
+ MCP Data version : unknown
+****************************
+:compileApiJava UP-TO-DATE
+:processApiResources UP-TO-DATE
+:apiClasses UP-TO-DATE
+:sourceMainJava
+:compileJavawarning: [options] bootstrap class path not set in conjunction with -source 1.6
+E:\MCmod\1.7.10\ShinColle\build\sources\java\com\lulan\shincolle\utility\ParticleHelper.java:10: error: unmappable character for encoding MS950
+	/**in:��l�y��, ���?, �H�έn�઺���V 	out:�৹���s��m
+	                     ^
+Note: Some input files use unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+1 warning
+
+:processResources
+:classes
+:jar
+:compileTestJava UP-TO-DATE
+:processTestResources UP-TO-DATE
+:testClasses UP-TO-DATE
+:test UP-TO-DATE
+:extractMcpData UP-TO-DATE
+:getVersionJson
+:extractUserDev UP-TO-DATE
+:genSrgs SKIPPED
+:reobf
+:assemble
+:check UP-TO-DATE
+:build
+
+BUILD SUCCESSFUL
+
+Total time: 1 mins 50.289 secs

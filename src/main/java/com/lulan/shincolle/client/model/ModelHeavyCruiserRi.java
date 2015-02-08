@@ -411,8 +411,10 @@ public class ModelHeavyCruiserRi extends ModelBase {
     	case AttrValues.Emotion.O_O:
     		EmotionStaring(ent);
 			break;
-    	case AttrValues.Emotion.BORED:
+    	case AttrValues.Emotion.HUNGRY:
+    		setFace(4);
 			break;
+    	case AttrValues.Emotion.BORED:
     	default:						//normal face
     		//reset face to 0
     		setFace(0); 			    

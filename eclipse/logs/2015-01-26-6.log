@@ -1,0 +1,55 @@
+[23:43:03] [main/INFO]: Setting user: PinkaLulan
+[23:43:05] [Client thread/INFO]: LWJGL Version: 2.9.1
+[23:43:09] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:Not Enough Items, FMLFileResourcePack:Shinkeiseikan Collection, FMLFileResourcePack:Damage Indicators, FMLFileResourcePack:iChunUtil, FMLFileResourcePack:MapWriter, FMLFileResourcePack:Example Mod, FMLFileResourcePack:Xray, FMLFileResourcePack:Morph, FMLFileResourcePack:In-game NBTEdit, FMLFileResourcePack:Tabula, TestSource1
+[23:43:10] [Sound Library Loader/INFO]: Sound engine started
+[23:43:11] [Client thread/WARN]: File shincolle:sounds/fire_03.ogg does not exist, cannot add it to event shincolle:ship-firesmall
+[23:43:12] [Client thread/INFO]: Created: 512x256 textures/blocks-atlas
+[23:43:12] [Client thread/INFO]: Created: 256x256 textures/items-atlas
+[23:43:13] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:Not Enough Items, FMLFileResourcePack:Shinkeiseikan Collection, FMLFileResourcePack:Damage Indicators, FMLFileResourcePack:iChunUtil, FMLFileResourcePack:MapWriter, FMLFileResourcePack:Example Mod, FMLFileResourcePack:Xray, FMLFileResourcePack:Morph, FMLFileResourcePack:In-game NBTEdit, FMLFileResourcePack:Tabula, TestSource1
+[23:43:13] [Client thread/INFO]: Created: 512x256 textures/blocks-atlas
+[23:43:13] [Client thread/INFO]: Created: 256x256 textures/items-atlas
+[23:43:14] [Sound Library Loader/INFO]: Sound engine started
+[23:43:15] [Client thread/WARN]: File shincolle:sounds/fire_03.ogg does not exist, cannot add it to event shincolle:ship-firesmall
+[23:43:18] [Server thread/INFO]: Starting integrated minecraft server version 1.7.10
+[23:43:18] [Server thread/INFO]: Generating keypair
+[23:43:18] [Server thread/INFO]: Preparing start region for level 0
+[23:43:19] [Server thread/INFO]: Changing view distance to 12, from 10
+[23:43:19] [Server thread/INFO]: PinkaLulan[local:E:6b259e87] logged in with entity id 189 at (329.5834069441913, 4.0, 483.16761291393874)
+[23:43:19] [Server thread/INFO]: PinkaLulan joined the game
+[23:43:24] [Client thread/INFO]: [CHAT] Damage Indicators v.3.2.0.0 is out of date. v.3.3.1.0 is now available.
+[23:44:49] [Server thread/INFO]: Saving and pausing game...
+[23:44:49] [Server thread/INFO]: Saving chunks for level 'New World'/Overworld
+[23:44:49] [Server thread/INFO]: Saving chunks for level 'New World'/Nether
+[23:44:49] [Server thread/INFO]: Saving chunks for level 'New World'/The End
+[23:45:39] [main/INFO]: Setting user: PinkaLulan
+[23:45:41] [Client thread/INFO]: LWJGL Version: 2.9.1
+[23:45:45] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:Not Enough Items, FMLFileResourcePack:Shinkeiseikan Collection, FMLFileResourcePack:Damage Indicators, FMLFileResourcePack:iChunUtil, FMLFileResourcePack:MapWriter, FMLFileResourcePack:Example Mod, FMLFileResourcePack:Xray, FMLFileResourcePack:Morph, FMLFileResourcePack:In-game NBTEdit, FMLFileResourcePack:Tabula, TestSource1
+[23:45:46] [Sound Library Loader/INFO]: Sound engine started
+[23:45:47] [Client thread/WARN]: File shincolle:sounds/fire_03.ogg does not exist, cannot add it to event shincolle:ship-firesmall
+[23:45:48] [Client thread/INFO]: Created: 512x256 textures/blocks-atlas
+[23:45:48] [Client thread/INFO]: Created: 256x256 textures/items-atlas
+[23:45:49] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:Not Enough Items, FMLFileResourcePack:Shinkeiseikan Collection, FMLFileResourcePack:Damage Indicators, FMLFileResourcePack:iChunUtil, FMLFileResourcePack:MapWriter, FMLFileResourcePack:Example Mod, FMLFileResourcePack:Xray, FMLFileResourcePack:Morph, FMLFileResourcePack:In-game NBTEdit, FMLFileResourcePack:Tabula, TestSource1
+[23:45:49] [Client thread/INFO]: Created: 512x256 textures/blocks-atlas
+[23:45:50] [Client thread/INFO]: Created: 256x256 textures/items-atlas
+[23:45:50] [Sound Library Loader/INFO]: Sound engine started
+[23:45:51] [Client thread/WARN]: File shincolle:sounds/fire_03.ogg does not exist, cannot add it to event shincolle:ship-firesmall
+[23:45:55] [Server thread/INFO]: Starting integrated minecraft server version 1.7.10
+[23:45:55] [Server thread/INFO]: Generating keypair
+[23:45:55] [Server thread/INFO]: Preparing start region for level 0
+[23:45:55] [Server thread/INFO]: Changing view distance to 12, from 10
+[23:45:56] [Server thread/INFO]: PinkaLulan[local:E:783fb1fe] logged in with entity id 189 at (329.5834069441913, 4.0, 483.16761291393874)
+[23:45:56] [Server thread/INFO]: PinkaLulan joined the game
+[23:46:01] [Client thread/INFO]: [CHAT] Damage Indicators v.3.2.0.0 is out of date. v.3.3.1.0 is now available.
+[23:49:50] [Server thread/INFO]: [PinkaLulan: Given [Black Wool] * 63 to PinkaLulan]
+[23:49:50] [Client thread/INFO]: [CHAT] Given [Black Wool] * 63 to PinkaLulan
+[23:50:03] [Server thread/INFO]: Saving and pausing game...
+[23:50:03] [Server thread/INFO]: Saving chunks for level 'New World'/Overworld
+[23:50:03] [Server thread/INFO]: Saving chunks for level 'New World'/Nether
+[23:50:03] [Server thread/INFO]: Saving chunks for level 'New World'/The End
+[23:50:03] [Server thread/INFO]: Stopping server
+[23:50:03] [Server thread/INFO]: Saving players
+[23:50:03] [Server thread/INFO]: Saving worlds
+[23:50:03] [Server thread/INFO]: Saving chunks for level 'New World'/Overworld
+[23:50:03] [Server thread/INFO]: Saving chunks for level 'New World'/Nether
+[23:50:03] [Server thread/INFO]: Saving chunks for level 'New World'/The End
+[23:50:04] [Client thread/INFO]: Stopping!

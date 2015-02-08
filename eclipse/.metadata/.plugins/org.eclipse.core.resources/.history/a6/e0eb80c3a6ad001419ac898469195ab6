@@ -1,0 +1,51 @@
+package com.lulan.shincolle.ai;
+
+import com.lulan.shincolle.entity.BasicEntityShip;
+
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.passive.EntityTameable;
+
+/**SIT AI FOR SHIP
+ * 可以在液體中坐下
+ */
+public class EntityAIShipSit extends EntityAIBase
+{
+    private EntityTameable theEntity;
+    private boolean isSitting;
+
+    public EntityAIShipSit(BasicEntityShip entity) {
+        this.theEntity = entity;
+        this.setMutexBits(5);
+    }
+
+    public boolean shouldExecute() {
+        EntityLivingBase entitylivingbase = this.theEntity.getOwner();
+        return entitylivingbase == null ? true : (this.theEntity.getDistanceSqToEntity(entitylivingbase) < 144.0D && entitylivingbase.getAITarget() != null ? false : this.isSitting);
+    }
+
+    /**
+     * Execute a one shot task or start executing a continuous task
+     */
+    public void startExecuting()
+    {
+        this.theEntity.getNavigator().clearPathEntity();
+        this.theEntity.setSitting(true);
+    }
+
+    /**
+     * Resets the task
+     */
+    public void resetTask()
+    {
+        this.theEntity.setSitting(false);
+    }
+
+    /**
+     * Sets the sitting flag.
+     */
+    public void setSitting(boolean p_75270_1_)
+    {
+        this.isSitting = p_75270_1_;
+    }
+}

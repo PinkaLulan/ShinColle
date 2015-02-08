@@ -44,7 +44,7 @@ public class GuiShipInventory extends GuiContainer {
 	private static final ResourceLocation guiBackground = new ResourceLocation(Reference.TEXTURES_GUI+"GuiShipInventory.png");
 	private static final ResourceLocation guiNameicon = new ResourceLocation(Reference.TEXTURES_GUI+"GuiNameIcon.png");
 	//draw string
-	private String titlename, shiplevel, lvMark, hpMark, strATK, strDEF, strSPD, strMOV, strHIT, Kills, Exp, AmmoLight, AmmoHeavy;
+	private String titlename, shiplevel, lvMark, hpMark, strATK, strDEF, strSPD, strMOV, strHIT, Kills, Exp, AmmoLight, AmmoHeavy, Grudge, Owner;
 	private int hpCurrent, hpMax, color;
 	
 	//ship type icon array
@@ -256,20 +256,32 @@ public class GuiShipInventory extends GuiContainer {
 			this.fontRendererObj.drawString(I18n.format("gui.shincolle:exp"), 87, 41, pickColor(5));
 			this.fontRendererObj.drawString(I18n.format("gui.shincolle:ammolight"), 87, 61, pickColor(5));
 			this.fontRendererObj.drawString(I18n.format("gui.shincolle:ammoheavy"), 87, 81, pickColor(5));
+			this.fontRendererObj.drawString(I18n.format("gui.shincolle:grudge"), 87, 101, pickColor(5));
 			//draw value
+			entity.setExpNext();  //update exp value
+			Exp = String.valueOf(this.entity.getExpCurrent())+"/"+String.valueOf(this.entity.getExpNext());
 			Kills = String.valueOf(this.entity.getKills());
 			AmmoLight = String.valueOf(this.entity.getNumAmmoLight());
 			AmmoHeavy = String.valueOf(this.entity.getNumAmmoHeavy());
-			entity.setExpNext();  //update exp value
-			Exp = String.valueOf(this.entity.getExpCurrent())+"/"+String.valueOf(this.entity.getExpNext());		
+			Grudge = String.valueOf(this.entity.getNumGrudge());
+				
 			this.fontRendererObj.drawStringWithShadow(Kills, 145-this.fontRendererObj.getStringWidth(Kills), 31, pickColor(0));
 			this.fontRendererObj.drawStringWithShadow(Exp, 145-this.fontRendererObj.getStringWidth(Exp), 51, pickColor(0));
 			this.fontRendererObj.drawStringWithShadow(AmmoLight, 145-this.fontRendererObj.getStringWidth(AmmoLight), 71, pickColor(0));
 			this.fontRendererObj.drawStringWithShadow(AmmoHeavy, 145-this.fontRendererObj.getStringWidth(AmmoHeavy), 91, pickColor(0));
+			this.fontRendererObj.drawStringWithShadow(Grudge, 145-this.fontRendererObj.getStringWidth(Grudge), 111, pickColor(0));
 						
 			break;
 			}
 		case 2: {	//page 3: owner name
+			//draw string
+			this.fontRendererObj.drawString(I18n.format("gui.shincolle:owner"), 87, 21, pickColor(5));
+			
+			//draw value
+			Owner = this.entity.getOwnerName();
+			
+			this.fontRendererObj.drawStringWithShadow(Owner, 145-this.fontRendererObj.getStringWidth(Owner), 31, pickColor(1));
+			
 			break;
 			}			
 		}//end page switch

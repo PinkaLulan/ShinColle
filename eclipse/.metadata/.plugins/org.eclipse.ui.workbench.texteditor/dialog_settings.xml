@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
+		<item value="false" key="isRegEx"/>
+		<item value="prevPosZ" key="selection"/>
+		<item value="false" key="casesensitive"/>
+		<item value="false" key="incremental"/>
+		<item value="true" key="wrap"/>
+		<item value="false" key="wholeword"/>
+		<list key="findhistory">
+			<item value="prevPosZ"/>
+			<item value="motionX"/>
+			<item value="setpos"/>
+			<item value="PetPathfinder"/>
+			<item value="AvoidWater"/>
+			<item value="isCollidedHorizontally"/>
+			<item value="Speed"/>
+			<item value="checkDepth"/>
+		</list>
+		<list key="replacehistory">
+			<item value="host"/>
+			<item value="TheOwner"/>
+			<item value="offsetZ"/>
+			<item value="offsetX"/>
+			<item value="OwnerEntity"/>
+			<item value="MinDist"/>
+			<item value="MaxDist"/>
+			<item value="Owner"/>
+		</list>
+	</section>
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
+		<item value="355" key="DIALOG_WIDTH"/>
+		<item value="1|微軟正黑體|10.8|0|WINDOWS|1|-18|0|0|0|400|0|0|0|-120|3|2|1|34|微軟正黑體" key="DIALOG_FONT_NAME"/>
+		<item value="478" key="DIALOG_HEIGHT"/>
+		<item value="118" key="DIALOG_X_ORIGIN"/>
+		<item value="163" key="DIALOG_Y_ORIGIN"/>
+	</section>
+</section>

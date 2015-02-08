@@ -1,0 +1,24 @@
+package com.lulan.shincolle.utility;
+
+import java.util.UUID;
+
+import net.minecraft.server.management.ServerConfigurationManager;
+
+public class GuiHelper {
+	
+	ServerConfigurationManager a;
+	
+	public GuiHelper() {}
+	
+	public static getPlayerFromUUID(String sid) {
+		try {
+            UUID uuid = UUID.fromString(this.func_152113_b());
+            return uuid == null ? null : this.worldObj.func_152378_a(uuid);
+        }
+        catch (IllegalArgumentException illegalargumentexception)
+        {
+            return null;
+        }
+	}
+
+}

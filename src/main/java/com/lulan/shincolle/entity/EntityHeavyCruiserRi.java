@@ -43,8 +43,9 @@ import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.ShinColle;
-import com.lulan.shincolle.ai.EntityAIInRangeTarget;
-import com.lulan.shincolle.ai.EntityAIRangeAttack;
+import com.lulan.shincolle.ai.EntityAIShipFollowOwner;
+import com.lulan.shincolle.ai.EntityAIShipInRangeTarget;
+import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.ai.EntityAIShipFloating;
 import com.lulan.shincolle.ai.EntityAIShipSit;
 import com.lulan.shincolle.client.inventory.ContainerShipInventory;
@@ -77,24 +78,24 @@ public class EntityHeavyCruiserRi extends BasicEntitySmallShip {
 		super.setAIList();
 		
 		//floating on water
-		this.tasks.addTask(1, new EntityAIShipSit(this, this.getOwner()));
-		this.tasks.addTask(2, new EntityAIShipFloating(this));
+		this.tasks.addTask(1, new EntityAIShipSit(this, this.getOwner()));	   //0101	
 		
 		//use range attack (light)
-		this.tasks.addTask(11, new EntityAIRangeAttack(this));
+		this.tasks.addTask(11, new EntityAIShipRangeAttack(this));			   //0011
 		
 		//use melee attack
-		this.tasks.addTask(12, new EntityAIAttackOnCollide(this, 1D, true));
-		this.tasks.addTask(13, new EntityAIMoveTowardsTarget(this, 1D, 64F));
+		this.tasks.addTask(12, new EntityAIAttackOnCollide(this, 1D, true));   //0011
+		this.tasks.addTask(13, new EntityAIMoveTowardsTarget(this, 1D, 64F));  //0001
 		
 		//idle AI
 		//moving
-//      this.tasks.addTask(21, new EntityAIRestrictOpenDoor(this));
-//		this.tasks.addTask(22, new EntityAIOpenDoor(this, true));
-		this.tasks.addTask(23, new EntityAIWatchClosest(this, EntityPlayer.class, 5F));
-		this.tasks.addTask(23, new EntityAIWatchClosest(this, BasicEntityShip.class, 7F));
-		this.tasks.addTask(24, new EntityAIWander(this, 0.8D));
-		this.tasks.addTask(25, new EntityAILookIdle(this));
+		this.tasks.addTask(21, new EntityAIOpenDoor(this, true));			   //0000
+		this.tasks.addTask(22, new EntityAIShipFollowOwner(this, 7F, 12F));//0011
+		this.tasks.addTask(23, new EntityAIShipFloating(this));				   //0110
+		this.tasks.addTask(24, new EntityAIWatchClosest(this, EntityPlayer.class, 5F));	  //0010
+		this.tasks.addTask(24, new EntityAIWatchClosest(this, BasicEntityShip.class, 7F));//0010
+		this.tasks.addTask(25, new EntityAIWander(this, 0.8D));				   //0001
+		this.tasks.addTask(25, new EntityAILookIdle(this));					   //0011
 		
 /* 		//switch AI method
 		this.tasks.removeTask(this.aiAttackOnCollide);
@@ -116,7 +117,7 @@ public class EntityHeavyCruiserRi extends BasicEntitySmallShip {
 	//NYI:	this.targetTasks.addTask(1, new EntityAIOwnerPointTarget(this));
 		this.targetTasks.addTask(2, new EntityAIOwnerHurtByTarget(this));
 		this.targetTasks.addTask(3, new EntityAIOwnerHurtTarget(this));
-		this.targetTasks.addTask(3, new EntityAIInRangeTarget(this, 0.4F, 1));
+		this.targetTasks.addTask(3, new EntityAIShipInRangeTarget(this, 0.4F, 1));
 	}
 	
 	//平常音效
@@ -161,7 +162,9 @@ public class EntityHeavyCruiserRi extends BasicEntitySmallShip {
     @Override
     public boolean attackEntityFrom(DamageSource attacker, float atk) {		
     	//set hurt face
-		this.setEntityEmotion(AttrValues.Emotion.O_O, true);
+    	if(this.getEntityEmotion() != AttrValues.Emotion.O_O) {
+    		this.setEntityEmotion(AttrValues.Emotion.O_O, true);
+    	}	
   	
     	return super.attackEntityFrom(attacker, atk);
     }

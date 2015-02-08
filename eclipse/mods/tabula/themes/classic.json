@@ -1,0 +1,188 @@
+{
+  "name": "Classic",
+  "author": "SizzlinBacen",
+  //Done
+  "workspaceBackground": [
+    225,
+    225,
+    225
+  ],
+  //Done
+  "windowBorder": [
+    128,
+    128,
+    128
+  ],
+  //Done
+  "windowBackground": [
+    232,
+    232,
+    232
+  ],
+  //Done
+  "tabBorder": [
+    255,
+    255,
+    255
+  ],
+  //Done
+  "tabSideInactive": [
+    168,
+    168,
+    168
+  ],
+  //Done
+  "elementInputBackgroundInactive": [
+    215,
+    215,
+    215
+  ],
+  //Done
+  "elementInputBackgroundHover": [
+    230,
+    230,
+    230
+  ],
+  //Done
+  "elementInputBorder": [
+    128,
+    128,
+    128
+  ],
+  //Done
+  "elementInputUpDownHover": [
+    170,
+    170,
+    170
+  ],
+  //Done
+  "elementInputUpDownClick": [
+    100,
+    100,
+    100
+  ],
+  //Done
+  "elementButtonBackgroundInactive": [
+    215,
+    215,
+    215
+  ],
+  //Done
+  "elementButtonBackgroundHover": [
+    230,
+    230,
+    230
+  ],
+  //Done
+  "elementButtonBorder": [
+    128,
+    128,
+    128
+  ],
+  //Done
+  "elementButtonClick": [
+    100,
+    100,
+    100
+  ],
+  //Done
+  "elementButtonToggle": [
+    160,
+    160,
+    160
+  ],
+  //Done
+  "elementButtonToggleHover": [
+    170,
+    170,
+    170
+  ],
+  //Done
+  "elementProjectTabActive": [
+    192,
+    192,
+    192
+  ],
+  //Done
+  "elementProjectTabHover": [
+    209,
+    209,
+    209
+  ],
+  //Done
+  "elementProjectTabFont": [
+    96,
+    96,
+    96
+  ],
+  //Done
+  "elementProjectTabFontChanges": [
+    255,
+    255,
+    255
+  ],
+  //Done
+  "elementTreeBorder": [
+    128,
+    128,
+    128
+  ],
+  //Done
+  "elementTreeScrollBar": [
+    232,
+    232,
+    232
+  ],
+  //Done
+  "elementTreeScrollBarBorder": [
+    128,
+    128,
+    128
+  ],
+  //Done
+  "elementTreeItemBorder": [
+    128,
+    128,
+    128
+  ],
+  //Done
+  "elementTreeItemBg": [
+    232,
+    232,
+    232
+  ],
+  //Done
+  "elementTreeItemBgSelect": [
+    128,
+    128,
+    128
+  ],
+  //Done
+  "elementTreeItemBgHover": [
+    209,
+    209,
+    209
+  ],
+  //TODO
+  "fontChat": [
+    96,
+    96,
+    96
+  ],
+  //Done
+  "font": [
+    96,
+    96,
+    96
+  ],
+  //Done
+  "fontDim": [
+    96,
+    96,
+    96
+  ],
+  "workspaceBlock": {
+    "block": "minecraft:planks",
+    "metadata": 1
+  }
+}

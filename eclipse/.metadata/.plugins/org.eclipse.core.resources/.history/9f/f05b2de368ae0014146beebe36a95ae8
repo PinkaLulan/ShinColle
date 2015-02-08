@@ -1,0 +1,60 @@
+# Keys
+keys.shincolle.category=Shin Colle
+keys.shincolle.repair=修復
+
+# Creative Tab
+itemGroup.shincolle=Shin Colle
+
+# Block
+tile.shincolle:BlockAbyssium.name=深海金屬磚
+tile.shincolle:BlockDesk.name=深海節點
+tile.shincolle:BlockGrudge.name=怨念團塊
+tile.shincolle:BlockPolymetal.name=多金屬磚
+tile.shincolle:BlockPolymetalOre.name=多金屬礦
+tile.shincolle:BlockSmallShipyard.name=深海熱泉
+
+# Container
+container.shincolle:SmallShipyard=深海熱泉
+
+# Item
+item.shincolle:Abyssium.name=深海金屬
+item.shincolle:Ammo.name=怨念彈
+item.shincolle:AmmoContainer.name=怨念彈集裝箱
+item.shincolle:BucketRepair.name=修復桶
+item.shincolle:Grudge.name=怨念
+item.shincolle:HeavyAmmo.name=重型怨念彈
+item.shincolle:HeavyAmmoContainer.name=重型怨念彈集裝箱
+item.shincolle:Polymetal.name=多金屬結核
+
+# Equip
+item.shincolle:EquipCannon.name=5吋單裝炮
+item.shincolle:EquipCannon1.name=6吋單裝炮
+item.shincolle:EquipCannon2.name=5吋連裝炮
+item.shincolle:EquipCannon3.name=6吋連裝速射炮
+item.shincolle:EquipCannon4.name=12.5吋連裝副炮
+item.shincolle:EquipCannon5.name=14吋連裝炮
+item.shincolle:EquipCannon6.name=16吋連裝炮
+item.shincolle:EquipCannon7.name=8吋三連裝炮
+item.shincolle:EquipCannon8.name=16吋三連裝炮
+
+# Spawn Egg
+item.shincolle:smallegg.name=建造小型棲艦
+item.shincolle:largeegg.name=建造大型棲艦
+item.shincolle:debugegg.name=Debug生怪蛋
+
+# Entity
+entity.shincolle:EntityDestroyerI.name=驅逐イ級
+entity.shincolle:EntityHeavyCruiserRi.name=重巡リ級
+
+# GUI
+gui.shincolle:level=等級
+gui.shincolle:hp=耐久
+gui.shincolle:firepower=火力
+gui.shincolle:armor=裝甲
+gui.shincolle:movespeed=航行速度
+gui.shincolle:attackspeed=填彈速度
+gui.shincolle:range=射程
+gui.shincolle:kills=擊殺數
+gui.shincolle:exp=經驗值
+gui.shincolle:ammolight=輕型彈藥
+gui.shincolle:ammoheavy=重型彈藥

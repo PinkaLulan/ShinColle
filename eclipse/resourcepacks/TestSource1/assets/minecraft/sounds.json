@@ -1,0 +1,22 @@
+{ 
+    "ship-say": {
+        "category": "hostile", "replace": true, "sounds": [
+            "ecchihentai_01",
+            "mada_01"
+        ]
+    },
+    
+    "ship-hurt": {
+        "category": "hostile", "replace": true, "sounds": [
+            "ecchihentai_01", 
+            "moushimasen_01"
+        ]
+    },
+    
+    "ship-death": {
+        "category": "hostile", "replace": true, "sounds": [
+            "doushite_01", 
+            "gomennasai_03"
+        ]
+    }
+}

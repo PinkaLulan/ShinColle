@@ -1,0 +1,56 @@
+[12:31:48] [main/INFO]: Setting user: PinkaLulan
+[12:31:50] [Client thread/INFO]: LWJGL Version: 2.9.1
+[12:31:54] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:Not Enough Items, FMLFileResourcePack:Shinkeiseikan Collection, FMLFileResourcePack:Damage Indicators, FMLFileResourcePack:iChunUtil, FMLFileResourcePack:MapWriter, FMLFileResourcePack:Example Mod, FMLFileResourcePack:Xray, FMLFileResourcePack:Morph, FMLFileResourcePack:In-game NBTEdit, FMLFileResourcePack:Tabula, TestSource1
+[12:31:55] [Sound Library Loader/INFO]: Sound engine started
+[12:31:57] [Client thread/INFO]: Created: 512x256 textures/blocks-atlas
+[12:31:57] [Client thread/INFO]: Created: 256x256 textures/items-atlas
+[12:31:58] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:Not Enough Items, FMLFileResourcePack:Shinkeiseikan Collection, FMLFileResourcePack:Damage Indicators, FMLFileResourcePack:iChunUtil, FMLFileResourcePack:MapWriter, FMLFileResourcePack:Example Mod, FMLFileResourcePack:Xray, FMLFileResourcePack:Morph, FMLFileResourcePack:In-game NBTEdit, FMLFileResourcePack:Tabula, TestSource1
+[12:31:59] [Client thread/INFO]: Created: 512x256 textures/blocks-atlas
+[12:31:59] [Client thread/INFO]: Created: 256x256 textures/items-atlas
+[12:32:00] [Sound Library Loader/INFO]: Sound engine started
+[12:32:06] [Server thread/INFO]: Starting integrated minecraft server version 1.7.10
+[12:32:06] [Server thread/INFO]: Generating keypair
+[12:32:06] [Server thread/INFO]: Preparing start region for level 0
+[12:32:07] [Server thread/INFO]: Changing view distance to 16, from 10
+[12:32:08] [Server thread/INFO]: PinkaLulan[local:E:a8f6c805] logged in with entity id 115 at (174.02560388686655, 106.0, -9.171861329499084)
+[12:32:08] [Server thread/INFO]: PinkaLulan joined the game
+[12:32:12] [Client thread/INFO]: [CHAT] Damage Indicators v.3.2.0.0 is out of date. v.3.2.3.0 is now available.
+[12:32:32] [Server thread/INFO]: Saving and pausing game...
+[12:32:32] [Server thread/INFO]: Saving chunks for level 'Water Test'/Overworld
+[12:32:32] [Server thread/INFO]: Saving chunks for level 'Water Test'/Nether
+[12:32:32] [Server thread/INFO]: Saving chunks for level 'Water Test'/The End
+[12:33:14] [Server thread/INFO]: Saving and pausing game...
+[12:33:14] [Server thread/INFO]: Saving chunks for level 'Water Test'/Overworld
+[12:33:14] [Server thread/INFO]: Saving chunks for level 'Water Test'/Nether
+[12:33:14] [Server thread/INFO]: Saving chunks for level 'Water Test'/The End
+[12:33:14] [Server thread/INFO]: Stopping server
+[12:33:14] [Server thread/INFO]: Saving players
+[12:33:14] [Server thread/INFO]: Saving worlds
+[12:33:14] [Server thread/INFO]: Saving chunks for level 'Water Test'/Overworld
+[12:33:14] [Server thread/INFO]: Saving chunks for level 'Water Test'/Nether
+[12:33:14] [Server thread/INFO]: Saving chunks for level 'Water Test'/The End
+[12:33:19] [Server thread/INFO]: Starting integrated minecraft server version 1.7.10
+[12:33:19] [Server thread/INFO]: Generating keypair
+[12:33:19] [Server thread/INFO]: Preparing start region for level 0
+[12:33:19] [Server thread/INFO]: Changing view distance to 16, from 10
+[12:33:20] [Server thread/INFO]: PinkaLulan[local:E:15875ea3] logged in with entity id 18057 at (179.15178484289382, 105.8985895841864, -9.35322286490171)
+[12:33:20] [Server thread/INFO]: PinkaLulan joined the game
+[12:34:13] [Server thread/INFO]: Saving and pausing game...
+[12:34:13] [Server thread/INFO]: Saving chunks for level 'Water Test'/Overworld
+[12:34:13] [Server thread/INFO]: Saving chunks for level 'Water Test'/Nether
+[12:34:13] [Server thread/INFO]: Saving chunks for level 'Water Test'/The End
+[12:34:45] [Server thread/INFO]: Saving and pausing game...
+[12:34:45] [Server thread/INFO]: Saving chunks for level 'Water Test'/Overworld
+[12:34:45] [Server thread/INFO]: Saving chunks for level 'Water Test'/Nether
+[12:34:45] [Server thread/INFO]: Saving chunks for level 'Water Test'/The End
+[12:37:29] [Server thread/INFO]: Saving and pausing game...
+[12:37:29] [Server thread/INFO]: Saving chunks for level 'Water Test'/Overworld
+[12:37:29] [Server thread/INFO]: Saving chunks for level 'Water Test'/Nether
+[12:37:29] [Server thread/INFO]: Saving chunks for level 'Water Test'/The End
+[12:37:31] [Client thread/INFO]: Stopping!
+[12:37:31] [Server thread/INFO]: Stopping server
+[12:37:31] [Server thread/INFO]: Saving players
+[12:37:31] [Server thread/INFO]: Saving worlds
+[12:37:31] [Server thread/INFO]: Saving chunks for level 'Water Test'/Overworld
+[12:37:31] [Server thread/INFO]: Saving chunks for level 'Water Test'/Nether
+[12:37:31] [Server thread/INFO]: Saving chunks for level 'Water Test'/The End

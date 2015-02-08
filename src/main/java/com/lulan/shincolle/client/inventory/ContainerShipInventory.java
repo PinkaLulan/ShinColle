@@ -5,6 +5,8 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.item.BasicEquip;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -25,6 +27,11 @@ public class ContainerShipInventory extends Container {
 	public static final byte SLOTS_TOTAL = 24;
 	public static final byte SLOTS_EQUIP = 6;
 	public static final byte SLOTS_INVENTORY = 18;
+	private int GuiKills;
+	private int GuiExpCurrent;
+	private int GuiNumAmmo;
+	private int GuiNumAmmoHeavy;
+	private int GuiNumGrudge;
 	
 	public ContainerShipInventory(InventoryPlayer invPlayer, BasicEntityShip entity1) {
 		int i,j;	//loop index
@@ -141,12 +148,74 @@ public class ContainerShipInventory extends Container {
         return itemstack;	//物品移動完成, 回傳剩下的物品
     }
 	
-	//將container數值跟entity內的數值比對, 如果不同則發送更新使gui呈現新數值
+	//發送更新gui進度條更新, 比detectAndSendChanges還要優先(在此放置init方法等)
+	@Override
+	public void addCraftingToCrafters (ICrafting crafting) {
+		super.addCraftingToCrafters(crafting);
+		crafting.sendProgressBarUpdate(this, 0, this.entity.getKills());
+		crafting.sendProgressBarUpdate(this, 1, this.entity.getExpCurrent());
+		crafting.sendProgressBarUpdate(this, 2, this.entity.getNumAmmoLight());
+		crafting.sendProgressBarUpdate(this, 3, this.entity.getNumAmmoHeavy());
+		crafting.sendProgressBarUpdate(this, 4, this.entity.getNumGrudge());
+	}
+	
+	//偵測數值是否改變, 有改變時發送更新(此為server端偵測)
 	@Override
 	public void detectAndSendChanges() {
 		super.detectAndSendChanges();
-
-
+		int getValue;
+		
+        for(Object crafter : this.crafters) {
+            ICrafting icrafting = (ICrafting) crafter;
+            
+            getValue = this.entity.getKills();
+            if(this.GuiKills != getValue) {
+                icrafting.sendProgressBarUpdate(this, 0, getValue);
+                this.GuiKills = getValue;
+            }   
+            getValue = this.entity.getExpCurrent();
+            if(this.GuiExpCurrent != getValue) {
+                 icrafting.sendProgressBarUpdate(this, 1, getValue);
+                 this.GuiExpCurrent = getValue;
+            }
+            getValue = this.entity.getNumAmmoLight();
+            if(this.GuiNumAmmo != getValue) {
+                icrafting.sendProgressBarUpdate(this, 2, getValue);
+                this.GuiNumAmmo = getValue;
+            }
+            getValue = this.entity.getNumAmmoHeavy();
+            if(this.GuiNumAmmoHeavy != getValue) {
+                icrafting.sendProgressBarUpdate(this, 3, getValue);
+                this.GuiNumAmmoHeavy = getValue;
+            }
+            getValue = this.entity.getNumGrudge();
+            if(this.GuiNumGrudge != getValue) {
+                icrafting.sendProgressBarUpdate(this, 4, getValue);
+                this.GuiNumGrudge = getValue;
+            }
+        }
+    }
+	
+	//client端container接收新值
+	@SideOnly(Side.CLIENT)
+    public void updateProgressBar(int valueType, int updatedValue) {     
+		switch(valueType) {
+		case 0: 
+			this.entity.setKills(updatedValue);
+			break;
+		case 1:
+			this.entity.setExpCurrent(updatedValue);
+			break;
+		case 2:
+			this.entity.setNumAmmoLight(updatedValue);
+			break;
+		case 3:
+			this.entity.setNumAmmoHeavy(updatedValue);
+			break;
+		case 4:
+			this.entity.setNumGrudge(updatedValue);
+			break;
+		}
     }
 
 }

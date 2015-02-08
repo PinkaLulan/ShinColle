@@ -11,6 +11,7 @@ import com.lulan.shincolle.client.particle.EntityFXSpray;
 import com.lulan.shincolle.crafting.EquipCalc;
 import com.lulan.shincolle.entity.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.network.createPacketS2C;
 import com.lulan.shincolle.reference.AttrID;
@@ -65,14 +66,18 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 	protected byte ShipID;
 	//for AI calc
 	protected int StartEmotion;			//表情開始時間
-	protected boolean HasAmmoLight;		//檢查有無彈藥
-	protected boolean HasAmmoHeavy;		//檢查有無重型彈藥
 	protected int NumAmmoLight;			//彈藥存量
 	protected int NumAmmoHeavy;			//重型彈藥存量
+	protected int NumGrudge;			//fuel存量
+	protected boolean NoFuel;			//無fuel狀態
 	protected double ShipDepth;			//水深, 用於水中高度判定
 	protected boolean CanFloatUp;		//是否有空氣方塊可以上浮
+	protected boolean LiquidSpeedUp;
 	protected boolean IsMarried;		//是否已婚
 	protected boolean IsFollowing;		//是否正在跟隨
+	protected double ShipPrevX;			//ship posX 5 sec ago
+	protected double ShipPrevY;			//ship posY 5 sec ago
+	protected double ShipPrevZ;			//ship posZ 5 sec ago
 	//equip states: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT
 	protected float[] ArrayEquip;
 	//final states: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT
@@ -103,16 +108,21 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		//TypeModify: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT
 		TypeModify = new float[] {1F, 1F, 1F, 1F, 1F, 1F};
 		//for AI
-		HasAmmoLight = false;		//ammo check
-		HasAmmoHeavy = false;
 		NumAmmoLight = 0;
 		NumAmmoHeavy = 0;
-		StartEmotion = -1;			//表情開始時間
+		NumGrudge = 0;
+		StartEmotion = -1;		//emotion start time
 		IsMarried = false;
 		IsFollowing = false;
-		ShipDepth = 0D;
-		CanFloatUp = false;
-		this.isImmuneToFire = true;
+		ShipDepth = 0D;			//water block above ship (within ship position)
+		CanFloatUp = false;		//check air block above water block
+		isImmuneToFire = true;	//set ship immune to lava
+		ShipPrevX = posX;		//ship position 5 sec ago
+		ShipPrevY = posY;
+		ShipPrevZ = posZ;
+		NoFuel = false;
+		LiquidSpeedUp = false;
+		this.jumpMovementFactor = 0.03F;
 	}
 	
 	@Override
@@ -123,6 +133,16 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 	@Override
 	public float getEyeHeight() {
 		return this.height * 1F;
+	}
+	
+	//get owner name (for player owner only)
+	public String getOwnerName() {
+		if(this.getOwner() != null) {
+			if(this.getOwner() instanceof EntityPlayer) {
+				return ((EntityPlayer)this.getOwner()).getDisplayName();
+			}
+		}		
+		return null;
 	}
 
 	@Override
@@ -175,17 +195,21 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 	public int getStartEmotion() {
 		return StartEmotion;
 	}
-	public boolean hasAmmoLight() {
-		return HasAmmoLight;
-	}
-	public boolean hasAmmoHeavy() {
-		return HasAmmoHeavy;
-	}
 	public int getNumAmmoLight() {
 		return NumAmmoLight;
 	}
 	public int getNumAmmoHeavy() {
 		return NumAmmoHeavy;
+	}
+	public int getNumGrudge() {
+		return NumGrudge;
+	}
+	public boolean hasAmmoLight() {
+		return NumAmmoLight > 0;
+	}
+	public boolean hasAmmoHeavy() {
+		// TODO Auto-generated method stub
+		return NumAmmoHeavy > 0;
 	}
 	public double getShipDepth() {
 		return ShipDepth;
@@ -346,9 +370,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		if(ArrayFinal[AttrID.SPD] < 0F) {
 			ArrayFinal[AttrID.SPD] = 0F;
 		}
-//		if(ArrayFinal[AttrID.MOV] > 1.2F) {
-//			ArrayFinal[AttrID.MOV] = 1.2F;	//move speed > 1.2 is buggy
-//		}
+		if(ArrayFinal[AttrID.MOV] > 0.8F) {
+			ArrayFinal[AttrID.MOV] = 0.8F;	//high move speed is buggy
+		}
 		if(ArrayFinal[AttrID.MOV] < 0F) {
 			ArrayFinal[AttrID.MOV] = 0F;
 		}
@@ -386,7 +410,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 	public void addShipExp(int exp) {
 		int CapLevel = IsMarried ? 150 : 100;
 		
-		if(ShipLevel != CapLevel) {	//level is not cap level
+		if(ShipLevel != CapLevel && ShipLevel < 150) {	//level is not cap level
 			ExpCurrent += exp;
 			if(ExpCurrent >= ExpNext) {
 				ExpCurrent -= ExpNext;	//level up
@@ -409,12 +433,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		}
 	}
 	
-	//called when a mob die near the entity
+	//called when a mob die near the entity (used in event handler)
 	public void addKills() {
 		Kills++;
 	}
 	
-	//called when load nbt data
+	//called when load nbt data or client sync
 	public void setKills(int par1) {
 		Kills = par1;
 	}
@@ -429,14 +453,19 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		IsFollowing = par1;
 	}
 
-	//called when load nbt data
+	//called when load nbt data or client sync
 	public void setNumAmmoLight(int par1) {
 		NumAmmoLight = par1;
 	}
 	
-	//called when load nbt data
+	//called when load nbt data or client sync
 	public void setNumAmmoHeavy(int par1) {
 		NumAmmoHeavy = par1;
+	}
+	
+	//called when load nbt data or client sync
+	public void setNumGrudge(int par1) {
+		NumGrudge = par1;
 	}
 	
 	//ship attribute setter, sync packet in method: calcShipAttributes 
@@ -561,22 +590,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
         }
 	
 		//shift+right click時打開GUI
-		if(player.isSneaking() && player.getUniqueID().equals(this.getOwner().getUniqueID())) {  
+		if(player.isSneaking() && this.getOwner() != null && player.getUniqueID().equals(this.getOwner().getUniqueID())) {  
 			int eid = this.getEntityId();
 			//player.openGui vs FMLNetworkHandler ?
 		//	player.openGui(ShinColle.instance, GUIs.SHIPINVENTORY, this.worldObj, eid, 0, 0);
     		FMLNetworkHandler.openGui(player, ShinColle.instance, GUIs.SHIPINVENTORY, this.worldObj, this.getEntityId(), 0, 0);
     		return true;
 		}
-		
-		//click ship without shift = sit
-		if(!this.worldObj.isRemote && !player.isSneaking() && player.getUniqueID().equals(this.getOwner().getUniqueID())) {			
-            this.setSitting(!this.isSitting());
-            this.isJumping = false;
-            this.setPathToEntity((PathEntity)null);
-            this.setTarget((Entity)null);
-            this.setAttackTarget((EntityLivingBase)null);
-        }
 		
 		//use item
 		if(itemstack != null) {
@@ -610,6 +630,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 					setEntityState(AttrValues.State.NORMAL_HEAVY, true);
 					break;			
 				}
+				return true;
 			}
 			
 			//use repair bucket
@@ -642,6 +663,16 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 	        }
 			
 		}
+		
+		//click ship without shift = sit
+		if(!this.worldObj.isRemote && !player.isSneaking() && this.getOwner() != null && player.getUniqueID().equals(this.getOwner().getUniqueID())) {			
+            this.setSitting(!this.isSitting());
+            this.isJumping = false;
+            this.setPathToEntity((PathEntity)null);
+            this.setTarget((Entity)null);
+            this.setAttackTarget((EntityLivingBase)null);
+            return true;
+        }
 
 		return false;
 	}
@@ -652,11 +683,14 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		super.onUpdate();
 		
 		this.checkDepth();	//check depth every tick
-		
-		//在液體中維持高度, 水中自然下降速度為0.02
+
 		Block CheckBlock = checkBlockWithOffset(0);
-		if(CheckBlock == Blocks.water || CheckBlock == Blocks.lava) {
+		if(this.getShipDepth() > 0D) {
+			//在液體中維持高度, 水中自然下降速度為0.02
 			this.motionY += 0.02D;
+			//在水中加速
+			this.motionX *= 1.1D;
+			this.motionZ *= 1.1D;
 			
 			if(this.worldObj.isRemote) {
 				//有移動時, 產生水花特效
@@ -672,7 +706,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 				    
 				if(motX != 0 || motZ != 0) {
 					Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray);
-				}			
+				}
 			}
 		}
 	}
@@ -680,72 +714,74 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 	//check entity state every tick
 	@Override
 	public void onLivingUpdate() {
-        super.onLivingUpdate();  
-
+        super.onLivingUpdate();
+        
         //server side check
         if((!worldObj.isRemote)) {
         	//sync client and reset AI after server start 2 sec
         	if(ticksExisted == 40) {
+        		clearAITasks();
         		clearAITargetTasks();	//reset AI for get owner after loading NBT data
         		setAIList();
         		setAITargetList();
         		sendSyncPacket();		//sync packet to client
         	}
-        	
-        	//由血量決定cry emotion
-        	if(this.ticksExisted % 40 == 0) {
-	    		if(this.getHealth()/this.getMaxHealth() < 0.5F) {
-	    			if(this.getEntityEmotion() != AttrValues.Emotion.T_T) {
-	    				this.setEntityEmotion(AttrValues.Emotion.T_T, true);
-	    			}			
-	    		}
-	    		else {	//back to normal face
-	    			if(this.getEntityEmotion() == AttrValues.Emotion.T_T) {
-	    				this.setEntityEmotion(AttrValues.Emotion.NORMAL, true);
-	    			}
-	    		}
-    		}
         	    	
-        	//check ammo every 100 ticks
+        	//check every 100 ticks
         	if(ticksExisted % 100 == 0) {
-        		//roll bored emtion when sitting
-        		if(this.isSitting() && this.getRNG().nextInt(3) > 1) {	//30% for bored
-	    			if(this.getEntityEmotion() != AttrValues.Emotion.BORED) {
-	    				this.setEntityEmotion(AttrValues.Emotion.BORED, true);
+        		//roll emtion: hungry > T_T > bored > O_O
+        		if(this.NoFuel) {
+        			if(this.getEntityEmotion() != AttrValues.Emotion.HUNGRY) {
+        				LogHelper.info("DEBUG : set emotion HUNGRY");
+	    				this.setEntityEmotion(AttrValues.Emotion.HUNGRY, true);
 	    			}
-	    		}
-	    		else {	//back to normal face
-	    			if(this.getEntityEmotion() == AttrValues.Emotion.BORED) {
-	    				this.setEntityEmotion(AttrValues.Emotion.NORMAL, true);
-	    			}
-	    		}
-        		
+        		}
+        		else {
+        			if(this.getHealth()/this.getMaxHealth() < 0.5F) {
+    	    			if(this.getEntityEmotion() != AttrValues.Emotion.T_T) {
+    	    				LogHelper.info("DEBUG : set emotion T_T");
+    	    				this.setEntityEmotion(AttrValues.Emotion.T_T, true);
+    	    			}			
+    	    		}
+        			else {
+        				if(this.isSitting() && this.getRNG().nextInt(3) > 1) {	//30% for bored
+        	    			if(this.getEntityEmotion() != AttrValues.Emotion.BORED) {
+        	    				LogHelper.info("DEBUG : set emotion BORED");
+        	    				this.setEntityEmotion(AttrValues.Emotion.BORED, true);
+        	    			}
+        	    		}
+        	    		else {	//back to normal face
+        	    			if(this.getEntityEmotion() != AttrValues.Emotion.NORMAL) {
+        	    				LogHelper.info("DEBUG : set emotion NORMAL");
+        	    				this.setEntityEmotion(AttrValues.Emotion.NORMAL, true);
+        	    			}
+        	    		}
+        			}     			
+        		}
+
         		//set air value
-        		if(this.getAir() < 120) {
+        		if(this.getAir() < 300) {
                 	setAir(300);
                 }
         		
-        		//check ammo number
-	        	HasAmmoLight = false;
-	        	HasAmmoHeavy = false;
-	        	if(getNumAmmoLight() > 0) { HasAmmoLight = true; }
-	        	if(getNumAmmoHeavy() > 0) { HasAmmoHeavy = true; }	        	
-	        	//check ship inventory
-	        	ItemStack SlotItem = null;
-	        	for(int i=ContainerShipInventory.SLOTS_EQUIP; i<ContainerShipInventory.SLOTS_TOTAL; i++) {
-	        		SlotItem = this.ExtProps.slots[i];
-	        		
-	    			if(SlotItem != null) {
-	    				if(SlotItem.getItem() == ModItems.Ammo) { HasAmmoLight = true; }
-	    				if(SlotItem.getItem() == ModItems.HeavyAmmo) { HasAmmoHeavy = true; }
-	    			}
-	    		}
-	        	
-        	}//end every 100 ticks        	
+        		//get ammo if no ammo
+        		if(!this.hasAmmoLight()) { this.decrAmmoNum(2); }
+        		if(!this.hasAmmoHeavy()) { this.decrAmmoNum(3); }
+        		
+        		//calc move distance and eat grudge (check position 5 sec ago)
+        		double distX = posX - ShipPrevX;
+        		double distY = posY - ShipPrevY;
+        		double distZ = posZ - ShipPrevZ;
+        		ShipPrevX = posX;
+        		ShipPrevY = posY;
+        		ShipPrevZ = posZ;
+	        	int distSqrt = (int) MathHelper.sqrt_double(distX*distX + distY*distY + distZ*distZ);
+	        	decrGrudgeNum(distSqrt+5);	//eat grudge or change movement speed
+        		
+        	}//end every 100 ticks
         }//end if(server side)
-        
     }
-	
+
 	//melee attack method, no ammo cost, no attack speed, damage = 12.5% atk
 	@Override
 	public boolean attackEntityAsMob(Entity target) {
@@ -756,6 +792,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		
 		//experience++
 		addShipExp(1);
+		
+		//grudge--
+		decrGrudgeNum(1);
 				
 	    //將atk跟attacker傳給目標的attackEntityFrom方法, 在目標class中計算傷害
 	    //並且回傳是否成功傷害到目標
@@ -794,6 +833,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		
 		//experience++
 		this.addShipExp(2);
+		
+		//grudge--
+		decrGrudgeNum(1);
 
 		//play cannon fire sound at attacker
         this.playSound(Reference.MOD_ID+":ship-firesmall", 0.4F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
@@ -848,10 +890,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		//set knockback value (testing)
 		float kbValue = 0.15F;
 		//飛彈是否採用直射
-		boolean isDirect = true;
+		boolean isDirect = false;
 		
 		//experience++
 		this.addShipExp(16);
+		
+		//grudge--
+		decrGrudgeNum(1);
 	
 		//play cannon fire sound at attacker
         this.playSound(Reference.MOD_ID+":ship-fireheavy", 0.4F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
@@ -869,14 +914,21 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
         double distX = target.posX - this.posX;
         double distY = target.posY - this.posY;
         double distZ = target.posZ - this.posZ;
-        //超過7格距離 or (NYI: 發射者在水中/水上), 則採用拋物線
-        if((distX*distX+distY*distY+distZ*distZ) > 49) {
-        	isDirect = false;
+        double launchPos = this.posY + this.height * 0.7D;
+        
+        //超過一定距離/水中 , 則採用拋物線,  在水中時發射高度較低
+        if((distX*distX+distY*distY+distZ*distZ) < 36) {
+        	isDirect = true;
         }
+        if(this.getShipDepth() > 0D) {
+        	isDirect = true;
+        	launchPos = this.posY + this.height * 0.2D;
+        }
+        
 
         //spawn missile   NYI: target position + random offset by ship HIT value
         EntityAbyssMissile missile = new EntityAbyssMissile(this.worldObj, this, 
-        		target.posX, target.posY+target.height*0.2D, target.posZ, atk, kbValue, isDirect);
+        		target.posX, target.posY+target.height*0.2D, target.posZ, launchPos, atk, kbValue, isDirect);
         this.worldObj.spawnEntityInWorld(missile);
         
         return true;
@@ -924,8 +976,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 				return true;
 			}
 			else {
-				if(decrAmmoItem(0)) {  //find ammo item
+				if(decrSupplies(0)) {  //find ammo item
 					NumAmmoLight += 29;
+					return true;
+				}
+				else if(decrSupplies(2)) {  //find ammo item
+					NumAmmoLight += 269;
 					return true;
 				}
 				else {				   //no ammo
@@ -938,79 +994,171 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 				return true;
 			}
 			else {
-				if(decrAmmoItem(1)) {  //find ammo item
+				if(decrSupplies(1)) {  //find ammo item
 					NumAmmoHeavy += 14;
+					return true;
+				}
+				else if(decrSupplies(3)) {  //find ammo item
+					NumAmmoHeavy += 134;
 					return true;
 				}
 				else {				   //no ammo
 					return false;
 				}
 			}
+		case 2:	//no ammo light, use item
+			if(decrSupplies(0)) {  //find ammo item
+				NumAmmoLight += 30;
+				return true;
+			}
+			else if(decrSupplies(2)) {  //find ammo item
+				NumAmmoLight += 270;
+				return true;
+			}
+			else {				   //no ammo
+				return false;
+			}
+		case 3:	//no ammo heavy, use item
+			if(decrSupplies(1)) {  //find ammo item
+				NumAmmoHeavy += 15;
+				return true;
+			}
+			else if(decrSupplies(3)) {  //find ammo item
+				NumAmmoHeavy += 135;
+				return true;
+			}
+			else {				   //no ammo
+				return false;
+			}
 		}
 		
 		return false;	//unknow attack type
 	}
 	
+	//eat grudge and change movement speed
+	private void decrGrudgeNum(int par1) {
+		boolean PrevNoFuel = NoFuel;
+		
+		if(par1 > 215) {	//max cost = 215 (calc from speed 1 moving 5 sec)
+			par1 = 215;
+		}
+		
+		if(NumGrudge > (int)par1) { //has enough fuel
+			NumGrudge -= (int)par1;
+		}
+		else {
+			if(decrSupplies(4)) {		//find grudge
+				NumGrudge += 1200;
+				NumGrudge -= (int)par1;
+			}
+			else if(decrSupplies(5)) {	//find grudge block
+				NumGrudge += 10800;
+				NumGrudge -= (int)par1;
+			}
+		}
+		
+		if(NumGrudge <= 0) {
+			NoFuel = true;
+		}
+		else {
+			NoFuel = false;
+		}
+
+		//get fuel, set AI
+		if(!NoFuel && PrevNoFuel) {
+//			LogHelper.info("DEBUG : grudge set AI");
+			clearAITasks();
+			clearAITargetTasks();
+			setAIList();
+			setAITargetList();
+			sendSyncPacket();
+		}
+		//no fuel, clear AI
+		if(NoFuel && !PrevNoFuel) {
+//			LogHelper.info("DEBUG : grudge clear AI");
+			clearAITasks();
+			clearAITargetTasks();
+			sendSyncPacket();
+		}
+		
+	}
+	
 	//decrese ammo amount with type, return true or false(not enough item)
-	private boolean decrAmmoItem(int type) {
-		boolean isEnoughAmmo = true;
-		int ammonum = 0;
-		Item ammotype = null;
+	private boolean decrSupplies(int type) {
+		boolean isEnoughItem = true;
+		int itemNum = 0;
+		ItemStack itemType = null;
 		
 		//find ammo
 		switch(type) {
 		case 0:	//use 1 light ammo
-			ammonum = 1;
-			ammotype = ModItems.Ammo;
+			itemNum = 1;
+			itemType = new ItemStack(ModItems.Ammo,1);
 			break;
 		case 1: //use 1 heavy ammo
-			ammonum = 1;
-			ammotype = ModItems.HeavyAmmo;
+			itemNum = 1;
+			itemType = new ItemStack(ModItems.HeavyAmmo,1);
+			break;
+		case 2:	//use 1 light ammo container
+			itemNum = 1;
+			itemType = new ItemStack(ModItems.AmmoContainer,1);
+			break;
+		case 3: //use 1 heavy ammo container
+			itemNum = 1;
+			itemType = new ItemStack(ModItems.HeavyAmmoContainer,1);
+			break;
+		case 4: //use 1 grudge
+			itemNum = 1;
+			itemType = new ItemStack(ModItems.Grudge,1);
+			break;
+		case 5: //use 1 grudge block
+			itemNum = 1;
+			itemType = new ItemStack(ModBlocks.BlockGrudge,1);
 			break;
 		}
 		
 		//search item in ship inventory
-		int i = findItemInSlot(ammotype);
+		int i = findItemInSlot(itemType);
 		if(i == -1) {		//item not found
 			return false;
 		}
-		ItemStack ammo = this.ExtProps.slots[i];
 		
-		//decr item stacksize		
-		if(ammo.stackSize >= ammonum) {
-			ammo.stackSize -= ammonum;
+		//decr item stacksize
+		ItemStack getItem = this.ExtProps.slots[i];
+
+		if(getItem.stackSize >= itemNum) {
+			getItem.stackSize -= itemNum;
 		}
-		else {	//not enough ammo, damage will reduce
-			ammo.stackSize = 0;
-			isEnoughAmmo = false;
+		else {	//not enough item
+			getItem.stackSize = 0;
+			isEnoughItem = false;
 		}
 				
-		if(ammo.stackSize == 0) {
-			ammo = null;
+		if(getItem.stackSize == 0) {
+			getItem = null;
 		}
 		
 		//save back itemstack
 		//no need to sync because no GUI opened
-		this.ExtProps.slots[i] = ammo;	
+		this.ExtProps.slots[i] = getItem;	
 		
-		return isEnoughAmmo;	
+		return isEnoughItem;	
 	}
 
 	//find item in ship inventory
-	private int findItemInSlot(Item parItem) {
+	private int findItemInSlot(ItemStack parItem) {
 		ItemStack slotitem = null;
 
 		//search ship inventory (except equip slots)
 		for(int i=ContainerShipInventory.SLOTS_EQUIP; i<ContainerShipInventory.SLOTS_TOTAL; i++) {
 			slotitem = this.ExtProps.slots[i];
-			if(slotitem != null && slotitem.getItem() == parItem) {
+			if(slotitem != null && slotitem.getItem().equals(parItem.getItem())) {
 				return i;	//found item
 			}		
 		}	
 		
 		return -1;	//item not found
-	}	
-	
+	}
 
 	
 }

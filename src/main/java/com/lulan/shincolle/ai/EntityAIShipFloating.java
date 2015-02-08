@@ -17,7 +17,7 @@ public class EntityAIShipFloating extends EntityAIBase {
 
     public EntityAIShipFloating(BasicEntityShip entity) {
         this.theEntity = entity;
-        this.setMutexBits(4);
+        this.setMutexBits(6);
         entity.getNavigator().setCanSwim(true);
     }
 
@@ -27,6 +27,11 @@ public class EntityAIShipFloating extends EntityAIBase {
 
     public void updateTask() {
     	//上浮到指定高度 (本體仍在水中)
+    	if(this.theEntity.getShipDepth() > 4D) {
+    		this.theEntity.motionY += 0.025D;
+    		return;
+    	}
+    	
     	if(this.theEntity.getShipDepth() > 1D) {
     		this.theEntity.motionY += 0.015D;
     		return;

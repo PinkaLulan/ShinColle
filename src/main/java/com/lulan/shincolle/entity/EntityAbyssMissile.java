@@ -12,6 +12,7 @@ import com.lulan.shincolle.utility.LogHelper;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -34,7 +35,7 @@ import net.minecraft.world.World;
  * 
  */
 public class EntityAbyssMissile extends Entity {
-    public EntityLivingBase hostEntity;  //host target
+    public BasicEntityShip hostEntity;  //host target
     public Entity hitEntity;			 //onImpact target (for entity)
     
     //missile motion
@@ -65,7 +66,7 @@ public class EntityAbyssMissile extends Entity {
     	super(world);
     }
     
-    public EntityAbyssMissile(World world, EntityLivingBase host, double tarX, double tarY, double tarZ, float atk, float kbValue, boolean isDirect) {
+    public EntityAbyssMissile(World world, BasicEntityShip host, double tarX, double tarY, double tarZ, double launchPos, float atk, float kbValue, boolean isDirect) {
         super(world);
         this.world = world;
         //設定entity的發射者, 用於追蹤造成傷害的來源
@@ -75,7 +76,7 @@ public class EntityAbyssMissile extends Entity {
         this.kbValue  = kbValue;
         //設定發射位置 (posY會加上offset), 左右+上下角度, 以及
         this.posX = host.posX;
-        this.posY = host.posY+host.height*0.5D;
+        this.posY = launchPos;
         this.posZ = host.posZ;     
         //計算距離, 取得方向vector, 並且初始化速度, 使飛彈方向朝向目標
         this.distX = tarX - this.posX;
@@ -194,8 +195,22 @@ public class EntityAbyssMissile extends Entity {
 //            }
             
             //判定bounding box內是否有可以觸發爆炸的entity
-            hitEntity = null; 
-            List hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, this.boundingBox);
+            hitEntity = null;
+            
+            //在水中發射
+            List hitList = null;
+            if(this.hostEntity != null) {
+            	if(this.hostEntity.getShipDepth() > 0) {
+                	hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, this.boundingBox.expand(1.0D, 1.0D, 1.0D));
+                }
+                else {	//在空氣中發射
+                	hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, this.boundingBox.expand(0.5D, 0.5D, 0.5D));
+                }
+            }
+            else {	//for server restart, kill the missile entity
+            	this.setDead();
+            }
+           
             //搜尋list, 找出第一個可以判定的目標, 即傳給onImpact
             if(hitList != null && !hitList.isEmpty()) {
                 for(int i=0; i<hitList.size(); ++i) { 
@@ -229,6 +244,11 @@ public class EntityAbyssMissile extends Entity {
     	//server side
     	if(!this.worldObj.isRemote) {  		
             if(entityHit != null) {	//撞到entity引起爆炸
+            	//若攻擊到玩家, 傷害固定為TNT傷害
+            	if(entityHit instanceof EntityPlayer) {
+            		if(this.atk > 59) this.atk = 59;	//same with TNT
+            	}
+            	
         		//設定該entity受到的傷害
             	isTargetHurt = entityHit.attackEntityFrom(DamageSource.causeMobDamage(this.hostEntity), this.atk);
 
@@ -243,32 +263,37 @@ public class EntityAbyssMissile extends Entity {
         	        }             	 
         	    }
             }
-            else {	//撞到block或其他原因引起爆炸, 則在飛彈最後地點引爆
-            	//判定bounding box內是否有可以吃傷害的entity
-                hitEntity = null;
-                AxisAlignedBB impactBox = this.boundingBox.expand(3D, 3D, 3D); 
-                List hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, impactBox);
-                //搜尋list, 找出第一個可以判定的目標, 即傳給onImpact
-                if(hitList != null && !hitList.isEmpty()) {
-                    for(int i=0; i<hitList.size(); ++i) { 
-                    	hitEntity = (Entity)hitList.get(i);
-                    	if(hitEntity.canBeCollidedWith() && (!hitEntity.isEntityEqual(this.hostEntity) || this.ticksExisted > 20)) {               		
-                    		//對entity造成傷害
-                    		isTargetHurt = hitEntity.attackEntityFrom(DamageSource.causeMobDamage(this.hostEntity), this.atk);
-                    	    //if attack success
-                    	    if(isTargetHurt) {
-                    	    	//calc kb effect
-                    	        if(this.kbValue > 0) {
-                    	        	hitEntity.addVelocity((double)(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue), 
-                    	                   0.1D, (double)(MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue));
-                    	            motionX *= 0.6D;
-                    	            motionZ *= 0.6D;
-                    	        }             	 
-                    	    }
+            
+            //計算範圍爆炸傷害: 判定bounding box內是否有可以吃傷害的entity
+            hitEntity = null;
+            AxisAlignedBB impactBox = this.boundingBox.expand(3.5D, 3.5D, 3.5D); 
+            List hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, impactBox);
+            //搜尋list, 找出第一個可以判定的目標, 即傳給onImpact
+            if(hitList != null && !hitList.isEmpty()) {
+                for(int i=0; i<hitList.size(); ++i) { 
+                	hitEntity = (Entity)hitList.get(i);
+                	if(hitEntity.canBeCollidedWith() && (!hitEntity.isEntityEqual(this.hostEntity) || this.ticksExisted > 20)) {               		
+                		//若攻擊到玩家, 傷害固定為TNT傷害
+                    	if(hitEntity instanceof EntityPlayer) {
+                    		if(this.atk > 59) this.atk = 59;	//same with TNT
                     	}
-                    }
-                }          	
-            }
+                		
+                		//對entity造成傷害
+                		isTargetHurt = hitEntity.attackEntityFrom(DamageSource.causeMobDamage(this.hostEntity), this.atk);
+                	    //if attack success
+                	    if(isTargetHurt) {
+                	    	//calc kb effect
+                	        if(this.kbValue > 0) {
+                	        	hitEntity.addVelocity((double)(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue), 
+                	                   0.1D, (double)(MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue));
+                	            motionX *= 0.6D;
+                	            motionZ *= 0.6D;
+                	        }             	 
+                	    }
+                	}
+                }
+            }          	
+
             
             //send packet to client for display partical effect 
             createPacketS2C.sendS2CAttackParticle(this, 2);

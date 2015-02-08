@@ -121,6 +121,7 @@ public class AttrValues {
 		public static final byte T_T = 2;				//sad
 		public static final byte O_O = 3;				//...
 		public static final byte BORED = 4;				//坐下時隨機抽的無聊表情
+		public static final byte HUNGRY = 5;			//no grudge
 	}
 	
 	public static final class ShipType {				//for GUI display
