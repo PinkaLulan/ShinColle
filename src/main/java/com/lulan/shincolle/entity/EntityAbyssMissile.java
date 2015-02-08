@@ -6,7 +6,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import java.util.Iterator;
 import java.util.List;
 
-import com.lulan.shincolle.network.createPacketS2C;
+import com.lulan.shincolle.network.CreatePacketS2C;
 import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.block.Block;
@@ -296,7 +296,7 @@ public class EntityAbyssMissile extends Entity {
 
             
             //send packet to client for display partical effect 
-            createPacketS2C.sendS2CAttackParticle(this, 2);
+            CreatePacketS2C.sendS2CAttackParticle(this, 2);
             this.setDead();
         }//end if server side
     }

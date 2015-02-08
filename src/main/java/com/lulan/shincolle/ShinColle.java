@@ -103,7 +103,7 @@ public class ShinColle {
 			LogHelper.info(oreName);
 		}
 		*/
-		
+
 		LogHelper.info("postInit complete.");	//debug
 	}
 	

@@ -3,6 +3,7 @@ package com.lulan.shincolle.client.model;
 import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.entity.EntityHeavyCruiserRi;
+import com.lulan.shincolle.reference.AttrID;
 import com.lulan.shincolle.reference.AttrValues;
 import com.lulan.shincolle.utility.LogHelper;
 
@@ -341,7 +342,7 @@ public class ModelHeavyCruiserRi extends ModelBase {
   		}
   		
 	    if(ent.isSitting() || ent.isRiding()) {  //騎乘動作 			
-  			if(ent.getEntityEmotion() == AttrValues.Emotion.BORED) {
+  			if(ent.getEntityState(AttrID.Emotion) == AttrValues.Emotion.BORED) {
 		    	GL11.glTranslatef(0F, 1.4F, 0F);
 				this.ArmLeft.rotateAngleX = 0.6F;
 	  			this.ArmRight.rotateAngleX = 0.6F;
@@ -386,7 +387,7 @@ public class ModelHeavyCruiserRi extends ModelBase {
 	}
     
     private void showEquip(EntityHeavyCruiserRi ent) {
-		if(ent.getEntityState() >= AttrValues.State.EQUIP) {
+		if(ent.getEntityState(AttrID.State) >= AttrValues.State.EQUIP) {
 			this.EquipBase.isHidden = false;
 			this.EquipLeftBase.isHidden = false;
 			this.EquipRightBase.isHidden = false;
@@ -400,24 +401,24 @@ public class ModelHeavyCruiserRi extends ModelBase {
   	}
   	
     //隨機抽取顯示的表情 
-    private void rollEmotion(EntityHeavyCruiserRi ent) {   	
-    	switch(ent.getEntityEmotion()) {
+    private void rollEmotion(EntityHeavyCruiserRi ent) { 
+    	switch(ent.getEntityState(AttrID.Emotion)) {
     	case AttrValues.Emotion.BLINK:	//blink
     		EmotionBlink(ent);
     		break;
     	case AttrValues.Emotion.T_T:	//cry
-    		setFace(2);
+    		if(ent.getStartEmotion() <= 0) { setFace(2); }
     		break;
     	case AttrValues.Emotion.O_O:
     		EmotionStaring(ent);
 			break;
     	case AttrValues.Emotion.HUNGRY:
-    		setFace(4);
+    		if(ent.getStartEmotion() <= 0) { setFace(4); }
 			break;
     	case AttrValues.Emotion.BORED:
     	default:						//normal face
     		//reset face to 0
-    		setFace(0); 			    
+    		if(ent.getStartEmotion() <= 0) setFace(0); 			    
     		//roll emotion (3 times) every 6 sec
     		//1 tick in entity = 3 tick in model class (20 vs 60 fps)
     		if(ent.ticksExisted % 120 == 0) {  			
@@ -435,46 +436,41 @@ public class ModelHeavyCruiserRi extends ModelBase {
 			ent.setStartEmotion(ent.ticksExisted);		//表情開始時間
 		}
     	
-    	switch(ent.ticksExisted - ent.getStartEmotion()) {
-		case 1:
-			setFace(3);
-			break;
-		}	
+    	int EmoTime = ent.ticksExisted - ent.getStartEmotion();
     	
-    	//reset face
-    	if(ent.ticksExisted - ent.getStartEmotion() > 41) {
+    	if(EmoTime > 41) {	//reset face
     		setFace(0);
 			ent.setEntityEmotion(AttrValues.Emotion.NORMAL, false);
 			ent.setStartEmotion(-1);
+    	}
+    	else if(EmoTime > 1) {
+    		setFace(3);
     	}
 	}
 
 	//眨眼動作, this emotion is CLIENT ONLY, no sync packet required
   	private void EmotionBlink(EntityHeavyCruiserRi ent) {
-  		if(ent.getEntityEmotion() == AttrValues.Emotion.NORMAL) {	//要在沒表情狀態才做表情		
+  		if(ent.getEntityState(AttrID.Emotion) == AttrValues.Emotion.NORMAL) {	//要在沒表情狀態才做表情		
   			ent.setStartEmotion(ent.ticksExisted);		//表情開始時間
   			ent.setEntityEmotion(AttrValues.Emotion.BLINK, false);	//標記表情為blink
   		}
-  		else {
-  			switch(ent.ticksExisted - ent.getStartEmotion()) {
-  			case 1:
-  				setFace(1);
-  				break;
-  			case 35:
-  				setFace(0);
-  				break;
-  			case 45:
-  				setFace(1);
-  				break;
-  			}
-  		}
   		
-  		//reset face
-    	if(ent.ticksExisted - ent.getStartEmotion() > 61) {
+  		int EmoTime = ent.ticksExisted - ent.getStartEmotion();
+    	 		
+    	if(EmoTime > 61) {	//reset face
     		setFace(0);
 			ent.setEntityEmotion(AttrValues.Emotion.NORMAL, false);
 			ent.setStartEmotion(-1);
     	}
+    	else if(EmoTime > 45) {
+    		setFace(1);
+    	}
+    	else if(EmoTime > 35) {
+    		setFace(0);
+    	}
+    	else if(EmoTime > 1) {
+    		setFace(1);
+    	}		
   	}
   	
   	//設定顯示的臉型

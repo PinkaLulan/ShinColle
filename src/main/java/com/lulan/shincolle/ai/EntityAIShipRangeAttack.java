@@ -51,7 +51,9 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
     public boolean shouldExecute() {
     	EntityLivingBase target = this.host.getAttackTarget();
     	
-        if (target != null && (this.host.hasAmmoLight() || this.host.hasAmmoHeavy())) {   
+        if (target != null && 
+        	(this.host.getEntityFlagB(AttrID.F_UseAmmoLight) || this.host.getEntityFlagB(AttrID.F_UseAmmoHeavy)) && 
+        	(this.host.hasAmmoLight() || this.host.hasAmmoHeavy())) {   
         	this.attackTarget = target;
             return true;
         }       
@@ -62,9 +64,8 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
     //init AI parameter, call once every target
     @Override
     public void startExecuting() {
-    	this.entityMoveSpeed = this.host.getFinalMOV(); 	
-    	this.maxDelayLight = (int)(20F / (this.host.getFinalSPD()));
-    	this.maxDelayHeavy = (int)(100F / (this.host.getFinalSPD()));    	
+    	this.maxDelayLight = (int)(20F / (this.host.getFinalState(AttrID.SPD)));
+    	this.maxDelayHeavy = (int)(100F / (this.host.getFinalState(AttrID.SPD)));    	
     	this.aimTime = (int) (20F * (float)( 150 - this.host.getShipLevel() ) / 150F) + 10;        
     	
     	//if target changed, check the delay time from prev attack
@@ -75,7 +76,7 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
     		this.delayHeavy = this.aimTime * 2;
     	}
     	
-        this.attackRange = this.host.getFinalHIT()+1F;
+        this.attackRange = this.host.getFinalState(AttrID.HIT) + 1F;
         this.rangeSq = this.attackRange * this.attackRange;
         
         distSq = distX = distY = distZ = motX = motY = motZ = 0D;
@@ -145,7 +146,7 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
 	        		
 	        		//若直線可視, 則直接直線移動
 	        		if(this.host.getEntitySenses().canSee(this.attackTarget)) {
-	        			double PetSpeed = this.host.getFinalMOV();
+	        			double PetSpeed = this.host.getFinalState(AttrID.MOV);
 	        			this.motX = (this.distX / this.distSq) * PetSpeed * 6D;
 	        			this.motZ = (this.distZ / this.distSq) * PetSpeed * 6D;
 
@@ -166,7 +167,7 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
 	        this.delayHeavy--;
 
 	        //若attack delay倒數完了且瞄準時間夠久, 則開始攻擊
-	        if(this.delayHeavy <= 0 && this.onSightTime >= this.aimTime && this.host.hasAmmoHeavy()) {
+	        if(this.delayHeavy <= 0 && this.onSightTime >= this.aimTime && this.host.hasAmmoHeavy() && this.host.getEntityFlagB(AttrID.F_UseAmmoHeavy)) {
 	        	//若目標跑出範圍 or 目標被阻擋 or 距離太近, 則停止攻擊, 進行下一輪ai判定
 	            if(distSq > (double)this.rangeSq || distSq < 4D || !onSight) { return; }
 	            
@@ -176,7 +177,7 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
 	        } 
 	        
 	        //若attack delay倒數完了且瞄準時間夠久, 則開始攻擊
-	        if(this.delayLight <= 0 && this.onSightTime >= this.aimTime && this.host.hasAmmoLight()) {
+	        if(this.delayLight <= 0 && this.onSightTime >= this.aimTime && this.host.hasAmmoLight() && this.host.getEntityFlagB(AttrID.F_UseAmmoLight)) {
 	        	//若目標跑出範圍 or 目標被阻擋, 則停止攻擊, 進行下一輪ai判定
 	            if(distSq > (double)this.rangeSq || !onSight) { return; }
 	            

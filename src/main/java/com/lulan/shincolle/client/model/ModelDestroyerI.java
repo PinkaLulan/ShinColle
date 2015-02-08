@@ -273,7 +273,7 @@ public class ModelDestroyerI extends ModelBase {
 
 
 	private void isKisaragi(EntityDestroyerI ent) {
-		if(ent.getEntityState() >= AttrValues.State.EQUIP) {
+		if(ent.getEntityState(AttrID.State) >= AttrValues.State.EQUIP) {
 			PKisaragi00.isHidden = false;
 			PKisaragi01.isHidden = false;
 			PKisaragi02.isHidden = false;
@@ -290,7 +290,7 @@ public class ModelDestroyerI extends ModelBase {
 	
 	//坐下動作
   	private void motionSit(EntityDestroyerI ent, float angleZ) {		
-  		if(ent.getEntityEmotion() == AttrValues.Emotion.BORED) {
+  		if(ent.getEntityState(AttrID.Emotion) == AttrValues.Emotion.BORED) {
   			GL11.glTranslatef(0F, 0.9F, 0F);	//1.4
   			PBack.rotateAngleZ = 0.6F;
   	  		PNeck.rotateAngleZ = -0.25F;
@@ -355,20 +355,20 @@ public class ModelDestroyerI extends ModelBase {
 
 	//隨機抽取顯示的表情 
     private void rollEmotion(EntityDestroyerI ent) {   	
-    	switch(ent.getEntityEmotion()) {
+    	switch(ent.getEntityState(AttrID.Emotion)) {
     	case AttrValues.Emotion.BLINK:	//blink
     		EmotionBlink(ent);
     		break;
     	case AttrValues.Emotion.T_T:	//cry
     	case AttrValues.Emotion.O_O:
     	case AttrValues.Emotion.HUNGRY:
-    		setFace(2);
+    		if(ent.getStartEmotion() <= 0) setFace(2);
     		break;
     	case AttrValues.Emotion.BORED:	//cry
-    		setFace(1);
+    		if(ent.getStartEmotion() <= 0) setFace(1);
     		break;
     	default:						//normal face
-    		setFace(0); 			    //reset face to 0
+    		if(ent.getStartEmotion() <= 0) setFace(0); 			    //reset face to 0
     		//roll emotion (3 times) every 6 sec
     		//1 tick in entity = 3 tick in model class (20 vs 60 fps)
     		if(ent.ticksExisted % 120 == 0) {  			
@@ -383,27 +383,27 @@ public class ModelDestroyerI extends ModelBase {
 
 	//眨眼動作, this emotion is CLIENT ONLY, no sync packet required
 	private void EmotionBlink(EntityDestroyerI ent) {
-		if(ent.getEntityEmotion() == AttrValues.Emotion.NORMAL) {	//要在沒表情狀態才做表情		
+		if(ent.getEntityState(AttrID.Emotion) == AttrValues.Emotion.NORMAL) {	//要在沒表情狀態才做表情		
 			ent.setStartEmotion(ent.ticksExisted);		//表情開始時間
 			ent.setEntityEmotion(AttrValues.Emotion.BLINK, false);	//標記表情為blink
 		}
-		else {
-			switch(ent.ticksExisted - ent.getStartEmotion()) {
-			case 1:
-				setFace(1);
-				break;
-			case 35:
-				setFace(0);
-				break;
-			case 45:
-				setFace(1);
-				break;
-			case 60:
-				setFace(0);
-				ent.setEntityEmotion(AttrValues.Emotion.NORMAL, false);
-				break;
-			}
-		}
+		
+		int EmoTime = ent.ticksExisted - ent.getStartEmotion();
+ 		
+    	if(EmoTime > 61) {	//reset face
+    		setFace(0);
+			ent.setEntityEmotion(AttrValues.Emotion.NORMAL, false);
+			ent.setStartEmotion(-1);
+    	}
+    	else if(EmoTime > 45) {
+    		setFace(1);
+    	}
+    	else if(EmoTime > 35) {
+    		setFace(0);
+    	}
+    	else if(EmoTime > 1) {
+    		setFace(1);
+    	}
 	}
 	
 	//設定顯示的臉型

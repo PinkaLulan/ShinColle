@@ -3,7 +3,7 @@ package com.lulan.shincolle.reference;
 //for array ID
 public class AttrID {
 
-	//Array ID
+	//Array ID: ArrayEquip, ArrayFinal, BonusPoint, TypeModify
 	public static final byte HP = 0;
 	public static final byte ATK = 1;
 	public static final byte DEF = 2;
@@ -11,10 +11,21 @@ public class AttrID {
 	public static final byte MOV = 4;
 	public static final byte HIT = 5;
 	
-	//EntityState
+	//Array ID: EntityState
 	public static final byte State = 0;
 	public static final byte Emotion = 1;
 	public static final byte SwimType = 2;
+	
+	//Array ID: EntityFlag
+	public static final byte F_CanFloatUp = 0;
+	public static final byte F_IsMarried = 1;
+	public static final byte F_UseAmmoLight = 2;
+	public static final byte F_UseAmmoHeavy = 3;
+	public static final byte F_NoFuel = 4;
+	
+	//GUI Button ID
+	public static final byte B_ShipInv_AmmoLight = 0;
+	public static final byte B_ShipInv_AmmoHeavy = 1;
 	
 	//ShipID
 	public static final byte DestroyerI = 0;

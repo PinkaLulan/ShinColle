@@ -9,6 +9,7 @@ import java.io.IOException;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.reference.AttrID;
 import com.lulan.shincolle.reference.Names;
+import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
@@ -55,9 +56,10 @@ public class ProcessPacketClientSide {
 			case Names.Packets.ENTITY_SYNC:  //entity sync packet
 				//read entity ID
 				entityID = bbis.readInt();
-				foundEntity = getEntityByID(entityID, theWorld);
+				foundEntity = EntityHelper.getEntityByID(entityID, theWorld);
 
 				if (foundEntity instanceof BasicEntityShip) {
+					LogHelper.info("DEBUG : client All Sync done");
 					BasicEntityShip foundEntityShip = (BasicEntityShip)foundEntity;
 					//read packet data
 					foundEntityShip.setShipLevel(bbis.readShort(), false);
@@ -65,46 +67,70 @@ public class ProcessPacketClientSide {
 					foundEntityShip.setExpCurrent(bbis.readInt());
 					foundEntityShip.setNumAmmoLight(bbis.readInt());
 					foundEntityShip.setNumAmmoHeavy(bbis.readInt());
+					foundEntityShip.setNumGrudge(bbis.readInt());
 					
-					foundEntityShip.setFinalHP(bbis.readFloat());
-					foundEntityShip.setFinalATK(bbis.readFloat());
-					foundEntityShip.setFinalDEF(bbis.readFloat());
-					foundEntityShip.setFinalSPD(bbis.readFloat());
-					foundEntityShip.setFinalMOV(bbis.readFloat());
-					foundEntityShip.setFinalHIT(bbis.readFloat());
+					foundEntityShip.setFinalState(AttrID.HP, bbis.readFloat());
+					foundEntityShip.setFinalState(AttrID.ATK, bbis.readFloat());
+					foundEntityShip.setFinalState(AttrID.DEF, bbis.readFloat());
+					foundEntityShip.setFinalState(AttrID.SPD, bbis.readFloat());
+					foundEntityShip.setFinalState(AttrID.MOV, bbis.readFloat());
+					foundEntityShip.setFinalState(AttrID.HIT, bbis.readFloat());
 					
 					foundEntityShip.setEntityState(bbis.readByte(), false);
 					foundEntityShip.setEntityEmotion(bbis.readByte(), false);
 					foundEntityShip.setEntitySwimType(bbis.readByte(), false);					
 					
-					foundEntityShip.setBonusHP(bbis.readByte());
-					foundEntityShip.setBonusATK(bbis.readByte());
-					foundEntityShip.setBonusDEF(bbis.readByte());
-					foundEntityShip.setBonusSPD(bbis.readByte());
-					foundEntityShip.setBonusMOV(bbis.readByte());
-					foundEntityShip.setBonusHIT(bbis.readByte());
+					foundEntityShip.setBonusPoint(AttrID.HP, bbis.readByte());
+					foundEntityShip.setBonusPoint(AttrID.ATK, bbis.readByte());
+					foundEntityShip.setBonusPoint(AttrID.DEF, bbis.readByte());
+					foundEntityShip.setBonusPoint(AttrID.SPD, bbis.readByte());
+					foundEntityShip.setBonusPoint(AttrID.MOV, bbis.readByte());
+					foundEntityShip.setBonusPoint(AttrID.HIT, bbis.readByte());
+					
+					foundEntityShip.setEntityFlagI(AttrID.F_CanFloatUp, bbis.readByte());
+					foundEntityShip.setEntityFlagI(AttrID.F_IsMarried, bbis.readByte());
+					foundEntityShip.setEntityFlagI(AttrID.F_UseAmmoLight, bbis.readByte());
+					foundEntityShip.setEntityFlagI(AttrID.F_UseAmmoHeavy, bbis.readByte());
+					foundEntityShip.setEntityFlagI(AttrID.F_NoFuel, bbis.readByte());
 				}
 				break;
 				
 			case Names.Packets.STATE_SYNC:  //entity sync packet
 				//read entity ID
 				entityID = bbis.readInt();
-				foundEntity = getEntityByID(entityID, theWorld);
+				foundEntity = EntityHelper.getEntityByID(entityID, theWorld);
 
 				if (foundEntity instanceof BasicEntityShip) {
+					LogHelper.info("DEBUG : client State Sync done");
 					BasicEntityShip foundEntityShip = (BasicEntityShip)foundEntity;
 					//read packet data	
 					foundEntityShip.setEntityState(bbis.readByte(), false);
 					foundEntityShip.setEntityEmotion(bbis.readByte(), false);
-					foundEntityShip.setEntitySwimType(bbis.readByte(), false);					
+					foundEntityShip.setEntitySwimType(bbis.readByte(), false);
+				}
+				break;
+				
+			case Names.Packets.FLAG_SYNC:  //entity sync packet
+				//read entity ID
+				entityID = bbis.readInt();
+				foundEntity = EntityHelper.getEntityByID(entityID, theWorld);
 
+				if (foundEntity instanceof BasicEntityShip) {
+					LogHelper.info("DEBUG : client Flag Sync done");
+					BasicEntityShip foundEntityShip = (BasicEntityShip)foundEntity;
+					//read packet data
+					foundEntityShip.setEntityFlagI(AttrID.F_CanFloatUp, bbis.readByte());
+					foundEntityShip.setEntityFlagI(AttrID.F_IsMarried, bbis.readByte());
+					foundEntityShip.setEntityFlagI(AttrID.F_UseAmmoLight, bbis.readByte());
+					foundEntityShip.setEntityFlagI(AttrID.F_UseAmmoHeavy, bbis.readByte());
+					foundEntityShip.setEntityFlagI(AttrID.F_NoFuel, bbis.readByte());					
 				}
 				break;
 				
 			case Names.Packets.PARTICLE_ATK:  //attack particle
 				//read entity ID
 				entityID = bbis.readInt();
-				foundEntity = getEntityByID(entityID, theWorld);
+				foundEntity = EntityHelper.getEntityByID(entityID, theWorld);
 				//read particle type
 				particleType = bbis.readByte();
 				//spawn particle
@@ -114,7 +140,7 @@ public class ProcessPacketClientSide {
 			case Names.Packets.PARTICLE_ATK2:  //attack particle at custom position
 				//read entity id
 				entityID = bbis.readInt();
-				foundEntity = getEntityByID(entityID, theWorld);
+				foundEntity = EntityHelper.getEntityByID(entityID, theWorld);
 				//read position + look vector
 				posX = bbis.readFloat();
 				posY = bbis.readFloat();
@@ -132,15 +158,6 @@ public class ProcessPacketClientSide {
 		bbis.close();   
 		}
 	}
- 
-	//get entity by ID
-	public static Entity getEntityByID(int entityID, World world) {
-		for(Object obj: world.getLoadedEntityList()) {
-			if(entityID != -1 && ((Entity)obj).getEntityId() == entityID) {
-				return ((Entity)obj);
-			}
-		}
-		return null;
-	}
+
 
 }

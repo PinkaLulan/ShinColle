@@ -1,6 +1,7 @@
 package com.lulan.shincolle.ai;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.reference.AttrID;
 import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.block.Block;
@@ -133,7 +134,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
         		
         		//若直線可視, 則直接直線移動
         		if(this.ThePet.getEntitySenses().canSee(this.TheOwner)) {
-        			double PetSpeed = this.ThePet.getFinalMOV();
+        			double PetSpeed = this.ThePet.getFinalState(AttrID.MOV);
         			this.motX = (this.distX / this.DistSqToOwner) * PetSpeed * 6D;
         			this.motZ = (this.distZ / this.DistSqToOwner) * PetSpeed * 6D;
 

@@ -13,7 +13,7 @@ import com.lulan.shincolle.entity.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
-import com.lulan.shincolle.network.createPacketS2C;
+import com.lulan.shincolle.network.CreatePacketS2C;
 import com.lulan.shincolle.reference.AttrID;
 import com.lulan.shincolle.reference.AttrValues;
 import com.lulan.shincolle.reference.GUIs;
@@ -69,12 +69,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 	protected int NumAmmoLight;			//彈藥存量
 	protected int NumAmmoHeavy;			//重型彈藥存量
 	protected int NumGrudge;			//fuel存量
-	protected boolean NoFuel;			//無fuel狀態
 	protected double ShipDepth;			//水深, 用於水中高度判定
-	protected boolean CanFloatUp;		//是否有空氣方塊可以上浮
-	protected boolean LiquidSpeedUp;
-	protected boolean IsMarried;		//是否已婚
-	protected boolean IsFollowing;		//是否正在跟隨
 	protected double ShipPrevX;			//ship posX 5 sec ago
 	protected double ShipPrevY;			//ship posY 5 sec ago
 	protected double ShipPrevZ;			//ship posZ 5 sec ago
@@ -84,6 +79,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 	protected float[] ArrayFinal;
 	//EntityState: 0:State 1:Emotion 2:SwimType
 	protected byte[] EntityState;
+	//EntityFlag: 0:CanFloatUp 1:IsMarried 2:UseAmmoLight 3:UseAmmoHeavy 4:NoFuel
+	protected byte[] EntityFlag;
 	//BonusPoint: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT
 	protected byte[] BonusPoint;
 	//TypeModify: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT
@@ -93,6 +90,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 	public BasicEntityShip(World world) {
 		super(world);
 		//init value
+		isImmuneToFire = true;	//set ship immune to lava
 		ShipLevel = 1;				//ship level
 		Kills = 0;					//kill mobs
 		ExpCurrent = 0;				//current exp
@@ -103,6 +101,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		ArrayFinal = new float[] {0F, 0F, 0F, 0F, 0F, 0F};
 		//EntityState: 0:State 1:Emotion 2:SwimType
 		EntityState = new byte[] {0, 0, 0};
+		//EntityFlag: 0:CanFloatUp 1:IsMarried 2:UseAmmoLight 3:UseAmmoHeavy 4:NoFuel
+		EntityFlag = new byte[] {0, 0, 1, 1, 0};
 		//BonusPoint: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT
 		BonusPoint = new byte[] {0, 0, 0, 0, 0, 0};
 		//TypeModify: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT
@@ -112,17 +112,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		NumAmmoHeavy = 0;
 		NumGrudge = 0;
 		StartEmotion = -1;		//emotion start time
-		IsMarried = false;
-		IsFollowing = false;
 		ShipDepth = 0D;			//water block above ship (within ship position)
-		CanFloatUp = false;		//check air block above water block
-		isImmuneToFire = true;	//set ship immune to lava
 		ShipPrevX = posX;		//ship position 5 sec ago
 		ShipPrevY = posY;
 		ShipPrevZ = posZ;
-		NoFuel = false;
-		LiquidSpeedUp = false;
-		this.jumpMovementFactor = 0.03F;
 	}
 	
 	@Override
@@ -208,101 +201,36 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		return NumAmmoLight > 0;
 	}
 	public boolean hasAmmoHeavy() {
-		// TODO Auto-generated method stub
 		return NumAmmoHeavy > 0;
 	}
 	public double getShipDepth() {
 		return ShipDepth;
 	}
-	public boolean isMarried() {
-		return IsMarried;
+	public boolean getEntityFlagB(int flag) {	//get flag (boolean)
+		if(EntityFlag[flag] == 1) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
-	public boolean isFollowing() {
-		return IsFollowing;
+	public byte getEntityFlagI(int flag) {	//get flag (byte)
+		return EntityFlag[flag];
 	}
-	public boolean CanFloatUp() {
-		return CanFloatUp;
+	public float getEquipState(int state) {
+		return ArrayEquip[state];
 	}
-	public float getEquipHP() {
-		return ArrayEquip[AttrID.HP];
+	public float getFinalState(int state) {
+		return ArrayFinal[state];
 	}
-	public float getEquipATK() {
-		return ArrayEquip[AttrID.ATK];
+	public byte getEntityState(int state) {
+		return EntityState[state];
 	}
-	public float getEquipDEF() {
-		return ArrayEquip[AttrID.DEF];
+	public byte getBonusPoint(int state) {
+		return BonusPoint[state];
 	}
-	public float getEquipSPD() {
-		return ArrayEquip[AttrID.SPD];
-	}
-	public float getEquipMOV() {
-		return ArrayEquip[AttrID.MOV];
-	}
-	public float getEquipHIT() {
-		return ArrayEquip[AttrID.HIT];
-	}
-	public float getFinalHP() {
-		return ArrayFinal[AttrID.HP];
-	}
-	public float getFinalATK() {
-		return ArrayFinal[AttrID.ATK];
-	}
-	public float getFinalDEF() {
-		return ArrayFinal[AttrID.DEF];
-	}
-	public float getFinalSPD() {
-		return ArrayFinal[AttrID.SPD];
-	}
-	public float getFinalMOV() {
-		return ArrayFinal[AttrID.MOV];
-	}
-	public float getFinalHIT() {
-		return ArrayFinal[AttrID.HIT];
-	}
-	public byte getEntityState() {
-		return EntityState[AttrID.State];
-	}
-	public byte getEntityEmotion() {
-		return EntityState[AttrID.Emotion];
-	}
-	public byte getEntitySwinType() {
-		return EntityState[AttrID.SwimType];
-	}
-	public byte getBonusHP() {
-		return BonusPoint[AttrID.HP];
-	}
-	public byte getBonusATK() {
-		return BonusPoint[AttrID.ATK];
-	}
-	public byte getBonusDEF() {
-		return BonusPoint[AttrID.DEF];
-	}
-	public byte getBonusSPD() {
-		return BonusPoint[AttrID.SPD];
-	}
-	public byte getBonusMOV() {
-		return BonusPoint[AttrID.MOV];
-	}
-	public byte getBonusHIT() {
-		return BonusPoint[AttrID.HIT];
-	}
-	public float getTypeModifyHP() {
-		return TypeModify[AttrID.HP];
-	}
-	public float getTypeModifyATK() {
-		return TypeModify[AttrID.ATK];
-	}
-	public float getTypeModifyDEF() {
-		return TypeModify[AttrID.DEF];
-	}
-	public float getTypeModifySPD() {
-		return TypeModify[AttrID.SPD];
-	}
-	public float getTypeModifyMOV() {
-		return TypeModify[AttrID.MOV];
-	}
-	public float getTypeModifyHIT() {
-		return TypeModify[AttrID.HIT];
+	public float getTypeModify(int state) {
+		return TypeModify[state];
 	}
 	
 	//replace isInWater, check water block with NO extend AABB
@@ -318,10 +246,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 				}
 				else {
 					if(BlockCheck == Blocks.air) {
-						CanFloatUp = true;
+						setEntityFlagB(AttrID.F_CanFloatUp, true);
 					}
 					else {
-						CanFloatUp = false;
+						setEntityFlagB(AttrID.F_CanFloatUp, false);
 					}
 					break;
 				}
@@ -377,6 +305,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 			ArrayFinal[AttrID.MOV] = 0F;
 		}
 		
+		this.jumpMovementFactor = (1F + ArrayFinal[AttrID.MOV]) * 0.03F;
+		
 		//set attribute by final value
 		/**
 		 * DO NOT SET ATTACK DAMAGE to non-EntityMob!!!!!
@@ -393,7 +323,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 			clearAITargetTasks();	//reset target AI (update hit range)
 			setAITargetList();	
 			sendSyncPacket();		//sync nbt data
-		}			
+		}
 	}
 	
 	//set exp value, no sync or update (for client load nbt data, gui display)
@@ -408,7 +338,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		
 	//called when entity exp++
 	public void addShipExp(int exp) {
-		int CapLevel = IsMarried ? 150 : 100;
+		int CapLevel = getEntityFlagB(AttrID.F_IsMarried) ? 150 : 100;
 		
 		if(ShipLevel != CapLevel && ShipLevel < 150) {	//level is not cap level
 			ExpCurrent += exp;
@@ -436,74 +366,42 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 	//called when a mob die near the entity (used in event handler)
 	public void addKills() {
 		Kills++;
-	}
-	
+	}	
 	//called when load nbt data or client sync
 	public void setKills(int par1) {
 		Kills = par1;
 	}
-	
-	//NYI
-	public void setMarried(boolean par1) {
-		IsMarried = par1;
-	}
-	
-	//called in AI
-	public void setFollowing(boolean par1) {
-		IsFollowing = par1;
-	}
-
 	//called when load nbt data or client sync
 	public void setNumAmmoLight(int par1) {
 		NumAmmoLight = par1;
-	}
-	
+	}	
 	//called when load nbt data or client sync
 	public void setNumAmmoHeavy(int par1) {
 		NumAmmoHeavy = par1;
-	}
-	
+	}	
 	//called when load nbt data or client sync
 	public void setNumGrudge(int par1) {
 		NumGrudge = par1;
 	}
-	
 	//ship attribute setter, sync packet in method: calcShipAttributes 
-	public void setFinalHP(float par1) {
-		ArrayFinal[AttrID.HP] = par1;
+	public void setFinalState(int state, float par1) {
+		ArrayFinal[state] = par1;
 	}
-	public void setFinalATK(float par1) {
-		ArrayFinal[AttrID.ATK] = par1;
+	public void setBonusPoint	(int state, byte par1) {
+		BonusPoint[state] = par1;
 	}
-	public void setFinalDEF(float par1) {
-		ArrayFinal[AttrID.DEF] = par1;
+	//called when load nbt data or GUI click
+	public void setEntityFlagB(int flag, boolean par1) {
+		if(par1) {
+			this.EntityFlag[flag] = 1;
+		}
+		else {
+			this.EntityFlag[flag] = 0;
+		}
 	}
-	public void setFinalSPD(float par1) {
-		ArrayFinal[AttrID.SPD] = par1;
-	}
-	public void setFinalMOV(float par1) {
-		ArrayFinal[AttrID.MOV] = par1;
-	}
-	public void setFinalHIT(float par1) {
-		ArrayFinal[AttrID.HIT] = par1;
-	}
-	public void setBonusHP(byte par1) {
-		BonusPoint[AttrID.HP] = par1;
-	}
-	public void setBonusATK(byte par1) {
-		BonusPoint[AttrID.ATK] = par1;
-	}
-	public void setBonusDEF(byte par1) {
-		BonusPoint[AttrID.DEF] = par1;
-	}
-	public void setBonusSPD(byte par1) {
-		BonusPoint[AttrID.SPD] = par1;
-	}
-	public void setBonusMOV(byte par1) {
-		BonusPoint[AttrID.MOV] = par1;
-	}
-	public void setBonusHIT(byte par1) {
-		BonusPoint[AttrID.HIT] = par1;
+	//called when load nbt data or GUI click
+	public void setEntityFlagI(int flag, int par1) {
+		this.EntityFlag[flag] = (byte)par1;
 	}
 	
 	//called when entity equip changed
@@ -548,21 +446,21 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 	public void setEntityState(int par1, boolean sync) {
 		EntityState[AttrID.State] = (byte)par1;	
 		if(sync && !worldObj.isRemote) {
-			createPacketS2C.sendS2CEntityStateSync(this);    
+			CreatePacketS2C.sendS2CEntityStateSync(this);    
 		}
 	}
 	
 	public void setEntityEmotion(int par1, boolean sync) {
 		EntityState[AttrID.Emotion] = (byte)par1;
 		if(sync && !worldObj.isRemote) {
-			createPacketS2C.sendS2CEntityStateSync(this);    
+			CreatePacketS2C.sendS2CEntityStateSync(this);    
 		}
 	}
 	
 	public void setEntitySwimType(int par1, boolean sync) {
 		EntityState[AttrID.SwimType] = (byte)par1;			
 		if(sync && !worldObj.isRemote) {
-			createPacketS2C.sendS2CEntityStateSync(this);    
+			CreatePacketS2C.sendS2CEntityStateSync(this);    
 		}   
 	}
 	
@@ -574,7 +472,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 	//manual send sync packet
 	public void sendSyncPacket() {
 		if (!worldObj.isRemote) {
-			createPacketS2C.sendS2CEntitySync(this);     
+			CreatePacketS2C.sendS2CEntitySync(this);     
 		}
 	}
 	
@@ -602,9 +500,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		if(itemstack != null) {
 			//use cake to change state
 			if(itemstack.getItem() == Items.cake) {
-				int ShipState = getEntityState() - AttrValues.State.EQUIP;
+				int ShipState = getEntityState(AttrID.State) - AttrValues.State.EQUIP;
 				
-				switch(getEntityState()) {
+				switch(getEntityState(AttrID.State)) {
 				case AttrValues.State.NORMAL:			//原本不顯示, 改為顯示
 					setEntityState(AttrValues.State.EQUIP, true);
 					break;
@@ -730,28 +628,28 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
         	//check every 100 ticks
         	if(ticksExisted % 100 == 0) {
         		//roll emtion: hungry > T_T > bored > O_O
-        		if(this.NoFuel) {
-        			if(this.getEntityEmotion() != AttrValues.Emotion.HUNGRY) {
+        		if(getEntityFlagB(AttrID.F_NoFuel)) {
+        			if(this.getEntityState(AttrID.Emotion) != AttrValues.Emotion.HUNGRY) {
         				LogHelper.info("DEBUG : set emotion HUNGRY");
 	    				this.setEntityEmotion(AttrValues.Emotion.HUNGRY, true);
 	    			}
         		}
         		else {
         			if(this.getHealth()/this.getMaxHealth() < 0.5F) {
-    	    			if(this.getEntityEmotion() != AttrValues.Emotion.T_T) {
+    	    			if(this.getEntityState(AttrID.Emotion) != AttrValues.Emotion.T_T) {
     	    				LogHelper.info("DEBUG : set emotion T_T");
     	    				this.setEntityEmotion(AttrValues.Emotion.T_T, true);
     	    			}			
     	    		}
         			else {
         				if(this.isSitting() && this.getRNG().nextInt(3) > 1) {	//30% for bored
-        	    			if(this.getEntityEmotion() != AttrValues.Emotion.BORED) {
+        	    			if(this.getEntityState(AttrID.Emotion) != AttrValues.Emotion.BORED) {
         	    				LogHelper.info("DEBUG : set emotion BORED");
         	    				this.setEntityEmotion(AttrValues.Emotion.BORED, true);
         	    			}
         	    		}
         	    		else {	//back to normal face
-        	    			if(this.getEntityEmotion() != AttrValues.Emotion.NORMAL) {
+        	    			if(this.getEntityState(AttrID.Emotion) != AttrValues.Emotion.NORMAL) {
         	    				LogHelper.info("DEBUG : set emotion NORMAL");
         	    				this.setEntityEmotion(AttrValues.Emotion.NORMAL, true);
         	    			}
@@ -817,7 +715,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 
 	        //send packet to client for display partical effect   
 	        if (!worldObj.isRemote) {
-				createPacketS2C.sendS2CAttackParticle(target, 1);     
+				CreatePacketS2C.sendS2CAttackParticle(target, 1);     
 			}
 	    }
 
@@ -874,9 +772,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 	        lookZ = lookZ / lookDist;
 	        
         	//send packet to client for display partical effect  
-        	createPacketS2C.sendS2CAttackParticle(target, 9);	//目標中彈特效  
+        	CreatePacketS2C.sendS2CAttackParticle(target, 9);	//目標中彈特效  
         	if(this.getLookVec() != null) {  					//發射者煙霧特效
-        		createPacketS2C.sendS2CAttackParticle2(this.getEntityId(), this.posX, this.posY, this.posZ, lookX, lookY, lookZ, 6);		
+        		CreatePacketS2C.sendS2CAttackParticle2(this.getEntityId(), this.posX, this.posY, this.posZ, lookX, lookY, lookZ, 6);		
         	}
         }
 
@@ -1037,7 +935,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 	
 	//eat grudge and change movement speed
 	private void decrGrudgeNum(int par1) {
-		boolean PrevNoFuel = NoFuel;
+		boolean PrevNoFuel = getEntityFlagB(AttrID.F_NoFuel);
 		
 		if(par1 > 215) {	//max cost = 215 (calc from speed 1 moving 5 sec)
 			par1 = 215;
@@ -1058,24 +956,25 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		}
 		
 		if(NumGrudge <= 0) {
-			NoFuel = true;
+			setEntityFlagB(AttrID.F_NoFuel, true);
 		}
 		else {
-			NoFuel = false;
+			setEntityFlagB(AttrID.F_NoFuel, false);
 		}
 
 		//get fuel, set AI
-		if(!NoFuel && PrevNoFuel) {
-//			LogHelper.info("DEBUG : grudge set AI");
+		if(!getEntityFlagB(AttrID.F_NoFuel) && PrevNoFuel) {
+LogHelper.info("DEBUG : !NoFuel set AI");
 			clearAITasks();
 			clearAITargetTasks();
 			setAIList();
 			setAITargetList();
 			sendSyncPacket();
 		}
+		
 		//no fuel, clear AI
-		if(NoFuel && !PrevNoFuel) {
-//			LogHelper.info("DEBUG : grudge clear AI");
+		if(getEntityFlagB(AttrID.F_NoFuel)) {
+LogHelper.info("DEBUG : NoFuel clear AI");
 			clearAITasks();
 			clearAITargetTasks();
 			sendSyncPacket();

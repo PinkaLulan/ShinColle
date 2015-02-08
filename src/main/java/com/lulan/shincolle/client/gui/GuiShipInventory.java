@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GL12;
 
 import com.lulan.shincolle.client.inventory.ContainerShipInventory;
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.network.CreatePacketC2S;
 import com.lulan.shincolle.reference.AttrID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
@@ -39,13 +40,16 @@ public class GuiShipInventory extends GuiContainer {
 	private InventoryPlayer player;
 	private float xMouse, yMouse;
 	private int xClick, yClick;
-	private int showPage;
-	private int pageIndictor;
 	private static final ResourceLocation guiBackground = new ResourceLocation(Reference.TEXTURES_GUI+"GuiShipInventory.png");
 	private static final ResourceLocation guiNameicon = new ResourceLocation(Reference.TEXTURES_GUI+"GuiNameIcon.png");
 	//draw string
 	private String titlename, shiplevel, lvMark, hpMark, strATK, strDEF, strSPD, strMOV, strHIT, Kills, Exp, AmmoLight, AmmoHeavy, Grudge, Owner;
 	private int hpCurrent, hpMax, color;
+	//draw button, page
+	private int showPage;
+	private int pageIndictor;
+	private boolean SwitchLight;
+	private boolean SwitchHeavy;
 	
 	//ship type icon array
 	private static final short[][] shipTypeIcon = {
@@ -104,6 +108,26 @@ public class GuiShipInventory extends GuiContainer {
         	break;
         }
         drawTexturedModalRect(guiLeft+147, guiTop+this.pageIndictor, 250, 0, 6, 34);
+        
+        //draw ammo ON/OFF
+        if(this.showPage == 1) {
+        	this.SwitchLight = this.entity.getEntityFlagB(AttrID.F_UseAmmoLight);
+            this.SwitchHeavy = this.entity.getEntityFlagB(AttrID.F_UseAmmoHeavy);
+            
+            if(this.SwitchLight) {
+            	drawTexturedModalRect(guiLeft+87, guiTop+71, 0, 214, 11, 11);
+            }
+            else {
+            	drawTexturedModalRect(guiLeft+87, guiTop+71, 11, 214, 11, 11);
+            }
+            
+            if(this.SwitchHeavy) {
+            	drawTexturedModalRect(guiLeft+87, guiTop+92, 0, 214, 11, 11);
+            }
+            else {
+            	drawTexturedModalRect(guiLeft+87, guiTop+92, 11, 214, 11, 11);
+            }
+        }       
         
         //draw level, ship type icon
         Minecraft.getMinecraft().getTextureManager().bindTexture(guiNameicon);
@@ -193,10 +217,10 @@ public class GuiShipInventory extends GuiContainer {
 		this.fontRendererObj.drawStringWithShadow(shiplevel, xSize-7-this.fontRendererObj.getStringWidth(shiplevel), 6, color);
 
 		//draw hp / maxhp, if currHP < maxHP, use darker color
-		color = pickColor(entity.getBonusHP());
+		color = pickColor(entity.getBonusPoint(AttrID.HP));
 		this.fontRendererObj.drawStringWithShadow("/"+String.valueOf(hpMax), 148 + this.fontRendererObj.getStringWidth(String.valueOf(hpCurrent)), 6, color);
 		if(hpCurrent < hpMax) {
-			switch(entity.getBonusHP()) {
+			switch(entity.getBonusPoint(AttrID.HP)) {
 			case 0:
 				color = 16119285;	//gray
 				break;
@@ -216,47 +240,47 @@ public class GuiShipInventory extends GuiContainer {
 		//draw string in different page
 		switch(this.showPage) {
 		case 0: {	//page 0: attribute page		
-			strATK = String.format("%.2f", this.entity.getFinalATK());
-			strDEF = String.format("%.2f", this.entity.getFinalDEF())+"%";
-			strSPD = String.format("%.2f", this.entity.getFinalSPD());
-			strMOV = String.format("%.2f", this.entity.getFinalMOV());
-			strHIT = String.format("%.2f", this.entity.getFinalHIT());
+			strATK = String.format("%.2f", this.entity.getFinalState(AttrID.ATK));
+			strDEF = String.format("%.2f", this.entity.getFinalState(AttrID.DEF))+"%";
+			strSPD = String.format("%.2f", this.entity.getFinalState(AttrID.SPD));
+			strMOV = String.format("%.2f", this.entity.getFinalState(AttrID.MOV));
+			strHIT = String.format("%.2f", this.entity.getFinalState(AttrID.HIT));
 			
 			//draw attribute name			
-			this.fontRendererObj.drawString(I18n.format("gui.shincolle:firepower"), 87, 21, pickColor(5));
+			this.fontRendererObj.drawString(I18n.format("gui.shincolle:firepower"), 87, 20, pickColor(5));
 			this.fontRendererObj.drawString(I18n.format("gui.shincolle:armor"), 87, 41, pickColor(5));
-			this.fontRendererObj.drawString(I18n.format("gui.shincolle:attackspeed"), 87, 61, pickColor(5));
-			this.fontRendererObj.drawString(I18n.format("gui.shincolle:movespeed"), 87, 81, pickColor(5));
-			this.fontRendererObj.drawString(I18n.format("gui.shincolle:range"), 87, 101, pickColor(5));
+			this.fontRendererObj.drawString(I18n.format("gui.shincolle:attackspeed"), 87, 62, pickColor(5));
+			this.fontRendererObj.drawString(I18n.format("gui.shincolle:movespeed"), 87, 83, pickColor(5));
+			this.fontRendererObj.drawString(I18n.format("gui.shincolle:range"), 87, 104, pickColor(5));
 					
 			//draw firepower
-			color = pickColor(entity.getBonusATK());
-			this.fontRendererObj.drawStringWithShadow(strATK, 145-this.fontRendererObj.getStringWidth(strATK), 31, color);
+			color = pickColor(entity.getBonusPoint(AttrID.ATK));
+			this.fontRendererObj.drawStringWithShadow(strATK, 145-this.fontRendererObj.getStringWidth(strATK), 30, color);
 			
 			//draw armor
-			color = pickColor(entity.getBonusDEF());
+			color = pickColor(entity.getBonusPoint(AttrID.DEF));
 			this.fontRendererObj.drawStringWithShadow(strDEF, 145-this.fontRendererObj.getStringWidth(strDEF), 51, color);
 			
 			//draw attack speed
-			color = pickColor(entity.getBonusSPD());
-			this.fontRendererObj.drawStringWithShadow(strSPD, 145-this.fontRendererObj.getStringWidth(strSPD), 71, color);
+			color = pickColor(entity.getBonusPoint(AttrID.SPD));
+			this.fontRendererObj.drawStringWithShadow(strSPD, 145-this.fontRendererObj.getStringWidth(strSPD), 72, color);
 			
 			//draw movement speed
-			color = pickColor(entity.getBonusMOV());
-			this.fontRendererObj.drawStringWithShadow(strMOV, 145-this.fontRendererObj.getStringWidth(strMOV), 91, color);
+			color = pickColor(entity.getBonusPoint(AttrID.MOV));
+			this.fontRendererObj.drawStringWithShadow(strMOV, 145-this.fontRendererObj.getStringWidth(strMOV), 93, color);
 					
 			//draw range
-			color = pickColor(entity.getBonusHIT());
-			this.fontRendererObj.drawStringWithShadow(strHIT, 145-this.fontRendererObj.getStringWidth(strHIT), 111, color);
+			color = pickColor(entity.getBonusPoint(AttrID.HIT));
+			this.fontRendererObj.drawStringWithShadow(strHIT, 145-this.fontRendererObj.getStringWidth(strHIT), 114, color);
 			break;
 			}
 		case 1:	{	//page 2: exp, kills, L&H ammo, fuel
 			//draw string
-			this.fontRendererObj.drawString(I18n.format("gui.shincolle:kills"), 87, 21, pickColor(5));
+			this.fontRendererObj.drawString(I18n.format("gui.shincolle:kills"), 87, 20, pickColor(5));
 			this.fontRendererObj.drawString(I18n.format("gui.shincolle:exp"), 87, 41, pickColor(5));
-			this.fontRendererObj.drawString(I18n.format("gui.shincolle:ammolight"), 87, 61, pickColor(5));
-			this.fontRendererObj.drawString(I18n.format("gui.shincolle:ammoheavy"), 87, 81, pickColor(5));
-			this.fontRendererObj.drawString(I18n.format("gui.shincolle:grudge"), 87, 101, pickColor(5));
+			this.fontRendererObj.drawString(I18n.format("gui.shincolle:ammolight"), 87, 62, pickColor(5));
+			this.fontRendererObj.drawString(I18n.format("gui.shincolle:ammoheavy"), 87, 83, pickColor(5));
+			this.fontRendererObj.drawString(I18n.format("gui.shincolle:grudge"), 87, 104, pickColor(5));
 			//draw value
 			entity.setExpNext();  //update exp value
 			Exp = String.valueOf(this.entity.getExpCurrent())+"/"+String.valueOf(this.entity.getExpNext());
@@ -265,22 +289,22 @@ public class GuiShipInventory extends GuiContainer {
 			AmmoHeavy = String.valueOf(this.entity.getNumAmmoHeavy());
 			Grudge = String.valueOf(this.entity.getNumGrudge());
 				
-			this.fontRendererObj.drawStringWithShadow(Kills, 145-this.fontRendererObj.getStringWidth(Kills), 31, pickColor(0));
+			this.fontRendererObj.drawStringWithShadow(Kills, 145-this.fontRendererObj.getStringWidth(Kills), 30, pickColor(0));
 			this.fontRendererObj.drawStringWithShadow(Exp, 145-this.fontRendererObj.getStringWidth(Exp), 51, pickColor(0));
-			this.fontRendererObj.drawStringWithShadow(AmmoLight, 145-this.fontRendererObj.getStringWidth(AmmoLight), 71, pickColor(0));
-			this.fontRendererObj.drawStringWithShadow(AmmoHeavy, 145-this.fontRendererObj.getStringWidth(AmmoHeavy), 91, pickColor(0));
-			this.fontRendererObj.drawStringWithShadow(Grudge, 145-this.fontRendererObj.getStringWidth(Grudge), 111, pickColor(0));
+			this.fontRendererObj.drawStringWithShadow(AmmoLight, 145-this.fontRendererObj.getStringWidth(AmmoLight), 72, pickColor(0));
+			this.fontRendererObj.drawStringWithShadow(AmmoHeavy, 145-this.fontRendererObj.getStringWidth(AmmoHeavy), 93, pickColor(0));
+			this.fontRendererObj.drawStringWithShadow(Grudge, 145-this.fontRendererObj.getStringWidth(Grudge), 114, pickColor(0));
 						
 			break;
 			}
 		case 2: {	//page 3: owner name
 			//draw string
-			this.fontRendererObj.drawString(I18n.format("gui.shincolle:owner"), 87, 21, pickColor(5));
+			this.fontRendererObj.drawString(I18n.format("gui.shincolle:owner"), 87, 20, pickColor(5));
 			
 			//draw value
 			Owner = this.entity.getOwnerName();
 			
-			this.fontRendererObj.drawStringWithShadow(Owner, 145-this.fontRendererObj.getStringWidth(Owner), 31, pickColor(1));
+			this.fontRendererObj.drawStringWithShadow(Owner, 145-this.fontRendererObj.getStringWidth(Owner), 30, pickColor(1));
 			
 			break;
 			}			
@@ -312,16 +336,52 @@ public class GuiShipInventory extends GuiContainer {
 	protected void mouseClicked(int posX, int posY, int mouseKey) {
         super.mouseClicked(posX, posY, mouseKey);
         
+        int ButtonValue;
+        
         //get click position
         xClick = posX - this.guiLeft;
         yClick = posY - this.guiTop;
         
         //if click in page block(85,18)~(153,124), change showPage (page 0,1,2)
-        if(xClick > 85 && xClick < 153 && yClick > 18 && yClick < 124) {
-        	this.showPage++;
-        	if(this.showPage > 2) {
+        //page0(145,18)~(154,53)  page1(145,53)~(154,89)  page2(145,89)~(154,125)
+        if(xClick > 140 && xClick < 156) {
+        	if(yClick > 17 && yClick < 53) {
         		this.showPage = 0;
         	}
+        	if(yClick > 52 && yClick < 89) {
+        		this.showPage = 1;
+        	}
+        	if(yClick > 88 && yClick < 125) {
+        		this.showPage = 2;
+        	}
+        }
+        
+        //遠程攻擊開關: iconON(0,214) iconOFF(16,214)
+        if(this.showPage == 1) {
+	        if(xClick > 84 && xClick < 140) {
+	        	if(yClick > 61 && yClick < 83) {
+	        		this.SwitchLight = this.entity.getEntityFlagB(AttrID.F_UseAmmoLight);      		
+	        		if(this.SwitchLight) {	//若原本為true, 則設為false(0)
+	        			ButtonValue = 0;
+	        		}
+	        		else {
+	        			ButtonValue = 1;
+	        		}
+	        		LogHelper.info("DEBUG : GUI click: use ammo light: "+ButtonValue);
+	        		CreatePacketC2S.sendC2SGUIShipInvClick(this.entity, AttrID.B_ShipInv_AmmoLight, ButtonValue);             
+	        	}
+	        	if(yClick > 82 && yClick < 104) {
+	        		this.SwitchHeavy = this.entity.getEntityFlagB(AttrID.F_UseAmmoHeavy);	
+	        		if(this.SwitchHeavy) {	//若原本為true, 則設為false(0)
+	        			ButtonValue = 0;
+	        		}
+	        		else {
+	        			ButtonValue = 1;
+	        		}
+	        		LogHelper.info("DEBUG : GUI click: use ammo heavy: "+ButtonValue);
+	        		CreatePacketC2S.sendC2SGUIShipInvClick(this.entity, AttrID.B_ShipInv_AmmoHeavy, ButtonValue); 
+	        	}
+	        }
         }
 	}
 	

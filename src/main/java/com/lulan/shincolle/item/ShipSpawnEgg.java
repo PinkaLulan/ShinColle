@@ -170,12 +170,12 @@ public class ShipSpawnEgg extends Item {
   		bonuspoint = ShipCalc.getBonusPoints(itemstack);
   		
   		//set bonus point
-  		entity.setBonusHP(bonuspoint[AttrID.HP]);
-  		entity.setBonusATK(bonuspoint[AttrID.ATK]);
-  		entity.setBonusDEF(bonuspoint[AttrID.DEF]);
-  		entity.setBonusSPD(bonuspoint[AttrID.SPD]);
-  		entity.setBonusMOV(bonuspoint[AttrID.MOV]);
-  		entity.setBonusHIT(bonuspoint[AttrID.HIT]);
+  		entity.setBonusPoint(AttrID.HP, bonuspoint[AttrID.HP]);
+  		entity.setBonusPoint(AttrID.ATK, bonuspoint[AttrID.ATK]);
+  		entity.setBonusPoint(AttrID.DEF, bonuspoint[AttrID.DEF]);
+  		entity.setBonusPoint(AttrID.SPD, bonuspoint[AttrID.SPD]);
+  		entity.setBonusPoint(AttrID.MOV, bonuspoint[AttrID.MOV]);
+  		entity.setBonusPoint(AttrID.HIT, bonuspoint[AttrID.HIT]);
   		
   		//calc ship attribute and save to nbt: hp atk def ...
   		LogHelper.info("DEBUG : spawn egg set ship attribute");

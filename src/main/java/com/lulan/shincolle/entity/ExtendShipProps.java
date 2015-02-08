@@ -42,6 +42,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		NBTTagCompound nbtExt_add1 = new NBTTagCompound();
 		NBTTagCompound nbtExt_add2 = new NBTTagCompound();
 		NBTTagCompound nbtExt_add3 = new NBTTagCompound();
+		NBTTagCompound nbtExt_add4 = new NBTTagCompound();
 
 		//save values to NBT
 		nbtExt.setShort("Level", this.entity.getShipLevel());
@@ -49,27 +50,35 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		nbtExt.setInteger("Exp", this.entity.getExpCurrent());
 		nbtExt.setInteger("NumAmmoL", this.entity.getNumAmmoLight());
 		nbtExt.setInteger("NumAmmoH", this.entity.getNumAmmoHeavy());
+		nbtExt.setInteger("NumGrudge", this.entity.getNumGrudge());
 		//save AttrFinal
 		nbtExt.setTag("Final", nbtExt_add1);
-		nbtExt_add1.setFloat("HP", this.entity.getFinalHP());
-		nbtExt_add1.setFloat("ATK", this.entity.getFinalATK());
-		nbtExt_add1.setFloat("DEF", this.entity.getFinalDEF());
-		nbtExt_add1.setFloat("SPD", this.entity.getFinalSPD());
-		nbtExt_add1.setFloat("MOV", this.entity.getFinalMOV());
-		nbtExt_add1.setFloat("HIT", this.entity.getFinalHIT());
+		nbtExt_add1.setFloat("HP", this.entity.getFinalState(AttrID.HP));
+		nbtExt_add1.setFloat("ATK", this.entity.getFinalState(AttrID.ATK));
+		nbtExt_add1.setFloat("DEF", this.entity.getFinalState(AttrID.DEF));
+		nbtExt_add1.setFloat("SPD", this.entity.getFinalState(AttrID.SPD));
+		nbtExt_add1.setFloat("MOV", this.entity.getFinalState(AttrID.MOV));
+		nbtExt_add1.setFloat("HIT", this.entity.getFinalState(AttrID.HIT));
 		//save EntityState
 		nbtExt.setTag("State", nbtExt_add2);	
-		nbtExt_add2.setByte("State", this.entity.getEntityState());
-		nbtExt_add2.setByte("Emotion", this.entity.getEntityEmotion());
-		nbtExt_add2.setByte("SwimType", this.entity.getEntitySwinType());
+		nbtExt_add2.setByte("State", this.entity.getEntityState(AttrID.State));
+		nbtExt_add2.setByte("Emotion", this.entity.getEntityState(AttrID.Emotion));
+		nbtExt_add2.setByte("SwimType", this.entity.getEntityState(AttrID.SwimType));
 		//save BonusPoint
 		nbtExt.setTag("Point", nbtExt_add3);	
-		nbtExt_add3.setByte("HP", this.entity.getBonusHP());
-		nbtExt_add3.setByte("ATK", this.entity.getBonusATK());
-		nbtExt_add3.setByte("DEF", this.entity.getBonusDEF());
-		nbtExt_add3.setByte("SPD", this.entity.getBonusSPD());
-		nbtExt_add3.setByte("MOV", this.entity.getBonusMOV());
-		nbtExt_add3.setByte("HIT", this.entity.getBonusHIT());
+		nbtExt_add3.setByte("HP", this.entity.getBonusPoint(AttrID.HP));
+		nbtExt_add3.setByte("ATK", this.entity.getBonusPoint(AttrID.ATK));
+		nbtExt_add3.setByte("DEF", this.entity.getBonusPoint(AttrID.DEF));
+		nbtExt_add3.setByte("SPD", this.entity.getBonusPoint(AttrID.SPD));
+		nbtExt_add3.setByte("MOV", this.entity.getBonusPoint(AttrID.MOV));
+		nbtExt_add3.setByte("HIT", this.entity.getBonusPoint(AttrID.HIT));
+		//save EntityFlag
+		nbtExt.setTag("ShipFlags", nbtExt_add4);
+		nbtExt_add4.setByte("CanFloat", this.entity.getEntityFlagI(AttrID.F_CanFloatUp));
+		nbtExt_add4.setByte("IsMarried", this.entity.getEntityFlagI(AttrID.F_IsMarried));
+		nbtExt_add4.setByte("UseAL", this.entity.getEntityFlagI(AttrID.F_UseAmmoLight));
+		nbtExt_add4.setByte("UseAH", this.entity.getEntityFlagI(AttrID.F_UseAmmoHeavy));
+		nbtExt_add4.setByte("NoFuel", this.entity.getEntityFlagI(AttrID.F_NoFuel));
 		
 		//save inventory
 		NBTTagList list = new NBTTagList();
@@ -100,14 +109,15 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		entity.setExpCurrent(nbt_tag.getInteger("Exp"));
 		entity.setNumAmmoLight(nbt_tag.getInteger("NumAmmoL"));
 		entity.setNumAmmoHeavy(nbt_tag.getInteger("NumAmmoH"));
+		entity.setNumGrudge(nbt_tag.getInteger("NumGrudge"));
 		//load Attr Final
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Final");
-		entity.setFinalHP(nbt_load.getFloat("HP"));
-		entity.setFinalATK(nbt_load.getFloat("ATK"));
-		entity.setFinalDEF(nbt_load.getFloat("DEF"));
-		entity.setFinalSPD(nbt_load.getFloat("SPD"));
-		entity.setFinalMOV(nbt_load.getFloat("MOV"));
-		entity.setFinalHIT(nbt_load.getFloat("HIT"));
+		entity.setFinalState(AttrID.HP, nbt_load.getFloat("HP"));
+		entity.setFinalState(AttrID.ATK, nbt_load.getFloat("ATK"));
+		entity.setFinalState(AttrID.DEF, nbt_load.getFloat("DEF"));
+		entity.setFinalState(AttrID.SPD, nbt_load.getFloat("SPD"));
+		entity.setFinalState(AttrID.MOV, nbt_load.getFloat("MOV"));
+		entity.setFinalState(AttrID.HIT, nbt_load.getFloat("HIT"));
 		//load entity state
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("State");
 		entity.setEntityState(nbt_load.getByte("State"), false);
@@ -115,12 +125,19 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		entity.setEntitySwimType(nbt_load.getByte("SwimType"), false);
 		//load bonus point
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Point");
-		entity.setBonusHP(nbt_load.getByte("HP"));
-		entity.setBonusATK(nbt_load.getByte("ATK"));
-		entity.setBonusDEF(nbt_load.getByte("DEF"));
-		entity.setBonusSPD(nbt_load.getByte("SPD"));
-		entity.setBonusMOV(nbt_load.getByte("MOV"));
-		entity.setBonusHIT(nbt_load.getByte("HIT"));
+		entity.setBonusPoint(AttrID.HP, nbt_load.getByte("HP"));
+		entity.setBonusPoint(AttrID.ATK, nbt_load.getByte("ATK"));
+		entity.setBonusPoint(AttrID.DEF, nbt_load.getByte("DEF"));
+		entity.setBonusPoint(AttrID.SPD, nbt_load.getByte("SPD"));
+		entity.setBonusPoint(AttrID.MOV, nbt_load.getByte("MOV"));
+		entity.setBonusPoint(AttrID.HIT, nbt_load.getByte("HIT"));
+		//load entity flag
+		nbt_load = (NBTTagCompound) nbt_tag.getTag("ShipFlags");
+		entity.setEntityFlagI(AttrID.F_CanFloatUp, nbt_load.getByte("CanFloat"));
+		entity.setEntityFlagI(AttrID.F_IsMarried, nbt_load.getByte("IsMarried"));
+		entity.setEntityFlagI(AttrID.F_UseAmmoLight, nbt_load.getByte("UseAL"));
+		entity.setEntityFlagI(AttrID.F_UseAmmoHeavy, nbt_load.getByte("UseAH"));
+		entity.setEntityFlagI(AttrID.F_NoFuel, nbt_load.getByte("NoFuel"));
 		
 		//load inventory
 		NBTTagList list = nbt.getTagList(tagName, 10);
@@ -136,8 +153,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		
 		//calc equip and attribute
 		entity.setExpNext();	//for gui display
-		entity.setEquipAndUpdateState();	
-		LogHelper.info("DEBUG : nbt exp"+entity.getShipLevel()+" "+entity.getExpNext());
+		entity.setEquipAndUpdateState();
 		LogHelper.info("DEBUG : load entity ExtNBT data on id: "+entity.getEntityId());
 	}
 

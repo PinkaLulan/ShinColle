@@ -52,7 +52,7 @@ public class EntityAIShipInRangeTarget extends EntityAITarget {
         this.setMutexBits(1);
 
         //½d³ò«ü©w
-        this.range2 = (int)this.host.getFinalHIT();
+        this.range2 = (int)this.host.getFinalState(AttrID.HIT);
         this.range1 = (int)(rangeProp * (float)this.range2);       
         this.targetMode = mode;
         

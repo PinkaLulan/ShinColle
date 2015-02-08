@@ -162,7 +162,7 @@ public class EntityHeavyCruiserRi extends BasicEntitySmallShip {
     @Override
     public boolean attackEntityFrom(DamageSource attacker, float atk) {		
     	//set hurt face
-    	if(this.getEntityEmotion() != AttrValues.Emotion.O_O) {
+    	if(this.getEntityState(AttrID.Emotion) != AttrValues.Emotion.O_O) {
     		this.setEntityEmotion(AttrValues.Emotion.O_O, true);
     	}	
   	

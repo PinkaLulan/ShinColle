@@ -3,7 +3,9 @@ package com.lulan.shincolle.client.inventory;
 import com.lulan.shincolle.crafting.SmallRecipes;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.item.BasicEquip;
+import com.lulan.shincolle.reference.AttrID;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
+import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -32,6 +34,8 @@ public class ContainerShipInventory extends Container {
 	private int GuiNumAmmo;
 	private int GuiNumAmmoHeavy;
 	private int GuiNumGrudge;
+	private int ButtonAmmoLight;
+	private int ButtonAmmoHeavy;
 	
 	public ContainerShipInventory(InventoryPlayer invPlayer, BasicEntityShip entity1) {
 		int i,j;	//loop index
@@ -157,6 +161,9 @@ public class ContainerShipInventory extends Container {
 		crafting.sendProgressBarUpdate(this, 2, this.entity.getNumAmmoLight());
 		crafting.sendProgressBarUpdate(this, 3, this.entity.getNumAmmoHeavy());
 		crafting.sendProgressBarUpdate(this, 4, this.entity.getNumGrudge());
+		LogHelper.info("DEBUG : crafting update UseAL "+this.entity.getEntityFlagI(AttrID.F_UseAmmoLight));
+		crafting.sendProgressBarUpdate(this, 5, this.entity.getEntityFlagI(AttrID.F_UseAmmoLight));
+		crafting.sendProgressBarUpdate(this, 6, this.entity.getEntityFlagI(AttrID.F_UseAmmoHeavy));
 	}
 	
 	//偵測數值是否改變, 有改變時發送更新(此為server端偵測)
@@ -193,6 +200,16 @@ public class ContainerShipInventory extends Container {
                 icrafting.sendProgressBarUpdate(this, 4, getValue);
                 this.GuiNumGrudge = getValue;
             }
+            getValue = this.entity.getEntityFlagI(AttrID.F_UseAmmoLight);
+            if(this.ButtonAmmoLight != getValue) {
+                icrafting.sendProgressBarUpdate(this, 5, getValue);
+                this.ButtonAmmoLight = getValue;
+            }
+            getValue = this.entity.getEntityFlagI(AttrID.F_UseAmmoHeavy);
+            if(this.ButtonAmmoHeavy != getValue) {
+                icrafting.sendProgressBarUpdate(this, 6, getValue);
+                this.ButtonAmmoHeavy = getValue;
+            }
         }
     }
 	
@@ -201,19 +218,32 @@ public class ContainerShipInventory extends Container {
     public void updateProgressBar(int valueType, int updatedValue) {     
 		switch(valueType) {
 		case 0: 
+			LogHelper.info("DEBUG : client container set KILL"+updatedValue);
 			this.entity.setKills(updatedValue);
 			break;
 		case 1:
+			LogHelper.info("DEBUG : client container set EXP"+updatedValue);
 			this.entity.setExpCurrent(updatedValue);
 			break;
 		case 2:
+			LogHelper.info("DEBUG : client container set NAL"+updatedValue);
 			this.entity.setNumAmmoLight(updatedValue);
 			break;
 		case 3:
+			LogHelper.info("DEBUG : client container set NAH"+updatedValue);
 			this.entity.setNumAmmoHeavy(updatedValue);
 			break;
 		case 4:
+			LogHelper.info("DEBUG : client container set NG"+updatedValue);
 			this.entity.setNumGrudge(updatedValue);
+			break;
+		case 5:
+			LogHelper.info("DEBUG : client container set UseAL"+updatedValue);
+			this.entity.setEntityFlagI(AttrID.F_UseAmmoLight, updatedValue);
+			break;
+		case 6:
+			LogHelper.info("DEBUG : client container set UseAH"+updatedValue);
+			this.entity.setEntityFlagI(AttrID.F_UseAmmoHeavy, updatedValue);
 			break;
 		}
     }
