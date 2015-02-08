@@ -1,9 +1,0 @@
-package com.lulan.shincolle.utility;
-
-public class GuiHelper {
-	
-	public GuiHelper() {}
-	
-	
-
-}
