@@ -23,7 +23,7 @@ public class EntityAIShipFloating extends EntityAIBase {
     }
 
     public boolean shouldExecute() {	
-        return !this.theEntity.isSitting() && this.theEntity.getEntityFlagB(AttrID.F_CanFloatUp);
+        return !this.theEntity.isSitting() && this.theEntity.getEntityFlag(AttrID.F_CanFloatUp);
     }
 
     public void updateTask() {

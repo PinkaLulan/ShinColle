@@ -13,6 +13,10 @@ import com.lulan.shincolle.client.model.ModelSmallShipyard;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.LogHelper;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
+@SideOnly(Side.CLIENT)
 public class RenderSmallShipyard extends TileEntitySpecialRenderer {
 
 	//∂Kπœ¿…∏ÙÆ|

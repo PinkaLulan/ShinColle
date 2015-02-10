@@ -9,6 +9,7 @@ itemGroup.shincolle=Shin Colle
 tile.shincolle:BlockAbyssium.name=Abyssium Block
 tile.shincolle:BlockDesk.name=Abyssal Node
 tile.shincolle:BlockGrudge.name=Grudge Lump
+tile.shincolle:BlockHeavyGrudge.name=Heavy Grudge Lump
 tile.shincolle:BlockPolymetal.name=Polymetallic Block
 tile.shincolle:BlockPolymetalOre.name=Polymetallic Ore
 tile.shincolle:BlockSmallShipyard.name=Abyssal Hydrothermal Vent

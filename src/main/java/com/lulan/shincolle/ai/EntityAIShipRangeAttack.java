@@ -52,7 +52,7 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
     	EntityLivingBase target = this.host.getAttackTarget();
     	
         if (target != null && 
-        	(this.host.getEntityFlagB(AttrID.F_UseAmmoLight) || this.host.getEntityFlagB(AttrID.F_UseAmmoHeavy)) && 
+        	(this.host.getEntityFlag(AttrID.F_UseAmmoLight) || this.host.getEntityFlag(AttrID.F_UseAmmoHeavy)) && 
         	(this.host.hasAmmoLight() || this.host.hasAmmoHeavy())) {   
         	this.attackTarget = target;
             return true;
@@ -167,7 +167,7 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
 	        this.delayHeavy--;
 
 	        //若attack delay倒數完了且瞄準時間夠久, 則開始攻擊
-	        if(this.delayHeavy <= 0 && this.onSightTime >= this.aimTime && this.host.hasAmmoHeavy() && this.host.getEntityFlagB(AttrID.F_UseAmmoHeavy)) {
+	        if(this.delayHeavy <= 0 && this.onSightTime >= this.aimTime && this.host.hasAmmoHeavy() && this.host.getEntityFlag(AttrID.F_UseAmmoHeavy)) {
 	        	//若目標跑出範圍 or 目標被阻擋 or 距離太近, 則停止攻擊, 進行下一輪ai判定
 	            if(distSq > (double)this.rangeSq || distSq < 4D || !onSight) { return; }
 	            
@@ -177,7 +177,7 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
 	        } 
 	        
 	        //若attack delay倒數完了且瞄準時間夠久, 則開始攻擊
-	        if(this.delayLight <= 0 && this.onSightTime >= this.aimTime && this.host.hasAmmoLight() && this.host.getEntityFlagB(AttrID.F_UseAmmoLight)) {
+	        if(this.delayLight <= 0 && this.onSightTime >= this.aimTime && this.host.hasAmmoLight() && this.host.getEntityFlag(AttrID.F_UseAmmoLight)) {
 	        	//若目標跑出範圍 or 目標被阻擋, 則停止攻擊, 進行下一輪ai判定
 	            if(distSq > (double)this.rangeSq || !onSight) { return; }
 	            

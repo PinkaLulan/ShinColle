@@ -59,11 +59,11 @@ public class CreatePacketS2C {
 			bbos.writeByte(entity.getBonusPoint(AttrID.MOV));
 			bbos.writeByte(entity.getBonusPoint(AttrID.HIT));
 			
-			bbos.writeByte(entity.getEntityFlagI(AttrID.F_CanFloatUp));
-			bbos.writeByte(entity.getEntityFlagI(AttrID.F_IsMarried));
-			bbos.writeByte(entity.getEntityFlagI(AttrID.F_UseAmmoLight));
-			bbos.writeByte(entity.getEntityFlagI(AttrID.F_UseAmmoHeavy));
-			bbos.writeByte(entity.getEntityFlagI(AttrID.F_NoFuel));
+			bbos.writeBoolean(entity.getEntityFlag(AttrID.F_CanFloatUp));
+			bbos.writeBoolean(entity.getEntityFlag(AttrID.F_IsMarried));
+			bbos.writeBoolean(entity.getEntityFlag(AttrID.F_UseAmmoLight));
+			bbos.writeBoolean(entity.getEntityFlag(AttrID.F_UseAmmoHeavy));
+			bbos.writeBoolean(entity.getEntityFlag(AttrID.F_NoFuel));
 		}
 
 		// put payload into a packet  
@@ -111,11 +111,11 @@ public class CreatePacketS2C {
 		//以下寫入要傳送的資料
 		if (parEntity instanceof BasicEntityShip) {
 			BasicEntityShip entity = (BasicEntityShip)parEntity;	
-			bbos.writeByte(entity.getEntityFlagI(AttrID.F_CanFloatUp));
-			bbos.writeByte(entity.getEntityFlagI(AttrID.F_IsMarried));
-			bbos.writeByte(entity.getEntityFlagI(AttrID.F_UseAmmoLight));
-			bbos.writeByte(entity.getEntityFlagI(AttrID.F_UseAmmoHeavy));
-			bbos.writeByte(entity.getEntityFlagI(AttrID.F_NoFuel));
+			bbos.writeBoolean(entity.getEntityFlag(AttrID.F_CanFloatUp));
+			bbos.writeBoolean(entity.getEntityFlag(AttrID.F_IsMarried));
+			bbos.writeBoolean(entity.getEntityFlag(AttrID.F_UseAmmoLight));
+			bbos.writeBoolean(entity.getEntityFlag(AttrID.F_UseAmmoHeavy));
+			bbos.writeBoolean(entity.getEntityFlag(AttrID.F_NoFuel));
 		}
 
 		// put payload into a packet  

@@ -12,15 +12,18 @@ public class ModBlocks {
 
 	public static final Block BlockAbyssium = new BlockAbyssium();
 	public static final Block BlockDesk = new BlockDesk();
+	public static final Block BlockGrudge = new BlockGrudge();
+	public static final Block BlockGrudgeHeavy = new BlockGrudgeHeavy();
+	public static final Block BlockPolymetal = new BlockPolymetal();
 	public static final Block BlockPolymetalOre = new BlockPolymetalOre();
 	public static final Block BlockSmallShipyard = new BlockSmallShipyard();
-	public static final Block BlockGrudge = new BlockGrudge();
-	public static final Block BlockPolymetal = new BlockPolymetal();
+
 	
 	public static void init() {
 		GameRegistry.registerBlock(BlockAbyssium, "BlockAbyssium");
 		GameRegistry.registerBlock(BlockDesk, "BlockDesk");
 		GameRegistry.registerBlock(BlockGrudge, "BlockGrudge");
+		GameRegistry.registerBlock(BlockGrudgeHeavy, "BlockGrudgeHeavy");
 		GameRegistry.registerBlock(BlockPolymetal, "BlockPolymetal");
 		GameRegistry.registerBlock(BlockPolymetalOre, "BlockPolymetalOre");
 		GameRegistry.registerBlock(BlockSmallShipyard, "BlockSmallShipyard");

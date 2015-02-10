@@ -74,11 +74,11 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		nbtExt_add3.setByte("HIT", this.entity.getBonusPoint(AttrID.HIT));
 		//save EntityFlag
 		nbtExt.setTag("ShipFlags", nbtExt_add4);
-		nbtExt_add4.setByte("CanFloat", this.entity.getEntityFlagI(AttrID.F_CanFloatUp));
-		nbtExt_add4.setByte("IsMarried", this.entity.getEntityFlagI(AttrID.F_IsMarried));
-		nbtExt_add4.setByte("UseAL", this.entity.getEntityFlagI(AttrID.F_UseAmmoLight));
-		nbtExt_add4.setByte("UseAH", this.entity.getEntityFlagI(AttrID.F_UseAmmoHeavy));
-		nbtExt_add4.setByte("NoFuel", this.entity.getEntityFlagI(AttrID.F_NoFuel));
+		nbtExt_add4.setBoolean("CanFloat", this.entity.getEntityFlag(AttrID.F_CanFloatUp));
+		nbtExt_add4.setBoolean("IsMarried", this.entity.getEntityFlag(AttrID.F_IsMarried));
+		nbtExt_add4.setBoolean("UseAL", this.entity.getEntityFlag(AttrID.F_UseAmmoLight));
+		nbtExt_add4.setBoolean("UseAH", this.entity.getEntityFlag(AttrID.F_UseAmmoHeavy));
+		nbtExt_add4.setBoolean("NoFuel", this.entity.getEntityFlag(AttrID.F_NoFuel));
 		
 		//save inventory
 		NBTTagList list = new NBTTagList();
@@ -133,11 +133,11 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		entity.setBonusPoint(AttrID.HIT, nbt_load.getByte("HIT"));
 		//load entity flag
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("ShipFlags");
-		entity.setEntityFlagI(AttrID.F_CanFloatUp, nbt_load.getByte("CanFloat"));
-		entity.setEntityFlagI(AttrID.F_IsMarried, nbt_load.getByte("IsMarried"));
-		entity.setEntityFlagI(AttrID.F_UseAmmoLight, nbt_load.getByte("UseAL"));
-		entity.setEntityFlagI(AttrID.F_UseAmmoHeavy, nbt_load.getByte("UseAH"));
-		entity.setEntityFlagI(AttrID.F_NoFuel, nbt_load.getByte("NoFuel"));
+		entity.setEntityFlag(AttrID.F_CanFloatUp, nbt_load.getBoolean("CanFloat"));
+		entity.setEntityFlag(AttrID.F_IsMarried, nbt_load.getBoolean("IsMarried"));
+		entity.setEntityFlag(AttrID.F_UseAmmoLight, nbt_load.getBoolean("UseAL"));
+		entity.setEntityFlag(AttrID.F_UseAmmoHeavy, nbt_load.getBoolean("UseAH"));
+		entity.setEntityFlag(AttrID.F_NoFuel, nbt_load.getBoolean("NoFuel"));
 		
 		//load inventory
 		NBTTagList list = nbt.getTagList(tagName, 10);

@@ -87,11 +87,11 @@ public class ProcessPacketClientSide {
 					foundEntityShip.setBonusPoint(AttrID.MOV, bbis.readByte());
 					foundEntityShip.setBonusPoint(AttrID.HIT, bbis.readByte());
 					
-					foundEntityShip.setEntityFlagI(AttrID.F_CanFloatUp, bbis.readByte());
-					foundEntityShip.setEntityFlagI(AttrID.F_IsMarried, bbis.readByte());
-					foundEntityShip.setEntityFlagI(AttrID.F_UseAmmoLight, bbis.readByte());
-					foundEntityShip.setEntityFlagI(AttrID.F_UseAmmoHeavy, bbis.readByte());
-					foundEntityShip.setEntityFlagI(AttrID.F_NoFuel, bbis.readByte());
+					foundEntityShip.setEntityFlag(AttrID.F_CanFloatUp, bbis.readBoolean());
+					foundEntityShip.setEntityFlag(AttrID.F_IsMarried, bbis.readBoolean());
+					foundEntityShip.setEntityFlag(AttrID.F_UseAmmoLight, bbis.readBoolean());
+					foundEntityShip.setEntityFlag(AttrID.F_UseAmmoHeavy, bbis.readBoolean());
+					foundEntityShip.setEntityFlag(AttrID.F_NoFuel, bbis.readBoolean());
 				}
 				break;
 				
@@ -119,11 +119,11 @@ public class ProcessPacketClientSide {
 					LogHelper.info("DEBUG : client Flag Sync done");
 					BasicEntityShip foundEntityShip = (BasicEntityShip)foundEntity;
 					//read packet data
-					foundEntityShip.setEntityFlagI(AttrID.F_CanFloatUp, bbis.readByte());
-					foundEntityShip.setEntityFlagI(AttrID.F_IsMarried, bbis.readByte());
-					foundEntityShip.setEntityFlagI(AttrID.F_UseAmmoLight, bbis.readByte());
-					foundEntityShip.setEntityFlagI(AttrID.F_UseAmmoHeavy, bbis.readByte());
-					foundEntityShip.setEntityFlagI(AttrID.F_NoFuel, bbis.readByte());					
+					foundEntityShip.setEntityFlag(AttrID.F_CanFloatUp, bbis.readBoolean());
+					foundEntityShip.setEntityFlag(AttrID.F_IsMarried, bbis.readBoolean());
+					foundEntityShip.setEntityFlag(AttrID.F_UseAmmoLight, bbis.readBoolean());
+					foundEntityShip.setEntityFlag(AttrID.F_UseAmmoHeavy, bbis.readBoolean());
+					foundEntityShip.setEntityFlag(AttrID.F_NoFuel, bbis.readBoolean());					
 				}
 				break;
 				

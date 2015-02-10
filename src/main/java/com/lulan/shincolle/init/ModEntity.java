@@ -11,10 +11,8 @@ import net.minecraft.entity.EntityList;
 import net.minecraft.item.Item;
 
 import com.lulan.shincolle.ShinColle;
-import com.lulan.shincolle.entity.EntityAbyssMissile;
-import com.lulan.shincolle.entity.EntityDestroyerI;
-import com.lulan.shincolle.entity.EntityHeavyCruiserRi;
-import com.lulan.shincolle.entity.EntityTest;
+import com.lulan.shincolle.entity.*;
+import com.lulan.shincolle.entity.renderentity.*;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.LogHelper;
 
@@ -33,6 +31,10 @@ public class ModEntity {
 		//register projectile entity
 		createProjectileEntity(EntityAbyssMissile.class, "EntityAbyssMissile", modEntityID++);
 	
+		//register render entity
+		createProjectileEntity(EntityRenderLargeShipyard.class, "EntityRenderLargeShipyard", modEntityID++);
+		createProjectileEntity(EntityRenderVortex.class, "EntityRenderVortex", modEntityID++);
+		
 		//register test entity
 		createEntityGlobalID(EntityTest.class, "EntityTest", 0x20FF45, 0x0040FF);
 	
@@ -47,9 +49,9 @@ public class ModEntity {
 	
 	//登錄非生物方法 (無生怪蛋)
 	//參數: 該生物class, 生物名稱
-	public static void createProjectileEntity(Class entityClass, String entityName, int modEntityID){
+	public static void createProjectileEntity(Class entityClass, String entityName, int entityId){
 		//登錄參數: 生物class, 生物名稱, 生物id, mod副本, 追蹤更新距離, 更新時間間隔, 是否發送速度封包
-		EntityRegistry.registerModEntity(entityClass, entityName, modEntityID, ShinColle.instance, 128, 1, true);
+		EntityRegistry.registerModEntity(entityClass, entityName, entityId, ShinColle.instance, 128, 1, true);
 	}
 	
 	//使用官方共通id登錄生物

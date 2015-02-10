@@ -1,36 +1,29 @@
 package com.lulan.shincolle.block;
 
-import com.lulan.shincolle.ShinColle;
-import com.lulan.shincolle.reference.GUIs;
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.tileentity.BasicTileMulti;
-import com.lulan.shincolle.tileentity.TileMultiPolymetal;
-import com.lulan.shincolle.utility.LogHelper;
-import com.lulan.shincolle.utility.MulitBlockHelper;
 
-import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
+import com.lulan.shincolle.tileentity.TileMultiLargeShipyard;
 
-public class BlockPolymetal extends BasicBlockMulti {
+public class BlockGrudgeHeavy extends BasicBlockMulti {
 	
 	private IIcon[] icons = new IIcon[2];
 	
-	public BlockPolymetal() {
-		super(Material.iron);
-		this.setBlockName("BlockPolymetal");
+	public BlockGrudgeHeavy() {
+		super(Material.sand);
+		this.setBlockName("BlockGrudgeHeavy");
 		this.setHarvestLevel("pickaxe", 0);
 	    this.setHardness(3F);
-		
-	}
-
+	    this.setLightLevel(1F);
+	    this.setStepSound(soundTypeSand);
+	}	
+	
 	@Override
 	public boolean isOpaqueCube() {
 		return false;
@@ -51,10 +44,17 @@ public class BlockPolymetal extends BasicBlockMulti {
 
 	@Override
 	public TileEntity createNewTileEntity(World world, int i) {
-		return new TileMultiPolymetal();
+		return new TileMultiLargeShipyard();
 	}
+	
 
-
-
-		
+	
+//	play portal sound
+//	if (p_149734_5_.nextInt(100) == 0)
+//    {
+//        p_149734_1_.playSound((double)p_149734_2_ + 0.5D, (double)p_149734_3_ + 0.5D, (double)p_149734_4_ + 0.5D, "portal.portal", 0.5F, p_149734_5_.nextFloat() * 0.4F + 0.8F, false);
+//    }
+	
+	
 }
+

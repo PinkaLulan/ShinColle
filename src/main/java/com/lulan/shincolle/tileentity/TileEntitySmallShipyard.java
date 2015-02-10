@@ -4,7 +4,7 @@ import com.lulan.shincolle.block.BlockSmallShipyard;
 import com.lulan.shincolle.crafting.SmallRecipes;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.FormatHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -331,7 +331,7 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ISidedIn
 	//計算建造時間 (換算成真實時間)
 	public String getBuildTimeString() {
 		int timeSec = (goalPower - consumedPower) / buildSpeed / 20;	//get time (單位: sec)		
-		return CalcHelper.getTimeFormated(timeSec);		
+		return FormatHelper.getTimeFormated(timeSec);		
 	}
 
 	

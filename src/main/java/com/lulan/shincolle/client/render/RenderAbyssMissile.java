@@ -23,7 +23,7 @@ public class RenderAbyssMissile extends Render {
 	private ModelBase model;
 	private float entityScale;	//¼Ò«¬¤j¤p
 
-    public RenderAbyssMissile(ModelBase model, float scale) {   
+    public RenderAbyssMissile(float scale) {   
     	this.model = new ModelAbyssMissile();
     	this.entityScale = scale;
 	}

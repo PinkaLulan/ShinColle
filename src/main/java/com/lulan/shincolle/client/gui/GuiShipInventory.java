@@ -111,8 +111,8 @@ public class GuiShipInventory extends GuiContainer {
         
         //draw ammo ON/OFF
         if(this.showPage == 1) {
-        	this.SwitchLight = this.entity.getEntityFlagB(AttrID.F_UseAmmoLight);
-            this.SwitchHeavy = this.entity.getEntityFlagB(AttrID.F_UseAmmoHeavy);
+        	this.SwitchLight = this.entity.getEntityFlag(AttrID.F_UseAmmoLight);
+            this.SwitchHeavy = this.entity.getEntityFlag(AttrID.F_UseAmmoHeavy);
             
             if(this.SwitchLight) {
             	drawTexturedModalRect(guiLeft+87, guiTop+71, 0, 214, 11, 11);
@@ -360,7 +360,7 @@ public class GuiShipInventory extends GuiContainer {
         if(this.showPage == 1) {
 	        if(xClick > 84 && xClick < 140) {
 	        	if(yClick > 61 && yClick < 83) {
-	        		this.SwitchLight = this.entity.getEntityFlagB(AttrID.F_UseAmmoLight);      		
+	        		this.SwitchLight = this.entity.getEntityFlag(AttrID.F_UseAmmoLight);      		
 	        		if(this.SwitchLight) {	//若原本為true, 則設為false(0)
 	        			ButtonValue = 0;
 	        		}
@@ -371,7 +371,7 @@ public class GuiShipInventory extends GuiContainer {
 	        		CreatePacketC2S.sendC2SGUIShipInvClick(this.entity, AttrID.B_ShipInv_AmmoLight, ButtonValue);             
 	        	}
 	        	if(yClick > 82 && yClick < 104) {
-	        		this.SwitchHeavy = this.entity.getEntityFlagB(AttrID.F_UseAmmoHeavy);	
+	        		this.SwitchHeavy = this.entity.getEntityFlag(AttrID.F_UseAmmoHeavy);	
 	        		if(this.SwitchHeavy) {	//若原本為true, 則設為false(0)
 	        			ButtonValue = 0;
 	        		}

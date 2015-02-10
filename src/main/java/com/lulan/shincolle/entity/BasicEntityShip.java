@@ -80,7 +80,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 	//EntityState: 0:State 1:Emotion 2:SwimType
 	protected byte[] EntityState;
 	//EntityFlag: 0:CanFloatUp 1:IsMarried 2:UseAmmoLight 3:UseAmmoHeavy 4:NoFuel
-	protected byte[] EntityFlag;
+	protected boolean[] EntityFlag;
 	//BonusPoint: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT
 	protected byte[] BonusPoint;
 	//TypeModify: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT
@@ -102,7 +102,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		//EntityState: 0:State 1:Emotion 2:SwimType
 		EntityState = new byte[] {0, 0, 0};
 		//EntityFlag: 0:CanFloatUp 1:IsMarried 2:UseAmmoLight 3:UseAmmoHeavy 4:NoFuel
-		EntityFlag = new byte[] {0, 0, 1, 1, 0};
+		EntityFlag = new boolean[] {false, false, true, true, false};
 		//BonusPoint: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT
 		BonusPoint = new byte[] {0, 0, 0, 0, 0, 0};
 		//TypeModify: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT
@@ -206,16 +206,16 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 	public double getShipDepth() {
 		return ShipDepth;
 	}
-	public boolean getEntityFlagB(int flag) {	//get flag (boolean)
-		if(EntityFlag[flag] == 1) {
-			return true;
+	public boolean getEntityFlag(int flag) {	//get flag (boolean)
+		return EntityFlag[flag];		
+	}
+	public byte getEntityFlagI(int flag) {		//get flag (byte)
+		if(EntityFlag[flag]) {
+			return 1;
 		}
 		else {
-			return false;
+			return 0;
 		}
-	}
-	public byte getEntityFlagI(int flag) {	//get flag (byte)
-		return EntityFlag[flag];
 	}
 	public float getEquipState(int state) {
 		return ArrayEquip[state];
@@ -246,10 +246,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 				}
 				else {
 					if(BlockCheck == Blocks.air) {
-						setEntityFlagB(AttrID.F_CanFloatUp, true);
+						setEntityFlag(AttrID.F_CanFloatUp, true);
 					}
 					else {
-						setEntityFlagB(AttrID.F_CanFloatUp, false);
+						setEntityFlag(AttrID.F_CanFloatUp, false);
 					}
 					break;
 				}
@@ -338,7 +338,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		
 	//called when entity exp++
 	public void addShipExp(int exp) {
-		int CapLevel = getEntityFlagB(AttrID.F_IsMarried) ? 150 : 100;
+		int CapLevel = getEntityFlag(AttrID.F_IsMarried) ? 150 : 100;
 		
 		if(ShipLevel != CapLevel && ShipLevel < 150) {	//level is not cap level
 			ExpCurrent += exp;
@@ -391,17 +391,17 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		BonusPoint[state] = par1;
 	}
 	//called when load nbt data or GUI click
-	public void setEntityFlagB(int flag, boolean par1) {
-		if(par1) {
-			this.EntityFlag[flag] = 1;
-		}
-		else {
-			this.EntityFlag[flag] = 0;
-		}
+	public void setEntityFlag(int flag, boolean par1) {
+		this.EntityFlag[flag] = par1;	
 	}
 	//called when load nbt data or GUI click
 	public void setEntityFlagI(int flag, int par1) {
-		this.EntityFlag[flag] = (byte)par1;
+		if(par1 == 1) {
+			this.EntityFlag[flag] = true;
+		}
+		else {
+			this.EntityFlag[flag] = false;
+		}
 	}
 	
 	//called when entity equip changed
@@ -628,7 +628,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
         	//check every 100 ticks
         	if(ticksExisted % 100 == 0) {
         		//roll emtion: hungry > T_T > bored > O_O
-        		if(getEntityFlagB(AttrID.F_NoFuel)) {
+        		if(getEntityFlag(AttrID.F_NoFuel)) {
         			if(this.getEntityState(AttrID.Emotion) != AttrValues.Emotion.HUNGRY) {
         				LogHelper.info("DEBUG : set emotion HUNGRY");
 	    				this.setEntityEmotion(AttrValues.Emotion.HUNGRY, true);
@@ -935,7 +935,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 	
 	//eat grudge and change movement speed
 	private void decrGrudgeNum(int par1) {
-		boolean PrevNoFuel = getEntityFlagB(AttrID.F_NoFuel);
+		boolean PrevNoFuel = getEntityFlag(AttrID.F_NoFuel);
 		
 		if(par1 > 215) {	//max cost = 215 (calc from speed 1 moving 5 sec)
 			par1 = 215;
@@ -956,14 +956,14 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		}
 		
 		if(NumGrudge <= 0) {
-			setEntityFlagB(AttrID.F_NoFuel, true);
+			setEntityFlag(AttrID.F_NoFuel, true);
 		}
 		else {
-			setEntityFlagB(AttrID.F_NoFuel, false);
+			setEntityFlag(AttrID.F_NoFuel, false);
 		}
 
 		//get fuel, set AI
-		if(!getEntityFlagB(AttrID.F_NoFuel) && PrevNoFuel) {
+		if(!getEntityFlag(AttrID.F_NoFuel) && PrevNoFuel) {
 LogHelper.info("DEBUG : !NoFuel set AI");
 			clearAITasks();
 			clearAITargetTasks();
@@ -973,7 +973,7 @@ LogHelper.info("DEBUG : !NoFuel set AI");
 		}
 		
 		//no fuel, clear AI
-		if(getEntityFlagB(AttrID.F_NoFuel)) {
+		if(getEntityFlag(AttrID.F_NoFuel)) {
 LogHelper.info("DEBUG : NoFuel clear AI");
 			clearAITasks();
 			clearAITargetTasks();

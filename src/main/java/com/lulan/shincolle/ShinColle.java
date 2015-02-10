@@ -20,6 +20,7 @@ import com.lulan.shincolle.init.ModRecipes;
 import com.lulan.shincolle.proxy.IProxy;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.LogHelper;
+import com.lulan.shincolle.utility.MulitBlockHelper;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;		//mod基本資訊
@@ -103,7 +104,7 @@ public class ShinColle {
 			LogHelper.info(oreName);
 		}
 		*/
-
+//		MulitBlockHelper.printPattern();
 		LogHelper.info("postInit complete.");	//debug
 	}
 	

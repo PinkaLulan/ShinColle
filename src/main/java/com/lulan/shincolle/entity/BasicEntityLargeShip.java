@@ -1,5 +1,15 @@
 package com.lulan.shincolle.entity;
 
-public class BasicEntityLargeShip {
+import net.minecraft.world.World;
+
+public class BasicEntityLargeShip extends BasicEntityShip {
+
+	public BasicEntityLargeShip(World world) {
+		super(world);
+	}
+
+	@Override
+	protected void setAITargetList() {
+	}
 
 }

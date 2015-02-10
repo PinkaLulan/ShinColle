@@ -1,8 +1,8 @@
 package com.lulan.shincolle.utility;
 
-public class CalcHelper {
+public class FormatHelper {
 	
-	public CalcHelper() {
+	public FormatHelper() {
 	}
 	
 	//將second轉成格式 00:00:00

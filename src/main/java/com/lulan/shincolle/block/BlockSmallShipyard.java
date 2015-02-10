@@ -30,8 +30,6 @@ import net.minecraft.world.World;
 
 public class BlockSmallShipyard extends BasicBlockContainer {
 
-	public Random rand = new Random();
-	public static boolean keepInventory = false;
 	private static final double[] smoke1 = new double[] {0.72, 1.1, 0.55};	//主煙囪 粒子位置
 	private static final double[] smoke2 = new double[] {0.22, 0.8, 0.7};	//中煙囪 粒子位置
 	private static final double[] smoke3 = new double[] {0.47, 0.6, 0.25};	//小煙囪 粒子位置
@@ -71,41 +69,40 @@ public class BlockSmallShipyard extends BasicBlockContainer {
 	//打掉方塊後, 掉落其內容物
 	@Override
 	public void breakBlock(World world, int x, int y, int z, Block block, int meta) {
-		if(!keepInventory) {
-			TileEntitySmallShipyard tileentity = (TileEntitySmallShipyard)world.getTileEntity(x, y, z);
-		
-			//抓到tile entity後, 掃描全部slot內容物, 然後做成entity掉落出來
-			if(tileentity != null) {
-				for(int i = 0; i < tileentity.getSizeInventory(); i++) {  //check all slots
-					ItemStack itemstack = tileentity.getStackInSlot(i);
-		
-					if(itemstack != null) {
-						float f = this.rand.nextFloat() * 0.8F + 0.1F;  //設定要隨機噴出的range
-						float f1 = this.rand.nextFloat() * 0.8F + 0.1F;
-						float f2 = this.rand.nextFloat() * 0.8F + 0.1F;
-		
-						while(itemstack.stackSize > 0) {
-							int j = this.rand.nextInt(21) + 10;
-							//如果物品超過一個隨機數量, 會分更多疊噴出
-							if(j > itemstack.stackSize) {  
-								j = itemstack.stackSize;
-							}
-		
-							itemstack.stackSize -= j;
-							//將item做成entity, 生成到世界上
-							EntityItem item = new EntityItem(world, (double)((float)x + f), (double)((float)y + f1), (double)((float)z + f2), new ItemStack(itemstack.getItem(), j, itemstack.getItemDamage()));
-							//如果有NBT tag, 也要複製到物品上
-							if(itemstack.hasTagCompound()) {
-								item.getEntityItem().setTagCompound((NBTTagCompound)itemstack.getTagCompound().copy());
-							}
-		
-						world.spawnEntityInWorld(item);	//生成entity
+		TileEntitySmallShipyard tileentity = (TileEntitySmallShipyard)world.getTileEntity(x, y, z);
+	
+		//抓到tile entity後, 掃描全部slot內容物, 然後做成entity掉落出來
+		if(tileentity != null) {
+			for(int i = 0; i < tileentity.getSizeInventory(); i++) {  //check all slots
+				ItemStack itemstack = tileentity.getStackInSlot(i);
+	
+				if(itemstack != null) {
+					float f = world.rand.nextFloat() * 0.8F + 0.1F;  //設定要隨機噴出的range
+					float f1 = world.rand.nextFloat() * 0.8F + 0.1F;
+					float f2 = world.rand.nextFloat() * 0.8F + 0.1F;
+	
+					while(itemstack.stackSize > 0) {
+						int j = world.rand.nextInt(21) + 10;
+						//如果物品超過一個隨機數量, 會分更多疊噴出
+						if(j > itemstack.stackSize) {  
+							j = itemstack.stackSize;
 						}
+	
+						itemstack.stackSize -= j;
+						//將item做成entity, 生成到世界上
+						EntityItem item = new EntityItem(world, (double)((float)x + f), (double)((float)y + f1), (double)((float)z + f2), new ItemStack(itemstack.getItem(), j, itemstack.getItemDamage()));
+						//如果有NBT tag, 也要複製到物品上
+						if(itemstack.hasTagCompound()) {
+							item.getEntityItem().setTagCompound((NBTTagCompound)itemstack.getTagCompound().copy());
+						}
+	
+					world.spawnEntityInWorld(item);	//生成entity
 					}
-				}	
-				world.func_147453_f(x, y, z, block);	//???
-			}
+				}
+			}	
+			world.func_147453_f(x, y, z, block);	//alert block changed
 		}
+
 		//呼叫原先的breakBlock, 會把tile entity移除掉
 		super.breakBlock(world, x, y, z, block, meta);
 	}
@@ -198,11 +195,11 @@ public class BlockSmallShipyard extends BasicBlockContainer {
 			}
 		}
 		
-		//unknow function
-		if (entity != null) {
-			entity.validate();
-			world.setTileEntity(x, y, z, entity);
-		}
+//		//unknow function
+//		if (entity != null) {
+//			entity.validate();
+//			world.setTileEntity(x, y, z, entity);
+//		}
 		
 	}
 
