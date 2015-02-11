@@ -224,19 +224,19 @@ public class ModelDestroyerI extends ModelBase {
   
   public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
 	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
-	
-	// Scale, Translate, Rotate
-	// GL11.glScalef(this.scale, this.scale, this.scale);
+
+	GL11.glPushMatrix();
+//  Scale, Translate, Rotate
+//  GL11.glScalef(this.scale, this.scale, this.scale);
 //	GL11.glEnable(GL11.GL_BLEND);			//開啟透明度模式
 //	GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-//	GL11.glPushMatrix();
 	GL11.glScalef(0.5F, 0.45F, 0.45F);	//debug用
 	GL11.glRotatef(90F, 0F, 1F, 0F);	//此模型頭部方向錯誤 因此render時調整回來
 	
 	PBack.render(f5);
 	
 //	GL11.glDisable(GL11.GL_BLEND);		//關閉透明度模式
-//	GL11.glPopMatrix();
+	GL11.glPopMatrix();
   }
   
   private void setRotation(ModelRenderer model, float x, float y, float z) {

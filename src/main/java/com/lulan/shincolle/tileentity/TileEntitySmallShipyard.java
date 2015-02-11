@@ -29,10 +29,11 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ISidedIn
 	 * 	MaxMaterial / MaxFuelCost = 64*4 / 460800
 	 *  MinMaterial / MinFuelCost = 16*4 / 57600 = BaseCost(57600) CostPerMaterial(2100)
 	 */	
-	public int consumedPower = 0;					//consumed power (increase)
-	public int remainedPower = 0;					//remained power (decrease)
-	public int goalPower = 0;						//goal power (sum by material amount)
-	private static final int buildSpeed = 480;  		//power cost per tick	
+	public int consumedPower = 0;	//已花費的能量
+	public int remainedPower = 0;	//剩餘燃料
+	public int goalPower = 0;		//需要達成的目標能量
+	public int buildType = 0;		//type 0:ship 1:equip
+	private static final int buildSpeed = 4800;  	//power cost per tick	
 	private static final int maxPower = 460800; 	//max power storage
 	private static final int[] slots_all = new int[] {0, 1, 2, 3, 4, 5};  //dont care side
 
@@ -121,7 +122,7 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ISidedIn
 		if (worldObj.getTileEntity(xCoord, yCoord, zCoord) != this) {
 			return false;
 		}
-		else {	//確認player要在該tile entity 64格內, 以免超出讀取範圍
+		else {	//確認player要在該tile entity 64格內, 以免超出讀取範圍 or 產生其他不明bug
 			return player.getDistanceSq((double)xCoord+0.5D, (double)yCoord+0.5D, (double)zCoord+0.5D) <= 64;
 		}
 	}
@@ -149,6 +150,7 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ISidedIn
         consumedPower = compound.getInteger("consumedPower");
         remainedPower = compound.getInteger("remainedPower");
         goalPower = compound.getInteger("goalPower");
+        buildType = compound.getInteger("buildType");
     }
 	
 	//將資料寫進nbt
@@ -157,7 +159,7 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ISidedIn
 		super.writeToNBT(compound);
 		
 		NBTTagList list = new NBTTagList();
-
+		compound.setTag("Items", list);
 		for(int i=0; i<slots.length; i++) {		//將slots[]資料寫進nbt
 			if (slots[i] != null) {
 				NBTTagCompound item = new NBTTagCompound();
@@ -166,11 +168,11 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ISidedIn
 				list.appendTag(item);			//增加下一個欄位
 			}
 		}
-		
-		compound.setTag("Items", list);
+			
 		compound.setInteger("consumedPower", consumedPower);
 		compound.setInteger("remainedPower", remainedPower);
 		compound.setInteger("goalPower", goalPower);
+		compound.setInteger("buildType", buildType);
 	}
 	
 	//判定物品是否能放入該格子, 用於canExtractItem等方法
@@ -214,7 +216,7 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ISidedIn
 	}
 	
 	//建造ship方法
-	public void buildShip() {
+	public void buildComplete() {
 		byte[] matAmount = new byte[4];
 		//取得四樣材料數量
 		matAmount = SmallRecipes.getMaterialAmount(slots);
@@ -224,8 +226,15 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ISidedIn
 		slots[1] = null;
 		slots[2] = null;
 		slots[3] = null;
+		
 		//輸入材料數量, 取得build output到slot 5
-		slots[5] = SmallRecipes.getBuildResult(matAmount);	
+		if(this.buildType == 0) {
+			slots[5] = SmallRecipes.getBuildResultShip(matAmount);
+		}
+		else {
+			slots[5] = SmallRecipes.getBuildResultEquip(matAmount);
+		}
+		
 	}
 	
 	//判定是否建造中
@@ -240,7 +249,7 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ISidedIn
 	
 	//判定是否有建造目標
 	public boolean canBuild() {
-		return goalPower > 0;
+		return goalPower > 0 && slots[5] == null;
 	}
 	
 	//取得建造花費
@@ -292,7 +301,7 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ISidedIn
 				if (this.consumedPower >= this.goalPower) {
 					this.consumedPower = 0;
 					this.goalPower = 0;
-					this.buildShip();	//建造出成品放到output slot
+					this.buildComplete();	//建造出成品放到output slot
 					sendUpdate = true;
 				}
 			}
@@ -317,12 +326,6 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ISidedIn
 		}
 	}
 
-	//計算build進度條, i為進度條pixel長度
-	public int getBuildProgressScaled(int i) {
-		//goalPower+1 for avoid devide by zero
-		return (consumedPower * i) / (goalPower + 1);
-	}
-
 	//計算fuel存量條
 	public int getPowerRemainingScaled(int i) {
 		return (remainedPower * i) / maxPower;
@@ -330,8 +333,9 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ISidedIn
 	
 	//計算建造時間 (換算成真實時間)
 	public String getBuildTimeString() {
+		//剩餘秒數 = (目標能量 - 目前能量) / (每tick增加能量) / 20
 		int timeSec = (goalPower - consumedPower) / buildSpeed / 20;	//get time (單位: sec)		
-		return FormatHelper.getTimeFormated(timeSec);		
+		return FormatHelper.getTimeFormated(timeSec);
 	}
 
 	

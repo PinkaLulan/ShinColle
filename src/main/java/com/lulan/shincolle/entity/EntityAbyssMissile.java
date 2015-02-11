@@ -6,10 +6,15 @@ import cpw.mods.fml.relauncher.SideOnly;
 import java.util.Iterator;
 import java.util.List;
 
+import org.lwjgl.opengl.GL11;
+
+import com.lulan.shincolle.client.particle.EntityFXSpray;
 import com.lulan.shincolle.network.CreatePacketS2C;
 import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -35,6 +40,7 @@ import net.minecraft.world.World;
  * 
  */
 public class EntityAbyssMissile extends Entity {
+	
     public BasicEntityShip hostEntity;  //host target
     public Entity hitEntity;			 //onImpact target (for entity)
     
@@ -232,9 +238,14 @@ public class EntityAbyssMissile extends Entity {
     	/**********client side***********/
     	else {
     		//spawn particle
-            for (int j = 0; j < 6; ++j) {
-                this.worldObj.spawnParticle("cloud", this.posX-this.motionX*1.5D*j, this.posY+1D-this.motionY*1.5D*j, this.posZ-this.motionZ*1.5D*j, -this.motionX*0.5D, -this.motionY*0.5D, -this.motionZ*0.5D);
-            }
+            for (int j = 0; j < 3; ++j) {
+//                this.worldObj.spawnParticle("cloud", this.posX-this.motionX*1.5D*j, this.posY+1D-this.motionY*1.5D*j, this.posZ-this.motionZ*1.5D*j, -this.motionX*0.5D, -this.motionY*0.5D, -this.motionZ*0.5D);
+                EntityFX particleSpray = new EntityFXSpray(worldObj, 
+                		this.posX-this.motionX*1.5D*j, this.posY+1D-this.motionY*1.5D*j, this.posZ-this.motionZ*1.5D*j, 
+                		-this.motionX*0.5D, -this.motionY*0.5D, -this.motionZ*0.5D,
+                		1F, 1F, 1F, 1F);
+            	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray);
+    		}
     	}//end client side
     	   	
     }

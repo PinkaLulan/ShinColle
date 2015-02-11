@@ -44,7 +44,7 @@ public class ModEntity {
 	//參數: 該生物class, 生物名稱, 怪物蛋背景色, 怪物蛋斑點色
 	public static void createEntity(Class entityClass, String entityName, int entityId){
 		//登錄參數: 生物class, 生物名稱, 生物id, mod副本, 追蹤更新距離, 更新時間間隔, 是否發送同步封包(高速entity必須true才會顯示平順)
-		EntityRegistry.registerModEntity(entityClass, entityName, entityId, ShinColle.instance, 64, 1, false);
+		EntityRegistry.registerModEntity(entityClass, entityName, entityId, ShinColle.instance, 64, 1, true);
 	}
 	
 	//登錄非生物方法 (無生怪蛋)

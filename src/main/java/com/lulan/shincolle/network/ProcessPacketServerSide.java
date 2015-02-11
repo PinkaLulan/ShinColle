@@ -5,6 +5,7 @@ import io.netty.buffer.ByteBufInputStream;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import java.io.IOException;
@@ -20,13 +21,11 @@ import cpw.mods.fml.relauncher.SideOnly;
 /**Process server side packet by Jabelar
  */
 public class ProcessPacketServerSide {
-	//for entity
-	private static int PacketTypeID;
-	private static int EntityID;
+
 	private static Entity FoundEntity;
-	//for GUI
-	private static int Button;
-	private static int Value;
+	private static TileEntity FoundTE;
+	private static int PacketTypeID, EntityID, Button, Value, xCoord, yCoord, zCoord;
+	
  
 	public ProcessPacketServerSide() {}
 
@@ -46,7 +45,21 @@ public class ProcessPacketServerSide {
 				Value = bbis.readByte();
 				//set value
 				EntityHelper.setEntityByGUI((BasicEntityShip)FoundEntity, (int)Button, (int)Value);
-LogHelper.info("DEBUG : recv packet (server side): GUI click:"+Button+" "+Value+" ");
+				LogHelper.info("DEBUG : recv packet (server side): GUI click:"+Button+" "+Value+" ");
+				}
+				break;
+			case Names.Packets.GUI_SHIPYARD: {
+				//read position
+				xCoord = bbis.readInt();
+				yCoord = bbis.readInt();
+				zCoord = bbis.readInt();
+				Button = bbis.readByte();
+				Value = bbis.readByte();
+				//get tile entity
+				FoundTE = parPlayer.worldObj.getTileEntity(xCoord, yCoord, zCoord);		
+				//set value
+				EntityHelper.setTileEntityByGUI(FoundTE, (int)Button, (int)Value);
+				LogHelper.info("DEBUG : recv packet (server side): GUI click:"+Button+" "+Value+" ");
 				}
 				break;
 			}

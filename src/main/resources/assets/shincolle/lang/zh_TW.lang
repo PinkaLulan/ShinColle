@@ -61,3 +61,5 @@ gui.shincolle:ammolight=輕型彈藥
 gui.shincolle:ammoheavy=重型彈藥
 gui.shincolle:grudge=怨氣
 gui.shincolle:owner=所屬
+gui.shincolle:nomaterial=材料不足
+gui.shincolle:nofuel=燃料不足

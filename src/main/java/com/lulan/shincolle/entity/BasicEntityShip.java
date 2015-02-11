@@ -7,6 +7,7 @@ import java.util.UUID;
 import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.ai.EntityAIShipSit;
 import com.lulan.shincolle.client.inventory.ContainerShipInventory;
+import com.lulan.shincolle.client.particle.EntityFXMiss;
 import com.lulan.shincolle.client.particle.EntityFXSpray;
 import com.lulan.shincolle.crafting.EquipCalc;
 import com.lulan.shincolle.entity.EntityAbyssMissile;
@@ -478,7 +479,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 	
 	//right click on ship
 	@Override
-	public boolean interact(EntityPlayer player) {		
+	public boolean interact(EntityPlayer player) {
+		
 		ItemStack itemstack = player.inventory.getCurrentItem();  //get item in hand
 		
 		//如果已經被綑綁, 再點一下可以解除綑綁
@@ -615,7 +617,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
         super.onLivingUpdate();
         
         //server side check
-        if((!worldObj.isRemote)) {
+        if((!worldObj.isRemote)) {    	
         	//sync client and reset AI after server start 2 sec
         	if(ticksExisted == 40) {
         		clearAITasks();
@@ -728,23 +730,46 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		float atk = ArrayFinal[AttrID.ATK];
 		//set knockback value (testing)
 		float kbValue = 0.05F;
-		
-		//experience++
-		this.addShipExp(2);
-		
-		//grudge--
-		decrGrudgeNum(1);
+		//update entity look at vector (for particle spawn)
+        //此方法比getLook還正確 (client sync問題)
+        float lookX = (float) (target.posX - this.posX);
+        float lookY = (float) (target.posY - this.posY);
+        float lookZ = (float) (target.posZ - this.posZ);
+        float lookDist = MathHelper.sqrt_float(lookX*lookX + lookY*lookY + lookZ*lookZ);
+        lookX = lookX / lookDist;
+        lookY = lookY / lookDist;
+        lookZ = lookZ / lookDist;
+        
+        //發射者煙霧特效
+        CreatePacketS2C.sendS2CAttackParticle2(this.getEntityId(), this.posX, this.posY, this.posZ, lookX, lookY, lookZ, 6);
 
 		//play cannon fire sound at attacker
-        this.playSound(Reference.MOD_ID+":ship-firesmall", 0.4F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        playSound(Reference.MOD_ID+":ship-firesmall", 0.4F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         //play entity attack sound
-        if(this.getRNG().nextInt(10) > 7) {
+        if(this.rand.nextInt(10) > 7) {
         	this.playSound(Reference.MOD_ID+":ship-hitsmall", 1F, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         }
+        
+        //experience++
+  		addShipExp(2);
+  		
+  		//grudge--
+  		decrGrudgeNum(1);
         
         //light ammo -1
         if(!decrAmmoNum(0)) {		//not enough ammo
         	atk = atk * 0.125F;	//reduce damage to 12.5%
+        }
+        
+        //calc miss chance
+        int missChance = (int) (ArrayFinal[AttrID.HIT] / (2F + 3F * (lookDist / ArrayFinal[AttrID.HIT])));
+        if(missChance < 3) missChance = 3;	//max miss chance = 33% 
+        if(this.rand.nextInt(missChance) == 0) {
+        	atk = 0;	//still attack, but no damage
+        	//spawn miss particle
+    		EntityFX particleMiss = new EntityFXMiss(worldObj, 
+    		          this.posX, this.posY+this.height, this.posZ, 1F);	    
+    		Minecraft.getMinecraft().effectRenderer.addEffect(particleMiss);
         }
 
 	    //將atk跟attacker傳給目標的attackEntityFrom方法, 在目標class中計算傷害
@@ -760,22 +785,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 	            motionX *= 0.6D;
 	            motionZ *= 0.6D;
 	        }
-	        	    
-	        //update entity look at vector (for particle)
-	        //此方法比getLook還正確 (client sync問題)
-	        float lookX = (float) (target.posX - this.posX);
-	        float lookY = (float) (target.posY - this.posY);
-	        float lookZ = (float) (target.posZ - this.posZ);
-	        float lookDist = MathHelper.sqrt_float(lookX*lookX + lookY*lookY + lookZ*lookZ);
-	        lookX = lookX / lookDist;
-	        lookY = lookY / lookDist;
-	        lookZ = lookZ / lookDist;
 	        
         	//send packet to client for display partical effect  
-        	CreatePacketS2C.sendS2CAttackParticle(target, 9);	//目標中彈特效  
-        	if(this.getLookVec() != null) {  					//發射者煙霧特效
-        		CreatePacketS2C.sendS2CAttackParticle2(this.getEntityId(), this.posX, this.posY, this.posZ, lookX, lookY, lookZ, 6);		
-        	}
+        	CreatePacketS2C.sendS2CAttackParticle(target, 9);	//目標中彈特效
         }
 
 	    return isTargetHurt;
@@ -789,6 +801,25 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		float kbValue = 0.15F;
 		//飛彈是否採用直射
 		boolean isDirect = false;
+		//計算目標距離
+		double tarX = target.posX;	//for miss chance calc
+		double tarY = target.posY;
+		double tarZ = target.posZ;
+        double distX = tarX - this.posX;
+        double distY = tarY - this.posY;
+        double distZ = tarZ - this.posZ;
+        float distSqrt = MathHelper.sqrt_double(distX*distX + distY*distY + distZ*distZ);
+        double launchPos = this.posY + this.height * 0.7D;
+        
+        //超過一定距離/水中 , 則採用拋物線,  在水中時發射高度較低
+        if((distX*distX+distY*distY+distZ*distZ) < 36) {
+        	isDirect = true;
+        }
+        if(this.getShipDepth() > 0D) {
+        	LogHelper.info("DEBUG : depth > 0 , use under missile");
+        	isDirect = true;
+        	launchPos = this.posY;
+        }
 		
 		//experience++
 		this.addShipExp(16);
@@ -804,29 +835,26 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
         }
         
         //heavy ammo -1
-        if(!decrAmmoNum(1)) {		//not enough ammo
-        	atk = atk * 0.25F;	//reduce damage to 25%
+        if(!decrAmmoNum(1)) {	//not enough ammo
+        	atk = atk * 0.125F;	//reduce damage to 12.5%
         }
         
-        //計算目標距離
-        double distX = target.posX - this.posX;
-        double distY = target.posY - this.posY;
-        double distZ = target.posZ - this.posZ;
-        double launchPos = this.posY + this.height * 0.7D;
-        
-        //超過一定距離/水中 , 則採用拋物線,  在水中時發射高度較低
-        if((distX*distX+distY*distY+distZ*distZ) < 36) {
-        	isDirect = true;
+        //calc miss chance, miss: add random offset(0~6) to missile target 
+        int missChance = (int) (ArrayFinal[AttrID.HIT] / (2F + 3F * (distSqrt / ArrayFinal[AttrID.HIT])));
+        if(missChance < 3) missChance = 3;	//max miss chance = 33% 
+        if(this.rand.nextInt(missChance) == 0) {
+        	tarX = tarX - 3D + this.rand.nextDouble() * 6D;
+        	tarY = tarY + this.rand.nextDouble() * 3D;
+        	tarZ = tarZ - 3D + this.rand.nextDouble() * 6D;
+        	//spawn miss particle
+    		EntityFX particleMiss = new EntityFXMiss(worldObj, 
+    		          this.posX, this.posY+this.height, this.posZ, 1F);	    
+    		Minecraft.getMinecraft().effectRenderer.addEffect(particleMiss);
         }
-        if(this.getShipDepth() > 0D) {
-        	isDirect = true;
-        	launchPos = this.posY + this.height * 0.2D;
-        }
-        
 
         //spawn missile   NYI: target position + random offset by ship HIT value
         EntityAbyssMissile missile = new EntityAbyssMissile(this.worldObj, this, 
-        		target.posX, target.posY+target.height*0.2D, target.posZ, launchPos, atk, kbValue, isDirect);
+        		tarX, tarY+target.height*0.2D, tarZ, launchPos, atk, kbValue, isDirect);
         this.worldObj.spawnEntityInWorld(missile);
         
         return true;

@@ -16,6 +16,7 @@ public final class Names {
 		public static final byte PARTICLE_ATK = 4;
 		public static final byte PARTICLE_ATK2 = 5;
 		public static final byte GUI_SHIPINV = 6;
+		public static final byte GUI_SHIPYARD = 7;
 	}
 
 }

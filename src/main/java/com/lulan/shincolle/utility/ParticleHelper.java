@@ -2,6 +2,8 @@ package com.lulan.shincolle.utility;
 
 import java.util.Random;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -93,6 +95,7 @@ public class ParticleHelper {
 		double ran1 = 0D;
 		double ran2 = 0D;
 		
+//		GL11.glDepthMask(true);
 		//spawn particle
 		switch(type) {
 		case 0:	//explode

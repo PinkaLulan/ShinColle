@@ -3,8 +3,13 @@ package com.lulan.shincolle.client.gui;
 import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.client.inventory.ContainerSmallShipyard;
+import com.lulan.shincolle.network.CreatePacketC2S;
+import com.lulan.shincolle.reference.AttrID;
+import com.lulan.shincolle.reference.GUIs;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
+import com.lulan.shincolle.utility.GuiHelper;
+import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -16,11 +21,13 @@ import net.minecraft.util.ResourceLocation;
 public class GuiSmallShipyard extends GuiContainer {
 
 	private static final ResourceLocation guiTexture = new ResourceLocation(Reference.TEXTURES_GUI+"GuiSmallShipyard.png");
-	private TileEntitySmallShipyard teSmallShipyard;
+	private TileEntitySmallShipyard tile;
+	private int xClick, yClick;
+	private String errorMsg;
 	
 	public GuiSmallShipyard(InventoryPlayer par1, TileEntitySmallShipyard par2) {
 		super(new ContainerSmallShipyard(par1, par2));
-		teSmallShipyard = par2;
+		tile = par2;
 		
 		this.xSize = 176;
 		this.ySize = 164;
@@ -30,16 +37,23 @@ public class GuiSmallShipyard extends GuiContainer {
 	@Override
 	protected void drawGuiContainerForegroundLayer(int i, int j) {
 		//取得gui顯示名稱
-		String name = this.teSmallShipyard.hasCustomInventoryName() ? this.teSmallShipyard.getInventoryName() : I18n.format(this.teSmallShipyard.getInventoryName());
-		String time = this.teSmallShipyard.getBuildTimeString();
+		String name = this.tile.hasCustomInventoryName() ? this.tile.getInventoryName() : I18n.format(this.tile.getInventoryName());
+		String time = this.tile.getBuildTimeString();
 		
 		//畫出字串 parm: string, x, y, color, (是否dropShadow)
 		//畫出該方塊名稱, 位置: x=gui寬度的一半扣掉字串長度一半, y=6, 顏色為4210752
 		this.fontRendererObj.drawString(name, this.xSize / 2 - this.fontRendererObj.getStringWidth(name) / 2, 6, 4210752);
-		//畫出玩家背包名稱
-		this.fontRendererObj.drawString(I18n.format("container.inventory"), 8, this.ySize - 87, 4210752);
 		//畫出倒數時間
-		this.fontRendererObj.drawString(time, 51, 51, 4210752);
+		this.fontRendererObj.drawString(time, 71 - this.fontRendererObj.getStringWidth(time) / 2, 51, 4210752);
+		//畫出提示訊息
+		if(tile.goalPower <= 0) {
+			errorMsg = I18n.format("gui.shincolle:nomaterial");
+			this.fontRendererObj.drawString(errorMsg, 80 - this.fontRendererObj.getStringWidth(errorMsg) / 2, 61, 16724787);
+		}
+		else if(!tile.hasRemainedPower()) {
+			errorMsg = I18n.format("gui.shincolle:nofuel");
+			this.fontRendererObj.drawString(errorMsg, 80 - this.fontRendererObj.getStringWidth(errorMsg) / 2, 61, 16724787);
+		}
 		
 	}
 
@@ -50,17 +64,43 @@ public class GuiSmallShipyard extends GuiContainer {
         Minecraft.getMinecraft().getTextureManager().bindTexture(guiTexture); //GUI圖檔
         drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);	//GUI大小設定
        
-        int scaleBar;
-        //畫出build進度條          
-        scaleBar = teSmallShipyard.getBuildProgressScaled(24);	//彩色進度條長度24
-        drawTexturedModalRect(guiLeft+113, guiTop+29, 176, 0, scaleBar+1, 16);
-        
         //畫出fuel存量條
-        if(teSmallShipyard.remainedPower > 0) {
-            scaleBar = teSmallShipyard.getPowerRemainingScaled(31);	//彩色進度條長度31	
-            drawTexturedModalRect(guiLeft+10, guiTop+48-scaleBar, 176, 46-scaleBar, 12, scaleBar);
+        int scaleBar; 
+        if(tile.remainedPower > 0) {
+            scaleBar = tile.getPowerRemainingScaled(31);	//彩色進度條長度31	
+            drawTexturedModalRect(guiLeft+10, guiTop+48-scaleBar, 176, 47-scaleBar, 12, scaleBar);
+        }
+        
+        //畫出type選擇框
+        if(tile.buildType == 0) {
+        	drawTexturedModalRect(guiLeft+123, guiTop+17, 176, 47, 18, 18);
+        }
+        else {
+        	drawTexturedModalRect(guiLeft+143, guiTop+17, 176, 47, 18, 18);
         }
 	
+	}
+	
+	//handle mouse click, @parm posX, posY, mouseKey (0:left 1:right 2:middle 3:...etc)
+	@Override
+	protected void mouseClicked(int posX, int posY, int mouseKey) {
+        super.mouseClicked(posX, posY, mouseKey);
+        
+        //get click position
+        xClick = posX - this.guiLeft;
+        yClick = posY - this.guiTop;
+        
+        //match all pages
+        switch(GuiHelper.getButton(GUIs.SMALLSHIPYARD, 0, xClick, yClick)) {
+        case 0:
+        	LogHelper.info("DEBUG : GUI click: build small ship: ship");
+    		CreatePacketC2S.sendC2SGUIShipyardClick(this.tile, AttrID.B_Shipyard_Ship, 0);
+        	break;
+        case 1:
+        	LogHelper.info("DEBUG : GUI click: build small ship: equip");
+    		CreatePacketC2S.sendC2SGUIShipyardClick(this.tile, AttrID.B_Shipyard_Ship, 1);
+        	break;
+        }
 	}
 
 }

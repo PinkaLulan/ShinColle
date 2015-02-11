@@ -27,9 +27,10 @@ public class EntityFXSpray extends EntityFX {
         super(world, posX, posY, posZ, 0.0D, 0.0D, 0.0D);
         this.motionX *= 0.1D;
         this.motionZ *= 0.1D;
+        this.motionY *= 0.1D;
         this.motionX += motionX;
         this.motionZ += motionZ;
-        this.motionY = 0D;
+        this.motionY += motionY;
         this.particleRed = colorR;
         this.particleGreen = colorG;
         this.particleBlue = colorB;

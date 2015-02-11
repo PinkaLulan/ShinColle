@@ -78,7 +78,8 @@ public class EntityHeavyCruiserRi extends BasicEntitySmallShip {
 		super.setAIList();
 		
 		//floating on water
-		this.tasks.addTask(1, new EntityAIShipSit(this, this.getOwner()));	   //0101	
+		this.tasks.addTask(1, new EntityAIShipSit(this, this.getOwner()));	   //0101
+		this.tasks.addTask(2, new EntityAIShipFollowOwner(this, 7F, 12F));	   //0011
 		
 		//use range attack (light)
 		this.tasks.addTask(11, new EntityAIShipRangeAttack(this));			   //0011
@@ -90,7 +91,7 @@ public class EntityHeavyCruiserRi extends BasicEntitySmallShip {
 		//idle AI
 		//moving
 		this.tasks.addTask(21, new EntityAIOpenDoor(this, true));			   //0000
-		this.tasks.addTask(22, new EntityAIShipFollowOwner(this, 7F, 12F));//0011
+		
 		this.tasks.addTask(23, new EntityAIShipFloating(this));				   //0110
 		this.tasks.addTask(24, new EntityAIWatchClosest(this, EntityPlayer.class, 5F));	  //0010
 		this.tasks.addTask(24, new EntityAIWatchClosest(this, BasicEntityShip.class, 7F));//0010

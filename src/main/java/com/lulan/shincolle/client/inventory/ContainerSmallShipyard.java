@@ -17,9 +17,9 @@ import net.minecraft.tileentity.TileEntityFurnace;
 
 /**SLOT POSITION
  * S1:grudge(33,29) S2:abyssium(53,29) S3:ammo(73,29) S4:poly(93,29)
- * fuel(8,53) fuel bar(10,48 height=30) fuel color bar(176,46) 
- * arrow(113,29 len=24) arrow color bar(176,0)
- * output(145,29) player inv(8,87) action bar(8,145) 
+ * fuel(8,53) fuel bar(10,48 height=30) fuel color bar(176,46)
+ * ship button(123,17) equip button(143,17)
+ * output(134,44) player inv(8,87) action bar(8,145)
  */
 public class ContainerSmallShipyard extends Container {
 	
@@ -27,6 +27,7 @@ public class ContainerSmallShipyard extends Container {
 	private int guiConsumedPower;
 	private int guiRemainedPower;
 	private int guiGoalPower;
+	private int guiBuildType;
 	private String guiBuildTime;
 	
 	
@@ -40,7 +41,7 @@ public class ContainerSmallShipyard extends Container {
 		this.addSlotToContainer(new SlotSmallShipyard(teSmallShipyard, 2, 73, 29));  //ammo
 		this.addSlotToContainer(new SlotSmallShipyard(teSmallShipyard, 3, 93, 29));  //poly
 		this.addSlotToContainer(new SlotSmallShipyard(teSmallShipyard, 4, 8, 53));   //fuel
-		this.addSlotToContainer(new SlotSmallShipyard(teSmallShipyard, 5, 145, 29)); //output
+		this.addSlotToContainer(new SlotSmallShipyard(teSmallShipyard, 5, 134, 44)); //output
 		
 		//player inventory
 		for(int i=0; i<3; i++) {
@@ -56,12 +57,13 @@ public class ContainerSmallShipyard extends Container {
 	}
 	
 	//發送更新gui進度條更新, 比detectAndSendChanges還要優先(在此放置init方法等)
-	@Override
-	public void addCraftingToCrafters (ICrafting crafting) {
-		super.addCraftingToCrafters(crafting);
-		crafting.sendProgressBarUpdate(this, 0, this.te.consumedPower);	 //發送新值更新build進度條
-		crafting.sendProgressBarUpdate(this, 1, this.te.remainedPower);  //發送新值更新fuel進度條
-	}
+//	@Override
+//	public void addCraftingToCrafters (ICrafting crafting) {
+//		super.addCraftingToCrafters(crafting);
+//		crafting.sendProgressBarUpdate(this, 0, this.te.consumedPower);	//時間進度
+//		crafting.sendProgressBarUpdate(this, 1, this.te.remainedPower);	//剩餘燃料
+//		crafting.sendProgressBarUpdate(this, 2, this.te.buildType);		//建造類型
+//	}
 
 	//玩家是否可以觸發右鍵點方塊事件
 	@Override
@@ -134,7 +136,7 @@ public class ContainerSmallShipyard extends Container {
         return itemstack;	//物品移動完成, 回傳剩下的物品
     }
 	
-	//將container數值跟tile entity內的數值比對, 如果不同則發送更新使gui呈現新數值
+	//將container數值跟tile entity內的數值比對, 如果不同則發送更新給client使gui呈現新數值
 	@Override
 	public void detectAndSendChanges() {
 		super.detectAndSendChanges();
@@ -143,21 +145,26 @@ public class ContainerSmallShipyard extends Container {
             ICrafting icrafting = (ICrafting) crafter;
 
             if(this.guiConsumedPower != this.te.consumedPower) {  	//更新build進度條
-                icrafting.sendProgressBarUpdate(this, 0, this.te.consumedPower);              
+                icrafting.sendProgressBarUpdate(this, 0, this.te.consumedPower);
+                this.guiConsumedPower = this.te.consumedPower;
             }
             
             if(this.guiGoalPower != this.te.goalPower) {  			//更新build進度條
-                 icrafting.sendProgressBarUpdate(this, 1, this.te.goalPower);               
+                 icrafting.sendProgressBarUpdate(this, 1, this.te.goalPower);
+                 this.guiGoalPower = this.te.goalPower;
              }
 
             if(this.guiRemainedPower != this.te.remainedPower) {  	//更新fuel存量條
                 icrafting.sendProgressBarUpdate(this, 2, this.te.remainedPower);
+                this.guiRemainedPower = this.te.remainedPower;
+            }
+            
+            if(this.guiBuildType != this.te.buildType) {  			//更新建造類型
+                icrafting.sendProgressBarUpdate(this, 3, this.te.buildType);
+                this.guiBuildType = this.te.buildType;
             }
         }
-        //將container值設為tile entity目前值
-        this.guiGoalPower = this.te.goalPower;
-        this.guiConsumedPower = this.te.consumedPower;
-        this.guiRemainedPower = this.te.remainedPower;
+        
     }
 
 	//client端container接收新值
@@ -173,6 +180,9 @@ public class ContainerSmallShipyard extends Container {
 			break;
 		case 2:
 			this.te.remainedPower = updatedValue;
+			break;
+		case 3:
+			this.te.buildType = updatedValue;
 			break;
 		}
     }

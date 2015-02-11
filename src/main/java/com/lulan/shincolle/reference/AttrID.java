@@ -26,6 +26,8 @@ public class AttrID {
 	//GUI Button ID
 	public static final byte B_ShipInv_AmmoLight = 0;
 	public static final byte B_ShipInv_AmmoHeavy = 1;
+	public static final byte B_Shipyard_Ship = 0;
+	public static final byte B_Shipyard_Equip = 1;
 	
 	//ShipID
 	public static final byte DestroyerI = 0;

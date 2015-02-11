@@ -21,7 +21,7 @@ import net.minecraft.util.ResourceLocation;
 public class RenderLargeShipyard extends Render {
 
 	//∂Kπœ¿…∏ÙÆ|
-	private static final ResourceLocation mobTextures = new ResourceLocation(Reference.TEXTURES_BLOCKS+"BlockLargeShipyard.png");
+	private static final ResourceLocation TEXTURE = new ResourceLocation(Reference.TEXTURES_BLOCKS+"BlockLargeShipyard.png");
 
 	private final ModelLargeShipyard model;
 			
@@ -35,9 +35,10 @@ public class RenderLargeShipyard extends Render {
     }
 
 	public void doRender(BasicRenderEntity entity, double offsetX, double offsetY, double offsetZ, float f3, float f4) {
-		this.bindEntityTexture(entity);	
+//		this.bindEntityTexture(entity);	
 		EntityPlayer player  = Minecraft.getMinecraft().thePlayer;
 		GL11.glPushMatrix();
+			Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE);
 			GL11.glTranslatef((float)offsetX, (float)offsetY+0.5F, (float)offsetZ);
 			GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
 //			GL11.glRotatef(angle, 0F, 1F, 0F);
@@ -50,7 +51,7 @@ public class RenderLargeShipyard extends Render {
 
 	@Override
 	protected ResourceLocation getEntityTexture(Entity p_110775_1_) {
-		return mobTextures;
+		return TEXTURE;
 	}
 	
 	@Override

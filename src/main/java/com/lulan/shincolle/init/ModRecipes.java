@@ -35,6 +35,8 @@ public class ModRecipes {
 		ItemStack grudeStack = new ItemStack(ModItems.Grudge);
 		ItemStack grudeStack9 = new ItemStack(ModItems.Grudge,9);
 		ItemStack grudeBlock = new ItemStack(ModBlocks.BlockGrudge);
+		ItemStack grudeBlock9 = new ItemStack(ModBlocks.BlockGrudge,9);
+		ItemStack grudeHeavyBlock = new ItemStack(ModBlocks.BlockGrudgeHeavy);
 		ItemStack gunpowderStack = new ItemStack(Items.gunpowder);	
 		ItemStack polymetalStack = new ItemStack(ModItems.Polymetal);
 		ItemStack polymetalStack9 = new ItemStack(ModItems.Polymetal,9);
@@ -50,6 +52,7 @@ public class ModRecipes {
 		GameRegistry.addRecipe(new ShapelessOreRecipe(ammoHeavy9, ammoHeavyContainer));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(abyssiumStack9, abyssiumBlock));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(grudeStack9, grudeBlock));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(grudeBlock9, grudeHeavyBlock));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(polymetalStack9, polymetalBlock));
 
 		//SHAPED RECIPE
@@ -76,6 +79,7 @@ public class ModRecipes {
 		GameRegistry.addRecipe(new ShapedOreRecipe(ammoHeavyContainer,"aaa","aaa","aaa",'a',ammoHeavy1));
 		GameRegistry.addRecipe(new ShapedOreRecipe(abyssiumBlock,"aaa","aaa","aaa",'a',abyssiumStack));
 		GameRegistry.addRecipe(new ShapedOreRecipe(grudeBlock,"aaa","aaa","aaa",'a',grudeStack));
+		GameRegistry.addRecipe(new ShapedOreRecipe(grudeHeavyBlock,"aaa","aaa","aaa",'a',grudeBlock));
 		GameRegistry.addRecipe(new ShapedOreRecipe(polymetalBlock,"aaa","aaa","aaa",'a',polymetalStack));
 		//small shipyard
 		GameRegistry.addRecipe(new ShapedOreRecipe(smallshipyardStack,"glg","lol","ooo",'g',grudeStack,'l',Items.lava_bucket,'o',Blocks.obsidian));

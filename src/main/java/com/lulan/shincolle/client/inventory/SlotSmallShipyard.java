@@ -11,7 +11,7 @@ import net.minecraft.tileentity.TileEntityFurnace;
 
 /**SLOT POSITION
  * S0:grudge(33,29) S1:abyssium(53,29) S2:ammo(73,29) S3:poly(93,29)
- * S4:fuel(8,53) fuel bar(10,18) fire(64,51) arrow(114,29) S5:output(145,29)
+ * S4:fuel(8,53) fuel bar(10,18) fire(64,51) S5:output(145,29)
  * player inv(8,87) action bar(8,145) 
  */
 public class SlotSmallShipyard extends Slot {

@@ -61,4 +61,5 @@ gui.shincolle:ammolight=Light Ammo
 gui.shincolle:ammoheavy=Heavy Ammo
 gui.shincolle:grudge=Grudge
 gui.shincolle:owner=Master
-
+gui.shincolle:nomaterial=Not Enough Materials
+gui.shincolle:nofuel=Not Enough Fuel
