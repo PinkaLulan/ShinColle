@@ -237,7 +237,7 @@ public class ModelHeavyCruiserRi extends ModelBase {
     @Override
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) { 
   	
-    	GL11.glPushMatrix();
+//    	GL11.glPushMatrix();
     	GL11.glEnable(GL11.GL_BLEND);			//開啟透明度模式
     	GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
     	GL11.glScalef(0.5F, 0.5F, 0.5F); 	
@@ -246,7 +246,7 @@ public class ModelHeavyCruiserRi extends ModelBase {
     	
     	this.BodyMain.render(f5);
     	GL11.glDisable(GL11.GL_BLEND);			//開啟透明度模式
-    	GL11.glPopMatrix();
+//    	GL11.glPopMatrix();
     }
 
     /**

@@ -7,8 +7,10 @@ import com.lulan.shincolle.client.inventory.ContainerShipInventory;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.network.CreatePacketC2S;
 import com.lulan.shincolle.reference.AttrID;
+import com.lulan.shincolle.reference.GUIs;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
+import com.lulan.shincolle.utility.GuiHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.client.Minecraft;
@@ -25,7 +27,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 
-/**ShipTypeIcon(157,18) 
+/**ICON_SHIPTYPE(157,18) 
  * NameIcon: LargeShip(0,0)(40x42) SmallShip(0,43)(30x30) 
  *           驅逐(41,0)(28x28) 輕巡(41,29) 重巡(41,58) 雷巡(41,87) 補給(12,74)
  *           戰艦(70,0) 航母(70,29) 輕母(70,58) 姬(70,87) 潛水(99,0) 浮游(99,29)
@@ -40,8 +42,8 @@ public class GuiShipInventory extends GuiContainer {
 	private InventoryPlayer player;
 	private float xMouse, yMouse;
 	private int xClick, yClick;
-	private static final ResourceLocation guiBackground = new ResourceLocation(Reference.TEXTURES_GUI+"GuiShipInventory.png");
-	private static final ResourceLocation guiNameicon = new ResourceLocation(Reference.TEXTURES_GUI+"GuiNameIcon.png");
+	private static final ResourceLocation TEXTURE_BG = new ResourceLocation(Reference.TEXTURES_GUI+"GuiShipInventory.png");
+	private static final ResourceLocation TEXTURE_ICON = new ResourceLocation(Reference.TEXTURES_GUI+"GuiNameIcon.png");
 	//draw string
 	private String titlename, shiplevel, lvMark, hpMark, strATK, strDEF, strSPD, strMOV, strHIT, Kills, Exp, AmmoLight, AmmoHeavy, Grudge, Owner;
 	private int hpCurrent, hpMax, color;
@@ -52,11 +54,11 @@ public class GuiShipInventory extends GuiContainer {
 	private boolean SwitchHeavy;
 	
 	//ship type icon array
-	private static final short[][] shipTypeIcon = {
+	private static final short[][] ICON_SHIPTYPE = {
 		{41,0}, {41,29}, {41,58}, {41,87}, {70,58}, {70,29}, {70,0}, {12,74}, {99,0},
 		{70,87}, {70,87}, {99,29}};
 	//ship name icon array
-	private static final short[][] shipNameIcon = {
+	private static final short[][] ICON_SHIPNAME = {
 		{128,0}, {139,0}, {150,0}, {161,0}, {172,0}, {183,0}, {194,0}, {205,0},
 		{216,0}, {227,0}, {238,0}, {128,60}, {139,60}, {150,60}, {161,60}, {172,60},
 		{183,60}, {194,60}, {205,60}, {216,60}, {227,60}, {238,60}, {128,120}, {139,120},
@@ -69,7 +71,7 @@ public class GuiShipInventory extends GuiContainer {
 		this.player = invPlayer;
 		this.xSize = 250;
 		this.ySize = 214;
-		this.showPage = 0;	//show page 0
+		this.showPage = 1;	//show page 1
 	}
 	
 	//GUI前景: 文字 
@@ -92,25 +94,25 @@ public class GuiShipInventory extends GuiContainer {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);	//RGBA
 		
 		//draw background
-        Minecraft.getMinecraft().getTextureManager().bindTexture(guiBackground);
+        Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE_BG);
         drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
         
         //draw page indicator
         switch(this.showPage) {
-        case 0:	//page 0
+        case 1:	//page 1
         	this.pageIndictor = 18;
         	break;
-        case 1:	//page 1
+        case 2:	//page 2
         	this.pageIndictor = 54;
         	break;
-        case 2:	//page 2
+        case 3:	//page 3
         	this.pageIndictor = 90;
         	break;
         }
         drawTexturedModalRect(guiLeft+147, guiTop+this.pageIndictor, 250, 0, 6, 34);
         
         //draw ammo ON/OFF
-        if(this.showPage == 1) {
+        if(this.showPage == 2) {
         	this.SwitchLight = this.entity.getEntityFlag(AttrID.F_UseAmmoLight);
             this.SwitchHeavy = this.entity.getEntityFlag(AttrID.F_UseAmmoHeavy);
             
@@ -130,18 +132,18 @@ public class GuiShipInventory extends GuiContainer {
         }       
         
         //draw level, ship type icon
-        Minecraft.getMinecraft().getTextureManager().bindTexture(guiNameicon);
+        Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE_ICON);
         if(entity.getShipLevel() > 100) {
         	drawTexturedModalRect(guiLeft+157, guiTop+18, 0, 0, 40, 42);
-        	drawTexturedModalRect(guiLeft+159, guiTop+22, shipTypeIcon[entity.getShipType()][0], shipTypeIcon[entity.getShipType()][1], 28, 28);
+        	drawTexturedModalRect(guiLeft+159, guiTop+22, ICON_SHIPTYPE[entity.getShipType()][0], ICON_SHIPTYPE[entity.getShipType()][1], 28, 28);
         }
         else {
         	drawTexturedModalRect(guiLeft+157, guiTop+18, 0, 43, 30, 30);
-        	drawTexturedModalRect(guiLeft+157, guiTop+18, shipTypeIcon[entity.getShipType()][0], shipTypeIcon[entity.getShipType()][1], 28, 28);
+        	drawTexturedModalRect(guiLeft+157, guiTop+18, ICON_SHIPTYPE[entity.getShipType()][0], ICON_SHIPTYPE[entity.getShipType()][1], 28, 28);
         }
         
         //draw left bottom name
-        drawTexturedModalRect(guiLeft+166, guiTop+63, shipNameIcon[entity.getShipID()][0], shipNameIcon[entity.getShipID()][1], 11, 59);
+        drawTexturedModalRect(guiLeft+166, guiTop+63, ICON_SHIPNAME[entity.getShipID()][0], ICON_SHIPNAME[entity.getShipID()][1], 11, 59);
         
         //draw entity model
         drawEntityModel(guiLeft+210, guiTop+100, 25, (float)(guiLeft + 200 - xMouse), (float)(guiTop + 50 - yMouse), this.entity);
@@ -239,7 +241,7 @@ public class GuiShipInventory extends GuiContainer {
 				
 		//draw string in different page
 		switch(this.showPage) {
-		case 0: {	//page 0: attribute page		
+		case 1: {	//page 0: attribute page		
 			strATK = String.format("%.2f", this.entity.getFinalState(AttrID.ATK));
 			strDEF = String.format("%.2f", this.entity.getFinalState(AttrID.DEF))+"%";
 			strSPD = String.format("%.2f", this.entity.getFinalState(AttrID.SPD));
@@ -274,7 +276,7 @@ public class GuiShipInventory extends GuiContainer {
 			this.fontRendererObj.drawStringWithShadow(strHIT, 145-this.fontRendererObj.getStringWidth(strHIT), 114, color);
 			break;
 			}
-		case 1:	{	//page 2: exp, kills, L&H ammo, fuel
+		case 2:	{	//page 2: exp, kills, L&H ammo, fuel
 			//draw string
 			this.fontRendererObj.drawString(I18n.format("gui.shincolle:kills"), 87, 20, pickColor(5));
 			this.fontRendererObj.drawString(I18n.format("gui.shincolle:exp"), 87, 41, pickColor(5));
@@ -297,7 +299,7 @@ public class GuiShipInventory extends GuiContainer {
 						
 			break;
 			}
-		case 2: {	//page 3: owner name
+		case 3: {	//page 3: owner name
 			//draw string
 			this.fontRendererObj.drawString(I18n.format("gui.shincolle:owner"), 87, 20, pickColor(5));
 			
@@ -342,47 +344,47 @@ public class GuiShipInventory extends GuiContainer {
         xClick = posX - this.guiLeft;
         yClick = posY - this.guiTop;
         
-        //if click in page block(85,18)~(153,124), change showPage (page 0,1,2)
-        //page0(145,18)~(154,53)  page1(145,53)~(154,89)  page2(145,89)~(154,125)
-        if(xClick > 140 && xClick < 156) {
-        	if(yClick > 17 && yClick < 53) {
-        		this.showPage = 0;
-        	}
-        	if(yClick > 52 && yClick < 89) {
-        		this.showPage = 1;
-        	}
-        	if(yClick > 88 && yClick < 125) {
-        		this.showPage = 2;
-        	}
-        }
-        
-        //遠程攻擊開關: iconON(0,214) iconOFF(16,214)
-        if(this.showPage == 1) {
-	        if(xClick > 84 && xClick < 140) {
-	        	if(yClick > 61 && yClick < 83) {
-	        		this.SwitchLight = this.entity.getEntityFlag(AttrID.F_UseAmmoLight);      		
-	        		if(this.SwitchLight) {	//若原本為true, 則設為false(0)
-	        			ButtonValue = 0;
-	        		}
-	        		else {
-	        			ButtonValue = 1;
-	        		}
-	        		LogHelper.info("DEBUG : GUI click: use ammo light: "+ButtonValue);
-	        		CreatePacketC2S.sendC2SGUIShipInvClick(this.entity, AttrID.B_ShipInv_AmmoLight, ButtonValue);             
-	        	}
-	        	if(yClick > 82 && yClick < 104) {
-	        		this.SwitchHeavy = this.entity.getEntityFlag(AttrID.F_UseAmmoHeavy);	
-	        		if(this.SwitchHeavy) {	//若原本為true, 則設為false(0)
-	        			ButtonValue = 0;
-	        		}
-	        		else {
-	        			ButtonValue = 1;
-	        		}
-	        		LogHelper.info("DEBUG : GUI click: use ammo heavy: "+ButtonValue);
-	        		CreatePacketC2S.sendC2SGUIShipInvClick(this.entity, AttrID.B_ShipInv_AmmoHeavy, ButtonValue); 
-	        	}
-	        }
-        }
+        //match all pages
+        switch(GuiHelper.getButton(GUIs.SHIPINVENTORY, 0, xClick, yClick)) {
+        case 0:
+        	this.showPage = 1;
+        	break;
+        case 1:
+        	this.showPage = 2;
+        	break;
+        case 2:
+        	this.showPage = 3;
+        	break;
+        default:	//繼續找是否為page 2的按鍵
+        	if(this.showPage == 2) {
+    	        switch(GuiHelper.getButton(GUIs.SHIPINVENTORY, 1, xClick, yClick)) {
+    	        case 0:
+    	        	this.SwitchLight = this.entity.getEntityFlag(AttrID.F_UseAmmoLight);      		
+            		if(this.SwitchLight) {	//若原本為true, 則設為false(0)
+            			ButtonValue = 0;
+            		}
+            		else {
+            			ButtonValue = 1;
+            		}
+            		LogHelper.info("DEBUG : GUI click: use ammo light: "+ButtonValue);
+            		CreatePacketC2S.sendC2SGUIShipInvClick(this.entity, AttrID.B_ShipInv_AmmoLight, ButtonValue);
+    	        	break;
+    	        case 1:
+    	        	this.SwitchHeavy = this.entity.getEntityFlag(AttrID.F_UseAmmoHeavy);	
+            		if(this.SwitchHeavy) {	//若原本為true, 則設為false(0)
+            			ButtonValue = 0;
+            		}
+            		else {
+            			ButtonValue = 1;
+            		}
+            		LogHelper.info("DEBUG : GUI click: use ammo heavy: "+ButtonValue);
+            		CreatePacketC2S.sendC2SGUIShipInvClick(this.entity, AttrID.B_ShipInv_AmmoHeavy, ButtonValue);
+    	        	break;
+    	        }//end page=2 switch
+            }
+        	break;
+    	}//end all page switch
+
 	}
 	
 

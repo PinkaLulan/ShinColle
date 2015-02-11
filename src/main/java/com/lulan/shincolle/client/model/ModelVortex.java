@@ -27,23 +27,23 @@ public class ModelVortex extends ModelBase {
     @Override
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) { 
     	
-    	GL11.glPushMatrix();		
+//    	GL11.glPushMatrix();		
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glDisable(GL11.GL_LIGHTING);
 //		GL11.glDepthMask(false);
     	GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-    	GL11.glPushMatrix();
+//    	GL11.glPushMatrix();
 //    	GL11.glRotatef(angle, x, y, z);
 //    	GL11.glDisable(GL11.GL_CULL_FACE);
 //    	GL11.glDisable(GL11.GL_DEPTH_TEST);
     	this.Vortex.render(f5);
 //    	GL11.glEnable(GL11.GL_DEPTH_TEST);
 //    	GL11.glEnable(GL11.GL_CULL_FACE);
-    	GL11.glPopMatrix();
+//    	GL11.glPopMatrix();
 //        GL11.glDepthMask(false);
         GL11.glEnable(GL11.GL_LIGHTING);
         GL11.glDisable(GL11.GL_BLEND);
-        GL11.glPopMatrix();
+//        GL11.glPopMatrix();
     }
 
     public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z) {

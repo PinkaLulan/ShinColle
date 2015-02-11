@@ -59,9 +59,9 @@ public class RenderSmallShipyard extends TileEntitySpecialRenderer {
 			//榜定model貼圖
 			Minecraft.getMinecraft().renderEngine.bindTexture(textures);	//client side only
 			//this.bindTexture(textures);
-			GL11.glPushMatrix();			
+//			GL11.glPushMatrix();			
 				this.model.renderModel(0.0625F);  //避免renderModel裡面有平移旋轉  必須push pop一次以免不正常位移
-			GL11.glPopMatrix();
+//			GL11.glPopMatrix();
 		GL11.glPopMatrix();
 		
 	}

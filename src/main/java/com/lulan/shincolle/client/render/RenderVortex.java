@@ -60,9 +60,9 @@ public class RenderVortex extends Render {
 			GL11.glRotatef(yaw * 57.2957F, 0F, 1F, 0F);
 			GL11.glRotatef(-entity.ticksExisted%360F, 0F, 0F, 1F);
 			GL11.glScalef(0.5F, 0.5F, 0.5F);
-			GL11.glPushMatrix();
+
 			this.model.render(entity, 0F, 0F, 0F, yaw, pitch, 0.0625F);
-			GL11.glPopMatrix();
+
 		GL11.glPopMatrix();
 		
 	}

@@ -160,7 +160,7 @@ public class ModelLargeShipyard extends ModelBase {
 
     @Override
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-    	GL11.glPushMatrix();		
+//    	GL11.glPushMatrix();		
 //		GL11.glEnable(GL11.GL_BLEND);
 //		GL11.glDisable(GL11.GL_LIGHTING);
 //		GL11.glDepthMask(false);
@@ -173,7 +173,7 @@ public class ModelLargeShipyard extends ModelBase {
 //        GL11.glDepthMask(true);
 //        GL11.glEnable(GL11.GL_LIGHTING);
 //        GL11.glDisable(GL11.GL_BLEND);
-        GL11.glPopMatrix();
+//        GL11.glPopMatrix();
     }
     
     public void renderModel(float f5) {	

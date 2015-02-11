@@ -19,6 +19,7 @@ import com.lulan.shincolle.init.ModWorldGen;
 import com.lulan.shincolle.init.ModRecipes;
 import com.lulan.shincolle.proxy.IProxy;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.GuiHelper;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.MulitBlockHelper;
 
@@ -105,6 +106,7 @@ public class ShinColle {
 		}
 		*/
 //		MulitBlockHelper.printPattern();
+//		GuiHelper.printButtons();
 		LogHelper.info("postInit complete.");	//debug
 	}
 	
