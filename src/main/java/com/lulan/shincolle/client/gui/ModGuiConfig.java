@@ -32,6 +32,6 @@ public class ModGuiConfig extends GuiConfig {
 	    list.addAll(new ConfigElement(ConfigHandler.config.getCategory("ship setting")).getChildElements());
 
 	    return list;
-	  }
+	}
 
 }

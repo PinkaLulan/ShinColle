@@ -37,6 +37,7 @@ public class BlockPolymetalOre extends BasicBlock {
 	
 	//掉落數量設定: 根據機率跟附魔等級決定掉落數量
 	//若附魔等級>0  依照等級隨機增加數量  最少2顆  最多為(1+附魔等級)個
+	@Override
 	public int quantityDroppedWithBonus(int fortune, Random rand) {
 		if (fortune > 0) {
 			return 2 + rand.nextInt(fortune);
@@ -44,11 +45,11 @@ public class BlockPolymetalOre extends BasicBlock {
 		return 1;  //無附魔 則掉落一顆
 	}
 	
-	/*
-	//箱子類方塊打掉才使用damageDropped 使其掉落metadata內的物品  (quantityDropped也有metadata版本)
-	@Override
-	public int damageDropped(int metadata) {
-	    return this.meta;
-	}
-	*/
+	
+//	//箱子類方塊打掉才使用damageDropped 使其掉落metadata內的物品  (quantityDropped也有metadata版本)
+//	@Override
+//	public int damageDropped(int metadata) {
+//	    return this.meta;
+//	}
+
 }

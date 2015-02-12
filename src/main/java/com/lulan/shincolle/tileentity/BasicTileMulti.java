@@ -1,6 +1,7 @@
 package com.lulan.shincolle.tileentity;
 
 import com.lulan.shincolle.block.BasicBlockMulti;
+import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -92,6 +93,7 @@ public class BasicTileMulti extends TileEntity {
         structType = type;
         //set block metadata
         //type 0: meta=1:on 2:off  type1: meta=3:on 4:off
+        LogHelper.info("DEBUG : set struct type client? "+this.worldObj.isRemote);
     	BasicBlockMulti.updateBlockState(this.worldObj, this.xCoord, this.yCoord, this.zCoord, structType * 2);
     }
     public void setHasMaster(boolean bool) {

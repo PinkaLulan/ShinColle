@@ -22,7 +22,7 @@ import net.minecraft.util.ResourceLocation;
 public class RenderVortex extends Render {
 
 	//∂Kπœ¿…∏ÙÆ|
-	private static final ResourceLocation mobTextures = new ResourceLocation(Reference.TEXTURES_ENTITY+"ModelVortex.png");
+	private static final ResourceLocation TEXTURE = new ResourceLocation(Reference.TEXTURES_ENTITY+"ModelVortex.png");
 
 	private final ModelVortex model;
 			
@@ -36,7 +36,6 @@ public class RenderVortex extends Render {
     }
 	
 	public void doRender(BasicRenderEntity entity, double offsetX, double offsetY, double offsetZ, float f3, float f4) {
-		this.bindEntityTexture(entity);
 		EntityPlayer player  = Minecraft.getMinecraft().thePlayer;
 		double distX = entity.posX - player.posX;
 		double distY = entity.posY - player.posY;
@@ -53,9 +52,10 @@ public class RenderVortex extends Render {
         else {
         	pitch += (Math.PI / 2F);
         }
-//        LogHelper.info("DEBUG : distY ");
+        
+        Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE);
 		GL11.glPushMatrix();
-			GL11.glTranslatef((float)offsetX, (float)offsetY+1.5F, (float)offsetZ);
+			GL11.glTranslatef((float)offsetX, (float)offsetY+0.5F, (float)offsetZ);
 //			GL11.glRotatef(pitch * 57.2957F, 1F, 0F, 0F);
 			GL11.glRotatef(yaw * 57.2957F, 0F, 1F, 0F);
 			GL11.glRotatef(-entity.ticksExisted%360F, 0F, 0F, 1F);
@@ -69,7 +69,7 @@ public class RenderVortex extends Render {
 
 	@Override
 	protected ResourceLocation getEntityTexture(Entity p_110775_1_) {
-		return mobTextures;
+		return TEXTURE;
 	}	
 
 	

@@ -14,21 +14,17 @@ public class EntityRenderVortex extends BasicRenderEntity {
 	public EntityRenderVortex(World world, int x, int y, int z) {
 		super(world, x, y, z);
 		this.posX = x + 0.5D;
-		this.posY = y - 0.95D;
+		this.posY = y - 0.1D;
 		this.posZ = z + 0.5D;
 		this.setPosition(posX, posY, posZ);
 	}
 
 	@Override
-	protected void readEntityFromNBT(NBTTagCompound nbt) {
-		
-		
+	protected void readEntityFromNBT(NBTTagCompound nbt) {	
 	}
 
 	@Override
-	protected void writeEntityToNBT(NBTTagCompound nbt) {
-		
-		
+	protected void writeEntityToNBT(NBTTagCompound nbt) {	
 	}
 
 }

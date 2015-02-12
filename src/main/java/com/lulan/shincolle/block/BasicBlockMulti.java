@@ -1,10 +1,14 @@
 package com.lulan.shincolle.block;
 
+import java.util.ArrayList;
+
 import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.creativetab.CreativeTabSC;
+import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.reference.GUIs;
+import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.tileentity.BasicTileMulti;
-import com.lulan.shincolle.tileentity.TileMultiLargeShipyard;
+import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.MulitBlockHelper;
 
@@ -17,44 +21,60 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 
 abstract public class BasicBlockMulti extends BasicBlockContainer {
 
+	protected IIcon iconInvsible;
+	
 	
 	//指定方塊類型block
 	public BasicBlockMulti(Material material) {
 		super(material);
-		this.setCreativeTab(CreativeTabSC.SC_TAB);	//加入到creative tab中
 	}
 	
 	//無指定類型時 預設為rock型
 	public BasicBlockMulti() {
-		this(Material.rock);
-		this.setCreativeTab(CreativeTabSC.SC_TAB);	//加入到creative tab中
+		super();
+	}
+
+	//multi block都會依照meta切換是否顯示為透明方塊, 因此設false使透明狀態時正常render
+	@Override
+	public boolean isOpaqueCube() {
+		return false;
 	}
 	
-	abstract public TileEntity createNewTileEntity(World world, int i);
-
-	//方塊圖示登錄
-	//取出方塊名稱(不含mod名稱)作為參數丟給icon register來登錄icon
-	//注意icon只在client端才需要執行
+	//使用兩種icon: 一般icon跟透明狀態icon
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerBlockIcons(IIconRegister iconRegister) {
-		blockIcon = iconRegister.registerIcon(String.format("%s", getUnwrappedUnlocalizedName(this.getUnlocalizedName())));
+		this.blockIcon = iconRegister.registerIcon(String.format("%s", getUnwrappedUnlocalizedName(this.getUnlocalizedName())));
+		this.iconInvsible = iconRegister.registerIcon(Reference.MOD_ID+":BlockInvisible");
 	}
 	
+	//meta非0時表示已經形成multi block結構, 因此將方塊改為透明貼圖
+	@Override
+	public IIcon getIcon(int side, int meta) {
+	    if(meta > 0) {
+	    	return this.iconInvsible;
+	    }
+	    else {
+	    	return this.blockIcon;
+	    }    
+	}
+	
+	//方塊放置時呼叫此方法
 	@Override
 	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack itemstack) {
 		
 	}
 	
-	/**右鍵點到方塊時呼叫此方法
-	 * 參數: world,方塊x,y,z,玩家,玩家面向,玩家點到的x,y,z
-	 */	
+	//右鍵點到方塊時呼叫此方法
+	//參數: world,方塊x,y,z,玩家,玩家面向,玩家點到的x,y,z	
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ) {
 		if(world.isRemote) {	//client端只需要收到true
@@ -65,7 +85,7 @@ abstract public class BasicBlockMulti extends BasicBlockContainer {
 
 			if(entity != null) {
 				if(entity.hasMaster()) {	//該方塊已經成形, 則打開GUI
-					LogHelper.info("DEBUG : multi block GUI open");
+					LogHelper.info("DEBUG : open multi block GUI");
 					switch(entity.getStructType()) {
 					case GUIs.LARGESHIPYARD:
 						FMLNetworkHandler.openGui(player, ShinColle.instance, GUIs.LARGESHIPYARD, world, 
@@ -75,7 +95,7 @@ abstract public class BasicBlockMulti extends BasicBlockContainer {
 					return true;			//已開啟GUI, 回傳true避免手上的東西用出去
 				}
 				else {						//該方塊尚未成形, 檢查是否可以成形
-					if(entity instanceof TileMultiLargeShipyard) {
+					if(entity instanceof TileMultiGrudgeHeavy) {
 						int type = MulitBlockHelper.checkMultiBlockForm(world, x, y, z);
 						if(type > 0) {
 							MulitBlockHelper.setupStructure(world, x, y, z, type);
@@ -106,7 +126,7 @@ abstract public class BasicBlockMulti extends BasicBlockContainer {
 	//打掉方塊後, 掉落其內容物
 	@Override
 	public void breakBlock(World world, int x, int y, int z, Block block, int meta) {
-		BasicTileMulti tile = (BasicTileMulti) world.getTileEntity(x, y, z);
+		BasicTileMulti tile = (BasicTileMulti)world.getTileEntity(x, y, z);
 
 		//原本形成結構, 則解除之
 		if(!world.isRemote && tile != null && tile.hasMaster()) {
@@ -152,7 +172,24 @@ abstract public class BasicBlockMulti extends BasicBlockContainer {
 	//將tile entity資料寫到block metadata中
 	public static void updateBlockState(World world, int x, int y, int z, int type) {
 		BasicTileMulti tile = (BasicTileMulti)world.getTileEntity(x, y, z);
-		world.setBlockMetadataWithNotify(x, y, z, type, 2);		
+		world.setBlockMetadataWithNotify(x, y, z, type, 2);
 	}
+	
+	//打破master方塊時, 掉落物保留tile entity的資料
+//	@Override
+//	public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune) {
+//        ArrayList<ItemStack> ret = new ArrayList<ItemStack>();
+//
+//        int count = quantityDropped(metadata, fortune, world.rand);
+//        for(int i = 0; i < count; i++)
+//        {
+//            Item item = getItemDropped(metadata, world.rand, fortune);
+//            if (item != null)
+//            {
+//                ret.add(new ItemStack(item, 1, damageDropped(metadata)));
+//            }
+//        }
+//        return ret;
+//    }
 
 }

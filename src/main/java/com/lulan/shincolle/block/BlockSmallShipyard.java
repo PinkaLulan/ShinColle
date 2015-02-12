@@ -62,7 +62,7 @@ public class BlockSmallShipyard extends BasicBlockContainer {
 	}
 
 	@Override
-	public TileEntity createNewTileEntity(World world, int i) {
+	public TileEntity createNewTileEntity(World world, int meta) {
 		return new TileEntitySmallShipyard();
 	}
 	

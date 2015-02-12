@@ -15,6 +15,7 @@ import com.lulan.shincolle.entity.renderentity.EntityRenderLargeShipyard;
 import com.lulan.shincolle.entity.renderentity.EntityRenderVortex;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.tileentity.BasicTileMulti;
+import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 
 public class MulitBlockHelper {
 	
@@ -36,16 +37,16 @@ public class MulitBlockHelper {
 	private static final byte[][][][] PATTERN = {
 		  //type 0:
 		  {  //  y = 0      y = 1      y = 2
-		    {  {1, 1, 1}, {1, 0, 1}, {0, 0, 0}  },	//x = 0
-		    {  {1, 1, 1}, {0, 0, 0}, {0, 2, 0}  },	//x = 1
-		    {  {1, 1, 1}, {1, 0, 1}, {0, 0, 0}  }	//x = 2
+		    {  { 1, 1, 1}, { 1,-1, 1}, {-1,-1,-1}  },	//x = 0
+		    {  { 1, 1, 1}, {-1,-1,-1}, {-1, 2,-1}  },	//x = 1
+		    {  { 1, 1, 1}, { 1,-1, 1}, {-1,-1,-1}  }	//x = 2
 		  },
 		  
 		  //type 1:
 		  {  //  y = 0      y = 1      y = 2 
-		    {  {1, 1, 1}, {0, 0, 0}, {0, 0, 0}  },	//x = 0
-		    {  {1, 1, 1}, {0, 1, 0}, {0, 2, 0}  },	//x = 1
-		    {  {1, 1, 1}, {0, 0, 0}, {0, 0, 0}  }	//x = 2
+		    {  { 1, 1, 1}, {-1,-1,-1}, {-1,-1,-1}  },	//x = 0
+		    {  { 1, 1, 1}, {-1, 1,-1}, {-1, 2,-1}  },	//x = 1
+		    {  { 1, 1, 1}, {-1,-1,-1}, {-1,-1,-1}  }	//x = 2
 		  }		
 		};
 	
@@ -66,7 +67,7 @@ public class MulitBlockHelper {
 	
 	/**CHECK MULTI BLOCK FORM
 	 * called when RIGHT CLICK or PLACE heavy grudge block
-	 * (heavy grudge block is always at top layer)
+	 * (heavy grudge block is always at top layer, so check X+-1 Y-2 Z+-1)
 	 */
 	public static int checkMultiBlockForm(World world, int xCoord, int yCoord, int zCoord) {
 		BasicTileMulti tile = null;
@@ -76,40 +77,47 @@ public class MulitBlockHelper {
 		//init 15 = 1111
 		int typeTemp = 0;
 		int typeMatch = NUM_PATTERN;
+		int checkX, checkY, checkZ;		//檢查block的位置
 	    
 		//高度4以下不須偵測
 		if(yCoord < 4) return -1;
 		
 	    //scan a 3x3x3 area
-		//1.檢查block並設定代號  2.判定是否符合pattern 3.若為MultiBlock則再抓TileEntity, 判定tile是否無主人, 才可加入結構
+		//1.檢查block並設定代號(code) 2.判定是否符合pattern 3.檢查tile entity是否有master
 	    for(int x = 0; x < 3; x++) {
 	    	for(int y = 0; y < 3; y++) {
 	    		for(int z = 0; z < 3; z++) {
+	    			checkX = xCoord - 1 + x;
+	    			checkY = yCoord - 2 + y;
+	    			checkZ = zCoord - 1 + z;
+	    			
 	    			//1.檢查block並設定代號
-	    			block = world.getBlock(xCoord - 1 + x, yCoord - 2 + y, zCoord - 1 + z);
+	    			block = world.getBlock(checkX, checkY, checkZ);
+	    			
 	    			code = -1;
 	    			if(block != null) {
-	    				if(block == Blocks.water || block == Blocks.air || block == Blocks.lava) code = 0;
+//	    				if(block == Blocks.water || block == Blocks.air || block == Blocks.lava) code = 0;
 		    			if(block == ModBlocks.BlockPolymetal) code = 1;
 		    			if(block == ModBlocks.BlockGrudgeHeavy) code = 2;
-		    			LogHelper.info("DEBUG : check MB: block "+(xCoord-1+x)+" "+(yCoord-3+y)+" "+(zCoord-1+z)+" "+block.getLocalizedName()+" "+code);
+		    			LogHelper.info("DEBUG : multi block check: pos "+checkX+" "+checkY+" "+checkZ+" "+block.getLocalizedName()+" "+code);
 	    			}
 	    			
 	    			//2.判定是否符合pattern
 	    			typeTemp = 0;
 	    			for(int t = 0; t < PATTERN.length; t++) {
 	    				if(code == PATTERN[t][x][y][z]) {
-	    					typeTemp += Math.pow(2, t);			//match pattern t
+	    					typeTemp += Math.pow(2, t);		//match pattern t
 	    				}
 	    			}
-	    			typeMatch = (typeMatch & typeTemp);
+	    			typeMatch = (typeMatch & typeTemp);		//進行and運算, 刪去不符合的type
+	    			
 	    			LogHelper.info("DEBUG : check MB: type "+typeMatch+" "+typeTemp);
-	    			if(typeMatch == 0) return -1;	//全部pattern檢查過, 無符合, 結束檢查
+	    			if(typeMatch == 0) return -1;	//全部pattern都被濾掉, 無符合, 結束檢查
 	    			
 	    			//3.若為MultiBlock則再抓TileEntity, 檢查其主從, 無主方塊才能加入, 有主方塊則結束檢查
-	    			if(code > 0) tile = (BasicTileMulti)world.getTileEntity(xCoord - 1 + x, yCoord - 3 + y, zCoord - 1 + z);
+	    			if(code > 0) tile = (BasicTileMulti)world.getTileEntity(checkX, checkY, checkZ);
 	    			if(tile != null) {
-	    				if(tile.hasMaster() || tile.isMaster()) {
+	    				if(tile.hasMaster()) {
 	    					return -1;
 	    				}
 					}
@@ -120,7 +128,7 @@ public class MulitBlockHelper {
 	    return typeMatch;
 	}
 	
-	//called when right click at master block
+	//setup multi block struct, add tile entity
 	public static void setupStructure(World world, int xCoord, int yCoord, int zCoord, int type) {
 		LogHelper.info("DEBUG : setup MB");
 		for(int x = xCoord - 1; x < xCoord + 2; x++) {
@@ -132,10 +140,10 @@ public class MulitBlockHelper {
 	                boolean master = (x == xCoord && y == yCoord && z == zCoord);
 	                
 	                if(tile != null && (tile instanceof BasicTileMulti)) {
-	                    ((BasicTileMulti) tile).setMasterCoords(xCoord, yCoord, zCoord);
-	                    ((BasicTileMulti) tile).setHasMaster(true);
-	                    ((BasicTileMulti) tile).setIsMaster(master);
-	                    ((BasicTileMulti) tile).setStructType(type);
+	                    ((BasicTileMulti)tile).setMasterCoords(xCoord, yCoord, zCoord);
+	                    ((BasicTileMulti)tile).setHasMaster(true);
+	                    ((BasicTileMulti)tile).setIsMaster(master);
+	                    ((BasicTileMulti)tile).setStructType(type);
 	                }
 	            }//end z loop
 	        }//end y loop
@@ -149,19 +157,18 @@ public class MulitBlockHelper {
 		world.spawnEntityInWorld(entBase);
 		world.spawnEntityInWorld(entVortex);
 	}
-	
-	//Reset method to be run when the master is gone or tells them to
+
+	//reset(remove) tile multi
 	private static void resetTileMulti(BasicTileMulti parTile) {
-		LogHelper.info("DEBUG : reset tile: "+parTile.xCoord+" "+parTile.yCoord+" "+parTile.zCoord);
 		parTile.setMasterCoords(0, 0, 0);
 		parTile.setHasMaster(false);
 		parTile.setIsMaster(false);
-		parTile.setStructType(0);
+		parTile.setStructType(0);	
 	}
 	
 	//Reset tile multi, called from master block if struct broken
 	public static void resetStructure(World world, int xCoord, int yCoord, int zCoord) {
-		LogHelper.info("DEBUG : reset struct: "+world.isRemote+" "+xCoord+" "+yCoord+" "+zCoord);
+		LogHelper.info("DEBUG : reset struct: client? "+world.isRemote+" "+xCoord+" "+yCoord+" "+zCoord);
 		
 		for(int x = xCoord - 1; x < xCoord + 2; x++) {
 			for(int y = yCoord - 2; y < yCoord + 1; y++) {
@@ -179,20 +186,11 @@ public class MulitBlockHelper {
 			AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(xCoord-1.5D, yCoord-2D, zCoord-1.5D, xCoord+1.5D, yCoord+1D, zCoord+1.5D);
 			List renderEntityList = world.getEntitiesWithinAABB(BasicRenderEntity.class, aabb);
 
-			LogHelper.info("DEBUG : reset aabb: "+aabb);
-			LogHelper.info("DEBUG : reset aabb list: "+renderEntityList.size());
-			
             for(int i = 0; i < renderEntityList.size(); i++) { 
             	LogHelper.info("DEBUG : clear render entity "+renderEntityList.get(i)+xCoord+" "+yCoord+" "+zCoord);
             	((Entity)renderEntityList.get(i)).setDead();
             }
 		}
-	}
-
-	//Check master
-	public static boolean checkForMaster(BasicTileMulti parTile) {
-	    TileEntity tile = parTile.getWorldObj().getTileEntity(parTile.getMasterX(), parTile.getMasterY(), parTile.getMasterZ());
-	    return (tile != null && (tile instanceof BasicTileMulti));
 	}
 
 

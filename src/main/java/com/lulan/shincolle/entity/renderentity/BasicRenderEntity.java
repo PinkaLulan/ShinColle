@@ -8,7 +8,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
-public abstract class BasicRenderEntity extends Entity {
+abstract public class BasicRenderEntity extends Entity {
 
 	public int blockX;
 	public int blockY;
@@ -16,12 +16,13 @@ public abstract class BasicRenderEntity extends Entity {
 	
 	public BasicRenderEntity(World world) {
 		super(world);
-		this.setSize(0.1F, 0.9F);
+		this.setSize(0.1F, 0.1F);
+		this.ignoreFrustumCheck = true;
 	}
 	
 	public BasicRenderEntity(World world, int x, int y, int z) {
 		super(world);
-		this.setSize(0.1F, 0.9F);
+		this.setSize(0.1F, 0.1F);
 		this.blockX = x;
 		this.blockY = y;
 		this.blockZ = z;

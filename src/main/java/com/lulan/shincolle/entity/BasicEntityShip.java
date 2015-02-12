@@ -591,7 +591,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 			//在水中加速
 			this.motionX *= 1.1D;
 			this.motionZ *= 1.1D;
-			
+
 			if(this.worldObj.isRemote) {
 				//有移動時, 產生水花特效
 				//(注意此entity因為設為非高速更新, client端不會更新motionX等數值, 需自行計算)

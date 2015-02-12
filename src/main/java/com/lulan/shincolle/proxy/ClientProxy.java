@@ -29,7 +29,7 @@ import com.lulan.shincolle.entity.renderentity.EntityRenderLargeShipyard;
 import com.lulan.shincolle.entity.renderentity.EntityRenderVortex;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
-import com.lulan.shincolle.tileentity.TileMultiLargeShipyard;
+import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.client.registry.ClientRegistry;
@@ -59,14 +59,14 @@ public class ClientProxy extends CommonProxy {
 		
 		//test entity render
 		RenderingRegistry.registerEntityRenderingHandler(EntityTest.class, new RenderTest(new ModelEntityTest(), 1F));
-		
+
+		//projectile render
+		RenderingRegistry.registerEntityRenderingHandler(EntityAbyssMissile.class, new RenderAbyssMissile(0.75F));
+
 		//render entity render
 		RenderingRegistry.registerEntityRenderingHandler(EntityRenderLargeShipyard.class, new RenderLargeShipyard());
 		RenderingRegistry.registerEntityRenderingHandler(EntityRenderVortex.class, new RenderVortex());
 		
-		//projectile render
-		RenderingRegistry.registerEntityRenderingHandler(EntityAbyssMissile.class, new RenderAbyssMissile(0.75F));
-
 		//block tile entity render
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySmallShipyard.class, tesrBlockSmallShipyard);
 	

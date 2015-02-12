@@ -4,7 +4,7 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.network.CreatePacketS2C;
 import com.lulan.shincolle.reference.AttrID;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
-import com.lulan.shincolle.tileentity.TileMultiLargeShipyard;
+import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
