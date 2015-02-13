@@ -55,15 +55,6 @@ public class ContainerSmallShipyard extends Container {
 			this.addSlotToContainer(new Slot(invPlayer, i, 8+i*18, 145));
 		}
 	}
-	
-	//發送更新gui進度條更新, 比detectAndSendChanges還要優先(在此放置init方法等)
-//	@Override
-//	public void addCraftingToCrafters (ICrafting crafting) {
-//		super.addCraftingToCrafters(crafting);
-//		crafting.sendProgressBarUpdate(this, 0, this.te.consumedPower);	//時間進度
-//		crafting.sendProgressBarUpdate(this, 1, this.te.remainedPower);	//剩餘燃料
-//		crafting.sendProgressBarUpdate(this, 2, this.te.buildType);		//建造類型
-//	}
 
 	//玩家是否可以觸發右鍵點方塊事件
 	@Override
@@ -86,7 +77,7 @@ public class ContainerSmallShipyard extends Container {
         if(slot != null && slot.getHasStack()) { 			//若slot有東西
             ItemStack itemstack1 = slot.getStack();			//itemstack1取得該slot物品
             itemstack = itemstack1.copy();					//itemstack複製一份itemstack1
-            itemID = SmallRecipes.getMaterialID(itemstack1);//取得物品種類(對應slot id)
+            itemID = SmallRecipes.getMaterialType(itemstack1);//取得物品種類(對應slot id)
 
             if(slotid == 5) {  //若點擊output slot時
             	//將output slot的物品嘗試跟player inventory or hot bar的slot合併, 不能合併則傳回null
@@ -114,7 +105,7 @@ public class ContainerSmallShipyard extends Container {
                 }
             }
             //如果是點擊slot 0~4, 則改放到player inventory or hot bar
-            else if (!this.mergeItemStack(itemstack1, 6, 42, false)) {
+            else if (!this.mergeItemStack(itemstack1, 6, 42, true)) {
                 return null;
             }
 
@@ -135,6 +126,15 @@ public class ContainerSmallShipyard extends Container {
         }
         return itemstack;	//物品移動完成, 回傳剩下的物品
     }
+	
+	//發送更新gui進度條更新, 比detectAndSendChanges還要優先(在此放置init方法等)
+	@Override
+	public void addCraftingToCrafters (ICrafting crafting) {
+		super.addCraftingToCrafters(crafting);
+		crafting.sendProgressBarUpdate(this, 0, this.te.consumedPower);	//時間進度
+		crafting.sendProgressBarUpdate(this, 1, this.te.remainedPower);	//剩餘燃料
+		crafting.sendProgressBarUpdate(this, 2, this.te.buildType);		//建造類型
+	}
 	
 	//將container數值跟tile entity內的數值比對, 如果不同則發送更新給client使gui呈現新數值
 	@Override

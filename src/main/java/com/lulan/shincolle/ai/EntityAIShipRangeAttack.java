@@ -52,9 +52,10 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
     	EntityLivingBase target = this.host.getAttackTarget();
     	
         if (target != null && 
-        	(this.host.getEntityFlag(AttrID.F_UseAmmoLight) || this.host.getEntityFlag(AttrID.F_UseAmmoHeavy)) && 
-        	(this.host.hasAmmoLight() || this.host.hasAmmoHeavy())) {   
+        	(this.host.getEntityFlag(AttrID.F_UseAmmoLight) && this.host.hasAmmoLight()) || 
+        	(this.host.getEntityFlag(AttrID.F_UseAmmoHeavy) && this.host.hasAmmoHeavy())) {   
         	this.attackTarget = target;
+        	LogHelper.info("DEBUG : try to range attack");
             return true;
         }       
         

@@ -24,7 +24,7 @@ public class ProcessPacketServerSide {
 
 	private static Entity FoundEntity;
 	private static TileEntity FoundTE;
-	private static int PacketTypeID, EntityID, Button, Value, xCoord, yCoord, zCoord;
+	private static int PacketTypeID, EntityID, Button, Value, Value2, xCoord, yCoord, zCoord;
 	
  
 	public ProcessPacketServerSide() {}
@@ -55,11 +55,12 @@ public class ProcessPacketServerSide {
 				zCoord = bbis.readInt();
 				Button = bbis.readByte();
 				Value = bbis.readByte();
+				Value2 = bbis.readByte();
 				//get tile entity
 				FoundTE = parPlayer.worldObj.getTileEntity(xCoord, yCoord, zCoord);		
 				//set value
-				EntityHelper.setTileEntityByGUI(FoundTE, (int)Button, (int)Value);
-				LogHelper.info("DEBUG : recv packet (server side): GUI click:"+Button+" "+Value+" ");
+				EntityHelper.setTileEntityByGUI(FoundTE, (int)Button, (int)Value, (int)Value2);
+				LogHelper.info("DEBUG : recv packet (server side): GUI click:"+Button+" "+Value+" "+Value2);
 				}
 				break;
 			}

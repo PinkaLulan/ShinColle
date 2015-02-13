@@ -61,21 +61,26 @@ public class SmallRecipes {
 	//判定物品是否為材料
 	public static boolean isMaterial(ItemStack itemstack) {
 		if(itemstack != null) {
-			Item item = itemstack.getItem();		
-			return (item == ModItems.Grudge)||(item == ModItems.Abyssium)||(item == ModItems.Ammo)||(item == ModItems.Polymetal);
+			Item item = itemstack.getItem();
+			int meta = itemstack.getItemDamage();
+			return (item == ModItems.Grudge)||
+				   (item == ModItems.AbyssMetal && meta == 0)||
+				   (item == ModItems.Ammo && meta == 0)||
+				   (item == ModItems.AbyssMetal && meta == 1);
 		}
 		return false;
 	}
 	
 	//判定材料種類: 0:grudge 1:abyss 2:ammo 3:poly 4:fuel -1:other
-	public static byte getMaterialID(ItemStack itemstack) {
+	public static byte getMaterialType(ItemStack itemstack) {
 		Item item = itemstack.getItem();
+		int meta = itemstack.getItemDamage();
 		byte itemID = -1;
 		
 		if(item == ModItems.Grudge) itemID = 0;
-		if(item == ModItems.Abyssium) itemID = 1;
-		if(item == ModItems.Ammo) itemID = 2;
-		if(item == ModItems.Polymetal) itemID = 3;
+		if(item == ModItems.AbyssMetal && meta == 0) itemID = 1;
+		if(item == ModItems.Ammo && meta == 0) itemID = 2;
+		if(item == ModItems.AbyssMetal && meta == 1) itemID = 3;
 		if(TileEntityFurnace.isItemFuel(itemstack))  itemID = 4;
 		
 		return itemID;
@@ -147,10 +152,10 @@ public class SmallRecipes {
 		ItemStack buildResult = null;
 		switch(rollResult) {
 		case 0:
-			buildResult = new ItemStack(ModItems.AmmoContainer, 11+rand.nextInt(11));
+			buildResult = new ItemStack(ModItems.Ammo, 11+rand.nextInt(11), 1);
 			break;
 		case 1:
-			buildResult = new ItemStack(ModItems.HeavyAmmoContainer, 2+rand.nextInt(2));
+			buildResult = new ItemStack(ModItems.Ammo, 2+rand.nextInt(2), 3);
 			break;
 		case 2:
 			buildResult = new ItemStack(ModItems.EquipCannon, 1, 0);

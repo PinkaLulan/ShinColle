@@ -981,6 +981,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 				NumGrudge += 10800;
 				NumGrudge -= (int)par1;
 			}
+			else if(decrSupplies(6)) {	//find grudge block
+				NumGrudge += 97200;
+				NumGrudge -= (int)par1;
+			}
 		}
 		
 		if(NumGrudge <= 0) {
@@ -1013,34 +1017,31 @@ LogHelper.info("DEBUG : NoFuel clear AI");
 	//decrese ammo amount with type, return true or false(not enough item)
 	private boolean decrSupplies(int type) {
 		boolean isEnoughItem = true;
-		int itemNum = 0;
+		int itemNum = 1;
 		ItemStack itemType = null;
 		
 		//find ammo
 		switch(type) {
 		case 0:	//use 1 light ammo
-			itemNum = 1;
-			itemType = new ItemStack(ModItems.Ammo,1);
+			itemType = new ItemStack(ModItems.Ammo,1,0);
 			break;
 		case 1: //use 1 heavy ammo
-			itemNum = 1;
-			itemType = new ItemStack(ModItems.HeavyAmmo,1);
+			itemType = new ItemStack(ModItems.Ammo,1,2);
 			break;
 		case 2:	//use 1 light ammo container
-			itemNum = 1;
-			itemType = new ItemStack(ModItems.AmmoContainer,1);
+			itemType = new ItemStack(ModItems.Ammo,1,1);
 			break;
 		case 3: //use 1 heavy ammo container
-			itemNum = 1;
-			itemType = new ItemStack(ModItems.HeavyAmmoContainer,1);
+			itemType = new ItemStack(ModItems.Ammo,1,3);
 			break;
 		case 4: //use 1 grudge
-			itemNum = 1;
 			itemType = new ItemStack(ModItems.Grudge,1);
 			break;
 		case 5: //use 1 grudge block
-			itemNum = 1;
 			itemType = new ItemStack(ModBlocks.BlockGrudge,1);
+			break;
+		case 6: //use 1 grudge block
+			itemType = new ItemStack(ModBlocks.BlockGrudgeHeavy,1);
 			break;
 		}
 		
@@ -1079,7 +1080,9 @@ LogHelper.info("DEBUG : NoFuel clear AI");
 		//search ship inventory (except equip slots)
 		for(int i=ContainerShipInventory.SLOTS_EQUIP; i<ContainerShipInventory.SLOTS_TOTAL; i++) {
 			slotitem = this.ExtProps.slots[i];
-			if(slotitem != null && slotitem.getItem().equals(parItem.getItem())) {
+			if(slotitem != null && 
+			   slotitem.getItem().equals(parItem.getItem()) && 
+			   slotitem.getItemDamage() == parItem.getItemDamage()) {
 				return i;	//found item
 			}		
 		}	

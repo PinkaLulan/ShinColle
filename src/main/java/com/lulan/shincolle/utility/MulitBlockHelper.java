@@ -23,26 +23,26 @@ public class MulitBlockHelper {
 	 * type:  0:large shipyard  1:large workshop
 	 * value: -1:other  0:water,air  1:polymetal  2:grudge
 	 * 
-	 * TYPE 0 - Large Shipyard:  o:polymetal block  g:heavy grudge block
+	 * TYPE 0001 - Large Shipyard:  o:polymetal block  g:heavy grudge block
 	 *      1.ooo   2.o o   4.
 	 *        ooo               g
 	 *        ooo     o o
 	 * 
-	 * NYI: TYPE 1 - Large Workshop:  o:polymetal block  g:heavy grudge block
+	 * NYI: TYPE 0010 - Large Workshop:  o:polymetal block  g:heavy grudge block
 	 *      1.o o   2.o o   3. ooo
 	 *                         ogo
 	 *        o o     o o      ooo
 	 */
 	private static final int NUM_PATTERN = 3;	//2 pattern for now = 0011 = 3
 	private static final byte[][][][] PATTERN = {
-		  //type 0:
+		  //type 0001:
 		  {  //  y = 0      y = 1      y = 2
 		    {  { 1, 1, 1}, { 1,-1, 1}, {-1,-1,-1}  },	//x = 0
 		    {  { 1, 1, 1}, {-1,-1,-1}, {-1, 2,-1}  },	//x = 1
 		    {  { 1, 1, 1}, { 1,-1, 1}, {-1,-1,-1}  }	//x = 2
 		  },
 		  
-		  //type 1:
+		  //type 0010:
 		  {  //  y = 0      y = 1      y = 2 
 		    {  { 1, 1, 1}, {-1,-1,-1}, {-1,-1,-1}  },	//x = 0
 		    {  { 1, 1, 1}, {-1, 1,-1}, {-1, 2,-1}  },	//x = 1
@@ -143,7 +143,20 @@ public class MulitBlockHelper {
 	                    ((BasicTileMulti)tile).setMasterCoords(xCoord, yCoord, zCoord);
 	                    ((BasicTileMulti)tile).setHasMaster(true);
 	                    ((BasicTileMulti)tile).setIsMaster(master);
-	                    ((BasicTileMulti)tile).setStructType(type);
+	                    //type: 0:normal 1:large shipyard off 2:large shipyard on 
+	                    //      3:large workshop off 4:large workshop on
+	                    //servant block is always = off type
+	                    if(type == 1) {	//large shipyard
+	                    	LogHelper.info("DEBUG : set MB: type 1");
+	                    	((BasicTileMulti)tile).setStructType(1, world);
+	                    }
+//	                    if(type == 2) {	//large workshop
+//	                    	((BasicTileMulti)tile).setStructType(3, world);
+//	                    }
+//	                    if(type == 4) {	//large
+//	                    	((BasicTileMulti)tile).setStructType(5, world);
+//	                    }
+	                    
 	                }
 	            }//end z loop
 	        }//end y loop
@@ -163,7 +176,7 @@ public class MulitBlockHelper {
 		parTile.setMasterCoords(0, 0, 0);
 		parTile.setHasMaster(false);
 		parTile.setIsMaster(false);
-		parTile.setStructType(0);	
+		parTile.setStructType(0, parTile.getWorldObj());	
 	}
 	
 	//Reset tile multi, called from master block if struct broken

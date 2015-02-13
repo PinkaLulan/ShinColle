@@ -16,16 +16,17 @@ tile.shincolle:BlockSmallShipyard.name=Abyssal Hydrothermal Vent
 
 # Container
 container.shincolle:SmallShipyard=Abyssal Hydrothermal Vent
+container.shincolle:LargeShipyard=Hadal Hydrothermal Vortex
 
 # Item
-item.shincolle:Abyssium.name=Abyssium Ingot
+item.shincolle:AbyssMetal.name=Abyssium Ingot
+item.shincolle:AbyssMetal1.name=Polymetallic Nodules
 item.shincolle:Ammo.name=Grudgeful Ammo
-item.shincolle:AmmoContainer.name=Grudgeful Ammo Container
+item.shincolle:Ammo1.name=Grudgeful Ammo Container
+item.shincolle:Ammo2.name=Heavy Grudgeful Ammo
+item.shincolle:Ammo3.name=Heavy Grudgeful Ammo Container
 item.shincolle:BucketRepair.name=Repair Bucket
 item.shincolle:Grudge.name=Grudge
-item.shincolle:HeavyAmmo.name=Heavy Grudgeful Ammo
-item.shincolle:HeavyAmmoContainer.name=Heavy Grudgeful Ammo Container
-item.shincolle:Polymetal.name=Polymetallic Nodules
 
 # Equip
 item.shincolle:EquipCannon.name=5-Inch Single Cannon

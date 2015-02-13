@@ -3,12 +3,15 @@ package com.lulan.shincolle.block;
 import java.util.ArrayList;
 
 import com.lulan.shincolle.ShinColle;
+import com.lulan.shincolle.crafting.SmallRecipes;
 import com.lulan.shincolle.creativetab.CreativeTabSC;
 import com.lulan.shincolle.init.ModBlocks;
+import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.reference.GUIs;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.tileentity.BasicTileMulti;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
+import com.lulan.shincolle.utility.FormatHelper;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.MulitBlockHelper;
 
@@ -21,9 +24,14 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 
@@ -87,7 +95,8 @@ abstract public class BasicBlockMulti extends BasicBlockContainer {
 				if(entity.hasMaster()) {	//該方塊已經成形, 則打開GUI
 					LogHelper.info("DEBUG : open multi block GUI");
 					switch(entity.getStructType()) {
-					case GUIs.LARGESHIPYARD:
+					case 1:	//large shipyard
+					case 2:
 						FMLNetworkHandler.openGui(player, ShinColle.instance, GUIs.LARGESHIPYARD, world, 
 								entity.getMasterX(), entity.getMasterY(), entity.getMasterZ());
 						break;
@@ -169,7 +178,8 @@ abstract public class BasicBlockMulti extends BasicBlockContainer {
 		super.breakBlock(world, x, y, z, block, meta);
 	}
 	
-	//將tile entity資料寫到block metadata中
+	//將tile entity資料寫到block metadata中, 輸入world可以判定是client還server端
+	//type: 0:normal 1:large shipyard off 2:large shipyard on 3:large workshop off 4:large workshop on
 	public static void updateBlockState(World world, int x, int y, int z, int type) {
 		BasicTileMulti tile = (BasicTileMulti)world.getTileEntity(x, y, z);
 		world.setBlockMetadataWithNotify(x, y, z, type, 2);
@@ -191,5 +201,6 @@ abstract public class BasicBlockMulti extends BasicBlockContainer {
 //        }
 //        return ret;
 //    }
+	
 
 }

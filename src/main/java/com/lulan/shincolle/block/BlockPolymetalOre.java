@@ -32,7 +32,13 @@ public class BlockPolymetalOre extends BasicBlock {
 	//掉落物設定
 	@Override
     public Item getItemDropped(int metadata, Random random, int fortune) {
-        return ModItems.Polymetal;
+        return ModItems.AbyssMetal;
+    }
+	
+	//掉落meta=1 (polymetal物品)
+	@Override
+	public int damageDropped(int meta) {
+        return 1;
     }
 	
 	//掉落數量設定: 根據機率跟附魔等級決定掉落數量

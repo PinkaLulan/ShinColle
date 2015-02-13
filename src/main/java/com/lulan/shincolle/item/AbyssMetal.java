@@ -8,13 +8,13 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 
-public class Ammo extends BasicItem {
-	byte types = 4;
-	IIcon[] icons = new IIcon[4];
+public class AbyssMetal extends BasicItem {	
+	byte types = 2;
+	IIcon[] icons = new IIcon[2];
 	
-	public Ammo() {
+	public AbyssMetal() {
 		super();
-		this.setUnlocalizedName("Ammo");
+		this.setUnlocalizedName("AbyssMetal");
 		this.setHasSubtypes(true);
 	}
 	
@@ -29,8 +29,6 @@ public class Ammo extends BasicItem {
 	public void registerIcons(IIconRegister iconRegister) {	
 		icons[0] = iconRegister.registerIcon(this.getUnlocalizedName().substring(this.getUnlocalizedName().indexOf(".")+1)+"0");
 		icons[1] = iconRegister.registerIcon(this.getUnlocalizedName().substring(this.getUnlocalizedName().indexOf(".")+1)+"1");
-		icons[2] = iconRegister.registerIcon(this.getUnlocalizedName().substring(this.getUnlocalizedName().indexOf(".")+1)+"2");
-		icons[3] = iconRegister.registerIcon(this.getUnlocalizedName().substring(this.getUnlocalizedName().indexOf(".")+1)+"3");
 	}
 	
 	@Override
@@ -38,5 +36,5 @@ public class Ammo extends BasicItem {
 		if(meta > types - 1) meta = types - 1;
 	    return this.icons[meta];
 	}
-	
+
 }

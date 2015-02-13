@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GL11;
 import com.lulan.shincolle.client.model.ModelLargeShipyard;
 import com.lulan.shincolle.client.model.ModelVortex;
 import com.lulan.shincolle.entity.renderentity.BasicRenderEntity;
+import com.lulan.shincolle.entity.renderentity.EntityRenderVortex;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.LogHelper;
 
@@ -22,7 +23,8 @@ import net.minecraft.util.ResourceLocation;
 public class RenderVortex extends Render {
 
 	//貼圖檔路徑
-	private static final ResourceLocation TEXTURE = new ResourceLocation(Reference.TEXTURES_ENTITY+"ModelVortex.png");
+	private static final ResourceLocation TEXTURE_OFF = new ResourceLocation(Reference.TEXTURES_ENTITY+"ModelVortex.png");
+	private static final ResourceLocation TEXTURE_ON = new ResourceLocation(Reference.TEXTURES_ENTITY+"ModelVortexOn.png");
 
 	private final ModelVortex model;
 			
@@ -32,10 +34,10 @@ public class RenderVortex extends Render {
 	
 	//傳入entity的都轉成abyssmissile
     public void doRender(Entity entity, double offsetX, double offsetY, double offsetZ, float p_76986_8_, float p_76986_9_) {
-        this.doRender((BasicRenderEntity)entity, offsetX, offsetY, offsetZ, p_76986_8_, p_76986_9_);
+        this.doRender((EntityRenderVortex)entity, offsetX, offsetY, offsetZ, p_76986_8_, p_76986_9_);
     }
 	
-	public void doRender(BasicRenderEntity entity, double offsetX, double offsetY, double offsetZ, float f3, float f4) {
+	public void doRender(EntityRenderVortex entity, double offsetX, double offsetY, double offsetZ, float f3, float f4) {
 		EntityPlayer player  = Minecraft.getMinecraft().thePlayer;
 		double distX = entity.posX - player.posX;
 		double distY = entity.posY - player.posY;
@@ -43,7 +45,8 @@ public class RenderVortex extends Render {
 
 		float f1 = MathHelper.sqrt_double(distX*distX + distZ*distZ);
         float pitch = (float)(Math.atan2(distY, (double)f1));
-        float yaw = (float)(Math.atan2(distX, distZ));    
+        float yaw = (float)(Math.atan2(distX, distZ));
+        float angle = -entity.ticksExisted % 360F;
         
         //依照x,z軸正負向修正角度(轉180)
         if(distZ > 0) {
@@ -52,13 +55,21 @@ public class RenderVortex extends Render {
         else {
         	pitch += (Math.PI / 2F);
         }
+
+        if(entity.getIsActive()) {
+        	Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE_ON);
+        	angle *= 5;
+        }
+        else {
+        	Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE_OFF);
+        }
         
-        Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE);
+        
 		GL11.glPushMatrix();
-			GL11.glTranslatef((float)offsetX, (float)offsetY+0.5F, (float)offsetZ);
+			GL11.glTranslatef((float)offsetX, (float)offsetY+1.5F, (float)offsetZ);
 //			GL11.glRotatef(pitch * 57.2957F, 1F, 0F, 0F);
 			GL11.glRotatef(yaw * 57.2957F, 0F, 1F, 0F);
-			GL11.glRotatef(-entity.ticksExisted%360F, 0F, 0F, 1F);
+			GL11.glRotatef(angle, 0F, 0F, 1F);
 			GL11.glScalef(0.5F, 0.5F, 0.5F);
 
 			this.model.render(entity, 0F, 0F, 0F, yaw, pitch, 0.0625F);
@@ -69,7 +80,7 @@ public class RenderVortex extends Render {
 
 	@Override
 	protected ResourceLocation getEntityTexture(Entity p_110775_1_) {
-		return TEXTURE;
+		return TEXTURE_OFF;
 	}	
 
 	

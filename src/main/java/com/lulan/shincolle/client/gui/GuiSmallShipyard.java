@@ -37,7 +37,7 @@ public class GuiSmallShipyard extends GuiContainer {
 	@Override
 	protected void drawGuiContainerForegroundLayer(int i, int j) {
 		//取得gui顯示名稱
-		String name = this.tile.hasCustomInventoryName() ? this.tile.getInventoryName() : I18n.format(this.tile.getInventoryName());
+		String name = I18n.format("container.shincolle:SmallShipyard");
 		String time = this.tile.getBuildTimeString();
 		
 		//畫出字串 parm: string, x, y, color, (是否dropShadow)
@@ -72,10 +72,10 @@ public class GuiSmallShipyard extends GuiContainer {
         }
         
         //畫出type選擇框
-        if(tile.buildType == 0) {
+        if(tile.buildType == 1) {
         	drawTexturedModalRect(guiLeft+123, guiTop+17, 176, 47, 18, 18);
         }
-        else {
+        else if(tile.buildType == 2) {
         	drawTexturedModalRect(guiLeft+143, guiTop+17, 176, 47, 18, 18);
         }
 	
@@ -85,20 +85,33 @@ public class GuiSmallShipyard extends GuiContainer {
 	@Override
 	protected void mouseClicked(int posX, int posY, int mouseKey) {
         super.mouseClicked(posX, posY, mouseKey);
-        
+            
         //get click position
         xClick = posX - this.guiLeft;
         yClick = posY - this.guiTop;
         
         //match all pages
+        int buttonValue = this.tile.buildType;
         switch(GuiHelper.getButton(GUIs.SMALLSHIPYARD, 0, xClick, yClick)) {
-        case 0:
-        	LogHelper.info("DEBUG : GUI click: build small ship: ship");
-    		CreatePacketC2S.sendC2SGUIShipyardClick(this.tile, AttrID.B_Shipyard_Ship, 0);
+        case 0:	
+        	if(buttonValue == 1) {
+        		buttonValue = 0;	//原本點ship 又點一次 則歸0
+        	}
+        	else {
+        		buttonValue = 1;	//原本點其他按鈕, 則設成ship
+        	}
+        	LogHelper.info("DEBUG : GUI click: build small ship: ship "+buttonValue);
+    		CreatePacketC2S.sendC2SGUIShipyardClick(this.tile, AttrID.B_Shipyard_Type, buttonValue, 0);
         	break;
         case 1:
-        	LogHelper.info("DEBUG : GUI click: build small ship: equip");
-    		CreatePacketC2S.sendC2SGUIShipyardClick(this.tile, AttrID.B_Shipyard_Ship, 1);
+        	if(buttonValue == 2) {
+        		buttonValue = 0;	//原本點equip 又點一次 則歸0
+        	}
+        	else {
+        		buttonValue = 2;	//原本點其他按鈕, 則設成equip
+        	}
+        	LogHelper.info("DEBUG : GUI click: build small ship: equip "+buttonValue);
+    		CreatePacketC2S.sendC2SGUIShipyardClick(this.tile, AttrID.B_Shipyard_Type, buttonValue, 0);
         	break;
         }
 	}

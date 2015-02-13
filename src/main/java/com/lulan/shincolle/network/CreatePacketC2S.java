@@ -43,7 +43,7 @@ public class CreatePacketC2S {
 	}
 	
 	//GUI click packet: shipyard
-	private static FMLProxyPacket createGUIShipyardClickPacket(TileEntity entity, int button, int value) throws IOException {
+	private static FMLProxyPacket createGUIShipyardClickPacket(TileEntity entity, int button, int value, int value2) throws IOException {
 		
 		//建立packet傳輸stream
 		ByteBufOutputStream bbos = new ByteBufOutputStream(Unpooled.buffer());
@@ -57,6 +57,7 @@ public class CreatePacketC2S {
 		//以下寫入要傳送的資料
 		bbos.writeByte((byte)button);
 		bbos.writeByte((byte)value);
+		bbos.writeByte((byte)value2);
 
 		// put payload into a packet  
 		FMLProxyPacket thePacket = new FMLProxyPacket(bbos.buffer(), CommonProxy.channelName);
@@ -83,10 +84,10 @@ public class CreatePacketC2S {
 	}
 	
 	//send GUI click packet
-	public static void sendC2SGUIShipyardClick(TileEntity entity, int button, int value) {
+	public static void sendC2SGUIShipyardClick(TileEntity entity, int button, int value, int value2) {
 		try {
 			LogHelper.info("DEBUG : send GUI Shipyard click packet to server");
-			sendToServer(createGUIShipyardClickPacket(entity, button, value));
+			sendToServer(createGUIShipyardClickPacket(entity, button, value, value2));
 		} 
 		catch (IOException e) {
 			e.printStackTrace();

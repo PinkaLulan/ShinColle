@@ -16,16 +16,17 @@ tile.shincolle:BlockSmallShipyard.name=深海熱泉
 
 # Container
 container.shincolle:SmallShipyard=深海熱泉
+container.shincolle:LargeShipyard=超深海熱漩
 
 # Item
-item.shincolle:Abyssium.name=深海金屬
+item.shincolle:AbyssMetal.name=深海金屬
+item.shincolle:AbyssMetal1.name=多金屬結核
 item.shincolle:Ammo.name=怨念彈
-item.shincolle:AmmoContainer.name=怨念彈集裝箱
+item.shincolle:Ammo1.name=怨念彈集裝箱
+item.shincolle:Ammo2.name=重型怨念彈
+item.shincolle:Ammo3.name=重型怨念彈集裝箱
 item.shincolle:BucketRepair.name=修復桶
 item.shincolle:Grudge.name=怨念
-item.shincolle:HeavyAmmo.name=重型怨念彈
-item.shincolle:HeavyAmmoContainer.name=重型怨念彈集裝箱
-item.shincolle:Polymetal.name=多金屬結核
 
 # Equip
 item.shincolle:EquipCannon.name=5吋單裝炮
@@ -61,5 +62,5 @@ gui.shincolle:ammolight=輕型彈藥
 gui.shincolle:ammoheavy=重型彈藥
 gui.shincolle:grudge=怨氣
 gui.shincolle:owner=所屬
-gui.shincolle:nomaterial=材料不足
+gui.shincolle:nomaterial=資材不足
 gui.shincolle:nofuel=燃料不足

@@ -1,20 +1,34 @@
 package com.lulan.shincolle.tileentity;
 
 import com.lulan.shincolle.block.BasicBlockMulti;
+import com.lulan.shincolle.block.BlockSmallShipyard;
+import com.lulan.shincolle.crafting.SmallRecipes;
+import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.FormatHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.inventory.ISidedInventory;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityFurnace;
+import net.minecraft.world.World;
 
 /**BASIC MULTI BLOCK TILE ENTITY
  * tut by Lomeli
  * web: https://lomeli12.net/tutorials/tutorial-how-to-make-a-simple-multiblock-structure/
  */
-public class BasicTileMulti extends TileEntity {
-	private boolean hasMaster, isMaster;				//master or servant flag
-	private int masterX, masterY, masterZ, structType;	//struct info
-	private String customName;
+abstract public class BasicTileMulti extends BasicTileEntity {
+
+	protected boolean hasMaster, isMaster;					//master or servant flag
+	protected int masterX, masterY, masterZ, structType;	//struct info
+	protected String customName;
+	
 	
 	public BasicTileMulti() {
         customName = "";
@@ -31,12 +45,6 @@ public class BasicTileMulti extends TileEntity {
     public boolean hasCustomName() {
         return customName != null && customName.length() > 0;
     }
-    
-    @Override
-    public void updateEntity() {
-    	super.updateEntity();
-    	
-    }
 
     @Override
     public void writeToNBT(NBTTagCompound data) {
@@ -47,10 +55,6 @@ public class BasicTileMulti extends TileEntity {
         data.setInteger("structType", structType);
         data.setBoolean("hasMaster", hasMaster);
         data.setBoolean("isMaster", isMaster);
-        
-        if(isMaster()) {  //已經成形, 額外儲存資料
-
-        }
     }
 
     @Override
@@ -62,10 +66,6 @@ public class BasicTileMulti extends TileEntity {
         structType = data.getInteger("structType");
         hasMaster = data.getBoolean("hasMaster");
         isMaster = data.getBoolean("isMaster");
-        
-        if(isMaster()) {  //已經成形, 額外儲存資料
-
-        }
     }
 
     //getter
@@ -89,12 +89,11 @@ public class BasicTileMulti extends TileEntity {
     }
 
     //setter
-    public void setStructType(int type) {
-        structType = type;
+    public void setStructType(int type, World world) {
         //set block metadata
-        //type 0: meta=1:on 2:off  type1: meta=3:on 4:off
-        LogHelper.info("DEBUG : set struct type client? "+this.worldObj.isRemote);
-    	BasicBlockMulti.updateBlockState(this.worldObj, this.xCoord, this.yCoord, this.zCoord, structType * 2);
+        //type 0001: meta=1:off 2:on  type 0010: meta=3:off 4:on
+    	BasicBlockMulti.updateBlockState(world, this.xCoord, this.yCoord, this.zCoord, type);
+    	structType = type;
     }
     public void setHasMaster(boolean bool) {
         hasMaster = bool;
@@ -107,6 +106,7 @@ public class BasicTileMulti extends TileEntity {
         masterY = y;
         masterZ = z;
     }
-    
+
+
 
 }

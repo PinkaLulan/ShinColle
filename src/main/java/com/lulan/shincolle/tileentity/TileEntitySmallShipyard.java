@@ -18,101 +18,42 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.MathHelper;
 
-public class TileEntitySmallShipyard extends BasicTileEntity implements ISidedInventory {
-
-	private ItemStack slots[] = new ItemStack[6];	//0:grudge 1:abyss 2:ammo 3:poly 4:fuel 5:output
-
-	/** Fuel Cost = BaseCost + CostPerMaterial * ( TotalMaterialAmount - minAmount * 4 )
-	 *  Total Build Time = FuelCost / buildSpeed
-	 *  MaxBuildTime / MaxFuelCost = 8min / 460800  (48 fuel per tick)
-	 *  MinBuildTime / MinFuelCost = 1min / 57600
-	 * 	MaxMaterial / MaxFuelCost = 64*4 / 460800
-	 *  MinMaterial / MinFuelCost = 16*4 / 57600 = BaseCost(57600) CostPerMaterial(2100)
-	 */	
+/** Fuel Cost = BaseCost + CostPerMaterial * ( TotalMaterialAmount - minAmount * 4 )
+ *  Total Build Time = FuelCost / buildSpeed
+ *  MaxBuildTime / MaxFuelCost = 8min / 460800  (48 fuel per tick)
+ *  MinBuildTime / MinFuelCost = 1min / 57600
+ * 	MaxMaterial / MaxFuelCost = 64*4 / 460800
+ *  MinMaterial / MinFuelCost = 16*4 / 57600 = BaseCost(57600) CostPerMaterial(2100)
+ */
+public class TileEntitySmallShipyard extends BasicTileEntity {
+		
 	public int consumedPower = 0;	//已花費的能量
 	public int remainedPower = 0;	//剩餘燃料
 	public int goalPower = 0;		//需要達成的目標能量
-	public int buildType = 0;		//type 0:ship 1:equip
-	private static final int buildSpeed = 4800;  	//power cost per tick	
-	private static final int maxPower = 460800; 	//max power storage
-	private static final int[] slots_all = new int[] {0, 1, 2, 3, 4, 5};  //dont care side
+	public int buildType = 0;		//type 0:none 1:ship 2:equip
+	private boolean isActive;		//是否正在建造中, 此為紀錄isBuilding是否有變化用
+	private static final int BUILDSPEED = 4800;  	//power cost per tick	
+	private static final int MAXPOWER = 460800; 	//max power storage
+	private static final int[] ALLSLOTS = new int[] {0, 1, 2, 3, 4, 5};  //dont care side
 
 	
-	public TileEntitySmallShipyard() {}
-
-	//設定空間格數, 各格子用途:0:grudge 1:abyss 2:ammo 3:poly 4:fuel 5:output
-	@Override
-	public int getSizeInventory() {
-		return slots.length;
+	public TileEntitySmallShipyard() {
+		//0:grudge 1:abyss 2:ammo 3:poly 4:fuel 5:output
+		this.slots = new ItemStack[6];
+		this.isActive = false;
 	}
 
-	@Override
-	public ItemStack getStackInSlot(int i) {
-		return slots[i];
-	}
-
-	//移除slot i中, 數量j個物品, 回傳為itemstack, 左右鍵等動作存取slot時會呼叫此方法
-	//(非shift動作) shift動作在container中的transferStackInSlot中實作
-	@Override
-	public ItemStack decrStackSize(int i, int j) {
-		ItemStack itemStack = getStackInSlot(i);
-        if (itemStack != null) {
-            if (itemStack.stackSize <= j) {			  //若數量<=j個
-                setInventorySlotContents(i, null);	  //則該slot清空
-            }
-            else {									  //若數量 >j個
-                itemStack = itemStack.splitStack(j);  //該itemstack數量-j
-                if (itemStack.stackSize == 0) {
-                    setInventorySlotContents(i, null);//全部拿光, slot清空
-                }
-            }
-        }
-        return itemStack;
-	}
-	
 	//依照輸出入口設定, 決定漏斗等裝置如何輸出入物品到特定slot中
 	@Override
 	public int[] getAccessibleSlotsFromSide(int i) {
-		return slots_all;
+		return ALLSLOTS;
 		//return i == 0 ? slots_bottom : (i == 1 ? slots_top : slots_side);
 	}
 
-	//關閉gui時是否取出slot中的物品, 以便讓物品掉落出來, 用於合成台等方塊 (此方塊沒有用到)
-	@Override
-	public ItemStack getStackInSlotOnClosing(int i) {
-		ItemStack itemStack = getStackInSlot(i);
-        if (itemStack != null) {
-            setInventorySlotContents(i, null);
-        }
-        return itemStack;
-	}
-
-	//將slot設成目標itemstack(也可以設成null) 用於decrStackSize等方法
-	@Override
-	public void setInventorySlotContents(int i, ItemStack itemstack) {
-		slots[i] = itemstack;
-		//若手上物品超過該格子限制數量, 則只能放進限制數量
-		if (itemstack != null && itemstack.stackSize > getInventoryStackLimit()) {
-			itemstack.stackSize = getInventoryStackLimit();
-		}	
-	}
-
-	//確認是否有自訂名稱(使用name tag取名過的話)
-	@Override
-	public boolean hasCustomInventoryName() {
-		return this.customName != null && this.customName.length() > 0;
-	}
-	
 	//GUI顯示的名稱, 有custom name則用, 不然就用預設名稱
 	@Override
 	public String getInventoryName() {
 		return this.hasCustomInventoryName() ? this.customName : "container."+Reference.MOD_ID+":SmallShipyard";
-	}
-
-	//每格可放的最大數量上限
-	@Override
-	public int getInventoryStackLimit() {
-		return 64;
 	}
 
 	//是否可以右鍵點開方塊
@@ -127,10 +68,6 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ISidedIn
 		}
 	}
 
-	//此兩方法不能跟container並用
-	public void openInventory() {}
-	public void closeInventory() {}
-	
 	//讀取nbt資料
 	@Override
     public void readFromNBT(NBTTagCompound compound) {
@@ -181,16 +118,17 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ISidedIn
 	public boolean isItemValidForSlot(int slot, ItemStack itemstack) {
 		if(itemstack != null) {
 			Item item = itemstack.getItem();
+			int meta = itemstack.getItemDamage();
 		
 			switch(slot) {
 			case 0:		//grudge slot
 				return item == ModItems.Grudge;
 			case 1:		//abyssium slot
-				return item == ModItems.Abyssium;
+				return item == ModItems.AbyssMetal && meta == 0;
 			case 2:		//ammo slot
-				return item == ModItems.Ammo;
+				return item == ModItems.Ammo && meta == 0;
 			case 3:		//polymetal slot
-				return item == ModItems.Polymetal;
+				return item == ModItems.AbyssMetal && meta == 1;
 			case 4:		//fuel slot
 				return TileEntityFurnace.isItemFuel(itemstack);
 			default:
@@ -200,12 +138,6 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ISidedIn
 		else {
 			return false;
 		}
-	}
-
-	//使用管線/漏斗輸入時呼叫, 不適用於手動置入
-	@Override
-	public boolean canInsertItem(int slot, ItemStack itemstack, int side) {
-		return this.isItemValidForSlot(slot, itemstack);  //不管side 皆用此判定
 	}
 
 	//使用管線/漏斗輸出時呼叫, 不適用於手動置入
@@ -228,10 +160,10 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ISidedIn
 		slots[3] = null;
 		
 		//輸入材料數量, 取得build output到slot 5
-		if(this.buildType == 0) {
+		if(this.buildType == 1) {	//build ship
 			slots[5] = SmallRecipes.getBuildResultShip(matAmount);
 		}
-		else {
+		else {						//build equip or no select
 			slots[5] = SmallRecipes.getBuildResultEquip(matAmount);
 		}
 		
@@ -244,7 +176,7 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ISidedIn
 	
 	//判定是否有燃料
 	public boolean hasRemainedPower() {
-		return remainedPower > buildSpeed;
+		return remainedPower > BUILDSPEED;
 	}
 	
 	//判定是否有建造目標
@@ -265,11 +197,10 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ISidedIn
 	//資料必須以markDirty標記block更新, 以及讀寫NBT tag來保存
 	@Override
 	public void updateEntity() {
-		boolean isActive = isBuilding();
 		boolean sendUpdate = false;	//標紀要block update, 有要更新metadata時設為true
 		
 		//update goalPower, check goalPower if material in slots[3] (polymetal slot)
-		if(slots[3] != null) {
+		if(this.buildType != 0) {
 			this.getGoalPower();
 		}
 		else {
@@ -279,7 +210,7 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ISidedIn
 		//server side
 		if(!worldObj.isRemote) {
 			//fuel補充
-			if(TileEntityFurnace.isItemFuel(this.slots[4]) && this.remainedPower < (this.maxPower - TileEntityFurnace.getItemBurnTime(this.slots[4]))) {
+			if(TileEntityFurnace.isItemFuel(this.slots[4]) && this.remainedPower < (this.MAXPOWER - TileEntityFurnace.getItemBurnTime(this.slots[4]))) {
 				this.remainedPower += TileEntityFurnace.getItemBurnTime(this.slots[4]);
 				
 				if(this.slots[4] != null) {
@@ -294,14 +225,15 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ISidedIn
 			
 			//判定是否建造中, 每tick進行進度值更新, 若非建造中則重置進度值
 			if(this.isBuilding()) {
-				this.remainedPower -= buildSpeed;	//fuel bar --
-				this.consumedPower += buildSpeed;	//build bar ++
+				this.remainedPower -= BUILDSPEED;	//fuel bar --
+				this.consumedPower += BUILDSPEED;	//build bar ++
 				
 				//power達標, 建造完成
 				if (this.consumedPower >= this.goalPower) {
-					this.consumedPower = 0;
-					this.goalPower = 0;
 					this.buildComplete();	//建造出成品放到output slot
+					this.consumedPower = 0;
+					this.goalPower = 0;		
+					this.buildType = 0;
 					sendUpdate = true;
 				}
 			}
@@ -313,6 +245,7 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ISidedIn
 			
 			//若狀態有改變過, 則發送更新  ex:本來active 而燃料用光導致無法active時
 			if(isActive != this.isBuilding()) {
+				isActive = this.isBuilding();
 				sendUpdate = true;
 			}
 		}
@@ -328,13 +261,13 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ISidedIn
 
 	//計算fuel存量條
 	public int getPowerRemainingScaled(int i) {
-		return (remainedPower * i) / maxPower;
+		return (remainedPower * i) / MAXPOWER;
 	}
 	
 	//計算建造時間 (換算成真實時間)
 	public String getBuildTimeString() {
 		//剩餘秒數 = (目標能量 - 目前能量) / (每tick增加能量) / 20
-		int timeSec = (goalPower - consumedPower) / buildSpeed / 20;	//get time (單位: sec)		
+		int timeSec = (goalPower - consumedPower) / BUILDSPEED / 20;	//get time (單位: sec)		
 		return FormatHelper.getTimeFormated(timeSec);
 	}
 
