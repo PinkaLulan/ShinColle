@@ -1,5 +1,6 @@
 package com.lulan.shincolle.tileentity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.lulan.shincolle.block.BlockGrudgeHeavy;
@@ -20,8 +21,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.World;
 
 /** Fuel Cost = BaseCost + CostPerMaterial * ( TotalMaterialAmount - minAmount * 4 )
  *  Total Build Time = FuelCost / buildSpeed
@@ -45,7 +48,7 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti {
 	public static final int POWERMAX = 1382400; 	//max power storage
 	public static final int SLOTS_NUM = 10;
 	public static final int SLOTS_OUT = 0;
-	private static final int[] SLOTS_ALL = new int[] {0,1,2,3,4,5,6,7,8,9};
+	public static final int[] SLOTS_ALL = new int[] {0,1,2,3,4,5,6,7,8,9};
 
 	
 	public TileMultiGrudgeHeavy() {
@@ -61,7 +64,10 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti {
 	public int[] getAccessibleSlotsFromSide(int side) {
 		//slot 0:output 2~10:inventory
 		//side 0:bottom 1:top 2~5:side
-		return SLOTS_ALL;
+		if(this.structType == 1 || this.structType == 2) {
+			return SLOTS_ALL;
+		}
+		return new int[] {};
 	}
 	
 	//GUI顯示的名稱, 有custom name則用, 不然就用預設名稱

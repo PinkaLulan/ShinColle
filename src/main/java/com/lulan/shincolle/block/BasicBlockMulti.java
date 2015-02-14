@@ -75,12 +75,10 @@ abstract public class BasicBlockMulti extends BasicBlockContainer {
 	    }    
 	}
 	
-	//方塊放置時呼叫此方法
 	@Override
 	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack itemstack) {
-		
 	}
-	
+
 	//右鍵點到方塊時呼叫此方法
 	//參數: world,方塊x,y,z,玩家,玩家面向,玩家點到的x,y,z	
 	@Override
@@ -132,7 +130,6 @@ abstract public class BasicBlockMulti extends BasicBlockContainer {
 //	    super.onNeighborBlockChange(world, x, y, z, block);
 	}
 	
-	//打掉方塊後, 掉落其內容物
 	@Override
 	public void breakBlock(World world, int x, int y, int z, Block block, int meta) {
 		BasicTileMulti tile = (BasicTileMulti)world.getTileEntity(x, y, z);

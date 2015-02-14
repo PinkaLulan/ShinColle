@@ -981,10 +981,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 				NumGrudge += 10800;
 				NumGrudge -= (int)par1;
 			}
-			else if(decrSupplies(6)) {	//find grudge block
-				NumGrudge += 97200;
-				NumGrudge -= (int)par1;
-			}
+//			else if(decrSupplies(6)) {	//find grudge heavy block
+//				NumGrudge += 97200;
+//				NumGrudge -= (int)par1;
+//			}
 		}
 		
 		if(NumGrudge <= 0) {

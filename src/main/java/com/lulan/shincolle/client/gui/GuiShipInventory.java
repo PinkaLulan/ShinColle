@@ -150,7 +150,7 @@ public class GuiShipInventory extends GuiContainer {
         
 	}
 	
-	//get new mouseX,Y and redraw gui
+	//get new mouseX,Y and draw gui
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float f) {
 		super.drawScreen(mouseX, mouseY, f);

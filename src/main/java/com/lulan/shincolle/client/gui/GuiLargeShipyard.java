@@ -1,6 +1,11 @@
 package com.lulan.shincolle.client.gui;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.lwjgl.opengl.GL11;
+
+import scala.reflect.internal.Trees.This;
 
 import com.lulan.shincolle.client.inventory.ContainerLargeShipyard;
 import com.lulan.shincolle.network.CreatePacketC2S;
@@ -27,7 +32,7 @@ public class GuiLargeShipyard extends GuiContainer {
 
 	private static final ResourceLocation TEXTURE_BG = new ResourceLocation(Reference.TEXTURES_GUI+"GuiLargeShipyard.png");
 	private TileMultiGrudgeHeavy tile;
-	private int xClick, yClick, selectMat, buildType, invMode;
+	private int xClick, yClick, selectMat, buildType, invMode, xMouse, yMouse;
 	private String name, time, errorMsg, matBuild0, matBuild1, matBuild2, matBuild3, matStock0, matStock1, matStock2, matStock3;
 	
 	public GuiLargeShipyard(InventoryPlayer par1, TileMultiGrudgeHeavy par2) {
@@ -35,6 +40,14 @@ public class GuiLargeShipyard extends GuiContainer {
 		this.tile = par2;
 		this.xSize = 208;
 		this.ySize = 223;
+	}
+	
+	//get new mouseX,Y and redraw gui
+	@Override
+	public void drawScreen(int mouseX, int mouseY, float f) {
+		super.drawScreen(mouseX, mouseY, f);
+		xMouse = mouseX;
+		yMouse = mouseY;
 	}
 	
 	//GUI前景: 文字 
@@ -75,6 +88,8 @@ public class GuiLargeShipyard extends GuiContainer {
 		this.fontRendererObj.drawString(matStock1, 125 - this.fontRendererObj.getStringWidth(matStock1) / 2, 39, 16776960);
 		this.fontRendererObj.drawString(matStock2, 125 - this.fontRendererObj.getStringWidth(matStock2) / 2, 58, 16776960);
 		this.fontRendererObj.drawString(matStock3, 125 - this.fontRendererObj.getStringWidth(matStock3) / 2, 77, 16776960);
+	
+		handleHoveringText();
 	}
 
 	//GUI背景: 背景圖片
@@ -96,16 +111,29 @@ public class GuiLargeShipyard extends GuiContainer {
         	drawTexturedModalRect(guiLeft+137+tile.getBuildType()*20, guiTop+24, 208, 64, 18, 18);
         }
         
-        //畫出資材選擇框 (27,14)
-        drawTexturedModalRect(guiLeft+27, guiTop+14+tile.getSelectMat()*19, 208, 64, 18, 18);
-        
         //畫出資材數量按鈕 (50,8)
         drawTexturedModalRect(guiLeft+50, guiTop+8+tile.getSelectMat()*19, 0, 223, 48, 30);
+        
+        //畫出資材選擇框 (27,14)
+        drawTexturedModalRect(guiLeft+27, guiTop+14+tile.getSelectMat()*19, 208, 64, 18, 18);
 	
         //畫出inventory mode按鈕 (23,92)
         if(tile.getInvMode() == 1) {	//iutput mode
         	drawTexturedModalRect(guiLeft+23, guiTop+92, 208, 82, 25, 20);
         }   
+	}
+	
+	//draw tooltip
+	private void handleHoveringText() {		
+		//畫出fuel存量 (8,19,22,84)
+		if(xMouse > 8+guiLeft && xMouse < 22+guiLeft && yMouse > 19+guiTop && yMouse < 84+guiTop) {
+			List list = new ArrayList();
+			String strFuel = String.valueOf(tile.getPowerRemained());
+			int strLen = this.fontRendererObj.getStringWidth(strFuel) / 2;
+			list.add(strFuel);
+			this.drawHoveringText(list, 3-strLen, 58, this.fontRendererObj);
+//			this.fontRendererObj.drawStringWithShadow(strFuel, 25-strLen, 47, 16777215);
+		}	
 	}
 	
 	//handle mouse click, @parm posX, posY, mouseKey (0:left 1:right 2:middle 3:...etc)
@@ -161,6 +189,14 @@ public class GuiLargeShipyard extends GuiContainer {
         case 6: //polymetal
         	selectMat = buttonClicked - 3;
         	LogHelper.info("DEBUG : GUI click: build large ship: select mats "+selectMat);
+    		CreatePacketC2S.sendC2SGUIShipyardClick(this.tile, AttrID.B_Shipyard_SelectMat, selectMat, 0);
+        	break;
+        case 7:	//select material grudge num
+        case 8: //abyssium num
+        case 9: //ammo num
+        case 10://polymetal num
+        	selectMat = buttonClicked - 7;
+        	LogHelper.info("DEBUG : GUI click: build large ship: select mats (num) "+selectMat);
     		CreatePacketC2S.sendC2SGUIShipyardClick(this.tile, AttrID.B_Shipyard_SelectMat, selectMat, 0);
         	break;
         }//end page 0 button switch

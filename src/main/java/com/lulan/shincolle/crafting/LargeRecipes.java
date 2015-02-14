@@ -218,7 +218,7 @@ public class LargeRecipes {
 			if(TileEntityFurnace.isItemFuel(itemstack)) { itemType = 0; }
 			else if(item == ModItems.Grudge) { itemType = 1; }
 			else if(item == Item.getItemFromBlock(ModBlocks.BlockGrudge)) { itemType = 2; }
-			else if(item == Item.getItemFromBlock(ModBlocks.BlockGrudgeHeavy)) { itemType = 3; }
+//			else if(item == Item.getItemFromBlock(ModBlocks.BlockGrudgeHeavy)) { itemType = 3; }
 			else if(item == ModItems.AbyssMetal && meta == 0) { itemType = 4; }
 			else if(item == Item.getItemFromBlock(ModBlocks.BlockAbyssium)) { itemType = 5; }
 			else if(item == ModItems.Ammo && meta == 0) { itemType = 6; }

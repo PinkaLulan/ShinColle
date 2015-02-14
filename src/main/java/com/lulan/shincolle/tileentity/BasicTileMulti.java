@@ -107,6 +107,4 @@ abstract public class BasicTileMulti extends BasicTileEntity {
         masterZ = z;
     }
 
-
-
 }

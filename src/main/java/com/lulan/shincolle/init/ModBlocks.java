@@ -23,10 +23,12 @@ public class ModBlocks {
 		GameRegistry.registerBlock(BlockAbyssium, "BlockAbyssium");
 		GameRegistry.registerBlock(BlockDesk, "BlockDesk");
 		GameRegistry.registerBlock(BlockGrudge, "BlockGrudge");
-		GameRegistry.registerBlock(BlockGrudgeHeavy, "BlockGrudgeHeavy");
 		GameRegistry.registerBlock(BlockPolymetal, "BlockPolymetal");
 		GameRegistry.registerBlock(BlockPolymetalOre, "BlockPolymetalOre");
 		GameRegistry.registerBlock(BlockSmallShipyard, "BlockSmallShipyard");
+		
+		//reg with itemblock
+		GameRegistry.registerBlock(BlockGrudgeHeavy, ItemBlockGrudgeHeavy.class, "BlockGrudgeHeavy");
 		
 	}
 }

@@ -8,7 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
-abstract public class BasicTileEntity extends TileEntity implements ISidedInventory {
+public class BasicTileEntity extends TileEntity implements ISidedInventory {
 	
 	protected ItemStack slots[];
 	protected String customName;
@@ -67,11 +67,12 @@ abstract public class BasicTileEntity extends TileEntity implements ISidedInvent
     //關閉gui時是否取出slot中的物品, 以便讓物品掉落出來, 用於合成台等方塊 (此方塊沒有用到)
   	@Override
   	public ItemStack getStackInSlotOnClosing(int i) {
-  		ItemStack itemStack = getStackInSlot(i);
-          if (itemStack != null) {
-              setInventorySlotContents(i, null);
-          }
-          return itemStack;
+//  		ItemStack itemStack = getStackInSlot(i);
+//          if (itemStack != null) {
+//              setInventorySlotContents(i, null);
+//          }
+//          return itemStack;
+  		return null;
   	}
   	
     //將slot設成目標itemstack(也可以設成null) 用於decrStackSize等方法
@@ -101,18 +102,28 @@ abstract public class BasicTileEntity extends TileEntity implements ISidedInvent
   	}
 
 	@Override
-	abstract public int[] getAccessibleSlotsFromSide(int side);
+	public int[] getAccessibleSlotsFromSide(int side) {
+		return null;
+	}
 
 	@Override
-	abstract public boolean canExtractItem(int slot, ItemStack itemstack, int side);
+	public boolean canExtractItem(int slot, ItemStack itemstack, int side) {
+		return false;
+	}
 
 	@Override
-	abstract public String getInventoryName();
+	public String getInventoryName() {
+		return null;
+	}
 
 	@Override
-	abstract public boolean isUseableByPlayer(EntityPlayer player);
+	public boolean isUseableByPlayer(EntityPlayer player) {
+		return false;
+	}
 
 	@Override
-	abstract public boolean isItemValidForSlot(int slot, ItemStack itemstack);	
+	public boolean isItemValidForSlot(int slot, ItemStack itemstack) {
+		return false;
+	}
 
 }

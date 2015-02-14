@@ -30,6 +30,13 @@ public class ContainerLargeShipyard extends Container {
 	private int[] guiMatStock = new int[4];
 	private String guiBuildTime;
 	
+	//for shift item
+	private static final int SLOT_OUTPUT = 0;
+	private static final int SLOT_INVENTORY = 1;
+	private static final int SLOT_PLAYERINV = 10;
+	private static final int SLOT_HOTBAR = 37;
+	private static final int SLOT_ALL = 46;
+	
 	
 	public ContainerLargeShipyard(InventoryPlayer player, TileMultiGrudgeHeavy tile) {
 		this.tile = tile;
@@ -95,64 +102,46 @@ public class ContainerLargeShipyard extends Container {
 	 * mergeItemStack: parm: item,start slot,end slot(此格不判定放入),是否先放到hot bar
 	 * slot id: 0:output 1~9:inventory 10~36:player inventory 37~45:hot bar
 	 */
-	
-	//bug: 傳送後原stack出現stacksize=0卻沒消失的狀況
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer player, int slotid) {
-        ItemStack itemstack = null;
+        ItemStack newStack = null;
         Slot slot = (Slot)this.inventorySlots.get(slotid);
 
-        if(slot != null && slot.getHasStack()) { 			//若slot有東西
-            ItemStack itemstack1 = slot.getStack();			//itemstack1取得該slot物品
-            itemstack = itemstack1.copy();					//itemstack複製一份itemstack1
+        if(slot != null && slot.getHasStack()) { 	//若slot有東西
+            ItemStack orgStack = slot.getStack();	//orgStack取得該slot物品
+            newStack = orgStack.copy();				//newStack為orgStack複製
 
-            if(slotid == 0) {  //若點擊output slot時
+            //點擊output slot時
+            if(slotid == SLOT_OUTPUT) {
             	//將output slot的物品嘗試跟整個inventory的slot合併, 不能合併則傳回null
-            	if(!this.mergeItemStack(itemstack1, 1, 46, true)) {
-                	return null;
-                }
-                slot.onSlotChange(itemstack1, itemstack); //若物品成功搬動過, 則呼叫slot change事件
-            }
-            //如果是點擊player inventory slot時, 判定是否能丟進方塊的inventory
-            else if(slotid > 0) {        	          	
-            	//item ID: -1:other 0:grudge 1:abyss 2:ammo 3:poly 4:fuel
-            	//若物品在player inventory, 則改放到inventory
-                if(slotid > 9 && slotid < 37) {
-                	if(!this.mergeItemStack(itemstack1, 1, 10, false)) {
-                        return null;
-                    }
-                }
-            	//若物品在hot bar, 則改放到inventory
-                else if (slotid > 36 && !this.mergeItemStack(itemstack1, 1, 37, false)) {
-                    return null;
-                }
-                //如果是點擊slot 0~10, 則改放到player inventory or hot bar
-                else {
-                	if(!this.mergeItemStack(itemstack1, 10, 46, true)) {
-                		return null;
-                	}
-                }
+            	if(!this.mergeItemStack(orgStack, SLOT_INVENTORY, SLOT_ALL, true)) 
+            		return null;
             }  
-
-//            //如果物品都放完了, 則設成null清空該物品
-//            if (itemstack1.stackSize <= 0) {
-//                slot.putStack((ItemStack)null);
-//            }
-//            else { //還沒放完, 先跑一次slot update
-//                slot.onSlotChanged();
-//            }
-            if(itemstack1.stackSize == 0) {
-            	return null;
+            //點擊hot bar => 移動到inventory or player inv
+            else if (slotid > SLOT_HOTBAR) {
+            	if(!this.mergeItemStack(orgStack, SLOT_INVENTORY, SLOT_HOTBAR, false))
+            		return null;
+            }
+            //點擊player inv => 移動到inventory or hot bar
+            else if(slotid > SLOT_PLAYERINV && slotid < SLOT_HOTBAR) {
+            	if(!this.mergeItemStack(orgStack, SLOT_INVENTORY, SLOT_PLAYERINV, true))
+            		return null;
+            } 
+            //點擊inventory => 移動到player inv or hot bar
+            else {
+            	if(!this.mergeItemStack(orgStack, SLOT_PLAYERINV, SLOT_ALL, false))
+            		return null;
             }
 
-            //如果itemstack的數量跟原先的數量相同, 表示都不能移動物品
-            if(itemstack1.stackSize == itemstack.stackSize) {
-                return null;
+            //如果物品都放完了, 則設成null清空該物品
+            if (orgStack.stackSize <= 0) {
+                slot.putStack(null);
             }
-            //最後再發送一次slot update
-            slot.onPickupFromSlot(player, itemstack1);
+            else { //還沒放完, 先跑一次slot update
+                slot.onSlotChanged();
+            }
         }
-        return itemstack;	//物品移動完成, 回傳剩下的物品
+        return newStack;	//物品移動完成, 回傳剩下的物品
     }
 	
 	//將container數值跟tile entity內的數值比對, 如果不同則發送更新給client使gui呈現新數值
