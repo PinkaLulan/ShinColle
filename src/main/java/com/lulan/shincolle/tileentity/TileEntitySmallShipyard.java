@@ -32,7 +32,7 @@ public class TileEntitySmallShipyard extends BasicTileEntity {
 	public int goalPower = 0;		//需要達成的目標能量
 	public int buildType = 0;		//type 0:none 1:ship 2:equip
 	private boolean isActive;		//是否正在建造中, 此為紀錄isBuilding是否有變化用
-	private static final int BUILDSPEED = 4800;  	//power cost per tick	
+	private static final int BUILDSPEED = 48;  	//power cost per tick	
 	private static final int MAXPOWER = 460800; 	//max power storage
 	private static final int[] ALLSLOTS = new int[] {0, 1, 2, 3, 4, 5};  //dont care side
 

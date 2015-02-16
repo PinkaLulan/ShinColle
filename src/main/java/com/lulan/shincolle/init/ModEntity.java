@@ -27,6 +27,7 @@ public class ModEntity {
 		//register ship entity
 		createEntity(EntityDestroyerI.class, "EntityDestroyerI", modEntityID++);
 		createEntity(EntityHeavyCruiserRi.class, "EntityHeavyCruiserRi", modEntityID++);
+		createEntity(EntityCarrierWo.class, "EntityCarrierWo", modEntityID++);
 				
 		//register projectile entity
 		createProjectileEntity(EntityAbyssMissile.class, "EntityAbyssMissile", modEntityID++);

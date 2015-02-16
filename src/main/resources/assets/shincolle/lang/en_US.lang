@@ -46,7 +46,8 @@ item.shincolle:debugegg.name=Debug Spawn Egg
 
 # Entity
 entity.shincolle:EntityDestroyerI.name=Destroyer I-Class
-entity.shincolle:EntityHeavyCruiserRi.name=HeavyCruiser RI-Class
+entity.shincolle:EntityHeavyCruiserRi.name=Heavy Cruiser Ri-Class
+entity.shincolle:EntityCarrierWo.name=Standard Carrier Wo-Class
 
 # GUI
 gui.shincolle:level=Level

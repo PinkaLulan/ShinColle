@@ -22,6 +22,8 @@ import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -118,6 +120,17 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 		ShipPrevY = posY;
 		ShipPrevZ = posZ;
 	}
+	
+//	@Override
+//	public float getBrightness(float p_70013_1_) {
+//		return 0F;
+//	}
+	
+	@Override
+	@SideOnly(Side.CLIENT)
+    public int getBrightnessForRender(float p_70070_1_) {
+        return 240;
+    }
 	
 	@Override
 	public boolean isAIEnabled() {
@@ -600,7 +613,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 				double parH = this.posY - (int)this.posY;
 				
 				EntityFX particleSpray = new EntityFXSpray(worldObj, 
-				          this.posX + motX*1.5D, this.posY + 0.5D, this.posZ + motZ*1.5D, 
+				          this.posX + motX*1.5D, this.posY + 0.4D, this.posZ + motZ*1.5D, 
 				          -motX*0.5D, 0D, -motZ*0.5D,
 				          1F, 1F, 1F, 1F);
 				    

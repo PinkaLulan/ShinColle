@@ -1,5 +1,8 @@
 package com.lulan.shincolle.client.gui;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.client.inventory.ContainerSmallShipyard;
@@ -22,7 +25,7 @@ public class GuiSmallShipyard extends GuiContainer {
 
 	private static final ResourceLocation guiTexture = new ResourceLocation(Reference.TEXTURES_GUI+"GuiSmallShipyard.png");
 	private TileEntitySmallShipyard tile;
-	private int xClick, yClick;
+	private int xClick, yClick, xMouse, yMouse;
 	private String errorMsg;
 	
 	public GuiSmallShipyard(InventoryPlayer par1, TileEntitySmallShipyard par2) {
@@ -31,6 +34,26 @@ public class GuiSmallShipyard extends GuiContainer {
 		
 		this.xSize = 176;
 		this.ySize = 164;
+	}
+	
+	//get new mouseX,Y and redraw gui
+	@Override
+	public void drawScreen(int mouseX, int mouseY, float f) {
+		super.drawScreen(mouseX, mouseY, f);
+		xMouse = mouseX;
+		yMouse = mouseY;
+	}
+	
+	//draw tooltip
+	private void handleHoveringText() {		
+		//畫出fuel存量 (8,19,22,84)
+		if(xMouse > 9+guiLeft && xMouse < 17+guiLeft && yMouse > 23+guiTop && yMouse < 49+guiTop) {
+			List list = new ArrayList();
+			String strFuel = String.valueOf(tile.remainedPower);
+			int strLen = this.fontRendererObj.getStringWidth(strFuel) / 2;
+			list.add(strFuel);
+			this.drawHoveringText(list, 4-strLen, 40, this.fontRendererObj);
+		}	
 	}
 	
 	//GUI前景: 文字 
@@ -55,6 +78,8 @@ public class GuiSmallShipyard extends GuiContainer {
 			this.fontRendererObj.drawString(errorMsg, 80 - this.fontRendererObj.getStringWidth(errorMsg) / 2, 61, 16724787);
 		}
 		
+		//畫出tooltip
+		handleHoveringText();
 	}
 
 	//GUI背景: 背景圖片

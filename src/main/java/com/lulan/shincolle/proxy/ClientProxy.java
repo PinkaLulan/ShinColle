@@ -7,12 +7,14 @@ import net.minecraftforge.client.MinecraftForgeClient;
 
 import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.client.model.ModelAbyssMissile;
+import com.lulan.shincolle.client.model.ModelCarrierWo;
 import com.lulan.shincolle.client.model.ModelDestroyerI;
 import com.lulan.shincolle.client.model.ModelEntityTest;
 import com.lulan.shincolle.client.model.ModelHeavyCruiserRi;
 import com.lulan.shincolle.client.model.ModelLargeShipyard;
 import com.lulan.shincolle.client.model.ModelVortex;
 import com.lulan.shincolle.client.render.RenderAbyssMissile;
+import com.lulan.shincolle.client.render.RenderCarrierWo;
 import com.lulan.shincolle.client.render.RenderDestroyerI;
 import com.lulan.shincolle.client.render.RenderHeavyCruiserRi;
 import com.lulan.shincolle.client.render.RenderLargeShipyard;
@@ -22,6 +24,7 @@ import com.lulan.shincolle.client.render.RenderTest;
 import com.lulan.shincolle.client.render.RenderVortex;
 import com.lulan.shincolle.client.settings.KeyBindings;
 import com.lulan.shincolle.entity.EntityAbyssMissile;
+import com.lulan.shincolle.entity.EntityCarrierWo;
 import com.lulan.shincolle.entity.EntityDestroyerI;
 import com.lulan.shincolle.entity.EntityHeavyCruiserRi;
 import com.lulan.shincolle.entity.EntityTest;
@@ -54,6 +57,7 @@ public class ClientProxy extends CommonProxy {
 		TileEntitySpecialRenderer tesrBlockSmallShipyard = new RenderSmallShipyard();
 		
 		//entity render
+		RenderingRegistry.registerEntityRenderingHandler(EntityCarrierWo.class, new RenderCarrierWo(new ModelCarrierWo(), 1F));
 		RenderingRegistry.registerEntityRenderingHandler(EntityDestroyerI.class, new RenderDestroyerI(new ModelDestroyerI(), 0.3F));
 		RenderingRegistry.registerEntityRenderingHandler(EntityHeavyCruiserRi.class, new RenderHeavyCruiserRi(new ModelHeavyCruiserRi(), 1F));
 		

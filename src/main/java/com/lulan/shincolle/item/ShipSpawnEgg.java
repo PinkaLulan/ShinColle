@@ -42,7 +42,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ShipSpawnEgg extends Item {
 	
 	Random rand;
-	private static final int ShipNumber = 2;
+	private static final int ShipNumber = 3;
 	
 	@SideOnly(Side.CLIENT)
     private IIcon[] iconEgg = new IIcon[3];	//egg icon
@@ -103,6 +103,7 @@ public class ShipSpawnEgg extends Item {
   	public void getSubItems(Item item, CreativeTabs tab, List list) {
   		list.add(new ItemStack(item, 1, 0));
   		list.add(new ItemStack(item, 1, 1));
+  		list.add(new ItemStack(item, 1, AttrID.CarrierWO+2));
   		list.add(new ItemStack(item, 1, AttrID.DestroyerI+2));
   		list.add(new ItemStack(item, 1, AttrID.HeavyCruiserRI+2));
   	}
@@ -118,7 +119,9 @@ public class ShipSpawnEgg extends Item {
   		case 0:	//small egg
   			return "shincolle.EntityDestroyerI";
   		case 1:	//large egg
-  			return "shincolle.EntityDestroyerI";
+  			return "shincolle.EntityCarrierWo";
+  		case AttrID.CarrierWO+2:
+  			return "shincolle.EntityCarrierWo";
   		case AttrID.DestroyerI+2:
   			return "shincolle.EntityDestroyerI";
   		case AttrID.HeavyCruiserRI+2:

@@ -41,6 +41,12 @@ public class EntityFXSpray extends EntityFX {
         this.noClip = false;
 
     }
+    
+    @Override
+	@SideOnly(Side.CLIENT)
+    public int getBrightnessForRender(float p_70070_1_) {
+        return 240;
+    }
 
     public void renderParticle(Tessellator tess, float ticks, float par3, float par4, float par5, float par6, float par7) {
         float f6 = ((float)this.particleAge + ticks) / (float)this.particleMaxAge * 32.0F;

@@ -2,6 +2,7 @@ package com.lulan.shincolle.client.model;
 
 import org.lwjgl.opengl.GL11;
 
+import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.EntityHeavyCruiserRi;
 import com.lulan.shincolle.reference.AttrID;
 import com.lulan.shincolle.reference.AttrValues;
@@ -262,7 +263,7 @@ public class ModelHeavyCruiserRi extends ModelBase {
     public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity) {
       super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
   
-      EntityHeavyCruiserRi ent = (EntityHeavyCruiserRi)entity;
+      BasicEntityShip ent = (BasicEntityShip)entity;
       
       showEquip(ent);
       
@@ -273,7 +274,7 @@ public class ModelHeavyCruiserRi extends ModelBase {
     }
     
     //雙腳移動計算
-  	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, EntityHeavyCruiserRi ent) {   
+  	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, BasicEntityShip ent) {   
   		float angleZ = MathHelper.cos(f2*0.08F);
   		float addk1 = 0;
   		float addk2 = 0;
@@ -301,7 +302,7 @@ public class ModelHeavyCruiserRi extends ModelBase {
 		this.LegLeft.rotateAngleY = 0F;
 		this.LegRight.rotateAngleY = 0F;    
 	    
-	    if(ent.isSprinting() || f1 > 0.6F) {	//奔跑動作
+	    if(ent.isSprinting() || f1 > 0.9F) {	//奔跑動作
   			this.ArmLeft.rotateAngleX = 1F;
   			this.ArmRight.rotateAngleX = 1F;
   			this.BodyMain.rotateAngleX = 0.5F;
@@ -386,7 +387,7 @@ public class ModelHeavyCruiserRi extends ModelBase {
 	    }
 	}
     
-    private void showEquip(EntityHeavyCruiserRi ent) {
+    private void showEquip(BasicEntityShip ent) {
 		if(ent.getEntityState(AttrID.State) >= AttrValues.State.EQUIP) {
 			this.EquipBase.isHidden = false;
 			this.EquipLeftBase.isHidden = false;
@@ -401,7 +402,7 @@ public class ModelHeavyCruiserRi extends ModelBase {
   	}
   	
     //隨機抽取顯示的表情 
-    private void rollEmotion(EntityHeavyCruiserRi ent) { 
+    private void rollEmotion(BasicEntityShip ent) { 
     	switch(ent.getEntityState(AttrID.Emotion)) {
     	case AttrValues.Emotion.BLINK:	//blink
     		EmotionBlink(ent);
@@ -431,7 +432,7 @@ public class ModelHeavyCruiserRi extends ModelBase {
     	}	
     }
     
-	private void EmotionStaring(EntityHeavyCruiserRi ent) {	
+	private void EmotionStaring(BasicEntityShip ent) {	
     	if(ent.getStartEmotion() == -1) {
 			ent.setStartEmotion(ent.ticksExisted);		//表情開始時間
 		}
@@ -449,7 +450,7 @@ public class ModelHeavyCruiserRi extends ModelBase {
 	}
 
 	//眨眼動作, this emotion is CLIENT ONLY, no sync packet required
-  	private void EmotionBlink(EntityHeavyCruiserRi ent) {
+  	private void EmotionBlink(BasicEntityShip ent) {
   		if(ent.getEntityState(AttrID.Emotion) == AttrValues.Emotion.NORMAL) {	//要在沒表情狀態才做表情		
   			ent.setStartEmotion(ent.ticksExisted);		//表情開始時間
   			ent.setEntityEmotion(AttrValues.Emotion.BLINK, false);	//標記表情為blink

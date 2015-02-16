@@ -47,6 +47,7 @@ item.shincolle:debugegg.name=Debug生怪蛋
 # Entity
 entity.shincolle:EntityDestroyerI.name=驅逐イ級
 entity.shincolle:EntityHeavyCruiserRi.name=重巡リ級
+entity.shincolle:EntityCarrierWo.name=正規空母ヲ級
 
 # GUI
 gui.shincolle:level=等級
