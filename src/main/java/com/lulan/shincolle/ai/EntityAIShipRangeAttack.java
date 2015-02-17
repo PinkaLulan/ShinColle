@@ -55,7 +55,7 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
         	(this.host.getEntityFlag(AttrID.F_UseAmmoLight) && this.host.hasAmmoLight()) || 
         	(this.host.getEntityFlag(AttrID.F_UseAmmoHeavy) && this.host.hasAmmoHeavy())) {   
         	this.attackTarget = target;
-        	LogHelper.info("DEBUG : try to range attack");
+//        	LogHelper.info("DEBUG : try to range attack");
             return true;
         }       
         

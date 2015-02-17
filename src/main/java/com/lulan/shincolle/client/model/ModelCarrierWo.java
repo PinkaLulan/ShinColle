@@ -9,6 +9,7 @@ import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.MathHelper;
 
@@ -33,6 +34,7 @@ public class ModelCarrierWo extends ModelBase {
     public ModelRenderer StaffHead;
     public ModelRenderer Head;
     public ModelRenderer Hair;
+    public ModelRenderer Face0;
     public ModelRenderer Face1;
     public ModelRenderer Face2;
     public ModelRenderer Face3;
@@ -70,6 +72,10 @@ public class ModelCarrierWo extends ModelBase {
     public ModelRenderer Cloak01;
     public ModelRenderer Cloak02;
     public ModelRenderer Cloak03;
+    public ModelRenderer GlowBodyMain;
+    public ModelRenderer GlowNeck;
+    public ModelRenderer GlowHead;
+    public ModelRenderer GlowEquipBase;
     
     public int HeadCooldown = 0;
     public boolean HeadTilt = false;
@@ -81,6 +87,9 @@ public class ModelCarrierWo extends ModelBase {
         this.Head = new ModelRenderer(this, 43, 101);
         this.Head.setRotationPoint(0.0F, -1.5F, 1.5F);
         this.Head.addBox(-7.0F, -14.0F, -6.5F, 14, 14, 13, 0.0F);
+        this.Face0 = new ModelRenderer(this, 68, 68);
+        this.Face0.setRotationPoint(0.0F, 0.0F, -0.1F);
+        this.Face0.addBox(-7.0F, -14.0F, -6.5F, 14, 14, 1, 0.0F);
         this.Face4 = new ModelRenderer(this, 98, 113);
         this.Face4.setRotationPoint(0.0F, 0.0F, -0.1F);
         this.Face4.addBox(-7.0F, -14.0F, -6.5F, 14, 14, 1, 0.0F);
@@ -285,7 +294,6 @@ public class ModelCarrierWo extends ModelBase {
         this.Cloak03.addBox(-16.0F, 0.0F, 0.0F, 32, 20, 0, 0.0F);
         this.setRotateAngle(Cloak03, 0.3490658503988659F, 0.0F, 0.0F);
         this.Neck.addChild(this.Head);
-        this.Head.addChild(this.Face4);
         this.EquipLC01.addChild(this.EquipLC02);
         this.EquipTB02R.addChild(this.EquipTB03R);
         this.BodyMain.addChild(this.BoobL);
@@ -305,20 +313,15 @@ public class ModelCarrierWo extends ModelBase {
         this.EquipBase.addChild(this.Equip04);
         this.EquipBase.addChild(this.EquipLC01);
         this.EquipBase.addChild(this.EquipTB01L);
-        this.EquipBase.addChild(this.EquipEye01);
-        this.EquipBase.addChild(this.EquipEye02);
         this.Staff.addChild(this.StaffHead);
         this.EquipBase.addChild(this.Equip06);
         this.EquipT01R.addChild(this.EquipT02R);
         this.EquipBase.addChild(this.Equip02);
         this.EquipTB01L.addChild(this.EquipTB02L);
-        this.Head.addChild(this.Face2);
         this.EquipBase.addChild(this.EquipT01R);
         this.EquipBase.addChild(this.EquipTB01R);
-        this.Head.addChild(this.Face1);
         this.EquipBase.addChild(this.EquipRC01);
         this.EquipT02R.addChild(this.EquipT03R);
-        this.Head.addChild(this.Face3);
         this.EquipBase.addChild(this.EquipTooth02);
         this.EquipTB01R.addChild(this.EquipTB02R);
         this.CloakNeck.addChild(this.Cloak01);
@@ -336,6 +339,31 @@ public class ModelCarrierWo extends ModelBase {
         this.BodyMain.addChild(this.BoobR);
         this.BodyMain.addChild(this.Butt);
         this.Cloak02.addChild(this.Cloak03);
+        
+        //以下為發光模型支架, 此部份模型整個亮度設為240
+        this.GlowBodyMain = new ModelRenderer(this, 0, 0);
+        this.GlowBodyMain.setRotationPoint(0.0F, -11.0F, 0.0F);
+        this.setRotateAngle(GlowBodyMain, -0.3490658503988659F, 0.0F, 0.0F);
+        this.GlowNeck = new ModelRenderer(this, 0, 0);
+        this.GlowNeck.setRotationPoint(0.0F, -12.0F, -2.0F);
+        this.setRotateAngle(GlowNeck, 0.3490658503988659F, 0.0F, 0.0F);
+        this.GlowHead = new ModelRenderer(this, 0, 0);
+        this.GlowHead.setRotationPoint(0.0F, -1.5F, 1.5F);
+        this.GlowEquipBase = new ModelRenderer(this, 0, 0);
+        this.GlowEquipBase.setRotationPoint(0.0F, -10.0F, -3.0F);
+        this.setRotateAngle(GlowEquipBase, 0.08726646259971647F, 0.0F, 0.0F);
+        
+        this.GlowBodyMain.addChild(this.GlowNeck);
+        this.GlowNeck.addChild(this.GlowHead);
+        this.GlowHead.addChild(this.GlowEquipBase);
+        this.GlowHead.addChild(this.Face0);
+        this.GlowHead.addChild(this.Face1);
+        this.GlowHead.addChild(this.Face2);
+        this.GlowHead.addChild(this.Face3);
+        this.GlowHead.addChild(this.Face4);
+        this.GlowEquipBase.addChild(this.EquipEye01);
+        this.GlowEquipBase.addChild(this.EquipEye02);
+        
     }
     
     /**
@@ -350,15 +378,21 @@ public class ModelCarrierWo extends ModelBase {
     @Override
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {    
         GL11.glPushMatrix();
-    	GL11.glEnable(GL11.GL_BLEND);			//開啟透明度模式
+        
+    	GL11.glEnable(GL11.GL_BLEND);
     	GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-    	GL11.glTranslatef(0F, 0.8F, 0F);
     	GL11.glScalef(0.5F, 0.5F, 0.5F); 	
-    	
-    	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
-    	
+
+    	setRotationAngles(f, f1, f2, f3, f4, f5, entity); 	
     	this.BodyMain.render(f5);
-    	GL11.glDisable(GL11.GL_BLEND);			//開啟透明度模式
+    	GL11.glDisable(GL11.GL_BLEND);
+    	
+    	//亮度設為240
+    	GL11.glDisable(GL11.GL_LIGHTING);
+    	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
+    	this.GlowBodyMain.render(f5); 	
+    	GL11.glEnable(GL11.GL_LIGHTING);
+    	
     	GL11.glPopMatrix();
     }
     
@@ -374,13 +408,32 @@ public class ModelCarrierWo extends ModelBase {
       
       motionHumanPos(f, f1, f2, f3, f4, ent);
 
+      setGlowRotation();
     }
     
-    //雙腳移動計算
+    //設定模型發光部份的rotation
+    private void setGlowRotation() {
+		this.GlowBodyMain.rotateAngleX = this.BodyMain.rotateAngleX;
+		this.GlowBodyMain.rotateAngleY = this.BodyMain.rotateAngleY;
+		this.GlowBodyMain.rotateAngleZ = this.BodyMain.rotateAngleZ;
+		this.GlowEquipBase.rotateAngleX = this.EquipBase.rotateAngleX;
+		this.GlowEquipBase.rotateAngleY = this.EquipBase.rotateAngleY;
+		this.GlowEquipBase.rotateAngleZ = this.EquipBase.rotateAngleZ;
+		this.GlowHead.rotateAngleX = this.Head.rotateAngleX;
+		this.GlowHead.rotateAngleY = this.Head.rotateAngleY;
+		this.GlowHead.rotateAngleZ = this.Head.rotateAngleZ;
+		this.GlowNeck.rotateAngleX = this.Neck.rotateAngleX;
+		this.GlowNeck.rotateAngleY = this.Neck.rotateAngleY;
+		this.GlowNeck.rotateAngleZ = this.Neck.rotateAngleZ;
+	}
+
+	//雙腳移動計算
   	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, BasicEntityShip ent) {   
   		float angleZ = MathHelper.cos(f2*0.08F);
   		float addk1 = 0;
   		float addk2 = 0;
+  		
+    	GL11.glTranslatef(0F, 1.5F, 0F);
   		
   		//leg move parm
   		addk1 = MathHelper.cos(f * 0.4F) * 0.5F * f1;
@@ -455,7 +508,7 @@ public class ModelCarrierWo extends ModelBase {
 			this.EquipTB03R.rotateAngleZ = -angleZ * 0.25F;
 		}
 
-	    if(ent.isSprinting() || f1 > 0.99F) {	//奔跑動作
+	    if(ent.isSprinting() || f1 > 0.7F) {	//奔跑動作
 			float angleZFast = MathHelper.cos(f2*0.3F);
 	    	//高度
 //		    GL11.glTranslatef(0F, -0.2F, 0F);
@@ -654,11 +707,13 @@ public class ModelCarrierWo extends ModelBase {
     private void showEquip(BasicEntityShip ent) {
 		if(ent.getEntityState(AttrID.State) >= AttrValues.State.EQUIP) {
 			this.EquipBase.isHidden = false;
-//			this.Staff.isHidden = false;
+			this.EquipEye01.isHidden = false;
+			this.EquipEye02.isHidden = false;
 		}
 		else {
 			this.EquipBase.isHidden = true;
-//			this.Staff.isHidden = true;
+			this.EquipEye01.isHidden = true;
+			this.EquipEye02.isHidden = true;
 		}
   	}
     
@@ -739,30 +794,35 @@ public class ModelCarrierWo extends ModelBase {
   	private void setFace(int emo) {
   		switch(emo) {
   		case 0:
+  			this.Face0.isHidden = false;
   			this.Face1.isHidden = true;
   			this.Face2.isHidden = true;
   			this.Face3.isHidden = true;
   			this.Face4.isHidden = true;
   			break;
   		case 1:
+  			this.Face0.isHidden = true;
   			this.Face1.isHidden = false;
   			this.Face2.isHidden = true;
   			this.Face3.isHidden = true;
   			this.Face4.isHidden = true;
   			break;
   		case 2:
+  			this.Face0.isHidden = true;
   			this.Face1.isHidden = true;
   			this.Face2.isHidden = false;
   			this.Face3.isHidden = true;
   			this.Face4.isHidden = true;
   			break;
   		case 3:
+  			this.Face0.isHidden = true;
   			this.Face1.isHidden = true;
   			this.Face2.isHidden = true;
   			this.Face3.isHidden = false;
   			this.Face4.isHidden = true;
   			break;
   		case 4:
+  			this.Face0.isHidden = true;
   			this.Face1.isHidden = true;
   			this.Face2.isHidden = true;
   			this.Face3.isHidden = true;

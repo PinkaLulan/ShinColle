@@ -126,11 +126,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 //		return 0F;
 //	}
 	
-	@Override
-	@SideOnly(Side.CLIENT)
-    public int getBrightnessForRender(float p_70070_1_) {
-        return 240;
-    }
+//	@Override
+//	@SideOnly(Side.CLIENT)
+//    public int getBrightnessForRender(float p_70070_1_) {
+//        return 240;
+//    }
 	
 	@Override
 	public boolean isAIEnabled() {

@@ -35,6 +35,7 @@ public class EntityAIShipSit extends EntityAIBase
     }
     
     public void updateTask() {
+//    	LogHelper.info("DEBUG : exec sitting");
     	this.theEntity.getNavigator().clearPathEntity();    
         this.theEntity.setPathToEntity((PathEntity)null);
         this.theEntity.setTarget((Entity)null);

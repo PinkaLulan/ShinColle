@@ -22,7 +22,8 @@ public class EntityAIShipFloating extends EntityAIBase {
         entity.getNavigator().setCanSwim(true);
     }
 
-    public boolean shouldExecute() {	
+    public boolean shouldExecute() {
+//    	LogHelper.info("DEBUG : floating cond? "+this.theEntity.getEntityFlag(AttrID.F_CanFloatUp));
         return !this.theEntity.isSitting() && this.theEntity.getEntityFlag(AttrID.F_CanFloatUp);
     }
 
@@ -35,6 +36,7 @@ public class EntityAIShipFloating extends EntityAIBase {
     	
     	if(this.theEntity.getShipDepth() > 1D) {
     		this.theEntity.motionY += 0.015D;
+//    		LogHelper.info("DEBUG : floating "+this.theEntity+" "+this.theEntity.getShipDepth());
     		return;
     	}
     	

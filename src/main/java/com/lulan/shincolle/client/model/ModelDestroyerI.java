@@ -12,6 +12,7 @@ import com.lulan.shincolle.utility.LogHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MathHelper;
@@ -46,6 +47,10 @@ public class ModelDestroyerI extends ModelBase {
 	public ModelRenderer PKisaragi01;
 	public ModelRenderer PKisaragi02;
 	public ModelRenderer PKisaragi03;
+	//add glow model
+	public ModelRenderer GlowPBack;
+	public ModelRenderer GlowPNeck;
+	public ModelRenderer GlowPHead;
 	
 	private int EntityEmotion;	//ヘ玡薄
 	private int EntityFace;		//ヘ玡ㄏノ繷场model
@@ -67,12 +72,6 @@ public class ModelDestroyerI extends ModelBase {
     setTextureOffset("PNeck.NeckNeck", 128, 28);
     setTextureOffset("PNeck.NeckBody", 0, 70);
     setTextureOffset("PHead.Head", 0, 0);
-    setTextureOffset("PEyeLightL0.LEye", 138, 64);
-    setTextureOffset("PEyeLightR0.REye", 138, 64);
-    setTextureOffset("PEyeLightL1.LEye", 138, 85);
-    setTextureOffset("PEyeLightR1.REye", 138, 85);
-    setTextureOffset("PEyeLightL2.LEye", 138, 106);
-    setTextureOffset("PEyeLightR2.REye", 138, 106);
     setTextureOffset("PHead.ToothTopMid", 96, 0);
     setTextureOffset("PHead.ToothTopRight", 128, 54);
     setTextureOffset("PHead.ToothTopLeft", 128, 54);
@@ -93,6 +92,12 @@ public class ModelDestroyerI extends ModelBase {
     setTextureOffset("PTailRight.TailRightFront", 128, 28);
     setTextureOffset("PTailRightEnd.TailRightEnd", 128, 36);
     setTextureOffset("PTailEnd.TailEnd", 128, 26);
+    setTextureOffset("Eye01L", 138, 64);
+    setTextureOffset("Eye02L", 138, 85);
+    setTextureOffset("Eye03L", 138, 106);
+    setTextureOffset("Eye01R", 138, 64);
+    setTextureOffset("Eye02R", 138, 85);
+    setTextureOffset("Eye03R", 138, 106);
     //add Kisaragi
     setTextureOffset("PKisaragi00.k00", 66, 102);
     setTextureOffset("PKisaragi01.k01", 114, 102);
@@ -119,18 +124,21 @@ public class ModelDestroyerI extends ModelBase {
       PHead.addBox("JawTop", -3F, 20F, -11F, 22, 2, 22);
       
     //3 emotion eye
-    PEyeLightL[0] = new ModelRenderer(this, "PEyeLightL0");
-    PEyeLightR[0] = new ModelRenderer(this, "PEyeLightR0");
-    PEyeLightL[0].addBox("LEye", -3F, 0F, 15.1F, 24, 20, 1);
-    PEyeLightR[0].addBox("REye", -3F, 0F, -16.1F, 24, 20, 1);
-    PEyeLightL[1] = new ModelRenderer(this, "PEyeLightL1");
-    PEyeLightR[1] = new ModelRenderer(this, "PEyeLightR1");
-    PEyeLightL[1].addBox("LEye", -3F, 0F, 15.1F, 24, 20, 1).isHidden = true;
-    PEyeLightR[1].addBox("REye", -3F, 0F, -16.1F, 24, 20, 1).isHidden = true;
-    PEyeLightL[2] = new ModelRenderer(this, "PEyeLightL2");
-    PEyeLightR[2] = new ModelRenderer(this, "PEyeLightR2");
-    PEyeLightL[2].addBox("LEye", -3F, 0F, 15.1F, 24, 20, 1).isHidden = true;
-    PEyeLightR[2].addBox("REye", -3F, 0F, -16.1F, 24, 20, 1).isHidden = true;
+    PEyeLightL[0] = new ModelRenderer(this, 138, 64);
+    PEyeLightL[0].mirror = true;
+    PEyeLightL[0].addBox(-3F, 0F, 15.1F, 24, 20, 1);
+    PEyeLightR[0] = new ModelRenderer(this, 138, 64);
+    PEyeLightR[0].addBox(-3F, 0F, -16.1F, 24, 20, 1);
+    PEyeLightL[1] = new ModelRenderer(this, 138, 85);
+    PEyeLightL[1].mirror = true;
+    PEyeLightL[1].addBox(-3F, 0F, 15.1F, 24, 20, 1).isHidden = true;
+    PEyeLightR[1] = new ModelRenderer(this, 138, 85);
+    PEyeLightR[1].addBox(-3F, 0F, -16.1F, 24, 20, 1).isHidden = true;
+    PEyeLightL[2] = new ModelRenderer(this, 138, 106);
+    PEyeLightL[2].mirror = true;
+    PEyeLightL[2].addBox(-3F, 0F, 15.1F, 24, 20, 1).isHidden = true;
+    PEyeLightR[2] = new ModelRenderer(this, 138, 106);
+    PEyeLightR[2].addBox(-3F, 0F, -16.1F, 24, 20, 1).isHidden = true;
     
     //add Kisaragi
     PKisaragi00 = new ModelRenderer(this, "PKisaragi00");
@@ -157,16 +165,6 @@ public class ModelDestroyerI extends ModelBase {
       PJawBottom.addBox("ToothBottomRight", -1F, 7.5F, -9F, 4, 10, 3);
       PJawBottom.addBox("ToothBottomMid", -1F, 14.5F, -6F, 4, 3, 12);
       PHead.addChild(PJawBottom);
-      PHead.addChild(PEyeLightL[0]);
-      PHead.addChild(PEyeLightR[0]);
-      PHead.addChild(PEyeLightL[1]);
-      PHead.addChild(PEyeLightR[1]);
-      PHead.addChild(PEyeLightL[2]);
-      PHead.addChild(PEyeLightR[2]);
-      PHead.addChild(PKisaragi00);
-      PHead.addChild(PKisaragi01);
-      PHead.addChild(PKisaragi02);
-      PHead.addChild(PKisaragi03);
       PNeck.addChild(PHead);
       PBack.addChild(PNeck);
     PBody = new ModelRenderer(this, "PBody");
@@ -220,6 +218,31 @@ public class ModelDestroyerI extends ModelBase {
       PTailEnd.addBox("TailEnd", -20F, -6F, -8F, 24, 10, 16);
       PTail.addChild(PTailEnd);
       PBack.addChild(PTail);
+      
+      //祇家や琜, 獹240
+      GlowPBack = new ModelRenderer(this, "GlowPBack");
+      GlowPBack.setRotationPoint(-8F, -16F, 0F);
+      setRotation(GlowPBack, 0F, 0F, -0.31F);   
+      GlowPNeck = new ModelRenderer(this, "GlowPNeck");
+      GlowPNeck.setRotationPoint(15F, 0F, 0F);
+      setRotation(GlowPNeck, 0F, 0F, 0.2F);
+      GlowPHead = new ModelRenderer(this, "GlowPHead");
+      GlowPHead.setRotationPoint(26F, 0F, 0F);
+      setRotation(GlowPHead, 0F, 0F, 0.3F);
+      
+      GlowPHead.addChild(PEyeLightL[0]);
+      GlowPHead.addChild(PEyeLightR[0]);
+      GlowPHead.addChild(PEyeLightL[1]);
+      GlowPHead.addChild(PEyeLightR[1]);
+      GlowPHead.addChild(PEyeLightL[2]);
+      GlowPHead.addChild(PEyeLightR[2]);
+      GlowPHead.addChild(PKisaragi00);
+      GlowPHead.addChild(PKisaragi01);
+      GlowPHead.addChild(PKisaragi02);
+      GlowPHead.addChild(PKisaragi03);
+      GlowPNeck.addChild(GlowPHead);
+      GlowPBack.addChild(GlowPNeck);  
+      
   }
   
   public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
@@ -234,6 +257,12 @@ public class ModelDestroyerI extends ModelBase {
 	GL11.glRotatef(90F, 0F, 1F, 0F);	//家繷场よ岿粇 render秸俱ㄓ
 	
 	PBack.render(f5);
+	
+	//獹砞240
+	GL11.glDisable(GL11.GL_LIGHTING);
+	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
+	this.GlowPBack.render(f5);
+	GL11.glEnable(GL11.GL_LIGHTING);
 	
 //	GL11.glDisable(GL11.GL_BLEND);		//闽超硓家Α
 	GL11.glPopMatrix();
@@ -269,8 +298,21 @@ public class ModelDestroyerI extends ModelBase {
     	GL11.glTranslatef(0F, 0.8F, 0F);
     }   
 
+    setGlowRotation();
   }
 
+  	//砞﹚祇家rrotation
+	private void setGlowRotation() {
+		this.GlowPBack.rotateAngleX = this.PBack.rotateAngleX;
+		this.GlowPBack.rotateAngleY = this.PBack.rotateAngleY;
+		this.GlowPBack.rotateAngleZ = this.PBack.rotateAngleZ;
+		this.GlowPHead.rotateAngleX = this.PHead.rotateAngleX;
+		this.GlowPHead.rotateAngleY = this.PHead.rotateAngleY;
+		this.GlowPHead.rotateAngleZ = this.PHead.rotateAngleZ;
+		this.GlowPNeck.rotateAngleX = this.PNeck.rotateAngleX;
+		this.GlowPNeck.rotateAngleY = this.PNeck.rotateAngleY;
+		this.GlowPNeck.rotateAngleZ = this.PNeck.rotateAngleZ;
+	}
 
 	private void isKisaragi(EntityDestroyerI ent) {
 		if(ent.getEntityState(AttrID.State) >= AttrValues.State.EQUIP) {

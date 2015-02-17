@@ -84,22 +84,22 @@ public class EntityCarrierWo extends BasicEntitySmallShip {
 		super.setAIList();
 		
 //		//floating on water
-//		this.tasks.addTask(1, new EntityAIShipSit(this, this.getOwner()));	   //0101
-//		this.tasks.addTask(2, new EntityAIShipFollowOwner(this, 7F, 12F));	   //0011
+		this.tasks.addTask(1, new EntityAIShipSit(this, this.getOwner()));	   //0101
+		this.tasks.addTask(2, new EntityAIShipFollowOwner(this, 7F, 12F));	   //0011
 //		
 //		//use range attack (light)
 //		this.tasks.addTask(11, new EntityAIShipRangeAttack(this));			   //0011
 //		
 //		//use melee attack
-//		this.tasks.addTask(12, new EntityAIAttackOnCollide(this, 1D, true));   //0011
-//		this.tasks.addTask(13, new EntityAIMoveTowardsTarget(this, 1D, 64F));  //0001
+		this.tasks.addTask(12, new EntityAIAttackOnCollide(this, 1D, true));   //0011
+		this.tasks.addTask(13, new EntityAIMoveTowardsTarget(this, 1D, 64F));  //0001
 //		
 //		//idle AI
 //		//moving
 //		this.tasks.addTask(21, new EntityAIOpenDoor(this, true));			   //0000
 //		
-//		this.tasks.addTask(23, new EntityAIShipFloating(this));				   //0110
-//		this.tasks.addTask(24, new EntityAIWatchClosest(this, EntityPlayer.class, 5F));	  //0010
+		this.tasks.addTask(21, new EntityAIShipFloating(this));				   //0110
+		this.tasks.addTask(22, new EntityAIWatchClosest2(this, EntityPlayer.class, 8F, 0.8F));	  //0010
 //		this.tasks.addTask(24, new EntityAIWatchClosest(this, BasicEntityShip.class, 7F));//0010
 //		this.tasks.addTask(25, new EntityAIWander(this, 0.8D));				   //0001
 //		this.tasks.addTask(25, new EntityAILookIdle(this));					   //0011
@@ -163,6 +163,7 @@ public class EntityCarrierWo extends BasicEntitySmallShip {
     public void onLivingUpdate() {
     	//check server side
     	if(this.worldObj.isRemote) {
+//    		if(!this.isSitting() && this.ticksExisted % 5 ==  0) {
     		if(this.ticksExisted % 5 ==  0) {
     			//若顯示裝備時, 則生成眼睛煙霧特效 (client only)
     			if(getEntityState(AttrID.State) >= AttrValues.State.EQUIP) {
@@ -173,12 +174,12 @@ public class EntityCarrierWo extends BasicEntitySmallShip {
     				EntityFX particleSprayL = new EntityFXSpray(worldObj, 
                     		this.posX+offX, this.posY+2.7D, this.posZ+offZ, 
                     		0D, 0.05D, 0D,
-                    		1F, 0F, 0F, 0.7F);
+                    		1F, 0F, 0F, 1F);
                 	Minecraft.getMinecraft().effectRenderer.addEffect(particleSprayL);
                 	EntityFX particleSprayR = new EntityFXSpray(worldObj, 
                     		this.posX-offX, this.posY+2.7D, this.posZ-offZ, 
                     		0D, 0.05D, 0D,
-                    		1F, 0F, 0F, 0.7F);
+                    		1F, 0F, 0F, 1F);
                 	Minecraft.getMinecraft().effectRenderer.addEffect(particleSprayR);
                 	
                 	

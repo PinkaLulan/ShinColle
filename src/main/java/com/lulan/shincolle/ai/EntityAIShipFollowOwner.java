@@ -61,7 +61,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
         	this.DistSqToOwner = this.distX*this.distX + this.distY*this.distY + this.distZ*this.distZ;
 
         	if(!this.ThePet.isSitting() && !this.ThePet.getLeashed() && DistSqToOwner > this.MaxDistSq) {
-                return true;
+        		return true;
         	}
         }
         
@@ -70,6 +70,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
 
     //目標還沒接近min dist或者距離超過TP_DIST時繼續AI
     public boolean continueExecuting() {
+    	LogHelper.info("DEBUG : exec follow owner");
     	//計算直線距離
     	this.distX = this.TheOwner.posX - this.ThePet.posX;
 		this.distY = this.TheOwner.posY - this.ThePet.posY - 1;

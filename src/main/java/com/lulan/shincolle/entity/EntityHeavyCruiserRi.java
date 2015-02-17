@@ -91,12 +91,11 @@ public class EntityHeavyCruiserRi extends BasicEntitySmallShip {
 		//idle AI
 		//moving
 		this.tasks.addTask(21, new EntityAIOpenDoor(this, true));			   //0000
-		
 		this.tasks.addTask(23, new EntityAIShipFloating(this));				   //0110
-		this.tasks.addTask(24, new EntityAIWatchClosest(this, EntityPlayer.class, 5F));	  //0010
-		this.tasks.addTask(24, new EntityAIWatchClosest(this, BasicEntityShip.class, 7F));//0010
+		this.tasks.addTask(24, new EntityAIWatchClosest(this, EntityPlayer.class, 8F));	  //0010
+//		this.tasks.addTask(24, new EntityAIWatchClosest(this, BasicEntityShip.class, 7F));//0010
 		this.tasks.addTask(25, new EntityAIWander(this, 0.8D));				   //0001
-		this.tasks.addTask(25, new EntityAILookIdle(this));					   //0011
+//		this.tasks.addTask(25, new EntityAILookIdle(this));					   //0011
 		
 /* 		//switch AI method
 		this.tasks.removeTask(this.aiAttackOnCollide);
@@ -146,6 +145,7 @@ public class EntityHeavyCruiserRi extends BasicEntitySmallShip {
     public void onLivingUpdate() {
     	//check server side
     	if(!this.worldObj.isRemote) {
+//    		LogHelper.info("DEBUG : depth "+this.tasks.);
     		//check every 5 sec
     		if(this.ticksExisted % 100 == 0) {
 	    		//apply potion effect in the night
