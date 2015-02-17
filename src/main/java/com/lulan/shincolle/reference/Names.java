@@ -11,12 +11,8 @@ public final class Names {
 	public static final class Packets {
 		public static final byte TEST = 0;
 		public static final byte ENTITY_SYNC = 1;
-		public static final byte STATE_SYNC = 2;
-		public static final byte FLAG_SYNC = 3;
-		public static final byte PARTICLE_ATK = 4;
-		public static final byte PARTICLE_ATK2 = 5;
-		public static final byte GUI_SHIPINV = 6;
-		public static final byte GUI_SHIPYARD = 7;
+		public static final byte SPAWN_PARTICLE = 2;
+		public static final byte GUI_CLICK = 3;
 	}
 
 }

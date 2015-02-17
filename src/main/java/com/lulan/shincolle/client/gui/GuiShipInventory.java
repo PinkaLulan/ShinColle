@@ -5,7 +5,8 @@ import org.lwjgl.opengl.GL12;
 
 import com.lulan.shincolle.client.inventory.ContainerShipInventory;
 import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.network.CreatePacketC2S;
+import com.lulan.shincolle.network.C2SGUIPackets;
+import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.AttrID;
 import com.lulan.shincolle.reference.GUIs;
 import com.lulan.shincolle.reference.Reference;
@@ -367,7 +368,8 @@ public class GuiShipInventory extends GuiContainer {
             			ButtonValue = 1;
             		}
             		LogHelper.info("DEBUG : GUI click: use ammo light: "+ButtonValue);
-            		CreatePacketC2S.sendC2SGUIShipInvClick(this.entity, AttrID.B_ShipInv_AmmoLight, ButtonValue);
+            		CommonProxy.channel.sendToServer(new C2SGUIPackets(this.entity, AttrID.B_ShipInv_AmmoLight, ButtonValue));
+//            		CreatePacketC2S.sendC2SGUIShipInvClick(this.entity, AttrID.B_ShipInv_AmmoLight, ButtonValue);
     	        	break;
     	        case 1:
     	        	this.SwitchHeavy = this.entity.getEntityFlag(AttrID.F_UseAmmoHeavy);	
@@ -378,7 +380,8 @@ public class GuiShipInventory extends GuiContainer {
             			ButtonValue = 1;
             		}
             		LogHelper.info("DEBUG : GUI click: use ammo heavy: "+ButtonValue);
-            		CreatePacketC2S.sendC2SGUIShipInvClick(this.entity, AttrID.B_ShipInv_AmmoHeavy, ButtonValue);
+            		CommonProxy.channel.sendToServer(new C2SGUIPackets(this.entity, AttrID.B_ShipInv_AmmoHeavy, ButtonValue));
+//            		CreatePacketC2S.sendC2SGUIShipInvClick(this.entity, AttrID.B_ShipInv_AmmoHeavy, ButtonValue);
     	        	break;
     	        }//end page=2 switch
             }

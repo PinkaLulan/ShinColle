@@ -1,12 +1,17 @@
 package com.lulan.shincolle.utility;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
+
 import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.network.CreatePacketS2C;
 import com.lulan.shincolle.reference.AttrID;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
@@ -18,9 +23,24 @@ public class EntityHelper {
 	public static Entity getEntityByID(int entityID, World world) {
 		for(Object obj: world.getLoadedEntityList()) {
 			if(entityID != -1 && ((Entity)obj).getEntityId() == entityID) {
-				LogHelper.info("DEBUG : found entity by ID/client? "+entityID+" "+world.isRemote);
+				LogHelper.info("DEBUG : found entity by ID, is client? "+entityID+" "+world.isRemote);
 				return ((Entity)obj);
 			}
+		}
+		return null;
+	}
+	
+	//get player on the server by UUID
+	public static EntityPlayerMP getOnlinePlayer(UUID id) {
+		//get online id list (server side only)
+		List onlineList = MinecraftServer.getServer().getConfigurationManager().playerEntityList;
+		Iterator iter = onlineList.iterator();
+		while(iter.hasNext()) {
+			EntityPlayerMP player = (EntityPlayerMP)iter.next();
+		    if(player.getUniqueID().equals(id)) {
+		    	LogHelper.info("DEBUG : found player by UUID "+player.getDisplayName());
+		    	return player;
+		    }
 		}
 		return null;
 	}

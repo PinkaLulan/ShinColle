@@ -1,6 +1,7 @@
 package com.lulan.shincolle.entity;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
@@ -14,13 +15,17 @@ import com.lulan.shincolle.entity.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
-import com.lulan.shincolle.network.CreatePacketS2C;
+import com.lulan.shincolle.network.S2CEntitySync;
+import com.lulan.shincolle.network.S2CSpawnParticle;
+import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.AttrID;
 import com.lulan.shincolle.reference.AttrValues;
 import com.lulan.shincolle.reference.GUIs;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
+import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -38,6 +43,7 @@ import net.minecraft.entity.ai.EntityAISit;
 import net.minecraft.entity.boss.IBossDisplayData;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityLargeFireball;
 import net.minecraft.init.Blocks;
@@ -47,6 +53,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.pathfinding.PathEntity;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
@@ -458,23 +465,26 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 	}
 
 	public void setEntityState(int par1, boolean sync) {
-		EntityState[AttrID.State] = (byte)par1;	
+		EntityState[AttrID.State] = (byte)par1;
 		if(sync && !worldObj.isRemote) {
-			CreatePacketS2C.sendS2CEntityStateSync(this);    
+			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
+			CommonProxy.channel.sendToAllAround(new S2CEntitySync(this, 1), point);
 		}
 	}
 	
 	public void setEntityEmotion(int par1, boolean sync) {
 		EntityState[AttrID.Emotion] = (byte)par1;
 		if(sync && !worldObj.isRemote) {
-			CreatePacketS2C.sendS2CEntityStateSync(this);    
+			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
+			CommonProxy.channel.sendToAllAround(new S2CEntitySync(this, 1), point);
 		}
 	}
 	
 	public void setEntitySwimType(int par1, boolean sync) {
 		EntityState[AttrID.SwimType] = (byte)par1;			
 		if(sync && !worldObj.isRemote) {
-			CreatePacketS2C.sendS2CEntityStateSync(this);    
+			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
+			CommonProxy.channel.sendToAllAround(new S2CEntitySync(this, 1), point);
 		}   
 	}
 	
@@ -485,8 +495,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 	
 	//manual send sync packet
 	public void sendSyncPacket() {
-		if (!worldObj.isRemote) {
-			CreatePacketS2C.sendS2CEntitySync(this);     
+		if(!worldObj.isRemote && this.getOwner() != null) {
+			EntityPlayerMP player = EntityHelper.getOnlinePlayer(this.getOwner().getUniqueID());
+			CommonProxy.channel.sendTo(new S2CEntitySync(this, 0), player);
 		}
 	}
 	
@@ -730,7 +741,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 
 	        //send packet to client for display partical effect   
 	        if (!worldObj.isRemote) {
-				CreatePacketS2C.sendS2CAttackParticle(target, 1);     
+	        	TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+	    		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(target, 1), point);
 			}
 	    }
 
@@ -754,7 +766,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
         lookZ = lookZ / lookDist;
         
         //發射者煙霧特效
-        CreatePacketS2C.sendS2CAttackParticle2(this.getEntityId(), this.posX, this.posY, this.posZ, lookX, lookY, lookZ, 6);
+        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 6, this.posX, this.posY, this.posZ, lookX, lookY, lookZ), point);
 
 		//play cannon fire sound at attacker
         playSound(Reference.MOD_ID+":ship-firesmall", 0.4F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
@@ -800,7 +813,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IEntityS
 	        }
 	        
         	//send packet to client for display partical effect  
-        	CreatePacketS2C.sendS2CAttackParticle(target, 9);	//目標中彈特效
+	        TargetPoint point1 = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+			CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(target, 9), point1);
         }
 
 	    return isTargetHurt;

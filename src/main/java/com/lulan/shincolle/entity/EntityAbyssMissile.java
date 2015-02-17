@@ -1,5 +1,6 @@
 package com.lulan.shincolle.entity;
 
+import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -9,7 +10,8 @@ import java.util.List;
 import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.client.particle.EntityFXSpray;
-import com.lulan.shincolle.network.CreatePacketS2C;
+import com.lulan.shincolle.network.S2CSpawnParticle;
+import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.block.Block;
@@ -306,8 +308,10 @@ public class EntityAbyssMissile extends Entity {
             }          	
 
             
-            //send packet to client for display partical effect 
-            CreatePacketS2C.sendS2CAttackParticle(this, 2);
+            //send packet to client for display partical effect
+            TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+    		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 2), point);
+//            CreatePacketS2C.sendS2CAttackParticle(this, 2);
             this.setDead();
         }//end if server side
     }

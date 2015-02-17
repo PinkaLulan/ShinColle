@@ -27,9 +27,9 @@ public class AttrID {
 	public static final byte B_ShipInv_AmmoLight = 0;
 	public static final byte B_ShipInv_AmmoHeavy = 1;
 	public static final byte B_Shipyard_Type = 0;
-	public static final byte B_Shipyard_InvMode = 2;
-	public static final byte B_Shipyard_SelectMat = 3;
-	public static final byte B_Shipyard_INCDEC = 4;
+	public static final byte B_Shipyard_InvMode = 1;
+	public static final byte B_Shipyard_SelectMat = 2;
+	public static final byte B_Shipyard_INCDEC = 3;
 	
 	//ShipID
 	public static final byte DestroyerI = 0;

@@ -58,6 +58,8 @@ public class ShinColle {
 	//	proxy.registerKeyBindings();
 		//render register
 		proxy.registerRender();
+		//Packet channel register (simple network)
+		proxy.registerChannel();
 		
 		LogHelper.info("preInit complete.");	//debug
 	}
@@ -68,8 +70,6 @@ public class ShinColle {
 	public void Init(FMLInitializationEvent event) {
 		//GUI register
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
-		//Packet channel register
-		proxy.registerChannel();
 		
 		ModEvents.init();
 		
@@ -89,22 +89,20 @@ public class ShinColle {
 	@Mod.EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
 		
-		/*
-		//list all entity
-		Iterator iter = EntityList.classToStringMapping.entrySet().iterator();
-		while(iter.hasNext()) {
-			Map.Entry entry = (Map.Entry)iter.next();
-		    Object key = entry.getKey();
-		    Object val = entry.getValue();
-		    LogHelper.info("DEBUG : list entity class: "+key+" , "+val);
-		}
-		*/
 		
-		/*
-		for(String oreName : OreDictionary.getOreNames()) {	//list all oreDictionary  (DEBUG)
-			LogHelper.info(oreName);
-		}
-		*/
+//		//list all entity
+//		Iterator iter = EntityList.classToStringMapping.entrySet().iterator();
+//		while(iter.hasNext()) {
+//			Map.Entry entry = (Map.Entry)iter.next();
+//		    Object key = entry.getKey();
+//		    Object val = entry.getValue();
+//		    LogHelper.info("DEBUG : list entity class: "+key+" , "+val);
+//		}	
+		
+//		for(String oreName : OreDictionary.getOreNames()) {	//list all oreDictionary  (DEBUG)
+//			LogHelper.info(oreName);
+//		}
+		
 //		MulitBlockHelper.printPattern();
 //		GuiHelper.printButtons();
 		LogHelper.info("postInit complete.");	//debug
