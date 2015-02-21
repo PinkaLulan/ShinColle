@@ -67,9 +67,9 @@ public class S2CEntitySync implements IMessage {
 					recvEntity.setFinalState(AttrID.MOV, buf.readFloat());
 					recvEntity.setFinalState(AttrID.HIT, buf.readFloat());
 
-					recvEntity.setEntityState(buf.readByte(), false);
-					recvEntity.setEntityEmotion(buf.readByte(), false);
-					recvEntity.setEntitySwimType(buf.readByte(), false);
+					recvEntity.setEntityState(AttrID.State, buf.readByte(), false);
+					recvEntity.setEntityState(AttrID.Emotion, buf.readByte(), false);
+					recvEntity.setEntityState(AttrID.Emotion2, buf.readByte(), false);
 
 					recvEntity.setBonusPoint(AttrID.HP, buf.readByte());
 					recvEntity.setBonusPoint(AttrID.ATK, buf.readByte());
@@ -87,9 +87,9 @@ public class S2CEntitySync implements IMessage {
 				break;
 			case 1: //entity state only
 				{
-					recvEntity.setEntityState(buf.readByte(), false);
-					recvEntity.setEntityEmotion(buf.readByte(), false);
-					recvEntity.setEntitySwimType(buf.readByte(), false);
+					recvEntity.setEntityState(AttrID.State, buf.readByte(), false);
+					recvEntity.setEntityState(AttrID.Emotion, buf.readByte(), false);
+					recvEntity.setEntityState(AttrID.Emotion2, buf.readByte(), false);
 				}
 				break;
 			case 2: //entity flag only
@@ -132,7 +132,7 @@ public class S2CEntitySync implements IMessage {
 				
 				buf.writeByte(this.sendEntity.getEntityState(AttrID.State));
 				buf.writeByte(this.sendEntity.getEntityState(AttrID.Emotion));
-				buf.writeByte(this.sendEntity.getEntityState(AttrID.SwimType));
+				buf.writeByte(this.sendEntity.getEntityState(AttrID.Emotion2));
 
 				buf.writeByte(this.sendEntity.getBonusPoint(AttrID.HP));
 				buf.writeByte(this.sendEntity.getBonusPoint(AttrID.ATK));
@@ -154,7 +154,7 @@ public class S2CEntitySync implements IMessage {
 				buf.writeInt(this.sendEntity.getEntityId());	//entity id
 				buf.writeByte(this.sendEntity.getEntityState(AttrID.State));
 				buf.writeByte(this.sendEntity.getEntityState(AttrID.Emotion));
-				buf.writeByte(this.sendEntity.getEntityState(AttrID.SwimType));
+				buf.writeByte(this.sendEntity.getEntityState(AttrID.Emotion2));
 			}
 			break;
 		case 2:	//entity flag only
@@ -177,7 +177,7 @@ public class S2CEntitySync implements IMessage {
 		@Override
 		public IMessage onMessage(S2CEntitySync message, MessageContext ctx) {
 //          System.out.println(String.format("Received %s from %s", message.text, ctx.getServerHandler().playerEntity.getDisplayName()));
-			LogHelper.info("DEBUG : recv Entity Sync packet : type "+recvType+" id "+entityID);
+//			LogHelper.info("DEBUG : recv Entity Sync packet : type "+recvType+" id "+entityID);
 			return null;
 		}
     }

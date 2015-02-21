@@ -12,6 +12,7 @@ import org.lwjgl.opengl.GL11;
 import com.lulan.shincolle.client.particle.EntityFXSpray;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
+import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.block.Block;
@@ -43,8 +44,9 @@ import net.minecraft.world.World;
  */
 public class EntityAbyssMissile extends Entity {
 	
-    public BasicEntityShip hostEntity;  //host target
-    public Entity hitEntity;			 //onImpact target (for entity)
+    public BasicEntityShip hostEntity;  	//main host
+    public BasicEntityAirplane hostEntity2;	//second host
+    public Entity hitEntity;			 	//onImpact target (for entity)
     
     //missile motion
     public double distX;			//target distance
@@ -72,6 +74,7 @@ public class EntityAbyssMissile extends Entity {
     
     public EntityAbyssMissile(World world) {
     	super(world);
+    	this.setSize(1.0F, 1.0F);
     }
     
     public EntityAbyssMissile(World world, BasicEntityShip host, double tarX, double tarY, double tarZ, double launchPos, float atk, float kbValue, boolean isDirect) {
@@ -79,7 +82,44 @@ public class EntityAbyssMissile extends Entity {
         this.world = world;
         //設定entity的發射者, 用於追蹤造成傷害的來源
         this.hostEntity = host;
-        this.setSize(1.0F, 1.0F);
+        this.hostEntity2 = null;
+        this.atk = atk;
+        this.kbValue  = kbValue;
+        //設定發射位置 (posY會加上offset), 左右+上下角度, 以及
+        this.posX = host.posX;
+        this.posY = launchPos;
+        this.posZ = host.posZ;     
+        //計算距離, 取得方向vector, 並且初始化速度, 使飛彈方向朝向目標
+        this.distX = tarX - this.posX;
+        this.distY = tarY - this.posY;
+        this.distZ = tarZ - this.posZ;
+        //設定直射或者拋物線
+        this.isDirect = isDirect;
+        
+        //直射彈道, no gravity
+    	double dist = (double)MathHelper.sqrt_double(this.distX*this.distX + this.distY*this.distY + this.distZ*this.distZ);
+  	    this.accX = this.distX / dist * this.ACCE;
+	    this.accY = this.distY / dist * this.ACCE;
+	    this.accZ = this.distZ / dist * this.ACCE;
+	    this.motionX = this.accX;
+	    this.motionZ = this.accY;
+	    this.motionY = this.accZ;
+ 
+	    //拋物線軌道計算, y軸初速加上 (一半飛行時間 * 額外y軸加速度)
+	    if(!this.isDirect) {
+	    	this.midFlyTime = (int) (0.5D * MathHelper.sqrt_double(2D * dist / this.ACCE));
+	    	this.accParaY = this.ACCE;
+	    	this.motionY = this.motionY + (double)this.midFlyTime * this.accParaY;
+	    }
+    }
+    
+    //如果是艦載機發射, 則host要設定為艦載機主人
+    public EntityAbyssMissile(World world, BasicEntityAirplane host, double tarX, double tarY, double tarZ, double launchPos, float atk, float kbValue, boolean isDirect) {
+        super(world);
+        this.world = world;
+        //設定entity的發射者, 用於追蹤造成傷害的來源
+        this.hostEntity = (BasicEntityShip)host.getOwner();
+        this.hostEntity2 = host;
         this.atk = atk;
         this.kbValue  = kbValue;
         //設定發射位置 (posY會加上offset), 左右+上下角度, 以及
@@ -223,7 +263,9 @@ public class EntityAbyssMissile extends Entity {
             if(hitList != null && !hitList.isEmpty()) {
                 for(int i=0; i<hitList.size(); ++i) { 
                 	hitEntity = (Entity)hitList.get(i);
-                	if(hitEntity.canBeCollidedWith() && (!hitEntity.isEntityEqual(this.hostEntity) || this.ticksExisted > 30)) {               		
+                	if(hitEntity.canBeCollidedWith() && this.ticksExisted > 10 &&
+                	   !hitEntity.isEntityEqual(this.hostEntity) && 
+                	   !hitEntity.isEntityEqual(this.hostEntity2)) {               		
                 		break;	//break for loop
                 	}
                 	else {
@@ -257,14 +299,16 @@ public class EntityAbyssMissile extends Entity {
     	//server side
     	if(!this.worldObj.isRemote) {  		
             if(entityHit != null) {	//撞到entity引起爆炸
-            	//若攻擊到玩家, 傷害固定為TNT傷害
+            	//若攻擊到玩家, 最大傷害固定為TNT傷害 (non-owner)
             	if(entityHit instanceof EntityPlayer) {
             		if(this.atk > 59) this.atk = 59;	//same with TNT
             	}
-            	
+            	//若攻擊到同陣營entity (ex: owner), 則傷害設為0 (但是依然觸發擊飛特效)
+            	if(EntityHelper.checkSameOwner(this.hostEntity.getOwner(), entityHit)) {
+            		atk = 0;
+            	}
         		//設定該entity受到的傷害
             	isTargetHurt = entityHit.attackEntityFrom(DamageSource.causeMobDamage(this.hostEntity), this.atk);
-
         	    //if attack success
         	    if(isTargetHurt) {
         	    	//calc kb effect
@@ -285,12 +329,13 @@ public class EntityAbyssMissile extends Entity {
             if(hitList != null && !hitList.isEmpty()) {
                 for(int i=0; i<hitList.size(); ++i) { 
                 	hitEntity = (Entity)hitList.get(i);
-                	if(hitEntity.canBeCollidedWith() && (!hitEntity.isEntityEqual(this.hostEntity) || this.ticksExisted > 20)) {               		
+                	if(hitEntity.canBeCollidedWith() && this.ticksExisted > 10 &&
+                     	   !hitEntity.isEntityEqual(this.hostEntity) && 
+                     	   !hitEntity.isEntityEqual(this.hostEntity2)) {               		
                 		//若攻擊到玩家, 傷害固定為TNT傷害
                     	if(hitEntity instanceof EntityPlayer) {
                     		if(this.atk > 59) this.atk = 59;	//same with TNT
                     	}
-                		
                 		//對entity造成傷害
                 		isTargetHurt = hitEntity.attackEntityFrom(DamageSource.causeMobDamage(this.hostEntity), this.atk);
                 	    //if attack success
@@ -306,11 +351,11 @@ public class EntityAbyssMissile extends Entity {
                 	}
                 }
             }          	
-
-            
+  
             //send packet to client for display partical effect
             TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-    		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 2), point);
+//    		LogHelper.info("DEBUG : missile impact particle "+point.x+" "+point.y+" "+point.z);
+            CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 2), point);
 //            CreatePacketS2C.sendS2CAttackParticle(this, 2);
             this.setDead();
         }//end if server side

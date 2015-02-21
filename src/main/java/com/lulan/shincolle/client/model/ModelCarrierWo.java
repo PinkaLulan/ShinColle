@@ -3,6 +3,7 @@ package com.lulan.shincolle.client.model;
 import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.EntityCarrierWo;
 import com.lulan.shincolle.reference.AttrID;
 import com.lulan.shincolle.reference.AttrValues;
 import com.lulan.shincolle.utility.LogHelper;
@@ -399,7 +400,7 @@ public class ModelCarrierWo extends ModelBase {
     //for idle/run animation
     public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity) {
       super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
-  
+      
       BasicEntityShip ent = (BasicEntityShip)entity;
       
       showEquip(ent);
@@ -508,7 +509,7 @@ public class ModelCarrierWo extends ModelBase {
 			this.EquipTB03R.rotateAngleZ = -angleZ * 0.25F;
 		}
 
-	    if(ent.isSprinting() || f1 > 0.7F) {	//奔跑動作
+	    if(ent.isSprinting() || f1 > 0.9F) {	//奔跑動作
 			float angleZFast = MathHelper.cos(f2*0.3F);
 	    	//高度
 //		    GL11.glTranslatef(0F, -0.2F, 0F);
@@ -583,17 +584,25 @@ public class ModelCarrierWo extends ModelBase {
 		    	}
 		    }
 	    }
-	    
-	    if(this.HeadTilt) {    	
+	    //emotion2: client side only
+	    if(this.HeadTilt) {
+	    	//用swim type參數當作歪頭flag
+	    	ent.setEntityState(AttrID.Emotion2, 1, false);
 	    	if(this.Neck.rotateAngleZ > -0.24F) {
 	    		this.Neck.rotateAngleZ -= 0.03F;
 	    	}
 	    }
 	    else {
+	    	//用swim type參數當作歪頭flag
+	    	ent.setEntityState(AttrID.Emotion2, 0, false);
 	    	if(this.Neck.rotateAngleZ < 0F) {
 	    		this.Neck.rotateAngleZ += 0.03F;
 	    	}
 	    }
+	    
+//	    //debug test
+//	    ent.rotationPitch -= 0.6F;
+//	    ent.rotationPitch %= 100F;
   		
 	    if(ent.isSneaking()) {		//潛行, 蹲下動作
   			this.ArmLeft.rotateAngleX = 0.7F;
@@ -752,14 +761,14 @@ public class ModelCarrierWo extends ModelBase {
   	private void EmotionBlink(BasicEntityShip ent) {
   		if(ent.getEntityState(AttrID.Emotion) == AttrValues.Emotion.NORMAL) {	//要在沒表情狀態才做表情		
   			ent.setStartEmotion(ent.ticksExisted);		//表情開始時間
-  			ent.setEntityEmotion(AttrValues.Emotion.BLINK, false);	//標記表情為blink
+  			ent.setEntityState(AttrID.Emotion, AttrValues.Emotion.BLINK, false);	//標記表情為blink
   		}
   		
   		int EmoTime = ent.ticksExisted - ent.getStartEmotion();
     	 		
     	if(EmoTime > 61) {	//reset face
     		setFace(0);
-			ent.setEntityEmotion(AttrValues.Emotion.NORMAL, false);
+			ent.setEntityState(AttrID.Emotion, AttrValues.Emotion.NORMAL, false);
 			ent.setStartEmotion(-1);
     	}
     	else if(EmoTime > 45) {
@@ -782,7 +791,7 @@ public class ModelCarrierWo extends ModelBase {
     	
     	if(EmoTime > 41) {	//reset face
     		setFace(0);
-			ent.setEntityEmotion(AttrValues.Emotion.NORMAL, false);
+			ent.setEntityState(AttrID.Emotion, AttrValues.Emotion.NORMAL, false);
 			ent.setStartEmotion(-1);
     	}
     	else if(EmoTime > 1) {

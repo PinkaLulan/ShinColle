@@ -2,28 +2,60 @@ package com.lulan.shincolle.utility;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
+import com.lulan.shincolle.entity.BasicEntityAirplane;
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.EntityAirplane;
 import com.lulan.shincolle.reference.AttrID;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 public class EntityHelper {
 
+	private static Random rand = new Random();
+	
 	public EntityHelper() {}
+	
+	//check is same owner for ship
+	public static boolean checkSameOwner(EntityLivingBase owner, EntityLivingBase target) {
+		EntityLivingBase getOwner = null;
+		
+		if(owner != null && target != null) {
+			if(target instanceof EntityPlayer) {
+				getOwner = target;
+			}
+			else if(target instanceof BasicEntityShip) {
+				getOwner = ((BasicEntityShip)target).getOwner();
+			}
+			else if(target instanceof EntityAirplane) {
+				getOwner = ((EntityAirplane)target).getOwner();
+			}
+			
+			if(getOwner != null && getOwner.getUniqueID().equals(owner.getUniqueID())) {
+				return true;
+			}
+		}
+		return false;
+	}
 	
 	//get entity by ID
 	public static Entity getEntityByID(int entityID, World world) {
 		for(Object obj: world.getLoadedEntityList()) {
 			if(entityID != -1 && ((Entity)obj).getEntityId() == entityID) {
-				LogHelper.info("DEBUG : found entity by ID, is client? "+entityID+" "+world.isRemote);
+//				LogHelper.info("DEBUG : found entity by ID, is client? "+entityID+" "+world.isRemote);
 				return ((Entity)obj);
 			}
 		}
@@ -38,7 +70,7 @@ public class EntityHelper {
 		while(iter.hasNext()) {
 			EntityPlayerMP player = (EntityPlayerMP)iter.next();
 		    if(player.getUniqueID().equals(id)) {
-		    	LogHelper.info("DEBUG : found player by UUID "+player.getDisplayName());
+//		    	LogHelper.info("DEBUG : found player by UUID "+player.getDisplayName());
 		    	return player;
 		    }
 		}
@@ -147,6 +179,89 @@ public class EntityHelper {
 				tile.addMatBuild(value, num);
 			}
 		}	
+	}
+	
+	//find random position with block check
+	//mode 0: find y = Y+1 ~ Y+3 and XZ at side of target
+	//mode 1: find y = Y-2 ~ Y+2 (NYI)
+	public static double[] findRandomPosition(Entity host, Entity target, double minDist, double randDist, int mode) {
+		Block findBlock = null;
+		double[] newPos = new double[] {0D, 0D, 0D};
+		
+		//try 25 times
+		for(int i = 0; i < 25; i++) {
+			switch(mode) {
+			case 0:	//y = y+1~y+3
+				newPos[1] = rand.nextDouble() * 2D + target.posY + 1D;
+				
+				//find side position
+				newPos[0] = rand.nextDouble() * randDist + minDist;	//ran = min + randN
+				newPos[2] = rand.nextDouble() * randDist + minDist;	
+				
+//				//輪擺位移法
+//				if(target.posX - host.posX > 0) {
+//					newPos[0] = target.posX + newPos[0];
+//				}
+//				else {
+//					newPos[0] = target.posX - newPos[0];
+//				}
+//				
+//				if(target.posZ - host.posZ > 0) {
+//					newPos[2] = target.posZ + newPos[2];
+//				}
+//				else {
+//					newPos[2] = target.posZ - newPos[2];
+//				}
+				//隨機選象限法
+				switch(rand.nextInt(4)) {
+				case 0:
+					newPos[0] = target.posX + newPos[0];
+					newPos[2] = target.posZ - newPos[2];
+					break;
+				case 1:
+					newPos[0] = target.posX - newPos[0];
+					newPos[2] = target.posZ + newPos[2];
+					break;
+				case 2:
+					newPos[0] = target.posX - newPos[0];
+					newPos[2] = target.posZ - newPos[2];
+					break;
+				case 3:
+					newPos[0] = target.posX + newPos[0];
+					newPos[2] = target.posZ + newPos[2];
+					break;
+				}//end inner switch
+				break;
+			case 1: //y = y-2~y+2, minDist unused
+				//NYI
+				break;
+			}//end mode switch
+			//check block
+			findBlock = host.worldObj.getBlock((int)newPos[0], (int)newPos[1], (int)newPos[2]);
+			if(findBlock != null && (findBlock == Blocks.air || findBlock == Blocks.water)) {
+				return newPos;
+			}	
+		}
+		
+		//find block fail, return target position
+		newPos[0] = target.posX;
+		newPos[1] = target.posY + 1D;
+		newPos[2] = target.posZ;
+		
+		return newPos;
+	}
+	
+	//計算指定速度下頭部朝向
+	public static float[] getLookDegree(double motX, double motY, double motZ) {
+		//計算模型要轉的角度 (RAD, not DEG)
+        double f1 = MathHelper.sqrt_double(motX*motX + motZ*motZ);
+        float[] degree = new float[2];
+        degree[1] = (float)(Math.atan2(motY, f1)) * 57.2958F;
+        degree[0] = (float)(Math.atan2(motX, motZ)) * 57.2958F;
+        degree[0] = -degree[0];
+//        LogHelper.info("DEBUG : pitch "+degree[1]);
+        
+        return degree;
 	}
 	
 }

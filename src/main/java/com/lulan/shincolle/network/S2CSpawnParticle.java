@@ -167,7 +167,7 @@ public class S2CSpawnParticle implements IMessage {
 		@Override
 		public IMessage onMessage(S2CSpawnParticle message, MessageContext ctx) {
 //          System.out.println(String.format("Received %s from %s", message.text, ctx.getServerHandler().playerEntity.getDisplayName()));
-			LogHelper.info("DEBUG : recv Spawn Particle packet : type "+recvType+" particle "+recvParticleType);
+//			LogHelper.info("DEBUG : recv Spawn Particle packet : type "+recvType+" particle "+recvParticleType);
 			return null;
 		}
     }

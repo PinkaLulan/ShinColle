@@ -45,9 +45,11 @@ item.shincolle:largeegg.name=Construct Large Seikan
 item.shincolle:debugegg.name=Debug Spawn Egg
 
 # Entity
-entity.shincolle:EntityDestroyerI.name=Destroyer I-Class
-entity.shincolle:EntityHeavyCruiserRi.name=Heavy Cruiser Ri-Class
-entity.shincolle:EntityCarrierWo.name=Standard Carrier Wo-Class
+entity.shincolle.EntityDestroyerI.name=Destroyer I-Class
+entity.shincolle.EntityHeavyCruiserRi.name=Heavy Cruiser Ri-Class
+entity.shincolle.EntityCarrierWo.name=Standard Carrier Wo-Class
+entity.shincolle.EntityAirplane.name=Abyssal Fighter Mk.II
+entity.shincolle.EntityAirplaneTakoyaki.name=Abyssal Avenger Torpedo Bomber
 
 # GUI
 gui.shincolle:level=Level
@@ -65,3 +67,5 @@ gui.shincolle:grudge=Grudge
 gui.shincolle:owner=Master
 gui.shincolle:nomaterial=Not Enough Materials
 gui.shincolle:nofuel=Not Enough Fuel
+gui.shincolle:airplanelight=L.Aircraft
+gui.shincolle:airplaneheavy=H.Aircraft

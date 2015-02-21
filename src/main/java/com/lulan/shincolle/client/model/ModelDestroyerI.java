@@ -427,14 +427,14 @@ public class ModelDestroyerI extends ModelBase {
 	private void EmotionBlink(EntityDestroyerI ent) {
 		if(ent.getEntityState(AttrID.Emotion) == AttrValues.Emotion.NORMAL) {	//要在沒表情狀態才做表情		
 			ent.setStartEmotion(ent.ticksExisted);		//表情開始時間
-			ent.setEntityEmotion(AttrValues.Emotion.BLINK, false);	//標記表情為blink
+			ent.setEntityState(AttrID.Emotion, AttrValues.Emotion.BLINK, false);	//標記表情為blink
 		}
 		
 		int EmoTime = ent.ticksExisted - ent.getStartEmotion();
  		
     	if(EmoTime > 61) {	//reset face
     		setFace(0);
-			ent.setEntityEmotion(AttrValues.Emotion.NORMAL, false);
+			ent.setEntityState(AttrID.Emotion, AttrValues.Emotion.NORMAL, false);
 			ent.setStartEmotion(-1);
     	}
     	else if(EmoTime > 45) {

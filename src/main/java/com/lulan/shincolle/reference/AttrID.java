@@ -14,7 +14,7 @@ public class AttrID {
 	//Array ID: EntityState
 	public static final byte State = 0;
 	public static final byte Emotion = 1;
-	public static final byte SwimType = 2;
+	public static final byte Emotion2 = 2;
 	
 	//Array ID: EntityFlag
 	public static final byte F_CanFloatUp = 0;

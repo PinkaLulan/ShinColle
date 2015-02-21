@@ -1,5 +1,6 @@
 package com.lulan.shincolle.handler;
 
+import com.lulan.shincolle.entity.BasicEntityAirplane;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.ExtendShipProps;
 import com.lulan.shincolle.init.ModItems;
@@ -36,8 +37,15 @@ public class EVENT_BUS_EventHandler {
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
 	public void eventDeath(LivingDeathEvent event) {
 		Entity ent = event.source.getSourceOfDamage();
-	    if(ent != null && ent instanceof BasicEntityShip) {
-	        ((BasicEntityShip)ent).addKills();
+	    if(ent != null) {
+	    	if(ent instanceof BasicEntityShip) {
+	    		((BasicEntityShip)ent).addKills();
+	    	}
+	    	else if(ent instanceof BasicEntityAirplane) {
+	    		if(((BasicEntityAirplane) ent).getOwner() != null) {
+	    			((BasicEntityShip)((BasicEntityAirplane) ent).getOwner()).addKills();
+	    		}
+	    	}  
 	    }
 	}
 	

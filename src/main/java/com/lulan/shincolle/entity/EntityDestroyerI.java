@@ -45,6 +45,7 @@ import com.lulan.shincolle.ai.EntityAIShipInRangeTarget;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.ai.EntityAIShipFloating;
 import com.lulan.shincolle.ai.EntityAIShipSit;
+import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
 import com.lulan.shincolle.client.inventory.ContainerShipInventory;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
@@ -58,13 +59,13 @@ import com.lulan.shincolle.utility.LogHelper;
 import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 
-public class EntityDestroyerI extends BasicEntitySmallShip {
+public class EntityDestroyerI extends BasicEntityShipSmall {
 
 	
 	public EntityDestroyerI(World world) {
 		super(world);
 		this.setSize(0.9F, 1.4F);	//碰撞大小 跟模型大小無關
-		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle:EntityDestroyerI.name"));
+		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityDestroyerI.name"));
 		this.ShipType = AttrValues.ShipType.DESTROYER;
 		this.ShipID = AttrID.DestroyerI;
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
@@ -78,7 +79,7 @@ public class EntityDestroyerI extends BasicEntitySmallShip {
 		
 		//floating on water
 		this.tasks.addTask(1, new EntityAIShipSit(this, this.getOwner()));	   //0101
-		this.tasks.addTask(2, new EntityAIShipFollowOwner(this, 7F, 12F));	   //0011
+		this.tasks.addTask(2, new EntityAIShipFollowOwner(this, 7F, 12F));	   //0111
 		
 		//use range attack (light)
 		this.tasks.addTask(11, new EntityAIShipRangeAttack(this));			   //0011
@@ -90,11 +91,11 @@ public class EntityDestroyerI extends BasicEntitySmallShip {
 		//idle AI
 		//moving
 		this.tasks.addTask(21, new EntityAIOpenDoor(this, true));			   //0000
-		this.tasks.addTask(23, new EntityAIShipFloating(this));				   //0110
-		this.tasks.addTask(24, new EntityAIWatchClosest(this, EntityPlayer.class, 8F));	  //0010
-//		this.tasks.addTask(24, new EntityAIWatchClosest(this, BasicEntityShip.class, 7F));//0010
+		this.tasks.addTask(23, new EntityAIShipFloating(this));				   //0101
+		this.tasks.addTask(24, new EntityAIShipWatchClosest(this, EntityPlayer.class, 8F, 0.1F)); //0010
 		this.tasks.addTask(25, new EntityAIWander(this, 0.8D));				   //0001
-//		this.tasks.addTask(26, new EntityAILookIdle(this));					   //0011
+//		this.tasks.addTask(25, new EntityAILookIdle(this));					   //0011
+
 		
 /* 		//switch AI method
 		this.tasks.removeTask(this.aiAttackOnCollide);

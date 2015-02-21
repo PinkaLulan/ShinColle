@@ -5,7 +5,9 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.EntityAirplane;
 import com.lulan.shincolle.reference.AttrID;
+import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.command.IEntitySelector;
@@ -41,19 +43,21 @@ public class EntityAIShipInRangeTarget extends EntityAITarget {
     private int range1;
     private int range2;
     private int targetMode;
+    private float rangeMod;
     
 
     //將maxRange 乘上一個比例當作range1
-    public EntityAIShipInRangeTarget(EntityCreature host, float rangeProp, int mode) {
+    public EntityAIShipInRangeTarget(BasicEntityShip host, float rangeMod, int mode) {
     	super(host, true, false);	//check onSight and not nearby(collision) only
-    	this.host = (BasicEntityShip) host;
+    	this.host = host;
     	this.targetClass = EntityLiving.class;
         this.targetSorter = new EntityAIShipInRangeTarget.Sorter(host);
         this.setMutexBits(1);
 
         //範圍指定
+        this.rangeMod = rangeMod;
         this.range2 = (int)this.host.getFinalState(AttrID.HIT);
-        this.range1 = (int)(rangeProp * (float)this.range2);       
+        this.range1 = (int)(this.rangeMod * (float)this.range2);
         this.targetMode = mode;
         
         //檢查範圍, 使range2 > range1 > 1
@@ -77,46 +81,30 @@ public class EntityAIShipInRangeTarget extends EntityAITarget {
         };
     }
 
-	public EntityAIShipInRangeTarget(EntityCreature host, Class targetClass, int range1, int range2, int mode) {
-        super(host, true, false);	//check onSight and not nearby(collision) only
-        this.host = (BasicEntityShip) host;
-        this.targetClass = targetClass;	//target class
-        this.targetSorter = new EntityAIShipInRangeTarget.Sorter(host);
-        this.setMutexBits(1);
-        
-        //範圍指定
-        this.range1 = range1;
-        this.range2 = range2;
-        this.targetMode = mode;
-        
-        //檢查範圍, 使range2 > range1 > 1
-        if(this.range1 < 1) {
-        	this.range1 = 1;
-        }
-        if(this.range2 <= this.range1) {
-        	this.range2 = this.range1 + 1;
-        }
-  
-        //target selector init
-        this.targetSelector = new IEntitySelector() {
-            public boolean isEntityApplicable(Entity target2) {
-            	//若目標為可扣血的則true, 否則用isSuitableTarget判定(且target player = false)
-                return !(target2 instanceof EntityLivingBase) ? 
-                		false : EntityAIShipInRangeTarget.this.isSuitableTarget((EntityLivingBase)target2, false);
-            }
-        };
-    }
-
     public boolean shouldExecute() {
+    	//update range every second
+    	if(this.host != null && this.host.ticksExisted % 20 == 0) {
+    		this.range2 = (int)this.host.getFinalState(AttrID.HIT);
+            this.range1 = (int)(this.rangeMod * (float)this.range2); 
+            //檢查範圍, 使range2 > range1 > 1
+            if(this.range1 < 1) {
+            	this.range1 = 1;
+            }
+            if(this.range2 <= this.range1) {
+            	this.range2 = this.range1 + 1;
+            }
+    	}   
+        
+//    	LogHelper.info("DEBUG : range2 "+range2);
     	//if sitting -> false
     	if(this.host.isSitting()) return false;
     	
     	//entity list < range1
         List list1 = this.taskOwner.worldObj.selectEntitiesWithinAABB(this.targetClass, 
-        		this.taskOwner.boundingBox.expand(this.range1, this.range1 * 0.3D, this.range1), this.targetSelector);
+        		this.taskOwner.boundingBox.expand(this.range1, this.range1 * 0.6D, this.range1), this.targetSelector);
         //entity list < range2
         List list2 = this.taskOwner.worldObj.selectEntitiesWithinAABB(this.targetClass, 
-        		this.taskOwner.boundingBox.expand(this.range2, this.range2 * 0.3D, this.range2), this.targetSelector);
+        		this.taskOwner.boundingBox.expand(this.range2, this.range2 * 0.6D, this.range2), this.targetSelector);
         //對目標做distance sort (increment)
         Collections.sort(list1, this.targetSorter);
         Collections.sort(list2, this.targetSorter);

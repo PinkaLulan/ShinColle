@@ -63,7 +63,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		nbtExt.setTag("State", nbtExt_add2);	
 		nbtExt_add2.setByte("State", this.entity.getEntityState(AttrID.State));
 		nbtExt_add2.setByte("Emotion", this.entity.getEntityState(AttrID.Emotion));
-		nbtExt_add2.setByte("SwimType", this.entity.getEntityState(AttrID.SwimType));
+		nbtExt_add2.setByte("Emotion2", this.entity.getEntityState(AttrID.Emotion2));
 		//save BonusPoint
 		nbtExt.setTag("Point", nbtExt_add3);	
 		nbtExt_add3.setByte("HP", this.entity.getBonusPoint(AttrID.HP));
@@ -120,9 +120,9 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		entity.setFinalState(AttrID.HIT, nbt_load.getFloat("HIT"));
 		//load entity state
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("State");
-		entity.setEntityState(nbt_load.getByte("State"), false);
-		entity.setEntityEmotion(nbt_load.getByte("Emotion"), false);
-		entity.setEntitySwimType(nbt_load.getByte("SwimType"), false);
+		entity.setEntityState(AttrID.State, nbt_load.getByte("State"), false);
+		entity.setEntityState(AttrID.Emotion, nbt_load.getByte("Emotion"), false);
+		entity.setEntityState(AttrID.Emotion2, nbt_load.getByte("Emotion2"), false);
 		//load bonus point
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Point");
 		entity.setBonusPoint(AttrID.HP, nbt_load.getByte("HP"));

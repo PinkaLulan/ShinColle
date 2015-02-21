@@ -84,7 +84,7 @@ public class C2SGUIPackets implements IMessage {
 				this.recvValue = buf.readByte();
 				//set value
 				EntityHelper.setEntityByGUI(recvEntity, (int)recvButton, (int)recvValue);
-				LogHelper.info("DEBUG : recv GUI click: "+recvButton+" "+recvValue);
+//				LogHelper.info("DEBUG : recv GUI click: "+recvButton+" "+recvValue);
 			}
 			break;
 		case 1: //shipyard gui click
@@ -98,7 +98,7 @@ public class C2SGUIPackets implements IMessage {
 				this.recvTile = (BasicTileEntity) serverWorld.getTileEntity(recvPosX, recvPosY, recvPosZ);
 				//set value
 				EntityHelper.setTileEntityByGUI(recvTile, (int)recvButton, (int)recvValue, (int)recvValue2);
-				LogHelper.info("DEBUG : recv packet (server side): GUI click:"+recvButton+" "+recvValue+" "+recvValue2);
+//				LogHelper.info("DEBUG : recv packet (server side): GUI click:"+recvButton+" "+recvValue+" "+recvValue2);
 			}
 			break;
 		}
@@ -136,7 +136,7 @@ public class C2SGUIPackets implements IMessage {
 		@Override
 		public IMessage onMessage(C2SGUIPackets message, MessageContext ctx) {
 //          System.out.println(String.format("Received %s from %s", message.text, ctx.getServerHandler().playerEntity.getDisplayName()));
-			LogHelper.info("DEBUG : recv GUI Click packet : type "+recvType+" button ");
+//			LogHelper.info("DEBUG : recv GUI Click packet : type "+recvType+" button ");
 			return null;
 		}
     }

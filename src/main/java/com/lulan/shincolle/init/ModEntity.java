@@ -31,6 +31,8 @@ public class ModEntity {
 				
 		//register projectile entity
 		createProjectileEntity(EntityAbyssMissile.class, "EntityAbyssMissile", modEntityID++);
+		createProjectileEntity(EntityAirplane.class, "EntityAirplane", modEntityID++);
+		createProjectileEntity(EntityAirplaneTakoyaki.class, "EntityAirplaneTakoyaki", modEntityID++);
 	
 		//register render entity
 		createProjectileEntity(EntityRenderLargeShipyard.class, "EntityRenderLargeShipyard", modEntityID++);
@@ -45,14 +47,14 @@ public class ModEntity {
 	//參數: 該生物class, 生物名稱, 怪物蛋背景色, 怪物蛋斑點色
 	public static void createEntity(Class entityClass, String entityName, int entityId){
 		//登錄參數: 生物class, 生物名稱, 生物id, mod副本, 追蹤更新距離, 更新時間間隔, 是否發送同步封包(高速entity必須true才會顯示平順)
-		EntityRegistry.registerModEntity(entityClass, entityName, entityId, ShinColle.instance, 64, 1, true);
+		EntityRegistry.registerModEntity(entityClass, entityName, entityId, ShinColle.instance, 48, 1, true);
 	}
 	
 	//登錄非生物方法 (無生怪蛋)
 	//參數: 該生物class, 生物名稱
 	public static void createProjectileEntity(Class entityClass, String entityName, int entityId){
 		//登錄參數: 生物class, 生物名稱, 生物id, mod副本, 追蹤更新距離, 更新時間間隔, 是否發送速度封包
-		EntityRegistry.registerModEntity(entityClass, entityName, entityId, ShinColle.instance, 128, 1, true);
+		EntityRegistry.registerModEntity(entityClass, entityName, entityId, ShinColle.instance, 64, 1, true);
 	}
 	
 	//使用官方共通id登錄生物

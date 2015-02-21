@@ -18,10 +18,10 @@ public class AttrValues {
 	
 	public static final float[] BaseATK = 
 		{3F,   4F,   3F,   4F,   10F,  14F,  12F,  17F,
-		 23F,  21F,  19F,  5F,   8F,   40F,  33F,  50F,
-		 1F,   40F,  45F,  50F,  15F,  10F,  13F,  14F,
-		 11F,  9F,   65F,  25F,  10F,  11F,  12F,  11F,
-		 55F,  18F};
+		 23F,  21F,  19F,  25F,  40F,  40F,  33F,  50F,
+		 1F,   40F,  45F,  50F,  0F,   0F,   0F,   0F,
+		 0F,   0F,   65F,  25F,  0F,   0F,   0F,   0F,
+		 55F,  0F};
 
 	public static final float[] BaseDEF = 
 		{5F,   6F,   7F,   9F,   12F,  15F,  17F,  19F,
@@ -46,7 +46,7 @@ public class AttrValues {
 
 	public static final float[] BaseHIT = 
 		{6F,    6F,    6F,    6F,    12F,   12F,   12F,   12F,
-		 14F,   14F,   14F,   18F,   22F,   16F,   16F,   18F,
+		 14F,   14F,   14F,   20F,   24F,   16F,   16F,   18F,
 		 9F,    9F,    9F,    9F,    26F,   36F,   26F,   32F,
 		 8F,    8F,    24F,   16F,   40F,   32F,   44F,   36F,
 		 36F,   28F};

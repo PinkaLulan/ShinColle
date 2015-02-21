@@ -103,9 +103,9 @@ public class ShipSpawnEgg extends Item {
   	public void getSubItems(Item item, CreativeTabs tab, List list) {
   		list.add(new ItemStack(item, 1, 0));
   		list.add(new ItemStack(item, 1, 1));
-  		list.add(new ItemStack(item, 1, AttrID.CarrierWO+2));
   		list.add(new ItemStack(item, 1, AttrID.DestroyerI+2));
   		list.add(new ItemStack(item, 1, AttrID.HeavyCruiserRI+2));
+  		list.add(new ItemStack(item, 1, AttrID.CarrierWO+2));
   	}
   	
   	/** Get entity name from metadata

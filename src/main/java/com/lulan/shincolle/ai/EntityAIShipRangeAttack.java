@@ -3,7 +3,6 @@ package com.lulan.shincolle.ai;
 import java.util.Random;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.entity.IEntityShip;
 import com.lulan.shincolle.reference.AttrID;
 import com.lulan.shincolle.utility.LogHelper;
 
@@ -25,7 +24,6 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
     private int maxDelayLight;	    //light attack max delay (calc from ship attack speed)
     private int delayHeavy = 0;			//heavy attack delay
     private int maxDelayHeavy;	    //heavy attack max delay (= light delay x5)    
-    private double entityMoveSpeed;	//move speed when finding attack path
     private int onSightTime;		//target on sight time
     private float attackRange;		//attack range
     private float rangeSq;			//attack range square
@@ -52,9 +50,10 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
     	EntityLivingBase target = this.host.getAttackTarget();
     	
         if (target != null && 
-        	(this.host.getEntityFlag(AttrID.F_UseAmmoLight) && this.host.hasAmmoLight()) || 
-        	(this.host.getEntityFlag(AttrID.F_UseAmmoHeavy) && this.host.hasAmmoHeavy())) {   
+        	((this.host.getEntityFlag(AttrID.F_UseAmmoLight) && this.host.hasAmmoLight()) || 
+        	(this.host.getEntityFlag(AttrID.F_UseAmmoHeavy) && this.host.hasAmmoHeavy()))) {   
         	this.attackTarget = target;
+//        	LogHelper.info("DEBUG : exec range attack "+target);
 //        	LogHelper.info("DEBUG : try to range attack");
             return true;
         }       
@@ -66,8 +65,8 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
     @Override
     public void startExecuting() {
     	this.maxDelayLight = (int)(20F / (this.host.getFinalState(AttrID.SPD)));
-    	this.maxDelayHeavy = (int)(100F / (this.host.getFinalState(AttrID.SPD)));    	
-    	this.aimTime = (int) (20F * (float)( 150 - this.host.getShipLevel() ) / 150F) + 10;        
+    	this.maxDelayHeavy = (int)(100F / (this.host.getFinalState(AttrID.SPD)));
+    	this.aimTime = (int) (20F * (float)( 150 - this.host.getShipLevel() ) / 150F) + 10;
     	
     	//if target changed, check the delay time from prev attack
     	if(this.delayLight <= this.aimTime) {
@@ -100,6 +99,15 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
     //進行AI
     public void updateTask() {
     	boolean onSight = false;	//判定直射是否無障礙物
+    	
+    	//get update attributes every second
+    	if(this.host != null && this.host.ticksExisted % 20 == 0) {
+    		this.maxDelayLight = (int)(20F / (this.host.getFinalState(AttrID.SPD)));
+        	this.maxDelayHeavy = (int)(100F / (this.host.getFinalState(AttrID.SPD)));
+        	this.aimTime = (int) (20F * (float)( 150 - this.host.getShipLevel() ) / 150F) + 10;
+        	this.attackRange = this.host.getFinalState(AttrID.HIT) + 1F;
+            this.rangeSq = this.attackRange * this.attackRange;
+    	}
     	  	
     	if(this.attackTarget != null) {  //for lots of NPE issue-.-	
     		this.distX = this.attackTarget.posX - this.host.posX;
@@ -139,6 +147,9 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
 	        		else if(this.distY < -1D) {
 	        			this.motY = -0.2F;
 	        		}
+	        		else {
+		        		this.motY = 0F;
+		        	}
 	  		
 	        		//若水平撞到東西, 則嘗試跳跳
 	        		if(this.host.isCollidedHorizontally) {

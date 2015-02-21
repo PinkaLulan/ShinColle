@@ -7,13 +7,17 @@ import net.minecraftforge.client.MinecraftForgeClient;
 
 import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.client.model.ModelAbyssMissile;
+import com.lulan.shincolle.client.model.ModelAirplane;
 import com.lulan.shincolle.client.model.ModelCarrierWo;
 import com.lulan.shincolle.client.model.ModelDestroyerI;
 import com.lulan.shincolle.client.model.ModelEntityTest;
 import com.lulan.shincolle.client.model.ModelHeavyCruiserRi;
 import com.lulan.shincolle.client.model.ModelLargeShipyard;
+import com.lulan.shincolle.client.model.ModelTakoyaki;
 import com.lulan.shincolle.client.model.ModelVortex;
 import com.lulan.shincolle.client.render.RenderAbyssMissile;
+import com.lulan.shincolle.client.render.RenderAirplane;
+import com.lulan.shincolle.client.render.RenderAirplaneTakoyaki;
 import com.lulan.shincolle.client.render.RenderCarrierWo;
 import com.lulan.shincolle.client.render.RenderDestroyerI;
 import com.lulan.shincolle.client.render.RenderHeavyCruiserRi;
@@ -24,6 +28,8 @@ import com.lulan.shincolle.client.render.RenderTest;
 import com.lulan.shincolle.client.render.RenderVortex;
 import com.lulan.shincolle.client.settings.KeyBindings;
 import com.lulan.shincolle.entity.EntityAbyssMissile;
+import com.lulan.shincolle.entity.EntityAirplane;
+import com.lulan.shincolle.entity.EntityAirplaneTakoyaki;
 import com.lulan.shincolle.entity.EntityCarrierWo;
 import com.lulan.shincolle.entity.EntityDestroyerI;
 import com.lulan.shincolle.entity.EntityHeavyCruiserRi;
@@ -66,6 +72,8 @@ public class ClientProxy extends CommonProxy {
 
 		//projectile render
 		RenderingRegistry.registerEntityRenderingHandler(EntityAbyssMissile.class, new RenderAbyssMissile(0.75F));
+		RenderingRegistry.registerEntityRenderingHandler(EntityAirplane.class, new RenderAirplane(new ModelAirplane(), 0.5F));
+		RenderingRegistry.registerEntityRenderingHandler(EntityAirplaneTakoyaki.class, new RenderAirplaneTakoyaki(new ModelTakoyaki(), 0.5F));
 
 		//render entity render
 		RenderingRegistry.registerEntityRenderingHandler(EntityRenderLargeShipyard.class, new RenderLargeShipyard());

@@ -7,6 +7,7 @@ import org.lwjgl.opengl.GL11;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 /**粒子特效處理class
@@ -16,13 +17,13 @@ public class ParticleHelper {
 	
 	private static World world = Minecraft.getMinecraft().theWorld;
 	private static Random rand = new Random();
+	
 	/**ROTATE PARTICLE POSITION (NxNxN)
 	 * in:原始座標, 邊長, 以及要轉的面向 	out:轉完的新位置
 	 * 現階段沒有做上下翻轉, 所以y值不會變動
 	 * f = face = 0,4:north  1,5:east  2,6:south  3,7:west
 	 */
-	public static double[] getNewPosition(double x, double y, double z, int f, int len) {
-		
+	public static double[] rotateForBlock(double x, double y, double z, int f, int len) {
 		double[] newParm = new double[3];
 		newParm[1] = y;
 		
@@ -50,6 +51,52 @@ public class ParticleHelper {
 		}
 			
 		return newParm;
+	}
+	
+	/**ROTATE PARTICLE FOR ENTITY
+	 * entity專用的特效位置旋轉方法, 因為entity才有yaw跟pitch參數, 可做到較細緻轉換
+	 * 由於模型是以Z軸正向轉X軸負向為正角度, 且Z軸正向為0度, 因此座標參數為(z,y,x)
+	 */
+	public static float[] rotateForEntity(float z, float y, float x, float yaw, float pitch, float scale) {
+		float cosYaw = MathHelper.cos(yaw);
+		float sinYaw = MathHelper.sin(yaw);
+		float cosPitch = MathHelper.cos(pitch);
+		float sinPitch = MathHelper.sin(pitch);
+		float[] newPos = new float[] {z, y, x};
+//		LogHelper.info("DEBUG : cos Yaw = "+cosYaw);
+//		LogHelper.info("DEBUG : sin Yaw = "+sinYaw);
+		
+		//計算水平旋轉: X+Z
+		newPos[0] = z * cosYaw + x * sinYaw;
+		newPos[2] = x * cosYaw - z * sinYaw;
+		//計算垂直旋轉
+//		newPos[1] = y * cosPitch * cosPitch - newPos[0] * sinPitch + newPos[2] * cosPitch * sinPitch;
+		
+		newPos[0] *= scale;
+//		newPos[1] *= scale;
+		newPos[2] *= scale;
+		
+		return newPos;
+	}
+	
+	/**ROTATE PARTICLE FOR ENTITY (Z AXIS)
+	 * 針對entity的Z軸做旋轉
+	 */
+	public static float[] rotateForEntityZaxis(float x, float y, float zdeg, float scale) {
+		float cosZdeg = MathHelper.cos(zdeg);
+		float sinZdeg = MathHelper.sin(zdeg);
+		float[] newPos = new float[] {0F, 0F};
+//		LogHelper.info("DEBUG : cos Zdeg = "+cosZdeg);
+//		LogHelper.info("DEBUG : sin Zdeg = "+sinZdeg);
+		
+		//計算水平旋轉: X+Z
+		newPos[0] = x * cosZdeg + y * sinZdeg;
+		newPos[1] = y* cosZdeg - x * sinZdeg;
+		
+		newPos[0] *= scale;
+		newPos[1] *= scale;
+		
+		return newPos;
 	}
 	
 	/**SPAWN ATTACK PARTICLE WITH CUSTOM POSITION
@@ -116,7 +163,7 @@ public class ParticleHelper {
 			world.spawnParticle("crit", posX, posY+2, posZ, 0.0D, 0.0D, 0.0D);
 			break;
 		case 4: //magicCrit
-			world.spawnParticle("magicCrit", posX, posY+2, posZ, 0.0D, 0.0D, 0.0D);
+			world.spawnParticle("happyVillager", posX, posY+2, posZ, 0.0D, 0.0D, 0.0D);
 			break;
 		case 5: //smoke
 			world.spawnParticle("smoke", posX, posY+2, posZ, 0.0D, 0.0D, 0.0D);
@@ -131,7 +178,9 @@ public class ParticleHelper {
 			world.spawnParticle("angryVillager", posX, posY+1, posZ, 0.0D, 0.0D, 0.0D);
 			break;
 		case 8: //flame
-			world.spawnParticle("flame", posX, posY+2, posZ, 0.0D, 0.0D, 0.0D);
+			world.spawnParticle("flame", posX, posY-0.1, posZ, 0.0D, 0.0D, 0.0D);
+			world.spawnParticle("flame", posX, posY, posZ, 0.0D, 0.0D, 0.0D);
+			world.spawnParticle("flame", posX, posY+0.1, posZ, 0.0D, 0.0D, 0.0D);
 			break;
 		case 9: //lava + largeexplode
 			world.spawnParticle("largeexplode", posX, posY+1.5, posZ, 0.0D, 0.0D, 0.0D);

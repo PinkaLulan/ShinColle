@@ -3,6 +3,7 @@ package com.lulan.shincolle.client.particle;
 import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -76,23 +77,28 @@ public class EntityFXSpray extends EntityFX {
      * Called to update the entity's position/logic.
      */
     public void onUpdate() {
-        this.prevPosX = this.posX;
-        this.prevPosY = this.posY;
-        this.prevPosZ = this.posZ;
+    	//this particle is CLIENT ONLY
+    	if(this.worldObj.isRemote) {
+    		this.prevPosX = this.posX;
+            this.prevPosY = this.posY;
+            this.prevPosZ = this.posZ;
 
-        if(this.particleAge++ > this.particleMaxAge) {
-            this.setDead();
-        }
+            if(this.particleAge++ > this.particleMaxAge) {
+                this.setDead();
+                return;
+            }
+            
+        	this.setParticleTextureIndex(7 - this.particleAge * 8 / this.particleMaxAge); 
+            this.motionX *= 0.96D;
+            this.motionY *= 0.96D;
+            this.motionZ *= 0.96D;
 
-        this.setParticleTextureIndex(7 - this.particleAge * 8 / this.particleMaxAge);
-        this.moveEntity(this.motionX, this.motionY, this.motionZ);
-        this.motionX *= 0.96D;
-        this.motionY *= 0.96D;
-        this.motionZ *= 0.96D;
-
-        if(this.onGround) {
-            this.motionX *= 0.7D;
-            this.motionZ *= 0.7D;
-        }
+            if(this.onGround) {
+                this.motionX *= 0.7D;
+                this.motionZ *= 0.7D;
+            }
+            
+            this.moveEntity(this.motionX, this.motionY, this.motionZ);
+    	}  
     }
 }

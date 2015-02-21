@@ -43,11 +43,13 @@ import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.ShinColle;
+import com.lulan.shincolle.ai.EntityAIShipCarrierAttack;
 import com.lulan.shincolle.ai.EntityAIShipFollowOwner;
 import com.lulan.shincolle.ai.EntityAIShipInRangeTarget;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.ai.EntityAIShipFloating;
 import com.lulan.shincolle.ai.EntityAIShipSit;
+import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
 import com.lulan.shincolle.client.inventory.ContainerShipInventory;
 import com.lulan.shincolle.client.particle.EntityFXSpray;
 import com.lulan.shincolle.handler.ConfigHandler;
@@ -58,21 +60,25 @@ import com.lulan.shincolle.reference.GUIs;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.utility.LogHelper;
+import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
-public class EntityCarrierWo extends BasicEntitySmallShip {
+public class EntityCarrierWo extends BasicEntityShipLarge {
 	
 	public EntityCarrierWo(World world) {
 		super(world);
 		this.setSize(0.9F, 2.7F);
-		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle:EntityCarrierWo.name"));
+		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityCarrierWo.name"));
 		this.ShipType = AttrValues.ShipType.STANDARD_CARRIER;
 		this.ShipID = AttrID.CarrierWO;
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();
 		
+		this.launchHeight = this.height * 0.6D;
 	}
 	
 	@Override
@@ -83,26 +89,25 @@ public class EntityCarrierWo extends BasicEntitySmallShip {
 	public void setAIList() {
 		super.setAIList();
 		
-//		//floating on water
+		//floating on water
 		this.tasks.addTask(1, new EntityAIShipSit(this, this.getOwner()));	   //0101
-		this.tasks.addTask(2, new EntityAIShipFollowOwner(this, 7F, 12F));	   //0011
-//		
-//		//use range attack (light)
-//		this.tasks.addTask(11, new EntityAIShipRangeAttack(this));			   //0011
-//		
-//		//use melee attack
+		this.tasks.addTask(2, new EntityAIShipFollowOwner(this, 7F, 12F));	   //0111
+		
+		//use range attack
+		this.tasks.addTask(11, new EntityAIShipCarrierAttack(this));		   //0011
+		
+		//use melee attack
 		this.tasks.addTask(12, new EntityAIAttackOnCollide(this, 1D, true));   //0011
 		this.tasks.addTask(13, new EntityAIMoveTowardsTarget(this, 1D, 64F));  //0001
-//		
-//		//idle AI
-//		//moving
-//		this.tasks.addTask(21, new EntityAIOpenDoor(this, true));			   //0000
-//		
-		this.tasks.addTask(21, new EntityAIShipFloating(this));				   //0110
-		this.tasks.addTask(22, new EntityAIWatchClosest2(this, EntityPlayer.class, 8F, 0.8F));	  //0010
-//		this.tasks.addTask(24, new EntityAIWatchClosest(this, BasicEntityShip.class, 7F));//0010
-//		this.tasks.addTask(25, new EntityAIWander(this, 0.8D));				   //0001
-//		this.tasks.addTask(25, new EntityAILookIdle(this));					   //0011
+		
+		//idle AI
+		//moving
+		this.tasks.addTask(21, new EntityAIOpenDoor(this, true));			   //0000
+		this.tasks.addTask(23, new EntityAIShipFloating(this));				   //0101
+		this.tasks.addTask(24, new EntityAIShipWatchClosest(this, EntityPlayer.class, 8F, 0.1F)); //0010
+		this.tasks.addTask(25, new EntityAIWander(this, 0.8D));				   //0001
+		this.tasks.addTask(25, new EntityAILookIdle(this));					   //0011
+
 		
 /* 		//switch AI method
 		this.tasks.removeTask(this.aiAttackOnCollide);
@@ -124,7 +129,7 @@ public class EntityCarrierWo extends BasicEntitySmallShip {
 	//NYI:	this.targetTasks.addTask(1, new EntityAIOwnerPointTarget(this));
 		this.targetTasks.addTask(2, new EntityAIOwnerHurtByTarget(this));
 		this.targetTasks.addTask(3, new EntityAIOwnerHurtTarget(this));
-		this.targetTasks.addTask(3, new EntityAIShipInRangeTarget(this, 0.4F, 1));
+		this.targetTasks.addTask(4, new EntityAIShipInRangeTarget(this, 0.4F, 1));
 	}
 	
 	//平常音效
@@ -153,7 +158,7 @@ public class EntityCarrierWo extends BasicEntitySmallShip {
     public boolean attackEntityFrom(DamageSource attacker, float atk) {		
     	//set hurt face
     	if(this.getEntityState(AttrID.Emotion) != AttrValues.Emotion.O_O) {
-    		this.setEntityEmotion(AttrValues.Emotion.O_O, true);
+    		this.setEntityState(AttrID.Emotion, AttrValues.Emotion.O_O, true);
     	}	
   	
     	return super.attackEntityFrom(attacker, atk);
@@ -167,25 +172,63 @@ public class EntityCarrierWo extends BasicEntitySmallShip {
     		if(this.ticksExisted % 5 ==  0) {
     			//若顯示裝備時, 則生成眼睛煙霧特效 (client only)
     			if(getEntityState(AttrID.State) >= AttrValues.State.EQUIP) {
-    				float radYaw = this.rotationYaw / 57.2957F;
-    				float offX = MathHelper.cos(radYaw) * 0.55F;
-    				float offZ = MathHelper.sin(radYaw) * 0.55F;
-//    				LogHelper.info("DEBUG : cos Yaw = "+offX+" "+offZ);
+    				float[] eyePosL = new float[] {0.5F, 0.3F, 1F};
+    				float[] eyePosR = new float[] {0.5F, 0.3F, -1F};
+    				float radYaw = 0F;
+    				float radPitch = 0F;
+    				float sinPitch = 0F;
+//    				LogHelper.info("DEBUG : eye "+this.rotationYaw+" "+this.rotationYawHead);
+    				radYaw = this.rotationYawHead / 57.2957F;
+    				radPitch = this.rotationPitch / 57.2957F;
+    				sinPitch = MathHelper.sin(radPitch);
+//    				LogHelper.info("DEBUG : sin pitch "+radPitch+" "+sinPitch);
+    				//低頭或抬頭, 眼睛位置移動
+    				if(radPitch > 0) {	//低頭: Z位置往前最多1.5, Y位置往下最多1
+    					eyePosL[0] = eyePosL[0]+sinPitch*1.5F;
+    					eyePosR[0] = eyePosR[0]+sinPitch*1.5F;
+    					eyePosL[1] = eyePosL[1]-sinPitch;
+    					eyePosR[1] = eyePosR[1]-sinPitch;
+    				}
+    				else {				//抬頭: Z位置往後最多2.5, Y位置往下最多0.5
+    					eyePosL[0] = eyePosL[0]+sinPitch*2.5F;
+    					eyePosR[0] = eyePosR[0]+sinPitch*2.5F;
+    					eyePosL[1] = eyePosL[1]+sinPitch*0.5F;
+    					eyePosR[1] = eyePosR[1]+sinPitch*0.5F;
+    				}
+    				//坐下位置計算
+    				if(this.isSitting()) {
+    					eyePosL = new float[] {0F, 0.3F, -0.2F};
+        				eyePosR = new float[] {0.7F, 0F, -2F};
+    				}
+    				//側歪頭位置計算, 歪頭只會修改Y高度跟X位置
+    				if(getEntityState(AttrID.Emotion2) == 1 && !this.isSitting()) {
+    					float[] tiltLeft = ParticleHelper.rotateForEntityZaxis(eyePosL[2], eyePosL[1], -0.24F, 1F);
+    					float[] tiltRight = ParticleHelper.rotateForEntityZaxis(eyePosR[2], eyePosR[1], -0.24F, 1F);
+    					eyePosL[2] = tiltLeft[0];
+    					eyePosL[1] = tiltLeft[1];
+    					eyePosR[2] = tiltRight[0];
+    					eyePosR[1] = tiltRight[1];
+    				}
+
+    				eyePosL = ParticleHelper.rotateForEntity(eyePosL[0], eyePosL[1], eyePosL[2], radYaw, -radPitch, 0.5F);
+    				eyePosR = ParticleHelper.rotateForEntity(eyePosR[0], eyePosR[1], eyePosR[2], radYaw, -radPitch, 0.5F);		
+    				
     				EntityFX particleSprayL = new EntityFXSpray(worldObj, 
-                    		this.posX+offX, this.posY+2.7D, this.posZ+offZ, 
+                    		this.posX+eyePosL[2], this.posY+2.5D+eyePosL[1], this.posZ+eyePosL[0], 
                     		0D, 0.05D, 0D,
                     		1F, 0F, 0F, 1F);
                 	Minecraft.getMinecraft().effectRenderer.addEffect(particleSprayL);
                 	EntityFX particleSprayR = new EntityFXSpray(worldObj, 
-                    		this.posX-offX, this.posY+2.7D, this.posZ-offZ, 
+                    		this.posX+eyePosR[2], this.posY+2.5D+eyePosR[1], this.posZ+eyePosR[0], 
                     		0D, 0.05D, 0D,
                     		1F, 0F, 0F, 1F);
-                	Minecraft.getMinecraft().effectRenderer.addEffect(particleSprayR);
-                	
-                	
+                	Minecraft.getMinecraft().effectRenderer.addEffect(particleSprayR);            	
     			}			
     		}	
     	}
+//    	else {
+//    		LogHelper.info("DEBUG : attack target "+this.getAttackTarget());
+//    	}
     	
     	super.onLivingUpdate();
     }

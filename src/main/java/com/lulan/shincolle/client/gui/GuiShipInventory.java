@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GL12;
 
 import com.lulan.shincolle.client.inventory.ContainerShipInventory;
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.BasicEntityShipLarge;
 import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.AttrID;
@@ -46,7 +47,8 @@ public class GuiShipInventory extends GuiContainer {
 	private static final ResourceLocation TEXTURE_BG = new ResourceLocation(Reference.TEXTURES_GUI+"GuiShipInventory.png");
 	private static final ResourceLocation TEXTURE_ICON = new ResourceLocation(Reference.TEXTURES_GUI+"GuiNameIcon.png");
 	//draw string
-	private String titlename, shiplevel, lvMark, hpMark, strATK, strDEF, strSPD, strMOV, strHIT, Kills, Exp, AmmoLight, AmmoHeavy, Grudge, Owner;
+	private String titlename, shiplevel, lvMark, hpMark, strATK, strDEF, strSPD, strMOV, strHIT, Kills, Exp, 
+				   AmmoLight, AmmoHeavy, Grudge, Owner, AirLight, AirHeavy;
 	private int hpCurrent, hpMax, color;
 	//draw button, page
 	private int showPage;
@@ -300,12 +302,23 @@ public class GuiShipInventory extends GuiContainer {
 						
 			break;
 			}
-		case 3: {	//page 3: owner name
+		case 3: {	//page 3: owner name, light/heavy airplane
 			//draw string
 			this.fontRendererObj.drawString(I18n.format("gui.shincolle:owner"), 87, 20, pickColor(5));
 			
 			//draw value
 			Owner = this.entity.getOwnerName();
+			
+			//大型艦, 顯示艦載機數量
+			if(this.entity instanceof BasicEntityShipLarge) {
+				this.fontRendererObj.drawString(I18n.format("gui.shincolle:airplanelight"), 87, 41, pickColor(5));
+				this.fontRendererObj.drawString(I18n.format("gui.shincolle:airplaneheavy"), 87, 62, pickColor(5));
+				AirLight = String.valueOf(((BasicEntityShipLarge)this.entity).getNumAircraftLight());
+				AirHeavy = String.valueOf(((BasicEntityShipLarge)this.entity).getNumAircraftHeavy());
+				this.fontRendererObj.drawStringWithShadow(AirLight, 145-this.fontRendererObj.getStringWidth(AirLight), 51, pickColor(1));
+				this.fontRendererObj.drawStringWithShadow(AirHeavy, 145-this.fontRendererObj.getStringWidth(AirHeavy), 72, pickColor(1));	
+				
+			}
 			
 			this.fontRendererObj.drawStringWithShadow(Owner, 145-this.fontRendererObj.getStringWidth(Owner), 30, pickColor(1));
 			

@@ -18,7 +18,7 @@ public class EntityAIShipFloating extends EntityAIBase {
 
     public EntityAIShipFloating(BasicEntityShip entity) {
         this.theEntity = entity;
-        this.setMutexBits(6);
+        this.setMutexBits(5);
         entity.getNavigator().setCanSwim(true);
     }
 
@@ -41,12 +41,12 @@ public class EntityAIShipFloating extends EntityAIBase {
     	}
     	
     	if(this.theEntity.getShipDepth() > 0.7D) {
-    		this.theEntity.motionY += 0.01D;
+    		this.theEntity.motionY += 0.007D;
     		return;
     	}
     	
-    	if(this.theEntity.getShipDepth() > 0.45D) {
-    		this.theEntity.motionY += 0.003D;
+    	if(this.theEntity.getShipDepth() > 0.47D) {
+    		this.theEntity.motionY += 0.0015D;
     		return;
     	}
     	   	

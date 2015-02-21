@@ -139,9 +139,9 @@ public class BlockSmallShipyard extends BasicBlockContainer {
 		double[] smokeR2 = new double[3];
 		double[] smokeR3 = new double[3];
 		
-		smokeR1 = ParticleHelper.getNewPosition(smoke1[0], smoke1[1], smoke1[2], meta, 1);
-		smokeR2 = ParticleHelper.getNewPosition(smoke2[0], smoke2[1], smoke2[2], meta, 1);
-		smokeR3 = ParticleHelper.getNewPosition(smoke3[0], smoke3[1], smoke3[2], meta, 1);
+		smokeR1 = ParticleHelper.rotateForBlock(smoke1[0], smoke1[1], smoke1[2], meta, 1);
+		smokeR2 = ParticleHelper.rotateForBlock(smoke2[0], smoke2[1], smoke2[2], meta, 1);
+		smokeR3 = ParticleHelper.rotateForBlock(smoke3[0], smoke3[1], smoke3[2], meta, 1);
 		
 		//if active -> spawn smoke
 		if(meta>3) {	//meta=4~7 = active

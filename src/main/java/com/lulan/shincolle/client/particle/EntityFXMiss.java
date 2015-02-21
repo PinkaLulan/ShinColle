@@ -107,7 +107,8 @@ public class EntityFXMiss extends EntityFX {
      * Called to update the entity's position/logic.
      */
     public void onUpdate() {
-        this.prevPosX = this.posX;
+    	//this is bot side particle
+		this.prevPosX = this.posX;
         this.prevPosY = this.posY;
         this.prevPosZ = this.posZ;
 
@@ -117,6 +118,5 @@ public class EntityFXMiss extends EntityFX {
 
         this.moveEntity(this.motionX, this.motionY, this.motionZ);
         this.motionY *= 0.9D;
-
     }
 }

@@ -49,5 +49,21 @@
             "melee_03",  
             "melee_04"   
         ]
+    },
+    
+    "ship-aircraft": {
+        "category": "hostile", "replace": true, "sounds": [
+            "aircraft_01",
+            "aircraft_02",
+            "aircraft_03"  
+        ]
+    },
+    
+    "ship-machinegun": {
+        "category": "hostile", "replace": true, "sounds": [
+            "gun_01",
+            "gun_02",
+            "gun_03"   
+        ]
     }
 }
