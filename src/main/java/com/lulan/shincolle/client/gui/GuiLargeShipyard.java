@@ -10,8 +10,7 @@ import scala.reflect.internal.Trees.This;
 import com.lulan.shincolle.client.inventory.ContainerLargeShipyard;
 import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
-import com.lulan.shincolle.reference.AttrID;
-import com.lulan.shincolle.reference.GUIs;
+import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 import com.lulan.shincolle.utility.GuiHelper;
@@ -152,7 +151,7 @@ public class GuiLargeShipyard extends GuiContainer {
         selectMat = this.tile.getSelectMat(); 
         
         //page 0 button
-        int buttonClicked = GuiHelper.getButton(GUIs.LARGESHIPYARD, 0, xClick, yClick);
+        int buttonClicked = GuiHelper.getButton(ID.LARGESHIPYARD, 0, xClick, yClick);
         switch(buttonClicked) {
         case 0:	//build ship
         	if(buildType == 1) {
@@ -162,7 +161,7 @@ public class GuiLargeShipyard extends GuiContainer {
         		buildType = 1;	//原本點其他按鈕, 則設成ship
         	}
         	LogHelper.info("DEBUG : GUI click: build large ship: ship "+buildType);
-        	CommonProxy.channel.sendToServer(new C2SGUIPackets(this.tile, AttrID.B_Shipyard_Type, buildType, 0));
+        	CommonProxy.channel.sendToServer(new C2SGUIPackets(this.tile, ID.B_Shipyard_Type, buildType, 0));
         	break;
         case 1:	//build equip
         	if(buildType == 2) {
@@ -172,7 +171,7 @@ public class GuiLargeShipyard extends GuiContainer {
         		buildType = 2;	//原本點其他按鈕, 則設成equip
         	}
         	LogHelper.info("DEBUG : GUI click: build large ship: equip "+buildType);
-        	CommonProxy.channel.sendToServer(new C2SGUIPackets(this.tile, AttrID.B_Shipyard_Type, buildType, 0));
+        	CommonProxy.channel.sendToServer(new C2SGUIPackets(this.tile, ID.B_Shipyard_Type, buildType, 0));
         	break;
         case 2:	//inventory mode
         	if(invMode == 0) {
@@ -182,7 +181,7 @@ public class GuiLargeShipyard extends GuiContainer {
         		invMode = 0;
         	}
         	LogHelper.info("DEBUG : GUI click: build large ship: invMode "+invMode);
-        	CommonProxy.channel.sendToServer(new C2SGUIPackets(this.tile, AttrID.B_Shipyard_InvMode, invMode, 0));
+        	CommonProxy.channel.sendToServer(new C2SGUIPackets(this.tile, ID.B_Shipyard_InvMode, invMode, 0));
         	break;
         case 3:	//select material grudge
         case 4: //abyssium
@@ -190,7 +189,7 @@ public class GuiLargeShipyard extends GuiContainer {
         case 6: //polymetal
         	selectMat = buttonClicked - 3;
         	LogHelper.info("DEBUG : GUI click: build large ship: select mats "+selectMat);
-        	CommonProxy.channel.sendToServer(new C2SGUIPackets(this.tile, AttrID.B_Shipyard_SelectMat, selectMat, 0));
+        	CommonProxy.channel.sendToServer(new C2SGUIPackets(this.tile, ID.B_Shipyard_SelectMat, selectMat, 0));
         	break;
         case 7:	//select material grudge num
         case 8: //abyssium num
@@ -198,12 +197,12 @@ public class GuiLargeShipyard extends GuiContainer {
         case 10://polymetal num
         	selectMat = buttonClicked - 7;
         	LogHelper.info("DEBUG : GUI click: build large ship: select mats (num) "+selectMat);
-        	CommonProxy.channel.sendToServer(new C2SGUIPackets(this.tile, AttrID.B_Shipyard_SelectMat, selectMat, 0));
+        	CommonProxy.channel.sendToServer(new C2SGUIPackets(this.tile, ID.B_Shipyard_SelectMat, selectMat, 0));
         	break;
         }//end page 0 button switch
         
         //other page button
-        buttonClicked = GuiHelper.getButton(GUIs.LARGESHIPYARD, selectMat+1, xClick, yClick);
+        buttonClicked = GuiHelper.getButton(ID.LARGESHIPYARD, selectMat+1, xClick, yClick);
         switch(buttonClicked) {
         case 0:	//build mat +1000
         case 1:	//build mat +100
@@ -214,7 +213,7 @@ public class GuiLargeShipyard extends GuiContainer {
         case 6:	//build mat -10
         case 7:	//build mat -1
         	LogHelper.info("DEBUG : GUI click: build large ship: inc/dec build materials "+(selectMat+1)+" "+buttonClicked);
-        	CommonProxy.channel.sendToServer(new C2SGUIPackets(this.tile, AttrID.B_Shipyard_INCDEC, selectMat, buttonClicked));
+        	CommonProxy.channel.sendToServer(new C2SGUIPackets(this.tile, ID.B_Shipyard_INCDEC, selectMat, buttonClicked));
         	break;	
         }//end other page button switch
         

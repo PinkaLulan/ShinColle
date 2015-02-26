@@ -46,7 +46,7 @@ public class EntityAbyssMissile extends Entity {
 	
     public BasicEntityShip hostEntity;  	//main host
     public BasicEntityAirplane hostEntity2;	//second host
-    public Entity hitEntity;			 	//onImpact target (for entity)
+    public EntityLivingBase hitEntity;			 	//onImpact target (for entity)
     
     //missile motion
     public double distX;			//target distance
@@ -206,7 +206,7 @@ public class EntityAbyssMissile extends Entity {
         super.onUpdate();
         
         /**********server side***********/
-    	if(!this.worldObj.isRemote) {	
+    	if(!this.worldObj.isRemote) {
     		//發射超過20 sec, 設定為死亡(消失), 注意server restart後此值會歸零
     		if(this.ticksExisted > 600) {
     			this.setDead();	//直接抹消, 不觸發爆炸
@@ -262,7 +262,7 @@ public class EntityAbyssMissile extends Entity {
             //搜尋list, 找出第一個可以判定的目標, 即傳給onImpact
             if(hitList != null && !hitList.isEmpty()) {
                 for(int i=0; i<hitList.size(); ++i) { 
-                	hitEntity = (Entity)hitList.get(i);
+                	hitEntity = (EntityLivingBase)hitList.get(i);
                 	if(hitEntity.canBeCollidedWith() && this.ticksExisted > 10 &&
                 	   !hitEntity.isEntityEqual(this.hostEntity) && 
                 	   !hitEntity.isEntityEqual(this.hostEntity2)) {               		
@@ -275,7 +275,7 @@ public class EntityAbyssMissile extends Entity {
             }
             //call onImpact
             if(hitEntity != null) {
-            	this.onImpact((EntityLivingBase)hitEntity);
+            	this.onImpact(hitEntity);
             } 
             
     	}//end server side
@@ -295,25 +295,30 @@ public class EntityAbyssMissile extends Entity {
     }
 
     //撞擊判定時呼叫此方法
-    protected void onImpact(EntityLivingBase entityHit) {
+    protected void onImpact(EntityLivingBase parHitEntity) {
     	//server side
-    	if(!this.worldObj.isRemote) {  		
-            if(entityHit != null) {	//撞到entity引起爆炸
+    	if(!this.worldObj.isRemote) {
+    		float missileAtk = atk;
+    		
+            if(parHitEntity != null) {	//撞到entity引起爆炸
             	//若攻擊到玩家, 最大傷害固定為TNT傷害 (non-owner)
-            	if(entityHit instanceof EntityPlayer) {
-            		if(this.atk > 59) this.atk = 59;	//same with TNT
+            	if(parHitEntity instanceof EntityPlayer) {
+            		if(missileAtk > 59) missileAtk = 59;	//same with TNT
             	}
+            	
             	//若攻擊到同陣營entity (ex: owner), 則傷害設為0 (但是依然觸發擊飛特效)
-            	if(EntityHelper.checkSameOwner(this.hostEntity.getOwner(), entityHit)) {
-            		atk = 0;
+            	if(EntityHelper.checkSameOwner(this.hostEntity.getOwner(), parHitEntity)) {
+            		missileAtk = 0;
             	}
+
         		//設定該entity受到的傷害
-            	isTargetHurt = entityHit.attackEntityFrom(DamageSource.causeMobDamage(this.hostEntity), this.atk);
-        	    //if attack success
+            	isTargetHurt = parHitEntity.attackEntityFrom(DamageSource.causeMobDamage(this.hostEntity), missileAtk);
+        	    
+            	//if attack success
         	    if(isTargetHurt) {
         	    	//calc kb effect
         	        if(this.kbValue > 0) {
-        	        	entityHit.addVelocity((double)(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue), 
+        	        	parHitEntity.addVelocity((double)(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue), 
         	                   0.1D, (double)(MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue));
         	            motionX *= 0.6D;
         	            motionZ *= 0.6D;
@@ -327,18 +332,28 @@ public class EntityAbyssMissile extends Entity {
             List hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, impactBox);
             //搜尋list, 找出第一個可以判定的目標, 即傳給onImpact
             if(hitList != null && !hitList.isEmpty()) {
-                for(int i=0; i<hitList.size(); ++i) { 
-                	hitEntity = (Entity)hitList.get(i);
+                for(int i=0; i<hitList.size(); ++i) {
+                	missileAtk = this.atk;
+                	hitEntity = (EntityLivingBase)hitList.get(i);
+                	
                 	if(hitEntity.canBeCollidedWith() && this.ticksExisted > 10 &&
                      	   !hitEntity.isEntityEqual(this.hostEntity) && 
                      	   !hitEntity.isEntityEqual(this.hostEntity2)) {               		
                 		//若攻擊到玩家, 傷害固定為TNT傷害
                     	if(hitEntity instanceof EntityPlayer) {
-                    		if(this.atk > 59) this.atk = 59;	//same with TNT
+                    		if(missileAtk > 59) missileAtk = 59;	//same with TNT
                     	}
+                    	
+                    	//若攻擊到同陣營entity (ex: owner), 則傷害設為0 (但是依然觸發擊飛特效)
+                		if(EntityHelper.checkSameOwner(this.hostEntity.getOwner(), hitEntity)) {
+                			missileAtk = 0;
+                    	}
+//                		LogHelper.info("DEBUG : misile atk "+missileAtk+" "+hitEntity);
+                		
                 		//對entity造成傷害
-                		isTargetHurt = hitEntity.attackEntityFrom(DamageSource.causeMobDamage(this.hostEntity), this.atk);
-                	    //if attack success
+                		isTargetHurt = hitEntity.attackEntityFrom(DamageSource.causeMobDamage(this.hostEntity), missileAtk);
+                	    
+                		//if attack success
                 	    if(isTargetHurt) {
                 	    	//calc kb effect
                 	        if(this.kbValue > 0) {

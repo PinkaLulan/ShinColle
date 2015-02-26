@@ -5,8 +5,8 @@ import java.util.Random;
 
 import org.lwjgl.opengl.GL11;
 
-import com.lulan.shincolle.reference.AttrID;
-import com.lulan.shincolle.reference.AttrValues;
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.client.Minecraft;
@@ -315,7 +315,7 @@ public class ModelDestroyerI extends ModelBase {
 	}
 
 	private void isKisaragi(EntityDestroyerI ent) {
-		if(ent.getEntityState(AttrID.State) >= AttrValues.State.EQUIP) {
+		if(ent.getStateEmotion(ID.State) >= Values.State.EQUIP) {
 			PKisaragi00.isHidden = false;
 			PKisaragi01.isHidden = false;
 			PKisaragi02.isHidden = false;
@@ -332,7 +332,7 @@ public class ModelDestroyerI extends ModelBase {
 	
 	//坐下動作
   	private void motionSit(EntityDestroyerI ent, float angleZ) {		
-  		if(ent.getEntityState(AttrID.Emotion) == AttrValues.Emotion.BORED) {
+  		if(ent.getStateEmotion(ID.Emotion) == Values.Emotion.BORED) {
   			GL11.glTranslatef(0F, 0.9F, 0F);	//1.4
   			PBack.rotateAngleZ = 0.6F;
   	  		PNeck.rotateAngleZ = -0.25F;
@@ -397,16 +397,16 @@ public class ModelDestroyerI extends ModelBase {
 
 	//隨機抽取顯示的表情 
     private void rollEmotion(EntityDestroyerI ent) {   	
-    	switch(ent.getEntityState(AttrID.Emotion)) {
-    	case AttrValues.Emotion.BLINK:	//blink
+    	switch(ent.getStateEmotion(ID.Emotion)) {
+    	case Values.Emotion.BLINK:	//blink
     		EmotionBlink(ent);
     		break;
-    	case AttrValues.Emotion.T_T:	//cry
-    	case AttrValues.Emotion.O_O:
-    	case AttrValues.Emotion.HUNGRY:
+    	case Values.Emotion.T_T:	//cry
+    	case Values.Emotion.O_O:
+    	case Values.Emotion.HUNGRY:
     		if(ent.getStartEmotion() <= 0) setFace(2);
     		break;
-    	case AttrValues.Emotion.BORED:	//cry
+    	case Values.Emotion.BORED:	//cry
     		if(ent.getStartEmotion() <= 0) setFace(1);
     		break;
     	default:						//normal face
@@ -425,22 +425,22 @@ public class ModelDestroyerI extends ModelBase {
 
 	//眨眼動作, this emotion is CLIENT ONLY, no sync packet required
 	private void EmotionBlink(EntityDestroyerI ent) {
-		if(ent.getEntityState(AttrID.Emotion) == AttrValues.Emotion.NORMAL) {	//要在沒表情狀態才做表情		
+		if(ent.getStateEmotion(ID.Emotion) == Values.Emotion.NORMAL) {	//要在沒表情狀態才做表情		
 			ent.setStartEmotion(ent.ticksExisted);		//表情開始時間
-			ent.setEntityState(AttrID.Emotion, AttrValues.Emotion.BLINK, false);	//標記表情為blink
+			ent.setStateEmotion(ID.Emotion, Values.Emotion.BLINK, false);	//標記表情為blink
 		}
 		
 		int EmoTime = ent.ticksExisted - ent.getStartEmotion();
  		
-    	if(EmoTime > 61) {	//reset face
+    	if(EmoTime > 46) {	//reset face
     		setFace(0);
-			ent.setEntityState(AttrID.Emotion, AttrValues.Emotion.NORMAL, false);
+			ent.setStateEmotion(ID.Emotion, Values.Emotion.NORMAL, false);
 			ent.setStartEmotion(-1);
     	}
-    	else if(EmoTime > 45) {
+    	else if(EmoTime > 35) {
     		setFace(1);
     	}
-    	else if(EmoTime > 35) {
+    	else if(EmoTime > 25) {
     		setFace(0);
     	}
     	else if(EmoTime > 1) {

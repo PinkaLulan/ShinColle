@@ -1,7 +1,8 @@
 package com.lulan.shincolle.ai;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.reference.AttrID;
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.block.Block;
@@ -27,10 +28,11 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
     World TheWorld;
     private static final double TP_DIST = 3000D;	//teleport condition ~ 54 blocks
     private PathNavigate PetPathfinder;
-    private int FindCooldown;
-    private double MaxDistSq;
-    private double MinDistSq;
-    private double DistSqToOwner;
+    private int findCooldown;
+    private double maxDistSq;
+    private double minDistSq;
+    private double distSq;
+    private double distSqrt;
     
     //直線前進用餐數
     private double distX, distY, distZ, motX, motY, motZ;	//跟目標的直線距離(的平方)
@@ -40,9 +42,10 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
         this.ThePet = entity;
         this.TheWorld = entity.worldObj;
         this.PetPathfinder = entity.getNavigator();
-        this.MinDistSq = MinDist * MinDist;
-        this.MaxDistSq = MaxDist * MaxDist;
-        this.DistSqToOwner = 0D;
+        this.minDistSq = MinDist * MinDist;
+        this.maxDistSq = MaxDist * MaxDist;
+        this.distSq = 1D;
+        this.distSqrt = 1D;
         this.setMutexBits(7);
     }
 
@@ -58,9 +61,9 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
         	this.distX = this.TheOwner.posX - this.ThePet.posX;
     		this.distY = this.TheOwner.posY - this.ThePet.posY - 1;
     		this.distZ = this.TheOwner.posZ - this.ThePet.posZ;
-        	this.DistSqToOwner = this.distX*this.distX + this.distY*this.distY + this.distZ*this.distZ;
+        	this.distSq = this.distX*this.distX + this.distY*this.distY + this.distZ*this.distZ;
 
-        	if(!this.ThePet.isSitting() && !this.ThePet.getLeashed() && DistSqToOwner > this.MaxDistSq) {
+        	if(!this.ThePet.isSitting() && !this.ThePet.getLeashed() && distSq > this.maxDistSq) {
         		return true;
         	}
         }
@@ -75,14 +78,14 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
     	this.distX = this.TheOwner.posX - this.ThePet.posX;
 		this.distY = this.TheOwner.posY - this.ThePet.posY - 1;
 		this.distZ = this.TheOwner.posZ - this.ThePet.posZ;
-    	this.DistSqToOwner = this.distX*this.distX + this.distY*this.distY + this.distZ*this.distZ;
+    	this.distSq = this.distX*this.distX + this.distY*this.distY + this.distZ*this.distZ;
     	
     	//距離超過傳送距離
-    	if(this.DistSqToOwner > this.TP_DIST) {
+    	if(this.distSq > this.TP_DIST) {
     		return true;
     	}
 
-    	if(this.DistSqToOwner > this.MinDistSq && !this.ThePet.isSitting()) {
+    	if(this.distSq > this.minDistSq && !this.ThePet.isSitting()) {
     		if(this.ThePet.getShipDepth() > 0D) {	//用於液體中移動, 液體中找path經常false
     			return true;
     		}
@@ -96,7 +99,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
 
     public void startExecuting() {
     	this.rotYaw = 0F;
-        this.FindCooldown = 0;
+        this.findCooldown = 0;
         this.PetPathfinder.setAvoidsWater(false);
         this.PetPathfinder.setEnterDoors(true);
         this.PetPathfinder.setCanSwim(true);
@@ -108,7 +111,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
     }
 
     public void updateTask() {
-    	this.FindCooldown--;
+    	this.findCooldown--;
     	this.motY = 0D;
     	
     	//設定頭部轉向
@@ -116,7 +119,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
 
         if(!this.ThePet.isSitting() && !this.ThePet.getLeashed()) {
         	//距離超過傳送距離, 直接傳送到目標上
-        	if(this.DistSqToOwner > this.TP_DIST) {
+        	if(this.distSq > this.TP_DIST) {
         		this.ThePet.posX = this.TheOwner.posX;
         		this.ThePet.posY = this.TheOwner.posY + 1D;
         		this.ThePet.posZ = this.TheOwner.posZ;
@@ -138,31 +141,36 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
         		
         		//若直線可視, 則直接直線移動
         		if(this.ThePet.getEntitySenses().canSee(this.TheOwner)) {
-        			
-        			double PetSpeed = this.ThePet.getFinalState(AttrID.MOV);
-        			this.motX = (this.distX / this.DistSqToOwner) * PetSpeed * 6D;
-        			this.motZ = (this.distZ / this.DistSqToOwner) * PetSpeed * 6D;
+        			double speed = this.ThePet.getStateFinal(ID.MOV);
+        			this.distSqrt = MathHelper.sqrt_double(this.distSq);
+        			this.motX = (this.distX / this.distSqrt) * speed * 1D;
+        			this.motZ = (this.distZ / this.distSqrt) * speed * 1D;
 //        			LogHelper.info("DEBUG  : follow owner: "+motX+" "+motZ);
         			this.ThePet.motionY = this.motY;
         			this.ThePet.motionX = this.motX;
         			this.ThePet.motionZ = this.motZ;
-        			this.ThePet.getMoveHelper().setMoveTo(this.ThePet.posX+this.motX, this.ThePet.posY+this.motY, this.ThePet.posZ+this.motZ, 1D);
+//        			this.ThePet.getMoveHelper().setMoveTo(this.ThePet.posX+this.motX, this.ThePet.posY+this.motY, this.ThePet.posZ+this.motZ, 1D);
+        			
+        			//身體角度設定
+        			float[] degree = EntityHelper.getLookDegree(motX, motY, motZ);
+        			this.ThePet.rotationYaw = degree[0];
+        			this.ThePet.rotationPitch = degree[1];
         			
         			//若水平撞到東西, 則嘗試跳跳
 	        		if(this.ThePet.isCollidedHorizontally) {
-	        			this.ThePet.setPosition(this.ThePet.posX, this.ThePet.posY + 0.3D, this.ThePet.posZ);
+	        			this.ThePet.motionY += 0.2D;
 	        		}
         			return;
         		}
            	}
         	
         	//每cd到找一次路徑
-        	if(this.FindCooldown <= 0) {
-    			this.FindCooldown = 10;
+        	if(this.findCooldown <= 0) {
+    			this.findCooldown = 10;
 
             	if(!this.PetPathfinder.tryMoveToEntityLiving(this.TheOwner, 1D)) {
             		LogHelper.info("DEBUG : AI try move fail, teleport entity");
-            		if(this.DistSqToOwner > this.MaxDistSq) {
+            		if(this.distSq > this.maxDistSq) {
                     	//重複找18次目標附近的隨機點, 直接傳送到目的地
                     	int offsetX, offsetZ, i, j, k;
                     	Block targetBlock;

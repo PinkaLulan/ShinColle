@@ -4,9 +4,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import com.lulan.shincolle.entity.BasicEntityAirplane;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.EntityAirplane;
-import com.lulan.shincolle.reference.AttrID;
+import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
@@ -56,7 +57,7 @@ public class EntityAIShipInRangeTarget extends EntityAITarget {
 
         //範圍指定
         this.rangeMod = rangeMod;
-        this.range2 = (int)this.host.getFinalState(AttrID.HIT);
+        this.range2 = (int)this.host.getStateFinal(ID.HIT);
         this.range1 = (int)(this.rangeMod * (float)this.range2);
         this.targetMode = mode;
         
@@ -71,9 +72,10 @@ public class EntityAIShipInRangeTarget extends EntityAITarget {
         //target selector init
         this.targetSelector = new IEntitySelector() {
             public boolean isEntityApplicable(Entity target2) {
-            	if(target2 instanceof EntityMob || target2 instanceof EntitySlime ||
+            	if((target2 instanceof EntityMob || target2 instanceof EntitySlime ||
             	   target2 instanceof EntityBat || target2 instanceof EntityDragon ||
-            	   target2 instanceof EntityFlying || target2 instanceof EntityWaterMob) {
+            	   target2 instanceof EntityFlying || target2 instanceof EntityWaterMob) &&
+            	   !target2.isDead) {
             		return true;
             	}
             	return false;
@@ -81,10 +83,16 @@ public class EntityAIShipInRangeTarget extends EntityAITarget {
         };
     }
 
+    @Override
     public boolean shouldExecute() {
+    	//if sitting -> false
+    	if(this.host.isSitting()) return false;
+//    	//target exec every 2 ticks
+//    	if(this.host.ticksExisted % 2 != 0)  return false;
+//    	LogHelper.info("DEBUG : should target "+this.host.getAttackTarget());
     	//update range every second
     	if(this.host != null && this.host.ticksExisted % 20 == 0) {
-    		this.range2 = (int)this.host.getFinalState(AttrID.HIT);
+    		this.range2 = (int)this.host.getStateFinal(ID.HIT);
             this.range1 = (int)(this.rangeMod * (float)this.range2); 
             //檢查範圍, 使range2 > range1 > 1
             if(this.range1 < 1) {
@@ -93,11 +101,7 @@ public class EntityAIShipInRangeTarget extends EntityAITarget {
             if(this.range2 <= this.range1) {
             	this.range2 = this.range1 + 1;
             }
-    	}   
-        
-//    	LogHelper.info("DEBUG : range2 "+range2);
-    	//if sitting -> false
-    	if(this.host.isSitting()) return false;
+    	}
     	
     	//entity list < range1
         List list1 = this.taskOwner.worldObj.selectEntitiesWithinAABB(this.targetClass, 
@@ -167,10 +171,17 @@ public class EntityAIShipInRangeTarget extends EntityAITarget {
      
         return false;
     }
+    
+    @Override
+    public void resetTask() {
+//    	LogHelper.info("DEBUG : reset target ai "+this.host.getAttackTarget());
+    }
 
-    public void startExecuting() {
+    @Override
+    public void startExecuting() { 	
         this.taskOwner.setAttackTarget(this.targetEntity);
         super.startExecuting();
+//        LogHelper.info("DEBUG : start target "+this.host.getAttackTarget());
     }
 
     /**SORTER CLASS

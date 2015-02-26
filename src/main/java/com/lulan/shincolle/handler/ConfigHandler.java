@@ -18,6 +18,11 @@ public class ConfigHandler {
 	public static boolean debugMode = false;
 	//SHIP SETTING
 	public static float hpRatio = 1.0f;
+	public static float atkRatio = 1.0f;
+	public static float defRatio = 1.0f;
+	public static float spdRatio = 1.0f;
+	public static float movRatio = 1.0f;
+	public static float hitRatio = 1.0f;
 
 	
 	//讀取設定檔參數
@@ -27,14 +32,18 @@ public class ConfigHandler {
 		
 		//讀取 ship setting設定
 		//hp ratio
-		hpRatio = config.getFloat("Scale_HP", "ship setting", 1f, 0.1f, 10f, "Ship HP scale");	
+		hpRatio = config.getFloat("Scale_HP", "ship setting", 1f, 0.01f, 100f, "Ship HP scale");
+		atkRatio = config.getFloat("Scale_ATK", "ship setting", 1f, 0.01f, 100f, "Ship FIREPOWER scale");
+		defRatio = config.getFloat("Scale_DEF", "ship setting", 1f, 0.01f, 100f, "Ship ARMOR scale");
+		spdRatio = config.getFloat("Scale_SPD", "ship setting", 1f, 0.01f, 100f, "Ship ATTACK SPEED scale");
+		movRatio = config.getFloat("Scale_MOV", "ship setting", 1f, 0.01f, 100f, "Ship MOVE SPEED scale");
+		hitRatio = config.getFloat("Scale_HIT", "ship setting", 1f, 0.01f, 100f, "Ship RANGE scale");
 		
 		//若設定檔有更新過 則儲存
 		if(config.hasChanged()) {
 			config.save();
 		}		
 	}
-	
 	
 	//設定檔處理 初始化動作
 	public static void init(File configFile) {		
@@ -44,7 +53,6 @@ public class ConfigHandler {
 			loadConfiguration();
 		}		
 	}
-	
 	
 	//若版本更新後 設定檔需要更新 則在此區塊增加更新方法
 	@SubscribeEvent

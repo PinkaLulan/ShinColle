@@ -7,8 +7,8 @@ import com.lulan.shincolle.crafting.SmallRecipes;
 import com.lulan.shincolle.creativetab.CreativeTabSC;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
-import com.lulan.shincolle.reference.GUIs;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.BasicTileMulti;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 import com.lulan.shincolle.utility.FormatHelper;
@@ -95,7 +95,7 @@ abstract public class BasicBlockMulti extends BasicBlockContainer {
 					switch(entity.getStructType()) {
 					case 1:	//large shipyard
 					case 2:
-						FMLNetworkHandler.openGui(player, ShinColle.instance, GUIs.LARGESHIPYARD, world, 
+						FMLNetworkHandler.openGui(player, ShinColle.instance, ID.LARGESHIPYARD, world, 
 								entity.getMasterX(), entity.getMasterY(), entity.getMasterZ());
 						break;
 					}

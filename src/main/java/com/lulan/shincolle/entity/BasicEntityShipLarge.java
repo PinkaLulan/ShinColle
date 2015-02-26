@@ -3,7 +3,7 @@ package com.lulan.shincolle.entity;
 import com.lulan.shincolle.client.particle.EntityFXMiss;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
-import com.lulan.shincolle.reference.AttrID;
+import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.LogHelper;
 
@@ -18,8 +18,6 @@ import net.minecraft.world.World;
 
 abstract public class BasicEntityShipLarge extends BasicEntityShip {
 
-	protected int numAircraftLight;		//# of airplane at same time
-	protected int numAircraftHeavy;
 	protected int maxAircraftLight;		//max airplane at same time
 	protected int maxAircraftHeavy;
 	protected int delayAircraft = 0;		//airplane recover delay
@@ -32,31 +30,37 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip {
 	
 	//getter
 	public int getNumAircraftLight() {
-		return this.numAircraftLight;
+		return StateMinor[ID.NumAirLight];
 	}
 	public int getNumAircraftHeavy() {
-		return this.numAircraftHeavy;
+		return StateMinor[ID.NumAirHeavy];
+	}
+	public boolean hasAirLight() {
+		return StateMinor[ID.NumAirLight] > 0;
+	}
+	public boolean hasAirHeavy() {
+		return StateMinor[ID.NumAirHeavy] > 0;
 	}
 	
 	//setter
 	public void setNumAircraftLight(int par1) {
 		if(this.worldObj.isRemote) {	//client端沒有max值可以判定, 因此直接設定即可
-			numAircraftLight = par1;
+			StateMinor[ID.NumAirLight] = par1;
 		}
 		else {
-			numAircraftLight = par1;
-			if(numAircraftLight > maxAircraftLight) numAircraftLight = maxAircraftLight;
-			if(numAircraftLight < 0) numAircraftLight = 0;
+			StateMinor[ID.NumAirLight] = par1;
+			if(getNumAircraftLight() > maxAircraftLight) StateMinor[ID.NumAirLight] = maxAircraftLight;
+			if(getNumAircraftLight() < 0) StateMinor[ID.NumAirLight] = 0;
 		}
 	}
 	public void setNumAircraftHeavy(int par1) {
 		if(this.worldObj.isRemote) {	//client端沒有max值可以判定, 因此直接設定即可
-			numAircraftHeavy = par1;
+			StateMinor[ID.NumAirHeavy] = par1;
 		}
 		else {
-			numAircraftHeavy = par1;
-			if(numAircraftHeavy > maxAircraftHeavy) numAircraftHeavy = maxAircraftHeavy;
-			if(numAircraftHeavy < 0) numAircraftHeavy = 0;
+			StateMinor[ID.NumAirHeavy] = par1;
+			if(getNumAircraftHeavy() > maxAircraftHeavy) StateMinor[ID.NumAirHeavy] = maxAircraftHeavy;
+			if(getNumAircraftHeavy() < 0) StateMinor[ID.NumAirHeavy] = 0;
 		}
 	}
 	
@@ -69,7 +73,7 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip {
 			//每一段時間回復一隻艦載機
 			delayAircraft--;
 			if(this.delayAircraft <= 0) {
-				delayAircraft = (int)(120F / (this.getFinalState(AttrID.SPD)));
+				delayAircraft = (int)(100F / (this.getStateFinal(ID.SPD)));
 				this.setNumAircraftLight(this.getNumAircraftLight()+1);
 				this.setNumAircraftHeavy(this.getNumAircraftHeavy()+1);
 			}
@@ -82,8 +86,8 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip {
 	public void calcShipAttributes(byte id) {
 		super.calcShipAttributes(id);
 		
-		this.maxAircraftLight = 4 + (int)(this.ShipLevel/5);
-		this.maxAircraftHeavy = 2 + (int)(this.ShipLevel/10);
+		this.maxAircraftLight = 4 + StateMinor[ID.ShipLevel] / 5;
+		this.maxAircraftHeavy = 2 + StateMinor[ID.ShipLevel] / 10;
 	}
 	
 	//range attack method, cost light ammo, attack delay = 20 / attack speed, damage = 100% atk 

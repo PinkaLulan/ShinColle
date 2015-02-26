@@ -5,7 +5,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.reference.AttrID;
+import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;

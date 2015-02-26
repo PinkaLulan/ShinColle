@@ -18,6 +18,8 @@ import com.lulan.shincolle.init.ModTileEntity;
 import com.lulan.shincolle.init.ModWorldGen;
 import com.lulan.shincolle.init.ModRecipes;
 import com.lulan.shincolle.proxy.IProxy;
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.GuiHelper;
 import com.lulan.shincolle.utility.LogHelper;

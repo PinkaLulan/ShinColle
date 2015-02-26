@@ -4,8 +4,8 @@ import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.EntityCarrierWo;
-import com.lulan.shincolle.reference.AttrID;
-import com.lulan.shincolle.reference.AttrValues;
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.client.model.ModelBase;
@@ -441,9 +441,10 @@ public class ModelCarrierWo extends ModelBase {
 	  	addk2 = MathHelper.cos(f * 0.4F + 3.1415927F) * 0.5F * f1;
 
   	    //移動頭部 使其看人, 不看人時持續擺動頭部
-	    this.Neck.rotateAngleY = f3 / 57.29578F;	//左右角度 角度轉成rad 即除以57.29578
-	    this.Neck.rotateAngleX = (f4 / 57.29578F) * 0.7F; 	//上下角度
-//	    this.Neck.rotateAngleX = 0F;
+//	    this.Neck.rotateAngleY = f3 / 57.29578F;	//左右角度 角度轉成rad 即除以57.29578
+//	    this.Neck.rotateAngleX = (f4 / 57.29578F) * 0.7F; 	//上下角度
+	  	this.Head.rotateAngleY = f3 / 57.29578F;	//左右角度 角度轉成rad 即除以57.29578
+	    this.Head.rotateAngleX = (f4 / 57.29578F) * 0.7F; 	//上下角度
 	    
 	    //正常站立動作
 	    //胸部
@@ -479,7 +480,7 @@ public class ModelCarrierWo extends ModelBase {
 		this.Staff.offsetY = -0.9F;
 		this.Staff.offsetZ = -1.4F;
 		//觸手晃動 (equip only)
-		if(ent.getEntityState(AttrID.State) >= AttrValues.State.EQUIP) {
+		if(ent.getStateEmotion(ID.State) >= Values.State.EQUIP) {
 			this.EquipT01L.rotateAngleX = angleZ * 0.05F + -0.2618F;
 			this.EquipT01L.rotateAngleZ = angleZ * 0.05F + -0.2618F;
 			this.EquipT02L.rotateAngleX = angleZ * 0.1F;
@@ -541,7 +542,7 @@ public class ModelCarrierWo extends ModelBase {
 			this.Staff.offsetY = 0F;
 			this.Staff.offsetZ = 0F;
 			//觸手晃動 (equip only)
-			if(ent.getEntityState(AttrID.State) >= AttrValues.State.EQUIP) {
+			if(ent.getStateEmotion(ID.State) >= Values.State.EQUIP) {
 				this.EquipT01L.rotateAngleX = angleZFast * 0.05F + 0.2618F;
 				this.EquipT01L.rotateAngleZ = -0.2618F;
 				this.EquipT02L.rotateAngleX = angleZFast * 0.15F + 0.2618F;
@@ -585,119 +586,117 @@ public class ModelCarrierWo extends ModelBase {
 		    }
 	    }
 	    //emotion2: client side only
+//	    if(this.HeadTilt) {
+//	    	//用swim type參數當作歪頭flag
+//	    	ent.setEntityState(AttrID.Emotion2, 1, false);
+//	    	if(this.Neck.rotateAngleZ > -0.24F) {
+//	    		this.Neck.rotateAngleZ -= 0.03F;
+//	    	}
+//	    }
+//	    else {
+//	    	//用swim type參數當作歪頭flag
+//	    	ent.setEntityState(AttrID.Emotion2, 0, false);
+//	    	if(this.Neck.rotateAngleZ < 0F) {
+//	    		this.Neck.rotateAngleZ += 0.03F;
+//	    	}
+//	    }
+	    
 	    if(this.HeadTilt) {
 	    	//用swim type參數當作歪頭flag
-	    	ent.setEntityState(AttrID.Emotion2, 1, false);
-	    	if(this.Neck.rotateAngleZ > -0.24F) {
-	    		this.Neck.rotateAngleZ -= 0.03F;
+	    	ent.setStateEmotion(ID.Emotion2, 1, false);
+	    	if(this.Head.rotateAngleZ > -0.24F) {
+	    		this.Head.rotateAngleZ -= 0.03F;
 	    	}
 	    }
 	    else {
 	    	//用swim type參數當作歪頭flag
-	    	ent.setEntityState(AttrID.Emotion2, 0, false);
-	    	if(this.Neck.rotateAngleZ < 0F) {
-	    		this.Neck.rotateAngleZ += 0.03F;
+	    	ent.setStateEmotion(ID.Emotion2, 0, false);
+	    	if(this.Head.rotateAngleZ < 0F) {
+	    		this.Head.rotateAngleZ += 0.03F;
 	    	}
 	    }
-	    
-//	    //debug test
-//	    ent.rotationPitch -= 0.6F;
-//	    ent.rotationPitch %= 100F;
+
   		
 	    if(ent.isSneaking()) {		//潛行, 蹲下動作
   			this.ArmLeft.rotateAngleX = 0.7F;
   			this.ArmRight.rotateAngleX = 0.7F;
   			this.BodyMain.rotateAngleX = 0.5F;
-  			this.Neck.rotateAngleX -= 0.5F;
+//  			this.Neck.rotateAngleX -= 0.5F;
+  			this.Head.rotateAngleX -= 0.5F;
   			addk1 -= 0.66F;
 			addk2 -= 0.66F;
   		}
 	    else {
-			this.Neck.rotateAngleX += 0.2F;
+//			this.Neck.rotateAngleX += 0.2F;
+			this.Head.rotateAngleX += 0.2F;
 	    }
   		
-	    if(ent.isSitting() || ent.isRiding()) {  //騎乘動作 			
-//  			if(ent.getEntityState(AttrID.Emotion) == AttrValues.Emotion.BORED) {
-//		    	GL11.glTranslatef(0F, 1.4F, 0F);
-//				this.ArmLeft.rotateAngleX = 0.6F;
-//	  			this.ArmRight.rotateAngleX = 0.6F;
-//	  			this.ArmLeft.rotateAngleZ = -0.6F;
-//	  			this.ArmRight.rotateAngleZ = 0.6F;
-//				this.BodyMain.rotateAngleX = -0.6F;
-//				this.Neck.rotateAngleX -= 0.35F;
-//				addk1 = -2F;
-//				addk2 = -2F;		
-//				this.LegLeft.rotateAngleZ = 1.2F;
-//				this.LegRight.rotateAngleZ = -1.2F;
-//				this.LegLeft.rotateAngleY = -0.75F;
-//				this.LegRight.rotateAngleY = 0.75F;
-//  			}
-//  			else {
-  				//高度
-//  			GL11.glTranslatef(0F, -0.2F, 0F);
-  		  	    //手臂晃動 
-  			  	this.ArmLeft.rotateAngleX = 0.4F;
-  			    this.ArmLeft.rotateAngleY = 0F;
-  			    this.ArmLeft.rotateAngleZ = -0.2618F;
-  			    this.ArmRight.rotateAngleX = 0.34F;
-  				this.ArmRight.rotateAngleY = 0F;
-  				this.ArmRight.rotateAngleZ = 0.5236F;
-  				//身體角度
-  				this.BodyMain.rotateAngleX = -0.349F;
-  				this.BodyMain.rotateAngleY = -1.57F;
-  				this.BodyMain.rotateAngleZ = -0.0873F;
-  				//脖子角度
-  				this.Neck.rotateAngleX += -0.2F;
-  				this.Neck.rotateAngleY += 1.0472F;
-  				this.Neck.rotateAngleZ += 0F;
-  				//腿擺動
-  				addk1 = angleZ * 0.3F + -1.0472F;
-  				addk2 = -angleZ * 0.3F + -1.0472F;
-  				this.LegLeft.rotateAngleY = 0F;
-  				this.LegRight.rotateAngleY = 0F;
-  				this.LegLeft.rotateAngleZ = 0.05236F;
-  				this.LegRight.rotateAngleZ = -0.05236F;
-  				//披風擺動
-  				this.Cloak01.rotateAngleX = angleZ * 0.1F + 1.2F;
-  				this.Cloak02.rotateAngleX = angleZ * 0.25F;
-  				this.Cloak03.rotateAngleX = angleZ * 0.15F;
-  				//杖位置
-  				this.Staff.rotateAngleX = 0.2F;
-  				this.Staff.rotateAngleY = 0F;
-  				this.Staff.rotateAngleZ = -2.0944F;
-  				this.Staff.offsetX = 0.9F;
-  				this.Staff.offsetY = -1.4F;
-  				this.Staff.offsetZ = -1.2F;
-  				//觸手晃動 (equip only)
-  				if(ent.getEntityState(AttrID.State) >= AttrValues.State.EQUIP) {
-  					this.EquipT01L.rotateAngleX = angleZ * 0.05F + 0.2618F;
-  					this.EquipT01L.rotateAngleZ = -0.2618F;
-  					this.EquipT02L.rotateAngleX = angleZ * 0.15F + 0.2618F;
-  					this.EquipT02L.rotateAngleZ = -0.2618F;
-  					this.EquipT03L.rotateAngleX = angleZ * 0.45F + 0.5236F;
-  					this.EquipT03L.rotateAngleZ = -0.2618F;
-  					
-  					this.EquipT01R.rotateAngleX = angleZ * 0.05F + 0.2618F;
-  					this.EquipT01R.rotateAngleZ = 0.2618F;
-  					this.EquipT02R.rotateAngleX = angleZ * 0.15F + 0.2618F;
-  					this.EquipT02R.rotateAngleZ = 0.2618F;
-  					this.EquipT03R.rotateAngleX = angleZ * 0.45F + 0.5236F;
-  					this.EquipT03R.rotateAngleZ = 0.2618F;
+	    if(ent.isSitting() || ent.isRiding()) {  //騎乘動作 
+	  	    //手臂晃動 
+		  	this.ArmLeft.rotateAngleX = 0.4F;
+		    this.ArmLeft.rotateAngleY = 0F;
+		    this.ArmLeft.rotateAngleZ = -0.2618F;
+		    this.ArmRight.rotateAngleX = 0.34F;
+			this.ArmRight.rotateAngleY = 0F;
+			this.ArmRight.rotateAngleZ = 0.5236F;
+			//身體角度
+			this.BodyMain.rotateAngleX = -0.349F;
+			this.BodyMain.rotateAngleY = -1.57F;
+			this.BodyMain.rotateAngleZ = -0.0873F;
+			//脖子角度
+//			this.Neck.rotateAngleX += -0.2F;
+//			this.Neck.rotateAngleY += 1.0472F;
+//			this.Neck.rotateAngleZ += 0F;
+			this.Head.rotateAngleX += -0.2F;
+			this.Head.rotateAngleY += 1.0472F;
+			this.Head.rotateAngleZ += 0F;
+			//腿擺動
+			addk1 = angleZ * 0.3F + -1.0472F;
+			addk2 = -angleZ * 0.3F + -1.0472F;
+			this.LegLeft.rotateAngleY = 0F;
+			this.LegRight.rotateAngleY = 0F;
+			this.LegLeft.rotateAngleZ = 0.05236F;
+			this.LegRight.rotateAngleZ = -0.05236F;
+			//披風擺動
+			this.Cloak01.rotateAngleX = angleZ * 0.1F + 1.2F;
+			this.Cloak02.rotateAngleX = angleZ * 0.25F;
+			this.Cloak03.rotateAngleX = angleZ * 0.15F;
+			//杖位置
+			this.Staff.rotateAngleX = 0.2F;
+			this.Staff.rotateAngleY = 0F;
+			this.Staff.rotateAngleZ = -2.0944F;
+			this.Staff.offsetX = 0.9F;
+			this.Staff.offsetY = -1.4F;
+			this.Staff.offsetZ = -1.2F;
+			//觸手晃動 (equip only)
+			if(ent.getStateEmotion(ID.State) >= Values.State.EQUIP) {
+				this.EquipT01L.rotateAngleX = angleZ * 0.05F + 0.2618F;
+				this.EquipT01L.rotateAngleZ = -0.2618F;
+				this.EquipT02L.rotateAngleX = angleZ * 0.15F + 0.2618F;
+				this.EquipT02L.rotateAngleZ = -0.2618F;
+				this.EquipT03L.rotateAngleX = angleZ * 0.45F + 0.5236F;
+				this.EquipT03L.rotateAngleZ = -0.2618F;
+				
+				this.EquipT01R.rotateAngleX = angleZ * 0.05F + 0.2618F;
+				this.EquipT01R.rotateAngleZ = 0.2618F;
+				this.EquipT02R.rotateAngleX = angleZ * 0.15F + 0.2618F;
+				this.EquipT02R.rotateAngleZ = 0.2618F;
+				this.EquipT03R.rotateAngleX = angleZ * 0.45F + 0.5236F;
+				this.EquipT03R.rotateAngleZ = 0.2618F;
 
-  					this.EquipTB01L.rotateAngleX = angleZ * 0.05F + 0.349F;
-  					this.EquipTB01L.rotateAngleZ = -0.349F;
-  					this.EquipTB02L.rotateAngleX = angleZ * 0.15F + 0.5236F;
-  					this.EquipTB02L.rotateAngleZ = 0.1745F;
-  					this.EquipTB03L.rotateAngleX = angleZ * 0.45F + 0.5236F;
-  					this.EquipTB03L.rotateAngleZ = 0.1745F;
-  					
-  					this.EquipTB01R.rotateAngleX = angleZ * 0.05F + 0.349F;
-  					this.EquipTB01R.rotateAngleZ = 0.349F;
-  					this.EquipTB02R.rotateAngleX = angleZ * 0.15F + 0.5236F;
-  					this.EquipTB02R.rotateAngleZ = -0.1745F;
-  					this.EquipTB03R.rotateAngleX = angleZ * 0.45F + 0.5236F;
-  					this.EquipTB03R.rotateAngleZ = -0.1745F;
-//  				}				
+				this.EquipTB01L.rotateAngleX = angleZ * 0.05F + 0.349F;
+				this.EquipTB01L.rotateAngleZ = -0.349F;
+				this.EquipTB02L.rotateAngleX = angleZ * 0.15F + 0.5236F;
+				this.EquipTB02L.rotateAngleZ = 0.1745F;
+				this.EquipTB03L.rotateAngleX = angleZ * 0.45F + 0.5236F;
+				this.EquipTB03L.rotateAngleZ = 0.1745F;
+				
+				this.EquipTB01R.rotateAngleX = angleZ * 0.05F + 0.349F;
+				this.EquipTB01R.rotateAngleZ = 0.349F;
+				this.EquipTB02R.rotateAngleX = angleZ * 0.15F + 0.5236F;
+				this.EquipTB02R.rotateAngleZ = -0.1745F;
+				this.EquipTB03R.rotateAngleX = angleZ * 0.45F + 0.5236F;
+				this.EquipTB03R.rotateAngleZ = -0.1745F;		
   			}			
   		}
 	    
@@ -714,7 +713,7 @@ public class ModelCarrierWo extends ModelBase {
 	}
     
     private void showEquip(BasicEntityShip ent) {
-		if(ent.getEntityState(AttrID.State) >= AttrValues.State.EQUIP) {
+		if(ent.getStateEmotion(ID.State) >= Values.State.EQUIP) {
 			this.EquipBase.isHidden = false;
 			this.EquipEye01.isHidden = false;
 			this.EquipEye02.isHidden = false;
@@ -728,20 +727,20 @@ public class ModelCarrierWo extends ModelBase {
     
     //隨機抽取顯示的表情 
     private void rollEmotion(BasicEntityShip ent) { 
-    	switch(ent.getEntityState(AttrID.Emotion)) {
-    	case AttrValues.Emotion.BLINK:	//blink
+    	switch(ent.getStateEmotion(ID.Emotion)) {
+    	case Values.Emotion.BLINK:	//blink
     		EmotionBlink(ent);
     		break;
-    	case AttrValues.Emotion.T_T:	//cry
+    	case Values.Emotion.T_T:	//cry
     		if(ent.getStartEmotion() <= 0) { setFace(2); }
     		break;
-    	case AttrValues.Emotion.O_O:
+    	case Values.Emotion.O_O:
     		EmotionStaring(ent);
 			break;
-    	case AttrValues.Emotion.HUNGRY:
+    	case Values.Emotion.HUNGRY:
     		if(ent.getStartEmotion() <= 0) { setFace(4); }
 			break;
-    	case AttrValues.Emotion.BORED:
+    	case Values.Emotion.BORED:
     	default:						//normal face
     		//reset face to 0
     		if(ent.getStartEmotion() <= 0) setFace(0); 			    
@@ -759,22 +758,22 @@ public class ModelCarrierWo extends ModelBase {
     
     //眨眼動作, this emotion is CLIENT ONLY, no sync packet required
   	private void EmotionBlink(BasicEntityShip ent) {
-  		if(ent.getEntityState(AttrID.Emotion) == AttrValues.Emotion.NORMAL) {	//要在沒表情狀態才做表情		
+  		if(ent.getStateEmotion(ID.Emotion) == Values.Emotion.NORMAL) {	//要在沒表情狀態才做表情		
   			ent.setStartEmotion(ent.ticksExisted);		//表情開始時間
-  			ent.setEntityState(AttrID.Emotion, AttrValues.Emotion.BLINK, false);	//標記表情為blink
+  			ent.setStateEmotion(ID.Emotion, Values.Emotion.BLINK, false);	//標記表情為blink
   		}
   		
   		int EmoTime = ent.ticksExisted - ent.getStartEmotion();
     	 		
-    	if(EmoTime > 61) {	//reset face
+    	if(EmoTime > 46) {	//reset face
     		setFace(0);
-			ent.setEntityState(AttrID.Emotion, AttrValues.Emotion.NORMAL, false);
+			ent.setStateEmotion(ID.Emotion, Values.Emotion.NORMAL, false);
 			ent.setStartEmotion(-1);
     	}
-    	else if(EmoTime > 45) {
+    	else if(EmoTime > 35) {
     		setFace(1);
     	}
-    	else if(EmoTime > 35) {
+    	else if(EmoTime > 25) {
     		setFace(0);
     	}
     	else if(EmoTime > 1) {
@@ -791,7 +790,7 @@ public class ModelCarrierWo extends ModelBase {
     	
     	if(EmoTime > 41) {	//reset face
     		setFace(0);
-			ent.setEntityState(AttrID.Emotion, AttrValues.Emotion.NORMAL, false);
+			ent.setStateEmotion(ID.Emotion, Values.Emotion.NORMAL, false);
 			ent.setStartEmotion(-1);
     	}
     	else if(EmoTime > 1) {

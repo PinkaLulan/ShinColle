@@ -28,7 +28,7 @@ import net.minecraft.world.World;
 import com.lulan.shincolle.crafting.ShipCalc;
 import com.lulan.shincolle.creativetab.CreativeTabSC;
 import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.reference.AttrID;
+import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.LogHelper;
 
@@ -103,9 +103,9 @@ public class ShipSpawnEgg extends Item {
   	public void getSubItems(Item item, CreativeTabs tab, List list) {
   		list.add(new ItemStack(item, 1, 0));
   		list.add(new ItemStack(item, 1, 1));
-  		list.add(new ItemStack(item, 1, AttrID.DestroyerI+2));
-  		list.add(new ItemStack(item, 1, AttrID.HeavyCruiserRI+2));
-  		list.add(new ItemStack(item, 1, AttrID.CarrierWO+2));
+  		list.add(new ItemStack(item, 1, ID.S_DestroyerI+2));
+  		list.add(new ItemStack(item, 1, ID.S_HeavyCruiserRI+2));
+  		list.add(new ItemStack(item, 1, ID.S_CarrierWO+2));
   	}
   	
   	/** Get entity name from metadata
@@ -120,11 +120,11 @@ public class ShipSpawnEgg extends Item {
   			return "shincolle.EntityDestroyerI";
   		case 1:	//large egg
   			return "shincolle.EntityCarrierWo";
-  		case AttrID.CarrierWO+2:
+  		case ID.S_CarrierWO+2:
   			return "shincolle.EntityCarrierWo";
-  		case AttrID.DestroyerI+2:
+  		case ID.S_DestroyerI+2:
   			return "shincolle.EntityDestroyerI";
-  		case AttrID.HeavyCruiserRI+2:
+  		case ID.S_HeavyCruiserRI+2:
   			return "shincolle.EntityHeavyCruiserRi";
   		default:
   			return "shincolle.EntityDestroyerI";
@@ -173,12 +173,12 @@ public class ShipSpawnEgg extends Item {
   		bonuspoint = ShipCalc.getBonusPoints(itemstack);
   		
   		//set bonus point
-  		entity.setBonusPoint(AttrID.HP, bonuspoint[AttrID.HP]);
-  		entity.setBonusPoint(AttrID.ATK, bonuspoint[AttrID.ATK]);
-  		entity.setBonusPoint(AttrID.DEF, bonuspoint[AttrID.DEF]);
-  		entity.setBonusPoint(AttrID.SPD, bonuspoint[AttrID.SPD]);
-  		entity.setBonusPoint(AttrID.MOV, bonuspoint[AttrID.MOV]);
-  		entity.setBonusPoint(AttrID.HIT, bonuspoint[AttrID.HIT]);
+  		entity.setBonusPoint(ID.HP, bonuspoint[ID.HP]);
+  		entity.setBonusPoint(ID.ATK, bonuspoint[ID.ATK]);
+  		entity.setBonusPoint(ID.DEF, bonuspoint[ID.DEF]);
+  		entity.setBonusPoint(ID.SPD, bonuspoint[ID.SPD]);
+  		entity.setBonusPoint(ID.MOV, bonuspoint[ID.MOV]);
+  		entity.setBonusPoint(ID.HIT, bonuspoint[ID.HIT]);
   		
   		//calc ship attribute and save to nbt: hp atk def ...
   		LogHelper.info("DEBUG : spawn egg set ship attribute");

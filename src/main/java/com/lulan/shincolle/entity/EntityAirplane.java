@@ -6,7 +6,7 @@ import com.lulan.shincolle.client.particle.EntityFXMiss;
 import com.lulan.shincolle.client.particle.EntityFXSpray;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
-import com.lulan.shincolle.reference.AttrID;
+import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.LogHelper;
 
@@ -35,8 +35,8 @@ public class EntityAirplane extends BasicEntityAirplane {
         this.targetEntity = target;
         
         //basic attr
-        this.atk = host.getFinalState(AttrID.ATK);
-        this.atkSpeed = host.getFinalState(AttrID.SPD);
+        this.atk = host.getStateFinal(ID.ATK_AL);
+        this.atkSpeed = host.getStateFinal(ID.SPD);
         //AI flag
         this.numAmmoLight = 6;
         this.numAmmoHeavy = 0;
@@ -49,8 +49,8 @@ public class EntityAirplane extends BasicEntityAirplane {
         this.setPosition(this.posX, this.posY, this.posZ);
 
 	    //設定基本屬性
-	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(host.getFinalState(AttrID.HP)*0.1D);
-		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(host.getFinalState(AttrID.MOV)*0.2D + 0.35D);
+	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(host.getStateFinal(ID.HP)*0.1D);
+		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(host.getStateFinal(ID.MOV)*0.2D + 0.45D);
 		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(16); //此為找目標, 路徑的範圍
 		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(1D);
 		if(this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());

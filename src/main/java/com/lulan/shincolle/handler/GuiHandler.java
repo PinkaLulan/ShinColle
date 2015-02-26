@@ -11,7 +11,7 @@ import com.lulan.shincolle.entity.EntityDestroyerI;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 import com.lulan.shincolle.utility.LogHelper;
-import com.lulan.shincolle.reference.GUIs;
+import com.lulan.shincolle.reference.ID;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -24,22 +24,22 @@ public class GuiHandler implements IGuiHandler {
 	Entity entity;
 	
 	@Override
-	public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
+	public Object getServerGuiElement(int guiId, EntityPlayer player, World world, int x, int y, int z) {
 		
-		switch(ID) {		//判定gui種類
-		case GUIs.SMALLSHIPYARD:	//GUI small shipyard
+		switch(guiId) {		//判定gui種類
+		case ID.SMALLSHIPYARD:	//GUI small shipyard
 			tile = world.getTileEntity(x, y, z);  //確定抓到entity才開ui 以免噴出NPE
 			if((tile != null) && (tile instanceof TileEntitySmallShipyard)) {  //server取得container
 				return new ContainerSmallShipyard(player.inventory, (TileEntitySmallShipyard) tile);
 			}
 			return null;
-		case GUIs.SHIPINVENTORY:	//GUI ship inventory
+		case ID.SHIPINVENTORY:	//GUI ship inventory
 			entity = world.getEntityByID(x);	//entity id存在x座標參數上
             if((entity != null) && (entity instanceof BasicEntityShip)){
 				return new ContainerShipInventory(player.inventory,(BasicEntityShip)entity);
 			}
 			return null;
-		case GUIs.LARGESHIPYARD:	//GUI large shipyard
+		case ID.LARGESHIPYARD:	//GUI large shipyard
 			tile = world.getTileEntity(x, y, z);  //確定抓到entity才開ui 以免噴出NPE
 			if((tile != null && tile instanceof TileMultiGrudgeHeavy)) {  //server取得container
 				return new ContainerLargeShipyard(player.inventory, (TileMultiGrudgeHeavy) tile);
@@ -50,22 +50,22 @@ public class GuiHandler implements IGuiHandler {
 	}
 
 	@Override
-	public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
+	public Object getClientGuiElement(int guiId, EntityPlayer player, World world, int x, int y, int z) {
 	
-		switch(ID) {		//判定gui種類
-		case GUIs.SMALLSHIPYARD:	//GUI small shipyard
+		switch(guiId) {		//判定gui種類
+		case ID.SMALLSHIPYARD:	//GUI small shipyard
 			tile = world.getTileEntity(x, y, z);  //確定抓到entity才開ui 以免噴出NPE
 			if ((tile!=null) && (tile instanceof TileEntitySmallShipyard)) {  //client取得gui
 				return new GuiSmallShipyard(player.inventory, (TileEntitySmallShipyard) tile);
 			}
 			return null;
-		case GUIs.SHIPINVENTORY:	//GUI ship inventory
+		case ID.SHIPINVENTORY:	//GUI ship inventory
 			entity = world.getEntityByID(x);	//entity id存在x座標參數上
             if((entity!=null) && (entity instanceof BasicEntityShip)){
 				return new GuiShipInventory(player.inventory,(BasicEntityShip)entity);
 			}
 			return null;
-		case GUIs.LARGESHIPYARD:	//GUI large shipyard
+		case ID.LARGESHIPYARD:	//GUI large shipyard
 			tile = world.getTileEntity(x, y, z);  //確定抓到entity才開ui 以免噴出NPE
 			if((tile != null && tile instanceof TileMultiGrudgeHeavy)) {  //server取得container
 				return new GuiLargeShipyard(player.inventory, (TileMultiGrudgeHeavy) tile);

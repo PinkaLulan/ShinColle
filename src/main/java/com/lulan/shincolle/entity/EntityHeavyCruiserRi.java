@@ -43,6 +43,7 @@ import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.ShinColle;
+import com.lulan.shincolle.ai.EntityAIShipAttackOnCollide;
 import com.lulan.shincolle.ai.EntityAIShipFollowOwner;
 import com.lulan.shincolle.ai.EntityAIShipInRangeTarget;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
@@ -52,9 +53,8 @@ import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
 import com.lulan.shincolle.client.inventory.ContainerShipInventory;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
-import com.lulan.shincolle.reference.AttrID;
-import com.lulan.shincolle.reference.AttrValues;
-import com.lulan.shincolle.reference.GUIs;
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.utility.LogHelper;
@@ -68,8 +68,8 @@ public class EntityHeavyCruiserRi extends BasicEntityShipSmall {
 		super(world);
 		this.setSize(0.9F, 1.7F);	//碰撞大小 跟模型大小無關
 		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityHeavyCruiserRi.name"));
-		this.ShipType = AttrValues.ShipType.HEAVY_CRUISER;
-		this.ShipID = AttrID.HeavyCruiserRI;
+		this.ShipType = Values.ShipType.HEAVY_CRUISER;
+		this.ShipID = ID.S_HeavyCruiserRI;
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();
 		
@@ -79,16 +79,18 @@ public class EntityHeavyCruiserRi extends BasicEntityShipSmall {
 		super.setAIList();
 		
 		//floating on water
-		this.tasks.addTask(1, new EntityAIShipSit(this, this.getOwner()));	   //0101
+		this.tasks.addTask(1, new EntityAIShipSit(this));	   //0101
 		this.tasks.addTask(2, new EntityAIShipFollowOwner(this, 7F, 12F));	   //0111
 		
 		//use range attack (light)
 		this.tasks.addTask(11, new EntityAIShipRangeAttack(this));			   //0011
 		
 		//use melee attack
-		this.tasks.addTask(12, new EntityAIAttackOnCollide(this, 1D, true));   //0011
-		this.tasks.addTask(13, new EntityAIMoveTowardsTarget(this, 1D, 64F));  //0001
-		
+		if(this.getStateFlag(ID.F_UseMelee)) {
+			this.tasks.addTask(12, new EntityAIShipAttackOnCollide(this, 1D, true));   //0011
+			this.tasks.addTask(13, new EntityAIMoveTowardsTarget(this, 1D, 48F));  //0001
+		}
+
 		//idle AI
 		//moving
 		this.tasks.addTask(21, new EntityAIOpenDoor(this, true));			   //0000
@@ -157,17 +159,6 @@ public class EntityHeavyCruiserRi extends BasicEntityShipSmall {
     	}
     	
     	super.onLivingUpdate();
-    }
-    
-    //this method work in server side
-    @Override
-    public boolean attackEntityFrom(DamageSource attacker, float atk) {		
-    	//set hurt face
-    	if(this.getEntityState(AttrID.Emotion) != AttrValues.Emotion.O_O) {
-    		this.setEntityState(AttrID.Emotion, AttrValues.Emotion.O_O, true);
-    	}	
-  	
-    	return super.attackEntityFrom(attacker, atk);
     }
 	
 

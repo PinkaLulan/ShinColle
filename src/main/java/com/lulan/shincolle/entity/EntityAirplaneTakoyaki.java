@@ -2,7 +2,7 @@ package com.lulan.shincolle.entity;
 
 import com.lulan.shincolle.ai.EntityAIShipAircraftAttack;
 import com.lulan.shincolle.client.particle.EntityFXSpray;
-import com.lulan.shincolle.reference.AttrID;
+import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.client.Minecraft;
@@ -25,8 +25,8 @@ public class EntityAirplaneTakoyaki extends BasicEntityAirplane {
         this.targetEntity = target;
         
         //basic attr
-        this.atk = host.getFinalState(AttrID.ATK);
-        this.atkSpeed = host.getFinalState(AttrID.SPD);
+        this.atk = host.getStateFinal(ID.ATK_AH);
+        this.atkSpeed = host.getStateFinal(ID.SPD);
         //AI flag
         this.numAmmoLight = 0;
         this.numAmmoHeavy = 3;
@@ -39,8 +39,8 @@ public class EntityAirplaneTakoyaki extends BasicEntityAirplane {
         this.setPosition(this.posX, this.posY, this.posZ);
  
 	    //設定基本屬性
-	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(host.getFinalState(AttrID.HP)*0.15D);
-		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(host.getFinalState(AttrID.MOV)*0.1D + 0.3D);
+	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(host.getStateFinal(ID.HP)*0.15D);
+		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(host.getStateFinal(ID.MOV)*0.1D + 0.4D);
 		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(16); //此為找目標, 路徑的範圍
 		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(1D);
 		if(this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());

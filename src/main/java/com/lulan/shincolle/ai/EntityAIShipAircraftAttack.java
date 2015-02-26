@@ -5,7 +5,7 @@ import java.util.Random;
 import com.lulan.shincolle.entity.BasicEntityAirplane;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.EntityAirplane;
-import com.lulan.shincolle.reference.AttrID;
+import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
@@ -47,7 +47,7 @@ public class EntityAIShipAircraftAttack extends EntityAIBase {
     public boolean shouldExecute() {
     	EntityLivingBase target = this.host.getAttackTarget();
     	
-        if (this.host.ticksExisted > 30 && target != null && 
+        if (this.host.ticksExisted > 30 && target != null && target.isEntityAlive() && 
         	((this.host.useAmmoLight && this.host.numAmmoLight > 0) || 
         	(this.host.useAmmoHeavy && this.host.numAmmoHeavy > 0))) {   
         	this.target = target;
@@ -101,34 +101,27 @@ public class EntityAIShipAircraftAttack extends EntityAIBase {
     		this.distRanY = randPos[1] - this.host.posY;
     		this.distRanZ = randPos[2] - this.host.posZ;	
     		this.distRanSqrt = MathHelper.sqrt_double(distX*distX + distY*distY + distZ*distZ);
-
-    		//設定頭部角度
-//	        this.host.getLookHelper().setLookPosition(randPos[0], randPos[1], randPos[2], 30F, 30F);
-	        this.host.getLookHelper().setLookPositionWithEntity(this.target, 45.0F, 30.0F);
-    		float[] degree = EntityHelper.getLookDegree(this.target.posX - this.host.posX, this.target.posY - this.host.posY, this.target.posZ - this.host.posZ);
-			this.host.rotationYaw = degree[0];
-			this.host.rotationPitch = degree[1];
     		
 	        //moving
         	double speed = this.host.getEntityAttribute(SharedMonsterAttributes.movementSpeed).getBaseValue();
 	        if(this.distSq > this.rangeSq) {
 				this.motX = (this.distRanX / this.distRanSqrt) * speed * 1.0D;
-				this.motY = (this.distRanY / this.distRanSqrt) * speed * 1.0D;
+				this.motY = (this.distRanY / this.distRanSqrt) * speed * 0.5D;
 				this.motZ = (this.distRanZ / this.distRanSqrt) * speed * 1.0D;
 	        }
 	        else {
 	        	this.motX = (this.distRanX / this.distRanSqrt) * speed * 0.3D;
-				this.motY = (this.distRanY / this.distRanSqrt) * speed * 0.3D;
+				this.motY = (this.distRanY / this.distRanSqrt) * speed * 0.15D;
 				this.motZ = (this.distRanZ / this.distRanSqrt) * speed * 0.3D;
 	        }
 	        
 //	        LogHelper.info("DEBUG : motX?"+motX+" "+motY+" "+motZ);
-	        if(this.motX > 0.5D) this.motX = 0.5D;
-	        if(this.motX < -0.5D) this.motX = -0.5D;
+	        if(this.motX > 0.7D) this.motX = 0.7D;
+	        if(this.motX < -0.7D) this.motX = -0.7D;
 	        if(this.motY > 0.5D) this.motY = 0.5D;
-	        if(this.motY < -0.5D) this.motY = -0.5D;
-	        if(this.motZ > 0.5D) this.motZ = 0.5D;
-	        if(this.motZ < -0.5D) this.motZ = -0.5D;
+	        if(this.motY < -0.7D) this.motY = -0.5D;
+	        if(this.motZ > 0.7D) this.motZ = 0.7D;
+	        if(this.motZ < -0.7D) this.motZ = -0.7D;
             
 	        this.host.motionX = motX;
 			this.host.motionY = motY;

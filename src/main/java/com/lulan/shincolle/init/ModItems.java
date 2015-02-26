@@ -18,7 +18,12 @@ public class ModItems {
 	public static final BasicItem BucketRepair = new BucketRepair();
 	public static final BasicItem Grudge = new Grudge();
 	//equip	
+	public static final BasicItem EquipAirplane = new EquipAirplane();
+	public static final BasicItem EquipArmor = new EquipArmor();
 	public static final BasicItem EquipCannon = new EquipCannon();
+	public static final BasicItem EquipRadar = new EquipRadar();
+	public static final BasicItem EquipTorpedo = new EquipTorpedo();
+	public static final BasicItem EquipTurbine = new EquipTurbine();
 	
 
 	//登錄item到遊戲中 (在pre init階段登錄)
@@ -31,7 +36,12 @@ public class ModItems {
 		GameRegistry.registerItem(BucketRepair, "BucketRepair");
 		GameRegistry.registerItem(Grudge, "Grudge");
 		//equip		
+		GameRegistry.registerItem(EquipAirplane, "EquipAirplane");
+		GameRegistry.registerItem(EquipArmor, "EquipArmor");
 		GameRegistry.registerItem(EquipCannon, "EquipCannon");
+		GameRegistry.registerItem(EquipRadar, "EquipRadar");
+		GameRegistry.registerItem(EquipTorpedo, "EquipTorpedo");
+		GameRegistry.registerItem(EquipTurbine, "EquipTurbine");
 		
 	}
 	

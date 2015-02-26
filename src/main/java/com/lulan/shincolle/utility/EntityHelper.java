@@ -8,7 +8,7 @@ import java.util.UUID;
 import com.lulan.shincolle.entity.BasicEntityAirplane;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.EntityAirplane;
-import com.lulan.shincolle.reference.AttrID;
+import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 
@@ -40,8 +40,15 @@ public class EntityHelper {
 			else if(target instanceof BasicEntityShip) {
 				getOwner = ((BasicEntityShip)target).getOwner();
 			}
-			else if(target instanceof EntityAirplane) {
-				getOwner = ((EntityAirplane)target).getOwner();
+			else if(target instanceof BasicEntityAirplane) {
+				//先取得airplane的owner(為一種Ship), 再取得該ship的owner(為一種EntityPlayer)
+				getOwner = ((BasicEntityAirplane)target).getOwner();
+				if(getOwner != null) {
+					getOwner = ((BasicEntityShip)getOwner).getOwner();
+				}
+				else {
+					return false;
+				}
 			}
 			
 			if(getOwner != null && getOwner.getUniqueID().equals(owner.getUniqueID())) {
@@ -81,13 +88,20 @@ public class EntityHelper {
 	public static void setEntityByGUI(BasicEntityShip entity, int button, int value) {
 		if(entity != null) {
 			switch(button) {
-			case AttrID.B_ShipInv_AmmoLight:
-				LogHelper.info("DEBUG : set entity value "+button+" "+value);
-				entity.setEntityFlagI(AttrID.F_UseAmmoLight, value);
+			case ID.B_ShipInv_Melee:
+				entity.setEntityFlagI(ID.F_UseMelee, value);
 				break;
-			case AttrID.B_ShipInv_AmmoHeavy:
-				LogHelper.info("DEBUG : set entity value "+button+" "+value);
-				entity.setEntityFlagI(AttrID.F_UseAmmoHeavy, value);
+			case ID.B_ShipInv_AmmoLight:
+				entity.setEntityFlagI(ID.F_UseAmmoLight, value);
+				break;
+			case ID.B_ShipInv_AmmoHeavy:
+				entity.setEntityFlagI(ID.F_UseAmmoHeavy, value);
+				break;
+			case ID.B_ShipInv_AirLight:
+				entity.setEntityFlagI(ID.F_UseAirLight, value);
+				break;
+			case ID.B_ShipInv_AirHeavy:
+				entity.setEntityFlagI(ID.F_UseAirHeavy, value);
 				break;
 			}
 		}
@@ -100,24 +114,24 @@ public class EntityHelper {
 	public static void setTileEntityByGUI(TileEntity tile, int button, int value, int value2) {
 		if(tile != null) {
 			if(tile instanceof TileEntitySmallShipyard) {
-				LogHelper.info("DEBUG : set tile entity value "+button+" "+value);
+//				LogHelper.info("DEBUG : set tile entity value "+button+" "+value);
 				((TileEntitySmallShipyard)tile).buildType = value;
 				return;
 			}
 			if(tile instanceof TileMultiGrudgeHeavy) {
-				LogHelper.info("DEBUG : set tile entity value "+button+" "+value+" "+value2);
+//				LogHelper.info("DEBUG : set tile entity value "+button+" "+value+" "+value2);
 				
 				switch(button) {
-				case AttrID.B_Shipyard_Type:		//build type
+				case ID.B_Shipyard_Type:		//build type
 					((TileMultiGrudgeHeavy)tile).setBuildType(value);
 					break;
-				case AttrID.B_Shipyard_InvMode:		//select inventory mode
+				case ID.B_Shipyard_InvMode:		//select inventory mode
 					((TileMultiGrudgeHeavy)tile).setInvMode(value);
 					break;
-				case AttrID.B_Shipyard_SelectMat:	//select material
+				case ID.B_Shipyard_SelectMat:	//select material
 					((TileMultiGrudgeHeavy)tile).setSelectMat(value);
 					break;
-				case AttrID.B_Shipyard_INCDEC:			//material inc,dec
+				case ID.B_Shipyard_INCDEC:			//material inc,dec
 					setLargeShipyardBuildMats((TileMultiGrudgeHeavy)tile, button, value, value2);
 					break;
 				}	

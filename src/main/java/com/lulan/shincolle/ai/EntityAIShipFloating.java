@@ -1,7 +1,7 @@
 package com.lulan.shincolle.ai;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.reference.AttrID;
+import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.entity.EntityLiving;
@@ -24,7 +24,7 @@ public class EntityAIShipFloating extends EntityAIBase {
 
     public boolean shouldExecute() {
 //    	LogHelper.info("DEBUG : floating cond? "+this.theEntity.getEntityFlag(AttrID.F_CanFloatUp));
-        return !this.theEntity.isSitting() && this.theEntity.getEntityFlag(AttrID.F_CanFloatUp);
+        return !this.theEntity.isSitting() && this.theEntity.getStateFlag(ID.F_CanFloatUp);
     }
 
     public void updateTask() {

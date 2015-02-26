@@ -5,14 +5,18 @@ public class GuiHelper {
 	//hard coded button position (x1,y1,x2,y2)
 	private static final int[][][][] BUTTON = {
 		{//gui0: ship inventory
-		 //0: page0         1: page1         2: page2
-		 {{145,18,154,52}, {145,53,154,88}, {145,89,154,125}},	//page 0
-		 //0: light ammo    1: heavy ammo
-		 {{84,61,140,82},  {84,83,140,104}}						//page 1
+		 //0: page0          1: page1          2: page2
+		 {{120,18,134,52},  {120,53,134,88},  {120,89,134,125},		//page 0
+		 //3:can melee       4: light ammo     5: heavy ammo
+		  {173,131,243,143},{173,144,243,155},{173,156,243,167},
+		 //6:air light       7:air heavy
+		  {173,168,243,179},{173,180,243,191}},
+		 //0:attack
+		  {{65,18,119,40}}													//page 1
 		},
 		{//gui1: small shipyard
 		 //0:ship button    1:equip button
-		 {{122,16,141,36}, {142,16,162,36}}						//page 0
+		 {{122,16,141,36}, {142,16,162,36}}							//page 0
 		},
 		{//gui2: large shipyard
 		 //0:ship button    1:equip button   2:inventory mode

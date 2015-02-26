@@ -4,7 +4,7 @@ import java.util.Random;
 
 import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.handler.GuiHandler;
-import com.lulan.shincolle.reference.GUIs;
+import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.utility.LogHelper;
@@ -119,7 +119,7 @@ public class BlockSmallShipyard extends BasicBlockContainer {
     		TileEntitySmallShipyard entity = (TileEntitySmallShipyard) world.getTileEntity(x, y, z);
     		
     		if (entity != null) {	//開啟方塊GUI 參數:玩家,mod instance,gui ID,world,座標xyz
-    			FMLNetworkHandler.openGui(player, ShinColle.instance, GUIs.SMALLSHIPYARD, world, x, y, z);
+    			FMLNetworkHandler.openGui(player, ShinColle.instance, ID.SMALLSHIPYARD, world, x, y, z);
     		}
     		return true;
     	}

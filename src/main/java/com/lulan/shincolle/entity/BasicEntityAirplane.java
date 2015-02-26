@@ -1,12 +1,13 @@
 package com.lulan.shincolle.entity;
 
+import java.util.List;
 import java.util.UUID;
 
 import com.lulan.shincolle.client.particle.EntityFXMiss;
 import com.lulan.shincolle.client.particle.EntityFXSpray;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
-import com.lulan.shincolle.reference.AttrID;
+import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
@@ -14,9 +15,17 @@ import com.lulan.shincolle.utility.LogHelper;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
+import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityFlying;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.boss.EntityDragon;
+import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.monster.EntitySlime;
+import net.minecraft.entity.passive.EntityBat;
+import net.minecraft.entity.passive.EntityWaterMob;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
@@ -37,9 +46,25 @@ public abstract class BasicEntityAirplane extends EntityLiving {
     public int numAmmoHeavy;
     public boolean useAmmoLight;
     public boolean useAmmoHeavy;
+    public boolean backHome;		//clear target, back to carrier
+    private final IEntitySelector targetSelector;
 	
     public BasicEntityAirplane(World world) {
         super(world);
+        this.backHome = false;
+        
+        //target selector init
+        this.targetSelector = new IEntitySelector() {
+            public boolean isEntityApplicable(Entity target2) {
+            	if((target2 instanceof EntityMob || target2 instanceof EntitySlime ||
+            	   target2 instanceof EntityBat || target2 instanceof EntityDragon ||
+            	   target2 instanceof EntityFlying || target2 instanceof EntityWaterMob) &&
+            	   !target2.isDead) {
+            		return true;
+            	}
+            	return false;
+            }
+        };
     }
     
     @Override
@@ -117,42 +142,85 @@ public abstract class BasicEntityAirplane extends EntityLiving {
 
 	@Override
 	public void onUpdate() {
-		super.onUpdate();
-		
 		//server side
 		if(!this.worldObj.isRemote) {
-			//前幾秒直線往目標移動
-			if(this.ticksExisted < 30 && this.getAttackTarget() != null) {
-				double distX = this.getAttackTarget().posX - this.posX;
-				double distZ = this.getAttackTarget().posZ - this.posZ;
-				double distSqrt = MathHelper.sqrt_double(distX*distX + distZ*distZ);
-				
-				this.motionX = distX / distSqrt * 0.3D;
-				this.motionZ = distZ / distSqrt * 0.3D;
-				this.motionY = 0.05D;		
-			}
-			
-			//超過30秒或者無攻擊目標, 自動消失
-			if(this.ticksExisted > 600) {
+			//owner消失(通常是server restart)
+			if(this.getOwner() == null) {
 				this.setDead();
 			}
-			
-			//攻擊目標消失, 重設目標為host的目標
-			if(this.getAttackTarget() == null && this.hostEntity != null) {
-				this.setAttackTarget(this.hostEntity.getAttackTarget());
-			}
-			
-			if(this.isInWater() && this.ticksExisted % 100 == 0) {
-				this.setAir(300);
-			}
+			else {
+				//歸宅
+				if(this.backHome && !this.isDead) {
+					if(this.getDistanceToEntity(this.getOwner()) > 2.7F) {
+						double speed = this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).getBaseValue();
+						double distX = this.getOwner().posX - this.posX;
+						double distY = this.getOwner().posY + 2.3D - this.posY;
+						double distZ = this.getOwner().posZ - this.posZ;
+						double distSqrt = MathHelper.sqrt_double(distX*distX + distY*distY + distZ*distZ);
+						
+						this.motionX = distX / distSqrt * speed * 1.0D;
+						this.motionY = distY / distSqrt * speed * 1.0D;
+						this.motionZ = distZ / distSqrt * speed * 1.0D;
+					}
+					else {	//歸還剩餘彈藥 (但是grudge不歸還)
+						this.setDead();
+						this.hostEntity.setStateMinor(ID.NumAmmoLight, this.hostEntity.getStateMinor(ID.NumAmmoLight) + this.numAmmoLight);
+						this.hostEntity.setStateMinor(ID.NumAmmoHeavy, this.hostEntity.getStateMinor(ID.NumAmmoHeavy) + this.numAmmoHeavy);
+					}
+				}
+				
+				//前幾秒直線往目標移動
+				if(this.ticksExisted < 30 && this.getAttackTarget() != null) {
+					double distX = this.getAttackTarget().posX - this.posX;
+					double distZ = this.getAttackTarget().posZ - this.posZ;
+					double distSqrt = MathHelper.sqrt_double(distX*distX + distZ*distZ);
+					
+					this.motionX = distX / distSqrt * 0.375D;
+					this.motionZ = distZ / distSqrt * 0.375D;
+					this.motionY = 0.05D;
+				}
+				
+				//超過60秒自動消失
+				if(this.ticksExisted > 1200) {
+					this.setDead();
+				}
+				
+				//攻擊目標消失, 找附近目標 or 設為host目前目標
+				if(!this.backHome && (this.getAttackTarget() == null || this.getAttackTarget().isDead) && this.hostEntity != null && this.ticksExisted % 2 == 0) {
+					//entity list < range1
+			        List list = this.worldObj.selectEntitiesWithinAABB(EntityLivingBase.class, 
+			        this.boundingBox.expand(20, 15, 20), this.targetSelector);
+			        
+			        if(list.isEmpty()) {
+			        	//都找不到目標則給host目標, 但是host目標必須在64格內
+			        	EntityLivingBase newTarget = this.hostEntity.getAttackTarget();
+			        	
+			        	if(newTarget != null && this.getDistanceToEntity(newTarget) < 64F) {
+			        		this.setAttackTarget(this.hostEntity.getAttackTarget());
+			        	}
+			        	else {
+			        		this.backHome = true;
+			        	}
+			        }
+			        else {
+			        	this.setAttackTarget((EntityLivingBase)list.get(list.size()/2));	
+			        }	
+				}
+				
+				if(this.isInWater() && this.ticksExisted % 100 == 0) {
+					this.setAir(300);
+				}
+			}	
 		}
 		
-		//計算面向角度 (both side)
-		if(this.ticksExisted < 30) {
+		if(this.ticksExisted % 4 == 0) {
+			//面向計算 (for both side)
 			float[] degree = EntityHelper.getLookDegree(posX - prevPosX, posY - prevPosY, posZ - prevPosZ);
 			this.rotationYaw = degree[0];
 			this.rotationPitch = degree[1];
-		}	
+		}
+
+		super.onUpdate();
 	}
 
 	//light attack
@@ -206,7 +274,7 @@ public abstract class BasicEntityAirplane extends EntityLiving {
 
 	public boolean attackEntityWithHeavyAmmo(Entity target) {
 		//get attack value
-		float atkHeavy = this.atk * 5F;
+		float atkHeavy = this.atk;
 		//set knockback value (testing)
 		float kbValue = 0.08F;
 //atkHeavy=0;

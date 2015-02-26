@@ -4,7 +4,7 @@ import com.lulan.shincolle.crafting.SmallRecipes;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipLarge;
 import com.lulan.shincolle.item.BasicEquip;
-import com.lulan.shincolle.reference.AttrID;
+import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.utility.LogHelper;
 
@@ -20,7 +20,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
 /**CUSTOM SHIP INVENTORY
- * slot: S0(66,18) S1(66,36) S2(66,54) S3(66,72) S4(66,90) S5(6,108) S6~S23(8,18) 6x3
+ * slot: S0(136,18) S1(136,36) S2(136,54) S3(136,72) S4(136,90) S5(6,108) S6~S23(8,18) 6x3
  * player inventory(44,132) hotbar(44,190)
  * S0~S5 for equip only
  */
@@ -31,7 +31,8 @@ public class ContainerShipInventory extends Container {
 	public static final byte SLOTS_EQUIP = 6;
 	public static final byte SLOTS_INVENTORY = 18;
 	private int GuiKills, GuiExpCurrent, GuiNumAmmo, GuiNumAmmoHeavy, GuiNumGrudge, 
-	            GuiNumAirLight, GuiNumAirHeavy, ButtonAmmoLight, ButtonAmmoHeavy;
+	            GuiNumAirLight, GuiNumAirHeavy, GuiIsMarried, 
+	            ButtonMelee, ButtonAmmoLight, ButtonAmmoHeavy, ButtonAirLight, ButtoAirHeavy;
 	
 	public ContainerShipInventory(InventoryPlayer invPlayer, BasicEntityShip entity1) {
 		int i,j;	//loop index
@@ -39,7 +40,7 @@ public class ContainerShipInventory extends Container {
 		
 		//ship equip = 0~5
 		for(i=0; i<6; i++) {
-			this.addSlotToContainer(new SlotShipInventory(entity1.getExtProps(), i, 66, 18+i*18));
+			this.addSlotToContainer(new SlotShipInventory(entity1.getExtProps(), i, 136, 18+i*18));
 		}
 		
 		//ship inventory = 6~23
@@ -52,13 +53,13 @@ public class ContainerShipInventory extends Container {
 		//player inventory
 		for(i=0; i<3; i++) {
 			for(j=0; j<9; j++) {
-				this.addSlotToContainer(new Slot(invPlayer, j+i*9+9, 44+j*18, 132+i*18));
+				this.addSlotToContainer(new Slot(invPlayer, j+i*9+9, 8+j*18, 132+i*18));
 			}
 		}
 		
 		//player action bar (hot bar)
 		for(i=0; i<9; i++) {
-			this.addSlotToContainer(new Slot(invPlayer, i, 44+i*18, 190));
+			this.addSlotToContainer(new Slot(invPlayer, i, 8+i*18, 190));
 		}
 	}
 	
@@ -152,19 +153,19 @@ public class ContainerShipInventory extends Container {
 	@Override
 	public void addCraftingToCrafters (ICrafting crafting) {
 		super.addCraftingToCrafters(crafting);
-		crafting.sendProgressBarUpdate(this, 0, this.entity.getKills());
-		crafting.sendProgressBarUpdate(this, 1, this.entity.getExpCurrent());
-		crafting.sendProgressBarUpdate(this, 2, this.entity.getNumAmmoLight());
-		crafting.sendProgressBarUpdate(this, 3, this.entity.getNumAmmoHeavy());
-		crafting.sendProgressBarUpdate(this, 4, this.entity.getNumGrudge());
-		crafting.sendProgressBarUpdate(this, 5, this.entity.getEntityFlagI(AttrID.F_UseAmmoLight));
-		crafting.sendProgressBarUpdate(this, 6, this.entity.getEntityFlagI(AttrID.F_UseAmmoHeavy));
-		
-		//大型艦顯示艦載機數值
-		if(this.entity instanceof BasicEntityShipLarge) {
-			crafting.sendProgressBarUpdate(this, 7, ((BasicEntityShipLarge)this.entity).getNumAircraftLight());
-			crafting.sendProgressBarUpdate(this, 8, ((BasicEntityShipLarge)this.entity).getNumAircraftHeavy());
-		}
+		crafting.sendProgressBarUpdate(this, 0, this.entity.getStateMinor(ID.Kills));
+		crafting.sendProgressBarUpdate(this, 1, this.entity.getStateMinor(ID.ExpCurrent));
+		crafting.sendProgressBarUpdate(this, 2, this.entity.getStateMinor(ID.NumAmmoLight));
+		crafting.sendProgressBarUpdate(this, 3, this.entity.getStateMinor(ID.NumAmmoHeavy));
+		crafting.sendProgressBarUpdate(this, 4, this.entity.getStateMinor(ID.NumGrudge));
+		crafting.sendProgressBarUpdate(this, 5, this.entity.getStateMinor(ID.NumAirLight));
+		crafting.sendProgressBarUpdate(this, 6, this.entity.getStateMinor(ID.NumAirHeavy));
+		crafting.sendProgressBarUpdate(this, 7, this.entity.getStateFlagI(ID.F_UseMelee));
+		crafting.sendProgressBarUpdate(this, 8, this.entity.getStateFlagI(ID.F_UseAmmoLight));
+		crafting.sendProgressBarUpdate(this, 9, this.entity.getStateFlagI(ID.F_UseAmmoHeavy));
+		crafting.sendProgressBarUpdate(this, 10, this.entity.getStateFlagI(ID.F_UseAirLight));
+		crafting.sendProgressBarUpdate(this, 11, this.entity.getStateFlagI(ID.F_UseAirHeavy));
+		crafting.sendProgressBarUpdate(this, 12, this.entity.getStateFlagI(ID.F_IsMarried));
 	}
 	
 	//偵測數值是否改變, 有改變時發送更新(此為server端偵測)
@@ -176,53 +177,70 @@ public class ContainerShipInventory extends Container {
         for(Object crafter : this.crafters) {
             ICrafting icrafting = (ICrafting) crafter;
             
-            getValue = this.entity.getKills();
+            getValue = this.entity.getStateMinor(ID.Kills);
             if(this.GuiKills != getValue) {
                 icrafting.sendProgressBarUpdate(this, 0, getValue);
                 this.GuiKills = getValue;
             }   
-            getValue = this.entity.getExpCurrent();
+            getValue = this.entity.getStateMinor(ID.ExpCurrent);
             if(this.GuiExpCurrent != getValue) {
-                 icrafting.sendProgressBarUpdate(this, 1, getValue);
-                 this.GuiExpCurrent = getValue;
+                icrafting.sendProgressBarUpdate(this, 1, getValue);
+                this.GuiExpCurrent = getValue;
             }
-            getValue = this.entity.getNumAmmoLight();
+            getValue = this.entity.getStateMinor(ID.NumAmmoLight);
             if(this.GuiNumAmmo != getValue) {
                 icrafting.sendProgressBarUpdate(this, 2, getValue);
                 this.GuiNumAmmo = getValue;
             }
-            getValue = this.entity.getNumAmmoHeavy();
+            getValue = this.entity.getStateMinor(ID.NumAmmoHeavy);
             if(this.GuiNumAmmoHeavy != getValue) {
                 icrafting.sendProgressBarUpdate(this, 3, getValue);
                 this.GuiNumAmmoHeavy = getValue;
             }
-            getValue = this.entity.getNumGrudge();
+            getValue = this.entity.getStateMinor(ID.NumGrudge);
             if(this.GuiNumGrudge != getValue) {
                 icrafting.sendProgressBarUpdate(this, 4, getValue);
                 this.GuiNumGrudge = getValue;
             }
-            getValue = this.entity.getEntityFlagI(AttrID.F_UseAmmoLight);
-            if(this.ButtonAmmoLight != getValue) {
+            getValue = this.entity.getStateMinor(ID.NumAirLight);
+            if(this.GuiNumAirLight != getValue) {
                 icrafting.sendProgressBarUpdate(this, 5, getValue);
+                this.GuiNumAirLight = getValue;
+            }
+            getValue = this.entity.getStateMinor(ID.NumAirHeavy);
+            if(this.GuiNumAirHeavy != getValue) {
+                icrafting.sendProgressBarUpdate(this, 6, getValue);
+                this.GuiNumAirHeavy = getValue;
+            }
+            getValue = this.entity.getStateFlagI(ID.F_UseMelee);
+            if(this.ButtonMelee != getValue) {
+                icrafting.sendProgressBarUpdate(this, 7, getValue);
+                this.ButtonMelee = getValue;
+            }
+            getValue = this.entity.getStateFlagI(ID.F_UseAmmoLight);
+            if(this.ButtonAmmoLight != getValue) {
+                icrafting.sendProgressBarUpdate(this, 8, getValue);
                 this.ButtonAmmoLight = getValue;
             }
-            getValue = this.entity.getEntityFlagI(AttrID.F_UseAmmoHeavy);
+            getValue = this.entity.getStateFlagI(ID.F_UseAmmoHeavy);
             if(this.ButtonAmmoHeavy != getValue) {
-                icrafting.sendProgressBarUpdate(this, 6, getValue);
+                icrafting.sendProgressBarUpdate(this, 9, getValue);
                 this.ButtonAmmoHeavy = getValue;
             }
-            
-            if(this.entity instanceof BasicEntityShipLarge) {
-            	getValue = ((BasicEntityShipLarge)this.entity).getNumAircraftLight();
-                if(this.GuiNumAirLight != getValue) {
-                    icrafting.sendProgressBarUpdate(this, 7, getValue);
-                    this.GuiNumAirLight = getValue;
-                }
-                getValue = ((BasicEntityShipLarge)this.entity).getNumAircraftHeavy();
-                if(this.GuiNumAirHeavy != getValue) {
-                    icrafting.sendProgressBarUpdate(this, 8, getValue);
-                    this.GuiNumAirHeavy = getValue;
-                }
+            getValue = this.entity.getStateFlagI(ID.F_UseAirLight);
+            if(this.ButtonAirLight != getValue) {
+                icrafting.sendProgressBarUpdate(this, 10, getValue);
+                this.ButtonAirLight = getValue;
+            }
+            getValue = this.entity.getStateFlagI(ID.F_UseAirHeavy);
+            if(this.ButtoAirHeavy != getValue) {
+                icrafting.sendProgressBarUpdate(this, 11, getValue);
+                this.ButtoAirHeavy = getValue;
+            }
+            getValue = this.entity.getStateFlagI(ID.F_IsMarried);
+            if(this.GuiIsMarried != getValue) {
+                icrafting.sendProgressBarUpdate(this, 12, getValue);
+                this.GuiIsMarried = getValue;
             }
         }
     }
@@ -231,39 +249,44 @@ public class ContainerShipInventory extends Container {
 	@SideOnly(Side.CLIENT)
     public void updateProgressBar(int valueType, int updatedValue) {     
 		switch(valueType) {
-		case 0: 
-//			LogHelper.info("DEBUG : client container set KILL"+updatedValue);
-			this.entity.setKills(updatedValue);
+		case 0:
+			this.entity.setStateMinor(ID.Kills, updatedValue);
 			break;
 		case 1:
-//			LogHelper.info("DEBUG : client container set EXP"+updatedValue);
-			this.entity.setExpCurrent(updatedValue);
+			this.entity.setStateMinor(ID.ExpCurrent, updatedValue);
 			break;
 		case 2:
-//			LogHelper.info("DEBUG : client container set NAL"+updatedValue);
-			this.entity.setNumAmmoLight(updatedValue);
+			this.entity.setStateMinor(ID.NumAmmoLight, updatedValue);
 			break;
 		case 3:
-//			LogHelper.info("DEBUG : client container set NAH"+updatedValue);
-			this.entity.setNumAmmoHeavy(updatedValue);
+			this.entity.setStateMinor(ID.NumAmmoHeavy, updatedValue);
 			break;
 		case 4:
-//			LogHelper.info("DEBUG : client container set NG"+updatedValue);
-			this.entity.setNumGrudge(updatedValue);
+			this.entity.setStateMinor(ID.NumGrudge, updatedValue);
 			break;
 		case 5:
-//			LogHelper.info("DEBUG : client container set UseAL"+updatedValue);
-			this.entity.setEntityFlagI(AttrID.F_UseAmmoLight, updatedValue);
+			this.entity.setStateMinor(ID.NumAirLight, updatedValue);
 			break;
 		case 6:
-//			LogHelper.info("DEBUG : client container set UseAH"+updatedValue);
-			this.entity.setEntityFlagI(AttrID.F_UseAmmoHeavy, updatedValue);
+			this.entity.setStateMinor(ID.NumAirHeavy, updatedValue);
 			break;
 		case 7:
-			((BasicEntityShipLarge)this.entity).setNumAircraftLight(updatedValue);
+			this.entity.setEntityFlagI(ID.F_UseMelee, updatedValue);
 			break;
 		case 8:
-			((BasicEntityShipLarge)this.entity).setNumAircraftHeavy(updatedValue);
+			this.entity.setEntityFlagI(ID.F_UseAmmoLight, updatedValue);
+			break;
+		case 9:
+			this.entity.setEntityFlagI(ID.F_UseAmmoHeavy, updatedValue);
+			break;
+		case 10:
+			this.entity.setEntityFlagI(ID.F_UseAirLight, updatedValue);
+			break;
+		case 11:
+			this.entity.setEntityFlagI(ID.F_UseAirHeavy, updatedValue);
+			break;
+		case 12:
+			this.entity.setEntityFlagI(ID.F_IsMarried, updatedValue);
 			break;
 		}
     }

@@ -14,36 +14,34 @@ import net.minecraft.pathfinding.PathEntity;
  */
 public class EntityAIShipSit extends EntityAIBase
 {
-    private BasicEntityShip theEntity;
-    private EntityLivingBase theOwner;
+    private BasicEntityShip host;
+    private EntityLivingBase owner;
 
-    public EntityAIShipSit(BasicEntityShip entity, EntityLivingBase owner) {
-        this.theEntity = entity;
-        this.theOwner = owner;
+    public EntityAIShipSit(BasicEntityShip entity) {
+        this.host = entity;
         this.setMutexBits(5);
     }
 
     public boolean shouldExecute() {
-        //必須是主人 & 主人沒有AI target & 該生物為坐下狀態
-        return this.theOwner == null ? true : 
-        	(this.theOwner.getAITarget() != null ? false : this.theEntity.isSitting());
+//    	LogHelper.info("DEBUG : exec sitting "+(this.owner == null));
+        return this.host.isSitting();
     }
 
     public void startExecuting() {
-    	this.theEntity.setSitting(true);
-    	this.theEntity.setJumping(false);
+    	this.host.setSitting(true);
+    	this.host.setJumping(false);
     }
     
     public void updateTask() {
 //    	LogHelper.info("DEBUG : exec sitting");
-    	this.theEntity.getNavigator().clearPathEntity();    
-        this.theEntity.setPathToEntity((PathEntity)null);
-        this.theEntity.setTarget((Entity)null);
-        this.theEntity.setAttackTarget((EntityLivingBase)null);
+    	this.host.getNavigator().clearPathEntity();    
+        this.host.setPathToEntity((PathEntity)null);
+        this.host.setTarget((Entity)null);
+        this.host.setAttackTarget((EntityLivingBase)null);
     }
 
     public void resetTask() {
-        this.theEntity.setSitting(false);
+        this.host.setSitting(false);
     }
 
 }

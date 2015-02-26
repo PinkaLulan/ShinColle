@@ -3,7 +3,7 @@ package com.lulan.shincolle.crafting;
 import java.util.Random;
 
 import com.lulan.shincolle.init.ModItems;
-import com.lulan.shincolle.reference.AttrID;
+import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.item.Item;

@@ -8,8 +8,7 @@ import org.lwjgl.opengl.GL11;
 import com.lulan.shincolle.client.inventory.ContainerSmallShipyard;
 import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
-import com.lulan.shincolle.reference.AttrID;
-import com.lulan.shincolle.reference.GUIs;
+import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.utility.GuiHelper;
@@ -118,7 +117,7 @@ public class GuiSmallShipyard extends GuiContainer {
         
         //match all pages
         int buttonValue = this.tile.buildType;
-        switch(GuiHelper.getButton(GUIs.SMALLSHIPYARD, 0, xClick, yClick)) {
+        switch(GuiHelper.getButton(ID.SMALLSHIPYARD, 0, xClick, yClick)) {
         case 0:	
         	if(buttonValue == 1) {
         		buttonValue = 0;	//原本點ship 又點一次 則歸0
@@ -127,7 +126,7 @@ public class GuiSmallShipyard extends GuiContainer {
         		buttonValue = 1;	//原本點其他按鈕, 則設成ship
         	}
         	LogHelper.info("DEBUG : GUI click: build small ship: ship "+buttonValue);
-        	CommonProxy.channel.sendToServer(new C2SGUIPackets(this.tile, AttrID.B_Shipyard_Type, buttonValue, 0));
+        	CommonProxy.channel.sendToServer(new C2SGUIPackets(this.tile, ID.B_Shipyard_Type, buttonValue, 0));
         	break;
         case 1:
         	if(buttonValue == 2) {
@@ -137,7 +136,7 @@ public class GuiSmallShipyard extends GuiContainer {
         		buttonValue = 2;	//原本點其他按鈕, 則設成equip
         	}
         	LogHelper.info("DEBUG : GUI click: build small ship: equip "+buttonValue);
-        	CommonProxy.channel.sendToServer(new C2SGUIPackets(this.tile, AttrID.B_Shipyard_Type, buttonValue, 0));
+        	CommonProxy.channel.sendToServer(new C2SGUIPackets(this.tile, ID.B_Shipyard_Type, buttonValue, 0));
         	break;
         }
 	}
