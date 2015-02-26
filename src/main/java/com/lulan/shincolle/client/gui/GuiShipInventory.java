@@ -118,11 +118,11 @@ public class GuiShipInventory extends GuiContainer {
         drawTexturedModalRect(guiLeft+127, guiTop+this.pageIndictor, 250, 0, 6, 34);
         
         //draw attack switch
-        this.switchMelee = this.entity.getStateFlag(ID.F_UseMelee);
-    	this.switchLight = this.entity.getStateFlag(ID.F_UseAmmoLight);
-        this.switchHeavy = this.entity.getStateFlag(ID.F_UseAmmoHeavy);
-        this.switchAirLight = this.entity.getStateFlag(ID.F_UseAirLight);
-        this.switchAirHeavy = this.entity.getStateFlag(ID.F_UseAirHeavy);
+        this.switchMelee = this.entity.getStateFlag(ID.F.UseMelee);
+    	this.switchLight = this.entity.getStateFlag(ID.F.UseAmmoLight);
+        this.switchHeavy = this.entity.getStateFlag(ID.F.UseAmmoHeavy);
+        this.switchAirLight = this.entity.getStateFlag(ID.F.UseAirLight);
+        this.switchAirHeavy = this.entity.getStateFlag(ID.F.UseAirHeavy);
         
         if(this.switchMelee) {
         	drawTexturedModalRect(guiLeft+174, guiTop+132, 0, 214, 11, 11);
@@ -161,7 +161,7 @@ public class GuiShipInventory extends GuiContainer {
         
         //draw level, ship type icon
         Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE_ICON);
-        if(entity.getStateMinor(ID.ShipLevel) > 99) {
+        if(entity.getStateMinor(ID.N.ShipLevel) > 99) {
         	drawTexturedModalRect(guiLeft+157, guiTop+18, 0, 0, 40, 42);
         	drawTexturedModalRect(guiLeft+159, guiTop+22, ICON_SHIPTYPE[entity.getShipType()][0], ICON_SHIPTYPE[entity.getShipType()][1], 28, 28);
         }
@@ -242,7 +242,7 @@ public class GuiShipInventory extends GuiContainer {
 	//draw level,hp,atk,def...
 	private void drawAttributes() {
 		//draw hp, level
-		shiplevel = String.valueOf(entity.getStateMinor(ID.ShipLevel));
+		shiplevel = String.valueOf(entity.getStateMinor(ID.N.ShipLevel));
 		lvMark = I18n.format("gui.shincolle:level");
 		hpMark = I18n.format("gui.shincolle:hp");
 		hpCurrent = MathHelper.ceiling_float_int(entity.getHealth());
@@ -264,7 +264,7 @@ public class GuiShipInventory extends GuiContainer {
 		this.fontRendererObj.drawString(canAHATK, 187, 182, pickColor(5));
 		
 		//draw level: 150->gold other->white
-		if(entity.getStateMinor(ID.ShipLevel) < 150) {
+		if(entity.getStateMinor(ID.N.ShipLevel) < 150) {
 			color = 16777215;  //white
 		}
 		else {
@@ -349,11 +349,11 @@ public class GuiShipInventory extends GuiContainer {
 			this.fontRendererObj.drawString(I18n.format("gui.shincolle:grudge"), 67, 104, pickColor(5));
 			//draw value
 			entity.setExpNext();  //update exp value
-			Exp = String.valueOf(this.entity.getStateMinor(ID.ExpCurrent))+"/"+String.valueOf(this.entity.getStateMinor(ID.ExpNext));
-			Kills = String.valueOf(this.entity.getStateMinor(ID.Kills));
-			AmmoLight = String.valueOf(this.entity.getStateMinor(ID.NumAmmoLight));
-			AmmoHeavy = String.valueOf(this.entity.getStateMinor(ID.NumAmmoHeavy));
-			Grudge = String.valueOf(this.entity.getStateMinor(ID.NumGrudge));
+			Exp = String.valueOf(this.entity.getStateMinor(ID.N.ExpCurrent))+"/"+String.valueOf(this.entity.getStateMinor(ID.N.ExpNext));
+			Kills = String.valueOf(this.entity.getStateMinor(ID.N.Kills));
+			AmmoLight = String.valueOf(this.entity.getStateMinor(ID.N.NumAmmoLight));
+			AmmoHeavy = String.valueOf(this.entity.getStateMinor(ID.N.NumAmmoHeavy));
+			Grudge = String.valueOf(this.entity.getStateMinor(ID.N.NumGrudge));
 				
 			this.fontRendererObj.drawStringWithShadow(Kills, 125-this.fontRendererObj.getStringWidth(Kills), 30, pickColor(0));
 			this.fontRendererObj.drawStringWithShadow(Exp, 125-this.fontRendererObj.getStringWidth(Exp), 51, pickColor(0));
@@ -418,7 +418,7 @@ public class GuiShipInventory extends GuiContainer {
         yClick = posY - this.guiTop;
         
         //match all pages
-        switch(GuiHelper.getButton(ID.SHIPINVENTORY, 0, xClick, yClick)) {
+        switch(GuiHelper.getButton(ID.G.SHIPINVENTORY, 0, xClick, yClick)) {
         case 0:	//page 1 button
         	this.showPage = 1;
         	break;
@@ -429,29 +429,29 @@ public class GuiShipInventory extends GuiContainer {
         	this.showPage = 3;
         	break;
         case 3:	//can melee button
-        	this.switchMelee = this.entity.getStateFlag(ID.F_UseMelee);
-    		CommonProxy.channel.sendToServer(new C2SGUIPackets(this.entity, ID.B_ShipInv_Melee, getInverseInt(this.switchMelee)));
+        	this.switchMelee = this.entity.getStateFlag(ID.F.UseMelee);
+    		CommonProxy.channel.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_Melee, getInverseInt(this.switchMelee)));
         	break;
         case 4:	//use ammo light button
-        	this.switchLight = this.entity.getStateFlag(ID.F_UseAmmoLight);
-    		CommonProxy.channel.sendToServer(new C2SGUIPackets(this.entity, ID.B_ShipInv_AmmoLight, getInverseInt(this.switchLight)));
+        	this.switchLight = this.entity.getStateFlag(ID.F.UseAmmoLight);
+    		CommonProxy.channel.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_AmmoLight, getInverseInt(this.switchLight)));
         	break;
         case 5:	//use ammo heavy button
-        	this.switchHeavy = this.entity.getStateFlag(ID.F_UseAmmoHeavy);
-    		CommonProxy.channel.sendToServer(new C2SGUIPackets(this.entity, ID.B_ShipInv_AmmoHeavy, getInverseInt(this.switchHeavy)));
+        	this.switchHeavy = this.entity.getStateFlag(ID.F.UseAmmoHeavy);
+    		CommonProxy.channel.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_AmmoHeavy, getInverseInt(this.switchHeavy)));
         	break;
         case 6:	//use air light button
-        	this.switchAirLight = this.entity.getStateFlag(ID.F_UseAirLight);
-    		CommonProxy.channel.sendToServer(new C2SGUIPackets(this.entity, ID.B_ShipInv_AirLight, getInverseInt(this.switchAirLight)));
+        	this.switchAirLight = this.entity.getStateFlag(ID.F.UseAirLight);
+    		CommonProxy.channel.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_AirLight, getInverseInt(this.switchAirLight)));
         	break;
         case 7:	//use air heavy button
-        	this.switchAirHeavy = this.entity.getStateFlag(ID.F_UseAirHeavy);
-    		CommonProxy.channel.sendToServer(new C2SGUIPackets(this.entity, ID.B_ShipInv_AirHeavy, getInverseInt(this.switchAirHeavy)));
+        	this.switchAirHeavy = this.entity.getStateFlag(ID.F.UseAirHeavy);
+    		CommonProxy.channel.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_AirHeavy, getInverseInt(this.switchAirHeavy)));
         	break;
     	}//end all page switch
         
         if(this.showPage == 2) {	//page 2: damage display switch
-        	switch(GuiHelper.getButton(ID.SHIPINVENTORY, 1, xClick, yClick)) {
+        	switch(GuiHelper.getButton(ID.G.SHIPINVENTORY, 1, xClick, yClick)) {
         	case 0:
         		if(this.showAttack == 1) {
         			this.showAttack = 2;

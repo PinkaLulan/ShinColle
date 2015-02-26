@@ -24,7 +24,7 @@ public class EntityAIShipFloating extends EntityAIBase {
 
     public boolean shouldExecute() {
 //    	LogHelper.info("DEBUG : floating cond? "+this.theEntity.getEntityFlag(AttrID.F_CanFloatUp));
-        return !this.theEntity.isSitting() && this.theEntity.getStateFlag(ID.F_CanFloatUp);
+        return !this.theEntity.isSitting() && this.theEntity.getStateFlag(ID.F.CanFloatUp);
     }
 
     public void updateTask() {

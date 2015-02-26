@@ -119,7 +119,7 @@ public class BlockSmallShipyard extends BasicBlockContainer {
     		TileEntitySmallShipyard entity = (TileEntitySmallShipyard) world.getTileEntity(x, y, z);
     		
     		if (entity != null) {	//開啟方塊GUI 參數:玩家,mod instance,gui ID,world,座標xyz
-    			FMLNetworkHandler.openGui(player, ShinColle.instance, ID.SMALLSHIPYARD, world, x, y, z);
+    			FMLNetworkHandler.openGui(player, ShinColle.instance, ID.G.SMALLSHIPYARD, world, x, y, z);
     		}
     		return true;
     	}

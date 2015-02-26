@@ -10,8 +10,10 @@ import java.util.List;
 import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.client.particle.EntityFXSpray;
+import com.lulan.shincolle.client.particle.EntityFXTexts;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
+import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
@@ -310,6 +312,15 @@ public class EntityAbyssMissile extends Entity {
             	if(EntityHelper.checkSameOwner(this.hostEntity.getOwner(), parHitEntity)) {
             		missileAtk = 0;
             	}
+            	
+            	//calc critical
+            	if(this.hostEntity != null && (this.rand.nextFloat() < this.hostEntity.getEffectEquip(ID.EF_CRI))) {
+            		missileAtk *= 3F;
+            		//spawn critical particle
+            		EntityFX particleMiss = new EntityFXTexts(worldObj, 
+            		          this.hostEntity.posX, this.hostEntity.posY+this.height, this.hostEntity.posZ, 1F, 1);	    
+            		Minecraft.getMinecraft().effectRenderer.addEffect(particleMiss);
+            	}
 
         		//設定該entity受到的傷害
             	isTargetHurt = parHitEntity.attackEntityFrom(DamageSource.causeMobDamage(this.hostEntity), missileAtk);
@@ -350,6 +361,15 @@ public class EntityAbyssMissile extends Entity {
                     	}
 //                		LogHelper.info("DEBUG : misile atk "+missileAtk+" "+hitEntity);
                 		
+                		//calc critical
+                		if(this.hostEntity != null && (this.rand.nextFloat() < this.hostEntity.getEffectEquip(ID.EF_CRI))) {
+                    		missileAtk *= 3F;
+                    		//spawn critical particle
+                    		EntityFX particleMiss = new EntityFXTexts(worldObj, 
+                    		          this.hostEntity.posX, this.hostEntity.posY+this.height, this.hostEntity.posZ, 1F, 1);	    
+                    		Minecraft.getMinecraft().effectRenderer.addEffect(particleMiss);
+                    	}
+                    	
                 		//對entity造成傷害
                 		isTargetHurt = hitEntity.attackEntityFrom(DamageSource.causeMobDamage(this.hostEntity), missileAtk);
                 	    

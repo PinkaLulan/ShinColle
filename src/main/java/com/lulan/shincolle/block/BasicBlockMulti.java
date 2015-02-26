@@ -95,7 +95,7 @@ abstract public class BasicBlockMulti extends BasicBlockContainer {
 					switch(entity.getStructType()) {
 					case 1:	//large shipyard
 					case 2:
-						FMLNetworkHandler.openGui(player, ShinColle.instance, ID.LARGESHIPYARD, world, 
+						FMLNetworkHandler.openGui(player, ShinColle.instance, ID.G.LARGESHIPYARD, world, 
 								entity.getMasterX(), entity.getMasterY(), entity.getMasterZ());
 						break;
 					}

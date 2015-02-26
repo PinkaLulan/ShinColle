@@ -424,7 +424,7 @@ public class ModelHeavyCruiserRi extends ModelBase {
   		}
   		
 	    if(ent.isSitting() || ent.isRiding()) {  //騎乘動作 			
-  			if(ent.getStateEmotion(ID.Emotion) == Values.Emotion.BORED) {
+  			if(ent.getStateEmotion(ID.S.Emotion) == Values.Emotion.BORED) {
 		    	GL11.glTranslatef(0F, 1.4F, 0F);
 				this.ArmLeft.rotateAngleX = 0.6F;
 	  			this.ArmRight.rotateAngleX = 0.6F;
@@ -469,7 +469,7 @@ public class ModelHeavyCruiserRi extends ModelBase {
 	}
     
     private void showEquip(BasicEntityShip ent) {
-		if(ent.getStateEmotion(ID.State) >= Values.State.EQUIP) {
+		if(ent.getStateEmotion(ID.S.State) >= Values.State.EQUIP) {
 			this.EquipBase.isHidden = false;
 			this.EquipLeftBase.isHidden = false;
 			this.EquipRightBase.isHidden = false;
@@ -488,7 +488,7 @@ public class ModelHeavyCruiserRi extends ModelBase {
   	
     //隨機抽取顯示的表情 
     private void rollEmotion(BasicEntityShip ent) { 
-    	switch(ent.getStateEmotion(ID.Emotion)) {
+    	switch(ent.getStateEmotion(ID.S.Emotion)) {
     	case Values.Emotion.BLINK:	//blink
     		EmotionBlink(ent);
     		break;
@@ -526,7 +526,7 @@ public class ModelHeavyCruiserRi extends ModelBase {
     	
     	if(EmoTime > 41) {	//reset face
     		setFace(0);
-			ent.setStateEmotion(ID.Emotion, Values.Emotion.NORMAL, false);
+			ent.setStateEmotion(ID.S.Emotion, Values.Emotion.NORMAL, false);
 			ent.setStartEmotion(-1);
     	}
     	else if(EmoTime > 1) {
@@ -536,16 +536,16 @@ public class ModelHeavyCruiserRi extends ModelBase {
 
 	//眨眼動作, this emotion is CLIENT ONLY, no sync packet required
   	private void EmotionBlink(BasicEntityShip ent) {
-  		if(ent.getStateEmotion(ID.Emotion) == Values.Emotion.NORMAL) {	//要在沒表情狀態才做表情		
+  		if(ent.getStateEmotion(ID.S.Emotion) == Values.Emotion.NORMAL) {	//要在沒表情狀態才做表情		
   			ent.setStartEmotion(ent.ticksExisted);		//表情開始時間
-  			ent.setStateEmotion(ID.Emotion, Values.Emotion.BLINK, false);	//標記表情為blink
+  			ent.setStateEmotion(ID.S.Emotion, Values.Emotion.BLINK, false);	//標記表情為blink
   		}
   		
   		int EmoTime = ent.ticksExisted - ent.getStartEmotion();
     	 		
     	if(EmoTime > 46) {	//reset face
     		setFace(0);
-			ent.setStateEmotion(ID.Emotion, Values.Emotion.NORMAL, false);
+			ent.setStateEmotion(ID.S.Emotion, Values.Emotion.NORMAL, false);
 			ent.setStartEmotion(-1);
     	}
     	else if(EmoTime > 35) {

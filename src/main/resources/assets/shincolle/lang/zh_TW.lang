@@ -115,4 +115,7 @@ gui.shincolle:canairlightattack=輕型艦載機
 gui.shincolle:canairheavyattack=重型艦載機
 gui.shincolle:notforcarrier=不適用於航母
 gui.shincolle:carrieronly=航母限定
-
+gui.shincolle:critical=爆擊率
+gui.shincolle:doublehit=二連擊
+gui.shincolle:triplehit=三連擊
+gui.shincolle:missreduce=提高命中率

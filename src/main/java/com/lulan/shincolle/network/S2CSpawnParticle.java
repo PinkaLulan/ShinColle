@@ -63,6 +63,12 @@ public class S2CSpawnParticle implements IMessage {
 		this.sendEntity = entity;
         this.sendType = 1;
         this.sendParticleType = (byte)type;
+        this.sendposX = (float)posX;
+        this.sendposY = (float)posY;
+        this.sendposZ = (float)posZ;
+        this.sendlookX = (float)lookX;
+        this.sendlookY = (float)lookY;
+        this.sendlookZ = (float)lookZ;
     }
 	
 	//type 2: spawn particle with position

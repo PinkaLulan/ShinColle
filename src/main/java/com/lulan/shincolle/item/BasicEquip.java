@@ -44,20 +44,24 @@ public class BasicEquip extends BasicItem {
 //    	LogHelper.info("DEBUG : item info "+EquipCalc.getEquipID(itemstack)+" "+itemStat[0]);
     	
     	if(itemStat != null) {
-    		if(itemStat[ID.HP_E] != 0F) list.add(EnumChatFormatting.RED + String.valueOf(itemStat[ID.HP_E])+ " " + I18n.format("gui.shincolle:hp"));
-    		if(itemStat[ID.ATK_E] != 0F) list.add(EnumChatFormatting.AQUA + String.valueOf(itemStat[ID.ATK_E])+ " " + I18n.format("gui.shincolle:firepower1"));
-    		if(itemStat[ID.ATK_H_E] != 0F) list.add(EnumChatFormatting.AQUA + String.valueOf(itemStat[ID.ATK_H_E])+ " " + I18n.format("gui.shincolle:torpedo"));
-    		if(itemStat[ID.ATK_AL_E] != 0F) list.add(EnumChatFormatting.AQUA + String.valueOf(itemStat[ID.ATK_AL_E])+ " " + I18n.format("gui.shincolle:airfirepower"));
-    		if(itemStat[ID.ATK_AH_E] != 0F) list.add(EnumChatFormatting.AQUA + String.valueOf(itemStat[ID.ATK_AH_E])+ " " + I18n.format("gui.shincolle:airtorpedo"));
-    		if(itemStat[ID.DEF_E] != 0F) list.add(EnumChatFormatting.WHITE + String.valueOf(itemStat[ID.DEF_E])+ " " + I18n.format("gui.shincolle:armor"));
-    		if(itemStat[ID.SPD_E] != 0F) list.add(EnumChatFormatting.YELLOW + String.valueOf(itemStat[ID.SPD_E])+ " " + I18n.format("gui.shincolle:attackspeed"));
-    		if(itemStat[ID.MOV_E] != 0F) list.add(EnumChatFormatting.GREEN + String.valueOf(itemStat[ID.MOV_E])+ " " + I18n.format("gui.shincolle:movespeed"));
-    		if(itemStat[ID.HIT_E] != 0F) list.add(EnumChatFormatting.LIGHT_PURPLE + String.valueOf(itemStat[ID.HIT_E])+ " " + I18n.format("gui.shincolle:range"));
+    		if(itemStat[ID.E.HP] != 0F) list.add(EnumChatFormatting.RED + String.valueOf(itemStat[ID.E.HP])+ " " + I18n.format("gui.shincolle:hp"));
+    		if(itemStat[ID.E.ATK_L] != 0F) list.add(EnumChatFormatting.RED + String.valueOf(itemStat[ID.E.ATK_L])+ " " + I18n.format("gui.shincolle:firepower1"));
+    		if(itemStat[ID.E.ATK_H] != 0F) list.add(EnumChatFormatting.GREEN + String.valueOf(itemStat[ID.E.ATK_H])+ " " + I18n.format("gui.shincolle:torpedo"));
+    		if(itemStat[ID.E.ATK_AL] != 0F) list.add(EnumChatFormatting.RED + String.valueOf(itemStat[ID.E.ATK_AL])+ " " + I18n.format("gui.shincolle:airfirepower"));
+    		if(itemStat[ID.E.ATK_AH] != 0F) list.add(EnumChatFormatting.GREEN + String.valueOf(itemStat[ID.E.ATK_AH])+ " " + I18n.format("gui.shincolle:airtorpedo"));
+    		if(itemStat[ID.E.DEF] != 0F) list.add(EnumChatFormatting.WHITE + String.valueOf(itemStat[ID.E.DEF])+ " " + I18n.format("gui.shincolle:armor"));
+    		if(itemStat[ID.E.SPD] != 0F) list.add(EnumChatFormatting.WHITE + String.valueOf(itemStat[ID.E.SPD])+ " " + I18n.format("gui.shincolle:attackspeed"));
+    		if(itemStat[ID.E.MOV] != 0F) list.add(EnumChatFormatting.GRAY + String.valueOf(itemStat[ID.E.MOV])+ " " + I18n.format("gui.shincolle:movespeed"));
+    		if(itemStat[ID.E.HIT] != 0F) list.add(EnumChatFormatting.LIGHT_PURPLE + String.valueOf(itemStat[ID.E.HIT])+ " " + I18n.format("gui.shincolle:range"));
+    		if(itemStat[ID.E.CRI] != 0F) list.add(EnumChatFormatting.AQUA + String.valueOf(itemStat[ID.E.CRI])+ " " + I18n.format("gui.shincolle:critical"));
+    		if(itemStat[ID.E.DHIT] != 0F) list.add(EnumChatFormatting.YELLOW + String.valueOf(itemStat[ID.E.DHIT])+ " " + I18n.format("gui.shincolle:doublehit"));
+    		if(itemStat[ID.E.THIT] != 0F) list.add(EnumChatFormatting.GOLD + String.valueOf(itemStat[ID.E.THIT])+ " " + I18n.format("gui.shincolle:triplehit"));
+    		if(itemStat[ID.E.MISS] != 0F) list.add(EnumChatFormatting.RED + String.valueOf(itemStat[ID.E.MISS])+ " " + I18n.format("gui.shincolle:missreduce"));
     	
-    		if(itemStat[ID.LEVEL_E] == 1F) {
+    		if(itemStat[ID.E.LEVEL] == 1F) {
     			list.add(EnumChatFormatting.DARK_RED + I18n.format("gui.shincolle:notforcarrier"));
     		}
-    		if(itemStat[ID.LEVEL_E] == 3F) {
+    		if(itemStat[ID.E.LEVEL] == 3F) {
     			list.add(EnumChatFormatting.DARK_AQUA + I18n.format("gui.shincolle:carrieronly"));
     		}
     	}

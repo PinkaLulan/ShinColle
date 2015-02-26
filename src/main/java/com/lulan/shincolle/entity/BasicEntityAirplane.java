@@ -3,7 +3,7 @@ package com.lulan.shincolle.entity;
 import java.util.List;
 import java.util.UUID;
 
-import com.lulan.shincolle.client.particle.EntityFXMiss;
+import com.lulan.shincolle.client.particle.EntityFXTexts;
 import com.lulan.shincolle.client.particle.EntityFXSpray;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -164,8 +164,8 @@ public abstract class BasicEntityAirplane extends EntityLiving {
 					}
 					else {	//歸還剩餘彈藥 (但是grudge不歸還)
 						this.setDead();
-						this.hostEntity.setStateMinor(ID.NumAmmoLight, this.hostEntity.getStateMinor(ID.NumAmmoLight) + this.numAmmoLight);
-						this.hostEntity.setStateMinor(ID.NumAmmoHeavy, this.hostEntity.getStateMinor(ID.NumAmmoHeavy) + this.numAmmoHeavy);
+						this.hostEntity.setStateMinor(ID.N.NumAmmoLight, this.hostEntity.getStateMinor(ID.N.NumAmmoLight) + this.numAmmoLight);
+						this.hostEntity.setStateMinor(ID.N.NumAmmoHeavy, this.hostEntity.getStateMinor(ID.N.NumAmmoHeavy) + this.numAmmoHeavy);
 					}
 				}
 				
@@ -234,15 +234,51 @@ public abstract class BasicEntityAirplane extends EntityLiving {
         TargetPoint point0 = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
 		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 8), point0);
 		
+		//calc miss chance, if not miss, calc cri/multi hit
+        float missChance = 1F / (this.hostEntity.getStateFinal(ID.HIT) / 3F);
+        missChance -= this.hostEntity.getEffectEquip(ID.EF_MISS);	//equip miss reduce
+        if(missChance > 0.35F) missChance = 0.35F;
+		
         //calc miss chance
-        if(this.rand.nextInt(8) == 0) {	//12.5% miss
+        if(this.rand.nextFloat() < missChance) {
         	atkLight = 0;	//still attack, but no damage
         	//spawn miss particle
-    		EntityFX particleMiss = new EntityFXMiss(worldObj, 
-    		          this.hostEntity.posX, this.hostEntity.posY+this.hostEntity.height, this.hostEntity.posZ, 1F);	    
+    		EntityFX particleMiss = new EntityFXTexts(worldObj, 
+    		          this.hostEntity.posX, this.hostEntity.posY+this.hostEntity.height, this.hostEntity.posZ, 1F, 0);	    
     		Minecraft.getMinecraft().effectRenderer.addEffect(particleMiss);
         }
-//atkLight = 0;       
+        else {
+        	//roll cri -> roll double hit -> roll triple hit (triple hit more rare)
+        	//calc critical
+        	if(this.rand.nextFloat() < this.hostEntity.getEffectEquip(ID.EF_CRI)) {
+        		atk *= 1.5F;
+        		//spawn critical particle
+        		EntityFX particleMiss = new EntityFXTexts(worldObj, 
+        		          this.posX, this.posY+this.height, this.posZ, 1F, 1);	    
+        		Minecraft.getMinecraft().effectRenderer.addEffect(particleMiss);
+        	}
+        	else {
+        		//calc double hit
+            	if(this.rand.nextFloat() < this.hostEntity.getEffectEquip(ID.EF_DHIT)) {
+            		atk *= 2F;
+            		//spawn double hit particle
+            		EntityFX particleMiss = new EntityFXTexts(worldObj, 
+            		          this.posX, this.posY+this.height, this.posZ, 1F, 2);	    
+            		Minecraft.getMinecraft().effectRenderer.addEffect(particleMiss);
+            	}
+            	else {
+            		//calc double hit
+                	if(this.rand.nextFloat() < this.hostEntity.getEffectEquip(ID.EF_THIT)) {
+                		atk *= 3F;
+                		//spawn triple hit particle
+                		EntityFX particleMiss = new EntityFXTexts(worldObj, 
+                		          this.posX, this.posY+this.height, this.posZ, 1F, 3);	    
+                		Minecraft.getMinecraft().effectRenderer.addEffect(particleMiss);
+                	}
+            	}
+        	}
+        }
+        
 	    //將atk跟attacker傳給目標的attackEntityFrom方法, 在目標class中計算傷害
 	    //並且回傳是否成功傷害到目標
 	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this), atkLight);
@@ -277,16 +313,21 @@ public abstract class BasicEntityAirplane extends EntityLiving {
 		float atkHeavy = this.atk;
 		//set knockback value (testing)
 		float kbValue = 0.08F;
-//atkHeavy=0;
+
 		//play cannon fire sound at attacker
         this.playSound(Reference.MOD_ID+":ship-fireheavy", 0.4F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         
+		//calc miss chance, if not miss, calc cri/multi hit
+        float missChance = 1F / (this.hostEntity.getStateFinal(ID.HIT) / 3F);
+        missChance -= this.hostEntity.getEffectEquip(ID.EF_MISS);	//equip miss reduce
+        if(missChance > 0.35F) missChance = 0.35F;
+		
         //calc miss chance
-        if(this.rand.nextInt(10) == 0) {	//10% miss
+        if(this.rand.nextFloat() < missChance) {
         	atkHeavy = 0;	//still attack, but no damage
         	//spawn miss particle
-    		EntityFX particleMiss = new EntityFXMiss(worldObj, 
-    		          this.hostEntity.posX, this.hostEntity.posY+this.hostEntity.height, this.hostEntity.posZ, 1F);	    
+    		EntityFX particleMiss = new EntityFXTexts(worldObj, 
+    		          this.hostEntity.posX, this.hostEntity.posY+this.hostEntity.height, this.hostEntity.posZ, 1F, 0);	    
     		Minecraft.getMinecraft().effectRenderer.addEffect(particleMiss);
         }
 

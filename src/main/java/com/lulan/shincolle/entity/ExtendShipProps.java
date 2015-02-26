@@ -47,14 +47,14 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 
 		//save values to NBT
 		nbtExt.setTag("Minor", nbtExt_add0);
-		nbtExt_add0.setInteger("Level", this.entity.getStateMinor(ID.ShipLevel));
-		nbtExt_add0.setInteger("Kills", this.entity.getStateMinor(ID.Kills));
-		nbtExt_add0.setInteger("Exp", this.entity.getStateMinor(ID.ExpCurrent));
-		nbtExt_add0.setInteger("NumAmmoL", this.entity.getStateMinor(ID.NumAmmoLight));
-		nbtExt_add0.setInteger("NumAmmoH", this.entity.getStateMinor(ID.NumAmmoHeavy));
-		nbtExt_add0.setInteger("NumGrudge", this.entity.getStateMinor(ID.NumGrudge));
-		nbtExt_add0.setInteger("NumAirL", this.entity.getStateMinor(ID.NumAirLight));
-		nbtExt_add0.setInteger("NumAirH", this.entity.getStateMinor(ID.NumAirHeavy));
+		nbtExt_add0.setInteger("Level", this.entity.getStateMinor(ID.N.ShipLevel));
+		nbtExt_add0.setInteger("Kills", this.entity.getStateMinor(ID.N.Kills));
+		nbtExt_add0.setInteger("Exp", this.entity.getStateMinor(ID.N.ExpCurrent));
+		nbtExt_add0.setInteger("NumAmmoL", this.entity.getStateMinor(ID.N.NumAmmoLight));
+		nbtExt_add0.setInteger("NumAmmoH", this.entity.getStateMinor(ID.N.NumAmmoHeavy));
+		nbtExt_add0.setInteger("NumGrudge", this.entity.getStateMinor(ID.N.NumGrudge));
+		nbtExt_add0.setInteger("NumAirL", this.entity.getStateMinor(ID.N.NumAirLight));
+		nbtExt_add0.setInteger("NumAirH", this.entity.getStateMinor(ID.N.NumAirHeavy));
 		//save AttrFinal
 		nbtExt.setTag("Final", nbtExt_add1);
 		nbtExt_add1.setFloat("HP", this.entity.getStateFinal(ID.HP));
@@ -68,9 +68,9 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		nbtExt_add1.setFloat("ATK_AH", this.entity.getStateFinal(ID.ATK_AH));
 		//save EntityState
 		nbtExt.setTag("Emotion", nbtExt_add2);	
-		nbtExt_add2.setByte("State", this.entity.getStateEmotion(ID.State));
-		nbtExt_add2.setByte("Emotion", this.entity.getStateEmotion(ID.Emotion));
-		nbtExt_add2.setByte("Emotion2", this.entity.getStateEmotion(ID.Emotion2));
+		nbtExt_add2.setByte("State", this.entity.getStateEmotion(ID.S.State));
+		nbtExt_add2.setByte("Emotion", this.entity.getStateEmotion(ID.S.Emotion));
+		nbtExt_add2.setByte("Emotion2", this.entity.getStateEmotion(ID.S.Emotion2));
 		//save BonusPoint
 		nbtExt.setTag("Point", nbtExt_add3);	
 		nbtExt_add3.setByte("HP", this.entity.getBonusPoint(ID.HP));
@@ -81,14 +81,14 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		nbtExt_add3.setByte("HIT", this.entity.getBonusPoint(ID.HIT));
 		//save EntityFlag
 		nbtExt.setTag("ShipFlags", nbtExt_add4);
-		nbtExt_add4.setBoolean("CanFloat", this.entity.getStateFlag(ID.F_CanFloatUp));
-		nbtExt_add4.setBoolean("IsMarried", this.entity.getStateFlag(ID.F_IsMarried));
-		nbtExt_add4.setBoolean("NoFuel", this.entity.getStateFlag(ID.F_NoFuel));
-		nbtExt_add4.setBoolean("Melee", this.entity.getStateFlag(ID.F_UseMelee));
-		nbtExt_add4.setBoolean("AmmoL", this.entity.getStateFlag(ID.F_UseAmmoLight));
-		nbtExt_add4.setBoolean("AmmoH", this.entity.getStateFlag(ID.F_UseAmmoHeavy));
-		nbtExt_add4.setBoolean("AirL", this.entity.getStateFlag(ID.F_UseAirLight));
-		nbtExt_add4.setBoolean("AirH", this.entity.getStateFlag(ID.F_UseAirHeavy));
+		nbtExt_add4.setBoolean("CanFloat", this.entity.getStateFlag(ID.F.CanFloatUp));
+		nbtExt_add4.setBoolean("IsMarried", this.entity.getStateFlag(ID.F.IsMarried));
+		nbtExt_add4.setBoolean("NoFuel", this.entity.getStateFlag(ID.F.NoFuel));
+		nbtExt_add4.setBoolean("Melee", this.entity.getStateFlag(ID.F.UseMelee));
+		nbtExt_add4.setBoolean("AmmoL", this.entity.getStateFlag(ID.F.UseAmmoLight));
+		nbtExt_add4.setBoolean("AmmoH", this.entity.getStateFlag(ID.F.UseAmmoHeavy));
+		nbtExt_add4.setBoolean("AirL", this.entity.getStateFlag(ID.F.UseAirLight));
+		nbtExt_add4.setBoolean("AirH", this.entity.getStateFlag(ID.F.UseAirHeavy));
 		
 		//save inventory
 		NBTTagList list = new NBTTagList();
@@ -115,14 +115,14 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 
 		//load minor state
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Minor");
-		entity.setStateMinor(ID.ShipLevel, nbt_load.getShort("Level"));
-		entity.setStateMinor(ID.Kills, nbt_load.getShort("Kills"));
-		entity.setStateMinor(ID.ExpCurrent, nbt_load.getShort("Exp"));
-		entity.setStateMinor(ID.NumAmmoLight, nbt_load.getShort("NumAmmoL"));
-		entity.setStateMinor(ID.NumAmmoHeavy, nbt_load.getShort("NumAmmoH"));
-		entity.setStateMinor(ID.NumGrudge, nbt_load.getShort("NumGrudge"));
-		entity.setStateMinor(ID.NumAirLight, nbt_load.getShort("NumAirL"));
-		entity.setStateMinor(ID.NumAirHeavy, nbt_load.getShort("NumAirH"));
+		entity.setStateMinor(ID.N.ShipLevel, nbt_load.getShort("Level"));
+		entity.setStateMinor(ID.N.Kills, nbt_load.getShort("Kills"));
+		entity.setStateMinor(ID.N.ExpCurrent, nbt_load.getShort("Exp"));
+		entity.setStateMinor(ID.N.NumAmmoLight, nbt_load.getShort("NumAmmoL"));
+		entity.setStateMinor(ID.N.NumAmmoHeavy, nbt_load.getShort("NumAmmoH"));
+		entity.setStateMinor(ID.N.NumGrudge, nbt_load.getShort("NumGrudge"));
+		entity.setStateMinor(ID.N.NumAirLight, nbt_load.getShort("NumAirL"));
+		entity.setStateMinor(ID.N.NumAirHeavy, nbt_load.getShort("NumAirH"));
 		//load final state
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Final");
 		entity.setStateFinal(ID.HP, nbt_load.getFloat("HP"));
@@ -136,9 +136,9 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		entity.setStateFinal(ID.HIT, nbt_load.getFloat("ATK_AH"));
 		//load emotion state
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Emotion");
-		entity.setStateEmotion(ID.State, nbt_load.getByte("State"), false);
-		entity.setStateEmotion(ID.Emotion, nbt_load.getByte("Emotion"), false);
-		entity.setStateEmotion(ID.Emotion2, nbt_load.getByte("Emotion2"), false);
+		entity.setStateEmotion(ID.S.State, nbt_load.getByte("State"), false);
+		entity.setStateEmotion(ID.S.Emotion, nbt_load.getByte("Emotion"), false);
+		entity.setStateEmotion(ID.S.Emotion2, nbt_load.getByte("Emotion2"), false);
 		//load bonus point
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Point");
 		entity.setBonusPoint(ID.HP, nbt_load.getByte("HP"));
@@ -149,14 +149,14 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		entity.setBonusPoint(ID.HIT, nbt_load.getByte("HIT"));
 		//load flags
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("ShipFlags");
-		entity.setStateFlag(ID.F_CanFloatUp, nbt_load.getBoolean("CanFloat"));
-		entity.setStateFlag(ID.F_IsMarried, nbt_load.getBoolean("IsMarried"));
-		entity.setStateFlag(ID.F_NoFuel, nbt_load.getBoolean("NoFuel"));
-		entity.setStateFlag(ID.F_UseMelee, nbt_load.getBoolean("Melee"));
-		entity.setStateFlag(ID.F_UseAmmoLight, nbt_load.getBoolean("AmmoL"));
-		entity.setStateFlag(ID.F_UseAmmoHeavy, nbt_load.getBoolean("AmmoH"));
-		entity.setStateFlag(ID.F_UseAirLight, nbt_load.getBoolean("AirL"));
-		entity.setStateFlag(ID.F_UseAirHeavy, nbt_load.getBoolean("AirH"));
+		entity.setStateFlag(ID.F.CanFloatUp, nbt_load.getBoolean("CanFloat"));
+		entity.setStateFlag(ID.F.IsMarried, nbt_load.getBoolean("IsMarried"));
+		entity.setStateFlag(ID.F.NoFuel, nbt_load.getBoolean("NoFuel"));
+		entity.setStateFlag(ID.F.UseMelee, nbt_load.getBoolean("Melee"));
+		entity.setStateFlag(ID.F.UseAmmoLight, nbt_load.getBoolean("AmmoL"));
+		entity.setStateFlag(ID.F.UseAmmoHeavy, nbt_load.getBoolean("AmmoH"));
+		entity.setStateFlag(ID.F.UseAirLight, nbt_load.getBoolean("AirL"));
+		entity.setStateFlag(ID.F.UseAirHeavy, nbt_load.getBoolean("AirH"));
 
 		//load inventory
 		NBTTagList list = nbt.getTagList(tagName, 10);

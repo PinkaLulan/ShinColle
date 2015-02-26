@@ -53,8 +53,8 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
     	EntityLivingBase target = this.host.getAttackTarget();
     	
         if (target != null && 
-        	((this.host.getStateFlag(ID.F_UseAmmoLight) && this.host.hasAmmoLight()) || 
-        	(this.host.getStateFlag(ID.F_UseAmmoHeavy) && this.host.hasAmmoHeavy()))) {   
+        	((this.host.getStateFlag(ID.F.UseAmmoLight) && this.host.hasAmmoLight()) || 
+        	(this.host.getStateFlag(ID.F.UseAmmoHeavy) && this.host.hasAmmoHeavy()))) {   
         	this.attackTarget = target;
 //        	LogHelper.info("DEBUG : exec range attack "+target);
 //        	LogHelper.info("DEBUG : try to range attack");
@@ -69,7 +69,7 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
     public void startExecuting() {
     	this.maxDelayLight = (int)(40F / (this.host.getStateFinal(ID.SPD)));
     	this.maxDelayHeavy = (int)(80F / (this.host.getStateFinal(ID.SPD)));
-    	this.aimTime = (int) (20F * (float)( 150 - this.host.getStateMinor(ID.ShipLevel) ) / 150F) + 10;
+    	this.aimTime = (int) (20F * (float)( 150 - this.host.getStateMinor(ID.N.ShipLevel) ) / 150F) + 10;
     	
     	//if target changed, check the delay time from prev attack
     	if(this.delayLight <= this.aimTime) {
@@ -195,7 +195,7 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
 	        this.delayHeavy--;
 
 	        //若attack delay倒數完了且瞄準時間夠久, 則開始攻擊
-	        if(this.delayHeavy <= 0 && this.onSightTime >= this.aimTime && this.host.hasAmmoHeavy() && this.host.getStateFlag(ID.F_UseAmmoHeavy)) {
+	        if(this.delayHeavy <= 0 && this.onSightTime >= this.aimTime && this.host.hasAmmoHeavy() && this.host.getStateFlag(ID.F.UseAmmoHeavy)) {
 	        	//若目標跑出範圍 or 目標被阻擋 or 距離太近, 則停止攻擊, 進行下一輪ai判定
 	            if(distSq > (double)this.rangeSq || distSq < 4D || !onSight) { return; }
 	            
@@ -205,7 +205,7 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
 	        } 
 	        
 	        //若attack delay倒數完了且瞄準時間夠久, 則開始攻擊
-	        if(this.delayLight <= 0 && this.onSightTime >= this.aimTime && this.host.hasAmmoLight() && this.host.getStateFlag(ID.F_UseAmmoLight)) {
+	        if(this.delayLight <= 0 && this.onSightTime >= this.aimTime && this.host.hasAmmoLight() && this.host.getStateFlag(ID.F.UseAmmoLight)) {
 	        	//若目標跑出範圍 or 目標被阻擋, 則停止攻擊, 進行下一輪ai判定
 	            if(distSq > (double)this.rangeSq || !onSight) { return; }
 	            

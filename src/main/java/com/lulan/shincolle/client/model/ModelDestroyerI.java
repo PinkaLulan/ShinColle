@@ -315,7 +315,7 @@ public class ModelDestroyerI extends ModelBase {
 	}
 
 	private void isKisaragi(EntityDestroyerI ent) {
-		if(ent.getStateEmotion(ID.State) >= Values.State.EQUIP) {
+		if(ent.getStateEmotion(ID.S.State) >= Values.State.EQUIP) {
 			PKisaragi00.isHidden = false;
 			PKisaragi01.isHidden = false;
 			PKisaragi02.isHidden = false;
@@ -332,7 +332,7 @@ public class ModelDestroyerI extends ModelBase {
 	
 	//坐下動作
   	private void motionSit(EntityDestroyerI ent, float angleZ) {		
-  		if(ent.getStateEmotion(ID.Emotion) == Values.Emotion.BORED) {
+  		if(ent.getStateEmotion(ID.S.Emotion) == Values.Emotion.BORED) {
   			GL11.glTranslatef(0F, 0.9F, 0F);	//1.4
   			PBack.rotateAngleZ = 0.6F;
   	  		PNeck.rotateAngleZ = -0.25F;
@@ -397,7 +397,7 @@ public class ModelDestroyerI extends ModelBase {
 
 	//隨機抽取顯示的表情 
     private void rollEmotion(EntityDestroyerI ent) {   	
-    	switch(ent.getStateEmotion(ID.Emotion)) {
+    	switch(ent.getStateEmotion(ID.S.Emotion)) {
     	case Values.Emotion.BLINK:	//blink
     		EmotionBlink(ent);
     		break;
@@ -425,16 +425,16 @@ public class ModelDestroyerI extends ModelBase {
 
 	//眨眼動作, this emotion is CLIENT ONLY, no sync packet required
 	private void EmotionBlink(EntityDestroyerI ent) {
-		if(ent.getStateEmotion(ID.Emotion) == Values.Emotion.NORMAL) {	//要在沒表情狀態才做表情		
+		if(ent.getStateEmotion(ID.S.Emotion) == Values.Emotion.NORMAL) {	//要在沒表情狀態才做表情		
 			ent.setStartEmotion(ent.ticksExisted);		//表情開始時間
-			ent.setStateEmotion(ID.Emotion, Values.Emotion.BLINK, false);	//標記表情為blink
+			ent.setStateEmotion(ID.S.Emotion, Values.Emotion.BLINK, false);	//標記表情為blink
 		}
 		
 		int EmoTime = ent.ticksExisted - ent.getStartEmotion();
  		
     	if(EmoTime > 46) {	//reset face
     		setFace(0);
-			ent.setStateEmotion(ID.Emotion, Values.Emotion.NORMAL, false);
+			ent.setStateEmotion(ID.S.Emotion, Values.Emotion.NORMAL, false);
 			ent.setStartEmotion(-1);
     	}
     	else if(EmoTime > 35) {

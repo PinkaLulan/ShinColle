@@ -9,7 +9,7 @@ import java.util.UUID;
 import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.ai.EntityAIShipSit;
 import com.lulan.shincolle.client.inventory.ContainerShipInventory;
-import com.lulan.shincolle.client.particle.EntityFXMiss;
+import com.lulan.shincolle.client.particle.EntityFXTexts;
 import com.lulan.shincolle.client.particle.EntityFXSpray;
 import com.lulan.shincolle.crafting.EquipCalc;
 import com.lulan.shincolle.entity.EntityAbyssMissile;
@@ -82,6 +82,8 @@ public abstract class BasicEntityShip extends EntityTameable {
 	protected float[] StateFinal;
 	/**minor states: 0:ShipLevel 1:Kills 2:ExpCurrent 3:ExpNext 4:NumAmmoLight 5:NumAmmoHeavy 6:NumGrudge 7:NumAirLight 8:NumAirHeavy*/
 	protected int[] StateMinor;
+	/**equip effect: 0:critical 1:doubleHit 2:tripleHit 3:baseMiss*/
+	protected float[] EffectEquip;		//NOT saved in NBT
 	/**EntityState: 0:HP State 1:Emotion 2:SwimType*/
 	protected byte[] StateEmotion;
 	/**EntityFlag: 0:canFloatUp 1:isMarried 2:noFuel 3:canMelee 4:canAmmoLight 5:canAmmoHeavy 6:canAirLight 7:canAirHeavy*/
@@ -99,6 +101,7 @@ public abstract class BasicEntityShip extends EntityTameable {
 		StateEquip = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F};
 		StateFinal = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F};
 		StateMinor = new int[] {1, 0, 0, 40, 0, 0, 0, 0, 0};
+		EffectEquip = new float[] {0F, 0F, 0F, 0F};
 		StateEmotion = new byte[] {0, 0, 0};
 		StateFlag = new boolean[] {false, false, false, true, true, true, true, true};
 		BonusPoint = new byte[] {0, 0, 0, 0, 0, 0};
@@ -167,7 +170,7 @@ public abstract class BasicEntityShip extends EntityTameable {
 		return ExtProps;
 	}
 	public int getShipLevel() {
-		return StateMinor[ID.ShipLevel];
+		return StateMinor[ID.N.ShipLevel];
 	}
 	public byte getShipType() {
 		return ShipType;
@@ -179,10 +182,10 @@ public abstract class BasicEntityShip extends EntityTameable {
 		return StartEmotion;
 	}
 	public boolean hasAmmoLight() {
-		return StateMinor[ID.NumAmmoLight] > 0;
+		return StateMinor[ID.N.NumAmmoLight] > 0;
 	}
 	public boolean hasAmmoHeavy() {
-		return StateMinor[ID.NumAmmoHeavy] > 0;
+		return StateMinor[ID.N.NumAmmoHeavy] > 0;
 	}
 	public double getShipDepth() {
 		return ShipDepth;
@@ -207,6 +210,9 @@ public abstract class BasicEntityShip extends EntityTameable {
 	public int getStateMinor(int id) {
 		return StateMinor[id];
 	}
+	public float getEffectEquip(int id) {
+		return EffectEquip[id];
+	}
 	public byte getStateEmotion(int id) {
 		return StateEmotion[id];
 	}
@@ -230,10 +236,10 @@ public abstract class BasicEntityShip extends EntityTameable {
 				}
 				else {
 					if(BlockCheck == Blocks.air) {
-						setStateFlag(ID.F_CanFloatUp, true);
+						setStateFlag(ID.F.CanFloatUp, true);
 					}
 					else {
-						setStateFlag(ID.F_CanFloatUp, false);
+						setStateFlag(ID.F.CanFloatUp, false);
 					}
 					break;
 				}
@@ -258,7 +264,9 @@ public abstract class BasicEntityShip extends EntityTameable {
 	//this method get equip state from slots, no input parm
 	public void calcEquipAndUpdateState() {
 		ItemStack itemstack = null;
-		float[] equipStat = {0F,0F,0F,0F,0F,0F};
+		float[] equipStat = {0F,0F,0F,0F,0F,0F,0F,0F,0F,0F};
+		
+		//init value
 		StateEquip[ID.HP] = 0F;
 		StateEquip[ID.DEF] = 0F;
 		StateEquip[ID.SPD] = 0F;
@@ -268,6 +276,10 @@ public abstract class BasicEntityShip extends EntityTameable {
 		StateEquip[ID.ATK_H] = 0F;
 		StateEquip[ID.ATK_AL] = 0F;
 		StateEquip[ID.ATK_AH] = 0F;
+		EffectEquip[ID.EF_CRI] = 0;
+		EffectEquip[ID.EF_DHIT] = 0;
+		EffectEquip[ID.EF_THIT] = 0;
+		EffectEquip[ID.EF_MISS] = 0;
 		
 		//calc equip slots
 		for(int i=0; i<ContainerShipInventory.SLOTS_EQUIP; i++) {
@@ -283,7 +295,12 @@ public abstract class BasicEntityShip extends EntityTameable {
 				StateEquip[ID.ATK_H] += equipStat[ID.ATK_H];
 				StateEquip[ID.ATK_AL] += equipStat[ID.ATK_AL];
 				StateEquip[ID.ATK_AH] += equipStat[ID.ATK_AH];
-			}
+				
+				EffectEquip[ID.EF_CRI] += equipStat[ID.CRI];
+				EffectEquip[ID.EF_DHIT] += equipStat[ID.DHIT];
+				EffectEquip[ID.EF_THIT] += equipStat[ID.THIT];
+				EffectEquip[ID.EF_MISS] += equipStat[ID.MISS];
+			}	
 		}
 		//update value
 		calcShipAttributes(this.ShipID);
@@ -294,24 +311,25 @@ public abstract class BasicEntityShip extends EntityTameable {
 	public void calcShipAttributes(byte id) {
 		//init or renew bonus value, for short value: discard decimal
 		//HP = (base + equip + (point + 1) * level * typeModify) * config scale
-		StateFinal[ID.HP] = (Values.BaseHP[id] + StateEquip[ID.HP] + (float)(BonusPoint[ID.HP]+1) * (float)StateMinor[ID.ShipLevel] * TypeModify[ID.HP]) * ConfigHandler.hpRatio; 
+		StateFinal[ID.HP] = (Values.BaseHP[id] + StateEquip[ID.HP] + (float)(BonusPoint[ID.HP]+1) * (float)StateMinor[ID.N.ShipLevel] * TypeModify[ID.HP]) * ConfigHandler.hpRatio; 
 		//DEF = base + ((point + 1) * level / 3 * 0.4 + equip) * typeModify
-		StateFinal[ID.DEF] = (Values.BaseDEF[id] + StateEquip[ID.DEF] + ((float)(BonusPoint[ID.DEF]+1) * ((float)StateMinor[ID.ShipLevel])/3F) * 0.4F * TypeModify[ID.DEF]) * ConfigHandler.defRatio;
+		StateFinal[ID.DEF] = (Values.BaseDEF[id] + StateEquip[ID.DEF] + ((float)(BonusPoint[ID.DEF]+1) * ((float)StateMinor[ID.N.ShipLevel])/3F) * 0.4F * TypeModify[ID.DEF]) * ConfigHandler.defRatio;
 		//SPD = base + ((point + 1) * level / 10 * 0.02 + equip) * typeModify
-		StateFinal[ID.SPD] = (Values.BaseSPD[id] + StateEquip[ID.SPD] + ((float)(BonusPoint[ID.SPD]+1) * ((float)StateMinor[ID.ShipLevel])/10F) * 0.02F * TypeModify[ID.SPD]) * ConfigHandler.spdRatio;
+		StateFinal[ID.SPD] = (Values.BaseSPD[id] + StateEquip[ID.SPD] + ((float)(BonusPoint[ID.SPD]+1) * ((float)StateMinor[ID.N.ShipLevel])/10F) * 0.02F * TypeModify[ID.SPD]) * ConfigHandler.spdRatio;
 		//MOV = base + ((point + 1) * level / 10 * 0.01 + equip) * typeModify
-		StateFinal[ID.MOV] = (Values.BaseMOV[id] + StateEquip[ID.MOV] + ((float)(BonusPoint[ID.MOV]+1) * ((float)StateMinor[ID.ShipLevel])/10F) * 0.01F * TypeModify[ID.MOV]) * ConfigHandler.movRatio;
-		//HIT = base + ((point + 1) * level / 10 * 0.8 + equip) * typeModify
-		StateFinal[ID.HIT] = (Values.BaseHIT[id] + StateEquip[ID.HIT] + ((float)(BonusPoint[ID.HIT]+1) * ((float)StateMinor[ID.ShipLevel])/10F) * 0.8F * TypeModify[ID.HIT]) * ConfigHandler.hitRatio;
+		StateFinal[ID.MOV] = (Values.BaseMOV[id] + StateEquip[ID.MOV] + ((float)(BonusPoint[ID.MOV]+1) * ((float)StateMinor[ID.N.ShipLevel])/10F) * 0.01F * TypeModify[ID.MOV]) * ConfigHandler.movRatio;
+		//HIT = base + ((point + 1) * level / 10 * 0.4 + equip) * typeModify
+		StateFinal[ID.HIT] = (Values.BaseHIT[id] + StateEquip[ID.HIT] + ((float)(BonusPoint[ID.HIT]+1) * ((float)StateMinor[ID.N.ShipLevel])/10F) * 0.4F * TypeModify[ID.HIT]) * ConfigHandler.hitRatio;
 		//ATK = (base + equip + ((point + 1) * level / 3) * typeModify) * config scale
-		float atk = Values.BaseATK[id] + ((float)(BonusPoint[ID.ATK]+1) * ((float)StateMinor[ID.ShipLevel])/3F) * 0.5F * TypeModify[ID.ATK];
+		float atk = Values.BaseATK[id] + ((float)(BonusPoint[ID.ATK]+1) * ((float)StateMinor[ID.N.ShipLevel])/3F) * 0.5F * TypeModify[ID.ATK];
 		StateFinal[ID.ATK] = (atk + StateEquip[ID.ATK]) * ConfigHandler.atkRatio;
 		StateFinal[ID.ATK_H] = (atk * 4F + StateEquip[ID.ATK_H]) * ConfigHandler.atkRatio;
 		StateFinal[ID.ATK_AL] = (atk + StateEquip[ID.ATK_AL]) * ConfigHandler.atkRatio;
 		StateFinal[ID.ATK_AH] = (atk * 4F + StateEquip[ID.ATK_AH]) * ConfigHandler.atkRatio;
 		//KB Resistance = Level / 10 * 0.04
-		float resisKB = (((float)StateMinor[ID.ShipLevel])/10F) * 0.067F;
-
+		float resisKB = (((float)StateMinor[ID.N.ShipLevel])/10F) * 0.067F;
+		
+		//min, max cap balue
 		if(StateFinal[ID.DEF] > 95F) {
 			StateFinal[ID.DEF] = 95F;	//max def = 95%
 		}
@@ -327,11 +345,9 @@ public abstract class BasicEntityShip extends EntityTameable {
 		if(StateFinal[ID.MOV] < 0F) {
 			StateFinal[ID.MOV] = 0F;
 		}
-//		if(StateFinal[ID.HIT] > 80F) {
-//			StateFinal[ID.HIT] = 80F;
-//		}
+
+		//calc cri,miss,multi hit rate
 		
-		this.jumpMovementFactor = (1F + StateFinal[ID.MOV]) * 0.03F;
 		
 		//set attribute by final value
 		/**
@@ -341,6 +357,8 @@ public abstract class BasicEntityShip extends EntityTameable {
 		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(StateFinal[ID.MOV]);
 		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(StateFinal[ID.HIT]+16); //此為找目標, 路徑的範圍
 		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(resisKB);
+		this.jumpMovementFactor = (1F + StateFinal[ID.MOV]) * 0.03F;
+		
 		//for new ship
 		if(this.getHealth() == 20F) this.setHealth(this.getMaxHealth());
 		
@@ -352,21 +370,21 @@ public abstract class BasicEntityShip extends EntityTameable {
 	
 	//set next exp value, no sync or update (for client load nbt data, gui display)
 	public void setExpNext() {
-		StateMinor[ID.ExpNext] = StateMinor[ID.ShipLevel] * 20 + 20;
+		StateMinor[ID.N.ExpNext] = StateMinor[ID.N.ShipLevel] * 20 + 20;
 	}
 		
 	//called when entity exp++
 	public void addShipExp(int exp) {
-		int CapLevel = getStateFlag(ID.F_IsMarried) ? 150 : 100;
+		int CapLevel = getStateFlag(ID.F.IsMarried) ? 150 : 100;
 		
-		if(StateMinor[ID.ShipLevel] != CapLevel && StateMinor[ID.ShipLevel] < 150) {	//level is not cap level
-			StateMinor[ID.ExpCurrent] += exp;
-			if(StateMinor[ID.ExpCurrent] >= StateMinor[ID.ExpNext]) {
+		if(StateMinor[ID.N.ShipLevel] != CapLevel && StateMinor[ID.N.ShipLevel] < 150) {	//level is not cap level
+			StateMinor[ID.N.ExpCurrent] += exp;
+			if(StateMinor[ID.N.ExpCurrent] >= StateMinor[ID.N.ExpNext]) {
 				//level up sound
 				this.worldObj.playSoundAtEntity(this, "random.levelup", 0.75F, 1.0F);
-				StateMinor[ID.ExpCurrent] -= StateMinor[ID.ExpNext];	//level up
-				StateMinor[ID.ExpNext] = (StateMinor[ID.ShipLevel] + 1) * 20 + 20;
-				setShipLevel(++StateMinor[ID.ShipLevel], true);
+				StateMinor[ID.N.ExpCurrent] -= StateMinor[ID.N.ExpNext];	//level up
+				StateMinor[ID.N.ExpNext] = (StateMinor[ID.N.ShipLevel] + 1) * 20 + 20;
+				setShipLevel(++StateMinor[ID.N.ShipLevel], true);
 			}
 		}	
 	}
@@ -375,7 +393,7 @@ public abstract class BasicEntityShip extends EntityTameable {
 	public void setShipLevel(int par1, boolean update) {
 		//set level
 		if(par1 < 151) {
-			StateMinor[ID.ShipLevel] = par1;
+			StateMinor[ID.N.ShipLevel] = par1;
 		}
 		//update attributes
 		if(update) { 
@@ -386,7 +404,7 @@ public abstract class BasicEntityShip extends EntityTameable {
 	
 	//called when a mob die near the entity (used in event handler)
 	public void addKills() {
-		StateMinor[ID.Kills]++;
+		StateMinor[ID.N.Kills]++;
 	}
 	//ship attribute setter, sync packet in method: calcShipAttributes 
 	public void setStateFinal(int state, float par1) {
@@ -405,7 +423,7 @@ public abstract class BasicEntityShip extends EntityTameable {
 		this.StateFlag[flag] = par1;
 		
 		//若修改melee flag, 則reload AI
-		if(flag == ID.F_UseMelee) {
+		if(flag == ID.F.UseMelee) {
 			clearAITasks();
     		setAIList();
 		}
@@ -420,7 +438,7 @@ public abstract class BasicEntityShip extends EntityTameable {
 		}
 		
 		//若修改melee flag, 則reload AI
-		if(flag == ID.F_UseMelee) {
+		if(flag == ID.F.UseMelee) {
 			clearAITasks();
     		setAIList();
 		}
@@ -474,7 +492,7 @@ public abstract class BasicEntityShip extends EntityTameable {
 		if(player.isSneaking() && this.getOwner() != null && player.getUniqueID().equals(this.getOwner().getUniqueID())) {  
 			int eid = this.getEntityId();
 			//player.openGui vs FMLNetworkHandler ?
-    		FMLNetworkHandler.openGui(player, ShinColle.instance, ID.SHIPINVENTORY, this.worldObj, this.getEntityId(), 0, 0);
+    		FMLNetworkHandler.openGui(player, ShinColle.instance, ID.G.SHIPINVENTORY, this.worldObj, this.getEntityId(), 0, 0);
     		return true;
 		}
 		
@@ -482,32 +500,32 @@ public abstract class BasicEntityShip extends EntityTameable {
 		if(itemstack != null) {
 			//use cake to change state
 			if(itemstack.getItem() == Items.cake) {
-				int ShipState = getStateEmotion(ID.State) - Values.State.EQUIP;
+				int ShipState = getStateEmotion(ID.S.State) - Values.State.EQUIP;
 				
-				switch(getStateEmotion(ID.State)) {
+				switch(getStateEmotion(ID.S.State)) {
 				case Values.State.NORMAL:			//原本不顯示, 改為顯示
-					setStateEmotion(ID.State, Values.State.EQUIP, true);
+					setStateEmotion(ID.S.State, Values.State.EQUIP, true);
 					break;
 				case Values.State.NORMAL_MINOR:
-					setStateEmotion(ID.State, Values.State.EQUIP_MINOR, true);
+					setStateEmotion(ID.S.State, Values.State.EQUIP_MINOR, true);
 					break;
 				case Values.State.NORMAL_MODERATE:
-					setStateEmotion(ID.State, Values.State.EQUIP_MODERATE, true);
+					setStateEmotion(ID.S.State, Values.State.EQUIP_MODERATE, true);
 					break;
 				case Values.State.NORMAL_HEAVY:
-					setStateEmotion(ID.State, Values.State.EQUIP_HEAVY, true);
+					setStateEmotion(ID.S.State, Values.State.EQUIP_HEAVY, true);
 					break;
 				case Values.State.EQUIP:			//原本顯示裝備, 改為不顯示
-					setStateEmotion(ID.State, Values.State.NORMAL, true);
+					setStateEmotion(ID.S.State, Values.State.NORMAL, true);
 					break;
 				case Values.State.EQUIP_MINOR:
-					setStateEmotion(ID.State, Values.State.NORMAL_MINOR, true);
+					setStateEmotion(ID.S.State, Values.State.NORMAL_MINOR, true);
 					break;
 				case Values.State.EQUIP_MODERATE:
-					setStateEmotion(ID.State, Values.State.NORMAL_MODERATE, true);
+					setStateEmotion(ID.S.State, Values.State.NORMAL_MODERATE, true);
 					break;
 				case Values.State.EQUIP_HEAVY:
-					setStateEmotion(ID.State, Values.State.NORMAL_HEAVY, true);
+					setStateEmotion(ID.S.State, Values.State.NORMAL_HEAVY, true);
 					break;			
 				}
 				return true;
@@ -720,30 +738,30 @@ public abstract class BasicEntityShip extends EntityTameable {
         	//check every 100 ticks
         	if(ticksExisted % 100 == 0) {
         		//roll emtion: hungry > T_T > bored > O_O
-        		if(getStateFlag(ID.F_NoFuel)) {
-        			if(this.getStateEmotion(ID.Emotion) != Values.Emotion.HUNGRY) {
+        		if(getStateFlag(ID.F.NoFuel)) {
+        			if(this.getStateEmotion(ID.S.Emotion) != Values.Emotion.HUNGRY) {
 //        				LogHelper.info("DEBUG : set emotion HUNGRY");
-	    				this.setStateEmotion(ID.Emotion, Values.Emotion.HUNGRY, true);
+	    				this.setStateEmotion(ID.S.Emotion, Values.Emotion.HUNGRY, true);
 	    			}
         		}
         		else {
         			if(this.getHealth()/this.getMaxHealth() < 0.5F) {
-    	    			if(this.getStateEmotion(ID.Emotion) != Values.Emotion.T_T) {
+    	    			if(this.getStateEmotion(ID.S.Emotion) != Values.Emotion.T_T) {
 //    	    				LogHelper.info("DEBUG : set emotion T_T");
-    	    				this.setStateEmotion(ID.Emotion, Values.Emotion.T_T, true);
+    	    				this.setStateEmotion(ID.S.Emotion, Values.Emotion.T_T, true);
     	    			}			
     	    		}
         			else {
         				if(this.isSitting() && this.getRNG().nextInt(3) > 1) {	//30% for bored
-        	    			if(this.getStateEmotion(ID.Emotion) != Values.Emotion.BORED) {
+        	    			if(this.getStateEmotion(ID.S.Emotion) != Values.Emotion.BORED) {
 //        	    				LogHelper.info("DEBUG : set emotion BORED");
-        	    				this.setStateEmotion(ID.Emotion, Values.Emotion.BORED, true);
+        	    				this.setStateEmotion(ID.S.Emotion, Values.Emotion.BORED, true);
         	    			}
         	    		}
         	    		else {	//back to normal face
-        	    			if(this.getStateEmotion(ID.Emotion) != Values.Emotion.NORMAL) {
+        	    			if(this.getStateEmotion(ID.S.Emotion) != Values.Emotion.NORMAL) {
 //        	    				LogHelper.info("DEBUG : set emotion NORMAL");
-        	    				this.setStateEmotion(ID.Emotion, Values.Emotion.NORMAL, true);
+        	    				this.setStateEmotion(ID.S.Emotion, Values.Emotion.NORMAL, true);
         	    			}
         	    		}
         			}     			
@@ -840,7 +858,7 @@ public abstract class BasicEntityShip extends EntityTameable {
         
         //發射者煙霧特效
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 6, this.posX, this.posY, this.posZ, lookX, lookY, lookZ), point);
+		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(6, this.posX, this.posY, this.posZ, lookX, lookY, lookZ), point);
 
 		//play cannon fire sound at attacker
         playSound(Reference.MOD_ID+":ship-firesmall", 0.4F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
@@ -859,16 +877,49 @@ public abstract class BasicEntityShip extends EntityTameable {
         if(!decrAmmoNum(0)) {		//not enough ammo
         	atk = atk * 0.125F;	//reduce damage to 12.5%
         }
+
+        //calc miss chance, if not miss, calc cri/multi hit
+        float missChance = 1F / (StateFinal[ID.HIT] / (2F + 3F * (lookDist / StateFinal[ID.HIT])));
+        missChance -= EffectEquip[ID.EF_MISS];		//equip miss reduce
+        if(missChance > 0.35F) missChance = 0.35F;	//max miss chance = 30%
         
-        //calc miss chance
-        int missChance = (int) (StateFinal[ID.HIT] / (2F + 3F * (lookDist / StateFinal[ID.HIT])));
-        if(missChance < 3) missChance = 3;	//max miss chance = 33% 
-        if(this.rand.nextInt(missChance) == 0) {
+        if(this.rand.nextFloat() < missChance) {
         	atk = 0;	//still attack, but no damage
         	//spawn miss particle
-    		EntityFX particleMiss = new EntityFXMiss(worldObj, 
-    		          this.posX, this.posY+this.height, this.posZ, 1F);	    
+    		EntityFX particleMiss = new EntityFXTexts(worldObj, 
+    		          this.posX, this.posY+this.height, this.posZ, 1F, 0);	    
     		Minecraft.getMinecraft().effectRenderer.addEffect(particleMiss);
+        }
+        else {
+        	//roll cri -> roll double hit -> roll triple hit (triple hit more rare)
+        	//calc critical
+        	if(this.rand.nextFloat() < EffectEquip[ID.EF_CRI]) {
+        		atk *= 1.5F;
+        		//spawn critical particle
+        		EntityFX particleMiss = new EntityFXTexts(worldObj, 
+        		          this.posX, this.posY+this.height, this.posZ, 1F, 1);	    
+        		Minecraft.getMinecraft().effectRenderer.addEffect(particleMiss);
+        	}
+        	else {
+        		//calc double hit
+            	if(this.rand.nextFloat() < EffectEquip[ID.EF_DHIT]) {
+            		atk *= 2F;
+            		//spawn double hit particle
+            		EntityFX particleMiss = new EntityFXTexts(worldObj, 
+            		          this.posX, this.posY+this.height, this.posZ, 1F, 2);	    
+            		Minecraft.getMinecraft().effectRenderer.addEffect(particleMiss);
+            	}
+            	else {
+            		//calc double hit
+                	if(this.rand.nextFloat() < EffectEquip[ID.EF_THIT]) {
+                		atk *= 3F;
+                		//spawn triple hit particle
+                		EntityFX particleMiss = new EntityFXTexts(worldObj, 
+                		          this.posX, this.posY+this.height, this.posZ, 1F, 3);	    
+                		Minecraft.getMinecraft().effectRenderer.addEffect(particleMiss);
+                	}
+            	}
+        	}
         }
 
 	    //將atk跟attacker傳給目標的attackEntityFrom方法, 在目標class中計算傷害
@@ -941,15 +992,17 @@ public abstract class BasicEntityShip extends EntityTameable {
         }
         
         //calc miss chance, miss: add random offset(0~6) to missile target 
-        int missChance = (int) (StateFinal[ID.HIT] / (2F + 3F * (distSqrt / StateFinal[ID.HIT])));
-        if(missChance < 3) missChance = 3;	//max miss chance = 33% 
-        if(this.rand.nextInt(missChance) == 0) {
+        float missChance = 1F / (StateFinal[ID.HIT] / (2F + 3F * (distSqrt / StateFinal[ID.HIT])));
+        missChance -= EffectEquip[ID.EF_MISS];	//equip miss reduce
+        if(missChance > 0.35F) missChance = 0.35F;	//max miss chance = 30%
+       
+        if(this.rand.nextFloat() < missChance) {
         	tarX = tarX - 3D + this.rand.nextDouble() * 6D;
         	tarY = tarY + this.rand.nextDouble() * 3D;
         	tarZ = tarZ - 3D + this.rand.nextDouble() * 6D;
         	//spawn miss particle
-    		EntityFX particleMiss = new EntityFXMiss(worldObj, 
-    		          this.posX, this.posY+this.height, this.posZ, 1F);	    
+    		EntityFX particleMiss = new EntityFXTexts(worldObj, 
+    		          this.posX, this.posY+this.height, this.posZ, 1F, 0);	    
     		Minecraft.getMinecraft().effectRenderer.addEffect(particleMiss);
         }
 
@@ -965,8 +1018,8 @@ public abstract class BasicEntityShip extends EntityTameable {
 	@Override
     public boolean attackEntityFrom(DamageSource attacker, float atk) {		
 		//set hurt face
-    	if(this.getStateEmotion(ID.Emotion) != Values.Emotion.O_O) {
-    		this.setStateEmotion(ID.Emotion, Values.Emotion.O_O, true);
+    	if(this.getStateEmotion(ID.S.Emotion) != Values.Emotion.O_O) {
+    		this.setStateEmotion(ID.S.Emotion, Values.Emotion.O_O, true);
     	}
 		
 		//進行def計算
@@ -1010,16 +1063,16 @@ public abstract class BasicEntityShip extends EntityTameable {
 		switch(type) {
 		case 0:  //use 1 light ammo
 			if(hasAmmoLight()) { 
-				--StateMinor[ID.NumAmmoLight];
+				--StateMinor[ID.N.NumAmmoLight];
 				return true;
 			}
 			else {
 				if(decrSupplies(0)) {  //find ammo item
-					StateMinor[ID.NumAmmoLight] += 29;
+					StateMinor[ID.N.NumAmmoLight] += 29;
 					return true;
 				}
 				else if(decrSupplies(2)) {  //find ammo item
-					StateMinor[ID.NumAmmoLight] += 269;
+					StateMinor[ID.N.NumAmmoLight] += 269;
 					return true;
 				}
 				else {				   //no ammo
@@ -1028,16 +1081,16 @@ public abstract class BasicEntityShip extends EntityTameable {
 			}
 		case 1:  //use 1 heavy ammo
 			if(hasAmmoHeavy()) { 
-				--StateMinor[ID.NumAmmoHeavy];
+				--StateMinor[ID.N.NumAmmoHeavy];
 				return true;
 			}
 			else {
 				if(decrSupplies(1)) {  //find ammo item
-					StateMinor[ID.NumAmmoHeavy] += 14;
+					StateMinor[ID.N.NumAmmoHeavy] += 14;
 					return true;
 				}
 				else if(decrSupplies(3)) {  //find ammo item
-					StateMinor[ID.NumAmmoHeavy] += 134;
+					StateMinor[ID.N.NumAmmoHeavy] += 134;
 					return true;
 				}
 				else {				   //no ammo
@@ -1046,11 +1099,11 @@ public abstract class BasicEntityShip extends EntityTameable {
 			}
 		case 2:	//no ammo light, use item
 			if(decrSupplies(0)) {  //find ammo item
-				StateMinor[ID.NumAmmoLight] += 30;
+				StateMinor[ID.N.NumAmmoLight] += 30;
 				return true;
 			}
 			else if(decrSupplies(2)) {  //find ammo item
-				StateMinor[ID.NumAmmoLight] += 270;
+				StateMinor[ID.N.NumAmmoLight] += 270;
 				return true;
 			}
 			else {				   //no ammo
@@ -1058,28 +1111,28 @@ public abstract class BasicEntityShip extends EntityTameable {
 			}
 		case 3:	//no ammo heavy, use item
 			if(decrSupplies(1)) {  //find ammo item
-				StateMinor[ID.NumAmmoHeavy] += 15;
+				StateMinor[ID.N.NumAmmoHeavy] += 15;
 				return true;
 			}
 			else if(decrSupplies(3)) {  //find ammo item
-				StateMinor[ID.NumAmmoHeavy] += 135;
+				StateMinor[ID.N.NumAmmoHeavy] += 135;
 				return true;
 			}
 			else {				   //no ammo
 				return false;
 			}
 		case 4:  //use 4 light ammo
-			if(StateMinor[ID.NumAmmoLight] > 3) { 
-				StateMinor[ID.NumAmmoLight] -= 4;
+			if(StateMinor[ID.N.NumAmmoLight] > 3) { 
+				StateMinor[ID.N.NumAmmoLight] -= 4;
 				return true;
 			}
 			else {
 				if(decrSupplies(0)) {  //find ammo item
-					StateMinor[ID.NumAmmoLight] += 26;
+					StateMinor[ID.N.NumAmmoLight] += 26;
 					return true;
 				}
 				else if(decrSupplies(2)) {  //find ammo item
-					StateMinor[ID.NumAmmoLight] += 266;
+					StateMinor[ID.N.NumAmmoLight] += 266;
 					return true;
 				}
 				else {				   //no ammo
@@ -1087,17 +1140,17 @@ public abstract class BasicEntityShip extends EntityTameable {
 				}
 			}
 		case 5:  //use 2 heavy ammo
-			if(StateMinor[ID.NumAmmoHeavy] > 1) { 
-				StateMinor[ID.NumAmmoHeavy] -= 2;
+			if(StateMinor[ID.N.NumAmmoHeavy] > 1) { 
+				StateMinor[ID.N.NumAmmoHeavy] -= 2;
 				return true;
 			}
 			else {
 				if(decrSupplies(1)) {  //find ammo item
-					StateMinor[ID.NumAmmoHeavy] += 13;
+					StateMinor[ID.N.NumAmmoHeavy] += 13;
 					return true;
 				}
 				else if(decrSupplies(3)) {  //find ammo item
-					StateMinor[ID.NumAmmoHeavy] += 133;
+					StateMinor[ID.N.NumAmmoHeavy] += 133;
 					return true;
 				}
 				else {				   //no ammo
@@ -1111,23 +1164,23 @@ public abstract class BasicEntityShip extends EntityTameable {
 	
 	//eat grudge and change movement speed
 	protected void decrGrudgeNum(int par1) {
-		boolean PrevNoFuel = getStateFlag(ID.F_NoFuel);
+		boolean PrevNoFuel = getStateFlag(ID.F.NoFuel);
 		
 		if(par1 > 215) {	//max cost = 215 (calc from speed 1 moving 5 sec)
 			par1 = 215;
 		}
 		
-		if(StateMinor[ID.NumGrudge] >= (int)par1) { //has enough fuel
-			StateMinor[ID.NumGrudge] -= (int)par1;
+		if(StateMinor[ID.N.NumGrudge] >= (int)par1) { //has enough fuel
+			StateMinor[ID.N.NumGrudge] -= (int)par1;
 		}
 		else {
 			if(decrSupplies(4)) {		//find grudge
-				StateMinor[ID.NumGrudge] += 1200;
-				StateMinor[ID.NumGrudge] -= (int)par1;
+				StateMinor[ID.N.NumGrudge] += 1200;
+				StateMinor[ID.N.NumGrudge] -= (int)par1;
 			}
 			else if(decrSupplies(5)) {	//find grudge block
-				StateMinor[ID.NumGrudge] += 10800;
-				StateMinor[ID.NumGrudge] -= (int)par1;
+				StateMinor[ID.N.NumGrudge] += 10800;
+				StateMinor[ID.N.NumGrudge] -= (int)par1;
 			}
 //避免吃掉含有儲存資訊的方塊, 因此停用此方塊作為grudge補充道具
 //			else if(decrSupplies(6)) {	//find grudge heavy block
@@ -1136,15 +1189,15 @@ public abstract class BasicEntityShip extends EntityTameable {
 //			}
 		}
 		
-		if(StateMinor[ID.NumGrudge] <= 0) {
-			setStateFlag(ID.F_NoFuel, true);
+		if(StateMinor[ID.N.NumGrudge] <= 0) {
+			setStateFlag(ID.F.NoFuel, true);
 		}
 		else {
-			setStateFlag(ID.F_NoFuel, false);
+			setStateFlag(ID.F.NoFuel, false);
 		}
 
 		//get fuel, set AI
-		if(!getStateFlag(ID.F_NoFuel) && PrevNoFuel) {
+		if(!getStateFlag(ID.F.NoFuel) && PrevNoFuel) {
 			LogHelper.info("DEBUG : !NoFuel set AI");
 			clearAITasks();
 			clearAITargetTasks();
@@ -1154,7 +1207,7 @@ public abstract class BasicEntityShip extends EntityTameable {
 		}
 		
 		//no fuel, clear AI
-		if(getStateFlag(ID.F_NoFuel)) {
+		if(getStateFlag(ID.F.NoFuel)) {
 			LogHelper.info("DEBUG : NoFuel clear AI");
 			clearAITasks();
 			clearAITargetTasks();

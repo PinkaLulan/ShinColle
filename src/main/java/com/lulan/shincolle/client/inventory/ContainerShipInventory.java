@@ -153,19 +153,19 @@ public class ContainerShipInventory extends Container {
 	@Override
 	public void addCraftingToCrafters (ICrafting crafting) {
 		super.addCraftingToCrafters(crafting);
-		crafting.sendProgressBarUpdate(this, 0, this.entity.getStateMinor(ID.Kills));
-		crafting.sendProgressBarUpdate(this, 1, this.entity.getStateMinor(ID.ExpCurrent));
-		crafting.sendProgressBarUpdate(this, 2, this.entity.getStateMinor(ID.NumAmmoLight));
-		crafting.sendProgressBarUpdate(this, 3, this.entity.getStateMinor(ID.NumAmmoHeavy));
-		crafting.sendProgressBarUpdate(this, 4, this.entity.getStateMinor(ID.NumGrudge));
-		crafting.sendProgressBarUpdate(this, 5, this.entity.getStateMinor(ID.NumAirLight));
-		crafting.sendProgressBarUpdate(this, 6, this.entity.getStateMinor(ID.NumAirHeavy));
-		crafting.sendProgressBarUpdate(this, 7, this.entity.getStateFlagI(ID.F_UseMelee));
-		crafting.sendProgressBarUpdate(this, 8, this.entity.getStateFlagI(ID.F_UseAmmoLight));
-		crafting.sendProgressBarUpdate(this, 9, this.entity.getStateFlagI(ID.F_UseAmmoHeavy));
-		crafting.sendProgressBarUpdate(this, 10, this.entity.getStateFlagI(ID.F_UseAirLight));
-		crafting.sendProgressBarUpdate(this, 11, this.entity.getStateFlagI(ID.F_UseAirHeavy));
-		crafting.sendProgressBarUpdate(this, 12, this.entity.getStateFlagI(ID.F_IsMarried));
+		crafting.sendProgressBarUpdate(this, 0, this.entity.getStateMinor(ID.N.Kills));
+		crafting.sendProgressBarUpdate(this, 1, this.entity.getStateMinor(ID.N.ExpCurrent));
+		crafting.sendProgressBarUpdate(this, 2, this.entity.getStateMinor(ID.N.NumAmmoLight));
+		crafting.sendProgressBarUpdate(this, 3, this.entity.getStateMinor(ID.N.NumAmmoHeavy));
+		crafting.sendProgressBarUpdate(this, 4, this.entity.getStateMinor(ID.N.NumGrudge));
+		crafting.sendProgressBarUpdate(this, 5, this.entity.getStateMinor(ID.N.NumAirLight));
+		crafting.sendProgressBarUpdate(this, 6, this.entity.getStateMinor(ID.N.NumAirHeavy));
+		crafting.sendProgressBarUpdate(this, 7, this.entity.getStateFlagI(ID.F.UseMelee));
+		crafting.sendProgressBarUpdate(this, 8, this.entity.getStateFlagI(ID.F.UseAmmoLight));
+		crafting.sendProgressBarUpdate(this, 9, this.entity.getStateFlagI(ID.F.UseAmmoHeavy));
+		crafting.sendProgressBarUpdate(this, 10, this.entity.getStateFlagI(ID.F.UseAirLight));
+		crafting.sendProgressBarUpdate(this, 11, this.entity.getStateFlagI(ID.F.UseAirHeavy));
+		crafting.sendProgressBarUpdate(this, 12, this.entity.getStateFlagI(ID.F.IsMarried));
 	}
 	
 	//偵測數值是否改變, 有改變時發送更新(此為server端偵測)
@@ -177,67 +177,67 @@ public class ContainerShipInventory extends Container {
         for(Object crafter : this.crafters) {
             ICrafting icrafting = (ICrafting) crafter;
             
-            getValue = this.entity.getStateMinor(ID.Kills);
+            getValue = this.entity.getStateMinor(ID.N.Kills);
             if(this.GuiKills != getValue) {
                 icrafting.sendProgressBarUpdate(this, 0, getValue);
                 this.GuiKills = getValue;
             }   
-            getValue = this.entity.getStateMinor(ID.ExpCurrent);
+            getValue = this.entity.getStateMinor(ID.N.ExpCurrent);
             if(this.GuiExpCurrent != getValue) {
                 icrafting.sendProgressBarUpdate(this, 1, getValue);
                 this.GuiExpCurrent = getValue;
             }
-            getValue = this.entity.getStateMinor(ID.NumAmmoLight);
+            getValue = this.entity.getStateMinor(ID.N.NumAmmoLight);
             if(this.GuiNumAmmo != getValue) {
                 icrafting.sendProgressBarUpdate(this, 2, getValue);
                 this.GuiNumAmmo = getValue;
             }
-            getValue = this.entity.getStateMinor(ID.NumAmmoHeavy);
+            getValue = this.entity.getStateMinor(ID.N.NumAmmoHeavy);
             if(this.GuiNumAmmoHeavy != getValue) {
                 icrafting.sendProgressBarUpdate(this, 3, getValue);
                 this.GuiNumAmmoHeavy = getValue;
             }
-            getValue = this.entity.getStateMinor(ID.NumGrudge);
+            getValue = this.entity.getStateMinor(ID.N.NumGrudge);
             if(this.GuiNumGrudge != getValue) {
                 icrafting.sendProgressBarUpdate(this, 4, getValue);
                 this.GuiNumGrudge = getValue;
             }
-            getValue = this.entity.getStateMinor(ID.NumAirLight);
+            getValue = this.entity.getStateMinor(ID.N.NumAirLight);
             if(this.GuiNumAirLight != getValue) {
                 icrafting.sendProgressBarUpdate(this, 5, getValue);
                 this.GuiNumAirLight = getValue;
             }
-            getValue = this.entity.getStateMinor(ID.NumAirHeavy);
+            getValue = this.entity.getStateMinor(ID.N.NumAirHeavy);
             if(this.GuiNumAirHeavy != getValue) {
                 icrafting.sendProgressBarUpdate(this, 6, getValue);
                 this.GuiNumAirHeavy = getValue;
             }
-            getValue = this.entity.getStateFlagI(ID.F_UseMelee);
+            getValue = this.entity.getStateFlagI(ID.F.UseMelee);
             if(this.ButtonMelee != getValue) {
                 icrafting.sendProgressBarUpdate(this, 7, getValue);
                 this.ButtonMelee = getValue;
             }
-            getValue = this.entity.getStateFlagI(ID.F_UseAmmoLight);
+            getValue = this.entity.getStateFlagI(ID.F.UseAmmoLight);
             if(this.ButtonAmmoLight != getValue) {
                 icrafting.sendProgressBarUpdate(this, 8, getValue);
                 this.ButtonAmmoLight = getValue;
             }
-            getValue = this.entity.getStateFlagI(ID.F_UseAmmoHeavy);
+            getValue = this.entity.getStateFlagI(ID.F.UseAmmoHeavy);
             if(this.ButtonAmmoHeavy != getValue) {
                 icrafting.sendProgressBarUpdate(this, 9, getValue);
                 this.ButtonAmmoHeavy = getValue;
             }
-            getValue = this.entity.getStateFlagI(ID.F_UseAirLight);
+            getValue = this.entity.getStateFlagI(ID.F.UseAirLight);
             if(this.ButtonAirLight != getValue) {
                 icrafting.sendProgressBarUpdate(this, 10, getValue);
                 this.ButtonAirLight = getValue;
             }
-            getValue = this.entity.getStateFlagI(ID.F_UseAirHeavy);
+            getValue = this.entity.getStateFlagI(ID.F.UseAirHeavy);
             if(this.ButtoAirHeavy != getValue) {
                 icrafting.sendProgressBarUpdate(this, 11, getValue);
                 this.ButtoAirHeavy = getValue;
             }
-            getValue = this.entity.getStateFlagI(ID.F_IsMarried);
+            getValue = this.entity.getStateFlagI(ID.F.IsMarried);
             if(this.GuiIsMarried != getValue) {
                 icrafting.sendProgressBarUpdate(this, 12, getValue);
                 this.GuiIsMarried = getValue;
@@ -250,43 +250,43 @@ public class ContainerShipInventory extends Container {
     public void updateProgressBar(int valueType, int updatedValue) {     
 		switch(valueType) {
 		case 0:
-			this.entity.setStateMinor(ID.Kills, updatedValue);
+			this.entity.setStateMinor(ID.N.Kills, updatedValue);
 			break;
 		case 1:
-			this.entity.setStateMinor(ID.ExpCurrent, updatedValue);
+			this.entity.setStateMinor(ID.N.ExpCurrent, updatedValue);
 			break;
 		case 2:
-			this.entity.setStateMinor(ID.NumAmmoLight, updatedValue);
+			this.entity.setStateMinor(ID.N.NumAmmoLight, updatedValue);
 			break;
 		case 3:
-			this.entity.setStateMinor(ID.NumAmmoHeavy, updatedValue);
+			this.entity.setStateMinor(ID.N.NumAmmoHeavy, updatedValue);
 			break;
 		case 4:
-			this.entity.setStateMinor(ID.NumGrudge, updatedValue);
+			this.entity.setStateMinor(ID.N.NumGrudge, updatedValue);
 			break;
 		case 5:
-			this.entity.setStateMinor(ID.NumAirLight, updatedValue);
+			this.entity.setStateMinor(ID.N.NumAirLight, updatedValue);
 			break;
 		case 6:
-			this.entity.setStateMinor(ID.NumAirHeavy, updatedValue);
+			this.entity.setStateMinor(ID.N.NumAirHeavy, updatedValue);
 			break;
 		case 7:
-			this.entity.setEntityFlagI(ID.F_UseMelee, updatedValue);
+			this.entity.setEntityFlagI(ID.F.UseMelee, updatedValue);
 			break;
 		case 8:
-			this.entity.setEntityFlagI(ID.F_UseAmmoLight, updatedValue);
+			this.entity.setEntityFlagI(ID.F.UseAmmoLight, updatedValue);
 			break;
 		case 9:
-			this.entity.setEntityFlagI(ID.F_UseAmmoHeavy, updatedValue);
+			this.entity.setEntityFlagI(ID.F.UseAmmoHeavy, updatedValue);
 			break;
 		case 10:
-			this.entity.setEntityFlagI(ID.F_UseAirLight, updatedValue);
+			this.entity.setEntityFlagI(ID.F.UseAirLight, updatedValue);
 			break;
 		case 11:
-			this.entity.setEntityFlagI(ID.F_UseAirHeavy, updatedValue);
+			this.entity.setEntityFlagI(ID.F.UseAirHeavy, updatedValue);
 			break;
 		case 12:
-			this.entity.setEntityFlagI(ID.F_IsMarried, updatedValue);
+			this.entity.setEntityFlagI(ID.F.IsMarried, updatedValue);
 			break;
 		}
     }

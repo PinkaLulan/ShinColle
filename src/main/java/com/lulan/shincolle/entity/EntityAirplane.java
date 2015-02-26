@@ -2,7 +2,7 @@ package com.lulan.shincolle.entity;
 
 import com.lulan.shincolle.ai.EntityAIShipAircraftAttack;
 import com.lulan.shincolle.ai.EntityAIShipSit;
-import com.lulan.shincolle.client.particle.EntityFXMiss;
+import com.lulan.shincolle.client.particle.EntityFXTexts;
 import com.lulan.shincolle.client.particle.EntityFXSpray;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;

@@ -115,4 +115,7 @@ gui.shincolle:canairlightattack=Use L.Air
 gui.shincolle:canairheavyattack=Use H.Air
 gui.shincolle:notforcarrier=Not For Aircraft Carrier
 gui.shincolle:carrieronly=Aircraft Carrier Only
-
+gui.shincolle:critical=Critical
+gui.shincolle:doublehit=Double Hit
+gui.shincolle:triplehit=Triple Hit
+gui.shincolle:missreduce=Reduce Miss

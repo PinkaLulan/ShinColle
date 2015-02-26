@@ -480,7 +480,7 @@ public class ModelCarrierWo extends ModelBase {
 		this.Staff.offsetY = -0.9F;
 		this.Staff.offsetZ = -1.4F;
 		//觸手晃動 (equip only)
-		if(ent.getStateEmotion(ID.State) >= Values.State.EQUIP) {
+		if(ent.getStateEmotion(ID.S.State) >= Values.State.EQUIP) {
 			this.EquipT01L.rotateAngleX = angleZ * 0.05F + -0.2618F;
 			this.EquipT01L.rotateAngleZ = angleZ * 0.05F + -0.2618F;
 			this.EquipT02L.rotateAngleX = angleZ * 0.1F;
@@ -542,7 +542,7 @@ public class ModelCarrierWo extends ModelBase {
 			this.Staff.offsetY = 0F;
 			this.Staff.offsetZ = 0F;
 			//觸手晃動 (equip only)
-			if(ent.getStateEmotion(ID.State) >= Values.State.EQUIP) {
+			if(ent.getStateEmotion(ID.S.State) >= Values.State.EQUIP) {
 				this.EquipT01L.rotateAngleX = angleZFast * 0.05F + 0.2618F;
 				this.EquipT01L.rotateAngleZ = -0.2618F;
 				this.EquipT02L.rotateAngleX = angleZFast * 0.15F + 0.2618F;
@@ -603,14 +603,14 @@ public class ModelCarrierWo extends ModelBase {
 	    
 	    if(this.HeadTilt) {
 	    	//用swim type參數當作歪頭flag
-	    	ent.setStateEmotion(ID.Emotion2, 1, false);
+	    	ent.setStateEmotion(ID.S.Emotion2, 1, false);
 	    	if(this.Head.rotateAngleZ > -0.24F) {
 	    		this.Head.rotateAngleZ -= 0.03F;
 	    	}
 	    }
 	    else {
 	    	//用swim type參數當作歪頭flag
-	    	ent.setStateEmotion(ID.Emotion2, 0, false);
+	    	ent.setStateEmotion(ID.S.Emotion2, 0, false);
 	    	if(this.Head.rotateAngleZ < 0F) {
 	    		this.Head.rotateAngleZ += 0.03F;
 	    	}
@@ -669,7 +669,7 @@ public class ModelCarrierWo extends ModelBase {
 			this.Staff.offsetY = -1.4F;
 			this.Staff.offsetZ = -1.2F;
 			//觸手晃動 (equip only)
-			if(ent.getStateEmotion(ID.State) >= Values.State.EQUIP) {
+			if(ent.getStateEmotion(ID.S.State) >= Values.State.EQUIP) {
 				this.EquipT01L.rotateAngleX = angleZ * 0.05F + 0.2618F;
 				this.EquipT01L.rotateAngleZ = -0.2618F;
 				this.EquipT02L.rotateAngleX = angleZ * 0.15F + 0.2618F;
@@ -713,7 +713,7 @@ public class ModelCarrierWo extends ModelBase {
 	}
     
     private void showEquip(BasicEntityShip ent) {
-		if(ent.getStateEmotion(ID.State) >= Values.State.EQUIP) {
+		if(ent.getStateEmotion(ID.S.State) >= Values.State.EQUIP) {
 			this.EquipBase.isHidden = false;
 			this.EquipEye01.isHidden = false;
 			this.EquipEye02.isHidden = false;
@@ -727,7 +727,7 @@ public class ModelCarrierWo extends ModelBase {
     
     //隨機抽取顯示的表情 
     private void rollEmotion(BasicEntityShip ent) { 
-    	switch(ent.getStateEmotion(ID.Emotion)) {
+    	switch(ent.getStateEmotion(ID.S.Emotion)) {
     	case Values.Emotion.BLINK:	//blink
     		EmotionBlink(ent);
     		break;
@@ -758,16 +758,16 @@ public class ModelCarrierWo extends ModelBase {
     
     //眨眼動作, this emotion is CLIENT ONLY, no sync packet required
   	private void EmotionBlink(BasicEntityShip ent) {
-  		if(ent.getStateEmotion(ID.Emotion) == Values.Emotion.NORMAL) {	//要在沒表情狀態才做表情		
+  		if(ent.getStateEmotion(ID.S.Emotion) == Values.Emotion.NORMAL) {	//要在沒表情狀態才做表情		
   			ent.setStartEmotion(ent.ticksExisted);		//表情開始時間
-  			ent.setStateEmotion(ID.Emotion, Values.Emotion.BLINK, false);	//標記表情為blink
+  			ent.setStateEmotion(ID.S.Emotion, Values.Emotion.BLINK, false);	//標記表情為blink
   		}
   		
   		int EmoTime = ent.ticksExisted - ent.getStartEmotion();
     	 		
     	if(EmoTime > 46) {	//reset face
     		setFace(0);
-			ent.setStateEmotion(ID.Emotion, Values.Emotion.NORMAL, false);
+			ent.setStateEmotion(ID.S.Emotion, Values.Emotion.NORMAL, false);
 			ent.setStartEmotion(-1);
     	}
     	else if(EmoTime > 35) {
@@ -790,7 +790,7 @@ public class ModelCarrierWo extends ModelBase {
     	
     	if(EmoTime > 41) {	//reset face
     		setFace(0);
-			ent.setStateEmotion(ID.Emotion, Values.Emotion.NORMAL, false);
+			ent.setStateEmotion(ID.S.Emotion, Values.Emotion.NORMAL, false);
 			ent.setStartEmotion(-1);
     	}
     	else if(EmoTime > 1) {

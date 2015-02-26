@@ -3,6 +3,76 @@ package com.lulan.shincolle.reference;
 //for array ID
 public class ID {
 
+	//GUI Button ID
+	public static final class B {
+		public static final byte ShipInv_Melee = 0;
+		public static final byte ShipInv_AmmoLight = 1;
+		public static final byte ShipInv_AmmoHeavy = 2;
+		public static final byte ShipInv_AirLight = 3;
+		public static final byte ShipInv_AirHeavy = 4;
+		public static final byte Shipyard_Type = 0;
+		public static final byte Shipyard_InvMode = 1;
+		public static final byte Shipyard_SelectMat = 2;
+		public static final byte Shipyard_INCDEC = 3;
+	}
+	
+	//Array ID: Equip Map
+	public static final class E {
+		public static final byte LEVEL = 0;
+		public static final byte HP = 1;
+		public static final byte ATK_L = 2;
+		public static final byte ATK_H = 3;
+		public static final byte ATK_AL = 4;
+		public static final byte ATK_AH = 5;
+		public static final byte DEF = 6;
+		public static final byte SPD = 7;
+		public static final byte MOV = 8;
+		public static final byte HIT = 9;
+		public static final byte CRI = 10;
+		public static final byte DHIT = 11;
+		public static final byte THIT = 12;
+		public static final byte MISS = 13;
+	}
+	
+	//Array ID: EntityFlag
+	public static final class F {
+		public static final byte CanFloatUp = 0;
+		public static final byte IsMarried = 1;
+		public static final byte NoFuel = 2;
+		public static final byte UseMelee = 3;
+		public static final byte UseAmmoLight = 4;
+		public static final byte UseAmmoHeavy = 5;
+		public static final byte UseAirLight = 6;
+		public static final byte UseAirHeavy = 7;
+	}
+	
+	//GUI ID
+	public static final class G {
+		public static final byte SHIPINVENTORY = 0;
+		public static final byte SMALLSHIPYARD = 1;
+		public static final byte LARGESHIPYARD = 2;
+	}
+	
+	//Array ID: Minor State
+	public static final class N {
+		public static final byte ShipLevel = 0;
+		public static final byte Kills = 1;
+		public static final byte ExpCurrent = 2;
+		public static final byte ExpNext = 3;
+		public static final byte NumAmmoLight = 4;
+		public static final byte NumAmmoHeavy = 5;
+		public static final byte NumGrudge = 6;
+		public static final byte NumAirLight = 7;
+		public static final byte NumAirHeavy = 8;
+	}
+	
+	//Array ID: Entity State
+	public static final class S {
+		public static final byte State = 0;
+		public static final byte Emotion = 1;
+		public static final byte Emotion2 = 2;
+	}
+	
 	//Array ID: StateEquip, StateFinal, BonusPoint, TypeModify
 	public static final byte HP = 0;
 	public static final byte ATK = 1;
@@ -13,60 +83,16 @@ public class ID {
 	public static final byte ATK_H = 6;
 	public static final byte ATK_AL = 7;
 	public static final byte ATK_AH = 8;
+	public static final byte CRI = 9;
+	public static final byte DHIT = 10;
+	public static final byte THIT = 11;
+	public static final byte MISS = 12;
 	
-	//Array ID: Entity State
-	public static final byte State = 0;
-	public static final byte Emotion = 1;
-	public static final byte Emotion2 = 2;
-	
-	//Array ID: Minor State
-	public static final byte ShipLevel = 0;
-	public static final byte Kills = 1;
-	public static final byte ExpCurrent = 2;
-	public static final byte ExpNext = 3;
-	public static final byte NumAmmoLight = 4;
-	public static final byte NumAmmoHeavy = 5;
-	public static final byte NumGrudge = 6;
-	public static final byte NumAirLight = 7;
-	public static final byte NumAirHeavy = 8;
-	
-	//Array ID: EntityFlag
-	public static final byte F_CanFloatUp = 0;
-	public static final byte F_IsMarried = 1;
-	public static final byte F_NoFuel = 2;
-	public static final byte F_UseMelee = 3;
-	public static final byte F_UseAmmoLight = 4;
-	public static final byte F_UseAmmoHeavy = 5;
-	public static final byte F_UseAirLight = 6;
-	public static final byte F_UseAirHeavy = 7;
-	
-	//GUI Button ID
-	public static final byte B_ShipInv_Melee = 0;
-	public static final byte B_ShipInv_AmmoLight = 1;
-	public static final byte B_ShipInv_AmmoHeavy = 2;
-	public static final byte B_ShipInv_AirLight = 3;
-	public static final byte B_ShipInv_AirHeavy = 4;
-	public static final byte B_Shipyard_Type = 0;
-	public static final byte B_Shipyard_InvMode = 1;
-	public static final byte B_Shipyard_SelectMat = 2;
-	public static final byte B_Shipyard_INCDEC = 3;
-	
-	//Array ID: Equip Map
-	public static final byte LEVEL_E = 0;
-	public static final byte HP_E = 1;
-	public static final byte ATK_E = 2;
-	public static final byte ATK_H_E = 3;
-	public static final byte ATK_AL_E = 4;
-	public static final byte ATK_AH_E = 5;
-	public static final byte DEF_E = 6;
-	public static final byte SPD_E = 7;
-	public static final byte MOV_E = 8;
-	public static final byte HIT_E = 9;
-	
-	//GUI ID
-	public static final byte SHIPINVENTORY = 0;
-	public static final byte SMALLSHIPYARD = 1;
-	public static final byte LARGESHIPYARD = 2;
+	//Array ID: Effect Equip
+	public static final byte EF_CRI = 0;
+	public static final byte EF_DHIT = 1;
+	public static final byte EF_THIT = 2;
+	public static final byte EF_MISS = 3;
 	
 	//Equip ID
 	public static final byte E_CANNON_SINGLE_5 = 0;

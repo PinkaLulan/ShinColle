@@ -74,7 +74,7 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
 	
 	@Override
 	public float getEyeHeight() {
-		return this.height * 0.8F;
+		return this.height * 1.2F;
 	}
 	
 	public void setAIList() {
@@ -88,7 +88,7 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
 		this.tasks.addTask(11, new EntityAIShipCarrierAttack(this));		   //0011
 		
 		//use melee attack
-		if(this.getStateFlag(ID.F_UseMelee)) {
+		if(this.getStateFlag(ID.F.UseMelee)) {
 			this.tasks.addTask(12, new EntityAIShipAttackOnCollide(this, 1D, true));   //0011
 			this.tasks.addTask(13, new EntityAIMoveTowardsTarget(this, 1D, 48F));  //0001
 		}
@@ -162,7 +162,7 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
 //    		if(!this.isSitting() && this.ticksExisted % 5 ==  0) {
     		if(this.ticksExisted % 5 ==  0) {
     			//若顯示裝備時, 則生成眼睛煙霧特效 (client only)
-    			if(getStateEmotion(ID.State) >= Values.State.EQUIP) {
+    			if(getStateEmotion(ID.S.State) >= Values.State.EQUIP) {
     				float[] eyePosL = new float[] {1.3F, 0.3F, 1F};
     				float[] eyePosR = new float[] {1.3F, 0.3F, -1F};
     				float radYaw = 0F;
@@ -192,7 +192,7 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
         				eyePosR = new float[] {0.7F, 0F, -2F};
     				}
     				//側歪頭位置計算, 歪頭只會修改Y高度跟X位置
-    				if(getStateEmotion(ID.Emotion2) == 1 && !this.isSitting()) {
+    				if(getStateEmotion(ID.S.Emotion2) == 1 && !this.isSitting()) {
     					float[] tiltLeft = ParticleHelper.rotateForEntityZaxis(eyePosL[2], eyePosL[1], -0.24F, 1F);
     					float[] tiltRight = ParticleHelper.rotateForEntityZaxis(eyePosR[2], eyePosR[1], -0.24F, 1F);
     					eyePosL[2] = tiltLeft[0];

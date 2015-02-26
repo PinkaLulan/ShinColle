@@ -24,21 +24,25 @@ public class EquipCalc {
 		byte equipID = getEquipID(item);
 		byte equipLevel = Values.EquipType[entity.getShipID()];
 		float[] getStat = Values.EquipMap.get(equipID);
-		float[] eqStat = new float[] {0F,0F,0F,0F,0F,0F,0F,0F,0F};
+		float[] eqStat = new float[] {0F,0F,0F,0F,0F,0F,0F,0F,0F,0F,0F,0F,0F};
 		
 		if(getStat != null) {
 			//cannot use the equip, return 0
 			if(getStat[0] != 2 && equipLevel != getStat[0]) return eqStat;
 			
-			eqStat[ID.HP] = getStat[ID.HP_E];
-			eqStat[ID.DEF] = getStat[ID.DEF_E];
-			eqStat[ID.SPD] = getStat[ID.SPD_E];
-			eqStat[ID.MOV] = getStat[ID.MOV_E];
-			eqStat[ID.HIT] = getStat[ID.HIT_E];
-			eqStat[ID.ATK] = getStat[ID.ATK_E];
-			eqStat[ID.ATK_H] = getStat[ID.ATK_H_E];
-			eqStat[ID.ATK_AL] = getStat[ID.ATK_AL_E];
-			eqStat[ID.ATK_AH] = getStat[ID.ATK_AH_E];
+			eqStat[ID.HP] = getStat[ID.E.HP];
+			eqStat[ID.DEF] = getStat[ID.E.DEF];
+			eqStat[ID.SPD] = getStat[ID.E.SPD];
+			eqStat[ID.MOV] = getStat[ID.E.MOV];
+			eqStat[ID.HIT] = getStat[ID.E.HIT];
+			eqStat[ID.ATK] = getStat[ID.E.ATK_L];
+			eqStat[ID.ATK_H] = getStat[ID.E.ATK_H];
+			eqStat[ID.ATK_AL] = getStat[ID.E.ATK_AL];
+			eqStat[ID.ATK_AH] = getStat[ID.E.ATK_AH];
+			eqStat[ID.CRI] = getStat[ID.E.CRI];
+			eqStat[ID.DHIT] = getStat[ID.E.DHIT];
+			eqStat[ID.THIT] = getStat[ID.E.THIT];
+			eqStat[ID.MISS] = getStat[ID.E.MISS];
 //			LogHelper.info("DEBUG : equip stat "+eqStat[0]+" "+eqStat[1]+" "+eqStat[2]+" "+eqStat[3]+" "+eqStat[4]+" "+eqStat[5]+" "+eqStat[6]+" "+eqStat[7]+" "+eqStat[8]);
 		}	
 		

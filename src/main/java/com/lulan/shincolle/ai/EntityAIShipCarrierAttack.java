@@ -49,8 +49,8 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
 //    	LogHelper.info("DEBUG : carrier attack "+target);
         if (((target != null && target.isEntityAlive()) || 
         	  this.attackTarget2 != null && this.attackTarget2.isEntityAlive()) &&
-        	((this.host.getStateFlag(ID.F_UseAirLight) && this.host.hasAmmoLight() && this.host.hasAirLight()) || 
-        	(this.host.getStateFlag(ID.F_UseAirHeavy) && this.host.hasAmmoHeavy() && this.host.hasAirHeavy()))) {   
+        	((this.host.getStateFlag(ID.F.UseAirLight) && this.host.hasAmmoLight() && this.host.hasAirLight()) || 
+        	(this.host.getStateFlag(ID.F.UseAirHeavy) && this.host.hasAmmoHeavy() && this.host.hasAirHeavy()))) {   
         	this.attackTarget = target;
         	this.attackTarget2 = target;
         	return true;
@@ -135,22 +135,22 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
 	        this.delayLaunch--;
 
 	        //若只使用單一種彈藥, 則停用typeLaunch
-	        if(!this.host.getStateFlag(ID.F_UseAirLight)) {
+	        if(!this.host.getStateFlag(ID.F.UseAirLight)) {
 	        	this.typeLaunch = false;
 	        }
-	        if(!this.host.getStateFlag(ID.F_UseAirHeavy)) {
+	        if(!this.host.getStateFlag(ID.F.UseAirHeavy)) {
 	        	this.typeLaunch = true;
 	        }
 	        
 	        //若attack delay倒數完了且瞄準時間夠久, 則開始攻擊, no onSight check
-	        if(this.typeLaunch && this.distSq < this.rangeSq && this.delayLaunch <= 0 && this.host.hasAmmoLight() && this.host.getStateFlag(ID.F_UseAirLight) && this.host.hasAirHeavy()) {
+	        if(this.typeLaunch && this.distSq < this.rangeSq && this.delayLaunch <= 0 && this.host.hasAmmoLight() && this.host.getStateFlag(ID.F.UseAirLight) && this.host.hasAirHeavy()) {
 	            this.host.attackEntityWithAircraft(this.attackTarget);
 	            this.delayLaunch = this.maxDelayLaunch;
 	            this.typeLaunch = !this.typeLaunch;
 	        }
 	        
 	        //若attack delay倒數完了且瞄準時間夠久, 則開始攻擊, no onSight check
-	        if(!this.typeLaunch && this.distSq < this.rangeSq && this.delayLaunch <= 0 && this.host.hasAmmoHeavy() && this.host.getStateFlag(ID.F_UseAirHeavy) && this.host.hasAirHeavy()) {	            
+	        if(!this.typeLaunch && this.distSq < this.rangeSq && this.delayLaunch <= 0 && this.host.hasAmmoHeavy() && this.host.getStateFlag(ID.F.UseAirHeavy) && this.host.hasAirHeavy()) {	            
 	            this.host.attackEntityWithHeavyAircraft(this.attackTarget);
 	            this.delayLaunch = this.maxDelayLaunch;
 	            this.typeLaunch = !this.typeLaunch;      

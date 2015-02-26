@@ -88,20 +88,20 @@ public class EntityHelper {
 	public static void setEntityByGUI(BasicEntityShip entity, int button, int value) {
 		if(entity != null) {
 			switch(button) {
-			case ID.B_ShipInv_Melee:
-				entity.setEntityFlagI(ID.F_UseMelee, value);
+			case ID.B.ShipInv_Melee:
+				entity.setEntityFlagI(ID.F.UseMelee, value);
 				break;
-			case ID.B_ShipInv_AmmoLight:
-				entity.setEntityFlagI(ID.F_UseAmmoLight, value);
+			case ID.B.ShipInv_AmmoLight:
+				entity.setEntityFlagI(ID.F.UseAmmoLight, value);
 				break;
-			case ID.B_ShipInv_AmmoHeavy:
-				entity.setEntityFlagI(ID.F_UseAmmoHeavy, value);
+			case ID.B.ShipInv_AmmoHeavy:
+				entity.setEntityFlagI(ID.F.UseAmmoHeavy, value);
 				break;
-			case ID.B_ShipInv_AirLight:
-				entity.setEntityFlagI(ID.F_UseAirLight, value);
+			case ID.B.ShipInv_AirLight:
+				entity.setEntityFlagI(ID.F.UseAirLight, value);
 				break;
-			case ID.B_ShipInv_AirHeavy:
-				entity.setEntityFlagI(ID.F_UseAirHeavy, value);
+			case ID.B.ShipInv_AirHeavy:
+				entity.setEntityFlagI(ID.F.UseAirHeavy, value);
 				break;
 			}
 		}
@@ -122,16 +122,16 @@ public class EntityHelper {
 //				LogHelper.info("DEBUG : set tile entity value "+button+" "+value+" "+value2);
 				
 				switch(button) {
-				case ID.B_Shipyard_Type:		//build type
+				case ID.B.Shipyard_Type:		//build type
 					((TileMultiGrudgeHeavy)tile).setBuildType(value);
 					break;
-				case ID.B_Shipyard_InvMode:		//select inventory mode
+				case ID.B.Shipyard_InvMode:		//select inventory mode
 					((TileMultiGrudgeHeavy)tile).setInvMode(value);
 					break;
-				case ID.B_Shipyard_SelectMat:	//select material
+				case ID.B.Shipyard_SelectMat:	//select material
 					((TileMultiGrudgeHeavy)tile).setSelectMat(value);
 					break;
-				case ID.B_Shipyard_INCDEC:			//material inc,dec
+				case ID.B.Shipyard_INCDEC:			//material inc,dec
 					setLargeShipyardBuildMats((TileMultiGrudgeHeavy)tile, button, value, value2);
 					break;
 				}	

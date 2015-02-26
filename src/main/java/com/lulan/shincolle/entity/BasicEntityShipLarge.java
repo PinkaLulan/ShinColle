@@ -1,6 +1,6 @@
 package com.lulan.shincolle.entity;
 
-import com.lulan.shincolle.client.particle.EntityFXMiss;
+import com.lulan.shincolle.client.particle.EntityFXTexts;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
@@ -30,37 +30,37 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip {
 	
 	//getter
 	public int getNumAircraftLight() {
-		return StateMinor[ID.NumAirLight];
+		return StateMinor[ID.N.NumAirLight];
 	}
 	public int getNumAircraftHeavy() {
-		return StateMinor[ID.NumAirHeavy];
+		return StateMinor[ID.N.NumAirHeavy];
 	}
 	public boolean hasAirLight() {
-		return StateMinor[ID.NumAirLight] > 0;
+		return StateMinor[ID.N.NumAirLight] > 0;
 	}
 	public boolean hasAirHeavy() {
-		return StateMinor[ID.NumAirHeavy] > 0;
+		return StateMinor[ID.N.NumAirHeavy] > 0;
 	}
 	
 	//setter
 	public void setNumAircraftLight(int par1) {
 		if(this.worldObj.isRemote) {	//client端沒有max值可以判定, 因此直接設定即可
-			StateMinor[ID.NumAirLight] = par1;
+			StateMinor[ID.N.NumAirLight] = par1;
 		}
 		else {
-			StateMinor[ID.NumAirLight] = par1;
-			if(getNumAircraftLight() > maxAircraftLight) StateMinor[ID.NumAirLight] = maxAircraftLight;
-			if(getNumAircraftLight() < 0) StateMinor[ID.NumAirLight] = 0;
+			StateMinor[ID.N.NumAirLight] = par1;
+			if(getNumAircraftLight() > maxAircraftLight) StateMinor[ID.N.NumAirLight] = maxAircraftLight;
+			if(getNumAircraftLight() < 0) StateMinor[ID.N.NumAirLight] = 0;
 		}
 	}
 	public void setNumAircraftHeavy(int par1) {
 		if(this.worldObj.isRemote) {	//client端沒有max值可以判定, 因此直接設定即可
-			StateMinor[ID.NumAirHeavy] = par1;
+			StateMinor[ID.N.NumAirHeavy] = par1;
 		}
 		else {
-			StateMinor[ID.NumAirHeavy] = par1;
-			if(getNumAircraftHeavy() > maxAircraftHeavy) StateMinor[ID.NumAirHeavy] = maxAircraftHeavy;
-			if(getNumAircraftHeavy() < 0) StateMinor[ID.NumAirHeavy] = 0;
+			StateMinor[ID.N.NumAirHeavy] = par1;
+			if(getNumAircraftHeavy() > maxAircraftHeavy) StateMinor[ID.N.NumAirHeavy] = maxAircraftHeavy;
+			if(getNumAircraftHeavy() < 0) StateMinor[ID.N.NumAirHeavy] = 0;
 		}
 	}
 	
@@ -86,8 +86,8 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip {
 	public void calcShipAttributes(byte id) {
 		super.calcShipAttributes(id);
 		
-		this.maxAircraftLight = 4 + StateMinor[ID.ShipLevel] / 5;
-		this.maxAircraftHeavy = 2 + StateMinor[ID.ShipLevel] / 10;
+		this.maxAircraftLight = 4 + StateMinor[ID.N.ShipLevel] / 5;
+		this.maxAircraftHeavy = 2 + StateMinor[ID.N.ShipLevel] / 10;
 	}
 	
 	//range attack method, cost light ammo, attack delay = 20 / attack speed, damage = 100% atk 

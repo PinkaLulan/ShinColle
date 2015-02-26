@@ -19,23 +19,25 @@ import net.minecraft.world.World;
 
 
 /**MISS PARTICLE
- * 攻擊miss時發出文字特效
+ * 攻擊miss時發出文字特效 type:0:miss 1:critical 2:double hit 3:triple hit
  * tut: https://github.com/Draco18s/Artifacts/blob/master/main/java/com/draco18s/artifacts/client/RadarParticle.java
  */
 @SideOnly(Side.CLIENT)
-public class EntityFXMiss extends EntityFX {
+public class EntityFXTexts extends EntityFX {
+
+	private static final ResourceLocation TEXTURE = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityFXTexts.png");
+	private float particleType;	//0:miss 1:critical 2:double hit 3:triple hit
 	
-	private static final ResourceLocation TEXTURE = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityFXMiss.png");
- 
-    public EntityFXMiss(World world, double posX, double posY, double posZ, float scale) {
-        super(world, posX, posY, posZ, 0.0D, 0.0D, 0.0D);
-        
+	
+    public EntityFXTexts(World world, double posX, double posY, double posZ, float scale, int type) {
+        super(world, posX, posY, posZ, 0.0D, 0.0D, 0.0D);  
         this.motionX = 0D;
         this.motionZ = 0D;
         this.motionY = 0.1D;
         this.particleScale = scale;
         this.particleMaxAge = 25;
         this.noClip = true;
+        this.particleType = (float)type;
 
     }
 
@@ -55,10 +57,10 @@ public class EntityFXMiss extends EntityFX {
 		
 		float f6 = 0F;
 		float f7 = 1F;
-		float f8 = 0F;
-		float f9 = 1F;
-		float f10 = 0.5F;
-
+		float f8 = particleType / 4F;
+		float f9 = (particleType + 1F) / 4F;
+		
+		float f10 = 0.8F;
         float f11 = (float)(this.prevPosX + (this.posX - this.prevPosX) * (double)ticks - interpPosX);
         float f12 = (float)(this.prevPosY + (this.posY - this.prevPosY) * (double)ticks - interpPosY);
         float f13 = (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * (double)ticks - interpPosZ);
@@ -71,10 +73,10 @@ public class EntityFXMiss extends EntityFX {
 //        tess.addVertexWithUV((double)(f11 + par3 * f10 + par6 * f10), (double)(f12 + par4 * 0.2F), (double)(f13 + par5 * f10 + par7 * f10), 0D, 0D);
 //        tess.addVertexWithUV((double)(f11 + par3 * f10 - par6 * f10), (double)(f12 - par4 * 0.2F), (double)(f13 + par5 * f10 - par7 * f10), 0D, 1D);
         //X跟Z位置不加頭部轉動偏移, 只有Y軸會偏向玩家方向
-        tess.addVertexWithUV((double)(f11 - par3 * f10), (double)(f12 - par4 * 0.2F), (double)(f13 - par5 * f10), 1D, 1D);
-        tess.addVertexWithUV((double)(f11 - par3 * f10), (double)(f12 + par4 * 0.2F), (double)(f13 - par5 * f10), 1D, 0D);
-        tess.addVertexWithUV((double)(f11 + par3 * f10), (double)(f12 + par4 * 0.2F), (double)(f13 + par5 * f10), 0D, 0D);
-        tess.addVertexWithUV((double)(f11 + par3 * f10), (double)(f12 - par4 * 0.2F), (double)(f13 + par5 * f10), 0D, 1D);
+        tess.addVertexWithUV((double)(f11 - par3 * f10), (double)(f12 - par4 * 0.2F), (double)(f13 - par5 * f10), f7, f9);
+        tess.addVertexWithUV((double)(f11 - par3 * f10), (double)(f12 + par4 * 0.2F), (double)(f13 - par5 * f10), f7, f8);
+        tess.addVertexWithUV((double)(f11 + par3 * f10), (double)(f12 + par4 * 0.2F), (double)(f13 + par5 * f10), f6, f8);
+        tess.addVertexWithUV((double)(f11 + par3 * f10), (double)(f12 - par4 * 0.2F), (double)(f13 + par5 * f10), f6, f9);
         //stop tess for restore texture
         tess.draw();
 

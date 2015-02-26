@@ -85,7 +85,7 @@ public class EntityDestroyerI extends BasicEntityShipSmall {
 		this.tasks.addTask(11, new EntityAIShipRangeAttack(this));			   //0011
 		
 		//use melee attack
-		if(this.getStateFlag(ID.F_UseMelee)) {
+		if(this.getStateFlag(ID.F.UseMelee)) {
 			this.tasks.addTask(12, new EntityAIShipAttackOnCollide(this, 1D, true));   //0011
 			this.tasks.addTask(13, new EntityAIMoveTowardsTarget(this, 1D, 48F));  //0001
 		}

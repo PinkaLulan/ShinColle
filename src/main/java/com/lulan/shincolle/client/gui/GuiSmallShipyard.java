@@ -117,7 +117,7 @@ public class GuiSmallShipyard extends GuiContainer {
         
         //match all pages
         int buttonValue = this.tile.buildType;
-        switch(GuiHelper.getButton(ID.SMALLSHIPYARD, 0, xClick, yClick)) {
+        switch(GuiHelper.getButton(ID.G.SMALLSHIPYARD, 0, xClick, yClick)) {
         case 0:	
         	if(buttonValue == 1) {
         		buttonValue = 0;	//原本點ship 又點一次 則歸0
@@ -126,7 +126,7 @@ public class GuiSmallShipyard extends GuiContainer {
         		buttonValue = 1;	//原本點其他按鈕, 則設成ship
         	}
         	LogHelper.info("DEBUG : GUI click: build small ship: ship "+buttonValue);
-        	CommonProxy.channel.sendToServer(new C2SGUIPackets(this.tile, ID.B_Shipyard_Type, buttonValue, 0));
+        	CommonProxy.channel.sendToServer(new C2SGUIPackets(this.tile, ID.B.Shipyard_Type, buttonValue, 0));
         	break;
         case 1:
         	if(buttonValue == 2) {
@@ -136,7 +136,7 @@ public class GuiSmallShipyard extends GuiContainer {
         		buttonValue = 2;	//原本點其他按鈕, 則設成equip
         	}
         	LogHelper.info("DEBUG : GUI click: build small ship: equip "+buttonValue);
-        	CommonProxy.channel.sendToServer(new C2SGUIPackets(this.tile, ID.B_Shipyard_Type, buttonValue, 0));
+        	CommonProxy.channel.sendToServer(new C2SGUIPackets(this.tile, ID.B.Shipyard_Type, buttonValue, 0));
         	break;
         }
 	}
