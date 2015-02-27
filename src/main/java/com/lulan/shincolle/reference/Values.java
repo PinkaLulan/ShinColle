@@ -152,17 +152,17 @@ public class Values {
 	put(ID.E_AIRCRAFT_BFLYFISH, new float[]{3F, 0F, 0F, 0F, 24F, 0F, 0F, 0.0F, -0.11F, 4.0F, 0.20F, 0F, 0F, 0F});
 	put(ID.E_AIRCRAFT_BHELL,    new float[]{3F, 0F, 0F, 0F, 21F, 0F, 0F, 0.25F, -0.15F, 5.0F, 0.24F, 0F, 0F, 0F});
 	//Recon aircraft
-	put(ID.E_AIRCRAFT_R,        new float[]{2F, 0F, 2F, 2F, 2F, 2F, 0F, 0.2F, -0.1F, 8.0F, 0.05F, 0F, 0F, 0.05F});
-	put(ID.E_AIRCRAFT_RFLYFISH, new float[]{2F, 0F, 4F, 4F, 4F, 4F, 0F, 0.3F, -0.15F, 12.0F, 0.10F, 0F, 0F, 0.10F});
+	put(ID.E_AIRCRAFT_R,        new float[]{2F, 0F, 2F, 2F, 2F, 2F, 0F, 0.2F, -0.1F, 8.0F, 0.05F, 0F, 0F, 0.04F});
+	put(ID.E_AIRCRAFT_RFLYFISH, new float[]{2F, 0F, 4F, 4F, 4F, 4F, 0F, 0.3F, -0.15F, 12.0F, 0.10F, 0F, 0F, 0.08F});
 	//radar
-	put(ID.E_RADAR_AIRMK1,   new float[]{2F, 0F, 2F, 0F, 2F, 0F, 5F, 0F, -0.04F, 5.0F, 0.03F, 0F, 0F, 0.06F});
-	put(ID.E_RADAR_AIRMK2,   new float[]{2F, 0F, 4F, 0F, 4F, 0F, 8F, 0F, -0.06F, 8.0F, 0.06F, 0F, 0F, 0.12F});
-	put(ID.E_RADAR_AIRABYSS, new float[]{2F, 0F, 6F, 0F, 6F, 0F, 15F, 0F, -0.08F, 12.0F, 0.09F, 0F, 0F, 0.18F});
-	put(ID.E_RADAR_SURMK1,   new float[]{2F, 0F, 0F, 8F, 0F, 8F, 5F, 0F, -0.04F, 5.0F, 0.03F, 0F, 0F, 0.06F});
-	put(ID.E_RADAR_SURMK2,   new float[]{2F, 0F, 0F, 14F, 0F, 14F, 8F, 0F, -0.06F, 8.0F, 0.06F, 0F, 0F, 0.12F});
-	put(ID.E_RADAR_SURABYSS, new float[]{2F, 0F, 0F, 20F, 0F, 20F, 15F, 0F, -0.08F, 12.0F, 0.09F, 0F, 0F, 0.18F});
-	put(ID.E_RADAR_SONAR,    new float[]{2F, 0F, 2F, 6F, 2F, 6F, 3F, 0F, -0.02F, 2.0F, 0.02F, 0F, 0F, 0.05F});
-	put(ID.E_RADAR_SONARMK2, new float[]{2F, 0F, 4F, 12F, 4F, 12F, 6F, 0F, -0.04F, 3.0F, 0.04F, 0F, 0F, 0.10F});
+	put(ID.E_RADAR_AIRMK1,   new float[]{2F, 0F, 2F, 0F, 2F, 0F, 5F, 0F, -0.04F, 5.0F, 0.03F, 0F, 0F, 0.04F});
+	put(ID.E_RADAR_AIRMK2,   new float[]{2F, 0F, 4F, 0F, 4F, 0F, 8F, 0F, -0.06F, 8.0F, 0.06F, 0F, 0F, 0.08F});
+	put(ID.E_RADAR_AIRABYSS, new float[]{2F, 0F, 6F, 0F, 6F, 0F, 15F, 0F, -0.08F, 12.0F, 0.09F, 0F, 0F, 0.12F});
+	put(ID.E_RADAR_SURMK1,   new float[]{2F, 0F, 0F, 8F, 0F, 8F, 5F, 0F, -0.04F, 5.0F, 0.03F, 0F, 0F, 0.04F});
+	put(ID.E_RADAR_SURMK2,   new float[]{2F, 0F, 0F, 14F, 0F, 14F, 8F, 0F, -0.06F, 8.0F, 0.06F, 0F, 0F, 0.08F});
+	put(ID.E_RADAR_SURABYSS, new float[]{2F, 0F, 0F, 20F, 0F, 20F, 15F, 0F, -0.08F, 12.0F, 0.09F, 0F, 0F, 0.12F});
+	put(ID.E_RADAR_SONAR,    new float[]{2F, 0F, 2F, 6F, 2F, 6F, 3F, 0F, -0.02F, 2.0F, 0.02F, 0F, 0F, 0.03F});
+	put(ID.E_RADAR_SONARMK2, new float[]{2F, 0F, 4F, 12F, 4F, 12F, 6F, 0F, -0.04F, 3.0F, 0.04F, 0F, 0F, 0.06F});
 	//turbine
 	put(ID.E_TURBINE,     new float[]{2F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0.15F, 0F, 0F, 0F, 0F, 0F});
 	put(ID.E_TURBINE_IMP, new float[]{2F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0.2F, 0F, 0F, 0F, 0F, 0F});

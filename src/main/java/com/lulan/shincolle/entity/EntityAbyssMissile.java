@@ -51,20 +51,20 @@ public class EntityAbyssMissile extends Entity {
     public EntityLivingBase hitEntity;			 	//onImpact target (for entity)
     
     //missile motion
-    public double distX;			//target distance
-    public double distY;
-    public double distZ;
+    public float distX;			//target distance
+    public float distY;
+    public float distZ;
     public boolean isDirect;		//false:parabola  true:direct
   
     //for parabola y position
-    public double accParaY;			//額外y軸加速度
+    public float accParaY;			//額外y軸加速度
     public int midFlyTime;			//一半的飛行時間
     
     //for direct only
-    public static final double ACCE = 0.02D;		//預設加速度
-    public double accX;				//三軸加速度
-    public double accY;
-    public double accZ;
+    public static final float ACCE = 0.02F;		//預設加速度
+    public float accX;				//三軸加速度
+    public float accY;
+    public float accZ;
     
     //missile attributes
     public float atk;				//missile damage
@@ -79,7 +79,7 @@ public class EntityAbyssMissile extends Entity {
     	this.setSize(1.0F, 1.0F);
     }
     
-    public EntityAbyssMissile(World world, BasicEntityShip host, double tarX, double tarY, double tarZ, double launchPos, float atk, float kbValue, boolean isDirect) {
+    public EntityAbyssMissile(World world, BasicEntityShip host, float tarX, float tarY, float tarZ, float launchPos, float atk, float kbValue, boolean isDirect) {
         super(world);
         this.world = world;
         //設定entity的發射者, 用於追蹤造成傷害的來源
@@ -92,31 +92,31 @@ public class EntityAbyssMissile extends Entity {
         this.posY = launchPos;
         this.posZ = host.posZ;     
         //計算距離, 取得方向vector, 並且初始化速度, 使飛彈方向朝向目標
-        this.distX = tarX - this.posX;
-        this.distY = tarY - this.posY;
-        this.distZ = tarZ - this.posZ;
+        this.distX = (float) (tarX - this.posX);
+        this.distY = (float) (tarY - this.posY);
+        this.distZ = (float) (tarZ - this.posZ);
         //設定直射或者拋物線
         this.isDirect = isDirect;
         
         //直射彈道, no gravity
-    	double dist = (double)MathHelper.sqrt_double(this.distX*this.distX + this.distY*this.distY + this.distZ*this.distZ);
-  	    this.accX = this.distX / dist * this.ACCE;
-	    this.accY = this.distY / dist * this.ACCE;
-	    this.accZ = this.distZ / dist * this.ACCE;
+    	float dist = MathHelper.sqrt_float(this.distX*this.distX + this.distY*this.distY + this.distZ*this.distZ);
+  	    this.accX = (float) (this.distX / dist * this.ACCE);
+	    this.accY = (float) (this.distY / dist * this.ACCE);
+	    this.accZ = (float) (this.distZ / dist * this.ACCE);
 	    this.motionX = this.accX;
 	    this.motionZ = this.accY;
 	    this.motionY = this.accZ;
  
 	    //拋物線軌道計算, y軸初速加上 (一半飛行時間 * 額外y軸加速度)
 	    if(!this.isDirect) {
-	    	this.midFlyTime = (int) (0.5D * MathHelper.sqrt_double(2D * dist / this.ACCE));
+	    	this.midFlyTime = (int) (0.5F * MathHelper.sqrt_float(2F * dist / this.ACCE));
 	    	this.accParaY = this.ACCE;
 	    	this.motionY = this.motionY + (double)this.midFlyTime * this.accParaY;
 	    }
     }
     
     //如果是艦載機發射, 則host要設定為艦載機主人
-    public EntityAbyssMissile(World world, BasicEntityAirplane host, double tarX, double tarY, double tarZ, double launchPos, float atk, float kbValue, boolean isDirect) {
+    public EntityAbyssMissile(World world, BasicEntityAirplane host, float tarX, float tarY, float tarZ, float launchPos, float atk, float kbValue, boolean isDirect) {
         super(world);
         this.world = world;
         //設定entity的發射者, 用於追蹤造成傷害的來源
@@ -129,24 +129,24 @@ public class EntityAbyssMissile extends Entity {
         this.posY = launchPos;
         this.posZ = host.posZ;     
         //計算距離, 取得方向vector, 並且初始化速度, 使飛彈方向朝向目標
-        this.distX = tarX - this.posX;
-        this.distY = tarY - this.posY;
-        this.distZ = tarZ - this.posZ;
+        this.distX = (float) (tarX - this.posX);
+        this.distY = (float) (tarY - this.posY);
+        this.distZ = (float) (tarZ - this.posZ);
         //設定直射或者拋物線
         this.isDirect = isDirect;
         
         //直射彈道, no gravity
-    	double dist = (double)MathHelper.sqrt_double(this.distX*this.distX + this.distY*this.distY + this.distZ*this.distZ);
-  	    this.accX = this.distX / dist * this.ACCE;
-	    this.accY = this.distY / dist * this.ACCE;
-	    this.accZ = this.distZ / dist * this.ACCE;
+    	float dist = MathHelper.sqrt_float(this.distX*this.distX + this.distY*this.distY + this.distZ*this.distZ);
+  	    this.accX = (float) (this.distX / dist * this.ACCE);
+	    this.accY = (float) (this.distY / dist * this.ACCE);
+	    this.accZ = (float) (this.distZ / dist * this.ACCE);
 	    this.motionX = this.accX;
 	    this.motionZ = this.accY;
 	    this.motionY = this.accZ;
  
 	    //拋物線軌道計算, y軸初速加上 (一半飛行時間 * 額外y軸加速度)
 	    if(!this.isDirect) {
-	    	this.midFlyTime = (int) (0.5D * MathHelper.sqrt_double(2D * dist / this.ACCE));
+	    	this.midFlyTime = (int) (0.5F * MathHelper.sqrt_float(2F * dist / this.ACCE));
 	    	this.accParaY = this.ACCE;
 	    	this.motionY = this.motionY + (double)this.midFlyTime * this.accParaY;
 	    }
@@ -230,19 +230,6 @@ public class EntityAbyssMissile extends Entity {
                 vec31 = Vec3.createVectorHelper(movingobjectposition.hitVec.xCoord, movingobjectposition.hitVec.yCoord, movingobjectposition.hitVec.zCoord);
                 this.onImpact(null);
             }
-    		
-//            //debug
-//            if(this.hostEntity != null) {
-//            	LogHelper.info("DEBUG : tick "+this.ticksExisted);
-//            	LogHelper.info("DEBUG : motionY "+this.motionY);
-//            	LogHelper.info("DEBUG : mieeile rot: "+this.rotationPitch*180/Math.PI+" "+this.rotationYaw*180/Math.PI);
-//            	LogHelper.info("DEBUG : host rot: "+this.hostEntity.rotationPitch+" "+this.hostEntity.rotationYaw);
-//            	LogHelper.info("DEBUG : missile mot: "+this.motionX+" "+this.motionY+" "+this.motionZ);
-//        		LogHelper.info("DEBUG : host pos: "+this.hostEntity.posX+" "+this.hostEntity.posY+" "+this.hostEntity.posZ); 
-//            	LogHelper.info("DEBUG : tar pos: "+this.targetX+" "+this.targetY+" "+this.targetZ);
-//            	LogHelper.info("DEBUG : diff pos: "+this.distX+" "+this.distY+" "+this.distZ);
-//            	LogHelper.info("DEBUG : AABB: "+this.boundingBox.toString());
-//            }
             
             //判定bounding box內是否有可以觸發爆炸的entity
             hitEntity = null;

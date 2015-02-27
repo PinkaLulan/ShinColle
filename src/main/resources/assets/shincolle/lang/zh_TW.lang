@@ -119,3 +119,5 @@ gui.shincolle:critical=爆擊率
 gui.shincolle:doublehit=二連擊
 gui.shincolle:triplehit=三連擊
 gui.shincolle:missreduce=提高命中率
+gui.shincolle:missrate=失誤率
+gui.shincolle:missrateair=失誤率(艦載機)

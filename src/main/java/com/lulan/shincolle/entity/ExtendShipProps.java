@@ -8,7 +8,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagFloat;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagShort;
 import net.minecraft.world.World;
@@ -44,6 +46,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		NBTTagCompound nbtExt_add2 = new NBTTagCompound();
 		NBTTagCompound nbtExt_add3 = new NBTTagCompound();
 		NBTTagCompound nbtExt_add4 = new NBTTagCompound();
+		NBTTagCompound nbtExt_add5 = new NBTTagCompound();
 
 		//save values to NBT
 		nbtExt.setTag("Minor", nbtExt_add0);
@@ -89,13 +92,19 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		nbtExt_add4.setBoolean("AmmoH", this.entity.getStateFlag(ID.F.UseAmmoHeavy));
 		nbtExt_add4.setBoolean("AirL", this.entity.getStateFlag(ID.F.UseAirLight));
 		nbtExt_add4.setBoolean("AirH", this.entity.getStateFlag(ID.F.UseAirHeavy));
+		//save EntityFlag
+		nbtExt.setTag("Equip", nbtExt_add5);
+		nbtExt_add5.setFloat("Cri", this.entity.getEffectEquip(ID.EF_CRI));
+		nbtExt_add5.setFloat("DHit", this.entity.getEffectEquip(ID.EF_DHIT));
+		nbtExt_add5.setFloat("THit", this.entity.getEffectEquip(ID.EF_THIT));
+		nbtExt_add5.setFloat("Miss", this.entity.getEffectEquip(ID.EF_MISS));
 		
 		//save inventory
 		NBTTagList list = new NBTTagList();
-		nbt.setTag(tagName, list);	//slots資料全部存在tag: ShipInv
+		nbt.setTag(tagName, list);
 		
 		for(int i=0; i<slots.length; i++) {
-			if (slots[i] != null) {
+			if(slots[i] != null) {
 				NBTTagCompound item = new NBTTagCompound();
 				item.setByte("Slot", (byte)i);
 				slots[i].writeToNBT(item);
@@ -112,7 +121,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 	public void loadNBTData(NBTTagCompound nbt) {
 		NBTTagCompound nbt_tag = (NBTTagCompound) nbt.getTag(SHIP_EXTPROP_NAME);
 		NBTTagCompound nbt_load = new NBTTagCompound();
-
+		
 		//load minor state
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Minor");
 		entity.setStateMinor(ID.N.ShipLevel, nbt_load.getShort("Level"));
@@ -157,7 +166,13 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		entity.setStateFlag(ID.F.UseAmmoHeavy, nbt_load.getBoolean("AmmoH"));
 		entity.setStateFlag(ID.F.UseAirLight, nbt_load.getBoolean("AirL"));
 		entity.setStateFlag(ID.F.UseAirHeavy, nbt_load.getBoolean("AirH"));
-
+		//load effect
+		nbt_load = (NBTTagCompound) nbt_tag.getTag("Equip");
+		entity.setEffectEquip(ID.EF_CRI, nbt_load.getFloat("Cri"));
+		entity.setEffectEquip(ID.EF_DHIT, nbt_load.getFloat("DHit"));
+		entity.setEffectEquip(ID.EF_THIT, nbt_load.getFloat("THit"));
+		entity.setEffectEquip(ID.EF_MISS, nbt_load.getFloat("Miss"));
+		
 		//load inventory
 		NBTTagList list = nbt.getTagList(tagName, 10);
 
@@ -165,7 +180,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 			NBTTagCompound item = (NBTTagCompound) list.getCompoundTagAt(i);
 			byte sid = item.getByte("Slot");
 
-			if (sid>=0 && sid<slots.length) {
+			if(sid>=0 && sid<slots.length) {
 				slots[sid] = ItemStack.loadItemStackFromNBT(item);
 			}
 		}

@@ -52,7 +52,7 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
     	
     	EntityLivingBase target = this.host.getAttackTarget();
     	
-        if (target != null && 
+        if (target != null && !target.isDead &&
         	((this.host.getStateFlag(ID.F.UseAmmoLight) && this.host.hasAmmoLight()) || 
         	(this.host.getStateFlag(ID.F.UseAmmoHeavy) && this.host.hasAmmoHeavy()))) {   
         	this.attackTarget = target;

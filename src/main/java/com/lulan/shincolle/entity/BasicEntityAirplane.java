@@ -235,7 +235,7 @@ public abstract class BasicEntityAirplane extends EntityLiving {
 		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 8), point0);
 		
 		//calc miss chance, if not miss, calc cri/multi hit
-        float missChance = 1F / (this.hostEntity.getStateFinal(ID.HIT) / 3F);
+		float missChance = 0.25F - 0.001F * this.hostEntity.getStateMinor(ID.N.ShipLevel);
         missChance -= this.hostEntity.getEffectEquip(ID.EF_MISS);	//equip miss reduce
         if(missChance > 0.35F) missChance = 0.35F;
 		
@@ -318,7 +318,7 @@ public abstract class BasicEntityAirplane extends EntityLiving {
         this.playSound(Reference.MOD_ID+":ship-fireheavy", 0.4F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         
 		//calc miss chance, if not miss, calc cri/multi hit
-        float missChance = 1F / (this.hostEntity.getStateFinal(ID.HIT) / 3F);
+        float missChance = 0.25F - 0.001F * this.hostEntity.getStateMinor(ID.N.ShipLevel);
         missChance -= this.hostEntity.getEffectEquip(ID.EF_MISS);	//equip miss reduce
         if(missChance > 0.35F) missChance = 0.35F;
 		
@@ -333,7 +333,7 @@ public abstract class BasicEntityAirplane extends EntityLiving {
 
         //spawn missile
         EntityAbyssMissile missile = new EntityAbyssMissile(this.worldObj, this, 
-        		target.posX, target.posY+target.height*0.2D, target.posZ, this.posY-0.8D, atkHeavy, kbValue, true);
+        		(float)target.posX, (float)(target.posY+target.height*0.2F), (float)target.posZ, (float)(this.posY-0.8F), atkHeavy, kbValue, true);
         this.worldObj.spawnEntityInWorld(missile);
         
         //®ø¯Ó¼uÃÄ­pºâ

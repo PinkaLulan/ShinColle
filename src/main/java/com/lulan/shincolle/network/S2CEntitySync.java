@@ -90,7 +90,12 @@ public class S2CEntitySync implements IMessage {
 					recvEntity.setStateFlag(ID.F.UseAmmoLight, buf.readBoolean());
 					recvEntity.setStateFlag(ID.F.UseAmmoHeavy, buf.readBoolean());
 					recvEntity.setStateFlag(ID.F.UseAirLight, buf.readBoolean());
-					recvEntity.setStateFlag(ID.F.UseAirHeavy, buf.readBoolean());	
+					recvEntity.setStateFlag(ID.F.UseAirHeavy, buf.readBoolean());
+					
+					recvEntity.setEffectEquip(ID.EF_CRI, buf.readFloat());
+					recvEntity.setEffectEquip(ID.EF_DHIT, buf.readFloat());
+					recvEntity.setEffectEquip(ID.EF_THIT, buf.readFloat());
+					recvEntity.setEffectEquip(ID.EF_MISS, buf.readFloat());
 				}
 				break;
 			case 1: //entity state only
@@ -165,6 +170,11 @@ public class S2CEntitySync implements IMessage {
 				buf.writeBoolean(this.sendEntity.getStateFlag(ID.F.UseAmmoHeavy));
 				buf.writeBoolean(this.sendEntity.getStateFlag(ID.F.UseAirLight));
 				buf.writeBoolean(this.sendEntity.getStateFlag(ID.F.UseAirHeavy));
+				
+				buf.writeFloat(this.sendEntity.getEffectEquip(ID.EF_CRI));
+				buf.writeFloat(this.sendEntity.getEffectEquip(ID.EF_DHIT));
+				buf.writeFloat(this.sendEntity.getEffectEquip(ID.EF_THIT));
+				buf.writeFloat(this.sendEntity.getEffectEquip(ID.EF_MISS));
 			}
 			break;
 		case 1:	//entity state only

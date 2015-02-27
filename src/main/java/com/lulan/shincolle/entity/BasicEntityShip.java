@@ -83,7 +83,7 @@ public abstract class BasicEntityShip extends EntityTameable {
 	/**minor states: 0:ShipLevel 1:Kills 2:ExpCurrent 3:ExpNext 4:NumAmmoLight 5:NumAmmoHeavy 6:NumGrudge 7:NumAirLight 8:NumAirHeavy*/
 	protected int[] StateMinor;
 	/**equip effect: 0:critical 1:doubleHit 2:tripleHit 3:baseMiss*/
-	protected float[] EffectEquip;		//NOT saved in NBT
+	protected float[] EffectEquip;
 	/**EntityState: 0:HP State 1:Emotion 2:SwimType*/
 	protected byte[] StateEmotion;
 	/**EntityFlag: 0:canFloatUp 1:isMarried 2:noFuel 3:canMelee 4:canAmmoLight 5:canAmmoHeavy 6:canAirLight 7:canAirHeavy*/
@@ -415,9 +415,15 @@ public abstract class BasicEntityShip extends EntityTameable {
 		StateMinor[state] = par1;
 	}
 	
+	//called when GUI update
+	public void setEffectEquip(int state, float par1) {
+		EffectEquip[state] = par1;
+	}
+	
 	public void setBonusPoint(int state, byte par1) {
 		BonusPoint[state] = par1;
 	}
+	
 	//called when load nbt data or GUI click
 	public void setStateFlag(int flag, boolean par1) {
 		this.StateFlag[flag] = par1;
@@ -428,6 +434,7 @@ public abstract class BasicEntityShip extends EntityTameable {
     		setAIList();
 		}
 	}
+	
 	//called when load nbt data or GUI click
 	public void setEntityFlagI(int flag, int par1) {
 		if(par1 == 1) {
@@ -848,17 +855,17 @@ public abstract class BasicEntityShip extends EntityTameable {
 		float kbValue = 0.05F;
 		//update entity look at vector (for particle spawn)
         //此方法比getLook還正確 (client sync問題)
-        float lookX = (float) (target.posX - this.posX);
-        float lookY = (float) (target.posY - this.posY);
-        float lookZ = (float) (target.posZ - this.posZ);
-        float lookDist = MathHelper.sqrt_float(lookX*lookX + lookY*lookY + lookZ*lookZ);
-        lookX = lookX / lookDist;
-        lookY = lookY / lookDist;
-        lookZ = lookZ / lookDist;
+        float distX = (float) (target.posX - this.posX);
+        float distY = (float) (target.posY - this.posY);
+        float distZ = (float) (target.posZ - this.posZ);
+        float distSqrt = MathHelper.sqrt_float(distX*distX + distY*distY + distZ*distZ);
+        distX = distX / distSqrt;
+        distY = distY / distSqrt;
+        distZ = distZ / distSqrt;
         
         //發射者煙霧特效
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(6, this.posX, this.posY, this.posZ, lookX, lookY, lookZ), point);
+		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(6, this.posX, this.posY, this.posZ, distX, distY, distZ), point);
 
 		//play cannon fire sound at attacker
         playSound(Reference.MOD_ID+":ship-firesmall", 0.4F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
@@ -879,9 +886,9 @@ public abstract class BasicEntityShip extends EntityTameable {
         }
 
         //calc miss chance, if not miss, calc cri/multi hit
-        float missChance = 1F / (StateFinal[ID.HIT] / (2F + 3F * (lookDist / StateFinal[ID.HIT])));
+        float missChance = 0.2F + 0.15F * (distSqrt / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.N.ShipLevel];
         missChance -= EffectEquip[ID.EF_MISS];		//equip miss reduce
-        if(missChance > 0.35F) missChance = 0.35F;	//max miss chance = 30%
+        if(missChance > 0.35F) missChance = 0.35F;	//max miss chance
         
         if(this.rand.nextFloat() < missChance) {
         	atk = 0;	//still attack, but no damage
@@ -954,23 +961,22 @@ public abstract class BasicEntityShip extends EntityTameable {
 		//飛彈是否採用直射
 		boolean isDirect = false;
 		//計算目標距離
-		double tarX = target.posX;	//for miss chance calc
-		double tarY = target.posY;
-		double tarZ = target.posZ;
-        double distX = tarX - this.posX;
-        double distY = tarY - this.posY;
-        double distZ = tarZ - this.posZ;
-        float distSqrt = MathHelper.sqrt_double(distX*distX + distY*distY + distZ*distZ);
-        double launchPos = this.posY + this.height * 0.7D;
+		float tarX = (float)target.posX;	//for miss chance calc
+		float tarY = (float)target.posY;
+		float tarZ = (float)target.posZ;
+		float distX = tarX - (float)this.posX;
+		float distY = tarY - (float)this.posY;
+		float distZ = tarZ - (float)this.posZ;
+        float distSqrt = MathHelper.sqrt_float(distX*distX + distY*distY + distZ*distZ);
+        float launchPos = (float)posY + height * 0.7F;
         
         //超過一定距離/水中 , 則採用拋物線,  在水中時發射高度較低
-        if((distX*distX+distY*distY+distZ*distZ) < 36) {
+        if((distX*distX+distY*distY+distZ*distZ) < 36F) {
         	isDirect = true;
         }
         if(this.getShipDepth() > 0D) {
-        	LogHelper.info("DEBUG : depth > 0 , use under missile");
         	isDirect = true;
-        	launchPos = this.posY;
+        	launchPos = (float)posY;
         }
 		
 		//experience++
@@ -992,14 +998,14 @@ public abstract class BasicEntityShip extends EntityTameable {
         }
         
         //calc miss chance, miss: add random offset(0~6) to missile target 
-        float missChance = 1F / (StateFinal[ID.HIT] / (2F + 3F * (distSqrt / StateFinal[ID.HIT])));
+        float missChance = 0.2F + 0.15F * (distSqrt / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.N.ShipLevel];
         missChance -= EffectEquip[ID.EF_MISS];	//equip miss reduce
         if(missChance > 0.35F) missChance = 0.35F;	//max miss chance = 30%
        
         if(this.rand.nextFloat() < missChance) {
-        	tarX = tarX - 3D + this.rand.nextDouble() * 6D;
-        	tarY = tarY + this.rand.nextDouble() * 3D;
-        	tarZ = tarZ - 3D + this.rand.nextDouble() * 6D;
+        	tarX = tarX - 3F + this.rand.nextFloat() * 6F;
+        	tarY = tarY + this.rand.nextFloat() * 3F;
+        	tarZ = tarZ - 3F + this.rand.nextFloat() * 6F;
         	//spawn miss particle
     		EntityFX particleMiss = new EntityFXTexts(worldObj, 
     		          this.posX, this.posY+this.height, this.posZ, 1F, 0);	    
@@ -1008,7 +1014,7 @@ public abstract class BasicEntityShip extends EntityTameable {
 
         //spawn missile
         EntityAbyssMissile missile = new EntityAbyssMissile(this.worldObj, this, 
-        		tarX, tarY+target.height*0.2D, tarZ, launchPos, atk, kbValue, isDirect);
+        		tarX, tarY+target.height*0.2F, tarZ, launchPos, atk, kbValue, isDirect);
         this.worldObj.spawnEntityInWorld(missile);
         
         return true;

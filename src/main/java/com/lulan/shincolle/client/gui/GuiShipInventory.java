@@ -51,8 +51,9 @@ public class GuiShipInventory extends GuiContainer {
 	//draw string
 	private List mouseoverList;
 	private String titlename, shiplevel, lvMark, hpMark, canMelee, canLATK, canHATK, canALATK, canAHATK, 
-	               strATK, strAATK, strLATK, strHATK, strALATK, strAHATK, strDEF, strSPD, strMOV, strHIT, Kills, Exp, Grudge, Owner,
-				   AmmoLight, AmmoHeavy, AirLight, AirHeavy, overATK;
+	               strATK, strAATK, strLATK, strHATK, strALATK, strAHATK, strDEF, strSPD, strMOV, strHIT, 
+	               Kills, Exp, Grudge, Owner, AmmoLight, AmmoHeavy, AirLight, AirHeavy, 
+	               overText, strCri, strDhit, strThit, strMissMin, strMissMax, strMissAir;
 	private int hpCurrent, hpMax, color, showPage, pageIndictor, showAttack;
 	private boolean switchMelee, switchLight, switchHeavy, switchAirLight, switchAirHeavy;
 	
@@ -179,16 +180,59 @@ public class GuiShipInventory extends GuiContainer {
 	}
 	
 	//draw tooltip
-	private void handleHoveringText() {		
-		//draw states value
+	private void handleHoveringText() {
+		//reset text
+		mouseoverList.clear();
+		
 		if(this.showPage == 2) {
-			if(xMouse > 65+guiLeft && xMouse < 120+guiLeft && yMouse > 18+guiTop && yMouse < 40+guiTop) {
-				mouseoverList.clear();
-				overATK = I18n.format("gui.shincolle:firepower1") + " " + strATK;
-				mouseoverList.add(overATK);
-				overATK = I18n.format("gui.shincolle:firepower2") + " " + strAATK;
-				mouseoverList.add(overATK);
-				this.drawHoveringText(mouseoverList, 55, 143, this.fontRendererObj);
+			//draw states value
+			if(xMouse > 65+guiLeft && xMouse < 120+guiLeft) {
+				//show text at ATTACK
+				if(yMouse > 18+guiTop && yMouse < 40+guiTop) {
+//					LogHelper.info("DEBUg : get tag "+this.entity.getEffectEquip(ID.EF_CRI));
+					strCri = String.valueOf((int)(this.entity.getEffectEquip(ID.EF_CRI) * 100F));
+					strDhit = String.valueOf((int)(this.entity.getEffectEquip(ID.EF_DHIT) * 100F));
+					strThit = String.valueOf((int)(this.entity.getEffectEquip(ID.EF_THIT) * 100F));
+				
+					//add mouseover text
+					overText = I18n.format("gui.shincolle:firepower1") + " " + strATK;
+					mouseoverList.add(overText);
+					overText = I18n.format("gui.shincolle:firepower2") + " " + strAATK;
+					mouseoverList.add(overText);
+					overText = I18n.format("gui.shincolle:critical") + " " + strCri + " %";
+					mouseoverList.add(overText);
+					overText = I18n.format("gui.shincolle:doublehit") + " " + strDhit + " %";
+					mouseoverList.add(overText);
+					overText = I18n.format("gui.shincolle:triplehit") + " " + strThit + " %";
+					mouseoverList.add(overText);
+					this.drawHoveringText(mouseoverList, 55, 143, this.fontRendererObj);
+				}
+				//show text at RANGE
+				else if(yMouse > 104+guiTop && yMouse < 126+guiTop) {
+					//calc min miss
+					int temp = (int) ((0.2F - this.entity.getEffectEquip(ID.EF_MISS) - 0.001F * this.entity.getStateMinor(ID.N.ShipLevel)) * 100F);
+					if(temp < 0) temp = 0;
+					if(temp > 35) temp = 35;
+					strMissMin = String.valueOf(temp);
+//					LogHelper.info("DEBUg : miss after "+this.entity.getStateFinal(ID.HIT));
+					//calc max miss
+					temp = (int) ((0.35F - this.entity.getEffectEquip(ID.EF_MISS) - 0.001F * this.entity.getStateMinor(ID.N.ShipLevel)) * 100F);
+					if(temp < 0) temp = 0;
+					if(temp > 35) temp = 35;
+					strMissMax = String.valueOf(temp);
+					
+					//calc air miss
+					temp = (int) ((0.25F - this.entity.getEffectEquip(ID.EF_MISS) - 0.001F * this.entity.getStateMinor(ID.N.ShipLevel)) * 100F);
+					if(temp < 0) temp = 0;
+					if(temp > 35) temp = 35;
+					strMissAir = String.valueOf(temp);		
+
+					overText = I18n.format("gui.shincolle:missrate") + " " + strMissMin + " ~ " + strMissMax + " %";
+					mouseoverList.add(overText);
+					overText = I18n.format("gui.shincolle:missrateair") + " " + strMissAir + " %";
+					mouseoverList.add(overText);
+					this.drawHoveringText(mouseoverList, 55, 143, this.fontRendererObj);
+				}
 			}
 		}
 			

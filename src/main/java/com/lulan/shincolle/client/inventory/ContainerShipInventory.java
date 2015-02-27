@@ -31,8 +31,9 @@ public class ContainerShipInventory extends Container {
 	public static final byte SLOTS_EQUIP = 6;
 	public static final byte SLOTS_INVENTORY = 18;
 	private int GuiKills, GuiExpCurrent, GuiNumAmmo, GuiNumAmmoHeavy, GuiNumGrudge, 
-	            GuiNumAirLight, GuiNumAirHeavy, GuiIsMarried, 
+	            GuiNumAirLight, GuiNumAirHeavy, GuiIsMarried,
 	            ButtonMelee, ButtonAmmoLight, ButtonAmmoHeavy, ButtonAirLight, ButtoAirHeavy;
+	private float GuiCri, GuiDhit, GuiThit, GuiMiss;
 	
 	public ContainerShipInventory(InventoryPlayer invPlayer, BasicEntityShip entity1) {
 		int i,j;	//loop index
@@ -173,6 +174,7 @@ public class ContainerShipInventory extends Container {
 	public void detectAndSendChanges() {
 		super.detectAndSendChanges();
 		int getValue;
+		float getValueF;
 		
         for(Object crafter : this.crafters) {
             ICrafting icrafting = (ICrafting) crafter;

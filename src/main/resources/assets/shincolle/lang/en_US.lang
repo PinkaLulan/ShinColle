@@ -118,4 +118,6 @@ gui.shincolle:carrieronly=Aircraft Carrier Only
 gui.shincolle:critical=Critical
 gui.shincolle:doublehit=Double Hit
 gui.shincolle:triplehit=Triple Hit
-gui.shincolle:missreduce=Reduce Miss
+gui.shincolle:missreduce=Miss Reduction
+gui.shincolle:missrate=Miss
+gui.shincolle:missrateair=Miss(Aircraft)
