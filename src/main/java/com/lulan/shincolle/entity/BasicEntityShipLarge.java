@@ -70,6 +70,11 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip {
 		
 		//server side
 		if(!this.worldObj.isRemote) {
+			//clear target if target dead (for unknow target bug)
+			if(this.getAttackTarget() != null && this.getAttackTarget().isDead) {
+				this.setAttackTarget(null);
+			}
+			
 			//每一段時間回復一隻艦載機
 			delayAircraft--;
 			if(this.delayAircraft <= 0) {
@@ -113,12 +118,17 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip {
         	return false;
         }
         
+        //發射者煙霧特效 (發射飛機不使用特效, 但是要發送封包來設定attackTime)
+        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
+        
         //spawn airplane
         if(target instanceof EntityLivingBase) {
         	EntityAirplane plane = new EntityAirplane(this.worldObj, this, (EntityLivingBase)target, this.posY+launchHeight);
             this.worldObj.spawnEntityInWorld(plane);
             return true;
         }
+
         return false;
 	}
 
@@ -144,6 +154,10 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip {
         if(!decrAmmoNum(5)) {		//not enough ammo
         	return false;
         }
+        
+        //發射者煙霧特效 (發射飛機不使用特效, 但是要發送封包來設定attackTime)
+        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
         
         //spawn airplane
         if(target instanceof EntityLivingBase) {

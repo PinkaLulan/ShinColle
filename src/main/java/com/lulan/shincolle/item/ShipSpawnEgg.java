@@ -42,7 +42,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ShipSpawnEgg extends Item {
 	
 	Random rand;
-	private static final int ShipNumber = 3;
 	
 	@SideOnly(Side.CLIENT)
     private IIcon[] iconEgg = new IIcon[3];	//egg icon
@@ -106,6 +105,7 @@ public class ShipSpawnEgg extends Item {
   		list.add(new ItemStack(item, 1, ID.S_DestroyerI+2));
   		list.add(new ItemStack(item, 1, ID.S_HeavyCruiserRI+2));
   		list.add(new ItemStack(item, 1, ID.S_CarrierWO+2));
+  		list.add(new ItemStack(item, 1, ID.S_BattleshipRE+2));
   	}
   	
   	/** Get entity name from metadata
@@ -120,12 +120,14 @@ public class ShipSpawnEgg extends Item {
   			return "shincolle.EntityDestroyerI";
   		case 1:	//large egg
   			return "shincolle.EntityCarrierWo";
-  		case ID.S_CarrierWO+2:
-  			return "shincolle.EntityCarrierWo";
   		case ID.S_DestroyerI+2:
   			return "shincolle.EntityDestroyerI";
   		case ID.S_HeavyCruiserRI+2:
   			return "shincolle.EntityHeavyCruiserRi";
+  		case ID.S_CarrierWO+2:
+  			return "shincolle.EntityCarrierWo";
+  		case ID.S_BattleshipRE+2:
+  			return "shincolle.EntityBattleshipRe";
   		default:
   			return "shincolle.EntityDestroyerI";
   		}

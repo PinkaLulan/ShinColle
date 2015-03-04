@@ -441,10 +441,8 @@ public class ModelCarrierWo extends ModelBase {
 	  	addk2 = MathHelper.cos(f * 0.4F + 3.1415927F) * 0.5F * f1;
 
   	    //移動頭部 使其看人, 不看人時持續擺動頭部
-//	    this.Neck.rotateAngleY = f3 / 57.29578F;	//左右角度 角度轉成rad 即除以57.29578
-//	    this.Neck.rotateAngleX = (f4 / 57.29578F) * 0.7F; 	//上下角度
 	  	this.Head.rotateAngleY = f3 / 57.29578F;	//左右角度 角度轉成rad 即除以57.29578
-	    this.Head.rotateAngleX = (f4 / 57.29578F) * 0.7F; 	//上下角度
+	    this.Head.rotateAngleX = (f4 / 57.29578F) * 0.7F - 0.4F; 	//上下角度
 	    
 	    //正常站立動作
 	    //胸部
@@ -585,31 +583,14 @@ public class ModelCarrierWo extends ModelBase {
 		    	}
 		    }
 	    }
-	    //emotion2: client side only
-//	    if(this.HeadTilt) {
-//	    	//用swim type參數當作歪頭flag
-//	    	ent.setEntityState(AttrID.Emotion2, 1, false);
-//	    	if(this.Neck.rotateAngleZ > -0.24F) {
-//	    		this.Neck.rotateAngleZ -= 0.03F;
-//	    	}
-//	    }
-//	    else {
-//	    	//用swim type參數當作歪頭flag
-//	    	ent.setEntityState(AttrID.Emotion2, 0, false);
-//	    	if(this.Neck.rotateAngleZ < 0F) {
-//	    		this.Neck.rotateAngleZ += 0.03F;
-//	    	}
-//	    }
 	    
 	    if(this.HeadTilt) {
-	    	//用swim type參數當作歪頭flag
 	    	ent.setStateEmotion(ID.S.Emotion2, 1, false);
 	    	if(this.Head.rotateAngleZ > -0.24F) {
 	    		this.Head.rotateAngleZ -= 0.03F;
 	    	}
 	    }
 	    else {
-	    	//用swim type參數當作歪頭flag
 	    	ent.setStateEmotion(ID.S.Emotion2, 0, false);
 	    	if(this.Head.rotateAngleZ < 0F) {
 	    		this.Head.rotateAngleZ += 0.03F;
@@ -621,13 +602,11 @@ public class ModelCarrierWo extends ModelBase {
   			this.ArmLeft.rotateAngleX = 0.7F;
   			this.ArmRight.rotateAngleX = 0.7F;
   			this.BodyMain.rotateAngleX = 0.5F;
-//  			this.Neck.rotateAngleX -= 0.5F;
   			this.Head.rotateAngleX -= 0.5F;
   			addk1 -= 0.66F;
 			addk2 -= 0.66F;
   		}
 	    else {
-//			this.Neck.rotateAngleX += 0.2F;
 			this.Head.rotateAngleX += 0.2F;
 	    }
   		
@@ -644,9 +623,6 @@ public class ModelCarrierWo extends ModelBase {
 			this.BodyMain.rotateAngleY = -1.57F;
 			this.BodyMain.rotateAngleZ = -0.0873F;
 			//脖子角度
-//			this.Neck.rotateAngleX += -0.2F;
-//			this.Neck.rotateAngleY += 1.0472F;
-//			this.Neck.rotateAngleZ += 0F;
 			this.Head.rotateAngleX += -0.2F;
 			this.Head.rotateAngleY += 1.0472F;
 			this.Head.rotateAngleZ += 0F;
@@ -781,6 +757,7 @@ public class ModelCarrierWo extends ModelBase {
     	}		
   	}
   	
+    //瞪人表情
   	private void EmotionStaring(BasicEntityShip ent) {	
     	if(ent.getStartEmotion() == -1) {
 			ent.setStartEmotion(ent.ticksExisted);		//表情開始時間

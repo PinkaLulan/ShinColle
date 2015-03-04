@@ -102,9 +102,9 @@ public class ParticleHelper {
 	/**SPAWN ATTACK PARTICLE WITH CUSTOM POSITION
 	 * @parm posX, posY, posZ, lookX, lookY, lookZ, type
 	 */
-	public static void spawnAttackParticleCustomVector(Entity target, double posX, double posY, double posZ, double lookX, double lookY, double lookZ, byte type) {
-		if(target != null && target instanceof EntityLivingBase) {
-			((EntityLivingBase) target).attackTime = 30;
+	public static void spawnAttackParticleCustomVector(Entity target, double posX, double posY, double posZ, double lookX, double lookY, double lookZ, byte type, boolean isShip) {
+		if(isShip && target != null) {
+			((EntityLivingBase) target).attackTime = 50;
 		}
 		
 		//spawn particle
@@ -115,8 +115,14 @@ public class ParticleHelper {
 	 * spawn particle and set attack time for model rendering
 	 * @parm entity, type
 	 */
-	public static void spawnAttackParticle(Entity target, byte type) {
-
+	public static void spawnAttackParticle(Entity target, byte type, boolean isShip) {
+		if(isShip && target != null) {
+			((EntityLivingBase) target).attackTime = 50;
+		}
+		
+		//0 = no particle
+		if(type == 0) return;
+		
 		//target look
 		double lookX = 0;
 		double lookY = 0;
@@ -145,9 +151,6 @@ public class ParticleHelper {
 //		GL11.glDepthMask(true);
 		//spawn particle
 		switch(type) {
-		case 0:	//explode
-			world.spawnParticle("explode", posX, posY+2, posZ, 0.0D, 0.0D, 0.0D);
-			break;
 		case 1: //largeexplode
 			world.spawnParticle("largeexplode", posX, posY+2, posZ, 0.0D, 0.0D, 0.0D);
 			break;
@@ -189,6 +192,8 @@ public class ParticleHelper {
 				ran2 = rand.nextFloat() * 3F - 1.5F;
 				world.spawnParticle("lava", posX+ran1, posY+1, posZ+ran2, 0D, 0D, 0D);
 			}			
+			break;
+		case 10://laser particle, draw particle from posXYZ to lookXYZ
 			break;
 		default:
 			break;		

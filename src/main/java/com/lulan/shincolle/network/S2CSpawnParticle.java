@@ -32,6 +32,8 @@ public class S2CSpawnParticle implements IMessage {
 	private static int recvType;
 	private static byte sendParticleType;
 	private static byte recvParticleType;
+	private static boolean sendIsShip;
+	private static boolean recvIsShip;
 	private static float sendposX;
 	private static float sendposY;
 	private static float sendposZ;
@@ -49,19 +51,21 @@ public class S2CSpawnParticle implements IMessage {
 	public S2CSpawnParticle() {}	//必須要有空參數constructor, forge才能使用此class
 	
 	//spawn particle: 
-	//type 0: spawn particle with entity
-	public S2CSpawnParticle(Entity entity, int type) {
+	//type 0: spawn particle with entity, if isShip -> set ship attackTime
+	public S2CSpawnParticle(Entity entity, int type, boolean isShip) {
 		clientWorld = Minecraft.getMinecraft().theWorld;
         this.sendEntity = entity;
         this.sendType = 0;
+        this.sendIsShip = isShip;
         this.sendParticleType = (byte)type;
     }
 	
-	//type 1: spawn particle with entity and position
-	public S2CSpawnParticle(Entity entity, int type, double posX, double posY, double posZ, double lookX, double lookY, double lookZ) {
+	//type 1: spawn particle with entity and position, if isShip -> set ship attackTime
+	public S2CSpawnParticle(Entity entity, int type, double posX, double posY, double posZ, double lookX, double lookY, double lookZ, boolean isShip) {
 		clientWorld = Minecraft.getMinecraft().theWorld;
 		this.sendEntity = entity;
         this.sendType = 1;
+        this.sendIsShip = isShip;
         this.sendParticleType = (byte)type;
         this.sendposX = (float)posX;
         this.sendposY = (float)posY;
@@ -96,7 +100,8 @@ public class S2CSpawnParticle implements IMessage {
 				this.entityID = buf.readInt();
 				recvEntity = EntityHelper.getEntityByID(entityID, clientWorld);
 				this.recvParticleType = buf.readByte();
-				ParticleHelper.spawnAttackParticle(recvEntity, recvParticleType);
+				this.recvIsShip = buf.readBoolean();
+				ParticleHelper.spawnAttackParticle(recvEntity, recvParticleType, recvIsShip);	
 			}
 			break;
 		case 1: //spawn particle with entity and position
@@ -104,13 +109,14 @@ public class S2CSpawnParticle implements IMessage {
 				this.entityID = buf.readInt();
 				recvEntity = EntityHelper.getEntityByID(entityID, clientWorld);
 				this.recvParticleType = buf.readByte();
+				this.recvIsShip = buf.readBoolean();
 				this.recvposX = buf.readFloat();
 				this.recvposY = buf.readFloat();
 				this.recvposZ = buf.readFloat();
 				this.recvlookX = buf.readFloat();
 				this.recvlookY = buf.readFloat();
 				this.recvlookZ = buf.readFloat();
-				ParticleHelper.spawnAttackParticleCustomVector(recvEntity, (double)recvposX, (double)recvposY, (double)recvposZ, (double)recvlookX, (double)recvlookY, (double)recvlookZ, recvParticleType);
+				ParticleHelper.spawnAttackParticleCustomVector(recvEntity, (double)recvposX, (double)recvposY, (double)recvposZ, (double)recvlookX, (double)recvlookY, (double)recvlookZ, recvParticleType, recvIsShip);
 			}
 			break;
 		case 2: //spawn particle with position
@@ -137,6 +143,7 @@ public class S2CSpawnParticle implements IMessage {
 				buf.writeByte(0);	//type 0
 				buf.writeInt(this.sendEntity.getEntityId());
 				buf.writeByte(this.sendParticleType);
+				buf.writeBoolean(this.sendIsShip);
 			}
 			break;
 		case 1:	//spawn particle with entity and position
@@ -144,6 +151,7 @@ public class S2CSpawnParticle implements IMessage {
 				buf.writeByte(1);	//type 1
 				buf.writeInt(this.sendEntity.getEntityId());
 				buf.writeByte(this.sendParticleType);
+				buf.writeBoolean(this.sendIsShip);
 				buf.writeFloat(this.sendposX);
 				buf.writeFloat(this.sendposY);
 				buf.writeFloat(this.sendposZ);

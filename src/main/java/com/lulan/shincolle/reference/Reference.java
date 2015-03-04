@@ -11,6 +11,7 @@ public class Reference {
 	public static final String TEXTURES_BLOCKS = MOD_ID + ":textures/blocks/";
 	public static final String TEXTURES_ENTITY = MOD_ID + ":textures/entity/";
 	public static final String TEXTURES_GUI = MOD_ID + ":textures/gui/";
+	public static final String TEXTURES_PARTICLE = MOD_ID + ":textures/particles/";
 	public static final String SOUNDS = MOD_ID + ":sounds/";
 	
 

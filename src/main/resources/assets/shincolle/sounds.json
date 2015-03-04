@@ -65,5 +65,13 @@
             "gun_02",
             "gun_03"   
         ]
+    },
+    
+    "ship-laser": {
+        "category": "hostile", "replace": true, "sounds": [
+        	"laser_01",
+       		"laser_02",
+            "laser_04"
+        ]
     }
 }

@@ -72,9 +72,10 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
 		this.launchHeight = this.height * 1.1D;
 	}
 	
+	//for morph
 	@Override
 	public float getEyeHeight() {
-		return this.height * 1.2F;
+		return this.height * 1.06F;
 	}
 	
 	public void setAIList() {
@@ -101,20 +102,6 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
 		this.tasks.addTask(25, new EntityAIWander(this, 0.8D));				   //0001
 		this.tasks.addTask(25, new EntityAILookIdle(this));					   //0011
 
-		
-/* 		//switch AI method
-		this.tasks.removeTask(this.aiAttackOnCollide);
-        this.tasks.removeTask(this.aiArrowAttack);
-        ItemStack itemstack = this.getHeldItem();
-
-        if (itemstack != null && itemstack.getItem() == Items.bow)
-        {
-            this.tasks.addTask(4, this.aiArrowAttack);
-        }
-        else
-        {
-            this.tasks.addTask(4, this.aiAttackOnCollide);
-        }*/
 	}
 	
 	public void setAITargetList() {	
@@ -163,8 +150,8 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
     		if(this.ticksExisted % 5 ==  0) {
     			//若顯示裝備時, 則生成眼睛煙霧特效 (client only)
     			if(getStateEmotion(ID.S.State) >= Values.State.EQUIP) {
-    				float[] eyePosL = new float[] {1.3F, 0.3F, 1F};
-    				float[] eyePosR = new float[] {1.3F, 0.3F, -1F};
+    				float[] eyePosL = new float[] {0.7F, 0.3F, 1F};
+    				float[] eyePosR = new float[] {0.7F, 0.3F, -1F};
     				float radYaw = 0F;
     				float radPitch = 0F;
     				float sinPitch = 0F;
@@ -207,12 +194,12 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
     				EntityFX particleSprayL = new EntityFXSpray(worldObj, 
                     		this.posX+eyePosL[2], this.posY+2.5D+eyePosL[1], this.posZ+eyePosL[0], 
                     		0D, 0.05D, 0D,
-                    		1F, 0F, 0F, 1F);
+                    		0.5F, 1F, 1F, 1F);
                 	Minecraft.getMinecraft().effectRenderer.addEffect(particleSprayL);
                 	EntityFX particleSprayR = new EntityFXSpray(worldObj, 
                     		this.posX+eyePosR[2], this.posY+2.5D+eyePosR[1], this.posZ+eyePosR[0], 
                     		0D, 0.05D, 0D,
-                    		1F, 0F, 0F, 1F);
+                    		0.5F, 1F, 1F, 1F);
                 	Minecraft.getMinecraft().effectRenderer.addEffect(particleSprayR);            	
     			}			
     		}	

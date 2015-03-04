@@ -304,9 +304,9 @@ public class EntityAbyssMissile extends Entity {
             	if(this.hostEntity != null && (this.rand.nextFloat() < this.hostEntity.getEffectEquip(ID.EF_CRI))) {
             		missileAtk *= 3F;
             		//spawn critical particle
-            		EntityFX particleMiss = new EntityFXTexts(worldObj, 
+            		EntityFX particleCri = new EntityFXTexts(worldObj, 
             		          this.hostEntity.posX, this.hostEntity.posY+this.height, this.hostEntity.posZ, 1F, 1);	    
-            		Minecraft.getMinecraft().effectRenderer.addEffect(particleMiss);
+            		Minecraft.getMinecraft().effectRenderer.addEffect(particleCri);
             	}
 
         		//設定該entity受到的傷害
@@ -352,9 +352,9 @@ public class EntityAbyssMissile extends Entity {
                 		if(this.hostEntity != null && (this.rand.nextFloat() < this.hostEntity.getEffectEquip(ID.EF_CRI))) {
                     		missileAtk *= 3F;
                     		//spawn critical particle
-                    		EntityFX particleMiss = new EntityFXTexts(worldObj, 
+                    		EntityFX particleCri = new EntityFXTexts(worldObj, 
                     		          this.hostEntity.posX, this.hostEntity.posY+this.height, this.hostEntity.posZ, 1F, 1);	    
-                    		Minecraft.getMinecraft().effectRenderer.addEffect(particleMiss);
+                    		Minecraft.getMinecraft().effectRenderer.addEffect(particleCri);
                     	}
                     	
                 		//對entity造成傷害
@@ -377,7 +377,7 @@ public class EntityAbyssMissile extends Entity {
             //send packet to client for display partical effect
             TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
 //    		LogHelper.info("DEBUG : missile impact particle "+point.x+" "+point.y+" "+point.z);
-            CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 2), point);
+            CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 2, false), point);
 //            CreatePacketS2C.sendS2CAttackParticle(this, 2);
             this.setDead();
         }//end if server side

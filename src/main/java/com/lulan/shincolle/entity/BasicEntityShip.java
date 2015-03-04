@@ -840,7 +840,7 @@ public abstract class BasicEntityShip extends EntityTameable {
 	        //send packet to client for display partical effect   
 	        if (!worldObj.isRemote) {
 	        	TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-	    		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(target, 1), point);
+	    		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(target, 1, false), point);
 			}
 	    }
 
@@ -865,7 +865,7 @@ public abstract class BasicEntityShip extends EntityTameable {
         
         //發射者煙霧特效
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(6, this.posX, this.posY, this.posZ, distX, distY, distZ), point);
+		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 6, this.posX, this.posY, this.posZ, distX, distY, distZ, true), point);
 
 		//play cannon fire sound at attacker
         playSound(Reference.MOD_ID+":ship-firesmall", 0.4F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
@@ -903,27 +903,27 @@ public abstract class BasicEntityShip extends EntityTameable {
         	if(this.rand.nextFloat() < EffectEquip[ID.EF_CRI]) {
         		atk *= 1.5F;
         		//spawn critical particle
-        		EntityFX particleMiss = new EntityFXTexts(worldObj, 
+        		EntityFX particleCri = new EntityFXTexts(worldObj, 
         		          this.posX, this.posY+this.height, this.posZ, 1F, 1);	    
-        		Minecraft.getMinecraft().effectRenderer.addEffect(particleMiss);
+        		Minecraft.getMinecraft().effectRenderer.addEffect(particleCri);
         	}
         	else {
         		//calc double hit
             	if(this.rand.nextFloat() < EffectEquip[ID.EF_DHIT]) {
             		atk *= 2F;
             		//spawn double hit particle
-            		EntityFX particleMiss = new EntityFXTexts(worldObj, 
+            		EntityFX particleDhit = new EntityFXTexts(worldObj, 
             		          this.posX, this.posY+this.height, this.posZ, 1F, 2);	    
-            		Minecraft.getMinecraft().effectRenderer.addEffect(particleMiss);
+            		Minecraft.getMinecraft().effectRenderer.addEffect(particleDhit);
             	}
             	else {
             		//calc double hit
                 	if(this.rand.nextFloat() < EffectEquip[ID.EF_THIT]) {
                 		atk *= 3F;
                 		//spawn triple hit particle
-                		EntityFX particleMiss = new EntityFXTexts(worldObj, 
+                		EntityFX particleThit = new EntityFXTexts(worldObj, 
                 		          this.posX, this.posY+this.height, this.posZ, 1F, 3);	    
-                		Minecraft.getMinecraft().effectRenderer.addEffect(particleMiss);
+                		Minecraft.getMinecraft().effectRenderer.addEffect(particleThit);
                 	}
             	}
         	}
@@ -943,9 +943,9 @@ public abstract class BasicEntityShip extends EntityTameable {
 	            motionZ *= 0.6D;
 	        }
 	        
-        	//send packet to client for display partical effect  
-	        TargetPoint point1 = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-			CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(target, 9), point1);
+        	//display hit particle on target
+	        TargetPoint point1 = new TargetPoint(this.dimension, target.posX, target.posY, target.posZ, 64D);
+			CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(target, 9, true), point1);
         }
 
 	    return isTargetHurt;

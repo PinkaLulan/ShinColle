@@ -80,11 +80,12 @@ item.shincolle:largeegg.name=建造大型棲艦
 item.shincolle:debugegg.name=Debug生怪蛋
 
 # Entity
-entity.shincolle.EntityDestroyerI.name=驅逐イ級
-entity.shincolle.EntityHeavyCruiserRi.name=重巡リ級
-entity.shincolle.EntityCarrierWo.name=空母ヲ級
 entity.shincolle.EntityAirplane.name=深海棲艦戰
 entity.shincolle.EntityAirplaneTakoyaki.name=深海復讐艦攻
+entity.shincolle.EntityBattleshipRe.name=航空戰艦RE級
+entity.shincolle.EntityCarrierWo.name=空母WO級
+entity.shincolle.EntityDestroyerI.name=驅逐I級
+entity.shincolle.EntityHeavyCruiserRi.name=重巡RI級
 
 # GUI
 gui.shincolle:level=等級

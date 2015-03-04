@@ -87,9 +87,7 @@ public class EntityAIShipInRangeTarget extends EntityAITarget {
     public boolean shouldExecute() {
     	//if sitting -> false
     	if(this.host.isSitting()) return false;
-//    	//target exec every 2 ticks
-//    	if(this.host.ticksExisted % 2 != 0)  return false;
-//    	LogHelper.info("DEBUG : should target "+this.host.getAttackTarget());
+
     	//update range every second
     	if(this.host != null && this.host.ticksExisted % 20 == 0) {
     		this.range2 = (int)this.host.getStateFinal(ID.HIT);

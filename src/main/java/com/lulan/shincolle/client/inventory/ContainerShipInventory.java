@@ -96,7 +96,7 @@ public class ContainerShipInventory extends Container {
             if(itemstack1.getItem() instanceof BasicEquip) isEquip = true;	//判定是否為equip
 
             if(slotid < 6) {  		//click equip slot
-            	if(!this.mergeItemStack(itemstack1, 6, 60, true)) { //take out equip
+            	if(!this.mergeItemStack(itemstack1, 6, 60, false)) { //take out equip
                 	return null;
                 }	
                 slot.onSlotChange(itemstack1, itemstack); //若物品成功搬動過, 則呼叫slot change事件

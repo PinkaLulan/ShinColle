@@ -25,8 +25,8 @@ import net.minecraft.world.World;
 @SideOnly(Side.CLIENT)
 public class EntityFXTexts extends EntityFX {
 
-	private static final ResourceLocation TEXTURE = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityFXTexts.png");
-	private float particleType;	//0:miss 1:critical 2:double hit 3:triple hit
+	private static final ResourceLocation TEXTURE = new ResourceLocation(Reference.TEXTURES_PARTICLE+"EntityFXTexts.png");
+	private int particleType;	//0:miss 1:critical 2:double hit 3:triple hit
 	
 	
     public EntityFXTexts(World world, double posX, double posY, double posZ, float scale, int type) {
@@ -37,7 +37,7 @@ public class EntityFXTexts extends EntityFX {
         this.particleScale = scale;
         this.particleMaxAge = 25;
         this.noClip = true;
-        this.particleType = (float)type;
+        this.particleType = type;
 
     }
 
@@ -49,7 +49,7 @@ public class EntityFXTexts extends EntityFX {
 		GL11.glPushMatrix();
 		//使用自帶的貼圖檔
 		Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE);
-		GL11.glDepthMask(true);
+//		GL11.glDepthMask(true);
 //		GL11.glDisable(GL11.GL_BLEND);
 //		GL11.glDisable(GL11.GL_LIGHTING);
 //		GL11.glEnable(GL11.GL_DEPTH_TEST);	//DEPTH TEST開啟後才能使用glDepthFunc
@@ -57,14 +57,14 @@ public class EntityFXTexts extends EntityFX {
 		
 		float f6 = 0F;
 		float f7 = 1F;
-		float f8 = particleType / 4F;
-		float f9 = (particleType + 1F) / 4F;
+		float f8 = (float)particleType / 4F;
+		float f9 = ((float)particleType + 1F) / 4F;
 		
 		float f10 = 0.8F;
         float f11 = (float)(this.prevPosX + (this.posX - this.prevPosX) * (double)ticks - interpPosX);
         float f12 = (float)(this.prevPosY + (this.posY - this.prevPosY) * (double)ticks - interpPosY);
         float f13 = (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * (double)ticks - interpPosZ);
-        
+
         //start tess
         tess.startDrawingQuads();
 //        tess.setColorRGBA_F(1F, 1F, 1F, 1F);
@@ -109,7 +109,7 @@ public class EntityFXTexts extends EntityFX {
      * Called to update the entity's position/logic.
      */
     public void onUpdate() {
-    	//this is bot side particle
+    	//this is both side particle
 		this.prevPosX = this.posX;
         this.prevPosY = this.posY;
         this.prevPosZ = this.posZ;

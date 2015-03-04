@@ -129,7 +129,7 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
     		}//end dist > range
 	
 	        //設定攻擊時, 頭部觀看的角度
-	        this.host.getLookHelper().setLookPosition(this.attackTarget.posX, this.attackTarget.posY+30D, this.attackTarget.posZ, 40.0F, 90.0F);
+	        this.host.getLookHelper().setLookPosition(this.attackTarget.posX, this.attackTarget.posY+2D, this.attackTarget.posZ, 40.0F, 90.0F);
 	        
 	        //delay time decr
 	        this.delayLaunch--;

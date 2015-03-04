@@ -75,6 +75,12 @@ public class EntityHeavyCruiserRi extends BasicEntityShipSmall {
 		
 	}
 	
+	//for morph
+	@Override
+	public float getEyeHeight() {
+		return this.height * 1.06F;
+	}
+	
 	public void setAIList() {
 		super.setAIList();
 		

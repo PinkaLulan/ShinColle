@@ -28,7 +28,7 @@ public class EquipCalc {
 		
 		if(getStat != null) {
 			//cannot use the equip, return 0
-			if(getStat[0] != 2 && equipLevel != getStat[0]) return eqStat;
+			if(equipLevel != 2 && equipLevel != getStat[0]) return eqStat;
 			
 			eqStat[ID.HP] = getStat[ID.E.HP];
 			eqStat[ID.DEF] = getStat[ID.E.DEF];

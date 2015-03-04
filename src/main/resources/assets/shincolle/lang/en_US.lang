@@ -77,14 +77,15 @@ item.shincolle:EquipArmor1.name.name=Heavy Abyssal Armor
 # Spawn Egg
 item.shincolle:smallegg.name=Construct Small Seikan
 item.shincolle:largeegg.name=Construct Large Seikan
-item.shincolle:debugegg.name=Debug Spawn Egg
+item.shincolle:debugegg.name=Ship Spawn Egg
 
 # Entity
+entity.shincolle.EntityAirplane.name=Abyssal Fighter
+entity.shincolle.EntityAirplaneTakoyaki.name=Abyssal Avenger Torpedo Bomber
+entity.shincolle.EntityBattleshipRe.name=Battleship Re-Class
 entity.shincolle.EntityCarrierWo.name=Standard Carrier Wo-Class
 entity.shincolle.EntityDestroyerI.name=Destroyer I-Class
 entity.shincolle.EntityHeavyCruiserRi.name=Heavy Cruiser Ri-Class
-entity.shincolle.EntityAirplane.name=Abyssal Fighter
-entity.shincolle.EntityAirplaneTakoyaki.name=Abyssal Avenger Torpedo Bomber
 
 # GUI
 gui.shincolle:level=Level

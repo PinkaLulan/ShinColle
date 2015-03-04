@@ -195,7 +195,7 @@ public abstract class BasicEntityAirplane extends EntityLiving {
 			        	//都找不到目標則給host目標, 但是host目標必須在64格內
 			        	EntityLivingBase newTarget = this.hostEntity.getAttackTarget();
 			        	
-			        	if(newTarget != null && this.getDistanceToEntity(newTarget) < 64F) {
+			        	if(newTarget != null && newTarget.isEntityAlive() && this.getDistanceToEntity(newTarget) < 40F) {
 			        		this.setAttackTarget(this.hostEntity.getAttackTarget());
 			        	}
 			        	else {
@@ -232,7 +232,7 @@ public abstract class BasicEntityAirplane extends EntityLiving {
         playSound(Reference.MOD_ID+":ship-machinegun", 0.4F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         //attack particle
         TargetPoint point0 = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 8), point0);
+		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 8, false), point0);
 		
 		//calc miss chance, if not miss, calc cri/multi hit
 		float missChance = 0.25F - 0.001F * this.hostEntity.getStateMinor(ID.N.ShipLevel);
@@ -253,27 +253,27 @@ public abstract class BasicEntityAirplane extends EntityLiving {
         	if(this.rand.nextFloat() < this.hostEntity.getEffectEquip(ID.EF_CRI)) {
         		atk *= 1.5F;
         		//spawn critical particle
-        		EntityFX particleMiss = new EntityFXTexts(worldObj, 
+        		EntityFX particleCri = new EntityFXTexts(worldObj, 
         		          this.posX, this.posY+this.height, this.posZ, 1F, 1);	    
-        		Minecraft.getMinecraft().effectRenderer.addEffect(particleMiss);
+        		Minecraft.getMinecraft().effectRenderer.addEffect(particleCri);
         	}
         	else {
         		//calc double hit
             	if(this.rand.nextFloat() < this.hostEntity.getEffectEquip(ID.EF_DHIT)) {
             		atk *= 2F;
             		//spawn double hit particle
-            		EntityFX particleMiss = new EntityFXTexts(worldObj, 
+            		EntityFX particleDhit = new EntityFXTexts(worldObj, 
             		          this.posX, this.posY+this.height, this.posZ, 1F, 2);	    
-            		Minecraft.getMinecraft().effectRenderer.addEffect(particleMiss);
+            		Minecraft.getMinecraft().effectRenderer.addEffect(particleDhit);
             	}
             	else {
             		//calc double hit
                 	if(this.rand.nextFloat() < this.hostEntity.getEffectEquip(ID.EF_THIT)) {
                 		atk *= 3F;
                 		//spawn triple hit particle
-                		EntityFX particleMiss = new EntityFXTexts(worldObj, 
+                		EntityFX particleThit = new EntityFXTexts(worldObj, 
                 		          this.posX, this.posY+this.height, this.posZ, 1F, 3);	    
-                		Minecraft.getMinecraft().effectRenderer.addEffect(particleMiss);
+                		Minecraft.getMinecraft().effectRenderer.addEffect(particleThit);
                 	}
             	}
         	}
@@ -293,7 +293,7 @@ public abstract class BasicEntityAirplane extends EntityLiving {
 	        
         	//send packet to client for display partical effect  
 	        TargetPoint point1 = new TargetPoint(this.dimension, target.posX, target.posY, target.posZ, 64D);
-			CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(target, 0), point1);
+			CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(target, 0, false), point1);
         }
 	    
 	    //消耗彈藥計算

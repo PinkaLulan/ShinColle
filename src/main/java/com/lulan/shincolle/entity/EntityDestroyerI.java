@@ -73,6 +73,12 @@ public class EntityDestroyerI extends BasicEntityShipSmall {
 		this.initTypeModify();
 	}
 	
+	//for morph
+	@Override
+	public float getEyeHeight() {
+		return this.height * 1.29F;
+	}
+	
 	@Override
 	public void setAIList() {
 		super.setAIList();
@@ -96,7 +102,7 @@ public class EntityDestroyerI extends BasicEntityShipSmall {
 		this.tasks.addTask(23, new EntityAIShipFloating(this));				   //0101
 		this.tasks.addTask(24, new EntityAIShipWatchClosest(this, EntityPlayer.class, 8F, 0.1F)); //0010
 		this.tasks.addTask(25, new EntityAIWander(this, 0.8D));				   //0001
-//		this.tasks.addTask(25, new EntityAILookIdle(this));					   //0011
+		this.tasks.addTask(26, new EntityAILookIdle(this));					   //0011
 
 		
 /* 		//switch AI method

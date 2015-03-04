@@ -1,6 +1,7 @@
 package com.lulan.shincolle.ai;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
@@ -12,6 +13,7 @@ import net.minecraft.world.World;
 
 /**ATTACK ON COLLIDE SHIP VERSION
  * 加上null檢查, 防止NPE出現
+ * (尚未完全修改, 無法對水下目標攻擊)
  */
 public class EntityAIShipAttackOnCollide extends EntityAIBase {
 	
@@ -50,8 +52,11 @@ public class EntityAIShipAttackOnCollide extends EntityAIBase {
         EntityLivingBase entitylivingbase = this.host.getAttackTarget();
 
         //無目標 or 目標死亡 or 正在坐下時 不啟動AI
-        if(entitylivingbase == null || !entitylivingbase.isEntityAlive() || this.host.isSitting()) {
+        if(entitylivingbase == null || this.host.isSitting()) {
             return false;
+        }
+        else if(entitylivingbase != null && entitylivingbase.isDead) {
+        	return false;
         }
         else if(this.classTarget != null && !this.classTarget.isAssignableFrom(entitylivingbase.getClass())) {
             return false;
@@ -84,13 +89,17 @@ public class EntityAIShipAttackOnCollide extends EntityAIBase {
 
     public void resetTask() {
         this.host.getNavigator().clearPathEntity();
+        this.host.setAttackTarget(null);
     }
 
     public void updateTask() {
         EntityLivingBase entitylivingbase = this.host.getAttackTarget();
         
         //null check for target continue set null bug (set target -> clear target in one tick)
-        if(entitylivingbase == null) return;
+        if(entitylivingbase == null || entitylivingbase.isDead) {
+        	resetTask();
+        	return;
+        }
         
         this.host.getLookHelper().setLookPositionWithEntity(entitylivingbase, 30.0F, 30.0F);
         
