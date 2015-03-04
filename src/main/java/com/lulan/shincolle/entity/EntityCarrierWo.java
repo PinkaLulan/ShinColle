@@ -78,6 +78,12 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
 		return this.height * 1.06F;
 	}
 	
+	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc
+	@Override
+	public int getEquipType() {
+		return 3;
+	}
+	
 	public void setAIList() {
 		super.setAIList();
 		

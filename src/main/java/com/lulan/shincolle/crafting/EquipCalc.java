@@ -22,13 +22,14 @@ public class EquipCalc {
 	//get equip state
 	public static float[] getEquipStat(BasicEntityShip entity, ItemStack item) {
 		byte equipID = getEquipID(item);
-		byte equipLevel = Values.EquipType[entity.getShipID()];
 		float[] getStat = Values.EquipMap.get(equipID);
 		float[] eqStat = new float[] {0F,0F,0F,0F,0F,0F,0F,0F,0F,0F,0F,0F,0F};
 		
 		if(getStat != null) {
 			//cannot use the equip, return 0
-			if(equipLevel != 2 && equipLevel != getStat[0]) return eqStat;
+			if(entity.getEquipType() != 2 && getStat[0] != 2) {
+				if(entity.getEquipType() != getStat[0]) return eqStat;
+			}
 			
 			eqStat[ID.HP] = getStat[ID.E.HP];
 			eqStat[ID.DEF] = getStat[ID.E.DEF];

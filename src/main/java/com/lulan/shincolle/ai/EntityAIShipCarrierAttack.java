@@ -37,7 +37,7 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
         }
         else {
             this.host = host;
-            this.setMutexBits(3);
+            this.setMutexBits(4);
         }
     }
 
@@ -72,7 +72,6 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
     //重置AI方法
     public void resetTask() {
         this.attackTarget = null;
-        this.delayLaunch = this.maxDelayLaunch;
     }
 
     //進行AI
@@ -100,10 +99,13 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
     	        	//在液體中, 採直線前進
     	        	if(this.host.getShipDepth() > 0D) {
     	        		//額外加上y軸速度, getPathToXYZ對空氣跟液體方塊無效, 因此y軸速度要另外加
-    	        		if(this.distY > 1.5D && this.host.getShipDepth() > 1.5D) {  //避免水面彈跳
+    	        		if(this.host.getShipDepth() > 0.7D && this.host.getShipDepth() < 5D) {  //如果接近水面, 則維持浮在水面
+    	        			this.motY = 0.15F;
+    	        		}
+    	        		else if(this.distY > 0D) {		//若沒有接近水面, 對方位置較高, 則上浮
     	        			this.motY = 0.2F;
     	        		}
-    	        		else if(this.distY < -1D) {
+    	        		else if(this.distY <= -5D) {	//若沒有接近水面, 對方位置較低, 則下沉
     	        			this.motY = -0.2F;
     	        		}
     	  		
@@ -129,8 +131,10 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
     		}//end dist > range
 	
 	        //設定攻擊時, 頭部觀看的角度
-	        this.host.getLookHelper().setLookPosition(this.attackTarget.posX, this.attackTarget.posY+2D, this.attackTarget.posZ, 40.0F, 90.0F);
-	        
+    		if(this.host.ticksExisted % 20 == 0) {
+    			this.host.getLookHelper().setLookPosition(this.attackTarget.posX, this.attackTarget.posY+2D, this.attackTarget.posZ, 40.0F, 90.0F);
+    		}
+	         
 	        //delay time decr
 	        this.delayLaunch--;
 

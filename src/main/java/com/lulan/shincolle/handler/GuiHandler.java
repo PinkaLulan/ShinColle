@@ -36,6 +36,7 @@ public class GuiHandler implements IGuiHandler {
 		case ID.G.SHIPINVENTORY:	//GUI ship inventory
 			entity = world.getEntityByID(x);	//entity id存在x座標參數上
             if((entity != null) && (entity instanceof BasicEntityShip)){
+            	((BasicEntityShip)entity).sendSyncPacket(); //sync once when gui opened
 				return new ContainerShipInventory(player.inventory,(BasicEntityShip)entity);
 			}
 			return null;

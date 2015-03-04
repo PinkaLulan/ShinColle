@@ -12,13 +12,6 @@ public class Values {
 	 * 24:EscF 25:FloF 26:BaH  27:DeH  28:HbH  29:IsD  30:MidH 31:NorH 
 	 * 32:SouH 33:ACWD
 	 */
-	public static final byte[] EquipType = 	//1:cannons+recon
-		{1,  1,  1,  1,  1,  1,  1,  1,		//2:cannons+recon+airplane
-		 1,  1,  1,  3,  3,  1,  1,  2,		//3:airplane
-		 1,  1,  1,  1,  3,  2,  2,  2,
-		 2,  2,  1,  1,  2,  2,  2,  2,
-		 2,  3};
-	
 	public static final float[] BaseHP = 
 		{20F,  22F,  24F,  28F,  33F,  36F,  39F,  48F,
 		 48F,  58F,  62F,  65F,  85F,  90F,  84F,  90F,

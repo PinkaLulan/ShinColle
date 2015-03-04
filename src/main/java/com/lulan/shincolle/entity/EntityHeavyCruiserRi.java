@@ -81,6 +81,12 @@ public class EntityHeavyCruiserRi extends BasicEntityShipSmall {
 		return this.height * 1.06F;
 	}
 	
+	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc
+	@Override
+	public int getEquipType() {
+		return 1;
+	}
+
 	public void setAIList() {
 		super.setAIList();
 		

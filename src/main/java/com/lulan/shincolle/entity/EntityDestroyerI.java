@@ -79,6 +79,12 @@ public class EntityDestroyerI extends BasicEntityShipSmall {
 		return this.height * 1.29F;
 	}
 	
+	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc
+	@Override
+	public int getEquipType() {
+		return 1;
+	}
+	
 	@Override
 	public void setAIList() {
 		super.setAIList();

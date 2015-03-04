@@ -103,7 +103,7 @@ public abstract class BasicEntityShip extends EntityTameable {
 		StateMinor = new int[] {1, 0, 0, 40, 0, 0, 0, 0, 0};
 		EffectEquip = new float[] {0F, 0F, 0F, 0F};
 		StateEmotion = new byte[] {0, 0, 0};
-		StateFlag = new boolean[] {false, false, false, true, true, true, true, true};
+		StateFlag = new boolean[] {false, false, false, false, true, true, true, true};
 		BonusPoint = new byte[] {0, 0, 0, 0, 0, 0};
 		TypeModify = new float[] {1F, 1F, 1F, 1F, 1F, 1F};
 		//for AI
@@ -169,6 +169,9 @@ public abstract class BasicEntityShip extends EntityTameable {
 	public ExtendShipProps getExtProps() {
 		return ExtProps;
 	}
+	
+	abstract public int getEquipType();
+	
 	public int getShipLevel() {
 		return StateMinor[ID.N.ShipLevel];
 	}
@@ -700,15 +703,11 @@ public abstract class BasicEntityShip extends EntityTameable {
 		this.checkDepth();	//check depth every tick
 
 		Block CheckBlock = checkBlockWithOffset(0);
-		if(this.getShipDepth() > 0D) {
-//			//在液體中維持高度, 水中自然下降速度為0.02
-//			this.motionY += 0.02D;
-//			//在水中加速
-//			this.motionX *= 1.1D;
-//			this.motionZ *= 1.1D;
-
-			if(this.worldObj.isRemote) {
-				//有移動時, 產生水花特效
+		
+		//client side
+		if(this.worldObj.isRemote) {
+			//有移動時, 產生水花特效
+			if(this.getShipDepth() > 0D) {
 				//(注意此entity因為設為非高速更新, client端不會更新motionX等數值, 需自行計算)
 				double motX = this.posX - this.prevPosX;
 				double motZ = this.posZ - this.prevPosZ;

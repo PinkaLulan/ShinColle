@@ -53,16 +53,22 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
 		return this.height * 1F;
 	}
 	
+	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc
+	@Override
+	public int getEquipType() {
+		return 2;
+	}
+	
 	public void setAIList() {
 		super.setAIList();
 		
 		//floating on water
-		this.tasks.addTask(1, new EntityAIShipSit(this));	   //0101
+		this.tasks.addTask(1, new EntityAIShipSit(this));	   				   //0101
 		this.tasks.addTask(2, new EntityAIShipFollowOwner(this, 7F, 12F));	   //0111
 		
 		//use range attack
-		this.tasks.addTask(11, new EntityAIShipRangeAttack(this));			   //0011
-		this.tasks.addTask(12, new EntityAIShipCarrierAttack(this));		   //0011
+		this.tasks.addTask(11, new EntityAIShipCarrierAttack(this));		   //0100
+		this.tasks.addTask(12, new EntityAIShipRangeAttack(this));			   //0011
 		
 		//use melee attack
 		if(this.getStateFlag(ID.F.UseMelee)) {
