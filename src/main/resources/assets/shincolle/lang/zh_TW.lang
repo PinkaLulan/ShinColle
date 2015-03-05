@@ -72,7 +72,7 @@ item.shincolle:EquipAirplane12.name=深海地獄艦爆
 item.shincolle:EquipAirplane13.name=深海棲艦偵察機
 item.shincolle:EquipAirplane14.name=深海飛魚偵察機
 item.shincolle:EquipArmor.name=深海裝甲
-item.shincolle:EquipArmor1.name.name=重型深海裝甲
+item.shincolle:EquipArmor1.name=重型深海裝甲
 
 # Spawn Egg
 item.shincolle:smallegg.name=建造小型棲艦

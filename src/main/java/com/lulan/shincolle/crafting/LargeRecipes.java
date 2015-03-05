@@ -23,17 +23,9 @@ import net.minecraft.tileentity.TileEntityFurnace;
  *  MinMaterial  / MinFuelCost = 100*4  / 460800  = BaseCost(460800) CostPerMaterial(256)
  *  
  *  
- * Equip Build Rate:
- *   Large Shipyard: single & weak twin cannon (equipID 4~8)
- *     grudge   -> +p
- *     abyssium -> +p
- *     ammo     -> +p
- *     polymetal-> +p
- *     
- *     min point (all 100)  = 
- *       result: AmmoCon 25% AmmoHCon % eq4 % eq5 % eq6 % eq7 % eq8 %
- *     max point (all 1000) = 
- *       result: AmmoCon 0%  AmmoHCon % eq4 % eq5 % eq6 % eq7 % eq8 %
+ * Equip Build Rate: first roll -> second roll
+ * 	 1. FIRST: roll equip type      
+ * 	 2. SECOND: roll equips of the type
  */	
 public class LargeRecipes {
 	
@@ -244,64 +236,15 @@ public class LargeRecipes {
 	
 	//將材料數量寫進itemstack回傳
 	public static ItemStack getBuildResultEquip(int[] matAmount) {
-		//計算材料總分: grudge 1.5p abyss 4p ammo 1p poly 2p
-		float[] equipChance = new float[7];
-		float pointMod = (matAmount[0]*1.5F + matAmount[1]*4F + matAmount[2]*1F + matAmount[3]*2F - 136F) / 408F;
-		
-		//equipChance: 0:AmmoContainer 1:AmmoHeavyContainer 2:eq4 3:eq5 4:eq6 5:eq7 6:eq8
-		//此為累積機率(cumulate chance)
-		equipChance[0] = 0.25F - 0.25F * pointMod;
-		equipChance[1] = 0.25F - 0.25F * pointMod + equipChance[0];
-		equipChance[2] = 0.3F - 0.1F * pointMod + equipChance[1];
-		equipChance[3] = 0.15F + 0.1F * pointMod + equipChance[2];
-		equipChance[4] = 0.05F + 0.15F * pointMod + equipChance[3];
-		equipChance[5] = 0F + 0.2F * pointMod + equipChance[4];
-		equipChance[6] = 0F + 0.15F * pointMod + equipChance[5];
-		
-		LogHelper.info("DEBUG : roll equip chance: "+String.format("%.2f", equipChance[0])+" "+
-						String.format("%.2f", equipChance[1])+" "+String.format("%.2f", equipChance[2])+" "+
-						String.format("%.2f", equipChance[3])+" "+String.format("%.2f", equipChance[4])+" "+
-						String.format("%.2f", equipChance[5])+" "+String.format("%.2f", equipChance[6]));
-		
-		//roll
-		float roll = rand.nextFloat();
-		int rollResult = 0;
-		//從array最後往前兩個開始比, 若骰的比i物品的機率高, 表示可以拿到第i+1個物品
-		for(int i = (equipChance.length - 2); i >= 0; i--) {
-			if(roll > equipChance[i]) {
-				rollResult = i + 1;
-				break;
-			}
-		}
-		
-		//get result item
+		//result item
 		ItemStack buildResult = null;
-		switch(rollResult) {
-		case 0:
-			buildResult = new ItemStack(ModItems.Ammo, 64, 1);
-			break;
-		case 1:
-			buildResult = new ItemStack(ModItems.Ammo, 8+rand.nextInt(7), 3);
-			break;
-		case 2:
-			buildResult = new ItemStack(ModItems.EquipCannon, 1, 4);
-			break;
-		case 3:
-			buildResult = new ItemStack(ModItems.EquipCannon, 1, 5);
-			break;
-		case 4:
-			buildResult = new ItemStack(ModItems.EquipCannon, 1, 6);
-			break;
-		case 5:
-			buildResult = new ItemStack(ModItems.EquipCannon, 1, 7);
-			break;
-		case 6:
-			buildResult = new ItemStack(ModItems.EquipCannon, 1, 8);
-			break;
-		}
-		
-		LogHelper.info("DEBUG : roll result: "+roll+" "+buildResult);
-		return buildResult;
+		int rollType = -1;
+		float randRate = rand.nextFloat();
+
+		//first roll: roll equip type
+		rollType = EquipCalc.rollEquipType(1, matAmount);
+		//second roll: roll equips of the type
+		return EquipCalc.rollEquipsOfTheType(rollType);
 	}
 	
 

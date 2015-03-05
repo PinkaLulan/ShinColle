@@ -44,7 +44,7 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti {
 	private boolean isActive;		//是否正在建造中, 此為紀錄isBuilding是否有變化用
 	private int[] matsBuild;		//建造材料量
 	private int[] matsStock;		//庫存材料量
-	public static final int BUILDSPEED = 4800;  	//power cost per tick
+	public static final int BUILDSPEED = 48;  	//power cost per tick
 	public static final int POWERMAX = 1382400; 	//max power storage
 	public static final int SLOTS_NUM = 10;
 	public static final int SLOTS_OUT = 0;

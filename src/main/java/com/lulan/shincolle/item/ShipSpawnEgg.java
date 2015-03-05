@@ -108,41 +108,17 @@ public class ShipSpawnEgg extends Item {
   		list.add(new ItemStack(item, 1, ID.S_BattleshipRE+2));
   	}
   	
-  	/** Get entity name from metadata
-  	 *  (entity name from ModEntity.class)
-  	 *  small egg: all non-hime ship
-  	 *  large egg: all ship
-  	 *  specific egg: specific ship
-  	 */
-  	private String getEntityToSpawnName(int meta) {
-  		switch(meta) {
-  		case 0:	//small egg
-  			return "shincolle.EntityDestroyerI";
-  		case 1:	//large egg
-  			return "shincolle.EntityCarrierWo";
-  		case ID.S_DestroyerI+2:
-  			return "shincolle.EntityDestroyerI";
-  		case ID.S_HeavyCruiserRI+2:
-  			return "shincolle.EntityHeavyCruiserRi";
-  		case ID.S_CarrierWO+2:
-  			return "shincolle.EntityCarrierWo";
-  		case ID.S_BattleshipRE+2:
-  			return "shincolle.EntityBattleshipRe";
-  		default:
-  			return "shincolle.EntityDestroyerI";
-  		}
-  		
-  	}
-  	
   	/** VANILLA SPAWN METHOD edited by Jabelar
      * Spawns the creature specified by the egg's type in the location specified by 
      * the last three parameters.
      * Parameters: world, metadata, x, y, z
      */
-  	private Entity spawnEntity(World parWorld,int meta, double parX, double parY, double parZ) {
-         	
-        if (!parWorld.isRemote) {	// never spawn entity on client side 
-            entityToSpawnName = getEntityToSpawnName(meta);
+  	private Entity spawnEntity(World parWorld, ItemStack item, double parX, double parY, double parZ) {   	
+        int entityType = 0;
+  		
+  		if (!parWorld.isRemote) {	// never spawn entity on client side 
+  			entityType = ShipCalc.rollShipType(item);
+  			entityToSpawnName = ShipCalc.getEntityToSpawnName(entityType);
             
             if (EntityList.stringToClassMapping.containsKey(entityToSpawnName)) {
                 entityToSpawn = (EntityLiving) EntityList.createEntityByName(entityToSpawnName, parWorld);
@@ -210,7 +186,7 @@ public class ShipSpawnEgg extends Item {
             }
             
             //spawn entity in front of player (1 block)
-            BasicEntityShip entity = (BasicEntityShip) spawnEntity(world, itemstack.getItemDamage(), par4 + 0.5D, par5 + d0, par6 + 0.5D);
+            BasicEntityShip entity = (BasicEntityShip) spawnEntity(world, itemstack, par4 + 0.5D, par5 + d0, par6 + 0.5D);
 
             if (entity != null) {
             	//calc bonus point, set custom name and owner name
@@ -261,7 +237,7 @@ public class ShipSpawnEgg extends Item {
                     }
 
                     if (world.getBlock(i, j, k) instanceof BlockLiquid) {
-                    	BasicEntityShip entity = (BasicEntityShip) spawnEntity(world, itemstack.getItemDamage(), i, j, k);
+                    	BasicEntityShip entity = (BasicEntityShip) spawnEntity(world, itemstack, i, j, k);
 
                         if (entity != null) {
                         	//calc bonus point, set custom name and owner name
@@ -293,7 +269,7 @@ public class ShipSpawnEgg extends Item {
     		material[0] = itemstack.stackTagCompound.getInteger("Grudge");
     		material[1] = itemstack.stackTagCompound.getInteger("Abyssium");
     		material[2] = itemstack.stackTagCompound.getInteger("Ammo");
-    		material[3] = itemstack.stackTagCompound.getInteger("Polymetal");          
+    		material[3] = itemstack.stackTagCompound.getInteger("Polymetal");
         }
     	
     	list.add(EnumChatFormatting.WHITE + "" + material[0] + " Grudge");

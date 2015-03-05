@@ -68,7 +68,7 @@ public class EntityHeavyCruiserRi extends BasicEntityShipSmall {
 		super(world);
 		this.setSize(0.9F, 1.7F);	//碰撞大小 跟模型大小無關
 		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityHeavyCruiserRi.name"));
-		this.ShipType = Values.ShipType.HEAVY_CRUISER;
+		this.ShipType = ID.ShipType.HEAVY_CRUISER;
 		this.ShipID = ID.S_HeavyCruiserRI;
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();

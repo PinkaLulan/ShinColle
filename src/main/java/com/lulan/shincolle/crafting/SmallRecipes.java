@@ -20,17 +20,15 @@ import net.minecraft.tileentity.TileEntityFurnace;
  *  MinMaterial / MinFuelCost = 16*4 / 57600 = BaseCost(57600) CostPerMaterial(2100)
  *  
  *  
- * Equip Build Rate:
- *   Small Shipyard: single & weak twin cannon (equipID 0~4)
- *     grudge   -> +1.5p
- *     abyssium -> +4.0p
- *     ammo     -> +1.0p
- *     polymetal-> +2.0p
- *     
- *     min point (all 16) = 136
- *       result: AmmoCon 25% AmmoHCon 25% eq0 30% eq1 15% eq2 5%  eq3 0%  eq4 0%
- *     max point (all 64) = 544
- *       result: AmmoCon 0%  AmmoHCon 0%  eq0 20% eq1 25% eq2 20% eq3 20% eq4 15%
+ * Equip Build Rate: first roll -> second roll -> third roll
+ * 	 1. FIRST: roll ammo or equip
+ *		ammo rate: total 64 (16x4) = 50%, total 128 = 0%
+ *		equip rate: 1 - ammo
+ *
+ * 	 2. SECOND: if equip, roll equip type
+ *              if ammo, roll ammo type and quantity
+ *              
+ * 	 3. THIRD: roll equips of the type
  */	
 public class SmallRecipes {
 	
@@ -117,65 +115,40 @@ public class SmallRecipes {
 	}
 	
 	//將材料數量寫進itemstack回傳
-	public static ItemStack getBuildResultEquip(byte[] matAmount) {
-		//計算材料總分: grudge 1.5p abyss 4p ammo 1p poly 2p
-		float[] equipChance = new float[7];
-		float pointMod = (matAmount[0]*1.5F + matAmount[1]*4F + matAmount[2]*1F + matAmount[3]*2F - 136F) / 408F;
-		
-		//equipChance: 0:AmmoContainer 1:AmmoHeavyContainer 2:eq0 3:eq1 4:eq2 5:eq3 6:eq4
-		//此為累積機率(cumulate chance)
-		equipChance[0] = 0.25F - 0.25F * pointMod;
-		equipChance[1] = 0.25F - 0.25F * pointMod + equipChance[0];
-		equipChance[2] = 0.3F - 0.1F * pointMod + equipChance[1];
-		equipChance[3] = 0.15F + 0.1F * pointMod + equipChance[2];
-		equipChance[4] = 0.05F + 0.15F * pointMod + equipChance[3];
-		equipChance[5] = 0F + 0.2F * pointMod + equipChance[4];
-		equipChance[6] = 0F + 0.15F * pointMod + equipChance[5];
-		
-		LogHelper.info("DEBUG : roll equip chance: "+String.format("%.2f", equipChance[0])+" "+
-						String.format("%.2f", equipChance[1])+" "+String.format("%.2f", equipChance[2])+" "+
-						String.format("%.2f", equipChance[3])+" "+String.format("%.2f", equipChance[4])+" "+
-						String.format("%.2f", equipChance[5])+" "+String.format("%.2f", equipChance[6]));
-		
-		//roll
-		float roll = rand.nextFloat();
-		int rollResult = 0;
-		//從array最後往前兩個開始比, 若骰的比i物品的機率高, 表示可以拿到第i+1個物品
-		for(int i = (equipChance.length - 2); i >= 0; i--) {
-			if(roll > equipChance[i]) {
-				rollResult = i + 1;
-				break;
-			}
-		}
-		
-		//get result item
+	public static ItemStack getBuildResultEquip(byte[] matAmount) {	
+		//result item
 		ItemStack buildResult = null;
-		switch(rollResult) {
-		case 0:
-			buildResult = new ItemStack(ModItems.Ammo, 11+rand.nextInt(11), 1);
-			break;
-		case 1:
-			buildResult = new ItemStack(ModItems.Ammo, 2+rand.nextInt(2), 3);
-			break;
-		case 2:
-			buildResult = new ItemStack(ModItems.EquipCannon, 1, 0);
-			break;
-		case 3:
-			buildResult = new ItemStack(ModItems.EquipCannon, 1, 1);
-			break;
-		case 4:
-			buildResult = new ItemStack(ModItems.EquipCannon, 1, 2);
-			break;
-		case 5:
-			buildResult = new ItemStack(ModItems.EquipCannon, 1, 3);
-			break;
-		case 6:
-			buildResult = new ItemStack(ModItems.EquipCannon, 1, 4);
-			break;
-		}
+		int totalMats = matAmount[0] + matAmount[1] + matAmount[2] + matAmount[3];
+		int[] matsInt = new int[] {0,0,0,0};
+		int rollType = -1;
+		float equipRate = totalMats / 128F;
+		float randRate = rand.nextFloat();
 		
-		LogHelper.info("DEBUG : roll result: "+roll+" "+buildResult);
-		return buildResult;
+		if(equipRate > 1F) equipRate = 1F;	//min 50%, max 100%	
+		LogHelper.info("DEBUG : equip build roll: rate / random "+String.format("%.2f", equipRate)+" "+String.format("%.2f", randRate));	
+		//first roll: roll equip or ammo
+		if(randRate < equipRate) {	//get equip 
+			//second roll: roll equip type
+			matsInt[0] = matAmount[0];
+			matsInt[1] = matAmount[1];
+			matsInt[2] = matAmount[2];
+			matsInt[3] = matAmount[3];
+			rollType = EquipCalc.rollEquipType(0, matsInt);
+			//third roll: roll equips of the type
+			return EquipCalc.rollEquipsOfTheType(rollType);
+			
+		}
+		else {								//get ammo
+			//second roll: roll ammo type and quantity
+			//50% for light or heavy ammo container
+			if(rand.nextInt(2) == 0) {	
+				buildResult = new ItemStack(ModItems.Ammo, 11+rand.nextInt(11), 1);
+			}
+			else {
+				buildResult = new ItemStack(ModItems.Ammo, 2+rand.nextInt(2), 3);
+			}
+			return buildResult;	
+		}
 	}
 	
 

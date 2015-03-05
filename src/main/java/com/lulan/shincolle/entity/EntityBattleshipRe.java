@@ -40,7 +40,7 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
 		super(world);
 		this.setSize(0.9F, 1.8F);
 		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityBattleshipRe.name"));
-		this.ShipType = Values.ShipType.BATTLESHIP;
+		this.ShipType = ID.ShipType.BATTLESHIP;
 		this.ShipID = ID.S_BattleshipRE;
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();

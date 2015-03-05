@@ -72,7 +72,7 @@ item.shincolle:EquipAirplane12.name=Abyssal Hell Diver
 item.shincolle:EquipAirplane13.name=Abyssal Recon Plane
 item.shincolle:EquipAirplane14.name=Abyssal Flying-Fish Recon Plane
 item.shincolle:EquipArmor.name=Abyssal Armor
-item.shincolle:EquipArmor1.name.name=Heavy Abyssal Armor
+item.shincolle:EquipArmor1.name=Heavy Abyssal Armor
 
 # Spawn Egg
 item.shincolle:smallegg.name=Construct Small Seikan

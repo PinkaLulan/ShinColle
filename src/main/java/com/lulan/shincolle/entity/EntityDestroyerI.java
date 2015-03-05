@@ -66,7 +66,7 @@ public class EntityDestroyerI extends BasicEntityShipSmall {
 		super(world);
 		this.setSize(0.9F, 1.4F);	//碰撞大小 跟模型大小無關
 		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityDestroyerI.name"));
-		this.ShipType = Values.ShipType.DESTROYER;
+		this.ShipType = ID.ShipType.DESTROYER;
 		this.ShipID = ID.S_DestroyerI;
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		

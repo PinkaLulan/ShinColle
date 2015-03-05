@@ -64,7 +64,7 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
 		super(world);
 		this.setSize(0.9F, 1.7F);
 		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityCarrierWo.name"));
-		this.ShipType = Values.ShipType.STANDARD_CARRIER;
+		this.ShipType = ID.ShipType.STANDARD_CARRIER;
 		this.ShipID = ID.S_CarrierWO;
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();
@@ -155,7 +155,7 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
 //    		if(!this.isSitting() && this.ticksExisted % 5 ==  0) {
     		if(this.ticksExisted % 5 ==  0) {
     			//若顯示裝備時, 則生成眼睛煙霧特效 (client only)
-    			if(getStateEmotion(ID.S.State) >= Values.State.EQUIP) {
+    			if(getStateEmotion(ID.S.State) >= ID.State.EQUIP) {
     				float[] eyePosL = new float[] {0.7F, 0.3F, 1F};
     				float[] eyePosR = new float[] {0.7F, 0.3F, -1F};
     				float radYaw = 0F;

@@ -34,6 +34,40 @@ public class ID {
 		public static final byte MISS = 13;
 	}
 	
+	//Type ID: Emotion
+	public static final class Emotion {
+		public static final byte NORMAL = 0;			//無表情
+		public static final byte BLINK = 1;				//眨眼
+		public static final byte T_T = 2;				//sad
+		public static final byte O_O = 3;				//...
+		public static final byte BORED = 4;				//坐下時隨機抽的無聊表情
+		public static final byte HUNGRY = 5;			//no grudge
+	}
+	
+	//Type ID: Emotion
+	public static final class EquipType {
+		public static final byte CANNON_SI = 0;			//single cannon
+		public static final byte CANNON_TW_LO = 1;		//low level twin cannon
+		public static final byte CANNON_TW_HI = 2;		//high level twin cannon
+		public static final byte CANNON_TR = 3;			//triple cannon
+		public static final byte TORPEDO_LO = 4;		//low level torpedo
+		public static final byte TORPEDO_HI = 5;		//high level torpedo
+		public static final byte AIR_T_LO = 6;			//low level aircraft T
+		public static final byte AIR_T_HI = 7;			//high level aircraft T
+		public static final byte AIR_F_LO = 8;			//low level aircraft F
+		public static final byte AIR_F_HI = 9;			//high level aircraft F
+		public static final byte AIR_B_LO = 10;			//low level aircraft B
+		public static final byte AIR_B_HI = 11;			//high level aircraft B
+		public static final byte AIR_R_LO = 12;			//low level aircraft R
+		public static final byte AIR_R_HI = 13;			//high level aircraft R
+		public static final byte RADAR_LO = 14;			//low level radar
+		public static final byte RADAR_HI = 15;			//high level radar
+		public static final byte TURBINE_LO = 16;		//low level turbine
+		public static final byte TURBINE_HI = 17;		//high level turbine
+		public static final byte ARMOR_LO = 18;			//low level armor
+		public static final byte ARMOR_HI = 19;			//high level armor
+	}
+	
 	//Array ID: EntityFlag
 	public static final class F {
 		public static final byte CanFloatUp = 0;
@@ -71,6 +105,34 @@ public class ID {
 		public static final byte State = 0;
 		public static final byte Emotion = 1;
 		public static final byte Emotion2 = 2;
+	}
+	
+	//Type ID: ship type
+	public static final class ShipType {				//for GUI display
+		public static final byte DESTROYER = 0;			//驅逐	驅逐艦
+		public static final byte LIGHT_CRUISER = 1;		//輕巡	輕巡洋艦
+		public static final byte HEAVY_CRUISER = 2;		//重巡	重巡洋艦
+		public static final byte TORPEDO_CRUISER = 3;	//雷巡 	重雷裝巡洋艦
+		public static final byte LIGHT_CARRIER = 4;		//輕母	輕航空母艦
+		public static final byte STANDARD_CARRIER = 5;	//航		航空母艦
+		public static final byte BATTLESHIP	= 6;		//戰		戰艦
+		public static final byte TRANSPORT = 7;			//補給	輸送艦
+		public static final byte SUBMARINE = 8;			//潛		潛水艇
+		public static final byte ONI = 9;				//鬼		鬼級
+		public static final byte HIME = 10;				//姬		姬級
+		public static final byte FORTRESS = 11;			//浮		浮游要塞/護衛要塞		
+	}
+	
+	//Type ID: ship state
+	public static final class State {
+		public static final byte NORMAL = 0;			//普通
+		public static final byte NORMAL_MINOR = 1;		//小破
+		public static final byte NORMAL_MODERATE = 2;	//中破
+		public static final byte NORMAL_HEAVY = 3;		//大破
+		public static final byte EQUIP = 20;			//艤裝狀態
+		public static final byte EQUIP_MINOR = 21;
+		public static final byte EQUIP_MODERATE = 22;
+		public static final byte EQUIP_HEAVY = 23;
 	}
 	
 	//Array ID: StateEquip, StateFinal, BonusPoint, TypeModify
@@ -128,11 +190,11 @@ public class ID {
 	public static final byte E_AIRCRAFT_RFLYFISH = 44;
 	public static final byte E_RADAR_AIRMK1 = 50;
 	public static final byte E_RADAR_AIRMK2 = 51;
-	public static final byte E_RADAR_AIRABYSS = 52;
-	public static final byte E_RADAR_SURMK1 = 53;
-	public static final byte E_RADAR_SURMK2 = 54;
-	public static final byte E_RADAR_SURABYSS = 55;
-	public static final byte E_RADAR_SONAR = 56;
+	public static final byte E_RADAR_SURMK1 = 52;
+	public static final byte E_RADAR_SURMK2 = 53;
+	public static final byte E_RADAR_SONAR = 54;
+	public static final byte E_RADAR_AIRABYSS = 55;
+	public static final byte E_RADAR_SURABYSS = 56;
 	public static final byte E_RADAR_SONARMK2 = 57;
 	public static final byte E_TURBINE = 60;
 	public static final byte E_TURBINE_IMP = 61;

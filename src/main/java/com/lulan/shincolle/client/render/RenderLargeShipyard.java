@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GL11;
 import com.lulan.shincolle.client.model.ModelLargeShipyard;
 import com.lulan.shincolle.entity.EntityAbyssMissile;
 import com.lulan.shincolle.entity.renderentity.BasicRenderEntity;
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.LogHelper;
 
@@ -36,7 +37,7 @@ public class RenderLargeShipyard extends Render {
 	
 	@Override
 	public boolean isStaticEntity() {
-		return true;
+		return ConfigHandler.staticMode;
 	}
 	
 	//傳入entity的都轉成abyssmissile
@@ -49,7 +50,7 @@ public class RenderLargeShipyard extends Render {
 		
 		Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE);
 		GL11.glPushMatrix();
-			GL11.glTranslatef((float)offsetX+0.4F, (float)offsetY-0.1F, (float)offsetZ+0.4F);
+			GL11.glTranslatef((float)offsetX+0.375F, (float)offsetY+0.8F, (float)offsetZ+0.375F);
 			GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
 			GL11.glScalef(1F, 1.2F, 1F);
 			this.model.render(entity, 0F, 0F, 0F, 0F, 0F, 0.0625F);

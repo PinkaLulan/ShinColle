@@ -510,32 +510,32 @@ public abstract class BasicEntityShip extends EntityTameable {
 		if(itemstack != null) {
 			//use cake to change state
 			if(itemstack.getItem() == Items.cake) {
-				int ShipState = getStateEmotion(ID.S.State) - Values.State.EQUIP;
+				int ShipState = getStateEmotion(ID.S.State) - ID.State.EQUIP;
 				
 				switch(getStateEmotion(ID.S.State)) {
-				case Values.State.NORMAL:			//原本不顯示, 改為顯示
-					setStateEmotion(ID.S.State, Values.State.EQUIP, true);
+				case ID.State.NORMAL:			//原本不顯示, 改為顯示
+					setStateEmotion(ID.S.State, ID.State.EQUIP, true);
 					break;
-				case Values.State.NORMAL_MINOR:
-					setStateEmotion(ID.S.State, Values.State.EQUIP_MINOR, true);
+				case ID.State.NORMAL_MINOR:
+					setStateEmotion(ID.S.State, ID.State.EQUIP_MINOR, true);
 					break;
-				case Values.State.NORMAL_MODERATE:
-					setStateEmotion(ID.S.State, Values.State.EQUIP_MODERATE, true);
+				case ID.State.NORMAL_MODERATE:
+					setStateEmotion(ID.S.State, ID.State.EQUIP_MODERATE, true);
 					break;
-				case Values.State.NORMAL_HEAVY:
-					setStateEmotion(ID.S.State, Values.State.EQUIP_HEAVY, true);
+				case ID.State.NORMAL_HEAVY:
+					setStateEmotion(ID.S.State, ID.State.EQUIP_HEAVY, true);
 					break;
-				case Values.State.EQUIP:			//原本顯示裝備, 改為不顯示
-					setStateEmotion(ID.S.State, Values.State.NORMAL, true);
+				case ID.State.EQUIP:			//原本顯示裝備, 改為不顯示
+					setStateEmotion(ID.S.State, ID.State.NORMAL, true);
 					break;
-				case Values.State.EQUIP_MINOR:
-					setStateEmotion(ID.S.State, Values.State.NORMAL_MINOR, true);
+				case ID.State.EQUIP_MINOR:
+					setStateEmotion(ID.S.State, ID.State.NORMAL_MINOR, true);
 					break;
-				case Values.State.EQUIP_MODERATE:
-					setStateEmotion(ID.S.State, Values.State.NORMAL_MODERATE, true);
+				case ID.State.EQUIP_MODERATE:
+					setStateEmotion(ID.S.State, ID.State.NORMAL_MODERATE, true);
 					break;
-				case Values.State.EQUIP_HEAVY:
-					setStateEmotion(ID.S.State, Values.State.NORMAL_HEAVY, true);
+				case ID.State.EQUIP_HEAVY:
+					setStateEmotion(ID.S.State, ID.State.NORMAL_HEAVY, true);
 					break;			
 				}
 				return true;
@@ -745,29 +745,29 @@ public abstract class BasicEntityShip extends EntityTameable {
         	if(ticksExisted % 100 == 0) {
         		//roll emtion: hungry > T_T > bored > O_O
         		if(getStateFlag(ID.F.NoFuel)) {
-        			if(this.getStateEmotion(ID.S.Emotion) != Values.Emotion.HUNGRY) {
+        			if(this.getStateEmotion(ID.S.Emotion) != ID.Emotion.HUNGRY) {
 //        				LogHelper.info("DEBUG : set emotion HUNGRY");
-	    				this.setStateEmotion(ID.S.Emotion, Values.Emotion.HUNGRY, true);
+	    				this.setStateEmotion(ID.S.Emotion, ID.Emotion.HUNGRY, true);
 	    			}
         		}
         		else {
         			if(this.getHealth()/this.getMaxHealth() < 0.5F) {
-    	    			if(this.getStateEmotion(ID.S.Emotion) != Values.Emotion.T_T) {
+    	    			if(this.getStateEmotion(ID.S.Emotion) != ID.Emotion.T_T) {
 //    	    				LogHelper.info("DEBUG : set emotion T_T");
-    	    				this.setStateEmotion(ID.S.Emotion, Values.Emotion.T_T, true);
+    	    				this.setStateEmotion(ID.S.Emotion, ID.Emotion.T_T, true);
     	    			}			
     	    		}
         			else {
         				if(this.isSitting() && this.getRNG().nextInt(3) > 1) {	//30% for bored
-        	    			if(this.getStateEmotion(ID.S.Emotion) != Values.Emotion.BORED) {
+        	    			if(this.getStateEmotion(ID.S.Emotion) != ID.Emotion.BORED) {
 //        	    				LogHelper.info("DEBUG : set emotion BORED");
-        	    				this.setStateEmotion(ID.S.Emotion, Values.Emotion.BORED, true);
+        	    				this.setStateEmotion(ID.S.Emotion, ID.Emotion.BORED, true);
         	    			}
         	    		}
         	    		else {	//back to normal face
-        	    			if(this.getStateEmotion(ID.S.Emotion) != Values.Emotion.NORMAL) {
+        	    			if(this.getStateEmotion(ID.S.Emotion) != ID.Emotion.NORMAL) {
 //        	    				LogHelper.info("DEBUG : set emotion NORMAL");
-        	    				this.setStateEmotion(ID.S.Emotion, Values.Emotion.NORMAL, true);
+        	    				this.setStateEmotion(ID.S.Emotion, ID.Emotion.NORMAL, true);
         	    			}
         	    		}
         			}     			
@@ -1023,8 +1023,8 @@ public abstract class BasicEntityShip extends EntityTameable {
 	@Override
     public boolean attackEntityFrom(DamageSource attacker, float atk) {		
 		//set hurt face
-    	if(this.getStateEmotion(ID.S.Emotion) != Values.Emotion.O_O) {
-    		this.setStateEmotion(ID.S.Emotion, Values.Emotion.O_O, true);
+    	if(this.getStateEmotion(ID.S.Emotion) != ID.Emotion.O_O) {
+    		this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
     	}
 		
 		//進行def計算
