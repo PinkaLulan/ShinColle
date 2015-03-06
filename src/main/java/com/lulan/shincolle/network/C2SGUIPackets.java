@@ -18,6 +18,8 @@ import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 /**SERVER TO CLIENT : SPAWN PARTICLE PACKET
  * 用於指定位置生成particle
@@ -27,7 +29,6 @@ import cpw.mods.fml.common.network.simpleimpl.MessageContext;
  */
 public class C2SGUIPackets implements IMessage {
 	
-	private static World serverWorld;
 	private static BasicEntityShip sendEntity;
 	private static BasicEntityShip recvEntity;
 	private static BasicTileEntity sendTile;
@@ -68,9 +69,10 @@ public class C2SGUIPackets implements IMessage {
 	
 	//接收packet方法
 	@Override
+	@SideOnly(Side.SERVER)
 	public void fromBytes(ByteBuf buf) {
 		//get server world
-		this.serverWorld = MinecraftServer.getServer().getEntityWorld();
+		World serverWorld = MinecraftServer.getServer().getEntityWorld();
 		
 		//get type and entityID
 		this.recvType = buf.readByte();
@@ -106,6 +108,7 @@ public class C2SGUIPackets implements IMessage {
 
 	//發出packet方法
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void toBytes(ByteBuf buf) {
 		switch(this.sendType) {
 		case 0:	//ship entity gui click

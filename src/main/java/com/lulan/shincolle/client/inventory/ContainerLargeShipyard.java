@@ -25,10 +25,9 @@ import net.minecraft.tileentity.TileEntityFurnace;
 public class ContainerLargeShipyard extends Container {
 	
 	private TileMultiGrudgeHeavy tile;
-	private int guiPowerConsumed, guiPowerRemained, guiPowerGoal, guiBuildType, guiSelectMat, guiInvMode = 0;
-	private int[] guiMatBuild = new int[4];
-	private int[] guiMatStock = new int[4];
-	private String guiBuildTime;
+	public int guiConsumedPower, guiRemainedPower, guiGoalPower, guiBuildType, guiSelectMat, guiInvMode = 0;
+	public int[] guiMatBuild = new int[] {0,0,0,0};
+	public int[] guiMatStock = new int[] {0,0,0,0};
 	
 	//for shift item
 	private static final int SLOT_OUTPUT = 0;
@@ -40,15 +39,7 @@ public class ContainerLargeShipyard extends Container {
 	
 	public ContainerLargeShipyard(InventoryPlayer player, TileMultiGrudgeHeavy tile) {
 		this.tile = tile;
-		guiMatBuild[0] = tile.getMatBuild(0);
-		guiMatBuild[1] = tile.getMatBuild(1);
-		guiMatBuild[2] = tile.getMatBuild(2);
-		guiMatBuild[3] = tile.getMatBuild(3);
-		guiMatStock[0] = tile.getMatStock(0);
-		guiMatStock[1] = tile.getMatStock(1);
-		guiMatStock[2] = tile.getMatStock(2);
-		guiMatStock[3] = tile.getMatStock(3);
-			
+		
 		//output slot (0)
 		this.addSlotToContainer(new SlotLargeShipyard(tile, 0, 168, 51));  //output
 		
@@ -75,20 +66,13 @@ public class ContainerLargeShipyard extends Container {
 	@Override
 	public void addCraftingToCrafters (ICrafting crafting) {
 		super.addCraftingToCrafters(crafting);
-		crafting.sendProgressBarUpdate(this, 0, this.tile.getPowerConsumed());
-		crafting.sendProgressBarUpdate(this, 1, this.tile.getPowerGoal());
-		crafting.sendProgressBarUpdate(this, 2, this.tile.getPowerRemained());
-		crafting.sendProgressBarUpdate(this, 3, this.tile.getBuildType());
-		crafting.sendProgressBarUpdate(this, 4, this.tile.getSelectMat());
-		crafting.sendProgressBarUpdate(this, 5, this.tile.getInvMode());
-		crafting.sendProgressBarUpdate(this, 6, this.tile.getMatStock(0));
-		crafting.sendProgressBarUpdate(this, 7, this.tile.getMatStock(1));
-		crafting.sendProgressBarUpdate(this, 8, this.tile.getMatStock(2));
-		crafting.sendProgressBarUpdate(this, 9, this.tile.getMatStock(3));
-		crafting.sendProgressBarUpdate(this, 10, this.tile.getMatBuild(0));
-		crafting.sendProgressBarUpdate(this, 11, this.tile.getMatBuild(1));
-		crafting.sendProgressBarUpdate(this, 12, this.tile.getMatBuild(2));
-		crafting.sendProgressBarUpdate(this, 13, this.tile.getMatBuild(3));
+		crafting.sendProgressBarUpdate(this, 0, this.tile.getBuildType());
+		crafting.sendProgressBarUpdate(this, 1, this.tile.getSelectMat());
+		crafting.sendProgressBarUpdate(this, 2, this.tile.getInvMode());
+		crafting.sendProgressBarUpdate(this, 3, this.tile.getMatBuild(0));
+		crafting.sendProgressBarUpdate(this, 4, this.tile.getMatBuild(1));
+		crafting.sendProgressBarUpdate(this, 5, this.tile.getMatBuild(2));
+		crafting.sendProgressBarUpdate(this, 6, this.tile.getMatBuild(3));
 	}
 
 	//玩家是否可以觸發右鍵點方塊事件
@@ -148,102 +132,88 @@ public class ContainerLargeShipyard extends Container {
 	@Override
 	public void detectAndSendChanges() {
 		super.detectAndSendChanges();
+		
+		if(this.guiConsumedPower != this.tile.getPowerConsumed() ||
+		   this.guiRemainedPower != this.tile.getPowerRemained() ||
+		   this.guiGoalPower != this.tile.getPowerGoal() ||
+		   this.guiMatStock[0] != this.tile.getMatStock(0) ||
+		   this.guiMatStock[1] != this.tile.getMatStock(1) ||
+		   this.guiMatStock[2] != this.tile.getMatStock(2) ||
+		   this.guiMatStock[3] != this.tile.getMatStock(3)) {
+			this.tile.sendSyncPacket();
+			this.guiConsumedPower = this.tile.getPowerConsumed();
+			this.guiRemainedPower = this.tile.getPowerRemained();
+			this.guiGoalPower = this.tile.getPowerGoal();
+			this.guiMatStock[0] = this.tile.getMatStock(0);
+			this.guiMatStock[1] = this.tile.getMatStock(1);
+			this.guiMatStock[2] = this.tile.getMatStock(2);
+			this.guiMatStock[3] = this.tile.getMatStock(3);
+        }
 
         for(Object crafter : this.crafters) {
             ICrafting icrafting = (ICrafting) crafter;
-
-            if(this.guiPowerConsumed != this.tile.getPowerConsumed()) {  	//更新build進度條
-                icrafting.sendProgressBarUpdate(this, 0, this.tile.getPowerConsumed());
-                this.guiPowerConsumed = this.tile.getPowerConsumed();
-            }
-            
-            if(this.guiPowerGoal != this.tile.getPowerGoal()) {  			//更新build進度條
-                 icrafting.sendProgressBarUpdate(this, 1, this.tile.getPowerGoal());
-                 this.guiPowerGoal = this.tile.getPowerGoal();
-             }
-
-            if(this.guiPowerRemained != this.tile.getPowerRemained()) {  	//更新fuel存量條
-                icrafting.sendProgressBarUpdate(this, 2, this.tile.getPowerRemained());
-                this.guiPowerRemained = this.tile.getPowerRemained();
-            }
             
             if(this.guiBuildType != this.tile.getBuildType()) {  			//更新建造類型
-                icrafting.sendProgressBarUpdate(this, 3, this.tile.getBuildType());
+                icrafting.sendProgressBarUpdate(this, 0, this.tile.getBuildType());
                 this.guiBuildType = this.tile.getBuildType();
             }
             
             if(this.guiSelectMat != this.tile.getSelectMat()) {  			//更新資材選擇
-                icrafting.sendProgressBarUpdate(this, 4, this.tile.getSelectMat());
+                icrafting.sendProgressBarUpdate(this, 1, this.tile.getSelectMat());
                 this.guiSelectMat = this.tile.getSelectMat();
             }
             
-            if(this.guiInvMode != this.tile.getInvMode()) {  			//更新inv mode
-                icrafting.sendProgressBarUpdate(this, 5, this.tile.getInvMode());
+            if(this.guiInvMode != this.tile.getInvMode()) {  				//更新inv mode
+                icrafting.sendProgressBarUpdate(this, 2, this.tile.getInvMode());
                 this.guiInvMode = this.tile.getInvMode();
             }
             
-            for(int i = 0; i < this.guiMatStock.length; i++) {
-            	if(this.guiMatStock[i] != this.tile.getMatStock(i)) {  	//更新資材存量
-                    icrafting.sendProgressBarUpdate(this, i+6, this.tile.getMatStock(i));
-                    this.guiMatStock[i] = this.tile.getMatStock(i);
-                }
+            if(this.guiMatBuild[0] != this.tile.getMatBuild(0)) {
+                icrafting.sendProgressBarUpdate(this, 3, this.tile.getMatBuild(0));
+                this.guiMatBuild[0] = this.tile.getMatBuild(0);
             }
             
-            for(int i = 0; i < this.guiMatBuild.length; i++) {
-            	if(this.guiMatBuild[i] != this.tile.getMatBuild(i)) {  	//更新資材建造量
-                    icrafting.sendProgressBarUpdate(this, i+10, this.tile.getMatBuild(i));
-                    this.guiMatBuild[i] = this.tile.getMatBuild(i);
-                }
+            if(this.guiMatBuild[1] != this.tile.getMatBuild(1)) {
+                icrafting.sendProgressBarUpdate(this, 4, this.tile.getMatBuild(1));
+                this.guiMatBuild[1] = this.tile.getMatBuild(1);
             }
-        }
-        
+            
+            if(this.guiMatBuild[2] != this.tile.getMatBuild(2)) {
+                icrafting.sendProgressBarUpdate(this, 5, this.tile.getMatBuild(2));
+                this.guiMatBuild[2] = this.tile.getMatBuild(2);
+            }
+            
+            if(this.guiMatBuild[3] != this.tile.getMatBuild(3)) {
+                icrafting.sendProgressBarUpdate(this, 6, this.tile.getMatBuild(3));
+                this.guiMatBuild[3] = this.tile.getMatBuild(3);
+            }
+        }  
     }
 
-	//client端container接收新值
+	//client端container接收新值, 這裡封包只會傳送short大小, 因此int值必須另外寫在封包系統中sync
 	@SideOnly(Side.CLIENT)
     public void updateProgressBar(int valueType, int updatedValue) {
         
 		switch(valueType) {
-		case 0: 
-			this.tile.setPowerConsumed(updatedValue);
-			break;
-		case 1:
-			this.tile.setPowerGoal(updatedValue);
-			break;
-		case 2:
-			this.tile.setPowerRemained(updatedValue);
-			break;
-		case 3:
+		case 0:
 			this.tile.setBuildType(updatedValue);
 			break;
-		case 4:
+		case 1:
 			this.tile.setSelectMat(updatedValue);
 			break;
-		case 5:
+		case 2:
 			this.tile.setInvMode(updatedValue);
 			break;
-		case 6:
-			this.tile.setMatStock(0, updatedValue);
-			break;
-		case 7:
-			this.tile.setMatStock(1, updatedValue);
-			break;
-		case 8:
-			this.tile.setMatStock(2, updatedValue);
-			break;
-		case 9:
-			this.tile.setMatStock(3, updatedValue);
-			break;
-		case 10:
+		case 3:
 			this.tile.setMatBuild(0, updatedValue);
 			break;
-		case 11:
+		case 4:
 			this.tile.setMatBuild(1, updatedValue);
 			break;
-		case 12:
+		case 5:
 			this.tile.setMatBuild(2, updatedValue);
 			break;
-		case 13:
+		case 6:
 			this.tile.setMatBuild(3, updatedValue);
 			break;
 		}

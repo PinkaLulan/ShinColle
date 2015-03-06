@@ -3,10 +3,14 @@ package com.lulan.shincolle.tileentity;
 import com.lulan.shincolle.block.BlockSmallShipyard;
 import com.lulan.shincolle.crafting.SmallRecipes;
 import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.network.S2CEntitySync;
+import com.lulan.shincolle.network.S2CGUIPackets;
+import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.FormatHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
+import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ISidedInventory;
@@ -14,6 +18,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.MathHelper;
@@ -27,10 +32,10 @@ import net.minecraft.util.MathHelper;
  */
 public class TileEntitySmallShipyard extends BasicTileEntity {
 		
-	public int consumedPower = 0;	//已花費的能量
-	public int remainedPower = 0;	//剩餘燃料
-	public int goalPower = 0;		//需要達成的目標能量
-	public int buildType = 0;		//type 0:none 1:ship 2:equip
+	private int consumedPower = 0;	//已花費的能量
+	private int remainedPower = 0;	//剩餘燃料
+	private int goalPower = 0;		//需要達成的目標能量
+	private int buildType = 0;		//type 0:none 1:ship 2:equip
 	private boolean isActive;		//是否正在建造中, 此為紀錄isBuilding是否有變化用
 	private static final int BUILDSPEED = 48;  	//power cost per tick	
 	private static final int MAXPOWER = 460800; 	//max power storage
@@ -41,6 +46,7 @@ public class TileEntitySmallShipyard extends BasicTileEntity {
 		//0:grudge 1:abyss 2:ammo 3:poly 4:fuel 5:output
 		this.slots = new ItemStack[6];
 		this.isActive = false;
+		this.syncTime = 0;
 	}
 
 	//依照輸出入口設定, 決定漏斗等裝置如何輸出入物品到特定slot中
@@ -238,7 +244,6 @@ public class TileEntitySmallShipyard extends BasicTileEntity {
 				}
 			}
 			
-			
 			if(!this.canBuild()) {	//非建造中, 重置build bar
 				this.consumedPower = 0;
 			}
@@ -269,6 +274,34 @@ public class TileEntitySmallShipyard extends BasicTileEntity {
 		//剩餘秒數 = (目標能量 - 目前能量) / (每tick增加能量) / 20
 		int timeSec = (goalPower - consumedPower) / BUILDSPEED / 20;	//get time (單位: sec)		
 		return FormatHelper.getTimeFormated(timeSec);
+	}
+	
+	//getter
+	public int getPowerConsumed() {
+		return this.consumedPower;
+	}
+	public int getPowerRemained() {
+		return this.remainedPower;
+	}
+	public int getPowerGoal() {
+		return this.goalPower;
+	}
+	public int getBuildType() {
+		return this.buildType;
+	}
+	
+	//setter
+	public void setPowerConsumed(int par1) {
+		this.consumedPower = par1;
+	}
+	public void setPowerRemained(int par1) {
+		this.remainedPower = par1;
+	}
+	public void setPowerGoal(int par1) {
+		this.goalPower = par1;
+	}
+	public void setBuildType(int par1) {
+		this.buildType = par1;
 	}
 
 	

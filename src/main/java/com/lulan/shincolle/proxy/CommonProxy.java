@@ -2,6 +2,7 @@ package com.lulan.shincolle.proxy;
 
 import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.network.S2CEntitySync;
+import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.reference.Names;
 import com.lulan.shincolle.reference.Reference;
@@ -26,6 +27,7 @@ public abstract class CommonProxy implements IProxy {
 		//register packets
 		channel.registerMessage(S2CEntitySync.Handler.class, S2CEntitySync.class, Names.Packets.ENTITY_SYNC, Side.CLIENT);
 		channel.registerMessage(S2CSpawnParticle.Handler.class, S2CSpawnParticle.class, Names.Packets.SPAWN_PARTICLE, Side.CLIENT);
+		channel.registerMessage(S2CGUIPackets.Handler.class, S2CGUIPackets.class, Names.Packets.GUI_SYNC, Side.CLIENT);
 		channel.registerMessage(C2SGUIPackets.Handler.class, C2SGUIPackets.class, Names.Packets.GUI_CLICK, Side.SERVER);
 	}
 

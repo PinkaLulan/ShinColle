@@ -235,6 +235,7 @@ public abstract class BasicEntityAirplane extends EntityLiving {
 		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 8, false), point0);
 		
 		//calc miss chance, if not miss, calc cri/multi hit
+		TargetPoint point = new TargetPoint(this.dimension, this.hostEntity.posX, this.hostEntity.posY, this.hostEntity.posZ, 64D);
 		float missChance = 0.25F - 0.001F * this.hostEntity.getStateMinor(ID.N.ShipLevel);
         missChance -= this.hostEntity.getEffectEquip(ID.EF_MISS);	//equip miss reduce
         if(missChance > 0.35F) missChance = 0.35F;
@@ -243,9 +244,8 @@ public abstract class BasicEntityAirplane extends EntityLiving {
         if(this.rand.nextFloat() < missChance) {
         	atkLight = 0;	//still attack, but no damage
         	//spawn miss particle
-    		EntityFX particleMiss = new EntityFXTexts(worldObj, 
-    		          this.hostEntity.posX, this.hostEntity.posY+this.hostEntity.height, this.hostEntity.posZ, 1F, 0);	    
-    		Minecraft.getMinecraft().effectRenderer.addEffect(particleMiss);
+        	
+        	CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this.hostEntity, 10, false), point);
         }
         else {
         	//roll cri -> roll double hit -> roll triple hit (triple hit more rare)
@@ -253,27 +253,21 @@ public abstract class BasicEntityAirplane extends EntityLiving {
         	if(this.rand.nextFloat() < this.hostEntity.getEffectEquip(ID.EF_CRI)) {
         		atk *= 1.5F;
         		//spawn critical particle
-        		EntityFX particleCri = new EntityFXTexts(worldObj, 
-        		          this.posX, this.posY+this.height, this.posZ, 1F, 1);	    
-        		Minecraft.getMinecraft().effectRenderer.addEffect(particleCri);
+            	CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this.hostEntity, 11, false), point);
         	}
         	else {
         		//calc double hit
             	if(this.rand.nextFloat() < this.hostEntity.getEffectEquip(ID.EF_DHIT)) {
             		atk *= 2F;
             		//spawn double hit particle
-            		EntityFX particleDhit = new EntityFXTexts(worldObj, 
-            		          this.posX, this.posY+this.height, this.posZ, 1F, 2);	    
-            		Minecraft.getMinecraft().effectRenderer.addEffect(particleDhit);
+            		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this.hostEntity, 12, false), point);
             	}
             	else {
             		//calc double hit
                 	if(this.rand.nextFloat() < this.hostEntity.getEffectEquip(ID.EF_THIT)) {
                 		atk *= 3F;
                 		//spawn triple hit particle
-                		EntityFX particleThit = new EntityFXTexts(worldObj, 
-                		          this.posX, this.posY+this.height, this.posZ, 1F, 3);	    
-                		Minecraft.getMinecraft().effectRenderer.addEffect(particleThit);
+                		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this.hostEntity, 13, false), point);
                 	}
             	}
         	}
@@ -326,9 +320,8 @@ public abstract class BasicEntityAirplane extends EntityLiving {
         if(this.rand.nextFloat() < missChance) {
         	atkHeavy = 0;	//still attack, but no damage
         	//spawn miss particle
-    		EntityFX particleMiss = new EntityFXTexts(worldObj, 
-    		          this.hostEntity.posX, this.hostEntity.posY+this.hostEntity.height, this.hostEntity.posZ, 1F, 0);	    
-    		Minecraft.getMinecraft().effectRenderer.addEffect(particleMiss);
+        	TargetPoint point = new TargetPoint(this.dimension, this.hostEntity.posX, this.hostEntity.posY, this.hostEntity.posZ, 64D);
+        	CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this.hostEntity, 10, false), point);
         }
 
         //spawn missile

@@ -10,10 +10,13 @@ import com.lulan.shincolle.entity.renderentity.BasicRenderEntity;
 import com.lulan.shincolle.entity.renderentity.EntityRenderVortex;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.network.S2CGUIPackets;
+import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.FormatHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
+import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -57,6 +60,7 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti {
 		this.isActive = false;
 		this.matsBuild = new int[] {0,0,0,0};
 		this.matsStock = new int[] {0,0,0,0};
+		this.syncTime = 0;
 	}
 	
 	//依照輸出入口設定, 決定漏斗等裝置如何輸出入物品到特定slot中
@@ -193,7 +197,7 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti {
 	@Override
 	public void updateEntity() {
 		boolean sendUpdate = false;	//標紀要block update, 有要更新metadata時設為true
-
+		
 		//update goalPower, check goalPower if material in slots[3] (polymetal slot)
 		if(this.buildType != 0) {
 			this.powerGoal = LargeRecipes.calcGoalPower(matsBuild);
@@ -204,6 +208,8 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti {
 		
 		//server side
 		if(!worldObj.isRemote) {
+			this.syncTime++;
+			
 			//fuel補充
 			//1.找出物品欄中最靠左邊的燃料 2.比較是否可以增加該燃料 3.增加燃料
 			int burnTime;
@@ -263,6 +269,14 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti {
 				this.powerRemained -= BUILDSPEED;	//fuel bar --
 				this.powerConsumed += BUILDSPEED;	//build bar ++
 				
+				//sync render entity every 100 ticks
+				//set render entity state
+				if(this.syncTime % 100 == 0) {
+					this.sendSyncPacket();
+					sendUpdate = true;
+					this.syncTime = 0;
+				}
+				
 				//power達標, 建造完成
 				if (this.powerConsumed >= this.powerGoal) {
 					this.buildComplete();	//建造出成品放到output slot
@@ -280,48 +294,21 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti {
 			//若狀態有改變過, 則發送更新  ex:本來active 而燃料用光導致無法active時
 			if(this.isActive != this.isBuilding()) {
 				this.isActive = this.isBuilding();
-				
-				//set render entity state
-				AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(xCoord-1.5D, yCoord-2D, zCoord-1.5D, xCoord+1.5D, yCoord+1D, zCoord+1.5D);
-				List renderEntityList = this.worldObj.getEntitiesWithinAABB(EntityRenderVortex.class, aabb);
-				
-	            for(int i = 0; i < renderEntityList.size(); i++) { 
-	            	LogHelper.info("DEBUG : set render entity state "+this.isBuilding()+" "+renderEntityList.get(i)+xCoord+" "+yCoord+" "+zCoord);
-	            	((EntityRenderVortex)renderEntityList.get(i)).setIsActive(this.isBuilding());
-	            }
-	            
 				sendUpdate = true;
-			}
-		}
-		else {	//client端, 修改render entity狀態
-			//若狀態有改變過, 則發送更新  ex:本來active 而燃料用光導致無法active時
-			if(this.isActive != this.isBuilding()) {
-				this.isActive = this.isBuilding();
-				
-				//set render entity state
-				AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(xCoord-1.5D, yCoord-2D, zCoord-1.5D, xCoord+1.5D, yCoord+1D, zCoord+1.5D);
-				List renderEntityList = this.worldObj.getEntitiesWithinAABB(EntityRenderVortex.class, aabb);
-				
-	            for(int i = 0; i < renderEntityList.size(); i++) { 
-	            	LogHelper.info("DEBUG : set render entity state "+this.isBuilding()+" "+renderEntityList.get(i)+xCoord+" "+yCoord+" "+zCoord);
-	            	((EntityRenderVortex)renderEntityList.get(i)).setIsActive(this.isBuilding());
-	            }
 			}
 		}
 		
 		//標紀要更新
 		if(sendUpdate) {
-//			int meta;
-//			if(this.isBuilding()) { 
-//				meta = 2;
-//			}
-//			else {
-//				meta = 1;
-//			}
-//			
-//			//更新方塊metadata
-//			BlockGrudgeHeavy.updateBlockState(this.worldObj, this.xCoord, this.yCoord, this.zCoord, meta);
-			//標記此方塊要更新, 以保證資料會存到硬碟
+			//set render entity state
+			AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(xCoord-1.5D, yCoord-2D, zCoord-1.5D, xCoord+1.5D, yCoord+1D, zCoord+1.5D);
+			List renderEntityList = this.worldObj.getEntitiesWithinAABB(EntityRenderVortex.class, aabb);
+			
+            for(int i = 0; i < renderEntityList.size(); i++) { 
+//            	LogHelper.info("DEBUG : set render entity state (Tile class) "+this.isBuilding()+" "+renderEntityList.get(i)+xCoord+" "+yCoord+" "+zCoord);
+            	((EntityRenderVortex)renderEntityList.get(i)).setIsActive(this.isBuilding());
+            }
+
 			this.markDirty();
 		}
 	}
@@ -395,5 +382,5 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti {
 	public void addMatStock(int id, int par1)  {	//add a number to stock
 		this.matsStock[id] += par1;
 	}
-
+	
 }

@@ -5,6 +5,7 @@ import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
@@ -18,6 +19,7 @@ import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.pathfinding.PathEntity;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Facing;
 import net.minecraft.util.IIcon;
@@ -43,7 +45,6 @@ public class ShipSpawnEgg extends Item {
 	
 	Random rand;
 	
-	@SideOnly(Side.CLIENT)
     private IIcon[] iconEgg = new IIcon[3];	//egg icon
 	
 	private static final String[] subNames = {		//for egg display names
@@ -98,7 +99,6 @@ public class ShipSpawnEgg extends Item {
   	
   	//for list all same id items
   	@Override
-  	@SideOnly(Side.CLIENT)
   	public void getSubItems(Item item, CreativeTabs tab, List list) {
   		list.add(new ItemStack(item, 1, 0));
   		list.add(new ItemStack(item, 1, 1));
@@ -171,10 +171,10 @@ public class ShipSpawnEgg extends Item {
     @Override
     public boolean onItemUse(ItemStack itemstack, EntityPlayer player, World world, int par4, int par5, int par6, int par7, float par8, float par9, float par10) {
         
-    	if (world.isRemote) {	//client side
-            return true;
+    	if(world.isRemote) {	//client side
+            return false;
         }
-        else {						//server side
+        else {					//server side
             Block block = world.getBlock(par4, par5, par6);		//get spawn position
             par4 += Facing.offsetsXForSide[par7];
             par5 += Facing.offsetsYForSide[par7];

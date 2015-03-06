@@ -16,6 +16,7 @@ import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
+import com.lulan.shincolle.utility.ParticleHelper;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -272,12 +273,8 @@ public class EntityAbyssMissile extends Entity {
     	else {
     		//spawn particle
             for (int j = 0; j < 3; ++j) {
-//                this.worldObj.spawnParticle("cloud", this.posX-this.motionX*1.5D*j, this.posY+1D-this.motionY*1.5D*j, this.posZ-this.motionZ*1.5D*j, -this.motionX*0.5D, -this.motionY*0.5D, -this.motionZ*0.5D);
-                EntityFX particleSpray = new EntityFXSpray(worldObj, 
-                		this.posX-this.motionX*1.5D*j, this.posY+1D-this.motionY*1.5D*j, this.posZ-this.motionZ*1.5D*j, 
-                		-this.motionX*0.5D, -this.motionY*0.5D, -this.motionZ*0.5D,
-                		1F, 1F, 1F, 1F);
-            	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray);
+            	ParticleHelper.spawnAttackParticleAt(this.posX-this.motionX*1.5D*j, this.posY+1D-this.motionY*1.5D*j, this.posZ-this.motionZ*1.5D*j, 
+                		-this.motionX*0.5D, -this.motionY*0.5D, -this.motionZ*0.5D, (byte)15);
     		}
     	}//end client side
     	   	
@@ -304,9 +301,8 @@ public class EntityAbyssMissile extends Entity {
             	if(this.hostEntity != null && (this.rand.nextFloat() < this.hostEntity.getEffectEquip(ID.EF_CRI))) {
             		missileAtk *= 3F;
             		//spawn critical particle
-            		EntityFX particleCri = new EntityFXTexts(worldObj, 
-            		          this.hostEntity.posX, this.hostEntity.posY+this.height, this.hostEntity.posZ, 1F, 1);	    
-            		Minecraft.getMinecraft().effectRenderer.addEffect(particleCri);
+            		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+                	CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this.hostEntity, 11, false), point);
             	}
 
         		//設定該entity受到的傷害
@@ -352,9 +348,8 @@ public class EntityAbyssMissile extends Entity {
                 		if(this.hostEntity != null && (this.rand.nextFloat() < this.hostEntity.getEffectEquip(ID.EF_CRI))) {
                     		missileAtk *= 3F;
                     		//spawn critical particle
-                    		EntityFX particleCri = new EntityFXTexts(worldObj, 
-                    		          this.hostEntity.posX, this.hostEntity.posY+this.height, this.hostEntity.posZ, 1F, 1);	    
-                    		Minecraft.getMinecraft().effectRenderer.addEffect(particleCri);
+                    		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+                        	CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this.hostEntity, 11, false), point);
                     	}
                     	
                 		//對entity造成傷害

@@ -1,7 +1,10 @@
 package com.lulan.shincolle.tileentity;
 
+import com.lulan.shincolle.network.S2CGUIPackets;
+import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.utility.LogHelper;
 
+import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
@@ -12,6 +15,7 @@ public class BasicTileEntity extends TileEntity implements ISidedInventory {
 	
 	protected ItemStack slots[];
 	protected String customName;
+	protected int syncTime;		//for sync
 	
 	public BasicTileEntity() {
         customName = "";
@@ -124,6 +128,14 @@ public class BasicTileEntity extends TileEntity implements ISidedInventory {
 	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack itemstack) {
 		return false;
+	}
+	
+	//sync data for GUI display
+	public void sendSyncPacket() {
+		if(!this.worldObj.isRemote) {
+			TargetPoint point = new TargetPoint(this.worldObj.provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, 8D);
+			CommonProxy.channel.sendToAllAround(new S2CGUIPackets(this), point);
+		}
 	}
 
 }

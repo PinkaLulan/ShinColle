@@ -13,6 +13,8 @@ import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 /**SERVER TO CLIENT : ENTITY SYNC PACKET
  * 用於entity的資料同步
@@ -22,7 +24,6 @@ import cpw.mods.fml.common.network.simpleimpl.MessageContext;
  */
 public class S2CEntitySync implements IMessage {
 	
-	private static World clientWorld;
 	private static BasicEntityShip sendEntity;
 	private static BasicEntityShip recvEntity;
 	private static int sendType;
@@ -38,12 +39,13 @@ public class S2CEntitySync implements IMessage {
 	public S2CEntitySync(BasicEntityShip entity, int type) {
         this.sendEntity = entity;
         this.sendType = type;
-        clientWorld = Minecraft.getMinecraft().theWorld;
     }
 	
-	//接收packet方法
+	//接收packet方法 (CLIENT SIDE)
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void fromBytes(ByteBuf buf) {
+		World clientWorld = Minecraft.getMinecraft().theWorld;
 		//get type and entityID
 		this.recvType = buf.readByte();
 		this.entityID = buf.readInt();
@@ -126,6 +128,7 @@ public class S2CEntitySync implements IMessage {
 
 	//發出packet方法
 	@Override
+	@SideOnly(Side.SERVER)
 	public void toBytes(ByteBuf buf) {
 		switch(this.sendType) {
 		case 0:	//sync all data

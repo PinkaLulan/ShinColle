@@ -49,9 +49,9 @@ public class EntityFXTexts extends EntityFX {
 		GL11.glPushMatrix();
 		//使用自帶的貼圖檔
 		Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE);
-//		GL11.glDepthMask(true);
+		GL11.glDepthMask(true);
 //		GL11.glDisable(GL11.GL_BLEND);
-//		GL11.glDisable(GL11.GL_LIGHTING);
+		GL11.glDisable(GL11.GL_LIGHTING);
 //		GL11.glEnable(GL11.GL_DEPTH_TEST);	//DEPTH TEST開啟後才能使用glDepthFunc
 //		GL11.glDepthFunc(GL11.GL_ALWAYS);
 		
@@ -90,7 +90,7 @@ public class EntityFXTexts extends EntityFX {
         
 //        GL11.glDepthFunc(GL11.GL_LEQUAL);
 //		GL11.glDisable(GL11.GL_DEPTH_TEST);	//DEPTH TEST關閉
-//      GL11.glEnable(GL11.GL_LIGHTING);
+      GL11.glEnable(GL11.GL_LIGHTING);
 //        GL11.glDisable(GL11.GL_BLEND);
 //		GL11.glDepthMask(false);
 		GL11.glPopMatrix();

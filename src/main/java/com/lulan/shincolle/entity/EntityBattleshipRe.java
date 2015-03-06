@@ -146,10 +146,7 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
 		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
         //spawn laser particle
-		EntityFX particleLaser = new EntityFXLaser(worldObj, 
-		          this.posX, this.posY+1.5D, this.posZ,
-		          target.posX, target.posY+target.height/2F, target.posZ, 1F, 0);	    
-		Minecraft.getMinecraft().effectRenderer.addEffect(particleLaser);
+		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(14, posX, posY + 1.5D, posZ, target.posX, target.posY+target.height/2F, target.posZ), point);
         
 		//play sound: (sound name, volume, pitch) 
         playSound(Reference.MOD_ID+":ship-laser", 0.2F, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
@@ -177,9 +174,7 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
         if(this.rand.nextFloat() < missChance) {
         	atk = 0;	//still attack, but no damage
         	//spawn miss particle
-    		EntityFX particleMiss = new EntityFXTexts(worldObj, 
-    		          this.posX, this.posY+this.height, this.posZ, 1F, 0);	    
-    		Minecraft.getMinecraft().effectRenderer.addEffect(particleMiss);
+        	CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
         }
         else {
         	//roll cri -> roll double hit -> roll triple hit (triple hit more rare)
@@ -187,27 +182,21 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
         	if(this.rand.nextFloat() < EffectEquip[ID.EF_CRI]) {
         		atk *= 1.5F;
         		//spawn critical particle
-        		EntityFX particleCri = new EntityFXTexts(worldObj, 
-        		          this.posX, this.posY+this.height, this.posZ, 1F, 1);	    
-        		Minecraft.getMinecraft().effectRenderer.addEffect(particleCri);
+        		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 11, false), point);
         	}
         	else {
         		//calc double hit
             	if(this.rand.nextFloat() < EffectEquip[ID.EF_DHIT]) {
             		atk *= 2F;
             		//spawn double hit particle
-            		EntityFX particleDhit = new EntityFXTexts(worldObj, 
-            		          this.posX, this.posY+this.height, this.posZ, 1F, 2);	    
-            		Minecraft.getMinecraft().effectRenderer.addEffect(particleDhit);
+            		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 12, false), point);
             	}
             	else {
             		//calc double hit
                 	if(this.rand.nextFloat() < EffectEquip[ID.EF_THIT]) {
                 		atk *= 3F;
                 		//spawn triple hit particle
-                		EntityFX particleThit = new EntityFXTexts(worldObj, 
-                		          this.posX, this.posY+this.height, this.posZ, 1F, 3);	    
-                		Minecraft.getMinecraft().effectRenderer.addEffect(particleThit);
+                		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 13, false), point);
                 	}
             	}
         	}
@@ -229,7 +218,7 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
 	        
         	//display hit particle on target
 	        TargetPoint point1 = new TargetPoint(this.dimension, target.posX, target.posY, target.posZ, 64D);
-			CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(target, 9, true), point1);
+			CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(target, 9, false), point1);
         }
 
 	    return isTargetHurt;

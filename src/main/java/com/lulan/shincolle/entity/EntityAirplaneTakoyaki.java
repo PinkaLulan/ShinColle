@@ -4,6 +4,7 @@ import com.lulan.shincolle.ai.EntityAIShipAircraftAttack;
 import com.lulan.shincolle.client.particle.EntityFXSpray;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.LogHelper;
+import com.lulan.shincolle.utility.ParticleHelper;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
@@ -68,11 +69,8 @@ public class EntityAirplaneTakoyaki extends BasicEntityAirplane {
 		
 		if(this.worldObj.isRemote) {
 			if(this.ticksExisted % 2 == 0) {
-				EntityFX particleSpray = new EntityFXSpray(worldObj, 
-			      		this.posX, this.posY+0.1D, this.posZ, 
-			      		-this.motionX*0.5D, 0.07D, -this.motionZ*0.5D,
-			      		1.0F, 0.0F, 0.0F, 0.8F);
-				Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray);
+				ParticleHelper.spawnAttackParticleAt(this.posX, this.posY+0.1D, this.posZ, 
+			      		-this.motionX*0.5D, 0.07D, -this.motionZ*0.5D, (byte)18);
 			}
 		}
 	}

@@ -20,16 +20,17 @@ import net.minecraft.world.World;
 import cpw.mods.fml.common.network.IGuiHandler;
 
 public class GuiHandler implements IGuiHandler {	
-	TileEntity tile;
-	Entity entity;
-	
+
 	@Override
 	public Object getServerGuiElement(int guiId, EntityPlayer player, World world, int x, int y, int z) {
+		TileEntity tile;
+		Entity entity;
 		
 		switch(guiId) {		//判定gui種類
 		case ID.G.SMALLSHIPYARD:	//GUI small shipyard
 			tile = world.getTileEntity(x, y, z);  //確定抓到entity才開ui 以免噴出NPE
 			if((tile != null) && (tile instanceof TileEntitySmallShipyard)) {  //server取得container
+				((TileEntitySmallShipyard)tile).sendSyncPacket(); //sync once when gui opened
 				return new ContainerSmallShipyard(player.inventory, (TileEntitySmallShipyard) tile);
 			}
 			return null;
@@ -43,6 +44,7 @@ public class GuiHandler implements IGuiHandler {
 		case ID.G.LARGESHIPYARD:	//GUI large shipyard
 			tile = world.getTileEntity(x, y, z);  //確定抓到entity才開ui 以免噴出NPE
 			if((tile != null && tile instanceof TileMultiGrudgeHeavy)) {  //server取得container
+				((TileMultiGrudgeHeavy)tile).sendSyncPacket(); //sync once when gui opened
 				return new ContainerLargeShipyard(player.inventory, (TileMultiGrudgeHeavy) tile);
 			}
 			return null;
@@ -52,7 +54,9 @@ public class GuiHandler implements IGuiHandler {
 
 	@Override
 	public Object getClientGuiElement(int guiId, EntityPlayer player, World world, int x, int y, int z) {
-	
+		TileEntity tile;
+		Entity entity;
+		
 		switch(guiId) {		//判定gui種類
 		case ID.G.SMALLSHIPYARD:	//GUI small shipyard
 			tile = world.getTileEntity(x, y, z);  //確定抓到entity才開ui 以免噴出NPE

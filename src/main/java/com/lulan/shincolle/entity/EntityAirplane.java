@@ -9,6 +9,7 @@ import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.LogHelper;
+import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraft.client.Minecraft;
@@ -78,13 +79,8 @@ public class EntityAirplane extends BasicEntityAirplane {
 		
 		//client side particle
 		if(this.worldObj.isRemote) {	
-			if(this.ticksExisted % 2 == 0) {
-				EntityFX particleSpray = new EntityFXSpray(worldObj, 
-	          		this.posX-this.motionX*1.5D, this.posY+0.5D-this.motionY*1.5D, this.posZ-this.motionZ*1.5D, 
-	          		-this.motionX*0.5D, -this.motionY*0.5D, -this.motionZ*0.5D,
-	          		0.2F, 1.0F, 0.6F, 0.7F);
-				Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray);
-			}
+			ParticleHelper.spawnAttackParticleAt(this.posX-this.motionX*1.5D, this.posY+0.5D-this.motionY*1.5D, this.posZ-this.motionZ*1.5D, 
+	          		-this.motionX*0.5D, -this.motionY*0.5D, -this.motionZ*0.5D, (byte)17);
 		}
 	}
 

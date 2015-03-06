@@ -60,7 +60,7 @@ public class EntityHelper {
 	
 	//get entity by ID
 	public static Entity getEntityByID(int entityID, World world) {
-		for(Object obj: world.getLoadedEntityList()) {
+		for(Object obj: world.loadedEntityList) {
 			if(entityID != -1 && ((Entity)obj).getEntityId() == entityID) {
 //				LogHelper.info("DEBUG : found entity by ID, is client? "+entityID+" "+world.isRemote);
 				return ((Entity)obj);
@@ -115,7 +115,7 @@ public class EntityHelper {
 		if(tile != null) {
 			if(tile instanceof TileEntitySmallShipyard) {
 //				LogHelper.info("DEBUG : set tile entity value "+button+" "+value);
-				((TileEntitySmallShipyard)tile).buildType = value;
+				((TileEntitySmallShipyard)tile).setBuildType(value);
 				return;
 			}
 			if(tile instanceof TileMultiGrudgeHeavy) {

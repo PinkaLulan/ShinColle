@@ -9,8 +9,8 @@ import java.util.UUID;
 import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.ai.EntityAIShipSit;
 import com.lulan.shincolle.client.inventory.ContainerShipInventory;
-import com.lulan.shincolle.client.particle.EntityFXTexts;
 import com.lulan.shincolle.client.particle.EntityFXSpray;
+import com.lulan.shincolle.client.particle.EntityFXTexts;
 import com.lulan.shincolle.crafting.EquipCalc;
 import com.lulan.shincolle.entity.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
@@ -24,6 +24,7 @@ import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
+import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
@@ -32,20 +33,15 @@ import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAISit;
-import net.minecraft.entity.boss.IBossDisplayData;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.projectile.EntityArrow;
-import net.minecraft.entity.projectile.EntityLargeFireball;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.Slot;
@@ -112,7 +108,6 @@ public abstract class BasicEntityShip extends EntityTameable {
 		ShipPrevX = posX;		//ship position 5 sec ago
 		ShipPrevY = posY;
 		ShipPrevZ = posZ;
-
 	}
 	
 	@Override
@@ -713,13 +708,9 @@ public abstract class BasicEntityShip extends EntityTameable {
 				double motZ = this.posZ - this.prevPosZ;
 				double parH = this.posY - (int)this.posY;
 				
-				EntityFX particleSpray = new EntityFXSpray(worldObj, 
-				          this.posX + motX*1.5D, this.posY + 0.4D, this.posZ + motZ*1.5D, 
-				          -motX*0.5D, 0D, -motZ*0.5D,
-				          1F, 1F, 1F, 1F);
-				    
 				if(motX != 0 || motZ != 0) {
-					Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray);
+					ParticleHelper.spawnAttackParticleAt(this.posX + motX*1.5D, this.posY + 0.4D, this.posZ + motZ*1.5D, 
+							-motX*0.5D, 0D, -motZ*0.5D, (byte)15);
 				}
 			}
 		}
@@ -743,6 +734,10 @@ public abstract class BasicEntityShip extends EntityTameable {
         	    	
         	//check every 100 ticks
         	if(ticksExisted % 100 == 0) {
+        		//sync emotion every 5 sec
+        		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
+    			CommonProxy.channel.sendToAllAround(new S2CEntitySync(this, 1), point);
+        		
         		//roll emtion: hungry > T_T > bored > O_O
         		if(getStateFlag(ID.F.NoFuel)) {
         			if(this.getStateEmotion(ID.S.Emotion) != ID.Emotion.HUNGRY) {
@@ -892,9 +887,7 @@ public abstract class BasicEntityShip extends EntityTameable {
         if(this.rand.nextFloat() < missChance) {
         	atk = 0;	//still attack, but no damage
         	//spawn miss particle
-    		EntityFX particleMiss = new EntityFXTexts(worldObj, 
-    		          this.posX, this.posY+this.height, this.posZ, 1F, 0);	    
-    		Minecraft.getMinecraft().effectRenderer.addEffect(particleMiss);
+    		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
         }
         else {
         	//roll cri -> roll double hit -> roll triple hit (triple hit more rare)
@@ -902,27 +895,21 @@ public abstract class BasicEntityShip extends EntityTameable {
         	if(this.rand.nextFloat() < EffectEquip[ID.EF_CRI]) {
         		atk *= 1.5F;
         		//spawn critical particle
-        		EntityFX particleCri = new EntityFXTexts(worldObj, 
-        		          this.posX, this.posY+this.height, this.posZ, 1F, 1);	    
-        		Minecraft.getMinecraft().effectRenderer.addEffect(particleCri);
+        		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 11, false), point);
         	}
         	else {
         		//calc double hit
             	if(this.rand.nextFloat() < EffectEquip[ID.EF_DHIT]) {
             		atk *= 2F;
             		//spawn double hit particle
-            		EntityFX particleDhit = new EntityFXTexts(worldObj, 
-            		          this.posX, this.posY+this.height, this.posZ, 1F, 2);	    
-            		Minecraft.getMinecraft().effectRenderer.addEffect(particleDhit);
+            		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 12, false), point);
             	}
             	else {
             		//calc double hit
                 	if(this.rand.nextFloat() < EffectEquip[ID.EF_THIT]) {
                 		atk *= 3F;
                 		//spawn triple hit particle
-                		EntityFX particleThit = new EntityFXTexts(worldObj, 
-                		          this.posX, this.posY+this.height, this.posZ, 1F, 3);	    
-                		Minecraft.getMinecraft().effectRenderer.addEffect(particleThit);
+                		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 13, false), point);
                 	}
             	}
         	}
@@ -944,7 +931,7 @@ public abstract class BasicEntityShip extends EntityTameable {
 	        
         	//display hit particle on target
 	        TargetPoint point1 = new TargetPoint(this.dimension, target.posX, target.posY, target.posZ, 64D);
-			CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(target, 9, true), point1);
+			CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(target, 9, false), point1);
         }
 
 	    return isTargetHurt;
@@ -1006,9 +993,8 @@ public abstract class BasicEntityShip extends EntityTameable {
         	tarY = tarY + this.rand.nextFloat() * 3F;
         	tarZ = tarZ - 3F + this.rand.nextFloat() * 6F;
         	//spawn miss particle
-    		EntityFX particleMiss = new EntityFXTexts(worldObj, 
-    		          this.posX, this.posY+this.height, this.posZ, 1F, 0);	    
-    		Minecraft.getMinecraft().effectRenderer.addEffect(particleMiss);
+        	TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+        	CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
         }
 
         //spawn missile
@@ -1203,7 +1189,7 @@ public abstract class BasicEntityShip extends EntityTameable {
 
 		//get fuel, set AI
 		if(!getStateFlag(ID.F.NoFuel) && PrevNoFuel) {
-			LogHelper.info("DEBUG : !NoFuel set AI");
+//			LogHelper.info("DEBUG : !NoFuel set AI");
 			clearAITasks();
 			clearAITargetTasks();
 			setAIList();
@@ -1213,7 +1199,7 @@ public abstract class BasicEntityShip extends EntityTameable {
 		
 		//no fuel, clear AI
 		if(getStateFlag(ID.F.NoFuel)) {
-			LogHelper.info("DEBUG : NoFuel clear AI");
+//			LogHelper.info("DEBUG : NoFuel clear AI");
 			clearAITasks();
 			clearAITargetTasks();
 			sendSyncPacket();

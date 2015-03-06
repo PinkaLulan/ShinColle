@@ -2,9 +2,11 @@ package com.lulan.shincolle.client.inventory;
 
 import com.lulan.shincolle.crafting.SmallRecipes;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
+import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
@@ -14,6 +16,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.tileentity.TileEntityFurnace;
+import net.minecraft.world.World;
 
 /**SLOT POSITION
  * S1:grudge(33,29) S2:abyssium(53,29) S3:ammo(73,29) S4:poly(93,29)
@@ -24,17 +27,11 @@ import net.minecraft.tileentity.TileEntityFurnace;
 public class ContainerSmallShipyard extends Container {
 	
 	private TileEntitySmallShipyard te;
-	private int guiConsumedPower;
-	private int guiRemainedPower;
-	private int guiGoalPower;
-	private int guiBuildType;
-	private String guiBuildTime;
+	public int guiBuildType, guiConsumedPower, guiRemainedPower, guiGoalPower;
 	
 	
 	public ContainerSmallShipyard(InventoryPlayer invPlayer, TileEntitySmallShipyard teSmallShipyard) {
 		this.te = teSmallShipyard;
-		guiConsumedPower = 0;
-		guiRemainedPower = 0;
 			
 		this.addSlotToContainer(new SlotSmallShipyard(teSmallShipyard, 0, 33, 29));  //grudge
 		this.addSlotToContainer(new SlotSmallShipyard(teSmallShipyard, 1, 53, 29));  //abyssium
@@ -131,9 +128,7 @@ public class ContainerSmallShipyard extends Container {
 	@Override
 	public void addCraftingToCrafters (ICrafting crafting) {
 		super.addCraftingToCrafters(crafting);
-		crafting.sendProgressBarUpdate(this, 0, this.te.consumedPower);	//時間進度
-		crafting.sendProgressBarUpdate(this, 1, this.te.remainedPower);	//剩餘燃料
-		crafting.sendProgressBarUpdate(this, 2, this.te.buildType);		//建造類型
+		crafting.sendProgressBarUpdate(this, 0, this.te.getBuildType());		//建造類型
 	}
 	
 	//將container數值跟tile entity內的數值比對, 如果不同則發送更新給client使gui呈現新數值
@@ -143,46 +138,44 @@ public class ContainerSmallShipyard extends Container {
 
         for(Object crafter : this.crafters) {
             ICrafting icrafting = (ICrafting) crafter;
-
-            if(this.guiConsumedPower != this.te.consumedPower) {  	//更新build進度條
-                icrafting.sendProgressBarUpdate(this, 0, this.te.consumedPower);
-                this.guiConsumedPower = this.te.consumedPower;
+            
+            if(this.guiBuildType != this.te.getBuildType()) {  			//更新建造類型
+                icrafting.sendProgressBarUpdate(this, 0, this.te.getBuildType());
+                this.guiBuildType = this.te.getBuildType();
             }
             
-            if(this.guiGoalPower != this.te.goalPower) {  			//更新build進度條
-                 icrafting.sendProgressBarUpdate(this, 1, this.te.goalPower);
-                 this.guiGoalPower = this.te.goalPower;
-             }
-
-            if(this.guiRemainedPower != this.te.remainedPower) {  	//更新fuel存量條
-                icrafting.sendProgressBarUpdate(this, 2, this.te.remainedPower);
-                this.guiRemainedPower = this.te.remainedPower;
+            if(this.guiConsumedPower != this.te.getPowerConsumed() ||
+               this.guiRemainedPower != this.te.getPowerRemained() ||
+               this.guiGoalPower != this.te.getPowerGoal()) {
+    			this.te.sendSyncPacket();
+                this.guiConsumedPower = this.te.getPowerConsumed();
+                this.guiRemainedPower = this.te.getPowerRemained();
+                this.guiGoalPower = this.te.getPowerGoal();
+                
+                //用sendProgressBarUpdate當作update的flag, 但是不從這邊傳實際值, 而是另外用自訂封包傳
+                icrafting.sendProgressBarUpdate(this, 1, 0);
             }
-            
-            if(this.guiBuildType != this.te.buildType) {  			//更新建造類型
-                icrafting.sendProgressBarUpdate(this, 3, this.te.buildType);
-                this.guiBuildType = this.te.buildType;
-            }
-        }
-        
+        } 
     }
 
 	//client端container接收新值
 	@SideOnly(Side.CLIENT)
     public void updateProgressBar(int valueType, int updatedValue) {
-        
+		World world = Minecraft.getMinecraft().theWorld;
+		//抓實際client端的tile, 注意抓到的tile跟container內的tile非相同副本(此為server端副本, 即使標CLIENT也不是client端)
+		TileEntitySmallShipyard tile = (TileEntitySmallShipyard) world.getTileEntity(this.te.xCoord, this.te.yCoord, this.te.zCoord);
+		
+		
 		switch(valueType) {
-		case 0: 
-			this.te.consumedPower = updatedValue;
+		case 0:
+			this.te.setBuildType(updatedValue);
 			break;
 		case 1:
-			this.te.goalPower = updatedValue;
-			break;
-		case 2:
-			this.te.remainedPower = updatedValue;
-			break;
-		case 3:
-			this.te.buildType = updatedValue;
+			if(tile != null) {
+				this.te.setPowerConsumed(tile.getPowerConsumed());
+				this.te.setPowerRemained(tile.getPowerRemained());
+				this.te.setPowerGoal(tile.getPowerGoal());
+			}
 			break;
 		}
     }

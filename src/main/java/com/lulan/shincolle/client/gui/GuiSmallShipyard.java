@@ -49,7 +49,7 @@ public class GuiSmallShipyard extends GuiContainer {
 		//畫出fuel存量 (8,19,22,84)
 		if(xMouse > 9+guiLeft && xMouse < 17+guiLeft && yMouse > 23+guiTop && yMouse < 49+guiTop) {
 			List list = new ArrayList();
-			String strFuel = String.valueOf(tile.remainedPower);
+			String strFuel = String.valueOf(tile.getPowerRemained());
 			int strLen = this.fontRendererObj.getStringWidth(strFuel) / 2;
 			list.add(strFuel);
 			this.drawHoveringText(list, 4-strLen, 40, this.fontRendererObj);
@@ -69,7 +69,7 @@ public class GuiSmallShipyard extends GuiContainer {
 		//畫出倒數時間
 		this.fontRendererObj.drawString(time, 71 - this.fontRendererObj.getStringWidth(time) / 2, 51, 4210752);
 		//畫出提示訊息
-		if(tile.goalPower <= 0) {
+		if(tile.getPowerGoal() <= 0) {
 			errorMsg = I18n.format("gui.shincolle:nomaterial");
 			this.fontRendererObj.drawString(errorMsg, 80 - this.fontRendererObj.getStringWidth(errorMsg) / 2, 61, 16724787);
 		}
@@ -91,16 +91,16 @@ public class GuiSmallShipyard extends GuiContainer {
        
         //畫出fuel存量條
         int scaleBar; 
-        if(tile.remainedPower > 0) {
+        if(tile.getPowerRemained() > 0) {
             scaleBar = tile.getPowerRemainingScaled(31);	//彩色進度條長度31	
             drawTexturedModalRect(guiLeft+10, guiTop+48-scaleBar, 176, 47-scaleBar, 12, scaleBar);
         }
         
         //畫出type選擇框
-        if(tile.buildType == 1) {
+        if(tile.getBuildType() == 1) {
         	drawTexturedModalRect(guiLeft+123, guiTop+17, 176, 47, 18, 18);
         }
-        else if(tile.buildType == 2) {
+        else if(tile.getBuildType() == 2) {
         	drawTexturedModalRect(guiLeft+143, guiTop+17, 176, 47, 18, 18);
         }
 	
@@ -116,7 +116,7 @@ public class GuiSmallShipyard extends GuiContainer {
         yClick = posY - this.guiTop;
         
         //match all pages
-        int buttonValue = this.tile.buildType;
+        int buttonValue = this.tile.getBuildType();
         switch(GuiHelper.getButton(ID.G.SMALLSHIPYARD, 0, xClick, yClick)) {
         case 0:	
         	if(buttonValue == 1) {

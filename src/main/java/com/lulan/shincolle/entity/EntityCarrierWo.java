@@ -197,16 +197,11 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
     				eyePosL = ParticleHelper.rotateForEntity(eyePosL[0], eyePosL[1], eyePosL[2], radYaw, -radPitch, 0.5F);
     				eyePosR = ParticleHelper.rotateForEntity(eyePosR[0], eyePosR[1], eyePosR[2], radYaw, -radPitch, 0.5F);		
     				
-    				EntityFX particleSprayL = new EntityFXSpray(worldObj, 
-                    		this.posX+eyePosL[2], this.posY+2.5D+eyePosL[1], this.posZ+eyePosL[0], 
-                    		0D, 0.05D, 0D,
-                    		0.5F, 1F, 1F, 1F);
-                	Minecraft.getMinecraft().effectRenderer.addEffect(particleSprayL);
-                	EntityFX particleSprayR = new EntityFXSpray(worldObj, 
-                    		this.posX+eyePosR[2], this.posY+2.5D+eyePosR[1], this.posZ+eyePosR[0], 
-                    		0D, 0.05D, 0D,
-                    		0.5F, 1F, 1F, 1F);
-                	Minecraft.getMinecraft().effectRenderer.addEffect(particleSprayR);            	
+    				ParticleHelper.spawnAttackParticleAt(this.posX+eyePosL[2], this.posY+2.5D+eyePosL[1], this.posZ+eyePosL[0], 
+                    		0D, 0.05D, 0D, (byte)16);
+    				
+    				ParticleHelper.spawnAttackParticleAt(this.posX+eyePosR[2], this.posY+2.5D+eyePosR[1], this.posZ+eyePosR[0], 
+                    		0D, 0.05D, 0D, (byte)16);   	
     			}			
     		}	
     	}

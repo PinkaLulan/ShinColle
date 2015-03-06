@@ -4,7 +4,14 @@ import java.util.Random;
 
 import org.lwjgl.opengl.GL11;
 
+import com.lulan.shincolle.client.particle.EntityFXLaser;
+import com.lulan.shincolle.client.particle.EntityFXSpray;
+import com.lulan.shincolle.client.particle.EntityFXTexts;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MathHelper;
@@ -15,7 +22,6 @@ import net.minecraft.world.World;
  */
 public class ParticleHelper {
 	
-	private static World world = Minecraft.getMinecraft().theWorld;
 	private static Random rand = new Random();
 	
 	/**ROTATE PARTICLE POSITION (NxNxN)
@@ -102,6 +108,7 @@ public class ParticleHelper {
 	/**SPAWN ATTACK PARTICLE WITH CUSTOM POSITION
 	 * @parm posX, posY, posZ, lookX, lookY, lookZ, type
 	 */
+	@SideOnly(Side.CLIENT)
 	public static void spawnAttackParticleCustomVector(Entity target, double posX, double posY, double posZ, double lookX, double lookY, double lookZ, byte type, boolean isShip) {
 		if(isShip && target != null) {
 			((EntityLivingBase) target).attackTime = 50;
@@ -115,8 +122,9 @@ public class ParticleHelper {
 	 * spawn particle and set attack time for model rendering
 	 * @parm entity, type
 	 */
-	public static void spawnAttackParticle(Entity target, byte type, boolean isShip) {
-		if(isShip && target != null) {
+	@SideOnly(Side.CLIENT)
+	public static void spawnAttackParticle(Entity target, byte type, boolean setAtkTime) {
+		if(setAtkTime && target != null) {
 			((EntityLivingBase) target).attackTime = 50;
 		}
 		
@@ -130,7 +138,10 @@ public class ParticleHelper {
 		
 		//get target position
 		if(target != null) {
-			if(target.getLookVec() != null) {
+			if(type > 9) {
+				lookY = target.height;
+			}
+			else if(target.getLookVec() != null) {
 				lookX = target.getLookVec().xCoord;
 				lookY = target.getLookVec().yCoord;
 				lookZ = target.getLookVec().zCoord;
@@ -143,7 +154,9 @@ public class ParticleHelper {
 	/**Spawn particle at xyz position
 	 * @parm world, posX, posY, posZ, particleID
 	 */
+	@SideOnly(Side.CLIENT)
 	public static void spawnAttackParticleAt(double posX, double posY, double posZ, double lookX, double lookY, double lookZ, byte type) {
+		World world = Minecraft.getMinecraft().theWorld;
 		//get target position
 		double ran1 = 0D;
 		double ran2 = 0D;
@@ -151,10 +164,10 @@ public class ParticleHelper {
 //		GL11.glDepthMask(true);
 		//spawn particle
 		switch(type) {
-		case 1: //largeexplode
+		case 1:		//largeexplode
 			world.spawnParticle("largeexplode", posX, posY+2, posZ, 0.0D, 0.0D, 0.0D);
 			break;
-		case 2: //hugeexplosion
+		case 2:		//hugeexplosion
 			world.spawnParticle("hugeexplosion", posX, posY+1, posZ, 0.0D, 0.0D, 0.0D);
 			for(int i=0;i<20;i++) {
 				ran1 = rand.nextFloat() * 6F - 3F;
@@ -162,30 +175,30 @@ public class ParticleHelper {
 				world.spawnParticle("lava", posX+ran1, posY+1, posZ+ran2, 0D, 0D, 0D);
 			}
 			break;
-		case 3: //crit
+		case 3:		//crit
 			world.spawnParticle("crit", posX, posY+2, posZ, 0.0D, 0.0D, 0.0D);
 			break;
-		case 4: //magicCrit
+		case 4: 	//magicCrit
 			world.spawnParticle("happyVillager", posX, posY+2, posZ, 0.0D, 0.0D, 0.0D);
 			break;
-		case 5: //smoke
+		case 5:		//smoke
 			world.spawnParticle("smoke", posX, posY+2, posZ, 0.0D, 0.0D, 0.0D);
 			break;
-		case 6: //largesmoke
+		case 6: 	//largesmoke
 			for(int i=0; i<20; i++) {
 				ran1 = rand.nextFloat() - 0.5F;
 				world.spawnParticle("largesmoke", posX+lookX-0.5D+0.05D*i, posY+0.8D+ran1, posZ+lookZ-0.5D+0.05D*i, lookX*0.2D, 0.05D, lookZ*0.2D);
 			}	
 			break;
-		case 7: //angryVillager
+		case 7: 	//angryVillager
 			world.spawnParticle("angryVillager", posX, posY+1, posZ, 0.0D, 0.0D, 0.0D);
 			break;
-		case 8: //flame
+		case 8:	 	//flame
 			world.spawnParticle("flame", posX, posY-0.1, posZ, 0.0D, 0.0D, 0.0D);
 			world.spawnParticle("flame", posX, posY, posZ, 0.0D, 0.0D, 0.0D);
 			world.spawnParticle("flame", posX, posY+0.1, posZ, 0.0D, 0.0D, 0.0D);
 			break;
-		case 9: //lava + largeexplode
+		case 9: 	//lava + largeexplode
 			world.spawnParticle("largeexplode", posX, posY+1.5, posZ, 0.0D, 0.0D, 0.0D);
 			for(int i=0; i<12; i++) {
 				ran1 = rand.nextFloat() * 3F - 1.5F;
@@ -193,7 +206,49 @@ public class ParticleHelper {
 				world.spawnParticle("lava", posX+ran1, posY+1, posZ+ran2, 0D, 0D, 0D);
 			}			
 			break;
-		case 10://laser particle, draw particle from posXYZ to lookXYZ
+		case 10:	//miss
+			EntityFXTexts particleMiss = new EntityFXTexts(world, 
+  		          posX, posY + lookY, posZ, 1F, 0);
+			Minecraft.getMinecraft().effectRenderer.addEffect(particleMiss);
+			break;
+		case 11:	//cri
+			EntityFXTexts particleCri = new EntityFXTexts(world, 
+  		          posX, posY + lookY, posZ, 1F, 1);	    
+			Minecraft.getMinecraft().effectRenderer.addEffect(particleCri);
+			break;
+		case 12:	//double hit
+			EntityFXTexts particleDHit = new EntityFXTexts(world, 
+	  		          posX, posY + lookY, posZ, 1F, 2);	    
+			Minecraft.getMinecraft().effectRenderer.addEffect(particleDHit);
+			break;
+		case 13:	//triple hit
+			EntityFXTexts particleTHit = new EntityFXTexts(world, 
+	  		          posX, posY + lookY, posZ, 1F, 3);	    
+			Minecraft.getMinecraft().effectRenderer.addEffect(particleTHit);
+			break;
+		case 14:	//laser
+			EntityFXLaser particleLaser = new EntityFXLaser(world, 
+			          posX, posY, posZ, lookX, lookY, lookZ, 1F, 0);
+			Minecraft.getMinecraft().effectRenderer.addEffect(particleLaser);
+		case 15:	//white spray
+			EntityFXSpray particleSpray = new EntityFXSpray(world, 
+            		posX, posY, posZ, lookX, lookY, lookZ, 1F, 1F, 1F, 1F);
+        	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray);
+			break;
+		case 16:	//cyan spray
+			EntityFXSpray particleSpray2 = new EntityFXSpray(world, 
+            		posX, posY, posZ, lookX, lookY, lookZ, 0.5F, 1F, 1F, 1F);
+        	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray2);
+			break;
+		case 17:	//green spray
+			EntityFXSpray particleSpray3 = new EntityFXSpray(world, 
+            		posX, posY, posZ, lookX, lookY, lookZ, 0.2F, 1.0F, 0.6F, 0.7F);
+        	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray3);
+			break;
+		case 18:	//red spray
+			EntityFXSpray particleSpray4 = new EntityFXSpray(world, 
+            		posX, posY, posZ, lookX, lookY, lookZ, 1.0F, 0.0F, 0.0F, 0.8F);
+        	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray4);
 			break;
 		default:
 			break;		

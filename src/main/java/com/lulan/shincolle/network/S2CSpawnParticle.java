@@ -15,6 +15,8 @@ import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 /**SERVER TO CLIENT : SPAWN PARTICLE PACKET
  * 用於指定位置生成particle
@@ -24,7 +26,6 @@ import cpw.mods.fml.common.network.simpleimpl.MessageContext;
  */
 public class S2CSpawnParticle implements IMessage {
 	
-	private static World clientWorld;
 	private static Entity sendEntity;
 	private static Entity recvEntity;
 	private static int entityID;
@@ -53,7 +54,6 @@ public class S2CSpawnParticle implements IMessage {
 	//spawn particle: 
 	//type 0: spawn particle with entity, if isShip -> set ship attackTime
 	public S2CSpawnParticle(Entity entity, int type, boolean isShip) {
-		clientWorld = Minecraft.getMinecraft().theWorld;
         this.sendEntity = entity;
         this.sendType = 0;
         this.sendIsShip = isShip;
@@ -62,7 +62,6 @@ public class S2CSpawnParticle implements IMessage {
 	
 	//type 1: spawn particle with entity and position, if isShip -> set ship attackTime
 	public S2CSpawnParticle(Entity entity, int type, double posX, double posY, double posZ, double lookX, double lookY, double lookZ, boolean isShip) {
-		clientWorld = Minecraft.getMinecraft().theWorld;
 		this.sendEntity = entity;
         this.sendType = 1;
         this.sendIsShip = isShip;
@@ -77,7 +76,6 @@ public class S2CSpawnParticle implements IMessage {
 	
 	//type 2: spawn particle with position
 	public S2CSpawnParticle(int type, double posX, double posY, double posZ, double lookX, double lookY, double lookZ) {
-		clientWorld = Minecraft.getMinecraft().theWorld;
         this.sendType = 2;
         this.sendParticleType = (byte)type;
         this.sendposX = (float)posX;
@@ -90,7 +88,9 @@ public class S2CSpawnParticle implements IMessage {
 	
 	//接收packet方法
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void fromBytes(ByteBuf buf) {
+		World clientWorld = Minecraft.getMinecraft().theWorld;
 		//get type and entityID
 		this.recvType = buf.readByte();
 	
@@ -136,6 +136,7 @@ public class S2CSpawnParticle implements IMessage {
 
 	//發出packet方法
 	@Override
+	@SideOnly(Side.SERVER)
 	public void toBytes(ByteBuf buf) {
 		switch(this.sendType) {
 		case 0:	//spawn particle with entity
