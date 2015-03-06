@@ -1,7 +1,6 @@
 package com.lulan.shincolle.client.handler;
 
 import com.lulan.shincolle.client.settings.KeyBindings;
-import com.lulan.shincolle.reference.Key;
 import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;

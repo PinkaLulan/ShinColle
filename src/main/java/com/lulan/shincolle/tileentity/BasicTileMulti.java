@@ -5,7 +5,6 @@ import com.lulan.shincolle.block.BlockSmallShipyard;
 import com.lulan.shincolle.crafting.SmallRecipes;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.FormatHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.entity.player.EntityPlayer;
