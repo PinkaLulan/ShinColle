@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
@@ -24,11 +25,11 @@ import cpw.mods.fml.relauncher.SideOnly;
  */
 public class S2CEntitySync implements IMessage {
 	
-	private static BasicEntityShip sendEntity;
-	private static BasicEntityShip recvEntity;
-	private static int sendType;
-	private static int recvType;
-	private static int entityID;
+	private BasicEntityShip sendEntity;
+	private BasicEntityShip recvEntity;
+	private int sendType;
+	private int recvType;
+	private int entityID;
 	
 	public S2CEntitySync() {}	//必須要有空參數constructor, forge才能使用此class
 	
@@ -43,9 +44,8 @@ public class S2CEntitySync implements IMessage {
 	
 	//接收packet方法 (CLIENT SIDE)
 	@Override
-	@SideOnly(Side.CLIENT)
 	public void fromBytes(ByteBuf buf) {
-		World clientWorld = Minecraft.getMinecraft().theWorld;
+		World clientWorld = ClientProxy.getClientWorld();
 		//get type and entityID
 		this.recvType = buf.readByte();
 		this.entityID = buf.readInt();
@@ -128,7 +128,6 @@ public class S2CEntitySync implements IMessage {
 
 	//發出packet方法
 	@Override
-	@SideOnly(Side.SERVER)
 	public void toBytes(ByteBuf buf) {
 		switch(this.sendType) {
 		case 0:	//sync all data

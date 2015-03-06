@@ -5,6 +5,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
@@ -26,27 +27,27 @@ import cpw.mods.fml.relauncher.SideOnly;
  */
 public class S2CSpawnParticle implements IMessage {
 	
-	private static Entity sendEntity;
-	private static Entity recvEntity;
-	private static int entityID;
-	private static int sendType;
-	private static int recvType;
-	private static byte sendParticleType;
-	private static byte recvParticleType;
-	private static boolean sendIsShip;
-	private static boolean recvIsShip;
-	private static float sendposX;
-	private static float sendposY;
-	private static float sendposZ;
-	private static float sendlookX;
-	private static float sendlookY;
-	private static float sendlookZ;
-	private static float recvposX;
-	private static float recvposY;
-	private static float recvposZ;
-	private static float recvlookX;
-	private static float recvlookY;
-	private static float recvlookZ;
+	private Entity sendEntity;
+	private Entity recvEntity;
+	private int entityID;
+	private int sendType;
+	private int recvType;
+	private byte sendParticleType;
+	private byte recvParticleType;
+	private boolean sendIsShip;
+	private boolean recvIsShip;
+	private float sendposX;
+	private float sendposY;
+	private float sendposZ;
+	private float sendlookX;
+	private float sendlookY;
+	private float sendlookZ;
+	private float recvposX;
+	private float recvposY;
+	private float recvposZ;
+	private float recvlookX;
+	private float recvlookY;
+	private float recvlookZ;
 	
 	
 	public S2CSpawnParticle() {}	//必須要有空參數constructor, forge才能使用此class
@@ -88,9 +89,8 @@ public class S2CSpawnParticle implements IMessage {
 	
 	//接收packet方法
 	@Override
-	@SideOnly(Side.CLIENT)
 	public void fromBytes(ByteBuf buf) {
-		World clientWorld = Minecraft.getMinecraft().theWorld;
+		World clientWorld = ClientProxy.getClientWorld();
 		//get type and entityID
 		this.recvType = buf.readByte();
 	
@@ -136,7 +136,6 @@ public class S2CSpawnParticle implements IMessage {
 
 	//發出packet方法
 	@Override
-	@SideOnly(Side.SERVER)
 	public void toBytes(ByteBuf buf) {
 		switch(this.sendType) {
 		case 0:	//spawn particle with entity

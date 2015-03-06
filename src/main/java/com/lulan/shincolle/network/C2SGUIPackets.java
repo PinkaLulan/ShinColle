@@ -7,6 +7,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.BasicTileEntity;
 import com.lulan.shincolle.utility.EntityHelper;
@@ -29,22 +30,22 @@ import cpw.mods.fml.relauncher.SideOnly;
  */
 public class C2SGUIPackets implements IMessage {
 	
-	private static BasicEntityShip sendEntity;
-	private static BasicEntityShip recvEntity;
-	private static BasicTileEntity sendTile;
-	private static BasicTileEntity recvTile;
-	private static int entityID;
-	private static int sendType;
-	private static int recvType;
-	private static int sendButton;
-	private static int recvButton;
-	private static int sendValue;
-	private static int recvValue;
-	private static int sendValue2;
-	private static int recvValue2;
-	private static int recvPosX;
-	private static int recvPosY;
-	private static int recvPosZ;
+	private BasicEntityShip sendEntity;
+	private BasicEntityShip recvEntity;
+	private BasicTileEntity sendTile;
+	private BasicTileEntity recvTile;
+	private int entityID;
+	private int sendType;
+	private int recvType;
+	private int sendButton;
+	private int recvButton;
+	private int sendValue;
+	private int recvValue;
+	private int sendValue2;
+	private int recvValue2;
+	private int recvPosX;
+	private int recvPosY;
+	private int recvPosZ;
 	
 	
 	public C2SGUIPackets() {}	//必須要有空參數constructor, forge才能使用此class
@@ -69,10 +70,9 @@ public class C2SGUIPackets implements IMessage {
 	
 	//接收packet方法
 	@Override
-	@SideOnly(Side.SERVER)
 	public void fromBytes(ByteBuf buf) {
 		//get server world
-		World serverWorld = MinecraftServer.getServer().getEntityWorld();
+		World serverWorld = ServerProxy.getServerWorld();
 		
 		//get type and entityID
 		this.recvType = buf.readByte();
@@ -108,7 +108,6 @@ public class C2SGUIPackets implements IMessage {
 
 	//發出packet方法
 	@Override
-	@SideOnly(Side.CLIENT)
 	public void toBytes(ByteBuf buf) {
 		switch(this.sendType) {
 		case 0:	//ship entity gui click

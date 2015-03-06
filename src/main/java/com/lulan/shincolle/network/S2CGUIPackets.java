@@ -11,6 +11,7 @@ import net.minecraft.world.World;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.renderentity.EntityRenderVortex;
+import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.BasicTileEntity;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
@@ -33,13 +34,13 @@ import cpw.mods.fml.relauncher.SideOnly;
  */
 public class S2CGUIPackets implements IMessage {
 	
-//	private static BasicEntityShip sendEntity;
-//	private static BasicEntityShip recvEntity;
-	private static TileEntitySmallShipyard sendTile1;
-	private static TileEntitySmallShipyard recvTile1;
-	private static TileMultiGrudgeHeavy sendTile2;
-	private static TileMultiGrudgeHeavy recvTile2;
-	private static int sendType, recvType, recvX, recvY, recvZ;
+//	private BasicEntityShip sendEntity;
+//	private BasicEntityShip recvEntity;
+	private TileEntitySmallShipyard sendTile1;
+	private TileEntitySmallShipyard recvTile1;
+	private TileMultiGrudgeHeavy sendTile2;
+	private TileMultiGrudgeHeavy recvTile2;
+	private int sendType, recvType, recvX, recvY, recvZ;
 	
 	
 	public S2CGUIPackets() {}	//必須要有空參數constructor, forge才能使用此class
@@ -64,10 +65,9 @@ public class S2CGUIPackets implements IMessage {
 	
 	//接收packet方法
 	@Override
-	@SideOnly(Side.CLIENT)
 	public void fromBytes(ByteBuf buf) {
 		//get server world
-		World clientWorld = Minecraft.getMinecraft().theWorld;
+		World clientWorld = ClientProxy.getClientWorld();
 		
 		//get type and entityID
 		this.recvType = buf.readByte();
@@ -123,7 +123,6 @@ public class S2CGUIPackets implements IMessage {
 
 	//發出packet方法
 	@Override
-	@SideOnly(Side.SERVER)
 	public void toBytes(ByteBuf buf) {
 		switch(this.sendType) {
 		case 0: //sync small shipyard gui

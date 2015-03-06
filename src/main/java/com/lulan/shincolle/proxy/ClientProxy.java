@@ -1,8 +1,10 @@
 package com.lulan.shincolle.proxy;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.RenderFireball;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.Item;
+import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 import com.lulan.shincolle.ShinColle;
@@ -53,6 +55,10 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class ClientProxy extends CommonProxy {
+	
+	public static World getClientWorld() {
+		return Minecraft.getMinecraft().theWorld;
+	}
 
 	//µn¿ý°»´ú«öÁä
 	@Override
