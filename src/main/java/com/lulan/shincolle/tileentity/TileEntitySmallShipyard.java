@@ -2,6 +2,7 @@ package com.lulan.shincolle.tileentity;
 
 import com.lulan.shincolle.block.BlockSmallShipyard;
 import com.lulan.shincolle.crafting.SmallRecipes;
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CGUIPackets;
@@ -37,7 +38,7 @@ public class TileEntitySmallShipyard extends BasicTileEntity {
 	private int goalPower = 0;		//需要達成的目標能量
 	private int buildType = 0;		//type 0:none 1:ship 2:equip
 	private boolean isActive;		//是否正在建造中, 此為紀錄isBuilding是否有變化用
-	private static final int BUILDSPEED = 48;  	//power cost per tick	
+	private static int buildSpeed = 48;  			//power cost per tick	
 	private static final int MAXPOWER = 460800; 	//max power storage
 	private static final int[] ALLSLOTS = new int[] {0, 1, 2, 3, 4, 5};  //dont care side
 
@@ -47,6 +48,10 @@ public class TileEntitySmallShipyard extends BasicTileEntity {
 		this.slots = new ItemStack[6];
 		this.isActive = false;
 		this.syncTime = 0;
+		
+		if(ConfigHandler.easyMode) {
+			buildSpeed = 480;
+		}
 	}
 
 	//依照輸出入口設定, 決定漏斗等裝置如何輸出入物品到特定slot中
@@ -182,7 +187,7 @@ public class TileEntitySmallShipyard extends BasicTileEntity {
 	
 	//判定是否有燃料
 	public boolean hasRemainedPower() {
-		return remainedPower > BUILDSPEED;
+		return remainedPower > buildSpeed;
 	}
 	
 	//判定是否有建造目標
@@ -216,23 +221,29 @@ public class TileEntitySmallShipyard extends BasicTileEntity {
 		//server side
 		if(!worldObj.isRemote) {
 			//fuel補充
-			if(TileEntityFurnace.isItemFuel(this.slots[4]) && this.remainedPower < (this.MAXPOWER - TileEntityFurnace.getItemBurnTime(this.slots[4]))) {
-				this.remainedPower += TileEntityFurnace.getItemBurnTime(this.slots[4]);
-				
+			int burnTime = TileEntityFurnace.getItemBurnTime(this.slots[4]);
+			
+			if(ConfigHandler.easyMode) {
+				burnTime *= 10;
+			}
+			
+			if(burnTime > 0 && burnTime + this.remainedPower < this.MAXPOWER) {
 				if(this.slots[4] != null) {
-					sendUpdate = true;			//標紀要update block
+					this.remainedPower += burnTime;	
 					this.slots[4].stackSize--;	//fuel -1
 					
 					if(this.slots[4].stackSize == 0) {
 						this.slots[4] = this.slots[4].getItem().getContainerItem(this.slots[4]);
 					}
+					
+					sendUpdate = true;			//標紀要update block
 				}
 			}
 			
 			//判定是否建造中, 每tick進行進度值更新, 若非建造中則重置進度值
 			if(this.isBuilding()) {
-				this.remainedPower -= BUILDSPEED;	//fuel bar --
-				this.consumedPower += BUILDSPEED;	//build bar ++
+				this.remainedPower -= buildSpeed;	//fuel bar --
+				this.consumedPower += buildSpeed;	//build bar ++
 				
 				//power達標, 建造完成
 				if (this.consumedPower >= this.goalPower) {
@@ -272,7 +283,7 @@ public class TileEntitySmallShipyard extends BasicTileEntity {
 	//計算建造時間 (換算成真實時間)
 	public String getBuildTimeString() {
 		//剩餘秒數 = (目標能量 - 目前能量) / (每tick增加能量) / 20
-		int timeSec = (goalPower - consumedPower) / BUILDSPEED / 20;	//get time (單位: sec)		
+		int timeSec = (goalPower - consumedPower) / buildSpeed / 20;	//get time (單位: sec)		
 		return FormatHelper.getTimeFormated(timeSec);
 	}
 	

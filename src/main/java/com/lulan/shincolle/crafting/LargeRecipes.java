@@ -2,6 +2,7 @@ package com.lulan.shincolle.crafting;
 
 import java.util.Random;
 
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.BasicItem;
@@ -79,33 +80,13 @@ public class LargeRecipes {
 	}
 	
 	//新增資材到slots中
-	public static boolean outputMaterialToSlot(TileMultiGrudgeHeavy tile, int selectMat, int i) {
+	public static boolean outputMaterialToSlot(TileMultiGrudgeHeavy tile, int selectMat, boolean compress) {
 		Item matchItem = null;
 		int meta = 0;
 		int slot = -1;
 		
 		//設定尋找的物品
-		if(i == 0) {	//輸出單件物品
-			switch(selectMat) {
-			case 0:		//item grudge
-				matchItem = ModItems.Grudge;
-				meta = 0;
-				break;
-			case 1:		//item abyssium
-				matchItem = ModItems.AbyssMetal;
-				meta = 0;
-				break;
-			case 2: 	//item light ammo
-				matchItem = ModItems.Ammo;
-				meta = 0;
-				break;
-			case 3: 	//item polymetal nodules
-				matchItem = ModItems.AbyssMetal;
-				meta = 1;
-				break;
-			}
-		}
-		else if(i == 1) {	//輸出block, container等壓縮物品
+		if(compress) {	//輸出block, container等壓縮物品
 			switch(selectMat) {
 			case 0:		//block grudge
 				matchItem = Item.getItemFromBlock(ModBlocks.BlockGrudge);
@@ -122,6 +103,26 @@ public class LargeRecipes {
 			case 3: 	//block polymetal
 				matchItem = Item.getItemFromBlock(ModBlocks.BlockPolymetal);
 				meta = 0;
+				break;
+			}	
+		}
+		else {			//輸出單件物品
+			switch(selectMat) {
+			case 0:		//item grudge
+				matchItem = ModItems.Grudge;
+				meta = 0;
+				break;
+			case 1:		//item abyssium
+				matchItem = ModItems.AbyssMetal;
+				meta = 0;
+				break;
+			case 2: 	//item light ammo
+				matchItem = ModItems.Ammo;
+				meta = 0;
+				break;
+			case 3: 	//item polymetal nodules
+				matchItem = ModItems.AbyssMetal;
+				meta = 1;
 				break;
 			}
 		}
@@ -183,16 +184,21 @@ public class LargeRecipes {
 			break;
 		}
 		
+		if(ConfigHandler.easyMode) {
+			matNum *= 10;
+		}
+		
 		//資材存量最多1萬上下, 超過就不收
 		int matStockCurrent;
+		
 		if(matType > -1) {
 			matStockCurrent = tile.getMatStock(matType);
+			
 			if(matStockCurrent < 10000) {
 				tile.setMatStock(matType, matStockCurrent + matNum);
 				return true;
 			}
 		}
-
 		
 		return false;
 	}

@@ -221,4 +221,3 @@ public class GuiLargeShipyard extends GuiContainer {
 	}
 
 }
-

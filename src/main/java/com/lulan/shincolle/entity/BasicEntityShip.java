@@ -731,7 +731,7 @@ public abstract class BasicEntityShip extends EntityTameable {
         		setAITargetList();
         		sendSyncPacket();		//sync packet to client
         	}
-        	    	
+        	
         	//check every 100 ticks
         	if(ticksExisted % 100 == 0) {
         		//sync emotion every 5 sec
@@ -1059,11 +1059,21 @@ public abstract class BasicEntityShip extends EntityTameable {
 			}
 			else {
 				if(decrSupplies(0)) {  //find ammo item
-					StateMinor[ID.N.NumAmmoLight] += 29;
+					if(ConfigHandler.easyMode) {
+						StateMinor[ID.N.NumAmmoLight] += 299;
+					}
+					else {
+						StateMinor[ID.N.NumAmmoLight] += 29;
+					}
 					return true;
 				}
 				else if(decrSupplies(2)) {  //find ammo item
-					StateMinor[ID.N.NumAmmoLight] += 269;
+					if(ConfigHandler.easyMode) {
+						StateMinor[ID.N.NumAmmoLight] += 2699;
+					}
+					else {
+						StateMinor[ID.N.NumAmmoLight] += 269;
+					}
 					return true;
 				}
 				else {				   //no ammo
@@ -1077,11 +1087,21 @@ public abstract class BasicEntityShip extends EntityTameable {
 			}
 			else {
 				if(decrSupplies(1)) {  //find ammo item
-					StateMinor[ID.N.NumAmmoHeavy] += 14;
+					if(ConfigHandler.easyMode) {
+						StateMinor[ID.N.NumAmmoHeavy] += 149;
+					}
+					else {
+						StateMinor[ID.N.NumAmmoHeavy] += 14;
+					}
 					return true;
 				}
 				else if(decrSupplies(3)) {  //find ammo item
-					StateMinor[ID.N.NumAmmoHeavy] += 134;
+					if(ConfigHandler.easyMode) {
+						StateMinor[ID.N.NumAmmoHeavy] += 1349;
+					}
+					else {
+						StateMinor[ID.N.NumAmmoHeavy] += 134;
+					}
 					return true;
 				}
 				else {				   //no ammo
@@ -1090,11 +1110,21 @@ public abstract class BasicEntityShip extends EntityTameable {
 			}
 		case 2:	//no ammo light, use item
 			if(decrSupplies(0)) {  //find ammo item
-				StateMinor[ID.N.NumAmmoLight] += 30;
+				if(ConfigHandler.easyMode) {
+					StateMinor[ID.N.NumAmmoLight] += 300;
+				}
+				else {
+					StateMinor[ID.N.NumAmmoLight] += 30;
+				}
 				return true;
 			}
 			else if(decrSupplies(2)) {  //find ammo item
-				StateMinor[ID.N.NumAmmoLight] += 270;
+				if(ConfigHandler.easyMode) {
+					StateMinor[ID.N.NumAmmoLight] += 2700;
+				}
+				else {
+					StateMinor[ID.N.NumAmmoLight] += 270;
+				}
 				return true;
 			}
 			else {				   //no ammo
@@ -1102,28 +1132,48 @@ public abstract class BasicEntityShip extends EntityTameable {
 			}
 		case 3:	//no ammo heavy, use item
 			if(decrSupplies(1)) {  //find ammo item
-				StateMinor[ID.N.NumAmmoHeavy] += 15;
+				if(ConfigHandler.easyMode) {
+					StateMinor[ID.N.NumAmmoHeavy] += 150;
+				}
+				else {
+					StateMinor[ID.N.NumAmmoHeavy] += 15;
+				}
 				return true;
 			}
 			else if(decrSupplies(3)) {  //find ammo item
-				StateMinor[ID.N.NumAmmoHeavy] += 135;
+				if(ConfigHandler.easyMode) {
+					StateMinor[ID.N.NumAmmoHeavy] += 1350;
+				}
+				else {
+					StateMinor[ID.N.NumAmmoHeavy] += 135;
+				}
 				return true;
 			}
 			else {				   //no ammo
 				return false;
 			}
 		case 4:  //use 4 light ammo
-			if(StateMinor[ID.N.NumAmmoLight] > 3) { 
+			if(StateMinor[ID.N.NumAmmoLight] > 3) {
 				StateMinor[ID.N.NumAmmoLight] -= 4;
 				return true;
 			}
 			else {
 				if(decrSupplies(0)) {  //find ammo item
-					StateMinor[ID.N.NumAmmoLight] += 26;
+					if(ConfigHandler.easyMode) {
+						StateMinor[ID.N.NumAmmoLight] += 296;
+					}
+					else {
+						StateMinor[ID.N.NumAmmoLight] += 26;
+					}
 					return true;
 				}
 				else if(decrSupplies(2)) {  //find ammo item
-					StateMinor[ID.N.NumAmmoLight] += 266;
+					if(ConfigHandler.easyMode) {
+						StateMinor[ID.N.NumAmmoLight] += 2696;
+					}
+					else {
+						StateMinor[ID.N.NumAmmoLight] += 266;
+					}
 					return true;
 				}
 				else {				   //no ammo
@@ -1137,11 +1187,21 @@ public abstract class BasicEntityShip extends EntityTameable {
 			}
 			else {
 				if(decrSupplies(1)) {  //find ammo item
-					StateMinor[ID.N.NumAmmoHeavy] += 13;
+					if(ConfigHandler.easyMode) {
+						StateMinor[ID.N.NumAmmoHeavy] += 148;
+					}
+					else {
+						StateMinor[ID.N.NumAmmoHeavy] += 13;
+					}
 					return true;
 				}
 				else if(decrSupplies(3)) {  //find ammo item
-					StateMinor[ID.N.NumAmmoHeavy] += 133;
+					if(ConfigHandler.easyMode) {
+						StateMinor[ID.N.NumAmmoHeavy] += 1348;
+					}
+					else {
+						StateMinor[ID.N.NumAmmoHeavy] += 133;
+					}
 					return true;
 				}
 				else {				   //no ammo
@@ -1166,11 +1226,21 @@ public abstract class BasicEntityShip extends EntityTameable {
 		}
 		else {
 			if(decrSupplies(4)) {		//find grudge
-				StateMinor[ID.N.NumGrudge] += 1200;
+				if(ConfigHandler.easyMode) {
+					StateMinor[ID.N.NumGrudge] += 3600;
+				}
+				else {
+					StateMinor[ID.N.NumGrudge] += 1200;
+				}
 				StateMinor[ID.N.NumGrudge] -= (int)par1;
 			}
 			else if(decrSupplies(5)) {	//find grudge block
-				StateMinor[ID.N.NumGrudge] += 10800;
+				if(ConfigHandler.easyMode) {
+					StateMinor[ID.N.NumGrudge] += 32400;
+				}
+				else {
+					StateMinor[ID.N.NumGrudge] += 10800;
+				}
 				StateMinor[ID.N.NumGrudge] -= (int)par1;
 			}
 //避免吃掉含有儲存資訊的方塊, 因此停用此方塊作為grudge補充道具

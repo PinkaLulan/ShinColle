@@ -7,6 +7,7 @@ import org.lwjgl.opengl.GL11;
 import com.lulan.shincolle.client.particle.EntityFXLaser;
 import com.lulan.shincolle.client.particle.EntityFXSpray;
 import com.lulan.shincolle.client.particle.EntityFXTexts;
+import com.lulan.shincolle.proxy.ClientProxy;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -22,6 +23,7 @@ import net.minecraft.world.World;
  */
 public class ParticleHelper {
 	
+	private static World world = ClientProxy.getClientWorld();
 	private static Random rand = new Random();
 	
 	/**ROTATE PARTICLE POSITION (NxNxN)
@@ -156,7 +158,6 @@ public class ParticleHelper {
 	 */
 	@SideOnly(Side.CLIENT)
 	public static void spawnAttackParticleAt(double posX, double posY, double posZ, double lookX, double lookY, double lookZ, byte type) {
-		World world = Minecraft.getMinecraft().theWorld;
 		//get target position
 		double ran1 = 0D;
 		double ran2 = 0D;
@@ -230,6 +231,7 @@ public class ParticleHelper {
 			EntityFXLaser particleLaser = new EntityFXLaser(world, 
 			          posX, posY, posZ, lookX, lookY, lookZ, 1F, 0);
 			Minecraft.getMinecraft().effectRenderer.addEffect(particleLaser);
+			break;
 		case 15:	//white spray
 			EntityFXSpray particleSpray = new EntityFXSpray(world, 
             		posX, posY, posZ, lookX, lookY, lookZ, 1F, 1F, 1F, 1F);
@@ -252,7 +254,7 @@ public class ParticleHelper {
 			break;
 		default:
 			break;		
-		}	
+		}
 	}
 
 	

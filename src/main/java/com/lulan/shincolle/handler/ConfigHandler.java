@@ -16,7 +16,9 @@ public class ConfigHandler {
 	//設定檔變數
 	//GENERAL
 	public static boolean debugMode = false;
+	public static boolean easyMode = false;
 	public static boolean staticMode = true;
+	
 	//SHIP SETTING
 	public static float hpRatio = 1.0f;
 	public static float atkRatio = 1.0f;
@@ -30,6 +32,9 @@ public class ConfigHandler {
 	private static void loadConfiguration() {
 		//是否開啟debug mode (spam debug/info message)
 		debugMode = config.getBoolean("Debug_Mode", "general", false, "Enable debug message (SPAM WARNING)");
+		
+		//是否開啟簡單模式 (spam debug/info message)
+		easyMode = config.getBoolean("Easy_Mode", "general", false, "Easy mode: decrease Large Construction requirement, ammo / grudge consumption of seikan activity");
 		
 		//是否把large shipyard設為static entity (只畫一次, 但是此功能跟NEI相衝)
 		staticMode = config.getBoolean("Static_Mode", "general", true, "Render LargeShipyard as static or normal entity (for NotEnoughItem: 1283: Stack overflow bug)");

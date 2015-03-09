@@ -33,7 +33,7 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;//mod post init
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;	//mod pre init
 import cpw.mods.fml.common.network.NetworkRegistry;
 
-@Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.MOD_VERSION, guiFactory = Reference.GUI_FACTORY)
+@Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.MOD_VERSION)
 public class ShinColle {
 	
 	//mod instance

@@ -147,7 +147,7 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
 		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
         //spawn laser particle
 		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(14, posX, posY + 1.5D, posZ, target.posX, target.posY+target.height/2F, target.posZ), point);
-        
+	
 		//play sound: (sound name, volume, pitch) 
         playSound(Reference.MOD_ID+":ship-laser", 0.2F, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         //play entity attack sound

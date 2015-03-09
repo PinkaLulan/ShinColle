@@ -8,6 +8,7 @@ import com.lulan.shincolle.block.BlockSmallShipyard;
 import com.lulan.shincolle.crafting.LargeRecipes;
 import com.lulan.shincolle.entity.renderentity.BasicRenderEntity;
 import com.lulan.shincolle.entity.renderentity.EntityRenderVortex;
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.network.S2CGUIPackets;
@@ -47,8 +48,8 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti {
 	private boolean isActive;		//是否正在建造中, 此為紀錄isBuilding是否有變化用
 	private int[] matsBuild;		//建造材料量
 	private int[] matsStock;		//庫存材料量
-	public static final int BUILDSPEED = 48;  	//power cost per tick
-	public static final int POWERMAX = 1382400; 	//max power storage
+	public static int buildSpeed = 48;  	//power cost per tick
+	public static final int POWERMAX = 1382400; //max power storage
 	public static final int SLOTS_NUM = 10;
 	public static final int SLOTS_OUT = 0;
 	public static final int[] SLOTS_ALL = new int[] {0,1,2,3,4,5,6,7,8,9};
@@ -61,6 +62,10 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti {
 		this.matsBuild = new int[] {0,0,0,0};
 		this.matsStock = new int[] {0,0,0,0};
 		this.syncTime = 0;
+		
+		if(ConfigHandler.easyMode) {
+			buildSpeed = 480;
+		}
 	}
 	
 	//依照輸出入口設定, 決定漏斗等裝置如何輸出入物品到特定slot中
@@ -184,7 +189,7 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti {
 	
 	//判定是否有燃料
 	public boolean hasPowerRemained() {
-		return powerRemained > BUILDSPEED;
+		return powerRemained > buildSpeed;
 	}
 	
 	//判定是否有建造目標
@@ -215,6 +220,11 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti {
 			int burnTime;
 			for(int i = SLOTS_OUT + 1; i < SLOTS_NUM; i++) {
 				burnTime = TileEntityFurnace.getItemBurnTime(this.slots[i]);
+				
+				if(ConfigHandler.easyMode) {
+					burnTime *= 10;
+				}
+				
 				if(burnTime > 0 && burnTime + this.powerRemained < this.POWERMAX) {
 					this.slots[i].stackSize--;	//fuel -1
 					this.powerRemained += burnTime;
@@ -234,6 +244,7 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti {
 			if(invMode == 0) {	//收入物品
 				for(int i = SLOTS_OUT + 1; i < SLOTS_NUM; i++) {
 					itemType = LargeRecipes.getMaterialType(slots[i]);
+					
 					if(itemType > 0) {	//is material
 						if(LargeRecipes.addMaterialStock(this, i, itemType)) {
 							slots[i].stackSize--;
@@ -250,15 +261,25 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti {
 				}
 			}
 			else {				//放出物品
-				if(getMatStock(selectMat) > 8) {		//放出block or container等壓縮型態
-					if(LargeRecipes.outputMaterialToSlot(this, selectMat, 1)) {
-						this.addMatStock(selectMat, -9);
+				int compressNum = 9;
+				int normalNum = 1;
+				
+				//抽出物品的數量
+				if(ConfigHandler.easyMode) {	
+					compressNum = 90;
+					normalNum = 10;
+				}
+				
+				//放出block or container等壓縮型態
+				if(getMatStock(selectMat) >= compressNum) {
+					if(LargeRecipes.outputMaterialToSlot(this, selectMat, true)) {
+						this.addMatStock(selectMat, -compressNum);
 						sendUpdate = true;
 					}
 				}
-				else if(getMatStock(selectMat) > 0) {	//放出單件物品型態
-					if(LargeRecipes.outputMaterialToSlot(this, selectMat, 0)) {
-						this.addMatStock(selectMat, -1);
+				else if(getMatStock(selectMat) >= normalNum) {	//放出單件物品型態
+					if(LargeRecipes.outputMaterialToSlot(this, selectMat, false)) {
+						this.addMatStock(selectMat, -normalNum);
 						sendUpdate = true;
 					}
 				}
@@ -266,8 +287,8 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti {
 
 			//判定是否建造中, 每tick進行進度值更新, 若非建造中則重置進度值
 			if(this.isBuilding()) {
-				this.powerRemained -= BUILDSPEED;	//fuel bar --
-				this.powerConsumed += BUILDSPEED;	//build bar ++
+				this.powerRemained -= buildSpeed;	//fuel bar --
+				this.powerConsumed += buildSpeed;	//build bar ++
 				
 				//sync render entity every 100 ticks
 				//set render entity state
@@ -321,7 +342,7 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti {
 	//計算建造時間 (換算成真實時間)
 	public String getBuildTimeString() {
 		//剩餘秒數 = (目標能量 - 目前能量) / (每tick增加能量) / 20
-		int timeSec = (powerGoal - powerConsumed) / BUILDSPEED / 20;	//get time (單位: sec)		
+		int timeSec = (powerGoal - powerConsumed) / buildSpeed / 20;	//get time (單位: sec)		
 		return FormatHelper.getTimeFormated(timeSec);
 	}
 	

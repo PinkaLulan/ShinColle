@@ -27,7 +27,7 @@ public class EntityFXTexts extends EntityFX {
 
 	private static final ResourceLocation TEXTURE = new ResourceLocation(Reference.TEXTURES_PARTICLE+"EntityFXTexts.png");
 	private int particleType;	//0:miss 1:critical 2:double hit 3:triple hit
-	
+
 	
     public EntityFXTexts(World world, double posX, double posY, double posZ, float scale, int type) {
         super(world, posX, posY, posZ, 0.0D, 0.0D, 0.0D);  
@@ -44,7 +44,7 @@ public class EntityFXTexts extends EntityFX {
     public void renderParticle(Tessellator tess, float ticks, float par3, float par4, float par5, float par6, float par7) {
     	
     	//stop last tess for bind texture
-    	tess.draw();	
+//    	tess.draw();
     	
 		GL11.glPushMatrix();
 		//使用自帶的貼圖檔
@@ -67,11 +67,7 @@ public class EntityFXTexts extends EntityFX {
 
         //start tess
         tess.startDrawingQuads();
-//        tess.setColorRGBA_F(1F, 1F, 1F, 1F);
-//        tess.addVertexWithUV((double)(f11 - par3 * f10 - par6 * f10), (double)(f12 - par4 * 0.2F), (double)(f13 - par5 * f10 - par7 * f10), 1D, 1D);
-//        tess.addVertexWithUV((double)(f11 - par3 * f10 + par6 * f10), (double)(f12 + par4 * 0.2F), (double)(f13 - par5 * f10 + par7 * f10), 1D, 0D);
-//        tess.addVertexWithUV((double)(f11 + par3 * f10 + par6 * f10), (double)(f12 + par4 * 0.2F), (double)(f13 + par5 * f10 + par7 * f10), 0D, 0D);
-//        tess.addVertexWithUV((double)(f11 + par3 * f10 - par6 * f10), (double)(f12 - par4 * 0.2F), (double)(f13 + par5 * f10 - par7 * f10), 0D, 1D);
+        tess.setBrightness(240);
         //X跟Z位置不加頭部轉動偏移, 只有Y軸會偏向玩家方向
         tess.addVertexWithUV((double)(f11 - par3 * f10), (double)(f12 - par4 * 0.2F), (double)(f13 - par5 * f10), f7, f9);
         tess.addVertexWithUV((double)(f11 - par3 * f10), (double)(f12 + par4 * 0.2F), (double)(f13 - par5 * f10), f7, f8);
@@ -79,14 +75,14 @@ public class EntityFXTexts extends EntityFX {
         tess.addVertexWithUV((double)(f11 + par3 * f10), (double)(f12 - par4 * 0.2F), (double)(f13 + par5 * f10), f6, f9);
         //stop tess for restore texture
         tess.draw();
-
-        //restore texture, 將貼圖檔回復為官方用的particles.png
-        try {
-        	Minecraft.getMinecraft().renderEngine.bindTexture((ResourceLocation)ReflectionHelper.getPrivateValue(EffectRenderer.class, null, new String[] { "particleTextures", "b", "field_110737_b" })); 
-		} 
-        catch (Exception e) {
-        	LogHelper.info("DEBUG : particle restore default texture fail");
-        }
+//
+//        //restore texture, 將貼圖檔回復為官方用的particles.png
+//        try {
+//        	Minecraft.getMinecraft().renderEngine.bindTexture((ResourceLocation)ReflectionHelper.getPrivateValue(EffectRenderer.class, null, new String[] { "particleTextures", "b", "field_110737_b" })); 
+//		} 
+//        catch (Exception e) {
+//        	LogHelper.info("DEBUG : particle restore default texture fail");
+//        }
         
 //        GL11.glDepthFunc(GL11.GL_LEQUAL);
 //		GL11.glDisable(GL11.GL_DEPTH_TEST);	//DEPTH TEST關閉
@@ -95,14 +91,14 @@ public class EntityFXTexts extends EntityFX {
 //		GL11.glDepthMask(false);
 		GL11.glPopMatrix();
 		
-		//start tess for other particle
-		tess.startDrawingQuads();
+//		//start tess for other particle
+//		tess.startDrawingQuads();
     }
     
-    //layer: 0:particle 1:terrain 2:items
+    //layer: 0:particle 1:terrain 2:items 3:custom?
     @Override
     public int getFXLayer() {
-        return 0;
+        return 3;
     }
 
     /**

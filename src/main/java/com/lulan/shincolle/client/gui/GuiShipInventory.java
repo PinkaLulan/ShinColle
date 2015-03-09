@@ -33,8 +33,8 @@ import net.minecraft.util.StatCollector;
 
 /**ICON_SHIPTYPE(157,18) 
  * NameIcon: LargeShip(0,0)(40x42) SmallShip(0,43)(30x30) 
- *           é©…é€(41,0)(28x28) è¼•å·¡(41,29) é‡å·¡(41,58) é›·å·¡(41,87) è£œçµ¦(12,74)
- *           æˆ°è‰¦(70,0) èˆªæ¯(70,29) è¼•æ¯(70,58) å§¬(70,87) æ½›æ°´(99,0) æµ®æ¸¸(99,29)
+ *           ÅX³v(41,0)(28x28) »´¨µ(41,29) ­«¨µ(41,58) ¹p¨µ(41,87) ¸Éµ¹(12,74)
+ *           ¾ÔÄ¥(70,0) ¯è¥À(70,29) »´¥À(70,58) ®V(70,87) ¼ç¤ô(99,0) ¯B´å(99,29)
  *           
  * Color note:gold:16766720 gray:4210752 dark-gray:3158064 white:16777215 green:65280
  *            yellow:16776960 orange:16753920 red:16711680 cyan:65535
@@ -80,13 +80,13 @@ public class GuiShipInventory extends GuiContainer {
 		this.showAttack = 1;	//show attack 1
 	}
 	
-	//GUIå‰æ™¯: æ–‡å­— 
+	//GUI«e´º: ¤å¦r 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int i, int j) {
-		//å–å¾—guié¡¯ç¤ºåç¨±
+		//¨ú±oguiÅã¥Ü¦WºÙ
 		titlename = entity.getCustomNameTag();	//get type name from nbt
 		
-		//ç•«å‡ºå­—ä¸² parm: string, x, y, color, (æ˜¯å¦dropShadow)
+		//µe¥X¦r¦ê parm: string, x, y, color, (¬O§_dropShadow)
 		//draw entity name (title) 
 		this.fontRendererObj.drawString(titlename, 8, 6, 0);
 		
@@ -95,7 +95,7 @@ public class GuiShipInventory extends GuiContainer {
 		handleHoveringText();
 	}
 
-	//GUIèƒŒæ™¯: èƒŒæ™¯åœ–ç‰‡
+	//GUI­I´º: ­I´º¹Ï¤ù
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float par1,int par2, int par3) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);	//RGBA
@@ -414,7 +414,7 @@ public class GuiShipInventory extends GuiContainer {
 			//draw value
 			Owner = this.entity.getOwnerName();
 			
-			//å¤§å‹è‰¦, é¡¯ç¤ºè‰¦è¼‰æ©Ÿæ•¸é‡
+			//¤j«¬Ä¥, Åã¥ÜÄ¥¸ü¾÷¼Æ¶q
 			if(this.entity instanceof BasicEntityShipLarge) {
 				this.fontRendererObj.drawString(I18n.format("gui.shincolle:airplanelight"), 67, 41, pickColor(5));
 				this.fontRendererObj.drawString(I18n.format("gui.shincolle:airplaneheavy"), 67, 62, pickColor(5));
