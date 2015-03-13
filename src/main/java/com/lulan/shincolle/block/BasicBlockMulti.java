@@ -106,7 +106,8 @@ abstract public class BasicBlockMulti extends BasicBlockContainer {
 						int type = MulitBlockHelper.checkMultiBlockForm(world, x, y, z);
 						if(type > 0) {
 							MulitBlockHelper.setupStructure(world, x, y, z, type);
-							LogHelper.info("DEBUG : check multi block form: type "+type);
+							LogHelper.info("DEBUG : check multi block form: type "+type);	
+							
 							return true;
 						}				
 					}		

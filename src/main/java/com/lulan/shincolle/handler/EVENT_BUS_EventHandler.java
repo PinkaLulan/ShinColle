@@ -2,6 +2,7 @@ package com.lulan.shincolle.handler;
 
 import com.lulan.shincolle.entity.BasicEntityAirplane;
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.ExtendPlayerProps;
 import com.lulan.shincolle.entity.ExtendShipProps;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.utility.LogHelper;
@@ -11,6 +12,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntitySlime;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -49,12 +51,19 @@ public class EVENT_BUS_EventHandler {
 	    }
 	}
 	
-	//add ship extend props to entity
+	//add extend props to entity
 	@SubscribeEvent
 	public void onEntityConstructing(EntityConstructing event) {
-	    if(event.entity instanceof BasicEntityShip) {
-	    	LogHelper.info("DEBUG : get entity construct event");
+	    //ship ext props
+		if(event.entity instanceof BasicEntityShip && event.entity.getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME) == null) {
+	    	LogHelper.info("DEBUG : add ship extend props");
 	        event.entity.registerExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME, new ExtendShipProps());
+	    }
+		
+		//player ext props
+		if(event.entity instanceof EntityPlayer && event.entity.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME) == null) {
+	    	LogHelper.info("DEBUG : add player extend props");
+	        event.entity.registerExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME, new ExtendPlayerProps());
 	    }
 	}
 	

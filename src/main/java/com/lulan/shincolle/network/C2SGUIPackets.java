@@ -5,6 +5,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.proxy.ServerProxy;
@@ -30,22 +31,10 @@ import cpw.mods.fml.relauncher.SideOnly;
  */
 public class C2SGUIPackets implements IMessage {
 	
-	private BasicEntityShip sendEntity;
-	private BasicEntityShip recvEntity;
-	private BasicTileEntity sendTile;
-	private BasicTileEntity recvTile;
-	private int entityID;
-	private int sendType;
-	private int recvType;
-	private int sendButton;
-	private int recvButton;
-	private int sendValue;
-	private int recvValue;
-	private int sendValue2;
-	private int recvValue2;
-	private int recvPosX;
-	private int recvPosY;
-	private int recvPosZ;
+	private World world;
+	private BasicEntityShip entity;
+	private BasicTileEntity tile;
+	private int entityID, worldID, type, button, value, value2, posX, posY, posZ;
 	
 	
 	public C2SGUIPackets() {}	//必須要有空參數constructor, forge才能使用此class
@@ -53,54 +42,63 @@ public class C2SGUIPackets implements IMessage {
 	//GUI click: 
 	//type 0: ship entity gui click
 	public C2SGUIPackets(BasicEntityShip entity, int button, int value) {
-        this.sendEntity = entity;
-        this.sendType = 0;
-        this.sendButton = button;
-        this.sendValue = value;
+        this.entity = entity;
+        this.worldID = entity.worldObj.provider.dimensionId;
+        this.type = 0;
+        this.button = button;
+        this.value = value;
     }
 	
 	//type 1: shipyard gui click
 	public C2SGUIPackets(BasicTileEntity tile, int button, int value, int value2) {
-        this.sendTile = tile;
-        this.sendType = 1;
-        this.sendButton = button;
-        this.sendValue = value;
-        this.sendValue2 = value2;
+        this.tile = tile;
+        this.worldID = tile.getWorldObj().provider.dimensionId;
+        this.type = 1;
+        this.button = button;
+        this.value = value;
+        this.value2 = value2;
     }
 	
 	//接收packet方法
 	@Override
-	public void fromBytes(ByteBuf buf) {
-		//get server world
-		World serverWorld = ServerProxy.getServerWorld();
-		
+	public void fromBytes(ByteBuf buf) {	
 		//get type and entityID
-		this.recvType = buf.readByte();
+		this.type = buf.readByte();
 	
-		switch(recvType) {
+		switch(type) {
 		case 0:	//ship entity gui click
 			{
-				this.entityID = buf.readInt();
-				recvEntity = (BasicEntityShip) EntityHelper.getEntityByID(entityID, serverWorld);
-				this.recvButton = buf.readByte();
-				this.recvValue = buf.readByte();
+				entityID = buf.readInt();
+				worldID = buf.readInt();
+				button = buf.readByte();
+				value = buf.readByte();
+				
+				//get entity
+				entity = (BasicEntityShip) EntityHelper.getEntityByID(entityID, worldID, false);
+				
 				//set value
-				EntityHelper.setEntityByGUI(recvEntity, (int)recvButton, (int)recvValue);
-//				LogHelper.info("DEBUG : recv GUI click: "+recvButton+" "+recvValue);
+				EntityHelper.setEntityByGUI(entity, (int)button, (int)value);
 			}
 			break;
 		case 1: //shipyard gui click
 			{
-				this.recvPosX = buf.readInt();
-				this.recvPosY = buf.readInt();
-				this.recvPosZ = buf.readInt();
-				this.recvButton = buf.readByte();
-				this.recvValue = buf.readByte();
-				this.recvValue2 = buf.readByte();			
-				this.recvTile = (BasicTileEntity) serverWorld.getTileEntity(recvPosX, recvPosY, recvPosZ);
+				this.worldID = buf.readInt();
+				this.posX = buf.readInt();
+				this.posY = buf.readInt();
+				this.posZ = buf.readInt();
+				this.button = buf.readByte();
+				this.value = buf.readByte();
+				this.value2 = buf.readByte();
+				
+				//get tile
+				world = DimensionManager.getWorld(worldID);
+				
+				if(world != null) {
+					this.tile = (BasicTileEntity) world.getTileEntity(posX, posY, posZ);
+				}
+				
 				//set value
-				EntityHelper.setTileEntityByGUI(recvTile, (int)recvButton, (int)recvValue, (int)recvValue2);
-//				LogHelper.info("DEBUG : recv packet (server side): GUI click:"+recvButton+" "+recvValue+" "+recvValue2);
+				EntityHelper.setTileEntityByGUI(tile, (int)button, (int)value, (int)value2);
 			}
 			break;
 		}
@@ -109,24 +107,26 @@ public class C2SGUIPackets implements IMessage {
 	//發出packet方法
 	@Override
 	public void toBytes(ByteBuf buf) {
-		switch(this.sendType) {
+		switch(this.type) {
 		case 0:	//ship entity gui click
 			{
 				buf.writeByte(0);
-				buf.writeInt(this.sendEntity.getEntityId());
-				buf.writeByte(this.sendButton);
-				buf.writeByte(this.sendValue);
+				buf.writeInt(this.entity.getEntityId());
+				buf.writeInt(this.worldID);
+				buf.writeByte(this.button);
+				buf.writeByte(this.value);
 			}
 			break;
 		case 1:	//shipyard gui click
 			{
 				buf.writeByte(1);
-				buf.writeInt(this.sendTile.xCoord);
-				buf.writeInt(this.sendTile.yCoord);
-				buf.writeInt(this.sendTile.zCoord);
-				buf.writeByte(this.sendButton);
-				buf.writeByte(this.sendValue);
-				buf.writeByte(this.sendValue2);
+				buf.writeInt(this.worldID);
+				buf.writeInt(this.tile.xCoord);
+				buf.writeInt(this.tile.yCoord);
+				buf.writeInt(this.tile.zCoord);
+				buf.writeByte(this.button);
+				buf.writeByte(this.value);
+				buf.writeByte(this.value2);
 			}
 			break;
 		}

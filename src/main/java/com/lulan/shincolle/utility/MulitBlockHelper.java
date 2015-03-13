@@ -14,6 +14,8 @@ import com.lulan.shincolle.entity.renderentity.BasicRenderEntity;
 import com.lulan.shincolle.entity.renderentity.EntityRenderLargeShipyard;
 import com.lulan.shincolle.entity.renderentity.EntityRenderVortex;
 import com.lulan.shincolle.init.ModBlocks;
+import com.lulan.shincolle.proxy.ClientProxy;
+import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.tileentity.BasicTileMulti;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 
@@ -162,7 +164,7 @@ public class MulitBlockHelper {
 	        }//end y loop
 	    }//end x loop
 		
-		//spawn render entity at position master y-1 
+		//spawn render entity at position master y-1
 		LogHelper.info("DEBUG : spawn render entity "+xCoord+" "+yCoord+" "+zCoord);
 		EntityRenderLargeShipyard entBase = new EntityRenderLargeShipyard(world, xCoord, yCoord, zCoord);
 		EntityRenderVortex entVortex = new EntityRenderVortex(world, xCoord, yCoord, zCoord);

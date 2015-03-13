@@ -66,6 +66,9 @@ public class ModelHeavyCruiserRi extends ModelBase {
     public ModelRenderer Face4;
     public ModelRenderer ShoesRight;
     public ModelRenderer ShoesLeft;
+    public ModelRenderer HeadTail0;
+    public ModelRenderer HeadTail1;
+    public ModelRenderer HeadTail2;
     
     public int HeadCooldown = 0;
     public boolean HeadTilt = false;
@@ -198,7 +201,19 @@ public class ModelHeavyCruiserRi extends ModelBase {
         this.EquipLeftTube3 = new ModelRenderer(this, 82, 56);
         this.EquipLeftTube3.setRotationPoint(0.0F, -11.0F, 0.0F);
         this.EquipLeftTube3.addBox(-1.5F, -20.0F, -1.5F, 3, 20, 3, 0.0F);
-        this.setRotateAngle(EquipLeftTube3, 1.4486232791552935F, 0.7853981633974483F, 0.2617993877991494F);
+        this.setRotateAngle(EquipLeftTube3, 1.4486232791552935F, 0.7853981633974483F, 0.2617993877991494F);   
+        this.HeadTail0 = new ModelRenderer(this, 20, 54);
+        this.HeadTail0.setRotationPoint(0.0F, -16.0F, 8.0F);
+        this.HeadTail0.addBox(-4.5F, 0.0F, -3.0F, 9, 14, 6, 0.0F);
+        this.setRotateAngle(HeadTail0, 0.2617993877991494F, 0.0F, 0.0F);
+        this.HeadTail1 = new ModelRenderer(this, 24, 54);
+        this.HeadTail1.setRotationPoint(0.0F, 12.0F, 0.0F);
+        this.HeadTail1.addBox(-3.5F, 0.0F, -3.0F, 7, 16, 6, 0.0F);
+        this.setRotateAngle(HeadTail1, 0.09F, 0.0F, 0.0F);
+        this.HeadTail2 = new ModelRenderer(this, 21, 55);
+        this.HeadTail2.setRotationPoint(0.0F, 14.0F, 0.0F);
+        this.HeadTail2.addBox(-4F, 0.0F, -2.5F, 8, 18, 5, 0.0F);
+        this.setRotateAngle(HeadTail2, -0.1745F, 0.0F, 0.0F);
         this.Face0 = new ModelRenderer(this, 98, 53);
         this.Face0.setRotationPoint(0.0F, 0.0F, -0.1F);
         this.Face0.addBox(-7.0F, -14.0F, -7.0F, 14, 14, 1, 0.0F);
@@ -243,6 +258,9 @@ public class ModelHeavyCruiserRi extends ModelBase {
         this.Neck.addChild(this.Cloak);       
         this.BodyMain.addChild(this.ArmLeft);
         this.EquipLeftTube2.addChild(this.EquipLeftTube3);
+        this.Head.addChild(this.HeadTail0);
+        this.HeadTail0.addChild(this.HeadTail1);
+        this.HeadTail1.addChild(this.HeadTail2);
         
         //以下為發光模型支架, 此部份模型整個亮度設為240
         //臉部支架
@@ -294,7 +312,6 @@ public class ModelHeavyCruiserRi extends ModelBase {
 
     @Override
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) { 
-  	
     	GL11.glPushMatrix();
     	GL11.glEnable(GL11.GL_BLEND);			//開啟透明度模式
     	GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -381,12 +398,15 @@ public class ModelHeavyCruiserRi extends ModelBase {
 		this.LegLeft.rotateAngleZ = 0.087F;
 		this.LegRight.rotateAngleZ = -0.087F;
 		this.LegLeft.rotateAngleY = 0F;
-		this.LegRight.rotateAngleY = 0F;    
+		this.LegRight.rotateAngleY = 0F;
+		this.HeadTail0.rotateAngleX = angleZ * 0.05F + 0.26F;
+		this.HeadTail1.rotateAngleX = angleZ * 0.1F + 0.09F;
 	    
 	    if(ent.isSprinting() || f1 > 0.9F) {	//奔跑動作
   			this.ArmLeft.rotateAngleX = 1F;
   			this.ArmRight.rotateAngleX = 1F;
   			this.BodyMain.rotateAngleX = 0.5F;
+  			this.HeadTail0.rotateAngleX = angleZ * 0.05F + 0.8F;
   			addk1 -= 0.4F;
 			addk2 -= 0.4F;
   		}
@@ -432,8 +452,8 @@ public class ModelHeavyCruiserRi extends ModelBase {
 	  			this.ArmRight.rotateAngleZ = 0.6F;
 				this.BodyMain.rotateAngleX = -0.6F;
 				this.Neck.rotateAngleX -= 0.35F;
-				addk1 = -2F;
-				addk2 = -2F;		
+				addk1 = -1.58F;
+				addk2 = -1.58F;		
 				this.LegLeft.rotateAngleZ = 1.2F;
 				this.LegRight.rotateAngleZ = -1.2F;
 				this.LegLeft.rotateAngleY = -0.75F;
@@ -469,21 +489,43 @@ public class ModelHeavyCruiserRi extends ModelBase {
 	}
     
     private void showEquip(BasicEntityShip ent) {
-		if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP) {
-			this.EquipBase.isHidden = false;
+    	switch(ent.getStateEmotion(ID.S.State)) {
+    	case ID.State.EQUIP00:	//equip only
+    	case ID.State.EQUIP03:
+    		this.EquipBase.isHidden = false;
 			this.EquipLeftBase.isHidden = false;
 			this.EquipRightBase.isHidden = false;
 			this.GlowEquipLeftBase.isHidden = false;
 			this.GlowEquipRightBase.isHidden = false;
-		}
-		else {
-			this.EquipBase.isHidden = true;
+			this.HeadTail0.isHidden = true;
+			break;
+    	case ID.State.EQUIP01:	//hair only
+    	case ID.State.EQUIP04:
+    		this.EquipBase.isHidden = true;
 			this.EquipLeftBase.isHidden = true;
 			this.EquipRightBase.isHidden = true;
 			this.GlowEquipLeftBase.isHidden = true;
 			this.GlowEquipRightBase.isHidden = true;
-		}
-	
+			this.HeadTail0.isHidden = false;
+			break;
+    	case ID.State.EQUIP02:	//hair + equip
+    	case ID.State.EQUIP05:
+    		this.EquipBase.isHidden = false;
+			this.EquipLeftBase.isHidden = false;
+			this.EquipRightBase.isHidden = false;
+			this.GlowEquipLeftBase.isHidden = false;
+			this.GlowEquipRightBase.isHidden = false;
+			this.HeadTail0.isHidden = false;
+			break;
+    	case ID.State.NORMAL:
+    		this.EquipBase.isHidden = true;
+			this.EquipLeftBase.isHidden = true;
+			this.EquipRightBase.isHidden = true;
+			this.GlowEquipLeftBase.isHidden = true;
+			this.GlowEquipRightBase.isHidden = true;
+			this.HeadTail0.isHidden = true;
+			break;
+    	}
   	}
   	
     //隨機抽取顯示的表情 

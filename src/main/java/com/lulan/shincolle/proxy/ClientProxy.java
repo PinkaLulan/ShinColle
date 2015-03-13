@@ -12,7 +12,10 @@ import com.lulan.shincolle.client.model.ModelAbyssMissile;
 import com.lulan.shincolle.client.model.ModelAirplane;
 import com.lulan.shincolle.client.model.ModelBattleshipRe;
 import com.lulan.shincolle.client.model.ModelCarrierWo;
+import com.lulan.shincolle.client.model.ModelDestroyerHa;
 import com.lulan.shincolle.client.model.ModelDestroyerI;
+import com.lulan.shincolle.client.model.ModelDestroyerNi;
+import com.lulan.shincolle.client.model.ModelDestroyerRo;
 import com.lulan.shincolle.client.model.ModelEntityTest;
 import com.lulan.shincolle.client.model.ModelHeavyCruiserRi;
 import com.lulan.shincolle.client.model.ModelLargeShipyard;
@@ -23,7 +26,10 @@ import com.lulan.shincolle.client.render.RenderAirplane;
 import com.lulan.shincolle.client.render.RenderAirplaneTakoyaki;
 import com.lulan.shincolle.client.render.RenderBattleshipRe;
 import com.lulan.shincolle.client.render.RenderCarrierWo;
+import com.lulan.shincolle.client.render.RenderDestroyerHa;
 import com.lulan.shincolle.client.render.RenderDestroyerI;
+import com.lulan.shincolle.client.render.RenderDestroyerNi;
+import com.lulan.shincolle.client.render.RenderDestroyerRo;
 import com.lulan.shincolle.client.render.RenderHeavyCruiserRi;
 import com.lulan.shincolle.client.render.RenderLargeShipyard;
 import com.lulan.shincolle.client.render.RenderSmallShipyard;
@@ -36,7 +42,10 @@ import com.lulan.shincolle.entity.EntityAirplane;
 import com.lulan.shincolle.entity.EntityAirplaneTakoyaki;
 import com.lulan.shincolle.entity.EntityBattleshipRe;
 import com.lulan.shincolle.entity.EntityCarrierWo;
+import com.lulan.shincolle.entity.EntityDestroyerHa;
 import com.lulan.shincolle.entity.EntityDestroyerI;
+import com.lulan.shincolle.entity.EntityDestroyerNi;
+import com.lulan.shincolle.entity.EntityDestroyerRo;
 import com.lulan.shincolle.entity.EntityHeavyCruiserRi;
 import com.lulan.shincolle.entity.EntityTest;
 import com.lulan.shincolle.entity.renderentity.EntityRenderLargeShipyard;
@@ -56,6 +65,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class ClientProxy extends CommonProxy {
 	
+	//client world會隨玩家所在位置持續改變, 但是dim id永遠都是0不變, 無法反推dim id?
 	public static World getClientWorld() {
 		return Minecraft.getMinecraft().theWorld;
 	}
@@ -76,7 +86,10 @@ public class ClientProxy extends CommonProxy {
 		//entity render
 		RenderingRegistry.registerEntityRenderingHandler(EntityBattleshipRe.class, new RenderBattleshipRe(new ModelBattleshipRe(), 1F));
 		RenderingRegistry.registerEntityRenderingHandler(EntityCarrierWo.class, new RenderCarrierWo(new ModelCarrierWo(), 1F));
-		RenderingRegistry.registerEntityRenderingHandler(EntityDestroyerI.class, new RenderDestroyerI(new ModelDestroyerI(), 0.3F));
+		RenderingRegistry.registerEntityRenderingHandler(EntityDestroyerI.class, new RenderDestroyerI(new ModelDestroyerI(), 1F));
+		RenderingRegistry.registerEntityRenderingHandler(EntityDestroyerRo.class, new RenderDestroyerRo(new ModelDestroyerRo(), 1F));
+		RenderingRegistry.registerEntityRenderingHandler(EntityDestroyerHa.class, new RenderDestroyerHa(new ModelDestroyerHa(), 1F));
+		RenderingRegistry.registerEntityRenderingHandler(EntityDestroyerNi.class, new RenderDestroyerNi(new ModelDestroyerNi(), 1F));
 		RenderingRegistry.registerEntityRenderingHandler(EntityHeavyCruiserRi.class, new RenderHeavyCruiserRi(new ModelHeavyCruiserRi(), 1F));
 		
 		//test entity render

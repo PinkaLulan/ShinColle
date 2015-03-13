@@ -118,7 +118,7 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
     		this.distZ = this.attackTarget.posZ - this.host.posZ;	
     		this.distSq = distX*distX + distY*distY + distZ*distZ;
     		    		
-            onSight = this.host.getEntitySenses().canSee(this.attackTarget);  
+            onSight = this.host.getEntitySenses().canSee(this.attackTarget);
 
 	        //可直視, 則parf++, 否則重置為0
 	        if(onSight) {

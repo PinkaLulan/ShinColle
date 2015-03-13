@@ -8,6 +8,7 @@ import java.util.UUID;
 import com.lulan.shincolle.entity.BasicEntityAirplane;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.EntityAirplane;
+import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
@@ -22,6 +23,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
 
 public class EntityHelper {
 
@@ -59,27 +61,41 @@ public class EntityHelper {
 	}
 	
 	//get entity by ID
-	public static Entity getEntityByID(int entityID, World world) {
-		for(Object obj: world.loadedEntityList) {
-			if(entityID != -1 && ((Entity)obj).getEntityId() == entityID) {
-//				LogHelper.info("DEBUG : found entity by ID, is client? "+entityID+" "+world.isRemote);
-				return ((Entity)obj);
+	public static Entity getEntityByID(int entityID, int worldID, boolean isClient) {
+		World world;
+		
+		if(isClient) {
+			world = ClientProxy.getClientWorld();
+		}
+		else {
+			world = DimensionManager.getWorld(worldID);
+		}
+		
+		if(world != null) {
+			for(Object obj: world.loadedEntityList) {
+				if(entityID != -1 && ((Entity)obj).getEntityId() == entityID) {
+					return ((Entity)obj);
+				}
 			}
 		}
+			
+		LogHelper.info("DEBUG : cannot fund entity "+entityID+" in world "+worldID+" client? "+world.isRemote);
 		return null;
 	}
 	
 	//get player on the server by UUID
-	public static EntityPlayerMP getOnlinePlayer(UUID id) {
-		//get online id list (server side only)
-		List onlineList = MinecraftServer.getServer().getConfigurationManager().playerEntityList;
-		Iterator iter = onlineList.iterator();
-		while(iter.hasNext()) {
-			EntityPlayerMP player = (EntityPlayerMP)iter.next();
-		    if(player.getUniqueID().equals(id)) {
-//		    	LogHelper.info("DEBUG : found player by UUID "+player.getDisplayName());
-		    	return player;
-		    }
+	public static EntityPlayerMP getOnlinePlayer(EntityLivingBase entity) {
+		if(entity != null) {
+			//get online id list (server side only)
+			List onlineList = MinecraftServer.getServer().getConfigurationManager().playerEntityList;
+			Iterator iter = onlineList.iterator();
+			
+			while(iter.hasNext()) {
+				EntityPlayerMP player = (EntityPlayerMP)iter.next();
+			    if(player.getUniqueID().equals(entity.getUniqueID())) {
+			    	return player;
+			    }
+			}
 		}
 		return null;
 	}
@@ -138,7 +154,7 @@ public class EntityHelper {
 			}			
 		}
 		else {
-			LogHelper.info("DEBUG : set tile entity by GUI fail, entity null");
+			LogHelper.info("DEBUG : set tile entity by GUI fail, tile is null");
 		}	
 	}
 

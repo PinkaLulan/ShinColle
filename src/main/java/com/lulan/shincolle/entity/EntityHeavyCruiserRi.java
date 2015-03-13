@@ -107,7 +107,7 @@ public class EntityHeavyCruiserRi extends BasicEntityShipSmall {
 		//moving
 		this.tasks.addTask(21, new EntityAIOpenDoor(this, true));			   //0000
 		this.tasks.addTask(23, new EntityAIShipFloating(this));				   //0101
-		this.tasks.addTask(24, new EntityAIShipWatchClosest(this, EntityPlayer.class, 8F, 0.1F)); //0010
+		this.tasks.addTask(24, new EntityAIShipWatchClosest(this, EntityPlayer.class, 6F, 0.1F)); //0010
 		this.tasks.addTask(25, new EntityAIWander(this, 0.8D));				   //0001
 //		this.tasks.addTask(25, new EntityAILookIdle(this));					   //0011
 		
@@ -133,27 +133,6 @@ public class EntityHeavyCruiserRi extends BasicEntityShipSmall {
 		this.targetTasks.addTask(3, new EntityAIOwnerHurtTarget(this));
 		this.targetTasks.addTask(4, new EntityAIShipInRangeTarget(this, 0.4F, 1));	//0001
 	}
-	
-	//平常音效
-	protected String getLivingSound() {
-        return Reference.MOD_ID+":ship-say";
-    }
-	
-	//受傷音效
-    protected String getHurtSound() {
-    	
-        return Reference.MOD_ID+":ship-hurt";
-    }
-
-    //死亡音效
-    protected String getDeathSound() {
-    	return Reference.MOD_ID+":ship-death";
-    }
-
-    //音效大小
-    protected float getSoundVolume() {
-        return 0.4F;
-    }
 
     @Override
     public void onLivingUpdate() {
@@ -172,6 +151,35 @@ public class EntityHeavyCruiserRi extends BasicEntityShipSmall {
     	
     	super.onLivingUpdate();
     }
+    
+    @Override
+  	public boolean interact(EntityPlayer player) {	
+		ItemStack itemstack = player.inventory.getCurrentItem();  //get item in hand
+		
+		//use cake to change state
+		if(itemstack != null) {
+			if(itemstack.getItem() == Items.cake) {
+				switch(getStateEmotion(ID.S.State)) {
+				case ID.State.NORMAL:
+					setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+					break;
+				case ID.State.EQUIP00:
+					setStateEmotion(ID.S.State, ID.State.EQUIP01, true);
+					break;
+				case ID.State.EQUIP01:
+					setStateEmotion(ID.S.State, ID.State.EQUIP02, true);
+					break;
+				case ID.State.EQUIP02:
+					setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+					break;
+				}
+				return true;
+			}
+		}
+		
+		super.interact(player);
+		return false;
+  	}
 	
 
 }

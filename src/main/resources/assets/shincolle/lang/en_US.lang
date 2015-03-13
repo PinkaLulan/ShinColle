@@ -27,6 +27,7 @@ item.shincolle:Ammo2.name=Heavy Grudgeful Ammo
 item.shincolle:Ammo3.name=Heavy Grudgeful Ammo Container
 item.shincolle:BucketRepair.name=Repair Bucket
 item.shincolle:Grudge.name=Grudge
+item.shincolle:MarriageRing.name=Seikan Wedding Ring
 
 # Equip
 item.shincolle:EquipCannon.name=5-Inch Single Cannon
@@ -77,14 +78,23 @@ item.shincolle:EquipArmor1.name=Heavy Abyssal Armor
 # Spawn Egg
 item.shincolle:smallegg.name=Construct Small Seikan
 item.shincolle:largeegg.name=Construct Large Seikan
-item.shincolle:debugegg.name=Ship Spawn Egg
+item.shincolle:shipegg2.name=Destroyer I-Class
+item.shincolle:shipegg3.name=Destroyer Ro-Class
+item.shincolle:shipegg4.name=Destroyer Ha-Class
+item.shincolle:shipegg5.name=Destroyer Ni-Class
+item.shincolle:shipegg11.name=Heavy Cruiser Ri-Class
+item.shincolle:shipegg14.name=Standard Carrier Wo-Class
+item.shincolle:shipegg17.name=Battleship Re-Class
 
 # Entity
 entity.shincolle.EntityAirplane.name=Abyssal Fighter
 entity.shincolle.EntityAirplaneTakoyaki.name=Abyssal Avenger Torpedo Bomber
 entity.shincolle.EntityBattleshipRe.name=Battleship Re-Class
 entity.shincolle.EntityCarrierWo.name=Standard Carrier Wo-Class
+entity.shincolle.EntityDestroyerHa.name=Destroyer Ha-Class
 entity.shincolle.EntityDestroyerI.name=Destroyer I-Class
+entity.shincolle.EntityDestroyerNi.name=Destroyer Ni-Class
+entity.shincolle.EntityDestroyerRo.name=Destroyer Ro-Class
 entity.shincolle.EntityHeavyCruiserRi.name=Heavy Cruiser Ri-Class
 
 # GUI
@@ -122,3 +132,6 @@ gui.shincolle:triplehit=Triple Hit
 gui.shincolle:missreduce=Miss Reduction
 gui.shincolle:missrate=Miss
 gui.shincolle:missrateair=Miss(Aircraft)
+gui.shincolle:marriage=Marriage
+gui.shincolle:married=Married
+gui.shincolle:unmarried=Unmarried

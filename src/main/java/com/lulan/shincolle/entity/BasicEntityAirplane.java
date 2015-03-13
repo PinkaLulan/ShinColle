@@ -188,23 +188,23 @@ public abstract class BasicEntityAirplane extends EntityLiving {
 				//攻擊目標消失, 找附近目標 or 設為host目前目標
 				if(!this.backHome && (this.getAttackTarget() == null || this.getAttackTarget().isDead) && this.hostEntity != null && this.ticksExisted % 2 == 0) {
 					//entity list < range1
+					EntityLivingBase newTarget;
 			        List list = this.worldObj.selectEntitiesWithinAABB(EntityLivingBase.class, 
 			        this.boundingBox.expand(20, 15, 20), this.targetSelector);
 			        
-			        if(list.isEmpty()) {
-			        	//都找不到目標則給host目標, 但是host目標必須在64格內
-			        	EntityLivingBase newTarget = this.hostEntity.getAttackTarget();
-			        	
-			        	if(newTarget != null && newTarget.isEntityAlive() && this.getDistanceToEntity(newTarget) < 40F) {
-			        		this.setAttackTarget(this.hostEntity.getAttackTarget());
-			        	}
-			        	else {
-			        		this.backHome = true;
-			        	}
+			        if(list.isEmpty()) {	//都找不到目標則給host目標, 但是host目標必須在64格內
+			        	newTarget = this.hostEntity.getAttackTarget();
 			        }
-			        else {
-			        	this.setAttackTarget((EntityLivingBase)list.get(list.size()/2));	
-			        }	
+			        else {	//從艦載機附近找出的目標, 判定是否要去攻擊
+			        	newTarget = (EntityLivingBase)list.get(list.size()/2);
+			        }
+			        
+			        if(newTarget != null && newTarget.isEntityAlive() && this.getDistanceToEntity(newTarget) < 40F && this.getEntitySenses().canSee(newTarget)) {
+		        		this.setAttackTarget(newTarget);
+		        	}
+		        	else {
+		        		this.backHome = true;
+		        	}
 				}
 				
 				if(this.isInWater() && this.ticksExisted % 100 == 0) {

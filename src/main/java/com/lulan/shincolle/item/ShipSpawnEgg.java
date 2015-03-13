@@ -47,10 +47,6 @@ public class ShipSpawnEgg extends Item {
 	
     private IIcon[] iconEgg = new IIcon[3];	//egg icon
 	
-	private static final String[] subNames = {		//for egg display names
-    	"smallship", "largeship", "debugship"
-    };
-	
     private EntityLiving entityToSpawn = null;
     private String entityToSpawnName = null;
 
@@ -74,8 +70,8 @@ public class ShipSpawnEgg extends Item {
   			return String.format("item."+Reference.MOD_ID+":smallegg");
   		case 1:   //large ship
   			return String.format("item."+Reference.MOD_ID+":largeegg");
-  		default:  //default case = debug ship
-  			return String.format("item."+Reference.MOD_ID+":debugegg");
+  		default:  //spec ship egg
+  			return String.format("item."+Reference.MOD_ID+":shipegg"+metaid);
   		}		
   	}
   	
@@ -103,6 +99,9 @@ public class ShipSpawnEgg extends Item {
   		list.add(new ItemStack(item, 1, 0));
   		list.add(new ItemStack(item, 1, 1));
   		list.add(new ItemStack(item, 1, ID.S_DestroyerI+2));
+  		list.add(new ItemStack(item, 1, ID.S_DestroyerRO+2));
+  		list.add(new ItemStack(item, 1, ID.S_DestroyerHA+2));
+  		list.add(new ItemStack(item, 1, ID.S_DestroyerNI+2));
   		list.add(new ItemStack(item, 1, ID.S_HeavyCruiserRI+2));
   		list.add(new ItemStack(item, 1, ID.S_CarrierWO+2));
   		list.add(new ItemStack(item, 1, ID.S_BattleshipRE+2));

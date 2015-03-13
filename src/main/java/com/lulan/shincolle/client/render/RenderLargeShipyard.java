@@ -12,6 +12,7 @@ import com.lulan.shincolle.utility.LogHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.entity.Entity;
@@ -24,7 +25,7 @@ public class RenderLargeShipyard extends Render {
 	//∂Kπœ¿…∏ÙÆ|
 	private static final ResourceLocation TEXTURE = new ResourceLocation(Reference.TEXTURES_BLOCKS+"BlockLargeShipyard.png");
 
-	private static ModelLargeShipyard model;
+	private ModelBase model;
 			
 	public RenderLargeShipyard() {
 		this.model = new ModelLargeShipyard();

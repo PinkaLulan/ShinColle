@@ -137,6 +137,21 @@ public class EntityAIShipAttackOnCollide extends EntityAIBase {
             if(!this.host.getNavigator().tryMoveToEntityLiving(entitylivingbase, this.speedTowardsTarget)) {
                 this.delayAttack += 15;
             }
+            
+            //在水中時, 根據目標位置上下移動 (因floating ai導致不會自動下沉)
+            if(this.host.isInWater()) {
+            	double distY = this.tarY - this.host.posY;
+            	
+            	if(distY > 1D) {
+            		this.host.motionY = 0.2D;
+            	}
+            	else if(distY < 1D) {
+            		this.host.motionY = -0.2D;
+            	}
+            	else {
+            		this.host.motionY = 0D;
+            	}
+            }
         }
 
         this.attackTick = Math.max(this.attackTick - 1, 0);

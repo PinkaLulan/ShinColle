@@ -24,7 +24,8 @@ public class ModItems {
 	public static final BasicItem EquipRadar = new EquipRadar();
 	public static final BasicItem EquipTorpedo = new EquipTorpedo();
 	public static final BasicItem EquipTurbine = new EquipTurbine();
-	
+	//misc
+	public static final BasicItem MarriageRing = new MarriageRing();
 
 	//登錄item到遊戲中 (在pre init階段登錄)
 	public static void init() {
@@ -42,7 +43,8 @@ public class ModItems {
 		GameRegistry.registerItem(EquipRadar, "EquipRadar");
 		GameRegistry.registerItem(EquipTorpedo, "EquipTorpedo");
 		GameRegistry.registerItem(EquipTurbine, "EquipTurbine");
-		
+		//misc
+		GameRegistry.registerItem(MarriageRing, "MarriageRing");
 	}
 	
 }

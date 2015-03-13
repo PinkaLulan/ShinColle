@@ -478,7 +478,7 @@ public class ModelCarrierWo extends ModelBase {
 		this.Staff.offsetY = -0.9F;
 		this.Staff.offsetZ = -1.4F;
 		//觸手晃動 (equip only)
-		if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP) {
+		if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
 			this.EquipT01L.rotateAngleX = angleZ * 0.05F + -0.2618F;
 			this.EquipT01L.rotateAngleZ = angleZ * 0.05F + -0.2618F;
 			this.EquipT02L.rotateAngleX = angleZ * 0.1F;
@@ -540,7 +540,7 @@ public class ModelCarrierWo extends ModelBase {
 			this.Staff.offsetY = 0F;
 			this.Staff.offsetZ = 0F;
 			//觸手晃動 (equip only)
-			if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP) {
+			if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
 				this.EquipT01L.rotateAngleX = angleZFast * 0.05F + 0.2618F;
 				this.EquipT01L.rotateAngleZ = -0.2618F;
 				this.EquipT02L.rotateAngleX = angleZFast * 0.15F + 0.2618F;
@@ -645,7 +645,7 @@ public class ModelCarrierWo extends ModelBase {
 			this.Staff.offsetY = -1.4F;
 			this.Staff.offsetZ = -1.2F;
 			//觸手晃動 (equip only)
-			if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP) {
+			if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
 				this.EquipT01L.rotateAngleX = angleZ * 0.05F + 0.2618F;
 				this.EquipT01L.rotateAngleZ = -0.2618F;
 				this.EquipT02L.rotateAngleX = angleZ * 0.15F + 0.2618F;
@@ -689,7 +689,7 @@ public class ModelCarrierWo extends ModelBase {
 	}
     
     private void showEquip(BasicEntityShip ent) {
-		if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP) {
+		if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
 			this.EquipBase.isHidden = false;
 			this.EquipEye01.isHidden = false;
 			this.EquipEye02.isHidden = false;

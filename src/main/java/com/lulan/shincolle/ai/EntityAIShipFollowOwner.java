@@ -26,7 +26,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
     private BasicEntityShip ThePet;
     private EntityLivingBase TheOwner;
     World TheWorld;
-    private static final double TP_DIST = 3000D;	//teleport condition ~ 54 blocks
+    private static final double TP_DIST = 2048D;	//teleport condition ~ 45 blocks
     private PathNavigate PetPathfinder;
     private int findCooldown;
     private double maxDistSq;

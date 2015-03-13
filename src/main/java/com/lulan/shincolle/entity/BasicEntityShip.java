@@ -54,6 +54,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.IExtendedEntityProperties;
 
 /**SHIP DATA <br>
@@ -119,6 +120,37 @@ public abstract class BasicEntityShip extends EntityTameable {
 	public float getEyeHeight() {
 		return this.height * 1F;
 	}
+	
+	//平常音效
+	protected String getLivingSound() {
+		if(this.getStateFlag(ID.F.IsMarried)) {
+			if(rand.nextInt(5) == 0) {
+				return Reference.MOD_ID+":ship-love";
+			}
+			else {
+				return Reference.MOD_ID+":ship-say";
+			}
+		}
+		else {
+			return Reference.MOD_ID+":ship-say";
+		}
+    }
+	
+	//受傷音效
+    protected String getHurtSound() {
+    	
+        return Reference.MOD_ID+":ship-hurt";
+    }
+
+    //死亡音效
+    protected String getDeathSound() {
+    	return Reference.MOD_ID+":ship-death";
+    }
+
+    //音效大小
+    protected float getSoundVolume() {
+        return ConfigHandler.shipVolume;
+    }
 	
 	//get owner name (for player owner only)
 	public String getOwnerName() {
@@ -476,7 +508,7 @@ public abstract class BasicEntityShip extends EntityTameable {
 	public void sendSyncPacket() {
 		if(!worldObj.isRemote) {
 			if(this.getOwner() != null) {
-				EntityPlayerMP player = EntityHelper.getOnlinePlayer(this.getOwner().getUniqueID());
+				EntityPlayerMP player = EntityHelper.getOnlinePlayer(this.getOwner());
 				CommonProxy.channel.sendTo(new S2CEntitySync(this, 0), player);
 			}
 		}
@@ -487,55 +519,8 @@ public abstract class BasicEntityShip extends EntityTameable {
 	public boolean interact(EntityPlayer player) {	
 		ItemStack itemstack = player.inventory.getCurrentItem();  //get item in hand
 		
-		//如果已經被綑綁, 再點一下可以解除綑綁
-		if(this.getLeashed() && this.getLeashedToEntity() == player) {
-            this.clearLeashed(true, !player.capabilities.isCreativeMode);
-            return true;
-        }
-	
-		//shift+right click時打開GUI
-		if(player.isSneaking() && this.getOwner() != null && player.getUniqueID().equals(this.getOwner().getUniqueID())) {  
-			int eid = this.getEntityId();
-			//player.openGui vs FMLNetworkHandler ?
-    		FMLNetworkHandler.openGui(player, ShinColle.instance, ID.G.SHIPINVENTORY, this.worldObj, this.getEntityId(), 0, 0);
-    		return true;
-		}
-		
 		//use item
 		if(itemstack != null) {
-			//use cake to change state
-			if(itemstack.getItem() == Items.cake) {
-				int ShipState = getStateEmotion(ID.S.State) - ID.State.EQUIP;
-				
-				switch(getStateEmotion(ID.S.State)) {
-				case ID.State.NORMAL:			//原本不顯示, 改為顯示
-					setStateEmotion(ID.S.State, ID.State.EQUIP, true);
-					break;
-				case ID.State.NORMAL_MINOR:
-					setStateEmotion(ID.S.State, ID.State.EQUIP_MINOR, true);
-					break;
-				case ID.State.NORMAL_MODERATE:
-					setStateEmotion(ID.S.State, ID.State.EQUIP_MODERATE, true);
-					break;
-				case ID.State.NORMAL_HEAVY:
-					setStateEmotion(ID.S.State, ID.State.EQUIP_HEAVY, true);
-					break;
-				case ID.State.EQUIP:			//原本顯示裝備, 改為不顯示
-					setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-					break;
-				case ID.State.EQUIP_MINOR:
-					setStateEmotion(ID.S.State, ID.State.NORMAL_MINOR, true);
-					break;
-				case ID.State.EQUIP_MODERATE:
-					setStateEmotion(ID.S.State, ID.State.NORMAL_MODERATE, true);
-					break;
-				case ID.State.EQUIP_HEAVY:
-					setStateEmotion(ID.S.State, ID.State.NORMAL_HEAVY, true);
-					break;			
-				}
-				return true;
-			}
-			
 			//use repair bucket
 			if(itemstack.getItem() == ModItems.BucketRepair) {	
 				//hp不到max hp時可以使用bucket
@@ -557,7 +542,38 @@ public abstract class BasicEntityShip extends EntityTameable {
 	                
 	                return true;
 	            }			
-			}	
+			}
+			
+			//use marriage ring
+			if(itemstack.getItem() == ModItems.MarriageRing && !this.getStateFlag(ID.F.IsMarried) && 
+			   player.isSneaking() && this.getOwner() != null && player.getUniqueID().equals(this.getOwner().getUniqueID())) {
+				//stack-1 in non-creative mode
+				if (!player.capabilities.isCreativeMode) {
+                    --itemstack.stackSize;
+                }
+
+                this.setStateFlag(ID.F.IsMarried, true);
+                
+                //play hearts effect
+                TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
+    			CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 3, false), point);
+                
+    			//play marriage sound
+    	        this.playSound(Reference.MOD_ID+":ship-love", ConfigHandler.shipVolume, 1.0F);
+    	        
+    	        //add 3 random bonus point
+    	        for(int i = 0; i < 3; ++i) {
+    	        	addRandomBonusPoint();
+    	        }
+    	        
+    	        this.calcEquipAndUpdateState();
+    	        
+                if (itemstack.stackSize <= 0) {  //物品用完時要設定為null清空該slot
+                	player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
+                }
+                
+                return true;
+			}
 			
 			//use lead
 			if(itemstack.getItem() == Items.lead && this.allowLeashing()) {	
@@ -565,6 +581,20 @@ public abstract class BasicEntityShip extends EntityTameable {
 				return true;
 	        }
 			
+		}
+		
+		//如果已經被綑綁, 再點一下可以解除綑綁
+		if(this.getLeashed() && this.getLeashedToEntity() == player) {
+            this.clearLeashed(true, !player.capabilities.isCreativeMode);
+            return true;
+        }
+	
+		//shift+right click時打開GUI
+		if(player.isSneaking() && this.getOwner() != null && player.getUniqueID().equals(this.getOwner().getUniqueID())) {  
+			int eid = this.getEntityId();
+			//player.openGui vs FMLNetworkHandler ?
+    		FMLNetworkHandler.openGui(player, ShinColle.instance, ID.G.SHIPINVENTORY, this.worldObj, this.getEntityId(), 0, 0);
+    		return true;
 		}
 		
 		//click ship without shift = sit
@@ -580,6 +610,25 @@ public abstract class BasicEntityShip extends EntityTameable {
 		return false;
 	}
 	
+	//add random bonus point, NO SYNC!
+	private void addRandomBonusPoint() {
+		int bonusChoose = rand.nextInt(6);
+		
+		//bonus point +1 if bonus point < 3
+		if(BonusPoint[bonusChoose] < 3) {
+			BonusPoint[bonusChoose] = (byte) (BonusPoint[bonusChoose] + 1);
+			return;
+		}
+		else {	//select other bonus point
+			for(int i = 0; i < BonusPoint.length; ++i) {
+				if(BonusPoint[i] < 3) {
+					BonusPoint[i] = (byte) (BonusPoint[i] + 1);
+					return;
+				}
+			}
+		}	
+	}
+
 	/**修改移動方法, 使其water跟lava中移動時像是flying entity
      * Moves the entity based on the specified heading.  Args: strafe, forward
      */
@@ -795,8 +844,23 @@ public abstract class BasicEntityShip extends EntityTameable {
         			this.setHealth(this.getHealth() + this.getMaxHealth() * 0.01F);
         		}
         	}
+        	//timekeeping
+        	//play entity attack sound
+        	if(ConfigHandler.timeKeeping) {
+        		long time = this.worldObj.provider.getWorldTime();
+            	int checkTime = (int)(time % 1000L);
+            	if(checkTime == 0) {
+            		playTimeSound((int)(time / 1000L) % 24);
+            	}
+        	}
         }//end if(server side)
     }
+
+	//timekeeping method
+	private void playTimeSound(int i) {
+		//play entity attack sound
+        this.playSound(Reference.MOD_ID+":ship-time"+i, ConfigHandler.timeKeepingVolume, 1.0F);
+	}
 
 	//melee attack method, no ammo cost, no attack speed, damage = 12.5% atk
 	@Override
@@ -818,7 +882,7 @@ public abstract class BasicEntityShip extends EntityTameable {
 
 	    //play entity attack sound
         if(this.getRNG().nextInt(10) > 6) {
-        	this.playSound(Reference.MOD_ID+":ship-hitsmall", 1.0F, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         }
 	    
 	    //if attack success
@@ -862,10 +926,10 @@ public abstract class BasicEntityShip extends EntityTameable {
 		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 6, this.posX, this.posY, this.posZ, distX, distY, distZ, true), point);
 
 		//play cannon fire sound at attacker
-        playSound(Reference.MOD_ID+":ship-firesmall", 0.4F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         //play entity attack sound
         if(this.rand.nextInt(10) > 7) {
-        	this.playSound(Reference.MOD_ID+":ship-hitsmall", 1F, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         }
         
         //experience++
@@ -972,10 +1036,10 @@ public abstract class BasicEntityShip extends EntityTameable {
 		decrGrudgeNum(1);
 	
 		//play cannon fire sound at attacker
-        this.playSound(Reference.MOD_ID+":ship-fireheavy", 0.4F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         //play entity attack sound
         if(this.getRNG().nextInt(10) > 7) {
-        	this.playSound(Reference.MOD_ID+":ship-hitsmall", 1F, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         }
         
         //heavy ammo -1

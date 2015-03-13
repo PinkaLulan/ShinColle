@@ -36,15 +36,15 @@ public class ID {
 	
 	//Type ID: Emotion
 	public static final class Emotion {
-		public static final byte NORMAL = 0;			//無表情
-		public static final byte BLINK = 1;				//眨眼
+		public static final byte NORMAL = 0;			//�銵冽��
+		public static final byte BLINK = 1;				//��
 		public static final byte T_T = 2;				//sad
 		public static final byte O_O = 3;				//...
-		public static final byte BORED = 4;				//坐下時隨機抽的無聊表情
+		public static final byte BORED = 4;				//����璈����”���
 		public static final byte HUNGRY = 5;			//no grudge
 	}
 	
-	//Type ID: Emotion
+	//Type ID: Equip type
 	public static final class EquipType {
 		public static final byte CANNON_SI = 0;			//single cannon
 		public static final byte CANNON_TW_LO = 1;		//low level twin cannon
@@ -109,30 +109,37 @@ public class ID {
 	
 	//Type ID: ship type
 	public static final class ShipType {				//for GUI display
-		public static final byte DESTROYER = 0;			//驅逐	驅逐艦
-		public static final byte LIGHT_CRUISER = 1;		//輕巡	輕巡洋艦
-		public static final byte HEAVY_CRUISER = 2;		//重巡	重巡洋艦
-		public static final byte TORPEDO_CRUISER = 3;	//雷巡 	重雷裝巡洋艦
-		public static final byte LIGHT_CARRIER = 4;		//輕母	輕航空母艦
-		public static final byte STANDARD_CARRIER = 5;	//航		航空母艦
-		public static final byte BATTLESHIP	= 6;		//戰		戰艦
-		public static final byte TRANSPORT = 7;			//補給	輸送艦
-		public static final byte SUBMARINE = 8;			//潛		潛水艇
-		public static final byte ONI = 9;				//鬼		鬼級
-		public static final byte HIME = 10;				//姬		姬級
-		public static final byte FORTRESS = 11;			//浮		浮游要塞/護衛要塞		
+		public static final byte DESTROYER = 0;			//驅逐艦
+		public static final byte LIGHT_CRUISER = 1;		//輕巡洋艦
+		public static final byte HEAVY_CRUISER = 2;		//重巡洋艦
+		public static final byte TORPEDO_CRUISER = 3;	//重雷裝巡洋艦
+		public static final byte LIGHT_CARRIER = 4;		//輕航空母艦
+		public static final byte STANDARD_CARRIER = 5;	//正規航空母艦
+		public static final byte BATTLESHIP	= 6;		//戰艦
+		public static final byte TRANSPORT = 7;			//運輸艦
+		public static final byte SUBMARINE = 8;			//潛水艇
+		public static final byte ONI = 9;				//鬼級
+		public static final byte HIME = 10;				//姬級
+		public static final byte FORTRESS = 11;			//浮游要塞
 	}
 	
 	//Type ID: ship state
 	public static final class State {
-		public static final byte NORMAL = 0;			//普通
-		public static final byte NORMAL_MINOR = 1;		//小破
-		public static final byte NORMAL_MODERATE = 2;	//中破
-		public static final byte NORMAL_HEAVY = 3;		//大破
-		public static final byte EQUIP = 20;			//艤裝狀態
-		public static final byte EQUIP_MINOR = 21;
-		public static final byte EQUIP_MODERATE = 22;
-		public static final byte EQUIP_HEAVY = 23;
+		public static final byte NORMAL = 0;			//無狀態
+		public static final byte EQUIP00 = 20;			//艤裝狀態0
+		public static final byte EQUIP01 = 30;			//艤裝狀態1
+		public static final byte EQUIP02 = 40;			//艤裝狀態2
+		public static final byte EQUIP03 = 50;			//艤裝狀態3
+		public static final byte EQUIP04 = 60;			//艤裝狀態4
+		public static final byte EQUIP05 = 70;			//艤裝狀態4
+		
+		//NYI
+//		public static final byte NORMAL_MINOR = 1;		//小破
+//		public static final byte NORMAL_MODERATE = 2;	//中破
+//		public static final byte NORMAL_HEAVY = 3;		//大破
+//		public static final byte EQUIP_MINOR = 21;
+//		public static final byte EQUIP_MODERATE = 22;
+//		public static final byte EQUIP_HEAVY = 23;
 	}
 	
 	//Array ID: StateEquip, StateFinal, BonusPoint, TypeModify

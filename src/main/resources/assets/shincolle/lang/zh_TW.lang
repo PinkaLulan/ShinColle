@@ -27,6 +27,7 @@ item.shincolle:Ammo2.name=重型怨念彈
 item.shincolle:Ammo3.name=重型怨念彈集裝箱
 item.shincolle:BucketRepair.name=修復桶
 item.shincolle:Grudge.name=怨念
+item.shincolle:MarriageRing.name=棲艦婚戒
 
 # Equip
 item.shincolle:EquipCannon.name=5吋單裝砲
@@ -77,14 +78,23 @@ item.shincolle:EquipArmor1.name=重型深海裝甲
 # Spawn Egg
 item.shincolle:smallegg.name=建造小型棲艦
 item.shincolle:largeegg.name=建造大型棲艦
-item.shincolle:debugegg.name=Debug生怪蛋
+item.shincolle:shipegg2.name=驅逐I級
+item.shincolle:shipegg3.name=驅逐RO級
+item.shincolle:shipegg4.name=驅逐HA級
+item.shincolle:shipegg5.name=驅逐NI級
+item.shincolle:shipegg11.name=重巡RI級
+item.shincolle:shipegg14.name=空母WO級
+item.shincolle:shipegg17.name=航空戰艦RE級
 
 # Entity
 entity.shincolle.EntityAirplane.name=深海棲艦戰
 entity.shincolle.EntityAirplaneTakoyaki.name=深海復讐艦攻
 entity.shincolle.EntityBattleshipRe.name=航空戰艦RE級
 entity.shincolle.EntityCarrierWo.name=空母WO級
+entity.shincolle.EntityDestroyerHa.name=驅逐HA級
 entity.shincolle.EntityDestroyerI.name=驅逐I級
+entity.shincolle.EntityDestroyerNi.name=驅逐NI級
+entity.shincolle.EntityDestroyerRo.name=驅逐RO級
 entity.shincolle.EntityHeavyCruiserRi.name=重巡RI級
 
 # GUI
@@ -122,3 +132,6 @@ gui.shincolle:triplehit=三連擊
 gui.shincolle:missreduce=提高命中率
 gui.shincolle:missrate=失誤率
 gui.shincolle:missrateair=失誤率(艦載機)
+gui.shincolle:marriage=婚姻狀態
+gui.shincolle:married=已婚
+gui.shincolle:unmarried=未婚

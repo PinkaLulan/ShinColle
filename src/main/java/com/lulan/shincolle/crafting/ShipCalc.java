@@ -145,7 +145,10 @@ public class ShipCalc {
     	
     	if(item.getItemDamage() == 0) {	//small egg
     		//Destroyer/Transport/Submarine
-    		shipList.add(new int[] {ID.S_DestroyerI, 150});
+    		shipList.add(new int[] {ID.S_DestroyerI, 200});
+    		shipList.add(new int[] {ID.S_DestroyerRO, 190});
+    		shipList.add(new int[] {ID.S_DestroyerHA, 180});
+    		shipList.add(new int[] {ID.S_DestroyerNI, 170});
     		
     		if(totalMats > 128) {	//>128 : LCruiser/HCruiser
     			shipList.add(new int[] {ID.S_HeavyCruiserRI, 50 + material[2] / 2});
@@ -197,6 +200,12 @@ public class ShipCalc {
   		switch(type) {
   		case ID.S_DestroyerI:
   			return "shincolle.EntityDestroyerI";
+  		case ID.S_DestroyerRO:
+  			return "shincolle.EntityDestroyerRo";
+  		case ID.S_DestroyerHA:
+  			return "shincolle.EntityDestroyerHa";
+  		case ID.S_DestroyerNI:
+  			return "shincolle.EntityDestroyerNi";
   		case ID.S_HeavyCruiserRI:
   			return "shincolle.EntityHeavyCruiserRi";
   		case ID.S_CarrierWO:

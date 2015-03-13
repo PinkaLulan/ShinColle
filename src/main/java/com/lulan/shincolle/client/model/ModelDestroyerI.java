@@ -52,18 +52,8 @@ public class ModelDestroyerI extends ModelBase {
 	public ModelRenderer GlowPNeck;
 	public ModelRenderer GlowPHead;
 	
-	private int EntityEmotion;	//目前表情
-	private int EntityFace;		//目前使用的頭部model
-	private int EmotionTime;	//目前表情
-	public float Scale;			//預設大小為1.0倍
 	
   public ModelDestroyerI() {
-
-    EntityEmotion = 0;
-    EntityFace = 0;
-    Scale = 1F;
-    EmotionTime = 0;
-
     textureWidth = 256;
     textureHeight = 128;
 
@@ -253,7 +243,7 @@ public class ModelDestroyerI extends ModelBase {
 //  GL11.glScalef(this.scale, this.scale, this.scale);
 //	GL11.glEnable(GL11.GL_BLEND);			//開啟透明度模式
 //	GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-	GL11.glScalef(0.5F, 0.45F, 0.45F);	//debug用
+	GL11.glScalef(0.45F, 0.4F, 0.4F);	//debug用
 	GL11.glRotatef(90F, 0F, 1F, 0F);	//此模型頭部方向錯誤 因此render時調整回來
 	
 	PBack.render(f5);
@@ -315,7 +305,7 @@ public class ModelDestroyerI extends ModelBase {
 	}
 
 	private void isKisaragi(EntityDestroyerI ent) {
-		if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP) {
+		if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
 			PKisaragi00.isHidden = false;
 			PKisaragi01.isHidden = false;
 			PKisaragi02.isHidden = false;
@@ -333,7 +323,7 @@ public class ModelDestroyerI extends ModelBase {
 	//坐下動作
   	private void motionSit(EntityDestroyerI ent, float angleZ) {		
   		if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {
-  			GL11.glTranslatef(0F, 0.9F, 0F);	//1.4
+  			GL11.glTranslatef(0F, 0.9F, 0F);
   			PBack.rotateAngleZ = 0.6F;
   	  		PNeck.rotateAngleZ = -0.25F;
   	  	    PHead.rotateAngleZ = -0.3F;
@@ -346,7 +336,7 @@ public class ModelDestroyerI extends ModelBase {
   	  	    PJawBottom.rotateAngleZ = -0.7F; 	  	    
   		}
   		else {
-  			GL11.glTranslatef(0F, 1.4F, 0F);	//1.4
+  			GL11.glTranslatef(0F, 1.4F, 0F);
   			PBack.rotateAngleZ = -0.8F;
   	  		PNeck.rotateAngleZ = -0.3F;
   	    	PLegRight.rotateAngleZ = -0.8F;

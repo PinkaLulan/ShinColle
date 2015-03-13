@@ -8,6 +8,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.renderentity.EntityRenderVortex;
@@ -34,27 +35,25 @@ import cpw.mods.fml.relauncher.SideOnly;
  */
 public class S2CGUIPackets implements IMessage {
 	
-//	private BasicEntityShip sendEntity;
-//	private BasicEntityShip recvEntity;
-	private TileEntitySmallShipyard sendTile1;
-	private TileEntitySmallShipyard recvTile1;
-	private TileMultiGrudgeHeavy sendTile2;
-	private TileMultiGrudgeHeavy recvTile2;
-	private int sendType, recvType, recvX, recvY, recvZ;
+//	private BasicEntityShip entity;
+	private TileEntitySmallShipyard tile1;
+	private TileMultiGrudgeHeavy tile2;
+	private World world;
+	private int type, recvX, recvY, recvZ;
 	
 	
 	public S2CGUIPackets() {}	//必須要有空參數constructor, forge才能使用此class
 	
 	//GUI sync: 
 	//type 0: sync shipyard
-	public S2CGUIPackets(BasicTileEntity tile) {  
+	public S2CGUIPackets(BasicTileEntity tile) {
 		if(tile instanceof TileEntitySmallShipyard) {
-			this.sendTile1 = (TileEntitySmallShipyard) tile;
-			this.sendType = 0;
+			tile1 = (TileEntitySmallShipyard) tile;
+			type = 0;
 		}
 		else if(tile instanceof TileMultiGrudgeHeavy) {
-			this.sendTile2 = (TileMultiGrudgeHeavy) tile;
-			this.sendType = 1;
+			tile2 = (TileMultiGrudgeHeavy) tile;
+			type = 1;
 		}
     }
 	
@@ -66,25 +65,24 @@ public class S2CGUIPackets implements IMessage {
 	//接收packet方法
 	@Override
 	public void fromBytes(ByteBuf buf) {
-		//get server world
-		World clientWorld = ClientProxy.getClientWorld();
+		world = ClientProxy.getClientWorld();
 		
 		//get type and entityID
-		this.recvType = buf.readByte();
+		this.type = buf.readByte();
 	
-		switch(recvType) {
+		switch(type) {
 		case 0: //sync small shipyard gui
 			{
 				this.recvX = buf.readInt();
 				this.recvY = buf.readInt();
 				this.recvZ = buf.readInt();
+
+				this.tile1 = (TileEntitySmallShipyard) world.getTileEntity(recvX, recvY, recvZ);
 				
-				this.recvTile1 = (TileEntitySmallShipyard) clientWorld.getTileEntity(recvX, recvY, recvZ);
-				
-				if(this.recvTile1 != null) {
-					this.recvTile1.setPowerConsumed(buf.readInt());
-					this.recvTile1.setPowerRemained(buf.readInt());
-					this.recvTile1.setPowerGoal(buf.readInt());
+				if(this.tile1 != null) {
+					tile1.setPowerConsumed(buf.readInt());
+					tile1.setPowerRemained(buf.readInt());
+					tile1.setPowerGoal(buf.readInt());
 				}	
 			}
 			break;
@@ -93,25 +91,24 @@ public class S2CGUIPackets implements IMessage {
 				this.recvX = buf.readInt();
 				this.recvY = buf.readInt();
 				this.recvZ = buf.readInt();
-				
-				this.recvTile2 = (TileMultiGrudgeHeavy) clientWorld.getTileEntity(recvX, recvY, recvZ);
-				
-				if(this.recvTile2 != null) {
-					this.recvTile2.setPowerConsumed(buf.readInt());
-					this.recvTile2.setPowerRemained(buf.readInt());
-					this.recvTile2.setPowerGoal(buf.readInt());
-					this.recvTile2.setMatStock(0, buf.readInt());
-					this.recvTile2.setMatStock(1, buf.readInt());
-					this.recvTile2.setMatStock(2, buf.readInt());
-					this.recvTile2.setMatStock(3, buf.readInt());
+
+				this.tile2 = (TileMultiGrudgeHeavy) world.getTileEntity(recvX, recvY, recvZ);
+
+				if(this.tile2 != null) {
+					this.tile2.setPowerConsumed(buf.readInt());
+					this.tile2.setPowerRemained(buf.readInt());
+					this.tile2.setPowerGoal(buf.readInt());
+					this.tile2.setMatStock(0, buf.readInt());
+					this.tile2.setMatStock(1, buf.readInt());
+					this.tile2.setMatStock(2, buf.readInt());
+					this.tile2.setMatStock(3, buf.readInt());
 					
 					//set render entity state
 					AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(recvX-1.5D, recvY-2D, recvZ-1.5D, recvX+1.5D, recvY+1D, recvZ+1.5D);
-					List renderEntityList = clientWorld.getEntitiesWithinAABB(EntityRenderVortex.class, aabb);
+					List renderEntityList = world.getEntitiesWithinAABB(EntityRenderVortex.class, aabb);
 					
 		            for(int i = 0; i < renderEntityList.size(); i++) { 
-//		            	LogHelper.info("DEBUG : set render entity state (Packet class) "+this.recvTile2.isBuilding()+" "+renderEntityList.get(i)+recvX+" "+recvY+" "+recvZ);
-		            	((EntityRenderVortex)renderEntityList.get(i)).setIsActive(this.recvTile2.isBuilding());
+		            	((EntityRenderVortex)renderEntityList.get(i)).setIsActive(tile2.isBuilding());
 		            }
 				}	
 			}
@@ -124,31 +121,31 @@ public class S2CGUIPackets implements IMessage {
 	//發出packet方法
 	@Override
 	public void toBytes(ByteBuf buf) {
-		switch(this.sendType) {
+		switch(this.type) {
 		case 0: //sync small shipyard gui
 			{
 				buf.writeByte(0);
-				buf.writeInt(this.sendTile1.xCoord);
-				buf.writeInt(this.sendTile1.yCoord);
-				buf.writeInt(this.sendTile1.zCoord);
-				buf.writeInt(this.sendTile1.getPowerConsumed());
-				buf.writeInt(this.sendTile1.getPowerRemained());
-				buf.writeInt(this.sendTile1.getPowerGoal());
+				buf.writeInt(this.tile1.xCoord);
+				buf.writeInt(this.tile1.yCoord);
+				buf.writeInt(this.tile1.zCoord);
+				buf.writeInt(this.tile1.getPowerConsumed());
+				buf.writeInt(this.tile1.getPowerRemained());
+				buf.writeInt(this.tile1.getPowerGoal());
 			}
 			break;
 		case 1: //sync large shipyard gui
 			{
 				buf.writeByte(1);
-				buf.writeInt(this.sendTile2.xCoord);
-				buf.writeInt(this.sendTile2.yCoord);
-				buf.writeInt(this.sendTile2.zCoord);
-				buf.writeInt(this.sendTile2.getPowerConsumed());
-				buf.writeInt(this.sendTile2.getPowerRemained());
-				buf.writeInt(this.sendTile2.getPowerGoal());
-				buf.writeInt(this.sendTile2.getMatStock(0));
-				buf.writeInt(this.sendTile2.getMatStock(1));
-				buf.writeInt(this.sendTile2.getMatStock(2));
-				buf.writeInt(this.sendTile2.getMatStock(3));
+				buf.writeInt(this.tile2.xCoord);
+				buf.writeInt(this.tile2.yCoord);
+				buf.writeInt(this.tile2.zCoord);
+				buf.writeInt(this.tile2.getPowerConsumed());
+				buf.writeInt(this.tile2.getPowerRemained());
+				buf.writeInt(this.tile2.getPowerGoal());
+				buf.writeInt(this.tile2.getMatStock(0));
+				buf.writeInt(this.tile2.getMatStock(1));
+				buf.writeInt(this.tile2.getMatStock(2));
+				buf.writeInt(this.tile2.getMatStock(3));
 			}
 		break;
 		case 2:	//sync ship inventory

@@ -37,10 +37,11 @@ public class ModRecipes {
 		ItemStack grudeBlock = new ItemStack(ModBlocks.BlockGrudge);
 		ItemStack grudeBlock9 = new ItemStack(ModBlocks.BlockGrudge,9,0);
 		ItemStack grudeHeavyBlock = new ItemStack(ModBlocks.BlockGrudgeHeavy);
-		ItemStack gunpowderStack = new ItemStack(Items.gunpowder);	
+		ItemStack gunpowderStack = new ItemStack(Items.gunpowder);
 		ItemStack polymetalStack = new ItemStack(ModItems.AbyssMetal,1,1);
 		ItemStack polymetalStack9 = new ItemStack(ModItems.AbyssMetal,9,1);
 		ItemStack polymetalBlock = new ItemStack(ModBlocks.BlockPolymetal);
+		ItemStack ring = new ItemStack(ModItems.MarriageRing);
 		ItemStack smallshipyardStack = new ItemStack(ModBlocks.BlockSmallShipyard);
 		
 		//SHAPELESS RECIPE
@@ -83,6 +84,8 @@ public class ModRecipes {
 		GameRegistry.addRecipe(new ShapedOreRecipe(polymetalBlock,"aaa","aaa","aaa",'a',polymetalStack));
 		//small shipyard
 		GameRegistry.addRecipe(new ShapedOreRecipe(smallshipyardStack,"glg","lol","ooo",'g',grudeStack,'l',Items.lava_bucket,'o',Blocks.obsidian));
+		//marriage ring
+		GameRegistry.addRecipe(new ShapedOreRecipe(ring,"asa","a a","aaa",'s',Items.nether_star,'a',abyssiumStack));
 		
 	}
 

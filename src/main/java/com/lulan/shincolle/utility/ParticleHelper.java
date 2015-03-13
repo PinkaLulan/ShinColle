@@ -112,12 +112,12 @@ public class ParticleHelper {
 	 */
 	@SideOnly(Side.CLIENT)
 	public static void spawnAttackParticleCustomVector(Entity target, double posX, double posY, double posZ, double lookX, double lookY, double lookZ, byte type, boolean isShip) {
-		if(isShip && target != null) {
-			((EntityLivingBase) target).attackTime = 50;
+		if(target != null) {
+			if(isShip) ((EntityLivingBase) target).attackTime = 50;
+			
+			//spawn particle
+			spawnAttackParticleAt(posX, posY, posZ, lookX, lookY, lookZ, type);
 		}
-		
-		//spawn particle
-		spawnAttackParticleAt(posX, posY, posZ, lookX, lookY, lookZ, type);
 	}
 	
 	/**SPAWN ATTACK PARTICLE
@@ -161,7 +161,7 @@ public class ParticleHelper {
 		//get target position
 		double ran1 = 0D;
 		double ran2 = 0D;
-		
+
 //		GL11.glDepthMask(true);
 		//spawn particle
 		switch(type) {
@@ -170,16 +170,24 @@ public class ParticleHelper {
 			break;
 		case 2:		//hugeexplosion
 			world.spawnParticle("hugeexplosion", posX, posY+1, posZ, 0.0D, 0.0D, 0.0D);
-			for(int i=0;i<20;i++) {
+			for(int i = 0; i < 20; ++i) {
 				ran1 = rand.nextFloat() * 6F - 3F;
 				ran2 = rand.nextFloat() * 6F - 3F;
 				world.spawnParticle("lava", posX+ran1, posY+1, posZ+ran2, 0D, 0D, 0D);
 			}
 			break;
-		case 3:		//crit
-			world.spawnParticle("crit", posX, posY+2, posZ, 0.0D, 0.0D, 0.0D);
+		case 3:		//hearts effect
+			for(int i = 0; i < 7; ++i) {
+	            double d0 = rand.nextGaussian() * 0.02D;
+	            double d1 = rand.nextGaussian() * 0.02D;
+	            double d2 = rand.nextGaussian() * 0.02D;
+	            world.spawnParticle("heart",
+	            		posX + rand.nextFloat() * 2D - 1D, 
+	            		posY + 0.5D + rand.nextFloat() * 2D, 
+	            		posZ + rand.nextFloat() * 2.0F - 1D, d0, d1, d2);
+	        }
 			break;
-		case 4: 	//magicCrit
+		case 4: 	//happy villager
 			world.spawnParticle("happyVillager", posX, posY+2, posZ, 0.0D, 0.0D, 0.0D);
 			break;
 		case 5:		//smoke

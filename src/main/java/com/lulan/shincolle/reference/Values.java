@@ -83,7 +83,7 @@ public class Values {
 		 1F,    1F};
 	
 	public static final float[] ModMOV = 	//mark for exists ship
-		{1F,    0F,    0F,    0F,    0F,    0F,    0F,    0F,
+		{1F,    1F,    1F,    1F,    0F,    0F,    0F,    0F,
 		 0F,    1F,    0F,    0F,    1F,    0F,    0F,    1F,
 		 0F,    0F,    0F,    0F,    0F,    0F,    0F,    0F,
 		 0F,    0F,    0F,    0F,    0F,    0F,    0F,    0F,

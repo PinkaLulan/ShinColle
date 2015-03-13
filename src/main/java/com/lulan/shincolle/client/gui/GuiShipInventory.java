@@ -53,7 +53,8 @@ public class GuiShipInventory extends GuiContainer {
 	private String titlename, shiplevel, lvMark, hpMark, canMelee, canLATK, canHATK, canALATK, canAHATK, 
 	               strATK, strAATK, strLATK, strHATK, strALATK, strAHATK, strDEF, strSPD, strMOV, strHIT, 
 	               Kills, Exp, Grudge, Owner, AmmoLight, AmmoHeavy, AirLight, AirHeavy, 
-	               overText, strCri, strDhit, strThit, strMissMin, strMissMax, strMissAir;
+	               overText, strCri, strDhit, strThit, strMissMin, strMissMax, strMissAir,
+	               marriage;
 	private int hpCurrent, hpMax, color, showPage, pageIndictor, showAttack;
 	private boolean switchMelee, switchLight, switchHeavy, switchAirLight, switchAirHeavy;
 	
@@ -297,7 +298,7 @@ public class GuiShipInventory extends GuiContainer {
 		canALATK = I18n.format("gui.shincolle:canairlightattack");
 		canAHATK = I18n.format("gui.shincolle:canairheavyattack");
 		color = 0;
-		
+
 		//draw lv/hp name
 		this.fontRendererObj.drawStringWithShadow(lvMark, 223-this.fontRendererObj.getStringWidth(lvMark), 6, 65535);
 		this.fontRendererObj.drawStringWithShadow(hpMark, 144-this.fontRendererObj.getStringWidth(hpMark), 6, 65535);
@@ -407,28 +408,37 @@ public class GuiShipInventory extends GuiContainer {
 						
 			break;
 			}
-		case 3: {	//page 3: owner name, light/heavy airplane
+		case 3: {	//page 3: owner name, light/heavy airplane, marriage
 			//draw string
 			this.fontRendererObj.drawString(I18n.format("gui.shincolle:owner"), 67, 20, pickColor(5));
+			this.fontRendererObj.drawString(I18n.format("gui.shincolle:marriage"), 67, 41, pickColor(5));
 			
 			//draw value
 			Owner = this.entity.getOwnerName();
 			
+			if(this.entity.getStateFlag(ID.F.IsMarried)) {
+				marriage = I18n.format("gui.shincolle:married");
+			}
+			else {
+				marriage = I18n.format("gui.shincolle:unmarried");
+			}	
+			
 			//大型艦, 顯示艦載機數量
 			if(this.entity instanceof BasicEntityShipLarge) {
-				this.fontRendererObj.drawString(I18n.format("gui.shincolle:airplanelight"), 67, 41, pickColor(5));
-				this.fontRendererObj.drawString(I18n.format("gui.shincolle:airplaneheavy"), 67, 62, pickColor(5));
+				this.fontRendererObj.drawString(I18n.format("gui.shincolle:airplanelight"), 67, 83, pickColor(5));
+				this.fontRendererObj.drawString(I18n.format("gui.shincolle:airplaneheavy"), 67, 104, pickColor(5));
 				AirLight = String.valueOf(((BasicEntityShipLarge)this.entity).getNumAircraftLight());
 				AirHeavy = String.valueOf(((BasicEntityShipLarge)this.entity).getNumAircraftHeavy());
-				this.fontRendererObj.drawStringWithShadow(AirLight, 125-this.fontRendererObj.getStringWidth(AirLight), 51, pickColor(1));
-				this.fontRendererObj.drawStringWithShadow(AirHeavy, 125-this.fontRendererObj.getStringWidth(AirHeavy), 72, pickColor(1));	
+				this.fontRendererObj.drawStringWithShadow(AirLight, 125-this.fontRendererObj.getStringWidth(AirLight), 93, pickColor(1));
+				this.fontRendererObj.drawStringWithShadow(AirHeavy, 125-this.fontRendererObj.getStringWidth(AirHeavy), 114, pickColor(1));	
 				
 			}
 			
 			this.fontRendererObj.drawStringWithShadow(Owner, 125-this.fontRendererObj.getStringWidth(Owner), 30, pickColor(1));
+			this.fontRendererObj.drawStringWithShadow(marriage, 125-this.fontRendererObj.getStringWidth(marriage), 51, pickColor(1));
 			
 			break;
-			}			
+			}//end case 3
 		}//end page switch
 	}
 

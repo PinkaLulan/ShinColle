@@ -19,7 +19,6 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
 	private Random rand = new Random();
     private BasicEntityShipLarge host;  		//entity with AI
     private EntityLivingBase attackTarget;  	//entity of target
-    private EntityLivingBase attackTarget2;  	//for target continue reset to null bug
     private int delayLaunch = 0;		//aircraft launch delay
     private int maxDelayLaunch;			//max launch delay
     private boolean typeLaunch = false;	//aircraft launch type, true = light
@@ -47,12 +46,10 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
     	
     	EntityLivingBase target = this.host.getAttackTarget();
 //    	LogHelper.info("DEBUG : carrier attack "+target);
-        if (((target != null && target.isEntityAlive()) || 
-        	  this.attackTarget2 != null && this.attackTarget2.isEntityAlive()) &&
+        if (target != null && target.isEntityAlive() &&
         	((this.host.getStateFlag(ID.F.UseAirLight) && this.host.hasAmmoLight() && this.host.hasAirLight()) || 
         	(this.host.getStateFlag(ID.F.UseAirHeavy) && this.host.hasAmmoHeavy() && this.host.hasAirHeavy()))) {   
         	this.attackTarget = target;
-        	this.attackTarget2 = target;
         	return true;
         }
         return false;
@@ -76,15 +73,16 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
 
     //進行AI
     public void updateTask() {
-    	boolean onSight = false;	//判定直射是否無障礙物
-    	//get update attributes
-    	if(this.host != null && this.host.ticksExisted % 80 == 0) {	
-    		this.maxDelayLaunch = (int)(80F / (this.host.getStateFinal(ID.SPD))) + 20;
-            this.attackRange = this.host.getStateFinal(ID.HIT);
-            this.rangeSq = this.attackRange * this.attackRange;
-    	}
-    	
     	if(this.attackTarget != null) {  //for lots of NPE issue-.-
+    		boolean onSight = this.host.getEntitySenses().canSee(this.attackTarget);
+    		
+    		//get update attributes
+        	if(this.host != null && this.host.ticksExisted % 80 == 0) {	
+        		this.maxDelayLaunch = (int)(80F / (this.host.getStateFinal(ID.SPD))) + 20;
+                this.attackRange = this.host.getStateFinal(ID.HIT);
+                this.rangeSq = this.attackRange * this.attackRange;
+        	}
+
     		if(this.distSq >= this.rangeSq) {
     			this.distX = this.attackTarget.posX - this.host.posX;
         		this.distY = this.attackTarget.posY - this.host.posY;
@@ -147,14 +145,14 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
 	        }
 	        
 	        //若attack delay倒數完了且瞄準時間夠久, 則開始攻擊, no onSight check
-	        if(this.typeLaunch && this.distSq < this.rangeSq && this.delayLaunch <= 0 && this.host.hasAmmoLight() && this.host.getStateFlag(ID.F.UseAirLight) && this.host.hasAirHeavy()) {
+	        if(onSight && this.typeLaunch && this.distSq < this.rangeSq && this.delayLaunch <= 0 && this.host.hasAmmoLight() && this.host.getStateFlag(ID.F.UseAirLight) && this.host.hasAirHeavy()) {
 	            this.host.attackEntityWithAircraft(this.attackTarget);
 	            this.delayLaunch = this.maxDelayLaunch;
 	            this.typeLaunch = !this.typeLaunch;
 	        }
 	        
 	        //若attack delay倒數完了且瞄準時間夠久, 則開始攻擊, no onSight check
-	        if(!this.typeLaunch && this.distSq < this.rangeSq && this.delayLaunch <= 0 && this.host.hasAmmoHeavy() && this.host.getStateFlag(ID.F.UseAirHeavy) && this.host.hasAirHeavy()) {	            
+	        if(onSight && !this.typeLaunch && this.distSq < this.rangeSq && this.delayLaunch <= 0 && this.host.hasAmmoHeavy() && this.host.getStateFlag(ID.F.UseAirHeavy) && this.host.hasAirHeavy()) {	            
 	            this.host.attackEntityWithHeavyAircraft(this.attackTarget);
 	            this.delayLaunch = this.maxDelayLaunch;
 	            this.typeLaunch = !this.typeLaunch;      

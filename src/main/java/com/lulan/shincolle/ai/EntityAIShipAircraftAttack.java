@@ -129,9 +129,11 @@ public class EntityAIShipAircraftAttack extends EntityAIBase {
 	        
 	        //delay time decr
 	        this.atkDelay--;
+	        
+	        onSight = this.host.getEntitySenses().canSee(this.target);
 
 	        //若attack delay倒數完了且瞄準時間夠久, 則開始攻擊
-	        if(this.atkDelay <= 0) {
+	        if(this.atkDelay <= 0 && onSight) {
 	        	//由於艦載機只會輕 or 重其中一種攻擊, 因此AI這邊共用cooldown, 不會造成影響
 	        	if(this.distSq < this.rangeSq && this.host.numAmmoLight > 0 && this.host.useAmmoLight) {
 		            //attack method

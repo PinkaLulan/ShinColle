@@ -1,7 +1,10 @@
 package com.lulan.shincolle.network;
 
+import java.util.UUID;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.proxy.ClientProxy;
@@ -25,11 +28,10 @@ import cpw.mods.fml.relauncher.SideOnly;
  */
 public class S2CEntitySync implements IMessage {
 	
-	private BasicEntityShip sendEntity;
-	private BasicEntityShip recvEntity;
-	private int sendType;
-	private int recvType;
+	private BasicEntityShip entity;
 	private int entityID;
+	private int type;
+
 	
 	public S2CEntitySync() {}	//必須要有空參數constructor, forge才能使用此class
 	
@@ -38,85 +40,84 @@ public class S2CEntitySync implements IMessage {
 	//type 1: entity state only
 	//type 2: entity flag only
 	public S2CEntitySync(BasicEntityShip entity, int type) {
-        this.sendEntity = entity;
-        this.sendType = type;
+        this.entity = entity;
+        this.type = type;
     }
 	
 	//接收packet方法 (CLIENT SIDE)
 	@Override
 	public void fromBytes(ByteBuf buf) {
-		World clientWorld = ClientProxy.getClientWorld();
 		//get type and entityID
-		this.recvType = buf.readByte();
+		this.type = buf.readByte();
 		this.entityID = buf.readInt();
-		recvEntity = (BasicEntityShip) EntityHelper.getEntityByID(entityID, clientWorld);
-	
-		if(recvEntity != null) {
-			switch(recvType) {
+		this.entity = (BasicEntityShip) EntityHelper.getEntityByID(entityID, 0, true);
+
+		if(entity != null) {
+			switch(type) {
 			case 0:	//sync all attr
 				{
-					recvEntity.setStateMinor(ID.N.ShipLevel, buf.readInt());
-					recvEntity.setStateMinor(ID.N.Kills, buf.readInt());
-					recvEntity.setStateMinor(ID.N.ExpCurrent, buf.readInt());
-					recvEntity.setStateMinor(ID.N.NumAmmoLight, buf.readInt());
-					recvEntity.setStateMinor(ID.N.NumAmmoHeavy, buf.readInt());
-					recvEntity.setStateMinor(ID.N.NumGrudge, buf.readInt());
-					recvEntity.setStateMinor(ID.N.NumAirLight, buf.readInt());
-					recvEntity.setStateMinor(ID.N.NumAirHeavy, buf.readInt());
-
-					recvEntity.setStateFinal(ID.HP, buf.readFloat());
-					recvEntity.setStateFinal(ID.ATK, buf.readFloat());
-					recvEntity.setStateFinal(ID.DEF, buf.readFloat());
-					recvEntity.setStateFinal(ID.SPD, buf.readFloat());
-					recvEntity.setStateFinal(ID.MOV, buf.readFloat());
-					recvEntity.setStateFinal(ID.HIT, buf.readFloat());
-					recvEntity.setStateFinal(ID.ATK_H, buf.readFloat());
-					recvEntity.setStateFinal(ID.ATK_AL, buf.readFloat());
-					recvEntity.setStateFinal(ID.ATK_AH, buf.readFloat());
-
-					recvEntity.setStateEmotion(ID.S.State, buf.readByte(), false);
-					recvEntity.setStateEmotion(ID.S.Emotion, buf.readByte(), false);
-					recvEntity.setStateEmotion(ID.S.Emotion2, buf.readByte(), false);
-
-					recvEntity.setBonusPoint(ID.HP, buf.readByte());
-					recvEntity.setBonusPoint(ID.ATK, buf.readByte());
-					recvEntity.setBonusPoint(ID.DEF, buf.readByte());
-					recvEntity.setBonusPoint(ID.SPD, buf.readByte());
-					recvEntity.setBonusPoint(ID.MOV, buf.readByte());
-					recvEntity.setBonusPoint(ID.HIT, buf.readByte());
-
-					recvEntity.setStateFlag(ID.F.CanFloatUp, buf.readBoolean());
-					recvEntity.setStateFlag(ID.F.IsMarried, buf.readBoolean());
-					recvEntity.setStateFlag(ID.F.NoFuel, buf.readBoolean());
-					recvEntity.setStateFlag(ID.F.UseMelee, buf.readBoolean());
-					recvEntity.setStateFlag(ID.F.UseAmmoLight, buf.readBoolean());
-					recvEntity.setStateFlag(ID.F.UseAmmoHeavy, buf.readBoolean());
-					recvEntity.setStateFlag(ID.F.UseAirLight, buf.readBoolean());
-					recvEntity.setStateFlag(ID.F.UseAirHeavy, buf.readBoolean());
+					entity.setStateMinor(ID.N.ShipLevel, buf.readInt());
+					entity.setStateMinor(ID.N.Kills, buf.readInt());
+					entity.setStateMinor(ID.N.ExpCurrent, buf.readInt());
+					entity.setStateMinor(ID.N.NumAmmoLight, buf.readInt());
+					entity.setStateMinor(ID.N.NumAmmoHeavy, buf.readInt());
+					entity.setStateMinor(ID.N.NumGrudge, buf.readInt());
+					entity.setStateMinor(ID.N.NumAirLight, buf.readInt());
+					entity.setStateMinor(ID.N.NumAirHeavy, buf.readInt());
 					
-					recvEntity.setEffectEquip(ID.EF_CRI, buf.readFloat());
-					recvEntity.setEffectEquip(ID.EF_DHIT, buf.readFloat());
-					recvEntity.setEffectEquip(ID.EF_THIT, buf.readFloat());
-					recvEntity.setEffectEquip(ID.EF_MISS, buf.readFloat());
+					entity.setStateFinal(ID.HP, buf.readFloat());
+					entity.setStateFinal(ID.ATK, buf.readFloat());
+					entity.setStateFinal(ID.DEF, buf.readFloat());
+					entity.setStateFinal(ID.SPD, buf.readFloat());
+					entity.setStateFinal(ID.MOV, buf.readFloat());
+					entity.setStateFinal(ID.HIT, buf.readFloat());
+					entity.setStateFinal(ID.ATK_H, buf.readFloat());
+					entity.setStateFinal(ID.ATK_AL, buf.readFloat());
+					entity.setStateFinal(ID.ATK_AH, buf.readFloat());
+					
+					entity.setStateEmotion(ID.S.State, buf.readByte(), false);
+					entity.setStateEmotion(ID.S.Emotion, buf.readByte(), false);
+					entity.setStateEmotion(ID.S.Emotion2, buf.readByte(), false);
+
+					entity.setBonusPoint(ID.HP, buf.readByte());
+					entity.setBonusPoint(ID.ATK, buf.readByte());
+					entity.setBonusPoint(ID.DEF, buf.readByte());
+					entity.setBonusPoint(ID.SPD, buf.readByte());
+					entity.setBonusPoint(ID.MOV, buf.readByte());
+					entity.setBonusPoint(ID.HIT, buf.readByte());
+
+					entity.setStateFlag(ID.F.CanFloatUp, buf.readBoolean());
+					entity.setStateFlag(ID.F.IsMarried, buf.readBoolean());
+					entity.setStateFlag(ID.F.NoFuel, buf.readBoolean());
+					entity.setStateFlag(ID.F.UseMelee, buf.readBoolean());
+					entity.setStateFlag(ID.F.UseAmmoLight, buf.readBoolean());
+					entity.setStateFlag(ID.F.UseAmmoHeavy, buf.readBoolean());
+					entity.setStateFlag(ID.F.UseAirLight, buf.readBoolean());
+					entity.setStateFlag(ID.F.UseAirHeavy, buf.readBoolean());
+					
+					entity.setEffectEquip(ID.EF_CRI, buf.readFloat());
+					entity.setEffectEquip(ID.EF_DHIT, buf.readFloat());
+					entity.setEffectEquip(ID.EF_THIT, buf.readFloat());
+					entity.setEffectEquip(ID.EF_MISS, buf.readFloat());
 				}
 				break;
 			case 1: //entity state only
 				{
-					recvEntity.setStateEmotion(ID.S.State, buf.readByte(), false);
-					recvEntity.setStateEmotion(ID.S.Emotion, buf.readByte(), false);
-					recvEntity.setStateEmotion(ID.S.Emotion2, buf.readByte(), false);
+					entity.setStateEmotion(ID.S.State, buf.readByte(), false);
+					entity.setStateEmotion(ID.S.Emotion, buf.readByte(), false);
+					entity.setStateEmotion(ID.S.Emotion2, buf.readByte(), false);
 				}
 				break;
 			case 2: //entity flag only
 				{
-					recvEntity.setStateFlag(ID.F.CanFloatUp, buf.readBoolean());
-					recvEntity.setStateFlag(ID.F.IsMarried, buf.readBoolean());
-					recvEntity.setStateFlag(ID.F.NoFuel, buf.readBoolean());
-					recvEntity.setStateFlag(ID.F.UseMelee, buf.readBoolean());
-					recvEntity.setStateFlag(ID.F.UseAmmoLight, buf.readBoolean());
-					recvEntity.setStateFlag(ID.F.UseAmmoHeavy, buf.readBoolean());
-					recvEntity.setStateFlag(ID.F.UseAirLight, buf.readBoolean());
-					recvEntity.setStateFlag(ID.F.UseAirHeavy, buf.readBoolean());
+					entity.setStateFlag(ID.F.CanFloatUp, buf.readBoolean());
+					entity.setStateFlag(ID.F.IsMarried, buf.readBoolean());
+					entity.setStateFlag(ID.F.NoFuel, buf.readBoolean());
+					entity.setStateFlag(ID.F.UseMelee, buf.readBoolean());
+					entity.setStateFlag(ID.F.UseAmmoLight, buf.readBoolean());
+					entity.setStateFlag(ID.F.UseAmmoHeavy, buf.readBoolean());
+					entity.setStateFlag(ID.F.UseAirLight, buf.readBoolean());
+					entity.setStateFlag(ID.F.UseAirHeavy, buf.readBoolean());
 				}
 				break;
 			}
@@ -129,77 +130,77 @@ public class S2CEntitySync implements IMessage {
 	//發出packet方法
 	@Override
 	public void toBytes(ByteBuf buf) {
-		switch(this.sendType) {
+		switch(this.type) {
 		case 0:	//sync all data
 			{
 				buf.writeByte(0);	//type 0
-				buf.writeInt(this.sendEntity.getEntityId());	//entity id
-				buf.writeInt(this.sendEntity.getStateMinor(ID.N.ShipLevel));
-				buf.writeInt(this.sendEntity.getStateMinor(ID.N.Kills));
-				buf.writeInt(this.sendEntity.getStateMinor(ID.N.ExpCurrent));
-				buf.writeInt(this.sendEntity.getStateMinor(ID.N.NumAmmoLight));
-				buf.writeInt(this.sendEntity.getStateMinor(ID.N.NumAmmoHeavy));
-				buf.writeInt(this.sendEntity.getStateMinor(ID.N.NumGrudge));
-				buf.writeInt(this.sendEntity.getStateMinor(ID.N.NumAirLight));
-				buf.writeInt(this.sendEntity.getStateMinor(ID.N.NumAirHeavy));
+				buf.writeInt(this.entity.getEntityId());
+				buf.writeInt(this.entity.getStateMinor(ID.N.ShipLevel));
+				buf.writeInt(this.entity.getStateMinor(ID.N.Kills));
+				buf.writeInt(this.entity.getStateMinor(ID.N.ExpCurrent));
+				buf.writeInt(this.entity.getStateMinor(ID.N.NumAmmoLight));
+				buf.writeInt(this.entity.getStateMinor(ID.N.NumAmmoHeavy));
+				buf.writeInt(this.entity.getStateMinor(ID.N.NumGrudge));
+				buf.writeInt(this.entity.getStateMinor(ID.N.NumAirLight));
+				buf.writeInt(this.entity.getStateMinor(ID.N.NumAirHeavy));
 
-				buf.writeFloat(this.sendEntity.getStateFinal(ID.HP));
-				buf.writeFloat(this.sendEntity.getStateFinal(ID.ATK));
-				buf.writeFloat(this.sendEntity.getStateFinal(ID.DEF));
-				buf.writeFloat(this.sendEntity.getStateFinal(ID.SPD));
-				buf.writeFloat(this.sendEntity.getStateFinal(ID.MOV));
-				buf.writeFloat(this.sendEntity.getStateFinal(ID.HIT));
-				buf.writeFloat(this.sendEntity.getStateFinal(ID.ATK_H));
-				buf.writeFloat(this.sendEntity.getStateFinal(ID.ATK_AL));
-				buf.writeFloat(this.sendEntity.getStateFinal(ID.ATK_AH));
+				buf.writeFloat(this.entity.getStateFinal(ID.HP));
+				buf.writeFloat(this.entity.getStateFinal(ID.ATK));
+				buf.writeFloat(this.entity.getStateFinal(ID.DEF));
+				buf.writeFloat(this.entity.getStateFinal(ID.SPD));
+				buf.writeFloat(this.entity.getStateFinal(ID.MOV));
+				buf.writeFloat(this.entity.getStateFinal(ID.HIT));
+				buf.writeFloat(this.entity.getStateFinal(ID.ATK_H));
+				buf.writeFloat(this.entity.getStateFinal(ID.ATK_AL));
+				buf.writeFloat(this.entity.getStateFinal(ID.ATK_AH));
 				
-				buf.writeByte(this.sendEntity.getStateEmotion(ID.S.State));
-				buf.writeByte(this.sendEntity.getStateEmotion(ID.S.Emotion));
-				buf.writeByte(this.sendEntity.getStateEmotion(ID.S.Emotion2));
+				buf.writeByte(this.entity.getStateEmotion(ID.S.State));
+				buf.writeByte(this.entity.getStateEmotion(ID.S.Emotion));
+				buf.writeByte(this.entity.getStateEmotion(ID.S.Emotion2));
 
-				buf.writeByte(this.sendEntity.getBonusPoint(ID.HP));
-				buf.writeByte(this.sendEntity.getBonusPoint(ID.ATK));
-				buf.writeByte(this.sendEntity.getBonusPoint(ID.DEF));
-				buf.writeByte(this.sendEntity.getBonusPoint(ID.SPD));
-				buf.writeByte(this.sendEntity.getBonusPoint(ID.MOV));
-				buf.writeByte(this.sendEntity.getBonusPoint(ID.HIT));
+				buf.writeByte(this.entity.getBonusPoint(ID.HP));
+				buf.writeByte(this.entity.getBonusPoint(ID.ATK));
+				buf.writeByte(this.entity.getBonusPoint(ID.DEF));
+				buf.writeByte(this.entity.getBonusPoint(ID.SPD));
+				buf.writeByte(this.entity.getBonusPoint(ID.MOV));
+				buf.writeByte(this.entity.getBonusPoint(ID.HIT));
 
-				buf.writeBoolean(this.sendEntity.getStateFlag(ID.F.CanFloatUp));
-				buf.writeBoolean(this.sendEntity.getStateFlag(ID.F.IsMarried));
-				buf.writeBoolean(this.sendEntity.getStateFlag(ID.F.NoFuel));
-				buf.writeBoolean(this.sendEntity.getStateFlag(ID.F.UseMelee));
-				buf.writeBoolean(this.sendEntity.getStateFlag(ID.F.UseAmmoLight));
-				buf.writeBoolean(this.sendEntity.getStateFlag(ID.F.UseAmmoHeavy));
-				buf.writeBoolean(this.sendEntity.getStateFlag(ID.F.UseAirLight));
-				buf.writeBoolean(this.sendEntity.getStateFlag(ID.F.UseAirHeavy));
+				buf.writeBoolean(this.entity.getStateFlag(ID.F.CanFloatUp));
+				buf.writeBoolean(this.entity.getStateFlag(ID.F.IsMarried));
+				buf.writeBoolean(this.entity.getStateFlag(ID.F.NoFuel));
+				buf.writeBoolean(this.entity.getStateFlag(ID.F.UseMelee));
+				buf.writeBoolean(this.entity.getStateFlag(ID.F.UseAmmoLight));
+				buf.writeBoolean(this.entity.getStateFlag(ID.F.UseAmmoHeavy));
+				buf.writeBoolean(this.entity.getStateFlag(ID.F.UseAirLight));
+				buf.writeBoolean(this.entity.getStateFlag(ID.F.UseAirHeavy));
 				
-				buf.writeFloat(this.sendEntity.getEffectEquip(ID.EF_CRI));
-				buf.writeFloat(this.sendEntity.getEffectEquip(ID.EF_DHIT));
-				buf.writeFloat(this.sendEntity.getEffectEquip(ID.EF_THIT));
-				buf.writeFloat(this.sendEntity.getEffectEquip(ID.EF_MISS));
+				buf.writeFloat(this.entity.getEffectEquip(ID.EF_CRI));
+				buf.writeFloat(this.entity.getEffectEquip(ID.EF_DHIT));
+				buf.writeFloat(this.entity.getEffectEquip(ID.EF_THIT));
+				buf.writeFloat(this.entity.getEffectEquip(ID.EF_MISS));
 			}
 			break;
 		case 1:	//entity state only
 			{
 				buf.writeByte(1);	//type 1
-				buf.writeInt(this.sendEntity.getEntityId());	//entity id
-				buf.writeByte(this.sendEntity.getStateEmotion(ID.S.State));
-				buf.writeByte(this.sendEntity.getStateEmotion(ID.S.Emotion));
-				buf.writeByte(this.sendEntity.getStateEmotion(ID.S.Emotion2));
+				buf.writeInt(this.entity.getEntityId());
+				buf.writeByte(this.entity.getStateEmotion(ID.S.State));
+				buf.writeByte(this.entity.getStateEmotion(ID.S.Emotion));
+				buf.writeByte(this.entity.getStateEmotion(ID.S.Emotion2));
 			}
 			break;
 		case 2:	//entity flag only
 			{
 				buf.writeByte(2);	//type 2
-				buf.writeInt(this.sendEntity.getEntityId());	//entity id
-				buf.writeBoolean(this.sendEntity.getStateFlag(ID.F.CanFloatUp));
-				buf.writeBoolean(this.sendEntity.getStateFlag(ID.F.IsMarried));
-				buf.writeBoolean(this.sendEntity.getStateFlag(ID.F.NoFuel));
-				buf.writeBoolean(this.sendEntity.getStateFlag(ID.F.UseMelee));
-				buf.writeBoolean(this.sendEntity.getStateFlag(ID.F.UseAmmoLight));
-				buf.writeBoolean(this.sendEntity.getStateFlag(ID.F.UseAmmoHeavy));
-				buf.writeBoolean(this.sendEntity.getStateFlag(ID.F.UseAirLight));
-				buf.writeBoolean(this.sendEntity.getStateFlag(ID.F.UseAirHeavy));	
+				buf.writeInt(this.entity.getEntityId());
+				buf.writeBoolean(this.entity.getStateFlag(ID.F.CanFloatUp));
+				buf.writeBoolean(this.entity.getStateFlag(ID.F.IsMarried));
+				buf.writeBoolean(this.entity.getStateFlag(ID.F.NoFuel));
+				buf.writeBoolean(this.entity.getStateFlag(ID.F.UseMelee));
+				buf.writeBoolean(this.entity.getStateFlag(ID.F.UseAmmoLight));
+				buf.writeBoolean(this.entity.getStateFlag(ID.F.UseAmmoHeavy));
+				buf.writeBoolean(this.entity.getStateFlag(ID.F.UseAirLight));
+				buf.writeBoolean(this.entity.getStateFlag(ID.F.UseAirHeavy));	
 			}
 			break;
 		}

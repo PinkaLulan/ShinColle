@@ -28,6 +28,9 @@ public class ModEntity {
 		createEntity(EntityBattleshipRe.class, "EntityBattleshipRe", modEntityID++);
 		createEntity(EntityCarrierWo.class, "EntityCarrierWo", modEntityID++);
 		createEntity(EntityDestroyerI.class, "EntityDestroyerI", modEntityID++);
+		createEntity(EntityDestroyerRo.class, "EntityDestroyerRo", modEntityID++);
+		createEntity(EntityDestroyerHa.class, "EntityDestroyerHa", modEntityID++);
+		createEntity(EntityDestroyerNi.class, "EntityDestroyerNi", modEntityID++);
 		createEntity(EntityHeavyCruiserRi.class, "EntityHeavyCruiserRi", modEntityID++);
 				
 		//register projectile entity
@@ -40,7 +43,7 @@ public class ModEntity {
 		createProjectileEntity(EntityRenderVortex.class, "EntityRenderVortex", modEntityID++);
 		
 		//register test entity
-		createEntityGlobalID(EntityTest.class, "EntityTest", 0x20FF45, 0x0040FF);
+//		createEntityGlobalID(EntityTest.class, "EntityTest", 0x20FF45, 0x0040FF);
 	
 	}
 	

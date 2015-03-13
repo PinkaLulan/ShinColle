@@ -38,7 +38,7 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
 	
 	public EntityBattleshipRe(World world) {
 		super(world);
-		this.setSize(0.9F, 1.8F);
+		this.setSize(0.8F, 1.8F);
 		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityBattleshipRe.name"));
 		this.ShipType = ID.ShipType.BATTLESHIP;
 		this.ShipID = ID.S_BattleshipRE;
@@ -80,7 +80,7 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
 		//moving
 		this.tasks.addTask(21, new EntityAIOpenDoor(this, true));			   //0000
 		this.tasks.addTask(23, new EntityAIShipFloating(this));				   //0101
-		this.tasks.addTask(24, new EntityAIShipWatchClosest(this, EntityPlayer.class, 8F, 0.1F)); //0010
+		this.tasks.addTask(24, new EntityAIShipWatchClosest(this, EntityPlayer.class, 6F, 0.1F)); //0010
 		this.tasks.addTask(25, new EntityAIWander(this, 0.8D));				   //0001
 		this.tasks.addTask(25, new EntityAILookIdle(this));					   //0011
 
@@ -94,35 +94,17 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
 		this.targetTasks.addTask(3, new EntityAIHurtByTarget(this, false));
 		this.targetTasks.addTask(4, new EntityAIShipInRangeTarget(this, 0.4F, 1));
 	}
-	
-	//平常音效
-	protected String getLivingSound() {
-	    return Reference.MOD_ID+":ship-say";
-	}
-	
-	//受傷音效
-	protected String getHurtSound() {
-		
-	    return Reference.MOD_ID+":ship-hurt";
-	}
-	
-	//死亡音效
-	protected String getDeathSound() {
-		return Reference.MOD_ID+":ship-death";
-	}
-	
-	//音效大小
-	protected float getSoundVolume() {
-	    return 0.4F;
-	}
 
 	//增加艦載機數量計算
 	@Override
 	public void calcShipAttributes(byte id) {
-		super.calcShipAttributes(id);
+		EffectEquip[ID.EF_DHIT] = EffectEquip[ID.EF_DHIT] + 0.1F;
+		EffectEquip[ID.EF_THIT] = EffectEquip[ID.EF_THIT] + 0.1F;
 		
 		this.maxAircraftLight += 4;
 		this.maxAircraftHeavy += 3;
+		
+		super.calcShipAttributes(id);	
 	}
 	
 	@Override
@@ -146,7 +128,7 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
 		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
         //spawn laser particle
-		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(14, posX, posY + 1.5D, posZ, target.posX, target.posY+target.height/2F, target.posZ), point);
+		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(14, worldObj.provider.dimensionId, posX, posY + 1.5D, posZ, target.posX, target.posY+target.height/2F, target.posZ), point);
 	
 		//play sound: (sound name, volume, pitch) 
         playSound(Reference.MOD_ID+":ship-laser", 0.2F, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));

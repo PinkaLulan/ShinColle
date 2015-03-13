@@ -28,6 +28,7 @@ import net.minecraft.entity.passive.EntityCow;
 import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -54,6 +55,7 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
+import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
@@ -64,7 +66,7 @@ public class EntityDestroyerI extends BasicEntityShipSmall {
 	
 	public EntityDestroyerI(World world) {
 		super(world);
-		this.setSize(0.9F, 1.4F);	//碰撞大小 跟模型大小無關
+		this.setSize(0.8F, 1.4F);	//碰撞大小 跟模型大小無關
 		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityDestroyerI.name"));
 		this.ShipType = ID.ShipType.DESTROYER;
 		this.ShipID = ID.S_DestroyerI;
@@ -106,7 +108,7 @@ public class EntityDestroyerI extends BasicEntityShipSmall {
 		//moving
 		this.tasks.addTask(21, new EntityAIOpenDoor(this, true));			   //0000
 		this.tasks.addTask(23, new EntityAIShipFloating(this));				   //0101
-		this.tasks.addTask(24, new EntityAIShipWatchClosest(this, EntityPlayer.class, 8F, 0.1F)); //0010
+		this.tasks.addTask(24, new EntityAIShipWatchClosest(this, EntityPlayer.class, 6F, 0.1F)); //0010
 		this.tasks.addTask(25, new EntityAIWander(this, 0.8D));				   //0001
 		this.tasks.addTask(26, new EntityAILookIdle(this));					   //0011
 
@@ -133,27 +135,46 @@ public class EntityDestroyerI extends BasicEntityShipSmall {
 		this.targetTasks.addTask(3, new EntityAIOwnerHurtTarget(this));				//0001
 		this.targetTasks.addTask(4, new EntityAIShipInRangeTarget(this, 0.4F, 1));	//0001
 	}
-
-	//平常音效
-	protected String getLivingSound() {
-        return Reference.MOD_ID+":ship-say";
-    }
-	
-	//受傷音效
-    protected String getHurtSound() {
-    	
-        return Reference.MOD_ID+":ship-hurt";
-    }
-
-    //死亡音效
-    protected String getDeathSound() {
-    	return Reference.MOD_ID+":ship-death";
-    }
-
-    //音效大小
-    protected float getSoundVolume() {
-        return 0.4F;
-    }
+    
+    //check entity state every tick
+  	@Override
+  	public void onLivingUpdate() {
+  		super.onLivingUpdate();
+          
+  		if(!worldObj.isRemote) {
+  			//add aura to master every 100 ticks
+  			if(this.ticksExisted % 100 == 0) {
+  				EntityPlayerMP player = EntityHelper.getOnlinePlayer(this.getOwner());
+  				if(getStateFlag(ID.F.IsMarried) && getStateMinor(ID.N.NumGrudge) > 0 && player != null && getDistanceSqToEntity(player) < 256D) {
+  					//potion effect: id, time, level
+  	  	  			player.addPotionEffect(new PotionEffect(Potion.moveSpeed.id, 300, getStateMinor(ID.N.ShipLevel) / 30 + 1));
+  				}
+  			}
+  		}    
+  	}
+  	
+  	@Override
+  	public boolean interact(EntityPlayer player) {	
+		ItemStack itemstack = player.inventory.getCurrentItem();  //get item in hand
+		
+		//use cake to change state
+		if(itemstack != null) {
+			if(itemstack.getItem() == Items.cake) {
+				switch(getStateEmotion(ID.S.State)) {
+				case ID.State.NORMAL:
+					setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+					break;
+				case ID.State.EQUIP00:
+					setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+					break;			
+				}
+				return true;
+			}
+		}
+		
+		super.interact(player);
+		return false;
+  	}
 
 
 }

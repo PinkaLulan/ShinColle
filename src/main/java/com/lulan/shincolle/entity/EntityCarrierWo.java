@@ -62,7 +62,7 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
 	
 	public EntityCarrierWo(World world) {
 		super(world);
-		this.setSize(0.9F, 1.7F);
+		this.setSize(0.8F, 1.7F);
 		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityCarrierWo.name"));
 		this.ShipType = ID.ShipType.STANDARD_CARRIER;
 		this.ShipID = ID.S_CarrierWO;
@@ -104,7 +104,7 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
 		//moving
 		this.tasks.addTask(21, new EntityAIOpenDoor(this, true));			   //0000
 		this.tasks.addTask(23, new EntityAIShipFloating(this));				   //0101
-		this.tasks.addTask(24, new EntityAIShipWatchClosest(this, EntityPlayer.class, 8F, 0.1F)); //0010
+		this.tasks.addTask(24, new EntityAIShipWatchClosest(this, EntityPlayer.class, 6F, 0.1F)); //0010
 		this.tasks.addTask(25, new EntityAIWander(this, 0.8D));				   //0001
 		this.tasks.addTask(25, new EntityAILookIdle(this));					   //0011
 
@@ -117,27 +117,6 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
 		this.targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this));
 		this.targetTasks.addTask(3, new EntityAIShipInRangeTarget(this, 0.4F, 1));
 	}
-	
-	//平常音效
-	protected String getLivingSound() {
-        return Reference.MOD_ID+":ship-say";
-    }
-	
-	//受傷音效
-    protected String getHurtSound() {
-    	
-        return Reference.MOD_ID+":ship-hurt";
-    }
-
-    //死亡音效
-    protected String getDeathSound() {
-    	return Reference.MOD_ID+":ship-death";
-    }
-
-    //音效大小
-    protected float getSoundVolume() {
-        return 0.4F;
-    }
     
     //增加艦載機數量計算
   	@Override
@@ -155,7 +134,7 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
 //    		if(!this.isSitting() && this.ticksExisted % 5 ==  0) {
     		if(this.ticksExisted % 5 ==  0) {
     			//若顯示裝備時, 則生成眼睛煙霧特效 (client only)
-    			if(getStateEmotion(ID.S.State) >= ID.State.EQUIP) {
+    			if(getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
     				float[] eyePosL = new float[] {0.7F, 0.3F, 1F};
     				float[] eyePosR = new float[] {0.7F, 0.3F, -1F};
     				float radYaw = 0F;
@@ -208,6 +187,29 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
     	
     	super.onLivingUpdate();
     }
+    
+    @Override
+  	public boolean interact(EntityPlayer player) {	
+		ItemStack itemstack = player.inventory.getCurrentItem();  //get item in hand
+		
+		//use cake to change state
+		if(itemstack != null) {
+			if(itemstack.getItem() == Items.cake) {
+				switch(getStateEmotion(ID.S.State)) {
+				case ID.State.NORMAL:
+					setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+					break;
+				case ID.State.EQUIP00:
+					setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+					break;			
+				}
+				return true;
+			}
+		}
+		
+		super.interact(player);
+		return false;
+  	}
 	
 
 }

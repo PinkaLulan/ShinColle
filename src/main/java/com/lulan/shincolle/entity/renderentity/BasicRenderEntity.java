@@ -52,9 +52,10 @@ abstract public class BasicRenderEntity extends Entity {
 //		if(this.ticksExisted > 200) {
 //			this.setDead();
 //		}
-//		
-//		if(!this.worldObj.isRemote && this.ticksExisted % 20 == 0) {
-//			LogHelper.info("DEBUG : render entity at "+this.boundingBox);
+		
+//		if(!this.worldObj.isRemote && this.ticksExisted % 21 == 0) {
+//			LogHelper.info("DEBUG : set inv "+(this.ticksExisted % 2 == 0));
+//			this.setInvisible(this.ticksExisted % 2 == 0);
 //		}
 	}
 	
