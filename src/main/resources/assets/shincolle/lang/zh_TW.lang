@@ -28,6 +28,7 @@ item.shincolle:Ammo3.name=重型怨念彈集裝箱
 item.shincolle:BucketRepair.name=修復桶
 item.shincolle:Grudge.name=怨念
 item.shincolle:MarriageRing.name=棲艦婚戒
+item.shincolle:RepairGoddess.name=深海女神的怨念
 
 # Equip
 item.shincolle:EquipCannon.name=5吋單裝砲
@@ -43,11 +44,11 @@ item.shincolle:EquipCannon9.name=8吋三連裝砲
 item.shincolle:EquipCannon10.name=16吋三連裝砲
 item.shincolle:EquipRadar.name=對空雷達 Mk.I
 item.shincolle:EquipRadar1.name=對空雷達 Mk.II
-item.shincolle:EquipRadar2.name=深海對空雷達
-item.shincolle:EquipRadar3.name=水上雷達 Mk.I
-item.shincolle:EquipRadar4.name=水上雷達 Mk.II
-item.shincolle:EquipRadar5.name=深海水上雷達
-item.shincolle:EquipRadar6.name=深海聲納
+item.shincolle:EquipRadar2.name=水上雷達 Mk.I
+item.shincolle:EquipRadar3.name=水上雷達 Mk.II
+item.shincolle:EquipRadar4.name=深海聲納
+item.shincolle:EquipRadar5.name=深海對空雷達
+item.shincolle:EquipRadar6.name=深海水上雷達
 item.shincolle:EquipRadar7.name=深海聲納 Mk.II
 item.shincolle:EquipTurbine.name=深海引擎
 item.shincolle:EquipTurbine1.name=改良型深海渦輪
@@ -135,3 +136,5 @@ gui.shincolle:missrateair=失誤率(艦載機)
 gui.shincolle:marriage=婚姻狀態
 gui.shincolle:married=已婚
 gui.shincolle:unmarried=未婚
+gui.shincolle:repairgoddess=深海女神的怨念使棲艦不會被擊沈。
+

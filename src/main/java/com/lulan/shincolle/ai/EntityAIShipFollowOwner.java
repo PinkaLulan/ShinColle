@@ -171,26 +171,13 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
             	if(!this.PetPathfinder.tryMoveToEntityLiving(this.TheOwner, 1D)) {
             		LogHelper.info("DEBUG : AI try move fail, teleport entity");
             		if(this.distSq > this.maxDistSq) {
-                    	//重複找18次目標附近的隨機點, 直接傳送到目的地
-                    	int offsetX, offsetZ, i, j, k;
-                    	Block targetBlock;
-                    	for(int t=0; t<18; t++) {
-                    		offsetX = this.TheWorld.rand.nextInt(7);
-                        	offsetZ = this.TheWorld.rand.nextInt(7);
-                            i = (int)(this.TheOwner.posX) - 3 + offsetX;
-                            j = (int)(this.TheOwner.posZ) - 3 + offsetZ;
-                            k = (int)(this.TheOwner.boundingBox.minY) - 1;
-                            targetBlock = this.TheWorld.getBlock(i, k, j);
-                            //bug: getBlock always get air from water block
-                            if(targetBlock != null && 
-                               (targetBlock.isSideSolid(TheWorld, i, k, j, ForgeDirection.UP) ||
-                            	targetBlock == Blocks.water ||
-                            	targetBlock == Blocks.lava)) {
-                            	this.ThePet.setLocationAndAngles((double)(i+0.5D), (double)(k+1D), (double)(j+0.5D), this.ThePet.rotationYaw, this.ThePet.rotationPitch);
-                            	this.PetPathfinder.clearPathEntity();
-                                return;
-                            }
-                    	}
+            			//相同dim才傳送
+            			LogHelper.info("DEBUG : Ai entity dim "+ThePet.dimension+" "+TheOwner.dimension);
+            			if(this.ThePet.dimension == this.TheOwner.dimension) {
+            				this.ThePet.setLocationAndAngles(this.TheOwner.posX, this.TheOwner.posY + 0.5D, this.TheOwner.posZ, this.ThePet.rotationYaw, this.ThePet.rotationPitch);
+                        	this.PetPathfinder.clearPathEntity();
+                            return;
+            			}
                     }
                 }//end !try move to owner
             }//end path find cooldown

@@ -150,7 +150,7 @@ public class ShipCalc {
     		shipList.add(new int[] {ID.S_DestroyerHA, 180});
     		shipList.add(new int[] {ID.S_DestroyerNI, 170});
     		
-    		if(totalMats > 128) {	//>128 : LCruiser/HCruiser
+    		if(totalMats >= 128) {	//>128 : LCruiser/HCruiser
     			shipList.add(new int[] {ID.S_HeavyCruiserRI, 50 + material[2] / 2});
     		}
 
@@ -158,7 +158,7 @@ public class ShipCalc {
     	else {							//large egg
     		shipList.add(new int[] {ID.S_CarrierWO, 300 + material[3] / 4});
     		
-    		if(totalMats > 1600) {
+    		if(totalMats >= 1600) {
     			shipList.add(new int[] {ID.S_BattleshipRE, 100 + material[2] / 4});
     		}
     	}

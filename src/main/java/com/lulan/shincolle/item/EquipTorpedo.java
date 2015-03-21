@@ -2,6 +2,8 @@ package com.lulan.shincolle.item;
 
 import java.util.List;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
@@ -30,6 +32,21 @@ public class EquipTorpedo extends BasicEquip {
 	public IIcon getIconFromDamage(int meta) {
 	    return icons[0];
 	}
+	
+	//item glow effect
+	@Override
+	@SideOnly(Side.CLIENT)
+    public boolean hasEffect(ItemStack item, int pass) {
+		int meta = item.getItemDamage();
+		
+		switch(meta) {
+		case 3:		//cuttlefish
+		case 4:		//high-speed
+			return true;
+		}
+		
+        return false;
+    }
 
 }
 

@@ -15,7 +15,6 @@ public class ModItems {
 	//materials
 	public static final BasicItem AbyssMetal = new AbyssMetal();
 	public static final BasicItem Ammo = new Ammo();
-	public static final BasicItem BucketRepair = new BucketRepair();
 	public static final BasicItem Grudge = new Grudge();
 	//equip	
 	public static final BasicItem EquipAirplane = new EquipAirplane();
@@ -25,7 +24,9 @@ public class ModItems {
 	public static final BasicItem EquipTorpedo = new EquipTorpedo();
 	public static final BasicItem EquipTurbine = new EquipTurbine();
 	//misc
+	public static final BasicItem BucketRepair = new RepairBucket();
 	public static final BasicItem MarriageRing = new MarriageRing();
+	public static final BasicItem RepairGoddess = new RepairGoddess();
 
 	//登錄item到遊戲中 (在pre init階段登錄)
 	public static void init() {
@@ -34,7 +35,6 @@ public class ModItems {
 		//materials
 		GameRegistry.registerItem(AbyssMetal, "AbyssMetal");
 		GameRegistry.registerItem(Ammo, "Ammo");
-		GameRegistry.registerItem(BucketRepair, "BucketRepair");
 		GameRegistry.registerItem(Grudge, "Grudge");
 		//equip		
 		GameRegistry.registerItem(EquipAirplane, "EquipAirplane");
@@ -44,7 +44,9 @@ public class ModItems {
 		GameRegistry.registerItem(EquipTorpedo, "EquipTorpedo");
 		GameRegistry.registerItem(EquipTurbine, "EquipTurbine");
 		//misc
+		GameRegistry.registerItem(BucketRepair, "BucketRepair");
 		GameRegistry.registerItem(MarriageRing, "MarriageRing");
+		GameRegistry.registerItem(RepairGoddess, "RepairGoddess");
 	}
 	
 }

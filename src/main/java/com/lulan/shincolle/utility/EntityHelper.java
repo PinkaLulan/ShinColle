@@ -16,6 +16,7 @@ import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -39,8 +40,8 @@ public class EntityHelper {
 			if(target instanceof EntityPlayer) {
 				getOwner = target;
 			}
-			else if(target instanceof BasicEntityShip) {
-				getOwner = ((BasicEntityShip)target).getOwner();
+			else if(target instanceof EntityTameable) {
+				getOwner = ((EntityTameable)target).getOwner();
 			}
 			else if(target instanceof BasicEntityAirplane) {
 				//先取得airplane的owner(為一種Ship), 再取得該ship的owner(為一種EntityPlayer)
@@ -53,6 +54,7 @@ public class EntityHelper {
 				}
 			}
 			
+			//檢查uuid是否相同
 			if(getOwner != null && getOwner.getUniqueID().equals(owner.getUniqueID())) {
 				return true;
 			}

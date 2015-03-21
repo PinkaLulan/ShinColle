@@ -28,6 +28,7 @@ item.shincolle:Ammo3.name=Heavy Grudgeful Ammo Container
 item.shincolle:BucketRepair.name=Repair Bucket
 item.shincolle:Grudge.name=Grudge
 item.shincolle:MarriageRing.name=Seikan Wedding Ring
+item.shincolle:RepairGoddess.name=The Grudge of Abyssal Goddess
 
 # Equip
 item.shincolle:EquipCannon.name=5-Inch Single Cannon
@@ -43,11 +44,11 @@ item.shincolle:EquipCannon9.name=8-Inch Triple Cannon
 item.shincolle:EquipCannon10.name=16-Inch Triple Cannon
 item.shincolle:EquipRadar.name=Air Radar Mk.I
 item.shincolle:EquipRadar1.name=Air Radar Mk.II
-item.shincolle:EquipRadar2.name=Abyssal Air Radar
-item.shincolle:EquipRadar3.name=Surface Radar Mk.I
-item.shincolle:EquipRadar4.name=Surface Radar Mk.II
-item.shincolle:EquipRadar5.name=Abyssal Surface Radar
-item.shincolle:EquipRadar6.name=Abyssal Sonar
+item.shincolle:EquipRadar2.name=Surface Radar Mk.I
+item.shincolle:EquipRadar3.name=Surface Radar Mk.II
+item.shincolle:EquipRadar4.name=Abyssal Sonar
+item.shincolle:EquipRadar5.name=Abyssal Air Radar
+item.shincolle:EquipRadar6.name=Abyssal Surface Radar
 item.shincolle:EquipRadar7.name=Abyssal Sonar Mk.II
 item.shincolle:EquipTurbine.name=Abyssal Engine
 item.shincolle:EquipTurbine1.name=Improved Abyssal Turbine
@@ -135,3 +136,5 @@ gui.shincolle:missrateair=Miss(Aircraft)
 gui.shincolle:marriage=Marriage
 gui.shincolle:married=Married
 gui.shincolle:unmarried=Unmarried
+gui.shincolle:repairgoddess=Prevents sinking from deadly damage.
+

@@ -96,13 +96,13 @@ public class EquipCalc {
 			equipList.add(new int[] {ID.EquipType.ARMOR_LO, 200});
 			equipList.add(new int[] {ID.EquipType.RADAR_LO, 120});
 			
-			if(totalMats > 128) {
+			if(totalMats > 127) {
 				//TORPEDO_LO uncommon, AIR_R_LO rare
 				equipList.add(new int[] {ID.EquipType.TORPEDO_LO, 140});
 				equipList.add(new int[] {ID.EquipType.AIR_R_LO, 100});
 			}
 			
-			if(totalMats > 160) {
+			if(totalMats > 159) {
 				//CANNON_TW_LO rare
 				equipList.add(new int[] {ID.EquipType.CANNON_TW_LO, 70});
 			}
@@ -223,7 +223,7 @@ public class EquipCalc {
 		ItemStack item = null;
 		int itemType = 0;
 		
-		//get itemstack
+		//get itemstack, itemId - 該類item的起始值 = 該類item的meta值
 		if(itemId >= ID.E_ARMOR) {
 			item = new ItemStack(ModItems.EquipArmor);
 			item.setItemDamage(itemId - ID.E_ARMOR);

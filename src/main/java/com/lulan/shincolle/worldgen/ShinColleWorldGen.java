@@ -56,7 +56,7 @@ public class ShinColleWorldGen implements IWorldGenerator {
 	//一般世界生成方法  每個chunk都會呼叫一次
 	private void generateSurface(World world, Random rand, int x, int z) {
 		//Polymetal生成: 生成大小4~8個block 每chunk生成次數10次 生成高度2~40
-		genPolymetal = new WorldGenMinable(ModBlocks.BlockPolymetalOre, 4 + rand.nextInt(5));  //每個chunk會重新隨機一次生成礦物大小
+		genPolymetal = new WorldGenMinable(ModBlocks.BlockPolymetalOre, 6 + rand.nextInt(4));  //每個chunk會重新隨機一次生成礦物大小
 		oreGenerator(genPolymetal, world, rand, x, z, 6, 3, 40);
 		
 	}

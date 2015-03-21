@@ -123,7 +123,7 @@ public class S2CEntitySync implements IMessage {
 			}
 		}
 		else {
-			LogHelper.info("DEBUG : packet handler: S2CEntitySync entity is null");
+			LogHelper.info("DEBUG : packet handler: S2CEntitySync entity is null "+type);
 		}
 	}
 

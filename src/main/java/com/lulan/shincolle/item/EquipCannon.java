@@ -2,6 +2,8 @@ package com.lulan.shincolle.item;
 
 import java.util.List;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
@@ -42,5 +44,23 @@ public class EquipCannon extends BasicEquip {
 	   
 	    return icons[0];
 	}
+	
+	//item glow effect
+	@Override
+	@SideOnly(Side.CLIENT)
+    public boolean hasEffect(ItemStack item, int pass) {
+		int meta = item.getItemDamage();
+		
+		switch(meta) {
+		case 6:		//14 tw
+		case 7:		//16 tw
+		case 8:		//20 tw
+		case 9:		//8 tr
+		case 10:	//16 tr
+			return true;
+		}
+		
+        return false;
+    }
 
 }

@@ -507,10 +507,18 @@ public abstract class BasicEntityShip extends EntityTameable {
 	//manual send sync packet
 	public void sendSyncPacket() {
 		if(!worldObj.isRemote) {
+			//for owner, send all data
 			if(this.getOwner() != null) {
 				EntityPlayerMP player = EntityHelper.getOnlinePlayer(this.getOwner());
-				CommonProxy.channel.sendTo(new S2CEntitySync(this, 0), player);
+				//owner在附近才需要sync
+				if(player != null && this.getDistanceToEntity(player) < 30F) {
+					CommonProxy.channel.sendTo(new S2CEntitySync(this, 0), player);
+				}	
 			}
+			
+			//for other player, send ship state for display
+			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 30D);
+			CommonProxy.channel.sendToAllAround(new S2CEntitySync(this, 1), point);
 		}
 	}
 	
@@ -1076,7 +1084,7 @@ public abstract class BasicEntityShip extends EntityTameable {
     	if(this.getStateEmotion(ID.S.Emotion) != ID.Emotion.O_O) {
     		this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
     	}
-		
+
 		//進行def計算
         float reduceAtk = atk * (1F - StateFinal[ID.DEF] / 100F);    
         if(atk < 0) { atk = 0; }
@@ -1084,26 +1092,50 @@ public abstract class BasicEntityShip extends EntityTameable {
         //若掉到世界外, 則傳送回y=4
         if(attacker.getDamageType().equals("outOfWorld")) {
         	this.posY = 4D;
-        	return true;
+        	return false;
         }
         
         //無敵的entity傷害無效
 		if(this.isEntityInvulnerable()) {	
             return false;
         }
-		else if(attacker.getSourceOfDamage() != null) { 
+		else if(attacker.getSourceOfDamage() != null) {
+			Entity entity = attacker.getSourceOfDamage();
+			
 			//不會對自己造成傷害
-			if(attacker.getSourceOfDamage().equals(this)) {  
+			if(entity.equals(this)) {  
 				return false;
 			}
 			
 			//若攻擊方同樣為ship, 則傷害-95% (使ship vs ship能打久一點)
-			if(attacker.getSourceOfDamage() instanceof BasicEntityShip) {
+			if(entity instanceof BasicEntityShip || entity instanceof BasicEntityAirplane) {
 				reduceAtk *= 0.05F;
+			}
+			
+			//若攻擊方為player, 則修正傷害
+			if(entity instanceof EntityPlayer) {
+				//若攻擊者為owner, 傷害 = 25%
+				if(this.getOwner() != null && entity.getUniqueID().equals(this.getOwner().getUniqueID())) {
+					reduceAtk *= 0.25F;
+				}
+				else {
+					//若禁止friendlyFire, 則傷害設為0
+					if(!ConfigHandler.friendlyFire) {
+						return false;
+					}
+				}
 			}
 
 			//取消坐下動作
 			this.setSitting(false);
+			
+			//若傷害力可能致死, 則尋找物品中有無repair goddess來取消掉此攻擊
+			if(reduceAtk >= (this.getHealth() - 1F)) {
+				if(this.decrSupplies(8)) {
+					this.setHealth(this.getMaxHealth());
+				}
+				return false;
+			}
    
             //執行父class的被攻擊判定, 包括重置love時間, 計算火毒抗性, 計算鐵砧/掉落傷害, 
             //hurtResistantTime(0.5sec無敵時間)計算, 
@@ -1341,7 +1373,7 @@ public abstract class BasicEntityShip extends EntityTameable {
 		
 	}
 	
-	//decrese ammo amount with type, return true or false(not enough item)
+	//decrese ammo/grudge/repair item, return true or false(not enough item)
 	protected boolean decrSupplies(int type) {
 		boolean isEnoughItem = true;
 		int itemNum = 1;
@@ -1370,6 +1402,12 @@ public abstract class BasicEntityShip extends EntityTameable {
 		case 6: //use 1 grudge block
 			itemType = new ItemStack(ModBlocks.BlockGrudgeHeavy,1);
 			break;
+		case 7:	//use 1 repair bucket
+			itemType = new ItemStack(ModItems.BucketRepair,1);
+			break;
+		case 8:	//use 1 repair goddess
+			itemType = new ItemStack(ModItems.RepairGoddess,1);
+			break;	
 		}
 		
 		//search item in ship inventory
@@ -1405,7 +1443,7 @@ public abstract class BasicEntityShip extends EntityTameable {
 		ItemStack slotitem = null;
 
 		//search ship inventory (except equip slots)
-		for(int i=ContainerShipInventory.SLOTS_EQUIP; i<ContainerShipInventory.SLOTS_TOTAL; i++) {
+		for(int i = ContainerShipInventory.SLOTS_EQUIP; i < ContainerShipInventory.SLOTS_TOTAL; i++) {
 			slotitem = this.ExtProps.slots[i];
 			if(slotitem != null && 
 			   slotitem.getItem().equals(parItem.getItem()) && 
