@@ -8,6 +8,7 @@ import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
 import net.minecraft.entity.ai.EntityAIOpenDoor;
@@ -111,11 +112,10 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
 	}
 	
 	public void setAITargetList() {	
-		//target AI
-	//NYI:	this.targetTasks.addTask(1, new EntityAIOwnerPointTarget(this));
 		this.targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this));
 		this.targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this));
-		this.targetTasks.addTask(3, new EntityAIShipInRangeTarget(this, 0.4F, 1));
+		this.targetTasks.addTask(3, new EntityAIHurtByTarget(this, false));
+		this.targetTasks.addTask(4, new EntityAIShipInRangeTarget(this, 0.4F, 1));
 	}
     
     //增加艦載機數量計算
@@ -183,7 +183,7 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
                     		0D, 0.05D, 0D, (byte)16);   	
     			}			
     		}	
-    	}
+    	}//end client
     	
     	super.onLivingUpdate();
     }

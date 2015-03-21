@@ -98,6 +98,7 @@ public class ID {
 		public static final byte NumGrudge = 6;
 		public static final byte NumAirLight = 7;
 		public static final byte NumAirHeavy = 8;
+		public static final byte ImmuneTime = 9;
 	}
 	
 	//Array ID: Entity State

@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import com.lulan.shincolle.client.particle.EntityFXTexts;
 import com.lulan.shincolle.client.particle.EntityFXSpray;
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
@@ -26,6 +27,7 @@ import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.passive.EntityBat;
 import net.minecraft.entity.passive.EntityWaterMob;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
@@ -149,6 +151,16 @@ public abstract class BasicEntityAirplane extends EntityLiving {
 				this.setDead();
 			}
 			else {
+				//超過60秒自動消失
+				if(this.ticksExisted > 1200) {
+					this.setDead();
+				}
+				
+				//達到30秒時強制歸宅
+				if(this.ticksExisted == 600) {
+					this.backHome = true;
+				}
+				
 				//歸宅
 				if(this.backHome && !this.isDead) {
 					if(this.getDistanceToEntity(this.getOwner()) > 2.7F) {
@@ -178,11 +190,6 @@ public abstract class BasicEntityAirplane extends EntityLiving {
 					this.motionX = distX / distSqrt * 0.375D;
 					this.motionZ = distZ / distSqrt * 0.375D;
 					this.motionY = 0.05D;
-				}
-				
-				//超過60秒自動消失
-				if(this.ticksExisted > 1200) {
-					this.setDead();
 				}
 				
 				//攻擊目標消失, 找附近目標 or 設為host目前目標
@@ -239,7 +246,7 @@ public abstract class BasicEntityAirplane extends EntityLiving {
 		float missChance = 0.25F - 0.001F * this.hostEntity.getStateMinor(ID.N.ShipLevel);
         missChance -= this.hostEntity.getEffectEquip(ID.EF_MISS);	//equip miss reduce
         if(missChance > 0.35F) missChance = 0.35F;
-		
+  		
         //calc miss chance
         if(this.rand.nextFloat() < missChance) {
         	atkLight = 0;	//still attack, but no damage
@@ -251,21 +258,21 @@ public abstract class BasicEntityAirplane extends EntityLiving {
         	//roll cri -> roll double hit -> roll triple hit (triple hit more rare)
         	//calc critical
         	if(this.rand.nextFloat() < this.hostEntity.getEffectEquip(ID.EF_CRI)) {
-        		atk *= 1.5F;
+        		atkLight *= 1.5F;
         		//spawn critical particle
             	CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this.hostEntity, 11, false), point);
         	}
         	else {
         		//calc double hit
             	if(this.rand.nextFloat() < this.hostEntity.getEffectEquip(ID.EF_DHIT)) {
-            		atk *= 2F;
+            		atkLight *= 2F;
             		//spawn double hit particle
             		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this.hostEntity, 12, false), point);
             	}
             	else {
             		//calc double hit
                 	if(this.rand.nextFloat() < this.hostEntity.getEffectEquip(ID.EF_THIT)) {
-                		atk *= 3F;
+                		atkLight *= 3F;
                 		//spawn triple hit particle
                 		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this.hostEntity, 13, false), point);
                 	}
@@ -273,6 +280,19 @@ public abstract class BasicEntityAirplane extends EntityLiving {
         	}
         }
         
+        //vs player = 25% dmg
+  		if(target instanceof EntityPlayer) {
+  			atkLight *= 0.25F;
+  			
+  			//check friendly fire
+    		if(!ConfigHandler.friendlyFire) {
+    			atkLight = 0F;
+    		}
+    		else if(atkLight > 59F) {
+    			atkLight = 59F;	//same with TNT
+    		}
+  		}
+
 	    //將atk跟attacker傳給目標的attackEntityFrom方法, 在目標class中計算傷害
 	    //並且回傳是否成功傷害到目標
 	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this), atkLight);

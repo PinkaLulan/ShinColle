@@ -18,6 +18,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.pathfinding.PathEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.EnumChatFormatting;
@@ -30,6 +31,7 @@ import net.minecraft.world.World;
 import com.lulan.shincolle.crafting.ShipCalc;
 import com.lulan.shincolle.creativetab.CreativeTabSC;
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.ExtendShipProps;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.LogHelper;
@@ -56,7 +58,6 @@ public class ShipSpawnEgg extends Item {
         this.setCreativeTab(CreativeTabSC.SC_TAB);
         this.maxStackSize = 1;
         rand = new Random();
-        
     }
   	
     //format: item.MOD_ID:EGG_NAME.name
@@ -115,8 +116,8 @@ public class ShipSpawnEgg extends Item {
   	private Entity spawnEntity(World parWorld, ItemStack item, double parX, double parY, double parZ) {   	
         int entityType = 0;
   		
-  		if (!parWorld.isRemote) {	// never spawn entity on client side 
-  			entityType = ShipCalc.rollShipType(item);
+  		if (!parWorld.isRemote) {	// never spawn entity on client side
+			entityType = ShipCalc.rollShipType(item);
   			entityToSpawnName = ShipCalc.getEntityToSpawnName(entityType);
             
             if (EntityList.stringToClassMapping.containsKey(entityToSpawnName)) {
@@ -145,22 +146,55 @@ public class ShipSpawnEgg extends Item {
   		entity.setAttackTarget((EntityLivingBase)null);
   		entity.func_152115_b(player.getUniqueID().toString());	//set owner uuid
   		
-  		//calc HP ATK DEF SPD MOV HIT bonus point
-  		byte[] bonuspoint = new byte[6];	 
-  		bonuspoint = ShipCalc.getBonusPoints(itemstack);
-  		
-  		//set bonus point
-  		entity.setBonusPoint(ID.HP, bonuspoint[ID.HP]);
-  		entity.setBonusPoint(ID.ATK, bonuspoint[ID.ATK]);
-  		entity.setBonusPoint(ID.DEF, bonuspoint[ID.DEF]);
-  		entity.setBonusPoint(ID.SPD, bonuspoint[ID.SPD]);
-  		entity.setBonusPoint(ID.MOV, bonuspoint[ID.MOV]);
-  		entity.setBonusPoint(ID.HIT, bonuspoint[ID.HIT]);
-  		
-  		//calc ship attribute and save to nbt: hp atk def ...
-  		LogHelper.info("DEBUG : spawn egg set ship attribute");
-  		entity.calcShipAttributes(entity.getShipID());
-  		
+  		//非指定ship egg, 則隨機骰屬性
+		if(itemstack.getItemDamage() > 1) {
+			NBTTagCompound nbt = itemstack.getTagCompound();
+			
+			if(nbt != null) {
+				NBTTagList list = nbt.getTagList("ShipInv", 10);
+				ExtendShipProps extProps = entity.getExtProps();
+				int[] attrs = nbt.getIntArray("Attrs");
+				
+				//load inventory
+				for(int i = 0; i < list.tagCount(); i++) {
+					NBTTagCompound item = (NBTTagCompound) list.getCompoundTagAt(i);
+					byte sid = item.getByte("Slot");
+
+					if(sid >= 0 && sid < extProps.slots.length) {
+						extProps.slots[sid] = ItemStack.loadItemStackFromNBT(item);
+					}
+				}
+				
+				//load bonus point
+				entity.setShipLevel(attrs[0], false);
+				entity.setBonusPoint(ID.HP, (byte)attrs[1]);
+				entity.setBonusPoint(ID.ATK, (byte)attrs[2]);
+				entity.setBonusPoint(ID.DEF, (byte)attrs[3]);
+				entity.setBonusPoint(ID.SPD, (byte)attrs[4]);
+				entity.setBonusPoint(ID.MOV, (byte)attrs[5]);
+				entity.setBonusPoint(ID.HIT, (byte)attrs[6]);
+				entity.setEntityFlagI(ID.F.IsMarried, attrs[7]);
+				
+				entity.calcShipAttributes(entity.getShipID());
+			}
+		}
+		else {
+			//calc HP ATK DEF SPD MOV HIT bonus point
+	  		byte[] bonuspoint = new byte[6];	 
+	  		bonuspoint = ShipCalc.getBonusPoints(itemstack);
+	  		
+	  		//set bonus point
+	  		entity.setBonusPoint(ID.HP, bonuspoint[ID.HP]);
+	  		entity.setBonusPoint(ID.ATK, bonuspoint[ID.ATK]);
+	  		entity.setBonusPoint(ID.DEF, bonuspoint[ID.DEF]);
+	  		entity.setBonusPoint(ID.SPD, bonuspoint[ID.SPD]);
+	  		entity.setBonusPoint(ID.MOV, bonuspoint[ID.MOV]);
+	  		entity.setBonusPoint(ID.HIT, bonuspoint[ID.HIT]);
+	  		
+	  		//calc ship attribute and save to nbt: hp atk def ...
+	  		LogHelper.info("DEBUG : spawn egg: set ship attribute");
+	  		entity.calcShipAttributes(entity.getShipID());
+		}	
   	}
   	
   	/** VANILLA SPAWN EGG onItemUse event (use item to block)

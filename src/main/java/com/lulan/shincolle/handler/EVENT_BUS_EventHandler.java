@@ -4,7 +4,10 @@ import com.lulan.shincolle.entity.BasicEntityAirplane;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
 import com.lulan.shincolle.entity.ExtendShipProps;
+import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.item.BasicEntityItem;
+import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.entity.DataWatcher;
@@ -14,6 +17,8 @@ import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
@@ -26,12 +31,52 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
  */
 public class EVENT_BUS_EventHandler {
 
-	//change vanilla mob drop (add grudge)
+	//change vanilla mob drop (add grudge), this is SERVER event
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
 	public void eventDrop(LivingDropsEvent event) {
 	    if(event.entity instanceof EntityMob || event.entity instanceof EntitySlime ) {
 	        ItemStack drop = new ItemStack(ModItems.Grudge, 1);
 	        event.drops.add(new EntityItem(event.entity.worldObj, event.entity.posX, event.entity.posY, event.entity.posZ, drop));
+	    }
+	    
+	    if(event.entity instanceof BasicEntityShip) {
+	    	BasicEntityShip entity = (BasicEntityShip)event.entity;
+	    	
+	    	//drop ship item
+	    	if(entity.getShipLevel() > 1) {		
+	    		ItemStack item = new ItemStack(ModItems.ShipSpawnEgg, 1, entity.getShipID()+2);
+		    	BasicEntityItem entityItem = new BasicEntityItem(event.entity.worldObj, event.entity.posX, event.entity.posY+0.5D, event.entity.posZ, item);    	
+		    	NBTTagCompound nbt = new NBTTagCompound();
+		    	ExtendShipProps extProps = entity.getExtProps();
+		    	
+		    	//get inventory data
+				NBTTagList list = new NBTTagList();
+				for(int i = 0; i < extProps.slots.length; i++) {
+					if(extProps.slots[i] != null) {
+						NBTTagCompound item2 = new NBTTagCompound();
+						item2.setByte("Slot", (byte)i);
+						extProps.slots[i].writeToNBT(item2);
+						list.appendTag(item2);
+					}
+				}
+				
+				//get attributes data
+		    	int[] attrs = new int[8];
+		    	attrs[0] = entity.getShipLevel() - 1;	//decrease level 1
+		    	attrs[1] = entity.getBonusPoint(ID.HP);
+		    	attrs[2] = entity.getBonusPoint(ID.ATK);
+		    	attrs[3] = entity.getBonusPoint(ID.DEF);
+		    	attrs[4] = entity.getBonusPoint(ID.SPD);
+		    	attrs[5] = entity.getBonusPoint(ID.MOV);
+		    	attrs[6] = entity.getBonusPoint(ID.HIT);
+		    	attrs[7] = entity.getStateFlagI(ID.F.IsMarried);
+		    	
+		    	//save nbt and spawn entity item
+		    	nbt.setTag("ShipInv", list);	//save inventory data to nbt
+		    	nbt.setIntArray("Attrs", attrs);	//save attributes data to nbt
+		    	entityItem.getEntityItem().setTagCompound(nbt);	  //save nbt to entity item
+		    	event.entity.worldObj.spawnEntityInWorld(entityItem);	//spawn entity item
+	    	}	
 	    }
 	}
 	

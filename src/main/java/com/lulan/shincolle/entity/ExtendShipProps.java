@@ -110,7 +110,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 				slots[i].writeToNBT(item);
 				list.appendTag(item);
 			}
-		}		
+		}
 		
 		nbt.setTag(SHIP_EXTPROP_NAME, nbtExt);	
 		LogHelper.info("DEBUG : save entity ExtNBT data on id: "+entity.getEntityId());

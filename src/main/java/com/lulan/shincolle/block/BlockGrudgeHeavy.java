@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 import com.lulan.shincolle.init.ModBlocks;
+import com.lulan.shincolle.item.BasicEntityItem;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.tileentity.BasicTileMulti;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
@@ -112,7 +113,7 @@ public class BlockGrudgeHeavy extends BasicBlockMulti {
 			}
 			
 			//掃描matBuild跟matStock是否有存值, 有的話轉存到block item上並生成到world中
-			EntityItem item = new EntityItem(world, (double)x, (double)y+0.5D, (double)z, new ItemStack(ModBlocks.BlockGrudgeHeavy, 1 ,0));
+			BasicEntityItem item = new BasicEntityItem(world, (double)x, (double)y+0.5D, (double)z, new ItemStack(ModBlocks.BlockGrudgeHeavy, 1 ,0));
 			NBTTagCompound nbt = new NBTTagCompound();
 			
 			int[] mats = new int[4];

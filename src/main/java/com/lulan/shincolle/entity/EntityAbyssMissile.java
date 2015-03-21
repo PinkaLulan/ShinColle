@@ -11,6 +11,7 @@ import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.client.particle.EntityFXSpray;
 import com.lulan.shincolle.client.particle.EntityFXTexts;
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
@@ -287,14 +288,9 @@ public class EntityAbyssMissile extends Entity {
     		float missileAtk = atk;
     		
             if(parHitEntity != null) {	//撞到entity引起爆炸
-            	//若攻擊到玩家, 最大傷害固定為TNT傷害 (non-owner)
-            	if(parHitEntity instanceof EntityPlayer) {
-            		if(missileAtk > 59) missileAtk = 59;	//same with TNT
-            	}
-            	
             	//若攻擊到同陣營entity (ex: owner), 則傷害設為0 (但是依然觸發擊飛特效)
             	if(EntityHelper.checkSameOwner(this.hostEntity.getOwner(), parHitEntity)) {
-            		missileAtk = 0;
+            		missileAtk = 0F;
             	}
             	
             	//calc critical
@@ -303,6 +299,19 @@ public class EntityAbyssMissile extends Entity {
             		//spawn critical particle
             		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
                 	CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this.hostEntity, 11, false), point);
+            	}
+            	
+            	//若攻擊到玩家, 最大傷害固定為TNT傷害 (non-owner)
+            	if(parHitEntity instanceof EntityPlayer) {
+            		missileAtk *= 0.25F;
+            		
+            		//check friendly fire
+            		if(!ConfigHandler.friendlyFire) {
+            			missileAtk = 0F;
+            		}
+            		else if(missileAtk > 59F) {
+            			missileAtk = 59F;	//same with TNT
+            		}
             	}
 
         		//設定該entity受到的傷害
@@ -332,12 +341,7 @@ public class EntityAbyssMissile extends Entity {
                 	
                 	if(hitEntity.canBeCollidedWith() && this.ticksExisted > 10 &&
                      	   !hitEntity.isEntityEqual(this.hostEntity) && 
-                     	   !hitEntity.isEntityEqual(this.hostEntity2)) {               		
-                		//若攻擊到玩家, 傷害固定為TNT傷害
-                    	if(hitEntity instanceof EntityPlayer) {
-                    		if(missileAtk > 59) missileAtk = 59;	//same with TNT
-                    	}
-                    	
+                     	   !hitEntity.isEntityEqual(this.hostEntity2)) {
                     	//若攻擊到同陣營entity (ex: owner), 則傷害設為0 (但是依然觸發擊飛特效)
                 		if(EntityHelper.checkSameOwner(this.hostEntity.getOwner(), hitEntity)) {
                 			missileAtk = 0;
@@ -350,6 +354,19 @@ public class EntityAbyssMissile extends Entity {
                     		//spawn critical particle
                     		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
                         	CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this.hostEntity, 11, false), point);
+                    	}
+                		
+                		//若攻擊到玩家, 最大傷害固定為TNT傷害 (non-owner)
+                    	if(hitEntity instanceof EntityPlayer) {
+                    		missileAtk *= 0.25F;
+                    		
+                    		//check friendly fire
+                    		if(!ConfigHandler.friendlyFire) {
+                    			missileAtk = 0F;
+                    		}
+                    		else if(missileAtk > 59F) {
+                    			missileAtk = 59F;	//same with TNT
+                    		}
                     	}
                     	
                 		//對entity造成傷害

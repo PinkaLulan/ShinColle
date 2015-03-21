@@ -74,7 +74,7 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip {
 			if(this.getAttackTarget() != null && this.getAttackTarget().isDead) {
 				this.setAttackTarget(null);
 			}
-			
+
 			//每一段時間回復一隻艦載機
 			delayAircraft--;
 			if(this.delayAircraft <= 0) {

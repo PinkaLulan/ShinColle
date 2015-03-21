@@ -683,8 +683,15 @@ public class ModelCarrierWo extends ModelBase {
 	    //攻擊時順便將左手指向對方	    
 	    if(ent.attackTime > 0) {
 	    	this.ArmLeft.rotateAngleX = f4 / 57.29578F - 1.5F;
-	    	this.ArmRight.rotateAngleZ = 0.7F; 
-	    	this.ArmRight.rotateAngleX = 0.4F; 
+	    	this.ArmRight.rotateAngleZ = 0.7F;
+	    	this.ArmRight.rotateAngleX = 0.4F;
+	    	//杖位置
+			this.Staff.rotateAngleX = 1.2F;
+			this.Staff.rotateAngleY = -0.18F;
+			this.Staff.rotateAngleZ = -1.2F;
+			this.Staff.offsetX = -0.4F;
+			this.Staff.offsetY = -0.3F;
+			this.Staff.offsetZ = -1F;
 	    }
 	}
     

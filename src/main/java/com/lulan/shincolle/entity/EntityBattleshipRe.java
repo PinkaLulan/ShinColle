@@ -26,6 +26,7 @@ import com.lulan.shincolle.ai.EntityAIShipSit;
 import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
 import com.lulan.shincolle.client.particle.EntityFXLaser;
 import com.lulan.shincolle.client.particle.EntityFXTexts;
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
@@ -88,7 +89,7 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
 	
 	public void setAITargetList() {	
 		//target AI
-	//NYI:	this.targetTasks.addTask(1, new EntityAIOwnerPointTarget(this));
+		//NYI:	this.targetTasks.addTask(1, new EntityAIOwnerPointTarget(this));
 		this.targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this));
 		this.targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this));
 		this.targetTasks.addTask(3, new EntityAIHurtByTarget(this, false));
@@ -183,6 +184,19 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
             	}
         	}
         }
+        
+        //vs player = 25% dmg
+  		if(target instanceof EntityPlayer) {
+  			atk *= 0.25F;
+  			
+  			//check friendly fire
+    		if(!ConfigHandler.friendlyFire) {
+    			atk = 0F;
+    		}
+    		else if(atk > 59F) {
+    			atk = 59F;	//same with TNT
+    		}
+  		}
 
 	    //將atk跟attacker傳給目標的attackEntityFrom方法, 在目標class中計算傷害
 	    //並且回傳是否成功傷害到目標

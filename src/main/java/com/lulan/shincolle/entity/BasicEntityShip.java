@@ -77,7 +77,7 @@ public abstract class BasicEntityShip extends EntityTameable {
 	protected float[] StateEquip;
 	/**final states: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT 6:ATK_Heavy 7:ATK_AirLight 8:ATK_AirHeavy*/
 	protected float[] StateFinal;
-	/**minor states: 0:ShipLevel 1:Kills 2:ExpCurrent 3:ExpNext 4:NumAmmoLight 5:NumAmmoHeavy 6:NumGrudge 7:NumAirLight 8:NumAirHeavy*/
+	/**minor states: 0:ShipLevel 1:Kills 2:ExpCurrent 3:ExpNext 4:NumAmmoLight 5:NumAmmoHeavy 6:NumGrudge 7:NumAirLight 8:NumAirHeavy 9:immunity time*/
 	protected int[] StateMinor;
 	/**equip effect: 0:critical 1:doubleHit 2:tripleHit 3:baseMiss*/
 	protected float[] EffectEquip;
@@ -97,7 +97,7 @@ public abstract class BasicEntityShip extends EntityTameable {
 		isImmuneToFire = true;	//set ship immune to lava
 		StateEquip = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F};
 		StateFinal = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F};
-		StateMinor = new int[] {1, 0, 0, 40, 0, 0, 0, 0, 0};
+		StateMinor = new int[] {1, 0, 0, 40, 0, 0, 0, 0, 0, 0};
 		EffectEquip = new float[] {0F, 0F, 0F, 0F};
 		StateEmotion = new byte[] {0, 0, 0};
 		StateFlag = new boolean[] {false, false, false, false, true, true, true, true};
@@ -115,6 +115,11 @@ public abstract class BasicEntityShip extends EntityTameable {
 	public boolean isAIEnabled() {
 		return true;
 	}
+	
+	@Override
+	public boolean isEntityInvulnerable() {
+        return StateMinor[ID.N.ImmuneTime] > 0;
+    }
 	
 	@Override
 	public float getEyeHeight() {
@@ -538,10 +543,10 @@ public abstract class BasicEntityShip extends EntityTameable {
 	                }
 	
 	                if(this instanceof BasicEntityShipSmall) {
-	                	this.heal(this.getMaxHealth() * 0.1F);	//1 bucket = 10% hp for small ship
+	                	this.heal(this.getMaxHealth() * 0.1F + 5F);	//1 bucket = 10% hp for small ship
 	                }
 	                else {
-	                	this.heal(this.getMaxHealth() * 0.05F);	//1 bucket = 5% hp for large ship
+	                	this.heal(this.getMaxHealth() * 0.05F + 10F);	//1 bucket = 5% hp for large ship
 	                }
 	                
 	                if (itemstack.stackSize <= 0) {  //物品用完時要設定為null清空該slot
@@ -780,6 +785,11 @@ public abstract class BasicEntityShip extends EntityTameable {
 //        LogHelper.info("DEBug : tick "+this.ticksExisted);
         //server side check
         if((!worldObj.isRemote)) {
+        	//decr immune time
+        	if(this.StateMinor[ID.N.ImmuneTime] > 0) {
+        		this.StateMinor[ID.N.ImmuneTime]--;
+        	}
+        	
         	//sync client and reset AI after server start 1 sec
         	if(ticksExisted == 20) {
         		clearAITasks();
@@ -787,6 +797,21 @@ public abstract class BasicEntityShip extends EntityTameable {
         		setAIList();
         		setAITargetList();
         		sendSyncPacket();		//sync packet to client
+        	}
+        	
+        	//check every 10 ticks
+        	if(ticksExisted % 10 == 0) {
+        		//use bucket automatically
+        		if((getMaxHealth() - getHealth()) > (getMaxHealth() * 0.1F + 5F)) {
+	                if(decrSupplies(7)) {
+	                	if(this instanceof BasicEntityShipSmall) {
+		                	this.heal(this.getMaxHealth() * 0.1F + 5F);	//1 bucket = 10% hp for small ship
+		                }
+		                else {
+		                	this.heal(this.getMaxHealth() * 0.05F + 10F);	//1 bucket = 5% hp for large ship
+		                }
+	                }
+	            }
         	}
         	
         	//check every 100 ticks
@@ -846,8 +871,8 @@ public abstract class BasicEntityShip extends EntityTameable {
         		
         	}//end every 100 ticks
         	
-        	//auto recovery every 60 sec
-        	if(this.ticksExisted % 1200 == 0) {
+        	//auto recovery every 20 sec
+        	if(this.ticksExisted % 400 == 0) {
         		if(this.getHealth() < this.getMaxHealth()) {
         			this.setHealth(this.getHealth() + this.getMaxHealth() * 0.01F);
         		}
@@ -986,7 +1011,20 @@ public abstract class BasicEntityShip extends EntityTameable {
             	}
         	}
         }
-
+        
+        //vs player = 25% dmg
+  		if(target instanceof EntityPlayer) {
+  			atk *= 0.25F;
+  			
+  			//check friendly fire
+    		if(!ConfigHandler.friendlyFire) {
+    			atk = 0F;
+    		}
+    		else if(atk > 59F) {
+    			atk = 59F;	//same with TNT
+    		}
+  		}
+  		
 	    //將atk跟attacker傳給目標的attackEntityFrom方法, 在目標class中計算傷害
 	    //並且回傳是否成功傷害到目標
 	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this), atk);
@@ -1133,8 +1171,9 @@ public abstract class BasicEntityShip extends EntityTameable {
 			if(reduceAtk >= (this.getHealth() - 1F)) {
 				if(this.decrSupplies(8)) {
 					this.setHealth(this.getMaxHealth());
+					this.StateMinor[ID.N.ImmuneTime] = 60;
+					return false;
 				}
-				return false;
 			}
    
             //執行父class的被攻擊判定, 包括重置love時間, 計算火毒抗性, 計算鐵砧/掉落傷害, 
