@@ -121,6 +121,15 @@ public class EntityHelper {
 			case ID.B.ShipInv_AirHeavy:
 				entity.setEntityFlagI(ID.F.UseAirHeavy, value);
 				break;
+			case ID.B.ShipInv_FollowMin:
+				entity.setStateMinor(ID.N.FollowMin, value);
+				break;
+			case ID.B.ShipInv_FollowMax:
+				entity.setStateMinor(ID.N.FollowMax, value);
+				break;
+			case ID.B.ShipInv_FleeHP:
+				entity.setStateMinor(ID.N.FleeHP, value);
+				break;
 			}
 		}
 		else {

@@ -37,6 +37,7 @@ import net.minecraft.world.World;
 import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.ai.EntityAIShipAttackOnCollide;
 import com.lulan.shincolle.ai.EntityAIShipCarrierAttack;
+import com.lulan.shincolle.ai.EntityAIShipFlee;
 import com.lulan.shincolle.ai.EntityAIShipFollowOwner;
 import com.lulan.shincolle.ai.EntityAIShipInRangeTarget;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
@@ -88,9 +89,10 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
 	public void setAIList() {
 		super.setAIList();
 		
-		//floating on water
-		this.tasks.addTask(1, new EntityAIShipSit(this));	   //0101
-		this.tasks.addTask(2, new EntityAIShipFollowOwner(this, 7F, 12F));	   //0111
+		//high priority
+		this.tasks.addTask(1, new EntityAIShipSit(this));	   				   //0101
+		this.tasks.addTask(2, new EntityAIShipFlee(this));					   //0111
+		this.tasks.addTask(3, new EntityAIShipFollowOwner(this));	   		   //0111
 		
 		//use range attack
 		this.tasks.addTask(11, new EntityAIShipCarrierAttack(this));		   //0011
@@ -112,6 +114,8 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
 	}
 	
 	public void setAITargetList() {	
+		//target AI
+		//NYI:	this.targetTasks.addTask(1, new EntityAIOwnerPointTarget(this));
 		this.targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this));
 		this.targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this));
 		this.targetTasks.addTask(3, new EntityAIHurtByTarget(this, false));

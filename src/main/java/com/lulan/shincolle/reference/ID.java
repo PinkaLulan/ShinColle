@@ -10,6 +10,9 @@ public class ID {
 		public static final byte ShipInv_AmmoHeavy = 2;
 		public static final byte ShipInv_AirLight = 3;
 		public static final byte ShipInv_AirHeavy = 4;
+		public static final byte ShipInv_FollowMin = 5;
+		public static final byte ShipInv_FollowMax = 6;
+		public static final byte ShipInv_FleeHP = 7;
 		public static final byte Shipyard_Type = 0;
 		public static final byte Shipyard_InvMode = 1;
 		public static final byte Shipyard_SelectMat = 2;
@@ -78,6 +81,7 @@ public class ID {
 		public static final byte UseAmmoHeavy = 5;
 		public static final byte UseAirLight = 6;
 		public static final byte UseAirHeavy = 7;
+		public static final byte HeadTilt = 8;			//client only
 	}
 	
 	//GUI ID
@@ -99,6 +103,9 @@ public class ID {
 		public static final byte NumAirLight = 7;
 		public static final byte NumAirHeavy = 8;
 		public static final byte ImmuneTime = 9;
+		public static final byte FollowMin = 10;
+		public static final byte FollowMax = 11;
+		public static final byte FleeHP = 12;
 	}
 	
 	//Array ID: Entity State

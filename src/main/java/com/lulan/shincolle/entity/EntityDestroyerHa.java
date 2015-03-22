@@ -1,5 +1,6 @@
 package com.lulan.shincolle.entity;
 
+import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
 import net.minecraft.entity.ai.EntityAIOpenDoor;
@@ -17,6 +18,7 @@ import net.minecraft.world.World;
 
 import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.ai.EntityAIShipAttackOnCollide;
+import com.lulan.shincolle.ai.EntityAIShipFlee;
 import com.lulan.shincolle.ai.EntityAIShipFollowOwner;
 import com.lulan.shincolle.ai.EntityAIShipInRangeTarget;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
@@ -65,9 +67,10 @@ public class EntityDestroyerHa extends BasicEntityShipSmall {
 	public void setAIList() {
 		super.setAIList();
 		
-		//floating on water
-		this.tasks.addTask(1, new EntityAIShipSit(this));	   //0101
-		this.tasks.addTask(2, new EntityAIShipFollowOwner(this, 7F, 12F));	   //0111
+		//high priority
+		this.tasks.addTask(1, new EntityAIShipSit(this));	   				   //0101
+		this.tasks.addTask(2, new EntityAIShipFlee(this));					   //0111
+		this.tasks.addTask(3, new EntityAIShipFollowOwner(this));	   		   //0111
 		
 		//use range attack (light)
 		this.tasks.addTask(11, new EntityAIShipRangeAttack(this));			   //0011
@@ -90,9 +93,10 @@ public class EntityDestroyerHa extends BasicEntityShipSmall {
 	public void setAITargetList() {	
 		//target AI
 		//NYI:	this.targetTasks.addTask(1, new EntityAIOwnerPointTarget(this));
-		this.targetTasks.addTask(2, new EntityAIOwnerHurtByTarget(this));			//0001
-		this.targetTasks.addTask(3, new EntityAIOwnerHurtTarget(this));				//0001
-		this.targetTasks.addTask(4, new EntityAIShipInRangeTarget(this, 0.4F, 1));	//0001
+		this.targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this));
+		this.targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this));
+		this.targetTasks.addTask(3, new EntityAIHurtByTarget(this, false));
+		this.targetTasks.addTask(4, new EntityAIShipInRangeTarget(this, 0.4F, 1));
 	}
 
     //check entity state every tick

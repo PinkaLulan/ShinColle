@@ -34,7 +34,7 @@ import net.minecraft.world.World;
 
 public abstract class BasicEntityAirplane extends EntityLiving {
 
-	protected BasicEntityShip hostEntity;  	//host target
+	protected BasicEntityShipLarge hostEntity;  		//host target
 	protected EntityLivingBase targetEntity;	//onImpact target (for entity)
 	protected World world;
     
@@ -178,6 +178,14 @@ public abstract class BasicEntityAirplane extends EntityLiving {
 						this.setDead();
 						this.hostEntity.setStateMinor(ID.N.NumAmmoLight, this.hostEntity.getStateMinor(ID.N.NumAmmoLight) + this.numAmmoLight);
 						this.hostEntity.setStateMinor(ID.N.NumAmmoHeavy, this.hostEntity.getStateMinor(ID.N.NumAmmoHeavy) + this.numAmmoHeavy);
+					
+						if(this instanceof EntityAirplane) {
+							hostEntity.setNumAircraftLight(hostEntity.getNumAircraftLight()+1);
+						}
+						else {
+							hostEntity.setNumAircraftHeavy(hostEntity.getNumAircraftHeavy()+1);
+						}
+					
 					}
 				}
 				

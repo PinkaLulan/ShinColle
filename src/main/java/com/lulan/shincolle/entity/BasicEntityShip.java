@@ -68,7 +68,8 @@ public abstract class BasicEntityShip extends EntityTameable {
 	protected byte ShipType;			//ship type
 	protected byte ShipID;
 	//for AI calc
-	protected int StartEmotion;			//表情開始時間
+	protected int StartEmotion;			//表情1開始時間
+	protected int StartEmotion2;		//表情2開始時間
 	protected double ShipDepth;			//水深, 用於水中高度判定
 	protected double ShipPrevX;			//ship posX 5 sec ago
 	protected double ShipPrevY;			//ship posY 5 sec ago
@@ -77,13 +78,13 @@ public abstract class BasicEntityShip extends EntityTameable {
 	protected float[] StateEquip;
 	/**final states: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT 6:ATK_Heavy 7:ATK_AirLight 8:ATK_AirHeavy*/
 	protected float[] StateFinal;
-	/**minor states: 0:ShipLevel 1:Kills 2:ExpCurrent 3:ExpNext 4:NumAmmoLight 5:NumAmmoHeavy 6:NumGrudge 7:NumAirLight 8:NumAirHeavy 9:immunity time*/
+	/**minor states: 0:ShipLevel 1:Kills 2:ExpCurrent 3:ExpNext 4:NumAmmoLight 5:NumAmmoHeavy 6:NumGrudge 7:NumAirLight 8:NumAirHeavy 9:immunity time 10:followMin 11:followMax 12:FleeHP*/
 	protected int[] StateMinor;
 	/**equip effect: 0:critical 1:doubleHit 2:tripleHit 3:baseMiss*/
 	protected float[] EffectEquip;
 	/**EntityState: 0:HP State 1:Emotion 2:SwimType*/
 	protected byte[] StateEmotion;
-	/**EntityFlag: 0:canFloatUp 1:isMarried 2:noFuel 3:canMelee 4:canAmmoLight 5:canAmmoHeavy 6:canAirLight 7:canAirHeavy*/
+	/**EntityFlag: 0:canFloatUp 1:isMarried 2:noFuel 3:canMelee 4:canAmmoLight 5:canAmmoHeavy 6:canAirLight 7:canAirHeavy 8:headTilt(client only)*/
 	protected boolean[] StateFlag;
 	/**BonusPoint: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT*/
 	protected byte[] BonusPoint;
@@ -97,10 +98,10 @@ public abstract class BasicEntityShip extends EntityTameable {
 		isImmuneToFire = true;	//set ship immune to lava
 		StateEquip = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F};
 		StateFinal = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F};
-		StateMinor = new int[] {1, 0, 0, 40, 0, 0, 0, 0, 0, 0};
+		StateMinor = new int[] {1, 0, 0, 40, 0, 0, 0, 0, 0, 0, 2, 14, 35};
 		EffectEquip = new float[] {0F, 0F, 0F, 0F};
 		StateEmotion = new byte[] {0, 0, 0};
-		StateFlag = new boolean[] {false, false, false, false, true, true, true, true};
+		StateFlag = new boolean[] {false, false, false, false, true, true, true, true, false};
 		BonusPoint = new byte[] {0, 0, 0, 0, 0, 0};
 		TypeModify = new float[] {1F, 1F, 1F, 1F, 1F, 1F};
 		//for AI
@@ -215,6 +216,9 @@ public abstract class BasicEntityShip extends EntityTameable {
 	}
 	public int getStartEmotion() {
 		return StartEmotion;
+	}
+	public int getStartEmotion2() {
+		return StartEmotion2;
 	}
 	public boolean hasAmmoLight() {
 		return StateMinor[ID.N.NumAmmoLight] > 0;
@@ -392,7 +396,7 @@ public abstract class BasicEntityShip extends EntityTameable {
 		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(StateFinal[ID.MOV]);
 		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(StateFinal[ID.HIT]+16); //此為找目標, 路徑的範圍
 		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(resisKB);
-		this.jumpMovementFactor = (1F + StateFinal[ID.MOV]) * 0.03F;
+		this.jumpMovementFactor = (1F + StateFinal[ID.MOV]) * 0.05F;
 		
 		//for new ship
 		if(this.getHealth() == 20F) this.setHealth(this.getMaxHealth());
@@ -507,6 +511,9 @@ public abstract class BasicEntityShip extends EntityTameable {
 	//emotion start time (CLIENT ONLY), called from model class
 	public void setStartEmotion(int par1) {
 		StartEmotion = par1;
+	}
+	public void setStartEmotion2(int par1) {
+		StartEmotion2 = par1;
 	}
 	
 	//manual send sync packet

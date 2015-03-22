@@ -29,7 +29,7 @@ public class EntityAirplane extends BasicEntityAirplane {
 		this.setSize(0.5F, 0.5F);
 	}
 	
-	public EntityAirplane(World world, BasicEntityShip host, EntityLivingBase target, double launchPos) {
+	public EntityAirplane(World world, BasicEntityShipLarge host, EntityLivingBase target, double launchPos) {
 		super(world);
 		this.world = world;
         this.hostEntity = host;

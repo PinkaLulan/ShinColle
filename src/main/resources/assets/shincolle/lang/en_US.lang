@@ -125,7 +125,7 @@ gui.shincolle:canlightattack=Use L.Ammo
 gui.shincolle:canheavyattack=Use H.Ammo
 gui.shincolle:canairlightattack=Use L.Air
 gui.shincolle:canairheavyattack=Use H.Air
-gui.shincolle:notforcarrier=Not For Aircraft Carrier
+gui.shincolle:notforcarrier=Unusable For Aircraft Carrier
 gui.shincolle:carrieronly=Aircraft Carrier Only
 gui.shincolle:critical=Critical
 gui.shincolle:doublehit=Double Hit
@@ -137,4 +137,6 @@ gui.shincolle:marriage=Marriage
 gui.shincolle:married=Married
 gui.shincolle:unmarried=Unmarried
 gui.shincolle:repairgoddess=Prevents sinking from deadly damage.
-
+gui.shincolle:followmin=Follow (Min)
+gui.shincolle:followmax=Follow (Max)
+gui.shincolle:fleehp=Flee HP%%

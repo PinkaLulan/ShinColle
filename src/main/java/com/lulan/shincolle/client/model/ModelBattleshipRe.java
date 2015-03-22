@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GL11;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
+import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
@@ -90,10 +91,9 @@ public class ModelBattleshipRe extends ModelBase {
     public ModelRenderer GlowTailHeadBase;
     public ModelRenderer GlowTailHead1;
     public ModelRenderer GlowTailJaw1;
-    
-    public int HeadCooldown = 0;
-    public boolean HeadTilt = false;
 
+    private int startEmo2 = 0;
+    
     public ModelBattleshipRe() {
         this.textureWidth = 256;
         this.textureHeight = 128;
@@ -775,30 +775,52 @@ public class ModelBattleshipRe extends ModelBase {
 			}		
   		}
 	    else {
+	    	startEmo2 = ent.getStartEmotion2();
+	    	
 	    	//頭部傾斜動作, 只在奔跑以外時roll
-		    if(--this.HeadCooldown < 0) {
-		    	this.HeadCooldown = 360;	//cd = 6sec
+	    	if(startEmo2 > 0) {
+	    		--startEmo2;
+	    		ent.setStartEmotion2(startEmo2);
+	    	}
+	    	
+		    if(startEmo2 <= 0) {
+		    	startEmo2 = 360;
+		    	ent.setStartEmotion2(startEmo2);	//cd = 6sec  	
 		    	
-		    	if(ent.getRNG().nextInt(3) > 1) {
-		    		this.HeadTilt = true;    		
+		    	if(ent.getRNG().nextInt(3) == 0) {
+		    		ent.setStateFlag(ID.F.HeadTilt, true);
 		    	}
 		    	else {
-		    		this.HeadTilt = false;
+		    		ent.setStateFlag(ID.F.HeadTilt, false);
 		    	}
 		    }
 	    }//end if sprint
 	    
 	    //roll頭部傾斜表情
-	    if(this.HeadTilt) {
-	    	ent.setStateEmotion(ID.S.Emotion2, 1, false);
-	    	if(this.Head.rotateAngleZ > -0.24F) {
-	    		this.Head.rotateAngleZ -= 0.03F;
+	    if(ent.getStateFlag(ID.F.HeadTilt)) {
+	    	if(ent.getStateEmotion(ID.S.Emotion2) == 1) {	//之前已經傾斜, 則繼續傾斜
+	    		this.Head.rotateAngleZ = -0.24F;
 	    	}
+	    	else {
+		    	this.Head.rotateAngleZ = (360 - startEmo2) * -0.03F;
+		    	
+		    	if(this.Head.rotateAngleZ < -0.24F) {
+		    		ent.setStateEmotion(ID.S.Emotion2, 1, false);
+		    		this.Head.rotateAngleZ = -0.24F;
+		    	}
+	    	}	
 	    }
 	    else {
-	    	ent.setStateEmotion(ID.S.Emotion2, 0, false);
-	    	if(this.Head.rotateAngleZ < 0F) {
-	    		this.Head.rotateAngleZ += 0.03F;
+	    	if(ent.getStateEmotion(ID.S.Emotion2) == 0) {	//維持之前角度
+	    		this.Head.rotateAngleZ = 0F;
+	    	}
+	    	else {
+		    	this.Head.rotateAngleZ = -0.24F + (360 - startEmo2) * 0.03F;
+		    	
+		    	if(this.Head.rotateAngleZ > 0F) {
+		    		this.Head.rotateAngleZ = 0F;
+		    		ent.setStateEmotion(ID.S.Emotion2, 0, false);
+		    	}
 	    	}
 	    }
   		

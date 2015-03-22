@@ -64,6 +64,9 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateMinor(ID.N.NumGrudge, buf.readInt());
 					entity.setStateMinor(ID.N.NumAirLight, buf.readInt());
 					entity.setStateMinor(ID.N.NumAirHeavy, buf.readInt());
+					entity.setStateMinor(ID.N.FollowMin, buf.readInt());
+					entity.setStateMinor(ID.N.FollowMax, buf.readInt());
+					entity.setStateMinor(ID.N.FleeHP, buf.readInt());
 					
 					entity.setStateFinal(ID.HP, buf.readFloat());
 					entity.setStateFinal(ID.ATK, buf.readFloat());
@@ -120,6 +123,21 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateFlag(ID.F.UseAirHeavy, buf.readBoolean());
 				}
 				break;
+			case 3: //entity state only
+				{
+					entity.setStateMinor(ID.N.ShipLevel, buf.readInt());
+					entity.setStateMinor(ID.N.Kills, buf.readInt());
+					entity.setStateMinor(ID.N.ExpCurrent, buf.readInt());
+					entity.setStateMinor(ID.N.NumAmmoLight, buf.readInt());
+					entity.setStateMinor(ID.N.NumAmmoHeavy, buf.readInt());
+					entity.setStateMinor(ID.N.NumGrudge, buf.readInt());
+					entity.setStateMinor(ID.N.NumAirLight, buf.readInt());
+					entity.setStateMinor(ID.N.NumAirHeavy, buf.readInt());
+					entity.setStateMinor(ID.N.FollowMin, buf.readInt());
+					entity.setStateMinor(ID.N.FollowMax, buf.readInt());
+					entity.setStateMinor(ID.N.FleeHP, buf.readInt());
+				}
+				break;
 			}
 		}
 		else {
@@ -143,6 +161,9 @@ public class S2CEntitySync implements IMessage {
 				buf.writeInt(this.entity.getStateMinor(ID.N.NumGrudge));
 				buf.writeInt(this.entity.getStateMinor(ID.N.NumAirLight));
 				buf.writeInt(this.entity.getStateMinor(ID.N.NumAirHeavy));
+				buf.writeInt(this.entity.getStateMinor(ID.N.FollowMin));
+				buf.writeInt(this.entity.getStateMinor(ID.N.FollowMax));
+				buf.writeInt(this.entity.getStateMinor(ID.N.FleeHP));
 
 				buf.writeFloat(this.entity.getStateFinal(ID.HP));
 				buf.writeFloat(this.entity.getStateFinal(ID.ATK));
@@ -201,6 +222,23 @@ public class S2CEntitySync implements IMessage {
 				buf.writeBoolean(this.entity.getStateFlag(ID.F.UseAmmoHeavy));
 				buf.writeBoolean(this.entity.getStateFlag(ID.F.UseAirLight));
 				buf.writeBoolean(this.entity.getStateFlag(ID.F.UseAirHeavy));	
+			}
+			break;
+		case 3:	//sync all data
+			{
+				buf.writeByte(3);	//type 3
+				buf.writeInt(this.entity.getEntityId());
+				buf.writeInt(this.entity.getStateMinor(ID.N.ShipLevel));
+				buf.writeInt(this.entity.getStateMinor(ID.N.Kills));
+				buf.writeInt(this.entity.getStateMinor(ID.N.ExpCurrent));
+				buf.writeInt(this.entity.getStateMinor(ID.N.NumAmmoLight));
+				buf.writeInt(this.entity.getStateMinor(ID.N.NumAmmoHeavy));
+				buf.writeInt(this.entity.getStateMinor(ID.N.NumGrudge));
+				buf.writeInt(this.entity.getStateMinor(ID.N.NumAirLight));
+				buf.writeInt(this.entity.getStateMinor(ID.N.NumAirHeavy));
+				buf.writeInt(this.entity.getStateMinor(ID.N.FollowMin));
+				buf.writeInt(this.entity.getStateMinor(ID.N.FollowMax));
+				buf.writeInt(this.entity.getStateMinor(ID.N.FleeHP));
 			}
 			break;
 		}

@@ -38,45 +38,49 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
     private double distX, distY, distZ, motX, motY, motZ;	//跟目標的直線距離(的平方)
     private float rotYaw;
 
-    public EntityAIShipFollowOwner(BasicEntityShip entity, float MinDist, float MaxDist) {
+    public EntityAIShipFollowOwner(BasicEntityShip entity) {
         this.ThePet = entity;
         this.TheWorld = entity.worldObj;
         this.PetPathfinder = entity.getNavigator();
-        this.minDistSq = MinDist * MinDist;
-        this.maxDistSq = MaxDist * MaxDist;
         this.distSq = 1D;
         this.distSqrt = 1D;
-        this.setMutexBits(7);
+        this.setMutexBits(7);  
     }
 
     //有owner且目標超過max dist時觸發AI, 觸發後此方法不再執行, 改為持續執行cont exec
     public boolean shouldExecute() {
-        EntityLivingBase OwnerEntity = this.ThePet.getOwner();
+    	if(!this.ThePet.isSitting() && !this.ThePet.getLeashed()) {
+    		EntityLivingBase OwnerEntity = this.ThePet.getOwner();
 
-        //get owner distance
-        if(OwnerEntity != null) {
-        	this.TheOwner = OwnerEntity;
-        	
-        	//計算直線距離
-        	this.distX = this.TheOwner.posX - this.ThePet.posX;
-    		this.distY = this.TheOwner.posY - this.ThePet.posY - 1;
-    		this.distZ = this.TheOwner.posZ - this.ThePet.posZ;
-        	this.distSq = this.distX*this.distX + this.distY*this.distY + this.distZ*this.distZ;
+            //get owner distance
+            if(OwnerEntity != null) {
+            	float fMin = ThePet.getStateMinor(ID.N.FollowMin);
+            	float fMax = ThePet.getStateMinor(ID.N.FollowMax);
+            	
+            	this.TheOwner = OwnerEntity;
+            	this.minDistSq = fMin * fMin;
+                this.maxDistSq = fMax * fMax;
 
-        	if(!this.ThePet.isSitting() && !this.ThePet.getLeashed() && distSq > this.maxDistSq) {
-        		return true;
-        	}
-        }
+            	//計算直線距離
+            	this.distX = this.TheOwner.posX - this.ThePet.posX;
+        		this.distY = this.TheOwner.posY - this.ThePet.posY;
+        		this.distZ = this.TheOwner.posZ - this.ThePet.posZ;
+            	this.distSq = this.distX*this.distX + this.distY*this.distY + this.distZ*this.distZ;
+
+            	if(distSq > this.maxDistSq) {
+            		return true;
+            	}
+            }
+    	} 
         
         return false;
     }
 
     //目標還沒接近min dist或者距離超過TP_DIST時繼續AI
     public boolean continueExecuting() {
-//    	LogHelper.info("DEBUG : exec follow owner");
     	//計算直線距離
     	this.distX = this.TheOwner.posX - this.ThePet.posX;
-		this.distY = this.TheOwner.posY - this.ThePet.posY - 1;
+		this.distY = this.TheOwner.posY - this.ThePet.posY;
 		this.distZ = this.TheOwner.posZ - this.ThePet.posZ;
     	this.distSq = this.distX*this.distX + this.distY*this.distY + this.distZ*this.distZ;
     	
@@ -111,6 +115,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
     }
 
     public void updateTask() {
+//    	LogHelper.info("DEBUG : exec follow owner");
     	this.findCooldown--;
     	this.motY = 0D;
     	

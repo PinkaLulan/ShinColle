@@ -52,6 +52,7 @@ public class ModelHeavyCruiserRi extends ModelBase {
     public ModelRenderer Hair;
     public ModelRenderer GlowBodyMain;
     public ModelRenderer GlowNeck;
+    public ModelRenderer GlowHead;
     public ModelRenderer GlowArmLeft;
     public ModelRenderer GlowEquipLeftBase;
     public ModelRenderer GlowEquipLeftBase3;
@@ -70,8 +71,7 @@ public class ModelHeavyCruiserRi extends ModelBase {
     public ModelRenderer HeadTail1;
     public ModelRenderer HeadTail2;
     
-    public int HeadCooldown = 0;
-    public boolean HeadTilt = false;
+    private int startEmo2 = 0;
 
     public ModelHeavyCruiserRi() {
         this.textureWidth = 128;
@@ -146,9 +146,9 @@ public class ModelHeavyCruiserRi extends ModelBase {
         this.ArmLeft.setRotationPoint(7.0F, -10.0F, 0.0F);
         this.ArmLeft.addBox(0.0F, 0.0F, -2.5F, 5, 25, 5, 0.0F);
         this.setRotateAngle(ArmLeft, 0.0F, 0.0F, -0.2617993877991494F);
-        this.Neck = new ModelRenderer(this, 68, 2);
+        this.Neck = new ModelRenderer(this, 76, 3);
         this.Neck.setRotationPoint(0.0F, -13.0F, 0.0F);
-        this.Neck.addBox(-7F, 0F, -7F, 14, 3, 14, 0.0F);
+        this.Neck.addBox(-6F, 0F, -6F, 12, 3, 12, 0.0F);
         this.ShoesRight = new ModelRenderer(this, 50, 51);
         this.ShoesRight.setRotationPoint(0.0F, 0.0F, 0.0F);
         this.ShoesRight.addBox(-4.0F, 17.0F, -4.0F, 8, 9, 8, 0.0F);
@@ -268,6 +268,8 @@ public class ModelHeavyCruiserRi extends ModelBase {
         this.GlowBodyMain.setRotationPoint(0.0F, -14.0F, 0.0F);
         this.GlowNeck = new ModelRenderer(this, 0, 0);
         this.GlowNeck.setRotationPoint(0.0F, -13.0F, 0.0F);
+        this.GlowHead = new ModelRenderer(this, 42, 100);
+        this.GlowHead.setRotationPoint(0.0F, 0.0F, 0.0F);
         //裝備牙齒支架, 由於裝備不動, 可合併到手臂支架
         this.GlowArmLeft = new ModelRenderer(this, 0, 0);
         this.GlowArmLeft.setRotationPoint(7F, -10F, 0F);
@@ -294,11 +296,12 @@ public class ModelHeavyCruiserRi extends ModelBase {
         this.GlowBodyMain.addChild(this.GlowNeck);
         this.GlowBodyMain.addChild(this.GlowArmLeft);
         this.GlowBodyMain.addChild(this.GlowArmRight);
-        this.GlowNeck.addChild(this.Face0);
-        this.GlowNeck.addChild(this.Face1);
-        this.GlowNeck.addChild(this.Face2);
-        this.GlowNeck.addChild(this.Face3);
-        this.GlowNeck.addChild(this.Face4);
+        this.GlowNeck.addChild(this.GlowHead);
+        this.GlowHead.addChild(this.Face0);
+        this.GlowHead.addChild(this.Face1);
+        this.GlowHead.addChild(this.Face2);
+        this.GlowHead.addChild(this.Face3);
+        this.GlowHead.addChild(this.Face4);
         this.GlowArmLeft.addChild(this.GlowEquipLeftBase);
         this.GlowEquipLeftBase.addChild(this.GlowEquipLeftBase3);
         this.GlowEquipLeftBase3.addChild(this.EquipLeftTooth);
@@ -369,6 +372,9 @@ public class ModelHeavyCruiserRi extends ModelBase {
 		this.GlowNeck.rotateAngleX = this.Neck.rotateAngleX;
 		this.GlowNeck.rotateAngleY = this.Neck.rotateAngleY;
 		this.GlowNeck.rotateAngleZ = this.Neck.rotateAngleZ;
+		this.GlowHead.rotateAngleX = this.Head.rotateAngleX;
+		this.GlowHead.rotateAngleY = this.Head.rotateAngleY;
+		this.GlowHead.rotateAngleZ = this.Head.rotateAngleZ;
 	}
 
 	//雙腳移動計算
@@ -382,8 +388,8 @@ public class ModelHeavyCruiserRi extends ModelBase {
 	  	addk2 = MathHelper.cos(f * 0.6662F + 3.1415927F) * 1.4F * f1;
 
   	    //移動頭部 使其看人, 不看人時持續擺動頭部
-	    this.Neck.rotateAngleY = f3 / 57.29578F;	//左右角度 角度轉成rad 即除以57.29578
-	    this.Neck.rotateAngleX = f4 / 57.29578F; 	//上下角度
+	    this.Head.rotateAngleY = f3 / 57.29578F;	//左右角度 角度轉成rad 即除以57.29578
+	    this.Head.rotateAngleX = f4 / 57.29578F; 	//上下角度
 	    
 	    //正常站立動作
 	    GL11.glTranslatef(0F, 1.5F, 0F);
@@ -411,27 +417,52 @@ public class ModelHeavyCruiserRi extends ModelBase {
 			addk2 -= 0.4F;
   		}
 	    else {
+	    	startEmo2 = ent.getStartEmotion2();
+	    	
 	    	//頭部傾斜動作, 只在奔跑以外時roll
-		    if(--this.HeadCooldown < 0) {
-		    	this.HeadCooldown = 360;	//cd = 6sec
+	    	if(startEmo2 > 0) {
+	    		--startEmo2;
+	    		ent.setStartEmotion2(startEmo2);
+	    	}
+	    	
+		    if(startEmo2 <= 0) {
+		    	startEmo2 = 360;
+		    	ent.setStartEmotion2(startEmo2);	//cd = 6sec  	
 		    	
-		    	if(ent.getRNG().nextInt(3) > 1) {
-		    		this.HeadTilt = true;    		
+		    	if(ent.getRNG().nextInt(3) == 0) {
+		    		ent.setStateFlag(ID.F.HeadTilt, true);
 		    	}
 		    	else {
-		    		this.HeadTilt = false;
+		    		ent.setStateFlag(ID.F.HeadTilt, false);
 		    	}
 		    }
-	    }
+	    }//end if sprint
 	    
-	    if(this.HeadTilt) {    	
-	    	if(this.Neck.rotateAngleZ > -0.24F) {
-	    		this.Neck.rotateAngleZ -= 0.03F;
+	    //roll頭部傾斜表情
+	    if(ent.getStateFlag(ID.F.HeadTilt)) {
+	    	if(ent.getStateEmotion(ID.S.Emotion2) == 1) {	//之前已經傾斜, 則繼續傾斜
+	    		this.Head.rotateAngleZ = -0.24F;
 	    	}
+	    	else {
+		    	this.Head.rotateAngleZ = (360 - startEmo2) * -0.03F;
+		    	
+		    	if(this.Head.rotateAngleZ < -0.24F) {
+		    		ent.setStateEmotion(ID.S.Emotion2, 1, false);
+		    		this.Head.rotateAngleZ = -0.24F;
+		    	}
+	    	}	
 	    }
 	    else {
-	    	if(this.Neck.rotateAngleZ < 0F) {
-	    		this.Neck.rotateAngleZ += 0.03F;
+	    	if(ent.getStateEmotion(ID.S.Emotion2) == 0) {	//維持之前角度
+	    		this.Head.rotateAngleZ = 0F;
+	    	}
+	    	else {
+		    	this.Head.rotateAngleZ = -0.24F + (360 - startEmo2) * 0.03F;
+		    	
+		    	if(this.Head.rotateAngleZ > 0F) {
+		    		this.Head.rotateAngleZ = 0F;
+		    		ent.setStateEmotion(ID.S.Emotion2, 0, false);
+		    	}
 	    	}
 	    }
   		
@@ -451,13 +482,14 @@ public class ModelHeavyCruiserRi extends ModelBase {
 	  			this.ArmLeft.rotateAngleZ = -0.6F;
 	  			this.ArmRight.rotateAngleZ = 0.6F;
 				this.BodyMain.rotateAngleX = -0.6F;
-				this.Neck.rotateAngleX -= 0.35F;
+				this.Head.rotateAngleX -= 0.35F;
 				addk1 = -1.58F;
 				addk2 = -1.58F;		
 				this.LegLeft.rotateAngleZ = 1.2F;
 				this.LegRight.rotateAngleZ = -1.2F;
 				this.LegLeft.rotateAngleY = -0.75F;
 				this.LegRight.rotateAngleY = 0.75F;
+				this.HeadTail0.rotateAngleX += 0.7F;
   			}
   			else {
   				GL11.glTranslatef(0F, 1.4F, 0F);
@@ -466,7 +498,7 @@ public class ModelHeavyCruiserRi extends ModelBase {
   	  			this.ArmLeft.rotateAngleZ = 0.5F;
   	  			this.ArmRight.rotateAngleZ = -0.5F;
   				this.BodyMain.rotateAngleX = 0.3F;
-  				this.Neck.rotateAngleX -= 0.35F;
+  				this.Head.rotateAngleX -= 0.35F;
   				addk1 = -2F;
   				addk2 = -2F;
   				this.LegLeft.rotateAngleY = 0.15F;

@@ -42,6 +42,7 @@ public class ModRecipes {
 		ItemStack polymetalStack9 = new ItemStack(ModItems.AbyssMetal,9,1);
 		ItemStack polymetalBlock = new ItemStack(ModBlocks.BlockPolymetal);
 		ItemStack ring = new ItemStack(ModItems.MarriageRing);
+		ItemStack repairGoddess = new ItemStack(ModItems.RepairGoddess,1,0);
 		ItemStack smallshipyardStack = new ItemStack(ModBlocks.BlockSmallShipyard);
 		
 		//SHAPELESS RECIPE
@@ -55,6 +56,8 @@ public class ModRecipes {
 		GameRegistry.addRecipe(new ShapelessOreRecipe(grudeStack9, grudeBlock));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(grudeBlock9, grudeHeavyBlock));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(polymetalStack9, polymetalBlock));
+		//abyssal goddess
+		GameRegistry.addRecipe(new ShapelessOreRecipe(repairGoddess, grudeHeavyBlock, Blocks.diamond_block));
 
 		//SHAPED RECIPE
 		//ammo material: copper/tin=8 iron/bronze=16 abyssium/gold/silver=32 diamond=64

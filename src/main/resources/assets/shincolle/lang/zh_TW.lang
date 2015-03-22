@@ -137,4 +137,6 @@ gui.shincolle:marriage=婚姻狀態
 gui.shincolle:married=已婚
 gui.shincolle:unmarried=未婚
 gui.shincolle:repairgoddess=深海女神的怨念使棲艦不會被擊沈。
-
+gui.shincolle:followmin=跟隨最短距離
+gui.shincolle:followmax=跟隨最長距離
+gui.shincolle:fleehp=逃跑血量(%%)

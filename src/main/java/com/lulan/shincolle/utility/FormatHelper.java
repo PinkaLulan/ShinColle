@@ -30,5 +30,10 @@ public class FormatHelper {
 
 	    return String.valueOf(num);
 	}
+	
+	//return 0 if par1 = true
+	public static int boolean2int(boolean par1) {
+		return par1 ? 0 : 1;
+	}
 
 }

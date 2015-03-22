@@ -32,7 +32,8 @@ public class ContainerShipInventory extends Container {
 	public static final byte SLOTS_INVENTORY = 18;
 	private int GuiKills, GuiExpCurrent, GuiNumAmmo, GuiNumAmmoHeavy, GuiNumGrudge, 
 	            GuiNumAirLight, GuiNumAirHeavy, GuiIsMarried,
-	            ButtonMelee, ButtonAmmoLight, ButtonAmmoHeavy, ButtonAirLight, ButtoAirHeavy;
+	            ButtonMelee, ButtonAmmoLight, ButtonAmmoHeavy, ButtonAirLight, ButtoAirHeavy,
+	            FollowMin, FollowMax, FleeHP;
 	private float GuiCri, GuiDhit, GuiThit, GuiMiss;
 	
 	public ContainerShipInventory(InventoryPlayer invPlayer, BasicEntityShip entity1) {
@@ -167,6 +168,9 @@ public class ContainerShipInventory extends Container {
 		crafting.sendProgressBarUpdate(this, 10, this.entity.getStateFlagI(ID.F.UseAirLight));
 		crafting.sendProgressBarUpdate(this, 11, this.entity.getStateFlagI(ID.F.UseAirHeavy));
 		crafting.sendProgressBarUpdate(this, 12, this.entity.getStateFlagI(ID.F.IsMarried));
+		crafting.sendProgressBarUpdate(this, 13, this.entity.getStateMinor(ID.N.FollowMin));
+		crafting.sendProgressBarUpdate(this, 14, this.entity.getStateMinor(ID.N.FollowMax));
+		crafting.sendProgressBarUpdate(this, 15, this.entity.getStateMinor(ID.N.FleeHP));
 	}
 	
 	//偵測數值是否改變, 有改變時發送更新(此為server端偵測)
@@ -244,6 +248,21 @@ public class ContainerShipInventory extends Container {
                 icrafting.sendProgressBarUpdate(this, 12, getValue);
                 this.GuiIsMarried = getValue;
             }
+            getValue = this.entity.getStateMinor(ID.N.FollowMin);
+            if(this.FollowMin != getValue) {
+                icrafting.sendProgressBarUpdate(this, 13, getValue);
+                this.FollowMin = getValue;
+            }
+            getValue = this.entity.getStateMinor(ID.N.FollowMax);
+            if(this.FollowMax != getValue) {
+                icrafting.sendProgressBarUpdate(this, 14, getValue);
+                this.FollowMax = getValue;
+            }
+            getValue = this.entity.getStateMinor(ID.N.FleeHP);
+            if(this.FleeHP != getValue) {
+                icrafting.sendProgressBarUpdate(this, 15, getValue);
+                this.FleeHP = getValue;
+            }
         }
     }
 	
@@ -289,6 +308,15 @@ public class ContainerShipInventory extends Container {
 			break;
 		case 12:
 			this.entity.setEntityFlagI(ID.F.IsMarried, updatedValue);
+			break;
+		case 13:
+			this.entity.setStateMinor(ID.N.FollowMin, updatedValue);
+			break;
+		case 14:
+			this.entity.setStateMinor(ID.N.FollowMax, updatedValue);
+			break;
+		case 15:
+			this.entity.setStateMinor(ID.N.FleeHP, updatedValue);
 			break;
 		}
     }
