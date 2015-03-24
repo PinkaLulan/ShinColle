@@ -9,9 +9,9 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
 public class ServerProxy extends CommonProxy {
 
-//	public static World[] getServerWorld(int dimID) {
-//		return MinecraftServer.getServer().worldServers;
-//	}
+	public static MinecraftServer getServer() {
+		return MinecraftServer.getServer();
+	}
 	
 	@Override
 	public void registerKeyBindings() {		

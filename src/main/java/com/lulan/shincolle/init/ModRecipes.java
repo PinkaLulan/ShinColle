@@ -38,9 +38,12 @@ public class ModRecipes {
 		ItemStack grudeBlock9 = new ItemStack(ModBlocks.BlockGrudge,9,0);
 		ItemStack grudeHeavyBlock = new ItemStack(ModBlocks.BlockGrudgeHeavy);
 		ItemStack gunpowderStack = new ItemStack(Items.gunpowder);
+		ItemStack kaitaiHammer = new ItemStack(ModItems.KaitaiHammer);
 		ItemStack polymetalStack = new ItemStack(ModItems.AbyssMetal,1,1);
+		ItemStack polymetalStack4 = new ItemStack(ModItems.AbyssMetal,4,1);
 		ItemStack polymetalStack9 = new ItemStack(ModItems.AbyssMetal,9,1);
 		ItemStack polymetalBlock = new ItemStack(ModBlocks.BlockPolymetal);
+		ItemStack polymetalGravel = new ItemStack(ModBlocks.BlockPolymetalGravel);
 		ItemStack ring = new ItemStack(ModItems.MarriageRing);
 		ItemStack repairGoddess = new ItemStack(ModItems.RepairGoddess,1,0);
 		ItemStack smallshipyardStack = new ItemStack(ModBlocks.BlockSmallShipyard);
@@ -49,13 +52,15 @@ public class ModRecipes {
 		//abyssium material:
 		GameRegistry.addRecipe(new ShapelessOreRecipe(abyssiumStack, "ingotIron", grudeStack));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(bucketRepairStack, Items.lava_bucket, grudeStack));		
-		//1 block to 9 items
+		//1 block to N items
 		GameRegistry.addRecipe(new ShapelessOreRecipe(ammo9, ammoContainer));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(ammoHeavy9, ammoHeavyContainer));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(abyssiumStack9, abyssiumBlock));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(grudeStack9, grudeBlock));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(grudeBlock9, grudeHeavyBlock));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(polymetalStack4, polymetalGravel));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(polymetalStack9, polymetalBlock));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(polymetalGravel, polymetalStack, polymetalStack, polymetalStack, polymetalStack));
 		//abyssal goddess
 		GameRegistry.addRecipe(new ShapelessOreRecipe(repairGoddess, grudeHeavyBlock, Blocks.diamond_block));
 
@@ -89,6 +94,8 @@ public class ModRecipes {
 		GameRegistry.addRecipe(new ShapedOreRecipe(smallshipyardStack,"glg","lol","ooo",'g',grudeStack,'l',Items.lava_bucket,'o',Blocks.obsidian));
 		//marriage ring
 		GameRegistry.addRecipe(new ShapedOreRecipe(ring,"asa","a a","aaa",'s',Items.nether_star,'a',abyssiumStack));
+		//kaitai hammer
+		GameRegistry.addRecipe(new ShapedOreRecipe(kaitaiHammer,"aaa","aaa"," s ",'s',Items.stick,'a',abyssiumStack));
 		
 	}
 

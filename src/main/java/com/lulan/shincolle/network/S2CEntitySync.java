@@ -67,6 +67,7 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateMinor(ID.N.FollowMin, buf.readInt());
 					entity.setStateMinor(ID.N.FollowMax, buf.readInt());
 					entity.setStateMinor(ID.N.FleeHP, buf.readInt());
+					entity.setStateMinor(ID.N.TargetAI, buf.readInt());
 					
 					entity.setStateFinal(ID.HP, buf.readFloat());
 					entity.setStateFinal(ID.ATK, buf.readFloat());
@@ -136,11 +137,13 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateMinor(ID.N.FollowMin, buf.readInt());
 					entity.setStateMinor(ID.N.FollowMax, buf.readInt());
 					entity.setStateMinor(ID.N.FleeHP, buf.readInt());
+					entity.setStateMinor(ID.N.TargetAI, buf.readInt());
 				}
 				break;
 			}
 		}
 		else {
+			buf.clear();
 			LogHelper.info("DEBUG : packet handler: S2CEntitySync entity is null "+type);
 		}
 	}
@@ -164,6 +167,7 @@ public class S2CEntitySync implements IMessage {
 				buf.writeInt(this.entity.getStateMinor(ID.N.FollowMin));
 				buf.writeInt(this.entity.getStateMinor(ID.N.FollowMax));
 				buf.writeInt(this.entity.getStateMinor(ID.N.FleeHP));
+				buf.writeInt(this.entity.getStateMinor(ID.N.TargetAI));
 
 				buf.writeFloat(this.entity.getStateFinal(ID.HP));
 				buf.writeFloat(this.entity.getStateFinal(ID.ATK));
@@ -239,6 +243,7 @@ public class S2CEntitySync implements IMessage {
 				buf.writeInt(this.entity.getStateMinor(ID.N.FollowMin));
 				buf.writeInt(this.entity.getStateMinor(ID.N.FollowMax));
 				buf.writeInt(this.entity.getStateMinor(ID.N.FleeHP));
+				buf.writeInt(this.entity.getStateMinor(ID.N.TargetAI));
 			}
 			break;
 		}

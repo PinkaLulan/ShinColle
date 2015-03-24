@@ -127,13 +127,6 @@ public class EntityHeavyCruiserRi extends BasicEntityShipSmall {
             this.tasks.addTask(4, this.aiAttackOnCollide);
         }*/
 	}
-	
-	public void setAITargetList() {	
-		this.targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this));
-		this.targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this));
-		this.targetTasks.addTask(3, new EntityAIHurtByTarget(this, false));
-		this.targetTasks.addTask(4, new EntityAIShipInRangeTarget(this, 0.4F, 1));
-	}
 
     @Override
     public void onLivingUpdate() {

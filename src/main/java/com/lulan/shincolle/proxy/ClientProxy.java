@@ -3,6 +3,7 @@ package com.lulan.shincolle.proxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.RenderFireball;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
@@ -68,6 +69,11 @@ public class ClientProxy extends CommonProxy {
 	//client world會隨玩家所在位置持續改變, 但是dim id永遠都是0不變, 無法反推dim id?
 	public static World getClientWorld() {
 		return Minecraft.getMinecraft().theWorld;
+	}
+	
+	//client player
+	public static EntityPlayer getClientPlayer() {
+		return Minecraft.getMinecraft().thePlayer;
 	}
 
 	//登錄偵測按鍵

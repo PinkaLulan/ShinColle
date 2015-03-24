@@ -88,15 +88,6 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
 		this.tasks.addTask(25, new EntityAILookIdle(this));					   //0011
 
 	}
-	
-	public void setAITargetList() {	
-		//target AI
-		//NYI:	this.targetTasks.addTask(1, new EntityAIOwnerPointTarget(this));
-		this.targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this));
-		this.targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this));
-		this.targetTasks.addTask(3, new EntityAIHurtByTarget(this, false));
-		this.targetTasks.addTask(4, new EntityAIShipInRangeTarget(this, 0.4F, 1));
-	}
 
 	//增加艦載機數量計算
 	@Override

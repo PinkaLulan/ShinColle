@@ -22,9 +22,9 @@ public class ConfigHandler {
 	
 	//SHIP SETTING
 	public static boolean timeKeeping = true;
-	public static float timeKeepingVolume = 0.5F;
-	public static float shipVolume = 0.5F;
-	public static float fireVolume = 1.0F;
+	public static float timeKeepingVolume = 1.0F;
+	public static float shipVolume = 1.0F;
+	public static float fireVolume = 0.7F;
 	public static float hpRatio = 1.0f;
 	public static float atkRatio = 1.0f;
 	public static float defRatio = 1.0f;
@@ -50,9 +50,9 @@ public class ConfigHandler {
 		//Åª¨ú ship setting³]©w
 		//hp ratio
 		timeKeeping = config.getBoolean("Timekeeping", "ship setting", true, "Play timekeeping sound every 1000 ticks (1 minecraft hour)");
-		timeKeepingVolume = config.getFloat("Timekeeping_Volume", "ship setting", 0.5F, 0F, 10F, "Timekeeping sound volume");
-		shipVolume = config.getFloat("Ship_Volume", "ship setting", 0.5F, 0F, 10F, "Other sound volume");
-		fireVolume = config.getFloat("Attack_Volume", "ship setting", 1.0F, 0F, 10F, "Attack sound volume");
+		timeKeepingVolume = config.getFloat("Timekeeping_Volume", "ship setting", 1.0F, 0F, 10F, "Timekeeping sound volume");
+		shipVolume = config.getFloat("Ship_Volume", "ship setting", 1.0F, 0F, 10F, "Other sound volume");
+		fireVolume = config.getFloat("Attack_Volume", "ship setting", 0.7F, 0F, 10F, "Attack sound volume");
 		hpRatio = config.getFloat("Scale_HP", "ship setting", 1F, 0.01F, 100F, "Ship HP scale");
 		atkRatio = config.getFloat("Scale_ATK", "ship setting", 1F, 0.01F, 100F, "Ship FIREPOWER scale");
 		defRatio = config.getFloat("Scale_DEF", "ship setting", 1F, 0.01F, 100F, "Ship ARMOR scale");

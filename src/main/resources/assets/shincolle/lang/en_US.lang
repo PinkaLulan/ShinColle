@@ -11,6 +11,7 @@ tile.shincolle:BlockDesk.name=Abyssal Node
 tile.shincolle:BlockGrudge.name=Grudge Lump
 tile.shincolle:BlockGrudgeHeavy.name=Heavy Grudge Lump
 tile.shincolle:BlockPolymetal.name=Polymetallic Block
+tile.shincolle:BlockPolymetalGravel.name=Polymetallic Gravel
 tile.shincolle:BlockPolymetalOre.name=Polymetallic Ore
 tile.shincolle:BlockSmallShipyard.name=Abyssal Hydrothermal Vent
 
@@ -26,6 +27,7 @@ item.shincolle:Ammo1.name=Grudgeful Ammo Container
 item.shincolle:Ammo2.name=Heavy Grudgeful Ammo
 item.shincolle:Ammo3.name=Heavy Grudgeful Ammo Container
 item.shincolle:BucketRepair.name=Repair Bucket
+item.shincolle:KaitaiHammer.name=Dismantle Hammer
 item.shincolle:Grudge.name=Grudge
 item.shincolle:MarriageRing.name=Seikan Wedding Ring
 item.shincolle:RepairGoddess.name=The Grudge of Abyssal Goddess
@@ -98,9 +100,11 @@ entity.shincolle.EntityDestroyerNi.name=Destroyer Ni-Class
 entity.shincolle.EntityDestroyerRo.name=Destroyer Ro-Class
 entity.shincolle.EntityHeavyCruiserRi.name=Heavy Cruiser Ri-Class
 
-# GUI
+# GUI: Ship Inventory Top
 gui.shincolle:level=Level
 gui.shincolle:hp=HP
+
+# GUI: Ship Inventory: Attributes
 gui.shincolle:firepower1=Firepower
 gui.shincolle:firepower2=Firepower(A)
 gui.shincolle:torpedo=Torpedo
@@ -116,15 +120,28 @@ gui.shincolle:ammolight=Light Ammo
 gui.shincolle:ammoheavy=Heavy Ammo
 gui.shincolle:grudge=Grudge
 gui.shincolle:owner=Master
-gui.shincolle:nomaterial=Not Enough Materials
-gui.shincolle:nofuel=Not Enough Fuel
+gui.shincolle:marriage=Marriage
+gui.shincolle:married=Married
+gui.shincolle:unmarried=Unmarried
 gui.shincolle:airplanelight=L.Aircraft
 gui.shincolle:airplaneheavy=H.Aircraft
+
+# GUI: Ship Inventory: AI options
 gui.shincolle:canmelee=Can Melee
 gui.shincolle:canlightattack=Use L.Ammo
 gui.shincolle:canheavyattack=Use H.Ammo
 gui.shincolle:canairlightattack=Use L.Air
 gui.shincolle:canairheavyattack=Use H.Air
+gui.shincolle:followmin=Follow (Min)
+gui.shincolle:followmax=Follow (Max)
+gui.shincolle:fleehp=Flee HP%%
+gui.shincolle:targetAI=Passive?
+
+# GUI: Shipyard
+gui.shincolle:nomaterial=Not Enough Materials
+gui.shincolle:nofuel=Not Enough Fuel
+
+# Item Tooltip
 gui.shincolle:notforcarrier=Unusable For Aircraft Carrier
 gui.shincolle:carrieronly=Aircraft Carrier Only
 gui.shincolle:critical=Critical
@@ -133,10 +150,5 @@ gui.shincolle:triplehit=Triple Hit
 gui.shincolle:missreduce=Miss Reduction
 gui.shincolle:missrate=Miss
 gui.shincolle:missrateair=Miss(Aircraft)
-gui.shincolle:marriage=Marriage
-gui.shincolle:married=Married
-gui.shincolle:unmarried=Unmarried
 gui.shincolle:repairgoddess=Prevents sinking from deadly damage.
-gui.shincolle:followmin=Follow (Min)
-gui.shincolle:followmax=Follow (Max)
-gui.shincolle:fleehp=Flee HP%%
+gui.shincolle:ringText=Marriages

@@ -72,5 +72,25 @@ public class GuiHelper {
 		return -1;
 	}
 	
+	//0:white 1:yellow 2:orange 3:red
+	public static int pickColor(int b) {
+		switch(b) {
+		case 0:
+			return 16777215;	//white
+		case 1:
+			return 16776960;	//yellow
+		case 2:
+			return 16753920;	//orange
+		case 3:
+			return 16724787;	//red
+		case 4:
+			return 3158064;		//dark gray, for string mark
+		case 5:
+			return 0;			//black
+		default:
+			return 16724787;	//red
+		}
+	}
+	
 
 }

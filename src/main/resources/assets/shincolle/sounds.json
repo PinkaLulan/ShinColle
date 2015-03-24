@@ -245,6 +245,12 @@
         "category": "hostile", "replace": true, "sounds": [
         	"time23"
         ]
+    },
+    
+    "ship-kaitai": {
+        "category": "hostile", "replace": true, "sounds": [
+        	"kaitai"
+        ]
     }
     
 }

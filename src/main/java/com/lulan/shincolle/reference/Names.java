@@ -14,6 +14,7 @@ public final class Names {
 		public static final byte SPAWN_PARTICLE = 2;
 		public static final byte GUI_CLICK = 3;
 		public static final byte GUI_SYNC = 4;
+		public static final byte PLAYER_SYNC = 5;
 	}
 
 }

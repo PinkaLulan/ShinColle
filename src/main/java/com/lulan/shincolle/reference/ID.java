@@ -13,6 +13,7 @@ public class ID {
 		public static final byte ShipInv_FollowMin = 5;
 		public static final byte ShipInv_FollowMax = 6;
 		public static final byte ShipInv_FleeHP = 7;
+		public static final byte ShipInv_TarAI = 8;
 		public static final byte Shipyard_Type = 0;
 		public static final byte Shipyard_InvMode = 1;
 		public static final byte Shipyard_SelectMat = 2;
@@ -106,6 +107,15 @@ public class ID {
 		public static final byte FollowMin = 10;
 		public static final byte FollowMax = 11;
 		public static final byte FleeHP = 12;
+		public static final byte TargetAI = 13;
+	}
+	
+	//Array ID: ring effect
+	public static final class R {
+		public static final byte Haste = 0;
+		public static final byte Speed = 1;
+		public static final byte Jump = 2;
+		public static final byte Damage = 3;
 	}
 	
 	//Array ID: Entity State

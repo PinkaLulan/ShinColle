@@ -1,7 +1,10 @@
 package com.lulan.shincolle.network;
 
+import java.util.UUID;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -34,6 +37,7 @@ public class C2SGUIPackets implements IMessage {
 	private World world;
 	private BasicEntityShip entity;
 	private BasicTileEntity tile;
+	private EntityPlayer player;
 	private int entityID, worldID, type, button, value, value2, posX, posY, posZ;
 	
 	
@@ -54,6 +58,16 @@ public class C2SGUIPackets implements IMessage {
         this.tile = tile;
         this.worldID = tile.getWorldObj().provider.dimensionId;
         this.type = 1;
+        this.button = button;
+        this.value = value;
+        this.value2 = value2;
+    }
+	
+	//type 2: player gui click
+	public C2SGUIPackets(EntityPlayer player, int button, int value, int value2) {
+        this.player = player;
+        this.worldID = player.worldObj.provider.dimensionId;
+        this.type = 2;
         this.button = button;
         this.value = value;
         this.value2 = value2;
@@ -101,6 +115,20 @@ public class C2SGUIPackets implements IMessage {
 				EntityHelper.setTileEntityByGUI(tile, (int)button, (int)value, (int)value2);
 			}
 			break;
+		case 2: //player gui click
+			{
+				this.entityID = buf.readInt();
+				this.button = buf.readByte();
+				this.value = buf.readByte();
+				this.value2 = buf.readByte();
+				
+				//get player
+				player = (EntityPlayer) EntityHelper.getEntityByID(entityID, worldID, false);
+				
+				//set value
+//				EntityHelper.setEntityByGUI(entity, (int)button, (int)value);
+			}
+			break;
 		}
 	}
 
@@ -124,6 +152,16 @@ public class C2SGUIPackets implements IMessage {
 				buf.writeInt(this.tile.xCoord);
 				buf.writeInt(this.tile.yCoord);
 				buf.writeInt(this.tile.zCoord);
+				buf.writeByte(this.button);
+				buf.writeByte(this.value);
+				buf.writeByte(this.value2);
+			}
+			break;
+		case 2:	//ship entity gui click
+			{
+				buf.writeByte(2);
+				buf.writeInt(this.entity.getEntityId());
+				buf.writeInt(this.worldID);
 				buf.writeByte(this.button);
 				buf.writeByte(this.value);
 				buf.writeByte(this.value2);

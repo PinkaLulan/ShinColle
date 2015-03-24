@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
@@ -39,7 +40,7 @@ public class S2CGUIPackets implements IMessage {
 	private TileEntitySmallShipyard tile1;
 	private TileMultiGrudgeHeavy tile2;
 	private World world;
-	private int type, recvX, recvY, recvZ;
+	private int type, recvX, recvY, recvZ, value, value2;
 	
 	
 	public S2CGUIPackets() {}	//必須要有空參數constructor, forge才能使用此class
@@ -57,10 +58,12 @@ public class S2CGUIPackets implements IMessage {
 		}
     }
 	
-//	//type 1: sync ship inventory
-//	public S2CGUIPackets(BasicEntityShip entity, int button, int value, int value2) {
-//		this.sendType = 2;
-//  }
+	//type 2: player gui sync
+	public S2CGUIPackets(int value, int value2) {
+        this.type = 2;
+        this.value = value;
+        this.value2 = value2;
+    }
 	
 	//接收packet方法
 	@Override
@@ -83,7 +86,10 @@ public class S2CGUIPackets implements IMessage {
 					tile1.setPowerConsumed(buf.readInt());
 					tile1.setPowerRemained(buf.readInt());
 					tile1.setPowerGoal(buf.readInt());
-				}	
+				}
+				else {
+					buf.clear();
+				}
 			}
 			break;
 		case 1: //sync large shipyard gui
@@ -110,10 +116,20 @@ public class S2CGUIPackets implements IMessage {
 		            for(int i = 0; i < renderEntityList.size(); i++) { 
 		            	((EntityRenderVortex)renderEntityList.get(i)).setIsActive(tile2.isBuilding());
 		            }
-				}	
+				}
+				else {
+					buf.clear();
+				}
 			}
-		break;
-		case 2:	//sync ship inventory
+			break;
+		case 2: //player gui click
+			{
+				this.value = buf.readByte();
+				this.value2 = buf.readByte();
+				
+				//set value
+				EntityHelper.syncClientPlayer((int)value, (int)value2);
+			}
 			break;
 		}
 	}
@@ -147,9 +163,12 @@ public class S2CGUIPackets implements IMessage {
 				buf.writeInt(this.tile2.getMatStock(2));
 				buf.writeInt(this.tile2.getMatStock(3));
 			}
-		break;
-		case 2:	//sync ship inventory
+			break;
+		case 2:	//ship entity gui click
 			{
+				buf.writeByte(2);
+				buf.writeByte(this.value);
+				buf.writeByte(this.value2);
 			}
 			break;
 		}

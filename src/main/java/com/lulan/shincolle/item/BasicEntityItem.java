@@ -25,10 +25,17 @@ public class BasicEntityItem extends EntityItem {
 		return false;
 	}
 	
-	//immune to fire
+	//immune to fire and lava
 	@Override
 	protected void dealFireDamage(int fire) {}
-	
+	@Override
+	public void setFire(int time) {}
+	@Override
+	protected void setOnFireFromLava() {}
+	@Override
+	public boolean handleLavaMovement() {
+		return false;
+	}
 	
 
 }

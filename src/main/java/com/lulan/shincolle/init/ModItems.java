@@ -25,6 +25,7 @@ public class ModItems {
 	public static final BasicItem EquipTurbine = new EquipTurbine();
 	//misc
 	public static final BasicItem BucketRepair = new RepairBucket();
+	public static final BasicItem KaitaiHammer = new KaitaiHammer();
 	public static final BasicItem MarriageRing = new MarriageRing();
 	public static final BasicItem RepairGoddess = new RepairGoddess();
 
@@ -45,6 +46,7 @@ public class ModItems {
 		GameRegistry.registerItem(EquipTurbine, "EquipTurbine");
 		//misc
 		GameRegistry.registerItem(BucketRepair, "BucketRepair");
+		GameRegistry.registerItem(KaitaiHammer, "KaitaiHammer");
 		GameRegistry.registerItem(MarriageRing, "MarriageRing");
 		GameRegistry.registerItem(RepairGoddess, "RepairGoddess");
 	}

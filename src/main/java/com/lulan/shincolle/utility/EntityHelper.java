@@ -8,8 +8,11 @@ import java.util.UUID;
 import com.lulan.shincolle.entity.BasicEntityAirplane;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.EntityAirplane;
+import com.lulan.shincolle.entity.ExtendPlayerProps;
 import com.lulan.shincolle.proxy.ClientProxy;
+import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Names;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 
@@ -62,6 +65,11 @@ public class EntityHelper {
 		return false;
 	}
 	
+	public static boolean checkOP(EntityPlayer player) {
+		MinecraftServer server = ServerProxy.getServer();
+		return server.getConfigurationManager().func_152596_g(player.getGameProfile());
+	}
+	
 	//get entity by ID
 	public static Entity getEntityByID(int entityID, int worldID, boolean isClient) {
 		World world;
@@ -102,6 +110,31 @@ public class EntityHelper {
 		return null;
 	}
 	
+	//process player GUI and sync
+	public static void setPlayerByGUI(int value, int value2) {
+		switch(value) {
+		case 0:
+			break;
+		}	
+	}
+	
+	//process player sync at client side
+	public static void syncClientPlayer(int value, int value2) {
+		EntityPlayer player = ClientProxy.getClientPlayer();
+		ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+		
+		if(extProps != null) {
+			switch(value) {
+			case 0:
+				extProps.setRingActiveI(value2);
+				break;
+			case 1:
+				extProps.setMarriageNum(value2);
+				break;
+			}
+		}
+	}
+	
 	//process GUI click
 	public static void setEntityByGUI(BasicEntityShip entity, int button, int value) {
 		if(entity != null) {
@@ -129,6 +162,9 @@ public class EntityHelper {
 				break;
 			case ID.B.ShipInv_FleeHP:
 				entity.setStateMinor(ID.N.FleeHP, value);
+				break;
+			case ID.B.ShipInv_TarAI:
+				entity.setStateMinor(ID.N.TargetAI, value);
 				break;
 			}
 		}
@@ -169,56 +205,50 @@ public class EntityHelper {
 		}	
 	}
 
-	//設定large shipyard的matBuild[], 必須判定matStock夠不夠轉成matBuild
-	private static void setLargeShipyardBuildMats(TileMultiGrudgeHeavy tile, int button, int value, int value2) {
+	//增減large shipyard的matBuild[]
+	private static void setLargeShipyardBuildMats(TileMultiGrudgeHeavy tile, int button, int matType, int value) {
 		int num = 0;
-		int type = 0;
+		int num2 = 0;
+		boolean stockToBuild = true;	//false = build -> stock , true = stock -> build
 		
 		//value2轉換為數量
-		switch(value2) {
+		switch(value) {
 		case 0:
+		case 4:
 			num = 1000;
 			break;
 		case 1:
+		case 5:
 			num = 100;
 			break;
 		case 2:
+		case 6:
 			num = 10;
 			break;
 		case 3:
-			num = 1;
-			break;
-		case 4:
-			num = -1000;
-			break;
-		case 5:
-			num = -100;
-			break;
-		case 6:
-			num = -10;
-			break;
 		case 7:
-			num = -1;
-			break;		
+			num = 1;
+			break;	
 		}
 		
-		//判定數量是否足夠轉換
-		if(num > 0) {	//matStock -> matBuild
-			//stock數量要夠轉, 且build數量必須在100~1000之間
-			if(tile.getMatStock(value) - num >= 0 &&
-			   tile.getMatBuild(value) + num < 1001) {
-				//將stock轉移到build
-				tile.addMatStock(value, -num);
-				tile.addMatBuild(value, num);
-			}
+		if(value > 3) stockToBuild = false;
+		
+		//判定num是否要修改, 再增減MatStock跟MatBuild
+		if(stockToBuild) {	//matStock -> matBuild
+			//材料不夠指定數量, 則num改為剩餘全部材料數量
+			if(num > tile.getMatStock(matType)) num = tile.getMatStock(matType);
+			//材料超過製造上限(1000), 則num降為上限數量
+			if(num + tile.getMatBuild(matType) > 1000) num = 1000 - tile.getMatBuild(matType);
+			
+			tile.addMatStock(matType, -num);
+			tile.addMatBuild(matType, num);
 		}
 		else {			//matBuild -> matStock
-			//build數量要足夠轉回stock, 這邊不限制stock上限 (可破萬), 這邊num為"NEGATIVE"
-			if(tile.getMatBuild(value) + num >= 0) {
-				//將build轉移到stock
-				tile.addMatStock(value, -num);
-				tile.addMatBuild(value, num);
-			}
+			//材料不夠指定數量, 則num改為剩餘全部材料數量
+			if(num > tile.getMatBuild(matType)) num = tile.getMatBuild(matType);
+			
+			tile.addMatBuild(matType, -num);
+			tile.addMatStock(matType, num);
 		}	
 	}
 	
@@ -304,5 +334,6 @@ public class EntityHelper {
         
         return degree;
 	}
+
 	
 }

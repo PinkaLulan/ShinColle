@@ -46,9 +46,9 @@ public class BlockPolymetalOre extends BasicBlock {
 	@Override
 	public int quantityDroppedWithBonus(int fortune, Random rand) {
 		if (fortune > 0) {
-			return 2 + rand.nextInt(fortune);
+			return 2 + rand.nextInt(fortune+1);
 		}
-		return 1;  //無附魔 則掉落一顆
+		return 1 + rand.nextInt(2);  //無附魔 則掉落1~2
 	}
 	
 	

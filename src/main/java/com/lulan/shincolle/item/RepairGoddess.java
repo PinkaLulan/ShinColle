@@ -12,6 +12,7 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 
 public class RepairGoddess extends BasicItem {
+	
 	public RepairGoddess() {
 		super();
 		this.setUnlocalizedName("RepairGoddess");

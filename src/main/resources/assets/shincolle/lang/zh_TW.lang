@@ -11,6 +11,7 @@ tile.shincolle:BlockDesk.name=深海節點
 tile.shincolle:BlockGrudge.name=怨念團塊
 tile.shincolle:BlockGrudgeHeavy.name=沉重的怨念團塊
 tile.shincolle:BlockPolymetal.name=多金屬磚
+tile.shincolle:BlockPolymetalGravel.name=多金屬礫石
 tile.shincolle:BlockPolymetalOre.name=多金屬礦
 tile.shincolle:BlockSmallShipyard.name=深海熱泉
 
@@ -26,6 +27,7 @@ item.shincolle:Ammo1.name=怨念彈集裝箱
 item.shincolle:Ammo2.name=重型怨念彈
 item.shincolle:Ammo3.name=重型怨念彈集裝箱
 item.shincolle:BucketRepair.name=修復桶
+item.shincolle:KaitaiHammer.name=解體槌
 item.shincolle:Grudge.name=怨念
 item.shincolle:MarriageRing.name=棲艦婚戒
 item.shincolle:RepairGoddess.name=深海女神的怨念
@@ -98,9 +100,11 @@ entity.shincolle.EntityDestroyerNi.name=驅逐NI級
 entity.shincolle.EntityDestroyerRo.name=驅逐RO級
 entity.shincolle.EntityHeavyCruiserRi.name=重巡RI級
 
-# GUI
+# GUI: Ship Inventory Top
 gui.shincolle:level=等級
 gui.shincolle:hp=耐久
+
+# GUI: Ship Inventory: Attributes
 gui.shincolle:firepower1=火力
 gui.shincolle:firepower2=火力(艦載機)
 gui.shincolle:torpedo=雷裝
@@ -114,17 +118,30 @@ gui.shincolle:kills=擊殺數
 gui.shincolle:exp=經驗值
 gui.shincolle:ammolight=輕型彈藥
 gui.shincolle:ammoheavy=重型彈藥
-gui.shincolle:grudge=怨氣
+gui.shincolle:grudge=怨念
 gui.shincolle:owner=所屬
-gui.shincolle:nomaterial=資材不足
-gui.shincolle:nofuel=燃料不足
+gui.shincolle:marriage=婚姻狀態
+gui.shincolle:married=已婚
+gui.shincolle:unmarried=未婚
 gui.shincolle:airplanelight=輕型艦載機
 gui.shincolle:airplaneheavy=重型艦載機
+
+# GUI: Ship Inventory: AI options
 gui.shincolle:canmelee=使用衝撞攻擊
 gui.shincolle:canlightattack=使用輕型彈藥
 gui.shincolle:canheavyattack=使用重型彈藥
 gui.shincolle:canairlightattack=輕型艦載機
 gui.shincolle:canairheavyattack=重型艦載機
+gui.shincolle:followmin=跟隨最短距離
+gui.shincolle:followmax=跟隨最長距離
+gui.shincolle:fleehp=逃跑血量(%%)
+gui.shincolle:targetAI=被動攻擊
+
+# GUI: Shipyard
+gui.shincolle:nomaterial=資材不足
+gui.shincolle:nofuel=燃料不足
+
+# Item Tooltip
 gui.shincolle:notforcarrier=不適用於航母
 gui.shincolle:carrieronly=航母限定
 gui.shincolle:critical=爆擊率
@@ -133,10 +150,6 @@ gui.shincolle:triplehit=三連擊
 gui.shincolle:missreduce=提高命中率
 gui.shincolle:missrate=失誤率
 gui.shincolle:missrateair=失誤率(艦載機)
-gui.shincolle:marriage=婚姻狀態
-gui.shincolle:married=已婚
-gui.shincolle:unmarried=未婚
 gui.shincolle:repairgoddess=深海女神的怨念使棲艦不會被擊沈。
-gui.shincolle:followmin=跟隨最短距離
-gui.shincolle:followmax=跟隨最長距離
-gui.shincolle:fleehp=逃跑血量(%%)
+gui.shincolle:ringText=結婚次數
+

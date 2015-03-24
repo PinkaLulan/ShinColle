@@ -80,10 +80,27 @@ public class GuiLargeShipyard extends GuiContainer {
 			this.fontRendererObj.drawString(errorMsg, 105 - this.fontRendererObj.getStringWidth(errorMsg) / 2, 99, 16724787);
 		}
 		//µe¥X¼Æ¦r
-		this.fontRendererObj.drawString(matBuild0, 73 - this.fontRendererObj.getStringWidth(matBuild0) / 2, 20, 16777215);
-		this.fontRendererObj.drawString(matBuild1, 73 - this.fontRendererObj.getStringWidth(matBuild1) / 2, 39, 16777215);
-		this.fontRendererObj.drawString(matBuild2, 73 - this.fontRendererObj.getStringWidth(matBuild2) / 2, 58, 16777215);
-		this.fontRendererObj.drawString(matBuild3, 73 - this.fontRendererObj.getStringWidth(matBuild3) / 2, 77, 16777215);
+		int colorNum = 0;
+		if(this.tile.getMatBuild(0) < 100) colorNum = GuiHelper.pickColor(3);
+		else if(this.tile.getMatBuild(0) == 1000) colorNum = GuiHelper.pickColor(1);
+		else colorNum = GuiHelper.pickColor(0);
+		this.fontRendererObj.drawString(matBuild0, 73 - this.fontRendererObj.getStringWidth(matBuild0) / 2, 20, colorNum);
+		
+		if(this.tile.getMatBuild(1) < 100) colorNum = GuiHelper.pickColor(3);
+		else if(this.tile.getMatBuild(1) == 1000) colorNum = GuiHelper.pickColor(1);
+		else colorNum = GuiHelper.pickColor(0);
+		this.fontRendererObj.drawString(matBuild1, 73 - this.fontRendererObj.getStringWidth(matBuild1) / 2, 39, colorNum);
+		
+		if(this.tile.getMatBuild(2) < 100) colorNum = GuiHelper.pickColor(3);
+		else if(this.tile.getMatBuild(2) == 1000) colorNum = GuiHelper.pickColor(1);
+		else colorNum = GuiHelper.pickColor(0);
+		this.fontRendererObj.drawString(matBuild2, 73 - this.fontRendererObj.getStringWidth(matBuild2) / 2, 58, colorNum);
+		
+		if(this.tile.getMatBuild(3) < 100) colorNum = GuiHelper.pickColor(3);
+		else if(this.tile.getMatBuild(3) == 1000) colorNum = GuiHelper.pickColor(1);
+		else colorNum = GuiHelper.pickColor(0);
+		this.fontRendererObj.drawString(matBuild3, 73 - this.fontRendererObj.getStringWidth(matBuild3) / 2, 77, colorNum);
+		
 		this.fontRendererObj.drawString(matStock0, 125 - this.fontRendererObj.getStringWidth(matStock0) / 2, 20, 16776960);
 		this.fontRendererObj.drawString(matStock1, 125 - this.fontRendererObj.getStringWidth(matStock1) / 2, 39, 16776960);
 		this.fontRendererObj.drawString(matStock2, 125 - this.fontRendererObj.getStringWidth(matStock2) / 2, 58, 16776960);

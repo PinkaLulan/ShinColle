@@ -52,14 +52,14 @@ public class GuiShipInventory extends GuiContainer {
 	private List mouseoverList;
 	private String titlename, shiplevel, lvMark, hpMark, canMelee, canLATK, canHATK, canALATK, canAHATK, 
 	               strATK, strAATK, strLATK, strHATK, strALATK, strAHATK, strDEF, strSPD, strMOV, strHIT, 
-	               Kills, Exp, Grudge, Owner, AmmoLight, AmmoHeavy, AirLight, AirHeavy, 
+	               Kills, Exp, Grudge, Owner, AmmoLight, AmmoHeavy, AirLight, AirHeavy, TarAI,
 	               overText, strCri, strDhit, strThit, strMissMin, strMissMax, strMissAir,
 	               marriage, followMin, followMax, fleeHP, followMinValue, followMaxValue,
 	               fleeHPValue, barPosValue;
 	private int hpCurrent, hpMax, color, showPage, showPageAI, pageIndicator, pageIndicatorAI, showAttack,
 				fMinPos, fMaxPos, fleeHPPos, barPos, mousePressBar;
 	private boolean switchMelee, switchLight, switchHeavy, switchAirLight, switchAirHeavy,
-				mousePress;
+				switchTarAI, mousePress;
 
 	//ship type icon array
 	private static final short[][] ICON_SHIPTYPE = {
@@ -136,6 +136,12 @@ public class GuiShipInventory extends GuiContainer {
             this.switchHeavy = this.entity.getStateFlag(ID.F.UseAmmoHeavy);
             this.switchAirLight = this.entity.getStateFlag(ID.F.UseAirLight);
             this.switchAirHeavy = this.entity.getStateFlag(ID.F.UseAirHeavy);
+            if(this.entity.getStateMinor(ID.N.TargetAI) == 0) {
+            	this.switchTarAI = true;
+            }
+            else {
+            	this.switchTarAI = false;
+            }
             
             if(this.switchMelee) {
             	drawTexturedModalRect(guiLeft+174, guiTop+132, 0, 214, 11, 11);
@@ -170,6 +176,13 @@ public class GuiShipInventory extends GuiContainer {
             }
             else {
             	drawTexturedModalRect(guiLeft+174, guiTop+180, 11, 214, 11, 11);
+            }
+            
+            if(this.switchTarAI) {
+            	drawTexturedModalRect(guiLeft+174, guiTop+192, 0, 214, 11, 11);
+            }
+            else {
+            	drawTexturedModalRect(guiLeft+174, guiTop+192, 11, 214, 11, 11);
             }
             
             break;
@@ -365,7 +378,7 @@ public class GuiShipInventory extends GuiContainer {
 		this.fontRendererObj.drawStringWithShadow(shiplevel, xSize-7-this.fontRendererObj.getStringWidth(shiplevel), 6, color);
 
 		//draw hp/maxhp, if currHP < maxHP, use darker color
-		color = pickColor(entity.getBonusPoint(ID.HP));
+		color = GuiHelper.pickColor(entity.getBonusPoint(ID.HP));
 		this.fontRendererObj.drawStringWithShadow("/"+String.valueOf(hpMax), 148 + this.fontRendererObj.getStringWidth(String.valueOf(hpCurrent)), 6, color);
 		if(hpCurrent < hpMax) {
 			switch(entity.getBonusPoint(ID.HP)) {
@@ -401,44 +414,44 @@ public class GuiShipInventory extends GuiContainer {
 			
 			//draw firepower
 			if(this.showAttack == 1) {	//show cannon attack
-				this.fontRendererObj.drawString(I18n.format("gui.shincolle:firepower1"), 67, 20, pickColor(5));
-				color = pickColor(entity.getBonusPoint(ID.ATK));
+				this.fontRendererObj.drawString(I18n.format("gui.shincolle:firepower1"), 67, 20, GuiHelper.pickColor(5));
+				color = GuiHelper.pickColor(entity.getBonusPoint(ID.ATK));
 				this.fontRendererObj.drawStringWithShadow(strATK, 125-this.fontRendererObj.getStringWidth(strATK), 30, color);
 			}
 			else {						//show aircraft attack
-				this.fontRendererObj.drawString(I18n.format("gui.shincolle:firepower2"), 67, 20, pickColor(5));
-				color = pickColor(entity.getBonusPoint(ID.ATK));
+				this.fontRendererObj.drawString(I18n.format("gui.shincolle:firepower2"), 67, 20, GuiHelper.pickColor(5));
+				color = GuiHelper.pickColor(entity.getBonusPoint(ID.ATK));
 				this.fontRendererObj.drawStringWithShadow(strAATK, 125-this.fontRendererObj.getStringWidth(strAATK), 30, color);
 			}
-			this.fontRendererObj.drawString(I18n.format("gui.shincolle:armor"), 67, 41, pickColor(5));
-			this.fontRendererObj.drawString(I18n.format("gui.shincolle:attackspeed"), 67, 62, pickColor(5));
-			this.fontRendererObj.drawString(I18n.format("gui.shincolle:movespeed"), 67, 83, pickColor(5));
-			this.fontRendererObj.drawString(I18n.format("gui.shincolle:range"), 67, 104, pickColor(5));
+			this.fontRendererObj.drawString(I18n.format("gui.shincolle:armor"), 67, 41, GuiHelper.pickColor(5));
+			this.fontRendererObj.drawString(I18n.format("gui.shincolle:attackspeed"), 67, 62, GuiHelper.pickColor(5));
+			this.fontRendererObj.drawString(I18n.format("gui.shincolle:movespeed"), 67, 83, GuiHelper.pickColor(5));
+			this.fontRendererObj.drawString(I18n.format("gui.shincolle:range"), 67, 104, GuiHelper.pickColor(5));
 			
 			//draw armor
-			color = pickColor(entity.getBonusPoint(ID.DEF));
+			color = GuiHelper.pickColor(entity.getBonusPoint(ID.DEF));
 			this.fontRendererObj.drawStringWithShadow(strDEF, 125-this.fontRendererObj.getStringWidth(strDEF), 51, color);
 			
 			//draw attack speed
-			color = pickColor(entity.getBonusPoint(ID.SPD));
+			color = GuiHelper.pickColor(entity.getBonusPoint(ID.SPD));
 			this.fontRendererObj.drawStringWithShadow(strSPD, 125-this.fontRendererObj.getStringWidth(strSPD), 72, color);
 			
 			//draw movement speed
-			color = pickColor(entity.getBonusPoint(ID.MOV));
+			color = GuiHelper.pickColor(entity.getBonusPoint(ID.MOV));
 			this.fontRendererObj.drawStringWithShadow(strMOV, 125-this.fontRendererObj.getStringWidth(strMOV), 93, color);
 					
 			//draw range
-			color = pickColor(entity.getBonusPoint(ID.HIT));
+			color = GuiHelper.pickColor(entity.getBonusPoint(ID.HIT));
 			this.fontRendererObj.drawStringWithShadow(strHIT, 125-this.fontRendererObj.getStringWidth(strHIT), 114, color);
 			break;
 			}
 		case 1:	{	//page 1: exp, kills, L&H ammo, fuel
 			//draw string
-			this.fontRendererObj.drawString(I18n.format("gui.shincolle:kills"), 67, 20, pickColor(5));
-			this.fontRendererObj.drawString(I18n.format("gui.shincolle:exp"), 67, 41, pickColor(5));
-			this.fontRendererObj.drawString(I18n.format("gui.shincolle:ammolight"), 67, 62, pickColor(5));
-			this.fontRendererObj.drawString(I18n.format("gui.shincolle:ammoheavy"), 67, 83, pickColor(5));
-			this.fontRendererObj.drawString(I18n.format("gui.shincolle:grudge"), 67, 104, pickColor(5));
+			this.fontRendererObj.drawString(I18n.format("gui.shincolle:kills"), 67, 20, GuiHelper.pickColor(5));
+			this.fontRendererObj.drawString(I18n.format("gui.shincolle:exp"), 67, 41, GuiHelper.pickColor(5));
+			this.fontRendererObj.drawString(I18n.format("gui.shincolle:ammolight"), 67, 62, GuiHelper.pickColor(5));
+			this.fontRendererObj.drawString(I18n.format("gui.shincolle:ammoheavy"), 67, 83, GuiHelper.pickColor(5));
+			this.fontRendererObj.drawString(I18n.format("gui.shincolle:grudge"), 67, 104, GuiHelper.pickColor(5));
 			//draw value
 			entity.setExpNext();  //update exp value
 			Exp = String.valueOf(this.entity.getStateMinor(ID.N.ExpCurrent))+"/"+String.valueOf(this.entity.getStateMinor(ID.N.ExpNext));
@@ -447,18 +460,18 @@ public class GuiShipInventory extends GuiContainer {
 			AmmoHeavy = String.valueOf(this.entity.getStateMinor(ID.N.NumAmmoHeavy));
 			Grudge = String.valueOf(this.entity.getStateMinor(ID.N.NumGrudge));
 				
-			this.fontRendererObj.drawStringWithShadow(Kills, 125-this.fontRendererObj.getStringWidth(Kills), 30, pickColor(0));
-			this.fontRendererObj.drawStringWithShadow(Exp, 125-this.fontRendererObj.getStringWidth(Exp), 51, pickColor(0));
-			this.fontRendererObj.drawStringWithShadow(AmmoLight, 125-this.fontRendererObj.getStringWidth(AmmoLight), 72, pickColor(0));
-			this.fontRendererObj.drawStringWithShadow(AmmoHeavy, 125-this.fontRendererObj.getStringWidth(AmmoHeavy), 93, pickColor(0));
-			this.fontRendererObj.drawStringWithShadow(Grudge, 125-this.fontRendererObj.getStringWidth(Grudge), 114, pickColor(0));
+			this.fontRendererObj.drawStringWithShadow(Kills, 125-this.fontRendererObj.getStringWidth(Kills), 30, GuiHelper.pickColor(0));
+			this.fontRendererObj.drawStringWithShadow(Exp, 125-this.fontRendererObj.getStringWidth(Exp), 51, GuiHelper.pickColor(0));
+			this.fontRendererObj.drawStringWithShadow(AmmoLight, 125-this.fontRendererObj.getStringWidth(AmmoLight), 72, GuiHelper.pickColor(0));
+			this.fontRendererObj.drawStringWithShadow(AmmoHeavy, 125-this.fontRendererObj.getStringWidth(AmmoHeavy), 93, GuiHelper.pickColor(0));
+			this.fontRendererObj.drawStringWithShadow(Grudge, 125-this.fontRendererObj.getStringWidth(Grudge), 114, GuiHelper.pickColor(0));
 						
 			break;
 			}
 		case 3: {	//page 3: owner name, light/heavy airplane, marriage
 			//draw string
-			this.fontRendererObj.drawString(I18n.format("gui.shincolle:owner"), 67, 20, pickColor(5));
-			this.fontRendererObj.drawString(I18n.format("gui.shincolle:marriage"), 67, 41, pickColor(5));
+			this.fontRendererObj.drawString(I18n.format("gui.shincolle:owner"), 67, 20, GuiHelper.pickColor(5));
+			this.fontRendererObj.drawString(I18n.format("gui.shincolle:marriage"), 67, 41, GuiHelper.pickColor(5));
 			
 			//draw value
 			Owner = this.entity.getOwnerName();
@@ -472,17 +485,17 @@ public class GuiShipInventory extends GuiContainer {
 			
 			//大型艦, 顯示艦載機數量
 			if(this.entity instanceof BasicEntityShipLarge) {
-				this.fontRendererObj.drawString(I18n.format("gui.shincolle:airplanelight"), 67, 83, pickColor(5));
-				this.fontRendererObj.drawString(I18n.format("gui.shincolle:airplaneheavy"), 67, 104, pickColor(5));
+				this.fontRendererObj.drawString(I18n.format("gui.shincolle:airplanelight"), 67, 83, GuiHelper.pickColor(5));
+				this.fontRendererObj.drawString(I18n.format("gui.shincolle:airplaneheavy"), 67, 104, GuiHelper.pickColor(5));
 				AirLight = String.valueOf(((BasicEntityShipLarge)this.entity).getNumAircraftLight());
 				AirHeavy = String.valueOf(((BasicEntityShipLarge)this.entity).getNumAircraftHeavy());
-				this.fontRendererObj.drawStringWithShadow(AirLight, 125-this.fontRendererObj.getStringWidth(AirLight), 93, pickColor(1));
-				this.fontRendererObj.drawStringWithShadow(AirHeavy, 125-this.fontRendererObj.getStringWidth(AirHeavy), 114, pickColor(1));	
+				this.fontRendererObj.drawStringWithShadow(AirLight, 125-this.fontRendererObj.getStringWidth(AirLight), 93, GuiHelper.pickColor(1));
+				this.fontRendererObj.drawStringWithShadow(AirHeavy, 125-this.fontRendererObj.getStringWidth(AirHeavy), 114, GuiHelper.pickColor(1));	
 				
 			}
 			
-			this.fontRendererObj.drawStringWithShadow(Owner, 125-this.fontRendererObj.getStringWidth(Owner), 30, pickColor(1));
-			this.fontRendererObj.drawStringWithShadow(marriage, 125-this.fontRendererObj.getStringWidth(marriage), 51, pickColor(1));
+			this.fontRendererObj.drawStringWithShadow(Owner, 125-this.fontRendererObj.getStringWidth(Owner), 30, GuiHelper.pickColor(1));
+			this.fontRendererObj.drawStringWithShadow(marriage, 125-this.fontRendererObj.getStringWidth(marriage), 51, GuiHelper.pickColor(1));
 			
 			break;
 			}//end case 3
@@ -497,12 +510,14 @@ public class GuiShipInventory extends GuiContainer {
 				canHATK = I18n.format("gui.shincolle:canheavyattack");
 				canALATK = I18n.format("gui.shincolle:canairlightattack");
 				canAHATK = I18n.format("gui.shincolle:canairheavyattack");
+				TarAI = I18n.format("gui.shincolle:targetAI");
 				
-				this.fontRendererObj.drawString(canMelee, 187, 134, pickColor(5));
-				this.fontRendererObj.drawString(canLATK, 187, 146, pickColor(5));
-				this.fontRendererObj.drawString(canHATK, 187, 158, pickColor(5));
-				this.fontRendererObj.drawString(canALATK, 187, 170, pickColor(5));
-				this.fontRendererObj.drawString(canAHATK, 187, 182, pickColor(5));
+				this.fontRendererObj.drawString(canMelee, 187, 134, GuiHelper.pickColor(5));
+				this.fontRendererObj.drawString(canLATK, 187, 146, GuiHelper.pickColor(5));
+				this.fontRendererObj.drawString(canHATK, 187, 158, GuiHelper.pickColor(5));
+				this.fontRendererObj.drawString(canALATK, 187, 170, GuiHelper.pickColor(5));
+				this.fontRendererObj.drawString(canAHATK, 187, 182, GuiHelper.pickColor(5));
+				this.fontRendererObj.drawString(TarAI, 187, 194, GuiHelper.pickColor(5));
 			}
 			break;
 		case 2:	{	//follow, flee AI page
@@ -511,9 +526,9 @@ public class GuiShipInventory extends GuiContainer {
 				followMax = I18n.format("gui.shincolle:followmax");
 				fleeHP = I18n.format("gui.shincolle:fleehp");
 				
-				this.fontRendererObj.drawString(followMin, 174, 134, pickColor(5));
-				this.fontRendererObj.drawString(followMax, 174, 158, pickColor(5));
-				this.fontRendererObj.drawString(fleeHP, 174, 182, pickColor(5));
+				this.fontRendererObj.drawString(followMin, 174, 134, GuiHelper.pickColor(5));
+				this.fontRendererObj.drawString(followMax, 174, 158, GuiHelper.pickColor(5));
+				this.fontRendererObj.drawString(fleeHP, 174, 182, GuiHelper.pickColor(5));
 				
 				//draw value
 				followMinValue = String.valueOf(entity.getStateMinor(ID.N.FollowMin));
@@ -522,26 +537,26 @@ public class GuiShipInventory extends GuiContainer {
 				
 				if(this.mousePressBar == 0) {
 					barPosValue = String.valueOf((int)((float)barPos / 42F * 30F + 1F));
-					this.fontRendererObj.drawStringWithShadow(barPosValue, 174, 145, pickColor(3));
+					this.fontRendererObj.drawStringWithShadow(barPosValue, 174, 145, GuiHelper.pickColor(3));
 				}
 				else {
-					this.fontRendererObj.drawStringWithShadow(followMinValue, 174, 145, pickColor(1));
+					this.fontRendererObj.drawStringWithShadow(followMinValue, 174, 145, GuiHelper.pickColor(1));
 				}
 				
 				if(this.mousePressBar == 1) {
 					barPosValue = String.valueOf((int)((float)barPos / 42F * 30F + 2F));
-					this.fontRendererObj.drawStringWithShadow(barPosValue, 174, 169, pickColor(3));		
+					this.fontRendererObj.drawStringWithShadow(barPosValue, 174, 169, GuiHelper.pickColor(3));		
 				}
 				else {
-					this.fontRendererObj.drawStringWithShadow(followMaxValue, 174, 169, pickColor(1));
+					this.fontRendererObj.drawStringWithShadow(followMaxValue, 174, 169, GuiHelper.pickColor(1));
 				}
 				
 				if(this.mousePressBar == 2) {
 					barPosValue = String.valueOf((int)((float)barPos / 42F * 100F));
-					this.fontRendererObj.drawStringWithShadow(barPosValue, 174, 193, pickColor(3));
+					this.fontRendererObj.drawStringWithShadow(barPosValue, 174, 193, GuiHelper.pickColor(3));
 				}
 				else {
-					this.fontRendererObj.drawStringWithShadow(fleeHPValue, 174, 193, pickColor(1));
+					this.fontRendererObj.drawStringWithShadow(fleeHPValue, 174, 193, GuiHelper.pickColor(1));
 				}	
 			}
 			break;
@@ -549,26 +564,6 @@ public class GuiShipInventory extends GuiContainer {
 			}
 			break;
 		}//end AI page switch
-	}
-
-	//0:white 1:yellow 2:orange 3:red
-	private int pickColor(int b) {
-		switch(b) {
-		case 0:
-			return 16777215;	//white
-		case 1:
-			return 16776960;	//yellow
-		case 2:
-			return 16753920;	//orange
-		case 3:
-			return 16724787;	//red
-		case 4:
-			return 3158064;		//dark gray, for string mark
-		case 5:
-			return 0;			//black
-		default:
-			return 16724787;	//red
-		}
 	}
 	
 	//mouse press + move
@@ -681,6 +676,15 @@ public class GuiShipInventory extends GuiContainer {
         	}
         	break;
         case 8:	//AI operation 5
+        	if(this.showPageAI == 1) {	//page 1: change target AI
+        		if(this.entity.getStateMinor(ID.N.TargetAI) == 0) {
+        			this.switchTarAI = true;
+        		}
+        		else {
+        			this.switchTarAI = false;
+        		}
+        		CommonProxy.channel.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_TarAI, getInverseInt(!this.switchTarAI)));
+        	}
         	break;
         case 9:		//AI page 1
         	this.showPageAI = 1;

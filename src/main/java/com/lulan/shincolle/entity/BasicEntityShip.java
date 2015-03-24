@@ -7,6 +7,7 @@ import java.util.Random;
 import java.util.UUID;
 
 import com.lulan.shincolle.ShinColle;
+import com.lulan.shincolle.ai.EntityAIShipInRangeTarget;
 import com.lulan.shincolle.ai.EntityAIShipSit;
 import com.lulan.shincolle.client.inventory.ContainerShipInventory;
 import com.lulan.shincolle.client.particle.EntityFXSpray;
@@ -16,6 +17,7 @@ import com.lulan.shincolle.entity.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.item.BasicEntityItem;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -39,6 +41,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.EntityAIHurtByTarget;
+import net.minecraft.entity.ai.EntityAIOwnerHurtByTarget;
+import net.minecraft.entity.ai.EntityAIOwnerHurtTarget;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -78,7 +84,9 @@ public abstract class BasicEntityShip extends EntityTameable {
 	protected float[] StateEquip;
 	/**final states: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT 6:ATK_Heavy 7:ATK_AirLight 8:ATK_AirHeavy*/
 	protected float[] StateFinal;
-	/**minor states: 0:ShipLevel 1:Kills 2:ExpCurrent 3:ExpNext 4:NumAmmoLight 5:NumAmmoHeavy 6:NumGrudge 7:NumAirLight 8:NumAirHeavy 9:immunity time 10:followMin 11:followMax 12:FleeHP*/
+	/**minor states: 0:ShipLevel 1:Kills 2:ExpCurrent 3:ExpNext 4:NumAmmoLight 
+	 * 5:NumAmmoHeavy 6:NumGrudge 7:NumAirLight 8:NumAirHeavy 9:immunity time 
+	 * 10:followMin 11:followMax 12:FleeHP 13:TargetAIType*/
 	protected int[] StateMinor;
 	/**equip effect: 0:critical 1:doubleHit 2:tripleHit 3:baseMiss*/
 	protected float[] EffectEquip;
@@ -98,7 +106,7 @@ public abstract class BasicEntityShip extends EntityTameable {
 		isImmuneToFire = true;	//set ship immune to lava
 		StateEquip = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F};
 		StateFinal = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F};
-		StateMinor = new int[] {1, 0, 0, 40, 0, 0, 0, 0, 0, 0, 2, 14, 35};
+		StateMinor = new int[] {1, 0, 0, 40, 0, 0, 0, 0, 0, 0, 2, 14, 35, 0};
 		EffectEquip = new float[] {0F, 0F, 0F, 0F};
 		StateEmotion = new byte[] {0, 0, 0};
 		StateFlag = new boolean[] {false, false, false, false, true, true, true, true, false};
@@ -180,8 +188,20 @@ public abstract class BasicEntityShip extends EntityTameable {
 		this.getNavigator().setCanSwim(true);
 	}
 	
-	//setup target AI
-	abstract protected void setAITargetList();
+	//setup target AI: par1: 0:passive 1:active
+	public void setAITargetList(int par1) {	
+		if(par1 == 0) {
+			this.targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this));
+			this.targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this));
+			this.targetTasks.addTask(3, new EntityAIHurtByTarget(this, false));
+		}
+		else {
+			this.targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this));
+			this.targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this));
+			this.targetTasks.addTask(3, new EntityAIHurtByTarget(this, false));
+			this.targetTasks.addTask(4, new EntityAIShipInRangeTarget(this, 0.4F, 1));
+		}	
+	}
 
 	//clear AI
 	protected void clearAITasks() {
@@ -452,6 +472,12 @@ public abstract class BasicEntityShip extends EntityTameable {
 	
 	public void setStateMinor(int state, int par1) {
 		StateMinor[state] = par1;
+		
+		//若修改melee flag, 則reload AI
+		if(state == ID.N.TargetAI) {
+			clearAITargetTasks();
+    		setAITargetList(par1);
+		}
 	}
 	
 	//called when GUI update
@@ -564,6 +590,53 @@ public abstract class BasicEntityShip extends EntityTameable {
 	            }			
 			}
 			
+			//use kaitai hammer
+			if(itemstack.getItem() == ModItems.KaitaiHammer && !worldObj.isRemote && 
+			   ((this.getOwner() != null && player.getUniqueID().equals(this.getOwner().getUniqueID())) ||
+				 EntityHelper.checkOP(player))) {
+				//創造模式不消耗物品
+                if (!player.capabilities.isCreativeMode) {  //stack-1 in non-creative mode
+                    --itemstack.stackSize;
+                    
+                    //set item amount
+                    ItemStack item0, item1, item2, item3;
+                                   
+                    if(this instanceof BasicEntityShipLarge) {
+                        item0 = new ItemStack(ModBlocks.BlockGrudge, 8 + rand.nextInt(3));
+                    	item1 = new ItemStack(ModBlocks.BlockAbyssium, 8 + rand.nextInt(3));
+                    	item2 = new ItemStack(ModItems.Ammo, 8 + rand.nextInt(3), 1);
+                    	item3 = new ItemStack(ModBlocks.BlockPolymetal, 8 + rand.nextInt(3));
+                    }
+                    else {
+                        item0 = new ItemStack(ModItems.Grudge, 10 + rand.nextInt(8));
+                    	item1 = new ItemStack(ModItems.AbyssMetal, 10 + rand.nextInt(8), 0);
+                    	item2 = new ItemStack(ModItems.Ammo, 10 + rand.nextInt(8), 0);
+                    	item3 = new ItemStack(ModItems.AbyssMetal, 10 + rand.nextInt(8), 1);
+                    }
+                    
+                    EntityItem entityItem0 = new EntityItem(worldObj, posX+0.5D, posY+0.8D, posZ+0.5D, item0);
+                    EntityItem entityItem1 = new EntityItem(worldObj, posX+0.5D, posY+0.8D, posZ-0.5D, item1);
+                    EntityItem entityItem2 = new EntityItem(worldObj, posX-0.5D, posY+0.8D, posZ+0.5D, item2);
+                    EntityItem entityItem3 = new EntityItem(worldObj, posX-0.5D, posY+0.8D, posZ-0.5D, item3);
+
+                    worldObj.spawnEntityInWorld(entityItem0);
+                    worldObj.spawnEntityInWorld(entityItem1);
+                    worldObj.spawnEntityInWorld(entityItem2);
+                    worldObj.spawnEntityInWorld(entityItem3);
+                    
+                    playSound(Reference.MOD_ID+":ship-kaitai", 1.0F, 1.0F);
+                }
+                
+                //物品用完時要設定為null清空該slot
+                if (itemstack.stackSize <= 0) {  
+                	player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
+                }
+                 
+                this.setDead();
+                
+                return true;			
+			}
+			
 			//use marriage ring
 			if(itemstack.getItem() == ModItems.MarriageRing && !this.getStateFlag(ID.F.IsMarried) && 
 			   player.isSneaking() && this.getOwner() != null && player.getUniqueID().equals(this.getOwner().getUniqueID())) {
@@ -572,7 +645,14 @@ public abstract class BasicEntityShip extends EntityTameable {
                     --itemstack.stackSize;
                 }
 
+				//set marriage flag
                 this.setStateFlag(ID.F.IsMarried, true);
+                
+                //player marriage num +1
+    			ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);		
+    			if(extProps != null) {
+    				extProps.setMarriageNum(extProps.getMarriageNum() + 1);
+    			}
                 
                 //play hearts effect
                 TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
@@ -802,7 +882,7 @@ public abstract class BasicEntityShip extends EntityTameable {
         		clearAITasks();
         		clearAITargetTasks();	//reset AI for get owner after loading NBT data
         		setAIList();
-        		setAITargetList();
+        		setAITargetList(getStateMinor(ID.N.TargetAI));
         		sendSyncPacket();		//sync packet to client
         	}
         	
@@ -1405,7 +1485,7 @@ public abstract class BasicEntityShip extends EntityTameable {
 			clearAITasks();
 			clearAITargetTasks();
 			setAIList();
-			setAITargetList();
+			setAITargetList(getStateMinor(ID.N.TargetAI));
 			sendSyncPacket();
 		}
 		
@@ -1416,7 +1496,6 @@ public abstract class BasicEntityShip extends EntityTameable {
 			clearAITargetTasks();
 			sendSyncPacket();
 		}
-		
 	}
 	
 	//decrese ammo/grudge/repair item, return true or false(not enough item)

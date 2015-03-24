@@ -11,19 +11,21 @@ import cpw.mods.fml.common.registry.GameRegistry;
 public class ModBlocks {
 
 	public static final Block BlockAbyssium = new BlockAbyssium();
-	public static final Block BlockDesk = new BlockDesk();
+//	public static final Block BlockDesk = new BlockDesk();
 	public static final Block BlockGrudge = new BlockGrudge();
 	public static final Block BlockGrudgeHeavy = new BlockGrudgeHeavy();
 	public static final Block BlockPolymetal = new BlockPolymetal();
+	public static final Block BlockPolymetalGravel = new BlockPolymetalGravel();
 	public static final Block BlockPolymetalOre = new BlockPolymetalOre();
 	public static final Block BlockSmallShipyard = new BlockSmallShipyard();
 
 	
 	public static void init() {
 		GameRegistry.registerBlock(BlockAbyssium, "BlockAbyssium");
-		GameRegistry.registerBlock(BlockDesk, "BlockDesk");
+//		GameRegistry.registerBlock(BlockDesk, "BlockDesk");
 		GameRegistry.registerBlock(BlockGrudge, "BlockGrudge");
 		GameRegistry.registerBlock(BlockPolymetal, "BlockPolymetal");
+		GameRegistry.registerBlock(BlockPolymetalGravel, "BlockPolymetalGravel");
 		GameRegistry.registerBlock(BlockPolymetalOre, "BlockPolymetalOre");
 		GameRegistry.registerBlock(BlockSmallShipyard, "BlockSmallShipyard");
 		

@@ -61,6 +61,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		nbtExt_add0.setInteger("FMin", this.entity.getStateMinor(ID.N.FollowMin));
 		nbtExt_add0.setInteger("FMax", this.entity.getStateMinor(ID.N.FollowMax));
 		nbtExt_add0.setInteger("FHP", this.entity.getStateMinor(ID.N.FleeHP));
+		nbtExt_add0.setInteger("TarAI", this.entity.getStateMinor(ID.N.TargetAI));
 		//save AttrFinal
 		nbtExt.setTag("Final", nbtExt_add1);
 		nbtExt_add1.setFloat("HP", this.entity.getStateFinal(ID.HP));
@@ -127,17 +128,18 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		
 		//load minor state
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Minor");
-		entity.setStateMinor(ID.N.ShipLevel, nbt_load.getShort("Level"));
-		entity.setStateMinor(ID.N.Kills, nbt_load.getShort("Kills"));
-		entity.setStateMinor(ID.N.ExpCurrent, nbt_load.getShort("Exp"));
-		entity.setStateMinor(ID.N.NumAmmoLight, nbt_load.getShort("NumAmmoL"));
-		entity.setStateMinor(ID.N.NumAmmoHeavy, nbt_load.getShort("NumAmmoH"));
-		entity.setStateMinor(ID.N.NumGrudge, nbt_load.getShort("NumGrudge"));
-		entity.setStateMinor(ID.N.NumAirLight, nbt_load.getShort("NumAirL"));
-		entity.setStateMinor(ID.N.NumAirHeavy, nbt_load.getShort("NumAirH"));
-		entity.setStateMinor(ID.N.FollowMin, nbt_load.getShort("FMin"));
-		entity.setStateMinor(ID.N.FollowMax, nbt_load.getShort("FMax"));
-		entity.setStateMinor(ID.N.FleeHP, nbt_load.getShort("FHP"));
+		entity.setStateMinor(ID.N.ShipLevel, nbt_load.getInteger("Level"));
+		entity.setStateMinor(ID.N.Kills, nbt_load.getInteger("Kills"));
+		entity.setStateMinor(ID.N.ExpCurrent, nbt_load.getInteger("Exp"));
+		entity.setStateMinor(ID.N.NumAmmoLight, nbt_load.getInteger("NumAmmoL"));
+		entity.setStateMinor(ID.N.NumAmmoHeavy, nbt_load.getInteger("NumAmmoH"));
+		entity.setStateMinor(ID.N.NumGrudge, nbt_load.getInteger("NumGrudge"));
+		entity.setStateMinor(ID.N.NumAirLight, nbt_load.getInteger("NumAirL"));
+		entity.setStateMinor(ID.N.NumAirHeavy, nbt_load.getInteger("NumAirH"));
+		entity.setStateMinor(ID.N.FollowMin, nbt_load.getInteger("FMin"));
+		entity.setStateMinor(ID.N.FollowMax, nbt_load.getInteger("FMax"));
+		entity.setStateMinor(ID.N.FleeHP, nbt_load.getInteger("FHP"));
+		entity.setStateMinor(ID.N.TargetAI, nbt_load.getInteger("TarAI"));
 		//load final state
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Final");
 		entity.setStateFinal(ID.HP, nbt_load.getFloat("HP"));
