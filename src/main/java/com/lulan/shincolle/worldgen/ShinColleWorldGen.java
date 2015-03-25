@@ -2,6 +2,7 @@ package com.lulan.shincolle.worldgen;
 
 import java.util.Random;
 
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModBlocks;
 
 import net.minecraft.block.Block;
@@ -68,7 +69,7 @@ public class ShinColleWorldGen implements IWorldGenerator {
 	private void generateSurface(World world, Random rand, int x, int z) {
 		//Polymetal生成: 生成大小4~8個block 每chunk生成次數10次 生成高度2~40
 		genPolymetal = new WorldGenMinable(ModBlocks.BlockPolymetalOre, 4 + rand.nextInt(4));  //每個chunk會重新隨機一次生成礦物大小
-		oreGenerator(genPolymetal, world, rand, x, z, 7, 3, 50);
+		oreGenerator(genPolymetal, world, rand, x, z, ConfigHandler.polyOreBaseRate, 3, 50);
 		
 	}
 	
@@ -80,7 +81,7 @@ public class ShinColleWorldGen implements IWorldGenerator {
 			genPolyGravel = new WorldGenPolyGravel(2 + rand.nextInt(2));
 			int posX, posY, posZ = 0;
 			
-			for(int i = 0; i < 4; i++) {
+			for(int i = 0; i < ConfigHandler.polyGravelBaseRate; i++) {
 				posX = x + rand.nextInt(16);
 				posZ = z + rand.nextInt(16);
 				posY = world.getTopSolidOrLiquidBlock(posX, posZ);	//取得高度最高的實體方塊(即水底)

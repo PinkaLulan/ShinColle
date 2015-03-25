@@ -4,6 +4,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
@@ -38,7 +39,10 @@ public class ModRecipes {
 		ItemStack grudeBlock9 = new ItemStack(ModBlocks.BlockGrudge,9,0);
 		ItemStack grudeHeavyBlock = new ItemStack(ModBlocks.BlockGrudgeHeavy);
 		ItemStack gunpowderStack = new ItemStack(Items.gunpowder);
-		ItemStack kaitaiHammer = new ItemStack(ModItems.KaitaiHammer);
+		ItemStack instantMat = new ItemStack(ModItems.InstantConMat);
+		ItemStack kaitaiHammer = new ItemStack(ModItems.KaitaiHammer, 1, OreDictionary.WILDCARD_VALUE);
+		ItemStack modernKit = new ItemStack(ModItems.ModernKit);
+		ItemStack ownerPaper = new ItemStack(ModItems.OwnerPaper);
 		ItemStack polymetalStack = new ItemStack(ModItems.AbyssMetal,1,1);
 		ItemStack polymetalStack4 = new ItemStack(ModItems.AbyssMetal,4,1);
 		ItemStack polymetalStack9 = new ItemStack(ModItems.AbyssMetal,9,1);
@@ -46,6 +50,7 @@ public class ModRecipes {
 		ItemStack polymetalGravel = new ItemStack(ModBlocks.BlockPolymetalGravel);
 		ItemStack ring = new ItemStack(ModItems.MarriageRing);
 		ItemStack repairGoddess = new ItemStack(ModItems.RepairGoddess,1,0);
+		ItemStack shipEgg = new ItemStack(ModItems.ShipSpawnEgg, 1, OreDictionary.WILDCARD_VALUE);	//for all meta value
 		ItemStack smallshipyardStack = new ItemStack(ModBlocks.BlockSmallShipyard);
 		
 		//SHAPELESS RECIPE
@@ -61,9 +66,12 @@ public class ModRecipes {
 		GameRegistry.addRecipe(new ShapelessOreRecipe(polymetalStack4, polymetalGravel));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(polymetalStack9, polymetalBlock));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(polymetalGravel, polymetalStack, polymetalStack, polymetalStack, polymetalStack));
-		//abyssal goddess
+		//misc
+		GameRegistry.addRecipe(new ShapelessOreRecipe(instantMat, kaitaiHammer, shipEgg));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(modernKit, kaitaiHammer, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(ownerPaper, grudeStack, Items.paper));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(repairGoddess, grudeHeavyBlock, Blocks.diamond_block));
-
+		
 		//SHAPED RECIPE
 		//ammo material: copper/tin=8 iron/bronze=16 abyssium/gold/silver=32 diamond=64
 		GameRegistry.addRecipe(new ShapedOreRecipe(ammo8,"iii","igi","ipi",'i',"ingotCopper",'g',grudeStack,'p',gunpowderStack));

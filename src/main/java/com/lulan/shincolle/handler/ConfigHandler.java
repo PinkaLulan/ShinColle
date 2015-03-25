@@ -31,6 +31,10 @@ public class ConfigHandler {
 	public static float spdRatio = 1.0f;
 	public static float movRatio = 1.0f;
 	public static float hitRatio = 1.0f;
+	
+	//WORLD GEN
+	public static int polyOreBaseRate = 7;
+	public static int polyGravelBaseRate = 4;
 
 	
 	//讀取設定檔參數
@@ -48,7 +52,6 @@ public class ConfigHandler {
 		friendlyFire = config.getBoolean("Friendly_Fire", "general", true, "false: disable damage done by player (except owner)");
 				
 		//讀取 ship setting設定
-		//hp ratio
 		timeKeeping = config.getBoolean("Timekeeping", "ship setting", true, "Play timekeeping sound every 1000 ticks (1 minecraft hour)");
 		timeKeepingVolume = config.getFloat("Timekeeping_Volume", "ship setting", 1.0F, 0F, 10F, "Timekeeping sound volume");
 		shipVolume = config.getFloat("Ship_Volume", "ship setting", 1.0F, 0F, 10F, "Other sound volume");
@@ -59,6 +62,10 @@ public class ConfigHandler {
 		spdRatio = config.getFloat("Scale_SPD", "ship setting", 1F, 0.01F, 100F, "Ship ATTACK SPEED scale");
 		movRatio = config.getFloat("Scale_MOV", "ship setting", 1F, 0.01F, 100F, "Ship MOVE SPEED scale");
 		hitRatio = config.getFloat("Scale_HIT", "ship setting", 1F, 0.01F, 100F, "Ship RANGE scale");
+		
+		//WORLD GEN
+		polyOreBaseRate = config.getInt("Polymetal_Ore", "world gen", 7, 0, 100, "Polymetallic Ore clusters in one chunk");
+		polyGravelBaseRate = config.getInt("Polymetal_Gravel", "world gen", 4, 0, 100, "Polymetallic Gravel clusters in one chunk");
 		
 		//若設定檔有更新過 則儲存
 		if(config.hasChanged()) {

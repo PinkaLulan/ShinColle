@@ -25,8 +25,11 @@ public class ModItems {
 	public static final BasicItem EquipTurbine = new EquipTurbine();
 	//misc
 	public static final BasicItem BucketRepair = new RepairBucket();
+	public static final BasicItem InstantConMat = new InstantConMat();
 	public static final BasicItem KaitaiHammer = new KaitaiHammer();
 	public static final BasicItem MarriageRing = new MarriageRing();
+	public static final BasicItem ModernKit = new ModernKit();
+	public static final BasicItem OwnerPaper = new OwnerPaper();
 	public static final BasicItem RepairGoddess = new RepairGoddess();
 
 	//登錄item到遊戲中 (在pre init階段登錄)
@@ -46,8 +49,11 @@ public class ModItems {
 		GameRegistry.registerItem(EquipTurbine, "EquipTurbine");
 		//misc
 		GameRegistry.registerItem(BucketRepair, "BucketRepair");
+		GameRegistry.registerItem(InstantConMat, "InstantConMat");
 		GameRegistry.registerItem(KaitaiHammer, "KaitaiHammer");
 		GameRegistry.registerItem(MarriageRing, "MarriageRing");
+		GameRegistry.registerItem(ModernKit, "ModernKit");
+		GameRegistry.registerItem(OwnerPaper, "OwnerPaper");
 		GameRegistry.registerItem(RepairGoddess, "RepairGoddess");
 	}
 	

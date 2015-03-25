@@ -22,6 +22,7 @@ public class ModWorldGen {
 		//normal item
 		ItemStack abyssium = new ItemStack(ModBlocks.BlockAbyssium, 1);
 		ItemStack polymetal = new ItemStack(ModBlocks.BlockPolymetal, 1);
+		ItemStack instantCon = new ItemStack(ModItems.InstantConMat, 1);
 		//ship egg
 		ItemStack spawneggRE = new ItemStack(ModItems.ShipSpawnEgg, 1, ID.S_BattleshipRE+2);
 		ItemStack spawneggWO = new ItemStack(ModItems.ShipSpawnEgg, 1, ID.S_CarrierWO+2);
@@ -32,6 +33,8 @@ public class ModWorldGen {
 		ItemStack airT = new ItemStack(ModItems.EquipAirplane, 1, 3);
 		ItemStack airF = new ItemStack(ModItems.EquipAirplane, 1, 8);
 		ItemStack airB = new ItemStack(ModItems.EquipAirplane, 1, 12);
+		ItemStack modernKit = new ItemStack(ModItems.ModernKit, 1);
+		ItemStack repair = new ItemStack(ModItems.RepairGoddess, 1);
 
 		//chest string
 		String[] rareChest = new String[] {ChestGenHooks.DUNGEON_CHEST,
@@ -55,6 +58,9 @@ public class ModWorldGen {
 			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(airF, 1, 1, 10));
 			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(airB, 1, 1, 10));
 			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(polymetal, 1, 3, 60));
+			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(modernKit, 1, 2, 20));
+			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(instantCon, 20, 40, 60));
+			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(instantCon, 1, 3, 30));
 		}
 	
 		//common chest
@@ -67,6 +73,9 @@ public class ModWorldGen {
 			ChestGenHooks.addItem(commChest[i], new WeightedRandomChestContent(airT, 1, 1, 5));
 			ChestGenHooks.addItem(commChest[i], new WeightedRandomChestContent(airF, 1, 1, 5));
 			ChestGenHooks.addItem(commChest[i], new WeightedRandomChestContent(airB, 1, 1, 5));
+			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(modernKit, 1, 2, 10));
+			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(instantCon, 15, 30, 60));
+			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(instantCon, 1, 1, 30));
 		}
 	}
 

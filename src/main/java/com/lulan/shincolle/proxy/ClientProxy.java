@@ -99,7 +99,7 @@ public class ClientProxy extends CommonProxy {
 		RenderingRegistry.registerEntityRenderingHandler(EntityHeavyCruiserRi.class, new RenderHeavyCruiserRi(new ModelHeavyCruiserRi(), 1F));
 		
 		//test entity render
-		RenderingRegistry.registerEntityRenderingHandler(EntityTest.class, new RenderTest(new ModelEntityTest(), 1F));
+//		RenderingRegistry.registerEntityRenderingHandler(EntityTest.class, new RenderTest(new ModelTest(), 1F));
 
 		//projectile render
 		RenderingRegistry.registerEntityRenderingHandler(EntityAbyssMissile.class, new RenderAbyssMissile(0.75F));

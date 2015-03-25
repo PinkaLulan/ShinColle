@@ -27,9 +27,12 @@ item.shincolle:Ammo1.name=怨念彈集裝箱
 item.shincolle:Ammo2.name=重型怨念彈
 item.shincolle:Ammo3.name=重型怨念彈集裝箱
 item.shincolle:BucketRepair.name=修復桶
+item.shincolle:InstantConMat.name=高速建造材料
 item.shincolle:KaitaiHammer.name=解體槌
 item.shincolle:Grudge.name=怨念
 item.shincolle:MarriageRing.name=棲艦婚戒
+item.shincolle:ModernKit.name=近代化改修工具
+item.shincolle:OwnerPaper.name=棲艦所有權書
 item.shincolle:RepairGoddess.name=深海女神的怨念
 
 # Equip
@@ -150,6 +153,7 @@ gui.shincolle:triplehit=三連擊
 gui.shincolle:missreduce=提高命中率
 gui.shincolle:missrate=失誤率
 gui.shincolle:missrateair=失誤率(艦載機)
+gui.shincolle:modernkit=右鍵使用使棲艦隨機屬性 +1
 gui.shincolle:repairgoddess=深海女神的怨念使棲艦不會被擊沈。
 gui.shincolle:ringText=結婚次數
-
+gui.shincolle:eggText=需求等級

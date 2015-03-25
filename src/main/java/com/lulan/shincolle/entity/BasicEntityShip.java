@@ -106,7 +106,7 @@ public abstract class BasicEntityShip extends EntityTameable {
 		isImmuneToFire = true;	//set ship immune to lava
 		StateEquip = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F};
 		StateFinal = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F};
-		StateMinor = new int[] {1, 0, 0, 40, 0, 0, 0, 0, 0, 0, 2, 14, 35, 0};
+		StateMinor = new int[] {1, 0, 0, 40, 0, 0, 0, 0, 0, 0, 2, 14, 35, 1};
 		EffectEquip = new float[] {0F, 0F, 0F, 0F};
 		StateEmotion = new byte[] {0, 0, 0};
 		StateFlag = new boolean[] {false, false, false, false, true, true, true, true, false};
@@ -571,8 +571,8 @@ public abstract class BasicEntityShip extends EntityTameable {
 			if(itemstack.getItem() == ModItems.BucketRepair) {	
 				//hp不到max hp時可以使用bucket
 				if(this.getHealth() < this.getMaxHealth()) {
-	                if (!player.capabilities.isCreativeMode) {  //stack-1 in non-creative mode
-	                    --itemstack.stackSize;
+					if(!player.capabilities.isCreativeMode) {  //item-1 in non-creative mode
+						--itemstack.stackSize;
 	                }
 	
 	                if(this instanceof BasicEntityShipSmall) {
@@ -582,7 +582,7 @@ public abstract class BasicEntityShip extends EntityTameable {
 	                	this.heal(this.getMaxHealth() * 0.05F + 10F);	//1 bucket = 5% hp for large ship
 	                }
 	                
-	                if (itemstack.stackSize <= 0) {  //物品用完時要設定為null清空該slot
+	                if (itemstack.stackSize <= 0) {  
 	                	player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
 	                }
 	                
@@ -595,8 +595,8 @@ public abstract class BasicEntityShip extends EntityTameable {
 			   ((this.getOwner() != null && player.getUniqueID().equals(this.getOwner().getUniqueID())) ||
 				 EntityHelper.checkOP(player))) {
 				//創造模式不消耗物品
-                if (!player.capabilities.isCreativeMode) {  //stack-1 in non-creative mode
-                    --itemstack.stackSize;
+                if (!player.capabilities.isCreativeMode) {  //damage +1 in non-creative mode
+ 	                itemstack.setItemDamage(itemstack.getItemDamage() + 1);
                     
                     //set item amount
                     ItemStack item0, item1, item2, item3;
@@ -624,11 +624,12 @@ public abstract class BasicEntityShip extends EntityTameable {
                     worldObj.spawnEntityInWorld(entityItem2);
                     worldObj.spawnEntityInWorld(entityItem3);
                     
-                    playSound(Reference.MOD_ID+":ship-kaitai", 1.0F, 1.0F);
+                    playSound(Reference.MOD_ID+":ship-kaitai", ConfigHandler.shipVolume, 1.0F);
+                    playSound(Reference.MOD_ID+":ship-death", ConfigHandler.shipVolume, 1.0F);
                 }
                 
                 //物品用完時要設定為null清空該slot
-                if (itemstack.stackSize <= 0) {  
+                if(itemstack.getItemDamage() >= itemstack.getMaxDamage()) {  //物品耐久度用完時要設定為null清空該slot
                 	player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
                 }
                  
@@ -641,7 +642,7 @@ public abstract class BasicEntityShip extends EntityTameable {
 			if(itemstack.getItem() == ModItems.MarriageRing && !this.getStateFlag(ID.F.IsMarried) && 
 			   player.isSneaking() && this.getOwner() != null && player.getUniqueID().equals(this.getOwner().getUniqueID())) {
 				//stack-1 in non-creative mode
-				if (!player.capabilities.isCreativeMode) {
+				if(!player.capabilities.isCreativeMode) {
                     --itemstack.stackSize;
                 }
 
@@ -668,11 +669,60 @@ public abstract class BasicEntityShip extends EntityTameable {
     	        
     	        this.calcEquipAndUpdateState();
     	        
-                if (itemstack.stackSize <= 0) {  //物品用完時要設定為null清空該slot
+                if(itemstack.stackSize <= 0) {  //物品用完時要設定為null清空該slot
                 	player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
                 }
                 
                 return true;
+			}
+			
+			//use modernization kit
+			if(itemstack.getItem() == ModItems.ModernKit) {
+				if(addRandomBonusPoint()) {	//add 1 random bonus
+					if(!player.capabilities.isCreativeMode) {
+	                    --itemstack.stackSize;
+	                    
+	                    if(itemstack.stackSize <= 0) {  //物品用完時要設定為null清空該slot
+	                    	player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
+	                    }
+	                }
+					
+					//play marriage sound
+	    	        this.playSound(Reference.MOD_ID+":ship-love", ConfigHandler.shipVolume, 1.0F);
+					
+					return true;
+				}	
+			}
+			
+			//use modernization kit, owner only
+			if(itemstack.getItem() == ModItems.OwnerPaper && this.getOwner() != null && player.getUniqueID().equals(this.getOwner().getUniqueID())) {
+				NBTTagCompound nbt = itemstack.getTagCompound();
+				boolean changeOwner = false;
+				
+				//check sign A and B is owner and another player
+				if(itemstack.hasTagCompound()) {
+					if(nbt.getString("signA").equals(player.getUniqueID().toString())) {
+						if(nbt.getString("signB").length() > 0) {
+							this.func_152115_b(nbt.getString("signB"));
+							changeOwner = true;
+						}
+					}
+					
+					if(nbt.getString("signB").equals(player.getUniqueID().toString())) {
+						if(nbt.getString("signA").length() > 0) {
+							this.func_152115_b(nbt.getString("signA"));
+							changeOwner = true;
+						}
+					}
+				}
+				
+				if(changeOwner) {
+					//play marriage sound
+	    	        this.playSound(Reference.MOD_ID+":ship-death", ConfigHandler.shipVolume, 1.0F);
+	    	        
+					player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
+					return true;
+				}
 			}
 			
 			//use lead
@@ -710,23 +760,25 @@ public abstract class BasicEntityShip extends EntityTameable {
 		return false;
 	}
 	
-	//add random bonus point, NO SYNC!
-	private void addRandomBonusPoint() {
+	//add random bonus point, NO SYNC, server only!
+	private boolean addRandomBonusPoint() {
 		int bonusChoose = rand.nextInt(6);
 		
 		//bonus point +1 if bonus point < 3
 		if(BonusPoint[bonusChoose] < 3) {
 			BonusPoint[bonusChoose] = (byte) (BonusPoint[bonusChoose] + 1);
-			return;
+			return true;
 		}
 		else {	//select other bonus point
 			for(int i = 0; i < BonusPoint.length; ++i) {
 				if(BonusPoint[i] < 3) {
 					BonusPoint[i] = (byte) (BonusPoint[i] + 1);
-					return;
+					return true;
 				}
 			}
-		}	
+		}
+		
+		return false;
 	}
 
 	/**修改移動方法, 使其water跟lava中移動時像是flying entity

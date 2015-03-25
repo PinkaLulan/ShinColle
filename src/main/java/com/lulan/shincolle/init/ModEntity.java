@@ -20,9 +20,12 @@ import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ModEntity {
+	
+	private static int modEntityID = 0;
 
-	public static void init() {	
-		int modEntityID = 0;
+	public static void init() {
+		//register test entity
+//		createEntityGlobalID(EntityTest.class, "EntityTest", 0x20FF45, 0x0040FF);
 		
 		//register ship entity
 		createEntity(EntityBattleshipRe.class, "EntityBattleshipRe", modEntityID++);
@@ -41,10 +44,7 @@ public class ModEntity {
 		//register render entity
 		createProjectileEntity(EntityRenderLargeShipyard.class, "EntityRenderLargeShipyard", modEntityID++);
 		createProjectileEntity(EntityRenderVortex.class, "EntityRenderVortex", modEntityID++);
-		
-		//register test entity
-//		createEntityGlobalID(EntityTest.class, "EntityTest", 0x20FF45, 0x0040FF);
-	
+
 	}
 	
 	//登錄生物方法
@@ -64,8 +64,7 @@ public class ModEntity {
 	//使用官方共通id登錄生物
 	//參數: 該生物class, 生物名稱
 	public static void createEntityGlobalID(Class entityClass, String entityName, int backColor, int spotColor){
-		int entityId = EntityRegistry.findGlobalUniqueEntityId();
-		LogHelper.info("DEBUG : Register Entity with Global ID System "+entityId+" "+entityName);
+		int entityId = modEntityID++;
 		
 		EntityRegistry.registerGlobalEntityID(entityClass, entityName, entityId);
 		//登錄參數: 生物class, 生物名稱, 生物id, mod副本, 追蹤更新距離, 更新時間間隔, 是否發送速度封包

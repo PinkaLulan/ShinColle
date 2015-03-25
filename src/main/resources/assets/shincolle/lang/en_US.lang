@@ -27,9 +27,12 @@ item.shincolle:Ammo1.name=Grudgeful Ammo Container
 item.shincolle:Ammo2.name=Heavy Grudgeful Ammo
 item.shincolle:Ammo3.name=Heavy Grudgeful Ammo Container
 item.shincolle:BucketRepair.name=Repair Bucket
+item.shincolle:InstantConMat.name=Instant Construction Material
 item.shincolle:KaitaiHammer.name=Dismantle Hammer
 item.shincolle:Grudge.name=Grudge
 item.shincolle:MarriageRing.name=Seikan Wedding Ring
+item.shincolle:ModernKit.name=Modernization Toolkit
+item.shincolle:OwnerPaper.name=Seikan Ownership Paper
 item.shincolle:RepairGoddess.name=The Grudge of Abyssal Goddess
 
 # Equip
@@ -150,5 +153,7 @@ gui.shincolle:triplehit=Triple Hit
 gui.shincolle:missreduce=Miss Reduction
 gui.shincolle:missrate=Miss
 gui.shincolle:missrateair=Miss(Aircraft)
+gui.shincolle:modernkit=Right click on seikan to +1 random attribute.
 gui.shincolle:repairgoddess=Prevents sinking from deadly damage.
 gui.shincolle:ringText=Marriages
+gui.shincolle:eggText=Require Level

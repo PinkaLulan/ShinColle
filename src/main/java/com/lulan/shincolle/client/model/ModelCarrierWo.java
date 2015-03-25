@@ -35,6 +35,13 @@ public class ModelCarrierWo extends ModelBase {
     public ModelRenderer StaffHead;
     public ModelRenderer Head;
     public ModelRenderer Hair;
+    public ModelRenderer Ahoke;
+    public ModelRenderer HairL01;
+    public ModelRenderer Hair00a;
+    public ModelRenderer Hair00b;
+    public ModelRenderer HairR01;
+    public ModelRenderer HairL02;
+    public ModelRenderer HairR02;
     public ModelRenderer Face0;
     public ModelRenderer Face1;
     public ModelRenderer Face2;
@@ -85,14 +92,8 @@ public class ModelCarrierWo extends ModelBase {
         this.textureHeight = 128;
         
         this.Head = new ModelRenderer(this, 43, 101);
-        this.Head.setRotationPoint(0.0F, -1.5F, 1.5F);
+        this.Head.setRotationPoint(0.0F, -1.0F, 1.5F);
         this.Head.addBox(-7.0F, -14.0F, -6.5F, 14, 14, 13, 0.0F);
-        this.Face0 = new ModelRenderer(this, 68, 68);
-        this.Face0.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face0.addBox(-7.0F, -14.0F, -6.5F, 14, 14, 1, 0.0F);
-        this.Face4 = new ModelRenderer(this, 98, 113);
-        this.Face4.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face4.addBox(-7.0F, -14.0F, -6.5F, 14, 14, 1, 0.0F);
         this.EquipLC02 = new ModelRenderer(this, 128, 0);
         this.EquipLC02.setRotationPoint(-1.0F, -2.0F, -7.0F);
         this.EquipLC02.addBox(-1.5F, -1.5F, -17.0F, 3, 3, 17, 0.0F);
@@ -101,10 +102,6 @@ public class ModelCarrierWo extends ModelBase {
         this.EquipTB03R.setRotationPoint(0.0F, 13.5F, 0.0F);
         this.EquipTB03R.addBox(-2.0F, -2.0F, -2.0F, 4, 15, 4, 0.0F);
         this.setRotateAngle(EquipTB03R, 0.6981317007977318F, 0.0F, -0.7853981633974483F);
-        this.BoobL = new ModelRenderer(this, 26, 26);
-        this.BoobL.setRotationPoint(2.6F, -9.0F, -3.2F);
-        this.BoobL.addBox(-4.0F, 0.0F, -1.0F, 8, 6, 5, 0.0F);
-        this.setRotateAngle(BoobL, -0.7853981633974483F, -0.08726646259971647F, -0.17453292519943295F);
         this.EquipLC03 = new ModelRenderer(this, 128, 0);
         this.EquipLC03.setRotationPoint(0.0F, 2.0F, -7.0F);
         this.EquipLC03.addBox(-1.5F, -1.5F, -16.0F, 3, 3, 16, 0.0F);
@@ -128,9 +125,34 @@ public class ModelCarrierWo extends ModelBase {
         this.Equip03.setRotationPoint(0.0F, -5.5F, 4.0F);
         this.Equip03.addBox(-16.0F, -18.0F, -20.0F, 32, 18, 40, 0.0F);
         this.setRotateAngle(Equip03, 0.06981317007977318F, 0.0F, 0.0F);
-        this.Hair = new ModelRenderer(this, 128, 62);
+        this.Hair = new ModelRenderer(this, 128, 61);
         this.Hair.setRotationPoint(0.0F, -7.0F, 0.0F);
-        this.Hair.addBox(-8.0F, -8.0F, -8.0F, 16, 20, 16, 0.0F);
+        this.Hair.addBox(-8.0F, -8.0F, -8.0F, 16, 14, 7, 0.0F);
+        this.HairR01 = new ModelRenderer(this, 175, 61);
+        this.HairR01.mirror = true;
+        this.HairR01.setRotationPoint(-6.0F, 0.0F, -2.0F);
+        this.HairR01.addBox(-1.0F, 0.0F, -2.0F, 2, 9, 4, 0.0F);
+        this.setRotateAngle(HairR01, -0.5235987755982988F, 0.17453292519943295F, 0.3141592653589793F);
+        this.HairR02 = new ModelRenderer(this, 176, 74);
+        this.HairR02.setRotationPoint(0.0F, 8.0F, 0.0F);
+        this.HairR02.addBox(-1.0F, 0.0F, -2.2F, 2, 9, 3, 0.0F);
+        this.setRotateAngle(HairR02, 0.3490658503988659F, 0.0F, -0.2617993877991494F);
+        this.HairL01 = new ModelRenderer(this, 175, 61);
+        this.HairL01.setRotationPoint(6.0F, 0.0F, -2.0F);
+        this.HairL01.addBox(-1.0F, 0.0F, -2.0F, 2, 9, 4, 0.0F);
+        this.setRotateAngle(HairL01, -0.5235987755982988F, -0.17453292519943295F, -0.3141592653589793F);
+        this.HairL02 = new ModelRenderer(this, 176, 74);
+        this.HairL02.mirror = true;
+        this.HairL02.setRotationPoint(0.0F, 8.0F, 0.0F);
+        this.HairL02.addBox(-1.0F, 0.0F, -2.2F, 2, 9, 3, 0.0F);
+        this.setRotateAngle(HairL02, 0.3490658503988659F, 0.0F, 0.2617993877991494F);
+        this.Hair00a = new ModelRenderer(this, 128, 82);
+        this.Hair00a.setRotationPoint(0.0F, 0.0F, -0.5F);
+        this.Hair00a.addBox(-7.5F, -7.5F, -1.0F, 15, 8, 9, 0.0F);
+        this.Hair00b = new ModelRenderer(this, 43, 21);
+        this.Hair00b.setRotationPoint(0.0F, 0.3F, -2.5F);
+        this.Hair00b.addBox(-7.5F, 0.0F, 0.0F, 15, 10, 10, 0.0F);
+        this.setRotateAngle(Hair00b, 0.17453292519943295F, 0.0F, 0.0F);
         this.EquipT03L = new ModelRenderer(this, 21, 56);
         this.EquipT03L.setRotationPoint(0.0F, 20.0F, 0.0F);
         this.EquipT03L.addBox(-2.5F, -2.0F, -2.5F, 5, 20, 5, 0.0F);
@@ -176,7 +198,7 @@ public class ModelCarrierWo extends ModelBase {
         this.EquipEye02.setRotationPoint(14.5F, -21F, -8.0F);
         this.EquipEye02.addBox(-7.5F, -6.0F, 0.0F, 15, 6, 14, 0.0F);
         this.setRotateAngle(EquipEye02, 0.13962634015954636F, -0.13962634015954636F, 0.2617993877991494F);
-        this.StaffHead = new ModelRenderer(this, 52, 20);
+        this.StaffHead = new ModelRenderer(this, 38, 80);
         this.StaffHead.setRotationPoint(-0.5F, -15.0F, -1.0F);
         this.StaffHead.addBox(0.0F, -13.0F, 0.0F, 4, 13, 8, 0.0F);
         this.Equip06 = new ModelRenderer(this, 96, 0);
@@ -195,9 +217,6 @@ public class ModelCarrierWo extends ModelBase {
         this.EquipTB02L.setRotationPoint(0.0F, 9.0F, 0.0F);
         this.EquipTB02L.addBox(-2.5F, -2.0F, -2.5F, 5, 16, 5, 0.0F);
         this.setRotateAngle(EquipTB02L, 0.4363323129985824F, 0.0F, -0.3490658503988659F);
-        this.Face2 = new ModelRenderer(this, 98, 83);
-        this.Face2.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face2.addBox(-7.0F, -14.0F, -6.5F, 14, 14, 1, 0.0F);
         this.EquipT01R = new ModelRenderer(this, 128, 0);
         this.EquipT01R.setRotationPoint(-17.0F, -7.0F, -8.0F);
         this.EquipT01R.addBox(-4.0F, 0.0F, -4.0F, 8, 10, 8, 0.0F);
@@ -206,9 +225,6 @@ public class ModelCarrierWo extends ModelBase {
         this.EquipTB01R.setRotationPoint(-15.0F, -6.0F, 10.0F);
         this.EquipTB01R.addBox(-3.0F, -2.0F, -3.0F, 6, 10, 6, 0.0F);
         this.setRotateAngle(EquipTB01R, 0.17453292519943295F, 0.0F, 0.3490658503988659F);
-        this.Face1 = new ModelRenderer(this, 98, 68);
-        this.Face1.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face1.addBox(-7.0F, -14.0F, -6.5F, 14, 14, 1, 0.0F);
         this.EquipRC01 = new ModelRenderer(this, 128, 0);
         this.EquipRC01.setRotationPoint(-30.0F, -7.0F, 4.0F);
         this.EquipRC01.addBox(-3.5F, -5.5F, -7.5F, 7, 11, 15, 0.0F);
@@ -217,9 +233,6 @@ public class ModelCarrierWo extends ModelBase {
         this.EquipT03R.setRotationPoint(0.0F, 20.0F, 0.0F);
         this.EquipT03R.addBox(-2.5F, -2.0F, -2.5F, 5, 20, 5, 0.0F);
         this.setRotateAngle(EquipT03R, 1.0471975511965976F, 0.0F, -0.7853981633974483F);
-        this.Face3 = new ModelRenderer(this, 98, 98);
-        this.Face3.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face3.addBox(-7.0F, -14.0F, -6.5F, 14, 14, 1, 0.0F);
         this.EquipTooth02 = new ModelRenderer(this, 128, 99);
         this.EquipTooth02.setRotationPoint(12.4F, -17.0F, -20.3F);
         this.EquipTooth02.addBox(0.0F, 0.0F, 0.0F, 14, 8, 4, 0.0F);
@@ -234,7 +247,7 @@ public class ModelCarrierWo extends ModelBase {
         this.setRotateAngle(Cloak01, 0.7853981633974483F, 0.0F, 0.0F);
         this.CloakNeck = new ModelRenderer(this, 128, 0);
         this.CloakNeck.setRotationPoint(0.0F, -13.0F, -1.5F);
-        this.CloakNeck.addBox(-11.0F, 0.0F, -6.0F, 22, 4, 12, 0.0F);
+        this.CloakNeck.addBox(-10.0F, 0.0F, -6.0F, 20, 4, 12, 0.0F);
         this.setRotateAngle(CloakNeck, 0.17453292519943295F, 0.0F, 0.0F);
         this.ArmRight = new ModelRenderer(this, 0, 54);
         this.ArmRight.setRotationPoint(-7.0F, -10.0F, 0.0F);
@@ -253,7 +266,7 @@ public class ModelCarrierWo extends ModelBase {
         this.BodyMain.addBox(-7.0F, -12.0F, -4.0F, 14, 18, 8, 0.0F);
         this.setRotateAngle(BodyMain, -0.3490658503988659F, 0.0F, 0.0F);
         this.Neck = new ModelRenderer(this, 52, 41);
-        this.Neck.setRotationPoint(0.0F, -12.0F, -2.0F);
+        this.Neck.setRotationPoint(0.0F, -12.5F, -2.0F);
         this.Neck.addBox(-7.5F, -1.5F, -6.0F, 15, 3, 13, 0.0F);
         this.setRotateAngle(Neck, 0.3490658503988659F, 0.0F, 0.0F);
         this.Equip01 = new ModelRenderer(this, 128, 0);
@@ -281,9 +294,14 @@ public class ModelCarrierWo extends ModelBase {
         this.EquipTooth01.setRotationPoint(0.0F, -19.3F, -20.6F);
         this.EquipTooth01.addBox(-12.0F, 0.0F, 0.0F, 24, 15, 1, 0.0F);
         this.setRotateAngle(EquipTooth01, 0.10471975511965977F, 0.0F, 0.0F);
-        this.BoobR = new ModelRenderer(this, 0, 26);
-        this.BoobR.setRotationPoint(-2.6F, -9.0F, -3.2F);
-        this.BoobR.addBox(-4.0F, 0.0F, -1.0F, 8, 6, 5, 0.0F);
+        this.BoobL = new ModelRenderer(this, 3, 27);
+        this.BoobL.mirror = true;
+        this.BoobL.setRotationPoint(2.5F, -9.0F, -3.2F);
+        this.BoobL.addBox(-3.5F, 0.0F, -1.0F, 7, 5, 4, 0.0F);
+        this.setRotateAngle(BoobL, -0.7853981633974483F, -0.08726646259971647F, -0.17453292519943295F); 
+        this.BoobR = new ModelRenderer(this, 3, 27);
+        this.BoobR.setRotationPoint(-2.5F, -9.0F, -3.2F);
+        this.BoobR.addBox(-3.5F, 0.0F, -1.0F, 7, 5, 4, 0.0F);
         this.setRotateAngle(BoobR, -0.7853981633974483F, 0.08726646259971647F, 0.17453292519943295F);
         this.Butt = new ModelRenderer(this, 0, 37);
         this.Butt.setRotationPoint(0.0F, 5.0F, 0.0F);
@@ -293,6 +311,25 @@ public class ModelCarrierWo extends ModelBase {
         this.Cloak03.setRotationPoint(0.0F, 20.0F, 0.0F);
         this.Cloak03.addBox(-16.0F, 0.0F, 0.0F, 32, 20, 0, 0.0F);
         this.setRotateAngle(Cloak03, 0.3490658503988659F, 0.0F, 0.0F);
+        this.Ahoke = new ModelRenderer(this, 31, 89);
+        this.Ahoke.setRotationPoint(0F, 0F, -4F);
+        this.Ahoke.addBox(0F, -14F, -12F, 0, 13, 12, 0.0F);
+        this.setRotateAngle(Ahoke, 0F, 0.7F, 0F);
+        this.Face0 = new ModelRenderer(this, 68, 68);
+        this.Face0.setRotationPoint(0.0F, 0.0F, -0.1F);
+        this.Face0.addBox(-7.0F, -14.0F, -6.5F, 14, 14, 1, 0.0F);
+        this.Face1 = new ModelRenderer(this, 98, 68);
+        this.Face1.setRotationPoint(0.0F, 0.0F, -0.1F);
+        this.Face1.addBox(-7.0F, -14.0F, -6.5F, 14, 14, 1, 0.0F);
+        this.Face2 = new ModelRenderer(this, 98, 83);
+        this.Face2.setRotationPoint(0.0F, 0.0F, -0.1F);
+        this.Face2.addBox(-7.0F, -14.0F, -6.5F, 14, 14, 1, 0.0F);
+        this.Face3 = new ModelRenderer(this, 98, 98);
+        this.Face3.setRotationPoint(0.0F, 0.0F, -0.1F);
+        this.Face3.addBox(-7.0F, -14.0F, -6.5F, 14, 14, 1, 0.0F);
+        this.Face4 = new ModelRenderer(this, 98, 113);
+        this.Face4.setRotationPoint(0.0F, 0.0F, -0.1F);
+        this.Face4.addBox(-7.0F, -14.0F, -6.5F, 14, 14, 1, 0.0F);
         this.Neck.addChild(this.Head);
         this.EquipLC01.addChild(this.EquipLC02);
         this.EquipTB02R.addChild(this.EquipTB03R);
@@ -304,6 +341,13 @@ public class ModelCarrierWo extends ModelBase {
         this.EquipTB02L.addChild(this.EquipTB03L);
         this.EquipBase.addChild(this.Equip03);
         this.Head.addChild(this.Hair);
+        this.Hair.addChild(this.Ahoke);
+        this.Hair.addChild(this.HairR01);
+        this.HairR01.addChild(this.HairR02);
+        this.Hair.addChild(this.HairL01);
+        this.HairL01.addChild(this.HairL02);
+        this.Hair.addChild(this.Hair00a);
+        this.Hair.addChild(this.Hair00b);
         this.EquipT02L.addChild(this.EquipT03L);
         this.Butt.addChild(this.LegLeft);
         this.EquipBase.addChild(this.EquipTooth03);
@@ -345,14 +389,13 @@ public class ModelCarrierWo extends ModelBase {
         this.GlowBodyMain.setRotationPoint(0.0F, -11.0F, 0.0F);
         this.setRotateAngle(GlowBodyMain, -0.3490658503988659F, 0.0F, 0.0F);
         this.GlowNeck = new ModelRenderer(this, 0, 0);
-        this.GlowNeck.setRotationPoint(0.0F, -12.0F, -2.0F);
-        this.setRotateAngle(GlowNeck, 0.3490658503988659F, 0.0F, 0.0F);
+        this.GlowNeck.setRotationPoint(0.0F, -12.5F, -2.0F);
+        this.setRotateAngle(GlowNeck, 0.3490658503988659F, 0.0F, 0.0F);  
         this.GlowHead = new ModelRenderer(this, 0, 0);
-        this.GlowHead.setRotationPoint(0.0F, -1.5F, 1.5F);
+        this.GlowHead.setRotationPoint(0.0F, -1.0F, 1.5F);
         this.GlowEquipBase = new ModelRenderer(this, 0, 0);
         this.GlowEquipBase.setRotationPoint(0.0F, -10.0F, -3.0F);
         this.setRotateAngle(GlowEquipBase, 0.08726646259971647F, 0.0F, 0.0F);
-        
         this.GlowBodyMain.addChild(this.GlowNeck);
         this.GlowNeck.addChild(this.GlowHead);
         this.GlowHead.addChild(this.GlowEquipBase);
@@ -361,6 +404,11 @@ public class ModelCarrierWo extends ModelBase {
         this.GlowHead.addChild(this.Face2);
         this.GlowHead.addChild(this.Face3);
         this.GlowHead.addChild(this.Face4);
+//        this.Head.addChild(this.Face0);
+//        this.Head.addChild(this.Face1);
+//        this.Head.addChild(this.Face2);
+//        this.Head.addChild(this.Face3);
+//        this.Head.addChild(this.Face4);
         this.GlowEquipBase.addChild(this.EquipEye01);
         this.GlowEquipBase.addChild(this.EquipEye02);
         
@@ -419,12 +467,12 @@ public class ModelCarrierWo extends ModelBase {
 		this.GlowEquipBase.rotateAngleX = this.EquipBase.rotateAngleX;
 		this.GlowEquipBase.rotateAngleY = this.EquipBase.rotateAngleY;
 		this.GlowEquipBase.rotateAngleZ = this.EquipBase.rotateAngleZ;
-		this.GlowHead.rotateAngleX = this.Head.rotateAngleX;
-		this.GlowHead.rotateAngleY = this.Head.rotateAngleY;
-		this.GlowHead.rotateAngleZ = this.Head.rotateAngleZ;
 		this.GlowNeck.rotateAngleX = this.Neck.rotateAngleX;
 		this.GlowNeck.rotateAngleY = this.Neck.rotateAngleY;
 		this.GlowNeck.rotateAngleZ = this.Neck.rotateAngleZ;
+		this.GlowHead.rotateAngleX = this.Head.rotateAngleX;
+		this.GlowHead.rotateAngleY = this.Head.rotateAngleY;
+		this.GlowHead.rotateAngleZ = this.Head.rotateAngleZ;
 	}
 
 	//雙腳移動計算
@@ -447,6 +495,8 @@ public class ModelCarrierWo extends ModelBase {
 	    //胸部
   	    this.BoobL.rotateAngleX = -angleZ * 0.06F - 0.73F;
   	    this.BoobR.rotateAngleX = -angleZ * 0.06F - 0.73F;
+  	    //呆毛
+  	    this.Ahoke.rotateAngleY = angleZ * 0.25F + 0.5236F;
   	    //手臂晃動 
 	  	this.ArmLeft.rotateAngleX = -0.26F;
   	    this.ArmRight.rotateAngleX = -0.26F;

@@ -290,6 +290,21 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti {
 				this.powerRemained -= buildSpeed;	//fuel bar --
 				this.powerConsumed += buildSpeed;	//build bar ++
 				
+				//消耗高速建造材料
+				for(int i = SLOTS_OUT + 1; i < SLOTS_NUM; i++) {
+					if(slots[i] != null && slots[i].getItem() == ModItems.InstantConMat) {
+						slots[i].stackSize--;
+						this.powerConsumed += 57600;
+						
+						if(this.slots[i].stackSize == 0) {
+							this.slots[i] = null;
+						}
+						
+						sendUpdate = true;
+						break;
+					}
+				}
+				
 				//sync render entity every 100 ticks
 				//set render entity state
 				if(this.syncTime % 100 == 0) {
