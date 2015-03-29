@@ -68,6 +68,7 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
 		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityCarrierWo.name"));
 		this.ShipType = ID.ShipType.STANDARD_CARRIER;
 		this.ShipID = ID.S_CarrierWO;
+		this.ModelPos = new float[] {0F, 15F, 0F, 30F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();
 		

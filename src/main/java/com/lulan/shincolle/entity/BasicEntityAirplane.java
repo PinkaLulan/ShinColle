@@ -8,6 +8,7 @@ import com.lulan.shincolle.client.particle.EntityFXSpray;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
+import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.EntityHelper;
@@ -32,7 +33,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
-public abstract class BasicEntityAirplane extends EntityLiving {
+public abstract class BasicEntityAirplane extends EntityLiving implements IShipAttack {
 
 	protected BasicEntityShipLarge hostEntity;  		//host target
 	protected EntityLivingBase targetEntity;	//onImpact target (for entity)
@@ -41,6 +42,7 @@ public abstract class BasicEntityAirplane extends EntityLiving {
     //attributes
     public float atk;				//damage
     public float atkSpeed;			//attack speed
+    public float movSpeed;			//move speed
     public float kbValue;			//knockback value
     
     //AI flag
@@ -91,12 +93,64 @@ public abstract class BasicEntityAirplane extends EntityLiving {
         return false;
     }
     
+    @Override
+	public float getAttackDamage() {	//not used for airplane
+		return 0;
+	}
+    
+    @Override
+    public float getAttackSpeed() {
+    	return this.atkSpeed;
+    }
+    
+    @Override
+	public float getAttackRange() {
+    	return 6F;
+    }
+    
+    @Override
+	public float getMoveSpeed() {
+		return this.movSpeed;
+	}
+    
+    @Override
+   	public int getAmmoLight() {
+   		return this.numAmmoLight;
+   	}
+
+   	@Override
+   	public int getAmmoHeavy() {
+   		return this.numAmmoHeavy;
+   	}
+    
+    @Override
+	public boolean hasAmmoLight() {
+    	return this.numAmmoLight > 0;
+    }
+    
+    @Override
+	public boolean hasAmmoHeavy() {
+    	return this.numAmmoHeavy > 0;
+    }
+
+	@Override
+	public void setAmmoLight(int num) {
+		this.numAmmoLight = num;
+	}
+
+	@Override
+	public void setAmmoHeavy(int num) {
+		this.numAmmoHeavy = num;
+	}
+        
+    @Override
     public EntityLivingBase getOwner() {
         return this.hostEntity;
     }
     
-    public EntityLivingBase getTarget() {
-        return this.targetEntity;
+    @Override
+    public EntityLivingBase getAttackTarget() {
+        return super.getAttackTarget();
     }
 
     //移動計算, 去除gravity部份
@@ -176,6 +230,12 @@ public abstract class BasicEntityAirplane extends EntityLiving {
 					}
 					else {	//歸還剩餘彈藥 (但是grudge不歸還)
 						this.setDead();
+						
+						this.numAmmoLight -= 2;
+						if(this.numAmmoLight < 0) this.numAmmoLight = 0;
+						this.numAmmoHeavy -= 1;
+						if(this.numAmmoHeavy < 0) this.numAmmoHeavy = 0;
+						
 						this.hostEntity.setStateMinor(ID.N.NumAmmoLight, this.hostEntity.getStateMinor(ID.N.NumAmmoLight) + this.numAmmoLight);
 						this.hostEntity.setStateMinor(ID.N.NumAmmoHeavy, this.hostEntity.getStateMinor(ID.N.NumAmmoHeavy) + this.numAmmoHeavy);
 					
@@ -201,7 +261,7 @@ public abstract class BasicEntityAirplane extends EntityLiving {
 				}
 				
 				//攻擊目標消失, 找附近目標 or 設為host目前目標
-				if(!this.backHome && (this.getAttackTarget() == null || this.getAttackTarget().isDead) && this.hostEntity != null && this.ticksExisted % 2 == 0) {
+				if(!this.backHome && (this.getAttackTarget() == null || this.getAttackTarget().isDead) && this.hostEntity != null && this.ticksExisted % 2 == 0) {	
 					//entity list < range1
 					EntityLivingBase newTarget;
 			        List list = this.worldObj.selectEntitiesWithinAABB(EntityLivingBase.class, 
@@ -211,12 +271,12 @@ public abstract class BasicEntityAirplane extends EntityLiving {
 			        	newTarget = this.hostEntity.getAttackTarget();
 			        }
 			        else {	//從艦載機附近找出的目標, 判定是否要去攻擊
-			        	newTarget = (EntityLivingBase)list.get(list.size()/2);
+			        	newTarget = (EntityLivingBase)list.get(0);
 			        }
 			        
 			        if(newTarget != null && newTarget.isEntityAlive() && this.getDistanceToEntity(newTarget) < 40F && this.getEntitySenses().canSee(newTarget)) {
-		        		this.setAttackTarget(newTarget);
-		        	}
+			        	this.setAttackTarget(newTarget);
+			        }
 		        	else {
 		        		this.backHome = true;
 		        	}
@@ -239,12 +299,13 @@ public abstract class BasicEntityAirplane extends EntityLiving {
 	}
 
 	//light attack
+	@Override
 	public boolean attackEntityWithAmmo(Entity target) {
 		float atkLight = this.atk;
 		float kbValue = 0.03F;
 
 		//play cannon fire sound at attacker
-        playSound(Reference.MOD_ID+":ship-machinegun", 0.4F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        playSound(Reference.MOD_ID+":ship-machinegun", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         //attack particle
         TargetPoint point0 = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
 		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 8, false), point0);
@@ -321,15 +382,12 @@ public abstract class BasicEntityAirplane extends EntityLiving {
 	    //消耗彈藥計算
   		if(numAmmoLight > 0) {
   			numAmmoLight--;
-  			
-  			if(numAmmoLight <= 0) {
-  				this.setDead();
-  			}
   		}
 
 	    return isTargetHurt;
 	}
 
+	@Override
 	public boolean attackEntityWithHeavyAmmo(Entity target) {
 		//get attack value
 		float atkHeavy = this.atk;
@@ -337,7 +395,7 @@ public abstract class BasicEntityAirplane extends EntityLiving {
 		float kbValue = 0.08F;
 
 		//play cannon fire sound at attacker
-        this.playSound(Reference.MOD_ID+":ship-fireheavy", 0.4F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         
 		//calc miss chance, if not miss, calc cri/multi hit
         float missChance = 0.25F - 0.001F * this.hostEntity.getStateMinor(ID.N.ShipLevel);
@@ -360,13 +418,14 @@ public abstract class BasicEntityAirplane extends EntityLiving {
         //消耗彈藥計算
   		if(numAmmoHeavy > 0) {
   			numAmmoHeavy--;
-  			
-  			if(numAmmoHeavy <= 0) {
-  				this.setDead();
-  			}
   		}
   		
         return true;
+	}
+	
+	@Override
+	public EntityLivingBase getTarget() {
+		return this.getAttackTarget();
 	}
 
 }

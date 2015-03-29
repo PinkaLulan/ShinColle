@@ -62,6 +62,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		nbtExt_add0.setInteger("FMax", this.entity.getStateMinor(ID.N.FollowMax));
 		nbtExt_add0.setInteger("FHP", this.entity.getStateMinor(ID.N.FleeHP));
 		nbtExt_add0.setInteger("TarAI", this.entity.getStateMinor(ID.N.TargetAI));
+		nbtExt_add0.setString("ownerName", this.entity.getOwnerName());
 		//save AttrFinal
 		nbtExt.setTag("Final", nbtExt_add1);
 		nbtExt_add1.setFloat("HP", this.entity.getStateFinal(ID.HP));
@@ -140,6 +141,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		entity.setStateMinor(ID.N.FollowMax, nbt_load.getInteger("FMax"));
 		entity.setStateMinor(ID.N.FleeHP, nbt_load.getInteger("FHP"));
 		entity.setStateMinor(ID.N.TargetAI, nbt_load.getInteger("TarAI"));
+		entity.setOwnerName(nbt_load.getString("ownerName"));
 		//load final state
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Final");
 		entity.setStateFinal(ID.HP, nbt_load.getFloat("HP"));

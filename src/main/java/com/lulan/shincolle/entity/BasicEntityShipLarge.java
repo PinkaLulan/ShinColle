@@ -107,19 +107,19 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip {
 		//play cannon fire sound at attacker
         playSound(Reference.MOD_ID+":ship-aircraft", 0.4F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         
+        //light ammo--
+        if(!decrAmmoNum(4)) {		//not enough ammo
+        	return false;
+        }
+        
         //experience++
   		addShipExp(8);
   		
   		//grudge--
   		decrGrudgeNum(2);
         
-        //light ammo -1
-        if(!decrAmmoNum(4)) {		//not enough ammo
-        	return false;
-        }
-        
         //發射者煙霧特效 (發射飛機不使用特效, 但是要發送封包來設定attackTime)
-        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
 		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
         
         //spawn airplane

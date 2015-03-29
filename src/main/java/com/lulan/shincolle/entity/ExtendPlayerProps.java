@@ -17,6 +17,7 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 	/** 0:haste 1:speed 2:jump 3:damage*/
 	private int[] ringEffect;
 	private int marriageNum;
+	private int bossCooldown;	//spawn boss cooldown
 	    
 	@Override
 	public void init(Entity entity, World world) {
@@ -27,6 +28,7 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		this.isRingFlying = false;
 		this.ringEffect = new int[] {0, 0, 0, 0};
 		this.marriageNum = 0;
+		this.bossCooldown = 4800;
 	}
 	
 	@Override
@@ -38,6 +40,7 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		nbtExt.setBoolean("RingFly", isRingFlying);
 		nbtExt.setIntArray("RingEffect", ringEffect);
 		nbtExt.setInteger("MarriageNum", marriageNum);
+		nbtExt.setInteger("BossCD", bossCooldown);
 		
 		nbt.setTag(PLAYER_EXTPROP_NAME, nbtExt);
 	}
@@ -51,6 +54,7 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		isRingFlying = nbtExt.getBoolean("RingFly");
 		ringEffect = nbtExt.getIntArray("RingEffect");
 		marriageNum = nbtExt.getInteger("MarriageNum");
+		bossCooldown = nbtExt.getInteger("BossCD");
 	}
 	
 	//getter
@@ -74,6 +78,9 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 	}
 	public int getDigSpeedBoost() {
 		return isRingActive ? marriageNum : 0;
+	}
+	public int getBossCooldown() {
+		return this.bossCooldown;
 	}
 	
 	//setter
@@ -99,6 +106,9 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 	}
 	public void setMarriageNum(int par1) {
 		marriageNum = par1;
+	}
+	public void setBossCooldown(int par1) {
+		this.bossCooldown = par1;
 	}
 
 

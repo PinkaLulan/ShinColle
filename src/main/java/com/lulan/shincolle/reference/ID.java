@@ -40,11 +40,11 @@ public class ID {
 	
 	//Type ID: Emotion
 	public static final class Emotion {
-		public static final byte NORMAL = 0;			//�銵冽��
-		public static final byte BLINK = 1;				//��
+		public static final byte NORMAL = 0;			//no emotion
+		public static final byte BLINK = 1;				//blink eye
 		public static final byte T_T = 2;				//sad
 		public static final byte O_O = 3;				//...
-		public static final byte BORED = 4;				//����璈����”���
+		public static final byte BORED = 4;				//sit phase 2
 		public static final byte HUNGRY = 5;			//no grudge
 	}
 	
@@ -268,6 +268,10 @@ public class ID {
 	public static final byte S_NorthernHime = 31;
 	public static final byte S_SouthernHime = 32;
 	public static final byte S_ACWaterOni = 33;
+	public static final byte S_LightCruiserOni = 34;
+	public static final byte S_BattleshipOni = 35;
+	
+	public static final byte S_DestroyerShimakaze = 36;
 	
 		
 }

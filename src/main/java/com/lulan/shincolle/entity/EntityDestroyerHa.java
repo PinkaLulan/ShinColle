@@ -46,6 +46,7 @@ public class EntityDestroyerHa extends BasicEntityShipSmall {
 		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityDestroyerHa.name"));
 		this.ShipType = ID.ShipType.DESTROYER;
 		this.ShipID = ID.S_DestroyerHA;
+		this.ModelPos = new float[] {0F, 0F, 0F, 25F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		
 		this.initTypeModify();

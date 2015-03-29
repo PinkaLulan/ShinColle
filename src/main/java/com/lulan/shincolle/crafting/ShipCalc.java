@@ -11,7 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 /**SHIP SPAWN CALC <br>
- * Material Bonus Rate:
+ * Material Bonus Rate (for small construction)
  *		Grudge    -> HP ATK DEF SPD MOV HIT	<br>
  *      Abyssium  -> HP DEF					<br>
  *      Ammo      -> ATK SPD				<br>
@@ -40,14 +40,14 @@ public class ShipCalc {
 	//in: itemstack(with materials amount)		out: ATK HP DEF SPD MOV HIT bonus value
 	public static byte[] getBonusPoints(ItemStack itemstack) {
 		byte[] bonusPoint = new byte[6];		//HP ATK DEF SPD MOV HIT
-		byte[] matAmount = getMatAmount(itemstack);	//0:grudge 1:abyssium 2:ammo 3:polymetal
+		int[] matAmount = getMatAmount(itemstack);	//0:grudge 1:abyssium 2:ammo 3:polymetal
 				
-		float[] rateHP = calcBonusRate((float)(matAmount[0]+matAmount[1]));	  //HP = grudge + abyssium
-		float[] rateATK = calcBonusRate((float)(matAmount[0]+matAmount[2]));  //ATK = grudge + ammo
-		float[] rateDEF = calcBonusRate((float)(matAmount[0]+matAmount[1]));  //DEF = grudge + abyssium
-		float[] rateSPD = calcBonusRate((float)(matAmount[0]+matAmount[2]));  //SPD = grudge + ammo
-		float[] rateMOV = calcBonusRate((float)(matAmount[0]+matAmount[3]));  //MOV = grudge + polymetal
-		float[] rateHIT = calcBonusRate((float)(matAmount[0]+matAmount[3]));  //HIT = grudge + polymetal
+		float[] rateHP = calcBonusRate((int)(matAmount[0]+matAmount[1]));	  //HP = grudge + abyssium
+		float[] rateATK = calcBonusRate((int)(matAmount[0]+matAmount[2]));  //ATK = grudge + ammo
+		float[] rateDEF = calcBonusRate((int)(matAmount[0]+matAmount[1]));  //DEF = grudge + abyssium
+		float[] rateSPD = calcBonusRate((int)(matAmount[0]+matAmount[2]));  //SPD = grudge + ammo
+		float[] rateMOV = calcBonusRate((int)(matAmount[0]+matAmount[3]));  //MOV = grudge + polymetal
+		float[] rateHIT = calcBonusRate((int)(matAmount[0]+matAmount[3]));  //HIT = grudge + polymetal
 
 		bonusPoint[0] = rollBonusValue(rateHP);
 		bonusPoint[1] = rollBonusValue(rateATK);
@@ -60,14 +60,14 @@ public class ShipCalc {
 	}
 
 	//get material amount from nbt data
-	private static byte[] getMatAmount(ItemStack itemstack) {
-		byte[] matAmount = {0,0,0,0};	//grudge, abyssium, ammo, polymetal
+	private static int[] getMatAmount(ItemStack itemstack) {
+		int[] matAmount = {0,0,0,0};	//grudge, abyssium, ammo, polymetal
 				
 		if(itemstack.hasTagCompound()) {		
-			matAmount[0] = itemstack.getTagCompound().getByte("Grudge");
-			matAmount[1] = itemstack.getTagCompound().getByte("Abyssium");
-			matAmount[2] = itemstack.getTagCompound().getByte("Ammo");
-			matAmount[3] = itemstack.getTagCompound().getByte("Polymetal");
+			matAmount[0] = itemstack.getTagCompound().getInteger("Grudge");
+			matAmount[1] = itemstack.getTagCompound().getInteger("Abyssium");
+			matAmount[2] = itemstack.getTagCompound().getInteger("Ammo");
+			matAmount[3] = itemstack.getTagCompound().getInteger("Polymetal");
 		}
 	
 		LogHelper.info("DEBUG : shipcalc get matAmount : "+matAmount[0]+" "+matAmount[1]+" "+matAmount[2]+" "+matAmount[3]);
@@ -75,16 +75,42 @@ public class ShipCalc {
 	}
 
 	//in: material amount		out: +0~+3 rate
-	private static float[] calcBonusRate(float i) {
+	private static float[] calcBonusRate(int i) {
 		float[] newRate = new float[4];
 		float total = 1F;	//avoid divide by zero
 		
-		newRate[0] = baseRate[0] + i * 0.25F;		//+0
-		newRate[1] = baseRate[1] + i * 0.75F;		//+1
-		newRate[2] = baseRate[2] + i * 0.375F;		//+2
-		newRate[3] = baseRate[3] + i * 0.25F;		//+3
+		//small construction
+		if(i < 129) {
+			newRate[0] = baseRate[0] + i * 0.25F;	//+0
+			newRate[1] = baseRate[1] + i * 0.75F;	//+1
+			newRate[2] = baseRate[2] + i * 0.375F;	//+2
+			newRate[3] = baseRate[3] + i * 0.25F;	//+3
+		}
+		//large construction
+		else {
+			if(i > 1599) {
+				i -= 1599;
+				newRate[0] = 100F + i * 0.1F;			//+0
+				newRate[1] = 150F + i * 0.3F;		//+1
+				newRate[2] = 200F + i * 0.35F;		//+2
+				newRate[3] = i * 0.4F;			//+3
+			}
+			else if(i > 999) {
+				i -= 999;
+				newRate[0] = 100F + i * 0.05F;		//+0
+				newRate[1] = 150F + i * 0.2F;		//+1
+				newRate[2] = 50F + i * 0.25F;		//+2
+				newRate[3] = 0F;					//+3
+			}
+			else {
+				newRate[0] = 150F + i * 0.15F;		//+0
+				newRate[1] = 50F + i * 0.4F;		//+1
+				newRate[2] = 0;						//+2
+				newRate[3] = 0;						//+3
+			}
+		}
 		
-		total = newRate[0]+newRate[1]+newRate[2]+newRate[3];
+		total = newRate[0] + newRate[1] + newRate[2] + newRate[3];
 		
 		newRate[0] /= total;
 		newRate[1] /= total;
@@ -129,7 +155,7 @@ public class ShipCalc {
 		int[] material = new int[4];
 		int totalMats = 0;
 		
-		if(item.getItemDamage() > 1) {	//is debug egg
+		if(item.getItemDamage() > 1) {	//is spec egg
 			return item.getItemDamage() - 2;
 		}
 		
@@ -180,7 +206,7 @@ public class ShipCalc {
 		//get result
 		for(int i = 0; i < shipList.size(); ++i) {
 			sumRate += shipList.get(i)[1];
-			
+			LogHelper.info("DEBUG : roll ship type: rate "+shipList.get(i)[0]+" "+shipList.get(i)[1]);
 			if(sumRate > randNum) {
 				rollResult = shipList.get(i)[0];
 				break;
@@ -212,6 +238,10 @@ public class ShipCalc {
   			return "shincolle.EntityCarrierWo";
   		case ID.S_BattleshipRE:
   			return "shincolle.EntityBattleshipRe";
+  		case ID.S_DestroyerShimakaze:
+  			return "shincolle.EntityDestroyerShimakaze";
+  		case ID.S_DestroyerShimakaze+200:
+  			return "shincolle.EntityDestroyerShimakazeBoss";
   		default:
   			return "shincolle.EntityDestroyerI";
   		}	

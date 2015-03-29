@@ -46,11 +46,12 @@ public class EntityAIShipAircraftAttack extends EntityAIBase {
     //check ai start condition
     public boolean shouldExecute() {
     	EntityLivingBase target = this.host.getAttackTarget();
-    	
+
         if (this.host.ticksExisted > 30 && target != null && target.isEntityAlive() && 
         	((this.host.useAmmoLight && this.host.numAmmoLight > 0) || 
         	(this.host.useAmmoHeavy && this.host.numAmmoHeavy > 0))) {   
         	this.target = target;
+
             return true;
         }
         return false;

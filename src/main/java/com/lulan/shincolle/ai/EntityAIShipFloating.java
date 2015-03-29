@@ -1,10 +1,12 @@
 package com.lulan.shincolle.ai;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.init.Blocks;
 
@@ -14,39 +16,50 @@ import net.minecraft.init.Blocks;
  */
 public class EntityAIShipFloating extends EntityAIBase {
 	
-    private BasicEntityShip theEntity;
+	private IShipFloating host;
+    private BasicEntityShip hostShip;
+    private EntityLivingBase hostLiving;
+    
 
-    public EntityAIShipFloating(BasicEntityShip entity) {
-        this.theEntity = entity;
+    public EntityAIShipFloating(IShipFloating entity) {
+    	this.host = entity;
+    	this.hostLiving = (EntityLivingBase) entity;
+    	
+    	if(entity instanceof BasicEntityShip) {
+    		this.hostShip = (BasicEntityShip) entity;
+    	}
+    	
         this.setMutexBits(5);
-        entity.getNavigator().setCanSwim(true);
     }
 
     public boolean shouldExecute() {
-//    	LogHelper.info("DEBUG : floating cond? "+this.theEntity.getEntityFlag(AttrID.F_CanFloatUp));
-        return !this.theEntity.isSitting() && this.theEntity.getStateFlag(ID.F.CanFloatUp);
+    	if(hostShip != null) {
+    		return !this.hostShip.isSitting() && this.hostShip.getStateFlag(ID.F.CanFloatUp);
+    	}
+    	else {
+    		return host.getShipDepth() > 0.47D;
+    	}
     }
 
     public void updateTask() {
     	//上浮到指定高度 (本體仍在水中)
-    	if(this.theEntity.getShipDepth() > 4D) {
-    		this.theEntity.motionY += 0.025D;
+    	if(this.host.getShipDepth() > 4D) {
+    		this.hostLiving.motionY += 0.025D;
     		return;
     	}
     	
-    	if(this.theEntity.getShipDepth() > 1D) {
-    		this.theEntity.motionY += 0.015D;
-//    		LogHelper.info("DEBUG : floating "+this.theEntity+" "+this.theEntity.getShipDepth());
+    	if(this.host.getShipDepth() > 1D) {
+    		this.hostLiving.motionY += 0.015D;
     		return;
     	}
     	
-    	if(this.theEntity.getShipDepth() > 0.7D) {
-    		this.theEntity.motionY += 0.007D;
+    	if(this.host.getShipDepth() > 0.7D) {
+    		this.hostLiving.motionY += 0.007D;
     		return;
     	}
     	
-    	if(this.theEntity.getShipDepth() > 0.47D) {
-    		this.theEntity.motionY += 0.0015D;
+    	if(this.host.getShipDepth() > 0.47D) {
+    		this.hostLiving.motionY += 0.0015D;
     		return;
     	}
     	   	

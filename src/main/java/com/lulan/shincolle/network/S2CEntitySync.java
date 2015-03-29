@@ -3,10 +3,12 @@ package com.lulan.shincolle.network;
 import java.util.UUID;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
@@ -29,6 +31,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class S2CEntitySync implements IMessage {
 	
 	private BasicEntityShip entity;
+	private EntityLiving entity2;
+	private IShipEmotion entity2e;
 	private int entityID;
 	private int type;
 
@@ -39,8 +43,17 @@ public class S2CEntitySync implements IMessage {
 	//type 0: all attribute
 	//type 1: entity state only
 	//type 2: entity flag only
+	//type 3: entity minor only
 	public S2CEntitySync(BasicEntityShip entity, int type) {
         this.entity = entity;
+        this.type = type;
+    }
+	
+	//for non ship entity sync
+	//type 4: all emotion
+	public S2CEntitySync(IShipEmotion entity, int type) {
+        this.entity2 = (EntityLiving) entity;
+        this.entity2e = entity;
         this.type = type;
     }
 	
@@ -50,7 +63,14 @@ public class S2CEntitySync implements IMessage {
 		//get type and entityID
 		this.type = buf.readByte();
 		this.entityID = buf.readInt();
-		this.entity = (BasicEntityShip) EntityHelper.getEntityByID(entityID, 0, true);
+		this.entity2 = (EntityLiving) EntityHelper.getEntityByID(entityID, 0, true);
+		
+		if(entity2 instanceof BasicEntityShip) {
+			this.entity = (BasicEntityShip) this.entity2;
+		}
+		else {
+			this.entity2e = (IShipEmotion) this.entity2;
+		}
 
 		if(entity != null) {
 			switch(type) {
@@ -124,7 +144,7 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateFlag(ID.F.UseAirHeavy, buf.readBoolean());
 				}
 				break;
-			case 3: //entity state only
+			case 3: //entity minor only
 				{
 					entity.setStateMinor(ID.N.ShipLevel, buf.readInt());
 					entity.setStateMinor(ID.N.Kills, buf.readInt());
@@ -138,6 +158,13 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateMinor(ID.N.FollowMax, buf.readInt());
 					entity.setStateMinor(ID.N.FleeHP, buf.readInt());
 					entity.setStateMinor(ID.N.TargetAI, buf.readInt());
+				}
+				break;
+			case 4: //IShipEmotion sync emtion
+				{
+					entity2e.setStateEmotion(ID.S.State, buf.readByte(), false);
+					entity2e.setStateEmotion(ID.S.Emotion, buf.readByte(), false);
+					entity2e.setStateEmotion(ID.S.Emotion2, buf.readByte(), false);
 				}
 				break;
 			}
@@ -228,7 +255,7 @@ public class S2CEntitySync implements IMessage {
 				buf.writeBoolean(this.entity.getStateFlag(ID.F.UseAirHeavy));	
 			}
 			break;
-		case 3:	//sync all data
+		case 3:	//sync minor only
 			{
 				buf.writeByte(3);	//type 3
 				buf.writeInt(this.entity.getEntityId());
@@ -244,6 +271,15 @@ public class S2CEntitySync implements IMessage {
 				buf.writeInt(this.entity.getStateMinor(ID.N.FollowMax));
 				buf.writeInt(this.entity.getStateMinor(ID.N.FleeHP));
 				buf.writeInt(this.entity.getStateMinor(ID.N.TargetAI));
+			}
+			break;
+		case 4:	//IShipEmotion emotion only
+			{
+				buf.writeByte(4);	//type 1
+				buf.writeInt(this.entity2.getEntityId());
+				buf.writeByte(this.entity2e.getStateEmotion(ID.S.State));
+				buf.writeByte(this.entity2e.getStateEmotion(ID.S.Emotion));
+				buf.writeByte(this.entity2e.getStateEmotion(ID.S.Emotion2));
 			}
 			break;
 		}

@@ -60,7 +60,10 @@ public class MarriageRing extends BasicItem {
 				//disable fly
 				if(!extProps.isRingActive()) {
 					extProps.setRingFlying(false);
-					player.capabilities.isFlying = false;
+					
+					if(!player.capabilities.isCreativeMode) {
+						player.capabilities.isFlying = false;
+					}
 				}
 				
 				//sync ring state to client
@@ -105,13 +108,19 @@ public class MarriageRing extends BasicItem {
 						//ring is not actived, cancel fly
 						else if(extProps.isRingFlying()) {
 							extProps.setRingFlying(false);
-							owner.capabilities.isFlying = false;
+							
+							if(!owner.capabilities.isCreativeMode) {
+								owner.capabilities.isFlying = false;
+							}
 						}
 					}
 					else {	//增加ring flying flag檢查, 避免持續關掉其他mod的fly功能
 						if(extProps.isRingFlying()) {
 							extProps.setRingFlying(false);
-							owner.capabilities.isFlying = false;
+							
+							if(!owner.capabilities.isCreativeMode) {
+								owner.capabilities.isFlying = false;
+							}
 						}
 					}
 				}

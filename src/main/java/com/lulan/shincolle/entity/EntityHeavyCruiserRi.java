@@ -71,6 +71,7 @@ public class EntityHeavyCruiserRi extends BasicEntityShipSmall {
 		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityHeavyCruiserRi.name"));
 		this.ShipType = ID.ShipType.HEAVY_CRUISER;
 		this.ShipID = ID.S_HeavyCruiserRI;
+		this.ModelPos = new float[] {0F, 10F, 0F, 30F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();
 		

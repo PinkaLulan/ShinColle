@@ -66,7 +66,7 @@ import net.minecraftforge.common.IExtendedEntityProperties;
 /**SHIP DATA <br>
  * Explanation in crafting/ShipCalc.class
  */
-public abstract class BasicEntityShip extends EntityTameable {
+public abstract class BasicEntityShip extends EntityTameable implements IShipAttack, IShipEmotion, IShipFloating {
 
 	protected ExtendShipProps ExtProps;	//entity額外NBT紀錄
 	
@@ -90,7 +90,7 @@ public abstract class BasicEntityShip extends EntityTameable {
 	protected int[] StateMinor;
 	/**equip effect: 0:critical 1:doubleHit 2:tripleHit 3:baseMiss*/
 	protected float[] EffectEquip;
-	/**EntityState: 0:HP State 1:Emotion 2:SwimType*/
+	/**EntityState: 0:HP State 1:Emotion 2:Emotion2*/
 	protected byte[] StateEmotion;
 	/**EntityFlag: 0:canFloatUp 1:isMarried 2:noFuel 3:canMelee 4:canAmmoLight 5:canAmmoHeavy 6:canAirLight 7:canAirHeavy 8:headTilt(client only)*/
 	protected boolean[] StateFlag;
@@ -98,6 +98,11 @@ public abstract class BasicEntityShip extends EntityTameable {
 	protected byte[] BonusPoint;
 	/**TypeModify: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT*/
 	protected float[] TypeModify;
+	/**ModelPos: posX, posY, posZ, scale (in ship inventory)*/
+	protected float[] ModelPos;
+	
+	//for GUI display
+	protected String ownerName;
 	
 	
 	public BasicEntityShip(World world) {
@@ -112,12 +117,14 @@ public abstract class BasicEntityShip extends EntityTameable {
 		StateFlag = new boolean[] {false, false, false, false, true, true, true, true, false};
 		BonusPoint = new byte[] {0, 0, 0, 0, 0, 0};
 		TypeModify = new float[] {1F, 1F, 1F, 1F, 1F, 1F};
+		ModelPos = new float[] {0F, 0F, 0F, 50F};
 		//for AI
 		StartEmotion = -1;		//emotion start time
 		ShipDepth = 0D;			//water block above ship (within ship position)
 		ShipPrevX = posX;		//ship position 5 sec ago
 		ShipPrevY = posY;
 		ShipPrevZ = posZ;
+		ownerName = "";
 	}
 	
 	@Override
@@ -134,6 +141,14 @@ public abstract class BasicEntityShip extends EntityTameable {
 	public float getEyeHeight() {
 		return this.height * 1F;
 	}
+	
+	@Override
+	public boolean hasCustomNameTag() {
+		if(ConfigHandler.showTag) {
+			return this.dataWatcher.getWatchableObjectString(10).length() > 0;
+		}
+        return false;
+    }
 	
 	//平常音效
 	protected String getLivingSound() {
@@ -168,12 +183,7 @@ public abstract class BasicEntityShip extends EntityTameable {
 	
 	//get owner name (for player owner only)
 	public String getOwnerName() {
-		if(this.getOwner() != null) {
-			if(this.getOwner() instanceof EntityPlayer) {
-				return ((EntityPlayer)this.getOwner()).getDisplayName();
-			}
-		}		
-		return null;
+		return this.ownerName;
 	}
 
 	@Override
@@ -234,24 +244,81 @@ public abstract class BasicEntityShip extends EntityTameable {
 	public byte getShipID() {
 		return ShipID;
 	}
+	
+	@Override
+	public int getAmmoLight() {
+		return this.StateMinor[ID.N.NumAmmoLight];
+	}
+
+	@Override
+	public int getAmmoHeavy() {
+		return this.StateMinor[ID.N.NumAmmoHeavy];
+	}
+	
+	@Override
 	public int getStartEmotion() {
 		return StartEmotion;
 	}
+	
+	@Override
 	public int getStartEmotion2() {
 		return StartEmotion2;
 	}
+	
+	@Override
+	public int getTickExisted() {
+		return this.ticksExisted;
+	}
+	
+	@Override
+	public int getAttackTime() {
+		return this.attackTime;
+	}
+	
+	@Override
+	public EntityLivingBase getTarget() {
+		return this.getAttackTarget();
+	}
+	
+	@Override
+	public float getAttackDamage() {	//not used for ship
+		return 0;
+	}
+	
+	@Override
+	public float getAttackSpeed() {
+		return this.StateFinal[ID.SPD];
+	}
+	
+	@Override
+	public float getAttackRange() {
+		return this.StateFinal[ID.HIT];
+	}
+	
+	@Override
+	public float getMoveSpeed() {
+		return this.StateFinal[ID.MOV];
+	}
+	
+	@Override
 	public boolean hasAmmoLight() {
 		return StateMinor[ID.N.NumAmmoLight] > 0;
 	}
+	
+	@Override
 	public boolean hasAmmoHeavy() {
 		return StateMinor[ID.N.NumAmmoHeavy] > 0;
 	}
+	
 	public double getShipDepth() {
 		return ShipDepth;
 	}
+	
+	@Override
 	public boolean getStateFlag(int flag) {	//get flag (boolean)
 		return StateFlag[flag];		
 	}
+	
 	public byte getStateFlagI(int flag) {		//get flag (byte)
 		if(StateFlag[flag]) {
 			return 1;
@@ -272,6 +339,7 @@ public abstract class BasicEntityShip extends EntityTameable {
 	public float getEffectEquip(int id) {
 		return EffectEquip[id];
 	}
+	@Override
 	public byte getStateEmotion(int id) {
 		return StateEmotion[id];
 	}
@@ -280,6 +348,9 @@ public abstract class BasicEntityShip extends EntityTameable {
 	}
 	public float getTypeModify(int id) {
 		return TypeModify[id];
+	}
+	public float[] getModelPos() {
+		return ModelPos;
 	}
 	
 	//replace isInWater, check water block with NO extend AABB
@@ -461,10 +532,26 @@ public abstract class BasicEntityShip extends EntityTameable {
 		}
 	}
 	
+	//set owner name (for player owner only)
+	public void setOwnerName(String name) {
+		this.ownerName = name;
+	}
+	
 	//called when a mob die near the entity (used in event handler)
 	public void addKills() {
 		StateMinor[ID.N.Kills]++;
 	}
+	
+	@Override
+	public void setAmmoLight(int num) {
+		this.StateMinor[ID.N.NumAmmoLight] = num;
+	}
+	
+	@Override
+	public void setAmmoHeavy(int num) {
+		this.StateMinor[ID.N.NumAmmoHeavy] = num;
+	}
+	
 	//ship attribute setter, sync packet in method: calcShipAttributes 
 	public void setStateFinal(int state, float par1) {
 		StateFinal[state] = par1;
@@ -490,11 +577,12 @@ public abstract class BasicEntityShip extends EntityTameable {
 	}
 	
 	//called when load nbt data or GUI click
-	public void setStateFlag(int flag, boolean par1) {
-		this.StateFlag[flag] = par1;
+	@Override
+	public void setStateFlag(int id, boolean par1) {
+		this.StateFlag[id] = par1;
 		
 		//若修改melee flag, 則reload AI
-		if(flag == ID.F.UseMelee) {
+		if(id == ID.F.UseMelee) {
 			clearAITasks();
     		setAIList();
 		}
@@ -526,6 +614,7 @@ public abstract class BasicEntityShip extends EntityTameable {
 		TypeModify[ID.HIT] = Values.ModHIT[ShipID];
 	}
 
+	@Override
 	public void setStateEmotion(int id, int value, boolean sync) {
 		StateEmotion[id] = (byte)value;
 		if(sync && !worldObj.isRemote) {
@@ -535,9 +624,12 @@ public abstract class BasicEntityShip extends EntityTameable {
 	}
 	
 	//emotion start time (CLIENT ONLY), called from model class
+	@Override
 	public void setStartEmotion(int par1) {
 		StartEmotion = par1;
 	}
+	
+	@Override
 	public void setStartEmotion2(int par1) {
 		StartEmotion2 = par1;
 	}
@@ -595,7 +687,7 @@ public abstract class BasicEntityShip extends EntityTameable {
 			   ((this.getOwner() != null && player.getUniqueID().equals(this.getOwner().getUniqueID())) ||
 				 EntityHelper.checkOP(player))) {
 				//創造模式不消耗物品
-                if (!player.capabilities.isCreativeMode) {  //damage +1 in non-creative mode
+                if(!player.capabilities.isCreativeMode) {  //damage +1 in non-creative mode
  	                itemstack.setItemDamage(itemstack.getItemDamage() + 1);
                     
                     //set item amount
@@ -1285,7 +1377,7 @@ public abstract class BasicEntityShip extends EntityTameable {
 			}
 			
 			//若攻擊方同樣為ship, 則傷害-95% (使ship vs ship能打久一點)
-			if(entity instanceof BasicEntityShip || entity instanceof BasicEntityAirplane) {
+			if(entity instanceof BasicEntityShip || entity instanceof BasicEntityAirplane || entity instanceof EntityRensouhou) {
 				reduceAtk *= 0.05F;
 			}
 			

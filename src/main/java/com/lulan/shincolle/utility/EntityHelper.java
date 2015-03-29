@@ -5,10 +5,14 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import scala.reflect.internal.Trees.This;
+
 import com.lulan.shincolle.entity.BasicEntityAirplane;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.EntityAirplane;
+import com.lulan.shincolle.entity.EntityRensouhou;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
+import com.lulan.shincolle.entity.IShipAttack;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
@@ -35,33 +39,76 @@ public class EntityHelper {
 	
 	public EntityHelper() {}
 	
-	//check is same owner for ship
-	public static boolean checkSameOwner(EntityLivingBase owner, EntityLivingBase target) {
-		EntityLivingBase getOwner = null;
+	//check is same owner for ship (host == target's owner)
+	public static boolean checkSameOwner(EntityLivingBase host, EntityLivingBase target) {
+		EntityLivingBase getOwnerA = null;
+		EntityLivingBase getOwnerB = null;
 		
-		if(owner != null && target != null) {
-			if(target instanceof EntityPlayer) {
-				getOwner = target;
-			}
-			else if(target instanceof EntityTameable) {
-				getOwner = ((EntityTameable)target).getOwner();
-			}
-			else if(target instanceof BasicEntityAirplane) {
-				//先取得airplane的owner(為一種Ship), 再取得該ship的owner(為一種EntityPlayer)
-				getOwner = ((BasicEntityAirplane)target).getOwner();
-				if(getOwner != null) {
-					getOwner = ((BasicEntityShip)getOwner).getOwner();
-				}
-				else {
-					return false;
-				}
-			}
+		if(host != null && target != null) {
+			getOwnerA = getOwnerFromEntity(host);
+			getOwnerB = getOwnerFromEntity(target);
 			
 			//檢查uuid是否相同
-			if(getOwner != null && getOwner.getUniqueID().equals(owner.getUniqueID())) {
+			if(getOwnerA != null && getOwnerB != null) {
+				return getOwnerA.getUniqueID().equals(getOwnerB.getUniqueID());
+			}
+		}
+		
+		return false;
+	}
+	
+	//get owner from entity
+	public static EntityLivingBase getOwnerFromEntity(EntityLivingBase host) {
+		//get owner from target
+		if(host instanceof EntityPlayer) {
+			return host;
+		}
+		else if(host instanceof EntityTameable) {
+			return ((EntityTameable)host).getOwner();
+		}
+		else if(host instanceof BasicEntityAirplane) {
+			//先取得airplane的owner(為一種Ship), 再取得該ship的owner(為一種EntityPlayer)
+			EntityLivingBase owner = ((BasicEntityAirplane)host).getOwner();
+			
+			if(owner != null) {
+				return ((BasicEntityShip)owner).getOwner();
+			}
+			else {
+				return null;
+			}
+		}
+		else if(host instanceof EntityRensouhou) {
+			//先取得airplane的owner(為一種Ship), 再取得該ship的owner(為一種EntityPlayer)
+			EntityLivingBase owner = ((EntityRensouhou)host).getOwner();
+			
+			if(owner != null) {
+				return ((BasicEntityShip)owner).getOwner();
+			}
+			else {
+				return null;
+			}
+		}
+		else if(host instanceof IShipAttack) {
+			return ((IShipAttack) host).getOwner();
+		}
+		
+		return null;
+	}
+
+	//check host's owner is EntityPlayer
+	public static boolean checkOwnerIsPlayer(EntityLivingBase host) {
+		EntityLivingBase getOwner = null;
+		
+		if(host != null) {
+			if(host instanceof EntityTameable) {
+				getOwner = ((EntityTameable)host).getOwner();
+				return (getOwner != null) && (getOwner instanceof EntityPlayer);
+			}
+			else if(host instanceof BasicEntityAirplane || host instanceof BasicEntityShip) {
 				return true;
 			}
 		}
+		
 		return false;
 	}
 	

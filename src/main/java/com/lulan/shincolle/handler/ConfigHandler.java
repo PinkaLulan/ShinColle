@@ -18,6 +18,7 @@ public class ConfigHandler {
 	public static boolean debugMode = false;
 	public static boolean easyMode = false;
 	public static boolean staticMode = false;
+	public static boolean showTag = true;
 	public static boolean friendlyFire = true;
 	
 	//SHIP SETTING
@@ -47,6 +48,9 @@ public class ConfigHandler {
 		
 		//是否把large shipyard設為static entity (只畫一次, 但是此功能跟NEI相衝)
 		staticMode = config.getBoolean("Static_Mode", "general", false, "Render LargeShipyard as static or normal entity (for NotEnoughItem: 1283: Stack overflow bug)");
+		
+		//是否顯示custom name tag
+		showTag = config.getBoolean("Show_Name_Tag", "general", true, "Show custom name tag?");
 		
 		//是否開啟簡單模式 (spam debug/info message)
 		friendlyFire = config.getBoolean("Friendly_Fire", "general", true, "false: disable damage done by player (except owner)");

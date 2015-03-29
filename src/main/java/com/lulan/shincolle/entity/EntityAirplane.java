@@ -38,11 +38,14 @@ public class EntityAirplane extends BasicEntityAirplane {
         //basic attr
         this.atk = host.getStateFinal(ID.ATK_AL);
         this.atkSpeed = host.getStateFinal(ID.SPD);
+        this.movSpeed = host.getStateFinal(ID.MOV) * 0.2F + 0.45F;
+        
         //AI flag
         this.numAmmoLight = 6;
         this.numAmmoHeavy = 0;
         this.useAmmoLight = true;
         this.useAmmoHeavy = false;
+        
         //設定發射位置
         this.posX = host.posX;
         this.posY = launchPos;
@@ -51,7 +54,7 @@ public class EntityAirplane extends BasicEntityAirplane {
 
 	    //設定基本屬性
 	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(host.getStateFinal(ID.HP)*0.1D);
-		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(host.getStateFinal(ID.MOV)*0.2D + 0.45D);
+		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(this.movSpeed);
 		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(16); //此為找目標, 路徑的範圍
 		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(1D);
 		if(this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
@@ -83,5 +86,6 @@ public class EntityAirplane extends BasicEntityAirplane {
 	          		-this.motionX*0.5D, -this.motionY*0.5D, -this.motionZ*0.5D, (byte)17);
 		}
 	}
+
 
 }

@@ -91,6 +91,8 @@ item.shincolle:shipegg5.name=Destroyer Ni-Class
 item.shincolle:shipegg11.name=Heavy Cruiser Ri-Class
 item.shincolle:shipegg14.name=Standard Carrier Wo-Class
 item.shincolle:shipegg17.name=Battleship Re-Class
+item.shincolle:shipegg38.name=Shimakaze
+item.shincolle:shipegg238.name=Shimakaze Kai
 
 # Entity
 entity.shincolle.EntityAirplane.name=Abyssal Fighter
@@ -101,6 +103,8 @@ entity.shincolle.EntityDestroyerHa.name=Destroyer Ha-Class
 entity.shincolle.EntityDestroyerI.name=Destroyer I-Class
 entity.shincolle.EntityDestroyerNi.name=Destroyer Ni-Class
 entity.shincolle.EntityDestroyerRo.name=Destroyer Ro-Class
+entity.shincolle.EntityDestroyerShimakaze.name=Shimakaze
+entity.shincolle.EntityDestroyerShimakazeBoss.name=Shimakaze Kai
 entity.shincolle.EntityHeavyCruiserRi.name=Heavy Cruiser Ri-Class
 
 # GUI: Ship Inventory Top
@@ -157,3 +161,6 @@ gui.shincolle:modernkit=Right click on seikan to +1 random attribute.
 gui.shincolle:repairgoddess=Prevents sinking from deadly damage.
 gui.shincolle:ringText=Marriages
 gui.shincolle:eggText=Require Level
+
+# Chat message
+chat.shincolle:bossshimakaze=Shimakaze Kai Walks on the Water!

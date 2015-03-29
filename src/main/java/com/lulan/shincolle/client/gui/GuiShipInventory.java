@@ -67,11 +67,10 @@ public class GuiShipInventory extends GuiContainer {
 		{70,87}, {70,87}, {99,29}};
 	//ship name icon array
 	private static final short[][] ICON_SHIPNAME = {
-		{128,0}, {139,0}, {150,0}, {161,0}, {172,0}, {183,0}, {194,0}, {205,0},
-		{216,0}, {227,0}, {238,0}, {128,60}, {139,60}, {150,60}, {161,60}, {172,60},
-		{183,60}, {194,60}, {205,60}, {216,60}, {227,60}, {238,60}, {128,120}, {139,120},
-		{150,120}, {161,120}, {172,120}, {183,120}, {194,120}, {205,120}, {216,120}, 
-		{227,120}, {238,120}};
+		{128,0}, {139,0}, {150,0}, {161,0}, {172,0}, {183,0}, {194,0}, {205,0}, {216,0}, {227,0}, {238,0}, 
+		{128,60}, {139,60}, {150,60}, {161,60}, {172,60}, {183,60}, {194,60}, {205,60}, {216,60}, {227,60}, {238,60}, 
+		{128,120}, {139,120}, {150,120}, {161,120}, {172,120}, {183,120}, {194,120}, {205,120}, {216,120}, {227,120}, {238,120}, 
+		{128,180}, {139,180}, {150,180}, {0,120}};
 	
 	public GuiShipInventory(InventoryPlayer invPlayer, BasicEntityShip entity1) {
 		super(new ContainerShipInventory(invPlayer, entity1));
@@ -246,7 +245,7 @@ public class GuiShipInventory extends GuiContainer {
         drawTexturedModalRect(guiLeft+166, guiTop+63, ICON_SHIPNAME[entity.getShipID()][0], ICON_SHIPNAME[entity.getShipID()][1], 11, 59);
         
         //draw entity model
-        drawEntityModel(guiLeft+210, guiTop+100, 25, (float)(guiLeft + 200 - xMouse), (float)(guiTop + 50 - yMouse), this.entity);
+        drawEntityModel(guiLeft+210, guiTop+100, entity.getModelPos(), (float)(guiLeft + 200 - xMouse), (float)(guiTop + 50 - yMouse), this.entity);
         
 	}
 	
@@ -318,20 +317,25 @@ public class GuiShipInventory extends GuiContainer {
 	}
 	
 	//draw entity model, copy from player inventory class
-	public static void drawEntityModel(int x, int y, int scale, float yaw, float pitch, BasicEntityShip entity) {		
+	public static void drawEntityModel(int x, int y, float[] modelPos, float yaw, float pitch, BasicEntityShip entity) {		
+		//set basic position and rotation
 		GL11.glEnable(GL11.GL_COLOR_MATERIAL);
 		GL11.glPushMatrix();
-		GL11.glTranslatef(x, y, 50.0F);
-		GL11.glScalef(-scale, scale, scale);
+		GL11.glTranslatef(x + modelPos[0], y + modelPos[1], 50.0F + modelPos[2]);
+		GL11.glScalef(-modelPos[3], modelPos[3], modelPos[3]);
 		GL11.glRotatef(180.0F, 0.0F, 0.0F, 1.0F);
 		float f2 = entity.renderYawOffset;
 		float f3 = entity.rotationYaw;
 		float f4 = entity.rotationPitch;
 		float f5 = entity.prevRotationYawHead;
 		float f6 = entity.rotationYawHead;
+		
+		//set the light of model (face to player)
 		GL11.glRotatef(135.0F, 0.0F, 1.0F, 0.0F);
 		RenderHelper.enableStandardItemLighting();
 		GL11.glRotatef(-135.0F, 0.0F, 1.0F, 0.0F);
+		
+		//set head look angle
 		GL11.glRotatef(-((float) Math.atan(pitch / 40.0F)) * 20.0F, 1.0F, 0.0F, 0.0F);
 		entity.renderYawOffset = (float) Math.atan(yaw / 40.0F) * 20.0F;
 		entity.rotationYaw = (float) Math.atan(yaw / 40.0F) * 40.0F;
@@ -470,11 +474,11 @@ public class GuiShipInventory extends GuiContainer {
 			}
 		case 3: {	//page 3: owner name, light/heavy airplane, marriage
 			//draw string
-			this.fontRendererObj.drawString(I18n.format("gui.shincolle:owner"), 67, 20, GuiHelper.pickColor(5));
-			this.fontRendererObj.drawString(I18n.format("gui.shincolle:marriage"), 67, 41, GuiHelper.pickColor(5));
+//			this.fontRendererObj.drawString(I18n.format("gui.shincolle:owner"), 67, 20, GuiHelper.pickColor(5));
+			this.fontRendererObj.drawString(I18n.format("gui.shincolle:marriage"), 67, 20, GuiHelper.pickColor(5));
 			
 			//draw value
-			Owner = this.entity.getOwnerName();
+//			Owner = this.entity.getOwnerName();
 			
 			if(this.entity.getStateFlag(ID.F.IsMarried)) {
 				marriage = I18n.format("gui.shincolle:married");
@@ -494,8 +498,8 @@ public class GuiShipInventory extends GuiContainer {
 				
 			}
 			
-			this.fontRendererObj.drawStringWithShadow(Owner, 125-this.fontRendererObj.getStringWidth(Owner), 30, GuiHelper.pickColor(1));
-			this.fontRendererObj.drawStringWithShadow(marriage, 125-this.fontRendererObj.getStringWidth(marriage), 51, GuiHelper.pickColor(1));
+//			this.fontRendererObj.drawStringWithShadow(Owner, 125-this.fontRendererObj.getStringWidth(Owner), 30, GuiHelper.pickColor(1));
+			this.fontRendererObj.drawStringWithShadow(marriage, 125-this.fontRendererObj.getStringWidth(marriage), 30, GuiHelper.pickColor(1));
 			
 			break;
 			}//end case 3

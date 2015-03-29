@@ -23,6 +23,7 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityFireball;
@@ -48,51 +49,55 @@ import net.minecraft.world.World;
  */
 public class EntityAbyssMissile extends Entity {
 	
-    public BasicEntityShip hostEntity;  	//main host
-    public BasicEntityAirplane hostEntity2;	//second host
-    public EntityLivingBase hitEntity;			 	//onImpact target (for entity)
+    private IShipAttack hostEntity;  		//main host type
+    private EntityLiving hostEntity2;		//second host type: entity living
+    private BasicEntityAirplane hostEntity3;	//second host type: airplane
+    private BasicEntityShip hostEntity4;		//second host type: BasicEntityShip
     
     //missile motion
-    public float distX;			//target distance
-    public float distY;
-    public float distZ;
-    public boolean isDirect;		//false:parabola  true:direct
+    private float distX;				//target distance
+    private float distY;
+    private float distZ;
+    private boolean isDirect;		//false:parabola  true:direct
   
     //for parabola y position
-    public float accParaY;			//額外y軸加速度
-    public int midFlyTime;			//一半的飛行時間
+    private float accParaY;			//額外y軸加速度
+    private int midFlyTime;			//一半的飛行時間
     
     //for direct only
-    public static final float ACCE = 0.02F;		//預設加速度
-    public float accX;				//三軸加速度
-    public float accY;
-    public float accZ;
+    private static final float ACCE = 0.02F;		//預設加速度
+    private float accX;				//三軸加速度
+    private float accY;
+    private float accZ;
     
     //missile attributes
-    public float atk;				//missile damage
-    public float kbValue;			//knockback value
-    public float missileHP;			//if hp = 0 -> onImpact
-    public boolean isTargetHurt;	//knockback flag
-    public World world;
+    private float atk;				//missile damage
+    private float kbValue;			//knockback value
+    private float missileHP;			//if hp = 0 -> onImpact
+    private boolean isTargetHurt;	//knockback flag
+    private World world;
 
     
+    //基本constructor, size必須在此設定
     public EntityAbyssMissile(World world) {
     	super(world);
     	this.setSize(1.0F, 1.0F);
     }
     
-    public EntityAbyssMissile(World world, BasicEntityShip host, float tarX, float tarY, float tarZ, float launchPos, float atk, float kbValue, boolean isDirect) {
+    public EntityAbyssMissile(World world, IShipAttack host, float tarX, float tarY, float tarZ, float launchPos, float atk, float kbValue, boolean isDirect) {
         super(world);
         this.world = world;
         //設定entity的發射者, 用於追蹤造成傷害的來源
         this.hostEntity = host;
-        this.hostEntity2 = null;
+        
+        //get host type and posXZ
+        this.checkSecondHost(host);
+        
+        //set basic attributes
         this.atk = atk;
         this.kbValue  = kbValue;
-        //設定發射位置 (posY會加上offset), 左右+上下角度, 以及
-        this.posX = host.posX;
         this.posY = launchPos;
-        this.posZ = host.posZ;     
+             
         //計算距離, 取得方向vector, 並且初始化速度, 使飛彈方向朝向目標
         this.distX = (float) (tarX - this.posX);
         this.distY = (float) (tarY - this.posY);
@@ -117,42 +122,45 @@ public class EntityAbyssMissile extends Entity {
 	    }
     }
     
-    //如果是艦載機發射, 則host要設定為艦載機主人
-    public EntityAbyssMissile(World world, BasicEntityAirplane host, float tarX, float tarY, float tarZ, float launchPos, float atk, float kbValue, boolean isDirect) {
-        super(world);
-        this.world = world;
-        //設定entity的發射者, 用於追蹤造成傷害的來源
-        this.hostEntity = (BasicEntityShip)host.getOwner();
-        this.hostEntity2 = host;
-        this.atk = atk;
-        this.kbValue  = kbValue;
-        //設定發射位置 (posY會加上offset), 左右+上下角度, 以及
-        this.posX = host.posX;
-        this.posY = launchPos;
-        this.posZ = host.posZ;     
-        //計算距離, 取得方向vector, 並且初始化速度, 使飛彈方向朝向目標
-        this.distX = (float) (tarX - this.posX);
-        this.distY = (float) (tarY - this.posY);
-        this.distZ = (float) (tarZ - this.posZ);
-        //設定直射或者拋物線
-        this.isDirect = isDirect;
-        
-        //直射彈道, no gravity
-    	float dist = MathHelper.sqrt_float(this.distX*this.distX + this.distY*this.distY + this.distZ*this.distZ);
-  	    this.accX = (float) (this.distX / dist * this.ACCE);
-	    this.accY = (float) (this.distY / dist * this.ACCE);
-	    this.accZ = (float) (this.distZ / dist * this.ACCE);
-	    this.motionX = this.accX;
-	    this.motionZ = this.accY;
-	    this.motionY = this.accZ;
- 
-	    //拋物線軌道計算, y軸初速加上 (一半飛行時間 * 額外y軸加速度)
-	    if(!this.isDirect) {
-	    	this.midFlyTime = (int) (0.5F * MathHelper.sqrt_float(2F * dist / this.ACCE));
-	    	this.accParaY = this.ACCE;
-	    	this.motionY = this.motionY + (double)this.midFlyTime * this.accParaY;
-	    }
-    }
+    //get host second type
+    private void checkSecondHost(IShipAttack host) {
+    	//type: ship
+		if(host instanceof BasicEntityShip) {
+			this.hostEntity2 = null;
+			this.hostEntity3 = null;
+			this.hostEntity4 = (BasicEntityShip) host;
+			//設定發射位置 (posY會加上offset), 左右+上下角度, 以及
+	        this.posX = hostEntity4.posX;
+	        this.posZ = hostEntity4.posZ;
+		}
+		//type: airplane
+		else if(host instanceof BasicEntityAirplane) {
+			this.hostEntity2 = null;
+			this.hostEntity3 = (BasicEntityAirplane) host;	//plane's master
+			this.hostEntity4 = (BasicEntityShip) ((BasicEntityAirplane)host).getOwner();
+			//設定發射位置 (posY會加上offset), 左右+上下角度, 以及
+	        this.posX = hostEntity3.posX;
+	        this.posZ = hostEntity3.posZ;
+		}
+		//type: rensouhou
+		else if(host instanceof EntityRensouhou) {
+			this.hostEntity2 = (EntityLiving) host;
+			this.hostEntity3 = null;
+			this.hostEntity4 = (BasicEntityShip) ((IShipAttack)host).getOwner();
+			//設定發射位置 (posY會加上offset), 左右+上下角度, 以及
+	        this.posX = hostEntity2.posX;
+	        this.posZ = hostEntity2.posZ;
+		}
+		//type: entity living
+		else {
+			this.hostEntity2 = (EntityLiving) host;
+			this.hostEntity3 = null;
+			this.hostEntity4 = null;
+			//設定發射位置 (posY會加上offset), 左右+上下角度, 以及
+	        this.posX = hostEntity2.posX;
+	        this.posZ = hostEntity2.posZ;
+		}
+	}
 
     protected void entityInit() {}
 
@@ -216,6 +224,11 @@ public class EntityAbyssMissile extends Entity {
     			this.setDead();	//直接抹消, 不觸發爆炸
     		}
     		
+    		//沒有host資料, 消除此飛彈
+    		if(this.hostEntity == null) {
+    			this.setDead();	//直接抹消, 不觸發爆炸
+    		}
+    		
     		//該位置碰到方塊, 則設定爆炸 (方法1: 直接用座標找方塊) 此方法由於把座標取int, 很多時候看起來有撞到但是依然抓不到方塊
     		if(!this.worldObj.blockExists((int)this.posX, (int)this.posY, (int)this.posZ)) {
     			this.onImpact(null);
@@ -234,36 +247,28 @@ public class EntityAbyssMissile extends Entity {
             }
             
             //判定bounding box內是否有可以觸發爆炸的entity
-            hitEntity = null;
-            
-            //在水中發射
+            EntityLivingBase hitEntity = null;
             List hitList = null;
-            if(this.hostEntity != null) {
-            	if(this.hostEntity.getShipDepth() > 0) {
-                	hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, this.boundingBox.expand(1.0D, 1.0D, 1.0D));
-                }
-                else {	//在空氣中發射
-                	hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, this.boundingBox.expand(0.5D, 0.5D, 0.5D));
-                }
-            }
-            else {	//for server restart, kill the missile entity
-            	this.setDead();
-            }
+            hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, this.boundingBox.expand(1.0D, 1.0D, 1.0D));
            
             //搜尋list, 找出第一個可以判定的目標, 即傳給onImpact
             if(hitList != null && !hitList.isEmpty()) {
                 for(int i=0; i<hitList.size(); ++i) { 
                 	hitEntity = (EntityLivingBase)hitList.get(i);
-                	if(hitEntity.canBeCollidedWith() && this.ticksExisted > 10 &&
-                	   !hitEntity.isEntityEqual(this.hostEntity) && 
-                	   !hitEntity.isEntityEqual(this.hostEntity2)) {               		
-                		break;	//break for loop
+                	
+                	/**不會對自己主人觸發爆炸
+            		 * isEntityEqual() is NOT working
+            		 * use entity id to check entity  */
+                	if(hitEntity.canBeCollidedWith() && this.ticksExisted > 10 && 
+                	   isNotHost(hitEntity.getEntityId()) && !EntityHelper.checkSameOwner((EntityLivingBase) this.hostEntity, hitEntity)) {
+                		break;	//get target entity
                 	}
                 	else {
-                		hitEntity = null;
-                	}
+            			hitEntity = null;
+            		}
                 }
             }
+            
             //call onImpact
             if(hitEntity != null) {
             	this.onImpact(hitEntity);
@@ -281,47 +286,60 @@ public class EntityAbyssMissile extends Entity {
     	   	
     }
 
-    //撞擊判定時呼叫此方法
-    protected void onImpact(EntityLivingBase parHitEntity) {
+    //check entity is not host itself
+    private boolean isNotHost(int eid) {
+		if(((EntityLivingBase)hostEntity).getEntityId() == eid) {
+			return false;
+		}
+		else if(hostEntity4 != null && hostEntity4.getEntityId() == eid) {
+			return false;
+		}
+    	
+		return true;
+	}
+
+	//撞擊判定時呼叫此方法
+    protected void onImpact(EntityLivingBase target) {
     	//server side
     	if(!this.worldObj.isRemote) {
     		float missileAtk = atk;
     		
-            if(parHitEntity != null) {	//撞到entity引起爆炸
+            if(target != null) {	//撞到entity引起爆炸
             	//若攻擊到同陣營entity (ex: owner), 則傷害設為0 (但是依然觸發擊飛特效)
-            	if(EntityHelper.checkSameOwner(this.hostEntity.getOwner(), parHitEntity)) {
+            	if(EntityHelper.checkSameOwner((EntityLivingBase) this.hostEntity, target)) {
             		missileAtk = 0F;
             	}
             	
-            	//calc critical
-            	if(this.hostEntity != null && (this.rand.nextFloat() < this.hostEntity.getEffectEquip(ID.EF_CRI))) {
+            	//calc critical, only for type:ship
+            	if(this.hostEntity4 != null && (this.rand.nextFloat() < this.hostEntity4.getEffectEquip(ID.EF_CRI))) {
             		missileAtk *= 3F;
             		//spawn critical particle
             		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-                	CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this.hostEntity, 11, false), point);
+                	CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this.hostEntity4, 11, false), point);
             	}
             	
             	//若攻擊到玩家, 最大傷害固定為TNT傷害 (non-owner)
-            	if(parHitEntity instanceof EntityPlayer) {
+            	if(target instanceof EntityPlayer) {
             		missileAtk *= 0.25F;
             		
-            		//check friendly fire
-            		if(!ConfigHandler.friendlyFire) {
-            			missileAtk = 0F;
-            		}
-            		else if(missileAtk > 59F) {
+            		if(missileAtk > 59F) {
             			missileAtk = 59F;	//same with TNT
             		}
+            		
+            		//check friendly fire
+            		if(EntityHelper.checkOwnerIsPlayer((EntityLivingBase) this.hostEntity) && !ConfigHandler.friendlyFire) {
+            			missileAtk = 0F;
+            		}
             	}
-
+//LogHelper.info("DEBUG : missile onImpact "+target.getEntityId()+" "+hostEntity3.getEntityId()+" "+target+" "+hostEntity3);
         		//設定該entity受到的傷害
-            	isTargetHurt = parHitEntity.attackEntityFrom(DamageSource.causeMobDamage(this.hostEntity), missileAtk);
+            	isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage((EntityLivingBase) this.hostEntity), missileAtk);
         	    
             	//if attack success
         	    if(isTargetHurt) {
         	    	//calc kb effect
         	        if(this.kbValue > 0) {
-        	        	parHitEntity.addVelocity((double)(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue), 
+        	        	target.addVelocity((double)(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue), 
         	                   0.1D, (double)(MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue));
         	            motionX *= 0.6D;
         	            motionZ *= 0.6D;
@@ -330,47 +348,50 @@ public class EntityAbyssMissile extends Entity {
             }
             
             //計算範圍爆炸傷害: 判定bounding box內是否有可以吃傷害的entity
-            hitEntity = null;
+            EntityLivingBase hitEntity = null;
             AxisAlignedBB impactBox = this.boundingBox.expand(3.5D, 3.5D, 3.5D); 
             List hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, impactBox);
+            
             //搜尋list, 找出第一個可以判定的目標, 即傳給onImpact
             if(hitList != null && !hitList.isEmpty()) {
                 for(int i=0; i<hitList.size(); ++i) {
                 	missileAtk = this.atk;
                 	hitEntity = (EntityLivingBase)hitList.get(i);
                 	
-                	if(hitEntity.canBeCollidedWith() && this.ticksExisted > 10 &&
-                     	   !hitEntity.isEntityEqual(this.hostEntity) && 
-                     	   !hitEntity.isEntityEqual(this.hostEntity2)) {
-                    	//若攻擊到同陣營entity (ex: owner), 則傷害設為0 (但是依然觸發擊飛特效)
-                		if(EntityHelper.checkSameOwner(this.hostEntity.getOwner(), hitEntity)) {
-                			missileAtk = 0;
-                    	}
-//                		LogHelper.info("DEBUG : misile atk "+missileAtk+" "+hitEntity);
-                		
-                		//calc critical
-                		if(this.hostEntity != null && (this.rand.nextFloat() < this.hostEntity.getEffectEquip(ID.EF_CRI))) {
+                	//目標不能是自己 or 主人
+                	if(hitEntity.canBeCollidedWith() && this.ticksExisted > 10 && 
+                	   isNotHost(hitEntity.getEntityId())) {
+//LogHelper.info("DEBUG : missile AE "+hitEntity.getEntityId()+" "+hostEntity3.getEntityId()+" "+hitEntity+" "+hostEntity3);
+
+            			//calc critical, only for type:ship
+                		if(this.hostEntity4 != null && (this.rand.nextFloat() < this.hostEntity4.getEffectEquip(ID.EF_CRI))) {
                     		missileAtk *= 3F;
                     		//spawn critical particle
                     		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-                        	CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this.hostEntity, 11, false), point);
+                        	CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this.hostEntity4, 11, false), point);
+                    	}
+                		
+                		//若攻擊到同陣營entity (ex: owner), 則傷害設為0 (但是依然觸發擊飛特效)
+                		if(EntityHelper.checkSameOwner((EntityLivingBase) this.hostEntity, hitEntity)) {
+                    		missileAtk = 0F;
                     	}
                 		
                 		//若攻擊到玩家, 最大傷害固定為TNT傷害 (non-owner)
                     	if(hitEntity instanceof EntityPlayer) {
                     		missileAtk *= 0.25F;
                     		
-                    		//check friendly fire
-                    		if(!ConfigHandler.friendlyFire) {
-                    			missileAtk = 0F;
-                    		}
-                    		else if(missileAtk > 59F) {
+                    		if(missileAtk > 59F) {
                     			missileAtk = 59F;	//same with TNT
+                    		}
+                    		
+                    		//check friendly fire
+                    		if(EntityHelper.checkOwnerIsPlayer((EntityLivingBase) this.hostEntity) && !ConfigHandler.friendlyFire) {
+                    			missileAtk = 0F;
                     		}
                     	}
                     	
                 		//對entity造成傷害
-                		isTargetHurt = hitEntity.attackEntityFrom(DamageSource.causeMobDamage(this.hostEntity), missileAtk);
+                		isTargetHurt = hitEntity.attackEntityFrom(DamageSource.causeMobDamage((EntityLivingBase) this.hostEntity), missileAtk);
                 	    
                 		//if attack success
                 	    if(isTargetHurt) {
@@ -382,20 +403,19 @@ public class EntityAbyssMissile extends Entity {
                 	            motionZ *= 0.6D;
                 	        }             	 
                 	    }
-                	}
-                }
-            }          	
+                	}//end can be collided with
+                }//end hit target list for loop
+            }//end hit target list != null
   
             //send packet to client for display partical effect
             TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-//    		LogHelper.info("DEBUG : missile impact particle "+point.x+" "+point.y+" "+point.z);
             CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 2, false), point);
-//            CreatePacketS2C.sendS2CAttackParticle(this, 2);
+            
             this.setDead();
         }//end if server side
     }
 
-    //儲存entity的nbt
+	//儲存entity的nbt
     public void writeEntityToNBT(NBTTagCompound nbt) {
     	nbt.setTag("direction", this.newDoubleNBTList(new double[] {this.motionX, this.motionY, this.motionZ}));  
     	nbt.setFloat("atk", this.atk);

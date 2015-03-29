@@ -91,6 +91,8 @@ item.shincolle:shipegg5.name=驅逐NI級
 item.shincolle:shipegg11.name=重巡RI級
 item.shincolle:shipegg14.name=空母WO級
 item.shincolle:shipegg17.name=航空戰艦RE級
+item.shincolle:shipegg38.name=島風
+item.shincolle:shipegg238.name=島風 改
 
 # Entity
 entity.shincolle.EntityAirplane.name=深海棲艦戰
@@ -101,6 +103,8 @@ entity.shincolle.EntityDestroyerHa.name=驅逐HA級
 entity.shincolle.EntityDestroyerI.name=驅逐I級
 entity.shincolle.EntityDestroyerNi.name=驅逐NI級
 entity.shincolle.EntityDestroyerRo.name=驅逐RO級
+entity.shincolle.EntityDestroyerShimakaze.name=島風
+entity.shincolle.EntityDestroyerShimakazeBoss.name=島風 改
 entity.shincolle.EntityHeavyCruiserRi.name=重巡RI級
 
 # GUI: Ship Inventory Top
@@ -157,3 +161,6 @@ gui.shincolle:modernkit=右鍵使用使棲艦隨機屬性 +1
 gui.shincolle:repairgoddess=深海女神的怨念使棲艦不會被擊沈。
 gui.shincolle:ringText=結婚次數
 gui.shincolle:eggText=需求等級
+
+# Chat message
+chat.shincolle:bossshimakaze=島風 改 出現在水面上!

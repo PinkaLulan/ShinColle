@@ -107,6 +107,8 @@ public class ShipSpawnEgg extends Item {
   		list.add(new ItemStack(item, 1, ID.S_HeavyCruiserRI+2));
   		list.add(new ItemStack(item, 1, ID.S_CarrierWO+2));
   		list.add(new ItemStack(item, 1, ID.S_BattleshipRE+2));
+  		list.add(new ItemStack(item, 1, ID.S_DestroyerShimakaze+2));
+  		list.add(new ItemStack(item, 1, ID.S_DestroyerShimakaze+202));	//BOSS entity
   	}
   	
   	/** VANILLA SPAWN METHOD edited by Jabelar
@@ -146,6 +148,7 @@ public class ShipSpawnEgg extends Item {
   		entity.setPathToEntity((PathEntity)null);
   		entity.setAttackTarget((EntityLivingBase)null);
   		entity.func_152115_b(player.getUniqueID().toString());	//set owner uuid
+  		entity.setOwnerName(player.getDisplayName());
   		
   		//非指定ship egg, 則隨機骰屬性
 		if(itemstack.getItemDamage() > 1) {
@@ -198,60 +201,138 @@ public class ShipSpawnEgg extends Item {
 		}	
   	}
   	
-  	/** VANILLA SPAWN EGG onItemUse event (use item to block)
-     * Callback for item usage. If the item does something special on right clicking, he will have one of those. Return
-     * True if something happen and false if it don't. This is for ITEMS, not BLOCKS
+    /** VANILLA SPAWN EGG onItemRightClick event (use item to air)
+     * Called whenever this item is equipped and the right mouse button is pressed. Args: itemStack, world, entityPlayer
      */
     @Override
-    public boolean onItemUse(ItemStack itemstack, EntityPlayer player, World world, int par4, int par5, int par6, int par7, float par8, float par9, float par10) {
+    public ItemStack onItemRightClick(ItemStack itemstack, World world, EntityPlayer player) {
         
     	if(world.isRemote) {	//client side
-            return false;
+            return itemstack;
         }
-        else {					//server side
-        	//if creative mode = item not consume
-            if(!player.capabilities.isCreativeMode) {
-            	//cost exp if use specific egg
-                if(itemstack.getItemDamage() > 1 && itemstack.hasTagCompound()) {
-                	NBTTagCompound nbt = itemstack.getTagCompound();
-                	int costLevel = nbt.getIntArray("Attrs")[0] / 3;
-                	
-                	if(player.experienceLevel < costLevel) return false;
-                	else {
-                		player.experienceLevel = player.experienceLevel - costLevel;
-                	}
-                }
-                	
-                //item -1
-                --itemstack.stackSize;
-            }
-            
-            Block block = world.getBlock(par4, par5, par6);		//get spawn position
-            par4 += Facing.offsetsXForSide[par7];
-            par5 += Facing.offsetsYForSide[par7];
-            par6 += Facing.offsetsZForSide[par7];
-            double d0 = 0.0D;
+        else {						//server side     
+            MovingObjectPosition movingobjectposition = getMovingObjectPositionFromPlayer(world, player, true);
 
-            if(par7 == 1 && block.getRenderType() == 11) {			//type11 = fence
-                d0 = 0.5D;
+            if (movingobjectposition == null) {
+                return itemstack;
             }
-            
-            //spawn entity in front of player (1 block)
-            BasicEntityShip entity = (BasicEntityShip) spawnEntity(world, itemstack, par4 + 0.5D, par5 + d0, par6 + 0.5D);
+            else {
+                if(movingobjectposition.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+                    int i = movingobjectposition.blockX;
+                    int j = movingobjectposition.blockY;
+                    int k = movingobjectposition.blockZ;
 
-            if(entity != null) {
-            	//calc bonus point, set custom name and owner name
-            	initEntityAttribute(itemstack, player, entity);
-         	
-            	//for egg with nameTag
-                if(itemstack.hasDisplayName()) {
-                    entity.setCustomNameTag(itemstack.getDisplayName());    
-                }
-            }
+                    if(!world.canMineBlock(player, i, j, k)) {
+                        return itemstack;
+                    }
 
-            return true;
+                    if(!player.canPlayerEdit(i, j, k, movingobjectposition.sideHit, itemstack)) {
+                        return itemstack;
+                    }
+
+//                    if(world.getBlock(i, j, k) instanceof BlockLiquid) {
+                    	//if creative mode = item not consume
+                        if(!player.capabilities.isCreativeMode) {
+                        	//cost exp if use specific egg
+                            if(itemstack.getItemDamage() > 1 && itemstack.hasTagCompound()) {
+                            	NBTTagCompound nbt = itemstack.getTagCompound();
+                            	int costLevel = nbt.getIntArray("Attrs")[0] / 3;
+                            	
+                            	if(player.experienceLevel < costLevel) return itemstack;
+                            	else {
+                            		player.experienceLevel = player.experienceLevel - costLevel;
+                            	}
+                            }
+                            	
+                            //item -1
+                            --itemstack.stackSize;
+                        }
+                        
+                        //spawn entity in front of player (1 block)
+                        if(itemstack.getItemDamage() > 200) {	//BOSS egg
+                        	EntityLivingBase entity = (EntityLivingBase) spawnEntity(world, itemstack, i, j+1D, k);
+                        }
+                        else {									//normal egg
+                        	BasicEntityShip entity = (BasicEntityShip) spawnEntity(world, itemstack, i, j+1D, k);
+
+                            if(entity != null) {
+                            	//calc bonus point, set custom name and owner name
+                            	initEntityAttribute(itemstack, player, entity);
+                         	
+                            	//for egg with nameTag
+                                if(itemstack.hasDisplayName()) {
+                                    entity.setCustomNameTag(itemstack.getDisplayName());    
+                                }
+                            }
+                        }//end spawn entity
+//                    }//end position can spawn
+                }//end get position
+
+                return itemstack;
+            }//end else
         }
     }
+  	
+    
+//  	/** VANILLA SPAWN EGG onItemUse event (use item to block)
+//     * Callback for item usage. If the item does something special on right clicking, he will have one of those. Return
+//     * True if something happen and false if it don't. This is for ITEMS, not BLOCKS
+//     */
+//    @Override
+//    public boolean onItemUse(ItemStack itemstack, EntityPlayer player, World world, int par4, int par5, int par6, int par7, float par8, float par9, float par10) {
+//        
+//    	if(world.isRemote) {	//client side
+//            return false;
+//        }
+//        else {					//server side
+//        	//if creative mode = item not consume
+//            if(!player.capabilities.isCreativeMode) {
+//            	//cost exp if use specific egg
+//                if(itemstack.getItemDamage() > 1 && itemstack.hasTagCompound()) {
+//                	NBTTagCompound nbt = itemstack.getTagCompound();
+//                	int costLevel = nbt.getIntArray("Attrs")[0] / 3;
+//                	
+//                	if(player.experienceLevel < costLevel) return false;
+//                	else {
+//                		player.experienceLevel = player.experienceLevel - costLevel;
+//                	}
+//                }
+//                	
+//                //item -1
+//                --itemstack.stackSize;
+//            }
+//            
+//            Block block = world.getBlock(par4, par5, par6);		//get spawn position
+//            par4 += Facing.offsetsXForSide[par7];
+//            par5 += Facing.offsetsYForSide[par7];
+//            par6 += Facing.offsetsZForSide[par7];
+//            double d0 = 0.0D;
+//
+//            if(par7 == 1 && block.getRenderType() == 11) {			//type11 = fence
+//                d0 = 0.5D;
+//            }
+//            
+//            //spawn entity in front of player (1 block)
+//            if(itemstack.getItemDamage() > 200) {	//BOSS egg
+//            	EntityLivingBase entity = (EntityLivingBase) spawnEntity(world, itemstack, par4 + 0.5D, par5 + d0, par6 + 0.5D);
+//            }
+//            else {									//normal egg
+//            	BasicEntityShip entity = (BasicEntityShip) spawnEntity(world, itemstack, par4 + 0.5D, par5 + d0, par6 + 0.5D);
+//
+//                if(entity != null) {
+//                	//calc bonus point, set custom name and owner name
+//                	initEntityAttribute(itemstack, player, entity);
+//             	
+//                	//for egg with nameTag
+//                    if(itemstack.hasDisplayName()) {
+//                        entity.setCustomNameTag(itemstack.getDisplayName());    
+//                    }
+//                }
+//            }
+//
+//            return true;
+//        }
+//    }
      
     //display egg information
     @Override
