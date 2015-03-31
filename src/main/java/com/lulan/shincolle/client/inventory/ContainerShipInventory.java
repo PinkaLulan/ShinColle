@@ -33,7 +33,7 @@ public class ContainerShipInventory extends Container {
 	private int GuiKills, GuiExpCurrent, GuiNumAmmo, GuiNumAmmoHeavy, GuiNumGrudge, 
 	            GuiNumAirLight, GuiNumAirHeavy, GuiIsMarried,
 	            ButtonMelee, ButtonAmmoLight, ButtonAmmoHeavy, ButtonAirLight, ButtoAirHeavy,
-	            FollowMin, FollowMax, FleeHP, TarAI;
+	            FollowMin, FollowMax, FleeHP, TarAI, AuraEffect;
 	private float GuiCri, GuiDhit, GuiThit, GuiMiss;
 	
 	public ContainerShipInventory(InventoryPlayer invPlayer, BasicEntityShip entity1) {
@@ -172,6 +172,7 @@ public class ContainerShipInventory extends Container {
 		crafting.sendProgressBarUpdate(this, 14, this.entity.getStateMinor(ID.N.FollowMax));
 		crafting.sendProgressBarUpdate(this, 15, this.entity.getStateMinor(ID.N.FleeHP));
 		crafting.sendProgressBarUpdate(this, 16, this.entity.getStateMinor(ID.N.TargetAI));
+		crafting.sendProgressBarUpdate(this, 17, this.entity.getStateFlagI(ID.F.UseRingEffect));
 	}
 	
 	//偵測數值是否改變, 有改變時發送更新(此為server端偵測)
@@ -269,6 +270,11 @@ public class ContainerShipInventory extends Container {
                 icrafting.sendProgressBarUpdate(this, 16, getValue);
                 this.TarAI = getValue;
             }
+            getValue = this.entity.getStateFlagI(ID.F.UseRingEffect);
+            if(this.AuraEffect != getValue) {
+                icrafting.sendProgressBarUpdate(this, 17, getValue);
+                this.AuraEffect = getValue;
+            }
         }
     }
 	
@@ -326,6 +332,9 @@ public class ContainerShipInventory extends Container {
 			break;
 		case 16:
 			this.entity.setStateMinor(ID.N.TargetAI, updatedValue);
+			break;
+		case 17:
+			this.entity.setEntityFlagI(ID.F.UseRingEffect, updatedValue);
 			break;
 		}
     }

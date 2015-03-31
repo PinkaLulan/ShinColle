@@ -11,6 +11,7 @@ import com.lulan.shincolle.entity.BasicEntityAirplane;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.EntityAirplane;
 import com.lulan.shincolle.entity.EntityRensouhou;
+import com.lulan.shincolle.entity.EntityRensouhouS;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
 import com.lulan.shincolle.entity.IShipAttack;
 import com.lulan.shincolle.proxy.ClientProxy;
@@ -78,8 +79,19 @@ public class EntityHelper {
 			}
 		}
 		else if(host instanceof EntityRensouhou) {
-			//先取得airplane的owner(為一種Ship), 再取得該ship的owner(為一種EntityPlayer)
+			//先取得連裝砲的owner(為一種Ship), 再取得該ship的owner(為一種EntityPlayer)
 			EntityLivingBase owner = ((EntityRensouhou)host).getOwner();
+			
+			if(owner != null) {
+				return ((BasicEntityShip)owner).getOwner();
+			}
+			else {
+				return null;
+			}
+		}
+		else if(host instanceof EntityRensouhouS) {
+			//先取得連裝砲的owner(為一種Ship), 再取得該ship的owner(為一種EntityPlayer)
+			EntityLivingBase owner = ((EntityRensouhouS)host).getOwner();
 			
 			if(owner != null) {
 				return ((BasicEntityShip)owner).getOwner();
@@ -212,6 +224,9 @@ public class EntityHelper {
 				break;
 			case ID.B.ShipInv_TarAI:
 				entity.setStateMinor(ID.N.TargetAI, value);
+				break;
+			case ID.B.ShipInv_AuraEffect:
+				entity.setEntityFlagI(ID.F.UseRingEffect, value);
 				break;
 			}
 		}

@@ -176,15 +176,16 @@ public class ShipCalc {
     		shipList.add(new int[] {ID.S_DestroyerHA, 180});
     		shipList.add(new int[] {ID.S_DestroyerNI, 170});
     		
-    		if(totalMats >= 128) {	//>128 : LCruiser/HCruiser
+    		if(totalMats >= 128) {		//> 128 : LCruiser/HCruiser
     			shipList.add(new int[] {ID.S_HeavyCruiserRI, 50 + material[2] / 2});
     		}
 
     	}
     	else {							//large egg
     		shipList.add(new int[] {ID.S_CarrierWO, 300 + material[3] / 4});
+    		shipList.add(new int[] {ID.S_BattleshipTA, 300 + material[2] / 4});
     		
-    		if(totalMats >= 1600) {
+    		if(totalMats >= 1600) {		//>1600 hime/re-class
     			shipList.add(new int[] {ID.S_BattleshipRE, 100 + material[2] / 4});
     		}
     	}
@@ -236,6 +237,8 @@ public class ShipCalc {
   			return "shincolle.EntityHeavyCruiserRi";
   		case ID.S_CarrierWO:
   			return "shincolle.EntityCarrierWo";
+  		case ID.S_BattleshipTA:
+  			return "shincolle.EntityBattleshipTa";
   		case ID.S_BattleshipRE:
   			return "shincolle.EntityBattleshipRe";
   		case ID.S_DestroyerShimakaze:

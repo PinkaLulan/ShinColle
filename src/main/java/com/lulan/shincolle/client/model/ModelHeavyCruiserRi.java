@@ -318,7 +318,7 @@ public class ModelHeavyCruiserRi extends ModelBase {
     	GL11.glPushMatrix();
     	GL11.glEnable(GL11.GL_BLEND);			//開啟透明度模式
     	GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-    	GL11.glScalef(0.5F, 0.5F, 0.5F); 	
+    	GL11.glScalef(0.45F, 0.45F, 0.45F); 	
     	
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
     	

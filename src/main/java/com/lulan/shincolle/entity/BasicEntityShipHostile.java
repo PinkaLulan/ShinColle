@@ -155,11 +155,15 @@ public class BasicEntityShipHostile extends EntityMob implements IShipAttack, IS
 
 	@Override
 	public void setStateEmotion(int id, int value, boolean sync) {
-		if(id == 1) {
+		switch(id) {
+		case 1:
 			StateEmotion = (byte) value;
-		}
-		else {
+			break;
+		case 2:
 			StateEmotion2 = (byte) value;
+			break;
+		default:
+			break;
 		}
 		
 		if(sync && !worldObj.isRemote) {

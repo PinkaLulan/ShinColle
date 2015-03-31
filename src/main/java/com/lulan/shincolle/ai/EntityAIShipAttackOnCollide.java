@@ -75,6 +75,7 @@ public class EntityAIShipAttackOnCollide extends EntityAIBase {
 
     public boolean continueExecuting() {
         EntityLivingBase entitylivingbase = this.host.getAttackTarget();
+        
         return (entitylivingbase == null || !entitylivingbase.isEntityAlive()) ? false : 
         	   (!this.longMemory ? !this.host.getNavigator().noPath() : 
         	   this.host.isWithinHomeDistance(MathHelper.floor_double(entitylivingbase.posX), 
@@ -84,6 +85,7 @@ public class EntityAIShipAttackOnCollide extends EntityAIBase {
 
     public void startExecuting() {
         this.host.getNavigator().setPath(this.entityPathEntity, this.speedTowardsTarget);
+        this.host.getNavigator().setCanSwim(true);
         this.delayAttack = 0;
     }
 
@@ -104,11 +106,12 @@ public class EntityAIShipAttackOnCollide extends EntityAIBase {
         this.host.getLookHelper().setLookPositionWithEntity(entitylivingbase, 30.0F, 30.0F);
         
         double distTarget = this.host.getDistanceSq(entitylivingbase.posX, entitylivingbase.boundingBox.minY, entitylivingbase.posZ);
-        double distAttack = (double)(this.host.width * 2.0F * this.host.width * 2.0F + entitylivingbase.width);
+        double distAttack = (double)(this.host.width * 3.0F * this.host.width * 3.0F + entitylivingbase.width);
         
         --this.delayAttack;
 
-        if((this.longMemory || this.host.getEntitySenses().canSee(entitylivingbase)) && this.delayAttack <= 0 && (this.tarX == 0.0D && this.tarY == 0.0D && this.tarZ == 0.0D || entitylivingbase.getDistanceSq(this.tarX, this.tarY, this.tarZ) >= 1.0D || this.host.getRNG().nextFloat() < 0.05F)) {
+        //官方內建的水平移動AI
+        if((this.longMemory || this.host.getEntitySenses().canSee(entitylivingbase)) && this.delayAttack <= 0 && (this.tarX == 0.0D && this.tarY == 0.0D && this.tarZ == 0.0D || entitylivingbase.getDistanceSq(this.tarX, this.tarY, this.tarZ) >= 1.0D || this.host.getRNG().nextFloat() < 0.1F)) {
             this.tarX = entitylivingbase.posX;
             this.tarY = entitylivingbase.boundingBox.minY;
             this.tarZ = entitylivingbase.posZ;
@@ -137,21 +140,27 @@ public class EntityAIShipAttackOnCollide extends EntityAIBase {
             if(!this.host.getNavigator().tryMoveToEntityLiving(entitylivingbase, this.speedTowardsTarget)) {
                 this.delayAttack += 15;
             }
-            
-            //在水中時, 根據目標位置上下移動 (因floating ai導致不會自動下沉)
-            if(this.host.isInWater()) {
-            	double distY = this.tarY - this.host.posY;
-            	
-            	if(distY > 1D) {
-            		this.host.motionY = 0.2D;
-            	}
-            	else if(distY < 1D) {
-            		this.host.motionY = -0.2D;
-            	}
-            	else {
-            		this.host.motionY = 0D;
-            	}
-            }
+        }
+        
+        //在水中時, 根據目標位置上下移動
+        if(this.host.isInWater()) {
+        	LogHelper.info("DEBUG : melee water move");
+        	double distY = this.tarY - this.host.posY;
+        	
+        	if(distY > 1D) {
+        		this.host.motionY = 0.1D;
+        	}
+        	else if(distY < -1D) {
+        		this.host.motionY = -0.1D;
+        	}
+        	else {
+        		this.host.motionY = 0D;
+        	}
+        	
+        	//若水平撞到東西, 則嘗試跳跳
+    		if(this.host.isCollidedHorizontally) {
+    			this.host.motionY += 0.25D;
+    		}
         }
 
         this.attackTick = Math.max(this.attackTick - 1, 0);

@@ -52,6 +52,8 @@ public class ModEntity {
 //		createEntityGlobalID(EntityTest.class, "EntityTest", 0x20FF45, 0x0040FF);
 		
 		//register ship entity
+		createEntity(EntityBattleshipTa.class, "EntityBattleshipTa", modEntityID++);
+		createEntity(EntityRensouhouS.class, "EntityRensouhouS", modEntityID++);
 		createEntity(EntityBattleshipRe.class, "EntityBattleshipRe", modEntityID++);
 		createEntity(EntityCarrierWo.class, "EntityCarrierWo", modEntityID++);
 		createEntity(EntityDestroyerI.class, "EntityDestroyerI", modEntityID++);

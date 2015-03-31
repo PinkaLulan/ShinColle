@@ -25,7 +25,9 @@
     "ship-hurt": {
         "category": "hostile", "replace": true, "sounds": [
             "hurt01",
+            "hurt01",
             "hurt02",
+            "hurt03",
             "hurt03"
         ]
     },

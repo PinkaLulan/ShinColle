@@ -28,7 +28,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
-public class EntityRensouhou extends EntityLiving implements IShipEmotion, IShipAttack {
+public class EntityRensouhouS extends EntityLiving implements IShipEmotion, IShipAttack {
 	
 	protected BasicEntityShip host;  	//host target
 	protected EntityLivingBase target;	//onImpact target (for entity)
@@ -55,12 +55,12 @@ public class EntityRensouhou extends EntityLiving implements IShipEmotion, IShip
 	protected boolean headTilt;
 
 	
-    public EntityRensouhou(World world) {
+    public EntityRensouhouS(World world) {
 		super(world);
-		this.setSize(0.6F, 0.8F);
+		this.setSize(0.6F, 1.5F);
 	}
     
-    public EntityRensouhou(World world, BasicEntityShip host, EntityLivingBase target) {
+    public EntityRensouhouS(World world, BasicEntityShip host, EntityLivingBase target) {
 		super(world);
 		this.world = world;
         this.host = host;
@@ -84,7 +84,7 @@ public class EntityRensouhou extends EntityLiving implements IShipEmotion, IShip
            
         //設定發射位置
         this.posX = host.posX + rand.nextDouble() * 3D - 1.5D;
-        this.posY = host.posY + 0D;
+        this.posY = host.posY + 0.5D;
         this.posZ = host.posZ + rand.nextDouble() * 3D - 1.5D;
         this.setPosition(this.posX, this.posY, this.posZ);
  
@@ -101,7 +101,7 @@ public class EntityRensouhou extends EntityLiving implements IShipEmotion, IShip
     
     @Override
 	public float getEyeHeight() {
-		return this.height * 2F;
+		return this.height;
 	}
 	
 	//setup AI
@@ -166,8 +166,8 @@ public class EntityRensouhou extends EntityLiving implements IShipEmotion, IShip
 			double parH = this.posY - (int)this.posY;
 			
 			if(motX != 0 || motZ != 0) {
-				ParticleHelper.spawnAttackParticleAt(this.posX + motX*1.5D, this.posY, this.posZ + motZ*1.5D, 
-						-motX*0.5D, 0D, -motZ*0.5D, (byte)15);
+				ParticleHelper.spawnAttackParticleAt(this.posX + motX*1.5D, this.posY + 1D, this.posZ + motZ*1.5D, 
+						-motX*0.5D, 0D, -motZ*0.5D, (byte)17);
 			}
 		}
 		//server side
@@ -213,7 +213,7 @@ public class EntityRensouhou extends EntityLiving implements IShipEmotion, IShip
 					if(this.numAmmoHeavy < 0) this.numAmmoHeavy = 0;
 					
 					//連裝砲數量+1
-					if(((EntityDestroyerShimakaze)host).numRensouhou < 6) ((EntityDestroyerShimakaze)host).numRensouhou++;
+					if(((EntityBattleshipTa)host).numRensouhou < 6) ((EntityBattleshipTa)host).numRensouhou++;
 					
 					//歸還彈藥
 					host.setAmmoLight(host.getAmmoLight() + this.getAmmoLight());
@@ -231,7 +231,7 @@ public class EntityRensouhou extends EntityLiving implements IShipEmotion, IShip
 	}
 	
 	@Override
-	public void setStateEmotion(int id, int value, boolean sync) {	
+	public void setStateEmotion(int id, int value, boolean sync) {
 		switch(id) {
 		case 1:
 			StateEmotion = (byte) value;
@@ -652,3 +652,4 @@ public class EntityRensouhou extends EntityLiving implements IShipEmotion, IShip
 	
 
 }
+

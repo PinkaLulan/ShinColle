@@ -41,7 +41,7 @@ public class S2CEntitySync implements IMessage {
 	
 	//entity sync: 
 	//type 0: all attribute
-	//type 1: entity state only
+	//type 1: entity emotion only
 	//type 2: entity flag only
 	//type 3: entity minor only
 	public S2CEntitySync(BasicEntityShip entity, int type) {
@@ -102,6 +102,7 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateEmotion(ID.S.State, buf.readByte(), false);
 					entity.setStateEmotion(ID.S.Emotion, buf.readByte(), false);
 					entity.setStateEmotion(ID.S.Emotion2, buf.readByte(), false);
+					entity.setStateEmotion(ID.S.HPState, buf.readByte(), false);
 
 					entity.setBonusPoint(ID.HP, buf.readByte());
 					entity.setBonusPoint(ID.ATK, buf.readByte());
@@ -118,6 +119,7 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateFlag(ID.F.UseAmmoHeavy, buf.readBoolean());
 					entity.setStateFlag(ID.F.UseAirLight, buf.readBoolean());
 					entity.setStateFlag(ID.F.UseAirHeavy, buf.readBoolean());
+					entity.setStateFlag(ID.F.UseRingEffect, buf.readBoolean());
 					
 					entity.setEffectEquip(ID.EF_CRI, buf.readFloat());
 					entity.setEffectEquip(ID.EF_DHIT, buf.readFloat());
@@ -125,11 +127,12 @@ public class S2CEntitySync implements IMessage {
 					entity.setEffectEquip(ID.EF_MISS, buf.readFloat());
 				}
 				break;
-			case 1: //entity state only
+			case 1: //entity emotion only
 				{
 					entity.setStateEmotion(ID.S.State, buf.readByte(), false);
 					entity.setStateEmotion(ID.S.Emotion, buf.readByte(), false);
 					entity.setStateEmotion(ID.S.Emotion2, buf.readByte(), false);
+					entity.setStateEmotion(ID.S.HPState, buf.readByte(), false);
 				}
 				break;
 			case 2: //entity flag only
@@ -142,6 +145,7 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateFlag(ID.F.UseAmmoHeavy, buf.readBoolean());
 					entity.setStateFlag(ID.F.UseAirLight, buf.readBoolean());
 					entity.setStateFlag(ID.F.UseAirHeavy, buf.readBoolean());
+					entity.setStateFlag(ID.F.UseRingEffect, buf.readBoolean());
 				}
 				break;
 			case 3: //entity minor only
@@ -165,6 +169,7 @@ public class S2CEntitySync implements IMessage {
 					entity2e.setStateEmotion(ID.S.State, buf.readByte(), false);
 					entity2e.setStateEmotion(ID.S.Emotion, buf.readByte(), false);
 					entity2e.setStateEmotion(ID.S.Emotion2, buf.readByte(), false);
+					entity2e.setStateEmotion(ID.S.HPState, buf.readByte(), false);
 				}
 				break;
 			}
@@ -209,6 +214,7 @@ public class S2CEntitySync implements IMessage {
 				buf.writeByte(this.entity.getStateEmotion(ID.S.State));
 				buf.writeByte(this.entity.getStateEmotion(ID.S.Emotion));
 				buf.writeByte(this.entity.getStateEmotion(ID.S.Emotion2));
+				buf.writeByte(this.entity.getStateEmotion(ID.S.HPState));
 
 				buf.writeByte(this.entity.getBonusPoint(ID.HP));
 				buf.writeByte(this.entity.getBonusPoint(ID.ATK));
@@ -225,6 +231,7 @@ public class S2CEntitySync implements IMessage {
 				buf.writeBoolean(this.entity.getStateFlag(ID.F.UseAmmoHeavy));
 				buf.writeBoolean(this.entity.getStateFlag(ID.F.UseAirLight));
 				buf.writeBoolean(this.entity.getStateFlag(ID.F.UseAirHeavy));
+				buf.writeBoolean(this.entity.getStateFlag(ID.F.UseRingEffect));
 				
 				buf.writeFloat(this.entity.getEffectEquip(ID.EF_CRI));
 				buf.writeFloat(this.entity.getEffectEquip(ID.EF_DHIT));
@@ -239,6 +246,7 @@ public class S2CEntitySync implements IMessage {
 				buf.writeByte(this.entity.getStateEmotion(ID.S.State));
 				buf.writeByte(this.entity.getStateEmotion(ID.S.Emotion));
 				buf.writeByte(this.entity.getStateEmotion(ID.S.Emotion2));
+				buf.writeByte(this.entity.getStateEmotion(ID.S.HPState));
 			}
 			break;
 		case 2:	//entity flag only
@@ -252,7 +260,8 @@ public class S2CEntitySync implements IMessage {
 				buf.writeBoolean(this.entity.getStateFlag(ID.F.UseAmmoLight));
 				buf.writeBoolean(this.entity.getStateFlag(ID.F.UseAmmoHeavy));
 				buf.writeBoolean(this.entity.getStateFlag(ID.F.UseAirLight));
-				buf.writeBoolean(this.entity.getStateFlag(ID.F.UseAirHeavy));	
+				buf.writeBoolean(this.entity.getStateFlag(ID.F.UseAirHeavy));
+				buf.writeBoolean(this.entity.getStateFlag(ID.F.UseRingEffect));
 			}
 			break;
 		case 3:	//sync minor only
@@ -280,6 +289,7 @@ public class S2CEntitySync implements IMessage {
 				buf.writeByte(this.entity2e.getStateEmotion(ID.S.State));
 				buf.writeByte(this.entity2e.getStateEmotion(ID.S.Emotion));
 				buf.writeByte(this.entity2e.getStateEmotion(ID.S.Emotion2));
+				buf.writeByte(this.entity2e.getStateEmotion(ID.S.HPState));
 			}
 			break;
 		}

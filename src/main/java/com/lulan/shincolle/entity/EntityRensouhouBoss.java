@@ -85,9 +85,9 @@ public class EntityRensouhouBoss extends EntityMob implements IShipEmotion, IShi
         this.headTilt = false;
            
         //設定發射位置
-        this.posX = host2.posX + 0.5D;
+        this.posX = host2.posX + rand.nextDouble() * 6D - 3D;
         this.posY = host2.posY + 0.5D;
-        this.posZ = host2.posZ + 0.5D;
+        this.posZ = host2.posZ + rand.nextDouble() * 6D - 3D;
         this.setPosition(this.posX, this.posY, this.posZ);
  
 	    //設定基本屬性
@@ -216,11 +216,15 @@ public class EntityRensouhouBoss extends EntityMob implements IShipEmotion, IShi
 	
 	@Override
 	public void setStateEmotion(int id, int value, boolean sync) {
-		if(id == 1) {
+		switch(id) {
+		case 1:
 			StateEmotion = (byte) value;
-		}
-		else {
+			break;
+		case 2:
 			StateEmotion2 = (byte) value;
+			break;
+		default:
+			break;
 		}
 		
 		if(sync && !worldObj.isRemote) {

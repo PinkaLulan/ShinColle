@@ -90,9 +90,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 	protected int[] StateMinor;
 	/**equip effect: 0:critical 1:doubleHit 2:tripleHit 3:baseMiss*/
 	protected float[] EffectEquip;
-	/**EntityState: 0:HP State 1:Emotion 2:Emotion2*/
+	/**EntityState: 0:State 1:Emotion 2:Emotion2 3:HP State*/
 	protected byte[] StateEmotion;
-	/**EntityFlag: 0:canFloatUp 1:isMarried 2:noFuel 3:canMelee 4:canAmmoLight 5:canAmmoHeavy 6:canAirLight 7:canAirHeavy 8:headTilt(client only)*/
+	/**EntityFlag: 0:canFloatUp 1:isMarried 2:noFuel 3:canMelee 4:canAmmoLight 5:canAmmoHeavy 6:canAirLight 7:canAirHeavy 8:headTilt(client only) 9:canRingEffect*/
 	protected boolean[] StateFlag;
 	/**BonusPoint: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT*/
 	protected byte[] BonusPoint;
@@ -113,8 +113,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 		StateFinal = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F};
 		StateMinor = new int[] {1, 0, 0, 40, 0, 0, 0, 0, 0, 0, 2, 14, 35, 1};
 		EffectEquip = new float[] {0F, 0F, 0F, 0F};
-		StateEmotion = new byte[] {0, 0, 0};
-		StateFlag = new boolean[] {false, false, false, false, true, true, true, true, false};
+		StateEmotion = new byte[] {0, 0, 0, 0};
+		StateFlag = new boolean[] {false, false, false, false, true, true, true, true, false, true};
 		BonusPoint = new byte[] {0, 0, 0, 0, 0, 0};
 		TypeModify = new float[] {1F, 1F, 1F, 1F, 1F, 1F};
 		ModelPos = new float[] {0F, 0F, 0F, 50F};
@@ -200,11 +200,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 	
 	//setup target AI: par1: 0:passive 1:active
 	public void setAITargetList(int par1) {	
+		//passive target AI
 		if(par1 == 0) {
 			this.targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this));
 			this.targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this));
 			this.targetTasks.addTask(3, new EntityAIHurtByTarget(this, false));
 		}
+		//active target AI
 		else {
 			this.targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this));
 			this.targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this));
@@ -215,17 +217,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 
 	//clear AI
 	protected void clearAITasks() {
-//		LogHelper.info("DEBUG : ai clear1 "+tasks.taskEntries.size()+" "+this.getCustomNameTag());
 		tasks.taskEntries.clear();
-//		LogHelper.info("DEBUG : ai clear2 "+tasks.taskEntries.size()+" "+this.getCustomNameTag());
 	}
 	
 	//clear target AI
 	protected void clearAITargetTasks() {
-//		LogHelper.info("DEBUG : target ai clear1 "+targetTasks.taskEntries.size()+" "+this.getCustomNameTag());
 		this.setAttackTarget(null);
 		targetTasks.taskEntries.clear();
-//		LogHelper.info("DEBUG : target ai clear2 "+targetTasks.taskEntries.size()+" "+this.getCustomNameTag());
 	}
 	
 	//getter
@@ -1006,7 +1004,27 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 							-motX*0.5D, 0D, -motZ*0.5D, (byte)15);
 				}
 			}
-		}
+			
+			if(this.ticksExisted % 10 == 0) {
+				//generate HP state effect
+				switch(getStateEmotion(ID.S.HPState)) {
+				case ID.HPState.MINOR:
+					ParticleHelper.spawnAttackParticleAt(this.posX, this.posY + 0.7D, this.posZ, 
+							0D, 0D, 0D, (byte)4);
+					break;
+				case ID.HPState.MODERATE:
+					ParticleHelper.spawnAttackParticleAt(this.posX, this.posY + 0.7D, this.posZ, 
+							0D, 0D, 0D, (byte)5);
+					break;
+				case ID.HPState.HEAVY:
+					ParticleHelper.spawnAttackParticleAt(this.posX, this.posY + 0.7D, this.posZ, 
+							0D, 0D, 0D, (byte)7);
+					break;
+				default:
+					break;
+				}
+			}	
+		}//end client side
 	}
 
 	//check entity state every tick
@@ -1021,8 +1039,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
         		this.StateMinor[ID.N.ImmuneTime]--;
         	}
         	
-        	//sync client and reset AI after server start 1 sec
-        	if(ticksExisted == 20) {
+        	//sync client and reset AI after server start 10 ticks
+        	if(ticksExisted == 10) {
         		clearAITasks();
         		clearAITargetTasks();	//reset AI for get owner after loading NBT data
         		setAIList();
@@ -1047,39 +1065,55 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
         	
         	//check every 100 ticks
         	if(ticksExisted % 100 == 0) {
-        		//sync emotion every 5 sec
-        		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
-    			CommonProxy.channel.sendToAllAround(new S2CEntitySync(this, 1), point);
+        		float hpState = this.getHealth() / this.getMaxHealth();
+        		
+        		//check hp state
+        		if(hpState > 0.75F) {		//normal
+        			this.setStateEmotion(ID.S.HPState, ID.HPState.NORMAL, false);
+        		}
+        		else if(hpState > 0.5F){	//minor damage
+        			this.setStateEmotion(ID.S.HPState, ID.HPState.MINOR, false);
+        		}
+				else if(hpState > 0.25F){	//moderate damage
+					this.setStateEmotion(ID.S.HPState, ID.HPState.MODERATE, false);   			
+				}
+				else {						//heavy damage
+					this.setStateEmotion(ID.S.HPState, ID.HPState.HEAVY, false);
+				}
         		
         		//roll emtion: hungry > T_T > bored > O_O
         		if(getStateFlag(ID.F.NoFuel)) {
         			if(this.getStateEmotion(ID.S.Emotion) != ID.Emotion.HUNGRY) {
 //        				LogHelper.info("DEBUG : set emotion HUNGRY");
-	    				this.setStateEmotion(ID.S.Emotion, ID.Emotion.HUNGRY, true);
+	    				this.setStateEmotion(ID.S.Emotion, ID.Emotion.HUNGRY, false);
 	    			}
         		}
         		else {
-        			if(this.getHealth()/this.getMaxHealth() < 0.5F) {
+        			if(hpState < 0.5F) {
     	    			if(this.getStateEmotion(ID.S.Emotion) != ID.Emotion.T_T) {
 //    	    				LogHelper.info("DEBUG : set emotion T_T");
-    	    				this.setStateEmotion(ID.S.Emotion, ID.Emotion.T_T, true);
+    	    				this.setStateEmotion(ID.S.Emotion, ID.Emotion.T_T, false);
     	    			}			
     	    		}
         			else {
         				if(this.isSitting() && this.getRNG().nextInt(3) > 1) {	//30% for bored
         	    			if(this.getStateEmotion(ID.S.Emotion) != ID.Emotion.BORED) {
 //        	    				LogHelper.info("DEBUG : set emotion BORED");
-        	    				this.setStateEmotion(ID.S.Emotion, ID.Emotion.BORED, true);
+        	    				this.setStateEmotion(ID.S.Emotion, ID.Emotion.BORED, false);
         	    			}
         	    		}
         	    		else {	//back to normal face
         	    			if(this.getStateEmotion(ID.S.Emotion) != ID.Emotion.NORMAL) {
 //        	    				LogHelper.info("DEBUG : set emotion NORMAL");
-        	    				this.setStateEmotion(ID.S.Emotion, ID.Emotion.NORMAL, true);
+        	    				this.setStateEmotion(ID.S.Emotion, ID.Emotion.NORMAL, false);
         	    			}
         	    		}
-        			}     			
+        			}
         		}
+        		
+        		//sync emotion every 5 sec
+        		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
+    			CommonProxy.channel.sendToAllAround(new S2CEntitySync(this, 1), point);
 
         		//set air value
         		if(this.getAir() < 300) {
@@ -1108,8 +1142,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
         			this.setHealth(this.getHealth() + this.getMaxHealth() * 0.01F);
         		}
         	}
-        	//timekeeping
-        	//play entity attack sound
+        	
+        	//play timekeeping sound
         	if(ConfigHandler.timeKeeping) {
         		long time = this.worldObj.provider.getWorldTime();
             	int checkTime = (int)(time % 1000L);
@@ -1581,7 +1615,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 	
 	//eat grudge and change movement speed
 	protected void decrGrudgeNum(int par1) {
-		boolean PrevNoFuel = getStateFlag(ID.F.NoFuel);
+		LogHelper.info("DEBUG : check grudge num");
 		
 		if(par1 > 215) {	//max cost = 215 (calc from speed 1 moving 5 sec)
 			par1 = 215;
@@ -1622,23 +1656,27 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 		else {
 			setStateFlag(ID.F.NoFuel, false);
 		}
-
-		//get fuel, set AI
-		if(!getStateFlag(ID.F.NoFuel) && PrevNoFuel) {
-//			LogHelper.info("DEBUG : !NoFuel set AI");
-			clearAITasks();
-			clearAITargetTasks();
-			setAIList();
-			setAITargetList(getStateMinor(ID.N.TargetAI));
-			sendSyncPacket();
-		}
 		
 		//no fuel, clear AI
 		if(getStateFlag(ID.F.NoFuel)) {
-//			LogHelper.info("DEBUG : NoFuel clear AI");
-			clearAITasks();
-			clearAITargetTasks();
-			sendSyncPacket();
+			//原本有AI, 則清除之
+			if(this.targetTasks.taskEntries.size() > 0) {
+				LogHelper.info("DEBUG : No fuel, clear AI");
+				clearAITasks();
+				clearAITargetTasks();
+				sendSyncPacket();
+			}	
+		}
+		//has fuel, set AI
+		else {
+			if(this.targetTasks.taskEntries.size() < 2) {
+				LogHelper.info("DEBUG : Get fuel, set AI");
+				clearAITasks();
+				clearAITargetTasks();
+				setAIList();
+				setAITargetList(getStateMinor(ID.N.TargetAI));
+				sendSyncPacket();
+			}
 		}
 	}
 	
@@ -1715,8 +1753,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 		for(int i = ContainerShipInventory.SLOTS_EQUIP; i < ContainerShipInventory.SLOTS_TOTAL; i++) {
 			slotitem = this.ExtProps.slots[i];
 			if(slotitem != null && 
-			   slotitem.getItem().equals(parItem.getItem()) && 
-			   slotitem.getItemDamage() == parItem.getItemDamage()) {
+			    slotitem.getItem().equals(parItem.getItem()) && 
+			    slotitem.getItemDamage() == parItem.getItemDamage()) {
 				return i;	//found item
 			}		
 		}	

@@ -55,11 +55,11 @@ public class GuiShipInventory extends GuiContainer {
 	               Kills, Exp, Grudge, Owner, AmmoLight, AmmoHeavy, AirLight, AirHeavy, TarAI,
 	               overText, strCri, strDhit, strThit, strMissMin, strMissMax, strMissAir,
 	               marriage, followMin, followMax, fleeHP, followMinValue, followMaxValue,
-	               fleeHPValue, barPosValue;
+	               fleeHPValue, barPosValue, auraEffect;
 	private int hpCurrent, hpMax, color, showPage, showPageAI, pageIndicator, pageIndicatorAI, showAttack,
 				fMinPos, fMaxPos, fleeHPPos, barPos, mousePressBar;
 	private boolean switchMelee, switchLight, switchHeavy, switchAirLight, switchAirHeavy,
-				switchTarAI, mousePress;
+				switchTarAI, mousePress, switchAura;
 
 	//ship type icon array
 	private static final short[][] ICON_SHIPTYPE = {
@@ -224,6 +224,17 @@ public class GuiShipInventory extends GuiContainer {
         	}
         case 3:	{	//page 3
     		this.pageIndicatorAI = 183;
+    		
+    		//draw attack switch
+            this.switchAura = this.entity.getStateFlag(ID.F.UseRingEffect);
+            
+            if(this.switchAura) {
+            	drawTexturedModalRect(guiLeft+174, guiTop+132, 0, 214, 11, 11);
+            }
+            else {
+            	drawTexturedModalRect(guiLeft+174, guiTop+132, 11, 214, 11, 11);
+            }
+  
     		break;
     		}
         }//end AI page switch
@@ -564,7 +575,12 @@ public class GuiShipInventory extends GuiContainer {
 				}	
 			}
 			break;
-		case 3: {	//not used
+		case 3: {	//aura effect
+			//draw string
+			auraEffect = I18n.format("gui.shincolle:auraeffect");
+			
+			this.fontRendererObj.drawString(auraEffect, 187, 134, GuiHelper.pickColor(5));
+			
 			}
 			break;
 		}//end AI page switch
@@ -653,6 +669,10 @@ public class GuiShipInventory extends GuiContainer {
         	if(this.showPageAI == 1) {	//page 1: can melee button
         		this.switchMelee = this.entity.getStateFlag(ID.F.UseMelee);
         		CommonProxy.channel.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_Melee, getInverseInt(this.switchMelee)));
+        	}
+        	else if(this.showPageAI == 3) {	//page 3: apply aura effect
+        		this.switchAura = this.entity.getStateFlag(ID.F.UseRingEffect);
+        		CommonProxy.channel.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_AuraEffect, getInverseInt(this.switchAura)));
         	}
         	break;
         case 4:	//AI operation 1 

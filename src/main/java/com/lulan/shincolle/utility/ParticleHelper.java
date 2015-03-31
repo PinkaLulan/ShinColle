@@ -161,8 +161,8 @@ public class ParticleHelper {
 		//get target position
 		double ran1 = 0D;
 		double ran2 = 0D;
-
-//		GL11.glDepthMask(true);
+		double ran3 = 0D;
+		
 		//spawn particle
 		switch(type) {
 		case 1:		//largeexplode
@@ -187,11 +187,22 @@ public class ParticleHelper {
 	            		posZ + rand.nextFloat() * 2.0F - 1D, d0, d1, d2);
 	        }
 			break;
-		case 4: 	//happy villager
-			world.spawnParticle("happyVillager", posX, posY+2, posZ, 0.0D, 0.0D, 0.0D);
+		case 4: 	//smoke: for minor damage
+			for(int i=0; i<3; i++) {
+				ran1 = rand.nextFloat() - 0.5F;
+				ran2 = rand.nextFloat() - 0.5F;
+				ran3 = rand.nextFloat() - 0.5F;
+				world.spawnParticle("smoke", posX+ran1, posY+ran2, posZ+ran3, 0D, 0D, 0D);
+			}	
 			break;
-		case 5:		//smoke
-			world.spawnParticle("smoke", posX, posY+2, posZ, 0.0D, 0.0D, 0.0D);
+		case 5:		//flame+smoke: for moderate damage
+			for(int i=0; i<3; i++) {
+				ran1 = rand.nextFloat() - 0.5F;
+				ran2 = rand.nextFloat() - 0.5F;
+				ran3 = rand.nextFloat() - 0.5F;
+				world.spawnParticle("smoke", posX+ran1, posY+ran2, posZ+ran3, 0D, 0D, 0D);
+				world.spawnParticle("flame", posX+ran3, posY+ran2, posZ+ran1, 0D, 0D, 0D);
+			}
 			break;
 		case 6: 	//largesmoke
 			for(int i=0; i<20; i++) {
@@ -199,8 +210,14 @@ public class ParticleHelper {
 				world.spawnParticle("largesmoke", posX+lookX-0.5D+0.05D*i, posY+0.8D+ran1, posZ+lookZ-0.5D+0.05D*i, lookX*0.2D, 0.05D, lookZ*0.2D);
 			}	
 			break;
-		case 7: 	//angryVillager
-			world.spawnParticle("angryVillager", posX, posY+1, posZ, 0.0D, 0.0D, 0.0D);
+		case 7: 	//flame+large smoke: for heavy damage
+			for(int i=0; i<4; i++) {
+				ran1 = rand.nextFloat() - 0.5F;
+				ran2 = rand.nextFloat() - 0.5F;
+				ran3 = rand.nextFloat() - 0.5F;
+				world.spawnParticle("largesmoke", posX+ran1, posY+ran2, posZ+ran3, 0D, 0D, 0D);
+				world.spawnParticle("flame", posX+ran3, posY+ran2, posZ+ran1, 0D, 0D, 0D);
+			}
 			break;
 		case 8:	 	//flame
 			world.spawnParticle("flame", posX, posY-0.1, posZ, 0.0D, 0.0D, 0.0D);

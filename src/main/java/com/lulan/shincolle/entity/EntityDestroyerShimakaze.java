@@ -136,7 +136,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall {
   				
   				//apply ring effect
   				EntityPlayerMP player = EntityHelper.getOnlinePlayer(this.getOwner());
-  				if(getStateFlag(ID.F.IsMarried) && getStateMinor(ID.N.NumGrudge) > 0 && player != null && getDistanceSqToEntity(player) < 256D) {
+  				if(getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.N.NumGrudge) > 0 && player != null && getDistanceSqToEntity(player) < 256D) {
   					//potion effect: id, time, level
   	  	  			player.addPotionEffect(new PotionEffect(Potion.moveSpeed.id, 300, getStateMinor(ID.N.ShipLevel) / 25 + 1));
   				}

@@ -106,6 +106,7 @@ public class ShipSpawnEgg extends Item {
   		list.add(new ItemStack(item, 1, ID.S_DestroyerNI+2));
   		list.add(new ItemStack(item, 1, ID.S_HeavyCruiserRI+2));
   		list.add(new ItemStack(item, 1, ID.S_CarrierWO+2));
+  		list.add(new ItemStack(item, 1, ID.S_BattleshipTA+2));
   		list.add(new ItemStack(item, 1, ID.S_BattleshipRE+2));
   		list.add(new ItemStack(item, 1, ID.S_DestroyerShimakaze+2));
   		list.add(new ItemStack(item, 1, ID.S_DestroyerShimakaze+202));	//BOSS entity
@@ -143,6 +144,7 @@ public class ShipSpawnEgg extends Item {
 	 * @parm spawn egg item, player, entity
 	 */
   	private void initEntityAttribute(ItemStack itemstack, EntityPlayer player, BasicEntityShip entity) {
+  		LogHelper.info("DEBUG : init ship states");
   		//set init AI value and owner
   		entity.setTamed(true);
   		entity.setPathToEntity((PathEntity)null);
@@ -150,7 +152,7 @@ public class ShipSpawnEgg extends Item {
   		entity.func_152115_b(player.getUniqueID().toString());	//set owner uuid
   		entity.setOwnerName(player.getDisplayName());
   		
-  		//非指定ship egg, 則隨機骰屬性
+  		//指定ship egg, 讀取nbt來給屬性
 		if(itemstack.getItemDamage() > 1) {
 			NBTTagCompound nbt = itemstack.getTagCompound();
 			
@@ -182,6 +184,7 @@ public class ShipSpawnEgg extends Item {
 				entity.calcShipAttributes(entity.getShipID());
 			}
 		}
+		//非指定ship egg, 則隨機骰屬性
 		else {
 			//calc HP ATK DEF SPD MOV HIT bonus point
 	  		byte[] bonuspoint = new byte[6];	 
@@ -250,9 +253,11 @@ public class ShipSpawnEgg extends Item {
                         
                         //spawn entity in front of player (1 block)
                         if(itemstack.getItemDamage() > 200) {	//BOSS egg
+                        	LogHelper.info("DEBUG : use boss egg");
                         	EntityLivingBase entity = (EntityLivingBase) spawnEntity(world, itemstack, i, j+1D, k);
                         }
                         else {									//normal egg
+                        	LogHelper.info("DEBUG : use normal egg");
                         	BasicEntityShip entity = (BasicEntityShip) spawnEntity(world, itemstack, i, j+1D, k);
 
                             if(entity != null) {

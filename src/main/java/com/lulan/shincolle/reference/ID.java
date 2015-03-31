@@ -14,6 +14,7 @@ public class ID {
 		public static final byte ShipInv_FollowMax = 6;
 		public static final byte ShipInv_FleeHP = 7;
 		public static final byte ShipInv_TarAI = 8;
+		public static final byte ShipInv_AuraEffect = 9;
 		public static final byte Shipyard_Type = 0;
 		public static final byte Shipyard_InvMode = 1;
 		public static final byte Shipyard_SelectMat = 2;
@@ -83,6 +84,7 @@ public class ID {
 		public static final byte UseAirLight = 6;
 		public static final byte UseAirHeavy = 7;
 		public static final byte HeadTilt = 8;			//client only
+		public static final byte UseRingEffect = 9;
 	}
 	
 	//GUI ID
@@ -90,6 +92,14 @@ public class ID {
 		public static final byte SHIPINVENTORY = 0;
 		public static final byte SMALLSHIPYARD = 1;
 		public static final byte LARGESHIPYARD = 2;
+	}
+	
+	//Type ID: ship state2
+	public static final class HPState {
+		public static final byte NORMAL = 0;	//無受損
+		public static final byte MINOR = 1;		//小破
+		public static final byte MODERATE = 2;	//中破
+		public static final byte HEAVY = 3;		//大破
 	}
 	
 	//Array ID: Minor State
@@ -123,6 +133,7 @@ public class ID {
 		public static final byte State = 0;
 		public static final byte Emotion = 1;
 		public static final byte Emotion2 = 2;
+		public static final byte HPState = 3;
 	}
 	
 	//Type ID: ship type
@@ -150,16 +161,8 @@ public class ID {
 		public static final byte EQUIP03 = 50;			//艤裝狀態3
 		public static final byte EQUIP04 = 60;			//艤裝狀態4
 		public static final byte EQUIP05 = 70;			//艤裝狀態4
-		
-		//NYI
-//		public static final byte NORMAL_MINOR = 1;		//小破
-//		public static final byte NORMAL_MODERATE = 2;	//中破
-//		public static final byte NORMAL_HEAVY = 3;		//大破
-//		public static final byte EQUIP_MINOR = 21;
-//		public static final byte EQUIP_MODERATE = 22;
-//		public static final byte EQUIP_HEAVY = 23;
 	}
-	
+
 	//Array ID: StateEquip, StateFinal, BonusPoint, TypeModify
 	public static final byte HP = 0;
 	public static final byte ATK = 1;

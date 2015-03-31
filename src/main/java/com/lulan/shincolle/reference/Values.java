@@ -28,7 +28,7 @@ public class Values {
 
 	public static final float[] BaseDEF = 
 		{5F,   6F,   7F,   9F,   12F,  15F,  17F,  19F,
-		 22F,  24F,  25F,  20F,  21F,  23F,  24F,  26F,
+		 22F,  24F,  25F,  20F,  21F,  23F,  28F,  26F,
 		 10F,  7F,   8F,   10F,  40F,  35F,  30F,  28F,
 		 12F,  14F,  45F,  25F,  40F,  35F,  50F,  35F, 
 		 38F,  50F,  0F,   0F,   12F};
@@ -42,7 +42,7 @@ public class Values {
 
 	public static final float[] BaseMOV = 
 		{0.5F,  0.5F,  0.5F,  0.5F,  0.45F, 0.45F, 0.45F, 0.45F,
-		 0.42F, 0.42F, 0.42F, 0.32F, 0.4F,  0.32F, 0.36F, 0.36F,
+		 0.42F, 0.42F, 0.42F, 0.32F, 0.4F,  0.32F, 0.42F, 0.36F,
 		 0.3F,  0.3F,  0.3F,  0.28F, 0.45F, 0.3F,  0.42F, 0.3F,
 		 0.5F,  0.5F,  0.42F, 0.5F,  0.2F,  0.22F, 0.2F,  0.25F,
 		 0.3F,  0.42F, 0.45F, 0.42F, 0.6F};
@@ -84,7 +84,7 @@ public class Values {
 	
 	public static final float[] ModMOV = 	//mark for exists ship
 		{1F,    1F,    1F,    1F,    0F,    0F,    0F,    0F,
-		 0F,    1F,    0F,    0F,    1F,    0F,    0F,    1F,
+		 0F,    1F,    0F,    0F,    1F,    0F,    1F,    1F,
 		 0F,    0F,    0F,    0F,    0F,    0F,    0F,    0F,
 		 0F,    0F,    0F,    0F,    0F,    0F,    0F,    0F,
 		 0F,    0F,    0F,    0F,    1F};

@@ -90,6 +90,7 @@ item.shincolle:shipegg4.name=Destroyer Ha-Class
 item.shincolle:shipegg5.name=Destroyer Ni-Class
 item.shincolle:shipegg11.name=Heavy Cruiser Ri-Class
 item.shincolle:shipegg14.name=Standard Carrier Wo-Class
+item.shincolle:shipegg16.name=Battleship Ta-Class
 item.shincolle:shipegg17.name=Battleship Re-Class
 item.shincolle:shipegg38.name=Shimakaze
 item.shincolle:shipegg238.name=Shimakaze Kai
@@ -98,6 +99,7 @@ item.shincolle:shipegg238.name=Shimakaze Kai
 entity.shincolle.EntityAirplane.name=Abyssal Fighter
 entity.shincolle.EntityAirplaneTakoyaki.name=Abyssal Avenger Torpedo Bomber
 entity.shincolle.EntityBattleshipRe.name=Battleship Re-Class
+entity.shincolle.EntityBattleshipTa.name=Battleship Ta-Class
 entity.shincolle.EntityCarrierWo.name=Standard Carrier Wo-Class
 entity.shincolle.EntityDestroyerHa.name=Destroyer Ha-Class
 entity.shincolle.EntityDestroyerI.name=Destroyer I-Class
@@ -106,6 +108,9 @@ entity.shincolle.EntityDestroyerRo.name=Destroyer Ro-Class
 entity.shincolle.EntityDestroyerShimakaze.name=Shimakaze
 entity.shincolle.EntityDestroyerShimakazeBoss.name=Shimakaze Kai
 entity.shincolle.EntityHeavyCruiserRi.name=Heavy Cruiser Ri-Class
+entity.shincolle.EntityRensouhou.name=Rensouhou
+entity.shincolle.EntityRensouhouBoss.name=Rensouhou (Boss)
+entity.shincolle.EntityRensouhouS.name=Shinkei Rensouhou
 
 # GUI: Ship Inventory Top
 gui.shincolle:level=Level
@@ -142,6 +147,7 @@ gui.shincolle:canairheavyattack=Use H.Air
 gui.shincolle:followmin=Follow (Min)
 gui.shincolle:followmax=Follow (Max)
 gui.shincolle:fleehp=Flee HP%%
+gui.shincolle:auraeffect=Aura Effect
 gui.shincolle:targetAI=Passive?
 
 # GUI: Shipyard

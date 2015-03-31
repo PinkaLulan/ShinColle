@@ -90,6 +90,7 @@ item.shincolle:shipegg4.name=驅逐HA級
 item.shincolle:shipegg5.name=驅逐NI級
 item.shincolle:shipegg11.name=重巡RI級
 item.shincolle:shipegg14.name=空母WO級
+item.shincolle:shipegg16.name=戰艦TA級
 item.shincolle:shipegg17.name=航空戰艦RE級
 item.shincolle:shipegg38.name=島風
 item.shincolle:shipegg238.name=島風 改
@@ -98,6 +99,7 @@ item.shincolle:shipegg238.name=島風 改
 entity.shincolle.EntityAirplane.name=深海棲艦戰
 entity.shincolle.EntityAirplaneTakoyaki.name=深海復讐艦攻
 entity.shincolle.EntityBattleshipRe.name=航空戰艦RE級
+entity.shincolle.EntityBattleshipTa.name=戰艦TA級
 entity.shincolle.EntityCarrierWo.name=空母WO級
 entity.shincolle.EntityDestroyerHa.name=驅逐HA級
 entity.shincolle.EntityDestroyerI.name=驅逐I級
@@ -106,6 +108,9 @@ entity.shincolle.EntityDestroyerRo.name=驅逐RO級
 entity.shincolle.EntityDestroyerShimakaze.name=島風
 entity.shincolle.EntityDestroyerShimakazeBoss.name=島風 改
 entity.shincolle.EntityHeavyCruiserRi.name=重巡RI級
+entity.shincolle.EntityRensouhou.name=連裝砲
+entity.shincolle.EntityRensouhouBoss.name=連裝砲 (Boss)
+entity.shincolle.EntityRensouhouS.name=深海連裝砲
 
 # GUI: Ship Inventory Top
 gui.shincolle:level=等級
@@ -142,6 +147,7 @@ gui.shincolle:canairheavyattack=重型艦載機
 gui.shincolle:followmin=跟隨最短距離
 gui.shincolle:followmax=跟隨最長距離
 gui.shincolle:fleehp=逃跑血量(%%)
+gui.shincolle:auraeffect=主人強化效果
 gui.shincolle:targetAI=被動攻擊
 
 # GUI: Shipyard

@@ -198,8 +198,8 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
 		        	//在液體中, 採直線前進
 		        	if(this.host.getShipDepth() > 0D) {
 		        		//額外加上y軸速度, getPathToXYZ對空氣跟液體方塊無效, 因此y軸速度要另外加
-		        		if(this.host.getShipDepth() > 0.7D && this.host.getShipDepth() < 5D) {  //如果接近水面, 則維持浮在水面
-		        			this.motY = 0.15F;
+		        		if(this.host.getShipDepth() > 0.5D && this.host.getShipDepth() < 5D) {  //如果接近水面, 則維持浮在水面
+		        			this.motY = 0.1F;
 		        		}
 		        		else if(this.distY > 2D) {		//若沒有接近水面, 對方位置較高, 則上浮
 		        			this.motY = 0.2F;
