@@ -67,7 +67,7 @@ public class EntityHeavyCruiserRi extends BasicEntityShipSmall {
 	
 	public EntityHeavyCruiserRi(World world) {
 		super(world);
-		this.setSize(0.9F, 1.7F);	//碰撞大小 跟模型大小無關
+		this.setSize(0.9F, 1.6F);	//碰撞大小 跟模型大小無關
 		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityHeavyCruiserRi.name"));
 		this.ShipType = ID.ShipType.HEAVY_CRUISER;
 		this.ShipID = ID.S_HeavyCruiserRI;
@@ -80,7 +80,7 @@ public class EntityHeavyCruiserRi extends BasicEntityShipSmall {
 	//for morph
 	@Override
 	public float getEyeHeight() {
-		return this.height * 1.06F;
+		return this.height * 1.1F;
 	}
 	
 	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc
@@ -154,19 +154,31 @@ public class EntityHeavyCruiserRi extends BasicEntityShipSmall {
 		//use cake to change state
 		if(itemstack != null) {
 			if(itemstack.getItem() == Items.cake) {
-				switch(getStateEmotion(ID.S.State)) {
-				case ID.State.NORMAL:
-					setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
-					break;
-				case ID.State.EQUIP00:
-					setStateEmotion(ID.S.State, ID.State.EQUIP01, true);
-					break;
-				case ID.State.EQUIP01:
-					setStateEmotion(ID.S.State, ID.State.EQUIP02, true);
-					break;
-				case ID.State.EQUIP02:
-					setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-					break;
+				if(player.isSneaking()) {
+					switch(getStateEmotion(ID.S.State2)) {
+					case ID.State.NORMAL_2:
+						setStateEmotion(ID.S.State2, ID.State.EQUIP00_2, true);
+						break;
+					case ID.State.EQUIP00_2:
+						setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
+						break;	
+					default:
+						setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
+						break;
+					}
+				}
+				else {
+					switch(getStateEmotion(ID.S.State)) {
+					case ID.State.NORMAL:
+						setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+						break;
+					case ID.State.EQUIP00:
+						setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+						break;
+					default:
+						setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+						break;
+					}
 				}
 				return true;
 			}
@@ -175,6 +187,11 @@ public class EntityHeavyCruiserRi extends BasicEntityShipSmall {
 		super.interact(player);
 		return false;
   	}
+    
+    @Override
+	public int getKaitaiType() {
+		return 0;
+	}
 	
 
 }

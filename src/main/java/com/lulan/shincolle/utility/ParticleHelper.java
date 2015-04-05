@@ -2,8 +2,15 @@ package com.lulan.shincolle.utility;
 
 import java.util.Random;
 
-import org.lwjgl.opengl.GL11;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
 
+import com.lulan.shincolle.client.particle.EntityFX91Type;
+import com.lulan.shincolle.client.particle.EntityFXChi;
 import com.lulan.shincolle.client.particle.EntityFXLaser;
 import com.lulan.shincolle.client.particle.EntityFXSpray;
 import com.lulan.shincolle.client.particle.EntityFXTexts;
@@ -11,12 +18,6 @@ import com.lulan.shincolle.proxy.ClientProxy;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.MathHelper;
-import net.minecraft.world.World;
 
 /**粒子特效處理class
  * 包含呼叫特效, 旋轉特效位置(NxNxN旋轉), 
@@ -26,12 +27,13 @@ public class ParticleHelper {
 	private static World world = ClientProxy.getClientWorld();
 	private static Random rand = new Random();
 	
+	
 	/**ROTATE PARTICLE POSITION (NxNxN)
 	 * in:原始座標, 邊長, 以及要轉的面向 	out:轉完的新位置
 	 * 現階段沒有做上下翻轉, 所以y值不會變動
 	 * f = face = 0,4:north  1,5:east  2,6:south  3,7:west
 	 */
-	public static double[] rotateForBlock(double x, double y, double z, int f, int len) {
+	public static double[] rotateParticleByFace(double x, double y, double z, int f, int len) {
 		double[] newParm = new double[3];
 		newParm[1] = y;
 		
@@ -65,21 +67,17 @@ public class ParticleHelper {
 	 * entity專用的特效位置旋轉方法, 因為entity才有yaw跟pitch參數, 可做到較細緻轉換
 	 * 由於模型是以Z軸正向轉X軸負向為正角度, 且Z軸正向為0度, 因此座標參數為(z,y,x)
 	 */
-	public static float[] rotateForEntity(float z, float y, float x, float yaw, float pitch, float scale) {
+	public static float[] rotateParticleByYaw(float z, float y, float x, float yaw, float pitch, float scale) {
 		float cosYaw = MathHelper.cos(yaw);
 		float sinYaw = MathHelper.sin(yaw);
 		float cosPitch = MathHelper.cos(pitch);
 		float sinPitch = MathHelper.sin(pitch);
 		float[] newPos = new float[] {z, y, x};
-//		LogHelper.info("DEBUG : cos Yaw = "+cosYaw);
-//		LogHelper.info("DEBUG : sin Yaw = "+sinYaw);
 		
 		//計算水平旋轉: X+Z
 		newPos[0] = z * cosYaw + x * sinYaw;
 		newPos[2] = x * cosYaw - z * sinYaw;
-		//計算垂直旋轉
-//		newPos[1] = y * cosPitch * cosPitch - newPos[0] * sinPitch + newPos[2] * cosPitch * sinPitch;
-		
+		//計算垂直旋轉		
 		newPos[0] *= scale;
 //		newPos[1] *= scale;
 		newPos[2] *= scale;
@@ -88,14 +86,32 @@ public class ParticleHelper {
 	}
 	
 	/**ROTATE PARTICLE FOR ENTITY (Z AXIS)
-	 * 針對entity的Z軸做旋轉
+	 * 針對entity的某一軸做旋轉, 角度單位為RAD
+	 * 注意entity前後為Z軸, 左右為X軸
 	 */
-	public static float[] rotateForEntityZaxis(float x, float y, float zdeg, float scale) {
-		float cosZdeg = MathHelper.cos(zdeg);
-		float sinZdeg = MathHelper.sin(zdeg);
+	public static float[] rotateParticleByAxis(float z, float x, float rad, float scale) {
+		float cosD = MathHelper.cos(rad);
+		float sinD = MathHelper.sin(rad);
 		float[] newPos = new float[] {0F, 0F};
-//		LogHelper.info("DEBUG : cos Zdeg = "+cosZdeg);
-//		LogHelper.info("DEBUG : sin Zdeg = "+sinZdeg);
+		
+		//計算水平旋轉: X+Z
+		newPos[0] = z * cosD + x * sinD;
+		newPos[1] = x* cosD - z * sinD;
+		
+		newPos[0] *= scale;
+		newPos[1] *= scale;
+		
+		return newPos;
+	}
+	
+	/**ROTATE PARTICLE FOR ENTITY (Z AXIS)
+	 * 針對entity的某一軸做旋轉
+	 */
+	public static float[] rotateParticleByLook(float x, float y, float lookX, float lookY, float scale) {		
+		float[] degree = EntityHelper.getLookDegree(lookX, 0, lookY);
+		float cosZdeg = MathHelper.cos(degree[0]);
+		float sinZdeg = MathHelper.sin(degree[0]);
+		float[] newPos = new float[] {0F, 0F};
 		
 		//計算水平旋轉: X+Z
 		newPos[0] = x * cosZdeg + y * sinZdeg;
@@ -162,6 +178,9 @@ public class ParticleHelper {
 		double ran1 = 0D;
 		double ran2 = 0D;
 		double ran3 = 0D;
+		float[] newPos1;
+		float[] newPos2;
+		float degYaw = 0F;
 		
 		//spawn particle
 		switch(type) {
@@ -189,34 +208,34 @@ public class ParticleHelper {
 			break;
 		case 4: 	//smoke: for minor damage
 			for(int i=0; i<3; i++) {
-				ran1 = rand.nextFloat() - 0.5F;
-				ran2 = rand.nextFloat() - 0.5F;
-				ran3 = rand.nextFloat() - 0.5F;
-				world.spawnParticle("smoke", posX+ran1, posY+ran2, posZ+ran3, 0D, 0D, 0D);
-			}	
+				ran1 = rand.nextFloat() * lookX - lookX / 2D;
+				ran2 = rand.nextFloat() * lookX - lookX / 2D;
+				ran3 = rand.nextFloat() * lookX - lookX / 2D;
+				world.spawnParticle("smoke", posX+ran1, posY+ran2, posZ+ran3, 0D, lookY, 0D);
+			}
 			break;
 		case 5:		//flame+smoke: for moderate damage
 			for(int i=0; i<3; i++) {
-				ran1 = rand.nextFloat() - 0.5F;
-				ran2 = rand.nextFloat() - 0.5F;
-				ran3 = rand.nextFloat() - 0.5F;
-				world.spawnParticle("smoke", posX+ran1, posY+ran2, posZ+ran3, 0D, 0D, 0D);
-				world.spawnParticle("flame", posX+ran3, posY+ran2, posZ+ran1, 0D, 0D, 0D);
+				ran1 = rand.nextFloat() * lookX - lookX / 2D;
+				ran2 = rand.nextFloat() * lookX - lookX / 2D;
+				ran3 = rand.nextFloat() * lookX - lookX / 2D;
+				world.spawnParticle("smoke", posX+ran1, posY+ran2, posZ+ran3, 0D, lookY, 0D);
+				world.spawnParticle("flame", posX+ran3, posY+ran2, posZ+ran1, 0D, lookY, 0D);
 			}
 			break;
 		case 6: 	//largesmoke
 			for(int i=0; i<20; i++) {
 				ran1 = rand.nextFloat() - 0.5F;
 				world.spawnParticle("largesmoke", posX+lookX-0.5D+0.05D*i, posY+0.8D+ran1, posZ+lookZ-0.5D+0.05D*i, lookX*0.2D, 0.05D, lookZ*0.2D);
-			}	
+			}
 			break;
 		case 7: 	//flame+large smoke: for heavy damage
 			for(int i=0; i<4; i++) {
-				ran1 = rand.nextFloat() - 0.5F;
-				ran2 = rand.nextFloat() - 0.5F;
-				ran3 = rand.nextFloat() - 0.5F;
+				ran1 = rand.nextFloat() * lookX - lookX / 2D;
+				ran2 = rand.nextFloat() * lookX - lookX / 2D;
+				ran3 = rand.nextFloat() * lookX - lookX / 2D;
 				world.spawnParticle("largesmoke", posX+ran1, posY+ran2, posZ+ran3, 0D, 0D, 0D);
-				world.spawnParticle("flame", posX+ran3, posY+ran2, posZ+ran1, 0D, 0D, 0D);
+				world.spawnParticle("flame", posX+ran3, posY+ran2, posZ+ran1, 0D, 0.05D, 0D);
 			}
 			break;
 		case 8:	 	//flame
@@ -277,8 +296,98 @@ public class ParticleHelper {
             		posX, posY, posZ, lookX, lookY, lookZ, 1.0F, 0.0F, 0.0F, 0.8F);
         	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray4);
 			break;
+		case 19: 	//double largesmoke for 14~20 inch cannon
+			//計算煙霧位置
+			degYaw = EntityHelper.getLookDegree(lookX, 0D, lookZ)[0];
+			newPos1 = ParticleHelper.rotateParticleByAxis(0F, (float)lookY, (degYaw % 360) / 57.2957F, 1F);
+			newPos2 = ParticleHelper.rotateParticleByAxis(0F, (float)-lookY, (degYaw % 360) / 57.2957F, 1F);
+			
+			for(int i=0; i<12; i++) {
+				ran1 = rand.nextFloat() - 0.5F;
+				world.spawnParticle("largesmoke", posX+lookX-0.5D+0.05D*i+newPos1[1], posY+0.8D+ran1, posZ+lookZ-0.5D+0.05D*i+newPos1[0], lookX*0.2D, 0.05D, lookZ*0.2D);
+				world.spawnParticle("largesmoke", posX+lookX-0.5D+0.05D*i+newPos2[1], posY+0.8D+ran1, posZ+lookZ-0.5D+0.05D*i+newPos2[0], lookX*0.2D, 0.05D, lookZ*0.2D);
+			}
+			break;
+		case 20: 	//smoke: for nagato equip
+			for(int i=0; i<3; i++) {
+				world.spawnParticle("smoke", posX, posY+i*0.1D, posZ, lookX, lookY, lookZ);
+			}
+			break;
+		case 21:	//Type 91 AP Fist: phase 4 hit particle
+			//draw speed blur
+			EntityFXLaser particleLaser2 = new EntityFXLaser(world, 
+			          posX, posY, posZ, lookX, lookY, lookZ, 4F, 1);
+			Minecraft.getMinecraft().effectRenderer.addEffect(particleLaser2);
+			EntityFXLaser particleLaser3 = new EntityFXLaser(world, 
+			          posX, posY+0.4D, posZ, lookX, lookY+0.4D, lookZ, 4F, 1);
+			Minecraft.getMinecraft().effectRenderer.addEffect(particleLaser3);
+			EntityFXLaser particleLaser4 = new EntityFXLaser(world, 
+			          posX, posY+0.8D, posZ, lookX, lookY+0.8D, lookZ, 4F, 1);
+			Minecraft.getMinecraft().effectRenderer.addEffect(particleLaser4);
+			
+			//draw hit particle
+			for(int i = 0; i < 20; ++i) {
+				newPos1 = rotateParticleByAxis(1, 0, 6.28F / 20F * i, 1);
+				//motionY傳入4, 表示為特殊設定
+				EntityFXSpray particleSpray5 = new EntityFXSpray(world, 
+						lookX, lookY+0.3D, lookZ, newPos1[0]*0.4D, 4D, newPos1[1]*0.4D, 1.0F, 0F, 0F, 1.0F);
+	        	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray5);
+			}
+			
+			//draw hit text
+			EntityFX91Type particleSpray6 = new EntityFX91Type(world, 
+					lookX, lookY+2.5D, lookZ, 0.6F);
+        	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray6);
+			break;
+		case 22:	//Type 91 AP Fist: phase 1,3 particle
+			for(int i = 0; i < 20; ++i) {
+				newPos1 = rotateParticleByAxis((float)lookX, 0, 6.28F / 20F * i, 1);
+				//motionY傳入4, 表示為特殊設定
+				EntityFXSpray particleSpray7 = new EntityFXSpray(world, 
+						posX+newPos1[0]*1.8D, posY+1.2D+lookY, posZ+newPos1[1]*1.8D, -newPos1[0]*0.06D, 0D, -newPos1[1]*0.06D, 1.0F, 1.0F, 1.0F, 0.5F);
+	        	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray7);
+			}
+			break;
+		case 23:	//Type 91 AP Fist: phase 2 particle
+			for(int i = 0; i < 20; ++i) {
+				newPos1 = rotateParticleByAxis((float)lookX, 0, 6.28F / 20F * i, 1);
+				//motionY傳入4, 表示為特殊設定
+				EntityFXSpray particleSpray8 = new EntityFXSpray(world, 
+						posX, posY+0.3D+lookY, posZ, newPos1[0]*0.15D, 4D, newPos1[1]*0.15D, 1.0F, 1.0F, 1.0F, 0.5F);
+	        	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray8);
+			}
+			break;
+		case 24: 	//smoke: for nagato BOSS equip
+			for(int i=0; i<3; i++) {
+				world.spawnParticle("largesmoke", posX, posY+i*0.3D, posZ, lookX, lookY, lookZ);
+			}
+			break;
 		default:
 			break;		
+		}
+	}
+	
+	/**Spawn particle at entity position
+	 * @parm world, posX, posY, posZ, particleID
+	 */
+	@SideOnly(Side.CLIENT)
+	public static void spawnAttackParticleAtEntity(Entity ent, double par1, double par2, double par3, byte type) {
+		//get target position
+		double ran1 = 0D;
+		double ran2 = 0D;
+		double ran3 = 0D;
+		float[] newPos1;
+		float[] newPos2;
+		float degYaw = 0F;
+		
+		//spawn particle
+		switch(type) {
+		case 1:		//氣彈特效 par1:scale par2:type
+			EntityFXChi particleChi1 = new EntityFXChi(world, ent, (float)par1, (int)par2);
+        	Minecraft.getMinecraft().effectRenderer.addEffect(particleChi1);
+			break;
+		default:
+			break;
 		}
 	}
 

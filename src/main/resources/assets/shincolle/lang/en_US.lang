@@ -92,12 +92,16 @@ item.shincolle:shipegg11.name=Heavy Cruiser Ri-Class
 item.shincolle:shipegg14.name=Standard Carrier Wo-Class
 item.shincolle:shipegg16.name=Battleship Ta-Class
 item.shincolle:shipegg17.name=Battleship Re-Class
-item.shincolle:shipegg38.name=Shimakaze
-item.shincolle:shipegg238.name=Shimakaze Kai
+item.shincolle:shipegg38.name=Destroyer Shimakaze
+item.shincolle:shipegg238.name=Destroyer Shimakaze Kai
+item.shincolle:shipegg39.name=Battleship Nagato
+item.shincolle:shipegg239.name=Battleship Nagato Kai
 
 # Entity
 entity.shincolle.EntityAirplane.name=Abyssal Fighter
 entity.shincolle.EntityAirplaneTakoyaki.name=Abyssal Avenger Torpedo Bomber
+entity.shincolle.EntityBattleshipNGT.name=Battleship Nagato
+entity.shincolle.EntityBattleshipNGTBoss.name=Battleship Nagato Kai
 entity.shincolle.EntityBattleshipRe.name=Battleship Re-Class
 entity.shincolle.EntityBattleshipTa.name=Battleship Ta-Class
 entity.shincolle.EntityCarrierWo.name=Standard Carrier Wo-Class
@@ -105,11 +109,11 @@ entity.shincolle.EntityDestroyerHa.name=Destroyer Ha-Class
 entity.shincolle.EntityDestroyerI.name=Destroyer I-Class
 entity.shincolle.EntityDestroyerNi.name=Destroyer Ni-Class
 entity.shincolle.EntityDestroyerRo.name=Destroyer Ro-Class
-entity.shincolle.EntityDestroyerShimakaze.name=Shimakaze
-entity.shincolle.EntityDestroyerShimakazeBoss.name=Shimakaze Kai
+entity.shincolle.EntityDestroyerShimakaze.name=Destroyer Shimakaze
+entity.shincolle.EntityDestroyerShimakazeBoss.name=Destroyer Shimakaze Kai
 entity.shincolle.EntityHeavyCruiserRi.name=Heavy Cruiser Ri-Class
 entity.shincolle.EntityRensouhou.name=Rensouhou
-entity.shincolle.EntityRensouhouBoss.name=Rensouhou (Boss)
+entity.shincolle.EntityRensouhouBoss.name=Rensouhou Kai
 entity.shincolle.EntityRensouhouS.name=Shinkei Rensouhou
 
 # GUI: Ship Inventory Top
@@ -169,4 +173,5 @@ gui.shincolle:ringText=Marriages
 gui.shincolle:eggText=Require Level
 
 # Chat message
-chat.shincolle:bossshimakaze=Shimakaze Kai Walks on the Water!
+chat.shincolle:bossshimakaze=Destroyer Shimakaze Kai Walks on the Water!
+chat.shincolle:bossnagato=Battleship Nagato Kai Walks on the Water!

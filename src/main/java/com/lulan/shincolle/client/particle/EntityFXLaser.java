@@ -1,21 +1,17 @@
 package com.lulan.shincolle.client.particle;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
+
 import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.LogHelper;
 
-import cpw.mods.fml.relauncher.ReflectionHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EffectRenderer;
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
 
 
 /**LASER PARTICLE
@@ -43,7 +39,26 @@ public class EntityFXLaser extends EntityFX {
         this.tarX = tarX;
         this.tarY = tarY;
         this.tarZ = tarZ;
-        this.particleMaxAge = 11; 
+        
+        switch(type) {
+        case 0:		//re-class laser
+        	this.particleMaxAge = 11;
+        	this.particleMaxAge = 6;
+        	this.particleRed = 1F;
+        	this.particleGreen = 1F;
+        	this.particleBlue = 1F;
+        	this.particleAlpha = 1F;
+        	break;
+        case 1:		//NGT speed blur
+        	this.particleMaxAge = 11;
+        	this.particleAge = 4;
+        	this.particleRed = 1F;
+        	this.particleGreen = 0F;
+        	this.particleBlue = 0F;
+        	this.particleAlpha = 1F;
+        	break;
+        }
+        
     }
 
     public void renderParticle(Tessellator tess, float ticks, float par3, float par4, float par5, float par6, float par7) {	
@@ -71,6 +86,7 @@ public class EntityFXLaser extends EntityFX {
       
         //start tess
         tess.startDrawingQuads();
+        tess.setColorRGBA_F(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha);
         //注意4個點形成的面只有正面會貼上貼圖, 若玩家在該面背面會看不到正面貼圖, 因此要畫兩面共8個點
         //要使玩家看到正面, 4個座標add順序必須為: 右下 -> 右上 -> 左上 -> 左下
         //add front plane

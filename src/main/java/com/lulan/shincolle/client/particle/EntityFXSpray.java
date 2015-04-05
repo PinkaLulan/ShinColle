@@ -40,6 +40,11 @@ public class EntityFXSpray extends EntityFX {
         this.Scale = this.particleScale;
         this.particleMaxAge = 40;
         this.noClip = false;
+        
+        if(motionY >= 4D) {
+        	this.motionY = 0D;
+        	this.Scale = 15F;
+        }
 
     }
     

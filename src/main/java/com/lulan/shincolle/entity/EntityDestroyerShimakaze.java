@@ -67,13 +67,13 @@ import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 
-public class EntityDestroyerShimakaze extends BasicEntityShipSmall {
+public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IUseRensouhou {
 
 	public int numRensouhou;
 	
 	public EntityDestroyerShimakaze(World world) {
 		super(world);
-		this.setSize(0.8F, 1.7F);	//碰撞大小 跟模型大小無關
+		this.setSize(0.8F, 1.8F);	//碰撞大小 跟模型大小無關
 		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityDestroyerShimakaze.name"));
 		this.ShipType = ID.ShipType.DESTROYER;
 		this.ShipID = ID.S_DestroyerShimakaze;
@@ -151,13 +151,31 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall {
 		//use cake to change state
 		if(itemstack != null) {
 			if(itemstack.getItem() == Items.cake) {
-				switch(getStateEmotion(ID.S.State)) {
-				case ID.State.NORMAL:
-					setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
-					break;
-				case ID.State.EQUIP00:
-					setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-					break;			
+				if(player.isSneaking()) {
+					switch(getStateEmotion(ID.S.State2)) {
+					case ID.State.NORMAL_2:
+						setStateEmotion(ID.S.State2, ID.State.EQUIP00_2, true);
+						break;
+					case ID.State.EQUIP00_2:
+						setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
+						break;	
+					default:
+						setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
+						break;
+					}
+				}
+				else {
+					switch(getStateEmotion(ID.S.State)) {
+					case ID.State.NORMAL:
+						setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+						break;
+					case ID.State.EQUIP00:
+						setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+						break;
+					default:
+						setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+						break;
+					}
 				}
 				return true;
 			}
@@ -200,8 +218,14 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall {
   		
 		//spawn airplane
         if(target instanceof EntityLivingBase) {
-        	EntityRensouhou rensoho = new EntityRensouhou(this.worldObj, this, (EntityLivingBase)target);
-            this.worldObj.spawnEntityInWorld(rensoho);
+        	if(this.getStateEmotion(ID.S.State2) > ID.State.NORMAL_2) {
+        		EntityRensouhouS rensoho2 = new EntityRensouhouS(this.worldObj, this, (EntityLivingBase)target);
+                this.worldObj.spawnEntityInWorld(rensoho2);
+        	}
+        	else {
+        		EntityRensouhou rensoho1 = new EntityRensouhou(this.worldObj, this, (EntityLivingBase)target);
+                this.worldObj.spawnEntityInWorld(rensoho1);
+        	}
             return true;
         }
 
@@ -292,6 +316,21 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall {
         this.worldObj.spawnEntityInWorld(missile5);
         
         return true;
+	}
+  	
+  	@Override
+	public int getKaitaiType() {
+		return 0;
+	}
+  	
+  	@Override
+	public int getNumRensouhou() {
+		return this.numRensouhou;
+	}
+
+	@Override
+	public void setNumRensouhou(int num) {
+		this.numRensouhou = num;
 	}
 
 

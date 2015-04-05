@@ -635,6 +635,26 @@ public class EntityRensouhouBoss extends EntityMob implements IShipEmotion, IShi
 		return this.getAttackTarget();
 	}
 	
+	@Override
+	public boolean getIsRiding() {
+		return false;
+	}
+
+	@Override
+	public boolean getIsSprinting() {
+		return false;
+	}
+
+	@Override
+	public boolean getIsSitting() {
+		return false;
+	}
+
+	@Override
+	public boolean getIsSneaking() {
+		return false;
+	}
+	
 
 }
 

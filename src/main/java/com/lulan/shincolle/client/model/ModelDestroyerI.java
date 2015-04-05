@@ -269,7 +269,7 @@ public class ModelDestroyerI extends ModelBase {
     super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
 
     float angleZ = MathHelper.cos(f2*0.125F);
-       
+    
     EntityDestroyerI ent = (EntityDestroyerI)entity;
     
     isKisaragi(ent);   

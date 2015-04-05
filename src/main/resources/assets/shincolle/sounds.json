@@ -253,6 +253,24 @@
         "category": "hostile", "replace": true, "sounds": [
         	"kaitai"
         ]
+    },
+    
+    "ship-ap_phase1": {
+        "category": "hostile", "replace": true, "sounds": [
+        	"ap_p1"
+        ]
+    },
+    
+    "ship-ap_phase2": {
+        "category": "hostile", "replace": true, "sounds": [
+        	"ap_p2"
+        ]
+    },
+    
+    "ship-ap_attack": {
+        "category": "hostile", "replace": true, "sounds": [
+        	"ap_attack"
+        ]
     }
     
 }

@@ -6,6 +6,7 @@ import com.lulan.shincolle.entity.IShipEmotion;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.MathHelper;
 
@@ -28,6 +29,11 @@ public class ModelRensouhouS extends ModelBase {
     public ModelRenderer Tooth01;
     public ModelRenderer HeadCannon1;
     public ModelRenderer HeadCannon2;
+    public ModelRenderer GlowBodyMain;
+    public ModelRenderer GlowHeadBase;
+    public ModelRenderer GlowHead;
+    public ModelRenderer GlowTailJaw1;
+    public ModelRenderer GlowTailHead2;
 
     public ModelRensouhouS() {
         this.textureWidth = 64;
@@ -89,16 +95,36 @@ public class ModelRensouhouS extends ModelBase {
         this.TailJaw1.addChild(this.Tube03);
         this.BodyMain.addChild(this.HeadBase);
         this.TailJaw1.addChild(this.Tube01);
-        this.TailHead2.addChild(this.HeadCannon1);
-        this.HeadBase.addChild(this.TailJaw1);
-        this.TailJaw1.addChild(this.Tooth02);
-        this.Head.addChild(this.TailHead2);
-        this.Head.addChild(this.Tooth01);
-        this.TailJaw1.addChild(this.Tube02);
-        this.TailHead2.addChild(this.HeadCannon2);
+        this.HeadBase.addChild(this.TailJaw1);  
+        this.Head.addChild(this.TailHead2);  
+        this.TailJaw1.addChild(this.Tube02);     
         this.HeadBase.addChild(this.Head);
         this.HeadBase.addChild(this.TailHeadCR1);
         this.HeadBase.addChild(this.TailHeadCL1);
+        
+        //發光支架
+        this.GlowBodyMain = new ModelRenderer(this, 0, 0);
+        this.GlowBodyMain.setRotationPoint(0.0F, 0.0F, 0.0F);
+        this.GlowHeadBase = new ModelRenderer(this, 0, 0);
+        this.GlowHeadBase.setRotationPoint(0.0F, 0.0F, 9.0F);
+        this.setRotateAngle(GlowHeadBase, -0.13962634015954636F, -3.141592653589793F, 0.0F);
+        this.GlowHead = new ModelRenderer(this, 0, 0);
+        this.GlowHead.setRotationPoint(0.0F, -8.5F, 4.0F);
+        this.setRotateAngle(GlowHead, 0.17453292519943295F, 0.0F, 0.0F);
+        this.GlowTailJaw1 = new ModelRenderer(this, 0, 0);
+        this.GlowTailJaw1.setRotationPoint(0.0F, 0.0F, 5.5F);
+        this.setRotateAngle(GlowTailJaw1, -0.3142F, 0.0F, 0.0F);
+        this.GlowTailHead2 = new ModelRenderer(this, 0, 0);
+        this.GlowTailHead2.setRotationPoint(0.0F, -1.0F, 6.5F);
+        
+        this.GlowBodyMain.addChild(this.GlowHeadBase);
+        this.GlowHeadBase.addChild(this.GlowHead);
+        this.GlowHeadBase.addChild(this.GlowTailJaw1);
+        this.GlowHead.addChild(this.GlowTailHead2);
+        this.GlowHead.addChild(this.Tooth01);
+        this.GlowTailJaw1.addChild(this.Tooth02);
+        this.GlowTailHead2.addChild(this.HeadCannon1);
+        this.GlowTailHead2.addChild(this.HeadCannon2);
     }
     
     public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z) {
@@ -117,7 +143,14 @@ public class ModelRensouhouS extends ModelBase {
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
     	this.BodyMain.render(f5);
     	
-    	GL11.glDisable(GL11.GL_BLEND);  	
+    	GL11.glDisable(GL11.GL_BLEND);
+    	
+    	//亮度設為240
+    	GL11.glDisable(GL11.GL_LIGHTING);
+    	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
+    	this.GlowBodyMain.render(f5);
+    	GL11.glEnable(GL11.GL_LIGHTING);
+    	
     	GL11.glPopMatrix();
     }
     
@@ -126,6 +159,8 @@ public class ModelRensouhouS extends ModelBase {
 		super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
 		  
 		IShipEmotion ent = (IShipEmotion)entity;
+		
+		setGlowRotation();
 		  
 		GL11.glTranslatef(0F, 1F, 0F);
 		float angleX = MathHelper.cos(f2 * 0.1F);
@@ -139,8 +174,15 @@ public class ModelRensouhouS extends ModelBase {
 		//攻擊動作    
 	    if(ent.getAttackTime() > 0) {
 	    	this.TailJaw1.rotateAngleX = angleX * 0.3F - 0.8F;
-	    }
-		
+	    }	
     }
+    
+    //設定模型發光部份的rotation
+    private void setGlowRotation() {
+		this.GlowTailJaw1.rotateAngleX = this.TailJaw1.rotateAngleX;
+		this.GlowTailJaw1.rotateAngleY = this.TailJaw1.rotateAngleY;
+		this.GlowTailJaw1.rotateAngleZ = this.TailJaw1.rotateAngleZ;
+    }
+    
 }
 

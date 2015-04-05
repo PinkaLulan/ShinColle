@@ -245,6 +245,10 @@ public class ShipCalc {
   			return "shincolle.EntityDestroyerShimakaze";
   		case ID.S_DestroyerShimakaze+200:
   			return "shincolle.EntityDestroyerShimakazeBoss";
+  		case ID.S_BattleshipNagato:
+  			return "shincolle.EntityBattleshipNGT";
+  		case ID.S_BattleshipNagato+200:
+  			return "shincolle.EntityBattleshipNGTBoss";
   		default:
   			return "shincolle.EntityDestroyerI";
   		}	

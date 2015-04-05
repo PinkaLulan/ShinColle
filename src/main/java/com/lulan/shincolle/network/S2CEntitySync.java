@@ -72,7 +72,7 @@ public class S2CEntitySync implements IMessage {
 			this.entity2e = (IShipEmotion) this.entity2;
 		}
 
-		if(entity != null) {
+		if(entity2 != null) {
 			switch(type) {
 			case 0:	//sync all attr
 				{
@@ -100,9 +100,11 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateFinal(ID.ATK_AH, buf.readFloat());
 					
 					entity.setStateEmotion(ID.S.State, buf.readByte(), false);
+					entity.setStateEmotion(ID.S.State2, buf.readByte(), false);
 					entity.setStateEmotion(ID.S.Emotion, buf.readByte(), false);
 					entity.setStateEmotion(ID.S.Emotion2, buf.readByte(), false);
 					entity.setStateEmotion(ID.S.HPState, buf.readByte(), false);
+					entity.setStateEmotion(ID.S.Phase, buf.readByte(), false);
 
 					entity.setBonusPoint(ID.HP, buf.readByte());
 					entity.setBonusPoint(ID.ATK, buf.readByte());
@@ -130,9 +132,11 @@ public class S2CEntitySync implements IMessage {
 			case 1: //entity emotion only
 				{
 					entity.setStateEmotion(ID.S.State, buf.readByte(), false);
+					entity.setStateEmotion(ID.S.State2, buf.readByte(), false);
 					entity.setStateEmotion(ID.S.Emotion, buf.readByte(), false);
 					entity.setStateEmotion(ID.S.Emotion2, buf.readByte(), false);
 					entity.setStateEmotion(ID.S.HPState, buf.readByte(), false);
+					entity.setStateEmotion(ID.S.Phase, buf.readByte(), false);
 				}
 				break;
 			case 2: //entity flag only
@@ -167,9 +171,11 @@ public class S2CEntitySync implements IMessage {
 			case 4: //IShipEmotion sync emtion
 				{
 					entity2e.setStateEmotion(ID.S.State, buf.readByte(), false);
+					entity2e.setStateEmotion(ID.S.State2, buf.readByte(), false);
 					entity2e.setStateEmotion(ID.S.Emotion, buf.readByte(), false);
 					entity2e.setStateEmotion(ID.S.Emotion2, buf.readByte(), false);
 					entity2e.setStateEmotion(ID.S.HPState, buf.readByte(), false);
+					entity2e.setStateEmotion(ID.S.Phase, buf.readByte(), false);
 				}
 				break;
 			}
@@ -212,9 +218,11 @@ public class S2CEntitySync implements IMessage {
 				buf.writeFloat(this.entity.getStateFinal(ID.ATK_AH));
 				
 				buf.writeByte(this.entity.getStateEmotion(ID.S.State));
+				buf.writeByte(this.entity.getStateEmotion(ID.S.State2));
 				buf.writeByte(this.entity.getStateEmotion(ID.S.Emotion));
 				buf.writeByte(this.entity.getStateEmotion(ID.S.Emotion2));
 				buf.writeByte(this.entity.getStateEmotion(ID.S.HPState));
+				buf.writeByte(this.entity.getStateEmotion(ID.S.Phase));
 
 				buf.writeByte(this.entity.getBonusPoint(ID.HP));
 				buf.writeByte(this.entity.getBonusPoint(ID.ATK));
@@ -244,9 +252,11 @@ public class S2CEntitySync implements IMessage {
 				buf.writeByte(1);	//type 1
 				buf.writeInt(this.entity.getEntityId());
 				buf.writeByte(this.entity.getStateEmotion(ID.S.State));
+				buf.writeByte(this.entity.getStateEmotion(ID.S.State2));
 				buf.writeByte(this.entity.getStateEmotion(ID.S.Emotion));
 				buf.writeByte(this.entity.getStateEmotion(ID.S.Emotion2));
 				buf.writeByte(this.entity.getStateEmotion(ID.S.HPState));
+				buf.writeByte(this.entity.getStateEmotion(ID.S.Phase));
 			}
 			break;
 		case 2:	//entity flag only
@@ -287,9 +297,11 @@ public class S2CEntitySync implements IMessage {
 				buf.writeByte(4);	//type 1
 				buf.writeInt(this.entity2.getEntityId());
 				buf.writeByte(this.entity2e.getStateEmotion(ID.S.State));
+				buf.writeByte(this.entity2e.getStateEmotion(ID.S.State2));
 				buf.writeByte(this.entity2e.getStateEmotion(ID.S.Emotion));
 				buf.writeByte(this.entity2e.getStateEmotion(ID.S.Emotion2));
 				buf.writeByte(this.entity2e.getStateEmotion(ID.S.HPState));
+				buf.writeByte(this.entity2e.getStateEmotion(ID.S.Phase));
 			}
 			break;
 		}

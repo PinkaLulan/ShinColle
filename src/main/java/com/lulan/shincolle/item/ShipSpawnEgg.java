@@ -110,6 +110,8 @@ public class ShipSpawnEgg extends Item {
   		list.add(new ItemStack(item, 1, ID.S_BattleshipRE+2));
   		list.add(new ItemStack(item, 1, ID.S_DestroyerShimakaze+2));
   		list.add(new ItemStack(item, 1, ID.S_DestroyerShimakaze+202));	//BOSS entity
+  		list.add(new ItemStack(item, 1, ID.S_BattleshipNagato+2));
+  		list.add(new ItemStack(item, 1, ID.S_BattleshipNagato+202));	//BOSS entity
   	}
   	
   	/** VANILLA SPAWN METHOD edited by Jabelar
@@ -172,7 +174,6 @@ public class ShipSpawnEgg extends Item {
 				}
 				
 				//load bonus point
-				entity.setShipLevel(attrs[0], false);
 				entity.setBonusPoint(ID.HP, (byte)attrs[1]);
 				entity.setBonusPoint(ID.ATK, (byte)attrs[2]);
 				entity.setBonusPoint(ID.DEF, (byte)attrs[3]);
@@ -180,8 +181,11 @@ public class ShipSpawnEgg extends Item {
 				entity.setBonusPoint(ID.MOV, (byte)attrs[5]);
 				entity.setBonusPoint(ID.HIT, (byte)attrs[6]);
 				entity.setEntityFlagI(ID.F.IsMarried, attrs[7]);
-				
-				entity.calcShipAttributes(entity.getShipID());
+
+				entity.setShipLevel(attrs[0], true);
+			}
+			else {
+				entity.setShipLevel(1, true);
 			}
 		}
 		//非指定ship egg, 則隨機骰屬性
@@ -199,8 +203,7 @@ public class ShipSpawnEgg extends Item {
 	  		entity.setBonusPoint(ID.HIT, bonuspoint[ID.HIT]);
 	  		
 	  		//calc ship attribute and save to nbt: hp atk def ...
-	  		LogHelper.info("DEBUG : spawn egg: set ship attribute");
-	  		entity.calcShipAttributes(entity.getShipID());
+	  		entity.setShipLevel(1, true);
 		}	
   	}
   	

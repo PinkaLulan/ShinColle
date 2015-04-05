@@ -194,23 +194,30 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
 		        if(distSq < (double)this.rangeSq && onSight) {
 		            this.host.getNavigator().clearPathEntity();
 		        }
-		        else {	//目標移動, 則繼續追擊	
-		        	//在液體中, 採直線前進
-		        	if(this.host.getShipDepth() > 0D) {
-		        		//額外加上y軸速度, getPathToXYZ對空氣跟液體方塊無效, 因此y軸速度要另外加
-		        		if(this.host.getShipDepth() > 0.5D && this.host.getShipDepth() < 5D) {  //如果接近水面, 則維持浮在水面
-		        			this.motY = 0.1F;
-		        		}
-		        		else if(this.distY > 2D) {		//若沒有接近水面, 對方位置較高, 則上浮
+		        else {	//目標移動, 則繼續追擊
+		        	//額外加上y軸速度, getPathToXYZ對空氣跟液體方塊無效, 因此y軸速度要另外加
+		        	
+	        		if(this.host.getShipDepth() > 0.55D) {
+	        			if(MathHelper.abs((float)distY) < 4F && this.host.getShipDepth() < 4D) {  //如果接近水面, 則維持浮在水面
+	        				LogHelper.info("DEBUG : move AAAAAAAAAAAAAAA");
+		        			this.motY = 0.08F;
+	        			}
+	        			else if(this.distY > 2D) {		//若沒有接近水面, 對方位置較高, 則上浮
+		        			LogHelper.info("DEBUG : move BBBBBBBBBBBBBBB");
 		        			this.motY = 0.2F;
 		        		}
 		        		else if(this.distY <= -2D) {	//若沒有接近水面, 對方位置較低, 則下沉
+		        			LogHelper.info("DEBUG : move CCCCCCCCCCCCCCC");
 		        			this.motY = -0.2F;
 		        		}
 		        		else {
+		        			LogHelper.info("DEBUG : move DDDDDDDDDDDDDDD");
 		        			this.motY = 0F;
 		        		}
-		  		
+	        		}	
+	        		
+		        	//在液體中, 採直線前進
+		        	if(this.host.isInWater()) {
 		        		//若直線可視, 則直接直線移動
 		        		if(this.host.getEntitySenses().canSee(this.attackTarget)) {
 		        			double speed = this.host.getStateFinal(ID.MOV);

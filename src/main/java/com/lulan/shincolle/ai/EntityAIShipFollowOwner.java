@@ -49,7 +49,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
 
     //有owner且目標超過max dist時觸發AI, 觸發後此方法不再執行, 改為持續執行cont exec
     public boolean shouldExecute() {
-    	if(!this.ThePet.isSitting() && !this.ThePet.getLeashed()) {
+    	if(!ThePet.isSitting() && !ThePet.getLeashed() && !ThePet.getStateFlag(ID.F.NoFuel)) {
     		EntityLivingBase OwnerEntity = this.ThePet.getOwner();
 
             //get owner distance
@@ -171,13 +171,13 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
         	
         	//每cd到找一次路徑
         	if(this.findCooldown <= 0) {
-    			this.findCooldown = 10;
+    			this.findCooldown = 20;
 
             	if(!this.PetPathfinder.tryMoveToEntityLiving(this.TheOwner, 1D)) {
-            		LogHelper.info("DEBUG : AI try move fail, teleport entity");
+            		LogHelper.info("DEBUG : follow AI: fail to move, teleport entity");
             		if(this.distSq > this.maxDistSq) {
             			//相同dim才傳送
-            			LogHelper.info("DEBUG : Ai entity dim "+ThePet.dimension+" "+TheOwner.dimension);
+            			LogHelper.info("DEBUG : follow AI: entity dimension "+ThePet.dimension+" "+TheOwner.dimension);
             			if(this.ThePet.dimension == this.TheOwner.dimension) {
             				this.ThePet.setLocationAndAngles(this.TheOwner.posX, this.TheOwner.posY + 0.5D, this.TheOwner.posZ, this.ThePet.rotationYaw, this.ThePet.rotationPitch);
                         	this.PetPathfinder.clearPathEntity();

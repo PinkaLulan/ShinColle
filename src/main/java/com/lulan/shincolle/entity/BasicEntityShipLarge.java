@@ -32,12 +32,15 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip {
 	public int getNumAircraftLight() {
 		return StateMinor[ID.N.NumAirLight];
 	}
+	
 	public int getNumAircraftHeavy() {
 		return StateMinor[ID.N.NumAirHeavy];
 	}
+	
 	public boolean hasAirLight() {
 		return StateMinor[ID.N.NumAirLight] > 0;
 	}
+	
 	public boolean hasAirHeavy() {
 		return StateMinor[ID.N.NumAirHeavy] > 0;
 	}
@@ -53,6 +56,7 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip {
 			if(getNumAircraftLight() < 0) StateMinor[ID.N.NumAirLight] = 0;
 		}
 	}
+	
 	public void setNumAircraftHeavy(int par1) {
 		if(this.worldObj.isRemote) {	//client端沒有max值可以判定, 因此直接設定即可
 			StateMinor[ID.N.NumAirHeavy] = par1;
@@ -78,7 +82,9 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip {
 			//每一段時間回復一隻艦載機
 			delayAircraft--;
 			if(this.delayAircraft <= 0) {
-				delayAircraft = (int)(100F / (this.getStateFinal(ID.SPD)));
+				delayAircraft = (int)(100F / (this.getStateFinal(ID.SPD)));	
+				if(delayAircraft > 250) delayAircraft = 250;	//fix: spd還沒設完值就除 會導致delay變超大 (除以0)
+				
 				this.setNumAircraftLight(this.getNumAircraftLight()+1);
 				this.setNumAircraftHeavy(this.getNumAircraftHeavy()+1);
 			}

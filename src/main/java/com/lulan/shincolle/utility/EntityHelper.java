@@ -106,18 +106,29 @@ public class EntityHelper {
 		
 		return null;
 	}
+	
+	//check entity ID is not same
+    public static boolean checkNotSameEntityID(Entity enta, Entity entb) {
+		if(enta.getEntityId() == entb.getEntityId()) {
+			return false;
+		}
+    	
+		return true;
+	}
 
 	//check host's owner is EntityPlayer
 	public static boolean checkOwnerIsPlayer(EntityLivingBase host) {
 		EntityLivingBase getOwner = null;
 		
 		if(host != null) {
-			if(host instanceof EntityTameable) {
+			if(host instanceof EntityPlayer || host instanceof BasicEntityAirplane || 
+					host instanceof BasicEntityShip || host instanceof EntityRensouhou ||
+					host instanceof EntityRensouhouS) {
+				return true;
+			}
+			else if(host instanceof EntityTameable) {
 				getOwner = ((EntityTameable)host).getOwner();
 				return (getOwner != null) && (getOwner instanceof EntityPlayer);
-			}
-			else if(host instanceof BasicEntityAirplane || host instanceof BasicEntityShip) {
-				return true;
 			}
 		}
 		
@@ -169,16 +180,8 @@ public class EntityHelper {
 		return null;
 	}
 	
-	//process player GUI and sync
+	//process player sync data
 	public static void setPlayerByGUI(int value, int value2) {
-		switch(value) {
-		case 0:
-			break;
-		}	
-	}
-	
-	//process player sync at client side
-	public static void syncClientPlayer(int value, int value2) {
 		EntityPlayer player = ClientProxy.getClientPlayer();
 		ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 		
@@ -382,17 +385,18 @@ public class EntityHelper {
 		newPos[2] = target.posZ;
 		
 		return newPos;
-	}
+	}	
 	
-	//計算指定速度下頭部朝向
+	/**由XYZ三個向量值計算 [XZ夾角(Yaw), XY夾角(Pitch)], return單位為度數
+	 */
 	public static float[] getLookDegree(double motX, double motY, double motZ) {
 		//計算模型要轉的角度 (RAD, not DEG)
         double f1 = MathHelper.sqrt_double(motX*motX + motZ*motZ);
         float[] degree = new float[2];
+        
         degree[1] = (float)(Math.atan2(motY, f1)) * 57.2958F;
         degree[0] = (float)(Math.atan2(motX, motZ)) * 57.2958F;
         degree[0] = -degree[0];
-//        LogHelper.info("DEBUG : pitch "+degree[1]);
         
         return degree;
 	}

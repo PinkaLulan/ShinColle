@@ -90,7 +90,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 	protected int[] StateMinor;
 	/**equip effect: 0:critical 1:doubleHit 2:tripleHit 3:baseMiss*/
 	protected float[] EffectEquip;
-	/**EntityState: 0:State 1:Emotion 2:Emotion2 3:HP State*/
+	/**EntityState: 0:State 1:Emotion 2:Emotion2 3:HP State 4:State2 5:AttackPhase*/
 	protected byte[] StateEmotion;
 	/**EntityFlag: 0:canFloatUp 1:isMarried 2:noFuel 3:canMelee 4:canAmmoLight 5:canAmmoHeavy 6:canAirLight 7:canAirHeavy 8:headTilt(client only) 9:canRingEffect*/
 	protected boolean[] StateFlag;
@@ -113,8 +113,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 		StateFinal = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F};
 		StateMinor = new int[] {1, 0, 0, 40, 0, 0, 0, 0, 0, 0, 2, 14, 35, 1};
 		EffectEquip = new float[] {0F, 0F, 0F, 0F};
-		StateEmotion = new byte[] {0, 0, 0, 0};
-		StateFlag = new boolean[] {false, false, false, false, true, true, true, true, false, true};
+		StateEmotion = new byte[] {0, 0, 0, 0, 0, 0};
+		StateFlag = new boolean[] {false, false, true, false, true, true, true, true, false, true};
 		BonusPoint = new byte[] {0, 0, 0, 0, 0, 0};
 		TypeModify = new float[] {1F, 1F, 1F, 1F, 1F, 1F};
 		ModelPos = new float[] {0F, 0F, 0F, 50F};
@@ -136,6 +136,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 	public boolean isEntityInvulnerable() {
         return StateMinor[ID.N.ImmuneTime] > 0;
     }
+	
+	@Override
+	public boolean isBurning() {	//display fire effect
+		return this.getStateEmotion(ID.S.HPState) == ID.HPState.HEAVY;
+	}
 	
 	@Override
 	public float getEyeHeight() {
@@ -233,6 +238,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 	
 	abstract public int getEquipType();
 	
+	abstract public int getKaitaiType();	//0 = small, 1 = large
+	
 	public int getShipLevel() {
 		return StateMinor[ID.N.ShipLevel];
 	}
@@ -271,6 +278,26 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 	@Override
 	public int getAttackTime() {
 		return this.attackTime;
+	}
+	
+	@Override
+	public boolean getIsRiding() {
+		return this.isRiding();
+	}
+
+	@Override
+	public boolean getIsSprinting() {
+		return this.isSprinting();
+	}
+
+	@Override
+	public boolean getIsSitting() {
+		return this.isSitting();
+	}
+
+	@Override
+	public boolean getIsSneaking() {
+		return this.isSneaking();
 	}
 	
 	@Override
@@ -487,9 +514,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(resisKB);
 		this.jumpMovementFactor = (1F + StateFinal[ID.MOV]) * 0.05F;
 		
-		//for new ship
-		if(this.getHealth() == 20F) this.setHealth(this.getMaxHealth());
-		
 		//for server side
 		if(!worldObj.isRemote) {
 			sendSyncPacket();		//sync nbt data
@@ -524,8 +548,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 			StateMinor[ID.N.ShipLevel] = par1;
 		}
 		//update attributes
-		if(update) { 
-			calcShipAttributes(ShipID); 
+		if(update) {
+			LogHelper.info("DEBUG : set ship level with update");
+			calcEquipAndUpdateState();
 			this.setHealth(this.getMaxHealth());
 		}
 	}
@@ -691,7 +716,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
                     //set item amount
                     ItemStack item0, item1, item2, item3;
                                    
-                    if(this instanceof BasicEntityShipLarge) {
+                    if(this.getKaitaiType() == 1) {
                         item0 = new ItemStack(ModBlocks.BlockGrudge, 8 + rand.nextInt(3));
                     	item1 = new ItemStack(ModBlocks.BlockAbyssium, 8 + rand.nextInt(3));
                     	item2 = new ItemStack(ModItems.Ammo, 8 + rand.nextInt(3), 1);
@@ -1006,19 +1031,19 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 			}
 			
 			if(this.ticksExisted % 10 == 0) {
-				//generate HP state effect
+				//generate HP state effect, use parm:lookX to send width size
 				switch(getStateEmotion(ID.S.HPState)) {
 				case ID.HPState.MINOR:
 					ParticleHelper.spawnAttackParticleAt(this.posX, this.posY + 0.7D, this.posZ, 
-							0D, 0D, 0D, (byte)4);
+							this.width, 0.05D, 0D, (byte)4);
 					break;
 				case ID.HPState.MODERATE:
 					ParticleHelper.spawnAttackParticleAt(this.posX, this.posY + 0.7D, this.posZ, 
-							0D, 0D, 0D, (byte)5);
+							this.width, 0.05D, 0D, (byte)5);
 					break;
 				case ID.HPState.HEAVY:
 					ParticleHelper.spawnAttackParticleAt(this.posX, this.posY + 0.7D, this.posZ, 
-							0D, 0D, 0D, (byte)7);
+							this.width, 0.05D, 0D, (byte)7);
 					break;
 				default:
 					break;
@@ -1034,6 +1059,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 //        LogHelper.info("DEBug : tick "+this.ticksExisted);
         //server side check
         if((!worldObj.isRemote)) {
+        	//clear dead target for vanilla AI bug
+  			if(this.getAttackTarget() != null && this.getAttackTarget().isDead) {
+  				this.setAttackTarget(null);
+  			}
+  			
         	//decr immune time
         	if(this.StateMinor[ID.N.ImmuneTime] > 0) {
         		this.StateMinor[ID.N.ImmuneTime]--;
@@ -1045,6 +1075,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
         		clearAITargetTasks();	//reset AI for get owner after loading NBT data
         		setAIList();
         		setAITargetList(getStateMinor(ID.N.TargetAI));
+        		decrGrudgeNum(0);		//check grudge
         		sendSyncPacket();		//sync packet to client
         	}
         	
@@ -1335,13 +1366,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
         if((distX*distX+distY*distY+distZ*distZ) < 36F) {
         	isDirect = true;
         }
-        if(this.getShipDepth() > 0D) {
+        if(getShipDepth() > 0D) {
         	isDirect = true;
         	launchPos = (float)posY;
         }
 		
 		//experience++
-		this.addShipExp(16);
+		addShipExp(16);
 		
 		//grudge--
 		decrGrudgeNum(1);
@@ -1383,10 +1414,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 	//be attacked method, 包括其他entity攻擊, anvil攻擊, arrow攻擊, fall damage都使用此方法 
 	@Override
     public boolean attackEntityFrom(DamageSource attacker, float atk) {		
-		//set hurt face
-    	if(this.getStateEmotion(ID.S.Emotion) != ID.Emotion.O_O) {
-    		this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
-    	}
+//		//set hurt face
+//    	if(this.getStateEmotion(ID.S.Emotion) != ID.Emotion.O_O) {
+//    		this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
+//    	}
 
 		//進行def計算
         float reduceAtk = atk * (1F - StateFinal[ID.DEF] / 100F);    

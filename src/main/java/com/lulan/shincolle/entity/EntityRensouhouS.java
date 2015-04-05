@@ -1,6 +1,13 @@
 package com.lulan.shincolle.entity;
 
-import java.util.List;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
 
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.handler.ConfigHandler;
@@ -12,21 +19,6 @@ import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
-import net.minecraft.command.IEntitySelector;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityFlying;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.boss.EntityDragon;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.monster.EntitySlime;
-import net.minecraft.entity.passive.EntityBat;
-import net.minecraft.entity.passive.EntityWaterMob;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.MathHelper;
-import net.minecraft.world.World;
 
 public class EntityRensouhouS extends EntityLiving implements IShipEmotion, IShipAttack {
 	
@@ -213,7 +205,8 @@ public class EntityRensouhouS extends EntityLiving implements IShipEmotion, IShi
 					if(this.numAmmoHeavy < 0) this.numAmmoHeavy = 0;
 					
 					//連裝砲數量+1
-					if(((EntityBattleshipTa)host).numRensouhou < 6) ((EntityBattleshipTa)host).numRensouhou++;
+					int numR = ((IUseRensouhou)host).getNumRensouhou();
+					if(numR < 6) ((IUseRensouhou)host).setNumRensouhou(numR+1);
 					
 					//歸還彈藥
 					host.setAmmoLight(host.getAmmoLight() + this.getAmmoLight());
@@ -648,6 +641,26 @@ public class EntityRensouhouS extends EntityLiving implements IShipEmotion, IShi
 	@Override
 	public float getAttackDamage() {	//not used for rensouhou
 		return 0;
+	}
+	
+	@Override
+	public boolean getIsRiding() {
+		return false;
+	}
+
+	@Override
+	public boolean getIsSprinting() {
+		return false;
+	}
+
+	@Override
+	public boolean getIsSitting() {
+		return false;
+	}
+
+	@Override
+	public boolean getIsSneaking() {
+		return false;
 	}
 	
 

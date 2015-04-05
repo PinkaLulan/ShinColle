@@ -71,7 +71,7 @@ public class ModelDestroyerShimakazeBoss extends ModelBase {
     public ModelRenderer GlowHead;
     
     private int startEmo2 = 0;
-    Random rand = new Random();
+    private Random rand = new Random();
 
     public ModelDestroyerShimakazeBoss() {
         this.textureWidth = 128;

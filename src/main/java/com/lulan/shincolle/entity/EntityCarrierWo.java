@@ -125,23 +125,24 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
       
     @Override
     public void onLivingUpdate() {
-    	//check server side
+    	//check client side
     	if(this.worldObj.isRemote) {
-//    		if(!this.isSitting() && this.ticksExisted % 5 ==  0) {
     		if(this.ticksExisted % 5 ==  0) {
     			//若顯示裝備時, 則生成眼睛煙霧特效 (client only)
     			if(getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
+    				//set origin position
     				float[] eyePosL = new float[] {0.7F, 0.3F, 1F};
     				float[] eyePosR = new float[] {0.7F, 0.3F, -1F};
     				float radYaw = 0F;
     				float radPitch = 0F;
     				float sinPitch = 0F;
-//    				LogHelper.info("DEBUG : eye "+this.rotationYaw+" "+this.rotationYawHead);
+    				
+    				//get rotate degree (rad)
     				radYaw = this.rotationYawHead / 57.2957F;
     				radPitch = this.rotationPitch / 57.2957F;
     				sinPitch = MathHelper.sin(radPitch);
-//    				LogHelper.info("DEBUG : sin pitch "+radPitch+" "+sinPitch);
-    				//低頭或抬頭, 眼睛位置移動
+
+    				//低頭或抬頭, 眼睛位置移動 (由於頭部旋轉中心跟特效旋轉中心不同, 故要加上此offset)
     				if(radPitch > 0) {	//低頭: Z位置往前最多1.5, Y位置往下最多1
     					eyePosL[0] = eyePosL[0]+sinPitch*1.5F;
     					eyePosR[0] = eyePosR[0]+sinPitch*1.5F;
@@ -154,24 +155,28 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
     					eyePosL[1] = eyePosL[1]+sinPitch*0.5F;
     					eyePosR[1] = eyePosR[1]+sinPitch*0.5F;
     				}
+    				
     				//坐下位置計算
     				if(this.isSitting()) {
     					eyePosL = new float[] {0F, 0.3F, -0.2F};
         				eyePosR = new float[] {0.7F, 0F, -2F};
     				}
+    				
     				//側歪頭位置計算, 歪頭只會修改Y高度跟X位置
     				if(getStateEmotion(ID.S.Emotion2) == 1 && !this.isSitting()) {
-    					float[] tiltLeft = ParticleHelper.rotateForEntityZaxis(eyePosL[2], eyePosL[1], -0.24F, 1F);
-    					float[] tiltRight = ParticleHelper.rotateForEntityZaxis(eyePosR[2], eyePosR[1], -0.24F, 1F);
+    					float[] tiltLeft = ParticleHelper.rotateParticleByAxis(eyePosL[2], eyePosL[1], -0.24F, 1F);
+    					float[] tiltRight = ParticleHelper.rotateParticleByAxis(eyePosR[2], eyePosR[1], -0.24F, 1F);
     					eyePosL[2] = tiltLeft[0];
     					eyePosL[1] = tiltLeft[1];
     					eyePosR[2] = tiltRight[0];
     					eyePosR[1] = tiltRight[1];
     				}
 
-    				eyePosL = ParticleHelper.rotateForEntity(eyePosL[0], eyePosL[1], eyePosL[2], radYaw, -radPitch, 0.5F);
-    				eyePosR = ParticleHelper.rotateForEntity(eyePosR[0], eyePosR[1], eyePosR[2], radYaw, -radPitch, 0.5F);		
+    				//依照新位置, 繼續旋轉Y軸
+    				eyePosL = ParticleHelper.rotateParticleByYaw(eyePosL[0], eyePosL[1], eyePosL[2], radYaw, -radPitch, 0.5F);
+    				eyePosR = ParticleHelper.rotateParticleByYaw(eyePosR[0], eyePosR[1], eyePosR[2], radYaw, -radPitch, 0.5F);		
     				
+    				//旋轉完三軸, 生成特效
     				ParticleHelper.spawnAttackParticleAt(this.posX+eyePosL[2], this.posY+2.5D+eyePosL[1], this.posZ+eyePosL[0], 
                     		0D, 0.05D, 0D, (byte)16);
     				
@@ -197,7 +202,10 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
 					break;
 				case ID.State.EQUIP00:
 					setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-					break;			
+					break;
+				default:
+					setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+					break;
 				}
 				return true;
 			}
@@ -206,6 +214,11 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
 		super.interact(player);
 		return false;
   	}
+    
+    @Override
+	public int getKaitaiType() {
+		return 1;
+	}
 	
 
 }

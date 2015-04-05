@@ -43,13 +43,13 @@ import com.lulan.shincolle.utility.EntityHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
-public class EntityBattleshipTa extends BasicEntityShip {
+public class EntityBattleshipTa extends BasicEntityShip implements IUseRensouhou {
 	
 	public int numRensouhou;
 	
 	public EntityBattleshipTa(World world) {
 		super(world);
-		this.setSize(0.8F, 1.7F);
+		this.setSize(0.8F, 1.6F);
 		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityBattleshipTa.name"));
 		this.ShipType = ID.ShipType.BATTLESHIP;
 		this.ShipID = ID.S_BattleshipTA;
@@ -60,7 +60,7 @@ public class EntityBattleshipTa extends BasicEntityShip {
 	
 	@Override
 	public float getEyeHeight() {
-		return this.height * 1F;
+		return this.height;
 	}
 	
 	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc
@@ -126,13 +126,31 @@ public class EntityBattleshipTa extends BasicEntityShip {
 		//use cake to change state
 		if(itemstack != null) {
 			if(itemstack.getItem() == Items.cake) {
-				switch(getStateEmotion(ID.S.State)) {
-				case ID.State.NORMAL:
-					setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
-					break;
-				case ID.State.EQUIP00:
-					setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-					break;			
+				if(player.isSneaking()) {
+					switch(getStateEmotion(ID.S.State2)) {
+					case ID.State.NORMAL_2:
+						setStateEmotion(ID.S.State2, ID.State.EQUIP00_2, true);
+						break;
+					case ID.State.EQUIP00_2:
+						setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
+						break;	
+					default:
+						setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
+						break;
+					}
+				}
+				else {
+					switch(getStateEmotion(ID.S.State)) {
+					case ID.State.NORMAL:
+						setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+						break;
+					case ID.State.EQUIP00:
+						setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+						break;
+					default:
+						setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+						break;
+					}
 				}
 				return true;
 			}
@@ -175,15 +193,34 @@ public class EntityBattleshipTa extends BasicEntityShip {
   		
 		//spawn airplane
         if(target instanceof EntityLivingBase) {
-        	EntityRensouhouS rensoho = new EntityRensouhouS(this.worldObj, this, (EntityLivingBase)target);
-            this.worldObj.spawnEntityInWorld(rensoho);
+        	if(this.getStateEmotion(ID.S.State2) > ID.State.NORMAL_2) {
+        		EntityRensouhou rensoho1 = new EntityRensouhou(this.worldObj, this, (EntityLivingBase)target);
+                this.worldObj.spawnEntityInWorld(rensoho1);
+        	}
+        	else {
+        		EntityRensouhouS rensoho2 = new EntityRensouhouS(this.worldObj, this, (EntityLivingBase)target);
+                this.worldObj.spawnEntityInWorld(rensoho2);
+        	}
             return true;
         }
 
         return false;
 	}
 	
-	
+	@Override
+	public int getKaitaiType() {
+		return 1;
+	}
+
+	@Override
+	public int getNumRensouhou() {
+		return this.numRensouhou;
+	}
+
+	@Override
+	public void setNumRensouhou(int num) {
+		this.numRensouhou = num;
+	}
 	
 	
 }

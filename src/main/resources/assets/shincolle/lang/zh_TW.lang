@@ -94,10 +94,14 @@ item.shincolle:shipegg16.name=戰艦TA級
 item.shincolle:shipegg17.name=航空戰艦RE級
 item.shincolle:shipegg38.name=島風
 item.shincolle:shipegg238.name=島風 改
+item.shincolle:shipegg39.name=戰艦 長門
+item.shincolle:shipegg239.name=戰艦 長門 改
 
 # Entity
 entity.shincolle.EntityAirplane.name=深海棲艦戰
 entity.shincolle.EntityAirplaneTakoyaki.name=深海復讐艦攻
+entity.shincolle.EntityBattleshipNGT.name=戰艦 長門
+entity.shincolle.EntityBattleshipNGTBoss.name=戰艦 長門 改
 entity.shincolle.EntityBattleshipRe.name=航空戰艦RE級
 entity.shincolle.EntityBattleshipTa.name=戰艦TA級
 entity.shincolle.EntityCarrierWo.name=空母WO級
@@ -105,11 +109,11 @@ entity.shincolle.EntityDestroyerHa.name=驅逐HA級
 entity.shincolle.EntityDestroyerI.name=驅逐I級
 entity.shincolle.EntityDestroyerNi.name=驅逐NI級
 entity.shincolle.EntityDestroyerRo.name=驅逐RO級
-entity.shincolle.EntityDestroyerShimakaze.name=島風
-entity.shincolle.EntityDestroyerShimakazeBoss.name=島風 改
+entity.shincolle.EntityDestroyerShimakaze.name=驅逐艦 島風
+entity.shincolle.EntityDestroyerShimakazeBoss.name=驅逐艦 島風 改
 entity.shincolle.EntityHeavyCruiserRi.name=重巡RI級
 entity.shincolle.EntityRensouhou.name=連裝砲
-entity.shincolle.EntityRensouhouBoss.name=連裝砲 (Boss)
+entity.shincolle.EntityRensouhouBoss.name=連裝砲 改
 entity.shincolle.EntityRensouhouS.name=深海連裝砲
 
 # GUI: Ship Inventory Top
@@ -169,4 +173,5 @@ gui.shincolle:ringText=結婚次數
 gui.shincolle:eggText=需求等級
 
 # Chat message
-chat.shincolle:bossshimakaze=島風 改 出現在水面上!
+chat.shincolle:bossshimakaze=驅逐艦 島風 改 出現在水面上!
+chat.shincolle:bossnagato=戰艦 長門 改 出現在水面上!

@@ -45,27 +45,29 @@ import cpw.mods.fml.common.registry.GameRegistry;
 */
 public class ModEntity {
 	
-	private static int modEntityID = 0;
+	private static int modEntityID = 2000;
 
 	public static void init() {
 		//register test entity
 //		createEntityGlobalID(EntityTest.class, "EntityTest", 0x20FF45, 0x0040FF);
 		
 		//register ship entity
-		createEntity(EntityBattleshipTa.class, "EntityBattleshipTa", modEntityID++);
-		createEntity(EntityRensouhouS.class, "EntityRensouhouS", modEntityID++);
+		createEntity(EntityBattleshipNGT.class, "EntityBattleshipNGT", modEntityID++);
+		createEntity(EntityBattleshipNGTBoss.class, "EntityBattleshipNGTBoss", modEntityID++);
 		createEntity(EntityBattleshipRe.class, "EntityBattleshipRe", modEntityID++);
+		createEntity(EntityBattleshipTa.class, "EntityBattleshipTa", modEntityID++);
 		createEntity(EntityCarrierWo.class, "EntityCarrierWo", modEntityID++);
 		createEntity(EntityDestroyerI.class, "EntityDestroyerI", modEntityID++);
 		createEntity(EntityDestroyerRo.class, "EntityDestroyerRo", modEntityID++);
 		createEntity(EntityDestroyerHa.class, "EntityDestroyerHa", modEntityID++);
 		createEntity(EntityDestroyerNi.class, "EntityDestroyerNi", modEntityID++);
 		createEntity(EntityDestroyerShimakaze.class, "EntityDestroyerShimakaze", modEntityID++);
-		createEntity(EntityRensouhou.class, "EntityRensouhou", modEntityID++);
 		createEntity(EntityDestroyerShimakazeBoss.class, "EntityDestroyerShimakazeBoss", modEntityID++);
-		createEntity(EntityRensouhouBoss.class, "EntityRensouhouBoss", modEntityID++);
 		createEntity(EntityHeavyCruiserRi.class, "EntityHeavyCruiserRi", modEntityID++);
-				
+		createEntity(EntityRensouhou.class, "EntityRensouhou", modEntityID++);
+		createEntity(EntityRensouhouBoss.class, "EntityRensouhouBoss", modEntityID++);
+		createEntity(EntityRensouhouS.class, "EntityRensouhouS", modEntityID++);
+		
 		//register projectile entity
 		createProjectileEntity(EntityAbyssMissile.class, "EntityAbyssMissile", modEntityID++);
 		createProjectileEntity(EntityAirplane.class, "EntityAirplane", modEntityID++);
@@ -96,6 +98,7 @@ public class ModEntity {
 	//登錄生物方法
 	//參數: 該生物class, 生物名稱, 怪物蛋背景色, 怪物蛋斑點色
 	public static void createEntity(Class entityClass, String entityName, int entityId){
+		LogHelper.info("DEBUG : register entity: "+entityId+" "+entityClass+" "+entityName);
 		//登錄參數: 生物class, 生物名稱, 生物id, mod副本, 追蹤更新距離, 更新時間間隔, 是否發送同步封包(高速entity必須true才會顯示平順)
 		EntityRegistry.registerModEntity(entityClass, entityName, entityId, ShinColle.instance, 48, 1, true);
 	}

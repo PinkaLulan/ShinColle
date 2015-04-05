@@ -27,6 +27,7 @@ import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.boss.IBossDisplayData;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.MathHelper;
@@ -45,17 +46,18 @@ public class EntityDestroyerShimakazeBoss extends BasicEntityShipHostile impleme
         //basic attr
         this.atk = 50F;
         this.atkSpeed = 1F;
-        this.atkRange = 20F;
+        this.atkRange = 16F;
         this.defValue = 80F;
         this.movSpeed = 0.6F;
         this.numRensouhou = 10;
 
         //AI flag
-        this.StateEmotion = 0;
-        this.StateEmotion2 = 0;
         this.StartEmotion = 0;
         this.StartEmotion2 = 0;
         this.headTilt = false;
+        
+        //misc
+        this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, ID.S_DestroyerShimakaze+2);
  
 	    //設定基本屬性
 	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(900D);
@@ -76,7 +78,7 @@ public class EntityDestroyerShimakazeBoss extends BasicEntityShipHostile impleme
 	
 	@Override
 	public float getEyeHeight() {
-		return this.height * 0.3F;
+		return this.height * 0.5F;
 	}
 	
 	//setup AI
@@ -86,14 +88,14 @@ public class EntityDestroyerShimakazeBoss extends BasicEntityShipHostile impleme
 
 		//use range attack
 		this.tasks.addTask(1, new EntityAIShipRangeAttack(this));			   //0011
-		this.tasks.addTask(2, new EntityAIMoveTowardsTarget(this, 1D, 48F));   //0001
+		this.tasks.addTask(2, new EntityAIMoveTowardsTarget(this, 1D, 40F));   //0001
 		
 		//idle AI
 		//moving
 		this.tasks.addTask(21, new EntityAIOpenDoor(this, true));			   //0000
-		this.tasks.addTask(23, new EntityAIShipFloating(this));				   //0101
-		this.tasks.addTask(24, new EntityAIShipWatchClosest(this, EntityPlayer.class, 6F, 0.1F)); //0010
-		this.tasks.addTask(25, new EntityAIWander(this, 0.8D));				   //0001
+		this.tasks.addTask(22, new EntityAIShipFloating(this));				   //0101
+		this.tasks.addTask(23, new EntityAIShipWatchClosest(this, EntityPlayer.class, 6F, 0.1F)); //0010
+		this.tasks.addTask(24, new EntityAIWander(this, 0.8D));				   //0001
 		this.tasks.addTask(25, new EntityAILookIdle(this));					   //0011
 
 	}

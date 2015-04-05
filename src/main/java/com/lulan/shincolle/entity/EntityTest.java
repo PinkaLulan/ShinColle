@@ -70,4 +70,28 @@ public class EntityTest extends EntityLiving implements IShipEmotion {
 		return 0;
 	}
 
+	@Override
+	public boolean getIsRiding() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean getIsSprinting() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean getIsSitting() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean getIsSneaking() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

@@ -521,42 +521,28 @@ public class ModelHeavyCruiserRi extends ModelBase {
 	}
     
     private void showEquip(BasicEntityShip ent) {
-    	switch(ent.getStateEmotion(ID.S.State)) {
-    	case ID.State.EQUIP00:	//equip only
-    	case ID.State.EQUIP03:
+    	//equip display
+    	if(ent.getStateEmotion(ID.S.State) > ID.State.NORMAL) {
     		this.EquipBase.isHidden = false;
 			this.EquipLeftBase.isHidden = false;
 			this.EquipRightBase.isHidden = false;
 			this.GlowEquipLeftBase.isHidden = false;
 			this.GlowEquipRightBase.isHidden = false;
-			this.HeadTail0.isHidden = true;
-			break;
-    	case ID.State.EQUIP01:	//hair only
-    	case ID.State.EQUIP04:
+    	}
+    	else {
     		this.EquipBase.isHidden = true;
 			this.EquipLeftBase.isHidden = true;
 			this.EquipRightBase.isHidden = true;
 			this.GlowEquipLeftBase.isHidden = true;
 			this.GlowEquipRightBase.isHidden = true;
-			this.HeadTail0.isHidden = false;
-			break;
-    	case ID.State.EQUIP02:	//hair + equip
-    	case ID.State.EQUIP05:
-    		this.EquipBase.isHidden = false;
-			this.EquipLeftBase.isHidden = false;
-			this.EquipRightBase.isHidden = false;
-			this.GlowEquipLeftBase.isHidden = false;
-			this.GlowEquipRightBase.isHidden = false;
-			this.HeadTail0.isHidden = false;
-			break;
-    	case ID.State.NORMAL:
-    		this.EquipBase.isHidden = true;
-			this.EquipLeftBase.isHidden = true;
-			this.EquipRightBase.isHidden = true;
-			this.GlowEquipLeftBase.isHidden = true;
-			this.GlowEquipRightBase.isHidden = true;
-			this.HeadTail0.isHidden = true;
-			break;
+    	}
+    	
+    	//hair display
+    	if(ent.getStateEmotion(ID.S.State2) > ID.State.NORMAL_2) {
+    		this.HeadTail0.isHidden = false;
+    	}
+    	else {
+    		this.HeadTail0.isHidden = true;
     	}
   	}
   	

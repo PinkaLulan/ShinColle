@@ -8,6 +8,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 import com.lulan.shincolle.client.model.ModelAirplane;
+import com.lulan.shincolle.client.model.ModelBattleshipNagato;
 import com.lulan.shincolle.client.model.ModelBattleshipRe;
 import com.lulan.shincolle.client.model.ModelBattleshipTa;
 import com.lulan.shincolle.client.model.ModelCarrierWo;
@@ -25,6 +26,8 @@ import com.lulan.shincolle.client.render.RenderAbyssMissile;
 import com.lulan.shincolle.client.render.RenderAirplane;
 import com.lulan.shincolle.client.render.RenderAirplaneTakoyaki;
 import com.lulan.shincolle.client.render.RenderBasicEntityItem;
+import com.lulan.shincolle.client.render.RenderBattleshipNGT;
+import com.lulan.shincolle.client.render.RenderBattleshipNGTBoss;
 import com.lulan.shincolle.client.render.RenderBattleshipRe;
 import com.lulan.shincolle.client.render.RenderBattleshipTa;
 import com.lulan.shincolle.client.render.RenderCarrierWo;
@@ -44,6 +47,8 @@ import com.lulan.shincolle.client.render.RenderVortex;
 import com.lulan.shincolle.entity.EntityAbyssMissile;
 import com.lulan.shincolle.entity.EntityAirplane;
 import com.lulan.shincolle.entity.EntityAirplaneTakoyaki;
+import com.lulan.shincolle.entity.EntityBattleshipNGT;
+import com.lulan.shincolle.entity.EntityBattleshipNGTBoss;
 import com.lulan.shincolle.entity.EntityBattleshipRe;
 import com.lulan.shincolle.entity.EntityBattleshipTa;
 import com.lulan.shincolle.entity.EntityCarrierWo;
@@ -92,8 +97,9 @@ public class ClientProxy extends CommonProxy {
 		TileEntitySpecialRenderer tesrBlockSmallShipyard = new RenderSmallShipyard();
 		
 		//entity render (model class, shadow size)
+		RenderingRegistry.registerEntityRenderingHandler(EntityBattleshipNGT.class, new RenderBattleshipNGT(new ModelBattleshipNagato(0), 0.7F));
+		RenderingRegistry.registerEntityRenderingHandler(EntityBattleshipNGTBoss.class, new RenderBattleshipNGTBoss(new ModelBattleshipNagato(1), 1.2F));
 		RenderingRegistry.registerEntityRenderingHandler(EntityBattleshipTa.class, new RenderBattleshipTa(new ModelBattleshipTa(), 0.7F));
-		RenderingRegistry.registerEntityRenderingHandler(EntityRensouhouS.class, new RenderRensouhouS(new ModelRensouhouS(), 0.4F));
 		RenderingRegistry.registerEntityRenderingHandler(EntityBattleshipRe.class, new RenderBattleshipRe(new ModelBattleshipRe(), 0.7F));
 		RenderingRegistry.registerEntityRenderingHandler(EntityCarrierWo.class, new RenderCarrierWo(new ModelCarrierWo(), 1F));
 		RenderingRegistry.registerEntityRenderingHandler(EntityDestroyerI.class, new RenderDestroyerI(new ModelDestroyerI(), 1F));
@@ -101,10 +107,11 @@ public class ClientProxy extends CommonProxy {
 		RenderingRegistry.registerEntityRenderingHandler(EntityDestroyerHa.class, new RenderDestroyerHa(new ModelDestroyerHa(), 1F));
 		RenderingRegistry.registerEntityRenderingHandler(EntityDestroyerNi.class, new RenderDestroyerNi(new ModelDestroyerNi(), 1F));
 		RenderingRegistry.registerEntityRenderingHandler(EntityDestroyerShimakaze.class, new RenderDestroyerShimakaze(new ModelDestroyerShimakaze(), 0.5F));
-		RenderingRegistry.registerEntityRenderingHandler(EntityRensouhou.class, new RenderRensouhou(new ModelRensouhou(0.3F, 3F), 0.4F));
 		RenderingRegistry.registerEntityRenderingHandler(EntityDestroyerShimakazeBoss.class, new RenderDestroyerShimakazeBoss(new ModelDestroyerShimakazeBoss(), 1F));
-		RenderingRegistry.registerEntityRenderingHandler(EntityRensouhouBoss.class, new RenderRensouhou(new ModelRensouhou(1F, 0F), 1F));
 		RenderingRegistry.registerEntityRenderingHandler(EntityHeavyCruiserRi.class, new RenderHeavyCruiserRi(new ModelHeavyCruiserRi(), 0.7F));
+		RenderingRegistry.registerEntityRenderingHandler(EntityRensouhou.class, new RenderRensouhou(new ModelRensouhou(0.3F, 3F), 0.4F));
+		RenderingRegistry.registerEntityRenderingHandler(EntityRensouhouBoss.class, new RenderRensouhou(new ModelRensouhou(1F, 0F), 1F));
+		RenderingRegistry.registerEntityRenderingHandler(EntityRensouhouS.class, new RenderRensouhouS(new ModelRensouhouS(), 0.4F));
 		
 		//test entity render
 //		RenderingRegistry.registerEntityRenderingHandler(EntityTest.class, new RenderTest(new ModelTest(), 1F));

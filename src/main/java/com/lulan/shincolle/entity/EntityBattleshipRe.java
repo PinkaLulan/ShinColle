@@ -1,14 +1,9 @@
 package com.lulan.shincolle.entity;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
 import net.minecraft.entity.ai.EntityAIOpenDoor;
-import net.minecraft.entity.ai.EntityAIOwnerHurtByTarget;
-import net.minecraft.entity.ai.EntityAIOwnerHurtTarget;
 import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
@@ -21,18 +16,14 @@ import com.lulan.shincolle.ai.EntityAIShipCarrierAttack;
 import com.lulan.shincolle.ai.EntityAIShipFlee;
 import com.lulan.shincolle.ai.EntityAIShipFloating;
 import com.lulan.shincolle.ai.EntityAIShipFollowOwner;
-import com.lulan.shincolle.ai.EntityAIShipInRangeTarget;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.ai.EntityAIShipSit;
 import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
-import com.lulan.shincolle.client.particle.EntityFXLaser;
-import com.lulan.shincolle.client.particle.EntityFXTexts;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.reference.Values;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -53,7 +44,7 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
 	
 	@Override
 	public float getEyeHeight() {
-		return this.height * 1F;
+		return this.height;
 	}
 	
 	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc
@@ -121,9 +112,10 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
      
         //set attackTime
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
+//		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
         //spawn laser particle
-		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(14, worldObj.provider.dimensionId, posX, posY + 1.5D, posZ, target.posX, target.posY+target.height/2F, target.posZ), point);
+//		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(14, worldObj.provider.dimensionId, posX, posY + 1.5D, posZ, target.posX, target.posY+target.height/2F, target.posZ), point);
+		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 14, posX, posY + 1.5D, posZ, target.posX, target.posY+target.height/2F, target.posZ, true), point);
 	
 		//play sound: (sound name, volume, pitch) 
         playSound(Reference.MOD_ID+":ship-laser", 0.2F, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
@@ -212,6 +204,11 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
         }
 
 	    return isTargetHurt;
+	}
+	
+	@Override
+	public int getKaitaiType() {
+		return 1;
 	}
 	
 	

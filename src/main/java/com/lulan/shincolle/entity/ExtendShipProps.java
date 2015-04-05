@@ -77,8 +77,10 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		//save EntityState
 		nbtExt.setTag("Emotion", nbtExt_add2);	
 		nbtExt_add2.setByte("State", this.entity.getStateEmotion(ID.S.State));
+		nbtExt_add2.setByte("State2", this.entity.getStateEmotion(ID.S.State2));
 		nbtExt_add2.setByte("Emotion", this.entity.getStateEmotion(ID.S.Emotion));
 		nbtExt_add2.setByte("Emotion2", this.entity.getStateEmotion(ID.S.Emotion2));
+		nbtExt_add2.setByte("Phase", this.entity.getStateEmotion(ID.S.Phase));
 		//save BonusPoint
 		nbtExt.setTag("Point", nbtExt_add3);	
 		nbtExt_add3.setByte("HP", this.entity.getBonusPoint(ID.HP));
@@ -97,6 +99,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		nbtExt_add4.setBoolean("AmmoH", this.entity.getStateFlag(ID.F.UseAmmoHeavy));
 		nbtExt_add4.setBoolean("AirL", this.entity.getStateFlag(ID.F.UseAirLight));
 		nbtExt_add4.setBoolean("AirH", this.entity.getStateFlag(ID.F.UseAirHeavy));
+		nbtExt_add4.setBoolean("WedEffect", this.entity.getStateFlag(ID.F.UseRingEffect));
 		//save EntityFlag
 		nbtExt.setTag("Equip", nbtExt_add5);
 		nbtExt_add5.setFloat("Cri", this.entity.getEffectEquip(ID.EF_CRI));
@@ -156,8 +159,10 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		//load emotion state
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Emotion");
 		entity.setStateEmotion(ID.S.State, nbt_load.getByte("State"), false);
+		entity.setStateEmotion(ID.S.State2, nbt_load.getByte("State2"), false);
 		entity.setStateEmotion(ID.S.Emotion, nbt_load.getByte("Emotion"), false);
 		entity.setStateEmotion(ID.S.Emotion2, nbt_load.getByte("Emotion2"), false);
+		entity.setStateEmotion(ID.S.Phase, nbt_load.getByte("Phase"), false);
 		//load bonus point
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Point");
 		entity.setBonusPoint(ID.HP, nbt_load.getByte("HP"));
@@ -176,6 +181,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		entity.setStateFlag(ID.F.UseAmmoHeavy, nbt_load.getBoolean("AmmoH"));
 		entity.setStateFlag(ID.F.UseAirLight, nbt_load.getBoolean("AirL"));
 		entity.setStateFlag(ID.F.UseAirHeavy, nbt_load.getBoolean("AirH"));
+		entity.setStateFlag(ID.F.UseRingEffect, nbt_load.getBoolean("WedEffect"));
 		//load effect
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Equip");
 		entity.setEffectEquip(ID.EF_CRI, nbt_load.getFloat("Cri"));

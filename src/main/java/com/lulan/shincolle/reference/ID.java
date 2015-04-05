@@ -130,10 +130,12 @@ public class ID {
 	
 	//Array ID: Entity State
 	public static final class S {
-		public static final byte State = 0;
-		public static final byte Emotion = 1;
-		public static final byte Emotion2 = 2;
-		public static final byte HPState = 3;
+		public static final byte State = 0;				//equip state
+		public static final byte Emotion = 1;			//emotion
+		public static final byte Emotion2 = 2;			//emotion 2
+		public static final byte HPState = 3;			//hp state
+		public static final byte State2 = 4;			//equip state 2
+		public static final byte Phase = 5;				//entity phase
 	}
 	
 	//Type ID: ship type
@@ -154,13 +156,22 @@ public class ID {
 	
 	//Type ID: ship state
 	public static final class State {
-		public static final byte NORMAL = 0;			//無狀態
-		public static final byte EQUIP00 = 20;			//艤裝狀態0
-		public static final byte EQUIP01 = 30;			//艤裝狀態1
-		public static final byte EQUIP02 = 40;			//艤裝狀態2
-		public static final byte EQUIP03 = 50;			//艤裝狀態3
-		public static final byte EQUIP04 = 60;			//艤裝狀態4
-		public static final byte EQUIP05 = 70;			//艤裝狀態4
+		//for ID.S.State
+		public static final byte NORMAL = 0;		//無狀態
+		public static final byte EQUIP00 = 20;		//艤裝狀態0
+		public static final byte EQUIP01 = 30;		//艤裝狀態1
+		public static final byte EQUIP02 = 40;		//艤裝狀態2
+		public static final byte EQUIP03 = 50;		//艤裝狀態3
+		public static final byte EQUIP04 = 60;		//艤裝狀態4
+		public static final byte EQUIP05 = 70;		//艤裝狀態5
+		//for ID.S.State2
+		public static final byte NORMAL_2 = 0;		//無狀態
+		public static final byte EQUIP00_2 = 1;		//艤裝狀態0
+		public static final byte EQUIP01_2 = 2;		//艤裝狀態1
+		public static final byte EQUIP02_2 = 3;		//艤裝狀態2
+		public static final byte EQUIP03_2 = 4;		//艤裝狀態3
+		public static final byte EQUIP04_2 = 5;		//艤裝狀態4
+		public static final byte EQUIP05_2 = 6;		//艤裝狀態5
 	}
 
 	//Array ID: StateEquip, StateFinal, BonusPoint, TypeModify
@@ -275,6 +286,7 @@ public class ID {
 	public static final byte S_BattleshipOni = 35;
 	
 	public static final byte S_DestroyerShimakaze = 36;
+	public static final byte S_BattleshipNagato = 37;
 	
 		
 }

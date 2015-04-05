@@ -331,8 +331,8 @@ public class EntityAbyssMissile extends Entity {
             			missileAtk = 0F;
             		}
             	}
-//LogHelper.info("DEBUG : missile onImpact "+target.getEntityId()+" "+hostEntity3.getEntityId()+" "+target+" "+hostEntity3);
-        		//設定該entity受到的傷害
+
+            	//設定該entity受到的傷害
             	isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage((EntityLivingBase) this.hostEntity), missileAtk);
         	    
             	//if attack success
@@ -361,7 +361,6 @@ public class EntityAbyssMissile extends Entity {
                 	//目標不能是自己 or 主人
                 	if(hitEntity.canBeCollidedWith() && this.ticksExisted > 10 && 
                 	   isNotHost(hitEntity.getEntityId())) {
-//LogHelper.info("DEBUG : missile AE "+hitEntity.getEntityId()+" "+hostEntity3.getEntityId()+" "+hitEntity+" "+hostEntity3);
 
             			//calc critical, only for type:ship
                 		if(this.hostEntity4 != null && (this.rand.nextFloat() < this.hostEntity4.getEffectEquip(ID.EF_CRI))) {

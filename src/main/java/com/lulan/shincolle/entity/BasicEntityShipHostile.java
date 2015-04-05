@@ -1,6 +1,18 @@
 package com.lulan.shincolle.entity;
 
-import com.lulan.shincolle.ai.EntityAIShipInRangeTarget;
+import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.ai.EntityAIHurtByTarget;
+import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
+import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
+
 import com.lulan.shincolle.ai.EntityAIShipInRangeTargetHostile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CEntitySync;
@@ -10,25 +22,6 @@ import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
-import net.minecraft.block.Block;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.ai.EntityAIArrowAttack;
-import net.minecraft.entity.ai.EntityAIHurtByTarget;
-import net.minecraft.entity.ai.EntityAILookIdle;
-import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
-import net.minecraft.entity.ai.EntityAIOwnerHurtByTarget;
-import net.minecraft.entity.ai.EntityAIOwnerHurtTarget;
-import net.minecraft.entity.ai.EntityAISwimming;
-import net.minecraft.entity.ai.EntityAIWander;
-import net.minecraft.entity.ai.EntityAIWatchClosest;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.MathHelper;
-import net.minecraft.world.World;
 
 public class BasicEntityShipHostile extends EntityMob implements IShipAttack, IShipEmotion, IShipFloating {
 
@@ -43,22 +36,29 @@ public class BasicEntityShipHostile extends EntityMob implements IShipAttack, IS
     
     //model display
     /**EntityState: 0:HP State 1:Emotion 2:Emotion2*/
-	protected byte StateEmotion;		//表情1
-	protected byte StateEmotion2;		//表情2
+	protected byte[] StateEmotion;		//表情1
 	protected int StartEmotion;			//表情1 開始時間
 	protected int StartEmotion2;		//表情2 開始時間
 	protected boolean headTilt;
+	
+	//misc
+	protected ItemStack dropItem;
 		
 	
 	public BasicEntityShipHostile(World world) {
 		super(world);
 		this.isImmuneToFire = true;	//set ship immune to lava
-		
+		this.StateEmotion = new byte[] {ID.State.EQUIP00, 0, 0, 0, 0, 0};
 	}
 	
 	@Override
 	public boolean isAIEnabled() {
 		return true;
+	}
+	
+	@Override
+	public boolean isBurning() {	//display fire effect
+		return this.getStateEmotion(ID.S.HPState) == ID.HPState.HEAVY;
 	}
 	
 	//setup AI
@@ -74,8 +74,9 @@ public class BasicEntityShipHostile extends EntityMob implements IShipAttack, IS
 	//setup target AI: par1: 0:passive 1:active
 	public void setAITargetList() {
 		this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
-		this.targetTasks.addTask(2, new EntityAIShipInRangeTargetHostile(this, 16, 32, 1));
-		this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntityPlayer.class, 0, true, false));
+		this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, BasicEntityShip.class, 0, true, false));
+		this.targetTasks.addTask(3, new EntityAIShipInRangeTargetHostile(this, 16, 32, 1));
+		this.targetTasks.addTask(4, new EntityAINearestAttackableTarget(this, EntityPlayer.class, 0, true, false));
 	}
 	
 	@Override
@@ -123,6 +124,11 @@ public class BasicEntityShipHostile extends EntityMob implements IShipAttack, IS
 		targetTasks.taskEntries.clear();
 	}
 	
+	//掉落egg設定
+	public ItemStack getDropEgg() {
+		return this.dropItem;
+	}
+	
 	//平常音效
 	@Override
 	protected String getLivingSound() {
@@ -150,21 +156,12 @@ public class BasicEntityShipHostile extends EntityMob implements IShipAttack, IS
 
 	@Override
 	public byte getStateEmotion(int id) {
-		return id == 1 ? StateEmotion : StateEmotion2;
+		return StateEmotion[id];
 	}
 
 	@Override
 	public void setStateEmotion(int id, int value, boolean sync) {
-		switch(id) {
-		case 1:
-			StateEmotion = (byte) value;
-			break;
-		case 2:
-			StateEmotion2 = (byte) value;
-			break;
-		default:
-			break;
-		}
+		StateEmotion[id] = (byte) value;
 		
 		if(sync && !worldObj.isRemote) {
 			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
@@ -245,6 +242,31 @@ public class BasicEntityShipHostile extends EntityMob implements IShipAttack, IS
 	@Override
 	public float getMoveSpeed() {
 		return this.movSpeed;
+	}
+	
+	@Override
+	public EntityLivingBase getTarget() {
+		return this.getAttackTarget();
+	}
+
+	@Override
+	public boolean getIsRiding() {
+		return false;
+	}
+
+	@Override
+	public boolean getIsSprinting() {
+		return false;
+	}
+
+	@Override
+	public boolean getIsSitting() {
+		return false;
+	}
+
+	@Override
+	public boolean getIsSneaking() {
+		return false;
 	}
 
 	@Override
@@ -443,7 +465,7 @@ public class BasicEntityShipHostile extends EntityMob implements IShipAttack, IS
 	public void onLivingUpdate() {
 		super.onLivingUpdate();
 		
-		//server side check
+		//server side
         if((!worldObj.isRemote)) {      	
         	//check every 100 ticks
         	if(ticksExisted % 100 == 0) {
@@ -452,12 +474,56 @@ public class BasicEntityShipHostile extends EntityMob implements IShipAttack, IS
                 	setAir(300);
                 }
         	}//end every 100 ticks
-        }	
+
+        	//clear dead target for vanilla AI bug
+  			if(this.getAttackTarget() != null) {
+  				if(this.getAttackTarget().isDead || 
+  				   this.getAttackTarget() instanceof BasicEntityShipHostile ||
+  				   this.getAttackTarget() instanceof EntityRensouhouBoss) {
+  					this.setAttackTarget(null);
+  				}
+  			}
+        }
+        //client side
+        else {
+        	if(this.ticksExisted % 100 == 0) {
+	        	//check hp state
+	    		float hpState = this.getHealth() / this.getMaxHealth();
+	    		if(hpState > 0.75F) {		//normal
+	    			this.setStateEmotion(ID.S.HPState, ID.HPState.NORMAL, false);
+	    		}
+	    		else if(hpState > 0.5F){	//minor damage
+	    			this.setStateEmotion(ID.S.HPState, ID.HPState.MINOR, false);
+	    		}
+				else if(hpState > 0.25F){	//moderate damage
+					this.setStateEmotion(ID.S.HPState, ID.HPState.MODERATE, false);   			
+				}
+				else {						//heavy damage
+					this.setStateEmotion(ID.S.HPState, ID.HPState.HEAVY, false);
+				}
+        	}	
+    		
+        	if(this.ticksExisted % 20 == 0) {
+    			//generate HP state effect
+    			switch(getStateEmotion(ID.S.HPState)) {
+    			case ID.HPState.MINOR:
+    				ParticleHelper.spawnAttackParticleAt(this.posX, this.posY + 0.7D, this.posZ, 
+    						this.width * 1.5D, 0.05D, 0D, (byte)4);
+    				break;
+    			case ID.HPState.MODERATE:
+    				ParticleHelper.spawnAttackParticleAt(this.posX, this.posY + 0.7D, this.posZ, 
+    						this.width * 1.5D, 0.05D, 0D, (byte)5);
+    				break;
+    			case ID.HPState.HEAVY:
+    				ParticleHelper.spawnAttackParticleAt(this.posX, this.posY + 0.7D, this.posZ, 
+    						this.width * 1.5D, 0.05D, 0D, (byte)7);
+    				break;
+    			default:
+    				break;
+    			}
+    		}
+        }
 	}
 
-	@Override
-	public EntityLivingBase getTarget() {
-		return this.getAttackTarget();
-	}
 
 }

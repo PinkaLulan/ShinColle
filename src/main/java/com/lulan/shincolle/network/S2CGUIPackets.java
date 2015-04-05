@@ -128,7 +128,7 @@ public class S2CGUIPackets implements IMessage {
 				this.value2 = buf.readByte();
 				
 				//set value
-				EntityHelper.syncClientPlayer((int)value, (int)value2);
+				EntityHelper.setPlayerByGUI((int)value, (int)value2);
 			}
 			break;
 		}

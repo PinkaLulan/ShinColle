@@ -40,8 +40,13 @@ public interface IShipEmotion {
 	 */
 	abstract public int getTickExisted();
 	
-	/**Get attack time for model display
+	/**Get attack time, sit, run state
 	 */
 	abstract public int getAttackTime();
+	abstract public boolean getIsRiding();
+	abstract public boolean getIsSprinting();
+	abstract public boolean getIsSitting();
+	abstract public boolean getIsSneaking();
+
 
 }

@@ -20,6 +20,7 @@ import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.entity.BasicEntityAirplane;
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.EntityDestroyerShimakazeBoss;
 import com.lulan.shincolle.entity.EntityRensouhouBoss;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
@@ -43,8 +44,8 @@ public class EVENT_BUS_EventHandler {
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
 	public void eventDrop(LivingDropsEvent event) {
 	    if(event.entity instanceof EntityMob || event.entity instanceof EntitySlime) {
-	    	if(event.entity instanceof EntityDestroyerShimakazeBoss) {
-	    		ItemStack bossEgg = new ItemStack(ModItems.ShipSpawnEgg, 1, ID.S_DestroyerShimakaze+2);
+	    	if(event.entity instanceof BasicEntityShipHostile) {
+	    		ItemStack bossEgg = ((BasicEntityShipHostile)event.entity).getDropEgg();
 	    		BasicEntityItem entityItem1 = new BasicEntityItem(event.entity.worldObj, event.entity.posX, event.entity.posY+0.5D, event.entity.posZ, bossEgg);
 	    		LogHelper.info("DEBUG : boss drop "+entityItem1.posX+" "+entityItem1.posY+" "+entityItem1.posZ);
 	    		event.entity.worldObj.spawnEntityInWorld(entityItem1);

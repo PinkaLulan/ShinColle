@@ -2,33 +2,26 @@ package com.lulan.shincolle.handler;
 
 import java.util.List;
 
-import com.lulan.shincolle.entity.EntityDestroyerShimakazeBoss;
-import com.lulan.shincolle.entity.ExtendPlayerProps;
-import com.lulan.shincolle.entity.renderentity.BasicRenderEntity;
-import com.lulan.shincolle.init.ModItems;
-import com.lulan.shincolle.proxy.ClientProxy;
-import com.lulan.shincolle.proxy.ServerProxy;
-import com.lulan.shincolle.utility.LogHelper;
-
 import net.minecraft.block.Block;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
-import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.BiomeDictionary;
+
+import com.lulan.shincolle.entity.BasicEntityShipHostile;
+import com.lulan.shincolle.entity.EntityBattleshipNGTBoss;
+import com.lulan.shincolle.entity.EntityDestroyerShimakazeBoss;
+import com.lulan.shincolle.entity.ExtendPlayerProps;
+import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.proxy.ServerProxy;
+import com.lulan.shincolle.utility.LogHelper;
+
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.common.gameevent.TickEvent.PlayerTickEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.RenderTickEvent;
 
 public class FML_COMMON_EventHandler {
 
@@ -48,14 +41,13 @@ public class FML_COMMON_EventHandler {
 				//cooldown--
 				if(BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.OCEAN) && extProps.hasRing()) {
 					extProps.setBossCooldown(extProps.getBossCooldown() - 1);
-					LogHelper.info("DEBUG : spawn boss: count cd "+extProps.getBossCooldown());
 				}
 				
 				//cooldown = 0, roll spawn
 				if(extProps.getBossCooldown() <= 0) {
 					extProps.setBossCooldown(4800);
 					
-					int rolli = event.player.getRNG().nextInt(5);
+					int rolli = event.player.getRNG().nextInt(4);
 					LogHelper.info("DEBUG : spawn boss: roll spawn "+rolli);
 					if(rolli == 0) {
 						//尋找10次地點, 找到一個可生成地點即生成後跳出loop
@@ -95,7 +87,7 @@ public class FML_COMMON_EventHandler {
 							if(blockY == Blocks.water) {
 								//check 64x64 range
 								AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(spawnX-64D, spawnY-64D, spawnZ-64D, spawnX+64D, spawnY+64D, spawnZ+64D);
-								List renderEntityList = event.player.worldObj.getEntitiesWithinAABB(EntityDestroyerShimakazeBoss.class, aabb);
+								List renderEntityList = event.player.worldObj.getEntitiesWithinAABB(BasicEntityShipHostile.class, aabb);
 
 								LogHelper.info("DEBUG : spawn boss: check list "+renderEntityList.size());
 								
@@ -107,10 +99,25 @@ public class FML_COMMON_EventHandler {
 					            					StatCollector.translateToLocal("chat.shincolle:bossshimakaze")+
 					            					EnumChatFormatting.AQUA+
 					            					" "+spawnX+" "+spawnY+" "+spawnZ));
-					            	LogHelper.info("DEBUG : SPAWN BOSS "+" "+spawnX+" "+spawnY+" "+spawnZ);
+					            	LogHelper.info("DEBUG : SPAWN BOSS Shimakaze "+" "+spawnX+" "+spawnY+" "+spawnZ);
 									EntityDestroyerShimakazeBoss boss = new EntityDestroyerShimakazeBoss(event.player.worldObj);
 									boss.setPosition(spawnX, spawnY, spawnZ);
 									event.player.worldObj.spawnEntityInWorld(boss);
+									
+									//spawn boss: Nagato (33%)
+									if(event.player.getRNG().nextInt(3) == 0) {
+										ServerProxy.getServer().getConfigurationManager().sendChatMsg(
+						            			new ChatComponentText(
+						            					EnumChatFormatting.RED+
+						            					StatCollector.translateToLocal("chat.shincolle:bossnagato")+
+						            					EnumChatFormatting.AQUA+
+						            					" "+spawnX+" "+spawnY+" "+spawnZ));
+						            	LogHelper.info("DEBUG : SPAWN BOSS Nagato "+" "+spawnX+" "+spawnY+" "+spawnZ);
+										EntityBattleshipNGTBoss boss2 = new EntityBattleshipNGTBoss(event.player.worldObj);
+										boss2.setPosition(spawnX, spawnY, spawnZ);
+										event.player.worldObj.spawnEntityInWorld(boss2);
+									}
+									
 									break;
 					            }	
 							}

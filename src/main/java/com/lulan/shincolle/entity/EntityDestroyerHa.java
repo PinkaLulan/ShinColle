@@ -121,7 +121,10 @@ public class EntityDestroyerHa extends BasicEntityShipSmall {
 					break;
 				case ID.State.EQUIP00:
 					setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-					break;			
+					break;
+				default:
+					setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+					break;
 				}
 				return true;
 			}
@@ -130,6 +133,11 @@ public class EntityDestroyerHa extends BasicEntityShipSmall {
 		super.interact(player);
 		return false;
   	}
+  	
+  	@Override
+	public int getKaitaiType() {
+		return 0;
+	}
 
 }
 
