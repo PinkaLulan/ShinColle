@@ -199,19 +199,19 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
 		        	
 	        		if(this.host.getShipDepth() > 0.55D) {
 	        			if(MathHelper.abs((float)distY) < 4F && this.host.getShipDepth() < 4D) {  //如果接近水面, 則維持浮在水面
-	        				LogHelper.info("DEBUG : move AAAAAAAAAAAAAAA");
+//	        				LogHelper.info("DEBUG : move AAAAAAAAAAAAAAA");
 		        			this.motY = 0.08F;
 	        			}
 	        			else if(this.distY > 2D) {		//若沒有接近水面, 對方位置較高, 則上浮
-		        			LogHelper.info("DEBUG : move BBBBBBBBBBBBBBB");
+//		        			LogHelper.info("DEBUG : move BBBBBBBBBBBBBBB");
 		        			this.motY = 0.2F;
 		        		}
 		        		else if(this.distY <= -2D) {	//若沒有接近水面, 對方位置較低, 則下沉
-		        			LogHelper.info("DEBUG : move CCCCCCCCCCCCCCC");
+//		        			LogHelper.info("DEBUG : move CCCCCCCCCCCCCCC");
 		        			this.motY = -0.2F;
 		        		}
 		        		else {
-		        			LogHelper.info("DEBUG : move DDDDDDDDDDDDDDD");
+//		        			LogHelper.info("DEBUG : move DDDDDDDDDDDDDDD");
 		        			this.motY = 0F;
 		        		}
 	        		}	

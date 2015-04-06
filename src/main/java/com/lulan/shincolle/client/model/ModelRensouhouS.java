@@ -159,8 +159,6 @@ public class ModelRensouhouS extends ModelBase {
 		super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
 		  
 		IShipEmotion ent = (IShipEmotion)entity;
-		
-		setGlowRotation();
 		  
 		GL11.glTranslatef(0F, 1F, 0F);
 		float angleX = MathHelper.cos(f2 * 0.1F);
@@ -174,14 +172,9 @@ public class ModelRensouhouS extends ModelBase {
 		//攻擊動作    
 	    if(ent.getAttackTime() > 0) {
 	    	this.TailJaw1.rotateAngleX = angleX * 0.3F - 0.8F;
-	    }	
-    }
-    
-    //設定模型發光部份的rotation
-    private void setGlowRotation() {
-		this.GlowTailJaw1.rotateAngleX = this.TailJaw1.rotateAngleX;
-		this.GlowTailJaw1.rotateAngleY = this.TailJaw1.rotateAngleY;
-		this.GlowTailJaw1.rotateAngleZ = this.TailJaw1.rotateAngleZ;
+	    }
+	    
+	    this.GlowTailJaw1.rotateAngleX = this.TailJaw1.rotateAngleX;
     }
     
 }

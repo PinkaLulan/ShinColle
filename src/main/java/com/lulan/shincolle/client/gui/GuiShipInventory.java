@@ -42,8 +42,8 @@ import net.minecraft.util.StatCollector;
  */
 public class GuiShipInventory extends GuiContainer {
 
-	private BasicEntityShip entity;
-	private InventoryPlayer player;
+	public BasicEntityShip entity;
+	public InventoryPlayer player;
 	private float xMouse, yMouse;
 	private int xClick, yClick;
 	private static final ResourceLocation TEXTURE_BG = new ResourceLocation(Reference.TEXTURES_GUI+"GuiShipInventory.png");
@@ -740,6 +740,17 @@ public class GuiShipInventory extends GuiContainer {
 	private int getInverseInt(boolean par1) {
 		return par1 ? 0 : 1;
 	}
+	
+	//close gui if entity dead
+	@Override
+	public void updateScreen() {
+		super.updateScreen();
+		
+		if (this.entity == null || this.entity.isDead) {
+            this.mc.thePlayer.closeScreen();
+        }
+	}
+	
 	
 
 }

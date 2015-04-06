@@ -10,7 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
-import net.minecraftforge.event.entity.EntityEvent.CanUpdate;
+import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
@@ -18,15 +18,16 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 
 import org.lwjgl.opengl.GL11;
 
+import com.lulan.shincolle.client.gui.GuiShipInventory;
 import com.lulan.shincolle.entity.BasicEntityAirplane;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
-import com.lulan.shincolle.entity.EntityDestroyerShimakazeBoss;
 import com.lulan.shincolle.entity.EntityRensouhouBoss;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
 import com.lulan.shincolle.entity.ExtendShipProps;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.BasicEntityItem;
+import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.LogHelper;
 
@@ -142,6 +143,7 @@ public class EVENT_BUS_EventHandler {
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
 	public void eventDeath(LivingDeathEvent event) {
 		Entity ent = event.source.getSourceOfDamage();
+		
 	    if(ent != null) {
 	    	if(ent instanceof BasicEntityShip) {
 	    		((BasicEntityShip)ent).addKills();
@@ -151,6 +153,24 @@ public class EVENT_BUS_EventHandler {
 	    			((BasicEntityShip)((BasicEntityAirplane) ent).getOwner()).addKills();
 	    		}
 	    	}  
+	    }
+	    
+	    //save player ext data
+	    if(event.entityLiving instanceof EntityPlayer) {
+	    	EntityPlayer player = (EntityPlayer) event.entityLiving;
+	    	ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+	    	
+	    	LogHelper.info("DEBUG : player death: save player data: "+player.getDisplayName()+" "+player.getUniqueID());
+	    	
+	    	if(extProps != null) {
+	    		LogHelper.info("DEBUG : player death: get player extProps");
+	    		//save player nbt data
+	    		NBTTagCompound nbt = new NBTTagCompound();
+	    		extProps.saveNBTData(nbt);
+	    		
+	    		//save nbt to commonproxy variable
+	    		CommonProxy.storeEntityData(player.getUniqueID().toString(), nbt);
+	    	}
 	    }
 	}
 	
@@ -162,11 +182,12 @@ public class EVENT_BUS_EventHandler {
 	    	LogHelper.info("DEBUG : add ship extend props");
 	        event.entity.registerExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME, new ExtendShipProps());
 	    }
-		
+
 		//player ext props
 		if(event.entity instanceof EntityPlayer && event.entity.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME) == null) {
-	    	LogHelper.info("DEBUG : add player extend props");
-	        event.entity.registerExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME, new ExtendPlayerProps());
+			LogHelper.info("DEBUG : add player extend props");
+			EntityPlayer player = (EntityPlayer) event.entity;
+	    	player.registerExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME, new ExtendPlayerProps()); 
 		}
 	}
 

@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
@@ -16,10 +17,12 @@ import com.lulan.shincolle.entity.EntityBattleshipNGTBoss;
 import com.lulan.shincolle.entity.EntityDestroyerShimakazeBoss;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
 import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.common.gameevent.TickEvent.PlayerTickEvent;
 
@@ -149,6 +152,22 @@ public class FML_COMMON_EventHandler {
 			}
 		}	
 	}//end onPlayerTick
+	
+	//restore player extProps data
+	@SubscribeEvent
+	public void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
+		LogHelper.info("DEBUG : get player respawn event "+event.player.getDisplayName()+" "+event.player.getUniqueID());
+    	
+        //restore player data from commonproxy variable
+        NBTTagCompound nbt = CommonProxy.getEntityData(event.player.getUniqueID().toString());
+        
+        if(nbt != null) {
+        	LogHelper.info("DEBUG : player respawn: restore player data");
+        	ExtendPlayerProps extProps = (ExtendPlayerProps) event.player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+        	
+        	extProps.loadNBTData(nbt);   	
+        }
+	}
 
 
 }

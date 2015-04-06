@@ -3,10 +3,12 @@ package com.lulan.shincolle.handler;
 import java.io.File;
 
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.client.event.ConfigChangedEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.config.Property;
 
 
 public class ConfigHandler {
@@ -22,16 +24,18 @@ public class ConfigHandler {
 	public static boolean friendlyFire = true;
 	
 	//SHIP SETTING
+	//scale: HP, ATK, DEF, SPD, MOV, HIT
+	public static Property propShip;
+	public static Property propBossSMKZ;
+	public static Property propBossNGT;
+	public static double[] scaleShip = new double[] {1D, 1D, 1D, 1D, 1D, 1D};
+	public static double[] scaleBossSMKZ = new double[] {900D, 50D, 80D, 1D, 0.6D, 16D};
+	public static double[] scaleBossNGT = new double[] {2400D, 200D, 92D, 2D, 0.4D, 24D};
+	
 	public static boolean timeKeeping = true;
 	public static float timeKeepingVolume = 1.0F;
 	public static float shipVolume = 1.0F;
 	public static float fireVolume = 0.7F;
-	public static float hpRatio = 1.0f;
-	public static float atkRatio = 1.0f;
-	public static float defRatio = 1.0f;
-	public static float spdRatio = 1.0f;
-	public static float movRatio = 1.0f;
-	public static float hitRatio = 1.0f;
 	
 	//WORLD GEN
 	public static int polyOreBaseRate = 7;
@@ -60,13 +64,11 @@ public class ConfigHandler {
 		timeKeepingVolume = config.getFloat("Timekeeping_Volume", "ship setting", 1.0F, 0F, 10F, "Timekeeping sound volume");
 		shipVolume = config.getFloat("Ship_Volume", "ship setting", 1.0F, 0F, 10F, "Other sound volume");
 		fireVolume = config.getFloat("Attack_Volume", "ship setting", 0.7F, 0F, 10F, "Attack sound volume");
-		hpRatio = config.getFloat("Scale_HP", "ship setting", 1F, 0.01F, 100F, "Ship HP scale");
-		atkRatio = config.getFloat("Scale_ATK", "ship setting", 1F, 0.01F, 100F, "Ship FIREPOWER scale");
-		defRatio = config.getFloat("Scale_DEF", "ship setting", 1F, 0.01F, 100F, "Ship ARMOR scale");
-		spdRatio = config.getFloat("Scale_SPD", "ship setting", 1F, 0.01F, 100F, "Ship ATTACK SPEED scale");
-		movRatio = config.getFloat("Scale_MOV", "ship setting", 1F, 0.01F, 100F, "Ship MOVE SPEED scale");
-		hitRatio = config.getFloat("Scale_HIT", "ship setting", 1F, 0.01F, 100F, "Ship RANGE scale");
 		
+		propShip = config.get("ship setting", "ship_scale", scaleShip, "Ship attributes SCALE: HP, firepower, armor, attack speed, move speed, range");
+		propBossSMKZ = config.get("ship setting", "ShimakazeBoss_scale", scaleBossSMKZ, "Boss:Shimakaze Attrs: HP, firepower, armor, attack speed, move speed, range");
+		propBossNGT = config.get("ship setting", "NagatoBoss_scale", scaleBossNGT, "Boss:Nagato Attrs: HP, firepower, armor, attack speed, move speed, range");
+
 		//WORLD GEN
 		polyOreBaseRate = config.getInt("Polymetal_Ore", "world gen", 7, 0, 100, "Polymetallic Ore clusters in one chunk");
 		polyGravelBaseRate = config.getInt("Polymetal_Gravel", "world gen", 4, 0, 100, "Polymetallic Gravel clusters in one chunk");
@@ -74,7 +76,12 @@ public class ConfigHandler {
 		//若設定檔有更新過 則儲存
 		if(config.hasChanged()) {
 			config.save();
-		}		
+		}
+		
+		//設定新值
+		scaleShip = propShip.getDoubleList();
+		scaleBossSMKZ = propBossSMKZ.getDoubleList();
+		scaleBossNGT = propBossNGT.getDoubleList();				
 	}
 	
 	//設定檔處理 初始化動作

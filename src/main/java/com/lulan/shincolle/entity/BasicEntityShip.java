@@ -466,24 +466,24 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 	public void calcShipAttributes(byte id) {
 		//init or renew bonus value, for short value: discard decimal
 		//HP = (base + equip + (point + 1) * level * typeModify) * config scale
-		StateFinal[ID.HP] = (Values.BaseHP[id] + StateEquip[ID.HP] + (float)(BonusPoint[ID.HP]+1) * (float)StateMinor[ID.N.ShipLevel] * TypeModify[ID.HP]) * ConfigHandler.hpRatio; 
+		StateFinal[ID.HP] = (Values.BaseHP[id] + StateEquip[ID.HP] + (float)(BonusPoint[ID.HP]+1) * (float)StateMinor[ID.N.ShipLevel] * TypeModify[ID.HP]) * (float)ConfigHandler.scaleShip[ID.HP]; 
 		//DEF = base + ((point + 1) * level / 3 * 0.4 + equip) * typeModify
-		StateFinal[ID.DEF] = (Values.BaseDEF[id] + StateEquip[ID.DEF] + ((float)(BonusPoint[ID.DEF]+1) * ((float)StateMinor[ID.N.ShipLevel])/3F) * 0.4F * TypeModify[ID.DEF]) * ConfigHandler.defRatio;
+		StateFinal[ID.DEF] = (Values.BaseDEF[id] + StateEquip[ID.DEF] + ((float)(BonusPoint[ID.DEF]+1) * ((float)StateMinor[ID.N.ShipLevel])/3F) * 0.4F * TypeModify[ID.DEF]) * (float)ConfigHandler.scaleShip[ID.DEF];
 		//SPD = base + ((point + 1) * level / 10 * 0.02 + equip) * typeModify
-		StateFinal[ID.SPD] = (Values.BaseSPD[id] + StateEquip[ID.SPD] + ((float)(BonusPoint[ID.SPD]+1) * ((float)StateMinor[ID.N.ShipLevel])/10F) * 0.02F * TypeModify[ID.SPD]) * ConfigHandler.spdRatio;
+		StateFinal[ID.SPD] = (Values.BaseSPD[id] + StateEquip[ID.SPD] + ((float)(BonusPoint[ID.SPD]+1) * ((float)StateMinor[ID.N.ShipLevel])/10F) * 0.02F * TypeModify[ID.SPD]) * (float)ConfigHandler.scaleShip[ID.SPD];
 		//MOV = base + ((point + 1) * level / 10 * 0.01 + equip) * typeModify
-		StateFinal[ID.MOV] = (Values.BaseMOV[id] + StateEquip[ID.MOV] + ((float)(BonusPoint[ID.MOV]+1) * ((float)StateMinor[ID.N.ShipLevel])/10F) * 0.01F * TypeModify[ID.MOV]) * ConfigHandler.movRatio;
+		StateFinal[ID.MOV] = (Values.BaseMOV[id] + StateEquip[ID.MOV] + ((float)(BonusPoint[ID.MOV]+1) * ((float)StateMinor[ID.N.ShipLevel])/10F) * 0.01F * TypeModify[ID.MOV]) * (float)ConfigHandler.scaleShip[ID.MOV];
 		//HIT = base + ((point + 1) * level / 10 * 0.4 + equip) * typeModify
-		StateFinal[ID.HIT] = (Values.BaseHIT[id] + StateEquip[ID.HIT] + ((float)(BonusPoint[ID.HIT]+1) * ((float)StateMinor[ID.N.ShipLevel])/10F) * 0.4F * TypeModify[ID.HIT]) * ConfigHandler.hitRatio;
+		StateFinal[ID.HIT] = (Values.BaseHIT[id] + StateEquip[ID.HIT] + ((float)(BonusPoint[ID.HIT]+1) * ((float)StateMinor[ID.N.ShipLevel])/10F) * 0.4F * TypeModify[ID.HIT]) * (float)ConfigHandler.scaleShip[ID.HIT];
 		//ATK = (base + equip + ((point + 1) * level / 3) * typeModify) * config scale
 		float atk = Values.BaseATK[id] + ((float)(BonusPoint[ID.ATK]+1) * ((float)StateMinor[ID.N.ShipLevel])/3F) * 0.5F * TypeModify[ID.ATK];
-		StateFinal[ID.ATK] = (atk + StateEquip[ID.ATK]) * ConfigHandler.atkRatio;
-		StateFinal[ID.ATK_H] = (atk * 4F + StateEquip[ID.ATK_H]) * ConfigHandler.atkRatio;
-		StateFinal[ID.ATK_AL] = (atk + StateEquip[ID.ATK_AL]) * ConfigHandler.atkRatio;
-		StateFinal[ID.ATK_AH] = (atk * 4F + StateEquip[ID.ATK_AH]) * ConfigHandler.atkRatio;
+		StateFinal[ID.ATK] = (atk + StateEquip[ID.ATK]) * (float)ConfigHandler.scaleShip[ID.ATK];
+		StateFinal[ID.ATK_H] = (atk * 4F + StateEquip[ID.ATK_H]) * (float)ConfigHandler.scaleShip[ID.ATK];
+		StateFinal[ID.ATK_AL] = (atk + StateEquip[ID.ATK_AL]) * (float)ConfigHandler.scaleShip[ID.ATK];
+		StateFinal[ID.ATK_AH] = (atk * 4F + StateEquip[ID.ATK_AH]) * (float)ConfigHandler.scaleShip[ID.ATK];
 		//KB Resistance = Level / 10 * 0.04
 		float resisKB = (((float)StateMinor[ID.N.ShipLevel])/10F) * 0.067F;
-		
+		LogHelper.info("DEBUG : get new value "+ConfigHandler.scaleShip[0]+" "+ConfigHandler.scaleShip[1]+" "+ConfigHandler.scaleShip[2]+" "+ConfigHandler.scaleShip[3]+" "+ConfigHandler.scaleShip[4]+" "+ConfigHandler.scaleShip[5]);
 		//min, max cap balue
 		if(StateFinal[ID.DEF] > 95F) {
 			StateFinal[ID.DEF] = 95F;	//max def = 95%
