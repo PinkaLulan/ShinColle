@@ -126,7 +126,7 @@ public class GuiSmallShipyard extends GuiContainer {
         		buttonValue = 1;	//原本點其他按鈕, 則設成ship
         	}
         	LogHelper.info("DEBUG : GUI click: build small ship: ship "+buttonValue);
-        	CommonProxy.channel.sendToServer(new C2SGUIPackets(this.tile, ID.B.Shipyard_Type, buttonValue, 0));
+        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, ID.B.Shipyard_Type, buttonValue, 0));
         	break;
         case 1:
         	if(buttonValue == 2) {
@@ -136,7 +136,7 @@ public class GuiSmallShipyard extends GuiContainer {
         		buttonValue = 2;	//原本點其他按鈕, 則設成equip
         	}
         	LogHelper.info("DEBUG : GUI click: build small ship: equip "+buttonValue);
-        	CommonProxy.channel.sendToServer(new C2SGUIPackets(this.tile, ID.B.Shipyard_Type, buttonValue, 0));
+        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, ID.B.Shipyard_Type, buttonValue, 0));
         	break;
         }
 	}

@@ -134,7 +134,7 @@ public class BasicTileEntity extends TileEntity implements ISidedInventory {
 	public void sendSyncPacket() {
 		if(!this.worldObj.isRemote) {
 			TargetPoint point = new TargetPoint(this.worldObj.provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, 8D);
-			CommonProxy.channel.sendToAllAround(new S2CGUIPackets(this), point);
+			CommonProxy.channelG.sendToAllAround(new S2CGUIPackets(this), point);
 		}
 	}
 

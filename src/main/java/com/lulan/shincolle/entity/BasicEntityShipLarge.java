@@ -5,13 +5,16 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
@@ -126,11 +129,18 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip {
         
         //發射者煙霧特效 (發射飛機不使用特效, 但是要發送封包來設定attackTime)
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
-		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
+		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
         
         //spawn airplane
         if(target instanceof EntityLivingBase) {
-        	EntityAirplane plane = new EntityAirplane(this.worldObj, this, (EntityLivingBase)target, this.posY+launchHeight);
+        	double summonHeight = this.posY+launchHeight;
+        	
+        	//check the summon block
+        	if(!EntityHelper.checkBlockSafe(worldObj, (int)posX, (int)(posY+launchHeight), (int)(posZ))) {
+        		summonHeight = posY+1D;
+        	}
+        	
+        	EntityAirplane plane = new EntityAirplane(this.worldObj, this, (EntityLivingBase)target, summonHeight);
             this.worldObj.spawnEntityInWorld(plane);
             return true;
         }
@@ -163,11 +173,18 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip {
         
         //發射者煙霧特效 (發射飛機不使用特效, 但是要發送封包來設定attackTime)
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
+		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
         
         //spawn airplane
         if(target instanceof EntityLivingBase) {
-        	EntityAirplaneTakoyaki plane = new EntityAirplaneTakoyaki(this.worldObj, this, (EntityLivingBase)target, this.posY+this.launchHeight);
+        	double summonHeight = this.posY+launchHeight;
+        	
+        	//check the summon block
+        	if(!EntityHelper.checkBlockSafe(worldObj, (int)posX, (int)(posY+launchHeight), (int)(posZ))) {
+        		summonHeight = posY+0.5D;
+        	}
+        	
+        	EntityAirplaneTakoyaki plane = new EntityAirplaneTakoyaki(this.worldObj, this, (EntityLivingBase)target, summonHeight);
             this.worldObj.spawnEntityInWorld(plane);
             return true;
         }

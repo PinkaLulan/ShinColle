@@ -611,13 +611,13 @@ public class GuiShipInventory extends GuiContainer {
     	//get cliuck button
     	switch(mousePressBar) {
     	case 0:	//bar0: follow min
-    		CommonProxy.channel.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_FollowMin, (int)((float)barPos / 42F * 30F + 1F)));
+    		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_FollowMin, (int)((float)barPos / 42F * 30F + 1F)));
     		break;
     	case 1:	//bar1: follow max
-    		CommonProxy.channel.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_FollowMax, (int)((float)barPos / 42F * 30F + 2F)));
+    		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_FollowMax, (int)((float)barPos / 42F * 30F + 2F)));
     		break;
     	case 2:	//bar2: flee hp
-    		CommonProxy.channel.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_FleeHP, (int)((float)barPos / 42F * 100F)));
+    		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_FleeHP, (int)((float)barPos / 42F * 100F)));
     		break;
     	}
     	
@@ -668,35 +668,35 @@ public class GuiShipInventory extends GuiContainer {
         case 3:	//AI operation 0 
         	if(this.showPageAI == 1) {	//page 1: can melee button
         		this.switchMelee = this.entity.getStateFlag(ID.F.UseMelee);
-        		CommonProxy.channel.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_Melee, getInverseInt(this.switchMelee)));
+        		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_Melee, getInverseInt(this.switchMelee)));
         	}
         	else if(this.showPageAI == 3) {	//page 3: apply aura effect
         		this.switchAura = this.entity.getStateFlag(ID.F.UseRingEffect);
-        		CommonProxy.channel.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_AuraEffect, getInverseInt(this.switchAura)));
+        		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_AuraEffect, getInverseInt(this.switchAura)));
         	}
         	break;
         case 4:	//AI operation 1 
         	if(this.showPageAI == 1) {	//page 1: use ammo light button
         		this.switchLight = this.entity.getStateFlag(ID.F.UseAmmoLight);
-        		CommonProxy.channel.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_AmmoLight, getInverseInt(this.switchLight)));
+        		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_AmmoLight, getInverseInt(this.switchLight)));
         	}
         	break;
         case 5:	//AI operation 2 
         	if(this.showPageAI == 1) {	//page 1: use ammo heavy button
         		this.switchHeavy = this.entity.getStateFlag(ID.F.UseAmmoHeavy);
-        		CommonProxy.channel.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_AmmoHeavy, getInverseInt(this.switchHeavy)));
+        		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_AmmoHeavy, getInverseInt(this.switchHeavy)));
         	}
         	break;
         case 6:	//AI operation 3
         	if(this.showPageAI == 1) {	//page 1: use air light button
         		this.switchAirLight = this.entity.getStateFlag(ID.F.UseAirLight);
-        		CommonProxy.channel.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_AirLight, getInverseInt(this.switchAirLight)));
+        		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_AirLight, getInverseInt(this.switchAirLight)));
         	}
         	break;
         case 7:	//AI operation 4
         	if(this.showPageAI == 1) {	//page 1: use air heavy button
         		this.switchAirHeavy = this.entity.getStateFlag(ID.F.UseAirHeavy);
-        		CommonProxy.channel.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_AirHeavy, getInverseInt(this.switchAirHeavy)));
+        		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_AirHeavy, getInverseInt(this.switchAirHeavy)));
         	}
         	break;
         case 8:	//AI operation 5
@@ -707,7 +707,7 @@ public class GuiShipInventory extends GuiContainer {
         		else {
         			this.switchTarAI = false;
         		}
-        		CommonProxy.channel.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_TarAI, getInverseInt(!this.switchTarAI)));
+        		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_TarAI, getInverseInt(!this.switchTarAI)));
         	}
         	break;
         case 9:		//AI page 1
@@ -746,7 +746,7 @@ public class GuiShipInventory extends GuiContainer {
 	public void updateScreen() {
 		super.updateScreen();
 		
-		if (this.entity == null || this.entity.isDead) {
+		if(this.entity == null || this.entity.isDead) {
             this.mc.thePlayer.closeScreen();
         }
 	}

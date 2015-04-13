@@ -54,10 +54,14 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
 
             //get owner distance
             if(OwnerEntity != null) {
+            	this.TheOwner = OwnerEntity;
+                
+            	if(this.TheOwner.dimension != this.ThePet.dimension) {
+            		return false;
+            	}
+            	
             	float fMin = ThePet.getStateMinor(ID.N.FollowMin);
             	float fMax = ThePet.getStateMinor(ID.N.FollowMax);
-            	
-            	this.TheOwner = OwnerEntity;
             	this.minDistSq = fMin * fMin;
                 this.maxDistSq = fMax * fMax;
 

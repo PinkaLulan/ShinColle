@@ -18,19 +18,30 @@ import cpw.mods.fml.relauncher.Side;
 
 public abstract class CommonProxy implements IProxy {
 	
-	public static final String channelName = Reference.MOD_ID;
-	public static SimpleNetworkWrapper channel;
+	public static final String channelNameE = "shinEntity";
+	public static final String channelNameG = "shinGUI";
+	public static final String channelNameP = "shinParticle";
+	
+	public static SimpleNetworkWrapper channelE;
+	public static SimpleNetworkWrapper channelG;
+	public static SimpleNetworkWrapper channelP;
 	private static final Map<String, NBTTagCompound> extendedEntityData = new HashMap<String, NBTTagCompound>();
 	
 	@Override
 	public void registerChannel() {
 		//SimpleNetworkWrapper packets
-		channel = NetworkRegistry.INSTANCE.newSimpleChannel(channelName);
+		channelE = NetworkRegistry.INSTANCE.newSimpleChannel(channelNameE);
+		channelG = NetworkRegistry.INSTANCE.newSimpleChannel(channelNameG);
+		channelP = NetworkRegistry.INSTANCE.newSimpleChannel(channelNameP);
+		
 		//register packets
-		channel.registerMessage(S2CEntitySync.Handler.class, S2CEntitySync.class, Names.Packets.ENTITY_SYNC, Side.CLIENT);
-		channel.registerMessage(S2CSpawnParticle.Handler.class, S2CSpawnParticle.class, Names.Packets.SPAWN_PARTICLE, Side.CLIENT);
-		channel.registerMessage(S2CGUIPackets.Handler.class, S2CGUIPackets.class, Names.Packets.GUI_SYNC, Side.CLIENT);
-		channel.registerMessage(C2SGUIPackets.Handler.class, C2SGUIPackets.class, Names.Packets.GUI_CLICK, Side.SERVER);
+		//entity sync packet
+		channelE.registerMessage(S2CEntitySync.Handler.class, S2CEntitySync.class, Names.Packets.ENTITY_SYNC, Side.CLIENT);
+		//GUI packet
+		channelP.registerMessage(S2CSpawnParticle.Handler.class, S2CSpawnParticle.class, Names.Packets.SPAWN_PARTICLE, Side.CLIENT);
+		//particle packet
+		channelG.registerMessage(S2CGUIPackets.Handler.class, S2CGUIPackets.class, Names.Packets.GUI_SYNC, Side.CLIENT);
+		channelG.registerMessage(C2SGUIPackets.Handler.class, C2SGUIPackets.class, Names.Packets.GUI_CLICK, Side.SERVER);
 	}
 	
 	//save entity data in globe variable for resuming data after death

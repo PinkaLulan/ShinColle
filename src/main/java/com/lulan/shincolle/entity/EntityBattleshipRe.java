@@ -75,7 +75,7 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
 		//moving
 		this.tasks.addTask(21, new EntityAIOpenDoor(this, true));			   //0000
 		this.tasks.addTask(23, new EntityAIShipFloating(this));				   //0101
-		this.tasks.addTask(24, new EntityAIShipWatchClosest(this, EntityPlayer.class, 6F, 0.1F)); //0010
+		this.tasks.addTask(24, new EntityAIShipWatchClosest(this, EntityPlayer.class, 6F, 0.05F)); //0010
 		this.tasks.addTask(25, new EntityAIWander(this, 0.8D));				   //0001
 		this.tasks.addTask(25, new EntityAILookIdle(this));					   //0011
 
@@ -115,7 +115,7 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
 //		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
         //spawn laser particle
 //		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(14, worldObj.provider.dimensionId, posX, posY + 1.5D, posZ, target.posX, target.posY+target.height/2F, target.posZ), point);
-		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 14, posX, posY + 1.5D, posZ, target.posX, target.posY+target.height/2F, target.posZ, true), point);
+		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 14, posX, posY + 1.5D, posZ, target.posX, target.posY+target.height/2F, target.posZ, true), point);
 	
 		//play sound: (sound name, volume, pitch) 
         playSound(Reference.MOD_ID+":ship-laser", 0.2F, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
@@ -143,7 +143,7 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
         if(this.rand.nextFloat() < missChance) {
         	atk = 0;	//still attack, but no damage
         	//spawn miss particle
-        	CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
+        	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
         }
         else {
         	//roll cri -> roll double hit -> roll triple hit (triple hit more rare)
@@ -151,21 +151,21 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
         	if(this.rand.nextFloat() < EffectEquip[ID.EF_CRI]) {
         		atk *= 1.5F;
         		//spawn critical particle
-        		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 11, false), point);
+        		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 11, false), point);
         	}
         	else {
         		//calc double hit
             	if(this.rand.nextFloat() < EffectEquip[ID.EF_DHIT]) {
             		atk *= 2F;
             		//spawn double hit particle
-            		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 12, false), point);
+            		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 12, false), point);
             	}
             	else {
             		//calc double hit
                 	if(this.rand.nextFloat() < EffectEquip[ID.EF_THIT]) {
                 		atk *= 3F;
                 		//spawn triple hit particle
-                		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 13, false), point);
+                		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 13, false), point);
                 	}
             	}
         	}
@@ -200,7 +200,7 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
 	        
         	//display hit particle on target
 	        TargetPoint point1 = new TargetPoint(this.dimension, target.posX, target.posY, target.posZ, 64D);
-			CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(target, 9, false), point1);
+			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 9, false), point1);
         }
 
 	    return isTargetHurt;

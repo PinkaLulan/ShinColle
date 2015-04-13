@@ -27,8 +27,8 @@ import net.minecraft.item.ItemStack;
 public class ContainerShipInventory extends Container {
 	
 	private BasicEntityShip entity;
-	public static final byte SLOTS_TOTAL = 24;
-	public static final byte SLOTS_EQUIP = 6;
+	public static final byte SLOTS_PLAYERINV = 24;
+	public static final byte SLOTS_SHIPINV = 6;
 	public static final byte SLOTS_INVENTORY = 18;
 	private int GuiKills, GuiExpCurrent, GuiNumAmmo, GuiNumAmmoHeavy, GuiNumGrudge, 
 	            GuiNumAirLight, GuiNumAirHeavy, GuiIsMarried,
@@ -96,8 +96,8 @@ public class ContainerShipInventory extends Container {
             
             if(itemstack1.getItem() instanceof BasicEquip) isEquip = true;	//判定是否為equip
 
-            if(slotid < 6) {  		//click equip slot
-            	if(!this.mergeItemStack(itemstack1, 6, 60, false)) { //take out equip
+            if(slotid < SLOTS_SHIPINV) {  		//click equip slot
+            	if(!this.mergeItemStack(itemstack1, SLOTS_SHIPINV, 60, false)) { //take out equip
                 	return null;
                 }	
                 slot.onSlotChange(itemstack1, itemstack); //若物品成功搬動過, 則呼叫slot change事件
@@ -105,28 +105,28 @@ public class ContainerShipInventory extends Container {
             else {					//slot is ship or player inventory (5~58)
             	if(slotid < 24) {	//if ship inventory (5~22)
             		if(isEquip) {	//把equip塞進slot 0~4, 塞不下則放player inventory (23~58)
-            			if(!this.mergeItemStack(itemstack1, 0, 6, false)) {
-                			if(!this.mergeItemStack(itemstack1, 24, 60, true)) {
+            			if(!this.mergeItemStack(itemstack1, 0, SLOTS_SHIPINV, false)) {
+                			if(!this.mergeItemStack(itemstack1, SLOTS_PLAYERINV, 60, true)) {
                 				return null;
                 			}			
                         }
             		}  
             		else {			//non-equip, put into player inventory (23~58)
-            			if(!this.mergeItemStack(itemstack1, 24, 60, true)) {
+            			if(!this.mergeItemStack(itemstack1, SLOTS_PLAYERINV, 60, true)) {
             				return null;
             			}
             		}
             	}
             	else {				//if player inventory (23~58)
             		if(isEquip) {	//把equip塞進slot 0~4, 塞不下則放ship inventory (5~22)
-            			if(!this.mergeItemStack(itemstack1, 0, 6, false)) {
-                			if(!this.mergeItemStack(itemstack1, 6, 24, true)) {
+            			if(!this.mergeItemStack(itemstack1, 0, SLOTS_SHIPINV, false)) {
+                			if(!this.mergeItemStack(itemstack1, SLOTS_SHIPINV, SLOTS_PLAYERINV, true)) {
                 				return null;
                 			}			
                         }
             		} 
             		else {			//non-equip, put into ship inventory (5~22)
-            			if(!this.mergeItemStack(itemstack1, 6, 24, false)) {
+            			if(!this.mergeItemStack(itemstack1, SLOTS_SHIPINV, SLOTS_PLAYERINV, false)) {
             				return null;
             			}
             		}
@@ -134,7 +134,7 @@ public class ContainerShipInventory extends Container {
             }
 
             //如果物品都放完了, 則設成null清空該物品
-            if (itemstack1.stackSize == 0) {
+            if (itemstack1.stackSize <= 0) {
                 slot.putStack((ItemStack)null);
             }
             else { //還沒放完, 先跑一次slot update

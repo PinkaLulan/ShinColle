@@ -16,6 +16,7 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
@@ -50,6 +51,7 @@ public class EntityRensouhou extends EntityLiving implements IShipEmotion, IShip
     public EntityRensouhou(World world) {
 		super(world);
 		this.setSize(0.6F, 0.8F);
+		this.isImmuneToFire = true;
 	}
     
     public EntityRensouhou(World world, BasicEntityShip host, EntityLivingBase target) {
@@ -57,6 +59,7 @@ public class EntityRensouhou extends EntityLiving implements IShipEmotion, IShip
 		this.world = world;
         this.host = host;
         this.target = target;
+        this.isImmuneToFire = true;
         
         //basic attr
         this.atk = host.getStateFinal(ID.ATK);
@@ -78,6 +81,14 @@ public class EntityRensouhou extends EntityLiving implements IShipEmotion, IShip
         this.posX = host.posX + rand.nextDouble() * 3D - 1.5D;
         this.posY = host.posY + 0D;
         this.posZ = host.posZ + rand.nextDouble() * 3D - 1.5D;
+
+    	//check the place is safe to summon
+    	if(!EntityHelper.checkBlockSafe(world, (int)posX, (int)posY, (int)posZ)) {
+    		this.posX = host.posX;
+            this.posY = host.posY;
+            this.posZ = host.posZ;
+    	}
+
         this.setPosition(this.posX, this.posY, this.posZ);
  
 	    //設定基本屬性
@@ -110,7 +121,12 @@ public class EntityRensouhou extends EntityLiving implements IShipEmotion, IShip
 	}
 	
 	@Override
-    public boolean attackEntityFrom(DamageSource attacker, float atk) {		
+    public boolean attackEntityFrom(DamageSource attacker, float atk) {
+		//disable 
+		if(attacker.getDamageType() == "inWall") {
+			return false;
+		}
+		
 		//set hurt face
     	if(this.getStateEmotion(ID.S.Emotion) != ID.Emotion.O_O) {
     		this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
@@ -238,7 +254,7 @@ public class EntityRensouhou extends EntityLiving implements IShipEmotion, IShip
 		
 		if(sync && !worldObj.isRemote) {
 			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
-			CommonProxy.channel.sendToAllAround(new S2CEntitySync(this, 4), point);
+			CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this, 4), point);
 		}
 	}
 
@@ -327,7 +343,7 @@ public class EntityRensouhou extends EntityLiving implements IShipEmotion, IShip
 		
 		//發射者煙霧特效
         TargetPoint point0 = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 6, this.posX, this.posY, this.posZ, distX, distY, distZ, true), point0);
+		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 6, this.posX, this.posY, this.posZ, distX, distY, distZ, true), point0);
 		
 		//calc miss chance, if not miss, calc cri/multi hit
 		TargetPoint point = new TargetPoint(this.dimension, this.host.posX, this.host.posY, this.host.posZ, 64D);
@@ -340,7 +356,7 @@ public class EntityRensouhou extends EntityLiving implements IShipEmotion, IShip
         	atkLight = 0;	//still attack, but no damage
         	//spawn miss particle
         	
-        	CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this.host, 10, false), point);
+        	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this.host, 10, false), point);
         }
         else {
         	//roll cri -> roll double hit -> roll triple hit (triple hit more rare)
@@ -348,21 +364,21 @@ public class EntityRensouhou extends EntityLiving implements IShipEmotion, IShip
         	if(this.rand.nextFloat() < this.host.getEffectEquip(ID.EF_CRI)) {
         		atkLight *= 1.5F;
         		//spawn critical particle
-            	CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this.host, 11, false), point);
+            	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this.host, 11, false), point);
         	}
         	else {
         		//calc double hit
             	if(this.rand.nextFloat() < this.host.getEffectEquip(ID.EF_DHIT)) {
             		atkLight *= 2F;
             		//spawn double hit particle
-            		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this.host, 12, false), point);
+            		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this.host, 12, false), point);
             	}
             	else {
             		//calc double hit
                 	if(this.rand.nextFloat() < this.host.getEffectEquip(ID.EF_THIT)) {
                 		atkLight *= 3F;
                 		//spawn triple hit particle
-                		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this.host, 13, false), point);
+                		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this.host, 13, false), point);
                 	}
             	}
         	}
@@ -395,7 +411,7 @@ public class EntityRensouhou extends EntityLiving implements IShipEmotion, IShip
 	        
 	        //display hit particle on target
 	        TargetPoint point1 = new TargetPoint(this.dimension, target.posX, target.posY, target.posZ, 64D);
-			CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(target, 9, false), point1);
+			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 9, false), point1);
         }
 	    
 	    //消耗彈藥計算
@@ -452,7 +468,7 @@ public class EntityRensouhou extends EntityLiving implements IShipEmotion, IShip
         	atkHeavy = 0;	//still attack, but no damage
         	//spawn miss particle
         	TargetPoint point = new TargetPoint(this.dimension, this.host.posX, this.host.posY, this.host.posZ, 64D);
-        	CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this.host, 10, false), point);
+        	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this.host, 10, false), point);
         }
 
         //spawn missile

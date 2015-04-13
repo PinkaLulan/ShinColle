@@ -39,8 +39,9 @@ public class ModRecipes {
 		ItemStack grudeBlock9 = new ItemStack(ModBlocks.BlockGrudge,9,0);
 		ItemStack grudeHeavyBlock = new ItemStack(ModBlocks.BlockGrudgeHeavy);
 		ItemStack gunpowderStack = new ItemStack(Items.gunpowder);
-		ItemStack instantMat = new ItemStack(ModItems.InstantConMat);
-		ItemStack kaitaiHammer = new ItemStack(ModItems.KaitaiHammer, 1, OreDictionary.WILDCARD_VALUE);
+		ItemStack instantMat8 = new ItemStack(ModItems.InstantConMat, 8);
+		ItemStack kaitaiHammerNew = new ItemStack(ModItems.KaitaiHammer);
+		ItemStack kaitaiHammerAll = new ItemStack(ModItems.KaitaiHammer, 1, OreDictionary.WILDCARD_VALUE);
 		ItemStack modernKit = new ItemStack(ModItems.ModernKit);
 		ItemStack ownerPaper = new ItemStack(ModItems.OwnerPaper);
 		ItemStack polymetalStack = new ItemStack(ModItems.AbyssMetal,1,1);
@@ -67,8 +68,8 @@ public class ModRecipes {
 		GameRegistry.addRecipe(new ShapelessOreRecipe(polymetalStack9, polymetalBlock));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(polymetalGravel, polymetalStack, polymetalStack, polymetalStack, polymetalStack));
 		//misc
-		GameRegistry.addRecipe(new ShapelessOreRecipe(instantMat, kaitaiHammer, shipEgg));
-		GameRegistry.addRecipe(new ShapelessOreRecipe(modernKit, kaitaiHammer, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(instantMat8, kaitaiHammerAll, shipEgg));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(modernKit, kaitaiHammerAll, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(ownerPaper, grudeStack, Items.paper));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(repairGoddess, grudeHeavyBlock, Blocks.diamond_block));
 		
@@ -103,7 +104,7 @@ public class ModRecipes {
 		//marriage ring
 		GameRegistry.addRecipe(new ShapedOreRecipe(ring,"asa","a a","aaa",'s',Items.nether_star,'a',abyssiumStack));
 		//kaitai hammer
-		GameRegistry.addRecipe(new ShapedOreRecipe(kaitaiHammer,"aaa","aaa"," s ",'s',Items.stick,'a',abyssiumStack));
+		GameRegistry.addRecipe(new ShapedOreRecipe(kaitaiHammerNew,"aaa","aaa"," s ",'s',Items.stick,'a',abyssiumStack));
 		
 	}
 

@@ -40,6 +40,17 @@ public class EntityHelper {
 	
 	public EntityHelper() {}
 	
+	//check block is safe for summon
+	public static boolean checkBlockSafe(World world, int x, int y, int z) {
+		Block block = world.getBlock(x, y, z);
+		
+		if(block == Blocks.air || block == null || block == Blocks.water || block == Blocks.lava) {
+    		return true;
+    	}
+		
+		return false;
+	}
+	
 	//check is same owner for ship (host == target's owner)
 	public static boolean checkSameOwner(EntityLivingBase host, EntityLivingBase target) {
 		EntityLivingBase getOwnerA = null;
@@ -178,6 +189,24 @@ public class EntityHelper {
 			}
 		}
 		return null;
+	}
+	
+	//process player sync data
+	public static void setPlayerExtProps(int[] value) {
+		EntityPlayer player = ClientProxy.getClientPlayer();
+		ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+		
+		if(extProps != null) {
+			extProps.setRingActiveI(value[0]);
+			extProps.setMarriageNum(value[1]);
+			
+			//disable fly
+			if(!extProps.isRingActive() && !player.capabilities.isCreativeMode && extProps.isRingFlying()) {
+				LogHelper.info("DEBUG : cancel fly by right click");
+				player.capabilities.isFlying = false;
+				extProps.setRingFlying(false);
+			}
+		}
 	}
 	
 	//process player sync data

@@ -145,7 +145,7 @@ public class EntityDestroyerShimakazeBoss extends BasicEntityShipHostile impleme
 
         //發射者煙霧特效 (招喚連裝砲不使用特效, 但是要發送封包來設定attackTime)
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
-		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
+		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
   		
 		//spawn airplane
         if(target instanceof EntityLivingBase) {
@@ -198,12 +198,12 @@ public class EntityDestroyerShimakazeBoss extends BasicEntityShipHostile impleme
         	tarZ = tarZ - 3F + this.rand.nextFloat() * 6F;
         	//spawn miss particle
         	TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-        	CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
+        	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
         }
         
         //發射者煙霧特效 (不使用特效, 但是要發送封包來設定attackTime)
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
-		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
+		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
 
         //spawn missile
         EntityAbyssMissile missile1 = new EntityAbyssMissile(this.worldObj, this, 

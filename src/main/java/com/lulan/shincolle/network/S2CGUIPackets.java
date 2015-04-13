@@ -1,34 +1,23 @@
 package com.lulan.shincolle.network;
 
+import io.netty.buffer.ByteBuf;
+
 import java.util.List;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
-import net.minecraftforge.common.DimensionManager;
 
-import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.ExtendPlayerProps;
 import com.lulan.shincolle.entity.renderentity.EntityRenderVortex;
 import com.lulan.shincolle.proxy.ClientProxy;
-import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.BasicTileEntity;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
-import com.lulan.shincolle.utility.ParticleHelper;
 
-import io.netty.buffer.ByteBuf;
-import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 /**SERVER TO CLIENT : GUI SYNC PACKET
  * 用於同步GUI中, 大小超過short大小的值
@@ -63,6 +52,13 @@ public class S2CGUIPackets implements IMessage {
         this.type = 2;
         this.value = value;
         this.value2 = value2;
+    }
+	
+	//type 3: player ring sync
+	public S2CGUIPackets(ExtendPlayerProps extProps) {
+        this.type = 3;
+        this.value = extProps.isRingActiveI();
+        this.value2 = extProps.getMarriageNum();
     }
 	
 	//接收packet方法
@@ -131,6 +127,17 @@ public class S2CGUIPackets implements IMessage {
 				EntityHelper.setPlayerByGUI((int)value, (int)value2);
 			}
 			break;
+		case 3: //player gui click
+			{			
+				int[] extValues = new int[2];
+				
+				extValues[0] = buf.readByte();
+				extValues[1] = buf.readByte();
+				
+				//set value
+				EntityHelper.setPlayerExtProps(extValues);
+			}
+			break;
 		}
 	}
 
@@ -167,6 +174,13 @@ public class S2CGUIPackets implements IMessage {
 		case 2:	//ship entity gui click
 			{
 				buf.writeByte(2);
+				buf.writeByte(this.value);
+				buf.writeByte(this.value2);
+			}
+			break;
+		case 3:	//ship entity gui click
+			{
+				buf.writeByte(3);
 				buf.writeByte(this.value);
 				buf.writeByte(this.value2);
 			}

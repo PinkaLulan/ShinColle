@@ -49,26 +49,23 @@ public class MarriageRing extends BasicItem {
 			}
 			
 			boolean isActive = itemstack.getTagCompound().getBoolean("isActive");
-			itemstack.getTagCompound().setBoolean("isActive", !isActive);
+			boolean invActive = !isActive;
+			itemstack.getTagCompound().setBoolean("isActive", invActive);
 			
 			//change player state
 			ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 			
 			if(extProps != null) {
-				extProps.setRingActive(!isActive);
+				extProps.setRingActive(invActive);
 				
 				//disable fly
-				if(!extProps.isRingActive()) {
+				if(!extProps.isRingActive() && !player.capabilities.isCreativeMode && extProps.isRingFlying()) {
+					player.capabilities.isFlying = false;
 					extProps.setRingFlying(false);
-					
-					if(!player.capabilities.isCreativeMode) {
-						player.capabilities.isFlying = false;
-					}
 				}
 				
 				//sync ring state to client
-				CommonProxy.channel.sendTo(new S2CGUIPackets(0, extProps.isRingActiveI()), (EntityPlayerMP) player);
-				CommonProxy.channel.sendTo(new S2CGUIPackets(1, extProps.getMarriageNum()), (EntityPlayerMP) player);
+				CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps), (EntityPlayerMP) player);
 			}
 		}
 		
@@ -90,7 +87,7 @@ public class MarriageRing extends BasicItem {
 	public void onUpdate(ItemStack item, World world, Entity entity, int slot, boolean inUse) {
 		ExtendPlayerProps extProps = null;
 		EntityPlayer owner = null;
-		
+
 		if(entity instanceof EntityPlayer) {
 			extProps = (ExtendPlayerProps) entity.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 			owner = (EntityPlayer) entity;
@@ -100,30 +97,20 @@ public class MarriageRing extends BasicItem {
 				//fly mode: marriages > 5
 				if(extProps.getMarriageNum() > 5) {
 					if(entity.isInWater() || entity.handleLavaMovement()) {
-						if(item.hasTagCompound() && item.getTagCompound().getBoolean("isActive")) {
-							extProps.setRingFlying(true);
-							owner.capabilities.allowFlying = true;
+						//not flying and ring is active
+						if(!owner.capabilities.isFlying && extProps.isRingActive()) {
 							owner.capabilities.isFlying = true;
-						}
-						//ring is not actived, cancel fly
-						else if(extProps.isRingFlying()) {
-							extProps.setRingFlying(false);
-							
-							if(!owner.capabilities.isCreativeMode) {
-								owner.capabilities.isFlying = false;
-							}
+							extProps.setRingFlying(true);
 						}
 					}
-					else {	//增加ring flying flag檢查, 避免持續關掉其他mod的fly功能
-						if(extProps.isRingFlying()) {
+					//cancel flying when leave water
+					else {
+						if(extProps.isRingFlying() && !owner.capabilities.isCreativeMode && owner.capabilities.isFlying) {
+							owner.capabilities.isFlying = false;
 							extProps.setRingFlying(false);
-							
-							if(!owner.capabilities.isCreativeMode) {
-								owner.capabilities.isFlying = false;
-							}
 						}
 					}
-				}
+				}	
 			
 				//water breathing: no requirement
 				if(owner.ticksExisted % 100 == 0) {

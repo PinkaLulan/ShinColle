@@ -122,7 +122,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
 		//moving
 		this.tasks.addTask(21, new EntityAIOpenDoor(this, true));			   //0000
 		this.tasks.addTask(23, new EntityAIShipFloating(this));				   //0101
-		this.tasks.addTask(24, new EntityAIShipWatchClosest(this, EntityPlayer.class, 6F, 0.1F)); //0010
+		this.tasks.addTask(24, new EntityAIShipWatchClosest(this, EntityPlayer.class, 6F, 0.05F)); //0010
 		this.tasks.addTask(25, new EntityAIWander(this, 0.8D));				   //0001
 		this.tasks.addTask(26, new EntityAILookIdle(this));					   //0011
 	}
@@ -192,7 +192,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
       
         //發射者煙霧特效
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 19, this.posX, this.posY+0.3D, this.posZ, distX, 1F, distZ, true), point);
+		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 19, this.posX, this.posY+0.3D, this.posZ, distX, 1F, distZ, true), point);
 
 		//play cannon fire sound at attacker
         playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
@@ -220,7 +220,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
         if(this.rand.nextFloat() < missChance) {
         	atk = 0;	//still attack, but no damage
         	//spawn miss particle
-    		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
+    		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
         }
         else {
         	//roll cri -> roll double hit -> roll triple hit (triple hit more rare)
@@ -228,21 +228,21 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
         	if(this.rand.nextFloat() < EffectEquip[ID.EF_CRI]) {
         		atk *= 1.5F;
         		//spawn critical particle
-        		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 11, false), point);
+        		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 11, false), point);
         	}
         	else {
         		//calc double hit
             	if(this.rand.nextFloat() < EffectEquip[ID.EF_DHIT]) {
             		atk *= 2F;
             		//spawn double hit particle
-            		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 12, false), point);
+            		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 12, false), point);
             	}
             	else {
             		//calc double hit
                 	if(this.rand.nextFloat() < EffectEquip[ID.EF_THIT]) {
                 		atk *= 3F;
                 		//spawn triple hit particle
-                		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 13, false), point);
+                		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 13, false), point);
                 	}
             	}
         	}
@@ -277,7 +277,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
 	        
         	//display hit particle on target
 	        TargetPoint point1 = new TargetPoint(this.dimension, target.posX, target.posY, target.posZ, 64D);
-			CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(target, 9, false), point1);
+			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 9, false), point1);
         }
 
 	    return isTargetHurt;
@@ -351,7 +351,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
       
         if(atkPhase > 3) {	//攻擊準備完成, 計算攻擊傷害
         	//display hit particle on target
-	        CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 21, posX, posY, posZ, target.posX, target.posY, target.posZ, true), point);
+	        CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 21, posX, posY, posZ, target.posX, target.posY, target.posZ, true), point);
         	
         	//calc miss chance, miss: atk1 = 0, atk2 = 50%
             float missChance = 0.2F + 0.15F * (distSqrt / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.N.ShipLevel];
@@ -362,13 +362,13 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
             	atk1 = 0F;
             	atk2 *= 0.5F;
             	//spawn miss particle
-            	CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
+            	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
             }
             else if(this.rand.nextFloat() < EffectEquip[ID.EF_CRI]) {	//CRI
         		atk1 *= 1.5F;
         		atk2 *= 1.5F;
         		//spawn critical particle
-        		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 11, false), point);
+        		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 11, false), point);
             }
             
             //vs player = 25% dmg
@@ -457,10 +457,10 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
         }
         else {
         	if(atkPhase == 2) {
-        		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 23, this.posX, this.posY, this.posZ, 1D, 0D, 0D, true), point);
+        		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 23, this.posX, this.posY, this.posZ, 1D, 0D, 0D, true), point);
         	}
         	else {
-        		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 22, this.posX, this.posY, this.posZ, 1D, 0D, 0D, true), point);
+        		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 22, this.posX, this.posY, this.posZ, 1D, 0D, 0D, true), point);
         	}
     		
         	this.setStateEmotion(ID.S.Phase, atkPhase, true);

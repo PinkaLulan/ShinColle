@@ -4,6 +4,7 @@ import com.lulan.shincolle.crafting.LargeRecipes;
 import com.lulan.shincolle.crafting.SmallRecipes;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
+import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -102,12 +103,12 @@ public class ContainerLargeShipyard extends Container {
             		return null;
             }  
             //點擊hot bar => 移動到inventory or player inv
-            else if (slotid > SLOT_HOTBAR) {
+            else if (slotid >= SLOT_HOTBAR) {
             	if(!this.mergeItemStack(orgStack, SLOT_INVENTORY, SLOT_HOTBAR, false))
             		return null;
             }
             //點擊player inv => 移動到inventory or hot bar
-            else if(slotid > SLOT_PLAYERINV && slotid < SLOT_HOTBAR) {
+            else if(slotid >= SLOT_PLAYERINV && slotid < SLOT_HOTBAR) {
             	if(!this.mergeItemStack(orgStack, SLOT_INVENTORY, SLOT_PLAYERINV, true))
             		return null;
             } 
@@ -125,6 +126,7 @@ public class ContainerLargeShipyard extends Container {
                 slot.onSlotChanged();
             }
         }
+
         return newStack;	//物品移動完成, 回傳剩下的物品
     }
 	

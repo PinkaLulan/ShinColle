@@ -165,7 +165,7 @@ public class BasicEntityShipHostile extends EntityMob implements IShipAttack, IS
 		
 		if(sync && !worldObj.isRemote) {
 			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
-			CommonProxy.channel.sendToAllAround(new S2CEntitySync(this, 4), point);
+			CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this, 4), point);
 		}
 	}
 

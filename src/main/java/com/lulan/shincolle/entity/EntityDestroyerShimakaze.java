@@ -118,7 +118,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IU
 		//moving
 		this.tasks.addTask(21, new EntityAIOpenDoor(this, true));			   //0000
 		this.tasks.addTask(23, new EntityAIShipFloating(this));				   //0101
-		this.tasks.addTask(24, new EntityAIShipWatchClosest(this, EntityPlayer.class, 6F, 0.1F)); //0010
+		this.tasks.addTask(24, new EntityAIShipWatchClosest(this, EntityPlayer.class, 6F, 0.05F)); //0010
 		this.tasks.addTask(25, new EntityAIWander(this, 0.8D));				   //0001
 		this.tasks.addTask(26, new EntityAILookIdle(this));					   //0011
 	}
@@ -214,7 +214,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IU
 
         //發射者煙霧特效 (招喚連裝砲不使用特效, 但是要發送封包來設定attackTime)
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
-		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
+		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
   		
 		//spawn airplane
         if(target instanceof EntityLivingBase) {
@@ -290,12 +290,12 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IU
         	tarZ = tarZ - 3F + this.rand.nextFloat() * 6F;
         	//spawn miss particle
         	TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-        	CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
+        	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
         }
         
         //發射者煙霧特效 (不使用特效, 但是要發送封包來設定attackTime)
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
-		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
+		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
 
         //spawn missile
         EntityAbyssMissile missile1 = new EntityAbyssMissile(this.worldObj, this, 

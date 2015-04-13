@@ -24,7 +24,6 @@ import cpw.mods.fml.relauncher.SideOnly;
  */
 public class ParticleHelper {
 	
-	private static World world = ClientProxy.getClientWorld();
 	private static Random rand = new Random();
 	
 	
@@ -174,6 +173,9 @@ public class ParticleHelper {
 	 */
 	@SideOnly(Side.CLIENT)
 	public static void spawnAttackParticleAt(double posX, double posY, double posZ, double lookX, double lookY, double lookZ, byte type) {
+		//注意此world不能設為static變數, 否則client端重登後world依然是舊world而非重登後的新world
+		World world = Minecraft.getMinecraft().theWorld;
+		
 		//get target position
 		double ran1 = 0D;
 		double ran2 = 0D;
@@ -181,7 +183,7 @@ public class ParticleHelper {
 		float[] newPos1;
 		float[] newPos2;
 		float degYaw = 0F;
-		
+		LogHelper.info("DEBUG : spawn partile "+type);
 		//spawn particle
 		switch(type) {
 		case 1:		//largeexplode
@@ -372,6 +374,8 @@ public class ParticleHelper {
 	 */
 	@SideOnly(Side.CLIENT)
 	public static void spawnAttackParticleAtEntity(Entity ent, double par1, double par2, double par3, byte type) {
+		World world = Minecraft.getMinecraft().theWorld;
+		
 		//get target position
 		double ran1 = 0D;
 		double ran2 = 0D;

@@ -178,7 +178,7 @@ public class GuiLargeShipyard extends GuiContainer {
         		buildType = 1;	//原本點其他按鈕, 則設成ship
         	}
         	LogHelper.info("DEBUG : GUI click: build large ship: ship "+buildType);
-        	CommonProxy.channel.sendToServer(new C2SGUIPackets(this.tile, ID.B.Shipyard_Type, buildType, 0));
+        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, ID.B.Shipyard_Type, buildType, 0));
         	break;
         case 1:	//build equip
         	if(buildType == 2) {
@@ -188,7 +188,7 @@ public class GuiLargeShipyard extends GuiContainer {
         		buildType = 2;	//原本點其他按鈕, 則設成equip
         	}
         	LogHelper.info("DEBUG : GUI click: build large ship: equip "+buildType);
-        	CommonProxy.channel.sendToServer(new C2SGUIPackets(this.tile, ID.B.Shipyard_Type, buildType, 0));
+        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, ID.B.Shipyard_Type, buildType, 0));
         	break;
         case 2:	//inventory mode
         	if(invMode == 0) {
@@ -198,7 +198,7 @@ public class GuiLargeShipyard extends GuiContainer {
         		invMode = 0;
         	}
         	LogHelper.info("DEBUG : GUI click: build large ship: invMode "+invMode);
-        	CommonProxy.channel.sendToServer(new C2SGUIPackets(this.tile, ID.B.Shipyard_InvMode, invMode, 0));
+        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, ID.B.Shipyard_InvMode, invMode, 0));
         	break;
         case 3:	//select material grudge
         case 4: //abyssium
@@ -206,7 +206,7 @@ public class GuiLargeShipyard extends GuiContainer {
         case 6: //polymetal
         	selectMat = buttonClicked - 3;
         	LogHelper.info("DEBUG : GUI click: build large ship: select mats "+selectMat);
-        	CommonProxy.channel.sendToServer(new C2SGUIPackets(this.tile, ID.B.Shipyard_SelectMat, selectMat, 0));
+        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, ID.B.Shipyard_SelectMat, selectMat, 0));
         	break;
         case 7:	//select material grudge num
         case 8: //abyssium num
@@ -214,7 +214,7 @@ public class GuiLargeShipyard extends GuiContainer {
         case 10://polymetal num
         	selectMat = buttonClicked - 7;
         	LogHelper.info("DEBUG : GUI click: build large ship: select mats (num) "+selectMat);
-        	CommonProxy.channel.sendToServer(new C2SGUIPackets(this.tile, ID.B.Shipyard_SelectMat, selectMat, 0));
+        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, ID.B.Shipyard_SelectMat, selectMat, 0));
         	break;
         }//end page 0 button switch
         
@@ -230,7 +230,7 @@ public class GuiLargeShipyard extends GuiContainer {
         case 6:	//build mat -10
         case 7:	//build mat -1
         	LogHelper.info("DEBUG : GUI click: build large ship: inc/dec build materials "+(selectMat+1)+" "+buttonClicked);
-        	CommonProxy.channel.sendToServer(new C2SGUIPackets(this.tile, ID.B.Shipyard_INCDEC, selectMat, buttonClicked));
+        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, ID.B.Shipyard_INCDEC, selectMat, buttonClicked));
         	break;	
         }//end other page button switch
         

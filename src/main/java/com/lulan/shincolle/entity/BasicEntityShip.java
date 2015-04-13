@@ -437,7 +437,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 		EffectEquip[ID.EF_MISS] = 0;
 		
 		//calc equip slots
-		for(int i=0; i<ContainerShipInventory.SLOTS_EQUIP; i++) {
+		for(int i=0; i<ContainerShipInventory.SLOTS_SHIPINV; i++) {
 			itemstack = this.ExtProps.slots[i];
 			if(itemstack != null) {
 				equipStat = EquipCalc.getEquipStat(this, itemstack);
@@ -483,7 +483,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 		StateFinal[ID.ATK_AH] = (atk * 4F + StateEquip[ID.ATK_AH]) * (float)ConfigHandler.scaleShip[ID.ATK];
 		//KB Resistance = Level / 10 * 0.04
 		float resisKB = (((float)StateMinor[ID.N.ShipLevel])/10F) * 0.067F;
-		LogHelper.info("DEBUG : get new value "+ConfigHandler.scaleShip[0]+" "+ConfigHandler.scaleShip[1]+" "+ConfigHandler.scaleShip[2]+" "+ConfigHandler.scaleShip[3]+" "+ConfigHandler.scaleShip[4]+" "+ConfigHandler.scaleShip[5]);
+
 		//min, max cap balue
 		if(StateFinal[ID.DEF] > 95F) {
 			StateFinal[ID.DEF] = 95F;	//max def = 95%
@@ -642,7 +642,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 		StateEmotion[id] = (byte)value;
 		if(sync && !worldObj.isRemote) {
 			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
-			CommonProxy.channel.sendToAllAround(new S2CEntitySync(this, 1), point);
+			CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this, 1), point);
 		}
 	}
 	
@@ -665,13 +665,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 				EntityPlayerMP player = EntityHelper.getOnlinePlayer(this.getOwner());
 				//owner在附近才需要sync
 				if(player != null && this.getDistanceToEntity(player) < 30F) {
-					CommonProxy.channel.sendTo(new S2CEntitySync(this, 0), player);
+					CommonProxy.channelE.sendTo(new S2CEntitySync(this, 0), player);
 				}	
 			}
 			
 			//for other player, send ship state for display
 			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 30D);
-			CommonProxy.channel.sendToAllAround(new S2CEntitySync(this, 1), point);
+			CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this, 1), point);
 		}
 	}
 	
@@ -772,7 +772,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
                 
                 //play hearts effect
                 TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
-    			CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 3, false), point);
+    			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 3, false), point);
                 
     			//play marriage sound
     	        this.playSound(Reference.MOD_ID+":ship-love", ConfigHandler.shipVolume, 1.0F);
@@ -1144,7 +1144,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
         		
         		//sync emotion every 5 sec
         		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
-    			CommonProxy.channel.sendToAllAround(new S2CEntitySync(this, 1), point);
+    			CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this, 1), point);
 
         		//set air value
         		if(this.getAir() < 300) {
@@ -1227,7 +1227,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 	        //send packet to client for display partical effect   
 	        if (!worldObj.isRemote) {
 	        	TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-	    		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(target, 1, false), point);
+	    		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 1, false), point);
 			}
 	    }
 
@@ -1252,7 +1252,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
         
         //發射者煙霧特效
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 6, this.posX, this.posY, this.posZ, distX, distY, distZ, true), point);
+		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 6, this.posX, this.posY, this.posZ, distX, distY, distZ, true), point);
 
 		//play cannon fire sound at attacker
         playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
@@ -1280,7 +1280,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
         if(this.rand.nextFloat() < missChance) {
         	atk = 0;	//still attack, but no damage
         	//spawn miss particle
-    		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
+    		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
         }
         else {
         	//roll cri -> roll double hit -> roll triple hit (triple hit more rare)
@@ -1288,21 +1288,21 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
         	if(this.rand.nextFloat() < EffectEquip[ID.EF_CRI]) {
         		atk *= 1.5F;
         		//spawn critical particle
-        		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 11, false), point);
+        		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 11, false), point);
         	}
         	else {
         		//calc double hit
             	if(this.rand.nextFloat() < EffectEquip[ID.EF_DHIT]) {
             		atk *= 2F;
             		//spawn double hit particle
-            		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 12, false), point);
+            		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 12, false), point);
             	}
             	else {
             		//calc double hit
                 	if(this.rand.nextFloat() < EffectEquip[ID.EF_THIT]) {
                 		atk *= 3F;
                 		//spawn triple hit particle
-                		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 13, false), point);
+                		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 13, false), point);
                 	}
             	}
         	}
@@ -1337,7 +1337,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 	        
         	//display hit particle on target
 	        TargetPoint point1 = new TargetPoint(this.dimension, target.posX, target.posY, target.posZ, 64D);
-			CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(target, 9, false), point1);
+			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 9, false), point1);
         }
 
 	    return isTargetHurt;
@@ -1400,7 +1400,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
         	tarZ = tarZ - 3F + this.rand.nextFloat() * 6F;
         	//spawn miss particle
         	TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-        	CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
+        	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
         }
 
         //spawn missile
@@ -1781,7 +1781,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 		ItemStack slotitem = null;
 
 		//search ship inventory (except equip slots)
-		for(int i = ContainerShipInventory.SLOTS_EQUIP; i < ContainerShipInventory.SLOTS_TOTAL; i++) {
+		for(int i = ContainerShipInventory.SLOTS_SHIPINV; i < ContainerShipInventory.SLOTS_PLAYERINV; i++) {
 			slotitem = this.ExtProps.slots[i];
 			if(slotitem != null && 
 			    slotitem.getItem().equals(parItem.getItem()) && 

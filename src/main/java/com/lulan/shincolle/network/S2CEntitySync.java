@@ -312,7 +312,8 @@ public class S2CEntitySync implements IMessage {
 		//收到封包時顯示debug訊息
 		@Override
 		public IMessage onMessage(S2CEntitySync message, MessageContext ctx) {
-//          System.out.println(String.format("Received %s from %s", message.text, ctx.getServerHandler().playerEntity.getDisplayName()));
+
+			//          System.out.println(String.format("Received %s from %s", message.text, ctx.getServerHandler().playerEntity.getDisplayName()));
 //			LogHelper.info("DEBUG : recv Entity Sync packet : type "+recvType+" id "+entityID);
 			return null;
 		}

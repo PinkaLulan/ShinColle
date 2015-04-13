@@ -207,6 +207,21 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipA
 			else {
 				//超過60秒自動消失
 				if(this.ticksExisted > 1200) {
+					this.numAmmoLight -= 2;
+					if(this.numAmmoLight < 0) this.numAmmoLight = 0;
+					this.numAmmoHeavy -= 1;
+					if(this.numAmmoHeavy < 0) this.numAmmoHeavy = 0;
+					
+					this.hostEntity.setStateMinor(ID.N.NumAmmoLight, this.hostEntity.getStateMinor(ID.N.NumAmmoLight) + this.numAmmoLight);
+					this.hostEntity.setStateMinor(ID.N.NumAmmoHeavy, this.hostEntity.getStateMinor(ID.N.NumAmmoHeavy) + this.numAmmoHeavy);
+				
+					if(this instanceof EntityAirplane) {
+						hostEntity.setNumAircraftLight(hostEntity.getNumAircraftLight()+1);
+					}
+					else {
+						hostEntity.setNumAircraftHeavy(hostEntity.getNumAircraftHeavy()+1);
+					}
+					
 					this.setDead();
 				}
 				
@@ -229,8 +244,6 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipA
 						this.motionZ = distZ / distSqrt * speed * 1.0D;
 					}
 					else {	//歸還剩餘彈藥 (但是grudge不歸還)
-						this.setDead();
-						
 						this.numAmmoLight -= 2;
 						if(this.numAmmoLight < 0) this.numAmmoLight = 0;
 						this.numAmmoHeavy -= 1;
@@ -245,7 +258,8 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipA
 						else {
 							hostEntity.setNumAircraftHeavy(hostEntity.getNumAircraftHeavy()+1);
 						}
-					
+						
+						this.setDead();
 					}
 				}
 				
@@ -297,6 +311,16 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipA
 
 		super.onUpdate();
 	}
+	
+	@Override
+	public boolean attackEntityFrom(DamageSource source, float atk) {
+		//disable 
+		if(source.getDamageType() == "inWall") {
+			return false;
+		}
+		
+		return super.attackEntityFrom(source, atk);
+    }
 
 	//light attack
 	@Override
@@ -308,7 +332,7 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipA
         playSound(Reference.MOD_ID+":ship-machinegun", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         //attack particle
         TargetPoint point0 = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 8, false), point0);
+		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 8, false), point0);
 		
 		//calc miss chance, if not miss, calc cri/multi hit
 		TargetPoint point = new TargetPoint(this.dimension, this.hostEntity.posX, this.hostEntity.posY, this.hostEntity.posZ, 64D);
@@ -321,7 +345,7 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipA
         	atkLight = 0;	//still attack, but no damage
         	//spawn miss particle
         	
-        	CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this.hostEntity, 10, false), point);
+        	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this.hostEntity, 10, false), point);
         }
         else {
         	//roll cri -> roll double hit -> roll triple hit (triple hit more rare)
@@ -329,21 +353,21 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipA
         	if(this.rand.nextFloat() < this.hostEntity.getEffectEquip(ID.EF_CRI)) {
         		atkLight *= 1.5F;
         		//spawn critical particle
-            	CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this.hostEntity, 11, false), point);
+            	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this.hostEntity, 11, false), point);
         	}
         	else {
         		//calc double hit
             	if(this.rand.nextFloat() < this.hostEntity.getEffectEquip(ID.EF_DHIT)) {
             		atkLight *= 2F;
             		//spawn double hit particle
-            		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this.hostEntity, 12, false), point);
+            		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this.hostEntity, 12, false), point);
             	}
             	else {
             		//calc double hit
                 	if(this.rand.nextFloat() < this.hostEntity.getEffectEquip(ID.EF_THIT)) {
                 		atkLight *= 3F;
                 		//spawn triple hit particle
-                		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this.hostEntity, 13, false), point);
+                		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this.hostEntity, 13, false), point);
                 	}
             	}
         	}
@@ -376,7 +400,7 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipA
 	        
         	//send packet to client for display partical effect  
 	        TargetPoint point1 = new TargetPoint(this.dimension, target.posX, target.posY, target.posZ, 64D);
-			CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(target, 0, false), point1);
+			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 0, false), point1);
         }
 	    
 	    //消耗彈藥計算
@@ -407,7 +431,7 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipA
         	atkHeavy = 0;	//still attack, but no damage
         	//spawn miss particle
         	TargetPoint point = new TargetPoint(this.dimension, this.hostEntity.posX, this.hostEntity.posY, this.hostEntity.posZ, 64D);
-        	CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this.hostEntity, 10, false), point);
+        	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this.hostEntity, 10, false), point);
         }
 
         //spawn missile

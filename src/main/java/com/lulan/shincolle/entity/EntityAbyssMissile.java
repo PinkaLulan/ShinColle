@@ -315,7 +315,7 @@ public class EntityAbyssMissile extends Entity {
             		missileAtk *= 3F;
             		//spawn critical particle
             		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-                	CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this.hostEntity4, 11, false), point);
+                	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this.hostEntity4, 11, false), point);
             	}
             	
             	//若攻擊到玩家, 最大傷害固定為TNT傷害 (non-owner)
@@ -367,7 +367,7 @@ public class EntityAbyssMissile extends Entity {
                     		missileAtk *= 3F;
                     		//spawn critical particle
                     		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-                        	CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this.hostEntity4, 11, false), point);
+                        	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this.hostEntity4, 11, false), point);
                     	}
                 		
                 		//若攻擊到同陣營entity (ex: owner), 則傷害設為0 (但是依然觸發擊飛特效)
@@ -408,7 +408,7 @@ public class EntityAbyssMissile extends Entity {
   
             //send packet to client for display partical effect
             TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-            CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 2, false), point);
+            CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 2, false), point);
             
             this.setDead();
         }//end if server side

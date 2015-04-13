@@ -24,7 +24,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 
 	public static final String SHIP_EXTPROP_NAME = "ShipExtProps";
 	public static final String tagName = "ShipInv";	//ship inventory nbt tag
-    public ItemStack[] slots = new ItemStack[ContainerShipInventory.SLOTS_TOTAL];
+    public ItemStack[] slots = new ItemStack[ContainerShipInventory.SLOTS_PLAYERINV];
     private BasicEntityShip entity;
     private World world;
 
