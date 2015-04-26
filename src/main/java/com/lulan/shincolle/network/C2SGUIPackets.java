@@ -26,11 +26,8 @@ import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-/**SERVER TO CLIENT : SPAWN PARTICLE PACKET
- * 用於指定位置生成particle
- * packet handler同樣建立在此class中
- * 
- * tut by diesieben07: http://www.minecraftforge.net/forum/index.php/topic,20135.0.html
+/**CLIENT TO SERVER : GUI INPUT PACKETS
+ * 用於將GUI的操作發送到server
  */
 public class C2SGUIPackets implements IMessage {
 	

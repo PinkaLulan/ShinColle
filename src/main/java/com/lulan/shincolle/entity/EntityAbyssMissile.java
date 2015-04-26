@@ -15,6 +15,7 @@ import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
@@ -65,7 +66,7 @@ public class EntityAbyssMissile extends Entity {
     private int midFlyTime;			//一半的飛行時間
     
     //for direct only
-    private static final float ACCE = 0.02F;		//預設加速度
+    private float ACCE = 0.02F;		//預設加速度
     private float accX;				//三軸加速度
     private float accY;
     private float accZ;
@@ -84,7 +85,7 @@ public class EntityAbyssMissile extends Entity {
     	this.setSize(1.0F, 1.0F);
     }
     
-    public EntityAbyssMissile(World world, IShipAttack host, float tarX, float tarY, float tarZ, float launchPos, float atk, float kbValue, boolean isDirect) {
+    public EntityAbyssMissile(World world, IShipAttack host, float tarX, float tarY, float tarZ, float launchPos, float atk, float kbValue, boolean isDirect, float customAcc) {
         super(world);
         this.world = world;
         //設定entity的發射者, 用於追蹤造成傷害的來源
@@ -104,6 +105,14 @@ public class EntityAbyssMissile extends Entity {
         this.distZ = (float) (tarZ - this.posZ);
         //設定直射或者拋物線
         this.isDirect = isDirect;
+        
+        //設定飛彈速度
+        if(customAcc > 0F) {
+        	this.ACCE = customAcc;
+        }
+        else {
+        	this.ACCE = 0.02F;
+        }
         
         //直射彈道, no gravity
     	float dist = MathHelper.sqrt_float(this.distX*this.distX + this.distY*this.distY + this.distZ*this.distZ);
@@ -144,6 +153,15 @@ public class EntityAbyssMissile extends Entity {
 		}
 		//type: rensouhou
 		else if(host instanceof EntityRensouhou) {
+			this.hostEntity2 = (EntityLiving) host;
+			this.hostEntity3 = null;
+			this.hostEntity4 = (BasicEntityShip) ((IShipAttack)host).getOwner();
+			//設定發射位置 (posY會加上offset), 左右+上下角度, 以及
+	        this.posX = hostEntity2.posX;
+	        this.posZ = hostEntity2.posZ;
+		}
+		//type: rensouhou
+		else if(host instanceof BasicEntityMount) {
 			this.hostEntity2 = (EntityLiving) host;
 			this.hostEntity3 = null;
 			this.hostEntity4 = (BasicEntityShip) ((IShipAttack)host).getOwner();
@@ -291,8 +309,10 @@ public class EntityAbyssMissile extends Entity {
 		if(((EntityLivingBase)hostEntity).getEntityId() == eid) {
 			return false;
 		}
-		else if(hostEntity4 != null && hostEntity4.getEntityId() == eid) {
-			return false;
+		else if(hostEntity4 != null && hostEntity4.getOwner() != null) {
+			if(hostEntity4.getEntityId() == eid || hostEntity4.getOwner().getEntityId() == eid) {
+				return false;
+			}
 		}
     	
 		return true;
@@ -300,6 +320,9 @@ public class EntityAbyssMissile extends Entity {
 
 	//撞擊判定時呼叫此方法
     protected void onImpact(EntityLivingBase target) {
+    	//play sound
+    	playSound(Reference.MOD_ID+":ship-explode", ConfigHandler.fireVolume * 1.5F, 0.7F / (this.rand.nextFloat() * 0.4F + 0.8F));
+    	
     	//server side
     	if(!this.worldObj.isRemote) {
     		float missileAtk = atk;

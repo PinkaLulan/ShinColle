@@ -65,7 +65,7 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
 	public EntityCarrierWo(World world) {
 		super(world);
 		this.setSize(0.8F, 1.7F);
-		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityCarrierWo.name"));
+//		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityCarrierWo.name"));
 		this.ShipType = ID.ShipType.STANDARD_CARRIER;
 		this.ShipID = ID.S_CarrierWO;
 		this.ModelPos = new float[] {0F, 15F, 0F, 30F};

@@ -79,7 +79,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
 	public EntityBattleshipNGT(World world) {
 		super(world);
 		this.setSize(0.8F, 1.6F);	//碰撞大小 跟模型大小無關
-		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityBattleshipNGT.name"));
+//		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityBattleshipNGT.name"));
 		this.ShipType = ID.ShipType.BATTLESHIP;
 		this.ShipID = ID.S_BattleshipNagato;
 		this.ModelPos = new float[] {0F, 15F, 0F, 40F};
@@ -142,7 +142,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
   				if(getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
   					
   					//計算煙霧位置
-  	  				float[] partPos = ParticleHelper.rotateParticleByAxis(-0.6F, 0F, (this.rotationYawHead % 360) / 57.2957F, 1F);	
+  	  				float[] partPos = ParticleHelper.rotateParticleByAxis(-0.6F, 0F, (this.rotationYawHead % 360) / 57.2957F, 1F);
   	  				//生成裝備冒煙特效
   	  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], posY+0.9D, posZ+partPos[0], 0D, 0D, 0D, (byte)20);
   				}	

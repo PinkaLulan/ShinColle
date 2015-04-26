@@ -515,7 +515,7 @@ public class ModelDestroyerShimakaze extends ModelBase {
 	    	else {
 		    	GL11.glTranslatef(0F, 1.5F, 0F);
 		    	//body
-		    	this.Head.rotateAngleX -= 0.5236F;
+		    	this.Head.rotateAngleX -= 0.7F;
 		    	this.BodyMain.rotateAngleX = 0.5236F;
 		    	this.HairMidL01.rotateAngleX += 0.2F;
 		    	this.HairMidR01.rotateAngleX += 0.2F;

@@ -174,7 +174,8 @@ public class ParticleHelper {
 	@SideOnly(Side.CLIENT)
 	public static void spawnAttackParticleAt(double posX, double posY, double posZ, double lookX, double lookY, double lookZ, byte type) {
 		//注意此world不能設為static變數, 否則client端重登後world依然是舊world而非重登後的新world
-		World world = Minecraft.getMinecraft().theWorld;
+//		World world = Minecraft.getMinecraft().theWorld;
+		World world = ClientProxy.getClientWorld();
 		
 		//get target position
 		double ran1 = 0D;
@@ -183,7 +184,7 @@ public class ParticleHelper {
 		float[] newPos1;
 		float[] newPos2;
 		float degYaw = 0F;
-		LogHelper.info("DEBUG : spawn partile "+type);
+//		LogHelper.info("DEBUG : spawn partile "+type);
 		//spawn particle
 		switch(type) {
 		case 1:		//largeexplode

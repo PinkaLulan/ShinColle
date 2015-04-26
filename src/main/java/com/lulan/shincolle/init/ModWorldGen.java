@@ -60,7 +60,6 @@ public class ModWorldGen {
 			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(polymetal, 1, 3, 60));
 			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(modernKit, 1, 2, 20));
 			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(instantCon, 20, 40, 60));
-			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(instantCon, 1, 3, 30));
 		}
 	
 		//common chest
@@ -75,7 +74,6 @@ public class ModWorldGen {
 			ChestGenHooks.addItem(commChest[i], new WeightedRandomChestContent(airB, 1, 1, 5));
 			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(modernKit, 1, 2, 10));
 			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(instantCon, 15, 30, 60));
-			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(instantCon, 1, 1, 30));
 		}
 	}
 

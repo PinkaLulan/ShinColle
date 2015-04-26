@@ -2,12 +2,14 @@ package com.lulan.shincolle.proxy;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 import com.lulan.shincolle.client.model.ModelAirplane;
+import com.lulan.shincolle.client.model.ModelBattleshipHime;
 import com.lulan.shincolle.client.model.ModelBattleshipNagato;
 import com.lulan.shincolle.client.model.ModelBattleshipRe;
 import com.lulan.shincolle.client.model.ModelBattleshipTa;
@@ -19,13 +21,16 @@ import com.lulan.shincolle.client.model.ModelDestroyerRo;
 import com.lulan.shincolle.client.model.ModelDestroyerShimakaze;
 import com.lulan.shincolle.client.model.ModelDestroyerShimakazeBoss;
 import com.lulan.shincolle.client.model.ModelHeavyCruiserRi;
+import com.lulan.shincolle.client.model.ModelMountBaH;
 import com.lulan.shincolle.client.model.ModelRensouhou;
 import com.lulan.shincolle.client.model.ModelRensouhouS;
+import com.lulan.shincolle.client.model.ModelSubmU511;
 import com.lulan.shincolle.client.model.ModelTakoyaki;
 import com.lulan.shincolle.client.render.RenderAbyssMissile;
 import com.lulan.shincolle.client.render.RenderAirplane;
 import com.lulan.shincolle.client.render.RenderAirplaneTakoyaki;
 import com.lulan.shincolle.client.render.RenderBasicEntityItem;
+import com.lulan.shincolle.client.render.RenderBattleshipHime;
 import com.lulan.shincolle.client.render.RenderBattleshipNGT;
 import com.lulan.shincolle.client.render.RenderBattleshipNGTBoss;
 import com.lulan.shincolle.client.render.RenderBattleshipRe;
@@ -39,14 +44,17 @@ import com.lulan.shincolle.client.render.RenderDestroyerShimakaze;
 import com.lulan.shincolle.client.render.RenderDestroyerShimakazeBoss;
 import com.lulan.shincolle.client.render.RenderHeavyCruiserRi;
 import com.lulan.shincolle.client.render.RenderLargeShipyard;
+import com.lulan.shincolle.client.render.RenderMountBaH;
 import com.lulan.shincolle.client.render.RenderRensouhou;
 import com.lulan.shincolle.client.render.RenderRensouhouS;
 import com.lulan.shincolle.client.render.RenderSmallShipyard;
 import com.lulan.shincolle.client.render.RenderSmallShipyardItem;
+import com.lulan.shincolle.client.render.RenderSubmU511;
 import com.lulan.shincolle.client.render.RenderVortex;
 import com.lulan.shincolle.entity.EntityAbyssMissile;
 import com.lulan.shincolle.entity.EntityAirplane;
 import com.lulan.shincolle.entity.EntityAirplaneTakoyaki;
+import com.lulan.shincolle.entity.EntityBattleshipHime;
 import com.lulan.shincolle.entity.EntityBattleshipNGT;
 import com.lulan.shincolle.entity.EntityBattleshipNGTBoss;
 import com.lulan.shincolle.entity.EntityBattleshipRe;
@@ -59,9 +67,12 @@ import com.lulan.shincolle.entity.EntityDestroyerRo;
 import com.lulan.shincolle.entity.EntityDestroyerShimakaze;
 import com.lulan.shincolle.entity.EntityDestroyerShimakazeBoss;
 import com.lulan.shincolle.entity.EntityHeavyCruiserRi;
+import com.lulan.shincolle.entity.EntityMountBaH;
 import com.lulan.shincolle.entity.EntityRensouhou;
 import com.lulan.shincolle.entity.EntityRensouhouBoss;
 import com.lulan.shincolle.entity.EntityRensouhouS;
+import com.lulan.shincolle.entity.EntitySubmU511;
+import com.lulan.shincolle.entity.EntitySubmU511Mob;
 import com.lulan.shincolle.entity.renderentity.EntityRenderLargeShipyard;
 import com.lulan.shincolle.entity.renderentity.EntityRenderVortex;
 import com.lulan.shincolle.init.ModBlocks;
@@ -82,6 +93,16 @@ public class ClientProxy extends CommonProxy {
 	public static EntityPlayer getClientPlayer() {
 		return Minecraft.getMinecraft().thePlayer;
 	}
+	
+	//client minecraft
+	public static GameSettings getGameSetting() {
+		return Minecraft.getMinecraft().gameSettings;
+	}
+	
+	//client minecraft
+	public static Minecraft getMineraft() {
+		return Minecraft.getMinecraft();
+	}
 
 	//µn¿ý°»´ú«öÁä
 	@Override
@@ -97,6 +118,7 @@ public class ClientProxy extends CommonProxy {
 		TileEntitySpecialRenderer tesrBlockSmallShipyard = new RenderSmallShipyard();
 		
 		//entity render (model class, shadow size)
+		RenderingRegistry.registerEntityRenderingHandler(EntityBattleshipHime.class, new RenderBattleshipHime(new ModelBattleshipHime(), 0.7F));
 		RenderingRegistry.registerEntityRenderingHandler(EntityBattleshipNGT.class, new RenderBattleshipNGT(new ModelBattleshipNagato(0), 0.7F));
 		RenderingRegistry.registerEntityRenderingHandler(EntityBattleshipNGTBoss.class, new RenderBattleshipNGTBoss(new ModelBattleshipNagato(1), 1.2F));
 		RenderingRegistry.registerEntityRenderingHandler(EntityBattleshipTa.class, new RenderBattleshipTa(new ModelBattleshipTa(), 0.7F));
@@ -112,6 +134,11 @@ public class ClientProxy extends CommonProxy {
 		RenderingRegistry.registerEntityRenderingHandler(EntityRensouhou.class, new RenderRensouhou(new ModelRensouhou(0.3F, 3F), 0.4F));
 		RenderingRegistry.registerEntityRenderingHandler(EntityRensouhouBoss.class, new RenderRensouhou(new ModelRensouhou(1F, 0F), 1F));
 		RenderingRegistry.registerEntityRenderingHandler(EntityRensouhouS.class, new RenderRensouhouS(new ModelRensouhouS(), 0.4F));
+		RenderingRegistry.registerEntityRenderingHandler(EntitySubmU511.class, new RenderSubmU511(new ModelSubmU511(), 0.5F));
+		RenderingRegistry.registerEntityRenderingHandler(EntitySubmU511Mob.class, new RenderSubmU511(new ModelSubmU511(), 0.5F));
+		
+		//mount render
+		RenderingRegistry.registerEntityRenderingHandler(EntityMountBaH.class, new RenderMountBaH(new ModelMountBaH(), 1.5F));
 		
 		//test entity render
 //		RenderingRegistry.registerEntityRenderingHandler(EntityTest.class, new RenderTest(new ModelTest(), 1F));

@@ -63,6 +63,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		nbtExt_add0.setInteger("FHP", this.entity.getStateMinor(ID.N.FleeHP));
 		nbtExt_add0.setInteger("TarAI", this.entity.getStateMinor(ID.N.TargetAI));
 		nbtExt_add0.setString("ownerName", this.entity.getOwnerName());
+		nbtExt_add0.setString("tagName", this.entity.getCustomNameTag());
 		//save AttrFinal
 		nbtExt.setTag("Final", nbtExt_add1);
 		nbtExt_add1.setFloat("HP", this.entity.getStateFinal(ID.HP));
@@ -100,6 +101,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		nbtExt_add4.setBoolean("AirL", this.entity.getStateFlag(ID.F.UseAirLight));
 		nbtExt_add4.setBoolean("AirH", this.entity.getStateFlag(ID.F.UseAirHeavy));
 		nbtExt_add4.setBoolean("WedEffect", this.entity.getStateFlag(ID.F.UseRingEffect));
+		nbtExt_add4.setBoolean("CanDrop", this.entity.getStateFlag(ID.F.CanDrop));
 		//save EntityFlag
 		nbtExt.setTag("Equip", nbtExt_add5);
 		nbtExt_add5.setFloat("Cri", this.entity.getEffectEquip(ID.EF_CRI));
@@ -145,6 +147,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		entity.setStateMinor(ID.N.FleeHP, nbt_load.getInteger("FHP"));
 		entity.setStateMinor(ID.N.TargetAI, nbt_load.getInteger("TarAI"));
 		entity.setOwnerName(nbt_load.getString("ownerName"));
+		entity.setNameTag(nbt_load.getString("tagName"));
 		//load final state
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Final");
 		entity.setStateFinal(ID.HP, nbt_load.getFloat("HP"));
@@ -182,6 +185,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		entity.setStateFlag(ID.F.UseAirLight, nbt_load.getBoolean("AirL"));
 		entity.setStateFlag(ID.F.UseAirHeavy, nbt_load.getBoolean("AirH"));
 		entity.setStateFlag(ID.F.UseRingEffect, nbt_load.getBoolean("WedEffect"));
+		entity.setStateFlag(ID.F.CanDrop, nbt_load.getBoolean("CanDrop"));
 		//load effect
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Equip");
 		entity.setEffectEquip(ID.EF_CRI, nbt_load.getFloat("Cri"));

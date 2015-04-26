@@ -39,7 +39,9 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAIOwnerHurtByTarget;
@@ -92,7 +94,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 	protected float[] EffectEquip;
 	/**EntityState: 0:State 1:Emotion 2:Emotion2 3:HP State 4:State2 5:AttackPhase*/
 	protected byte[] StateEmotion;
-	/**EntityFlag: 0:canFloatUp 1:isMarried 2:noFuel 3:canMelee 4:canAmmoLight 5:canAmmoHeavy 6:canAirLight 7:canAirHeavy 8:headTilt(client only) 9:canRingEffect*/
+	/**EntityFlag: 0:canFloatUp 1:isMarried 2:noFuel 3:canMelee 4:canAmmoLight 5:canAmmoHeavy 6:canAirLight 7:canAirHeavy 8:headTilt(client only) 9:canRingEffect 10:canDrop*/
 	protected boolean[] StateFlag;
 	/**BonusPoint: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT*/
 	protected byte[] BonusPoint;
@@ -114,7 +116,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 		StateMinor = new int[] {1, 0, 0, 40, 0, 0, 0, 0, 0, 0, 2, 14, 35, 1};
 		EffectEquip = new float[] {0F, 0F, 0F, 0F};
 		StateEmotion = new byte[] {0, 0, 0, 0, 0, 0};
-		StateFlag = new boolean[] {false, false, true, false, true, true, true, true, false, true};
+		StateFlag = new boolean[] {false, false, true, false, true, true, true, true, false, true, true};
 		BonusPoint = new byte[] {0, 0, 0, 0, 0, 0};
 		TypeModify = new float[] {1F, 1F, 1F, 1F, 1F, 1F};
 		ModelPos = new float[] {0F, 0F, 0F, 50F};
@@ -125,6 +127,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 		ShipPrevY = posY;
 		ShipPrevZ = posZ;
 		ownerName = "";
+		stepHeight = 1F;
 	}
 	
 	@Override
@@ -512,7 +515,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(StateFinal[ID.MOV]);
 		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(StateFinal[ID.HIT]+16); //此為找目標, 路徑的範圍
 		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(resisKB);
-		this.jumpMovementFactor = (1F + StateFinal[ID.MOV]) * 0.05F;
+//		this.jumpMovementFactor = (1F + StateFinal[ID.MOV]) * 0.05F;
 		
 		//for server side
 		if(!worldObj.isRemote) {
@@ -560,6 +563,15 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 		this.ownerName = name;
 	}
 	
+	//prevent player use name tag
+	@Override
+	public void setCustomNameTag(String str) {}
+	
+	//custom name tag method
+	public void setNameTag(String str) {
+        this.dataWatcher.updateObject(10, str);
+    }
+	
 	//called when a mob die near the entity (used in event handler)
 	public void addKills() {
 		StateMinor[ID.N.Kills]++;
@@ -605,9 +617,15 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 		this.StateFlag[id] = par1;
 		
 		//若修改melee flag, 則reload AI
-		if(id == ID.F.UseMelee) {
+		if(!this.worldObj.isRemote && id == ID.F.UseMelee) {
 			clearAITasks();
     		setAIList();
+    		
+    		//設定mount的AI
+			if(this.ridingEntity instanceof BasicEntityMount) {
+				((BasicEntityMount) this.ridingEntity).clearAITasks();
+				((BasicEntityMount) this.ridingEntity).setAIList();
+			}
 		}
 	}
 	
@@ -621,9 +639,15 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 		}
 		
 		//若修改melee flag, 則reload AI
-		if(flag == ID.F.UseMelee) {
+		if(!this.worldObj.isRemote && flag == ID.F.UseMelee) {
 			clearAITasks();
     		setAIList();
+    		
+    		//設定mount的AI
+			if(this.ridingEntity instanceof BasicEntityMount) {
+				((BasicEntityMount) this.ridingEntity).clearAITasks();
+				((BasicEntityMount) this.ridingEntity).setAIList();
+			}
 		}
 	}
 	
@@ -682,8 +706,17 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 		
 		//use item
 		if(itemstack != null) {
+			//use name tag, owner only
+			if(itemstack.getItem() == Items.name_tag && EntityHelper.checkSameOwner(player, this)) {
+	            //若該name tag有取名過, 則將名字貼到entity上
+				if(itemstack.hasDisplayName()) {
+					this.setNameTag(itemstack.getDisplayName());
+					return false;
+	            } 
+			}
+			
 			//use repair bucket
-			if(itemstack.getItem() == ModItems.BucketRepair) {	
+			if(itemstack.getItem() == ModItems.BucketRepair) {
 				//hp不到max hp時可以使用bucket
 				if(this.getHealth() < this.getMaxHealth()) {
 					if(!player.capabilities.isCreativeMode) {  //item-1 in non-creative mode
@@ -715,13 +748,24 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
                     
                     //set item amount
                     ItemStack item0, item1, item2, item3;
-                                   
+                                
+                    //large ship -> more materials
                     if(this.getKaitaiType() == 1) {
-                        item0 = new ItemStack(ModBlocks.BlockGrudge, 8 + rand.nextInt(3));
-                    	item1 = new ItemStack(ModBlocks.BlockAbyssium, 8 + rand.nextInt(3));
-                    	item2 = new ItemStack(ModItems.Ammo, 8 + rand.nextInt(3), 1);
-                    	item3 = new ItemStack(ModBlocks.BlockPolymetal, 8 + rand.nextInt(3));
+                    	if(ConfigHandler.easyMode) {	//easy mode
+                    		item0 = new ItemStack(ModBlocks.BlockGrudge, 1);
+                        	item1 = new ItemStack(ModBlocks.BlockAbyssium, 1);
+                        	item2 = new ItemStack(ModItems.Ammo, 1, 1);
+                        	item3 = new ItemStack(ModBlocks.BlockPolymetal, 1);
+                    	}
+                    	else {						
+                    		item0 = new ItemStack(ModBlocks.BlockGrudge, 8 + rand.nextInt(3));
+                        	item1 = new ItemStack(ModBlocks.BlockAbyssium, 8 + rand.nextInt(3));
+                        	item2 = new ItemStack(ModItems.Ammo, 8 + rand.nextInt(3), 1);
+                        	item3 = new ItemStack(ModBlocks.BlockPolymetal, 8 + rand.nextInt(3));
+                    	}
+                        
                     }
+                    //small ship
                     else {
                         item0 = new ItemStack(ModItems.Grudge, 10 + rand.nextInt(8));
                     	item1 = new ItemStack(ModItems.AbyssMetal, 10 + rand.nextInt(8), 0);
@@ -856,8 +900,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 	
 		//shift+right click時打開GUI
 		if(player.isSneaking() && this.getOwner() != null && player.getUniqueID().equals(this.getOwner().getUniqueID())) {  
-			int eid = this.getEntityId();
-			//player.openGui vs FMLNetworkHandler ?
     		FMLNetworkHandler.openGui(player, ShinColle.instance, ID.G.SHIPINVENTORY, this.worldObj, this.getEntityId(), 0, 0);
     		return true;
 		}
@@ -1011,10 +1053,15 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 	public void onUpdate() {
 		super.onUpdate();
 
-		this.checkDepth();	//check depth every tick
+		if(this.isInWater() || this.handleLavaMovement()) {
+			this.checkDepth();	//check depth every tick
+		}
+		else {
+			this.ShipDepth = 0D;
+		}
 
 		Block CheckBlock = checkBlockWithOffset(0);
-		
+
 		//client side
 		if(this.worldObj.isRemote) {
 			//有移動時, 產生水花特效
@@ -1056,13 +1103,18 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 	@Override
 	public void onLivingUpdate() {
         super.onLivingUpdate();
-//        LogHelper.info("DEBug : tick "+this.ticksExisted);
+
         //server side check
         if((!worldObj.isRemote)) {
         	//clear dead target for vanilla AI bug
   			if(this.getAttackTarget() != null && this.getAttackTarget().isDead) {
   				this.setAttackTarget(null);
   			}
+ 			
+  			//clear target if target is self/host
+			if(getAttackTarget() == this.ridingEntity) {
+				this.setAttackTarget(null);
+			}
   			
         	//decr immune time
         	if(this.StateMinor[ID.N.ImmuneTime] > 0) {
@@ -1071,6 +1123,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
         	
         	//sync client and reset AI after server start 10 ticks
         	if(ticksExisted == 10) {
+        		this.setStateFlag(ID.F.CanDrop, true);
         		clearAITasks();
         		clearAITargetTasks();	//reset AI for get owner after loading NBT data
         		setAIList();
@@ -1092,6 +1145,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 		                }
 	                }
 	            }
+//        		LogHelper.info("DEBUG : check spawn: "+this.worldObj.getChunkProvider().getPossibleCreatures(EnumCreatureType.waterCreature, (int)posX, (int)posY, (int)posZ));
         	}
         	
         	//check every 100 ticks
@@ -1405,7 +1459,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 
         //spawn missile
         EntityAbyssMissile missile = new EntityAbyssMissile(this.worldObj, this, 
-        		tarX, tarY+target.height*0.2F, tarZ, launchPos, atk, kbValue, isDirect);
+        		tarX, tarY+target.height*0.2F, tarZ, launchPos, atk, kbValue, isDirect, -1F);
         this.worldObj.spawnEntityInWorld(missile);
         
         return true;
@@ -1414,13 +1468,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 	//be attacked method, 包括其他entity攻擊, anvil攻擊, arrow攻擊, fall damage都使用此方法 
 	@Override
     public boolean attackEntityFrom(DamageSource attacker, float atk) {		
-//		//set hurt face
-//    	if(this.getStateEmotion(ID.S.Emotion) != ID.Emotion.O_O) {
-//    		this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
-//    	}
+		//set hurt face
+    	if(this.getStateEmotion(ID.S.Emotion) != ID.Emotion.O_O) {
+    		this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
+    	}
 
 		//進行def計算
-        float reduceAtk = atk * (1F - StateFinal[ID.DEF] / 100F);    
+        float reduceAtk = atk * (1F - (StateFinal[ID.DEF] - (float)rand.nextInt(20) + 10F) / 100F);    
         if(atk < 0) { atk = 0; }
         
         //若掉到世界外, 則傳送回y=4
@@ -1433,16 +1487,17 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 		if(this.isEntityInvulnerable()) {	
             return false;
         }
-		else if(attacker.getSourceOfDamage() != null) {
+		else if(attacker.getSourceOfDamage() != null) {	//不為null才算傷害, 可免疫毒/掉落/窒息等傷害
 			Entity entity = attacker.getSourceOfDamage();
 			
-			//不會對自己造成傷害
+			//不會對自己造成傷害, 可免疫毒/掉落/窒息等傷害 (此為自己對自己造成傷害)
 			if(entity.equals(this)) {  
 				return false;
 			}
 			
 			//若攻擊方同樣為ship, 則傷害-95% (使ship vs ship能打久一點)
-			if(entity instanceof BasicEntityShip || entity instanceof BasicEntityAirplane || entity instanceof EntityRensouhou) {
+			if(entity instanceof BasicEntityShip || entity instanceof BasicEntityAirplane || 
+			   entity instanceof EntityRensouhou || entity instanceof BasicEntityMount) {
 				reduceAtk *= 0.05F;
 			}
 			
@@ -1696,6 +1751,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 				clearAITasks();
 				clearAITargetTasks();
 				sendSyncPacket();
+				
+				//設定mount的AI
+				if(this.ridingEntity instanceof BasicEntityMount) {
+					((BasicEntityMount) this.ridingEntity).clearAITasks();
+				}
 			}	
 		}
 		//has fuel, set AI
@@ -1707,6 +1767,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 				setAIList();
 				setAITargetList(getStateMinor(ID.N.TargetAI));
 				sendSyncPacket();
+				
+				//設定mount的AI
+				if(this.ridingEntity instanceof BasicEntityMount) {
+					((BasicEntityMount) this.ridingEntity).clearAITasks();
+					((BasicEntityMount) this.ridingEntity).setAIList();
+				}
 			}
 		}
 	}
@@ -1792,6 +1858,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 		
 		return -1;	//item not found
 	}
+	
+//	@Override
+//	public void mountEntity(Entity ent) {
+//		LogHelper.info("DEBUG : mount entity called! "+ent);
+//		super.mountEntity(ent);
+//    }
 
 	
 }

@@ -72,7 +72,7 @@ public class EntityAIShipInRangeTargetHostile extends EntityAITarget {
         this.targetSelector = new IEntitySelector() {
             public boolean isEntityApplicable(Entity target2) {
             	if((target2 instanceof EntityPlayer || target2 instanceof BasicEntityShip ||
-            	   target2 instanceof BasicEntityAirplane) && !target2.isDead) {
+            	   target2 instanceof BasicEntityAirplane) && !target2.isDead && !target2.isInvisible()) {
             		return true;
             	}
             	return false;

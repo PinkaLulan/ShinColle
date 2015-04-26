@@ -1,29 +1,42 @@
 package com.lulan.shincolle.init;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
-
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EnumCreatureType;
-import net.minecraft.item.Item;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.BiomeDictionary;
 
 import com.google.common.base.Predicates;
 import com.google.common.collect.Iterators;
 import com.lulan.shincolle.ShinColle;
-import com.lulan.shincolle.entity.*;
-import com.lulan.shincolle.entity.renderentity.*;
+import com.lulan.shincolle.entity.EntityAbyssMissile;
+import com.lulan.shincolle.entity.EntityAirplane;
+import com.lulan.shincolle.entity.EntityAirplaneTakoyaki;
+import com.lulan.shincolle.entity.EntityBattleshipHime;
+import com.lulan.shincolle.entity.EntityBattleshipNGT;
+import com.lulan.shincolle.entity.EntityBattleshipNGTBoss;
+import com.lulan.shincolle.entity.EntityBattleshipRe;
+import com.lulan.shincolle.entity.EntityBattleshipTa;
+import com.lulan.shincolle.entity.EntityCarrierWo;
+import com.lulan.shincolle.entity.EntityDestroyerHa;
+import com.lulan.shincolle.entity.EntityDestroyerI;
+import com.lulan.shincolle.entity.EntityDestroyerNi;
+import com.lulan.shincolle.entity.EntityDestroyerRo;
+import com.lulan.shincolle.entity.EntityDestroyerShimakaze;
+import com.lulan.shincolle.entity.EntityDestroyerShimakazeBoss;
+import com.lulan.shincolle.entity.EntityHeavyCruiserRi;
+import com.lulan.shincolle.entity.EntityMountBaH;
+import com.lulan.shincolle.entity.EntityMountSeat;
+import com.lulan.shincolle.entity.EntityRensouhou;
+import com.lulan.shincolle.entity.EntityRensouhouBoss;
+import com.lulan.shincolle.entity.EntityRensouhouS;
+import com.lulan.shincolle.entity.EntitySubmU511;
+import com.lulan.shincolle.entity.EntitySubmU511Mob;
+import com.lulan.shincolle.entity.renderentity.EntityRenderLargeShipyard;
+import com.lulan.shincolle.entity.renderentity.EntityRenderVortex;
 import com.lulan.shincolle.item.BasicEntityItem;
-import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.common.registry.EntityRegistry;
-import cpw.mods.fml.common.registry.GameRegistry;
 
 /**
 // register natural spawns for entities
@@ -52,6 +65,7 @@ public class ModEntity {
 //		createEntityGlobalID(EntityTest.class, "EntityTest", 0x20FF45, 0x0040FF);
 		
 		//register ship entity
+		createEntity(EntityBattleshipHime.class, "EntityBattleshipHime", modEntityID++);
 		createEntity(EntityBattleshipNGT.class, "EntityBattleshipNGT", modEntityID++);
 		createEntity(EntityBattleshipNGTBoss.class, "EntityBattleshipNGTBoss", modEntityID++);
 		createEntity(EntityBattleshipRe.class, "EntityBattleshipRe", modEntityID++);
@@ -67,6 +81,12 @@ public class ModEntity {
 		createEntity(EntityRensouhou.class, "EntityRensouhou", modEntityID++);
 		createEntity(EntityRensouhouBoss.class, "EntityRensouhouBoss", modEntityID++);
 		createEntity(EntityRensouhouS.class, "EntityRensouhouS", modEntityID++);
+		createEntity(EntitySubmU511.class, "EntitySubmU511", modEntityID++);
+		createEntity(EntitySubmU511Mob.class, "EntitySubmU511Mob", modEntityID++);
+		
+		//register mount entity
+		createEntity(EntityMountBaH.class, "EntityMountBaH", modEntityID++);
+		createEntity(EntityMountSeat.class, "EntityMountSeat2", modEntityID++);
 		
 		//register projectile entity
 		createProjectileEntity(EntityAbyssMissile.class, "EntityAbyssMissile", modEntityID++);
@@ -77,11 +97,12 @@ public class ModEntity {
 		createProjectileEntity(EntityRenderLargeShipyard.class, "EntityRenderLargeShipyard", modEntityID++);
 		createProjectileEntity(EntityRenderVortex.class, "EntityRenderVortex", modEntityID++);
 
-		//register item entity
+		//register item, misc entity
 		createItemEntity(BasicEntityItem.class, "BasicEntityItem", modEntityID++);
 		
 	}
 	
+	//NOT WORKING
 //	//mob自然生成方法, 必須放在postInit才呼叫, 以取得全部mod註冊的全部biome
 //	public static void initNaturalSpawn() {
 //		//register entity natrual spawn
@@ -89,8 +110,10 @@ public class ModEntity {
 //		BiomeGenBase[] allBiomes = Iterators.toArray(Iterators.filter(Iterators.forArray(BiomeGenBase.getBiomeGenArray()), Predicates.notNull()), BiomeGenBase.class);
 //		
 //		for(int i = 0; i < allBiomes.length; ++i) {
-//			if(BiomeDictionary.isBiomeOfType(allBiomes[i], BiomeDictionary.Type.OCEAN)) {
-//				EntityRegistry.addSpawn(EntityDestroyerShimakazeBoss.class, 1, 1, 1, EnumCreatureType.creature, BiomeGenBase.savanna);
+//			if(BiomeDictionary.isBiomeOfType(allBiomes[i], BiomeDictionary.Type.FOREST) ||
+//			   BiomeDictionary.isBiomeOfType(allBiomes[i], BiomeDictionary.Type.PLAINS) ||
+//			   BiomeDictionary.isBiomeOfType(allBiomes[i], BiomeDictionary.Type.RIVER)) {
+//				EntityRegistry.addSpawn(EntitySubmU511Mob.class, 50, 1, 2, EnumCreatureType.waterCreature, allBiomes[i]);
 //			}
 //		}
 //	}

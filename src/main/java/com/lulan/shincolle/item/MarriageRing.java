@@ -123,7 +123,7 @@ public class MarriageRing extends BasicItem {
 		}//end instanceof player
 	}
 	
-	//show ability text
+	//show ability text, this is CLIENT side
 	@Override
     public void addInformation(ItemStack itemstack, EntityPlayer player, List list, boolean par4) {  		
 		ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);

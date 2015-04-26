@@ -45,8 +45,13 @@
             "fire01",
             "fire02",
             "fire03",
-            "fire04",
-            "fire05"       
+            "fire04"      
+        ]
+    },
+    
+    "ship-explode": {
+        "category": "hostile", "replace": true, "sounds": [
+            "fire05"   
         ]
     },
     
@@ -270,6 +275,43 @@
     "ship-ap_attack": {
         "category": "hostile", "replace": true, "sounds": [
         	"ap_attack"
+        ]
+    },
+    
+    "ship-waka_attack": {
+        "category": "hostile", "replace": true, "sounds": [
+        	"waka_atk01",
+        	"waka_atk02",
+        	"waka_atk03",
+        	"waka_atk04",
+        	"waka_atk05",
+        	"waka_atk06",
+        	"waka_atk07"
+        ]
+    },
+    
+    "ship-waka_hurt": {
+        "category": "hostile", "replace": true, "sounds": [
+        	"waka_hurt01",
+        	"waka_hurt02",
+        	"waka_hurt03"
+        ]
+    },
+    
+    "ship-waka_idle": {
+        "category": "hostile", "replace": true, "sounds": [
+        	"waka_idle01",
+        	"waka_idle02",
+        	"waka_idle04",
+        	"waka_idle05",
+        	"waka_idle06"
+        ]
+    },
+    
+    "ship-waka_death": {
+        "category": "hostile", "replace": true, "sounds": [
+        	"waka_death02",
+        	"waka_death03"
         ]
     }
     

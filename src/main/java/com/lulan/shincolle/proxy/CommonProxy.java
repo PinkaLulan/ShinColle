@@ -6,11 +6,11 @@ import java.util.Map;
 import net.minecraft.nbt.NBTTagCompound;
 
 import com.lulan.shincolle.network.C2SGUIPackets;
+import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.reference.Names;
-import com.lulan.shincolle.reference.Reference;
 
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
@@ -25,7 +25,7 @@ public abstract class CommonProxy implements IProxy {
 	public static SimpleNetworkWrapper channelE;
 	public static SimpleNetworkWrapper channelG;
 	public static SimpleNetworkWrapper channelP;
-	private static final Map<String, NBTTagCompound> extendedEntityData = new HashMap<String, NBTTagCompound>();
+	public static final Map<String, NBTTagCompound> extendedEntityData = new HashMap<String, NBTTagCompound>();
 	
 	@Override
 	public void registerChannel() {
@@ -37,11 +37,13 @@ public abstract class CommonProxy implements IProxy {
 		//register packets
 		//entity sync packet
 		channelE.registerMessage(S2CEntitySync.Handler.class, S2CEntitySync.class, Names.Packets.ENTITY_SYNC, Side.CLIENT);
-		//GUI packet
-		channelP.registerMessage(S2CSpawnParticle.Handler.class, S2CSpawnParticle.class, Names.Packets.SPAWN_PARTICLE, Side.CLIENT);
 		//particle packet
+		channelP.registerMessage(S2CSpawnParticle.Handler.class, S2CSpawnParticle.class, Names.Packets.SPAWN_PARTICLE, Side.CLIENT);
+		//GUI packet
 		channelG.registerMessage(S2CGUIPackets.Handler.class, S2CGUIPackets.class, Names.Packets.GUI_SYNC, Side.CLIENT);
 		channelG.registerMessage(C2SGUIPackets.Handler.class, C2SGUIPackets.class, Names.Packets.GUI_CLICK, Side.SERVER);
+		channelG.registerMessage(C2SInputPackets.Handler.class, C2SInputPackets.class, Names.Packets.KEY_INPUT, Side.SERVER);
+		
 	}
 	
 	//save entity data in globe variable for resuming data after death

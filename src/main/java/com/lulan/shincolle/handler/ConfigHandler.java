@@ -22,15 +22,15 @@ public class ConfigHandler {
 	public static boolean staticMode = false;
 	public static boolean showTag = true;
 	public static boolean friendlyFire = true;
+	public static boolean useWakamoto = true;
 	
 	//SHIP SETTING
 	//scale: HP, ATK, DEF, SPD, MOV, HIT
-	public static Property propShip;
-	public static Property propBossSMKZ;
-	public static Property propBossNGT;
+	public static Property propShip, propBossSMKZ, propBossNGT, propMobU511;
 	public static double[] scaleShip = new double[] {1D, 1D, 1D, 1D, 1D, 1D};
 	public static double[] scaleBossSMKZ = new double[] {900D, 50D, 80D, 1D, 0.6D, 16D};
 	public static double[] scaleBossNGT = new double[] {2400D, 200D, 92D, 2D, 0.4D, 24D};
+	public static double[] scaleMobU511 = new double[] {100D, 20D, 30D, 1D, 0.4D, 12D, 200D};
 	
 	public static boolean timeKeeping = true;
 	public static float timeKeepingVolume = 1.0F;
@@ -58,6 +58,9 @@ public class ConfigHandler {
 		
 		//是否開啟簡單模式 (spam debug/info message)
 		friendlyFire = config.getBoolean("Friendly_Fire", "general", true, "false: disable damage done by player (except owner)");
+		
+		//是否開啟簡單模式 (spam debug/info message)
+		useWakamoto = config.getBoolean("Sound_Wakamoto", "general", true, "enable Wakamoto sound for particular ship");
 				
 		//讀取 ship setting設定
 		timeKeeping = config.getBoolean("Timekeeping", "ship setting", true, "Play timekeeping sound every 1000 ticks (1 minecraft hour)");
@@ -68,6 +71,7 @@ public class ConfigHandler {
 		propShip = config.get("ship setting", "ship_scale", scaleShip, "Ship attributes SCALE: HP, firepower, armor, attack speed, move speed, range");
 		propBossSMKZ = config.get("ship setting", "ShimakazeBoss_scale", scaleBossSMKZ, "Boss:Shimakaze Attrs: HP, firepower, armor, attack speed, move speed, range");
 		propBossNGT = config.get("ship setting", "NagatoBoss_scale", scaleBossNGT, "Boss:Nagato Attrs: HP, firepower, armor, attack speed, move speed, range");
+		propMobU511 = config.get("ship setting", "MobU511_scale", scaleMobU511, "Mob:U511 Attrs: HP, firepower, armor, attack speed, move speed, range, spawnPerSquid");
 
 		//WORLD GEN
 		polyOreBaseRate = config.getInt("Polymetal_Ore", "world gen", 7, 0, 100, "Polymetallic Ore clusters in one chunk");
@@ -81,7 +85,8 @@ public class ConfigHandler {
 		//設定新值
 		scaleShip = propShip.getDoubleList();
 		scaleBossSMKZ = propBossSMKZ.getDoubleList();
-		scaleBossNGT = propBossNGT.getDoubleList();				
+		scaleBossNGT = propBossNGT.getDoubleList();
+		scaleMobU511 = propMobU511.getDoubleList();
 	}
 	
 	//設定檔處理 初始化動作

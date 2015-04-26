@@ -1,26 +1,22 @@
 package com.lulan.shincolle.network;
 
-import java.util.UUID;
-
-import net.minecraft.client.Minecraft;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.world.World;
-import net.minecraftforge.common.DimensionManager;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 
+import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.EntityMountSeat;
 import com.lulan.shincolle.entity.IShipEmotion;
-import com.lulan.shincolle.proxy.ClientProxy;
+import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
-import io.netty.buffer.ByteBuf;
-import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 /**SERVER TO CLIENT : ENTITY SYNC PACKET
  * 用於entity的資料同步
@@ -51,6 +47,7 @@ public class S2CEntitySync implements IMessage {
 	
 	//for non ship entity sync
 	//type 4: all emotion
+	//type 5: player mount packet
 	public S2CEntitySync(IShipEmotion entity, int type) {
         this.entity2 = (EntityLiving) entity;
         this.entity2e = entity;
@@ -178,6 +175,23 @@ public class S2CEntitySync implements IMessage {
 					entity2e.setStateEmotion(ID.S.Phase, buf.readByte(), false);
 				}
 				break;
+			case 5: //IShipEmotion player mount
+				{
+					int playerId = buf.readInt();
+					int seatId = buf.readInt();
+					
+					EntityPlayer player = (EntityPlayer) EntityHelper.getEntityByID(playerId, 0, true);
+					EntityMountSeat seat = (EntityMountSeat) EntityHelper.getEntityByID(seatId, 0, true);
+					
+					LogHelper.info("DEBUG : player mount packet: "+player+" "+seat);
+					player.mountEntity(seat);
+					player.ridingEntity = seat;
+					seat.riddenByEntity = player;
+					seat.host = (BasicEntityMount) entity2;
+					seat.host.seat2 = seat;
+					seat.host.setStateEmotion(ID.S.Emotion, 1, false);
+				}
+				break;
 			}
 		}
 		else {
@@ -302,6 +316,14 @@ public class S2CEntitySync implements IMessage {
 				buf.writeByte(this.entity2e.getStateEmotion(ID.S.Emotion2));
 				buf.writeByte(this.entity2e.getStateEmotion(ID.S.HPState));
 				buf.writeByte(this.entity2e.getStateEmotion(ID.S.Phase));
+			}
+			break;
+		case 5:	//IShipEmotion player mount packet
+			{
+				buf.writeByte(5);	//type 1
+				buf.writeInt(this.entity2.getEntityId());
+				buf.writeInt(((BasicEntityMount)this.entity2e).riddenByEntity2.getEntityId());
+				buf.writeInt(((BasicEntityMount)this.entity2e).seat2.getEntityId());
 			}
 			break;
 		}

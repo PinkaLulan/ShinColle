@@ -2,17 +2,16 @@ package com.lulan.shincolle.ai;
 
 import java.util.Random;
 
-import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.entity.IShipAttack;
-import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
-
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.MathHelper;
+
+import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.IShipAttack;
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.EntityHelper;
 
 /**ENTITY RANGE ATTACK AI
  * 從骨弓的射箭AI修改而來
@@ -22,8 +21,8 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
 	
 	private Random rand = new Random();
     private BasicEntityShip host;  	//AI host entity
-    private EntityLiving host2;
-    private IShipAttack host2i;  	//AI host entity, non-ship entity
+    private EntityLiving host2;		//AI host entity (for non-ship)
+    private IShipAttack host2i;  	//AI host entity (for non-ship)
     private EntityLivingBase attackTarget;  //entity of target
     private int delayLight = 0;			//light attack delay (attack when time 0)
     private int maxDelayLight;	    //light attack max delay (calc from ship attack speed)
@@ -237,13 +236,14 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
 		        			//身體角度設定
 		        			float[] degree = EntityHelper.getLookDegree(motX, motY, motZ);
 		        			this.host.rotationYaw = degree[0];
+		        			this.host.rotationYawHead = degree[0];
 		        			this.host.rotationPitch = degree[1];
 	//	        			this.host.getMoveHelper().setMoveTo(this.host.posX+this.motX, this.host.posY+this.motY, this.host.posZ+this.motZ, 1D);
 		        		}
 		        		
 		        		//若水平撞到東西, 則嘗試跳跳
 		        		if(this.host.isCollidedHorizontally) {
-		        			this.host.motionY += 0.25D;
+		        			this.host.motionY += 0.4D;
 		        		}
 		           	}
 	            	else {	//非液體中, 採用一般尋找路徑法

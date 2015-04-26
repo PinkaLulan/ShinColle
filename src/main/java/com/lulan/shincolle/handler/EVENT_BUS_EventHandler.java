@@ -2,29 +2,32 @@ package com.lulan.shincolle.handler;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntitySlime;
+import net.minecraft.entity.passive.EntitySquid;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
-import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 
 import org.lwjgl.opengl.GL11;
 
-import com.lulan.shincolle.client.gui.GuiShipInventory;
 import com.lulan.shincolle.entity.BasicEntityAirplane;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.EntityRensouhouBoss;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
 import com.lulan.shincolle.entity.ExtendShipProps;
+import com.lulan.shincolle.entity.IShipAttack;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.BasicEntityItem;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -44,12 +47,23 @@ public class EVENT_BUS_EventHandler {
 	//change vanilla mob drop (add grudge), this is SERVER event
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
 	public void eventDrop(LivingDropsEvent event) {
-	    if(event.entity instanceof EntityMob || event.entity instanceof EntitySlime) {
+	    //mob drop grudge
+		if(event.entity instanceof EntityMob || event.entity instanceof EntitySlime) {
 	    	if(event.entity instanceof BasicEntityShipHostile) {
-	    		ItemStack bossEgg = ((BasicEntityShipHostile)event.entity).getDropEgg();
-	    		BasicEntityItem entityItem1 = new BasicEntityItem(event.entity.worldObj, event.entity.posX, event.entity.posY+0.5D, event.entity.posZ, bossEgg);
-	    		LogHelper.info("DEBUG : boss drop "+entityItem1.posX+" "+entityItem1.posY+" "+entityItem1.posZ);
-	    		event.entity.worldObj.spawnEntityInWorld(entityItem1);
+	    		BasicEntityShipHostile entity = (BasicEntityShipHostile)event.entity;
+	    		
+	    		if(entity.canDrop) {
+	    			//set drop flag to false
+	    			entity.canDrop = false;
+	    			
+	    			ItemStack bossEgg = ((BasicEntityShipHostile)event.entity).getDropEgg();
+	    			
+	    			if(bossEgg != null) {
+	    				BasicEntityItem entityItem1 = new BasicEntityItem(event.entity.worldObj, event.entity.posX, event.entity.posY+0.5D, event.entity.posZ, bossEgg);
+			    		LogHelper.info("DEBUG : boss drop "+entityItem1.posX+" "+entityItem1.posY+" "+entityItem1.posZ);
+			    		event.entity.worldObj.spawnEntityInWorld(entityItem1);
+	    			}
+	    		}	
 	    	}
 	    	
 	    	if(!(event.entity instanceof EntityRensouhouBoss)) {
@@ -58,45 +72,51 @@ public class EVENT_BUS_EventHandler {
 	    	}
 	    }
 	    
+	    //ship drop egg, if canDrop is true, drop spawn egg and set canDrop to false
 	    if(event.entity instanceof BasicEntityShip) {
 	    	BasicEntityShip entity = (BasicEntityShip)event.entity;
 	    	
-	    	//drop ship item	
-    		ItemStack item = new ItemStack(ModItems.ShipSpawnEgg, 1, entity.getShipID()+2);
-	    	BasicEntityItem entityItem2 = new BasicEntityItem(event.entity.worldObj, event.entity.posX, event.entity.posY+0.5D, event.entity.posZ, item);
-	    	NBTTagCompound nbt = new NBTTagCompound();
-	    	ExtendShipProps extProps = entity.getExtProps();
-	    	
-	    	//get inventory data
-			NBTTagList list = new NBTTagList();
-			for(int i = 0; i < extProps.slots.length; i++) {
-				if(extProps.slots[i] != null) {
-					NBTTagCompound item2 = new NBTTagCompound();
-					item2.setByte("Slot", (byte)i);
-					extProps.slots[i].writeToNBT(item2);
-					list.appendTag(item2);
+	    	if(entity.getStateFlag(ID.F.CanDrop)) {
+	    		//set flag to false to prevent multiple drop from unknown bug
+	    		entity.setStateFlag(ID.F.CanDrop, false);
+	    		
+	    		//drop ship item
+	    		ItemStack item = new ItemStack(ModItems.ShipSpawnEgg, 1, entity.getShipID()+2);
+		    	BasicEntityItem entityItem2 = new BasicEntityItem(event.entity.worldObj, event.entity.posX, event.entity.posY+0.5D, event.entity.posZ, item);
+		    	NBTTagCompound nbt = new NBTTagCompound();
+		    	ExtendShipProps extProps = entity.getExtProps();
+		    	
+		    	//get inventory data
+				NBTTagList list = new NBTTagList();
+				for(int i = 0; i < extProps.slots.length; i++) {
+					if(extProps.slots[i] != null) {
+						NBTTagCompound item2 = new NBTTagCompound();
+						item2.setByte("Slot", (byte)i);
+						extProps.slots[i].writeToNBT(item2);
+						list.appendTag(item2);
+					}
 				}
-			}
-			
-			//get attributes data
-	    	int[] attrs = new int[8];
-	    	
-	    	if(entity.getShipLevel() > 1) attrs[0] = entity.getShipLevel() - 1;	//decrease level 1
-	    	else attrs[0] = 1;
-	    	
-	    	attrs[1] = entity.getBonusPoint(ID.HP);
-	    	attrs[2] = entity.getBonusPoint(ID.ATK);
-	    	attrs[3] = entity.getBonusPoint(ID.DEF);
-	    	attrs[4] = entity.getBonusPoint(ID.SPD);
-	    	attrs[5] = entity.getBonusPoint(ID.MOV);
-	    	attrs[6] = entity.getBonusPoint(ID.HIT);
-	    	attrs[7] = entity.getStateFlagI(ID.F.IsMarried);
-	    	
-	    	//save nbt and spawn entity item
-	    	nbt.setTag("ShipInv", list);	//save inventory data to nbt
-	    	nbt.setIntArray("Attrs", attrs);	//save attributes data to nbt
-	    	entityItem2.getEntityItem().setTagCompound(nbt);	  //save nbt to entity item
-	    	event.entity.worldObj.spawnEntityInWorld(entityItem2);	//spawn entity item
+				
+				//get attributes data
+		    	int[] attrs = new int[8];
+		    	
+		    	if(entity.getShipLevel() > 1) attrs[0] = entity.getShipLevel() - 1;	//decrease level 1
+		    	else attrs[0] = 1;
+		    	
+		    	attrs[1] = entity.getBonusPoint(ID.HP);
+		    	attrs[2] = entity.getBonusPoint(ID.ATK);
+		    	attrs[3] = entity.getBonusPoint(ID.DEF);
+		    	attrs[4] = entity.getBonusPoint(ID.SPD);
+		    	attrs[5] = entity.getBonusPoint(ID.MOV);
+		    	attrs[6] = entity.getBonusPoint(ID.HIT);
+		    	attrs[7] = entity.getStateFlagI(ID.F.IsMarried);
+		    	
+		    	//save nbt and spawn entity item
+		    	nbt.setTag("ShipInv", list);	//save inventory data to nbt
+		    	nbt.setIntArray("Attrs", attrs);	//save attributes data to nbt
+		    	entityItem2.getEntityItem().setTagCompound(nbt);	  //save nbt to entity item
+		    	event.entity.worldObj.spawnEntityInWorld(entityItem2);	//spawn entity item
+	    	}
 	    }
 	}
 	
@@ -145,14 +165,15 @@ public class EVENT_BUS_EventHandler {
 		Entity ent = event.source.getSourceOfDamage();
 		
 	    if(ent != null) {
-	    	if(ent instanceof BasicEntityShip) {
+	    	if(ent instanceof BasicEntityShip) {	//本體擊殺
 	    		((BasicEntityShip)ent).addKills();
 	    	}
-	    	else if(ent instanceof BasicEntityAirplane) {
-	    		if(((BasicEntityAirplane) ent).getOwner() != null) {
-	    			((BasicEntityShip)((BasicEntityAirplane) ent).getOwner()).addKills();
+	    	else if(ent instanceof IShipAttack) {	//其他召喚物擊殺
+	    		if(((IShipAttack) ent).getOwner() != null &&
+	    		   ((IShipAttack) ent).getOwner() instanceof BasicEntityShip) {
+	    			((BasicEntityShip)((IShipAttack) ent).getOwner()).addKills();
 	    		}
-	    	}  
+	    	}
 	    }
 	    
 	    //save player ext data
@@ -179,17 +200,48 @@ public class EVENT_BUS_EventHandler {
 	public void onEntityConstructing(EntityConstructing event) {
 	    //ship ext props
 		if(event.entity instanceof BasicEntityShip && event.entity.getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME) == null) {
-	    	LogHelper.info("DEBUG : add ship extend props");
+	    	LogHelper.info("DEBUG : on ship constructing");
 	        event.entity.registerExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME, new ExtendShipProps());
 	    }
 
 		//player ext props
 		if(event.entity instanceof EntityPlayer && event.entity.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME) == null) {
-			LogHelper.info("DEBUG : add player extend props");
-			EntityPlayer player = (EntityPlayer) event.entity;
-	    	player.registerExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME, new ExtendPlayerProps()); 
+			LogHelper.info("DEBUG : on player constructing");
+			EntityPlayer player = (EntityPlayer) event.entity;	
+			ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+			
+			if(extProps != null) {
+				//restore player data from commonproxy variable
+		        NBTTagCompound nbt = CommonProxy.getEntityData(player.getUniqueID().toString());
+		        
+		    	if(nbt != null) {
+		        	LogHelper.info("DEBUG : player constructing: restore player data (EVENT BUS event)");		        	
+		        	extProps.loadNBTData(nbt);
+		        }
+			}
+			else {
+				LogHelper.info("DEBUG : add player extend props");
+				player.registerExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME, new ExtendPlayerProps());
+			}
 		}
 	}
+	
+	//Add ship mob spawn in squid event
+	@SubscribeEvent
+	public void onSquidSpawn(LivingSpawnEvent.CheckSpawn event) {
+		if(event.entityLiving instanceof EntitySquid) {
+			if(event.world.rand.nextInt((int)ConfigHandler.scaleMobU511[ID.SpawnPerSquid]) == 0) {
+				LogHelper.info("DEBUG : spawn ship mob at "+event.x+" "+event.y+" "+event.z+" rate "+ConfigHandler.scaleMobU511[ID.SpawnPerSquid]);
+				EntityLiving entityToSpawn = (EntityLiving) EntityList.createEntityByName("shincolle.EntitySubmU511Mob", event.world);
+				entityToSpawn.posX = event.x;
+				entityToSpawn.posY = event.y;
+				entityToSpawn.posZ = event.z;
+				entityToSpawn.setPosition(event.x, event.y, event.z);
+				event.world.spawnEntityInWorld(entityToSpawn);
+			}
+		}
+	}
+	
 
 	
 }

@@ -174,7 +174,7 @@ public class EntityHelper {
 		return null;
 	}
 	
-	//get player on the server by UUID
+	//get player is online by entity
 	public static EntityPlayerMP getOnlinePlayer(EntityLivingBase entity) {
 		if(entity != null) {
 			//get online id list (server side only)
@@ -188,7 +188,7 @@ public class EntityHelper {
 			    }
 			}
 		}
-		return null;
+		return null;	//player offline
 	}
 	
 	//process player sync data

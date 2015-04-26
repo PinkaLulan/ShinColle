@@ -16,6 +16,7 @@ import net.minecraft.world.World;
 import com.lulan.shincolle.ai.EntityAIShipInRangeTargetHostile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CEntitySync;
+import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
@@ -43,12 +44,17 @@ public class BasicEntityShipHostile extends EntityMob implements IShipAttack, IS
 	
 	//misc
 	protected ItemStack dropItem;
+	
+	//AI
+	public boolean canDrop;				//drop item flag
 		
 	
 	public BasicEntityShipHostile(World world) {
 		super(world);
 		this.isImmuneToFire = true;	//set ship immune to lava
 		this.StateEmotion = new byte[] {ID.State.EQUIP00, 0, 0, 0, 0, 0};
+		this.stepHeight = 2F;
+		this.canDrop = true;
 	}
 	
 	@Override
@@ -76,11 +82,21 @@ public class BasicEntityShipHostile extends EntityMob implements IShipAttack, IS
 		this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
 		this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, BasicEntityShip.class, 0, true, false));
 		this.targetTasks.addTask(3, new EntityAIShipInRangeTargetHostile(this, 16, 32, 1));
-		this.targetTasks.addTask(4, new EntityAINearestAttackableTarget(this, EntityPlayer.class, 0, true, false));
+//		this.targetTasks.addTask(4, new EntityAINearestAttackableTarget(this, EntityPlayer.class, 0, true, false));
 	}
 	
 	@Override
-    public boolean attackEntityFrom(DamageSource attacker, float atk) {		
+    public boolean attackEntityFrom(DamageSource attacker, float atk) {
+		//disable 
+		if(attacker.getDamageType() == "inWall") {
+			return false;
+		}
+		
+		if(attacker.getDamageType() == "outOfWorld") {
+			this.setDead();
+			return true;
+		}
+				
 		//set hurt face
     	if(this.getStateEmotion(ID.S.Emotion) != ID.Emotion.O_O) {
     		this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
@@ -216,7 +232,92 @@ public class BasicEntityShipHostile extends EntityMob implements IShipAttack, IS
 
 	@Override
 	public boolean attackEntityWithAmmo(Entity target) {
-		return false;
+		//get attack value
+		float atk = this.atk;
+		//set knockback value (testing)
+		float kbValue = 0.05F;
+		//update entity look at vector (for particle spawn)
+        //此方法比getLook還正確 (client sync問題)
+        float distX = (float) (target.posX - this.posX);
+        float distY = (float) (target.posY - this.posY);
+        float distZ = (float) (target.posZ - this.posZ);
+        float distSqrt = MathHelper.sqrt_float(distX*distX + distY*distY + distZ*distZ);
+        distX = distX / distSqrt;
+        distY = distY / distSqrt;
+        distZ = distZ / distSqrt;
+      
+        //發射者煙霧特效
+        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 6, this.posX, this.posY+3.5D, this.posZ, distX, 2.8D, distZ, true), point);
+
+		//play cannon fire sound at attacker
+        playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        //play entity attack sound
+        if(this.rand.nextInt(10) > 7) {
+        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        }
+
+        //calc miss chance, if not miss, calc cri/multi hit   
+        if(this.rand.nextFloat() < 0.2F) {
+        	atk = 0;	//still attack, but no damage
+        	//spawn miss particle
+    		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
+        }
+        else {
+        	//roll cri -> roll double hit -> roll triple hit (triple hit more rare)
+        	//calc critical
+        	if(this.rand.nextFloat() < 0.15F) {
+        		atk *= 1.5F;
+        		//spawn critical particle
+        		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 11, false), point);
+        	}
+        	else {
+        		//calc double hit
+            	if(this.rand.nextFloat() < 0.15F) {
+            		atk *= 2F;
+            		//spawn double hit particle
+            		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 12, false), point);
+            	}
+            	else {
+            		//calc double hit
+                	if(this.rand.nextFloat() < 0.15F) {
+                		atk *= 3F;
+                		//spawn triple hit particle
+                		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 13, false), point);
+                	}
+            	}
+        	}
+        }
+        
+        //vs player = 25% dmg
+  		if(target instanceof EntityPlayer) {
+  			atk *= 0.25F;
+  			
+    		if(atk > 159F) {
+    			atk = 159F;	//same with TNT
+    		}
+  		}
+  		
+	    //將atk跟attacker傳給目標的attackEntityFrom方法, 在目標class中計算傷害
+	    //並且回傳是否成功傷害到目標
+	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this), atk);
+
+	    //if attack success
+	    if(isTargetHurt) {
+	    	//calc kb effect
+	        if(kbValue > 0) {
+	            target.addVelocity((double)(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue), 
+	                   0.1D, (double)(MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue));
+	            motionX *= 0.6D;
+	            motionZ *= 0.6D;
+	        }
+	        
+        	//display hit particle on target
+	        TargetPoint point1 = new TargetPoint(this.dimension, target.posX, target.posY, target.posZ, 64D);
+			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 9, false), point1);
+        }
+
+	    return isTargetHurt;
 	}
 
 	@Override

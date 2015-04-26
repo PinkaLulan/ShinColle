@@ -108,10 +108,13 @@ public class ShipSpawnEgg extends Item {
   		list.add(new ItemStack(item, 1, ID.S_CarrierWO+2));
   		list.add(new ItemStack(item, 1, ID.S_BattleshipTA+2));
   		list.add(new ItemStack(item, 1, ID.S_BattleshipRE+2));
+  		list.add(new ItemStack(item, 1, ID.S_BattleshipHime+2));
   		list.add(new ItemStack(item, 1, ID.S_DestroyerShimakaze+2));
   		list.add(new ItemStack(item, 1, ID.S_DestroyerShimakaze+202));	//BOSS entity
   		list.add(new ItemStack(item, 1, ID.S_BattleshipNagato+2));
   		list.add(new ItemStack(item, 1, ID.S_BattleshipNagato+202));	//BOSS entity
+  		list.add(new ItemStack(item, 1, ID.S_SubmarineU511+2));
+  		list.add(new ItemStack(item, 1, ID.S_SubmarineU511+202));	//BOSS entity
   	}
   	
   	/** VANILLA SPAWN METHOD edited by Jabelar

@@ -513,14 +513,28 @@ public class ModelBattleshipTa extends ModelBase {
   	}
   	
   	private void showEquip(BasicEntityShip ent) {
-		if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
-			this.EquipLeft.isHidden = false;
-			this.EquipRight.isHidden = false;
-		}
-		else {
+  		switch(ent.getStateEmotion(ID.S.State)) {
+  		case ID.State.EQUIP00:	//只有披風
+  			this.Cloak01.isHidden = false;
 			this.EquipLeft.isHidden = true;
 			this.EquipRight.isHidden = true;
-		}
+			break;
+  		case ID.State.EQUIP01:	//只有護肩
+  			this.Cloak01.isHidden = true;
+			this.EquipLeft.isHidden = false;
+			this.EquipRight.isHidden = false;
+			break;
+  		case ID.State.EQUIP02:	//披風+護肩
+  			this.Cloak01.isHidden = false;
+			this.EquipLeft.isHidden = false;
+			this.EquipRight.isHidden = false;
+			break;
+		default:				//都沒有
+			this.Cloak01.isHidden = true;
+			this.EquipLeft.isHidden = true;
+			this.EquipRight.isHidden = true;
+			break;	
+  		}
   	}
   	
   	//隨機抽取顯示的表情 

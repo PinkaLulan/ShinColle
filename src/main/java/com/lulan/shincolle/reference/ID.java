@@ -83,8 +83,9 @@ public class ID {
 		public static final byte UseAmmoHeavy = 5;
 		public static final byte UseAirLight = 6;
 		public static final byte UseAirHeavy = 7;
-		public static final byte HeadTilt = 8;			//client only
+		public static final byte HeadTilt = 8;			//client only, no sync
 		public static final byte UseRingEffect = 9;
+		public static final byte CanDrop = 10;			//server only, no sync
 	}
 	
 	//GUI ID
@@ -188,6 +189,7 @@ public class ID {
 	public static final byte DHIT = 10;
 	public static final byte THIT = 11;
 	public static final byte MISS = 12;
+	public static final byte SpawnPerSquid = 6;
 	
 	//Array ID: Effect Equip
 	public static final byte EF_CRI = 0;
@@ -287,6 +289,7 @@ public class ID {
 	
 	public static final byte S_DestroyerShimakaze = 36;
 	public static final byte S_BattleshipNagato = 37;
+	public static final byte S_SubmarineU511 = 38;
 	
 		
 }

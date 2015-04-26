@@ -15,6 +15,7 @@ public final class Names {
 		public static final byte GUI_CLICK = 3;
 		public static final byte GUI_SYNC = 4;
 		public static final byte PLAYER_SYNC = 5;
+		public static final byte KEY_INPUT = 6;
 	}
 
 }

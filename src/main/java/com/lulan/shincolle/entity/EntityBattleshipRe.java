@@ -32,7 +32,7 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
 	public EntityBattleshipRe(World world) {
 		super(world);
 		this.setSize(0.8F, 1.8F);
-		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityBattleshipRe.name"));
+//		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityBattleshipRe.name"));
 		this.ShipType = ID.ShipType.BATTLESHIP;
 		this.ShipID = ID.S_BattleshipRE;
 		this.ModelPos = new float[] {-6F, 10F, 0F, 40F};

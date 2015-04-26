@@ -460,7 +460,7 @@ public class EntityRensouhouBoss extends EntityMob implements IShipEmotion, IShi
 
         //spawn missile
         EntityAbyssMissile missile = new EntityAbyssMissile(this.worldObj, this, 
-        		tarX, tarY+target.height*0.2F, tarZ, launchPos, atkHeavy, kbValue, isDirect);
+        		tarX, tarY+target.height*0.2F, tarZ, launchPos, atkHeavy, kbValue, isDirect, -1F);
         this.worldObj.spawnEntityInWorld(missile);
         
         //®ø¯Ó¼uÃÄ­pºâ

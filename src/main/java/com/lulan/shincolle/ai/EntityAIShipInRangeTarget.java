@@ -31,7 +31,7 @@ import net.minecraft.entity.passive.EntityWaterMob;
  * 1:target < range1 => < range2 (先打內圈, 再打外圈)
  * 2:target between range1 and range2 => < range1 (先打外圈, 再打內圈)
  * 
- * @parm host, target, range1, range2, mode 
+ * @parm host, target, range1, range2, mode
  * @parm host, target, range proportion, mode
  */
 public class EntityAIShipInRangeTarget extends EntityAITarget {
@@ -75,7 +75,7 @@ public class EntityAIShipInRangeTarget extends EntityAITarget {
             	if((target2 instanceof EntityMob || target2 instanceof EntitySlime ||
             	   target2 instanceof EntityBat || target2 instanceof EntityDragon ||
             	   target2 instanceof EntityFlying || target2 instanceof EntityWaterMob) &&
-            	   !target2.isDead) {
+            	   !target2.isDead && !target2.isInvisible()) {
             		return true;
             	}
             	return false;

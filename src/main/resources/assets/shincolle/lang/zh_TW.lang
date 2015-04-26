@@ -92,14 +92,18 @@ item.shincolle:shipegg11.name=重巡RI級
 item.shincolle:shipegg14.name=空母WO級
 item.shincolle:shipegg16.name=戰艦TA級
 item.shincolle:shipegg17.name=航空戰艦RE級
-item.shincolle:shipegg38.name=島風
-item.shincolle:shipegg238.name=島風 改
+item.shincolle:shipegg28.name=戰艦棲姬
+item.shincolle:shipegg38.name=驅逐艦 島風
+item.shincolle:shipegg238.name=驅逐艦 島風 改
 item.shincolle:shipegg39.name=戰艦 長門
 item.shincolle:shipegg239.name=戰艦 長門 改
+item.shincolle:shipegg40.name=潛水艇 U-511
+item.shincolle:shipegg240.name=潛水艇 U-511 改
 
 # Entity
 entity.shincolle.EntityAirplane.name=深海棲艦戰
 entity.shincolle.EntityAirplaneTakoyaki.name=深海復讐艦攻
+entity.shincolle.EntityBattleshipHime.name=戰艦棲姬
 entity.shincolle.EntityBattleshipNGT.name=戰艦 長門
 entity.shincolle.EntityBattleshipNGTBoss.name=戰艦 長門 改
 entity.shincolle.EntityBattleshipRe.name=航空戰艦RE級
@@ -112,9 +116,13 @@ entity.shincolle.EntityDestroyerRo.name=驅逐RO級
 entity.shincolle.EntityDestroyerShimakaze.name=驅逐艦 島風
 entity.shincolle.EntityDestroyerShimakazeBoss.name=驅逐艦 島風 改
 entity.shincolle.EntityHeavyCruiserRi.name=重巡RI級
+entity.shincolle.EntityMountBaH.name=三連裝砲
+entity.shincolle.EntityMountSeat2.name=座位2
 entity.shincolle.EntityRensouhou.name=連裝砲
 entity.shincolle.EntityRensouhouBoss.name=連裝砲 改
 entity.shincolle.EntityRensouhouS.name=深海連裝砲
+entity.shincolle.EntitySubmU511.name=潛水艇 U-511
+entity.shincolle.EntitySubmU511Mob.name=潛水艇 U-511 改
 
 # GUI: Ship Inventory Top
 gui.shincolle:level=等級

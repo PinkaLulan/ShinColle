@@ -1,30 +1,24 @@
 package com.lulan.shincolle.ai;
 
-import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
-
-import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.passive.EntityTameable;
-import net.minecraft.init.Blocks;
-import net.minecraft.pathfinding.PathEntity;
 import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
+
+import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.IShipMount;
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
 /**SHIP FOLLOW OWNER AI
- * 會持續跟隨owner, 不會因為找不到路徑就停止跟隨
  * 距離超過max dist時觸發移動, 直到走進min dist距離時停止
- * 距離超過40格會直接teleport到owner旁邊
- * 
- * @parm entity, move speed, min dist, max dist
+ * 距離超過TP_DIST會直接teleport到owner旁邊
  */
 public class EntityAIShipFollowOwner extends EntityAIBase {
-    private BasicEntityShip ThePet;
-    private EntityLivingBase TheOwner;
+
+    private BasicEntityShip host;
+    private EntityLivingBase owner;
     World TheWorld;
     private static final double TP_DIST = 2048D;	//teleport condition ~ 45 blocks
     private PathNavigate PetPathfinder;
@@ -38,37 +32,38 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
     private double distX, distY, distZ, motX, motY, motZ;	//跟目標的直線距離(的平方)
     private float rotYaw;
 
+    
     public EntityAIShipFollowOwner(BasicEntityShip entity) {
-        this.ThePet = entity;
+        this.host = entity;
         this.TheWorld = entity.worldObj;
         this.PetPathfinder = entity.getNavigator();
         this.distSq = 1D;
         this.distSqrt = 1D;
         this.setMutexBits(7);  
     }
-
+    
     //有owner且目標超過max dist時觸發AI, 觸發後此方法不再執行, 改為持續執行cont exec
     public boolean shouldExecute() {
-    	if(!ThePet.isSitting() && !ThePet.getLeashed() && !ThePet.getStateFlag(ID.F.NoFuel)) {
-    		EntityLivingBase OwnerEntity = this.ThePet.getOwner();
+    	if(!host.isSitting() && !host.isRiding() && !host.getLeashed() && !host.getStateFlag(ID.F.NoFuel)) {
+    		EntityLivingBase OwnerEntity = this.host.getOwner();
 
             //get owner distance
             if(OwnerEntity != null) {
-            	this.TheOwner = OwnerEntity;
+            	this.owner = OwnerEntity;
                 
-            	if(this.TheOwner.dimension != this.ThePet.dimension) {
+            	if(this.owner.dimension != this.host.dimension) {
             		return false;
             	}
             	
-            	float fMin = ThePet.getStateMinor(ID.N.FollowMin);
-            	float fMax = ThePet.getStateMinor(ID.N.FollowMax);
+            	float fMin = host.getStateMinor(ID.N.FollowMin);
+            	float fMax = host.getStateMinor(ID.N.FollowMax);
             	this.minDistSq = fMin * fMin;
                 this.maxDistSq = fMax * fMax;
 
             	//計算直線距離
-            	this.distX = this.TheOwner.posX - this.ThePet.posX;
-        		this.distY = this.TheOwner.posY - this.ThePet.posY;
-        		this.distZ = this.TheOwner.posZ - this.ThePet.posZ;
+            	this.distX = this.owner.posX - this.host.posX;
+        		this.distY = this.owner.posY - this.host.posY;
+        		this.distZ = this.owner.posZ - this.host.posZ;
             	this.distSq = this.distX*this.distX + this.distY*this.distY + this.distZ*this.distZ;
 
             	if(distSq > this.maxDistSq) {
@@ -83,9 +78,9 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
     //目標還沒接近min dist或者距離超過TP_DIST時繼續AI
     public boolean continueExecuting() {
     	//計算直線距離
-    	this.distX = this.TheOwner.posX - this.ThePet.posX;
-		this.distY = this.TheOwner.posY - this.ThePet.posY;
-		this.distZ = this.TheOwner.posZ - this.ThePet.posZ;
+    	this.distX = this.owner.posX - this.host.posX;
+		this.distY = this.owner.posY - this.host.posY;
+		this.distZ = this.owner.posZ - this.host.posZ;
     	this.distSq = this.distX*this.distX + this.distY*this.distY + this.distZ*this.distZ;
     	
     	//距離超過傳送距離
@@ -93,8 +88,8 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
     		return true;
     	}
 
-    	if(this.distSq > this.minDistSq && !this.ThePet.isSitting()) {
-    		if(this.ThePet.getShipDepth() > 0D) {	//用於液體中移動, 液體中找path經常false
+    	if(this.distSq > this.minDistSq && !host.isSitting() && !host.isRiding()) {
+    		if(this.host.getShipDepth() > 0D) {	//用於液體中移動, 液體中找path經常false
     			return true;
     		}
     		
@@ -114,7 +109,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
     }
 
     public void resetTask() {
-        this.TheOwner = null;
+        this.owner = null;
         this.PetPathfinder.clearPathEntity();
     }
 
@@ -124,21 +119,21 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
     	this.motY = 0D;
     	
     	//設定頭部轉向
-        this.ThePet.getLookHelper().setLookPositionWithEntity(this.TheOwner, 10.0F, (float)this.ThePet.getVerticalFaceSpeed());
+        this.host.getLookHelper().setLookPositionWithEntity(this.owner, 10.0F, (float)this.host.getVerticalFaceSpeed());
 
-        if(!this.ThePet.isSitting() && !this.ThePet.getLeashed()) {
+        if(!this.host.isSitting() && !this.host.getLeashed()) {
         	//距離超過傳送距離, 直接傳送到目標上
         	if(this.distSq > this.TP_DIST) {
-        		this.ThePet.posX = this.TheOwner.posX;
-        		this.ThePet.posY = this.TheOwner.posY + 1D;
-        		this.ThePet.posZ = this.TheOwner.posZ;
-        		this.ThePet.setPosition(this.ThePet.posX, this.ThePet.posY, this.ThePet.posZ);
+        		this.host.posX = this.owner.posX;
+        		this.host.posY = this.owner.posY + 1D;
+        		this.host.posZ = this.owner.posZ;
+        		this.host.setPosition(this.host.posX, this.host.posY, this.host.posZ);
         	}
         	
     		//在液體中, 採直線移動
-        	if(this.ThePet.getShipDepth() > 0D) {
+        	if(this.host.getShipDepth() > 0D) {
         		//額外加上y軸速度, getPathToXYZ對空氣跟液體方塊無效, 因此y軸速度要另外加
-        		if(this.distY > 1.5D && this.ThePet.getShipDepth() > 1.5D) {  //避免水面彈跳
+        		if(this.distY > 1.5D && this.host.getShipDepth() > 1.5D) {  //避免水面彈跳
         			this.motY = 0.2F;
         		}
         		else if(this.distY < -1D) {
@@ -149,25 +144,25 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
 	        	}
         		
         		//若直線可視, 則直接直線移動
-        		if(this.ThePet.getEntitySenses().canSee(this.TheOwner)) {
-        			double speed = this.ThePet.getStateFinal(ID.MOV);
+        		if(this.host.getEntitySenses().canSee(this.owner)) {
+        			double speed = this.host.getStateFinal(ID.MOV);
         			this.distSqrt = MathHelper.sqrt_double(this.distSq);
         			this.motX = (this.distX / this.distSqrt) * speed * 1D;
         			this.motZ = (this.distZ / this.distSqrt) * speed * 1D;
 //        			LogHelper.info("DEBUG  : follow owner: "+motX+" "+motZ);
-        			this.ThePet.motionY = this.motY;
-        			this.ThePet.motionX = this.motX;
-        			this.ThePet.motionZ = this.motZ;
-//        			this.ThePet.getMoveHelper().setMoveTo(this.ThePet.posX+this.motX, this.ThePet.posY+this.motY, this.ThePet.posZ+this.motZ, 1D);
+        			this.host.motionY = this.motY;
+        			this.host.motionX = this.motX;
+        			this.host.motionZ = this.motZ;
+//        			this.host.getMoveHelper().setMoveTo(this.host.posX+this.motX, this.host.posY+this.motY, this.host.posZ+this.motZ, 1D);
         			
         			//身體角度設定
         			float[] degree = EntityHelper.getLookDegree(motX, motY, motZ);
-        			this.ThePet.rotationYaw = degree[0];
-        			this.ThePet.rotationPitch = degree[1];
+        			this.host.rotationYaw = degree[0];
+        			this.host.rotationPitch = degree[1];
         			
         			//若水平撞到東西, 則嘗試跳跳
-	        		if(this.ThePet.isCollidedHorizontally) {
-	        			this.ThePet.motionY += 0.2D;
+	        		if(this.host.isCollidedHorizontally) {
+	        			this.host.motionY += 0.2D;
 	        		}
         			return;
         		}
@@ -177,13 +172,13 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
         	if(this.findCooldown <= 0) {
     			this.findCooldown = 20;
 
-            	if(!this.PetPathfinder.tryMoveToEntityLiving(this.TheOwner, 1D)) {
+            	if(!this.PetPathfinder.tryMoveToEntityLiving(this.owner, 1D)) {
             		LogHelper.info("DEBUG : follow AI: fail to move, teleport entity");
             		if(this.distSq > this.maxDistSq) {
             			//相同dim才傳送
-            			LogHelper.info("DEBUG : follow AI: entity dimension "+ThePet.dimension+" "+TheOwner.dimension);
-            			if(this.ThePet.dimension == this.TheOwner.dimension) {
-            				this.ThePet.setLocationAndAngles(this.TheOwner.posX, this.TheOwner.posY + 0.5D, this.TheOwner.posZ, this.ThePet.rotationYaw, this.ThePet.rotationPitch);
+            			LogHelper.info("DEBUG : follow AI: entity dimension "+host.dimension+" "+owner.dimension);
+            			if(this.host.dimension == this.owner.dimension) {
+            				this.host.setLocationAndAngles(this.owner.posX, this.owner.posY + 0.5D, this.owner.posZ, this.host.rotationYaw, this.host.rotationPitch);
                         	this.PetPathfinder.clearPathEntity();
                             return;
             			}
