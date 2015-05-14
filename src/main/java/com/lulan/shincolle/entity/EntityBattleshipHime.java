@@ -89,7 +89,7 @@ public class EntityBattleshipHime extends BasicEntityShip {
   				//summon mount if emotion state = equip00
   	  	  		if(getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
   	  	  			if(!this.isRiding()) {
-  	  	  				LogHelper.info("DEBUG : ship summon mount");
+//  	  	  				LogHelper.info("DEBUG : ship summon mount");
   	  	  				//summon mount entity
   	  	  	  			EntityMountBaH mount = new EntityMountBaH(worldObj, this);
   	  	  	  			this.worldObj.spawnEntityInWorld(mount);

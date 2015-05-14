@@ -1,76 +1,58 @@
 package com.lulan.shincolle.entity;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
-
-import com.lulan.shincolle.ShinColle;
-import com.lulan.shincolle.ai.EntityAIShipInRangeTarget;
-import com.lulan.shincolle.ai.EntityAIShipSit;
-import com.lulan.shincolle.client.inventory.ContainerShipInventory;
-import com.lulan.shincolle.client.particle.EntityFXSpray;
-import com.lulan.shincolle.client.particle.EntityFXTexts;
-import com.lulan.shincolle.crafting.EquipCalc;
-import com.lulan.shincolle.entity.EntityAbyssMissile;
-import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.init.ModBlocks;
-import com.lulan.shincolle.init.ModItems;
-import com.lulan.shincolle.item.BasicEntityItem;
-import com.lulan.shincolle.network.S2CEntitySync;
-import com.lulan.shincolle.network.S2CSpawnParticle;
-import com.lulan.shincolle.proxy.CommonProxy;
-import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
-import com.lulan.shincolle.utility.ParticleHelper;
-
-import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
-import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.client.Minecraft;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAIOwnerHurtByTarget;
 import net.minecraft.entity.ai.EntityAIOwnerHurtTarget;
+import net.minecraft.entity.ai.EntityMoveHelper;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.pathfinding.PathEntity;
-import net.minecraft.server.MinecraftServer;
+import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
-import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
-import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.common.IExtendedEntityProperties;
+
+import com.lulan.shincolle.ShinColle;
+import com.lulan.shincolle.ai.EntityAIShipInRangeTarget;
+import com.lulan.shincolle.ai.path.ShipMoveHelper;
+import com.lulan.shincolle.ai.path.ShipPathNavigate;
+import com.lulan.shincolle.client.inventory.ContainerShipInventory;
+import com.lulan.shincolle.crafting.EquipCalc;
+import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.init.ModBlocks;
+import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.network.S2CEntitySync;
+import com.lulan.shincolle.network.S2CSpawnParticle;
+import com.lulan.shincolle.proxy.CommonProxy;
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.reference.Values;
+import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
+import com.lulan.shincolle.utility.ParticleHelper;
+
+import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
+import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
 
 /**SHIP DATA <br>
  * Explanation in crafting/ShipCalc.class
  */
-public abstract class BasicEntityShip extends EntityTameable implements IShipAttack, IShipEmotion, IShipFloating {
+public abstract class BasicEntityShip extends EntityTameable implements IShipAttack, IShipEmotion, IShipFloating, IShipNavigator {
 
 	protected ExtendShipProps ExtProps;	//entity額外NBT紀錄
+	protected ShipPathNavigate shipNavigator;	//水空移動用navigator
+	protected ShipMoveHelper shipMoveHelper;
 	
 	//for attribute calc
 	protected byte ShipType;			//ship type
@@ -128,6 +110,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 		ShipPrevZ = posZ;
 		ownerName = "";
 		stepHeight = 1F;
+		shipNavigator = new ShipPathNavigate(this, worldObj);
+		shipMoveHelper = new ShipMoveHelper(this);
 	}
 	
 	@Override
@@ -237,6 +221,14 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 	//getter
 	public ExtendShipProps getExtProps() {
 		return ExtProps;
+	}
+	
+	public ShipPathNavigate getShipNavigate() {
+		return shipNavigator;
+	}
+	
+	public ShipMoveHelper getShipMoveHelper() {
+		return shipMoveHelper;
 	}
 	
 	abstract public int getEquipType();
@@ -703,7 +695,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 	@Override
 	public boolean interact(EntityPlayer player) {	
 		ItemStack itemstack = player.inventory.getCurrentItem();  //get item in hand
-		
+
 		//use item
 		if(itemstack != null) {
 			//use name tag, owner only
@@ -1046,6 +1038,22 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 
         this.limbSwingAmount += (f6 - this.limbSwingAmount) * 0.4F;
         this.limbSwing += this.limbSwingAmount;
+    }
+	
+	//update ship move helper
+	@Override
+	protected void updateAITasks() {	
+		super.updateAITasks();
+   
+		//若有水空path, 則更新ship navigator
+		if(!this.getShipNavigate().noPath()) {
+			this.worldObj.theProfiler.startSection("ship navi");
+	        this.shipNavigator.onUpdateNavigation();
+	        this.worldObj.theProfiler.endSection();
+	        this.worldObj.theProfiler.startSection("ship move");
+	        this.shipMoveHelper.onUpdateMoveHelper();
+	        this.worldObj.theProfiler.endSection();
+		}    
     }
 	
 	//update entity position

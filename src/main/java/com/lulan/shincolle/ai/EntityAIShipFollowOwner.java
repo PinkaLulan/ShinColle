@@ -6,8 +6,10 @@ import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
+import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipMount;
+import com.lulan.shincolle.entity.IShipNavigator;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
@@ -22,6 +24,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
     World TheWorld;
     private static final double TP_DIST = 2048D;	//teleport condition ~ 45 blocks
     private PathNavigate PetPathfinder;
+    private ShipPathNavigate ShipNavigator;
     private int findCooldown;
     private double maxDistSq;
     private double minDistSq;
@@ -37,6 +40,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
         this.host = entity;
         this.TheWorld = entity.worldObj;
         this.PetPathfinder = entity.getNavigator();
+        this.ShipNavigator = entity.getShipNavigate();
         this.distSq = 1D;
         this.distSqrt = 1D;
         this.setMutexBits(7);  
@@ -89,11 +93,15 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
     	}
 
     	if(this.distSq > this.minDistSq && !host.isSitting() && !host.isRiding()) {
-    		if(this.host.getShipDepth() > 0D) {	//用於液體中移動, 液體中找path經常false
+    		if(this.host.getShipDepth() > 0D) {		//用於液體中移動, 液體中找path經常false
     			return true;
     		}
     		
-    		if(!this.PetPathfinder.noPath()) {		//用於陸上移動, path find可正常運作
+    		if(!this.PetPathfinder.noPath()) {		//用於陸上移動, 若有path
+    			return true;
+    		}
+    		
+    		if(!this.ShipNavigator.noPath()) {		//用於水空移動, 若有path
     			return true;
     		}
     	}

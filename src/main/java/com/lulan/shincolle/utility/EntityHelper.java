@@ -3,25 +3,9 @@ package com.lulan.shincolle.utility;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
-
-import scala.reflect.internal.Trees.This;
-
-import com.lulan.shincolle.entity.BasicEntityAirplane;
-import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.entity.EntityAirplane;
-import com.lulan.shincolle.entity.EntityRensouhou;
-import com.lulan.shincolle.entity.EntityRensouhouS;
-import com.lulan.shincolle.entity.ExtendPlayerProps;
-import com.lulan.shincolle.entity.IShipAttack;
-import com.lulan.shincolle.proxy.ClientProxy;
-import com.lulan.shincolle.proxy.ServerProxy;
-import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.Names;
-import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
-import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockLiquid;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityTameable;
@@ -33,6 +17,20 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.fluids.BlockFluidBase;
+import net.minecraftforge.fluids.IFluidBlock;
+
+import com.lulan.shincolle.entity.BasicEntityAirplane;
+import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.EntityRensouhou;
+import com.lulan.shincolle.entity.EntityRensouhouS;
+import com.lulan.shincolle.entity.ExtendPlayerProps;
+import com.lulan.shincolle.entity.IShipAttack;
+import com.lulan.shincolle.proxy.ClientProxy;
+import com.lulan.shincolle.proxy.ServerProxy;
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
+import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 
 public class EntityHelper {
 
@@ -40,18 +38,41 @@ public class EntityHelper {
 	
 	public EntityHelper() {}
 	
-	//check block is safe for summon
+	/**check block is safe (not solid block) */
 	public static boolean checkBlockSafe(World world, int x, int y, int z) {
 		Block block = world.getBlock(x, y, z);
-		
-		if(block == Blocks.air || block == null || block == Blocks.water || block == Blocks.lava) {
+		return checkBlockSafe(block);
+	}
+	
+	/**check block is safe (not solid block) */
+	public static boolean checkBlockSafe(Block block) {
+		if(block == Blocks.air || block == null || checkBlockIsLiquid(block)) {
     		return true;
-    	}
-		
+    	}	
 		return false;
 	}
 	
-	//check is same owner for ship (host == target's owner)
+	/**check block is liquid (not air or solid block) */
+	public static boolean checkBlockIsLiquid(Block block) {
+        if(block instanceof BlockLiquid || block instanceof IFluidBlock || block instanceof BlockFluidBase) {
+            return true;
+        }		
+		return false;
+	}
+	
+	/**check entity is in liquid (not air or solid block) */
+	public static boolean checkEntityIsInLiquid(Entity entity) {
+		Block block = entity.worldObj.getBlock(MathHelper.floor_double(entity.posX), (int)(entity.boundingBox.minY + 0.5D), MathHelper.floor_double(entity.posZ));
+		return checkBlockIsLiquid(block);
+	}
+	
+	/**check entity is free to move in the block */
+	public static boolean checkEntityIsFree(Entity entity) {
+		Block block = entity.worldObj.getBlock(MathHelper.floor_double(entity.posX), (int)(entity.boundingBox.minY + 0.5D), MathHelper.floor_double(entity.posZ));
+		return checkBlockSafe(block);
+	}
+	
+	/**check is same owner for ship (host's owner == target's owner) */
 	public static boolean checkSameOwner(EntityLivingBase host, EntityLivingBase target) {
 		EntityLivingBase getOwnerA = null;
 		EntityLivingBase getOwnerB = null;
@@ -69,7 +90,7 @@ public class EntityHelper {
 		return false;
 	}
 	
-	//get owner from entity
+	/**get owner from entity */
 	public static EntityLivingBase getOwnerFromEntity(EntityLivingBase host) {
 		//get owner from target
 		if(host instanceof EntityPlayer) {
@@ -118,7 +139,7 @@ public class EntityHelper {
 		return null;
 	}
 	
-	//check entity ID is not same
+	/**check entity ID is not same */
     public static boolean checkNotSameEntityID(Entity enta, Entity entb) {
 		if(enta.getEntityId() == entb.getEntityId()) {
 			return false;
@@ -127,7 +148,7 @@ public class EntityHelper {
 		return true;
 	}
 
-	//check host's owner is EntityPlayer
+	/**check host's owner is EntityPlayer */
 	public static boolean checkOwnerIsPlayer(EntityLivingBase host) {
 		EntityLivingBase getOwner = null;
 		
@@ -146,12 +167,13 @@ public class EntityHelper {
 		return false;
 	}
 	
+	/** */
 	public static boolean checkOP(EntityPlayer player) {
 		MinecraftServer server = ServerProxy.getServer();
 		return server.getConfigurationManager().func_152596_g(player.getGameProfile());
 	}
 	
-	//get entity by ID
+	/**get entity by ID */
 	public static Entity getEntityByID(int entityID, int worldID, boolean isClient) {
 		World world;
 		
@@ -174,7 +196,7 @@ public class EntityHelper {
 		return null;
 	}
 	
-	//get player is online by entity
+	/**get player is online by entity */
 	public static EntityPlayerMP getOnlinePlayer(EntityLivingBase entity) {
 		if(entity != null) {
 			//get online id list (server side only)
@@ -191,7 +213,7 @@ public class EntityHelper {
 		return null;	//player offline
 	}
 	
-	//process player sync data
+	/**process player sync data */
 	public static void setPlayerExtProps(int[] value) {
 		EntityPlayer player = ClientProxy.getClientPlayer();
 		ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
@@ -209,7 +231,7 @@ public class EntityHelper {
 		}
 	}
 	
-	//process player sync data
+	/**process player sync data */
 	public static void setPlayerByGUI(int value, int value2) {
 		EntityPlayer player = ClientProxy.getClientPlayer();
 		ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
@@ -226,7 +248,7 @@ public class EntityHelper {
 		}
 	}
 	
-	//process GUI click
+	/**process GUI click */
 	public static void setEntityByGUI(BasicEntityShip entity, int button, int value) {
 		if(entity != null) {
 			switch(button) {
@@ -267,7 +289,7 @@ public class EntityHelper {
 		}
 	}
 	
-	//process Shipyard GUI click
+	/**process Shipyard GUI click */
 	public static void setTileEntityByGUI(TileEntity tile, int button, int value, int value2) {
 		if(tile != null) {
 			if(tile instanceof TileEntitySmallShipyard) {
@@ -299,7 +321,7 @@ public class EntityHelper {
 		}	
 	}
 
-	//增減large shipyard的matBuild[]
+	/**增減large shipyard的matBuild[] */
 	private static void setLargeShipyardBuildMats(TileMultiGrudgeHeavy tile, int button, int matType, int value) {
 		int num = 0;
 		int num2 = 0;
@@ -346,9 +368,10 @@ public class EntityHelper {
 		}	
 	}
 	
-	//find random position with block check
+	/**find random position with block check
 	//mode 0: find y = Y+1 ~ Y+3 and XZ at side of target
 	//mode 1: find y = Y-2 ~ Y+2 (NYI)
+	 */
 	public static double[] findRandomPosition(Entity host, Entity target, double minDist, double randDist, int mode) {
 		Block findBlock = null;
 		double[] newPos = new double[] {0D, 0D, 0D};
