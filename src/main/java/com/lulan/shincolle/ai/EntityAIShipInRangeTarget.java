@@ -199,8 +199,7 @@ public class EntityAIShipInRangeTarget extends EntityAITarget {
         public int compare(Entity target1, Entity target2) {
             double d0 = this.targetEntity.getDistanceSqToEntity(target1);
             double d1 = this.targetEntity.getDistanceSqToEntity(target2);
-        //    return d0 < d1 ? -1 : (d0 > d1 ? 1 : 0);
-            return (int)(d0 - d1);
+            return d0 < d1 ? -1 : (d0 > d1 ? 1 : 0);
         }       
     }//end sorter class
   
