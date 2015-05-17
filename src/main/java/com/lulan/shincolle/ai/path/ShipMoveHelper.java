@@ -1,12 +1,20 @@
 package com.lulan.shincolle.ai.path;
 
+import com.lulan.shincolle.entity.IShipNavigator;
+import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
+
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.util.MathHelper;
 
+/**SHIP MOVE HELPER
+ * 配合ship navigator使用, 額外增加y軸移動量, 適用於水中或飛行entity
+ */
 public class ShipMoveHelper {
     /** The EntityLiving that is being moved */
     private EntityLiving entity;
+    private IShipNavigator entityN;
     private double posX;
     private double posY;
     private double posZ;
@@ -17,6 +25,7 @@ public class ShipMoveHelper {
 
     public ShipMoveHelper(EntityLiving entity) {
         this.entity = entity;
+        this.entityN = (IShipNavigator) entity;
         this.posX = entity.posX;
         this.posY = entity.posY;
         this.posZ = entity.posZ;
@@ -54,18 +63,51 @@ public class ShipMoveHelper {
             int i = MathHelper.floor_double(this.entity.boundingBox.minY + 0.5D);
             double x1 = this.posX - this.entity.posX;
             double z1 = this.posZ - this.entity.posZ;
-            double y1 = this.posY - (double)i;
+            double y1 = this.posY - this.entity.posY;
+//            double y1 = this.posY - (double)i;
             double moveSq = x1 * x1 + y1 * y1 + z1 * z1;
-
+            
             //若移動值夠大, 則計算身體面向方向, 以及y軸移動動作
-            if(moveSq >= 2.500000277905201E-7D) {
+            if(moveSq >= 0.1D) {
                 float f = (float)(Math.atan2(z1, x1) * 180.0D / Math.PI) - 90.0F;
+                float moveSpeed = (float)(this.speed * this.entity.getEntityAttribute(SharedMonsterAttributes.movementSpeed).getAttributeValue());
+//                LogHelper.info("DEBUG : moveHelper: update f "+(x1 * x1 + z1 * z1));
                 this.entity.rotationYaw = this.limitAngle(this.entity.rotationYaw, f, 30.0F);
-                this.entity.setAIMoveSpeed((float)(this.speed * this.entity.getEntityAttribute(SharedMonsterAttributes.movementSpeed).getAttributeValue()));
+//                this.entity.setAIMoveSpeed(moveSpeed);
 
-                if (y1 > 0.0D && x1 * x1 + z1 * z1 < 1.0D) {
+                //y軸移動: 由於官方setAIMoveSpeed只提供水平移動, 因此y軸移動必須自行設定
+                //y軸速度, 每tick增減值為: 移動速度的 20%
+                //移動速度降為10%, 避免水平移動太遠
+                if(entityN.canFly()) {
+                	if(y1 > 0.5D) {
+                    	this.entity.motionY += moveSpeed * 0.15D;
+                    	moveSpeed *= 0.7F;
+                    }
+                    else if(y1 < -0.5D){
+                    	this.entity.motionY -= moveSpeed * 0.15D;
+                    	moveSpeed *= 0.7F;
+                    }
+                }
+                else if(EntityHelper.checkEntityIsInLiquid(entity)) {
+                	if(y1 > 0.3D) {
+                    	this.entity.motionY += moveSpeed * 0.2D;
+                    	moveSpeed *= 0.2F;
+                    }
+                    else if(y1 < -0.3D){
+                    	this.entity.motionY -= moveSpeed * 0.2D;
+                    	moveSpeed *= 0.2F;
+                    }
+                	
+                	//若在目標正下方, 則嘗試跳跳
+                    if(y1 > 0.0D && x1 * x1 + z1 * z1 < 4.0D) {
+                        this.entity.getJumpHelper().setJumping();
+                    }
+                }
+                else if(y1 > 0.0D && x1 * x1 + z1 * z1 < 4.0D) {	//用於陸上跳躍
                     this.entity.getJumpHelper().setJumping();
                 }
+//                LogHelper.info("DEBUG : moveHelper: speed "+moveSpeed);
+                this.entity.setAIMoveSpeed(moveSpeed);
             }
         }
     }

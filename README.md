@@ -12,4 +12,8 @@ forum (Chinese)
 http://forum.gamer.com.tw/C.php?bsn=18673&snA=124090&tnum=1
 
 download (Curse)
+<<<<<<< Updated upstream
 http://www.curse.com/mc-mods/minecraft/228395-shincolle
+=======
+http://www.curse.com/mc-mods/minecraft/228395-shincolle
+>>>>>>> Stashed changes

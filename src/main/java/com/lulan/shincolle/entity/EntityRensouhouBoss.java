@@ -3,6 +3,10 @@ package com.lulan.shincolle.entity;
 import java.util.List;
 
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
+import com.lulan.shincolle.ai.path.ShipMoveHelper;
+import com.lulan.shincolle.ai.path.ShipPathEntity;
+import com.lulan.shincolle.ai.path.ShipPathNavigate;
+import com.lulan.shincolle.ai.path.ShipPathPoint;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;
@@ -35,6 +39,8 @@ public class EntityRensouhouBoss extends EntityMob implements IShipEmotion, IShi
 	protected EntityLivingBase host2;
 	protected EntityLivingBase target;	//onImpact target (for entity)
 	protected World world;
+	protected ShipPathNavigate shipNavigator;	//水空移動用navigator
+	protected ShipMoveHelper shipMoveHelper;
     
     //attributes
 	protected float atk;				//damage
@@ -70,6 +76,8 @@ public class EntityRensouhouBoss extends EntityMob implements IShipEmotion, IShi
         this.host2 = (EntityLivingBase) host;
         this.target = target;
         this.isImmuneToFire = true;
+        shipNavigator = new ShipPathNavigate(this, worldObj);
+		shipMoveHelper = new ShipMoveHelper(this);
         
         //basic attr
         this.atk = 30F;
@@ -668,6 +676,56 @@ public class EntityRensouhouBoss extends EntityMob implements IShipEmotion, IShi
 
 	@Override
 	public boolean getIsSneaking() {
+		return false;
+	}
+	
+	@Override
+	public ShipPathNavigate getShipNavigate() {
+		return this.shipNavigator;
+	}
+
+	@Override
+	public ShipMoveHelper getShipMoveHelper() {
+		return this.shipMoveHelper;
+	}
+	
+	//update ship move helper
+	@Override
+	protected void updateAITasks() {
+		super.updateAITasks();
+        
+        //若有水空path, 則更新ship navigator
+        if(!this.getShipNavigate().noPath()) {
+			//用particle顯示path point
+			if(this.ticksExisted % 20 == 0) {
+				ShipPathEntity pathtemp = this.getShipNavigate().getPath();
+				ShipPathPoint pointtemp;
+				
+				for(int i = 0; i < pathtemp.getCurrentPathLength(); i++) {
+					pointtemp = pathtemp.getPathPointFromIndex(i);
+					//發射者煙霧特效
+			        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
+					//路徑點畫紅色, 目標點畫綠色
+					if(i == pathtemp.getCurrentPathIndex()) {
+						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 16, pointtemp.xCoord, pointtemp.yCoord+0.5D, pointtemp.zCoord, 0F, 0F, 0F, false), point);
+					}
+					else {
+						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 18, pointtemp.xCoord, pointtemp.yCoord+0.5D, pointtemp.zCoord, 0F, 0F, 0F, false), point);
+					}
+				}
+			}
+
+			this.worldObj.theProfiler.startSection("ship navi");
+	        this.shipNavigator.onUpdateNavigation();
+	        this.worldObj.theProfiler.endSection();
+	        this.worldObj.theProfiler.startSection("ship move");
+	        this.shipMoveHelper.onUpdateMoveHelper();
+	        this.worldObj.theProfiler.endSection();
+		}
+    }
+	
+	@Override
+	public boolean canFly() {
 		return false;
 	}
 	

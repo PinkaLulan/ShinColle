@@ -10,4 +10,6 @@ public interface IShipNavigator {
 	public ShipPathNavigate getShipNavigate();
 	
 	public ShipMoveHelper getShipMoveHelper();
+	
+	public boolean canFly();
 }

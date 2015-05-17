@@ -63,7 +63,7 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
 
     //判定是否繼續AI： 有target就繼續, 或者已經移動完畢就繼續
     public boolean continueExecuting() {
-        return this.shouldExecute() || !this.host.getNavigator().noPath();
+        return this.shouldExecute() || !this.host.getShipNavigate().noPath();
     }
 
     //重置AI方法
@@ -75,6 +75,7 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
     public void updateTask() {
     	if(this.attackTarget != null) {  //for lots of NPE issue-.-
     		boolean onSight = this.host.getEntitySenses().canSee(this.attackTarget);
+//    		boolean onSight = true;
     		
     		//get update attributes
         	if(this.host != null && this.host.ticksExisted % 80 == 0) {	
@@ -89,49 +90,19 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
         		this.distZ = this.attackTarget.posZ - this.host.posZ;	
         		this.distSq = distX*distX + distY*distY + distZ*distZ;
     	
-    	        //若目標進入射程, 且目標無障礙物阻擋, 則清空AI移動的目標, 以停止繼續移動      
-    	        if(distSq < (double)this.rangeSq && onSight) {
-    	            this.host.getNavigator().clearPathEntity();
-    	        }
-    	        else {	//目標移動, 則繼續追擊	
-    	        	//在液體中, 採直線前進
-    	        	if(this.host.getShipDepth() > 0D) {
-    	        		//額外加上y軸速度, getPathToXYZ對空氣跟液體方塊無效, 因此y軸速度要另外加
-    	        		if(this.host.getShipDepth() > 0.7D && this.host.getShipDepth() < 5D) {  //如果接近水面, 則維持浮在水面
-    	        			this.motY = 0.15F;
-    	        		}
-    	        		else if(this.distY > 0D) {		//若沒有接近水面, 對方位置較高, 則上浮
-    	        			this.motY = 0.2F;
-    	        		}
-    	        		else if(this.distY <= -5D) {	//若沒有接近水面, 對方位置較低, 則下沉
-    	        			this.motY = -0.2F;
-    	        		}
-    	  		
-    	        		//若水平撞到東西, 則嘗試跳跳
-    	        		if(this.host.isCollidedHorizontally) {
-    	        			this.host.setPosition(this.host.posX, this.host.posY + 0.3D, this.host.posZ);
-    	        		}
-    	        		
-    	        		//若直線可視, 則直接直線移動
-    	        		if(this.host.getEntitySenses().canSee(this.attackTarget)) {
-    	        			double speed = this.host.getStateFinal(ID.MOV);
-    	        			this.motX = (this.distX / this.distSq) * speed * 6D;
-    	        			this.motZ = (this.distZ / this.distSq) * speed * 6D;
-
-    	        			this.host.motionY = this.motY;
-    	        			this.host.getMoveHelper().setMoveTo(this.host.posX+this.motX, this.host.posY+this.motY, this.host.posZ+this.motZ, 1D);
-    	        		}
-    	           	}
-                	else {	//非液體中, 採用一般尋找路徑法
-                		this.host.getNavigator().tryMoveToEntityLiving(this.attackTarget, 1D);
-                	}
-                }
+        		//若目標進入射程, 且目標無障礙物阻擋, 則清空AI移動的目標, 以停止繼續移動      
+		        if(distSq < (double)this.rangeSq && onSight) {
+		        	this.host.getShipNavigate().clearPathEntity();
+		        }
+		        else {	//目標移動, 則繼續追擊		        	
+		        	if(host.ticksExisted % 20 == 0) {
+		        		this.host.getShipNavigate().tryMoveToEntityLiving(this.attackTarget, 1D);
+		        	}
+	            }
     		}//end dist > range
 	
 	        //設定攻擊時, 頭部觀看的角度
-    		if(this.host.ticksExisted % 20 == 0) {
-    			this.host.getLookHelper().setLookPosition(this.attackTarget.posX, this.attackTarget.posY+2D, this.attackTarget.posZ, 40.0F, 90.0F);
-    		}
+    		this.host.getLookHelper().setLookPosition(this.attackTarget.posX, this.attackTarget.posY+2D, this.attackTarget.posZ, 40.0F, 90.0F);
 	         
 	        //delay time decr
 	        this.delayLaunch--;

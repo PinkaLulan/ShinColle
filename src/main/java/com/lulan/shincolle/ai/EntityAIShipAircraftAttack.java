@@ -73,7 +73,7 @@ public class EntityAIShipAircraftAttack extends EntityAIBase {
 
     //判定是否繼續AI： 有target就繼續, 或者已經移動完畢就繼續
     public boolean continueExecuting() {
-        return this.shouldExecute();
+        return this.shouldExecute()  || !this.host.getShipNavigate().noPath();
     }
 
     //重置AI方法
@@ -96,37 +96,16 @@ public class EntityAIShipAircraftAttack extends EntityAIBase {
 
         	if(this.host.ticksExisted % 10 == 0) {
 	        	randPos = EntityHelper.findRandomPosition(this.host, this.target, 3D, 3D, 0);    	
-        	}
         	
-        	this.distRanX = randPos[0] - this.host.posX;
-    		this.distRanY = randPos[1] - this.host.posY;
-    		this.distRanZ = randPos[2] - this.host.posZ;	
-    		this.distRanSqrt = MathHelper.sqrt_double(distX*distX + distY*distY + distZ*distZ);
-    		
-	        //moving
-        	double speed = this.host.getEntityAttribute(SharedMonsterAttributes.movementSpeed).getBaseValue();
-	        if(this.distSq > this.rangeSq) {
-				this.motX = (this.distRanX / this.distRanSqrt) * speed * 1.0D;
-				this.motY = (this.distRanY / this.distRanSqrt) * speed * 0.5D;
-				this.motZ = (this.distRanZ / this.distRanSqrt) * speed * 1.0D;
-	        }
-	        else {
-	        	this.motX = (this.distRanX / this.distRanSqrt) * speed * 0.3D;
-				this.motY = (this.distRanY / this.distRanSqrt) * speed * 0.15D;
-				this.motZ = (this.distRanZ / this.distRanSqrt) * speed * 0.3D;
-	        }
-	        
-//	        LogHelper.info("DEBUG : motX?"+motX+" "+motY+" "+motZ);
-	        if(this.motX > 0.7D) this.motX = 0.7D;
-	        if(this.motX < -0.7D) this.motX = -0.7D;
-	        if(this.motY > 0.5D) this.motY = 0.5D;
-	        if(this.motY < -0.7D) this.motY = -0.5D;
-	        if(this.motZ > 0.7D) this.motZ = 0.7D;
-	        if(this.motZ < -0.7D) this.motZ = -0.7D;
-            
-	        this.host.motionX = motX;
-			this.host.motionY = motY;
-			this.host.motionZ = motZ;
+	        	//目標在射程外, 則100%速度前進
+	        	if(this.distSq > this.rangeSq) {
+		        	this.host.getShipNavigate().tryMoveToXYZ(randPos[0], randPos[1], randPos[2], 1D);
+	        	}
+	        	//目標在射程內, 則緩速移動
+	        	else {
+		        	this.host.getShipNavigate().tryMoveToXYZ(randPos[0], randPos[1], randPos[2], 0.4D);
+	        	}
+        	}
 	        
 	        //delay time decr
 	        this.atkDelay--;

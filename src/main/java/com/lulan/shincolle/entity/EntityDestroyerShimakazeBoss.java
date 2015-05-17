@@ -42,7 +42,8 @@ public class EntityDestroyerShimakazeBoss extends BasicEntityShipHostile impleme
 		super(world);
 		this.setSize(1.4F, 6F);
 		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityDestroyerShimakazeBoss.name"));
-        
+		ignoreFrustumCheck = true;	//即使不在視線內一樣render
+		
         //basic attr
         this.atk = (float) ConfigHandler.scaleBossSMKZ[ID.ATK];
         this.atkSpeed = (float) ConfigHandler.scaleBossSMKZ[ID.SPD];

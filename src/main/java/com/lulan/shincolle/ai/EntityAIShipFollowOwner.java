@@ -23,7 +23,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
     private EntityLivingBase owner;
     World TheWorld;
     private static final double TP_DIST = 2048D;	//teleport condition ~ 45 blocks
-    private PathNavigate PetPathfinder;
+//    private PathNavigate PetPathfinder;
     private ShipPathNavigate ShipNavigator;
     private int findCooldown;
     private double maxDistSq;
@@ -39,7 +39,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
     public EntityAIShipFollowOwner(BasicEntityShip entity) {
         this.host = entity;
         this.TheWorld = entity.worldObj;
-        this.PetPathfinder = entity.getNavigator();
+//        this.PetPathfinder = entity.getNavigator();
         this.ShipNavigator = entity.getShipNavigate();
         this.distSq = 1D;
         this.distSqrt = 1D;
@@ -74,8 +74,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
             		return true;
             	}
             }
-    	} 
-        
+    	}
         return false;
     }
 
@@ -87,38 +86,30 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
 		this.distZ = this.owner.posZ - this.host.posZ;
     	this.distSq = this.distX*this.distX + this.distY*this.distY + this.distZ*this.distZ;
     	
-    	//距離超過傳送距離
+    	//距離超過傳送距離, 則處理傳送部份
     	if(this.distSq > this.TP_DIST) {
     		return true;
     	}
 
-    	if(this.distSq > this.minDistSq && !host.isSitting() && !host.isRiding()) {
-    		if(this.host.getShipDepth() > 0D) {		//用於液體中移動, 液體中找path經常false
-    			return true;
-    		}
-    		
-    		if(!this.PetPathfinder.noPath()) {		//用於陸上移動, 若有path
-    			return true;
-    		}
-    		
+    	//有path還沒走完, 則處理path移動部份
+    	if(this.distSq > this.minDistSq && !host.isSitting() && !host.isRiding()) {		
     		if(!this.ShipNavigator.noPath()) {		//用於水空移動, 若有path
     			return true;
     		}
     	}
-    	return false;
+    	
+    	//其他情況
+    	return shouldExecute();
     }
 
     public void startExecuting() {
     	this.rotYaw = 0F;
-        this.findCooldown = 0;
-        this.PetPathfinder.setAvoidsWater(false);
-        this.PetPathfinder.setEnterDoors(true);
-        this.PetPathfinder.setCanSwim(true);
+        this.findCooldown = 20;
     }
 
     public void resetTask() {
         this.owner = null;
-        this.PetPathfinder.clearPathEntity();
+        this.ShipNavigator.clearPathEntity();
     }
 
     public void updateTask() {
@@ -138,56 +129,19 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
         		this.host.setPosition(this.host.posX, this.host.posY, this.host.posZ);
         	}
         	
-    		//在液體中, 採直線移動
-        	if(this.host.getShipDepth() > 0D) {
-        		//額外加上y軸速度, getPathToXYZ對空氣跟液體方塊無效, 因此y軸速度要另外加
-        		if(this.distY > 1.5D && this.host.getShipDepth() > 1.5D) {  //避免水面彈跳
-        			this.motY = 0.2F;
-        		}
-        		else if(this.distY < -1D) {
-        			this.motY = -0.2F;
-        		}
-        		else {
-	        		this.motY = 0F;
-	        	}
-        		
-        		//若直線可視, 則直接直線移動
-        		if(this.host.getEntitySenses().canSee(this.owner)) {
-        			double speed = this.host.getStateFinal(ID.MOV);
-        			this.distSqrt = MathHelper.sqrt_double(this.distSq);
-        			this.motX = (this.distX / this.distSqrt) * speed * 1D;
-        			this.motZ = (this.distZ / this.distSqrt) * speed * 1D;
-//        			LogHelper.info("DEBUG  : follow owner: "+motX+" "+motZ);
-        			this.host.motionY = this.motY;
-        			this.host.motionX = this.motX;
-        			this.host.motionZ = this.motZ;
-//        			this.host.getMoveHelper().setMoveTo(this.host.posX+this.motX, this.host.posY+this.motY, this.host.posZ+this.motZ, 1D);
-        			
-        			//身體角度設定
-        			float[] degree = EntityHelper.getLookDegree(motX, motY, motZ);
-        			this.host.rotationYaw = degree[0];
-        			this.host.rotationPitch = degree[1];
-        			
-        			//若水平撞到東西, 則嘗試跳跳
-	        		if(this.host.isCollidedHorizontally) {
-	        			this.host.motionY += 0.2D;
-	        		}
-        			return;
-        		}
-           	}
-        	
         	//每cd到找一次路徑
         	if(this.findCooldown <= 0) {
-    			this.findCooldown = 20;
+    			this.findCooldown = 30;
 
-            	if(!this.PetPathfinder.tryMoveToEntityLiving(this.owner, 1D)) {
-            		LogHelper.info("DEBUG : follow AI: fail to move, teleport entity");
-            		if(this.distSq > this.maxDistSq) {
+    			//check path result
+            	if(!this.ShipNavigator.tryMoveToEntityLiving(this.owner, 1D)) {
+            		LogHelper.info("DEBUG : follow AI: fail to follow, teleport entity");
+            		if(this.distSq > this.TP_DIST) {
             			//相同dim才傳送
             			LogHelper.info("DEBUG : follow AI: entity dimension "+host.dimension+" "+owner.dimension);
             			if(this.host.dimension == this.owner.dimension) {
             				this.host.setLocationAndAngles(this.owner.posX, this.owner.posY + 0.5D, this.owner.posZ, this.host.rotationYaw, this.host.rotationPitch);
-                        	this.PetPathfinder.clearPathEntity();
+                        	this.ShipNavigator.clearPathEntity();
                             return;
             			}
                     }

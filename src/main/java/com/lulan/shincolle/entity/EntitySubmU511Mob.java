@@ -48,6 +48,7 @@ public class EntitySubmU511Mob extends BasicEntityShipHostile {
         this.atkRange = (float) ConfigHandler.scaleMobU511[ID.HIT];
         this.defValue = (float) ConfigHandler.scaleMobU511[ID.DEF];
         this.movSpeed = (float) ConfigHandler.scaleMobU511[ID.MOV];
+        this.stepHeight = 1F;
 
         //AI flag
         this.StartEmotion = 0;

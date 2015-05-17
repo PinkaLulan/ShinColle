@@ -60,13 +60,13 @@ public class EntityHelper {
 		return false;
 	}
 	
-	/**check entity is in liquid (not air or solid block) */
+	/**check entity is in (stand on, y+0D) liquid (not air or solid block) */
 	public static boolean checkEntityIsInLiquid(Entity entity) {
-		Block block = entity.worldObj.getBlock(MathHelper.floor_double(entity.posX), (int)(entity.boundingBox.minY + 0.5D), MathHelper.floor_double(entity.posZ));
+		Block block = entity.worldObj.getBlock(MathHelper.floor_double(entity.posX), (int)(entity.boundingBox.minY), MathHelper.floor_double(entity.posZ));
 		return checkBlockIsLiquid(block);
 	}
 	
-	/**check entity is free to move in the block */
+	/**check entity is free to move in (stand in, y+0.5D) the block */
 	public static boolean checkEntityIsFree(Entity entity) {
 		Block block = entity.worldObj.getBlock(MathHelper.floor_double(entity.posX), (int)(entity.boundingBox.minY + 0.5D), MathHelper.floor_double(entity.posZ));
 		return checkBlockSafe(block);

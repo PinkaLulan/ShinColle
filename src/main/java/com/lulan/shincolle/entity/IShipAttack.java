@@ -3,7 +3,7 @@ package com.lulan.shincolle.entity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 
-public interface IShipAttack {
+public interface IShipAttack extends IShipNavigator {
 	
 	/**Use light ammo to attack
 	 */

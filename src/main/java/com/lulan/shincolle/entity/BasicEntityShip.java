@@ -1,6 +1,7 @@
 package com.lulan.shincolle.entity;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLivingBase;
@@ -9,6 +10,7 @@ import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAIOwnerHurtByTarget;
 import net.minecraft.entity.ai.EntityAIOwnerHurtTarget;
 import net.minecraft.entity.ai.EntityMoveHelper;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,14 +21,18 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.pathfinding.PathEntity;
 import net.minecraft.pathfinding.PathNavigate;
+import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.ai.EntityAIShipInRangeTarget;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
+import com.lulan.shincolle.ai.path.ShipPathEntity;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
+import com.lulan.shincolle.ai.path.ShipPathPoint;
 import com.lulan.shincolle.client.inventory.ContainerShipInventory;
 import com.lulan.shincolle.crafting.EquipCalc;
 import com.lulan.shincolle.handler.ConfigHandler;
@@ -48,7 +54,7 @@ import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
 /**SHIP DATA <br>
  * Explanation in crafting/ShipCalc.class
  */
-public abstract class BasicEntityShip extends EntityTameable implements IShipAttack, IShipEmotion, IShipFloating, IShipNavigator {
+public abstract class BasicEntityShip extends EntityTameable implements IShipAttack, IShipEmotion, IShipFloating {
 
 	protected ExtendShipProps ExtProps;	//entity額外NBT紀錄
 	protected ShipPathNavigate shipNavigator;	//水空移動用navigator
@@ -91,6 +97,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 	
 	public BasicEntityShip(World world) {
 		super(world);
+		ignoreFrustumCheck = true;	//即使不在視線內一樣render
 		//init value
 		isImmuneToFire = true;	//set ship immune to lava
 		StateEquip = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F};
@@ -377,15 +384,16 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 	private void checkDepth() {
 		Block BlockCheck = checkBlockWithOffset(0);
 		
-		if(BlockCheck == Blocks.water || BlockCheck == Blocks.lava) {
+//		if(BlockCheck == Blocks.water || BlockCheck == Blocks.lava) {
+		if(EntityHelper.checkBlockIsLiquid(BlockCheck)) {
 			ShipDepth = 1;
 			for(int i=1; (this.posY+i)<255D; i++) {
 				BlockCheck = checkBlockWithOffset(i);
-				if(BlockCheck == Blocks.water || BlockCheck == Blocks.lava) {
+				if(EntityHelper.checkBlockIsLiquid(BlockCheck)) {
 					ShipDepth++;
 				}
 				else {
-					if(BlockCheck == Blocks.air) {
+					if(BlockCheck.getMaterial() == Material.air) {
 						setStateFlag(ID.F.CanFloatUp, true);
 					}
 					else {
@@ -397,6 +405,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 			ShipDepth = ShipDepth - (this.posY - (int)this.posY);
 		}
 		else {
+			setStateFlag(ID.F.CanFloatUp, false);
 			ShipDepth = 0;
 		}
 	}
@@ -937,7 +946,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
     public void moveEntityWithHeading(float movX, float movZ) {
         double d0;
 
-        if(this.isInWater() || this.handleLavaMovement()) { //判定為液體中時, 不會自動下沉
+        if(EntityHelper.checkEntityIsInLiquid(this)) { //判定為液體中時, 不會自動下沉
             d0 = this.posY;
             this.moveFlying(movX, movZ, this.getStateFinal(ID.MOV)*0.4F); //水中的速度計算(含漂移效果)
             this.moveEntity(this.motionX, this.motionY, this.motionZ);
@@ -1042,25 +1051,74 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 	
 	//update ship move helper
 	@Override
-	protected void updateAITasks() {	
+	protected void updateAITasks() {
 		super.updateAITasks();
-   
-		//若有水空path, 則更新ship navigator
-		if(!this.getShipNavigate().noPath()) {
+		
+        //若有水空path, 則更新ship navigator
+        if(!this.getShipNavigate().noPath()) {
+        	if(!this.getNavigator().noPath()) {
+        		this.getNavigator().clearPathEntity();
+        	}
+//        	LogHelper.info("DEBUG : AI tick: path navi update");
+//        	LogHelper.info("DEBUG : AI tick: path length A "+this.getShipNavigate().getPath().getCurrentPathIndex()+" / "+this.getShipNavigate().getPath().getCurrentPathLength());
+//        	LogHelper.info("DEBUG : AI tick: path length A "+this.getShipNavigate().getPath().getCurrentPathIndex());
+			//用particle顯示path point
+			if(this.ticksExisted % 20 == 0) {
+				ShipPathEntity pathtemp = this.getShipNavigate().getPath();
+				ShipPathPoint pointtemp;
+//				LogHelper.info("DEBUG : AI tick: path length A "+pathtemp.getCurrentPathIndex()+" / "+pathtemp.getCurrentPathLength()+" xyz: "+pathtemp.getPathPointFromIndex(0).xCoord+" "+pathtemp.getPathPointFromIndex(0).yCoord+" "+pathtemp.getPathPointFromIndex(0).zCoord+" ");
+				
+				for(int i = 0; i < pathtemp.getCurrentPathLength(); i++) {
+					pointtemp = pathtemp.getPathPointFromIndex(i);
+					//發射者煙霧特效
+			        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
+					//路徑點畫紅色, 目標點畫綠色
+					if(i == pathtemp.getCurrentPathIndex()) {
+						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 16, pointtemp.xCoord, pointtemp.yCoord+0.5D, pointtemp.zCoord, 0F, 0F, 0F, false), point);
+					}
+					else {
+						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 18, pointtemp.xCoord, pointtemp.yCoord+0.5D, pointtemp.zCoord, 0F, 0F, 0F, false), point);
+					}
+				}
+			}
+
 			this.worldObj.theProfiler.startSection("ship navi");
 	        this.shipNavigator.onUpdateNavigation();
 	        this.worldObj.theProfiler.endSection();
 	        this.worldObj.theProfiler.startSection("ship move");
 	        this.shipMoveHelper.onUpdateMoveHelper();
 	        this.worldObj.theProfiler.endSection();
-		}    
+		}
+
+        if(!this.getNavigator().noPath()) {
+//        	LogHelper.info("DEBUG : AI tick: path length B "+this.getNavigator().getPath().getCurrentPathIndex()+" / "+this.getNavigator().getPath().getCurrentPathLength());
+			//用particle顯示path point
+			if(this.ticksExisted % 20 == 0) {
+				PathEntity pathtemp2 = this.getNavigator().getPath();
+				PathPoint pointtemp2;
+//				LogHelper.info("DEBUG : AI tick: path length B "+pathtemp2.getCurrentPathLength()+" "+pathtemp2.getPathPointFromIndex(0).xCoord+" "+pathtemp2.getPathPointFromIndex(0).yCoord+" "+pathtemp2.getPathPointFromIndex(0).zCoord+" ");
+//				LogHelper.info("DEBUG : AI tick: path length B "+pathtemp2.getCurrentPathIndex());
+				for(int i = 0; i < pathtemp2.getCurrentPathLength(); i++) {
+					pointtemp2 = pathtemp2.getPathPointFromIndex(i);
+					//發射者煙霧特效
+			        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
+					//路徑點畫紅色, 目標點畫綠色
+					if(i == pathtemp2.getCurrentPathIndex()) {
+						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 16, pointtemp2.xCoord, pointtemp2.yCoord+0.5D, pointtemp2.zCoord, 0F, 0F, 0F, false), point);
+					}
+					else {
+						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 17, pointtemp2.xCoord, pointtemp2.yCoord+0.5D, pointtemp2.zCoord, 0F, 0F, 0F, false), point);
+					}
+				}
+			}
+        }
     }
 	
 	//update entity position
 	@Override
 	public void onUpdate() {
 		super.onUpdate();
-
+		
 		if(this.isInWater() || this.handleLavaMovement()) {
 			this.checkDepth();	//check depth every tick
 		}
@@ -1114,6 +1172,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 
         //server side check
         if((!worldObj.isRemote)) {
+        	if(this.getAttackTarget()!=null) {
+    			LogHelper.info("DEBUG : ship target "+this.getAttackTarget().isDead+" "+this.getAttackTarget());
+    		}
         	//clear dead target for vanilla AI bug
   			if(this.getAttackTarget() != null && this.getAttackTarget().isDead) {
   				this.setAttackTarget(null);
@@ -1867,11 +1928,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 		return -1;	//item not found
 	}
 	
-//	@Override
-//	public void mountEntity(Entity ent) {
-//		LogHelper.info("DEBUG : mount entity called! "+ent);
-//		super.mountEntity(ent);
-//    }
+	@Override
+	public boolean canFly() {
+		return false;
+	}
 
 	
 }

@@ -133,8 +133,8 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
 
     //判定是否繼續AI： 有target就繼續, 或者已經移動完畢就繼續
     public boolean continueExecuting() {
-    	if(host != null) return this.shouldExecute() || !this.host.getNavigator().noPath();
-    	if(host2 != null) return this.shouldExecute();
+    	if(host != null) return this.shouldExecute() || !this.host.getShipNavigate().noPath();
+    	if(host2 != null) return this.shouldExecute() || !this.host2i.getShipNavigate().noPath();
     	
     	return false;
     }
@@ -191,64 +191,12 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
 		
 		        //若目標進入射程, 且目標無障礙物阻擋, 則清空AI移動的目標, 以停止繼續移動      
 		        if(distSq < (double)this.rangeSq && onSight) {
-		            this.host.getNavigator().clearPathEntity();
+		        	this.host.getShipNavigate().clearPathEntity();
 		        }
-		        else {	//目標移動, 則繼續追擊
-		        	//額外加上y軸速度, getPathToXYZ對空氣跟液體方塊無效, 因此y軸速度要另外加
-		        	
-	        		if(this.host.getShipDepth() > 0.55D) {
-	        			if(MathHelper.abs((float)distY) < 4F && this.host.getShipDepth() < 4D) {  //如果接近水面, 則維持浮在水面
-//	        				LogHelper.info("DEBUG : move AAAAAAAAAAAAAAA");
-		        			this.motY = 0.08F;
-	        			}
-	        			else if(this.distY > 2D) {		//若沒有接近水面, 對方位置較高, 則上浮
-//		        			LogHelper.info("DEBUG : move BBBBBBBBBBBBBBB");
-		        			this.motY = 0.2F;
-		        		}
-		        		else if(this.distY <= -2D) {	//若沒有接近水面, 對方位置較低, 則下沉
-//		        			LogHelper.info("DEBUG : move CCCCCCCCCCCCCCC");
-		        			this.motY = -0.2F;
-		        		}
-		        		else {
-//		        			LogHelper.info("DEBUG : move DDDDDDDDDDDDDDD");
-		        			this.motY = 0F;
-		        		}
-	        		}	
-	        		
-		        	//在液體中, 採直線前進
-		        	if(this.host.isInWater()) {
-		        		//若直線可視, 則直接直線移動
-		        		if(this.host.getEntitySenses().canSee(this.attackTarget)) {
-		        			double speed = this.host.getStateFinal(ID.MOV);
-		        			this.distSqrt = MathHelper.sqrt_double(this.distSq);
-		        			this.motX = (this.distX / this.distSqrt) * speed * 1D;
-		        			this.motZ = (this.distZ / this.distSqrt) * speed * 1D;
-		        			
-		        			if(this.motX > 0.8D) this.motX = 0.8D;
-		        	        if(this.motX < -0.8D) this.motX = -0.8D;
-		        	        if(this.motZ > 0.8D) this.motZ = 0.8D;
-		        	        if(this.motZ < -0.8D) this.motZ = -0.8D;
-		        	        
-		        	        this.host.motionX = motX;
-		        			this.host.motionY = motY;
-		        			this.host.motionZ = motZ;
-		        			
-		        			//身體角度設定
-		        			float[] degree = EntityHelper.getLookDegree(motX, motY, motZ);
-		        			this.host.rotationYaw = degree[0];
-		        			this.host.rotationYawHead = degree[0];
-		        			this.host.rotationPitch = degree[1];
-	//	        			this.host.getMoveHelper().setMoveTo(this.host.posX+this.motX, this.host.posY+this.motY, this.host.posZ+this.motZ, 1D);
-		        		}
-		        		
-		        		//若水平撞到東西, 則嘗試跳跳
-		        		if(this.host.isCollidedHorizontally) {
-		        			this.host.motionY += 0.4D;
-		        		}
-		           	}
-	            	else {	//非液體中, 採用一般尋找路徑法
-	            		this.host.getNavigator().tryMoveToEntityLiving(this.attackTarget, 1D);
-	            	}
+		        else {	//目標移動, 則繼續追	        	
+		        	if(host.ticksExisted % 20 == 0) {
+		        		this.host.getShipNavigate().tryMoveToEntityLiving(this.attackTarget, 1D);
+		        	}
 	            }
 		
 		        //設定攻擊時, 頭部觀看的角度
@@ -295,66 +243,10 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
 	    		
 	    		//若目標進入射程, 且目標無障礙物阻擋, 則清空AI移動的目標, 以停止繼續移動      
 		        if(distSq < (double)this.rangeSq && onSight) {
-		            this.host2.getNavigator().clearPathEntity();
+		        	this.host2i.getShipNavigate().clearPathEntity();
 		        }
-		        else {	//目標移動, 則繼續追擊	
-		        	//在液體中, 採直線前進
-		        	if(this.host2.isInWater()) {
-		        		//額外加上y軸速度, getPathToXYZ對空氣跟液體方塊無效, 因此y軸速度要另外加
-		        		if(this.host2.worldObj.getBlock((int)this.host2.posX, (int)this.host2.posY + 1, (int)this.host2.posZ) != Blocks.water) {  //如果接近水面, 則維持浮在水面
-		        			int depthInt = (int)host2.posY;
-		        			float depth = (float)host2.posY - (float)depthInt;
-		        			
-		        			if(depth > 0.4F && this.distY > -2D) {	//水深超過0.6, 目標高度差大於-2, 則稍微上浮
-		        				this.motY = 0.1F;
-		        			}
-		        			else if(this.distY < -4D) {	//對方在較低位置, 稍微下潛
-		        				this.motY = -0.1F;
-		        			}
-		        			else {					//維持水深
-		        				this.motY = 0F;
-		        			}
-		        		}
-		        		else if(this.distY > 2D) {	//若沒有接近水面, 對方位置較高, 則上浮
-		        			this.motY = 0.2F;
-		        		}
-		        		else if(this.distY < -4D) {	//若沒有接近水面, 對方位置較低, 則下沉
-		        			this.motY = -0.2F;
-		        		}
-		        		else {
-		        			this.motY = 0F;
-		        		}
-		  		
-		        		//若直線可視, 則直接直線移動
-		        		if(this.host2.getEntitySenses().canSee(this.attackTarget)) {
-		        			double speed = this.host2i.getMoveSpeed();
-		        			this.distSqrt = MathHelper.sqrt_double(this.distSq);
-		        			this.motX = (this.distX / this.distSqrt) * speed * 1D;
-		        			this.motZ = (this.distZ / this.distSqrt) * speed * 1D;
-		        			
-		        			if(this.motX > 0.8D) this.motX = 0.8D;
-		        	        if(this.motX < -0.8D) this.motX = -0.8D;
-		        	        if(this.motZ > 0.8D) this.motZ = 0.8D;
-		        	        if(this.motZ < -0.8D) this.motZ = -0.8D;
-		        	        
-		        	        this.host2.motionX = motX;
-		        			this.host2.motionY = motY;
-		        			this.host2.motionZ = motZ;
-		        			
-		        			//身體角度設定
-		        			float[] degree = EntityHelper.getLookDegree(motX, motY, motZ);
-		        			this.host2.rotationYaw = degree[0];
-		        			this.host2.rotationPitch = degree[1];
-		        		}
-		        		
-		        		//若水平撞到東西, 則嘗試跳跳
-		        		if(this.host2.isCollidedHorizontally) {
-		        			this.host2.motionY += 0.25D;
-		        		}
-		           	}
-	            	else {	//非液體中, 採用一般尋找路徑法
-	            		this.host2.getNavigator().tryMoveToEntityLiving(this.attackTarget, 1D);
-	            	}
+		        else {	//目標移動, 則繼續追擊
+		        	this.host2i.getShipNavigate().tryMoveToEntityLiving(this.attackTarget, 1D);
 	            }
 		
 		        //設定攻擊時, 頭部觀看的角度

@@ -2,6 +2,8 @@ package com.lulan.shincolle.ai.path;
 
 import com.lulan.shincolle.entity.IShipNavigator;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.FormatHelper;
+import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -192,6 +194,7 @@ public class ShipPathNavigate {
         if(!this.noPath()) {
         	//若可以執行移動, 則跑pathFollow方法
             if(this.canNavigate()) {
+//            	LogHelper.info("DEBUG : path navi: path follow");
                 this.pathFollow();
             }
 
@@ -199,6 +202,9 @@ public class ShipPathNavigate {
             if(!this.noPath()) {
             	//取得下一個目標點
                 Vec3 vec3 = this.currentPath.getPosition(this.theEntity);
+//                LogHelper.info("DEBUG : path navi: path vec "+this.currentPath.getCurrentPathIndex()+" / "+this.currentPath.getCurrentPathLength()+" "+vec3.xCoord+" "+vec3.yCoord+" "+vec3.zCoord);
+//                LogHelper.info("DEBUG : path navi: path pp  "+currentPath.getPathPointFromIndex(currentPath.getCurrentPathIndex()).xCoord+" "+currentPath.getPathPointFromIndex(currentPath.getCurrentPathIndex()).yCoord+" "+currentPath.getPathPointFromIndex(currentPath.getCurrentPathIndex()).zCoord+" ");
+//                LogHelper.info("DEBUG : path navi: path pos "+this.theEntity.posX+" "+this.theEntity.posY+" "+this.theEntity.posZ+" ");
                 //若還有下一個點要移動, 則設定移動量使move helper可以實際移動entity
                 if(vec3 != null) {
                     this.theEntity2.getShipMoveHelper().setMoveTo(vec3.xCoord, vec3.yCoord, vec3.zCoord, this.speed);
@@ -207,7 +213,7 @@ public class ShipPathNavigate {
         }
     }
 
-    /** 判定entity是否卡住(超過100 tick仍在原地) or entity是否可以省略一些路徑點 
+    /** 判定entity是否卡住(超過100 tick仍在原地) or entity是否可以抄捷徑以省略一些路徑點 
      *  以y高度判定是否有些點可以省略 (不判定水平距離)
      */
     private void pathFollow() {
@@ -215,37 +221,40 @@ public class ShipPathNavigate {
         int pptemp = this.currentPath.getCurrentPathLength();
 
         //掃描還沒走的路徑點, 找出是否有y高度不同的點
-        for(int j = this.currentPath.getCurrentPathIndex(); j < this.currentPath.getCurrentPathLength(); ++j) {
-            if(this.currentPath.getPathPointFromIndex(j).yCoord != (int)entityPos.yCoord) {
-            	pptemp = j;
-                break;
-            }
-        }
+//        for(int j = this.currentPath.getCurrentPathIndex(); j < this.currentPath.getCurrentPathLength(); ++j) {
+////            if(this.currentPath.getPathPointFromIndex(j).yCoord != (int)entityPos.yCoord) {
+//        	float diff = (float) (this.currentPath.getPathPointFromIndex(j).yCoord - entityPos.yCoord);
+//        	if(MathHelper.abs(diff) > 0.5F) {
+//            	pptemp = j;
+////            	LogHelper.info("DEBUG : path navi: y diff "+j+" "+diff+" : "+this.currentPath.getPathPointFromIndex(j).yCoord+" "+entityPos.yCoord);
+////            	LogHelper.info("DEBUG : path navi: y diff "+j+" "+" : "+this.currentPath.getPathPointFromIndex(j).yCoord+" "+entityPos.yCoord);
+//            	break;
+//            }
+//        }
 
         float widthSq = this.theEntity.width * this.theEntity.width;
         int k;
 
-        //掃描目前的點到y高度不同的點, 若距離不到entity大小, 則直接判定entity已經到達該點, 將目標點標記為該點
-        //用於縮短path長度?
+        //掃描目前的點到y高度不同的點, 若距離不到entity大小, 則判定entity已經到達該點
         for(k = this.currentPath.getCurrentPathIndex(); k < pptemp; ++k) {
             if(entityPos.squareDistanceTo(this.currentPath.getVectorFromIndex(this.theEntity, k)) < (double)widthSq) {
-                this.currentPath.setCurrentPathIndex(k + 1);
+                this.currentPath.setCurrentPathIndex(k + 1);	//已到達目標點, 設定目標點為下一點
             }
         }
 
         k = MathHelper.ceiling_float_int(this.theEntity.width);
-        int l = (int)this.theEntity.height + 1;
-        int i1 = k;
+        int heighInt = (int)this.theEntity.height + 1;
+        int widthInt = k;
 
-        //從y高度不合的點往回掃描, 找是否有點能從目前點直線走過去, 有的話將該點設為目標點
+        //從y高度不合的點往回掃描, 找是否有點能從目前點直線走過去, 有的話將該點設為目標點使entity往該點直線前進
         for(int j1 = pptemp - 1; j1 >= this.currentPath.getCurrentPathIndex(); --j1) {
-            if(this.isDirectPathBetweenPoints(entityPos, this.currentPath.getVectorFromIndex(this.theEntity, j1), k, l, i1)) {
+            if(this.isDirectPathBetweenPoints(entityPos, this.currentPath.getVectorFromIndex(this.theEntity, j1), k, heighInt, widthInt)) {
                 this.currentPath.setCurrentPathIndex(j1);
                 break;
             }
         }
 
-        //若距離上一次成功移動的時間超過100 ticks
+        //每100 ticks檢查一次移動距離
         if(this.totalTicks - this.ticksAtLastPos > 100) {
         	//若距離上一次成功移動的點不到1.5格, 則表示某種原因造成幾乎沒移動, 清除該path
             if(entityPos.squareDistanceTo(this.lastPosCheck) < 2.25D) {
@@ -277,7 +286,8 @@ public class ShipPathNavigate {
      * 將entity位置資訊以vec3表示
      */
     private Vec3 getEntityPosition() {
-        return Vec3.createVectorHelper(this.theEntity.posX, (double)this.getPathableYPos(), this.theEntity.posZ);
+//        return Vec3.createVectorHelper(this.theEntity.posX, this.getPathableYPos(), this.theEntity.posZ);
+        return Vec3.createVectorHelper(this.theEntity.posX, this.theEntity.posY, this.theEntity.posZ);
     }
 
     /**CHANGE:
@@ -289,10 +299,12 @@ public class ShipPathNavigate {
      * 若不能游泳, 則以目前y作為path起點
      * Gets the safe pathing Y position for the entity depending on if it can path swim or not
      */
-    private int getPathableYPos() {
+    private double getPathableYPos() {
     	if(this.canFly) {
+//    	LogHelper.info("DEBUG : path navi: path y "+(int)(this.theEntity.boundingBox.minY + 0.5D));
     		//可以飛, 直接以目前y為起點
-            return (int)(this.theEntity.boundingBox.minY + 0.5D);
+//            return (int)(this.theEntity.boundingBox.minY + 0.5D);
+    		return this.theEntity.posY;
         }
         else {
         	 int i = (int)this.theEntity.boundingBox.minY;
@@ -301,7 +313,12 @@ public class ShipPathNavigate {
              //往下找出第一個非air的方塊
              do {
                  if(block != Blocks.air && block != null) {
-                     return i;
+                	 if(EntityHelper.checkBlockIsLiquid(block)) {
+                		 return i + 0.4D;
+                	 }
+                	 else {
+                		 return i;
+                	 }  
                  }
 
                  ++i;
@@ -314,21 +331,20 @@ public class ShipPathNavigate {
         }
     }
 
-    /**
-     * If on ground or swimming and can swim
+    /**非騎乘中, 且該entity可以飛 or 站在地面 or 在可穿透方塊中
      */
     private boolean canNavigate() {
-        return !theEntity.isRiding() && EntityHelper.checkEntityIsFree(theEntity);
+        return !theEntity.isRiding() && (this.canFly || this.theEntity.onGround || EntityHelper.checkEntityIsFree(theEntity));
     }
 
     /**
-     * Returns true if the entity is in water or lava, false otherwise
+     * Returns true if the entity is in water or lava or other liquid
      */
     private boolean isInLiquid() {
         return EntityHelper.checkEntityIsInLiquid(theEntity);
     }
 
-    /**
+    /**NO USE
      * Trims path data from the end to the first sun covered block
      */
     private void removeSunnyPath() {
@@ -344,71 +360,106 @@ public class ShipPathNavigate {
         }
     }
 
-    /**
+    /**entity抄捷徑的方法, 若直線可視無阻礙, 則會直線往該點移動
+     * NEW: 加入y軸判定, 使其可以抄y軸捷徑
      * Returns true when an entity of specified size could safely walk in a straight line between the two points. Args:
      * pos1, pos2, entityXSize, entityYSize, entityZSize
      */
     private boolean isDirectPathBetweenPoints(Vec3 pos1, Vec3 pos2, int xSize, int ySize, int zSize) {
         int x1 = MathHelper.floor_double(pos1.xCoord);
         int z1 = MathHelper.floor_double(pos1.zCoord);
+        int y1 = (int)pos1.yCoord;
         double xOffset = pos2.xCoord - pos1.xCoord;
         double zOffset = pos2.zCoord - pos1.zCoord;
-        double xzOffsetSq = xOffset * xOffset + zOffset * zOffset;
+        double yOffset = pos2.yCoord - pos1.yCoord;
+        double xzOffsetSq = xOffset * xOffset + zOffset * zOffset + yOffset * yOffset;
+//        double xzOffsetSq = xOffset * xOffset + zOffset * zOffset;
 
-        if (xzOffsetSq < 1.0E-8D) {	//若距離極小, 則判定不須移動
+        if(xzOffsetSq < 1.0E-8D) {	//若距離極小, 則判定不須跳點 (移動最小單位是0.01 因此xzSq最小為E-8)
             return false;
         }
-        else {
+        else {						//搜尋可跳的點
             double xzOffset = 1.0D / Math.sqrt(xzOffsetSq);
             xOffset *= xzOffset;	//normalize offset
             zOffset *= xzOffset;
+            yOffset *= xzOffset;
             xSize += 2;				//size擴張2, 以檢查周圍方塊
             zSize += 2;
+            ySize += 2;
             
-            if(!this.isSafeToStandAt(x1, (int)pos1.yCoord, z1, xSize, ySize, zSize, pos1, xOffset, zOffset)) {
+            if(!this.isSafeToStandAt(x1, y1, z1, xSize, ySize, zSize, pos1, xOffset, zOffset)) {
                 return false;		//若該點不能安全站立, 則false
             }
             else {					//該點可安全站立
-                xSize -= 2;			//縮回原size
+            	//縮回原size
+                xSize -= 2;
                 zSize -= 2;
-                double xOffAbs = 1.0D / Math.abs(xOffset);		//offset取絕對值
+                ySize -= 2; 
+                //offset取絕對值
+                double xOffAbs = 1.0D / Math.abs(xOffset);
                 double zOffAbs = 1.0D / Math.abs(zOffset);
-                double x1Theta = (double)(x1*1) - pos1.xCoord;	//int座標-double座標, 取得小數offset
-                double z1Theta = (double)(z1*1) - pos1.zCoord;	//以決定x,z方向
-                //offset為正向, 則theta改為正值
+                double yOffAbs = 1.0D / Math.abs(yOffset);  
+                //int座標-double座標, 取得位移theta值
+                double x1Theta = (double)(x1*1) - pos1.xCoord;
+                double z1Theta = (double)(z1*1) - pos1.zCoord;
+                double y1Theta = (double)(y1*1) - pos1.yCoord;     
+                //若offset為正向, 則theta+1變回正值
                 if(xOffset >= 0.0D) {
                     ++x1Theta;
                 }
                 if(zOffset >= 0.0D) {
                     ++z1Theta;
                 }
-                //以x,z位移做切割, 以便檢查該線上會經過的所有方塊
+                if(yOffset >= 0.0D) {
+                    ++y1Theta;
+                }       
+                //normalize theta值 (normalize且全部變為正值, 比較大小用)
                 x1Theta /= xOffset;
                 z1Theta /= zOffset;
-                int xDir = xOffset < 0.0D ? -1 : 1;				//xz方向
+                y1Theta /= yOffset;
+                //xz方向, 用於抓方塊位置
+                int xDir = xOffset < 0.0D ? -1 : 1;
                 int zDir = zOffset < 0.0D ? -1 : 1;
-                int x2 = MathHelper.floor_double(pos2.xCoord);	//pos2座標值
+                int yDir = yOffset < 0.0D ? -1 : 1;
+                //取得pos2整數座標
+                int x2 = MathHelper.floor_double(pos2.xCoord);
                 int z2 = MathHelper.floor_double(pos2.zCoord);
-                int xIntOffset = x2 - x1;						//pos1,2整數距離
+                int y2 = MathHelper.floor_double(pos2.yCoord);
+                //計算pos1,2整數距離
+                int xIntOffset = x2 - x1;
                 int zIntOffset = z2 - z1;
-                //檢查直線路徑上, 是否都能安全站立, 若都通過測試, 則回傳true
+                int yIntOffset = y2 - y1;
+                
+                //以theta值做遞增, 檢查該線上經過會碰到的所有方塊, 是否都能安全站立, 若都通過測試, 則回傳true
                 do {
-                    if(xIntOffset * xDir <= 0 && zIntOffset * zDir <= 0) {
+                	//若三方向都沒有距離差, 則結束
+                    if(xIntOffset * xDir <= 0 && zIntOffset * zDir <= 0 && yIntOffset * yDir <= 0) {
+//                    if(xIntOffset * xDir <= 0 && zIntOffset * zDir <= 0) {
                         return true;
                     }
-
-                    if(x1Theta < z1Theta) {
-                        x1Theta += xOffAbs;
+                    
+                    //找出theta最小的值 (最沒有被推進過的方向), 該方向+1格
+                    switch(FormatHelper.min(x1Theta, y1Theta, z1Theta)) {
+                    case 1:
+                    	x1Theta += xOffAbs;
                         x1 += xDir;
                         xIntOffset = x2 - x1;
-                    }
-                    else {
-                        z1Theta += zOffAbs;
+                    	break;
+                    case 2:
+                    	y1Theta += yOffAbs;
+                        y1 += yDir;
+                        yIntOffset = y2 - y1;
+                    	break;
+                    case 3:
+                    	z1Theta += zOffAbs;
                         z1 += zDir;
                         zIntOffset = z2 - z1;
+                    	break;
+                    default:
+                    	break;
                     }
                 }
-                while(this.isSafeToStandAt(x1, (int)pos1.yCoord, z1, xSize, ySize, zSize, pos1, xOffset, zOffset));
+                while(this.isSafeToStandAt(x1, y1, z1, xSize, ySize, zSize, pos1, xOffset, zOffset));
                 //無法通過檢查, 回傳false
                 return false;
             }
@@ -428,17 +479,21 @@ public class ShipPathNavigate {
             return false;
         }
         else {
+        	//會飛的entity不須檢查落腳點
+        	if(this.canFly) return true;
+        	
+        	//不會飛的entity必須檢查全部落腳方塊
             for(int x1 = xSize2; x1 < xSize2 + xSize; ++x1) {
                 for(int z1 = zSize2; z1 < zSize2 + zSize; ++z1) {
                     double x2 = (double)x1 + 0.5D - orgPos.xCoord;
                     double z2 = (double)z1 + 0.5D - orgPos.zCoord;
 
-                    //該方塊周圍為clear, 檢查底下方塊是否可安全站立
+                    //檢查底下方塊是否可安全站立
                     if(x2 * vecX + z2 * vecZ >= 0.0D) {
                         Block block = this.worldObj.getBlock(x1, yOffset - 1, z1);
                         Material material = block.getMaterial();
                         //若不能飛, 底下又是air, 則false
-                        if(material == Material.air && !this.canFly) {
+                        if(block == null || material == Material.air) {
                             return false;
                         }
                     }

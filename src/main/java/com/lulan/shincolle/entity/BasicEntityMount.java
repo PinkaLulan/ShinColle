@@ -15,6 +15,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.PathEntity;
+import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
@@ -25,6 +26,10 @@ import com.lulan.shincolle.ai.EntityAIMountRangeAttack;
 import com.lulan.shincolle.ai.EntityAIShipAttackOnCollide;
 import com.lulan.shincolle.ai.EntityAIShipFloating;
 import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
+import com.lulan.shincolle.ai.path.ShipMoveHelper;
+import com.lulan.shincolle.ai.path.ShipPathEntity;
+import com.lulan.shincolle.ai.path.ShipPathNavigate;
+import com.lulan.shincolle.ai.path.ShipPathPoint;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;
@@ -38,12 +43,14 @@ import com.lulan.shincolle.utility.ParticleHelper;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
 
-public class BasicEntityMount extends EntityCreature implements IShipEmotion, IShipAttack, IShipMount, IShipFloating {
+public class BasicEntityMount extends EntityCreature implements IShipMount {
 	
 	protected BasicEntityShip host;  			//host
 	public EntityMountSeat seat2;				//seat 2
 	public EntityLivingBase riddenByEntity2;	//second rider
 	protected World world;
+	protected ShipPathNavigate shipNavigator;	//水空移動用navigator
+	protected ShipMoveHelper shipMoveHelper;
     
     //attributes
 	protected float atkRange;			//attack range
@@ -64,8 +71,11 @@ public class BasicEntityMount extends EntityCreature implements IShipEmotion, IS
     public BasicEntityMount(World world) {	//client side
 		super(world);
 		isImmuneToFire = true;
+		ignoreFrustumCheck = true;	//即使不在視線內一樣render
 		stepHeight = 3F;
 		keyPressed = 0;
+		shipNavigator = new ShipPathNavigate(this, worldObj);
+		shipMoveHelper = new ShipMoveHelper(this);
 	}
     
     //平常音效
@@ -837,114 +847,103 @@ public class BasicEntityMount extends EntityCreature implements IShipEmotion, IS
   		
         return true;
 	}
-    
-    //水中跟岩漿中不會下沉
-    @Override
-    public void moveEntityWithHeading(float p_70612_1_, float p_70612_2_) {
+	
+	/**修改移動方法, 使其water跟lava中移動時像是flying entity
+     * Moves the entity based on the specified heading.  Args: strafe, forward
+     */
+	@Override
+    public void moveEntityWithHeading(float movX, float movZ) {
         double d0;
 
-        if(this.isInWater() || this.handleLavaMovement()) {
-            this.moveFlying(p_70612_1_, p_70612_2_, 0.04F);
+//        if(this.isInWater() || this.handleLavaMovement()) { //判定為液體中時, 不會自動下沉
+        if(EntityHelper.checkEntityIsInLiquid(this)) { //判定為液體中時, 不會自動下沉
+            d0 = this.posY;
+            this.moveFlying(movX, movZ, this.movSpeed*0.4F); //水中的速度計算(含漂移效果)
             this.moveEntity(this.motionX, this.motionY, this.motionZ);
+            //水中阻力
             this.motionX *= 0.8D;
             this.motionY *= 0.8D;
             this.motionZ *= 0.8D;
+            //水中撞到東西會上升
+            if (this.isCollidedHorizontally && this.isOffsetPositionInLiquid(this.motionX, this.motionY + 0.6D - this.posY + d0, this.motionZ)) {
+                this.motionY = 0.3D;
+            }
         }
-        else {
+        else {									//其他移動狀態
             float f2 = 0.91F;
-
-            if (this.onGround)
-            {
+            
+            if(this.onGround) {					//在地面移動
                 f2 = this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.boundingBox.minY) - 1, MathHelper.floor_double(this.posZ)).slipperiness * 0.91F;
             }
 
             float f3 = 0.16277136F / (f2 * f2 * f2);
             float f4;
-
-            if (this.onGround)
-            {
+            
+            if(this.onGround) {
                 f4 = this.getAIMoveSpeed() * f3;
             }
-            else
-            {
+            else {								//跳躍中
                 f4 = this.jumpMovementFactor;
             }
-
-            this.moveFlying(p_70612_1_, p_70612_2_, f4);
+            this.moveFlying(movX, movZ, f4);
             f2 = 0.91F;
-
-            if (this.onGround)
-            {
+            
+            if(this.onGround) {
                 f2 = this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.boundingBox.minY) - 1, MathHelper.floor_double(this.posZ)).slipperiness * 0.91F;
             }
 
-            if (this.isOnLadder())
-            {
+            if(this.isOnLadder()) {				//爬樓梯中
                 float f5 = 0.15F;
-
-                if (this.motionX < (double)(-f5))
-                {
+                //限制爬樓梯時的橫向移動速度
+                if(this.motionX < (double)(-f5)) {
                     this.motionX = (double)(-f5);
                 }
-
-                if (this.motionX > (double)f5)
-                {
+                if(this.motionX > (double)f5) {
                     this.motionX = (double)f5;
                 }
-
-                if (this.motionZ < (double)(-f5))
-                {
+                if(this.motionZ < (double)(-f5)) {
                     this.motionZ = (double)(-f5);
                 }
-
-                if (this.motionZ > (double)f5)
-                {
+                if(this.motionZ > (double)f5) {
                     this.motionZ = (double)f5;
                 }
 
                 this.fallDistance = 0.0F;
-
-                if (this.motionY < -0.15D)
-                {
+                //限制爬樓梯的落下速度
+                if (this.motionY < -0.15D) {
                     this.motionY = -0.15D;
                 }
 
                 boolean flag = this.isSneaking();
-
-                if (flag && this.motionY < 0.0D)
-                {
-                    this.motionY = 0.0D;
+                //若是爬樓梯時為sneaking, 則不會落下(卡在樓梯上)
+                if(flag && this.motionY < 0D) {
+                    this.motionY = 0D;
                 }
             }
 
             this.moveEntity(this.motionX, this.motionY, this.motionZ);
-
-            if (this.isCollidedHorizontally && this.isOnLadder())
-            {
-                this.motionY = 0.2D;
+            //往樓梯推擠, 則會往上爬
+            if(this.isCollidedHorizontally && this.isOnLadder()) {
+                this.motionY = 0.4D;
             }
-
-            if (this.worldObj.isRemote && (!this.worldObj.blockExists((int)this.posX, 0, (int)this.posZ) || !this.worldObj.getChunkFromBlockCoords((int)this.posX, (int)this.posZ).isChunkLoaded))
-            {
-                if (this.posY > 0.0D)
-                {
-                    this.motionY = -0.1D;
+            //自然掉落
+            if(this.worldObj.isRemote && (!this.worldObj.blockExists((int)this.posX, 0, (int)this.posZ) || !this.worldObj.getChunkFromBlockCoords((int)this.posX, (int)this.posZ).isChunkLoaded)) {
+                if (this.posY > 0.0D) {
+                    this.motionY = -0.1D;	//空氣中的gravity為0.1D
                 }
-                else
-                {
+                else {
                     this.motionY = 0.0D;
                 }
             }
-            else
-            {
+            else {
                 this.motionY -= 0.08D;
             }
-
-            this.motionY *= 0.9800000190734863D;
+            //空氣中的三方向阻力
+            this.motionY *= 0.98D;			
             this.motionX *= (double)f2;
             this.motionZ *= (double)f2;
         }
-
+        //計算四肢擺動值
         this.prevLimbSwingAmount = this.limbSwingAmount;
         d0 = this.posX - this.prevPosX;
         double d1 = this.posZ - this.prevPosZ;
@@ -1039,6 +1038,82 @@ public class BasicEntityMount extends EntityCreature implements IShipEmotion, IS
 	public boolean shouldDismountInWater(Entity rider) {
         return false;
     }
+
+	@Override
+	public ShipPathNavigate getShipNavigate() {
+		return this.shipNavigator;
+	}
+
+	@Override
+	public ShipMoveHelper getShipMoveHelper() {
+		return this.shipMoveHelper;
+	}
+	
+	//update ship move helper
+	@Override
+	protected void updateAITasks() {
+		super.updateAITasks();
+        
+        //若有水空path, 則更新ship navigator
+        if(!this.getShipNavigate().noPath()) {
+        	if(!this.getNavigator().noPath()) {
+        		this.getNavigator().clearPathEntity();
+        	}
+			//用particle顯示path point
+			if(this.ticksExisted % 20 == 0) {
+				ShipPathEntity pathtemp = this.getShipNavigate().getPath();
+				ShipPathPoint pointtemp;
+				
+				for(int i = 0; i < pathtemp.getCurrentPathLength(); i++) {
+					pointtemp = pathtemp.getPathPointFromIndex(i);
+					//發射者煙霧特效
+			        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
+					//路徑點畫紅色, 目標點畫綠色
+					if(i == pathtemp.getCurrentPathIndex()) {
+						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 16, pointtemp.xCoord, pointtemp.yCoord+0.5D, pointtemp.zCoord, 0F, 0F, 0F, false), point);
+					}
+					else {
+						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 18, pointtemp.xCoord, pointtemp.yCoord+0.5D, pointtemp.zCoord, 0F, 0F, 0F, false), point);
+					}
+				}
+			}
+
+			this.worldObj.theProfiler.startSection("ship navi");
+	        this.shipNavigator.onUpdateNavigation();
+	        this.worldObj.theProfiler.endSection();
+	        this.worldObj.theProfiler.startSection("ship move");
+	        this.shipMoveHelper.onUpdateMoveHelper();
+	        this.worldObj.theProfiler.endSection();
+		}
+        
+        if(!this.getNavigator().noPath()) {
+//        	LogHelper.info("DEBUG : AI tick: path length B "+this.getNavigator().getPath().getCurrentPathIndex()+" / "+this.getNavigator().getPath().getCurrentPathLength());
+			//用particle顯示path point
+			if(this.ticksExisted % 20 == 0) {
+				PathEntity pathtemp2 = this.getNavigator().getPath();
+				PathPoint pointtemp2;
+//				LogHelper.info("DEBUG : AI tick: path length B "+pathtemp2.getCurrentPathLength()+" "+pathtemp2.getPathPointFromIndex(0).xCoord+" "+pathtemp2.getPathPointFromIndex(0).yCoord+" "+pathtemp2.getPathPointFromIndex(0).zCoord+" ");
+//				LogHelper.info("DEBUG : AI tick: path length B "+pathtemp2.getCurrentPathIndex());
+				for(int i = 0; i < pathtemp2.getCurrentPathLength(); i++) {
+					pointtemp2 = pathtemp2.getPathPointFromIndex(i);
+					//發射者煙霧特效
+			        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
+					//路徑點畫紅色, 目標點畫綠色
+					if(i == pathtemp2.getCurrentPathIndex()) {
+						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 16, pointtemp2.xCoord, pointtemp2.yCoord+0.5D, pointtemp2.zCoord, 0F, 0F, 0F, false), point);
+					}
+					else {
+						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 17, pointtemp2.xCoord, pointtemp2.yCoord+0.5D, pointtemp2.zCoord, 0F, 0F, 0F, false), point);
+					}
+				}
+			}
+        }
+    }
+
+	@Override
+	public boolean canFly() {
+		return false;
+	}
 	
 
 }

@@ -3,6 +3,10 @@ package com.lulan.shincolle.entity;
 import java.util.List;
 import java.util.UUID;
 
+import com.lulan.shincolle.ai.path.ShipMoveHelper;
+import com.lulan.shincolle.ai.path.ShipPathEntity;
+import com.lulan.shincolle.ai.path.ShipPathNavigate;
+import com.lulan.shincolle.ai.path.ShipPathPoint;
 import com.lulan.shincolle.client.particle.EntityFXTexts;
 import com.lulan.shincolle.client.particle.EntityFXSpray;
 import com.lulan.shincolle.handler.ConfigHandler;
@@ -29,6 +33,8 @@ import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.passive.EntityBat;
 import net.minecraft.entity.passive.EntityWaterMob;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.pathfinding.PathEntity;
+import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
@@ -38,7 +44,9 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipA
 	protected BasicEntityShipLarge hostEntity;  		//host target
 	protected EntityLivingBase targetEntity;	//onImpact target (for entity)
 	protected World world;
-    
+	protected ShipPathNavigate shipNavigator;	//水空移動用navigator
+	protected ShipMoveHelper shipMoveHelper;
+	
     //attributes
     public float atk;				//damage
     public float atkSpeed;			//attack speed
@@ -56,6 +64,9 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipA
     public BasicEntityAirplane(World world) {
         super(world);
         this.backHome = false;
+        shipNavigator = new ShipPathNavigate(this, worldObj);
+		shipMoveHelper = new ShipMoveHelper(this);
+		this.shipNavigator.setCanFly(true);
         
         //target selector init
         this.targetSelector = new IEntitySelector() {
@@ -154,33 +165,16 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipA
     }
 
     //移動計算, 去除gravity部份
-    public void moveEntityWithHeading(float movX, float movZ) {
-        if(this.isInWater() || this.handleLavaMovement()) {
-            this.moveFlying(movX, movZ, 0.04F);
-            this.moveEntity(this.motionX, this.motionY, this.motionZ);
-            this.motionX *= 0.8D;
-            this.motionY *= 0.8D;
-            this.motionZ *= 0.8D;
-        }
-        else {
-            float f2 = 0.91F;
+    public void moveEntityWithHeading(float movX, float movZ) { 	
+        this.moveFlying(movX, movZ, this.movSpeed*0.4F); //水中的速度計算(含漂移效果)
+        this.moveEntity(this.motionX, this.motionY, this.motionZ);
 
-            if(this.onGround) {
-                f2 = this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.boundingBox.minY) - 1, MathHelper.floor_double(this.posZ)).slipperiness * 0.91F;
-            }
-
-            float f3 = 0.16277136F / (f2 * f2 * f2);
-            this.moveFlying(movX, movZ, this.onGround ? 0.1F * f3 : 0.02F);
-            f2 = 0.91F;
-
-            if(this.onGround) {
-                f2 = this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.boundingBox.minY) - 1, MathHelper.floor_double(this.posZ)).slipperiness * 0.91F;
-            }
-
-            this.moveEntity(this.motionX, this.motionY, this.motionZ);
-            this.motionX *= (double)f2;
-            this.motionY *= (double)f2;
-            this.motionZ *= (double)f2;
+        this.motionX *= 0.91D;
+        this.motionY *= 0.91D;
+        this.motionZ *= 0.91D;
+        //撞到東西會上升
+        if (this.isCollidedHorizontally && this.isOffsetPositionInLiquid(this.motionX, this.motionY + 0.6D, this.motionZ)) {
+            this.motionY += 0.2D;
         }
 
         this.prevLimbSwingAmount = this.limbSwingAmount;
@@ -205,6 +199,10 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipA
 				this.setDead();
 			}
 			else {
+//				if(this.getAttackTarget()!=null) {
+//	    			LogHelper.info("DEBUG : airplane target "+this.getAttackTarget().isDead+" "+this.getAttackTarget());
+//	    		}
+				
 				//超過60秒自動消失
 				if(this.ticksExisted > 1200) {
 					this.numAmmoLight -= 2;
@@ -226,22 +224,23 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipA
 				}
 				
 				//達到30秒時強制歸宅
-				if(this.ticksExisted == 600) {
+				if(this.ticksExisted >= 600) {
 					this.backHome = true;
 				}
 				
 				//歸宅
 				if(this.backHome && !this.isDead) {
 					if(this.getDistanceToEntity(this.getOwner()) > 2.7F) {
-						double speed = this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).getBaseValue();
-						double distX = this.getOwner().posX - this.posX;
-						double distY = this.getOwner().posY + 2.3D - this.posY;
-						double distZ = this.getOwner().posZ - this.posZ;
-						double distSqrt = MathHelper.sqrt_double(distX*distX + distY*distY + distZ*distZ);
-						
-						this.motionX = distX / distSqrt * speed * 1.0D;
-						this.motionY = distY / distSqrt * speed * 1.0D;
-						this.motionZ = distZ / distSqrt * speed * 1.0D;
+//						double speed = this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).getBaseValue();
+//						double distX = this.getOwner().posX - this.posX;
+//						double distY = this.getOwner().posY + 2.3D - this.posY;
+//						double distZ = this.getOwner().posZ - this.posZ;
+//						double distSqrt = MathHelper.sqrt_double(distX*distX + distY*distY + distZ*distZ);
+//						
+//						this.motionX = distX / distSqrt * speed * 1.0D;
+//						this.motionY = distY / distSqrt * speed * 1.0D;
+//						this.motionZ = distZ / distSqrt * speed * 1.0D;
+						this.getShipNavigate().tryMoveToXYZ(this.getOwner().posX, this.getOwner().posY + 2.3D, this.getOwner().posZ, 1D);
 					}
 					else {	//歸還剩餘彈藥 (但是grudge不歸還)
 						this.numAmmoLight -= 2;
@@ -264,7 +263,7 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipA
 				}
 				
 				//前幾秒直線往目標移動
-				if(this.ticksExisted < 30 && this.getAttackTarget() != null) {
+				if(this.ticksExisted < 15 && this.getAttackTarget() != null) {
 					double distX = this.getAttackTarget().posX - this.posX;
 					double distZ = this.getAttackTarget().posZ - this.posZ;
 					double distSqrt = MathHelper.sqrt_double(distX*distX + distZ*distZ);
@@ -275,13 +274,14 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipA
 				}
 				
 				//攻擊目標消失, 找附近目標 or 設為host目前目標
-				if(!this.backHome && (this.getAttackTarget() == null || this.getAttackTarget().isDead) && this.hostEntity != null && this.ticksExisted % 2 == 0) {	
+				if(!this.backHome && (this.getAttackTarget() == null || this.getAttackTarget().isDead) && this.hostEntity != null && this.ticksExisted % 10 == 0) {	
 					//entity list < range1
 					EntityLivingBase newTarget;
 			        List list = this.worldObj.selectEntitiesWithinAABB(EntityLivingBase.class, 
-			        this.boundingBox.expand(20, 15, 20), this.targetSelector);
+			        this.boundingBox.expand(20, 20, 20), this.targetSelector);
 			        
-			        if(list.isEmpty()) {	//都找不到目標則給host目標, 但是host目標必須在64格內
+			        //都找不到目標則給host目標, 但是host目標必須在xyz20格內
+			        if(list.isEmpty()) {
 			        	newTarget = this.hostEntity.getAttackTarget();
 			        }
 			        else {	//從艦載機附近找出的目標, 判定是否要去攻擊
@@ -451,6 +451,57 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipA
 	public EntityLivingBase getTarget() {
 		return this.getAttackTarget();
 	}
+	
+	@Override
+	public ShipPathNavigate getShipNavigate() {
+		return this.shipNavigator;
+	}
+
+	@Override
+	public ShipMoveHelper getShipMoveHelper() {
+		return this.shipMoveHelper;
+	}
+	
+	//update ship move helper
+	@Override
+	protected void updateAITasks() {
+		super.updateAITasks();
+        
+        //若有水空path, 則更新ship navigator
+        if(!this.getShipNavigate().noPath()) {
+			//用particle顯示path point
+			if(this.ticksExisted % 20 == 0) {
+				ShipPathEntity pathtemp = this.getShipNavigate().getPath();
+				ShipPathPoint pointtemp;
+				
+				for(int i = 0; i < pathtemp.getCurrentPathLength(); i++) {
+					pointtemp = pathtemp.getPathPointFromIndex(i);
+					//發射者煙霧特效
+			        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
+					//路徑點畫紅色, 目標點畫綠色
+					if(i == pathtemp.getCurrentPathIndex()) {
+						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 16, pointtemp.xCoord, pointtemp.yCoord+0.5D, pointtemp.zCoord, 0F, 0F, 0F, false), point);
+					}
+					else {
+						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 18, pointtemp.xCoord, pointtemp.yCoord+0.5D, pointtemp.zCoord, 0F, 0F, 0F, false), point);
+					}
+				}
+			}
+
+			this.worldObj.theProfiler.startSection("ship navi");
+	        this.shipNavigator.onUpdateNavigation();
+	        this.worldObj.theProfiler.endSection();
+	        this.worldObj.theProfiler.startSection("ship move");
+	        this.shipMoveHelper.onUpdateMoveHelper();
+	        this.worldObj.theProfiler.endSection();
+		}
+    }
+	
+	@Override
+	public boolean canFly() {
+		return true;
+	}
+	
 
 }
 

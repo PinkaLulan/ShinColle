@@ -11,6 +11,14 @@ public class ShipPath {
     private int count;
 
 
+    public ShipPathPoint[] getPathPoints() {
+    	return pathPoints;
+    }
+    
+    public int getCount() {
+    	return count;
+    }
+    
     /**
      * Adds a point to the path
      */
