@@ -60,6 +60,9 @@ public class ModelSubmU511 extends ModelBase {
     public ModelRenderer EquipMid;
     public ModelRenderer EquipL;
     public ModelRenderer EquipR;
+    public ModelRenderer GlowBodyMain;
+    public ModelRenderer GlowNeck;
+    public ModelRenderer GlowHead;
     
     private Random rand = new Random();
     private int startEmo2 = 0;
@@ -95,7 +98,7 @@ public class ModelSubmU511 extends ModelBase {
         this.setRotateAngle(Neck, 0.05235987755982988F, 0.0F, 0.0F);
         this.BoobL = new ModelRenderer(this, 33, 103);
         this.BoobL.mirror = true;
-        this.BoobL.setRotationPoint(3.3F, -8.8F, -2.9F);
+        this.BoobL.setRotationPoint(3.3F, -8.8F, -2.7F);
         this.BoobL.addBox(-3.0F, 0.0F, 0.0F, 6, 4, 4, 0.0F);
         this.setRotateAngle(BoobL, -0.6981317007977318F, 0.08726646259971647F, 0.08726646259971647F);
         this.ArmRight03 = new ModelRenderer(this, 28, 78);
@@ -134,7 +137,7 @@ public class ModelSubmU511 extends ModelBase {
         this.Skirt.addBox(-8.0F, 0.0F, -4.5F, 16, 9, 8, 0.0F);
         this.setRotateAngle(Skirt, 0.3490658503988659F, -3.141592653589793F, 0.0F);
         this.BoobR = new ModelRenderer(this, 33, 103);
-        this.BoobR.setRotationPoint(-3.3F, -8.8F, -2.9F);
+        this.BoobR.setRotationPoint(-3.3F, -8.8F, -2.7F);
         this.BoobR.addBox(-3.0F, 0.0F, 0.0F, 6, 4, 4, 0.0F);
         this.setRotateAngle(BoobR, -0.6981317007977318F, -0.08726646259971647F, -0.08726646259971647F);
         this.EquipR = new ModelRenderer(this, 0, 23);
@@ -237,7 +240,6 @@ public class ModelSubmU511 extends ModelBase {
         this.Butt.addChild(this.Skirt);
         this.BodyMain.addChild(this.BoobR);
         this.EquipMid.addChild(this.EquipR);
-        this.Head.addChild(this.Face0);
         this.ArmLeft02.addChild(this.ArmLeft03);
         this.EquipBase.addChild(this.EquipMid);
         this.Hat02.addChild(this.Ear2);
@@ -246,19 +248,33 @@ public class ModelSubmU511 extends ModelBase {
         this.Head.addChild(this.HairMain);
         this.LegRight01.addChild(this.LegRight02);
         this.Hat01.addChild(this.Hat02);
-        this.Head.addChild(this.Face1);
         this.Hair.addChild(this.Ahoke);
-        this.Head.addChild(this.Face3);
-        this.Head.addChild(this.Face4);
         this.Neck.addChild(this.Head);
         this.LegLeft01.addChild(this.LegLeft02);
         this.Neck.addChild(this.Pipe);
-        this.Head.addChild(this.Face2);
         this.Hat02.addChild(this.Ear1);
         this.Butt.addChild(this.LegRight01);
         this.Butt.addChild(this.LegLeft01);
         this.BodyMain.addChild(this.EquipBase);
         this.ArmLeft01.addChild(this.ArmLeft02);
+        
+        //發光支架
+        this.GlowBodyMain = new ModelRenderer(this, 0, 0);
+        this.GlowBodyMain.setRotationPoint(0.0F, -13.0F, 0.0F);
+        this.GlowNeck = new ModelRenderer(this, 0, 0);
+        this.GlowNeck.setRotationPoint(0.0F, -10.5F, 0.0F);
+        this.setRotateAngle(GlowNeck, 0.05235987755982988F, 0.0F, 0.0F);
+        this.GlowHead = new ModelRenderer(this, 0, 0);
+        this.GlowHead.setRotationPoint(0.0F, -1.5F, 0.0F);
+        
+        this.GlowBodyMain.addChild(this.GlowNeck);
+        this.GlowNeck.addChild(this.GlowHead);
+        this.GlowHead.addChild(this.Face0);
+        this.GlowHead.addChild(this.Face1);
+        this.GlowHead.addChild(this.Face2);
+        this.GlowHead.addChild(this.Face3);
+        this.GlowHead.addChild(this.Face4);
+        
     }
     
     public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z) {
@@ -279,15 +295,15 @@ public class ModelSubmU511 extends ModelBase {
     	GL11.glDisable(GL11.GL_BLEND);
     	
     	//亮度設為240
-//    	GL11.glDisable(GL11.GL_LIGHTING);
-//    	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
-//    	this.GlowBodyMain.render(f5);
-//    	GL11.glEnable(GL11.GL_LIGHTING);
+    	GL11.glDisable(GL11.GL_LIGHTING);
+    	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
+    	this.GlowBodyMain.render(f5);
+    	GL11.glEnable(GL11.GL_LIGHTING);
     	
     	GL11.glPopMatrix();
     }
     
-  //for idle/run animation
+    //for idle/run animation
     @Override
     public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity) { 	
     	super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
@@ -305,15 +321,15 @@ public class ModelSubmU511 extends ModelBase {
     
     //設定模型發光部份的rotation
     private void setGlowRotation() {
-//		this.GlowBodyMain.rotateAngleX = this.BodyMain.rotateAngleX;
-//		this.GlowBodyMain.rotateAngleY = this.BodyMain.rotateAngleY;
-//		this.GlowBodyMain.rotateAngleZ = this.BodyMain.rotateAngleZ;
-//		this.GlowNeck.rotateAngleX = this.Neck.rotateAngleX;
-//		this.GlowNeck.rotateAngleY = this.Neck.rotateAngleY;
-//		this.GlowNeck.rotateAngleZ = this.Neck.rotateAngleZ;
-//		this.GlowHead.rotateAngleX = this.Head.rotateAngleX;
-//		this.GlowHead.rotateAngleY = this.Head.rotateAngleY;
-//		this.GlowHead.rotateAngleZ = this.Head.rotateAngleZ;
+		this.GlowBodyMain.rotateAngleX = this.BodyMain.rotateAngleX;
+		this.GlowBodyMain.rotateAngleY = this.BodyMain.rotateAngleY;
+		this.GlowBodyMain.rotateAngleZ = this.BodyMain.rotateAngleZ;
+		this.GlowNeck.rotateAngleX = this.Neck.rotateAngleX;
+		this.GlowNeck.rotateAngleY = this.Neck.rotateAngleY;
+		this.GlowNeck.rotateAngleZ = this.Neck.rotateAngleZ;
+		this.GlowHead.rotateAngleX = this.Head.rotateAngleX;
+		this.GlowHead.rotateAngleY = this.Head.rotateAngleY;
+		this.GlowHead.rotateAngleZ = this.Head.rotateAngleZ;
     }
     
     //雙腳移動計算
@@ -511,8 +527,13 @@ public class ModelSubmU511 extends ModelBase {
 			break;
     	case ID.Emotion.BORED:
     	default:						//normal face
-    		//reset face to 0
-    		if(ent.getStartEmotion() <= 0) setFace(0);
+    		//reset face to 0 or blink if emotion time > 0
+    		if(ent.getStartEmotion() <= 0) {
+    			setFace(0);
+    		}
+    		else {
+    			EmotionBlink(ent);
+    		}
     		//roll emotion (3 times) every 6 sec
     		//1 tick in entity = 3 tick in model class (20 vs 60 fps)
     		if(ent.getTickExisted() % 120 == 0) {
@@ -526,10 +547,11 @@ public class ModelSubmU511 extends ModelBase {
     }
     
     //眨眼動作, this emotion is CLIENT ONLY, no sync packet required
-  	private void EmotionBlink(IShipEmotion ent) {
+    private void EmotionBlink(IShipEmotion ent) {
   		if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.NORMAL) {	//要在沒表情狀態才做表情		
   			ent.setStartEmotion(ent.getTickExisted());		//表情開始時間
   			ent.setStateEmotion(ID.S.Emotion, ID.Emotion.BLINK, false);	//標記表情為blink
+  			setFace(1);
   		}
   		
   		int EmoTime = ent.getTickExisted() - ent.getStartEmotion();
@@ -545,9 +567,9 @@ public class ModelSubmU511 extends ModelBase {
     	else if(EmoTime > 25) {
     		setFace(0);
     	}
-    	else if(EmoTime > 1) {
+    	else if(EmoTime > -1) {
     		setFace(1);
-    	}		
+    	}
   	}
   	
   	//瞪人表情

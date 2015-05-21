@@ -1,6 +1,6 @@
 package com.lulan.shincolle.entity;
 
-public interface IShipEmotion {
+public interface IShipEmotion extends IShipFlags {
 	
 	/**Get emotion value
 	 * id = 0: return damaged state
@@ -15,18 +15,6 @@ public interface IShipEmotion {
 	 * sync: send sync packet to client?
 	 */
 	abstract public void setStateEmotion(int id, int value, boolean sync);
-	
-	/**Get state flag
-	 * flag: 8:head tilt
-	 */
-	abstract public boolean getStateFlag(int flag);
-	
-	/**Set state flag
-	 * for individual entity displaying head tilt or other emotion
-	 * flag: 8:head tilt
-	 * sync: send sync packet to client?
-	 */
-	abstract public void setStateFlag(int id, boolean flag);
 	
 	/**GET/SET emotion start time
 	 * emotion start time for individual entity

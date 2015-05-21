@@ -33,7 +33,7 @@ import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
-public class EntityBattleshipNGTBoss extends BasicEntityShipHostile implements IBossDisplayData {
+public class EntityBattleshipNGTBoss extends BasicEntityShipBoss {
 
 	public EntityBattleshipNGTBoss(World world) {
 		super(world);

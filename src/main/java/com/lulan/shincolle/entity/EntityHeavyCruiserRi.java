@@ -67,7 +67,7 @@ public class EntityHeavyCruiserRi extends BasicEntityShipSmall {
 	
 	public EntityHeavyCruiserRi(World world) {
 		super(world);
-		this.setSize(0.9F, 1.5F);	//碰撞大小 跟模型大小無關
+		this.setSize(0.9F, 1.6F);	//碰撞大小 跟模型大小無關
 //		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityHeavyCruiserRi.name"));
 		this.ShipType = ID.ShipType.HEAVY_CRUISER;
 		this.ShipID = ID.S_HeavyCruiserRI;
@@ -80,7 +80,7 @@ public class EntityHeavyCruiserRi extends BasicEntityShipSmall {
 	//for morph
 	@Override
 	public float getEyeHeight() {
-		return this.height * 1.1F;
+		return this.height;
 	}
 	
 	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc

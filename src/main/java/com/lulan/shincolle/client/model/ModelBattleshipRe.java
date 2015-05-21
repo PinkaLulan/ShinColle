@@ -3,6 +3,7 @@ package com.lulan.shincolle.client.model;
 import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.LogHelper;
@@ -1038,6 +1039,7 @@ public class ModelBattleshipRe extends ModelBase {
 			this.TailHeadBase.rotateAngleX = -0.2618F;
 			this.TailHeadBase.rotateAngleY = 0F;
 			this.TailHeadBase.rotateAngleZ = 0F;
+			
 			if(ent.attackTime > 47) {
 				this.TailHead1.rotateAngleX = (50 - ent.attackTime) * 0.15F + 0.4F;
 				this.TailJaw1.rotateAngleX = (ent.attackTime - 50) * 0.15F - 0.4F;
@@ -1074,8 +1076,13 @@ public class ModelBattleshipRe extends ModelBase {
 			break;
     	case ID.Emotion.BORED:
     	default:						//normal face
-    		//reset face to 0
-    		if(ent.getStartEmotion() <= 0) setFace(0); 			    
+    		//reset face to 0 or blink if emotion time > 0
+    		if(ent.getStartEmotion() <= 0) {
+    			setFace(0);
+    		}
+    		else {
+    			EmotionBlink(ent);
+    		} 
     		//roll emotion (3 times) every 6 sec
     		//1 tick in entity = 3 tick in model class (20 vs 60 fps)
     		if(ent.ticksExisted % 120 == 0) {  			
@@ -1089,13 +1096,14 @@ public class ModelBattleshipRe extends ModelBase {
     }
     
     //眨眼動作, this emotion is CLIENT ONLY, no sync packet required
-  	private void EmotionBlink(BasicEntityShip ent) {
+    private void EmotionBlink(IShipEmotion ent) {
   		if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.NORMAL) {	//要在沒表情狀態才做表情		
-  			ent.setStartEmotion(ent.ticksExisted);		//表情開始時間
+  			ent.setStartEmotion(ent.getTickExisted());		//表情開始時間
   			ent.setStateEmotion(ID.S.Emotion, ID.Emotion.BLINK, false);	//標記表情為blink
+  			setFace(1);
   		}
   		
-  		int EmoTime = ent.ticksExisted - ent.getStartEmotion();
+  		int EmoTime = ent.getTickExisted() - ent.getStartEmotion();
     	 		
     	if(EmoTime > 46) {	//reset face
     		setFace(0);
@@ -1108,9 +1116,9 @@ public class ModelBattleshipRe extends ModelBase {
     	else if(EmoTime > 25) {
     		setFace(0);
     	}
-    	else if(EmoTime > 1) {
+    	else if(EmoTime > -1) {
     		setFace(1);
-    	}		
+    	}
   	}
   	
   	//瞪人表情

@@ -97,7 +97,7 @@ public class ShipPathFinder {
         	//若取出點=終點, 則完成path
             if(ppDequeue.equals(endpp)) {						
             	//將所有point做成path entity
-            	LogHelper.info("DEBUG : path navi: find count (pathing done) "+findCount);
+//            	LogHelper.info("DEBUG : path navi: find count (pathing done) "+findCount);
                 return this.createEntityPath(startpp, endpp);
             }
             

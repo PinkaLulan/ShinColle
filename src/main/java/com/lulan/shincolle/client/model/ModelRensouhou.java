@@ -232,8 +232,13 @@ public class ModelRensouhou extends ModelBase {
 			break;
     	case ID.Emotion.BORED:
     	default:						//normal face
-    		//reset face to 0
-    		if(ent.getStartEmotion() <= 0) setFace(0); 			    
+    		//reset face to 0 or blink if emotion time > 0
+    		if(ent.getStartEmotion() <= 0) {
+    			setFace(0);
+    		}
+    		else {
+    			EmotionBlink(ent);
+    		}
     		//roll emotion (3 times) every 6 sec
     		//1 tick in entity = 3 tick in model class (20 vs 60 fps)
     		if(ent.getTickExisted() % 120 == 0) {
@@ -247,10 +252,11 @@ public class ModelRensouhou extends ModelBase {
     }
     
     //眨眼動作, this emotion is CLIENT ONLY, no sync packet required
-  	private void EmotionBlink(IShipEmotion ent) {
+    private void EmotionBlink(IShipEmotion ent) {
   		if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.NORMAL) {	//要在沒表情狀態才做表情		
   			ent.setStartEmotion(ent.getTickExisted());		//表情開始時間
   			ent.setStateEmotion(ID.S.Emotion, ID.Emotion.BLINK, false);	//標記表情為blink
+  			setFace(1);
   		}
   		
   		int EmoTime = ent.getTickExisted() - ent.getStartEmotion();
@@ -266,9 +272,9 @@ public class ModelRensouhou extends ModelBase {
     	else if(EmoTime > 25) {
     		setFace(0);
     	}
-    	else if(EmoTime > 1) {
+    	else if(EmoTime > -1) {
     		setFace(1);
-    	}		
+    	}
   	}
   	
   	//瞪人表情

@@ -24,6 +24,7 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
@@ -410,39 +411,6 @@ public class BasicEntityShipHostile extends EntityMob implements IShipAttack, IS
 		return ShipDepth;
 	}
 	
-	//check block from entity posY + offset
-	public Block checkBlockWithOffset(int par1) {
-		int blockX = MathHelper.floor_double(this.posX);
-	    int blockY = MathHelper.floor_double(this.boundingBox.minY);
-	    int blockZ = MathHelper.floor_double(this.posZ);
-
-	    return this.worldObj.getBlock(blockX, blockY + par1, blockZ);    
-	}
-	
-	//replace isInWater, check water block with NO extend AABB
-	private void checkDepth() {
-		Block BlockCheck = checkBlockWithOffset(0);
-		
-		if(BlockCheck == Blocks.water || BlockCheck == Blocks.lava) {
-			ShipDepth = 1D;
-			//check 10 blocks
-			for(int i = 1; i < 10; ++i) {
-				BlockCheck = checkBlockWithOffset(i);
-				
-				if(BlockCheck == Blocks.water || BlockCheck == Blocks.lava) {
-					ShipDepth++;
-				}
-				else {
-					break;
-				}
-			}		
-			ShipDepth = ShipDepth - (this.posY - (int)this.posY);
-		}
-		else {
-			ShipDepth = 0;
-		}
-	}
-	
 	@Override
     public void moveEntityWithHeading(float movX, float movZ) {
         double d0;
@@ -553,7 +521,8 @@ public class BasicEntityShipHostile extends EntityMob implements IShipAttack, IS
 	public void onUpdate() {
 		super.onUpdate();
 		
-		checkDepth();
+		//check depth
+		EntityHelper.checkDepth(this);
 		
 		//client side
 		if(this.worldObj.isRemote && this.isInWater()) {
@@ -577,22 +546,22 @@ public class BasicEntityShipHostile extends EntityMob implements IShipAttack, IS
 		
 		//server side
         if((!worldObj.isRemote)) {      	
-        	//check every 100 ticks
-        	if(ticksExisted % 100 == 0) {
+        	//check every 10 ticks
+        	if(ticksExisted % 10 == 0) {
         		//set air value
         		if(this.getAir() < 300) {
                 	setAir(300);
                 }
-        	}//end every 100 ticks
-
-        	//clear dead target for vanilla AI bug
-  			if(this.getAttackTarget() != null) {
-  				if(this.getAttackTarget().isDead || 
-  				   this.getAttackTarget() instanceof BasicEntityShipHostile ||
-  				   this.getAttackTarget() instanceof EntityRensouhouBoss) {
-  					this.setAttackTarget(null);
-  				}
-  			}
+        		
+        		//clear dead target for vanilla AI bug
+      			if(this.getAttackTarget() != null) {
+      				if(!this.getAttackTarget().isEntityAlive() || 
+      				   this.getAttackTarget() instanceof BasicEntityShipHostile ||
+      				   this.getAttackTarget() instanceof EntityRensouhouBoss) {
+      					this.setAttackTarget(null);
+      				}
+      			}
+        	}//end every 10 ticks	
         }
         //client side
         else {
@@ -651,7 +620,12 @@ public class BasicEntityShipHostile extends EntityMob implements IShipAttack, IS
 		super.updateAITasks();
         
         //若有水空path, 則更新ship navigator
-        if(!this.getShipNavigate().noPath()) {
+        if(shipNavigator != null && shipMoveHelper != null && !this.getShipNavigate().noPath()) {
+        	//若同時有官方ai的路徑, 則清除官方ai路徑
+        	if(!this.getNavigator().noPath()) {
+        		this.getNavigator().clearPathEntity();
+        	}
+        	
 			//用particle顯示path point
 			if(this.ticksExisted % 20 == 0) {
 				ShipPathEntity pathtemp = this.getShipNavigate().getPath();
@@ -683,6 +657,11 @@ public class BasicEntityShipHostile extends EntityMob implements IShipAttack, IS
 	@Override
 	public boolean canFly() {
 		return false;
+	}
+
+	@Override
+	public void setShipDepth(double par1) {
+		ShipDepth = par1;
 	}
 
 

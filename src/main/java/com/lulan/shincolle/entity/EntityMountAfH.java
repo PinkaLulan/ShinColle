@@ -1,51 +1,23 @@
 package com.lulan.shincolle.entity;
 
-import net.minecraft.block.Block;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityCreature;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAILookIdle;
-import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
-import net.minecraft.entity.ai.EntityAIOpenDoor;
-import net.minecraft.entity.ai.EntityAIWander;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
-import net.minecraft.pathfinding.PathEntity;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
-import com.lulan.shincolle.ShinColle;
-import com.lulan.shincolle.ai.EntityAIMountFollowOwner;
-import com.lulan.shincolle.ai.EntityAIShipAttackOnCollide;
-import com.lulan.shincolle.ai.EntityAIShipFloating;
-import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
-import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
 import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.network.S2CEntitySync;
-import com.lulan.shincolle.network.S2CSpawnParticle;
-import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
-import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
-import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
-
-public class EntityMountBaH extends BasicEntityMount {
+public class EntityMountAfH extends BasicEntityMount {
 	
-    public EntityMountBaH(World world) {	//client side
+    public EntityMountAfH(World world) {	//client side
 		super(world);
-		this.setSize(1.9F, 2.7F);
+		this.setSize(1.9F, 1.3F);
 		this.isImmuneToFire = true;
 	}
     
-    public EntityMountBaH(World world, BasicEntityShip host) {	//server side
+    public EntityMountAfH(World world, BasicEntityShip host) {	//server side
 		super(world);
         this.host = host;
         this.isImmuneToFire = true;
@@ -86,15 +58,34 @@ public class EntityMountBaH extends BasicEntityMount {
     
     @Override
     public double getMountedYOffset() {
-        return (double)this.height * 1.02D;
-//    	return (double)this.height * 0.0D;
+//        return (double)this.height * 0D;
+    	return this.height;
     }
-    
-    @Override
+
+	@Override
 	public float[] getRidePos() {
-		return new float[] {1.2F, -1.3F, 1.1F};
+		return new float[] {-1F, -1F, 1.5F};
 	}
 
+	@Override
+	public void onUpdate() {
+		super.onUpdate();
+//		LogHelper.info("DEBUG : mount depth "+this.ShipDepth);
+		
+		//client side
+		if(this.worldObj.isRemote) {
+			if(this.ticksExisted % 8 == 0) {
+				//¼L¤Ú«_¬õ·Ï¯S®Ä
+				float[] partPos1 = ParticleHelper.rotateParticleByAxis(0F, -1.0F, this.renderYawOffset / 57.2958F, 1F);
+				float[] partPos2 = ParticleHelper.rotateParticleByAxis(0F, -1.8F, this.renderYawOffset / 57.2958F, 1F);
+				ParticleHelper.spawnAttackParticleAt(this.posX + partPos1[1], this.posY + 0.9F, this.posZ + partPos1[0], 
+							0D, 0.1D, 0D, (byte)18);
+				ParticleHelper.spawnAttackParticleAt(this.posX + partPos2[1], this.posY + 0.9F, this.posZ + partPos2[0], 
+						0D, 0.1D, 0D, (byte)18);
+			}
+		}
+	}
 
 }
+
 

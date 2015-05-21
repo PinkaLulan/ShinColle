@@ -1,5 +1,7 @@
 package com.lulan.shincolle.handler;
 
+import java.util.List;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
@@ -12,6 +14,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -60,7 +63,7 @@ public class EVENT_BUS_EventHandler {
 	    			
 	    			if(bossEgg != null) {
 	    				BasicEntityItem entityItem1 = new BasicEntityItem(event.entity.worldObj, event.entity.posX, event.entity.posY+0.5D, event.entity.posZ, bossEgg);
-			    		LogHelper.info("DEBUG : boss drop "+entityItem1.posX+" "+entityItem1.posY+" "+entityItem1.posZ);
+			    		LogHelper.info("DEBUG : ship mob drop "+entityItem1.posX+" "+entityItem1.posY+" "+entityItem1.posZ);
 			    		event.entity.worldObj.spawnEntityInWorld(entityItem1);
 	    			}
 	    		}	
@@ -226,18 +229,35 @@ public class EVENT_BUS_EventHandler {
 		}
 	}
 	
-	//Add ship mob spawn in squid event
+	/**Add ship mob spawn in squid event
+	 * FIX: add spawn limit (1 spawn within 32 blocks)
+	 */
 	@SubscribeEvent
 	public void onSquidSpawn(LivingSpawnEvent.CheckSpawn event) {
 		if(event.entityLiving instanceof EntitySquid) {
 			if(event.world.rand.nextInt((int)ConfigHandler.scaleMobU511[ID.SpawnPerSquid]) == 0) {
-				LogHelper.info("DEBUG : spawn ship mob at "+event.x+" "+event.y+" "+event.z+" rate "+ConfigHandler.scaleMobU511[ID.SpawnPerSquid]);
-				EntityLiving entityToSpawn = (EntityLiving) EntityList.createEntityByName("shincolle.EntitySubmU511Mob", event.world);
-				entityToSpawn.posX = event.x;
-				entityToSpawn.posY = event.y;
-				entityToSpawn.posZ = event.z;
-				entityToSpawn.setPosition(event.x, event.y, event.z);
-				event.world.spawnEntityInWorld(entityToSpawn);
+				//check 64x64 range
+				AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(event.x-16D, event.y-32D, event.z-16D, event.x+16D, event.y+32D, event.z+16D);
+				List ListMob = event.world.getEntitiesWithinAABB(BasicEntityShipHostile.class, aabb);
+
+				//list低於1個表示沒有找到其他boss
+	            if(ListMob.size() < 1) {
+	            	LogHelper.info("DEBUG : spawn ship mob at "+event.x+" "+event.y+" "+event.z+" rate "+ConfigHandler.scaleMobU511[ID.SpawnPerSquid]);
+	            	EntityLiving entityToSpawn;
+	            	//50%:U511 50%:Ro500
+	            	if(event.world.rand.nextInt(2) == 0) {
+	            		entityToSpawn = (EntityLiving) EntityList.createEntityByName("shincolle.EntitySubmU511Mob", event.world);
+					}
+	            	else {
+	            		entityToSpawn = (EntityLiving) EntityList.createEntityByName("shincolle.EntitySubmRo500Mob", event.world);
+	            	}
+	            	
+					entityToSpawn.posX = event.x;
+					entityToSpawn.posY = event.y;
+					entityToSpawn.posZ = event.z;
+					entityToSpawn.setPosition(event.x, event.y, event.z);
+					event.world.spawnEntityInWorld(entityToSpawn);
+	            }	
 			}
 		}
 	}

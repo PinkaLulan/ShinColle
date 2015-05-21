@@ -1,6 +1,7 @@
 package com.lulan.shincolle.entity;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
@@ -43,7 +44,7 @@ import com.lulan.shincolle.utility.ParticleHelper;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
 
-public class BasicEntityMount extends EntityCreature implements IShipMount {
+abstract public class BasicEntityMount extends EntityCreature implements IShipMount {
 	
 	protected BasicEntityShip host;  			//host
 	public EntityMountSeat seat2;				//seat 2
@@ -219,13 +220,16 @@ public class BasicEntityMount extends EntityCreature implements IShipMount {
 	//replace isInWater, check water block with NO extend AABB
 	private void checkDepth() {
 		Block BlockCheck = checkBlockWithOffset(0);
-		
-		if(BlockCheck == Blocks.water || BlockCheck == Blocks.lava) {
+
+		if(EntityHelper.checkBlockIsLiquid(BlockCheck)) {
 			ShipDepth = 1;
 			for(int i=1; (this.posY+i)<255D; i++) {
 				BlockCheck = checkBlockWithOffset(i);
-				if(BlockCheck == Blocks.water || BlockCheck == Blocks.lava) {
+				if(EntityHelper.checkBlockIsLiquid(BlockCheck)) {
 					ShipDepth++;
+				}
+				else {
+					break;
 				}
 			}		
 			ShipDepth = ShipDepth - (this.posY - (int)this.posY);
@@ -253,16 +257,18 @@ public class BasicEntityMount extends EntityCreature implements IShipMount {
 			//use cake
 			if(itemstack.getItem() == Items.cake) {
 				switch(host.getStateEmotion(ID.S.State)) {
-				case ID.State.NORMAL:
+				case ID.State.NORMAL:	//普通轉騎乘
 					host.setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
 					break;
-				case ID.State.EQUIP00:
+				case ID.State.EQUIP00:	//騎乘轉普通
 					host.setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+					this.setRiderNull();
 					break;
 				default:
 					host.setStateEmotion(ID.S.State, ID.State.NORMAL, true);
 					break;
 				}
+				
 				return true;
 			}
 			
@@ -361,16 +367,20 @@ public class BasicEntityMount extends EntityCreature implements IShipMount {
 			this.rotationYaw = rider2.rotationYaw;
 		}
 			
-		if(this.isInWater() || this.handleLavaMovement()) {
-			this.checkDepth();	//check depth every tick
+		//check depth
+		EntityHelper.checkDepth(this);
+		
+		//sync rotate angle
+		if(this.riddenByEntity != null) {
+			((EntityLivingBase)this.riddenByEntity).rotationYawHead = this.rotationYawHead;
+			((EntityLivingBase)this.riddenByEntity).prevRotationYaw = this.prevRotationYaw;
+			((EntityLivingBase)this.riddenByEntity).rotationYaw = this.rotationYaw;
+			((EntityLivingBase)this.riddenByEntity).renderYawOffset = this.renderYawOffset;
 		}
-		else {
-			this.ShipDepth = 0D;
-		}
-//LogHelper.info("DEBUG : mount state "+this.worldObj.isRemote+" "+this.keyPressed);
+
 		//client side
 		if(this.worldObj.isRemote) {
-			if(this.isInWater() || this.handleLavaMovement()) {
+			if(ShipDepth > 0D) {
 				//水中移動時, 產生水花特效
 				//(注意此entity因為設為非高速更新, client端不會更新motionX等數值, 需自行計算)
 				double motX = this.posX - this.prevPosX;
@@ -382,21 +392,9 @@ public class BasicEntityMount extends EntityCreature implements IShipMount {
 							-motX*0.5D, 0D, -motZ*0.5D, (byte)15);
 				}
 			}
-			
-			if(this.riddenByEntity != null) {
-//				LogHelper.info("DEBUG : rider2 move "+((EntityLivingBase)riddenByEntity).prevRotationYawHead+" "+this.prevRotationYawHead); 
-				((EntityLivingBase)this.riddenByEntity).rotationYawHead = this.rotationYawHead;
-				((EntityLivingBase)this.riddenByEntity).prevRotationYawHead = this.prevRotationYawHead;
-				((EntityLivingBase)this.riddenByEntity).renderYawOffset = this.renderYawOffset;
-			}
 		}
 		//server side
 		else {
-			//clear target if target is self/host
-			if(this.getTarget() == this || this.getTarget() == host) {
-				this.setAttackTarget(null);
-			}
-
 			//owner消失(通常是server restart)
 			if(this.getOwner() == null) {
 				this.setDead();
@@ -436,10 +434,12 @@ public class BasicEntityMount extends EntityCreature implements IShipMount {
 				if(this.ticksExisted % 10 == 0) {
 					this.setAttackTarget(this.host.getAttackTarget());
 					
-					//clear target if target dead
-					if(this.getAttackTarget() != null  && this.getAttackTarget().isDead) {
-						this.setAttackTarget(null);
-					}
+					//clear dead or same team target 
+	      			if(this.getAttackTarget() != null) {
+	      				if(!this.getAttackTarget().isEntityAlive() || EntityHelper.checkSameOwner(this, getAttackTarget())) {
+	      					this.setAttackTarget(null);
+	      				}
+	      			}
 				}
 			}
 		}
@@ -451,7 +451,7 @@ public class BasicEntityMount extends EntityCreature implements IShipMount {
 		float[] movez = ParticleHelper.rotateParticleByAxis(movSpeed, 0F, yaw, 1F);	//前後
 		float[] movex = ParticleHelper.rotateParticleByAxis(0F, movSpeed, yaw, 1F);	//左右
 		
-		if(this.onGround || this.isInWater() || this.handleLavaMovement()) {
+		if(this.onGround || EntityHelper.checkEntityIsInLiquid(this)) {
 			//horizontal move, 至少要4 tick才能加到最高速
 			//W (bit 1)
 			if((keyPressed & 1) > 0) {
@@ -500,7 +500,7 @@ public class BasicEntityMount extends EntityCreature implements IShipMount {
 			if(this.isCollidedHorizontally) {
 				this.motionY += 0.4D;
 			}
-			
+//			LogHelper.info("DEBUG : key press "+keyPressed);
 			//jump (bit 5)
 			if((keyPressed & 16) > 0) {
 				this.motionY += this.movSpeed * 2F;
@@ -568,15 +568,21 @@ public class BasicEntityMount extends EntityCreature implements IShipMount {
 			CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this, 4), point);
 		}
 	}
+	
+	@Override
+	public void setShipDepth(double par1) {
+		this.ShipDepth = par1;
+	}
 
 	@Override
-	public boolean getStateFlag(int flag) {
-		return this.host.getStateFlag(flag);
+	public boolean getStateFlag(int flag) {	
+		if(host != null) return this.host.getStateFlag(flag);
+		return false;
 	}
 
 	@Override
 	public void setStateFlag(int id, boolean flag) {
-		this.host.setStateFlag(id, flag);
+		if(host != null) this.host.setStateFlag(id, flag);
 	}
 
 	@Override
@@ -708,6 +714,9 @@ public class BasicEntityMount extends EntityCreature implements IShipMount {
         TargetPoint point0 = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
         CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 19, this.posX, this.posY+1.5D, this.posZ, distX, 1.2F, distZ, true), point0);
 
+        //發送攻擊flag給host, 設定其attack time
+		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this.host, 0, true), point0);
+		
 		//calc miss chance, if not miss, calc cri/multi hit
 		TargetPoint point = new TargetPoint(this.dimension, this.host.posX, this.host.posY, this.host.posZ, 64D);
         float missChance = 0.2F + 0.15F * (distSqrt / host.getStateFinal(ID.HIT)) - 0.001F * host.getShipLevel();
@@ -970,17 +979,20 @@ public class BasicEntityMount extends EntityCreature implements IShipMount {
 	
 	@Override
 	public float getMoveSpeed() {
-		return this.host.getStateFinal(ID.MOV);
+		if(host != null) return this.host.getStateFinal(ID.MOV);
+		return 0F;
 	}
 	
 	@Override
 	public int getAmmoLight() {
-		return this.host.getStateMinor(ID.N.NumAmmoLight);
+		if(host != null) return this.host.getStateMinor(ID.N.NumAmmoLight);
+		return 0;
 	}
 
 	@Override
 	public int getAmmoHeavy() {
-		return this.host.getStateMinor(ID.N.NumAmmoHeavy);
+		if(host != null) return this.host.getStateMinor(ID.N.NumAmmoHeavy);
+		return 0;
 	}
 
 	@Override
@@ -1055,28 +1067,36 @@ public class BasicEntityMount extends EntityCreature implements IShipMount {
 		super.updateAITasks();
         
         //若有水空path, 則更新ship navigator
-        if(!this.getShipNavigate().noPath()) {
+        if(shipNavigator != null && shipMoveHelper != null && !this.getShipNavigate().noPath()) {
+        	//若同時有官方ai的路徑, 則清除官方ai路徑
         	if(!this.getNavigator().noPath()) {
         		this.getNavigator().clearPathEntity();
         	}
-			//用particle顯示path point
-			if(this.ticksExisted % 20 == 0) {
-				ShipPathEntity pathtemp = this.getShipNavigate().getPath();
-				ShipPathPoint pointtemp;
-				
-				for(int i = 0; i < pathtemp.getCurrentPathLength(); i++) {
-					pointtemp = pathtemp.getPathPointFromIndex(i);
-					//發射者煙霧特效
-			        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
-					//路徑點畫紅色, 目標點畫綠色
-					if(i == pathtemp.getCurrentPathIndex()) {
-						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 16, pointtemp.xCoord, pointtemp.yCoord+0.5D, pointtemp.zCoord, 0F, 0F, 0F, false), point);
-					}
-					else {
-						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 18, pointtemp.xCoord, pointtemp.yCoord+0.5D, pointtemp.zCoord, 0F, 0F, 0F, false), point);
-					}
-				}
-			}
+        	
+        	//若坐下或綁住, 則清除路徑
+        	if(this.getLeashed()) {
+        		this.getShipNavigate().clearPathEntity();
+        	}
+        	else {
+    			//用particle顯示path point
+    			if(this.ticksExisted % 20 == 0) {
+    				ShipPathEntity pathtemp = this.getShipNavigate().getPath();
+    				ShipPathPoint pointtemp;
+    				
+    				for(int i = 0; i < pathtemp.getCurrentPathLength(); i++) {
+    					pointtemp = pathtemp.getPathPointFromIndex(i);
+    					//發射者煙霧特效
+    			        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
+    					//路徑點畫紅色, 目標點畫綠色
+    					if(i == pathtemp.getCurrentPathIndex()) {
+    						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 16, pointtemp.xCoord, pointtemp.yCoord+0.5D, pointtemp.zCoord, 0F, 0F, 0F, false), point);
+    					}
+    					else {
+    						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 18, pointtemp.xCoord, pointtemp.yCoord+0.5D, pointtemp.zCoord, 0F, 0F, 0F, false), point);
+    					}
+    				}
+    			}
+        	}
 
 			this.worldObj.theProfiler.startSection("ship navi");
 	        this.shipNavigator.onUpdateNavigation();
@@ -1115,6 +1135,25 @@ public class BasicEntityMount extends EntityCreature implements IShipMount {
 		return false;
 	}
 	
+	//get seat position: z, x, height
+	abstract public float[] getRidePos();
+	
+	//for clear rider process
+	public void setRiderNull() {
+		//清除座位2 entity
+		if(this.seat2 != null) {
+			seat2.setRiderNull();
+		}
+		//清除座騎主人
+		if(this.riddenByEntity != null) {
+			riddenByEntity.ridingEntity = null;
+			riddenByEntity = null;
+		}
+		//清除座位2上面坐的人
+		this.riddenByEntity2 = null;
+		this.setDead();
+	}
 
+	
 }
 

@@ -322,7 +322,6 @@ public class ModelBattleshipHime extends ModelBase {
 		this.GlowHead.rotateAngleZ = this.Head.rotateAngleZ;
     }
     
-    //Âù¸}²¾°Ê­pºâ
   	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {   
   		float angleX = MathHelper.cos(f2*0.08F);
   		float angleAdd1 = MathHelper.cos(f * 0.7F) * f1 * 0.7F;
@@ -482,6 +481,8 @@ public class ModelBattleshipHime extends ModelBase {
 		    	//Body
 		    	this.Head.rotateAngleX += 0.14F;
 			  	this.BodyMain.rotateAngleX = -0.4363F;
+			  	this.BoobL.rotateAngleX -= 0.25F;
+			  	this.BoobR.rotateAngleX -= 0.25F;
 			    //arm 
 			  	this.ArmLeft01.rotateAngleX = -0.3142F;
 			    this.ArmLeft01.rotateAngleZ = 0.3490F;
@@ -534,6 +535,8 @@ public class ModelBattleshipHime extends ModelBase {
 			    		//Body
 				    	this.Head.rotateAngleX += 0.14F;
 					  	this.BodyMain.rotateAngleX = -0.4363F;
+					  	this.BoobL.rotateAngleX -= 0.25F;
+					  	this.BoobR.rotateAngleX -= 0.25F;
 					    //arm 
 					  	this.ArmLeft01.rotateAngleX = -0.3142F;
 					    this.ArmLeft01.rotateAngleZ = 0.3490F;

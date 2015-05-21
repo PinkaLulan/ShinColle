@@ -92,6 +92,7 @@ item.shincolle:shipegg11.name=Heavy Cruiser Ri-Class
 item.shincolle:shipegg14.name=Standard Carrier Wo-Class
 item.shincolle:shipegg16.name=Battleship Ta-Class
 item.shincolle:shipegg17.name=Battleship Re-Class
+item.shincolle:shipegg23.name=Airfield Princess
 item.shincolle:shipegg28.name=Battleship Princess
 item.shincolle:shipegg38.name=Destroyer Shimakaze
 item.shincolle:shipegg238.name=Destroyer Shimakaze Kai
@@ -99,8 +100,11 @@ item.shincolle:shipegg39.name=Battleship Nagato
 item.shincolle:shipegg239.name=Battleship Nagato Kai
 item.shincolle:shipegg40.name=Submarine U-511
 item.shincolle:shipegg240.name=Submarine U-511 Kai
+item.shincolle:shipegg41.name=Submarine Ro-500
+item.shincolle:shipegg241.name=Submarine Ro-500 (Mob)
 
 # Entity
+entity.shincolle.EntityAirfieldHime.name=Airfield Princess
 entity.shincolle.EntityAirplane.name=Abyssal Fighter
 entity.shincolle.EntityAirplaneTakoyaki.name=Abyssal Avenger Torpedo Bomber
 entity.shincolle.EntityBattleshipHime.name=Battleship Princess
@@ -116,11 +120,14 @@ entity.shincolle.EntityDestroyerRo.name=Destroyer Ro-Class
 entity.shincolle.EntityDestroyerShimakaze.name=Destroyer Shimakaze
 entity.shincolle.EntityDestroyerShimakazeBoss.name=Destroyer Shimakaze Kai
 entity.shincolle.EntityHeavyCruiserRi.name=Heavy Cruiser Ri-Class
+entity.shincolle.EntityMountAfH.name=Airbase
 entity.shincolle.EntityMountBaH.name=Sanrensouhou
 entity.shincolle.EntityMountSeat2.name=Seat2
 entity.shincolle.EntityRensouhou.name=Rensouhou
 entity.shincolle.EntityRensouhouBoss.name=Rensouhou Kai
 entity.shincolle.EntityRensouhouS.name=Shinkei Rensouhou
+entity.shincolle.EntitySubmRo500.name=Submarine Ro-500
+entity.shincolle.EntitySubmRo500Mob.name=Submarine Ro-500
 entity.shincolle.EntitySubmU511.name=Submarine U-511
 entity.shincolle.EntitySubmU511Mob.name=Submarine U-511 Kai
 
@@ -181,5 +188,5 @@ gui.shincolle:ringText=Marriages
 gui.shincolle:eggText=Require Level
 
 # Chat message
-chat.shincolle:bossshimakaze=Destroyer Shimakaze Kai Walks on the Water!
-chat.shincolle:bossnagato=Battleship Nagato Kai Walks on the Water!
+chat.shincolle:bossspawn1=A Fleet Walks on the Water!
+chat.shincolle:bossspawn2=Detecte An Invasion Fleet!

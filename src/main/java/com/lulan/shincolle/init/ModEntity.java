@@ -1,14 +1,10 @@
 package com.lulan.shincolle.init;
 
 import net.minecraft.entity.EntityList;
-import net.minecraft.entity.EnumCreatureType;
-import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraftforge.common.BiomeDictionary;
 
-import com.google.common.base.Predicates;
-import com.google.common.collect.Iterators;
 import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.entity.EntityAbyssMissile;
+import com.lulan.shincolle.entity.EntityAirfieldHime;
 import com.lulan.shincolle.entity.EntityAirplane;
 import com.lulan.shincolle.entity.EntityAirplaneTakoyaki;
 import com.lulan.shincolle.entity.EntityBattleshipHime;
@@ -24,11 +20,14 @@ import com.lulan.shincolle.entity.EntityDestroyerRo;
 import com.lulan.shincolle.entity.EntityDestroyerShimakaze;
 import com.lulan.shincolle.entity.EntityDestroyerShimakazeBoss;
 import com.lulan.shincolle.entity.EntityHeavyCruiserRi;
+import com.lulan.shincolle.entity.EntityMountAfH;
 import com.lulan.shincolle.entity.EntityMountBaH;
 import com.lulan.shincolle.entity.EntityMountSeat;
 import com.lulan.shincolle.entity.EntityRensouhou;
 import com.lulan.shincolle.entity.EntityRensouhouBoss;
 import com.lulan.shincolle.entity.EntityRensouhouS;
+import com.lulan.shincolle.entity.EntitySubmRo500;
+import com.lulan.shincolle.entity.EntitySubmRo500Mob;
 import com.lulan.shincolle.entity.EntitySubmU511;
 import com.lulan.shincolle.entity.EntitySubmU511Mob;
 import com.lulan.shincolle.entity.renderentity.EntityRenderLargeShipyard;
@@ -65,6 +64,7 @@ public class ModEntity {
 //		createEntityGlobalID(EntityTest.class, "EntityTest", 0x20FF45, 0x0040FF);
 		
 		//register ship entity
+		createEntity(EntityAirfieldHime.class, "EntityAirfieldHime", modEntityID++);
 		createEntity(EntityBattleshipHime.class, "EntityBattleshipHime", modEntityID++);
 		createEntity(EntityBattleshipNGT.class, "EntityBattleshipNGT", modEntityID++);
 		createEntity(EntityBattleshipNGTBoss.class, "EntityBattleshipNGTBoss", modEntityID++);
@@ -81,10 +81,13 @@ public class ModEntity {
 		createEntity(EntityRensouhou.class, "EntityRensouhou", modEntityID++);
 		createEntity(EntityRensouhouBoss.class, "EntityRensouhouBoss", modEntityID++);
 		createEntity(EntityRensouhouS.class, "EntityRensouhouS", modEntityID++);
+		createEntity(EntitySubmRo500.class, "EntitySubmRo500", modEntityID++);
+		createEntity(EntitySubmRo500Mob.class, "EntitySubmRo500Mob", modEntityID++);
 		createEntity(EntitySubmU511.class, "EntitySubmU511", modEntityID++);
 		createEntity(EntitySubmU511Mob.class, "EntitySubmU511Mob", modEntityID++);
 		
 		//register mount entity
+		createEntity(EntityMountAfH.class, "EntityMountAfH", modEntityID++);
 		createEntity(EntityMountBaH.class, "EntityMountBaH", modEntityID++);
 		createEntity(EntityMountSeat.class, "EntityMountSeat2", modEntityID++);
 		

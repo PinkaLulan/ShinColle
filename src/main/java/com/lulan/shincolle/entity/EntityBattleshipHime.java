@@ -24,7 +24,6 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -33,7 +32,6 @@ public class EntityBattleshipHime extends BasicEntityShip {
 	public EntityBattleshipHime(World world) {
 		super(world);
 		this.setSize(0.8F, 1.6F);
-//		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityBattleshipHime.name"));
 		this.ShipType = ID.ShipType.HIME;
 		this.ShipID = ID.S_BattleshipHime;
 		this.ModelPos = new float[] {-6F, 15F, 0F, 40F};
@@ -101,7 +99,13 @@ public class EntityBattleshipHime extends BasicEntityShip {
   	  	  		else {
   	  	  			//cancel riding
   	  	  			if(this.isRiding() && this.ridingEntity instanceof EntityMountBaH) {
-  	  	  				this.ridingEntity.setDead();
+  	  	  				EntityMountBaH mount = (EntityMountBaH) this.ridingEntity;
+  	  	  				
+  	  	  				if(mount.seat2 != null ) {
+  	  	  					mount.seat2.setRiderNull();	
+  	  	  				}
+  	  	  				
+  	  	  				mount.setRiderNull();
   	  	  				this.ridingEntity = null;
   	  	  			}
   	  	  		}

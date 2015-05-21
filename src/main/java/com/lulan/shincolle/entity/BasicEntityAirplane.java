@@ -74,7 +74,7 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipA
             	if((target2 instanceof EntityMob || target2 instanceof EntitySlime ||
             	   target2 instanceof EntityBat || target2 instanceof EntityDragon ||
             	   target2 instanceof EntityFlying || target2 instanceof EntityWaterMob) &&
-            	   !target2.isDead) {
+            	   target2.isEntityAlive()) {
             		return true;
             	}
             	return false;
@@ -231,15 +231,6 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipA
 				//歸宅
 				if(this.backHome && !this.isDead) {
 					if(this.getDistanceToEntity(this.getOwner()) > 2.7F) {
-//						double speed = this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).getBaseValue();
-//						double distX = this.getOwner().posX - this.posX;
-//						double distY = this.getOwner().posY + 2.3D - this.posY;
-//						double distZ = this.getOwner().posZ - this.posZ;
-//						double distSqrt = MathHelper.sqrt_double(distX*distX + distY*distY + distZ*distZ);
-//						
-//						this.motionX = distX / distSqrt * speed * 1.0D;
-//						this.motionY = distY / distSqrt * speed * 1.0D;
-//						this.motionZ = distZ / distSqrt * speed * 1.0D;
 						this.getShipNavigate().tryMoveToXYZ(this.getOwner().posX, this.getOwner().posY + 2.3D, this.getOwner().posZ, 1D);
 					}
 					else {	//歸還剩餘彈藥 (但是grudge不歸還)
@@ -468,7 +459,11 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipA
 		super.updateAITasks();
         
         //若有水空path, 則更新ship navigator
-        if(!this.getShipNavigate().noPath()) {
+        if(shipNavigator != null && shipMoveHelper != null && !this.getShipNavigate().noPath()) {
+        	//若同時有官方ai的路徑, 則清除官方ai路徑
+        	if(!this.getNavigator().noPath()) {
+        		this.getNavigator().clearPathEntity();
+        	}
 			//用particle顯示path point
 			if(this.ticksExisted % 20 == 0) {
 				ShipPathEntity pathtemp = this.getShipNavigate().getPath();

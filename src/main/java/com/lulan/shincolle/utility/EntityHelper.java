@@ -6,6 +6,7 @@ import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityTameable;
@@ -21,11 +22,13 @@ import net.minecraftforge.fluids.BlockFluidBase;
 import net.minecraftforge.fluids.IFluidBlock;
 
 import com.lulan.shincolle.entity.BasicEntityAirplane;
+import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.EntityRensouhou;
 import com.lulan.shincolle.entity.EntityRensouhouS;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
 import com.lulan.shincolle.entity.IShipAttack;
+import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
@@ -90,48 +93,72 @@ public class EntityHelper {
 		return false;
 	}
 	
+	//replace isInWater, check water block with NO extend AABB
+	public static void checkDepth(IShipFloating entity) {
+		Entity entityCD = (Entity) entity;
+		Block BlockCheck = checkBlockWithOffset(entityCD, 0);
+		double depth = 0;
+		
+		if(EntityHelper.checkBlockIsLiquid(BlockCheck)) {
+			depth = 1;
+
+			for(int i = 1; entityCD.posY + i < 255D; i++) {
+				BlockCheck = checkBlockWithOffset(entityCD, i);
+				
+				if(EntityHelper.checkBlockIsLiquid(BlockCheck)) {
+					depth++;
+				}
+				else {	//最上面碰到空氣類方塊才可以上浮, 否則不上浮
+					if(BlockCheck.getMaterial() == Material.air) {
+						entity.setStateFlag(ID.F.CanFloatUp, true);
+					}
+					else {
+						entity.setStateFlag(ID.F.CanFloatUp, false);
+					}
+					break;
+				}
+			}		
+			depth = depth - (double)(entityCD.posY - (int)entityCD.posY);
+		}
+		else {
+			depth = 0;	
+			entity.setStateFlag(ID.F.CanFloatUp, false);
+		}
+		
+		entity.setShipDepth(depth);
+	}
+	
+	/**get block from entity position with offset*/
+	public static Block checkBlockWithOffset(Entity entity, int par1) {
+		int blockX = MathHelper.floor_double(entity.posX);
+	    int blockY = MathHelper.floor_double(entity.boundingBox.minY);
+	    int blockZ = MathHelper.floor_double(entity.posZ);
+
+	    return entity.worldObj.getBlock(blockX, blockY + par1, blockZ);    
+	}
+	
 	/**get owner from entity */
 	public static EntityLivingBase getOwnerFromEntity(EntityLivingBase host) {
 		//get owner from target
+		//若為玩家, 則直接回傳玩家
 		if(host instanceof EntityPlayer) {
 			return host;
 		}
+		//若為寵物, 則回傳寵物owner
 		else if(host instanceof EntityTameable) {
 			return ((EntityTameable)host).getOwner();
 		}
-		else if(host instanceof BasicEntityAirplane) {
-			//先取得airplane的owner(為一種Ship), 再取得該ship的owner(為一種EntityPlayer)
-			EntityLivingBase owner = ((BasicEntityAirplane)host).getOwner();
+		//若為飛機,座騎,召喚物, 則取得owner的owner
+		else if(host instanceof BasicEntityAirplane || host instanceof BasicEntityMount ||
+				host instanceof EntityRensouhou || host instanceof EntityRensouhouS) {
+			//先取得airplane的owner(為一種ship), 再取得該ship的owner(為一種EntityPlayer)
+			EntityLivingBase owner = ((IShipAttack)host).getOwner();
 			
 			if(owner != null) {
-				return ((BasicEntityShip)owner).getOwner();
-			}
-			else {
-				return null;
+				return ((IShipAttack)owner).getOwner();
 			}
 		}
-		else if(host instanceof EntityRensouhou) {
-			//先取得連裝砲的owner(為一種Ship), 再取得該ship的owner(為一種EntityPlayer)
-			EntityLivingBase owner = ((EntityRensouhou)host).getOwner();
-			
-			if(owner != null) {
-				return ((BasicEntityShip)owner).getOwner();
-			}
-			else {
-				return null;
-			}
-		}
-		else if(host instanceof EntityRensouhouS) {
-			//先取得連裝砲的owner(為一種Ship), 再取得該ship的owner(為一種EntityPlayer)
-			EntityLivingBase owner = ((EntityRensouhouS)host).getOwner();
-			
-			if(owner != null) {
-				return ((BasicEntityShip)owner).getOwner();
-			}
-			else {
-				return null;
-			}
-		}
+		//若為其他用IshipAttack的, 直接取owner
 		else if(host instanceof IShipAttack) {
 			return ((IShipAttack) host).getOwner();
 		}

@@ -703,7 +703,11 @@ public class EntityRensouhou extends EntityLiving implements IShipEmotion, IShip
 		super.updateAITasks();
         
         //若有水空path, 則更新ship navigator
-        if(!this.getShipNavigate().noPath()) {
+        if(shipNavigator != null && shipMoveHelper != null && !this.getShipNavigate().noPath()) {
+        	//若同時有官方ai的路徑, 則清除官方ai路徑
+        	if(!this.getNavigator().noPath()) {
+        		this.getNavigator().clearPathEntity();
+        	}
 			//用particle顯示path point
 			if(this.ticksExisted % 20 == 0) {
 				ShipPathEntity pathtemp = this.getShipNavigate().getPath();

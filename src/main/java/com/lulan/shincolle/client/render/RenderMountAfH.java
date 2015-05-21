@@ -7,16 +7,12 @@ import net.minecraft.util.ResourceLocation;
 
 import com.lulan.shincolle.reference.Reference;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-@SideOnly(Side.CLIENT)
-public class RenderBattleshipHime extends RenderLiving {
+public class RenderMountAfH extends RenderLiving {
 	
 	//∂Kπœ¿…∏ÙÆ|
-	private static final ResourceLocation mobTextures = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityBattleshipHime.png");
+	private static final ResourceLocation mobTextures = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityMountAfH.png");
 
-	public RenderBattleshipHime(ModelBase par1, float par2) {
+	public RenderMountAfH(ModelBase par1, float par2) {
 		super(par1, par2);	
 	}
 
@@ -26,7 +22,5 @@ public class RenderBattleshipHime extends RenderLiving {
 	}
 
 }
-
-
 
 

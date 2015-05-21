@@ -313,6 +313,12 @@
         	"waka_death02",
         	"waka_death03"
         ]
+    },
+    
+    "ship-garuru": {
+        "category": "hostile", "replace": true, "sounds": [
+        	"garuru"
+        ]
     }
     
 }

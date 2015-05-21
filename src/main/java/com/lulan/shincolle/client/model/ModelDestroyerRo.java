@@ -4,6 +4,7 @@ import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.entity.EntityDestroyerI;
 import com.lulan.shincolle.entity.EntityDestroyerRo;
+import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.reference.ID;
 
 import net.minecraft.client.model.ModelBase;
@@ -423,7 +424,13 @@ public class ModelDestroyerRo extends ModelBase {
     		if(ent.getStartEmotion() <= 0) setFace(1);
     		break;
     	default:						//normal face
-    		if(ent.getStartEmotion() <= 0) setFace(0); 			    //reset face to 0
+    		//reset face to 0 or blink if emotion time > 0
+    		if(ent.getStartEmotion() <= 0) {
+    			setFace(0);
+    		}
+    		else {
+    			EmotionBlink(ent);
+    		}
     		//roll emotion (3 times) every 6 sec
     		//1 tick in entity = 3 tick in model class (20 vs 60 fps)
     		if(ent.ticksExisted % 120 == 0) {  			
@@ -437,14 +444,15 @@ public class ModelDestroyerRo extends ModelBase {
     }
 
 	//眨眼動作, this emotion is CLIENT ONLY, no sync packet required
-	private void EmotionBlink(EntityDestroyerRo ent) {
-		if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.NORMAL) {	//要在沒表情狀態才做表情		
-			ent.setStartEmotion(ent.ticksExisted);		//表情開始時間
-			ent.setStateEmotion(ID.S.Emotion, ID.Emotion.BLINK, false);	//標記表情為blink
-		}
-		
-		int EmoTime = ent.ticksExisted - ent.getStartEmotion();
- 		
+    private void EmotionBlink(IShipEmotion ent) {
+  		if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.NORMAL) {	//要在沒表情狀態才做表情		
+  			ent.setStartEmotion(ent.getTickExisted());		//表情開始時間
+  			ent.setStateEmotion(ID.S.Emotion, ID.Emotion.BLINK, false);	//標記表情為blink
+  			setFace(1);
+  		}
+  		
+  		int EmoTime = ent.getTickExisted() - ent.getStartEmotion();
+    	 		
     	if(EmoTime > 46) {	//reset face
     		setFace(0);
 			ent.setStateEmotion(ID.S.Emotion, ID.Emotion.NORMAL, false);
@@ -456,10 +464,10 @@ public class ModelDestroyerRo extends ModelBase {
     	else if(EmoTime > 25) {
     		setFace(0);
     	}
-    	else if(EmoTime > 1) {
+    	else if(EmoTime > -1) {
     		setFace(1);
     	}
-	}
+  	}
 	
 	//設定顯示的臉型
 	private void setFace(int emo) {

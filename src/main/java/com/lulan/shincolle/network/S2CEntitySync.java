@@ -3,13 +3,11 @@ package com.lulan.shincolle.network;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.EntityMountSeat;
 import com.lulan.shincolle.entity.IShipEmotion;
-import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
@@ -28,6 +26,7 @@ public class S2CEntitySync implements IMessage {
 	
 	private BasicEntityShip entity;
 	private EntityLiving entity2;
+	private EntityMountSeat entitySeat;
 	private IShipEmotion entity2e;
 	private int entityID;
 	private int type;
@@ -45,7 +44,7 @@ public class S2CEntitySync implements IMessage {
         this.type = type;
     }
 	
-	//for non ship entity sync
+	//for mount entity sync
 	//type 4: all emotion
 	//type 5: player mount packet
 	public S2CEntitySync(IShipEmotion entity, int type) {
@@ -54,19 +53,29 @@ public class S2CEntitySync implements IMessage {
         this.type = type;
     }
 	
+	//for mount seat sync
+	//type 6: player mount packet, set player or clear player on the seat
+	public S2CEntitySync(EntityMountSeat entity, int type) {
+        this.entitySeat= entity;
+        this.type = type;
+    }
+	
 	//接收packet方法 (CLIENT SIDE)
 	@Override
 	public void fromBytes(ByteBuf buf) {
 		//get type and entityID
 		this.type = buf.readByte();
-		this.entityID = buf.readInt();
-		this.entity2 = (EntityLiving) EntityHelper.getEntityByID(entityID, 0, true);
 		
-		if(entity2 instanceof BasicEntityShip) {
-			this.entity = (BasicEntityShip) this.entity2;
-		}
-		else {
-			this.entity2e = (IShipEmotion) this.entity2;
+		if(this.type < 6) {
+			this.entityID = buf.readInt();
+			this.entity2 = (EntityLiving) EntityHelper.getEntityByID(entityID, 0, true);
+			
+			if(entity2 instanceof BasicEntityShip) {
+				this.entity = (BasicEntityShip) this.entity2;
+			}
+			else {
+				this.entity2e = (IShipEmotion) this.entity2;
+			}
 		}
 
 		if(entity2 != null) {
@@ -175,7 +184,7 @@ public class S2CEntitySync implements IMessage {
 					entity2e.setStateEmotion(ID.S.Phase, buf.readByte(), false);
 				}
 				break;
-			case 5: //IShipEmotion player mount
+			case 5: //IShipEmotion player mount sync
 				{
 					int playerId = buf.readInt();
 					int seatId = buf.readInt();
@@ -184,12 +193,41 @@ public class S2CEntitySync implements IMessage {
 					EntityMountSeat seat = (EntityMountSeat) EntityHelper.getEntityByID(seatId, 0, true);
 					
 					LogHelper.info("DEBUG : player mount packet: "+player+" "+seat);
-					player.mountEntity(seat);
-					player.ridingEntity = seat;
-					seat.riddenByEntity = player;
-					seat.host = (BasicEntityMount) entity2;
-					seat.host.seat2 = seat;
-					seat.host.setStateEmotion(ID.S.Emotion, 1, false);
+					if(player != null && seat != null) {
+						player.mountEntity(seat);
+						player.ridingEntity = seat;
+						seat.riddenByEntity = player;
+						seat.host = (BasicEntityMount) entity2;
+						seat.host.seat2 = seat;
+						seat.host.setStateEmotion(ID.S.Emotion, 1, false);
+					}	
+				}
+				break;
+			case 6:	//seat sync
+				{
+					int seatId = buf.readInt();
+					int playerId = buf.readInt();
+					int hostId = buf.readInt();
+					
+					EntityMountSeat seat = (EntityMountSeat) EntityHelper.getEntityByID(seatId, 0, true);
+					
+					if(playerId <= 0) {
+						if(seat != null) {
+							seat.setRiderNull();
+						}
+					}
+					else {
+						EntityPlayer player = (EntityPlayer) EntityHelper.getEntityByID(playerId, 0, true);
+						BasicEntityMount mount = (BasicEntityMount) EntityHelper.getEntityByID(hostId, 0, true);
+						
+						if(seat != null && mount != null) {
+							seat.host = mount;
+							seat.riddenByEntity = player;
+							seat.host.seat2 = seat;
+							seat.host.riddenByEntity2 = player;
+							seat.host.setStateEmotion(ID.S.Emotion, 1, false);
+						}
+					}
 				}
 				break;
 			}
@@ -324,6 +362,22 @@ public class S2CEntitySync implements IMessage {
 				buf.writeInt(this.entity2.getEntityId());
 				buf.writeInt(((BasicEntityMount)this.entity2e).riddenByEntity2.getEntityId());
 				buf.writeInt(((BasicEntityMount)this.entity2e).seat2.getEntityId());
+			}
+			break;
+		case 6:	//IShipEmotion player mount packet
+			{
+				buf.writeByte(6);	//type 1
+				
+				if(entitySeat.riddenByEntity == null || entitySeat.host.seat2 == null) {
+					buf.writeInt(this.entitySeat.getEntityId());
+					buf.writeInt(-1);
+					buf.writeInt(-1);
+				}
+				else {
+					buf.writeInt(this.entitySeat.getEntityId());
+					buf.writeInt(this.entitySeat.riddenByEntity.getEntityId());
+					buf.writeInt(this.entitySeat.host.getEntityId());
+				}
 			}
 			break;
 		}

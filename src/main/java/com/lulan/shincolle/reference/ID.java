@@ -155,9 +155,9 @@ public class ID {
 		public static final byte FORTRESS = 11;			//浮游要塞
 	}
 	
-	//Type ID: ship state
+	/**Type ID: ship state*/
 	public static final class State {
-		//for ID.S.State
+		/**for ID.S.State*/
 		public static final byte NORMAL = 0;		//無狀態
 		public static final byte EQUIP00 = 20;		//艤裝狀態0
 		public static final byte EQUIP01 = 30;		//艤裝狀態1
@@ -165,7 +165,7 @@ public class ID {
 		public static final byte EQUIP03 = 50;		//艤裝狀態3
 		public static final byte EQUIP04 = 60;		//艤裝狀態4
 		public static final byte EQUIP05 = 70;		//艤裝狀態5
-		//for ID.S.State2
+		/**for ID.S.State2*/
 		public static final byte NORMAL_2 = 0;		//無狀態
 		public static final byte EQUIP00_2 = 1;		//艤裝狀態0
 		public static final byte EQUIP01_2 = 2;		//艤裝狀態1
@@ -290,6 +290,7 @@ public class ID {
 	public static final byte S_DestroyerShimakaze = 36;
 	public static final byte S_BattleshipNagato = 37;
 	public static final byte S_SubmarineU511 = 38;
+	public static final byte S_SubmarineRo500 = 39;
 	
 		
 }

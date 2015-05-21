@@ -11,12 +11,12 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RenderBattleshipHime extends RenderLiving {
+public class RenderAirfieldHime extends RenderLiving {
 	
 	//∂Kπœ¿…∏ÙÆ|
-	private static final ResourceLocation mobTextures = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityBattleshipHime.png");
+	private static final ResourceLocation mobTextures = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityAirfieldHime.png");
 
-	public RenderBattleshipHime(ModelBase par1, float par2) {
+	public RenderAirfieldHime(ModelBase par1, float par2) {
 		super(par1, par2);	
 	}
 
@@ -26,6 +26,7 @@ public class RenderBattleshipHime extends RenderLiving {
 	}
 
 }
+
 
 
 

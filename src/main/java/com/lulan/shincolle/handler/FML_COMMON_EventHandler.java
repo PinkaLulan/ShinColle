@@ -3,10 +3,10 @@ package com.lulan.shincolle.handler;
 import java.util.List;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
@@ -17,11 +17,13 @@ import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.BiomeDictionary;
 
 import com.lulan.shincolle.entity.BasicEntityMount;
-import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.BasicEntityShipBoss;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.EntityBattleshipNGTBoss;
 import com.lulan.shincolle.entity.EntityDestroyerShimakazeBoss;
 import com.lulan.shincolle.entity.EntityMountSeat;
+import com.lulan.shincolle.entity.EntitySubmRo500Mob;
+import com.lulan.shincolle.entity.EntitySubmU511Mob;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.network.C2SInputPackets;
@@ -29,7 +31,6 @@ import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
-import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -51,7 +52,6 @@ public class FML_COMMON_EventHandler {
 	public void onPlayerTick(PlayerTickEvent event) {
 		if(event.phase == Phase.START) {
 			ExtendPlayerProps extProps = (ExtendPlayerProps) event.player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
-//LogHelper.info("DEBUG : player ride "+event.player.worldObj.isRemote+" "+event.player.ridingEntity); 
 			//spawn boss in ocean biome, server side
 			if(extProps != null && !event.player.worldObj.isRemote) {
 				int blockX = (int) event.player.posX;
@@ -66,13 +66,14 @@ public class FML_COMMON_EventHandler {
 				
 				//cooldown = 0, roll spawn
 				if(extProps.getBossCooldown() <= 0) {
-					extProps.setBossCooldown(4800);
+					extProps.setBossCooldown(ConfigHandler.bossCooldown);
 					
 					int rolli = event.player.getRNG().nextInt(4);
 					LogHelper.info("DEBUG : spawn boss: roll spawn "+rolli);
 					if(rolli == 0) {
 						//尋找10次地點, 找到一個可生成地點即生成後跳出loop
-						for(int i = 0; i < 10; i++) {
+						int i;
+						for(i = 0; i < 10; i++) {
 							int offX = event.player.getRNG().nextInt(32) + 32;
 							int offZ = event.player.getRNG().nextInt(32) + 32;
 							
@@ -105,40 +106,72 @@ public class FML_COMMON_EventHandler {
 							
 							LogHelper.info("DEBUG : spawn boss: get block "+blockY.getLocalizedName()+" "+spawnX+" "+spawnY+" "+spawnZ);
 							//生成在水面
-							if(blockY == Blocks.water) {
+							if(blockY.getMaterial() == Material.water) {
 								//check 64x64 range
 								AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(spawnX-64D, spawnY-64D, spawnZ-64D, spawnX+64D, spawnY+64D, spawnZ+64D);
-								List listBoss = event.player.worldObj.getEntitiesWithinAABB(BasicEntityShipHostile.class, aabb);
+								List listBoss = event.player.worldObj.getEntitiesWithinAABB(BasicEntityShipBoss.class, aabb);
 
 								LogHelper.info("DEBUG : spawn boss: check existed boss "+listBoss.size());
 								
-								//list低於1個表示沒有找到其他boss
-					            if(listBoss.size() < 1) {
+								//若96x96x96範圍內boss數量1隻以下, 則判定可以生成boss
+					            if(listBoss.size() < 2) {
+					            	/**艦隊組成:
+					            	 * boss x2 + destroyer x4
+					            	 * boss id: 0:Nagato 1:Shimakaze
+					            	 * mob id: 0:U511 1:Ro500
+					            	 */
+					            	//roll生成mob
+					            	int[] spawnList = new int[] {0,0,0,0,0,0};
+					            	spawnList[0] = event.player.worldObj.rand.nextInt(2);	//boss 1
+					            	spawnList[1] = event.player.worldObj.rand.nextInt(2);	//boss 2
+					            	spawnList[2] = event.player.worldObj.rand.nextInt(2);	//mob 1
+					            	spawnList[3] = event.player.worldObj.rand.nextInt(2);	//mob 2
+					            	spawnList[4] = event.player.worldObj.rand.nextInt(2);	//mob 3
+					            	spawnList[5] = event.player.worldObj.rand.nextInt(2);	//mob 4
+					            	
+					            	//new生成mob
+					            	BasicEntityShipHostile[] spawnMobs = new BasicEntityShipHostile[6];
+					            	//new bosses
+					            	for(i = 0; i < 2; i++) {
+					            		switch(spawnList[i]) {
+					            		case 1:
+					            			spawnMobs[i] = new EntityDestroyerShimakazeBoss(event.player.worldObj);
+					            			break;
+					            		default:
+					            			spawnMobs[i] = new EntityBattleshipNGTBoss(event.player.worldObj);
+					            			break;
+					            		}
+					            	}	
+					            	//new mobs
+					            	for(i = 2; i < 6; i++) {
+					            		switch(spawnList[i]) {
+					            		case 1:
+					            			spawnMobs[i] = new EntitySubmRo500Mob(event.player.worldObj);
+					            			break;
+					            		default:
+					            			spawnMobs[i] = new EntitySubmU511Mob(event.player.worldObj);
+					            			break;
+					            		}
+					            	}
+					            	//set mob position and spawn to the world
+					            	for(i = 0; i < 6; i++) {
+					            		spawnMobs[i].setPosition(spawnX, spawnY, spawnZ);
+					            		event.player.worldObj.spawnEntityInWorld(spawnMobs[i]);
+					            	}
+					            	//發出spawn公告
+					            	String spawnText = null;
+					            	if(event.player.worldObj.rand.nextInt(2) == 0) {
+					            		spawnText = StatCollector.translateToLocal("chat.shincolle:bossspawn1");
+					            	}
+					            	else {
+					            		spawnText = StatCollector.translateToLocal("chat.shincolle:bossspawn2");
+					            	}
+					            	
 					            	ServerProxy.getServer().getConfigurationManager().sendChatMsg(
-					            			new ChatComponentText(
-					            					EnumChatFormatting.YELLOW+
-					            					StatCollector.translateToLocal("chat.shincolle:bossshimakaze")+
-					            					EnumChatFormatting.AQUA+
-					            					" "+spawnX+" "+spawnY+" "+spawnZ));
-					            	LogHelper.info("DEBUG : spawn boss: Shimakaze "+" "+spawnX+" "+spawnY+" "+spawnZ);
-									EntityDestroyerShimakazeBoss boss = new EntityDestroyerShimakazeBoss(event.player.worldObj);
-									boss.setPosition(spawnX, spawnY, spawnZ);
-									event.player.worldObj.spawnEntityInWorld(boss);
-									
-									//spawn boss: Nagato (33%)
-									if(event.player.getRNG().nextInt(3) == 0) {
-										ServerProxy.getServer().getConfigurationManager().sendChatMsg(
-						            			new ChatComponentText(
-						            					EnumChatFormatting.RED+
-						            					StatCollector.translateToLocal("chat.shincolle:bossnagato")+
-						            					EnumChatFormatting.AQUA+
-						            					" "+spawnX+" "+spawnY+" "+spawnZ));
-						            	LogHelper.info("DEBUG : spawn boss: Nagato "+" "+spawnX+" "+spawnY+" "+spawnZ);
-										EntityBattleshipNGTBoss boss2 = new EntityBattleshipNGTBoss(event.player.worldObj);
-										boss2.setPosition(spawnX, spawnY, spawnZ);
-										event.player.worldObj.spawnEntityInWorld(boss2);
-									}
-									
+					            			new ChatComponentText(EnumChatFormatting.YELLOW+spawnText+
+					            					EnumChatFormatting.AQUA+" "+spawnX+" "+spawnY+" "+spawnZ));
+					            	
+					            	LogHelper.info("DEBUG : spawn fleet "+spawnX+" "+spawnY+" "+spawnZ);
 									break;
 					            }	
 							}

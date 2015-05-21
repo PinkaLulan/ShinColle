@@ -245,6 +245,7 @@ public class EntityAbyssMissile extends Entity {
     		//沒有host資料, 消除此飛彈
     		if(this.hostEntity == null) {
     			this.setDead();	//直接抹消, 不觸發爆炸
+    			return;
     		}
     		
     		//該位置碰到方塊, 則設定爆炸 (方法1: 直接用座標找方塊) 此方法由於把座標取int, 很多時候看起來有撞到但是依然抓不到方塊
@@ -277,7 +278,8 @@ public class EntityAbyssMissile extends Entity {
                 	/**不會對自己主人觸發爆炸
             		 * isEntityEqual() is NOT working
             		 * use entity id to check entity  */
-                	if(hitEntity.canBeCollidedWith() && this.ticksExisted > 10 && 
+//                	if(hitEntity.canBeCollidedWith() && this.ticksExisted > 10 &&
+                	if(hitEntity.canBeCollidedWith() && 
                 	   isNotHost(hitEntity.getEntityId()) && !EntityHelper.checkSameOwner((EntityLivingBase) this.hostEntity, hitEntity)) {
                 		break;	//get target entity
                 	}
@@ -306,7 +308,7 @@ public class EntityAbyssMissile extends Entity {
 
     //check entity is not host itself
     private boolean isNotHost(int eid) {
-		if(((EntityLivingBase)hostEntity).getEntityId() == eid) {
+		if(hostEntity != null && ((EntityLivingBase)hostEntity).getEntityId() == eid) {
 			return false;
 		}
 		else if(hostEntity4 != null && hostEntity4.getOwner() != null) {
@@ -382,7 +384,7 @@ public class EntityAbyssMissile extends Entity {
                 	hitEntity = (EntityLivingBase)hitList.get(i);
                 	
                 	//目標不能是自己 or 主人
-                	if(hitEntity.canBeCollidedWith() && this.ticksExisted > 10 && 
+                	if(hitEntity.canBeCollidedWith() && 
                 	   isNotHost(hitEntity.getEntityId())) {
 
             			//calc critical, only for type:ship

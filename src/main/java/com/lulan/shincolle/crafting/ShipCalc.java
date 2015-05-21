@@ -185,6 +185,10 @@ public class ShipCalc {
     		shipList.add(new int[] {ID.S_CarrierWO, 300 + material[3] / 4});
     		shipList.add(new int[] {ID.S_BattleshipTA, 300 + material[2] / 4});
     		
+    		if(totalMats >= 1000) {
+    			shipList.add(new int[] {ID.S_AirfieldHime, 250 + material[0] / 4});
+    		}
+    		
     		if(totalMats >= 1600) {		//>1600 hime/re-class
     			shipList.add(new int[] {ID.S_BattleshipRE, 100 + material[2] / 4});
     			shipList.add(new int[] {ID.S_BattleshipHime, material[2] / 5});
@@ -242,6 +246,8 @@ public class ShipCalc {
   			return "shincolle.EntityBattleshipTa";
   		case ID.S_BattleshipRE:
   			return "shincolle.EntityBattleshipRe";
+  		case ID.S_AirfieldHime:
+  			return "shincolle.EntityAirfieldHime";
   		case ID.S_BattleshipHime:
   			return "shincolle.EntityBattleshipHime";
   		case ID.S_DestroyerShimakaze:
@@ -256,6 +262,10 @@ public class ShipCalc {
   			return "shincolle.EntitySubmU511";
   		case ID.S_SubmarineU511+200:
   			return "shincolle.EntitySubmU511Mob";
+  		case ID.S_SubmarineRo500:
+  			return "shincolle.EntitySubmRo500";
+  		case ID.S_SubmarineRo500+200:
+  			return "shincolle.EntitySubmRo500Mob";
   		default:
   			return "shincolle.EntityDestroyerI";
   		}	
