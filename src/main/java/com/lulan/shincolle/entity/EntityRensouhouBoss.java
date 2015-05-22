@@ -701,7 +701,7 @@ public class EntityRensouhouBoss extends EntityMob implements IShipEmotion, IShi
         		this.getNavigator().clearPathEntity();
         	}
 			//•Œparticle≈„•‹path point
-			if(this.ticksExisted % 20 == 0) {
+        	if(ConfigHandler.debugMode && this.ticksExisted % 20 == 0) {
 				ShipPathEntity pathtemp = this.getShipNavigate().getPath();
 				ShipPathPoint pointtemp;
 				

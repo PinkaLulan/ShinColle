@@ -1109,7 +1109,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
         if(!this.getNavigator().noPath()) {
 //        	LogHelper.info("DEBUG : AI tick: path length B "+this.getNavigator().getPath().getCurrentPathIndex()+" / "+this.getNavigator().getPath().getCurrentPathLength());
 			//•Œparticle≈„•‹path point
-			if(this.ticksExisted % 20 == 0) {
+        	if(ConfigHandler.debugMode && this.ticksExisted % 20 == 0) {
 				PathEntity pathtemp2 = this.getNavigator().getPath();
 				PathPoint pointtemp2;
 //				LogHelper.info("DEBUG : AI tick: path length B "+pathtemp2.getCurrentPathLength()+" "+pathtemp2.getPathPointFromIndex(0).xCoord+" "+pathtemp2.getPathPointFromIndex(0).yCoord+" "+pathtemp2.getPathPointFromIndex(0).zCoord+" ");

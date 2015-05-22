@@ -96,7 +96,7 @@ public class EntityAIShipAircraftAttack extends EntityAIBase {
 
         	if(this.host.ticksExisted % 10 == 0) {
 	        	randPos = EntityHelper.findRandomPosition(this.host, this.target, 3D, 3D, 0);    	
-        	
+//	        	randPos[0] = target.posX;randPos[1] = target.posY;randPos[2] = target.posZ;	//for test
 	        	//目標在射程外, 則100%速度前進
 	        	if(this.distSq > this.rangeSq) {
 		        	this.host.getShipNavigate().tryMoveToXYZ(randPos[0], randPos[1], randPos[2], 1D);

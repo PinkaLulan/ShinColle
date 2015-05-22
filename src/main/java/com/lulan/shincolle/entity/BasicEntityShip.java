@@ -1038,7 +1038,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 //            	LogHelper.info("DEBUG : AI tick: path length A "+this.getShipNavigate().getPath().getCurrentPathIndex()+" / "+this.getShipNavigate().getPath().getCurrentPathLength());
 //            	LogHelper.info("DEBUG : AI tick: path length A "+this.getShipNavigate().getPath().getCurrentPathIndex());
     			//用particle顯示path point
-    			if(this.ticksExisted % 20 == 0) {
+    			if(ConfigHandler.debugMode && this.ticksExisted % 20 == 0) {
     				ShipPathEntity pathtemp = this.getShipNavigate().getPath();
     				ShipPathPoint pointtemp;
 //    				LogHelper.info("DEBUG : AI tick: path length A "+pathtemp.getCurrentPathIndex()+" / "+pathtemp.getCurrentPathLength()+" xyz: "+pathtemp.getPathPointFromIndex(0).xCoord+" "+pathtemp.getPathPointFromIndex(0).yCoord+" "+pathtemp.getPathPointFromIndex(0).zCoord+" ");
@@ -1069,7 +1069,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
         if(!this.getNavigator().noPath()) {
 //        	LogHelper.info("DEBUG : AI tick: path length B "+this.getNavigator().getPath().getCurrentPathIndex()+" / "+this.getNavigator().getPath().getCurrentPathLength());
 			//用particle顯示path point
-			if(this.ticksExisted % 20 == 0) {
+        	if(ConfigHandler.debugMode && this.ticksExisted % 20 == 0) {
 				PathEntity pathtemp2 = this.getNavigator().getPath();
 				PathPoint pointtemp2;
 //				LogHelper.info("DEBUG : AI tick: path length B "+pathtemp2.getCurrentPathLength()+" "+pathtemp2.getPathPointFromIndex(0).xCoord+" "+pathtemp2.getPathPointFromIndex(0).yCoord+" "+pathtemp2.getPathPointFromIndex(0).zCoord+" ");

@@ -152,10 +152,10 @@ public class EntityHelper {
 		else if(host instanceof BasicEntityAirplane || host instanceof BasicEntityMount ||
 				host instanceof EntityRensouhou || host instanceof EntityRensouhouS) {
 			//先取得airplane的owner(為一種ship), 再取得該ship的owner(為一種EntityPlayer)
-			EntityLivingBase owner = ((IShipAttack)host).getOwner();
+			BasicEntityShip owner = (BasicEntityShip) ((IShipAttack)host).getOwner();
 			
 			if(owner != null) {
-				return ((IShipAttack)owner).getOwner();
+				return owner.getOwner();
 			}
 		}
 		//若為其他用IshipAttack的, 直接取owner

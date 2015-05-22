@@ -64,6 +64,7 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipA
     public BasicEntityAirplane(World world) {
         super(world);
         this.backHome = false;
+        this.isImmuneToFire = true;
         shipNavigator = new ShipPathNavigate(this, worldObj);
 		shipMoveHelper = new ShipMoveHelper(this);
 		this.shipNavigator.setCanFly(true);
@@ -465,7 +466,7 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipA
         		this.getNavigator().clearPathEntity();
         	}
 			//•Œparticle≈„•‹path point
-			if(this.ticksExisted % 20 == 0) {
+        	if(ConfigHandler.debugMode && this.ticksExisted % 20 == 0) {
 				ShipPathEntity pathtemp = this.getShipNavigate().getPath();
 				ShipPathPoint pointtemp;
 				
