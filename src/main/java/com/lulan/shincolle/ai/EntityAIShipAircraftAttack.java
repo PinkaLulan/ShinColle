@@ -47,7 +47,7 @@ public class EntityAIShipAircraftAttack extends EntityAIBase {
     public boolean shouldExecute() {
     	EntityLivingBase target = this.host.getAttackTarget();
 
-        if (this.host.ticksExisted > 30 && target != null && target.isEntityAlive() && 
+        if (this.host.ticksExisted > 18 && target != null && target.isEntityAlive() && 
         	((this.host.useAmmoLight && this.host.numAmmoLight > 0) || 
         	(this.host.useAmmoHeavy && this.host.numAmmoHeavy > 0))) {   
         	this.target = target;
@@ -94,7 +94,7 @@ public class EntityAIShipAircraftAttack extends EntityAIBase {
     		this.distZ = this.target.posZ - this.host.posZ;	
     		this.distSq = distX*distX + distY*distY + distZ*distZ;
 
-        	if(this.host.ticksExisted % 10 == 0) {
+        	if(this.host.ticksExisted % 20 == 0) {
 	        	randPos = EntityHelper.findRandomPosition(this.host, this.target, 3D, 3D, 0);    	
 //	        	randPos[0] = target.posX;randPos[1] = target.posY;randPos[2] = target.posZ;	//for test
 	        	//目標在射程外, 則100%速度前進

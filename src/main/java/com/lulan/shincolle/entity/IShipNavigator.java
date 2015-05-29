@@ -12,4 +12,7 @@ public interface IShipNavigator {
 	public ShipMoveHelper getShipMoveHelper();
 	
 	public boolean canFly();
+	
+	public float getMoveSpeed();
+	
 }

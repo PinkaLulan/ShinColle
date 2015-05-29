@@ -245,7 +245,7 @@ public class ShipPathFinder {
                     }
                     
                     //若嘗試超過特定次數, 則判定沒有安全落地, 傳回null
-                    if(j1++ >= entity.getMaxSafePointTries()) {
+                    if(j1++ >= 32) {
                         return null;
                     }
                     
@@ -312,10 +312,10 @@ public class ShipPathFinder {
                         	pathInLiquid = false;
                         }
                         
-                    	//碰到的是陷阱門
-                        if(block == Blocks.trapdoor) {
-                        	pathToDoor = true;	//此為特定情況才能通過
-                        }
+//                    	//碰到的是陷阱門
+//                        if(block == Blocks.trapdoor) {
+//                        	pathToDoor = true;	//此為特定情況才能通過
+//                        }
 
                         int k1 = block.getRenderType();
                         

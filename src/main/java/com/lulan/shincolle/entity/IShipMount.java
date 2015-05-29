@@ -5,7 +5,7 @@ import net.minecraft.entity.EntityLivingBase;
 /**for mount type entity
  *
  */
-public interface IShipMount extends IShipFloating, IShipEmotion, IShipAttack {
+public interface IShipMount extends IShipFloating {
 	
 	/**get rider*/
 	abstract public EntityLivingBase getRiddenByEntity();

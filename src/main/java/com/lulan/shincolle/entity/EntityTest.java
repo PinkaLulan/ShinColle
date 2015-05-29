@@ -94,4 +94,18 @@ public class EntityTest extends EntityLiving implements IShipEmotion {
 		return false;
 	}
 
+	@Override
+	public boolean getIsLeashed() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+	@Override
+	public int getStateMinor(int id) {
+		return 0;
+	}
+
+	@Override
+	public void setStateMinor(int state, int par1) {}
+
 }

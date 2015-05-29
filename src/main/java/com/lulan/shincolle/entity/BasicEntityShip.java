@@ -54,7 +54,7 @@ import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
 /**SHIP DATA <br>
  * Explanation in crafting/ShipCalc.class
  */
-public abstract class BasicEntityShip extends EntityTameable implements IShipAttack, IShipEmotion, IShipFloating {
+public abstract class BasicEntityShip extends EntityTameable implements IShipCannonAttack, IShipFloating {
 
 	protected ExtendShipProps ExtProps;	//entity額外NBT紀錄
 	protected ShipPathNavigate shipNavigator;	//水空移動用navigator
@@ -243,14 +243,22 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 	/** 0=small 1=large */
 	abstract public int getKaitaiType();	//0 = small, 1 = large
 	
-	public int getShipLevel() {
+	@Override
+	public int getLevel() {
 		return StateMinor[ID.N.ShipLevel];
 	}
+	
 	public byte getShipType() {
 		return ShipType;
 	}
+	
 	public byte getShipID() {
 		return ShipID;
+	}
+	
+	@Override
+	public EntityLivingBase getPlayerOwner() {
+		return this.getOwner();
 	}
 	
 	@Override
@@ -287,6 +295,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 	public boolean getIsRiding() {
 		return this.isRiding();
 	}
+	
+	@Override
+	public boolean getIsLeashed() {
+		return this.getLeashed();
+	}
 
 	@Override
 	public boolean getIsSprinting() {
@@ -309,7 +322,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 	}
 	
 	@Override
-	public float getAttackDamage() {	//not used for ship
+	public float getAttackDamage() {	//NO USE for ship entity
 		return 0;
 	}
 	
@@ -321,6 +334,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 	@Override
 	public float getAttackRange() {
 		return this.StateFinal[ID.HIT];
+	}
+	
+	@Override
+	public float getDefValue() {
+		return this.StateFinal[ID.DEF];
 	}
 	
 	@Override
@@ -337,6 +355,16 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 	public boolean hasAmmoHeavy() {
 		return StateMinor[ID.N.NumAmmoHeavy] > 0;
 	}
+
+	@Override
+	public boolean useAmmoLight() {
+		return StateFlag[ID.F.UseAmmoLight];
+	}
+
+	@Override
+	public boolean useAmmoHeavy() {
+		return StateFlag[ID.F.UseAmmoHeavy];
+	}
 	
 	@Override
 	public double getShipDepth() {
@@ -348,7 +376,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 		return StateFlag[flag];		
 	}
 	
-	public byte getStateFlagI(int flag) {		//get flag (byte)
+	public byte getStateFlagI(int flag) {	//get flag (byte)
 		if(StateFlag[flag]) {
 			return 1;
 		}
@@ -365,6 +393,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 	public int getStateMinor(int id) {
 		return StateMinor[id];
 	}
+	@Override
 	public float getEffectEquip(int id) {
 		return EffectEquip[id];
 	}
@@ -1022,72 +1051,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 	protected void updateAITasks() {
 		super.updateAITasks();
 		
-        //若有水空path, 則更新ship navigator
-        if(shipNavigator != null && shipMoveHelper != null && !this.getShipNavigate().noPath()) {
-        	//若同時有官方ai的路徑, 則清除官方ai路徑
-        	if(!this.getNavigator().noPath()) {
-        		this.getNavigator().clearPathEntity();
-        	}
-        	
-        	//若坐下或綁住, 則清除路徑
-        	if(this.isSitting() || this.getLeashed()) {
-        		this.getShipNavigate().clearPathEntity();
-        	}
-        	else {
-//            	LogHelper.info("DEBUG : AI tick: path navi update");
-//            	LogHelper.info("DEBUG : AI tick: path length A "+this.getShipNavigate().getPath().getCurrentPathIndex()+" / "+this.getShipNavigate().getPath().getCurrentPathLength());
-//            	LogHelper.info("DEBUG : AI tick: path length A "+this.getShipNavigate().getPath().getCurrentPathIndex());
-    			//用particle顯示path point
-    			if(ConfigHandler.debugMode && this.ticksExisted % 20 == 0) {
-    				ShipPathEntity pathtemp = this.getShipNavigate().getPath();
-    				ShipPathPoint pointtemp;
-//    				LogHelper.info("DEBUG : AI tick: path length A "+pathtemp.getCurrentPathIndex()+" / "+pathtemp.getCurrentPathLength()+" xyz: "+pathtemp.getPathPointFromIndex(0).xCoord+" "+pathtemp.getPathPointFromIndex(0).yCoord+" "+pathtemp.getPathPointFromIndex(0).zCoord+" ");
-    				
-    				for(int i = 0; i < pathtemp.getCurrentPathLength(); i++) {
-    					pointtemp = pathtemp.getPathPointFromIndex(i);
-    					//發射者煙霧特效
-    			        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
-    					//路徑點畫紅色, 目標點畫綠色
-    					if(i == pathtemp.getCurrentPathIndex()) {
-    						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 16, pointtemp.xCoord, pointtemp.yCoord+0.5D, pointtemp.zCoord, 0F, 0F, 0F, false), point);
-    					}
-    					else {
-    						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 18, pointtemp.xCoord, pointtemp.yCoord+0.5D, pointtemp.zCoord, 0F, 0F, 0F, false), point);
-    					}
-    				}
-    			}
-        	}
-
-			this.worldObj.theProfiler.startSection("ship navi");
-	        this.shipNavigator.onUpdateNavigation();
-	        this.worldObj.theProfiler.endSection();
-	        this.worldObj.theProfiler.startSection("ship move");
-	        this.shipMoveHelper.onUpdateMoveHelper();
-	        this.worldObj.theProfiler.endSection();
-		}
-
-        if(!this.getNavigator().noPath()) {
-//        	LogHelper.info("DEBUG : AI tick: path length B "+this.getNavigator().getPath().getCurrentPathIndex()+" / "+this.getNavigator().getPath().getCurrentPathLength());
-			//用particle顯示path point
-        	if(ConfigHandler.debugMode && this.ticksExisted % 20 == 0) {
-				PathEntity pathtemp2 = this.getNavigator().getPath();
-				PathPoint pointtemp2;
-//				LogHelper.info("DEBUG : AI tick: path length B "+pathtemp2.getCurrentPathLength()+" "+pathtemp2.getPathPointFromIndex(0).xCoord+" "+pathtemp2.getPathPointFromIndex(0).yCoord+" "+pathtemp2.getPathPointFromIndex(0).zCoord+" ");
-//				LogHelper.info("DEBUG : AI tick: path length B "+pathtemp2.getCurrentPathIndex());
-				for(int i = 0; i < pathtemp2.getCurrentPathLength(); i++) {
-					pointtemp2 = pathtemp2.getPathPointFromIndex(i);
-					//發射者煙霧特效
-			        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
-					//路徑點畫紅色, 目標點畫綠色
-					if(i == pathtemp2.getCurrentPathIndex()) {
-						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 16, pointtemp2.xCoord, pointtemp2.yCoord+0.5D, pointtemp2.zCoord, 0F, 0F, 0F, false), point);
-					}
-					else {
-						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 17, pointtemp2.xCoord, pointtemp2.yCoord+0.5D, pointtemp2.zCoord, 0F, 0F, 0F, false), point);
-					}
-				}
-			}
-        }
+        EntityHelper.updateShipNavigator(this);
     }
 	
 	//update entity position
@@ -1293,11 +1257,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
     }
 
 	//timekeeping method
-	private void playTimeSound(int i) {
+	protected void playTimeSound(int i) {
 		//play entity attack sound
         this.playSound(Reference.MOD_ID+":ship-time"+i, ConfigHandler.timeKeepingVolume, 1.0F);
 	}
-
+	
 	//melee attack method, no ammo cost, no attack speed, damage = 12.5% atk
 	@Override
 	public boolean attackEntityAsMob(Entity target) {
@@ -1345,28 +1309,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 	public boolean attackEntityWithAmmo(Entity target) {	
 		//get attack value
 		float atk = StateFinal[ID.ATK];
+		
 		//set knockback value (testing)
 		float kbValue = 0.05F;
-		//update entity look at vector (for particle spawn)
-        //此方法比getLook還正確 (client sync問題)
-        float distX = (float) (target.posX - this.posX);
-        float distY = (float) (target.posY - this.posY);
-        float distZ = (float) (target.posZ - this.posZ);
-        float distSqrt = MathHelper.sqrt_float(distX*distX + distY*distY + distZ*distZ);
-        distX = distX / distSqrt;
-        distY = distY / distSqrt;
-        distZ = distZ / distSqrt;
-        
-        //發射者煙霧特效
-        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 6, this.posX, this.posY, this.posZ, distX, distY, distZ, true), point);
-
-		//play cannon fire sound at attacker
-        playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-        //play entity attack sound
-        if(this.rand.nextInt(10) > 7) {
-        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-        }
         
         //experience++
   		addShipExp(2);
@@ -1378,56 +1323,77 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
         if(!decrAmmoNum(0)) {		//not enough ammo
         	atk = atk * 0.125F;	//reduce damage to 12.5%
         }
+        
+        //calc dist to target
+        float distX = (float) (target.posX - this.posX);
+        float distY = (float) (target.posY - this.posY);
+        float distZ = (float) (target.posZ - this.posZ);
+        float distSqrt = MathHelper.sqrt_float(distX*distX + distY*distY + distZ*distZ);
+        distX = distX / distSqrt;
+        distY = distY / distSqrt;
+        distZ = distZ / distSqrt;
+        
+        //play cannon fire sound at attacker
+        playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        //play entity attack sound
+        if(this.rand.nextInt(10) > 7) {
+        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        }
+        
+        //發射者煙霧特效
+        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 6, this.posX, this.posY, this.posZ, distX, distY, distZ, true), point);
 
         //calc miss chance, if not miss, calc cri/multi hit
         float missChance = 0.2F + 0.15F * (distSqrt / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.N.ShipLevel];
         missChance -= EffectEquip[ID.EF_MISS];		//equip miss reduce
         if(missChance > 0.35F) missChance = 0.35F;	//max miss chance
         
-        if(this.rand.nextFloat() < missChance) {
-        	atk = 0;	//still attack, but no damage
-        	//spawn miss particle
-    		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
-        }
-        else {
-        	//roll cri -> roll double hit -> roll triple hit (triple hit more rare)
-        	//calc critical
-        	if(this.rand.nextFloat() < EffectEquip[ID.EF_CRI]) {
-        		atk *= 1.5F;
-        		//spawn critical particle
-        		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 11, false), point);
-        	}
-        	else {
-        		//calc double hit
-            	if(this.rand.nextFloat() < EffectEquip[ID.EF_DHIT]) {
-            		atk *= 2F;
-            		//spawn double hit particle
-            		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 12, false), point);
-            	}
-            	else {
-            		//calc double hit
-                	if(this.rand.nextFloat() < EffectEquip[ID.EF_THIT]) {
-                		atk *= 3F;
-                		//spawn triple hit particle
-                		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 13, false), point);
-                	}
-            	}
-        	}
-        }
-        
-        //vs player = 25% dmg
-  		if(target instanceof EntityPlayer) {
-  			atk *= 0.25F;
-  			
-  			//check friendly fire
-    		if(!ConfigHandler.friendlyFire) {
-    			atk = 0F;
-    		}
-    		else if(atk > 59F) {
-    			atk = 59F;	//same with TNT
-    		}
+        //calc miss -> crit -> double -> tripple
+  		if(rand.nextFloat() < missChance) {
+          	atk = 0F;	//still attack, but no damage
+          	//spawn miss particle
+      		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
+  		}
+  		else {
+  			//roll cri -> roll double hit -> roll triple hit (triple hit more rare)
+  			//calc critical
+          	if(rand.nextFloat() < this.getEffectEquip(ID.EF_CRI)) {
+          		atk *= 1.5F;
+          		//spawn critical particle
+          		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 11, false), point);
+          	}
+          	else {
+          		//calc double hit
+              	if(rand.nextFloat() < this.getEffectEquip(ID.EF_DHIT)) {
+              		atk *= 2F;
+              		//spawn double hit particle
+              		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 12, false), point);
+              	}
+              	else {
+              		//calc double hit
+                  	if(rand.nextFloat() < this.getEffectEquip(ID.EF_THIT)) {
+                  		atk *= 3F;
+                  		//spawn triple hit particle
+                  		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 13, false), point);
+                  	}
+              	}
+          	}
   		}
   		
+  		//calc damage to player
+  		if(target instanceof EntityPlayer) {
+  			atk *= 0.25F;
+    			
+  			//check friendly fire
+      		if(!ConfigHandler.friendlyFire) {
+      			atk = 0F;
+      		}
+      		else if(atk > 59F) {
+      			atk = 59F;	//same with TNT
+      		}
+  		}
+      		
 	    //將atk跟attacker傳給目標的attackEntityFrom方法, 在目標class中計算傷害
 	    //並且回傳是否成功傷害到目標
 	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this), atk);
@@ -1502,14 +1468,14 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
         if(missChance > 0.35F) missChance = 0.35F;	//max miss chance = 30%
        
         if(this.rand.nextFloat() < missChance) {
-        	tarX = tarX - 3F + this.rand.nextFloat() * 6F;
-        	tarY = tarY + this.rand.nextFloat() * 3F;
-        	tarZ = tarZ - 3F + this.rand.nextFloat() * 6F;
+        	tarX = tarX - 5F + this.rand.nextFloat() * 10F;
+        	tarY = tarY + this.rand.nextFloat() * 5F;
+        	tarZ = tarZ - 5F + this.rand.nextFloat() * 10F;
         	//spawn miss particle
         	TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
         	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
         }
-
+        
         //spawn missile
         EntityAbyssMissile missile = new EntityAbyssMissile(this.worldObj, this, 
         		tarX, tarY+target.height*0.2F, tarZ, launchPos, atk, kbValue, isDirect, -1F);
@@ -1915,6 +1881,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipAtt
 	@Override
 	public boolean canFly() {
 		return false;
+	}
+	
+	@Override
+	public boolean canBreatheUnderwater() {
+		return true;
 	}
 
 	

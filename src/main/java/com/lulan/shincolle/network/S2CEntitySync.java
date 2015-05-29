@@ -1,6 +1,7 @@
 package com.lulan.shincolle.network;
 
 import io.netty.buffer.ByteBuf;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
 
@@ -26,8 +27,9 @@ public class S2CEntitySync implements IMessage {
 	
 	private BasicEntityShip entity;
 	private EntityLiving entity2;
-	private EntityMountSeat entitySeat;
 	private IShipEmotion entity2e;
+	private Entity entity3;
+	private EntityMountSeat entity3s;
 	private int entityID;
 	private int type;
 
@@ -56,29 +58,45 @@ public class S2CEntitySync implements IMessage {
 	//for mount seat sync
 	//type 6: player mount packet, set player or clear player on the seat
 	public S2CEntitySync(EntityMountSeat entity, int type) {
-        this.entitySeat= entity;
+        this.entity3s = entity;
         this.type = type;
     }
 	
 	//接收packet方法 (CLIENT SIDE)
 	@Override
 	public void fromBytes(ByteBuf buf) {
+		boolean getSyncTarget = false;
 		//get type and entityID
 		this.type = buf.readByte();
+		this.entityID = buf.readInt();
 		
-		if(this.type < 6) {
-			this.entityID = buf.readInt();
+		if(this.type < 6) {	//for packet 0~5
 			this.entity2 = (EntityLiving) EntityHelper.getEntityByID(entityID, 0, true);
 			
-			if(entity2 instanceof BasicEntityShip) {
-				this.entity = (BasicEntityShip) this.entity2;
+			//確認有抓到要sync的entity
+			if(entity2 != null) {
+				getSyncTarget = true;
+				
+				if(entity2 instanceof BasicEntityShip) {
+					this.entity = (BasicEntityShip) this.entity2;
+				}
+				else {
+					this.entity2e = (IShipEmotion) this.entity2;
+				}
 			}
-			else {
-				this.entity2e = (IShipEmotion) this.entity2;
+			
+		}
+		else {				//for packet 6~			
+			//packet id 6: for mount seat2 sync
+			this.entity3 = EntityHelper.getEntityByID(entityID, 0, true);
+			
+			if(entity3 instanceof EntityMountSeat) {
+				entity3s = (EntityMountSeat) entity3;
+				getSyncTarget = true;
 			}
 		}
 
-		if(entity2 != null) {
+		if(getSyncTarget) {
 			switch(type) {
 			case 0:	//sync all attr
 				{
@@ -184,48 +202,52 @@ public class S2CEntitySync implements IMessage {
 					entity2e.setStateEmotion(ID.S.Phase, buf.readByte(), false);
 				}
 				break;
-			case 5: //IShipEmotion player mount sync
+			case 5: //player mount sync (only send when player right click on mount)
 				{
 					int playerId = buf.readInt();
 					int seatId = buf.readInt();
 					
 					EntityPlayer player = (EntityPlayer) EntityHelper.getEntityByID(playerId, 0, true);
-					EntityMountSeat seat = (EntityMountSeat) EntityHelper.getEntityByID(seatId, 0, true);
+					this.entity3s = (EntityMountSeat) EntityHelper.getEntityByID(seatId, 0, true);
 					
-					LogHelper.info("DEBUG : player mount packet: "+player+" "+seat);
-					if(player != null && seat != null) {
-						player.mountEntity(seat);
-						player.ridingEntity = seat;
-						seat.riddenByEntity = player;
-						seat.host = (BasicEntityMount) entity2;
-						seat.host.seat2 = seat;
-						seat.host.setStateEmotion(ID.S.Emotion, 1, false);
+					LogHelper.info("DEBUG : player mount sync packet: "+player+" "+entity3s);
+					if(player != null && entity3s != null) {
+						player.mountEntity(entity3s);
+						player.ridingEntity = entity3s;
+						entity3s.riddenByEntity = player;
+						entity3s.host = (BasicEntityMount) entity2;
+						entity3s.host.seat2 = entity3s;
+						entity3s.host.setStateEmotion(ID.S.Emotion, 1, false);
 					}	
 				}
 				break;
-			case 6:	//seat sync
+			case 6:	//seat2 sync
 				{
-					int seatId = buf.readInt();
 					int playerId = buf.readInt();
 					int hostId = buf.readInt();
-					
-					EntityMountSeat seat = (EntityMountSeat) EntityHelper.getEntityByID(seatId, 0, true);
-					
-					if(playerId <= 0) {
-						if(seat != null) {
-							seat.setRiderNull();
-						}
+							
+					//dismount packet
+					if(playerId < 0) {	//id設為-1表示為dismount packet
+						entity3s.setRiderNull();
 					}
+					//mount sync packet
 					else {
 						EntityPlayer player = (EntityPlayer) EntityHelper.getEntityByID(playerId, 0, true);
 						BasicEntityMount mount = (BasicEntityMount) EntityHelper.getEntityByID(hostId, 0, true);
-						
-						if(seat != null && mount != null) {
-							seat.host = mount;
-							seat.riddenByEntity = player;
-							seat.host.seat2 = seat;
-							seat.host.riddenByEntity2 = player;
-							seat.host.setStateEmotion(ID.S.Emotion, 1, false);
+
+						//sync for mount
+						if(mount != null) {
+							LogHelper.info("DEBUG : sync seat2 packet: get seat2");
+							entity3s.host = mount;
+							entity3s.riddenByEntity = player;
+							entity3s.host.seat2 = entity3s;
+							entity3s.host.riddenByEntity2 = player;
+							entity3s.host.setStateEmotion(ID.S.Emotion, 1, false);
+						}
+						//host not found, dismount
+						else {
+							LogHelper.info("DEBUG : sync seat2 packet: seat2 null");
+							entity3s.setRiderNull();
 						}
 					}
 				}
@@ -234,7 +256,7 @@ public class S2CEntitySync implements IMessage {
 		}
 		else {
 			buf.clear();
-			LogHelper.info("DEBUG : packet handler: S2CEntitySync entity is null "+type);
+			LogHelper.info("DEBUG : packet handler: S2CEntitySync: entity is null "+type);
 		}
 	}
 
@@ -368,15 +390,17 @@ public class S2CEntitySync implements IMessage {
 			{
 				buf.writeByte(6);	//type 1
 				
-				if(entitySeat.riddenByEntity == null || entitySeat.host.seat2 == null) {
-					buf.writeInt(this.entitySeat.getEntityId());
+				//dismount packet
+				if(entity3s.riddenByEntity == null || entity3s.host.seat2 == null) {
+					buf.writeInt(this.entity3s.getEntityId());
 					buf.writeInt(-1);
 					buf.writeInt(-1);
 				}
+				//mount sync packet
 				else {
-					buf.writeInt(this.entitySeat.getEntityId());
-					buf.writeInt(this.entitySeat.riddenByEntity.getEntityId());
-					buf.writeInt(this.entitySeat.host.getEntityId());
+					buf.writeInt(this.entity3s.getEntityId());
+					buf.writeInt(this.entity3s.riddenByEntity.getEntityId());
+					buf.writeInt(this.entity3s.host.getEntityId());
 				}
 			}
 			break;

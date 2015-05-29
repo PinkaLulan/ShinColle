@@ -7,6 +7,7 @@ import net.minecraft.world.World;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
@@ -66,7 +67,7 @@ public class EntityMountSeat extends Entity {
 		//server side
 		if(!this.worldObj.isRemote) {
 			//sync every 60 ticks
-			if(this.ticksExisted % 60 == 0) {
+			if(this.ticksExisted % 40 == 0) {
 				if(host != null) {
 					//若rider不在或者host的seat換人, 則消除此entity
 					if(host.getHealth() <= 1F || this.riddenByEntity == null || this.host.seat2 != this) {
@@ -82,7 +83,7 @@ public class EntityMountSeat extends Entity {
 					this.setRiderNull();
 					return;
 				}
-			}	
+			}
 		}
 		
 		//host check, BOTH side
@@ -91,18 +92,18 @@ public class EntityMountSeat extends Entity {
 			this.posX = host.posX + ridePos[1];
 			this.posY = host.posY;
 			this.posZ = host.posZ + ridePos[0];
-//			this.setPosition(posX, posY, posZ);
+			this.setPosition(posX, posY, posZ);
 		}
 		else {
 			this.setRiderNull();
 		}
 		
-		//get off mount, BOTH side
-		if(this.riddenByEntity != null && this.ticksExisted > 10) {
-			if(this.riddenByEntity.isSneaking()) {
-				this.setRiderNull();
-			}
-		}
+//		//get off mount, BOTH side
+//		if(this.riddenByEntity != null && this.ticksExisted > 10) {
+//			if(this.riddenByEntity.isSneaking()) {
+//				this.setRiderNull();
+//			}
+//		}
 	}
 
 	@Override
@@ -114,16 +115,18 @@ public class EntityMountSeat extends Entity {
 	
 	//set rider null and clear this seat entity, call by package
 	public void setRiderNull() {
-		//清除騎手
-		if(this.riddenByEntity != null) {
-			this.riddenByEntity.ridingEntity = null;
-			this.riddenByEntity = null;
+		//clear host side
+		if(host != null) {
+			host.seat2 = null;				//clear seat2
+			host.riddenByEntity2 = null;	//clear rider2
+			host.setStateEmotion(ID.S.Emotion, 0, false);
+			host = null;					//clear host
 		}
 		
-		//設定host狀態為非兩人騎乘
-		if(host != null) {
-			host.seat2 = null;
-			host.setStateEmotion(ID.S.Emotion, 0, false);
+		//clear seat2(this) side
+		if(this.riddenByEntity != null) {	
+			this.riddenByEntity.ridingEntity = null;
+			this.riddenByEntity = null;		//clear seat2 rider
 		}
 		
 		//若是server則發送sync packet
@@ -132,7 +135,7 @@ public class EntityMountSeat extends Entity {
 			CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this, 6), point);
 		}
 
-		this.setDead();
+		this.setDead();	//此setDead只有發生在server side, client side必須由sync packet處理
 	}
 	
 	

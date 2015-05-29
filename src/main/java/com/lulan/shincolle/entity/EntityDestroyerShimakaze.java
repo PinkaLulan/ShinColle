@@ -30,7 +30,7 @@ import com.lulan.shincolle.reference.Reference;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
-public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IUseRensouhou {
+public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements ISummonAttack {
 
 	public int numRensouhou;
 	
@@ -249,9 +249,9 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IU
         if(missChance > 0.35F) missChance = 0.35F;	//max miss chance = 30%
        
         if(this.rand.nextFloat() < missChance) {
-        	tarX = tarX - 3F + this.rand.nextFloat() * 6F;
-        	tarY = tarY + this.rand.nextFloat() * 3F;
-        	tarZ = tarZ - 3F + this.rand.nextFloat() * 6F;
+        	tarX = tarX - 5F + this.rand.nextFloat() * 10F;
+        	tarY = tarY + this.rand.nextFloat() * 5F;
+        	tarZ = tarZ - 5F + this.rand.nextFloat() * 10F;
         	//spawn miss particle
         	TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
         	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
@@ -288,12 +288,12 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IU
 	}
   	
   	@Override
-	public int getNumRensouhou() {
+	public int getNumServant() {
 		return this.numRensouhou;
 	}
 
 	@Override
-	public void setNumRensouhou(int num) {
+	public void setNumServant(int num) {
 		this.numRensouhou = num;
 	}
 

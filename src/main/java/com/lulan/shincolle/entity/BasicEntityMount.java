@@ -1,7 +1,6 @@
 package com.lulan.shincolle.entity;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
@@ -11,8 +10,6 @@ import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
 import net.minecraft.entity.ai.EntityAIOpenDoor;
 import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.PathEntity;
@@ -22,11 +19,10 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.ShinColle;
-import com.lulan.shincolle.ai.EntityAIMountFollowOwner;
-import com.lulan.shincolle.ai.EntityAIMountRangeAttack;
 import com.lulan.shincolle.ai.EntityAIShipAttackOnCollide;
 import com.lulan.shincolle.ai.EntityAIShipFloating;
-import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
+import com.lulan.shincolle.ai.EntityAIShipFollowOwner;
+import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathEntity;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
@@ -44,7 +40,11 @@ import com.lulan.shincolle.utility.ParticleHelper;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
 
-abstract public class BasicEntityMount extends EntityCreature implements IShipMount {
+/**MOUNT ENTITY
+ * mount use cannon attack, no aircraft attack
+ * all states get from host ex: sitting, leashed, sprinting...
+ */
+abstract public class BasicEntityMount extends EntityCreature implements IShipMount, IShipCannonAttack {
 	
 	protected BasicEntityShip host;  			//host
 	public EntityMountSeat seat2;				//seat 2
@@ -82,7 +82,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
     //平常音效
     @Override
 	protected String getLivingSound() {
-		if(ConfigHandler.useWakamoto && rand.nextInt(5) == 0) {
+		if(ConfigHandler.useWakamoto && rand.nextInt(8) == 0) {
 			return Reference.MOD_ID+":ship-waka_idle";
 		}
 		return null;
@@ -91,7 +91,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   	//受傷音效
     @Override
 	protected String getHurtSound() {
-		if(ConfigHandler.useWakamoto && rand.nextInt(5) == 0) {
+		if(ConfigHandler.useWakamoto && rand.nextInt(8) == 0) {
 			return Reference.MOD_ID+":ship-waka_hurt";
 		}
 		return null;
@@ -129,10 +129,10 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 			this.getNavigator().setCanSwim(true);
 
 			//high priority
-			this.tasks.addTask(1, new EntityAIMountFollowOwner(this));	   		   //0111
+			this.tasks.addTask(1, new EntityAIShipFollowOwner(this));	   		   //0111
 			
 			//use range attack
-			this.tasks.addTask(2, new EntityAIMountRangeAttack(this));			   //0011
+			this.tasks.addTask(2, new EntityAIShipRangeAttack(this));			   //0011
 			
 			//use melee attack
 			if(this.getStateFlag(ID.F.UseMelee)) {
@@ -173,13 +173,13 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 				return false;
 			}
 			
-			//set hurt face
-	    	if(this.getStateEmotion(ID.S.Emotion) != ID.Emotion.O_O) {
-	    		this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
+			//set host hurt face
+	    	if(this.host.getStateEmotion(ID.S.Emotion) != ID.Emotion.O_O) {
+	    		this.host.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
 	    	}
 	    	
 	    	//進行def計算
-	        float reduceAtk = atk * (1F - host.getStateFinal(ID.DEF) / 100F);
+	        float reduceAtk = atk * (1F - this.getDefValue() * 0.01F);
 	        if(atk < 0) { atk = 0; }
 	        
 	        if(attacker.getSourceOfDamage() != null) {
@@ -204,7 +204,6 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	        	this.host.setSitting(false);
 	        }
 			
-//LogHelper.info("DEBUG : def "+atk+" "+reduceAtk);	        
 	        return super.attackEntityFrom(attacker, reduceAtk);
 		}
 		
@@ -216,37 +215,6 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	public boolean canBePushed() {
         return false;
     }
-	
-	//replace isInWater, check water block with NO extend AABB
-	private void checkDepth() {
-		Block BlockCheck = checkBlockWithOffset(0);
-
-		if(EntityHelper.checkBlockIsLiquid(BlockCheck)) {
-			ShipDepth = 1;
-			for(int i=1; (this.posY+i)<255D; i++) {
-				BlockCheck = checkBlockWithOffset(i);
-				if(EntityHelper.checkBlockIsLiquid(BlockCheck)) {
-					ShipDepth++;
-				}
-				else {
-					break;
-				}
-			}		
-			ShipDepth = ShipDepth - (this.posY - (int)this.posY);
-		}
-		else {
-			ShipDepth = 0;
-		}
-	}
-	
-	//check block from entity posY + offset
-	public Block checkBlockWithOffset(int par1) {
-		int blockX = MathHelper.floor_double(this.posX);
-	    int blockY = MathHelper.floor_double(this.boundingBox.minY);
-	    int blockZ = MathHelper.floor_double(this.posZ);
-
-	    return this.worldObj.getBlock(blockX, blockY + par1, blockZ);    
-	}
 	
 	@Override
   	public boolean interact(EntityPlayer player) {	
@@ -268,7 +236,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 					host.setStateEmotion(ID.S.State, ID.State.NORMAL, true);
 					break;
 				}
-				
+				this.host.setPositionAndUpdate(posX, posY + 2D, posZ);
 				return true;
 			}
 			
@@ -419,11 +387,9 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 						this.movSpeed = host.getStateFinal(ID.MOV);
 					}
 
-			        getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(host.getStateFinal(ID.HP) * 0.5D);
-					getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(movSpeed);
-					getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(host.getStateFinal(ID.HIT) + 16); //此為找目標, 路徑的範圍
-					getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue((double)host.getShipLevel() / 150D);
-				
+					//update attribute
+					setupAttrs();
+					
 					//防止溺死
 					if(this.isInWater()) {
 						this.setAir(300);
@@ -719,7 +685,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		
 		//calc miss chance, if not miss, calc cri/multi hit
 		TargetPoint point = new TargetPoint(this.dimension, this.host.posX, this.host.posY, this.host.posZ, 64D);
-        float missChance = 0.2F + 0.15F * (distSqrt / host.getStateFinal(ID.HIT)) - 0.001F * host.getShipLevel();
+        float missChance = 0.2F + 0.15F * (distSqrt / host.getStateFinal(ID.HIT)) - 0.001F * host.getLevel();
         missChance -= this.host.getEffectEquip(ID.EF_MISS);		//equip miss reduce
         if(missChance > 0.35F) missChance = 0.35F;	//max miss chance
   		
@@ -837,13 +803,15 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
         }
         
         //calc miss chance, miss: add random offset(0~6) to missile target 
-        float missChance = 0.2F + 0.15F * (distSqrt / host.getEffectEquip(ID.EF_DHIT)) - 0.001F * host.getShipLevel();
+        float missChance = 0.2F + 0.15F * (distSqrt / host.getEffectEquip(ID.EF_DHIT)) - 0.001F * host.getLevel();
         missChance -= this.host.getEffectEquip(ID.EF_MISS);	//equip miss reduce
         if(missChance > 0.35F) missChance = 0.35F;	//max miss chance = 30%
 		
         //calc miss chance
         if(this.rand.nextFloat() < missChance) {
-        	atkHeavy = 0;	//still attack, but no damage
+        	tarX = tarX - 5F + this.rand.nextFloat() * 10F;
+        	tarY = tarY + this.rand.nextFloat() * 5F;
+      	  	tarZ = tarZ - 5F + this.rand.nextFloat() * 10F;
         	//spawn miss particle
         	TargetPoint point = new TargetPoint(this.dimension, this.host.posX, this.host.posY, this.host.posZ, 64D);
         	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this.host, 10, false), point);
@@ -966,21 +934,54 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
         this.limbSwingAmount += (f6 - this.limbSwingAmount) * 0.4F;
         this.limbSwing += this.limbSwingAmount;
     }
+	
+	@Override
+	public int getLevel() {
+		if(host != null) return this.host.getLevel();
+		return 150;
+	}
 
 	@Override
 	public float getAttackSpeed() {
-		return this.host.getStateFinal(ID.SPD);
+		if(host != null) return this.host.getStateFinal(ID.SPD);
+		return 0F;
 	}
 
 	@Override
 	public float getAttackRange() {
-		return this.host.getStateFinal(ID.HIT);
+		if(host != null) return this.host.getStateFinal(ID.HIT);
+		return 0F;
 	}
 	
 	@Override
 	public float getMoveSpeed() {
 		if(host != null) return this.host.getStateFinal(ID.MOV);
 		return 0F;
+	}
+	
+	@Override
+	public boolean getIsLeashed() {		//綁住host或者自己都算綁住
+		if(host != null) {
+			return this.host.getIsLeashed() || this.getLeashed();
+		}
+		return false;
+	}
+	
+	@Override
+	public EntityLivingBase getPlayerOwner() {
+		if(host != null) return this.host.getPlayerOwner();
+		return null;
+	}
+	
+	@Override
+	public int getStateMinor(int id) {
+		if(host != null) return this.host.getStateMinor(id);
+		return 0;
+	}
+
+	@Override
+	public void setStateMinor(int state, int par1) {
+		if(host != null) this.host.setStateMinor(state, par1);
 	}
 	
 	@Override
@@ -994,6 +995,18 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		if(host != null) return this.host.getStateMinor(ID.N.NumAmmoHeavy);
 		return 0;
 	}
+	
+	@Override
+	public boolean useAmmoLight() {
+		if(host != null) return this.host.useAmmoLight();
+		return true;
+	}
+
+	@Override
+	public boolean useAmmoHeavy() {
+		if(host != null) return this.host.useAmmoHeavy();
+		return true;
+	}
 
 	@Override
 	public boolean hasAmmoLight() {
@@ -1006,13 +1019,25 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	}
 
 	@Override
-	public void setAmmoLight(int num) {}	//not used
+	public void setAmmoLight(int num) {}	//no use
 
 	@Override
-	public void setAmmoHeavy(int num) {}	//not used
+	public void setAmmoHeavy(int num) {}	//no use
 
 	@Override
-	public float getAttackDamage() {		//not used
+	public float getAttackDamage() {		//no use
+		return 0F;
+	}
+	
+	@Override
+	public float getEffectEquip(int id) {
+		if(host != null) return host.getEffectEquip(id);
+		return 0F;
+	}
+	
+	@Override
+	public float getDefValue() {
+		if(host != null) return host.getStateFinal(ID.DEF) * 0.5F;
 		return 0F;
 	}
 
@@ -1028,6 +1053,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 
 	@Override
 	public boolean getIsSitting() {
+		if(host != null) return this.host.getIsSitting();
 		return false;
 	}
 
@@ -1065,74 +1091,18 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	@Override
 	protected void updateAITasks() {
 		super.updateAITasks();
-        
-        //若有水空path, 則更新ship navigator
-        if(shipNavigator != null && shipMoveHelper != null && !this.getShipNavigate().noPath()) {
-        	//若同時有官方ai的路徑, 則清除官方ai路徑
-        	if(!this.getNavigator().noPath()) {
-        		this.getNavigator().clearPathEntity();
-        	}
-        	
-        	//若坐下或綁住, 則清除路徑
-        	if(this.getLeashed()) {
-        		this.getShipNavigate().clearPathEntity();
-        	}
-        	else {
-    			//用particle顯示path point
-    			if(this.ticksExisted % 20 == 0) {
-    				ShipPathEntity pathtemp = this.getShipNavigate().getPath();
-    				ShipPathPoint pointtemp;
-    				
-    				for(int i = 0; i < pathtemp.getCurrentPathLength(); i++) {
-    					pointtemp = pathtemp.getPathPointFromIndex(i);
-    					//發射者煙霧特效
-    			        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
-    					//路徑點畫紅色, 目標點畫綠色
-    					if(i == pathtemp.getCurrentPathIndex()) {
-    						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 16, pointtemp.xCoord, pointtemp.yCoord+0.5D, pointtemp.zCoord, 0F, 0F, 0F, false), point);
-    					}
-    					else {
-    						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 18, pointtemp.xCoord, pointtemp.yCoord+0.5D, pointtemp.zCoord, 0F, 0F, 0F, false), point);
-    					}
-    				}
-    			}
-        	}
-
-			this.worldObj.theProfiler.startSection("ship navi");
-	        this.shipNavigator.onUpdateNavigation();
-	        this.worldObj.theProfiler.endSection();
-	        this.worldObj.theProfiler.startSection("ship move");
-	        this.shipMoveHelper.onUpdateMoveHelper();
-	        this.worldObj.theProfiler.endSection();
-		}
-        
-        if(!this.getNavigator().noPath()) {
-//        	LogHelper.info("DEBUG : AI tick: path length B "+this.getNavigator().getPath().getCurrentPathIndex()+" / "+this.getNavigator().getPath().getCurrentPathLength());
-			//用particle顯示path point
-        	if(ConfigHandler.debugMode && this.ticksExisted % 20 == 0) {
-				PathEntity pathtemp2 = this.getNavigator().getPath();
-				PathPoint pointtemp2;
-//				LogHelper.info("DEBUG : AI tick: path length B "+pathtemp2.getCurrentPathLength()+" "+pathtemp2.getPathPointFromIndex(0).xCoord+" "+pathtemp2.getPathPointFromIndex(0).yCoord+" "+pathtemp2.getPathPointFromIndex(0).zCoord+" ");
-//				LogHelper.info("DEBUG : AI tick: path length B "+pathtemp2.getCurrentPathIndex());
-				for(int i = 0; i < pathtemp2.getCurrentPathLength(); i++) {
-					pointtemp2 = pathtemp2.getPathPointFromIndex(i);
-					//發射者煙霧特效
-			        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
-					//路徑點畫紅色, 目標點畫綠色
-					if(i == pathtemp2.getCurrentPathIndex()) {
-						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 16, pointtemp2.xCoord, pointtemp2.yCoord+0.5D, pointtemp2.zCoord, 0F, 0F, 0F, false), point);
-					}
-					else {
-						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 17, pointtemp2.xCoord, pointtemp2.yCoord+0.5D, pointtemp2.zCoord, 0F, 0F, 0F, false), point);
-					}
-				}
-			}
-        }
+		
+        EntityHelper.updateShipNavigator(this);
     }
 
 	@Override
 	public boolean canFly() {
 		return false;
+	}
+	
+	@Override
+	public boolean canBreatheUnderwater() {
+		return true;
 	}
 	
 	//get seat position: z, x, height
@@ -1152,6 +1122,14 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		//清除座位2上面坐的人
 		this.riddenByEntity2 = null;
 		this.setDead();
+	}
+	
+	//update attribute
+	public void setupAttrs() {
+		getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(host.getStateFinal(ID.HP) * 0.5D);
+		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(movSpeed);
+		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(host.getStateFinal(ID.HIT) + 32); //此為找目標, 路徑的範圍
+		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue((double)host.getLevel() / 150D);
 	}
 
 	

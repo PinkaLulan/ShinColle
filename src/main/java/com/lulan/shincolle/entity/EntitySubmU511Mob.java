@@ -221,9 +221,9 @@ public class EntitySubmU511Mob extends BasicEntityShipHostile {
         
         //calc miss chance, miss: add random offset(0~6) to missile target 
         if(this.rand.nextFloat() < 0.25F) {
-        	tarX = tarX - 3F + this.rand.nextFloat() * 6F;
-        	tarY = tarY + this.rand.nextFloat() * 3F;
-        	tarZ = tarZ - 3F + this.rand.nextFloat() * 6F;
+        	tarX = tarX - 5F + this.rand.nextFloat() * 10F;
+        	tarY = tarY + this.rand.nextFloat() * 5F;
+      	  	tarZ = tarZ - 5F + this.rand.nextFloat() * 10F;
         	//spawn miss particle
         	TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
         	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);

@@ -220,11 +220,11 @@ public class ShipPathNavigate {
         Vec3 entityPos = this.getEntityPosition();
         int pptemp = this.currentPath.getCurrentPathLength();
 
-        //掃描還沒走的路徑點, 找出是否有y高度不同的點
+        //掃描還沒走的路徑點, 找出是否有y高度差距接近1格的點
 //        for(int j = this.currentPath.getCurrentPathIndex(); j < this.currentPath.getCurrentPathLength(); ++j) {
 ////            if(this.currentPath.getPathPointFromIndex(j).yCoord != (int)entityPos.yCoord) {
 //        	float diff = (float) (this.currentPath.getPathPointFromIndex(j).yCoord - entityPos.yCoord);
-//        	if(MathHelper.abs(diff) > 0.5F) {
+//        	if(MathHelper.abs(diff) > 0.8F) {
 //            	pptemp = j;
 ////            	LogHelper.info("DEBUG : path navi: y diff "+j+" "+diff+" : "+this.currentPath.getPathPointFromIndex(j).yCoord+" "+entityPos.yCoord);
 ////            	LogHelper.info("DEBUG : path navi: y diff "+j+" "+" : "+this.currentPath.getPathPointFromIndex(j).yCoord+" "+entityPos.yCoord);
@@ -235,7 +235,7 @@ public class ShipPathNavigate {
         float widthSq = this.theEntity.width * this.theEntity.width;
         int k;
 
-        //掃描目前的點到y高度不同的點, 若距離不到entity大小, 則判定entity已經到達該點
+        //掃描目前的點到y高度不同or最後的點, 若距離不到entity大小, 則判定entity已經到達該點
         for(k = this.currentPath.getCurrentPathIndex(); k < pptemp; ++k) {
             if(entityPos.squareDistanceTo(this.currentPath.getVectorFromIndex(this.theEntity, k)) < (double)widthSq) {
                 this.currentPath.setCurrentPathIndex(k + 1);	//已到達目標點, 設定目標點為下一點
@@ -243,7 +243,7 @@ public class ShipPathNavigate {
         }
 
         k = MathHelper.ceiling_float_int(this.theEntity.width);
-        int heighInt = (int)this.theEntity.height + 1;
+        int heighInt = (int)this.theEntity.height;
         int widthInt = k;
 
         //從y高度不合的點往回掃描, 找是否有點能從目前點直線走過去, 有的話將該點設為目標點使entity往該點直線前進
@@ -375,7 +375,7 @@ public class ShipPathNavigate {
         double xzOffsetSq = xOffset * xOffset + zOffset * zOffset + yOffset * yOffset;
 //        double xzOffsetSq = xOffset * xOffset + zOffset * zOffset;
 
-        if(xzOffsetSq < 1.0E-8D) {	//若距離極小, 則判定不須跳點 (移動最小單位是0.01 因此xzSq最小為E-8)
+        if(xzOffsetSq < 1.0E-12D) {	//若距離極小, 則判定不須跳點 (移動最小單位是0.01 因此xzSq最小為E-8)
             return false;
         }
         else {						//搜尋可跳的點
@@ -474,14 +474,14 @@ public class ShipPathNavigate {
         int xSize2 = xOffset - xSize / 2;
         int zSize2 = zOffset - zSize / 2;
         
+        //會飛的entity不須檢查落腳點
+    	if(this.canFly) return true;
+        
         //若該位置有方塊卡住, 則false
         if(!this.isPositionClear(xSize2, yOffset, zSize2, xSize, ySize, zSize, orgPos, vecX, vecZ)) {
             return false;
         }
         else {
-        	//會飛的entity不須檢查落腳點
-        	if(this.canFly) return true;
-        	
         	//不會飛的entity必須檢查全部落腳方塊
             for(int x1 = xSize2; x1 < xSize2 + xSize; ++x1) {
                 for(int z1 = zSize2; z1 < zSize2 + zSize; ++z1) {
@@ -517,10 +517,12 @@ public class ShipPathNavigate {
 
                     if(x2 * vecX + z2 * vecZ >= 0.0D) {
                         Block block = this.worldObj.getBlock(x1, y1, z1);
-                        //若該方塊為實體方塊, 或者不為安全類方塊, 則視為有障礙物
-                        if(!block.getBlocksMovement(this.worldObj, x1, y1, z1) || !EntityHelper.checkBlockSafe(block)) {
-                            return false;
-                        }
+                        
+                        //若為安全類方塊, 則視為clear
+                        if(EntityHelper.checkBlockSafe(block)) return true;
+                        
+                        //若該方塊為其他不可通過方塊, 則視為有障礙物
+                        if(!block.getBlocksMovement(this.worldObj, x1, y1, z1)) return false;
                     }
                 }
             }

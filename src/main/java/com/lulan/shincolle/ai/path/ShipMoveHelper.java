@@ -64,7 +64,6 @@ public class ShipMoveHelper {
             double x1 = this.posX - this.entity.posX;
             double z1 = this.posZ - this.entity.posZ;
             double y1 = this.posY - this.entity.posY;
-//            double y1 = this.posY - (double)i;
             double moveSq = x1 * x1 + y1 * y1 + z1 * z1;
             
             //若移動值夠大, 則計算身體面向方向, 以及y軸移動動作
@@ -72,38 +71,41 @@ public class ShipMoveHelper {
                 float f = (float)(Math.atan2(z1, x1) * 180.0D / Math.PI) - 90.0F;
                 float moveSpeed = (float)(this.speed * this.entity.getEntityAttribute(SharedMonsterAttributes.movementSpeed).getAttributeValue());
 //                LogHelper.info("DEBUG : moveHelper: update f "+(x1 * x1 + z1 * z1));
-                this.entity.rotationYaw = this.limitAngle(this.entity.rotationYaw, f, 30.0F);
+                this.entity.rotationYaw = this.limitAngle(this.entity.rotationYaw, f, 45.0F);
 //                this.entity.setAIMoveSpeed(moveSpeed);
 
                 //y軸移動: 由於官方setAIMoveSpeed只提供水平移動, 因此y軸移動必須自行設定
-                //y軸速度, 每tick增減值為: 移動速度的 20%
-                //移動速度降為10%, 避免水平移動太遠
+                //爬升時速度較慢, 落下時速度快
+                //fly entity
                 if(entityN.canFly()) {
-                	if(y1 > 0.5D) {
-                    	this.entity.motionY += moveSpeed * 0.15D;
-                    	moveSpeed *= 0.7F;
-                    }
-                    else if(y1 < -0.5D){
-                    	this.entity.motionY -= moveSpeed * 0.15D;
-                    	moveSpeed *= 0.7F;
-                    }
+//                    if(x1 * x1 + z1 * z1 < 3.0D) {
+                        if(y1 > 0D) {
+                        	this.entity.motionY += moveSpeed * 0.15D;
+                        	moveSpeed *= 0.8F;
+                        }
+                        else if(y1 < -0.2D){
+                        	this.entity.motionY -= moveSpeed * 0.2D;
+//                        	moveSpeed *= 0.5F;
+                        }
+//                    }
                 }
+                //non-fly entity
                 else if(EntityHelper.checkEntityIsInLiquid(entity)) {
-                	if(y1 > 0.3D) {
-                    	this.entity.motionY += moveSpeed * 0.2D;
-                    	moveSpeed *= 0.2F;
-                    }
-                    else if(y1 < -0.3D){
-                    	this.entity.motionY -= moveSpeed * 0.2D;
-                    	moveSpeed *= 0.2F;
-                    }
-                	
-                	//若在目標正下方, 則嘗試跳跳
-                    if(y1 > 0.0D && x1 * x1 + z1 * z1 < 4.0D) {
-                        this.entity.getJumpHelper().setJumping();
-                    }
+//                	if(x1 * x1 + z1 * z1 < 3.0D) {
+                		if(y1 > 0D) {
+                        	this.entity.motionY += moveSpeed * 0.1D;
+                        	moveSpeed *= 0.5F;
+//                        	LogHelper.info("DEBUG : moveHelper: get up in water ");
+                        }
+                        else if(y1 < -0.2D){
+                        	this.entity.motionY -= moveSpeed * 0.15D;
+//                        	moveSpeed *= 0.7F;
+//                        	LogHelper.info("DEBUG : moveHelper: get down in water ");
+                        }
+//                	}
                 }
-                else if(y1 > 0.0D && x1 * x1 + z1 * z1 < 4.0D) {	//用於陸上跳躍
+                else if(y1 > 0.0D && x1 * x1 + z1 * z1 < 3.0D) {	//用於陸上跳躍
+//                	LogHelper.info("DEBUG : moveHelper: get up on land ");
                     this.entity.getJumpHelper().setJumping();
                 }
 //                LogHelper.info("DEBUG : moveHelper: speed "+moveSpeed);

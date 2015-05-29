@@ -107,10 +107,14 @@ public class BasicEntityItem extends Entity {
 	//cancel motionY
 	@Override
     public void onUpdate() {
-//LogHelper.info("DEBUG : item pos "+this.worldObj.isRemote+" "+this.posX+" "+this.posY+" "+this.posZ);
 		this.setPosition(posX, posY, posZ);
 //        onEntityUpdate();
 
+		//play ender portal sound
+		if (this.worldObj.isRemote && this.worldObj.rand.nextInt(50) == 0) {
+			this.worldObj.playSound((double)posX + 0.5D, (double)posY + 0.5D, (double)posZ + 0.5D, "portal.portal", 0.5F, this.worldObj.rand.nextFloat() * 0.4F + 0.8F, false);
+        }
+		
         if(this.getEntityItem() == null) {
             this.setDead();
         }
@@ -126,10 +130,11 @@ public class BasicEntityItem extends Entity {
             ++this.age;
 
             ItemStack item = this.item;
-    
-            if(!this.worldObj.isRemote && this.age >= 6000) {
-            	this.setDead();
-            }
+ 
+            //2015/5/27: change to not despawn
+//            if(!this.worldObj.isRemote && this.age >= 6000) {
+//            	this.setDead();
+//            }
     
             if(item != null && item.stackSize <= 0) {
                 this.setDead();
@@ -168,10 +173,7 @@ public class BasicEntityItem extends Entity {
     }
 
 	@Override
-	protected void entityInit() {
-		// TODO Auto-generated method stub
-		
-	}
+	protected void entityInit() {}
 
 	@Override
 	protected void readEntityFromNBT(NBTTagCompound nbt) {

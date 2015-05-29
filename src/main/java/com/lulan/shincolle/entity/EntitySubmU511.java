@@ -95,7 +95,7 @@ public class EntitySubmU511 extends BasicEntityShipSmall {
   					EntityPlayerMP player = (EntityPlayerMP) this.getOwner();
   	  				if(getStateFlag(ID.F.IsMarried) && getStateMinor(ID.N.NumGrudge) > 0 && player != null && getDistanceSqToEntity(player) < 256D) {
   	  					//potion effect: id, time, level
-  	  	  	  			player.addPotionEffect(new PotionEffect(Potion.invisibility.id, 60 + getShipLevel() * 10));
+  	  	  	  			player.addPotionEffect(new PotionEffect(Potion.invisibility.id, 60 + getLevel() * 10));
   	  				}
   				}	
   			}
@@ -103,7 +103,7 @@ public class EntitySubmU511 extends BasicEntityShipSmall {
   			if(this.ticksExisted % 300 == 0) {
   				if(getStateFlag(ID.F.UseRingEffect)) {
   					//apply ability to ship
-  					this.addPotionEffect(new PotionEffect(Potion.invisibility.id, 100 + getShipLevel()));
+  					this.addPotionEffect(new PotionEffect(Potion.invisibility.id, 100 + getLevel()));
   				}
   			}
   		}    

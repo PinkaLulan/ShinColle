@@ -29,7 +29,7 @@ import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
-public class BasicEntityShipHostile extends EntityMob implements IShipAttack, IShipEmotion, IShipFloating {
+public class BasicEntityShipHostile extends EntityMob implements IShipCannonAttack, IShipFloating {
 
 	//attributes
 	protected float atk;				//damage
@@ -196,8 +196,9 @@ public class BasicEntityShipHostile extends EntityMob implements IShipAttack, IS
 	}
 
 	@Override
-	public boolean getStateFlag(int flag) {
-		return this.headTilt;
+	public boolean getStateFlag(int flag) {		//hostile mob: for attack and headTile check
+		if(flag == ID.F.HeadTilt) return this.headTilt;
+		return true;
 	}
 
 	@Override
@@ -618,50 +619,66 @@ public class BasicEntityShipHostile extends EntityMob implements IShipAttack, IS
 	@Override
 	protected void updateAITasks() {
 		super.updateAITasks();
-        
-        //若有水空path, 則更新ship navigator
-        if(shipNavigator != null && shipMoveHelper != null && !this.getShipNavigate().noPath()) {
-        	//若同時有官方ai的路徑, 則清除官方ai路徑
-        	if(!this.getNavigator().noPath()) {
-        		this.getNavigator().clearPathEntity();
-        	}
-        	
-			//用particle顯示path point
-        	if(ConfigHandler.debugMode && this.ticksExisted % 20 == 0) {
-				ShipPathEntity pathtemp = this.getShipNavigate().getPath();
-				ShipPathPoint pointtemp;
-				
-				for(int i = 0; i < pathtemp.getCurrentPathLength(); i++) {
-					pointtemp = pathtemp.getPathPointFromIndex(i);
-					//發射者煙霧特效
-			        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
-					//路徑點畫紅色, 目標點畫綠色
-					if(i == pathtemp.getCurrentPathIndex()) {
-						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 16, pointtemp.xCoord, pointtemp.yCoord+0.5D, pointtemp.zCoord, 0F, 0F, 0F, false), point);
-					}
-					else {
-						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 18, pointtemp.xCoord, pointtemp.yCoord+0.5D, pointtemp.zCoord, 0F, 0F, 0F, false), point);
-					}
-				}
-			}
-
-			this.worldObj.theProfiler.startSection("ship navi");
-	        this.shipNavigator.onUpdateNavigation();
-	        this.worldObj.theProfiler.endSection();
-	        this.worldObj.theProfiler.startSection("ship move");
-	        this.shipMoveHelper.onUpdateMoveHelper();
-	        this.worldObj.theProfiler.endSection();
-		}
+		
+        EntityHelper.updateShipNavigator(this);
     }
 	
 	@Override
 	public boolean canFly() {
 		return false;
 	}
+	
+	@Override
+	public boolean canBreatheUnderwater() {
+		return true;
+	}
 
 	@Override
 	public void setShipDepth(double par1) {
 		ShipDepth = par1;
+	}
+
+	@Override
+	public boolean getIsLeashed() {
+		return false;
+	}
+
+	@Override
+	public int getLevel() {
+		return 150;
+	}
+
+	@Override
+	public boolean useAmmoLight() {
+		return true;
+	}
+
+	@Override
+	public boolean useAmmoHeavy() {
+		return true;
+	}
+
+	@Override
+	public EntityLivingBase getPlayerOwner() {
+		return this;
+	}
+
+	@Override
+	public int getStateMinor(int id) {
+		return 0;
+	}
+
+	@Override
+	public void setStateMinor(int state, int par1) {}
+
+	@Override
+	public float getEffectEquip(int id) {	//cri rate
+		return 0.15F;
+	}
+
+	@Override
+	public float getDefValue() {
+		return defValue;
 	}
 
 

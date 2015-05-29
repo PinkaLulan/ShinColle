@@ -1,5 +1,8 @@
 package com.lulan.shincolle.entity;
 
+/**SHIP EMOTION
+ * include emtion time and state
+ */
 public interface IShipEmotion extends IShipFlags {
 	
 	/**Get emotion value
@@ -35,6 +38,6 @@ public interface IShipEmotion extends IShipFlags {
 	abstract public boolean getIsSprinting();
 	abstract public boolean getIsSitting();
 	abstract public boolean getIsSneaking();
-
+	abstract public boolean getIsLeashed();
 
 }

@@ -19,7 +19,9 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
-abstract public class BasicEntityShipLarge extends BasicEntityShip {
+/**LARGE SHIP = Use Aircraft
+ */
+abstract public class BasicEntityShipLarge extends BasicEntityShip implements IShipAircraftAttack {
 
 	protected int maxAircraftLight;		//max airplane at same time
 	protected int maxAircraftHeavy;
@@ -32,23 +34,28 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip {
 	}
 	
 	//getter
+	@Override
 	public int getNumAircraftLight() {
 		return StateMinor[ID.N.NumAirLight];
 	}
 	
+	@Override
 	public int getNumAircraftHeavy() {
 		return StateMinor[ID.N.NumAirHeavy];
 	}
 	
+	@Override
 	public boolean hasAirLight() {
 		return StateMinor[ID.N.NumAirLight] > 0;
 	}
 	
+	@Override
 	public boolean hasAirHeavy() {
 		return StateMinor[ID.N.NumAirHeavy] > 0;
 	}
 	
 	//setter
+	@Override
 	public void setNumAircraftLight(int par1) {
 		if(this.worldObj.isRemote) {	//client端沒有max值可以判定, 因此直接設定即可
 			StateMinor[ID.N.NumAirLight] = par1;
@@ -60,6 +67,7 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip {
 		}
 	}
 	
+	@Override
 	public void setNumAircraftHeavy(int par1) {
 		if(this.worldObj.isRemote) {	//client端沒有max值可以判定, 因此直接設定即可
 			StateMinor[ID.N.NumAirHeavy] = par1;
@@ -78,14 +86,14 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip {
 		//server side
 		if(!this.worldObj.isRemote) {
 			//clear target if target dead (for unknow target bug)
-			if(this.getAttackTarget() != null && this.getAttackTarget().isDead) {
+			if(this.getAttackTarget() != null && !this.getAttackTarget().isEntityAlive()) {
 				this.setAttackTarget(null);
 			}
 
 			//每一段時間回復一隻艦載機
 			delayAircraft--;
 			if(this.delayAircraft <= 0) {
-				delayAircraft = (int)(100F / (this.getStateFinal(ID.SPD)));	
+				delayAircraft = (int)(240F / (this.getStateFinal(ID.SPD)));	
 				if(delayAircraft > 250) delayAircraft = 250;	//fix: spd還沒設完值就除 會導致delay變超大 (除以0)
 				
 				this.setNumAircraftLight(this.getNumAircraftLight()+1);
@@ -105,6 +113,7 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip {
 	}
 	
 	//range attack method, cost light ammo, attack delay = 20 / attack speed, damage = 100% atk 
+	@Override
 	public boolean attackEntityWithAircraft(Entity target) {
 //		LogHelper.info("DEBUG : launch LIGHT aircraft"+target);
 		//clear target every attack
@@ -149,6 +158,7 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip {
 	}
 
 	//range attack method, cost heavy ammo, attack delay = 100 / attack speed, damage = 500% atk
+	@Override
 	public boolean attackEntityWithHeavyAircraft(Entity target) {
 //		LogHelper.info("DEBUG : launch HEAVY aircraft"+target);
 		//clear target every attack

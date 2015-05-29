@@ -24,6 +24,7 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -118,7 +119,7 @@ public class EntityBattleshipHime extends BasicEntityShip {
 	@Override
   	public boolean interact(EntityPlayer player) {	
 		ItemStack itemstack = player.inventory.getCurrentItem();  //get item in hand
-		
+		LogHelper.info("DEBUg : origin height "+ModelPos[1]+" "+this.worldObj.isRemote);
 		//use cake to change state
 		if(itemstack != null) {
 			if(itemstack.getItem() == Items.cake) {
@@ -133,6 +134,7 @@ public class EntityBattleshipHime extends BasicEntityShip {
 					setStateEmotion(ID.S.State, ID.State.NORMAL, true);
 					break;
 				}
+				this.setPositionAndUpdate(posX, posY + 2D, posZ);
 				return true;
 			}
 		}
@@ -333,6 +335,18 @@ public class EntityBattleshipHime extends BasicEntityShip {
 	public boolean canBePushed() {
         return this.ridingEntity == null;
     }
+  	
+  	@Override
+  	public float[] getModelPos() {
+  		if(this.isRiding()) {
+  			ModelPos[1] = 0F;
+  		}
+  		else {
+  			ModelPos[1] = 15F;
+  		}
+  		
+		return ModelPos;
+	}
 	
 }
 

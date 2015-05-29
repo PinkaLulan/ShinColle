@@ -30,6 +30,7 @@ public class ModItems {
 	public static final BasicItem MarriageRing = new MarriageRing();
 	public static final BasicItem ModernKit = new ModernKit();
 	public static final BasicItem OwnerPaper = new OwnerPaper();
+	public static final BasicItem PointerItem = new PointerItem();
 	public static final BasicItem RepairGoddess = new RepairGoddess();
 
 	//登錄item到遊戲中 (在pre init階段登錄)
@@ -54,6 +55,7 @@ public class ModItems {
 		GameRegistry.registerItem(MarriageRing, "MarriageRing");
 		GameRegistry.registerItem(ModernKit, "ModernKit");
 		GameRegistry.registerItem(OwnerPaper, "OwnerPaper");
+		GameRegistry.registerItem(PointerItem, "PointerItem");
 		GameRegistry.registerItem(RepairGoddess, "RepairGoddess");
 	}
 	

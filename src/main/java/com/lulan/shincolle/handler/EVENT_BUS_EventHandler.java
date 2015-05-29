@@ -30,7 +30,7 @@ import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.EntityRensouhouBoss;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
 import com.lulan.shincolle.entity.ExtendShipProps;
-import com.lulan.shincolle.entity.IShipAttack;
+import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.BasicEntityItem;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -103,7 +103,7 @@ public class EVENT_BUS_EventHandler {
 				//get attributes data
 		    	int[] attrs = new int[8];
 		    	
-		    	if(entity.getShipLevel() > 1) attrs[0] = entity.getShipLevel() - 1;	//decrease level 1
+		    	if(entity.getLevel() > 1) attrs[0] = entity.getLevel() - 1;	//decrease level 1
 		    	else attrs[0] = 1;
 		    	
 		    	attrs[1] = entity.getBonusPoint(ID.HP);
@@ -171,10 +171,10 @@ public class EVENT_BUS_EventHandler {
 	    	if(ent instanceof BasicEntityShip) {	//本體擊殺
 	    		((BasicEntityShip)ent).addKills();
 	    	}
-	    	else if(ent instanceof IShipAttack) {	//其他召喚物擊殺
-	    		if(((IShipAttack) ent).getOwner() != null &&
-	    		   ((IShipAttack) ent).getOwner() instanceof BasicEntityShip) {
-	    			((BasicEntityShip)((IShipAttack) ent).getOwner()).addKills();
+	    	else if(ent instanceof IShipAttackBase) {	//其他召喚物擊殺
+	    		if(((IShipAttackBase) ent).getOwner() != null &&
+	    		   ((IShipAttackBase) ent).getOwner() instanceof BasicEntityShip) {
+	    			((BasicEntityShip)((IShipAttackBase) ent).getOwner()).addKills();
 	    		}
 	    	}
 	    }

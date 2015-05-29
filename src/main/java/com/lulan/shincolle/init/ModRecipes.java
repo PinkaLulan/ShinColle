@@ -44,6 +44,7 @@ public class ModRecipes {
 		ItemStack kaitaiHammerAll = new ItemStack(ModItems.KaitaiHammer, 1, OreDictionary.WILDCARD_VALUE);
 		ItemStack modernKit = new ItemStack(ModItems.ModernKit);
 		ItemStack ownerPaper = new ItemStack(ModItems.OwnerPaper);
+		ItemStack pointer = new ItemStack(ModItems.PointerItem);
 		ItemStack polymetalStack = new ItemStack(ModItems.AbyssMetal,1,1);
 		ItemStack polymetalStack4 = new ItemStack(ModItems.AbyssMetal,4,1);
 		ItemStack polymetalStack9 = new ItemStack(ModItems.AbyssMetal,9,1);
@@ -105,6 +106,8 @@ public class ModRecipes {
 		GameRegistry.addRecipe(new ShapedOreRecipe(ring,"asa","a a","aaa",'s',Items.nether_star,'a',abyssiumStack));
 		//kaitai hammer
 		GameRegistry.addRecipe(new ShapedOreRecipe(kaitaiHammerNew,"aaa","aaa"," s ",'s',Items.stick,'a',abyssiumStack));
+		//pointer staff
+		GameRegistry.addRecipe(new ShapedOreRecipe(pointer,"  g"," p ","p  ",'g',grudeBlock,'p',polymetalStack));
 		
 	}
 

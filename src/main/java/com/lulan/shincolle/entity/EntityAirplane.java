@@ -85,6 +85,19 @@ public class EntityAirplane extends BasicEntityAirplane {
 			ParticleHelper.spawnAttackParticleAt(this.posX-this.motionX*1.5D, this.posY+0.5D-this.motionY*1.5D, this.posZ-this.motionZ*1.5D, 
 	          		-this.motionX*0.5D, -this.motionY*0.5D, -this.motionZ*0.5D, (byte)17);
 		}
+		else {
+			if(!this.hasAmmoLight()) this.backHome = true;
+		}
+	}
+
+	@Override
+	public boolean useAmmoLight() {
+		return true;
+	}
+
+	@Override
+	public boolean useAmmoHeavy() {
+		return false;
 	}
 
 

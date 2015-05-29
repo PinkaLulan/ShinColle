@@ -33,9 +33,9 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
-public class EntityRensouhouBoss extends EntityMob implements IShipEmotion, IShipAttack {
+public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack {
 	
-	protected IShipAttack host;  		//host target
+	protected IShipAttackBase host;  		//host target
 	protected EntityLivingBase host2;
 	protected EntityLivingBase target;	//onImpact target (for entity)
 	protected World world;
@@ -69,7 +69,7 @@ public class EntityRensouhouBoss extends EntityMob implements IShipEmotion, IShi
 		this.isImmuneToFire = true;
 	}
     
-    public EntityRensouhouBoss(World world, IShipAttack host, EntityLivingBase target) {
+    public EntityRensouhouBoss(World world, IShipAttackBase host, EntityLivingBase target) {
 		super(world);
 		this.world = world;
         this.host = host;
@@ -83,7 +83,7 @@ public class EntityRensouhouBoss extends EntityMob implements IShipEmotion, IShi
         this.atk = 30F;
         this.atkSpeed = 0.8F;
         this.atkRange = host.getAttackRange();
-        this.defValue = 70F;
+        this.defValue = host.getDefValue() * 0.5F;
         this.movSpeed = 0.6F;
         
         //AI flag
@@ -112,7 +112,7 @@ public class EntityRensouhouBoss extends EntityMob implements IShipEmotion, IShi
 	    //設定基本屬性
 	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(100D);
 		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(this.movSpeed);
-		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(this.atkRange + 16); //此為找目標, 路徑的範圍
+		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(this.atkRange + 32); //此為找目標, 路徑的範圍
 		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(0.2D);
 		if(this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
 				
@@ -258,8 +258,9 @@ public class EntityRensouhouBoss extends EntityMob implements IShipEmotion, IShi
 	}
 
 	@Override
-	public boolean getStateFlag(int flag) {
-		return this.headTilt;
+	public boolean getStateFlag(int flag) {		//hostile mob: for attack and headTile check
+		if(flag == ID.F.HeadTilt) return this.headTilt;
+		return true;
 	}
 
 	@Override
@@ -693,39 +694,8 @@ public class EntityRensouhouBoss extends EntityMob implements IShipEmotion, IShi
 	@Override
 	protected void updateAITasks() {
 		super.updateAITasks();
-        
-        //若有水空path, 則更新ship navigator
-        if(this.getShipNavigate() != null && !this.getShipNavigate().noPath()) {
-        	//若同時有官方ai的路徑, 則清除官方ai路徑
-        	if(!this.getNavigator().noPath()) {
-        		this.getNavigator().clearPathEntity();
-        	}
-			//用particle顯示path point
-        	if(ConfigHandler.debugMode && this.ticksExisted % 20 == 0) {
-				ShipPathEntity pathtemp = this.getShipNavigate().getPath();
-				ShipPathPoint pointtemp;
-				
-				for(int i = 0; i < pathtemp.getCurrentPathLength(); i++) {
-					pointtemp = pathtemp.getPathPointFromIndex(i);
-					//發射者煙霧特效
-			        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
-					//路徑點畫紅色, 目標點畫綠色
-					if(i == pathtemp.getCurrentPathIndex()) {
-						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 16, pointtemp.xCoord, pointtemp.yCoord+0.5D, pointtemp.zCoord, 0F, 0F, 0F, false), point);
-					}
-					else {
-						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 18, pointtemp.xCoord, pointtemp.yCoord+0.5D, pointtemp.zCoord, 0F, 0F, 0F, false), point);
-					}
-				}
-			}
-
-			this.worldObj.theProfiler.startSection("ship navi");
-	        this.shipNavigator.onUpdateNavigation();
-	        this.worldObj.theProfiler.endSection();
-	        this.worldObj.theProfiler.startSection("ship move");
-	        this.shipMoveHelper.onUpdateMoveHelper();
-	        this.worldObj.theProfiler.endSection();
-		}
+		
+        EntityHelper.updateShipNavigator(this);
     }
 	
 	@Override
@@ -733,6 +703,53 @@ public class EntityRensouhouBoss extends EntityMob implements IShipEmotion, IShi
 		return false;
 	}
 	
+	@Override
+	public boolean canBreatheUnderwater() {
+		return true;
+	}
+	
+	@Override
+	public boolean getIsLeashed() {
+		return false;
+	}
+	
+	@Override
+	public int getLevel() {
+		return 150;
+	}
+	
+	@Override
+	public boolean useAmmoLight() {
+		return true;
+	}
+
+	@Override
+	public boolean useAmmoHeavy() {
+		return false;
+	}
+	
+	@Override
+	public EntityLivingBase getPlayerOwner() {
+		return this.host2;
+	}
+	
+	@Override
+	public int getStateMinor(int id) {
+		return 0;
+	}
+
+	@Override
+	public void setStateMinor(int state, int par1) {}
+	
+	@Override
+	public float getEffectEquip(int id) {
+		return 0.15F;
+	}
+
+	@Override
+	public float getDefValue() {
+		return defValue;
+	}
 
 }
 

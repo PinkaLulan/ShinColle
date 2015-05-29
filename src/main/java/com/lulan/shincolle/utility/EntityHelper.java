@@ -8,11 +8,14 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
+import net.minecraft.pathfinding.PathEntity;
+import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
@@ -21,26 +24,36 @@ import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fluids.BlockFluidBase;
 import net.minecraftforge.fluids.IFluidBlock;
 
+import com.lulan.shincolle.ai.path.ShipMoveHelper;
+import com.lulan.shincolle.ai.path.ShipPathEntity;
+import com.lulan.shincolle.ai.path.ShipPathNavigate;
+import com.lulan.shincolle.ai.path.ShipPathPoint;
 import com.lulan.shincolle.entity.BasicEntityAirplane;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.EntityRensouhou;
 import com.lulan.shincolle.entity.EntityRensouhouS;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
-import com.lulan.shincolle.entity.IShipAttack;
+import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipFloating;
+import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.ClientProxy;
+import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
+
+import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
 public class EntityHelper {
 
 	private static Random rand = new Random();
 	
 	public EntityHelper() {}
-	
+
 	/**check block is safe (not solid block) */
 	public static boolean checkBlockSafe(World world, int x, int y, int z) {
 		Block block = world.getBlock(x, y, z);
@@ -49,7 +62,7 @@ public class EntityHelper {
 	
 	/**check block is safe (not solid block) */
 	public static boolean checkBlockSafe(Block block) {
-		if(block == Blocks.air || block == null || checkBlockIsLiquid(block)) {
+		if(block.getMaterial() == Material.air || block == null || checkBlockIsLiquid(block)) {
     		return true;
     	}	
 		return false;
@@ -81,6 +94,12 @@ public class EntityHelper {
 		EntityLivingBase getOwnerB = null;
 		
 		if(host != null && target != null) {
+			//for hostile mob
+			if(host instanceof BasicEntityShipHostile && target instanceof BasicEntityShipHostile) {
+				return true;
+			}
+			
+			//for other entity
 			getOwnerA = getOwnerFromEntity(host);
 			getOwnerB = getOwnerFromEntity(target);
 			
@@ -148,20 +167,26 @@ public class EntityHelper {
 		else if(host instanceof EntityTameable) {
 			return ((EntityTameable)host).getOwner();
 		}
-		//若為飛機,座騎,召喚物, 則取得owner的owner
-		else if(host instanceof BasicEntityAirplane || host instanceof BasicEntityMount ||
-				host instanceof EntityRensouhou || host instanceof EntityRensouhouS) {
-			//先取得airplane的owner(為一種ship), 再取得該ship的owner(為一種EntityPlayer)
-			BasicEntityShip owner = (BasicEntityShip) ((IShipAttack)host).getOwner();
-			
-			if(owner != null) {
-				return owner.getOwner();
-			}
+		//若為其他用IShipAttack的, 直接取player owner
+		else if(host instanceof IShipAttackBase) {
+			return ((IShipAttackBase) host).getPlayerOwner();
 		}
-		//若為其他用IshipAttack的, 直接取owner
-		else if(host instanceof IShipAttack) {
-			return ((IShipAttack) host).getOwner();
-		}
+		
+		
+//		//若為飛機,座騎,召喚物, 則取得owner的owner
+//		else if(host instanceof BasicEntityAirplane || host instanceof BasicEntityMount ||
+//				host instanceof EntityRensouhou || host instanceof EntityRensouhouS) {
+//			//先取得airplane的owner(為一種ship), 再取得該ship的owner(為一種EntityPlayer)
+//			BasicEntityShip owner = (BasicEntityShip) ((IShipAttackBase)host).getOwner();
+//			
+//			if(owner != null) {
+//				return owner.getOwner();
+//			}
+//		}
+//		//若為其他用IshipAttack的, 直接取owner
+//		else if(host instanceof IShipAttackBase) {
+//			return ((IShipAttackBase) host).getOwner();
+//		}
 		
 		return null;
 	}
@@ -181,8 +206,8 @@ public class EntityHelper {
 		
 		if(host != null) {
 			if(host instanceof EntityPlayer || host instanceof BasicEntityAirplane || 
-					host instanceof BasicEntityShip || host instanceof EntityRensouhou ||
-					host instanceof EntityRensouhouS) {
+			   host instanceof BasicEntityShip || host instanceof BasicEntityMount ||
+			   host instanceof EntityRensouhou || host instanceof EntityRensouhouS) {
 				return true;
 			}
 			else if(host instanceof EntityTameable) {
@@ -480,5 +505,80 @@ public class EntityHelper {
         return degree;
 	}
 
+	/** update ship path navigator */
+	public static void updateShipNavigator(IShipAttackBase entity) {
+		EntityLiving entity2 = (EntityLiving) entity;
+		ShipPathNavigate pathNavi = entity.getShipNavigate();
+		ShipMoveHelper moveHelper = entity.getShipMoveHelper();
+		
+		//若有水空path, 則更新ship navigator
+        if(pathNavi != null && moveHelper != null && !pathNavi.noPath()) {
+        	//若同時有官方ai的路徑, 則清除官方ai路徑
+        	if(!entity2.getNavigator().noPath()) {
+        		entity2.getNavigator().clearPathEntity();
+        	}
+
+        	//若坐下或綁住, 則清除路徑
+        	if(entity.getIsSitting() || entity.getIsLeashed()) {
+        		entity.getShipNavigate().clearPathEntity();
+        	}
+        	else {
+//            	LogHelper.info("DEBUG : AI tick: path navi update");
+//            	LogHelper.info("DEBUG : AI tick: path length A "+this.getShipNavigate().getPath().getCurrentPathIndex()+" / "+this.getShipNavigate().getPath().getCurrentPathLength());
+//            	LogHelper.info("DEBUG : AI tick: path length A "+this.getShipNavigate().getPath().getCurrentPathIndex());
+    			
+        		//用particle顯示path point
+    			if(ConfigHandler.debugMode && entity2.ticksExisted % 20 == 0) {
+    				ShipPathEntity pathtemp = pathNavi.getPath();
+    				ShipPathPoint pointtemp;
+//    				LogHelper.info("DEBUG : AI tick: path length A "+pathtemp.getCurrentPathIndex()+" / "+pathtemp.getCurrentPathLength()+" xyz: "+pathtemp.getPathPointFromIndex(0).xCoord+" "+pathtemp.getPathPointFromIndex(0).yCoord+" "+pathtemp.getPathPointFromIndex(0).zCoord+" ");
+    				
+    				for(int i = 0; i < pathtemp.getCurrentPathLength(); i++) {
+    					pointtemp = pathtemp.getPathPointFromIndex(i);
+    					//發射者煙霧特效
+    			        TargetPoint point = new TargetPoint(entity2.dimension, entity2.posX, entity2.posY, entity2.posZ, 48D);
+    					//路徑點畫紅色, 目標點畫綠色
+    					if(i == pathtemp.getCurrentPathIndex()) {
+    						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(entity2, 16, pointtemp.xCoord, pointtemp.yCoord+0.5D, pointtemp.zCoord, 0F, 0F, 0F, false), point);
+    					}
+    					else {
+    						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(entity2, 18, pointtemp.xCoord, pointtemp.yCoord+0.5D, pointtemp.zCoord, 0F, 0F, 0F, false), point);
+    					}
+    				}
+    			}
+        	}
+
+        	entity2.worldObj.theProfiler.startSection("ship navi");
+        	pathNavi.onUpdateNavigation();
+	        entity2.worldObj.theProfiler.endSection();
+	        entity2.worldObj.theProfiler.startSection("ship move");
+	        moveHelper.onUpdateMoveHelper();
+	        entity2.worldObj.theProfiler.endSection();
+		}
+
+        if(!entity2.getNavigator().noPath()) {
+//        	LogHelper.info("DEBUG : AI tick: path length B "+this.getNavigator().getPath().getCurrentPathIndex()+" / "+this.getNavigator().getPath().getCurrentPathLength());
+			//用particle顯示path point
+        	if(ConfigHandler.debugMode && entity2.ticksExisted % 20 == 0) {
+				PathEntity pathtemp2 = entity2.getNavigator().getPath();
+				PathPoint pointtemp2;
+//				LogHelper.info("DEBUG : AI tick: path length B "+pathtemp2.getCurrentPathLength()+" "+pathtemp2.getPathPointFromIndex(0).xCoord+" "+pathtemp2.getPathPointFromIndex(0).yCoord+" "+pathtemp2.getPathPointFromIndex(0).zCoord+" ");
+//				LogHelper.info("DEBUG : AI tick: path length B "+pathtemp2.getCurrentPathIndex());
+				for(int i = 0; i < pathtemp2.getCurrentPathLength(); i++) {
+					pointtemp2 = pathtemp2.getPathPointFromIndex(i);
+					//發射者煙霧特效
+			        TargetPoint point = new TargetPoint(entity2.dimension, entity2.posX, entity2.posY, entity2.posZ, 48D);
+					//路徑點畫紅色, 目標點畫綠色
+					if(i == pathtemp2.getCurrentPathIndex()) {
+						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(entity2, 16, pointtemp2.xCoord, pointtemp2.yCoord+0.5D, pointtemp2.zCoord, 0F, 0F, 0F, false), point);
+					}
+					else {
+						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(entity2, 17, pointtemp2.xCoord, pointtemp2.yCoord+0.5D, pointtemp2.zCoord, 0F, 0F, 0F, false), point);
+					}
+				}
+			}
+        }
+	}
+	
 	
 }

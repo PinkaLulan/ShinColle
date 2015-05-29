@@ -10,7 +10,7 @@ import net.minecraft.world.World;
 
 import com.lulan.shincolle.ai.path.ShipPathEntity;
 import com.lulan.shincolle.ai.path.ShipPathPoint;
-import com.lulan.shincolle.entity.IShipAttack;
+import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipEmotion;
 
 /**ATTACK ON COLLIDE SHIP VERSION
@@ -19,7 +19,7 @@ import com.lulan.shincolle.entity.IShipEmotion;
 public class EntityAIShipAttackOnCollide extends EntityAIBase {
 	
     World worldObj;
-    IShipAttack host;
+    IShipAttackBase host;
     EntityCreature host2;
     /** An amount of decrementing ticks that allows the entity to attack once the tick reaches 0. */
     int attackTick;
@@ -37,12 +37,12 @@ public class EntityAIShipAttackOnCollide extends EntityAIBase {
 
     private int failedPathFindingPenalty;
 
-    public EntityAIShipAttackOnCollide(IShipAttack host, Class classTarget, double speed, boolean longMemory) {
+    public EntityAIShipAttackOnCollide(IShipAttackBase host, Class classTarget, double speed, boolean longMemory) {
         this(host, speed, longMemory);
         this.classTarget = classTarget;
     }
 
-    public EntityAIShipAttackOnCollide(IShipAttack host, double speed, boolean longMemory) {
+    public EntityAIShipAttackOnCollide(IShipAttackBase host, double speed, boolean longMemory) {
         this.host = host;
         this.host2 = (EntityCreature) host;
         this.worldObj = ((Entity)host).worldObj;

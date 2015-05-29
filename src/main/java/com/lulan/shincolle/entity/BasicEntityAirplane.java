@@ -1,45 +1,37 @@
 package com.lulan.shincolle.entity;
 
 import java.util.List;
-import java.util.UUID;
 
-import com.lulan.shincolle.ai.path.ShipMoveHelper;
-import com.lulan.shincolle.ai.path.ShipPathEntity;
-import com.lulan.shincolle.ai.path.ShipPathNavigate;
-import com.lulan.shincolle.ai.path.ShipPathPoint;
-import com.lulan.shincolle.client.particle.EntityFXTexts;
-import com.lulan.shincolle.client.particle.EntityFXSpray;
-import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.network.S2CSpawnParticle;
-import com.lulan.shincolle.proxy.CommonProxy;
-import com.lulan.shincolle.proxy.ServerProxy;
-import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
-
-import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
 import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityFlying;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.passive.EntityBat;
 import net.minecraft.entity.passive.EntityWaterMob;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.pathfinding.PathEntity;
-import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
-public abstract class BasicEntityAirplane extends EntityLiving implements IShipAttack {
+import com.lulan.shincolle.ai.path.ShipMoveHelper;
+import com.lulan.shincolle.ai.path.ShipPathEntity;
+import com.lulan.shincolle.ai.path.ShipPathNavigate;
+import com.lulan.shincolle.ai.path.ShipPathPoint;
+import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.network.S2CSpawnParticle;
+import com.lulan.shincolle.proxy.CommonProxy;
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
+
+import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
+
+public abstract class BasicEntityAirplane extends EntityLiving implements IShipCannonAttack {
 
 	protected BasicEntityShipLarge hostEntity;  		//host target
 	protected EntityLivingBase targetEntity;	//onImpact target (for entity)
@@ -65,10 +57,11 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipA
         super(world);
         this.backHome = false;
         this.isImmuneToFire = true;
-        shipNavigator = new ShipPathNavigate(this, worldObj);
-		shipMoveHelper = new ShipMoveHelper(this);
+        this.shipNavigator = new ShipPathNavigate(this, worldObj);
+        this.shipMoveHelper = new ShipMoveHelper(this);
 		this.shipNavigator.setCanFly(true);
-        
+		this.stepHeight = 7F;
+		
         //target selector init
         this.targetSelector = new IEntitySelector() {
             public boolean isEntityApplicable(Entity target2) {
@@ -224,7 +217,7 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipA
 					this.setDead();
 				}
 				
-				//達到30秒時強制歸宅
+				//達到30秒時強制歸宅, 沒彈藥也設定歸宅
 				if(this.ticksExisted >= 600) {
 					this.backHome = true;
 				}
@@ -255,7 +248,7 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipA
 				}
 				
 				//前幾秒直線往目標移動
-				if(this.ticksExisted < 15 && this.getAttackTarget() != null) {
+				if(this.ticksExisted < 20 && this.getAttackTarget() != null) {
 					double distX = this.getAttackTarget().posX - this.posX;
 					double distZ = this.getAttackTarget().posZ - this.posZ;
 					double distSqrt = MathHelper.sqrt_double(distX*distX + distZ*distZ);
@@ -266,7 +259,7 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipA
 				}
 				
 				//攻擊目標消失, 找附近目標 or 設為host目前目標
-				if(!this.backHome && (this.getAttackTarget() == null || this.getAttackTarget().isDead) && this.hostEntity != null && this.ticksExisted % 10 == 0) {	
+				if(!this.backHome && (this.getAttackTarget() == null || !this.getAttackTarget().isEntityAlive()) && this.hostEntity != null && this.ticksExisted % 10 == 0) {	
 					//entity list < range1
 					EntityLivingBase newTarget;
 			        List list = this.worldObj.selectEntitiesWithinAABB(EntityLivingBase.class, 
@@ -311,7 +304,19 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipA
 			return false;
 		}
 		
-		return super.attackEntityFrom(source, atk);
+		if(source.getDamageType() == "outOfWorld") {
+			this.setDead();
+			return false;
+		}
+		
+		//進行def計算, airplane def = 50% host def
+		float reduceAtk = atk;
+		if(hostEntity != null) {
+			reduceAtk = atk * (1F - this.getDefValue() * 0.01F);
+		}  
+        if(atk < 0) { atk = 0; }
+        
+        return super.attackEntityFrom(source, reduceAtk);
     }
 
 	//light attack
@@ -458,39 +463,8 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipA
 	@Override
 	protected void updateAITasks() {
 		super.updateAITasks();
-        
-        //若有水空path, 則更新ship navigator
-        if(shipNavigator != null && shipMoveHelper != null && !this.getShipNavigate().noPath()) {
-        	//若同時有官方ai的路徑, 則清除官方ai路徑
-        	if(!this.getNavigator().noPath()) {
-        		this.getNavigator().clearPathEntity();
-        	}
-			//用particle顯示path point
-        	if(ConfigHandler.debugMode && this.ticksExisted % 20 == 0) {
-				ShipPathEntity pathtemp = this.getShipNavigate().getPath();
-				ShipPathPoint pointtemp;
-				
-				for(int i = 0; i < pathtemp.getCurrentPathLength(); i++) {
-					pointtemp = pathtemp.getPathPointFromIndex(i);
-					//發射者煙霧特效
-			        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
-					//路徑點畫紅色, 目標點畫綠色
-					if(i == pathtemp.getCurrentPathIndex()) {
-						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 16, pointtemp.xCoord, pointtemp.yCoord+0.5D, pointtemp.zCoord, 0F, 0F, 0F, false), point);
-					}
-					else {
-						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 18, pointtemp.xCoord, pointtemp.yCoord+0.5D, pointtemp.zCoord, 0F, 0F, 0F, false), point);
-					}
-				}
-			}
-
-			this.worldObj.theProfiler.startSection("ship navi");
-	        this.shipNavigator.onUpdateNavigation();
-	        this.worldObj.theProfiler.endSection();
-	        this.worldObj.theProfiler.startSection("ship move");
-	        this.shipMoveHelper.onUpdateMoveHelper();
-	        this.worldObj.theProfiler.endSection();
-		}
+		
+        EntityHelper.updateShipNavigator(this);
     }
 	
 	@Override
@@ -498,6 +472,109 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipA
 		return true;
 	}
 	
+	@Override
+	public boolean canBreatheUnderwater() {
+		return true;
+	}
+	
+	@Override
+	public byte getStateEmotion(int id) {
+		return 0;
+	}
+
+	@Override
+	public void setStateEmotion(int id, int value, boolean sync) {}
+
+	@Override
+	public int getStartEmotion() {
+		return 0;
+	}
+
+	@Override
+	public int getStartEmotion2() {
+		return 0;
+	}
+
+	@Override
+	public void setStartEmotion(int par1) {}
+
+	@Override
+	public void setStartEmotion2(int par1) {}
+
+	@Override
+	public int getTickExisted() {
+		return this.ticksExisted;
+	}
+
+	@Override
+	public int getAttackTime() {
+		return this.attackTime;
+	}
+
+	@Override
+	public boolean getIsRiding() {
+		return false;
+	}
+
+	@Override
+	public boolean getIsSprinting() {
+		return false;
+	}
+
+	@Override
+	public boolean getIsSitting() {
+		return false;
+	}
+
+	@Override
+	public boolean getIsSneaking() {
+		return false;
+	}
+
+	@Override
+	public boolean getIsLeashed() {
+		return false;
+	}
+
+	@Override
+	public boolean getStateFlag(int flag) {	//for attack AI check
+		return true;
+	}
+
+	@Override
+	public void setStateFlag(int id, boolean flag) {}
+	
+	@Override
+	public int getLevel() {
+		if(hostEntity != null) return this.hostEntity.getLevel();
+		return 150;
+	}
+	
+	@Override
+	public EntityLivingBase getPlayerOwner() {
+		if(hostEntity != null) return this.hostEntity.getPlayerOwner();
+		return null;
+	}
+	
+	@Override
+	public int getStateMinor(int id) {
+		return 0;
+	}
+
+	@Override
+	public void setStateMinor(int state, int par1) {}
+	
+	@Override
+	public float getEffectEquip(int id) {
+		if(hostEntity != null) return hostEntity.getEffectEquip(id);
+		return 0F;
+	}
+	
+	@Override
+	public float getDefValue() {
+		if(hostEntity != null) return hostEntity.getStateFinal(ID.DEF) * 0.5F;
+		return 0F;
+	}
 
 }
 

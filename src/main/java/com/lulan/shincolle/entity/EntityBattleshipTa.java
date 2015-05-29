@@ -43,7 +43,7 @@ import com.lulan.shincolle.utility.EntityHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
-public class EntityBattleshipTa extends BasicEntityShip implements IUseRensouhou {
+public class EntityBattleshipTa extends BasicEntityShip implements ISummonAttack {
 	
 	public int numRensouhou;
 	
@@ -219,12 +219,12 @@ public class EntityBattleshipTa extends BasicEntityShip implements IUseRensouhou
 	}
 
 	@Override
-	public int getNumRensouhou() {
+	public int getNumServant() {
 		return this.numRensouhou;
 	}
 
 	@Override
-	public void setNumRensouhou(int num) {
+	public void setNumServant(int num) {
 		this.numRensouhou = num;
 	}
 	

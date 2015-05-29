@@ -103,7 +103,7 @@ public class EntityAirfieldHime extends BasicEntityShipLarge {
         		//2: 結婚後, 周圍某一目標回血, 包括玩家, 回血目標依等級提昇
 				if(getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.N.NumGrudge) > 0) {
 					//判定bounding box內是否有可以回血的目標
-					int healCount = (int)(this.getShipLevel() / 50) + 1;
+					int healCount = (int)(this.getLevel() / 50) + 1;
 		            EntityLivingBase hitEntity = null;
 		            List hitList = null;
 		            hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, this.boundingBox.expand(16D, 16D, 16D));
@@ -117,11 +117,11 @@ public class EntityAirfieldHime extends BasicEntityShipLarge {
 		            	//抓可以補血的目標, 不包含自己
 		            	if(hitEntity != this && hitEntity.getHealth() / hitEntity.getMaxHealth() < 0.96F) {
 	            			if(hitEntity instanceof EntityPlayer) {
-	            				hitEntity.heal(1F + this.getShipLevel() * 0.05F);
+	            				hitEntity.heal(1F + this.getLevel() * 0.05F);
 		            			healCount--;
 		            		}
 		            		else if(hitEntity instanceof BasicEntityShip) {
-		            			hitEntity.heal(1F + hitEntity.getMaxHealth() * 0.05F + this.getShipLevel() * 0.1F);
+		            			hitEntity.heal(1F + hitEntity.getMaxHealth() * 0.05F + this.getLevel() * 0.1F);
 		            			healCount--;
 			            	}
 		            	}
@@ -156,7 +156,7 @@ public class EntityAirfieldHime extends BasicEntityShipLarge {
   	  	  			}
   	  	  		}
   			}	
-  		}	
+  		}
   			
   		super.onLivingUpdate();
   	}
@@ -201,6 +201,7 @@ public class EntityAirfieldHime extends BasicEntityShipLarge {
 						setStateEmotion(ID.S.State, ID.State.NORMAL, true);
 						break;
 					}
+					this.setPositionAndUpdate(posX, posY + 2D, posZ);
 				}
 				return true;
 			}
@@ -247,6 +248,18 @@ public class EntityAirfieldHime extends BasicEntityShipLarge {
 	public boolean canBePushed() {
         return this.ridingEntity == null;
     }
+  	
+  	@Override
+  	public float[] getModelPos() {
+  		if(this.isRiding()) {
+  			ModelPos[1] = -25F;
+  		}
+  		else {
+  			ModelPos[1] = 15F;
+  		}
+  		
+		return ModelPos;
+	}
 
 
 }

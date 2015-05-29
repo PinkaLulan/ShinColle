@@ -3,13 +3,10 @@ package com.lulan.shincolle.entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.world.World;
 
-import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
-public class EntityMountAfH extends BasicEntityMount {
+public class EntityMountAfH extends BasicEntityMountLarge {
 	
     public EntityMountAfH(World world) {	//client side
 		super(world);
@@ -40,11 +37,8 @@ public class EntityMountAfH extends BasicEntityMount {
         this.setPosition(this.posX, this.posY, this.posZ);
  
 	    //設定基本屬性
-	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(host.getStateFinal(ID.HP) * 0.5D);
-		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(movSpeed);
-		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(host.getStateFinal(ID.HIT) + 16); //此為找目標, 路徑的範圍
-		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue((double)host.getShipLevel() / 150D);
-		
+        setupAttrs();
+        
 		if(this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
 				
 		//設定AI
@@ -85,6 +79,7 @@ public class EntityMountAfH extends BasicEntityMount {
 			}
 		}
 	}
+
 
 }
 

@@ -25,7 +25,7 @@ import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
-public class EntityRensouhou extends EntityLiving implements IShipEmotion, IShipAttack {
+public class EntityRensouhou extends EntityLiving implements IShipCannonAttack {
 	
 	protected BasicEntityShip host;  	//host target
 	protected EntityLivingBase target;	//onImpact target (for entity)
@@ -73,7 +73,7 @@ public class EntityRensouhou extends EntityLiving implements IShipEmotion, IShip
         this.atk = host.getStateFinal(ID.ATK);
         this.atkSpeed = host.getStateFinal(ID.SPD) + rand.nextFloat() * 0.5F - 0.25F;
         this.atkRange = host.getStateFinal(ID.HIT) + 1F;
-        this.defValue = host.getStateFinal(ID.DEF);
+        this.defValue = host.getStateFinal(ID.DEF) * 0.5F;
         this.movSpeed = host.getStateFinal(ID.MOV) * 0.2F + 0.4F;
         
         //AI flag
@@ -102,7 +102,7 @@ public class EntityRensouhou extends EntityLiving implements IShipEmotion, IShip
 	    //設定基本屬性
 	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(host.getStateFinal(ID.HP)*0.3D);
 		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(this.movSpeed);
-		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(host.getStateFinal(ID.HIT) + 16); //此為找目標, 路徑的範圍
+		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(host.getStateFinal(ID.HIT) + 32); //此為找目標, 路徑的範圍
 		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(1D);
 		if(this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
 				
@@ -229,8 +229,8 @@ public class EntityRensouhou extends EntityLiving implements IShipEmotion, IShip
 					if(this.numAmmoHeavy < 0) this.numAmmoHeavy = 0;
 					
 					//連裝砲數量+1
-					int numR = ((IUseRensouhou)host).getNumRensouhou();
-					if(numR < 6) ((IUseRensouhou)host).setNumRensouhou(numR+1);
+					int numR = ((ISummonAttack)host).getNumServant();
+					if(numR < 6) ((ISummonAttack)host).setNumServant(numR+1);
 					
 					//歸還彈藥
 					host.setAmmoLight(host.getAmmoLight() + this.getAmmoLight());
@@ -267,8 +267,9 @@ public class EntityRensouhou extends EntityLiving implements IShipEmotion, IShip
 	}
 
 	@Override
-	public boolean getStateFlag(int flag) {
-		return this.headTilt;
+	public boolean getStateFlag(int flag) {		//hostile mob: for attack and headTile check
+		if(flag == ID.F.HeadTilt) return this.headTilt;
+		return true;
 	}
 
 	@Override
@@ -355,7 +356,7 @@ public class EntityRensouhou extends EntityLiving implements IShipEmotion, IShip
 		
 		//calc miss chance, if not miss, calc cri/multi hit
 		TargetPoint point = new TargetPoint(this.dimension, this.host.posX, this.host.posY, this.host.posZ, 64D);
-        float missChance = 0.2F + 0.15F * (distSqrt / host.getStateFinal(ID.HIT)) - 0.001F * host.getShipLevel();
+        float missChance = 0.2F + 0.15F * (distSqrt / host.getStateFinal(ID.HIT)) - 0.001F * host.getLevel();
         missChance -= this.host.getEffectEquip(ID.EF_MISS);		//equip miss reduce
         if(missChance > 0.35F) missChance = 0.35F;	//max miss chance
   		
@@ -467,7 +468,7 @@ public class EntityRensouhou extends EntityLiving implements IShipEmotion, IShip
         }
         
         //calc miss chance, miss: add random offset(0~6) to missile target 
-        float missChance = 0.2F + 0.15F * (distSqrt / host.getEffectEquip(ID.EF_DHIT)) - 0.001F * host.getShipLevel();
+        float missChance = 0.2F + 0.15F * (distSqrt / host.getEffectEquip(ID.EF_DHIT)) - 0.001F * host.getLevel();
         missChance -= this.host.getEffectEquip(ID.EF_MISS);	//equip miss reduce
         if(missChance > 0.35F) missChance = 0.35F;	//max miss chance = 30%
 		
@@ -701,39 +702,8 @@ public class EntityRensouhou extends EntityLiving implements IShipEmotion, IShip
 	@Override
 	protected void updateAITasks() {
 		super.updateAITasks();
-        
-        //若有水空path, 則更新ship navigator
-        if(shipNavigator != null && shipMoveHelper != null && !this.getShipNavigate().noPath()) {
-        	//若同時有官方ai的路徑, 則清除官方ai路徑
-        	if(!this.getNavigator().noPath()) {
-        		this.getNavigator().clearPathEntity();
-        	}
-			//用particle顯示path point
-        	if(ConfigHandler.debugMode && this.ticksExisted % 20 == 0) {
-				ShipPathEntity pathtemp = this.getShipNavigate().getPath();
-				ShipPathPoint pointtemp;
-				
-				for(int i = 0; i < pathtemp.getCurrentPathLength(); i++) {
-					pointtemp = pathtemp.getPathPointFromIndex(i);
-					//發射者煙霧特效
-			        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
-					//路徑點畫紅色, 目標點畫綠色
-					if(i == pathtemp.getCurrentPathIndex()) {
-						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 16, pointtemp.xCoord, pointtemp.yCoord+0.5D, pointtemp.zCoord, 0F, 0F, 0F, false), point);
-					}
-					else {
-						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 18, pointtemp.xCoord, pointtemp.yCoord+0.5D, pointtemp.zCoord, 0F, 0F, 0F, false), point);
-					}
-				}
-			}
-
-			this.worldObj.theProfiler.startSection("ship navi");
-	        this.shipNavigator.onUpdateNavigation();
-	        this.worldObj.theProfiler.endSection();
-	        this.worldObj.theProfiler.startSection("ship move");
-	        this.shipMoveHelper.onUpdateMoveHelper();
-	        this.worldObj.theProfiler.endSection();
-		}
+		
+        EntityHelper.updateShipNavigator(this);
     }
 	
 	@Override
@@ -741,5 +711,55 @@ public class EntityRensouhou extends EntityLiving implements IShipEmotion, IShip
 		return false;
 	}
 	
+	@Override
+	public boolean canBreatheUnderwater() {
+		return true;
+	}
+
+	@Override
+	public boolean getIsLeashed() {
+		return false;
+	}
+
+	@Override
+	public int getLevel() {
+		if(host != null) return this.host.getLevel();
+		return 150;
+	}
+
+	@Override
+	public boolean useAmmoLight() {
+		return true;
+	}
+
+	@Override
+	public boolean useAmmoHeavy() {
+		return false;
+	}
+
+	@Override
+	public EntityLivingBase getPlayerOwner() {
+		if(host != null) return this.host.getPlayerOwner();
+		return null;
+	}
+	
+	@Override
+	public int getStateMinor(int id) {
+		return 0;
+	}
+
+	@Override
+	public void setStateMinor(int state, int par1) {}
+	
+	@Override
+	public float getEffectEquip(int id) {
+		if(host != null) return host.getEffectEquip(id);
+		return 0F;
+	}
+	
+	@Override
+	public float getDefValue() {
+		return this.defValue;
+	}
 
 }
