@@ -1131,6 +1131,11 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(host.getStateFinal(ID.HIT) + 32); //此為找目標, 路徑的範圍
 		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue((double)host.getLevel() / 150D);
 	}
+	
+	@Override
+	public void setEntitySit() {
+		if(host != null) host.setEntitySit();
+	}
 
 	
 }

@@ -27,10 +27,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
     private double minDistSq;
     private double distSq;
     private double distSqrt;
-    
-    //直線前進用餐數
     private double distX, distY, distZ;	//跟目標的直線距離(的平方)
-    private float rotYaw;
 
     
     public EntityAIShipFollowOwner(IShipAttackBase entity) {
@@ -44,10 +41,11 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
     
     //有owner且目標超過max dist時觸發AI, 觸發後此方法不再執行, 改為持續執行cont exec
     public boolean shouldExecute() {
-    	if(!host.getIsSitting() && !host.getIsRiding() && !host.getIsLeashed() && !host.getStateFlag(ID.F.NoFuel)) {
+    	if(!host.getIsSitting() && !host.getIsRiding() && !host.getIsLeashed() && 
+    	   !host.getStateFlag(ID.F.NoFuel) && host.getStateFlag(ID.F.CanFollow)) {
     		EntityLivingBase OwnerEntity = this.host.getPlayerOwner();
 
-            //get owner distance
+    		//get owner distance
             if(OwnerEntity != null) {
             	this.owner = OwnerEntity;
                 
@@ -78,18 +76,14 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
     public boolean continueExecuting() {
     	//非坐下, 騎乘, 被綁住時可以繼續執行AI
     	if(host != null) { 
-    		if(!host.getIsSitting() && !host.getIsRiding() && !host.getIsLeashed()) {
-	    		//計算直線距離
-	        	this.distX = this.owner.posX - this.host2.posX;
-	    		this.distY = this.owner.posY - this.host2.posY;
-	    		this.distZ = this.owner.posZ - this.host2.posZ;
-	        	this.distSq = this.distX*this.distX + this.distY*this.distY + this.distZ*this.distZ;
-	        	
+    		if(!host.getIsSitting() && !host.getIsRiding() && !host.getIsLeashed() && 
+    		   !host.getStateFlag(ID.F.NoFuel) && host.getStateFlag(ID.F.CanFollow)) {
+
 	        	//距離超過傳送距離, 則處理傳送部份
 	        	if(this.distSq > this.TP_DIST) {
 	        		return true;
 	        	}
-	
+
 	        	//還沒走進min follow range, 繼續走
 	        	if(this.distSq > this.minDistSq ) {		
 	        		return true;
@@ -108,7 +102,6 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
     }
 
     public void startExecuting() {
-    	this.rotYaw = 0F;
         this.findCooldown = 20;
         this.checkTeleport = 0;
     }
@@ -123,8 +116,32 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
 //    		LogHelper.info("DEBUG : exec follow owner");
         	this.findCooldown--;
         	
+        	if(host2.ticksExisted % 100 == 0){
+        		//update owner distance
+            	EntityLivingBase OwnerEntity = this.host.getPlayerOwner();
+                if(OwnerEntity != null) {
+                	this.owner = OwnerEntity;
+                    
+                	if(this.owner.dimension != this.host2.dimension) {
+                		this.resetTask();
+                		return;
+                	}
+                	
+                	float fMin = host.getStateMinor(ID.N.FollowMin);
+                	float fMax = host.getStateMinor(ID.N.FollowMax);
+                	this.minDistSq = fMin * fMin;
+                    this.maxDistSq = fMax * fMax;
+
+                	//計算直線距離
+                	this.distX = this.owner.posX - this.host2.posX;
+            		this.distY = this.owner.posY - this.host2.posY;
+            		this.distZ = this.owner.posZ - this.host2.posZ;
+                	this.distSq = this.distX*this.distX + this.distY*this.distY + this.distZ*this.distZ;
+                }
+        	}//end update
+        	
         	//設定頭部轉向
-            this.host2.getLookHelper().setLookPositionWithEntity(this.owner, 10.0F, (float)this.host2.getVerticalFaceSpeed());
+            this.host2.getLookHelper().setLookPositionWithEntity(this.owner, 30.0F, (float)this.host2.getVerticalFaceSpeed());
 
         	//距離超過傳送距離, 直接傳送到目標上
         	if(this.distSq > this.TP_DIST) {
@@ -148,14 +165,15 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
     			
     			//check path result
             	if(!this.ShipNavigator.tryMoveToEntityLiving(this.owner, 1D)) {
-            		LogHelper.info("DEBUG : follow AI: fail to follow, teleport entity");
-            		if(this.distSq > this.TP_DIST) {
-            			this.checkTeleport++;
+            		LogHelper.info("DEBUG : follow AI: fail to follow, cannot reach or too far away");
+            		//若超過max dist持續240ticks, 則teleport
+            		if(this.distSq > this.maxDistSq) {
+            			this.checkTeleport++;	//若距離超過max dist且移動又失敗, 會使checkTP每30 tick+1
                 		
-                		if(this.checkTeleport > 60) {
+                		if(this.checkTeleport > 8) {
                 			this.checkTeleport = 0;
                 			//相同dim才傳送
-                			LogHelper.info("DEBUG : follow AI: entity dimension "+host2.dimension+" "+owner.dimension);
+                			LogHelper.info("DEBUG : follow AI: teleport entity: dimension "+host2.dimension+" "+owner.dimension);
                 			if(this.host2.dimension == this.owner.dimension) {
                 				this.host2.setLocationAndAngles(this.owner.posX, this.owner.posY + 1D, this.owner.posZ, this.host2.rotationYaw, this.host2.rotationPitch);
                 				this.ShipNavigator.clearPathEntity();

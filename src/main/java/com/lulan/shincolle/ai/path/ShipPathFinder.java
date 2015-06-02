@@ -219,7 +219,7 @@ public class ShipPathFinder {
                this.getVerticalOffset(entity, x, y + pathOption, z, entitySize) == 1) {
                 pathpoint1 = this.openPoint(x, y + pathOption, z);	//把往上一點加入到path
                 y += pathOption;
-            } 
+            }
             //若有找到可加入path的點, 則往下找該點底下方塊是否可安全站立(只往下找X格, X依照entity自己的getMaxSafePointTries決定)
             if(pathpoint1 != null) {
             	//若可以飛, 則直接回傳pathpoint
@@ -256,6 +256,10 @@ public class ShipPathFinder {
                     }
                 }
             }
+            
+//            if(pathCase == -3) {
+//            	LogHelper.info("DEBUg : find fence "+x+" "+y+" "+z+" "+pathpoint1);
+//            }
             
             return pathpoint1;
         }

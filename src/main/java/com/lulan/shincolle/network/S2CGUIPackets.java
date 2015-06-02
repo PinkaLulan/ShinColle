@@ -14,6 +14,7 @@ import com.lulan.shincolle.tileentity.BasicTileEntity;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -28,6 +29,7 @@ public class S2CGUIPackets implements IMessage {
 //	private BasicEntityShip entity;
 	private TileEntitySmallShipyard tile1;
 	private TileMultiGrudgeHeavy tile2;
+	private ExtendPlayerProps props;
 	private World world;
 	private int type, recvX, recvY, recvZ, value, value2;
 	
@@ -54,11 +56,10 @@ public class S2CGUIPackets implements IMessage {
         this.value2 = value2;
     }
 	
-	//type 3: player ring sync
+	//type 3: player extend props sync (for team frame and radar GUI)
 	public S2CGUIPackets(ExtendPlayerProps extProps) {
         this.type = 3;
-        this.value = extProps.isRingActiveI();
-        this.value2 = extProps.getMarriageNum();
+        this.props = extProps;
     }
 	
 	//接收packet方法
@@ -127,15 +128,29 @@ public class S2CGUIPackets implements IMessage {
 				EntityHelper.setPlayerByGUI((int)value, (int)value2);
 			}
 			break;
-		case 3: //player gui click
+		case 3: //sync player props
 			{			
-				int[] extValues = new int[2];
+				int[] extValues = new int[8];
+				boolean[] shipSelected = new boolean[6];
 				
 				extValues[0] = buf.readByte();
 				extValues[1] = buf.readByte();
-				
+				extValues[2] = buf.readInt();
+				shipSelected[0] = buf.readBoolean();
+				extValues[3] = buf.readInt();
+				shipSelected[1] = buf.readBoolean();
+				extValues[4] = buf.readInt();
+				shipSelected[2] = buf.readBoolean();
+				extValues[5] = buf.readInt();
+				shipSelected[3] = buf.readBoolean();
+				extValues[6] = buf.readInt();
+				shipSelected[4] = buf.readBoolean();
+				extValues[7] = buf.readInt();
+				shipSelected[5] = buf.readBoolean();
+//				LogHelper.info("DEBUG : gui sync packet: id 3: "+extValues[0]+" "+extValues[1]+" "+extValues[2]+" "+extValues[3]+" "+extValues[4]+" "+extValues[5]+" "+extValues[6]+" "+extValues[7]);
 				//set value
 				EntityHelper.setPlayerExtProps(extValues);
+				EntityHelper.setPlayerExtProps(shipSelected);
 			}
 			break;
 		}
@@ -178,11 +193,22 @@ public class S2CGUIPackets implements IMessage {
 				buf.writeByte(this.value2);
 			}
 			break;
-		case 3:	//ship entity gui click
+		case 3:	//sync player props
 			{
 				buf.writeByte(3);
-				buf.writeByte(this.value);
-				buf.writeByte(this.value2);
+				buf.writeByte(this.props.isRingActiveI());
+				buf.writeByte(this.props.getMarriageNum());
+				//send team list
+				for(int i = 0; i < 6; i++) {
+					if(props.getTeamList(i) != null) {
+						buf.writeInt(props.getTeamList(i).getEntityId());
+						buf.writeBoolean(props.getTeamSelected(i));
+					}
+					else {
+						buf.writeInt(-1);
+						buf.writeBoolean(false);
+					}
+				}
 			}
 			break;
 		}

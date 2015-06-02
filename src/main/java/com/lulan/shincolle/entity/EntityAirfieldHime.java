@@ -4,36 +4,14 @@ import java.util.List;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.ai.EntityAILookIdle;
-import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
-import net.minecraft.entity.ai.EntityAIOpenDoor;
-import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
-import com.lulan.shincolle.ai.EntityAIShipAttackOnCollide;
 import com.lulan.shincolle.ai.EntityAIShipCarrierAttack;
-import com.lulan.shincolle.ai.EntityAIShipFlee;
-import com.lulan.shincolle.ai.EntityAIShipFloating;
-import com.lulan.shincolle.ai.EntityAIShipFollowOwner;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
-import com.lulan.shincolle.ai.EntityAIShipSit;
-import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
-import com.lulan.shincolle.entity.renderentity.BasicRenderEntity;
-import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.network.S2CSpawnParticle;
-import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.LogHelper;
-
-import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
 public class EntityAirfieldHime extends BasicEntityShipLarge {
 	
@@ -63,29 +41,9 @@ public class EntityAirfieldHime extends BasicEntityShipLarge {
 	public void setAIList() {
 		super.setAIList();
 		
-		//high priority
-		this.tasks.addTask(1, new EntityAIShipSit(this));	   				   //0101
-		this.tasks.addTask(2, new EntityAIShipFlee(this));					   //0111
-		this.tasks.addTask(3, new EntityAIShipFollowOwner(this));	   		   //0111
-		
 		//use range attack
 		this.tasks.addTask(11, new EntityAIShipCarrierAttack(this));		   //0100
 		this.tasks.addTask(12, new EntityAIShipRangeAttack(this));			   //0011
-		
-		//use melee attack
-		if(this.getStateFlag(ID.F.UseMelee)) {
-			this.tasks.addTask(13, new EntityAIShipAttackOnCollide(this, 1D, true));   //0011
-			this.tasks.addTask(14, new EntityAIMoveTowardsTarget(this, 1D, 48F));  //0001
-		}
-		
-		//idle AI
-		//moving
-		this.tasks.addTask(21, new EntityAIOpenDoor(this, true));			   //0000
-		this.tasks.addTask(23, new EntityAIShipFloating(this));				   //0101
-		this.tasks.addTask(24, new EntityAIShipWatchClosest(this, EntityPlayer.class, 6F, 0.05F)); //0010
-		this.tasks.addTask(25, new EntityAIWander(this, 0.8D));				   //0001
-		this.tasks.addTask(25, new EntityAILookIdle(this));					   //0011
-
 	}
 	
 	//check entity state every tick
@@ -106,7 +64,7 @@ public class EntityAirfieldHime extends BasicEntityShipLarge {
 					int healCount = (int)(this.getLevel() / 50) + 1;
 		            EntityLivingBase hitEntity = null;
 		            List hitList = null;
-		            hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, this.boundingBox.expand(16D, 16D, 16D));
+		            hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, this.boundingBox.expand(12D, 12D, 12D));
 		           
 		            for(int i = 0; i < hitList.size(); i++) {
 		            	//¸É¦å¦WÃB¨S¤F, break
@@ -140,6 +98,8 @@ public class EntityAirfieldHime extends BasicEntityShipLarge {
   	  	  	  			
   	  	  	  			//set riding entity
 	  	  	  			this.mountEntity(mount);
+	  	  	  			
+	  	  	  			//sync rider
   	  	  			}
   	  	  		}
   	  	  		else {

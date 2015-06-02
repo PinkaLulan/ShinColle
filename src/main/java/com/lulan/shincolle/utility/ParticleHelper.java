@@ -13,6 +13,7 @@ import com.lulan.shincolle.client.particle.EntityFX91Type;
 import com.lulan.shincolle.client.particle.EntityFXChi;
 import com.lulan.shincolle.client.particle.EntityFXLaser;
 import com.lulan.shincolle.client.particle.EntityFXSpray;
+import com.lulan.shincolle.client.particle.EntityFXTeam;
 import com.lulan.shincolle.client.particle.EntityFXTexts;
 import com.lulan.shincolle.proxy.ClientProxy;
 
@@ -365,6 +366,10 @@ public class ParticleHelper {
 				world.spawnParticle("largesmoke", posX, posY+i*0.3D, posZ, lookX, lookY, lookZ);
 			}
 			break;
+		case 25:	//arrow particle: for move or attack target mark
+			EntityFXTeam particleTeam = new EntityFXTeam(world, (float)lookX, (int)lookY, posX, posY, posZ);
+			Minecraft.getMinecraft().effectRenderer.addEffect(particleTeam);
+			break;
 		default:
 			break;		
 		}
@@ -390,6 +395,10 @@ public class ParticleHelper {
 		case 1:		//氣彈特效 par1:scale par2:type
 			EntityFXChi particleChi1 = new EntityFXChi(world, ent, (float)par1, (int)par2);
         	Minecraft.getMinecraft().effectRenderer.addEffect(particleChi1);
+			break;
+		case 2:		//隊伍圈選特效 par1:scale par2:type
+			EntityFXTeam particleTeam = new EntityFXTeam(world, ent, (float)par1, (int)par2);
+			Minecraft.getMinecraft().effectRenderer.addEffect(particleTeam);
 			break;
 		default:
 			break;

@@ -187,6 +187,10 @@ gui.shincolle:modernkit=Right click on seikan to +1 random attribute.
 gui.shincolle:repairgoddess=Prevents sinking from deadly damage.
 gui.shincolle:ringText=Marriages
 gui.shincolle:eggText=Require Level
+gui.shincolle:pointer0=Single Mode
+gui.shincolle:pointer1=Group Mode
+gui.shincolle:pointer2=Formation Mode
+gui.shincolle:pointer3=(Sneaking Right Click to Change Mode)
 
 # Chat message
 chat.shincolle:bossspawn1=A Fleet Walks on the Water!

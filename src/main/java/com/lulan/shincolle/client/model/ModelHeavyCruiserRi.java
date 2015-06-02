@@ -298,11 +298,6 @@ public class ModelHeavyCruiserRi extends ModelBase {
         this.GlowBodyMain.addChild(this.GlowArmLeft);
         this.GlowBodyMain.addChild(this.GlowArmRight);
         this.GlowNeck.addChild(this.GlowHead);
-        this.GlowHead.addChild(this.Face0);
-        this.GlowHead.addChild(this.Face1);
-        this.GlowHead.addChild(this.Face2);
-        this.GlowHead.addChild(this.Face3);
-        this.GlowHead.addChild(this.Face4);
         this.GlowArmLeft.addChild(this.GlowEquipLeftBase);
         this.GlowEquipLeftBase.addChild(this.GlowEquipLeftBase3);
         this.GlowEquipLeftBase3.addChild(this.EquipLeftTooth);
@@ -311,7 +306,11 @@ public class ModelHeavyCruiserRi extends ModelBase {
         this.GlowEquipRightBase.addChild(this.GlowEquipRightBase3);
         this.GlowEquipRightBase2.addChild(this.EquipRightTooth1);
         this.GlowEquipRightBase3.addChild(this.EquipRightTooth2);
-        
+        this.GlowHead.addChild(this.Face0);
+        this.GlowHead.addChild(this.Face1);
+        this.GlowHead.addChild(this.Face2);
+        this.GlowHead.addChild(this.Face3);
+        this.GlowHead.addChild(this.Face4);
     }
 
     @Override

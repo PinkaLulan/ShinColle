@@ -1,30 +1,26 @@
 package com.lulan.shincolle.network;
 
-import java.util.UUID;
-
-import net.minecraft.client.Minecraft;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 
+import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.proxy.ServerProxy;
+import com.lulan.shincolle.entity.ExtendPlayerProps;
+import com.lulan.shincolle.entity.IShipEmotion;
+import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.BasicTileEntity;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
-import com.lulan.shincolle.utility.ParticleHelper;
 
-import io.netty.buffer.ByteBuf;
-import cpw.mods.fml.common.network.ByteBufUtils;
+import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 /**CLIENT TO SERVER : GUI INPUT PACKETS
  * 用於將GUI的操作發送到server
@@ -60,15 +56,68 @@ public class C2SGUIPackets implements IMessage {
         this.value2 = value2;
     }
 	
-	//type 2: player gui click
+	/**type 2: player gui click: button = button id, value = button value
+	 * type 3: pointer click (add team): button = -1, value = team slot, value2 = entity id
+	 * type 4: pointer click (attack target): button = -2, value = meta, value2 = target id
+	 * type 7: pointer click (set sitting): button = -4, value = meta, value2 = entity id
+	 * type 8: open ship GUI: button = -5, value2 = entity id
+	 * type 9: sync player item
+	 */
 	public C2SGUIPackets(EntityPlayer player, int button, int value, int value2) {
         this.player = player;
         this.worldID = player.worldObj.provider.dimensionId;
-        this.type = 2;
         this.button = button;
         this.value = value;
         this.value2 = value2;
+        
+        //button type
+        switch(button) {
+        default:	//player點gui按鈕的packet
+        	this.type = 2;
+        	break;
+        case -1:	//pointer click: add team
+        	this.type = 3;
+        	break;
+        case -2:	//pointer click: attack target
+        	this.type = 4;
+        	break;
+        case -3:	//open ship GUI
+        	this.type = 8;
+        	break;
+        case -4:	//pointer click: set sitting
+        	this.type = 7;
+        	break;
+        case -5:	//sync player item
+        	this.type = 9;
+        	break;
+        }
     }
+	
+	/**type 5: pointer click (move): button = -1, value = meta, value2 = side, posXYZ = move target 
+	 * type 6: pointer click (set select): button = -2, value = select, value2 = entity id, posX = meta
+	 */
+	public C2SGUIPackets(EntityPlayer player, int button, int value, int value2, int posX, int posY, int posZ) {
+        this.player = player;
+        this.worldID = player.worldObj.provider.dimensionId;
+        this.button = button;
+        this.value = value;
+        this.value2 = value2;
+        this.posX = posX;
+        this.posY = posY;
+        this.posZ = posZ;
+        
+        switch(button) {
+        default:	//unknow packet
+        	this.type = -1;
+        	break;
+        case -1:	//pointer right click: move
+        	this.type = 5;
+        	break;
+        case -2:	//pointer click: set ship selected
+        	this.type = 6;
+        	break;
+        }
+	}
 	
 	//接收packet方法
 	@Override
@@ -115,15 +164,161 @@ public class C2SGUIPackets implements IMessage {
 		case 2: //player gui click
 			{
 				this.entityID = buf.readInt();
-				this.button = buf.readByte();
-				this.value = buf.readByte();
-				this.value2 = buf.readByte();
+				this.worldID = buf.readInt();
+				this.button = buf.readInt();
+				this.value = buf.readInt();
+				this.value2 = buf.readInt();
 				
 				//get player
 				player = (EntityPlayer) EntityHelper.getEntityByID(entityID, worldID, false);
 				
 				//set value
 //				EntityHelper.setEntityByGUI(entity, (int)button, (int)value);
+			}
+			break;
+		case 3: //pointer click: add team
+			{
+				this.entityID = buf.readInt();
+				this.worldID = buf.readInt();
+				this.button = buf.readInt();	//no use
+				this.value = buf.readInt();		//no use, always 0 (team index)
+				this.value2 = buf.readInt();	//entity id
+				
+				Entity getEnt = EntityHelper.getEntityByID(entityID, worldID, false);
+				Entity getEnt2 = null;
+
+				if(value2 >= 0) {
+					getEnt2 = EntityHelper.getEntityByID(value2, worldID, false);
+				}
+				
+				if(getEnt instanceof EntityPlayer) {
+					this.player = (EntityPlayer) getEnt;
+					ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+					BasicEntityShip teamship = null;
+					
+					if(extProps != null) {
+						//點到的是ship entity, 則add team
+						if(getEnt2 instanceof BasicEntityShip) {
+							extProps.setTeamList(value, (BasicEntityShip) getEnt2, false);
+						}
+						//其他entity or null, 則視為清空該team slot
+						else {
+							extProps.setTeamList(value, null, false);
+						}
+						
+						//sync team list to client
+						CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps), (EntityPlayerMP) player);
+					}
+				}
+			}
+			break;
+		case 4: //pointer click: attack target
+			{
+				this.entityID = buf.readInt();
+				this.worldID = buf.readInt();
+				this.button = buf.readInt();	//no use
+				this.value = buf.readInt();		//meta
+				this.value2 = buf.readInt();	//target id
+				
+				Entity getEnt = EntityHelper.getEntityByID(entityID, worldID, false);
+				Entity getEnt2 = EntityHelper.getEntityByID(value2, worldID, false);
+				
+				if(getEnt instanceof EntityPlayer) {
+					this.player = (EntityPlayer) getEnt;
+					EntityHelper.applyTeamAttack(player, value, getEnt2);
+				}
+			}
+			break;
+		case 5: //pointer click: moving
+			{
+				this.entityID = buf.readInt();
+				this.worldID = buf.readInt();
+				this.button = buf.readInt();	//no use
+				this.value = buf.readInt();		//meta
+				this.value2 = buf.readInt();	//block side
+				this.posX = buf.readInt();		//tar X
+				this.posY = buf.readInt();		//tar Y
+				this.posZ = buf.readInt();		//tar Z
+				
+				Entity getEnt = EntityHelper.getEntityByID(entityID, worldID, false);
+				
+				if(getEnt instanceof EntityPlayer) {
+					this.player = (EntityPlayer) getEnt;
+					EntityHelper.applyTeamMove(player, value, value2, posX, posY, posZ);
+				}
+			}
+			break;
+		case 6: //pointer click: set select
+			{
+				this.entityID = buf.readInt();
+				this.worldID = buf.readInt();
+				this.button = buf.readInt();	//no use
+				this.value = buf.readInt();		//select state
+				this.value2 = buf.readInt();	//entity id
+				this.posX = buf.readInt();		//pointer meta
+				this.posY = buf.readInt();		//no use
+				this.posZ = buf.readInt();		//no use
+				
+				Entity getEnt = EntityHelper.getEntityByID(entityID, worldID, false);
+				
+				if(getEnt instanceof EntityPlayer) {
+					this.player = (EntityPlayer) getEnt;
+					boolean select = (value > 0 ? true : false);
+
+					EntityHelper.applyTeamSelect(player, posX, value2, select);
+				}
+			}
+			break;
+		case 7: //pointer click: set sitting
+			{
+				this.entityID = buf.readInt();
+				this.worldID = buf.readInt();
+				this.button = buf.readInt();	//no use
+				this.value = buf.readInt();		//meta
+				this.value2 = buf.readInt();	//entity id
+				
+				Entity getEnt = EntityHelper.getEntityByID(entityID, worldID, false);
+				
+				if(getEnt instanceof EntityPlayer) {
+					this.player = (EntityPlayer) getEnt;
+					EntityHelper.applyTeamSit(player, value, value2);
+				}
+			}
+			break;
+		case 8:	//open ship GUI
+			{
+				this.entityID = buf.readInt();
+				this.worldID = buf.readInt();
+				this.button = buf.readInt();	//no use
+				this.value = buf.readInt();		//no use
+				this.value2 = buf.readInt();	//entity id
+				
+				Entity getEnt = EntityHelper.getEntityByID(entityID, worldID, false);
+				Entity getEnt2 = EntityHelper.getEntityByID(value2, worldID, false);
+				
+				if(getEnt instanceof EntityPlayer && getEnt2 instanceof BasicEntityShip) {
+					this.player = (EntityPlayer) getEnt;
+					this.entity = (BasicEntityShip) getEnt2;
+					FMLNetworkHandler.openGui(player, ShinColle.instance, ID.G.SHIPINVENTORY, player.worldObj, entity.getEntityId(), 0, 0);
+				}
+			}
+			break;
+		case 9:	//open ship GUI
+			{
+				this.entityID = buf.readInt();
+				this.worldID = buf.readInt();
+				this.button = buf.readInt();	//no use
+				this.value = buf.readInt();		//item meta
+				this.value2 = buf.readInt();	//no use
+				
+				Entity getEnt = EntityHelper.getEntityByID(entityID, worldID, false);
+				
+				if(getEnt instanceof EntityPlayer) {
+					this.player = (EntityPlayer) getEnt;
+					if(this.player.inventory.getCurrentItem() != null) {
+						this.player.inventory.getCurrentItem().setItemDamage(value);
+					}
+				}
 			}
 			break;
 		}
@@ -155,13 +350,32 @@ public class C2SGUIPackets implements IMessage {
 			}
 			break;
 		case 2:	//ship entity gui click
+		case 3:	//pointer click: add team
+		case 4:	//pointer click: attack target
+		case 7:	//pointer click: set sitting
+		case 8:	//open ship GUI
+		case 9:	//sync player item
 			{
-				buf.writeByte(2);
-				buf.writeInt(this.entity.getEntityId());
+				buf.writeByte(this.type);
+				buf.writeInt(this.player.getEntityId());
 				buf.writeInt(this.worldID);
-				buf.writeByte(this.button);
-				buf.writeByte(this.value);
-				buf.writeByte(this.value2);
+				buf.writeInt(this.button);
+				buf.writeInt(this.value);
+				buf.writeInt(this.value2);
+			}
+			break;
+		case 5:	//pointer click: moving
+		case 6:	//pointer click: set select
+			{
+				buf.writeByte(this.type);
+				buf.writeInt(this.player.getEntityId());
+				buf.writeInt(this.worldID);
+				buf.writeInt(this.button);
+				buf.writeInt(this.value);
+				buf.writeInt(this.value2);
+				buf.writeInt(this.posX);
+				buf.writeInt(this.posY);
+				buf.writeInt(this.posZ);
 			}
 			break;
 		}

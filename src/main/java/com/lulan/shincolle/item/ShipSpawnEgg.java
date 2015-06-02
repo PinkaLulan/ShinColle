@@ -158,7 +158,6 @@ public class ShipSpawnEgg extends Item {
   		entity.setPathToEntity((PathEntity)null);
   		entity.setAttackTarget((EntityLivingBase)null);
   		entity.func_152115_b(player.getUniqueID().toString());	//set owner uuid
-  		entity.setOwnerName(player.getDisplayName());
   		
   		//指定ship egg, 讀取nbt來給屬性
 		if(itemstack.getItemDamage() > 1) {
@@ -188,7 +187,14 @@ public class ShipSpawnEgg extends Item {
 				entity.setBonusPoint(ID.HIT, (byte)attrs[6]);
 				entity.setEntityFlagI(ID.F.IsMarried, attrs[7]);
 
+				//load ship level
 				entity.setShipLevel(attrs[0], true);
+				
+				//load owner UUID
+				String ownerid = nbt.getString("owner");
+				if(ownerid != null && ownerid.length() > 5) {
+					entity.func_152115_b(nbt.getString("owner"));
+				}
 			}
 			else {
 				entity.setShipLevel(1, true);

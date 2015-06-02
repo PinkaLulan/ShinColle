@@ -762,4 +762,8 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack {
 		return this.defValue;
 	}
 
+	@Override
+	public void setEntitySit() {}
+	
+
 }

@@ -1,4 +1,6 @@
-package com.lulan.shincolle.entity;
+package com.lulan.shincolle.entity.other;
+
+import com.lulan.shincolle.entity.IShipEmotion;
 
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.world.World;
@@ -107,5 +109,11 @@ public class EntityTest extends EntityLiving implements IShipEmotion {
 
 	@Override
 	public void setStateMinor(int state, int par1) {}
+
+	@Override
+	public void setEntitySit() {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

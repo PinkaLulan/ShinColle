@@ -1,38 +1,39 @@
 package com.lulan.shincolle.entity;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
+import net.minecraft.entity.ai.EntityAILookIdle;
+import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
+import net.minecraft.entity.ai.EntityAIOpenDoor;
 import net.minecraft.entity.ai.EntityAIOwnerHurtByTarget;
 import net.minecraft.entity.ai.EntityAIOwnerHurtTarget;
-import net.minecraft.entity.ai.EntityMoveHelper;
-import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.pathfinding.PathEntity;
-import net.minecraft.pathfinding.PathNavigate;
-import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
-import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.ShinColle;
+import com.lulan.shincolle.ai.EntityAIShipAttackOnCollide;
+import com.lulan.shincolle.ai.EntityAIShipFlee;
+import com.lulan.shincolle.ai.EntityAIShipFloating;
+import com.lulan.shincolle.ai.EntityAIShipFollowOwner;
+import com.lulan.shincolle.ai.EntityAIShipGuarding;
 import com.lulan.shincolle.ai.EntityAIShipInRangeTarget;
+import com.lulan.shincolle.ai.EntityAIShipSit;
+import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
-import com.lulan.shincolle.ai.path.ShipPathEntity;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
-import com.lulan.shincolle.ai.path.ShipPathPoint;
 import com.lulan.shincolle.client.inventory.ContainerShipInventory;
 import com.lulan.shincolle.crafting.EquipCalc;
 import com.lulan.shincolle.handler.ConfigHandler;
@@ -56,7 +57,7 @@ import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
  */
 public abstract class BasicEntityShip extends EntityTameable implements IShipCannonAttack, IShipFloating {
 
-	protected ExtendShipProps ExtProps;	//entity額外NBT紀錄
+	protected ExtendShipProps ExtProps;			//entity額外NBT紀錄
 	protected ShipPathNavigate shipNavigator;	//水空移動用navigator
 	protected ShipMoveHelper shipMoveHelper;
 	
@@ -76,13 +77,14 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	protected float[] StateFinal;
 	/**minor states: 0:ShipLevel 1:Kills 2:ExpCurrent 3:ExpNext 4:NumAmmoLight 
 	 * 5:NumAmmoHeavy 6:NumGrudge 7:NumAirLight 8:NumAirHeavy 9:immunity time 
-	 * 10:followMin 11:followMax 12:FleeHP 13:TargetAIType*/
+	 * 10:followMin 11:followMax 12:FleeHP 13:TargetAIType 14:guardX 15:guardY 16:guardZ*/
 	protected int[] StateMinor;
 	/**equip effect: 0:critical 1:doubleHit 2:tripleHit 3:baseMiss*/
 	protected float[] EffectEquip;
 	/**EntityState: 0:State 1:Emotion 2:Emotion2 3:HP State 4:State2 5:AttackPhase*/
 	protected byte[] StateEmotion;
-	/**EntityFlag: 0:canFloatUp 1:isMarried 2:noFuel 3:canMelee 4:canAmmoLight 5:canAmmoHeavy 6:canAirLight 7:canAirHeavy 8:headTilt(client only) 9:canRingEffect 10:canDrop*/
+	/**EntityFlag: 0:canFloatUp 1:isMarried 2:noFuel 3:canMelee 4:canAmmoLight 5:canAmmoHeavy 
+	 * 6:canAirLight 7:canAirHeavy 8:headTilt(client only) 9:canRingEffect 10:canDrop 11:canFollow*/
 	protected boolean[] StateFlag;
 	/**BonusPoint: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT*/
 	protected byte[] BonusPoint;
@@ -102,10 +104,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		isImmuneToFire = true;	//set ship immune to lava
 		StateEquip = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F};
 		StateFinal = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F};
-		StateMinor = new int[] {1, 0, 0, 40, 0, 0, 0, 0, 0, 0, 2, 14, 35, 1};
+		StateMinor = new int[] {1, 0, 0, 40, 0, 0, 0, 0, 0, 0, 2, 14, 35, 1, -1, -1, -1};
 		EffectEquip = new float[] {0F, 0F, 0F, 0F};
 		StateEmotion = new byte[] {0, 0, 0, 0, 0, 0};
-		StateFlag = new boolean[] {false, false, true, false, true, true, true, true, false, true, true};
+		StateFlag = new boolean[] {false, false, true, false, true, true, true, true, false, true, true, false};
 		BonusPoint = new byte[] {0, 0, 0, 0, 0, 0};
 		TypeModify = new float[] {1F, 1F, 1F, 1F, 1F, 1F};
 		ModelPos = new float[] {0F, 0F, 0F, 50F};
@@ -195,6 +197,26 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.getNavigator().setEnterDoors(true);
 		this.getNavigator().setAvoidsWater(false);
 		this.getNavigator().setCanSwim(true);
+		
+		//high priority
+		this.tasks.addTask(1, new EntityAIShipSit(this));	   		//0101
+		this.tasks.addTask(2, new EntityAIShipFlee(this));			//0111
+		this.tasks.addTask(3, new EntityAIShipGuarding(this));		//0111
+		this.tasks.addTask(4, new EntityAIShipFollowOwner(this));	//0111
+		
+		//use melee attack
+		if(this.getStateFlag(ID.F.UseMelee)) {
+			this.tasks.addTask(15, new EntityAIShipAttackOnCollide(this, 1D, true));//0011
+			this.tasks.addTask(16, new EntityAIMoveTowardsTarget(this, 1D, 48F));	//0001
+		}
+		
+		//idle AI
+		//moving
+		this.tasks.addTask(21, new EntityAIOpenDoor(this, true));	//0000
+		this.tasks.addTask(23, new EntityAIShipFloating(this));		//0101
+		this.tasks.addTask(24, new EntityAIShipWatchClosest(this, EntityPlayer.class, 6F, 0.05F)); //0010
+		this.tasks.addTask(25, new EntityAIWander(this, 0.8D));		//0001
+		this.tasks.addTask(25, new EntityAILookIdle(this));			//0011
 	}
 	
 	//setup target AI: par1: 0:passive 1:active
@@ -609,6 +631,22 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		BonusPoint[state] = par1;
 	}
 	
+	@Override
+	public void setEntitySit() {
+		this.setSitting(!this.isSitting());
+        this.isJumping = false;
+        this.getShipNavigate().clearPathEntity();
+        this.setPathToEntity((PathEntity)null);
+        this.setTarget((Entity)null);
+        this.setAttackTarget((EntityLivingBase)null);
+        
+        if(this.ridingEntity instanceof BasicEntityMount) {
+        	((BasicEntityMount) this.ridingEntity).getShipNavigate().clearPathEntity();
+        	((BasicEntityMount) this.ridingEntity).getNavigator().clearPathEntity();
+        	((BasicEntityMount) this.ridingEntity).setAttackTarget(null);
+        }
+	}
+	
 	//called when load nbt data or GUI click
 	@Override
 	public void setStateFlag(int id, boolean par1) {
@@ -883,7 +921,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			}
 			
 			//use lead
-			if(itemstack.getItem() == Items.lead && this.allowLeashing()) {	
+			if(itemstack.getItem() == Items.lead && this.allowLeashing()) {
+				this.getShipNavigate().clearPathEntity();
 				this.setLeashedToEntity(player, true);
 				return true;
 	        }
@@ -904,11 +943,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		
 		//click ship without shift = sit
 		if(!this.worldObj.isRemote && !player.isSneaking() && this.getOwner() != null && player.getUniqueID().equals(this.getOwner().getUniqueID())) {			
-			this.setSitting(!this.isSitting());
-            this.isJumping = false;
-            this.setPathToEntity((PathEntity)null);
-            this.setTarget((Entity)null);
-            this.setAttackTarget((EntityLivingBase)null);
+			this.setEntitySit();
             return true;
         }
 
@@ -1058,7 +1093,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	@Override
 	public void onUpdate() {
 		super.onUpdate();
-
+//		LogHelper.info("DEBUG : entity id "+this.worldObj.isRemote+" "+this.getEntityId());
 		EntityHelper.checkDepth(this);
 //		LogHelper.info("DEBUG : mount depth "+this.ShipDepth+" "+this.worldObj.isRemote);
 		//client side

@@ -90,15 +90,6 @@ public class EntityDestroyerShimakazeBoss extends BasicEntityShipBoss {
 		//use range attack
 		this.tasks.addTask(1, new EntityAIShipRangeAttack(this));			   //0011
 		this.tasks.addTask(2, new EntityAIMoveTowardsTarget(this, 1D, 40F));   //0001
-		
-		//idle AI
-		//moving
-		this.tasks.addTask(21, new EntityAIOpenDoor(this, true));			   //0000
-		this.tasks.addTask(22, new EntityAIShipFloating(this));				   //0101
-		this.tasks.addTask(23, new EntityAIShipWatchClosest(this, EntityPlayer.class, 6F, 0.1F)); //0010
-		this.tasks.addTask(24, new EntityAIWander(this, 0.8D));				   //0001
-		this.tasks.addTask(25, new EntityAILookIdle(this));					   //0011
-
 	}
 	
 	//num rensouhou++

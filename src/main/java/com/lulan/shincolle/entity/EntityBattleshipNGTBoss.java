@@ -85,15 +85,6 @@ public class EntityBattleshipNGTBoss extends BasicEntityShipBoss {
 		//use range attack
 		this.tasks.addTask(1, new EntityAIShipRangeAttack(this));			   //0011
 		this.tasks.addTask(2, new EntityAIMoveTowardsTarget(this, 1D, 40F));   //0001
-		
-		//idle AI
-		//moving
-		this.tasks.addTask(21, new EntityAIOpenDoor(this, true));			   //0000
-		this.tasks.addTask(22, new EntityAIShipFloating(this));				   //0101
-		this.tasks.addTask(23, new EntityAIShipWatchClosest(this, EntityPlayer.class, 6F, 0.1F)); //0010
-		this.tasks.addTask(24, new EntityAIWander(this, 0.8D));				   //0001
-		this.tasks.addTask(25, new EntityAILookIdle(this));					   //0011
-
 	}
 	
 	//num rensouhou++
@@ -103,7 +94,7 @@ public class EntityBattleshipNGTBoss extends BasicEntityShipBoss {
 
   		//client side
   		if(worldObj.isRemote) {
-  			if(this.ticksExisted % 10 == 0) {
+  			if(this.ticksExisted % 5 == 0) {
   				if(getStateEmotion(ID.S.Phase) == 1 || getStateEmotion(ID.S.Phase) == 3) {
    	  				//生成氣彈特效
   	  				ParticleHelper.spawnAttackParticleAtEntity(this, 0.3D, 2D, 0D, (byte)1);
@@ -111,7 +102,7 @@ public class EntityBattleshipNGTBoss extends BasicEntityShipBoss {
 			
   				if(getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
   					//計算煙霧位置
-  	  				float[] partPos = ParticleHelper.rotateParticleByAxis(-1.8F, 0F, (this.rotationYawHead % 360) / 57.2957F, 1F);	
+  	  				float[] partPos = ParticleHelper.rotateParticleByAxis(-1.8F, 0F, (this.renderYawOffset % 360) / 57.2957F, 1F);	
   	  				//生成裝備冒煙特效
   	  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], posY+5.5D, posZ+partPos[0], 0D, 0D, 0D, (byte)24);
   				}	

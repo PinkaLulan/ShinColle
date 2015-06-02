@@ -86,6 +86,7 @@ public class ID {
 		public static final byte HeadTilt = 8;			//client only, no sync
 		public static final byte UseRingEffect = 9;
 		public static final byte CanDrop = 10;			//server only, no sync
+		public static final byte CanFollow = 11;			//server only, no sync
 	}
 	
 	//GUI ID
@@ -119,6 +120,9 @@ public class ID {
 		public static final byte FollowMax = 11;
 		public static final byte FleeHP = 12;
 		public static final byte TargetAI = 13;
+		public static final byte GuardX = 14;
+		public static final byte GuardY = 15;
+		public static final byte GuardZ = 16;
 	}
 	
 	//Array ID: ring effect

@@ -55,30 +55,9 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
 	
 	public void setAIList() {
 		super.setAIList();
-		
-		//high priority
-		this.tasks.addTask(1, new EntityAIShipSit(this));	   				   //0101
-		this.tasks.addTask(2, new EntityAIShipFlee(this));					   //0111
-		this.tasks.addTask(3, new EntityAIShipFollowOwner(this));	   		   //0111
-		
 		//use range attack
 		this.tasks.addTask(11, new EntityAIShipCarrierAttack(this));		   //0100
 		this.tasks.addTask(12, new EntityAIShipRangeAttack(this));			   //0011
-		
-		//use melee attack
-		if(this.getStateFlag(ID.F.UseMelee)) {
-			this.tasks.addTask(13, new EntityAIShipAttackOnCollide(this, 1D, true));   //0011
-			this.tasks.addTask(14, new EntityAIMoveTowardsTarget(this, 1D, 48F));  //0001
-		}
-		
-		//idle AI
-		//moving
-		this.tasks.addTask(21, new EntityAIOpenDoor(this, true));			   //0000
-		this.tasks.addTask(23, new EntityAIShipFloating(this));				   //0101
-		this.tasks.addTask(24, new EntityAIShipWatchClosest(this, EntityPlayer.class, 6F, 0.05F)); //0010
-		this.tasks.addTask(25, new EntityAIWander(this, 0.8D));				   //0001
-		this.tasks.addTask(25, new EntityAILookIdle(this));					   //0011
-
 	}
 
 	//增加艦載機數量計算

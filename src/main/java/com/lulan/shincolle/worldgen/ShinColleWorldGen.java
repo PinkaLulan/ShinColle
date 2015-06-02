@@ -84,7 +84,7 @@ public class ShinColleWorldGen implements IWorldGenerator {
 			for(int i = 0; i < ConfigHandler.polyGravelBaseRate; i++) {
 				posX = x + rand.nextInt(16);
 				posZ = z + rand.nextInt(16);
-				posY = world.getTopSolidOrLiquidBlock(posX, posZ);	//取得高度最高的實體方塊(即水底)
+				posY = world.getTopSolidOrLiquidBlock(posX, posZ);	//取得高度最高的實體方塊+1格(即水底+1)
 				
 				genPolyGravel.generate(world, rand, posX, posY, posZ);
 			}

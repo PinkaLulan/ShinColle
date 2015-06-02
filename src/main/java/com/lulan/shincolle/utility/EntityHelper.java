@@ -10,6 +10,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityItemFrame;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -18,7 +19,10 @@ import net.minecraft.pathfinding.PathEntity;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fluids.BlockFluidBase;
@@ -36,8 +40,10 @@ import com.lulan.shincolle.entity.EntityRensouhou;
 import com.lulan.shincolle.entity.EntityRensouhouS;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
 import com.lulan.shincolle.entity.IShipAttackBase;
+import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -47,6 +53,8 @@ import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class EntityHelper {
 
@@ -89,9 +97,9 @@ public class EntityHelper {
 	}
 	
 	/**check is same owner for ship (host's owner == target's owner) */
-	public static boolean checkSameOwner(EntityLivingBase host, EntityLivingBase target) {
-		EntityLivingBase getOwnerA = null;
-		EntityLivingBase getOwnerB = null;
+	public static boolean checkSameOwner(Entity host, Entity target) {
+		Entity getOwnerA = null;
+		Entity getOwnerB = null;
 		
 		if(host != null && target != null) {
 			//for hostile mob
@@ -157,7 +165,7 @@ public class EntityHelper {
 	}
 	
 	/**get owner from entity */
-	public static EntityLivingBase getOwnerFromEntity(EntityLivingBase host) {
+	public static Entity getOwnerFromEntity(Entity host) {
 		//get owner from target
 		//若為玩家, 則直接回傳玩家
 		if(host instanceof EntityPlayer) {
@@ -265,7 +273,7 @@ public class EntityHelper {
 		return null;	//player offline
 	}
 	
-	/**process player sync data */
+	/**sync player extend props data by integer */
 	public static void setPlayerExtProps(int[] value) {
 		EntityPlayer player = ClientProxy.getClientPlayer();
 		ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
@@ -274,11 +282,37 @@ public class EntityHelper {
 			extProps.setRingActiveI(value[0]);
 			extProps.setMarriageNum(value[1]);
 			
-			//disable fly
+			//set team list
+			BasicEntityShip teamship = null;
+			for(int i = 0; i < 6; i++) {
+				if(value[i+2] <= 0) {
+					extProps.setTeamList(i, null, true);
+				}
+				else {
+					teamship = (BasicEntityShip) EntityHelper.getEntityByID(value[i+2], 0, true);
+					LogHelper.info("DEBUG : player extend props: set team "+i+" "+teamship);
+					extProps.setTeamList(i, teamship, true);
+				}
+			}
+			
+			//disable fly if non-active
 			if(!extProps.isRingActive() && !player.capabilities.isCreativeMode && extProps.isRingFlying()) {
 				LogHelper.info("DEBUG : cancel fly by right click");
 				player.capabilities.isFlying = false;
 				extProps.setRingFlying(false);
+			}
+		}
+	}
+	
+	/**sync player extend props data by boolean */
+	public static void setPlayerExtProps(boolean[] value) {
+		EntityPlayer player = ClientProxy.getClientPlayer();
+		ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+		
+		if(extProps != null) {
+			//set team selected
+			for(int i = 0; i < 6; i++) {
+				extProps.setTeamSelected(i, value[i]);
 			}
 		}
 	}
@@ -539,10 +573,10 @@ public class EntityHelper {
     			        TargetPoint point = new TargetPoint(entity2.dimension, entity2.posX, entity2.posY, entity2.posZ, 48D);
     					//路徑點畫紅色, 目標點畫綠色
     					if(i == pathtemp.getCurrentPathIndex()) {
-    						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(entity2, 16, pointtemp.xCoord, pointtemp.yCoord+0.5D, pointtemp.zCoord, 0F, 0F, 0F, false), point);
+    						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(entity2, 16, pointtemp.xCoord + entity2.width * 0.5D, pointtemp.yCoord + 0.5D, pointtemp.zCoord + entity2.width * 0.5D, 0F, 0F, 0F, false), point);
     					}
     					else {
-    						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(entity2, 18, pointtemp.xCoord, pointtemp.yCoord+0.5D, pointtemp.zCoord, 0F, 0F, 0F, false), point);
+    						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(entity2, 18, pointtemp.xCoord + entity2.width * 0.5D, pointtemp.yCoord + 0.5D, pointtemp.zCoord + entity2.width * 0.5D, 0F, 0F, 0F, false), point);
     					}
     				}
     			}
@@ -570,14 +604,296 @@ public class EntityHelper {
 			        TargetPoint point = new TargetPoint(entity2.dimension, entity2.posX, entity2.posY, entity2.posZ, 48D);
 					//路徑點畫紅色, 目標點畫綠色
 					if(i == pathtemp2.getCurrentPathIndex()) {
-						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(entity2, 16, pointtemp2.xCoord, pointtemp2.yCoord+0.5D, pointtemp2.zCoord, 0F, 0F, 0F, false), point);
+						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(entity2, 16, pointtemp2.xCoord + entity2.width * 0.5D, pointtemp2.yCoord + 0.5D, pointtemp2.zCoord + entity2.width * 0.5D, 0F, 0F, 0F, false), point);
 					}
 					else {
-						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(entity2, 17, pointtemp2.xCoord, pointtemp2.yCoord+0.5D, pointtemp2.zCoord, 0F, 0F, 0F, false), point);
+						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(entity2, 17, pointtemp2.xCoord + entity2.width * 0.5D, pointtemp2.yCoord + 0.5D, pointtemp2.zCoord + entity2.width * 0.5D, 0F, 0F, 0F, false), point);
 					}
 				}
 			}
         }
+	}
+	
+	/**ray trace for block, include liquid block
+	 * 
+	 */
+	@SideOnly(Side.CLIENT)
+    public static MovingObjectPosition getPlayerMouseOverBlock(double dist, float duringTicks) {
+        EntityPlayer player = ClientProxy.getClientPlayer();
+		
+		Vec3 vec3 = player.getPosition(duringTicks);
+        Vec3 vec31 = player.getLook(duringTicks);
+        Vec3 vec32 = vec3.addVector(vec31.xCoord * dist, vec31.yCoord * dist, vec31.zCoord * dist);
+        
+        //func_147447_a(所有視線追蹤皆用此方法) 參數: entity位置, entity視線最遠位置, 是否抓液體方塊, ??, 距離內沒抓到任何東西回傳MISS(而不是回傳null)
+        return player.worldObj.func_147447_a(vec3, vec32, true, false, false);
+    }
+	
+	/**ray trace for entity: 
+	 * 1. get the farest block
+	 * 2. create collision box (rectangle, diagonal vertex = player and farest block)
+	 * 3. get entity in this box
+	 * 4. check entity on player~block sight line
+	 * 5. return nearest entity
+	 */
+	@SideOnly(Side.CLIENT)
+	public static MovingObjectPosition getPlayerMouseOverEntity(double dist, float duringTicks) {
+		EntityLivingBase viewer = ClientProxy.getMineraft().renderViewEntity;
+		MovingObjectPosition lookBlock = null;
+		
+        if(viewer != null && viewer.worldObj != null) {
+            lookBlock = viewer.rayTrace(dist, duringTicks);
+            Vec3 vec3 = viewer.getPosition(duringTicks);
+
+            //若有抓到方塊, 則d1改為抓到方塊的距離
+            double d1 = dist;
+            if(lookBlock != null) {
+                d1 = lookBlock.hitVec.distanceTo(vec3);
+            }
+
+            Vec3 vec31 = viewer.getLook(duringTicks);
+            double vec3x = vec31.xCoord * dist;
+            double vec3y = vec31.yCoord * dist;
+            double vec3z = vec31.zCoord * dist;
+            Vec3 vec32 = vec3.addVector(vec3x, vec3y, vec3z);
+            Vec3 vec33 = null;
+            MovingObjectPosition lookEntity = null;
+            Entity pointedEntity = null;
+            
+            //從玩家到目標方塊之間, 做出擴展1格的方形collision box, 抓出其中碰到的entity
+            double f1 = 1D;
+            List list = viewer.worldObj.getEntitiesWithinAABBExcludingEntity(viewer, viewer.boundingBox.addCoord(vec3x, vec3y, vec3z).expand(f1, f1, f1));
+            double d2 = d1;
+
+            //檢查抓到的entity, 是否在玩家~目標方塊的視線上
+            for(int i = 0; i < list.size(); ++i) {
+                Entity entity = (Entity)list.get(i);
+
+                if(entity.canBeCollidedWith()) {
+                	//檢查碰到的entity是否在視線上
+                    double f2 = entity.getCollisionBorderSize();
+                    AxisAlignedBB targetBox = entity.boundingBox.expand(f2, f2, f2);
+                    MovingObjectPosition getObj = targetBox.calculateIntercept(vec3, vec32);
+
+                    //若viewer完全塞在目標的box裡面
+                    if(targetBox.isVecInside(vec3)) {
+                        if(d2 >= 0D) {
+                        	pointedEntity = entity;
+                        	//抓到位置玩家位置或者目標box位置
+                            vec33 = (getObj == null ? vec3 : getObj.hitVec);
+                            //抓到距離改為0
+                            d2 = 0D;
+                        }
+                    }
+                    //其他有抓到目標的情況
+                    else if(getObj != null) {
+                        double d3 = vec3.distanceTo(getObj.hitVec);	//抓到距離
+
+                        //若抓到距離在dist之內, 則判定為抓到目標
+                        if(d3 < d2 || d2 == 0D) {
+                        	//若抓到的是玩家自己的座騎, 且屬於不能互動的座騎
+                            if(entity == viewer.ridingEntity && !entity.canRiderInteract()) {
+                                //若dist設為0D, 才會抓到自己的座騎, 否則都無視座騎
+                            	if(d2 == 0D) {
+                                    pointedEntity = entity;
+                                    vec33 = getObj.hitVec;
+                                }
+                            }
+                            //其他非座騎entity
+                            else {
+                                pointedEntity = entity;
+                                vec33 = getObj.hitVec;
+                                d2 = d3;
+                            }
+                        }
+                    }
+                }
+            }
+
+            //若有抓到entity, 且抓到距離在視線碰到的最遠方塊之內, 才算有抓到entity
+            if(pointedEntity != null && (d2 < d1 || lookBlock == null)) {
+            	lookBlock = new MovingObjectPosition(pointedEntity, vec33);
+            }
+        }
+        
+        return lookBlock;
+    }
+	
+	/** set ship guard, and check guard position is not same */
+	public static void applyShipGuard(BasicEntityShip ship, int x, int y, int z) {
+		if(ship != null) {
+			int gx = ship.getStateMinor(ID.N.GuardX);
+			int gy = ship.getStateMinor(ID.N.GuardY);
+			int gz = ship.getStateMinor(ID.N.GuardZ);
+			
+			//same guard position, cancel guard mode
+			if(gx == x && gy == y && gz == z) {
+				ship.setStateFlag(ID.F.CanFollow, true);	//set follow
+				ship.setStateMinor(ID.N.GuardX, -1);		//reset guard position
+				ship.setStateMinor(ID.N.GuardY, -1);
+				ship.setStateMinor(ID.N.GuardZ, -1);
+			}
+			//apply guard mode
+			else {
+				ship.setSitting(false);						//stop sitting
+				ship.setStateFlag(ID.F.CanFollow, false);	//stop follow
+				ship.setStateMinor(ID.N.GuardX, x);
+				ship.setStateMinor(ID.N.GuardY, y);
+				ship.setStateMinor(ID.N.GuardZ, z);
+				ship.getShipNavigate().tryMoveToXYZ(x, y, z, 1D);
+			}
+		}
+	}
+	
+	/** set ship attack target with team list */
+	public static void applyTeamAttack(EntityPlayer player, int meta, Entity target) {
+		if(target instanceof EntityLivingBase) {
+			EntityLivingBase tar = (EntityLivingBase) target;
+			ExtendPlayerProps props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+			BasicEntityShip[] ships = props.getTeamListWithSelectState(meta);
+			BasicEntityMount mounts = null;
+			
+			if(props != null) {
+				switch(meta) {
+				default:	//single mode
+					if(ships[0] != null) {
+						//設定ship攻擊目標
+						ships[0].setSitting(false);
+						ships[0].setAttackTarget(tar);
+						
+						//若該ship有騎乘座騎, 將座騎目標也設定
+						if(ships[0].ridingEntity instanceof BasicEntityMount) {
+							((BasicEntityMount)ships[0].ridingEntity).setAttackTarget(tar);
+						}
+					}
+					break;
+				case 1:		//group mode
+				case 2:		//formation mode
+					for(int i = 0; i < ships.length; i++) {
+						if(ships[i] != null) {
+							//設定ship攻擊目標
+							ships[i].setSitting(false);
+							ships[i].setAttackTarget(tar);
+							
+							//若該ship有騎乘座騎, 將座騎目標也設定
+							if(ships[i].ridingEntity instanceof BasicEntityMount) {
+								((BasicEntityMount)ships[i].ridingEntity).setAttackTarget(tar);
+							}
+						}
+					}
+					break;
+				}//end switch
+			}
+		}
+	}
+
+	/** set ship move with team list */
+	public static void applyTeamMove(EntityPlayer player, int meta, int side, int x, int y, int z) {
+		ExtendPlayerProps props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+		BasicEntityShip[] ships = props.getTeamListWithSelectState(meta);
+		
+		if(props != null) {
+			switch(meta) {
+			default:	//single mode
+				if(ships[0] != null) {
+					//設定ship移動地點
+					applyShipGuard(ships[0], x, y, z);
+					//若該ship有騎乘座騎, 將座騎目標也設定
+					if(ships[0].ridingEntity instanceof BasicEntityMount) {
+						((BasicEntityMount)ships[0].ridingEntity).getShipNavigate().tryMoveToXYZ(x, y, z, 1D);
+					}
+				}
+				break;
+			case 1:		//group mode
+			case 2:		//formation mode
+				for(int i = 0;i < ships.length; i++) {
+					if(ships[i] != null) {
+						//設定ship移動地點
+						applyShipGuard(ships[i], x, y, z);
+						
+						//若該ship有騎乘座騎, 將座騎目標也設定
+						if(ships[i].ridingEntity instanceof BasicEntityMount) {
+							((BasicEntityMount)ships[i].ridingEntity).getShipNavigate().tryMoveToXYZ(x, y, z, 1D);
+						}
+					}
+				}
+				break;
+			}//end switch
+		}		
+	}
+	
+	/** set ship sitting with team list, only called at server side
+	 *  1. 若目標不在隊伍, 則單獨設定目標坐下
+	 *  2. 若目標在隊伍, 則依照 pointer類型設定目標坐下
+	 */
+	public static void applyTeamSit(EntityPlayer player, int meta, int entityid) {
+		ExtendPlayerProps props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+		BasicEntityShip[] ships = props.getTeamListWithSelectState(meta);
+		
+		if(props != null) {
+			//不在隊伍名單裡面
+			if(props.checkInTeamList(entityid) < 0) {
+				Entity target = getEntityByID(entityid, player.worldObj.provider.dimensionId, player.worldObj.isRemote);
+				
+				if(target instanceof IShipEmotion) {
+					((IShipEmotion) target).setEntitySit();
+				}
+			}
+			//有在隊伍中, 則依照pointer類型抓目標
+			else {
+				switch(meta) {
+				default:	//single mode
+					if(ships[0] != null) {
+						//設定ship sit
+						ships[0].setEntitySit();
+					}
+					break;
+				case 1:		//group mode
+				case 2:		//formation mode
+					for(int i = 0; i < ships.length; i++) {
+						if(ships[i] != null) {
+							//設定ship sit
+							ships[i].setEntitySit();
+						}
+					}
+					break;
+				}//end switch
+			}//end not in team
+		}
+	}
+	
+	/** set ship select (focus) with team list, only called at server side
+	 */
+	public static void applyTeamSelect(EntityPlayer player, int meta, int entityid, boolean select) {
+		ExtendPlayerProps props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+		
+		if(props != null) {
+			int i = props.checkInTeamList(entityid);
+			
+			//check entity is in team
+			if(i >= 0) {
+				switch(meta) {
+				default:	//single mode (僅一隻可以focus)
+					/**single mode不能取消focus, 一定有一隻會是focus狀態*/
+					props.clearTeamSelected();
+					props.setTeamSelected(i, true);
+					break;
+				case 1:		//group mode (不限focus數量)
+					props.setTeamSelected(i, !props.getTeamSelected(i));
+					break;
+				case 2:		//formation mode (僅一隻可以focus, 會設為flagship)
+					/**formation mode不能取消focus, 一定有一隻會是focus (flagship)狀態*/
+					props.clearTeamSelected();
+					props.setTeamSelected(i, true);
+					break;
+				}
+			}
+			
+			//sync team list to client
+			CommonProxy.channelG.sendTo(new S2CGUIPackets(props), (EntityPlayerMP) player);
+		}
+		
+		
 	}
 	
 	

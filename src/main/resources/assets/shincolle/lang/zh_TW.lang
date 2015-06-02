@@ -187,6 +187,10 @@ gui.shincolle:modernkit=右鍵使用使棲艦隨機屬性 +1
 gui.shincolle:repairgoddess=深海女神的怨念使棲艦不會被擊沈。
 gui.shincolle:ringText=結婚次數
 gui.shincolle:eggText=需求等級
+gui.shincolle:pointer0=個別模式
+gui.shincolle:pointer1=團體模式
+gui.shincolle:pointer2=陣型模式
+gui.shincolle:pointer3=(蹲下右鍵以切換模式)
 
 # Chat message
 chat.shincolle:bossspawn1=有艦娘出現在水面上!

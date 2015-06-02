@@ -575,6 +575,9 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 		if(hostEntity != null) return hostEntity.getStateFinal(ID.DEF) * 0.5F;
 		return 0F;
 	}
+	
+	@Override
+	public void setEntitySit() {}
 
 }
 

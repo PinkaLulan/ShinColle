@@ -62,6 +62,9 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		nbtExt_add0.setInteger("FMax", this.entity.getStateMinor(ID.N.FollowMax));
 		nbtExt_add0.setInteger("FHP", this.entity.getStateMinor(ID.N.FleeHP));
 		nbtExt_add0.setInteger("TarAI", this.entity.getStateMinor(ID.N.TargetAI));
+		nbtExt_add0.setInteger("GuardX", this.entity.getStateMinor(ID.N.GuardX));
+		nbtExt_add0.setInteger("GuardY", this.entity.getStateMinor(ID.N.GuardY));
+		nbtExt_add0.setInteger("GuardZ", this.entity.getStateMinor(ID.N.GuardZ));
 		nbtExt_add0.setString("ownerName", this.entity.getOwnerName());
 		nbtExt_add0.setString("tagName", this.entity.getCustomNameTag());
 		//save AttrFinal
@@ -102,6 +105,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		nbtExt_add4.setBoolean("AirH", this.entity.getStateFlag(ID.F.UseAirHeavy));
 		nbtExt_add4.setBoolean("WedEffect", this.entity.getStateFlag(ID.F.UseRingEffect));
 		nbtExt_add4.setBoolean("CanDrop", this.entity.getStateFlag(ID.F.CanDrop));
+		nbtExt_add4.setBoolean("CanFollow", this.entity.getStateFlag(ID.F.CanFollow));
 		//save EntityFlag
 		nbtExt.setTag("Equip", nbtExt_add5);
 		nbtExt_add5.setFloat("Cri", this.entity.getEffectEquip(ID.EF_CRI));
@@ -146,6 +150,9 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		entity.setStateMinor(ID.N.FollowMax, nbt_load.getInteger("FMax"));
 		entity.setStateMinor(ID.N.FleeHP, nbt_load.getInteger("FHP"));
 		entity.setStateMinor(ID.N.TargetAI, nbt_load.getInteger("TarAI"));
+		entity.setStateMinor(ID.N.GuardX, nbt_load.getInteger("GuardX"));
+		entity.setStateMinor(ID.N.GuardY, nbt_load.getInteger("GuardY"));
+		entity.setStateMinor(ID.N.GuardZ, nbt_load.getInteger("GuardZ"));
 		entity.setOwnerName(nbt_load.getString("ownerName"));
 		entity.setNameTag(nbt_load.getString("tagName"));
 		//load final state
@@ -186,6 +193,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		entity.setStateFlag(ID.F.UseAirHeavy, nbt_load.getBoolean("AirH"));
 		entity.setStateFlag(ID.F.UseRingEffect, nbt_load.getBoolean("WedEffect"));
 		entity.setStateFlag(ID.F.CanDrop, nbt_load.getBoolean("CanDrop"));
+		entity.setStateFlag(ID.F.CanFollow, nbt_load.getBoolean("CanFollow"));
 		//load effect
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Equip");
 		entity.setEffectEquip(ID.EF_CRI, nbt_load.getFloat("Cri"));

@@ -750,6 +750,10 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
 	public float getDefValue() {
 		return defValue;
 	}
+	
+	@Override
+	public void setEntitySit() {}
+	
 
 }
 

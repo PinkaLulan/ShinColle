@@ -23,6 +23,7 @@ public class ConfigHandler {
 	public static boolean showTag = true;
 	public static boolean friendlyFire = true;
 	public static boolean useWakamoto = true;
+	public static boolean alwaysShowTeam = false;
 	public static int bossCooldown = 4800;
 	
 	//SHIP SETTING
@@ -41,7 +42,8 @@ public class ConfigHandler {
 	//WORLD GEN
 	public static int polyOreBaseRate = 7;
 	public static int polyGravelBaseRate = 4;
-
+	public static boolean[] polyGravelBaseBlock = new boolean[] {true, true, false, false};	//stone gravel sand dirt
+	public static Property propPolyGravel;
 	
 	//讀取設定檔參數
 	private static void loadConfiguration() {
@@ -66,6 +68,9 @@ public class ConfigHandler {
 		//boss生成cd設定 (ticks)
 		bossCooldown = config.getInt("Boss_Cooldown", "general", 4800, 20, 1728000, "boss spawn cooldown");
 		
+		//是否顯示custom name tag
+		alwaysShowTeam = config.getBoolean("Always_Show_Team", "general", false, "Always show team circles");
+		
 		//讀取 ship setting設定
 		timeKeeping = config.getBoolean("Timekeeping", "ship setting", true, "Play timekeeping sound every 1000 ticks (1 minecraft hour)");
 		timeKeepingVolume = config.getFloat("Timekeeping_Volume", "ship setting", 1.0F, 0F, 10F, "Timekeeping sound volume");
@@ -80,6 +85,7 @@ public class ConfigHandler {
 		//WORLD GEN
 		polyOreBaseRate = config.getInt("Polymetal_Ore", "world gen", 7, 0, 100, "Polymetallic Ore clusters in one chunk");
 		polyGravelBaseRate = config.getInt("Polymetal_Gravel", "world gen", 4, 0, 100, "Polymetallic Gravel clusters in one chunk");
+		propPolyGravel = config.get("world gen", "Polymetal_Gravel_Replace", polyGravelBaseBlock, "PolyGravel replaced block: stone, gravel, sand, dirt", true, 4);
 		
 		//若設定檔有更新過 則儲存
 		if(config.hasChanged()) {
@@ -91,6 +97,7 @@ public class ConfigHandler {
 		scaleBossSMKZ = propBossSMKZ.getDoubleList();
 		scaleBossNGT = propBossNGT.getDoubleList();
 		scaleMobU511 = propMobU511.getDoubleList();
+		polyGravelBaseBlock = propPolyGravel.getBooleanList();
 	}
 	
 	//設定檔處理 初始化動作

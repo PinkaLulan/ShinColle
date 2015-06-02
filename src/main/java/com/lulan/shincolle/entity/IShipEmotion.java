@@ -39,5 +39,9 @@ public interface IShipEmotion extends IShipFlags {
 	abstract public boolean getIsSitting();
 	abstract public boolean getIsSneaking();
 	abstract public boolean getIsLeashed();
+	
+	/**Set states, sitting
+	 */
+	abstract void setEntitySit();
 
 }

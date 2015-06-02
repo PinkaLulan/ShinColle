@@ -4,7 +4,10 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
+import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
+import net.minecraft.entity.ai.EntityAIOpenDoor;
+import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -13,7 +16,9 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
+import com.lulan.shincolle.ai.EntityAIShipFloating;
 import com.lulan.shincolle.ai.EntityAIShipInRangeTargetHostile;
+import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathEntity;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
@@ -85,6 +90,15 @@ public class BasicEntityShipHostile extends EntityMob implements IShipCannonAtta
 		this.getNavigator().setEnterDoors(true);
 		this.getNavigator().setAvoidsWater(false);
 		this.getNavigator().setCanSwim(true);
+		
+		//idle AI
+		//moving
+		this.tasks.addTask(21, new EntityAIOpenDoor(this, true));			   //0000
+		this.tasks.addTask(22, new EntityAIShipFloating(this));				   //0101
+		this.tasks.addTask(23, new EntityAIShipWatchClosest(this, EntityPlayer.class, 6F, 0.1F)); //0010
+		this.tasks.addTask(24, new EntityAIWander(this, 0.8D));				   //0001
+		this.tasks.addTask(25, new EntityAILookIdle(this));					   //0011
+
 	}
 	
 	//setup target AI: par1: 0:passive 1:active
@@ -680,6 +694,9 @@ public class BasicEntityShipHostile extends EntityMob implements IShipCannonAtta
 	public float getDefValue() {
 		return defValue;
 	}
+
+	@Override
+	public void setEntitySit() {}
 
 
 }

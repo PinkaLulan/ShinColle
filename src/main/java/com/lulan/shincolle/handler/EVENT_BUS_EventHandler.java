@@ -117,6 +117,7 @@ public class EVENT_BUS_EventHandler {
 		    	//save nbt and spawn entity item
 		    	nbt.setTag("ShipInv", list);	//save inventory data to nbt
 		    	nbt.setIntArray("Attrs", attrs);	//save attributes data to nbt
+		    	nbt.setString("owner", entity.func_152113_b());	//get owner uuid
 		    	entityItem2.getEntityItem().setTagCompound(nbt);	  //save nbt to entity item
 		    	event.entity.worldObj.spawnEntityInWorld(entityItem2);	//spawn entity item
 	    	}
