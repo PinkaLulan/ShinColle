@@ -37,6 +37,8 @@ public class EntityFXTeam extends EntityFX {
 	private double height;
 	private Entity host;
 	
+	
+	//mark at entity
     public EntityFXTeam(World world, Entity host, float scale, int type) {
         super(world, host.posX, host.posY, host.posZ, 0.0D, 0.0D, 0.0D);  
         this.host = host;
@@ -74,9 +76,28 @@ public class EntityFXTeam extends EntityFX {
         	this.particleBlue = 0F;
         	this.particleMaxAge = 9;
         	break;
+        case 4:		//green, moving target
+        	this.particleRed = 0F;
+        	this.particleGreen = 1F;
+        	this.particleBlue = 0F;
+        	this.particleMaxAge = 30;
+        	break;
+        case 5:		//red, attack target
+        	this.particleRed = 1F;
+        	this.particleGreen = 0F;
+        	this.particleBlue = 0F;
+        	this.particleMaxAge = 30;
+        	break;
+        case 6:		//white, guard target
+        	this.particleRed = 1F;
+        	this.particleGreen = 1F;
+        	this.particleBlue = 1F;
+        	this.particleMaxAge = 30;
+        	break;
         }
     }
     
+    //mark at block
     public EntityFXTeam(World world, float scale, int type, double x, double y, double z) {
         super(world, x, y, z, 0.0D, 0.0D, 0.0D);
         this.motionX = 0D;
@@ -94,14 +115,21 @@ public class EntityFXTeam extends EntityFX {
         	this.particleRed = 0F;
         	this.particleGreen = 1F;
         	this.particleBlue = 0F;
-        	this.particleMaxAge = 20;
+        	this.particleMaxAge = 30;
         	this.setPosition(x, y, z);
         	break;
         case 5:		//red, attack target
         	this.particleRed = 1F;
         	this.particleGreen = 0F;
         	this.particleBlue = 0F;
-        	this.particleMaxAge = 20;
+        	this.particleMaxAge = 30;
+        	this.setPosition(x, y, z);
+        	break;
+        case 6:		//white, guard target
+        	this.particleRed = 1F;
+        	this.particleGreen = 1F;
+        	this.particleBlue = 1F;
+        	this.particleMaxAge = 30;
         	this.setPosition(x, y, z);
         	break;
         }

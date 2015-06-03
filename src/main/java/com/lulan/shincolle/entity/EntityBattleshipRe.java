@@ -165,7 +165,7 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
 
 	    //將atk跟attacker傳給目標的attackEntityFrom方法, 在目標class中計算傷害
 	    //並且回傳是否成功傷害到目標
-	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this), atk);
+	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this).setMagicDamage(), atk);
 
 	    //if attack success
 	    if(isTargetHurt) {

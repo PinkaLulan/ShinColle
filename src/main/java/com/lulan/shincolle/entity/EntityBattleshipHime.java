@@ -1,10 +1,6 @@
 package com.lulan.shincolle.entity;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.EntityAILookIdle;
-import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
-import net.minecraft.entity.ai.EntityAIOpenDoor;
-import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -12,13 +8,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
-import com.lulan.shincolle.ai.EntityAIShipAttackOnCollide;
-import com.lulan.shincolle.ai.EntityAIShipFlee;
-import com.lulan.shincolle.ai.EntityAIShipFloating;
-import com.lulan.shincolle.ai.EntityAIShipFollowOwner;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
-import com.lulan.shincolle.ai.EntityAIShipSit;
-import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -58,44 +48,6 @@ public class EntityBattleshipHime extends BasicEntityShip {
 		this.tasks.addTask(12, new EntityAIShipRangeAttack(this));			   //0011
 	}
 	
-	//check entity state every tick
-  	@Override
-  	public void onLivingUpdate() {
-  		//server side
-  		if(!worldObj.isRemote) {
-  			//check every second
-  			if(this.ticksExisted % 20 == 0) {
-  				//summon mount if emotion state = equip00
-  	  	  		if(getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
-  	  	  			if(!this.isRiding()) {
-//  	  	  				LogHelper.info("DEBUG : ship summon mount");
-  	  	  				//summon mount entity
-  	  	  	  			EntityMountBaH mount = new EntityMountBaH(worldObj, this);
-  	  	  	  			this.worldObj.spawnEntityInWorld(mount);
-  	  	  	  			
-  	  	  	  			//set riding entity
-	  	  	  			this.mountEntity(mount);
-  	  	  			}
-  	  	  		}
-  	  	  		else {
-  	  	  			//cancel riding
-  	  	  			if(this.isRiding() && this.ridingEntity instanceof EntityMountBaH) {
-  	  	  				EntityMountBaH mount = (EntityMountBaH) this.ridingEntity;
-  	  	  				
-  	  	  				if(mount.seat2 != null ) {
-  	  	  					mount.seat2.setRiderNull();	
-  	  	  				}
-  	  	  				
-  	  	  				mount.setRiderNull();
-  	  	  				this.ridingEntity = null;
-  	  	  			}
-  	  	  		}
-  			}	
-  		}	
-  			
-  		super.onLivingUpdate();
-  	}
-	
 	@Override
   	public boolean interact(EntityPlayer player) {	
 		ItemStack itemstack = player.inventory.getCurrentItem();  //get item in hand
@@ -109,12 +61,12 @@ public class EntityBattleshipHime extends BasicEntityShip {
 					break;
 				case ID.State.EQUIP00:
 					setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+					this.setPositionAndUpdate(posX, posY + 2D, posZ);
 					break;
 				default:
 					setStateEmotion(ID.S.State, ID.State.NORMAL, true);
 					break;
 				}
-				this.setPositionAndUpdate(posX, posY + 2D, posZ);
 				return true;
 			}
 		}
@@ -276,7 +228,7 @@ public class EntityBattleshipHime extends BasicEntityShip {
   		
 	    //將atk跟attacker傳給目標的attackEntityFrom方法, 在目標class中計算傷害
 	    //並且回傳是否成功傷害到目標
-	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this), atk);
+	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this).setProjectile(), atk);
 
 	    //if attack success
 	    if(isTargetHurt) {
@@ -315,6 +267,17 @@ public class EntityBattleshipHime extends BasicEntityShip {
 	public boolean canBePushed() {
         return this.ridingEntity == null;
     }
+  	
+  	//true if use mounts
+  	@Override
+  	public boolean canSummonMounts() {
+  		return true;
+  	}
+  	
+  	@Override
+  	public BasicEntityMount summonMountEntity() {
+		return new EntityMountBaH(worldObj, this);
+	}
   	
   	@Override
   	public float[] getModelPos() {

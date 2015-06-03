@@ -39,6 +39,7 @@ import com.lulan.shincolle.crafting.EquipCalc;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.item.PointerItem;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -55,11 +56,12 @@ import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
 /**SHIP DATA <br>
  * Explanation in crafting/ShipCalc.class
  */
-public abstract class BasicEntityShip extends EntityTameable implements IShipCannonAttack, IShipFloating {
+public abstract class BasicEntityShip extends EntityTameable implements IShipCannonAttack, IShipGuardian, IShipFloating {
 
 	protected ExtendShipProps ExtProps;			//entity額外NBT紀錄
 	protected ShipPathNavigate shipNavigator;	//水空移動用navigator
 	protected ShipMoveHelper shipMoveHelper;
+	protected Entity guardedEntity;
 	
 	//for attribute calc
 	protected byte ShipType;			//ship type
@@ -77,7 +79,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	protected float[] StateFinal;
 	/**minor states: 0:ShipLevel 1:Kills 2:ExpCurrent 3:ExpNext 4:NumAmmoLight 
 	 * 5:NumAmmoHeavy 6:NumGrudge 7:NumAirLight 8:NumAirHeavy 9:immunity time 
-	 * 10:followMin 11:followMax 12:FleeHP 13:TargetAIType 14:guardX 15:guardY 16:guardZ*/
+	 * 10:followMin 11:followMax 12:FleeHP 13:TargetAIType 14:guardX 15:guardY 16:guardZ 17:guardDim
+	 * 18:guardID*/
 	protected int[] StateMinor;
 	/**equip effect: 0:critical 1:doubleHit 2:tripleHit 3:baseMiss*/
 	protected float[] EffectEquip;
@@ -93,7 +96,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	/**ModelPos: posX, posY, posZ, scale (in ship inventory)*/
 	protected float[] ModelPos;
 	
-	//for GUI display
+	//for GUI display, no use
 	protected String ownerName;
 	
 	
@@ -104,7 +107,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		isImmuneToFire = true;	//set ship immune to lava
 		StateEquip = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F};
 		StateFinal = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F};
-		StateMinor = new int[] {1, 0, 0, 40, 0, 0, 0, 0, 0, 0, 2, 14, 35, 1, -1, -1, -1};
+		StateMinor = new int[] {1, 0, 0, 40, 0, 0, 0, 0, 0, 0, 2, 14, 35, 1, -1, -1, -1, 0, -1};
 		EffectEquip = new float[] {0F, 0F, 0F, 0F};
 		StateEmotion = new byte[] {0, 0, 0, 0, 0, 0};
 		StateFlag = new boolean[] {false, false, true, false, true, true, true, true, false, true, true, false};
@@ -1129,7 +1132,42 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				default:
 					break;
 				}
-			}	
+			}//end every 10 ticks
+			
+			if(this.ticksExisted % 40 == 0) {
+				//show guard position
+				if(!this.getStateFlag(ID.F.CanFollow)) {
+					//set guard entity
+					if(this.getStateMinor(ID.N.GuardID) > 0) {
+						Entity getEnt = EntityHelper.getEntityByID(this.getStateMinor(ID.N.GuardID), 0, true);
+						
+						if(getEnt != null) {
+							this.setGuarded(getEnt);
+						}
+					}
+					else {
+						this.setGuarded(null);
+					}
+					
+					//owner have to hold pointer item
+					EntityPlayer player = (EntityPlayer) this.getPlayerOwner();
+					if(player != null) {
+						ItemStack item = player.inventory.getCurrentItem();
+						
+						if(item != null && item.getItem() instanceof PointerItem) {
+							//標記在entity上
+							if(this.getGuarded() != null) {
+								ParticleHelper.spawnAttackParticleAtEntity(this.getGuarded(), 0.3D, 6D, 0D, (byte)2);
+							}
+							//標記載block上
+							else if(this.getGuardedPos(1) >= 0) {
+								ParticleHelper.spawnAttackParticleAt(this.getGuardedPos(0), this.getGuardedPos(1), this.getGuardedPos(2), 0.3D, 6D, 0D, (byte)25);
+							}
+						}
+					}
+				}
+			}//end every 20 ticks
+			
 		}//end client side
 	}
 
@@ -1191,7 +1229,43 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	                }
 	            }
 //        		LogHelper.info("DEBUG : check spawn: "+this.worldObj.getChunkProvider().getPossibleCreatures(EnumCreatureType.waterCreature, (int)posX, (int)posY, (int)posZ));
-        	}
+        	}//end every 10 ticks
+        	
+        	//check every 20 ticks
+        	if(ticksExisted % 20 == 0) {
+        		//cancel mounts
+        		if(this.canSummonMounts()) {
+        			if(getStateEmotion(ID.S.State) < ID.State.EQUIP00) {
+      	  	  			//cancel riding
+      	  	  			if(this.isRiding() && this.ridingEntity instanceof BasicEntityMount) {
+      	  	  				BasicEntityMount mount = (BasicEntityMount) this.ridingEntity;
+      	  	  				
+      	  	  				if(mount.seat2 != null ) {
+      	  	  					mount.seat2.setRiderNull();	
+      	  	  				}
+      	  	  				
+      	  	  				mount.setRiderNull();
+      	  	  				this.ridingEntity = null;
+      	  	  			}
+      	  	  		}
+        		}
+        		
+//        		//debug: check disappear ship
+//        		if(this.worldObj.provider.dimensionId == 0) {	//main world
+//        			LogHelper.info("DEBUG : ship pos dim "+ClientProxy.getClientWorld().provider.dimensionId+" "+this.dimension+" "+this.posX+" "+this.posY+" "+this.posZ);
+//        		}
+//        		else {	//other world
+//        			LogHelper.info("DEBUG : ship pos dim "+ClientProxy.getClientWorld().provider.dimensionId+" "+this.dimension+" "+this.posX+" "+this.posY+" "+this.posZ);
+//        		}
+        	}//end every 20 ticks
+        	
+        	//check every 40 ticks
+        	if(ticksExisted % 40 == 0) {
+        		if(this.getPlayerOwner() != null) {
+        			//sync guard
+    				CommonProxy.channelE.sendTo(new S2CEntitySync(this, 3), (EntityPlayerMP) this.getPlayerOwner());
+        		}
+	        }//end every 40 ticks
         	
         	//check every 100 ticks
         	if(ticksExisted % 100 == 0) {
@@ -1264,6 +1338,23 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	        	int distSqrt = (int) MathHelper.sqrt_double(distX*distX + distY*distY + distZ*distZ);
 	        	decrGrudgeNum(distSqrt+5);	//eat grudge or change movement speed
         		
+	        	//summon mounts
+	        	if(this.canSummonMounts()) {
+	        		//summon mount if emotion state >= equip00
+	  	  	  		if(getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
+	  	  	  			if(!this.isRiding()) {
+	  	  	  				//summon mount entity
+	  	  	  	  			BasicEntityMount mount = this.summonMountEntity();
+	  	  	  	  			this.worldObj.spawnEntityInWorld(mount);
+	  	  	  	  			
+	  	  	  	  			//set riding entity
+		  	  	  			this.mountEntity(mount);
+		  	  	  			
+		  	  	  			//sync rider
+		  	  	  			mount.sendSyncPacket();
+	  	  	  			}
+	  	  	  		}
+	        	}
         	}//end every 100 ticks
         	
         	//auto recovery every 20 sec
@@ -1431,7 +1522,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
       		
 	    //將atk跟attacker傳給目標的attackEntityFrom方法, 在目標class中計算傷害
 	    //並且回傳是否成功傷害到目標
-	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this), atk);
+	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this).setProjectile(), atk);
 
 	    //if attack success
 	    if(isTargetHurt) {
@@ -1538,7 +1629,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         }
         
         //無敵的entity傷害無效
-		if(this.isEntityInvulnerable()) {	
+		if(this.isEntityInvulnerable()) {
             return false;
         }
 		else if(attacker.getSourceOfDamage() != null) {	//不為null才算傷害, 可免疫毒/掉落/窒息等傷害
@@ -1921,6 +2012,54 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	@Override
 	public boolean canBreatheUnderwater() {
 		return true;
+	}
+	
+	//true if use mounts
+	public boolean canSummonMounts() {
+		return false;
+	}
+	
+	public BasicEntityMount summonMountEntity() {
+		return null;
+	}
+	
+	@Override
+	public Entity getGuarded() {
+		return this.guardedEntity;
+	}
+
+	@Override
+	public void setGuarded(Entity entity) {
+		if(entity != null && entity.isEntityAlive()) {
+			this.guardedEntity = entity;
+			this.setStateMinor(ID.N.GuardID, entity.getEntityId());
+		}
+		else {
+			this.guardedEntity = null;
+			this.setStateMinor(ID.N.GuardID, -1);
+		}
+	}
+
+	@Override
+	public int getGuardedPos(int vec) {
+		switch(vec) {
+		default:
+			return this.getStateMinor(ID.N.GuardX);
+		case 1:
+			return this.getStateMinor(ID.N.GuardY);
+		case 2:
+			return this.getStateMinor(ID.N.GuardZ);
+		case 3:
+			return this.getStateMinor(ID.N.GuardDim);
+		}
+	}
+
+	@Override
+	public void setGuardedPos(int x, int y, int z, int dim) {
+		this.setStateMinor(ID.N.GuardX, x);
+		this.setStateMinor(ID.N.GuardY, y);
+		this.setStateMinor(ID.N.GuardZ, z);
+		this.setStateMinor(ID.N.GuardDim, dim);
 	}
 
 	

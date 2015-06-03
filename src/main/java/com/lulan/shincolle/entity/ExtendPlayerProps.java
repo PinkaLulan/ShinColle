@@ -190,10 +190,10 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		else {
 			//entity不為null才找欄位存
 			if(entity != null) {
-				//debug: show team
-				for(int k = 0; k < 6; k++) {
-					LogHelper.info("DEBUG : show team list (before add) "+this.saveId+" "+k+" "+this.teamList[k]);
-				}
+//				//debug: show team
+//				for(int k = 0; k < 6; k++) {
+//					LogHelper.info("DEBUG : team list (before add) "+this.saveId+" "+k+" "+this.teamList[k]);
+//				}
 				
 				//若entity非自己所屬, 則不能add team
 				if(player != null && !EntityHelper.checkSameOwner(player, entity)) {

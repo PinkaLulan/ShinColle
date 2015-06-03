@@ -86,37 +86,7 @@ public class EntityAirfieldHime extends BasicEntityShipLarge {
 		            }
 				}//end heal ability
         	}
-
-  			//check every second
-  			if(this.ticksExisted % 20 == 0) {
-  				//summon mount if emotion state = equip00
-  	  	  		if(getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
-  	  	  			if(!this.isRiding()) {
-  	  	  				//summon mount entity
-  	  	  	  			EntityMountAfH mount = new EntityMountAfH(worldObj, this);
-  	  	  	  			this.worldObj.spawnEntityInWorld(mount);
-  	  	  	  			
-  	  	  	  			//set riding entity
-	  	  	  			this.mountEntity(mount);
-	  	  	  			
-	  	  	  			//sync rider
-  	  	  			}
-  	  	  		}
-  	  	  		else {
-  	  	  			//cancel riding
-  	  	  			if(this.isRiding() && this.ridingEntity instanceof EntityMountAfH) {
-  	  	  				EntityMountAfH mount = (EntityMountAfH) this.ridingEntity;
-  	  	  				
-  	  	  				if(mount.seat2 != null ) {
-  	  	  					mount.seat2.setRiderNull();	
-  	  	  				}
-  	  	  				
-  	  	  				mount.setRiderNull();
-  	  	  				this.ridingEntity = null;
-  	  	  			}
-  	  	  		}
-  			}	
-  		}
+  		}//end server side
   			
   		super.onLivingUpdate();
   	}
@@ -156,12 +126,12 @@ public class EntityAirfieldHime extends BasicEntityShipLarge {
 						break;
 					case ID.State.EQUIP00:
 						setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+						this.setPositionAndUpdate(posX, posY + 2D, posZ);
 						break;
 					default:
 						setStateEmotion(ID.S.State, ID.State.NORMAL, true);
 						break;
 					}
-					this.setPositionAndUpdate(posX, posY + 2D, posZ);
 				}
 				return true;
 			}
@@ -208,6 +178,17 @@ public class EntityAirfieldHime extends BasicEntityShipLarge {
 	public boolean canBePushed() {
         return this.ridingEntity == null;
     }
+  	
+  	//true if use mounts
+  	@Override
+  	public boolean canSummonMounts() {
+  		return true;
+  	}
+  	
+  	@Override
+  	public BasicEntityMount summonMountEntity() {
+		return new EntityMountAfH(worldObj, this);
+	}
   	
   	@Override
   	public float[] getModelPos() {

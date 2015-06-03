@@ -177,7 +177,14 @@ public class FML_COMMON_EventHandler {
 							}
 						}
 					}//end roll spawn boss
-				}//end boss cooldown <= 0	
+				}//end boss cooldown <= 0
+				
+				//sync team list every 20 ticks
+				if(event.player.ticksExisted % 20 == 0) {
+					//sync team list to client
+					CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps), (EntityPlayerMP) event.player);
+				}//end every 20 ticks
+				
 			}//end server side, extProps != null
 			
 			//check ring item (check for first found ring only) every 20 ticks

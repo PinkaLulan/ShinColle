@@ -43,6 +43,7 @@ import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.ClientProxy;
@@ -290,7 +291,6 @@ public class EntityHelper {
 				}
 				else {
 					teamship = (BasicEntityShip) EntityHelper.getEntityByID(value[i+2], 0, true);
-					LogHelper.info("DEBUG : player extend props: set team "+i+" "+teamship);
 					extProps.setTeamList(i, teamship, true);
 				}
 			}
@@ -725,13 +725,17 @@ public class EntityHelper {
 			int gx = ship.getStateMinor(ID.N.GuardX);
 			int gy = ship.getStateMinor(ID.N.GuardY);
 			int gz = ship.getStateMinor(ID.N.GuardZ);
+			int gd = ship.getStateMinor(ID.N.GuardDim);
 			
 			//same guard position, cancel guard mode
-			if(gx == x && gy == y && gz == z) {
+			if(gx == x && gy == y && gz == z && gd == ship.worldObj.provider.dimensionId) {
 				ship.setStateFlag(ID.F.CanFollow, true);	//set follow
 				ship.setStateMinor(ID.N.GuardX, -1);		//reset guard position
 				ship.setStateMinor(ID.N.GuardY, -1);
 				ship.setStateMinor(ID.N.GuardZ, -1);
+				ship.setStateMinor(ID.N.GuardDim, 0);
+				ship.setStateMinor(ID.N.GuardID, -1);
+				ship.setGuarded(null);
 			}
 			//apply guard mode
 			else {
@@ -740,7 +744,51 @@ public class EntityHelper {
 				ship.setStateMinor(ID.N.GuardX, x);
 				ship.setStateMinor(ID.N.GuardY, y);
 				ship.setStateMinor(ID.N.GuardZ, z);
-				ship.getShipNavigate().tryMoveToXYZ(x, y, z, 1D);
+				ship.setStateMinor(ID.N.GuardDim, ship.worldObj.provider.dimensionId);
+				ship.setStateMinor(ID.N.GuardID, -1);
+				ship.setGuarded(null);
+				
+				if(ship.ridingEntity != null && ship.ridingEntity instanceof BasicEntityMount) {
+					((BasicEntityMount)ship.ridingEntity).getShipNavigate().tryMoveToXYZ(x, y, z, 1D);
+				}
+				else {
+					ship.getShipNavigate().tryMoveToXYZ(x, y, z, 1D);
+				}
+			}
+		}
+	}
+	
+	/** set ship guard, and check guard position is not same */
+	public static void applyShipGuardEntity(BasicEntityShip ship, Entity guarded) {
+		if(ship != null) {
+			Entity getEnt = ship.getGuarded();
+			
+			//same guard position, cancel guard mode
+			if(getEnt != null && getEnt.getEntityId() == guarded.getEntityId()) {
+				ship.setStateFlag(ID.F.CanFollow, true);	//set follow
+				ship.setStateMinor(ID.N.GuardX, -1);		//reset guard position
+				ship.setStateMinor(ID.N.GuardY, -1);
+				ship.setStateMinor(ID.N.GuardZ, -1);
+				ship.setStateMinor(ID.N.GuardDim, 0);
+				ship.setStateMinor(ID.N.GuardID, -1);
+				ship.setGuarded(null);
+			}
+			//apply guard mode
+			else {
+				ship.setSitting(false);						//stop sitting
+				ship.setStateFlag(ID.F.CanFollow, false);	//stop follow
+				ship.setStateMinor(ID.N.GuardX, -1);		//clear guard position
+				ship.setStateMinor(ID.N.GuardY, -1);
+				ship.setStateMinor(ID.N.GuardZ, -1);
+				ship.setStateMinor(ID.N.GuardDim, guarded.worldObj.provider.dimensionId);
+				ship.setGuarded(guarded);
+				
+				if(ship.ridingEntity != null && ship.ridingEntity instanceof BasicEntityMount) {
+					((BasicEntityMount)ship.ridingEntity).getShipNavigate().tryMoveToEntityLiving(guarded, 1D);
+				}
+				else {
+					ship.getShipNavigate().tryMoveToEntityLiving(guarded, 1D);
+				}
 			}
 		}
 	}
@@ -786,6 +834,36 @@ public class EntityHelper {
 			}
 		}
 	}
+	
+	/** set ship move with team list */
+	public static void applyTeamGuard(EntityPlayer player, int meta, Entity guarded) {
+		ExtendPlayerProps props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+		BasicEntityShip[] ships = props.getTeamListWithSelectState(meta);
+		
+		if(props != null) {
+			switch(meta) {
+			default:	//single mode
+				if(ships[0] != null) {
+					//設定ship移動地點
+					applyShipGuardEntity(ships[0], guarded);
+					//sync guard
+					CommonProxy.channelE.sendTo(new S2CEntitySync(ships[0], 3), (EntityPlayerMP) player);
+				}
+				break;
+			case 1:		//group mode
+			case 2:		//formation mode
+				for(int i = 0;i < ships.length; i++) {
+					if(ships[i] != null) {
+						//設定ship移動地點
+						applyShipGuardEntity(ships[i], guarded);
+						//sync guard
+						CommonProxy.channelE.sendTo(new S2CEntitySync(ships[i], 3), (EntityPlayerMP) player);
+					}
+				}
+				break;
+			}//end switch
+		}		
+	}
 
 	/** set ship move with team list */
 	public static void applyTeamMove(EntityPlayer player, int meta, int side, int x, int y, int z) {
@@ -798,10 +876,8 @@ public class EntityHelper {
 				if(ships[0] != null) {
 					//設定ship移動地點
 					applyShipGuard(ships[0], x, y, z);
-					//若該ship有騎乘座騎, 將座騎目標也設定
-					if(ships[0].ridingEntity instanceof BasicEntityMount) {
-						((BasicEntityMount)ships[0].ridingEntity).getShipNavigate().tryMoveToXYZ(x, y, z, 1D);
-					}
+					//sync guard
+					CommonProxy.channelE.sendTo(new S2CEntitySync(ships[0], 3), (EntityPlayerMP) player);
 				}
 				break;
 			case 1:		//group mode
@@ -810,16 +886,13 @@ public class EntityHelper {
 					if(ships[i] != null) {
 						//設定ship移動地點
 						applyShipGuard(ships[i], x, y, z);
-						
-						//若該ship有騎乘座騎, 將座騎目標也設定
-						if(ships[i].ridingEntity instanceof BasicEntityMount) {
-							((BasicEntityMount)ships[i].ridingEntity).getShipNavigate().tryMoveToXYZ(x, y, z, 1D);
-						}
+						//sync guard
+						CommonProxy.channelE.sendTo(new S2CEntitySync(ships[i], 3), (EntityPlayerMP) player);
 					}
 				}
 				break;
 			}//end switch
-		}		
+		}
 	}
 	
 	/** set ship sitting with team list, only called at server side
@@ -829,7 +902,7 @@ public class EntityHelper {
 	public static void applyTeamSit(EntityPlayer player, int meta, int entityid) {
 		ExtendPlayerProps props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 		BasicEntityShip[] ships = props.getTeamListWithSelectState(meta);
-		
+
 		if(props != null) {
 			//不在隊伍名單裡面
 			if(props.checkInTeamList(entityid) < 0) {

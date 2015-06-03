@@ -90,7 +90,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
 	        	}
 	        	
 	        	//其他情況
-	        	return shouldExecute();
+	        	return !ShipNavigator.noPath() ||shouldExecute();
     		}
     		else {	//若為坐下, 騎乘, 被綁, 則重置AI
     			this.resetTask();
@@ -116,7 +116,8 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
 //    		LogHelper.info("DEBUG : exec follow owner");
         	this.findCooldown--;
         	
-        	if(host2.ticksExisted % 100 == 0){
+        	//update follow range every 60 ticks
+        	if(host2.ticksExisted % 60 == 0){
         		//update owner distance
             	EntityLivingBase OwnerEntity = this.host.getPlayerOwner();
                 if(OwnerEntity != null) {
@@ -139,6 +140,11 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
                 	this.distSq = this.distX*this.distX + this.distY*this.distY + this.distZ*this.distZ;
                 }
         	}//end update
+        	
+        	//end move
+        	if(this.distSq <= this.minDistSq) {
+        		this.ShipNavigator.clearPathEntity();
+        	}
         	
         	//設定頭部轉向
             this.host2.getLookHelper().setLookPositionWithEntity(this.owner, 30.0F, (float)this.host2.getVerticalFaceSpeed());

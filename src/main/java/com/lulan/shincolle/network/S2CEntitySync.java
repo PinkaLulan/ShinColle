@@ -3,6 +3,7 @@ package com.lulan.shincolle.network;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 
 import com.lulan.shincolle.entity.BasicEntityMount;
@@ -49,6 +50,7 @@ public class S2CEntitySync implements IMessage {
 	//for mount entity sync
 	//type 4: all emotion
 	//type 5: player mount packet
+	//type 7: mounts sync
 	public S2CEntitySync(IShipEmotion entity, int type) {
         this.entity2 = (EntityLiving) entity;
         this.entity2e = entity;
@@ -70,9 +72,15 @@ public class S2CEntitySync implements IMessage {
 		this.type = buf.readByte();
 		this.entityID = buf.readInt();
 		
-		if(this.type < 6) {	//for packet 0~5
+		switch(this.type) {
+		case 0:
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+		case 7:
 			this.entity2 = (EntityLiving) EntityHelper.getEntityByID(entityID, 0, true);
-			
 			//確認有抓到要sync的entity
 			if(entity2 != null) {
 				getSyncTarget = true;
@@ -84,16 +92,15 @@ public class S2CEntitySync implements IMessage {
 					this.entity2e = (IShipEmotion) this.entity2;
 				}
 			}
-			
-		}
-		else {				//for packet 6~			
-			//packet id 6: for mount seat2 sync
+			break;
+		case 6:	//packet id 6: for mount seat2 sync
 			this.entity3 = EntityHelper.getEntityByID(entityID, 0, true);
 			
 			if(entity3 instanceof EntityMountSeat) {
 				entity3s = (EntityMountSeat) entity3;
 				getSyncTarget = true;
 			}
+			break;
 		}
 
 		if(getSyncTarget) {
@@ -112,6 +119,11 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateMinor(ID.N.FollowMax, buf.readInt());
 					entity.setStateMinor(ID.N.FleeHP, buf.readInt());
 					entity.setStateMinor(ID.N.TargetAI, buf.readInt());
+					entity.setStateMinor(ID.N.GuardX, buf.readInt());
+					entity.setStateMinor(ID.N.GuardY, buf.readInt());
+					entity.setStateMinor(ID.N.GuardZ, buf.readInt());
+					entity.setStateMinor(ID.N.GuardDim, buf.readInt());
+					entity.setStateMinor(ID.N.GuardID, buf.readInt());
 					
 					entity.setStateFinal(ID.HP, buf.readFloat());
 					entity.setStateFinal(ID.ATK, buf.readFloat());
@@ -190,6 +202,11 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateMinor(ID.N.FollowMax, buf.readInt());
 					entity.setStateMinor(ID.N.FleeHP, buf.readInt());
 					entity.setStateMinor(ID.N.TargetAI, buf.readInt());
+					entity.setStateMinor(ID.N.GuardX, buf.readInt());
+					entity.setStateMinor(ID.N.GuardY, buf.readInt());
+					entity.setStateMinor(ID.N.GuardZ, buf.readInt());
+					entity.setStateMinor(ID.N.GuardDim, buf.readInt());
+					entity.setStateMinor(ID.N.GuardID, buf.readInt());
 				}
 				break;
 			case 4: //IShipEmotion sync emtion
@@ -252,6 +269,40 @@ public class S2CEntitySync implements IMessage {
 					}
 				}
 				break;
+			case 7:
+				{
+					int hostid = buf.readInt();
+					int rider2id = buf.readInt();
+					int seat2id = buf.readInt();
+					
+					BasicEntityMount mount = (BasicEntityMount) entity2;
+					Entity getEnt = null;
+
+					if(mount != null) {
+						//set host
+						if(hostid > 0) {
+							mount.host = (BasicEntityShip) EntityHelper.getEntityByID(hostid, 0, true);
+						}
+						else {
+							mount.host = null;
+						}
+						//set rider2
+						if(rider2id > 0) {
+							mount.riddenByEntity2 = (EntityLivingBase) EntityHelper.getEntityByID(rider2id, 0, true);
+						}
+						else {
+							mount.riddenByEntity2 = null;
+						}
+						//set seat2
+						if(seat2id > 0) {
+							mount.seat2 = (EntityMountSeat) EntityHelper.getEntityByID(seat2id, 0, true);
+						}
+						else {
+							mount.seat2 = null;
+						}
+					}
+				}
+				break;
 			}
 		}
 		else {
@@ -280,6 +331,11 @@ public class S2CEntitySync implements IMessage {
 				buf.writeInt(this.entity.getStateMinor(ID.N.FollowMax));
 				buf.writeInt(this.entity.getStateMinor(ID.N.FleeHP));
 				buf.writeInt(this.entity.getStateMinor(ID.N.TargetAI));
+				buf.writeInt(this.entity.getStateMinor(ID.N.GuardX));
+				buf.writeInt(this.entity.getStateMinor(ID.N.GuardY));
+				buf.writeInt(this.entity.getStateMinor(ID.N.GuardZ));
+				buf.writeInt(this.entity.getStateMinor(ID.N.GuardDim));
+				buf.writeInt(this.entity.getStateMinor(ID.N.GuardID));
 
 				buf.writeFloat(this.entity.getStateFinal(ID.HP));
 				buf.writeFloat(this.entity.getStateFinal(ID.ATK));
@@ -364,11 +420,16 @@ public class S2CEntitySync implements IMessage {
 				buf.writeInt(this.entity.getStateMinor(ID.N.FollowMax));
 				buf.writeInt(this.entity.getStateMinor(ID.N.FleeHP));
 				buf.writeInt(this.entity.getStateMinor(ID.N.TargetAI));
+				buf.writeInt(this.entity.getStateMinor(ID.N.GuardX));
+				buf.writeInt(this.entity.getStateMinor(ID.N.GuardY));
+				buf.writeInt(this.entity.getStateMinor(ID.N.GuardZ));
+				buf.writeInt(this.entity.getStateMinor(ID.N.GuardDim));
+				buf.writeInt(this.entity.getStateMinor(ID.N.GuardID));
 			}
 			break;
 		case 4:	//IShipEmotion emotion only
 			{
-				buf.writeByte(4);	//type 1
+				buf.writeByte(4);	//type 4
 				buf.writeInt(this.entity2.getEntityId());
 				buf.writeByte(this.entity2e.getStateEmotion(ID.S.State));
 				buf.writeByte(this.entity2e.getStateEmotion(ID.S.State2));
@@ -380,7 +441,7 @@ public class S2CEntitySync implements IMessage {
 			break;
 		case 5:	//IShipEmotion player mount packet
 			{
-				buf.writeByte(5);	//type 1
+				buf.writeByte(5);	//type 5
 				buf.writeInt(this.entity2.getEntityId());
 				buf.writeInt(((BasicEntityMount)this.entity2e).riddenByEntity2.getEntityId());
 				buf.writeInt(((BasicEntityMount)this.entity2e).seat2.getEntityId());
@@ -388,7 +449,7 @@ public class S2CEntitySync implements IMessage {
 			break;
 		case 6:	//IShipEmotion player mount packet
 			{
-				buf.writeByte(6);	//type 1
+				buf.writeByte(6);	//type 6
 				
 				//dismount packet
 				if(entity3s.riddenByEntity == null || entity3s.host.seat2 == null) {
@@ -401,6 +462,37 @@ public class S2CEntitySync implements IMessage {
 					buf.writeInt(this.entity3s.getEntityId());
 					buf.writeInt(this.entity3s.riddenByEntity.getEntityId());
 					buf.writeInt(this.entity3s.host.getEntityId());
+				}
+			}
+			break;
+		case 7:	//mounts sync
+			{
+				if(entity2 instanceof BasicEntityMount) {
+					BasicEntityMount mount = (BasicEntityMount) entity2;
+					
+					buf.writeByte(7);	//type 7
+					buf.writeInt(mount.getEntityId());
+					//get host id
+					if(mount.host != null) {
+						buf.writeInt(mount.host.getEntityId());
+					}
+					else {
+						buf.writeInt(-1);	//cause client get entity = null
+					}
+					//get rider2 id
+					if(mount.riddenByEntity2 != null) {
+						buf.writeInt(mount.riddenByEntity2.getEntityId());
+					}
+					else {
+						buf.writeInt(-1);	//cause client get entity = null
+					}
+					//get seat2 id
+					if(mount.seat2 != null) {
+						buf.writeInt(mount.seat2.getEntityId());
+					}
+					else {
+						buf.writeInt(-1);	//cause client get entity = null
+					}
 				}
 			}
 			break;

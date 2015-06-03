@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.lulan.shincolle.entity.BasicEntityAirplane;
+import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.EntityAirplane;
 import com.lulan.shincolle.reference.ID;
@@ -72,7 +73,7 @@ public class EntityAIShipInRangeTargetHostile extends EntityAITarget {
         this.targetSelector = new IEntitySelector() {
             public boolean isEntityApplicable(Entity target2) {
             	if((target2 instanceof EntityPlayer || target2 instanceof BasicEntityShip ||
-            	   target2 instanceof BasicEntityAirplane) && !target2.isDead && !target2.isInvisible()) {
+            	   target2 instanceof BasicEntityAirplane || target2 instanceof BasicEntityMount) && !target2.isDead && !target2.isInvisible()) {
             		return true;
             	}
             	return false;

@@ -2,6 +2,7 @@ package com.lulan.shincolle.network;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.World;
@@ -10,12 +11,11 @@ import net.minecraftforge.common.DimensionManager;
 import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
-import com.lulan.shincolle.entity.IShipEmotion;
+import com.lulan.shincolle.item.PointerItem;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.BasicTileEntity;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
@@ -60,8 +60,10 @@ public class C2SGUIPackets implements IMessage {
 	 * type 3: pointer click (add team): button = -1, value = team slot, value2 = entity id
 	 * type 4: pointer click (attack target): button = -2, value = meta, value2 = target id
 	 * type 7: pointer click (set sitting): button = -4, value = meta, value2 = entity id
-	 * type 8: open ship GUI: button = -5, value2 = entity id
-	 * type 9: sync player item
+	 * type 8: open ship GUI: button = -3, value2 = entity id
+	 * type 9: sync player item: button = -5, value = meta
+	 * type 10: guard entity: button = -6, value = meta, value2 = guarded id
+	 * type 11: clear team: button = -7
 	 */
 	public C2SGUIPackets(EntityPlayer player, int button, int value, int value2) {
         this.player = player;
@@ -89,6 +91,12 @@ public class C2SGUIPackets implements IMessage {
         	break;
         case -5:	//sync player item
         	this.type = 9;
+        	break;
+        case -6:	//guard entity
+        	this.type = 10;
+        	break;
+        case -7:	//clear team
+        	this.type = 11;
         	break;
         }
     }
@@ -318,6 +326,66 @@ public class C2SGUIPackets implements IMessage {
 					if(this.player.inventory.getCurrentItem() != null) {
 						this.player.inventory.getCurrentItem().setItemDamage(value);
 					}
+					
+					//if sync pointer, check pointer meta
+					if(this.player.inventory.getCurrentItem().getItem() instanceof PointerItem) {
+						ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+						
+						if(extProps != null) {
+							//is single mode, set focus ships to only 1 ship
+							if(value == 0) {
+								extProps.clearTeamSelected();
+								
+								for(int j = 0; j < 6; j++) {
+									if(extProps.getTeamList(j) != null) {
+										//focus ship j
+										extProps.setTeamSelected(j, true);
+										//sync team list
+										CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps), (EntityPlayerMP) player);
+										break;
+									}
+								}
+							}
+						}
+					}//end pointer sync
+				}
+			}
+			break;
+		case 10:	//guard entity
+			{
+				this.entityID = buf.readInt();
+				this.worldID = buf.readInt();
+				this.button = buf.readInt();	//no use
+				this.value = buf.readInt();		//meta
+				this.value2 = buf.readInt();	//entity id
+				
+				Entity getEnt = EntityHelper.getEntityByID(entityID, worldID, false);
+				Entity getEnt2 = EntityHelper.getEntityByID(value2, worldID, false);
+				
+				if(getEnt instanceof EntityPlayer && getEnt2 != null) {
+					this.player = (EntityPlayer) getEnt;
+					EntityHelper.applyTeamGuard(player, value, getEnt2);
+				}
+			}
+			break;
+		case 11:	//clear team
+			{
+				this.entityID = buf.readInt();
+				this.worldID = buf.readInt();
+				
+				Entity getEnt = EntityHelper.getEntityByID(entityID, worldID, false);
+				
+				if(getEnt instanceof EntityPlayer) {
+					this.player = (EntityPlayer) getEnt;
+					ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+					
+					if(extProps != null) {
+						extProps.clearTeamSelected();
+						extProps.clearShipTeamAll();
+						
+						//sync team list
+						CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps), (EntityPlayerMP) player);
+					}
 				}
 			}
 			break;
@@ -355,6 +423,7 @@ public class C2SGUIPackets implements IMessage {
 		case 7:	//pointer click: set sitting
 		case 8:	//open ship GUI
 		case 9:	//sync player item
+		case 10://guard entity
 			{
 				buf.writeByte(this.type);
 				buf.writeInt(this.player.getEntityId());
@@ -376,6 +445,13 @@ public class C2SGUIPackets implements IMessage {
 				buf.writeInt(this.posX);
 				buf.writeInt(this.posY);
 				buf.writeInt(this.posZ);
+			}
+			break;
+		case 11://clear team
+			{
+				buf.writeByte(11);
+				buf.writeInt(this.player.getEntityId());
+				buf.writeInt(this.worldID);
 			}
 			break;
 		}

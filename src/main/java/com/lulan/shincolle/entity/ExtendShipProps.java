@@ -65,6 +65,8 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		nbtExt_add0.setInteger("GuardX", this.entity.getStateMinor(ID.N.GuardX));
 		nbtExt_add0.setInteger("GuardY", this.entity.getStateMinor(ID.N.GuardY));
 		nbtExt_add0.setInteger("GuardZ", this.entity.getStateMinor(ID.N.GuardZ));
+		nbtExt_add0.setInteger("GuardDim", this.entity.getStateMinor(ID.N.GuardDim));
+		nbtExt_add0.setInteger("GuardID", this.entity.getStateMinor(ID.N.GuardID));
 		nbtExt_add0.setString("ownerName", this.entity.getOwnerName());
 		nbtExt_add0.setString("tagName", this.entity.getCustomNameTag());
 		//save AttrFinal
@@ -153,6 +155,8 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		entity.setStateMinor(ID.N.GuardX, nbt_load.getInteger("GuardX"));
 		entity.setStateMinor(ID.N.GuardY, nbt_load.getInteger("GuardY"));
 		entity.setStateMinor(ID.N.GuardZ, nbt_load.getInteger("GuardZ"));
+		entity.setStateMinor(ID.N.GuardDim, nbt_load.getInteger("GuardDim"));
+		entity.setStateMinor(ID.N.GuardID, nbt_load.getInteger("GuardID"));
 		entity.setOwnerName(nbt_load.getString("ownerName"));
 		entity.setNameTag(nbt_load.getString("tagName"));
 		//load final state

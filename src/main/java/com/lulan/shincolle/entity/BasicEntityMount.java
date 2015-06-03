@@ -10,6 +10,7 @@ import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
 import net.minecraft.entity.ai.EntityAIOpenDoor;
 import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.PathEntity;
@@ -22,6 +23,7 @@ import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.ai.EntityAIShipAttackOnCollide;
 import com.lulan.shincolle.ai.EntityAIShipFloating;
 import com.lulan.shincolle.ai.EntityAIShipFollowOwner;
+import com.lulan.shincolle.ai.EntityAIShipGuarding;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathEntity;
@@ -44,9 +46,9 @@ import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
  * mount use cannon attack, no aircraft attack
  * all states get from host ex: sitting, leashed, sprinting...
  */
-abstract public class BasicEntityMount extends EntityCreature implements IShipMount, IShipCannonAttack {
+abstract public class BasicEntityMount extends EntityCreature implements IShipMount, IShipCannonAttack, IShipGuardian {
 	
-	protected BasicEntityShip host;  			//host
+	public BasicEntityShip host;  				//host
 	public EntityMountSeat seat2;				//seat 2
 	public EntityLivingBase riddenByEntity2;	//second rider
 	protected World world;
@@ -129,23 +131,24 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 			this.getNavigator().setCanSwim(true);
 
 			//high priority
-			this.tasks.addTask(1, new EntityAIShipFollowOwner(this));	   		   //0111
+			this.tasks.addTask(1, new EntityAIShipGuarding(this));		//0111
+			this.tasks.addTask(2, new EntityAIShipFollowOwner(this));	//0111
 			
 			//use range attack
-			this.tasks.addTask(2, new EntityAIShipRangeAttack(this));			   //0011
+			this.tasks.addTask(3, new EntityAIShipRangeAttack(this));	//0011
 			
 			//use melee attack
 			if(this.getStateFlag(ID.F.UseMelee)) {
-				this.tasks.addTask(12, new EntityAIShipAttackOnCollide(this, 1D, true));   //0011
-				this.tasks.addTask(13, new EntityAIMoveTowardsTarget(this, 1D, 48F));  //0001
+				this.tasks.addTask(12, new EntityAIShipAttackOnCollide(this, 1D, true));//0011
+				this.tasks.addTask(13, new EntityAIMoveTowardsTarget(this, 1D, 48F));	//0001
 			}
 			
 			//idle AI
 			//moving
-			this.tasks.addTask(21, new EntityAIOpenDoor(this, true));			   //0000
-			this.tasks.addTask(22, new EntityAIShipFloating(this));				   //0101
-			this.tasks.addTask(24, new EntityAIWander(this, 0.8D));				   //0001
-			this.tasks.addTask(25, new EntityAILookIdle(this));					   //0011
+			this.tasks.addTask(21, new EntityAIOpenDoor(this, true));	//0000
+			this.tasks.addTask(22, new EntityAIShipFloating(this));		//0101
+			this.tasks.addTask(24, new EntityAIWander(this, 0.8D));		//0001
+			this.tasks.addTask(25, new EntityAILookIdle(this));			//0011
 		}
 	}
 	
@@ -394,7 +397,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 					if(this.isInWater()) {
 						this.setAir(300);
 					}
-				}
+				}//end every 100 ticks
 				
 				//get target every 10 ticks
 				if(this.ticksExisted % 10 == 0) {
@@ -406,7 +409,12 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	      					this.setAttackTarget(null);
 	      				}
 	      			}
-				}
+				}//end every 10 ticks
+				
+				//sync every 60 ticks
+				if(this.ticksExisted % 60 == 0) {
+					this.sendSyncPacket();
+				}//end every 60 ticks
 			}
 		}
 	}
@@ -737,7 +745,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 
 	    //將atk跟attacker傳給目標的attackEntityFrom方法, 在目標class中計算傷害
 	    //並且回傳是否成功傷害到目標
-	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this), atkLight);
+	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this).setProjectile(), atkLight);
 
 	    //if attack success
 	    if(isTargetHurt) {
@@ -1135,6 +1143,37 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	@Override
 	public void setEntitySit() {
 		if(host != null) host.setEntitySit();
+	}
+	
+	//sync host, rider, rider2, seat...
+	public void sendSyncPacket() {
+		if(!worldObj.isRemote) {
+			//for other player, send ship state for display
+			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+			CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this, 7), point);
+		}
+	}
+	
+	@Override
+	public Entity getGuarded() {
+		if(host != null) return this.host.getGuarded();
+		return null;
+	}
+
+	@Override
+	public void setGuarded(Entity entity) {
+		if(host != null) this.host.setGuarded(entity);
+	}
+
+	@Override
+	public int getGuardedPos(int vec) {
+		if(host != null) return this.host.getGuardedPos(vec);
+		return -1;
+	}
+
+	@Override
+	public void setGuardedPos(int x, int y, int z, int dim) {
+		if(host != null) this.host.setGuardedPos(x, y, z, dim);
 	}
 
 	

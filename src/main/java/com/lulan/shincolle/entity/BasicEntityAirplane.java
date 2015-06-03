@@ -385,7 +385,7 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 
 	    //將atk跟attacker傳給目標的attackEntityFrom方法, 在目標class中計算傷害
 	    //並且回傳是否成功傷害到目標
-	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this), atkLight);
+	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this).setProjectile(), atkLight);
 
 	    //if attack success
 	    if(isTargetHurt) {

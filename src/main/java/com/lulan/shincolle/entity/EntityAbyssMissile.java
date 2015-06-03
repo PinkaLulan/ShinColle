@@ -303,7 +303,7 @@ public class EntityAbyssMissile extends Entity {
             	}
 
             	//設定該entity受到的傷害
-            	isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(host2), missileAtk);
+            	isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(host2).setExplosion(), missileAtk);
 
             	//if attack success
         	    if(isTargetHurt) {
@@ -359,7 +359,7 @@ public class EntityAbyssMissile extends Entity {
                     		}
                     	}
                 		//對entity造成傷害
-                		isTargetHurt = hitEntity.attackEntityFrom(DamageSource.causeMobDamage(host2), missileAtk);
+                		isTargetHurt = hitEntity.attackEntityFrom(DamageSource.causeMobDamage(host2).setExplosion(), missileAtk);
                 	    
                 		//if attack success
                 	    if(isTargetHurt) {

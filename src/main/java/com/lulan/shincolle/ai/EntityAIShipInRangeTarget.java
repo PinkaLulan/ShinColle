@@ -19,9 +19,11 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAITarget;
 import net.minecraft.entity.boss.EntityDragon;
+import net.minecraft.entity.boss.EntityDragonPart;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.passive.EntityBat;
+import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.passive.EntityWaterMob;
 
 
@@ -73,7 +75,8 @@ public class EntityAIShipInRangeTarget extends EntityAITarget {
         this.targetSelector = new IEntitySelector() {
             public boolean isEntityApplicable(Entity target2) {
             	if((target2 instanceof EntityMob || target2 instanceof EntitySlime ||
-            	   target2 instanceof EntityBat || target2 instanceof EntityDragon ||
+            	   target2 instanceof EntityBat || target2 instanceof EntityDragon || 
+            	   target2 instanceof EntityDragonPart ||
             	   target2 instanceof EntityFlying || target2 instanceof EntityWaterMob) &&
             	   !target2.isDead && !target2.isInvisible()) {
             		return true;
@@ -110,7 +113,19 @@ public class EntityAIShipInRangeTarget extends EntityAITarget {
         //對目標做distance sort (increment)
         Collections.sort(list1, this.targetSorter);
         Collections.sort(list2, this.targetSorter);
-		
+        
+//        //debug
+//        LogHelper.info("DEBUG : target sort list: "+list1.size()+" "+list2.size());
+//        
+//        for(int i = 0;i < list1.size(); i++) {
+//        	Entity ent = (Entity) list1.get(i);
+//        	LogHelper.info("DEBUG : list1 "+i+" "+this.targetEntity.getDistanceSqToEntity(ent));
+//        }
+//        for(int j = 0;j < list2.size(); j++) {
+//        	Entity ent2 = (Entity) list2.get(j);
+//        	LogHelper.info("DEBUG : list2 "+j+" "+this.targetEntity.getDistanceSqToEntity(ent2));
+//        }
+        
         switch(this.targetMode) {
         case 0:  //mode 0:target between range1 and range2 only
         	list2.removeAll(list1);	 //list2排除range1以內的目標
