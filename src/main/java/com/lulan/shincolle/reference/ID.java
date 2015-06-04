@@ -125,6 +125,7 @@ public class ID {
 		public static final byte GuardZ = 16;
 		public static final byte GuardDim = 17;
 		public static final byte GuardID = 18;
+		public static final byte OwnerID = 19;
 	}
 	
 	//Array ID: ring effect

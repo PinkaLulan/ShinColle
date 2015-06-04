@@ -124,6 +124,7 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateMinor(ID.N.GuardZ, buf.readInt());
 					entity.setStateMinor(ID.N.GuardDim, buf.readInt());
 					entity.setStateMinor(ID.N.GuardID, buf.readInt());
+					entity.setStateMinor(ID.N.OwnerID, buf.readInt());
 					
 					entity.setStateFinal(ID.HP, buf.readFloat());
 					entity.setStateFinal(ID.ATK, buf.readFloat());
@@ -207,6 +208,7 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateMinor(ID.N.GuardZ, buf.readInt());
 					entity.setStateMinor(ID.N.GuardDim, buf.readInt());
 					entity.setStateMinor(ID.N.GuardID, buf.readInt());
+					entity.setStateMinor(ID.N.OwnerID, buf.readInt());
 				}
 				break;
 			case 4: //IShipEmotion sync emtion
@@ -336,7 +338,8 @@ public class S2CEntitySync implements IMessage {
 				buf.writeInt(this.entity.getStateMinor(ID.N.GuardZ));
 				buf.writeInt(this.entity.getStateMinor(ID.N.GuardDim));
 				buf.writeInt(this.entity.getStateMinor(ID.N.GuardID));
-
+				buf.writeInt(this.entity.getStateMinor(ID.N.OwnerID));
+				
 				buf.writeFloat(this.entity.getStateFinal(ID.HP));
 				buf.writeFloat(this.entity.getStateFinal(ID.ATK));
 				buf.writeFloat(this.entity.getStateFinal(ID.DEF));
@@ -425,6 +428,7 @@ public class S2CEntitySync implements IMessage {
 				buf.writeInt(this.entity.getStateMinor(ID.N.GuardZ));
 				buf.writeInt(this.entity.getStateMinor(ID.N.GuardDim));
 				buf.writeInt(this.entity.getStateMinor(ID.N.GuardID));
+				buf.writeInt(this.entity.getStateMinor(ID.N.OwnerID));
 			}
 			break;
 		case 4:	//IShipEmotion emotion only

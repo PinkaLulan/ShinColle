@@ -209,6 +209,8 @@ public class S2CGUIPackets implements IMessage {
 						buf.writeBoolean(false);
 					}
 				}
+//				//send player UUID
+//				if(this.props)
 			}
 			break;
 		}

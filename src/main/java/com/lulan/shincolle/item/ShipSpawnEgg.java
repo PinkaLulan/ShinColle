@@ -192,12 +192,24 @@ public class ShipSpawnEgg extends Item {
 				
 				//load owner UUID
 				String ownerid = nbt.getString("owner");
-				if(ownerid != null && ownerid.length() > 5) {
+				String ownername = nbt.getString("ownername");
+				
+				//若有抓到owner data
+				if(ownerid != null && ownerid.length() > 5 && ownername.length() > 1) {
+					LogHelper.info("DEBUG : old spawn egg");
 					entity.func_152115_b(nbt.getString("owner"));
+					entity.setOwnerName(ownername);
+				}
+				//抓不到owner, 重設owner為使用者
+				else {
+					LogHelper.info("DEBUG : new spawn egg");
+					entity.setOwnerName(player.getDisplayName());
 				}
 			}
 			else {
+				LogHelper.info("DEBUG : new spawn egg "+player.getDisplayName());
 				entity.setShipLevel(1, true);
+				entity.setOwnerName(player.getDisplayName());
 			}
 		}
 		//非指定ship egg, 則隨機骰屬性
@@ -364,6 +376,7 @@ public class ShipSpawnEgg extends Item {
 
     		if(nbt.hasKey("Attrs")) {
     			list.add(EnumChatFormatting.AQUA + "" + I18n.format("gui.shincolle:eggText") + " " + (nbt.getIntArray("Attrs")[0]/3));
+    			list.add(EnumChatFormatting.RED + "" + nbt.getString("ownername"));
     		}
     		else {
     			material[0] = itemstack.stackTagCompound.getInteger("Grudge");

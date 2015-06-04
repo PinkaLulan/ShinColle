@@ -16,8 +16,8 @@ import net.minecraftforge.common.IExtendedEntityProperties;
 public class ExtendPlayerProps implements IExtendedEntityProperties {
 
 	public static final String PLAYER_EXTPROP_NAME = "TeitokuExtProps";
-	private EntityPlayer player;
-	private World world;
+	public EntityPlayer player;
+	public World world;
 	private boolean hasRing;
 	private boolean isRingActive;
 	private boolean isRingFlying;

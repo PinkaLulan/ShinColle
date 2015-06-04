@@ -98,6 +98,7 @@ public class EntityHelper {
 	}
 	
 	/**check is same owner for ship (host's owner == target's owner) */
+	//注意盜版會發生player uuid不合的情形, 導致無法開gui或者其他功能
 	public static boolean checkSameOwner(Entity host, Entity target) {
 		Entity getOwnerA = null;
 		Entity getOwnerB = null;
@@ -110,11 +111,34 @@ public class EntityHelper {
 			
 			//for other entity
 			getOwnerA = getOwnerFromEntity(host);
-			getOwnerB = getOwnerFromEntity(target);
+			getOwnerB = getOwnerFromEntity(target); 
 			
-			//檢查uuid是否相同
-			if(getOwnerA != null && getOwnerB != null) {
-				return getOwnerA.getUniqueID().equals(getOwnerB.getUniqueID());
+			//client side check
+			if(host.worldObj.isRemote || target.worldObj.isRemote) {
+				//client端判定: 由於sync問題, client端必須另外抓一次owner
+				if(getOwnerA instanceof BasicEntityShip) {
+					getOwnerA = getEntityByID(((BasicEntityShip) getOwnerA).getStateMinor(ID.N.OwnerID), 0, true);
+				}
+				if(getOwnerB instanceof BasicEntityShip) {
+					getOwnerB = getEntityByID(((BasicEntityShip) getOwnerB).getStateMinor(ID.N.OwnerID), 0, true);
+				}
+				
+				//檢查uuid是否相同
+				if(getOwnerA != null && getOwnerB != null) {
+					LogHelper.info("DEBUG : check owner (client) A:"+getOwnerA.getUniqueID()+" B: "+getOwnerB.getUniqueID());
+					return getOwnerA.getUniqueID().equals(getOwnerB.getUniqueID());
+				}
+				else {
+					LogHelper.info("DEBUG : check owner (client) A:"+getOwnerA+" B: "+getOwnerB);
+				}
+			}
+			//server side check
+			else {
+				//檢查uuid是否相同
+				if(getOwnerA != null && getOwnerB != null) {
+					LogHelper.info("DEBUG : check owner (server) A:"+getOwnerA.getUniqueID()+" B: "+getOwnerB.getUniqueID());
+					return getOwnerA.getUniqueID().equals(getOwnerB.getUniqueID());
+				}
 			}
 		}
 		
@@ -171,6 +195,25 @@ public class EntityHelper {
 		//若為玩家, 則直接回傳玩家
 		if(host instanceof EntityPlayer) {
 			return host;
+		}
+		//若為ship類
+		else if(host instanceof BasicEntityShip) {
+			if(host.worldObj.isRemote) {
+				//client ship: return ship
+				return host;
+			}
+			else {
+				return ((BasicEntityShip) host).getOwner();
+			}
+		}
+		else if(host instanceof BasicEntityMount) {
+			if(host.worldObj.isRemote) {
+				//client mount: return ship
+				return ((BasicEntityMount) host).getOwner();
+			}
+			else {
+				return ((BasicEntityMount)host).getPlayerOwner();
+			}
 		}
 		//若為寵物, 則回傳寵物owner
 		else if(host instanceof EntityTameable) {
@@ -748,11 +791,13 @@ public class EntityHelper {
 				ship.setStateMinor(ID.N.GuardID, -1);
 				ship.setGuarded(null);
 				
-				if(ship.ridingEntity != null && ship.ridingEntity instanceof BasicEntityMount) {
-					((BasicEntityMount)ship.ridingEntity).getShipNavigate().tryMoveToXYZ(x, y, z, 1D);
-				}
-				else {
-					ship.getShipNavigate().tryMoveToXYZ(x, y, z, 1D);
+				if(!ship.getStateFlag(ID.F.NoFuel)) {
+					if(ship.ridingEntity != null && ship.ridingEntity instanceof BasicEntityMount) {
+						((BasicEntityMount)ship.ridingEntity).getShipNavigate().tryMoveToXYZ(x, y, z, 1D);
+					}
+					else {
+						ship.getShipNavigate().tryMoveToXYZ(x, y, z, 1D);
+					}
 				}
 			}
 		}
@@ -783,11 +828,13 @@ public class EntityHelper {
 				ship.setStateMinor(ID.N.GuardDim, guarded.worldObj.provider.dimensionId);
 				ship.setGuarded(guarded);
 				
-				if(ship.ridingEntity != null && ship.ridingEntity instanceof BasicEntityMount) {
-					((BasicEntityMount)ship.ridingEntity).getShipNavigate().tryMoveToEntityLiving(guarded, 1D);
-				}
-				else {
-					ship.getShipNavigate().tryMoveToEntityLiving(guarded, 1D);
+				if(!ship.getStateFlag(ID.F.NoFuel)) {
+					if(ship.ridingEntity != null && ship.ridingEntity instanceof BasicEntityMount) {
+						((BasicEntityMount)ship.ridingEntity).getShipNavigate().tryMoveToEntityLiving(guarded, 1D);
+					}
+					else {
+						ship.getShipNavigate().tryMoveToEntityLiving(guarded, 1D);
+					}
 				}
 			}
 		}

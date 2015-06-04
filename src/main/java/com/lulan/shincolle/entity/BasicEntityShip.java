@@ -80,7 +80,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	/**minor states: 0:ShipLevel 1:Kills 2:ExpCurrent 3:ExpNext 4:NumAmmoLight 
 	 * 5:NumAmmoHeavy 6:NumGrudge 7:NumAirLight 8:NumAirHeavy 9:immunity time 
 	 * 10:followMin 11:followMax 12:FleeHP 13:TargetAIType 14:guardX 15:guardY 16:guardZ 17:guardDim
-	 * 18:guardID*/
+	 * 18:guardID 19:ownerID*/
 	protected int[] StateMinor;
 	/**equip effect: 0:critical 1:doubleHit 2:tripleHit 3:baseMiss*/
 	protected float[] EffectEquip;
@@ -107,7 +107,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		isImmuneToFire = true;	//set ship immune to lava
 		StateEquip = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F};
 		StateFinal = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F};
-		StateMinor = new int[] {1, 0, 0, 40, 0, 0, 0, 0, 0, 0, 2, 14, 35, 1, -1, -1, -1, 0, -1};
+		StateMinor = new int[] {1, 0, 0, 40, 0, 0, 0, 0, 0, 0, 2, 14, 35, 1, -1, -1, -1, 0, -1, -1};
 		EffectEquip = new float[] {0F, 0F, 0F, 0F};
 		StateEmotion = new byte[] {0, 0, 0, 0, 0, 0};
 		StateFlag = new boolean[] {false, false, true, false, true, true, true, true, false, true, true, false};
@@ -188,6 +188,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	//get owner name (for player owner only)
 	public String getOwnerName() {
 		return this.ownerName;
+	}
+	
+	//for client host check, owner must be online
+	public int getOwnerID() {
+		return this.getStateMinor(ID.N.OwnerID);
 	}
 
 	@Override
@@ -586,6 +591,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.ownerName = name;
 	}
 	
+	public void setOwnerID(int par1) {
+		this.setStateMinor(ID.N.OwnerID, par1);
+	}
+	
 	//prevent player use name tag
 	@Override
 	public void setCustomNameTag(String str) {}
@@ -727,7 +736,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			if(this.getOwner() != null) {
 				EntityPlayerMP player = EntityHelper.getOnlinePlayer(this.getOwner());
 				//owner在附近才需要sync
-				if(player != null && this.getDistanceToEntity(player) < 30F) {
+				if(player != null && this.getDistanceToEntity(player) < 48F) {
 					CommonProxy.channelE.sendTo(new S2CEntitySync(this, 0), player);
 				}	
 			}
@@ -1261,7 +1270,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	
         	//check every 40 ticks
         	if(ticksExisted % 40 == 0) {
-        		if(this.getPlayerOwner() != null) {
+        		if(this.getPlayerOwner() != null && this.dimension == this.getPlayerOwner().dimension && this.getPlayerOwner().getDistanceToEntity(this) < 100F) {
+//        			LogHelper.info("DEBUG : ship onupdate sync 3: "+getPlayerOwner().getEntityId());
+        			//update owner entity id (could be changed when owner change dimension or dead)
+        			this.setStateMinor(ID.N.OwnerID, this.getPlayerOwner().getEntityId());
+        			
         			//sync guard
     				CommonProxy.channelE.sendTo(new S2CEntitySync(this, 3), (EntityPlayerMP) this.getPlayerOwner());
         		}
@@ -1373,6 +1386,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
             	}
         	}
         }//end if(server side)
+        //client side
+//        else {
+//        	//set client side owner
+//        	if(this.ticksExisted % 20 == 0) {
+//        		LogHelper.info("DEBUG : entity sync 3: get owner id "+this.getStateMinor(ID.N.OwnerID));
+//        	}
+//        }
         
 //        //both side
 //        if(this.ridingEntity instanceof BasicEntityMount) {

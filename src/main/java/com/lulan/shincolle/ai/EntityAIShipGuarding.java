@@ -205,7 +205,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
             		if(this.distSq > this.maxDistSq && host2.dimension == host.getStateMinor(ID.N.GuardDim)) {
             			this.checkTeleport++;	//若距離超過max dist且移動又失敗, 會使checkTP每30 tick+1
                 		
-                		if(this.checkTeleport > 8) {
+                		if(this.checkTeleport > 12) {
                 			this.checkTeleport = 0;
                 			//teleport
             				this.host2.setLocationAndAngles(this.gx, this.gy + 0.5D, this.gz, this.host2.rotationYaw, this.host2.rotationPitch);
