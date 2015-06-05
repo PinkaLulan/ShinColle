@@ -193,16 +193,14 @@ public class ShipPathNavigate {
         //若有path
         if(!this.noPath()) {
             //若pathFollow沒把path清除, 表示還可以繼續移動
-            if(!this.noPath()) {
-            	//取得下一個目標點
-                Vec3 vec3 = this.currentPath.getPosition(this.theEntity);
+        	//取得下一個目標點
+            Vec3 vec3 = this.currentPath.getPosition(this.theEntity);
 //                LogHelper.info("DEBUG : path navi: path vec "+this.currentPath.getCurrentPathIndex()+" / "+this.currentPath.getCurrentPathLength()+" "+vec3.xCoord+" "+vec3.yCoord+" "+vec3.zCoord);
 //                LogHelper.info("DEBUG : path navi: path pp  "+currentPath.getPathPointFromIndex(currentPath.getCurrentPathIndex()).xCoord+" "+currentPath.getPathPointFromIndex(currentPath.getCurrentPathIndex()).yCoord+" "+currentPath.getPathPointFromIndex(currentPath.getCurrentPathIndex()).zCoord+" ");
 //                LogHelper.info("DEBUG : path navi: path pos "+this.theEntity.posX+" "+this.theEntity.posY+" "+this.theEntity.posZ+" ");
-                //若還有下一個點要移動, 則設定移動量使move helper可以實際移動entity
-                if(vec3 != null) {
-                    this.theEntity2.getShipMoveHelper().setMoveTo(vec3.xCoord, vec3.yCoord, vec3.zCoord, this.speed);
-                }
+            //若還有下一個點要移動, 則設定移動量使move helper可以實際移動entity
+            if(vec3 != null) {
+                this.theEntity2.getShipMoveHelper().setMoveTo(vec3.xCoord, vec3.yCoord, vec3.zCoord, this.speed);
             }
             
             //若可以執行移動, 則跑pathFollow方法更新下一個目標點
@@ -260,11 +258,6 @@ public class ShipPathNavigate {
         if(this.totalTicks - this.ticksAtLastPos > 25) {
         	//若距離上一次成功移動的點不到1.5格, 則表示某種原因造成幾乎沒移動, 清除該path
             if(entityPos.squareDistanceTo(this.lastPosCheck) < 2.25D) {
-            	//超過5秒無法移動, clear path
-                if(this.totalTicks - this.ticksAtLastPos > 100) {
-                	this.clearPathEntity();
-                }
-                
             	//可能本身在柵欄方塊中(起點就在柵欄方塊), 判定要移動到柵欄隔壁空地方塊, 但是要穿過柵欄, AI無法判斷人在柵欄哪一側
             	//暫定解法: 隨機往路徑方向的左右移動一格, 嘗試脫離柵欄
 //            	Block stand = theEntity.worldObj.getBlock(MathHelper.floor_double(theEntity.posX), (int)theEntity.posY, MathHelper.floor_double(theEntity.posZ));
@@ -285,6 +278,11 @@ public class ShipPathNavigate {
             	
             	//set move
             	this.theEntity2.getShipMoveHelper().setMoveTo(targetX, theEntity.posY, targetZ, this.speed);
+            
+            	//超過5秒無法移動, clear path
+                if(this.totalTicks - this.ticksAtLastPos > 100) {
+                	this.clearPathEntity();
+                }
             }
 
             //更新成功移動的紀錄

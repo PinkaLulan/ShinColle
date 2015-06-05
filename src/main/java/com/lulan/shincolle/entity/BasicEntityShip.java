@@ -1159,7 +1159,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 					}
 					
 					//owner have to hold pointer item
-					EntityPlayer player = (EntityPlayer) this.getPlayerOwner();
+//					EntityPlayer player = (EntityPlayer) this.getPlayerOwner();
+					EntityPlayer player = null;
+					if(this.getStateMinor(ID.N.OwnerID) > 0) {
+						player = (EntityPlayer) EntityHelper.getEntityByID(this.getStateMinor(ID.N.OwnerID), this.dimension, true);
+					}
+					
 					if(player != null) {
 						ItemStack item = player.inventory.getCurrentItem();
 						
@@ -1387,12 +1392,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	}
         }//end if(server side)
         //client side
-//        else {
-//        	//set client side owner
-//        	if(this.ticksExisted % 20 == 0) {
-//        		LogHelper.info("DEBUG : entity sync 3: get owner id "+this.getStateMinor(ID.N.OwnerID));
-//        	}
-//        }
+        else {
+        	//set client side owner
+        	if(this.ticksExisted % 20 == 0) {
+        		LogHelper.info("DEBUG : entity sync 3: get owner id "+this.getStateMinor(ID.N.OwnerID));
+        	}
+        }
         
 //        //both side
 //        if(this.ridingEntity instanceof BasicEntityMount) {
