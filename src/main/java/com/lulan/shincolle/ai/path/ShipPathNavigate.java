@@ -260,25 +260,26 @@ public class ShipPathNavigate {
             if(entityPos.squareDistanceTo(this.lastPosCheck) < 2.25D) {
             	//可能本身在柵欄方塊中(起點就在柵欄方塊), 判定要移動到柵欄隔壁空地方塊, 但是要穿過柵欄, AI無法判斷人在柵欄哪一側
             	//暫定解法: 隨機往路徑方向的左右移動一格, 嘗試脫離柵欄
-//            	Block stand = theEntity.worldObj.getBlock(MathHelper.floor_double(theEntity.posX), (int)theEntity.posY, MathHelper.floor_double(theEntity.posZ));
-            	float dx = (float) (theEntity.posX - currentPath.getVectorFromIndex(this.theEntity, currentPath.getCurrentPathIndex()).xCoord);
-            	float dz = (float) (theEntity.posZ - currentPath.getVectorFromIndex(this.theEntity, currentPath.getCurrentPathIndex()).zCoord);
-            	LogHelper.info("DEBUG : path navi: get stand block: "+dx+" "+dz);
-            	double targetX = theEntity.posX;
-            	double targetZ = theEntity.posZ;
-            	
-            	//get random position
-            	if(dx > 0.2 || dx < -0.2) {	//若目標點離x方向一定距離, 則在z方向隨機選+-1
-            		targetZ = theEntity.getRNG().nextInt(2) == 0 ? targetZ - 1.5D : targetZ + 1.5D;
+            	if(!currentPath.isFinished()) {
+            		float dx = (float) (theEntity.posX - currentPath.getVectorFromIndex(this.theEntity, currentPath.getCurrentPathIndex()).xCoord);
+                	float dz = (float) (theEntity.posZ - currentPath.getVectorFromIndex(this.theEntity, currentPath.getCurrentPathIndex()).zCoord);
+                	LogHelper.info("DEBUG : path navi: get stand block: "+dx+" "+dz);
+                	double targetX = theEntity.posX;
+                	double targetZ = theEntity.posZ;
+                	
+                	//get random position
+                	if(dx > 0.2 || dx < -0.2) {	//若目標點離x方向一定距離, 則在z方向隨機選+-1
+                		targetZ = theEntity.getRNG().nextInt(2) == 0 ? targetZ - 1.5D : targetZ + 1.5D;
+                	}
+                	
+                	if(dz > 0.2 || dz < -0.2) {
+                		targetX = theEntity.getRNG().nextInt(2) == 0 ? targetX - 1.5D : targetX + 1.5D;
+                	}
+                	
+                	//set move
+                	this.theEntity2.getShipMoveHelper().setMoveTo(targetX, theEntity.posY, targetZ, this.speed);
             	}
             	
-            	if(dz > 0.2 || dz < -0.2) {
-            		targetX = theEntity.getRNG().nextInt(2) == 0 ? targetX - 1.5D : targetX + 1.5D;
-            	}
-            	
-            	//set move
-            	this.theEntity2.getShipMoveHelper().setMoveTo(targetX, theEntity.posY, targetZ, this.speed);
-            
             	//超過5秒無法移動, clear path
                 if(this.totalTicks - this.ticksAtLastPos > 100) {
                 	this.clearPathEntity();

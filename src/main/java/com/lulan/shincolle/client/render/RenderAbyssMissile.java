@@ -11,7 +11,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 
 import com.lulan.shincolle.client.model.ModelAbyssMissile;
-import com.lulan.shincolle.entity.EntityAbyssMissile;
+import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.reference.Reference;
 
 

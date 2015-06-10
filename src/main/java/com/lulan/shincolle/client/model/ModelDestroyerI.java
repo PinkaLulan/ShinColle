@@ -17,8 +17,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MathHelper;
 
-import com.lulan.shincolle.entity.EntityDestroyerI;
 import com.lulan.shincolle.entity.IShipEmotion;
+import com.lulan.shincolle.entity.destroyer.EntityDestroyerI;
 
 /**Created in 2015/1/9
  * 注意: model class內所有方法都是fps 60模式

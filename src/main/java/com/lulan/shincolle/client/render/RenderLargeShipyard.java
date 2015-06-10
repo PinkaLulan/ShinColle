@@ -3,7 +3,7 @@ package com.lulan.shincolle.client.render;
 import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.client.model.ModelLargeShipyard;
-import com.lulan.shincolle.entity.EntityAbyssMissile;
+import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.entity.renderentity.BasicRenderEntity;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.Reference;

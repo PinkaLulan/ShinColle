@@ -8,7 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityFurnace;
 
 import com.lulan.shincolle.entity.BasicEntityShipLarge;
-import com.lulan.shincolle.entity.EntityDestroyerI;
+import com.lulan.shincolle.entity.destroyer.EntityDestroyerI;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.BasicEquip;
 import com.lulan.shincolle.utility.LogHelper;

@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.lulan.shincolle.entity.BasicEntityAirplane;
 import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.entity.EntityAirplane;
+import com.lulan.shincolle.entity.other.EntityAirplane;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;

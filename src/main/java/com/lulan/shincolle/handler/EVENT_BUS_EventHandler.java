@@ -27,10 +27,10 @@ import org.lwjgl.opengl.GL11;
 import com.lulan.shincolle.entity.BasicEntityAirplane;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
-import com.lulan.shincolle.entity.EntityRensouhouBoss;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
 import com.lulan.shincolle.entity.ExtendShipProps;
 import com.lulan.shincolle.entity.IShipAttackBase;
+import com.lulan.shincolle.entity.hostile.EntityRensouhouBoss;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.BasicEntityItem;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -119,6 +119,7 @@ public class EVENT_BUS_EventHandler {
 		    	nbt.setIntArray("Attrs", attrs);	//save attributes data to nbt
 		    	nbt.setString("owner", entity.func_152113_b());	//get owner uuid
 		    	nbt.setString("ownername", entity.getOwnerName());
+		    	nbt.setString("customname", entity.getCustomNameTag());
 		    	entityItem2.getEntityItem().setTagCompound(nbt);	  //save nbt to entity item
 		    	event.entity.worldObj.spawnEntityInWorld(entityItem2);	//spawn entity item
 	    	}

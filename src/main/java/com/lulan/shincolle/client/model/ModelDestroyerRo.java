@@ -2,9 +2,9 @@ package com.lulan.shincolle.client.model;
 
 import org.lwjgl.opengl.GL11;
 
-import com.lulan.shincolle.entity.EntityDestroyerI;
-import com.lulan.shincolle.entity.EntityDestroyerRo;
 import com.lulan.shincolle.entity.IShipEmotion;
+import com.lulan.shincolle.entity.destroyer.EntityDestroyerI;
+import com.lulan.shincolle.entity.destroyer.EntityDestroyerRo;
 import com.lulan.shincolle.reference.ID;
 
 import net.minecraft.client.model.ModelBase;

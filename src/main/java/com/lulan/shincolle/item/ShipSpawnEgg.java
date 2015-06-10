@@ -110,6 +110,7 @@ public class ShipSpawnEgg extends Item {
   		list.add(new ItemStack(item, 1, ID.S_BattleshipRE+2));
   		list.add(new ItemStack(item, 1, ID.S_AirfieldHime+2));
   		list.add(new ItemStack(item, 1, ID.S_BattleshipHime+2));
+  		list.add(new ItemStack(item, 1, ID.S_HarbourHime+2));
   		list.add(new ItemStack(item, 1, ID.S_DestroyerShimakaze+2));
   		list.add(new ItemStack(item, 1, ID.S_DestroyerShimakaze+202));	//mob entity
   		list.add(new ItemStack(item, 1, ID.S_BattleshipNagato+2));
@@ -193,6 +194,7 @@ public class ShipSpawnEgg extends Item {
 				//load owner UUID
 				String ownerid = nbt.getString("owner");
 				String ownername = nbt.getString("ownername");
+				String customname = nbt.getString("customname");
 				
 				//­Y¦³§ì¨ìowner data
 				if(ownerid != null && ownerid.length() > 5 && ownername.length() > 1) {
@@ -204,6 +206,11 @@ public class ShipSpawnEgg extends Item {
 				else {
 					LogHelper.info("DEBUG : new spawn egg");
 					entity.setOwnerName(player.getDisplayName());
+				}
+				
+				//set custom name
+				if(customname != null && customname.length() > 0) {
+					entity.setNameTag(customname);
 				}
 			}
 			else {
@@ -376,6 +383,7 @@ public class ShipSpawnEgg extends Item {
 
     		if(nbt.hasKey("Attrs")) {
     			list.add(EnumChatFormatting.AQUA + "" + I18n.format("gui.shincolle:eggText") + " " + (nbt.getIntArray("Attrs")[0]/3));
+    			list.add(EnumChatFormatting.WHITE + "" + nbt.getString("customname"));
     			list.add(EnumChatFormatting.RED + "" + nbt.getString("ownername"));
     		}
     		else {

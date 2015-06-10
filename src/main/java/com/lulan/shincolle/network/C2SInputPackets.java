@@ -9,10 +9,11 @@ import net.minecraft.world.World;
 import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.entity.EntityMountSeat;
+import com.lulan.shincolle.entity.mounts.EntityMountSeat;
 import com.lulan.shincolle.handler.FML_COMMON_EventHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
@@ -104,7 +105,7 @@ public class C2SInputPackets implements IMessage {
 			
 			switch(message.type) {
 			case 0:	//mounts key input packet
-				System.out.println(String.format("DEBUG : client key input: %s from %s", message.value, player.getDisplayName()));
+				LogHelper.info(String.format("DEBUG : client key input: %s from %s", message.value, player.getDisplayName()));
 				//set player's mount movement
 				if(player.isRiding() && player.ridingEntity instanceof EntityMountSeat) {
 					BasicEntityMount mount = ((EntityMountSeat)player.ridingEntity).host;

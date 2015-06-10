@@ -21,6 +21,8 @@ import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathEntity;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.ai.path.ShipPathPoint;
+import com.lulan.shincolle.entity.other.EntityAbyssMissile;
+import com.lulan.shincolle.entity.other.EntityAirplane;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -385,8 +387,12 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 
 	    //將atk跟attacker傳給目標的attackEntityFrom方法, 在目標class中計算傷害
 	    //並且回傳是否成功傷害到目標
-	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this).setProjectile(), atkLight);
-
+  		boolean isTargetHurt = false;
+  		
+  		if(this.hostEntity != null) {
+  			isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this.hostEntity).setProjectile(), atkLight);
+  		}
+	    
 	    //if attack success
 	    if(isTargetHurt) {
 	    	//calc kb effect
@@ -432,7 +438,7 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
         }
 
         //spawn missile
-        EntityAbyssMissile missile = new EntityAbyssMissile(this.worldObj, this, 
+    	EntityAbyssMissile missile = new EntityAbyssMissile(this.worldObj, this, 
         		(float)target.posX, (float)(target.posY+target.height*0.2F), (float)target.posZ, (float)(this.posY-0.8F), atkHeavy, kbValue, true, -1F);
         this.worldObj.spawnEntityInWorld(missile);
         

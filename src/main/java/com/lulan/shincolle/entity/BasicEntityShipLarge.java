@@ -1,6 +1,8 @@
 package com.lulan.shincolle.entity;
 
 import com.lulan.shincolle.client.particle.EntityFXTexts;
+import com.lulan.shincolle.entity.other.EntityAirplane;
+import com.lulan.shincolle.entity.other.EntityAirplaneTakoyaki;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;

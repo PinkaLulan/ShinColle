@@ -29,6 +29,8 @@ import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathEntity;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.ai.path.ShipPathPoint;
+import com.lulan.shincolle.entity.mounts.EntityMountSeat;
+import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;
@@ -66,6 +68,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	protected int StartEmotion;			//表情1 開始時間
 	protected int StartEmotion2;		//表情2 開始時間
 	protected boolean headTilt;
+	protected float[] ridePos;
 	
 	//AI
 	protected double ShipDepth;			//水深, 用於水中高度判定
@@ -79,6 +82,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		keyPressed = 0;
 		shipNavigator = new ShipPathNavigate(this, worldObj);
 		shipMoveHelper = new ShipMoveHelper(this);
+		ridePos = new float[] {0F,0F,0F};
 	}
     
     //平常音效
@@ -745,8 +749,12 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 
 	    //將atk跟attacker傳給目標的attackEntityFrom方法, 在目標class中計算傷害
 	    //並且回傳是否成功傷害到目標
-	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this).setProjectile(), atkLight);
-
+	    boolean isTargetHurt = false;
+	    
+	    if(this.host != null) {
+	    	isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this.host).setProjectile(), atkLight);
+	    }
+	    		
 	    //if attack success
 	    if(isTargetHurt) {
 	    	//calc kb effect
@@ -1114,7 +1122,9 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	}
 	
 	//get seat position: z, x, height
-	abstract public float[] getRidePos();
+	public float[] getRidePos() {
+		return this.ridePos;
+	}
 	
 	//for clear rider process
 	public void setRiderNull() {
@@ -1149,7 +1159,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	public void sendSyncPacket() {
 		if(!worldObj.isRemote) {
 			//for other player, send ship state for display
-			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
 			CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this, 7), point);
 		}
 	}

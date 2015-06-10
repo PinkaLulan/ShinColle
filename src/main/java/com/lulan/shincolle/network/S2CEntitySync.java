@@ -8,8 +8,9 @@ import net.minecraft.entity.player.EntityPlayer;
 
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.entity.EntityMountSeat;
 import com.lulan.shincolle.entity.IShipEmotion;
+import com.lulan.shincolle.entity.mounts.EntityMountSeat;
+import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
@@ -31,8 +32,7 @@ public class S2CEntitySync implements IMessage {
 	private IShipEmotion entity2e;
 	private Entity entity3;
 	private EntityMountSeat entity3s;
-	private int entityID;
-	private int type;
+	private int entityID, value, type;
 
 	
 	public S2CEntitySync() {}	//必須要有空參數constructor, forge才能使用此class
@@ -64,10 +64,19 @@ public class S2CEntitySync implements IMessage {
         this.type = type;
     }
 	
+	//for mount seat sync
+	//type 8: entity type sync
+	public S2CEntitySync(Entity entity, int value, int type) {
+        this.entity3 = entity;
+        this.value = value;
+        this.type = type;
+    }
+
 	//接收packet方法 (CLIENT SIDE)
 	@Override
 	public void fromBytes(ByteBuf buf) {
 		boolean getSyncTarget = false;
+		
 		//get type and entityID
 		this.type = buf.readByte();
 		this.entityID = buf.readInt();
@@ -98,6 +107,13 @@ public class S2CEntitySync implements IMessage {
 			
 			if(entity3 instanceof EntityMountSeat) {
 				entity3s = (EntityMountSeat) entity3;
+				getSyncTarget = true;
+			}
+			break;
+		case 8:	//missile sync
+			this.entity3 = EntityHelper.getEntityByID(entityID, 0, true);
+			
+			if(entity3 != null) {
 				getSyncTarget = true;
 			}
 			break;
@@ -305,6 +321,15 @@ public class S2CEntitySync implements IMessage {
 					}
 				}
 				break;
+			case 8:
+				{
+					int value = buf.readInt();
+					
+					if(entity3 instanceof EntityAbyssMissile) {
+						((EntityAbyssMissile)entity3).setMissileType(value);
+					}
+				}
+				break;
 			}
 		}
 		else {
@@ -498,6 +523,13 @@ public class S2CEntitySync implements IMessage {
 						buf.writeInt(-1);	//cause client get entity = null
 					}
 				}
+			}
+			break;
+		case 8:
+			{
+				buf.writeByte(8);	//type 8
+				buf.writeInt(this.entity3.getEntityId());
+				buf.writeInt(this.value);
 			}
 			break;
 		}

@@ -3,8 +3,8 @@ package com.lulan.shincolle.client.model;
 import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.entity.EntityDestroyerShimakaze;
 import com.lulan.shincolle.entity.IShipEmotion;
+import com.lulan.shincolle.entity.destroyer.EntityDestroyerShimakaze;
 import com.lulan.shincolle.reference.ID;
 
 import net.minecraft.client.model.ModelBase;

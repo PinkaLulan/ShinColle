@@ -18,8 +18,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-/**CHI PARTICLE
- * 氣彈環繞特效, entity必須為IShipEmotion
+/**NYI
  */
 @SideOnly(Side.CLIENT)
 public class EntityFXShockWave extends EntityFX {
@@ -30,23 +29,24 @@ public class EntityFXShockWave extends EntityFX {
 	
     public EntityFXShockWave(World world, Entity host, float scale, int type) {
         super(world, host.posX+1.5D, host.posY+host.height*0.7D, host.posZ, 0.0D, 0.0D, 0.0D);  
-        this.host = host;
-        this.motionX = 0D;
-        this.motionZ = 0D;
-        this.motionY = 0D;
-        this.particleScale = scale;
-        this.noClip = true;
-        this.particleType = type;
-        
-        switch(type) {
-        case 1:
-        	this.particleRed = 1F;
-        	this.particleGreen = 1F;
-        	this.particleBlue = 1F;
-        	this.particleAlpha = 1F;
-        	this.particleMaxAge = 50;
-        	break;
-        }
+//NYI
+//        this.host = host;
+//        this.motionX = 0D;
+//        this.motionZ = 0D;
+//        this.motionY = 0D;
+//        this.particleScale = scale;
+//        this.noClip = true;
+//        this.particleType = type;
+//        
+//        switch(type) {
+//        case 1:
+//        	this.particleRed = 1F;
+//        	this.particleGreen = 1F;
+//        	this.particleBlue = 1F;
+//        	this.particleAlpha = 1F;
+//        	this.particleMaxAge = 50;
+//        	break;
+//        }
     }
 
     public void renderParticle(Tessellator tess, float ticks, float par3, float par4, float par5, float par6, float par7) {       

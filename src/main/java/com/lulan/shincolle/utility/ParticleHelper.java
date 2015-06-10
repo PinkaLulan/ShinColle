@@ -3,7 +3,6 @@ package com.lulan.shincolle.utility;
 import java.util.Random;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MathHelper;
@@ -12,6 +11,7 @@ import net.minecraft.world.World;
 import com.lulan.shincolle.client.particle.EntityFX91Type;
 import com.lulan.shincolle.client.particle.EntityFXChi;
 import com.lulan.shincolle.client.particle.EntityFXLaser;
+import com.lulan.shincolle.client.particle.EntityFXLightning;
 import com.lulan.shincolle.client.particle.EntityFXSpray;
 import com.lulan.shincolle.client.particle.EntityFXTeam;
 import com.lulan.shincolle.client.particle.EntityFXTexts;
@@ -370,6 +370,16 @@ public class ParticleHelper {
 			EntityFXTeam particleTeam = new EntityFXTeam(world, (float)lookX, (int)lookY, posX, posY, posZ);
 			Minecraft.getMinecraft().effectRenderer.addEffect(particleTeam);
 			break;
+		case 26:	//white spray
+			EntityFXSpray particleSpray7 = new EntityFXSpray(world, 
+            		posX, posY, posZ, lookX, lookY, lookZ, 0.7F, 0.94F, 1F, 1F);
+        	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray7);
+			break;
+		case 27:	//yellow spray
+			EntityFXSpray particleSpray8 = new EntityFXSpray(world, 
+            		posX, posY, posZ, lookX, lookY, lookZ, 1F, 1F, 0.6F, 1F);
+        	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray8);
+			break;
 		default:
 			break;		
 		}
@@ -393,12 +403,16 @@ public class ParticleHelper {
 		//spawn particle
 		switch(type) {
 		case 1:		//氣彈特效 par1:scale par2:type
-			EntityFXChi particleChi1 = new EntityFXChi(world, ent, (float)par1, (int)par2);
-        	Minecraft.getMinecraft().effectRenderer.addEffect(particleChi1);
+			EntityFXChi fxChi1 = new EntityFXChi(world, ent, (float)par1, (int)par2);
+        	Minecraft.getMinecraft().effectRenderer.addEffect(fxChi1);
 			break;
 		case 2:		//隊伍圈選特效 par1:scale par2:type
-			EntityFXTeam particleTeam = new EntityFXTeam(world, ent, (float)par1, (int)par2);
-			Minecraft.getMinecraft().effectRenderer.addEffect(particleTeam);
+			EntityFXTeam fxTeam = new EntityFXTeam(world, ent, (float)par1, (int)par2);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fxTeam);
+			break;
+		case 3:
+			EntityFXLightning fxLightning = new EntityFXLightning(world, ent, (float)par1, (int)par2);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fxLightning);
 			break;
 		default:
 			break;

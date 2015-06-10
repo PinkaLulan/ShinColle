@@ -153,11 +153,16 @@ public class EntityFXTeam extends EntityFX {
 		float halfScale = particleScale * 0.5F;
 		
 		//particle是以玩家視野來render, 因此座標要扣掉interpPos轉換為玩家視野座標
-        double f11 = (float)(this.posX - interpPosX);
-        double f12 = (float)(this.posY - interpPosY + this.height + 1.3D);
-        double f12b = (float)(this.posY - interpPosY + 0.3D);
-        double f13 = (float)(this.posZ - interpPosZ);
+//		double f11 = (float)(this.prevPosX + (this.posX - this.prevPosX) * (double)ticks - interpPosX);
+//		double f12 = (float)(this.prevPosY + (this.posY - this.prevPosY) * (double)ticks - interpPosY + this.height + 1.3D);
+//		double f12b = (float)(this.prevPosY + (this.posY - this.prevPosY) * (double)ticks - interpPosY + 0.3D);
+//		double f13 = (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * (double)ticks - interpPosZ);
  
+		double f11 = this.posX - interpPosX;
+		double f12 = this.posY - interpPosY + this.height + 1.3D;
+		double f12b = this.posY - interpPosY + 0.3D;
+		double f13 = this.posZ - interpPosZ;
+		
         //start tess
         tess.startDrawingQuads();
         tess.setColorRGBA_F(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha);

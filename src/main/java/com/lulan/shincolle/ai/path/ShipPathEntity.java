@@ -58,7 +58,14 @@ public class ShipPathEntity {
     }
 
     public int getCurrentPathIndex() {
-        return this.currentPathIndex;
+    	//fix: index out of bound exception
+    	if(this.currentPathIndex >= this.points.length) {
+    		this.currentPathIndex = this.points.length - 1;
+    		return this.currentPathIndex;
+    	}
+    	else {
+    		return this.currentPathIndex;
+    	}
     }
 
     public void setCurrentPathIndex(int i) {
@@ -69,8 +76,6 @@ public class ShipPathEntity {
      * Gets the vector of the PathPoint associated with the given index.
      */
     public Vec3 getVectorFromIndex(Entity entity, int i) {
-    	if(i >= this.pathLength) i = this.pathLength--;
-    	
         double d0 = (double)this.points[i].xCoord + (double)((int)(entity.width + 1.0F)) * 0.5D;
         double d1 = (double)this.points[i].yCoord;
         double d2 = (double)this.points[i].zCoord + (double)((int)(entity.width + 1.0F)) * 0.5D;

@@ -1,7 +1,7 @@
 package com.lulan.shincolle.client.render;
 
 import com.lulan.shincolle.client.model.ModelDestroyerI;
-import com.lulan.shincolle.entity.EntityDestroyerI;
+import com.lulan.shincolle.entity.destroyer.EntityDestroyerI;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.LogHelper;
 

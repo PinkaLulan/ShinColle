@@ -3,8 +3,8 @@ package com.lulan.shincolle.client.model;
 import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.entity.EntityHeavyCruiserRi;
 import com.lulan.shincolle.entity.IShipEmotion;
+import com.lulan.shincolle.entity.cruiser.EntityHeavyCruiserRi;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.LogHelper;

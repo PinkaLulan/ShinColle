@@ -7,7 +7,7 @@ import com.lulan.shincolle.client.inventory.ContainerLargeShipyard;
 import com.lulan.shincolle.client.inventory.ContainerShipInventory;
 import com.lulan.shincolle.client.inventory.ContainerSmallShipyard;
 import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.entity.EntityDestroyerI;
+import com.lulan.shincolle.entity.destroyer.EntityDestroyerI;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 import com.lulan.shincolle.utility.LogHelper;

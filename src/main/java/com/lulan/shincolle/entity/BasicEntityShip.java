@@ -36,6 +36,8 @@ import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.client.inventory.ContainerShipInventory;
 import com.lulan.shincolle.crafting.EquipCalc;
+import com.lulan.shincolle.entity.other.EntityAbyssMissile;
+import com.lulan.shincolle.entity.other.EntityRensouhou;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
@@ -437,6 +439,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	public float getTypeModify(int id) {
 		return TypeModify[id];
 	}
+	/** get model pos in GUI */
 	public float[] getModelPos() {
 		return ModelPos;
 	}
@@ -500,7 +503,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		//MOV = base + ((point + 1) * level / 10 * 0.01 + equip) * typeModify
 		StateFinal[ID.MOV] = (Values.BaseMOV[id] + StateEquip[ID.MOV] + ((float)(BonusPoint[ID.MOV]+1) * ((float)StateMinor[ID.N.ShipLevel])/10F) * 0.01F * TypeModify[ID.MOV]) * (float)ConfigHandler.scaleShip[ID.MOV];
 		//HIT = base + ((point + 1) * level / 10 * 0.4 + equip) * typeModify
-		StateFinal[ID.HIT] = (Values.BaseHIT[id] + StateEquip[ID.HIT] + ((float)(BonusPoint[ID.HIT]+1) * ((float)StateMinor[ID.N.ShipLevel])/10F) * 0.4F * TypeModify[ID.HIT]) * (float)ConfigHandler.scaleShip[ID.HIT];
+		StateFinal[ID.HIT] = (Values.BaseHIT[id] + StateEquip[ID.HIT] + ((float)(BonusPoint[ID.HIT]+1) * ((float)StateMinor[ID.N.ShipLevel])/10F) * 0.3F * TypeModify[ID.HIT]) * (float)ConfigHandler.scaleShip[ID.HIT];
 		//ATK = (base + equip + ((point + 1) * level / 3) * typeModify) * config scale
 		float atk = Values.BaseATK[id] + ((float)(BonusPoint[ID.ATK]+1) * ((float)StateMinor[ID.N.ShipLevel])/3F) * 0.5F * TypeModify[ID.ATK];
 		StateFinal[ID.ATK] = (atk + StateEquip[ID.ATK]) * (float)ConfigHandler.scaleShip[ID.ATK];
@@ -830,6 +833,38 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                     worldObj.spawnEntityInWorld(entityItem1);
                     worldObj.spawnEntityInWorld(entityItem2);
                     worldObj.spawnEntityInWorld(entityItem3);
+                    
+                    //drop inventory item
+                    if(ExtProps != null) {
+                    	for(int i = 0; i < ExtProps.slots.length; i++) {
+            				ItemStack invitem = ExtProps.slots[i];
+
+            				if(invitem != null) {
+            					//設定要隨機噴出的range
+            					float f = rand.nextFloat() * 0.8F + 0.1F;
+            					float f1 = rand.nextFloat() * 0.8F + 0.1F;
+            					float f2 = rand.nextFloat() * 0.8F + 0.1F;
+
+            					while(invitem.stackSize > 0) {
+            						int j = rand.nextInt(21) + 10;
+            						//如果物品超過一個隨機數量, 會分更多疊噴出
+            						if(j > invitem.stackSize) {  
+            							j = invitem.stackSize;
+            						}
+
+            						invitem.stackSize -= j;
+            						//將item做成entity, 生成到世界上
+            						EntityItem item = new EntityItem(this.worldObj, this.posX+f, this.posY+f1, this.posZ+f2, new ItemStack(invitem.getItem(), j, invitem.getItemDamage()));
+            						//如果有NBT tag, 也要複製到物品上
+            						if(invitem.hasTagCompound()) {
+            							item.getEntityItem().setTagCompound((NBTTagCompound)invitem.getTagCompound().copy());
+            						}
+            						
+            						worldObj.spawnEntityInWorld(item);	//生成item entity
+            					}
+            				}
+            			}
+                    }//end drop inventory item
                     
                     playSound(Reference.MOD_ID+":ship-kaitai", ConfigHandler.shipVolume, 1.0F);
                     playSound(Reference.MOD_ID+":ship-death", ConfigHandler.shipVolume, 1.0F);
@@ -1162,7 +1197,15 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 //					EntityPlayer player = (EntityPlayer) this.getPlayerOwner();
 					EntityPlayer player = null;
 					if(this.getStateMinor(ID.N.OwnerID) > 0) {
-						player = (EntityPlayer) EntityHelper.getEntityByID(this.getStateMinor(ID.N.OwnerID), this.dimension, true);
+						Entity getEnt = EntityHelper.getEntityByID(this.getStateMinor(ID.N.OwnerID), this.dimension, true);
+						
+						if(getEnt != null && getEnt instanceof EntityPlayer) {
+							player = (EntityPlayer) getEnt;
+						}
+						//找不到owner (可能超出距離或者不同世界), reset owner = -1
+						else {
+							this.setStateMinor(ID.N.OwnerID, -1);
+						}
 					}
 					
 					if(player != null) {
@@ -1180,8 +1223,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 						}
 					}
 				}
-			}//end every 20 ticks
-			
+			}//end every 40 ticks
 		}//end client side
 	}
 
@@ -1275,7 +1317,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	
         	//check every 40 ticks
         	if(ticksExisted % 40 == 0) {
-        		if(this.getPlayerOwner() != null && this.dimension == this.getPlayerOwner().dimension && this.getPlayerOwner().getDistanceToEntity(this) < 100F) {
+        		if(this.getPlayerOwner() != null && this.dimension == this.getPlayerOwner().dimension && this.getPlayerOwner().getDistanceToEntity(this) < 48F) {
 //        			LogHelper.info("DEBUG : ship onupdate sync 3: "+getPlayerOwner().getEntityId());
         			//update owner entity id (could be changed when owner change dimension or dead)
         			this.setStateMinor(ID.N.OwnerID, this.getPlayerOwner().getEntityId());
@@ -1392,12 +1434,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	}
         }//end if(server side)
         //client side
-        else {
-        	//set client side owner
-        	if(this.ticksExisted % 20 == 0) {
-        		LogHelper.info("DEBUG : entity sync 3: get owner id "+this.getStateMinor(ID.N.OwnerID));
-        	}
-        }
+//        else {
+//        	//set client side owner
+//        	if(this.ticksExisted % 20 == 0) {
+//        		LogHelper.info("DEBUG : entity sync 3: get owner id "+this.getStateMinor(ID.N.OwnerID));
+//        	}
+//        }
         
 //        //both side
 //        if(this.ridingEntity instanceof BasicEntityMount) {
@@ -1871,7 +1913,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	
 	//eat grudge and change movement speed
 	protected void decrGrudgeNum(int par1) {
-		LogHelper.info("DEBUG : check grudge num");
+//		LogHelper.info("DEBUG : check grudge num");
 		
 		if(par1 > 215) {	//max cost = 215 (calc from speed 1 moving 5 sec)
 			par1 = 215;
