@@ -263,11 +263,9 @@ public class ModelHarbourHime extends ModelBase {
         this.BodyMain.addChild(this.ArmLeft01);
         this.ArmRight02.addChild(this.ArmRight03);
         this.ArmLeft01.addChild(this.ArmLeft02);
-        this.Head.addChild(this.HeadH);
         this.BodyMain.addChild(this.ArmRight01);
         this.Head.addChild(this.Hair);
         this.Butt.addChild(this.LegLeft01);
-        this.HeadH2.addChild(this.HeadH3);
         this.Butt.addChild(this.Skirt);
         this.HairMain.addChild(this.Hair01);
         this.BodyMain.addChild(this.BoobR);
@@ -289,7 +287,7 @@ public class ModelHarbourHime extends ModelBase {
         this.Hair.addChild(this.HairL01);
         this.LegRight02.addChild(this.ShoesR);
         this.LegRight01.addChild(this.LegRight02);
-        this.HeadH.addChild(this.HeadH2);
+        
         this.Hair.addChild(this.HairR01);
         this.Hair.addChild(this.Ahoke);
         this.Head.addChild(this.HairMain);
@@ -312,6 +310,9 @@ public class ModelHarbourHime extends ModelBase {
         this.GlowHead.addChild(this.Face2);
         this.GlowHead.addChild(this.Face3);
         this.GlowHead.addChild(this.Face4);
+        this.GlowHead.addChild(this.HeadH);
+        this.HeadH.addChild(this.HeadH2);
+        this.HeadH2.addChild(this.HeadH3);
     }
     
     public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z) {
@@ -765,13 +766,15 @@ public class ModelHarbourHime extends ModelBase {
 	    //§ðÀ»°Ê§@    
 	    if(ent.getAttackTime() > 0) {
 	    	if(ent.getAttackTime() > 25) setFace(3);
-    		//arm
-	    	this.ArmLeft01.rotateAngleX = -1.57F;
+	    	//arm
+	    	this.ArmLeft01.rotateAngleX = -1.4F;
 	    	this.ArmLeft01.rotateAngleY = -0.14F;
 	    	this.ArmLeft01.rotateAngleZ = 0F;
-	    	this.ArmLeft03.rotateAngleY = 1.34F;
-	    	this.ArmLeft06.rotateAngleY = -0.26F;
 	    	this.ArmLeft06.rotateAngleZ = -0.96F;
+	    	this.ArmRight01.rotateAngleX = -1.4F;
+	    	this.ArmRight01.rotateAngleY = 0.14F;
+	    	this.ArmRight01.rotateAngleZ = 0F;
+	    	this.ArmRight06.rotateAngleZ = 0.96F;
 	    }
 	    
 	    //leg motion

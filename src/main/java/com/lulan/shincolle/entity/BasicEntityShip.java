@@ -43,6 +43,7 @@ import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.PointerItem;
 import com.lulan.shincolle.network.S2CEntitySync;
+import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
@@ -68,9 +69,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	//for attribute calc
 	protected byte ShipType;			//ship type
 	protected byte ShipID;
+	
 	//for AI calc
-	protected int StartEmotion;			//表情1開始時間
-	protected int StartEmotion2;		//表情2開始時間
 	protected double ShipDepth;			//水深, 用於水中高度判定
 	protected double ShipPrevX;			//ship posX 5 sec ago
 	protected double ShipPrevY;			//ship posY 5 sec ago
@@ -82,21 +82,27 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	/**minor states: 0:ShipLevel 1:Kills 2:ExpCurrent 3:ExpNext 4:NumAmmoLight 
 	 * 5:NumAmmoHeavy 6:NumGrudge 7:NumAirLight 8:NumAirHeavy 9:immunity time 
 	 * 10:followMin 11:followMax 12:FleeHP 13:TargetAIType 14:guardX 15:guardY 16:guardZ 17:guardDim
-	 * 18:guardID 19:ownerID*/
+	 * 18:guardID 19:ownerID */
 	protected int[] StateMinor;
 	/**equip effect: 0:critical 1:doubleHit 2:tripleHit 3:baseMiss*/
 	protected float[] EffectEquip;
 	/**EntityState: 0:State 1:Emotion 2:Emotion2 3:HP State 4:State2 5:AttackPhase*/
 	protected byte[] StateEmotion;
 	/**EntityFlag: 0:canFloatUp 1:isMarried 2:noFuel 3:canMelee 4:canAmmoLight 5:canAmmoHeavy 
-	 * 6:canAirLight 7:canAirHeavy 8:headTilt(client only) 9:canRingEffect 10:canDrop 11:canFollow*/
+	 * 6:canAirLight 7:canAirHeavy 8:headTilt(client only) 9:canRingEffect 10:canDrop 11:canFollow
+	 * 12:onSightChase */
 	protected boolean[] StateFlag;
-	/**BonusPoint: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT*/
+	/**BonusPoint: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT */
 	protected byte[] BonusPoint;
-	/**TypeModify: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT*/
+	/**TypeModify: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT */
 	protected float[] TypeModify;
-	/**ModelPos: posX, posY, posZ, scale (in ship inventory)*/
+	/**ModelPos: posX, posY, posZ, scale (in ship inventory) */
 	protected float[] ModelPos;
+	
+	//for model render
+	protected int StartEmotion;			//表情1開始時間
+	protected int StartEmotion2;		//表情2開始時間
+	protected float[] rotateAngle;		//模型旋轉角度, 用於手持物品render
 	
 	//for GUI display, no use
 	protected String ownerName;
@@ -112,12 +118,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		StateMinor = new int[] {1, 0, 0, 40, 0, 0, 0, 0, 0, 0, 2, 14, 35, 1, -1, -1, -1, 0, -1, -1};
 		EffectEquip = new float[] {0F, 0F, 0F, 0F};
 		StateEmotion = new byte[] {0, 0, 0, 0, 0, 0};
-		StateFlag = new boolean[] {false, false, true, false, true, true, true, true, false, true, true, false};
+		StateFlag = new boolean[] {false, false, true, false, true, true, true, true, false, true, true, false, false};
 		BonusPoint = new byte[] {0, 0, 0, 0, 0, 0};
 		TypeModify = new float[] {1F, 1F, 1F, 1F, 1F, 1F};
 		ModelPos = new float[] {0F, 0F, 0F, 50F};
+		
 		//for AI
-		StartEmotion = -1;		//emotion start time
 		ShipDepth = 0D;			//water block above ship (within ship position)
 		ShipPrevX = posX;		//ship position 5 sec ago
 		ShipPrevY = posY;
@@ -126,6 +132,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		stepHeight = 1F;
 		shipNavigator = new ShipPathNavigate(this, worldObj);
 		shipMoveHelper = new ShipMoveHelper(this);
+		
+		//for render
+		StartEmotion = -1;		//emotion start time
+		StartEmotion2 = -1;		//head tile cooldown
+		rotateAngle = new float[] {0F, 0F, 0F};		//model rotate angle (right hand)
 	}
 	
 	@Override
@@ -186,6 +197,32 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     protected float getSoundVolume() {
         return ConfigHandler.shipVolume;
     }
+    
+    //get model rotate angle, par1 = 0:X, 1:Y, 2:Z
+    @Override
+    public float getModelRotate(int par1) {
+    	switch(par1) {
+    	default:
+    		return this.rotateAngle[0];
+    	case 1:
+    		return this.rotateAngle[1];
+    	case 2:
+    		return this.rotateAngle[2];
+    	}
+    }
+    
+    //set model rotate angle, par1 = 0:X, 1:Y, 2:Z
+    @Override
+	public void setModelRotate(int par1, float par2) {
+		switch(par1) {
+    	default:
+    		rotateAngle[0] = par2;
+    	case 1:
+    		rotateAngle[1] = par2;
+    	case 2:
+    		rotateAngle[2] = par2;
+    	}
+	}
 	
 	//get owner name (for player owner only)
 	public String getOwnerName() {
@@ -224,7 +261,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		//moving
 		this.tasks.addTask(21, new EntityAIOpenDoor(this, true));	//0000
 		this.tasks.addTask(23, new EntityAIShipFloating(this));		//0101
-		this.tasks.addTask(24, new EntityAIShipWatchClosest(this, EntityPlayer.class, 6F, 0.05F)); //0010
+		this.tasks.addTask(24, new EntityAIShipWatchClosest(this, EntityPlayer.class, 6F, 0.08F)); //0010
 		this.tasks.addTask(25, new EntityAIWander(this, 0.8D));		//0001
 		this.tasks.addTask(25, new EntityAILookIdle(this));			//0011
 	}
@@ -513,25 +550,30 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		//KB Resistance = Level / 10 * 0.04
 		float resisKB = (((float)StateMinor[ID.N.ShipLevel])/10F) * 0.067F;
 
-		//min, max cap balue
-		if(StateFinal[ID.DEF] > 95F) {
-			StateFinal[ID.DEF] = 95F;	//max def = 95%
+		//max cap balue
+		for(int i = 0; i < ConfigHandler.limitShip.length; i++) {
+			if(ConfigHandler.limitShip[i] >= 0D && StateFinal[i] > ConfigHandler.limitShip[i]) {
+				StateFinal[i] = (float) ConfigHandler.limitShip[i];
+			}
 		}
-		if(StateFinal[ID.SPD] > 4F) {
-			StateFinal[ID.SPD] = 4F;	//min attack delay = 0.5 sec
+		
+		if(ConfigHandler.limitShip[ID.ATK] >= 0D && StateFinal[ID.ATK_H] > ConfigHandler.limitShip[ID.ATK]) {
+			StateFinal[ID.ATK_H] = (float) ConfigHandler.limitShip[ID.ATK];
 		}
+		if(ConfigHandler.limitShip[ID.ATK] >= 0D && StateFinal[ID.ATK_AL] > ConfigHandler.limitShip[ID.ATK]) {
+			StateFinal[ID.ATK_AL] = (float) ConfigHandler.limitShip[ID.ATK];
+		}
+		if(ConfigHandler.limitShip[ID.ATK] >= 0D && StateFinal[ID.ATK_AH] > ConfigHandler.limitShip[ID.ATK]) {
+			StateFinal[ID.ATK_AH] = (float) ConfigHandler.limitShip[ID.ATK];
+		}
+
+		//min cap value
 		if(StateFinal[ID.SPD] < 0F) {
 			StateFinal[ID.SPD] = 0F;
-		}
-		if(StateFinal[ID.MOV] > 0.8F) {
-			StateFinal[ID.MOV] = 0.8F;	//high move speed is buggy
 		}
 		if(StateFinal[ID.MOV] < 0F) {
 			StateFinal[ID.MOV] = 0F;
 		}
-
-		//calc cri,miss,multi hit rate
-		
 		
 		//set attribute by final value
 		/**
@@ -747,6 +789,19 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			//for other player, send ship state for display
 			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 30D);
 			CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this, 1), point);
+		}
+	}
+	
+	//sync data for GUI display
+	public void sendGUISyncPacket() {
+		if(!this.worldObj.isRemote) {
+			if(this.getOwner() != null) {
+				EntityPlayerMP player = EntityHelper.getOnlinePlayer(this.getOwner());
+				//owner在附近才需要sync
+				if(player != null && this.getDistanceToEntity(player) < 64F) {
+					CommonProxy.channelG.sendTo(new S2CGUIPackets(this), player);
+				}	
+			}
 		}
 	}
 	
@@ -1239,7 +1294,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 //    		}
         	
         	//clear dead target for vanilla AI bug
-  			if(this.getAttackTarget() != null && this.getAttackTarget().isDead) {
+  			if(this.getAttackTarget() != null && !this.getAttackTarget().isEntityAlive()) {
   				this.setAttackTarget(null);
   			}
  			
@@ -1406,6 +1461,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	  	  	  				//summon mount entity
 	  	  	  	  			BasicEntityMount mount = this.summonMountEntity();
 	  	  	  	  			this.worldObj.spawnEntityInWorld(mount);
+	  	  	  	  			
+	  	  	  	  			//clear rider
+	  	  	  	  			if(this.riddenByEntity != null) {
+	  	  	  	  				this.riddenByEntity.mountEntity(null);
+	  	  	  	  			}
 	  	  	  	  			
 	  	  	  	  			//set riding entity
 		  	  	  			this.mountEntity(mount);
@@ -1679,7 +1739,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	
 	//be attacked method, 包括其他entity攻擊, anvil攻擊, arrow攻擊, fall damage都使用此方法 
 	@Override
-    public boolean attackEntityFrom(DamageSource attacker, float atk) {		
+    public boolean attackEntityFrom(DamageSource attacker, float atk) {
 		//set hurt face
     	if(this.getStateEmotion(ID.S.Emotion) != ID.Emotion.O_O) {
     		this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
@@ -2099,10 +2159,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	public void setGuarded(Entity entity) {
 		if(entity != null && entity.isEntityAlive()) {
 			this.guardedEntity = entity;
+			this.setStateFlag(ID.F.CanFollow, false);
 			this.setStateMinor(ID.N.GuardID, entity.getEntityId());
 		}
 		else {
 			this.guardedEntity = null;
+			this.setStateFlag(ID.F.CanFollow, true);
 			this.setStateMinor(ID.N.GuardID, -1);
 		}
 	}
@@ -2127,7 +2189,29 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.setStateMinor(ID.N.GuardY, y);
 		this.setStateMinor(ID.N.GuardZ, z);
 		this.setStateMinor(ID.N.GuardDim, dim);
+		
+		if(y <= 0) {
+			this.setStateFlag(ID.F.CanFollow, true);
+		}
+		else {
+			this.setStateFlag(ID.F.CanFollow, false);
+		}
 	}
+	
+	@Override
+	public double getMountedYOffset() {
+		return (double)this.height;
+	}
+	
+//	//set slot 6 as held item 
+//	@Override
+//	public ItemStack getHeldItem() {
+//		if(ExtProps != null && ExtProps.slots != null) {
+//			return ExtProps.slots[6];
+//		}
+//		
+//		return super.getHeldItem();
+//	}
 
 	
 }

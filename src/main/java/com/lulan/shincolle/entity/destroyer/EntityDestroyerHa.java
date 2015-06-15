@@ -104,6 +104,16 @@ public class EntityDestroyerHa extends BasicEntityShipSmall {
 	public int getKaitaiType() {
 		return 0;
 	}
+  	
+  	@Override
+	public double getMountedYOffset() {
+  		if(this.isSitting()) {
+  			return (double)this.height * 0.3F;
+  		}
+  		else {
+  			return (double)this.height * 0.75F;
+  		}
+	}
 
 }
 

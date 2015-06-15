@@ -109,6 +109,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		nbtExt_add4.setBoolean("WedEffect", this.entity.getStateFlag(ID.F.UseRingEffect));
 		nbtExt_add4.setBoolean("CanDrop", this.entity.getStateFlag(ID.F.CanDrop));
 		nbtExt_add4.setBoolean("CanFollow", this.entity.getStateFlag(ID.F.CanFollow));
+		nbtExt_add4.setBoolean("OnSight", this.entity.getStateFlag(ID.F.OnSightChase));
 		//save EntityFlag
 		nbtExt.setTag("Equip", nbtExt_add5);
 		nbtExt_add5.setFloat("Cri", this.entity.getEffectEquip(ID.EF_CRI));
@@ -200,6 +201,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		entity.setStateFlag(ID.F.UseRingEffect, nbt_load.getBoolean("WedEffect"));
 		entity.setStateFlag(ID.F.CanDrop, nbt_load.getBoolean("CanDrop"));
 		entity.setStateFlag(ID.F.CanFollow, nbt_load.getBoolean("CanFollow"));
+		entity.setStateFlag(ID.F.OnSightChase, nbt_load.getBoolean("OnSight"));
 		//load effect
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Equip");
 		entity.setEffectEquip(ID.EF_CRI, nbt_load.getFloat("Cri"));

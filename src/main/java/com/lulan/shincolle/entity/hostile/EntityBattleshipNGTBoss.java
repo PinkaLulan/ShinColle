@@ -320,7 +320,7 @@ public class EntityBattleshipNGTBoss extends BasicEntityShipBoss {
                 	hitEntity = (EntityLivingBase)hitList.get(i);
                 	
                 	//目標不能是自己 or 主人
-                	if(hitEntity.canBeCollidedWith() && EntityHelper.checkNotSameEntityID(this, hitEntity)) {
+                	if(hitEntity != this && hitEntity.canBeCollidedWith() && EntityHelper.checkNotSameEntityID(this, hitEntity)) {
                 		//calc miss and cri
                 		if(this.rand.nextFloat() < 0.2F) {	//MISS
                         	atkTemp *= 0.5F;

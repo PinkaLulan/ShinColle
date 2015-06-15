@@ -66,6 +66,7 @@ public class S2CEntitySync implements IMessage {
 	
 	//for mount seat sync
 	//type 8: entity type sync
+	//type 9: entity pos sync (for teleport)
 	public S2CEntitySync(Entity entity, int value, int type) {
         this.entity3 = entity;
         this.value = value;
@@ -175,6 +176,7 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateFlag(ID.F.UseAirLight, buf.readBoolean());
 					entity.setStateFlag(ID.F.UseAirHeavy, buf.readBoolean());
 					entity.setStateFlag(ID.F.UseRingEffect, buf.readBoolean());
+					entity.setStateFlag(ID.F.OnSightChase, buf.readBoolean());
 					
 					entity.setEffectEquip(ID.EF_CRI, buf.readFloat());
 					entity.setEffectEquip(ID.EF_DHIT, buf.readFloat());
@@ -203,6 +205,7 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateFlag(ID.F.UseAirLight, buf.readBoolean());
 					entity.setStateFlag(ID.F.UseAirHeavy, buf.readBoolean());
 					entity.setStateFlag(ID.F.UseRingEffect, buf.readBoolean());
+					entity.setStateFlag(ID.F.OnSightChase, buf.readBoolean());
 				}
 				break;
 			case 3: //entity minor only
@@ -321,13 +324,24 @@ public class S2CEntitySync implements IMessage {
 					}
 				}
 				break;
-			case 8:
+			case 8:	//missile type sync
 				{
 					int value = buf.readInt();
 					
 					if(entity3 instanceof EntityAbyssMissile) {
 						((EntityAbyssMissile)entity3).setMissileType(value);
 					}
+				}
+				break;
+			case 9:	//entity position sync
+				{
+					double px = buf.readDouble();
+					double py = buf.readDouble();
+					double pz = buf.readDouble();
+					float yaw = buf.readFloat();
+					float pit = buf.readFloat();
+					
+					entity3.setPositionAndRotation(px, py, pz, yaw, pit);
 				}
 				break;
 			}
@@ -398,6 +412,7 @@ public class S2CEntitySync implements IMessage {
 				buf.writeBoolean(this.entity.getStateFlag(ID.F.UseAirLight));
 				buf.writeBoolean(this.entity.getStateFlag(ID.F.UseAirHeavy));
 				buf.writeBoolean(this.entity.getStateFlag(ID.F.UseRingEffect));
+				buf.writeBoolean(this.entity.getStateFlag(ID.F.OnSightChase));
 				
 				buf.writeFloat(this.entity.getEffectEquip(ID.EF_CRI));
 				buf.writeFloat(this.entity.getEffectEquip(ID.EF_DHIT));
@@ -430,6 +445,7 @@ public class S2CEntitySync implements IMessage {
 				buf.writeBoolean(this.entity.getStateFlag(ID.F.UseAirLight));
 				buf.writeBoolean(this.entity.getStateFlag(ID.F.UseAirHeavy));
 				buf.writeBoolean(this.entity.getStateFlag(ID.F.UseRingEffect));
+				buf.writeBoolean(this.entity.getStateFlag(ID.F.OnSightChase));
 			}
 			break;
 		case 3:	//sync minor only
@@ -525,11 +541,22 @@ public class S2CEntitySync implements IMessage {
 				}
 			}
 			break;
-		case 8:
+		case 8:	//missile tpye sync
 			{
 				buf.writeByte(8);	//type 8
 				buf.writeInt(this.entity3.getEntityId());
 				buf.writeInt(this.value);
+			}
+			break;
+		case 9:	//entity position sync
+			{
+				buf.writeByte(9);	//type 9
+				buf.writeInt(this.entity3.getEntityId());
+				buf.writeDouble(this.entity3.posX);
+				buf.writeDouble(this.entity3.posY);
+				buf.writeDouble(this.entity3.posZ);
+				buf.writeFloat(this.entity3.rotationYaw);
+				buf.writeFloat(this.entity3.rotationPitch);
 			}
 			break;
 		}

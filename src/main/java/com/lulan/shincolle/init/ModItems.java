@@ -1,8 +1,25 @@
 package com.lulan.shincolle.init;
 
-import net.minecraft.item.Item;
-
-import com.lulan.shincolle.item.*;
+import com.lulan.shincolle.item.AbyssMetal;
+import com.lulan.shincolle.item.Ammo;
+import com.lulan.shincolle.item.BasicItem;
+import com.lulan.shincolle.item.EquipAirplane;
+import com.lulan.shincolle.item.EquipArmor;
+import com.lulan.shincolle.item.EquipCannon;
+import com.lulan.shincolle.item.EquipRadar;
+import com.lulan.shincolle.item.EquipTorpedo;
+import com.lulan.shincolle.item.EquipTurbine;
+import com.lulan.shincolle.item.Grudge;
+import com.lulan.shincolle.item.InstantConMat;
+import com.lulan.shincolle.item.KaitaiHammer;
+import com.lulan.shincolle.item.MarriageRing;
+import com.lulan.shincolle.item.ModernKit;
+import com.lulan.shincolle.item.OwnerPaper;
+import com.lulan.shincolle.item.PointerItem;
+import com.lulan.shincolle.item.RepairBucket;
+import com.lulan.shincolle.item.RepairGoddess;
+import com.lulan.shincolle.item.ShipSpawnEgg;
+import com.lulan.shincolle.item.ToyAirplane;
 import com.lulan.shincolle.reference.Reference;
 
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -32,6 +49,8 @@ public class ModItems {
 	public static final BasicItem OwnerPaper = new OwnerPaper();
 	public static final BasicItem PointerItem = new PointerItem();
 	public static final BasicItem RepairGoddess = new RepairGoddess();
+	//toy
+	public static final BasicItem ToyAirplane = new ToyAirplane();
 
 	//登錄item到遊戲中 (在pre init階段登錄)
 	public static void init() {
@@ -57,6 +76,8 @@ public class ModItems {
 		GameRegistry.registerItem(OwnerPaper, "OwnerPaper");
 		GameRegistry.registerItem(PointerItem, "PointerItem");
 		GameRegistry.registerItem(RepairGoddess, "RepairGoddess");
+		//toy
+		GameRegistry.registerItem(ToyAirplane, "ToyAirplane");
 	}
 	
 }

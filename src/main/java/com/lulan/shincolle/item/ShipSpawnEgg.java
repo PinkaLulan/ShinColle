@@ -111,6 +111,7 @@ public class ShipSpawnEgg extends Item {
   		list.add(new ItemStack(item, 1, ID.S_AirfieldHime+2));
   		list.add(new ItemStack(item, 1, ID.S_BattleshipHime+2));
   		list.add(new ItemStack(item, 1, ID.S_HarbourHime+2));
+  		list.add(new ItemStack(item, 1, ID.S_NorthernHime+2));
   		list.add(new ItemStack(item, 1, ID.S_DestroyerShimakaze+2));
   		list.add(new ItemStack(item, 1, ID.S_DestroyerShimakaze+202));	//mob entity
   		list.add(new ItemStack(item, 1, ID.S_BattleshipNagato+2));

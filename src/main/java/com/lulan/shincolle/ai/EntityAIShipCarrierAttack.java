@@ -70,8 +70,8 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
 
     //判定是否繼續AI： 有target就繼續, 或者還在移動中則繼續
     public boolean continueExecuting() {
-//        return this.shouldExecute() || !this.host.getShipNavigate().noPath();
-    	return this.shouldExecute();
+        return this.shouldExecute() || (target != null && target.isEntityAlive() && !this.host.getShipNavigate().noPath());
+//    	return this.shouldExecute();
     }
 
     //重置AI方法, DO NOT reset delay time here
@@ -89,6 +89,14 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
     	if(this.target != null && host != null) {  //for lots of NPE issue-.-
     		boolean onSight = this.host2.getEntitySenses().canSee(this.target);
 //    		boolean onSight = true;		 //for debug
+    		
+    		//若不在視線內, 檢查flag
+    		if(!onSight) {
+    			if(host.getStateFlag(ID.F.OnSightChase)) {
+	            	this.resetTask();
+	            	return;
+	            }
+    		}
     		
     		//get update attributes
         	if(this.host2.ticksExisted % 60 == 0) {	

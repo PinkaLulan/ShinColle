@@ -69,9 +69,29 @@ public class EVENT_BUS_EventHandler {
 	    		}	
 	    	}
 	    	
+	    	//drop grudge
 	    	if(!(event.entity instanceof EntityRensouhouBoss)) {
-	    		ItemStack drop = new ItemStack(ModItems.Grudge, 1);
-		        event.drops.add(new EntityItem(event.entity.worldObj, event.entity.posX, event.entity.posY, event.entity.posZ, drop));
+	    		//if config has drop rate setting
+	    		int numGrudge = (int) ConfigHandler.dropGrudge;
+//	    		LogHelper.info("DEBUG : drop grudge "+numGrudge+" "+ConfigHandler.dropGrudge);
+	    		//若設定超過1, 則掉落多個 (ex: 5.5 = 5顆)
+	    		if(numGrudge > 0) {
+	    			ItemStack drop = new ItemStack(ModItems.Grudge, numGrudge);
+			        event.drops.add(new EntityItem(event.entity.worldObj, event.entity.posX, event.entity.posY, event.entity.posZ, drop));
+	    		}
+	    		//值不到1, 機率掉落1個
+	    		else {
+	    			if(event.entity.worldObj.rand.nextFloat() <= ConfigHandler.dropGrudge) {
+	    				ItemStack drop = new ItemStack(ModItems.Grudge, 1);
+				        event.drops.add(new EntityItem(event.entity.worldObj, event.entity.posX, event.entity.posY, event.entity.posZ, drop));
+	    			}
+	    		}
+	    		
+	    		//剩餘不到1的值, 改為機率掉落
+	    		if(event.entity.worldObj.rand.nextFloat() < (ConfigHandler.dropGrudge - (float)numGrudge)) {
+    				ItemStack drop = new ItemStack(ModItems.Grudge, 1);
+			        event.drops.add(new EntityItem(event.entity.worldObj, event.entity.posX, event.entity.posY, event.entity.posZ, drop));
+    			}
 	    	}
 	    }
 	    
@@ -240,7 +260,7 @@ public class EVENT_BUS_EventHandler {
 		if(event.entityLiving instanceof EntitySquid) {
 			if(event.world.rand.nextInt((int)ConfigHandler.scaleMobU511[ID.SpawnPerSquid]) == 0) {
 				//check 64x64 range
-				AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(event.x-16D, event.y-32D, event.z-16D, event.x+16D, event.y+32D, event.z+16D);
+				AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(event.x-24D, event.y-32D, event.z-24D, event.x+24D, event.y+32D, event.z+24D);
 				List ListMob = event.world.getEntitiesWithinAABB(BasicEntityShipHostile.class, aabb);
 
 				//list低於1個表示沒有找到其他boss

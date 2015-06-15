@@ -162,7 +162,7 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
                     		0D, 0.05D, 0D, (byte)16);
     				
     				ParticleHelper.spawnAttackParticleAt(this.posX+eyePosR[2], this.posY+2.5D+eyePosR[1], this.posZ+eyePosR[0], 
-                    		0D, 0.05D, 0D, (byte)16);   	
+                    		0D, 0.05D, 0D, (byte)16);
     			}			
     		}	
     	}//end client
@@ -199,6 +199,26 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
     @Override
 	public int getKaitaiType() {
 		return 1;
+	}
+    
+    @Override
+	public double getMountedYOffset() {
+    	if(this.getStateEmotion(ID.S.State) > ID.State.NORMAL) {
+    		if(this.isSitting()) {
+      			return (double)this.height * 1.3F;
+      		}
+      		else {
+      			return (double)this.height * 1.35F;
+      		}
+    	}
+    	else {
+    		if(this.isSitting()) {
+      			return (double)this.height * 0.68F;
+      		}
+      		else {
+      			return (double)this.height * 0.68F;
+      		}
+    	}
 	}
 	
 

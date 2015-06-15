@@ -41,7 +41,7 @@ public class EntityAIShipInRangeTarget extends EntityAITarget {
     private final Class targetClass;
     private final EntityAIShipInRangeTarget.Sorter targetSorter;
     private final IEntitySelector targetSelector;
-    private BasicEntityShip host;
+    private final BasicEntityShip host;
     private EntityLivingBase targetEntity;
     private int range1;
     private int range2;
@@ -50,7 +50,7 @@ public class EntityAIShipInRangeTarget extends EntityAITarget {
     
 
     //將maxRange 乘上一個比例當作range1
-    public EntityAIShipInRangeTarget(BasicEntityShip host, float rangeMod, int mode) {
+    public EntityAIShipInRangeTarget(final BasicEntityShip host, float rangeMod, int mode) {
     	super(host, true, false);	//check onSight and not nearby(collision) only
     	this.host = host;
     	this.targetClass = EntityLiving.class;
@@ -78,7 +78,18 @@ public class EntityAIShipInRangeTarget extends EntityAITarget {
             	   target2 instanceof EntityBat || target2 instanceof EntityDragon || 
             	   target2 instanceof EntityDragonPart ||
             	   target2 instanceof EntityFlying || target2 instanceof EntityWaterMob) &&
-            	   !target2.isDead && !target2.isInvisible()) {
+            	   target2.isEntityAlive() && !target2.isInvisible()) {
+            		
+            		//若host有設定必須on sight, 則檢查on sight
+            		if(host.getStateFlag(ID.F.OnSightChase)) {
+            			if(host.getEntitySenses().canSee(target2)) {
+            				return true;
+            			}
+            			else {
+            				return false;
+            			}
+            		}
+            		
             		return true;
             	}
             	return false;

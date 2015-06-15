@@ -270,9 +270,14 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack {
 	}
 
 	@Override
-	public boolean getStateFlag(int flag) {		//hostile mob: for attack and headTile check
-		if(flag == ID.F.HeadTilt) return this.headTilt;
-		return true;
+	public boolean getStateFlag(int flag) {
+		switch(flag) {
+		default:
+			return true;
+		case ID.F.OnSightChase:
+			if(host != null) return host.getStateFlag(flag);
+			return false;
+		}
 	}
 
 	@Override
@@ -767,6 +772,14 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack {
 
 	@Override
 	public void setEntitySit() {}
+
+	@Override
+	public float getModelRotate(int par1) {
+		return 0;
+	}
+
+	@Override
+	public void setModelRotate(int par1, float par2) {}
 	
 
 }

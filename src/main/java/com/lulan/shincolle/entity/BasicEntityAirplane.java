@@ -544,7 +544,12 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 
 	@Override
 	public boolean getStateFlag(int flag) {	//for attack AI check
-		return true;
+		switch(flag) {
+		default:
+			return true;
+		case ID.F.OnSightChase:
+			return false;
+		}
 	}
 
 	@Override
@@ -584,6 +589,14 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 	
 	@Override
 	public void setEntitySit() {}
+	
+    @Override
+    public float getModelRotate(int par1) {
+    	return 0F;
+    }
+    
+    @Override
+	public void setModelRotate(int par1, float par2) {}
 
 }
 

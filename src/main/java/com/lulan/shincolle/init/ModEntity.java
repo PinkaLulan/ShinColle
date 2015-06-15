@@ -16,6 +16,7 @@ import com.lulan.shincolle.entity.destroyer.EntityDestroyerShimakaze;
 import com.lulan.shincolle.entity.hime.EntityAirfieldHime;
 import com.lulan.shincolle.entity.hime.EntityBattleshipHime;
 import com.lulan.shincolle.entity.hime.EntityHarbourHime;
+import com.lulan.shincolle.entity.hime.EntityNorthernHime;
 import com.lulan.shincolle.entity.hostile.EntityBattleshipNGTBoss;
 import com.lulan.shincolle.entity.hostile.EntityDestroyerShimakazeBoss;
 import com.lulan.shincolle.entity.hostile.EntityRensouhouBoss;
@@ -28,6 +29,7 @@ import com.lulan.shincolle.entity.mounts.EntityMountSeat;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.entity.other.EntityAirplane;
 import com.lulan.shincolle.entity.other.EntityAirplaneTakoyaki;
+import com.lulan.shincolle.entity.other.EntityFloatingFort;
 import com.lulan.shincolle.entity.other.EntityRensouhou;
 import com.lulan.shincolle.entity.other.EntityRensouhouS;
 import com.lulan.shincolle.entity.renderentity.EntityRenderLargeShipyard;
@@ -81,6 +83,7 @@ public class ModEntity {
 		createEntity(EntityDestroyerShimakazeBoss.class, "EntityDestroyerShimakazeBoss", modEntityID++);
 		createEntity(EntityHarbourHime.class, "EntityHarbourHime", modEntityID++);
 		createEntity(EntityHeavyCruiserRi.class, "EntityHeavyCruiserRi", modEntityID++);
+		createEntity(EntityNorthernHime.class, "EntityNorthernHime", modEntityID++);
 		createEntity(EntityRensouhou.class, "EntityRensouhou", modEntityID++);
 		createEntity(EntityRensouhouBoss.class, "EntityRensouhouBoss", modEntityID++);
 		createEntity(EntityRensouhouS.class, "EntityRensouhouS", modEntityID++);
@@ -99,7 +102,8 @@ public class ModEntity {
 		createProjectileEntity(EntityAbyssMissile.class, "EntityAbyssMissile", modEntityID++);
 		createProjectileEntity(EntityAirplane.class, "EntityAirplane", modEntityID++);
 		createProjectileEntity(EntityAirplaneTakoyaki.class, "EntityAirplaneTakoyaki", modEntityID++);
-	
+		createProjectileEntity(EntityFloatingFort.class, "EntityFloatingFort", modEntityID++);
+		
 		//register render entity
 		createProjectileEntity(EntityRenderLargeShipyard.class, "EntityRenderLargeShipyard", modEntityID++);
 		createProjectileEntity(EntityRenderVortex.class, "EntityRenderVortex", modEntityID++);
@@ -126,7 +130,7 @@ public class ModEntity {
 //	}
 	
 	//登錄生物方法
-	//參數: 該生物class, 生物名稱, 怪物蛋背景色, 怪物蛋斑點色
+	//參數: 該生物class, 生物名稱, 生物id
 	public static void createEntity(Class entityClass, String entityName, int entityId){
 		LogHelper.info("DEBUG : register entity: "+entityId+" "+entityClass+" "+entityName);
 		//登錄參數: 生物class, 生物名稱, 生物id, mod副本, 追蹤更新距離, 更新時間間隔, 是否發送同步封包(高速entity必須true才會顯示平順)
@@ -134,21 +138,21 @@ public class ModEntity {
 	}
 	
 	//登錄非生物方法 (無生怪蛋)
-	//參數: 該生物class, 生物名稱
+	//參數: 該生物class, 生物名稱, 生物id
 	public static void createProjectileEntity(Class entityClass, String entityName, int entityId){
 		//登錄參數: 生物class, 生物名稱, 生物id, mod副本, 追蹤更新距離, 更新時間間隔, 是否發送速度封包
 		EntityRegistry.registerModEntity(entityClass, entityName, entityId, ShinColle.instance, 48, 1, true);
 	}
 	
 	//登錄item entity方法 (無生怪蛋)
-	//參數: 該生物class, 生物名稱
+	//參數: 該生物class, 生物名稱, 生物id
 	public static void createItemEntity(Class entityClass, String entityName, int entityId){
 		//登錄參數: 生物class, 生物名稱, 生物id, mod副本, 追蹤更新距離, 更新時間間隔, 是否發送速度封包
 		EntityRegistry.registerModEntity(entityClass, entityName, entityId, ShinColle.instance, 48, 1, false);
 	}
 	
 	//使用官方共通id登錄生物
-	//參數: 該生物class, 生物名稱
+	//參數: 該生物class, 生物名稱, 生怪蛋背景色, 生怪蛋斑點色
 	public static void createEntityGlobalID(Class entityClass, String entityName, int backColor, int spotColor){
 		int entityId = modEntityID++;
 		

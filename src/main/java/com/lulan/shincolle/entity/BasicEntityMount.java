@@ -25,6 +25,7 @@ import com.lulan.shincolle.ai.EntityAIShipFloating;
 import com.lulan.shincolle.ai.EntityAIShipFollowOwner;
 import com.lulan.shincolle.ai.EntityAIShipGuarding;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
+import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathEntity;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
@@ -151,7 +152,8 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 			//moving
 			this.tasks.addTask(21, new EntityAIOpenDoor(this, true));	//0000
 			this.tasks.addTask(22, new EntityAIShipFloating(this));		//0101
-			this.tasks.addTask(24, new EntityAIWander(this, 0.8D));		//0001
+			this.tasks.addTask(23, new EntityAIShipWatchClosest(this, EntityPlayer.class, 6F, 0.08F)); //0010
+//			this.tasks.addTask(24, new EntityAIWander(this, 0.8D));		//0001
 			this.tasks.addTask(25, new EntityAILookIdle(this));			//0011
 		}
 	}
@@ -1185,6 +1187,15 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	public void setGuardedPos(int x, int y, int z, int dim) {
 		if(host != null) this.host.setGuardedPos(x, y, z, dim);
 	}
+	
+    @Override
+    public float getModelRotate(int par1) {
+    	return 0F;
+    }
+    
+    //set model rotate angle, par1 = 0:X, 1:Y, 2:Z
+    @Override
+	public void setModelRotate(int par1, float par2) {}
 
 	
 }

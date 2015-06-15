@@ -54,6 +54,7 @@ public class ModRecipes {
 		ItemStack repairGoddess = new ItemStack(ModItems.RepairGoddess,1,0);
 		ItemStack shipEgg = new ItemStack(ModItems.ShipSpawnEgg, 1, OreDictionary.WILDCARD_VALUE);	//for all meta value
 		ItemStack smallshipyardStack = new ItemStack(ModBlocks.BlockSmallShipyard);
+		ItemStack toyplane = new ItemStack(ModItems.ToyAirplane);
 		
 		//SHAPELESS RECIPE
 		//abyssium material:
@@ -108,6 +109,8 @@ public class ModRecipes {
 		GameRegistry.addRecipe(new ShapedOreRecipe(kaitaiHammerNew,"aaa","aaa"," s ",'s',Items.stick,'a',abyssiumStack));
 		//pointer staff
 		GameRegistry.addRecipe(new ShapedOreRecipe(pointer,"  g"," p ","p  ",'g',grudeBlock,'p',polymetalStack));
+		//toy plane
+		GameRegistry.addRecipe(new ShapedOreRecipe(toyplane," a ","aaa"," a ",'a',polymetalStack));
 		
 	}
 

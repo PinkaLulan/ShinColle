@@ -395,7 +395,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
                 	hitEntity = (EntityLivingBase)hitList.get(i);
                 	
                 	//目標不能是自己 or 主人
-                	if(hitEntity.canBeCollidedWith() && EntityHelper.checkNotSameEntityID(this, hitEntity)) {
+                	if(hitEntity != this && hitEntity.canBeCollidedWith() && EntityHelper.checkNotSameEntityID(this, hitEntity)) {
                 		//calc miss and cri
                 		if(this.rand.nextFloat() < missChance) {	//MISS
                         	atkTemp *= 0.5F;
@@ -457,6 +457,26 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
 	@Override
 	public int getKaitaiType() {
 		return 1;
+	}
+	
+	@Override
+	public double getMountedYOffset() {
+		if(this.isSitting()) {
+			if(getStateEmotion(ID.S.State) > ID.State.NORMAL) {
+				return (double)this.height * 0.4F;
+			}
+			else {
+				if(getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {
+					return (double)this.height * -0.1F;
+	  			}
+	  			else {
+	  				return (double)this.height * 0.3F;
+	  			}
+			}
+  		}
+  		else {
+  			return (double)this.height * 0.8F;
+  		}
 	}
 
 

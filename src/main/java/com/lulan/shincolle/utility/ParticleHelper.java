@@ -380,6 +380,30 @@ public class ParticleHelper {
             		posX, posY, posZ, lookX, lookY, lookZ, 1F, 1F, 0.6F, 1F);
         	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray8);
 			break;
+		case 28:	//drip water
+			ran1 = rand.nextFloat() * 0.7D - 0.35D;
+			ran2 = rand.nextFloat() * 0.7D - 0.35D;
+			world.spawnParticle("dripWater", posX+ran1, posY, posZ+ran2, lookX, lookY, lookZ);
+			break;
+		case 29:	//orange spray
+			EntityFXSpray particleSpray9 = new EntityFXSpray(world, 
+            		posX, posY, posZ, lookX, lookY, lookZ, 1.0F, 0.35F, 0.0F, 0.8F);
+        	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray9);
+			break;
+		case 30:	//snow hit
+			for(int i=0; i<12; i++) {
+				ran1 = rand.nextFloat() * 2F - 1F;
+				ran2 = rand.nextFloat() * 2F - 1F;
+				ran3 = rand.nextFloat() * 2F - 1F;
+				world.spawnParticle("snowballpoof", posX+ran1, posY+0.8D+ran2, posZ+ran3, lookX*0.2D, 0.5D, lookZ*0.2D);
+			}
+			break;
+		case 31: 	//throw snow smoke
+			for(int i=0; i<20; i++) {
+				ran1 = rand.nextFloat() - 0.5F;
+				world.spawnParticle("snowshovel", posX+lookX-0.5D+0.05D*i, posY+0.8D+ran1, posZ+lookZ-0.5D+0.05D*i, lookX*0.2D, 0.05D, lookZ*0.2D);
+			}
+			break;
 		default:
 			break;		
 		}

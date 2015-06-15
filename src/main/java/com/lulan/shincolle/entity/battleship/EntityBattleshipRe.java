@@ -192,5 +192,15 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
 		return 1;
 	}
 	
+	@Override
+	public double getMountedYOffset() {
+		if(this.isSitting()) {
+  			return (double)this.height * 0.0F;
+  		}
+  		else {
+  			return (double)this.height * 0.4F;
+  		}
+	}
+	
 	
 }

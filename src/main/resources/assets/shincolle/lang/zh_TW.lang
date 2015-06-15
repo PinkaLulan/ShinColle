@@ -35,6 +35,7 @@ item.shincolle:ModernKit.name=近代化改修工具
 item.shincolle:OwnerPaper.name=棲艦所有權書
 item.shincolle:PointerItem.name=WO級的指揮權杖
 item.shincolle:RepairGoddess.name=深海女神的怨念
+item.shincolle:ToyAirplane.name=零式21型艦戰 (1/48)
 
 # Equip
 item.shincolle:EquipCannon.name=5吋單裝砲
@@ -96,6 +97,7 @@ item.shincolle:shipegg17.name=航空戰艦RE級
 item.shincolle:shipegg23.name=飛行場姬
 item.shincolle:shipegg28.name=戰艦棲姬
 item.shincolle:shipegg30.name=港灣棲姬
+item.shincolle:shipegg33.name=北方棲姬
 item.shincolle:shipegg38.name=驅逐艦 島風
 item.shincolle:shipegg238.name=驅逐艦 島風 改
 item.shincolle:shipegg39.name=戰艦 長門
@@ -121,12 +123,14 @@ entity.shincolle.EntityDestroyerNi.name=驅逐NI級
 entity.shincolle.EntityDestroyerRo.name=驅逐RO級
 entity.shincolle.EntityDestroyerShimakaze.name=驅逐艦 島風
 entity.shincolle.EntityDestroyerShimakazeBoss.name=驅逐艦 島風 改
+entity.shincolle.EntityFloatingFort.name=浮游要塞
 entity.shincolle.EntityHarbourHime.name=港灣棲姬
 entity.shincolle.EntityHeavyCruiserRi.name=重巡RI級
 entity.shincolle.EntityMountAfH.name=空軍基地
 entity.shincolle.EntityMountBaH.name=三連裝砲
 entity.shincolle.EntityMountHbH.name=港灣基地
 entity.shincolle.EntityMountSeat2.name=座位2
+entity.shincolle.EntityNorthernHime.name=北方棲姬
 entity.shincolle.EntityRensouhou.name=連裝砲
 entity.shincolle.EntityRensouhouBoss.name=連裝砲 改
 entity.shincolle.EntityRensouhouS.name=深海連裝砲
@@ -171,7 +175,8 @@ gui.shincolle:followmin=跟隨最短距離
 gui.shincolle:followmax=跟隨最長距離
 gui.shincolle:fleehp=逃跑血量(%%)
 gui.shincolle:auraeffect=主人強化效果
-gui.shincolle:targetAI=被動攻擊
+gui.shincolle:targetAI=被動攻擊?
+gui.shincolle:onsightAI=視線內才追擊?
 
 # GUI: Shipyard
 gui.shincolle:nomaterial=資材不足
@@ -193,7 +198,8 @@ gui.shincolle:eggText=需求等級
 gui.shincolle:pointer0=個別模式
 gui.shincolle:pointer1=團體模式
 gui.shincolle:pointer2=陣型模式
-gui.shincolle:pointer3=(蹲下右鍵以切換模式)
+gui.shincolle:pointer3=(蹲下左鍵以切換模式)
+gui.shincolle:pointer4=隊伍
 
 # Chat message
 chat.shincolle:bossspawn1=有艦娘出現在水面上!

@@ -208,6 +208,10 @@ public class ShipPathNavigate {
 //            	LogHelper.info("DEBUG : path navi: path follow");
                 this.pathFollow();
             }
+            
+//            if(this.currentPath.isFinished()) {
+//            	this.clearPathEntity();
+//            }
         }
     }
 
@@ -238,7 +242,7 @@ public class ShipPathNavigate {
         for(k = this.currentPath.getCurrentPathIndex(); k < pptemp; ++k) {
             if(entityPos.squareDistanceTo(this.currentPath.getVectorFromIndex(this.theEntity, k)) < (double)widthSq) {
 //            	LogHelper.info("DEBUG : path navi: get path+1 "+k+" "+entityPos.squareDistanceTo(this.currentPath.getVectorFromIndex(this.theEntity, k)));
-            	this.currentPath.setCurrentPathIndex(k + 1);	//已到達目標點, 設定目標點為下一點
+            	this.currentPath.setCurrentPathIndex(++k);	//已到達目標點, 設定目標點為下一點
             }
         }
 

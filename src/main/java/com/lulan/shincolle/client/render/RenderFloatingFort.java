@@ -11,12 +11,12 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RenderAirplaneTakoyaki extends RenderLiving {
+public class RenderFloatingFort extends RenderLiving {
 	
 	//∂Kπœ¿…∏ÙÆ|
-	private static final ResourceLocation mobTextures = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityAircraftTakoyaki.png");
+	private static final ResourceLocation mobTextures = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityFloatingFort.png");
 
-	public RenderAirplaneTakoyaki(ModelBase par1, float par2) {
+	public RenderFloatingFort(ModelBase par1, float par2) {
 		super(par1, par2);	
 	}
 
@@ -26,5 +26,6 @@ public class RenderAirplaneTakoyaki extends RenderLiving {
 	}
 
 }
+
 
 

@@ -23,6 +23,7 @@ import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
+import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
@@ -216,7 +217,7 @@ public class PointerItem extends BasicItem {
 				GameSettings keySet = ClientProxy.getGameSetting();
 				
 				if(keySet.keyBindSprint.getIsKeyPressed()) {
-					//guard entity
+					//set guard entity
 					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, -6, meta, hitObj.entityHit.getEntityId()));
 					return item;
 				}
@@ -346,6 +347,12 @@ public class PointerItem extends BasicItem {
 		
 		return item;
     }
+	
+	//按住物品時
+	@Override
+	public void onUsingTick(ItemStack stack, EntityPlayer player, int count) {
+		LogHelper.info("DEBUG : using pointer "+count);
+    }
 
 	//right click on solid block
 	@Override
@@ -461,6 +468,45 @@ public class PointerItem extends BasicItem {
 			list.add(EnumChatFormatting.AQUA + I18n.format("gui.shincolle:pointer0"));
 			list.add(EnumChatFormatting.GRAY + I18n.format("gui.shincolle:pointer3"));
 			break;
+    	}
+    	
+    	ExtendPlayerProps props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+    	
+    	if(props != null) {
+    		list.add(EnumChatFormatting.YELLOW+""+EnumChatFormatting.UNDERLINE + 
+    				String.format("%s %d", I18n.format("gui.shincolle:pointer4"), props.getTeamId()+1));
+    	
+    		BasicEntityShip ship = null;
+    		String name = null;
+    		int level = 0;
+    		int j = 1;
+    		for(int i = 0; i < 6; i++) {
+    			//get entity
+    			ship = props.getTeamList(i);
+    			
+    			if(ship != null) {
+    				//get level
+    				level = ship.getStateMinor(ID.N.ShipLevel);
+    				
+	    			//get name
+	    			if(ship.getCustomNameTag() != null && ship.getCustomNameTag().length() > 0) {
+	    				name = ship.getCustomNameTag();
+	    			}
+	    			else {
+	    				name = I18n.format("entity.shincolle."+ship.getClass().getSimpleName()+".name");
+	    			}
+	    			
+	    			//add info string
+	    			if(props.getTeamSelected(i)) {
+	    				list.add(EnumChatFormatting.WHITE + String.format("%d: %s - Lv %d", j, name, level));
+	    			}
+	    			else {
+	    				list.add(EnumChatFormatting.GRAY + String.format("%d: %s - Lv %d", j, name, level));
+	    			}
+	    			
+	    			j++;
+    			}
+    		}
     	}
     }
 	

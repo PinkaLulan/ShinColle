@@ -325,15 +325,21 @@ public class EntityHelper {
 		if(extProps != null) {
 			extProps.setRingActiveI(value[0]);
 			extProps.setMarriageNum(value[1]);
+			extProps.setTeamId(value[2]);
 			
 			//set team list
 			BasicEntityShip teamship = null;
 			for(int i = 0; i < 6; i++) {
-				if(value[i+2] <= 0) {
+				if(value[i+3] <= 0) {
 					extProps.setTeamList(i, null, true);
 				}
 				else {
-					teamship = (BasicEntityShip) EntityHelper.getEntityByID(value[i+2], 0, true);
+					if(value[i+3] > 0) {
+						teamship = (BasicEntityShip) EntityHelper.getEntityByID(value[i+3], 0, true);
+					}
+					else {
+						teamship = null;
+					}
 					extProps.setTeamList(i, teamship, true);
 				}
 			}
@@ -410,6 +416,9 @@ public class EntityHelper {
 				break;
 			case ID.B.ShipInv_AuraEffect:
 				entity.setEntityFlagI(ID.F.UseRingEffect, value);
+				break;
+			case ID.B.ShipInv_OnSightAI:
+				entity.setEntityFlagI(ID.F.OnSightChase, value);
 				break;
 			}
 		}
@@ -772,24 +781,24 @@ public class EntityHelper {
 			
 			//same guard position, cancel guard mode
 			if(gx == x && gy == y && gz == z && gd == ship.worldObj.provider.dimensionId) {
-				ship.setStateFlag(ID.F.CanFollow, true);	//set follow
 				ship.setStateMinor(ID.N.GuardX, -1);		//reset guard position
 				ship.setStateMinor(ID.N.GuardY, -1);
 				ship.setStateMinor(ID.N.GuardZ, -1);
 				ship.setStateMinor(ID.N.GuardDim, 0);
 				ship.setStateMinor(ID.N.GuardID, -1);
 				ship.setGuarded(null);
+				ship.setStateFlag(ID.F.CanFollow, true);	//set follow
 			}
 			//apply guard mode
 			else {
 				ship.setSitting(false);						//stop sitting
-				ship.setStateFlag(ID.F.CanFollow, false);	//stop follow
 				ship.setStateMinor(ID.N.GuardX, x);
 				ship.setStateMinor(ID.N.GuardY, y);
 				ship.setStateMinor(ID.N.GuardZ, z);
 				ship.setStateMinor(ID.N.GuardDim, ship.worldObj.provider.dimensionId);
 				ship.setStateMinor(ID.N.GuardID, -1);
 				ship.setGuarded(null);
+				ship.setStateFlag(ID.F.CanFollow, false);	//stop follow
 				
 				if(!ship.getStateFlag(ID.F.NoFuel)) {
 					if(ship.ridingEntity != null && ship.ridingEntity instanceof BasicEntityMount) {
@@ -810,23 +819,23 @@ public class EntityHelper {
 			
 			//same guard position, cancel guard mode
 			if(getEnt != null && getEnt.getEntityId() == guarded.getEntityId()) {
-				ship.setStateFlag(ID.F.CanFollow, true);	//set follow
 				ship.setStateMinor(ID.N.GuardX, -1);		//reset guard position
 				ship.setStateMinor(ID.N.GuardY, -1);
 				ship.setStateMinor(ID.N.GuardZ, -1);
 				ship.setStateMinor(ID.N.GuardDim, 0);
 				ship.setStateMinor(ID.N.GuardID, -1);
 				ship.setGuarded(null);
+				ship.setStateFlag(ID.F.CanFollow, true);	//set follow
 			}
 			//apply guard mode
 			else {
 				ship.setSitting(false);						//stop sitting
-				ship.setStateFlag(ID.F.CanFollow, false);	//stop follow
 				ship.setStateMinor(ID.N.GuardX, -1);		//clear guard position
 				ship.setStateMinor(ID.N.GuardY, -1);
 				ship.setStateMinor(ID.N.GuardZ, -1);
 				ship.setStateMinor(ID.N.GuardDim, guarded.worldObj.provider.dimensionId);
 				ship.setGuarded(guarded);
+				ship.setStateFlag(ID.F.CanFollow, false);	//stop follow
 				
 				if(!ship.getStateFlag(ID.F.NoFuel)) {
 					if(ship.ridingEntity != null && ship.ridingEntity instanceof BasicEntityMount) {

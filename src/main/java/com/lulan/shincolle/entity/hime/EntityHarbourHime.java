@@ -66,7 +66,7 @@ public class EntityHarbourHime extends BasicEntityShipLarge {
   		//server side
   		if(!worldObj.isRemote) {
   			//飛行場特殊能力
-        	if(this.ticksExisted % 100 == 0) {
+        	if(this.ticksExisted % 160 == 0) {
         		//1: 增強被動回血
         		if(getStateMinor(ID.N.NumGrudge) > 0 && this.getHealth() < this.getMaxHealth()) {
         			this.setHealth(this.getHealth() + this.getMaxHealth() * 0.03F);
@@ -87,13 +87,13 @@ public class EntityHarbourHime extends BasicEntityShipLarge {
 		            	hitEntity = (EntityLivingBase) hitList.get(i);
 		            	
 		            	//抓可以補血的目標, 不包含自己
-		            	if(hitEntity != this && hitEntity.getHealth() / hitEntity.getMaxHealth() < 0.96F) {
+		            	if(hitEntity != this && hitEntity.getHealth() / hitEntity.getMaxHealth() < 0.94F) {
 	            			if(hitEntity instanceof EntityPlayer) {
-	            				hitEntity.heal(1F + this.getLevel() * 0.05F);
+	            				hitEntity.heal(4F + this.getLevel() * 0.06F);
 		            			healCount--;
 		            		}
 		            		else if(hitEntity instanceof BasicEntityShip) {
-		            			hitEntity.heal(1F + hitEntity.getMaxHealth() * 0.05F + this.getLevel() * 0.1F);
+		            			hitEntity.heal(4F + hitEntity.getMaxHealth() * 0.06F + this.getLevel() * 0.2F);
 		            			healCount--;
 			            	}
 		            	}
@@ -193,7 +193,7 @@ public class EntityHarbourHime extends BasicEntityShipLarge {
   	 */
   	public boolean attackEntityWithSpecialAmmo(Entity target) {	
   		//get attack value
-  		float atk = StateFinal[ID.ATK_H];
+  		float atk = StateFinal[ID.ATK_H] * 0.5F;
   		
   		//set knockback value (testing)
   		float kbValue = 0.15F;
@@ -206,7 +206,11 @@ public class EntityHarbourHime extends BasicEntityShipLarge {
   		float distY = tarY - (float)this.posY;
   		float distZ = tarZ - (float)this.posZ;
   		float distSqrt = MathHelper.sqrt_float(distX*distX + distY*distY + distZ*distZ);
-  		float launchPos = (float)posY - 1F;
+  		float launchPos = (float)posY + 0.4F;
+  		
+  		if(this.ridingEntity != null && this.ridingEntity instanceof BasicEntityMount) {
+  			launchPos = (float)posY - 1.2F;
+  		}
   		
   		//experience++
   		addShipExp(16);
@@ -225,24 +229,27 @@ public class EntityHarbourHime extends BasicEntityShipLarge {
   		if(!decrAmmoNum(1)) {	//not enough ammo
   			atk = atk * 0.125F;	//reduce damage to 12.5%
   		}
+  		
+  		//發射者煙霧特效 (發射飛機不使用特效, 但是要發送封包來設定attackTime)
+        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
+		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
           
   		//calc miss chance, miss: add random offset(0~6) to missile target 
   		float missChance = 0.2F + 0.15F * (distSqrt / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.N.ShipLevel];
   		missChance -= EffectEquip[ID.EF_MISS];	//equip miss reduce
   		if(missChance > 0.35F) missChance = 0.35F;	//max miss chance = 30%
-         
+  		
   		if(this.rand.nextFloat() < missChance) {
           	tarX = tarX - 5F + this.rand.nextFloat() * 10F;
           	tarY = tarY + this.rand.nextFloat() * 5F;
           	tarZ = tarZ - 5F + this.rand.nextFloat() * 10F;
           	//spawn miss particle
-          	TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
           	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
   		}
           
   		//spawn missile
   		EntityAbyssMissile missile = new EntityAbyssMissile(this.worldObj, this, 
-          		tarX, tarY+target.height*0.2F, tarZ, launchPos, atk, kbValue, true, 0.15F);
+          		tarX, tarY+target.height*0.35F, tarZ, launchPos, atk, kbValue, true, 0.3F);
   		this.worldObj.spawnEntityInWorld(missile);
           
   		return true;
@@ -275,6 +282,21 @@ public class EntityHarbourHime extends BasicEntityShipLarge {
   		}
   		
 		return ModelPos;
+	}
+  	
+  	@Override
+	public double getMountedYOffset() {
+  		if(this.isSitting()) {
+			if(getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {
+				return (double)this.height * 0.0F;
+  			}
+  			else {
+  				return (double)this.height * 0.5F;
+  			}
+  		}
+  		else {
+  			return (double)this.height * 0.85F;
+  		}
 	}
 
 

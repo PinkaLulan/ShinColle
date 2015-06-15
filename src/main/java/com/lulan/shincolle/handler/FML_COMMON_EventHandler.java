@@ -17,6 +17,7 @@ import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.BiomeDictionary;
 
 import com.lulan.shincolle.entity.BasicEntityMount;
+import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipBoss;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
@@ -26,6 +27,8 @@ import com.lulan.shincolle.entity.hostile.EntitySubmRo500Mob;
 import com.lulan.shincolle.entity.hostile.EntitySubmU511Mob;
 import com.lulan.shincolle.entity.mounts.EntityMountSeat;
 import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.item.PointerItem;
+import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.proxy.ClientProxy;
@@ -181,10 +184,19 @@ public class FML_COMMON_EventHandler {
 				
 				//sync team list every 20 ticks
 				if(event.player.ticksExisted % 20 == 0) {
+					//check entity is alive
+					BasicEntityShip getent = null;
+					for(int i = 0; i < 6; i++) {
+						getent = extProps.getTeamList(i);
+						
+						if(getent != null && !getent.isEntityAlive()) {
+							extProps.clearShipSlot(i);
+						}
+					}
+					
 					//sync team list to client
 					CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps), (EntityPlayerMP) event.player);
 				}//end every 20 ticks
-				
 			}//end server side, extProps != null
 			
 			//check ring item (check for first found ring only) every 20 ticks
@@ -247,9 +259,30 @@ public class FML_COMMON_EventHandler {
 //		LogHelper.info("DEBUG : key event "+Minecraft.getMinecraft().thePlayer.ridingEntity);
 		//if player is riding, send packet
 		EntityPlayer player = ClientProxy.getClientPlayer();
+		this.keySet = ClientProxy.getGameSetting();
 		
+		//pointer item control
+		if(player.inventory.getCurrentItem() != null && player.inventory.getCurrentItem().getItem() instanceof PointerItem) {
+			//ctrl + xx
+			int getKey = -1;
+			if(keySet.keyBindSprint.getIsKeyPressed()) {
+				//check hotbar key 0~8
+				for(int i = 0; i < keySet.keyBindsHotbar.length; i++) {
+					if(keySet.keyBindsHotbar[i].getIsKeyPressed()) {
+						getKey = i;
+						break;
+					}
+				}
+				LogHelper.info("DEBUG : key input: pointer set team "+getKey);
+				if(getKey >= 0) {
+					//change team id
+					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, -8, getKey, 0));
+				}
+			}
+		}
+		
+		//riding control
 		if(player.isRiding() && player.ridingEntity instanceof EntityMountSeat) {
-			this.keySet = ClientProxy.getGameSetting();
 			int newKeys = 0;
 			
 			//forward

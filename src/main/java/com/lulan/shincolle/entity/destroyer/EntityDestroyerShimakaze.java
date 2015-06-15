@@ -283,6 +283,20 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
 		this.numRensouhou = num;
 	}
 
+	@Override
+	public double getMountedYOffset() {
+		if(this.isSitting()) {
+			if(getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {
+				return 0F;
+  			}
+  			else {
+  				return (double)this.height * 0.1F;
+  			}
+  		}
+  		else {
+  			return (double)this.height * 0.45F;
+  		}
+	}
 
 }
 

@@ -15,6 +15,8 @@ public class ID {
 		public static final byte ShipInv_FleeHP = 7;
 		public static final byte ShipInv_TarAI = 8;
 		public static final byte ShipInv_AuraEffect = 9;
+		public static final byte ShipInv_OnSightAI = 10;
+		
 		public static final byte Shipyard_Type = 0;
 		public static final byte Shipyard_InvMode = 1;
 		public static final byte Shipyard_SelectMat = 2;
@@ -86,7 +88,8 @@ public class ID {
 		public static final byte HeadTilt = 8;			//client only, no sync
 		public static final byte UseRingEffect = 9;
 		public static final byte CanDrop = 10;			//server only, no sync
-		public static final byte CanFollow = 11;			//server only, no sync
+		public static final byte CanFollow = 11;		//server only, no sync
+		public static final byte OnSightChase = 12;
 	}
 	
 	//GUI ID

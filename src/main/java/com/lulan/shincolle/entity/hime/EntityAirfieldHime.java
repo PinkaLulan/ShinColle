@@ -58,7 +58,7 @@ public class EntityAirfieldHime extends BasicEntityShipLarge {
   		//server side
   		if(!worldObj.isRemote) {
   			//飛行場特殊能力
-        	if(this.ticksExisted % 100 == 0) {
+        	if(this.ticksExisted % 160 == 0) {
         		//1: 增強被動回血
         		if(getStateMinor(ID.N.NumGrudge) > 0 && this.getHealth() < this.getMaxHealth()) {
         			this.setHealth(this.getHealth() + this.getMaxHealth() * 0.03F);
@@ -67,10 +67,10 @@ public class EntityAirfieldHime extends BasicEntityShipLarge {
         		//2: 結婚後, 周圍某一目標回血, 包括玩家, 回血目標依等級提昇
 				if(getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.N.NumGrudge) > 0) {
 					//判定bounding box內是否有可以回血的目標
-					int healCount = (int)(this.getLevel() / 50) + 1;
+					int healCount = (int)(this.getLevel() / 15) + 2;
 		            EntityLivingBase hitEntity = null;
 		            List hitList = null;
-		            hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, this.boundingBox.expand(12D, 12D, 12D));
+		            hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, this.boundingBox.expand(18D, 18D, 18D));
 		           
 		            for(int i = 0; i < hitList.size(); i++) {
 		            	//補血名額沒了, break
@@ -79,13 +79,13 @@ public class EntityAirfieldHime extends BasicEntityShipLarge {
 		            	hitEntity = (EntityLivingBase) hitList.get(i);
 		            	
 		            	//抓可以補血的目標, 不包含自己
-		            	if(hitEntity != this && hitEntity.getHealth() / hitEntity.getMaxHealth() < 0.96F) {
+		            	if(hitEntity != this && hitEntity.getHealth() / hitEntity.getMaxHealth() < 0.98F) {
 	            			if(hitEntity instanceof EntityPlayer) {
-	            				hitEntity.heal(1F + this.getLevel() * 0.05F);
+	            				hitEntity.heal(1F + this.getLevel() * 0.02F);
 		            			healCount--;
 		            		}
 		            		else if(hitEntity instanceof BasicEntityShip) {
-		            			hitEntity.heal(1F + hitEntity.getMaxHealth() * 0.05F + this.getLevel() * 0.1F);
+		            			hitEntity.heal(1F + hitEntity.getMaxHealth() * 0.02F + this.getLevel() * 0.1F);
 		            			healCount--;
 			            	}
 		            	}
@@ -206,6 +206,16 @@ public class EntityAirfieldHime extends BasicEntityShipLarge {
   		}
   		
 		return ModelPos;
+	}
+  	
+  	@Override
+	public double getMountedYOffset() {
+  		if(this.isSitting()) {
+  			return (double)this.height * 0.58F;
+  		}
+  		else {
+  			return (double)this.height * 0.73F;
+  		}
 	}
 
 

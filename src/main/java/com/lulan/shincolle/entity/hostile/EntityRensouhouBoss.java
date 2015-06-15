@@ -262,8 +262,14 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
 
 	@Override
 	public boolean getStateFlag(int flag) {		//hostile mob: for attack and headTile check
-		if(flag == ID.F.HeadTilt) return this.headTilt;
-		return true;
+		switch(flag) {
+		default:
+			return true;
+		case ID.F.HeadTilt:
+			return this.headTilt;
+		case ID.F.OnSightChase:
+			return false;
+		}
 	}
 
 	@Override
@@ -756,6 +762,14 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
 	
 	@Override
 	public void setEntitySit() {}
+
+	@Override
+	public float getModelRotate(int par1) {
+		return 0F;
+	}
+
+	@Override
+	public void setModelRotate(int par1, float par2) {}
 	
 
 }

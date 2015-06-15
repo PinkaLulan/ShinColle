@@ -99,6 +99,11 @@ public class EntityAbyssMissile extends Entity {
         this.distX = (float) (tarX - this.posX);
         this.distY = (float) (tarY - this.posY);
         this.distZ = (float) (tarZ - this.posZ);
+        
+        if(MathHelper.abs(this.distX) < 0.001F) this.distX = 0F;
+        if(MathHelper.abs(this.distY) < 0.001F) this.distY = 0F;
+        if(MathHelper.abs(this.distZ) < 0.001F) this.distZ = 0F;
+        
         //設定直射或者拋物線
         this.isDirect = isDirect;
         this.type = 0;
@@ -123,8 +128,8 @@ public class EntityAbyssMissile extends Entity {
 	    this.accY = (float) (this.distY / dist * this.ACCE);
 	    this.accZ = (float) (this.distZ / dist * this.ACCE);
 	    this.motionX = this.accX;
-	    this.motionZ = this.accY;
-	    this.motionY = this.accZ;
+	    this.motionY = this.accY;
+	    this.motionZ = this.accZ;
  
 	    //拋物線軌道計算, y軸初速加上 (一半飛行時間 * 額外y軸加速度)
 	    if(!this.isDirect) {
@@ -191,20 +196,21 @@ public class EntityAbyssMissile extends Entity {
         
         /**********server side***********/
     	if(!this.worldObj.isRemote) {
-    		//發射超過20 sec, 設定為死亡(消失), 注意server restart後此值會歸零
-    		if(this.ticksExisted > 600) {
-    			this.setDead();	//直接抹消, 不觸發爆炸
-    		}
-    		else if(this.ticksExisted == 1) {
-    			//for other player, send ship state for display
-    			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
-    			CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this, this.type, 8), point);
-    		}
-    		
     		//沒有host資料, 消除此飛彈
     		if(this.host == null) {
     			this.setDead();	//直接抹消, 不觸發爆炸
     			return;
+    		}
+    		
+    		//發射超過20 sec, 設定為死亡(消失), 注意server restart後此值會歸零
+    		if(this.ticksExisted > 300) {
+    			this.setDead();	//直接抹消, 不觸發爆炸
+    			return;
+    		}
+    		//sync missile type at start
+    		else if(this.ticksExisted == 1) {
+    			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
+    			CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this, this.type, 8), point);
     		}
     		
     		//該位置碰到方塊, 則設定爆炸 (方法1: 直接用座標找方塊) 此方法由於把座標取int, 很多時候看起來有撞到但是依然抓不到方塊
@@ -271,7 +277,7 @@ public class EntityAbyssMissile extends Entity {
     		
     		for (int j = 0; j < 3; ++j) {
             	ParticleHelper.spawnAttackParticleAt(this.posX-this.motionX*1.5D*j, this.posY+1D-this.motionY*1.5D*j, this.posZ-this.motionZ*1.5D*j, 
-                		-this.motionX*0.5D, -this.motionY*0.5D, -this.motionZ*0.5D, smokeType);
+                		-this.motionX*0.1D, -this.motionY*0.1D, -this.motionZ*0.1D, smokeType);
     		}
     	}//end client side
     	   	
@@ -361,8 +367,7 @@ public class EntityAbyssMissile extends Entity {
                 	hitEntity = (EntityLivingBase)hitList.get(i);
                 	
                 	//目標不能是自己 or 主人
-                	if(hitEntity.canBeCollidedWith() && 
-                	   isNotHost(hitEntity.getEntityId())) {
+                	if(hitEntity.canBeCollidedWith() && isNotHost(hitEntity.getEntityId())) {
 
             			//calc critical, only for type:ship
                 		if(this.host != null && (this.rand.nextFloat() < this.host.getEffectEquip(ID.EF_CRI))) {

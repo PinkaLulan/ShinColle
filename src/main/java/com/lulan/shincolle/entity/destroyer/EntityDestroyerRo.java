@@ -22,6 +22,7 @@ import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.entity.ExtendShipProps;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.LogHelper;
 
 public class EntityDestroyerRo extends BasicEntityShipSmall {
 
@@ -60,7 +61,7 @@ public class EntityDestroyerRo extends BasicEntityShipSmall {
   	@Override
   	public void onLivingUpdate() {
   		super.onLivingUpdate();
-          
+  		
   		if(!worldObj.isRemote) {
   			//add aura to master every 100 ticks
   			if(this.ticksExisted % 100 == 0) {
@@ -103,6 +104,16 @@ public class EntityDestroyerRo extends BasicEntityShipSmall {
   	@Override
 	public int getKaitaiType() {
 		return 0;
+	}
+  	
+  	@Override
+	public double getMountedYOffset() {
+  		if(this.isSitting()) {
+  			return (double)this.height * 0.2F;
+  		}
+  		else {
+  			return (double)this.height * 0.6F;
+  		}
 	}
 
 }

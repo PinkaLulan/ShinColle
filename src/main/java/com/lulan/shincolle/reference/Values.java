@@ -16,14 +16,14 @@ public class Values {
 		{20F,  22F,  24F,  28F,  33F,  36F,  39F,  48F,
 		 48F,  58F,  62F,  65F,  85F,  90F,  84F,  90F,
 		 70F,  50F,  44F,  35F,  175F, 240F, 135F, 150F,
-		 33F,  44F,  200F, 95F,  260F, 225F, 300F, 220F, 
+		 33F,  44F,  200F, 95F,  260F, 225F, 300F, 210F, 
 		 175F, 195F, 1F,   1F,   23F,  90F,  20F,  22F};
 	//姬級 = 普通最高數值+50%
 	public static final float[] BaseATK =
 		{3F,   4F,   3F,   4F,   6F,   9F,   7F,   12F,
 		 16F,  14F,  13F,  16F,  19F,  24F,  19F,  28F,
 		 0F,   0F,   0F,   0F,   0F,   21F,  0F,   0F,
-		 0F,   0F,   42F,  0F,   19F,  0F,   0F,   0F,
+		 0F,   0F,   42F,  0F,   19F,  0F,   0F,   17F,
 		 0F,   0F,   0F,   0F,   9F,   28F,  20F,  24F};
 
 	public static final float[] BaseDEF = 
@@ -44,14 +44,14 @@ public class Values {
 		{0.5F,  0.5F,  0.5F,  0.5F,  0.45F, 0.45F, 0.45F, 0.45F,
 		 0.42F, 0.42F, 0.42F, 0.32F, 0.4F,  0.32F, 0.42F, 0.36F,
 		 0.3F,  0.3F,  0.3F,  0.28F, 0.45F, 0.3F,  0.42F, 0.3F,
-		 0.5F,  0.5F,  0.4F,  0.5F,  0.2F,  0.22F, 0.2F,  0.25F,
+		 0.5F,  0.5F,  0.4F,  0.5F,  0.2F,  0.22F, 0.2F,  0.32F,
 		 0.3F,  0.42F, 0.45F, 0.42F, 0.6F,  0.3F,  0.3F,  0.32F};
 
 	public static final float[] BaseHIT =
 		{6F,    6F,    6F,    6F,    9F,    9F,    9F,    9F,
 		 11F,   11F,   11F,   16F,   20F,   13F,   13F,   13F,
-		 6F,    6F,    6F,    6F,    20F,   26F,   20F,   23F,
-		 6F,    6F,    20F,   11F,   26F,   26F,   30F,   26F,
+		 6F,    6F,    6F,    6F,    20F,   26F,   20F,   22F,
+		 6F,    6F,    20F,   11F,   26F,   26F,   30F,   24F,
 		 23F,   24F,   0F,    0F,    9F,    13F,   6F,    7F};
 	
 	public static final float[] ModHP =
@@ -63,14 +63,14 @@ public class Values {
 	
 	public static final float[] ModATK = 
 		{0.25F, 0.28F, 0.25F, 0.28F, 0.3F,  0.35F, 0.32F, 0.38F,
-		 0.44F, 0.42F, 0.4F,  0.4F,  0.5F,  0.7F,  0.6F,  0.8F,
+		 0.44F, 0.42F, 0.4F,  0.4F,  0.65F, 0.8F,  0.7F,  1F,
 		 0.25F, 1F,    1F,    1F,    1F,    0.8F,  1F,    1F,
 		 0.5F,  0.5F,  1F,    1F,    0.75F,  0.75F, 0.9F,  0.7F,
-		 1F,    1F,    0F,    0F,    0.5F,  0.7F,  1F,    1F};
+		 1F,    1F,    0F,    0F,    0.5F,  0.8F,  1F,    1F};
 	
 	public static final float[] ModDEF = 
 		{0.5F,  0.52F, 0.54F, 0.56F, 0.6F,  0.62F, 0.64F, 0.66F,
-		 0.7F,  0.7F,  0.7F,  0.7F,  0.7F,  0.9F,  0.9F,  0.9F,
+		 0.7F,  0.7F,  0.7F,  0.7F,  0.7F,  0.8F,  0.9F,  0.8F,
 		 0.5F,  0.54F, 0.52F, 0.5F,  1F,    1F,    1F,    1F,
 		 0.5F,  0.5F,  1F,    1F,    1F,    1F,    1F,    1F,
 		 1F,    1F,    1F,    1F,    0.6F,  0.9F,  0.5F,  0.5F};
@@ -86,7 +86,7 @@ public class Values {
 		{1F,    1F,    1F,    1F,    0F,    0F,    0F,    0F,
 		 0F,    1F,    0F,    0F,    1F,    0F,    1F,    1F,
 		 0F,    0F,    0F,    0F,    0F,    1F,    0F,    0F,
-		 0F,    0F,    1F,    0F,    1F,    0F,    0F,    0F,
+		 0F,    0F,    1F,    0F,    1F,    0F,    0F,    1F,
 		 0F,    0F,    0F,    0F,    1F,    1F,    1F,    1F};
 	
 	public static final float[] ModHIT = 

@@ -212,6 +212,22 @@ public class EntitySubmRo500 extends BasicEntityShipSmall {
           
           return true;
   	}
+  	
+  	@Override
+	public double getMountedYOffset() {
+  		if(this.isSitting()) {
+			if(getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {
+				return 0F;
+  			}
+  			else {
+  				return 0F;
+  			}
+  		}
+  		else {
+  			return (double)this.height * 0.5F;
+  		}
+	}
+  	
 
 }
 

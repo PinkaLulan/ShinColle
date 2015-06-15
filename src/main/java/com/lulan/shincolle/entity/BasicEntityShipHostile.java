@@ -52,6 +52,7 @@ public class BasicEntityShipHostile extends EntityMob implements IShipCannonAtta
 	protected int StartEmotion;			//表情1 開始時間
 	protected int StartEmotion2;		//表情2 開始時間
 	protected boolean headTilt;
+	protected float[] rotateAngle;		//模型旋轉角度, 用於手持物品render
 	
 	//misc
 	protected ItemStack dropItem;
@@ -64,13 +65,14 @@ public class BasicEntityShipHostile extends EntityMob implements IShipCannonAtta
 	
 	public BasicEntityShipHostile(World world) {
 		super(world);
-		this.isImmuneToFire = true;	//set ship immune to lava
+		isImmuneToFire = true;	//set ship immune to lava
 		ignoreFrustumCheck = true;	//即使不在視線內一樣render
-		this.StateEmotion = new byte[] {ID.State.EQUIP00, 0, 0, 0, 0, 0};
-		this.stepHeight = 4F;
-		this.canDrop = true;
+		StateEmotion = new byte[] {ID.State.EQUIP00, 0, 0, 0, 0, 0};
+		stepHeight = 4F;
+		canDrop = true;
 		shipNavigator = new ShipPathNavigate(this, worldObj);
 		shipMoveHelper = new ShipMoveHelper(this);
+		rotateAngle = new float[] {0F, 0F, 0F};
 	}
 	
 	@Override
@@ -212,8 +214,14 @@ public class BasicEntityShipHostile extends EntityMob implements IShipCannonAtta
 
 	@Override
 	public boolean getStateFlag(int flag) {		//hostile mob: for attack and headTile check
-		if(flag == ID.F.HeadTilt) return this.headTilt;
-		return true;
+		switch(flag) {
+		default:
+			return true;
+		case ID.F.HeadTilt:
+			return this.headTilt;
+		case ID.F.OnSightChase:
+			return false;
+		}
 	}
 
 	@Override
@@ -698,6 +706,32 @@ public class BasicEntityShipHostile extends EntityMob implements IShipCannonAtta
 
 	@Override
 	public void setEntitySit() {}
+
+	//get model rotate angle, par1 = 0:X, 1:Y, 2:Z
+    @Override
+    public float getModelRotate(int par1) {
+    	switch(par1) {
+    	default:
+    		return this.rotateAngle[0];
+    	case 1:
+    		return this.rotateAngle[1];
+    	case 2:
+    		return this.rotateAngle[2];
+    	}
+    }
+    
+    //set model rotate angle, par1 = 0:X, 1:Y, 2:Z
+    @Override
+	public void setModelRotate(int par1, float par2) {
+		switch(par1) {
+    	default:
+    		rotateAngle[0] = par2;
+    	case 1:
+    		rotateAngle[1] = par2;
+    	case 2:
+    		rotateAngle[2] = par2;
+    	}
+	}
 
 
 }

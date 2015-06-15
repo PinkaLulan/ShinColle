@@ -6,10 +6,15 @@ import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
+import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipAttackBase;
+import com.lulan.shincolle.network.S2CEntitySync;
+import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.LogHelper;
+
+import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 /**SHIP FOLLOW OWNER AI
  * 距離超過max dist時觸發移動, 直到走進min dist距離時停止
  * 距離超過TP_DIST會直接teleport到owner旁邊
@@ -113,7 +118,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
 
     public void updateTask() {
     	if(host != null) {
-//    		LogHelper.info("DEBUG : exec follow owner");
+    		LogHelper.info("DEBUG : exec follow owner");
         	this.findCooldown--;
         	
         	//update follow range every 60 ticks
@@ -158,8 +163,15 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
         			//相同dim才傳送
         			LogHelper.info("DEBUG : follow AI: distSQ > "+this.TP_DIST+" , teleport entity. dim: "+host2.dimension+" "+owner.dimension);
         			if(this.host2.dimension == this.owner.dimension) {
+        				
+        				//teleport
+            			if(this.distSq > 1024) {	//32 blocks away, drop seat2
+            				this.clearMountSeat2();
+            			}
+            			
         				this.host2.setLocationAndAngles(this.owner.posX, this.owner.posY + 1D, this.owner.posZ, this.host2.rotationYaw, this.host2.rotationPitch);
         				this.ShipNavigator.clearPathEntity();
+        				this.sendSyncPacket();
                         return;
         			}
         		}
@@ -181,8 +193,15 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
                 			//相同dim才傳送
                 			LogHelper.info("DEBUG : follow AI: teleport entity: dimension "+host2.dimension+" "+owner.dimension);
                 			if(this.host2.dimension == this.owner.dimension) {
+                				
+                				//teleport
+                    			if(this.distSq > 1024) {	//32 blocks away, drop seat2
+                    				this.clearMountSeat2();
+                    			}
+                    			
                 				this.host2.setLocationAndAngles(this.owner.posX, this.owner.posY + 1D, this.owner.posZ, this.host2.rotationYaw, this.host2.rotationPitch);
                 				this.ShipNavigator.clearPathEntity();
+                				this.sendSyncPacket();
                                 return;
                 			}
                 		}	
@@ -191,6 +210,35 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
             }//end path find cooldown
     	}
     }
+    
+	//clear seat2
+  	private void clearMountSeat2() {
+  		//若座位2有人, 要先把座位2的乘客踢掉
+  		if(host2.ridingEntity != null) {
+  			if(host2.ridingEntity instanceof BasicEntityMount) {
+	  			BasicEntityMount mount = (BasicEntityMount) host2.ridingEntity;
+	  			if(mount.seat2 != null) {
+	  				mount.seat2.setRiderNull();
+	  			}
+  			}
+  			else {
+  				host2.mountEntity(null);
+  			}
+  		}
+  		
+  		//清空騎乘的人
+  		if(host2.riddenByEntity != null) {
+  			host2.riddenByEntity.mountEntity(null);
+  			host2.riddenByEntity = null;
+  		}
+  	}
+  	
+  	//sync position
+  	private void sendSyncPacket() {
+  		//for other player, send ship state for display
+  		TargetPoint point = new TargetPoint(host2.dimension, host2.posX, host2.posY, host2.posZ, 48D);
+  		CommonProxy.channelE.sendToAllAround(new S2CEntitySync(host2, 0, 9), point);
+  	}
 	
 	
 }

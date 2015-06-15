@@ -61,7 +61,7 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
         	
         	EntityLivingBase target = this.host.getTarget();
         	
-            if(target != null && !target.isDead &&
+            if(target != null && target.isEntityAlive() &&
                ((this.host.getStateFlag(ID.F.UseAmmoLight) && this.host.hasAmmoLight()) || 
                 (this.host.getStateFlag(ID.F.UseAmmoHeavy) && this.host.hasAmmoHeavy()))) {   
             	this.target = target;
@@ -97,16 +97,14 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
 
     //判定是否繼續AI： 有target就繼續, 或者已經移動完畢就繼續
     public boolean continueExecuting() {
-//    	if(host != null) return this.shouldExecute() || !this.host.getShipNavigate().noPath();
-    	if(host != null) return this.shouldExecute();
+    	if(host != null) return this.shouldExecute() || (target != null && target.isEntityAlive() && !this.host.getShipNavigate().noPath());
+//    	if(host != null) return this.shouldExecute();
    	
     	return false;
     }
 
     //重置AI方法
     public void resetTask() {
-//        this.delayLight = this.aimTime;
-//        this.delayHeavy = this.aimTime;
         this.target = null;
         this.onSightTime = 0;
         if(host != null) {
@@ -146,6 +144,11 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
 	        }
 	        else {
 	            this.onSightTime = 0;
+	            
+	            if(host.getStateFlag(ID.F.OnSightChase)) {
+	            	this.resetTask();
+	            	return;
+	            }
 	        }
 	
 	        //若目標進入射程, 且目標無障礙物阻擋, 則清空AI移動的目標, 以停止繼續移動      

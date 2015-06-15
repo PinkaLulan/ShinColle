@@ -116,4 +116,16 @@ public class EntityTest extends EntityLiving implements IShipEmotion {
 		
 	}
 
+	@Override
+	public float getModelRotate(int par1) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setModelRotate(int par1, float par2) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

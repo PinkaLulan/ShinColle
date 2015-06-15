@@ -55,11 +55,11 @@ public class GuiShipInventory extends GuiContainer {
 	               Kills, Exp, Grudge, Owner, AmmoLight, AmmoHeavy, AirLight, AirHeavy, TarAI,
 	               overText, strCri, strDhit, strThit, strMissMin, strMissMax, strMissAir,
 	               marriage, followMin, followMax, fleeHP, followMinValue, followMaxValue,
-	               fleeHPValue, barPosValue, auraEffect;
+	               fleeHPValue, barPosValue, auraEffect, strOnSight;
 	private int hpCurrent, hpMax, color, showPage, showPageAI, pageIndicator, pageIndicatorAI, showAttack,
 				fMinPos, fMaxPos, fleeHPPos, barPos, mousePressBar;
 	private boolean switchMelee, switchLight, switchHeavy, switchAirLight, switchAirHeavy,
-				switchTarAI, mousePress, switchAura;
+				switchTarAI, mousePress, switchAura, switchOnSight;
 
 	//ship type icon array
 	private static final short[][] ICON_SHIPTYPE = {
@@ -129,19 +129,15 @@ public class GuiShipInventory extends GuiContainer {
         case 1:	{	//page 1
         	this.pageIndicatorAI = 131;
         	
-        	//draw attack switch
+        	//get button value
             this.switchMelee = this.entity.getStateFlag(ID.F.UseMelee);
         	this.switchLight = this.entity.getStateFlag(ID.F.UseAmmoLight);
             this.switchHeavy = this.entity.getStateFlag(ID.F.UseAmmoHeavy);
             this.switchAirLight = this.entity.getStateFlag(ID.F.UseAirLight);
             this.switchAirHeavy = this.entity.getStateFlag(ID.F.UseAirHeavy);
-            if(this.entity.getStateMinor(ID.N.TargetAI) == 0) {
-            	this.switchTarAI = true;
-            }
-            else {
-            	this.switchTarAI = false;
-            }
+            this.switchAura = this.entity.getStateFlag(ID.F.UseRingEffect);
             
+            //draw button
             if(this.switchMelee) {
             	drawTexturedModalRect(guiLeft+174, guiTop+132, 0, 214, 11, 11);
             }
@@ -177,7 +173,7 @@ public class GuiShipInventory extends GuiContainer {
             	drawTexturedModalRect(guiLeft+174, guiTop+180, 11, 214, 11, 11);
             }
             
-            if(this.switchTarAI) {
+            if(this.switchAura) {
             	drawTexturedModalRect(guiLeft+174, guiTop+192, 0, 214, 11, 11);
             }
             else {
@@ -189,6 +185,7 @@ public class GuiShipInventory extends GuiContainer {
         case 2: {	//page 2
         	this.pageIndicatorAI = 157;
         	
+        	//get button value
         	fMinPos = (int)(((float)(entity.getStateMinor(ID.N.FollowMin) - 1) / 30F) * 42F);
         	fMaxPos = (int)(((float)(entity.getStateMinor(ID.N.FollowMax) - 2) / 30F) * 42F);
         	fleeHPPos = (int)(((float)entity.getStateMinor(ID.N.FleeHP) / 100F) * 42F);
@@ -225,14 +222,27 @@ public class GuiShipInventory extends GuiContainer {
         case 3:	{	//page 3
     		this.pageIndicatorAI = 183;
     		
-    		//draw attack switch
-            this.switchAura = this.entity.getStateFlag(ID.F.UseRingEffect);
-            
-            if(this.switchAura) {
+    		//get button value
+    		if(this.entity.getStateMinor(ID.N.TargetAI) == 0) {
+            	this.switchTarAI = true;
+            }
+            else {
+            	this.switchTarAI = false;
+            }
+    		this.switchOnSight = this.entity.getStateFlag(ID.F.OnSightChase);
+    		
+    		//draw button
+            if(this.switchTarAI) {
             	drawTexturedModalRect(guiLeft+174, guiTop+132, 0, 214, 11, 11);
             }
             else {
             	drawTexturedModalRect(guiLeft+174, guiTop+132, 11, 214, 11, 11);
+            }
+            if(this.switchOnSight) {
+            	drawTexturedModalRect(guiLeft+174, guiTop+144, 0, 214, 11, 11);
+            }
+            else {
+            	drawTexturedModalRect(guiLeft+174, guiTop+144, 11, 214, 11, 11);
             }
   
     		break;
@@ -525,14 +535,14 @@ public class GuiShipInventory extends GuiContainer {
 				canHATK = I18n.format("gui.shincolle:canheavyattack");
 				canALATK = I18n.format("gui.shincolle:canairlightattack");
 				canAHATK = I18n.format("gui.shincolle:canairheavyattack");
-				TarAI = I18n.format("gui.shincolle:targetAI");
+				auraEffect = I18n.format("gui.shincolle:auraeffect");
 				
 				this.fontRendererObj.drawString(canMelee, 187, 134, GuiHelper.pickColor(5));
 				this.fontRendererObj.drawString(canLATK, 187, 146, GuiHelper.pickColor(5));
 				this.fontRendererObj.drawString(canHATK, 187, 158, GuiHelper.pickColor(5));
 				this.fontRendererObj.drawString(canALATK, 187, 170, GuiHelper.pickColor(5));
 				this.fontRendererObj.drawString(canAHATK, 187, 182, GuiHelper.pickColor(5));
-				this.fontRendererObj.drawString(TarAI, 187, 194, GuiHelper.pickColor(5));
+				this.fontRendererObj.drawString(auraEffect, 187, 194, GuiHelper.pickColor(5));
 			}
 			break;
 		case 2:	{	//follow, flee AI page
@@ -577,9 +587,15 @@ public class GuiShipInventory extends GuiContainer {
 			break;
 		case 3: {	//aura effect
 			//draw string
-			auraEffect = I18n.format("gui.shincolle:auraeffect");
+			TarAI = I18n.format("gui.shincolle:targetAI");
+			strOnSight = I18n.format("gui.shincolle:onsightAI");
 			
-			this.fontRendererObj.drawString(auraEffect, 187, 134, GuiHelper.pickColor(5));
+			this.fontRendererObj.drawString(TarAI, 187, 134, GuiHelper.pickColor(5));
+			this.fontRendererObj.drawString(strOnSight, 187, 146, GuiHelper.pickColor(5));
+//			this.fontRendererObj.drawString(canHATK, 187, 158, GuiHelper.pickColor(5));
+//			this.fontRendererObj.drawString(canALATK, 187, 170, GuiHelper.pickColor(5));
+//			this.fontRendererObj.drawString(canAHATK, 187, 182, GuiHelper.pickColor(5));
+//			this.fontRendererObj.drawString(auraEffect, 187, 194, GuiHelper.pickColor(5));
 			
 			}
 			break;
@@ -670,15 +686,24 @@ public class GuiShipInventory extends GuiContainer {
         		this.switchMelee = this.entity.getStateFlag(ID.F.UseMelee);
         		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_Melee, getInverseInt(this.switchMelee)));
         	}
-        	else if(this.showPageAI == 3) {	//page 3: apply aura effect
-        		this.switchAura = this.entity.getStateFlag(ID.F.UseRingEffect);
-        		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_AuraEffect, getInverseInt(this.switchAura)));
+        	else if(this.showPageAI == 3) {	//page 3: change target AI
+        		if(this.entity.getStateMinor(ID.N.TargetAI) == 0) {
+        			this.switchTarAI = false;
+        		}
+        		else {
+        			this.switchTarAI = true;
+        		}
+        		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_TarAI, getInverseInt(this.switchTarAI)));
         	}
         	break;
         case 4:	//AI operation 1 
         	if(this.showPageAI == 1) {	//page 1: use ammo light button
         		this.switchLight = this.entity.getStateFlag(ID.F.UseAmmoLight);
         		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_AmmoLight, getInverseInt(this.switchLight)));
+        	}
+        	else if(this.showPageAI == 3) {	//page 3: change onsight AI
+        		this.switchOnSight = this.entity.getStateFlag(ID.F.OnSightChase);
+        		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_OnSightAI, getInverseInt(this.switchOnSight)));
         	}
         	break;
         case 5:	//AI operation 2 
@@ -700,14 +725,9 @@ public class GuiShipInventory extends GuiContainer {
         	}
         	break;
         case 8:	//AI operation 5
-        	if(this.showPageAI == 1) {	//page 1: change target AI
-        		if(this.entity.getStateMinor(ID.N.TargetAI) == 0) {
-        			this.switchTarAI = true;
-        		}
-        		else {
-        			this.switchTarAI = false;
-        		}
-        		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_TarAI, getInverseInt(!this.switchTarAI)));
+        	if(this.showPageAI == 1) {	//page 1: apply aura effect
+        		this.switchAura = this.entity.getStateFlag(ID.F.UseRingEffect);
+        		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_AuraEffect, getInverseInt(this.switchAura)));
         	}
         	break;
         case 9:		//AI page 1

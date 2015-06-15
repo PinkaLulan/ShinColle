@@ -33,7 +33,7 @@ public class ContainerShipInventory extends Container {
 	private int GuiKills, GuiExpCurrent, GuiNumAmmo, GuiNumAmmoHeavy, GuiNumGrudge, 
 	            GuiNumAirLight, GuiNumAirHeavy, GuiIsMarried,
 	            ButtonMelee, ButtonAmmoLight, ButtonAmmoHeavy, ButtonAirLight, ButtoAirHeavy,
-	            FollowMin, FollowMax, FleeHP, TarAI, AuraEffect;
+	            FollowMin, FollowMax, FleeHP, TarAI, AuraEffect, OnSightAI;
 	private float GuiCri, GuiDhit, GuiThit, GuiMiss;
 	
 	public ContainerShipInventory(InventoryPlayer invPlayer, BasicEntityShip entity1) {
@@ -155,11 +155,9 @@ public class ContainerShipInventory extends Container {
 	@Override
 	public void addCraftingToCrafters (ICrafting crafting) {
 		super.addCraftingToCrafters(crafting);
-		crafting.sendProgressBarUpdate(this, 0, this.entity.getStateMinor(ID.N.Kills));
 		crafting.sendProgressBarUpdate(this, 1, this.entity.getStateMinor(ID.N.ExpCurrent));
 		crafting.sendProgressBarUpdate(this, 2, this.entity.getStateMinor(ID.N.NumAmmoLight));
 		crafting.sendProgressBarUpdate(this, 3, this.entity.getStateMinor(ID.N.NumAmmoHeavy));
-		crafting.sendProgressBarUpdate(this, 4, this.entity.getStateMinor(ID.N.NumGrudge));
 		crafting.sendProgressBarUpdate(this, 5, this.entity.getStateMinor(ID.N.NumAirLight));
 		crafting.sendProgressBarUpdate(this, 6, this.entity.getStateMinor(ID.N.NumAirHeavy));
 		crafting.sendProgressBarUpdate(this, 7, this.entity.getStateFlagI(ID.F.UseMelee));
@@ -173,6 +171,7 @@ public class ContainerShipInventory extends Container {
 		crafting.sendProgressBarUpdate(this, 15, this.entity.getStateMinor(ID.N.FleeHP));
 		crafting.sendProgressBarUpdate(this, 16, this.entity.getStateMinor(ID.N.TargetAI));
 		crafting.sendProgressBarUpdate(this, 17, this.entity.getStateFlagI(ID.F.UseRingEffect));
+		crafting.sendProgressBarUpdate(this, 18, this.entity.getStateFlagI(ID.F.OnSightChase));
 	}
 	
 	//偵測數值是否改變, 有改變時發送更新(此為server端偵測)
@@ -182,14 +181,16 @@ public class ContainerShipInventory extends Container {
 		int getValue;
 		float getValueF;
 		
+		if(this.GuiKills != this.entity.getStateMinor(ID.N.Kills) ||
+		   this.GuiNumGrudge != this.entity.getStateMinor(ID.N.NumGrudge)) {
+			this.entity.sendGUISyncPacket();
+			this.GuiKills = this.entity.getStateMinor(ID.N.Kills);
+			this.GuiNumGrudge = this.entity.getStateMinor(ID.N.NumGrudge);
+		}
+		
         for(Object crafter : this.crafters) {
             ICrafting icrafting = (ICrafting) crafter;
-            
-            getValue = this.entity.getStateMinor(ID.N.Kills);
-            if(this.GuiKills != getValue) {
-                icrafting.sendProgressBarUpdate(this, 0, getValue);
-                this.GuiKills = getValue;
-            }   
+  
             getValue = this.entity.getStateMinor(ID.N.ExpCurrent);
             if(this.GuiExpCurrent != getValue) {
                 icrafting.sendProgressBarUpdate(this, 1, getValue);
@@ -204,11 +205,6 @@ public class ContainerShipInventory extends Container {
             if(this.GuiNumAmmoHeavy != getValue) {
                 icrafting.sendProgressBarUpdate(this, 3, getValue);
                 this.GuiNumAmmoHeavy = getValue;
-            }
-            getValue = this.entity.getStateMinor(ID.N.NumGrudge);
-            if(this.GuiNumGrudge != getValue) {
-                icrafting.sendProgressBarUpdate(this, 4, getValue);
-                this.GuiNumGrudge = getValue;
             }
             getValue = this.entity.getStateMinor(ID.N.NumAirLight);
             if(this.GuiNumAirLight != getValue) {
@@ -275,6 +271,11 @@ public class ContainerShipInventory extends Container {
                 icrafting.sendProgressBarUpdate(this, 17, getValue);
                 this.AuraEffect = getValue;
             }
+            getValue = this.entity.getStateFlagI(ID.F.OnSightChase);
+            if(this.OnSightAI != getValue) {
+                icrafting.sendProgressBarUpdate(this, 18, getValue);
+                this.OnSightAI = getValue;
+            }
         }
     }
 	
@@ -282,9 +283,6 @@ public class ContainerShipInventory extends Container {
 	@SideOnly(Side.CLIENT)
     public void updateProgressBar(int valueType, int updatedValue) {     
 		switch(valueType) {
-		case 0:
-			this.entity.setStateMinor(ID.N.Kills, updatedValue);
-			break;
 		case 1:
 			this.entity.setStateMinor(ID.N.ExpCurrent, updatedValue);
 			break;
@@ -293,9 +291,6 @@ public class ContainerShipInventory extends Container {
 			break;
 		case 3:
 			this.entity.setStateMinor(ID.N.NumAmmoHeavy, updatedValue);
-			break;
-		case 4:
-			this.entity.setStateMinor(ID.N.NumGrudge, updatedValue);
 			break;
 		case 5:
 			this.entity.setStateMinor(ID.N.NumAirLight, updatedValue);
@@ -335,6 +330,9 @@ public class ContainerShipInventory extends Container {
 			break;
 		case 17:
 			this.entity.setEntityFlagI(ID.F.UseRingEffect, updatedValue);
+			break;
+		case 18:
+			this.entity.setEntityFlagI(ID.F.OnSightChase, updatedValue);
 			break;
 		}
     }

@@ -213,6 +213,21 @@ public class EntityBattleshipTa extends BasicEntityShip implements ISummonAttack
 		this.numRensouhou = num;
 	}
 	
+	@Override
+	public double getMountedYOffset() {
+		if(this.isSitting()) {
+			if(getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {
+  				return 0F;
+  			}
+  			else {
+  				return (double)this.height * 0.0F;
+  			}
+  		}
+  		else {
+  			return (double)this.height * 0.68F;
+  		}
+	}
+	
 	
 }
 

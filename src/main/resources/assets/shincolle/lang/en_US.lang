@@ -35,6 +35,7 @@ item.shincolle:ModernKit.name=Modernization Toolkit
 item.shincolle:OwnerPaper.name=Seikan Ownership Paper
 item.shincolle:PointerItem.name=Wo-Class Command Scepter
 item.shincolle:RepairGoddess.name=The Grudge of Abyssal Goddess
+item.shincolle:ToyAirplane.name=Model 21 Zero Fighter (1/48)
 
 # Equip
 item.shincolle:EquipCannon.name=5-Inch Single Cannon
@@ -96,6 +97,7 @@ item.shincolle:shipegg17.name=Battleship Re-Class
 item.shincolle:shipegg23.name=Airfield Princess
 item.shincolle:shipegg28.name=Battleship Princess
 item.shincolle:shipegg30.name=Harbour Princess
+item.shincolle:shipegg33.name=Northern Princess
 item.shincolle:shipegg38.name=Destroyer Shimakaze
 item.shincolle:shipegg238.name=Destroyer Shimakaze Kai
 item.shincolle:shipegg39.name=Battleship Nagato
@@ -121,12 +123,14 @@ entity.shincolle.EntityDestroyerNi.name=Destroyer Ni-Class
 entity.shincolle.EntityDestroyerRo.name=Destroyer Ro-Class
 entity.shincolle.EntityDestroyerShimakaze.name=Destroyer Shimakaze
 entity.shincolle.EntityDestroyerShimakazeBoss.name=Destroyer Shimakaze Kai
+entity.shincolle.EntityFloatingFort.name=Floating Fortress
 entity.shincolle.EntityHarbourHime.name=Harbour Princess
 entity.shincolle.EntityHeavyCruiserRi.name=Heavy Cruiser Ri-Class
 entity.shincolle.EntityMountAfH.name=Airbase
 entity.shincolle.EntityMountBaH.name=Sanrensouhou
 entity.shincolle.EntityMountHbH.name=Harbourbase
 entity.shincolle.EntityMountSeat2.name=Seat2
+entity.shincolle.EntityNorthernHime.name=Northern Princess
 entity.shincolle.EntityRensouhou.name=Rensouhou
 entity.shincolle.EntityRensouhouBoss.name=Rensouhou Kai
 entity.shincolle.EntityRensouhouS.name=Shinkei Rensouhou
@@ -172,6 +176,7 @@ gui.shincolle:followmax=Follow (Max)
 gui.shincolle:fleehp=Flee HP%%
 gui.shincolle:auraeffect=Aura Effect
 gui.shincolle:targetAI=Passive?
+gui.shincolle:onsightAI=Onsight?
 
 # GUI: Shipyard
 gui.shincolle:nomaterial=Not Enough Materials
@@ -193,7 +198,8 @@ gui.shincolle:eggText=Require Level
 gui.shincolle:pointer0=Single Mode
 gui.shincolle:pointer1=Group Mode
 gui.shincolle:pointer2=Formation Mode
-gui.shincolle:pointer3=(Sneaking Right Click to Change Mode)
+gui.shincolle:pointer3=(Sneaking Left Click to Change Mode)
+gui.shincolle:pointer4=Team
 
 # Chat message
 chat.shincolle:bossspawn1=A Fleet Walks on the Water!

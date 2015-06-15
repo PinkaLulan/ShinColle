@@ -161,6 +161,15 @@ public class EntityHeavyCruiserRi extends BasicEntityShipSmall {
 		return 0;
 	}
 	
+    @Override
+	public double getMountedYOffset() {
+    	if(this.isSitting()) {
+  			return (double)this.height * 0.2F;
+  		}
+  		else {
+  			return (double)this.height * 0.6F;
+  		}
+	}
 
 }
 

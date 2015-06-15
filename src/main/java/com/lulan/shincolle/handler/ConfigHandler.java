@@ -25,10 +25,12 @@ public class ConfigHandler {
 	public static boolean useWakamoto = true;
 	public static boolean alwaysShowTeam = false;
 	public static int bossCooldown = 4800;
+	public static float dropGrudge = 1.0F;
 	
 	//SHIP SETTING
 	//scale: HP, ATK, DEF, SPD, MOV, HIT
-	public static Property propShip, propBossSMKZ, propBossNGT, propMobU511;
+	public static Property propShip, propShipLimit, propBossSMKZ, propBossNGT, propMobU511;
+	public static double[] limitShip = new double[] {-1D, -1D, 75D, 4D, 0.8D, -1D};
 	public static double[] scaleShip = new double[] {1D, 1D, 1D, 1D, 1D, 1D};
 	public static double[] scaleBossSMKZ = new double[] {900D, 50D, 80D, 1D, 0.6D, 16D};
 	public static double[] scaleBossNGT = new double[] {2400D, 200D, 92D, 2D, 0.4D, 24D};
@@ -47,12 +49,25 @@ public class ConfigHandler {
 	
 	//讀取設定檔參數
 	private static void loadConfiguration() {
+		
+		//是否顯示custom name tag
+		alwaysShowTeam = config.getBoolean("Always_Show_Team", "general", false, "Always show team circles");
+		
+		//boss生成cd設定 (ticks)
+		bossCooldown = config.getInt("Boss_Cooldown", "general", 4800, 20, 1728000, "boss spawn cooldown");
+				
 		//是否開啟debug mode (spam debug/info message)
 		debugMode = config.getBoolean("Debug_Mode", "general", false, "Enable debug message (SPAM WARNING)");
+		
+		//grudge掉落率設定
+		dropGrudge = config.getFloat("DropRate_Grudge", "general", 1F, 0F, 64F, "Grudge drop rate (ex: 0.5 = 50% drop 1 grudge, 5.5 = drop 5 grudge + 50% drop 1 grudge)");
 		
 		//是否開啟簡單模式 (spam debug/info message)
 		easyMode = config.getBoolean("Easy_Mode", "general", false, "Easy mode: decrease Large Construction requirement, ammo / grudge consumption of seikan activity");
 		
+		//是否開啟簡單模式 (spam debug/info message)
+		friendlyFire = config.getBoolean("Friendly_Fire", "general", true, "false: disable damage done by player (except owner)");
+				
 		//是否把large shipyard設為static entity (只畫一次, 但是此功能跟NEI相衝)
 		staticMode = config.getBoolean("Static_Mode", "general", false, "Render LargeShipyard as static or normal entity (for NotEnoughItem: 1283: Stack overflow bug)");
 		
@@ -60,16 +75,7 @@ public class ConfigHandler {
 		showTag = config.getBoolean("Show_Name_Tag", "general", true, "Show custom name tag?");
 		
 		//是否開啟簡單模式 (spam debug/info message)
-		friendlyFire = config.getBoolean("Friendly_Fire", "general", true, "false: disable damage done by player (except owner)");
-		
-		//是否開啟簡單模式 (spam debug/info message)
 		useWakamoto = config.getBoolean("Sound_Wakamoto", "general", true, "enable Wakamoto sound for particular ship");
-			
-		//boss生成cd設定 (ticks)
-		bossCooldown = config.getInt("Boss_Cooldown", "general", 4800, 20, 1728000, "boss spawn cooldown");
-		
-		//是否顯示custom name tag
-		alwaysShowTeam = config.getBoolean("Always_Show_Team", "general", false, "Always show team circles");
 		
 		//讀取 ship setting設定
 		timeKeeping = config.getBoolean("Timekeeping", "ship setting", true, "Play timekeeping sound every 1000 ticks (1 minecraft hour)");
@@ -78,6 +84,7 @@ public class ConfigHandler {
 		fireVolume = config.getFloat("Attack_Volume", "ship setting", 0.7F, 0F, 10F, "Attack sound volume");
 		
 		propShip = config.get("ship setting", "ship_scale", scaleShip, "Ship attributes SCALE: HP, firepower, armor, attack speed, move speed, range");
+		propShipLimit = config.get("ship setting", "ship_limit", limitShip, "Ship attributes LIMIT (-1 = no limit): HP, firepower, armor(%), attack speed(per second), move speed, range(blocks)");
 		propBossSMKZ = config.get("ship setting", "ShimakazeBoss_scale", scaleBossSMKZ, "Boss:Shimakaze Attrs: HP, firepower, armor, attack speed, move speed, range");
 		propBossNGT = config.get("ship setting", "NagatoBoss_scale", scaleBossNGT, "Boss:Nagato Attrs: HP, firepower, armor, attack speed, move speed, range");
 		propMobU511 = config.get("ship setting", "MobU511_scale", scaleMobU511, "Mob:U511/Ro500 Attrs: HP, firepower, armor, attack speed, move speed, range, spawnPerSquid");
@@ -93,6 +100,7 @@ public class ConfigHandler {
 		}
 		
 		//設定新值
+		limitShip = propShipLimit.getDoubleList();
 		scaleShip = propShip.getDoubleList();
 		scaleBossSMKZ = propBossSMKZ.getDoubleList();
 		scaleBossNGT = propBossNGT.getDoubleList();
