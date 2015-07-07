@@ -1,12 +1,12 @@
 package com.lulan.shincolle.init;
 
-import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
+import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ModRecipes {
 	//°t¤è½d¨Ò
@@ -40,6 +40,7 @@ public class ModRecipes {
 		ItemStack grudeHeavyBlock = new ItemStack(ModBlocks.BlockGrudgeHeavy);
 		ItemStack gunpowderStack = new ItemStack(Items.gunpowder);
 		ItemStack instantMat8 = new ItemStack(ModItems.InstantConMat, 8);
+		ItemStack ironBlock = new ItemStack(Blocks.iron_block);
 		ItemStack kaitaiHammerNew = new ItemStack(ModItems.KaitaiHammer);
 		ItemStack kaitaiHammerAll = new ItemStack(ModItems.KaitaiHammer, 1, OreDictionary.WILDCARD_VALUE);
 		ItemStack modernKit = new ItemStack(ModItems.ModernKit);
@@ -64,6 +65,7 @@ public class ModRecipes {
 		GameRegistry.addRecipe(new ShapelessOreRecipe(ammo9, ammoContainer));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(ammoHeavy9, ammoHeavyContainer));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(abyssiumStack9, abyssiumBlock));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(abyssiumBlock, ironBlock, grudeBlock));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(grudeStack9, grudeBlock));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(grudeBlock9, grudeHeavyBlock));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(polymetalStack4, polymetalGravel));
@@ -100,7 +102,7 @@ public class ModRecipes {
 		GameRegistry.addRecipe(new ShapedOreRecipe(abyssiumBlock,"aaa","aaa","aaa",'a',abyssiumStack));
 		GameRegistry.addRecipe(new ShapedOreRecipe(grudeBlock,"aaa","aaa","aaa",'a',grudeStack));
 		GameRegistry.addRecipe(new ShapedOreRecipe(grudeHeavyBlock,"aaa","aaa","aaa",'a',grudeBlock));
-		GameRegistry.addRecipe(new ShapedOreRecipe(polymetalBlock,"aaa","aaa","aaa",'a',polymetalStack));
+		GameRegistry.addRecipe(new ShapedOreRecipe(polymetalBlock,"aaa","aaa","aaa",'a',"dustManganese"));
 		//small shipyard
 		GameRegistry.addRecipe(new ShapedOreRecipe(smallshipyardStack,"glg","lol","ooo",'g',grudeStack,'l',Items.lava_bucket,'o',Blocks.obsidian));
 		//marriage ring
@@ -108,9 +110,9 @@ public class ModRecipes {
 		//kaitai hammer
 		GameRegistry.addRecipe(new ShapedOreRecipe(kaitaiHammerNew,"aaa","aaa"," s ",'s',Items.stick,'a',abyssiumStack));
 		//pointer staff
-		GameRegistry.addRecipe(new ShapedOreRecipe(pointer,"  g"," p ","p  ",'g',grudeBlock,'p',polymetalStack));
+		GameRegistry.addRecipe(new ShapedOreRecipe(pointer,"  g"," p ","p  ",'g',grudeBlock,'p',"dustManganese"));
 		//toy plane
-		GameRegistry.addRecipe(new ShapedOreRecipe(toyplane," a ","aaa"," a ",'a',polymetalStack));
+		GameRegistry.addRecipe(new ShapedOreRecipe(toyplane," a ","aaa"," a ",'a',"dustManganese"));
 		
 	}
 

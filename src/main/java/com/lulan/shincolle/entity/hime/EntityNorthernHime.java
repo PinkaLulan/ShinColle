@@ -48,11 +48,14 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
 		goRideEntity = null;
 		goRiding = false;
 		launchHeight = this.height;
+		
+		//set attack type
+		this.StateFlag[ID.F.HaveRingEffect] = true;
 	}
 	
 	@Override
 	public float getEyeHeight() {
-		return this.height * 1.3F;
+		return 1.0F;
 	}
 	
 	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc

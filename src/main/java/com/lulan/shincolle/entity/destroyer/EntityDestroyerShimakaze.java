@@ -42,7 +42,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
 	
 	public EntityDestroyerShimakaze(World world) {
 		super(world);
-		this.setSize(0.8F, 1.8F);	//碰撞大小 跟模型大小無關
+		this.setSize(0.6F, 1.8F);	//碰撞大小 跟模型大小無關
 //		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityDestroyerShimakaze.name"));
 		this.ShipType = ID.ShipType.DESTROYER;
 		this.ShipID = ID.S_DestroyerShimakaze;
@@ -51,12 +51,17 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
 		
 		this.numRensouhou = 6;
 		this.initTypeModify();
+		
+		//set attack type
+		this.StateFlag[ID.F.HaveRingEffect] = true;
+		this.StateFlag[ID.F.AtkType_AirLight] = false;
+		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
 	}
 	
 	//for morph
 	@Override
 	public float getEyeHeight() {
-		return this.height;
+		return 1.7375F;
 	}
 	
 	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc

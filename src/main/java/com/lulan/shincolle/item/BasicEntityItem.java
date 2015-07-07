@@ -159,12 +159,17 @@ public class BasicEntityItem extends Entity {
         if(!this.worldObj.isRemote) {
             ItemStack itemstack = this.getEntityItem();
             int i = itemstack.stackSize;
-            
+//            LogHelper.info("DEBUg : drop entity: i "+i);
             this.worldObj.playSoundAtEntity(player, "random.pop", 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
             
             if(player.inventory.addItemStackToInventory(itemstack)) {
-            	
+//            	i = itemstack.stackSize;
+//            	LogHelper.info("DEBUg : get drop entity true: i "+i);
             }
+//            else {
+//            	i = itemstack.stackSize;
+//            	LogHelper.info("DEBUg : get drop entity false: i "+i);
+//            }
             
             if(itemstack.stackSize <= 0) {
                 this.setDead();

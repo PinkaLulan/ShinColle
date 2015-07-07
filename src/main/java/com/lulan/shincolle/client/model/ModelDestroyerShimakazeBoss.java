@@ -2,27 +2,23 @@ package com.lulan.shincolle.client.model;
 
 import java.util.Random;
 
-import org.lwjgl.opengl.GL11;
-
-import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.entity.IShipEmotion;
-import com.lulan.shincolle.entity.destroyer.EntityDestroyerShimakaze;
-import com.lulan.shincolle.entity.hostile.EntityDestroyerShimakazeBoss;
-import com.lulan.shincolle.reference.ID;
-
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MathHelper;
+
+import org.lwjgl.opengl.GL11;
+
+import com.lulan.shincolle.entity.hostile.EntityDestroyerShimakazeBoss;
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.EmotionHelper;
 
 /**
  * ModelDestroyerShimakaze - PinkaLulan 2015/3/27
  * Created using Tabula 4.1.1
  */
-public class ModelDestroyerShimakazeBoss extends ModelBase {
+public class ModelDestroyerShimakazeBoss extends ModelBase implements IModelEmotion {
     public ModelRenderer BodyMain;
     public ModelRenderer NeckCloth;
     public ModelRenderer BoobR;
@@ -320,7 +316,7 @@ public class ModelDestroyerShimakazeBoss extends ModelBase {
 		  
 		EntityDestroyerShimakazeBoss ent = (EntityDestroyerShimakazeBoss) entity;
 		
-		rollEmotion(ent);
+		EmotionHelper.rollEmotion(this, ent);
 		  
 		motionHumanPos(f, f1, f2, f3, f4, ent);
 		
@@ -546,88 +542,9 @@ public class ModelDestroyerShimakazeBoss extends ModelBase {
 	    
   	}
   	
-  	//隨機抽取顯示的表情 
-    private void rollEmotion(EntityDestroyerShimakazeBoss ent) { 
-    	switch(ent.getStateEmotion(ID.S.Emotion)) {
-    	case ID.Emotion.BLINK:	//blink
-    		EmotionBlink(ent);
-    		break;
-    	case ID.Emotion.T_T:	//cry
-    		if(ent.getStartEmotion() <= 0) { setFace(2); }
-    		break;
-    	case ID.Emotion.O_O:
-    		EmotionStaring(ent);
-			break;
-    	case ID.Emotion.HUNGRY:
-    		if(ent.getStartEmotion() <= 0) { setFace(4); }
-			break;
-    	case ID.Emotion.BORED:
-    	default:						//normal face
-    		//reset face to 0 or blink if emotion time > 0
-    		if(ent.getStartEmotion() <= 0) {
-    			setFace(0);
-    		}
-    		else {
-    			EmotionBlink(ent);
-    		}
-    		//roll emotion (3 times) every 6 sec
-    		//1 tick in entity = 3 tick in model class (20 vs 60 fps)
-    		if(ent.ticksExisted % 120 == 0) {
-        		int emotionRand = rand.nextInt(10);
-        		if(emotionRand > 7) {
-        			EmotionBlink(ent);
-        		} 		
-        	}
-    		break;
-    	}	
-    }
-    
-    //眨眼動作, this emotion is CLIENT ONLY, no sync packet required
-    private void EmotionBlink(IShipEmotion ent) {
-  		if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.NORMAL) {	//要在沒表情狀態才做表情		
-  			ent.setStartEmotion(ent.getTickExisted());		//表情開始時間
-  			ent.setStateEmotion(ID.S.Emotion, ID.Emotion.BLINK, false);	//標記表情為blink
-  			setFace(1);
-  		}
-  		
-  		int EmoTime = ent.getTickExisted() - ent.getStartEmotion();
-    	 		
-    	if(EmoTime > 46) {	//reset face
-    		setFace(0);
-			ent.setStateEmotion(ID.S.Emotion, ID.Emotion.NORMAL, false);
-			ent.setStartEmotion(-1);
-    	}
-    	else if(EmoTime > 35) {
-    		setFace(1);
-    	}
-    	else if(EmoTime > 25) {
-    		setFace(0);
-    	}
-    	else if(EmoTime > -1) {
-    		setFace(1);
-    	}
-  	}
-  	
-  	//瞪人表情
-  	private void EmotionStaring(EntityDestroyerShimakazeBoss ent) {	
-    	if(ent.getStartEmotion() == -1) {
-			ent.setStartEmotion(ent.ticksExisted);		//表情開始時間
-		}
-    	
-    	int EmoTime = ent.ticksExisted - ent.getStartEmotion();
-    	
-    	if(EmoTime > 41) {	//reset face
-    		setFace(0);
-			ent.setStateEmotion(ID.S.Emotion, ID.Emotion.NORMAL, false);
-			ent.setStartEmotion(-1);
-    	}
-    	else if(EmoTime > 1) {
-    		setFace(3);
-    	}
-	}
-  	
     //設定顯示的臉型
-  	private void setFace(int emo) {
+  	@Override
+  	public void setFace(int emo) {
   		switch(emo) {
   		case 0:
   			this.Face0.isHidden = false;

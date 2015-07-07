@@ -200,7 +200,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
         				this.clearMountSeat2();
         			}
         			
-    				this.host2.setLocationAndAngles(this.gx, this.gy + 0.5D, this.gz, this.host2.rotationYaw, this.host2.rotationPitch);
+    				this.host2.setLocationAndAngles(this.gx+0.5D, this.gy+0.5D, this.gz+0.5D, this.host2.rotationYaw, this.host2.rotationPitch);
     				this.ShipNavigator.clearPathEntity();
     				this.sendSyncPacket();
                     return;
@@ -221,12 +221,12 @@ public class EntityAIShipGuarding extends EntityAIBase {
                 		if(this.checkTeleport > 120) {
                 			this.checkTeleport = 0;
                 			
-                			//teleport
                 			if(this.distSq > 1024) {	//32 blocks away, drop seat2
                 				this.clearMountSeat2();
                 			}
                 			
-                			this.host2.setLocationAndAngles(this.gx, this.gy + 0.5D, this.gz, this.host2.rotationYaw, this.host2.rotationPitch);
+                			//teleport
+                			this.host2.setLocationAndAngles(this.gx+0.5D, this.gy+0.5D, this.gz+0.5D, this.host2.rotationYaw, this.host2.rotationPitch);
             				this.ShipNavigator.clearPathEntity();
             				this.sendSyncPacket();
                             return;
@@ -247,9 +247,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
 	  				mount.seat2.setRiderNull();
 	  			}
   			}
-  			else {
-  				host2.mountEntity(null);
-  			}
+  			host2.mountEntity(null);
   		}
   		
   		//清空騎乘的人

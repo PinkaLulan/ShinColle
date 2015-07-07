@@ -52,7 +52,7 @@ public class EntityMountAfH extends BasicEntityMountLarge {
     
     @Override
 	public float getEyeHeight() {
-		return this.height * 1.3F;
+    	return 1.7F;
 	}
     
     @Override

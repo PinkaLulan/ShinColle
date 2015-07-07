@@ -2,25 +2,25 @@ package com.lulan.shincolle.client.model;
 
 import java.util.Random;
 
+import net.minecraft.client.model.ModelBase;
+import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.MathHelper;
+
 import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.reference.ID;
-
-import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.MathHelper;
+import com.lulan.shincolle.utility.EmotionHelper;
 
 /**
  * ModelAirfieldHime - PinkaLulan 2015/5/16
  * Created using Tabula 4.1.1
  */
-public class ModelAirfieldHime extends ModelBase {
+public class ModelAirfieldHime extends ModelBase implements IModelEmotion {
     public ModelRenderer BodyMain;
     public ModelRenderer Neck;
     public ModelRenderer BoobR;
@@ -385,7 +385,7 @@ public class ModelAirfieldHime extends ModelBase {
 		
 		showEquip(ent);
 		
-		rollEmotion(ent);
+		EmotionHelper.rollEmotion(this, ent);
 		  
 		motionHumanPos(f, f1, f2, f3, f4, ent);
 		
@@ -450,10 +450,6 @@ public class ModelAirfieldHime extends ModelBase {
 	  	this.Hair01.rotateAngleX = angleX * 0.012F + 0.26F + headX;
 	  	this.Hair02.rotateAngleX = angleX * 0.015F - 0.08F + headX;
 	  	this.Hair03.rotateAngleX = angleX * 0.018F - 0.14F;
-	  	this.HairL01.rotateAngleX = angleX * 0.02F + headX - 0.26F;
-	  	this.HairL02.rotateAngleX = angleX * 0.02F + headX + 0.26F;
-	  	this.HairR01.rotateAngleX = angleX * 0.02F + headX - 0.26F;
-	  	this.HairR02.rotateAngleX = angleX * 0.02F + headX + 0.26F;
 	    //arm 
 	  	this.ArmLeft01.rotateAngleX = angleAdd2 * 0.8F + 0.2F;
 	  	this.ArmLeft01.rotateAngleY = 0F;
@@ -491,7 +487,7 @@ public class ModelAirfieldHime extends ModelBase {
 		    	startEmo2 = 360;
 		    	ent.setStartEmotion2(startEmo2);	//cd = 6sec  	
 		    	
-		    	if(((EntityLivingBase)ent).getRNG().nextInt(3) == 0) {
+		    	if(rand.nextInt(3) == 0) {
 		    		ent.setStateFlag(ID.F.HeadTilt, true);
 		    	}
 		    	else {
@@ -670,6 +666,8 @@ public class ModelAirfieldHime extends ModelBase {
 		    	}//end if sitting
 		    	else {
 		    		GL11.glTranslatef(0F, 2.4F, -0.5F);
+		    		//body
+		    		this.Head.rotateAngleX -= 0.35F;
 				    //arm 
 				  	this.ArmLeft01.rotateAngleX = 0.5F;
 				    this.ArmLeft01.rotateAngleZ = -1.2F;
@@ -680,7 +678,7 @@ public class ModelAirfieldHime extends ModelBase {
 					addk2 = -0.35F;
 					this.LegRight02.rotateAngleX = 0.8727F;
 					//hair
-					this.Hair01.rotateAngleX += 0.09F;
+					this.Hair01.rotateAngleX += 0.45F;
 					this.Hair02.rotateAngleX += 0.43F;
 					this.Hair03.rotateAngleX += 0.49F;
 		    	}
@@ -807,6 +805,13 @@ public class ModelAirfieldHime extends ModelBase {
 	    	setRoad(ent.getAttackTime());
 	    }
 	    
+	    //鬢毛調整
+	    headX = this.Head.rotateAngleX * -0.5F;
+	    this.HairL01.rotateAngleX = angleX * 0.02F + headX - 0.26F;
+	  	this.HairL02.rotateAngleX = angleX * 0.02F + headX + 0.26F;
+	  	this.HairR01.rotateAngleX = angleX * 0.02F + headX - 0.26F;
+	  	this.HairR02.rotateAngleX = angleX * 0.02F + headX + 0.26F;
+	  	
 	    //leg motion
 	    this.LegLeft01.rotateAngleX = addk1;
 	    this.LegRight01.rotateAngleX = addk2;
@@ -887,89 +892,10 @@ public class ModelAirfieldHime extends ModelBase {
 			break;
 		}//end attack time > 0
 	}//end pose
-
-	//隨機抽取顯示的表情 
-    private void rollEmotion(IShipEmotion ent) { 
-    	switch(ent.getStateEmotion(ID.S.Emotion)) {
-    	case ID.Emotion.BLINK:	//blink
-    		EmotionBlink(ent);
-    		break;
-    	case ID.Emotion.T_T:	//cry
-    		if(ent.getStartEmotion() <= 0) { setFace(2); }
-    		break;
-    	case ID.Emotion.O_O:
-    		EmotionStaring(ent);
-			break;
-    	case ID.Emotion.HUNGRY:
-    		if(ent.getStartEmotion() <= 0) { setFace(4); }
-			break;
-    	case ID.Emotion.BORED:
-    	default:						//normal face
-    		//reset face to 0 or blink if emotion time > 0
-    		if(ent.getStartEmotion() <= 0) {
-    			setFace(0);
-    		}
-    		else {
-    			EmotionBlink(ent);
-    		}
-    		//roll emotion (3 times) every 6 sec
-    		//1 tick in entity = 3 tick in model class (20 vs 60 fps)
-    		if(ent.getTickExisted() % 120 == 0) {
-        		int emotionRand = ((EntityLivingBase)ent).getRNG().nextInt(10);   		
-        		if(emotionRand > 7) {
-        			EmotionBlink(ent);
-        		} 		
-        	}
-    		break;
-    	}	
-    }
-    
-    //眨眼動作, this emotion is CLIENT ONLY, no sync packet required
-  	private void EmotionBlink(IShipEmotion ent) {
-  		if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.NORMAL) {	//要在沒表情狀態才做表情		
-  			ent.setStartEmotion(ent.getTickExisted());		//表情開始時間
-  			ent.setStateEmotion(ID.S.Emotion, ID.Emotion.BLINK, false);	//標記表情為blink
-  			setFace(1);
-  		}
-  		
-  		int EmoTime = ent.getTickExisted() - ent.getStartEmotion();
-    	 		
-    	if(EmoTime > 46) {	//reset face
-    		setFace(0);
-			ent.setStateEmotion(ID.S.Emotion, ID.Emotion.NORMAL, false);
-			ent.setStartEmotion(-1);
-    	}
-    	else if(EmoTime > 35) {
-    		setFace(1);
-    	}
-    	else if(EmoTime > 25) {
-    		setFace(0);
-    	}
-    	else if(EmoTime > -1) {
-    		setFace(1);
-    	}		
-  	}
-  	
-  	//瞪人表情
-  	private void EmotionStaring(IShipEmotion ent) {	
-    	if(ent.getStartEmotion() == -1) {
-			ent.setStartEmotion(ent.getTickExisted());		//表情開始時間
-		}
-    	
-    	int EmoTime = ent.getTickExisted() - ent.getStartEmotion();
-    	
-    	if(EmoTime > 41) {	//reset face
-    		setFace(0);
-			ent.setStateEmotion(ID.S.Emotion, ID.Emotion.NORMAL, false);
-			ent.setStartEmotion(-1);
-    	}
-    	else if(EmoTime > 1) {
-    		setFace(3);
-    	}
-	}
   	
     //設定顯示的臉型
-  	private void setFace(int emo) {
+    @Override
+  	public void setFace(int emo) {
   		switch(emo) {
   		case 0:
   			this.Face0.isHidden = false;

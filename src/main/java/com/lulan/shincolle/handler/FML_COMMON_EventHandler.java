@@ -63,7 +63,10 @@ public class FML_COMMON_EventHandler {
 				BiomeGenBase biome = event.player.worldObj.getBiomeGenForCoords(blockX, blockZ);	
 				
 				//cooldown--
-				if(BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.OCEAN) && extProps.hasRing()) {
+				if((BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.WATER) || 
+					BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.BEACH) ||
+					BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.RIVER) ||
+					BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.OCEAN)) && extProps.hasRing()) {
 					extProps.setBossCooldown(extProps.getBossCooldown() - 1);
 				}
 				

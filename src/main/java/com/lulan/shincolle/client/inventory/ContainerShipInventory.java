@@ -76,11 +76,11 @@ public class ContainerShipInventory extends Container {
 	 * slot id: 0~4:equip  5~22:ship inventory 
 	 *          23~49:player inventory  50~58:hot bar
 	 *          
-	 * Click: slot 0~5   (Equip)   -> put in slot 5~58 (ShipInv & Player)
-	 *        slot 6~23  (ShipInv) -> if equip -> slot 0~4 (Equip)
-	 *                             -> if other -> slot 23~58 (Player)
-	 *        slot 24~59 (Player)  -> if equip -> slot 0~4 (Equip)
-	 *        					   -> if other -> slot 5~22 (ShipInv)
+	 * Click: slot 0~5   (Equip)   -> put in slot 6~59 (ShipInv & Player)
+	 *        slot 6~23  (ShipInv) -> if equip -> slot 0~5 (Equip)
+	 *                             -> if other -> slot 24~59 (Player)
+	 *        slot 24~59 (Player)  -> if equip -> slot 0~5 (Equip)
+	 *        					   -> if other -> slot 6~23 (ShipInv)
 	 *        
 	 * Equip slot check in SlotShipInventory.class 
 	 */
@@ -97,14 +97,14 @@ public class ContainerShipInventory extends Container {
             if(itemstack1.getItem() instanceof BasicEquip) isEquip = true;	//判定是否為equip
 
             if(slotid < SLOTS_SHIPINV) {  		//click equip slot
-            	if(!this.mergeItemStack(itemstack1, SLOTS_SHIPINV, 60, false)) { //take out equip
+            	if(!this.mergeItemStack(itemstack1, SLOTS_SHIPINV, 60, true)) { //take out equip
                 	return null;
                 }	
                 slot.onSlotChange(itemstack1, itemstack); //若物品成功搬動過, 則呼叫slot change事件
             }
             else {					//slot is ship or player inventory (5~58)
-            	if(slotid < 24) {	//if ship inventory (5~22)
-            		if(isEquip) {	//把equip塞進slot 0~4, 塞不下則放player inventory (23~58)
+            	if(slotid < SLOTS_PLAYERINV) {	//if ship inventory (0~23)
+            		if(isEquip) {	//把equip塞進slot 0~4, 塞不下則放player inventory (24~58)
             			if(!this.mergeItemStack(itemstack1, 0, SLOTS_SHIPINV, false)) {
                 			if(!this.mergeItemStack(itemstack1, SLOTS_PLAYERINV, 60, true)) {
                 				return null;

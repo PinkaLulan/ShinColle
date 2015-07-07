@@ -770,6 +770,11 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
 
 	@Override
 	public void setModelRotate(int par1, float par2) {}
+
+	@Override
+	public boolean getAttackType(int par1) {
+		return true;
+	}
 	
 
 }

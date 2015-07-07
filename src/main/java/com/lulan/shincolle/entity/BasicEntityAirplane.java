@@ -291,7 +291,7 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 		
 		if(this.ticksExisted % 4 == 0) {
 			//­±¦V­pºâ (for both side)
-			float[] degree = EntityHelper.getLookDegree(posX - prevPosX, posY - prevPosY, posZ - prevPosZ);
+			float[] degree = EntityHelper.getLookDegree(posX - prevPosX, posY - prevPosY, posZ - prevPosZ, true);
 			this.rotationYaw = degree[0];
 			this.rotationPitch = degree[1];
 		}
@@ -597,6 +597,11 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
     
     @Override
 	public void setModelRotate(int par1, float par2) {}
+    
+    @Override
+	public boolean getAttackType(int par1) {
+		return true;
+	}
 
 }
 

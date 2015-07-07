@@ -34,10 +34,12 @@ public class GuiLargeShipyard extends GuiContainer {
 	private TileMultiGrudgeHeavy tile;
 	private int xClick, yClick, selectMat, buildType, invMode, xMouse, yMouse;
 	private String name, time, errorMsg, matBuild0, matBuild1, matBuild2, matBuild3, matStock0, matStock1, matStock2, matStock3;
+	private float tickGUI;
 	
 	public GuiLargeShipyard(InventoryPlayer par1, TileMultiGrudgeHeavy par2) {
 		super(new ContainerLargeShipyard(par1, par2));
 		this.tile = par2;
+		this.tickGUI = 0F;
 		this.xSize = 208;
 		this.ySize = 223;
 	}
@@ -48,6 +50,7 @@ public class GuiLargeShipyard extends GuiContainer {
 		super.drawScreen(mouseX, mouseY, f);
 		xMouse = mouseX;
 		yMouse = mouseY;
+		tickGUI += 0.125F;
 	}
 	
 	//GUI前景: 文字 
@@ -122,10 +125,63 @@ public class GuiLargeShipyard extends GuiContainer {
             scaleBar = tile.getPowerRemainingScaled(64);	//彩色進度條長度64	
             drawTexturedModalRect(guiLeft+9, guiTop+83-scaleBar, 208, 64-scaleBar, 12, scaleBar);
         }
-        
-        //畫出type選擇框 (157,24)
-        if(tile.getBuildType() != 0) {
-        	drawTexturedModalRect(guiLeft+137+tile.getBuildType()*20, guiTop+24, 208, 64, 18, 18);
+
+        //畫出type選擇框
+        switch(tile.getBuildType()) {
+        case ID.Build.SHIP:
+        	drawTexturedModalRect(guiLeft+157, guiTop+24, 208, 64, 18, 18);
+        	break;
+        case ID.Build.SHIP_LOOP:
+        	//draw animate
+        	switch((int)tickGUI % 6) {
+        	default:
+        	case 0:
+        		drawTexturedModalRect(guiLeft+157, guiTop+24, 208, 103, 18, 18);
+        		break;
+        	case 1:
+        		drawTexturedModalRect(guiLeft+157, guiTop+24, 208, 121, 18, 18);
+        		break;
+        	case 2:
+        		drawTexturedModalRect(guiLeft+157, guiTop+24, 208, 139, 18, 18);
+        		break;
+        	case 3:
+        		drawTexturedModalRect(guiLeft+157, guiTop+24, 208, 157, 18, 18);
+        		break;
+        	case 4:
+        		drawTexturedModalRect(guiLeft+157, guiTop+24, 208, 175, 18, 18);
+        		break;
+        	case 5:
+        		drawTexturedModalRect(guiLeft+157, guiTop+24, 208, 193, 18, 18);
+        		break;
+        	}
+        	break;
+        case ID.Build.EQUIP:
+        	drawTexturedModalRect(guiLeft+177, guiTop+24, 208, 64, 18, 18);
+        	break;
+        case ID.Build.EQUIP_LOOP:
+        	//draw animate
+        	switch((int)tickGUI % 6) {
+        	default:
+        	case 0:
+        		drawTexturedModalRect(guiLeft+177, guiTop+24, 208, 103, 18, 18);
+        		break;
+        	case 1:
+        		drawTexturedModalRect(guiLeft+177, guiTop+24, 208, 121, 18, 18);
+        		break;
+        	case 2:
+        		drawTexturedModalRect(guiLeft+177, guiTop+24, 208, 139, 18, 18);
+        		break;
+        	case 3:
+        		drawTexturedModalRect(guiLeft+177, guiTop+24, 208, 157, 18, 18);
+        		break;
+        	case 4:
+        		drawTexturedModalRect(guiLeft+177, guiTop+24, 208, 175, 18, 18);
+        		break;
+        	case 5:
+        		drawTexturedModalRect(guiLeft+177, guiTop+24, 208, 193, 18, 18);
+        		break;
+        	}
+        	break;
         }
         
         //畫出資材數量按鈕 (50,8)
@@ -149,7 +205,6 @@ public class GuiLargeShipyard extends GuiContainer {
 			int strLen = this.fontRendererObj.getStringWidth(strFuel) / 2;
 			list.add(strFuel);
 			this.drawHoveringText(list, 3-strLen, 58, this.fontRendererObj);
-//			this.fontRendererObj.drawStringWithShadow(strFuel, 25-strLen, 47, 16777215);
 		}	
 	}
 	
@@ -171,22 +226,38 @@ public class GuiLargeShipyard extends GuiContainer {
         int buttonClicked = GuiHelper.getButton(ID.G.LARGESHIPYARD, 0, xClick, yClick);
         switch(buttonClicked) {
         case 0:	//build ship
-        	if(buildType == 1) {
-        		buildType = 0;	//原本點ship 又點一次 則歸0
+        	//change button value
+        	switch(buildType) {
+        	default:
+        	case ID.Build.NONE:
+        		buildType = ID.Build.SHIP;
+        		break;
+        	case ID.Build.SHIP:
+        		buildType = ID.Build.SHIP_LOOP;
+        		break;
+        	case ID.Build.SHIP_LOOP:
+        		buildType = ID.Build.NONE;
+        		break;
         	}
-        	else {
-        		buildType = 1;	//原本點其他按鈕, 則設成ship
-        	}
+        	//send packet
         	LogHelper.info("DEBUG : GUI click: build large ship: ship "+buildType);
         	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, ID.B.Shipyard_Type, buildType, 0));
         	break;
         case 1:	//build equip
-        	if(buildType == 2) {
-        		buildType = 0;	//原本點equip 又點一次 則歸0
+        	//change button value
+        	switch(buildType) {
+        	default:
+        	case ID.Build.NONE:
+        		buildType = ID.Build.EQUIP;
+        		break;
+        	case ID.Build.EQUIP:
+        		buildType = ID.Build.EQUIP_LOOP;
+        		break;
+        	case ID.Build.EQUIP_LOOP:
+        		buildType = ID.Build.NONE;
+        		break;
         	}
-        	else {
-        		buildType = 2;	//原本點其他按鈕, 則設成equip
-        	}
+        	//send packet
         	LogHelper.info("DEBUG : GUI click: build large ship: equip "+buildType);
         	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, ID.B.Shipyard_Type, buildType, 0));
         	break;

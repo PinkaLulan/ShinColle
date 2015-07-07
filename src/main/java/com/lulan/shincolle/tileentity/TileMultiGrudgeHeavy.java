@@ -6,6 +6,7 @@ import java.util.List;
 import com.lulan.shincolle.block.BlockGrudgeHeavy;
 import com.lulan.shincolle.block.BlockSmallShipyard;
 import com.lulan.shincolle.crafting.LargeRecipes;
+import com.lulan.shincolle.crafting.SmallRecipes;
 import com.lulan.shincolle.entity.renderentity.BasicRenderEntity;
 import com.lulan.shincolle.entity.renderentity.EntityRenderVortex;
 import com.lulan.shincolle.handler.ConfigHandler;
@@ -13,10 +14,13 @@ import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
+import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.FormatHelper;
 import com.lulan.shincolle.utility.LogHelper;
+import com.lulan.shincolle.utility.TileEntityHelper;
 
+import cpw.mods.fml.common.IFuelHandler;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -37,12 +41,12 @@ import net.minecraft.world.World;
  * 	MaxMaterial / MaxFuelCost = 1000*4 / 1382400
  *  MinMaterial / MinFuelCost = 100*4 / 460800 = BaseCost(460800) CostPerMaterial(256)
  */
-public class TileMultiGrudgeHeavy extends BasicTileMulti {	
+public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileFurnace {	
 	
 	private int powerConsumed = 0;	//已花費的能量
 	private int powerRemained = 0;	//剩餘燃料
 	private int powerGoal = 0;		//需要達成的目標能量
-	private int buildType = 0;		//type 0:none 1:ship 2:equip
+	private int buildType = 0;		//type 0:none 1:ship 2:equip 3:ship loop 4: equip loop
 	private int invMode = 0;		//物品欄模式 0:收物品 1:放出物品
 	private int selectMat = 0;		//物品選擇模式, 用於物品輸出 0:grudge 1:abyss 2:ammo 3:poly
 	private boolean isActive;		//是否正在建造中, 此為紀錄isBuilding是否有變化用
@@ -168,18 +172,17 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti {
 	//建造ship方法
 	public void buildComplete() {
 		//輸入材料數量, 取得build output到slot 5
-		if(this.buildType == 1) {	//build ship
+		switch(this.buildType) {
+		default:
+		case ID.Build.SHIP:			//build ship
+		case ID.Build.SHIP_LOOP:
 			slots[0] = LargeRecipes.getBuildResultShip(matsBuild);
-		}
-		else {						//build equip or no select
+			break;
+		case ID.Build.EQUIP:		//build equip
+		case ID.Build.EQUIP_LOOP:
 			slots[0] = LargeRecipes.getBuildResultEquip(matsBuild);
+			break;
 		}
-				
-		//將建造材料扣掉
-		matsBuild[0] = 0;
-		matsBuild[1] = 0;
-		matsBuild[2] = 0;
-		matsBuild[3] = 0;	
 	}
 	
 	//判定是否建造中
@@ -203,7 +206,7 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti {
 	public void updateEntity() {
 		boolean sendUpdate = false;	//標紀要block update, 有要更新metadata時設為true
 		
-		//update goalPower, check goalPower if material in slots[3] (polymetal slot)
+		//update goalPower
 		if(this.buildType != 0) {
 			this.powerGoal = LargeRecipes.calcGoalPower(matsBuild);
 		}
@@ -216,27 +219,8 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti {
 			this.syncTime++;
 			
 			//fuel補充
-			//1.找出物品欄中最靠左邊的燃料 2.比較是否可以增加該燃料 3.增加燃料
-			int burnTime;
-			for(int i = SLOTS_OUT + 1; i < SLOTS_NUM; i++) {
-				burnTime = TileEntityFurnace.getItemBurnTime(this.slots[i]);
-				
-				if(ConfigHandler.easyMode) {
-					burnTime *= 10;
-				}
-				
-				if(burnTime > 0 && burnTime + this.powerRemained < this.POWERMAX) {
-					this.slots[i].stackSize--;	//fuel -1
-					this.powerRemained += burnTime;
-					
-					//若該物品用完, 用getContainerItem處理是否要清空還是留下桶子 ex: lava bucket -> empty bucket
-					if(this.slots[i].stackSize == 0) {
-						this.slots[i] = this.slots[i].getItem().getContainerItem(this.slots[i]);
-					}
-					
-					sendUpdate = true;	//標紀要update block
-					break;	//加過一個燃料就停止loop, 每tick最多吃掉一顆燃料
-				}
+			if(TileEntityHelper.checkItemFuel(this)) {
+				sendUpdate = true;
 			}
 			
 			//inventory mode 0:收入物品 1:放出物品
@@ -245,6 +229,7 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti {
 				for(int i = SLOTS_OUT + 1; i < SLOTS_NUM; i++) {
 					itemType = LargeRecipes.getMaterialType(slots[i]);
 					
+					//add material into stock
 					if(itemType > 0) {	//is material
 						if(LargeRecipes.addMaterialStock(this, i, itemType)) {
 							slots[i].stackSize--;
@@ -256,13 +241,12 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti {
 							sendUpdate = true;
 							break;		//新增材料成功, 跳到下個tick
 						}
-						//新增材料失敗, 搜尋下一個slot
 					}
 				}
 			}
 			else {				//放出物品
-				int compressNum = 9;
-				int normalNum = 1;
+				int compressNum = 9;	//output block
+				int normalNum = 1;		//output single item
 				
 				//抽出物品的數量
 				if(ConfigHandler.easyMode) {	
@@ -305,9 +289,9 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti {
 					}
 				}
 				
-				//sync render entity every 100 ticks
+				//sync render entity every 40 ticks
 				//set render entity state
-				if(this.syncTime % 100 == 0) {
+				if(this.syncTime % 40 == 0) {
 					this.sendSyncPacket();
 					sendUpdate = true;
 					this.syncTime = 0;
@@ -318,7 +302,25 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti {
 					this.buildComplete();	//建造出成品放到output slot
 					this.powerConsumed = 0;
 					this.powerGoal = 0;
-					this.buildType = 0;	
+
+					//continue build if mode = loop mode
+					switch(buildType) {
+					default:
+					case ID.Build.SHIP:
+					case ID.Build.EQUIP:		//reset build type
+						this.buildType = ID.Build.NONE;
+						//將建造材料清除
+						matsBuild[0] = 0;
+						matsBuild[1] = 0;
+						matsBuild[2] = 0;
+						matsBuild[3] = 0;
+						break;
+					case ID.Build.SHIP_LOOP:	//remain build type
+					case ID.Build.EQUIP_LOOP:	//remain build type
+						this.setRepeatBuild();
+						break;
+					}
+
 					sendUpdate = true;
 				}
 			}			
@@ -348,6 +350,22 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti {
 			this.markDirty();
 		}
 	}
+	
+	//set materials for repeat build
+	public void setRepeatBuild() {
+		//set materials
+		for(int i = 0; i < 4; i++) {
+			//has enough materials
+			if(matsStock[i] >= matsBuild[i]) {
+				matsStock[i] -= matsBuild[i];
+			}
+			//no materials, reset matsBuild
+			else {
+				matsBuild[i] = 0;
+				buildType = ID.Build.NONE;
+			}
+		}
+	}
 
 	//計算fuel存量條
 	public int getPowerRemainingScaled(int i) {
@@ -362,14 +380,21 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti {
 	}
 	
 	//getter
+	@Override
 	public int getPowerConsumed() {
 		return powerConsumed;
 	}
+	@Override
 	public int getPowerRemained() {
 		return powerRemained;
 	}
+	@Override
 	public int getPowerGoal() {
 		return powerGoal;
+	}
+	@Override
+	public int getPowerMax() {
+		return POWERMAX;
 	}
 	public int getBuildType() {
 		return buildType;
@@ -388,15 +413,21 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti {
 	}
 	
 	//setter
+	@Override
 	public void setPowerConsumed(int par1) {
 		this.powerConsumed = par1;
 	}
+	@Override
 	public void setPowerRemained(int par1) {
 		this.powerRemained = par1;
 	}
+	@Override
 	public void setPowerGoal(int par1) {
 		this.powerGoal = par1;
 	}
+	@Override
+	public void setPowerMax(int par1) {}
+	
 	public void setBuildType(int par1) {
 		this.buildType = par1;
 	}
@@ -418,5 +449,18 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti {
 	public void addMatStock(int id, int par1)  {	//add a number to stock
 		this.matsStock[id] += par1;
 	}
+
+	//fuel input slot (1~9)
+	@Override
+	public int getFuelSlotMin() {
+		return SLOTS_OUT+1;
+	}
+
+	//fuel input slot (1~9)
+	@Override
+	public int getFuelSlotMax() {
+		return SLOTS_NUM-1;
+	}
+
 	
 }

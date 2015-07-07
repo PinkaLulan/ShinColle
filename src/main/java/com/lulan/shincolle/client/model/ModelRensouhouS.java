@@ -1,14 +1,14 @@
 package com.lulan.shincolle.client.model;
 
-import org.lwjgl.opengl.GL11;
-
-import com.lulan.shincolle.entity.IShipEmotion;
-
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.MathHelper;
+
+import org.lwjgl.opengl.GL11;
+
+import com.lulan.shincolle.entity.IShipEmotion;
 
 /**
  * ModelRensouhouS - PinkaLulan 2015/3/30

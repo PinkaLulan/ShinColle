@@ -23,7 +23,7 @@ public class EntityAirfieldHime extends BasicEntityShipLarge {
 	
 	public EntityAirfieldHime(World world) {
 		super(world);
-		this.setSize(0.8F, 1.6F);
+		this.setSize(0.6F, 1.8F);
 		this.ShipType = ID.ShipType.HIME;
 		this.ShipID = ID.S_AirfieldHime;
 		this.ModelPos = new float[] {-6F, 15F, 0F, 40F};
@@ -31,11 +31,14 @@ public class EntityAirfieldHime extends BasicEntityShipLarge {
 		this.initTypeModify();
 		
 		launchHeight = this.height * 0.7F;
+		
+		//set attack type
+		this.StateFlag[ID.F.HaveRingEffect] = true;
 	}
 	
 	@Override
 	public float getEyeHeight() {
-		return this.height;
+		return 1.7375F;
 	}
 	
 	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc
@@ -179,7 +182,7 @@ public class EntityAirfieldHime extends BasicEntityShipLarge {
   		return super.attackEntityWithHeavyAmmo(target);
   	}
 	
-  	//BUG: NOT WORKING
+	//Á×§K¸òrider2¸I¼²
   	@Override
 	public boolean canBePushed() {
         return this.ridingEntity == null;

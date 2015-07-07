@@ -66,7 +66,7 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
 	
 	public EntityCarrierWo(World world) {
 		super(world);
-		this.setSize(0.8F, 1.7F);
+		this.setSize(0.6F, 1.8F);
 //		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityCarrierWo.name"));
 		this.ShipType = ID.ShipType.STANDARD_CARRIER;
 		this.ShipID = ID.S_CarrierWO;
@@ -75,12 +75,16 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
 		this.initTypeModify();
 		
 		this.launchHeight = this.height * 1.1D;
+		
+		//set attack type
+		this.StateFlag[ID.F.AtkType_Light] = false;
+		this.StateFlag[ID.F.AtkType_Heavy] = false;
 	}
 	
 	//for morph
 	@Override
 	public float getEyeHeight() {
-		return this.height * 1.06F;
+		return 1.7375F;
 	}
 	
 	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc
@@ -154,14 +158,14 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
     				}
 
     				//依照新位置, 繼續旋轉Y軸
-    				eyePosL = ParticleHelper.rotateParticleByYaw(eyePosL[0], eyePosL[1], eyePosL[2], radYaw, -radPitch, 0.5F);
-    				eyePosR = ParticleHelper.rotateParticleByYaw(eyePosR[0], eyePosR[1], eyePosR[2], radYaw, -radPitch, 0.5F);		
+    				eyePosL = ParticleHelper.rotateParticleByYawPitch(eyePosL[0], eyePosL[1], eyePosL[2], radYaw, radPitch, 0.5F);
+    				eyePosR = ParticleHelper.rotateParticleByYawPitch(eyePosR[0], eyePosR[1], eyePosR[2], radYaw, radPitch, 0.5F);		
     				
     				//旋轉完三軸, 生成特效
-    				ParticleHelper.spawnAttackParticleAt(this.posX+eyePosL[2], this.posY+2.5D+eyePosL[1], this.posZ+eyePosL[0], 
+    				ParticleHelper.spawnAttackParticleAt(this.posX+eyePosL[0], this.posY+2.5D+eyePosL[1], this.posZ+eyePosL[2], 
                     		0D, 0.05D, 0D, (byte)16);
     				
-    				ParticleHelper.spawnAttackParticleAt(this.posX+eyePosR[2], this.posY+2.5D+eyePosR[1], this.posZ+eyePosR[0], 
+    				ParticleHelper.spawnAttackParticleAt(this.posX+eyePosR[0], this.posY+2.5D+eyePosR[1], this.posZ+eyePosR[2], 
                     		0D, 0.05D, 0D, (byte)16);
     			}			
     		}	

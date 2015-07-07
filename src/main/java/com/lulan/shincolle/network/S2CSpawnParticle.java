@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
@@ -18,10 +19,10 @@ import cpw.mods.fml.common.network.simpleimpl.MessageContext;
  */
 public class S2CSpawnParticle implements IMessage {
 
-	private Entity entity;
-	private int entityID, type;
+	private Entity entity, entity2;
+	private int entityID, entityID2, type;
 	private byte particleType;
-	private boolean isShip;
+	private boolean isShip;		//set ship attackTime for model render
 	private float posX, posY, posZ, lookX, lookY, lookZ;
 	
 	
@@ -61,6 +62,18 @@ public class S2CSpawnParticle implements IMessage {
         this.lookY = (float)lookY;
         this.lookZ = (float)lookZ;
     }
+	
+	//type 3: spawn particle with host and target entity
+	public S2CSpawnParticle(Entity host, Entity target, double par1, double par2, double par3, int type, boolean isShip) {
+		this.type = 3;
+		this.isShip = isShip;
+        this.particleType = (byte)type;
+        this.entityID = host.getEntityId();
+        this.entityID2 = target.getEntityId();
+        this.posX = (float)par1;
+        this.posY = (float)par2;
+        this.posZ = (float)par3;
+	}
 	
 	//接收packet方法
 	@Override
@@ -110,6 +123,22 @@ public class S2CSpawnParticle implements IMessage {
 				ParticleHelper.spawnAttackParticleAt(posX, posY, posZ, lookX, lookY, lookZ, particleType);	
 			}
 			break;
+		case 3: //spawn particle with position
+			{
+				this.particleType = buf.readByte();
+				this.isShip = buf.readBoolean();
+				this.entityID = buf.readInt();
+				this.entityID2 = buf.readInt();
+				this.posX = buf.readFloat();
+				this.posY = buf.readFloat();
+				this.posZ = buf.readFloat();
+				
+				entity = EntityHelper.getEntityByID(entityID, 0, true);
+				entity2 = EntityHelper.getEntityByID(entityID2, 0, true);
+				
+				ParticleHelper.spawnAttackParticleAtEntity(entity, entity2, posX, posY, posZ, particleType, isShip);
+			}
+			break;
 		}
 	}
 
@@ -149,6 +178,18 @@ public class S2CSpawnParticle implements IMessage {
 				buf.writeFloat(this.lookX);
 				buf.writeFloat(this.lookY);
 				buf.writeFloat(this.lookZ);
+			}
+			break;
+		case 3:	//spawn particle with host and target
+			{
+				buf.writeByte(3);	//type 3
+				buf.writeByte(this.particleType);
+				buf.writeBoolean(this.isShip);
+				buf.writeInt(this.entityID);
+				buf.writeInt(this.entityID2);
+				buf.writeFloat(this.posX);
+				buf.writeFloat(this.posY);
+				buf.writeFloat(this.posZ);
 			}
 			break;
 		}

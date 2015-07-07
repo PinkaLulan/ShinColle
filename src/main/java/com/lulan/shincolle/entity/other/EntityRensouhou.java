@@ -59,7 +59,7 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack {
 	
     public EntityRensouhou(World world) {
 		super(world);
-		this.setSize(0.6F, 0.8F);
+		this.setSize(0.5F, 0.8F);
 		this.isImmuneToFire = true;
 	}
     
@@ -780,6 +780,11 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack {
 
 	@Override
 	public void setModelRotate(int par1, float par2) {}
+
+	@Override
+	public boolean getAttackType(int par1) {
+		return true;
+	}
 	
 
 }

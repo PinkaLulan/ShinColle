@@ -64,7 +64,7 @@ public class GuiShipInventory extends GuiContainer {
 	//ship type icon array
 	private static final short[][] ICON_SHIPTYPE = {
 		{41,0}, {41,29}, {41,58}, {41,87}, {70,58}, {70,29}, {70,0}, {12,74}, {99,0},
-		{70,87}, {70,87}, {99,29}};
+		{99,58}, {70,87}, {99,29}};
 	//ship name icon array
 	private static final short[][] ICON_SHIPNAME = {
 		{128,0}, {139,0}, {150,0}, {161,0}, {172,0}, {183,0}, {194,0}, {205,0}, {216,0}, {227,0}, {238,0}, 
@@ -145,39 +145,49 @@ public class GuiShipInventory extends GuiContainer {
             	drawTexturedModalRect(guiLeft+174, guiTop+132, 11, 214, 11, 11);
             }
             
-            if(this.switchLight) {
-            	drawTexturedModalRect(guiLeft+174, guiTop+144, 0, 214, 11, 11);
-            }
-            else {
-            	drawTexturedModalRect(guiLeft+174, guiTop+144, 11, 214, 11, 11);
-            }
-            
-            if(this.switchHeavy) {
-            	drawTexturedModalRect(guiLeft+174, guiTop+156, 0, 214, 11, 11);
-            }
-            else {
-            	drawTexturedModalRect(guiLeft+174, guiTop+156, 11, 214, 11, 11);
+            if(entity.getAttackType(ID.F.AtkType_Light)) {
+	            if(this.switchLight) {
+	            	drawTexturedModalRect(guiLeft+174, guiTop+144, 0, 214, 11, 11);
+	            }
+	            else {
+	            	drawTexturedModalRect(guiLeft+174, guiTop+144, 11, 214, 11, 11);
+	            }
             }
             
-            if(this.switchAirLight) {
-            	drawTexturedModalRect(guiLeft+174, guiTop+168, 0, 214, 11, 11);
-            }
-            else {
-            	drawTexturedModalRect(guiLeft+174, guiTop+168, 11, 214, 11, 11);
-            }
-            
-            if(this.switchAirHeavy) {
-            	drawTexturedModalRect(guiLeft+174, guiTop+180, 0, 214, 11, 11);
-            }
-            else {
-            	drawTexturedModalRect(guiLeft+174, guiTop+180, 11, 214, 11, 11);
+            if(entity.getAttackType(ID.F.AtkType_Heavy)) {
+	            if(this.switchHeavy) {
+	            	drawTexturedModalRect(guiLeft+174, guiTop+156, 0, 214, 11, 11);
+	            }
+	            else {
+	            	drawTexturedModalRect(guiLeft+174, guiTop+156, 11, 214, 11, 11);
+	            }
             }
             
-            if(this.switchAura) {
-            	drawTexturedModalRect(guiLeft+174, guiTop+192, 0, 214, 11, 11);
+            if(entity.getAttackType(ID.F.AtkType_AirLight)) {
+	            if(this.switchAirLight) {
+	            	drawTexturedModalRect(guiLeft+174, guiTop+168, 0, 214, 11, 11);
+	            }
+	            else {
+	            	drawTexturedModalRect(guiLeft+174, guiTop+168, 11, 214, 11, 11);
+	            }
             }
-            else {
-            	drawTexturedModalRect(guiLeft+174, guiTop+192, 11, 214, 11, 11);
+            
+            if(entity.getAttackType(ID.F.AtkType_AirHeavy)) {
+	            if(this.switchAirHeavy) {
+	            	drawTexturedModalRect(guiLeft+174, guiTop+180, 0, 214, 11, 11);
+	            }
+	            else {
+	            	drawTexturedModalRect(guiLeft+174, guiTop+180, 11, 214, 11, 11);
+	            }
+            }
+            
+            if(entity.getAttackType(ID.F.HaveRingEffect)) {
+	            if(this.switchAura) {
+	            	drawTexturedModalRect(guiLeft+174, guiTop+192, 0, 214, 11, 11);
+	            }
+	            else {
+	            	drawTexturedModalRect(guiLeft+174, guiTop+192, 11, 214, 11, 11);
+	            }
             }
             
             break;
@@ -538,10 +548,15 @@ public class GuiShipInventory extends GuiContainer {
 				auraEffect = I18n.format("gui.shincolle:auraeffect");
 				
 				this.fontRendererObj.drawString(canMelee, 187, 134, GuiHelper.pickColor(5));
+				if(entity.getAttackType(ID.F.AtkType_Light))
 				this.fontRendererObj.drawString(canLATK, 187, 146, GuiHelper.pickColor(5));
+				if(entity.getAttackType(ID.F.AtkType_Heavy))
 				this.fontRendererObj.drawString(canHATK, 187, 158, GuiHelper.pickColor(5));
+				if(entity.getAttackType(ID.F.AtkType_AirLight))
 				this.fontRendererObj.drawString(canALATK, 187, 170, GuiHelper.pickColor(5));
+				if(entity.getAttackType(ID.F.AtkType_AirHeavy))
 				this.fontRendererObj.drawString(canAHATK, 187, 182, GuiHelper.pickColor(5));
+				if(entity.getAttackType(ID.F.HaveRingEffect))
 				this.fontRendererObj.drawString(auraEffect, 187, 194, GuiHelper.pickColor(5));
 			}
 			break;

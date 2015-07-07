@@ -69,7 +69,7 @@ public class EntityHeavyCruiserRi extends BasicEntityShipSmall {
 	
 	public EntityHeavyCruiserRi(World world) {
 		super(world);
-		this.setSize(0.9F, 1.6F);	//碰撞大小 跟模型大小無關
+		this.setSize(0.6F, 1.8F);	//碰撞大小 跟模型大小無關
 //		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityHeavyCruiserRi.name"));
 		this.ShipType = ID.ShipType.HEAVY_CRUISER;
 		this.ShipID = ID.S_HeavyCruiserRI;
@@ -77,12 +77,16 @@ public class EntityHeavyCruiserRi extends BasicEntityShipSmall {
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();
 		
+		//set attack type
+		this.StateFlag[ID.F.HaveRingEffect] = true;
+		this.StateFlag[ID.F.AtkType_AirLight] = false;
+		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
 	}
 	
 	//for morph
 	@Override
 	public float getEyeHeight() {
-		return this.height;
+		return 1.7375F;
 	}
 	
 	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc
@@ -105,10 +109,10 @@ public class EntityHeavyCruiserRi extends BasicEntityShipSmall {
     		//check every 5 sec
     		if(this.ticksExisted % 100 == 0) {
 	    		//apply potion effect in the night
-	        	if (!this.worldObj.isDaytime()) {	
+	        	if (!this.worldObj.isDaytime() && this.getStateFlag(ID.F.UseRingEffect)) {	
         			this.addPotionEffect(new PotionEffect(Potion.moveSpeed.id, 300, 2));
         			this.addPotionEffect(new PotionEffect(Potion.jump.id, 300, 2));
-        		} 		
+        		}
         	}
     	}
     	

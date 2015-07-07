@@ -28,7 +28,7 @@ public class EntityDestroyerRo extends BasicEntityShipSmall {
 
 	public EntityDestroyerRo(World world) {
 		super(world);
-		this.setSize(0.8F, 1.4F);	//碰撞大小 跟模型大小無關
+		this.setSize(0.7F, 1.6F);	//碰撞大小 跟模型大小無關
 //		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityDestroyerRo.name"));
 		this.ShipType = ID.ShipType.DESTROYER;
 		this.ShipID = ID.S_DestroyerRO;
@@ -36,12 +36,17 @@ public class EntityDestroyerRo extends BasicEntityShipSmall {
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		
 		this.initTypeModify();
+		
+		//set attack type
+		this.StateFlag[ID.F.HaveRingEffect] = true;
+		this.StateFlag[ID.F.AtkType_AirLight] = false;
+		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
 	}
 	
 	//for morph
 	@Override
 	public float getEyeHeight() {
-		return this.height * 1.29F;
+		return 1.5F;
 	}
 	
 	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc

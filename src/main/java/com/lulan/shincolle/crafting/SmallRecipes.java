@@ -5,6 +5,7 @@ import java.util.Random;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.LogHelper;
+import com.lulan.shincolle.utility.TileEntityHelper;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -33,23 +34,26 @@ import net.minecraft.tileentity.TileEntityFurnace;
 public class SmallRecipes {
 	
 	private static Random rand = new Random();
-	private static final byte minAmount = 16;		//material min amount
+	public static final int minAmount = 16;		//material min amount
 	private static final int basePower = 57600;		//base cost power
 	private static final int powerPerMat = 2100;	//cost per item
 	
 	public SmallRecipes() {}
 		
 	//檢查材料是否能夠建造
-	public static boolean canRecipeBuild(byte[] matAmount) {
-		return matAmount[0]>=minAmount && matAmount[1]>=minAmount && matAmount[2]>=minAmount && matAmount[3]>=minAmount;
+	public static boolean canRecipeBuild(int[] matAmount) {
+		return matAmount[0] >= minAmount &&
+			   matAmount[1] >= minAmount &&
+			   matAmount[2] >= minAmount &&
+			   matAmount[3] >= minAmount;
 	}
 	
 	//計算總共需要的燃料
-	public static int calcGoalPower(byte[] matAmount) {
+	public static int calcGoalPower(int[] matAmount) {
 		int extraAmount;
 		
 		if(canRecipeBuild(matAmount)) {
-			extraAmount = (int) matAmount[0] + (int) matAmount[1] + (int) matAmount[2] + (int) matAmount[3] - (int)(minAmount) * 4;
+			extraAmount = matAmount[0] + matAmount[1] + matAmount[2] + matAmount[3] - (minAmount) * 4;
 			return basePower + powerPerMat * extraAmount;
 		}
 		
@@ -70,28 +74,29 @@ public class SmallRecipes {
 	}
 	
 	//判定材料種類: 0:grudge 1:abyss 2:ammo 3:poly 4:fuel -1:other
-	public static byte getMaterialType(ItemStack itemstack) {
+	public static int getMaterialType(ItemStack itemstack) {
 		Item item = itemstack.getItem();
 		int meta = itemstack.getItemDamage();
-		byte itemID = -1;
+		int itemID = -1;
 		
 		if(item == ModItems.Grudge) itemID = 0;
-		if(item == ModItems.AbyssMetal && meta == 0) itemID = 1;
-		if(item == ModItems.Ammo && meta == 0) itemID = 2;
-		if(item == ModItems.AbyssMetal && meta == 1) itemID = 3;
-		if(TileEntityFurnace.isItemFuel(itemstack))  itemID = 4;
+		else if(item == ModItems.AbyssMetal && meta == 0) itemID = 1;
+		else if(item == ModItems.Ammo && meta == 0) itemID = 2;
+		else if(item == ModItems.AbyssMetal && meta == 1) itemID = 3;
+		else if(TileEntityHelper.getItemFuelValue(itemstack) > 0)  itemID = 4;
+		else if(item == ModItems.InstantConMat) itemID = 4;
 		
 		return itemID;
 	}
 	
 	//取得四樣材料個數with null check
 	//itemstack:0:grudge 1:abyss 2:ammo 3:poly 4:fuel 5:output
-	public static byte[] getMaterialAmount(ItemStack[] item) {
-		byte[] itemAmount = new byte[4];
+	public static int[] getMaterialAmount(ItemStack[] item) {
+		int[] itemAmount = new int[4];
 		
 		for(int i=0; i<4; i++) {	//取得item 0~3的資料, 即四樣材料資料
 			if(item[i] != null) {	//加上null判斷以免NPE
-				itemAmount[i] = (byte) item[i].stackSize;
+				itemAmount[i] = item[i].stackSize;
 			}
 			else {
 				itemAmount[i] = 0;
@@ -102,20 +107,20 @@ public class SmallRecipes {
 	}
 	
 	//將材料數量寫進itemstack回傳
-	public static ItemStack getBuildResultShip(byte[] matAmount) {
+	public static ItemStack getBuildResultShip(int[] matAmount) {
 		ItemStack buildResult = new ItemStack(ModItems.ShipSpawnEgg);
 		buildResult.setItemDamage(0);
 		buildResult.stackTagCompound = new NBTTagCompound();
-		buildResult.stackTagCompound.setByte("Grudge", matAmount[0]);
-		buildResult.stackTagCompound.setByte("Abyssium", matAmount[1]);
-		buildResult.stackTagCompound.setByte("Ammo", matAmount[2]);
-		buildResult.stackTagCompound.setByte("Polymetal", matAmount[3]);
+		buildResult.stackTagCompound.setByte("Grudge", (byte)matAmount[0]);
+		buildResult.stackTagCompound.setByte("Abyssium", (byte)matAmount[1]);
+		buildResult.stackTagCompound.setByte("Ammo", (byte)matAmount[2]);
+		buildResult.stackTagCompound.setByte("Polymetal", (byte)matAmount[3]);
 		
 		return buildResult;
 	}
 	
 	//將材料數量寫進itemstack回傳
-	public static ItemStack getBuildResultEquip(byte[] matAmount) {	
+	public static ItemStack getBuildResultEquip(int[] matAmount) {	
 		//result item
 		ItemStack buildResult = null;
 		int totalMats = matAmount[0] + matAmount[1] + matAmount[2] + matAmount[3];

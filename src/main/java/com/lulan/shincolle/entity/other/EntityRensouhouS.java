@@ -30,7 +30,7 @@ public class EntityRensouhouS extends EntityRensouhou {
 
     public EntityRensouhouS(World world) {
 		super(world);
-		this.setSize(0.6F, 1.4F);
+		this.setSize(0.5F, 1.4F);
 	}
     
     public EntityRensouhouS(World world, BasicEntityShip host, EntityLivingBase target) {

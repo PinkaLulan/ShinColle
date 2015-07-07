@@ -23,6 +23,15 @@ public class ID {
 		public static final byte Shipyard_INCDEC = 3;
 	}
 	
+	//shipyard build type
+	public static final class Build {
+		public static final byte NONE = 0;
+		public static final byte SHIP = 1;
+		public static final byte EQUIP = 2;
+		public static final byte SHIP_LOOP = 3;
+		public static final byte EQUIP_LOOP = 4;
+	}
+	
 	//Array ID: Equip Map
 	public static final class E {
 		public static final byte LEVEL = 0;
@@ -90,6 +99,11 @@ public class ID {
 		public static final byte CanDrop = 10;			//server only, no sync
 		public static final byte CanFollow = 11;		//server only, no sync
 		public static final byte OnSightChase = 12;
+		public static final byte AtkType_Light = 13;
+		public static final byte AtkType_Heavy = 14;
+		public static final byte AtkType_AirLight = 15;
+		public static final byte AtkType_AirHeavy = 16;
+		public static final byte HaveRingEffect = 17;
 	}
 	
 	//GUI ID
@@ -160,7 +174,7 @@ public class ID {
 		public static final byte BATTLESHIP	= 6;		//戰艦
 		public static final byte TRANSPORT = 7;			//運輸艦
 		public static final byte SUBMARINE = 8;			//潛水艇
-		public static final byte ONI = 9;				//鬼級
+		public static final byte DEMON = 9;				//鬼級
 		public static final byte HIME = 10;				//姬級
 		public static final byte FORTRESS = 11;			//浮游要塞
 	}
@@ -219,6 +233,7 @@ public class ID {
 	public static final byte E_CANNON_TWIN_20 = 8;
 	public static final byte E_CANNON_TRI_8 = 9;
 	public static final byte E_CANNON_TRI_16 = 10;
+	public static final byte E_CANNON_FG_15 = 11;
 	public static final byte E_TORPEDO_21MK1 = 20;
 	public static final byte E_TORPEDO_21MK2 = 21;
 	public static final byte E_TORPEDO_22MK1 = 22;
@@ -280,7 +295,7 @@ public class ID {
 	public static final byte S_SubmarineYO = 18;
 	public static final byte S_SubmarineSO = 19;
 	
-	public static final byte S_AircraftCarrierHime = 20;
+	public static final byte S_CarrierHime = 20;
 	public static final byte S_AirfieldHime = 21;
 	public static final byte S_ArmoredCarrierHime = 22;
 	public static final byte S_AnchorageHime = 23;
@@ -289,13 +304,13 @@ public class ID {
 	public static final byte S_BattleshipHime = 26;
 	public static final byte S_DestroyerHime = 27;
 	public static final byte S_HarbourHime = 28;
-	public static final byte S_IsolatedOni = 29;
+	public static final byte S_IsolatedDemon = 29;
 	public static final byte S_MidwayHime = 30;
 	public static final byte S_NorthernHime = 31;
 	public static final byte S_SouthernHime = 32;
-	public static final byte S_ACWaterOni = 33;
-	public static final byte S_LightCruiserOni = 34;
-	public static final byte S_BattleshipOni = 35;
+	public static final byte S_CarrierWD = 33;
+	public static final byte S_LightCruiserDemon = 34;
+	public static final byte S_BattleshipWD = 35;
 	
 	public static final byte S_DestroyerShimakaze = 36;
 	public static final byte S_BattleshipNagato = 37;

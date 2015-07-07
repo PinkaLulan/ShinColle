@@ -124,4 +124,14 @@ public class TileMultiPolymetal extends BasicTileMulti {
 		return false;
 	}
 
+	@Override
+	public int getFuelSlotMin() {
+		return SLOTS_OUT+1;
+	}
+
+	@Override
+	public int getFuelSlotMax() {
+		return SLOTS_NUM-1;
+	}
+
 }

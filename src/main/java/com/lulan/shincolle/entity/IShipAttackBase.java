@@ -18,8 +18,10 @@ public interface IShipAttackBase extends IShipNavigator, IShipEmotion {
 
 	/**Get attack attributes */
 	public float getAttackDamage();			//for non-ship entity
-	public float getAttackSpeed();
+	public float getAttackSpeed();			
 	public float getAttackRange();
+	
+	public boolean getAttackType(int par1);	//check available attack type
 	
 	public float getDefValue();
 	

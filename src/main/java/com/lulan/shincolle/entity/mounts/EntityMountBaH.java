@@ -50,12 +50,12 @@ public class EntityMountBaH extends BasicEntityMount {
     
     @Override
 	public float getEyeHeight() {
-		return this.height * 1.3F;
+    	return 1.7F;
 	}
     
     @Override
     public double getMountedYOffset() {
-        return (double)this.height * 1.02D;
+        return 2.754D;
     }
 
 

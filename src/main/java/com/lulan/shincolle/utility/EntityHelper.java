@@ -50,6 +50,7 @@ import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 
@@ -431,8 +432,23 @@ public class EntityHelper {
 	public static void setTileEntityByGUI(TileEntity tile, int button, int value, int value2) {
 		if(tile != null) {
 			if(tile instanceof TileEntitySmallShipyard) {
+				TileEntitySmallShipyard smalltile = (TileEntitySmallShipyard) tile;
 //				LogHelper.info("DEBUG : set tile entity value "+button+" "+value);
-				((TileEntitySmallShipyard)tile).setBuildType(value);
+				smalltile.setBuildType(value);
+				
+				//set build record
+				if(value == ID.Build.EQUIP_LOOP || value == ID.Build.SHIP_LOOP) {
+					int[] getMat = new int[] {0,0,0,0};
+					
+					for(int i = 0; i < 4; i++) {
+						if(smalltile.getStackInSlot(i) != null) {
+							getMat[i] = smalltile.getStackInSlot(i).stackSize;
+						}
+					}
+					
+					smalltile.setBuildRecord(getMat);
+				}
+				
 				return;
 			}
 			if(tile instanceof TileMultiGrudgeHeavy) {
@@ -448,7 +464,7 @@ public class EntityHelper {
 				case ID.B.Shipyard_SelectMat:	//select material
 					((TileMultiGrudgeHeavy)tile).setSelectMat(value);
 					break;
-				case ID.B.Shipyard_INCDEC:			//material inc,dec
+				case ID.B.Shipyard_INCDEC:		//material inc,dec
 					setLargeShipyardBuildMats((TileMultiGrudgeHeavy)tile, button, value, value2);
 					break;
 				}	
@@ -579,14 +595,18 @@ public class EntityHelper {
 	
 	/**由XYZ三個向量值計算 [XZ夾角(Yaw), XY夾角(Pitch)], return單位為度數
 	 */
-	public static float[] getLookDegree(double motX, double motY, double motZ) {
+	public static float[] getLookDegree(double motX, double motY, double motZ, boolean getDegree) {
 		//計算模型要轉的角度 (RAD, not DEG)
         double f1 = MathHelper.sqrt_double(motX*motX + motZ*motZ);
         float[] degree = new float[2];
         
-        degree[1] = (float)(Math.atan2(motY, f1)) * 57.2958F;
-        degree[0] = (float)(Math.atan2(motX, motZ)) * 57.2958F;
-        degree[0] = -degree[0];
+        degree[1] = -(float)(Math.atan2(motY, f1));
+        degree[0] = -(float)(Math.atan2(motX, motZ));
+
+        if(getDegree) {	//get degree value
+        	degree[0] *= Values.N.RAD_DIV;
+        	degree[1] *= Values.N.RAD_DIV;
+        }
         
         return degree;
 	}

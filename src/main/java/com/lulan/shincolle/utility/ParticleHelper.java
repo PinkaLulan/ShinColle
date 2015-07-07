@@ -11,6 +11,7 @@ import net.minecraft.world.World;
 import com.lulan.shincolle.client.particle.EntityFX91Type;
 import com.lulan.shincolle.client.particle.EntityFXChi;
 import com.lulan.shincolle.client.particle.EntityFXLaser;
+import com.lulan.shincolle.client.particle.EntityFXLaserNoTexture;
 import com.lulan.shincolle.client.particle.EntityFXLightning;
 import com.lulan.shincolle.client.particle.EntityFXSpray;
 import com.lulan.shincolle.client.particle.EntityFXTeam;
@@ -64,22 +65,27 @@ public class ParticleHelper {
 	}
 	
 	/**ROTATE PARTICLE FOR ENTITY
-	 * entity專用的特效位置旋轉方法, 因為entity才有yaw跟pitch參數, 可做到較細緻轉換
-	 * 由於模型是以Z軸正向轉X軸負向為正角度, 且Z軸正向為0度, 因此座標參數為(z,y,x)
+	 * entity專用的特效位置旋轉方法, 使用yaw跟pitch為參數
+	 * 模型是以Z軸正向轉X軸負向為正角度, 且Z軸正向為0度
 	 */
-	public static float[] rotateParticleByYaw(float z, float y, float x, float yaw, float pitch, float scale) {
+	public static float[] rotateParticleByYawPitch(float x, float y, float z, float yaw, float pitch, float scale) {
 		float cosYaw = MathHelper.cos(yaw);
 		float sinYaw = MathHelper.sin(yaw);
-		float cosPitch = MathHelper.cos(pitch);
-		float sinPitch = MathHelper.sin(pitch);
-		float[] newPos = new float[] {z, y, x};
+		float cosPitch = MathHelper.cos(-pitch);
+		float sinPitch = MathHelper.sin(-pitch);
+		float[] newPos = new float[] {x, y, z};
 		
-		//計算水平旋轉: X+Z
-		newPos[0] = z * cosYaw + x * sinYaw;
-		newPos[2] = x * cosYaw - z * sinYaw;
-		//計算垂直旋轉		
+		//計算pitch旋轉: z,y
+		newPos[2] = z * cosPitch - y * sinPitch;
+		newPos[1] = y * cosPitch + z * sinPitch;
+		
+		//計算yaw旋轉: x,z
+		newPos[0] = x * cosYaw - newPos[2] * sinYaw;
+		newPos[2] = newPos[2] * cosYaw + x * sinYaw;
+		
+		//計算scale
 		newPos[0] *= scale;
-//		newPos[1] *= scale;
+		newPos[1] *= scale;
 		newPos[2] *= scale;
 		
 		return newPos;
@@ -104,11 +110,13 @@ public class ParticleHelper {
 		return newPos;
 	}
 	
-	/**ROTATE PARTICLE FOR ENTITY (Z AXIS)
-	 * 針對entity的某一軸做旋轉
+	/**ROTATE PARTICLE FOR ENTITY
+	 * 針對entity的某一軸做旋轉, 以目標的位置為參數
+	 * 
+	 * @parm orgX, orgY, vecX, vecY, scale
 	 */
 	public static float[] rotateParticleByLook(float x, float y, float lookX, float lookY, float scale) {		
-		float[] degree = EntityHelper.getLookDegree(lookX, 0, lookY);
+		float[] degree = EntityHelper.getLookDegree(lookX, 0, lookY, false);
 		float cosZdeg = MathHelper.cos(degree[0]);
 		float sinZdeg = MathHelper.sin(degree[0]);
 		float[] newPos = new float[] {0F, 0F};
@@ -170,7 +178,7 @@ public class ParticleHelper {
 	}
 	
 	/**Spawn particle at xyz position
-	 * @parm world, posX, posY, posZ, particleID
+	 * @parm posX, posY, posZ, lookX, lookY, lookZ, particleID
 	 */
 	@SideOnly(Side.CLIENT)
 	public static void spawnAttackParticleAt(double posX, double posY, double posZ, double lookX, double lookY, double lookZ, byte type) {
@@ -302,9 +310,9 @@ public class ParticleHelper {
 			break;
 		case 19: 	//double largesmoke for 14~20 inch cannon
 			//計算煙霧位置
-			degYaw = EntityHelper.getLookDegree(lookX, 0D, lookZ)[0];
-			newPos1 = ParticleHelper.rotateParticleByAxis(0F, (float)lookY, (degYaw % 360) / 57.2957F, 1F);
-			newPos2 = ParticleHelper.rotateParticleByAxis(0F, (float)-lookY, (degYaw % 360) / 57.2957F, 1F);
+			degYaw = EntityHelper.getLookDegree(lookX, 0D, lookZ, false)[0];
+			newPos1 = ParticleHelper.rotateParticleByAxis(0F, (float)lookY, degYaw, 1F);
+			newPos2 = ParticleHelper.rotateParticleByAxis(0F, (float)-lookY, degYaw, 1F);
 			
 			for(int i=0; i<12; i++) {
 				ran1 = rand.nextFloat() - 0.5F;
@@ -410,7 +418,7 @@ public class ParticleHelper {
 	}
 	
 	/**Spawn particle at entity position
-	 * @parm world, posX, posY, posZ, particleID
+	 * @parm host, par1, par2, par3, particleID
 	 */
 	@SideOnly(Side.CLIENT)
 	public static void spawnAttackParticleAtEntity(Entity ent, double par1, double par2, double par3, byte type) {
@@ -437,6 +445,56 @@ public class ParticleHelper {
 		case 3:
 			EntityFXLightning fxLightning = new EntityFXLightning(world, ent, (float)par1, (int)par2);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fxLightning);
+			break;
+		default:
+			break;
+		}
+	}
+	
+	/**Spawn particle at entity position
+	 * @parm host, par1, par2, par3, particleID
+	 */
+	@SideOnly(Side.CLIENT)
+	public static void spawnAttackParticleAtEntity(Entity host, Entity target, double par1, double par2, double par3, byte type, boolean setAtkTime) {
+		World world = Minecraft.getMinecraft().theWorld;
+		
+		//null check
+		if(host == null || target == null) {
+			return;
+		}
+		//set attack time, EntityLivingBase only
+		else {
+			if(setAtkTime) {
+				((EntityLivingBase) host).attackTime = 50;
+			}
+		}
+		
+		//get target position
+		double ran1 = 0D;
+		double ran2 = 0D;
+		double ran3 = 0D;
+		float[] newPos1;
+		float[] newPos2;
+		float degYaw = 0F;
+		
+		//spawn particle
+		switch(type) {
+		case 0:		//雙光束砲
+			//host check
+			EntityLivingBase host2 = null;
+			if(host instanceof EntityLivingBase) {
+				host2 = (EntityLivingBase) host;
+			}
+			else {
+				return;
+			}
+			
+			EntityFXLaserNoTexture laser1 = new EntityFXLaserNoTexture(world, host2, target, 0.78F, par1, 0F, 0.05F, 0);
+			Minecraft.getMinecraft().effectRenderer.addEffect(laser1);
+			
+			EntityFXLaserNoTexture laser2 = new EntityFXLaserNoTexture(world, host2, target, -0.78F, par1, 0F, 0.05F, 0);
+			Minecraft.getMinecraft().effectRenderer.addEffect(laser2);
+
 			break;
 		default:
 			break;

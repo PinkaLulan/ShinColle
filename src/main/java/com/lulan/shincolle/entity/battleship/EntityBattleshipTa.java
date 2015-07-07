@@ -54,18 +54,22 @@ public class EntityBattleshipTa extends BasicEntityShip implements ISummonAttack
 	
 	public EntityBattleshipTa(World world) {
 		super(world);
-		this.setSize(0.8F, 1.6F);
+		this.setSize(0.6F, 1.8F);
 //		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityBattleshipTa.name"));
 		this.ShipType = ID.ShipType.BATTLESHIP;
 		this.ShipID = ID.S_BattleshipTA;
 		this.ModelPos = new float[] {-6F, 10F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();
+		
+		//set attack type
+		this.StateFlag[ID.F.AtkType_AirLight] = false;
+		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
 	}
 	
 	@Override
 	public float getEyeHeight() {
-		return this.height;
+		return 1.7375F;
 	}
 	
 	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc

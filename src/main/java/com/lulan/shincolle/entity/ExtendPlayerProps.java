@@ -57,9 +57,9 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		nbtExt.setInteger("MarriageNum", marriageNum);
 		nbtExt.setInteger("BossCD", bossCooldown);
 		
-		for(int i = 0; i < 9; i++) {
-			nbtExt.setIntArray("TeamList"+i, this.getTeamListID(i));
-		}
+//		for(int i = 0; i < 9; i++) {
+//			nbtExt.setIntArray("TeamList"+i, this.getTeamListID(i));
+//		}
 		
 		nbt.setTag(PLAYER_EXTPROP_NAME, nbtExt);
 	}
@@ -75,9 +75,9 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		marriageNum = nbtExt.getInteger("MarriageNum");
 		bossCooldown = nbtExt.getInteger("BossCD");
 		
-		for(int i = 0; i < 9; i++) {
-			this.setTeamListByID(i, nbtExt.getIntArray("TeamList"+i));
-		}
+//		for(int i = 0; i < 9; i++) {
+//			this.setTeamListByID(i, nbtExt.getIntArray("TeamList"+i));
+//		}
 	}
 	
 	//getter

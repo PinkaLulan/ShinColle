@@ -32,7 +32,7 @@ public class EntitySubmRo500Mob extends BasicEntityShipHostile {
 
 	public EntitySubmRo500Mob(World world) {
 		super(world);
-		this.setSize(0.7F, 1.4F);
+		this.setSize(0.6F, 1.4F);
       
         //basic attr
         this.atk = (float) ConfigHandler.scaleMobU511[ID.ATK];
@@ -70,7 +70,7 @@ public class EntitySubmRo500Mob extends BasicEntityShipHostile {
 	
 	@Override
 	public float getEyeHeight() {
-		return this.height * 1.2F;
+		return 1.28F;
 	}
 	
 	//平常音效新增: garuru

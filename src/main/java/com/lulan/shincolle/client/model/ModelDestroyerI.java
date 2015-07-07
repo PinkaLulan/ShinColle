@@ -1,30 +1,23 @@
 package com.lulan.shincolle.client.model;
 
 
-import java.util.Random;
-
-import org.lwjgl.opengl.GL11;
-
-import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.utility.LogHelper;
-
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MathHelper;
 
-import com.lulan.shincolle.entity.IShipEmotion;
+import org.lwjgl.opengl.GL11;
+
 import com.lulan.shincolle.entity.destroyer.EntityDestroyerI;
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.EmotionHelper;
 
 /**Created in 2015/1/9
  * 注意: model class內所有方法都是fps 60模式
  *      也就是全部方法一秒都會call 60次, 跟entity內部一秒是20次的時間變化速度不同
  */
-public class ModelDestroyerI extends ModelBase {
+public class ModelDestroyerI extends ModelBase implements IModelEmotion {
     //fields
 	public ModelRenderer PBack;
 	public ModelRenderer PNeck;
@@ -390,7 +383,7 @@ public class ModelDestroyerI extends ModelBase {
     private void rollEmotion(EntityDestroyerI ent) {   	
     	switch(ent.getStateEmotion(ID.S.Emotion)) {
     	case ID.Emotion.BLINK:	//blink
-    		EmotionBlink(ent);
+    		EmotionHelper.EmotionBlink(this, ent);
     		break;
     	case ID.Emotion.T_T:	//cry
     	case ID.Emotion.O_O:
@@ -406,48 +399,23 @@ public class ModelDestroyerI extends ModelBase {
     			setFace(0);
     		}
     		else {
-    			EmotionBlink(ent);
+    			EmotionHelper.EmotionBlink(this, ent);
     		}
     		//roll emotion (3 times) every 6 sec
     		//1 tick in entity = 3 tick in model class (20 vs 60 fps)
     		if(ent.ticksExisted % 120 == 0) {  			
         		int emotionRand = ent.getRNG().nextInt(10);   		
         		if(emotionRand > 7) {
-        			EmotionBlink(ent);
+        			EmotionHelper.EmotionBlink(this, ent);
         		} 		
         	}
     		break;
     	}	
     }
-
-	//眨眼動作, this emotion is CLIENT ONLY, no sync packet required
-    private void EmotionBlink(IShipEmotion ent) {
-  		if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.NORMAL) {	//要在沒表情狀態才做表情		
-  			ent.setStartEmotion(ent.getTickExisted());		//表情開始時間
-  			ent.setStateEmotion(ID.S.Emotion, ID.Emotion.BLINK, false);	//標記表情為blink
-  			setFace(1);
-  		}
-  		
-  		int EmoTime = ent.getTickExisted() - ent.getStartEmotion();
-    	 		
-    	if(EmoTime > 46) {	//reset face
-    		setFace(0);
-			ent.setStateEmotion(ID.S.Emotion, ID.Emotion.NORMAL, false);
-			ent.setStartEmotion(-1);
-    	}
-    	else if(EmoTime > 35) {
-    		setFace(1);
-    	}
-    	else if(EmoTime > 25) {
-    		setFace(0);
-    	}
-    	else if(EmoTime > -1) {
-    		setFace(1);
-    	}
-  	}
 	
 	//設定顯示的臉型
-	private void setFace(int emo) {
+    @Override
+  	public void setFace(int emo) {
 		switch(emo) {
 		case 0:
 			PEyeLightL[0].isHidden = false;

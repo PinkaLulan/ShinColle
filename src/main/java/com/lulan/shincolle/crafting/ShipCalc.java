@@ -194,6 +194,7 @@ public class ShipCalc {
     		if(totalMats >= 1600) {		//>1600 hime/re-class
     			shipList.add(new int[] {ID.S_BattleshipRE, 100 + material[2] / 4});
     			shipList.add(new int[] {ID.S_BattleshipHime, material[2] / 5});
+    			shipList.add(new int[] {ID.S_CarrierWD, material[3] / 5});
     		}
     	}
 
@@ -256,6 +257,8 @@ public class ShipCalc {
   			return "shincolle.EntityHarbourHime";
   		case ID.S_NorthernHime:
   			return "shincolle.EntityNorthernHime";
+  		case ID.S_CarrierWD:
+  			return "shincolle.EntityCarrierWD";
   		case ID.S_DestroyerShimakaze:
   			return "shincolle.EntityDestroyerShimakaze";
   		case ID.S_DestroyerShimakaze+200:

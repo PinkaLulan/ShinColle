@@ -33,8 +33,8 @@ public class EntityFXLaser extends EntityFX {
         this.motionX = 0D;
         this.motionZ = 0D;
         this.motionY = 0D;
-        this.particleScale = scale;	//not used
-        this.particleType = type;	//not used for now
+        this.particleScale = scale;
+        this.particleType = type;
         this.noClip = true;
         this.tarX = tarX;
         this.tarY = tarY;
@@ -43,7 +43,6 @@ public class EntityFXLaser extends EntityFX {
         switch(type) {
         case 0:		//re-class laser
         	this.particleMaxAge = 11;
-        	this.particleMaxAge = 6;
         	this.particleRed = 1F;
         	this.particleGreen = 1F;
         	this.particleBlue = 1F;

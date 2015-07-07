@@ -90,7 +90,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	protected byte[] StateEmotion;
 	/**EntityFlag: 0:canFloatUp 1:isMarried 2:noFuel 3:canMelee 4:canAmmoLight 5:canAmmoHeavy 
 	 * 6:canAirLight 7:canAirHeavy 8:headTilt(client only) 9:canRingEffect 10:canDrop 11:canFollow
-	 * 12:onSightChase */
+	 * 12:onSightChase 13:AtkType_Light 14:AtkType_Heavy 15:AtkType_AirLight 16:AtkType_AirHeavy 
+	 * 17:HaveRingEffect */
 	protected boolean[] StateFlag;
 	/**BonusPoint: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT */
 	protected byte[] BonusPoint;
@@ -118,7 +119,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		StateMinor = new int[] {1, 0, 0, 40, 0, 0, 0, 0, 0, 0, 2, 14, 35, 1, -1, -1, -1, 0, -1, -1};
 		EffectEquip = new float[] {0F, 0F, 0F, 0F};
 		StateEmotion = new byte[] {0, 0, 0, 0, 0, 0};
-		StateFlag = new boolean[] {false, false, true, false, true, true, true, true, false, true, true, false, false};
+		StateFlag = new boolean[] {false, false, true, false, true, true, true, true, false, true,
+								   true, false, false, true, true, true, true, false};
 		BonusPoint = new byte[] {0, 0, 0, 0, 0, 0};
 		TypeModify = new float[] {1F, 1F, 1F, 1F, 1F, 1F};
 		ModelPos = new float[] {0F, 0F, 0F, 50F};
@@ -403,6 +405,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	@Override
 	public float getAttackRange() {
 		return this.StateFinal[ID.HIT];
+	}
+	
+	@Override
+	public boolean getAttackType(int par1) {
+		return this.getStateFlag(par1);
 	}
 	
 	@Override
@@ -845,95 +852,103 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			}
 			
 			//use kaitai hammer
-			if(itemstack.getItem() == ModItems.KaitaiHammer && !worldObj.isRemote && 
+			if(itemstack.getItem() == ModItems.KaitaiHammer && player.isSneaking() &&
 			   ((this.getOwner() != null && player.getUniqueID().equals(this.getOwner().getUniqueID())) ||
 				 EntityHelper.checkOP(player))) {
-				//創造模式不消耗物品
-                if(!player.capabilities.isCreativeMode) {  //damage +1 in non-creative mode
- 	                itemstack.setItemDamage(itemstack.getItemDamage() + 1);
-                    
-                    //set item amount
-                    ItemStack item0, item1, item2, item3;
-                                
-                    //large ship -> more materials
-                    if(this.getKaitaiType() == 1) {
-                    	if(ConfigHandler.easyMode) {	//easy mode
-                    		item0 = new ItemStack(ModBlocks.BlockGrudge, 1);
-                        	item1 = new ItemStack(ModBlocks.BlockAbyssium, 1);
-                        	item2 = new ItemStack(ModItems.Ammo, 1, 1);
-                        	item3 = new ItemStack(ModBlocks.BlockPolymetal, 1);
-                    	}
-                    	else {						
-                    		item0 = new ItemStack(ModBlocks.BlockGrudge, 8 + rand.nextInt(3));
-                        	item1 = new ItemStack(ModBlocks.BlockAbyssium, 8 + rand.nextInt(3));
-                        	item2 = new ItemStack(ModItems.Ammo, 8 + rand.nextInt(3), 1);
-                        	item3 = new ItemStack(ModBlocks.BlockPolymetal, 8 + rand.nextInt(3));
-                    	}
-                        
-                    }
-                    //small ship
-                    else {
-                        item0 = new ItemStack(ModItems.Grudge, 10 + rand.nextInt(8));
-                    	item1 = new ItemStack(ModItems.AbyssMetal, 10 + rand.nextInt(8), 0);
-                    	item2 = new ItemStack(ModItems.Ammo, 10 + rand.nextInt(8), 0);
-                    	item3 = new ItemStack(ModItems.AbyssMetal, 10 + rand.nextInt(8), 1);
-                    }
-                    
-                    EntityItem entityItem0 = new EntityItem(worldObj, posX+0.5D, posY+0.8D, posZ+0.5D, item0);
-                    EntityItem entityItem1 = new EntityItem(worldObj, posX+0.5D, posY+0.8D, posZ-0.5D, item1);
-                    EntityItem entityItem2 = new EntityItem(worldObj, posX-0.5D, posY+0.8D, posZ+0.5D, item2);
-                    EntityItem entityItem3 = new EntityItem(worldObj, posX-0.5D, posY+0.8D, posZ-0.5D, item3);
+				
+				//client
+				if(worldObj.isRemote) {
+					return true;
+				}
+				//server
+				else {
+					//創造模式不消耗物品
+	                if(!player.capabilities.isCreativeMode) {  //damage +1 in non-creative mode
+	 	                itemstack.setItemDamage(itemstack.getItemDamage() + 1);
+	                    
+	                    //set item amount
+	                    ItemStack item0, item1, item2, item3;
+	                                
+	                    //large ship -> more materials
+	                    if(this.getKaitaiType() == 1) {
+	                    	if(ConfigHandler.easyMode) {	//easy mode
+	                    		item0 = new ItemStack(ModBlocks.BlockGrudge, 1);
+	                        	item1 = new ItemStack(ModBlocks.BlockAbyssium, 1);
+	                        	item2 = new ItemStack(ModItems.Ammo, 1, 1);
+	                        	item3 = new ItemStack(ModBlocks.BlockPolymetal, 1);
+	                    	}
+	                    	else {						
+	                    		item0 = new ItemStack(ModBlocks.BlockGrudge, 8 + rand.nextInt(3));
+	                        	item1 = new ItemStack(ModBlocks.BlockAbyssium, 8 + rand.nextInt(3));
+	                        	item2 = new ItemStack(ModItems.Ammo, 8 + rand.nextInt(3), 1);
+	                        	item3 = new ItemStack(ModBlocks.BlockPolymetal, 8 + rand.nextInt(3));
+	                    	}
+	                        
+	                    }
+	                    //small ship
+	                    else {
+	                        item0 = new ItemStack(ModItems.Grudge, 10 + rand.nextInt(8));
+	                    	item1 = new ItemStack(ModItems.AbyssMetal, 10 + rand.nextInt(8), 0);
+	                    	item2 = new ItemStack(ModItems.Ammo, 10 + rand.nextInt(8), 0);
+	                    	item3 = new ItemStack(ModItems.AbyssMetal, 10 + rand.nextInt(8), 1);
+	                    }
+	                    
+	                    EntityItem entityItem0 = new EntityItem(worldObj, posX+0.5D, posY+0.8D, posZ+0.5D, item0);
+	                    EntityItem entityItem1 = new EntityItem(worldObj, posX+0.5D, posY+0.8D, posZ-0.5D, item1);
+	                    EntityItem entityItem2 = new EntityItem(worldObj, posX-0.5D, posY+0.8D, posZ+0.5D, item2);
+	                    EntityItem entityItem3 = new EntityItem(worldObj, posX-0.5D, posY+0.8D, posZ-0.5D, item3);
 
-                    worldObj.spawnEntityInWorld(entityItem0);
-                    worldObj.spawnEntityInWorld(entityItem1);
-                    worldObj.spawnEntityInWorld(entityItem2);
-                    worldObj.spawnEntityInWorld(entityItem3);
-                    
-                    //drop inventory item
-                    if(ExtProps != null) {
-                    	for(int i = 0; i < ExtProps.slots.length; i++) {
-            				ItemStack invitem = ExtProps.slots[i];
+	                    worldObj.spawnEntityInWorld(entityItem0);
+	                    worldObj.spawnEntityInWorld(entityItem1);
+	                    worldObj.spawnEntityInWorld(entityItem2);
+	                    worldObj.spawnEntityInWorld(entityItem3);
+	                    
+	                    //drop inventory item
+	                    if(ExtProps != null) {
+	                    	for(int i = 0; i < ExtProps.slots.length; i++) {
+	            				ItemStack invitem = ExtProps.slots[i];
 
-            				if(invitem != null) {
-            					//設定要隨機噴出的range
-            					float f = rand.nextFloat() * 0.8F + 0.1F;
-            					float f1 = rand.nextFloat() * 0.8F + 0.1F;
-            					float f2 = rand.nextFloat() * 0.8F + 0.1F;
+	            				if(invitem != null) {
+	            					//設定要隨機噴出的range
+	            					float f = rand.nextFloat() * 0.8F + 0.1F;
+	            					float f1 = rand.nextFloat() * 0.8F + 0.1F;
+	            					float f2 = rand.nextFloat() * 0.8F + 0.1F;
 
-            					while(invitem.stackSize > 0) {
-            						int j = rand.nextInt(21) + 10;
-            						//如果物品超過一個隨機數量, 會分更多疊噴出
-            						if(j > invitem.stackSize) {  
-            							j = invitem.stackSize;
-            						}
+	            					while(invitem.stackSize > 0) {
+	            						int j = rand.nextInt(21) + 10;
+	            						//如果物品超過一個隨機數量, 會分更多疊噴出
+	            						if(j > invitem.stackSize) {  
+	            							j = invitem.stackSize;
+	            						}
 
-            						invitem.stackSize -= j;
-            						//將item做成entity, 生成到世界上
-            						EntityItem item = new EntityItem(this.worldObj, this.posX+f, this.posY+f1, this.posZ+f2, new ItemStack(invitem.getItem(), j, invitem.getItemDamage()));
-            						//如果有NBT tag, 也要複製到物品上
-            						if(invitem.hasTagCompound()) {
-            							item.getEntityItem().setTagCompound((NBTTagCompound)invitem.getTagCompound().copy());
-            						}
-            						
-            						worldObj.spawnEntityInWorld(item);	//生成item entity
-            					}
-            				}
-            			}
-                    }//end drop inventory item
-                    
-                    playSound(Reference.MOD_ID+":ship-kaitai", ConfigHandler.shipVolume, 1.0F);
-                    playSound(Reference.MOD_ID+":ship-death", ConfigHandler.shipVolume, 1.0F);
-                }
-                
-                //物品用完時要設定為null清空該slot
-                if(itemstack.getItemDamage() >= itemstack.getMaxDamage()) {  //物品耐久度用完時要設定為null清空該slot
-                	player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
-                }
-                 
-                this.setDead();
-                
-                return true;			
-			}
+	            						invitem.stackSize -= j;
+	            						//將item做成entity, 生成到世界上
+	            						EntityItem item = new EntityItem(this.worldObj, this.posX+f, this.posY+f1, this.posZ+f2, new ItemStack(invitem.getItem(), j, invitem.getItemDamage()));
+	            						//如果有NBT tag, 也要複製到物品上
+	            						if(invitem.hasTagCompound()) {
+	            							item.getEntityItem().setTagCompound((NBTTagCompound)invitem.getTagCompound().copy());
+	            						}
+	            						
+	            						worldObj.spawnEntityInWorld(item);	//生成item entity
+	            					}
+	            				}
+	            			}
+	                    }//end drop inventory item
+	                    
+	                    playSound(Reference.MOD_ID+":ship-kaitai", ConfigHandler.shipVolume, 1.0F);
+	                    playSound(Reference.MOD_ID+":ship-death", ConfigHandler.shipVolume, 1.0F);
+	                }
+	                
+	                //物品用完時要設定為null清空該slot
+	                if(itemstack.getItemDamage() >= itemstack.getMaxDamage()) {  //物品耐久度用完時要設定為null清空該slot
+	                	player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
+	                }
+	                 
+	                this.setDead();
+	                
+	                return true;
+				}//end server side
+			}//end kaitai hammer
 			
 			//use marriage ring
 			if(itemstack.getItem() == ModItems.MarriageRing && !this.getStateFlag(ID.F.IsMarried) && 
@@ -1239,17 +1254,14 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 					//set guard entity
 					if(this.getStateMinor(ID.N.GuardID) > 0) {
 						Entity getEnt = EntityHelper.getEntityByID(this.getStateMinor(ID.N.GuardID), 0, true);
-						
-						if(getEnt != null) {
-							this.setGuarded(getEnt);
-						}
+						this.setGuarded(getEnt);
 					}
 					else {
+						//reset guard entity
 						this.setGuarded(null);
 					}
 					
 					//owner have to hold pointer item
-//					EntityPlayer player = (EntityPlayer) this.getPlayerOwner();
 					EntityPlayer player = null;
 					if(this.getStateMinor(ID.N.OwnerID) > 0) {
 						Entity getEnt = EntityHelper.getEntityByID(this.getStateMinor(ID.N.OwnerID), this.dimension, true);
@@ -1266,14 +1278,14 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 					if(player != null) {
 						ItemStack item = player.inventory.getCurrentItem();
 						
-						if(item != null && item.getItem() instanceof PointerItem) {
+						if(ConfigHandler.alwaysShowTeam || (item != null && item.getItem() instanceof PointerItem)) {
 							//標記在entity上
 							if(this.getGuarded() != null) {
 								ParticleHelper.spawnAttackParticleAtEntity(this.getGuarded(), 0.3D, 6D, 0D, (byte)2);
 							}
 							//標記載block上
 							else if(this.getGuardedPos(1) >= 0) {
-								ParticleHelper.spawnAttackParticleAt(this.getGuardedPos(0), this.getGuardedPos(1), this.getGuardedPos(2), 0.3D, 6D, 0D, (byte)25);
+								ParticleHelper.spawnAttackParticleAt(this.getGuardedPos(0)+0.5D, this.getGuardedPos(1), this.getGuardedPos(2)+0.5D, 0.3D, 6D, 0D, (byte)25);
 							}
 						}
 					}
@@ -1495,6 +1507,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         }//end if(server side)
         //client side
 //        else {
+//        	LogHelper.info("DEBUG : emotion "+this.getStateEmotion(ID.S.Emotion)+" "+getStartEmotion());
 //        	//set client side owner
 //        	if(this.ticksExisted % 20 == 0) {
 //        		LogHelper.info("DEBUG : entity sync 3: get owner id "+this.getStateMinor(ID.N.OwnerID));
@@ -1744,6 +1757,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     	if(this.getStateEmotion(ID.S.Emotion) != ID.Emotion.O_O) {
     		this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
     	}
+    	
+    	//若攻擊方為owner, 則直接回傳傷害, 不計def跟friendly fire
+		if(attacker.getSourceOfDamage() instanceof EntityPlayer &&
+		   EntityHelper.checkSameOwner(attacker.getSourceOfDamage(), this)) {
+			this.setSitting(false);
+			return super.attackEntityFrom(attacker, atk);
+		}
 
 		//進行def計算
         float reduceAtk = atk * (1F - (StateFinal[ID.DEF] - (float)rand.nextInt(20) + 10F) / 100F);    
@@ -1767,23 +1787,17 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				return false;
 			}
 			
-			//若攻擊方同樣為ship, 則傷害-95% (使ship vs ship能打久一點)
+			//若攻擊方同樣為ship, 則傷害降為limit ship所設定的def上限 (使ship vs ship能打久一點)
 			if(entity instanceof BasicEntityShip || entity instanceof BasicEntityAirplane || 
 			   entity instanceof EntityRensouhou || entity instanceof BasicEntityMount) {
-				reduceAtk *= 0.05F;
+				reduceAtk = reduceAtk * (100F - (float)ConfigHandler.limitShip[ID.DEF]) * 0.01F;
 			}
 			
-			//若攻擊方為player, 則修正傷害
+			//若攻擊方為player, 則檢查friendly fire
 			if(entity instanceof EntityPlayer) {
-				//若攻擊者為owner, 傷害 = 25%
-				if(this.getOwner() != null && entity.getUniqueID().equals(this.getOwner().getUniqueID())) {
-					reduceAtk *= 0.25F;
-				}
-				else {
-					//若禁止friendlyFire, 則傷害設為0
-					if(!ConfigHandler.friendlyFire) {
-						return false;
-					}
+				//若禁止friendlyFire, 則不造成傷害
+				if(!ConfigHandler.friendlyFire) {
+					return false;
 				}
 			}
 
@@ -2159,12 +2173,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	public void setGuarded(Entity entity) {
 		if(entity != null && entity.isEntityAlive()) {
 			this.guardedEntity = entity;
-			this.setStateFlag(ID.F.CanFollow, false);
 			this.setStateMinor(ID.N.GuardID, entity.getEntityId());
 		}
 		else {
 			this.guardedEntity = null;
-			this.setStateFlag(ID.F.CanFollow, true);
 			this.setStateMinor(ID.N.GuardID, -1);
 		}
 	}
@@ -2189,13 +2201,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.setStateMinor(ID.N.GuardY, y);
 		this.setStateMinor(ID.N.GuardZ, z);
 		this.setStateMinor(ID.N.GuardDim, dim);
-		
-		if(y <= 0) {
-			this.setStateFlag(ID.F.CanFollow, true);
-		}
-		else {
-			this.setStateFlag(ID.F.CanFollow, false);
-		}
 	}
 	
 	@Override

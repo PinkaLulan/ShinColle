@@ -733,5 +733,10 @@ public class BasicEntityShipHostile extends EntityMob implements IShipCannonAtta
     	}
 	}
 
+	@Override
+	public boolean getAttackType(int par1) {
+		return true;
+	}
+
 
 }

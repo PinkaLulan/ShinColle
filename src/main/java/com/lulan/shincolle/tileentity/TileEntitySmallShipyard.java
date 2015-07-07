@@ -7,9 +7,11 @@ import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
+import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.FormatHelper;
 import com.lulan.shincolle.utility.LogHelper;
+import com.lulan.shincolle.utility.TileEntityHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraft.entity.player.EntityPlayer;
@@ -31,14 +33,15 @@ import net.minecraft.util.MathHelper;
  * 	MaxMaterial / MaxFuelCost = 64*4 / 460800
  *  MinMaterial / MinFuelCost = 16*4 / 57600 = BaseCost(57600) CostPerMaterial(2100)
  */
-public class TileEntitySmallShipyard extends BasicTileEntity {
+public class TileEntitySmallShipyard extends BasicTileEntity implements ITileFurnace {
 		
 	private int consumedPower = 0;	//已花費的能量
 	private int remainedPower = 0;	//剩餘燃料
 	private int goalPower = 0;		//需要達成的目標能量
-	private int buildType = 0;		//type 0:none 1:ship 2:equip
+	private int buildType = 0;		//type 0:none 1:ship 2:equip 3:ship loop 4: equip loop
+	private int[] buildRecord;
 	private boolean isActive;		//是否正在建造中, 此為紀錄isBuilding是否有變化用
-	private static int buildSpeed = 48;  			//power cost per tick	
+	private static int buildSpeed = 48;  			//power cost per tick
 	private static final int MAXPOWER = 460800; 	//max power storage
 	private static final int[] ALLSLOTS = new int[] {0, 1, 2, 3, 4, 5};  //dont care side
 
@@ -99,6 +102,7 @@ public class TileEntitySmallShipyard extends BasicTileEntity {
         remainedPower = compound.getInteger("remainedPower");
         goalPower = compound.getInteger("goalPower");
         buildType = compound.getInteger("buildType");
+        buildRecord = compound.getIntArray("buildRecord");
     }
 	
 	//將資料寫進nbt
@@ -121,6 +125,7 @@ public class TileEntitySmallShipyard extends BasicTileEntity {
 		compound.setInteger("remainedPower", remainedPower);
 		compound.setInteger("goalPower", goalPower);
 		compound.setInteger("buildType", buildType);
+		compound.setIntArray("buildRecord", buildRecord);
 	}
 	
 	//判定物品是否能放入該格子, 用於canExtractItem等方法
@@ -141,7 +146,7 @@ public class TileEntitySmallShipyard extends BasicTileEntity {
 			case 3:		//polymetal slot
 				return item == ModItems.AbyssMetal && meta == 1;
 			case 4:		//fuel slot
-				return TileEntityFurnace.isItemFuel(itemstack);
+				return TileEntityHelper.getItemFuelValue(itemstack) > 0 || item == ModItems.InstantConMat;
 			default:
 				return false;
 			}
@@ -160,24 +165,55 @@ public class TileEntitySmallShipyard extends BasicTileEntity {
 	
 	//建造ship方法
 	public void buildComplete() {
-		byte[] matAmount = new byte[4];
-		//取得四樣材料數量
-		matAmount = SmallRecipes.getMaterialAmount(slots);
+		//若為無限loop建造, 則檢查record的紀錄
+		if(this.buildType == ID.Build.EQUIP_LOOP || this.buildType == ID.Build.SHIP_LOOP) {
+			for(int i = 0; i < 4; i++) {
+				//檢查材料是否足夠
+				if(slots[i] == null || slots[i].stackSize < this.buildRecord[i]) {
+					return;
+				}
+				//吃掉材料
+				else {
+					slots[i].stackSize -= this.buildRecord[i];
+					if(slots[i].stackSize <= 0) slots[i] = null;
+				}
+			}
 
-		//將輸入材料全部吃掉
-		slots[0] = null;
-		slots[1] = null;
-		slots[2] = null;
-		slots[3] = null;
-		
-		//輸入材料數量, 取得build output到slot 5
-		if(this.buildType == 1) {	//build ship
-			slots[5] = SmallRecipes.getBuildResultShip(matAmount);
+			//輸入材料數量, 取得build output到slot 5
+			switch(this.buildType) {
+			default:
+			case ID.Build.SHIP_LOOP:
+				slots[5] = SmallRecipes.getBuildResultShip(buildRecord);
+				break;
+			case ID.Build.EQUIP_LOOP:
+				slots[5] = SmallRecipes.getBuildResultEquip(buildRecord);
+				break;
+			}
 		}
-		else {						//build equip or no select
-			slots[5] = SmallRecipes.getBuildResultEquip(matAmount);
+		else {
+			int[] matAmount = new int[4];
+			//取得四樣材料數量
+			matAmount = SmallRecipes.getMaterialAmount(slots);
+
+			//將輸入材料全部吃掉
+			slots[0] = null;
+			slots[1] = null;
+			slots[2] = null;
+			slots[3] = null;
+			
+			//輸入材料數量, 取得build output到slot 5
+			switch(this.buildType) {
+			default:
+			case ID.Build.SHIP:			//build ship
+			case ID.Build.SHIP_LOOP:
+				slots[5] = SmallRecipes.getBuildResultShip(matAmount);
+				break;
+			case ID.Build.EQUIP:		//build equip
+			case ID.Build.EQUIP_LOOP:
+				slots[5] = SmallRecipes.getBuildResultEquip(matAmount);
+				break;
+			}
 		}
-		
 	}
 	
 	//判定是否建造中
@@ -190,18 +226,46 @@ public class TileEntitySmallShipyard extends BasicTileEntity {
 		return remainedPower > buildSpeed;
 	}
 	
-	//判定是否有建造目標
+	//判定是否能建造
 	public boolean canBuild() {
-		return goalPower > 0 && slots[5] == null;
+		//若為無限loop建造, 則檢查record的紀錄
+		if(this.buildType == ID.Build.EQUIP_LOOP || this.buildType == ID.Build.SHIP_LOOP) {		
+			//檢查紀錄是否可以建造
+			if(SmallRecipes.canRecipeBuild(buildRecord)) {
+				//檢查材料是否足夠
+				for(int i = 0; i < 4; i++) {
+					if(slots[i] == null || slots[i].stackSize < this.buildRecord[i]) return false;
+				}
+				
+				return goalPower > 0 && slots[5] == null;
+			}
+		}
+		else {
+			return goalPower > 0 && slots[5] == null;
+		}
+		
+		return false;
 	}
 	
 	//取得建造花費
 	public void getGoalPower() {
-		byte[] itemAmount = new byte[4];	
-		//計算材料量
-		itemAmount = SmallRecipes.getMaterialAmount(slots);		
-		//依照材料量計算goalPower, 若材料沒達minAmount則goalPower會得到0
-		goalPower = SmallRecipes.calcGoalPower(itemAmount); 
+		//若為無限loop建造, 則計算record的紀錄
+		if(this.buildType == ID.Build.EQUIP_LOOP || this.buildType == ID.Build.SHIP_LOOP) {
+			//檢查紀錄是否可以建造
+			if(SmallRecipes.canRecipeBuild(buildRecord)) {
+				goalPower = SmallRecipes.calcGoalPower(buildRecord);
+			}
+			else {
+				goalPower = 0;
+			}
+		}
+		else {
+			int[] itemAmount = new int[4];
+			//計算材料量
+			itemAmount = SmallRecipes.getMaterialAmount(slots);
+			//依照材料量計算goalPower, 若材料沒達minAmount則goalPower會得到0
+			goalPower = SmallRecipes.calcGoalPower(itemAmount);
+		}
 	}
 	
 	//方塊的流程進行方法
@@ -209,39 +273,45 @@ public class TileEntitySmallShipyard extends BasicTileEntity {
 	@Override
 	public void updateEntity() {
 		boolean sendUpdate = false;	//標紀要block update, 有要更新metadata時設為true
-		
-		//update goalPower, check goalPower if material in slots[3] (polymetal slot)
-		if(this.buildType != 0) {
-			this.getGoalPower();
-		}
-		else {
-			this.goalPower = 0;
+
+		//null check
+		if(this.buildRecord == null || this.buildRecord.length < 1) {
+			this.buildRecord = new int[4];
+			this.buildRecord[0] = 0;
+			this.buildRecord[1] = 0;
+			this.buildRecord[2] = 0;
+			this.buildRecord[3] = 0;
 		}
 		
 		//server side
 		if(!worldObj.isRemote) {
-			//fuel補充
-			int burnTime = TileEntityFurnace.getItemBurnTime(this.slots[4]);
-			
-			if(ConfigHandler.easyMode) {
-				burnTime *= 10;
+			//update goalPower
+			if(this.buildType != ID.Build.NONE) {
+				this.getGoalPower();
+			}
+			else {
+				this.goalPower = 0;
 			}
 			
-			if(burnTime > 0 && burnTime + this.remainedPower < this.MAXPOWER) {
-				if(this.slots[4] != null) {
-					this.remainedPower += burnTime;	
-					this.slots[4].stackSize--;	//fuel -1
-					
-					if(this.slots[4].stackSize == 0) {
-						this.slots[4] = this.slots[4].getItem().getContainerItem(this.slots[4]);
-					}
-					
-					sendUpdate = true;			//標紀要update block
-				}
+			//fuel補充
+			if(TileEntityHelper.checkItemFuel(this)) {
+				sendUpdate = true;
 			}
 			
 			//判定是否建造中, 每tick進行進度值更新, 若非建造中則重置進度值
 			if(this.isBuilding()) {
+				//在燃料格使用快速建造材料
+				if(slots[4] != null && slots[4].getItem() == ModItems.InstantConMat) {
+					slots[4].stackSize--;
+					this.consumedPower += 115200;
+					
+					if(this.slots[4].stackSize == 0) {
+						this.slots[4] = null;
+					}
+					
+					sendUpdate = true;
+				}
+				
 				this.remainedPower -= buildSpeed;	//fuel bar --
 				this.consumedPower += buildSpeed;	//build bar ++
 				
@@ -249,8 +319,20 @@ public class TileEntitySmallShipyard extends BasicTileEntity {
 				if (this.consumedPower >= this.goalPower) {
 					this.buildComplete();	//建造出成品放到output slot
 					this.consumedPower = 0;
-					this.goalPower = 0;		
-					this.buildType = 0;
+					this.goalPower = 0;
+					
+					//continue build if mode = loop mode
+					switch(buildType) {
+					default:
+					case ID.Build.SHIP:
+					case ID.Build.EQUIP:		//reset build type
+						this.buildType = ID.Build.NONE;
+						break;
+					case ID.Build.SHIP_LOOP:	//remain build type
+					case ID.Build.EQUIP_LOOP:
+						break;
+					}
+					
 					sendUpdate = true;
 				}
 			}
@@ -314,6 +396,27 @@ public class TileEntitySmallShipyard extends BasicTileEntity {
 	public void setBuildType(int par1) {
 		this.buildType = par1;
 	}
+	public void setBuildRecord(int[] par1) {
+		for(int i = 0; i < 4; i++) this.buildRecord[i] = par1[i];
+	}
+
+	@Override
+	public int getFuelSlotMin() {
+		return 4;
+	}
+
+	@Override
+	public int getFuelSlotMax() {
+		return 4;
+	}
+
+	@Override
+	public int getPowerMax() {
+		return this.MAXPOWER;
+	}
+
+	@Override
+	public void setPowerMax(int par1) {}
 
 	
 }

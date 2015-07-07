@@ -14,13 +14,13 @@ import org.lwjgl.opengl.GL11;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.EmotionHelper;
 
 /**
  * ModelSubmRO500 - PinkaLulan 2015/5/20
  * Created using Tabula 4.1.1
  */
-public class ModelSubmRo500 extends ModelBase {
+public class ModelSubmRo500 extends ModelBase implements IModelEmotion {
     public ModelRenderer BodyMain;
     public ModelRenderer Neck;
     public ModelRenderer BoobR;
@@ -329,7 +329,7 @@ public class ModelSubmRo500 extends ModelBase {
 		
 		showEquip(ent);
 		
-		rollEmotion(ent);
+		EmotionHelper.rollEmotion(this, ent);
 		  
 		motionHumanPos(f, f1, f2, f3, f4, ent);
 		
@@ -431,7 +431,7 @@ public class ModelSubmRo500 extends ModelBase {
 		    	startEmo2 = 360;
 		    	ent.setStartEmotion2(startEmo2);	//cd = 6sec  	
 		    	
-		    	if(((EntityLivingBase)ent).getRNG().nextInt(3) == 0) {
+		    	if(rand.nextInt(3) == 0) {
 		    		ent.setStateFlag(ID.F.HeadTilt, true);
 		    	}
 		    	else {
@@ -569,88 +569,9 @@ public class ModelSubmRo500 extends ModelBase {
 		}
   	}
   	
-  	//隨機抽取顯示的表情 
-    private void rollEmotion(IShipEmotion ent) { 
-    	switch(ent.getStateEmotion(ID.S.Emotion)) {
-    	case ID.Emotion.BLINK:	//blink
-    		EmotionBlink(ent);
-    		break;
-    	case ID.Emotion.T_T:	//cry
-    		if(ent.getStartEmotion() <= 0) { setFace(2); }
-    		break;
-    	case ID.Emotion.O_O:
-    		EmotionStaring(ent);
-			break;
-    	case ID.Emotion.HUNGRY:
-    		if(ent.getStartEmotion() <= 0) { setFace(4); }
-			break;
-    	case ID.Emotion.BORED:
-    	default:						//normal face
-    		//reset face to 0 or blink if emotion time > 0
-    		if(ent.getStartEmotion() <= 0) {
-    			setFace(0);
-    		}
-    		else {
-    			EmotionBlink(ent);
-    		}
-    		//roll emotion (3 times) every 6 sec
-    		//1 tick in entity = 3 tick in model class (20 vs 60 fps)
-    		if(ent.getTickExisted() % 120 == 0) {
-        		int emotionRand = ((EntityLivingBase)ent).getRNG().nextInt(10);   		
-        		if(emotionRand > 7) {
-        			EmotionBlink(ent);
-        		} 		
-        	}
-    		break;
-    	}	
-    }
-    
-    //眨眼動作, this emotion is CLIENT ONLY, no sync packet required
-    private void EmotionBlink(IShipEmotion ent) {
-  		if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.NORMAL) {	//要在沒表情狀態才做表情		
-  			ent.setStartEmotion(ent.getTickExisted());		//表情開始時間
-  			ent.setStateEmotion(ID.S.Emotion, ID.Emotion.BLINK, false);	//標記表情為blink
-  			setFace(1);
-  		}
-  		
-  		int EmoTime = ent.getTickExisted() - ent.getStartEmotion();
-    	 		
-    	if(EmoTime > 46) {	//reset face
-    		setFace(0);
-			ent.setStateEmotion(ID.S.Emotion, ID.Emotion.NORMAL, false);
-			ent.setStartEmotion(-1);
-    	}
-    	else if(EmoTime > 35) {
-    		setFace(1);
-    	}
-    	else if(EmoTime > 25) {
-    		setFace(0);
-    	}
-    	else if(EmoTime > -1) {
-    		setFace(1);
-    	}
-  	}
-  	
-  	//瞪人表情
-  	private void EmotionStaring(IShipEmotion ent) {	
-    	if(ent.getStartEmotion() == -1) {
-			ent.setStartEmotion(ent.getTickExisted());		//表情開始時間
-		}
-    	
-    	int EmoTime = ent.getTickExisted() - ent.getStartEmotion();
-    	
-    	if(EmoTime > 41) {	//reset face
-    		setFace(0);
-			ent.setStateEmotion(ID.S.Emotion, ID.Emotion.NORMAL, false);
-			ent.setStartEmotion(-1);
-    	}
-    	else if(EmoTime > 1) {
-    		setFace(3);
-    	}
-	}
-  	
     //設定顯示的臉型
-  	private void setFace(int emo) {
+  	@Override
+  	public void setFace(int emo) {
   		switch(emo) {
   		case 0:
   			this.Face0.isHidden = false;

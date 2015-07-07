@@ -20,7 +20,7 @@ public class EquipCannon extends BasicEquip {
 	public EquipCannon() {
 		super();
 		this.setUnlocalizedName("EquipCannon");
-		this.types = 11;	//single = 2, twin = 7, triple = 2
+		this.types = 12;	//single = 2, twin = 7, triple = 3
 	}
 	
 	@Override
@@ -35,10 +35,10 @@ public class EquipCannon extends BasicEquip {
 	    if(meta < 2) {				//0,1 = single cannon
 	    	return this.icons[0];
 	    }
-	    else if(meta < 9) {			//2~6 = twin cannon
+	    else if(meta < 9) {			//2~8 = twin cannon
 	    	return this.icons[1];
 	    }
-	    else if(meta < 11) {			//7,8 = triple cannon
+	    else if(meta < 12) {			//9~11 = triple cannon
 	    	return this.icons[2];
 	    }
 	   
@@ -55,7 +55,6 @@ public class EquipCannon extends BasicEquip {
 		case 6:		//14 tw
 		case 7:		//16 tw
 		case 8:		//20 tw
-		case 9:		//8 tr
 		case 10:	//16 tr
 			return true;
 		}

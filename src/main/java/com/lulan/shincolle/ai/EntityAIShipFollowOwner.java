@@ -118,7 +118,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
 
     public void updateTask() {
     	if(host != null) {
-    		LogHelper.info("DEBUG : exec follow owner");
+//    		LogHelper.info("DEBUG : exec follow owner");
         	this.findCooldown--;
         	
         	//update follow range every 60 ticks
@@ -158,7 +158,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
         	if(this.distSq > this.TP_DIST) {
         		this.checkTeleport++;
         		
-        		if(this.checkTeleport > 60) {
+        		if(this.checkTeleport > 80) {
         			this.checkTeleport = 0;
         			//相同dim才傳送
         			LogHelper.info("DEBUG : follow AI: distSQ > "+this.TP_DIST+" , teleport entity. dim: "+host2.dimension+" "+owner.dimension);
@@ -193,7 +193,6 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
                 			//相同dim才傳送
                 			LogHelper.info("DEBUG : follow AI: teleport entity: dimension "+host2.dimension+" "+owner.dimension);
                 			if(this.host2.dimension == this.owner.dimension) {
-                				
                 				//teleport
                     			if(this.distSq > 1024) {	//32 blocks away, drop seat2
                     				this.clearMountSeat2();
@@ -221,9 +220,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
 	  				mount.seat2.setRiderNull();
 	  			}
   			}
-  			else {
-  				host2.mountEntity(null);
-  			}
+  			host2.mountEntity(null);
   		}
   		
   		//清空騎乘的人

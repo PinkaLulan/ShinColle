@@ -182,6 +182,10 @@ public class LargeRecipes {
 			matType = 3;
 			matNum = 9;
 			break;
+		case 10: //polymetal gravel
+			matType = 3;
+			matNum = 4;
+			break;
 		}
 		
 		if(ConfigHandler.easyMode) {
@@ -213,8 +217,14 @@ public class LargeRecipes {
 			item = itemstack.getItem();
 			meta = itemstack.getItemDamage();
 			
-			if(TileEntityFurnace.isItemFuel(itemstack)) { itemType = 0; }
-			else if(item == ModItems.Grudge) { itemType = 1; }
+			/**itemtype :
+			 * -1/0: other item
+			 * 1: grudge 2: grudge block 3: grudge heavy block
+			 * 4: abyss metal 5: abyss metal block
+			 * 6: ammo 7: ammo container
+			 * 8: polymetal 9: polymetal block 10: polymetal gravel
+			 */
+			if(item == ModItems.Grudge) { itemType = 1; }
 			else if(item == Item.getItemFromBlock(ModBlocks.BlockGrudge)) { itemType = 2; }
 //			else if(item == Item.getItemFromBlock(ModBlocks.BlockGrudgeHeavy)) { itemType = 3; }
 			else if(item == ModItems.AbyssMetal && meta == 0) { itemType = 4; }
@@ -223,6 +233,7 @@ public class LargeRecipes {
 			else if(item == ModItems.Ammo && meta == 1) { itemType = 7; }
 			else if(item == ModItems.AbyssMetal && meta == 1) { itemType = 8; }
 			else if(item == Item.getItemFromBlock(ModBlocks.BlockPolymetal)) { itemType = 9; }
+			else if(item == Item.getItemFromBlock(ModBlocks.BlockPolymetalGravel)) { itemType = 10; }
 		}
 
 		return itemType;

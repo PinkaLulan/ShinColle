@@ -69,7 +69,7 @@ public class ContainerSmallShipyard extends Container {
 	public ItemStack transferStackInSlot(EntityPlayer player, int slotid) {
         ItemStack itemstack = null;
         Slot slot = (Slot)this.inventorySlots.get(slotid);
-        byte itemID = -1;
+        int itemID = -1;
 
         if(slot != null && slot.getHasStack()) { 			//若slot有東西
             ItemStack itemstack1 = slot.getStack();			//itemstack1取得該slot物品

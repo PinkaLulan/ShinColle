@@ -11,7 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
-public class BasicTileEntity extends TileEntity implements ISidedInventory {
+abstract public class BasicTileEntity extends TileEntity implements ISidedInventory {
 	
 	protected ItemStack slots[];
 	protected String customName;
@@ -43,11 +43,17 @@ public class BasicTileEntity extends TileEntity implements ISidedInventory {
   	public int getSizeInventory() {
   		return slots.length;
   	}
-
+  	
   	@Override
   	public ItemStack getStackInSlot(int i) {
   		return slots[i];
   	}
+  	
+  	//get fule slot min number
+  	abstract public int getFuelSlotMin();
+  	
+  	//get fule slot max number
+  	abstract public int getFuelSlotMax();
   	
     //移除slot i中, 數量j個物品, 回傳為itemstack, 左右鍵等動作存取slot時會呼叫此方法
   	//(非shift動作) shift動作在container中的transferStackInSlot中實作
@@ -133,7 +139,7 @@ public class BasicTileEntity extends TileEntity implements ISidedInventory {
 	//sync data for GUI display
 	public void sendSyncPacket() {
 		if(!this.worldObj.isRemote) {
-			TargetPoint point = new TargetPoint(this.worldObj.provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, 8D);
+			TargetPoint point = new TargetPoint(this.worldObj.provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, 30D);
 			CommonProxy.channelG.sendToAllAround(new S2CGUIPackets(this), point);
 		}
 	}

@@ -64,7 +64,7 @@ public class EntityFXSpray extends EntityFX {
         if(f6 > 1.0F) {
             f6 = 1.0F;
         }
-
+//        LogHelper.info("DEBUG : par "+par5+" "+par7);
         this.particleScale = this.Scale * f6;
         GL11.glPushMatrix();
         GL11.glDisable(GL11.GL_LIGHTING);

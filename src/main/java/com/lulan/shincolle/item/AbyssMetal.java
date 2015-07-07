@@ -8,6 +8,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 
+/**meta:
+ * 0: abyssium ingot
+ * 1: polymetallic nodules
+ */
 public class AbyssMetal extends BasicItem {	
 	byte types = 2;
 	IIcon[] icons = new IIcon[2];
@@ -33,7 +37,7 @@ public class AbyssMetal extends BasicItem {
 	
 	@Override
 	public IIcon getIconFromDamage(int meta) {
-		if(meta > types - 1) meta = types - 1;
+		if(meta >= types) meta = types - 1;
 	    return this.icons[meta];
 	}
 

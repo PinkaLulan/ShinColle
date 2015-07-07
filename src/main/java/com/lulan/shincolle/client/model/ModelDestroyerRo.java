@@ -6,6 +6,7 @@ import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.destroyer.EntityDestroyerI;
 import com.lulan.shincolle.entity.destroyer.EntityDestroyerRo;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.EmotionHelper;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
@@ -17,7 +18,7 @@ import net.minecraft.util.MathHelper;
  * ModelDestroyerRo - PinkaLulan 2015/3/9
  * Created using Tabula 4.1.1
  */
-public class ModelDestroyerRo extends ModelBase {
+public class ModelDestroyerRo extends ModelBase implements IModelEmotion {
 	public ModelRenderer Back;
     public ModelRenderer NeckBack;
     public ModelRenderer Body;
@@ -413,7 +414,7 @@ public class ModelDestroyerRo extends ModelBase {
     private void rollEmotion(EntityDestroyerRo ent) {   	
     	switch(ent.getStateEmotion(ID.S.Emotion)) {
     	case ID.Emotion.BLINK:	//blink
-    		EmotionBlink(ent);
+    		EmotionHelper.EmotionBlink(this, ent);
     		break;
     	case ID.Emotion.T_T:	//cry
     	case ID.Emotion.O_O:
@@ -429,48 +430,23 @@ public class ModelDestroyerRo extends ModelBase {
     			setFace(0);
     		}
     		else {
-    			EmotionBlink(ent);
+    			EmotionHelper.EmotionBlink(this, ent);
     		}
     		//roll emotion (3 times) every 6 sec
     		//1 tick in entity = 3 tick in model class (20 vs 60 fps)
     		if(ent.ticksExisted % 120 == 0) {  			
         		int emotionRand = ent.getRNG().nextInt(10);   		
         		if(emotionRand > 7) {
-        			EmotionBlink(ent);
+        			EmotionHelper.EmotionBlink(this, ent);
         		} 		
         	}
     		break;
     	}	
     }
-
-	//眨眼動作, this emotion is CLIENT ONLY, no sync packet required
-    private void EmotionBlink(IShipEmotion ent) {
-  		if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.NORMAL) {	//要在沒表情狀態才做表情		
-  			ent.setStartEmotion(ent.getTickExisted());		//表情開始時間
-  			ent.setStateEmotion(ID.S.Emotion, ID.Emotion.BLINK, false);	//標記表情為blink
-  			setFace(1);
-  		}
-  		
-  		int EmoTime = ent.getTickExisted() - ent.getStartEmotion();
-    	 		
-    	if(EmoTime > 46) {	//reset face
-    		setFace(0);
-			ent.setStateEmotion(ID.S.Emotion, ID.Emotion.NORMAL, false);
-			ent.setStartEmotion(-1);
-    	}
-    	else if(EmoTime > 35) {
-    		setFace(1);
-    	}
-    	else if(EmoTime > 25) {
-    		setFace(0);
-    	}
-    	else if(EmoTime > -1) {
-    		setFace(1);
-    	}
-  	}
 	
 	//設定顯示的臉型
-	private void setFace(int emo) {
+    @Override
+  	public void setFace(int emo) {
 		switch(emo) {
 		case 0:
 			FaceL00.isHidden = false;

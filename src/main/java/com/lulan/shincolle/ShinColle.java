@@ -1,32 +1,20 @@
 package com.lulan.shincolle;
 
 
-import java.util.Iterator;
-import java.util.Map;
-
-import net.minecraft.entity.EntityList;
-import net.minecraft.entity.EnumCreatureType;
-import net.minecraftforge.common.MinecraftForge;
-
 import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.handler.EVENT_BUS_EventHandler;
 import com.lulan.shincolle.handler.GuiHandler;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModEntity;
 import com.lulan.shincolle.init.ModEvents;
 import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.init.ModOres;
+import com.lulan.shincolle.init.ModRecipes;
 import com.lulan.shincolle.init.ModTileEntity;
 import com.lulan.shincolle.init.ModWorldGen;
-import com.lulan.shincolle.init.ModRecipes;
 import com.lulan.shincolle.proxy.IProxy;
-import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.GuiHelper;
 import com.lulan.shincolle.utility.LogHelper;
-import com.lulan.shincolle.utility.MulitBlockHelper;
 
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;		//mod基本資訊
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;	//mod init
@@ -73,6 +61,8 @@ public class ShinColle {
 	public void Init(FMLInitializationEvent event) {
 		//GUI register
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
+		
+		ModOres.oreDictRegister();
 		
 		ModEvents.init();
 		

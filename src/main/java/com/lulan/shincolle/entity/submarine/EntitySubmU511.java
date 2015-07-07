@@ -37,19 +37,24 @@ public class EntitySubmU511 extends BasicEntityShipSmall {
 
 	public EntitySubmU511(World world) {
 		super(world);
-		this.setSize(0.7F, 1.4F);	//碰撞大小 跟模型大小無關
+		this.setSize(0.6F, 1.4F);	//碰撞大小 跟模型大小無關
 		this.ShipType = ID.ShipType.SUBMARINE;
 		this.ShipID = ID.S_SubmarineU511;
 		this.ModelPos = new float[] {0F, 10F, 0F, 45F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		
 		this.initTypeModify();
+		
+		//set attack type
+		this.StateFlag[ID.F.HaveRingEffect] = true;
+		this.StateFlag[ID.F.AtkType_AirLight] = false;
+		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
 	}
 	
 	//for morph
 	@Override
 	public float getEyeHeight() {
-		return this.height * 1.2F;
+		return 1.28F;
 	}
 	
 	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc
@@ -84,7 +89,7 @@ public class EntitySubmU511 extends BasicEntityShipSmall {
   			}
   			
   			if(this.ticksExisted % 300 == 0) {
-  				if(getStateFlag(ID.F.UseRingEffect)) {
+  				if(getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.N.NumGrudge) > 0) {
   					//apply ability to ship
   					this.addPotionEffect(new PotionEffect(Potion.invisibility.id, 100 + getLevel()));
   				}

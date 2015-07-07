@@ -327,7 +327,7 @@ public class PointerItem extends BasicItem {
 						//move to xyz
 						CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, -1, meta, 0, x, y, z));
 						//在目標上畫出標記
-						ParticleHelper.spawnAttackParticleAt(x, y, z, 0.3D, 4D, 0D, (byte)25);
+						ParticleHelper.spawnAttackParticleAt(x+0.5D, y, z+0.5D, 0.3D, 4D, 0D, (byte)25);
 					}
 					//抓到entity (非預期狀況, 正常應該不會再抓到entity)
 					else if(hitObj2.typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY){
@@ -336,7 +336,7 @@ public class PointerItem extends BasicItem {
 						//移動到該ship旁邊
 						CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, -1, meta, 0, (int)hitObj2.entityHit.posX, (int)hitObj2.entityHit.posY, (int)hitObj2.entityHit.posZ));
 						//在目標上畫出標記
-						ParticleHelper.spawnAttackParticleAt(hitObj2.entityHit.posX, hitObj2.entityHit.posY, hitObj2.entityHit.posZ, 0.3D, 4D, 0D, (byte)25);
+						ParticleHelper.spawnAttackParticleAt(hitObj2.entityHit.posX+0.5D, hitObj2.entityHit.posY, hitObj2.entityHit.posZ+0.5D, 0.3D, 4D, 0D, (byte)25);
 					}
 					else {
 						LogHelper.info("DEBUG : pointer right click: MISS");
@@ -381,12 +381,15 @@ public class PointerItem extends BasicItem {
 			if(player instanceof EntityPlayer) {
 				//client side
 				if(world.isRemote) {
+//					LogHelper.info("DEBUG : look "+player.rotationYaw+" "+player.rotationPitch);
 					if(player.ticksExisted % 10 == 0) {
-//						//抓視線上的東西 (debug)
+						//抓視線上的東西 (debug)
 //						MovingObjectPosition hitObj = EntityHelper.getPlayerMouseOverEntity(64D, 1F);
 //						if(hitObj != null) {
 //							if(hitObj.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
 //								LogHelper.info("DEBUG : hit BLOCK "+world.getBlock(hitObj.blockX, hitObj.blockY, hitObj.blockZ).getLocalizedName()+" "+hitObj.blockX+" "+hitObj.blockY+" "+hitObj.blockZ);
+//								float[] look = EntityHelper.getLookDegree(hitObj.blockX-player.posX, hitObj.blockY-player.posY, hitObj.blockZ-player.posZ, true);
+//								LogHelper.info("DEBUG : look "+look[0]+" "+look[1]);
 //							}
 //							else if(hitObj.typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
 //								LogHelper.info("DEBUG : hit ENTITY "+hitObj.entityHit.getClass().getSimpleName());

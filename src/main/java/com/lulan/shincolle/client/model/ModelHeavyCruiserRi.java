@@ -1,13 +1,6 @@
 package com.lulan.shincolle.client.model;
 
-import org.lwjgl.opengl.GL11;
-
-import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.entity.IShipEmotion;
-import com.lulan.shincolle.entity.cruiser.EntityHeavyCruiserRi;
-import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.utility.LogHelper;
+import java.util.Random;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
@@ -15,11 +8,17 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.MathHelper;
 
+import org.lwjgl.opengl.GL11;
+
+import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.EmotionHelper;
+
 /**
  * HeavyCruiserRi - PinkaLulan 2015/2/3
  * Created using Tabula 4.1.1
  */
-public class ModelHeavyCruiserRi extends ModelBase {
+public class ModelHeavyCruiserRi extends ModelBase implements IModelEmotion {
     public ModelRenderer BodyMain;
     public ModelRenderer Butt;
     public ModelRenderer ArmLeft;
@@ -51,6 +50,11 @@ public class ModelHeavyCruiserRi extends ModelBase {
     public ModelRenderer Head;
     public ModelRenderer Cloak;
     public ModelRenderer Hair;
+    public ModelRenderer Face0;
+    public ModelRenderer Face1;
+    public ModelRenderer Face2;
+    public ModelRenderer Face3;
+    public ModelRenderer Face4;
     public ModelRenderer GlowBodyMain;
     public ModelRenderer GlowNeck;
     public ModelRenderer GlowHead;
@@ -61,17 +65,13 @@ public class ModelHeavyCruiserRi extends ModelBase {
     public ModelRenderer GlowEquipRightBase;
     public ModelRenderer GlowEquipRightBase2;
     public ModelRenderer GlowEquipRightBase3;
-    public ModelRenderer Face0;
-    public ModelRenderer Face1;
-    public ModelRenderer Face2;
-    public ModelRenderer Face3;
-    public ModelRenderer Face4;
     public ModelRenderer ShoesRight;
     public ModelRenderer ShoesLeft;
     public ModelRenderer HeadTail0;
     public ModelRenderer HeadTail1;
     public ModelRenderer HeadTail2;
     
+    private Random rand = new Random();
     private int startEmo2 = 0;
 
     public ModelHeavyCruiserRi() {
@@ -149,7 +149,8 @@ public class ModelHeavyCruiserRi extends ModelBase {
         this.setRotateAngle(ArmLeft, 0.0F, 0.0F, -0.2617993877991494F);
         this.Neck = new ModelRenderer(this, 76, 3);
         this.Neck.setRotationPoint(0.0F, -12.0F, 0.0F);
-        this.Neck.addBox(-6F, 0F, -6F, 12, 3, 12, 0.0F);
+        this.Neck.addBox(-7F, 0F, -6F, 14, 3, 12, 0.0F);
+        this.setRotateAngle(Neck, 0.1F, 0F, 0F);
         this.ShoesRight = new ModelRenderer(this, 52, 52);
         this.ShoesRight.setRotationPoint(0.0F, 0.0F, 0.0F);
         this.ShoesRight.addBox(-3.5F, 17.0F, -3.5F, 7, 9, 7, 0.0F);
@@ -217,19 +218,19 @@ public class ModelHeavyCruiserRi extends ModelBase {
         this.setRotateAngle(HeadTail2, -0.1745F, 0.0F, 0.0F);
         this.Face0 = new ModelRenderer(this, 98, 53);
         this.Face0.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face0.addBox(-7.0F, -12.5F, -7.0F, 14, 14, 1, 0.0F);
+        this.Face0.addBox(-7.0F, -13.7F, -7.0F, 14, 14, 1, 0.0F);
         this.Face1 = new ModelRenderer(this, 98, 68);
         this.Face1.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face1.addBox(-7.0F, -12.5F, -7.0F, 14, 14, 1, 0.0F);
+        this.Face1.addBox(-7.0F, -13.7F, -7.0F, 14, 14, 1, 0.0F);
         this.Face2 = new ModelRenderer(this, 98, 83);
         this.Face2.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face2.addBox(-7.0F, -12.5F, -7.0F, 14, 14, 1, 0.0F);
+        this.Face2.addBox(-7.0F, -13.7F, -7.0F, 14, 14, 1, 0.0F);
         this.Face3 = new ModelRenderer(this, 98, 98);
         this.Face3.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face3.addBox(-7.0F, -12.5F, -7.0F, 14, 14, 1, 0.0F);
+        this.Face3.addBox(-7.0F, -13.7F, -7.0F, 14, 14, 1, 0.0F);
         this.Face4 = new ModelRenderer(this, 98, 113);
         this.Face4.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face4.addBox(-7.0F, -12.5F, -7.0F, 14, 14, 1, 0.0F);
+        this.Face4.addBox(-7.0F, -13.7F, -7.0F, 14, 14, 1, 0.0F);
         this.EquipRightTube1.addChild(this.EquipRightTube2);
         this.BodyMain.addChild(this.LegRight);
         this.BodyMain.addChild(this.BoobL);
@@ -268,9 +269,10 @@ public class ModelHeavyCruiserRi extends ModelBase {
         this.GlowBodyMain = new ModelRenderer(this, 0, 0);
         this.GlowBodyMain.setRotationPoint(0.0F, -14.0F, 0.0F);
         this.GlowNeck = new ModelRenderer(this, 0, 0);
-        this.GlowNeck.setRotationPoint(0.0F, -13.0F, 0.0F);
+        this.GlowNeck.setRotationPoint(0.0F, -12.0F, 0.0F);
         this.GlowHead = new ModelRenderer(this, 42, 100);
         this.GlowHead.setRotationPoint(0.0F, 0.0F, 0.0F);
+        
         //裝備牙齒支架, 由於裝備不動, 可合併到手臂支架
         this.GlowArmLeft = new ModelRenderer(this, 0, 0);
         this.GlowArmLeft.setRotationPoint(7F, -10F, 0F);
@@ -298,6 +300,12 @@ public class ModelHeavyCruiserRi extends ModelBase {
         this.GlowBodyMain.addChild(this.GlowArmLeft);
         this.GlowBodyMain.addChild(this.GlowArmRight);
         this.GlowNeck.addChild(this.GlowHead);
+        this.GlowHead.addChild(this.Face0);
+        this.GlowHead.addChild(this.Face1);
+        this.GlowHead.addChild(this.Face2);
+        this.GlowHead.addChild(this.Face3);
+        this.GlowHead.addChild(this.Face4);
+        
         this.GlowArmLeft.addChild(this.GlowEquipLeftBase);
         this.GlowEquipLeftBase.addChild(this.GlowEquipLeftBase3);
         this.GlowEquipLeftBase3.addChild(this.EquipLeftTooth);
@@ -306,11 +314,6 @@ public class ModelHeavyCruiserRi extends ModelBase {
         this.GlowEquipRightBase.addChild(this.GlowEquipRightBase3);
         this.GlowEquipRightBase2.addChild(this.EquipRightTooth1);
         this.GlowEquipRightBase3.addChild(this.EquipRightTooth2);
-        this.GlowHead.addChild(this.Face0);
-        this.GlowHead.addChild(this.Face1);
-        this.GlowHead.addChild(this.Face2);
-        this.GlowHead.addChild(this.Face3);
-        this.GlowHead.addChild(this.Face4);
     }
 
     @Override
@@ -351,7 +354,7 @@ public class ModelHeavyCruiserRi extends ModelBase {
       
       showEquip(ent);
       
-      rollEmotion(ent);
+      EmotionHelper.rollEmotion(this, ent);
       
       motionHumanPos(f, f1, f2, f3, f4, ent);
 
@@ -384,8 +387,8 @@ public class ModelHeavyCruiserRi extends ModelBase {
   		float addk2 = 0;
   		
   		//leg move parm
-  		addk1 = MathHelper.cos(f * 0.6662F) * 1.4F * f1;
-	  	addk2 = MathHelper.cos(f * 0.6662F + 3.1415927F) * 1.4F * f1;
+  		addk1 = MathHelper.cos(f * 0.6662F) * 1.4F * f1 + 0.15F;
+	  	addk2 = MathHelper.cos(f * 0.6662F + 3.1415927F) * 1.4F * f1 + 0.15F;
 
   	    //移動頭部 使其看人, 不看人時持續擺動頭部
 	    this.Head.rotateAngleY = f3 / 57.29578F;	//左右角度 角度轉成rad 即除以57.29578
@@ -396,15 +399,19 @@ public class ModelHeavyCruiserRi extends ModelBase {
 	    this.Cloak.rotateAngleX = angleZ * 0.2F + 1F;	    
   	    this.BoobL.rotateAngleX = -angleZ * 0.06F - 0.73F;
   	    this.BoobR.rotateAngleX = -angleZ * 0.06F - 0.73F;
+  	    //body
+  	    this.BodyMain.rotateAngleX = -0.15F;
+  	    //arm
 	  	this.ArmLeft.rotateAngleZ = angleZ * -0.15F - 0.3F;
   	    this.ArmRight.rotateAngleZ = angleZ * 0.15F + 0.3F;
-	    this.ArmLeft.rotateAngleX = 0F;
-		this.ArmRight.rotateAngleX = 0F;
-		this.BodyMain.rotateAngleX = 0F;
+	    this.ArmLeft.rotateAngleX = 0.2F;
+		this.ArmRight.rotateAngleX = 0.2F;
+		//leg
 		this.LegLeft.rotateAngleZ = 0.087F;
 		this.LegRight.rotateAngleZ = -0.087F;
 		this.LegLeft.rotateAngleY = 0F;
 		this.LegRight.rotateAngleY = 0F;
+		//hair
 		this.HeadTail0.rotateAngleX = angleZ * 0.05F + 0.26F;
 		this.HeadTail1.rotateAngleX = angleZ * 0.1F + 0.09F;
 	    
@@ -429,7 +436,7 @@ public class ModelHeavyCruiserRi extends ModelBase {
 		    	startEmo2 = 360;
 		    	ent.setStartEmotion2(startEmo2);	//cd = 6sec  	
 		    	
-		    	if(ent.getRNG().nextInt(3) == 0) {
+		    	if(rand.nextInt(3) == 0) {
 		    		ent.setStateFlag(ID.F.HeadTilt, true);
 		    	}
 		    	else {
@@ -545,88 +552,10 @@ public class ModelHeavyCruiserRi extends ModelBase {
     		this.HeadTail0.isHidden = true;
     	}
   	}
-  	
-    //隨機抽取顯示的表情 
-    private void rollEmotion(BasicEntityShip ent) { 
-    	switch(ent.getStateEmotion(ID.S.Emotion)) {
-    	case ID.Emotion.BLINK:	//blink
-    		EmotionBlink(ent);
-    		break;
-    	case ID.Emotion.T_T:	//cry
-    		if(ent.getStartEmotion() <= 0) { setFace(2); }
-    		break;
-    	case ID.Emotion.O_O:
-    		EmotionStaring(ent);
-			break;
-    	case ID.Emotion.HUNGRY:
-    		if(ent.getStartEmotion() <= 0) { setFace(4); }
-			break;
-    	case ID.Emotion.BORED:
-    	default:						//normal face
-    		//reset face to 0 or blink if emotion time > 0
-    		if(ent.getStartEmotion() <= 0) {
-    			setFace(0);
-    		}
-    		else {
-    			EmotionBlink(ent);
-    		}
-    		//roll emotion (3 times) every 6 sec
-    		//1 tick in entity = 3 tick in model class (20 vs 60 fps)
-    		if(ent.ticksExisted % 120 == 0) {  			
-        		int emotionRand = ent.getRNG().nextInt(10);   		
-        		if(emotionRand > 7) {
-        			EmotionBlink(ent);
-        		} 		
-        	}
-    		break;
-    	}	
-    }
-    
-	private void EmotionStaring(BasicEntityShip ent) {	
-    	if(ent.getStartEmotion() == -1) {
-			ent.setStartEmotion(ent.ticksExisted);		//表情開始時間
-		}
-    	
-    	int EmoTime = ent.ticksExisted - ent.getStartEmotion();
-    	
-    	if(EmoTime > 41) {	//reset face
-    		setFace(0);
-			ent.setStateEmotion(ID.S.Emotion, ID.Emotion.NORMAL, false);
-			ent.setStartEmotion(-1);
-    	}
-    	else if(EmoTime > 1) {
-    		setFace(3);
-    	}
-	}
 
-	//眨眼動作, this emotion is CLIENT ONLY, no sync packet required
-	private void EmotionBlink(IShipEmotion ent) {
-  		if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.NORMAL) {	//要在沒表情狀態才做表情		
-  			ent.setStartEmotion(ent.getTickExisted());		//表情開始時間
-  			ent.setStateEmotion(ID.S.Emotion, ID.Emotion.BLINK, false);	//標記表情為blink
-  			setFace(1);
-  		}
-  		
-  		int EmoTime = ent.getTickExisted() - ent.getStartEmotion();
-    	 		
-    	if(EmoTime > 46) {	//reset face
-    		setFace(0);
-			ent.setStateEmotion(ID.S.Emotion, ID.Emotion.NORMAL, false);
-			ent.setStartEmotion(-1);
-    	}
-    	else if(EmoTime > 35) {
-    		setFace(1);
-    	}
-    	else if(EmoTime > 25) {
-    		setFace(0);
-    	}
-    	else if(EmoTime > -1) {
-    		setFace(1);
-    	}
-  	}
-  	
   	//設定顯示的臉型
-  	private void setFace(int emo) {
+	@Override
+  	public void setFace(int emo) {
   		switch(emo) {
   		case 0:
   			this.Face0.isHidden = false;

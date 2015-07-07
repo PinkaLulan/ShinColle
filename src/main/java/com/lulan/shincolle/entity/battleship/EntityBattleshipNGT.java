@@ -80,12 +80,16 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
 
 	public EntityBattleshipNGT(World world) {
 		super(world);
-		this.setSize(0.8F, 1.6F);	//碰撞大小 跟模型大小無關
+		this.setSize(0.6F, 1.8F);	//碰撞大小 跟模型大小無關
 //		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityBattleshipNGT.name"));
 		this.ShipType = ID.ShipType.BATTLESHIP;
 		this.ShipID = ID.S_BattleshipNagato;
 		this.ModelPos = new float[] {0F, 15F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);
+		
+		//set attack type
+		this.StateFlag[ID.F.AtkType_AirLight] = false;
+		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
 		
 		this.initTypeModify();
 	}
@@ -93,7 +97,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
 	//for morph
 	@Override
 	public float getEyeHeight() {
-		return this.height;
+		return 1.7375F;
 	}
 	
 	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc

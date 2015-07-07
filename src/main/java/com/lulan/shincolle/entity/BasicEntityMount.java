@@ -38,6 +38,7 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
@@ -89,7 +90,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
     //平常音效
     @Override
 	protected String getLivingSound() {
-		if(ConfigHandler.useWakamoto && rand.nextInt(8) == 0) {
+		if(ConfigHandler.useWakamoto && rand.nextInt(10) == 0) {
 			return Reference.MOD_ID+":ship-waka_idle";
 		}
 		return null;
@@ -98,7 +99,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   	//受傷音效
     @Override
 	protected String getHurtSound() {
-		if(ConfigHandler.useWakamoto && rand.nextInt(8) == 0) {
+		if(ConfigHandler.useWakamoto && rand.nextInt(10) == 0) {
 			return Reference.MOD_ID+":ship-waka_hurt";
 		}
 		return null;
@@ -152,9 +153,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 			//moving
 			this.tasks.addTask(21, new EntityAIOpenDoor(this, true));	//0000
 			this.tasks.addTask(22, new EntityAIShipFloating(this));		//0101
-			this.tasks.addTask(23, new EntityAIShipWatchClosest(this, EntityPlayer.class, 6F, 0.08F)); //0010
 //			this.tasks.addTask(24, new EntityAIWander(this, 0.8D));		//0001
-			this.tasks.addTask(25, new EntityAILookIdle(this));			//0011
 		}
 	}
 	
@@ -335,10 +334,11 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		super.onUpdate();
 		
 		//apply movement by key pressed
-		if(this.seat2 != null && this.seat2.riddenByEntity != null && this.keyPressed > 0) {
+		if(this.host != null && !host.getStateFlag(ID.F.NoFuel) &&
+		   this.seat2 != null && this.seat2.riddenByEntity != null && this.keyPressed > 0) {
 			EntityLivingBase rider2 = (EntityLivingBase)this.seat2.riddenByEntity;
-			float yaw = rider2.rotationYawHead % 360F / 57.2958F;
-			float pitch = rider2.rotationPitch % 360F / 57.2958F;
+			float yaw = rider2.rotationYawHead % 360F * Values.N.RAD_MUL;
+			float pitch = rider2.rotationPitch % 360F * Values.N.RAD_MUL;
 			
 			this.applyMovement(pitch, yaw);
 			this.rotationYaw = rider2.rotationYaw;
@@ -349,10 +349,33 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		
 		//sync rotate angle
 		if(this.riddenByEntity != null) {
-			((EntityLivingBase)this.riddenByEntity).rotationYawHead = this.rotationYawHead;
-			((EntityLivingBase)this.riddenByEntity).prevRotationYaw = this.prevRotationYaw;
-			((EntityLivingBase)this.riddenByEntity).rotationYaw = this.rotationYaw;
-			((EntityLivingBase)this.riddenByEntity).renderYawOffset = this.renderYawOffset;
+			//若沒有在移動中, 則強制對齊rider朝向
+			if(this.getShipNavigate().noPath()) {
+				this.rotationYawHead = ((EntityLivingBase)this.riddenByEntity).rotationYawHead;
+				this.prevRotationYaw = ((EntityLivingBase)this.riddenByEntity).prevRotationYaw;
+				this.rotationYaw = ((EntityLivingBase)this.riddenByEntity).rotationYaw;
+				this.renderYawOffset = ((EntityLivingBase)this.riddenByEntity).renderYawOffset;
+			}
+			//若移動中, 則rider對齊mount朝向
+			else {
+				((EntityLivingBase)this.riddenByEntity).rotationYawHead = this.rotationYawHead;
+				((EntityLivingBase)this.riddenByEntity).prevRotationYaw = this.prevRotationYaw;
+				((EntityLivingBase)this.riddenByEntity).rotationYaw = this.rotationYaw;
+				((EntityLivingBase)this.riddenByEntity).renderYawOffset = this.renderYawOffset;
+			}
+			
+			//若有rider2且移動時, 則改為rider2朝向
+			if(this.riddenByEntity2 != null && this.keyPressed != 0) {
+				this.rotationYawHead = riddenByEntity2.rotationYawHead;
+				this.prevRotationYaw = riddenByEntity2.prevRotationYaw;
+				this.rotationYaw = riddenByEntity2.rotationYaw;
+				this.renderYawOffset = riddenByEntity2.renderYawOffset;
+				
+				((EntityLivingBase)this.riddenByEntity).rotationYawHead = this.rotationYawHead;
+				((EntityLivingBase)this.riddenByEntity).prevRotationYaw = this.prevRotationYaw;
+				((EntityLivingBase)this.riddenByEntity).rotationYaw = this.rotationYaw;
+				((EntityLivingBase)this.riddenByEntity).renderYawOffset = this.renderYawOffset;
+			}
 		}
 
 		//client side
@@ -1048,6 +1071,12 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	}
 	
 	@Override
+	public boolean getAttackType(int par1) {
+		if(host != null) return host.getAttackType(par1);
+		return true;
+	}
+	
+	@Override
 	public float getEffectEquip(int id) {
 		if(host != null) return host.getEffectEquip(id);
 		return 0F;
@@ -1196,7 +1225,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
     //set model rotate angle, par1 = 0:X, 1:Y, 2:Z
     @Override
 	public void setModelRotate(int par1, float par2) {}
-
+    
 	
 }
 
