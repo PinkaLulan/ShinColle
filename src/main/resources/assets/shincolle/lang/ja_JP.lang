@@ -1,0 +1,212 @@
+// 翻訳 HawkEye
+// ※ わざとひらがなを使わずカタカナにし、カタカナが続く場合は スペースを空けるようにしてあります。
+# Keys
+keys.shincolle.category=Shin Colle
+keys.shincolle.repair=修復
+
+# Creative Tab
+itemGroup.shincolle=Shin Colle
+
+# Block
+tile.shincolle:BlockAbyssium.name=深海金属ブロック
+tile.shincolle:BlockDesk.name=深海ノ ノード
+tile.shincolle:BlockGrudge.name=怨念ノ塊
+tile.shincolle:BlockGrudgeHeavy.name=大量ノ怨念ノ塊
+tile.shincolle:BlockPolymetal.name=多金属ブロック
+tile.shincolle:BlockPolymetalGravel.name=多金属砂利
+tile.shincolle:BlockPolymetalOre.name=多金属鉱石
+tile.shincolle:BlockSmallShipyard.name=深海ノ熱水噴出孔
+
+# Container
+container.shincolle:SmallShipyard=深海ノ熱水噴出孔
+container.shincolle:LargeShipyard=超深海ノ熱水噴出孔
+
+# Item
+item.shincolle:AbyssMetal.name=深海金属インゴット
+item.shincolle:AbyssMetal1.name=深海金属ノ小サナ塊
+item.shincolle:Ammo.name=怨念ガ コモッタ弾薬
+item.shincolle:Ammo1.name=怨念ガ コモッタ弾薬箱
+item.shincolle:Ammo2.name=怨念ガ コモッタ重弾薬
+item.shincolle:Ammo3.name=怨念ガ コモッタ重弾薬箱
+item.shincolle:BucketRepair.name=高速修復材
+item.shincolle:InstantConMat.name=高速建造材
+item.shincolle:KaitaiHammer.name=解体ハンマー
+item.shincolle:Grudge.name=怨念
+item.shincolle:MarriageRing.name=棲艦ノ結婚指輪
+item.shincolle:ModernKit.name=近代化改修ツール
+item.shincolle:OwnerPaper.name=棲艦オーナー変更用紙
+item.shincolle:PointerItem.name=ヲ級ノ命令ノ杖
+item.shincolle:RepairGoddess.name=深海ノ女神ノ怨念
+item.shincolle:ToyAirplane.name=零式艦戦21型 (1/48スケール)
+
+# Equip
+item.shincolle:EquipCannon.name=5inch単装砲
+item.shincolle:EquipCannon1.name=6inch単装砲
+item.shincolle:EquipCannon2.name=5inch連装砲
+item.shincolle:EquipCannon3.name=6inch単装速射砲
+item.shincolle:EquipCannon4.name=5inch連装両用莢砲
+item.shincolle:EquipCannon5.name=12.5inch連装副砲
+item.shincolle:EquipCannon6.name=14inch連装砲
+item.shincolle:EquipCannon7.name=16inch連装砲
+item.shincolle:EquipCannon8.name=20inch連装砲
+item.shincolle:EquipCannon9.name=8inch三連装砲
+item.shincolle:EquipCannon10.name=16inch三連装砲
+item.shincolle:EquipCannon11.name=15inch要塞砲
+item.shincolle:EquipRadar.name=対空電探 Mk.I
+item.shincolle:EquipRadar1.name=対空電探 Mk.II
+item.shincolle:EquipRadar2.name=対水上電探 Mk.I
+item.shincolle:EquipRadar3.name=対水上電探 Mk.II
+item.shincolle:EquipRadar4.name=深海水中聴音機
+item.shincolle:EquipRadar5.name=深海対空電探
+item.shincolle:EquipRadar6.name=深海対水上電探
+item.shincolle:EquipRadar7.name=深海水中聴音機 Mk.II
+item.shincolle:EquipTurbine.name=深海エンジン
+item.shincolle:EquipTurbine1.name=改良型深海タービン
+item.shincolle:EquipTurbine2.name=上位型深海エンジン
+item.shincolle:EquipTorpedo.name=21inch魚雷 Mk.I
+item.shincolle:EquipTorpedo1.name=21inch魚雷 Mk.II
+item.shincolle:EquipTorpedo2.name=22inch魚雷 Mk.II
+item.shincolle:EquipTorpedo3.name=深海烏賊魚雷
+item.shincolle:EquipTorpedo4.name=深海高速魚雷
+item.shincolle:EquipAirplane.name=深海棲艦攻 Mk.I
+item.shincolle:EquipAirplane1.name=深海棲艦攻 Mk.II
+item.shincolle:EquipAirplane2.name=深海棲艦攻 Mk.III
+item.shincolle:EquipAirplane3.name=深海復讐艦攻
+item.shincolle:EquipAirplane4.name=深海棲艦戦 Mk.I
+item.shincolle:EquipAirplane5.name=深海棲艦戦 Mk.II
+item.shincolle:EquipAirplane6.name=深海棲艦戦 Mk.III
+item.shincolle:EquipAirplane7.name=深海飛び魚艦戦
+item.shincolle:EquipAirplane8.name=深海猫艦戦
+item.shincolle:EquipAirplane9.name=深海棲艦爆 Mk.I
+item.shincolle:EquipAirplane10.name=深海棲艦爆 Mk.II
+item.shincolle:EquipAirplane11.name=深海飛び魚艦爆 Bomber
+item.shincolle:EquipAirplane12.name=深海地獄艦爆
+item.shincolle:EquipAirplane13.name=深海棲艦偵察機
+item.shincolle:EquipAirplane14.name=深海飛び魚偵察機
+item.shincolle:EquipArmor.name=深海装甲
+item.shincolle:EquipArmor1.name=重型深海装甲
+
+# Spawn Egg
+item.shincolle:smallegg.name=小型棲艦建造
+item.shincolle:largeegg.name=大型棲艦建造
+item.shincolle:shipegg2.name=駆逐イ級
+item.shincolle:shipegg3.name=駆逐ロ級
+item.shincolle:shipegg4.name=駆逐ハ級
+item.shincolle:shipegg5.name=駆逐ニ級
+item.shincolle:shipegg11.name=重巡リ級
+item.shincolle:shipegg14.name=空母ヲ級
+item.shincolle:shipegg16.name=戦艦タ級
+item.shincolle:shipegg17.name=戦艦レ級
+item.shincolle:shipegg23.name=飛行場姫
+item.shincolle:shipegg28.name=戦艦棲姫
+item.shincolle:shipegg30.name=港湾棲姫
+item.shincolle:shipegg33.name=北方棲姫
+item.shincolle:shipegg35.name=空母水鬼
+item.shincolle:shipegg38.name=駆逐艦 島風
+item.shincolle:shipegg238.name=駆逐艦 島風 改
+item.shincolle:shipegg39.name=戦艦 長門
+item.shincolle:shipegg239.name=戦艦 長門 改
+item.shincolle:shipegg40.name=潜水艦 U-511
+item.shincolle:shipegg240.name=潜水艦 U-511 改
+item.shincolle:shipegg41.name=潜水艦 呂500
+item.shincolle:shipegg241.name=潜水艦 呂500 (Mob)
+
+# Entity
+entity.shincolle.EntityAirfieldHime.name=飛行場姫
+entity.shincolle.EntityAirplane.name=深海棲艦戦
+entity.shincolle.EntityAirplaneTakoyaki.name=深海復讐艦攻
+entity.shincolle.EntityBattleshipHime.name=戦艦棲姫
+entity.shincolle.EntityBattleshipNGT.name=戦艦 長門
+entity.shincolle.EntityBattleshipNGTBoss.name=戦艦 長門 改
+entity.shincolle.EntityBattleshipRe.name=戦艦レ級
+entity.shincolle.EntityBattleshipTa.name=戦艦タ級
+entity.shincolle.EntityCarrierWD.name=空母水鬼
+entity.shincolle.EntityCarrierWo.name=空母ヲ級
+entity.shincolle.EntityDestroyerHa.name=駆逐ハ級
+entity.shincolle.EntityDestroyerI.name=駆逐イ級
+entity.shincolle.EntityDestroyerNi.name=駆逐ニ級
+entity.shincolle.EntityDestroyerRo.name=駆逐ロ級
+entity.shincolle.EntityDestroyerShimakaze.name=駆逐艦 島風
+entity.shincolle.EntityDestroyerShimakazeBoss.name=駆逐艦 島風 改
+entity.shincolle.EntityFloatingFort.name=浮遊要塞
+entity.shincolle.EntityHarbourHime.name=港湾棲姫
+entity.shincolle.EntityHeavyCruiserRi.name=重巡リ級
+entity.shincolle.EntityMountAfH.name=空軍基地
+entity.shincolle.EntityMountBaH.name=三連装砲
+entity.shincolle.EntityMountCaWD.name=深海航空母艦
+entity.shincolle.EntityMountHbH.name=港湾基地
+entity.shincolle.EntityMountSeat2.name=座席2
+entity.shincolle.EntityNorthernHime.name=北方棲姫
+entity.shincolle.EntityRensouhou.name=連装砲
+entity.shincolle.EntityRensouhouBoss.name=連装砲 改
+entity.shincolle.EntityRensouhouS.name=深海連装砲
+entity.shincolle.EntitySubmRo500.name=潜水艦 呂500
+entity.shincolle.EntitySubmRo500Mob.name=潜水艦 呂500 (Mob)
+entity.shincolle.EntitySubmU511.name=潜水艦 U-511
+entity.shincolle.EntitySubmU511Mob.name=潜水艦 U-511 改
+
+# GUI: Ship Inventory Top
+gui.shincolle:level=レベル
+gui.shincolle:hp=HP
+
+# GUI: Ship Inventory: Attributes
+gui.shincolle:firepower1=火力
+gui.shincolle:firepower2=火力(艦載機)
+gui.shincolle:torpedo=魚雷
+gui.shincolle:airfirepower=火力(艦載機)
+gui.shincolle:airtorpedo=魚雷(艦載機)
+gui.shincolle:armor=装甲
+gui.shincolle:movespeed=航行速度
+gui.shincolle:attackspeed=装弾速度
+gui.shincolle:range=射程
+gui.shincolle:kills=キル数
+gui.shincolle:exp=経験値
+gui.shincolle:ammolight=軽型弾薬
+gui.shincolle:ammoheavy=重型弾薬
+gui.shincolle:grudge=怨念
+gui.shincolle:owner=オーナー
+gui.shincolle:marriage=婚姻状態
+gui.shincolle:married=既婚
+gui.shincolle:unmarried=未婚
+gui.shincolle:airplanelight=軽型艦載機
+gui.shincolle:airplaneheavy=重型艦載機
+
+# GUI: Ship Inventory: AI options
+gui.shincolle:canmelee=直接攻撃
+gui.shincolle:canlightattack=軽型弾薬ノ使用
+gui.shincolle:canheavyattack=重型弾薬ノ使用
+gui.shincolle:canairlightattack=軽型艦載機ノ使用
+gui.shincolle:canairheavyattack=重型艦載機ノ使用
+gui.shincolle:followmin=フォロー最短距離
+gui.shincolle:followmax=フォロー最長距離
+gui.shincolle:fleehp=撤退スル HP(%%)
+gui.shincolle:auraeffect=オーナー強化
+gui.shincolle:targetAI=受動的ニ攻撃?
+gui.shincolle:onsightAI=視界内ノミ追撃?
+
+# GUI: Shipyard
+gui.shincolle:nomaterial=資材不足
+gui.shincolle:nofuel=燃料不足
+
+# Item Tooltip
+gui.shincolle:notforcarrier=空母使用不可
+gui.shincolle:carrieronly=空母限定
+gui.shincolle:critical=クリティカル率
+gui.shincolle:doublehit=二連続ヒット率
+gui.shincolle:triplehit=三連続ヒット率
+gui.shincolle:missreduce=命中率上昇率
+gui.shincolle:missrate=失敗確率
+gui.shincolle:missrateair=失敗率(艦載機)
+gui.shincolle:modernkit=棲艦ニ向ケテ右クリック スルト ランダム デ パラメータ +1.
+gui.shincolle:repairgoddess=致命的ナ攻撃カラノ撃沈ヲ防グ.
+gui.shincolle:ringText=結婚シタ数
+gui.shincolle:eggText=要求レベル
+gui.shincolle:pointer0=シングルモード
+gui.shincolle:pointer1=グループモード
+gui.shincolle:pointer2=フォーメーションモード
+gui.shincolle:pointer3=(シフト左クリック デ モード切替)
+gui.shincolle:pointer4=チーム
+
+# Chat message
+chat.shincolle:bossspawn1=水面ニ艦娘ガ出現!
+chat.shincolle:bossspawn2=艦娘ノ侵略ヲ観測!
