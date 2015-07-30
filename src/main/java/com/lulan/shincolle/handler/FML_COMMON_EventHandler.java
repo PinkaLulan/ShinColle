@@ -44,10 +44,10 @@ import cpw.mods.fml.common.gameevent.TickEvent.PlayerTickEvent;
 
 public class FML_COMMON_EventHandler {
 	
-	private static GameSettings keySet;
+	private GameSettings keySet;
 	//keys: W S A D J
-	public static int rideKeys = 0;
-	public static boolean openGUI = false;
+	public int rideKeys = 0;
+	public int openGUI = 0;
 	
 
 	//player update tick, tick TWICE every tick (preTick + postTick) and BOTH SIDE (client + server)
@@ -266,20 +266,32 @@ public class FML_COMMON_EventHandler {
 		
 		//pointer item control
 		if(player.inventory.getCurrentItem() != null && player.inventory.getCurrentItem().getItem() instanceof PointerItem) {
+			//get pointer item
+			ItemStack pointer = player.inventory.getCurrentItem();
+			
 			//ctrl + xx
 			int getKey = -1;
+			int orgCurrentItem = player.inventory.currentItem;
 			if(keySet.keyBindSprint.getIsKeyPressed()) {
 				//check hotbar key 0~8
 				for(int i = 0; i < keySet.keyBindsHotbar.length; i++) {
 					if(keySet.keyBindsHotbar[i].getIsKeyPressed()) {
 						getKey = i;
+						
+						//儲存快捷位置到權杖, 使權杖能將快捷列回復到權杖上 (CLIENT ONLY)
+						if(!pointer.hasTagCompound()) {
+							pointer.setTagCompound(new NBTTagCompound());
+						}
+						pointer.getTagCompound().setBoolean("chgHB", true);
+						pointer.getTagCompound().setInteger("orgHB", orgCurrentItem);
+						
 						break;
 					}
 				}
-				LogHelper.info("DEBUG : key input: pointer set team "+getKey);
+				LogHelper.info("DEBUG : key input: pointer set team: "+getKey+" currItem: "+orgCurrentItem);
 				if(getKey >= 0) {
 					//change team id
-					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, -8, getKey, 0));
+					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, -8, getKey, orgCurrentItem));
 				}
 			}
 		}
@@ -331,14 +343,14 @@ public class FML_COMMON_EventHandler {
 				//inventory, open ship GUI
 				if(keySet.keyBindInventory.isPressed()) {
 					LogHelper.info("DEBUG : key event: open ship GUI");
-					this.openGUI = true;
+					this.openGUI = 1;
 				}
 				else {	//放開按鍵時會跑到此選項, 設回false
-					this.openGUI = false;
+					this.openGUI = 0;
 				}
 				
 				//send control packet
-				CommonProxy.channelG.sendToServer(new C2SInputPackets(0));
+				CommonProxy.channelG.sendToServer(new C2SInputPackets(0, this.rideKeys, this.openGUI));
 			}
 		}//end is riding
 	}//end key event

@@ -17,6 +17,7 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.BasicTileEntity;
 import com.lulan.shincolle.utility.EntityHelper;
 
+import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -400,13 +401,13 @@ public class C2SGUIPackets implements IMessage {
 				this.worldID = buf.readInt();
 				this.button = buf.readInt();	//no use
 				this.value = buf.readInt();		//team id
-				this.value2 = buf.readInt();	//no use
+				this.value2 = buf.readInt();	//org current item
 				
 				Entity getEnt = EntityHelper.getEntityByID(entityID, worldID, false);
 				
 				if(getEnt instanceof EntityPlayer) {
 					this.player = (EntityPlayer) getEnt;
-					boolean select = (value > 0 ? true : false);
+					this.player.inventory.currentItem = this.value2;
 	
 					ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 					

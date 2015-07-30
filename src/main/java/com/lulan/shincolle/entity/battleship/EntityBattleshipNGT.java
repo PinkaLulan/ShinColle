@@ -120,12 +120,14 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
   		super.onLivingUpdate();
           
   		if(worldObj.isRemote) {
-  			if(this.ticksExisted % 5 == 0) {
+  			if(this.ticksExisted % 10 == 0) {
   				if(getStateEmotion(ID.S.Phase) > 0) {
    	  				//生成氣彈特效
   	  				ParticleHelper.spawnAttackParticleAtEntity(this, 0.1D, 1D, 0D, (byte)1);
   				}
+  			}
 			
+  			if(this.ticksExisted % 5 == 0) {
   				if(getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
   					double smokeY = posY + 1.6D;
   					if(this.isSitting()) smokeY = posY + 0.9D;

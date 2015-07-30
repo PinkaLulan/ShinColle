@@ -376,12 +376,25 @@ public class PointerItem extends BasicItem {
  	 */
 	@Override
 	public void onUpdate(ItemStack item, World world, Entity player, int slot, boolean inUse) {
-//		LogHelper.info("DEBUG : on update: "+inUse);
+		if(world.isRemote && !inUse) {
+			//restore hotbar position
+			if(item.hasTagCompound() && item.getTagCompound().getBoolean("chgHB")) {
+				int orgCurrentItem = item.getTagCompound().getInteger("orgHB");
+				LogHelper.info("DEBUG : change hotbar "+((EntityPlayer)player).inventory.currentItem+" to "+orgCurrentItem);
+				
+				if(((EntityPlayer)player).inventory.currentItem != orgCurrentItem) {
+					((EntityPlayer)player).inventory.currentItem = orgCurrentItem;
+					CommonProxy.channelG.sendToServer(new C2SInputPackets(1, orgCurrentItem, 0));
+					item.getTagCompound().setBoolean("chgHB", false);
+				}
+			}
+		}
+		
+		//show team mark
 		if(inUse || ConfigHandler.alwaysShowTeam) {
 			if(player instanceof EntityPlayer) {
 				//client side
 				if(world.isRemote) {
-//					LogHelper.info("DEBUG : look "+player.rotationYaw+" "+player.rotationPitch);
 					if(player.ticksExisted % 10 == 0) {
 						//抓視線上的東西 (debug)
 //						MovingObjectPosition hitObj = EntityHelper.getPlayerMouseOverEntity(64D, 1F);

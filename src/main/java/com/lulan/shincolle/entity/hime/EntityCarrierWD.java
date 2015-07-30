@@ -264,7 +264,7 @@ public class EntityCarrierWD extends BasicEntityShipLarge {
   	@Override
   	public float[] getModelPos() {
   		if(this.isRiding()) {
-  			ModelPos[1] = -25F;
+  			ModelPos[1] = -15F;
   		}
   		else {
   			ModelPos[1] = 15F;

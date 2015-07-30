@@ -272,13 +272,19 @@ public class EntityHelper {
 		return false;
 	}
 	
-	/** */
+	/** check player is OP */
 	public static boolean checkOP(EntityPlayer player) {
-		MinecraftServer server = ServerProxy.getServer();
-		return server.getConfigurationManager().func_152596_g(player.getGameProfile());
+		if(player != null) {
+			if(!player.worldObj.isRemote) {
+				MinecraftServer server = ServerProxy.getServer();
+				return server.getConfigurationManager().func_152596_g(player.getGameProfile());
+			}
+		}
+		
+		return false;
 	}
 	
-	/**get entity by ID */
+	/** get entity by ID */
 	public static Entity getEntityByID(int entityID, int worldID, boolean isClient) {
 		World world;
 		

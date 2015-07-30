@@ -116,56 +116,40 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
     			//若顯示裝備時, 則生成眼睛煙霧特效 (client only)
     			if(getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
     				//set origin position
-    				float[] eyePosL = new float[] {0.7F, 0.3F, 1F};
-    				float[] eyePosR = new float[] {0.7F, 0.3F, -1F};
-    				float radYaw = 0F;
-    				float radPitch = 0F;
-    				float sinPitch = 0F;
-    				
-    				//get rotate degree (rad)
-    				radYaw = this.rotationYawHead / 57.2957F;
-    				radPitch = this.rotationPitch / 57.2957F;
-    				sinPitch = MathHelper.sin(radPitch);
-
-    				//低頭或抬頭, 眼睛位置移動 (由於頭部旋轉中心跟特效旋轉中心不同, 故要加上此offset)
-    				if(radPitch > 0) {	//低頭: Z位置往前最多1.5, Y位置往下最多1
-    					eyePosL[0] = eyePosL[0]+sinPitch*1.5F;
-    					eyePosR[0] = eyePosR[0]+sinPitch*1.5F;
-    					eyePosL[1] = eyePosL[1]-sinPitch;
-    					eyePosR[1] = eyePosR[1]-sinPitch;
-    				}
-    				else {				//抬頭: Z位置往後最多2.5, Y位置往下最多0.5
-    					eyePosL[0] = eyePosL[0]+sinPitch*2.5F;
-    					eyePosR[0] = eyePosR[0]+sinPitch*2.5F;
-    					eyePosL[1] = eyePosL[1]+sinPitch*0.5F;
-    					eyePosR[1] = eyePosR[1]+sinPitch*0.5F;
-    				}
+    				float[] eyePosL;
+    				float[] eyePosR;
+    				float radYaw = this.rotationYawHead * Values.N.RAD_MUL;
+    				float radPitch = this.rotationPitch * Values.N.RAD_MUL;
     				
     				//坐下位置計算
     				if(this.isSitting()) {
-    					eyePosL = new float[] {0F, 0.3F, -0.2F};
-        				eyePosR = new float[] {0.7F, 0F, -2F};
+    					eyePosL = new float[] {0.1F, 1.2F, -0.5F};
+        				eyePosR = new float[] {-0.9F, 1.0F, 0F};
+    				}
+    				else {
+    					eyePosL = new float[] {0.55F, 1.2F, 0.2F};
+        				eyePosR = new float[] {-0.55F, 1.2F, 0.2F};
     				}
     				
     				//側歪頭位置計算, 歪頭只會修改Y高度跟X位置
     				if(getStateEmotion(ID.S.Emotion2) == 1 && !this.isSitting()) {
-    					float[] tiltLeft = ParticleHelper.rotateParticleByAxis(eyePosL[2], eyePosL[1], -0.24F, 1F);
-    					float[] tiltRight = ParticleHelper.rotateParticleByAxis(eyePosR[2], eyePosR[1], -0.24F, 1F);
-    					eyePosL[2] = tiltLeft[0];
+    					float[] tiltLeft = ParticleHelper.rotateParticleByAxis(eyePosL[0], eyePosL[1], -0.24F, 1F);
+    					float[] tiltRight = ParticleHelper.rotateParticleByAxis(eyePosR[0], eyePosR[1], -0.24F, 1F);
+    					eyePosL[0] = tiltLeft[0];
     					eyePosL[1] = tiltLeft[1];
-    					eyePosR[2] = tiltRight[0];
+    					eyePosR[0] = tiltRight[0];
     					eyePosR[1] = tiltRight[1];
     				}
 
     				//依照新位置, 繼續旋轉Y軸
-    				eyePosL = ParticleHelper.rotateParticleByYawPitch(eyePosL[0], eyePosL[1], eyePosL[2], radYaw, radPitch, 0.5F);
-    				eyePosR = ParticleHelper.rotateParticleByYawPitch(eyePosR[0], eyePosR[1], eyePosR[2], radYaw, radPitch, 0.5F);		
+    				eyePosL = ParticleHelper.rotateParticleByYawPitch(eyePosL[0], eyePosL[1], eyePosL[2], radYaw, radPitch, 1F);
+    				eyePosR = ParticleHelper.rotateParticleByYawPitch(eyePosR[0], eyePosR[1], eyePosR[2], radYaw, radPitch, 1F);		
     				
     				//旋轉完三軸, 生成特效
-    				ParticleHelper.spawnAttackParticleAt(this.posX+eyePosL[0], this.posY+2.5D+eyePosL[1], this.posZ+eyePosL[2], 
+    				ParticleHelper.spawnAttackParticleAt(this.posX+eyePosL[0], this.posY+1.5D+eyePosL[1], this.posZ+eyePosL[2], 
                     		0D, 0.05D, 0D, (byte)16);
     				
-    				ParticleHelper.spawnAttackParticleAt(this.posX+eyePosR[0], this.posY+2.5D+eyePosR[1], this.posZ+eyePosR[2], 
+    				ParticleHelper.spawnAttackParticleAt(this.posX+eyePosR[0], this.posY+1.5D+eyePosR[1], this.posZ+eyePosR[2], 
                     		0D, 0.05D, 0D, (byte)16);
     			}			
     		}	

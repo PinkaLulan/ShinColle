@@ -98,8 +98,11 @@ public class S2CEntitySync implements IMessage {
 				if(entity2 instanceof BasicEntityShip) {
 					this.entity = (BasicEntityShip) this.entity2;
 				}
-				else {
+				else if(entity2 instanceof IShipEmotion) {
 					this.entity2e = (IShipEmotion) this.entity2;
+				}
+				else {
+					getSyncTarget = false;
 				}
 			}
 			break;
@@ -115,6 +118,12 @@ public class S2CEntitySync implements IMessage {
 			this.entity3 = EntityHelper.getEntityByID(entityID, 0, true);
 			
 			if(entity3 != null) {
+				getSyncTarget = true;
+			}
+			break;
+		case 10: //player current item sync
+			this.entity3 = EntityHelper.getEntityByID(entityID, 0, true);
+			if(entity3 instanceof EntityPlayer) {
 				getSyncTarget = true;
 			}
 			break;
@@ -326,7 +335,7 @@ public class S2CEntitySync implements IMessage {
 				break;
 			case 8:	//missile type sync
 				{
-					int value = buf.readInt();
+					this.value = buf.readInt();
 					
 					if(entity3 instanceof EntityAbyssMissile) {
 						((EntityAbyssMissile)entity3).setMissileType(value);

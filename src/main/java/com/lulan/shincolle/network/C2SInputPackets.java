@@ -28,17 +28,19 @@ public class C2SInputPackets implements IMessage {
 	private World world;
 	private EntityPlayer player;
 	private int type, worldID, entityID, value, value2;
-	private boolean openGUI;
 	
 	
 	public C2SInputPackets() {}	//必須要有空參數constructor, forge才能使用此class
 	
 	//type 0: mount key input
-	public C2SInputPackets(int type) {
+	//type 1: sync current item
+	public C2SInputPackets(int type, int value, int value2) {
         this.type = type;
+        this.value = value;
+        this.value2 = value2;
     }
 	
-	//type 1:
+	//type :
 	public C2SInputPackets(int type, Entity entity, int value, int value2) {
         this.type = type;
         this.player = (EntityPlayer) entity;
@@ -55,19 +57,10 @@ public class C2SInputPackets implements IMessage {
 	
 		switch(type) {
 		case 0:	//ship entity gui click
+		case 1:	//sync current item
 			{
 				this.value = buf.readInt();
-				this.openGUI = buf.readBoolean();
-			}
-			break;
-		case 1:	//
-			{
-//				this.entityID = buf.readInt();	//player id
-//				this.worldID = buf.readInt();	//world id
-//				this.value = buf.readInt();		//ship id
-//				this.value2 = buf.readInt();	//no use
-//				
-//				this.player = (EntityPlayer) EntityHelper.getEntityByID(entityID, worldID, false);
+				this.value2 = buf.readInt();
 			}
 			break;
 		}
@@ -78,19 +71,11 @@ public class C2SInputPackets implements IMessage {
 	public void toBytes(ByteBuf buf) {
 		switch(this.type) {
 		case 0:	//ship entity gui click
+		case 1:	//sync current item
 			{
-				buf.writeByte(0);
-				buf.writeInt(FML_COMMON_EventHandler.rideKeys);
-				buf.writeBoolean(FML_COMMON_EventHandler.openGUI);
-			}
-			break;
-		case 1:	//
-			{
-//				buf.writeByte(1);
-//				buf.writeInt(this.player.getEntityId());
-//				buf.writeInt(this.worldID);
-//				buf.writeInt(this.value);
-//				buf.writeInt(this.value2);
+				buf.writeByte((byte)this.type);
+				buf.writeInt(this.value);
+				buf.writeInt(this.value2);
 			}
 			break;
 		}
@@ -119,7 +104,7 @@ public class C2SInputPackets implements IMessage {
 							mount.keyPressed = message.value;
 							
 							//open ship GUI
-							if(message.openGUI) {
+							if(message.value2 == 1) {
 								if(mount.getOwner() != null) {
 									FMLNetworkHandler.openGui(player, ShinColle.instance, ID.G.SHIPINVENTORY, player.worldObj, mount.getOwner().getEntityId(), 0, 0);
 								}
@@ -128,8 +113,8 @@ public class C2SInputPackets implements IMessage {
 					}
 				}
 				break;
-			case 1:	//
-				
+			case 1:	//sync current item
+				player.inventory.currentItem = message.value;
 				break;
 			}//end switch
 			
