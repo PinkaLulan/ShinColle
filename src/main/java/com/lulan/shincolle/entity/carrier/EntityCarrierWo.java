@@ -1,75 +1,24 @@
 package com.lulan.shincolle.entity.carrier;
 
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityAgeable;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAIHurtByTarget;
-import net.minecraft.entity.ai.EntityAILookIdle;
-import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
-import net.minecraft.entity.ai.EntityAIOpenDoor;
-import net.minecraft.entity.ai.EntityAIOwnerHurtByTarget;
-import net.minecraft.entity.ai.EntityAIOwnerHurtTarget;
-import net.minecraft.entity.ai.EntityAIWander;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.monster.EntitySlime;
-import net.minecraft.entity.monster.IMob;
-import net.minecraft.entity.passive.EntityCow;
-import net.minecraft.entity.passive.EntitySheep;
-import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
-import com.lulan.shincolle.ShinColle;
-import com.lulan.shincolle.ai.EntityAIShipAttackOnCollide;
 import com.lulan.shincolle.ai.EntityAIShipCarrierAttack;
-import com.lulan.shincolle.ai.EntityAIShipFlee;
-import com.lulan.shincolle.ai.EntityAIShipFollowOwner;
-import com.lulan.shincolle.ai.EntityAIShipInRangeTarget;
-import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
-import com.lulan.shincolle.ai.EntityAIShipFloating;
-import com.lulan.shincolle.ai.EntityAIShipSit;
-import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
-import com.lulan.shincolle.client.inventory.ContainerShipInventory;
-import com.lulan.shincolle.client.particle.EntityFXSpray;
 import com.lulan.shincolle.entity.BasicEntityShipLarge;
 import com.lulan.shincolle.entity.ExtendShipProps;
-import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
-
-import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
-import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class EntityCarrierWo extends BasicEntityShipLarge {
 	
 	public EntityCarrierWo(World world) {
 		super(world);
 		this.setSize(0.6F, 1.8F);
-//		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityCarrierWo.name"));
-		this.ShipType = ID.ShipType.STANDARD_CARRIER;
-		this.ShipID = ID.S_CarrierWO;
+		this.setStateMinor(ID.M.ShipType, ID.ShipType.STANDARD_CARRIER);
+		this.setStateMinor(ID.M.ShipClass, ID.S_CarrierWO);
 		this.ModelPos = new float[] {0F, 15F, 0F, 30F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();
@@ -133,8 +82,8 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
     				
     				//側歪頭位置計算, 歪頭只會修改Y高度跟X位置
     				if(getStateEmotion(ID.S.Emotion2) == 1 && !this.isSitting()) {
-    					float[] tiltLeft = ParticleHelper.rotateParticleByAxis(eyePosL[0], eyePosL[1], -0.24F, 1F);
-    					float[] tiltRight = ParticleHelper.rotateParticleByAxis(eyePosR[0], eyePosR[1], -0.24F, 1F);
+    					float[] tiltLeft = ParticleHelper.rotateXZByAxis(eyePosL[0], eyePosL[1], -0.24F, 1F);
+    					float[] tiltRight = ParticleHelper.rotateXZByAxis(eyePosR[0], eyePosR[1], -0.24F, 1F);
     					eyePosL[0] = tiltLeft[0];
     					eyePosL[1] = tiltLeft[1];
     					eyePosR[0] = tiltRight[0];
@@ -142,8 +91,8 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
     				}
 
     				//依照新位置, 繼續旋轉Y軸
-    				eyePosL = ParticleHelper.rotateParticleByYawPitch(eyePosL[0], eyePosL[1], eyePosL[2], radYaw, radPitch, 1F);
-    				eyePosR = ParticleHelper.rotateParticleByYawPitch(eyePosR[0], eyePosR[1], eyePosR[2], radYaw, radPitch, 1F);		
+    				eyePosL = ParticleHelper.rotateXYZByYawPitch(eyePosL[0], eyePosL[1], eyePosL[2], radYaw, radPitch, 1F);
+    				eyePosR = ParticleHelper.rotateXYZByYawPitch(eyePosR[0], eyePosR[1], eyePosR[2], radYaw, radPitch, 1F);		
     				
     				//旋轉完三軸, 生成特效
     				ParticleHelper.spawnAttackParticleAt(this.posX+eyePosL[0], this.posY+1.5D+eyePosL[1], this.posZ+eyePosL[2], 

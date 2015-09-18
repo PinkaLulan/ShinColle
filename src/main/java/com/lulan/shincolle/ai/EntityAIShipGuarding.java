@@ -66,9 +66,9 @@ public class EntityAIShipGuarding extends EntityAIBase {
     			}
     		}
     		else {
-    			this.gx = host.getStateMinor(ID.N.GuardX);
-        		this.gy = host.getStateMinor(ID.N.GuardY);
-        		this.gz = host.getStateMinor(ID.N.GuardZ);
+    			this.gx = host.getStateMinor(ID.M.GuardX);
+        		this.gy = host.getStateMinor(ID.M.GuardY);
+        		this.gz = host.getStateMinor(ID.M.GuardZ);
     		}
     		
     		//若gy=0, 表示這entity剛初始化, 還不能執行AI
@@ -77,8 +77,8 @@ public class EntityAIShipGuarding extends EntityAIBase {
     			return false;
     		}
     		else {
-    			float fMin = host.getStateMinor(ID.N.FollowMin);
-            	float fMax = host.getStateMinor(ID.N.FollowMax);
+    			float fMin = host.getStateMinor(ID.M.FollowMin);
+            	float fMax = host.getStateMinor(ID.M.FollowMax);
             	this.minDistSq = fMin * fMin;
                 this.maxDistSq = fMax * fMax;
                 
@@ -154,9 +154,9 @@ public class EntityAIShipGuarding extends EntityAIBase {
         			}
         		}
         		else {
-        			this.gx = host.getStateMinor(ID.N.GuardX);
-            		this.gy = host.getStateMinor(ID.N.GuardY);
-            		this.gz = host.getStateMinor(ID.N.GuardZ);
+        			this.gx = host.getStateMinor(ID.M.GuardX);
+            		this.gy = host.getStateMinor(ID.M.GuardY);
+            		this.gz = host.getStateMinor(ID.M.GuardZ);
         		}
         		
         		//若gy<=0, 表示這entity停止定點防守, 改跟隨owner
@@ -166,8 +166,8 @@ public class EntityAIShipGuarding extends EntityAIBase {
         			return;
         		}
         		else {
-        			float fMin = host.getStateMinor(ID.N.FollowMin);
-                	float fMax = host.getStateMinor(ID.N.FollowMax);
+        			float fMin = host.getStateMinor(ID.M.FollowMin);
+                	float fMax = host.getStateMinor(ID.M.FollowMax);
                 	this.minDistSq = fMin * fMin;
                     this.maxDistSq = fMax * fMax;
                     
@@ -188,7 +188,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
             this.host2.getLookHelper().setLookPosition(gx, gy, gz, 30F, (float)this.host2.getVerticalFaceSpeed());
 
         	//距離超過傳送距離, 直接傳送到目標上
-        	if(this.distSq > this.maxDistSq && host2.dimension == host.getStateMinor(ID.N.GuardDim)) {
+        	if(this.distSq > this.maxDistSq && host2.dimension == host.getStateMinor(ID.M.GuardDim)) {
         		this.checkTeleport++;
         		
         		if(this.checkTeleport > 200) {
@@ -215,7 +215,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
             	if(!this.ShipNavigator.tryMoveToXYZ(gx, gy, gz, 1D)) {
             		LogHelper.info("DEBUG : guarding AI: fail to move, cannot reach or too far away");
             		//若超過max dist持續120ticks, 則teleport
-            		if(this.distSq > this.maxDistSq && host2.dimension == host.getStateMinor(ID.N.GuardDim)) {
+            		if(this.distSq > this.maxDistSq && host2.dimension == host.getStateMinor(ID.M.GuardDim)) {
             			this.checkTeleport++;	//若距離超過max dist且移動又失敗, 會使checkTP每30 tick+1
                 		
                 		if(this.checkTeleport > 120) {

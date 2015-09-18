@@ -1,6 +1,9 @@
 package com.lulan.shincolle.entity;
 
-import com.lulan.shincolle.client.particle.EntityFXTexts;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.world.World;
+
 import com.lulan.shincolle.entity.other.EntityAirplane;
 import com.lulan.shincolle.entity.other.EntityAirplaneTakoyaki;
 import com.lulan.shincolle.network.S2CSpawnParticle;
@@ -8,18 +11,8 @@ import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.init.Blocks;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.MathHelper;
-import net.minecraft.world.World;
 
 /**LARGE SHIP = Use Aircraft
  */
@@ -38,46 +31,46 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip implements IS
 	//getter
 	@Override
 	public int getNumAircraftLight() {
-		return StateMinor[ID.N.NumAirLight];
+		return StateMinor[ID.M.NumAirLight];
 	}
 	
 	@Override
 	public int getNumAircraftHeavy() {
-		return StateMinor[ID.N.NumAirHeavy];
+		return StateMinor[ID.M.NumAirHeavy];
 	}
 	
 	@Override
 	public boolean hasAirLight() {
-		return StateMinor[ID.N.NumAirLight] > 0;
+		return StateMinor[ID.M.NumAirLight] > 0;
 	}
 	
 	@Override
 	public boolean hasAirHeavy() {
-		return StateMinor[ID.N.NumAirHeavy] > 0;
+		return StateMinor[ID.M.NumAirHeavy] > 0;
 	}
 	
 	//setter
 	@Override
 	public void setNumAircraftLight(int par1) {
 		if(this.worldObj.isRemote) {	//client端沒有max值可以判定, 因此直接設定即可
-			StateMinor[ID.N.NumAirLight] = par1;
+			StateMinor[ID.M.NumAirLight] = par1;
 		}
 		else {
-			StateMinor[ID.N.NumAirLight] = par1;
-			if(getNumAircraftLight() > maxAircraftLight) StateMinor[ID.N.NumAirLight] = maxAircraftLight;
-			if(getNumAircraftLight() < 0) StateMinor[ID.N.NumAirLight] = 0;
+			StateMinor[ID.M.NumAirLight] = par1;
+			if(getNumAircraftLight() > maxAircraftLight) StateMinor[ID.M.NumAirLight] = maxAircraftLight;
+			if(getNumAircraftLight() < 0) StateMinor[ID.M.NumAirLight] = 0;
 		}
 	}
 	
 	@Override
 	public void setNumAircraftHeavy(int par1) {
 		if(this.worldObj.isRemote) {	//client端沒有max值可以判定, 因此直接設定即可
-			StateMinor[ID.N.NumAirHeavy] = par1;
+			StateMinor[ID.M.NumAirHeavy] = par1;
 		}
 		else {
-			StateMinor[ID.N.NumAirHeavy] = par1;
-			if(getNumAircraftHeavy() > maxAircraftHeavy) StateMinor[ID.N.NumAirHeavy] = maxAircraftHeavy;
-			if(getNumAircraftHeavy() < 0) StateMinor[ID.N.NumAirHeavy] = 0;
+			StateMinor[ID.M.NumAirHeavy] = par1;
+			if(getNumAircraftHeavy() > maxAircraftHeavy) StateMinor[ID.M.NumAirHeavy] = maxAircraftHeavy;
+			if(getNumAircraftHeavy() < 0) StateMinor[ID.M.NumAirHeavy] = 0;
 		}
 	}
 	
@@ -110,8 +103,8 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip implements IS
 	public void calcShipAttributes(byte id) {
 		super.calcShipAttributes(id);
 		
-		this.maxAircraftLight = 4 + StateMinor[ID.N.ShipLevel] / 5;
-		this.maxAircraftHeavy = 2 + StateMinor[ID.N.ShipLevel] / 10;
+		this.maxAircraftLight = 4 + StateMinor[ID.M.ShipLevel] / 5;
+		this.maxAircraftHeavy = 2 + StateMinor[ID.M.ShipLevel] / 10;
 	}
 	
 	//range attack method, cost light ammo, attack delay = 20 / attack speed, damage = 100% atk 

@@ -1,15 +1,14 @@
 package com.lulan.shincolle.tileentity;
 
-import com.lulan.shincolle.network.S2CGUIPackets;
-import com.lulan.shincolle.proxy.CommonProxy;
-import com.lulan.shincolle.utility.LogHelper;
-
-import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+
+import com.lulan.shincolle.network.S2CGUIPackets;
+import com.lulan.shincolle.proxy.CommonProxy;
+
+import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
 abstract public class BasicTileEntity extends TileEntity implements ISidedInventory {
 	

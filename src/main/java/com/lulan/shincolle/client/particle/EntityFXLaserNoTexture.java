@@ -10,7 +10,6 @@ import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.relauncher.Side;
@@ -56,7 +55,7 @@ public class EntityFXLaserNoTexture extends EntityFX {
         default:
         case 0:		//紅光束砲
         	float[] lookDeg = EntityHelper.getLookDegree(tarX-posX, tarY-posY, tarZ-posZ, false);
-        	float[] posOffset = ParticleHelper.rotateParticleByYawPitch((float)par1, 0F, 0.78F, lookDeg[0], lookDeg[1], 1F);
+        	float[] posOffset = ParticleHelper.rotateXYZByYawPitch((float)par1, 0F, 0.78F, lookDeg[0], lookDeg[1], 1F);
         	this.shotYaw = lookDeg[0];
         	this.shotPitch = lookDeg[1];
         	this.posX += posOffset[0];
@@ -85,15 +84,15 @@ public class EntityFXLaserNoTexture extends EntityFX {
 		//計算角度造成的位移
 		float s = this.particleScale * 0.5F;
 		//外層紅色
-		float[] v1 = ParticleHelper.rotateParticleByYawPitch(1F, -1F, 0F, shotYaw, shotPitch, s);
-		float[] v2 = ParticleHelper.rotateParticleByYawPitch(1F, 1F, 0F, shotYaw, shotPitch, s);
-		float[] v3 = ParticleHelper.rotateParticleByYawPitch(-1F, 1F, 0F, shotYaw, shotPitch, s);
-		float[] v4 = ParticleHelper.rotateParticleByYawPitch(-1F, -1F, 0F, shotYaw, shotPitch, s);
+		float[] v1 = ParticleHelper.rotateXYZByYawPitch(1F, -1F, 0F, shotYaw, shotPitch, s);
+		float[] v2 = ParticleHelper.rotateXYZByYawPitch(1F, 1F, 0F, shotYaw, shotPitch, s);
+		float[] v3 = ParticleHelper.rotateXYZByYawPitch(-1F, 1F, 0F, shotYaw, shotPitch, s);
+		float[] v4 = ParticleHelper.rotateXYZByYawPitch(-1F, -1F, 0F, shotYaw, shotPitch, s);
 		//內層白色
-		float[] v5 = ParticleHelper.rotateParticleByYawPitch(0.25F, -0.25F, 0F, shotYaw, shotPitch, s);
-		float[] v6 = ParticleHelper.rotateParticleByYawPitch(0.25F, 0.25F, 0F, shotYaw, shotPitch, s);
-		float[] v7 = ParticleHelper.rotateParticleByYawPitch(-0.25F, 0.25F, 0F, shotYaw, shotPitch, s);
-		float[] v8 = ParticleHelper.rotateParticleByYawPitch(-0.25F, -0.25F, 0F, shotYaw, shotPitch, s);
+		float[] v5 = ParticleHelper.rotateXYZByYawPitch(0.25F, -0.25F, 0F, shotYaw, shotPitch, s);
+		float[] v6 = ParticleHelper.rotateXYZByYawPitch(0.25F, 0.25F, 0F, shotYaw, shotPitch, s);
+		float[] v7 = ParticleHelper.rotateXYZByYawPitch(-0.25F, 0.25F, 0F, shotYaw, shotPitch, s);
+		float[] v8 = ParticleHelper.rotateXYZByYawPitch(-0.25F, -0.25F, 0F, shotYaw, shotPitch, s);
 		
 		this.host.renderYawOffset = shotYaw * Values.N.RAD_DIV;
 		//particle是以玩家視野來render, 因此座標要扣掉interpPos轉換為玩家視野座標
@@ -219,7 +218,7 @@ public class EntityFXLaserNoTexture extends EntityFX {
     		switch(this.particleType) {
     		case 0:	//紅光砲
     			float[] lookDeg = EntityHelper.getLookDegree(tarX-posX, tarY-posY, tarZ-posZ, false);
-            	float[] posOffset = ParticleHelper.rotateParticleByYawPitch((float)par1, 0F, 0.78F, lookDeg[0], lookDeg[1], 1F);
+            	float[] posOffset = ParticleHelper.rotateXYZByYawPitch((float)par1, 0F, 0.78F, lookDeg[0], lookDeg[1], 1F);
             	this.shotYaw = lookDeg[0];
             	this.shotPitch = lookDeg[1];
             	this.posX = host.posX + posOffset[0];

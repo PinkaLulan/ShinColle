@@ -138,7 +138,7 @@ public class EntityFXShockWave extends EntityFX {
         this.prevPosY = this.posY;
         this.prevPosZ = this.posZ;
         
-        float[] newPos = ParticleHelper.rotateParticleByAxis(1F, 0F, 6.28F / this.particleMaxAge * this.particleAge, 1F);
+        float[] newPos = ParticleHelper.rotateXZByAxis(1F, 0F, 6.28F / this.particleMaxAge * this.particleAge, 1F);
 
         if(this.host != null) {
         	this.posX = this.host.posX + newPos[0];

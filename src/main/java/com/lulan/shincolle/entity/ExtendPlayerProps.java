@@ -1,35 +1,40 @@
 package com.lulan.shincolle.entity;
 
-import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.network.S2CGUIPackets;
-import com.lulan.shincolle.proxy.CommonProxy;
-import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IExtendedEntityProperties;
+
+import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
 
 public class ExtendPlayerProps implements IExtendedEntityProperties {
 
 	public static final String PLAYER_EXTPROP_NAME = "TeitokuExtProps";
 	public EntityPlayer player;
 	public World world;
+	
+	//wedding ring
 	private boolean hasRing;
 	private boolean isRingActive;
 	private boolean isRingFlying;
-	/** 0:haste 1:speed 2:jump 3:damage*/
-	private int[] ringEffect;
+	private int[] ringEffect;			//0:haste 1:speed 2:jump 3:damage
 	private int marriageNum;
 	private int bossCooldown;			//spawn boss cooldown
+	
+	//ship team command
 	private BasicEntityShip[][] teamList;	//上限6格欄位, 離線不需要存, 因為entity id每次登入or伺服器重開都會換
 	private boolean[][] selectState;		//ship selected, for command control target
 	private int saveId;					//指示目前隊伍存到第幾個, value = 0~5
 	private int teamId;					//指示目前顯示的隊伍
-	    
+	
+	//player id
+	private int playerUID;
+	private int playerTeamID;
+
+
 	@Override
 	public void init(Entity entity, World world) {
 		this.world = world;
@@ -44,6 +49,8 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		this.selectState = new boolean[9][6];
 		this.saveId = 0;
 		this.teamId = 0;
+		this.playerUID = -1;
+		this.playerTeamID = 0;
 	}
 	
 	@Override
@@ -56,12 +63,15 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		nbtExt.setIntArray("RingEffect", ringEffect);
 		nbtExt.setInteger("MarriageNum", marriageNum);
 		nbtExt.setInteger("BossCD", bossCooldown);
+		nbtExt.setInteger("PlayerUID", playerUID);
+		nbtExt.setInteger("TeamID", playerTeamID);
 		
 //		for(int i = 0; i < 9; i++) {
 //			nbtExt.setIntArray("TeamList"+i, this.getTeamListID(i));
 //		}
 		
 		nbt.setTag(PLAYER_EXTPROP_NAME, nbtExt);
+		LogHelper.info("DEBUG : save player ExtNBT data on id: "+player.getEntityId());
 	}
 
 	@Override
@@ -74,37 +84,48 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		ringEffect = nbtExt.getIntArray("RingEffect");
 		marriageNum = nbtExt.getInteger("MarriageNum");
 		bossCooldown = nbtExt.getInteger("BossCD");
+		playerUID = nbtExt.getInteger("PlayerUID");
+		playerTeamID = nbtExt.getInteger("TeamID");
 		
 //		for(int i = 0; i < 9; i++) {
 //			this.setTeamListByID(i, nbtExt.getIntArray("TeamList"+i));
 //		}
+		LogHelper.info("DEBUG : load player ExtNBT data on id: "+player.getEntityId());
 	}
 	
 	//getter
 	public boolean isRingActive() {
 		return isRingActive;
 	}
+	
 	public int isRingActiveI() {
 		return isRingActive ? 1 : 0;
 	}
+	
 	public boolean isRingFlying() {
 		return isRingFlying;
 	}
+	
 	public boolean hasRing() {
 		return hasRing;
 	}
+	
 	public int getRingEffect(int id) {
 		return ringEffect[id];
 	}
+	
 	public int getMarriageNum() {
 		return marriageNum;
 	}
+	
 	public int getDigSpeedBoost() {
 		return isRingActive ? marriageNum : 0;
 	}
+	
 	public int getBossCooldown() {
 		return this.bossCooldown;
 	}
+	
 	public int[] getTeamListID(int tid) {
 		int[] eid = new int[6];
 		
@@ -166,10 +187,19 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		return this.teamId;
 	}
 	
+	public int getPlayerUID() {
+		return this.playerUID;
+	}
+	
+	public int getPlayerTeamId() {
+		return this.playerTeamID;
+	}
+	
 	//setter
 	public void setRingActive(boolean par1) {
 		isRingActive = par1;
 	}
+	
 	public void setRingActiveI(int par1) {
 		if(par1 == 0) {
 			isRingActive = false;
@@ -178,28 +208,43 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 			isRingActive = true;
 		}
 	}
+	
 	public void setRingFlying(boolean par1) {
 		isRingFlying = par1;
 	}
+	
 	public void setHasRing(boolean par1) {
 		hasRing = par1;
 	}
+	
 	public void setRingEffect(int id, int par1) {
 		ringEffect[id] = par1;
 	}
+	
 	public void setMarriageNum(int par1) {
 		marriageNum = par1;
 	}
+	
 	public void setBossCooldown(int par1) {
 		this.bossCooldown = par1;
 	}
+	
 	public void setTeamSelected(int id, boolean par1) {
 		if(id > 5) id = 0;
 		selectState[teamId][id] = par1;
 	}
+	
 	public void setTeamId(int par1) {
 		if(par1 > 9) par1 = 0;
 		this.teamId = par1;
+	}
+	
+	public void setPlayerUID(int par1) {
+		this.playerUID = par1;
+	}
+	
+	public void setPlayerTeamId(int par1) {
+		this.playerTeamID = par1;
 	}
 	
 	/**將ship加入隊伍名單

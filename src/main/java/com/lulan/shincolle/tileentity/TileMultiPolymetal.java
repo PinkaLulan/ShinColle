@@ -1,11 +1,7 @@
 package com.lulan.shincolle.tileentity;
 
-import com.lulan.shincolle.block.BasicBlockMulti;
-import com.lulan.shincolle.utility.LogHelper;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
 
 /**SERVANT BLOCK: POLYMETAL
  * servant block的所有方法都是跟master block呼叫

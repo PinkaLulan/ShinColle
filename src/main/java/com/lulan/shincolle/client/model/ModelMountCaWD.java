@@ -10,6 +10,7 @@ import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.LogHelper;
 
 /**
  * ModelMountCaWD - PinkaLulan	2015/7/5
@@ -429,6 +430,16 @@ public class ModelMountCaWD extends ModelBase {
     	//seat2 有載人動作
 	    if(ent.getStateEmotion(ID.S.Emotion) > 0) {
 	    	this.Jaw01.rotateAngleX = 1.0F;
+	    }
+	    
+	    //移動時顯示推進器火焰
+	    if(f1 > 0.2F) {
+	    	this.WingL01Fire.isHidden = false;
+	    	this.WingR01Fire.isHidden = false;
+	    }
+	    else {
+	    	this.WingL01Fire.isHidden = true;
+	    	this.WingR01Fire.isHidden = true;
 	    }
 	    
 	    //發光支架

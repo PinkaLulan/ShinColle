@@ -1,20 +1,15 @@
 package com.lulan.shincolle.entity;
 
-import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
 import net.minecraft.entity.ai.EntityAIOpenDoor;
-import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.PathEntity;
-import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
@@ -25,11 +20,8 @@ import com.lulan.shincolle.ai.EntityAIShipFloating;
 import com.lulan.shincolle.ai.EntityAIShipFollowOwner;
 import com.lulan.shincolle.ai.EntityAIShipGuarding;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
-import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
-import com.lulan.shincolle.ai.path.ShipPathEntity;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
-import com.lulan.shincolle.ai.path.ShipPathPoint;
 import com.lulan.shincolle.entity.mounts.EntityMountSeat;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
@@ -85,12 +77,13 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		shipNavigator = new ShipPathNavigate(this, worldObj);
 		shipMoveHelper = new ShipMoveHelper(this);
 		ridePos = new float[] {0F,0F,0F};
+		
 	}
     
     //平常音效
     @Override
 	protected String getLivingSound() {
-		if(ConfigHandler.useWakamoto && rand.nextInt(10) == 0) {
+		if(ConfigHandler.useWakamoto && rand.nextInt(30) == 0) {
 			return Reference.MOD_ID+":ship-waka_idle";
 		}
 		return null;
@@ -99,7 +92,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   	//受傷音效
     @Override
 	protected String getHurtSound() {
-		if(ConfigHandler.useWakamoto && rand.nextInt(10) == 0) {
+		if(ConfigHandler.useWakamoto && rand.nextInt(30) == 0) {
 			return Reference.MOD_ID+":ship-waka_hurt";
 		}
 		return null;
@@ -285,7 +278,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 				}
 				
 				//只有主人可以設為坐下
-				if(EntityHelper.checkSameOwner(player, this.getOwner())) {
+				if(EntityHelper.checkSameOwner(player, this.host)) {
 					this.host.setSitting(!this.host.isSitting());
 		            this.isJumping = false;
 		            this.setPathToEntity((PathEntity)null);
@@ -319,7 +312,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
         }
 		
 		//shift+right click時打開host GUI
-		if(player.isSneaking() && EntityHelper.checkSameOwner(player, this.getOwner())) {  
+		if(player.isSneaking() && EntityHelper.checkSameOwner(player, this.host)) {  
 			int eid = this.host.getEntityId();
 			//player.openGui vs FMLNetworkHandler ?
     		FMLNetworkHandler.openGui(player, ShinColle.instance, ID.G.SHIPINVENTORY, this.worldObj, this.host.getEntityId(), 0, 0);
@@ -396,12 +389,12 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		//server side
 		else {
 			//owner消失(通常是server restart)
-			if(this.getOwner() == null) {
+			if(this.host == null) {
 				this.setDead();
 			}
 			else {		
 				//owner還在, 但是已經騎乘別人, 則消除此entity
-				if(this.getOwner().ridingEntity != this) {
+				if(this.host.ridingEntity != this) {
 					LogHelper.info("DEBUG : ride change "+this.riddenByEntity); 
 					this.setDead();
 				}
@@ -451,8 +444,8 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	//set movement by key pressed, pitch/yaw is RAD not DEGREE
 	private void applyMovement(float pitch, float yaw) {
 		//calc move direction by yaw
-		float[] movez = ParticleHelper.rotateParticleByAxis(movSpeed, 0F, yaw, 1F);	//前後
-		float[] movex = ParticleHelper.rotateParticleByAxis(0F, movSpeed, yaw, 1F);	//左右
+		float[] movez = ParticleHelper.rotateXZByAxis(movSpeed, 0F, yaw, 1F);	//前後
+		float[] movex = ParticleHelper.rotateXZByAxis(0F, movSpeed, yaw, 1F);	//左右
 		
 		if(this.onGround || EntityHelper.checkEntityIsInLiquid(this)) {
 			//horizontal move, 至少要4 tick才能加到最高速
@@ -632,11 +625,6 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   	protected void clearAITargetTasks() {
   	   targetTasks.taskEntries.clear();
   	}
-  	
-  	@Override
-    public EntityLivingBase getOwner() {
-        return this.host;
-    }
     
   	@Override
 	public EntityLivingBase getTarget() {
@@ -859,7 +847,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
         }
 
         //spawn missile
-        EntityAbyssMissile missile = new EntityAbyssMissile(this.worldObj, this, 
+        EntityAbyssMissile missile = new EntityAbyssMissile(this.worldObj, this.host, 
         		tarX, tarY+target.height*0.2F, tarZ, launchPos, atkHeavy, kbValue, isDirect, -1F);
         this.worldObj.spawnEntityInWorld(missile);
   		
@@ -1009,12 +997,6 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	}
 	
 	@Override
-	public EntityLivingBase getPlayerOwner() {
-		if(host != null) return this.host.getPlayerOwner();
-		return null;
-	}
-	
-	@Override
 	public int getStateMinor(int id) {
 		if(host != null) return this.host.getStateMinor(id);
 		return 0;
@@ -1027,13 +1009,13 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	
 	@Override
 	public int getAmmoLight() {
-		if(host != null) return this.host.getStateMinor(ID.N.NumAmmoLight);
+		if(host != null) return this.host.getStateMinor(ID.M.NumAmmoLight);
 		return 0;
 	}
 
 	@Override
 	public int getAmmoHeavy() {
-		if(host != null) return this.host.getStateMinor(ID.N.NumAmmoHeavy);
+		if(host != null) return this.host.getStateMinor(ID.M.NumAmmoHeavy);
 		return 0;
 	}
 	
@@ -1225,6 +1207,20 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
     //set model rotate angle, par1 = 0:X, 1:Y, 2:Z
     @Override
 	public void setModelRotate(int par1, float par2) {}
+    
+    @Override
+	public int getPlayerUID() {
+		if(host != null) return this.host.getPlayerUID();
+		return -1;
+	}
+
+	@Override
+	public void setPlayerUID(int uid) {}
+	
+	@Override
+	public Entity getHostEntity() {
+		return this.host;
+	}
     
 	
 }

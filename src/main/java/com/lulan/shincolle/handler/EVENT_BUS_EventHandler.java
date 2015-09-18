@@ -21,10 +21,10 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.world.WorldEvent;
 
 import org.lwjgl.opengl.GL11;
 
-import com.lulan.shincolle.entity.BasicEntityAirplane;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
@@ -33,8 +33,9 @@ import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.hostile.EntityRensouhouBoss;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.BasicEntityItem;
-import com.lulan.shincolle.proxy.CommonProxy;
+import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.common.eventhandler.EventPriority;
@@ -49,7 +50,7 @@ public class EVENT_BUS_EventHandler {
 
 	//change vanilla mob drop (add grudge), this is SERVER event
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
-	public void eventDrop(LivingDropsEvent event) {
+	public void onDrop(LivingDropsEvent event) {
 	    //mob drop grudge
 		if(event.entity instanceof EntityMob || event.entity instanceof EntitySlime) {
 	    	if(event.entity instanceof BasicEntityShipHostile) {
@@ -104,7 +105,7 @@ public class EVENT_BUS_EventHandler {
 	    		entity.setStateFlag(ID.F.CanDrop, false);
 	    		
 	    		//drop ship item
-	    		ItemStack item = new ItemStack(ModItems.ShipSpawnEgg, 1, entity.getShipID()+2);
+	    		ItemStack item = new ItemStack(ModItems.ShipSpawnEgg, 1, entity.getShipClass()+2);
 		    	BasicEntityItem entityItem2 = new BasicEntityItem(event.entity.worldObj, event.entity.posX, event.entity.posY+0.5D, event.entity.posZ, item);
 		    	NBTTagCompound nbt = new NBTTagCompound();
 		    	ExtendShipProps extProps = entity.getExtProps();
@@ -135,11 +136,18 @@ public class EVENT_BUS_EventHandler {
 		    	attrs[7] = entity.getStateFlagI(ID.F.IsMarried);
 		    	
 		    	//save nbt and spawn entity item
+		    	EntityPlayer owner = EntityHelper.getEntityPlayerByUID(entity.getStateMinor(ID.M.PlayerUID), entity.worldObj);
+		    	
+		    	if(owner != null) {
+		    		nbt.setString("ownername", owner.getDisplayName());
+		    	}
+		    	
 		    	nbt.setTag("ShipInv", list);	//save inventory data to nbt
 		    	nbt.setIntArray("Attrs", attrs);	//save attributes data to nbt
-		    	nbt.setString("owner", entity.func_152113_b());	//get owner uuid
-		    	nbt.setString("ownername", entity.getOwnerName());
+		    	nbt.setInteger("PlayerID", entity.getStateMinor(ID.M.PlayerUID));
+		    	nbt.setInteger("ShipID", entity.getStateMinor(ID.M.ShipUID));
 		    	nbt.setString("customname", entity.getCustomNameTag());
+		    	
 		    	entityItem2.getEntityItem().setTagCompound(nbt);	  //save nbt to entity item
 		    	event.entity.worldObj.spawnEntityInWorld(entityItem2);	//spawn entity item
 	    	}
@@ -148,7 +156,7 @@ public class EVENT_BUS_EventHandler {
 	
 	//apply ring effect: boost dig speed in water
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
-	public void eventGetBreakSpeed(PlayerEvent.BreakSpeed event) {
+	public void onGetBreakSpeed(PlayerEvent.BreakSpeed event) {
 		ExtendPlayerProps extProps = (ExtendPlayerProps) event.entityPlayer.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 		
 		if(extProps != null && (event.entityPlayer.isInWater() || event.entityPlayer.handleLavaMovement())) {
@@ -161,7 +169,7 @@ public class EVENT_BUS_EventHandler {
 	//apply ring effect: vision in the water
 	@SideOnly(Side.CLIENT)
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
-	public void eventSetLiquidFog(EntityViewRenderEvent.FogDensity event) {
+	public void onSetLiquidFog(EntityViewRenderEvent.FogDensity event) {
 		if(event.entity.isInsideOfMaterial(Material.lava) ||
 		   event.entity.isInsideOfMaterial(Material.water)){
 			
@@ -185,19 +193,20 @@ public class EVENT_BUS_EventHandler {
 		}
 	}
 	
-	//add kills number
+	/** entity death event */
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
-	public void eventDeath(LivingDeathEvent event) {
+	public void onEntityDeath(LivingDeathEvent event) {
 		Entity ent = event.source.getSourceOfDamage();
 		
+		//add kills number
 	    if(ent != null) {
 	    	if(ent instanceof BasicEntityShip) {	//本體擊殺
 	    		((BasicEntityShip)ent).addKills();
 	    	}
 	    	else if(ent instanceof IShipAttackBase) {	//其他召喚物擊殺
-	    		if(((IShipAttackBase) ent).getOwner() != null &&
-	    		   ((IShipAttackBase) ent).getOwner() instanceof BasicEntityShip) {
-	    			((BasicEntityShip)((IShipAttackBase) ent).getOwner()).addKills();
+	    		if(((IShipAttackBase) ent).getHostEntity() != null &&
+	    		   ((IShipAttackBase) ent).getHostEntity() instanceof BasicEntityShip) {
+	    			((BasicEntityShip)((IShipAttackBase) ent).getHostEntity()).addKills();
 	    		}
 	    	}
 	    }
@@ -216,7 +225,7 @@ public class EVENT_BUS_EventHandler {
 	    		extProps.saveNBTData(nbt);
 	    		
 	    		//save nbt to commonproxy variable
-	    		CommonProxy.storeEntityData(player.getUniqueID().toString(), nbt);
+	    		ServerProxy.setPlayerData(player.getUniqueID().toString(), nbt);
 	    	}
 	    }
 	}
@@ -226,29 +235,15 @@ public class EVENT_BUS_EventHandler {
 	public void onEntityConstructing(EntityConstructing event) {
 	    //ship ext props
 		if(event.entity instanceof BasicEntityShip && event.entity.getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME) == null) {
-	    	LogHelper.info("DEBUG : on ship constructing");
+	    	LogHelper.info("DEBUG : entity constructing: on ship constructing "+event.entity.getEntityId());
 	        event.entity.registerExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME, new ExtendShipProps());
-	    }
+		}
 
 		//player ext props
 		if(event.entity instanceof EntityPlayer && event.entity.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME) == null) {
-			LogHelper.info("DEBUG : on player constructing");
-			EntityPlayer player = (EntityPlayer) event.entity;	
-			ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
-			
-			if(extProps != null) {
-				//restore player data from commonproxy variable
-		        NBTTagCompound nbt = CommonProxy.getEntityData(player.getUniqueID().toString());
-		        
-		    	if(nbt != null) {
-		        	LogHelper.info("DEBUG : player constructing: restore player data (EVENT BUS event)");		        	
-		        	extProps.loadNBTData(nbt);
-		        }
-			}
-			else {
-				LogHelper.info("DEBUG : add player extend props");
-				player.registerExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME, new ExtendPlayerProps());
-			}
+			LogHelper.info("DEBUG : entity constructing: on player constructing "+event.entity.getEntityId()+" "+event.entity.getClass().getSimpleName());
+			EntityPlayer player = (EntityPlayer) event.entity;
+			player.registerExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME, new ExtendPlayerProps());
 		}
 	}
 	
@@ -260,7 +255,7 @@ public class EVENT_BUS_EventHandler {
 		if(event.entityLiving instanceof EntitySquid) {
 			if(event.world.rand.nextInt((int)ConfigHandler.scaleMobU511[ID.SpawnPerSquid]) == 0) {
 				//check 64x64 range
-				AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(event.x-24D, event.y-32D, event.z-24D, event.x+24D, event.y+32D, event.z+24D);
+				AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(event.x-32D, event.y-32D, event.z-32D, event.x+32D, event.y+32D, event.z+32D);
 				List ListMob = event.world.getEntitiesWithinAABB(BasicEntityShipHostile.class, aabb);
 
 				//list低於1個表示沒有找到其他boss
@@ -285,6 +280,19 @@ public class EVENT_BUS_EventHandler {
 		}
 	}
 	
+	/**world loaded event
+	 * init MapStorage here
+	 * 由於global mapstorage不管在world都是讀取同一個handler, 所以不檢查world id, 隨便一個world皆可
+	 * 若為perMapStorage, 則是不同world各有一份
+	 */
+	@SubscribeEvent
+	public void onWorldLoad(WorldEvent.Load event) {
+		LogHelper.info("DEBUG : on world load: "+event.world.provider.dimensionId);
+		
+		if(event.world != null && !ServerProxy.initServerFile) {
+			ServerProxy.initServerProxy(event.world);
+		}
+	}
 
 	
 }

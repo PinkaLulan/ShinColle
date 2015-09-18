@@ -2,15 +2,14 @@ package com.lulan.shincolle.worldgen;
 
 import java.util.Random;
 
-import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.init.ModBlocks;
-import com.lulan.shincolle.utility.LogHelper;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenerator;
+
+import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.init.ModBlocks;
 
 /**generate polymetallic gravel on the seabed
  * mod from clay generator

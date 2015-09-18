@@ -1,20 +1,19 @@
 package com.lulan.shincolle.entity;
 
-import com.lulan.shincolle.client.inventory.ContainerShipInventory;
-import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.LogHelper;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagFloat;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagShort;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IExtendedEntityProperties;
+
+import com.lulan.shincolle.client.inventory.ContainerShipInventory;
+import com.lulan.shincolle.proxy.ServerProxy;
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
 
 /**Extend Entity NBT data
  * IExtendedEntityProperties會在NBT加上新的tag: SHIP_EXTPROP_NAME
@@ -25,7 +24,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 	public static final String SHIP_EXTPROP_NAME = "ShipExtProps";
 	public static final String tagName = "ShipInv";	//ship inventory nbt tag
     public ItemStack[] slots = new ItemStack[ContainerShipInventory.SLOTS_PLAYERINV];
-    private BasicEntityShip entity;
+    public BasicEntityShip entity;
     private World world;
 
   
@@ -34,12 +33,13 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 	public void init(Entity entity, World world) {
 		this.world = world;
 		this.entity = (BasicEntityShip) entity;
-
+		
 	}
 	
 	//save extend entity prop
 	@Override
 	public void saveNBTData(NBTTagCompound nbt) {
+		//save nbt data
 		NBTTagCompound nbtExt = new NBTTagCompound();
 		NBTTagCompound nbtExt_add0 = new NBTTagCompound();
 		NBTTagCompound nbtExt_add1 = new NBTTagCompound();
@@ -50,25 +50,26 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 
 		//save values to NBT
 		nbtExt.setTag("Minor", nbtExt_add0);
-		nbtExt_add0.setInteger("Level", this.entity.getStateMinor(ID.N.ShipLevel));
-		nbtExt_add0.setInteger("Kills", this.entity.getStateMinor(ID.N.Kills));
-		nbtExt_add0.setInteger("Exp", this.entity.getStateMinor(ID.N.ExpCurrent));
-		nbtExt_add0.setInteger("NumAmmoL", this.entity.getStateMinor(ID.N.NumAmmoLight));
-		nbtExt_add0.setInteger("NumAmmoH", this.entity.getStateMinor(ID.N.NumAmmoHeavy));
-		nbtExt_add0.setInteger("NumGrudge", this.entity.getStateMinor(ID.N.NumGrudge));
-		nbtExt_add0.setInteger("NumAirL", this.entity.getStateMinor(ID.N.NumAirLight));
-		nbtExt_add0.setInteger("NumAirH", this.entity.getStateMinor(ID.N.NumAirHeavy));
-		nbtExt_add0.setInteger("FMin", this.entity.getStateMinor(ID.N.FollowMin));
-		nbtExt_add0.setInteger("FMax", this.entity.getStateMinor(ID.N.FollowMax));
-		nbtExt_add0.setInteger("FHP", this.entity.getStateMinor(ID.N.FleeHP));
-		nbtExt_add0.setInteger("TarAI", this.entity.getStateMinor(ID.N.TargetAI));
-		nbtExt_add0.setInteger("GuardX", this.entity.getStateMinor(ID.N.GuardX));
-		nbtExt_add0.setInteger("GuardY", this.entity.getStateMinor(ID.N.GuardY));
-		nbtExt_add0.setInteger("GuardZ", this.entity.getStateMinor(ID.N.GuardZ));
-		nbtExt_add0.setInteger("GuardDim", this.entity.getStateMinor(ID.N.GuardDim));
-		nbtExt_add0.setInteger("GuardID", this.entity.getStateMinor(ID.N.GuardID));
-		nbtExt_add0.setInteger("ownerID", this.entity.getStateMinor(ID.N.OwnerID));
-		nbtExt_add0.setString("ownerName", this.entity.getOwnerName());
+		nbtExt_add0.setInteger("Level", this.entity.getStateMinor(ID.M.ShipLevel));
+		nbtExt_add0.setInteger("Kills", this.entity.getStateMinor(ID.M.Kills));
+		nbtExt_add0.setInteger("Exp", this.entity.getStateMinor(ID.M.ExpCurrent));
+		nbtExt_add0.setInteger("NumAmmoL", this.entity.getStateMinor(ID.M.NumAmmoLight));
+		nbtExt_add0.setInteger("NumAmmoH", this.entity.getStateMinor(ID.M.NumAmmoHeavy));
+		nbtExt_add0.setInteger("NumGrudge", this.entity.getStateMinor(ID.M.NumGrudge));
+		nbtExt_add0.setInteger("NumAirL", this.entity.getStateMinor(ID.M.NumAirLight));
+		nbtExt_add0.setInteger("NumAirH", this.entity.getStateMinor(ID.M.NumAirHeavy));
+		nbtExt_add0.setInteger("FMin", this.entity.getStateMinor(ID.M.FollowMin));
+		nbtExt_add0.setInteger("FMax", this.entity.getStateMinor(ID.M.FollowMax));
+		nbtExt_add0.setInteger("FHP", this.entity.getStateMinor(ID.M.FleeHP));
+		nbtExt_add0.setInteger("TarAI", this.entity.getStateMinor(ID.M.TargetAI));
+		nbtExt_add0.setInteger("GuardX", this.entity.getStateMinor(ID.M.GuardX));
+		nbtExt_add0.setInteger("GuardY", this.entity.getStateMinor(ID.M.GuardY));
+		nbtExt_add0.setInteger("GuardZ", this.entity.getStateMinor(ID.M.GuardZ));
+		nbtExt_add0.setInteger("GuardDim", this.entity.getStateMinor(ID.M.GuardDim));
+		nbtExt_add0.setInteger("GuardID", this.entity.getStateMinor(ID.M.GuardID));
+		nbtExt_add0.setInteger("PlayerUID", this.entity.getStateMinor(ID.M.PlayerUID));
+		nbtExt_add0.setInteger("ShipUID", this.entity.getStateMinor(ID.M.ShipUID));
+		nbtExt_add0.setInteger("PlayerEID", this.entity.getStateMinor(ID.M.PlayerEID));
 		nbtExt_add0.setString("tagName", this.entity.getCustomNameTag());
 		//save AttrFinal
 		nbtExt.setTag("Final", nbtExt_add1);
@@ -131,6 +132,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		}
 		
 		nbt.setTag(SHIP_EXTPROP_NAME, nbtExt);	
+		
 		LogHelper.info("DEBUG : save entity ExtNBT data on id: "+entity.getEntityId());
 	}
 
@@ -142,25 +144,26 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		
 		//load minor state
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Minor");
-		entity.setStateMinor(ID.N.ShipLevel, nbt_load.getInteger("Level"));
-		entity.setStateMinor(ID.N.Kills, nbt_load.getInteger("Kills"));
-		entity.setStateMinor(ID.N.ExpCurrent, nbt_load.getInteger("Exp"));
-		entity.setStateMinor(ID.N.NumAmmoLight, nbt_load.getInteger("NumAmmoL"));
-		entity.setStateMinor(ID.N.NumAmmoHeavy, nbt_load.getInteger("NumAmmoH"));
-		entity.setStateMinor(ID.N.NumGrudge, nbt_load.getInteger("NumGrudge"));
-		entity.setStateMinor(ID.N.NumAirLight, nbt_load.getInteger("NumAirL"));
-		entity.setStateMinor(ID.N.NumAirHeavy, nbt_load.getInteger("NumAirH"));
-		entity.setStateMinor(ID.N.FollowMin, nbt_load.getInteger("FMin"));
-		entity.setStateMinor(ID.N.FollowMax, nbt_load.getInteger("FMax"));
-		entity.setStateMinor(ID.N.FleeHP, nbt_load.getInteger("FHP"));
-		entity.setStateMinor(ID.N.TargetAI, nbt_load.getInteger("TarAI"));
-		entity.setStateMinor(ID.N.GuardX, nbt_load.getInteger("GuardX"));
-		entity.setStateMinor(ID.N.GuardY, nbt_load.getInteger("GuardY"));
-		entity.setStateMinor(ID.N.GuardZ, nbt_load.getInteger("GuardZ"));
-		entity.setStateMinor(ID.N.GuardDim, nbt_load.getInteger("GuardDim"));
-		entity.setStateMinor(ID.N.GuardID, nbt_load.getInteger("GuardID"));
-		entity.setStateMinor(ID.N.OwnerID, nbt_load.getInteger("ownerID"));
-		entity.setOwnerName(nbt_load.getString("ownerName"));
+		entity.setStateMinor(ID.M.ShipLevel, nbt_load.getInteger("Level"));
+		entity.setStateMinor(ID.M.Kills, nbt_load.getInteger("Kills"));
+		entity.setStateMinor(ID.M.ExpCurrent, nbt_load.getInteger("Exp"));
+		entity.setStateMinor(ID.M.NumAmmoLight, nbt_load.getInteger("NumAmmoL"));
+		entity.setStateMinor(ID.M.NumAmmoHeavy, nbt_load.getInteger("NumAmmoH"));
+		entity.setStateMinor(ID.M.NumGrudge, nbt_load.getInteger("NumGrudge"));
+		entity.setStateMinor(ID.M.NumAirLight, nbt_load.getInteger("NumAirL"));
+		entity.setStateMinor(ID.M.NumAirHeavy, nbt_load.getInteger("NumAirH"));
+		entity.setStateMinor(ID.M.FollowMin, nbt_load.getInteger("FMin"));
+		entity.setStateMinor(ID.M.FollowMax, nbt_load.getInteger("FMax"));
+		entity.setStateMinor(ID.M.FleeHP, nbt_load.getInteger("FHP"));
+		entity.setStateMinor(ID.M.TargetAI, nbt_load.getInteger("TarAI"));
+		entity.setStateMinor(ID.M.GuardX, nbt_load.getInteger("GuardX"));
+		entity.setStateMinor(ID.M.GuardY, nbt_load.getInteger("GuardY"));
+		entity.setStateMinor(ID.M.GuardZ, nbt_load.getInteger("GuardZ"));
+		entity.setStateMinor(ID.M.GuardDim, nbt_load.getInteger("GuardDim"));
+		entity.setStateMinor(ID.M.GuardID, nbt_load.getInteger("GuardID"));
+		entity.setStateMinor(ID.M.PlayerUID, nbt_load.getInteger("PlayerUID"));
+		entity.setStateMinor(ID.M.ShipUID, nbt_load.getInteger("ShipUID"));
+		entity.setStateMinor(ID.M.PlayerEID, nbt_load.getInteger("PlayerEID"));
 		entity.setNameTag(nbt_load.getString("tagName"));
 		//load final state
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Final");
@@ -210,7 +213,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		entity.setEffectEquip(ID.EF_MISS, nbt_load.getFloat("Miss"));
 		
 		//load inventory
-		NBTTagList list = nbt.getTagList(tagName, 10);
+		NBTTagList list = nbt.getTagList(tagName, 10);	//tagList可以用9(tagList)或者10(tagCompound)來取
 
 		for(int i=0; i<list.tagCount(); i++) {
 			NBTTagCompound item = (NBTTagCompound) list.getCompoundTagAt(i);
@@ -223,7 +226,8 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		
 		//calc equip and attribute
 		entity.setExpNext();	//for gui display
-		entity.calcEquipAndUpdateState();
+		entity.calcEquipAndUpdateState();	//re-calc attributes and send sync packet
+		
 		LogHelper.info("DEBUG : load entity ExtNBT data on id: "+entity.getEntityId());
 	}
 

@@ -3,15 +3,14 @@ package com.lulan.shincolle.ai;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.world.World;
 
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.entity.BasicEntityMount;
-import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
@@ -48,7 +47,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
     public boolean shouldExecute() {
     	if(!host.getIsSitting() && !host.getIsRiding() && !host.getIsLeashed() && 
     	   !host.getStateFlag(ID.F.NoFuel) && host.getStateFlag(ID.F.CanFollow)) {
-    		EntityLivingBase OwnerEntity = this.host.getPlayerOwner();
+    		EntityLivingBase OwnerEntity = EntityHelper.getEntityPlayerByUID(this.host.getPlayerUID(), this.host2.worldObj);
 
     		//get owner distance
             if(OwnerEntity != null) {
@@ -58,8 +57,8 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
             		return false;
             	}
             	
-            	float fMin = host.getStateMinor(ID.N.FollowMin);
-            	float fMax = host.getStateMinor(ID.N.FollowMax);
+            	float fMin = host.getStateMinor(ID.M.FollowMin);
+            	float fMax = host.getStateMinor(ID.M.FollowMax);
             	this.minDistSq = fMin * fMin;
                 this.maxDistSq = fMax * fMax;
 
@@ -124,7 +123,8 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
         	//update follow range every 60 ticks
         	if(host2.ticksExisted % 60 == 0){
         		//update owner distance
-            	EntityLivingBase OwnerEntity = this.host.getPlayerOwner();
+            	EntityLivingBase OwnerEntity = EntityHelper.getEntityPlayerByUID(this.host.getPlayerUID(), this.host2.worldObj);
+
                 if(OwnerEntity != null) {
                 	this.owner = OwnerEntity;
                     
@@ -133,8 +133,8 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
                 		return;
                 	}
                 	
-                	float fMin = host.getStateMinor(ID.N.FollowMin);
-                	float fMax = host.getStateMinor(ID.N.FollowMax);
+                	float fMin = host.getStateMinor(ID.M.FollowMin);
+                	float fMax = host.getStateMinor(ID.M.FollowMax);
                 	this.minDistSq = fMin * fMin;
                     this.maxDistSq = fMax * fMax;
 

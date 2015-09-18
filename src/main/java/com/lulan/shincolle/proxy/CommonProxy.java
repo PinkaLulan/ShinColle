@@ -1,10 +1,5 @@
 package com.lulan.shincolle.proxy;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import net.minecraft.nbt.NBTTagCompound;
-
 import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.network.S2CEntitySync;
@@ -22,10 +17,15 @@ public abstract class CommonProxy implements IProxy {
 	public static final String channelNameG = "shinGUI";
 	public static final String channelNameP = "shinParticle";
 	
+	/**packet system
+	 * channelE: entity sync
+	 * channelG: gui sync and input
+	 * channelP: particle
+	 */
 	public static SimpleNetworkWrapper channelE;
 	public static SimpleNetworkWrapper channelG;
 	public static SimpleNetworkWrapper channelP;
-	public static final Map<String, NBTTagCompound> extendedEntityData = new HashMap<String, NBTTagCompound>();
+
 	
 	@Override
 	public void registerChannel() {
@@ -46,16 +46,5 @@ public abstract class CommonProxy implements IProxy {
 		
 	}
 	
-	//save entity data in globe variable for resuming data after death
-	//map set: UUID, nbt data
-	public static void storeEntityData(String uuid, NBTTagCompound nbt) {
-		extendedEntityData.put(uuid, nbt);
-	}
-
-	//get nbt data in map
-	public static NBTTagCompound getEntityData(String name) {
-		return extendedEntityData.get(name);
-	}
-
 
 }

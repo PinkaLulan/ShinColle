@@ -77,7 +77,7 @@ public class C2SGUIPackets implements IMessage {
         
         //button type
         switch(button) {
-        default:	//playerÂIgui«ö¶sªºpacket
+        default:	//no use
         	this.type = 2;
         	break;
         case -1:	//pointer click: add team
@@ -175,19 +175,14 @@ public class C2SGUIPackets implements IMessage {
 				EntityHelper.setTileEntityByGUI(tile, (int)button, (int)value, (int)value2);
 			}
 			break;
-		case 2: //player gui click
+		case 2: //NO USE
 			{
 				this.entityID = buf.readInt();
 				this.worldID = buf.readInt();
 				this.button = buf.readInt();
 				this.value = buf.readInt();
 				this.value2 = buf.readInt();
-				
-				//get player
-				player = (EntityPlayer) EntityHelper.getEntityByID(entityID, worldID, false);
-				
-				//set value
-//				EntityHelper.setEntityByGUI(entity, (int)button, (int)value);
+
 			}
 			break;
 		case 3: //pointer click: add team
@@ -198,15 +193,15 @@ public class C2SGUIPackets implements IMessage {
 				this.value = buf.readInt();		//no use, always 0 (team index)
 				this.value2 = buf.readInt();	//entity id
 				
-				Entity getEnt = EntityHelper.getEntityByID(entityID, worldID, false);
+				EntityPlayer getEnt = EntityHelper.getEntityPlayerByID(entityID, worldID, false);
 				Entity getEnt2 = null;
 
 				if(value2 >= 0) {
 					getEnt2 = EntityHelper.getEntityByID(value2, worldID, false);
 				}
 				
-				if(getEnt instanceof EntityPlayer) {
-					this.player = (EntityPlayer) getEnt;
+				if(getEnt != null) {
+					this.player = getEnt;
 					ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 					BasicEntityShip teamship = null;
 					
@@ -234,11 +229,11 @@ public class C2SGUIPackets implements IMessage {
 				this.value = buf.readInt();		//meta
 				this.value2 = buf.readInt();	//target id
 				
-				Entity getEnt = EntityHelper.getEntityByID(entityID, worldID, false);
+				EntityPlayer getEnt = EntityHelper.getEntityPlayerByID(entityID, worldID, false);
 				Entity getEnt2 = EntityHelper.getEntityByID(value2, worldID, false);
 				
-				if(getEnt instanceof EntityPlayer) {
-					this.player = (EntityPlayer) getEnt;
+				if(getEnt != null) {
+					this.player = getEnt;
 					EntityHelper.applyTeamAttack(player, value, getEnt2);
 				}
 			}
@@ -254,10 +249,10 @@ public class C2SGUIPackets implements IMessage {
 				this.posY = buf.readInt();		//tar Y
 				this.posZ = buf.readInt();		//tar Z
 				
-				Entity getEnt = EntityHelper.getEntityByID(entityID, worldID, false);
+				EntityPlayer getEnt = EntityHelper.getEntityPlayerByID(entityID, worldID, false);
 				
-				if(getEnt instanceof EntityPlayer) {
-					this.player = (EntityPlayer) getEnt;
+				if(getEnt != null) {
+					this.player = getEnt;
 					EntityHelper.applyTeamMove(player, value, value2, posX, posY, posZ);
 				}
 			}
@@ -273,10 +268,10 @@ public class C2SGUIPackets implements IMessage {
 				this.posY = buf.readInt();		//no use
 				this.posZ = buf.readInt();		//no use
 				
-				Entity getEnt = EntityHelper.getEntityByID(entityID, worldID, false);
+				EntityPlayer getEnt = EntityHelper.getEntityPlayerByID(entityID, worldID, false);
 				
-				if(getEnt instanceof EntityPlayer) {
-					this.player = (EntityPlayer) getEnt;
+				if(getEnt != null) {
+					this.player = getEnt;
 					boolean select = (value > 0 ? true : false);
 
 					EntityHelper.applyTeamSelect(player, posX, value2, select);
@@ -291,10 +286,10 @@ public class C2SGUIPackets implements IMessage {
 				this.value = buf.readInt();		//meta
 				this.value2 = buf.readInt();	//entity id
 				
-				Entity getEnt = EntityHelper.getEntityByID(entityID, worldID, false);
+				EntityPlayer getEnt = EntityHelper.getEntityPlayerByID(entityID, worldID, false);
 				
-				if(getEnt instanceof EntityPlayer) {
-					this.player = (EntityPlayer) getEnt;
+				if(getEnt != null) {
+					this.player = getEnt;
 					EntityHelper.applyTeamSit(player, value, value2);
 				}
 			}
@@ -307,11 +302,11 @@ public class C2SGUIPackets implements IMessage {
 				this.value = buf.readInt();		//no use
 				this.value2 = buf.readInt();	//entity id
 				
-				Entity getEnt = EntityHelper.getEntityByID(entityID, worldID, false);
+				EntityPlayer getEnt = EntityHelper.getEntityPlayerByID(entityID, worldID, false);
 				Entity getEnt2 = EntityHelper.getEntityByID(value2, worldID, false);
 				
-				if(getEnt instanceof EntityPlayer && getEnt2 instanceof BasicEntityShip) {
-					this.player = (EntityPlayer) getEnt;
+				if(getEnt != null && getEnt2 instanceof BasicEntityShip) {
+					this.player = getEnt;
 					this.entity = (BasicEntityShip) getEnt2;
 					FMLNetworkHandler.openGui(player, ShinColle.instance, ID.G.SHIPINVENTORY, player.worldObj, entity.getEntityId(), 0, 0);
 				}
@@ -325,10 +320,10 @@ public class C2SGUIPackets implements IMessage {
 				this.value = buf.readInt();		//item meta
 				this.value2 = buf.readInt();	//no use
 				
-				Entity getEnt = EntityHelper.getEntityByID(entityID, worldID, false);
+				EntityPlayer getEnt = EntityHelper.getEntityPlayerByID(entityID, worldID, false);
 				
-				if(getEnt instanceof EntityPlayer) {
-					this.player = (EntityPlayer) getEnt;
+				if(getEnt != null) {
+					this.player = getEnt;
 					if(this.player.inventory.getCurrentItem() != null) {
 						this.player.inventory.getCurrentItem().setItemDamage(value);
 					}
@@ -365,11 +360,11 @@ public class C2SGUIPackets implements IMessage {
 				this.value = buf.readInt();		//meta
 				this.value2 = buf.readInt();	//entity id
 				
-				Entity getEnt = EntityHelper.getEntityByID(entityID, worldID, false);
+				EntityPlayer getEnt = EntityHelper.getEntityPlayerByID(entityID, worldID, false);
 				Entity getEnt2 = EntityHelper.getEntityByID(value2, worldID, false);
 				
-				if(getEnt instanceof EntityPlayer && getEnt2 != null) {
-					this.player = (EntityPlayer) getEnt;
+				if(getEnt != null && getEnt2 != null) {
+					this.player = getEnt;
 					EntityHelper.applyTeamGuard(player, value, getEnt2);
 				}
 			}
@@ -379,10 +374,10 @@ public class C2SGUIPackets implements IMessage {
 				this.entityID = buf.readInt();
 				this.worldID = buf.readInt();
 				
-				Entity getEnt = EntityHelper.getEntityByID(entityID, worldID, false);
+				EntityPlayer getEnt = EntityHelper.getEntityPlayerByID(entityID, worldID, false);
 				
-				if(getEnt instanceof EntityPlayer) {
-					this.player = (EntityPlayer) getEnt;
+				if(getEnt != null) {
+					this.player = getEnt;
 					ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 					
 					if(extProps != null) {
@@ -403,10 +398,10 @@ public class C2SGUIPackets implements IMessage {
 				this.value = buf.readInt();		//team id
 				this.value2 = buf.readInt();	//org current item
 				
-				Entity getEnt = EntityHelper.getEntityByID(entityID, worldID, false);
+				EntityPlayer getEnt = EntityHelper.getEntityPlayerByID(entityID, worldID, false);
 				
-				if(getEnt instanceof EntityPlayer) {
-					this.player = (EntityPlayer) getEnt;
+				if(getEnt != null) {
+					this.player = getEnt;
 					this.player.inventory.currentItem = this.value2;
 	
 					ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);

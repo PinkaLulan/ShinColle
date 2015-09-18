@@ -55,9 +55,8 @@ public class EntityBattleshipTa extends BasicEntityShip implements ISummonAttack
 	public EntityBattleshipTa(World world) {
 		super(world);
 		this.setSize(0.6F, 1.8F);
-//		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityBattleshipTa.name"));
-		this.ShipType = ID.ShipType.BATTLESHIP;
-		this.ShipID = ID.S_BattleshipTA;
+		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
+		this.setStateMinor(ID.M.ShipClass, ID.S_BattleshipTA);
 		this.ModelPos = new float[] {-6F, 10F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();

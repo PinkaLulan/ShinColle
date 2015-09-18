@@ -140,11 +140,13 @@ public class S2CGUIPackets implements IMessage {
 			break;
 		case 3: //sync player props
 			{			
-				int[] extValues = new int[9];
+				int[] extValues = new int[11];
 				boolean[] shipSelected = new boolean[6];
 				
+				//ring
 				extValues[0] = buf.readByte();	//ring active
 				extValues[1] = buf.readByte();	//marriage num
+				//pointer team
 				extValues[2] = buf.readInt();	//team id
 				extValues[3] = buf.readInt();	//team list 1
 				shipSelected[0] = buf.readBoolean();
@@ -158,6 +160,9 @@ public class S2CGUIPackets implements IMessage {
 				shipSelected[4] = buf.readBoolean();
 				extValues[8] = buf.readInt();	//team list 6
 				shipSelected[5] = buf.readBoolean();
+				//player uid
+				extValues[9] = buf.readInt();	//player uid
+				extValues[10] = buf.readInt();	//player team id
 //				LogHelper.info("DEBUG : gui sync packet: id 3: "+extValues[0]+" "+extValues[1]+" "+extValues[2]+" "+extValues[3]+" "+extValues[4]+" "+extValues[5]+" "+extValues[6]+" "+extValues[7]);
 				//set value
 				EntityHelper.setPlayerExtProps(extValues);
@@ -171,8 +176,8 @@ public class S2CGUIPackets implements IMessage {
 				if(getEnt instanceof BasicEntityShip) {
 					BasicEntityShip ship = (BasicEntityShip) getEnt;
 					
-					ship.setStateMinor(ID.N.Kills, buf.readInt());
-					ship.setStateMinor(ID.N.NumGrudge, buf.readInt());
+					ship.setStateMinor(ID.M.Kills, buf.readInt());
+					ship.setStateMinor(ID.M.NumGrudge, buf.readInt());
 				}
 			}
 			break;
@@ -219,10 +224,13 @@ public class S2CGUIPackets implements IMessage {
 		case 3:	//sync player props
 			{
 				buf.writeByte(3);
+				
+				//ring
 				buf.writeByte(props.isRingActiveI());
 				buf.writeByte(props.getMarriageNum());
+				
+				//team list
 				buf.writeInt(props.getTeamId());
-				//send team list
 				for(int i = 0; i < 6; i++) {
 					if(props.getTeamList(i) != null) {
 						buf.writeInt(props.getTeamList(i).getEntityId());
@@ -233,16 +241,18 @@ public class S2CGUIPackets implements IMessage {
 						buf.writeBoolean(false);
 					}
 				}
-//				//send player UUID
-//				if(this.props)
+				
+				//player uid
+				buf.writeInt(props.getPlayerUID());
+				buf.writeInt(props.getPlayerTeamId());
 			}
 			break;
 		case 4:	//sync ship inventory GUI: kills and grudge
 			{
 				buf.writeByte(4);
 				buf.writeInt(ship.getEntityId());
-				buf.writeInt(ship.getStateMinor(ID.N.Kills));
-				buf.writeInt(ship.getStateMinor(ID.N.NumGrudge));
+				buf.writeInt(ship.getStateMinor(ID.M.Kills));
+				buf.writeInt(ship.getStateMinor(ID.M.NumGrudge));
 			}
 			break;
 		}

@@ -1,18 +1,14 @@
 package com.lulan.shincolle.entity.other;
 
-import com.lulan.shincolle.ai.EntityAIShipAircraftAttack;
-import com.lulan.shincolle.client.particle.EntityFXSpray;
-import com.lulan.shincolle.entity.BasicEntityAirplane;
-import com.lulan.shincolle.entity.BasicEntityShipLarge;
-import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.LogHelper;
-import com.lulan.shincolle.utility.ParticleHelper;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.world.World;
+
+import com.lulan.shincolle.ai.EntityAIShipAircraftAttack;
+import com.lulan.shincolle.entity.BasicEntityAirplane;
+import com.lulan.shincolle.entity.BasicEntityShipLarge;
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.ParticleHelper;
 
 public class EntityAirplaneTakoyaki extends BasicEntityAirplane {
 	
@@ -24,7 +20,7 @@ public class EntityAirplaneTakoyaki extends BasicEntityAirplane {
 	public EntityAirplaneTakoyaki(World world, BasicEntityShipLarge host, EntityLivingBase target, double launchPos) {
 		super(world);
 		this.world = world;
-        this.hostEntity = host;
+        this.host = host;
         this.targetEntity = target;
         
         //basic attr

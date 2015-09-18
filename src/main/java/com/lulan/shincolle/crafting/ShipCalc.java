@@ -155,7 +155,7 @@ public class ShipCalc {
 		int[] material = new int[4];
 		int totalMats = 0;
 		
-		if(item.getItemDamage() > 1) {	//is spec egg
+		if(item.getItemDamage() > 1) {	//is special egg
 			return item.getItemDamage() - 2;
 		}
 		

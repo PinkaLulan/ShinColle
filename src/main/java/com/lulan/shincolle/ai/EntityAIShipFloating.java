@@ -40,8 +40,8 @@ public class EntityAIShipFloating extends EntityAIBase {
     		return !this.hostShip.isSitting() && this.hostShip.getStateFlag(ID.F.CanFloatUp);
     	}
     	//mount類: 檢查mount水深 & host坐下
-    	else if(hostMount != null && hostMount.getOwner() != null) {
-			this.hostShip = (BasicEntityShip) hostMount.getOwner();
+    	else if(hostMount != null && hostMount.getHostEntity() != null) {
+			this.hostShip = (BasicEntityShip) hostMount.getHostEntity();
 			
 			return !this.hostShip.isSitting() && hostMount.getShipDepth() > 0.47D;
 		}

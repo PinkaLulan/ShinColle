@@ -8,7 +8,6 @@ import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
@@ -67,8 +66,8 @@ public class EntityMountSeat extends Entity {
 	public void onUpdate() {		
 		//server side
 		if(!this.worldObj.isRemote) {
-			//sync every 60 ticks
-			if(this.ticksExisted % 40 == 0) {
+			//sync every 32 ticks
+			if(this.ticksExisted % 32 == 0) {
 				if(host != null) {
 					//若rider不在或者host的seat換人, 則消除此entity
 					if(host.getHealth() <= 1F || this.riddenByEntity == null || this.host.seat2 != this) {
@@ -89,7 +88,7 @@ public class EntityMountSeat extends Entity {
 		
 		//host check, BOTH side
 		if(host != null) {
-			float[] ridePos = ParticleHelper.rotateParticleByAxis(host.getRidePos()[0], host.getRidePos()[1], host.renderYawOffset/57.2957F, 1F);	
+			float[] ridePos = ParticleHelper.rotateXZByAxis(host.getRidePos()[0], host.getRidePos()[1], host.renderYawOffset/57.2957F, 1F);	
 			this.posX = host.posX + ridePos[1];
 			this.posY = host.posY;
 			this.posZ = host.posZ + ridePos[0];
@@ -98,13 +97,6 @@ public class EntityMountSeat extends Entity {
 		else {
 			this.setRiderNull();
 		}
-		
-//		//get off mount, BOTH side
-//		if(this.riddenByEntity != null && this.ticksExisted > 10) {
-//			if(this.riddenByEntity.isSneaking()) {
-//				this.setRiderNull();
-//			}
-//		}
 	}
 
 	@Override

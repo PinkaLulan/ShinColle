@@ -2,23 +2,6 @@ package com.lulan.shincolle.entity.other;
 
 import java.util.List;
 
-import com.lulan.shincolle.ai.EntityAIShipAircraftAttack;
-import com.lulan.shincolle.client.particle.EntityFXSpray;
-import com.lulan.shincolle.entity.BasicEntityAirplane;
-import com.lulan.shincolle.entity.BasicEntityShipLarge;
-import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.network.S2CSpawnParticle;
-import com.lulan.shincolle.proxy.CommonProxy;
-import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
-import com.lulan.shincolle.utility.ParticleHelper;
-
-import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
@@ -26,6 +9,16 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+
+import com.lulan.shincolle.entity.BasicEntityAirplane;
+import com.lulan.shincolle.entity.BasicEntityShipLarge;
+import com.lulan.shincolle.network.S2CSpawnParticle;
+import com.lulan.shincolle.proxy.CommonProxy;
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.ParticleHelper;
+
+import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
 public class EntityFloatingFort extends BasicEntityAirplane {
 	
@@ -37,7 +30,7 @@ public class EntityFloatingFort extends BasicEntityAirplane {
 	public EntityFloatingFort(World world, BasicEntityShipLarge host, EntityLivingBase target, double launchPos) {
 		super(world);
 		this.world = world;
-        this.hostEntity = host;
+        this.host = host;
         this.targetEntity = target;
         
         //basic attr
@@ -148,14 +141,14 @@ public class EntityFloatingFort extends BasicEntityAirplane {
             	hitEntity = (EntityLivingBase)hitList.get(i);
             	
             	//目標可以被碰撞, 且目標不同主人, 則判定可傷害
-            	if(hitEntity.canBeCollidedWith() && !EntityHelper.checkSameOwner(this.getPlayerOwner(), hitEntity)) {
+            	if(hitEntity.canBeCollidedWith() && !EntityHelper.checkSameOwner(this.host, hitEntity)) {
 
         			//calc critical, only for type:ship
-            		if(hostEntity != null && (this.rand.nextFloat() < this.hostEntity.getEffectEquip(ID.EF_CRI))) {
+            		if(host != null && (this.rand.nextFloat() < this.host.getEffectEquip(ID.EF_CRI))) {
             			atk2 *= 3F;
                 		//spawn critical particle
                 		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
-                    	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(hostEntity, 11, false), point);
+                    	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(host, 11, false), point);
                 	}
             		
             		//若攻擊到玩家, 則傷害減為25%, 且最大傷害固定為TNT傷害 (non-owner)
@@ -167,13 +160,14 @@ public class EntityFloatingFort extends BasicEntityAirplane {
                 		}
                 		
                 		//check friendly fire
-                		if(EntityHelper.checkOwnerIsPlayer(hitEntity) && !ConfigHandler.friendlyFire) {
+                		if(!EntityHelper.doFriendlyFire(this.host, (EntityPlayer) hitEntity)) {
                 			atk2 = 0F;
                 		}
                 	}
+                	
             		//對entity造成傷害
-                	if(hostEntity != null) {
-                		isTargetHurt = hitEntity.attackEntityFrom(DamageSource.causeMobDamage(hostEntity).setExplosion(), atk2);
+                	if(host != null) {
+                		isTargetHurt = hitEntity.attackEntityFrom(DamageSource.causeMobDamage(host).setExplosion(), atk2);
                 	}
                 	else {
                 		isTargetHurt = hitEntity.attackEntityFrom(DamageSource.causeMobDamage(this).setExplosion(), atk2);

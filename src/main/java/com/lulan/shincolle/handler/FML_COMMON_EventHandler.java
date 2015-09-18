@@ -5,6 +5,7 @@ import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.settings.GameSettings;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -37,8 +38,10 @@ import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.InputEvent;
 import cpw.mods.fml.common.gameevent.InputEvent.KeyInputEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.common.gameevent.TickEvent.PlayerTickEvent;
 
@@ -48,6 +51,10 @@ public class FML_COMMON_EventHandler {
 	//keys: W S A D J
 	public int rideKeys = 0;
 	public int openGUI = 0;
+	public int keyCooldown = 0;		//press key cooldown, count down in player tick
+	//render view change
+	private boolean isViewChanged = false;
+	private boolean isViewPlayer = false;
 	
 
 	//player update tick, tick TWICE every tick (preTick + postTick) and BOTH SIDE (client + server)
@@ -202,6 +209,13 @@ public class FML_COMMON_EventHandler {
 				}//end every 20 ticks
 			}//end server side, extProps != null
 			
+			//count down key cooldown
+			if(event.player.worldObj.isRemote) {
+				if(this.keyCooldown > 0) {
+					this.keyCooldown--;
+				}
+			}
+			
 			//check ring item (check for first found ring only) every 20 ticks
 			if(event.player.ticksExisted % 20 == 0) {
 				boolean hasRing = false;
@@ -231,6 +245,7 @@ public class FML_COMMON_EventHandler {
 						}
 					}
 				}
+//				LogHelper.info("DEBUG : "+event.player.worldObj.isRemote+" "+extProps.player.getEntityId()+" "+event.player.getEntityId());
 			}//end player per 20 ticks
 		}//end player tick phase: START
 	}//end onPlayerTick
@@ -240,32 +255,32 @@ public class FML_COMMON_EventHandler {
 	public void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
 		LogHelper.info("DEBUG : get player respawn event "+event.player.getDisplayName()+" "+event.player.getUniqueID());
     	
-        //restore player data from commonproxy variable
-        NBTTagCompound nbt = CommonProxy.getEntityData(event.player.getUniqueID().toString());
+        //restore player data from ServerProxy variable
+        NBTTagCompound nbt = ServerProxy.getPlayerData(event.player.getUniqueID().toString());
         
         if(nbt != null) {
-        	LogHelper.info("DEBUG : player respawn: restore player data (FML COMMON event) "+event.player.worldObj.isRemote);
         	ExtendPlayerProps extProps = (ExtendPlayerProps) event.player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
-        	
         	extProps.loadNBTData(nbt);
+        	LogHelper.info("DEBUG : player respawn: restore player data: eid: "+event.player.getEntityId()+" pid: "+extProps.getPlayerUID());
         	
         	//sync extProps state to client
 			CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps), (EntityPlayerMP) event.player);
         }
 	}//end onPlayerRespawn
 	
-	//get key input, 按下+放開都會發出一次, 且每個按鍵分開發出, CLIENT side only event
+	//
+	
+	/**get input, 按下+放開都會發出一次, 且每個按鍵分開發出, CLIENT side only event
+	 * getIsKeyPressed = 該按鍵是否按著, isPressed = 這次event是否為該按鍵
+	 * 
+	 */
 	@SubscribeEvent
-	public void onKeyInput(KeyInputEvent event) {
-		//getIsKeyPressed = 該按鍵是否按著, isPressed = 這次event是否為該按鍵
-//		LogHelper.info("DEBUG : key event "+Minecraft.getMinecraft().gameSettings.keyBindBack.getIsKeyPressed());
-//		LogHelper.info("DEBUG : key event "+Minecraft.getMinecraft().thePlayer.ridingEntity);
-		//if player is riding, send packet
+	public void onKeyInput(InputEvent event) {
 		EntityPlayer player = ClientProxy.getClientPlayer();
 		this.keySet = ClientProxy.getGameSetting();
 		
 		//pointer item control
-		if(player.inventory.getCurrentItem() != null && player.inventory.getCurrentItem().getItem() instanceof PointerItem) {
+		if(event instanceof KeyInputEvent && player.inventory.getCurrentItem() != null && player.inventory.getCurrentItem().getItem() instanceof PointerItem) {
 			//get pointer item
 			ItemStack pointer = player.inventory.getCurrentItem();
 			
@@ -295,83 +310,99 @@ public class FML_COMMON_EventHandler {
 				}
 			}
 		}
-		
+
 		//riding control
 		if(player.isRiding() && player.ridingEntity instanceof EntityMountSeat) {
 			int newKeys = 0;
 			
-			//forward
-			if(keySet.keyBindForward.getIsKeyPressed()) {
-				LogHelper.info("DEBUG : key event: press W");
-				newKeys = newKeys | 1;
+			//view change, accept KEYBOARD or MOUSE input
+			if(keySet.keyBindPickBlock.getIsKeyPressed() && this.keyCooldown <= 0) {
+				LogHelper.info("DEBUG : key event: player view "+this.isViewPlayer);
+				this.keyCooldown = 5;
+				this.isViewPlayer = !this.isViewPlayer;
 			}
 			
-			//back
-			if(keySet.keyBindBack.getIsKeyPressed()) {
-				LogHelper.info("DEBUG : key event: press S");
-				newKeys = newKeys | 2;
-			}
-			
-			//left
-			if(keySet.keyBindLeft.getIsKeyPressed()) {
-				LogHelper.info("DEBUG : key event: press A");
-				newKeys = newKeys | 4;
-			}
-			
-			//right
-			if(keySet.keyBindRight.getIsKeyPressed()) {
-				LogHelper.info("DEBUG : key event: press D");
-				newKeys = newKeys | 8;
-			}
-			
-			//jump
-			if(keySet.keyBindJump.isPressed()) {
-				LogHelper.info("DEBUG : key event: jump");
-				newKeys = newKeys | 16;
-			}
-			
-			//server跟client同時設定, 移動顯示才會順暢, 只靠server設定移動會不連續
-			BasicEntityMount mount = ((EntityMountSeat)player.ridingEntity).host;
-
-			if(mount != null) {
-				//set key for packet
-				this.rideKeys = newKeys;
-				
-				//set client key
-				((EntityMountSeat) player.ridingEntity).host.keyPressed = newKeys;
-
-				//inventory, open ship GUI
-				if(keySet.keyBindInventory.isPressed()) {
-					LogHelper.info("DEBUG : key event: open ship GUI");
-					this.openGUI = 1;
-				}
-				else {	//放開按鍵時會跑到此選項, 設回false
-					this.openGUI = 0;
+			//move and open GUI is KEYBOARD ONLY
+			if(event instanceof KeyInputEvent) {
+				//forward
+				if(keySet.keyBindForward.getIsKeyPressed()) {
+					LogHelper.info("DEBUG : key event: press W");
+					newKeys = newKeys | 1;
 				}
 				
-				//send control packet
-				CommonProxy.channelG.sendToServer(new C2SInputPackets(0, this.rideKeys, this.openGUI));
-			}
+				//back
+				if(keySet.keyBindBack.getIsKeyPressed()) {
+					LogHelper.info("DEBUG : key event: press S");
+					newKeys = newKeys | 2;
+				}
+				
+				//left
+				if(keySet.keyBindLeft.getIsKeyPressed()) {
+					LogHelper.info("DEBUG : key event: press A");
+					newKeys = newKeys | 4;
+				}
+				
+				//right
+				if(keySet.keyBindRight.getIsKeyPressed()) {
+					LogHelper.info("DEBUG : key event: press D");
+					newKeys = newKeys | 8;
+				}
+				
+				//jump
+				if(keySet.keyBindJump.isPressed()) {
+					LogHelper.info("DEBUG : key event: jump");
+					newKeys = newKeys | 16;
+				}
+				
+				//server跟client同時設定, 移動顯示才會順暢, 只靠server設定移動會不連續
+				BasicEntityMount mount = ((EntityMountSeat)player.ridingEntity).host;
+	
+				if(mount != null) {
+					//set key for packet
+					this.rideKeys = newKeys;
+					
+					//set client key
+					((EntityMountSeat) player.ridingEntity).host.keyPressed = newKeys;
+	
+					//open ship GUI
+					if(keySet.keyBindInventory.isPressed()) {
+						CommonProxy.channelG.sendToServer(new C2SInputPackets(1, this.openGUI));
+					}
+					//set move key
+					else {
+						CommonProxy.channelG.sendToServer(new C2SInputPackets(0, this.rideKeys));
+					}
+				}
+			}//is key event
 		}//end is riding
 	}//end key event
 
-	//player login, called after extProps loaded
+	/**player login, called after extProps loaded, SERVER ONLY event
+	 */
 	@SubscribeEvent
 	public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
-		LogHelper.info("DEBUG : get player login event "+event.player.getDisplayName()+" "+event.player.getUniqueID());
+		/**load player extend data
+		 */
+		LogHelper.info("DEBUG : player login: "+event.player.getDisplayName()+" "+event.player.getUniqueID());
 		ExtendPlayerProps extProps = (ExtendPlayerProps) event.player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 		
 		if(extProps != null) {
-			LogHelper.info("DEBUG : player login: save player extProps in CommonProxy");
-			
-			//save player nbt data to common proxy
-    		NBTTagCompound nbt = new NBTTagCompound();
-    		extProps.saveNBTData(nbt);
-    		CommonProxy.storeEntityData(event.player.getUniqueID().toString(), nbt);
-    		
-    		//sync extProps state to client
-			CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps), (EntityPlayerMP) event.player);
-		}
+			if(!event.player.worldObj.isRemote) {
+				/**update player id
+				 * NOTE: this is VERY SLOW op with disk access
+				 */
+				ServerProxy.updatePlayerID(event.player);
+				
+				/** save player extend data in server proxy */
+				LogHelper.info("DEBUG : player login: save player extProps in ServerProxy");
+	    		NBTTagCompound nbt = new NBTTagCompound();
+	    		extProps.saveNBTData(nbt);
+	    		ServerProxy.setPlayerData(event.player.getUniqueID().toString(), nbt);
+	    		
+	    		//sync extProps state to client
+				CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps), (EntityPlayerMP) event.player);
+			}//end server side
+		}//end player extProps not null
 	}
 	
 	//player loggout, not be called in singleplayer 
@@ -379,15 +410,66 @@ public class FML_COMMON_EventHandler {
 	public void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
 		ExtendPlayerProps extProps = (ExtendPlayerProps) event.player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
     	
-    	LogHelper.info("DEBUG : get player logout event "+event.player.getDisplayName()+" "+event.player.getUniqueID());
+    	LogHelper.info("DEBUG : player logout: "+event.player.getDisplayName()+" "+event.player.getUniqueID());
     	
     	if(extProps != null) {
-    		LogHelper.info("DEBUG : player logout: save player extProps in CommonProxy");
+    		/** save player extend data in server proxy */
+    		LogHelper.info("DEBUG : player logout: save player extProps in ServerProxy");
     		//save player nbt data
     		NBTTagCompound nbt = new NBTTagCompound();
     		extProps.saveNBTData(nbt);
-    		CommonProxy.storeEntityData(event.player.getUniqueID().toString(), nbt);
+    		ServerProxy.setPlayerData(event.player.getUniqueID().toString(), nbt);
     	}
+	}
+	
+	//change eye height when riding mounts, this is CLIENT ONLY event
+	@SubscribeEvent
+    public void renderTick(TickEvent.RenderTickEvent event) {
+		EntityPlayer player = ClientProxy.getClientPlayer();
+		
+		//在render前, 依照騎乘類型調整eye height
+		if(player != null) {
+			if(event.phase == TickEvent.Phase.START) {
+				if(player.isRiding() && player.ridingEntity instanceof EntityMountSeat) {
+					EntityMountSeat seat = (EntityMountSeat) player.ridingEntity;
+					
+					if(seat.host != null) {
+						//將view point切換到ship身上
+						if(seat.host.host != null && !this.isViewChanged && !this.isViewPlayer) {
+							ClientProxy.getMineraft().renderViewEntity = seat.host.host;
+							this.isViewChanged = true;
+						}
+						
+						//將人物視野轉動套用到ship身上
+						if(this.isViewChanged) {
+							EntityLivingBase camera = ClientProxy.getMineraft().renderViewEntity;
+							
+							if(camera != null) {	
+								camera.renderYawOffset = player.renderYawOffset;
+								camera.rotationPitch = player.rotationPitch;
+								camera.rotationYaw = player.rotationYaw;
+								camera.rotationYawHead = player.rotationYawHead;
+								camera.prevCameraPitch = player.prevCameraPitch;
+								camera.prevRenderYawOffset = player.prevRenderYawOffset;
+								camera.prevRotationPitch = player.prevRotationPitch;
+								camera.prevRotationYaw = player.prevRotationYaw;
+								camera.prevRotationYawHead = player.prevRotationYawHead;
+							}
+						}
+						
+					}//end host != null
+				}//end riding SEAT
+			}//end phase START
+			else if(event.phase == TickEvent.Phase.END) {
+				//該render tick結束後必須把視角切回玩家, 以免其他利用view entity的方法出錯
+				if(this.isViewChanged) {
+					ClientProxy.getMineraft().renderViewEntity = ClientProxy.getClientPlayer();
+					this.isViewChanged = false;
+				}
+				
+			}//end phase END
+		}
+		
 	}
 
 }

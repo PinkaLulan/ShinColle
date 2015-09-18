@@ -148,7 +148,7 @@ public class EntityFXChi extends EntityFX {
         this.prevPosY = this.posY;
         this.prevPosZ = this.posZ;
         
-        float[] newPos = ParticleHelper.rotateParticleByAxis(radChi, 0F, 6.28F / this.particleMaxAge * this.particleAge, 1F);
+        float[] newPos = ParticleHelper.rotateXZByAxis(radChi, 0F, 6.28F / this.particleMaxAge * this.particleAge, 1F);
 
         if(this.host != null) {
         	this.posX = this.host.posX + newPos[0];

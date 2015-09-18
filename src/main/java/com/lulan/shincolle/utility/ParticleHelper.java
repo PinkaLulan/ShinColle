@@ -68,7 +68,7 @@ public class ParticleHelper {
 	 * entity專用的特效位置旋轉方法, 使用yaw跟pitch為參數
 	 * 模型是以Z軸正向轉X軸負向為正角度, 且Z軸正向為0度
 	 */
-	public static float[] rotateParticleByYawPitch(float x, float y, float z, float yaw, float pitch, float scale) {
+	public static float[] rotateXYZByYawPitch(float x, float y, float z, float yaw, float pitch, float scale) {
 		float cosYaw = MathHelper.cos(yaw);
 		float sinYaw = MathHelper.sin(yaw);
 		float cosPitch = MathHelper.cos(-pitch);
@@ -91,11 +91,11 @@ public class ParticleHelper {
 		return newPos;
 	}
 	
-	/**ROTATE PARTICLE FOR ENTITY (Z AXIS)
+	/**ROTATE BY AXIS
 	 * 針對entity的某一軸做旋轉, 角度單位為RAD
 	 * 注意entity前後為Z軸, 左右為X軸
 	 */
-	public static float[] rotateParticleByAxis(float z, float x, float rad, float scale) {
+	public static float[] rotateXZByAxis(float z, float x, float rad, float scale) {
 		float cosD = MathHelper.cos(rad);
 		float sinD = MathHelper.sin(rad);
 		float[] newPos = new float[] {0F, 0F};
@@ -112,10 +112,8 @@ public class ParticleHelper {
 	
 	/**ROTATE PARTICLE FOR ENTITY
 	 * 針對entity的某一軸做旋轉, 以目標的位置為參數
-	 * 
-	 * @parm orgX, orgY, vecX, vecY, scale
 	 */
-	public static float[] rotateParticleByLook(float x, float y, float lookX, float lookY, float scale) {		
+	public static float[] rotateXZByLook(float x, float y, float lookX, float lookY, float scale) {		
 		float[] degree = EntityHelper.getLookDegree(lookX, 0, lookY, false);
 		float cosZdeg = MathHelper.cos(degree[0]);
 		float sinZdeg = MathHelper.sin(degree[0]);
@@ -311,8 +309,8 @@ public class ParticleHelper {
 		case 19: 	//double largesmoke for 14~20 inch cannon
 			//計算煙霧位置
 			degYaw = EntityHelper.getLookDegree(lookX, 0D, lookZ, false)[0];
-			newPos1 = ParticleHelper.rotateParticleByAxis(0F, (float)lookY, degYaw, 1F);
-			newPos2 = ParticleHelper.rotateParticleByAxis(0F, (float)-lookY, degYaw, 1F);
+			newPos1 = ParticleHelper.rotateXZByAxis(0F, (float)lookY, degYaw, 1F);
+			newPos2 = ParticleHelper.rotateXZByAxis(0F, (float)-lookY, degYaw, 1F);
 			
 			for(int i=0; i<12; i++) {
 				ran1 = rand.nextFloat() - 0.5F;
@@ -339,7 +337,7 @@ public class ParticleHelper {
 			
 			//draw hit particle
 			for(int i = 0; i < 20; ++i) {
-				newPos1 = rotateParticleByAxis(1, 0, 6.28F / 20F * i, 1);
+				newPos1 = rotateXZByAxis(1, 0, 6.28F / 20F * i, 1);
 				//motionY傳入4, 表示為特殊設定
 				EntityFXSpray particleSpray5 = new EntityFXSpray(world, 
 						lookX, lookY+0.3D, lookZ, newPos1[0]*0.4D, 4D, newPos1[1]*0.4D, 1.0F, 0F, 0F, 1.0F);
@@ -353,7 +351,7 @@ public class ParticleHelper {
 			break;
 		case 22:	//Type 91 AP Fist: phase 1,3 particle
 			for(int i = 0; i < 20; ++i) {
-				newPos1 = rotateParticleByAxis((float)lookX, 0, 6.28F / 20F * i, 1);
+				newPos1 = rotateXZByAxis((float)lookX, 0, 6.28F / 20F * i, 1);
 				//motionY傳入4, 表示為特殊設定
 				EntityFXSpray particleSpray7 = new EntityFXSpray(world, 
 						posX+newPos1[0]*1.8D, posY+1.2D+lookY, posZ+newPos1[1]*1.8D, -newPos1[0]*0.06D, 0D, -newPos1[1]*0.06D, 1.0F, 1.0F, 1.0F, 0.5F);
@@ -362,7 +360,7 @@ public class ParticleHelper {
 			break;
 		case 23:	//Type 91 AP Fist: phase 2 particle
 			for(int i = 0; i < 20; ++i) {
-				newPos1 = rotateParticleByAxis((float)lookX, 0, 6.28F / 20F * i, 1);
+				newPos1 = rotateXZByAxis((float)lookX, 0, 6.28F / 20F * i, 1);
 				//motionY傳入4, 表示為特殊設定
 				EntityFXSpray particleSpray8 = new EntityFXSpray(world, 
 						posX, posY+0.3D+lookY, posZ, newPos1[0]*0.15D, 4D, newPos1[1]*0.15D, 1.0F, 1.0F, 1.0F, 0.5F);

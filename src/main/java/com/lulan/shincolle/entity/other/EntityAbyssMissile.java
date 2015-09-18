@@ -5,7 +5,6 @@ import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -19,6 +18,7 @@ import net.minecraft.world.World;
 import com.lulan.shincolle.entity.BasicEntityAirplane;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.IShipAttackBase;
+import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;
@@ -26,7 +26,6 @@ import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
@@ -42,11 +41,11 @@ import cpw.mods.fml.relauncher.SideOnly;
  * 到中點時, Vy = 0
  * 
  */
-public class EntityAbyssMissile extends Entity {
+public class EntityAbyssMissile extends Entity implements IShipOwner {
 	
     private IShipAttackBase host;	//main host type
     private EntityLiving host2;		//second host type: entity living
-    private EntityLivingBase owner;
+    private int playerUID;			//owner UID, for owner check
     
     //missile motion
     private float distX;			//target distance
@@ -69,7 +68,6 @@ public class EntityAbyssMissile extends Entity {
     private float atk;				//missile damage
     private float kbValue;			//knockback value
     private float missileHP;		//if hp = 0 -> onImpact
-    private boolean isTargetHurt;	//knockback flag
     private World world;
 
     
@@ -86,7 +84,7 @@ public class EntityAbyssMissile extends Entity {
         //設定host跟owner
         this.host = host;
         this.host2 = (EntityLiving) host;
-        this.owner = this.host.getPlayerOwner();
+        this.setPlayerUID(host.getPlayerUID());
         
         //set basic attributes
         this.atk = atk;
@@ -222,6 +220,7 @@ public class EntityAbyssMissile extends Entity {
     		Vec3 vec3 = Vec3.createVectorHelper(this.posX, this.posY, this.posZ);
             Vec3 vec31 = Vec3.createVectorHelper(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
             MovingObjectPosition movingobjectposition = this.worldObj.rayTraceBlocks(vec3, vec31);          
+            
             vec3 = Vec3.createVectorHelper(this.posX, this.posY, this.posZ);
             vec31 = Vec3.createVectorHelper(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
 
@@ -293,74 +292,19 @@ public class EntityAbyssMissile extends Entity {
 
 	//撞擊判定時呼叫此方法
     protected void onImpact(EntityLivingBase target) {
-    	isTargetHurt = false;
-    	
     	//play sound
     	playSound(Reference.MOD_ID+":ship-explode", ConfigHandler.fireVolume * 1.5F, 0.7F / (this.rand.nextFloat() * 0.4F + 0.8F));
     	
     	//server side
     	if(!this.worldObj.isRemote) {
     		float missileAtk = atk;
-    		EntityLivingBase host3 = null;
-    		
-    		if(host2 instanceof BasicEntityMount || host2 instanceof BasicEntityAirplane) {
-        		host3 = host.getOwner();
-    		}
-    		
-            if(target != null) {	//撞到entity引起爆炸
-            	//若攻擊到同陣營entity (ex: owner), 則傷害設為0 (但是依然觸發擊飛特效)
-            	if(EntityHelper.checkSameOwner(host2, target)) {
-            		missileAtk = 0F;
-            	}
-            	
-            	//calc critical, only for type:ship
-            	if(this.host != null && (this.rand.nextFloat() < this.host.getEffectEquip(ID.EF_CRI))) {
-            		missileAtk *= 3F;
-            		//spawn critical particle
-            		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-                	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this.host2, 11, false), point);
-            	}
-            	
-            	//若攻擊到玩家, 最大傷害固定為TNT傷害 (non-owner)
-            	if(target instanceof EntityPlayer) {
-            		missileAtk *= 0.25F;
-            		
-            		if(missileAtk > 59F) {
-            			missileAtk = 59F;	//same with TNT
-            		}
-            		
-            		//check friendly fire if host is not mob
-            		if(EntityHelper.checkOwnerIsPlayer(host2) && !ConfigHandler.friendlyFire) {
-            			missileAtk = 0F;
-            		}
-            	}
 
-            	//設定該entity受到的傷害
-        		if(host3 != null) {
-        			isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(host3).setExplosion(), missileAtk);
-        		}
-            	else {
-            		isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(host2).setExplosion(), missileAtk);
-            	}
-            	
-            	//if attack success
-        	    if(isTargetHurt) {
-        	    	//calc kb effect
-        	        if(this.kbValue > 0) {
-        	        	target.addVelocity((double)(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue), 
-        	                   0.1D, (double)(MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue));
-        	            motionX *= 0.6D;
-        	            motionZ *= 0.6D;
-        	        }             	 
-        	    }
-            }
-            
             //計算範圍爆炸傷害: 判定bounding box內是否有可以吃傷害的entity
             EntityLivingBase hitEntity = null;
             AxisAlignedBB impactBox = this.boundingBox.expand(3.5D, 3.5D, 3.5D); 
             List hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, impactBox);
             
-            //搜尋list, 找出第一個可以判定的目標, 即傳給onImpact
+            //對list中所有可攻擊entity做出傷害判定
             if(hitList != null && !hitList.isEmpty()) {
                 for(int i=0; i<hitList.size(); ++i) {
                 	missileAtk = this.atk;
@@ -368,49 +312,44 @@ public class EntityAbyssMissile extends Entity {
                 	
                 	//目標不能是自己 or 主人
                 	if(hitEntity.canBeCollidedWith() && isNotHost(hitEntity.getEntityId())) {
-
-            			//calc critical, only for type:ship
-                		if(this.host != null && (this.rand.nextFloat() < this.host.getEffectEquip(ID.EF_CRI))) {
-                    		missileAtk *= 3F;
-                    		//spawn critical particle
-                    		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-                        	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(host2, 11, false), point);
-                    	}
                 		
-                		//若攻擊到同陣營entity (ex: owner), 則傷害設為0 (但是依然觸發擊飛特效)
+                		//若owner相同, 則傷害設為0 (但是依然觸發擊飛特效)
                 		if(EntityHelper.checkSameOwner(host2, hitEntity)) {
                     		missileAtk = 0F;
                     	}
+                		else {
+                			//calc critical, only for type:ship
+                    		if(this.host != null && (this.rand.nextFloat() < this.host.getEffectEquip(ID.EF_CRI))) {
+                        		missileAtk *= 3F;
+                        		//spawn critical particle
+                        		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+                            	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(host2, 11, false), point);
+                        	}
+                    		
+                    		//若攻擊到玩家, 最大傷害固定為TNT傷害 (non-owner)
+                        	if(hitEntity instanceof EntityPlayer) {
+                        		missileAtk *= 0.25F;
+                        		
+                        		if(missileAtk > 59F) {
+                        			missileAtk = 59F;	//same with TNT
+                        		}
+                        		
+                        		//check friendly fire
+                        		if(!EntityHelper.doFriendlyFire(this.host, (EntityPlayer) hitEntity)) {
+                        			missileAtk = 0F;
+                        		}
+                        	}
+                		}
                 		
-                		//若攻擊到玩家, 最大傷害固定為TNT傷害 (non-owner)
-                    	if(hitEntity instanceof EntityPlayer) {
-                    		missileAtk *= 0.25F;
-                    		
-                    		if(missileAtk > 59F) {
-                    			missileAtk = 59F;	//same with TNT
-                    		}
-                    		
-                    		//check friendly fire
-                    		if(EntityHelper.checkOwnerIsPlayer(host2) && !ConfigHandler.friendlyFire) {
-                    			missileAtk = 0F;
-                    		}
-                    	}
-                		//對entity造成傷害
-                    	if(host3 != null) {
-                    		isTargetHurt = hitEntity.attackEntityFrom(DamageSource.causeMobDamage(host3).setExplosion(), missileAtk);
-                    	}
-                    	else {
-                    		isTargetHurt = hitEntity.attackEntityFrom(DamageSource.causeMobDamage(host2).setExplosion(), missileAtk);
-                    	}
                 		//if attack success
-                	    if(isTargetHurt) {
+                	    if(hitEntity.attackEntityFrom(DamageSource.causeMobDamage(host2).setExplosion(), missileAtk)) {
                 	    	//calc kb effect
                 	        if(this.kbValue > 0) {
                 	        	hitEntity.addVelocity((double)(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue), 
                 	                   0.1D, (double)(MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue));
                 	            motionX *= 0.6D;
                 	            motionZ *= 0.6D;
-                	        }             	 
+                	        }
                 	    }
                 	}//end can be collided with
                 }//end hit target list for loop
@@ -486,5 +425,21 @@ public class EntityAbyssMissile extends Entity {
     public void setMissileType(int par1) {
     	this.type = par1;
     }
+
+	@Override
+	public int getPlayerUID() {
+		return this.playerUID;
+	}
+
+	@Override
+	public void setPlayerUID(int uid) {
+		this.playerUID = uid;
+	}
+
+	@Override
+	public Entity getHostEntity() {
+		return this.host2;
+	}
     
+	
 }

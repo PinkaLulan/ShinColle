@@ -5,7 +5,6 @@ import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidContainerItem;
-import net.minecraftforge.fluids.IFluidHandler;
 
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.tileentity.BasicTileEntity;

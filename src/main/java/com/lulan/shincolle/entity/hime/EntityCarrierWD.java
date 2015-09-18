@@ -19,9 +19,6 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.utility.LogHelper;
-import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -30,8 +27,8 @@ public class EntityCarrierWD extends BasicEntityShipLarge {
 	public EntityCarrierWD(World world) {
 		super(world);
 		this.setSize(0.6F, 1.8F);
-		this.ShipType = ID.ShipType.DEMON;
-		this.ShipID = ID.S_CarrierWD;
+		this.setStateMinor(ID.M.ShipType, ID.ShipType.DEMON);
+		this.setStateMinor(ID.M.ShipClass, ID.S_CarrierWD);
 		this.ModelPos = new float[] {-6F, 15F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();
@@ -60,23 +57,6 @@ public class EntityCarrierWD extends BasicEntityShipLarge {
 		this.tasks.addTask(11, new EntityAIShipCarrierAttack(this));		   //0100
 		this.tasks.addTask(12, new EntityAIShipRangeAttack(this));			   //0011
 	}
-	
-	//check entity state every tick
-  	@Override
-  	public void onLivingUpdate() {
-//  		//server side
-//  		if(!worldObj.isRemote) {
-//
-//  		}//end server side
-//  		if(worldObj.isRemote) {
-//  			float[] newPos = ParticleHelper.rotateParticleByYawPitch(1F, 1F, 1F, this.renderYawOffset*Values.N.RAD_MUL, this.rotationPitch*Values.N.RAD_MUL, 1F);
-//  			ParticleHelper.spawnAttackParticleAt(posX+newPos[0], posY+newPos[1], posZ+newPos[2], 0D, 0D, 0D, (byte)16);
-//  		
-//  			ParticleHelper.spawnAttackParticleAtEntity(this, this, posX+newPos[0], posY+newPos[1], posZ+newPos[2], (byte)1, false);
-//  		}
-  		
-  		super.onLivingUpdate();
-  	}
 	
 	@Override
   	public boolean interact(EntityPlayer player) {	
@@ -167,7 +147,7 @@ public class EntityCarrierWD extends BasicEntityShipLarge {
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, target, shotHeight, 0D, 0D, 0, true), point);
 
         //calc miss chance, if not miss, calc cri/multi hit
-        float missChance = 0.2F + 0.15F * (distSqrt / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.N.ShipLevel];
+        float missChance = 0.2F + 0.15F * (distSqrt / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.M.ShipLevel];
         missChance -= EffectEquip[ID.EF_MISS];		//equip miss reduce
         if(missChance > 0.35F) missChance = 0.35F;	//max miss chance
         

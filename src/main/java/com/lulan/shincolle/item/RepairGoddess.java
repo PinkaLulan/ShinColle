@@ -7,10 +7,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 
-import com.lulan.shincolle.crafting.EquipCalc;
-import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.Values;
-
 public class RepairGoddess extends BasicItem {
 	
 	public RepairGoddess() {

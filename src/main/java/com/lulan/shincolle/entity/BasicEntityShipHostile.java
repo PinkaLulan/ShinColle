@@ -1,6 +1,5 @@
 package com.lulan.shincolle.entity;
 
-import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
@@ -10,7 +9,6 @@ import net.minecraft.entity.ai.EntityAIOpenDoor;
 import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
@@ -20,9 +18,7 @@ import com.lulan.shincolle.ai.EntityAIShipFloating;
 import com.lulan.shincolle.ai.EntityAIShipInRangeTargetHostile;
 import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
-import com.lulan.shincolle.ai.path.ShipPathEntity;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
-import com.lulan.shincolle.ai.path.ShipPathPoint;
 import com.lulan.shincolle.entity.hostile.EntityRensouhouBoss;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CEntitySync;
@@ -358,12 +354,7 @@ public class BasicEntityShipHostile extends EntityMob implements IShipCannonAtta
 	public boolean attackEntityWithHeavyAmmo(Entity target) {
 		return false;
 	}
-
-	@Override
-	public EntityLivingBase getOwner() {
-		return this;
-	}
-
+	
 	@Override
 	public float getAttackSpeed() {
 		return this.atkSpeed;
@@ -682,11 +673,6 @@ public class BasicEntityShipHostile extends EntityMob implements IShipCannonAtta
 	}
 
 	@Override
-	public EntityLivingBase getPlayerOwner() {
-		return this;
-	}
-
-	@Override
 	public int getStateMinor(int id) {
 		return 0;
 	}
@@ -736,6 +722,19 @@ public class BasicEntityShipHostile extends EntityMob implements IShipCannonAtta
 	@Override
 	public boolean getAttackType(int par1) {
 		return true;
+	}
+
+	@Override
+	public int getPlayerUID() {
+		return -100;	//-100 for hostile mob
+	}
+
+	@Override
+	public void setPlayerUID(int uid) {}
+	
+	@Override
+	public Entity getHostEntity() {
+		return this;
 	}
 
 

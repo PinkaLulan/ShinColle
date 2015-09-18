@@ -18,9 +18,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
-import com.lulan.shincolle.ai.path.ShipPathEntity;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
-import com.lulan.shincolle.ai.path.ShipPathPoint;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.entity.other.EntityAirplane;
 import com.lulan.shincolle.handler.ConfigHandler;
@@ -29,13 +27,12 @@ import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
 public abstract class BasicEntityAirplane extends EntityLiving implements IShipCannonAttack {
 
-	protected BasicEntityShipLarge hostEntity;  		//host target
+	protected BasicEntityShipLarge host;  		//host target
 	protected EntityLivingBase targetEntity;	//onImpact target (for entity)
 	protected World world;
 	protected ShipPathNavigate shipNavigator;	//水空移動用navigator
@@ -149,11 +146,6 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 	public void setAmmoHeavy(int num) {
 		this.numAmmoHeavy = num;
 	}
-        
-    @Override
-    public EntityLivingBase getOwner() {
-        return this.hostEntity;
-    }
     
     @Override
     public EntityLivingBase getAttackTarget() {
@@ -185,37 +177,42 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
         this.limbSwingAmount += (f4 - this.limbSwingAmount) * 0.4F;
         this.limbSwing += this.limbSwingAmount;
     }
+    
+	//ammo recycle
+    protected void recycleAmmo() {
+    	//light cost 4, plane get 6 => -2
+		this.numAmmoLight -= 2;
+		if(this.numAmmoLight < 0) this.numAmmoLight = 0;
+		
+		//heavy cost 2, plane get 3 => -1
+		this.numAmmoHeavy -= 1;
+		if(this.numAmmoHeavy < 0) this.numAmmoHeavy = 0;
+		
+		//#ammo++
+		this.host.setStateMinor(ID.M.NumAmmoLight, this.host.getStateMinor(ID.M.NumAmmoLight) + this.numAmmoLight);
+		this.host.setStateMinor(ID.M.NumAmmoHeavy, this.host.getStateMinor(ID.M.NumAmmoHeavy) + this.numAmmoHeavy);
+	
+		//#plane++
+		if(this instanceof EntityAirplane) {
+			host.setNumAircraftLight(host.getNumAircraftLight()+1);
+		}
+		else {
+			host.setNumAircraftHeavy(host.getNumAircraftHeavy()+1);
+		}
+    }
 
 	@Override
 	public void onUpdate() {
 		//server side
 		if(!this.worldObj.isRemote) {
-			//owner消失(通常是server restart)
-			if(this.getOwner() == null) {
+			//host check
+			if(this.getPlayerUID() <= 0) {	//no host, or host has no owner
 				this.setDead();
 			}
-			else {
-//				if(this.getAttackTarget()!=null) {
-//	    			LogHelper.info("DEBUG : airplane target "+this.getAttackTarget().isDead+" "+this.getAttackTarget());
-//	    		}
-				
+			else {		
 				//超過60秒自動消失
 				if(this.ticksExisted > 1200) {
-					this.numAmmoLight -= 2;
-					if(this.numAmmoLight < 0) this.numAmmoLight = 0;
-					this.numAmmoHeavy -= 1;
-					if(this.numAmmoHeavy < 0) this.numAmmoHeavy = 0;
-					
-					this.hostEntity.setStateMinor(ID.N.NumAmmoLight, this.hostEntity.getStateMinor(ID.N.NumAmmoLight) + this.numAmmoLight);
-					this.hostEntity.setStateMinor(ID.N.NumAmmoHeavy, this.hostEntity.getStateMinor(ID.N.NumAmmoHeavy) + this.numAmmoHeavy);
-				
-					if(this instanceof EntityAirplane) {
-						hostEntity.setNumAircraftLight(hostEntity.getNumAircraftLight()+1);
-					}
-					else {
-						hostEntity.setNumAircraftHeavy(hostEntity.getNumAircraftHeavy()+1);
-					}
-					
+					this.recycleAmmo();
 					this.setDead();
 				}
 				
@@ -226,25 +223,11 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 				
 				//歸宅
 				if(this.backHome && !this.isDead) {
-					if(this.getDistanceToEntity(this.getOwner()) > 2.7F) {
-						this.getShipNavigate().tryMoveToXYZ(this.getOwner().posX, this.getOwner().posY + 2.3D, this.getOwner().posZ, 1D);
+					if(this.getDistanceToEntity(this.host) > 2.7F) {
+						this.getShipNavigate().tryMoveToXYZ(this.host.posX, this.host.posY + 2.3D, this.host.posZ, 1D);
 					}
 					else {	//歸還剩餘彈藥 (但是grudge不歸還)
-						this.numAmmoLight -= 2;
-						if(this.numAmmoLight < 0) this.numAmmoLight = 0;
-						this.numAmmoHeavy -= 1;
-						if(this.numAmmoHeavy < 0) this.numAmmoHeavy = 0;
-						
-						this.hostEntity.setStateMinor(ID.N.NumAmmoLight, this.hostEntity.getStateMinor(ID.N.NumAmmoLight) + this.numAmmoLight);
-						this.hostEntity.setStateMinor(ID.N.NumAmmoHeavy, this.hostEntity.getStateMinor(ID.N.NumAmmoHeavy) + this.numAmmoHeavy);
-					
-						if(this instanceof EntityAirplane) {
-							hostEntity.setNumAircraftLight(hostEntity.getNumAircraftLight()+1);
-						}
-						else {
-							hostEntity.setNumAircraftHeavy(hostEntity.getNumAircraftHeavy()+1);
-						}
-						
+						this.recycleAmmo();
 						this.setDead();
 					}
 				}
@@ -261,21 +244,23 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 				}
 				
 				//攻擊目標消失, 找附近目標 or 設為host目前目標
-				if(!this.backHome && (this.getAttackTarget() == null || !this.getAttackTarget().isEntityAlive()) && this.hostEntity != null && this.ticksExisted % 10 == 0) {	
+				if(!this.backHome && (this.getAttackTarget() == null || !this.getAttackTarget().isEntityAlive()) &&
+					this.host != null && this.ticksExisted % 10 == 0) {	
 					//entity list < range1
 					EntityLivingBase newTarget;
 			        List list = this.worldObj.selectEntitiesWithinAABB(EntityLivingBase.class, 
-			        this.boundingBox.expand(20, 20, 20), this.targetSelector);
+			        				this.boundingBox.expand(16, 16, 16), this.targetSelector);
 			        
-			        //都找不到目標則給host目標, 但是host目標必須在xyz20格內
+			        //都找不到目標則給host目標, 但是host目標必須在xyz16格內
 			        if(list.isEmpty()) {
-			        	newTarget = this.hostEntity.getAttackTarget();
+			        	newTarget = this.host.getAttackTarget();
 			        }
 			        else {	//從艦載機附近找出的目標, 判定是否要去攻擊
 			        	newTarget = (EntityLivingBase)list.get(0);
 			        }
 			        
-			        if(newTarget != null && newTarget.isEntityAlive() && this.getDistanceToEntity(newTarget) < 40F && this.getEntitySenses().canSee(newTarget)) {
+			        if(newTarget != null && newTarget.isEntityAlive() && this.getDistanceToEntity(newTarget) < 40F &&
+			           this.getEntitySenses().canSee(newTarget)) {
 			        	this.setAttackTarget(newTarget);
 			        }
 		        	else {
@@ -311,9 +296,9 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 			return false;
 		}
 		
-		//進行def計算, airplane def = 50% host def
+		//def calc
 		float reduceAtk = atk;
-		if(hostEntity != null) {
+		if(host != null) {
 			reduceAtk = atk * (1F - this.getDefValue() * 0.01F);
 		}  
         if(atk < 0) { atk = 0; }
@@ -334,9 +319,9 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 8, false), point0);
 		
 		//calc miss chance, if not miss, calc cri/multi hit
-		TargetPoint point = new TargetPoint(this.dimension, this.hostEntity.posX, this.hostEntity.posY, this.hostEntity.posZ, 64D);
-		float missChance = 0.25F - 0.001F * this.hostEntity.getStateMinor(ID.N.ShipLevel);
-        missChance -= this.hostEntity.getEffectEquip(ID.EF_MISS);	//equip miss reduce
+		TargetPoint point = new TargetPoint(this.dimension, this.host.posX, this.host.posY, this.host.posZ, 64D);
+		float missChance = 0.25F - 0.001F * this.host.getStateMinor(ID.M.ShipLevel);
+        missChance -= this.host.getEffectEquip(ID.EF_MISS);	//equip miss reduce
         if(missChance > 0.35F) missChance = 0.35F;
   		
         //calc miss chance
@@ -344,29 +329,29 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
         	atkLight = 0;	//still attack, but no damage
         	//spawn miss particle
         	
-        	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this.hostEntity, 10, false), point);
+        	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this.host, 10, false), point);
         }
         else {
         	//roll cri -> roll double hit -> roll triple hit (triple hit more rare)
         	//calc critical
-        	if(this.rand.nextFloat() < this.hostEntity.getEffectEquip(ID.EF_CRI)) {
+        	if(this.rand.nextFloat() < this.host.getEffectEquip(ID.EF_CRI)) {
         		atkLight *= 1.5F;
         		//spawn critical particle
-            	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this.hostEntity, 11, false), point);
+            	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this.host, 11, false), point);
         	}
         	else {
         		//calc double hit
-            	if(this.rand.nextFloat() < this.hostEntity.getEffectEquip(ID.EF_DHIT)) {
+            	if(this.rand.nextFloat() < this.host.getEffectEquip(ID.EF_DHIT)) {
             		atkLight *= 2F;
             		//spawn double hit particle
-            		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this.hostEntity, 12, false), point);
+            		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this.host, 12, false), point);
             	}
             	else {
             		//calc double hit
-                	if(this.rand.nextFloat() < this.hostEntity.getEffectEquip(ID.EF_THIT)) {
+                	if(this.rand.nextFloat() < this.host.getEffectEquip(ID.EF_THIT)) {
                 		atkLight *= 3F;
                 		//spawn triple hit particle
-                		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this.hostEntity, 13, false), point);
+                		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this.host, 13, false), point);
                 	}
             	}
         	}
@@ -389,8 +374,8 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 	    //並且回傳是否成功傷害到目標
   		boolean isTargetHurt = false;
   		
-  		if(this.hostEntity != null) {
-  			isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this.hostEntity).setProjectile(), atkLight);
+  		if(this.host != null) {
+  			isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this.host).setProjectile(), atkLight);
   		}
 	    
 	    //if attack success
@@ -425,20 +410,20 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
         this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         
 		//calc miss chance, if not miss, calc cri/multi hit
-        float missChance = 0.25F - 0.001F * this.hostEntity.getStateMinor(ID.N.ShipLevel);
-        missChance -= this.hostEntity.getEffectEquip(ID.EF_MISS);	//equip miss reduce
+        float missChance = 0.25F - 0.001F * this.host.getStateMinor(ID.M.ShipLevel);
+        missChance -= this.host.getEffectEquip(ID.EF_MISS);	//equip miss reduce
         if(missChance > 0.35F) missChance = 0.35F;
 		
         //calc miss chance
         if(this.rand.nextFloat() < missChance) {
         	atkHeavy = 0;	//still attack, but no damage
         	//spawn miss particle
-        	TargetPoint point = new TargetPoint(this.dimension, this.hostEntity.posX, this.hostEntity.posY, this.hostEntity.posZ, 64D);
-        	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this.hostEntity, 10, false), point);
+        	TargetPoint point = new TargetPoint(this.dimension, this.host.posX, this.host.posY, this.host.posZ, 64D);
+        	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this.host, 10, false), point);
         }
 
         //spawn missile
-    	EntityAbyssMissile missile = new EntityAbyssMissile(this.worldObj, this, 
+    	EntityAbyssMissile missile = new EntityAbyssMissile(this.worldObj, this.host, 
         		(float)target.posX, (float)(target.posY+target.height*0.2F), (float)target.posZ, (float)(this.posY-0.8F), atkHeavy, kbValue, true, -1F);
         this.worldObj.spawnEntityInWorld(missile);
         
@@ -557,14 +542,8 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 	
 	@Override
 	public int getLevel() {
-		if(hostEntity != null) return this.hostEntity.getLevel();
+		if(host != null) return this.host.getLevel();
 		return 150;
-	}
-	
-	@Override
-	public EntityLivingBase getPlayerOwner() {
-		if(hostEntity != null) return this.hostEntity.getPlayerOwner();
-		return null;
 	}
 	
 	@Override
@@ -577,13 +556,13 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 	
 	@Override
 	public float getEffectEquip(int id) {
-		if(hostEntity != null) return hostEntity.getEffectEquip(id);
+		if(host != null) return host.getEffectEquip(id);
 		return 0F;
 	}
 	
 	@Override
 	public float getDefValue() {
-		if(hostEntity != null) return hostEntity.getStateFinal(ID.DEF) * 0.5F;
+		if(host != null) return host.getStateFinal(ID.DEF) * 0.5F;
 		return 0F;
 	}
 	
@@ -602,6 +581,22 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 	public boolean getAttackType(int par1) {
 		return true;
 	}
+
+	@Override
+	public int getPlayerUID() {
+		if(host != null) return this.host.getPlayerUID();
+		return -1;
+	}
+
+	@Override
+	public void setPlayerUID(int uid) {}
+	
+	@Override
+	public Entity getHostEntity() {
+		return this.host;
+	}
+    
+    
 
 }
 

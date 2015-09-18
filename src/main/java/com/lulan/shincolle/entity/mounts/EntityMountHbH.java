@@ -1,8 +1,6 @@
 package com.lulan.shincolle.entity.mounts;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.entity.BasicEntityMountLarge;

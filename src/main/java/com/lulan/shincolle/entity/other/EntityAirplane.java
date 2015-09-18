@@ -1,28 +1,14 @@
 package com.lulan.shincolle.entity.other;
 
-import com.lulan.shincolle.ai.EntityAIShipAircraftAttack;
-import com.lulan.shincolle.ai.EntityAIShipSit;
-import com.lulan.shincolle.client.particle.EntityFXTexts;
-import com.lulan.shincolle.client.particle.EntityFXSpray;
-import com.lulan.shincolle.entity.BasicEntityAirplane;
-import com.lulan.shincolle.entity.BasicEntityShipLarge;
-import com.lulan.shincolle.network.S2CSpawnParticle;
-import com.lulan.shincolle.proxy.CommonProxy;
-import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.LogHelper;
-import com.lulan.shincolle.utility.ParticleHelper;
-
-import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityFlying;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+
+import com.lulan.shincolle.ai.EntityAIShipAircraftAttack;
+import com.lulan.shincolle.entity.BasicEntityAirplane;
+import com.lulan.shincolle.entity.BasicEntityShipLarge;
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.ParticleHelper;
 
 public class EntityAirplane extends BasicEntityAirplane {
 	
@@ -34,7 +20,7 @@ public class EntityAirplane extends BasicEntityAirplane {
 	public EntityAirplane(World world, BasicEntityShipLarge host, EntityLivingBase target, double launchPos) {
 		super(world);
 		this.world = world;
-        this.hostEntity = host;
+        this.host = host;
         this.targetEntity = target;
         
         //basic attr

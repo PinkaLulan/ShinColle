@@ -1,10 +1,6 @@
 package com.lulan.shincolle.entity.submarine;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.EntityAILookIdle;
-import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
-import net.minecraft.entity.ai.EntityAIOpenDoor;
-import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
@@ -14,13 +10,7 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
-import com.lulan.shincolle.ai.EntityAIShipAttackOnCollide;
-import com.lulan.shincolle.ai.EntityAIShipFlee;
-import com.lulan.shincolle.ai.EntityAIShipFloating;
-import com.lulan.shincolle.ai.EntityAIShipFollowOwner;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
-import com.lulan.shincolle.ai.EntityAIShipSit;
-import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.entity.ExtendShipProps;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
@@ -38,8 +28,8 @@ public class EntitySubmU511 extends BasicEntityShipSmall {
 	public EntitySubmU511(World world) {
 		super(world);
 		this.setSize(0.6F, 1.4F);	//碰撞大小 跟模型大小無關
-		this.ShipType = ID.ShipType.SUBMARINE;
-		this.ShipID = ID.S_SubmarineU511;
+		this.setStateMinor(ID.M.ShipType, ID.ShipType.SUBMARINE);
+		this.setStateMinor(ID.M.ShipClass, ID.S_SubmarineU511);
 		this.ModelPos = new float[] {0F, 10F, 0F, 45F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		
@@ -80,8 +70,8 @@ public class EntitySubmU511 extends BasicEntityShipSmall {
   			if(this.ticksExisted % 100 == 0) {
   				if(getStateFlag(ID.F.UseRingEffect)) {
   					//apply ability to player
-  					EntityPlayerMP player = (EntityPlayerMP) this.getOwner();
-  	  				if(getStateFlag(ID.F.IsMarried) && getStateMinor(ID.N.NumGrudge) > 0 && player != null && getDistanceSqToEntity(player) < 256D) {
+  					EntityPlayerMP player = (EntityPlayerMP) EntityHelper.getEntityPlayerByUID(this.getPlayerUID(), this.worldObj);
+  	  				if(getStateFlag(ID.F.IsMarried) && getStateMinor(ID.M.NumGrudge) > 0 && player != null && getDistanceSqToEntity(player) < 256D) {
   	  					//potion effect: id, time, level
   	  	  	  			player.addPotionEffect(new PotionEffect(Potion.invisibility.id, 60 + getLevel() * 10));
   	  				}
@@ -89,7 +79,7 @@ public class EntitySubmU511 extends BasicEntityShipSmall {
   			}
   			
   			if(this.ticksExisted % 300 == 0) {
-  				if(getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.N.NumGrudge) > 0) {
+  				if(getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.M.NumGrudge) > 0) {
   					//apply ability to ship
   					this.addPotionEffect(new PotionEffect(Potion.invisibility.id, 100 + getLevel()));
   				}
@@ -177,7 +167,7 @@ public class EntitySubmU511 extends BasicEntityShipSmall {
           }
           
           //calc miss chance, miss: add random offset(0~6) to missile target 
-          float missChance = 0.2F + 0.15F * (distSqrt / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.N.ShipLevel];
+          float missChance = 0.2F + 0.15F * (distSqrt / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.M.ShipLevel];
           missChance -= EffectEquip[ID.EF_MISS];	//equip miss reduce
           if(missChance > 0.35F) missChance = 0.35F;	//max miss chance = 30%
          

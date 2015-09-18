@@ -8,7 +8,6 @@ import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
@@ -98,8 +97,9 @@ public class PointerItem extends BasicItem {
 						ship = (BasicEntityShip)hitObj.entityHit;
 					}
 					else {
-						ship = (BasicEntityShip) ((BasicEntityMount)hitObj.entityHit).getOwner();
+						ship = (BasicEntityShip) ((BasicEntityMount)hitObj.entityHit).getHostEntity();
 					}
+					
 					//null check
 					if(ship == null) return false;
 					
@@ -230,7 +230,7 @@ public class PointerItem extends BasicItem {
 						ship = (BasicEntityShip)hitObj.entityHit;
 					}
 					else {
-						ship = (BasicEntityShip) ((BasicEntityMount)hitObj.entityHit).getOwner();
+						ship = (BasicEntityShip) ((BasicEntityMount)hitObj.entityHit).getHostEntity();
 					}
 					//null check
 					if(ship == null) return item;
@@ -384,7 +384,7 @@ public class PointerItem extends BasicItem {
 				
 				if(((EntityPlayer)player).inventory.currentItem != orgCurrentItem) {
 					((EntityPlayer)player).inventory.currentItem = orgCurrentItem;
-					CommonProxy.channelG.sendToServer(new C2SInputPackets(1, orgCurrentItem, 0));
+					CommonProxy.channelG.sendToServer(new C2SInputPackets(2, orgCurrentItem));
 					item.getTagCompound().setBoolean("chgHB", false);
 				}
 			}
@@ -502,7 +502,7 @@ public class PointerItem extends BasicItem {
     			
     			if(ship != null) {
     				//get level
-    				level = ship.getStateMinor(ID.N.ShipLevel);
+    				level = ship.getStateMinor(ID.M.ShipLevel);
     				
 	    			//get name
 	    			if(ship.getCustomNameTag() != null && ship.getCustomNameTag().length() > 0) {

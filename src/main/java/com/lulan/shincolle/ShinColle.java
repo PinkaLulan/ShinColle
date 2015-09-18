@@ -12,6 +12,7 @@ import com.lulan.shincolle.init.ModRecipes;
 import com.lulan.shincolle.init.ModTileEntity;
 import com.lulan.shincolle.init.ModWorldGen;
 import com.lulan.shincolle.proxy.IProxy;
+import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.LogHelper;
 
@@ -20,6 +21,7 @@ import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;	//mod init
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;//mod post init
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;	//mod pre init
+import cpw.mods.fml.common.event.FMLServerAboutToStartEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 
 @Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.MOD_VERSION)
@@ -34,7 +36,7 @@ public class ShinColle {
 	public static IProxy proxy;
 	
 	
-	//pre initial: load config, block/item/entity/render init, event handler init
+	/** pre initial: load config, block/item/entity/render init, event handler init */
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {		
 		//config inti
@@ -52,11 +54,12 @@ public class ShinColle {
 		//Packet channel register (simple network)
 		proxy.registerChannel();
 		
-		LogHelper.info("preInit complete.");	//debug
+		LogHelper.info("DEBUG : preInit complete.");	//debug
 	}
 	
-	//initial: recipe/tileentity/gui/worldgen init, event handler regist, create data handler, request mod interact
-	//         AND oreDictionary registr
+	/**initial: recipe/tileentity/gui/worldgen init, event handler regist, create data handler, 
+	 *          request mod interact AND oreDictionary registr
+	 */
 	@Mod.EventHandler
 	public void Init(FMLInitializationEvent event) {
 		//GUI register
@@ -70,13 +73,13 @@ public class ShinColle {
 
 		ModTileEntity.init();
 		
-		LogHelper.info("Init complete.");	//debug	
+		LogHelper.info("DEBUG : Init complete.");	//debug	
 		
 		//Waila tooltip provider (NYI)
         //FMLInterModComms.sendMessage("Waila", "register", "com.lulan.shincolle.waila.WailaDataProvider.callbackRegister");
 	}
 	
-	//post initial: mod interact
+	/** post initial: mod interact */
 	@Mod.EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
 		//world gen跟entity spawn放在postInit, 以便能讀取到其他mod的biome
@@ -101,7 +104,19 @@ public class ShinColle {
 		
 //		MulitBlockHelper.printPattern();
 //		GuiHelper.printButtons();
-		LogHelper.info("postInit complete.");	//debug
+		
+		LogHelper.info("DEBUG : postInit complete.");	//debug
+	}
+	
+	/** server about to start event 
+	 *  當開啟一個存檔或者MP伺服器開啟時會丟出此事件
+	 *  在此事件中將MapStorage的讀取紀錄設為false
+	 *  使每次開不同存檔都會重讀該存檔的MapStorage
+	 */
+	@Mod.EventHandler
+	public void onServerStarted(FMLServerAboutToStartEvent event) {
+		LogHelper.info("DEBUG : server about to start: is MP server? "+event.getSide().isServer());	//debug
+	    ServerProxy.initServerFile = false;
 	}
 	
 

@@ -5,11 +5,7 @@ import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
-import net.minecraft.entity.ai.EntityAIOpenDoor;
-import net.minecraft.entity.ai.EntityAIWander;
-import net.minecraft.entity.boss.IBossDisplayData;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
@@ -18,9 +14,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
-import com.lulan.shincolle.ai.EntityAIShipFloating;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
-import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
 import com.lulan.shincolle.entity.BasicEntityShipBoss;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
@@ -29,7 +23,6 @@ import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
@@ -103,7 +96,7 @@ public class EntityBattleshipNGTBoss extends BasicEntityShipBoss {
 			
   				if(getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
   					//計算煙霧位置
-  	  				float[] partPos = ParticleHelper.rotateParticleByAxis(-1.8F, 0F, (this.renderYawOffset % 360) / 57.2957F, 1F);	
+  	  				float[] partPos = ParticleHelper.rotateXZByAxis(-1.8F, 0F, (this.renderYawOffset % 360) / 57.2957F, 1F);	
   	  				//生成裝備冒煙特效
   	  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], posY+5.5D, posZ+partPos[0], 0D, 0D, 0D, (byte)24);
   				}	
@@ -324,14 +317,13 @@ public class EntityBattleshipNGTBoss extends BasicEntityShipBoss {
                 		//calc miss and cri
                 		if(this.rand.nextFloat() < 0.2F) {	//MISS
                         	atkTemp *= 0.5F;
-                        
                         }
                         else if(this.rand.nextFloat() < 0.15F) {	//CRI
                     		atkTemp *= 1.5F;
                         }
                 		
                 		//若攻擊到同陣營entity (ex: owner), 則傷害設為0 (但是依然觸發擊飛特效)
-                		if(EntityHelper.checkSameOwner(this.getOwner(), hitEntity)) {
+                		if(EntityHelper.checkSameOwner(this, hitEntity)) {
                 			atkTemp = 0F;
                     	}
                 		

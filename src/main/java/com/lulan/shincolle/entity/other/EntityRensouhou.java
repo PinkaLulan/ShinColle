@@ -11,9 +11,7 @@ import net.minecraft.world.World;
 
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
-import com.lulan.shincolle.ai.path.ShipPathEntity;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
-import com.lulan.shincolle.ai.path.ShipPathPoint;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipCannonAttack;
 import com.lulan.shincolle.entity.ISummonAttack;
@@ -194,7 +192,7 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack {
 			boolean setdead = false;
 			
 			//owner消失(通常是server restart)
-			if(this.getOwner() == null) {
+			if(this.host == null) {
 				setdead = true;
 			}
 			else {
@@ -329,11 +327,6 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack {
   	protected void clearAITargetTasks() {
   	   targetTasks.taskEntries.clear();
   	}
-  	
-  	@Override
-    public EntityLivingBase getOwner() {
-        return this.host;
-    }
     
   	@Override
 	public EntityLivingBase getTarget() {
@@ -489,7 +482,7 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack {
         }
 
         //spawn missile
-        EntityAbyssMissile missile = new EntityAbyssMissile(this.worldObj, this, 
+        EntityAbyssMissile missile = new EntityAbyssMissile(this.worldObj, this.host, 
         		tarX, tarY+target.height*0.2F, tarZ, launchPos, atkHeavy, kbValue, isDirect, -1F);
         this.worldObj.spawnEntityInWorld(missile);
         
@@ -744,12 +737,6 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack {
 	public boolean useAmmoHeavy() {
 		return false;
 	}
-
-	@Override
-	public EntityLivingBase getPlayerOwner() {
-		if(host != null) return this.host.getPlayerOwner();
-		return null;
-	}
 	
 	@Override
 	public int getStateMinor(int id) {
@@ -784,6 +771,20 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack {
 	@Override
 	public boolean getAttackType(int par1) {
 		return true;
+	}
+
+	@Override
+	public int getPlayerUID() {
+		if(host != null) return this.host.getPlayerUID();
+		return -1;
+	}
+
+	@Override
+	public void setPlayerUID(int uid) {}
+	
+	@Override
+	public Entity getHostEntity() {
+		return this.host;
 	}
 	
 

@@ -122,27 +122,31 @@ public class ID {
 	}
 	
 	//Array ID: Minor State
-	public static final class N {
+	public static final class M {
 		public static final byte ShipLevel = 0;
 		public static final byte Kills = 1;
-		public static final byte ExpCurrent = 2;
+		public static final byte ExpCurrent = 2;	//exp curr/next
 		public static final byte ExpNext = 3;
 		public static final byte NumAmmoLight = 4;
 		public static final byte NumAmmoHeavy = 5;
 		public static final byte NumGrudge = 6;
 		public static final byte NumAirLight = 7;
 		public static final byte NumAirHeavy = 8;
-		public static final byte ImmuneTime = 9;
-		public static final byte FollowMin = 10;
-		public static final byte FollowMax = 11;
-		public static final byte FleeHP = 12;
-		public static final byte TargetAI = 13;
-		public static final byte GuardX = 14;
+		public static final byte ImmuneTime = 9;	//entity immune time
+		public static final byte FollowMin = 10;	//follow range min/max
+		public static final byte FollowMax = 11;	
+		public static final byte FleeHP = 12;		//flee hp%
+		public static final byte TargetAI = 13;		//active AI or passive AI 
+		public static final byte GuardX = 14;		//guard xyz pos
 		public static final byte GuardY = 15;
 		public static final byte GuardZ = 16;
-		public static final byte GuardDim = 17;
-		public static final byte GuardID = 18;
-		public static final byte OwnerID = 19;
+		public static final byte GuardDim = 17;		//guard entity world id
+		public static final byte GuardID = 18;		//guard entity id
+		public static final byte ShipType = 19;		//ship type
+		public static final byte ShipClass = 20;	//ship class
+		public static final byte PlayerUID = 21;	//player UID
+		public static final byte ShipUID = 22;		//ship UID
+		public static final byte PlayerEID = 23;	//player entity id
 	}
 	
 	//Array ID: ring effect

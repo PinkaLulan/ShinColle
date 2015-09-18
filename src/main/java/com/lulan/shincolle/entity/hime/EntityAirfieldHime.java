@@ -24,8 +24,8 @@ public class EntityAirfieldHime extends BasicEntityShipLarge {
 	public EntityAirfieldHime(World world) {
 		super(world);
 		this.setSize(0.6F, 1.8F);
-		this.ShipType = ID.ShipType.HIME;
-		this.ShipID = ID.S_AirfieldHime;
+		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
+		this.setStateMinor(ID.M.ShipClass, ID.S_AirfieldHime);
 		this.ModelPos = new float[] {-6F, 15F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();
@@ -63,12 +63,12 @@ public class EntityAirfieldHime extends BasicEntityShipLarge {
   			//飛行場特殊能力
         	if(this.ticksExisted % 160 == 0) {
         		//1: 增強被動回血
-        		if(getStateMinor(ID.N.NumGrudge) > 0 && this.getHealth() < this.getMaxHealth()) {
+        		if(getStateMinor(ID.M.NumGrudge) > 0 && this.getHealth() < this.getMaxHealth()) {
         			this.setHealth(this.getHealth() + this.getMaxHealth() * 0.03F);
         		}
         		
         		//2: 結婚後, 周圍某一目標回血, 包括玩家, 回血目標依等級提昇
-				if(getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.N.NumGrudge) > 0) {
+				if(getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.M.NumGrudge) > 0) {
 					//判定bounding box內是否有可以回血的目標
 					int healCount = (int)(this.getLevel() / 15) + 2;
 		            EntityLivingBase hitEntity = null;

@@ -1,30 +1,20 @@
 package com.lulan.shincolle.tileentity;
 
-import com.lulan.shincolle.block.BlockSmallShipyard;
-import com.lulan.shincolle.crafting.SmallRecipes;
-import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.init.ModItems;
-import com.lulan.shincolle.network.S2CEntitySync;
-import com.lulan.shincolle.network.S2CGUIPackets;
-import com.lulan.shincolle.proxy.CommonProxy;
-import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.FormatHelper;
-import com.lulan.shincolle.utility.LogHelper;
-import com.lulan.shincolle.utility.TileEntityHelper;
-
-import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
-import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityFurnace;
-import net.minecraft.util.MathHelper;
+
+import com.lulan.shincolle.block.BlockSmallShipyard;
+import com.lulan.shincolle.crafting.SmallRecipes;
+import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.FormatHelper;
+import com.lulan.shincolle.utility.TileEntityHelper;
 
 /** Fuel Cost = BaseCost + CostPerMaterial * ( TotalMaterialAmount - minAmount * 4 )
  *  Total Build Time = FuelCost / buildSpeed

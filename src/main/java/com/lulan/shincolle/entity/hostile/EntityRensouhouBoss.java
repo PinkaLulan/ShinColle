@@ -1,12 +1,17 @@
 package com.lulan.shincolle.entity.hostile;
 
-import java.util.List;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
 
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
-import com.lulan.shincolle.ai.path.ShipPathEntity;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
-import com.lulan.shincolle.ai.path.ShipPathPoint;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipCannonAttack;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
@@ -20,21 +25,6 @@ import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
-import net.minecraft.command.IEntitySelector;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityFlying;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.boss.EntityDragon;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.monster.EntitySlime;
-import net.minecraft.entity.passive.EntityBat;
-import net.minecraft.entity.passive.EntityWaterMob;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.MathHelper;
-import net.minecraft.world.World;
 
 public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack {
 	
@@ -202,7 +192,7 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
 			boolean setdead = false;
 			
 			//owner消失(通常是server restart)
-			if(this.getOwner() == null) {
+			if(this.host == null) {
 				setdead = true;
 			}
 			else {
@@ -321,11 +311,6 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
   	protected void clearAITargetTasks() {
   	   targetTasks.taskEntries.clear();
   	}
-  	
-  	@Override
-    public EntityLivingBase getOwner() {
-        return this.host2;
-    }
     
     @Override
     public EntityLivingBase getAttackTarget() {
@@ -477,7 +462,7 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
         }
 
         //spawn missile
-        EntityAbyssMissile missile = new EntityAbyssMissile(this.worldObj, this, 
+        EntityAbyssMissile missile = new EntityAbyssMissile(this.worldObj, this.host, 
         		tarX, tarY+target.height*0.2F, tarZ, launchPos, atkHeavy, kbValue, isDirect, -1F);
         this.worldObj.spawnEntityInWorld(missile);
         
@@ -738,11 +723,6 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
 	}
 	
 	@Override
-	public EntityLivingBase getPlayerOwner() {
-		return this.host2;
-	}
-	
-	@Override
 	public int getStateMinor(int id) {
 		return 0;
 	}
@@ -774,6 +754,19 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
 	@Override
 	public boolean getAttackType(int par1) {
 		return true;
+	}
+	
+	@Override
+	public int getPlayerUID() {
+		return -100;	//-100 for hostile mob
+	}
+
+	@Override
+	public void setPlayerUID(int uid) {}
+	
+	@Override
+	public Entity getHostEntity() {
+		return this.host2;
 	}
 	
 

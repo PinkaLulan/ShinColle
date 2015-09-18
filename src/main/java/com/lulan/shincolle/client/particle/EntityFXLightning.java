@@ -60,7 +60,7 @@ public class EntityFXLightning extends EntityFX {
             
             //calc particle position for MountHbH
         	float randx = rand.nextFloat() + 0.1F;
-        	float[] newPos = ParticleHelper.rotateParticleByAxis(0.8F+rand.nextFloat()*0.2F, randx, ((EntityLivingBase)host).renderYawOffset * -0.01745F, 1F);
+        	float[] newPos = ParticleHelper.rotateXZByAxis(0.8F+rand.nextFloat()*0.2F, randx, ((EntityLivingBase)host).renderYawOffset * -0.01745F, 1F);
             if(this.host != null) {
             	this.posX = this.host.posX + newPos[0];
             	this.posY = this.host.posY + 1.53D + randx * 0.25D;
@@ -175,7 +175,7 @@ public class EntityFXLightning extends EntityFX {
         //type 0: HarbourHime Mount
         if(this.particleType == 0 && host != null) {
         	float randx = rand.nextFloat() + 0.1F;
-        	float[] newPos = ParticleHelper.rotateParticleByAxis(0.8F+rand.nextFloat()*0.2F, randx, ((EntityLivingBase)host).renderYawOffset * -0.01745F, 1F);
+        	float[] newPos = ParticleHelper.rotateXZByAxis(0.8F+rand.nextFloat()*0.2F, randx, ((EntityLivingBase)host).renderYawOffset * -0.01745F, 1F);
 
         	//x=1 y=1.8, x=0.7 y=1.72, x=0.5 y=1.65, x=0.3 y=1.6, x=0.1 y=1.55
             if(this.host != null) {
