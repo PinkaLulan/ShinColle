@@ -24,11 +24,16 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 	private int marriageNum;
 	private int bossCooldown;			//spawn boss cooldown
 	
-	//ship team command
-	private BasicEntityShip[][] teamList;	//上限6格欄位, 離線不需要存, 因為entity id每次登入or伺服器重開都會換
+	/**team list
+	 * 9 teams, 1 team = 6 ships
+	 * save ship entity id
+	 */
+	private BasicEntityShip[][] teamList;	//total 9 teams, 1 team = 6 ships
 	private boolean[][] selectState;		//ship selected, for command control target
-	private int saveId;					//指示目前隊伍存到第幾個, value = 0~5
-	private int teamId;					//指示目前顯示的隊伍
+	private boolean initSID = false;		//ship UID init flag: false = not init
+	private int[][] sidList;				//ship UID
+	private int saveId;						//current ship/empty slot, value = 0~5
+	private int teamId;						//current team
 	
 	//player id
 	private int playerUID;
@@ -47,6 +52,8 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		this.bossCooldown = ConfigHandler.bossCooldown;
 		this.teamList = new BasicEntityShip[9][6];
 		this.selectState = new boolean[9][6];
+		this.sidList = new int[9][6];
+		this.initSID = false;
 		this.saveId = 0;
 		this.teamId = 0;
 		this.playerUID = -1;
@@ -66,9 +73,20 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		nbtExt.setInteger("PlayerUID", playerUID);
 		nbtExt.setInteger("TeamID", playerTeamID);
 		
-//		for(int i = 0; i < 9; i++) {
-//			nbtExt.setIntArray("TeamList"+i, this.getTeamListID(i));
-//		}
+		/**save team list by ship UID
+		 * entity id will change after entity reconstruction
+		 * a way to keep team list is saving ship UID
+		 */
+		if(this.initSID) {	//update id AFTER sid is inited
+			LogHelper.info("DEBUG : save player ExtNBT: update ship UID from teamList");
+			this.updateSID();
+		}
+		
+		for(int i = 0; i < 9; i++) {
+			LogHelper.info("DEBUG : save player ExtNBT: "+this.getSIDofTeam(i)[0]);
+			nbtExt.setIntArray("TeamList"+i, this.getSIDofTeam(i));
+			nbtExt.setByteArray("SelectState"+i, this.getSelectStateOfTeam(i));
+		}
 		
 		nbt.setTag(PLAYER_EXTPROP_NAME, nbtExt);
 		LogHelper.info("DEBUG : save player ExtNBT data on id: "+player.getEntityId());
@@ -87,10 +105,28 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		playerUID = nbtExt.getInteger("PlayerUID");
 		playerTeamID = nbtExt.getInteger("TeamID");
 		
-//		for(int i = 0; i < 9; i++) {
-//			this.setTeamListByID(i, nbtExt.getIntArray("TeamList"+i));
-//		}
-		LogHelper.info("DEBUG : load player ExtNBT data on id: "+player.getEntityId());
+		/**load team list by ship UID
+		 * get entity by ship UID, SERVER SIDE ONLY
+		 * 
+		 * player entity can be loaded between ship entities,
+		 * the teamList have to sync after all entity loaded (not here)
+		 */
+		if(!this.world.isRemote) {
+			for(int i = 0; i < 9; ++i) {
+				byte[] byteSelect = nbtExt.getByteArray("SelectState"+i);
+				int[] sid = nbtExt.getIntArray("TeamList"+i);
+				LogHelper.info("DEBUG : load player ExtNBT: "+sid[0]);
+						
+				for(int j = 0; j < 6; ++j) {
+					//set select state
+					this.selectState[i][j] = byteSelect[j] == 1 ? true : false;
+					//set ship UID
+					this.sidList[i][j] = sid[j];
+				}
+			}
+		}
+		
+		LogHelper.info("DEBUG : load player ExtNBT data on id: "+player.getEntityId()+" client? "+this.world.isRemote);
 	}
 	
 	//getter
@@ -126,7 +162,7 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		return this.bossCooldown;
 	}
 	
-	public int[] getTeamListID(int tid) {
+	public int[] getEntityIDofTeam(int tid) {
 		int[] eid = new int[6];
 		
 		for(int i = 0; i < 6; i++) {
@@ -141,20 +177,19 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		return eid;
 	}
 	
-	public BasicEntityShip getTeamList(int id) {
+	public BasicEntityShip getEntityOfCurrentTeam(int id) {
 		if(id > 5) id = 0;
 		return teamList[teamId][id];
 	}
 	
-	//meta為pointer的item damage
-	public BasicEntityShip[] getTeamListWithSelectState(int meta) {	//get selected ship
+	public BasicEntityShip[] getEntityOfCurrentMode(int mode) {	//meta為pointer的item damage
 		BasicEntityShip[] ships = new BasicEntityShip[6];
 		
-		switch(meta) {
+		switch(mode) {
 		default:	//single mode
 			//return第一個找到的已選擇的ship
 			for(int i = 0; i < 6; i++) {
-				if(this.getTeamSelected(i)) {
+				if(this.getSelectStateOfCurrentTeam(i)) {
 					ships[0] = this.teamList[teamId][i];
 					return ships;
 				}
@@ -164,7 +199,7 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 			//return所有已選擇的ship
 			int j = 0;
 			for(int i = 0; i < 6; i++) {
-				if(this.getTeamSelected(i)) {
+				if(this.getSelectStateOfCurrentTeam(i)) {
 					ships[j] = this.teamList[teamId][i];
 					j++;
 				}
@@ -178,9 +213,36 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		return ships;
 	}
 	
-	public boolean getTeamSelected(int id) {	//get selected state
+	public byte[] getSelectStateOfTeam(int tid) {	//get selected state (byte array)
+		byte[] byteState = new byte[6];
+		
+		if(tid > 5) tid = 0;
+		
+		if(selectState[tid] != null) {
+			for(int i = 0; i < 6; ++i) {
+				byteState[i] = selectState[tid][i] ? (byte)1 : (byte)0;
+			}
+		}
+		
+		return byteState;
+	}
+	
+	public boolean getSelectStateOfCurrentTeam(int id) {	//get selected state
 		if(id > 5) id = 0;
 		return selectState[teamId][id];
+	}
+	
+	public int[] getSIDofTeam(int tid) {	//get all ship UID in a team
+		if(sidList != null && sidList[tid] != null) {
+			return sidList[tid];
+		}
+		
+		return null;
+	}
+	
+	public int getSIDofCurrentTeam(int id) {	//get current team ship UID
+		if(id > 5) id = 0;
+		return sidList[teamId][id];
 	}
 	
 	public int getTeamId() {
@@ -193,6 +255,10 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 	
 	public int getPlayerTeamId() {
 		return this.playerTeamID;
+	}
+	
+	public boolean getInitSID() {
+		return this.initSID;
 	}
 	
 	//setter
@@ -229,7 +295,7 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		this.bossCooldown = par1;
 	}
 	
-	public void setTeamSelected(int id, boolean par1) {
+	public void setSelectStateOfCurrentTeam(int id, boolean par1) {
 		if(id > 5) id = 0;
 		selectState[teamId][id] = par1;
 	}
@@ -247,13 +313,17 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		this.playerTeamID = par1;
 	}
 	
+	public void setInitSID(boolean par1) {
+		this.initSID = par1;
+	}
+	
 	/**將ship加入隊伍名單
 	 * 若ship不為null, 表示要加入名單 -> 找目前非null欄位比對是否同id -> 同id表示remove該entity
 	 *                                                  -> 不同id表示可新增entity
 	 * 若為null, 表示清空該slot
 	 * 若為client端, 表示由sync packet收到資料, 則全部照 傳入值設定
 	 */
-	public void setTeamList(int id, BasicEntityShip entity, boolean isClient) {
+	public void addEntityToTeam(int id, BasicEntityShip entity, boolean isClient) {
 		boolean canAdd = false;
 		
 		//client 收到sync packets
@@ -276,18 +346,18 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 				}
 				
 				//找有無重複ship, 有的話則清除該ship, id指到該slot
-				int inTeam = this.checkInTeamList(entity.getEntityId());
+				int inTeam = this.checkIsInCurrentTeam(entity.getEntityId());
 				if(inTeam >= 0) {
 					this.teamList[teamId][inTeam] = null;
 					this.saveId = inTeam;
-					this.setTeamSelected(inTeam, false);
+					this.setSelectStateOfCurrentTeam(inTeam, false);
 					return;
 				}
 				
 				//若無重複entity, 則挑null空位存, id指示為下一個slot
 				for(int i = 0; i < 6; i++) {
 					if(this.teamList[teamId][i] == null) {
-						this.setTeamSelected(i, false);
+						this.setSelectStateOfCurrentTeam(i, false);
 						teamList[teamId][i] = entity;
 						saveId = i + 1;
 						if(saveId > 5) saveId = 0;
@@ -296,7 +366,7 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 				}
 				
 				//都沒空位, 則挑id指的位置存
-				this.setTeamSelected(this.saveId, false);
+				this.setSelectStateOfCurrentTeam(this.saveId, false);
 				this.teamList[teamId][this.saveId] = entity;
 				//id++, 且在0~5之間變動
 				saveId++;
@@ -305,7 +375,7 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 			}
 			else {
 				if(id > 5) id = 0;
-				this.setTeamSelected(id, false);
+				this.setSelectStateOfCurrentTeam(id, false);
 				this.teamList[teamId][id] = null;
 				return;
 			}
@@ -316,7 +386,7 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 	 * world id from player world, if player change world
 	 * team list will be all clear (cannot find entity)
 	 */
-	public void setTeamListByID(int tid, int[] eid) {
+	public void addEntityToTeamByID(int tid, int[] eid) {
 		Entity getEnt = null;
 		
 		for(int i = 0; i < 6; i++) {
@@ -333,7 +403,7 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		}
 	}
 	
-	public int checkInTeamList(int eid) {
+	public int checkIsInCurrentTeam(int eid) {
 		for(int i = 0; i < 6; i++) {
 			if(this.teamList[teamId][i] != null) {
 				if(teamList[teamId][i].getEntityId() == eid) {
@@ -345,7 +415,8 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		return -1;
 	}
 	
-	public void clearTeamSelected() {			//clear a slot
+	//clear select state of a team
+	public void clearSelectStateOfCurrentTeam() {
 		selectState[teamId][0] = false;
 		selectState[teamId][1] = false;
 		selectState[teamId][2] = false;
@@ -354,15 +425,52 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		selectState[teamId][5] = false;
 	}
 	
-	public void clearShipSlot(int id) {		//clear a slot
+	//clear a ship slot
+	public void clearShipOfCurrentTeam(int id) {
 		teamList[teamId][id] = null;
 		selectState[teamId][id] = false;
 	}
 	
-	public void clearShipTeamAll() {		//clear all slot
+	//clear all slot
+	public void clearAllTeam() {
 		for(int i = 0; i < 6; i++) {
 			teamList[teamId][i] = null;
 			selectState[teamId][i] = false;
+		}
+	}
+	
+	//get all ship UID in a team from entity
+	public void updateSID() {
+		if(sidList != null && teamList != null) {
+			//get ship sid
+			for(int i = 0; i < 9; i++) {
+				for(int j = 0; j < 6; j++) {
+					if(this.teamList[i][j] != null) {
+						this.sidList[i][j] = this.teamList[i][j].getShipUID();
+					}
+					else {
+						this.sidList[i][j] = -1;
+					}
+				}
+			}
+		}
+	}
+	
+	//get ship entity by SID, called
+	public void updateShipEntityBySID() {
+		if(this.sidList != null) {
+			for(int i = 0; i < 9; i++) {
+				for(int j = 0; j < 6; j++) {
+					if(this.sidList[i][j] > 0) {
+						this.teamList[i][j] = EntityHelper.getShipBySID(sidList[i][j]);
+					}
+					else {
+						this.teamList[i][j] = null;
+					}
+				}
+			}
+			
+			this.initSID = true;
 		}
 	}
 

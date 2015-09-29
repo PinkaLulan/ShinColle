@@ -5,6 +5,7 @@ import io.netty.buffer.ByteBuf;
 import java.util.List;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
@@ -23,18 +24,24 @@ import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 
 /**SERVER TO CLIENT : GUI SYNC PACKET
- * 用於同步GUI中, 大小超過short大小的值
+ * 用於GUI中大小超過short的值同步 / client端使用物品同步 / client端物品顯示訊息同步
+ * 
  * 因sendProgressBarUpdate只能同步short, 需另外實做封包同步float, string, int
  */
 public class S2CGUIPackets implements IMessage {
 	
-//	private BasicEntityShip entity;
 	private TileEntitySmallShipyard tile1;
 	private TileMultiGrudgeHeavy tile2;
 	private ExtendPlayerProps props;
 	private BasicEntityShip ship;
 	private World world;
-	private int type, recvX, recvY, recvZ, value, value2;
+	private int type, entityID, recvX, recvY, recvZ, value, value2;
+	private boolean flag;
+	
+	//packet id
+	public static final class PID {
+		public static final byte FlagInitSID = 5;
+	}
 	
 	
 	public S2CGUIPackets() {}	//必須要有空參數constructor, forge才能使用此class
@@ -70,6 +77,17 @@ public class S2CGUIPackets implements IMessage {
 	public S2CGUIPackets(BasicEntityShip ship) {
         this.type = 4;
         this.ship = ship;
+    }
+	
+	//type 5: player extend props sync type 2
+	public S2CGUIPackets(int type, int value, boolean flag) {
+        this.type = type;
+        
+        switch(type) {
+        case PID.FlagInitSID:
+        	this.flag = flag;
+        	break;
+        }
     }
 	
 	//接收packet方法
@@ -146,6 +164,7 @@ public class S2CGUIPackets implements IMessage {
 				//ring
 				extValues[0] = buf.readByte();	//ring active
 				extValues[1] = buf.readByte();	//marriage num
+				
 				//pointer team
 				extValues[2] = buf.readInt();	//team id
 				extValues[3] = buf.readInt();	//team list 1
@@ -160,10 +179,11 @@ public class S2CGUIPackets implements IMessage {
 				shipSelected[4] = buf.readBoolean();
 				extValues[8] = buf.readInt();	//team list 6
 				shipSelected[5] = buf.readBoolean();
+				
 				//player uid
 				extValues[9] = buf.readInt();	//player uid
 				extValues[10] = buf.readInt();	//player team id
-//				LogHelper.info("DEBUG : gui sync packet: id 3: "+extValues[0]+" "+extValues[1]+" "+extValues[2]+" "+extValues[3]+" "+extValues[4]+" "+extValues[5]+" "+extValues[6]+" "+extValues[7]);
+				
 				//set value
 				EntityHelper.setPlayerExtProps(extValues);
 				EntityHelper.setPlayerExtProps(shipSelected);
@@ -178,6 +198,18 @@ public class S2CGUIPackets implements IMessage {
 					
 					ship.setStateMinor(ID.M.Kills, buf.readInt());
 					ship.setStateMinor(ID.M.NumGrudge, buf.readInt());
+				}
+			}
+			break;
+		case 5:	//sync ship GUI
+			{
+				this.flag = buf.readBoolean();
+				
+				EntityPlayer player = ClientProxy.getClientPlayer();
+				ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+				
+				if(extProps != null) {
+					extProps.setInitSID(this.flag);
 				}
 			}
 			break;
@@ -232,9 +264,9 @@ public class S2CGUIPackets implements IMessage {
 				//team list
 				buf.writeInt(props.getTeamId());
 				for(int i = 0; i < 6; i++) {
-					if(props.getTeamList(i) != null) {
-						buf.writeInt(props.getTeamList(i).getEntityId());
-						buf.writeBoolean(props.getTeamSelected(i));
+					if(props.getEntityOfCurrentTeam(i) != null) {
+						buf.writeInt(props.getEntityOfCurrentTeam(i).getEntityId());
+						buf.writeBoolean(props.getSelectStateOfCurrentTeam(i));
 					}
 					else {
 						buf.writeInt(-1);
@@ -253,6 +285,12 @@ public class S2CGUIPackets implements IMessage {
 				buf.writeInt(ship.getEntityId());
 				buf.writeInt(ship.getStateMinor(ID.M.Kills));
 				buf.writeInt(ship.getStateMinor(ID.M.NumGrudge));
+			}
+			break;
+		case 5:	//sync ship inventory GUI: kills and grudge
+			{
+				buf.writeByte(5);
+				buf.writeBoolean(flag);
 			}
 			break;
 		}

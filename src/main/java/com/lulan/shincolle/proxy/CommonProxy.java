@@ -26,6 +26,8 @@ public abstract class CommonProxy implements IProxy {
 	public static SimpleNetworkWrapper channelG;
 	public static SimpleNetworkWrapper channelP;
 
+	public static boolean isMultiplayer = false;	//the world is MP or SP
+	
 	
 	@Override
 	public void registerChannel() {

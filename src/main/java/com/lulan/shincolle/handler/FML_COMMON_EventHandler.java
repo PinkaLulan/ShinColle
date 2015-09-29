@@ -192,21 +192,39 @@ public class FML_COMMON_EventHandler {
 					}//end roll spawn boss
 				}//end boss cooldown <= 0
 				
-				//sync team list every 20 ticks
-				if(event.player.ticksExisted % 20 == 0) {
+				boolean syncTeamList = false;
+				
+				//sync team list every 128 ticks
+				if(event.player.ticksExisted % 128 == 0) {
 					//check entity is alive
 					BasicEntityShip getent = null;
 					for(int i = 0; i < 6; i++) {
-						getent = extProps.getTeamList(i);
+						getent = extProps.getEntityOfCurrentTeam(i);
 						
 						if(getent != null && !getent.isEntityAlive()) {
-							extProps.clearShipSlot(i);
+							extProps.clearShipOfCurrentTeam(i);
 						}
 					}
 					
-					//sync team list to client
+					syncTeamList = true;
+				}//end every 128 ticks
+//				LogHelper.info("DEBUG : player tick: ship: "+
+//				ServerProxy.getAllShipWorldData().size());
+				//init ship UID
+				if(!extProps.getInitSID() && event.player.ticksExisted % 16 == 0) {
+					LogHelper.info("DEBUG : player tick: update team entity");
+					//update ship temaList
+					extProps.updateShipEntityBySID();
+					//sync flag to client
+					CommonProxy.channelG.sendTo(new S2CGUIPackets(S2CGUIPackets.PID.FlagInitSID, 0, true), (EntityPlayerMP) event.player);
+					syncTeamList = true;
+				}//end tick = 64
+				
+				//send team list sync packet
+				if(syncTeamList) {
 					CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps), (EntityPlayerMP) event.player);
-				}//end every 20 ticks
+				}
+				
 			}//end server side, extProps != null
 			
 			//count down key cooldown
@@ -221,7 +239,7 @@ public class FML_COMMON_EventHandler {
 				boolean hasRing = false;
 				ItemStack itemRing = null;
 				
-				for(int i = 0; i < 36; ++i) {
+				for(int i = 0; i < event.player.inventory.getSizeInventory(); ++i) {
 					if(event.player.inventory.getStackInSlot(i) != null && 
 					   event.player.inventory.getStackInSlot(i).getItem() == ModItems.MarriageRing) {
 						hasRing = true;
@@ -306,7 +324,7 @@ public class FML_COMMON_EventHandler {
 				LogHelper.info("DEBUG : key input: pointer set team: "+getKey+" currItem: "+orgCurrentItem);
 				if(getKey >= 0) {
 					//change team id
-					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, -8, getKey, orgCurrentItem));
+					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetShipTeamID, getKey, orgCurrentItem));
 				}
 			}
 		}
@@ -405,7 +423,7 @@ public class FML_COMMON_EventHandler {
 		}//end player extProps not null
 	}
 	
-	//player loggout, not be called in singleplayer 
+	//player loggout, NO USE in singleplayer
 	@SubscribeEvent
 	public void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
 		ExtendPlayerProps extProps = (ExtendPlayerProps) event.player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
@@ -417,6 +435,7 @@ public class FML_COMMON_EventHandler {
     		LogHelper.info("DEBUG : player logout: save player extProps in ServerProxy");
     		//save player nbt data
     		NBTTagCompound nbt = new NBTTagCompound();
+    		
     		extProps.saveNBTData(nbt);
     		ServerProxy.setPlayerData(event.player.getUniqueID().toString(), nbt);
     	}
@@ -469,7 +488,7 @@ public class FML_COMMON_EventHandler {
 				
 			}//end phase END
 		}
-		
 	}
+	
 
 }

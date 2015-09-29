@@ -107,7 +107,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	protected String ownerName;
 	
 	//for initial
+	private boolean initAI;
 	private boolean isUpdated;	//updated ship id/owner id tag
+	private int updateTime = 16;		//update check interval
 	
 	
 	public BasicEntityShip(World world) {
@@ -150,6 +152,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		rotateAngle = new float[] {0F, 0F, 0F};		//model rotate angle (right hand)
 		
 		//for init
+		initAI = false;
 		isUpdated = false;
 	}
 	
@@ -584,6 +587,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		}
 
 		//min cap value
+		if(StateFinal[ID.HP] < 1F) {
+			StateFinal[ID.HP] = 1F;
+		}
+		if(StateFinal[ID.HIT] < 1F) {
+			StateFinal[ID.HIT] = 1F;
+		}
 		if(StateFinal[ID.SPD] < 0F) {
 			StateFinal[ID.SPD] = 0F;
 		}
@@ -1375,35 +1384,46 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	}
         	
         	//register or update ship id and owner id
-			if(!this.isUpdated && ticksExisted % 4 == 0) {
-				if(this.getShipUID() <= 0) {
-					ServerProxy.updateShipID(this);		//update ship uid
-				}
+			if(!this.isUpdated && ticksExisted % updateTime == 0) {
+				LogHelper.info("DEBUG : update ship: initial SID, PID");
+				ServerProxy.updateShipID(this);		//update ship uid
 				
 				if(this.getPlayerUID() <= 0) {
 					ServerProxy.updateShipOwnerID(this);//update owner uid
 				}
 				
 				//update success
-				if(getPlayerUID() > 0 && getShipUID() > 0) {
+				if(getPlayerUID() > 0 && getShipUID() > 0 && 
+				   ServerProxy.getShipWorldData(getShipUID()) != null &&
+				   ServerProxy.getShipWorldData(getShipUID())[0] > 0) {
 					this.sendSyncPacket();
 					this.isUpdated = true;
 				}
+				
+				//prolong update time
+				if(updateTime >= 8192) {
+					updateTime = 8192;
+				}
+				else {
+					updateTime *= 2;
+				}
 			}//end update id
-        	
-        	//sync client and reset AI after server start 10 ticks
-        	if(ticksExisted == 8) {
-        		this.setStateFlag(ID.F.CanDrop, true);
-        		clearAITasks();
-        		clearAITargetTasks();	//reset AI for get owner after loading NBT data
-        		setAIList();
-        		setAITargetList(getStateMinor(ID.M.TargetAI));
-        		decrGrudgeNum(0);		//check grudge
-        		sendSyncPacket();		//sync packet to client
-        	}
         	
         	//check every 8 ticks
         	if(ticksExisted % 8 == 0) {
+        		//reset AI and sync once
+        		if(!this.initAI && ticksExisted > 10) {
+        			this.setStateFlag(ID.F.CanDrop, true);
+            		clearAITasks();
+            		clearAITargetTasks();	//reset AI for get owner after loading NBT data
+            		setAIList();
+            		setAITargetList(getStateMinor(ID.M.TargetAI));
+            		decrGrudgeNum(0);		//check grudge
+            		sendSyncPacket();		//sync packet to client
+            		
+            		this.initAI = true;
+        		}
+        		
         		//clear dead or same team target 
       			if(this.getAttackTarget() != null) {
       				if(!this.getAttackTarget().isEntityAlive() || EntityHelper.checkSameOwner(this, getAttackTarget())) {
@@ -1445,10 +1465,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         		}
         		
             	/** debug info */
-//            	LogHelper.info("DEBUG : ship update: eid: "+this.getEntityId()+" eidSP: "+
-//            					ServerProxy.getShipWorldData(this.getShipUID())[0]);
-            	LogHelper.info("DEBUG : ship update: eid: "+ServerProxy.getNextShipID()+" "+ServerProxy.getNextPlayerID()+" "+this.getPlayerUID()+" "+this.getShipUID());
-            	//debug: check disappear ship
+//            	LogHelper.info("DEBUG : ship update: eid: "+
+//            					ServerProxy.getShipWorldData(106));
+//            	LogHelper.info("DEBUG : ship update: eid: "+ServerProxy.getNextShipID()+" "+ServerProxy.getNextPlayerID()+" "+ConfigHandler.nextPlayerID+" "+ConfigHandler.nextShipID);
 //        		if(this.worldObj.provider.dimensionId == 0) {	//main world
 //        			LogHelper.info("DEBUG : ship pos dim "+ClientProxy.getClientWorld().provider.dimensionId+" "+this.dimension+" "+this.posX+" "+this.posY+" "+this.posZ);
 //        		}

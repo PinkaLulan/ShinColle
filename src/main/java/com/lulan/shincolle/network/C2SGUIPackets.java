@@ -34,6 +34,20 @@ public class C2SGUIPackets implements IMessage {
 	private EntityPlayer player;
 	private int entityID, worldID, type, button, value, value2, posX, posY, posZ;
 	
+	//packet id
+	public static final class PID {
+		public static final byte AddTeam = -1;
+		public static final byte AttackTarget = -2;
+		public static final byte OpenShipGUI = -3;
+		public static final byte SetSitting = -4;
+		public static final byte SyncPlayerItem = -5;
+		public static final byte GuardEntity = -6;
+		public static final byte ClearTeam = -7;
+		public static final byte SetShipTeamID = -8;
+		public static final byte SetMove = -9;
+		public static final byte SetSelect = -10;
+	}
+	
 	
 	public C2SGUIPackets() {}	//必須要有空參數constructor, forge才能使用此class
 	
@@ -68,66 +82,66 @@ public class C2SGUIPackets implements IMessage {
 	 * type 12: set team id: button = -8, value = teamID
 	 * 
 	 */
-	public C2SGUIPackets(EntityPlayer player, int button, int value, int value2) {
+	public C2SGUIPackets(EntityPlayer player, int packetType2, int value, int value2) {
         this.player = player;
         this.worldID = player.worldObj.provider.dimensionId;
-        this.button = button;
+        this.button = packetType2;
         this.value = value;
         this.value2 = value2;
         
         //button type
-        switch(button) {
+        switch(packetType2) {
         default:	//no use
         	this.type = 2;
         	break;
-        case -1:	//pointer click: add team
+        case PID.AddTeam:	//pointer click: add team
         	this.type = 3;
         	break;
-        case -2:	//pointer click: attack target
+        case PID.AttackTarget:	//pointer click: attack target
         	this.type = 4;
         	break;
-        case -3:	//open ship GUI
+        case PID.OpenShipGUI:	//open ship GUI
         	this.type = 8;
         	break;
-        case -4:	//pointer click: set sitting
+        case PID.SetSitting:	//pointer click: set sitting
         	this.type = 7;
         	break;
-        case -5:	//sync player item
+        case PID.SyncPlayerItem:	//sync player item
         	this.type = 9;
         	break;
-        case -6:	//guard entity
+        case PID.GuardEntity:	//guard entity
         	this.type = 10;
         	break;
-        case -7:	//clear team
+        case PID.ClearTeam:	//clear team
         	this.type = 11;
         	break;
-        case -8:	//set team id
+        case PID.SetShipTeamID:	//set team id
         	this.type = 12;
         	break;
         }
     }
 	
-	/**type 5: pointer click (move): button = -1, value = meta, value2 = side, posXYZ = move target 
-	 * type 6: pointer click (set select): button = -2, value = select, value2 = entity id, posX = meta
+	/**type 5: pointer click (move): value = meta, value2 = side, posXYZ = move target 
+	 * type 6: pointer click (set select): value = select, value2 = entity id, posX = meta
 	 */
-	public C2SGUIPackets(EntityPlayer player, int button, int value, int value2, int posX, int posY, int posZ) {
+	public C2SGUIPackets(EntityPlayer player, int packetType2, int value, int value2, int posX, int posY, int posZ) {
         this.player = player;
         this.worldID = player.worldObj.provider.dimensionId;
-        this.button = button;
+        this.button = packetType2;
         this.value = value;
         this.value2 = value2;
         this.posX = posX;
         this.posY = posY;
         this.posZ = posZ;
         
-        switch(button) {
+        switch(packetType2) {
         default:	//unknow packet
         	this.type = -1;
         	break;
-        case -1:	//pointer right click: move
+        case PID.SetMove:	//pointer right click: move
         	this.type = 5;
         	break;
-        case -2:	//pointer click: set ship selected
+        case PID.SetSelect:	//pointer click: set ship selected
         	this.type = 6;
         	break;
         }
@@ -208,11 +222,11 @@ public class C2SGUIPackets implements IMessage {
 					if(extProps != null) {
 						//點到的是ship entity, 則add team
 						if(getEnt2 instanceof BasicEntityShip) {
-							extProps.setTeamList(value, (BasicEntityShip) getEnt2, false);
+							extProps.addEntityToTeam(value, (BasicEntityShip) getEnt2, false);
 						}
 						//其他entity or null, 則視為清空該team slot
 						else {
-							extProps.setTeamList(value, null, false);
+							extProps.addEntityToTeam(value, null, false);
 						}
 						
 						//sync team list to client
@@ -312,7 +326,7 @@ public class C2SGUIPackets implements IMessage {
 				}
 			}
 			break;
-		case 9:	//open ship GUI
+		case 9:	//sync pointer item
 			{
 				this.entityID = buf.readInt();
 				this.worldID = buf.readInt();
@@ -324,23 +338,27 @@ public class C2SGUIPackets implements IMessage {
 				
 				if(getEnt != null) {
 					this.player = getEnt;
-					if(this.player.inventory.getCurrentItem() != null) {
-						this.player.inventory.getCurrentItem().setItemDamage(value);
-					}
 					
 					//if sync pointer, check pointer meta
-					if(this.player.inventory.getCurrentItem().getItem() instanceof PointerItem) {
+					if(this.player.inventory.getCurrentItem() != null &&
+					   this.player.inventory.getCurrentItem().getItem() instanceof PointerItem) {
+						
+						//sync item damage value
+						this.player.inventory.getCurrentItem().setItemDamage(value);
+						
+						//change focus target if pointer mode = 0
 						ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 						
 						if(extProps != null) {
 							//is single mode, set focus ships to only 1 ship
 							if(value == 0) {
-								extProps.clearTeamSelected();
-								
+								//reset focus ship
+								extProps.clearSelectStateOfCurrentTeam();
+								//set focus ship at first ship
 								for(int j = 0; j < 6; j++) {
-									if(extProps.getTeamList(j) != null) {
+									if(extProps.getEntityOfCurrentTeam(j) != null) {
 										//focus ship j
-										extProps.setTeamSelected(j, true);
+										extProps.setSelectStateOfCurrentTeam(j, true);
 										//sync team list
 										CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps), (EntityPlayerMP) player);
 										break;
@@ -381,8 +399,8 @@ public class C2SGUIPackets implements IMessage {
 					ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 					
 					if(extProps != null) {
-						extProps.clearTeamSelected();
-						extProps.clearShipTeamAll();
+						extProps.clearSelectStateOfCurrentTeam();
+						extProps.clearAllTeam();
 						
 						//sync team list
 						CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps), (EntityPlayerMP) player);

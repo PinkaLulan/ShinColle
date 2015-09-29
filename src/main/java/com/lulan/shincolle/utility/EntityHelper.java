@@ -241,6 +241,22 @@ public class EntityHelper {
 		return null;
 	}
 	
+	/** get ship entity by ship UID, server side only */
+	public static BasicEntityShip getShipBySID(int sid) {
+		int[] data = ServerProxy.getShipWorldData(sid);
+		
+		if(data != null) {
+			Entity getEnt = getEntityByID(data[0], data[1], false);
+			LogHelper.info("DEBUG : get ship by SID: "+data);
+			if(getEnt instanceof BasicEntityShip) {
+				return (BasicEntityShip) getEnt;
+			}
+		}
+		
+		LogHelper.info("DEBUG : ship not found: sid: "+sid);
+		return null;
+	}
+	
 	/** get player by entity ID */
 	public static EntityPlayer getEntityPlayerByID(int entityID, int worldID, boolean isClient) {
 		World world;
@@ -383,7 +399,7 @@ public class EntityHelper {
 			BasicEntityShip teamship = null;
 			for(int i = 0; i < 6; i++) {
 				if(value[i+3] <= 0) {
-					extProps.setTeamList(i, null, true);
+					extProps.addEntityToTeam(i, null, true);
 				}
 				else {
 					if(value[i+3] > 0) {
@@ -392,7 +408,7 @@ public class EntityHelper {
 					else {
 						teamship = null;
 					}
-					extProps.setTeamList(i, teamship, true);
+					extProps.addEntityToTeam(i, teamship, true);
 				}
 			}
 			
@@ -417,7 +433,7 @@ public class EntityHelper {
 		if(extProps != null) {
 			//set team selected
 			for(int i = 0; i < 6; i++) {
-				extProps.setTeamSelected(i, value[i]);
+				extProps.setSelectStateOfCurrentTeam(i, value[i]);
 			}
 		}
 	}
@@ -915,13 +931,14 @@ public class EntityHelper {
 		if(target instanceof EntityLivingBase) {
 			EntityLivingBase tar = (EntityLivingBase) target;
 			ExtendPlayerProps props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
-			BasicEntityShip[] ships = props.getTeamListWithSelectState(meta);
+			BasicEntityShip[] ships = props.getEntityOfCurrentMode(meta);
 			BasicEntityMount mounts = null;
+			int worldID = player.worldObj.provider.dimensionId;
 			
 			if(props != null) {
 				switch(meta) {
 				default:	//single mode
-					if(ships[0] != null) {
+					if(ships[0] != null && ships[0].worldObj.provider.dimensionId == worldID) {
 						//設定ship攻擊目標
 						ships[0].setSitting(false);
 						ships[0].setAttackTarget(tar);
@@ -935,7 +952,7 @@ public class EntityHelper {
 				case 1:		//group mode
 				case 2:		//formation mode
 					for(int i = 0; i < ships.length; i++) {
-						if(ships[i] != null) {
+						if(ships[i] != null && ships[i].worldObj.provider.dimensionId == worldID) {
 							//設定ship攻擊目標
 							ships[i].setSitting(false);
 							ships[i].setAttackTarget(tar);
@@ -955,12 +972,13 @@ public class EntityHelper {
 	/** set ship move with team list */
 	public static void applyTeamGuard(EntityPlayer player, int meta, Entity guarded) {
 		ExtendPlayerProps props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
-		BasicEntityShip[] ships = props.getTeamListWithSelectState(meta);
+		BasicEntityShip[] ships = props.getEntityOfCurrentMode(meta);
+		int worldID = player.worldObj.provider.dimensionId;
 		
 		if(props != null) {
 			switch(meta) {
 			default:	//single mode
-				if(ships[0] != null) {
+				if(ships[0] != null && ships[0].worldObj.provider.dimensionId == worldID) {
 					//設定ship移動地點
 					applyShipGuardEntity(ships[0], guarded);
 					//sync guard
@@ -970,7 +988,7 @@ public class EntityHelper {
 			case 1:		//group mode
 			case 2:		//formation mode
 				for(int i = 0;i < ships.length; i++) {
-					if(ships[i] != null) {
+					if(ships[i] != null && ships[i].worldObj.provider.dimensionId == worldID) {
 						//設定ship移動地點
 						applyShipGuardEntity(ships[i], guarded);
 						//sync guard
@@ -985,12 +1003,13 @@ public class EntityHelper {
 	/** set ship move with team list */
 	public static void applyTeamMove(EntityPlayer player, int meta, int side, int x, int y, int z) {
 		ExtendPlayerProps props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
-		BasicEntityShip[] ships = props.getTeamListWithSelectState(meta);
+		BasicEntityShip[] ships = props.getEntityOfCurrentMode(meta);
+		int worldID = player.worldObj.provider.dimensionId;
 		
 		if(props != null) {
 			switch(meta) {
 			default:	//single mode
-				if(ships[0] != null) {
+				if(ships[0] != null && ships[0].worldObj.provider.dimensionId == worldID) {
 					//設定ship移動地點
 					applyShipGuard(ships[0], x, y, z);
 					//sync guard
@@ -1000,7 +1019,7 @@ public class EntityHelper {
 			case 1:		//group mode
 			case 2:		//formation mode
 				for(int i = 0;i < ships.length; i++) {
-					if(ships[i] != null) {
+					if(ships[i] != null && ships[i].worldObj.provider.dimensionId == worldID) {
 						//設定ship移動地點
 						applyShipGuard(ships[i], x, y, z);
 						//sync guard
@@ -1018,11 +1037,12 @@ public class EntityHelper {
 	 */
 	public static void applyTeamSit(EntityPlayer player, int meta, int entityid) {
 		ExtendPlayerProps props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
-		BasicEntityShip[] ships = props.getTeamListWithSelectState(meta);
-
+		BasicEntityShip[] ships = props.getEntityOfCurrentMode(meta);
+		int worldID = player.worldObj.provider.dimensionId;
+		
 		if(props != null) {
 			//不在隊伍名單裡面
-			if(props.checkInTeamList(entityid) < 0) {
+			if(props.checkIsInCurrentTeam(entityid) < 0) {
 				Entity target = getEntityByID(entityid, player.worldObj.provider.dimensionId, player.worldObj.isRemote);
 				
 				if(target instanceof IShipEmotion) {
@@ -1033,7 +1053,7 @@ public class EntityHelper {
 			else {
 				switch(meta) {
 				default:	//single mode
-					if(ships[0] != null) {
+					if(ships[0] != null && ships[0].worldObj.provider.dimensionId == worldID) {
 						//設定ship sit
 						ships[0].setEntitySit();
 					}
@@ -1041,7 +1061,7 @@ public class EntityHelper {
 				case 1:		//group mode
 				case 2:		//formation mode
 					for(int i = 0; i < ships.length; i++) {
-						if(ships[i] != null) {
+						if(ships[i] != null && ships[i].worldObj.provider.dimensionId == worldID) {
 							//設定ship sit
 							ships[i].setEntitySit();
 						}
@@ -1058,23 +1078,23 @@ public class EntityHelper {
 		ExtendPlayerProps props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 		
 		if(props != null) {
-			int i = props.checkInTeamList(entityid);
+			int i = props.checkIsInCurrentTeam(entityid);
 			
 			//check entity is in team
 			if(i >= 0) {
 				switch(meta) {
 				default:	//single mode (僅一隻可以focus)
 					/**single mode不能取消focus, 一定有一隻會是focus狀態*/
-					props.clearTeamSelected();
-					props.setTeamSelected(i, true);
+					props.clearSelectStateOfCurrentTeam();
+					props.setSelectStateOfCurrentTeam(i, true);
 					break;
 				case 1:		//group mode (不限focus數量)
-					props.setTeamSelected(i, !props.getTeamSelected(i));
+					props.setSelectStateOfCurrentTeam(i, !props.getSelectStateOfCurrentTeam(i));
 					break;
 				case 2:		//formation mode (僅一隻可以focus, 會設為flagship)
 					/**formation mode不能取消focus, 一定有一隻會是focus (flagship)狀態*/
-					props.clearTeamSelected();
-					props.setTeamSelected(i, true);
+					props.clearSelectStateOfCurrentTeam();
+					props.setSelectStateOfCurrentTeam(i, true);
 					break;
 				}
 			}

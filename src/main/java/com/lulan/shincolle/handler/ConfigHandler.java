@@ -47,6 +47,7 @@ public class ConfigHandler {
 	public static boolean[] polyGravelBaseBlock = new boolean[] {true, true, false, false};	//stone gravel sand dirt
 	public static Property propPolyGravel;
 	
+	
 	//讀取設定檔參數
 	private static void loadConfiguration() {
 		

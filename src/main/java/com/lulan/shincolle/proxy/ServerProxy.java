@@ -14,6 +14,7 @@ import net.minecraft.world.storage.MapStorage;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.server.ShinWorldData;
 import com.lulan.shincolle.utility.LogHelper;
 
@@ -56,7 +57,7 @@ public class ServerProxy extends CommonProxy {
 	 * delete when server close
 	 * 
 	 * mapShipID <ship UID, ship data>
-	 * ship data = 0:ship entity id(int)
+	 * ship data = 0:ship entity id(int) 1:world id(int)
 	 * 
 	 * use:
 	 * 1. load from file: none
@@ -206,6 +207,7 @@ public class ServerProxy extends CommonProxy {
 	
 	public static void setNextPlayerID(int par1) {
 		if(serverData != null) {
+			LogHelper.info("DEBUG : init server proxy: set next player id "+par1);
 			nextPlayerID = par1;
 			serverData.markDirty();
 		}
@@ -217,6 +219,7 @@ public class ServerProxy extends CommonProxy {
 	
 	public static void setNextShipID(int par1) {
 		if(serverData != null) {
+			LogHelper.info("DEBUG : init server proxy: set next ship id "+par1);
 			nextShipID = par1;
 			serverData.markDirty();
 		}
@@ -283,13 +286,14 @@ public class ServerProxy extends CommonProxy {
 		LogHelper.info("DEBUG : update entity id to ServerProxy");
 		
 		int sid = ship.getShipUID();
-		int[] sdata = new int[1];
+		int[] sdata = new int[2];
 		
 		sdata[0] = ship.getEntityId();
+		sdata[1] = ship.worldObj.provider.dimensionId;
 		
 		//update ship data
 		if(sid > 0) {
-			LogHelper.info("DEBUG : update ship: update ship id "+sid+" eid: "+sdata[0]);
+			LogHelper.info("DEBUG : update ship: update ship id "+sid+" eid: "+sdata[0]+" world: "+sdata[1]);
 			setShipWorldData(sid, sdata);	//cache in server proxy
 		}
 		//ship id < 0, create one
@@ -300,7 +304,7 @@ public class ServerProxy extends CommonProxy {
 				sid = 100;	//ship id init value = 100
 			}
 			
-			LogHelper.info("DEBUG : update ship: create sid: "+sid+" eid: "+sdata[0]);
+			LogHelper.info("DEBUG : update ship: create sid: "+sid+" eid: "+sdata[0]+" world: "+sdata[1]);
 			ship.setShipUID(sid);
 			setShipWorldData(sid, sdata);	//cache in server proxy
 			setNextShipID(++sid);	//next id ++
@@ -311,7 +315,7 @@ public class ServerProxy extends CommonProxy {
 	public static void updateShipOwnerID(BasicEntityShip ship) {
 		Entity owner = ship.getOwner();
 		
-		LogHelper.info("DEBUG : update ship: get owner id");
+		LogHelper.info("DEBUG : update ship: get owner id: owner "+owner);
 		if(owner instanceof EntityPlayer) {
 			//get player UID from player's extend props
 			ExtendPlayerProps extProps = (ExtendPlayerProps) owner.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);

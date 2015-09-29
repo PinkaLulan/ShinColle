@@ -280,7 +280,7 @@ public class EVENT_BUS_EventHandler {
 		}
 	}
 	
-	/**world loaded event
+	/**world load event
 	 * init MapStorage here
 	 * 由於global mapstorage不管在world都是讀取同一個handler, 所以不檢查world id, 隨便一個world皆可
 	 * 若為perMapStorage, 則是不同world各有一份
@@ -293,6 +293,17 @@ public class EVENT_BUS_EventHandler {
 			ServerProxy.initServerProxy(event.world);
 		}
 	}
+	
+//	/**world unload event
+//	 * save ship team list here, for SINGLEPLAYER ONLY
+//	 * for multiplayer: PlayerLoggedOutEvent
+//	 * 
+//	 * 由於不明原因, logout event只會在多人遊戲下發出, 單機遊戲必須使用此world unload event
+//	 */
+//	@SubscribeEvent
+//	public void onWorldUnload(WorldEvent.Unload event) {
+//		LogHelper.info("DEBUG : on world unload: "+event.world.provider.dimensionId);
+//	}
 
 	
 }

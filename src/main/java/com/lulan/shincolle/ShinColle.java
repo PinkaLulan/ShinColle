@@ -11,6 +11,7 @@ import com.lulan.shincolle.init.ModOres;
 import com.lulan.shincolle.init.ModRecipes;
 import com.lulan.shincolle.init.ModTileEntity;
 import com.lulan.shincolle.init.ModWorldGen;
+import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.IProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.Reference;
@@ -117,6 +118,7 @@ public class ShinColle {
 	public void onServerStarted(FMLServerAboutToStartEvent event) {
 		LogHelper.info("DEBUG : server about to start: is MP server? "+event.getSide().isServer());	//debug
 	    ServerProxy.initServerFile = false;
+	    CommonProxy.isMultiplayer = event.getSide().isServer();
 	}
 	
 
