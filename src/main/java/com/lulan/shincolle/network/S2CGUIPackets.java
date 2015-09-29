@@ -158,35 +158,43 @@ public class S2CGUIPackets implements IMessage {
 			break;
 		case 3: //sync player props
 			{			
-				int[] extValues = new int[11];
+				int[] propValues = new int[4];
+				int[] shipValues = new int[12];	//0:ship 0 eid  1: ship 0 uid  2: ship 1 eid...
+				int teamID = 0;
 				boolean[] shipSelected = new boolean[6];
 				
 				//ring
-				extValues[0] = buf.readByte();	//ring active
-				extValues[1] = buf.readByte();	//marriage num
-				
-				//pointer team
-				extValues[2] = buf.readInt();	//team id
-				extValues[3] = buf.readInt();	//team list 1
-				shipSelected[0] = buf.readBoolean();
-				extValues[4] = buf.readInt();	//team list 2
-				shipSelected[1] = buf.readBoolean();
-				extValues[5] = buf.readInt();	//team list 3
-				shipSelected[2] = buf.readBoolean();
-				extValues[6] = buf.readInt();	//team list 4
-				shipSelected[3] = buf.readBoolean();
-				extValues[7] = buf.readInt();	//team list 5
-				shipSelected[4] = buf.readBoolean();
-				extValues[8] = buf.readInt();	//team list 6
-				shipSelected[5] = buf.readBoolean();
+				propValues[0] = buf.readByte();	//ring active
+				propValues[1] = buf.readByte();	//marriage num
 				
 				//player uid
-				extValues[9] = buf.readInt();	//player uid
-				extValues[10] = buf.readInt();	//player team id
+				propValues[2] = buf.readInt();	//player uid
+				propValues[3] = buf.readInt();	//player team id
+				
+				//ship team
+				teamID = buf.readInt();
+				shipValues[0] = buf.readInt();			//ship 0 entity ID
+				shipValues[1] = buf.readInt();			//ship 0 ship UID
+				shipSelected[0] = buf.readBoolean();	//ship 0 select state
+				shipValues[2] = buf.readInt();			//ship 1
+				shipValues[3] = buf.readInt();
+				shipSelected[1] = buf.readBoolean();
+				shipValues[4] = buf.readInt();			//ship 2
+				shipValues[5] = buf.readInt();
+				shipSelected[2] = buf.readBoolean();
+				shipValues[6] = buf.readInt();			//ship 3
+				shipValues[7] = buf.readInt();
+				shipSelected[3] = buf.readBoolean();
+				shipValues[8] = buf.readInt();			//ship 4
+				shipValues[9] = buf.readInt();
+				shipSelected[4] = buf.readBoolean();
+				shipValues[10] = buf.readInt();			//ship 5
+				shipValues[11] = buf.readInt();
+				shipSelected[5] = buf.readBoolean();
 				
 				//set value
-				EntityHelper.setPlayerExtProps(extValues);
-				EntityHelper.setPlayerExtProps(shipSelected);
+				EntityHelper.setPlayerExtProps(propValues);
+				EntityHelper.setPlayerExtProps(teamID, shipValues, shipSelected);
 			}
 			break;
 		case 4:	//sync ship GUI
@@ -261,22 +269,27 @@ public class S2CGUIPackets implements IMessage {
 				buf.writeByte(props.isRingActiveI());
 				buf.writeByte(props.getMarriageNum());
 				
-				//team list
-				buf.writeInt(props.getTeamId());
-				for(int i = 0; i < 6; i++) {
-					if(props.getEntityOfCurrentTeam(i) != null) {
-						buf.writeInt(props.getEntityOfCurrentTeam(i).getEntityId());
-						buf.writeBoolean(props.getSelectStateOfCurrentTeam(i));
-					}
-					else {
-						buf.writeInt(-1);
-						buf.writeBoolean(false);
-					}
-				}
-				
 				//player uid
 				buf.writeInt(props.getPlayerUID());
 				buf.writeInt(props.getPlayerTeamId());
+				
+				//team id
+				buf.writeInt(props.getTeamId());
+				
+				//team list
+				for(int i = 0; i < 6; i++) {
+					//get entity id
+					if(props.getEntityOfCurrentTeam(i) != null) {
+						buf.writeInt(props.getEntityOfCurrentTeam(i).getEntityId());
+					}
+					else {
+						buf.writeInt(-1);
+					}
+					//get ship UID
+					buf.writeInt(props.getSIDofCurrentTeam(i));
+					//get select state
+					buf.writeBoolean(props.getSelectStateOfCurrentTeam(i));
+				}
 			}
 			break;
 		case 4:	//sync ship inventory GUI: kills and grudge

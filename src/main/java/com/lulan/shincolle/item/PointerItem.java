@@ -106,11 +106,11 @@ public class PointerItem extends BasicItem {
 					//是主人: 左鍵: add/remove team 蹲下左鍵:set focus
 					if(EntityHelper.checkSameOwner(player, ship) && props != null) {
 						//check is in team
-						int i = props.checkIsInCurrentTeam(ship.getEntityId());
+						int i = props.checkIsInCurrentTeam(ship.getShipUID());
 						
 						//蹲下左鍵: remove team if in team
 						if(player.isSneaking()) {
-							//if in team, remove entity
+							//if in team
 							if(i >= 0) {
 								LogHelper.info("DEBUG : pointer remove team: "+ship);
 								//if single mode, set other ship focus
@@ -118,13 +118,13 @@ public class PointerItem extends BasicItem {
 									for(int j = 0; j < 6; j++) {
 										if(j != i && props.getEntityOfCurrentTeam(j) != null) {
 											//focus ship j
-											CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetSelect, 1, props.getEntityOfCurrentTeam(j).getEntityId(), meta, 0, 0));
+											CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetSelect, 1, props.getEntityOfCurrentTeam(j).getShipUID(), meta, 0, 0));
 											break;
 										}
 									}
 								}
 								
-								//send add team packet (remove entity)
+								//its already in team, remove ship
 								CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.AddTeam, 0, ship.getEntityId()));
 								return true;
 							}
@@ -134,7 +134,7 @@ public class PointerItem extends BasicItem {
 							//in team, set focus
 							if(i >= 0) {
 								LogHelper.info("DEBUG : pointer set focus: "+hitObj.entityHit);
-								CommonProxy.channelG.sendToServer(new C2SGUIPackets(player , C2SGUIPackets.PID.SetSelect, 1, ship.getEntityId(), meta, 0, 0));
+								CommonProxy.channelG.sendToServer(new C2SGUIPackets(player , C2SGUIPackets.PID.SetSelect, 1, ship.getShipUID(), meta, 0, 0));
 							}
 							//not in team, add team
 							else {
@@ -143,7 +143,7 @@ public class PointerItem extends BasicItem {
 							
 								//若single mode, 則每add一隻就設該隻為focus
 								if(meta == 0) {
-									CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetSelect, 1, ship.getEntityId(), meta, 0, 0));
+									CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetSelect, 1, ship.getShipUID(), meta, 0, 0));
 								}
 							}
 							return true;
@@ -245,7 +245,7 @@ public class PointerItem extends BasicItem {
 						//右鍵: set sitting
 						else {
 							//send sit packet
-							CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetSitting, meta, ship.getEntityId()));
+							CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetSitting, meta, ship.getShipUID()));
 						}
 						return item;
 					}
@@ -513,8 +513,8 @@ public class PointerItem extends BasicItem {
 	    			}
 	    			
 	    			//add info string
-	    			if(props.getSelectStateOfCurrentTeam(i)) {
-	    				list.add(EnumChatFormatting.WHITE + String.format("%d: %s - Lv %d", j, name, level));
+    				if(props.getSelectStateOfCurrentTeam(i)) {
+    					list.add(EnumChatFormatting.WHITE + String.format("%d: %s - Lv %d", j, name, level));
 	    			}
 	    			else {
 	    				list.add(EnumChatFormatting.GRAY + String.format("%d: %s - Lv %d", j, name, level));
@@ -522,7 +522,15 @@ public class PointerItem extends BasicItem {
 	    			
 	    			j++;
     			}
-    		}
+    			//ship is null, check ship UID
+    			else {
+    				//check ship UID
+    				if(props.getSIDofCurrentTeam(i) > 0) {
+    					list.add(EnumChatFormatting.DARK_RED+""+EnumChatFormatting.OBFUSCATED+"1111111111111111");
+    					j++;
+    				}
+    			}//end ship is null
+    		}//end teamList loop
     	}
     }
 	

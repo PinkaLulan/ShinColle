@@ -42,7 +42,7 @@ public class ServerProxy extends CommonProxy {
 	 * -100 = hostile mob
 	 * 
 	 * mapPlayerID <player UID(Integer), player data(int[])>
-	 * player data = 0:player entity id(int), 1:player team id(int)
+	 * player data = 0:player entity id(int), 1:player team id(int) 2:world id(int)
 	 * 
 	 * use:
 	 * 1. load from file: player login event
@@ -252,14 +252,15 @@ public class ServerProxy extends CommonProxy {
 		
 		if(extProps != null) {
 			int pid = extProps.getPlayerUID();
-			int[] pdata = new int[2];
+			int[] pdata = new int[3];
 			
 			pdata[0] = player.getEntityId();
 			pdata[1] = extProps.getPlayerTeamId();
+			pdata[2] = player.worldObj.provider.dimensionId;
 			
 			//update player data
 			if(pid > 0) {
-				LogHelper.info("DEBUG : update player: update player id "+pid+" eid: "+pdata[0]);
+				LogHelper.info("DEBUG : update player: update player id "+pid+" eid: "+pdata[0]+" world: "+pdata[2]);
 				setPlayerWorldData(pid, pdata);
 			}
 			//player id < 0, create one
@@ -270,7 +271,7 @@ public class ServerProxy extends CommonProxy {
 					pid = 100;	//player id init value = 100
 				}
 				
-				LogHelper.info("DEBUG : update player: create pid: "+pid+" eid: "+pdata[0]);
+				LogHelper.info("DEBUG : update player: create pid: "+pid+" eid: "+pdata[0]+" world: "+pdata[2]);
 				extProps.setPlayerUID(pid);	//set player id
 				setPlayerWorldData(pid, pdata);	//cache in server proxy
 				setNextPlayerID(++pid);	//next id ++

@@ -69,7 +69,6 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		nbtExt_add0.setInteger("GuardID", this.entity.getStateMinor(ID.M.GuardID));
 		nbtExt_add0.setInteger("PlayerUID", this.entity.getStateMinor(ID.M.PlayerUID));
 		nbtExt_add0.setInteger("ShipUID", this.entity.getStateMinor(ID.M.ShipUID));
-		nbtExt_add0.setInteger("PlayerEID", this.entity.getStateMinor(ID.M.PlayerEID));
 		nbtExt_add0.setString("tagName", this.entity.getCustomNameTag());
 		//save AttrFinal
 		nbtExt.setTag("Final", nbtExt_add1);
@@ -163,7 +162,6 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		entity.setStateMinor(ID.M.GuardID, nbt_load.getInteger("GuardID"));
 		entity.setStateMinor(ID.M.PlayerUID, nbt_load.getInteger("PlayerUID"));
 		entity.setStateMinor(ID.M.ShipUID, nbt_load.getInteger("ShipUID"));
-		entity.setStateMinor(ID.M.PlayerEID, nbt_load.getInteger("PlayerEID"));
 		entity.setNameTag(nbt_load.getString("tagName"));
 		//load final state
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Final");

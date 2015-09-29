@@ -182,7 +182,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
     			this.findCooldown = 30;
     			
     			//check path result
-            	if(!this.ShipNavigator.tryMoveToEntityLiving(this.owner, 1D)) {
+            	if(this.host2.dimension == this.owner.dimension && !this.ShipNavigator.tryMoveToEntityLiving(this.owner, 1D)) {
             		LogHelper.info("DEBUG : follow AI: fail to follow, cannot reach or too far away");
             		//若超過max dist持續240ticks, 則teleport
             		if(this.distSq > this.maxDistSq) {

@@ -235,22 +235,28 @@ public class EntityHelper {
 					return ((Entity)obj);
 				}
 			}
+			
+			LogHelper.info("DEBUG : entity not found: eid: "+entityID+" world: "+worldID+" client: "+world.isRemote);
 		}
 			
-		LogHelper.info("DEBUG : entity not found: eid: "+entityID+" world: "+worldID+" client: "+world.isRemote);
 		return null;
 	}
 	
 	/** get ship entity by ship UID, server side only */
 	public static BasicEntityShip getShipBySID(int sid) {
-		int[] data = ServerProxy.getShipWorldData(sid);
-		
-		if(data != null) {
-			Entity getEnt = getEntityByID(data[0], data[1], false);
-			LogHelper.info("DEBUG : get ship by SID: "+data);
-			if(getEnt instanceof BasicEntityShip) {
-				return (BasicEntityShip) getEnt;
+		if(sid > 0) {
+			int[] data = ServerProxy.getShipWorldData(sid);
+			
+			if(data != null) {
+				Entity getEnt = getEntityByID(data[0], data[1], false);
+//				LogHelper.info("DEBUG : get ship by SID: "+data);
+				if(getEnt instanceof BasicEntityShip) {
+					return (BasicEntityShip) getEnt;
+				}
 			}
+		}
+		else {	//sid <= 0
+			return null;
 		}
 		
 		LogHelper.info("DEBUG : ship not found: sid: "+sid);
@@ -286,8 +292,13 @@ public class EntityHelper {
 			//從server proxy抓出player uid cache
 			int[] pdata = ServerProxy.getPlayerWorldData(uid);
 			
-			//成功抓到data
-			if(pdata != null && pdata.length > 1) {
+			if(pdata != null && pdata.length > 2) {
+				//成功抓到data, 且player的world跟呼叫者的world相同
+				if(pdata[2] != world.provider.dimensionId) {
+//					LogHelper.info("DEBUG : player not found: different world: "+world.provider.dimensionId+" vs "+pdata[2]);
+					return null;
+				}
+				
 				return (EntityPlayer) getEntityPlayerByID(pdata[0], world.provider.dimensionId, world.isRemote);
 			}
 		}
@@ -303,7 +314,7 @@ public class EntityHelper {
 			int[] pdata = ServerProxy.getPlayerWorldData(uid);
 			
 			//成功抓到data
-			if(pdata != null && pdata.length > 1) {
+			if(pdata != null && pdata.length > 2) {
 				return pdata[0];
 			}
 		}
@@ -318,7 +329,7 @@ public class EntityHelper {
 			int[] pdata = ServerProxy.getPlayerWorldData(uid);
 			
 			//成功抓到data
-			if(pdata != null && pdata.length > 1) {
+			if(pdata != null && pdata.length > 2) {
 				return pdata[1];
 			}
 		}
@@ -385,7 +396,7 @@ public class EntityHelper {
 		}
 	}
 	
-	/**sync player extend props data by integer */
+	/**set player extend props data by packets, CLIENT SIDE ONLY */
 	public static void setPlayerExtProps(int[] value) {
 		EntityPlayer player = ClientProxy.getClientPlayer();
 		ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
@@ -393,28 +404,8 @@ public class EntityHelper {
 		if(extProps != null) {
 			extProps.setRingActiveI(value[0]);
 			extProps.setMarriageNum(value[1]);
-			extProps.setTeamId(value[2]);
-			
-			//set team list
-			BasicEntityShip teamship = null;
-			for(int i = 0; i < 6; i++) {
-				if(value[i+3] <= 0) {
-					extProps.addEntityToTeam(i, null, true);
-				}
-				else {
-					if(value[i+3] > 0) {
-						teamship = (BasicEntityShip) EntityHelper.getEntityByID(value[i+3], 0, true);
-					}
-					else {
-						teamship = null;
-					}
-					extProps.addEntityToTeam(i, teamship, true);
-				}
-			}
-			
-			//set player uid
-			extProps.setPlayerUID(value[9]);
-			extProps.setPlayerTeamId(value[10]);
+			extProps.setPlayerUID(value[2]);
+			extProps.setPlayerTeamId(value[3]);
 			
 			//disable fly if non-active
 			if(!extProps.isRingActive() && !player.capabilities.isCreativeMode && extProps.isRingFlying()) {
@@ -425,17 +416,48 @@ public class EntityHelper {
 		}
 	}
 	
-	/**sync player extend props data by boolean */
-	public static void setPlayerExtProps(boolean[] value) {
+	/**set player extend props team list by packets, CLIENT SIDE ONLY */
+	public static void setPlayerExtProps(int teamid, int[] teamlist, boolean[] selstate) {
 		EntityPlayer player = ClientProxy.getClientPlayer();
 		ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 		
 		if(extProps != null) {
+			//set current team
+			extProps.setTeamId(teamid);
+			
 			//set team selected
 			for(int i = 0; i < 6; i++) {
-				extProps.setSelectStateOfCurrentTeam(i, value[i]);
-			}
-		}
+				//set select state
+				extProps.setSelectStateOfCurrentTeam(i, selstate[i]);
+				
+				//set ship entity
+				if(teamlist[i * 2] <= 0) {
+					extProps.addEntityToTeam(i, null, true);
+				}
+				else {
+					Entity getEnt = getEntityByID(teamlist[i * 2], 0, true);
+					
+					if(getEnt instanceof BasicEntityShip) {
+						extProps.addEntityToTeam(i, (BasicEntityShip) getEnt, true);
+					}
+					else {
+						extProps.addEntityToTeam(i, null, true);
+					}
+				}
+				
+				//set ship UID
+				extProps.setSIDofCurrentTeam(i, teamlist[i * 2 + 1]);
+				
+				/**NOTE:
+				 * client端可能接收到不同world的entity, 導致getEntityByID結果為null
+				 * 此時會讓teamList存null, 但是sidList有存ship UID
+				 * pointer item可以藉此將該slot標記為ship lost
+				 * 藉此保留該slot直到切換到相同world為止
+				 * 
+				 * server端可正確找到entity, 以上只針對client端的狀況說明
+				 */
+			}//end for loop
+		}//end props != null
 	}
 	
 	/**process player sync data */
@@ -1035,19 +1057,17 @@ public class EntityHelper {
 	 *  1. 若目標不在隊伍, 則單獨設定目標坐下
 	 *  2. 若目標在隊伍, 則依照 pointer類型設定目標坐下
 	 */
-	public static void applyTeamSit(EntityPlayer player, int meta, int entityid) {
+	public static void applyTeamSit(EntityPlayer player, int meta, int shipUID) {
 		ExtendPlayerProps props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 		BasicEntityShip[] ships = props.getEntityOfCurrentMode(meta);
 		int worldID = player.worldObj.provider.dimensionId;
 		
 		if(props != null) {
 			//不在隊伍名單裡面
-			if(props.checkIsInCurrentTeam(entityid) < 0) {
-				Entity target = getEntityByID(entityid, player.worldObj.provider.dimensionId, player.worldObj.isRemote);
+			if(props.checkIsInCurrentTeam(shipUID) < 0) {
+				BasicEntityShip target = getShipBySID(shipUID);
 				
-				if(target instanceof IShipEmotion) {
-					((IShipEmotion) target).setEntitySit();
-				}
+				target.setEntitySit();
 			}
 			//有在隊伍中, 則依照pointer類型抓目標
 			else {
@@ -1074,11 +1094,11 @@ public class EntityHelper {
 	
 	/** set ship select (focus) with team list, only called at server side
 	 */
-	public static void applyTeamSelect(EntityPlayer player, int meta, int entityid, boolean select) {
+	public static void applyTeamSelect(EntityPlayer player, int meta, int shipUID, boolean select) {
 		ExtendPlayerProps props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 		
 		if(props != null) {
-			int i = props.checkIsInCurrentTeam(entityid);
+			int i = props.checkIsInCurrentTeam(shipUID);
 			
 			//check entity is in team
 			if(i >= 0) {

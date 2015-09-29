@@ -212,8 +212,8 @@ public class EntityAIShipGuarding extends EntityAIBase {
     			this.findCooldown = 30;
     			
     			//check path result
-            	if(!this.ShipNavigator.tryMoveToXYZ(gx, gy, gz, 1D)) {
-            		LogHelper.info("DEBUG : guarding AI: fail to move, cannot reach or too far away");
+            	if(host2.dimension == host.getStateMinor(ID.M.GuardDim) && !this.ShipNavigator.tryMoveToXYZ(gx, gy, gz, 1D)) {
+            		LogHelper.info("DEBUG : guarding AI: fail to move, cannot reach or too far away "+gx+" "+gy+" "+gz);
             		//若超過max dist持續120ticks, 則teleport
             		if(this.distSq > this.maxDistSq && host2.dimension == host.getStateMinor(ID.M.GuardDim)) {
             			this.checkTeleport++;	//若距離超過max dist且移動又失敗, 會使checkTP每30 tick+1

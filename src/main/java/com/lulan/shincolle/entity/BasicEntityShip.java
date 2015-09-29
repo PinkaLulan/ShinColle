@@ -1332,26 +1332,30 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 						this.setGuarded(null);
 					}
 					
-					//display pointer target effect
+					//display pointer target effect, 只有owner才會接收到該ship同步的EID, 非owner讀取到的EID <= 0
 					EntityPlayer player = null;
 					if(this.getStateMinor(ID.M.PlayerEID) > 0) {
 						player = EntityHelper.getEntityPlayerByID(getStateMinor(ID.M.PlayerEID), 0, true);
-					}
 					
-					if(player != null) {
-						ItemStack item = player.inventory.getCurrentItem();
-						
-						if(ConfigHandler.alwaysShowTeam || (item != null && item.getItem() instanceof PointerItem)) {
-							//標記在entity上
-							if(this.getGuarded() != null) {
-								ParticleHelper.spawnAttackParticleAtEntity(this.getGuarded(), 0.3D, 6D, 0D, (byte)2);
-							}
-							//標記載block上
-							else if(this.getGuardedPos(1) >= 0) {
-								ParticleHelper.spawnAttackParticleAt(this.getGuardedPos(0)+0.5D, this.getGuardedPos(1), this.getGuardedPos(2)+0.5D, 0.3D, 6D, 0D, (byte)25);
+						if(player != null) {
+							ItemStack item = player.inventory.getCurrentItem();
+							
+							if(ConfigHandler.alwaysShowTeam || (item != null && item.getItem() instanceof PointerItem)) {
+								//標記在entity上
+								if(this.getGuarded() != null) {
+									ParticleHelper.spawnAttackParticleAtEntity(this.getGuarded(), 0.3D, 6D, 0D, (byte)2);
+								}
+								//標記載block上
+								else if(this.getGuardedPos(1) >= 0) {
+									ParticleHelper.spawnAttackParticleAt(this.getGuardedPos(0)+0.5D, this.getGuardedPos(1), this.getGuardedPos(2)+0.5D, 0.3D, 6D, 0D, (byte)25);
+								}
 							}
 						}
+						else {
+							this.setStateMinor(ID.M.PlayerEID, -1);
+						}
 					}
+					
 				}//end show pointer target effect
 			}//end every 32 ticks
 		}//end client side
@@ -1480,11 +1484,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	//check every 64 ticks
         	if(ticksExisted % 64 == 0) {
         		if(this.getPlayerUID() > 0) {
-        			int eid = EntityHelper.getPlayerEID(this.getPlayerUID());
-        			
-        			if(eid > 0) {
-        				//update owner entity id (could be changed when owner change dimension or dead)
-            			this.setStateMinor(ID.M.PlayerEID, eid);
+        			//get owner
+        			EntityPlayer player = EntityHelper.getEntityPlayerByUID(this.getPlayerUID(), this.worldObj);
+        					
+        			//owner exists (online and same world)
+        			if(player != null) {
+    					//update owner entity id (could be changed when owner change dimension or dead)
+            			this.setStateMinor(ID.M.PlayerEID, player.getEntityId());
             			//sync guard
             			this.sendSyncPacket(3, false);
             		}

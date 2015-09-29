@@ -35,6 +35,7 @@ import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
+import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -194,22 +195,35 @@ public class FML_COMMON_EventHandler {
 				
 				boolean syncTeamList = false;
 				
-				//sync team list every 128 ticks
-				if(event.player.ticksExisted % 128 == 0) {
+				//sync team list every 64 ticks
+				if(event.player.ticksExisted % 64 == 0) {
 					//check entity is alive
 					BasicEntityShip getent = null;
 					for(int i = 0; i < 6; i++) {
-						getent = extProps.getEntityOfCurrentTeam(i);
-						
-						if(getent != null && !getent.isEntityAlive()) {
-							extProps.clearShipOfCurrentTeam(i);
+						//get ship by UID
+						getent = EntityHelper.getShipBySID(extProps.getSIDofCurrentTeam(i));
+
+//						LogHelper.info("DEBUG : player tick: update teamList: "+i+" "+extProps.getSIDofCurrentTeam(i)+" "+getent);
+						//get ship
+						if(getent != null) {
+							//update ship entity
+							extProps.addEntityToCurrentTeam(i, getent);
 						}
+						//ship lost
+						else {
+							//clear slot if no ship UID
+							if(extProps.getSIDofCurrentTeam(i) <= 0) {
+								extProps.addEntityToCurrentTeam(i, null);
+							}
+						}	
 					}
 					
 					syncTeamList = true;
-				}//end every 128 ticks
+				}//end every 64 ticks
+				
 //				LogHelper.info("DEBUG : player tick: ship: "+
-//				ServerProxy.getAllShipWorldData().size());
+//				ServerProxy.getPlayerWorldData(101)[0]);
+				
 				//init ship UID
 				if(!extProps.getInitSID() && event.player.ticksExisted % 16 == 0) {
 					LogHelper.info("DEBUG : player tick: update team entity");
@@ -218,7 +232,7 @@ public class FML_COMMON_EventHandler {
 					//sync flag to client
 					CommonProxy.channelG.sendTo(new S2CGUIPackets(S2CGUIPackets.PID.FlagInitSID, 0, true), (EntityPlayerMP) event.player);
 					syncTeamList = true;
-				}//end tick = 64
+				}//end init ship UID
 				
 				//send team list sync packet
 				if(syncTeamList) {
@@ -439,6 +453,23 @@ public class FML_COMMON_EventHandler {
     		extProps.saveNBTData(nbt);
     		ServerProxy.setPlayerData(event.player.getUniqueID().toString(), nbt);
     	}
+	}
+	
+	/**player change dimension, need to update player data
+	 */
+	@SubscribeEvent
+	public void onPlayerChangeDim(PlayerEvent.PlayerChangedDimensionEvent event) {
+		/**load player extend data
+		 */
+		LogHelper.info("DEBUG : player change dim: "+event.player.getDisplayName()+" "+event.player.getUniqueID());
+		ExtendPlayerProps extProps = (ExtendPlayerProps) event.player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+		
+		if(extProps != null) {
+			if(!event.player.worldObj.isRemote) {
+				/** update player id */
+				ServerProxy.updatePlayerID(event.player);
+			}//end server side
+		}//end player extProps not null
 	}
 	
 	//change eye height when riding mounts, this is CLIENT ONLY event

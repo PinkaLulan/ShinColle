@@ -122,7 +122,7 @@ public class C2SGUIPackets implements IMessage {
     }
 	
 	/**type 5: pointer click (move): value = meta, value2 = side, posXYZ = move target 
-	 * type 6: pointer click (set select): value = select, value2 = entity id, posX = meta
+	 * type 6: pointer click (set select): value = select, value2 = ship UID, posX = meta
 	 */
 	public C2SGUIPackets(EntityPlayer player, int packetType2, int value, int value2, int posX, int posY, int posZ) {
         this.player = player;
@@ -271,13 +271,13 @@ public class C2SGUIPackets implements IMessage {
 				}
 			}
 			break;
-		case 6: //pointer click: set select
+		case 6: //pointer click: set ship select
 			{
 				this.entityID = buf.readInt();
 				this.worldID = buf.readInt();
 				this.button = buf.readInt();	//no use
 				this.value = buf.readInt();		//select state
-				this.value2 = buf.readInt();	//entity id
+				this.value2 = buf.readInt();	//ship UID
 				this.posX = buf.readInt();		//pointer meta
 				this.posY = buf.readInt();		//no use
 				this.posZ = buf.readInt();		//no use
@@ -298,7 +298,7 @@ public class C2SGUIPackets implements IMessage {
 				this.worldID = buf.readInt();
 				this.button = buf.readInt();	//no use
 				this.value = buf.readInt();		//meta
-				this.value2 = buf.readInt();	//entity id
+				this.value2 = buf.readInt();	//ship UID
 				
 				EntityPlayer getEnt = EntityHelper.getEntityPlayerByID(entityID, worldID, false);
 				
@@ -399,8 +399,7 @@ public class C2SGUIPackets implements IMessage {
 					ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 					
 					if(extProps != null) {
-						extProps.clearSelectStateOfCurrentTeam();
-						extProps.clearAllTeam();
+						extProps.clearAllShipOfCurrentTeam();
 						
 						//sync team list
 						CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps), (EntityPlayerMP) player);
@@ -408,7 +407,7 @@ public class C2SGUIPackets implements IMessage {
 				}
 			}
 			break;
-		case 12: //pointer click: set select
+		case 12: //pointer click: set team id
 			{
 				this.entityID = buf.readInt();
 				this.worldID = buf.readInt();
