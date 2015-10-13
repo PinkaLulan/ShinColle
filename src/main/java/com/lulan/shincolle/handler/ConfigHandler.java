@@ -26,6 +26,7 @@ public class ConfigHandler {
 	public static boolean alwaysShowTeam = false;
 	public static int bossCooldown = 4800;
 	public static float dropGrudge = 1.0F;
+	public static int clostGUIDist = 16;
 	
 	//SHIP SETTING
 	//scale: HP, ATK, DEF, SPD, MOV, HIT
@@ -56,7 +57,10 @@ public class ConfigHandler {
 		
 		//boss生成cd設定 (ticks)
 		bossCooldown = config.getInt("Boss_Cooldown", "general", 4800, 20, 1728000, "boss spawn cooldown");
-				
+		
+		//玩家離開多遠時關閉GUI
+		clostGUIDist = config.getInt("Close_GUI_Distance", "general", 16, 2, 64, "close ship GUI if away from player X blocks");
+		
 		//是否開啟debug mode (spam debug/info message)
 		debugMode = config.getBoolean("Debug_Mode", "general", false, "Enable debug message (SPAM WARNING)");
 		

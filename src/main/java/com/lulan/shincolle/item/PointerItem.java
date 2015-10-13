@@ -71,6 +71,48 @@ public class PointerItem extends BasicItem {
 	 * 左鍵棲艦 = 是主人就加入隊伍, 已經在隊伍則設為focus
 	 * 蹲下左鍵 = 切換物品模式 or 移除已經在隊伍中的ship
 	 */
+	/**left click:<br>
+	 * left:<br>
+	 *   air:				-<br>
+	 *   block:				-<br>
+	 *   ship(owner):		add team/set focus<br>
+	 *   ship(friend):		-<br>
+	 *   ship(hostile):		-<br>
+	 *   player(friend):	-<br>
+	 *   player(hostile):	-<br>
+	 *   other:				-<br>
+	 *<br>  
+	 * left + sprint:<br>
+	 *   air:				-<br>
+	 *   block:				-<br>
+	 *   ship(owner):		-<br>
+	 *   ship(friend):		-<br>
+	 *   ship(hostile):		-<br>
+	 *   player(friend):	-<br>
+	 *   player(hostile):	-<br>
+	 *   other:				-<br>
+	 *<br> 
+	 * left + sneak:<br>
+	 *   air:				change mode<br>
+	 *   block:				-<br>
+	 *   ship(owner):		remove a ship in the team<br>
+	 *   ship(friend):		-<br>
+	 *   ship(hostile):		-<br>
+	 *   player(friend):	-<br>
+	 *   player(hostile):	-<br>
+	 *   other:				-<br>
+	 *<br>
+	 * left + sprint + sneak:<br>
+	 *   air:				clear team<br>
+	 *   block:				-<br>
+	 *   ship(owner):		-<br>
+	 *   ship(friend):		-<br>
+	 *   ship(hostile):		-<br>
+	 *   player(friend):	-<br>
+	 *   player(hostile):	-<br>
+	 *   other:				-<br>
+	 *<br>
+	 */
 	@Override
 	public boolean onEntitySwing(EntityLivingBase entityLiving, ItemStack item) {
 //		LogHelper.info("DEBUG : pointer swing (left click) "+entityLiving);
@@ -86,6 +128,7 @@ public class PointerItem extends BasicItem {
 			ExtendPlayerProps props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 			MovingObjectPosition hitObj = EntityHelper.getPlayerMouseOverEntity(64D, 1F);
 			
+			//hit entity
 			if(hitObj != null) {
 				LogHelper.info("DEBUG : pointer left click: ENTITY "+hitObj.entityHit);
 				
@@ -103,7 +146,7 @@ public class PointerItem extends BasicItem {
 					//null check
 					if(ship == null) return false;
 					
-					//是主人: 左鍵: add/remove team 蹲下左鍵:set focus
+					//是主人: 左鍵: add team/set focus 蹲下左鍵:remove team
 					if(EntityHelper.checkSameOwner(player, ship) && props != null) {
 						//check is in team
 						int i = props.checkIsInCurrentTeam(ship.getShipUID());
@@ -118,14 +161,14 @@ public class PointerItem extends BasicItem {
 									for(int j = 0; j < 6; j++) {
 										if(j != i && props.getEntityOfCurrentTeam(j) != null) {
 											//focus ship j
-											CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetSelect, 1, props.getEntityOfCurrentTeam(j).getShipUID(), meta, 0, 0));
+											CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetSelect, meta, props.getEntityOfCurrentTeam(j).getShipUID()));
 											break;
 										}
 									}
 								}
 								
 								//its already in team, remove ship
-								CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.AddTeam, 0, ship.getEntityId()));
+								CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.AddTeam, ship.getEntityId()));
 								return true;
 							}
 						}
@@ -134,16 +177,16 @@ public class PointerItem extends BasicItem {
 							//in team, set focus
 							if(i >= 0) {
 								LogHelper.info("DEBUG : pointer set focus: "+hitObj.entityHit);
-								CommonProxy.channelG.sendToServer(new C2SGUIPackets(player , C2SGUIPackets.PID.SetSelect, 1, ship.getShipUID(), meta, 0, 0));
+								CommonProxy.channelG.sendToServer(new C2SGUIPackets(player , C2SGUIPackets.PID.SetSelect, meta, ship.getShipUID()));
 							}
 							//not in team, add team
 							else {
 								LogHelper.info("DEBUG : pointer add team: "+hitObj.entityHit);
-								CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.AddTeam, 0, ship.getEntityId()));
+								CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.AddTeam, ship.getEntityId()));
 							
 								//若single mode, 則每add一隻就設該隻為focus
 								if(meta == 0) {
-									CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetSelect, 1, ship.getShipUID(), meta, 0, 0));
+									CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetSelect, meta, ship.getShipUID()));
 								}
 							}
 							return true;
@@ -160,6 +203,7 @@ public class PointerItem extends BasicItem {
 				}
 			}//end hit != null
 			
+			//click on air
 			//蹲下左鍵 vs block or 非自己的寵物, 則切換pointer模式
 			//check key pressed
 			GameSettings keySet = ClientProxy.getGameSetting();
@@ -169,7 +213,7 @@ public class PointerItem extends BasicItem {
 				if(keySet.keyBindSprint.getIsKeyPressed()) {
 					LogHelper.info("DEBUG : pointer clear all focus");
 					//send sync packet to server
-					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.ClearTeam, 0, 0));
+					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.ClearTeam, 0));
 					return true;
 				}
 				//sneak only: change pointer mode
@@ -179,24 +223,56 @@ public class PointerItem extends BasicItem {
 					item.setItemDamage(meta);
 					
 					//send sync packet to server
-					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SyncPlayerItem, meta, 0));
+					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SyncPlayerItem, meta));
 					return true;
 				}
 			}
 		}//end client side && player != null
-//		//server side
-//		else {
-//			//server side sneaking, prevent break block
-//			if(entityLiving.isSneaking()) {
-//				return true;
-//			}
-//		}
 		
         return true;	//both side
     }
 	
-	/**right click
-	 * 
+	/**right click:<br>
+	 * right:<br>
+	 *   air:				-<br>
+	 *   block:				guard(move&attack)<br>
+	 *   ship(owner):		sit<br>
+	 *   ship(friend):		guard(move&attack)<br>
+	 *   ship(hostile):		attack<br>
+	 *   player(friend):	guard(move&attack)<br>
+	 *   player(hostile):	attack<br>
+	 *   other:				attack<br>
+	 *<br>  
+	 * right + sprint:<br>
+	 *   air:				-<br>
+	 *   block:				guard(move only)<br>
+	 *   ship(owner):		guard(move only)<br>
+	 *   ship(friend):		guard(move only)<br>
+	 *   ship(hostile):		guard(move only)<br>
+	 *   player(friend):	guard(move only)<br>
+	 *   player(hostile):	guard(move only)<br>
+	 *   other:				guard(move only)<br>
+	 *<br> 
+	 * right + sneak:<br>
+	 *   air:				-<br>
+	 *   block:				-<br>
+	 *   ship(owner):		GUI<br>
+	 *   ship(friend):		-<br>
+	 *   ship(hostile):		-<br>
+	 *   player(friend):	-<br>
+	 *   player(hostile):	-<br>
+	 *   other:				-<br>
+	 *<br>
+	 * right + sprint + sneak:<br>
+	 *   air:				-<br>
+	 *   block:				-<br>
+	 *   ship(owner):		-<br>
+	 *   ship(friend):		-<br>
+	 *   ship(hostile):		-<br>
+	 *   player(friend):	-<br>
+	 *   player(hostile):	-<br>
+	 *   other:				-<br>
+	 *<br>
 	 */
 	@Override
     public ItemStack onItemRightClick(ItemStack item, World world, EntityPlayer player) {
@@ -209,16 +285,17 @@ public class PointerItem extends BasicItem {
 			//先用getPlayerMouseOverEntity抓entity
 			MovingObjectPosition hitObj = EntityHelper.getPlayerMouseOverEntity(64D, 1F);
 			
-			//抓到的是entity
+			//get entity
 			if(hitObj != null && hitObj.typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
 				LogHelper.info("DEBUG : pointer right click: ENTITY "+hitObj.entityHit.getClass().getSimpleName());
 					
-				//apply guarding function
+				//get pressed key
 				GameSettings keySet = ClientProxy.getGameSetting();
 				
+				//right + sprint: entity: guard entity(move only)
 				if(keySet.keyBindSprint.getIsKeyPressed()) {
-					//set guard entity
-					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.GuardEntity, meta, hitObj.entityHit.getEntityId()));
+					//set guard entity (move only: type = 0)
+					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.GuardEntity, meta, 0, hitObj.entityHit.getEntityId()));
 					return item;
 				}
 				
@@ -240,7 +317,7 @@ public class PointerItem extends BasicItem {
 						//蹲下右鍵: open GUI
 						if(player.isSneaking()) {
 							//send GUI packet
-							CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.OpenShipGUI, 0, ship.getEntityId()));
+							CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.OpenShipGUI, ship.getEntityId()));
 						}
 						//右鍵: set sitting
 						else {
@@ -260,7 +337,7 @@ public class PointerItem extends BasicItem {
 						}
 						else {
 							//移動到該ship旁邊
-							CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetMove, meta, 0, (int)hitObj.entityHit.posX, (int)hitObj.entityHit.posY, (int)hitObj.entityHit.posZ));
+							CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetMove, meta, 1, (int)hitObj.entityHit.posX, (int)hitObj.entityHit.posY, (int)hitObj.entityHit.posZ));
 							//在目標上畫出標記
 							ParticleHelper.spawnAttackParticleAtEntity(hitObj.entityHit, 0.3D, 4D, 0D, (byte)2);
 						}
@@ -278,7 +355,7 @@ public class PointerItem extends BasicItem {
 						}
 						else {
 							//移動到該PLAYER旁邊
-							CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetMove, meta, 0, (int)hitObj.entityHit.posX, (int)hitObj.entityHit.posY, (int)hitObj.entityHit.posZ));
+							CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetMove, meta, 1, (int)hitObj.entityHit.posX, (int)hitObj.entityHit.posY, (int)hitObj.entityHit.posZ));
 							//在目標上畫出標記
 							ParticleHelper.spawnAttackParticleAtEntity(hitObj.entityHit, 0.3D, 4D, 0D, (byte)2);
 						}
@@ -323,21 +400,34 @@ public class PointerItem extends BasicItem {
 							x++;
 							break;
 						}
+						
 						LogHelper.info("DEBUG : pointer right click: BLOCK: side: "+hitObj2.sideHit+" xyz: "+x+" "+y+" "+z);
+						
+						//get pressed key
+						GameSettings keySet2 = ClientProxy.getGameSetting();
+						int guardType = 1;
+						
+						//right + sprint: entity: guard (move only)
+						if(keySet2.keyBindSprint.getIsKeyPressed()) {
+							//set guard entity (move only: type = 0)
+							guardType = 0;
+						}
+
 						//move to xyz
-						CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetMove, meta, 0, x, y, z));
+						CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetMove, meta, guardType, x, y, z));
+						
 						//在目標上畫出標記
 						ParticleHelper.spawnAttackParticleAt(x+0.5D, y, z+0.5D, 0.3D, 4D, 0D, (byte)25);
 					}
-					//抓到entity (非預期狀況, 正常應該不會再抓到entity)
-					else if(hitObj2.typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY){
-						LogHelper.info("DEBUG : pointer right click: ENTITY (method 2) "+hitObj2.entityHit.getClass().getSimpleName());
-						//move to entity
-						//移動到該ship旁邊
-						CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetMove, meta, 0, (int)hitObj2.entityHit.posX, (int)hitObj2.entityHit.posY, (int)hitObj2.entityHit.posZ));
-						//在目標上畫出標記
-						ParticleHelper.spawnAttackParticleAt(hitObj2.entityHit.posX+0.5D, hitObj2.entityHit.posY, hitObj2.entityHit.posZ+0.5D, 0.3D, 4D, 0D, (byte)25);
-					}
+//					//抓到entity (非預期狀況, 正常應該不會再抓到entity)
+//					else if(hitObj2.typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY){
+//						LogHelper.info("DEBUG : pointer right click: ENTITY (method 2) "+hitObj2.entityHit.getClass().getSimpleName());
+//						//move to entity
+//						//移動到該ship旁邊
+//						CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetMove, meta, 1, (int)hitObj2.entityHit.posX, (int)hitObj2.entityHit.posY, (int)hitObj2.entityHit.posZ));
+//						//在目標上畫出標記
+//						ParticleHelper.spawnAttackParticleAt(hitObj2.entityHit.posX+0.5D, hitObj2.entityHit.posY, hitObj2.entityHit.posZ+0.5D, 0.3D, 4D, 0D, (byte)25);
+//					}
 					else {
 						LogHelper.info("DEBUG : pointer right click: MISS");
 					}

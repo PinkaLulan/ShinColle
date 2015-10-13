@@ -20,6 +20,12 @@ import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
  * 持續固守某一點followMax格之內, 距離該點followMax格以上就會嘗試回去該點直到靠近followMin格內
  * 距離超過max格超過指定時間後, 強制傳送回該點
  * 若host的gy<=0, 則視為必須跟隨owner, 會設定CanFollow = true
+ * 
+ * 2015/9/30:
+ * move & attack mode:
+ *   1. set StateMinor[GuardType] = 1
+ *   2. get target within attack range every X ticks
+ *   3. attack target if cooldown = 0
  */
 public class EntityAIShipGuarding extends EntityAIBase {
 

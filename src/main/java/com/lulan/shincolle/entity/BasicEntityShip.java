@@ -80,7 +80,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	/**minor states: 0:ShipLevel 1:Kills 2:ExpCurrent 3:ExpNext 4:NumAmmoLight 
 	 * 5:NumAmmoHeavy 6:NumGrudge 7:NumAirLight 8:NumAirHeavy 9:immunity time 
 	 * 10:followMin 11:followMax 12:FleeHP 13:TargetAIType 14:guardX 15:guardY 16:guardZ 17:guardDim
-	 * 18:guardID 19:shipType 20:shipClass 21:playerUID 22:shipUID 23:playerEID */
+	 * 18:guardID 19:shipType 20:shipClass 21:playerUID 22:shipUID 23:playerEID 24:guardType */
 	protected int[] StateMinor;
 	/**equip effect: 0:critical 1:doubleHit 2:tripleHit 3:baseMiss*/
 	protected float[] EffectEquip;
@@ -123,7 +123,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				                0, 0, 0, 0, 0,
 				                2, 14, 35, 1, -1,
 				                -1, -1, 0, -1, 0,
-				                0, -1, -1, -1
+				                0, -1, -1, -1, 0
 				                };
 		EffectEquip = new float[] {0F, 0F, 0F, 0F};
 		StateEmotion = new byte[] {0, 0, 0, 0, 0, 0};
@@ -566,10 +566,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		StateFinal[ID.ATK_H] = (atk * 4F + StateEquip[ID.ATK_H]) * (float)ConfigHandler.scaleShip[ID.ATK];
 		StateFinal[ID.ATK_AL] = (atk + StateEquip[ID.ATK_AL]) * (float)ConfigHandler.scaleShip[ID.ATK];
 		StateFinal[ID.ATK_AH] = (atk * 4F + StateEquip[ID.ATK_AH]) * (float)ConfigHandler.scaleShip[ID.ATK];
+		
 		//KB Resistance = Level / 10 * 0.04
 		float resisKB = (((float)StateMinor[ID.M.ShipLevel])/10F) * 0.067F;
 
-		//max cap balue
+		//max cap
 		for(int i = 0; i < ConfigHandler.limitShip.length; i++) {
 			if(ConfigHandler.limitShip[i] >= 0D && StateFinal[i] > ConfigHandler.limitShip[i]) {
 				StateFinal[i] = (float) ConfigHandler.limitShip[i];
@@ -586,7 +587,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			StateFinal[ID.ATK_AH] = (float) ConfigHandler.limitShip[ID.ATK];
 		}
 
-		//min cap value
+		//min cap
 		if(StateFinal[ID.HP] < 1F) {
 			StateFinal[ID.HP] = 1F;
 		}
@@ -1276,6 +1277,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	
 	/** update entity 
 	 *  在此用onUpdate跟onLivingUpdate區分server跟client update
+	 *  for shincolle:
 	 *  onUpdate = client update only
 	 *  onLivingUpdate = server update only
 	 */
@@ -1345,7 +1347,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 								if(this.getGuarded() != null) {
 									ParticleHelper.spawnAttackParticleAtEntity(this.getGuarded(), 0.3D, 6D, 0D, (byte)2);
 								}
-								//標記載block上
+								//標記在block上
 								else if(this.getGuardedPos(1) >= 0) {
 									ParticleHelper.spawnAttackParticleAt(this.getGuardedPos(0)+0.5D, this.getGuardedPos(1), this.getGuardedPos(2)+0.5D, 0.3D, 6D, 0D, (byte)25);
 								}
@@ -2281,6 +2283,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		else {
 			this.guardedEntity = null;
 			this.setStateMinor(ID.M.GuardID, -1);
+			this.setStateMinor(ID.M.GuardType, 0);
 		}
 	}
 

@@ -871,7 +871,7 @@ public class EntityHelper {
     }
 	
 	/** set ship guard, and check guard position is not same */
-	public static void applyShipGuard(BasicEntityShip ship, int x, int y, int z) {
+	public static void applyShipGuard(BasicEntityShip ship, int type, int x, int y, int z) {
 		if(ship != null) {
 			int gx = ship.getStateMinor(ID.M.GuardX);
 			int gy = ship.getStateMinor(ID.M.GuardY);
@@ -896,6 +896,7 @@ public class EntityHelper {
 				ship.setStateMinor(ID.M.GuardZ, z);
 				ship.setStateMinor(ID.M.GuardDim, ship.worldObj.provider.dimensionId);
 				ship.setStateMinor(ID.M.GuardID, -1);
+				ship.setStateMinor(ID.M.GuardType, type);
 				ship.setGuarded(null);
 				ship.setStateFlag(ID.F.CanFollow, false);	//stop follow
 				
@@ -912,11 +913,11 @@ public class EntityHelper {
 	}
 	
 	/** set ship guard, and check guard position is not same */
-	public static void applyShipGuardEntity(BasicEntityShip ship, Entity guarded) {
+	public static void applyShipGuardEntity(BasicEntityShip ship, Entity guarded, int type) {
 		if(ship != null) {
 			Entity getEnt = ship.getGuarded();
 			
-			//same guard position, cancel guard mode
+			//same guard position, cancel guard
 			if(getEnt != null && getEnt.getEntityId() == guarded.getEntityId()) {
 				ship.setStateMinor(ID.M.GuardX, -1);		//reset guard position
 				ship.setStateMinor(ID.M.GuardY, -1);
@@ -926,13 +927,14 @@ public class EntityHelper {
 				ship.setGuarded(null);
 				ship.setStateFlag(ID.F.CanFollow, true);	//set follow
 			}
-			//apply guard mode
+			//apply guard
 			else {
 				ship.setSitting(false);						//stop sitting
 				ship.setStateMinor(ID.M.GuardX, -1);		//clear guard position
 				ship.setStateMinor(ID.M.GuardY, -1);
 				ship.setStateMinor(ID.M.GuardZ, -1);
 				ship.setStateMinor(ID.M.GuardDim, guarded.worldObj.provider.dimensionId);
+				ship.setStateMinor(ID.M.GuardType, type);
 				ship.setGuarded(guarded);
 				ship.setStateFlag(ID.F.CanFollow, false);	//stop follow
 				
@@ -992,7 +994,7 @@ public class EntityHelper {
 	}
 	
 	/** set ship move with team list */
-	public static void applyTeamGuard(EntityPlayer player, int meta, Entity guarded) {
+	public static void applyTeamGuard(EntityPlayer player, Entity guarded, int meta, int type) {
 		ExtendPlayerProps props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 		BasicEntityShip[] ships = props.getEntityOfCurrentMode(meta);
 		int worldID = player.worldObj.provider.dimensionId;
@@ -1002,7 +1004,7 @@ public class EntityHelper {
 			default:	//single mode
 				if(ships[0] != null && ships[0].worldObj.provider.dimensionId == worldID) {
 					//設定ship移動地點
-					applyShipGuardEntity(ships[0], guarded);
+					applyShipGuardEntity(ships[0], guarded, type);
 					//sync guard
 					CommonProxy.channelE.sendTo(new S2CEntitySync(ships[0], 3), (EntityPlayerMP) player);
 				}
@@ -1012,7 +1014,7 @@ public class EntityHelper {
 				for(int i = 0;i < ships.length; i++) {
 					if(ships[i] != null && ships[i].worldObj.provider.dimensionId == worldID) {
 						//設定ship移動地點
-						applyShipGuardEntity(ships[i], guarded);
+						applyShipGuardEntity(ships[i], guarded, type);
 						//sync guard
 						CommonProxy.channelE.sendTo(new S2CEntitySync(ships[i], 3), (EntityPlayerMP) player);
 					}
@@ -1022,18 +1024,20 @@ public class EntityHelper {
 		}		
 	}
 
-	/** set ship move with team list */
-	public static void applyTeamMove(EntityPlayer player, int meta, int side, int x, int y, int z) {
+	/** set ship move with team list 
+	 *  parms: 0:meta 1:guard type 2:posX 3:posY 4:posZ
+	 */
+	public static void applyTeamMove(EntityPlayer player, int[] parms) {
 		ExtendPlayerProps props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
-		BasicEntityShip[] ships = props.getEntityOfCurrentMode(meta);
+		BasicEntityShip[] ships = props.getEntityOfCurrentMode(parms[0]);
 		int worldID = player.worldObj.provider.dimensionId;
 		
 		if(props != null) {
-			switch(meta) {
+			switch(parms[0]) {
 			default:	//single mode
 				if(ships[0] != null && ships[0].worldObj.provider.dimensionId == worldID) {
 					//設定ship移動地點
-					applyShipGuard(ships[0], x, y, z);
+					applyShipGuard(ships[0], parms[1], parms[2], parms[3], parms[4]);
 					//sync guard
 					CommonProxy.channelE.sendTo(new S2CEntitySync(ships[0], 3), (EntityPlayerMP) player);
 				}
@@ -1043,7 +1047,7 @@ public class EntityHelper {
 				for(int i = 0;i < ships.length; i++) {
 					if(ships[i] != null && ships[i].worldObj.provider.dimensionId == worldID) {
 						//設定ship移動地點
-						applyShipGuard(ships[i], x, y, z);
+						applyShipGuard(ships[i], parms[1], parms[2], parms[3], parms[4]);
 						//sync guard
 						CommonProxy.channelE.sendTo(new S2CEntitySync(ships[i], 3), (EntityPlayerMP) player);
 					}
@@ -1094,7 +1098,7 @@ public class EntityHelper {
 	
 	/** set ship select (focus) with team list, only called at server side
 	 */
-	public static void applyTeamSelect(EntityPlayer player, int meta, int shipUID, boolean select) {
+	public static void applyTeamSelect(EntityPlayer player, int meta, int shipUID) {
 		ExtendPlayerProps props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 		
 		if(props != null) {

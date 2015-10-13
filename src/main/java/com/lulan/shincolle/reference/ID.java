@@ -147,6 +147,7 @@ public class ID {
 		public static final byte PlayerUID = 21;	//player UID
 		public static final byte ShipUID = 22;		//ship UID
 		public static final byte PlayerEID = 23;	//player entity id
+		public static final byte GuardType = 24;	//guard type: 0:move 1:move & attack
 	}
 	
 	//Array ID: ring effect

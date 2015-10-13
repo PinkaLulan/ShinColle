@@ -9,6 +9,7 @@ import org.lwjgl.opengl.GL12;
 import com.lulan.shincolle.client.inventory.ContainerShipInventory;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipLarge;
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
@@ -776,12 +777,12 @@ public class GuiShipInventory extends GuiContainer {
 		return par1 ? 0 : 1;
 	}
 	
-	//close gui if entity dead
+	//close gui if entity dead or too far away
 	@Override
 	public void updateScreen() {
 		super.updateScreen();
 		
-		if(this.entity == null || this.entity.isDead) {
+		if(this.entity == null || this.entity.isDead || this.entity.getDistanceToEntity(this.mc.thePlayer) > (float)ConfigHandler.clostGUIDist) {
             this.mc.thePlayer.closeScreen();
         }
 	}

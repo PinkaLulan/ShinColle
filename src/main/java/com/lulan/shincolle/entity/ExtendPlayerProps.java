@@ -339,18 +339,19 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 	}
 	
 	/**將ship加入隊伍名單
-	 * 若ship不為null, 表示要加入名單 -> 找目前非null欄位比對是否同id -> 同id表示remove該entity
-	 *                                                  -> 不同id表示可新增entity
-	 * 若為null, 表示清空該slot
-	 * 若為client端, 表示由sync packet收到資料, 則全部照 傳入值設定
+	 * 若entity != null, 表示要加入名單 -> 找目前非null欄位比對是否同id -> 同id表示remove該entity
+	 *                                                        -> 不同id表示可新增entity
+	 * 若entity = null, 表示清空該slot
+	 * 
+	 * 若useTeamID = true, 表示不考慮是否重複之類的, 強制插入到slot的位置
 	 */
-	public void addEntityToTeam(int id, BasicEntityShip entity, boolean isClient) {
+	public void addEntityToTeam(int slot, BasicEntityShip entity, boolean useTeamID) {
 		boolean canAdd = false;
 		
 		//client 收到sync packets
-		if(isClient) {
-			if(id > 5) id = 0;
-			addEntityToCurrentTeam(id, entity);
+		if(useTeamID) {
+			if(slot > 5) slot = 0;
+			addEntityToCurrentTeam(slot, entity);
 			return;
 		}
 		else {
@@ -395,9 +396,9 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 				return;
 			}
 			else {
-				if(id > 5) id = 0;
-				this.setSelectStateOfCurrentTeam(id, false);
-				addEntityToCurrentTeam(id, null);
+				if(slot > 5) slot = 0;
+				this.setSelectStateOfCurrentTeam(slot, false);
+				addEntityToCurrentTeam(slot, null);
 				return;
 			}
 		}//end server side

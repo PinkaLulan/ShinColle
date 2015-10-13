@@ -159,6 +159,7 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateMinor(ID.M.GuardZ, buf.readInt());
 					entity.setStateMinor(ID.M.GuardDim, buf.readInt());
 					entity.setStateMinor(ID.M.GuardID, buf.readInt());
+					entity.setStateMinor(ID.M.GuardType, buf.readInt());
 					entity.setStateMinor(ID.M.PlayerUID, buf.readInt());
 					entity.setStateMinor(ID.M.ShipUID, buf.readInt());
 					entity.setStateMinor(ID.M.PlayerEID, buf.readInt());
@@ -247,6 +248,7 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateMinor(ID.M.GuardZ, buf.readInt());
 					entity.setStateMinor(ID.M.GuardDim, buf.readInt());
 					entity.setStateMinor(ID.M.GuardID, buf.readInt());
+					entity.setStateMinor(ID.M.GuardType, buf.readInt());
 					entity.setStateMinor(ID.M.PlayerUID, buf.readInt());
 					entity.setStateMinor(ID.M.ShipUID, buf.readInt());
 					entity.setStateMinor(ID.M.PlayerEID, buf.readInt());
@@ -401,6 +403,7 @@ public class S2CEntitySync implements IMessage {
 				buf.writeInt(this.entity.getStateMinor(ID.M.GuardZ));
 				buf.writeInt(this.entity.getStateMinor(ID.M.GuardDim));
 				buf.writeInt(this.entity.getStateMinor(ID.M.GuardID));
+				buf.writeInt(this.entity.getStateMinor(ID.M.GuardType));
 				buf.writeInt(this.entity.getStateMinor(ID.M.PlayerUID));
 				buf.writeInt(this.entity.getStateMinor(ID.M.ShipUID));
 				buf.writeInt(this.entity.getStateMinor(ID.M.PlayerEID));
@@ -495,6 +498,7 @@ public class S2CEntitySync implements IMessage {
 				buf.writeInt(this.entity.getStateMinor(ID.M.GuardZ));
 				buf.writeInt(this.entity.getStateMinor(ID.M.GuardDim));
 				buf.writeInt(this.entity.getStateMinor(ID.M.GuardID));
+				buf.writeInt(this.entity.getStateMinor(ID.M.GuardType));
 				buf.writeInt(this.entity.getStateMinor(ID.M.PlayerUID));
 				buf.writeInt(this.entity.getStateMinor(ID.M.ShipUID));
 				buf.writeInt(this.entity.getStateMinor(ID.M.PlayerEID));
