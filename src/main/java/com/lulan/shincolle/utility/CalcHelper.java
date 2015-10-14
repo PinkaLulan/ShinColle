@@ -1,11 +1,12 @@
 package com.lulan.shincolle.utility;
 
+
 /**FORMAT HELPER
  * format and math method
  */
-public class FormatHelper {
+public class CalcHelper {
 	
-	public FormatHelper() {
+	public CalcHelper() {
 	}
 	
 	/** 將second轉成格式 00:00:00 */
@@ -60,5 +61,6 @@ public class FormatHelper {
 			}
 		}
 	}
+    
 
 }

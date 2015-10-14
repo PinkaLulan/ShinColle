@@ -13,7 +13,7 @@ import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.FormatHelper;
+import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.TileEntityHelper;
 
 /** Fuel Cost = BaseCost + CostPerMaterial * ( TotalMaterialAmount - minAmount * 4 )
@@ -356,7 +356,7 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ITileFur
 	public String getBuildTimeString() {
 		//剩餘秒數 = (目標能量 - 目前能量) / (每tick增加能量) / 20
 		int timeSec = (goalPower - consumedPower) / buildSpeed / 20;	//get time (單位: sec)		
-		return FormatHelper.getTimeFormated(timeSec);
+		return CalcHelper.getTimeFormated(timeSec);
 	}
 	
 	//getter

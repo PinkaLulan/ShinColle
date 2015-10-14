@@ -119,7 +119,7 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
     	
     	if(this.host != null && this.target != null) {
     		//get update attributes every second
-    		if(this.host2.ticksExisted % 60 == 0) {
+    		if(this.host2.ticksExisted % 64 == 0) {
 	    		this.maxDelayLight = (int)(40F / (this.host.getAttackSpeed()));
 		    	this.maxDelayHeavy = (int)(80F / (this.host.getAttackSpeed()));
 		    	this.aimTime = (int) (20F * (float)(150 - this.host.getLevel()) / 150F) + 10;

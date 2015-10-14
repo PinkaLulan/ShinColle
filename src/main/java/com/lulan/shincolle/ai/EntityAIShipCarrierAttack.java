@@ -42,6 +42,7 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
             //init value
             this.launchDelay = 20;
             this.launchDelayMax = 40;
+            this.launchType = false;
         }
     }
 
@@ -99,7 +100,7 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
     		}
     		
     		//get update attributes
-        	if(this.host2.ticksExisted % 60 == 0) {	
+        	if(this.host2.ticksExisted % 64 == 0) {	
         		this.launchDelayMax = (int)(60F / (this.host.getAttackSpeed())) + 10;
                 this.range = this.host.getAttackRange();
                 this.rangeSq = this.range * this.range;

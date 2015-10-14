@@ -1,18 +1,33 @@
 package com.lulan.shincolle.ai;
 
+import java.util.Collections;
+import java.util.List;
+
+import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityFlying;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.boss.EntityDragon;
+import net.minecraft.entity.boss.EntityDragonPart;
+import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.monster.EntitySlime;
+import net.minecraft.entity.passive.EntityBat;
+import net.minecraft.entity.passive.EntityWaterMob;
 
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.entity.BasicEntityMount;
+import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.BasicEntityShipLarge;
+import com.lulan.shincolle.entity.IShipCannonAttack;
 import com.lulan.shincolle.entity.IShipGuardian;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.LogHelper;
+import com.lulan.shincolle.utility.TargetHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 /**SHIP GUARDING AI
@@ -23,9 +38,11 @@ import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
  * 
  * 2015/9/30:
  * move & attack mode:
- *   1. set StateMinor[GuardType] = 1
+ *   attack while moving with shorter range & longer delay
+ * 
+ *   1. if StateMinor[GuardType] = 1
  *   2. get target within attack range every X ticks
- *   3. attack target if cooldown = 0
+ *   3. attack target if delay = 0
  */
 public class EntityAIShipGuarding extends EntityAIBase {
 
@@ -33,23 +50,53 @@ public class EntityAIShipGuarding extends EntityAIBase {
     private EntityLiving host2;
     private Entity guarded;
     private ShipPathNavigate ShipNavigator;
+    private final TargetHelper.Sorter targetSorter;
+    private final TargetHelper.Selector targetSelector;
     private int findCooldown;
     private int checkTeleport;	//> 200 = use teleport
-    private double maxDistSq;
-    private double minDistSq;
-    private double distSq;
-    private double distSqrt;
-    private double distX, distY, distZ;	//跟目標的直線距離(的平方)
+    private double maxDistSq, minDistSq;
+    private double distSq, distSqrt, distX, distY, distZ;	//跟目標的直線距離
     private int gx, gy, gz;				//guard position (block position)
+    
+    //attack parms, for BasicEntityShip only
+    private BasicEntityShip ship;  		//AI host entity
+    private BasicEntityShipLarge ship2;
+    private EntityLivingBase target;  	//entity of target
+    private int[] delayTime;			//attack delay time: 0:light 1:heavy 2:aircraft
+    private int[] maxDelayTime;	    	//attack max delay time
+    private int onSightTime;			//target on sight time
+    private int aimTime;				//time before fire
+    private float range, rangeSq;		//attack range
+    private boolean launchType;			//airplane type, true = light
+    private double tarDist, tarDistSqrt, tarDistX, tarDistY, tarDistZ;	//跟目標的直線距離
 
     
     public EntityAIShipGuarding(IShipGuardian entity) {
         this.host = entity;
         this.host2 = (EntityLiving) entity;
         this.ShipNavigator = entity.getShipNavigate();
+        this.targetSorter = new TargetHelper.Sorter(host2);
+        this.targetSelector = new TargetHelper.Selector(host2);
         this.distSq = 1D;
         this.distSqrt = 1D;
-        this.setMutexBits(7);  
+        this.setMutexBits(7);
+        
+        if(entity instanceof BasicEntityShip) {
+        	this.ship = (BasicEntityShip) entity;
+        	
+        	if(entity instanceof BasicEntityShipLarge) {
+        		this.ship2 = (BasicEntityShipLarge) entity;
+        	}
+        	
+        	//init value
+        	this.delayTime = new int[] {20, 20, 20};
+        	this.maxDelayTime = new int[] {20, 40, 40};
+        	this.onSightTime = 0;
+        	this.aimTime = 20;
+        	this.range = 1;
+        	this.rangeSq = 1;
+        }
+
     }
     
     //判定是否開始執行AI
@@ -137,6 +184,46 @@ public class EntityAIShipGuarding extends EntityAIBase {
     }
 
     public void updateTask() {
+    	//update attack while moving
+    	if(ship != null && ship.getStateMinor(ID.M.GuardType) > 0) {
+    		//update parms
+    		if(ship.ticksExisted % 64 == 0) {
+    			this.updateAttackParms();
+    		}
+    		
+    		//delay--
+    		this.delayTime[0] = this.delayTime[0] - 1;
+    		this.delayTime[1] = this.delayTime[1] - 1;
+    		this.delayTime[2] = this.delayTime[2] - 1;
+    		
+    		//find target
+    		if(ship.ticksExisted % 16 == 0) {
+    			this.findTarget();
+    		}
+    		
+    		//attack target
+    		if(this.target != null && this.ship.getEntitySenses().canSee(this.target)) {
+    			//onsight++
+    			this.onSightTime++;
+    			
+    			//calc dist
+    			this.tarDistX = this.target.posX - this.ship.posX;
+        		this.tarDistY = this.target.posY - this.ship.posY;
+        		this.tarDistZ = this.target.posZ - this.ship.posZ;
+        		this.tarDistSqrt = tarDistX*tarDistX + tarDistY*tarDistY + tarDistZ*tarDistZ;
+
+        		//attack target within range
+        		if(tarDistSqrt <= this.rangeSq && this.onSightTime >= this.aimTime) {
+    	        	this.attackTarget();
+        		}
+    		}
+    		//no target or not onsight, reset
+    		else {
+    			this.onSightTime = 0;
+    		}
+    	}//end attack while moving
+    	
+    	//update guarding
     	if(host != null) {
 //    		LogHelper.info("DEBUG : exec guarding");
         	this.findCooldown--;
@@ -240,7 +327,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
                     }
                 }//end !try move
             }//end path find cooldown
-    	}
+    	}//end guard entity
     }
 
     //clear seat2
@@ -269,5 +356,88 @@ public class EntityAIShipGuarding extends EntityAIBase {
 		TargetPoint point = new TargetPoint(host2.dimension, host2.posX, host2.posY, host2.posZ, 48D);
 		CommonProxy.channelE.sendToAllAround(new S2CEntitySync(host2, 0, 9), point);
 	}
+	
+	//update attack parms
+	private void updateAttackParms() {
+    	if(this.ship != null) {
+    		//attack range = 70% normal range
+    		this.range = (int)(this.ship.getStateFinal(ID.HIT) * 0.7F);
+    		
+    		//檢查範圍, 使range2 > range1 > 1
+            if(this.range < 1) {
+            	this.range = 1;
+            }
+    		
+    		this.rangeSq = this.range * this.range;
+
+    		//attack delay = 125% normal delay
+    		this.maxDelayTime[0] = (int)(50F / (this.ship.getAttackSpeed()));
+    		this.maxDelayTime[1] = (int)(100F / (this.ship.getAttackSpeed()));
+    		this.maxDelayTime[2] = (int)(75F / (this.ship.getAttackSpeed())) + 10;
+    		
+    		//aim time (no change)
+    		this.aimTime = (int) (20F * (float)(150 - this.host.getLevel()) / 150F) + 10;
+    	}
+	}
+	
+	//find target
+	private void findTarget() {
+		List list1 = this.ship.worldObj.selectEntitiesWithinAABB(EntityLivingBase.class, 
+        		this.ship.boundingBox.expand(this.range, this.range * 0.6D, this.range), this.targetSelector);
+        
+        //sort target list
+        Collections.sort(list1, this.targetSorter);
+        
+        //get nearest target
+		if(list1.size() > 2) {
+			this.target = (EntityLivingBase)list1.get(this.ship.worldObj.rand.nextInt(3));
+    	}
+		else if(!list1.isEmpty()){
+			this.target = (EntityLivingBase)list1.get(0);
+		}
+	}
+	
+	//attack method
+	private void attackTarget() {
+		//light attack
+		if(this.ship.getStateFlag(ID.F.AtkType_Light) && this.delayTime[0] <= 0 && 
+		   this.ship.useAmmoLight() && this.ship.hasAmmoLight()) {
+    		this.ship.attackEntityWithAmmo(this.target);
+            this.delayTime[0] = this.maxDelayTime[0];
+    	}
+    	
+    	//heavy attack
+    	if(this.ship.getStateFlag(ID.F.AtkType_Heavy) && this.delayTime[1] <= 0 && 
+    	   this.ship.useAmmoHeavy() && this.ship.hasAmmoHeavy()) {
+    		this.ship.attackEntityWithHeavyAmmo(this.target);
+            this.delayTime[1] = this.maxDelayTime[1];
+    	}
+    	
+    	//aircraft light attack
+        if(this.ship2 != null && (this.ship2.getStateFlag(ID.F.UseAirLight) || this.ship2.getStateFlag(ID.F.UseAirHeavy)) && this.delayTime[2] <= 0) {
+        	//若只使用單一種彈藥, 則停用型態切換, 只發射同一種飛機
+            if(!this.ship2.getStateFlag(ID.F.UseAirLight)) {
+            	this.launchType = false;
+            }
+            if(!this.ship2.getStateFlag(ID.F.UseAirHeavy)) {
+            	this.launchType = true;
+            }
+            
+        	//light
+        	if(this.launchType && this.ship2.hasAmmoLight() && this.ship2.hasAirLight()) {
+        		this.ship2.attackEntityWithAircraft(this.target);
+        		this.delayTime[2] = this.maxDelayTime[2];
+        	}
+        	
+        	//heavy
+        	if(!this.launchType && this.ship2.hasAmmoHeavy() && this.ship2.hasAirHeavy()) {
+        		this.ship2.attackEntityWithHeavyAircraft(this.target);
+        		this.delayTime[2] = this.maxDelayTime[2];
+        	}
+        	
+        	this.launchType = !this.launchType;		//change type
+        }
+	}
+
 	
 }

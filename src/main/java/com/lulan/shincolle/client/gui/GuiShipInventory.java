@@ -782,7 +782,7 @@ public class GuiShipInventory extends GuiContainer {
 	public void updateScreen() {
 		super.updateScreen();
 		
-		if(this.entity == null || this.entity.isDead || this.entity.getDistanceToEntity(this.mc.thePlayer) > (float)ConfigHandler.clostGUIDist) {
+		if(this.entity == null || this.entity.isDead || this.entity.getDistanceToEntity(this.mc.thePlayer) > (float)ConfigHandler.closeGUIDist) {
             this.mc.thePlayer.closeScreen();
         }
 	}

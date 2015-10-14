@@ -2,7 +2,7 @@ package com.lulan.shincolle.ai.path;
 
 import com.lulan.shincolle.entity.IShipNavigator;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.FormatHelper;
+import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.block.Block;
@@ -469,7 +469,7 @@ public class ShipPathNavigate {
                     }
                     
                     //找出theta最小的值 (最沒有被推進過的方向), 該方向+1格
-                    switch(FormatHelper.min(x1Theta, y1Theta, z1Theta)) {
+                    switch(CalcHelper.min(x1Theta, y1Theta, z1Theta)) {
                     case 1:
                     	x1Theta += xOffAbs;
                         x1 += xDir;

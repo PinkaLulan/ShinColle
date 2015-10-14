@@ -11,7 +11,7 @@ import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.BasicTileMulti;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
-import com.lulan.shincolle.utility.FormatHelper;
+import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.MulitBlockHelper;
 
