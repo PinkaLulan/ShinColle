@@ -6,6 +6,7 @@ import net.minecraft.world.World;
 import com.lulan.shincolle.entity.BasicEntityMountLarge;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.LogHelper;
 
 public class EntityMountCaWD extends BasicEntityMountLarge {
 	

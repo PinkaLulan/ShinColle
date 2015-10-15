@@ -242,7 +242,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner {
                 	/**不會對自己主人觸發爆炸
             		 * isEntityEqual() is NOT working
             		 * use entity id to check entity  */
-                	if(hitEntity.canBeCollidedWith() && isNotHost(hitEntity.getEntityId()) && 
+                	if(hitEntity.canBeCollidedWith() && isNotHost(hitEntity) && 
                 	   !EntityHelper.checkSameOwner(host2, hitEntity)) {
                 		break;	//get target entity
                 	}
@@ -282,11 +282,21 @@ public class EntityAbyssMissile extends Entity implements IShipOwner {
     	   	
     }
 
-    //check entity is not host itself
-    private boolean isNotHost(int eid) {
-		if(host2 != null && host2.getEntityId() == eid) {
-			return false;
-		} 	
+    //check entity is not host or launcher
+    private boolean isNotHost(EntityLivingBase entity) {
+		if(host2 != null) {
+			//not launcher
+			if(host2.getEntityId() == entity.getEntityId()) {
+				return false;
+			}
+			//not friendly target (owner or same team)
+			else if(entity instanceof IShipOwner) {
+				if(((IShipOwner) entity).getPlayerUID() == this.getPlayerUID()) {
+					return true;
+				}
+			}
+		}
+
 		return true;
 	}
 
@@ -311,7 +321,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner {
                 	hitEntity = (EntityLivingBase)hitList.get(i);
                 	
                 	//目標不能是自己 or 主人
-                	if(hitEntity.canBeCollidedWith() && isNotHost(hitEntity.getEntityId())) {
+                	if(hitEntity.canBeCollidedWith() && isNotHost(hitEntity)) {
                 		
                 		//若owner相同, 則傷害設為0 (但是依然觸發擊飛特效)
                 		if(EntityHelper.checkSameOwner(host2, hitEntity)) {

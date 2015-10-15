@@ -1178,14 +1178,14 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	}
 	
 	@Override
-	public Entity getGuarded() {
-		if(host != null) return this.host.getGuarded();
+	public Entity getGuardedEntity() {
+		if(host != null) return this.host.getGuardedEntity();
 		return null;
 	}
 
 	@Override
-	public void setGuarded(Entity entity) {
-		if(host != null) this.host.setGuarded(entity);
+	public void setGuardedEntity(Entity entity) {
+		if(host != null) this.host.setGuardedEntity(entity);
 	}
 
 	@Override
@@ -1195,8 +1195,8 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	}
 
 	@Override
-	public void setGuardedPos(int x, int y, int z, int dim) {
-		if(host != null) this.host.setGuardedPos(x, y, z, dim);
+	public void setGuardedPos(int x, int y, int z, int dim, int type) {
+		if(host != null) this.host.setGuardedPos(x, y, z, dim, type);
 	}
 	
     @Override

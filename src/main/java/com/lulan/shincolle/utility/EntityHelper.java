@@ -34,7 +34,6 @@ import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
 import com.lulan.shincolle.entity.IShipAttackBase;
-import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.handler.ConfigHandler;
@@ -98,8 +97,8 @@ public class EntityHelper {
 		int ida = getPlayerUID(enta);
 		int idb = getPlayerUID(entb);
 
-		//ida != 0 or -1
-		if(ida > 0 || ida < -1) {
+		//ida, idb != 0 or -1
+		if((ida > 0 || ida < -1) && (idb > 0 || idb < -1)) {
 			return (ida == idb);
 		}
 		
@@ -347,8 +346,19 @@ public class EntityHelper {
 		}
 		
 		//shincolle entity
-		if(ent instanceof IShipAttackBase) {
-			return ((IShipAttackBase) ent).getPlayerUID();
+		if(ent instanceof IShipOwner) {
+			return ((IShipOwner) ent).getPlayerUID();
+		}
+		
+		//tameable entity
+		if(ent instanceof EntityTameable) {
+			EntityLivingBase owner = ((EntityTameable) ent).getOwner();
+			//get player UID
+			if(owner instanceof EntityPlayer) {
+				ExtendPlayerProps extProps = (ExtendPlayerProps) owner.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+				
+				if(extProps != null) return extProps.getPlayerUID();
+			}
 		}
 		
 		return -1;
@@ -880,26 +890,16 @@ public class EntityHelper {
 			
 			//same guard position, cancel guard mode
 			if(gx == x && gy == y && gz == z && gd == ship.worldObj.provider.dimensionId) {
-				ship.setStateMinor(ID.M.GuardX, -1);		//reset guard position
-				ship.setStateMinor(ID.M.GuardY, -1);
-				ship.setStateMinor(ID.M.GuardZ, -1);
-				ship.setStateMinor(ID.M.GuardDim, 0);
-				ship.setStateMinor(ID.M.GuardID, -1);
-				ship.setGuarded(null);
+				ship.setGuardedPos(-1, -1, -1, 0, 0);		//reset guard position
+				ship.setGuardedEntity(null);
 				ship.setStateFlag(ID.F.CanFollow, true);	//set follow
 			}
 			//apply guard mode
 			else {
 				ship.setSitting(false);						//stop sitting
-				ship.setStateMinor(ID.M.GuardX, x);
-				ship.setStateMinor(ID.M.GuardY, y);
-				ship.setStateMinor(ID.M.GuardZ, z);
-				ship.setStateMinor(ID.M.GuardDim, ship.worldObj.provider.dimensionId);
-				ship.setStateMinor(ID.M.GuardID, -1);
-				ship.setStateMinor(ID.M.GuardType, type);
-				ship.setGuarded(null);
+				ship.setGuardedEntity(null);				//clear guard target
+				ship.setGuardedPos(x, y, z, ship.worldObj.provider.dimensionId, type);
 				ship.setStateFlag(ID.F.CanFollow, false);	//stop follow
-				
 				if(!ship.getStateFlag(ID.F.NoFuel)) {
 					if(ship.ridingEntity != null && ship.ridingEntity instanceof BasicEntityMount) {
 						((BasicEntityMount)ship.ridingEntity).getShipNavigate().tryMoveToXYZ(x, y, z, 1D);
@@ -915,27 +915,19 @@ public class EntityHelper {
 	/** set ship guard, and check guard position is not same */
 	public static void applyShipGuardEntity(BasicEntityShip ship, Entity guarded, int type) {
 		if(ship != null) {
-			Entity getEnt = ship.getGuarded();
+			Entity getEnt = ship.getGuardedEntity();
 			
 			//same guard position, cancel guard
 			if(getEnt != null && getEnt.getEntityId() == guarded.getEntityId()) {
-				ship.setStateMinor(ID.M.GuardX, -1);		//reset guard position
-				ship.setStateMinor(ID.M.GuardY, -1);
-				ship.setStateMinor(ID.M.GuardZ, -1);
-				ship.setStateMinor(ID.M.GuardDim, 0);
-				ship.setStateMinor(ID.M.GuardID, -1);
-				ship.setGuarded(null);
+				ship.setGuardedPos(-1, -1, -1, 0, 0);		//reset guard position
+				ship.setGuardedEntity(null);
 				ship.setStateFlag(ID.F.CanFollow, true);	//set follow
 			}
 			//apply guard
 			else {
 				ship.setSitting(false);						//stop sitting
-				ship.setStateMinor(ID.M.GuardX, -1);		//clear guard position
-				ship.setStateMinor(ID.M.GuardY, -1);
-				ship.setStateMinor(ID.M.GuardZ, -1);
-				ship.setStateMinor(ID.M.GuardDim, guarded.worldObj.provider.dimensionId);
-				ship.setStateMinor(ID.M.GuardType, type);
-				ship.setGuarded(guarded);
+				ship.setGuardedPos(-1, -1, -1, guarded.worldObj.provider.dimensionId, type);
+				ship.setGuardedEntity(guarded);
 				ship.setStateFlag(ID.F.CanFollow, false);	//stop follow
 				
 				if(!ship.getStateFlag(ID.F.NoFuel)) {

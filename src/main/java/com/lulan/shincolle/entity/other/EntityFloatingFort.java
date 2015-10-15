@@ -36,7 +36,7 @@ public class EntityFloatingFort extends BasicEntityAirplane {
         //basic attr
         this.atk = host.getStateFinal(ID.ATK_H) * 0.5F;
         this.atkSpeed = host.getStateFinal(ID.SPD);
-        this.movSpeed = 0.35F;
+        this.movSpeed = 0.3F;
         
         //AI flag
         this.numAmmoLight = 0;

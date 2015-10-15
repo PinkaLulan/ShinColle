@@ -15,6 +15,7 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -64,7 +65,7 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
 	
 	@Override
 	//range attack method, cost light ammo, attack delay = 20 / attack speed, damage = 100% atk 
-	public boolean attackEntityWithAmmo(Entity target) {	
+	public boolean attackEntityWithAmmo(Entity target) {
 		//get attack value
 		float atk = StateFinal[ID.ATK];
 		//set knockback value (testing)

@@ -26,7 +26,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
     private static final double TP_DIST = 2048D;	//teleport condition ~ 45 blocks
     private ShipPathNavigate ShipNavigator;
     private int findCooldown;
-    private int checkTeleport;	//> 40 = use teleport
+    private int checkTeleport, checkTeleport2;		//use teleport time
     private double maxDistSq;
     private double minDistSq;
     private double distSq;
@@ -108,6 +108,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
     public void startExecuting() {
         this.findCooldown = 20;
         this.checkTeleport = 0;
+        this.checkTeleport2 = 0;
     }
 
     public void resetTask() {
@@ -158,10 +159,10 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
         	if(this.distSq > this.TP_DIST) {
         		this.checkTeleport++;
         		
-        		if(this.checkTeleport > 80) {
+        		if(this.checkTeleport > 256) {
         			this.checkTeleport = 0;
         			//相同dim才傳送
-        			LogHelper.info("DEBUG : follow AI: distSQ > "+this.TP_DIST+" , teleport entity. dim: "+host2.dimension+" "+owner.dimension);
+        			LogHelper.info("DEBUG : follow AI: distSQ > "+this.TP_DIST+" , teleport to target. dim: "+host2.dimension+" "+owner.dimension);
         			if(this.host2.dimension == this.owner.dimension) {
         				
         				//teleport
@@ -186,12 +187,12 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
             		LogHelper.info("DEBUG : follow AI: fail to follow, cannot reach or too far away");
             		//若超過max dist持續240ticks, 則teleport
             		if(this.distSq > this.maxDistSq) {
-            			this.checkTeleport++;	//若距離超過max dist且移動又失敗, 會使checkTP每30 tick+1
+            			this.checkTeleport2++;
                 		
-                		if(this.checkTeleport > 8) {
-                			this.checkTeleport = 0;
+                		if(this.checkTeleport2 > 8) {
+                			this.checkTeleport2 = 0;
                 			//相同dim才傳送
-                			LogHelper.info("DEBUG : follow AI: teleport entity: dimension "+host2.dimension+" "+owner.dimension);
+                			LogHelper.info("DEBUG : follow AI: teleport entity: dimension check: "+host2.dimension+" "+owner.dimension);
                 			if(this.host2.dimension == this.owner.dimension) {
                 				//teleport
                     			if(this.distSq > 1024) {	//32 blocks away, drop seat2

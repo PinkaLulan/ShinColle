@@ -1129,7 +1129,14 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		
 		//click ship without shift = sit
 		if(!this.worldObj.isRemote && !player.isSneaking() && EntityHelper.checkSameOwner(this, player)) {			
-			this.setEntitySit();
+			//current item = pointer
+			if(itemstack != null && itemstack.getItem() == ModItems.PointerItem) {
+				//call sitting method by PointerItem class, not here
+			}
+			else {
+				this.setEntitySit();
+			}
+			
             return true;
         }
 
@@ -1327,11 +1334,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 					//set guard entity
 					if(this.getStateMinor(ID.M.GuardID) > 0) {
 						Entity getEnt = EntityHelper.getEntityByID(this.getStateMinor(ID.M.GuardID), 0, true);
-						this.setGuarded(getEnt);
+						this.setGuardedEntity(getEnt);
 					}
 					else {
 						//reset guard entity
-						this.setGuarded(null);
+						this.setGuardedEntity(null);
 					}
 					
 					//display pointer target effect, 只有owner才會接收到該ship同步的EID, 非owner讀取到的EID <= 0
@@ -1344,8 +1351,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 							
 							if(ConfigHandler.alwaysShowTeam || (item != null && item.getItem() instanceof PointerItem)) {
 								//標記在entity上
-								if(this.getGuarded() != null) {
-									ParticleHelper.spawnAttackParticleAtEntity(this.getGuarded(), 0.3D, 6D, 0D, (byte)2);
+								if(this.getGuardedEntity() != null) {
+									ParticleHelper.spawnAttackParticleAtEntity(this.getGuardedEntity(), 0.3D, 6D, 0D, (byte)2);
 								}
 								//標記在block上
 								else if(this.getGuardedPos(1) >= 0) {
@@ -1371,7 +1378,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	@Override
 	public void onLivingUpdate() {
         super.onLivingUpdate();
-
+        
+        //debug
+//      	LogHelper.info("DEBUG : ship onUpdate: flag: side: "+this.worldObj.isRemote+" "+this.StateMinor[ID.M.GuardType]);
+      		
         //server side check
         if((!worldObj.isRemote)) {
         	//clear dead target for vanilla AI bug
@@ -2270,12 +2280,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	}
 	
 	@Override
-	public Entity getGuarded() {
+	public Entity getGuardedEntity() {
 		return this.guardedEntity;
 	}
 
 	@Override
-	public void setGuarded(Entity entity) {
+	public void setGuardedEntity(Entity entity) {
 		if(entity != null && entity.isEntityAlive()) {
 			this.guardedEntity = entity;
 			this.setStateMinor(ID.M.GuardID, entity.getEntityId());
@@ -2283,14 +2293,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		else {
 			this.guardedEntity = null;
 			this.setStateMinor(ID.M.GuardID, -1);
-			this.setStateMinor(ID.M.GuardType, 0);
 		}
 	}
 
 	@Override
 	public int getGuardedPos(int vec) {
 		switch(vec) {
-		default:
+		case 0:
 			return this.getStateMinor(ID.M.GuardX);
 		case 1:
 			return this.getStateMinor(ID.M.GuardY);
@@ -2298,15 +2307,18 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			return this.getStateMinor(ID.M.GuardZ);
 		case 3:
 			return this.getStateMinor(ID.M.GuardDim);
+		default:
+			return this.getStateMinor(ID.M.GuardType);
 		}
 	}
 
 	@Override
-	public void setGuardedPos(int x, int y, int z, int dim) {
+	public void setGuardedPos(int x, int y, int z, int dim, int type) {
 		this.setStateMinor(ID.M.GuardX, x);
 		this.setStateMinor(ID.M.GuardY, y);
 		this.setStateMinor(ID.M.GuardZ, z);
 		this.setStateMinor(ID.M.GuardDim, dim);
+		this.setStateMinor(ID.M.GuardType, type);
 	}
 	
 	@Override

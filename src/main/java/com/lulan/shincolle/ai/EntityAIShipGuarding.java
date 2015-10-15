@@ -43,7 +43,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
     private final TargetHelper.Sorter targetSorter;
     private final TargetHelper.Selector targetSelector;
     private int findCooldown;
-    private int checkTeleport;	//> 200 = use teleport
+    private int checkTeleport, checkTeleport2;	//> 200 = use teleport
     private double maxDistSq, minDistSq;
     private double distSq, distSqrt, distX, distY, distZ;	//跟目標的直線距離
     private int gx, gy, gz;				//guard position (block position)
@@ -94,12 +94,12 @@ public class EntityAIShipGuarding extends EntityAIBase {
     	//非坐下, 非騎乘, 非被綁, 非可跟隨, 且有fuel才執行
     	if(host != null && !host.getIsSitting() && !host.getStateFlag(ID.F.NoFuel) && !host.getStateFlag(ID.F.CanFollow)) {
     		//check guarded entity
-    		this.guarded = host.getGuarded();
+    		this.guarded = host.getGuardedEntity();
     		
     		//get guard target
     		if(this.guarded != null) {
     			if(!this.guarded.isEntityAlive()) {
-    				host.setGuarded(null);
+    				host.setGuardedEntity(null);
     				return false;
     			}
     			else {
@@ -164,18 +164,25 @@ public class EntityAIShipGuarding extends EntityAIBase {
     public void startExecuting() {
         this.findCooldown = 20;
         this.checkTeleport = 0;
+        this.checkTeleport2 = 0;
     }
 
     public void resetTask() {
     	this.guarded = null;
     	this.findCooldown = 20;
         this.checkTeleport = 0;
+        this.checkTeleport2 = 0;
         this.ShipNavigator.clearPathEntity();
     }
 
     public void updateTask() {
-    	//update attack while moving
-    	if(ship != null && ship.getStateMinor(ID.M.GuardType) > 0) {
+    	/**update attack while moving
+    	 * active when:
+    	 * 1. is ship entity
+    	 * 2. target AI = active attack
+    	 * 3. guard type > 0
+    	 */
+    	if(ship != null && ship.getStateMinor(ID.M.TargetAI) > 0 && ship.getStateMinor(ID.M.GuardType) > 0) {
     		//update parms
     		if(ship.ticksExisted % 64 == 0) {
     			this.updateAttackParms();
@@ -221,12 +228,12 @@ public class EntityAIShipGuarding extends EntityAIBase {
         	//update position every 30 ticks
         	if(host2.ticksExisted % 30 == 0) {
         		//check guarded entity
-        		this.guarded = host.getGuarded();
+        		this.guarded = host.getGuardedEntity();
         		
         		//get guard target
         		if(this.guarded != null) {
         			if(!this.guarded.isEntityAlive()) {
-        				host.setGuarded(null);
+        				host.setGuardedEntity(null);
         				this.resetTask();
         				return;
         			}
@@ -274,8 +281,8 @@ public class EntityAIShipGuarding extends EntityAIBase {
         	if(this.distSq > this.maxDistSq && host2.dimension == host.getStateMinor(ID.M.GuardDim)) {
         		this.checkTeleport++;
         		
-        		if(this.checkTeleport > 200) {
-        			LogHelper.info("DEBUG : guarding AI: point away > 200 ticks, teleport entity");
+        		if(this.checkTeleport > 256) {
+        			LogHelper.info("DEBUG : guarding AI: away from target > 256 ticks, teleport to target");
         			this.checkTeleport = 0;
         			
         			//teleport
@@ -299,10 +306,10 @@ public class EntityAIShipGuarding extends EntityAIBase {
             		LogHelper.info("DEBUG : guarding AI: fail to move, cannot reach or too far away "+gx+" "+gy+" "+gz);
             		//若超過max dist持續120ticks, 則teleport
             		if(this.distSq > this.maxDistSq && host2.dimension == host.getStateMinor(ID.M.GuardDim)) {
-            			this.checkTeleport++;	//若距離超過max dist且移動又失敗, 會使checkTP每30 tick+1
+            			this.checkTeleport2++;
                 		
-                		if(this.checkTeleport > 120) {
-                			this.checkTeleport = 0;
+                		if(this.checkTeleport2 > 8) {
+                			this.checkTeleport2 = 0;
                 			
                 			if(this.distSq > 1024) {	//32 blocks away, drop seat2
                 				this.clearMountSeat2();

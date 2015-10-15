@@ -423,7 +423,7 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
         }
 
         //spawn missile
-    	EntityAbyssMissile missile = new EntityAbyssMissile(this.worldObj, this.host, 
+    	EntityAbyssMissile missile = new EntityAbyssMissile(this.worldObj, this, 
         		(float)target.posX, (float)(target.posY+target.height*0.2F), (float)target.posZ, (float)(this.posY-0.8F), atkHeavy, kbValue, true, -1F);
         this.worldObj.spawnEntityInWorld(missile);
         

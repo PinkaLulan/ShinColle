@@ -927,16 +927,22 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion {
 	    }//end if riding
 	    
 	    //§ðÀ»°Ê§@
-	    if(ent.getAttackTime() > 46) {
-	    	this.ArmRight01.rotateAngleX = (46F - ent.getAttackTime()) * 0.625F - 1F;
+	    if(ent.getAttackTime() > 49) {
+	    	this.ArmRight01.rotateAngleX = -3.5F;
 	    	this.ArmRight01.rotateAngleY = 0F;
 	    	this.ArmRight01.rotateAngleZ = -0.35F;
 	    	this.ArmRight04.rotateAngleY = -1.57F;
 	    }
-	    else if(ent.getAttackTime() > 34) {
-	    	this.ArmRight01.rotateAngleX = -1F;
+	    else if(ent.getAttackTime() > 46) {
+	    	this.ArmRight01.rotateAngleX = (46F - ent.getAttackTime()) * 0.75F - 0.5F;
 	    	this.ArmRight01.rotateAngleY = 0F;
 	    	this.ArmRight01.rotateAngleZ = -0.35F;
+	    	this.ArmRight04.rotateAngleY = -1.57F;
+	    }
+	    else if(ent.getAttackTime() > 35) {
+	    	this.ArmRight01.rotateAngleX = -0.5F;
+	    	this.ArmRight01.rotateAngleY = 0F;
+	    	this.ArmRight01.rotateAngleZ = 0.5F;
 	    	this.ArmRight04.rotateAngleY = -1.57F;
 	    }
 	    

@@ -234,7 +234,7 @@ public class C2SGUIPackets implements IMessage {
 				this.worldID = buf.readInt();
 				this.value1 = buf.readInt();	//meta
 				this.value2 = buf.readInt();	//ship UID
-				
+
 				EntityPlayer getEnt = EntityHelper.getEntityPlayerByID(entityID, worldID, false);
 				
 				if(getEnt != null) {
