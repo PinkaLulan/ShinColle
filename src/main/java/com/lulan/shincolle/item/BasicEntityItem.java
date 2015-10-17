@@ -7,6 +7,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
+
+import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.utility.EntityHelper;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -94,11 +98,11 @@ public class BasicEntityItem extends Entity {
 	@Override
     public void onUpdate() {
 		this.setPosition(posX, posY, posZ);
-//        onEntityUpdate();
+//        onEntityUpdate();	//DO NOT run onEntityUpdate (不需要更新entity movement之類的)
 
 		//play ender portal sound
 		if (this.worldObj.isRemote && this.worldObj.rand.nextInt(50) == 0) {
-			this.worldObj.playSound((double)posX + 0.5D, (double)posY + 0.5D, (double)posZ + 0.5D, "portal.portal", 0.5F, this.worldObj.rand.nextFloat() * 0.4F + 0.8F, false);
+			this.worldObj.playSound(posX + 0.5D, posY + 0.5D, posZ + 0.5D, "portal.portal", 0.5F, this.worldObj.rand.nextFloat() * 0.4F + 0.8F, false);
         }
 		
         if(this.getEntityItem() == null) {
@@ -116,11 +120,6 @@ public class BasicEntityItem extends Entity {
             ++this.age;
 
             ItemStack item = this.item;
- 
-            //2015/5/27: change to not despawn
-//            if(!this.worldObj.isRemote && this.age >= 6000) {
-//            	this.setDead();
-//            }
     
             if(item != null && item.stackSize <= 0) {
                 this.setDead();
@@ -145,22 +144,48 @@ public class BasicEntityItem extends Entity {
         if(!this.worldObj.isRemote) {
             ItemStack itemstack = this.getEntityItem();
             int i = itemstack.stackSize;
-//            LogHelper.info("DEBUg : drop entity: i "+i);
+            
             this.worldObj.playSoundAtEntity(player, "random.pop", 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
             
-            if(player.inventory.addItemStackToInventory(itemstack)) {
-//            	i = itemstack.stackSize;
-//            	LogHelper.info("DEBUg : get drop entity true: i "+i);
+            //ship spawn egg = owner pick only
+            if(itemstack.getItem() == ModItems.ShipSpawnEgg) {
+            	NBTTagCompound nbt = itemstack.getTagCompound();
+            	
+            	//ship egg with tag
+            	if(nbt != null) {
+            		int pid1 = nbt.getInteger("PlayerID");
+            		int pid2 = EntityHelper.getPlayerUID(player);
+            		
+            		//check player UID
+            		if(pid1 <= 0) {	//ship's player UID isn't inited (old ship)
+            			//check player UUID
+            			String uuid1 = nbt.getString("owner");
+            			String uuid2 = player.getUniqueID().toString();
+            			
+            			if(uuid2.equals(uuid1)) {
+            				player.inventory.addItemStackToInventory(itemstack);
+            			}
+            		}
+            		else {	//get legal player UID
+            			if(pid1 == pid2) {
+            				player.inventory.addItemStackToInventory(itemstack);
+            			}
+            		}
+            	}
+            	//ship egg w/o tag
+            	else {
+            		player.inventory.addItemStackToInventory(itemstack);
+            	}
             }
-//            else {
-//            	i = itemstack.stackSize;
-//            	LogHelper.info("DEBUg : get drop entity false: i "+i);
-//            }
+            //not ship spawn egg
+            else {
+            	player.inventory.addItemStackToInventory(itemstack);
+            }
             
             if(itemstack.stackSize <= 0) {
                 this.setDead();
             }
-        }
+        }//end server side
     }
 
 	@Override

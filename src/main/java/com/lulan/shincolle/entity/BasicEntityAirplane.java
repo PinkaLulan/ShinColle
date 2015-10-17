@@ -63,7 +63,8 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 		
         //target selector init
         this.targetSelector = new IEntitySelector() {
-            public boolean isEntityApplicable(Entity target2) {
+            @Override
+			public boolean isEntityApplicable(Entity target2) {
             	if((target2 instanceof EntityMob || target2 instanceof EntitySlime ||
             	   target2 instanceof EntityBat || target2 instanceof EntityDragon ||
             	   target2 instanceof EntityFlying || target2 instanceof EntityWaterMob) &&
@@ -91,9 +92,12 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
   	}
 
     //禁止任何掉落計算
-    protected void fall(float world) {}
-    protected void updateFallState(double par1, boolean par2) {}
-    public boolean isOnLadder() {
+    @Override
+	protected void fall(float world) {}
+    @Override
+	protected void updateFallState(double par1, boolean par2) {}
+    @Override
+	public boolean isOnLadder() {
         return false;
     }
     
@@ -153,7 +157,8 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
     }
 
     //移動計算, 去除gravity部份
-    public void moveEntityWithHeading(float movX, float movZ) { 	
+    @Override
+	public void moveEntityWithHeading(float movX, float movZ) { 	
         this.moveFlying(movX, movZ, this.movSpeed*0.4F); //水中的速度計算(含漂移效果)
         this.moveEntity(this.motionX, this.motionY, this.motionZ);
 
@@ -382,8 +387,8 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 	    if(isTargetHurt) {
 	    	//calc kb effect
 	        if(kbValue > 0) {
-	            target.addVelocity((double)(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue), 
-	                   0.1D, (double)(MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue));
+	            target.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
+	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
 	        }
 	        
         	//send packet to client for display partical effect  
@@ -596,6 +601,10 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 		return this.host;
 	}
     
+	@Override
+	public int getDamageType() {
+		return ID.ShipDmgType.AIRPLANE;
+	}
     
 
 }

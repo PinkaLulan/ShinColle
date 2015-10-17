@@ -15,25 +15,25 @@ abstract public class BasicEntityMountLarge extends BasicEntityMount implements 
 
 	@Override
 	public int getNumAircraftLight() {
-		if(host != null) return (int)host.getStateMinor(ID.M.NumAirLight);
+		if(host != null) return host.getStateMinor(ID.M.NumAirLight);
 		return 0;
 	}
 
 	@Override
 	public int getNumAircraftHeavy() {
-		if(host != null) return (int)host.getStateMinor(ID.M.NumAirHeavy);
+		if(host != null) return host.getStateMinor(ID.M.NumAirHeavy);
 		return 0;
 	}
 
 	@Override
 	public boolean hasAirLight() {
-		if(host != null) return (int)host.getStateMinor(ID.M.NumAirLight) > 0;
+		if(host != null) return host.getStateMinor(ID.M.NumAirLight) > 0;
 		return false;
 	}
 
 	@Override
 	public boolean hasAirHeavy() {
-		if(host != null) return (int)host.getStateMinor(ID.M.NumAirHeavy) > 0;
+		if(host != null) return host.getStateMinor(ID.M.NumAirHeavy) > 0;
 		return false;
 	}
 

@@ -415,8 +415,8 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack {
 	    if(isTargetHurt) {
 	    	//calc kb effect
 	        if(kbValue > 0) {
-	            target.addVelocity((double)(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue), 
-	                   0.1D, (double)(MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue));
+	            target.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
+	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
 	        }
 	        
 	        //display hit particle on target
@@ -542,24 +542,24 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack {
             {
                 float f5 = 0.15F;
 
-                if (this.motionX < (double)(-f5))
+                if (this.motionX < (-f5))
                 {
-                    this.motionX = (double)(-f5);
+                    this.motionX = (-f5);
                 }
 
-                if (this.motionX > (double)f5)
+                if (this.motionX > f5)
                 {
-                    this.motionX = (double)f5;
+                    this.motionX = f5;
                 }
 
-                if (this.motionZ < (double)(-f5))
+                if (this.motionZ < (-f5))
                 {
-                    this.motionZ = (double)(-f5);
+                    this.motionZ = (-f5);
                 }
 
-                if (this.motionZ > (double)f5)
+                if (this.motionZ > f5)
                 {
-                    this.motionZ = (double)f5;
+                    this.motionZ = f5;
                 }
 
                 this.fallDistance = 0.0F;
@@ -601,8 +601,8 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack {
             }
 
             this.motionY *= 0.9800000190734863D;
-            this.motionX *= (double)f2;
-            this.motionZ *= (double)f2;
+            this.motionX *= f2;
+            this.motionZ *= f2;
         }
 
         this.prevLimbSwingAmount = this.limbSwingAmount;
@@ -785,6 +785,11 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack {
 	@Override
 	public Entity getHostEntity() {
 		return this.host;
+	}
+
+	@Override
+	public int getDamageType() {
+		return ID.ShipDmgType.DESTROYER;
 	}
 	
 

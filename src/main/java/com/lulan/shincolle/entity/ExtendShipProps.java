@@ -10,9 +10,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.IExtendedEntityProperties;
 
 import com.lulan.shincolle.client.inventory.ContainerShipInventory;
-import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
 /**Extend Entity NBT data
@@ -216,7 +214,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		NBTTagList list = nbt.getTagList(tagName, 10);	//tagList可以用9(tagList)或者10(tagCompound)來取
 
 		for(int i=0; i<list.tagCount(); i++) {
-			NBTTagCompound item = (NBTTagCompound) list.getCompoundTagAt(i);
+			NBTTagCompound item = list.getCompoundTagAt(i);
 			byte sid = item.getByte("Slot");
 
 			if(sid>=0 && sid<slots.length) {

@@ -36,7 +36,8 @@ public class TargetHelper {
             this.targetEntity = entity;
         }
         
-        public int compare(Object target1, Object target2) {
+        @Override
+		public int compare(Object target1, Object target2) {
             return this.compare((Entity)target1, (Entity)target2);
         }
 
@@ -58,7 +59,8 @@ public class TargetHelper {
     		this.host = host;
     	}
     	
-    	public boolean isEntityApplicable(Entity target2) {
+    	@Override
+		public boolean isEntityApplicable(Entity target2) {
         	if((target2 instanceof EntityMob || target2 instanceof EntitySlime ||
         	   target2 instanceof EntityBat || target2 instanceof EntityDragon || 
         	   target2 instanceof EntityDragonPart ||
@@ -97,7 +99,8 @@ public class TargetHelper {
     		this.host = host;
     	}
     	
-    	public boolean isEntityApplicable(Entity target2) {
+    	@Override
+		public boolean isEntityApplicable(Entity target2) {
         	if((target2 instanceof EntityPlayer || target2 instanceof BasicEntityShip ||
         	   target2 instanceof BasicEntityAirplane || target2 instanceof BasicEntityMount) && 
         	   target2.isEntityAlive() && !target2.isInvisible()) {

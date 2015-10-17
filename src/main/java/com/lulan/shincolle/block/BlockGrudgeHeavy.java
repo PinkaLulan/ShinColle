@@ -1,31 +1,20 @@
 package com.lulan.shincolle.block;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.item.BasicEntityItem;
-import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.tileentity.BasicTileMulti;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
-import com.lulan.shincolle.utility.LogHelper;
-import com.lulan.shincolle.utility.MulitBlockHelper;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 
 public class BlockGrudgeHeavy extends BasicBlockMulti {
@@ -102,7 +91,7 @@ public class BlockGrudgeHeavy extends BasicBlockMulti {
 
 						itemstack.stackSize -= j;
 						//將item做成entity, 生成到世界上
-						EntityItem item = new EntityItem(world, (double)((float)x + f), (double)((float)y + f1), (double)((float)z + f2), new ItemStack(itemstack.getItem(), j, itemstack.getItemDamage()));
+						EntityItem item = new EntityItem(world, x + f, y + f1, z + f2, new ItemStack(itemstack.getItem(), j, itemstack.getItemDamage()));
 						//如果有NBT tag, 也要複製到物品上
 						if(itemstack.hasTagCompound()) {
 							item.getEntityItem().setTagCompound((NBTTagCompound)itemstack.getTagCompound().copy());
@@ -113,7 +102,7 @@ public class BlockGrudgeHeavy extends BasicBlockMulti {
 			}
 			
 			//掃描matBuild跟matStock是否有存值, 有的話轉存到block item上並生成到world中
-			BasicEntityItem item = new BasicEntityItem(world, (double)x, (double)y+0.5D, (double)z, new ItemStack(ModBlocks.BlockGrudgeHeavy, 1 ,0));
+			BasicEntityItem item = new BasicEntityItem(world, x, y+0.5D, z, new ItemStack(ModBlocks.BlockGrudgeHeavy, 1 ,0));
 			NBTTagCompound nbt = new NBTTagCompound();
 			
 			int[] mats = new int[4];
@@ -136,11 +125,12 @@ public class BlockGrudgeHeavy extends BasicBlockMulti {
 	}
 	
 	//隨機發出傳送門音效
+	@Override
 	@SideOnly(Side.CLIENT)
     public void randomDisplayTick(World p_149734_1_, int p_149734_2_, int p_149734_3_, int p_149734_4_, Random p_149734_5_) {
 		//play portal sound
 		if (p_149734_5_.nextInt(50) == 0) {
-            p_149734_1_.playSound((double)p_149734_2_ + 0.5D, (double)p_149734_3_ + 0.5D, (double)p_149734_4_ + 0.5D, "portal.portal", 0.5F, p_149734_5_.nextFloat() * 0.4F + 0.8F, false);
+            p_149734_1_.playSound(p_149734_2_ + 0.5D, p_149734_3_ + 0.5D, p_149734_4_ + 0.5D, "portal.portal", 0.5F, p_149734_5_.nextFloat() * 0.4F + 0.8F, false);
         }
     }
 

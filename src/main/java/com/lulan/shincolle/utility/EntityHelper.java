@@ -130,7 +130,7 @@ public class EntityHelper {
 					break;
 				}
 			}		
-			depth = depth - (double)(entityCD.posY - (int)entityCD.posY);
+			depth = depth - (entityCD.posY - (int)entityCD.posY);
 		}
 		else {
 			depth = 0;	
@@ -298,7 +298,7 @@ public class EntityHelper {
 					return null;
 				}
 				
-				return (EntityPlayer) getEntityPlayerByID(pdata[0], world.provider.dimensionId, world.isRemote);
+				return getEntityPlayerByID(pdata[0], world.provider.dimensionId, world.isRemote);
 			}
 		}
 		
@@ -385,21 +385,21 @@ public class EntityHelper {
 		}
 	}
 	
-	/** set owner uuid for pet */
+	/** set owner uuid for pet by player UID and pet entity */
 	public static void setPetPlayerUUID(int pid, EntityTameable pet) {
 		EntityPlayer owner = EntityHelper.getEntityPlayerByUID(pid, pet.worldObj);
 		
 		setPetPlayerUUID(owner, pet);
 	}
 	
-	/** set owner uuid for pet */
+	/** set owner uuid for pet by player entity and pet entity */
 	public static void setPetPlayerUUID(EntityPlayer player, EntityTameable pet) {
 		if(player != null) {
 			setPetPlayerUUID(player.getUniqueID().toString(), pet);
 		}
 	}
 	
-	/** set owner uuid for pet */
+	/** set owner uuid for pet by player uuid and pet entity*/
 	public static void setPetPlayerUUID(String uuid, EntityTameable pet) {
 		if(pet != null) {
 			pet.func_152115_b(uuid);

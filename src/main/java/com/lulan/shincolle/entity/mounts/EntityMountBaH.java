@@ -57,6 +57,11 @@ public class EntityMountBaH extends BasicEntityMount {
         return 2.754D;
     }
 
+	@Override
+	public int getDamageType() {
+		return ID.ShipDmgType.BATTLESHIP;
+	}
+
 
 }
 

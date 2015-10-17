@@ -10,7 +10,6 @@ import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.LogHelper;
 
 /**
  * ModelMountCaWD - PinkaLulan	2015/7/5

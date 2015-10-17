@@ -4,7 +4,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
@@ -51,7 +50,8 @@ public class EntityAIShipAttackOnCollide extends EntityAIBase {
         this.setMutexBits(3);
     }
 
-    public boolean shouldExecute() {
+    @Override
+	public boolean shouldExecute() {
     	if(this.host2.isRiding()) {
     		return false;
     	}
@@ -80,7 +80,8 @@ public class EntityAIShipAttackOnCollide extends EntityAIBase {
         }
     }
 
-    public boolean continueExecuting() {
+    @Override
+	public boolean continueExecuting() {
     	if(this.host2.isRiding()) {
     		return false;
     	}
@@ -94,17 +95,20 @@ public class EntityAIShipAttackOnCollide extends EntityAIBase {
         			   							  MathHelper.floor_double(entitylivingbase.posZ)));
     }
 
-    public void startExecuting() {
+    @Override
+	public void startExecuting() {
         this.host.getShipNavigate().setPath(this.entityPathEntity, speedTowardsTarget);
         this.delayAttack = 0;
     }
 
-    public void resetTask() {
+    @Override
+	public void resetTask() {
         this.host.getShipNavigate().clearPathEntity();
         this.host2.setAttackTarget(null);
     }
 
-    public void updateTask() {
+    @Override
+	public void updateTask() {
     	if(this.host2.isRiding()) {
     		return;
     	}
@@ -120,7 +124,7 @@ public class EntityAIShipAttackOnCollide extends EntityAIBase {
         this.host2.getLookHelper().setLookPositionWithEntity(entitylivingbase, 30.0F, 30.0F);
         
         double distTarget = this.host2.getDistanceSq(entitylivingbase.posX, entitylivingbase.boundingBox.minY, entitylivingbase.posZ);
-        double distAttack = (double)(this.host2.width * this.host2.width * 10F + entitylivingbase.width * 3F);
+        double distAttack = this.host2.width * this.host2.width * 10F + entitylivingbase.width * 3F;
         
         --this.delayAttack;
 

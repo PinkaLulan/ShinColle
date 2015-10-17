@@ -29,6 +29,7 @@ public class EntityCarrierWD extends BasicEntityShipLarge {
 		this.setSize(0.6F, 1.8F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.DEMON);
 		this.setStateMinor(ID.M.ShipClass, ID.S_CarrierWD);
+		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CARRIER);
 		this.ModelPos = new float[] {-6F, 15F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();
@@ -50,6 +51,7 @@ public class EntityCarrierWD extends BasicEntityShipLarge {
 		return 3;
 	}
 	
+	@Override
 	public void setAIList() {
 		super.setAIList();
 		
@@ -204,8 +206,8 @@ public class EntityCarrierWD extends BasicEntityShipLarge {
 	    if(isTargetHurt) {
 	    	//calc kb effect
 	        if(kbValue > 0) {
-	            target.addVelocity((double)(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue), 
-	                   0.1D, (double)(MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue));
+	            target.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
+	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
 	            motionX *= 0.6D;
 	            motionZ *= 0.6D;
 	        }

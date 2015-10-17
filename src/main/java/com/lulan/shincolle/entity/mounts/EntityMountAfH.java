@@ -77,6 +77,11 @@ public class EntityMountAfH extends BasicEntityMountLarge {
 		}
 	}
 
+	@Override
+	public int getDamageType() {
+		return ID.ShipDmgType.AVIATION;
+	}
+
 
 }
 

@@ -2,19 +2,14 @@ package com.lulan.shincolle.client.render;
 
 import org.lwjgl.opengl.GL11;
 
-import com.lulan.shincolle.client.model.ModelLargeShipyard;
 import com.lulan.shincolle.client.model.ModelVortex;
-import com.lulan.shincolle.entity.renderentity.BasicRenderEntity;
 import com.lulan.shincolle.entity.renderentity.EntityRenderVortex;
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.LogHelper;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MathHelper;
@@ -34,7 +29,8 @@ public class RenderVortex extends Render {
 	}
 	
 	//傳入entity的都轉成abyssmissile
-    public void doRender(Entity entity, double offsetX, double offsetY, double offsetZ, float p_76986_8_, float p_76986_9_) {
+    @Override
+	public void doRender(Entity entity, double offsetX, double offsetY, double offsetZ, float p_76986_8_, float p_76986_9_) {
         this.doRender((EntityRenderVortex)entity, offsetX, offsetY, offsetZ, p_76986_8_, p_76986_9_);
     }
 	
@@ -45,7 +41,7 @@ public class RenderVortex extends Render {
 		double distZ = entity.posZ - player.posZ;
 
 		float f1 = MathHelper.sqrt_double(distX*distX + distZ*distZ);
-        float pitch = (float)(Math.atan2(distY, (double)f1));
+        float pitch = (float)(Math.atan2(distY, f1));
         float yaw = (float)(Math.atan2(distX, distZ));
         float angle = -entity.ticksExisted % 360F;
         

@@ -3,7 +3,7 @@ package com.lulan.shincolle.reference;
 //for array ID
 public class ID {
 
-	//GUI Button ID
+	/**GUI Button ID*/
 	public static final class B {
 		public static final byte ShipInv_Melee = 0;
 		public static final byte ShipInv_AmmoLight = 1;
@@ -23,7 +23,7 @@ public class ID {
 		public static final byte Shipyard_INCDEC = 3;
 	}
 	
-	//shipyard build type
+	/**shipyard build type*/
 	public static final class Build {
 		public static final byte NONE = 0;
 		public static final byte SHIP = 1;
@@ -32,7 +32,7 @@ public class ID {
 		public static final byte EQUIP_LOOP = 4;
 	}
 	
-	//Array ID: Equip Map
+	/**Equip Map*/
 	public static final class E {
 		public static final byte LEVEL = 0;
 		public static final byte HP = 1;
@@ -50,7 +50,7 @@ public class ID {
 		public static final byte MISS = 13;
 	}
 	
-	//Type ID: Emotion
+	/**Emotion*/
 	public static final class Emotion {
 		public static final byte NORMAL = 0;			//no emotion
 		public static final byte BLINK = 1;				//blink eye
@@ -60,7 +60,7 @@ public class ID {
 		public static final byte HUNGRY = 5;			//no grudge
 	}
 	
-	//Type ID: Equip type
+	/**Equip type*/
 	public static final class EquipType {
 		public static final byte CANNON_SI = 0;			//single cannon
 		public static final byte CANNON_TW_LO = 1;		//low level twin cannon
@@ -84,7 +84,7 @@ public class ID {
 		public static final byte ARMOR_HI = 19;			//high level armor
 	}
 	
-	//Array ID: EntityFlag
+	/**EntityFlag*/
 	public static final class F {
 		public static final byte CanFloatUp = 0;
 		public static final byte IsMarried = 1;
@@ -106,14 +106,14 @@ public class ID {
 		public static final byte HaveRingEffect = 17;
 	}
 	
-	//GUI ID
+	/**GUI ID*/
 	public static final class G {
 		public static final byte SHIPINVENTORY = 0;
 		public static final byte SMALLSHIPYARD = 1;
 		public static final byte LARGESHIPYARD = 2;
 	}
 	
-	//Type ID: ship state2
+	/**ship state2*/
 	public static final class HPState {
 		public static final byte NORMAL = 0;	//無受損
 		public static final byte MINOR = 1;		//小破
@@ -121,7 +121,7 @@ public class ID {
 		public static final byte HEAVY = 3;		//大破
 	}
 	
-	//Array ID: Minor State
+	/**Minor State*/
 	public static final class M {
 		public static final byte ShipLevel = 0;
 		public static final byte Kills = 1;
@@ -148,9 +148,10 @@ public class ID {
 		public static final byte ShipUID = 22;		//ship UID
 		public static final byte PlayerEID = 23;	//player entity id
 		public static final byte GuardType = 24;	//guard type: 0:move 1:move & attack
+		public static final byte DamageType = 25;	//damage type
 	}
 	
-	//Array ID: ring effect
+	/**ring effect*/
 	public static final class R {
 		public static final byte Haste = 0;
 		public static final byte Speed = 1;
@@ -158,7 +159,7 @@ public class ID {
 		public static final byte Damage = 3;
 	}
 	
-	//Array ID: Entity State
+	/**Entity State*/
 	public static final class S {
 		public static final byte State = 0;				//equip state
 		public static final byte Emotion = 1;			//emotion
@@ -168,7 +169,7 @@ public class ID {
 		public static final byte Phase = 5;				//entity phase
 	}
 	
-	//Type ID: ship type
+	/**ship type*/
 	public static final class ShipType {				//for GUI display
 		public static final byte DESTROYER = 0;			//驅逐艦
 		public static final byte LIGHT_CRUISER = 1;		//輕巡洋艦
@@ -184,7 +185,20 @@ public class ID {
 		public static final byte FORTRESS = 11;			//浮游要塞
 	}
 	
-	/**Type ID: ship state*/
+	/**ship damage type*/
+	public static final class ShipDmgType {
+		public static final byte UNDEFINED = 0;			//其他, 未定義
+		public static final byte DESTROYER = 1;			//驅逐
+		public static final byte CRUISER = 2;			//巡洋
+		public static final byte CARRIER = 3;			//空母
+		public static final byte AVIATION = 4;			//航戰
+		public static final byte BATTLESHIP	= 5;		//戰艦
+		public static final byte TRANSPORT = 6;			//運輸
+		public static final byte SUBMARINE = 7;			//潛艇
+		public static final byte AIRPLANE = 8;			//飛行物
+	}
+	
+	/**ship state*/
 	public static final class State {
 		/**for ID.S.State*/
 		public static final byte NORMAL = 0;		//無狀態
@@ -204,7 +218,7 @@ public class ID {
 		public static final byte EQUIP05_2 = 6;		//艤裝狀態5
 	}
 
-	//Array ID: StateEquip, StateFinal, BonusPoint, TypeModify
+	/**StateEquip, StateFinal, BonusPoint, TypeModify*/
 	public static final byte HP = 0;
 	public static final byte ATK = 1;
 	public static final byte DEF = 2;
@@ -220,13 +234,13 @@ public class ID {
 	public static final byte MISS = 12;
 	public static final byte SpawnPerSquid = 6;
 	
-	//Array ID: Effect Equip
+	/**Effect Equip*/
 	public static final byte EF_CRI = 0;
 	public static final byte EF_DHIT = 1;
 	public static final byte EF_THIT = 2;
 	public static final byte EF_MISS = 3;
 	
-	//Equip ID
+	/**Equip ID*/
 	public static final byte E_CANNON_SINGLE_5 = 0;
 	public static final byte E_CANNON_SINGLE_6 = 1;
 	public static final byte E_CANNON_TWIN_5 = 2;
@@ -273,7 +287,7 @@ public class ID {
 	public static final byte E_ARMOR = 70;
 	public static final byte E_ARMOR_ENH = 71;
 
-	//Ship ID
+	/**Ship ID*/
 	public static final byte S_DestroyerI = 0;
 	public static final byte S_DestroyerRO = 1;
 	public static final byte S_DestroyerHA = 2;
@@ -322,5 +336,11 @@ public class ID {
 	public static final byte S_SubmarineU511 = 38;
 	public static final byte S_SubmarineRo500 = 39;
 	
+	public static final byte S_HarbourWD = 40;
+	public static final byte S_AnchorageWD = 41;
+	public static final byte S_SeaplaneHime = 42;
+	public static final byte S_AirdefenseHime = 43;
+	
+	public static final byte S_BattleshipYamato = 100;
 		
 }

@@ -170,7 +170,7 @@ public class ShipSpawnEgg extends Item {
 				
 				//load inventory
 				for(int i = 0; i < list.tagCount(); i++) {
-					NBTTagCompound item = (NBTTagCompound) list.getCompoundTagAt(i);
+					NBTTagCompound item = list.getCompoundTagAt(i);
 					byte sid = item.getByte("Slot");
 
 					if(sid >= 0 && sid < extProps.slots.length) {
@@ -196,6 +196,11 @@ public class ShipSpawnEgg extends Item {
 				if(customname != null && customname.length() > 0) {
 					entity.setNameTag(customname);
 				}
+				
+				/** OWNER SETTING
+		    	 *  1. check player UID first (after rv.22)
+		    	 *  2. if (1) fail, check player UUID string (before rv.22)
+		    	 */
 				
 				/** set owner by player's UUID (before rv.22) */
 				String ownerid = nbt.getString("owner");

@@ -11,13 +11,15 @@ public interface IShipAttackBase extends IShipNavigator, IShipEmotion, IShipOwne
 	public EntityLivingBase getTarget();
 
 	/**Get attack attributes */
-	public float getAttackDamage();
-	public float getAttackSpeed();			
-	public float getAttackRange();
+	public float getAttackDamage();			//attack damage
+	public float getAttackSpeed();			//attack speed
+	public float getAttackRange();			//attack range
+	
+	public int getDamageType();				//damage type
 	
 	public boolean getAttackType(int par1);	//check available attack type
 	
-	public float getDefValue();
+	public float getDefValue();				//defence value
 	
 	public float getEffectEquip(int id);	//double hit, triple hit, crit, miss
 	

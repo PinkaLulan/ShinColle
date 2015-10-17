@@ -1,21 +1,14 @@
 package com.lulan.shincolle.client.inventory;
 
-import com.lulan.shincolle.crafting.SmallRecipes;
 import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.entity.BasicEntityShipLarge;
 import com.lulan.shincolle.item.BasicEquip;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
-import com.lulan.shincolle.utility.LogHelper;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ICrafting;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
@@ -280,6 +273,7 @@ public class ContainerShipInventory extends Container {
     }
 	
 	//clientºÝcontainer±µ¦¬·s­È
+	@Override
 	@SideOnly(Side.CLIENT)
     public void updateProgressBar(int valueType, int updatedValue) {     
 		switch(valueType) {

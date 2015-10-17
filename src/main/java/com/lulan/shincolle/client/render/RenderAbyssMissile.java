@@ -57,7 +57,8 @@ public class RenderAbyssMissile extends Render {
     }
 
     //傳入entity的都轉成abyssmissile
-    public void doRender(Entity entity, double offsetX, double offsetY, double offsetZ, float p_76986_8_, float p_76986_9_) {
+    @Override
+	public void doRender(Entity entity, double offsetX, double offsetY, double offsetZ, float p_76986_8_, float p_76986_9_) {
         this.doRender((EntityAbyssMissile)entity, offsetX, offsetY, offsetZ, p_76986_8_, p_76986_9_);
     }
 }

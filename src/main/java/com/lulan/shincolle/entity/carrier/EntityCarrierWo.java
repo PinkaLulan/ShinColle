@@ -20,6 +20,7 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
 		this.setSize(0.6F, 1.8F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.STANDARD_CARRIER);
 		this.setStateMinor(ID.M.ShipClass, ID.S_CarrierWO);
+		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CARRIER);
 		this.ModelPos = new float[] {0F, 15F, 0F, 30F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();
@@ -43,6 +44,7 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
 		return 3;
 	}
 	
+	@Override
 	public void setAIList() {
 		super.setAIList();
 		//use range attack

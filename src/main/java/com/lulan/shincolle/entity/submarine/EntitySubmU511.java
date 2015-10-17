@@ -30,6 +30,7 @@ public class EntitySubmU511 extends BasicEntityShipSmall {
 		this.setSize(0.6F, 1.4F);	//碰撞大小 跟模型大小無關
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.SUBMARINE);
 		this.setStateMinor(ID.M.ShipClass, ID.S_SubmarineU511);
+		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.SUBMARINE);
 		this.ModelPos = new float[] {0F, 10F, 0F, 45F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		

@@ -11,12 +11,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
-import net.minecraft.entity.monster.EntityZombie;
-import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.init.Blocks;
-import net.minecraft.pathfinding.PathEntity;
-import net.minecraft.pathfinding.PathFinder;
-import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.ChunkCache;
@@ -82,7 +77,7 @@ public class ShipPathNavigate {
      * Try to find and set a path to XYZ. Returns true if successful.
      */
     public boolean tryMoveToXYZ(double x, double y, double z, double speed) {
-        ShipPathEntity pathentity = this.getPathToXYZ((double)MathHelper.floor_double(x), (double)((int)y), (double)MathHelper.floor_double(z));
+        ShipPathEntity pathentity = this.getPathToXYZ(MathHelper.floor_double(x), ((int)y), MathHelper.floor_double(z));
         return this.setPath(pathentity, speed);
     }
 
@@ -240,7 +235,7 @@ public class ShipPathNavigate {
 
         //掃描目前的點到y高度不同or最後的點, 若距離不到entity大小, 則判定entity已經到達該點
         for(k = this.currentPath.getCurrentPathIndex(); k < pptemp; ++k) {
-            if(entityPos.squareDistanceTo(this.currentPath.getVectorFromIndex(this.theEntity, k)) < (double)widthSq) {
+            if(entityPos.squareDistanceTo(this.currentPath.getVectorFromIndex(this.theEntity, k)) < widthSq) {
 //            	LogHelper.info("DEBUG : path navi: get path+1 "+k+" "+entityPos.squareDistanceTo(this.currentPath.getVectorFromIndex(this.theEntity, k)));
             	this.currentPath.setCurrentPathIndex(++k);	//已到達目標點, 設定目標點為下一點
             }
@@ -430,9 +425,9 @@ public class ShipPathNavigate {
                 double zOffAbs = 1.0D / Math.abs(zOffset);
                 double yOffAbs = 1.0D / Math.abs(yOffset);  
                 //int座標-double座標, 取得位移theta值
-                double x1Theta = (double)(x1*1) - pos1.xCoord;
-                double z1Theta = (double)(z1*1) - pos1.zCoord;
-                double y1Theta = (double)(y1*1) - pos1.yCoord;     
+                double x1Theta = x1*1 - pos1.xCoord;
+                double z1Theta = z1*1 - pos1.zCoord;
+                double y1Theta = y1*1 - pos1.yCoord;     
                 //若offset為正向, 則theta+1變回正值
                 if(xOffset >= 0.0D) {
                     ++x1Theta;
@@ -515,8 +510,8 @@ public class ShipPathNavigate {
         	//不會飛的entity必須檢查全部落腳方塊
             for(int x1 = xSize2; x1 < xSize2 + xSize; ++x1) {
                 for(int z1 = zSize2; z1 < zSize2 + zSize; ++z1) {
-                    double x2 = (double)x1 + 0.5D - orgPos.xCoord;
-                    double z2 = (double)z1 + 0.5D - orgPos.zCoord;
+                    double x2 = x1 + 0.5D - orgPos.xCoord;
+                    double z2 = z1 + 0.5D - orgPos.zCoord;
 
                     //檢查底下方塊是否可安全站立
                     if(x2 * vecX + z2 * vecZ >= 0.0D) {
@@ -542,8 +537,8 @@ public class ShipPathNavigate {
         for(int x1 = xOffset; x1 < xOffset + xSize; ++x1) {
             for(int y1 = yOffset; y1 < yOffset + ySize; ++y1) {
                 for(int z1 = zOffset; z1 < zOffset + zSize; ++z1) {
-                    double x2 = (double)x1 + 0.5D - orgPos.xCoord;
-                    double z2 = (double)z1 + 0.5D - orgPos.zCoord;
+                    double x2 = x1 + 0.5D - orgPos.xCoord;
+                    double z2 = z1 + 0.5D - orgPos.zCoord;
 
                     if(x2 * vecX + z2 * vecZ >= 0.0D) {
                         Block block = this.worldObj.getBlock(x1, y1, z1);

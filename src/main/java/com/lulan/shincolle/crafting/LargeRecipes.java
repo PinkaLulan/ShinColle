@@ -5,15 +5,10 @@ import java.util.Random;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
-import com.lulan.shincolle.item.BasicItem;
-import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
-import com.lulan.shincolle.utility.LogHelper;
-
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntityFurnace;
 
 /**Large Shipyard Recipe Helper
  *  Fuel Cost = BaseCost + CostPerMaterial * ( TotalMaterialAmount - minAmount * 4 )
@@ -67,7 +62,7 @@ public class LargeRecipes {
 	//get fit or empty slot with item
 	private static int getFitSlot(TileMultiGrudgeHeavy tile, Item item, int meta) {
 		//search slot 1~10
-		for(int i = tile.SLOTS_OUT + 1; i < tile.SLOTS_NUM; i++) {
+		for(int i = TileMultiGrudgeHeavy.SLOTS_OUT + 1; i < TileMultiGrudgeHeavy.SLOTS_NUM; i++) {
 			//slot為空 or 物品相同且尚未達到最大堆疊數
 			if((tile.getStackInSlot(i) == null) ||
 			   (tile.getStackInSlot(i).getItem() == item &&

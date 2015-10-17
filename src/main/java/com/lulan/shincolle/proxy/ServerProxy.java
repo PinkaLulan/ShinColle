@@ -14,7 +14,6 @@ import net.minecraft.world.storage.MapStorage;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
-import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.server.ShinWorldData;
 import com.lulan.shincolle.utility.LogHelper;
 
@@ -110,20 +109,20 @@ public class ServerProxy extends CommonProxy {
 		serverData = (ShinWorldData) serverFile.loadData(ShinWorldData.class, ShinWorldData.SAVEID);
 		
 		//init data by MapStorage data
-		if(serverData != null && serverData.nbtData != null) {
+		if(serverData != null && ShinWorldData.nbtData != null) {
 			LogHelper.info("DEBUG : init server proxy: get data from .dat file");
 			//load common variable
-			setNextPlayerID(serverData.nbtData.getInteger(serverData.TAG_NEXTPLAYERID));
-			setNextShipID(serverData.nbtData.getInteger(serverData.TAG_NEXTSHIPID));
-			setNextTeamID(serverData.nbtData.getInteger(serverData.TAG_NEXTTEAMID));
+			setNextPlayerID(ShinWorldData.nbtData.getInteger(ShinWorldData.TAG_NEXTPLAYERID));
+			setNextShipID(ShinWorldData.nbtData.getInteger(ShinWorldData.TAG_NEXTSHIPID));
+			setNextTeamID(ShinWorldData.nbtData.getInteger(ShinWorldData.TAG_NEXTTEAMID));
 			
 			//load player data:  from server save file to playerMap
-			NBTTagList list = serverData.nbtData.getTagList(serverData.TAG_PLAYERDATA, 9);
+			NBTTagList list = ShinWorldData.nbtData.getTagList(ShinWorldData.TAG_PLAYERDATA, 9);
 			
 			for(int i = 0; i < list.tagCount(); i++) {
 				NBTTagCompound getlist = list.getCompoundTagAt(i);
-				int uid = getlist.getInteger(serverData.TAG_PUID);
-				int[] data = getlist.getIntArray(serverData.TAG_PDATA);
+				int uid = getlist.getInteger(ShinWorldData.TAG_PUID);
+				int[] data = getlist.getIntArray(ShinWorldData.TAG_PDATA);
 				
 				setPlayerWorldData(uid, data);
 			}

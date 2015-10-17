@@ -153,7 +153,7 @@ public class S2CGUIPackets implements IMessage {
 				this.value2 = buf.readByte();
 				
 				//set value
-				EntityHelper.setPlayerByGUI((int)value, (int)value2);
+				EntityHelper.setPlayerByGUI(value, value2);
 			}
 			break;
 		case 3: //sync player props

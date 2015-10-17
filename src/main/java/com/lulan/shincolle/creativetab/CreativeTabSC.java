@@ -1,6 +1,5 @@
 package com.lulan.shincolle.creativetab;
 
-import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.reference.Reference;
 

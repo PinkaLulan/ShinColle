@@ -34,7 +34,8 @@ public class EntityAIShipFloating extends EntityAIBase {
         this.setMutexBits(5);
     }
 
-    public boolean shouldExecute() {
+    @Override
+	public boolean shouldExecute() {
     	//ship類: 檢查host坐下
     	if(hostShip != null) {
     		return !this.hostShip.isSitting() && this.hostShip.getStateFlag(ID.F.CanFloatUp);
@@ -51,7 +52,8 @@ public class EntityAIShipFloating extends EntityAIBase {
     	}
     }
 
-    public void updateTask() {
+    @Override
+	public void updateTask() {
     	//上浮到指定高度 (本體仍在水中)
     	if(this.host.getShipDepth() > 4D) {
     		this.hostLiving.motionY += 0.025D;

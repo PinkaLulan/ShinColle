@@ -2,7 +2,6 @@ package com.lulan.shincolle.network;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.World;
@@ -16,9 +15,6 @@ import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.BasicTileEntity;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
-
-import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -114,7 +110,7 @@ public class C2SGUIPackets implements IMessage {
 				entity = (BasicEntityShip) EntityHelper.getEntityByID(entityID, worldID, false);
 				
 				//set value
-				EntityHelper.setEntityByGUI(entity, (int)button, (int)value1);
+				EntityHelper.setEntityByGUI(entity, button, value1);
 			}
 			break;
 		case 1: //shipyard gui click
@@ -137,7 +133,7 @@ public class C2SGUIPackets implements IMessage {
 				}
 				
 				//set value
-				EntityHelper.setTileEntityByGUI(tile, (int)button, (int)value1, (int)value2);
+				EntityHelper.setTileEntityByGUI(tile, button, value1, value2);
 			}
 			break;
 		case PID.AddTeam: //add team, 1 parm

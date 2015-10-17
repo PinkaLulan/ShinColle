@@ -101,8 +101,10 @@ abstract public class BasicTileEntity extends TileEntity implements ISidedInvent
   	}
   	
     //此兩方法不能跟container並用
-  	public void openInventory() {}
-  	public void closeInventory() {}
+  	@Override
+	public void openInventory() {}
+  	@Override
+	public void closeInventory() {}
   	
     //使用管線/漏斗輸入時呼叫, 不適用於手動置入
   	@Override

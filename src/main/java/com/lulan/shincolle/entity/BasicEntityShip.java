@@ -80,7 +80,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	/**minor states: 0:ShipLevel 1:Kills 2:ExpCurrent 3:ExpNext 4:NumAmmoLight 
 	 * 5:NumAmmoHeavy 6:NumGrudge 7:NumAirLight 8:NumAirHeavy 9:immunity time 
 	 * 10:followMin 11:followMax 12:FleeHP 13:TargetAIType 14:guardX 15:guardY 16:guardZ 17:guardDim
-	 * 18:guardID 19:shipType 20:shipClass 21:playerUID 22:shipUID 23:playerEID 24:guardType */
+	 * 18:guardID 19:shipType 20:shipClass 21:playerUID 22:shipUID 23:playerEID 24:guardType 
+	 * 25:damageType*/
 	protected int[] StateMinor;
 	/**equip effect: 0:critical 1:doubleHit 2:tripleHit 3:baseMiss*/
 	protected float[] EffectEquip;
@@ -123,7 +124,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				                0, 0, 0, 0, 0,
 				                2, 14, 35, 1, -1,
 				                -1, -1, 0, -1, 0,
-				                0, -1, -1, -1, 0
+				                0, -1, -1, -1, 0,
+				                0
 				                };
 		EffectEquip = new float[] {0F, 0F, 0F, 0F};
 		StateEmotion = new byte[] {0, 0, 0, 0, 0, 0};
@@ -185,6 +187,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     }
 	
 	//平常音效
+	@Override
 	protected String getLivingSound() {
 		if(this.getStateFlag(ID.F.IsMarried)) {
 			if(rand.nextInt(5) == 0) {
@@ -200,18 +203,21 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     }
 	
 	//受傷音效
-    protected String getHurtSound() {
+    @Override
+	protected String getHurtSound() {
     	
         return Reference.MOD_ID+":ship-hurt";
     }
 
     //死亡音效
-    protected String getDeathSound() {
+    @Override
+	protected String getDeathSound() {
     	return Reference.MOD_ID+":ship-death";
     }
 
     //音效大小
-    protected float getSoundVolume() {
+    @Override
+	protected float getSoundVolume() {
         return ConfigHandler.shipVolume;
     }
     
@@ -306,10 +312,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		return ExtProps;
 	}
 	
+	@Override
 	public ShipPathNavigate getShipNavigate() {
 		return shipNavigator;
 	}
 	
+	@Override
 	public ShipMoveHelper getShipMoveHelper() {
 		return shipMoveHelper;
 	}
@@ -478,6 +486,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	public float getStateFinal(int id) {
 		return StateFinal[id];
 	}
+	@Override
 	public int getStateMinor(int id) {
 		return StateMinor[id];
 	}
@@ -568,7 +577,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		StateFinal[ID.ATK_AH] = (atk * 4F + StateEquip[ID.ATK_AH]) * (float)ConfigHandler.scaleShip[ID.ATK];
 		
 		//KB Resistance = Level / 10 * 0.04
-		float resisKB = (((float)StateMinor[ID.M.ShipLevel])/10F) * 0.067F;
+		float resisKB = ((StateMinor[ID.M.ShipLevel])/10F) * 0.067F;
 
 		//max cap
 		for(int i = 0; i < ConfigHandler.limitShip.length; i++) {
@@ -686,6 +695,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		StateFinal[state] = par1;
 	}
 	
+	@Override
 	public void setStateMinor(int state, int par1) {
 		StateMinor[state] = par1;
 		
@@ -1210,17 +1220,17 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
             if(this.isOnLadder()) {				//爬樓梯中
                 float f5 = 0.15F;
                 //限制爬樓梯時的橫向移動速度
-                if(this.motionX < (double)(-f5)) {
-                    this.motionX = (double)(-f5);
+                if(this.motionX < (-f5)) {
+                    this.motionX = (-f5);
                 }
-                if(this.motionX > (double)f5) {
-                    this.motionX = (double)f5;
+                if(this.motionX > f5) {
+                    this.motionX = f5;
                 }
-                if(this.motionZ < (double)(-f5)) {
-                    this.motionZ = (double)(-f5);
+                if(this.motionZ < (-f5)) {
+                    this.motionZ = (-f5);
                 }
-                if(this.motionZ > (double)f5) {
-                    this.motionZ = (double)f5;
+                if(this.motionZ > f5) {
+                    this.motionZ = f5;
                 }
 
                 this.fallDistance = 0.0F;
@@ -1255,8 +1265,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
             }
             //空氣中的三方向阻力
             this.motionY *= 0.98D;			
-            this.motionX *= (double)f2;
-            this.motionZ *= (double)f2;
+            this.motionX *= f2;
+            this.motionZ *= f2;
 //            LogHelper.info("DEBUG : f2 "+f2+" ");
         }
         //計算四肢擺動值
@@ -1670,8 +1680,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	    if(isTargetHurt) {
 	    	//calc kb effect
 	        if(kbValue > 0) {
-	            target.addVelocity((double)(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue), 
-	                   0.1D, (double)(MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue));
+	            target.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
+	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
 	            motionX *= 0.6D;
 	            motionZ *= 0.6D;
 	        }
@@ -1687,6 +1697,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	}
 	
 	//range attack method, cost light ammo, attack delay = 20 / attack speed, damage = 100% atk 
+	@Override
 	public boolean attackEntityWithAmmo(Entity target) {	
 		//get attack value
 		float atk = StateFinal[ID.ATK];
@@ -1783,8 +1794,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	    if(isTargetHurt) {
 	    	//calc kb effect
 	        if(kbValue > 0) {
-	            target.addVelocity((double)(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue), 
-	                   0.1D, (double)(MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue));
+	            target.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
+	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
 	            motionX *= 0.6D;
 	            motionZ *= 0.6D;
 	        }
@@ -1798,6 +1809,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	}
 
 	//range attack method, cost heavy ammo, attack delay = 100 / attack speed, damage = 500% atk
+	@Override
 	public boolean attackEntityWithHeavyAmmo(Entity target) {	
 		//get attack value
 		float atk = StateFinal[ID.ATK_H];
@@ -1881,7 +1893,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		}
 
 		//進行def計算
-        float reduceAtk = atk * (1F - (StateFinal[ID.DEF] - (float)rand.nextInt(20) + 10F) / 100F);    
+        float reduceAtk = atk * (1F - (StateFinal[ID.DEF] - rand.nextInt(20) + 10F) / 100F);    
         if(atk < 0) { atk = 0; }
         
         //若掉到世界外, 則傳送回y=4
@@ -2108,8 +2120,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			par1 = 215;
 		}
 		
-		if(StateMinor[ID.M.NumGrudge] >= (int)par1) { //has enough fuel
-			StateMinor[ID.M.NumGrudge] -= (int)par1;
+		if(StateMinor[ID.M.NumGrudge] >= par1) { //has enough fuel
+			StateMinor[ID.M.NumGrudge] -= par1;
 		}
 		else {
 			if(decrSupplies(4)) {		//find grudge
@@ -2119,7 +2131,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				else {
 					StateMinor[ID.M.NumGrudge] += 1200;
 				}
-				StateMinor[ID.M.NumGrudge] -= (int)par1;
+				StateMinor[ID.M.NumGrudge] -= par1;
 			}
 			else if(decrSupplies(5)) {	//find grudge block
 				if(ConfigHandler.easyMode) {
@@ -2128,7 +2140,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				else {
 					StateMinor[ID.M.NumGrudge] += 10800;
 				}
-				StateMinor[ID.M.NumGrudge] -= (int)par1;
+				StateMinor[ID.M.NumGrudge] -= par1;
 			}
 //避免吃掉含有儲存資訊的方塊, 因此停用此方塊作為grudge補充道具
 //			else if(decrSupplies(6)) {	//find grudge heavy block
@@ -2323,7 +2335,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	
 	@Override
 	public double getMountedYOffset() {
-		return (double)this.height;
+		return this.height;
 	}
 	
 	@Override
@@ -2331,8 +2343,14 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		if(this.getPlayerUID() > 0) {
 			return EntityHelper.getEntityPlayerByUID(this.getPlayerUID(), this.worldObj);
 		}
-		
-		return null;
+		else {
+			return this.getOwner();
+		}
+	}
+	
+	@Override
+	public int getDamageType() {
+		return this.getStateMinor(ID.M.DamageType);
 	}
 	
 //	//set slot 6 as held item 

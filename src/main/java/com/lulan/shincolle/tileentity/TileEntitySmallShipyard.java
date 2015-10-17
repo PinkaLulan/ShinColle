@@ -68,7 +68,7 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ITileFur
 			return false;
 		}
 		else {	//確認player要在該tile entity 64格內, 以免超出讀取範圍 or 產生其他不明bug
-			return player.getDistanceSq((double)xCoord+0.5D, (double)yCoord+0.5D, (double)zCoord+0.5D) <= 64;
+			return player.getDistanceSq(xCoord+0.5D, yCoord+0.5D, zCoord+0.5D) <= 64;
 		}
 	}
 
@@ -360,12 +360,15 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ITileFur
 	}
 	
 	//getter
+	@Override
 	public int getPowerConsumed() {
 		return this.consumedPower;
 	}
+	@Override
 	public int getPowerRemained() {
 		return this.remainedPower;
 	}
+	@Override
 	public int getPowerGoal() {
 		return this.goalPower;
 	}
@@ -374,12 +377,15 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ITileFur
 	}
 	
 	//setter
+	@Override
 	public void setPowerConsumed(int par1) {
 		this.consumedPower = par1;
 	}
+	@Override
 	public void setPowerRemained(int par1) {
 		this.remainedPower = par1;
 	}
+	@Override
 	public void setPowerGoal(int par1) {
 		this.goalPower = par1;
 	}
@@ -402,7 +408,7 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ITileFur
 
 	@Override
 	public int getPowerMax() {
-		return this.MAXPOWER;
+		return TileEntitySmallShipyard.MAXPOWER;
 	}
 
 	@Override

@@ -74,6 +74,11 @@ public class EntityMountCaWD extends BasicEntityMountLarge {
 	public boolean attackEntityWithHeavyAmmo(Entity target) {
 		return false;
 	}
+
+	@Override
+	public int getDamageType() {
+		return ID.ShipDmgType.CARRIER;
+	}
 	
 
 }

@@ -31,7 +31,7 @@ import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
-public class BasicEntityShipHostile extends EntityMob implements IShipCannonAttack, IShipFloating {
+public abstract class BasicEntityShipHostile extends EntityMob implements IShipCannonAttack, IShipFloating {
 
 	//attributes
 	protected float atk;				//damage
@@ -336,8 +336,8 @@ public class BasicEntityShipHostile extends EntityMob implements IShipCannonAtta
 	    if(isTargetHurt) {
 	    	//calc kb effect
 	        if(kbValue > 0) {
-	            target.addVelocity((double)(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue), 
-	                   0.1D, (double)(MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue));
+	            target.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
+	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
 	            motionX *= 0.6D;
 	            motionZ *= 0.6D;
 	        }
@@ -469,17 +469,17 @@ public class BasicEntityShipHostile extends EntityMob implements IShipCannonAtta
             if(this.isOnLadder()) {				//爬樓梯中
                 float f5 = 0.15F;
                 //限制爬樓梯時的橫向移動速度
-                if(this.motionX < (double)(-f5)) {
-                    this.motionX = (double)(-f5);
+                if(this.motionX < (-f5)) {
+                    this.motionX = (-f5);
                 }
-                if(this.motionX > (double)f5) {
-                    this.motionX = (double)f5;
+                if(this.motionX > f5) {
+                    this.motionX = f5;
                 }
-                if(this.motionZ < (double)(-f5)) {
-                    this.motionZ = (double)(-f5);
+                if(this.motionZ < (-f5)) {
+                    this.motionZ = (-f5);
                 }
-                if(this.motionZ > (double)f5) {
-                    this.motionZ = (double)f5;
+                if(this.motionZ > f5) {
+                    this.motionZ = f5;
                 }
 
                 this.fallDistance = 0.0F;
@@ -514,8 +514,8 @@ public class BasicEntityShipHostile extends EntityMob implements IShipCannonAtta
             }
             //空氣中的三方向阻力
             this.motionY *= 0.98D;			
-            this.motionX *= (double)f2;
-            this.motionZ *= (double)f2;
+            this.motionX *= f2;
+            this.motionZ *= f2;
         }
         //計算四肢擺動值
         this.prevLimbSwingAmount = this.limbSwingAmount;

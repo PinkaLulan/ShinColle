@@ -90,7 +90,8 @@ public class EntityAIShipGuarding extends EntityAIBase {
     }
     
     //判定是否開始執行AI
-    public boolean shouldExecute() {
+    @Override
+	public boolean shouldExecute() {
     	//非坐下, 非騎乘, 非被綁, 非可跟隨, 且有fuel才執行
     	if(host != null && !host.getIsSitting() && !host.getStateFlag(ID.F.NoFuel) && !host.getStateFlag(ID.F.CanFollow)) {
     		//check guarded entity
@@ -140,7 +141,8 @@ public class EntityAIShipGuarding extends EntityAIBase {
     }
 
     //目標還沒接近min dist或者距離超過TP_DIST時繼續AI
-    public boolean continueExecuting() {
+    @Override
+	public boolean continueExecuting() {
     	if(host != null) {
     		//非坐下, 非騎乘, 非被綁, 非可跟隨, 且有fuel才執行
     		if(!host.getIsSitting() && !host.getStateFlag(ID.F.NoFuel) && !host.getStateFlag(ID.F.CanFollow)) {
@@ -161,13 +163,15 @@ public class EntityAIShipGuarding extends EntityAIBase {
     	return false;
     }
 
-    public void startExecuting() {
+    @Override
+	public void startExecuting() {
         this.findCooldown = 20;
         this.checkTeleport = 0;
         this.checkTeleport2 = 0;
     }
 
-    public void resetTask() {
+    @Override
+	public void resetTask() {
     	this.guarded = null;
     	this.findCooldown = 20;
         this.checkTeleport = 0;
@@ -175,7 +179,8 @@ public class EntityAIShipGuarding extends EntityAIBase {
         this.ShipNavigator.clearPathEntity();
     }
 
-    public void updateTask() {
+    @Override
+	public void updateTask() {
     	/**update attack while moving
     	 * active when:
     	 * 1. is ship entity
@@ -275,7 +280,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
         	}
         	
         	//設定頭部轉向
-            this.host2.getLookHelper().setLookPosition(gx, gy, gz, 30F, (float)this.host2.getVerticalFaceSpeed());
+            this.host2.getLookHelper().setLookPosition(gx, gy, gz, 30F, this.host2.getVerticalFaceSpeed());
 
         	//距離超過傳送距離, 直接傳送到目標上
         	if(this.distSq > this.maxDistSq && host2.dimension == host.getStateMinor(ID.M.GuardDim)) {
@@ -373,7 +378,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
     		this.maxDelayTime[2] = (int)(75F / (this.ship.getAttackSpeed())) + 10;
     		
     		//aim time (no change)
-    		this.aimTime = (int) (20F * (float)(150 - this.host.getLevel()) / 150F) + 10;
+    		this.aimTime = (int) (20F * (150 - this.host.getLevel()) / 150F) + 10;
     	}
 	}
 	

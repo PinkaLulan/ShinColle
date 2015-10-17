@@ -25,7 +25,8 @@ public class WorldGenPolyGravel extends WorldGenerator {
         this.numberOfBlocks = num;
     }
 
-    public boolean generate(World world, Random rand, int x, int y, int z) {
+    @Override
+	public boolean generate(World world, Random rand, int x, int y, int z) {
     	boolean notFrozen = true;
     	
     	//碰到frozen ocean, 會抓到海面的冰塊, 必須往下找海底

@@ -15,8 +15,6 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
-import com.lulan.shincolle.entity.BasicEntityAirplane;
-import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.handler.ConfigHandler;
@@ -122,9 +120,9 @@ public class EntityAbyssMissile extends Entity implements IShipOwner {
         
         //直射彈道, no gravity
     	float dist = MathHelper.sqrt_float(this.distX*this.distX + this.distY*this.distY + this.distZ*this.distZ);
-  	    this.accX = (float) (this.distX / dist * this.ACCE);
-	    this.accY = (float) (this.distY / dist * this.ACCE);
-	    this.accZ = (float) (this.distZ / dist * this.ACCE);
+  	    this.accX = this.distX / dist * this.ACCE;
+	    this.accY = this.distY / dist * this.ACCE;
+	    this.accZ = this.distZ / dist * this.ACCE;
 	    this.motionX = this.accX;
 	    this.motionY = this.accY;
 	    this.motionZ = this.accZ;
@@ -137,7 +135,8 @@ public class EntityAbyssMissile extends Entity implements IShipOwner {
 	    }
     }
 
-    protected void entityInit() {}
+    @Override
+	protected void entityInit() {}
 
     /**
      * Checks if the entity is in range to render by using the past in distance and 
@@ -146,7 +145,8 @@ public class EntityAbyssMissile extends Entity implements IShipOwner {
      * 
      * 由於entity可能不為正方體, 故取平均邊長大小來計算距離, 此方法預設為256倍邊長大小
      */
-    @SideOnly(Side.CLIENT)
+    @Override
+	@SideOnly(Side.CLIENT)
     public boolean isInRangeToRenderDist(double distanceSq) {
         double d1 = this.boundingBox.getAverageEdgeLength() * 256D;
         return distanceSq < d1 * d1;
@@ -154,7 +154,8 @@ public class EntityAbyssMissile extends Entity implements IShipOwner {
 
     //update entity
     //注意: 移動要在server+client都做畫面才能顯示平順, particle則只能在client做
-    public void onUpdate() {
+    @Override
+	public void onUpdate() {
     	/**********both side***********/
     	//將位置更新 (包含server, client間同步位置, 才能使bounding box運作正常)
         this.setPosition(this.posX, this.posY, this.posZ);
@@ -178,7 +179,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner {
            	
     	//計算模型要轉的角度 (RAD, not DEG)
         float f1 = MathHelper.sqrt_double(this.motionX*this.motionX + this.motionZ*this.motionZ);
-        this.rotationPitch = (float)(Math.atan2(this.motionY, (double)f1));
+        this.rotationPitch = (float)(Math.atan2(this.motionY, f1));
         this.rotationYaw = (float)(Math.atan2(this.motionX, this.motionZ));    
         
         //依照x,z軸正負向修正角度(轉180)
@@ -355,8 +356,8 @@ public class EntityAbyssMissile extends Entity implements IShipOwner {
                 	    if(hitEntity.attackEntityFrom(DamageSource.causeMobDamage(host2).setExplosion(), missileAtk)) {
                 	    	//calc kb effect
                 	        if(this.kbValue > 0) {
-                	        	hitEntity.addVelocity((double)(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue), 
-                	                   0.1D, (double)(MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue));
+                	        	hitEntity.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
+                	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
                 	            motionX *= 0.6D;
                 	            motionZ *= 0.6D;
                 	        }
@@ -374,13 +375,15 @@ public class EntityAbyssMissile extends Entity implements IShipOwner {
     }
 
 	//儲存entity的nbt
-    public void writeEntityToNBT(NBTTagCompound nbt) {
+    @Override
+	public void writeEntityToNBT(NBTTagCompound nbt) {
     	nbt.setTag("direction", this.newDoubleNBTList(new double[] {this.motionX, this.motionY, this.motionZ}));  
     	nbt.setFloat("atk", this.atk);
     }
 
     //讀取entity的nbt
-    public void readEntityFromNBT(NBTTagCompound nbt) {
+    @Override
+	public void readEntityFromNBT(NBTTagCompound nbt) {
         if(nbt.hasKey("direction", 9)) {	//9為tag list
             NBTTagList nbttaglist = nbt.getTagList("direction", 6);	//6為tag double
             this.motionX = nbttaglist.func_150309_d(0);	//此為get double
@@ -395,17 +398,20 @@ public class EntityAbyssMissile extends Entity implements IShipOwner {
     }
 
     //設定true可使其他生物判定是否要閃開此entity
-    public boolean canBeCollidedWith() {
+    @Override
+	public boolean canBeCollidedWith() {
         return true;
     }
 
     //取得此entity的bounding box大小
-    public float getCollisionBorderSize() {
+    @Override
+	public float getCollisionBorderSize() {
         return 1.0F;
     }
 
     //entity被攻擊到時呼叫此方法
-    public boolean attackEntityFrom(DamageSource attacker, float atk) {
+    @Override
+	public boolean attackEntityFrom(DamageSource attacker, float atk) {
         if(this.isEntityInvulnerable()) {	//對無敵目標回傳false
             return false;
         }
@@ -416,18 +422,21 @@ public class EntityAbyssMissile extends Entity implements IShipOwner {
     }
 
     //render用, 陰影大小
-    @SideOnly(Side.CLIENT)
+    @Override
+	@SideOnly(Side.CLIENT)
     public float getShadowSize() {
         return 0.0F;
     }
 
     //計算光線用
-    public float getBrightness(float p_70013_1_) {
+    @Override
+	public float getBrightness(float p_70013_1_) {
         return 1.0F;
     }
 
     //render用, 亮度值屬於亮紫色
-    @SideOnly(Side.CLIENT)
+    @Override
+	@SideOnly(Side.CLIENT)
     public int getBrightnessForRender(float p_70070_1_) {
         return 15728880;
     }

@@ -652,8 +652,8 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   	    if(isTargetHurt) {
   	    	//calc kb effect
   	        if(kbValue > 0) {
-  	            target.addVelocity((double)(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue), 
-  	                   0.1D, (double)(MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue));
+  	            target.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
+  	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
   	            motionX *= 0.6D;
   	            motionZ *= 0.6D;
   	        }
@@ -772,8 +772,8 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	    if(isTargetHurt) {
 	    	//calc kb effect
 	        if(kbValue > 0) {
-	            target.addVelocity((double)(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue), 
-	                   0.1D, (double)(MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue));
+	            target.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
+	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
 	        }
 	        
 	        //display hit particle on target
@@ -901,17 +901,17 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
             if(this.isOnLadder()) {				//爬樓梯中
                 float f5 = 0.15F;
                 //限制爬樓梯時的橫向移動速度
-                if(this.motionX < (double)(-f5)) {
-                    this.motionX = (double)(-f5);
+                if(this.motionX < (-f5)) {
+                    this.motionX = (-f5);
                 }
-                if(this.motionX > (double)f5) {
-                    this.motionX = (double)f5;
+                if(this.motionX > f5) {
+                    this.motionX = f5;
                 }
-                if(this.motionZ < (double)(-f5)) {
-                    this.motionZ = (double)(-f5);
+                if(this.motionZ < (-f5)) {
+                    this.motionZ = (-f5);
                 }
-                if(this.motionZ > (double)f5) {
-                    this.motionZ = (double)f5;
+                if(this.motionZ > f5) {
+                    this.motionZ = f5;
                 }
 
                 this.fallDistance = 0.0F;
@@ -946,8 +946,8 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
             }
             //空氣中的三方向阻力
             this.motionY *= 0.98D;			
-            this.motionX *= (double)f2;
-            this.motionZ *= (double)f2;
+            this.motionX *= f2;
+            this.motionZ *= f2;
         }
         //計算四肢擺動值
         this.prevLimbSwingAmount = this.limbSwingAmount;
@@ -1160,7 +1160,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(host.getStateFinal(ID.HP) * 0.5D);
 		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(movSpeed);
 		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(host.getStateFinal(ID.HIT) + 32); //此為找目標, 路徑的範圍
-		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue((double)host.getLevel() / 150D);
+		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(host.getLevel() / 150D);
 	}
 	
 	@Override

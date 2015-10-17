@@ -7,13 +7,9 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
-import net.minecraft.pathfinding.Path;
-import net.minecraft.pathfinding.PathEntity;
-import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.IntHashMap;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
-import net.minecraftforge.fluids.BlockFluidClassic;
 
 /**SHIP PATH FINDER
  * for ship path navigator
@@ -51,7 +47,7 @@ public class ShipPathFinder {
      * Creates a path from an entity to a specified location within a minimum distance
      */
     public ShipPathEntity createEntityPathTo(Entity entity, int x, int y, int z, float range) {
-        return this.createEntityPathTo(entity, (double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F), range);
+        return this.createEntityPathTo(entity, x + 0.5F, y + 0.5F, z + 0.5F, range);
     }
 
     /**
@@ -66,7 +62,7 @@ public class ShipPathFinder {
 
         //將起點終點加入point map
         ShipPathPoint startpp = this.openPoint(MathHelper.floor_double(entity.boundingBox.minX), i, MathHelper.floor_double(entity.boundingBox.minZ));
-        ShipPathPoint endpp = this.openPoint(MathHelper.floor_double(x - (double)(entity.width / 2.0F)), MathHelper.floor_double(y), MathHelper.floor_double(z - (double)(entity.width / 2.0F)));
+        ShipPathPoint endpp = this.openPoint(MathHelper.floor_double(x - entity.width / 2.0F), MathHelper.floor_double(y), MathHelper.floor_double(z - entity.width / 2.0F));
         //目標的長寬高+1建立為一個path point, 用於判定路徑寬高是否會卡住該entity
         ShipPathPoint entitySize = new ShipPathPoint(MathHelper.floor_float(entity.width + 1.0F), MathHelper.floor_float(entity.height + 1.0F), MathHelper.floor_float(entity.width + 1.0F));
         //計算出起點終點之間所有點

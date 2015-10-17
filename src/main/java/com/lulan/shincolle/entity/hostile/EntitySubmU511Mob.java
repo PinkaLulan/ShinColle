@@ -218,6 +218,12 @@ public class EntitySubmU511Mob extends BasicEntityShipHostile {
         
         return true;
 	}
+  	
+  	@Override
+	public int getDamageType() {
+		return ID.ShipDmgType.SUBMARINE;
+	}
+  	
 
 }
 

@@ -103,6 +103,12 @@ public class Values {
 		 0.6F,  0.6F,  1F,    1F,    1.1F,  1.1F,  1.1F,  1.1F,
 		 1F,    1F,    1F,    1F,    0.4F,  1F,    0.5F,  0.5F};
 	
+	/**damage modifier array [damage type id][target type id]*/
+	public static final float[][] ModDmg = 
+		{{},
+		 {}
+		};
+	
 	/**EQUIP MAP
 	 * equip state:
 	 *		 0:equip type 1:hp 2:L.atk 3:H.atk 4:L.plane atk 5:H.plane atk 6:def 

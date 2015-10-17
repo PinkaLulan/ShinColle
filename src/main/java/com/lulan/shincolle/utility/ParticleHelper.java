@@ -42,18 +42,18 @@ public class ParticleHelper {
 		switch(f) {
 		case 1:		//turn east
 		case 5:
-			newParm[0] = (double)len - z;
+			newParm[0] = len - z;
 			newParm[2] = x;
 			break;
 		case 2:		//turn south
 		case 6:
-			newParm[0] = (double)len - x;
-			newParm[2] = (double)len - z;
+			newParm[0] = len - x;
+			newParm[2] = len - z;
 			break;
 		case 3:		//turn west
 		case 7:
 			newParm[0] = z;
-			newParm[2] = (double)len - x;
+			newParm[2] = len - x;
 			break;
 		default:	//default north, no change
 			newParm[0] = x;

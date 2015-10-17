@@ -80,7 +80,7 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileFurnace
 			return false;
 		}
 		else {	//確認player要在該tile entity 64格內, 以免超出讀取範圍 or 產生其他不明bug
-			return player.getDistanceSq((double)xCoord+0.5D, (double)yCoord+0.5D, (double)zCoord+0.5D) <= 64;
+			return player.getDistanceSq(xCoord+0.5D, yCoord+0.5D, zCoord+0.5D) <= 64;
 		}
 	}
 	

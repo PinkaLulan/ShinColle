@@ -1,19 +1,10 @@
 package com.lulan.shincolle.ai;
 
-import java.util.Random;
-
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.init.Blocks;
-import net.minecraft.util.MathHelper;
-
-import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipCannonAttack;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 
 /**ENTITY RANGE ATTACK AI
  * 從骨弓的射箭AI修改而來
@@ -54,7 +45,8 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
     }
 
     //check ai start condition
-    public boolean shouldExecute() {
+    @Override
+	public boolean shouldExecute() {
     	//for entity ship
     	if(host2 != null) {
     		if(this.host.getIsSitting()) return false;
@@ -78,7 +70,7 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
     	if(host != null) {
 	    	this.maxDelayLight = (int)(40F / (this.host.getAttackSpeed()));
 	    	this.maxDelayHeavy = (int)(80F / (this.host.getAttackSpeed()));
-	    	this.aimTime = (int) (20F * (float)(150 - this.host.getLevel()) / 150F) + 10;
+	    	this.aimTime = (int) (20F * (150 - this.host.getLevel()) / 150F) + 10;
 	    	
 	    	//if target changed, check the delay time from prev attack
 	    	if(this.delayLight <= this.aimTime) {
@@ -96,7 +88,8 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
     }
 
     //判定是否繼續AI： 有target就繼續, 或者已經移動完畢就繼續
-    public boolean continueExecuting() {
+    @Override
+	public boolean continueExecuting() {
     	if(host != null) return this.shouldExecute() || (target != null && target.isEntityAlive() && !this.host.getShipNavigate().noPath());
 //    	if(host != null) return this.shouldExecute();
    	
@@ -104,7 +97,8 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
     }
 
     //重置AI方法
-    public void resetTask() {
+    @Override
+	public void resetTask() {
         this.target = null;
         this.onSightTime = 0;
         if(host != null) {
@@ -114,7 +108,8 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
     }
 
     //進行AI
-    public void updateTask() {
+    @Override
+	public void updateTask() {
     	boolean onSight = false;	//判定直射是否無障礙物
     	
     	if(this.host != null && this.target != null) {
@@ -122,7 +117,7 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
     		if(this.host2.ticksExisted % 64 == 0) {
 	    		this.maxDelayLight = (int)(40F / (this.host.getAttackSpeed()));
 		    	this.maxDelayHeavy = (int)(80F / (this.host.getAttackSpeed()));
-		    	this.aimTime = (int) (20F * (float)(150 - this.host.getLevel()) / 150F) + 10;
+		    	this.aimTime = (int) (20F * (150 - this.host.getLevel()) / 150F) + 10;
 		    	this.range = this.host.getAttackRange();
 		        this.rangeSq = this.range * this.range;
     		}
@@ -152,7 +147,7 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
 	        }
 	
 	        //若目標進入射程, 且目標無障礙物阻擋, 則清空AI移動的目標, 以停止繼續移動      
-	        if(distSq < (double)this.rangeSq && onSight) {
+	        if(distSq < this.rangeSq && onSight) {
 	        	this.host.getShipNavigate().clearPathEntity();
 	        }
 	        else {	//目標移動, 則繼續追	        	

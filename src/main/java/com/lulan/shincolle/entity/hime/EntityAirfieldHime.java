@@ -26,6 +26,7 @@ public class EntityAirfieldHime extends BasicEntityShipLarge {
 		this.setSize(0.6F, 1.8F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
 		this.setStateMinor(ID.M.ShipClass, ID.S_AirfieldHime);
+		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
 		this.ModelPos = new float[] {-6F, 15F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();
@@ -47,6 +48,7 @@ public class EntityAirfieldHime extends BasicEntityShipLarge {
 		return 2;
 	}
 	
+	@Override
 	public void setAIList() {
 		super.setAIList();
 		
@@ -70,7 +72,7 @@ public class EntityAirfieldHime extends BasicEntityShipLarge {
         		//2: 結婚後, 周圍某一目標回血, 包括玩家, 回血目標依等級提昇
 				if(getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.M.NumGrudge) > 0) {
 					//判定bounding box內是否有可以回血的目標
-					int healCount = (int)(this.getLevel() / 15) + 2;
+					int healCount = this.getLevel() / 15 + 2;
 		            EntityLivingBase hitEntity = null;
 		            List hitList = null;
 		            hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, this.boundingBox.expand(18D, 18D, 18D));

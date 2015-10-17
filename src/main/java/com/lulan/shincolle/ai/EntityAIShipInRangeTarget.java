@@ -46,7 +46,7 @@ public class EntityAIShipInRangeTarget extends EntityAITarget {
         //範圍指定
         this.rangeMod = rangeMod;
         this.range2 = (int)this.host.getStateFinal(ID.HIT);
-        this.range1 = (int)(this.rangeMod * (float)this.range2);
+        this.range1 = (int)(this.rangeMod * this.range2);
         this.targetMode = mode;
         
         //檢查範圍, 使range2 > range1 > 1
@@ -67,7 +67,7 @@ public class EntityAIShipInRangeTarget extends EntityAITarget {
     	//update range every second
     	if(this.host != null && this.host.ticksExisted % 32 == 0) {
     		this.range2 = (int)this.host.getStateFinal(ID.HIT);
-            this.range1 = (int)(this.rangeMod * (float)this.range2); 
+            this.range1 = (int)(this.rangeMod * this.range2); 
             //檢查範圍, 使range2 > range1 > 1
             if(this.range1 < 1) {
             	this.range1 = 1;

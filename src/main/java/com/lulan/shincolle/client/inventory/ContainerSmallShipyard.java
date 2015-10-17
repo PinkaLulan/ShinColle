@@ -2,8 +2,6 @@ package com.lulan.shincolle.client.inventory;
 
 import com.lulan.shincolle.crafting.SmallRecipes;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
-import com.lulan.shincolle.utility.LogHelper;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
@@ -11,11 +9,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ICrafting;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.FurnaceRecipes;
-import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.world.World;
 
 /**SLOT POSITION
@@ -159,6 +154,7 @@ public class ContainerSmallShipyard extends Container {
     }
 
 	//clientºÝcontainer±µ¦¬·s­È
+	@Override
 	@SideOnly(Side.CLIENT)
     public void updateProgressBar(int valueType, int updatedValue) {
 		World world = Minecraft.getMinecraft().theWorld;

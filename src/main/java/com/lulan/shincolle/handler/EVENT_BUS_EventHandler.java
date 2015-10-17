@@ -89,7 +89,7 @@ public class EVENT_BUS_EventHandler {
 	    		}
 	    		
 	    		//剩餘不到1的值, 改為機率掉落
-	    		if(event.entity.worldObj.rand.nextFloat() < (ConfigHandler.dropGrudge - (float)numGrudge)) {
+	    		if(event.entity.worldObj.rand.nextFloat() < (ConfigHandler.dropGrudge - numGrudge)) {
     				ItemStack drop = new ItemStack(ModItems.Grudge, 1);
 			        event.drops.add(new EntityItem(event.entity.worldObj, event.entity.posX, event.entity.posY, event.entity.posZ, drop));
     			}
@@ -135,6 +135,16 @@ public class EVENT_BUS_EventHandler {
 		    	attrs[6] = entity.getBonusPoint(ID.HIT);
 		    	attrs[7] = entity.getStateFlagI(ID.F.IsMarried);
 		    	
+		    	/** OWNER SETTING
+		    	 *  1. check player UID first (after rv.22)
+		    	 *  2. if (1) fail, check player UUID string (before rv.22)
+		    	 */
+		    	
+		    	/** set owner info by player's UUID (before rv.22) */
+		    	String ownerUUID = EntityHelper.getPetPlayerUUID(entity);
+		    	nbt.setString("owner", ownerUUID);
+		    	
+		    	/** set owner info by player's UID (after rv.22) */
 		    	//save nbt and spawn entity item
 		    	EntityPlayer owner = EntityHelper.getEntityPlayerByUID(entity.getStateMinor(ID.M.PlayerUID), entity.worldObj);
 		    	
@@ -142,7 +152,7 @@ public class EVENT_BUS_EventHandler {
 		    		nbt.setString("ownername", owner.getDisplayName());
 		    	}
 		    	
-		    	nbt.setTag("ShipInv", list);	//save inventory data to nbt
+		    	nbt.setTag("ShipInv", list);		//save inventory data to nbt
 		    	nbt.setIntArray("Attrs", attrs);	//save attributes data to nbt
 		    	nbt.setInteger("PlayerID", entity.getStateMinor(ID.M.PlayerUID));
 		    	nbt.setInteger("ShipID", entity.getStateMinor(ID.M.ShipUID));
@@ -176,7 +186,7 @@ public class EVENT_BUS_EventHandler {
 			ExtendPlayerProps extProps = (ExtendPlayerProps) event.entity.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 			
 			if(extProps != null && extProps.isRingActive()) {
-				float fogDen = 0.1F - (float)extProps.getMarriageNum() * 0.02F;
+				float fogDen = 0.1F - extProps.getMarriageNum() * 0.02F;
 				
 				if(fogDen < 0.01F) fogDen = 0.001F;
 				

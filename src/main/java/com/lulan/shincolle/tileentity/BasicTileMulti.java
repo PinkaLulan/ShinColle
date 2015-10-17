@@ -20,15 +20,18 @@ abstract public class BasicTileMulti extends BasicTileEntity {
         customName = "";
     }
 	
+	@Override
 	public String getCustomName() {
         return customName;
     }
 
-    public void setCustomName(String customName) {
+    @Override
+	public void setCustomName(String customName) {
         this.customName = customName;
     }
     
-    public boolean hasCustomName() {
+    @Override
+	public boolean hasCustomName() {
         return customName != null && customName.length() > 0;
     }
 

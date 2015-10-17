@@ -73,7 +73,8 @@ public class EntityFXLaserNoTexture extends EntityFX {
 
     //par3 = Yaw的cos值, par4 = Pitch的cos值, par5 = Yaw的sin值
     //par6 = Yaw的sin值乘上-Pitch的sin值, par7 = Yaw的cos值乘上Pitch的sin值
-    public void renderParticle(Tessellator tess, float ticks, float par3, float par4, float par5, float par6, float par7) {	
+    @Override
+	public void renderParticle(Tessellator tess, float ticks, float par3, float par4, float par5, float par6, float par7) {	
 		GL11.glPushMatrix();
 		GL11.glDepthMask(true);
 		GL11.glEnable(GL11.GL_BLEND);
@@ -208,7 +209,8 @@ public class EntityFXLaserNoTexture extends EntityFX {
     /**
      * Called to update the entity's position/logic.
      */
-    public void onUpdate() {
+    @Override
+	public void onUpdate() {
     	//null check
     	if(host == null || target == null) {
     		this.setDead();

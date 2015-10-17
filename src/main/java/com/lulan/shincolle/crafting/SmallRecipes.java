@@ -3,14 +3,12 @@ package com.lulan.shincolle.crafting;
 import java.util.Random;
 
 import com.lulan.shincolle.init.ModItems;
-import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.TileEntityHelper;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntityFurnace;
 
 /**Small Shipyard Recipe Helper
  *  Fuel Cost = BaseCost + CostPerMaterial * ( TotalMaterialAmount - minAmount * 4 )

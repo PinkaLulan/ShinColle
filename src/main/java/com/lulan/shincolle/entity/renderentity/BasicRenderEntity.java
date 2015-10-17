@@ -41,8 +41,10 @@ abstract public class BasicRenderEntity extends Entity {
 	@Override
 	protected void entityInit() {}
 
+	@Override
 	abstract protected void readEntityFromNBT(NBTTagCompound nbt);
 
+	@Override
 	abstract protected void writeEntityToNBT(NBTTagCompound nbt);
 	
 	@Override

@@ -43,7 +43,7 @@ public class TileMultiPolymetal extends BasicTileMulti {
 		//用master的資料return
 		if(tile != null) {
 			if(tile instanceof TileMultiGrudgeHeavy) {
-				return ((TileMultiGrudgeHeavy)tile).SLOTS_ALL;
+				return TileMultiGrudgeHeavy.SLOTS_ALL;
 			} 
 		}
 		return new int[] {};

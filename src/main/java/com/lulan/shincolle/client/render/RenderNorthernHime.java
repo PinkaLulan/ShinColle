@@ -16,15 +16,11 @@ import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-
 import com.lulan.shincolle.client.model.ModelNorthernHime;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.LogHelper;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -145,9 +141,9 @@ public class RenderNorthernHime extends RenderLiving {
             if(itemstack.getItem().requiresMultipleRenderPasses()) {
                 for(i = 0; i < itemstack.getItem().getRenderPasses(itemstack.getItemDamage()); ++i) {
                     int j = itemstack.getItem().getColorFromItemStack(itemstack, i);
-                    f5 = (float)(j >> 16 & 255) / 255.0F;
-                    f2 = (float)(j >> 8 & 255) / 255.0F;
-                    float f3 = (float)(j & 255) / 255.0F;
+                    f5 = (j >> 16 & 255) / 255.0F;
+                    f2 = (j >> 8 & 255) / 255.0F;
+                    float f3 = (j & 255) / 255.0F;
                     GL11.glColor4f(f5, f2, f3, 1.0F);
                     this.renderManager.itemRenderer.renderItem(host, itemstack, i);
                 }
@@ -155,9 +151,9 @@ public class RenderNorthernHime extends RenderLiving {
             //其他一般物品
             else {
                 i = itemstack.getItem().getColorFromItemStack(itemstack, 0);
-                float f4 = (float)(i >> 16 & 255) / 255.0F;
-                f5 = (float)(i >> 8 & 255) / 255.0F;
-                f2 = (float)(i & 255) / 255.0F;
+                float f4 = (i >> 16 & 255) / 255.0F;
+                f5 = (i >> 8 & 255) / 255.0F;
+                f2 = (i & 255) / 255.0F;
                 GL11.glColor4f(f4, f5, f2, 1.0F);
                 this.renderManager.itemRenderer.renderItem(host, itemstack, 0);
             }

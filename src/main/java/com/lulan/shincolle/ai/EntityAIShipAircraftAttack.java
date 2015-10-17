@@ -3,17 +3,9 @@ package com.lulan.shincolle.ai;
 import java.util.Random;
 
 import com.lulan.shincolle.entity.BasicEntityAirplane;
-import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.entity.other.EntityAirplane;
-import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
-
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.util.MathHelper;
 
 /**AIRCRAFT ATTACK AI
  * entity必須實作attackEntityWithAmmo, attackEntityWithHeavyAmmo 兩個方法
@@ -44,7 +36,8 @@ public class EntityAIShipAircraftAttack extends EntityAIBase {
     }
 
     //check ai start condition
-    public boolean shouldExecute() {
+    @Override
+	public boolean shouldExecute() {
     	EntityLivingBase target = this.host.getAttackTarget();
 
         if (this.host.ticksExisted > 18 && target != null && target.isEntityAlive() && 
@@ -72,18 +65,21 @@ public class EntityAIShipAircraftAttack extends EntityAIBase {
     }
 
     //判定是否繼續AI： 有target就繼續, 或者已經移動完畢就繼續
-    public boolean continueExecuting() {
+    @Override
+	public boolean continueExecuting() {
         return this.shouldExecute()  || (target != null && target.isEntityAlive() && !this.host.getShipNavigate().noPath());
     }
 
     //重置AI方法
-    public void resetTask() {
+    @Override
+	public void resetTask() {
         this.target = null;
         this.atkDelay = 0;
     }
 
     //進行AI
-    public void updateTask() {
+    @Override
+	public void updateTask() {
     	boolean onSight = false;	//判定直射是否無障礙物
     	  	
     	if(this.target != null) {  //for lots of NPE issue-.-
