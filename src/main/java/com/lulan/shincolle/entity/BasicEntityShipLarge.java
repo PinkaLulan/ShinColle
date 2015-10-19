@@ -100,8 +100,8 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip implements IS
 	
 	//增加艦載機數量計算
 	@Override
-	public void calcShipAttributes(byte id) {
-		super.calcShipAttributes(id);
+	public void calcShipAttributes() {
+		super.calcShipAttributes();
 		
 		this.maxAircraftLight = 4 + StateMinor[ID.M.ShipLevel] / 5;
 		this.maxAircraftHeavy = 2 + StateMinor[ID.M.ShipLevel] / 10;

@@ -509,8 +509,14 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		return ModelPos;
 	}
 	
-	//called when entity equip changed
-	//this method get equip state from slots, no input parm
+	/**calc equip and all attrs
+	 * step:
+	 * 1. reset all attrs to 0
+	 * 2. calc 6 equip slots
+	 * 3. calc special attrs (if @Override calcShipAttributes())
+	 * 4. calc HP,DEF...etc
+	 * 5. send sync packet
+	 */
 	public void calcEquipAndUpdateState() {
 		ItemStack itemstack = null;
 		float[] equipStat = {0F,0F,0F,0F,0F,0F,0F,0F,0F,0F};
@@ -525,16 +531,17 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		StateEquip[ID.ATK_H] = 0F;
 		StateEquip[ID.ATK_AL] = 0F;
 		StateEquip[ID.ATK_AH] = 0F;
-		EffectEquip[ID.EF_CRI] = 0;
-		EffectEquip[ID.EF_DHIT] = 0;
-		EffectEquip[ID.EF_THIT] = 0;
-		EffectEquip[ID.EF_MISS] = 0;
+		EffectEquip[ID.EF_CRI] = 0F;
+		EffectEquip[ID.EF_DHIT] = 0F;
+		EffectEquip[ID.EF_THIT] = 0F;
+		EffectEquip[ID.EF_MISS] = 0F;
 		
 		//calc equip slots
 		for(int i=0; i<ContainerShipInventory.SLOTS_SHIPINV; i++) {
 			itemstack = this.ExtProps.slots[i];
 			if(itemstack != null) {
 				equipStat = EquipCalc.getEquipStat(this, itemstack);
+				
 				StateEquip[ID.HP] += equipStat[ID.HP];
 				StateEquip[ID.DEF] += equipStat[ID.DEF];
 				StateEquip[ID.SPD] += equipStat[ID.SPD];
@@ -552,25 +559,27 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			}	
 		}
 		//update value
-		calcShipAttributes(this.getShipClass());
+		calcShipAttributes();
 	}
 	
-	//setter	
-	//setting attributes, called at load nbt data & init mob
-	public void calcShipAttributes(byte id) {
-		//init or renew bonus value, for short value: discard decimal
+	/** calc ship attrs */
+	public void calcShipAttributes() {
+		//get attrs value
+		float[] getStat = Values.ShipAttrMap.get(this.getShipClass());
+		
 		//HP = (base + equip + (point + 1) * level * typeModify) * config scale
-		StateFinal[ID.HP] = (Values.BaseHP[id] + StateEquip[ID.HP] + (float)(BonusPoint[ID.HP]+1) * (float)StateMinor[ID.M.ShipLevel] * TypeModify[ID.HP]) * (float)ConfigHandler.scaleShip[ID.HP]; 
+		StateFinal[ID.HP] = (getStat[ID.ShipAttr.BaseHP] + StateEquip[ID.HP] + (float)(BonusPoint[ID.HP]+1F) * (float)StateMinor[ID.M.ShipLevel] * TypeModify[ID.HP]) * (float)ConfigHandler.scaleShip[ID.HP]; 
 		//DEF = base + ((point + 1) * level / 3 * 0.4 + equip) * typeModify
-		StateFinal[ID.DEF] = (Values.BaseDEF[id] + StateEquip[ID.DEF] + ((float)(BonusPoint[ID.DEF]+1) * ((float)StateMinor[ID.M.ShipLevel])/3F) * 0.4F * TypeModify[ID.DEF]) * (float)ConfigHandler.scaleShip[ID.DEF];
+		StateFinal[ID.DEF] = (getStat[ID.ShipAttr.BaseDEF] + StateEquip[ID.DEF] + ((float)(BonusPoint[ID.DEF]+1F) * ((float)StateMinor[ID.M.ShipLevel])/3F) * 0.4F * TypeModify[ID.DEF]) * (float)ConfigHandler.scaleShip[ID.DEF];
 		//SPD = base + ((point + 1) * level / 10 * 0.02 + equip) * typeModify
-		StateFinal[ID.SPD] = (Values.BaseSPD[id] + StateEquip[ID.SPD] + ((float)(BonusPoint[ID.SPD]+1) * ((float)StateMinor[ID.M.ShipLevel])/10F) * 0.02F * TypeModify[ID.SPD]) * (float)ConfigHandler.scaleShip[ID.SPD];
+		StateFinal[ID.SPD] = (getStat[ID.ShipAttr.BaseSPD] + StateEquip[ID.SPD] + ((float)(BonusPoint[ID.SPD]+1F) * ((float)StateMinor[ID.M.ShipLevel])/10F) * 0.02F * TypeModify[ID.SPD]) * (float)ConfigHandler.scaleShip[ID.SPD];
 		//MOV = base + ((point + 1) * level / 10 * 0.01 + equip) * typeModify
-		StateFinal[ID.MOV] = (Values.BaseMOV[id] + StateEquip[ID.MOV] + ((float)(BonusPoint[ID.MOV]+1) * ((float)StateMinor[ID.M.ShipLevel])/10F) * 0.01F * TypeModify[ID.MOV]) * (float)ConfigHandler.scaleShip[ID.MOV];
-		//HIT = base + ((point + 1) * level / 10 * 0.4 + equip) * typeModify
-		StateFinal[ID.HIT] = (Values.BaseHIT[id] + StateEquip[ID.HIT] + ((float)(BonusPoint[ID.HIT]+1) * ((float)StateMinor[ID.M.ShipLevel])/10F) * 0.3F * TypeModify[ID.HIT]) * (float)ConfigHandler.scaleShip[ID.HIT];
-		//ATK = (base + equip + ((point + 1) * level / 3) * typeModify) * config scale
-		float atk = Values.BaseATK[id] + ((float)(BonusPoint[ID.ATK]+1) * ((float)StateMinor[ID.M.ShipLevel])/3F) * 0.5F * TypeModify[ID.ATK];
+		StateFinal[ID.MOV] = (getStat[ID.ShipAttr.BaseMOV] + StateEquip[ID.MOV] + ((float)(BonusPoint[ID.MOV]+1F) * ((float)StateMinor[ID.M.ShipLevel])/10F) * 0.01F * TypeModify[ID.MOV]) * (float)ConfigHandler.scaleShip[ID.MOV];
+		//HIT = base + ((point + 1) * level / 10 * 0.3 + equip) * typeModify
+		StateFinal[ID.HIT] = (getStat[ID.ShipAttr.BaseHIT] + StateEquip[ID.HIT] + ((float)(BonusPoint[ID.HIT]+1F) * ((float)StateMinor[ID.M.ShipLevel])/10F) * 0.3F * TypeModify[ID.HIT]) * (float)ConfigHandler.scaleShip[ID.HIT];
+		//ATK = (base + equip + ((point + 1) * level / 3) * 0.5 * typeModify) * config scale
+		float atk = getStat[ID.ShipAttr.BaseATK] + ((float)(BonusPoint[ID.ATK]+1F) * ((float)StateMinor[ID.M.ShipLevel])/3F) * 0.5F * TypeModify[ID.ATK];
+		
 		StateFinal[ID.ATK] = (atk + StateEquip[ID.ATK]) * (float)ConfigHandler.scaleShip[ID.ATK];
 		StateFinal[ID.ATK_H] = (atk * 4F + StateEquip[ID.ATK_H]) * (float)ConfigHandler.scaleShip[ID.ATK];
 		StateFinal[ID.ATK_AL] = (atk + StateEquip[ID.ATK_AL]) * (float)ConfigHandler.scaleShip[ID.ATK];
@@ -626,7 +635,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		}
 	}
 	
-	//set next exp value, no sync or update (for client load nbt data, gui display)
+	//set next exp value (for client load nbt data, gui display)
 	public void setExpNext() {
 		StateMinor[ID.M.ExpNext] = StateMinor[ID.M.ShipLevel] * 20 + 20;
 	}
@@ -773,12 +782,15 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	
 	//called when entity spawn, set the type modify
 	public void initTypeModify() {
-		TypeModify[ID.HP] = Values.ModHP[this.getShipClass()];
-		TypeModify[ID.ATK] = Values.ModATK[this.getShipClass()];
-		TypeModify[ID.DEF] = Values.ModDEF[this.getShipClass()];
-		TypeModify[ID.SPD] = Values.ModSPD[this.getShipClass()];
-		TypeModify[ID.MOV] = Values.ModMOV[this.getShipClass()];
-		TypeModify[ID.HIT] = Values.ModHIT[this.getShipClass()];
+		//get attrs value
+		float[] getStat = Values.ShipAttrMap.get(this.getShipClass());
+				
+		TypeModify[ID.HP] = getStat[ID.ShipAttr.ModHP];
+		TypeModify[ID.ATK] = getStat[ID.ShipAttr.ModATK];
+		TypeModify[ID.DEF] = getStat[ID.ShipAttr.ModDEF];
+		TypeModify[ID.SPD] = getStat[ID.ShipAttr.ModSPD];
+		TypeModify[ID.MOV] = getStat[ID.ShipAttr.ModMOV];
+		TypeModify[ID.HIT] = getStat[ID.ShipAttr.ModHIT];
 	}
 
 	@Override

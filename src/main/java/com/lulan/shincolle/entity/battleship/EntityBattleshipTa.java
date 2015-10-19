@@ -75,11 +75,11 @@ public class EntityBattleshipTa extends BasicEntityShip implements ISummonAttack
 
 	//Ta級額外增加屬性
 	@Override
-	public void calcShipAttributes(byte id) {
+	public void calcShipAttributes() {
 		EffectEquip[ID.EF_CRI] = EffectEquip[ID.EF_CRI] + 0.1F;
 		EffectEquip[ID.EF_MISS] = EffectEquip[ID.EF_MISS] + 0.1F;
 		
-		super.calcShipAttributes(id);	
+		super.calcShipAttributes();	
 	}
 	
 	@Override

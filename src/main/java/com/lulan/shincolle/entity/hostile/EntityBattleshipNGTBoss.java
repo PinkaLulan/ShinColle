@@ -366,5 +366,11 @@ public class EntityBattleshipNGTBoss extends BasicEntityShipBoss {
         return isTargetHurt;
 	}
 
+	@Override
+	public int getDamageType() {
+		return ID.ShipDmgType.BATTLESHIP;
+	}
+	
+
 }
 

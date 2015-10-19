@@ -205,5 +205,11 @@ public class EntityDestroyerShimakazeBoss extends BasicEntityShipBoss {
         
         return true;
 	}
+  	
+  	@Override
+	public int getDamageType() {
+		return ID.ShipDmgType.DESTROYER;
+	}
+  	
 
 }

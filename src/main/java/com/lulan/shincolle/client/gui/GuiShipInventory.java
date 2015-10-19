@@ -395,7 +395,7 @@ public class GuiShipInventory extends GuiContainer {
 
 		//draw lv/hp name
 		this.fontRendererObj.drawStringWithShadow(lvMark, 223-this.fontRendererObj.getStringWidth(lvMark), 6, 65535);
-		this.fontRendererObj.drawStringWithShadow(hpMark, 144-this.fontRendererObj.getStringWidth(hpMark), 6, 65535);
+		this.fontRendererObj.drawStringWithShadow(hpMark, 137-this.fontRendererObj.getStringWidth(hpMark), 6, 65535);
 		
 		//draw level: 150->gold other->white
 		if(entity.getStateMinor(ID.M.ShipLevel) < 150) {
@@ -408,7 +408,7 @@ public class GuiShipInventory extends GuiContainer {
 
 		//draw hp/maxhp, if currHP < maxHP, use darker color
 		color = GuiHelper.pickColor(entity.getBonusPoint(ID.HP));
-		this.fontRendererObj.drawStringWithShadow("/"+String.valueOf(hpMax), 148 + this.fontRendererObj.getStringWidth(String.valueOf(hpCurrent)), 6, color);
+		this.fontRendererObj.drawStringWithShadow("/"+String.valueOf(hpMax), 140 + this.fontRendererObj.getStringWidth(String.valueOf(hpCurrent)), 6, color);
 		if(hpCurrent < hpMax) {
 			switch(entity.getBonusPoint(ID.HP)) {
 			case 0:
@@ -425,7 +425,7 @@ public class GuiShipInventory extends GuiContainer {
 				break;
 			}
 		}
-		this.fontRendererObj.drawStringWithShadow(String.valueOf(hpCurrent), 147, 6, color);	
+		this.fontRendererObj.drawStringWithShadow(String.valueOf(hpCurrent), 139, 6, color);	
 				
 		//draw string in different page
 		switch(this.showPage) {

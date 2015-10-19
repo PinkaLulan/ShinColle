@@ -169,6 +169,35 @@ public class ID {
 		public static final byte Phase = 5;				//entity phase
 	}
 	
+	/**ship attrs id, for Values.ShipAttrMap */
+	public static final class ShipAttr {
+		public static final byte BaseHP = 0;
+		public static final byte BaseATK = 1;
+		public static final byte BaseDEF = 2;
+		public static final byte BaseSPD = 3;
+		public static final byte BaseMOV = 4;
+		public static final byte BaseHIT = 5;
+		public static final byte ModHP = 6;
+		public static final byte ModATK = 7;
+		public static final byte ModDEF = 8;
+		public static final byte ModSPD = 9;
+		public static final byte ModMOV = 10;
+		public static final byte ModHIT = 11;
+	}
+	
+	/**ship damage type*/
+	public static final class ShipDmgType {
+		public static final byte UNDEFINED = 0;			//其他, 未定義
+		public static final byte DESTROYER = 1;			//驅逐
+		public static final byte CRUISER = 2;			//巡洋
+		public static final byte CARRIER = 3;			//空母
+		public static final byte AVIATION = 4;			//航戰
+		public static final byte BATTLESHIP	= 5;		//戰艦
+		public static final byte TRANSPORT = 6;			//運輸
+		public static final byte SUBMARINE = 7;			//潛艇
+		public static final byte AIRPLANE = 8;			//飛行物
+	}
+	
 	/**ship type*/
 	public static final class ShipType {				//for GUI display
 		public static final byte DESTROYER = 0;			//驅逐艦
@@ -183,19 +212,6 @@ public class ID {
 		public static final byte DEMON = 9;				//鬼級
 		public static final byte HIME = 10;				//姬級
 		public static final byte FORTRESS = 11;			//浮游要塞
-	}
-	
-	/**ship damage type*/
-	public static final class ShipDmgType {
-		public static final byte UNDEFINED = 0;			//其他, 未定義
-		public static final byte DESTROYER = 1;			//驅逐
-		public static final byte CRUISER = 2;			//巡洋
-		public static final byte CARRIER = 3;			//空母
-		public static final byte AVIATION = 4;			//航戰
-		public static final byte BATTLESHIP	= 5;		//戰艦
-		public static final byte TRANSPORT = 6;			//運輸
-		public static final byte SUBMARINE = 7;			//潛艇
-		public static final byte AIRPLANE = 8;			//飛行物
 	}
 	
 	/**ship state*/
@@ -318,8 +334,8 @@ public class ID {
 	public static final byte S_AirfieldHime = 21;
 	public static final byte S_ArmoredCarrierHime = 22;
 	public static final byte S_AnchorageHime = 23;
-	public static final byte S_EscortFortress = 24;
-	public static final byte S_FloatingFortress = 25;
+	public static final byte S_HarbourWD = 24;
+	public static final byte S_AnchorageWD = 25;
 	public static final byte S_BattleshipHime = 26;
 	public static final byte S_DestroyerHime = 27;
 	public static final byte S_HarbourHime = 28;
@@ -336,10 +352,8 @@ public class ID {
 	public static final byte S_SubmarineU511 = 38;
 	public static final byte S_SubmarineRo500 = 39;
 	
-	public static final byte S_HarbourWD = 40;
-	public static final byte S_AnchorageWD = 41;
-	public static final byte S_SeaplaneHime = 42;
-	public static final byte S_AirdefenseHime = 43;
+	public static final byte S_SeaplaneHime = 40;
+	public static final byte S_AirdefenseHime = 41;
 	
 	public static final byte S_BattleshipYamato = 100;
 		
