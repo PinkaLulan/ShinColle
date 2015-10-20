@@ -51,6 +51,7 @@ import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.reference.Values;
+import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
@@ -572,21 +573,21 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		//DEF = base + ((point + 1) * level / 3 * 0.4 + equip) * typeModify
 		StateFinal[ID.DEF] = (getStat[ID.ShipAttr.BaseDEF] + StateEquip[ID.DEF] + ((float)(BonusPoint[ID.DEF]+1F) * ((float)StateMinor[ID.M.ShipLevel])/3F) * 0.4F * TypeModify[ID.DEF]) * (float)ConfigHandler.scaleShip[ID.DEF];
 		//SPD = base + ((point + 1) * level / 10 * 0.02 + equip) * typeModify
-		StateFinal[ID.SPD] = (getStat[ID.ShipAttr.BaseSPD] + StateEquip[ID.SPD] + ((float)(BonusPoint[ID.SPD]+1F) * ((float)StateMinor[ID.M.ShipLevel])/10F) * 0.02F * TypeModify[ID.SPD]) * (float)ConfigHandler.scaleShip[ID.SPD];
+		StateFinal[ID.SPD] = (getStat[ID.ShipAttr.BaseSPD] + StateEquip[ID.SPD] + ((float)(BonusPoint[ID.SPD]+1F) * ((float)StateMinor[ID.M.ShipLevel])/10F) * 0.04F * TypeModify[ID.SPD]) * (float)ConfigHandler.scaleShip[ID.SPD];
 		//MOV = base + ((point + 1) * level / 10 * 0.01 + equip) * typeModify
-		StateFinal[ID.MOV] = (getStat[ID.ShipAttr.BaseMOV] + StateEquip[ID.MOV] + ((float)(BonusPoint[ID.MOV]+1F) * ((float)StateMinor[ID.M.ShipLevel])/10F) * 0.01F * TypeModify[ID.MOV]) * (float)ConfigHandler.scaleShip[ID.MOV];
+		StateFinal[ID.MOV] = (getStat[ID.ShipAttr.BaseMOV] + StateEquip[ID.MOV] + ((float)(BonusPoint[ID.MOV]+1F) * ((float)StateMinor[ID.M.ShipLevel])/10F) * 0.02F * TypeModify[ID.MOV]) * (float)ConfigHandler.scaleShip[ID.MOV];
 		//HIT = base + ((point + 1) * level / 10 * 0.3 + equip) * typeModify
-		StateFinal[ID.HIT] = (getStat[ID.ShipAttr.BaseHIT] + StateEquip[ID.HIT] + ((float)(BonusPoint[ID.HIT]+1F) * ((float)StateMinor[ID.M.ShipLevel])/10F) * 0.3F * TypeModify[ID.HIT]) * (float)ConfigHandler.scaleShip[ID.HIT];
+		StateFinal[ID.HIT] = (getStat[ID.ShipAttr.BaseHIT] + StateEquip[ID.HIT] + ((float)(BonusPoint[ID.HIT]+1F) * ((float)StateMinor[ID.M.ShipLevel])/10F) * 0.2F * TypeModify[ID.HIT]) * (float)ConfigHandler.scaleShip[ID.HIT];
 		//ATK = (base + equip + ((point + 1) * level / 3) * 0.5 * typeModify) * config scale
-		float atk = getStat[ID.ShipAttr.BaseATK] + ((float)(BonusPoint[ID.ATK]+1F) * ((float)StateMinor[ID.M.ShipLevel])/3F) * 0.5F * TypeModify[ID.ATK];
+		float atk = getStat[ID.ShipAttr.BaseATK] + ((float)(BonusPoint[ID.ATK]+1F) * ((float)StateMinor[ID.M.ShipLevel])/3F) * 0.4F * TypeModify[ID.ATK];
 		
 		StateFinal[ID.ATK] = (atk + StateEquip[ID.ATK]) * (float)ConfigHandler.scaleShip[ID.ATK];
 		StateFinal[ID.ATK_H] = (atk * 4F + StateEquip[ID.ATK_H]) * (float)ConfigHandler.scaleShip[ID.ATK];
 		StateFinal[ID.ATK_AL] = (atk + StateEquip[ID.ATK_AL]) * (float)ConfigHandler.scaleShip[ID.ATK];
 		StateFinal[ID.ATK_AH] = (atk * 4F + StateEquip[ID.ATK_AH]) * (float)ConfigHandler.scaleShip[ID.ATK];
 		
-		//KB Resistance = Level / 10 * 0.04
-		float resisKB = ((StateMinor[ID.M.ShipLevel])/10F) * 0.067F;
+		//KB Resistance
+		float resisKB = ((StateMinor[ID.M.ShipLevel])/10F) * 0.05F;
 
 		//max cap
 		for(int i = 0; i < ConfigHandler.limitShip.length; i++) {
@@ -637,7 +638,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	
 	//set next exp value (for client load nbt data, gui display)
 	public void setExpNext() {
-		StateMinor[ID.M.ExpNext] = StateMinor[ID.M.ShipLevel] * 20 + 20;
+		StateMinor[ID.M.ExpNext] = StateMinor[ID.M.ShipLevel] * ConfigHandler.expMod + ConfigHandler.expMod;
 	}
 		
 	//called when entity exp++
@@ -650,7 +651,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				//level up sound
 				this.worldObj.playSoundAtEntity(this, "random.levelup", 0.75F, 1.0F);
 				StateMinor[ID.M.ExpCurrent] -= StateMinor[ID.M.ExpNext];	//level up
-				StateMinor[ID.M.ExpNext] = (StateMinor[ID.M.ShipLevel] + 1) * 20 + 20;
+				StateMinor[ID.M.ExpNext] = (StateMinor[ID.M.ShipLevel] + 1) * ConfigHandler.expMod + ConfigHandler.expMod;
 				setShipLevel(++StateMinor[ID.M.ShipLevel], true);
 			}
 		}	
@@ -1403,7 +1404,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         
         //debug
 //      	LogHelper.info("DEBUG : ship onUpdate: flag: side: "+this.worldObj.isRemote+" "+this.StateMinor[ID.M.GuardType]);
-      		
+      	
         //server side check
         if((!worldObj.isRemote)) {
         	//clear dead target for vanilla AI bug
@@ -1503,8 +1504,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         		}
         		
             	/** debug info */
-//            	LogHelper.info("DEBUG : ship update: eid: "+
-//            					ServerProxy.getShipWorldData(106));
+//            	LogHelper.info("DEBUG : ship update: "+Values.ModDmgDay[5][6]+" "+Values.ModDmgNight[2][5]);
 //            	LogHelper.info("DEBUG : ship update: eid: "+ServerProxy.getNextShipID()+" "+ServerProxy.getNextPlayerID()+" "+ConfigHandler.nextPlayerID+" "+ConfigHandler.nextShipID);
 //        		if(this.worldObj.provider.dimensionId == 0) {	//main world
 //        			LogHelper.info("DEBUG : ship pos dim "+ClientProxy.getClientWorld().provider.dimensionId+" "+this.dimension+" "+this.posX+" "+this.posY+" "+this.posZ);
@@ -1903,10 +1903,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			this.setSitting(false);
 			return super.attackEntityFrom(attacker, atk);
 		}
-
-		//進行def計算
-        float reduceAtk = atk * (1F - (StateFinal[ID.DEF] - rand.nextInt(20) + 10F) / 100F);    
-        if(atk < 0) { atk = 0; }
         
         //若掉到世界外, 則傳送回y=4
         if(attacker.getDamageType().equals("outOfWorld")) {
@@ -1926,12 +1922,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				return false;
 			}
 			
-			//若攻擊方同樣為ship, 則傷害降為limit ship所設定的def上限 (使ship vs ship能打久一點)
-			if(entity instanceof BasicEntityShip || entity instanceof BasicEntityAirplane || 
-			   entity instanceof EntityRensouhou || entity instanceof BasicEntityMount) {
-				reduceAtk = reduceAtk * (100F - (float)ConfigHandler.limitShip[ID.DEF]) * 0.01F;
-			}
-			
 			//若攻擊方為player, 則檢查friendly fire
 			if(entity instanceof EntityPlayer) {
 				//若禁止friendlyFire, 則不造成傷害
@@ -1939,6 +1929,25 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 					return false;
 				}
 			}
+			
+			//進行def計算
+			float reduceAtk = atk * (1F - (StateFinal[ID.DEF] - rand.nextInt(20) + 10F) / 100F);    
+			
+			//ship vs ship, config傷害調整
+			if(entity instanceof BasicEntityShip || entity instanceof BasicEntityAirplane || 
+			   entity instanceof EntityRensouhou || entity instanceof BasicEntityMount) {
+				reduceAtk = reduceAtk * (float)ConfigHandler.dmgSvS * 0.01F;
+			}
+			
+			//ship vs ship, damage type傷害調整
+			if(entity instanceof IShipAttackBase) {
+				//get attack time for damage modifier setting (day, night or ...etc)
+				int modSet = this.worldObj.provider.isDaytime() ? 0 : 1;
+				reduceAtk = CalcHelper.calcDamageByType(reduceAtk, ((IShipAttackBase) entity).getDamageType(), this.getDamageType(), modSet);
+			}
+			
+			//min damage設為1
+	        if(reduceAtk < 1) reduceAtk = 1;
 
 			//取消坐下動作
 			this.setSitting(false);

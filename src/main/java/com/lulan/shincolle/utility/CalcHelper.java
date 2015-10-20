@@ -1,5 +1,8 @@
 package com.lulan.shincolle.utility;
 
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Values;
+
 
 /**FORMAT HELPER
  * format and math method
@@ -61,6 +64,29 @@ public class CalcHelper {
 			}
 		}
 	}
-    
+	
+	/** damage calc by damage type 
+	 *  dmg: damage value
+	 *  typeAtk: attacker type id
+	 *  typeDef: defender type id
+	 *  modSet: use which damage modifier setting: 0:day 1:night 2+:no use
+	 */
+    public static float calcDamageByType(float dmg, int typeAtk, int typeDef, int modSet) {
+    	//if type = undefined, return org damage
+    	if(typeAtk <= 0 || typeDef <= 0) return dmg;
+    	
+    	//get damage modifier
+    	float mod = 1F;
+    	
+    	if(modSet > 0) {
+    		mod = Values.ModDmgNight[typeAtk-1][typeDef-1];
+    	}
+    	else {
+    		mod = Values.ModDmgDay[typeAtk-1][typeDef-1];
+    	}
+    	
+    	return dmg * mod;
+    	
+    }
 
 }

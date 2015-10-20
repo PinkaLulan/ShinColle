@@ -20,12 +20,14 @@ import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.entity.hostile.EntityRensouhouBoss;
+import com.lulan.shincolle.entity.other.EntityRensouhou;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
@@ -124,10 +126,6 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
     	if(this.getStateEmotion(ID.S.Emotion) != ID.Emotion.O_O) {
     		this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
     	}
-    	
-    	//進行def計算
-        float reduceAtk = atk * (1F - this.defValue / 100F);    
-        if(atk < 0) { atk = 0; }
         
         //無敵的entity傷害無效
   		if(this.isEntityInvulnerable()) {	
@@ -147,9 +145,25 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
   	        	this.setDead();
   	        	return false;
   	        }
+
+  	        //def calc
+  			float reduceAtk = atk;
+  			
+  			reduceAtk = atk * (1F - this.getDefValue() * 0.01F);
+  			
+  			//ship vs ship, damage type傷害調整
+  			if(entity instanceof IShipAttackBase) {
+  				//get attack time for damage modifier setting (day, night or ...etc)
+  				int modSet = this.worldObj.provider.isDaytime() ? 0 : 1;
+  				reduceAtk = CalcHelper.calcDamageByType(reduceAtk, ((IShipAttackBase) entity).getDamageType(), this.getDamageType(), modSet);
+  			}
+  			
+  	        if(reduceAtk < 1) reduceAtk = 1;
+  	        
+  	        return super.attackEntityFrom(attacker, reduceAtk);
   		}
     	
-    	return super.attackEntityFrom(attacker, reduceAtk);
+    	return false;
 	}
 	
 	//clear AI

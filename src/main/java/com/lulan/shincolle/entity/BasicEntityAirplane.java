@@ -21,11 +21,13 @@ import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.entity.other.EntityAirplane;
+import com.lulan.shincolle.entity.other.EntityRensouhou;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
@@ -303,10 +305,27 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 		
 		//def calc
 		float reduceAtk = atk;
+		
 		if(host != null) {
 			reduceAtk = atk * (1F - this.getDefValue() * 0.01F);
-		}  
-        if(atk < 0) { atk = 0; }
+		}
+		
+		//ship vs ship, config傷害調整
+		Entity entity = source.getSourceOfDamage();
+		
+		if(entity instanceof BasicEntityShip || entity instanceof BasicEntityAirplane || 
+		   entity instanceof EntityRensouhou || entity instanceof BasicEntityMount) {
+			reduceAtk = reduceAtk * (float)ConfigHandler.dmgSummon * 0.01F;
+		}
+		
+		//ship vs ship, damage type傷害調整
+		if(entity instanceof IShipAttackBase) {
+			//get attack time for damage modifier setting (day, night or ...etc)
+			int modSet = this.worldObj.provider.isDaytime() ? 0 : 1;
+			reduceAtk = CalcHelper.calcDamageByType(reduceAtk, ((IShipAttackBase) entity).getDamageType(), this.getDamageType(), modSet);
+		}
+		
+        if(reduceAtk < 1) reduceAtk = 1;
         
         return super.attackEntityFrom(source, reduceAtk);
     }

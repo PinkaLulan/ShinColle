@@ -36,9 +36,14 @@ public class ServerProxy extends CommonProxy {
 	 * for owner/team check, use map for data cache, save to .dat file when server close
 	 * entity建立時會讀取此map來取得owner id, 並存在自己的nbt中, 以後就直接以該entity存的owner id來判斷owner
 	 * 
+	 * player UID in other entity (owner check):
 	 * -1/0 = no owner
-	 * 100~N = player
+	 * 1~N = player owner
 	 * -100 = hostile mob
+	 * 
+	 * team id:
+	 * -1/0 = not in pvp mode
+	 * 1~N = pvp mode: team 1~N
 	 * 
 	 * mapPlayerID <player UID(Integer), player data(int[])>
 	 * player data = 0:player entity id(int), 1:player team id(int) 2:world id(int)

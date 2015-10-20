@@ -188,14 +188,13 @@ public class ID {
 	/**ship damage type*/
 	public static final class ShipDmgType {
 		public static final byte UNDEFINED = 0;			//其他, 未定義
-		public static final byte DESTROYER = 1;			//驅逐
-		public static final byte CRUISER = 2;			//巡洋
-		public static final byte CARRIER = 3;			//空母
-		public static final byte AVIATION = 4;			//航戰
-		public static final byte BATTLESHIP	= 5;		//戰艦
-		public static final byte TRANSPORT = 6;			//運輸
-		public static final byte SUBMARINE = 7;			//潛艇
-		public static final byte AIRPLANE = 8;			//飛行物
+		public static final byte CARRIER = 1;			//空母
+		public static final byte AVIATION = 2;			//航戰
+		public static final byte BATTLESHIP	= 3;		//戰艦
+		public static final byte CRUISER = 4;			//巡洋
+		public static final byte DESTROYER = 5;			//驅逐
+		public static final byte SUBMARINE = 6;			//潛艇
+		public static final byte AIRPLANE = 7;			//飛行物
 	}
 	
 	/**ship type*/

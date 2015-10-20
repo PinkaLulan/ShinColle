@@ -37,6 +37,10 @@ public class ConfigHandler {
 	public static double[] scaleBossNGT = new double[] {2400D, 200D, 92D, 2D, 0.4D, 24D};
 	public static double[] scaleMobU511 = new double[] {100D, 20D, 30D, 1D, 0.4D, 12D, 200D};
 	
+	public static int dmgSvS = 20;		//ship vs ship damage modifier, 20 = dmg * 20%
+	public static int dmgSummon = 100;	//summons damage modifier, 20 = dmg * 20%
+	public static int expMod = 20;		//ship exp per level, ex: 20 => lv 15 exp req = 15*20+20
+	
 	public static boolean timeKeeping = true;
 	public static float timeKeepingVolume = 1.0F;
 	public static float shipVolume = 1.0F;
@@ -94,6 +98,11 @@ public class ConfigHandler {
 		propBossNGT = config.get("ship setting", "NagatoBoss_scale", scaleBossNGT, "Boss:Nagato Attrs: HP, firepower, armor, attack speed, move speed, range");
 		propMobU511 = config.get("ship setting", "MobU511_scale", scaleMobU511, "Mob:U511/Ro500 Attrs: HP, firepower, armor, attack speed, move speed, range, spawnPerSquid");
 
+		//ship vs ship damage modifier
+		dmgSvS = config.getInt("SVS_DmgTaken", "ship setting", 20, 0, 10000, "Ship vs Ship damage modifier, 20 = damage * 20% ");
+		dmgSummon = config.getInt("Summon_DmgTaken", "ship setting", 100, 0, 10000, "summons (mounts, aircraft ...etc) damage modifier, 20 = damage * 20% ");
+		expMod = config.getInt("EXP_Modifier", "ship setting", 20, 0, 10000, "ship experience modifier, 20 = level 150: 150*20+20 = 3020");
+		
 		//WORLD GEN
 		polyOreBaseRate = config.getInt("Polymetal_Ore", "world gen", 7, 0, 100, "Polymetallic Ore clusters in one chunk");
 		polyGravelBaseRate = config.getInt("Polymetal_Gravel", "world gen", 4, 0, 100, "Polymetallic Gravel clusters in one chunk");
