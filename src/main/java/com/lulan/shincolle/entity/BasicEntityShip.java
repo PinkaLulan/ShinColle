@@ -1908,7 +1908,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         if(attacker.getDamageType().equals("outOfWorld")) {
         	//取消坐下動作
 			this.setSitting(false);
-        	this.posY = 4D;
+			this.mountEntity(null);
+        	this.setPositionAndUpdate(this.posX, 4D, this.posZ);
+        	this.motionX = 0D;
+        	this.motionY = 0D;
+        	this.motionZ = 0D;
         	return false;
         }
         
