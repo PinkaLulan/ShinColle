@@ -1906,6 +1906,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         
         //若掉到世界外, 則傳送回y=4
         if(attacker.getDamageType().equals("outOfWorld")) {
+        	//取消坐下動作
+			this.setSitting(false);
         	this.posY = 4D;
         	return false;
         }
@@ -1918,7 +1920,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			Entity entity = attacker.getSourceOfDamage();
 			
 			//不會對自己造成傷害, 可免疫毒/掉落/窒息等傷害 (此為自己對自己造成傷害)
-			if(entity.equals(this)) {  
+			if(entity.equals(this)) {
+				//取消坐下動作
+				this.setSitting(false);
 				return false;
 			}
 			
