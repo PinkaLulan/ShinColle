@@ -88,7 +88,7 @@ public class EntityBattleshipNGTBoss extends BasicEntityShipBoss {
 
   		//client side
   		if(worldObj.isRemote) {
-  			if(this.ticksExisted % 5 == 0) {
+  			if(this.ticksExisted % 10 == 0) {
   				if(getStateEmotion(ID.S.Phase) == 1 || getStateEmotion(ID.S.Phase) == 3) {
    	  				//生成氣彈特效
   	  				ParticleHelper.spawnAttackParticleAtEntity(this, 0.3D, 2D, 0D, (byte)1);

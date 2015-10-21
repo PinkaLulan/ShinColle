@@ -84,7 +84,7 @@ public class CalcHelper {
     	else {
     		mod = Values.ModDmgDay[typeAtk-1][typeDef-1];
     	}
-    	
+//    	LogHelper.info("DEBUG : calc helper: org dmg "+dmg+" new dmg "+(dmg*mod));
     	return dmg * mod;
     	
     }

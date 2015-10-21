@@ -236,7 +236,10 @@ public class ParticleHelper {
 		case 6: 	//largesmoke
 			for(int i=0; i<20; i++) {
 				ran1 = rand.nextFloat() - 0.5F;
-				world.spawnParticle("largesmoke", posX+lookX-0.5D+0.05D*i, posY+0.8D+ran1, posZ+lookZ-0.5D+0.05D*i, lookX*0.2D, 0.05D, lookZ*0.2D);
+				ran2 = rand.nextFloat();
+				ran3 = rand.nextFloat();
+				world.spawnParticle("largesmoke", posX+lookX-0.5D+0.05D*i, posY+0.6D+ran1, posZ+lookZ-0.5D+0.05D*i, lookX*0.3D*ran2, 0.05D*ran2, lookZ*0.3D*ran2);
+				world.spawnParticle("largesmoke", posX+lookX-0.5D+0.05D*i, posY+1.0D+ran1, posZ+lookZ-0.5D+0.05D*i, lookX*0.3D*ran3, 0.05D*ran3, lookZ*0.3D*ran3);
 			}
 			break;
 		case 7: 	//flame+large smoke: for heavy damage
@@ -314,8 +317,12 @@ public class ParticleHelper {
 			
 			for(int i=0; i<12; i++) {
 				ran1 = rand.nextFloat() - 0.5F;
-				world.spawnParticle("largesmoke", posX+lookX-0.5D+0.05D*i+newPos1[1], posY+0.8D+ran1, posZ+lookZ-0.5D+0.05D*i+newPos1[0], lookX*0.2D, 0.05D, lookZ*0.2D);
-				world.spawnParticle("largesmoke", posX+lookX-0.5D+0.05D*i+newPos2[1], posY+0.8D+ran1, posZ+lookZ-0.5D+0.05D*i+newPos2[0], lookX*0.2D, 0.05D, lookZ*0.2D);
+				ran2 = rand.nextFloat();
+				ran3 = rand.nextFloat();
+				world.spawnParticle("largesmoke", posX+lookX-0.5D+0.05D*i+newPos1[1], posY+0.6D+ran1, posZ+lookZ-0.5D+0.05D*i+newPos1[0], lookX*0.3D*ran2, 0.05D*ran2, lookZ*0.3D*ran2);
+				world.spawnParticle("largesmoke", posX+lookX-0.5D+0.05D*i+newPos2[1], posY+0.6D+ran1, posZ+lookZ-0.5D+0.05D*i+newPos2[0], lookX*0.3D*ran3, 0.05D*ran3, lookZ*0.3D*ran3);
+				world.spawnParticle("largesmoke", posX+lookX-0.5D+0.05D*i+newPos1[1], posY+0.9D+ran1, posZ+lookZ-0.5D+0.05D*i+newPos1[0], lookX*0.3D*ran3, 0.05D*ran3, lookZ*0.3D*ran3);
+				world.spawnParticle("largesmoke", posX+lookX-0.5D+0.05D*i+newPos2[1], posY+0.9D+ran1, posZ+lookZ-0.5D+0.05D*i+newPos2[0], lookX*0.3D*ran2, 0.05D*ran2, lookZ*0.3D*ran2);
 			}
 			break;
 		case 20: 	//smoke: for nagato equip
@@ -407,7 +414,10 @@ public class ParticleHelper {
 		case 31: 	//throw snow smoke
 			for(int i=0; i<20; i++) {
 				ran1 = rand.nextFloat() - 0.5F;
-				world.spawnParticle("snowshovel", posX+lookX-0.5D+0.05D*i, posY+0.8D+ran1, posZ+lookZ-0.5D+0.05D*i, lookX*0.2D, 0.05D, lookZ*0.2D);
+				ran2 = rand.nextFloat();
+				ran3 = rand.nextFloat();
+				world.spawnParticle("snowshovel", posX+lookX-0.5D+0.05D*i, posY+0.7D+ran1, posZ+lookZ-0.5D+0.05D*i, lookX*0.3D*ran2, 0.05D*ran2, lookZ*0.3D*ran2);
+				world.spawnParticle("snowshovel", posX+lookX-0.5D+0.05D*i, posY+0.9D+ran1, posZ+lookZ-0.5D+0.05D*i, lookX*0.3D*ran3, 0.05D*ran3, lookZ*0.3D*ran3);
 			}
 			break;
 		default:

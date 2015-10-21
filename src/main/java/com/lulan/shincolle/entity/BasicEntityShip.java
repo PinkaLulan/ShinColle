@@ -123,7 +123,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		StateFinal = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F};
 		StateMinor = new int[] {1, 0, 0, 40, 0,
 				                0, 0, 0, 0, 0,
-				                2, 14, 35, 1, -1,
+				                3, 12, 35, 1, -1,
 				                -1, -1, 0, -1, 0,
 				                0, -1, -1, -1, 0,
 				                0

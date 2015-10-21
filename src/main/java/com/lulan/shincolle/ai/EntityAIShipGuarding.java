@@ -201,6 +201,11 @@ public class EntityAIShipGuarding extends EntityAIBase {
     		//find target
     		if(ship.ticksExisted % 16 == 0) {
     			this.findTarget();
+    			
+    			//clear target if target dead
+    			if(this.target != null && !this.target.isEntityAlive()) {
+    				this.target = null;
+    			}
     		}
     		
     		//attack target
