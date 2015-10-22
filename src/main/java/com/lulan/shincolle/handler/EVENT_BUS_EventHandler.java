@@ -263,14 +263,14 @@ public class EVENT_BUS_EventHandler {
 	@SubscribeEvent
 	public void onSquidSpawn(LivingSpawnEvent.CheckSpawn event) {
 		if(event.entityLiving instanceof EntitySquid) {
-			if(event.world.rand.nextInt((int)ConfigHandler.scaleMobU511[ID.SpawnPerSquid]) == 0) {
+			if(event.world.rand.nextInt((int)ConfigHandler.scaleMobU511[6]) == 0) {
 				//check 64x64 range
 				AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(event.x-32D, event.y-32D, event.z-32D, event.x+32D, event.y+32D, event.z+32D);
 				List ListMob = event.world.getEntitiesWithinAABB(BasicEntityShipHostile.class, aabb);
 
 				//list低於1個表示沒有找到其他boss
 	            if(ListMob.size() < 1) {
-	            	LogHelper.info("DEBUG : spawn ship mob at "+event.x+" "+event.y+" "+event.z+" rate "+ConfigHandler.scaleMobU511[ID.SpawnPerSquid]);
+	            	LogHelper.info("DEBUG : spawn ship mob at "+event.x+" "+event.y+" "+event.z+" rate "+ConfigHandler.scaleMobU511[6]);
 	            	EntityLiving entityToSpawn;
 	            	//50%:U511 50%:Ro500
 	            	if(event.world.rand.nextInt(2) == 0) {

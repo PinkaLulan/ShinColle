@@ -13,7 +13,7 @@ public class EquipCannon extends BasicEquip {
 	public EquipCannon() {
 		super();
 		this.setUnlocalizedName("EquipCannon");
-		this.types = 12;	//single = 2, twin = 7, triple = 3
+		this.types = 19;	//single = 2, twin = 7, triple = 3, machine = 7
 	}
 	
 	@Override
@@ -21,21 +21,38 @@ public class EquipCannon extends BasicEquip {
 		icons[0] = iconRegister.registerIcon(this.getUnlocalizedName().substring(this.getUnlocalizedName().indexOf(".")+1)+"0");
 		icons[1] = iconRegister.registerIcon(this.getUnlocalizedName().substring(this.getUnlocalizedName().indexOf(".")+1)+"1");
 		icons[2] = iconRegister.registerIcon(this.getUnlocalizedName().substring(this.getUnlocalizedName().indexOf(".")+1)+"2");
+		icons[3] = iconRegister.registerIcon(this.getUnlocalizedName().substring(this.getUnlocalizedName().indexOf(".")+1)+"3");
 	}
 	
 	@Override
 	public IIcon getIconFromDamage(int meta) {
-	    if(meta < 2) {				//0,1 = single cannon
-	    	return this.icons[0];
-	    }
-	    else if(meta < 9) {			//2~8 = twin cannon
-	    	return this.icons[1];
-	    }
-	    else if(meta < 12) {			//9~11 = triple cannon
-	    	return this.icons[2];
-	    }
-	   
-	    return icons[0];
+		switch(meta) {
+		case 0:
+		case 1:
+			return this.icons[0];	//single cannon
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+		case 6:
+		case 7:
+		case 8:
+			return this.icons[1];	//twin cannon
+		case 9:
+		case 10:
+		case 11:
+			return this.icons[2];	//triple cannon
+		case 12:
+		case 13:
+		case 14:
+		case 15:
+		case 16:
+		case 17:
+		case 18:
+			return this.icons[3];	//machine gun
+		default:
+			return this.icons[0];
+		}
 	}
 	
 	//item glow effect
@@ -49,6 +66,8 @@ public class EquipCannon extends BasicEquip {
 		case 7:		//16 tw
 		case 8:		//20 tw
 		case 10:	//16 tr
+		case 17:	//40mm mach
+		case 18:	//4ich+CIC
 			return true;
 		}
 		

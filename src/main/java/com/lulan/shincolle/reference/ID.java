@@ -48,6 +48,10 @@ public class ID {
 		public static final byte DHIT = 11;
 		public static final byte THIT = 12;
 		public static final byte MISS = 13;
+		public static final byte AA = 14;
+		public static final byte ASM = 15;
+		public static final byte RARE_TYPE = 16;
+		public static final byte RARE_RATE = 17;
 	}
 	
 	/**Emotion*/
@@ -82,6 +86,10 @@ public class ID {
 		public static final byte TURBINE_HI = 17;		//high level turbine
 		public static final byte ARMOR_LO = 18;			//low level armor
 		public static final byte ARMOR_HI = 19;			//high level armor
+		public static final byte GUN_LO = 20;			//low level machine gun
+		public static final byte GUN_HI = 21;			//high level machine gun
+		public static final byte CATAPULT_LO = 22;		//low level catapult
+		public static final byte CATAPULT_HI = 23;		//high level catapult
 	}
 	
 	/**EntityFlag*/
@@ -243,19 +251,17 @@ public class ID {
 	public static final byte ATK_H = 6;
 	public static final byte ATK_AL = 7;
 	public static final byte ATK_AH = 8;
-	public static final byte CRI = 9;
-	public static final byte DHIT = 10;
-	public static final byte THIT = 11;
-	public static final byte MISS = 12;
-	public static final byte SpawnPerSquid = 6;
 	
 	/**Effect Equip*/
 	public static final byte EF_CRI = 0;
 	public static final byte EF_DHIT = 1;
 	public static final byte EF_THIT = 2;
 	public static final byte EF_MISS = 3;
+	public static final byte EF_AA = 4;
+	public static final byte EF_ASM = 5;
 	
 	/**Equip ID*/
+	//cannon
 	public static final byte E_CANNON_SINGLE_5 = 0;
 	public static final byte E_CANNON_SINGLE_6 = 1;
 	public static final byte E_CANNON_TWIN_5 = 2;
@@ -268,11 +274,13 @@ public class ID {
 	public static final byte E_CANNON_TRI_8 = 9;
 	public static final byte E_CANNON_TRI_16 = 10;
 	public static final byte E_CANNON_FG_15 = 11;
+	//torpedo
 	public static final byte E_TORPEDO_21MK1 = 20;
 	public static final byte E_TORPEDO_21MK2 = 21;
 	public static final byte E_TORPEDO_22MK1 = 22;
 	public static final byte E_TORPEDO_CUTTLEFISH = 23;
 	public static final byte E_TORPEDO_HIGHSPEED = 24;
+	//aircraft
 	public static final byte E_AIRCRAFT_TMK1 = 30;
 	public static final byte E_AIRCRAFT_TMK2 = 31;
 	public static final byte E_AIRCRAFT_TMK3 = 32;
@@ -288,6 +296,10 @@ public class ID {
 	public static final byte E_AIRCRAFT_BHELL = 42;
 	public static final byte E_AIRCRAFT_R = 43;
 	public static final byte E_AIRCRAFT_RFLYFISH = 44;
+	public static final byte E_AIRCRAFT_TAVENGERK = 45;
+	public static final byte E_AIRCRAFT_FHELLCATK = 46;
+	public static final byte E_AIRCRAFT_BHELLK = 47;
+	//radar
 	public static final byte E_RADAR_AIRMK1 = 50;
 	public static final byte E_RADAR_AIRMK2 = 51;
 	public static final byte E_RADAR_SURMK1 = 52;
@@ -296,12 +308,28 @@ public class ID {
 	public static final byte E_RADAR_AIRABYSS = 55;
 	public static final byte E_RADAR_SURABYSS = 56;
 	public static final byte E_RADAR_SONARMK2 = 57;
+	public static final byte E_RADAR_FCSCIC = 58;
+	//turbine
 	public static final byte E_TURBINE = 60;
 	public static final byte E_TURBINE_IMP = 61;
 	public static final byte E_TURBINE_ENH = 62;
+	//armor
 	public static final byte E_ARMOR = 70;
 	public static final byte E_ARMOR_ENH = 71;
-
+	//machine gun
+	public static final byte E_GUN_HA_3 = 80;
+	public static final byte E_GUN_HA_5 = 81;
+	public static final byte E_GUN_SINGLE_12 = 82;
+	public static final byte E_GUN_SINGLE_20 = 83;
+	public static final byte E_GUN_TWIN_40 = 84;
+	public static final byte E_GUN_QUAD_40 = 85;
+	public static final byte E_GUN_TWIN_4_CIC = 86;
+	//catapult
+	public static final byte E_CATAPULT_F = 100;
+	public static final byte E_CATAPULT_H = 100;
+	public static final byte E_CATAPULT_C = 100;
+	public static final byte E_CATAPULT_E = 100;
+	
 	/**Ship ID*/
 	public static final byte S_DestroyerI = 0;
 	public static final byte S_DestroyerRO = 1;

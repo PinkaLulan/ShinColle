@@ -6,14 +6,14 @@ import net.minecraft.util.IIcon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class EquipRadar extends BasicEquip {
+public class EquipCatapult extends BasicEquip {
 	
-	IIcon[] icons = new IIcon[4];
+	IIcon[] icons = new IIcon[1];
 	
-	public EquipRadar() {
+	public EquipCatapult() {
 		super();
-		this.setUnlocalizedName("EquipRadar");
-		this.types = 9;
+		this.setUnlocalizedName("EquipCatapult");
+		this.types = 4;
 	}
 	
 	@Override
@@ -23,7 +23,7 @@ public class EquipRadar extends BasicEquip {
 	
 	@Override
 	public IIcon getIconFromDamage(int meta) {
-	    return icons[0];
+		return icons[0];
 	}
 	
 	//item glow effect
@@ -33,10 +33,8 @@ public class EquipRadar extends BasicEquip {
 		int meta = item.getItemDamage();
 		
 		switch(meta) {
-		case 5:		//air
-		case 6:		//sur
-		case 7:		//sonar mk2
-		case 8:		//FCS+CIC
+		case 2:
+		case 3:
 			return true;
 		}
 		

@@ -84,7 +84,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	 * 18:guardID 19:shipType 20:shipClass 21:playerUID 22:shipUID 23:playerEID 24:guardType 
 	 * 25:damageType*/
 	protected int[] StateMinor;
-	/**equip effect: 0:critical 1:doubleHit 2:tripleHit 3:baseMiss*/
+	/**equip effect: 0:critical 1:doubleHit 2:tripleHit 3:baseMiss 4:atk_AntiAir 5:atk_AntiSS*/
 	protected float[] EffectEquip;
 	/**EntityState: 0:State 1:Emotion 2:Emotion2 3:HP State 4:State2 5:AttackPhase*/
 	protected byte[] StateEmotion;
@@ -128,7 +128,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				                0, -1, -1, -1, 0,
 				                0
 				                };
-		EffectEquip = new float[] {0F, 0F, 0F, 0F};
+		EffectEquip = new float[] {0F, 0F, 0F, 0F, 0F, 0F};
 		StateEmotion = new byte[] {0, 0, 0, 0, 0, 0};
 		StateFlag = new boolean[] {false, false, true, false, true,
 				                   true, true, true, false, true,
@@ -532,32 +532,37 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		StateEquip[ID.ATK_H] = 0F;
 		StateEquip[ID.ATK_AL] = 0F;
 		StateEquip[ID.ATK_AH] = 0F;
+		
 		EffectEquip[ID.EF_CRI] = 0F;
 		EffectEquip[ID.EF_DHIT] = 0F;
 		EffectEquip[ID.EF_THIT] = 0F;
 		EffectEquip[ID.EF_MISS] = 0F;
+		EffectEquip[ID.EF_AA] = 0F;
+		EffectEquip[ID.EF_ASM] = 0F;
 		
 		//calc equip slots
 		for(int i=0; i<ContainerShipInventory.SLOTS_SHIPINV; i++) {
-			itemstack = this.ExtProps.slots[i];
-			if(itemstack != null) {
-				equipStat = EquipCalc.getEquipStat(this, itemstack);
+			equipStat = EquipCalc.getEquipStat(this, this.ExtProps.slots[i]);
+			
+			if(equipStat != null) {
+//				LogHelper.info("DEBUG : equip stat "+equipStat[0]+" "+equipStat[1]+" "+equipStat[2]+" "+equipStat[3]+" "+equipStat[4]+" "+equipStat[5]+" "+equipStat[6]+" "+equipStat[7]+" "+equipStat[8]);
+				StateEquip[ID.HP] += equipStat[ID.E.HP];
+				StateEquip[ID.DEF] += equipStat[ID.E.DEF];
+				StateEquip[ID.SPD] += equipStat[ID.E.SPD];
+				StateEquip[ID.MOV] += equipStat[ID.E.MOV];
+				StateEquip[ID.HIT] += equipStat[ID.E.HIT];
+				StateEquip[ID.ATK] += equipStat[ID.E.ATK_L];
+				StateEquip[ID.ATK_H] += equipStat[ID.E.ATK_H];
+				StateEquip[ID.ATK_AL] += equipStat[ID.E.ATK_AL];
+				StateEquip[ID.ATK_AH] += equipStat[ID.E.ATK_AH];
 				
-				StateEquip[ID.HP] += equipStat[ID.HP];
-				StateEquip[ID.DEF] += equipStat[ID.DEF];
-				StateEquip[ID.SPD] += equipStat[ID.SPD];
-				StateEquip[ID.MOV] += equipStat[ID.MOV];
-				StateEquip[ID.HIT] += equipStat[ID.HIT];
-				StateEquip[ID.ATK] += equipStat[ID.ATK];
-				StateEquip[ID.ATK_H] += equipStat[ID.ATK_H];
-				StateEquip[ID.ATK_AL] += equipStat[ID.ATK_AL];
-				StateEquip[ID.ATK_AH] += equipStat[ID.ATK_AH];
-				
-				EffectEquip[ID.EF_CRI] += equipStat[ID.CRI];
-				EffectEquip[ID.EF_DHIT] += equipStat[ID.DHIT];
-				EffectEquip[ID.EF_THIT] += equipStat[ID.THIT];
-				EffectEquip[ID.EF_MISS] += equipStat[ID.MISS];
-			}	
+				EffectEquip[ID.EF_CRI] += equipStat[ID.E.CRI];
+				EffectEquip[ID.EF_DHIT] += equipStat[ID.E.DHIT];
+				EffectEquip[ID.EF_THIT] += equipStat[ID.E.THIT];
+				EffectEquip[ID.EF_MISS] += equipStat[ID.E.MISS];
+				EffectEquip[ID.EF_AA] += equipStat[ID.E.AA];
+				EffectEquip[ID.EF_ASM] += equipStat[ID.E.ASM];
+			}
 		}
 		//update value
 		calcShipAttributes();
@@ -567,7 +572,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	public void calcShipAttributes() {
 		//get attrs value
 		float[] getStat = Values.ShipAttrMap.get(this.getShipClass());
-		
+
 		//HP = (base + equip + (point + 1) * level * typeModify) * config scale
 		StateFinal[ID.HP] = (getStat[ID.ShipAttr.BaseHP] + StateEquip[ID.HP] + (float)(BonusPoint[ID.HP]+1F) * (float)StateMinor[ID.M.ShipLevel] * TypeModify[ID.HP]) * (float)ConfigHandler.scaleShip[ID.HP]; 
 		//DEF = base + ((point + 1) * level / 3 * 0.4 + equip) * typeModify

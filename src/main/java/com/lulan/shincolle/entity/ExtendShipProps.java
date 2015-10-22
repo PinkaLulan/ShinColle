@@ -80,6 +80,8 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		nbtExt_add1.setFloat("ATK_H", this.entity.getStateFinal(ID.ATK_H));
 		nbtExt_add1.setFloat("ATK_AL", this.entity.getStateFinal(ID.ATK_AL));
 		nbtExt_add1.setFloat("ATK_AH", this.entity.getStateFinal(ID.ATK_AH));
+//		nbtExt_add1.setFloat("ATK_AA", this.entity.getStateFinal(ID.ATK_AH));
+//		nbtExt_add1.setFloat("ATK_ASM", this.entity.getStateFinal(ID.ATK_AH));
 		//save EntityState
 		nbtExt.setTag("Emotion", nbtExt_add2);	
 		nbtExt_add2.setByte("State", this.entity.getStateEmotion(ID.S.State));

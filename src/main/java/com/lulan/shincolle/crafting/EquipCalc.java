@@ -25,33 +25,20 @@ public class EquipCalc {
 	
 	//get equip state
 	public static float[] getEquipStat(BasicEntityShip entity, ItemStack item) {
-		byte equipID = getEquipID(item);
-		float[] getStat = Values.EquipMap.get(equipID);
-		float[] eqStat = new float[] {0F,0F,0F,0F,0F,0F,0F,0F,0F,0F,0F,0F,0F};
-		
-		if(getStat != null) {
-			//cannot use the equip, return 0
-			if(entity.getEquipType() != 2 && getStat[0] != 2) {
-				if(entity.getEquipType() != getStat[0]) return eqStat;
-			}
+		if(item != null && entity != null) {
+			byte equipID = getEquipID(item);
+			float[] getStat = Values.EquipMap.get(equipID);	//get item attributes
 			
-			eqStat[ID.HP] = getStat[ID.E.HP];
-			eqStat[ID.DEF] = getStat[ID.E.DEF];
-			eqStat[ID.SPD] = getStat[ID.E.SPD];
-			eqStat[ID.MOV] = getStat[ID.E.MOV];
-			eqStat[ID.HIT] = getStat[ID.E.HIT];
-			eqStat[ID.ATK] = getStat[ID.E.ATK_L];
-			eqStat[ID.ATK_H] = getStat[ID.E.ATK_H];
-			eqStat[ID.ATK_AL] = getStat[ID.E.ATK_AL];
-			eqStat[ID.ATK_AH] = getStat[ID.E.ATK_AH];
-			eqStat[ID.CRI] = getStat[ID.E.CRI];
-			eqStat[ID.DHIT] = getStat[ID.E.DHIT];
-			eqStat[ID.THIT] = getStat[ID.E.THIT];
-			eqStat[ID.MISS] = getStat[ID.E.MISS];
-//			LogHelper.info("DEBUG : equip stat "+eqStat[0]+" "+eqStat[1]+" "+eqStat[2]+" "+eqStat[3]+" "+eqStat[4]+" "+eqStat[5]+" "+eqStat[6]+" "+eqStat[7]+" "+eqStat[8]);
-		}	
-		
-		return eqStat;
+			if(getStat != null) {
+				//cannot use this equip, return null
+				if(entity.getEquipType() != 2 && getStat[0] != 2) {
+					if(entity.getEquipType() != getStat[0]) return null;
+				}
+	//			LogHelper.info("DEBUG : equip stat "+equipID+" "+getStat[0]+" "+getStat[1]+" "+getStat[2]+" "+getStat[3]+" "+getStat[4]+" "+getStat[5]+" "+getStat[6]+" "+getStat[7]+" "+getStat[8]);
+				return getStat;
+			}	
+		}
+		return null;
 	}
 	
 	//get equip id
@@ -177,7 +164,7 @@ public class EquipCalc {
 			Byte key = (Byte) entry.getKey();
 			float[] val = (float[]) entry.getValue();
 		    
-			if(val[14] == type) {
+			if(val[ID.E.RARE_TYPE] == type) {
 				equipList.put(key, val);
 			}
 		}
@@ -192,8 +179,8 @@ public class EquipCalc {
 		iter = equipList.entrySet().iterator();
 		while(iter.hasNext()) {
 			Map.Entry entry = (Map.Entry)iter.next();
-			totalRate += (int)((float[])entry.getValue())[15];
-			LogHelper.info("DEBUG : first while "+(int)((float[])entry.getValue())[15]);
+			totalRate += (int)((float[])entry.getValue())[ID.E.RARE_RATE];
+			LogHelper.info("DEBUG : first while "+(int)((float[])entry.getValue())[ID.E.RARE_RATE]);
 		}
 		
 		//get random number
@@ -203,8 +190,8 @@ public class EquipCalc {
 		iter = equipList.entrySet().iterator();
 		while(iter.hasNext()) {
 			Map.Entry entry = (Map.Entry)iter.next();
-			sumRate += (int)((float[])entry.getValue())[15];
-			LogHelper.info("DEBUG : second while "+(int)((float[])entry.getValue())[15]+" rand "+randNum);
+			sumRate += (int)((float[])entry.getValue())[ID.E.RARE_RATE];
+			LogHelper.info("DEBUG : second while "+(int)((float[])entry.getValue())[ID.E.RARE_RATE]+" rand "+randNum);
 			
 			if(sumRate > randNum) {
 				rollResult = ((Byte)entry.getKey()).intValue();
