@@ -7,6 +7,7 @@ import com.lulan.shincolle.item.EquipAirplane;
 import com.lulan.shincolle.item.EquipArmor;
 import com.lulan.shincolle.item.EquipCannon;
 import com.lulan.shincolle.item.EquipCatapult;
+import com.lulan.shincolle.item.EquipMachinegun;
 import com.lulan.shincolle.item.EquipRadar;
 import com.lulan.shincolle.item.EquipTorpedo;
 import com.lulan.shincolle.item.EquipTurbine;
@@ -39,6 +40,7 @@ public class ModItems {
 	public static final BasicItem EquipArmor = new EquipArmor();
 	public static final BasicItem EquipCannon = new EquipCannon();
 	public static final BasicItem EquipCatapult = new EquipCatapult();
+	public static final BasicItem EquipMachinegun = new EquipMachinegun();
 	public static final BasicItem EquipRadar = new EquipRadar();
 	public static final BasicItem EquipTorpedo = new EquipTorpedo();
 	public static final BasicItem EquipTurbine = new EquipTurbine();
@@ -67,6 +69,7 @@ public class ModItems {
 		GameRegistry.registerItem(EquipArmor, "EquipArmor");
 		GameRegistry.registerItem(EquipCannon, "EquipCannon");
 		GameRegistry.registerItem(EquipCatapult, "EquipCatapult");
+		GameRegistry.registerItem(EquipMachinegun, "EquipMachinegun");
 		GameRegistry.registerItem(EquipRadar, "EquipRadar");
 		GameRegistry.registerItem(EquipTorpedo, "EquipTorpedo");
 		GameRegistry.registerItem(EquipTurbine, "EquipTurbine");

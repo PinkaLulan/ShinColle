@@ -50,7 +50,9 @@ public class BasicEquip extends BasicItem {
     		if(itemStat[ID.E.DHIT] != 0F) list.add(EnumChatFormatting.YELLOW + String.valueOf(itemStat[ID.E.DHIT])+ " " + I18n.format("gui.shincolle:doublehit"));
     		if(itemStat[ID.E.THIT] != 0F) list.add(EnumChatFormatting.GOLD + String.valueOf(itemStat[ID.E.THIT])+ " " + I18n.format("gui.shincolle:triplehit"));
     		if(itemStat[ID.E.MISS] != 0F) list.add(EnumChatFormatting.RED + String.valueOf(itemStat[ID.E.MISS])+ " " + I18n.format("gui.shincolle:missreduce"));
-    	
+    		if(itemStat[ID.E.AA] != 0F) list.add(EnumChatFormatting.YELLOW + String.valueOf(itemStat[ID.E.AA])+ " " + I18n.format("gui.shincolle:antiair"));
+    		if(itemStat[ID.E.ASM] != 0F) list.add(EnumChatFormatting.AQUA + String.valueOf(itemStat[ID.E.ASM])+ " " + I18n.format("gui.shincolle:antiss"));
+        	
     		if(itemStat[ID.E.LEVEL] == 1F) {
     			list.add(EnumChatFormatting.DARK_RED + I18n.format("gui.shincolle:notforcarrier"));
     		}

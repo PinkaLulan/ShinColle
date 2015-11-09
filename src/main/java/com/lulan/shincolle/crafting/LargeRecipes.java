@@ -246,17 +246,22 @@ public class LargeRecipes {
 		return buildResult;
 	}
 	
-	//將材料數量寫進itemstack回傳
+	/** ROLL SYSTEM
+	 *  1. get material amounts
+	 *  2. roll equip type by mat.amounts
+	 *  3. roll equip by equip type and mat.amounts
+	 */
 	public static ItemStack getBuildResultEquip(int[] matAmount) {
 		//result item
 		ItemStack buildResult = null;
 		int rollType = -1;
+		int totalMat = matAmount[0]+matAmount[1]+matAmount[2]+matAmount[3];
 		float randRate = rand.nextFloat();
 
 		//first roll: roll equip type
 		rollType = EquipCalc.rollEquipType(1, matAmount);
 		//second roll: roll equips of the type
-		return EquipCalc.rollEquipsOfTheType(rollType);
+		return EquipCalc.rollEquipsOfTheType(rollType, totalMat, 1);
 	}
 	
 

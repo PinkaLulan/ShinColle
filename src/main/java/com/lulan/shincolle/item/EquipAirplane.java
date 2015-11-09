@@ -49,7 +49,6 @@ public class EquipAirplane extends BasicEquip {
 		case 13:
 		case 14:
 			return this.icons[3];	//Recon
-			
 		default:
 			return this.icons[0];
 		}
@@ -68,6 +67,9 @@ public class EquipAirplane extends BasicEquip {
 		case 11:	//fly-fish B
 		case 12:	//hell B
 		case 14:	//fly-fish R
+		case 15:	//T kai
+		case 16:	//F kai
+		case 17:	//B kai
 			return true;
 		}
 		

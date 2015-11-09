@@ -51,7 +51,7 @@ public class ID {
 		public static final byte AA = 14;
 		public static final byte ASM = 15;
 		public static final byte RARE_TYPE = 16;
-		public static final byte RARE_RATE = 17;
+		public static final byte RARE_MEAN = 17;
 	}
 	
 	/**Emotion*/
@@ -326,9 +326,9 @@ public class ID {
 	public static final byte E_GUN_TWIN_4_CIC = 86;
 	//catapult
 	public static final byte E_CATAPULT_F = 100;
-	public static final byte E_CATAPULT_H = 100;
-	public static final byte E_CATAPULT_C = 100;
-	public static final byte E_CATAPULT_E = 100;
+	public static final byte E_CATAPULT_H = 101;
+	public static final byte E_CATAPULT_C = 102;
+	public static final byte E_CATAPULT_E = 103;
 	
 	/**Ship ID*/
 	public static final byte S_DestroyerI = 0;

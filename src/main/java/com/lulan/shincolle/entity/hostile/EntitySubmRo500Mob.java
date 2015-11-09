@@ -180,7 +180,7 @@ public class EntitySubmRo500Mob extends BasicEntityShipHostile {
   	@Override
   	public boolean attackEntityWithHeavyAmmo(Entity target) {	
 		//get attack value
-		float atkHeavy = this.atk * 4F;
+		float atkHeavy = this.atk * 3F;
 		
 		//set knockback value (testing)
 		float kbValue = 0.08F;

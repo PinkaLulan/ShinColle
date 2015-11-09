@@ -1,10 +1,10 @@
 package com.lulan.shincolle.item;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class EquipCannon extends BasicEquip {
 	
@@ -13,7 +13,7 @@ public class EquipCannon extends BasicEquip {
 	public EquipCannon() {
 		super();
 		this.setUnlocalizedName("EquipCannon");
-		this.types = 19;	//single = 2, twin = 7, triple = 3, machine = 7
+		this.types = 12;	//single = 2, twin = 7, triple = 3
 	}
 	
 	@Override
@@ -21,7 +21,6 @@ public class EquipCannon extends BasicEquip {
 		icons[0] = iconRegister.registerIcon(this.getUnlocalizedName().substring(this.getUnlocalizedName().indexOf(".")+1)+"0");
 		icons[1] = iconRegister.registerIcon(this.getUnlocalizedName().substring(this.getUnlocalizedName().indexOf(".")+1)+"1");
 		icons[2] = iconRegister.registerIcon(this.getUnlocalizedName().substring(this.getUnlocalizedName().indexOf(".")+1)+"2");
-		icons[3] = iconRegister.registerIcon(this.getUnlocalizedName().substring(this.getUnlocalizedName().indexOf(".")+1)+"3");
 	}
 	
 	@Override
@@ -42,14 +41,6 @@ public class EquipCannon extends BasicEquip {
 		case 10:
 		case 11:
 			return this.icons[2];	//triple cannon
-		case 12:
-		case 13:
-		case 14:
-		case 15:
-		case 16:
-		case 17:
-		case 18:
-			return this.icons[3];	//machine gun
 		default:
 			return this.icons[0];
 		}
@@ -66,8 +57,6 @@ public class EquipCannon extends BasicEquip {
 		case 7:		//16 tw
 		case 8:		//20 tw
 		case 10:	//16 tr
-		case 17:	//40mm mach
-		case 18:	//4ich+CIC
 			return true;
 		}
 		

@@ -7,12 +7,15 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
+import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAIOpenDoor;
 import net.minecraft.entity.ai.EntityAIOwnerHurtByTarget;
 import net.minecraft.entity.ai.EntityAIOwnerHurtTarget;
 import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.passive.EntityTameable;
+import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
@@ -294,7 +297,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			this.targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this));
 			this.targetTasks.addTask(3, new EntityAIHurtByTarget(this, false));
 			this.targetTasks.addTask(4, new EntityAIShipInRangeTarget(this, 0.4F, 1));
-		}	
+		}
+		
+		//DEBUG
+		this.targetTasks.addTask(5, new EntityAINearestAttackableTarget(this, EntitySheep.class, 0, false));
 	}
 
 	//clear AI
@@ -587,9 +593,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		float atk = getStat[ID.ShipAttr.BaseATK] + ((float)(BonusPoint[ID.ATK]+1F) * ((float)StateMinor[ID.M.ShipLevel])/3F) * 0.4F * TypeModify[ID.ATK];
 		
 		StateFinal[ID.ATK] = (atk + StateEquip[ID.ATK]) * (float)ConfigHandler.scaleShip[ID.ATK];
-		StateFinal[ID.ATK_H] = (atk * 4F + StateEquip[ID.ATK_H]) * (float)ConfigHandler.scaleShip[ID.ATK];
+		StateFinal[ID.ATK_H] = (atk * 3F + StateEquip[ID.ATK_H]) * (float)ConfigHandler.scaleShip[ID.ATK];
 		StateFinal[ID.ATK_AL] = (atk + StateEquip[ID.ATK_AL]) * (float)ConfigHandler.scaleShip[ID.ATK];
-		StateFinal[ID.ATK_AH] = (atk * 4F + StateEquip[ID.ATK_AH]) * (float)ConfigHandler.scaleShip[ID.ATK];
+		StateFinal[ID.ATK_AH] = (atk * 3F + StateEquip[ID.ATK_AH]) * (float)ConfigHandler.scaleShip[ID.ATK];
 		
 		//KB Resistance
 		float resisKB = ((StateMinor[ID.M.ShipLevel])/10F) * 0.05F;
@@ -1509,7 +1515,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         		}
         		
             	/** debug info */
-//            	LogHelper.info("DEBUG : ship update: "+Values.ModDmgDay[5][6]+" "+Values.ModDmgNight[2][5]);
+//            	LogHelper.info("DEBUG : ship update: "+CalcHelper.NORM_TABLE[1999]/4.9867787F);
 //            	LogHelper.info("DEBUG : ship update: eid: "+ServerProxy.getNextShipID()+" "+ServerProxy.getNextPlayerID()+" "+ConfigHandler.nextPlayerID+" "+ConfigHandler.nextShipID);
 //        		if(this.worldObj.provider.dimensionId == 0) {	//main world
 //        			LogHelper.info("DEBUG : ship pos dim "+ClientProxy.getClientWorld().provider.dimensionId+" "+this.dimension+" "+this.posX+" "+this.posY+" "+this.posZ);
