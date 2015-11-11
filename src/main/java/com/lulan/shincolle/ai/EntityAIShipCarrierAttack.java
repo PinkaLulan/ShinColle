@@ -8,7 +8,6 @@ import net.minecraft.entity.ai.EntityAIBase;
 
 import com.lulan.shincolle.entity.IShipAircraftAttack;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.LogHelper;
 
 /**CARRIER RANGE ATTACK AI
  * entity必須實作IUseAircraft
@@ -42,11 +41,13 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
             //init value
             this.launchDelay = 20;
             this.launchDelayMax = 40;
+            this.launchType = false;
         }
     }
 
     //check ai start condition
-    public boolean shouldExecute() {
+    @Override
+	public boolean shouldExecute() {
 //    	LogHelper.info("DEBUG : carrier attack "+target);
     	if(this.host.getIsSitting()) return false;
     	
@@ -69,13 +70,15 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
     }
 
     //判定是否繼續AI： 有target就繼續, 或者還在移動中則繼續
-    public boolean continueExecuting() {
+    @Override
+	public boolean continueExecuting() {
         return this.shouldExecute() || (target != null && target.isEntityAlive() && !this.host.getShipNavigate().noPath());
 //    	return this.shouldExecute();
     }
 
     //重置AI方法, DO NOT reset delay time here
-    public void resetTask() {
+    @Override
+	public void resetTask() {
 //    	LogHelper.info("DEBUG : air attack AI "+target);
         this.target = null;
         if(host != null) {
@@ -85,7 +88,8 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
     }
 
     //進行AI
-    public void updateTask() {
+    @Override
+	public void updateTask() {
     	if(this.target != null && host != null) {  //for lots of NPE issue-.-
     		boolean onSight = this.host2.getEntitySenses().canSee(this.target);
 //    		boolean onSight = true;		 //for debug
@@ -99,7 +103,7 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
     		}
     		
     		//get update attributes
-        	if(this.host2.ticksExisted % 60 == 0) {	
+        	if(this.host2.ticksExisted % 64 == 0) {	
         		this.launchDelayMax = (int)(60F / (this.host.getAttackSpeed())) + 10;
                 this.range = this.host.getAttackRange();
                 this.rangeSq = this.range * this.range;
@@ -112,7 +116,7 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
         		this.distSq = distX*distX + distY*distY + distZ*distZ;
     	
         		//若目標進入射程, 且目標無障礙物阻擋, 則清空AI移動的目標, 以停止繼續移動      
-		        if(distSq < (double)this.rangeSq && onSight) {
+		        if(distSq < this.rangeSq && onSight) {
 		        	this.host.getShipNavigate().clearPathEntity();
 		        }
 		        else {	//目標移動, 則繼續追擊		        	

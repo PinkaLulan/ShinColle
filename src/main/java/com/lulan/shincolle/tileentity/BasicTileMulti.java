@@ -1,22 +1,9 @@
 package com.lulan.shincolle.tileentity;
 
-import com.lulan.shincolle.block.BasicBlockMulti;
-import com.lulan.shincolle.block.BlockSmallShipyard;
-import com.lulan.shincolle.crafting.SmallRecipes;
-import com.lulan.shincolle.init.ModItems;
-import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.LogHelper;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
-import net.minecraft.inventory.ISidedInventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.world.World;
+
+import com.lulan.shincolle.block.BasicBlockMulti;
 
 /**BASIC MULTI BLOCK TILE ENTITY
  * tut by Lomeli
@@ -33,15 +20,18 @@ abstract public class BasicTileMulti extends BasicTileEntity {
         customName = "";
     }
 	
+	@Override
 	public String getCustomName() {
         return customName;
     }
 
-    public void setCustomName(String customName) {
+    @Override
+	public void setCustomName(String customName) {
         this.customName = customName;
     }
     
-    public boolean hasCustomName() {
+    @Override
+	public boolean hasCustomName() {
         return customName != null && customName.length() > 0;
     }
 

@@ -1,12 +1,17 @@
 package com.lulan.shincolle.entity.hostile;
 
-import java.util.List;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
 
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
-import com.lulan.shincolle.ai.path.ShipPathEntity;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
-import com.lulan.shincolle.ai.path.ShipPathPoint;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipCannonAttack;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
@@ -16,25 +21,11 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
-import net.minecraft.command.IEntitySelector;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityFlying;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.boss.EntityDragon;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.monster.EntitySlime;
-import net.minecraft.entity.passive.EntityBat;
-import net.minecraft.entity.passive.EntityWaterMob;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.MathHelper;
-import net.minecraft.world.World;
 
 public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack {
 	
@@ -152,10 +143,6 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
     	if(this.getStateEmotion(ID.S.Emotion) != ID.Emotion.O_O) {
     		this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
     	}
-    	
-    	//進行def計算
-        float reduceAtk = atk * (1F - this.defValue / 100F);    
-        if(atk < 0) { atk = 0; }
         
         //無敵的entity傷害無效
   		if(this.isEntityInvulnerable()) {	
@@ -175,9 +162,25 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
   	        	this.setDead();
   	        	return false;
   	        }
+  	        
+  	        //def calc
+  			float reduceAtk = atk;
+  			
+  			reduceAtk = atk * (1F - this.getDefValue() * 0.01F);
+  			
+  			//ship vs ship, damage type傷害調整
+  			if(entity instanceof IShipAttackBase) {
+  				//get attack time for damage modifier setting (day, night or ...etc)
+  				int modSet = this.worldObj.provider.isDaytime() ? 0 : 1;
+  				reduceAtk = CalcHelper.calcDamageByType(reduceAtk, ((IShipAttackBase) entity).getDamageType(), this.getDamageType(), modSet);
+  			}
+  			
+  	        if(reduceAtk < 1) reduceAtk = 1;
+  	        
+  	        return super.attackEntityFrom(attacker, reduceAtk);
   		}
     	
-    	return super.attackEntityFrom(attacker, reduceAtk);
+    	return false;
 	}
 	
 	@Override
@@ -202,7 +205,7 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
 			boolean setdead = false;
 			
 			//owner消失(通常是server restart)
-			if(this.getOwner() == null) {
+			if(this.host == null) {
 				setdead = true;
 			}
 			else {
@@ -321,11 +324,6 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
   	protected void clearAITargetTasks() {
   	   targetTasks.taskEntries.clear();
   	}
-  	
-  	@Override
-    public EntityLivingBase getOwner() {
-        return this.host2;
-    }
     
     @Override
     public EntityLivingBase getAttackTarget() {
@@ -412,8 +410,8 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
 	    if(isTargetHurt) {
 	    	//calc kb effect
 	        if(kbValue > 0) {
-	            target.addVelocity((double)(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue), 
-	                   0.02D, (double)(MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue));
+	            target.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
+	                   0.02D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
 	        }
 	        
 	        //display hit particle on target
@@ -537,24 +535,24 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
             {
                 float f5 = 0.15F;
 
-                if (this.motionX < (double)(-f5))
+                if (this.motionX < (-f5))
                 {
-                    this.motionX = (double)(-f5);
+                    this.motionX = (-f5);
                 }
 
-                if (this.motionX > (double)f5)
+                if (this.motionX > f5)
                 {
-                    this.motionX = (double)f5;
+                    this.motionX = f5;
                 }
 
-                if (this.motionZ < (double)(-f5))
+                if (this.motionZ < (-f5))
                 {
-                    this.motionZ = (double)(-f5);
+                    this.motionZ = (-f5);
                 }
 
-                if (this.motionZ > (double)f5)
+                if (this.motionZ > f5)
                 {
-                    this.motionZ = (double)f5;
+                    this.motionZ = f5;
                 }
 
                 this.fallDistance = 0.0F;
@@ -596,8 +594,8 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
             }
 
             this.motionY *= 0.9800000190734863D;
-            this.motionX *= (double)f2;
-            this.motionZ *= (double)f2;
+            this.motionX *= f2;
+            this.motionZ *= f2;
         }
 
         this.prevLimbSwingAmount = this.limbSwingAmount;
@@ -738,11 +736,6 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
 	}
 	
 	@Override
-	public EntityLivingBase getPlayerOwner() {
-		return this.host2;
-	}
-	
-	@Override
 	public int getStateMinor(int id) {
 		return 0;
 	}
@@ -774,6 +767,24 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
 	@Override
 	public boolean getAttackType(int par1) {
 		return true;
+	}
+	
+	@Override
+	public int getPlayerUID() {
+		return -100;	//-100 for hostile mob
+	}
+
+	@Override
+	public void setPlayerUID(int uid) {}
+	
+	@Override
+	public Entity getHostEntity() {
+		return this.host2;
+	}
+
+	@Override
+	public int getDamageType() {
+		return ID.ShipDmgType.DESTROYER;
 	}
 	
 

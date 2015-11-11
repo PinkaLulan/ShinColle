@@ -5,15 +5,10 @@ import java.util.Random;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
-import com.lulan.shincolle.item.BasicItem;
-import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
-import com.lulan.shincolle.utility.LogHelper;
-
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntityFurnace;
 
 /**Large Shipyard Recipe Helper
  *  Fuel Cost = BaseCost + CostPerMaterial * ( TotalMaterialAmount - minAmount * 4 )
@@ -67,7 +62,7 @@ public class LargeRecipes {
 	//get fit or empty slot with item
 	private static int getFitSlot(TileMultiGrudgeHeavy tile, Item item, int meta) {
 		//search slot 1~10
-		for(int i = tile.SLOTS_OUT + 1; i < tile.SLOTS_NUM; i++) {
+		for(int i = TileMultiGrudgeHeavy.SLOTS_OUT + 1; i < TileMultiGrudgeHeavy.SLOTS_NUM; i++) {
 			//slot為空 or 物品相同且尚未達到最大堆疊數
 			if((tile.getStackInSlot(i) == null) ||
 			   (tile.getStackInSlot(i).getItem() == item &&
@@ -251,17 +246,22 @@ public class LargeRecipes {
 		return buildResult;
 	}
 	
-	//將材料數量寫進itemstack回傳
+	/** ROLL SYSTEM
+	 *  1. get material amounts
+	 *  2. roll equip type by mat.amounts
+	 *  3. roll equip by equip type and mat.amounts
+	 */
 	public static ItemStack getBuildResultEquip(int[] matAmount) {
 		//result item
 		ItemStack buildResult = null;
 		int rollType = -1;
+		int totalMat = matAmount[0]+matAmount[1]+matAmount[2]+matAmount[3];
 		float randRate = rand.nextFloat();
 
 		//first roll: roll equip type
 		rollType = EquipCalc.rollEquipType(1, matAmount);
 		//second roll: roll equips of the type
-		return EquipCalc.rollEquipsOfTheType(rollType);
+		return EquipCalc.rollEquipsOfTheType(rollType, totalMat, 1);
 	}
 	
 

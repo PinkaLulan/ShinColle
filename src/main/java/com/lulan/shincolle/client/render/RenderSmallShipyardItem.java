@@ -2,16 +2,11 @@ package com.lulan.shincolle.client.render;
 
 import org.lwjgl.opengl.GL11;
 
-import com.lulan.shincolle.client.model.ModelSmallShipyard;
-import com.lulan.shincolle.reference.Reference;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
 
 @SideOnly(Side.CLIENT)
@@ -22,8 +17,8 @@ public class RenderSmallShipyardItem implements IItemRenderer  {
 	
 	public RenderSmallShipyardItem(TileEntitySpecialRenderer tesr, TileEntity entity) {
 		this.tesr = tesr;
-		this.entity = entity;	
-		this.entity.blockMetadata = -2;	//distinguish itemblock(-2)/block(0~7)/non-init state(-1)
+		RenderSmallShipyardItem.entity = entity;	
+		RenderSmallShipyardItem.entity.blockMetadata = -2;	//distinguish itemblock(-2)/block(0~7)/non-init state(-1)
 	}
 
 	@Override
@@ -47,7 +42,7 @@ public class RenderSmallShipyardItem implements IItemRenderer  {
 			GL11.glTranslatef(0F, 0.3F, 0F);
 		}
 		//µe¥Xmodel
-		this.tesr.renderTileEntityAt(this.entity, 0D, 0D, 0D, 0F);
+		this.tesr.renderTileEntityAt(RenderSmallShipyardItem.entity, 0D, 0D, 0D, 0F);
 
 	}
 

@@ -2,8 +2,6 @@ package com.lulan.shincolle.block;
 
 import com.lulan.shincolle.creativetab.CreativeTabSC;
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.LogHelper;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;

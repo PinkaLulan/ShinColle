@@ -2,10 +2,6 @@ package com.lulan.shincolle.entity.destroyer;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.ai.EntityAILookIdle;
-import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
-import net.minecraft.entity.ai.EntityAIOpenDoor;
-import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
@@ -15,13 +11,7 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
-import com.lulan.shincolle.ai.EntityAIShipAttackOnCollide;
-import com.lulan.shincolle.ai.EntityAIShipFlee;
-import com.lulan.shincolle.ai.EntityAIShipFloating;
-import com.lulan.shincolle.ai.EntityAIShipFollowOwner;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
-import com.lulan.shincolle.ai.EntityAIShipSit;
-import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.entity.ExtendShipProps;
 import com.lulan.shincolle.entity.ISummonAttack;
@@ -33,6 +23,7 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.EntityHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -43,9 +34,9 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
 	public EntityDestroyerShimakaze(World world) {
 		super(world);
 		this.setSize(0.6F, 1.8F);	//碰撞大小 跟模型大小無關
-//		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityDestroyerShimakaze.name"));
-		this.ShipType = ID.ShipType.DESTROYER;
-		this.ShipID = ID.S_DestroyerShimakaze;
+		this.setStateMinor(ID.M.ShipType, ID.ShipType.DESTROYER);
+		this.setStateMinor(ID.M.ShipClass, ID.S_DestroyerShimakaze);
+		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
 		this.ModelPos = new float[] {0F, 15F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);
 		
@@ -89,11 +80,10 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
   				if(this.numRensouhou < 6) numRensouhou++;
   				
   				//apply ring effect
-  				EntityPlayerMP player = (EntityPlayerMP) this.getOwner();
-//  				EntityPlayerMP player = EntityHelper.getOnlinePlayer(this.getOwner());
-  				if(getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.N.NumGrudge) > 0 && player != null && getDistanceSqToEntity(player) < 256D) {
+  				EntityPlayerMP player = (EntityPlayerMP) EntityHelper.getEntityPlayerByUID(this.getPlayerUID(), this.worldObj);
+  				if(getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.M.NumGrudge) > 0 && player != null && getDistanceSqToEntity(player) < 256D) {
   					//potion effect: id, time, level
-  	  	  			player.addPotionEffect(new PotionEffect(Potion.moveSpeed.id, 300, getStateMinor(ID.N.ShipLevel) / 25 + 1));
+  	  	  			player.addPotionEffect(new PotionEffect(Potion.moveSpeed.id, 300, getStateMinor(ID.M.ShipLevel) / 25 + 1));
   				}
   			}
   		}    
@@ -235,7 +225,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
         }
         
         //calc miss chance, miss: add random offset(0~6) to missile target 
-        float missChance = 0.2F + 0.15F * (distSqrt / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.N.ShipLevel];
+        float missChance = 0.2F + 0.15F * (distSqrt / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.M.ShipLevel];
         missChance -= EffectEquip[ID.EF_MISS];	//equip miss reduce
         if(missChance > 0.35F) missChance = 0.35F;	//max miss chance = 30%
        
@@ -302,6 +292,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
   			return (double)this.height * 0.45F;
   		}
 	}
+
 
 }
 

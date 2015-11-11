@@ -2,23 +2,16 @@ package com.lulan.shincolle.item;
 
 import java.util.List;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.IIcon;
 
 import com.lulan.shincolle.crafting.EquipCalc;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.LogHelper;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class BasicEquip extends BasicItem {	
 	byte types;
@@ -57,7 +50,9 @@ public class BasicEquip extends BasicItem {
     		if(itemStat[ID.E.DHIT] != 0F) list.add(EnumChatFormatting.YELLOW + String.valueOf(itemStat[ID.E.DHIT])+ " " + I18n.format("gui.shincolle:doublehit"));
     		if(itemStat[ID.E.THIT] != 0F) list.add(EnumChatFormatting.GOLD + String.valueOf(itemStat[ID.E.THIT])+ " " + I18n.format("gui.shincolle:triplehit"));
     		if(itemStat[ID.E.MISS] != 0F) list.add(EnumChatFormatting.RED + String.valueOf(itemStat[ID.E.MISS])+ " " + I18n.format("gui.shincolle:missreduce"));
-    	
+    		if(itemStat[ID.E.AA] != 0F) list.add(EnumChatFormatting.YELLOW + String.valueOf(itemStat[ID.E.AA])+ " " + I18n.format("gui.shincolle:antiair"));
+    		if(itemStat[ID.E.ASM] != 0F) list.add(EnumChatFormatting.AQUA + String.valueOf(itemStat[ID.E.ASM])+ " " + I18n.format("gui.shincolle:antiss"));
+        	
     		if(itemStat[ID.E.LEVEL] == 1F) {
     			list.add(EnumChatFormatting.DARK_RED + I18n.format("gui.shincolle:notforcarrier"));
     		}

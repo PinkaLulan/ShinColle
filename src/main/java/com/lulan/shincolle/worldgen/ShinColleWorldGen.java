@@ -2,16 +2,16 @@ package com.lulan.shincolle.worldgen;
 
 import java.util.Random;
 
-import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.init.ModBlocks;
-
-import net.minecraft.block.Block;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.feature.WorldGenMinable;
 import net.minecraft.world.gen.feature.WorldGenerator;
 import net.minecraftforge.common.BiomeDictionary;
+
+import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.init.ModBlocks;
+
 import cpw.mods.fml.common.IWorldGenerator;
 
 public class ShinColleWorldGen implements IWorldGenerator {

@@ -2,8 +2,6 @@ package com.lulan.shincolle.block;
 
 import com.lulan.shincolle.creativetab.CreativeTabSC;
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.LogHelper;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.BlockContainer;
@@ -48,6 +46,7 @@ abstract public class BasicBlockContainer extends BlockContainer {
 	}
 	
 	//new tile entity instance in child class 
+	@Override
 	abstract public TileEntity createNewTileEntity(World world, int i);
 	
 	/**方塊放下時設定其朝向
@@ -59,7 +58,7 @@ abstract public class BasicBlockContainer extends BlockContainer {
 	@Override
 	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack itemstack) {		
 		//由玩家的旋轉角度決定方塊的朝向
-		int facecase = MathHelper.floor_double((double)(entity.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
+		int facecase = MathHelper.floor_double(entity.rotationYaw * 4.0F / 360.0F + 0.5D) & 3;
 		
 		if (facecase == 0) {	//player face south , block -> 2:north
 		    world.setBlockMetadataWithNotify(x, y, z, 0, 2);

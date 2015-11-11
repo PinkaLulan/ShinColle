@@ -1,18 +1,14 @@
 package com.lulan.shincolle.entity.other;
 
-import com.lulan.shincolle.ai.EntityAIShipAircraftAttack;
-import com.lulan.shincolle.client.particle.EntityFXSpray;
-import com.lulan.shincolle.entity.BasicEntityAirplane;
-import com.lulan.shincolle.entity.BasicEntityShipLarge;
-import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.LogHelper;
-import com.lulan.shincolle.utility.ParticleHelper;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.world.World;
+
+import com.lulan.shincolle.ai.EntityAIShipAircraftAttack;
+import com.lulan.shincolle.entity.BasicEntityAirplane;
+import com.lulan.shincolle.entity.BasicEntityShipLarge;
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.ParticleHelper;
 
 public class EntityAirplaneTakoyaki extends BasicEntityAirplane {
 	
@@ -24,7 +20,7 @@ public class EntityAirplaneTakoyaki extends BasicEntityAirplane {
 	public EntityAirplaneTakoyaki(World world, BasicEntityShipLarge host, EntityLivingBase target, double launchPos) {
 		super(world);
 		this.world = world;
-        this.hostEntity = host;
+        this.host = host;
         this.targetEntity = target;
         
         //basic attr
@@ -45,7 +41,9 @@ public class EntityAirplaneTakoyaki extends BasicEntityAirplane {
         this.setPosition(this.posX, this.posY, this.posZ);
  
 	    //設定基本屬性
-	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(host.getStateFinal(ID.HP)*0.15D);
+        double mhp = host.getLevel() + host.getStateFinal(ID.HP)*0.2D;
+        
+	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(mhp);
 		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(this.movSpeed);
 		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(host.getStateFinal(ID.HIT)+32D); //此為找目標, 路徑的範圍
 		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(1D);

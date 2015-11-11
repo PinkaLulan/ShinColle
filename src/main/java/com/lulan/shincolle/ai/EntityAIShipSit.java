@@ -1,12 +1,9 @@
 package com.lulan.shincolle.ai;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.utility.LogHelper;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.pathfinding.PathEntity;
 
 /**SIT AI FOR SHIP
@@ -22,17 +19,20 @@ public class EntityAIShipSit extends EntityAIBase
         this.setMutexBits(5);
     }
 
-    public boolean shouldExecute() {
+    @Override
+	public boolean shouldExecute() {
 //    	LogHelper.info("DEBUG : exec sitting "+(this.owner == null));
         return this.host.isSitting();
     }
 
-    public void startExecuting() {
+    @Override
+	public void startExecuting() {
     	this.host.setSitting(true);
     	this.host.setJumping(false);
     }
     
-    public void updateTask() {
+    @Override
+	public void updateTask() {
 //    	LogHelper.info("DEBUG : exec sitting");
     	this.host.getNavigator().clearPathEntity();    
         this.host.setPathToEntity((PathEntity)null);
@@ -40,7 +40,8 @@ public class EntityAIShipSit extends EntityAIBase
         this.host.setAttackTarget((EntityLivingBase)null);
     }
 
-    public void resetTask() {
+    @Override
+	public void resetTask() {
         this.host.setSitting(false);
     }
 

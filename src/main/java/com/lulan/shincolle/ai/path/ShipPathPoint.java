@@ -1,6 +1,5 @@
 package com.lulan.shincolle.ai.path;
 
-import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.MathHelper;
 
 /**SHIP PATH POINT
@@ -44,9 +43,9 @@ public class ShipPathPoint {
      * Returns the linear distance to another path point
      */
     public float distanceTo(ShipPathPoint point) {
-        float f = (float)(point.xCoord - this.xCoord);
-        float f1 = (float)(point.yCoord - this.yCoord);
-        float f2 = (float)(point.zCoord - this.zCoord);
+        float f = point.xCoord - this.xCoord;
+        float f1 = point.yCoord - this.yCoord;
+        float f2 = point.zCoord - this.zCoord;
         return MathHelper.sqrt_float(f * f + f1 * f1 + f2 * f2);
     }
 
@@ -54,13 +53,14 @@ public class ShipPathPoint {
      * Returns the squared distance to another path point
      */
     public float distanceToSquared(ShipPathPoint point) {
-        float f = (float)(point.xCoord - this.xCoord);
-        float f1 = (float)(point.yCoord - this.yCoord);
-        float f2 = (float)(point.zCoord - this.zCoord);
+        float f = point.xCoord - this.xCoord;
+        float f1 = point.yCoord - this.yCoord;
+        float f2 = point.zCoord - this.zCoord;
         return f * f + f1 * f1 + f2 * f2;
     }
 
-    public boolean equals(Object obj) {
+    @Override
+	public boolean equals(Object obj) {
         if(!(obj instanceof ShipPathPoint)) {
             return false;
         }
@@ -70,7 +70,8 @@ public class ShipPathPoint {
         }
     }
 
-    public int hashCode() {
+    @Override
+	public int hashCode() {
         return this.hash;
     }
 
@@ -81,7 +82,8 @@ public class ShipPathPoint {
         return this.index >= 0;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return this.xCoord + ", " + this.yCoord + ", " + this.zCoord;
     }
     

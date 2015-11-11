@@ -1,11 +1,7 @@
 package com.lulan.shincolle.tileentity;
 
-import com.lulan.shincolle.block.BasicBlockMulti;
-import com.lulan.shincolle.utility.LogHelper;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
 
 /**SERVANT BLOCK: POLYMETAL
  * servant block的所有方法都是跟master block呼叫
@@ -47,7 +43,7 @@ public class TileMultiPolymetal extends BasicTileMulti {
 		//用master的資料return
 		if(tile != null) {
 			if(tile instanceof TileMultiGrudgeHeavy) {
-				return ((TileMultiGrudgeHeavy)tile).SLOTS_ALL;
+				return TileMultiGrudgeHeavy.SLOTS_ALL;
 			} 
 		}
 		return new int[] {};

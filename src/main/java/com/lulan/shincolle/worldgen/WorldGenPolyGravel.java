@@ -2,15 +2,14 @@ package com.lulan.shincolle.worldgen;
 
 import java.util.Random;
 
-import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.init.ModBlocks;
-import com.lulan.shincolle.utility.LogHelper;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenerator;
+
+import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.init.ModBlocks;
 
 /**generate polymetallic gravel on the seabed
  * mod from clay generator
@@ -26,7 +25,8 @@ public class WorldGenPolyGravel extends WorldGenerator {
         this.numberOfBlocks = num;
     }
 
-    public boolean generate(World world, Random rand, int x, int y, int z) {
+    @Override
+	public boolean generate(World world, Random rand, int x, int y, int z) {
     	boolean notFrozen = true;
     	
     	//碰到frozen ocean, 會抓到海面的冰塊, 必須往下找海底

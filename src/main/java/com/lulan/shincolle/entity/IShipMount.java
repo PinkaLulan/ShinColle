@@ -8,7 +8,10 @@ import net.minecraft.entity.EntityLivingBase;
 public interface IShipMount extends IShipFloating {
 	
 	/**get rider*/
-	abstract public EntityLivingBase getRiddenByEntity();
+	public EntityLivingBase getRiddenByEntity();
+	
+//	/**get player eye height mod value, no use for now*/
+//	public float getRidingPlayerEyeHeight();
 
 }
 

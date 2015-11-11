@@ -2,7 +2,8 @@ package com.lulan.shincolle.item;
 
 import java.util.List;
 
-import net.minecraft.client.resources.I18n;
+import com.lulan.shincolle.entity.ExtendPlayerProps;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -11,51 +12,66 @@ import net.minecraft.world.World;
 
 public class OwnerPaper extends BasicItem {
 	
+	public static final String SignNameA = "SignNameA";	//player name tag
+	public static final String SignNameB = "SignNameB";
+	public static final String SignIDA = "SignIDA";		//player id tag
+	public static final String SignIDB = "SignIDB";
+	
+	
 	public OwnerPaper() {
 		super();
 		this.setUnlocalizedName("OwnerPaper");
 		this.maxStackSize = 1;
 	}
 	
-	//activate or deactivate ring
+	//right click to sign the paper
 	@Override
 	public ItemStack onItemRightClick(ItemStack itemstack, World world, EntityPlayer player) {
-		//right click to sign the paper
 //		if(!world.isRemote) {
-			//add sign data
-			if(!itemstack.hasTagCompound()) {	//use first time
-				itemstack.setTagCompound(new NBTTagCompound());
-				itemstack.getTagCompound().setString("signA", player.getUniqueID().toString());
-				itemstack.getTagCompound().setString("signA2", player.getDisplayName());
-				itemstack.getTagCompound().setString("signB", "");
-				itemstack.getTagCompound().setString("signB2", "");
-				itemstack.getTagCompound().setBoolean("signPos", false);
-			}
-			else {	//use > second time
-				//signPos: true -> sign at A, false -> sign at B
-				if(itemstack.getTagCompound().getBoolean("signPos")) {
-					itemstack.getTagCompound().setString("signA", player.getUniqueID().toString());
-					itemstack.getTagCompound().setString("signA2", player.getDisplayName());
+			ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+
+			if(extProps != null) {
+				//first time use
+				if(!itemstack.hasTagCompound()) {
+					itemstack.setTagCompound(new NBTTagCompound());
+					itemstack.getTagCompound().setString(SignNameA, player.getDisplayName());
+					itemstack.getTagCompound().setString(SignNameB, "");
+					itemstack.getTagCompound().setInteger(SignIDA, -1);
+					itemstack.getTagCompound().setInteger(SignIDB, -1);
 					itemstack.getTagCompound().setBoolean("signPos", false);
+					
+					//get player UID
+					itemstack.getTagCompound().setInteger(SignIDA, extProps.getPlayerUID());
+
 				}
+				//use > second time
 				else {
-					itemstack.getTagCompound().setString("signB", player.getUniqueID().toString());
-					itemstack.getTagCompound().setString("signB2", player.getDisplayName());
-					itemstack.getTagCompound().setBoolean("signPos", true);
+					//signPos: true -> sign at A, false -> sign at B
+					if(itemstack.getTagCompound().getBoolean("signPos")) {
+						itemstack.getTagCompound().setString(SignNameA, player.getDisplayName());
+						itemstack.getTagCompound().setInteger(SignIDA, extProps.getPlayerUID());
+						itemstack.getTagCompound().setBoolean("signPos", false);
+					}
+					else {
+						itemstack.getTagCompound().setString(SignNameB, player.getDisplayName());
+						itemstack.getTagCompound().setInteger(SignIDB, extProps.getPlayerUID());
+						itemstack.getTagCompound().setBoolean("signPos", true);
+					}
 				}
-			}
-			
-			return itemstack;
+			}//end extprops != null
 //		}
+		
+		return itemstack;
 	}
 	
 	//display equip information
     @Override
-    public void addInformation(ItemStack itemstack, EntityPlayer player, List list, boolean par4) {  	
-    	
+    public void addInformation(ItemStack itemstack, EntityPlayer player, List list, boolean par4) {
     	if(itemstack.hasTagCompound()) {
-    		list.add(EnumChatFormatting.AQUA + itemstack.getTagCompound().getString("signA2"));
-    		list.add(EnumChatFormatting.AQUA + itemstack.getTagCompound().getString("signB2"));	
+    		list.add(EnumChatFormatting.AQUA + itemstack.getTagCompound().getString(SignNameA));
+    		list.add(EnumChatFormatting.RED + String.valueOf(itemstack.getTagCompound().getInteger(SignIDA)));
+    		list.add(EnumChatFormatting.AQUA + itemstack.getTagCompound().getString(SignNameB));
+    		list.add(EnumChatFormatting.RED + String.valueOf(itemstack.getTagCompound().getInteger(SignIDB)));
     	}
     	
     }

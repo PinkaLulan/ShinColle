@@ -3,14 +3,10 @@ package com.lulan.shincolle.ai;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.pathfinding.PathNavigate;
-import net.minecraft.util.MathHelper;
 
 /**FLEE AI
  * if ship's HP is below fleeHP, ship will stop attack and try to flee
@@ -37,13 +33,13 @@ public class EntityAIShipFlee extends EntityAIBase {
 	
 	@Override
 	public boolean shouldExecute() {
-		this.fleehp = (float)host.getStateMinor(ID.N.FleeHP) / 100F;
+		this.fleehp = host.getStateMinor(ID.M.FleeHP) / 100F;
 		
 		//血量低於fleeHP 且不是坐下也不是綁住的狀態才執行flee AI
 		if(!host.isSitting() && !host.getLeashed() && 
 		   (host.getHealth() / host.getMaxHealth()) <= fleehp) {
 			
-			EntityLivingBase OwnerEntity = host.getOwner();
+			EntityLivingBase OwnerEntity = (EntityLivingBase) host.getHostEntity();
 			
 			if(OwnerEntity != null) {
 				owner = OwnerEntity;
@@ -61,29 +57,33 @@ public class EntityAIShipFlee extends EntityAIBase {
 		return false;
 	}
 	
-    public boolean continueExecuting() {
+    @Override
+	public boolean continueExecuting() {
     	//距離縮短到2格內就停止
     	return shouldExecute();
     }
 
-    public void startExecuting() {
+    @Override
+	public void startExecuting() {
     	this.findCooldown = 0;
     }
 
-    public void resetTask() {
+    @Override
+	public void resetTask() {
         this.owner = null;
         this.ShipPathfinder.clearPathEntity();
     }
     
-    public void updateTask() {
+    @Override
+	public void updateTask() {
     	this.findCooldown--;
     	this.motY = 0D;
     	
     	//設定頭部轉向
-        this.host.getLookHelper().setLookPositionWithEntity(this.owner, 10.0F, (float)this.host.getVerticalFaceSpeed());
+        this.host.getLookHelper().setLookPositionWithEntity(this.owner, 10.0F, this.host.getVerticalFaceSpeed());
 
     	//距離超過傳送距離, 直接傳送到目標上
-    	if(this.distSq > this.TP_DIST) {
+    	if(this.distSq > EntityAIShipFlee.TP_DIST) {
     		this.host.posX = this.owner.posX;
     		this.host.posY = this.owner.posY + 1D;
     		this.host.posZ = this.owner.posZ;

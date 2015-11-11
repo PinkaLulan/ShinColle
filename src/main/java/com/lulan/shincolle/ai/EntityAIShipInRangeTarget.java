@@ -1,30 +1,15 @@
 package com.lulan.shincolle.ai;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
-import com.lulan.shincolle.entity.BasicEntityAirplane;
-import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.entity.other.EntityAirplane;
-import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
-
-import net.minecraft.command.IEntitySelector;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityCreature;
-import net.minecraft.entity.EntityFlying;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAITarget;
-import net.minecraft.entity.boss.EntityDragon;
-import net.minecraft.entity.boss.EntityDragonPart;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.monster.EntitySlime;
-import net.minecraft.entity.passive.EntityBat;
-import net.minecraft.entity.passive.EntitySheep;
-import net.minecraft.entity.passive.EntityWaterMob;
+
+import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.TargetHelper;
 
 
 /**GET TARGET WITHIN SPECIFIC RANGE
@@ -39,8 +24,8 @@ import net.minecraft.entity.passive.EntityWaterMob;
 public class EntityAIShipInRangeTarget extends EntityAITarget {
 	
     private final Class targetClass;
-    private final EntityAIShipInRangeTarget.Sorter targetSorter;
-    private final IEntitySelector targetSelector;
+    private final TargetHelper.Sorter targetSorter;
+    private final TargetHelper.Selector targetSelector;
     private final BasicEntityShip host;
     private EntityLivingBase targetEntity;
     private int range1;
@@ -54,13 +39,14 @@ public class EntityAIShipInRangeTarget extends EntityAITarget {
     	super(host, true, false);	//check onSight and not nearby(collision) only
     	this.host = host;
     	this.targetClass = EntityLiving.class;
-        this.targetSorter = new EntityAIShipInRangeTarget.Sorter(host);
+        this.targetSorter = new TargetHelper.Sorter(host);
+        this.targetSelector = new TargetHelper.Selector(host);
         this.setMutexBits(1);
 
         //範圍指定
         this.rangeMod = rangeMod;
         this.range2 = (int)this.host.getStateFinal(ID.HIT);
-        this.range1 = (int)(this.rangeMod * (float)this.range2);
+        this.range1 = (int)(this.rangeMod * this.range2);
         this.targetMode = mode;
         
         //檢查範圍, 使range2 > range1 > 1
@@ -71,30 +57,6 @@ public class EntityAIShipInRangeTarget extends EntityAITarget {
         	this.range2 = this.range1 + 1;
         }
  
-        //target selector init
-        this.targetSelector = new IEntitySelector() {
-            public boolean isEntityApplicable(Entity target2) {
-            	if((target2 instanceof EntityMob || target2 instanceof EntitySlime ||
-            	   target2 instanceof EntityBat || target2 instanceof EntityDragon || 
-            	   target2 instanceof EntityDragonPart ||
-            	   target2 instanceof EntityFlying || target2 instanceof EntityWaterMob) &&
-            	   target2.isEntityAlive() && !target2.isInvisible()) {
-            		
-            		//若host有設定必須on sight, 則檢查on sight
-            		if(host.getStateFlag(ID.F.OnSightChase)) {
-            			if(host.getEntitySenses().canSee(target2)) {
-            				return true;
-            			}
-            			else {
-            				return false;
-            			}
-            		}
-            		
-            		return true;
-            	}
-            	return false;
-            }
-        };
     }
 
     @Override
@@ -103,9 +65,9 @@ public class EntityAIShipInRangeTarget extends EntityAITarget {
     	if(this.host.isSitting()) return false;
 
     	//update range every second
-    	if(this.host != null && this.host.ticksExisted % 20 == 0) {
+    	if(this.host != null && this.host.ticksExisted % 32 == 0) {
     		this.range2 = (int)this.host.getStateFinal(ID.HIT);
-            this.range1 = (int)(this.rangeMod * (float)this.range2); 
+            this.range1 = (int)(this.rangeMod * this.range2); 
             //檢查範圍, 使range2 > range1 > 1
             if(this.range1 < 1) {
             	this.range1 = 1;
@@ -208,25 +170,5 @@ public class EntityAIShipInRangeTarget extends EntityAITarget {
 //        LogHelper.info("DEBUG : start target "+this.host.getAttackTarget());
     }
 
-    /**SORTER CLASS
-     */
-    public static class Sorter implements Comparator {
-        private final Entity targetEntity;
-
-        public Sorter(Entity entity) {
-            this.targetEntity = entity;
-        }
-        
-        public int compare(Object target1, Object target2) {
-            return this.compare((Entity)target1, (Entity)target2);
-        }
-
-        //負值會排在list前面, 值越大越後面, list(0)會是距離最近的目標
-        public int compare(Entity target1, Entity target2) {
-            double d0 = this.targetEntity.getDistanceSqToEntity(target1);
-            double d1 = this.targetEntity.getDistanceSqToEntity(target2);
-            return d0 < d1 ? -1 : (d0 > d1 ? 1 : 0);
-        }       
-    }//end sorter class
   
 }

@@ -1,21 +1,14 @@
 package com.lulan.shincolle.client.inventory;
 
-import com.lulan.shincolle.crafting.SmallRecipes;
 import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.entity.BasicEntityShipLarge;
 import com.lulan.shincolle.item.BasicEquip;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
-import com.lulan.shincolle.utility.LogHelper;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ICrafting;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
@@ -155,21 +148,21 @@ public class ContainerShipInventory extends Container {
 	@Override
 	public void addCraftingToCrafters (ICrafting crafting) {
 		super.addCraftingToCrafters(crafting);
-		crafting.sendProgressBarUpdate(this, 1, this.entity.getStateMinor(ID.N.ExpCurrent));
-		crafting.sendProgressBarUpdate(this, 2, this.entity.getStateMinor(ID.N.NumAmmoLight));
-		crafting.sendProgressBarUpdate(this, 3, this.entity.getStateMinor(ID.N.NumAmmoHeavy));
-		crafting.sendProgressBarUpdate(this, 5, this.entity.getStateMinor(ID.N.NumAirLight));
-		crafting.sendProgressBarUpdate(this, 6, this.entity.getStateMinor(ID.N.NumAirHeavy));
+		crafting.sendProgressBarUpdate(this, 1, this.entity.getStateMinor(ID.M.ExpCurrent));
+		crafting.sendProgressBarUpdate(this, 2, this.entity.getStateMinor(ID.M.NumAmmoLight));
+		crafting.sendProgressBarUpdate(this, 3, this.entity.getStateMinor(ID.M.NumAmmoHeavy));
+		crafting.sendProgressBarUpdate(this, 5, this.entity.getStateMinor(ID.M.NumAirLight));
+		crafting.sendProgressBarUpdate(this, 6, this.entity.getStateMinor(ID.M.NumAirHeavy));
 		crafting.sendProgressBarUpdate(this, 7, this.entity.getStateFlagI(ID.F.UseMelee));
 		crafting.sendProgressBarUpdate(this, 8, this.entity.getStateFlagI(ID.F.UseAmmoLight));
 		crafting.sendProgressBarUpdate(this, 9, this.entity.getStateFlagI(ID.F.UseAmmoHeavy));
 		crafting.sendProgressBarUpdate(this, 10, this.entity.getStateFlagI(ID.F.UseAirLight));
 		crafting.sendProgressBarUpdate(this, 11, this.entity.getStateFlagI(ID.F.UseAirHeavy));
 		crafting.sendProgressBarUpdate(this, 12, this.entity.getStateFlagI(ID.F.IsMarried));
-		crafting.sendProgressBarUpdate(this, 13, this.entity.getStateMinor(ID.N.FollowMin));
-		crafting.sendProgressBarUpdate(this, 14, this.entity.getStateMinor(ID.N.FollowMax));
-		crafting.sendProgressBarUpdate(this, 15, this.entity.getStateMinor(ID.N.FleeHP));
-		crafting.sendProgressBarUpdate(this, 16, this.entity.getStateMinor(ID.N.TargetAI));
+		crafting.sendProgressBarUpdate(this, 13, this.entity.getStateMinor(ID.M.FollowMin));
+		crafting.sendProgressBarUpdate(this, 14, this.entity.getStateMinor(ID.M.FollowMax));
+		crafting.sendProgressBarUpdate(this, 15, this.entity.getStateMinor(ID.M.FleeHP));
+		crafting.sendProgressBarUpdate(this, 16, this.entity.getStateMinor(ID.M.TargetAI));
 		crafting.sendProgressBarUpdate(this, 17, this.entity.getStateFlagI(ID.F.UseRingEffect));
 		crafting.sendProgressBarUpdate(this, 18, this.entity.getStateFlagI(ID.F.OnSightChase));
 	}
@@ -181,37 +174,37 @@ public class ContainerShipInventory extends Container {
 		int getValue;
 		float getValueF;
 		
-		if(this.GuiKills != this.entity.getStateMinor(ID.N.Kills) ||
-		   this.GuiNumGrudge != this.entity.getStateMinor(ID.N.NumGrudge)) {
+		if(this.GuiKills != this.entity.getStateMinor(ID.M.Kills) ||
+		   this.GuiNumGrudge != this.entity.getStateMinor(ID.M.NumGrudge)) {
 			this.entity.sendGUISyncPacket();
-			this.GuiKills = this.entity.getStateMinor(ID.N.Kills);
-			this.GuiNumGrudge = this.entity.getStateMinor(ID.N.NumGrudge);
+			this.GuiKills = this.entity.getStateMinor(ID.M.Kills);
+			this.GuiNumGrudge = this.entity.getStateMinor(ID.M.NumGrudge);
 		}
 		
         for(Object crafter : this.crafters) {
             ICrafting icrafting = (ICrafting) crafter;
   
-            getValue = this.entity.getStateMinor(ID.N.ExpCurrent);
+            getValue = this.entity.getStateMinor(ID.M.ExpCurrent);
             if(this.GuiExpCurrent != getValue) {
                 icrafting.sendProgressBarUpdate(this, 1, getValue);
                 this.GuiExpCurrent = getValue;
             }
-            getValue = this.entity.getStateMinor(ID.N.NumAmmoLight);
+            getValue = this.entity.getStateMinor(ID.M.NumAmmoLight);
             if(this.GuiNumAmmo != getValue) {
                 icrafting.sendProgressBarUpdate(this, 2, getValue);
                 this.GuiNumAmmo = getValue;
             }
-            getValue = this.entity.getStateMinor(ID.N.NumAmmoHeavy);
+            getValue = this.entity.getStateMinor(ID.M.NumAmmoHeavy);
             if(this.GuiNumAmmoHeavy != getValue) {
                 icrafting.sendProgressBarUpdate(this, 3, getValue);
                 this.GuiNumAmmoHeavy = getValue;
             }
-            getValue = this.entity.getStateMinor(ID.N.NumAirLight);
+            getValue = this.entity.getStateMinor(ID.M.NumAirLight);
             if(this.GuiNumAirLight != getValue) {
                 icrafting.sendProgressBarUpdate(this, 5, getValue);
                 this.GuiNumAirLight = getValue;
             }
-            getValue = this.entity.getStateMinor(ID.N.NumAirHeavy);
+            getValue = this.entity.getStateMinor(ID.M.NumAirHeavy);
             if(this.GuiNumAirHeavy != getValue) {
                 icrafting.sendProgressBarUpdate(this, 6, getValue);
                 this.GuiNumAirHeavy = getValue;
@@ -246,22 +239,22 @@ public class ContainerShipInventory extends Container {
                 icrafting.sendProgressBarUpdate(this, 12, getValue);
                 this.GuiIsMarried = getValue;
             }
-            getValue = this.entity.getStateMinor(ID.N.FollowMin);
+            getValue = this.entity.getStateMinor(ID.M.FollowMin);
             if(this.FollowMin != getValue) {
                 icrafting.sendProgressBarUpdate(this, 13, getValue);
                 this.FollowMin = getValue;
             }
-            getValue = this.entity.getStateMinor(ID.N.FollowMax);
+            getValue = this.entity.getStateMinor(ID.M.FollowMax);
             if(this.FollowMax != getValue) {
                 icrafting.sendProgressBarUpdate(this, 14, getValue);
                 this.FollowMax = getValue;
             }
-            getValue = this.entity.getStateMinor(ID.N.FleeHP);
+            getValue = this.entity.getStateMinor(ID.M.FleeHP);
             if(this.FleeHP != getValue) {
                 icrafting.sendProgressBarUpdate(this, 15, getValue);
                 this.FleeHP = getValue;
             }
-            getValue = this.entity.getStateMinor(ID.N.TargetAI);
+            getValue = this.entity.getStateMinor(ID.M.TargetAI);
             if(this.TarAI != getValue) {
                 icrafting.sendProgressBarUpdate(this, 16, getValue);
                 this.TarAI = getValue;
@@ -280,23 +273,24 @@ public class ContainerShipInventory extends Container {
     }
 	
 	//clientºÝcontainer±µ¦¬·s­È
+	@Override
 	@SideOnly(Side.CLIENT)
     public void updateProgressBar(int valueType, int updatedValue) {     
 		switch(valueType) {
 		case 1:
-			this.entity.setStateMinor(ID.N.ExpCurrent, updatedValue);
+			this.entity.setStateMinor(ID.M.ExpCurrent, updatedValue);
 			break;
 		case 2:
-			this.entity.setStateMinor(ID.N.NumAmmoLight, updatedValue);
+			this.entity.setStateMinor(ID.M.NumAmmoLight, updatedValue);
 			break;
 		case 3:
-			this.entity.setStateMinor(ID.N.NumAmmoHeavy, updatedValue);
+			this.entity.setStateMinor(ID.M.NumAmmoHeavy, updatedValue);
 			break;
 		case 5:
-			this.entity.setStateMinor(ID.N.NumAirLight, updatedValue);
+			this.entity.setStateMinor(ID.M.NumAirLight, updatedValue);
 			break;
 		case 6:
-			this.entity.setStateMinor(ID.N.NumAirHeavy, updatedValue);
+			this.entity.setStateMinor(ID.M.NumAirHeavy, updatedValue);
 			break;
 		case 7:
 			this.entity.setEntityFlagI(ID.F.UseMelee, updatedValue);
@@ -317,16 +311,16 @@ public class ContainerShipInventory extends Container {
 			this.entity.setEntityFlagI(ID.F.IsMarried, updatedValue);
 			break;
 		case 13:
-			this.entity.setStateMinor(ID.N.FollowMin, updatedValue);
+			this.entity.setStateMinor(ID.M.FollowMin, updatedValue);
 			break;
 		case 14:
-			this.entity.setStateMinor(ID.N.FollowMax, updatedValue);
+			this.entity.setStateMinor(ID.M.FollowMax, updatedValue);
 			break;
 		case 15:
-			this.entity.setStateMinor(ID.N.FleeHP, updatedValue);
+			this.entity.setStateMinor(ID.M.FleeHP, updatedValue);
 			break;
 		case 16:
-			this.entity.setStateMinor(ID.N.TargetAI, updatedValue);
+			this.entity.setStateMinor(ID.M.TargetAI, updatedValue);
 			break;
 		case 17:
 			this.entity.setEntityFlagI(ID.F.UseRingEffect, updatedValue);

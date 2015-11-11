@@ -2,14 +2,11 @@ package com.lulan.shincolle.init;
 
 import net.minecraftforge.common.MinecraftForge;
 
-import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.handler.EVENT_BUS_EventHandler;
 import com.lulan.shincolle.handler.FML_COMMON_EventHandler;
-import com.lulan.shincolle.handler.GuiHandler;
 
 import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.network.NetworkRegistry;
 
 public class ModEvents {
 	

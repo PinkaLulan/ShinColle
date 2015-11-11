@@ -3,18 +3,12 @@ package com.lulan.shincolle.client.particle;
 import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.LogHelper;
-
-import cpw.mods.fml.relauncher.ReflectionHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.client.particle.EntityFX;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
@@ -135,7 +129,8 @@ public class EntityFXTeam extends EntityFX {
         }
     }
 
-    public void renderParticle(Tessellator tess, float ticks, float par3, float par4, float par5, float par6, float par7) {
+    @Override
+	public void renderParticle(Tessellator tess, float ticks, float par3, float par4, float par5, float par6, float par7) {
 		GL11.glPushMatrix();
 		//使用自帶的貼圖檔
 		Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE);
@@ -169,25 +164,25 @@ public class EntityFXTeam extends EntityFX {
         tess.setBrightness(240);
         //畫出箭頭
         //X跟Z位置不加頭部轉動偏移, 只有Y軸會偏向玩家方向
-        tess.addVertexWithUV((double)(f11 - par3 * particleScale), (double)(f12 - par4 * particleScale * 2.0F), (double)(f13 - par5 * particleScale), xmax, y1max);
-        tess.addVertexWithUV((double)(f11 - par3 * particleScale), (double)(f12 + par4 * particleScale * 2.0F), (double)(f13 - par5 * particleScale), xmax, y1min);
-        tess.addVertexWithUV((double)(f11 + par3 * particleScale), (double)(f12 + par4 * particleScale * 2.0F), (double)(f13 + par5 * particleScale), xmin, y1min);
-        tess.addVertexWithUV((double)(f11 + par3 * particleScale), (double)(f12 - par4 * particleScale * 2.0F), (double)(f13 + par5 * particleScale), xmin, y1max);
+        tess.addVertexWithUV(f11 - par3 * particleScale, f12 - par4 * particleScale * 2.0F, f13 - par5 * particleScale, xmax, y1max);
+        tess.addVertexWithUV(f11 - par3 * particleScale, f12 + par4 * particleScale * 2.0F, f13 - par5 * particleScale, xmax, y1min);
+        tess.addVertexWithUV(f11 + par3 * particleScale, f12 + par4 * particleScale * 2.0F, f13 + par5 * particleScale, xmin, y1min);
+        tess.addVertexWithUV(f11 + par3 * particleScale, f12 - par4 * particleScale * 2.0F, f13 + par5 * particleScale, xmin, y1max);
 
         halfScale = particleScale * 3F;
         
         tess.setColorRGBA_F(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha * 0.5F);
         //畫出圈圈(朝上)
-        tess.addVertexWithUV((double)(f11 + halfScale), f12b, (double)(f13 + halfScale), xmax, y2max);
-        tess.addVertexWithUV((double)(f11 + halfScale), f12b, (double)(f13 - halfScale), xmax, y2min);
-        tess.addVertexWithUV((double)(f11 - halfScale), f12b, (double)(f13 - halfScale), xmin, y2min);
-        tess.addVertexWithUV((double)(f11 - halfScale), f12b, (double)(f13 + halfScale), xmin, y2max);
+        tess.addVertexWithUV(f11 + halfScale, f12b, f13 + halfScale, xmax, y2max);
+        tess.addVertexWithUV(f11 + halfScale, f12b, f13 - halfScale, xmax, y2min);
+        tess.addVertexWithUV(f11 - halfScale, f12b, f13 - halfScale, xmin, y2min);
+        tess.addVertexWithUV(f11 - halfScale, f12b, f13 + halfScale, xmin, y2max);
 
         //畫出圈圈(朝下)
-        tess.addVertexWithUV((double)(f11 + halfScale), f12b, (double)(f13 - halfScale), xmax, y2max);
-        tess.addVertexWithUV((double)(f11 + halfScale), f12b, (double)(f13 + halfScale), xmax, y2min);
-        tess.addVertexWithUV((double)(f11 - halfScale), f12b, (double)(f13 + halfScale), xmin, y2min);
-        tess.addVertexWithUV((double)(f11 - halfScale), f12b, (double)(f13 - halfScale), xmin, y2max);
+        tess.addVertexWithUV(f11 + halfScale, f12b, f13 - halfScale, xmax, y2max);
+        tess.addVertexWithUV(f11 + halfScale, f12b, f13 + halfScale, xmax, y2min);
+        tess.addVertexWithUV(f11 - halfScale, f12b, f13 + halfScale, xmin, y2min);
+        tess.addVertexWithUV(f11 - halfScale, f12b, f13 - halfScale, xmin, y2max);
         
         //stop tess for restore texture
         tess.draw();
@@ -206,7 +201,8 @@ public class EntityFXTeam extends EntityFX {
     /**
      * Called to update the entity's position/logic.
      */
-    public void onUpdate() {
+    @Override
+	public void onUpdate() {
     	if(host != null) {
 			this.setPosition(host.posX, host.posY, host.posZ);
     	}
@@ -218,7 +214,7 @@ public class EntityFXTeam extends EntityFX {
     	
     	//fade out effect
     	if(particleType > 3 && particleAge > 10) {
-    		this.particleAlpha = 1F - (((float)particleAge - 10F) / 20F);
+    		this.particleAlpha = 1F - ((particleAge - 10F) / 20F);
     	}
     	
         if(this.particleAge++ > this.particleMaxAge) {

@@ -1,6 +1,5 @@
 package com.lulan.shincolle.utility;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -10,7 +9,6 @@ import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityItemFrame;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -32,16 +30,12 @@ import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathEntity;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.ai.path.ShipPathPoint;
-import com.lulan.shincolle.entity.BasicEntityAirplane;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
 import com.lulan.shincolle.entity.IShipAttackBase;
-import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.IShipFloating;
-import com.lulan.shincolle.entity.other.EntityRensouhou;
-import com.lulan.shincolle.entity.other.EntityRensouhouS;
+import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CGUIPackets;
@@ -99,54 +93,19 @@ public class EntityHelper {
 	}
 	
 	/**check is same owner for ship (host's owner == target's owner) */
-	//注意盜版會發生player uuid不合的情形, 導致無法開gui或者其他功能
-	public static boolean checkSameOwner(Entity host, Entity target) {
-		Entity getOwnerA = null;
-		Entity getOwnerB = null;
-		
-		if(host != null && target != null) {
-			//for hostile mob
-			if(host instanceof BasicEntityShipHostile && target instanceof BasicEntityShipHostile) {
-				return true;
-			}
-			
-			//for other entity
-			getOwnerA = getOwnerFromEntity(host);
-			getOwnerB = getOwnerFromEntity(target); 
-			
-			//client side check
-			if(host.worldObj.isRemote || target.worldObj.isRemote) {
-				//client端判定: 由於sync問題, client端必須另外抓一次owner
-				if(getOwnerA instanceof BasicEntityShip) {
-					getOwnerA = getEntityByID(((BasicEntityShip) getOwnerA).getStateMinor(ID.N.OwnerID), 0, true);
-				}
-				if(getOwnerB instanceof BasicEntityShip) {
-					getOwnerB = getEntityByID(((BasicEntityShip) getOwnerB).getStateMinor(ID.N.OwnerID), 0, true);
-				}
-				
-				//檢查uuid是否相同
-				if(getOwnerA != null && getOwnerB != null) {
-					LogHelper.info("DEBUG : check owner (client) A:"+getOwnerA.getUniqueID()+" B: "+getOwnerB.getUniqueID());
-					return getOwnerA.getUniqueID().equals(getOwnerB.getUniqueID());
-				}
-				else {
-					LogHelper.info("DEBUG : check owner (client) A:"+getOwnerA+" B: "+getOwnerB);
-				}
-			}
-			//server side check
-			else {
-				//檢查uuid是否相同
-				if(getOwnerA != null && getOwnerB != null) {
-					LogHelper.info("DEBUG : check owner (server) A:"+getOwnerA.getUniqueID()+" B: "+getOwnerB.getUniqueID());
-					return getOwnerA.getUniqueID().equals(getOwnerB.getUniqueID());
-				}
-			}
+	public static boolean checkSameOwner(Entity enta, Entity entb) {
+		int ida = getPlayerUID(enta);
+		int idb = getPlayerUID(entb);
+
+		//ida, idb != 0 or -1
+		if((ida > 0 || ida < -1) && (idb > 0 || idb < -1)) {
+			return (ida == idb);
 		}
 		
 		return false;
 	}
 	
-	//replace isInWater, check water block with NO extend AABB
+	/**replace isInWater, check water block with NO extend AABB */
 	public static void checkDepth(IShipFloating entity) {
 		Entity entityCD = (Entity) entity;
 		Block BlockCheck = checkBlockWithOffset(entityCD, 0);
@@ -171,7 +130,7 @@ public class EntityHelper {
 					break;
 				}
 			}		
-			depth = depth - (double)(entityCD.posY - (int)entityCD.posY);
+			depth = depth - (entityCD.posY - (int)entityCD.posY);
 		}
 		else {
 			depth = 0;	
@@ -181,7 +140,7 @@ public class EntityHelper {
 		entity.setShipDepth(depth);
 	}
 	
-	/**get block from entity position with offset*/
+	/**get block from entity position with offset */
 	public static Block checkBlockWithOffset(Entity entity, int par1) {
 		int blockX = MathHelper.floor_double(entity.posX);
 	    int blockY = MathHelper.floor_double(entity.boundingBox.minY);
@@ -190,95 +149,75 @@ public class EntityHelper {
 	    return entity.worldObj.getBlock(blockX, blockY + par1, blockZ);    
 	}
 	
-	/**get owner from entity */
-	public static Entity getOwnerFromEntity(Entity host) {
-		//get owner from target
-		//若為玩家, 則直接回傳玩家
-		if(host instanceof EntityPlayer) {
-			return host;
-		}
-		//若為ship類
-		else if(host instanceof BasicEntityShip) {
-			if(host.worldObj.isRemote) {
-				//client ship: return ship
-				return host;
-			}
-			else {
-				return ((BasicEntityShip) host).getOwner();
-			}
-		}
-		else if(host instanceof BasicEntityMount) {
-			if(host.worldObj.isRemote) {
-				//client mount: return ship
-				return ((BasicEntityMount) host).getOwner();
-			}
-			else {
-				return ((BasicEntityMount)host).getPlayerOwner();
-			}
-		}
-		//若為寵物, 則回傳寵物owner
-		else if(host instanceof EntityTameable) {
-			return ((EntityTameable)host).getOwner();
-		}
-		//若為其他用IShipAttack的, 直接取player owner
-		else if(host instanceof IShipAttackBase) {
-			return ((IShipAttackBase) host).getPlayerOwner();
-		}
-		
-		
-//		//若為飛機,座騎,召喚物, 則取得owner的owner
-//		else if(host instanceof BasicEntityAirplane || host instanceof BasicEntityMount ||
-//				host instanceof EntityRensouhou || host instanceof EntityRensouhouS) {
-//			//先取得airplane的owner(為一種ship), 再取得該ship的owner(為一種EntityPlayer)
-//			BasicEntityShip owner = (BasicEntityShip) ((IShipAttackBase)host).getOwner();
-//			
-//			if(owner != null) {
-//				return owner.getOwner();
-//			}
-//		}
-//		//若為其他用IshipAttack的, 直接取owner
-//		else if(host instanceof IShipAttackBase) {
-//			return ((IShipAttackBase) host).getOwner();
-//		}
-		
-		return null;
-	}
-	
-	/**check entity ID is not same */
+	/**check entity ID is not same, used in AE damage checking */
     public static boolean checkNotSameEntityID(Entity enta, Entity entb) {
-		if(enta.getEntityId() == entb.getEntityId()) {
-			return false;
+		if(enta != null && entb != null) {
+			return !(enta.getEntityId() - entb.getEntityId() == 0);
 		}
     	
 		return true;
 	}
 
-	/**check host's owner is EntityPlayer */
-	public static boolean checkOwnerIsPlayer(EntityLivingBase host) {
+	/**check host's owner is EntityPlayer, for mod interact */
+	public static boolean checkOwnerIsPlayer(EntityLivingBase ent) {
 		EntityLivingBase getOwner = null;
 		
-		if(host != null) {
-			if(host instanceof EntityPlayer || host instanceof BasicEntityAirplane || 
-			   host instanceof BasicEntityShip || host instanceof BasicEntityMount ||
-			   host instanceof EntityRensouhou || host instanceof EntityRensouhouS) {
+		if(ent != null) {
+			if(getPlayerUID(ent) > 0) {
 				return true;
 			}
-			else if(host instanceof EntityTameable) {
-				getOwner = ((EntityTameable)host).getOwner();
-				return (getOwner != null) && (getOwner instanceof EntityPlayer);
+			else if(ent instanceof EntityTameable) {
+				getOwner = ((EntityTameable)ent).getOwner();
+				return (getOwner instanceof EntityPlayer);
 			}
 		}
 		
 		return false;
 	}
 	
-	/** */
+	/** check player is OP */
 	public static boolean checkOP(EntityPlayer player) {
-		MinecraftServer server = ServerProxy.getServer();
-		return server.getConfigurationManager().func_152596_g(player.getGameProfile());
+		if(player != null) {
+			if(!player.worldObj.isRemote) {
+				MinecraftServer server = ServerProxy.getServer();
+				return server.getConfigurationManager().func_152596_g(player.getGameProfile());
+			}
+		}
+		
+		return false;
 	}
 	
-	/**get entity by ID */
+	/**check friendly fire for EntityPlayer (false = no damage) */
+	public static boolean doFriendlyFire(IShipOwner attacker, EntityPlayer target) {
+		if(attacker != null && target != null) {
+			int ida = attacker.getPlayerUID();	//attacker's owner id
+			
+			//is friendly fire
+			if(ConfigHandler.friendlyFire) {
+				//attacker = normal ship
+				if(ida > 0) {
+					int idb = getPlayerUID(target);
+					//same owner, no damage
+					if(ida == idb) {
+						return false;
+					}
+					//diff owner, do damage
+				}
+			}
+			//no friendly fire
+			else {
+				//ship can't hurt player
+				if(ida >= -1) {
+					return false;
+				}
+			}
+		}
+		
+		//default setting: can damage
+		return true;
+	}
+	
+	/** get (loaded) entity by entity ID */
 	public static Entity getEntityByID(int entityID, int worldID, boolean isClient) {
 		World world;
 		
@@ -289,36 +228,185 @@ public class EntityHelper {
 			world = DimensionManager.getWorld(worldID);
 		}
 		
-		if(world != null) {
+		if(world != null && entityID > 0) {
 			for(Object obj: world.loadedEntityList) {
-				if(entityID != -1 && ((Entity)obj).getEntityId() == entityID) {
+				if(((Entity)obj).getEntityId() == entityID) {
 					return ((Entity)obj);
+				}
+			}
+			
+			LogHelper.info("DEBUG : entity not found: eid: "+entityID+" world: "+worldID+" client: "+world.isRemote);
+		}
+			
+		return null;
+	}
+	
+	/** get ship entity by ship UID, server side only */
+	public static BasicEntityShip getShipBySID(int sid) {
+		if(sid > 0) {
+			int[] data = ServerProxy.getShipWorldData(sid);
+			
+			if(data != null) {
+				Entity getEnt = getEntityByID(data[0], data[1], false);
+//				LogHelper.info("DEBUG : get ship by SID: "+data);
+				if(getEnt instanceof BasicEntityShip) {
+					return (BasicEntityShip) getEnt;
+				}
+			}
+		}
+		else {	//sid <= 0
+			return null;
+		}
+		
+		LogHelper.info("DEBUG : ship not found: sid: "+sid);
+		return null;
+	}
+	
+	/** get player by entity ID */
+	public static EntityPlayer getEntityPlayerByID(int entityID, int worldID, boolean isClient) {
+		World world;
+		
+		if(isClient) {
+			world = ClientProxy.getClientWorld();
+		}
+		else {
+			world = DimensionManager.getWorld(worldID);
+		}
+		
+		if(world != null && entityID > 0) {
+			for(Object obj: world.playerEntities) {
+				if(((Entity)obj).getEntityId() == entityID) {
+					return ((EntityPlayer)obj);
 				}
 			}
 		}
 			
-		LogHelper.info("DEBUG : cannot fund entity "+entityID+" in world "+worldID+" client? "+world.isRemote);
+		LogHelper.info("DEBUG : player not found: eid: "+entityID+" world: "+worldID+" client: "+world.isRemote);
 		return null;
 	}
 	
-	/**get player is online by entity */
-	public static EntityPlayerMP getOnlinePlayer(EntityLivingBase entity) {
-		if(entity != null) {
-			//get online id list (server side only)
-			List onlineList = MinecraftServer.getServer().getConfigurationManager().playerEntityList;
-			Iterator iter = onlineList.iterator();
+	/** get (online) player by player UID, SERVER SIDE ONLY */
+	public static EntityPlayer getEntityPlayerByUID(int uid, World world) {
+		if(!world.isRemote && uid > 0) {
+			//從server proxy抓出player uid cache
+			int[] pdata = ServerProxy.getPlayerWorldData(uid);
 			
-			while(iter.hasNext()) {
-				EntityPlayerMP player = (EntityPlayerMP)iter.next();
-			    if(player.getUniqueID().equals(entity.getUniqueID())) {
-			    	return player;
-			    }
+			if(pdata != null && pdata.length > 2) {
+				//成功抓到data, 且player的world跟呼叫者的world相同
+				if(pdata[2] != world.provider.dimensionId) {
+//					LogHelper.info("DEBUG : player not found: different world: "+world.provider.dimensionId+" vs "+pdata[2]);
+					return null;
+				}
+				
+				return getEntityPlayerByID(pdata[0], world.provider.dimensionId, world.isRemote);
 			}
 		}
-		return null;	//player offline
+		
+		LogHelper.info("DEBUG : player not found: uid: "+uid+" client? "+world.isRemote);
+		return null;
 	}
 	
-	/**sync player extend props data by integer */
+	/** get (online) player entity id by player UID, SERVER SIDE ONLY */
+	public static int getPlayerEID(int uid) {
+		if(uid > 0) {
+			//從server proxy抓出player uid cache
+			int[] pdata = ServerProxy.getPlayerWorldData(uid);
+			
+			//成功抓到data
+			if(pdata != null && pdata.length > 2) {
+				return pdata[0];
+			}
+		}
+		
+		return -1;
+	}
+	
+	/** get (online) player team id by player UID, SERVER SIDE ONLY */
+	public static int getPlayerTID(int uid) {
+		if(uid > 0) {
+			//從server proxy抓出player uid cache
+			int[] pdata = ServerProxy.getPlayerWorldData(uid);
+			
+			//成功抓到data
+			if(pdata != null && pdata.length > 2) {
+				return pdata[1];
+			}
+		}
+		
+		return -1;
+	}
+	
+	/** get player UID by entity */
+	public static int getPlayerUID(Entity ent) {
+		//player entity
+		if(ent instanceof EntityPlayer) {
+			ExtendPlayerProps extProps = (ExtendPlayerProps) ent.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+			
+			if(extProps != null) return extProps.getPlayerUID();
+		}
+		
+		//shincolle entity
+		if(ent instanceof IShipOwner) {
+			return ((IShipOwner) ent).getPlayerUID();
+		}
+		
+		//tameable entity
+		if(ent instanceof EntityTameable) {
+			EntityLivingBase owner = ((EntityTameable) ent).getOwner();
+			//get player UID
+			if(owner instanceof EntityPlayer) {
+				ExtendPlayerProps extProps = (ExtendPlayerProps) owner.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+				
+				if(extProps != null) return extProps.getPlayerUID();
+			}
+		}
+		
+		return -1;
+	}
+	
+	/** get player uuid */
+	public static String getPetPlayerUUID(EntityTameable pet) {
+		if(pet != null) {
+			return pet.func_152113_b();
+		}
+		
+		return null;
+	}
+	
+	/** set player UID for pet, SERVER SIDE ONLY */
+	public static void setPetPlayerUID(EntityPlayer player, IShipOwner pet) {
+		setPetPlayerUID(getPlayerUID(player), pet);
+	}
+	
+	/** set player UID for pet */
+	public static void setPetPlayerUID(int pid, IShipOwner pet) {
+		if(pet != null && pid > 0) {
+			pet.setPlayerUID(pid);
+		}
+	}
+	
+	/** set owner uuid for pet by player UID and pet entity */
+	public static void setPetPlayerUUID(int pid, EntityTameable pet) {
+		EntityPlayer owner = EntityHelper.getEntityPlayerByUID(pid, pet.worldObj);
+		
+		setPetPlayerUUID(owner, pet);
+	}
+	
+	/** set owner uuid for pet by player entity and pet entity */
+	public static void setPetPlayerUUID(EntityPlayer player, EntityTameable pet) {
+		if(player != null) {
+			setPetPlayerUUID(player.getUniqueID().toString(), pet);
+		}
+	}
+	
+	/** set owner uuid for pet by player uuid and pet entity*/
+	public static void setPetPlayerUUID(String uuid, EntityTameable pet) {
+		if(pet != null) {
+			pet.func_152115_b(uuid);
+		}
+	}
+	
+	/**set player extend props data by packets, CLIENT SIDE ONLY */
 	public static void setPlayerExtProps(int[] value) {
 		EntityPlayer player = ClientProxy.getClientPlayer();
 		ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
@@ -326,24 +414,8 @@ public class EntityHelper {
 		if(extProps != null) {
 			extProps.setRingActiveI(value[0]);
 			extProps.setMarriageNum(value[1]);
-			extProps.setTeamId(value[2]);
-			
-			//set team list
-			BasicEntityShip teamship = null;
-			for(int i = 0; i < 6; i++) {
-				if(value[i+3] <= 0) {
-					extProps.setTeamList(i, null, true);
-				}
-				else {
-					if(value[i+3] > 0) {
-						teamship = (BasicEntityShip) EntityHelper.getEntityByID(value[i+3], 0, true);
-					}
-					else {
-						teamship = null;
-					}
-					extProps.setTeamList(i, teamship, true);
-				}
-			}
+			extProps.setPlayerUID(value[2]);
+			extProps.setPlayerTeamId(value[3]);
 			
 			//disable fly if non-active
 			if(!extProps.isRingActive() && !player.capabilities.isCreativeMode && extProps.isRingFlying()) {
@@ -354,17 +426,48 @@ public class EntityHelper {
 		}
 	}
 	
-	/**sync player extend props data by boolean */
-	public static void setPlayerExtProps(boolean[] value) {
+	/**set player extend props team list by packets, CLIENT SIDE ONLY */
+	public static void setPlayerExtProps(int teamid, int[] teamlist, boolean[] selstate) {
 		EntityPlayer player = ClientProxy.getClientPlayer();
 		ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 		
 		if(extProps != null) {
+			//set current team
+			extProps.setTeamId(teamid);
+			
 			//set team selected
 			for(int i = 0; i < 6; i++) {
-				extProps.setTeamSelected(i, value[i]);
-			}
-		}
+				//set select state
+				extProps.setSelectStateOfCurrentTeam(i, selstate[i]);
+				
+				//set ship entity
+				if(teamlist[i * 2] <= 0) {
+					extProps.addEntityToTeam(i, null, true);
+				}
+				else {
+					Entity getEnt = getEntityByID(teamlist[i * 2], 0, true);
+					
+					if(getEnt instanceof BasicEntityShip) {
+						extProps.addEntityToTeam(i, (BasicEntityShip) getEnt, true);
+					}
+					else {
+						extProps.addEntityToTeam(i, null, true);
+					}
+				}
+				
+				//set ship UID
+				extProps.setSIDofCurrentTeam(i, teamlist[i * 2 + 1]);
+				
+				/**NOTE:
+				 * client端可能接收到不同world的entity, 導致getEntityByID結果為null
+				 * 此時會讓teamList存null, 但是sidList有存ship UID
+				 * pointer item可以藉此將該slot標記為ship lost
+				 * 藉此保留該slot直到切換到相同world為止
+				 * 
+				 * server端可正確找到entity, 以上只針對client端的狀況說明
+				 */
+			}//end for loop
+		}//end props != null
 	}
 	
 	/**process player sync data */
@@ -404,16 +507,16 @@ public class EntityHelper {
 				entity.setEntityFlagI(ID.F.UseAirHeavy, value);
 				break;
 			case ID.B.ShipInv_FollowMin:
-				entity.setStateMinor(ID.N.FollowMin, value);
+				entity.setStateMinor(ID.M.FollowMin, value);
 				break;
 			case ID.B.ShipInv_FollowMax:
-				entity.setStateMinor(ID.N.FollowMax, value);
+				entity.setStateMinor(ID.M.FollowMax, value);
 				break;
 			case ID.B.ShipInv_FleeHP:
-				entity.setStateMinor(ID.N.FleeHP, value);
+				entity.setStateMinor(ID.M.FleeHP, value);
 				break;
 			case ID.B.ShipInv_TarAI:
-				entity.setStateMinor(ID.N.TargetAI, value);
+				entity.setStateMinor(ID.M.TargetAI, value);
 				break;
 			case ID.B.ShipInv_AuraEffect:
 				entity.setEntityFlagI(ID.F.UseRingEffect, value);
@@ -539,21 +642,7 @@ public class EntityHelper {
 				//find side position
 				newPos[0] = rand.nextDouble() * randDist + minDist;	//ran = min + randN
 				newPos[2] = rand.nextDouble() * randDist + minDist;	
-				
-//				//輪擺位移法
-//				if(target.posX - host.posX > 0) {
-//					newPos[0] = target.posX + newPos[0];
-//				}
-//				else {
-//					newPos[0] = target.posX - newPos[0];
-//				}
-//				
-//				if(target.posZ - host.posZ > 0) {
-//					newPos[2] = target.posZ + newPos[2];
-//				}
-//				else {
-//					newPos[2] = target.posZ - newPos[2];
-//				}
+
 				//隨機選象限法
 				switch(rand.nextInt(4)) {
 				case 0:
@@ -792,34 +881,25 @@ public class EntityHelper {
     }
 	
 	/** set ship guard, and check guard position is not same */
-	public static void applyShipGuard(BasicEntityShip ship, int x, int y, int z) {
+	public static void applyShipGuard(BasicEntityShip ship, int type, int x, int y, int z) {
 		if(ship != null) {
-			int gx = ship.getStateMinor(ID.N.GuardX);
-			int gy = ship.getStateMinor(ID.N.GuardY);
-			int gz = ship.getStateMinor(ID.N.GuardZ);
-			int gd = ship.getStateMinor(ID.N.GuardDim);
+			int gx = ship.getStateMinor(ID.M.GuardX);
+			int gy = ship.getStateMinor(ID.M.GuardY);
+			int gz = ship.getStateMinor(ID.M.GuardZ);
+			int gd = ship.getStateMinor(ID.M.GuardDim);
 			
 			//same guard position, cancel guard mode
 			if(gx == x && gy == y && gz == z && gd == ship.worldObj.provider.dimensionId) {
-				ship.setStateMinor(ID.N.GuardX, -1);		//reset guard position
-				ship.setStateMinor(ID.N.GuardY, -1);
-				ship.setStateMinor(ID.N.GuardZ, -1);
-				ship.setStateMinor(ID.N.GuardDim, 0);
-				ship.setStateMinor(ID.N.GuardID, -1);
-				ship.setGuarded(null);
+				ship.setGuardedPos(-1, -1, -1, 0, 0);		//reset guard position
+				ship.setGuardedEntity(null);
 				ship.setStateFlag(ID.F.CanFollow, true);	//set follow
 			}
 			//apply guard mode
 			else {
 				ship.setSitting(false);						//stop sitting
-				ship.setStateMinor(ID.N.GuardX, x);
-				ship.setStateMinor(ID.N.GuardY, y);
-				ship.setStateMinor(ID.N.GuardZ, z);
-				ship.setStateMinor(ID.N.GuardDim, ship.worldObj.provider.dimensionId);
-				ship.setStateMinor(ID.N.GuardID, -1);
-				ship.setGuarded(null);
+				ship.setGuardedEntity(null);				//clear guard target
+				ship.setGuardedPos(x, y, z, ship.worldObj.provider.dimensionId, type);
 				ship.setStateFlag(ID.F.CanFollow, false);	//stop follow
-				
 				if(!ship.getStateFlag(ID.F.NoFuel)) {
 					if(ship.ridingEntity != null && ship.ridingEntity instanceof BasicEntityMount) {
 						((BasicEntityMount)ship.ridingEntity).getShipNavigate().tryMoveToXYZ(x, y, z, 1D);
@@ -833,28 +913,21 @@ public class EntityHelper {
 	}
 	
 	/** set ship guard, and check guard position is not same */
-	public static void applyShipGuardEntity(BasicEntityShip ship, Entity guarded) {
+	public static void applyShipGuardEntity(BasicEntityShip ship, Entity guarded, int type) {
 		if(ship != null) {
-			Entity getEnt = ship.getGuarded();
+			Entity getEnt = ship.getGuardedEntity();
 			
-			//same guard position, cancel guard mode
+			//same guard position, cancel guard
 			if(getEnt != null && getEnt.getEntityId() == guarded.getEntityId()) {
-				ship.setStateMinor(ID.N.GuardX, -1);		//reset guard position
-				ship.setStateMinor(ID.N.GuardY, -1);
-				ship.setStateMinor(ID.N.GuardZ, -1);
-				ship.setStateMinor(ID.N.GuardDim, 0);
-				ship.setStateMinor(ID.N.GuardID, -1);
-				ship.setGuarded(null);
+				ship.setGuardedPos(-1, -1, -1, 0, 0);		//reset guard position
+				ship.setGuardedEntity(null);
 				ship.setStateFlag(ID.F.CanFollow, true);	//set follow
 			}
-			//apply guard mode
+			//apply guard
 			else {
 				ship.setSitting(false);						//stop sitting
-				ship.setStateMinor(ID.N.GuardX, -1);		//clear guard position
-				ship.setStateMinor(ID.N.GuardY, -1);
-				ship.setStateMinor(ID.N.GuardZ, -1);
-				ship.setStateMinor(ID.N.GuardDim, guarded.worldObj.provider.dimensionId);
-				ship.setGuarded(guarded);
+				ship.setGuardedPos(-1, -1, -1, guarded.worldObj.provider.dimensionId, type);
+				ship.setGuardedEntity(guarded);
 				ship.setStateFlag(ID.F.CanFollow, false);	//stop follow
 				
 				if(!ship.getStateFlag(ID.F.NoFuel)) {
@@ -874,13 +947,14 @@ public class EntityHelper {
 		if(target instanceof EntityLivingBase) {
 			EntityLivingBase tar = (EntityLivingBase) target;
 			ExtendPlayerProps props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
-			BasicEntityShip[] ships = props.getTeamListWithSelectState(meta);
+			BasicEntityShip[] ships = props.getEntityOfCurrentMode(meta);
 			BasicEntityMount mounts = null;
+			int worldID = player.worldObj.provider.dimensionId;
 			
 			if(props != null) {
 				switch(meta) {
 				default:	//single mode
-					if(ships[0] != null) {
+					if(ships[0] != null && ships[0].worldObj.provider.dimensionId == worldID) {
 						//設定ship攻擊目標
 						ships[0].setSitting(false);
 						ships[0].setAttackTarget(tar);
@@ -894,7 +968,7 @@ public class EntityHelper {
 				case 1:		//group mode
 				case 2:		//formation mode
 					for(int i = 0; i < ships.length; i++) {
-						if(ships[i] != null) {
+						if(ships[i] != null && ships[i].worldObj.provider.dimensionId == worldID) {
 							//設定ship攻擊目標
 							ships[i].setSitting(false);
 							ships[i].setAttackTarget(tar);
@@ -912,16 +986,17 @@ public class EntityHelper {
 	}
 	
 	/** set ship move with team list */
-	public static void applyTeamGuard(EntityPlayer player, int meta, Entity guarded) {
+	public static void applyTeamGuard(EntityPlayer player, Entity guarded, int meta, int type) {
 		ExtendPlayerProps props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
-		BasicEntityShip[] ships = props.getTeamListWithSelectState(meta);
+		BasicEntityShip[] ships = props.getEntityOfCurrentMode(meta);
+		int worldID = player.worldObj.provider.dimensionId;
 		
 		if(props != null) {
 			switch(meta) {
 			default:	//single mode
-				if(ships[0] != null) {
+				if(ships[0] != null && ships[0].worldObj.provider.dimensionId == worldID) {
 					//設定ship移動地點
-					applyShipGuardEntity(ships[0], guarded);
+					applyShipGuardEntity(ships[0], guarded, type);
 					//sync guard
 					CommonProxy.channelE.sendTo(new S2CEntitySync(ships[0], 3), (EntityPlayerMP) player);
 				}
@@ -929,9 +1004,9 @@ public class EntityHelper {
 			case 1:		//group mode
 			case 2:		//formation mode
 				for(int i = 0;i < ships.length; i++) {
-					if(ships[i] != null) {
+					if(ships[i] != null && ships[i].worldObj.provider.dimensionId == worldID) {
 						//設定ship移動地點
-						applyShipGuardEntity(ships[i], guarded);
+						applyShipGuardEntity(ships[i], guarded, type);
 						//sync guard
 						CommonProxy.channelE.sendTo(new S2CEntitySync(ships[i], 3), (EntityPlayerMP) player);
 					}
@@ -941,17 +1016,20 @@ public class EntityHelper {
 		}		
 	}
 
-	/** set ship move with team list */
-	public static void applyTeamMove(EntityPlayer player, int meta, int side, int x, int y, int z) {
+	/** set ship move with team list 
+	 *  parms: 0:meta 1:guard type 2:posX 3:posY 4:posZ
+	 */
+	public static void applyTeamMove(EntityPlayer player, int[] parms) {
 		ExtendPlayerProps props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
-		BasicEntityShip[] ships = props.getTeamListWithSelectState(meta);
+		BasicEntityShip[] ships = props.getEntityOfCurrentMode(parms[0]);
+		int worldID = player.worldObj.provider.dimensionId;
 		
 		if(props != null) {
-			switch(meta) {
+			switch(parms[0]) {
 			default:	//single mode
-				if(ships[0] != null) {
+				if(ships[0] != null && ships[0].worldObj.provider.dimensionId == worldID) {
 					//設定ship移動地點
-					applyShipGuard(ships[0], x, y, z);
+					applyShipGuard(ships[0], parms[1], parms[2], parms[3], parms[4]);
 					//sync guard
 					CommonProxy.channelE.sendTo(new S2CEntitySync(ships[0], 3), (EntityPlayerMP) player);
 				}
@@ -959,9 +1037,9 @@ public class EntityHelper {
 			case 1:		//group mode
 			case 2:		//formation mode
 				for(int i = 0;i < ships.length; i++) {
-					if(ships[i] != null) {
+					if(ships[i] != null && ships[i].worldObj.provider.dimensionId == worldID) {
 						//設定ship移動地點
-						applyShipGuard(ships[i], x, y, z);
+						applyShipGuard(ships[i], parms[1], parms[2], parms[3], parms[4]);
 						//sync guard
 						CommonProxy.channelE.sendTo(new S2CEntitySync(ships[i], 3), (EntityPlayerMP) player);
 					}
@@ -975,24 +1053,23 @@ public class EntityHelper {
 	 *  1. 若目標不在隊伍, 則單獨設定目標坐下
 	 *  2. 若目標在隊伍, 則依照 pointer類型設定目標坐下
 	 */
-	public static void applyTeamSit(EntityPlayer player, int meta, int entityid) {
+	public static void applyTeamSit(EntityPlayer player, int meta, int shipUID) {
 		ExtendPlayerProps props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
-		BasicEntityShip[] ships = props.getTeamListWithSelectState(meta);
-
+		BasicEntityShip[] ships = props.getEntityOfCurrentMode(meta);
+		int worldID = player.worldObj.provider.dimensionId;
+		
 		if(props != null) {
 			//不在隊伍名單裡面
-			if(props.checkInTeamList(entityid) < 0) {
-				Entity target = getEntityByID(entityid, player.worldObj.provider.dimensionId, player.worldObj.isRemote);
+			if(props.checkIsInCurrentTeam(shipUID) < 0) {
+				BasicEntityShip target = getShipBySID(shipUID);
 				
-				if(target instanceof IShipEmotion) {
-					((IShipEmotion) target).setEntitySit();
-				}
+				target.setEntitySit();
 			}
 			//有在隊伍中, 則依照pointer類型抓目標
 			else {
 				switch(meta) {
 				default:	//single mode
-					if(ships[0] != null) {
+					if(ships[0] != null && ships[0].worldObj.provider.dimensionId == worldID) {
 						//設定ship sit
 						ships[0].setEntitySit();
 					}
@@ -1000,7 +1077,7 @@ public class EntityHelper {
 				case 1:		//group mode
 				case 2:		//formation mode
 					for(int i = 0; i < ships.length; i++) {
-						if(ships[i] != null) {
+						if(ships[i] != null && ships[i].worldObj.provider.dimensionId == worldID) {
 							//設定ship sit
 							ships[i].setEntitySit();
 						}
@@ -1013,27 +1090,27 @@ public class EntityHelper {
 	
 	/** set ship select (focus) with team list, only called at server side
 	 */
-	public static void applyTeamSelect(EntityPlayer player, int meta, int entityid, boolean select) {
+	public static void applyTeamSelect(EntityPlayer player, int meta, int shipUID) {
 		ExtendPlayerProps props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 		
 		if(props != null) {
-			int i = props.checkInTeamList(entityid);
+			int i = props.checkIsInCurrentTeam(shipUID);
 			
 			//check entity is in team
 			if(i >= 0) {
 				switch(meta) {
 				default:	//single mode (僅一隻可以focus)
 					/**single mode不能取消focus, 一定有一隻會是focus狀態*/
-					props.clearTeamSelected();
-					props.setTeamSelected(i, true);
+					props.clearSelectStateOfCurrentTeam();
+					props.setSelectStateOfCurrentTeam(i, true);
 					break;
 				case 1:		//group mode (不限focus數量)
-					props.setTeamSelected(i, !props.getTeamSelected(i));
+					props.setSelectStateOfCurrentTeam(i, !props.getSelectStateOfCurrentTeam(i));
 					break;
 				case 2:		//formation mode (僅一隻可以focus, 會設為flagship)
 					/**formation mode不能取消focus, 一定有一隻會是focus (flagship)狀態*/
-					props.clearTeamSelected();
-					props.setTeamSelected(i, true);
+					props.clearSelectStateOfCurrentTeam();
+					props.setSelectStateOfCurrentTeam(i, true);
 					break;
 				}
 			}

@@ -2,13 +2,10 @@ package com.lulan.shincolle.client.model;
 
 import org.lwjgl.opengl.GL11;
 
-import com.lulan.shincolle.utility.LogHelper;
-
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.MathHelper;
 
 /**
  * BlockHeavyGrudge - PinkaLulan  2015/3/29
@@ -60,7 +57,8 @@ public class ModelBasicEntityItem extends ModelBase {
     }
 
     //for idle/run animation
-    public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity) {
+    @Override
+	public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity) {
       super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
       
       this.shape1.rotateAngleX = f % 360F / 5F;

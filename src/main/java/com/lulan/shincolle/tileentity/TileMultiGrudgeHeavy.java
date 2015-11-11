@@ -1,38 +1,21 @@
 package com.lulan.shincolle.tileentity;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import com.lulan.shincolle.block.BlockGrudgeHeavy;
-import com.lulan.shincolle.block.BlockSmallShipyard;
-import com.lulan.shincolle.crafting.LargeRecipes;
-import com.lulan.shincolle.crafting.SmallRecipes;
-import com.lulan.shincolle.entity.renderentity.BasicRenderEntity;
-import com.lulan.shincolle.entity.renderentity.EntityRenderVortex;
-import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.init.ModBlocks;
-import com.lulan.shincolle.init.ModItems;
-import com.lulan.shincolle.network.S2CGUIPackets;
-import com.lulan.shincolle.proxy.CommonProxy;
-import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.FormatHelper;
-import com.lulan.shincolle.utility.LogHelper;
-import com.lulan.shincolle.utility.TileEntityHelper;
-
-import cpw.mods.fml.common.IFuelHandler;
-import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.world.World;
+
+import com.lulan.shincolle.crafting.LargeRecipes;
+import com.lulan.shincolle.entity.renderentity.EntityRenderVortex;
+import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.TileEntityHelper;
 
 /** Fuel Cost = BaseCost + CostPerMaterial * ( TotalMaterialAmount - minAmount * 4 )
  *  Total Build Time = FuelCost / buildSpeed
@@ -97,7 +80,7 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileFurnace
 			return false;
 		}
 		else {	//確認player要在該tile entity 64格內, 以免超出讀取範圍 or 產生其他不明bug
-			return player.getDistanceSq((double)xCoord+0.5D, (double)yCoord+0.5D, (double)zCoord+0.5D) <= 64;
+			return player.getDistanceSq(xCoord+0.5D, yCoord+0.5D, zCoord+0.5D) <= 64;
 		}
 	}
 	
@@ -376,7 +359,7 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileFurnace
 	public String getBuildTimeString() {
 		//剩餘秒數 = (目標能量 - 目前能量) / (每tick增加能量) / 20
 		int timeSec = (powerGoal - powerConsumed) / buildSpeed / 20;	//get time (單位: sec)		
-		return FormatHelper.getTimeFormated(timeSec);
+		return CalcHelper.getTimeFormated(timeSec);
 	}
 	
 	//getter

@@ -32,8 +32,9 @@ public class EntityHarbourHime extends BasicEntityShipLarge {
 	public EntityHarbourHime(World world) {
 		super(world);
 		this.setSize(0.6F, 1.8F);
-		this.ShipType = ID.ShipType.HIME;
-		this.ShipID = ID.S_HarbourHime;
+		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
+		this.setStateMinor(ID.M.ShipClass, ID.S_HarbourHime);
+		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
 		this.ModelPos = new float[] {-6F, 15F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();
@@ -55,6 +56,7 @@ public class EntityHarbourHime extends BasicEntityShipLarge {
 		return 2;
 	}
 	
+	@Override
 	public void setAIList() {
 		super.setAIList();
 		
@@ -71,14 +73,14 @@ public class EntityHarbourHime extends BasicEntityShipLarge {
   			//飛行場特殊能力
         	if(this.ticksExisted % 160 == 0) {
         		//1: 增強被動回血
-        		if(getStateMinor(ID.N.NumGrudge) > 0 && this.getHealth() < this.getMaxHealth()) {
+        		if(getStateMinor(ID.M.NumGrudge) > 0 && this.getHealth() < this.getMaxHealth()) {
         			this.setHealth(this.getHealth() + this.getMaxHealth() * 0.03F);
         		}
         		
         		//2: 結婚後, 周圍某一目標回血, 包括玩家, 回血目標依等級提昇
-				if(getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.N.NumGrudge) > 0) {
+				if(getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.M.NumGrudge) > 0) {
 					//判定bounding box內是否有可以回血的目標
-					int healCount = (int)(this.getLevel() / 50) + 1;
+					int healCount = this.getLevel() / 50 + 1;
 		            EntityLivingBase hitEntity = null;
 		            List hitList = null;
 		            hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, this.boundingBox.expand(12D, 12D, 12D));
@@ -238,7 +240,7 @@ public class EntityHarbourHime extends BasicEntityShipLarge {
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
           
   		//calc miss chance, miss: add random offset(0~6) to missile target 
-  		float missChance = 0.2F + 0.15F * (distSqrt / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.N.ShipLevel];
+  		float missChance = 0.2F + 0.15F * (distSqrt / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.M.ShipLevel];
   		missChance -= EffectEquip[ID.EF_MISS];	//equip miss reduce
   		if(missChance > 0.35F) missChance = 0.35F;	//max miss chance = 30%
   		

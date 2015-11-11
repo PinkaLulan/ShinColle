@@ -431,6 +431,16 @@ public class ModelMountCaWD extends ModelBase {
 	    	this.Jaw01.rotateAngleX = 1.0F;
 	    }
 	    
+	    //移動時顯示推進器火焰
+	    if(f1 > 0.2F) {
+	    	this.WingL01Fire.isHidden = false;
+	    	this.WingR01Fire.isHidden = false;
+	    }
+	    else {
+	    	this.WingL01Fire.isHidden = true;
+	    	this.WingR01Fire.isHidden = true;
+	    }
+	    
 	    //發光支架
 	    this.GlowJaw01.rotateAngleX = this.Jaw01.rotateAngleX;
   	}

@@ -1,17 +1,10 @@
 package com.lulan.shincolle.client.inventory;
 
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntityFurnace;
-
-import com.lulan.shincolle.entity.BasicEntityShipLarge;
-import com.lulan.shincolle.entity.destroyer.EntityDestroyerI;
-import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.BasicEquip;
-import com.lulan.shincolle.utility.LogHelper;
 
 /**CUSTOM SHIP INVENTORY
  * slot: S0(80,19) S1(80,37) S2(80,55) S3(80,73) S4(80,91) S5~S22(8,112)

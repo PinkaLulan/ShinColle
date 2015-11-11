@@ -12,7 +12,6 @@ import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.IShipEmotion;
-import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
@@ -753,9 +752,10 @@ public class ModelCarrierWDemon extends ModelBase implements IModelEmotion {
 	    
 	    if(ent.getIsRiding()) {
 	    	if(((Entity)ent).ridingEntity instanceof BasicEntityMount) {
-	    		if(((IShipFloating)((Entity)ent).ridingEntity).getShipDepth() > 0) {
+//	    		if(((IShipFloating)((Entity)ent).ridingEntity).getShipDepth() > 0) {
 //	        		GL11.glTranslatef(0F, -0.4F, 0F);
-	        	}
+//	        	}
+	    		this.EquipBase.isHidden = false;
 	    		
 	    		if(ent.getIsSitting()) {
 	    			if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {

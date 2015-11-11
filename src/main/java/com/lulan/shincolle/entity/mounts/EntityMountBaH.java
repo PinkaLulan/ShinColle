@@ -1,6 +1,5 @@
 package com.lulan.shincolle.entity.mounts;
 
-import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.entity.BasicEntityMount;
@@ -57,6 +56,11 @@ public class EntityMountBaH extends BasicEntityMount {
     public double getMountedYOffset() {
         return 2.754D;
     }
+
+	@Override
+	public int getDamageType() {
+		return ID.ShipDmgType.BATTLESHIP;
+	}
 
 
 }

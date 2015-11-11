@@ -60,7 +60,8 @@ public class EntityFXLaser extends EntityFX {
         
     }
 
-    public void renderParticle(Tessellator tess, float ticks, float par3, float par4, float par5, float par6, float par7) {	
+    @Override
+	public void renderParticle(Tessellator tess, float ticks, float par3, float par4, float par5, float par6, float par7) {	
 		GL11.glPushMatrix();
 		//使用自帶的貼圖檔
 		Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE);
@@ -71,8 +72,8 @@ public class EntityFXLaser extends EntityFX {
 //		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
 		
 		float minU = 0F;
-		float maxU = (float)(rand.nextInt(32)+32);
-		float minV = (float)(this.particleAge % 12) / 12F;
+		float maxU = rand.nextInt(32)+32;
+		float minV = this.particleAge % 12 / 12F;
 		float maxV = minV + 0.08333333F;
 		
 		//particle是以玩家視野來render, 因此座標要扣掉interpPos轉換為玩家視野座標
@@ -117,7 +118,8 @@ public class EntityFXLaser extends EntityFX {
     /**
      * Called to update the entity's position/logic.
      */
-    public void onUpdate() {
+    @Override
+	public void onUpdate() {
         if(this.particleAge++ > this.particleMaxAge) {
             this.setDead();
         }

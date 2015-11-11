@@ -1,14 +1,10 @@
 package com.lulan.shincolle.client.inventory;
 
-import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntityFurnace;
 
 public class SlotSmallShipyard extends Slot {
 	

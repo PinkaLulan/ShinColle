@@ -37,36 +37,40 @@ public class S2CEntitySync implements IMessage {
 	
 	public S2CEntitySync() {}	//必須要有空參數constructor, forge才能使用此class
 	
-	//entity sync: 
+	/**entity sync: 
 	//type 0: all attribute
 	//type 1: entity emotion only
 	//type 2: entity flag only
 	//type 3: entity minor only
+	 */
 	public S2CEntitySync(BasicEntityShip entity, int type) {
         this.entity = entity;
         this.type = type;
     }
 	
-	//for mount entity sync
+	/**for mount entity sync
 	//type 4: all emotion
 	//type 5: player mount packet
 	//type 7: mounts sync
+	 */
 	public S2CEntitySync(IShipEmotion entity, int type) {
         this.entity2 = (EntityLiving) entity;
         this.entity2e = entity;
         this.type = type;
     }
 	
-	//for mount seat sync
+	/**for mount seat sync
 	//type 6: player mount packet, set player or clear player on the seat
+	 */
 	public S2CEntitySync(EntityMountSeat entity, int type) {
         this.entity3s = entity;
         this.type = type;
     }
 	
-	//for mount seat sync
+	/**for mount seat sync
 	//type 8: entity type sync
 	//type 9: entity pos sync (for teleport)
+	 */
 	public S2CEntitySync(Entity entity, int value, int type) {
         this.entity3 = entity;
         this.value = value;
@@ -82,6 +86,7 @@ public class S2CEntitySync implements IMessage {
 		this.type = buf.readByte();
 		this.entityID = buf.readInt();
 		
+		//get target entity
 		switch(this.type) {
 		case 0:
 		case 1:
@@ -90,16 +95,23 @@ public class S2CEntitySync implements IMessage {
 		case 4:
 		case 5:
 		case 7:
-			this.entity2 = (EntityLiving) EntityHelper.getEntityByID(entityID, 0, true);
+//			LogHelper.info("DEBUG : sync entity: eid "+this.entityID+" type "+this.type);
+//			this.entity2 = (EntityLiving) EntityHelper.getEntityByID(entityID, 0, true);
+			Entity ent = EntityHelper.getEntityByID(entityID, 0, true);
+			
 			//確認有抓到要sync的entity
-			if(entity2 != null) {
+			if(ent != null && ent instanceof EntityLiving) {
+				this.entity2 = (EntityLiving) ent;
 				getSyncTarget = true;
 				
 				if(entity2 instanceof BasicEntityShip) {
 					this.entity = (BasicEntityShip) this.entity2;
 				}
-				else {
+				else if(entity2 instanceof IShipEmotion) {
 					this.entity2e = (IShipEmotion) this.entity2;
+				}
+				else {
+					getSyncTarget = false;
 				}
 			}
 			break;
@@ -118,30 +130,39 @@ public class S2CEntitySync implements IMessage {
 				getSyncTarget = true;
 			}
 			break;
+		case 10: //player current item sync
+			this.entity3 = EntityHelper.getEntityPlayerByID(entityID, 0, true);
+			if(entity3 != null) {
+				getSyncTarget = true;
+			}
+			break;
 		}
 
 		if(getSyncTarget) {
 			switch(type) {
 			case 0:	//sync all attr
 				{
-					entity.setStateMinor(ID.N.ShipLevel, buf.readInt());
-					entity.setStateMinor(ID.N.Kills, buf.readInt());
-					entity.setStateMinor(ID.N.ExpCurrent, buf.readInt());
-					entity.setStateMinor(ID.N.NumAmmoLight, buf.readInt());
-					entity.setStateMinor(ID.N.NumAmmoHeavy, buf.readInt());
-					entity.setStateMinor(ID.N.NumGrudge, buf.readInt());
-					entity.setStateMinor(ID.N.NumAirLight, buf.readInt());
-					entity.setStateMinor(ID.N.NumAirHeavy, buf.readInt());
-					entity.setStateMinor(ID.N.FollowMin, buf.readInt());
-					entity.setStateMinor(ID.N.FollowMax, buf.readInt());
-					entity.setStateMinor(ID.N.FleeHP, buf.readInt());
-					entity.setStateMinor(ID.N.TargetAI, buf.readInt());
-					entity.setStateMinor(ID.N.GuardX, buf.readInt());
-					entity.setStateMinor(ID.N.GuardY, buf.readInt());
-					entity.setStateMinor(ID.N.GuardZ, buf.readInt());
-					entity.setStateMinor(ID.N.GuardDim, buf.readInt());
-					entity.setStateMinor(ID.N.GuardID, buf.readInt());
-					entity.setStateMinor(ID.N.OwnerID, buf.readInt());
+					entity.setStateMinor(ID.M.ShipLevel, buf.readInt());
+					entity.setStateMinor(ID.M.Kills, buf.readInt());
+					entity.setStateMinor(ID.M.ExpCurrent, buf.readInt());
+					entity.setStateMinor(ID.M.NumAmmoLight, buf.readInt());
+					entity.setStateMinor(ID.M.NumAmmoHeavy, buf.readInt());
+					entity.setStateMinor(ID.M.NumGrudge, buf.readInt());
+					entity.setStateMinor(ID.M.NumAirLight, buf.readInt());
+					entity.setStateMinor(ID.M.NumAirHeavy, buf.readInt());
+					entity.setStateMinor(ID.M.FollowMin, buf.readInt());
+					entity.setStateMinor(ID.M.FollowMax, buf.readInt());
+					entity.setStateMinor(ID.M.FleeHP, buf.readInt());
+					entity.setStateMinor(ID.M.TargetAI, buf.readInt());
+					entity.setStateMinor(ID.M.GuardX, buf.readInt());
+					entity.setStateMinor(ID.M.GuardY, buf.readInt());
+					entity.setStateMinor(ID.M.GuardZ, buf.readInt());
+					entity.setStateMinor(ID.M.GuardDim, buf.readInt());
+					entity.setStateMinor(ID.M.GuardID, buf.readInt());
+					entity.setStateMinor(ID.M.GuardType, buf.readInt());
+					entity.setStateMinor(ID.M.PlayerUID, buf.readInt());
+					entity.setStateMinor(ID.M.ShipUID, buf.readInt());
+					entity.setStateMinor(ID.M.PlayerEID, buf.readInt());
 					
 					entity.setStateFinal(ID.HP, buf.readFloat());
 					entity.setStateFinal(ID.ATK, buf.readFloat());
@@ -210,24 +231,27 @@ public class S2CEntitySync implements IMessage {
 				break;
 			case 3: //entity minor only
 				{
-					entity.setStateMinor(ID.N.ShipLevel, buf.readInt());
-					entity.setStateMinor(ID.N.Kills, buf.readInt());
-					entity.setStateMinor(ID.N.ExpCurrent, buf.readInt());
-					entity.setStateMinor(ID.N.NumAmmoLight, buf.readInt());
-					entity.setStateMinor(ID.N.NumAmmoHeavy, buf.readInt());
-					entity.setStateMinor(ID.N.NumGrudge, buf.readInt());
-					entity.setStateMinor(ID.N.NumAirLight, buf.readInt());
-					entity.setStateMinor(ID.N.NumAirHeavy, buf.readInt());
-					entity.setStateMinor(ID.N.FollowMin, buf.readInt());
-					entity.setStateMinor(ID.N.FollowMax, buf.readInt());
-					entity.setStateMinor(ID.N.FleeHP, buf.readInt());
-					entity.setStateMinor(ID.N.TargetAI, buf.readInt());
-					entity.setStateMinor(ID.N.GuardX, buf.readInt());
-					entity.setStateMinor(ID.N.GuardY, buf.readInt());
-					entity.setStateMinor(ID.N.GuardZ, buf.readInt());
-					entity.setStateMinor(ID.N.GuardDim, buf.readInt());
-					entity.setStateMinor(ID.N.GuardID, buf.readInt());
-					entity.setStateMinor(ID.N.OwnerID, buf.readInt());
+					entity.setStateMinor(ID.M.ShipLevel, buf.readInt());
+					entity.setStateMinor(ID.M.Kills, buf.readInt());
+					entity.setStateMinor(ID.M.ExpCurrent, buf.readInt());
+					entity.setStateMinor(ID.M.NumAmmoLight, buf.readInt());
+					entity.setStateMinor(ID.M.NumAmmoHeavy, buf.readInt());
+					entity.setStateMinor(ID.M.NumGrudge, buf.readInt());
+					entity.setStateMinor(ID.M.NumAirLight, buf.readInt());
+					entity.setStateMinor(ID.M.NumAirHeavy, buf.readInt());
+					entity.setStateMinor(ID.M.FollowMin, buf.readInt());
+					entity.setStateMinor(ID.M.FollowMax, buf.readInt());
+					entity.setStateMinor(ID.M.FleeHP, buf.readInt());
+					entity.setStateMinor(ID.M.TargetAI, buf.readInt());
+					entity.setStateMinor(ID.M.GuardX, buf.readInt());
+					entity.setStateMinor(ID.M.GuardY, buf.readInt());
+					entity.setStateMinor(ID.M.GuardZ, buf.readInt());
+					entity.setStateMinor(ID.M.GuardDim, buf.readInt());
+					entity.setStateMinor(ID.M.GuardID, buf.readInt());
+					entity.setStateMinor(ID.M.GuardType, buf.readInt());
+					entity.setStateMinor(ID.M.PlayerUID, buf.readInt());
+					entity.setStateMinor(ID.M.ShipUID, buf.readInt());
+					entity.setStateMinor(ID.M.PlayerEID, buf.readInt());
 				}
 				break;
 			case 4: //IShipEmotion sync emtion
@@ -245,7 +269,7 @@ public class S2CEntitySync implements IMessage {
 					int playerId = buf.readInt();
 					int seatId = buf.readInt();
 					
-					EntityPlayer player = (EntityPlayer) EntityHelper.getEntityByID(playerId, 0, true);
+					EntityPlayer player = EntityHelper.getEntityPlayerByID(playerId, 0, true);
 					this.entity3s = (EntityMountSeat) EntityHelper.getEntityByID(seatId, 0, true);
 					
 					LogHelper.info("DEBUG : player mount sync packet: "+player+" "+entity3s);
@@ -270,7 +294,7 @@ public class S2CEntitySync implements IMessage {
 					}
 					//mount sync packet
 					else {
-						EntityPlayer player = (EntityPlayer) EntityHelper.getEntityByID(playerId, 0, true);
+						EntityPlayer player = EntityHelper.getEntityPlayerByID(playerId, 0, true);
 						BasicEntityMount mount = (BasicEntityMount) EntityHelper.getEntityByID(hostId, 0, true);
 
 						//sync for mount
@@ -307,6 +331,7 @@ public class S2CEntitySync implements IMessage {
 						else {
 							mount.host = null;
 						}
+						
 						//set rider2
 						if(rider2id > 0) {
 							mount.riddenByEntity2 = (EntityLivingBase) EntityHelper.getEntityByID(rider2id, 0, true);
@@ -314,6 +339,7 @@ public class S2CEntitySync implements IMessage {
 						else {
 							mount.riddenByEntity2 = null;
 						}
+						
 						//set seat2
 						if(seat2id > 0) {
 							mount.seat2 = (EntityMountSeat) EntityHelper.getEntityByID(seat2id, 0, true);
@@ -326,7 +352,7 @@ public class S2CEntitySync implements IMessage {
 				break;
 			case 8:	//missile type sync
 				{
-					int value = buf.readInt();
+					this.value = buf.readInt();
 					
 					if(entity3 instanceof EntityAbyssMissile) {
 						((EntityAbyssMissile)entity3).setMissileType(value);
@@ -348,7 +374,7 @@ public class S2CEntitySync implements IMessage {
 		}
 		else {
 			buf.clear();
-			LogHelper.info("DEBUG : packet handler: S2CEntitySync: entity is null "+type);
+			LogHelper.info("DEBUG : packet handler: S2CEntitySync: entity is null, type: "+type+" eid: "+entityID);
 		}
 	}
 
@@ -360,24 +386,27 @@ public class S2CEntitySync implements IMessage {
 			{
 				buf.writeByte(0);	//type 0
 				buf.writeInt(this.entity.getEntityId());
-				buf.writeInt(this.entity.getStateMinor(ID.N.ShipLevel));
-				buf.writeInt(this.entity.getStateMinor(ID.N.Kills));
-				buf.writeInt(this.entity.getStateMinor(ID.N.ExpCurrent));
-				buf.writeInt(this.entity.getStateMinor(ID.N.NumAmmoLight));
-				buf.writeInt(this.entity.getStateMinor(ID.N.NumAmmoHeavy));
-				buf.writeInt(this.entity.getStateMinor(ID.N.NumGrudge));
-				buf.writeInt(this.entity.getStateMinor(ID.N.NumAirLight));
-				buf.writeInt(this.entity.getStateMinor(ID.N.NumAirHeavy));
-				buf.writeInt(this.entity.getStateMinor(ID.N.FollowMin));
-				buf.writeInt(this.entity.getStateMinor(ID.N.FollowMax));
-				buf.writeInt(this.entity.getStateMinor(ID.N.FleeHP));
-				buf.writeInt(this.entity.getStateMinor(ID.N.TargetAI));
-				buf.writeInt(this.entity.getStateMinor(ID.N.GuardX));
-				buf.writeInt(this.entity.getStateMinor(ID.N.GuardY));
-				buf.writeInt(this.entity.getStateMinor(ID.N.GuardZ));
-				buf.writeInt(this.entity.getStateMinor(ID.N.GuardDim));
-				buf.writeInt(this.entity.getStateMinor(ID.N.GuardID));
-				buf.writeInt(this.entity.getStateMinor(ID.N.OwnerID));
+				buf.writeInt(this.entity.getStateMinor(ID.M.ShipLevel));
+				buf.writeInt(this.entity.getStateMinor(ID.M.Kills));
+				buf.writeInt(this.entity.getStateMinor(ID.M.ExpCurrent));
+				buf.writeInt(this.entity.getStateMinor(ID.M.NumAmmoLight));
+				buf.writeInt(this.entity.getStateMinor(ID.M.NumAmmoHeavy));
+				buf.writeInt(this.entity.getStateMinor(ID.M.NumGrudge));
+				buf.writeInt(this.entity.getStateMinor(ID.M.NumAirLight));
+				buf.writeInt(this.entity.getStateMinor(ID.M.NumAirHeavy));
+				buf.writeInt(this.entity.getStateMinor(ID.M.FollowMin));
+				buf.writeInt(this.entity.getStateMinor(ID.M.FollowMax));
+				buf.writeInt(this.entity.getStateMinor(ID.M.FleeHP));
+				buf.writeInt(this.entity.getStateMinor(ID.M.TargetAI));
+				buf.writeInt(this.entity.getStateMinor(ID.M.GuardX));
+				buf.writeInt(this.entity.getStateMinor(ID.M.GuardY));
+				buf.writeInt(this.entity.getStateMinor(ID.M.GuardZ));
+				buf.writeInt(this.entity.getStateMinor(ID.M.GuardDim));
+				buf.writeInt(this.entity.getStateMinor(ID.M.GuardID));
+				buf.writeInt(this.entity.getStateMinor(ID.M.GuardType));
+				buf.writeInt(this.entity.getStateMinor(ID.M.PlayerUID));
+				buf.writeInt(this.entity.getStateMinor(ID.M.ShipUID));
+				buf.writeInt(this.entity.getStateMinor(ID.M.PlayerEID));
 				
 				buf.writeFloat(this.entity.getStateFinal(ID.HP));
 				buf.writeFloat(this.entity.getStateFinal(ID.ATK));
@@ -452,24 +481,27 @@ public class S2CEntitySync implements IMessage {
 			{
 				buf.writeByte(3);	//type 3
 				buf.writeInt(this.entity.getEntityId());
-				buf.writeInt(this.entity.getStateMinor(ID.N.ShipLevel));
-				buf.writeInt(this.entity.getStateMinor(ID.N.Kills));
-				buf.writeInt(this.entity.getStateMinor(ID.N.ExpCurrent));
-				buf.writeInt(this.entity.getStateMinor(ID.N.NumAmmoLight));
-				buf.writeInt(this.entity.getStateMinor(ID.N.NumAmmoHeavy));
-				buf.writeInt(this.entity.getStateMinor(ID.N.NumGrudge));
-				buf.writeInt(this.entity.getStateMinor(ID.N.NumAirLight));
-				buf.writeInt(this.entity.getStateMinor(ID.N.NumAirHeavy));
-				buf.writeInt(this.entity.getStateMinor(ID.N.FollowMin));
-				buf.writeInt(this.entity.getStateMinor(ID.N.FollowMax));
-				buf.writeInt(this.entity.getStateMinor(ID.N.FleeHP));
-				buf.writeInt(this.entity.getStateMinor(ID.N.TargetAI));
-				buf.writeInt(this.entity.getStateMinor(ID.N.GuardX));
-				buf.writeInt(this.entity.getStateMinor(ID.N.GuardY));
-				buf.writeInt(this.entity.getStateMinor(ID.N.GuardZ));
-				buf.writeInt(this.entity.getStateMinor(ID.N.GuardDim));
-				buf.writeInt(this.entity.getStateMinor(ID.N.GuardID));
-				buf.writeInt(this.entity.getStateMinor(ID.N.OwnerID));
+				buf.writeInt(this.entity.getStateMinor(ID.M.ShipLevel));
+				buf.writeInt(this.entity.getStateMinor(ID.M.Kills));
+				buf.writeInt(this.entity.getStateMinor(ID.M.ExpCurrent));
+				buf.writeInt(this.entity.getStateMinor(ID.M.NumAmmoLight));
+				buf.writeInt(this.entity.getStateMinor(ID.M.NumAmmoHeavy));
+				buf.writeInt(this.entity.getStateMinor(ID.M.NumGrudge));
+				buf.writeInt(this.entity.getStateMinor(ID.M.NumAirLight));
+				buf.writeInt(this.entity.getStateMinor(ID.M.NumAirHeavy));
+				buf.writeInt(this.entity.getStateMinor(ID.M.FollowMin));
+				buf.writeInt(this.entity.getStateMinor(ID.M.FollowMax));
+				buf.writeInt(this.entity.getStateMinor(ID.M.FleeHP));
+				buf.writeInt(this.entity.getStateMinor(ID.M.TargetAI));
+				buf.writeInt(this.entity.getStateMinor(ID.M.GuardX));
+				buf.writeInt(this.entity.getStateMinor(ID.M.GuardY));
+				buf.writeInt(this.entity.getStateMinor(ID.M.GuardZ));
+				buf.writeInt(this.entity.getStateMinor(ID.M.GuardDim));
+				buf.writeInt(this.entity.getStateMinor(ID.M.GuardID));
+				buf.writeInt(this.entity.getStateMinor(ID.M.GuardType));
+				buf.writeInt(this.entity.getStateMinor(ID.M.PlayerUID));
+				buf.writeInt(this.entity.getStateMinor(ID.M.ShipUID));
+				buf.writeInt(this.entity.getStateMinor(ID.M.PlayerEID));
 			}
 			break;
 		case 4:	//IShipEmotion emotion only
@@ -524,6 +556,7 @@ public class S2CEntitySync implements IMessage {
 					else {
 						buf.writeInt(-1);	//cause client get entity = null
 					}
+					
 					//get rider2 id
 					if(mount.riddenByEntity2 != null) {
 						buf.writeInt(mount.riddenByEntity2.getEntityId());
@@ -531,6 +564,7 @@ public class S2CEntitySync implements IMessage {
 					else {
 						buf.writeInt(-1);	//cause client get entity = null
 					}
+					
 					//get seat2 id
 					if(mount.seat2 != null) {
 						buf.writeInt(mount.seat2.getEntityId());
@@ -567,8 +601,7 @@ public class S2CEntitySync implements IMessage {
 		//收到封包時顯示debug訊息
 		@Override
 		public IMessage onMessage(S2CEntitySync message, MessageContext ctx) {
-
-			//          System.out.println(String.format("Received %s from %s", message.text, ctx.getServerHandler().playerEntity.getDisplayName()));
+//			System.out.println(String.format("Received %s from %s", message.text, ctx.getServerHandler().playerEntity.getDisplayName()));
 //			LogHelper.info("DEBUG : recv Entity Sync packet : type "+recvType+" id "+entityID);
 			return null;
 		}

@@ -1,9 +1,5 @@
 package com.lulan.shincolle.entity.destroyer;
 
-import net.minecraft.entity.ai.EntityAILookIdle;
-import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
-import net.minecraft.entity.ai.EntityAIOpenDoor;
-import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
@@ -12,16 +8,11 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.world.World;
 
-import com.lulan.shincolle.ai.EntityAIShipAttackOnCollide;
-import com.lulan.shincolle.ai.EntityAIShipFlee;
-import com.lulan.shincolle.ai.EntityAIShipFloating;
-import com.lulan.shincolle.ai.EntityAIShipFollowOwner;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
-import com.lulan.shincolle.ai.EntityAIShipSit;
-import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.entity.ExtendShipProps;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.EntityHelper;
 
 public class EntityDestroyerI extends BasicEntityShipSmall {
 
@@ -29,9 +20,9 @@ public class EntityDestroyerI extends BasicEntityShipSmall {
 	public EntityDestroyerI(World world) {
 		super(world);
 		this.setSize(0.7F, 1.6F);	//碰撞大小 跟模型大小無關
-//		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityDestroyerI.name"));
-		this.ShipType = ID.ShipType.DESTROYER;
-		this.ShipID = ID.S_DestroyerI;
+		this.setStateMinor(ID.M.ShipType, ID.ShipType.DESTROYER);
+		this.setStateMinor(ID.M.ShipClass, ID.S_DestroyerI);
+		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
 		this.ModelPos = new float[] {0F, 0F, 0F, 25F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		
@@ -70,11 +61,10 @@ public class EntityDestroyerI extends BasicEntityShipSmall {
   		if(!worldObj.isRemote) {
   			//add aura to master every 100 ticks
   			if(this.ticksExisted % 100 == 0) {
-  				EntityPlayerMP player = (EntityPlayerMP) this.getOwner();
-//  				EntityPlayerMP player = EntityHelper.getOnlinePlayer(this.getOwner());
-  				if(getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.N.NumGrudge) > 0 && player != null && getDistanceSqToEntity(player) < 256D) {
+  				EntityPlayerMP player = (EntityPlayerMP) EntityHelper.getEntityPlayerByUID(this.getPlayerUID(), this.worldObj);
+  				if(getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.M.NumGrudge) > 0 && player != null && getDistanceSqToEntity(player) < 256D) {
   					//potion effect: id, time, level
-  	  	  			player.addPotionEffect(new PotionEffect(Potion.moveSpeed.id, 300, getStateMinor(ID.N.ShipLevel) / 30 + 1));
+  	  	  			player.addPotionEffect(new PotionEffect(Potion.moveSpeed.id, 300, getStateMinor(ID.M.ShipLevel) / 45 + 1));
   				}
   			}
   		}    

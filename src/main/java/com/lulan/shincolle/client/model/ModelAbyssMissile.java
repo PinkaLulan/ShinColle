@@ -1,7 +1,5 @@
 package com.lulan.shincolle.client.model;
 
-import com.lulan.shincolle.utility.LogHelper;
-
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
@@ -57,7 +55,8 @@ public class ModelAbyssMissile extends ModelBase {
     }
     
     //for idle/run animation
-    public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity) {  
+    @Override
+	public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity) {  
     	this.Body.rotateAngleY = f3;	//左右角度
     	this.Body.rotateAngleX = f4; 	//上下角度
     }

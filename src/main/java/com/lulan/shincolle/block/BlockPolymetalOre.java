@@ -4,7 +4,6 @@ import java.util.Random;
 
 import com.lulan.shincolle.init.ModItems;
 
-import net.minecraft.block.material.Material;
 import net.minecraft.item.Item;
 import net.minecraft.world.IBlockAccess;
 

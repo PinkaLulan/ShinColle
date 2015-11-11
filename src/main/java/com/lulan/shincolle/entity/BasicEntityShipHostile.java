@@ -1,6 +1,5 @@
 package com.lulan.shincolle.entity;
 
-import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
@@ -10,7 +9,6 @@ import net.minecraft.entity.ai.EntityAIOpenDoor;
 import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
@@ -20,22 +18,22 @@ import com.lulan.shincolle.ai.EntityAIShipFloating;
 import com.lulan.shincolle.ai.EntityAIShipInRangeTargetHostile;
 import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
-import com.lulan.shincolle.ai.path.ShipPathEntity;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
-import com.lulan.shincolle.ai.path.ShipPathPoint;
 import com.lulan.shincolle.entity.hostile.EntityRensouhouBoss;
+import com.lulan.shincolle.entity.other.EntityRensouhou;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
-public class BasicEntityShipHostile extends EntityMob implements IShipCannonAttack, IShipFloating {
+public abstract class BasicEntityShipHostile extends EntityMob implements IShipCannonAttack, IShipFloating {
 
 	//attributes
 	protected float atk;				//damage
@@ -128,10 +126,6 @@ public class BasicEntityShipHostile extends EntityMob implements IShipCannonAtta
     	if(this.getStateEmotion(ID.S.Emotion) != ID.Emotion.O_O) {
     		this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
     	}
-    	
-    	//進行def計算
-        float reduceAtk = atk * (1F - this.defValue / 100F);    
-        if(atk < 0) { atk = 0; }
         
         //無敵的entity傷害無效
   		if(this.isEntityInvulnerable()) {	
@@ -151,9 +145,25 @@ public class BasicEntityShipHostile extends EntityMob implements IShipCannonAtta
   	        	this.setDead();
   	        	return false;
   	        }
+
+  	        //def calc
+  			float reduceAtk = atk;
+  			
+  			reduceAtk = atk * (1F - this.getDefValue() * 0.01F);
+  			
+  			//ship vs ship, damage type傷害調整
+  			if(entity instanceof IShipAttackBase) {
+  				//get attack time for damage modifier setting (day, night or ...etc)
+  				int modSet = this.worldObj.provider.isDaytime() ? 0 : 1;
+  				reduceAtk = CalcHelper.calcDamageByType(reduceAtk, ((IShipAttackBase) entity).getDamageType(), this.getDamageType(), modSet);
+  			}
+  			
+  	        if(reduceAtk < 1) reduceAtk = 1;
+  	        
+  	        return super.attackEntityFrom(attacker, reduceAtk);
   		}
     	
-    	return super.attackEntityFrom(attacker, reduceAtk);
+    	return false;
 	}
 	
 	//clear AI
@@ -340,8 +350,8 @@ public class BasicEntityShipHostile extends EntityMob implements IShipCannonAtta
 	    if(isTargetHurt) {
 	    	//calc kb effect
 	        if(kbValue > 0) {
-	            target.addVelocity((double)(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue), 
-	                   0.1D, (double)(MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue));
+	            target.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
+	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
 	            motionX *= 0.6D;
 	            motionZ *= 0.6D;
 	        }
@@ -358,12 +368,7 @@ public class BasicEntityShipHostile extends EntityMob implements IShipCannonAtta
 	public boolean attackEntityWithHeavyAmmo(Entity target) {
 		return false;
 	}
-
-	@Override
-	public EntityLivingBase getOwner() {
-		return this;
-	}
-
+	
 	@Override
 	public float getAttackSpeed() {
 		return this.atkSpeed;
@@ -478,17 +483,17 @@ public class BasicEntityShipHostile extends EntityMob implements IShipCannonAtta
             if(this.isOnLadder()) {				//爬樓梯中
                 float f5 = 0.15F;
                 //限制爬樓梯時的橫向移動速度
-                if(this.motionX < (double)(-f5)) {
-                    this.motionX = (double)(-f5);
+                if(this.motionX < (-f5)) {
+                    this.motionX = (-f5);
                 }
-                if(this.motionX > (double)f5) {
-                    this.motionX = (double)f5;
+                if(this.motionX > f5) {
+                    this.motionX = f5;
                 }
-                if(this.motionZ < (double)(-f5)) {
-                    this.motionZ = (double)(-f5);
+                if(this.motionZ < (-f5)) {
+                    this.motionZ = (-f5);
                 }
-                if(this.motionZ > (double)f5) {
-                    this.motionZ = (double)f5;
+                if(this.motionZ > f5) {
+                    this.motionZ = f5;
                 }
 
                 this.fallDistance = 0.0F;
@@ -523,8 +528,8 @@ public class BasicEntityShipHostile extends EntityMob implements IShipCannonAtta
             }
             //空氣中的三方向阻力
             this.motionY *= 0.98D;			
-            this.motionX *= (double)f2;
-            this.motionZ *= (double)f2;
+            this.motionX *= f2;
+            this.motionZ *= f2;
         }
         //計算四肢擺動值
         this.prevLimbSwingAmount = this.limbSwingAmount;
@@ -682,11 +687,6 @@ public class BasicEntityShipHostile extends EntityMob implements IShipCannonAtta
 	}
 
 	@Override
-	public EntityLivingBase getPlayerOwner() {
-		return this;
-	}
-
-	@Override
 	public int getStateMinor(int id) {
 		return 0;
 	}
@@ -736,6 +736,19 @@ public class BasicEntityShipHostile extends EntityMob implements IShipCannonAtta
 	@Override
 	public boolean getAttackType(int par1) {
 		return true;
+	}
+
+	@Override
+	public int getPlayerUID() {
+		return -100;	//-100 for hostile mob
+	}
+
+	@Override
+	public void setPlayerUID(int uid) {}
+	
+	@Override
+	public Entity getHostEntity() {
+		return this;
 	}
 
 

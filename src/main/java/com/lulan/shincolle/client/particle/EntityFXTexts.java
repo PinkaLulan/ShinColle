@@ -3,17 +3,11 @@ package com.lulan.shincolle.client.particle;
 import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.LogHelper;
-
-import cpw.mods.fml.relauncher.ReflectionHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.client.particle.EntityFX;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
@@ -41,7 +35,8 @@ public class EntityFXTexts extends EntityFX {
 
     }
 
-    public void renderParticle(Tessellator tess, float ticks, float par3, float par4, float par5, float par6, float par7) {
+    @Override
+	public void renderParticle(Tessellator tess, float ticks, float par3, float par4, float par5, float par6, float par7) {
     	
     	//stop last tess for bind texture
 //    	tess.draw();
@@ -57,22 +52,22 @@ public class EntityFXTexts extends EntityFX {
 		
 		float f6 = 0F;
 		float f7 = 1F;
-		float f8 = (float)particleType / 4F;
-		float f9 = ((float)particleType + 1F) / 4F;
+		float f8 = particleType / 4F;
+		float f9 = (particleType + 1F) / 4F;
 		
 		float f10 = 0.8F;
-        float f11 = (float)(this.prevPosX + (this.posX - this.prevPosX) * (double)ticks - interpPosX);
-        float f12 = (float)(this.prevPosY + (this.posY - this.prevPosY) * (double)ticks - interpPosY);
-        float f13 = (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * (double)ticks - interpPosZ);
+        float f11 = (float)(this.prevPosX + (this.posX - this.prevPosX) * ticks - interpPosX);
+        float f12 = (float)(this.prevPosY + (this.posY - this.prevPosY) * ticks - interpPosY);
+        float f13 = (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * ticks - interpPosZ);
 
         //start tess
         tess.startDrawingQuads();
         tess.setBrightness(240);
         //X跟Z位置不加頭部轉動偏移, 只有Y軸會偏向玩家方向
-        tess.addVertexWithUV((double)(f11 - par3 * f10), (double)(f12 - par4 * 0.2F), (double)(f13 - par5 * f10), f7, f9);
-        tess.addVertexWithUV((double)(f11 - par3 * f10), (double)(f12 + par4 * 0.2F), (double)(f13 - par5 * f10), f7, f8);
-        tess.addVertexWithUV((double)(f11 + par3 * f10), (double)(f12 + par4 * 0.2F), (double)(f13 + par5 * f10), f6, f8);
-        tess.addVertexWithUV((double)(f11 + par3 * f10), (double)(f12 - par4 * 0.2F), (double)(f13 + par5 * f10), f6, f9);
+        tess.addVertexWithUV(f11 - par3 * f10, f12 - par4 * 0.2F, f13 - par5 * f10, f7, f9);
+        tess.addVertexWithUV(f11 - par3 * f10, f12 + par4 * 0.2F, f13 - par5 * f10, f7, f8);
+        tess.addVertexWithUV(f11 + par3 * f10, f12 + par4 * 0.2F, f13 + par5 * f10, f6, f8);
+        tess.addVertexWithUV(f11 + par3 * f10, f12 - par4 * 0.2F, f13 + par5 * f10, f6, f9);
         //stop tess for restore texture
         tess.draw();
 //
@@ -104,7 +99,8 @@ public class EntityFXTexts extends EntityFX {
     /**
      * Called to update the entity's position/logic.
      */
-    public void onUpdate() {
+    @Override
+	public void onUpdate() {
     	//this is both side particle
 		this.prevPosX = this.posX;
         this.prevPosY = this.posY;

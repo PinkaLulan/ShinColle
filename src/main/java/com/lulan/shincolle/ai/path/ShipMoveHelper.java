@@ -2,8 +2,6 @@ package com.lulan.shincolle.ai.path;
 
 import com.lulan.shincolle.entity.IShipNavigator;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
-
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.util.MathHelper;

@@ -1,18 +1,11 @@
 package com.lulan.shincolle.client.render;
 
-import com.lulan.shincolle.client.model.ModelDestroyerI;
-import com.lulan.shincolle.entity.destroyer.EntityDestroyerI;
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.LogHelper;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.boss.BossStatus;
-import net.minecraft.entity.boss.IBossDisplayData;
 import net.minecraft.util.ResourceLocation;
 
 @SideOnly(Side.CLIENT)

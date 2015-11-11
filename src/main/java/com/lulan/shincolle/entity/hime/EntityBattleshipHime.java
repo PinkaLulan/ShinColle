@@ -18,7 +18,6 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -27,8 +26,9 @@ public class EntityBattleshipHime extends BasicEntityShip {
 	public EntityBattleshipHime(World world) {
 		super(world);
 		this.setSize(0.6F, 1.8F);
-		this.ShipType = ID.ShipType.HIME;
-		this.ShipID = ID.S_BattleshipHime;
+		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
+		this.setStateMinor(ID.M.ShipClass, ID.S_BattleshipHime);
+		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
 		this.ModelPos = new float[] {-6F, 15F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();
@@ -49,6 +49,7 @@ public class EntityBattleshipHime extends BasicEntityShip {
 		return 1;
 	}
 	
+	@Override
 	public void setAIList() {
 		super.setAIList();
 
@@ -59,7 +60,6 @@ public class EntityBattleshipHime extends BasicEntityShip {
 	@Override
   	public boolean interact(EntityPlayer player) {	
 		ItemStack itemstack = player.inventory.getCurrentItem();  //get item in hand
-		LogHelper.info("DEBUg : origin height "+ModelPos[1]+" "+this.worldObj.isRemote);
 		//use cake to change state
 		if(itemstack != null) {
 			if(itemstack.getItem() == Items.cake) {
@@ -122,8 +122,8 @@ public class EntityBattleshipHime extends BasicEntityShip {
 	    if(isTargetHurt) {
 	    	//calc kb effect
 	        if(kbValue > 0) {
-	            target.addVelocity((double)(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue), 
-	                   0.1D, (double)(MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue));
+	            target.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
+	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
 	            motionX *= 0.6D;
 	            motionZ *= 0.6D;
 	        }
@@ -186,7 +186,7 @@ public class EntityBattleshipHime extends BasicEntityShip {
         }
 
         //calc miss chance, if not miss, calc cri/multi hit
-        float missChance = 0.2F + 0.15F * (distSqrt / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.N.ShipLevel];
+        float missChance = 0.2F + 0.15F * (distSqrt / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.M.ShipLevel];
         missChance -= EffectEquip[ID.EF_MISS];		//equip miss reduce
         if(missChance > 0.35F) missChance = 0.35F;	//max miss chance
         
@@ -242,8 +242,8 @@ public class EntityBattleshipHime extends BasicEntityShip {
 	    if(isTargetHurt) {
 	    	//calc kb effect
 	        if(kbValue > 0) {
-	            target.addVelocity((double)(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue), 
-	                   0.1D, (double)(MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue));
+	            target.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
+	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
 	            motionX *= 0.6D;
 	            motionZ *= 0.6D;
 	        }
@@ -313,6 +313,7 @@ public class EntityBattleshipHime extends BasicEntityShip {
   			return (double)this.height * 0.8F;
   		}
 	}
+
 	
 }
 
