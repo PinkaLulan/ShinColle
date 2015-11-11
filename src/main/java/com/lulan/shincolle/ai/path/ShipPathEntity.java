@@ -1,8 +1,6 @@
 package com.lulan.shincolle.ai.path;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.pathfinding.PathEntity;
-import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.Vec3;
 
 /**SHIP PATH ENTITY
@@ -71,9 +69,9 @@ public class ShipPathEntity {
     public Vec3 getVectorFromIndex(Entity entity, int i) {
     	if(i >= points.length) i = points.length - 1;
     	
-        double d0 = (double)this.points[i].xCoord + (double)((int)(entity.width + 1.0F)) * 0.5D;
-        double d1 = (double)this.points[i].yCoord;
-        double d2 = (double)this.points[i].zCoord + (double)((int)(entity.width + 1.0F)) * 0.5D;
+        double d0 = this.points[i].xCoord + ((int)(entity.width + 1.0F)) * 0.5D;
+        double d1 = this.points[i].yCoord;
+        double d2 = this.points[i].zCoord + ((int)(entity.width + 1.0F)) * 0.5D;
         return Vec3.createVectorHelper(d0, d1, d2);
     }
 

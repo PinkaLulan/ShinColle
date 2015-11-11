@@ -1,21 +1,15 @@
 package com.lulan.shincolle.client.particle;
 
-import java.util.Random;
-
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.IShipFloating;
-import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.relauncher.Side;
@@ -60,7 +54,7 @@ public class EntityFXLightning extends EntityFX {
             
             //calc particle position for MountHbH
         	float randx = rand.nextFloat() + 0.1F;
-        	float[] newPos = ParticleHelper.rotateParticleByAxis(0.8F+rand.nextFloat()*0.2F, randx, ((EntityLivingBase)host).renderYawOffset * -0.01745F, 1F);
+        	float[] newPos = ParticleHelper.rotateXZByAxis(0.8F+rand.nextFloat()*0.2F, randx, ((EntityLivingBase)host).renderYawOffset * -0.01745F, 1F);
             if(this.host != null) {
             	this.posX = this.host.posX + newPos[0];
             	this.posY = this.host.posY + 1.53D + randx * 0.25D;
@@ -72,7 +66,8 @@ public class EntityFXLightning extends EntityFX {
         this.prevShape = new double[numStem][6];	//prev lightning shape
     }
 
-    public void renderParticle(Tessellator tess, float ticks, float par3, float par4, float par5, float par6, float par7) {
+    @Override
+	public void renderParticle(Tessellator tess, float ticks, float par3, float par4, float par5, float par6, float par7) {
 		//stop last tess
 //    	tess.draw();
     	
@@ -92,9 +87,9 @@ public class EntityFXLightning extends EntityFX {
 		float f8 = 0F;
 		float f9 = 1F;
 		
-        float f11 = (float)(this.prevPosX + (this.posX - this.prevPosX) * (double)ticks - interpPosX);
-        float f12 = (float)(this.prevPosY + (this.posY - this.prevPosY) * (double)ticks - interpPosY);
-        float f13 = (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * (double)ticks - interpPosZ);
+        float f11 = (float)(this.prevPosX + (this.posX - this.prevPosX) * ticks - interpPosX);
+        float f12 = (float)(this.prevPosY + (this.posY - this.prevPosY) * ticks - interpPosY);
+        float f13 = (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * ticks - interpPosZ);
 
         //create lightning shape
 //        if(this.particleAge <= 1 || this.particleAge % 4 == 0) {
@@ -162,7 +157,8 @@ public class EntityFXLightning extends EntityFX {
     /**
      * Called to update the entity's position/logic.
      */
-    public void onUpdate() {
+    @Override
+	public void onUpdate() {
     	//this is both side particle
 		this.prevPosX = this.posX;
         this.prevPosY = this.posY;
@@ -175,7 +171,7 @@ public class EntityFXLightning extends EntityFX {
         //type 0: HarbourHime Mount
         if(this.particleType == 0 && host != null) {
         	float randx = rand.nextFloat() + 0.1F;
-        	float[] newPos = ParticleHelper.rotateParticleByAxis(0.8F+rand.nextFloat()*0.2F, randx, ((EntityLivingBase)host).renderYawOffset * -0.01745F, 1F);
+        	float[] newPos = ParticleHelper.rotateXZByAxis(0.8F+rand.nextFloat()*0.2F, randx, ((EntityLivingBase)host).renderYawOffset * -0.01745F, 1F);
 
         	//x=1 y=1.8, x=0.7 y=1.72, x=0.5 y=1.65, x=0.3 y=1.6, x=0.1 y=1.55
             if(this.host != null) {

@@ -19,7 +19,7 @@ public class EntityAIShipWatchClosest extends EntityAIWatchClosest {
     //stop watching if target is riding
     @Override
     public boolean shouldExecute() {
-    	EntityPlayer target = this.host.worldObj.getClosestPlayerToEntity(this.host, (double)this.range);
+    	EntityPlayer target = this.host.worldObj.getClosestPlayerToEntity(this.host, this.range);
     
     	if(target != null && target.isRiding()) {
     		return false;

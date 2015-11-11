@@ -1,12 +1,10 @@
 package com.lulan.shincolle.entity.renderentity;
 
-import com.lulan.shincolle.utility.LogHelper;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 abstract public class BasicRenderEntity extends Entity {
 	
@@ -43,8 +41,10 @@ abstract public class BasicRenderEntity extends Entity {
 	@Override
 	protected void entityInit() {}
 
+	@Override
 	abstract protected void readEntityFromNBT(NBTTagCompound nbt);
 
+	@Override
 	abstract protected void writeEntityToNBT(NBTTagCompound nbt);
 	
 	@Override

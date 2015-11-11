@@ -1,11 +1,5 @@
 package com.lulan.shincolle.client.settings;
 
-import net.minecraft.client.settings.KeyBinding;
-
-import org.lwjgl.input.Keyboard;
-
-import com.lulan.shincolle.reference.Names;
-
 public class KeyBindings {
 	
 	//­×´_«öÁä (debug¥Î)

@@ -3,17 +3,11 @@ package com.lulan.shincolle.client.particle;
 import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.LogHelper;
-
-import cpw.mods.fml.relauncher.ReflectionHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.client.particle.EntityFX;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
@@ -44,7 +38,8 @@ public class EntityFX91Type extends EntityFX {
 
     //par3,4,5為玩家視角Yaw參數, 用於調整x,y,z值對應到玩家水平視角的水平跟垂直移動
     //par6,7為玩家視角Pitch參數, 用於調整x,z值對應到玩家垂直視角的水平移動
-    public void renderParticle(Tessellator tess, float ticks, float par3, float par4, float par5, float par6, float par7) {
+    @Override
+	public void renderParticle(Tessellator tess, float ticks, float par3, float par4, float par5, float par6, float par7) {
     	
     	//stop last tess for bind texture
 //    	tess.draw();
@@ -118,10 +113,10 @@ public class EntityFX91Type extends EntityFX {
         float offsetY = offy * scale;
         float offsetZ = offz * scale;
         
-		tess.addVertexWithUV((double)(x - offsetX), (double)(y - offsetY), (double)(z - offsetZ), maxu, maxv);
-        tess.addVertexWithUV((double)(x - offsetX), (double)(y + offsetY), (double)(z - offsetZ), maxu, minv);
-        tess.addVertexWithUV((double)(x + offsetX), (double)(y + offsetY), (double)(z + offsetZ), minu, minv);
-        tess.addVertexWithUV((double)(x + offsetX), (double)(y - offsetY), (double)(z + offsetZ), minu, maxv);	
+		tess.addVertexWithUV(x - offsetX, y - offsetY, z - offsetZ, maxu, maxv);
+        tess.addVertexWithUV(x - offsetX, y + offsetY, z - offsetZ, maxu, minv);
+        tess.addVertexWithUV(x + offsetX, y + offsetY, z + offsetZ, minu, minv);
+        tess.addVertexWithUV(x + offsetX, y - offsetY, z + offsetZ, minu, maxv);	
 	}
 
 	//layer: 0:particle 1:terrain 2:items 3:custom?
@@ -133,7 +128,8 @@ public class EntityFX91Type extends EntityFX {
     /**
      * Called to update the entity's position/logic.
      */
-    public void onUpdate() {
+    @Override
+	public void onUpdate() {
     	//this is both side particle
 		this.prevPosX = this.posX;
         this.prevPosY = this.posY;

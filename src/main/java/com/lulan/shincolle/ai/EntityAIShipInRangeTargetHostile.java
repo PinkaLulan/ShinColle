@@ -1,30 +1,14 @@
 package com.lulan.shincolle.ai;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
-import com.lulan.shincolle.entity.BasicEntityAirplane;
-import com.lulan.shincolle.entity.BasicEntityMount;
-import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.entity.other.EntityAirplane;
-import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
-
-import net.minecraft.command.IEntitySelector;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
-import net.minecraft.entity.EntityFlying;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAITarget;
-import net.minecraft.entity.boss.EntityDragon;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.monster.EntitySlime;
-import net.minecraft.entity.passive.EntityBat;
-import net.minecraft.entity.passive.EntityWaterMob;
-import net.minecraft.entity.player.EntityPlayer;
+
+import com.lulan.shincolle.utility.TargetHelper;
 
 
 /**GET TARGET WITHIN SPECIFIC RANGE for HOSTILE MOB
@@ -38,8 +22,8 @@ import net.minecraft.entity.player.EntityPlayer;
 public class EntityAIShipInRangeTargetHostile extends EntityAITarget {
 	
     private final Class targetClass;
-    private final EntityAIShipInRangeTargetHostile.Sorter targetSorter;
-    private final IEntitySelector targetSelector;
+    private final TargetHelper.Sorter targetSorter;
+    private final TargetHelper.SelectorForHostile targetSelector;
     private EntityCreature host;
     private EntityLivingBase target;
     private int range1;
@@ -53,7 +37,8 @@ public class EntityAIShipInRangeTargetHostile extends EntityAITarget {
     	super(host, true, false);	//check onSight and not nearby(collision) only
     	this.host = host;
     	this.targetClass = EntityLiving.class;
-        this.targetSorter = new EntityAIShipInRangeTargetHostile.Sorter(host);
+        this.targetSorter = new TargetHelper.Sorter(host);
+        this.targetSelector = new TargetHelper.SelectorForHostile(host);
         this.setMutexBits(1);
 
         //範圍指定
@@ -68,17 +53,6 @@ public class EntityAIShipInRangeTargetHostile extends EntityAITarget {
         if(this.range2 <= this.range1) {
         	this.range2 = this.range1 + 1;
         }
- 
-        //target selector init
-        this.targetSelector = new IEntitySelector() {
-            public boolean isEntityApplicable(Entity target2) {
-            	if((target2 instanceof EntityPlayer || target2 instanceof BasicEntityShip ||
-            	   target2 instanceof BasicEntityAirplane || target2 instanceof BasicEntityMount) && !target2.isDead && !target2.isInvisible()) {
-            		return true;
-            	}
-            	return false;
-            }
-        };
     }
 
     @Override
@@ -166,26 +140,6 @@ public class EntityAIShipInRangeTargetHostile extends EntityAITarget {
 //        LogHelper.info("DEBUG : start target "+this.host.getAttackTarget());
     }
 
-    /**SORTER CLASS
-     */
-    public static class Sorter implements Comparator {
-        private final Entity target;
-
-        public Sorter(Entity entity) {
-            this.target = entity;
-        }
-        
-        public int compare(Object target1, Object target2) {
-            return this.compare((Entity)target1, (Entity)target2);
-        }
-
-        //負值會排在list前面, 值越大越後面, list(0)會是距離最近的目標
-        public int compare(Entity target1, Entity target2) {
-            double d0 = this.target.getDistanceSqToEntity(target1);
-            double d1 = this.target.getDistanceSqToEntity(target2);
-            return d0 < d1 ? -1 : (d0 > d1 ? 1 : 0);
-        }       
-    }//end sorter class
   
 }
 

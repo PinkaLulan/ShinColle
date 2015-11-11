@@ -3,9 +3,6 @@ package com.lulan.shincolle.item;
 import java.util.List;
 import java.util.Random;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockLiquid;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
@@ -16,14 +13,11 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.pathfinding.PathEntity;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.Facing;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
@@ -35,6 +29,7 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.ExtendShipProps;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.relauncher.Side;
@@ -134,6 +129,7 @@ public class ShipSpawnEgg extends Item {
   		if (!parWorld.isRemote) {	// never spawn entity on client side
 			entityType = ShipCalc.rollShipType(item);
   			entityToSpawnName = ShipCalc.getEntityToSpawnName(entityType);
+            LogHelper.info("DEBUG : spawn entity: "+entityToSpawnName);
             
             if (EntityList.stringToClassMapping.containsKey(entityToSpawnName)) {
                 entityToSpawn = (EntityLiving) EntityList.createEntityByName(entityToSpawnName, parWorld);
@@ -160,20 +156,21 @@ public class ShipSpawnEgg extends Item {
   		entity.setTamed(true);
   		entity.setPathToEntity((PathEntity)null);
   		entity.setAttackTarget((EntityLivingBase)null);
-  		entity.func_152115_b(player.getUniqueID().toString());	//set owner uuid
   		
   		//指定ship egg, 讀取nbt來給屬性
 		if(itemstack.getItemDamage() > 1) {
 			NBTTagCompound nbt = itemstack.getTagCompound();
 			
 			if(nbt != null) {
+				LogHelper.info("DEBUG : old spawn egg");
+				
 				NBTTagList list = nbt.getTagList("ShipInv", 10);
 				ExtendShipProps extProps = entity.getExtProps();
 				int[] attrs = nbt.getIntArray("Attrs");
 				
 				//load inventory
 				for(int i = 0; i < list.tagCount(); i++) {
-					NBTTagCompound item = (NBTTagCompound) list.getCompoundTagAt(i);
+					NBTTagCompound item = list.getCompoundTagAt(i);
 					byte sid = item.getByte("Slot");
 
 					if(sid >= 0 && sid < extProps.slots.length) {
@@ -193,38 +190,57 @@ public class ShipSpawnEgg extends Item {
 				//load ship level
 				entity.setShipLevel(attrs[0], true);
 				
-				//load owner UUID
-				String ownerid = nbt.getString("owner");
-				String ownername = nbt.getString("ownername");
+				//set custom name
 				String customname = nbt.getString("customname");
 				
-				//若有抓到owner data
-				if(ownerid != null && ownerid.length() > 5 && ownername.length() > 1) {
-					LogHelper.info("DEBUG : old spawn egg");
-					entity.func_152115_b(nbt.getString("owner"));
-					entity.setOwnerName(ownername);
-				}
-				//抓不到owner, 重設owner為使用者
-				else {
-					LogHelper.info("DEBUG : new spawn egg");
-					entity.setOwnerName(player.getDisplayName());
-				}
-				
-				//set custom name
 				if(customname != null && customname.length() > 0) {
 					entity.setNameTag(customname);
 				}
+				
+				/** OWNER SETTING
+		    	 *  1. check player UID first (after rv.22)
+		    	 *  2. if (1) fail, check player UUID string (before rv.22)
+		    	 */
+				
+				/** set owner by player's UUID (before rv.22) */
+				String ownerid = nbt.getString("owner");
+				
+				if(ownerid != null && ownerid.length() > 5) {
+					entity.func_152115_b(ownerid);
+				}
+				
+				/** set owner by player's UID (after rv.22) */
+				int pid = nbt.getInteger("PlayerID");	//player uid
+				int sid = nbt.getInteger("ShipID");		//ship uid
+				
+				if(pid > 0) {
+					entity.setStateMinor(ID.M.PlayerUID, pid);
+				}
+				if(sid > 0) {
+					entity.setStateMinor(ID.M.ShipUID, sid);
+				}
+
+				EntityHelper.setPetPlayerUUID(pid, entity);	//set owner uuid
 			}
 			else {
-				LogHelper.info("DEBUG : new spawn egg "+player.getDisplayName());
+				LogHelper.info("DEBUG : new spawn egg");
 				entity.setShipLevel(1, true);
-				entity.setOwnerName(player.getDisplayName());
+				
+				//set owner
+				EntityHelper.setPetPlayerUUID(player.getUniqueID().toString(), entity);
+				EntityHelper.setPetPlayerUID(player, entity);
 			}
 		}
 		//非指定ship egg, 則隨機骰屬性
 		else {
+			LogHelper.info("DEBUG : new spawn egg (random)");
+			
+			//set owner
+			EntityHelper.setPetPlayerUUID(player.getUniqueID().toString(), entity);
+			EntityHelper.setPetPlayerUID(player, entity);
+			
 			//calc HP ATK DEF SPD MOV HIT bonus point
-	  		byte[] bonuspoint = new byte[6];	 
+	  		byte[] bonuspoint = new byte[6];
 	  		bonuspoint = ShipCalc.getBonusPoints(itemstack);
 	  		
 	  		//set bonus point
@@ -299,13 +315,16 @@ public class ShipSpawnEgg extends Item {
                         	BasicEntityShip entity = (BasicEntityShip) spawnEntity(world, itemstack, i, j+1D, k);
 
                             if(entity != null) {
-                            	//calc bonus point, set custom name and owner name
-                            	initEntityAttribute(itemstack, player, entity);
-                         	
                             	//for egg with nameTag
                                 if(itemstack.hasDisplayName()) {
                                     entity.setCustomNameTag(itemstack.getDisplayName());    
                                 }
+                                
+                            	//calc bonus point, set custom name and owner name
+                            	initEntityAttribute(itemstack, player, entity);
+                            	
+                            	//send sync packet
+                            	entity.sendSyncPacket();
                             }
                         }//end spawn entity
 //                    }//end position can spawn

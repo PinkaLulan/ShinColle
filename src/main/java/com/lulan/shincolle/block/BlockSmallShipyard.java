@@ -3,29 +3,19 @@ package com.lulan.shincolle.block;
 import java.util.Random;
 
 import com.lulan.shincolle.ShinColle;
-import com.lulan.shincolle.handler.GuiHandler;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
-import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 public class BlockSmallShipyard extends BasicBlockContainer {
@@ -90,7 +80,7 @@ public class BlockSmallShipyard extends BasicBlockContainer {
 	
 						itemstack.stackSize -= j;
 						//將item做成entity, 生成到世界上
-						EntityItem item = new EntityItem(world, (double)((float)x + f), (double)((float)y + f1), (double)((float)z + f2), new ItemStack(itemstack.getItem(), j, itemstack.getItemDamage()));
+						EntityItem item = new EntityItem(world, x + f, y + f1, z + f2, new ItemStack(itemstack.getItem(), j, itemstack.getItemDamage()));
 						//如果有NBT tag, 也要複製到物品上
 						if(itemstack.hasTagCompound()) {
 							item.getEntityItem().setTagCompound((NBTTagCompound)itemstack.getTagCompound().copy());
@@ -149,29 +139,29 @@ public class BlockSmallShipyard extends BasicBlockContainer {
 			switch(rand.nextInt(3)) {	//使三根煙囪分開冒煙
 			case 0:
 				//主煙囪特效
-				world.spawnParticle("smoke", (double)x+smokeR1[0], (double)y+smokeR1[1], (double)z+smokeR1[2], 0.0D, 0D, 0.0D);
-				world.spawnParticle("smoke", (double)x+smokeR1[0], (double)y+smokeR1[1]+0.1D, (double)z+smokeR1[2], 0.0D, 0.005D, 0.0D);
-				world.spawnParticle("smoke", (double)x+smokeR1[0], (double)y+smokeR1[1]+0.2D, (double)z+smokeR1[2], 0.0D, 0.01D, 0.0D);
+				world.spawnParticle("smoke", x+smokeR1[0], y+smokeR1[1], z+smokeR1[2], 0.0D, 0D, 0.0D);
+				world.spawnParticle("smoke", x+smokeR1[0], y+smokeR1[1]+0.1D, z+smokeR1[2], 0.0D, 0.005D, 0.0D);
+				world.spawnParticle("smoke", x+smokeR1[0], y+smokeR1[1]+0.2D, z+smokeR1[2], 0.0D, 0.01D, 0.0D);
 				//小煙囪特效
-				world.spawnParticle("smoke", (double)x+smokeR3[0], (double)y+smokeR3[1], (double)z+smokeR3[2], 0.0D, 0D, 0.0D);
-				world.spawnParticle("smoke", (double)x+smokeR3[0], (double)y+smokeR3[1]+0.1D, (double)z+smokeR3[2], 0.0D, 0.01D, 0.0D);
+				world.spawnParticle("smoke", x+smokeR3[0], y+smokeR3[1], z+smokeR3[2], 0.0D, 0D, 0.0D);
+				world.spawnParticle("smoke", x+smokeR3[0], y+smokeR3[1]+0.1D, z+smokeR3[2], 0.0D, 0.01D, 0.0D);
 				break;
 			case 1:
 				//主煙囪特效
-				world.spawnParticle("smoke", (double)x+smokeR1[0], (double)y+smokeR1[1], (double)z+smokeR1[2], 0.0D, 0D, 0.0D);
-				world.spawnParticle("smoke", (double)x+smokeR1[0], (double)y+smokeR1[1]+0.1D, (double)z+smokeR1[2], 0.0D, 0.005D, 0.0D);
-				world.spawnParticle("smoke", (double)x+smokeR1[0], (double)y+smokeR1[1]+0.2D, (double)z+smokeR1[2], 0.0D, 0.01D, 0.0D);
+				world.spawnParticle("smoke", x+smokeR1[0], y+smokeR1[1], z+smokeR1[2], 0.0D, 0D, 0.0D);
+				world.spawnParticle("smoke", x+smokeR1[0], y+smokeR1[1]+0.1D, z+smokeR1[2], 0.0D, 0.005D, 0.0D);
+				world.spawnParticle("smoke", x+smokeR1[0], y+smokeR1[1]+0.2D, z+smokeR1[2], 0.0D, 0.01D, 0.0D);
 				//中煙囪特效
-				world.spawnParticle("smoke", (double)x+smokeR2[0], (double)y+smokeR2[1], (double)z+smokeR2[2], 0.0D, 0D, 0.0D);
-				world.spawnParticle("smoke", (double)x+smokeR2[0], (double)y+smokeR2[1]+0.1D, (double)z+smokeR2[2], 0.0D, 0.01D, 0.0D);
+				world.spawnParticle("smoke", x+smokeR2[0], y+smokeR2[1], z+smokeR2[2], 0.0D, 0D, 0.0D);
+				world.spawnParticle("smoke", x+smokeR2[0], y+smokeR2[1]+0.1D, z+smokeR2[2], 0.0D, 0.01D, 0.0D);
 				break;
 			case 2:
 				//中煙囪特效
-				world.spawnParticle("smoke", (double)x+smokeR2[0], (double)y+smokeR2[1], (double)z+smokeR2[2], 0.0D, 0D, 0.0D);
-				world.spawnParticle("smoke", (double)x+smokeR2[0], (double)y+smokeR2[1]+0.1D, (double)z+smokeR2[2], 0.0D, 0.01D, 0.0D);
+				world.spawnParticle("smoke", x+smokeR2[0], y+smokeR2[1], z+smokeR2[2], 0.0D, 0D, 0.0D);
+				world.spawnParticle("smoke", x+smokeR2[0], y+smokeR2[1]+0.1D, z+smokeR2[2], 0.0D, 0.01D, 0.0D);
 				//小煙囪特效
-				world.spawnParticle("smoke", (double)x+smokeR3[0], (double)y+smokeR3[1], (double)z+smokeR3[2], 0.0D, 0D, 0.0D);
-				world.spawnParticle("smoke", (double)x+smokeR3[0], (double)y+smokeR3[1]+0.1D, (double)z+smokeR3[2], 0.0D, 0.01D, 0.0D);
+				world.spawnParticle("smoke", x+smokeR3[0], y+smokeR3[1], z+smokeR3[2], 0.0D, 0D, 0.0D);
+				world.spawnParticle("smoke", x+smokeR3[0], y+smokeR3[1]+0.1D, z+smokeR3[2], 0.0D, 0.01D, 0.0D);
 				break;
 			default:
 				break;

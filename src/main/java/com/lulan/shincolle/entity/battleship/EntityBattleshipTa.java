@@ -1,38 +1,13 @@
 package com.lulan.shincolle.entity.battleship;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.ai.EntityAIHurtByTarget;
-import net.minecraft.entity.ai.EntityAILookIdle;
-import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
-import net.minecraft.entity.ai.EntityAIOpenDoor;
-import net.minecraft.entity.ai.EntityAIOwnerHurtByTarget;
-import net.minecraft.entity.ai.EntityAIOwnerHurtTarget;
-import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
-import com.lulan.shincolle.ai.EntityAIShipAttackOnCollide;
-import com.lulan.shincolle.ai.EntityAIShipCarrierAttack;
-import com.lulan.shincolle.ai.EntityAIShipFlee;
-import com.lulan.shincolle.ai.EntityAIShipFloating;
-import com.lulan.shincolle.ai.EntityAIShipFollowOwner;
-import com.lulan.shincolle.ai.EntityAIShipInRangeTarget;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
-import com.lulan.shincolle.ai.EntityAIShipSit;
-import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
-import com.lulan.shincolle.client.particle.EntityFXLaser;
-import com.lulan.shincolle.client.particle.EntityFXTexts;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.ExtendShipProps;
 import com.lulan.shincolle.entity.ISummonAttack;
@@ -43,8 +18,6 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.utility.EntityHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -55,9 +28,9 @@ public class EntityBattleshipTa extends BasicEntityShip implements ISummonAttack
 	public EntityBattleshipTa(World world) {
 		super(world);
 		this.setSize(0.6F, 1.8F);
-//		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityBattleshipTa.name"));
-		this.ShipType = ID.ShipType.BATTLESHIP;
-		this.ShipID = ID.S_BattleshipTA;
+		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
+		this.setStateMinor(ID.M.ShipClass, ID.S_BattleshipTA);
+		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
 		this.ModelPos = new float[] {-6F, 10F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();
@@ -78,6 +51,7 @@ public class EntityBattleshipTa extends BasicEntityShip implements ISummonAttack
 		return 1;
 	}
 	
+	@Override
 	public void setAIList() {
 		super.setAIList();
 
@@ -101,11 +75,11 @@ public class EntityBattleshipTa extends BasicEntityShip implements ISummonAttack
 
 	//Ta級額外增加屬性
 	@Override
-	public void calcShipAttributes(byte id) {
+	public void calcShipAttributes() {
 		EffectEquip[ID.EF_CRI] = EffectEquip[ID.EF_CRI] + 0.1F;
 		EffectEquip[ID.EF_MISS] = EffectEquip[ID.EF_MISS] + 0.1F;
 		
-		super.calcShipAttributes(id);	
+		super.calcShipAttributes();	
 	}
 	
 	@Override

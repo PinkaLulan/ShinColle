@@ -1,17 +1,10 @@
 package com.lulan.shincolle.item;
 
-import java.util.List;
-
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.IIcon;
 
 public class EquipAirplane extends BasicEquip {
 	
@@ -20,7 +13,7 @@ public class EquipAirplane extends BasicEquip {
 	public EquipAirplane() {
 		super();
 		this.setUnlocalizedName("EquipAirplane");
-		this.types = 15;	//T=4,F=5,B=4,R=2
+		this.types = 18;	//T=5,F=6,B=5,R=2
 	}
 	
 	@Override
@@ -33,20 +26,32 @@ public class EquipAirplane extends BasicEquip {
 	
 	@Override
 	public IIcon getIconFromDamage(int meta) {
-	    if(meta < 4) {				//0~3 = Torpedo
-	    	return this.icons[0];
-	    }
-	    else if(meta < 9) {			//4~8 = Fighter
-	    	return this.icons[1];
-	    }
-	    else if(meta < 13) {		//9~12 = Bomber
-	    	return this.icons[2];
-	    }
-	    else if(meta < 15) {		//13~14 = Recon
-	    	return this.icons[3];
-	    }
-	   
-	    return icons[0];
+		switch(meta) {
+		case 0:
+		case 1:
+		case 2:
+		case 3:
+		case 15:
+			return this.icons[0];	//Torpedo
+		case 4:
+		case 5:
+		case 6:
+		case 7:
+		case 8:
+		case 16:
+			return this.icons[1];	//Fighter
+		case 9:
+		case 10:
+		case 11:
+		case 12:
+		case 17:
+			return this.icons[2];	//Bomber
+		case 13:
+		case 14:
+			return this.icons[3];	//Recon
+		default:
+			return this.icons[0];
+		}
 	}
 	
 	//item glow effect
@@ -62,6 +67,9 @@ public class EquipAirplane extends BasicEquip {
 		case 11:	//fly-fish B
 		case 12:	//hell B
 		case 14:	//fly-fish R
+		case 15:	//T kai
+		case 16:	//F kai
+		case 17:	//B kai
 			return true;
 		}
 		

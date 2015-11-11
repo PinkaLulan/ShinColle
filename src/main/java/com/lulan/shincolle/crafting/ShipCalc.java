@@ -8,7 +8,6 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 
 /**SHIP SPAWN CALC <br>
  * Material Bonus Rate (for small construction)
@@ -42,12 +41,12 @@ public class ShipCalc {
 		byte[] bonusPoint = new byte[6];		//HP ATK DEF SPD MOV HIT
 		int[] matAmount = getMatAmount(itemstack);	//0:grudge 1:abyssium 2:ammo 3:polymetal
 				
-		float[] rateHP = calcBonusRate((int)(matAmount[0]+matAmount[1]));	  //HP = grudge + abyssium
-		float[] rateATK = calcBonusRate((int)(matAmount[0]+matAmount[2]));  //ATK = grudge + ammo
-		float[] rateDEF = calcBonusRate((int)(matAmount[0]+matAmount[1]));  //DEF = grudge + abyssium
-		float[] rateSPD = calcBonusRate((int)(matAmount[0]+matAmount[2]));  //SPD = grudge + ammo
-		float[] rateMOV = calcBonusRate((int)(matAmount[0]+matAmount[3]));  //MOV = grudge + polymetal
-		float[] rateHIT = calcBonusRate((int)(matAmount[0]+matAmount[3]));  //HIT = grudge + polymetal
+		float[] rateHP = calcBonusRate(matAmount[0]+matAmount[1]);	  //HP = grudge + abyssium
+		float[] rateATK = calcBonusRate(matAmount[0]+matAmount[2]);  //ATK = grudge + ammo
+		float[] rateDEF = calcBonusRate(matAmount[0]+matAmount[1]);  //DEF = grudge + abyssium
+		float[] rateSPD = calcBonusRate(matAmount[0]+matAmount[2]);  //SPD = grudge + ammo
+		float[] rateMOV = calcBonusRate(matAmount[0]+matAmount[3]);  //MOV = grudge + polymetal
+		float[] rateHIT = calcBonusRate(matAmount[0]+matAmount[3]);  //HIT = grudge + polymetal
 
 		bonusPoint[0] = rollBonusValue(rateHP);
 		bonusPoint[1] = rollBonusValue(rateATK);
@@ -124,7 +123,7 @@ public class ShipCalc {
 	
 	//roll +0~+3 according to rate
 	private static byte rollBonusValue(float[] rate) {
-		float ranNum = (float)(rand.nextInt(100) + 1)/100F;		//random 0.01~1.00
+		float ranNum = (rand.nextInt(100) + 1)/100F;		//random 0.01~1.00
 		float bonus3 = rate[0]+rate[1]+rate[2];
 		float bonus2 = rate[0]+rate[1];
 		float bonus1 = rate[0];
@@ -155,7 +154,7 @@ public class ShipCalc {
 		int[] material = new int[4];
 		int totalMats = 0;
 		
-		if(item.getItemDamage() > 1) {	//is spec egg
+		if(item.getItemDamage() > 1) {	//is special egg
 			return item.getItemDamage() - 2;
 		}
 		

@@ -3,14 +3,12 @@ package com.lulan.shincolle.crafting;
 import java.util.Random;
 
 import com.lulan.shincolle.init.ModItems;
-import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.TileEntityHelper;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntityFurnace;
 
 /**Small Shipyard Recipe Helper
  *  Fuel Cost = BaseCost + CostPerMaterial * ( TotalMaterialAmount - minAmount * 4 )
@@ -119,20 +117,25 @@ public class SmallRecipes {
 		return buildResult;
 	}
 	
-	//將材料數量寫進itemstack回傳
+	/** ROLL SYSTEM
+	 *  0. get material amounts
+	 *  1. roll junk or equips
+	 *  2. roll equip type by mat.amounts
+	 *  3. roll equip by equip type and mat.amounts
+	 */
 	public static ItemStack getBuildResultEquip(int[] matAmount) {	
 		//result item
 		ItemStack buildResult = null;
 		int totalMats = matAmount[0] + matAmount[1] + matAmount[2] + matAmount[3];
 		int[] matsInt = new int[] {0,0,0,0};
 		int rollType = -1;
-		float equipRate = totalMats / 128F;
+		float equipRate = totalMats / 128F;		//if total mats < 128, could get ammo
 		float randRate = rand.nextFloat();
 		
 		if(equipRate > 1F) equipRate = 1F;	//min 50%, max 100%	
 		LogHelper.info("DEBUG : equip build roll: rate / random "+String.format("%.2f", equipRate)+" "+String.format("%.2f", randRate));	
 		//first roll: roll equip or ammo
-		if(randRate < equipRate) {	//get equip 
+		if(randRate < equipRate) {	//get equip
 			//second roll: roll equip type
 			matsInt[0] = matAmount[0];
 			matsInt[1] = matAmount[1];
@@ -140,7 +143,7 @@ public class SmallRecipes {
 			matsInt[3] = matAmount[3];
 			rollType = EquipCalc.rollEquipType(0, matsInt);
 			//third roll: roll equips of the type
-			return EquipCalc.rollEquipsOfTheType(rollType);
+			return EquipCalc.rollEquipsOfTheType(rollType, totalMats, 0);
 			
 		}
 		else {								//get ammo

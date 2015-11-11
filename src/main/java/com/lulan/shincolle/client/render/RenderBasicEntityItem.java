@@ -1,6 +1,5 @@
 package com.lulan.shincolle.client.render;
 
-import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
@@ -10,8 +9,6 @@ import org.lwjgl.opengl.GL11;
 import com.lulan.shincolle.client.model.ModelBasicEntityItem;
 import com.lulan.shincolle.item.BasicEntityItem;
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.LogHelper;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -50,7 +47,8 @@ public class RenderBasicEntityItem extends Render {
     }
 
     //傳入entity的都轉成abyssmissile
-    public void doRender(Entity entity, double offsetX, double offsetY, double offsetZ, float p_76986_8_, float p_76986_9_) {
+    @Override
+	public void doRender(Entity entity, double offsetX, double offsetY, double offsetZ, float p_76986_8_, float p_76986_9_) {
     	this.doRender((BasicEntityItem)entity, offsetX, offsetY, offsetZ, p_76986_8_, p_76986_9_);
     }
 }

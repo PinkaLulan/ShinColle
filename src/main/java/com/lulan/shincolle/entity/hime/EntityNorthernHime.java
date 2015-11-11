@@ -24,7 +24,6 @@ import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
@@ -38,8 +37,9 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
 	public EntityNorthernHime(World world) {
 		super(world);
 		this.setSize(0.6F, 1.1F);
-		this.ShipType = ID.ShipType.HIME;
-		this.ShipID = ID.S_NorthernHime;
+		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
+		this.setStateMinor(ID.M.ShipClass, ID.S_NorthernHime);
+		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
 		this.ModelPos = new float[] {-6F, 8F, 0F, 50F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();
@@ -64,6 +64,7 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
 		return 2;
 	}
 	
+	@Override
 	public void setAIList() {
 		super.setAIList();
 		
@@ -80,14 +81,14 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
   			//every 80 ticks
         	if(this.ticksExisted % 80 == 0) {
         		//1: 增強被動回血
-        		if(getStateMinor(ID.N.NumGrudge) > 0 && this.getHealth() < this.getMaxHealth()) {
+        		if(getStateMinor(ID.M.NumGrudge) > 0 && this.getHealth() < this.getMaxHealth()) {
         			this.setHealth(this.getHealth() + this.getMaxHealth() * 0.015F);
         		}
         		
         		//2: 結婚後, 周圍某一目標回血, 包括玩家, 回血目標依等級提昇
-				if(getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.N.NumGrudge) > 0) {
+				if(getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.M.NumGrudge) > 0) {
 					//判定bounding box內是否有可以回血的目標
-					int healCount = (int)(this.getLevel() / 25) + 1;
+					int healCount = this.getLevel() / 25 + 1;
 		            EntityLivingBase hitEntity = null;
 		            List hitList = null;
 		            hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, this.boundingBox.expand(6D, 6D, 6D));
@@ -218,7 +219,7 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
 	            	//只騎乘同主人的棲艦或者主人
 	            	if(getEnt instanceof BasicEntityShip || getEnt instanceof EntityPlayer) {
 	            		if(getEnt != this && !getEnt.isRiding() && getEnt.riddenByEntity == null &&
-	            			EntityHelper.checkSameOwner(this.getOwner(), getEnt)) {
+	            			EntityHelper.checkSameOwner(this, getEnt)) {
 	            			this.goRidingTicks = 0;
 	            			this.goRiding = true;
 	            			this.goRideEntity = getEnt;
@@ -331,7 +332,7 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 31, this.posX, this.posY, this.posZ, distX, distY, distZ, true), point);
 
         //calc miss chance, if not miss, calc cri/multi hit
-        float missChance = 0.2F + 0.15F * (distSqrt / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.N.ShipLevel];
+        float missChance = 0.2F + 0.15F * (distSqrt / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.M.ShipLevel];
         missChance -= EffectEquip[ID.EF_MISS];		//equip miss reduce
         if(missChance > 0.35F) missChance = 0.35F;	//max miss chance
         
@@ -388,8 +389,8 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
 	    if(isTargetHurt) {
 	    	//calc kb effect
 	        if(kbValue > 0) {
-	            target.addVelocity((double)(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue), 
-	                   0.1D, (double)(MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue));
+	            target.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
+	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
 	            motionX *= 0.6D;
 	            motionZ *= 0.6D;
 	        }

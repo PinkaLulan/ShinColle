@@ -2,8 +2,6 @@ package com.lulan.shincolle.utility;
 
 import java.util.Random;
 
-import net.minecraft.entity.EntityLivingBase;
-
 import com.lulan.shincolle.client.model.IModelEmotion;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.reference.ID;

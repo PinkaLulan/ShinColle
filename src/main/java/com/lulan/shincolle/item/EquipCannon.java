@@ -1,17 +1,10 @@
 package com.lulan.shincolle.item;
 
-import java.util.List;
-
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.IIcon;
 
 public class EquipCannon extends BasicEquip {
 	
@@ -32,17 +25,25 @@ public class EquipCannon extends BasicEquip {
 	
 	@Override
 	public IIcon getIconFromDamage(int meta) {
-	    if(meta < 2) {				//0,1 = single cannon
-	    	return this.icons[0];
-	    }
-	    else if(meta < 9) {			//2~8 = twin cannon
-	    	return this.icons[1];
-	    }
-	    else if(meta < 12) {			//9~11 = triple cannon
-	    	return this.icons[2];
-	    }
-	   
-	    return icons[0];
+		switch(meta) {
+		case 0:
+		case 1:
+			return this.icons[0];	//single cannon
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+		case 6:
+		case 7:
+		case 8:
+			return this.icons[1];	//twin cannon
+		case 9:
+		case 10:
+		case 11:
+			return this.icons[2];	//triple cannon
+		default:
+			return this.icons[0];
+		}
 	}
 	
 	//item glow effect

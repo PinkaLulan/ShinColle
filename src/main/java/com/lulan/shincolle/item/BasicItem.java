@@ -1,14 +1,14 @@
 package com.lulan.shincolle.item;
 
-import com.lulan.shincolle.creativetab.CreativeTabSC;
-import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.LogHelper;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+
+import com.lulan.shincolle.creativetab.CreativeTabSC;
+import com.lulan.shincolle.reference.Reference;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 //基本item class 定義各種item基本方法
 public class BasicItem extends Item {

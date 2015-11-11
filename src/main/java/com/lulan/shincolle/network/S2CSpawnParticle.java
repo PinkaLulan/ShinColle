@@ -4,7 +4,6 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
@@ -107,7 +106,7 @@ public class S2CSpawnParticle implements IMessage {
 				this.lookX = buf.readFloat();
 				this.lookY = buf.readFloat();
 				this.lookZ = buf.readFloat();
-				ParticleHelper.spawnAttackParticleCustomVector(entity, (double)posX, (double)posY, (double)posZ, (double)lookX, (double)lookY, (double)lookZ, particleType, isShip);
+				ParticleHelper.spawnAttackParticleCustomVector(entity, posX, posY, posZ, lookX, lookY, lookZ, particleType, isShip);
 			}
 			break;
 		case 2: //spawn particle with position

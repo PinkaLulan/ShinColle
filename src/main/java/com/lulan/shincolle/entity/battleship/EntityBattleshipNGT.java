@@ -1,76 +1,29 @@
 package com.lulan.shincolle.entity.battleship;
 
 import java.util.List;
-import java.util.Random;
 
-import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityAgeable;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAIAttackOnCollide;
-import net.minecraft.entity.ai.EntityAIHurtByTarget;
-import net.minecraft.entity.ai.EntityAILookIdle;
-import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
-import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
-import net.minecraft.entity.ai.EntityAIOpenDoor;
-import net.minecraft.entity.ai.EntityAIOwnerHurtByTarget;
-import net.minecraft.entity.ai.EntityAIOwnerHurtTarget;
-import net.minecraft.entity.ai.EntityAIPanic;
-import net.minecraft.entity.ai.EntityAIRestrictOpenDoor;
-import net.minecraft.entity.ai.EntityAITargetNonTamed;
-import net.minecraft.entity.ai.EntityAIWander;
-import net.minecraft.entity.ai.EntityAIWatchClosest;
-import net.minecraft.entity.ai.EntityAIWatchClosest2;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.monster.EntitySlime;
-import net.minecraft.entity.monster.IMob;
-import net.minecraft.entity.passive.EntityCow;
-import net.minecraft.entity.passive.EntitySheep;
-import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
-import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
-import com.lulan.shincolle.ShinColle;
-import com.lulan.shincolle.ai.EntityAIShipAttackOnCollide;
-import com.lulan.shincolle.ai.EntityAIShipFlee;
-import com.lulan.shincolle.ai.EntityAIShipFollowOwner;
-import com.lulan.shincolle.ai.EntityAIShipInRangeTarget;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
-import com.lulan.shincolle.ai.EntityAIShipFloating;
-import com.lulan.shincolle.ai.EntityAIShipSit;
-import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
-import com.lulan.shincolle.client.inventory.ContainerShipInventory;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.entity.ExtendShipProps;
 import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
-import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
-import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 
 /**特殊heavy attack:
  * 用StateEmotion[ID.S.Phase]來儲存攻擊階段
@@ -81,9 +34,9 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
 	public EntityBattleshipNGT(World world) {
 		super(world);
 		this.setSize(0.6F, 1.8F);	//碰撞大小 跟模型大小無關
-//		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityBattleshipNGT.name"));
-		this.ShipType = ID.ShipType.BATTLESHIP;
-		this.ShipID = ID.S_BattleshipNagato;
+		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
+		this.setStateMinor(ID.M.ShipClass, ID.S_BattleshipNagato);
+		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
 		this.ModelPos = new float[] {0F, 15F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);
 		
@@ -120,18 +73,20 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
   		super.onLivingUpdate();
           
   		if(worldObj.isRemote) {
-  			if(this.ticksExisted % 5 == 0) {
+  			if(this.ticksExisted % 10 == 0) {
   				if(getStateEmotion(ID.S.Phase) > 0) {
    	  				//生成氣彈特效
   	  				ParticleHelper.spawnAttackParticleAtEntity(this, 0.1D, 1D, 0D, (byte)1);
   				}
+  			}
 			
+  			if(this.ticksExisted % 5 == 0) {
   				if(getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
   					double smokeY = posY + 1.6D;
   					if(this.isSitting()) smokeY = posY + 0.9D;
   					
   					//計算煙霧位置
-  	  				float[] partPos = ParticleHelper.rotateParticleByAxis(-0.55F, 0F, (this.renderYawOffset % 360) / 57.2957F, 1F);
+  	  				float[] partPos = ParticleHelper.rotateXZByAxis(-0.55F, 0F, (this.renderYawOffset % 360) / 57.2957F, 1F);
   	  				//生成裝備冒煙特效
   	  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], smokeY, posZ+partPos[0], 0D, 0D, 0D, (byte)20);
   				}	
@@ -202,7 +157,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
         }
 
         //calc miss chance, if not miss, calc cri/multi hit
-        float missChance = 0.2F + 0.15F * (distSqrt / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.N.ShipLevel];
+        float missChance = 0.2F + 0.15F * (distSqrt / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.M.ShipLevel];
         missChance -= EffectEquip[ID.EF_MISS];		//equip miss reduce
         if(missChance > 0.35F) missChance = 0.35F;	//max miss chance
         
@@ -258,8 +213,8 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
 	    if(isTargetHurt) {
 	    	//calc kb effect
 	        if(kbValue > 0) {
-	            target.addVelocity((double)(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue), 
-	                   0.1D, (double)(MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue));
+	            target.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
+	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
 	            motionX *= 0.6D;
 	            motionZ *= 0.6D;
 	        }
@@ -343,7 +298,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
 	        CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 21, posX, posY, posZ, target.posX, target.posY, target.posZ, true), point);
         	
         	//calc miss chance, miss: atk1 = 0, atk2 = 50%
-            float missChance = 0.2F + 0.15F * (distSqrt / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.N.ShipLevel];
+            float missChance = 0.2F + 0.15F * (distSqrt / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.M.ShipLevel];
             missChance -= EffectEquip[ID.EF_MISS];	//equip miss reduce
             if(missChance > 0.35F) missChance = 0.35F;	//max miss chance = 30%
            
@@ -403,14 +358,13 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
                 		//calc miss and cri
                 		if(this.rand.nextFloat() < missChance) {	//MISS
                         	atkTemp *= 0.5F;
-                        
                         }
                         else if(this.rand.nextFloat() < EffectEquip[ID.EF_CRI]) {	//CRI
                     		atkTemp *= 1.5F;
                         }
                 		
                 		//若攻擊到同陣營entity (ex: owner), 則傷害設為0 (但是依然觸發擊飛特效)
-                		if(EntityHelper.checkSameOwner(this.getOwner(), hitEntity)) {
+                		if(EntityHelper.checkSameOwner(this, hitEntity)) {
                 			atkTemp = 0F;
                     	}
                 		
@@ -423,7 +377,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
                     		}
                     		
                     		//check friendly fire
-                    		if(EntityHelper.checkOwnerIsPlayer(hitEntity) && !ConfigHandler.friendlyFire) {
+                    		if(!EntityHelper.doFriendlyFire(this, (EntityPlayer) hitEntity)) {
                     			atkTemp = 0F;
                     		}
                     	}
@@ -432,8 +386,8 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
                 	    if(hitEntity.attackEntityFrom(DamageSource.causeMobDamage(this), atkTemp)) {
                 	    	//calc kb effect
                 	        if(kbValue > 0) {
-                	        	hitEntity.addVelocity((double)(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue), 
-                	                   0.1D, (double)(MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue));
+                	        	hitEntity.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
+                	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
                 	            motionX *= 0.6D;
                 	            motionZ *= 0.6D;
                 	        }             	 

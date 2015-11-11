@@ -9,27 +9,21 @@ import org.lwjgl.opengl.GL12;
 import com.lulan.shincolle.client.inventory.ContainerShipInventory;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipLarge;
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.utility.GuiHelper;
-import com.lulan.shincolle.utility.LogHelper;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StatCollector;
 
 /**ICON_SHIPTYPE(157,18) 
  * NameIcon: LargeShip(0,0)(40x42) SmallShip(0,43)(30x30) 
@@ -196,9 +190,9 @@ public class GuiShipInventory extends GuiContainer {
         	this.pageIndicatorAI = 157;
         	
         	//get button value
-        	fMinPos = (int)(((float)(entity.getStateMinor(ID.N.FollowMin) - 1) / 30F) * 42F);
-        	fMaxPos = (int)(((float)(entity.getStateMinor(ID.N.FollowMax) - 2) / 30F) * 42F);
-        	fleeHPPos = (int)(((float)entity.getStateMinor(ID.N.FleeHP) / 100F) * 42F);
+        	fMinPos = (int)(((entity.getStateMinor(ID.M.FollowMin) - 1) / 30F) * 42F);
+        	fMaxPos = (int)(((entity.getStateMinor(ID.M.FollowMax) - 2) / 30F) * 42F);
+        	fleeHPPos = (int)((entity.getStateMinor(ID.M.FleeHP) / 100F) * 42F);
         	
         	//draw range bar
         	drawTexturedModalRect(guiLeft+191, guiTop+148, 31, 214, 43, 3);
@@ -233,7 +227,7 @@ public class GuiShipInventory extends GuiContainer {
     		this.pageIndicatorAI = 183;
     		
     		//get button value
-    		if(this.entity.getStateMinor(ID.N.TargetAI) == 0) {
+    		if(this.entity.getStateMinor(ID.M.TargetAI) == 0) {
             	this.switchTarAI = true;
             }
             else {
@@ -263,7 +257,7 @@ public class GuiShipInventory extends GuiContainer {
         
         //draw level, ship type icon
         Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE_ICON);
-        if(entity.getStateMinor(ID.N.ShipLevel) > 99) {
+        if(entity.getStateMinor(ID.M.ShipLevel) > 99) {
         	drawTexturedModalRect(guiLeft+157, guiTop+18, 0, 0, 40, 42);
         	drawTexturedModalRect(guiLeft+159, guiTop+22, ICON_SHIPTYPE[entity.getShipType()][0], ICON_SHIPTYPE[entity.getShipType()][1], 28, 28);
         }
@@ -273,10 +267,10 @@ public class GuiShipInventory extends GuiContainer {
         }
         
         //draw left bottom name
-        drawTexturedModalRect(guiLeft+166, guiTop+63, ICON_SHIPNAME[entity.getShipID()][0], ICON_SHIPNAME[entity.getShipID()][1], 11, 59);
+        drawTexturedModalRect(guiLeft+166, guiTop+63, ICON_SHIPNAME[entity.getShipClass()][0], ICON_SHIPNAME[entity.getShipClass()][1], 11, 59);
         
         //draw entity model
-        drawEntityModel(guiLeft+210, guiTop+100, entity.getModelPos(), (float)(guiLeft + 200 - xMouse), (float)(guiTop + 50 - yMouse), this.entity);
+        drawEntityModel(guiLeft+210, guiTop+100, entity.getModelPos(), guiLeft + 200 - xMouse, guiTop + 50 - yMouse, this.entity);
         
 	}
 	
@@ -311,19 +305,19 @@ public class GuiShipInventory extends GuiContainer {
 				//show text at RANGE
 				else if(yMouse > 104+guiTop && yMouse < 126+guiTop) {
 					//calc min miss
-					int temp = (int) ((0.2F - this.entity.getEffectEquip(ID.EF_MISS) - 0.001F * this.entity.getStateMinor(ID.N.ShipLevel)) * 100F);
+					int temp = (int) ((0.2F - this.entity.getEffectEquip(ID.EF_MISS) - 0.001F * this.entity.getStateMinor(ID.M.ShipLevel)) * 100F);
 					if(temp < 0) temp = 0;
 					if(temp > 35) temp = 35;
 					strMissMin = String.valueOf(temp);
 //					LogHelper.info("DEBUg : miss after "+this.entity.getStateFinal(ID.HIT));
 					//calc max miss
-					temp = (int) ((0.35F - this.entity.getEffectEquip(ID.EF_MISS) - 0.001F * this.entity.getStateMinor(ID.N.ShipLevel)) * 100F);
+					temp = (int) ((0.35F - this.entity.getEffectEquip(ID.EF_MISS) - 0.001F * this.entity.getStateMinor(ID.M.ShipLevel)) * 100F);
 					if(temp < 0) temp = 0;
 					if(temp > 35) temp = 35;
 					strMissMax = String.valueOf(temp);
 					
 					//calc air miss
-					temp = (int) ((0.25F - this.entity.getEffectEquip(ID.EF_MISS) - 0.001F * this.entity.getStateMinor(ID.N.ShipLevel)) * 100F);
+					temp = (int) ((0.25F - this.entity.getEffectEquip(ID.EF_MISS) - 0.001F * this.entity.getStateMinor(ID.M.ShipLevel)) * 100F);
 					if(temp < 0) temp = 0;
 					if(temp > 35) temp = 35;
 					strMissAir = String.valueOf(temp);		
@@ -392,7 +386,7 @@ public class GuiShipInventory extends GuiContainer {
 	//draw level,hp,atk,def...
 	private void drawAttributes() {
 		//draw hp, level
-		shiplevel = String.valueOf(entity.getStateMinor(ID.N.ShipLevel));
+		shiplevel = String.valueOf(entity.getStateMinor(ID.M.ShipLevel));
 		lvMark = I18n.format("gui.shincolle:level");
 		hpMark = I18n.format("gui.shincolle:hp");
 		hpCurrent = MathHelper.ceiling_float_int(entity.getHealth());
@@ -401,10 +395,10 @@ public class GuiShipInventory extends GuiContainer {
 
 		//draw lv/hp name
 		this.fontRendererObj.drawStringWithShadow(lvMark, 223-this.fontRendererObj.getStringWidth(lvMark), 6, 65535);
-		this.fontRendererObj.drawStringWithShadow(hpMark, 144-this.fontRendererObj.getStringWidth(hpMark), 6, 65535);
+		this.fontRendererObj.drawStringWithShadow(hpMark, 137-this.fontRendererObj.getStringWidth(hpMark), 6, 65535);
 		
 		//draw level: 150->gold other->white
-		if(entity.getStateMinor(ID.N.ShipLevel) < 150) {
+		if(entity.getStateMinor(ID.M.ShipLevel) < 150) {
 			color = 16777215;  //white
 		}
 		else {
@@ -414,7 +408,7 @@ public class GuiShipInventory extends GuiContainer {
 
 		//draw hp/maxhp, if currHP < maxHP, use darker color
 		color = GuiHelper.pickColor(entity.getBonusPoint(ID.HP));
-		this.fontRendererObj.drawStringWithShadow("/"+String.valueOf(hpMax), 148 + this.fontRendererObj.getStringWidth(String.valueOf(hpCurrent)), 6, color);
+		this.fontRendererObj.drawStringWithShadow("/"+String.valueOf(hpMax), 140 + this.fontRendererObj.getStringWidth(String.valueOf(hpCurrent)), 6, color);
 		if(hpCurrent < hpMax) {
 			switch(entity.getBonusPoint(ID.HP)) {
 			case 0:
@@ -431,7 +425,7 @@ public class GuiShipInventory extends GuiContainer {
 				break;
 			}
 		}
-		this.fontRendererObj.drawStringWithShadow(String.valueOf(hpCurrent), 147, 6, color);	
+		this.fontRendererObj.drawStringWithShadow(String.valueOf(hpCurrent), 139, 6, color);	
 				
 		//draw string in different page
 		switch(this.showPage) {
@@ -489,11 +483,11 @@ public class GuiShipInventory extends GuiContainer {
 			this.fontRendererObj.drawString(I18n.format("gui.shincolle:grudge"), 67, 104, GuiHelper.pickColor(5));
 			//draw value
 			entity.setExpNext();  //update exp value
-			Exp = String.valueOf(this.entity.getStateMinor(ID.N.ExpCurrent))+"/"+String.valueOf(this.entity.getStateMinor(ID.N.ExpNext));
-			Kills = String.valueOf(this.entity.getStateMinor(ID.N.Kills));
-			AmmoLight = String.valueOf(this.entity.getStateMinor(ID.N.NumAmmoLight));
-			AmmoHeavy = String.valueOf(this.entity.getStateMinor(ID.N.NumAmmoHeavy));
-			Grudge = String.valueOf(this.entity.getStateMinor(ID.N.NumGrudge));
+			Exp = String.valueOf(this.entity.getStateMinor(ID.M.ExpCurrent))+"/"+String.valueOf(this.entity.getStateMinor(ID.M.ExpNext));
+			Kills = String.valueOf(this.entity.getStateMinor(ID.M.Kills));
+			AmmoLight = String.valueOf(this.entity.getStateMinor(ID.M.NumAmmoLight));
+			AmmoHeavy = String.valueOf(this.entity.getStateMinor(ID.M.NumAmmoHeavy));
+			Grudge = String.valueOf(this.entity.getStateMinor(ID.M.NumGrudge));
 				
 			this.fontRendererObj.drawStringWithShadow(Kills, 125-this.fontRendererObj.getStringWidth(Kills), 30, GuiHelper.pickColor(0));
 			this.fontRendererObj.drawStringWithShadow(Exp, 125-this.fontRendererObj.getStringWidth(Exp), 51, GuiHelper.pickColor(0));
@@ -571,12 +565,12 @@ public class GuiShipInventory extends GuiContainer {
 				this.fontRendererObj.drawString(fleeHP, 174, 182, GuiHelper.pickColor(5));
 				
 				//draw value
-				followMinValue = String.valueOf(entity.getStateMinor(ID.N.FollowMin));
-				followMaxValue = String.valueOf(entity.getStateMinor(ID.N.FollowMax));
-				fleeHPValue = String.valueOf(entity.getStateMinor(ID.N.FleeHP));
+				followMinValue = String.valueOf(entity.getStateMinor(ID.M.FollowMin));
+				followMaxValue = String.valueOf(entity.getStateMinor(ID.M.FollowMax));
+				fleeHPValue = String.valueOf(entity.getStateMinor(ID.M.FleeHP));
 				
 				if(this.mousePressBar == 0) {
-					barPosValue = String.valueOf((int)((float)barPos / 42F * 30F + 1F));
+					barPosValue = String.valueOf((int)(barPos / 42F * 30F + 1F));
 					this.fontRendererObj.drawStringWithShadow(barPosValue, 174, 145, GuiHelper.pickColor(3));
 				}
 				else {
@@ -584,7 +578,7 @@ public class GuiShipInventory extends GuiContainer {
 				}
 				
 				if(this.mousePressBar == 1) {
-					barPosValue = String.valueOf((int)((float)barPos / 42F * 30F + 2F));
+					barPosValue = String.valueOf((int)(barPos / 42F * 30F + 2F));
 					this.fontRendererObj.drawStringWithShadow(barPosValue, 174, 169, GuiHelper.pickColor(3));		
 				}
 				else {
@@ -592,7 +586,7 @@ public class GuiShipInventory extends GuiContainer {
 				}
 				
 				if(this.mousePressBar == 2) {
-					barPosValue = String.valueOf((int)((float)barPos / 42F * 100F));
+					barPosValue = String.valueOf((int)(barPos / 42F * 100F));
 					this.fontRendererObj.drawStringWithShadow(barPosValue, 174, 193, GuiHelper.pickColor(3));
 				}
 				else {
@@ -618,7 +612,8 @@ public class GuiShipInventory extends GuiContainer {
 	}
 	
 	//mouse press + move
-    protected void mouseClickMove(int posX, int posY, int mouseKey, long pressTime) {
+    @Override
+	protected void mouseClickMove(int posX, int posY, int mouseKey, long pressTime) {
     	super.mouseClickMove(posX, posY, mouseKey, pressTime);
 
     	//get click position
@@ -632,7 +627,8 @@ public class GuiShipInventory extends GuiContainer {
     }
     
     //state: -1:move 0:left up 1:right up 2:...
-    protected void mouseMovedOrUp(int posX, int posY, int state) {
+    @Override
+	protected void mouseMovedOrUp(int posX, int posY, int state) {
     	super.mouseMovedOrUp(posX, posY, state);
 
     	//get click position
@@ -642,13 +638,13 @@ public class GuiShipInventory extends GuiContainer {
     	//get cliuck button
     	switch(mousePressBar) {
     	case 0:	//bar0: follow min
-    		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_FollowMin, (int)((float)barPos / 42F * 30F + 1F)));
+    		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_FollowMin, (int)(barPos / 42F * 30F + 1F)));
     		break;
     	case 1:	//bar1: follow max
-    		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_FollowMax, (int)((float)barPos / 42F * 30F + 2F)));
+    		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_FollowMax, (int)(barPos / 42F * 30F + 2F)));
     		break;
     	case 2:	//bar2: flee hp
-    		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_FleeHP, (int)((float)barPos / 42F * 100F)));
+    		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_FleeHP, (int)(barPos / 42F * 100F)));
     		break;
     	}
     	
@@ -702,7 +698,7 @@ public class GuiShipInventory extends GuiContainer {
         		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_Melee, getInverseInt(this.switchMelee)));
         	}
         	else if(this.showPageAI == 3) {	//page 3: change target AI
-        		if(this.entity.getStateMinor(ID.N.TargetAI) == 0) {
+        		if(this.entity.getStateMinor(ID.M.TargetAI) == 0) {
         			this.switchTarAI = false;
         		}
         		else {
@@ -776,12 +772,12 @@ public class GuiShipInventory extends GuiContainer {
 		return par1 ? 0 : 1;
 	}
 	
-	//close gui if entity dead
+	//close gui if entity dead or too far away
 	@Override
 	public void updateScreen() {
 		super.updateScreen();
 		
-		if(this.entity == null || this.entity.isDead) {
+		if(this.entity == null || this.entity.isDead || this.entity.getDistanceToEntity(this.mc.thePlayer) > ConfigHandler.closeGUIDist) {
             this.mc.thePlayer.closeScreen();
         }
 	}

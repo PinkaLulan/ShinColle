@@ -4,7 +4,6 @@ import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.MathHelper;
 
@@ -97,7 +96,8 @@ public class ModelFloatingFort extends ModelBase {
     }
 
     //for idle/run animation
-    public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity) {  
+    @Override
+	public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity) {  
     	this.BodyMain.rotateAngleY = f3 * 0.0174533F;	//左右角度
     	this.BodyMain.rotateAngleX = f4 * 0.0174533F; 	//上下角度
     	this.JawMain.rotateAngleZ = 0F;

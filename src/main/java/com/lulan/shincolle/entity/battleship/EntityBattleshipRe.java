@@ -1,24 +1,13 @@
 package com.lulan.shincolle.entity.battleship;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.EntityAILookIdle;
-import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
-import net.minecraft.entity.ai.EntityAIOpenDoor;
-import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
-import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
-import com.lulan.shincolle.ai.EntityAIShipAttackOnCollide;
 import com.lulan.shincolle.ai.EntityAIShipCarrierAttack;
-import com.lulan.shincolle.ai.EntityAIShipFlee;
-import com.lulan.shincolle.ai.EntityAIShipFloating;
-import com.lulan.shincolle.ai.EntityAIShipFollowOwner;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
-import com.lulan.shincolle.ai.EntityAIShipSit;
-import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
 import com.lulan.shincolle.entity.BasicEntityShipLarge;
 import com.lulan.shincolle.entity.ExtendShipProps;
 import com.lulan.shincolle.handler.ConfigHandler;
@@ -26,6 +15,7 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -34,9 +24,9 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
 	public EntityBattleshipRe(World world) {
 		super(world);
 		this.setSize(0.6F, 1.8F);
-//		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityBattleshipRe.name"));
-		this.ShipType = ID.ShipType.BATTLESHIP;
-		this.ShipID = ID.S_BattleshipRE;
+		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
+		this.setStateMinor(ID.M.ShipClass, ID.S_BattleshipRE);
+		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
 		this.ModelPos = new float[] {-6F, 10F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();
@@ -55,6 +45,7 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
 		return 2;
 	}
 	
+	@Override
 	public void setAIList() {
 		super.setAIList();
 		//use range attack
@@ -76,7 +67,7 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
 	
 	@Override
 	//range attack method, cost light ammo, attack delay = 20 / attack speed, damage = 100% atk 
-	public boolean attackEntityWithAmmo(Entity target) {	
+	public boolean attackEntityWithAmmo(Entity target) {
 		//get attack value
 		float atk = StateFinal[ID.ATK];
 		//set knockback value (testing)
@@ -117,7 +108,7 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
         }
 
         //calc miss chance, if not miss, calc cri/multi hit
-        float missChance = 0.2F + 0.15F * (distSqrt / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.N.ShipLevel];
+        float missChance = 0.2F + 0.15F * (distSqrt / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.M.ShipLevel];
         missChance -= EffectEquip[ID.EF_MISS];		//equip miss reduce
         if(missChance > 0.35F) missChance = 0.35F;	//max miss chance
         
@@ -173,8 +164,8 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
 	    if(isTargetHurt) {
 	    	//calc kb effect
 	        if(kbValue > 0) {
-	            target.addVelocity((double)(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue), 
-	                   0.1D, (double)(MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue));
+	            target.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
+	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
 	            motionX *= 0.6D;
 	            motionZ *= 0.6D;
 	        }

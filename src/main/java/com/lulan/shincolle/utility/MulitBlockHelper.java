@@ -4,8 +4,6 @@ import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
@@ -14,10 +12,7 @@ import com.lulan.shincolle.entity.renderentity.BasicRenderEntity;
 import com.lulan.shincolle.entity.renderentity.EntityRenderLargeShipyard;
 import com.lulan.shincolle.entity.renderentity.EntityRenderVortex;
 import com.lulan.shincolle.init.ModBlocks;
-import com.lulan.shincolle.proxy.ClientProxy;
-import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.tileentity.BasicTileMulti;
-import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 
 public class MulitBlockHelper {
 	

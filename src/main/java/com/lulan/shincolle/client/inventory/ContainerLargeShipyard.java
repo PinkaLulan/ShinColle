@@ -1,22 +1,14 @@
 package com.lulan.shincolle.client.inventory;
 
-import com.lulan.shincolle.crafting.LargeRecipes;
-import com.lulan.shincolle.crafting.SmallRecipes;
-import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
-import com.lulan.shincolle.utility.LogHelper;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ICrafting;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.FurnaceRecipes;
-import net.minecraft.tileentity.TileEntityFurnace;
 
 /**SLOT POSITION
  * output(168,51) fuel bar(9,83 height=63) fuel color bar(208,64)
@@ -193,6 +185,7 @@ public class ContainerLargeShipyard extends Container {
     }
 
 	//client端container接收新值, 這裡封包只會傳送short大小, 因此int值必須另外寫在封包系統中sync
+	@Override
 	@SideOnly(Side.CLIENT)
     public void updateProgressBar(int valueType, int updatedValue) {
         

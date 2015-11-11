@@ -9,7 +9,6 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 
 public class KaitaiHammer extends BasicItem {
 	
@@ -62,7 +61,11 @@ public class KaitaiHammer extends BasicItem {
 				entity.attackEntityFrom(DamageSource.causePlayerDamage(player), ((BasicEntityShip) entity).getMaxHealth() * 1.01F);
 				
 				//item meta+1
-				int meta = stack.getItemDamage()+1;
+				int meta = stack.getItemDamage();
+				
+				if(!player.capabilities.isCreativeMode) {
+					meta++;
+				}
 				
 				if(meta >= stack.getMaxDamage()) {
 					//destroy the hammer

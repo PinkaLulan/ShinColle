@@ -1,7 +1,5 @@
 package com.lulan.shincolle.entity.renderentity;
 
-import com.lulan.shincolle.utility.LogHelper;
-
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 

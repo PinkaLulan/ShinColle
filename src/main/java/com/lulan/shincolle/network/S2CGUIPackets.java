@@ -5,6 +5,7 @@ import io.netty.buffer.ByteBuf;
 import java.util.List;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
@@ -23,18 +24,24 @@ import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 
 /**SERVER TO CLIENT : GUI SYNC PACKET
- * 用於同步GUI中, 大小超過short大小的值
+ * 用於GUI中大小超過short的值同步 / client端使用物品同步 / client端物品顯示訊息同步
+ * 
  * 因sendProgressBarUpdate只能同步short, 需另外實做封包同步float, string, int
  */
 public class S2CGUIPackets implements IMessage {
 	
-//	private BasicEntityShip entity;
 	private TileEntitySmallShipyard tile1;
 	private TileMultiGrudgeHeavy tile2;
 	private ExtendPlayerProps props;
 	private BasicEntityShip ship;
 	private World world;
-	private int type, recvX, recvY, recvZ, value, value2;
+	private int type, entityID, recvX, recvY, recvZ, value, value2;
+	private boolean flag;
+	
+	//packet id
+	public static final class PID {
+		public static final byte FlagInitSID = 5;
+	}
 	
 	
 	public S2CGUIPackets() {}	//必須要有空參數constructor, forge才能使用此class
@@ -70,6 +77,17 @@ public class S2CGUIPackets implements IMessage {
 	public S2CGUIPackets(BasicEntityShip ship) {
         this.type = 4;
         this.ship = ship;
+    }
+	
+	//type 5: player extend props sync type 2
+	public S2CGUIPackets(int type, int value, boolean flag) {
+        this.type = type;
+        
+        switch(type) {
+        case PID.FlagInitSID:
+        	this.flag = flag;
+        	break;
+        }
     }
 	
 	//接收packet方法
@@ -135,33 +153,48 @@ public class S2CGUIPackets implements IMessage {
 				this.value2 = buf.readByte();
 				
 				//set value
-				EntityHelper.setPlayerByGUI((int)value, (int)value2);
+				EntityHelper.setPlayerByGUI(value, value2);
 			}
 			break;
 		case 3: //sync player props
 			{			
-				int[] extValues = new int[9];
+				int[] propValues = new int[4];
+				int[] shipValues = new int[12];	//0:ship 0 eid  1: ship 0 uid  2: ship 1 eid...
+				int teamID = 0;
 				boolean[] shipSelected = new boolean[6];
 				
-				extValues[0] = buf.readByte();	//ring active
-				extValues[1] = buf.readByte();	//marriage num
-				extValues[2] = buf.readInt();	//team id
-				extValues[3] = buf.readInt();	//team list 1
-				shipSelected[0] = buf.readBoolean();
-				extValues[4] = buf.readInt();	//team list 2
+				//ring
+				propValues[0] = buf.readByte();	//ring active
+				propValues[1] = buf.readByte();	//marriage num
+				
+				//player uid
+				propValues[2] = buf.readInt();	//player uid
+				propValues[3] = buf.readInt();	//player team id
+				
+				//ship team
+				teamID = buf.readInt();
+				shipValues[0] = buf.readInt();			//ship 0 entity ID
+				shipValues[1] = buf.readInt();			//ship 0 ship UID
+				shipSelected[0] = buf.readBoolean();	//ship 0 select state
+				shipValues[2] = buf.readInt();			//ship 1
+				shipValues[3] = buf.readInt();
 				shipSelected[1] = buf.readBoolean();
-				extValues[5] = buf.readInt();	//team list 3
+				shipValues[4] = buf.readInt();			//ship 2
+				shipValues[5] = buf.readInt();
 				shipSelected[2] = buf.readBoolean();
-				extValues[6] = buf.readInt();	//team list 4
+				shipValues[6] = buf.readInt();			//ship 3
+				shipValues[7] = buf.readInt();
 				shipSelected[3] = buf.readBoolean();
-				extValues[7] = buf.readInt();	//team list 5
+				shipValues[8] = buf.readInt();			//ship 4
+				shipValues[9] = buf.readInt();
 				shipSelected[4] = buf.readBoolean();
-				extValues[8] = buf.readInt();	//team list 6
+				shipValues[10] = buf.readInt();			//ship 5
+				shipValues[11] = buf.readInt();
 				shipSelected[5] = buf.readBoolean();
-//				LogHelper.info("DEBUG : gui sync packet: id 3: "+extValues[0]+" "+extValues[1]+" "+extValues[2]+" "+extValues[3]+" "+extValues[4]+" "+extValues[5]+" "+extValues[6]+" "+extValues[7]);
+				
 				//set value
-				EntityHelper.setPlayerExtProps(extValues);
-				EntityHelper.setPlayerExtProps(shipSelected);
+				EntityHelper.setPlayerExtProps(propValues);
+				EntityHelper.setPlayerExtProps(teamID, shipValues, shipSelected);
 			}
 			break;
 		case 4:	//sync ship GUI
@@ -171,8 +204,20 @@ public class S2CGUIPackets implements IMessage {
 				if(getEnt instanceof BasicEntityShip) {
 					BasicEntityShip ship = (BasicEntityShip) getEnt;
 					
-					ship.setStateMinor(ID.N.Kills, buf.readInt());
-					ship.setStateMinor(ID.N.NumGrudge, buf.readInt());
+					ship.setStateMinor(ID.M.Kills, buf.readInt());
+					ship.setStateMinor(ID.M.NumGrudge, buf.readInt());
+				}
+			}
+			break;
+		case 5:	//sync ship GUI
+			{
+				this.flag = buf.readBoolean();
+				
+				EntityPlayer player = ClientProxy.getClientPlayer();
+				ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+				
+				if(extProps != null) {
+					extProps.setInitSID(this.flag);
 				}
 			}
 			break;
@@ -219,30 +264,46 @@ public class S2CGUIPackets implements IMessage {
 		case 3:	//sync player props
 			{
 				buf.writeByte(3);
+				
+				//ring
 				buf.writeByte(props.isRingActiveI());
 				buf.writeByte(props.getMarriageNum());
+				
+				//player uid
+				buf.writeInt(props.getPlayerUID());
+				buf.writeInt(props.getPlayerTeamId());
+				
+				//team id
 				buf.writeInt(props.getTeamId());
-				//send team list
+				
+				//team list
 				for(int i = 0; i < 6; i++) {
-					if(props.getTeamList(i) != null) {
-						buf.writeInt(props.getTeamList(i).getEntityId());
-						buf.writeBoolean(props.getTeamSelected(i));
+					//get entity id
+					if(props.getEntityOfCurrentTeam(i) != null) {
+						buf.writeInt(props.getEntityOfCurrentTeam(i).getEntityId());
 					}
 					else {
 						buf.writeInt(-1);
-						buf.writeBoolean(false);
 					}
+					//get ship UID
+					buf.writeInt(props.getSIDofCurrentTeam(i));
+					//get select state
+					buf.writeBoolean(props.getSelectStateOfCurrentTeam(i));
 				}
-//				//send player UUID
-//				if(this.props)
 			}
 			break;
 		case 4:	//sync ship inventory GUI: kills and grudge
 			{
 				buf.writeByte(4);
 				buf.writeInt(ship.getEntityId());
-				buf.writeInt(ship.getStateMinor(ID.N.Kills));
-				buf.writeInt(ship.getStateMinor(ID.N.NumGrudge));
+				buf.writeInt(ship.getStateMinor(ID.M.Kills));
+				buf.writeInt(ship.getStateMinor(ID.M.NumGrudge));
+			}
+			break;
+		case 5:	//sync ship inventory GUI: kills and grudge
+			{
+				buf.writeByte(5);
+				buf.writeBoolean(flag);
 			}
 			break;
 		}

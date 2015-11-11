@@ -1,17 +1,10 @@
 package com.lulan.shincolle.item;
 
-import java.util.List;
-
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.IIcon;
 
 public class EquipRadar extends BasicEquip {
 	
@@ -20,7 +13,7 @@ public class EquipRadar extends BasicEquip {
 	public EquipRadar() {
 		super();
 		this.setUnlocalizedName("EquipRadar");
-		this.types = 8;
+		this.types = 9;
 	}
 	
 	@Override
@@ -43,6 +36,7 @@ public class EquipRadar extends BasicEquip {
 		case 5:		//air
 		case 6:		//sur
 		case 7:		//sonar mk2
+		case 8:		//FCS+CIC
 			return true;
 		}
 		
