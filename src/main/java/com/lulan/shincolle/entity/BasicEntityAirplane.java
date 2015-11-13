@@ -335,6 +335,9 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 	public boolean attackEntityWithAmmo(Entity target) {
 		float atkLight = this.atk;
 		float kbValue = 0.03F;
+		
+		//calc equip special dmg: AA, ASM
+		atkLight = CalcHelper.calcDamageByEquipEffect(this, target, atkLight, 0);
 
 		//play cannon fire sound at attacker
         playSound(Reference.MOD_ID+":ship-machinegun", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
@@ -427,7 +430,6 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 	public boolean attackEntityWithHeavyAmmo(Entity target) {
 		//get attack value
 		float atkHeavy = this.atk;
-		//set knockback value (testing)
 		float kbValue = 0.08F;
 
 		//play cannon fire sound at attacker

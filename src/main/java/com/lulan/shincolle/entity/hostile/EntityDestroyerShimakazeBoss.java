@@ -142,9 +142,8 @@ public class EntityDestroyerShimakazeBoss extends BasicEntityShipBoss {
   	public boolean attackEntityWithHeavyAmmo(Entity target) {	
 		//get attack value
 		float atkHeavy = this.atk * 0.3F;
-		
-		//set knockback value (testing)
 		float kbValue = 0.08F;
+		
 		//飛彈是否採用直射
 		boolean isDirect = false;
 		//計算目標距離
@@ -209,6 +208,19 @@ public class EntityDestroyerShimakazeBoss extends BasicEntityShipBoss {
   	@Override
 	public int getDamageType() {
 		return ID.ShipDmgType.DESTROYER;
+	}
+  	
+  	@Override
+	public float getEffectEquip(int id) {
+		switch(id) {
+		case ID.EF_CRI:
+			return 0.15F;
+		case ID.EF_AA:  //DD vs AA,ASM effect
+		case ID.EF_ASM:
+			return this.atk * 0.5F;
+		default:
+			return 0F;
+		}
 	}
   	
 

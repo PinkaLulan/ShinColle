@@ -16,6 +16,7 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.entity.IShipAttackBase;
+import com.lulan.shincolle.entity.IShipAttributes;
 import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CEntitySync;
@@ -23,7 +24,9 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
@@ -39,7 +42,7 @@ import cpw.mods.fml.relauncher.SideOnly;
  * 到中點時, Vy = 0
  * 
  */
-public class EntityAbyssMissile extends Entity implements IShipOwner {
+public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttributes {
 	
     private IShipAttackBase host;	//main host type
     private EntityLiving host2;		//second host type: entity living
@@ -321,9 +324,11 @@ public class EntityAbyssMissile extends Entity implements IShipOwner {
                 	missileAtk = this.atk;
                 	hitEntity = (EntityLivingBase)hitList.get(i);
                 	
+                	//calc equip special dmg: AA, ASM
+                	missileAtk = CalcHelper.calcDamageByEquipEffect(this, hitEntity, missileAtk, 1);
+                	
                 	//目標不能是自己 or 主人
                 	if(hitEntity.canBeCollidedWith() && isNotHost(hitEntity)) {
-                		
                 		//若owner相同, 則傷害設為0 (但是依然觸發擊飛特效)
                 		if(EntityHelper.checkSameOwner(host2, hitEntity)) {
                     		missileAtk = 0F;
@@ -351,7 +356,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner {
                         		}
                         	}
                 		}
-                		
+                		LogHelper.info("DEBUG: missile onImpact: dmg "+missileAtk+" tar "+hitEntity+" host "+this.host);
                 		//if attack success
                 	    if(hitEntity.attackEntityFrom(DamageSource.causeMobDamage(host2).setExplosion(), missileAtk)) {
                 	    	//calc kb effect
@@ -459,6 +464,12 @@ public class EntityAbyssMissile extends Entity implements IShipOwner {
 	public Entity getHostEntity() {
 		return this.host2;
 	}
-    
+
+	@Override
+	public float getEffectEquip(int id) {
+		if(host != null) return host.getEffectEquip(id);
+		return 0F;
+	}
+
 	
 }

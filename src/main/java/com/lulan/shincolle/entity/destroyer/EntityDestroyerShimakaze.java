@@ -182,9 +182,8 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
   	public boolean attackEntityWithHeavyAmmo(Entity target) {	
 		//get attack value
 		float atk = StateFinal[ID.ATK_H] * 0.3F;
-		
-		//set knockback value (testing)
 		float kbValue = 0.15F;
+		
 		//飛彈是否採用直射
 		boolean isDirect = false;
 		//計算目標距離

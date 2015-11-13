@@ -15,7 +15,7 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.LogHelper;
+import com.lulan.shincolle.utility.CalcHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -55,14 +55,14 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
 
 	//增加艦載機數量計算
 	@Override
-	public void calcShipAttributes(byte id) {
-		EffectEquip[ID.EF_DHIT] = EffectEquip[ID.EF_DHIT] + 0.1F;
-		EffectEquip[ID.EF_THIT] = EffectEquip[ID.EF_THIT] + 0.1F;
+	public void calcShipAttributes() {
+		EffectEquip[ID.EF_DHIT] = EffectEquip[ID.EF_DHIT] + 0.2F;
+		EffectEquip[ID.EF_THIT] = EffectEquip[ID.EF_THIT] + 0.2F;
 		
-		this.maxAircraftLight += 4;
-		this.maxAircraftHeavy += 3;
+		this.maxAircraftLight += 6;
+		this.maxAircraftHeavy += 4;
 		
-		super.calcShipAttributes(id);	
+		super.calcShipAttributes();	
 	}
 	
 	@Override
@@ -72,6 +72,10 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
 		float atk = StateFinal[ID.ATK];
 		//set knockback value (testing)
 		float kbValue = 0.05F;
+		
+		//calc equip special dmg: AA, ASM
+		atk = CalcHelper.calcDamageByEquipEffect(this, target, atk, 0);
+		
 		//update entity look at vector (for particle spawn)
         //此方法比getLook還正確 (client sync問題)
         float distX = (float) (target.posX - this.posX);

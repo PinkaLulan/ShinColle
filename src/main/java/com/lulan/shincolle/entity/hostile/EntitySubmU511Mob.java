@@ -19,6 +19,7 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.CalcHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -116,9 +117,11 @@ public class EntitySubmU511Mob extends BasicEntityShipHostile {
   	public boolean attackEntityWithAmmo(Entity target) {
   		//get attack value
   		float atk = this.atk;
-  		
-  		//set knockback value (testing)
   		float kbValue = 0.05F;
+  		
+  		//calc equip special dmg: AA, ASM
+  		atk = CalcHelper.calcDamageByEquipEffect(this, target, atk, 0);
+  		
   		//飛彈是否採用直射
   		boolean isDirect = false;
   		//計算目標距離
@@ -170,9 +173,8 @@ public class EntitySubmU511Mob extends BasicEntityShipHostile {
   	public boolean attackEntityWithHeavyAmmo(Entity target) {	
 		//get attack value
 		float atkHeavy = this.atk * 3F;
-		
-		//set knockback value (testing)
 		float kbValue = 0.08F;
+		
 		//飛彈是否採用直射
 		boolean isDirect = false;
 		//計算目標距離

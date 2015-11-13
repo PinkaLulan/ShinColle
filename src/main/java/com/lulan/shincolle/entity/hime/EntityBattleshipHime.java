@@ -18,6 +18,7 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.CalcHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -151,8 +152,11 @@ public class EntityBattleshipHime extends BasicEntityShip {
   		
   		//get attack value
 		float atk = StateFinal[ID.ATK];
-		//set knockback value (testing)
 		float kbValue = 0.05F;
+		
+		//calc equip special dmg: AA, ASM
+  		atk = CalcHelper.calcDamageByEquipEffect(this, target, atk, 0);
+		
 		//update entity look at vector (for particle spawn)
         //此方法比getLook還正確 (client sync問題)
         float distX = (float) (target.posX - this.posX);

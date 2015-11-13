@@ -1734,6 +1734,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		//grudge--
   		decrGrudgeNum(1);
         
+  		//calc equip special dmg: AA, ASM
+  		atk = CalcHelper.calcDamageByEquipEffect(this, target, atk, 0);
+  		
         //light ammo -1
         if(!decrAmmoNum(0)) {		//not enough ammo
         	atk = atk * 0.125F;	//reduce damage to 12.5%
@@ -1836,9 +1839,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	public boolean attackEntityWithHeavyAmmo(Entity target) {	
 		//get attack value
 		float atk = StateFinal[ID.ATK_H];
-		
-		//set knockback value (testing)
 		float kbValue = 0.15F;
+		
 		//飛彈是否採用直射
 		boolean isDirect = false;
 		//計算目標距離

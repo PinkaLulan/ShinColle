@@ -75,7 +75,7 @@ public class Values {
 	 * index by ID.ShipDmgType
 	 */
 	public static final float[][] ModDmgDay = 		//for day battle
-		{{0.5F,  0.5F,  0.5F,  0.5F,  1F,    0F,    1F},
+		{{0.5F,  0.5F,  0.5F,  0.5F,  1F,    0F,    0.75F},
 		 {1F,    1F,    1F,    1.25F, 1.5F,  0.5F,  0.75F},
 		 {1.25F, 1.25F, 1F,    1.5F,  2F,    0F,    0.5F},
 		 {1F,    1F,    1F,    1F,    1.25F, 1.25F, 1F},

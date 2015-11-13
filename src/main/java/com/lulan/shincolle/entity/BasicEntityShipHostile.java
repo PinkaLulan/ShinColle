@@ -20,7 +20,6 @@ import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.entity.hostile.EntityRensouhouBoss;
-import com.lulan.shincolle.entity.other.EntityRensouhou;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;
@@ -280,6 +279,10 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		float atk = this.atk;
 		//set knockback value (testing)
 		float kbValue = 0.05F;
+		
+		//calc equip special dmg: AA, ASM
+		atk = CalcHelper.calcDamageByEquipEffect(this, target, atk, 0);
+		
 		//update entity look at vector (for particle spawn)
         //此方法比getLook還正確 (client sync問題)
         float distX = (float) (target.posX - this.posX);
@@ -696,7 +699,12 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 
 	@Override
 	public float getEffectEquip(int id) {	//cri rate
-		return 0.15F;
+		switch(id) {
+		case ID.EF_CRI:
+			return 0.15F;
+		default:
+			return 0F;
+		}
 	}
 
 	@Override

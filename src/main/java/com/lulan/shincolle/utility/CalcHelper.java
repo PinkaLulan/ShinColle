@@ -1,5 +1,9 @@
 package com.lulan.shincolle.utility;
 
+import net.minecraft.entity.Entity;
+
+import com.lulan.shincolle.entity.IShipAttributes;
+import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 
 
@@ -99,6 +103,42 @@ public class CalcHelper {
     	}
 //    	LogHelper.info("DEBUG : calc helper: org dmg "+dmg+" new dmg "+(dmg*mod));
     	return dmg * mod;
+    }
+    
+    /** damage calc by equip effect: AA, ASM
+     *  host: attacker
+     *  target: target
+     *  dmg: attack damage
+     *  type: 0:light 1:heavy 2:
+     */
+    public static float calcDamageByEquipEffect(IShipAttributes host, Entity target, float dmg, int type) {
+    	float newDmg = dmg;
+    	float modDmg = 1F;
+  		
+  		//light, heavy or special attack
+  		switch(type) {
+  		case 1:  //heavy
+  			modDmg = 3F;
+  			break;
+  		case 2:  //nagato heavy attack
+  			modDmg = 4F;
+  			break;
+		default:  //light or normal attack
+			modDmg = 1F;
+			break;
+  		}
+  		
+  		//check target type
+  		int targettype = EntityHelper.checkEntityTypeForEquipEffect(target);
+  		
+  		if(targettype == 1) {			//air mob
+  			newDmg = newDmg + host.getEffectEquip(ID.EF_AA) * modDmg;
+  		}
+  		else if(targettype == 2) {	//water mob
+  			newDmg = newDmg + host.getEffectEquip(ID.EF_ASM) * modDmg;
+  		}
+  		
+  		return newDmg;
     }
     
     /** calc normal distribution
