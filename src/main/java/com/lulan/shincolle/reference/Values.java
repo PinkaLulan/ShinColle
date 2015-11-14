@@ -101,6 +101,8 @@ public class Values {
 	 *       1:cannon, torpedo
 	 *       2:aircraft-R, engine, armor, radar
 	 *       3:aircraft-T/F/B
+	 *       
+	 * note: 新增裝備要記得在LargeRecipe新增回收價格
 	 */
 	public static final Map<Byte, float[]> EquipMap = Collections.unmodifiableMap(new HashMap<Byte, float[]>() {{
 	//single cannon                          Typ HP   LA   HA   LAA  HAA  DEF SPD   MOV     RNG   CRI    DHit   THit   Miss   AA   ASM  Rare Type/Mean

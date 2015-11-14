@@ -200,7 +200,7 @@ public class EntityHarbourHime extends BasicEntityShipLarge {
   		//get attack value
   		float atk = StateFinal[ID.ATK_H] * 0.5F;
   		float kbValue = 0.15F;
- atk = 0F; 		
+		
   		//­pºâ¥Ø¼Ð¶ZÂ÷
   		float tarX = (float)target.posX;	//for miss chance calc
   		float tarY = (float)target.posY;

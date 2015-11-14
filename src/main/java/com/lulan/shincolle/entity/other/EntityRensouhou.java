@@ -17,7 +17,7 @@ import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipCannonAttack;
-import com.lulan.shincolle.entity.ISummonAttack;
+import com.lulan.shincolle.entity.IShipSummonAttack;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;
@@ -256,8 +256,8 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack {
 					if(this.numAmmoHeavy < 0) this.numAmmoHeavy = 0;
 					
 					//連裝砲數量+1
-					int numR = ((ISummonAttack)host).getNumServant();
-					if(numR < 6) ((ISummonAttack)host).setNumServant(numR+1);
+					int numR = ((IShipSummonAttack)host).getNumServant();
+					if(numR < 6) ((IShipSummonAttack)host).setNumServant(numR+1);
 					
 					//歸還彈藥
 					host.setAmmoLight(host.getAmmoLight() + this.getAmmoLight());

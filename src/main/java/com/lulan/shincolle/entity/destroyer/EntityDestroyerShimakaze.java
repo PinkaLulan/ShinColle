@@ -14,7 +14,7 @@ import net.minecraft.world.World;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.entity.ExtendShipProps;
-import com.lulan.shincolle.entity.ISummonAttack;
+import com.lulan.shincolle.entity.IShipSummonAttack;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.entity.other.EntityRensouhou;
 import com.lulan.shincolle.entity.other.EntityRensouhouS;
@@ -27,7 +27,7 @@ import com.lulan.shincolle.utility.EntityHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
-public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements ISummonAttack {
+public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IShipSummonAttack {
 
 	public int numRensouhou;
 	

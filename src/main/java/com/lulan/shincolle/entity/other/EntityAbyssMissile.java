@@ -356,7 +356,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
                         		}
                         	}
                 		}
-                		LogHelper.info("DEBUG: missile onImpact: dmg "+missileAtk+" tar "+hitEntity+" host "+this.host);
+//                		LogHelper.info("DEBUG: missile onImpact: dmg "+missileAtk+" tar "+hitEntity+" host "+this.host);
                 		//if attack success
                 	    if(hitEntity.attackEntityFrom(DamageSource.causeMobDamage(host2).setExplosion(), missileAtk)) {
                 	    	//calc kb effect

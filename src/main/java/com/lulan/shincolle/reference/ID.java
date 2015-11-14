@@ -129,6 +129,31 @@ public class ID {
 		public static final byte HEAVY = 3;		//大破
 	}
 	
+	/** item type for part of item */
+	public static final class ItemType {
+		public static final byte AbyssMetal = 1;
+		public static final byte AbyssMetal_Abyssium = 2;
+		public static final byte AbyssMetal_Polymetal = 3;
+		public static final byte Ammo = 4;
+		public static final byte Ammo_L = 5;
+		public static final byte Ammo_H = 6;
+		public static final byte Ammo_LC = 7;
+		public static final byte Ammo_HC = 8;
+		public static final byte Grudge = 9;
+		public static final byte BlockAbyssium = 10;
+		public static final byte BlockGrudge = 11;
+		public static final byte BlockPolymetal = 12;
+		public static final byte BlockPolymetalGravel = 13;
+		public static final byte EquipAirplane = 14;
+		public static final byte EquipArmor = 15;
+		public static final byte EquipCannon = 16;
+		public static final byte EquipCatapult = 17;
+		public static final byte EquipMachinegun = 18;
+		public static final byte EquipRadar = 19;
+		public static final byte EquipTorpedo = 20;
+		public static final byte EquipTurbine = 21;
+	}
+	
 	/**Minor State*/
 	public static final class M {
 		public static final byte ShipLevel = 0;
