@@ -41,6 +41,17 @@ import cpw.mods.fml.relauncher.SideOnly;
  * 在經過距離中點之前, 加上額外motionY向上以及accY向下
  * 到中點時, Vy = 0
  * 
+ * speical type:
+ * type 1:  high speed torpedo
+ *   customAcc: 0.05~0.09
+ * type 2:  railgun
+ *   customAcc: >0.09
+ * type 3:  cluster main
+ *   customAcc: 0.02
+ * type 4:  cluster sub
+ *   customAcc: 0.02
+ *   
+ * 
  */
 public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttributes {
 	
@@ -49,9 +60,6 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
     private int playerUID;			//owner UID, for owner check
     
     //missile motion
-    private float distX;			//target distance
-    private float distY;
-    private float distZ;
     private boolean isDirect;		//false:parabola  true:direct
   
     //for parabola y position
@@ -78,10 +86,42 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
     	this.setSize(1.0F, 1.0F);
     }
     
+    /** for cluster sub missile */
+    public EntityAbyssMissile(World world, IShipAttackBase host, float mX, float mY, float mZ, float pX, float pY, float pZ, float atk, float kbValue) {
+        super(world);
+        this.world = world;
+        LogHelper.info("DEBUG : const new missile "+pX+" "+pY+" "+pZ);
+        //設定host跟owner
+        this.host = host;
+        this.host2 = (EntityLiving) host;
+        this.setPlayerUID(host.getPlayerUID());
+        
+        //set basic attributes
+        this.atk = atk;
+        this.kbValue  = kbValue;
+        this.posX = pX;
+        this.posY = pY;
+        this.posZ = pZ;
+        this.isDirect = false;
+        this.type = 4;
+        this.ACCE = 0.02F;
+        this.accParaY = this.ACCE * 0.5F;
+        
+        if(mY > 0) mY = 0F;
+        
+        //acc and motion
+        this.accX = mX * 0.1F;
+	    this.accY = -this.ACCE;
+	    this.accZ = mZ * 0.1F;
+	    this.motionX = mX;
+	    this.motionY = mY;
+	    this.motionZ = mZ;
+    }
+    
     public EntityAbyssMissile(World world, IShipAttackBase host, float tarX, float tarY, float tarZ, float launchPos, float atk, float kbValue, boolean isDirect, float customAcc) {
         super(world);
         this.world = world;
-        
+//        LogHelper.info("DEBUG : const normal missile ");
         //設定host跟owner
         this.host = host;
         this.host2 = (EntityLiving) host;
@@ -95,13 +135,13 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
         this.posY = launchPos;
              
         //計算距離, 取得方向vector, 並且初始化速度, 使飛彈方向朝向目標
-        this.distX = (float) (tarX - this.posX);
-        this.distY = (float) (tarY - this.posY);
-        this.distZ = (float) (tarZ - this.posZ);
+        float distX = (float) (tarX - this.posX);
+        float distY = (float) (tarY - this.posY);
+        float distZ = (float) (tarZ - this.posZ);
         
-        if(MathHelper.abs(this.distX) < 0.001F) this.distX = 0F;
-        if(MathHelper.abs(this.distY) < 0.001F) this.distY = 0F;
-        if(MathHelper.abs(this.distZ) < 0.001F) this.distZ = 0F;
+        if(MathHelper.abs(distX) < 0.001F) distX = 0F;
+        if(MathHelper.abs(distY) < 0.001F) distY = 0F;
+        if(MathHelper.abs(distZ) < 0.001F) distZ = 0F;
         
         //設定直射或者拋物線
         this.isDirect = isDirect;
@@ -113,7 +153,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
         	if(customAcc > 0.09F) {
         		this.type = 2;
         	}
-        	else if(customAcc > 0.05F) {
+        	else if(customAcc > 0.05F) {	//ro500, u511
         		this.type = 1;
         	}
         }
@@ -121,11 +161,17 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
         	this.ACCE = 0.02F;
         }
         
+        //check special type
+        if(customAcc == -2F) {
+        	this.type = 3;	//cluster main
+        	LogHelper.info("DEBUG : const type 3 missile ");
+        }
+        
         //直射彈道, no gravity
-    	float dist = MathHelper.sqrt_float(this.distX*this.distX + this.distY*this.distY + this.distZ*this.distZ);
-  	    this.accX = this.distX / dist * this.ACCE;
-	    this.accY = this.distY / dist * this.ACCE;
-	    this.accZ = this.distZ / dist * this.ACCE;
+    	float dist = MathHelper.sqrt_float(distX*distX + distY*distY + distZ*distZ);
+  	    this.accX = distX / dist * this.ACCE;
+	    this.accY = distY / dist * this.ACCE;
+	    this.accZ = distZ / dist * this.ACCE;
 	    this.motionX = this.accX;
 	    this.motionY = this.accY;
 	    this.motionZ = this.accZ;
@@ -171,6 +217,12 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
     		this.motionY += this.accY;
     	}
     	
+    	//cluster sub missile acc
+    	if(this.type == 4) {
+    		this.motionX *= 0.8F;
+    		this.motionZ *= 0.8F;
+    	}
+    	
     	//計算next tick的速度
         this.motionX += this.accX;
         this.motionZ += this.accZ;
@@ -186,7 +238,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
         this.rotationYaw = (float)(Math.atan2(this.motionX, this.motionZ));    
         
         //依照x,z軸正負向修正角度(轉180)
-        if(this.distX > 0) {
+        if(this.motionX > 0) {
         	this.rotationYaw -= Math.PI;
         }
         else {
@@ -213,6 +265,17 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
     		else if(this.ticksExisted == 1) {
     			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
     			CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this, this.type, 8), point);
+    		}
+    		
+    		//spawn cluster sub missile
+    		if(this.type == 3 && this.ticksExisted > 15) {
+    			if(this.ticksExisted % 8 == 0) {
+    				EntityAbyssMissile subm = new EntityAbyssMissile(this.worldObj, this.host, 
+    						(float)this.motionX, (float)this.motionY, (float)this.motionZ, 
+    						(float)this.posX, (float)this.posY - 1F, (float)this.posZ,
+    		        		atk, kbValue);
+    		        this.worldObj.spawnEntityInWorld(subm);
+    			}
     		}
     		
     		//該位置碰到方塊, 則設定爆炸 (方法1: 直接用座標找方塊) 此方法由於把座標取int, 很多時候看起來有撞到但是依然抓不到方塊
@@ -268,13 +331,17 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
     		byte smokeType = 15;
     		
     		switch(this.type) {
-    		default:
-    			break;
     		case 1:
     			smokeType = 16;
     			break;
     		case 2:
     			smokeType = 27;
+    			break;
+    		case 3:
+    		case 4:
+    			smokeType = 18;
+    			break;
+    		default:
     			break;
     		}
     		

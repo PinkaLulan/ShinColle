@@ -12,7 +12,9 @@ import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.ExtendShipProps;
+import com.lulan.shincolle.entity.IShipMount;
 import com.lulan.shincolle.entity.mounts.EntityMountBaH;
+import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -260,18 +262,74 @@ public class EntityBattleshipHime extends BasicEntityShip {
 	    return isTargetHurt;
 	}
   	
-  	//ÀË¬d¬O§_riding
+  	/** cluster bomb */
   	@Override
   	public boolean attackEntityWithHeavyAmmo(Entity target) {
-  	//check riding
+  		//check riding
   		if(this.isRiding()) {
   			//stop attack if riding ship mount
-  			if(this.ridingEntity instanceof EntityMountBaH) {
+  			if(this.ridingEntity instanceof IShipMount) {
   				return false;
   			}
   		}
   		
-  		return super.attackEntityWithHeavyAmmo(target);
+  		return attackEntityWithSpecialAmmo(target);
+  	}
+  	
+  	/** cluster bomb */
+  	public boolean attackEntityWithSpecialAmmo(Entity target) {
+  		//get attack value
+		float atk = StateFinal[ID.ATK_H] * 0.8F;
+		float kbValue = 0.15F;
+		
+		//­pºâ¥Ø¼Ð¶ZÂ÷
+		float tarX = (float)target.posX;	//for miss chance calc
+		float tarY = (float)target.posY;
+		float tarZ = (float)target.posZ;
+		float distX = tarX - (float)this.posX;
+		float distY = tarY - (float)this.posY;
+		float distZ = tarZ - (float)this.posZ;
+        float distSqrt = MathHelper.sqrt_float(distX*distX + distY*distY + distZ*distZ);
+        float launchPos = (float)posY + height * 0.7F;
+		
+		//experience++
+		addShipExp(16);
+		
+		//grudge--
+		decrGrudgeNum(1);
+	
+		//play cannon fire sound at attacker
+        this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        //play entity attack sound
+        if(this.getRNG().nextInt(10) > 7) {
+        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        }
+        
+        //heavy ammo -1
+        if(!decrAmmoNum(1)) {	//not enough ammo
+        	atk = atk * 0.125F;	//reduce damage to 12.5%
+        }
+        
+        //calc miss chance, miss: add random offset(0~6) to missile target 
+        float missChance = 0.2F + 0.15F * (distSqrt / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.M.ShipLevel];
+        missChance -= EffectEquip[ID.EF_MISS];	//equip miss reduce
+        if(missChance > 0.35F) missChance = 0.35F;	//max miss chance = 30%
+       
+        if(this.rand.nextFloat() < missChance) {
+        	tarX = tarX - 5F + this.rand.nextFloat() * 10F;
+        	tarY = tarY + this.rand.nextFloat() * 5F;
+        	tarZ = tarZ - 5F + this.rand.nextFloat() * 10F;
+        	//spawn miss particle
+        	TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+        	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
+        }
+       
+        //spawn missile
+        EntityAbyssMissile missile = new EntityAbyssMissile(this.worldObj, this, 
+        		tarX, tarY+target.height*0.2F, tarZ, launchPos, atk, kbValue, false, -2F);
+        this.worldObj.spawnEntityInWorld(missile);
+        
+        return true;
   	}
 	
 	//Á×§K¸òrider2¸I¼²

@@ -58,6 +58,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
     private int aimTime;				//time before fire
     private float range, rangeSq;		//attack range
     private boolean launchType;			//airplane type, true = light
+    private boolean isMoving;			//is moving
     private double tarDist, tarDistSqrt, tarDistX, tarDistY, tarDistZ;	//跟目標的直線距離
 
     
@@ -69,6 +70,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
         this.targetSelector = new TargetHelper.Selector(host2);
         this.distSq = 1D;
         this.distSqrt = 1D;
+        this.isMoving = false;
         this.setMutexBits(7);
         
         if(entity instanceof BasicEntityShip) {
@@ -173,6 +175,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
     @Override
 	public void resetTask() {
     	this.guarded = null;
+    	this.isMoving = false;
     	this.findCooldown = 20;
         this.checkTeleport = 0;
         this.checkTeleport2 = 0;
@@ -187,12 +190,12 @@ public class EntityAIShipGuarding extends EntityAIBase {
     	 * 2. target AI = active attack
     	 * 3. guard type > 0
     	 */
-    	if(ship != null && ship.getStateMinor(ID.M.TargetAI) > 0 && ship.getStateMinor(ID.M.GuardType) > 0) {
+    	if(isMoving && ship != null && ship.getStateMinor(ID.M.TargetAI) > 0 && ship.getStateMinor(ID.M.GuardType) > 0) {
     		//update parms
     		if(ship.ticksExisted % 64 == 0) {
     			this.updateAttackParms();
     		}
-    		
+//    		LogHelper.info("DEBUG : guarding AI: exec moving attack");
     		//delay--
     		this.delayTime[0] = this.delayTime[0] - 1;
     		this.delayTime[1] = this.delayTime[1] - 1;
@@ -281,6 +284,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
         	
         	//end move
         	if(this.distSq <= this.minDistSq) {
+        		this.isMoving = false;
         		this.ShipNavigator.clearPathEntity();
         	}
         	
@@ -310,28 +314,32 @@ public class EntityAIShipGuarding extends EntityAIBase {
         	//每cd到找一次路徑
         	if(this.findCooldown <= 0) {
     			this.findCooldown = 30;
-    			
+//    			LogHelper.info("DEBUG : guarding AI: find path cd");
     			//check path result
-            	if(host2.dimension == host.getStateMinor(ID.M.GuardDim) && !this.ShipNavigator.tryMoveToXYZ(gx, gy, gz, 1D)) {
-            		LogHelper.info("DEBUG : guarding AI: fail to move, cannot reach or too far away "+gx+" "+gy+" "+gz);
-            		//若超過max dist持續120ticks, 則teleport
-            		if(this.distSq > this.maxDistSq && host2.dimension == host.getStateMinor(ID.M.GuardDim)) {
-            			this.checkTeleport2++;
-                		
-                		if(this.checkTeleport2 > 8) {
-                			this.checkTeleport2 = 0;
-                			
-                			if(this.distSq > 1024) {	//32 blocks away, drop seat2
-                				this.clearMountSeat2();
-                			}
-                			
-                			//teleport
-                			this.host2.setLocationAndAngles(this.gx+0.5D, this.gy+0.5D, this.gz+0.5D, this.host2.rotationYaw, this.host2.rotationPitch);
-            				this.ShipNavigator.clearPathEntity();
-            				this.sendSyncPacket();
-                            return;
-                		}	
-                    }
+            	if(host2.dimension == host.getStateMinor(ID.M.GuardDim)) {
+            		this.isMoving = this.ShipNavigator.tryMoveToXYZ(gx, gy, gz, 1D);
+            		
+            		if(!this.isMoving) {
+	            		LogHelper.info("DEBUG : guarding AI: fail to move, cannot reach or too far away "+gx+" "+gy+" "+gz);
+	            		//若超過max dist持續120ticks, 則teleport
+	            		if(this.distSq > this.maxDistSq && host2.dimension == host.getStateMinor(ID.M.GuardDim)) {
+	            			this.checkTeleport2++;
+	                		
+	                		if(this.checkTeleport2 > 8) {
+	                			this.checkTeleport2 = 0;
+	                			
+	                			if(this.distSq > 1024) {	//32 blocks away, drop seat2
+	                				this.clearMountSeat2();
+	                			}
+	                			
+	                			//teleport
+	                			this.host2.setLocationAndAngles(this.gx+0.5D, this.gy+0.5D, this.gz+0.5D, this.host2.rotationYaw, this.host2.rotationPitch);
+	            				this.ShipNavigator.clearPathEntity();
+	            				this.sendSyncPacket();
+	                            return;
+	                		}	
+	                    }
+            		}
                 }//end !try move
             }//end path find cooldown
     	}//end guard entity

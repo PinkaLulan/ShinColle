@@ -300,7 +300,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		}
 		
 		//DEBUG
-		this.targetTasks.addTask(5, new EntityAINearestAttackableTarget(this, EntitySheep.class, 0, false));
+//		this.targetTasks.addTask(5, new EntityAINearestAttackableTarget(this, EntitySheep.class, 0, false));
 	}
 
 	//clear AI
