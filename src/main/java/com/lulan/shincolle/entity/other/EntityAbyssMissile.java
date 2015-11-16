@@ -90,7 +90,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
     public EntityAbyssMissile(World world, IShipAttackBase host, float mX, float mY, float mZ, float pX, float pY, float pZ, float atk, float kbValue) {
         super(world);
         this.world = world;
-        LogHelper.info("DEBUG : const new missile "+pX+" "+pY+" "+pZ);
+//        LogHelper.info("DEBUG : const new missile "+pX+" "+pY+" "+pZ);
         //³]©whost¸òowner
         this.host = host;
         this.host2 = (EntityLiving) host;
