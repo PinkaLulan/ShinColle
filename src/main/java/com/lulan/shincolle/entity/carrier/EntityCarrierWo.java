@@ -53,8 +53,8 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
     
     //增加艦載機數量計算
   	@Override
-  	public void calcShipAttributes(byte id) {
-  		super.calcShipAttributes(id);
+  	public void calcShipAttributes() {
+  		super.calcShipAttributes();
   		
   		this.maxAircraftLight += 10;
   		this.maxAircraftHeavy += 8;
@@ -66,7 +66,8 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
     	if(this.worldObj.isRemote) {
     		if(this.ticksExisted % 5 ==  0) {
     			//若顯示裝備時, 則生成眼睛煙霧特效 (client only)
-    			if(getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
+    			if(getStateEmotion(ID.S.State) >= ID.State.EQUIP00 &&
+    			   getStateEmotion(ID.S.Emotion) != ID.Emotion.BORED) {
     				//set origin position
     				float[] eyePosL;
     				float[] eyePosR;
@@ -75,8 +76,8 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
     				
     				//坐下位置計算
     				if(this.isSitting()) {
-    					eyePosL = new float[] {0.1F, 1.2F, -0.5F};
-        				eyePosR = new float[] {-0.9F, 1.0F, 0F};
+    					eyePosL = new float[] {-0.3F, 1.2F, -0.4F};
+        				eyePosR = new float[] {-0.7F, 1.0F, 0.6F};
     				}
     				else {
     					eyePosL = new float[] {0.55F, 1.2F, 0.2F};

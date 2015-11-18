@@ -19,14 +19,19 @@ import com.lulan.shincolle.utility.EmotionHelper;
 public class ModelCarrierWo extends ModelBase implements IModelEmotion {
     public ModelRenderer BodyMain;
     public ModelRenderer Butt;
-    public ModelRenderer ArmLeft;
-    public ModelRenderer ArmRight;
+    public ModelRenderer ArmLeft01;
+    public ModelRenderer ArmRight01;
+    public ModelRenderer ArmLeft02;
+    public ModelRenderer ArmRight02;
     public ModelRenderer Neck;
+    public ModelRenderer Neck02;
     public ModelRenderer BoobR;
     public ModelRenderer BoobL;
     public ModelRenderer CloakNeck;
-    public ModelRenderer LegRight;
-    public ModelRenderer LegLeft;
+    public ModelRenderer LegRight01;
+    public ModelRenderer LegLeft01;
+    public ModelRenderer LegRight02;
+    public ModelRenderer LegLeft02;
     public ModelRenderer ShoesRight;
     public ModelRenderer ShoesLeft;
     public ModelRenderer Staff;
@@ -40,11 +45,6 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
     public ModelRenderer HairR01;
     public ModelRenderer HairL02;
     public ModelRenderer HairR02;
-    public ModelRenderer Face0;
-    public ModelRenderer Face1;
-    public ModelRenderer Face2;
-    public ModelRenderer Face3;
-    public ModelRenderer Face4;
     public ModelRenderer EquipBase;
     public ModelRenderer Equip01;
     public ModelRenderer Equip02;
@@ -82,6 +82,11 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
     public ModelRenderer GlowNeck;
     public ModelRenderer GlowHead;
     public ModelRenderer GlowEquipBase;
+    public ModelRenderer Face0;
+    public ModelRenderer Face1;
+    public ModelRenderer Face2;
+    public ModelRenderer Face3;
+    public ModelRenderer Face4;
     
     private int startEmo2 = 0;
 
@@ -90,7 +95,7 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
         this.textureHeight = 128;
         
         this.Head = new ModelRenderer(this, 43, 101);
-        this.Head.setRotationPoint(0.0F, -1.0F, 1.5F);
+        this.Head.setRotationPoint(0.0F, -13.5F, -0.5F);
         this.Head.addBox(-7.0F, -14.0F, -6.5F, 14, 14, 13, 0.0F);
         this.EquipLC02 = new ModelRenderer(this, 128, 0);
         this.EquipLC02.setRotationPoint(-1.0F, -2.0F, -7.0F);
@@ -110,7 +115,7 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
         this.setRotateAngle(EquipT02L, -0.17453292519943295F, 0.0F, -0.2617993877991494F);
         this.ShoesRight = new ModelRenderer(this, 0, 109);
         this.ShoesRight.setRotationPoint(0.0F, 0.0F, 0.0F);
-        this.ShoesRight.addBox(-3.5F, 16.5F, -3.5F, 7, 9, 7, 0.0F);
+        this.ShoesRight.addBox(-3.5F, 4.5F, -0.5F, 7, 9, 7, 0.0F);
         this.Equip05 = new ModelRenderer(this, 104, 0);
         this.Equip05.setRotationPoint(0.0F, -5.0F, 2.5F);
         this.Equip05.addBox(-24.0F, -18.0F, -15.0F, 48, 18, 28, 0.0F);
@@ -155,11 +160,14 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
         this.EquipT03L.setRotationPoint(0.0F, 20.0F, 0.0F);
         this.EquipT03L.addBox(-2.5F, -2.0F, -2.5F, 5, 20, 5, 0.0F);
         this.setRotateAngle(EquipT03L, 1.0471975511965976F, 0.0F, 0.7853981633974483F);
-        this.LegLeft = new ModelRenderer(this, 0, 86);
-        this.LegLeft.mirror = true;
-        this.LegLeft.setRotationPoint(4.2F, 5.0F, -1F);
-        this.LegLeft.addBox(-3F, 0F, -3F, 6, 17, 6, 0.0F);
-        this.setRotateAngle(LegLeft, 0.0F, 0.0F, 0.05235987755982988F);
+        this.LegLeft01 = new ModelRenderer(this, 0, 88);
+        this.LegLeft01.mirror = true;
+        this.LegLeft01.setRotationPoint(4.2F, 5.0F, -1F);
+        this.LegLeft01.addBox(-3F, 0F, -3F, 6, 12, 6, 0.0F);
+        this.LegLeft02 = new ModelRenderer(this, 1, 110);
+        this.LegLeft02.mirror = true;
+        this.LegLeft02.setRotationPoint(0F, 12F, -3F);
+        this.LegLeft02.addBox(-3F, 0F, 0F, 6, 7, 6, 0.0F);
         this.EquipTooth03 = new ModelRenderer(this, 128, 99);
         this.EquipTooth03.mirror = true;
         this.EquipTooth03.setRotationPoint(-12.4F, -17.0F, -20.3F);
@@ -171,7 +179,7 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
         this.setRotateAngle(EquipRC02, -0.10471975511965977F, 0.0F, 0.0F);
         this.ShoesLeft = new ModelRenderer(this, 0, 109);
         this.ShoesLeft.setRotationPoint(0.0F, 0.0F, 0.0F);
-        this.ShoesLeft.addBox(-3.5F, 16.5F, -3.5F, 7, 9, 7, 0.0F);
+        this.ShoesLeft.addBox(-3.5F, 4.5F, -0.5F, 7, 9, 7, 0.0F);
         this.EquipBase = new ModelRenderer(this, 0, 0);
         this.EquipBase.setRotationPoint(0.0F, -10.0F, -3.0F);
         this.EquipBase.addBox(0.0F, 0.0F, 0.0F, 0, 0, 0, 0.0F);
@@ -239,22 +247,26 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
         this.EquipTB02R.setRotationPoint(0.0F, 9.0F, 0.0F);
         this.EquipTB02R.addBox(-2.5F, -2.0F, -2.5F, 5, 16, 5, 0.0F);
         this.setRotateAngle(EquipTB02R, 0.4363323129985824F, 0.0F, 0.3490658503988659F);
-        this.Cloak01 = new ModelRenderer(this, 200, 73);
-        this.Cloak01.setRotationPoint(0.0F, 3.0F, 6.0F);
-        this.Cloak01.addBox(-12.0F, 0.0F, 0.0F, 24, 15, 0, 0.0F);
-        this.setRotateAngle(Cloak01, 0.7853981633974483F, 0.0F, 0.0F);
-        this.CloakNeck = new ModelRenderer(this, 128, 0);
-        this.CloakNeck.setRotationPoint(0.0F, -13.0F, -1.5F);
-        this.CloakNeck.addBox(-10.0F, 0.0F, -6.0F, 20, 4, 12, 0.0F);
-        this.setRotateAngle(CloakNeck, 0.17453292519943295F, 0.0F, 0.0F);
-        this.ArmRight = new ModelRenderer(this, 0, 54);
-        this.ArmRight.setRotationPoint(-6.0F, -10.0F, 0.0F);
-        this.ArmRight.addBox(-5.0F, 0.0F, -3.0F, 5, 24, 5, 0.0F);
-        this.setRotateAngle(ArmRight, -0.6981317007977318F, -0.5235987755982988F, 0.0F);
-        this.LegRight = new ModelRenderer(this, 0, 86);
-        this.LegRight.setRotationPoint(-4.2F, 5.0F, -1F);
-        this.LegRight.addBox(-3F, 0F, -3F, 6, 17, 6, 0.0F);
-        this.setRotateAngle(LegRight, 0.0F, 0.0F, -0.05235987755982988F);
+        this.Cloak01 = new ModelRenderer(this, 216, 85);
+        this.Cloak01.setRotationPoint(0.0F, 6.5F, 6.0F);
+        this.Cloak01.addBox(-10.0F, 0.0F, 0.0F, 20, 12, 0, 0.0F);
+        this.setRotateAngle(Cloak01, 0.5F, 0.0F, 0.0F);
+        this.CloakNeck = new ModelRenderer(this, 192, 61);
+        this.CloakNeck.setRotationPoint(0.0F, -12.0F, -1.5F);
+        this.CloakNeck.addBox(-10.0F, 0.0F, -6.0F, 20, 7, 12, 0.0F);
+        this.setRotateAngle(CloakNeck, 0.31416F, 0.0F, 0.0F);
+        this.ArmRight01 = new ModelRenderer(this, 0, 54);
+        this.ArmRight01.setRotationPoint(-4.7F, -9F, 0F);
+        this.ArmRight01.addBox(-5F, -1F, -2F, 5, 12, 5, 0F);
+        this.ArmRight02 = new ModelRenderer(this, 0, 71);
+        this.ArmRight02.setRotationPoint(-5F, 11F, 2F);
+        this.ArmRight02.addBox(0F, 0F, -4F, 5, 12, 5, 0.0F);
+        this.LegRight01 = new ModelRenderer(this, 0, 88);
+        this.LegRight01.setRotationPoint(-4.2F, 5F, -1F);
+        this.LegRight01.addBox(-3F, 0F, -3F, 6, 12, 6, 0.0F);
+        this.LegRight02 = new ModelRenderer(this,1, 110);
+        this.LegRight02.setRotationPoint(0F, 12F, -3F);
+        this.LegRight02.addBox(-3F, 0F, 0F, 6, 7, 6, 0.0F);
         this.EquipT01L = new ModelRenderer(this, 128, 0);
         this.EquipT01L.setRotationPoint(17.0F, -7.0F, -8.0F);
         this.EquipT01L.addBox(-4.0F, 0.0F, -4.0F, 8, 10, 8, 0.0F);
@@ -264,25 +276,32 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
         this.BodyMain.addBox(-6.5F, -12.0F, -4.0F, 13, 17, 7, 0.0F);
         this.setRotateAngle(BodyMain, -0.3490658503988659F, 0.0F, 0.0F);
         this.Neck = new ModelRenderer(this, 52, 41);
-        this.Neck.setRotationPoint(0.0F, -12.5F, -2.0F);
-        this.Neck.addBox(-7.5F, -1.5F, -6.0F, 15, 3, 13, 0.0F);
-        this.setRotateAngle(Neck, 0.3490658503988659F, 0.0F, 0.0F);
+        this.Neck.setRotationPoint(0.0F, -13F, -2F);
+        this.Neck.addBox(-7.5F, -1.5F, -7F, 15, 4, 13, 0.0F);
+        this.setRotateAngle(Neck, 0.41888F, 0.0F, 0.0F);
+        this.Neck02 = new ModelRenderer(this, 128, 0);
+        this.Neck02.setRotationPoint(0F, 2F, -5F);
+        this.Neck02.addBox(-1.5F, 0F, -1.5F, 3, 5, 3, 0.0F);
+        this.setRotateAngle(Neck02, -0.52F, 0.0F, 0.0F);
         this.Equip01 = new ModelRenderer(this, 128, 0);
         this.Equip01.setRotationPoint(0.0F, 0.0F, 0.0F);
         this.Equip01.addBox(-9.0F, -28.5F, -7.0F, 18, 27, 22, 0.0F);
         this.setRotateAngle(Equip01, 0.0873F, 0.0F, 0.0F);
-        this.ArmLeft = new ModelRenderer(this, 0, 54);
-        this.ArmLeft.mirror = true;
-        this.ArmLeft.setRotationPoint(6.0F, -10.0F, 0.0F);
-        this.ArmLeft.addBox(0.0F, 0.0F, -3.0F, 5, 24, 5, 0.0F);
-        this.setRotateAngle(ArmLeft, -0.6981317007977318F, 0.5235987755982988F, 0.0F);
+        this.ArmLeft01 = new ModelRenderer(this, 0, 54);
+        this.ArmLeft01.mirror = true;
+        this.ArmLeft01.setRotationPoint(4.7F, -9F, 0F);
+        this.ArmLeft01.addBox(0F, -1F, -2F, 5, 12, 5, 0.0F);
+        this.ArmLeft02 = new ModelRenderer(this, 0, 71);
+        this.ArmLeft02.mirror = true;
+        this.ArmLeft02.setRotationPoint(5F, 11F, 3F);
+        this.ArmLeft02.addBox(-5F, 0F, -5F, 5, 12, 5, 0.0F);
         this.Staff = new ModelRenderer(this, 128, 0);
         this.Staff.setRotationPoint(8.0F, 35.0F, 21.0F);
         this.Staff.addBox(0.0F, -15.0F, 0.0F, 3, 28, 4, 0.0F);
         this.setRotateAngle(Staff, 1.1838568316277536F, -0.18203784098300857F, -1.2292353921796064F);
-        this.Cloak02 = new ModelRenderer(this, 196, 88);
-        this.Cloak02.setRotationPoint(0.0F, 15.0F, 0.0F);
-        this.Cloak02.addBox(-14.0F, 0.0F, 0.0F, 28, 20, 0, 0.0F);
+        this.Cloak02 = new ModelRenderer(this, 208, 97);
+        this.Cloak02.setRotationPoint(0.0F, 12.0F, 0.0F);
+        this.Cloak02.addBox(-12.0F, 0.0F, 0.0F, 24, 16, 0, 0.0F);
         this.setRotateAngle(Cloak02, -0.4553564018453205F, 0.0F, 0.0F);
         this.EquipRC03 = new ModelRenderer(this, 128, 0);
         this.EquipRC03.setRotationPoint(0.0F, 2.0F, -7.0F);
@@ -302,12 +321,12 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
         this.BoobR.addBox(-3.5F, 0.0F, -1.0F, 7, 5, 4, 0.0F);
         this.setRotateAngle(BoobR, -0.7853981633974483F, -0.08726646259971647F, -0.14F);
         this.Butt = new ModelRenderer(this, 0, 38);
-        this.Butt.setRotationPoint(0.0F, 5.0F, 0.0F);
+        this.Butt.setRotationPoint(0.0F, 4.7F, 0.5F);
         this.Butt.addBox(-7.5F, -2.0F, -4.1F, 15, 8, 8, 0.0F);
         this.setRotateAngle(Butt, 0.5235987755982988F, 0.0F, 0.0F);
-        this.Cloak03 = new ModelRenderer(this, 192, 108);
-        this.Cloak03.setRotationPoint(0.0F, 20.0F, 0.0F);
-        this.Cloak03.addBox(-16.0F, 0.0F, 0.0F, 32, 15, 0, 0.0F);
+        this.Cloak03 = new ModelRenderer(this, 196, 113);
+        this.Cloak03.setRotationPoint(0.0F, 16.0F, 0.0F);
+        this.Cloak03.addBox(-15.0F, 0.0F, 0.0F, 30, 15, 0, 0.0F);
         this.setRotateAngle(Cloak03, 0.3490658503988659F, 0.0F, 0.0F);
         this.Ahoke = new ModelRenderer(this, 31, 89);
         this.Ahoke.setRotationPoint(0F, 0F, -4F);
@@ -328,13 +347,13 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
         this.Face4 = new ModelRenderer(this, 98, 113);
         this.Face4.setRotationPoint(0.0F, 0.0F, -0.1F);
         this.Face4.addBox(-7.0F, -14.0F, -6.5F, 14, 14, 1, 0.0F);
-        this.Neck.addChild(this.Head);
+        this.BodyMain.addChild(this.Head);
         this.EquipLC01.addChild(this.EquipLC02);
         this.EquipTB02R.addChild(this.EquipTB03R);
         this.BodyMain.addChild(this.BoobL);
         this.EquipLC01.addChild(this.EquipLC03);
         this.EquipT01L.addChild(this.EquipT02L);
-        this.LegRight.addChild(this.ShoesRight);
+        this.LegRight02.addChild(this.ShoesRight);
         this.EquipBase.addChild(this.Equip05);
         this.EquipTB02L.addChild(this.EquipTB03L);
         this.EquipBase.addChild(this.Equip03);
@@ -347,10 +366,11 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
         this.Hair.addChild(this.Hair00a);
         this.Hair.addChild(this.Hair00b);
         this.EquipT02L.addChild(this.EquipT03L);
-        this.Butt.addChild(this.LegLeft);
+        this.Butt.addChild(this.LegLeft01);
+        this.LegLeft01.addChild(this.LegLeft02);
         this.EquipBase.addChild(this.EquipTooth03);
         this.EquipRC01.addChild(this.EquipRC02);
-        this.LegLeft.addChild(this.ShoesLeft);
+        this.LegLeft02.addChild(this.ShoesLeft);
         this.Head.addChild(this.EquipBase);
         this.EquipBase.addChild(this.Equip04);
         this.EquipBase.addChild(this.EquipLC01);
@@ -368,13 +388,17 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
         this.EquipTB01R.addChild(this.EquipTB02R);
         this.CloakNeck.addChild(this.Cloak01);
         this.BodyMain.addChild(this.CloakNeck);
-        this.BodyMain.addChild(this.ArmRight);
-        this.Butt.addChild(this.LegRight);
+        this.BodyMain.addChild(this.ArmRight01);
+        this.ArmRight01.addChild(this.ArmRight02);
+        this.Butt.addChild(this.LegRight01);
+        this.LegRight01.addChild(this.LegRight02);
         this.EquipBase.addChild(this.EquipT01L);
         this.BodyMain.addChild(this.Neck);
+        this.Neck.addChild(this.Neck02);
         this.EquipBase.addChild(this.Equip01);
-        this.BodyMain.addChild(this.ArmLeft);
-        this.ArmRight.addChild(this.Staff);
+        this.BodyMain.addChild(this.ArmLeft01);
+        this.ArmLeft01.addChild(this.ArmLeft02);
+        this.ArmRight02.addChild(this.Staff);
         this.Cloak01.addChild(this.Cloak02);
         this.EquipRC01.addChild(this.EquipRC03);
         this.EquipBase.addChild(this.EquipTooth01);
@@ -386,30 +410,20 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
         this.GlowBodyMain = new ModelRenderer(this, 0, 0);
         this.GlowBodyMain.setRotationPoint(0.0F, -11.0F, 0.0F);
         this.setRotateAngle(GlowBodyMain, -0.3490658503988659F, 0.0F, 0.0F);
-        this.GlowNeck = new ModelRenderer(this, 0, 0);
-        this.GlowNeck.setRotationPoint(0.0F, -12.5F, -2.0F);
-        this.setRotateAngle(GlowNeck, 0.3490658503988659F, 0.0F, 0.0F);  
         this.GlowHead = new ModelRenderer(this, 0, 0);
-        this.GlowHead.setRotationPoint(0.0F, -1.0F, 1.5F);
+        this.GlowHead.setRotationPoint(0.0F, -13.5F, -0.5F);
         this.GlowEquipBase = new ModelRenderer(this, 0, 0);
         this.GlowEquipBase.setRotationPoint(0.0F, -10.0F, -3.0F);
         this.setRotateAngle(GlowEquipBase, 0.08726646259971647F, 0.0F, 0.0F);
-        this.GlowBodyMain.addChild(this.GlowNeck);
-        this.GlowNeck.addChild(this.GlowHead);
+        this.GlowBodyMain.addChild(this.GlowHead);
         this.GlowHead.addChild(this.GlowEquipBase);
+        this.GlowEquipBase.addChild(this.EquipEye01);
+        this.GlowEquipBase.addChild(this.EquipEye02);
         this.GlowHead.addChild(this.Face0);
         this.GlowHead.addChild(this.Face1);
         this.GlowHead.addChild(this.Face2);
         this.GlowHead.addChild(this.Face3);
         this.GlowHead.addChild(this.Face4);
-//        this.Head.addChild(this.Face0);
-//        this.Head.addChild(this.Face1);
-//        this.Head.addChild(this.Face2);
-//        this.Head.addChild(this.Face3);
-//        this.Head.addChild(this.Face4);
-        this.GlowEquipBase.addChild(this.EquipEye01);
-        this.GlowEquipBase.addChild(this.EquipEye02);
-        
     }
     
     /**
@@ -466,9 +480,6 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 		this.GlowEquipBase.rotateAngleX = this.EquipBase.rotateAngleX;
 		this.GlowEquipBase.rotateAngleY = this.EquipBase.rotateAngleY;
 		this.GlowEquipBase.rotateAngleZ = this.EquipBase.rotateAngleZ;
-		this.GlowNeck.rotateAngleX = this.Neck.rotateAngleX;
-		this.GlowNeck.rotateAngleY = this.Neck.rotateAngleY;
-		this.GlowNeck.rotateAngleZ = this.Neck.rotateAngleZ;
 		this.GlowHead.rotateAngleX = this.Head.rotateAngleX;
 		this.GlowHead.rotateAngleY = this.Head.rotateAngleY;
 		this.GlowHead.rotateAngleZ = this.Head.rotateAngleZ;
@@ -488,8 +499,7 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 
   	    //移動頭部 使其看人, 不看人時持續擺動頭部
 	  	this.Head.rotateAngleY = f3 / 57.29578F;	//左右角度 角度轉成rad 即除以57.29578
-	    this.Head.rotateAngleX = (f4 / 57.29578F) * 0.7F - 0.4F; 	//上下角度
-	    
+	    this.Head.rotateAngleX = (f4 / 57.29578F) * 0.7F; 	//上下角度
 	    //正常站立動作
 	    //胸部
   	    this.BoobL.rotateAngleX = -angleZ * 0.06F - 0.73F;
@@ -497,23 +507,36 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
   	    //呆毛
   	    this.Ahoke.rotateAngleY = angleZ * 0.25F + 0.5236F;
   	    //手臂晃動 
-	  	this.ArmLeft.rotateAngleX = -0.26F;
-  	    this.ArmRight.rotateAngleX = -0.26F;
-	    this.ArmLeft.rotateAngleY = 0F;
-		this.ArmRight.rotateAngleY = 0F;
-		this.ArmLeft.rotateAngleZ = 0.26F;
-		this.ArmRight.rotateAngleZ = -0.26F;
+	  	this.ArmLeft01.rotateAngleX = -0.3F;
+  	    this.ArmRight01.rotateAngleX = -0.3F;
+	    this.ArmLeft01.rotateAngleY = 0F;
+		this.ArmRight01.rotateAngleY = 0F;
+		this.ArmLeft01.rotateAngleZ = 0.24F;
+		this.ArmRight01.rotateAngleZ = -0.24F;
+		this.ArmLeft02.rotateAngleX = 0F;
+	    this.ArmLeft02.rotateAngleY = 0F;
+	    this.ArmLeft02.rotateAngleZ = 0F;
+	    this.ArmRight02.rotateAngleY = 0F;
+		this.ArmLeft02.rotateAngleZ = 0F;
+		this.ArmRight02.rotateAngleZ = 0F;
 		//身體角度
 		this.BodyMain.rotateAngleX = -0.1745F;
 		this.BodyMain.rotateAngleY = 0F;
 		this.BodyMain.rotateAngleZ = 0F;
+		this.Butt.rotateAngleX = 0.5236F;
+		this.Butt.offsetY = 0F;
+		this.Butt.offsetZ = 0F;
 		//腿擺動
 		addk1 += -0.349F;
 		addk2 += -0.349F;
-		this.LegLeft.rotateAngleZ = 0.052F;
-		this.LegRight.rotateAngleZ = -0.052F;
-		this.LegLeft.rotateAngleY = 0F;
-		this.LegRight.rotateAngleY = 0F;
+		this.LegLeft01.rotateAngleY = 0F;
+		this.LegLeft01.rotateAngleZ = 0.052F;
+		this.LegLeft02.rotateAngleX = 0F;
+		this.LegLeft02.offsetZ = 0F;
+		this.LegRight01.rotateAngleY = 0F;
+		this.LegRight01.rotateAngleZ = -0.052F;
+		this.LegRight02.rotateAngleX = 0F;
+		this.LegRight02.offsetZ = 0F;
 		//披風擺動
 		this.Cloak01.rotateAngleX = angleZ * 0.05F + 0.2618F;
 		this.Cloak02.rotateAngleX = angleZ * 0.1F + 0.1745F;
@@ -522,8 +545,8 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 		this.Staff.rotateAngleX = 0F;
 		this.Staff.rotateAngleY = 0F;
 		this.Staff.rotateAngleZ = 1.8326F;
-		this.Staff.offsetX = -0.9F;
-		this.Staff.offsetY = -0.9F;
+		this.Staff.offsetX = -0.7F;
+		this.Staff.offsetY = -1.7F;
 		this.Staff.offsetZ = -1.4F;
 		//觸手晃動 (equip only)
 		if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
@@ -561,32 +584,32 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 	    	//高度
 //		    GL11.glTranslatef(0F, -0.2F, 0F);
 	  	    //手臂晃動 
-		  	this.ArmLeft.rotateAngleX = -0.6981F;
-	  	    this.ArmRight.rotateAngleX = -0.6981F;
-		    this.ArmLeft.rotateAngleY = 0.5236F;
-			this.ArmRight.rotateAngleY = -0.5236F;
-			this.ArmLeft.rotateAngleZ = 0F;
-			this.ArmRight.rotateAngleZ = 0F;
+		  	this.ArmLeft01.rotateAngleX = -0.6981F;
+	  	    this.ArmRight01.rotateAngleX = -0.6981F;
+		    this.ArmLeft01.rotateAngleY = 0.4F;
+			this.ArmRight01.rotateAngleY = -0.4F;
+			this.ArmLeft01.rotateAngleZ = 0F;
+			this.ArmRight01.rotateAngleZ = 0F;
 			//身體角度
 			this.BodyMain.rotateAngleX = -0.349F;
 			//腿擺動
 			addk1 = 0F;
 			addk2 = 0F;
-			this.LegLeft.rotateAngleY = 0F;
-			this.LegRight.rotateAngleY = 0F;
-			this.LegLeft.rotateAngleZ = 0.05236F;
-			this.LegRight.rotateAngleZ = -0.05236F;
+			this.LegLeft01.rotateAngleY = 0F;
+			this.LegRight01.rotateAngleY = 0F;
+			this.LegLeft01.rotateAngleZ = 0.05236F;
+			this.LegRight01.rotateAngleZ = -0.05236F;
 			//披風擺動
 			this.Cloak01.rotateAngleX = angleZFast * 0.1F + 1.2F;
 			this.Cloak02.rotateAngleX = angleZFast * 0.25F;
 			this.Cloak03.rotateAngleX = angleZFast * 0.15F;
 			//杖位置
-			this.Staff.rotateAngleX = 1.1839F;
+			this.Staff.rotateAngleX = 1.3F;
 			this.Staff.rotateAngleY = -0.1820F;
 			this.Staff.rotateAngleZ = -1.2292F;
-			this.Staff.offsetX = 0F;
-			this.Staff.offsetY = 0F;
-			this.Staff.offsetZ = 0F;
+			this.Staff.offsetX = 0.2F;
+			this.Staff.offsetY = -1F;
+			this.Staff.offsetZ = -0.1F;
 			//觸手晃動 (equip only)
 			if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
 				this.EquipT01L.rotateAngleX = angleZFast * 0.05F + 0.2618F;
@@ -639,7 +662,7 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 		    	}
 		    }
 	    }//end if sprint
-	    
+    
 	    //roll頭部傾斜表情
 	    if(ent.getStateFlag(ID.F.HeadTilt)) {
 	    	if(ent.getStateEmotion(ID.S.Emotion2) == 1) {	//之前已經傾斜, 則繼續傾斜
@@ -670,10 +693,11 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 
   		
 	    if(ent.isSneaking()) {		//潛行, 蹲下動作
-  			this.ArmLeft.rotateAngleX = 0.7F;
-  			this.ArmRight.rotateAngleX = 0.7F;
+  			this.ArmLeft01.rotateAngleX = 0.7F;
+  			this.ArmRight01.rotateAngleX = 0.7F;
   			this.BodyMain.rotateAngleX = 0.5F;
   			this.Head.rotateAngleX -= 0.5F;
+  			this.Cloak01.rotateAngleX = angleZ * 0.02F + 0.34F;
   			addk1 -= 0.66F;
 			addk2 -= 0.66F;
   		}
@@ -681,81 +705,159 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 			this.Head.rotateAngleX += 0.2F;
 	    }
   		
-	    if(ent.isSitting() || ent.isRiding()) {  //騎乘動作 
-	  	    //手臂晃動 
-		  	this.ArmLeft.rotateAngleX = 0.4F;
-		    this.ArmLeft.rotateAngleY = 0F;
-		    this.ArmLeft.rotateAngleZ = -0.2618F;
-		    this.ArmRight.rotateAngleX = 0.34F;
-			this.ArmRight.rotateAngleY = 0F;
-			this.ArmRight.rotateAngleZ = 0.5236F;
-			//身體角度
-			this.BodyMain.rotateAngleX = -0.349F;
-			this.BodyMain.rotateAngleY = -1.57F;
-			this.BodyMain.rotateAngleZ = -0.0873F;
-			//脖子角度
-			this.Head.rotateAngleX += -0.2F;
-			this.Head.rotateAngleY += 1.0472F;
-			this.Head.rotateAngleZ += 0F;
-			//腿擺動
-			addk1 = angleZ * 0.3F + -1.0472F;
-			addk2 = -angleZ * 0.3F + -1.0472F;
-			this.LegLeft.rotateAngleY = 0F;
-			this.LegRight.rotateAngleY = 0F;
-			this.LegLeft.rotateAngleZ = 0.05236F;
-			this.LegRight.rotateAngleZ = -0.05236F;
-			//披風擺動
-			this.Cloak01.rotateAngleX = angleZ * 0.1F + 1.2F;
-			this.Cloak02.rotateAngleX = angleZ * 0.25F;
-			this.Cloak03.rotateAngleX = angleZ * 0.15F;
-			//杖位置
-			this.Staff.rotateAngleX = 0.2F;
-			this.Staff.rotateAngleY = 0F;
-			this.Staff.rotateAngleZ = -2.0944F;
-			this.Staff.offsetX = 0.9F;
-			this.Staff.offsetY = -1.4F;
-			this.Staff.offsetZ = -1.2F;
-			//觸手晃動 (equip only)
-			if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
-				this.EquipT01L.rotateAngleX = angleZ * 0.05F + 0.2618F;
-				this.EquipT01L.rotateAngleZ = -0.2618F;
-				this.EquipT02L.rotateAngleX = angleZ * 0.15F + 0.2618F;
-				this.EquipT02L.rotateAngleZ = -0.2618F;
-				this.EquipT03L.rotateAngleX = angleZ * 0.45F + 0.5236F;
-				this.EquipT03L.rotateAngleZ = -0.2618F;
-				
-				this.EquipT01R.rotateAngleX = angleZ * 0.05F + 0.2618F;
-				this.EquipT01R.rotateAngleZ = 0.2618F;
-				this.EquipT02R.rotateAngleX = angleZ * 0.15F + 0.2618F;
-				this.EquipT02R.rotateAngleZ = 0.2618F;
-				this.EquipT03R.rotateAngleX = angleZ * 0.45F + 0.5236F;
-				this.EquipT03R.rotateAngleZ = 0.2618F;
+	    if(ent.isSitting() || ent.isRiding()) {  //騎乘動作
+	    	if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {
+	    		setFace(1);
+		    	GL11.glTranslatef(0F, 1.35F, 0F);
+		    	//身體角度
+				this.BodyMain.rotateAngleX = 0.2094F;
+				this.BodyMain.rotateAngleY = 0F;
+				this.BodyMain.rotateAngleZ = 0F;
+				this.Butt.rotateAngleX = -0.4189F;
+				this.Butt.offsetZ = -0.12F;
+				//頭
+				this.Head.rotateAngleX += 0.1745F;
+				this.Head.rotateAngleY *= 0.5F;
+		    	//手臂
+			  	this.ArmLeft01.rotateAngleX = -1.0472F;
+			    this.ArmLeft01.rotateAngleY = 0F;
+			    this.ArmLeft01.rotateAngleZ = 0.4189F;
+			    this.ArmLeft02.rotateAngleX = -0.1396F;
+			    this.ArmLeft02.rotateAngleY = 0F;
+			    this.ArmLeft02.rotateAngleZ = 1.2915F;
+			    this.ArmRight01.rotateAngleX = -0.8727F;
+				this.ArmRight01.rotateAngleY = 0F;
+				this.ArmRight01.rotateAngleZ = -0.0873F;
+				this.ArmRight02.rotateAngleZ = -1.1345F;
+				//腿擺動
+				addk1 = -2.2689F;
+				addk2 = -2.2689F;
+				this.LegLeft01.rotateAngleY = -0.2094F;
+				this.LegLeft01.rotateAngleZ = -0.2094F;
+				this.LegLeft02.rotateAngleX = 1.7454F;
+				this.LegLeft02.offsetZ = 0.3F;
+				this.LegRight01.rotateAngleY = 0F;
+				this.LegRight01.rotateAngleZ = 0.0873F;
+				this.LegRight02.rotateAngleX = 1.5708F;
+				this.LegRight02.offsetZ = 0.3F;
+				//披風擺動
+				this.Cloak01.rotateAngleX = 0.2618F;
+				this.Cloak02.rotateAngleX = -1.3963F;
+				this.Cloak03.rotateAngleX = -0.9425F;
+				//杖位置
+				this.Staff.rotateAngleX = 1.309F;
+				this.Staff.rotateAngleY = -0.5934F;
+				this.Staff.rotateAngleZ = -0.2094F;
+				this.Staff.offsetX = -0.3F;
+				this.Staff.offsetY = -1.5F;
+				this.Staff.offsetZ = -1.7F;
+				//觸手晃動 (equip only)
+				if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
+					this.EquipT01L.rotateAngleX = angleZ * 0.01F - 0.2618F;
+					this.EquipT01L.rotateAngleZ = -0.2618F;
+					this.EquipT02L.rotateAngleX = angleZ * 0.03F - 0.3491F;
+					this.EquipT02L.rotateAngleZ = 0.2618F;
+					this.EquipT03L.rotateAngleX = -angleZ * 0.1F + 1.0472F;
+					this.EquipT03L.rotateAngleZ = 1.0472F;
+					
+					this.EquipT01R.rotateAngleX = -angleZ * 0.01F - 0.2618F;
+					this.EquipT01R.rotateAngleZ = 0.2618F;
+					this.EquipT02R.rotateAngleX = -angleZ * 0.03F - 0.3491F;
+					this.EquipT02R.rotateAngleZ = -0.2618F;
+					this.EquipT03R.rotateAngleX = angleZ * 0.1F + 1.0472F;
+					this.EquipT03R.rotateAngleZ = -1.0472F;
 
-				this.EquipTB01L.rotateAngleX = angleZ * 0.05F + 0.349F;
-				this.EquipTB01L.rotateAngleZ = -0.349F;
-				this.EquipTB02L.rotateAngleX = angleZ * 0.15F + 0.5236F;
-				this.EquipTB02L.rotateAngleZ = 0.1745F;
-				this.EquipTB03L.rotateAngleX = angleZ * 0.45F + 0.5236F;
-				this.EquipTB03L.rotateAngleZ = 0.1745F;
-				
-				this.EquipTB01R.rotateAngleX = angleZ * 0.05F + 0.349F;
-				this.EquipTB01R.rotateAngleZ = 0.349F;
-				this.EquipTB02R.rotateAngleX = angleZ * 0.15F + 0.5236F;
-				this.EquipTB02R.rotateAngleZ = -0.1745F;
-				this.EquipTB03R.rotateAngleX = angleZ * 0.45F + 0.5236F;
-				this.EquipTB03R.rotateAngleZ = -0.1745F;		
-  			}			
+					this.EquipTB01L.rotateAngleX = angleZ * 0.01F + 0.1745F;
+					this.EquipTB01L.rotateAngleZ = -0.3491F;
+					this.EquipTB02L.rotateAngleX = angleZ * 0.03F - 0.6981F;
+					this.EquipTB02L.rotateAngleZ = 0.3491F;
+					this.EquipTB03L.rotateAngleX = angleZ * 0.05F + 0.1745F;
+					this.EquipTB03L.rotateAngleZ = 0.2618F;
+					
+					this.EquipTB01R.rotateAngleX = -angleZ * 0.01F + 0.1745F;
+					this.EquipTB01R.rotateAngleZ = 0.3491F;
+					this.EquipTB02R.rotateAngleX = -angleZ * 0.03F - 0.6981F;
+					this.EquipTB02R.rotateAngleZ = -0.3491F;
+					this.EquipTB03R.rotateAngleX = -angleZ * 0.05F + 0.1745F;
+					this.EquipTB03R.rotateAngleZ = -0.2618F;
+	  			}
+	    	}
+	    	else {
+	    		//手臂晃動 
+			  	this.ArmLeft01.rotateAngleX = 0.4F;
+			    this.ArmLeft01.rotateAngleY = 0F;
+			    this.ArmLeft01.rotateAngleZ = -0.32F;
+			    this.ArmRight01.rotateAngleX = 0.34F;
+				this.ArmRight01.rotateAngleY = 0F;
+				this.ArmRight01.rotateAngleZ = 0.5236F;
+				//身體角度
+				this.BodyMain.rotateAngleX = -0.349F;
+				this.BodyMain.rotateAngleY = -1.57F;
+				this.BodyMain.rotateAngleZ = -0.0873F;
+				//脖子角度
+				this.Head.rotateAngleX += -0.25F;
+				this.Head.rotateAngleY += 0.4F;
+				this.Head.rotateAngleZ += 0F;
+				//腿擺動
+				addk1 = angleZ * 0.3F + -1.0472F;
+				addk2 = -angleZ * 0.3F + -1.0472F;
+				this.LegLeft01.rotateAngleY = 0F;
+				this.LegRight01.rotateAngleY = 0F;
+				this.LegLeft01.rotateAngleZ = 0.05236F;
+				this.LegRight01.rotateAngleZ = -0.05236F;
+				//披風擺動
+				this.Cloak01.rotateAngleX = angleZ * 0.1F + 0.4F;
+				this.Cloak02.rotateAngleX = angleZ * 0.15F;
+				this.Cloak03.rotateAngleX = angleZ * 0.15F;
+				//杖位置
+				this.Staff.rotateAngleX = 0.2F;
+				this.Staff.rotateAngleY = 0F;
+				this.Staff.rotateAngleZ = -2.0F;
+				this.Staff.offsetX = 0.8F;
+				this.Staff.offsetY = -1.95F;
+				this.Staff.offsetZ = -1.4F;
+				//觸手晃動 (equip only)
+				if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
+					this.EquipT01L.rotateAngleX = -angleZ * 0.05F + 0.2618F;
+					this.EquipT01L.rotateAngleZ = -0.2618F;
+					this.EquipT02L.rotateAngleX = -angleZ * 0.15F + 0.2618F;
+					this.EquipT02L.rotateAngleZ = -0.1618F;
+					this.EquipT03L.rotateAngleX = -angleZ * 0.45F + 0F;
+					this.EquipT03L.rotateAngleZ = -0.2618F;
+					
+					this.EquipT01R.rotateAngleX = angleZ * 0.05F + 0.2618F;
+					this.EquipT01R.rotateAngleZ = 0.2618F;
+					this.EquipT02R.rotateAngleX = angleZ * 0.15F + 0.2618F;
+					this.EquipT02R.rotateAngleZ = 0.1618F;
+					this.EquipT03R.rotateAngleX = angleZ * 0.45F + 0F;
+					this.EquipT03R.rotateAngleZ = 0.2618F;
+	
+					this.EquipTB01L.rotateAngleX = angleZ * 0.05F + 0.349F;
+					this.EquipTB01L.rotateAngleZ = -0.349F;
+					this.EquipTB02L.rotateAngleX = angleZ * 0.15F + 0.2236F;
+					this.EquipTB02L.rotateAngleZ = 0.1745F;
+					this.EquipTB03L.rotateAngleX = angleZ * 0.45F + 0.1236F;
+					this.EquipTB03L.rotateAngleZ = 0.1745F;
+					
+					this.EquipTB01R.rotateAngleX = -angleZ * 0.05F + 0.349F;
+					this.EquipTB01R.rotateAngleZ = 0.349F;
+					this.EquipTB02R.rotateAngleX = -angleZ * 0.15F + 0.2236F;
+					this.EquipTB02R.rotateAngleZ = -0.1745F;
+					this.EquipTB03R.rotateAngleX = -angleZ * 0.45F + 0.1236F;
+					this.EquipTB03R.rotateAngleZ = -0.1745F;
+	  			}
+	    	}
   		}
 	    
 	    //leg motion
-	    this.LegLeft.rotateAngleX = addk1;
-	    this.LegRight.rotateAngleX = addk2;
+	    this.LegLeft01.rotateAngleX = addk1;
+	    this.LegRight01.rotateAngleX = addk2;
 	    
 	    //攻擊時順便將左手指向對方	    
 	    if(ent.attackTime > 0) {
-	    	this.ArmLeft.rotateAngleX = f4 / 57.29578F - 1.5F;
-	    	this.ArmRight.rotateAngleZ = 0.7F;
-	    	this.ArmRight.rotateAngleX = 0.4F;
+	    	this.ArmLeft01.rotateAngleX = f4 / 57.29578F - 1.5F;
+	    	this.ArmRight01.rotateAngleZ = 0.7F;
+	    	this.ArmRight01.rotateAngleX = 0.4F;
 	    	//杖位置
 			this.Staff.rotateAngleX = 1.2F;
 			this.Staff.rotateAngleY = -0.18F;

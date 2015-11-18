@@ -34,6 +34,7 @@ import com.lulan.shincolle.ai.EntityAIShipFollowOwner;
 import com.lulan.shincolle.ai.EntityAIShipGuarding;
 import com.lulan.shincolle.ai.EntityAIShipInRangeTarget;
 import com.lulan.shincolle.ai.EntityAIShipSit;
+import com.lulan.shincolle.ai.EntityAIShipWander;
 import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
@@ -279,7 +280,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.tasks.addTask(21, new EntityAIOpenDoor(this, true));	//0000
 		this.tasks.addTask(23, new EntityAIShipFloating(this));		//0101
 		this.tasks.addTask(24, new EntityAIShipWatchClosest(this, EntityPlayer.class, 6F, 0.08F)); //0010
-		this.tasks.addTask(25, new EntityAIWander(this, 0.8D));		//0001
+		this.tasks.addTask(25, new EntityAIShipWander(this, 0.8D));	//0001
 		this.tasks.addTask(25, new EntityAILookIdle(this));			//0011
 	}
 	
