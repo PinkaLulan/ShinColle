@@ -1,37 +1,34 @@
 package com.lulan.shincolle.client.render;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-import com.lulan.shincolle.client.model.ModelSmallShipyard;
+import com.lulan.shincolle.client.model.ModelBlockDesk;
 import com.lulan.shincolle.reference.Reference;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RenderSmallShipyard extends TileEntitySpecialRenderer {
+public class RenderBlockDesk extends TileEntitySpecialRenderer {
 
 	//貼圖檔路徑
-	private static final ResourceLocation textureOn = new ResourceLocation(Reference.TEXTURES_BLOCKS+"BlockSmallShipyardOn.png");
-	private static final ResourceLocation textureOff = new ResourceLocation(Reference.TEXTURES_BLOCKS+"BlockSmallShipyardOff.png");
-		
-	private final ModelSmallShipyard model;
+	private static final ResourceLocation TEXTURE = new ResourceLocation(Reference.TEXTURES_BLOCKS+"BlockDesk.png");
+
+	private ModelBlockDesk body;
 	
-	public RenderSmallShipyard() {
-		this.model = new ModelSmallShipyard();
+	public RenderBlockDesk() {
+		this.body = new ModelBlockDesk();
 	}
 	
 	@Override
 	public void renderTileEntityAt(TileEntity tileentity, double x, double y, double z, float scale) {
-
 		int meta = tileentity.getBlockMetadata();
-		
-		ResourceLocation textures = (meta>3 ? textureOn : textureOff);
 		float angle = 0;	//0=north 90=east 180=south -90=west
 		
 		switch(meta) {
@@ -53,12 +50,9 @@ public class RenderSmallShipyard extends TileEntitySpecialRenderer {
 			GL11.glTranslatef((float)x+0.5F, (float)y+1.5F, (float)z+0.5F);
 			GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
 			GL11.glRotatef(angle, 0F, 1F, 0F);
-			//榜定model貼圖
-			Minecraft.getMinecraft().renderEngine.bindTexture(textures);	//client side only
-			//this.bindTexture(textures);
-//			GL11.glPushMatrix();			
-				this.model.renderModel(0.0625F);  //避免renderModel裡面有平移旋轉  必須push pop一次以免不正常位移
-//			GL11.glPopMatrix();
+			//draw desk body
+			Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE);
+			this.body.render(0.0625F);
 		GL11.glPopMatrix();
 		
 	}

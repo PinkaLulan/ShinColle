@@ -245,13 +245,13 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
         EntityAbyssMissile missile1 = new EntityAbyssMissile(this.worldObj, this, 
         		tarX, tarY+target.height*0.2F, tarZ, launchPos, atk, kbValue, isDirect, -1F);
         EntityAbyssMissile missile2 = new EntityAbyssMissile(this.worldObj, this, 
-        		tarX+3F, tarY+target.height*0.2F, tarZ+3F, launchPos, atk, kbValue, isDirect, -1F);
+        		tarX+3F, tarY+target.height*0.2F, tarZ+5F, launchPos, atk, kbValue, isDirect, -1F);
         EntityAbyssMissile missile3 = new EntityAbyssMissile(this.worldObj, this, 
-        		tarX+3F, tarY+target.height*0.2F, tarZ-3F, launchPos, atk, kbValue, isDirect, -1F);
+        		tarX+3F, tarY+target.height*0.2F, tarZ-5F, launchPos, atk, kbValue, isDirect, -1F);
         EntityAbyssMissile missile4 = new EntityAbyssMissile(this.worldObj, this, 
-        		tarX-3F, tarY+target.height*0.2F, tarZ+3F, launchPos, atk, kbValue, isDirect, -1F);
+        		tarX-3F, tarY+target.height*0.2F, tarZ+5F, launchPos, atk, kbValue, isDirect, -1F);
         EntityAbyssMissile missile5 = new EntityAbyssMissile(this.worldObj, this, 
-        		tarX-3F, tarY+target.height*0.2F, tarZ-3F, launchPos, atk, kbValue, isDirect, -1F);
+        		tarX-3F, tarY+target.height*0.2F, tarZ-5F, launchPos, atk, kbValue, isDirect, -1F);
         
         this.worldObj.spawnEntityInWorld(missile1);
         this.worldObj.spawnEntityInWorld(missile2);

@@ -26,10 +26,10 @@ public class BasicEntityItem extends Entity {
 	
 	public BasicEntityItem(World world, double x, double y, double z, ItemStack item) {
 		super(world);
-		this.posX = x;
+		this.posX = x+0.5D;
 		this.posY = y;
-		this.posZ = z;
-		this.setPosition(x, y, z);
+		this.posZ = z+0.5D;
+		this.setPosition(this.posX, this.posY, this.posZ);
 		this.yOffset = this.height / 2.0F;
 		this.motionX = 0D;
 		this.motionY = 0D;

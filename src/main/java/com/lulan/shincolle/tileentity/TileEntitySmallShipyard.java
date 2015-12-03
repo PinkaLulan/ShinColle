@@ -67,7 +67,7 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ITileFur
 		if (worldObj.getTileEntity(xCoord, yCoord, zCoord) != this) {
 			return false;
 		}
-		else {	//確認player要在該tile entity 64格內, 以免超出讀取範圍 or 產生其他不明bug
+		else {	//確認player要在該tile entity 8格內, 以免超出讀取範圍 or 產生其他不明bug
 			return player.getDistanceSq(xCoord+0.5D, yCoord+0.5D, zCoord+0.5D) <= 64;
 		}
 	}

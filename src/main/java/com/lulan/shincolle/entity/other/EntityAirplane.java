@@ -33,6 +33,7 @@ public class EntityAirplane extends BasicEntityAirplane {
         this.numAmmoHeavy = 0;
         this.useAmmoLight = true;
         this.useAmmoHeavy = false;
+        this.antiAir = host.getStateFlag(ID.F.AntiAir);
         
         //設定發射位置
         this.posX = host.posX;

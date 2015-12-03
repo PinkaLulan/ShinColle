@@ -184,30 +184,33 @@ public class ShipPathNavigate {
 
     /** navigation tick */
     public void onUpdateNavigation() {
-        ++this.totalTicks;
-        //若有path
-        if(!this.noPath()) {
-            //若pathFollow沒把path清除, 表示還可以繼續移動
-        	//取得下一個目標點
-            Vec3 vec3 = this.currentPath.getPosition(this.theEntity);
-//                LogHelper.info("DEBUG : path navi: path vec "+this.currentPath.getCurrentPathIndex()+" / "+this.currentPath.getCurrentPathLength()+" "+vec3.xCoord+" "+vec3.yCoord+" "+vec3.zCoord);
-//                LogHelper.info("DEBUG : path navi: path pp  "+currentPath.getPathPointFromIndex(currentPath.getCurrentPathIndex()).xCoord+" "+currentPath.getPathPointFromIndex(currentPath.getCurrentPathIndex()).yCoord+" "+currentPath.getPathPointFromIndex(currentPath.getCurrentPathIndex()).zCoord+" ");
-//                LogHelper.info("DEBUG : path navi: path pos "+this.theEntity.posX+" "+this.theEntity.posY+" "+this.theEntity.posZ+" ");
-            //若還有下一個點要移動, 則設定移動量使move helper可以實際移動entity
-            if(vec3 != null) {
-                this.theEntity2.getShipMoveHelper().setMoveTo(vec3.xCoord, vec3.yCoord, vec3.zCoord, this.speed);
+    	//wait 100 ticks, prevent login delay
+    	if(theEntity.ticksExisted > 20) {
+    		++this.totalTicks;
+            //若有path
+            if(!this.noPath()) {
+                //若pathFollow沒把path清除, 表示還可以繼續移動
+            	//取得下一個目標點
+                Vec3 vec3 = this.currentPath.getPosition(this.theEntity);
+//                    LogHelper.info("DEBUG : path navi: path vec "+this.currentPath.getCurrentPathIndex()+" / "+this.currentPath.getCurrentPathLength()+" "+vec3.xCoord+" "+vec3.yCoord+" "+vec3.zCoord);
+//                    LogHelper.info("DEBUG : path navi: path pp  "+currentPath.getPathPointFromIndex(currentPath.getCurrentPathIndex()).xCoord+" "+currentPath.getPathPointFromIndex(currentPath.getCurrentPathIndex()).yCoord+" "+currentPath.getPathPointFromIndex(currentPath.getCurrentPathIndex()).zCoord+" ");
+//                    LogHelper.info("DEBUG : path navi: path pos "+this.theEntity.posX+" "+this.theEntity.posY+" "+this.theEntity.posZ+" ");
+                //若還有下一個點要移動, 則設定移動量使move helper可以實際移動entity
+                if(vec3 != null) {
+                    this.theEntity2.getShipMoveHelper().setMoveTo(vec3.xCoord, vec3.yCoord, vec3.zCoord, this.speed);
+                }
+                
+                //若可以執行移動, 則跑pathFollow方法更新下一個目標點
+                if(this.canNavigate()) {
+//                	LogHelper.info("DEBUG : path navi: path follow");
+                    this.pathFollow();
+                }
+                
+//                if(this.currentPath.isFinished()) {
+//                	this.clearPathEntity();
+//                }
             }
-            
-            //若可以執行移動, 則跑pathFollow方法更新下一個目標點
-            if(this.canNavigate()) {
-//            	LogHelper.info("DEBUG : path navi: path follow");
-                this.pathFollow();
-            }
-            
-//            if(this.currentPath.isFinished()) {
-//            	this.clearPathEntity();
-//            }
-        }
+    	}
     }
 
     /** 判定entity是否卡住(超過100 tick仍在原地) or entity是否可以抄捷徑以省略一些路徑點 

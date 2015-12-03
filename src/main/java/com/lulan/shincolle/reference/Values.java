@@ -1,8 +1,18 @@
 package com.lulan.shincolle.reference;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import com.lulan.shincolle.init.ModBlocks;
+import com.lulan.shincolle.init.ModItems;
+
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 
 public class Values {
 	
@@ -11,6 +21,7 @@ public class Values {
 		public static final float RAD_DIV = 57.295779513F;
 		public static final float RAD_MUL = 0.0174532925F;
 	}
+	
 	
 	/**SHIP ATTRIBUTES MAP
 	 * index by ID.ShipAttr
@@ -43,19 +54,19 @@ public class Values {
 //	put(ID.S_SubmarineYO,        new float[] {44F,  28F, 8F,  0.6F, 0.3F,  5F,  0.33F, 0.7F,  0.14F, 0.5F,  0.6F,  0.3F});
 //	put(ID.S_SubmarineSO,        new float[] {35F,  35F, 10F, 0.6F, 0.28F, 5F,  0.3F,  0.8F,  0.16F, 0.5F,  0.56F, 0.3F});
 	//demon                                   HP    ATK  DEF  SPD   MOV    HIT  HP     ATK    DEF    SPD    MOV    HIT
-//	put(ID.S_IsolatedDemon,      new float[] {225F, 18F, 34F, 0.7F, 0.22F, 24F, 1.3F,  0.45F, 0.29F, 0.6F,  0.44F, 0.8F});
+//	put(ID.S_IsolatedDemon,      new float[] {225F, 13F, 34F, 0.7F, 0.22F, 24F, 1.3F,  0.4F,  0.29F, 0.6F,  0.44F, 0.8F});
 //	put(ID.S_LightCruiserDemon,  new float[] {130F, 30F, 25F, 0.8F, 0.45F, 14F, 0.8F,  0.65F, 0.25F, 0.6F,  0.9F,  0.55F});
 	//hime                                    HP    ATK  DEF  SPD   MOV    HIT  HP     ATK    DEF    SPD    MOV    HIT
 //	put(ID.S_AirdefenseHime,     new float[] {120F, 32F, 35F, 0.8F, 0.5F,  12F, 0.8F,  0.7F,  0.3F,  0.6F,  1F,    0.5F});
-	put(ID.S_AirfieldHime,       new float[] {240F, 21F, 32F, 0.8F, 0.3F,  26F, 1.2F,  0.5F,  0.28F, 0.6F,  0.6F,  0.8F});
+	put(ID.S_AirfieldHime,       new float[] {240F, 16F, 32F, 0.8F, 0.3F,  26F, 1.2F,  0.45F, 0.28F, 0.6F,  0.6F,  0.8F});
 //	put(ID.S_AnchorageHime,      new float[] {150F, 19F, 32F, 0.7F, 0.3F,  23F, 0.95F, 0.5F,  0.28F, 0.6F,  0.6F,  0.8F});
 //	put(ID.S_ArmoredCarrierHime, new float[] {150F, 34F, 35F, 0.8F, 0.42F, 20F, 0.9F,  0.73F, 0.3F,  0.63F, 0.84F, 0.7F});
 	put(ID.S_BattleshipHime,     new float[] {200F, 42F, 40F, 0.8F, 0.4F,  16F, 1.0F,  0.8F,  0.32F, 0.73F, 0.8F,  0.6F});
 //	put(ID.S_CarrierHime,        new float[] {180F, 40F, 35F, 0.8F, 0.45F, 22F, 0.85F, 0.77F, 0.3F,  0.65F, 0.9F,  0.7F});
 //	put(ID.S_DestroyerHime,      new float[] {90F,  22F, 20F, 0.8F, 0.5F,  12F, 0.55F, 0.5F,  0.22F, 0.6F,  1F,    0.5F});
-	put(ID.S_HarbourHime,        new float[] {260F, 19F, 36F, 0.6F, 0.2F,  24F, 1.35F, 0.45F, 0.3F,  0.6F,  0.4F,  0.8F});
-//	put(ID.S_MidwayHime,         new float[] {350F, 20F, 45F, 0.6F, 0.2F,  30F, 1.5F,  0.55F, 0.34F, 0.6F,  0.4F,  0.8F});
-	put(ID.S_NorthernHime,       new float[] {210F, 17F, 30F, 0.6F, 0.32F, 22F, 1.15F, 0.4F,  0.27F, 0.6F,  0.64F, 0.8F});
+	put(ID.S_HarbourHime,        new float[] {260F, 14F, 36F, 0.6F, 0.2F,  24F, 1.35F, 0.4F,  0.3F,  0.6F,  0.4F,  0.8F});
+//	put(ID.S_MidwayHime,         new float[] {350F, 18F, 45F, 0.6F, 0.2F,  30F, 1.5F,  0.5F,  0.34F, 0.6F,  0.4F,  0.8F});
+	put(ID.S_NorthernHime,       new float[] {210F, 13F, 30F, 0.6F, 0.32F, 22F, 1.15F, 0.35F, 0.27F, 0.6F,  0.64F, 0.8F});
 //	put(ID.S_SeaplaneHime,       new float[] {170F, 24F, 25F, 0.8F, 0.45F, 18F, 1F,    0.6F,  0.25F, 0.63F, 0.9F,  0.65F});
 //	put(ID.S_SouthernHime,       new float[] {170F, 35F, 34F, 0.8F, 0.3F,  20F, 1F,    0.73F, 0.29F, 0.63F, 0.6F,  0.7F});
 	//water demon                             HP    ATK  DEF  SPD   MOV    HIT  HP     ATK    DEF    SPD    MOV    HIT
@@ -70,6 +81,7 @@ public class Values {
 	put(ID.S_SubmarineU511,      new float[] {28F,  30F, 7F,  0.6F, 0.3F,  7F,  0.3F,  0.7F,  0.13F, 0.7F,  0.6F,  0.4F});
 	put(ID.S_SubmarineRo500,     new float[] {32F,  32F, 10F, 0.6F, 0.3F,  8F,  0.33F, 0.75F, 0.16F, 0.7F,  0.6F,  0.4F});
 	}});
+	
 	
 	/**damage modifier array [damage type id][target type id]
 	 * index by ID.ShipDmgType
@@ -92,6 +104,7 @@ public class Values {
 		 {1.5F,  1.5F,  1.25F, 1.25F, 1.5F,  1.5F,  0F},
 		 {0.5F,  0.5F,  0.5F,  0.75F, 0.75F, 0.25F, 0.75F}
 		};
+	
 	
 	/**EQUIP MAP
 	 * index by ID.E
@@ -179,6 +192,179 @@ public class Values {
 	put(ID.E_CATAPULT_C,         new float[]{3F, 0,   0F,  0F,  0F,  0F,  0F, 1.2F, -0.26F, 0F,   0F,    0F,    0F,    0F,    0F,  0F,  ID.EquipType.CATAPULT_HI,  800F});
 	put(ID.E_CATAPULT_E,         new float[]{3F, 0,   0F,  0F,  0F,  0F,  0F, 1.8F, -0.34F, 0F,   0F,    0F,    0F,    0F,    0F,  0F,  ID.EquipType.CATAPULT_HI,  1000F});
 	}});
+	
+	
+	/** ITEMSTACK MAP FOR ICON
+	 *  
+	 */
+	public static final Map<Byte, ItemStack> ItemIconMap = Collections.unmodifiableMap(new HashMap<Byte, ItemStack>() {{
+	put(ID.Item.IronIG,     new ItemStack(Items.iron_ingot));
+	put(ID.Item.Grudge,     new ItemStack(ModItems.Grudge));
+	put(ID.Item.GrudgeB,    new ItemStack(ModBlocks.BlockGrudge));
+	put(ID.Item.GrudgeBH,   new ItemStack(ModBlocks.BlockGrudgeHeavy));
+	put(ID.Item.AbyssIG,    new ItemStack(ModItems.AbyssMetal, 1, 0));
+	put(ID.Item.AbyssB,     new ItemStack(ModBlocks.BlockAbyssium));
+	put(ID.Item.PolymIG,    new ItemStack(ModItems.AbyssMetal, 1, 1));
+	put(ID.Item.PolymOre,   new ItemStack(ModBlocks.BlockPolymetalOre));
+	put(ID.Item.PolymB,     new ItemStack(ModBlocks.BlockPolymetal));
+	put(ID.Item.PolymBG,    new ItemStack(ModBlocks.BlockPolymetalGravel));
+	put(ID.Item.Gunpowder,  new ItemStack(Items.gunpowder));
+	put(ID.Item.Blazepowder,new ItemStack(Items.blaze_powder));
+	put(ID.Item.AmmoL,      new ItemStack(ModItems.Ammo, 1, 0));
+	put(ID.Item.AmmoLC,     new ItemStack(ModItems.Ammo, 1, 1));
+	put(ID.Item.AmmoH,      new ItemStack(ModItems.Ammo, 1, 2));
+	put(ID.Item.AmmoHC,     new ItemStack(ModItems.Ammo, 1, 3));
+	put(ID.Item.RpBucket,   new ItemStack(ModItems.BucketRepair));
+	put(ID.Item.LaBucket,   new ItemStack(Items.lava_bucket));
+	put(ID.Item.NStar,      new ItemStack(Items.nether_star));
+	put(ID.Item.Ring,       new ItemStack(ModItems.MarriageRing));
+	put(ID.Item.Paper,      new ItemStack(Items.paper));
+	put(ID.Item.OwnPaper,   new ItemStack(ModItems.OwnerPaper));
+	put(ID.Item.Stick,      new ItemStack(Items.stick));
+	put(ID.Item.KHammer,    new ItemStack(ModItems.KaitaiHammer));
+	put(ID.Item.ModTool,    new ItemStack(ModItems.ModernKit));
+	put(ID.Item.SpawnEgg0,  new ItemStack(ModItems.ShipSpawnEgg, 1, 0));
+	put(ID.Item.SpawnEgg1,  new ItemStack(ModItems.ShipSpawnEgg, 1, 1));
+	put(ID.Item.SpawnEgg2,  new ItemStack(ModItems.ShipSpawnEgg, 1, 2));
+	put(ID.Item.InstantMat, new ItemStack(ModItems.InstantConMat));
+	put(ID.Item.DiamondB,   new ItemStack(Blocks.diamond_block));
+	put(ID.Item.RpGod,      new ItemStack(ModItems.RepairGoddess));
+	put(ID.Item.Pointer,    new ItemStack(ModItems.PointerItem));
+	put(ID.Item.ModelZF,    new ItemStack(ModItems.ToyAirplane));
+	put(ID.Item.Desk,       new ItemStack(ModBlocks.BlockDesk));
+	put(ID.Item.ObsidianB,  new ItemStack(Blocks.obsidian));
+	put(ID.Item.WoolB,      new ItemStack(Blocks.wool));
+	put(ID.Item.SmallSY,    new ItemStack(ModBlocks.BlockSmallShipyard));
+	put(ID.Item.EqCannon0,  new ItemStack(ModItems.EquipCannon, 1, 0));
+	put(ID.Item.EqCannon1,  new ItemStack(ModItems.EquipCannon, 1, 2));
+	put(ID.Item.EqCannon2,  new ItemStack(ModItems.EquipCannon, 1, 9));
+	put(ID.Item.EqMGun,     new ItemStack(ModItems.EquipMachinegun));
+	put(ID.Item.EqCatap,    new ItemStack(ModItems.EquipCatapult));
+	put(ID.Item.EqRadar,    new ItemStack(ModItems.EquipRadar));
+	put(ID.Item.EqTurbine,  new ItemStack(ModItems.EquipTurbine));
+	put(ID.Item.EqTorpedo,  new ItemStack(ModItems.EquipTorpedo));
+	put(ID.Item.EqAirT,     new ItemStack(ModItems.EquipAirplane, 1, 0));
+	put(ID.Item.EqAirF,     new ItemStack(ModItems.EquipAirplane, 1, 4));
+	put(ID.Item.EqAirB,     new ItemStack(ModItems.EquipAirplane, 1, 9));
+	put(ID.Item.EqAirR,     new ItemStack(ModItems.EquipAirplane, 1, 13));
+	put(ID.Item.EqArmor,    new ItemStack(ModItems.EquipArmor));
+	}});
+	
+	
+	/** BOOK CONTENT MAP
+	 *  map<int, List<int[]>> = <ChapPage#, Content List<Content Array>>
+	 *  
+	 *  ChapPage#: ex: 01020 = chap 1, page 20
+	 *                 02018 = chap 2, page 18
+	 *                 
+	 *  Content List: list of content in int array               
+	 *  
+	 *  Content Array: 0:c.type  1:page pos  2:posX  3:posY  4...N:parms
+	 *    c.type: 0:text  1:picture  2:item icon
+	 *    page pos: 0:left  1:right
+	 *    posX: if picture: x pixels offset
+	 *    posY: if picture: y pixels offset
+	 *    parms: 
+	 *      for picture: 4:picID  5:picU  6:picV  7:sizeX  8:sizeY
+	 *      for item icon: 4:iconID
+	 *    
+	 */
+	public static final Map<Integer, List> BookList = Collections.unmodifiableMap(new HashMap<Integer, List>() {{
+	//chap 0: introduction
+	//        page 0
+	put(0, Arrays.asList(   new int[] {0, 0, 0, 0},
+						    new int[] {0, 1, 0, 0}));
+	//  	  page 1
+	put(1, Arrays.asList(   new int[] {0, 0, 0, 0},
+						    new int[] {0, 1, 0, 0}));
+	
+	//chap 1: resources
+	//		page 0: grudge
+	put(1000, Arrays.asList(new int[] {0, 0, 0, 0},
+							new int[] {0, 1, 0, 0},
+							new int[] {1, 0, 0, 60, 0, 0, 0, 100, 56},
+							new int[] {2, 0, 13, 0, ID.Item.Grudge},
+							new int[] {2, 0, 43, 0, ID.Item.GrudgeB},
+							new int[] {2, 0, 73, 0, ID.Item.GrudgeBH}));
+	//		page 1: abyssium
+	put(1001, Arrays.asList(new int[] {0, 0, 0, 0},
+							new int[] {0, 1, 0, 0},
+							new int[] {1, 0, 0, 0, 0, 100, 72, 100, 62},
+							new int[] {2, 0, 3, 23, ID.Item.Grudge},
+							new int[] {2, 0, 23, 23, ID.Item.IronIG},
+							new int[] {2, 0, 81, 23, ID.Item.AbyssIG}));
+	//		page 2: polymetal
+	put(1002, Arrays.asList(new int[] {0, 0, 0, 0},
+							new int[] {0, 1, 0, 0},
+							new int[] {1, 0, 0, 0, 0, 0, 56, 100, 56},
+							new int[] {1, 1, 0, 70, 0, 0, 112, 100, 59},
+							new int[] {2, 0, 5, 60, ID.Item.PolymOre},
+							new int[] {2, 0, 30, 60, ID.Item.PolymIG},
+							new int[] {2, 0, 55, 60, ID.Item.PolymB},
+							new int[] {2, 0, 80, 60, ID.Item.PolymBG}));
+	//		page 3: ammo
+	put(1003, Arrays.asList(new int[] {0, 0, 0, 0},
+							new int[] {0, 1, 0, 0},
+							new int[] {1, 0, 0, 0, 0, 100, 72, 100, 62},
+							new int[] {2, 0, 3,  3,  ID.Item.IronIG},
+							new int[] {2, 0, 23, 3,  ID.Item.IronIG},
+							new int[] {2, 0, 43, 3,  ID.Item.IronIG},
+							new int[] {2, 0, 3,  23, ID.Item.IronIG},
+							new int[] {2, 0, 23, 23, ID.Item.Grudge},
+							new int[] {2, 0, 43, 23, ID.Item.IronIG},
+							new int[] {2, 0, 3,  43, ID.Item.IronIG},
+							new int[] {2, 0, 23, 43, ID.Item.Gunpowder},
+							new int[] {2, 0, 43, 43, ID.Item.IronIG},
+							new int[] {2, 0, 81, 23, ID.Item.AmmoL},
+							new int[] {2, 1, 3, 110, ID.Item.AmmoL},
+							new int[] {2, 1, 28, 110, ID.Item.AmmoLC},
+							new int[] {2, 1, 53, 110, ID.Item.AmmoH},
+							new int[] {2, 1, 78, 110, ID.Item.AmmoHC}));
+	//		page 4: repair bucket
+	put(1004, Arrays.asList(new int[] {0, 0, 0, 0},
+							new int[] {0, 1, 0, 0},
+							new int[] {1, 0, 0, 0, 0, 100, 72, 100, 62},
+							new int[] {2, 0, 3,  23, ID.Item.LaBucket},
+							new int[] {2, 0, 23, 23, ID.Item.Grudge},
+							new int[] {2, 0, 81, 23, ID.Item.RpBucket}));
+	//		page 5: ring
+	put(1005, Arrays.asList(new int[] {0, 0, 0, 0},
+							new int[] {0, 1, 0, 0},
+							new int[] {1, 0, 0, 0, 0, 100, 72, 100, 62},
+							new int[] {2, 0, 3,  3,  ID.Item.AbyssIG},
+							new int[] {2, 0, 23, 3,  ID.Item.NStar},
+							new int[] {2, 0, 43, 3,  ID.Item.AbyssIG},
+							new int[] {2, 0, 3,  23, ID.Item.AbyssIG},
+							new int[] {2, 0, 43, 23, ID.Item.AbyssIG},
+							new int[] {2, 0, 3,  43, ID.Item.AbyssIG},
+							new int[] {2, 0, 23, 43, ID.Item.AbyssIG},
+							new int[] {2, 0, 43, 43, ID.Item.AbyssIG},
+							new int[] {2, 0, 81, 23, ID.Item.Ring}));
+	//		page 6: ownership paper
+	put(1006, Arrays.asList(new int[] {0, 0, 0, 0},
+							new int[] {0, 1, 0, 0},
+							new int[] {1, 0, 0, 0, 0, 100, 72, 100, 62},
+							new int[] {2, 0, 3,  23, ID.Item.Paper},
+							new int[] {2, 0, 23, 23, ID.Item.Grudge},
+							new int[] {2, 0, 81, 23, ID.Item.OwnPaper}));
+	//		page 7: hammer
+	put(1007, Arrays.asList(new int[] {0, 0, 0, 0},
+							new int[] {0, 1, 0, 0},
+							new int[] {1, 0, 0, 0, 0, 100, 72, 100, 62},
+							new int[] {2, 0, 3,  3,  ID.Item.AbyssIG},
+							new int[] {2, 0, 23, 3,  ID.Item.AbyssIG},
+							new int[] {2, 0, 43, 3,  ID.Item.AbyssIG},
+							new int[] {2, 0, 3,  23, ID.Item.AbyssIG},
+							new int[] {2, 0, 23, 23, ID.Item.AbyssIG},
+							new int[] {2, 0, 43, 23, ID.Item.AbyssIG},
+							new int[] {2, 0, 23, 43, ID.Item.Stick},
+							new int[] {2, 0, 81, 23, ID.Item.KHammer}));
+	//		page 8: 
+
+		
+	}});
+	
+	
 	
 	
 }

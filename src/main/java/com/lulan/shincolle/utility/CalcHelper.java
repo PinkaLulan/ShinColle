@@ -1,5 +1,8 @@
 package com.lulan.shincolle.utility;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.entity.Entity;
 
 import com.lulan.shincolle.entity.IShipAttributes;
@@ -7,7 +10,7 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 
 
-/**FORMAT HELPER
+/**CALC HELPER
  * format and math method
  */
 public class CalcHelper {
@@ -164,6 +167,28 @@ public class CalcHelper {
     		return NORM_TABLE[x];
     	}
     	return NORM_MIN;
+    }
+    
+    /** cut string with new line symbol into string array
+     *  new line symbol: <BR><BR/><br><br/>
+     */
+    public static String[] stringConvNewlineToArray(String str) {
+    	String[] strSplit = str.split("<BR>|<BR/>|<br>|<br/>");
+    	return strSplit;
+    }
+    
+    /** cut string with new line symbol into string list
+     *  new line symbol: <BR><BR/><br><br/>
+     */
+    public static List<String> stringConvNewlineToList(String str) {
+    	List<String> result = new ArrayList();
+    	String[] strSplit = stringConvNewlineToArray(str);
+    	
+    	for(String s : strSplit) {
+    		result.add(s);
+    	}
+    	
+    	return result;
     }
     
     

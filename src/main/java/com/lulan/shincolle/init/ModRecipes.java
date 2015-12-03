@@ -33,13 +33,19 @@ public class ModRecipes {
 		ItemStack ammoHeavyContainer = new ItemStack(ModItems.Ammo,1,3);
 		ItemStack blazepowderStack = new ItemStack(Items.blaze_powder);
 		ItemStack bucketRepairStack = new ItemStack(ModItems.BucketRepair);	
+		ItemStack desk = new ItemStack(ModBlocks.BlockDesk);
 		ItemStack grudeStack = new ItemStack(ModItems.Grudge);
 		ItemStack grudeStack9 = new ItemStack(ModItems.Grudge,9,0);
 		ItemStack grudeBlock = new ItemStack(ModBlocks.BlockGrudge);
 		ItemStack grudeBlock9 = new ItemStack(ModBlocks.BlockGrudge,9,0);
 		ItemStack grudeHeavyBlock = new ItemStack(ModBlocks.BlockGrudgeHeavy);
 		ItemStack gunpowderStack = new ItemStack(Items.gunpowder);
+		
+		
 		ItemStack instantMat8 = new ItemStack(ModItems.InstantConMat, 8);
+		ItemStack instantMat32 = new ItemStack(ModItems.InstantConMat, 32);
+		
+		
 		ItemStack ironBlock = new ItemStack(Blocks.iron_block);
 		ItemStack kaitaiHammerNew = new ItemStack(ModItems.KaitaiHammer);
 		ItemStack kaitaiHammerAll = new ItemStack(ModItems.KaitaiHammer, 1, OreDictionary.WILDCARD_VALUE);
@@ -54,6 +60,8 @@ public class ModRecipes {
 		ItemStack ring = new ItemStack(ModItems.MarriageRing);
 		ItemStack repairGoddess = new ItemStack(ModItems.RepairGoddess,1,0);
 		ItemStack shipEgg = new ItemStack(ModItems.ShipSpawnEgg, 1, OreDictionary.WILDCARD_VALUE);	//for all meta value
+		ItemStack shipEggS = new ItemStack(ModItems.ShipSpawnEgg, 1, 0);
+		ItemStack shipEggL = new ItemStack(ModItems.ShipSpawnEgg, 1, 1);
 		ItemStack smallshipyardStack = new ItemStack(ModBlocks.BlockSmallShipyard);
 		ItemStack toyplane = new ItemStack(ModItems.ToyAirplane);
 		
@@ -72,7 +80,8 @@ public class ModRecipes {
 		GameRegistry.addRecipe(new ShapelessOreRecipe(polymetalStack9, polymetalBlock));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(polymetalGravel, polymetalStack, polymetalStack, polymetalStack, polymetalStack));
 		//misc
-		GameRegistry.addRecipe(new ShapelessOreRecipe(instantMat8, kaitaiHammerAll, shipEgg));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(instantMat8, kaitaiHammerAll, shipEggS));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(instantMat32, kaitaiHammerAll, shipEggL));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(modernKit, kaitaiHammerAll, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(ownerPaper, grudeStack, Items.paper));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(repairGoddess, grudeHeavyBlock, Blocks.diamond_block));
@@ -103,6 +112,8 @@ public class ModRecipes {
 		GameRegistry.addRecipe(new ShapedOreRecipe(grudeBlock,"aaa","aaa","aaa",'a',grudeStack));
 		GameRegistry.addRecipe(new ShapedOreRecipe(grudeHeavyBlock,"aaa","aaa","aaa",'a',grudeBlock));
 		GameRegistry.addRecipe(new ShapedOreRecipe(polymetalBlock,"aaa","aaa","aaa",'a',"dustManganese"));
+		//desk
+		GameRegistry.addRecipe(new ShapedOreRecipe(desk,"wgw","o o","o o",'w',Blocks.wool,'g',grudeBlock,'o',Blocks.obsidian));
 		//small shipyard
 		GameRegistry.addRecipe(new ShapedOreRecipe(smallshipyardStack,"glg","lol","ooo",'g',grudeStack,'l',Items.lava_bucket,'o',Blocks.obsidian));
 		//marriage ring

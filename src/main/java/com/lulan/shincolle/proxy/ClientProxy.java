@@ -45,6 +45,8 @@ import com.lulan.shincolle.client.render.RenderBattleshipNGT;
 import com.lulan.shincolle.client.render.RenderBattleshipNGTBoss;
 import com.lulan.shincolle.client.render.RenderBattleshipRe;
 import com.lulan.shincolle.client.render.RenderBattleshipTa;
+import com.lulan.shincolle.client.render.RenderBlockDesk;
+import com.lulan.shincolle.client.render.RenderBlockDeskItem;
 import com.lulan.shincolle.client.render.RenderCarrierWDemon;
 import com.lulan.shincolle.client.render.RenderCarrierWo;
 import com.lulan.shincolle.client.render.RenderDestroyerHa;
@@ -105,6 +107,7 @@ import com.lulan.shincolle.entity.submarine.EntitySubmRo500;
 import com.lulan.shincolle.entity.submarine.EntitySubmU511;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.item.BasicEntityItem;
+import com.lulan.shincolle.tileentity.TileEntityDesk;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 
 import cpw.mods.fml.client.registry.ClientRegistry;
@@ -191,9 +194,11 @@ public class ClientProxy extends CommonProxy {
 		RenderingRegistry.registerEntityRenderingHandler(EntityRenderVortex.class, new RenderVortex());
 		
 		//block tile entity render
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityDesk.class, new RenderBlockDesk());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySmallShipyard.class, tesrBlockSmallShipyard);
-	
+		
 		//custom block item render
+		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ModBlocks.BlockDesk), new RenderBlockDeskItem(new RenderBlockDesk(), new TileEntityDesk()));
 		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ModBlocks.BlockSmallShipyard), new RenderSmallShipyardItem(tesrBlockSmallShipyard, new TileEntitySmallShipyard()));
 
 		//custom item entity render

@@ -1,8 +1,9 @@
-package com.lulan.shincolle.client.inventory;
+package com.lulan.shincolle.client.gui.inventory;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.item.BasicEquip;
 import com.lulan.shincolle.reference.ID;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;

@@ -5,14 +5,17 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
+import com.lulan.shincolle.client.gui.GuiDesk;
 import com.lulan.shincolle.client.gui.GuiLargeShipyard;
 import com.lulan.shincolle.client.gui.GuiShipInventory;
 import com.lulan.shincolle.client.gui.GuiSmallShipyard;
-import com.lulan.shincolle.client.inventory.ContainerLargeShipyard;
-import com.lulan.shincolle.client.inventory.ContainerShipInventory;
-import com.lulan.shincolle.client.inventory.ContainerSmallShipyard;
+import com.lulan.shincolle.client.gui.inventory.ContainerDesk;
+import com.lulan.shincolle.client.gui.inventory.ContainerLargeShipyard;
+import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
+import com.lulan.shincolle.client.gui.inventory.ContainerSmallShipyard;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.tileentity.TileEntityDesk;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 
@@ -47,6 +50,13 @@ public class GuiHandler implements IGuiHandler {
 				return new ContainerLargeShipyard(player.inventory, (TileMultiGrudgeHeavy) tile);
 			}
 			return null;
+		case ID.G.ADMIRALDESK:	   //GUI admiral desk
+			tile = world.getTileEntity(x, y, z);  //確定抓到entity才開ui 以免噴出NPE
+			if((tile != null && tile instanceof TileEntityDesk)) {  //server取得container
+				((TileEntityDesk)tile).sendSyncPacket(); //sync once when gui opened
+				return new ContainerDesk(player.inventory, (TileEntityDesk) tile);
+			}
+			return null;
 		}
 		return null;
 	}
@@ -73,6 +83,12 @@ public class GuiHandler implements IGuiHandler {
 			tile = world.getTileEntity(x, y, z);  //確定抓到entity才開ui 以免噴出NPE
 			if((tile != null && tile instanceof TileMultiGrudgeHeavy)) {  //server取得container
 				return new GuiLargeShipyard(player.inventory, (TileMultiGrudgeHeavy) tile);
+			}
+			return null;
+		case ID.G.ADMIRALDESK:	//GUI large shipyard
+			tile = world.getTileEntity(x, y, z);  //確定抓到entity才開ui 以免噴出NPE
+			if((tile != null && tile instanceof TileEntityDesk)) {  //server取得container
+				return new GuiDesk(player.inventory, (TileEntityDesk) tile);
 			}
 			return null;
 		}

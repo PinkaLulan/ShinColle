@@ -707,7 +707,6 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
   		
 	    if(ent.isSitting() || ent.isRiding()) {  //騎乘動作
 	    	if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {
-	    		setFace(1);
 		    	GL11.glTranslatef(0F, 1.35F, 0F);
 		    	//身體角度
 				this.BodyMain.rotateAngleX = 0.2094F;
@@ -716,7 +715,6 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 				this.Butt.rotateAngleX = -0.4189F;
 				this.Butt.offsetZ = -0.12F;
 				//頭
-				this.Head.rotateAngleX += 0.1745F;
 				this.Head.rotateAngleY *= 0.5F;
 		    	//手臂
 			  	this.ArmLeft01.rotateAngleX = -1.0472F;
@@ -813,7 +811,7 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 				this.Staff.rotateAngleX = 0.2F;
 				this.Staff.rotateAngleY = 0F;
 				this.Staff.rotateAngleZ = -2.0F;
-				this.Staff.offsetX = 0.8F;
+				this.Staff.offsetX = 1.1F;
 				this.Staff.offsetY = -1.95F;
 				this.Staff.offsetZ = -1.4F;
 				//觸手晃動 (equip only)

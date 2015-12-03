@@ -521,5 +521,16 @@ public class FML_COMMON_EventHandler {
 		}
 	}
 	
+	/** Server tick
+	 * 
+	 */
+	@SubscribeEvent
+    public void serverTick(TickEvent.ServerTickEvent event) {
+		if(event.phase == Phase.END) {	//在server tick處理完全部事情後發動
+			ServerProxy.updateServerTick();
+		}
+	}
 
+	
+	
 }

@@ -35,7 +35,7 @@ import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 public abstract class BasicEntityAirplane extends EntityLiving implements IShipCannonAttack {
 
 	protected BasicEntityShipLarge host;  		//host target
-	protected EntityLivingBase targetEntity;	//onImpact target (for entity)
+	protected EntityLivingBase targetEntity;	//onImpact target, backup for anti-air
 	protected World world;
 	protected ShipPathNavigate shipNavigator;	//水空移動用navigator
 	protected ShipMoveHelper shipMoveHelper;
@@ -52,30 +52,31 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
     public boolean useAmmoLight;
     public boolean useAmmoHeavy;
     public boolean backHome;		//clear target, back to carrier
-    private final IEntitySelector targetSelector;
+    public boolean antiAir;			//attack other airplane first
+    
+    //target selector
+    private static final IEntitySelector targetSelector = new IEntitySelector() {
+        @Override
+		public boolean isEntityApplicable(Entity target2) {
+        	if((target2 instanceof EntityMob || target2 instanceof EntitySlime ||
+        	   target2 instanceof EntityBat || target2 instanceof EntityDragon ||
+        	   target2 instanceof EntityFlying || target2 instanceof EntityWaterMob) &&
+        	   target2.isEntityAlive()) {
+        		return true;
+        	}
+        	return false;
+        }
+    };
 	
     public BasicEntityAirplane(World world) {
         super(world);
         this.backHome = false;
+        this.antiAir = false;
         this.isImmuneToFire = true;
         this.shipNavigator = new ShipPathNavigate(this, worldObj);
         this.shipMoveHelper = new ShipMoveHelper(this);
 		this.shipNavigator.setCanFly(true);
 		this.stepHeight = 7F;
-		
-        //target selector init
-        this.targetSelector = new IEntitySelector() {
-            @Override
-			public boolean isEntityApplicable(Entity target2) {
-            	if((target2 instanceof EntityMob || target2 instanceof EntitySlime ||
-            	   target2 instanceof EntityBat || target2 instanceof EntityDragon ||
-            	   target2 instanceof EntityFlying || target2 instanceof EntityWaterMob) &&
-            	   target2.isEntityAlive()) {
-            		return true;
-            	}
-            	return false;
-            }
-        };
     }
     
     @Override
@@ -269,6 +270,7 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 			        if(newTarget != null && newTarget.isEntityAlive() && this.getDistanceToEntity(newTarget) < 40F &&
 			           this.getEntitySenses().canSee(newTarget)) {
 			        	this.setAttackTarget(newTarget);
+			        	this.targetEntity = newTarget;	//target backup
 			        }
 		        	else {
 		        		this.backHome = true;

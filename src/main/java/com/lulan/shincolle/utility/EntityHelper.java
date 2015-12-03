@@ -50,6 +50,7 @@ import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
+import com.lulan.shincolle.tileentity.TileEntityDesk;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 
@@ -310,6 +311,22 @@ public class EntityHelper {
 		}
 			
 		LogHelper.info("DEBUG : player not found: eid: "+entityID+" world: "+worldID+" client: "+world.isRemote);
+		return null;
+	}
+	
+	/** get (online) player by player UID, SERVER SIDE ONLY (get world id from player cache) */
+	public static EntityPlayer getEntityPlayerByUID(int uid) {
+		if(uid > 0) {
+			int[] pdata = ServerProxy.getPlayerWorldData(uid);
+			
+			//get world
+			int worldID = 0;
+			if(pdata != null) worldID = pdata[2];
+			World world = ServerProxy.getServerWorldByWorldID(worldID);
+			
+			return getEntityPlayerByUID(uid, world);
+		}
+		
 		return null;
 	}
 	
@@ -582,7 +599,7 @@ public class EntityHelper {
 				
 				return;
 			}
-			if(tile instanceof TileMultiGrudgeHeavy) {
+			else if(tile instanceof TileMultiGrudgeHeavy) {
 //				LogHelper.info("DEBUG : set tile entity value "+button+" "+value+" "+value2);
 				
 				switch(button) {
@@ -599,11 +616,25 @@ public class EntityHelper {
 					setLargeShipyardBuildMats((TileMultiGrudgeHeavy)tile, button, value, value2);
 					break;
 				}	
-			}			
+			}
 		}
 		else {
 			LogHelper.info("DEBUG : set tile entity by GUI fail, tile is null");
 		}	
+	}
+	
+	/**process tile entity GUI click */
+	public static void setTileEntityByGUI(TileEntity tile, int value1, int[] value3) {
+		if(tile != null) {
+			if(tile instanceof TileEntityDesk) {  //admiral desk sync
+				if(value1 == ID.B.Desk_Sync) {
+					((TileEntityDesk)tile).setSyncData(value3);
+				}
+			}
+		}
+		else {
+			LogHelper.info("DEBUG : set tile entity by GUI fail, tile is null");
+		}
 	}
 
 	/**¼W´îlarge shipyardªºmatBuild[] */

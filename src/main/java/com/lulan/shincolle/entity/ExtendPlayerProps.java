@@ -1,5 +1,10 @@
 package com.lulan.shincolle.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang3.ArrayUtils;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -34,6 +39,7 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 	private int[][] sidList;				//ship UID
 	private int saveId;						//current ship/empty slot, value = 0~5
 	private int teamId;						//current team
+	private List<Integer> shipEIDList;		//all ships' entity id list
 	
 	//player id
 	private int playerUID;
@@ -53,6 +59,7 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		this.teamList = new BasicEntityShip[9][6];
 		this.selectState = new boolean[9][6];
 		this.sidList = new int[9][6];
+		this.shipEIDList = new ArrayList();
 		this.initSID = false;
 		this.saveId = 0;
 		this.teamId = 0;
@@ -261,6 +268,10 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		return this.initSID;
 	}
 	
+	public List<Integer> getShipEIDList() {
+		return this.shipEIDList;
+	}
+	
 	//setter
 	public void setRingActive(boolean par1) {
 		isRingActive = par1;
@@ -321,6 +332,10 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 	
 	public void setInitSID(boolean par1) {
 		this.initSID = par1;
+	}
+	
+	public void setShipEIDList(List<Integer> list) {
+		this.shipEIDList = list;	//shallow copy, ref only
 	}
 	
 	//add ship entity to slot

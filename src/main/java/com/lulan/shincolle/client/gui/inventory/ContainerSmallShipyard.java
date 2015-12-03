@@ -1,7 +1,8 @@
-package com.lulan.shincolle.client.inventory;
+package com.lulan.shincolle.client.gui.inventory;
 
 import com.lulan.shincolle.crafting.SmallRecipes;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;

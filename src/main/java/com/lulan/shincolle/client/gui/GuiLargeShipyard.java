@@ -3,7 +3,7 @@ package com.lulan.shincolle.client.gui;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.lulan.shincolle.client.inventory.ContainerLargeShipyard;
+import com.lulan.shincolle.client.gui.inventory.ContainerLargeShipyard;
 import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
