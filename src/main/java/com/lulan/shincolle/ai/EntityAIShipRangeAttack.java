@@ -3,8 +3,11 @@ package com.lulan.shincolle.ai;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
+
+import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.IShipCannonAttack;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.LogHelper;
 
 /**ENTITY RANGE ATTACK AI
  * 從骨弓的射箭AI修改而來
@@ -49,7 +52,15 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
 	public boolean shouldExecute() {
     	//for entity ship
     	if(host2 != null) {
+    		//坐下中不攻擊
     		if(this.host.getIsSitting()) return false;
+    		
+    		//若騎乘ship類座騎, 則攻擊交給mount判定
+    		if(this.host.getIsRiding()) {
+    			if(this.host2.ridingEntity instanceof BasicEntityMount) {
+    				return false;
+    			}
+    		}
         	
         	EntityLivingBase target = this.host.getTarget();
         	
@@ -68,9 +79,7 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
     @Override
     public void startExecuting() {
     	if(host != null) {
-	    	this.maxDelayLight = (int)(40F / (this.host.getAttackSpeed()));
-	    	this.maxDelayHeavy = (int)(80F / (this.host.getAttackSpeed()));
-	    	this.aimTime = (int) (20F * (150 - this.host.getLevel()) / 150F) + 10;
+    		this.updateAttackParms();
 	    	
 	    	//if target changed, check the delay time from prev attack
 	    	if(this.delayLight <= this.aimTime) {
@@ -79,9 +88,6 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
 	    	if(this.delayHeavy <= this.aimTime * 2) {
 	    		this.delayHeavy = this.aimTime * 2;
 	    	}
-	    	
-	        this.range = this.host.getAttackRange();
-	        this.rangeSq = this.range * this.range;
 	        
 	        distSq = distX = distY = distZ = 0D;
     	}      
@@ -90,9 +96,14 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
     //判定是否繼續AI： 有target就繼續, 或者已經移動完畢就繼續
     @Override
 	public boolean continueExecuting() {
-    	if(host != null) return this.shouldExecute() || (target != null && target.isEntityAlive() && !this.host.getShipNavigate().noPath());
-//    	if(host != null) return this.shouldExecute();
-   	
+    	if(host != null) {
+    		if(target != null && target.isEntityAlive() && !this.host.getShipNavigate().noPath()) {
+        		return true;
+        	}
+        	
+            return this.shouldExecute();
+    	}
+    	
     	return false;
     }
 
@@ -115,11 +126,7 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
     	if(this.host != null && this.target != null) {
     		//get update attributes every second
     		if(this.host2.ticksExisted % 64 == 0) {
-	    		this.maxDelayLight = (int)(40F / (this.host.getAttackSpeed()));
-		    	this.maxDelayHeavy = (int)(80F / (this.host.getAttackSpeed()));
-		    	this.aimTime = (int) (20F * (150 - this.host.getLevel()) / 150F) + 10;
-		    	this.range = this.host.getAttackRange();
-		        this.rangeSq = this.range * this.range;
+    			this.updateAttackParms();
     		}
 
     		//delay time decr
@@ -158,6 +165,10 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
 	
 	        //設定攻擊時, 頭部觀看的角度
 	        this.host2.getLookHelper().setLookPositionWithEntity(this.target, 30.0F, 30.0F);
+	        
+	        if(host2.isRiding() && host2.ridingEntity instanceof BasicEntityMount) {
+	        	((BasicEntityMount)host2.ridingEntity).getLookHelper().setLookPositionWithEntity(this.target, 30.0F, 30.0F);
+	        }
 
 	        //若attack delay倒數完了且瞄準時間夠久, 則開始攻擊
 	        if(onSight && distSq <= this.rangeSq && this.onSightTime >= this.aimTime) {
@@ -165,6 +176,7 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
 	        	if(this.delayLight <= 0 && this.host.useAmmoLight() && this.host.hasAmmoLight()) {
 	        		this.host.attackEntityWithAmmo(this.target);
 		            this.delayLight = this.maxDelayLight;
+//		            LogHelper.info("dEBUG: ranged attack: host: "+this.host);
 	        	}
 	        	
 	        	//使用重攻擊
@@ -184,4 +196,14 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
 
     	}//end target != null
     }//end update task
+    
+    private void updateAttackParms() {
+    	this.maxDelayLight = (int)(80F / (this.host.getAttackSpeed()));
+    	this.maxDelayHeavy = (int)(160F / (this.host.getAttackSpeed()));
+    	this.aimTime = (int) (20F * (150 - this.host.getLevel()) / 150F) + 10;
+    	
+    	this.range = this.host.getAttackRange();
+        this.rangeSq = this.range * this.range;
+    }
+    
 }

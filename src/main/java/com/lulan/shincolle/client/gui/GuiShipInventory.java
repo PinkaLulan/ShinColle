@@ -6,7 +6,7 @@ import java.util.List;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
-import com.lulan.shincolle.client.inventory.ContainerShipInventory;
+import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipLarge;
 import com.lulan.shincolle.handler.ConfigHandler;
@@ -15,6 +15,7 @@ import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.GuiHelper;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -49,7 +50,7 @@ public class GuiShipInventory extends GuiContainer {
 	               Kills, Exp, Grudge, Owner, AmmoLight, AmmoHeavy, AirLight, AirHeavy, TarAI,
 	               overText, strCri, strDhit, strThit, strMissMin, strMissMax, strMissAir,
 	               marriage, followMin, followMax, fleeHP, followMinValue, followMaxValue,
-	               fleeHPValue, barPosValue, auraEffect, strOnSight;
+	               fleeHPValue, barPosValue, auraEffect, strOnSight, strAA, strASM;
 	private int hpCurrent, hpMax, color, showPage, showPageAI, pageIndicator, pageIndicatorAI, showAttack,
 				fMinPos, fMaxPos, fleeHPPos, barPos, mousePressBar;
 	private boolean switchMelee, switchLight, switchHeavy, switchAirLight, switchAirHeavy,
@@ -288,7 +289,9 @@ public class GuiShipInventory extends GuiContainer {
 					strCri = String.valueOf((int)(this.entity.getEffectEquip(ID.EF_CRI) * 100F));
 					strDhit = String.valueOf((int)(this.entity.getEffectEquip(ID.EF_DHIT) * 100F));
 					strThit = String.valueOf((int)(this.entity.getEffectEquip(ID.EF_THIT) * 100F));
-				
+					strAA = String.valueOf((int)(this.entity.getEffectEquip(ID.EF_AA)));
+					strASM = String.valueOf((int)(this.entity.getEffectEquip(ID.EF_ASM)));
+					
 					//add mouseover text
 					overText = I18n.format("gui.shincolle:firepower1") + " " + strATK;
 					mouseoverList.add(overText);
@@ -299,6 +302,10 @@ public class GuiShipInventory extends GuiContainer {
 					overText = I18n.format("gui.shincolle:doublehit") + " " + strDhit + " %";
 					mouseoverList.add(overText);
 					overText = I18n.format("gui.shincolle:triplehit") + " " + strThit + " %";
+					mouseoverList.add(overText);
+					overText = I18n.format("gui.shincolle:antiair") + " " + strAA;
+					mouseoverList.add(overText);
+					overText = I18n.format("gui.shincolle:antiss") + " " + strASM;
 					mouseoverList.add(overText);
 					this.drawHoveringText(mouseoverList, 55, 143, this.fontRendererObj);
 				}

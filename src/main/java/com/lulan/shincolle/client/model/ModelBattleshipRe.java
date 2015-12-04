@@ -22,8 +22,10 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
     public ModelRenderer Neck;
     public ModelRenderer BoobR;
     public ModelRenderer BoobL;
-    public ModelRenderer ArmLeft;
-    public ModelRenderer ArmRight;
+    public ModelRenderer ArmLeft01;
+    public ModelRenderer ArmRight01;
+    public ModelRenderer ArmLeft02;
+    public ModelRenderer ArmRight02;
     public ModelRenderer BagMain;
     public ModelRenderer TailBase;
     public ModelRenderer Butt;
@@ -100,11 +102,15 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
         this.Face2 = new ModelRenderer(this, 80, 66);
         this.Face2.setRotationPoint(0.0F, 0.0F, -0.1F);
         this.Face2.addBox(-7.0F, -14.0F, -6.5F, 14, 14, 1, 0.0F);
-        this.ArmLeft = new ModelRenderer(this, 0, 57);
-        this.ArmLeft.mirror = true;
-        this.ArmLeft.setRotationPoint(6.5F, -8.5F, -0.5F);
-        this.ArmLeft.addBox(0.0F, 0.0F, -3.0F, 6, 17, 6, 0.0F);
-        this.setRotateAngle(ArmLeft, 0.2617993877991494F, 0.0F, -0.4363323129985824F);
+        this.ArmLeft01 = new ModelRenderer(this, 0, 57);
+        this.ArmLeft01.mirror = true;
+        this.ArmLeft01.setRotationPoint(4.5F, -8.5F, -0.5F);
+        this.ArmLeft01.addBox(0.0F, 0.0F, -3.0F, 6, 10, 6, 0.0F);
+        this.setRotateAngle(ArmLeft01, 0.2617993877991494F, 0.0F, -0.4363323129985824F);
+        this.ArmLeft02 = new ModelRenderer(this, 0, 57);
+        this.ArmLeft02.mirror = true;
+        this.ArmLeft02.setRotationPoint(6F, 10F, 3F);
+        this.ArmLeft02.addBox(-6F, 0.0F, -6F, 6, 7, 6, 0.0F);
         this.TailHeadC1 = new ModelRenderer(this, 201, 78);
         this.TailHeadC1.setRotationPoint(0.0F, -3.5F, 0.0F);
         this.TailHeadC1.addBox(-4.5F, 0.0F, 0.0F, 9, 5, 9, 0.0F);
@@ -128,7 +134,7 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
         this.setRotateAngle(BoobL, -0.7853981633974483F, -0.12217304763960307F, -0.08726646259971647F);
         this.PalmLeft = new ModelRenderer(this, 0, 89);
         this.PalmLeft.mirror = true;
-        this.PalmLeft.setRotationPoint(3.0F, 17.0F, 0.0F);
+        this.PalmLeft.setRotationPoint(-3F, 7F, -3F);
         this.PalmLeft.addBox(-2.5F, 0.0F, -2.5F, 5, 4, 5, 0.0F);
         this.TailHeadCR2 = new ModelRenderer(this, 207, 77);
         this.TailHeadCR2.setRotationPoint(-2.0F, 0.5F, 7.0F);
@@ -185,10 +191,13 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
         this.TailHeadCL2.setRotationPoint(2.0F, 0.5F, 7.0F);
         this.TailHeadCL2.addBox(0.0F, 0.0F, 0.0F, 2, 2, 10, 0.0F);
         this.setRotateAngle(TailHeadCL2, 0.08726646259971647F, 0.17453292519943295F, 0.0F);
-        this.ArmRight = new ModelRenderer(this, 0, 57);
-        this.ArmRight.setRotationPoint(-6.5F, -8.5F, -0.5F);
-        this.ArmRight.addBox(-6.0F, 0.0F, -3.0F, 6, 17, 6, 0.0F);
-        this.setRotateAngle(ArmRight, 0.2617993877991494F, 0.0F, 0.4363323129985824F);
+        this.ArmRight01 = new ModelRenderer(this, 0, 57);
+        this.ArmRight01.setRotationPoint(-4.5F, -8.5F, -0.5F);
+        this.ArmRight01.addBox(-6.0F, 0.0F, -3.0F, 6, 10, 6, 0.0F);
+        this.setRotateAngle(ArmRight01, 0.2617993877991494F, 0.0F, 0.4363323129985824F);
+        this.ArmRight02 = new ModelRenderer(this, 0, 57);
+        this.ArmRight02.setRotationPoint(-6F, 10F, 3F);
+        this.ArmRight02.addBox(0F, 0F, -6F, 6, 7, 6, 0.0F);
         this.TailBack4 = new ModelRenderer(this, 163, 70);
         this.TailBack4.setRotationPoint(0.0F, -7.0F, 0.0F);
         this.TailBack4.addBox(-3.5F, 0.0F, 0.0F, 7, 2, 12, 0.0F);
@@ -287,7 +296,7 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
         this.TailHeadC4.addBox(-1.0F, 0.0F, 0.0F, 2, 2, 10, 0.0F);
         this.setRotateAngle(TailHeadC4, 0.13962634015954636F, 0.05235987755982988F, 0.0F);
         this.PalmRight = new ModelRenderer(this, 0, 89);
-        this.PalmRight.setRotationPoint(-3.0F, 17.0F, 0.0F);
+        this.PalmRight.setRotationPoint(3F, 7F, -3F);
         this.PalmRight.addBox(-2.5F, 0.0F, -2.5F, 5, 4, 5, 0.0F);
         this.setRotateAngle(PalmRight, 0.0F, 0.02530727415391778F, 0.0F);
         this.Tail2 = new ModelRenderer(this, 208, 103);
@@ -331,11 +340,12 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
         this.BagMain2.setRotationPoint(-0.5F, 11.0F, -0.5F);
         this.BagMain2.addBox(-7.5F, 0.0F, 0.0F, 15, 9, 8, 0.0F);
         this.setRotateAngle(BagMain2, 0.6981317007977318F, 0.0F, -0.2617993877991494F);
-        this.BodyMain.addChild(this.ArmLeft);
+        this.BodyMain.addChild(this.ArmLeft01);
+        this.ArmLeft01.addChild(this.ArmLeft02);
         this.TailHead1.addChild(this.TailHeadC1);
         this.Cloth.addChild(this.Cloth2);
         this.BodyMain.addChild(this.BoobL);
-        this.ArmLeft.addChild(this.PalmLeft);
+        this.ArmLeft02.addChild(this.PalmLeft);
         this.TailHeadCR1.addChild(this.TailHeadCR2);
         this.TailHeadC1.addChild(this.TailHeadC2);
         this.TailHeadCR1.addChild(this.TailHeadCR3);
@@ -347,7 +357,8 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
         this.TailHead1.addChild(this.TailHead3);
         this.TailHead1.addChild(this.TailHead2);
         this.TailHeadCL1.addChild(this.TailHeadCL2);
-        this.BodyMain.addChild(this.ArmRight);
+        this.BodyMain.addChild(this.ArmRight01);
+        this.ArmRight01.addChild(this.ArmRight02);
         this.TailJaw1.addChild(this.TailJaw2);
         this.BodyMain.addChild(this.BoobR);
         this.Butt.addChild(this.LegLeft);
@@ -360,7 +371,7 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
         this.Head.addChild(this.Hair);
         this.TailHeadBase.addChild(this.TailHeadCR1);
         this.TailHeadC1.addChild(this.TailHeadC4);
-        this.ArmRight.addChild(this.PalmRight);
+        this.ArmRight02.addChild(this.PalmRight);
         this.TailHeadCL1.addChild(this.TailHeadCL3);
         this.BoobR.addChild(this.BoobM);
         this.BagMain.addChild(this.BagMain2);
@@ -560,12 +571,14 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
 	  	this.BodyMain.rotateAngleY = 0F;
 	  	this.Cloth2.rotateAngleX = -0.0524F;
 	    //arm 
-	  	this.ArmLeft.rotateAngleX = 0.2618F;
-	    this.ArmLeft.rotateAngleY = 0F;
-	    this.ArmLeft.rotateAngleZ = angleX * 0.1F - 0.5236F;
-	    this.ArmRight.rotateAngleX = 0.2618F;
-		this.ArmRight.rotateAngleY = 0F;
-		this.ArmRight.rotateAngleZ = -angleX * 0.1F + 0.5236F;
+	  	this.ArmLeft01.rotateAngleX = 0.2618F;
+	    this.ArmLeft01.rotateAngleY = 0F;
+	    this.ArmLeft01.rotateAngleZ = angleX * 0.1F - 0.5236F;
+	    this.ArmLeft02.rotateAngleZ = 0F;
+	    this.ArmRight01.rotateAngleX = 0.2618F;
+		this.ArmRight01.rotateAngleY = 0F;
+		this.ArmRight01.rotateAngleZ = -angleX * 0.1F + 0.5236F;
+		this.ArmRight02.rotateAngleZ = 0F;
 		//bag
 		this.BagStrap1.rotateAngleX = 0.2618F;
 		this.BagStrap1.rotateAngleY = -0.1396F;
@@ -612,12 +625,12 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
 				//高度
 			    GL11.glTranslatef(0F, 0.5F, 0F);
 		  	    //手臂晃動
-			  	this.ArmLeft.rotateAngleX = MathHelper.cos(f * 0.8F) * 0.1F -2.0944F;
-			    this.ArmLeft.rotateAngleY = -0.5236F;
-			    this.ArmLeft.rotateAngleZ = 0F;
-			    this.ArmRight.rotateAngleX = -MathHelper.cos(f * 0.8F) * 0.1F -2.0944F;
-				this.ArmRight.rotateAngleY = 0.5236F;
-				this.ArmRight.rotateAngleZ = 0F;
+			  	this.ArmLeft01.rotateAngleX = MathHelper.cos(f * 0.8F) * 0.1F -2.0944F;
+			    this.ArmLeft01.rotateAngleY = -0.5236F;
+			    this.ArmLeft01.rotateAngleZ = 0F;
+			    this.ArmRight01.rotateAngleX = -MathHelper.cos(f * 0.8F) * 0.1F -2.0944F;
+				this.ArmRight01.rotateAngleY = 0.5236F;
+				this.ArmRight01.rotateAngleZ = 0F;
 				//頭部角度
 				this.Head.rotateAngleX -= 0.5236F;
 				//身體角度
@@ -669,12 +682,12 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
 				//高度
 			    GL11.glTranslatef(0F, 0.3F, 0F);
 		  	    //手臂晃動 
-			  	this.ArmLeft.rotateAngleX = -1.0472F;
-			    this.ArmLeft.rotateAngleY = 0.2618F;
-			    this.ArmLeft.rotateAngleZ = 0F;
-			    this.ArmRight.rotateAngleX = -2.7925F;
-				this.ArmRight.rotateAngleY = 0F;
-				this.ArmRight.rotateAngleZ = f3 / -57F;
+			  	this.ArmLeft01.rotateAngleX = -1.0472F;
+			    this.ArmLeft01.rotateAngleY = 0.2618F;
+			    this.ArmLeft01.rotateAngleZ = 0F;
+			    this.ArmRight01.rotateAngleX = -2.7925F;
+				this.ArmRight01.rotateAngleY = 0F;
+				this.ArmRight01.rotateAngleZ = f3 / -57F;
 				//頭部角度
 				this.Head.rotateAngleX -= 1.2217F;
 				//身體角度
@@ -723,12 +736,12 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
 				//高度
 			    GL11.glTranslatef(0F, 0.5F, 0F);
 		  	    //手臂晃動 
-			  	this.ArmLeft.rotateAngleX = MathHelper.cos(f * 0.8F) * 0.1F + 0.6981F;
-			    this.ArmLeft.rotateAngleY = 0F;
-			    this.ArmLeft.rotateAngleZ = -0.6981F;
-			    this.ArmRight.rotateAngleX = MathHelper.cos(f * 0.8F) * 0.1F + 0.6981F;
-				this.ArmRight.rotateAngleY = 0F;
-				this.ArmRight.rotateAngleZ = 0.6981F;
+			  	this.ArmLeft01.rotateAngleX = MathHelper.cos(f * 0.8F) * 0.1F + 0.6981F;
+			    this.ArmLeft01.rotateAngleY = 0F;
+			    this.ArmLeft01.rotateAngleZ = -0.6981F;
+			    this.ArmRight01.rotateAngleX = MathHelper.cos(f * 0.8F) * 0.1F + 0.6981F;
+				this.ArmRight01.rotateAngleY = 0F;
+				this.ArmRight01.rotateAngleZ = 0.6981F;
 				//頭部角度
 				this.Head.rotateAngleX -= 1.0472F;
 				//身體角度
@@ -828,12 +841,12 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
   			//高度
 		    GL11.glTranslatef(0F, 0.2F, 0F);
 	  	    //手臂晃動 
-		  	this.ArmLeft.rotateAngleX = 0.5236F;
-		    this.ArmLeft.rotateAngleY = 0F;
-		    this.ArmLeft.rotateAngleZ = -0.5236F;
-		    this.ArmRight.rotateAngleX = 0.5236F;
-			this.ArmRight.rotateAngleY = 0F;
-			this.ArmRight.rotateAngleZ = 0.5236F;
+		  	this.ArmLeft01.rotateAngleX = 0.5236F;
+		    this.ArmLeft01.rotateAngleY = 0F;
+		    this.ArmLeft01.rotateAngleZ = -0.5236F;
+		    this.ArmRight01.rotateAngleX = 0.5236F;
+			this.ArmRight01.rotateAngleY = 0F;
+			this.ArmRight01.rotateAngleZ = 0.5236F;
 			//頭部角度
 			this.Head.rotateAngleX = -1.2217F;
 			//身體角度
@@ -881,18 +894,76 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
   		
 	    if(ent.isSitting() || ent.isRiding()) {  //騎乘動作
 	    	if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {	
+				GL11.glTranslatef(0F, 0.5F, 0F);
+		    	//Body
+				this.Head.rotateAngleX += 0.3F;
+		    	this.BodyMain.rotateAngleX = -0.3F;
+		    	this.Cloth2.rotateAngleX = -0.3F;
+		  	    //arm 
+				this.ArmLeft01.rotateAngleX = 2.3F;
+			    this.ArmLeft01.rotateAngleY = 0F;
+			    this.ArmLeft01.rotateAngleZ = 0.2F;
+			    this.ArmLeft02.rotateAngleZ = 1F;
+			    this.ArmRight01.rotateAngleX = 2.3F;
+				this.ArmRight01.rotateAngleY = 0F;
+				this.ArmRight01.rotateAngleZ = -0.2F;
+				this.ArmRight02.rotateAngleZ = -1F;
+				//bag
+				this.BagStrap1.rotateAngleX = 0.6F;
+				this.BagStrap1.rotateAngleY = 0F;
+				this.BagStrap1.rotateAngleZ = 0F;
+				this.BagStrap2.rotateAngleX = 1.0472F;
+				this.BagStrap2.rotateAngleY = 1.3963F;
+				//leg
+				addk1 = angleX*0.1F -0.9F;
+				addk2 = -angleX*0.1F -0.9F;
+				this.LegLeft.rotateAngleY = -0.2F;
+				this.LegRight.rotateAngleY = 0.2F;
+				//tail
+				this.TailBase.rotateAngleX = -1.0F;
+				this.TailBase.rotateAngleY = 0.2618F;
+				this.TailBase.rotateAngleZ = 0F;
+				this.Tail1.rotateAngleX = 0.6981F;
+				this.Tail1.rotateAngleY = 0.0872F;
+				this.Tail1.rotateAngleZ = 0F;
+				this.Tail2.rotateAngleX = 0.5236F;
+				this.Tail2.rotateAngleY = 0.0872F;
+				this.Tail2.rotateAngleZ = 0.1745F;
+				this.Tail3.rotateAngleX = 0F;
+				this.Tail3.rotateAngleY = 0.6981F;
+				this.Tail3.rotateAngleZ = 0F;
+				this.Tail4.rotateAngleX = 0F;
+				this.Tail4.rotateAngleY = 0.6981F;
+				this.Tail4.rotateAngleZ = 0F;
+				this.Tail5.rotateAngleX = 0F;
+				this.Tail5.rotateAngleY = 0.5236F;
+				this.Tail5.rotateAngleZ = 0F;
+				this.Tail6.rotateAngleX = 0F;
+				this.Tail6.rotateAngleY = 0.5236F;
+				this.Tail6.rotateAngleZ = 0F;
+				this.TailHeadBase.rotateAngleX = 0.2618F;
+				this.TailHeadBase.rotateAngleY = 0.5236F;
+				this.TailHeadBase.rotateAngleZ = 0F;
+				this.TailHead1.rotateAngleX = 0.2618F;
+				this.TailJaw1.rotateAngleX = angleX * 0.1F - 0.2618F;
+	    	}
+	    	else {
 	    		GL11.glTranslatef(0F, 1.7F, 0F);
 		    	//Body
+	    		this.Head.rotateAngleX *= 0.8F;
 		    	this.Head.rotateAngleX -= 1.8F;
+		    	this.Head.rotateAngleY *= 0.5F;
 		    	this.BodyMain.rotateAngleX = 1.5708F;
 		    	this.Cloth2.rotateAngleX = -0.0524F;
 		  	    //arm 
-			  	this.ArmLeft.rotateAngleX = -2.9671F;
-			    this.ArmLeft.rotateAngleY = 0F;
-			    this.ArmLeft.rotateAngleZ = -1.0472F;
-			    this.ArmRight.rotateAngleX = -2.9671F;
-				this.ArmRight.rotateAngleY = 0F;
-				this.ArmRight.rotateAngleZ = 1.0472F;
+			  	this.ArmLeft01.rotateAngleX = -2.9671F;
+			    this.ArmLeft01.rotateAngleY = 0F;
+			    this.ArmLeft01.rotateAngleZ = 0.0349F;
+			    this.ArmLeft02.rotateAngleZ = 1.3962F;
+			    this.ArmRight01.rotateAngleX = -2.9671F;
+				this.ArmRight01.rotateAngleY = 0F;
+				this.ArmRight01.rotateAngleZ = -0.0349F;
+				this.ArmRight02.rotateAngleZ = -1.3962F;
 				//bag
 				this.BagStrap1.rotateAngleX = 0.2618F;
 				this.BagStrap1.rotateAngleY = -0.1396F;
@@ -932,57 +1003,6 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
 				this.TailHead1.rotateAngleX = 0.2618F;
 				this.TailJaw1.rotateAngleX = angleX * 0.1F - 0.15F;
 	    	}
-	    	else {
-	    		GL11.glTranslatef(0F, 0.5F, 0F);
-		    	//Body
-		    	this.BodyMain.rotateAngleX = -0.1745F;
-		    	this.Cloth2.rotateAngleX = -0.1745F;
-		  	    //arm 
-			  	this.ArmLeft.rotateAngleX = -0.2618F;
-			    this.ArmLeft.rotateAngleY = 0F;
-			    this.ArmLeft.rotateAngleZ = 0.2618F;
-			    this.ArmRight.rotateAngleX = -0.2618F;
-				this.ArmRight.rotateAngleY = 0F;
-				this.ArmRight.rotateAngleZ = -0.2618F;
-				//bag
-				this.BagStrap1.rotateAngleX = 0.6F;
-				this.BagStrap1.rotateAngleY = 0F;
-				this.BagStrap1.rotateAngleZ = 0F;
-				this.BagStrap2.rotateAngleX = 1.0472F;
-				this.BagStrap2.rotateAngleY = 1.3963F;
-				//leg
-				addk1 = -0.7854F;
-				addk2 = -0.7854F;
-				this.LegLeft.rotateAngleY = -0.5236F;
-				this.LegRight.rotateAngleY = 0.5236F;
-				//tail
-				this.TailBase.rotateAngleX = -1.2217F;
-				this.TailBase.rotateAngleY = 0.2618F;
-				this.TailBase.rotateAngleZ = 0F;
-				this.Tail1.rotateAngleX = 0.6981F;
-				this.Tail1.rotateAngleY = 0.0872F;
-				this.Tail1.rotateAngleZ = 0F;
-				this.Tail2.rotateAngleX = 0.5236F;
-				this.Tail2.rotateAngleY = 0.0872F;
-				this.Tail2.rotateAngleZ = 0.1745F;
-				this.Tail3.rotateAngleX = 0F;
-				this.Tail3.rotateAngleY = 0.6981F;
-				this.Tail3.rotateAngleZ = 0F;
-				this.Tail4.rotateAngleX = 0F;
-				this.Tail4.rotateAngleY = 0.6981F;
-				this.Tail4.rotateAngleZ = 0F;
-				this.Tail5.rotateAngleX = 0F;
-				this.Tail5.rotateAngleY = 0.5236F;
-				this.Tail5.rotateAngleZ = 0F;
-				this.Tail6.rotateAngleX = 0F;
-				this.Tail6.rotateAngleY = 0.5236F;
-				this.Tail6.rotateAngleZ = 0F;
-				this.TailHeadBase.rotateAngleX = 0.2618F;
-				this.TailHeadBase.rotateAngleY = 0.5236F;
-				this.TailHeadBase.rotateAngleZ = 0F;
-				this.TailHead1.rotateAngleX = 0.2618F;
-				this.TailJaw1.rotateAngleX = angleX * 0.1F - 0.2618F;
-	    	}
   		}//end if sitting
 	    
 	    //攻擊動作    
@@ -990,12 +1010,12 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
 	    	//高度
 		    GL11.glTranslatef(0F, 0.6F, 0F);
 	  	    //手臂晃動 
-		  	this.ArmLeft.rotateAngleX = 0.5236F;
-		    this.ArmLeft.rotateAngleY = 0F;
-		    this.ArmLeft.rotateAngleZ = -0.5236F;
-		    this.ArmRight.rotateAngleX = -2.7925F;
-			this.ArmRight.rotateAngleY = 0F;
-			this.ArmRight.rotateAngleZ = -0.2618F;
+		  	this.ArmLeft01.rotateAngleX = 0.5236F;
+		    this.ArmLeft01.rotateAngleY = 0F;
+		    this.ArmLeft01.rotateAngleZ = -0.5236F;
+		    this.ArmRight01.rotateAngleX = -2.7925F;
+			this.ArmRight01.rotateAngleY = 0F;
+			this.ArmRight01.rotateAngleZ = -0.2618F;
 			//頭部角度
 			this.Head.rotateAngleX = -1.2217F;
 			this.Head.rotateAngleY = 0F;

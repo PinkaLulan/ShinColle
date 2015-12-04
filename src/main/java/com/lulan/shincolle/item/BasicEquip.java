@@ -13,7 +13,7 @@ import com.lulan.shincolle.crafting.EquipCalc;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 
-public class BasicEquip extends BasicItem {	
+abstract public class BasicEquip extends BasicItem implements IShipItemType {	
 	byte types;
 	
 	public BasicEquip() {

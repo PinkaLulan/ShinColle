@@ -1,5 +1,7 @@
 package com.lulan.shincolle.item;
 
+import com.lulan.shincolle.reference.ID;
+
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
@@ -39,6 +41,11 @@ public class EquipTurbine extends BasicEquip {
 		
         return false;
     }
+	
+	@Override
+	public int getItemType() {
+		return ID.ItemType.EquipTurbine;
+	}
 
 
 }

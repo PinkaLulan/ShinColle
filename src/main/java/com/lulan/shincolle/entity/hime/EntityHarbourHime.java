@@ -199,10 +199,8 @@ public class EntityHarbourHime extends BasicEntityShipLarge {
   	public boolean attackEntityWithSpecialAmmo(Entity target) {	
   		//get attack value
   		float atk = StateFinal[ID.ATK_H] * 0.5F;
-  		
-  		//set knockback value (testing)
   		float kbValue = 0.15F;
-
+		
   		//­pºâ¥Ø¼Ð¶ZÂ÷
   		float tarX = (float)target.posX;	//for miss chance calc
   		float tarY = (float)target.posY;

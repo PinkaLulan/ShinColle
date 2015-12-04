@@ -1,10 +1,14 @@
 package com.lulan.shincolle.proxy;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.server.MinecraftServer;
@@ -14,7 +18,10 @@ import net.minecraft.world.storage.MapStorage;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
+import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.server.ShinWorldData;
+import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
 public class ServerProxy extends CommonProxy {
@@ -85,13 +92,16 @@ public class ServerProxy extends CommonProxy {
 	private static int nextShipID = -1;
 	private static int nextTeamID = -1;
 	
-	/**server global files
-	 */
+	/**server global files */
 	private static MapStorage serverFile = null;
 	private static ShinWorldData serverData = null;
 	public static boolean initServerFile = false;	//when open a save or world -> reset to false
 	
+	/**server global var */
+	public static int serverTicks = 0;
+	public static int updateRadarTicks = ConfigHandler.radarUpdate;
 
+	
 	//init server proxy variables, called when world loaded and initServerFile = false
 	public static void initServerProxy(World world) {
 		LogHelper.info("DEBUG : init server proxy");
@@ -151,6 +161,17 @@ public class ServerProxy extends CommonProxy {
 		return MinecraftServer.getServer().worldServers;
 	}
 	
+	public static WorldServer getServerWorldByWorldID(int worldID) {
+		WorldServer[] worlds = getServerWorld();
+				
+		for(WorldServer getw : worlds) {
+			if(getw.provider.dimensionId == worldID) {
+				return getw;
+			}
+		}
+		return null;
+	}
+	
 	@Override
 	public void registerKeyBindings() {		
 	}
@@ -174,7 +195,8 @@ public class ServerProxy extends CommonProxy {
 	//get player world data
 	public static int[] getPlayerWorldData(int par1) {
 //		LogHelper.info("DEBUG : Server Proxy: get player data");
-		return mapPlayerID.get(par1);
+		if(par1 != -1) return mapPlayerID.get(par1);
+		return null;
 	}
 	
 	//set player world data
@@ -194,7 +216,8 @@ public class ServerProxy extends CommonProxy {
 	//get player world data
 	public static int[] getShipWorldData(int par1) {
 //		LogHelper.info("DEBUG : Server Proxy: get ship data");
-		return mapShipID.get(par1);
+		if(par1 != -1) return mapShipID.get(par1);
+		return null;
 	}
 	
 	//set player world data
@@ -331,6 +354,76 @@ public class ServerProxy extends CommonProxy {
 				ship.setPlayerUID(pid);
 			}
 		}
+	}
+	
+	/**update server tick*/
+	public static void updateServerTick() {
+		//server tick +1
+		serverTicks++;
+		if(serverTicks > 23999) serverTicks = 0;
+		
+		//work after server start tick > 60
+		if(serverTicks > 60) {
+			
+			/**every update radar tick
+			 * 1. create a map: key = player uid, value = ships eid
+			 * 2. sync map to each player
+			 */
+			if(serverTicks % updateRadarTicks == 0) {
+				//all ship map: <Player UID, ship entity id list>
+				Map<Integer, List<Integer>> allShipMapByPlayer = new HashMap<Integer, List<Integer>>();
+//				LogHelper.info("dEBUG : update ship list");
+				//init value
+				Iterator iter = mapPlayerID.entrySet().iterator();
+				while(iter.hasNext()) {
+					Map.Entry entry = (Map.Entry) iter.next();
+					int sid = (Integer) entry.getKey();		//get player uid
+					List<Integer> value = new ArrayList();	//new empty list
+					//add init value
+					allShipMapByPlayer.put(sid, value);
+				}
+			
+				//build allShipMapByPlayer: get ship from mapShipID, assign to allShipMapByPlayer
+				iter = mapShipID.entrySet().iterator();
+				while(iter.hasNext()) {
+					Map.Entry entry = (Map.Entry) iter.next();
+				    int sid = (Integer) entry.getKey();		//get ship uid
+				    int[] sdata = (int[]) entry.getValue();	//get ship data
+				    
+				    //get ship's owner's uid
+				    int puid = -1;
+				    BasicEntityShip ship = EntityHelper.getShipBySID(sid);	//get ship entity
+				    if(ship != null) puid = ship.getPlayerUID();			//get ship's owner uid
+				    
+				    int[] pdata = getPlayerWorldData(puid);	//get owner's data
+				    
+				    //檢查是否在同world, 相同world的ship才加入list
+				    if(sdata != null && pdata != null && sdata[1] == pdata[2]) {
+				    	//add ship's entity id to player's shipList
+				    	List shipList = allShipMapByPlayer.get(puid);
+				    	if(shipList != null) {
+				    		shipList.add(sdata[0]);
+				    		allShipMapByPlayer.put(puid, shipList);
+				    	}
+				    }
+				}//end build up allShipMapByPlayer
+				
+				//sync map to each player
+				iter = allShipMapByPlayer.entrySet().iterator();
+				while(iter.hasNext()) {
+					Map.Entry entry = (Map.Entry) iter.next();
+					int sid = (Integer) entry.getKey();		//get player uid
+					List<Integer> value = (List<Integer>) entry.getValue();	//get data
+					EntityPlayerMP player = (EntityPlayerMP)EntityHelper.getEntityPlayerByUID(sid);
+					
+					//sync data to player
+					CommonProxy.channelG.sendTo(new S2CGUIPackets(S2CGUIPackets.PID.SyncShipList, value), (EntityPlayerMP) player);
+				}
+			}//end every updateRadarTicks
+			
+			
+		}//end server start > 60 ticks
+		
 	}
 
 	

@@ -7,9 +7,14 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityFlying;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.boss.EntityWither;
+import net.minecraft.entity.monster.EntityBlaze;
+import net.minecraft.entity.passive.EntityBat;
 import net.minecraft.entity.passive.EntityTameable;
+import net.minecraft.entity.passive.EntityWaterMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -45,6 +50,7 @@ import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
+import com.lulan.shincolle.tileentity.TileEntityDesk;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 
@@ -90,6 +96,29 @@ public class EntityHelper {
 	public static boolean checkEntityIsFree(Entity entity) {
 		Block block = entity.worldObj.getBlock(MathHelper.floor_double(entity.posX), (int)(entity.boundingBox.minY + 0.5D), MathHelper.floor_double(entity.posZ));
 		return checkBlockSafe(block);
+	}
+	
+	/**check entity is air or underwater mob, return 0:default 1:air 2:water */
+	public static int checkEntityTypeForEquipEffect(Entity entity) {
+		if(entity instanceof IShipAttackBase) {
+			switch(((IShipAttackBase) entity).getDamageType()) {
+			case ID.ShipDmgType.AIRPLANE:
+				return 1;
+			case ID.ShipDmgType.SUBMARINE:
+				return 2;
+			default:	//default type
+				return 0;
+			}
+		}
+		else if(entity instanceof EntityWaterMob) {
+			return 2;
+		}
+		else if(entity instanceof EntityBlaze || entity instanceof EntityWither ||
+				entity instanceof EntityBat || entity instanceof EntityFlying) {
+			return 1;
+		}
+		
+		return 0;
 	}
 	
 	/**check is same owner for ship (host's owner == target's owner) */
@@ -282,6 +311,22 @@ public class EntityHelper {
 		}
 			
 		LogHelper.info("DEBUG : player not found: eid: "+entityID+" world: "+worldID+" client: "+world.isRemote);
+		return null;
+	}
+	
+	/** get (online) player by player UID, SERVER SIDE ONLY (get world id from player cache) */
+	public static EntityPlayer getEntityPlayerByUID(int uid) {
+		if(uid > 0) {
+			int[] pdata = ServerProxy.getPlayerWorldData(uid);
+			
+			//get world
+			int worldID = 0;
+			if(pdata != null) worldID = pdata[2];
+			World world = ServerProxy.getServerWorldByWorldID(worldID);
+			
+			return getEntityPlayerByUID(uid, world);
+		}
+		
 		return null;
 	}
 	
@@ -554,7 +599,7 @@ public class EntityHelper {
 				
 				return;
 			}
-			if(tile instanceof TileMultiGrudgeHeavy) {
+			else if(tile instanceof TileMultiGrudgeHeavy) {
 //				LogHelper.info("DEBUG : set tile entity value "+button+" "+value+" "+value2);
 				
 				switch(button) {
@@ -571,11 +616,25 @@ public class EntityHelper {
 					setLargeShipyardBuildMats((TileMultiGrudgeHeavy)tile, button, value, value2);
 					break;
 				}	
-			}			
+			}
 		}
 		else {
 			LogHelper.info("DEBUG : set tile entity by GUI fail, tile is null");
 		}	
+	}
+	
+	/**process tile entity GUI click */
+	public static void setTileEntityByGUI(TileEntity tile, int value1, int[] value3) {
+		if(tile != null) {
+			if(tile instanceof TileEntityDesk) {  //admiral desk sync
+				if(value1 == ID.B.Desk_Sync) {
+					((TileEntityDesk)tile).setSyncData(value3);
+				}
+			}
+		}
+		else {
+			LogHelper.info("DEBUG : set tile entity by GUI fail, tile is null");
+		}
 	}
 
 	/**¼W´îlarge shipyardªºmatBuild[] */

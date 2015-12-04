@@ -1,5 +1,7 @@
 package com.lulan.shincolle.item;
 
+import com.lulan.shincolle.reference.ID;
+
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.util.IIcon;
 
@@ -22,6 +24,12 @@ public class EquipArmor extends BasicEquip {
 	public IIcon getIconFromDamage(int meta) {
 	    return icons[0];
 	}
+	
+	@Override
+	public int getItemType() {
+		return ID.ItemType.EquipArmor;
+	}
+	
 
 }
 

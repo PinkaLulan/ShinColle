@@ -23,6 +23,7 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
@@ -295,9 +296,11 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
 	public boolean attackEntityWithAmmo(Entity target) {	
 		//get attack value
 		float atk = StateFinal[ID.ATK];
-		
 		//set knockback value (testing)
 		float kbValue = 0.05F;
+		
+		//calc equip special dmg: AA, ASM
+		atk = CalcHelper.calcDamageByEquipEffect(this, target, atk, 0);
         
         //experience++
   		addShipExp(2);

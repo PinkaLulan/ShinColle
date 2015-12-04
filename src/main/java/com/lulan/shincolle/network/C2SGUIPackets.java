@@ -15,6 +15,8 @@ import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.BasicTileEntity;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
+
 import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -34,6 +36,7 @@ public class C2SGUIPackets implements IMessage {
 	
 	//packet id
 	public static final class PID {
+		//pointer
 		public static final byte AddTeam = -1;
 		public static final byte AttackTarget = -2;
 		public static final byte OpenShipGUI = -3;
@@ -44,6 +47,8 @@ public class C2SGUIPackets implements IMessage {
 		public static final byte SetShipTeamID = -8;
 		public static final byte SetMove = -9;
 		public static final byte SetSelect = -10;
+		//tile entity
+		public static final byte TileEntitySync = -11;
 	}
 	
 	
@@ -59,7 +64,7 @@ public class C2SGUIPackets implements IMessage {
         this.value1 = value1;
     }
 	
-	//type 1: shipyard gui click
+	//type 1: tile entity gui click
 	public C2SGUIPackets(BasicTileEntity tile, int button, int value1, int value2) {
         this.tile = tile;
         this.worldID = tile.getWorldObj().provider.dimensionId;
@@ -67,6 +72,15 @@ public class C2SGUIPackets implements IMessage {
         this.button = button;
         this.value1 = value1;
         this.value2 = value2;
+    }
+	
+	//tile entity gui click
+	public C2SGUIPackets(BasicTileEntity tile, int value1, int[] value3) {
+        this.tile = tile;
+        this.worldID = tile.getWorldObj().provider.dimensionId;
+        this.type = PID.TileEntitySync;
+        this.value1 = value1;
+        this.value3 = value3;
     }
 	
 	/**
@@ -113,7 +127,7 @@ public class C2SGUIPackets implements IMessage {
 				EntityHelper.setEntityByGUI(entity, button, value1);
 			}
 			break;
-		case 1: //shipyard gui click
+		case 1: //tile entity gui click
 			{
 				this.value3 = new int[3];
 				
@@ -363,6 +377,33 @@ public class C2SGUIPackets implements IMessage {
 				}
 			}
 			break;
+		case PID.TileEntitySync:  //sync tile entity
+			{
+				this.worldID = buf.readInt();
+				int[] tilepos = new int[3];
+				tilepos[0] = buf.readInt();
+				tilepos[1] = buf.readInt();
+				tilepos[2] = buf.readInt();
+				this.value1 = buf.readInt();
+				
+				//get tile
+				world = DimensionManager.getWorld(worldID);
+				if(world != null) {
+					this.tile = (BasicTileEntity) world.getTileEntity(tilepos[0], tilepos[1], tilepos[2]);
+				}
+				
+				//set tile
+				switch(this.value1) {
+				case ID.B.Desk_Sync:  //admiral desk sync
+					this.value3 = new int[3];
+					for(int i = 0; i < 3; ++i) {
+						this.value3[i] = buf.readInt();
+					}
+					EntityHelper.setTileEntityByGUI(tile, value1, value3);
+					break;
+				}
+			}
+			break;
 		}
 	}
 
@@ -405,6 +446,20 @@ public class C2SGUIPackets implements IMessage {
 				buf.writeByte(this.type);
 				buf.writeInt(this.player.getEntityId());
 				buf.writeInt(this.worldID);
+				
+				for(int val : value3) {
+					buf.writeInt(val);
+				}
+			}
+			break;
+		case PID.TileEntitySync:
+			{
+				buf.writeByte(this.type);
+				buf.writeInt(this.worldID);
+				buf.writeInt(this.tile.xCoord);
+				buf.writeInt(this.tile.yCoord);
+				buf.writeInt(this.tile.zCoord);
+				buf.writeInt(this.value1);
 				
 				for(int val : value3) {
 					buf.writeInt(val);

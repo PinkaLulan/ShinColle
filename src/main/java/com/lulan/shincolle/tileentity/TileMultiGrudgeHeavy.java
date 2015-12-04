@@ -15,6 +15,7 @@ import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.TileEntityHelper;
 
 /** Fuel Cost = BaseCost + CostPerMaterial * ( TotalMaterialAmount - minAmount * 4 )
@@ -211,10 +212,10 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileFurnace
 			if(invMode == 0) {	//收入物品
 				for(int i = SLOTS_OUT + 1; i < SLOTS_NUM; i++) {
 					itemType = LargeRecipes.getMaterialType(slots[i]);
-					
+//					LogHelper.info("DEBUG : large build: slot "+i+" item type "+itemType);
 					//add material into stock
 					if(itemType > 0) {	//is material
-						if(LargeRecipes.addMaterialStock(this, i, itemType)) {
+						if(LargeRecipes.addMaterialStock(this, i, itemType, slots[i])) {
 							slots[i].stackSize--;
 							
 							if(slots[i].stackSize == 0) {
