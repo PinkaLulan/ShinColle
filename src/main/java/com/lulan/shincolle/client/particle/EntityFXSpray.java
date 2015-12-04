@@ -2,6 +2,8 @@ package com.lulan.shincolle.client.particle;
 
 import org.lwjgl.opengl.GL11;
 
+import com.lulan.shincolle.utility.LogHelper;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.particle.EntityFX;
@@ -25,6 +27,16 @@ public class EntityFXSpray extends EntityFX {
         this.motionX += motionX;
         this.motionZ += motionZ;
         this.motionY += motionY;
+        
+        double limit = 0.3D;
+        //speed limit
+        if(this.motionX > limit) this.motionX = limit;
+        if(this.motionY > limit) this.motionY = limit;
+        if(this.motionZ > limit) this.motionZ = limit;
+        if(this.motionX < -limit) this.motionX = -limit;
+        if(this.motionY < -limit) this.motionY = -limit;
+        if(this.motionZ < -limit) this.motionZ = -limit;
+        
         this.particleRed = colorR;
         this.particleGreen = colorG;
         this.particleBlue = colorB;
@@ -33,7 +45,7 @@ public class EntityFXSpray extends EntityFX {
         this.Scale = this.particleScale;
         this.particleMaxAge = 40;
         this.noClip = false;
-        
+
         if(motionY >= 4D) {
         	this.motionY = 0D;
         	this.Scale = 15F;

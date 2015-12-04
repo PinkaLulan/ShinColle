@@ -45,7 +45,8 @@ abstract public class BasicTileEntity extends TileEntity implements ISidedInvent
   	
   	@Override
   	public ItemStack getStackInSlot(int i) {
-  		return slots[i];
+  		if(slots != null) return slots[i];
+  		return null;
   	}
   	
   	//get fule slot min number
@@ -144,5 +145,9 @@ abstract public class BasicTileEntity extends TileEntity implements ISidedInvent
 			CommonProxy.channelG.sendToAllAround(new S2CGUIPackets(this), point);
 		}
 	}
+	
+	//sync data client to server
+	public void sendSyncPacketC2S() {}
+	
 
 }

@@ -3,11 +3,11 @@ keys.shincolle.category=Shin Colle
 keys.shincolle.repair=修復
 
 # Creative Tab
-itemGroup.shincolle=Shin Colle
+itemGroup.shincolle=ShinColle
 
 # Block
 tile.shincolle:BlockAbyssium.name=深海金屬磚
-tile.shincolle:BlockDesk.name=深海節點
+tile.shincolle:BlockDesk.name=深海提督的辦公桌
 tile.shincolle:BlockGrudge.name=怨念團塊
 tile.shincolle:BlockGrudgeHeavy.name=沉重的怨念團塊
 tile.shincolle:BlockPolymetal.name=多金屬磚
@@ -16,6 +16,7 @@ tile.shincolle:BlockPolymetalOre.name=多金屬礦
 tile.shincolle:BlockSmallShipyard.name=深海熱泉
 
 # Container
+container.shincolle:BlockDesk=深海提督的辦公桌
 container.shincolle:SmallShipyard=深海熱泉
 container.shincolle:LargeShipyard=超深海熱漩
 
@@ -30,9 +31,9 @@ item.shincolle:BucketRepair.name=修復桶
 item.shincolle:InstantConMat.name=高速建造材料
 item.shincolle:KaitaiHammer.name=解體槌
 item.shincolle:Grudge.name=怨念
-item.shincolle:MarriageRing.name=棲艦婚戒
+item.shincolle:MarriageRing.name=深海棲艦結婚戒指
 item.shincolle:ModernKit.name=近代化改修工具
-item.shincolle:OwnerPaper.name=棲艦所有權書
+item.shincolle:OwnerPaper.name=深海棲艦所有權書
 item.shincolle:PointerItem.name=ヲ級的指揮權杖
 item.shincolle:RepairGoddess.name=深海女神的怨念
 item.shincolle:ToyAirplane.name=零式21型艦戰 (1/48)
@@ -107,6 +108,7 @@ item.shincolle:shipegg3.name=驅逐ロ級
 item.shincolle:shipegg4.name=驅逐ハ級
 item.shincolle:shipegg5.name=驅逐ニ級
 item.shincolle:shipegg11.name=重巡リ級
+item.shincolle:shipegg12.name=重巡ネ級
 item.shincolle:shipegg14.name=空母ヲ級
 item.shincolle:shipegg16.name=戰艦タ級
 item.shincolle:shipegg17.name=航空戰艦レ級
@@ -123,6 +125,8 @@ item.shincolle:shipegg40.name=潛水艇 U-511
 item.shincolle:shipegg240.name=潛水艇 U-511 改
 item.shincolle:shipegg41.name=潛水艇 呂500
 item.shincolle:shipegg241.name=潛水艇 呂500 (Mob)
+item.shincolle:shipegg102.name=戰艦 大和
+item.shincolle:shipegg302.name=戰艦 大和 改
 
 # Entity
 entity.shincolle.EntityAirfieldHime.name=飛行場姬
@@ -133,6 +137,8 @@ entity.shincolle.EntityBattleshipNGT.name=戰艦 長門
 entity.shincolle.EntityBattleshipNGTBoss.name=戰艦 長門 改
 entity.shincolle.EntityBattleshipRe.name=航空戰艦レ級
 entity.shincolle.EntityBattleshipTa.name=戰艦タ級
+entity.shincolle.EntityBattleshipYMT.name=戰艦 大和
+entity.shincolle.EntityBattleshipYMTBoss.name=戰艦 大和 改
 entity.shincolle.EntityCarrierWD.name=空母水鬼
 entity.shincolle.EntityCarrierWo.name=空母ヲ級
 entity.shincolle.EntityDestroyerHa.name=驅逐ハ級
@@ -143,6 +149,7 @@ entity.shincolle.EntityDestroyerShimakaze.name=驅逐艦 島風
 entity.shincolle.EntityDestroyerShimakazeBoss.name=驅逐艦 島風 改
 entity.shincolle.EntityFloatingFort.name=浮游要塞
 entity.shincolle.EntityHarbourHime.name=港灣棲姬
+entity.shincolle.EntityHeavyCruiserNe.name=重巡ネ級
 entity.shincolle.EntityHeavyCruiserRi.name=重巡リ級
 entity.shincolle.EntityMountAfH.name=空軍基地
 entity.shincolle.EntityMountBaH.name=三連裝砲
@@ -157,6 +164,59 @@ entity.shincolle.EntitySubmRo500.name=潛水艇 呂500
 entity.shincolle.EntitySubmRo500Mob.name=潛水艇 呂500
 entity.shincolle.EntitySubmU511.name=潛水艇 U-511
 entity.shincolle.EntitySubmU511Mob.name=潛水艇 U-511 改
+
+# formatting codes:
+# new line: <br>, <BR>, <br/> or <BR/> can set next line manually. (String can wrap to next line automatically to fit gui width.)
+# other code: §0, §1 ...etc. check: http://minecraft.gamepedia.com/Formatting_codes 
+
+# GUI: Book Text Chap 0
+gui.shincolle:book.chap0.title=簡介
+gui.shincolle:book.chap0.text0d0=§c深海棲艦§0是一群從鐵與怨念中誕生的可愛太太們，原本自由自在地生活在大海中。<br><br>但是某一天，海面上突然出現了一群自稱為§9艦娘§0的不明生物，這些§9艦娘§0裝備著強力的艤裝，毫無理由的四處攻擊§c深海棲艦§0的棲地。
+gui.shincolle:book.chap0.text0d1=由於§9艦娘§0肆意破壞著§c深海棲艦§0們的棲地，這些可愛的太太們陷入了嚴重的生存危機之中。<br><br>只有一個人能帶領§c深海棲艦§0們走出絕望，那就是你...§4「深海提督」§0，她們的未來就決定在你的手中！
+gui.shincolle:book.chap0.text1d0=你可以藉由四種資源：§d怨念§0、§d深海金屬§0、§d怨念彈藥§0以及§d多金屬礦§0來建造§c深海棲艦§0以及維持棲艦們活動的消耗。<br><br>§c深海棲艦§0在足夠的資源供應下，會主動保護主人，並攻擊任何靠近的敵對生物。                                                              
+gui.shincolle:book.chap0.text1d1=現在就去收集這些可愛的棲艦太太們吧！
+
+# GUI: Book Text Chap 1
+gui.shincolle:book.chap1.title=方塊/物品/資源
+gui.shincolle:book.chap1.title0=怨念
+gui.shincolle:book.chap1.text0d0=<br><br><br>§d§n怨念§r§0是怪物死亡後感情的殘留，同時也是§c深海棲艦§0活動的能量來源。
+gui.shincolle:book.chap1.text0d1=大部分怪物死亡後都會掉落§d§n怨念§r§0，你可以建立一個怪物農場以便穩定獲得§d§n怨念§r§0來維持艦隊生活所需。<br><br><br>9個§d§n怨念§r§0可以合成為1個§9怨念團塊§0，進一步可以再合成為§9沉重的怨念團塊§0。
+gui.shincolle:book.chap1.title1=深海金屬
+gui.shincolle:book.chap1.text1d0=<br><br><br><br><br><br><br><br>§d§n深海金屬§r§0是將鐵以怨念附魔後得到的金屬，為構成§c深海棲艦§0跟棲艦們裝備的主要材料。
+gui.shincolle:book.chap1.text1d1=§d§n深海金屬§r§0可以在工作台以1個怨念跟1個鐵錠合成，且9個§d§n深海金屬§r§0可以進一步合成為§9深海金屬磚§0。
+gui.shincolle:book.chap1.title2=多金屬礦
+gui.shincolle:book.chap1.text2d0=<br><br><br><br><br><br><br><br><br>§d§n多金屬礦§r§0主要生成於海洋以及其他存在有大量水的生態系，為另一個構成§c深海棲艦§0跟棲艦們裝備的重要材料。
+gui.shincolle:book.chap1.text2d1=通常在海底可以找到大量的多金屬礫石沈積，這種鬆脆的多金屬礦球是使用艦載機的深海太太們最喜愛的零食之一。
+gui.shincolle:book.chap1.title3=怨念彈藥
+gui.shincolle:book.chap1.text3d0=<br><br><br><br><br><br><br><br>§d§n怨念彈藥§r§0是§c深海棲艦§0攻擊時的消耗品，彈藥不足時棲艦將無法進行攻擊。§r
+gui.shincolle:book.chap1.text3d1=除了鐵以外也可以使用銅、銀、金、鑽等材料製作彈藥，不同材料可以做出不同數量的彈藥。<br><br>使用§9烈焰粉§0取代§9火藥§0則能夠做出威力更強大的重型彈藥。
+gui.shincolle:book.chap1.title4=修復桶
+gui.shincolle:book.chap1.text4d0=<br><br><br><br><br><br><br><br>§d§n修復桶§r§0是以地球上最營養豐富的岩漿，加入些許怨念調味而成，對§c深海棲艦§0來說是最棒的精力補充飲料。
+gui.shincolle:book.chap1.text4d1=右鍵使用§d§n修復桶§r§0可以回復目標棲艦一定的耐久度。<br><br>讓棲艦隨身攜帶§d§n修復桶§r§0，棲艦受傷時將會自動使用來回復耐久度。
+gui.shincolle:book.chap1.title5=深海棲艦結婚戒指
+gui.shincolle:book.chap1.text5d0=<br><br><br><br><br><br><br><br>    §d§n深海棲艦結婚戒指§r§0<br><br>經典簡約的深海金屬爪鑲戒台搭配地獄星型切割工法，完美大方地呈現出地獄之星最美麗的光芒。
+gui.shincolle:book.chap1.text5d1=這款戒指象徵著地獄的美麗與擁有者的力量，同時也是你跟§c深海棲艦§0結為連理的重要證明。<br><br>§9蹲下+右鍵§0對棲艦使用即可跟棲艦結婚，§9右鍵§0使用戒指則能開啟特殊能力。<br><br>結婚棲艦數量將會影響戒指能發揮的能力。
+gui.shincolle:book.chap1.title6=深海棲艦所有權書
+gui.shincolle:book.chap1.text6d0=<br><br><br><br><br><br><br><br>這張§d§n深海棲艦所有權書§r§0詳細記載了所有權轉讓的雙方應履行的內容跟各種事項，只需雙方簽名後即可生效。
+gui.shincolle:book.chap1.text6d1=§9右鍵§0使用可以簽署該契約，交易雙方皆簽署後，棲艦所有權人對其棲艦§9右鍵§0使用即可轉讓該棲艦。
+gui.shincolle:book.chap1.title7=解體槌
+gui.shincolle:book.chap1.text7d0=<br><br><br><br><br><br><br><br>§d§n解體槌§r§0可以將§c深海棲艦§0分解並回收一些材料。
+gui.shincolle:book.chap1.text7d1=§9左鍵§0使用可以一擊殺自己擁有的棲艦。<br><br>§9蹲下+右鍵§0使用則能分解該棲艦。<br><br>只有擁有者或是OP權限可以拆解該棲艦。
+
+# GUI: Book Text Chap 2
+gui.shincolle:book.chap2.title=建造
+
+# GUI: Book Text Chap 3
+gui.shincolle:book.chap3.title=船艦屬性
+
+# GUI: Book Text Chap 4
+gui.shincolle:book.chap4.title=船艦列表
+
+# GUI: Book Text Chap 5
+gui.shincolle:book.chap5.title=敵方船艦列表
+
+# GUI: Book Text Chap 6
+gui.shincolle:book.chap6.title=裝備列表
 
 # GUI: Ship Inventory Top
 gui.shincolle:level=等級

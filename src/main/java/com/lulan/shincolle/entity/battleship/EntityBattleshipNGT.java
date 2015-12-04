@@ -20,6 +20,7 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
@@ -124,6 +125,10 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
 		float atk = StateFinal[ID.ATK];
 		//set knockback value (testing)
 		float kbValue = 0.05F;
+		
+		//calc equip special dmg: AA, ASM
+  		atk = CalcHelper.calcDamageByEquipEffect(this, target, atk, 0);
+		
 		//update entity look at vector (for particle spawn)
         //此方法比getLook還正確 (client sync問題)
         float distX = (float) (target.posX - this.posX);
@@ -235,9 +240,11 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
   		//get attack value
 		float atk1 = StateFinal[ID.ATK_H] * 4F;
 		float atk2 = StateFinal[ID.ATK_H];
-		
-		//set knockback value (testing)
 		float kbValue = 0.15F;
+		
+		//calc equip special dmg: AA, ASM
+  		atk1 = CalcHelper.calcDamageByEquipEffect(this, target, atk1, 2);
+  		atk2 = CalcHelper.calcDamageByEquipEffect(this, target, atk2, 2);
 		
 		boolean isTargetHurt = false;
 

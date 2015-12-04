@@ -21,6 +21,8 @@ public class ID {
 		public static final byte Shipyard_InvMode = 1;
 		public static final byte Shipyard_SelectMat = 2;
 		public static final byte Shipyard_INCDEC = 3;
+		
+		public static final byte Desk_Sync = 0;
 	}
 	
 	/**shipyard build type*/
@@ -105,13 +107,14 @@ public class ID {
 		public static final byte HeadTilt = 8;			//client only, no sync
 		public static final byte UseRingEffect = 9;
 		public static final byte CanDrop = 10;			//server only, no sync
-		public static final byte CanFollow = 11;		//server only, no sync
+		public static final byte CanFollow = 11;
 		public static final byte OnSightChase = 12;
 		public static final byte AtkType_Light = 13;
 		public static final byte AtkType_Heavy = 14;
 		public static final byte AtkType_AirLight = 15;
 		public static final byte AtkType_AirHeavy = 16;
 		public static final byte HaveRingEffect = 17;
+		public static final byte AntiAir = 18;
 	}
 	
 	/**GUI ID*/
@@ -119,6 +122,61 @@ public class ID {
 		public static final byte SHIPINVENTORY = 0;
 		public static final byte SMALLSHIPYARD = 1;
 		public static final byte LARGESHIPYARD = 2;
+		public static final byte ADMIRALDESK = 3;
+	}
+	
+	/**ICON ID for BOOK*/
+	public static final class Item {
+		public static final byte IronIG = 0;
+		public static final byte Grudge = 1;
+		public static final byte GrudgeB = 2;
+		public static final byte GrudgeBH = 3;
+		public static final byte AbyssIG = 4;
+		public static final byte AbyssB = 5;
+		public static final byte PolymIG = 6;
+		public static final byte PolymB = 7;
+		public static final byte PolymBG = 8;
+		public static final byte PolymOre = 9;
+		public static final byte Gunpowder = 10;
+		public static final byte Blazepowder = 11;
+		public static final byte AmmoL = 12;
+		public static final byte AmmoLC = 13;
+		public static final byte AmmoH = 14;
+		public static final byte AmmoHC = 15;
+		public static final byte RpBucket = 16;
+		public static final byte LaBucket = 17;
+		public static final byte NStar = 18;
+		public static final byte Ring = 19;
+		public static final byte Paper = 20;
+		public static final byte OwnPaper = 21;
+		public static final byte Stick = 22;
+		public static final byte KHammer = 23;
+		public static final byte ModTool = 24;
+		public static final byte SpawnEgg0 = 25;
+		public static final byte SpawnEgg1 = 26;
+		public static final byte SpawnEgg2 = 27;
+		public static final byte InstantMat = 28;
+		public static final byte DiamondB = 29;
+		public static final byte RpGod = 30;
+		public static final byte Pointer = 31;
+		public static final byte ModelZF = 32;
+		public static final byte Desk = 33;
+		public static final byte ObsidianB = 34;
+		public static final byte WoolB = 35;
+		public static final byte SmallSY = 36;
+		public static final byte EqCannon0 = 37;
+		public static final byte EqCannon1 = 38;
+		public static final byte EqCannon2 = 39;
+		public static final byte EqMGun = 40;
+		public static final byte EqCatap = 41;
+		public static final byte EqRadar = 42;
+		public static final byte EqTurbine = 43;
+		public static final byte EqTorpedo = 44;
+		public static final byte EqAirT = 45;
+		public static final byte EqAirF = 46;
+		public static final byte EqAirB = 47;
+		public static final byte EqAirR = 48;
+		public static final byte EqArmor = 49;
 	}
 	
 	/**ship state2*/
@@ -127,6 +185,31 @@ public class ID {
 		public static final byte MINOR = 1;		//小破
 		public static final byte MODERATE = 2;	//中破
 		public static final byte HEAVY = 3;		//大破
+	}
+	
+	/** item type for part of item */
+	public static final class ItemType {
+		public static final byte AbyssMetal = 1;
+		public static final byte AbyssMetal_Abyssium = 2;
+		public static final byte AbyssMetal_Polymetal = 3;
+		public static final byte Ammo = 4;
+		public static final byte Ammo_L = 5;
+		public static final byte Ammo_H = 6;
+		public static final byte Ammo_LC = 7;
+		public static final byte Ammo_HC = 8;
+		public static final byte Grudge = 9;
+		public static final byte BlockAbyssium = 10;
+		public static final byte BlockGrudge = 11;
+		public static final byte BlockPolymetal = 12;
+		public static final byte BlockPolymetalGravel = 13;
+		public static final byte EquipAirplane = 14;
+		public static final byte EquipArmor = 15;
+		public static final byte EquipCannon = 16;
+		public static final byte EquipCatapult = 17;
+		public static final byte EquipMachinegun = 18;
+		public static final byte EquipRadar = 19;
+		public static final byte EquipTorpedo = 20;
+		public static final byte EquipTurbine = 21;
 	}
 	
 	/**Minor State*/
@@ -381,6 +464,10 @@ public class ID {
 	
 	public static final byte S_SeaplaneHime = 40;
 	public static final byte S_AirdefenseHime = 41;
+	public static final byte S_PTImp = 42;
+	public static final byte S_LightCruiserHime = 43;
+	public static final byte S_SubmarineHime = 44;
+	public static final byte S_DestroyerWD = 45;
 	
 	public static final byte S_BattleshipYamato = 100;
 		

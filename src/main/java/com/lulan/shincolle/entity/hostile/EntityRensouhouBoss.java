@@ -335,6 +335,9 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
 	public boolean attackEntityWithAmmo(Entity target) {
 		float atkLight = this.atk;
 		float kbValue = 0.001F;
+		
+		//calc equip special dmg: AA, ASM
+  		atk = CalcHelper.calcDamageByEquipEffect(this, target, atk, 0);
 
 		//play cannon fire sound at attacker
         playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
@@ -435,7 +438,6 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
 	public boolean attackEntityWithHeavyAmmo(Entity target) {
 		//get attack value
 		float atkHeavy = this.atk;
-		//set knockback value (testing)
 		float kbValue = 0.08F;
 
 		//play cannon fire sound at attacker
@@ -745,7 +747,15 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
 	
 	@Override
 	public float getEffectEquip(int id) {
-		return 0.15F;
+		switch(id) {
+		case ID.EF_CRI:
+			return 0.15F;
+		case ID.EF_ASM:  //destroyer AA,ASM++
+		case ID.EF_AA:
+			return this.atk * 0.5F;
+		default:
+			return 0F;
+		}
 	}
 
 	@Override

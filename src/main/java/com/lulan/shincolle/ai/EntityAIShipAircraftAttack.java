@@ -53,7 +53,7 @@ public class EntityAIShipAircraftAttack extends EntityAIBase {
     //init AI parameter, call once every target
     @Override
     public void startExecuting() {
-    	this.maxDelay = (int)(60F / (this.host.atkSpeed));
+    	this.maxDelay = (int)(80F / (this.host.atkSpeed));
     	this.atkDelay = 0;
         this.attackRange = 6F;
         this.rangeSq = this.attackRange * this.attackRange;

@@ -10,8 +10,8 @@ import net.minecraft.entity.ai.EntityAIBase;
 
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.entity.BasicEntityMount;
-import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.entity.BasicEntityShipLarge;
+import com.lulan.shincolle.entity.IShipAircraftAttack;
+import com.lulan.shincolle.entity.IShipCannonAttack;
 import com.lulan.shincolle.entity.IShipGuardian;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -49,8 +49,8 @@ public class EntityAIShipGuarding extends EntityAIBase {
     private int gx, gy, gz;				//guard position (block position)
     
     //attack parms, for BasicEntityShip only
-    private BasicEntityShip ship;  		//AI host entity
-    private BasicEntityShipLarge ship2;
+    private IShipCannonAttack ship;  	//host can use cannon
+    private IShipAircraftAttack ship2;	//host can use aircraft
     private EntityLivingBase target;  	//entity of target
     private int[] delayTime;			//attack delay time: 0:light 1:heavy 2:aircraft
     private int[] maxDelayTime;	    	//attack max delay time
@@ -58,6 +58,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
     private int aimTime;				//time before fire
     private float range, rangeSq;		//attack range
     private boolean launchType;			//airplane type, true = light
+    private boolean isMoving;			//is moving
     private double tarDist, tarDistSqrt, tarDistX, tarDistY, tarDistZ;	//跟目標的直線距離
 
     
@@ -69,31 +70,32 @@ public class EntityAIShipGuarding extends EntityAIBase {
         this.targetSelector = new TargetHelper.Selector(host2);
         this.distSq = 1D;
         this.distSqrt = 1D;
+        this.isMoving = false;
         this.setMutexBits(7);
         
-        if(entity instanceof BasicEntityShip) {
-        	this.ship = (BasicEntityShip) entity;
+        //mount類, 設定ship為host
+        if(entity instanceof IShipCannonAttack) {
+        	this.ship = (IShipCannonAttack) entity;
         	
-        	if(entity instanceof BasicEntityShipLarge) {
-        		this.ship2 = (BasicEntityShipLarge) entity;
+        	if(entity instanceof IShipAircraftAttack) {
+        		this.ship2 = (IShipAircraftAttack) entity;
         	}
-        	
-        	//init value
-        	this.delayTime = new int[] {20, 20, 20};
-        	this.maxDelayTime = new int[] {20, 40, 40};
-        	this.onSightTime = 0;
-        	this.aimTime = 20;
-        	this.range = 1;
-        	this.rangeSq = 1;
         }
-
+        
+        //init value
+    	this.delayTime = new int[] {20, 20, 20};
+    	this.maxDelayTime = new int[] {20, 40, 40};
+    	this.onSightTime = 0;
+    	this.aimTime = 20;
+    	this.range = 1;
+    	this.rangeSq = 1;
     }
     
     //判定是否開始執行AI
     @Override
 	public boolean shouldExecute() {
     	//非坐下, 非騎乘, 非被綁, 非可跟隨, 且有fuel才執行
-    	if(host != null && !host.getIsSitting() && !host.getStateFlag(ID.F.NoFuel) && !host.getStateFlag(ID.F.CanFollow)) {
+    	if(host != null && !host.getIsRiding() && !host.getIsSitting() && !host.getStateFlag(ID.F.NoFuel) && !host.getStateFlag(ID.F.CanFollow)) {
     		//check guarded entity
     		this.guarded = host.getGuardedEntity();
     		
@@ -145,7 +147,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
 	public boolean continueExecuting() {
     	if(host != null) {
     		//非坐下, 非騎乘, 非被綁, 非可跟隨, 且有fuel才執行
-    		if(!host.getIsSitting() && !host.getStateFlag(ID.F.NoFuel) && !host.getStateFlag(ID.F.CanFollow)) {
+    		if(!host.getIsRiding() && !host.getIsSitting() && !host.getStateFlag(ID.F.NoFuel) && !host.getStateFlag(ID.F.CanFollow)) {
     			//還沒走進min follow range, 繼續走
 	        	if(this.distSq > this.minDistSq) {		
 	        		return true;	//need update guard position
@@ -173,6 +175,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
     @Override
 	public void resetTask() {
     	this.guarded = null;
+    	this.isMoving = false;
     	this.findCooldown = 20;
         this.checkTeleport = 0;
         this.checkTeleport2 = 0;
@@ -187,19 +190,19 @@ public class EntityAIShipGuarding extends EntityAIBase {
     	 * 2. target AI = active attack
     	 * 3. guard type > 0
     	 */
-    	if(ship != null && ship.getStateMinor(ID.M.TargetAI) > 0 && ship.getStateMinor(ID.M.GuardType) > 0) {
+    	if(isMoving && ship != null && ship.getStateMinor(ID.M.TargetAI) > 0 && ship.getStateMinor(ID.M.GuardType) > 0) {
     		//update parms
-    		if(ship.ticksExisted % 64 == 0) {
+    		if(host2.ticksExisted % 64 == 0) {
     			this.updateAttackParms();
     		}
-    		
+//    		LogHelper.info("DEBUG : guarding AI: exec moving attack");
     		//delay--
     		this.delayTime[0] = this.delayTime[0] - 1;
     		this.delayTime[1] = this.delayTime[1] - 1;
     		this.delayTime[2] = this.delayTime[2] - 1;
     		
     		//find target
-    		if(ship.ticksExisted % 16 == 0) {
+    		if(host2.ticksExisted % 32 == 0) {
     			this.findTarget();
     			
     			//clear target if target dead
@@ -209,14 +212,14 @@ public class EntityAIShipGuarding extends EntityAIBase {
     		}
     		
     		//attack target
-    		if(this.target != null && this.ship.getEntitySenses().canSee(this.target)) {
+    		if(this.target != null && this.host2.getEntitySenses().canSee(this.target)) {
     			//onsight++
     			this.onSightTime++;
     			
     			//calc dist
-    			this.tarDistX = this.target.posX - this.ship.posX;
-        		this.tarDistY = this.target.posY - this.ship.posY;
-        		this.tarDistZ = this.target.posZ - this.ship.posZ;
+    			this.tarDistX = this.target.posX - this.host2.posX;
+        		this.tarDistY = this.target.posY - this.host2.posY;
+        		this.tarDistZ = this.target.posZ - this.host2.posZ;
         		this.tarDistSqrt = tarDistX*tarDistX + tarDistY*tarDistY + tarDistZ*tarDistZ;
 
         		//attack target within range
@@ -281,6 +284,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
         	
         	//end move
         	if(this.distSq <= this.minDistSq) {
+        		this.isMoving = false;
         		this.ShipNavigator.clearPathEntity();
         	}
         	
@@ -310,28 +314,32 @@ public class EntityAIShipGuarding extends EntityAIBase {
         	//每cd到找一次路徑
         	if(this.findCooldown <= 0) {
     			this.findCooldown = 30;
-    			
+//    			LogHelper.info("DEBUG : guarding AI: find path cd");
     			//check path result
-            	if(host2.dimension == host.getStateMinor(ID.M.GuardDim) && !this.ShipNavigator.tryMoveToXYZ(gx, gy, gz, 1D)) {
-            		LogHelper.info("DEBUG : guarding AI: fail to move, cannot reach or too far away "+gx+" "+gy+" "+gz);
-            		//若超過max dist持續120ticks, 則teleport
-            		if(this.distSq > this.maxDistSq && host2.dimension == host.getStateMinor(ID.M.GuardDim)) {
-            			this.checkTeleport2++;
-                		
-                		if(this.checkTeleport2 > 8) {
-                			this.checkTeleport2 = 0;
-                			
-                			if(this.distSq > 1024) {	//32 blocks away, drop seat2
-                				this.clearMountSeat2();
-                			}
-                			
-                			//teleport
-                			this.host2.setLocationAndAngles(this.gx+0.5D, this.gy+0.5D, this.gz+0.5D, this.host2.rotationYaw, this.host2.rotationPitch);
-            				this.ShipNavigator.clearPathEntity();
-            				this.sendSyncPacket();
-                            return;
-                		}	
-                    }
+            	if(host2.dimension == host.getStateMinor(ID.M.GuardDim)) {
+            		this.isMoving = this.ShipNavigator.tryMoveToXYZ(gx, gy, gz, 1D);
+            		
+            		if(!this.isMoving) {
+	            		LogHelper.info("DEBUG : guarding AI: fail to move, cannot reach or too far away "+gx+" "+gy+" "+gz+" "+this.host);
+	            		//若超過max dist持續120ticks, 則teleport
+	            		if(this.distSq > this.maxDistSq && host2.dimension == host.getStateMinor(ID.M.GuardDim)) {
+	            			this.checkTeleport2++;
+	                		
+	                		if(this.checkTeleport2 > 8) {
+	                			this.checkTeleport2 = 0;
+	                			
+	                			if(this.distSq > 1024) {	//32 blocks away, drop seat2
+	                				this.clearMountSeat2();
+	                			}
+	                			
+	                			//teleport
+	                			this.host2.setLocationAndAngles(this.gx+0.5D, this.gy+0.5D, this.gz+0.5D, this.host2.rotationYaw, this.host2.rotationPitch);
+	            				this.ShipNavigator.clearPathEntity();
+	            				this.sendSyncPacket();
+	                            return;
+	                		}	
+	                    }
+            		}
                 }//end !try move
             }//end path find cooldown
     	}//end guard entity
@@ -368,7 +376,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
 	private void updateAttackParms() {
     	if(this.ship != null) {
     		//attack range = 70% normal range
-    		this.range = (int)(this.ship.getStateFinal(ID.HIT) * 0.7F);
+    		this.range = (int)(this.ship.getAttackRange() * 0.7F);
     		
     		//檢查範圍, 使range2 > range1 > 1
             if(this.range < 1) {
@@ -378,9 +386,9 @@ public class EntityAIShipGuarding extends EntityAIBase {
     		this.rangeSq = this.range * this.range;
 
     		//attack delay = 125% normal delay
-    		this.maxDelayTime[0] = (int)(50F / (this.ship.getAttackSpeed()));
-    		this.maxDelayTime[1] = (int)(100F / (this.ship.getAttackSpeed()));
-    		this.maxDelayTime[2] = (int)(75F / (this.ship.getAttackSpeed())) + 10;
+    		this.maxDelayTime[0] = (int)(100F / (this.ship.getAttackSpeed()));
+    		this.maxDelayTime[1] = (int)(200F / (this.ship.getAttackSpeed()));
+    		this.maxDelayTime[2] = (int)(100F / (this.ship.getAttackSpeed()));
     		
     		//aim time (no change)
     		this.aimTime = (int) (20F * (150 - this.host.getLevel()) / 150F) + 10;
@@ -389,15 +397,15 @@ public class EntityAIShipGuarding extends EntityAIBase {
 	
 	//find target
 	private void findTarget() {
-		List list1 = this.ship.worldObj.selectEntitiesWithinAABB(EntityLivingBase.class, 
-        		this.ship.boundingBox.expand(this.range, this.range * 0.6D, this.range), this.targetSelector);
+		List list1 = this.host2.worldObj.selectEntitiesWithinAABB(EntityLivingBase.class, 
+        		this.host2.boundingBox.expand(this.range, this.range * 0.6D, this.range), this.targetSelector);
         
         //sort target list
         Collections.sort(list1, this.targetSorter);
         
         //get nearest target
 		if(list1.size() > 2) {
-			this.target = (EntityLivingBase)list1.get(this.ship.worldObj.rand.nextInt(3));
+			this.target = (EntityLivingBase)list1.get(this.host2.worldObj.rand.nextInt(3));
     	}
 		else if(!list1.isEmpty()){
 			this.target = (EntityLivingBase)list1.get(0);

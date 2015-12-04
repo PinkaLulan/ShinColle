@@ -14,7 +14,7 @@ import net.minecraft.world.World;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.entity.ExtendShipProps;
-import com.lulan.shincolle.entity.ISummonAttack;
+import com.lulan.shincolle.entity.IShipSummonAttack;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.entity.other.EntityRensouhou;
 import com.lulan.shincolle.entity.other.EntityRensouhouS;
@@ -27,7 +27,7 @@ import com.lulan.shincolle.utility.EntityHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
-public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements ISummonAttack {
+public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IShipSummonAttack {
 
 	public int numRensouhou;
 	
@@ -182,9 +182,8 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
   	public boolean attackEntityWithHeavyAmmo(Entity target) {	
 		//get attack value
 		float atk = StateFinal[ID.ATK_H] * 0.3F;
-		
-		//set knockback value (testing)
 		float kbValue = 0.15F;
+		
 		//飛彈是否採用直射
 		boolean isDirect = false;
 		//計算目標距離
@@ -246,13 +245,13 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
         EntityAbyssMissile missile1 = new EntityAbyssMissile(this.worldObj, this, 
         		tarX, tarY+target.height*0.2F, tarZ, launchPos, atk, kbValue, isDirect, -1F);
         EntityAbyssMissile missile2 = new EntityAbyssMissile(this.worldObj, this, 
-        		tarX+3F, tarY+target.height*0.2F, tarZ+3F, launchPos, atk, kbValue, isDirect, -1F);
+        		tarX+3F, tarY+target.height*0.2F, tarZ+5F, launchPos, atk, kbValue, isDirect, -1F);
         EntityAbyssMissile missile3 = new EntityAbyssMissile(this.worldObj, this, 
-        		tarX+3F, tarY+target.height*0.2F, tarZ-3F, launchPos, atk, kbValue, isDirect, -1F);
+        		tarX+3F, tarY+target.height*0.2F, tarZ-5F, launchPos, atk, kbValue, isDirect, -1F);
         EntityAbyssMissile missile4 = new EntityAbyssMissile(this.worldObj, this, 
-        		tarX-3F, tarY+target.height*0.2F, tarZ+3F, launchPos, atk, kbValue, isDirect, -1F);
+        		tarX-3F, tarY+target.height*0.2F, tarZ+5F, launchPos, atk, kbValue, isDirect, -1F);
         EntityAbyssMissile missile5 = new EntityAbyssMissile(this.worldObj, this, 
-        		tarX-3F, tarY+target.height*0.2F, tarZ-3F, launchPos, atk, kbValue, isDirect, -1F);
+        		tarX-3F, tarY+target.height*0.2F, tarZ-5F, launchPos, atk, kbValue, isDirect, -1F);
         
         this.worldObj.spawnEntityInWorld(missile1);
         this.worldObj.spawnEntityInWorld(missile2);

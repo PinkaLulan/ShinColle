@@ -203,6 +203,8 @@ public class S2CEntitySync implements IMessage {
 					entity.setEffectEquip(ID.EF_DHIT, buf.readFloat());
 					entity.setEffectEquip(ID.EF_THIT, buf.readFloat());
 					entity.setEffectEquip(ID.EF_MISS, buf.readFloat());
+					entity.setEffectEquip(ID.EF_AA, buf.readFloat());
+					entity.setEffectEquip(ID.EF_ASM, buf.readFloat());
 				}
 				break;
 			case 1: //entity emotion only
@@ -447,6 +449,8 @@ public class S2CEntitySync implements IMessage {
 				buf.writeFloat(this.entity.getEffectEquip(ID.EF_DHIT));
 				buf.writeFloat(this.entity.getEffectEquip(ID.EF_THIT));
 				buf.writeFloat(this.entity.getEffectEquip(ID.EF_MISS));
+				buf.writeFloat(this.entity.getEffectEquip(ID.EF_AA));
+				buf.writeFloat(this.entity.getEffectEquip(ID.EF_ASM));
 			}
 			break;
 		case 1:	//entity state only

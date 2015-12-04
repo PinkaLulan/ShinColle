@@ -3,6 +3,7 @@ package com.lulan.shincolle.init;
 import net.minecraft.block.Block;
 
 import com.lulan.shincolle.block.BlockAbyssium;
+import com.lulan.shincolle.block.BlockDesk;
 import com.lulan.shincolle.block.BlockGrudge;
 import com.lulan.shincolle.block.BlockGrudgeHeavy;
 import com.lulan.shincolle.block.BlockPolymetal;
@@ -18,7 +19,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 public class ModBlocks {
 
 	public static final Block BlockAbyssium = new BlockAbyssium();
-//	public static final Block BlockDesk = new BlockDesk();
+	public static final Block BlockDesk = new BlockDesk();
 	public static final Block BlockGrudge = new BlockGrudge();
 	public static final Block BlockGrudgeHeavy = new BlockGrudgeHeavy();
 	public static final Block BlockPolymetal = new BlockPolymetal();
@@ -29,7 +30,7 @@ public class ModBlocks {
 	
 	public static void init() {
 		GameRegistry.registerBlock(BlockAbyssium, "BlockAbyssium");
-//		GameRegistry.registerBlock(BlockDesk, "BlockDesk");
+		GameRegistry.registerBlock(BlockDesk, "BlockDesk");
 		GameRegistry.registerBlock(BlockGrudge, "BlockGrudge");
 		GameRegistry.registerBlock(BlockPolymetal, "BlockPolymetal");
 		GameRegistry.registerBlock(BlockPolymetalGravel, "BlockPolymetalGravel");

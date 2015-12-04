@@ -9,7 +9,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IExtendedEntityProperties;
 
-import com.lulan.shincolle.client.inventory.ContainerShipInventory;
+import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.LogHelper;
 
@@ -117,6 +117,8 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		nbtExt_add5.setFloat("DHit", this.entity.getEffectEquip(ID.EF_DHIT));
 		nbtExt_add5.setFloat("THit", this.entity.getEffectEquip(ID.EF_THIT));
 		nbtExt_add5.setFloat("Miss", this.entity.getEffectEquip(ID.EF_MISS));
+		nbtExt_add5.setFloat("AA", this.entity.getEffectEquip(ID.EF_AA));
+		nbtExt_add5.setFloat("ASM", this.entity.getEffectEquip(ID.EF_ASM));
 		
 		//save inventory
 		NBTTagList list = new NBTTagList();
@@ -211,6 +213,8 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		entity.setEffectEquip(ID.EF_DHIT, nbt_load.getFloat("DHit"));
 		entity.setEffectEquip(ID.EF_THIT, nbt_load.getFloat("THit"));
 		entity.setEffectEquip(ID.EF_MISS, nbt_load.getFloat("Miss"));
+		entity.setEffectEquip(ID.EF_AA, nbt_load.getFloat("AA"));
+		entity.setEffectEquip(ID.EF_ASM, nbt_load.getFloat("ASM"));
 		
 		//load inventory
 		NBTTagList list = nbt.getTagList(tagName, 10);	//tagList可以用9(tagList)或者10(tagCompound)來取

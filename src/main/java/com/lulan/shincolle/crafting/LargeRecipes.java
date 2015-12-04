@@ -2,13 +2,17 @@ package com.lulan.shincolle.crafting;
 
 import java.util.Random;
 
-import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.init.ModBlocks;
-import com.lulan.shincolle.init.ModItems;
-import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+
+import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.init.ModBlocks;
+import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.item.IShipItemType;
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
+import com.lulan.shincolle.utility.LogHelper;
 
 /**Large Shipyard Recipe Helper
  *  Fuel Cost = BaseCost + CostPerMaterial * ( TotalMaterialAmount - minAmount * 4 )
@@ -26,8 +30,9 @@ import net.minecraft.nbt.NBTTagCompound;
 public class LargeRecipes {
 	
 	private static Random rand = new Random();
-	private static final byte MIN_AMOUNT = 100;		//material min amount
-	private static final int BASE_POWER = 460800;		//base cost power
+	private static final int MIN_AMOUNT = 100;		//material min amount
+	private static final int MAX_STOCK = 400000;	//max amount in stock
+	private static final int BASE_POWER = 460800;	//base cost power
 	private static final int POWER_PER_MAT = 256;	//cost per item
 	
 	public LargeRecipes() {}
@@ -136,99 +141,289 @@ public class LargeRecipes {
 	}
 
 	//新增資材到matsStock中
-	public static boolean addMaterialStock(TileMultiGrudgeHeavy tile, int slot, int itemType) {
-		int matType = -1;
-		int matNum = 0;
+	public static boolean addMaterialStock(TileMultiGrudgeHeavy tile, int slot, int itemType, ItemStack item) {
+		int[] addMats = new int[] {0,0,0,0};
+		int meta = item.getItemDamage();
 		
+		//set recycle price
 		switch(itemType) {
-		case 1:	//grudge item
-			matType = 0;
-			matNum = 1;
+		case ID.ItemType.AbyssMetal_Abyssium:
+			addMats[1] = 1;
 			break;
-		case 2:	//grudge block
-			matType = 0;
-			matNum = 9;
+		case ID.ItemType.AbyssMetal_Polymetal:
+			addMats[3] = 1;
 			break;
-		case 3:	//grudge block heavy
-			matType = 0;
-			matNum = 81;
+		case ID.ItemType.Ammo_L:
+			addMats[2] = 1;
 			break;
-		case 4:	//abyssium
-			matType = 1;
-			matNum = 1;
+		case ID.ItemType.Ammo_LC:
+			addMats[2] = 9;
 			break;
-		case 5:	//abyssium block
-			matType = 1;
-			matNum = 9;
+		case ID.ItemType.Ammo_H:
+			addMats[2] = 4;
 			break;
-		case 6:	//light ammo
-			matType = 2;
-			matNum = 1;
+		case ID.ItemType.Ammo_HC:
+			addMats[2] = 36;
 			break;
-		case 7:	//light ammo container
-			matType = 2;
-			matNum = 9;
+		case ID.ItemType.BlockAbyssium:
+			addMats[1] = 9;
 			break;
-		case 8:	//polymetal
-			matType = 3;
-			matNum = 1;
+		case ID.ItemType.BlockGrudge:
+			addMats[0] = 9;
 			break;
-		case 9:	//polymetal block
-			matType = 3;
-			matNum = 9;
+		case ID.ItemType.BlockPolymetal:
+			addMats[3] = 9;
 			break;
-		case 10: //polymetal gravel
-			matType = 3;
-			matNum = 4;
+		case ID.ItemType.BlockPolymetalGravel:
+			addMats[3] = 4;
 			break;
+		case ID.ItemType.Grudge:
+			addMats[0] = 1;
+			break;
+		case ID.ItemType.EquipAirplane:
+			switch(meta) {
+			case 13:	//256
+				addMats[0] = rand.nextInt(12) + 3;
+				addMats[1] = rand.nextInt(14) + 5;
+				addMats[2] = rand.nextInt(14) + 5;
+				addMats[3] = rand.nextInt(16) + 11;
+				break;
+			case 14:	//1000
+				addMats[0] = rand.nextInt(10) + 40;
+				addMats[1] = rand.nextInt(15) + 50;
+				addMats[2] = rand.nextInt(20) + 60;
+				addMats[3] = rand.nextInt(25) + 80;
+				break;
+			default:	//2400,3800
+				addMats[0] = rand.nextInt(20) + 80;
+				addMats[1] = rand.nextInt(30) + 100;
+				addMats[2] = rand.nextInt(40) + 120;
+				addMats[3] = rand.nextInt(50) + 150;
+				break;
+			}
+			break;
+		case ID.ItemType.EquipArmor:
+			switch(meta) {
+			case 0:		//80
+				addMats[0] = rand.nextInt(3) + 3;
+				addMats[1] = rand.nextInt(4) + 4;
+				addMats[2] = rand.nextInt(2) + 2;
+				addMats[3] = rand.nextInt(2) + 2;
+				break;
+			default:	//500
+				addMats[0] = rand.nextInt(15) + 35;
+				addMats[1] = rand.nextInt(20) + 45;
+				addMats[2] = rand.nextInt(10) + 25;
+				addMats[3] = rand.nextInt(5) + 15;
+				break;
+			}
+			break;
+		case ID.ItemType.EquipCannon:
+			switch(meta) {
+			case 0:		//128
+			case 1:
+				addMats[0] = rand.nextInt(4) + 5;
+				addMats[1] = rand.nextInt(4) + 5;
+				addMats[2] = rand.nextInt(5) + 11;
+				addMats[3] = rand.nextInt(3) + 3;
+				break;
+			case 2:		//320
+			case 3:
+			case 4:
+			case 5:
+				addMats[0] = rand.nextInt(7) + 10;
+				addMats[1] = rand.nextInt(7) + 10;
+				addMats[2] = rand.nextInt(8) + 16;
+				addMats[3] = rand.nextInt(6) + 6;
+				break;
+			case 6:		//1600
+			case 7:
+			case 8:
+				addMats[0] = rand.nextInt(10) + 50;
+				addMats[1] = rand.nextInt(15) + 70;
+				addMats[2] = rand.nextInt(35) + 90;
+				addMats[3] = rand.nextInt(20) + 80;
+				break;
+			default:	//4400
+				addMats[0] = rand.nextInt(20) + 100;
+				addMats[1] = rand.nextInt(30) + 130;
+				addMats[2] = rand.nextInt(70) + 180;
+				addMats[3] = rand.nextInt(40) + 150;
+				break;
+			}
+			break;
+		case ID.ItemType.EquipCatapult:
+			switch(meta) {
+			case 0:		//2800
+			case 1:
+				addMats[0] = rand.nextInt(30) + 110;
+				addMats[1] = rand.nextInt(40) + 130;
+				addMats[2] = rand.nextInt(20) + 80;
+				addMats[3] = rand.nextInt(50) + 160;
+				break;
+			default:	//5000
+				addMats[0] = rand.nextInt(30) + 130;
+				addMats[1] = rand.nextInt(50) + 160;
+				addMats[2] = rand.nextInt(20) + 100;
+				addMats[3] = rand.nextInt(80) + 190;
+				break;
+			}
+			break;
+		case ID.ItemType.EquipMachinegun:
+			switch(meta) {
+			case 0:		//100
+			case 1:
+			case 2:
+			case 3:
+				addMats[0] = rand.nextInt(3) + 2;
+				addMats[1] = rand.nextInt(4) + 5;
+				addMats[2] = rand.nextInt(5) + 6;
+				addMats[3] = rand.nextInt(1) + 1;
+				break;
+			default:	//800
+				addMats[0] = rand.nextInt(10) + 24;
+				addMats[1] = rand.nextInt(15) + 30;
+				addMats[2] = rand.nextInt(20) + 40;
+				addMats[3] = rand.nextInt(5) + 14;
+				break;
+			}
+			break;
+		case ID.ItemType.EquipRadar:
+			switch(meta) {
+			case 0:		//200
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+				addMats[0] = rand.nextInt(5) + 12;
+				addMats[1] = rand.nextInt(4) + 8;
+				addMats[2] = rand.nextInt(3) + 8;
+				addMats[3] = rand.nextInt(2) + 6;
+				break;
+			default:	//2000
+				addMats[0] = rand.nextInt(40) + 100;
+				addMats[1] = rand.nextInt(30) + 80;
+				addMats[2] = rand.nextInt(20) + 70;
+				addMats[3] = rand.nextInt(10) + 50;
+				break;
+			}
+			break;
+		case ID.ItemType.EquipTorpedo:
+			switch(meta) {
+			case 0:		//160
+			case 1:
+			case 2:
+				addMats[0] = rand.nextInt(4) + 6;
+				addMats[1] = rand.nextInt(5) + 6;
+				addMats[2] = rand.nextInt(6) + 12;
+				addMats[3] = rand.nextInt(3) + 4;
+				break;
+			default:	//1200
+				addMats[0] = rand.nextInt(20) + 60;
+				addMats[1] = rand.nextInt(25) + 70;
+				addMats[2] = rand.nextInt(30) + 80;
+				addMats[3] = rand.nextInt(15) + 45;
+				break;
+			}
+			break;
+		case ID.ItemType.EquipTurbine:
+			switch(meta) {
+			case 0:		//1400
+			case 1:
+				addMats[0] = rand.nextInt(35) + 90;
+				addMats[1] = rand.nextInt(25) + 80;
+				addMats[2] = rand.nextInt(15) + 45;
+				addMats[3] = rand.nextInt(20) + 60;
+				break;
+			default:	//3200
+				addMats[0] = rand.nextInt(60) + 170;
+				addMats[1] = rand.nextInt(45) + 130;
+				addMats[2] = rand.nextInt(20) + 80;
+				addMats[3] = rand.nextInt(30) + 100;
+				break;
+			}
+			break;
+		}//end recycle price
+		
+		if(ConfigHandler.easyMode && itemType < ID.ItemType.EquipAirplane) {
+			addMats[0] *= 10;
+			addMats[1] *= 10;
+			addMats[2] *= 10;
+			addMats[3] *= 10;
 		}
 		
-		if(ConfigHandler.easyMode) {
-			matNum *= 10;
-		}
-		
-		//資材存量最多1萬上下, 超過就不收
+		//check amount in stock
 		int matStockCurrent;
+		boolean canAdd = true;
 		
-		if(matType > -1) {
-			matStockCurrent = tile.getMatStock(matType);
-			
-			if(matStockCurrent < 10000) {
-				tile.setMatStock(matType, matStockCurrent + matNum);
-				return true;
+		for(int i = 0; i < 4; ++i) {
+			matStockCurrent = tile.getMatStock(i);
+			if(matStockCurrent > MAX_STOCK) {
+				canAdd = false;
+				break;
 			}
 		}
 		
-		return false;
+		//add material
+		if(canAdd) {
+			for(int j = 0; j < 4; ++j) {
+				tile.addMatStock(j, addMats[j]);
+			}
+			LogHelper.info("DEBUG: large recipe: recycle: "+addMats[0]+" "+addMats[1]+" "+addMats[2]+" "+addMats[3]);
+		}
+		
+		return canAdd;
 	}
 	
 	//判定材料種類: -1:other 0:fuel 1~N:meterial
-	public static byte getMaterialType(ItemStack itemstack) {
-		Item item = null;
-		byte itemType = -1;
+	public static int getMaterialType(ItemStack itemstack) {
+		int itemType = -1;
 		int meta = 0;	
 		
 		if(itemstack != null) {
-			item = itemstack.getItem();
+			Item item = itemstack.getItem();
 			meta = itemstack.getItemDamage();
 			
-			/**itemtype :
+			/**itemtype, ref: ID.ItemType
 			 * -1/0: other item
-			 * 1: grudge 2: grudge block 3: grudge heavy block
-			 * 4: abyss metal 5: abyss metal block
-			 * 6: ammo 7: ammo container
-			 * 8: polymetal 9: polymetal block 10: polymetal gravel
 			 */
-			if(item == ModItems.Grudge) { itemType = 1; }
-			else if(item == Item.getItemFromBlock(ModBlocks.BlockGrudge)) { itemType = 2; }
-//			else if(item == Item.getItemFromBlock(ModBlocks.BlockGrudgeHeavy)) { itemType = 3; }
-			else if(item == ModItems.AbyssMetal && meta == 0) { itemType = 4; }
-			else if(item == Item.getItemFromBlock(ModBlocks.BlockAbyssium)) { itemType = 5; }
-			else if(item == ModItems.Ammo && meta == 0) { itemType = 6; }
-			else if(item == ModItems.Ammo && meta == 1) { itemType = 7; }
-			else if(item == ModItems.AbyssMetal && meta == 1) { itemType = 8; }
-			else if(item == Item.getItemFromBlock(ModBlocks.BlockPolymetal)) { itemType = 9; }
-			else if(item == Item.getItemFromBlock(ModBlocks.BlockPolymetalGravel)) { itemType = 10; }
+			if(item instanceof IShipItemType) {
+				itemType = ((IShipItemType) item).getItemType();
+				
+				//special type: item with meta value
+				switch(itemType) {
+				case ID.ItemType.AbyssMetal:
+					if(meta == 0) {
+						itemType = ID.ItemType.AbyssMetal_Abyssium;
+					}
+					else {
+						itemType = ID.ItemType.AbyssMetal_Polymetal;
+					}
+					break;
+				case ID.ItemType.Ammo:
+					switch(meta) {
+					case 0:
+						itemType = ID.ItemType.Ammo_L;
+						break;
+					case 1:
+						itemType = ID.ItemType.Ammo_LC;
+						break;
+					case 2:
+						itemType = ID.ItemType.Ammo_H;
+						break;
+					case 3:
+						itemType = ID.ItemType.Ammo_HC;
+						break;
+					}
+					break;
+				}
+			}//end special item type
+			
+			/** check block item type */
+			if(item == Item.getItemFromBlock(ModBlocks.BlockGrudge)) { itemType = ID.ItemType.BlockGrudge; }
+			else if(item == Item.getItemFromBlock(ModBlocks.BlockAbyssium)) { itemType = ID.ItemType.BlockAbyssium; }
+			else if(item == Item.getItemFromBlock(ModBlocks.BlockPolymetal)) { itemType = ID.ItemType.BlockPolymetal; }
+			else if(item == Item.getItemFromBlock(ModBlocks.BlockPolymetalGravel)) { itemType = ID.ItemType.BlockPolymetalGravel; }
 		}
 
 		return itemType;

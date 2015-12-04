@@ -1,12 +1,17 @@
 package com.lulan.shincolle.ai;
 
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.ai.EntityAIBase;
+
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
+import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.network.S2CEntitySync;
+import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.LogHelper;
 
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.ai.EntityAIBase;
+import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
 /**FLEE AI
  * if ship's HP is below fleeHP, ship will stop attack and try to flee
@@ -59,7 +64,6 @@ public class EntityAIShipFlee extends EntityAIBase {
 	
     @Override
 	public boolean continueExecuting() {
-    	//距離縮短到2格內就停止
     	return shouldExecute();
     }
 
@@ -92,22 +96,62 @@ public class EntityAIShipFlee extends EntityAIBase {
     	
     	//每cd到找一次路徑
     	if(this.findCooldown <= 0) {
-			this.findCooldown = 10;
+			this.findCooldown = 16;
 
-        	if(!this.ShipPathfinder.tryMoveToEntityLiving(this.owner, 1.2D)) {
-        		LogHelper.info("DEBUG : Flee AI try move fail, teleport entity");
+			boolean canMove = false;
+			if(host.isRiding() && host.ridingEntity instanceof BasicEntityMount) {
+				canMove = ((BasicEntityMount)host.ridingEntity).getShipNavigate().tryMoveToEntityLiving(this.owner, 1.2D);
+			}
+			else {
+				canMove = this.ShipPathfinder.tryMoveToEntityLiving(this.owner, 1.2D);
+			}
+				
+			if(!canMove) {
+        		LogHelper.info("DEBUG : flee AI: moving fail, teleport entity "+this.host);
         		if(this.distSq > 200F) {
         			//相同dim才傳送
         			if(this.host.dimension == this.owner.dimension) {
+        				//clear mount
+            			if(this.distSq > 1024F) {	//32 blocks away, drop mount
+            				this.clearMountSeat2();
+            			}
+        				
         				this.host.setLocationAndAngles(this.owner.posX, this.owner.posY + 0.5D, this.owner.posZ, this.host.rotationYaw, this.host.rotationPitch);
                     	this.ShipPathfinder.clearPathEntity();
+                    	this.sendSyncPacket();
                         return;
         			}
                 }
             }//end !try move to owner
         }//end path find cooldown
     }
-	
+    
+	//clear seat2
+  	private void clearMountSeat2() {
+  		//若座位2有人, 要先把座位2的乘客踢掉
+  		if(host.ridingEntity != null) {
+  			if(host.ridingEntity instanceof BasicEntityMount) {
+	  			BasicEntityMount mount = (BasicEntityMount) host.ridingEntity;
+	  			if(mount.seat2 != null) {
+	  				mount.seat2.setRiderNull();
+	  			}
+  			}
+  			host.mountEntity(null);
+  		}
+  		
+  		//清空騎乘的人
+  		if(host.riddenByEntity != null) {
+  			host.riddenByEntity.mountEntity(null);
+  			host.riddenByEntity = null;
+  		}
+  	}
+  	
+	//sync position
+  	private void sendSyncPacket() {
+  		//for other player, send ship state for display
+  		TargetPoint point = new TargetPoint(host.dimension, host.posX, host.posY, host.posZ, 48D);
+  		CommonProxy.channelE.sendToAllAround(new S2CEntitySync(host, 0, 9), point);
+  	}
 	
 
 }

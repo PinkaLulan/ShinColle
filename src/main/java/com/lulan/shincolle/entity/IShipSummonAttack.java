@@ -1,9 +1,9 @@
 package com.lulan.shincolle.entity;
 
 /**SUMMON ATTACK
- * entity summon servant to attack
+ * entity summon servant, pet, etc. to attack
  */
-public interface ISummonAttack {
+public interface IShipSummonAttack {
 	
 	abstract public int getNumServant();
 	

@@ -6,6 +6,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 
+import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.IShipAircraftAttack;
 import com.lulan.shincolle.reference.ID;
 
@@ -51,6 +52,13 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
 //    	LogHelper.info("DEBUG : carrier attack "+target);
     	if(this.host.getIsSitting()) return false;
     	
+    	//若騎乘ship類座騎, 則攻擊交給mount判定
+		if(this.host.getIsRiding()) {
+			if(this.host2.ridingEntity instanceof BasicEntityMount) {
+				return false;
+			}
+		}
+    	
     	EntityLivingBase target = this.host.getTarget();
 
         if((target != null && target.isEntityAlive()) &&
@@ -72,8 +80,15 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
     //判定是否繼續AI： 有target就繼續, 或者還在移動中則繼續
     @Override
 	public boolean continueExecuting() {
-        return this.shouldExecute() || (target != null && target.isEntityAlive() && !this.host.getShipNavigate().noPath());
-//    	return this.shouldExecute();
+    	if(host != null) {
+    		if(target != null && target.isEntityAlive() && !this.host.getShipNavigate().noPath()) {
+        		return true;
+        	}
+        	
+            return this.shouldExecute();
+    	}
+    	
+    	return false;
     }
 
     //重置AI方法, DO NOT reset delay time here
@@ -104,7 +119,7 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
     		
     		//get update attributes
         	if(this.host2.ticksExisted % 64 == 0) {	
-        		this.launchDelayMax = (int)(60F / (this.host.getAttackSpeed())) + 10;
+        		this.launchDelayMax = (int)(100F / (this.host.getAttackSpeed()));
                 this.range = this.host.getAttackRange();
                 this.rangeSq = this.range * this.range;
         	}

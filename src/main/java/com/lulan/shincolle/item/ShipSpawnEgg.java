@@ -100,6 +100,7 @@ public class ShipSpawnEgg extends Item {
   		list.add(new ItemStack(item, 1, ID.S_DestroyerHA+2));
   		list.add(new ItemStack(item, 1, ID.S_DestroyerNI+2));
   		list.add(new ItemStack(item, 1, ID.S_HeavyCruiserRI+2));
+  		list.add(new ItemStack(item, 1, ID.S_HeavyCruiserNE+2));
   		list.add(new ItemStack(item, 1, ID.S_CarrierWO+2));
   		list.add(new ItemStack(item, 1, ID.S_BattleshipTA+2));
   		list.add(new ItemStack(item, 1, ID.S_BattleshipRE+2));
@@ -112,6 +113,8 @@ public class ShipSpawnEgg extends Item {
   		list.add(new ItemStack(item, 1, ID.S_DestroyerShimakaze+202));	//mob entity
   		list.add(new ItemStack(item, 1, ID.S_BattleshipNagato+2));
   		list.add(new ItemStack(item, 1, ID.S_BattleshipNagato+202));	//mob entity
+  		list.add(new ItemStack(item, 1, ID.S_BattleshipYamato+2));
+  		list.add(new ItemStack(item, 1, ID.S_BattleshipYamato+202));	//mob entity
   		list.add(new ItemStack(item, 1, ID.S_SubmarineU511+2));
   		list.add(new ItemStack(item, 1, ID.S_SubmarineU511+202));		//mob entity
   		list.add(new ItemStack(item, 1, ID.S_SubmarineRo500+2));
@@ -238,18 +241,14 @@ public class ShipSpawnEgg extends Item {
 			//set owner
 			EntityHelper.setPetPlayerUUID(player.getUniqueID().toString(), entity);
 			EntityHelper.setPetPlayerUID(player, entity);
-			
-			//calc HP ATK DEF SPD MOV HIT bonus point
-	  		byte[] bonuspoint = new byte[6];
-	  		bonuspoint = ShipCalc.getBonusPoints(itemstack);
 	  		
-	  		//set bonus point
-	  		entity.setBonusPoint(ID.HP, bonuspoint[ID.HP]);
-	  		entity.setBonusPoint(ID.ATK, bonuspoint[ID.ATK]);
-	  		entity.setBonusPoint(ID.DEF, bonuspoint[ID.DEF]);
-	  		entity.setBonusPoint(ID.SPD, bonuspoint[ID.SPD]);
-	  		entity.setBonusPoint(ID.MOV, bonuspoint[ID.MOV]);
-	  		entity.setBonusPoint(ID.HIT, bonuspoint[ID.HIT]);
+	  		//init bonus point to zero
+	  		entity.setBonusPoint(ID.HP, (byte)0);
+	  		entity.setBonusPoint(ID.ATK, (byte)0);
+	  		entity.setBonusPoint(ID.DEF, (byte)0);
+	  		entity.setBonusPoint(ID.SPD, (byte)0);
+	  		entity.setBonusPoint(ID.MOV, (byte)0);
+	  		entity.setBonusPoint(ID.HIT, (byte)0);
 	  		
 	  		//calc ship attribute and save to nbt: hp atk def ...
 	  		entity.setShipLevel(1, true);

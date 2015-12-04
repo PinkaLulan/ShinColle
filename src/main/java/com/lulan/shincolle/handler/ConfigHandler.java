@@ -28,6 +28,9 @@ public class ConfigHandler {
 	public static float dropGrudge = 1.0F;
 	public static int closeGUIDist = 16;
 	
+	//DESK
+	public static int radarUpdate = 128;	//radar update interval (ticks)
+	
 	//SHIP SETTING
 	//scale: HP, ATK, DEF, SPD, MOV, HIT
 	public static Property propShip, propShipLimit, propBossSMKZ, propBossNGT, propMobU511;
@@ -77,6 +80,9 @@ public class ConfigHandler {
 		//是否開啟簡單模式 (spam debug/info message)
 		friendlyFire = config.getBoolean("Friendly_Fire", "general", true, "false: disable damage done by player (except owner)");
 				
+		//desk雷達更新間隔
+		radarUpdate = config.getInt("Radar_Update", "desk", 128, 20, 6000, "Radar update interval (ticks) in Admiral's Desk GUI");
+		
 		//是否把large shipyard設為static entity (只畫一次, 但是此功能跟NEI相衝)
 		staticMode = config.getBoolean("Static_Mode", "general", false, "Render LargeShipyard as static or normal entity (for NotEnoughItem: 1283: Stack overflow bug)");
 		
