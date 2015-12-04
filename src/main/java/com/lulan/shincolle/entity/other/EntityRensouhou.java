@@ -17,7 +17,7 @@ import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipCannonAttack;
-import com.lulan.shincolle.entity.ISummonAttack;
+import com.lulan.shincolle.entity.IShipSummonAttack;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;
@@ -256,8 +256,8 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack {
 					if(this.numAmmoHeavy < 0) this.numAmmoHeavy = 0;
 					
 					//連裝砲數量+1
-					int numR = ((ISummonAttack)host).getNumServant();
-					if(numR < 6) ((ISummonAttack)host).setNumServant(numR+1);
+					int numR = ((IShipSummonAttack)host).getNumServant();
+					if(numR < 6) ((IShipSummonAttack)host).setNumServant(numR+1);
 					
 					//歸還彈藥
 					host.setAmmoLight(host.getAmmoLight() + this.getAmmoLight());
@@ -364,6 +364,9 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack {
 	public boolean attackEntityWithAmmo(Entity target) {
 		float atkLight = this.atk;
 		float kbValue = 0.03F;
+		
+		//calc equip special dmg: AA, ASM
+  		atk = CalcHelper.calcDamageByEquipEffect(this, target, atk, 0);
 
 		//play cannon fire sound at attacker
         playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
@@ -466,7 +469,6 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack {
 	public boolean attackEntityWithHeavyAmmo(Entity target) {
 		//get attack value
 		float atkHeavy = this.atk;
-		//set knockback value (testing)
 		float kbValue = 0.08F;
 
 		//play cannon fire sound at attacker

@@ -1,9 +1,13 @@
 package com.lulan.shincolle.entity.mounts;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 
+import com.lulan.shincolle.ai.EntityAIShipCarrierAttack;
+import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.hime.EntityBattleshipHime;
 import com.lulan.shincolle.reference.ID;
 
 public class EntityMountBaH extends BasicEntityMount {
@@ -60,6 +64,25 @@ public class EntityMountBaH extends BasicEntityMount {
 	@Override
 	public int getDamageType() {
 		return ID.ShipDmgType.BATTLESHIP;
+	}
+	
+	//use host's cluster bomb
+	@Override
+	public boolean attackEntityWithHeavyAmmo(Entity target) {
+		if(this.host instanceof EntityBattleshipHime) {
+			return ((EntityBattleshipHime) host).attackEntityWithSpecialAmmo(target);
+		}
+		else {
+			return super.attackEntityWithHeavyAmmo(target);
+		}
+	}
+	
+	@Override
+	public void setAIList() {
+		super.setAIList();
+		
+		//use range attack
+		this.tasks.addTask(11, new EntityAIShipRangeAttack(this));			   //0011
 	}
 
 

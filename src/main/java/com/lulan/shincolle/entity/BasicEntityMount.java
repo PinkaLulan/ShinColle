@@ -20,6 +20,7 @@ import com.lulan.shincolle.ai.EntityAIShipFloating;
 import com.lulan.shincolle.ai.EntityAIShipFollowOwner;
 import com.lulan.shincolle.ai.EntityAIShipGuarding;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
+import com.lulan.shincolle.ai.EntityAIShipWander;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.entity.mounts.EntityMountSeat;
@@ -135,9 +136,6 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 			this.tasks.addTask(1, new EntityAIShipGuarding(this));		//0111
 			this.tasks.addTask(2, new EntityAIShipFollowOwner(this));	//0111
 			
-			//use range attack
-			this.tasks.addTask(3, new EntityAIShipRangeAttack(this));	//0011
-			
 			//use melee attack
 			if(this.getStateFlag(ID.F.UseMelee)) {
 				this.tasks.addTask(12, new EntityAIShipAttackOnCollide(this, 1D, true));//0011
@@ -148,7 +146,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 			//moving
 			this.tasks.addTask(21, new EntityAIOpenDoor(this, true));	//0000
 			this.tasks.addTask(22, new EntityAIShipFloating(this));		//0101
-//			this.tasks.addTask(24, new EntityAIWander(this, 0.8D));		//0001
+			this.tasks.addTask(25, new EntityAIShipWander(this, 0.8D));	//0001
 		}
 	}
 	
@@ -359,8 +357,9 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		
 		//sync rotate angle
 		if(this.riddenByEntity != null) {
+//			if(!this.worldObj.isRemote) {
 			//若沒有在移動中, 則強制對齊rider朝向
-			if(this.getShipNavigate().noPath()) {
+			if(this.getShipNavigate().noPath() && this.getNavigator().noPath()) {
 				this.rotationYawHead = ((EntityLivingBase)this.riddenByEntity).rotationYawHead;
 				this.prevRotationYaw = ((EntityLivingBase)this.riddenByEntity).prevRotationYaw;
 				this.rotationYaw = ((EntityLivingBase)this.riddenByEntity).rotationYaw;
@@ -373,7 +372,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 				((EntityLivingBase)this.riddenByEntity).rotationYaw = this.rotationYaw;
 				((EntityLivingBase)this.riddenByEntity).renderYawOffset = this.renderYawOffset;
 			}
-			
+//			}
 			//若有rider2且移動時, 則改為rider2朝向
 			if(this.riddenByEntity2 != null && this.keyPressed != 0) {
 				this.rotationYawHead = riddenByEntity2.rotationYawHead;
@@ -385,6 +384,9 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 				((EntityLivingBase)this.riddenByEntity).prevRotationYaw = this.prevRotationYaw;
 				((EntityLivingBase)this.riddenByEntity).rotationYaw = this.rotationYaw;
 				((EntityLivingBase)this.riddenByEntity).renderYawOffset = this.renderYawOffset;
+
+				//清除AI自動走路, 以免妨礙玩家控制移動
+				this.getShipNavigate().clearPathEntity();
 			}
 		}
 
@@ -438,8 +440,8 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 					}
 				}//end every 100 ticks
 				
-				//get target every 10 ticks
-				if(this.ticksExisted % 10 == 0) {
+				//get target every 8 ticks
+				if(this.ticksExisted % 8 == 0) {
 					this.setAttackTarget(this.host.getAttackTarget());
 					
 					//clear dead or same team target 
@@ -451,7 +453,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 				}//end every 10 ticks
 				
 				//sync every 60 ticks
-				if(this.ticksExisted % 60 == 0) {
+				if(this.ticksExisted % 64 == 0) {
 					this.sendSyncPacket();
 				}//end every 60 ticks
 			}
@@ -690,6 +692,9 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	public boolean attackEntityWithAmmo(Entity target) {
 		float atkLight = this.host.getStateFinal(ID.ATK);
 		float kbValue = 0.03F;
+		
+		//calc equip special dmg: AA, ASM
+		atkLight = CalcHelper.calcDamageByEquipEffect(this, target, atkLight, 0);
 
 		//play cannon fire sound at attacker
         playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
@@ -805,9 +810,8 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	public boolean attackEntityWithHeavyAmmo(Entity target) {
 		//get attack value
 		float atkHeavy = this.host.getStateFinal(ID.ATK_H);
-		//set knockback value (testing)
 		float kbValue = 0.08F;
-
+		
 		//play cannon fire sound at attacker
         this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         //play entity attack sound

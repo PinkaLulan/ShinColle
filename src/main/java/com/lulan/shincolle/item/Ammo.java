@@ -2,13 +2,15 @@ package com.lulan.shincolle.item;
 
 import java.util.List;
 
+import com.lulan.shincolle.reference.ID;
+
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 
-public class Ammo extends BasicItem {
+public class Ammo extends BasicItem implements IShipItemType {
 	byte types = 4;
 	IIcon[] icons = new IIcon[4];
 	
@@ -38,5 +40,11 @@ public class Ammo extends BasicItem {
 		if(meta > types - 1) meta = types - 1;
 	    return this.icons[meta];
 	}
+	
+	@Override
+	public int getItemType() {
+		return ID.ItemType.Ammo;
+	}
+	
 	
 }

@@ -1,20 +1,20 @@
-package com.lulan.shincolle.client.inventory;
-
-import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
+package com.lulan.shincolle.client.gui.inventory;
 
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
-public class SlotLargeShipyard extends Slot {
+import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
+
+public class SlotSmallShipyard extends Slot {
 	
 	private int slotIndex;
-	private TileMultiGrudgeHeavy tile;
+	private TileEntitySmallShipyard tile;
 
-	public SlotLargeShipyard(IInventory entity, int slotIndex, int x, int y) {
+	public SlotSmallShipyard(IInventory entity, int slotIndex, int x, int y) {
 		super(entity, slotIndex, x, y);
 		this.slotIndex = slotIndex;
-		this.tile = (TileMultiGrudgeHeavy)entity;
+		this.tile = (TileEntitySmallShipyard)entity;
 	}
 	
 	//設定每個slot可以放進的物品: 0:grudge 1:abyssium 2:ammo 3:polymetal 4:fuel 5:output
@@ -23,4 +23,5 @@ public class SlotLargeShipyard extends Slot {
 		return tile.isItemValidForSlot(this.slotIndex, itemstack);
     }
 
+	
 }

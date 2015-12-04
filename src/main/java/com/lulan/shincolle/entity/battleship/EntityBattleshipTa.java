@@ -10,7 +10,7 @@ import net.minecraft.world.World;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.ExtendShipProps;
-import com.lulan.shincolle.entity.ISummonAttack;
+import com.lulan.shincolle.entity.IShipSummonAttack;
 import com.lulan.shincolle.entity.other.EntityRensouhou;
 import com.lulan.shincolle.entity.other.EntityRensouhouS;
 import com.lulan.shincolle.handler.ConfigHandler;
@@ -21,7 +21,7 @@ import com.lulan.shincolle.reference.Reference;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
-public class EntityBattleshipTa extends BasicEntityShip implements ISummonAttack {
+public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAttack {
 	
 	public int numRensouhou;
 	

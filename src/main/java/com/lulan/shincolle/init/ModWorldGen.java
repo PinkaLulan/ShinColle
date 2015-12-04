@@ -23,6 +23,7 @@ public class ModWorldGen {
 		ItemStack abyssium = new ItemStack(ModBlocks.BlockAbyssium, 1);
 		ItemStack polymetal = new ItemStack(ModBlocks.BlockPolymetal, 1);
 		ItemStack instantCon = new ItemStack(ModItems.InstantConMat, 1);
+		ItemStack desk = new ItemStack(ModBlocks.BlockDesk);
 		//ship egg
 		ItemStack spawneggRE = new ItemStack(ModItems.ShipSpawnEgg, 1, ID.S_BattleshipRE+2);
 		ItemStack spawneggWO = new ItemStack(ModItems.ShipSpawnEgg, 1, ID.S_CarrierWO+2);
@@ -57,24 +58,29 @@ public class ModWorldGen {
 			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(airT, 1, 1, 10));
 			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(airF, 1, 1, 10));
 			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(airB, 1, 1, 10));
-			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(polymetal, 1, 3, 60));
-			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(modernKit, 1, 2, 20));
-			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(instantCon, 20, 40, 60));
+			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(polymetal, 1, 3, 30));
+			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(modernKit, 1, 2, 15));
+			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(instantCon, 20, 40, 30));
 		}
 	
 		//common chest
 		for(int i = 0; i < commChest.length; ++i) {
-			ChestGenHooks.addItem(commChest[i], new WeightedRandomChestContent(abyssium, 1, 3, 30));
-			ChestGenHooks.addItem(commChest[i], new WeightedRandomChestContent(polymetal, 1, 3, 60));
+			ChestGenHooks.addItem(commChest[i], new WeightedRandomChestContent(abyssium, 1, 3, 40));
+			ChestGenHooks.addItem(commChest[i], new WeightedRandomChestContent(polymetal, 1, 3, 50));
 			ChestGenHooks.addItem(commChest[i], new WeightedRandomChestContent(ring, 1, 1, 2));
 			ChestGenHooks.addItem(commChest[i], new WeightedRandomChestContent(cannon, 1, 1, 5));
 			ChestGenHooks.addItem(commChest[i], new WeightedRandomChestContent(torpedo, 1, 1, 5));
 			ChestGenHooks.addItem(commChest[i], new WeightedRandomChestContent(airT, 1, 1, 5));
 			ChestGenHooks.addItem(commChest[i], new WeightedRandomChestContent(airF, 1, 1, 5));
 			ChestGenHooks.addItem(commChest[i], new WeightedRandomChestContent(airB, 1, 1, 5));
-			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(modernKit, 1, 2, 10));
-			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(instantCon, 15, 30, 60));
+			ChestGenHooks.addItem(commChest[i], new WeightedRandomChestContent(modernKit, 1, 2, 10));
+			ChestGenHooks.addItem(commChest[i], new WeightedRandomChestContent(instantCon, 15, 30, 60));
 		}
+		
+		//starter chest
+		ChestGenHooks.addItem(ChestGenHooks.VILLAGE_BLACKSMITH, new WeightedRandomChestContent(desk, 1, 1, 90));
+		ChestGenHooks.addItem(ChestGenHooks.BONUS_CHEST, new WeightedRandomChestContent(desk, 1, 1, 25));
+		
 	}
 
 }

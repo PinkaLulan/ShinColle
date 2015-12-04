@@ -15,6 +15,7 @@ import com.lulan.shincolle.entity.BasicEntityShipLarge;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
@@ -125,7 +126,6 @@ public class EntityFloatingFort extends BasicEntityAirplane {
 		boolean isTargetHurt = false;
 		//get attack value
 		float atk2 = this.atk;
-		//set knockback value (testing)
 		float kbValue = 0.08F;
 		
 		//calc miss chance, if not miss, calc cri/multi hit
@@ -140,9 +140,11 @@ public class EntityFloatingFort extends BasicEntityAirplane {
             	atk2 = this.atk;
             	hitEntity = (EntityLivingBase)hitList.get(i);
             	
+            	//calc equip special dmg: AA, ASM
+            	atk2 = CalcHelper.calcDamageByEquipEffect(this, hitEntity, atk2, 1);
+            	
             	//目標可以被碰撞, 且目標不同主人, 則判定可傷害
             	if(hitEntity.canBeCollidedWith() && !EntityHelper.checkSameOwner(this.host, hitEntity)) {
-
         			//calc critical, only for type:ship
             		if(host != null && (this.rand.nextFloat() < this.host.getEffectEquip(ID.EF_CRI))) {
             			atk2 *= 3F;

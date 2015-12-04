@@ -142,9 +142,8 @@ public class EntityDestroyerShimakazeBoss extends BasicEntityShipBoss {
   	public boolean attackEntityWithHeavyAmmo(Entity target) {	
 		//get attack value
 		float atkHeavy = this.atk * 0.3F;
-		
-		//set knockback value (testing)
 		float kbValue = 0.08F;
+		
 		//飛彈是否採用直射
 		boolean isDirect = false;
 		//計算目標距離
@@ -189,13 +188,13 @@ public class EntityDestroyerShimakazeBoss extends BasicEntityShipBoss {
         EntityAbyssMissile missile1 = new EntityAbyssMissile(this.worldObj, this, 
         		tarX, tarY+target.height*0.2F, tarZ, launchPos, atkHeavy, kbValue, isDirect, -1F);
         EntityAbyssMissile missile2 = new EntityAbyssMissile(this.worldObj, this, 
-        		tarX+3F, tarY+target.height*0.2F, tarZ+3F, launchPos, atkHeavy, kbValue, isDirect, -1F);
+        		tarX+3F, tarY+target.height*0.2F, tarZ+6F, launchPos, atkHeavy, kbValue, isDirect, -1F);
         EntityAbyssMissile missile3 = new EntityAbyssMissile(this.worldObj, this, 
-        		tarX+3F, tarY+target.height*0.2F, tarZ-3F, launchPos, atkHeavy, kbValue, isDirect, -1F);
+        		tarX+3F, tarY+target.height*0.2F, tarZ-6F, launchPos, atkHeavy, kbValue, isDirect, -1F);
         EntityAbyssMissile missile4 = new EntityAbyssMissile(this.worldObj, this, 
-        		tarX-3F, tarY+target.height*0.2F, tarZ+3F, launchPos, atkHeavy, kbValue, isDirect, -1F);
+        		tarX-3F, tarY+target.height*0.2F, tarZ+6F, launchPos, atkHeavy, kbValue, isDirect, -1F);
         EntityAbyssMissile missile5 = new EntityAbyssMissile(this.worldObj, this, 
-        		tarX-3F, tarY+target.height*0.2F, tarZ-3F, launchPos, atkHeavy, kbValue, isDirect, -1F);
+        		tarX-3F, tarY+target.height*0.2F, tarZ-6F, launchPos, atkHeavy, kbValue, isDirect, -1F);
         
         this.worldObj.spawnEntityInWorld(missile1);
         this.worldObj.spawnEntityInWorld(missile2);
@@ -209,6 +208,19 @@ public class EntityDestroyerShimakazeBoss extends BasicEntityShipBoss {
   	@Override
 	public int getDamageType() {
 		return ID.ShipDmgType.DESTROYER;
+	}
+  	
+  	@Override
+	public float getEffectEquip(int id) {
+		switch(id) {
+		case ID.EF_CRI:
+			return 0.15F;
+		case ID.EF_AA:  //DD vs AA,ASM effect
+		case ID.EF_ASM:
+			return this.atk * 0.5F;
+		default:
+			return 0F;
+		}
 	}
   	
 

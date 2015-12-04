@@ -3,11 +3,11 @@ keys.shincolle.category=Shin Colle
 keys.shincolle.repair=Repair
 
 # Creative Tab
-itemGroup.shincolle=Shin Colle
+itemGroup.shincolle=ShinColle
 
 # Block
 tile.shincolle:BlockAbyssium.name=Abyssium Block
-tile.shincolle:BlockDesk.name=Abyssal Node
+tile.shincolle:BlockDesk.name=Abyssal Adrmiral's Desk
 tile.shincolle:BlockGrudge.name=Grudge Lump
 tile.shincolle:BlockGrudgeHeavy.name=Heavy Grudge Lump
 tile.shincolle:BlockPolymetal.name=Polymetallic Block
@@ -16,6 +16,7 @@ tile.shincolle:BlockPolymetalOre.name=Polymetallic Ore
 tile.shincolle:BlockSmallShipyard.name=Abyssal Hydrothermal Vent
 
 # Container
+container.shincolle:BlockDesk=Abyssal Adrmiral's Desk
 container.shincolle:SmallShipyard=Abyssal Hydrothermal Vent
 container.shincolle:LargeShipyard=Hadal Hydrothermal Vortex
 
@@ -107,6 +108,7 @@ item.shincolle:shipegg3.name=Destroyer Ro-Class
 item.shincolle:shipegg4.name=Destroyer Ha-Class
 item.shincolle:shipegg5.name=Destroyer Ni-Class
 item.shincolle:shipegg11.name=Heavy Cruiser Ri-Class
+item.shincolle:shipegg12.name=Heavy Cruiser Ne-Class
 item.shincolle:shipegg14.name=Standard Carrier Wo-Class
 item.shincolle:shipegg16.name=Battleship Ta-Class
 item.shincolle:shipegg17.name=Battleship Re-Class
@@ -123,6 +125,8 @@ item.shincolle:shipegg40.name=Submarine U-511
 item.shincolle:shipegg240.name=Submarine U-511 Kai
 item.shincolle:shipegg41.name=Submarine Ro-500
 item.shincolle:shipegg241.name=Submarine Ro-500 (Mob)
+item.shincolle:shipegg102.name=戰艦 大和
+item.shincolle:shipegg302.name=戰艦 大和 改
 
 # Entity
 entity.shincolle.EntityAirfieldHime.name=Airfield Princess
@@ -133,6 +137,8 @@ entity.shincolle.EntityBattleshipNGT.name=Battleship Nagato
 entity.shincolle.EntityBattleshipNGTBoss.name=Battleship Nagato Kai
 entity.shincolle.EntityBattleshipRe.name=Battleship Re-Class
 entity.shincolle.EntityBattleshipTa.name=Battleship Ta-Class
+entity.shincolle.EntityBattleshipYMT.name=Battleship Yamato
+entity.shincolle.EntityBattleshipYMTBoss.name=Battleship Yamato Kai
 entity.shincolle.EntityCarrierWD.name=Aircraft Carrier Water Demon
 entity.shincolle.EntityCarrierWo.name=Standard Carrier Wo-Class
 entity.shincolle.EntityDestroyerHa.name=Destroyer Ha-Class
@@ -143,6 +149,7 @@ entity.shincolle.EntityDestroyerShimakaze.name=Destroyer Shimakaze
 entity.shincolle.EntityDestroyerShimakazeBoss.name=Destroyer Shimakaze Kai
 entity.shincolle.EntityFloatingFort.name=Floating Fortress
 entity.shincolle.EntityHarbourHime.name=Harbour Princess
+entity.shincolle.EntityHeavyCruiserNe.name=Heavy Cruiser Ne-Class
 entity.shincolle.EntityHeavyCruiserRi.name=Heavy Cruiser Ri-Class
 entity.shincolle.EntityMountAfH.name=Airbase
 entity.shincolle.EntityMountBaH.name=Sanrensouhou
@@ -157,6 +164,17 @@ entity.shincolle.EntitySubmRo500.name=Submarine Ro-500
 entity.shincolle.EntitySubmRo500Mob.name=Submarine Ro-500
 entity.shincolle.EntitySubmU511.name=Submarine U-511
 entity.shincolle.EntitySubmU511Mob.name=Submarine U-511 Kai
+
+# formatting codes:
+# new line: <br>, <BR>, <br/> or <BR/> can set next line manually. (String can wrap to next line automatically to fit gui width.)
+# other code: §0, §1 ...etc. check: http://minecraft.gamepedia.com/Formatting_codes
+gui.shincolle:book.chap0.title=Introduction
+gui.shincolle:book.chap1.title=Resources
+gui.shincolle:book.chap2.title=Construction
+gui.shincolle:book.chap3.title=Ship Attributes
+gui.shincolle:book.chap4.title=Ship List
+gui.shincolle:book.chap5.title=Enemy List
+gui.shincolle:book.chap6.title=Equipments List
 
 # GUI: Ship Inventory Top
 gui.shincolle:level=Level

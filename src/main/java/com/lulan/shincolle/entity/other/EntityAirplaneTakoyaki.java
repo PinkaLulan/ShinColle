@@ -33,6 +33,7 @@ public class EntityAirplaneTakoyaki extends BasicEntityAirplane {
         this.numAmmoHeavy = 3;
         this.useAmmoLight = false;
         this.useAmmoHeavy = true;
+        this.antiAir = host.getStateFlag(ID.F.AntiAir);
         
         //設定發射位置
         this.posX = host.posX;

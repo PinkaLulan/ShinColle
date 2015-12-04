@@ -3,10 +3,11 @@ package com.lulan.shincolle.entity.mounts;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 
+import com.lulan.shincolle.ai.EntityAIShipCarrierAttack;
+import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityMountLarge;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.LogHelper;
 
 public class EntityMountCaWD extends BasicEntityMountLarge {
 	
@@ -78,6 +79,15 @@ public class EntityMountCaWD extends BasicEntityMountLarge {
 	@Override
 	public int getDamageType() {
 		return ID.ShipDmgType.CARRIER;
+	}
+	
+	@Override
+	public void setAIList() {
+		super.setAIList();
+		
+		//use range attack
+		this.tasks.addTask(10, new EntityAIShipCarrierAttack(this));		   //0100
+		this.tasks.addTask(11, new EntityAIShipRangeAttack(this));			   //0011
 	}
 	
 

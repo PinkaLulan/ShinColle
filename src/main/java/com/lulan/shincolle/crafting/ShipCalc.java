@@ -1,13 +1,18 @@
 package com.lulan.shincolle.crafting;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.MathHelper;
 
 /**SHIP SPAWN CALC <br>
  * Material Bonus Rate (for small construction)
@@ -36,27 +41,35 @@ public class ShipCalc {
 	private static Random rand = new Random();
 	private static final float[] baseRate = new float[] {64F, 16F, 4F, 1F};
 	
-	//in: itemstack(with materials amount)		out: ATK HP DEF SPD MOV HIT bonus value
-	public static byte[] getBonusPoints(ItemStack itemstack) {
-		byte[] bonusPoint = new byte[6];		//HP ATK DEF SPD MOV HIT
-		int[] matAmount = getMatAmount(itemstack);	//0:grudge 1:abyssium 2:ammo 3:polymetal
-				
-		float[] rateHP = calcBonusRate(matAmount[0]+matAmount[1]);	  //HP = grudge + abyssium
-		float[] rateATK = calcBonusRate(matAmount[0]+matAmount[2]);  //ATK = grudge + ammo
-		float[] rateDEF = calcBonusRate(matAmount[0]+matAmount[1]);  //DEF = grudge + abyssium
-		float[] rateSPD = calcBonusRate(matAmount[0]+matAmount[2]);  //SPD = grudge + ammo
-		float[] rateMOV = calcBonusRate(matAmount[0]+matAmount[3]);  //MOV = grudge + polymetal
-		float[] rateHIT = calcBonusRate(matAmount[0]+matAmount[3]);  //HIT = grudge + polymetal
-
-		bonusPoint[0] = rollBonusValue(rateHP);
-		bonusPoint[1] = rollBonusValue(rateATK);
-		bonusPoint[2] = rollBonusValue(rateDEF);
-		bonusPoint[3] = rollBonusValue(rateSPD);
-		bonusPoint[4] = rollBonusValue(rateMOV);
-		bonusPoint[5] = rollBonusValue(rateHIT);
+	//roll table
+	private static List<int[]> EquipSmall = new ArrayList<int[]>();
+	private static List<int[]> EquipLarge = new ArrayList<int[]>();
 	
-		return bonusPoint;
+	//init roll table
+	static {
+		/**roll table: 0:ship id, 1:material mean, 2:modified material type
+		 * material mean: material amount correspond to normal dist, high = need more materials
+		 * modified material type: mat can increase build rate: -1:none 0:grudge 1:metal 2:ammo 3:poly
+		 */
+		//small build
+		EquipSmall.add(new int[] {ID.S_DestroyerI,      80,   0});
+		EquipSmall.add(new int[] {ID.S_DestroyerRO,     90,   0});
+		EquipSmall.add(new int[] {ID.S_DestroyerHA,     100,  0});
+		EquipSmall.add(new int[] {ID.S_DestroyerNI,     110,  0});
+		EquipSmall.add(new int[] {ID.S_HeavyCruiserRI,  200,  2});
+		EquipSmall.add(new int[] {ID.S_HeavyCruiserNE,  256,  2});
+		
+		//large build
+		EquipLarge.add(new int[] {ID.S_CarrierWO,       500,  3});
+		EquipLarge.add(new int[] {ID.S_BattleshipTA,    800,  2});
+		EquipLarge.add(new int[] {ID.S_NorthernHime,    2600, 1});
+		EquipLarge.add(new int[] {ID.S_HarbourHime,     2800, 1});
+		EquipLarge.add(new int[] {ID.S_AirfieldHime,    3000, 1});
+		EquipLarge.add(new int[] {ID.S_BattleshipRE,    3800, 2});	
+		EquipLarge.add(new int[] {ID.S_BattleshipHime,  4600, 2});
+		EquipLarge.add(new int[] {ID.S_CarrierWD,       5000, 3});
 	}
+	
 
 	//get material amount from nbt data
 	private static int[] getMatAmount(ItemStack itemstack) {
@@ -73,81 +86,6 @@ public class ShipCalc {
 		return matAmount;
 	}
 
-	//in: material amount		out: +0~+3 rate
-	private static float[] calcBonusRate(int i) {
-		float[] newRate = new float[4];
-		float total = 1F;	//avoid divide by zero
-		
-		//small construction
-		if(i < 129) {
-			newRate[0] = baseRate[0] + i * 0.25F;	//+0
-			newRate[1] = baseRate[1] + i * 0.75F;	//+1
-			newRate[2] = baseRate[2] + i * 0.375F;	//+2
-			newRate[3] = baseRate[3] + i * 0.25F;	//+3
-		}
-		//large construction
-		else {
-			if(i > 1599) {
-				i -= 1599;
-				newRate[0] = 100F + i * 0.1F;			//+0
-				newRate[1] = 150F + i * 0.3F;		//+1
-				newRate[2] = 200F + i * 0.35F;		//+2
-				newRate[3] = i * 0.4F;			//+3
-			}
-			else if(i > 999) {
-				i -= 999;
-				newRate[0] = 100F + i * 0.05F;		//+0
-				newRate[1] = 150F + i * 0.2F;		//+1
-				newRate[2] = 50F + i * 0.25F;		//+2
-				newRate[3] = 0F;					//+3
-			}
-			else {
-				newRate[0] = 150F + i * 0.15F;		//+0
-				newRate[1] = 50F + i * 0.4F;		//+1
-				newRate[2] = 0;						//+2
-				newRate[3] = 0;						//+3
-			}
-		}
-		
-		total = newRate[0] + newRate[1] + newRate[2] + newRate[3];
-		
-		newRate[0] /= total;
-		newRate[1] /= total;
-		newRate[2] /= total;
-		newRate[3] /= total;	
-		
-		LogHelper.info("DEBUG : shipcalc baseRate : "+baseRate[0]+" "+baseRate[1]+" "+baseRate[2]+" "+baseRate[3]);
-		LogHelper.info("DEBUG : shipcalc newRate : "+newRate[0]+" "+newRate[1]+" "+newRate[2]+" "+newRate[3]);
-		return newRate;
-	}
-	
-	//roll +0~+3 according to rate
-	private static byte rollBonusValue(float[] rate) {
-		float ranNum = (rand.nextInt(100) + 1)/100F;		//random 0.01~1.00
-		float bonus3 = rate[0]+rate[1]+rate[2];
-		float bonus2 = rate[0]+rate[1];
-		float bonus1 = rate[0];
-		
-		LogHelper.info("DEBUG : bonus random : "+ranNum+" +3: "+bonus3+" +2: "+bonus2+" +1: "+bonus1);
-		
-		if(ranNum > bonus3) {
-			LogHelper.info("DEBUG : get bonus point : 3");
-			return 3;
-		}
-		else if(ranNum > bonus2) {
-			LogHelper.info("DEBUG : get bonus point : 2");
-			return 2;
-		}
-		else if(ranNum > bonus1) {
-			LogHelper.info("DEBUG : get bonus point : 1");
-			return 1;
-		}
-		else {
-			LogHelper.info("DEBUG : get bonus point : 0");
-			return 0;
-		}
-	}
-	
 	//roll ship type by total number of materials
 	public static int rollShipType(ItemStack item) {
 		List<int[]> shipList = new ArrayList<int[]>();
@@ -167,61 +105,84 @@ public class ShipCalc {
     		
     		totalMats = material[0] + material[1] + material[2] + material[3];
         }
-    	
-    	if(item.getItemDamage() == 0) {	//small egg
-    		//Destroyer/Transport/Submarine
-    		shipList.add(new int[] {ID.S_DestroyerI, 200});
-    		shipList.add(new int[] {ID.S_DestroyerRO, 190});
-    		shipList.add(new int[] {ID.S_DestroyerHA, 180});
-    		shipList.add(new int[] {ID.S_DestroyerNI, 170});
-    		
-    		if(totalMats >= 128) {		//> 128 : LCruiser/HCruiser
-    			shipList.add(new int[] {ID.S_HeavyCruiserRI, 100 + material[2] * 2});
-    		}
 
-    	}
-    	else {							//large egg
-    		shipList.add(new int[] {ID.S_CarrierWO, 300 + material[3] / 4});
-    		shipList.add(new int[] {ID.S_BattleshipTA, 300 + material[2] / 4});
-    		
-    		if(totalMats >= 1000) {
-    			shipList.add(new int[] {ID.S_AirfieldHime, 220 + material[1] / 4});
-    			shipList.add(new int[] {ID.S_HarbourHime, 220 + material[1] / 4});
-    			shipList.add(new int[] {ID.S_NorthernHime, 220 + material[1] / 4});
-    		}
-    		
-    		if(totalMats >= 1600) {		//>1600 hime/re-class
-    			shipList.add(new int[] {ID.S_BattleshipRE, 100 + material[2] / 4});
-    			shipList.add(new int[] {ID.S_BattleshipHime, material[2] / 5});
-    			shipList.add(new int[] {ID.S_CarrierWD, material[3] / 5});
-    		}
-    	}
-
-    	//roll item
-		int totalRate = 0;
-		int sumRate = 0;
-		int randNum = 0;
-		int rollResult = -1;
-		
-		//get sum of rate
-		for(int[] iter : shipList) {	
-			totalRate += iter[1];
+    	List<int[]> shiplistOrg = null;  //raw ship list: 0:ship ID, 1:mean 2:specific material
+		float te = 4000F;	//debug
+		//get equip list by build type
+		if(item.getItemDamage() == 0) {	 //small egg
+			shiplistOrg = EquipSmall;
+			te = 256F;
+		}
+		else {
+			shiplistOrg = EquipLarge;
 		}
 		
-		//get random number
-		randNum = rand.nextInt(totalRate);
+		/**roll ship type
+		 * 0. tweak roll list by mat.amount: specific material decrease the mean value
+		 * 1. get prob of ships in roll list
+		 * 2. roll 0~1 to get ship
+		 * 3. return ship id
+		 */
+		//prob list: map<ship ID, prob parameter>
+		Map<Integer, Float> probList = new HashMap<Integer, Float>();
+		int meanNew = 0;
+		int meanDist = 0;
+		float prob = 0F;
 		
-		//get result
-		for(int i = 0; i < shipList.size(); ++i) {
-			sumRate += shipList.get(i)[1];
-			LogHelper.info("DEBUG : roll ship type: rate "+shipList.get(i)[0]+" "+shipList.get(i)[1]);
-			if(sumRate > randNum) {
-				rollResult = shipList.get(i)[0];
+		for(int[] i : shiplistOrg) {
+			//get modified material type
+			if(i[2] >= 0 && i[2] <= 3) {
+				meanNew = i[1] - material[i[2]];
+			}
+			else {
+				meanNew = i[1];
+			}
+			
+			//get mean distance
+			meanDist = MathHelper.abs_int(totalMats - meanNew);
+			
+			//mean value to prob value
+			if(item.getItemDamage() == 0) {	 //small egg
+				//for small build, max material = 256
+				//change scale to large build resolution
+				meanDist = (int) (meanDist * 15.625F); // = mat / 256 * 4000
+			}
+			
+			prob = CalcHelper.getNormDist(meanDist);
+			//add to map
+			probList.put(i[0], prob);
+			LogHelper.info("DEBUG: roll ship type: prob list: ID "+i[0]+" MEAN(ORG) "+i[1]+" MEAN(NEW) "+meanNew+" MEAN(P) "+(meanNew/te)+" MD "+meanDist+" PR "+prob);
+		}
+		
+		float random = rand.nextFloat();
+		float totalProb = 0F;
+		float sumProb = 0.0125F;	//init value to prevent float comparison bug
+		int rollresult = -1;
+
+		//get total prob
+		Iterator iter = probList.entrySet().iterator();
+		while(iter.hasNext()) {
+			Map.Entry entry = (Map.Entry)iter.next();
+			totalProb += (Float) entry.getValue();
+		}
+		
+		//scale random number to totalProb
+		random *= totalProb;
+		
+		//roll ship
+		iter = probList.entrySet().iterator();
+		while(iter.hasNext()) {
+			Map.Entry entry = (Map.Entry)iter.next();
+			sumProb += (Float) entry.getValue();
+			LogHelper.info("DEBUG: roll ship type: random: "+random+" sum.pr "+sumProb+" total.pr "+totalProb);
+			if(sumProb > random) {	//get item
+				rollresult = (Integer) entry.getKey();
+				LogHelper.info("DEBUG: roll ship type: get ship:"+rollresult);
 				break;
-			}	
+			}
 		}
-		LogHelper.info("DEBUG : roll ship type: total "+totalRate+" rand "+randNum+" type "+rollResult);	
-		return rollResult;
+
+		return rollresult;
 	}
 	
 	/** Get entity name from metadata
@@ -242,6 +203,8 @@ public class ShipCalc {
   			return "shincolle.EntityDestroyerNi";
   		case ID.S_HeavyCruiserRI:
   			return "shincolle.EntityHeavyCruiserRi";
+  		case ID.S_HeavyCruiserNE:
+  			return "shincolle.EntityHeavyCruiserNe";
   		case ID.S_CarrierWO:
   			return "shincolle.EntityCarrierWo";
   		case ID.S_BattleshipTA:
@@ -266,6 +229,10 @@ public class ShipCalc {
   			return "shincolle.EntityBattleshipNGT";
   		case ID.S_BattleshipNagato+200:
   			return "shincolle.EntityBattleshipNGTBoss";
+  		case ID.S_BattleshipYamato:
+  			return "shincolle.EntityBattleshipYMT";
+  		case ID.S_BattleshipYamato+200:
+  			return "shincolle.EntityBattleshipYMTBoss";
   		case ID.S_SubmarineU511:
   			return "shincolle.EntitySubmU511";
   		case ID.S_SubmarineU511+200:

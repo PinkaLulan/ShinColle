@@ -34,10 +34,11 @@ import com.lulan.shincolle.ai.EntityAIShipFollowOwner;
 import com.lulan.shincolle.ai.EntityAIShipGuarding;
 import com.lulan.shincolle.ai.EntityAIShipInRangeTarget;
 import com.lulan.shincolle.ai.EntityAIShipSit;
+import com.lulan.shincolle.ai.EntityAIShipWander;
 import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
-import com.lulan.shincolle.client.inventory.ContainerShipInventory;
+import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
 import com.lulan.shincolle.crafting.EquipCalc;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.entity.other.EntityRensouhou;
@@ -94,7 +95,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	/**EntityFlag: 0:canFloatUp 1:isMarried 2:noFuel 3:canMelee 4:canAmmoLight 5:canAmmoHeavy 
 	 * 6:canAirLight 7:canAirHeavy 8:headTilt(client only) 9:canRingEffect 10:canDrop 11:canFollow
 	 * 12:onSightChase 13:AtkType_Light 14:AtkType_Heavy 15:AtkType_AirLight 16:AtkType_AirHeavy 
-	 * 17:HaveRingEffect */
+	 * 17:HaveRingEffect 18:AntiAir */
 	protected boolean[] StateFlag;
 	/**BonusPoint: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT */
 	protected byte[] BonusPoint;
@@ -136,7 +137,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		StateFlag = new boolean[] {false, false, true, false, true,
 				                   true, true, true, false, true,
 								   true, false, false, true, true,
-								   true, true, false
+								   true, true, false, false
 								   };
 		BonusPoint = new byte[] {0, 0, 0, 0, 0, 0};
 		TypeModify = new float[] {1F, 1F, 1F, 1F, 1F, 1F};
@@ -279,7 +280,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.tasks.addTask(21, new EntityAIOpenDoor(this, true));	//0000
 		this.tasks.addTask(23, new EntityAIShipFloating(this));		//0101
 		this.tasks.addTask(24, new EntityAIShipWatchClosest(this, EntityPlayer.class, 6F, 0.08F)); //0010
-		this.tasks.addTask(25, new EntityAIWander(this, 0.8D));		//0001
+		this.tasks.addTask(25, new EntityAIShipWander(this, 0.8D));	//0001
 		this.tasks.addTask(25, new EntityAILookIdle(this));			//0011
 	}
 	
@@ -300,7 +301,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		}
 		
 		//DEBUG
-		this.targetTasks.addTask(5, new EntityAINearestAttackableTarget(this, EntitySheep.class, 0, false));
+//		this.targetTasks.addTask(5, new EntityAINearestAttackableTarget(this, EntitySheep.class, 0, false));
 	}
 
 	//clear AI
@@ -1734,6 +1735,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		//grudge--
   		decrGrudgeNum(1);
         
+  		//calc equip special dmg: AA, ASM
+  		atk = CalcHelper.calcDamageByEquipEffect(this, target, atk, 0);
+  		
         //light ammo -1
         if(!decrAmmoNum(0)) {		//not enough ammo
         	atk = atk * 0.125F;	//reduce damage to 12.5%
@@ -1836,9 +1840,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	public boolean attackEntityWithHeavyAmmo(Entity target) {	
 		//get attack value
 		float atk = StateFinal[ID.ATK_H];
-		
-		//set knockback value (testing)
 		float kbValue = 0.15F;
+		
 		//飛彈是否採用直射
 		boolean isDirect = false;
 		//計算目標距離

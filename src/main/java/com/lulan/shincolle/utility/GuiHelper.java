@@ -47,6 +47,18 @@ public class GuiHelper {
 		 {{50,65,62,75},{62,65,74,75},{74,65,86,75},{86,65,98,75},	//poly
 		 //4:poly -1k    5:poly -100   6:poly -10    7:poly -1    
 		  {50,85,62,95},{62,85,74,95},{74,85,86,95},{86,85,98,95}}
+		},
+		{//gui3: admiral desk
+		 //0:radar btn       1:book btn								//all
+		 {{3,2,19,18},      {22,2,38,18}},
+		 //0:radar scale											//radar
+		 {{7,158,55,170}},
+		 //0:left page       1:right page	   2:chap 0				//book
+		 {{52,180,72,193},  {174,180,194,193},{243,34,256,45},
+		 //3:chap 1          4:chap 2          5:chap 3
+		  {243,46,256,59},  {243,60,256,71},  {243,72,256,82},
+		 //6:chap 4          7:chap 5          8:chap 6
+		  {243,83,256,96},  {243,97,256,109}, {243,110,256,121}}
 		}
 	};
 	
@@ -63,16 +75,20 @@ public class GuiHelper {
 		for(int i = 0; i < BUTTON[gui][page].length; i++) {
 			if(x >= BUTTON[gui][page][i][0] && y >= BUTTON[gui][page][i][1] &&
 			   x <= BUTTON[gui][page][i][2] && y <= BUTTON[gui][page][i][3]) {
-				LogHelper.info("DEBUG : GUI get button: gui "+gui+" page "+page+" x "+x+" y "+y+" button "+i);
+//				LogHelper.info("DEBUG : GUI get button: gui "+gui+" page "+page+" x "+x+" y "+y+" button "+i);
 				return i;
 			}
 		}
 		
-		LogHelper.info("DEBUG : GUI get no button: gui "+gui+" page "+page+" x "+x+" y "+y);
+//		LogHelper.info("DEBUG : GUI get no button: gui "+gui+" page "+page+" x "+x+" y "+y);
 		return -1;
 	}
 	
-	//0:white 1:yellow 2:orange 3:red
+	public enum pickColorName {
+		WHITE, YELLOW, ORANGE, RED1, GRAY1, BLACK, RED2, GRAY2
+	}
+	
+	//color code
 	public static int pickColor(int b) {
 		switch(b) {
 		case 0:
@@ -82,11 +98,15 @@ public class GuiHelper {
 		case 2:
 			return 16753920;	//orange
 		case 3:
-			return 16724787;	//red
+			return 16724787;	//light red, RED1
 		case 4:
-			return 3158064;		//dark gray, for string mark
+			return 3158064;		//dark gray, GRAY1
 		case 5:
 			return 0;			//black
+		case 6:
+			return 11141120;	//dark red, RED2
+		case 7:
+			return 11184810;	//light gray, GRAY2
 		default:
 			return 16724787;	//red
 		}

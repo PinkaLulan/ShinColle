@@ -1,9 +1,16 @@
 package com.lulan.shincolle.utility;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraft.entity.Entity;
+
+import com.lulan.shincolle.entity.IShipAttributes;
+import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 
 
-/**FORMAT HELPER
+/**CALC HELPER
  * format and math method
  */
 public class CalcHelper {
@@ -101,6 +108,42 @@ public class CalcHelper {
     	return dmg * mod;
     }
     
+    /** damage calc by equip effect: AA, ASM
+     *  host: attacker
+     *  target: target
+     *  dmg: attack damage
+     *  type: 0:light 1:heavy 2:
+     */
+    public static float calcDamageByEquipEffect(IShipAttributes host, Entity target, float dmg, int type) {
+    	float newDmg = dmg;
+    	float modDmg = 1F;
+  		
+  		//light, heavy or special attack
+  		switch(type) {
+  		case 1:  //heavy
+  			modDmg = 3F;
+  			break;
+  		case 2:  //nagato heavy attack
+  			modDmg = 4F;
+  			break;
+		default:  //light or normal attack
+			modDmg = 1F;
+			break;
+  		}
+  		
+  		//check target type
+  		int targettype = EntityHelper.checkEntityTypeForEquipEffect(target);
+  		
+  		if(targettype == 1) {			//air mob
+  			newDmg = newDmg + host.getEffectEquip(ID.EF_AA) * modDmg;
+  		}
+  		else if(targettype == 2) {	//water mob
+  			newDmg = newDmg + host.getEffectEquip(ID.EF_ASM) * modDmg;
+  		}
+  		
+  		return newDmg;
+    }
+    
     /** calc normal distribution
      *  f(x) = 1 / (s*sqrt(2*PI)) * exp(-(x-m)^2/(2*s^2))
      *  s = SD, m = mean
@@ -124,6 +167,28 @@ public class CalcHelper {
     		return NORM_TABLE[x];
     	}
     	return NORM_MIN;
+    }
+    
+    /** cut string with new line symbol into string array
+     *  new line symbol: <BR><BR/><br><br/>
+     */
+    public static String[] stringConvNewlineToArray(String str) {
+    	String[] strSplit = str.split("<BR>|<BR/>|<br>|<br/>");
+    	return strSplit;
+    }
+    
+    /** cut string with new line symbol into string list
+     *  new line symbol: <BR><BR/><br><br/>
+     */
+    public static List<String> stringConvNewlineToList(String str) {
+    	List<String> result = new ArrayList();
+    	String[] strSplit = stringConvNewlineToArray(str);
+    	
+    	for(String s : strSplit) {
+    		result.add(s);
+    	}
+    	
+    	return result;
     }
     
     

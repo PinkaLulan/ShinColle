@@ -787,7 +787,7 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion {
 	    		this.EquipRC203.rotateAngleX -= 0.5F;
 	    		break;
 	    	default:	//cannon or heavy atk phase 1,3
-	    		setFace(3);
+//	    		setFace(3);
 	    		//Body
 			  	this.BodyMain.rotateAngleX = -0.17F;
 			    //arm 
