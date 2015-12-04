@@ -21,7 +21,7 @@ public class SlotDesk extends Slot {
 	//設定每個slot可以放進的物品: 0:grudge 1:abyssium 2:ammo 3:polymetal 4:fuel 5:output
 	@Override
 	public boolean isItemValid(ItemStack itemstack) {
-		return tile.isItemValidForSlot(this.slotIndex, itemstack);
+		return true;
     }
 	
 	//player can not take item from slot

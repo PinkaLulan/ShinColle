@@ -122,13 +122,14 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 			for(int i = 0; i < 9; ++i) {
 				byte[] byteSelect = nbtExt.getByteArray("SelectState"+i);
 				int[] sid = nbtExt.getIntArray("TeamList"+i);
-				LogHelper.info("DEBUG : load player ExtNBT: "+sid[0]);
 						
-				for(int j = 0; j < 6; ++j) {
-					//set select state
-					this.selectState[i][j] = byteSelect[j] == 1 ? true : false;
-					//set ship UID
-					this.sidList[i][j] = sid[j];
+				if(sid != null && sid.length > 5) {  //null check for new player
+					for(int j = 0; j < 6; ++j) {
+						//set select state
+						this.selectState[i][j] = byteSelect[j] == 1 ? true : false;
+						//set ship UID
+						this.sidList[i][j] = sid[j];
+					}
 				}
 			}
 		}

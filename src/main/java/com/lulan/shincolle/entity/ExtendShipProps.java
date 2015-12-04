@@ -217,7 +217,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		entity.setEffectEquip(ID.EF_ASM, nbt_load.getFloat("ASM"));
 		
 		//load inventory
-		NBTTagList list = nbt.getTagList(tagName, 10);	//tagList可以用9(tagList)或者10(tagCompound)來取
+		NBTTagList list = nbt.getTagList(tagName, 10);	//tagList內為tagCompound, 代號=10
 
 		for(int i=0; i<list.tagCount(); i++) {
 			NBTTagCompound item = list.getCompoundTagAt(i);

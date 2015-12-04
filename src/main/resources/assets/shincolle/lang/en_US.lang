@@ -125,8 +125,8 @@ item.shincolle:shipegg40.name=Submarine U-511
 item.shincolle:shipegg240.name=Submarine U-511 Kai
 item.shincolle:shipegg41.name=Submarine Ro-500
 item.shincolle:shipegg241.name=Submarine Ro-500 (Mob)
-item.shincolle:shipegg102.name=戰艦 大和
-item.shincolle:shipegg302.name=戰艦 大和 改
+item.shincolle:shipegg102.name=Battleship Yamato
+item.shincolle:shipegg302.name=Battleship Yamato Kai
 
 # Entity
 entity.shincolle.EntityAirfieldHime.name=Airfield Princess
@@ -168,15 +168,80 @@ entity.shincolle.EntitySubmU511Mob.name=Submarine U-511 Kai
 # formatting codes:
 # new line: <br>, <BR>, <br/> or <BR/> can set next line manually. (String can wrap to next line automatically to fit gui width.)
 # other code: §0, §1 ...etc. check: http://minecraft.gamepedia.com/Formatting_codes
+
+# GUI: Book Text Chap 0
 gui.shincolle:book.chap0.title=Introduction
+gui.shincolle:book.chap0.text0d0=Not Yet Translated
+gui.shincolle:book.chap0.text0d1=Not Yet Translated
+gui.shincolle:book.chap0.text1d0=Not Yet Translated
+gui.shincolle:book.chap0.text1d1=Not Yet Translated
+
+# GUI: Book Text Chap 1
 gui.shincolle:book.chap1.title=Resources
+gui.shincolle:book.chap1.title0=Grudge
+gui.shincolle:book.chap1.text0d0=Not Yet Translated
+gui.shincolle:book.chap1.text0d1=Not Yet Translated
+gui.shincolle:book.chap1.title1=Abyssium
+gui.shincolle:book.chap1.text1d0=Not Yet Translated
+gui.shincolle:book.chap1.text1d1=Not Yet Translated
+gui.shincolle:book.chap1.title2=Polymetal
+gui.shincolle:book.chap1.text2d0=Not Yet Translated
+gui.shincolle:book.chap1.text2d1=Not Yet Translated
+gui.shincolle:book.chap1.title3=Grudgeful Ammo
+gui.shincolle:book.chap1.text3d0=Not Yet Translated
+gui.shincolle:book.chap1.text3d1=Not Yet Translated
+gui.shincolle:book.chap1.title4=Repair Bucket
+gui.shincolle:book.chap1.text4d0=Not Yet Translated
+gui.shincolle:book.chap1.text4d1=Not Yet Translated
+gui.shincolle:book.chap1.title5=Seikan Wedding Ring
+gui.shincolle:book.chap1.text5d0=Not Yet Translated
+gui.shincolle:book.chap1.text5d1=Not Yet Translated
+gui.shincolle:book.chap1.title6=Seikan Ownership Paper
+gui.shincolle:book.chap1.text6d0=Not Yet Translated
+gui.shincolle:book.chap1.text6d1=Not Yet Translated
+gui.shincolle:book.chap1.title7=Dismantle Hammer
+gui.shincolle:book.chap1.text7d0=Not Yet Translated
+gui.shincolle:book.chap1.text7d1=Not Yet Translated
+gui.shincolle:book.chap1.title8=Modernization Toolkit
+gui.shincolle:book.chap1.text8d0=Not Yet Translated
+gui.shincolle:book.chap1.text8d1=Not Yet Translated
+gui.shincolle:book.chap1.title9=Instant Construction Material
+gui.shincolle:book.chap1.text9d0=Not Yet Translated
+gui.shincolle:book.chap1.text9d1=Not Yet Translated
+gui.shincolle:book.chap1.title10=The Grudge of Abyssal Goddess
+gui.shincolle:book.chap1.text10d0=Not Yet Translated
+gui.shincolle:book.chap1.text10d1=Not Yet Translated
+gui.shincolle:book.chap1.title11=Wo-Class Command Scepter
+gui.shincolle:book.chap1.text11d0=Not Yet Translated
+gui.shincolle:book.chap1.text11d1=Not Yet Translated
+gui.shincolle:book.chap1.title12=Model 21 Zero Fighter (1/48)
+gui.shincolle:book.chap1.text12d0=Not Yet Translated
+gui.shincolle:book.chap1.text12d1=Not Yet Translated
+gui.shincolle:book.chap1.title13=Abyssal Adrmiral's Desk
+gui.shincolle:book.chap1.text13d0=Not Yet Translated
+gui.shincolle:book.chap1.text13d1=Not Yet Translated
+
+# GUI: Book Text Chap 2
 gui.shincolle:book.chap2.title=Construction
+
+# GUI: Book Text Chap 3
 gui.shincolle:book.chap3.title=Ship Attributes
+
+# GUI: Book Text Chap 4
 gui.shincolle:book.chap4.title=Ship List
+
+# GUI: Book Text Chap 5
 gui.shincolle:book.chap5.title=Enemy List
+
+# GUI: Book Text Chap 6
 gui.shincolle:book.chap6.title=Equipments List
 
-# GUI: Ship Inventory Top
+# GUI: Radar Screen
+gui.shincolle:radar.position=C
+gui.shincolle:radar.height=H
+gui.shincolle:radar.recall=Recall
+
+# GUI: Ship Inventory: Top
 gui.shincolle:level=Level
 gui.shincolle:hp=HP
 

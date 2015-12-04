@@ -202,6 +202,24 @@ gui.shincolle:book.chap1.text6d1=§9右鍵§0使用可以簽署該契約，交�
 gui.shincolle:book.chap1.title7=解體槌
 gui.shincolle:book.chap1.text7d0=<br><br><br><br><br><br><br><br>§d§n解體槌§r§0可以將§c深海棲艦§0分解並回收一些材料。
 gui.shincolle:book.chap1.text7d1=§9左鍵§0使用可以一擊殺自己擁有的棲艦。<br><br>§9蹲下+右鍵§0使用則能分解該棲艦。<br><br>只有擁有者或是OP權限可以拆解該棲艦。
+gui.shincolle:book.chap1.title8=近代化改修工具
+gui.shincolle:book.chap1.text8d0=
+gui.shincolle:book.chap1.text8d1=
+gui.shincolle:book.chap1.title9=高速建造材料
+gui.shincolle:book.chap1.text9d0=
+gui.shincolle:book.chap1.text9d1=
+gui.shincolle:book.chap1.title10=深海女神的怨念
+gui.shincolle:book.chap1.text10d0=
+gui.shincolle:book.chap1.text10d1=
+gui.shincolle:book.chap1.title11=ヲ級的指揮權杖
+gui.shincolle:book.chap1.text11d0=
+gui.shincolle:book.chap1.text11d1=
+gui.shincolle:book.chap1.title12=零式21型艦戰 (1/48)
+gui.shincolle:book.chap1.text12d0=
+gui.shincolle:book.chap1.text12d1=
+gui.shincolle:book.chap1.title13=深海提督的辦公桌
+gui.shincolle:book.chap1.text13d0=
+gui.shincolle:book.chap1.text13d1=
 
 # GUI: Book Text Chap 2
 gui.shincolle:book.chap2.title=建造
@@ -218,7 +236,12 @@ gui.shincolle:book.chap5.title=敵方船艦列表
 # GUI: Book Text Chap 6
 gui.shincolle:book.chap6.title=裝備列表
 
-# GUI: Ship Inventory Top
+# GUI: Radar Screen
+gui.shincolle:radar.position=座標
+gui.shincolle:radar.height=高度
+gui.shincolle:radar.recall=召回
+
+# GUI: Ship Inventory: Top
 gui.shincolle:level=等級
 gui.shincolle:hp=耐久
 

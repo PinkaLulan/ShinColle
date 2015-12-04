@@ -12,6 +12,7 @@ import com.lulan.shincolle.init.ModItems;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 public class Values {
@@ -359,8 +360,64 @@ public class Values {
 							new int[] {2, 0, 43, 23, ID.Item.AbyssIG},
 							new int[] {2, 0, 23, 43, ID.Item.Stick},
 							new int[] {2, 0, 81, 23, ID.Item.KHammer}));
-	//		page 8: 
-
+	//		page 8: modernization toolkit
+	put(1008, Arrays.asList(new int[] {0, 0, 0, 0},
+							new int[] {0, 1, 0, 0},
+							new int[] {1, 0, 0, 0, 0, 100, 72, 100, 62},
+							new int[] {2, 0, 3,  3,  ID.Item.KHammer},
+							new int[] {2, 0, 23, 3,  ID.Item.SpawnEgg2},
+							new int[] {2, 0, 43, 3,  ID.Item.SpawnEgg0},
+							new int[] {2, 0, 3,  23, ID.Item.SpawnEgg2},
+							new int[] {2, 0, 23, 23, ID.Item.SpawnEgg2},
+							new int[] {2, 0, 43, 23, ID.Item.SpawnEgg1},
+							new int[] {2, 0, 3,  43, ID.Item.SpawnEgg2},
+							new int[] {2, 0, 23, 43, ID.Item.SpawnEgg1},
+							new int[] {2, 0, 43, 43, ID.Item.SpawnEgg2},
+							new int[] {2, 0, 81, 23, ID.Item.ModTool}));
+	//		page 9: instant mats
+	put(1009, Arrays.asList(new int[] {0, 0, 0, 0},
+							new int[] {0, 1, 0, 0},
+							new int[] {1, 0, 0, 0, 0, 100, 72, 100, 62},
+							new int[] {2, 0, 3,  23, ID.Item.KHammer},
+							new int[] {2, 0, 23, 23, ID.Item.SpawnEgg0},
+							new int[] {2, 0, 81, 23, ID.Item.InstantMat}));
+	//		page 10: abyssal goddess
+	put(1010, Arrays.asList(new int[] {0, 0, 0, 0},
+							new int[] {0, 1, 0, 0},
+							new int[] {1, 0, 0, 0, 0, 100, 72, 100, 62},
+							new int[] {2, 0, 3,  23, ID.Item.GrudgeBH},
+							new int[] {2, 0, 23, 23, ID.Item.DiamondB},
+							new int[] {2, 0, 81, 23, ID.Item.RpGod}));
+	//		page 11: pointer
+	put(1011, Arrays.asList(new int[] {0, 0, 0, 0},
+							new int[] {0, 1, 0, 0},
+							new int[] {1, 0, 0, 0, 0, 100, 72, 100, 62},
+							new int[] {2, 0, 3,  43, ID.Item.PolymIG},
+							new int[] {2, 0, 23, 23, ID.Item.PolymIG},
+							new int[] {2, 0, 43, 3,  ID.Item.GrudgeB},
+							new int[] {2, 0, 81, 23, ID.Item.Pointer}));
+	//		page 12: model zero fighter
+	put(1012, Arrays.asList(new int[] {0, 0, 0, 0},
+							new int[] {0, 1, 0, 0},
+							new int[] {1, 0, 0, 0, 0, 100, 72, 100, 62},
+							new int[] {2, 0, 23,  3, ID.Item.PolymIG},
+							new int[] {2, 0, 3,  23, ID.Item.PolymIG},
+							new int[] {2, 0, 23, 23, ID.Item.PolymIG},
+							new int[] {2, 0, 43, 23, ID.Item.PolymIG},
+							new int[] {2, 0, 23, 43, ID.Item.PolymIG},
+							new int[] {2, 0, 81, 23, ID.Item.ModelZF}));
+	//		page 13:
+	put(1013, Arrays.asList(new int[] {0, 0, 0, 0},
+							new int[] {0, 1, 0, 0},
+							new int[] {1, 0, 0, 0, 0, 100, 72, 100, 62},
+							new int[] {2, 0, 3,  3,  ID.Item.WoolB},
+							new int[] {2, 0, 23, 3,  ID.Item.GrudgeB},
+							new int[] {2, 0, 43, 3,  ID.Item.WoolB},
+							new int[] {2, 0, 3,  23, ID.Item.ObsidianB},
+							new int[] {2, 0, 43, 23, ID.Item.ObsidianB},
+							new int[] {2, 0, 3,  43, ID.Item.ObsidianB},
+							new int[] {2, 0, 43, 43, ID.Item.ObsidianB},
+							new int[] {2, 0, 81, 23, ID.Item.Desk}));
 		
 	}});
 	

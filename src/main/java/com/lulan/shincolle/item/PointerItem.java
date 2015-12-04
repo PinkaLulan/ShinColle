@@ -616,7 +616,7 @@ public class PointerItem extends BasicItem {
     			else {
     				//check ship UID
     				if(props.getSIDofCurrentTeam(i) > 0) {
-    					list.add(EnumChatFormatting.DARK_RED+""+EnumChatFormatting.OBFUSCATED+"1111111111111111");
+    					list.add(EnumChatFormatting.DARK_RED+""+EnumChatFormatting.OBFUSCATED+"NO_SIGNAL");
     					j++;
     				}
     			}//end ship is null

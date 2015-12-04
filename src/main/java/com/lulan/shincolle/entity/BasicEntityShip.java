@@ -1436,7 +1436,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	
         	//register or update ship id and owner id
 			if(!this.isUpdated && ticksExisted % updateTime == 0) {
-				LogHelper.info("DEBUG : update ship: initial SID, PID");
+				LogHelper.info("DEBUG : update ship: initial SID, PID  cd: "+updateTime);
 				ServerProxy.updateShipID(this);		//update ship uid
 				
 				if(this.getPlayerUID() <= 0) {
@@ -1452,8 +1452,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				}
 				
 				//prolong update time
-				if(updateTime >= 8192) {
-					updateTime = 8192;
+				if(updateTime >= 4096) {
+					updateTime = 4096;
 				}
 				else {
 					updateTime *= 2;
@@ -2203,7 +2203,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		if(getStateFlag(ID.F.NoFuel)) {
 			//原本有AI, 則清除之
 			if(this.targetTasks.taskEntries.size() > 0) {
-				LogHelper.info("DEBUG : No fuel, clear AI");
+				LogHelper.info("DEBUG : No fuel, clear AI "+this);
 				clearAITasks();
 				clearAITargetTasks();
 				sendSyncPacket();
@@ -2217,7 +2217,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		//has fuel, set AI
 		else {
 			if(this.targetTasks.taskEntries.size() < 2) {
-				LogHelper.info("DEBUG : Get fuel, set AI");
+				LogHelper.info("DEBUG : Get fuel, set AI "+this);
 				clearAITasks();
 				clearAITargetTasks();
 				setAIList();

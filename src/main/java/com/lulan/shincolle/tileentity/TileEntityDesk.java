@@ -17,11 +17,17 @@ import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 public class TileEntityDesk extends BasicTileEntity {
 
 	public int guiFunc = 0;
+	
+	//radar
+	public int radar_zoomLv = 0;
+	
+	//book
 	public int book_chap = 0;
 	public int book_page = 0;
 	
 	
 	public TileEntityDesk() {
+		this.slots = new ItemStack[10];
 	}
 	
 	@Override
@@ -58,6 +64,7 @@ public class TileEntityDesk extends BasicTileEntity {
         super.readFromNBT(compound);	//從nbt讀取方塊的xyz座標
         
         guiFunc = compound.getInteger("guiFunc");
+        radar_zoomLv = compound.getInteger("radarZoom");
         book_chap = compound.getInteger("bookChap");
         book_page = compound.getInteger("bookPage");
     }
@@ -68,6 +75,7 @@ public class TileEntityDesk extends BasicTileEntity {
 		super.writeToNBT(compound);
 		
 		compound.setInteger("guiFunc", guiFunc);
+		compound.setInteger("radarZoom", radar_zoomLv);
 		compound.setInteger("bookChap", book_chap);
 		compound.setInteger("bookPage", book_page);
 	}
@@ -75,10 +83,11 @@ public class TileEntityDesk extends BasicTileEntity {
 	@Override
 	public void sendSyncPacketC2S() {
 		if(this.worldObj.isRemote) {
-			int[] data = new int[3];
+			int[] data = new int[4];
 			data[0] = this.guiFunc;
 			data[1] = this.book_chap;
 			data[2] = this.book_page;
+			data[3] = this.radar_zoomLv;
 			CommonProxy.channelG.sendToServer(new C2SGUIPackets(this, ID.B.Desk_Sync, data));
 		}
 	}
@@ -86,7 +95,7 @@ public class TileEntityDesk extends BasicTileEntity {
 	@Override
 	public void sendSyncPacket() {
 		if(!this.worldObj.isRemote) {
-			LogHelper.info("DEBUG : desk sync s2c "+this.guiFunc+" "+this.book_chap+" "+this.book_page);
+//			LogHelper.info("DEBUG : desk sync s2c "+this.guiFunc+" "+this.book_chap+" "+this.book_page);
 			TargetPoint point = new TargetPoint(this.worldObj.provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, 8D);
 			CommonProxy.channelG.sendToAllAround(new S2CGUIPackets(this), point);
 		}
@@ -98,6 +107,7 @@ public class TileEntityDesk extends BasicTileEntity {
 			this.guiFunc = data[0];
 			this.book_chap = data[1];
 			this.book_page = data[2];
+			this.radar_zoomLv = data[3];
 		}
 	}
 	

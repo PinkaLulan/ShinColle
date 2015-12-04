@@ -1,13 +1,15 @@
 package com.lulan.shincolle.client.gui.inventory;
 
+import java.util.ArrayList;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ICrafting;
 import net.minecraft.item.ItemStack;
 
+import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.tileentity.TileEntityDesk;
-import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -21,12 +23,12 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ContainerDesk extends Container {
 	
 	private TileEntityDesk tile;
+	private InventoryPlayer player;
 	private int guiFunc, bookChap, bookPage;
 	
 	
 	public ContainerDesk(InventoryPlayer invPlayer, TileEntityDesk te) {
 		this.tile = te;
-
 	}
 
 	//玩家是否可以觸發右鍵點方塊事件
@@ -53,13 +55,14 @@ public class ContainerDesk extends Container {
 		crafting.sendProgressBarUpdate(this, 1, this.tile.guiFunc);
 		crafting.sendProgressBarUpdate(this, 2, this.tile.book_chap);
 		crafting.sendProgressBarUpdate(this, 3, this.tile.book_page);
+		crafting.sendProgressBarUpdate(this, 4, this.tile.radar_zoomLv);
 	}
 	
 	//將container數值跟tile entity內的數值比對, 如果不同則發送更新給client使gui呈現新數值
 	@Override
 	public void detectAndSendChanges() {
 		super.detectAndSendChanges();
-
+				
 //        for(Object crafter : this.crafters) {
 //            ICrafting icrafting = (ICrafting) crafter;
 //            
@@ -90,6 +93,9 @@ public class ContainerDesk extends Container {
 			break;
 		case 3:
 			this.tile.book_page = updatedValue;
+			break;
+		case 4:
+			this.tile.radar_zoomLv = updatedValue;
 			break;
 		}
     }

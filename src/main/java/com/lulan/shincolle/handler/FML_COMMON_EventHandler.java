@@ -239,6 +239,12 @@ public class FML_COMMON_EventHandler {
 					CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps), (EntityPlayerMP) event.player);
 				}
 				
+//				//every 32 ticks
+//				if(event.player.ticksExisted % 32 == 0) {
+//					//DEBUG
+//					LogHelper.info("DEBUG : player tick: get #data "+ServerProxy.getAllPlayerWorldData().size());
+//				}//end every 32 ticks
+				
 			}//end server side, extProps != null
 			
 			//count down key cooldown

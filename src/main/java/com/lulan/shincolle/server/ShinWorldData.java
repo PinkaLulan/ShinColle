@@ -9,6 +9,7 @@ import net.minecraft.world.WorldSavedData;
 
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.LogHelper;
 
 /**伺服器端資料
  * 儲存player id等, 伺服器端判定用資料
@@ -45,6 +46,7 @@ public class ShinWorldData extends WorldSavedData {
 	public void readFromNBT(NBTTagCompound nbt) {
 		//get data
 		nbtData = (NBTTagCompound) nbt.copy();
+//		LogHelper.info("DEBUG : world data: load NBT: "+nbtData.toString());
 	}//end read nbt
 
 	/**write server save file
@@ -62,7 +64,7 @@ public class ShinWorldData extends WorldSavedData {
 		Iterator iter = ServerProxy.getAllPlayerWorldData().entrySet().iterator();
 		
 		while(iter.hasNext()) {
-		    Map.Entry entry = (Map.Entry) iter.next(); 
+		    Map.Entry entry = (Map.Entry) iter.next();
 		    int uid = (Integer) entry.getKey();
 		    int[] data = (int[]) entry.getValue();
 		    
@@ -71,9 +73,8 @@ public class ShinWorldData extends WorldSavedData {
 		    save.setIntArray(TAG_PDATA, data);
 		    list.appendTag(save);	//將save加入到list中, 不檢查是否有重複的tag, 而是新增一個tag
 		} 
-		
+//		LogHelper.info("DEBUG : world data: save NBT: "+list.tagCount());
 		nbt.setTag(TAG_PLAYERDATA, list);	//將list加入到nbt中
-		
 	}//end write nbt
 
 }

@@ -100,7 +100,7 @@ public class ShipSpawnEgg extends Item {
   		list.add(new ItemStack(item, 1, ID.S_DestroyerHA+2));
   		list.add(new ItemStack(item, 1, ID.S_DestroyerNI+2));
   		list.add(new ItemStack(item, 1, ID.S_HeavyCruiserRI+2));
-  		list.add(new ItemStack(item, 1, ID.S_HeavyCruiserNE+2));
+//  		list.add(new ItemStack(item, 1, ID.S_HeavyCruiserNE+2));
   		list.add(new ItemStack(item, 1, ID.S_CarrierWO+2));
   		list.add(new ItemStack(item, 1, ID.S_BattleshipTA+2));
   		list.add(new ItemStack(item, 1, ID.S_BattleshipRE+2));
@@ -113,8 +113,8 @@ public class ShipSpawnEgg extends Item {
   		list.add(new ItemStack(item, 1, ID.S_DestroyerShimakaze+202));	//mob entity
   		list.add(new ItemStack(item, 1, ID.S_BattleshipNagato+2));
   		list.add(new ItemStack(item, 1, ID.S_BattleshipNagato+202));	//mob entity
-  		list.add(new ItemStack(item, 1, ID.S_BattleshipYamato+2));
-  		list.add(new ItemStack(item, 1, ID.S_BattleshipYamato+202));	//mob entity
+//  		list.add(new ItemStack(item, 1, ID.S_BattleshipYamato+2));
+//  		list.add(new ItemStack(item, 1, ID.S_BattleshipYamato+202));	//mob entity
   		list.add(new ItemStack(item, 1, ID.S_SubmarineU511+2));
   		list.add(new ItemStack(item, 1, ID.S_SubmarineU511+202));		//mob entity
   		list.add(new ItemStack(item, 1, ID.S_SubmarineRo500+2));

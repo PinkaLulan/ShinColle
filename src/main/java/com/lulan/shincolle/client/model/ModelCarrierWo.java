@@ -502,8 +502,8 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 	    this.Head.rotateAngleX = (f4 / 57.29578F) * 0.7F; 	//上下角度
 	    //正常站立動作
 	    //胸部
-  	    this.BoobL.rotateAngleX = -angleZ * 0.06F - 0.73F;
-  	    this.BoobR.rotateAngleX = -angleZ * 0.06F - 0.73F;
+  	    this.BoobL.rotateAngleX = -angleZ * 0.06F - 0.63F;
+  	    this.BoobR.rotateAngleX = -angleZ * 0.06F - 0.63F;
   	    //呆毛
   	    this.Ahoke.rotateAngleY = angleZ * 0.25F + 0.5236F;
   	    //手臂晃動 
@@ -857,12 +857,12 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 	    	this.ArmRight01.rotateAngleZ = 0.7F;
 	    	this.ArmRight01.rotateAngleX = 0.4F;
 	    	//杖位置
-			this.Staff.rotateAngleX = 1.2F;
-			this.Staff.rotateAngleY = -0.18F;
+			this.Staff.rotateAngleX = 1.5F;
+			this.Staff.rotateAngleY = 0F;
 			this.Staff.rotateAngleZ = -1.2F;
-			this.Staff.offsetX = -0.4F;
-			this.Staff.offsetY = -0.3F;
-			this.Staff.offsetZ = -1F;
+			this.Staff.offsetX = -0.2F;
+			this.Staff.offsetY = -1.2F;
+			this.Staff.offsetZ = -1.0F;
 	    }
 	}
     

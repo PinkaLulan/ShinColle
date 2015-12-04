@@ -51,8 +51,10 @@ public class GuiHelper {
 		{//gui3: admiral desk
 		 //0:radar btn       1:book btn								//all
 		 {{3,2,19,18},      {22,2,38,18}},
-		 //0:radar scale											//radar
-		 {{7,158,55,170}},
+		 //0:radar scale	 1:ship slot 0     2:ship slot 1		//radar
+		 {{7,158,55,170},   {140,23,252,54},  {140,55,252,86},
+		 //3:ship slot 2     4:ship slot 3     5:ship slot 4
+		  {140,87,252,118}, {140,119,252,150},{140,151,252,187}},
 		 //0:left page       1:right page	   2:chap 0				//book
 		 {{52,180,72,193},  {174,180,194,193},{243,34,256,45},
 		 //3:chap 1          4:chap 2          5:chap 3

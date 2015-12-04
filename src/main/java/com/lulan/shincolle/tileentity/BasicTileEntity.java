@@ -115,7 +115,7 @@ abstract public class BasicTileEntity extends TileEntity implements ISidedInvent
 
 	@Override
 	public int[] getAccessibleSlotsFromSide(int side) {
-		return null;
+		return new int[] {};
 	}
 
 	@Override

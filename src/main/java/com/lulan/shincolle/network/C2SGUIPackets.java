@@ -395,8 +395,8 @@ public class C2SGUIPackets implements IMessage {
 				//set tile
 				switch(this.value1) {
 				case ID.B.Desk_Sync:  //admiral desk sync
-					this.value3 = new int[3];
-					for(int i = 0; i < 3; ++i) {
+					this.value3 = new int[4];
+					for(int i = 0; i < 4; ++i) {
 						this.value3[i] = buf.readInt();
 					}
 					EntityHelper.setTileEntityByGUI(tile, value1, value3);

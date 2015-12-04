@@ -57,7 +57,7 @@ public class ShipCalc {
 		EquipSmall.add(new int[] {ID.S_DestroyerHA,     100,  0});
 		EquipSmall.add(new int[] {ID.S_DestroyerNI,     110,  0});
 		EquipSmall.add(new int[] {ID.S_HeavyCruiserRI,  200,  2});
-		EquipSmall.add(new int[] {ID.S_HeavyCruiserNE,  256,  2});
+//		EquipSmall.add(new int[] {ID.S_HeavyCruiserNE,  256,  2});
 		
 		//large build
 		EquipLarge.add(new int[] {ID.S_CarrierWO,       500,  3});

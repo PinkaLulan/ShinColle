@@ -10,17 +10,22 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.client.gui.inventory.ContainerDesk;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
+import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.tileentity.TileEntityDesk;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
@@ -47,8 +52,14 @@ public class GuiDesk extends GuiContainer {
 	private int tickGUI, guiFunc;
 	private String errorMsg;
 	
+	//player data
+	EntityPlayer player;
+	ExtendPlayerProps extProps;
+	
 	//radar
-	private int radar_zoomLv;
+	private int radar_zoomLv;			//0:256x256 1:64x64 2:16x16
+	private int radar_listNum;			//list index number
+	private int radar_clicked;			//clicked ship
 	private List<ShipEntity> shipList;
 	
 	//book
@@ -85,9 +96,14 @@ public class GuiDesk extends GuiContainer {
 		this.tile = par2;
 		this.tickGUI = 0;				//ticks in gui (not game tick)
 		
+		//player data
+		player = ClientProxy.getClientPlayer();
+		extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+		
 		//radar
-		this.radar_zoomLv = 0;			//0:256x256 1:64x64 2:16x16
 		this.shipList = new ArrayList();
+		this.radar_listNum = 0;
+		this.radar_clicked = -1;
 	}
 	
 	//get new mouseX,Y and redraw gui
@@ -96,11 +112,15 @@ public class GuiDesk extends GuiContainer {
 		super.drawScreen(mouseX, mouseY, f);
 		xMouse = mouseX;
 		yMouse = mouseY;
+		
 		tickGUI += 1;
 	}
 	
 	//draw tooltip
 	private void handleHoveringText() {
+		int mx = xMouse - guiLeft;
+		int my = yMouse - guiTop;
+		
 		//draw ship name on light spot in radar function
 		switch(this.guiFunc) {
 		case 1:  /** radar */
@@ -127,15 +147,37 @@ public class GuiDesk extends GuiContainer {
 			drawHoveringText(list, xMouse-guiLeft, yMouse-guiTop, this.fontRendererObj);
 			break;  //end radar
 		case 2:     /** book */
-			int getbtn = GuiHelper.getButton(ID.G.ADMIRALDESK, 2, xMouse-guiLeft, yMouse-guiTop);
-			
+			int getbtn = GuiHelper.getButton(ID.G.ADMIRALDESK, 2, mx, my);
+
 			//get chap text
         	if(getbtn > 1 && getbtn < 9) {
         		getbtn -= 2;
         		String strChap = I18n.format("gui.shincolle:book.chap"+getbtn+".title");
         		List list2 = CalcHelper.stringConvNewlineToList(strChap);
         		int strLen = this.fontRendererObj.getStringWidth(strChap);
-        		drawHoveringText(list2, xMouse-guiLeft-strLen-20, yMouse-guiTop, this.fontRendererObj);
+        		drawHoveringText(list2, mx-strLen-20, my, this.fontRendererObj);
+        	}
+        	else {
+        		int id = GuiBook.getIndexID(this.book_chapNum, this.book_pageNum);
+        		List<int[]> cont = Values.BookList.get(id);
+        		
+        		if(cont != null) {
+        			for(int[] getc : cont) {
+        				if(getc != null && getc.length == 5) {
+        					int xa = getc[2] + GuiBook.Page0LX;              //at left page
+        					if(getc[1] > 0) xa = getc[2] + GuiBook.Page0RX;  //at right page
+        					int xb = xa + 16;
+        					int ya = getc[3] + GuiBook.Page0LY;
+        					int yb = ya + 16;
+        					ItemStack item = GuiBook.getItemStackForIcon(getc[4]);
+        					
+        					if(mx > xa && mx < xb && my > ya && my < yb) {
+        						this.renderToolTip(item, mx, my);
+        						break;
+        					}
+        				}
+        			}//end for book content
+        		}//end if book content
         	}
         	
 			break;  //end book
@@ -145,14 +187,10 @@ public class GuiDesk extends GuiContainer {
 	//GUI前景: 文字 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int i, int j) {
-		//get new value
-		this.guiFunc = this.tile.guiFunc;
-		this.book_chapNum = this.tile.book_chap;
-		this.book_pageNum = this.tile.book_page;
-		
 		//draw ship data in radar function
 		switch(this.guiFunc) {
 		case 1:  //radar
+			drawRadarText();
 			break;  //end radar
 		case 2:  //book
 			GuiBook.drawBookContent(this, this.fontRendererObj, this.book_chapNum, this.book_pageNum);
@@ -172,6 +210,7 @@ public class GuiDesk extends GuiContainer {
        
         //get new value
   		this.guiFunc = this.tile.guiFunc;
+  		this.radar_zoomLv = this.tile.radar_zoomLv;
   		this.book_chapNum = this.tile.book_chap;
   		this.book_pageNum = this.tile.book_page;
       		
@@ -204,6 +243,12 @@ public class GuiDesk extends GuiContainer {
         	}
         	drawTexturedModalRect(guiLeft+9, guiTop+160, 24, texty, 44, 8);
         	
+        	//draw ship clicked circle
+        	if(this.radar_clicked > -1 && this.radar_clicked < 5) {
+        		int cirY = 25 + this.radar_clicked * 32;
+            	drawTexturedModalRect(guiLeft+142, guiTop+cirY, 68, 192, 108, 31);
+        	}
+        	
         	//draw radar ship icon
         	drawRadarIcon();
         	break;	//end radar
@@ -226,11 +271,42 @@ public class GuiDesk extends GuiContainer {
         }
 	}
 	
+	//mouse input
+	@Override
+	public void handleMouseInput() {
+		super.handleMouseInput();
+		
+		int wheel = Mouse.getEventDWheel();
+		if(wheel < 0) {			//scroll down
+			if(this.shipList.size() > 0) {
+				radar_clicked--;
+				radar_listNum++;
+				
+				if(radar_listNum > this.shipList.size()-1) {
+					radar_listNum = this.shipList.size()-1;
+					radar_clicked++;
+				}
+				if(radar_listNum < 0) {
+					radar_listNum = 0;
+					radar_clicked++;  //捲過頭, 補回1
+				}
+			}
+		}
+		else if(wheel > 0) {	//scroll up
+			radar_clicked++;
+			radar_listNum--;
+			if(radar_listNum < 0) {
+				radar_listNum = 0;
+				radar_clicked--;  //捲過頭, 補回1
+			}
+		}
+	}
+	
 	//handle mouse click, @parm posX, posY, mouseKey (0:left 1:right 2:middle 3:...etc)
 	@Override
 	protected void mouseClicked(int posX, int posY, int mouseKey) {
         super.mouseClicked(posX, posY, mouseKey);
-            
+        LogHelper.info("DEBUG : click mouse "+mouseKey);
         //get click position
         xClick = posX - this.guiLeft;
         yClick = posY - this.guiTop;
@@ -242,10 +318,18 @@ public class GuiDesk extends GuiContainer {
         //match radar page
         switch(this.guiFunc) {
         case 1:     //radar
-        	switch(GuiHelper.getButton(ID.G.ADMIRALDESK, 1, xClick, yClick)) {
+        	int radarBtn = GuiHelper.getButton(ID.G.ADMIRALDESK, 1, xClick, yClick);
+        	switch(radarBtn) {
             case 0:	//radar scale
             	this.radar_zoomLv++;
             	if(this.radar_zoomLv > 2) this.radar_zoomLv = 0;
+            	break;
+            case 1: //ship slot 0~4
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            	this.radar_clicked = radarBtn - 1;
             	break;
             }
         	break;  //end radar
@@ -282,6 +366,12 @@ public class GuiDesk extends GuiContainer {
         syncTileEntityC2S();
 	}
 	
+	@Override
+	protected void mouseClickMove(int mx, int my, int button, long time) {
+		super.mouseClickMove(mx, my, button, time);
+		
+	}
+	
 	private void setDeskFunction(int button) {
 		if(button >= 0) {
 			if(this.guiFunc != button+1) {
@@ -299,15 +389,14 @@ public class GuiDesk extends GuiContainer {
 	//client to server sync
 	private void syncTileEntityC2S() {
 		this.tile.guiFunc = this.guiFunc;
+		this.tile.radar_zoomLv = this.radar_zoomLv;
 		this.tile.book_chap = this.book_chapNum;
 		this.tile.book_page = this.book_pageNum;
 		this.tile.sendSyncPacketC2S();
 	}
 	
+	//draw light spot in radar screen
 	private void drawRadarIcon() {
-		EntityPlayer player = ClientProxy.getClientPlayer();
-		ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
-		
 		if(extProps != null) {
 			List<Integer> ships = extProps.getShipEIDList();
 			
@@ -322,6 +411,7 @@ public class GuiDesk extends GuiContainer {
 			int dx = 0;
 			int dy = 0;
 			int dz = 0;
+			int id = 0;
 			this.shipList = new ArrayList();
 			
 			//for all ships in ship list
@@ -396,12 +486,44 @@ public class GuiDesk extends GuiContainer {
 					}
 					
 					//draw icon by radar zoom level, radar center = [70,89]
-					drawTexturedModalRect(guiLeft+69+(int)px, guiTop+88+(int)pz, sIcon, 192, 3, 3);	
+					if(id == this.radar_listNum + this.radar_clicked) {
+						drawTexturedModalRect(guiLeft+69+(int)px, guiTop+88+(int)pz, 0, 195, 3, 3);
+					}
+					else {
+						drawTexturedModalRect(guiLeft+69+(int)px, guiTop+88+(int)pz, sIcon, 192, 3, 3);
+					}
+					id++;
 				}//end y position > 0
 			}//end for all ship
 			GL11.glDisable(GL11.GL_BLEND);
 		}//end get player
 	}//end draw radar icon
+	
+	//draw ship text in radar screen
+	private void drawRadarText() {
+		//draw ship list in radar
+		String str;
+		ShipEntity s;
+		int texty = 31;
+		
+		for(int i = this.radar_listNum; i < shipList.size() && i < this.radar_listNum + 5; ++i) {
+			//get ship position
+			s = shipList.get(i);
+			if(s != null && s.ship != null) {
+				//draw name
+				fontRendererObj.drawString(s.name, 146, texty, GuiHelper.pickColor(GuiHelper.pickColorName.WHITE.ordinal()));
+				texty += 12;
+				//draw pos
+				str = I18n.format("gui.shincolle:radar.position") + " " + 
+					  MathHelper.ceiling_double_int(s.ship.posX) + " , " + 
+					  MathHelper.ceiling_double_int(s.ship.posZ) + "  " +
+					  I18n.format("gui.shincolle:radar.height") + " " +
+					  (int)(s.ship.posY);
+				fontRendererObj.drawString(str, 146, texty, GuiHelper.pickColor(GuiHelper.pickColorName.YELLOW.ordinal()));
+				texty += 20;
+			}
+		}
+	}
 
 
 }

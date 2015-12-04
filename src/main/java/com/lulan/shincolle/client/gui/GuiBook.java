@@ -5,15 +5,18 @@ import java.util.List;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
+import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
@@ -45,12 +48,12 @@ public class GuiBook {
 	private static RenderItem itemRender = new RenderItem();
 	private static int numChap;
 	private static int numPage;
-	private static int PageWidth = 106; //page width
-	private static int Page0LX = 13;    //left page start X pos
-	private static int Page0LY = 50;    //left page start Y pos
-	private static int Page0RX = 133;   //right page start X pos
-	private static int Page0RY = 50;    //right page start Y pos
-	public static final int[] PageLimit = new int[] {1,20,0,0,0,0,0};  //max page number
+	public static int PageWidth = 106; //page width
+	public static int Page0LX = 13;    //left page start X pos
+	public static int Page0LY = 50;    //left page start Y pos
+	public static int Page0RX = 133;   //right page start X pos
+	public static int Page0RY = 50;    //right page start Y pos
+	public static final int[] PageLimit = new int[] {1,13,0,0,0,0,0};  //max page number
 	
 	public GuiBook() {}
 	
@@ -59,7 +62,7 @@ public class GuiBook {
 		/** Content Array:
 		 *  0:c.type  1:pageL/R  2:posX  3:posY  4:add content
 		 */
-		int index = chap * 1000 + page;
+		int index = getIndexID(chap, page);
 		List<int[]> cont = Values.BookList.get(index);
 		
 		gui = par1;
@@ -68,20 +71,12 @@ public class GuiBook {
 		numPage = page;
 		
 		//DEBUG: test page
-		if(numChap == 1 && numPage == 8) {
-			cont =  Arrays.asList(
-					new int[] {0, 0, 0, 0},
-					new int[] {0, 1, 0, 0},
-					new int[] {1, 0, 0, 0, 0, 100, 72, 100, 62},
-					new int[] {2, 0, 3,  3,  ID.Item.AbyssIG},
-					new int[] {2, 0, 23, 3,  ID.Item.AbyssIG},
-					new int[] {2, 0, 43, 3,  ID.Item.AbyssIG},
-					new int[] {2, 0, 3,  23, ID.Item.AbyssIG},
-					new int[] {2, 0, 23, 23, ID.Item.AbyssIG},
-					new int[] {2, 0, 43, 23, ID.Item.AbyssIG},
-					new int[] {2, 0, 23, 43, ID.Item.Stick},
-					new int[] {2, 0, 81, 23, ID.Item.KHammer}
-		);}
+//		if(numChap == 2 && numPage == 0) {
+//			cont =  Arrays.asList(new int[] {0, 0, 0, 0},
+//								new int[] {0, 1, 0, 0},
+//								new int[] {1, 0, 0, 0, 0, 100, 72, 100, 62},
+//								new int[] {2, 0, 81, 23, ID.Item.Desk}
+//		);}
 		
 		if(cont != null) {
 			for(int[] getc : cont) {
@@ -222,7 +217,8 @@ public class GuiBook {
 	//draw item icon
 	private static void drawItemIcon(ItemStack item, int x, int y, boolean effect) {
 		if(item != null) {
-			itemRender.renderItemIntoGUI(font, tm, item, x, y, effect);
+//			itemRender.renderItemIntoGUI(font, tm, item, x, y, effect);  //not suitable for custom TESR block
+			itemRender.renderItemAndEffectIntoGUI(font, tm, item, x, y);
 		}
 	}
 	
@@ -230,6 +226,11 @@ public class GuiBook {
 	public static int getMaxPageNumber(int chap) {
 		if(chap < PageLimit.length) return PageLimit[chap];
 		return 0;
+	}
+	
+	//get index id for Values.BookList
+	public static int getIndexID(int ch, int pg) {
+		return ch * 1000 + pg;
 	}
 	
 	//get itemstack for icon
