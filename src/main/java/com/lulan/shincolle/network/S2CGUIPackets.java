@@ -16,13 +16,16 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
 import com.lulan.shincolle.entity.renderentity.EntityRenderVortex;
 import com.lulan.shincolle.proxy.ClientProxy;
+import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.BasicTileEntity;
 import com.lulan.shincolle.tileentity.TileEntityDesk;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
 
+import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
@@ -46,52 +49,56 @@ public class S2CGUIPackets implements IMessage {
 	
 	//packet id
 	public static final class PID {
+		public static final byte TileSmallSY = 0;
+		public static final byte TileLargeSY = 1;
+		public static final byte TileDesk = 2;
+		public static final byte SyncPlayerProp = 3;
+		public static final byte SyncShipInv = 4;
 		public static final byte FlagInitSID = 5;
 		public static final byte SyncShipList = 6;
-		public static final byte SyncDesk = 7;
+		public static final byte SyncPlayerProp_TargetClass = 7;
 	}
 	
 	
 	public S2CGUIPackets() {}	//必須要有空參數constructor, forge才能使用此class
 	
 	//GUI sync: 
-	//type 0: sync shipyard
-	//type 1: sync large shipyard
+	//sync tile entity
 	public S2CGUIPackets(BasicTileEntity tile) {
 		if(tile instanceof TileEntitySmallShipyard) {
 			this.tile1 = (TileEntitySmallShipyard) tile;
-			this.type = 0;
+			this.type = PID.TileSmallSY;
 		}
 		else if(tile instanceof TileMultiGrudgeHeavy) {
 			this.tile2 = (TileMultiGrudgeHeavy) tile;
-			this.type = 1;
+			this.type = PID.TileLargeSY;
 		}
 		else if(tile instanceof TileEntityDesk) {
 			this.tile = tile;
-			this.type = PID.SyncDesk;
+			this.type = PID.TileDesk;
 		}
     }
 	
-	//type 2: player gui sync
-	public S2CGUIPackets(int value, int value2) {
-        this.type = 2;
-        this.value = value;
-        this.value2 = value2;
-    }
-	
-	//type 3: player extend props sync (for team frame and radar GUI)
-	public S2CGUIPackets(ExtendPlayerProps extProps) {
-        this.type = 3;
+	//player extend props sync (for team frame and radar GUI)
+	public S2CGUIPackets(ExtendPlayerProps extProps, int type) {
+        this.type = type;
         this.props = extProps;
+        
+        switch(type) {
+        case PID.SyncPlayerProp_TargetClass:
+        	int uid = props.getPlayerUID();
+        	this.data = ServerProxy.getPlayerTargetClassList(uid);
+        	break;
+        }
     }
 	
-	//type 4: ship inventory sync
+	//ship inventory sync
 	public S2CGUIPackets(BasicEntityShip ship) {
-        this.type = 4;
+        this.type = PID.SyncShipInv;
         this.ship = ship;
     }
 	
-	//type 5: player extend props sync type 2
+	//player extend props sync type 2
 	public S2CGUIPackets(int type, int value, boolean flag) {
         this.type = type;
         
@@ -102,7 +109,7 @@ public class S2CGUIPackets implements IMessage {
         }
     }
 	
-	//type 6: ship list sync
+	//ship list sync
 	public S2CGUIPackets(int type, List list) {
 		this.type = type;
 		this.data = list;
@@ -117,7 +124,7 @@ public class S2CGUIPackets implements IMessage {
 		this.type = buf.readByte();
 	
 		switch(type) {
-		case 0: //sync small shipyard gui
+		case PID.TileSmallSY: //sync small shipyard gui
 			{
 				this.recvX = buf.readInt();
 				this.recvY = buf.readInt();
@@ -135,7 +142,7 @@ public class S2CGUIPackets implements IMessage {
 				}
 			}
 			break;
-		case 1: //sync large shipyard gui
+		case PID.TileLargeSY: //sync large shipyard gui
 			{
 				this.recvX = buf.readInt();
 				this.recvY = buf.readInt();
@@ -165,16 +172,27 @@ public class S2CGUIPackets implements IMessage {
 				}
 			}
 			break;
-		case 2: //player gui click
+		case PID.TileDesk:
 			{
-				this.value = buf.readByte();
-				this.value2 = buf.readByte();
+				this.recvX = buf.readInt();
+				this.recvY = buf.readInt();
+				this.recvZ = buf.readInt();
 				
-				//set value
-				EntityHelper.setPlayerByGUI(value, value2);
+				this.tile = world.getTileEntity(recvX, recvY, recvZ);
+				
+				if(this.tile1 != null) {
+					int[] data = new int[3];
+					data[0] = buf.readInt();
+					data[1] = buf.readInt();
+					data[2] = buf.readInt();
+					EntityHelper.setTileEntityByGUI(tile, ID.B.Desk_Sync, data);
+				}
+				else {
+					buf.clear();
+				}
 			}
 			break;
-		case 3: //sync player props
+		case PID.SyncPlayerProp: //sync player props
 			{			
 				int[] propValues = new int[4];
 				int[] shipValues = new int[12];	//0:ship 0 eid  1: ship 0 uid  2: ship 1 eid...
@@ -215,7 +233,7 @@ public class S2CGUIPackets implements IMessage {
 				EntityHelper.setPlayerExtProps(teamID, shipValues, shipSelected);
 			}
 			break;
-		case 4:	//sync ship GUI
+		case PID.SyncShipInv:	//sync ship GUI
 			{
 				Entity getEnt = EntityHelper.getEntityByID(buf.readInt(), 0, true);
 				
@@ -227,7 +245,7 @@ public class S2CGUIPackets implements IMessage {
 				}
 			}
 			break;
-		case 5:	//sync ship GUI
+		case PID.FlagInitSID:	//sync ship GUI
 			{
 				this.flag = buf.readBoolean();
 				
@@ -239,10 +257,10 @@ public class S2CGUIPackets implements IMessage {
 				}
 			}
 			break;
-		case 6:	//sync ship list
+		case PID.SyncShipList:	//sync ship list
 			{
 				int listLen = buf.readInt();
-				
+
 				if(listLen > 0) {
 					EntityPlayer player = ClientProxy.getClientPlayer();
 					ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
@@ -259,23 +277,29 @@ public class S2CGUIPackets implements IMessage {
 				}
 			}
 			break;
-		case PID.SyncDesk:
+		case PID.SyncPlayerProp_TargetClass:	//sync ship list
 			{
-				this.recvX = buf.readInt();
-				this.recvY = buf.readInt();
-				this.recvZ = buf.readInt();
-				
-				this.tile = world.getTileEntity(recvX, recvY, recvZ);
-				
-				if(this.tile1 != null) {
-					int[] data = new int[3];
-					data[0] = buf.readInt();
-					data[1] = buf.readInt();
-					data[2] = buf.readInt();
-					EntityHelper.setTileEntityByGUI(tile, ID.B.Desk_Sync, data);
+				EntityPlayer player = ClientProxy.getClientPlayer();
+				ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+				List<String> data = new ArrayList();
+				int listLen = buf.readInt();
+	
+				if(listLen > 0) {
+					//get list data
+					for(int i = 0; i < listLen; ++i) {
+						data.add(ByteBufUtils.readUTF8String(buf));
+					}
+					
+					if(extProps != null) {
+						extProps.setTargetClass(data);
+						LogHelper.info("DEBUG : S2C gui sync: get list "+data.get(0));
+					}
 				}
 				else {
-					buf.clear();
+					if(extProps != null) {
+						extProps.clearAllTargetClass();
+						LogHelper.info("DEBUG : S2C gui sync: clear target class list ");
+					}
 				}
 			}
 			break;
@@ -286,9 +310,9 @@ public class S2CGUIPackets implements IMessage {
 	@Override
 	public void toBytes(ByteBuf buf) {
 		switch(this.type) {
-		case 0: //sync small shipyard gui
+		case PID.TileSmallSY: //sync small shipyard gui
 			{
-				buf.writeByte(0);
+				buf.writeByte(this.type);
 				buf.writeInt(this.tile1.xCoord);
 				buf.writeInt(this.tile1.yCoord);
 				buf.writeInt(this.tile1.zCoord);
@@ -297,9 +321,9 @@ public class S2CGUIPackets implements IMessage {
 				buf.writeInt(this.tile1.getPowerGoal());
 			}
 			break;
-		case 1: //sync large shipyard gui
+		case PID.TileLargeSY: //sync large shipyard gui
 			{
-				buf.writeByte(1);
+				buf.writeByte(this.type);
 				buf.writeInt(this.tile2.xCoord);
 				buf.writeInt(this.tile2.yCoord);
 				buf.writeInt(this.tile2.zCoord);
@@ -312,16 +336,25 @@ public class S2CGUIPackets implements IMessage {
 				buf.writeInt(this.tile2.getMatStock(3));
 			}
 			break;
-		case 2:	//ship entity gui click
+		case PID.TileDesk:  //sync admiral desk
 			{
-				buf.writeByte(2);
-				buf.writeByte(this.value);
-				buf.writeByte(this.value2);
+				buf.writeByte(this.type);
+				buf.writeInt(tile.xCoord);
+				buf.writeInt(tile.yCoord);
+				buf.writeInt(tile.zCoord);
+				
+				switch(this.type) {
+				case PID.TileDesk:
+					buf.writeInt(((TileEntityDesk)tile).guiFunc);
+					buf.writeInt(((TileEntityDesk)tile).guiFunc);
+					buf.writeInt(((TileEntityDesk)tile).guiFunc);
+					break;
+				}
 			}
 			break;
-		case 3:	//sync player props
+		case PID.SyncPlayerProp:	//sync player props
 			{
-				buf.writeByte(3);
+				buf.writeByte(this.type);
 				
 				//ring
 				buf.writeByte(props.isRingActiveI());
@@ -350,52 +383,50 @@ public class S2CGUIPackets implements IMessage {
 				}
 			}
 			break;
-		case 4:	//sync ship inventory GUI: kills and grudge
+		case PID.SyncShipInv:	//sync ship inventory GUI: kills and grudge
 			{
-				buf.writeByte(4);
+				buf.writeByte(this.type);
 				buf.writeInt(ship.getEntityId());
 				buf.writeInt(ship.getStateMinor(ID.M.Kills));
 				buf.writeInt(ship.getStateMinor(ID.M.NumGrudge));
 			}
 			break;
-		case 5:	//sync ship inventory GUI: kills and grudge
+		case PID.FlagInitSID:	//sync ship inventory GUI: kills and grudge
 			{
-				buf.writeByte(5);
+				buf.writeByte(this.type);
 				buf.writeBoolean(flag);
 			}
 			break;
-		case 6:	//sync ship list
+		case PID.SyncShipList:	//sync ship list
+		case PID.SyncPlayerProp_TargetClass:  //sync target class
 			{
-				buf.writeByte(6);
+				buf.writeByte(this.type);
 				
 				//send list
 				if(data != null) {
 					//send list length
 					buf.writeInt(data.size());
+					
 					//send list data
 					Iterator iter = data.iterator();
-					while(iter.hasNext()) {
-						buf.writeInt((Integer) iter.next());
+					
+					switch(this.type) {
+					case PID.SyncShipList:
+						while(iter.hasNext()) {
+							//int list
+							buf.writeInt((Integer) iter.next());
+						}
+						break;
+					case PID.SyncPlayerProp_TargetClass:
+						while(iter.hasNext()) {
+							//string list
+							ByteBufUtils.writeUTF8String(buf, (String) iter.next());
+						}
+						break;
 					}
 				}
 				else {
-					buf.writeInt(0);
-				}
-			}
-			break;
-		case PID.SyncDesk:  //sync admiral desk
-			{
-				buf.writeByte(this.type);
-				buf.writeInt(tile.xCoord);
-				buf.writeInt(tile.yCoord);
-				buf.writeInt(tile.zCoord);
-				
-				switch(this.type) {
-				case PID.SyncDesk:
-					buf.writeInt(((TileEntityDesk)tile).guiFunc);
-					buf.writeInt(((TileEntityDesk)tile).guiFunc);
-					buf.writeInt(((TileEntityDesk)tile).guiFunc);
-					break;
+					buf.writeInt(-1);
 				}
 			}
 			break;

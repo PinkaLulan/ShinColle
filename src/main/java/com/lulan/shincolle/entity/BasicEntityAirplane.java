@@ -17,6 +17,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
+import com.lulan.shincolle.ai.EntityAIShipAircraftAttack;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
@@ -35,10 +36,10 @@ import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 public abstract class BasicEntityAirplane extends EntityLiving implements IShipCannonAttack {
 
 	protected BasicEntityShipLarge host;  		//host target
-	protected EntityLivingBase targetEntity;	//onImpact target, backup for anti-air
 	protected World world;
 	protected ShipPathNavigate shipNavigator;	//水空移動用navigator
 	protected ShipMoveHelper shipMoveHelper;
+	protected Entity atkTarget;
 	
     //attributes
     public float atk;				//damage
@@ -83,6 +84,19 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 	public boolean isAIEnabled() {
 		return true;
 	}
+    
+	//setup AI
+  	protected void setAIList() {
+  		this.clearAITasks();
+  		this.clearAITargetTasks();
+
+  		this.getNavigator().setEnterDoors(true);
+  		this.getNavigator().setAvoidsWater(false);
+  		this.getNavigator().setCanSwim(true);
+  		
+  		this.tasks.addTask(1, new EntityAIShipAircraftAttack(this));
+  		this.setEntityTarget(atkTarget);
+  	}
   	
     //clear AI
   	protected void clearAITasks() {
@@ -153,11 +167,6 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 	public void setAmmoHeavy(int num) {
 		this.numAmmoHeavy = num;
 	}
-    
-    @Override
-    public EntityLivingBase getAttackTarget() {
-        return super.getAttackTarget();
-    }
 
     //移動計算, 去除gravity部份
     @Override
@@ -241,9 +250,9 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 				}
 				
 				//前幾秒直線往目標移動
-				if(this.ticksExisted < 20 && this.getAttackTarget() != null) {
-					double distX = this.getAttackTarget().posX - this.posX;
-					double distZ = this.getAttackTarget().posZ - this.posZ;
+				if(this.ticksExisted < 20 && this.getEntityTarget() != null) {
+					double distX = this.getEntityTarget().posX - this.posX;
+					double distZ = this.getEntityTarget().posZ - this.posZ;
 					double distSqrt = MathHelper.sqrt_double(distX*distX + distZ*distZ);
 					
 					this.motionX = distX / distSqrt * 0.375D;
@@ -252,25 +261,24 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 				}
 				
 				//攻擊目標消失, 找附近目標 or 設為host目前目標
-				if(!this.backHome && (this.getAttackTarget() == null || !this.getAttackTarget().isEntityAlive()) &&
+				if(!this.backHome && (this.getEntityTarget() == null || !this.getEntityTarget().isEntityAlive()) &&
 					this.host != null && this.ticksExisted % 10 == 0) {	
 					//entity list < range1
-					EntityLivingBase newTarget;
-			        List list = this.worldObj.selectEntitiesWithinAABB(EntityLivingBase.class, 
+					Entity newTarget;
+			        List list = this.worldObj.selectEntitiesWithinAABB(Entity.class, 
 			        				this.boundingBox.expand(16, 16, 16), this.targetSelector);
 			        
 			        //都找不到目標則給host目標, 但是host目標必須在xyz16格內
 			        if(list.isEmpty()) {
-			        	newTarget = this.host.getAttackTarget();
+			        	newTarget = this.host.getEntityTarget();
 			        }
 			        else {	//從艦載機附近找出的目標, 判定是否要去攻擊
-			        	newTarget = (EntityLivingBase)list.get(0);
+			        	newTarget = (Entity)list.get(0);
 			        }
 			        
-			        if(newTarget != null && newTarget.isEntityAlive() && this.getDistanceToEntity(newTarget) < 40F &&
+			        if(newTarget != null && newTarget.isEntityAlive() && this.getDistanceSqToEntity(newTarget) < 1600F &&
 			           this.getEntitySenses().canSee(newTarget)) {
-			        	this.setAttackTarget(newTarget);
-			        	this.targetEntity = newTarget;	//target backup
+			        	this.setEntityTarget(atkTarget);
 			        }
 		        	else {
 		        		this.backHome = true;
@@ -464,8 +472,13 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 	}
 	
 	@Override
-	public EntityLivingBase getTarget() {
-		return this.getAttackTarget();
+	public Entity getEntityTarget() {
+		return this.atkTarget;
+	}
+  	
+  	@Override
+	public void setEntityTarget(Entity target) {
+		this.atkTarget = target;
 	}
 	
 	@Override

@@ -1,13 +1,12 @@
 package com.lulan.shincolle.ai;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.IShipCannonAttack;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.LogHelper;
 
 /**ENTITY RANGE ATTACK AI
  * 從骨弓的射箭AI修改而來
@@ -17,7 +16,7 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
 	
     private IShipCannonAttack host;  	//AI host entity
     private EntityLiving host2;
-    private EntityLivingBase target;  	//entity of target
+    private Entity target;  			//entity of target
     private int delayLight;				//light attack delay
     private int maxDelayLight;	    	//light attack max delay
     private int delayHeavy;				//heavy attack delay
@@ -62,7 +61,7 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
     			}
     		}
         	
-        	EntityLivingBase target = this.host.getTarget();
+        	Entity target = this.host.getEntityTarget();
         	
             if(target != null && target.isEntityAlive() &&
                ((this.host.getAttackType(ID.F.AtkType_Light) && this.host.getStateFlag(ID.F.UseAmmoLight) && this.host.hasAmmoLight()) || 
@@ -114,6 +113,7 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
         this.onSightTime = 0;
         if(host != null) {
         	this.host2.setAttackTarget(null);
+        	this.host.setEntityTarget(null);
         	this.host.getShipNavigate().clearPathEntity();
         }
     }

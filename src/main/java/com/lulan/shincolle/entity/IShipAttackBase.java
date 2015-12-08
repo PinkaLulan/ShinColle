@@ -1,6 +1,6 @@
 package com.lulan.shincolle.entity;
 
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.Entity;
 
 /**SHIP ATTACK BASE
  * include attacker states getter/setter
@@ -8,7 +8,8 @@ import net.minecraft.entity.EntityLivingBase;
 public interface IShipAttackBase extends IShipNavigator, IShipEmotion, IShipOwner, IShipAttributes {
 	
 	/**Get attack target, if entity is EntityLivingBase, return super.getAttackTarget() */
-	public EntityLivingBase getTarget();
+	public Entity getEntityTarget();
+	public void setEntityTarget(Entity target);
 
 	/**Get attack attributes */
 	public float getAttackDamage();			//attack damage

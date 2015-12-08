@@ -291,6 +291,21 @@ public class EntityHelper {
 		return null;
 	}
 	
+	/** get player by ship entity */
+	public static EntityPlayer getEntityPlayerByShip(BasicEntityShip ship, boolean isClient) {
+		if(ship != null) {
+			int pUID = ship.getPlayerUID();
+			
+			if(isClient) { //client side method
+				return (EntityPlayer) ship.getOwner();
+			}
+			else {         //server side method
+				return getEntityPlayerByUID(pUID);
+			}
+		}
+		return null;
+	}
+	
 	/** get player by entity ID */
 	public static EntityPlayer getEntityPlayerByID(int entityID, int worldID, boolean isClient) {
 		World world;
@@ -449,6 +464,21 @@ public class EntityHelper {
 		if(pet != null) {
 			pet.func_152115_b(uuid);
 		}
+	}
+	
+	/** get player extend props by player eid */
+	public static ExtendPlayerProps getExtendPlayerProps(int entityID, int worldID, boolean isClient) {
+		EntityPlayer player = getEntityPlayerByID(entityID, worldID, isClient);
+		if(player != null) {
+			return getExtendPlayerProps(player);
+		}
+		return null;
+	}
+	
+	/** get player extend props by player entity */
+	public static ExtendPlayerProps getExtendPlayerProps(EntityPlayer player) {
+		if(player != null) return (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+		 return null;
 	}
 	
 	/**set player extend props data by packets, CLIENT SIDE ONLY */
@@ -1004,7 +1034,6 @@ public class EntityHelper {
 	/** set ship attack target with team list */
 	public static void applyTeamAttack(EntityPlayer player, int meta, Entity target) {
 		if(target instanceof EntityLivingBase) {
-			EntityLivingBase tar = (EntityLivingBase) target;
 			ExtendPlayerProps props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 			BasicEntityShip[] ships = props.getEntityOfCurrentMode(meta);
 			BasicEntityMount mounts = null;
@@ -1016,11 +1045,11 @@ public class EntityHelper {
 					if(ships[0] != null && ships[0].worldObj.provider.dimensionId == worldID) {
 						//設定ship攻擊目標
 						ships[0].setSitting(false);
-						ships[0].setAttackTarget(tar);
+						ships[0].setEntityTarget(target);
 						
 						//若該ship有騎乘座騎, 將座騎目標也設定
 						if(ships[0].ridingEntity instanceof BasicEntityMount) {
-							((BasicEntityMount)ships[0].ridingEntity).setAttackTarget(tar);
+							((BasicEntityMount)ships[0].ridingEntity).setEntityTarget(target);
 						}
 					}
 					break;
@@ -1030,11 +1059,11 @@ public class EntityHelper {
 						if(ships[i] != null && ships[i].worldObj.provider.dimensionId == worldID) {
 							//設定ship攻擊目標
 							ships[i].setSitting(false);
-							ships[i].setAttackTarget(tar);
+							ships[i].setEntityTarget(target);
 							
 							//若該ship有騎乘座騎, 將座騎目標也設定
 							if(ships[i].ridingEntity instanceof BasicEntityMount) {
-								((BasicEntityMount)ships[i].ridingEntity).setAttackTarget(tar);
+								((BasicEntityMount)ships[i].ridingEntity).setEntityTarget(target);
 							}
 						}
 					}
@@ -1175,7 +1204,7 @@ public class EntityHelper {
 			}
 			
 			//sync team list to client
-			CommonProxy.channelG.sendTo(new S2CGUIPackets(props), (EntityPlayerMP) player);
+			CommonProxy.channelG.sendTo(new S2CGUIPackets(props, S2CGUIPackets.PID.SyncPlayerProp), (EntityPlayerMP) player);
 		}
 		
 		

@@ -113,7 +113,7 @@ public class ModRecipes {
 		GameRegistry.addRecipe(new ShapedOreRecipe(grudeHeavyBlock,"aaa","aaa","aaa",'a',grudeBlock));
 		GameRegistry.addRecipe(new ShapedOreRecipe(polymetalBlock,"aaa","aaa","aaa",'a',"dustManganese"));
 		//desk
-		GameRegistry.addRecipe(new ShapedOreRecipe(desk,"wgw","o o","o o",'w',Blocks.wool,'g',grudeBlock,'o',Blocks.obsidian));
+		GameRegistry.addRecipe(new ShapedOreRecipe(desk,"www","ogo","o o",'w',Blocks.wool,'g',grudeBlock,'o',Blocks.obsidian));
 		//small shipyard
 		GameRegistry.addRecipe(new ShapedOreRecipe(smallshipyardStack,"glg","lol","ooo",'g',grudeStack,'l',Items.lava_bucket,'o',Blocks.obsidian));
 		//marriage ring

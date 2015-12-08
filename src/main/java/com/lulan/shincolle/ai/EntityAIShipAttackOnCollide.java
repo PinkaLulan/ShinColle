@@ -1,14 +1,13 @@
 package com.lulan.shincolle.ai;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityCreature;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.ai.path.ShipPathEntity;
 import com.lulan.shincolle.ai.path.ShipPathPoint;
+import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipEmotion;
 
@@ -19,7 +18,7 @@ public class EntityAIShipAttackOnCollide extends EntityAIBase {
 	
     World worldObj;
     IShipAttackBase host;
-    EntityCreature host2;
+    BasicEntityShip host2;
     /** An amount of decrementing ticks that allows the entity to attack once the tick reaches 0. */
     int attackTick;
     /** The speed with which the mob will approach the target */
@@ -28,7 +27,6 @@ public class EntityAIShipAttackOnCollide extends EntityAIBase {
     boolean longMemory;
     /** The PathEntity of our entity. */
     ShipPathEntity entityPathEntity;
-    Class classTarget;
     private int delayAttack;
     private double tarX;
     private double tarY;
@@ -36,15 +34,10 @@ public class EntityAIShipAttackOnCollide extends EntityAIBase {
 
     private int failedPathFindingPenalty;
 
-    public EntityAIShipAttackOnCollide(IShipAttackBase host, Class classTarget, double speed, boolean longMemory) {
-        this(host, speed, longMemory);
-        this.classTarget = classTarget;
-    }
-
     public EntityAIShipAttackOnCollide(IShipAttackBase host, double speed, boolean longMemory) {
         this.host = host;
-        this.host2 = (EntityCreature) host;
-        this.worldObj = ((Entity)host).worldObj;
+        this.host2 = (BasicEntityShip) host;
+        this.worldObj = host2.worldObj;
         this.speedTowardsTarget = speed;
         this.longMemory = longMemory;
         this.setMutexBits(3);
@@ -56,21 +49,18 @@ public class EntityAIShipAttackOnCollide extends EntityAIBase {
     		return false;
     	}
     	
-        EntityLivingBase entitylivingbase = this.host.getTarget();
+        Entity target = this.host.getEntityTarget();
 
         //無目標 or 目標死亡 or 正在坐下時 不啟動AI
-        if(entitylivingbase == null || ((IShipEmotion)host).getIsSitting()) {
+        if(target == null || ((IShipEmotion)host).getIsSitting()) {
             return false;
         }
-        else if(entitylivingbase != null && entitylivingbase.isDead) {
+        else if(target != null && target.isDead) {
         	return false;
-        }
-        else if(this.classTarget != null && !this.classTarget.isAssignableFrom(entitylivingbase.getClass())) {
-            return false;
         }
         else {
             if(-- this.delayAttack <= 0) {
-                this.entityPathEntity = this.host.getShipNavigate().getPathToEntityLiving(entitylivingbase);
+                this.entityPathEntity = this.host.getShipNavigate().getPathToEntityLiving(target);
                 this.delayAttack = 4 + this.host2.getRNG().nextInt(7);
                 return this.entityPathEntity != null;
             }
@@ -86,13 +76,13 @@ public class EntityAIShipAttackOnCollide extends EntityAIBase {
     		return false;
     	}
     	
-        EntityLivingBase entitylivingbase = this.host.getTarget();
+        Entity target = this.host.getEntityTarget();
         
-        return (entitylivingbase == null || !entitylivingbase.isEntityAlive()) ? false : 
+        return (target == null || !target.isEntityAlive()) ? false : 
         	   (!this.longMemory ? !this.host.getShipNavigate().noPath() : 
-        	   this.host2.isWithinHomeDistance(MathHelper.floor_double(entitylivingbase.posX), 
-        			   							  MathHelper.floor_double(entitylivingbase.posY), 
-        			   							  MathHelper.floor_double(entitylivingbase.posZ)));
+        	   this.host2.isWithinHomeDistance(MathHelper.floor_double(target.posX), 
+        			   						   MathHelper.floor_double(target.posY), 
+        			   						   MathHelper.floor_double(target.posZ)));
     }
 
     @Override
@@ -104,7 +94,7 @@ public class EntityAIShipAttackOnCollide extends EntityAIBase {
     @Override
 	public void resetTask() {
         this.host.getShipNavigate().clearPathEntity();
-        this.host2.setAttackTarget(null);
+        this.host2.setEntityTarget(null);
     }
 
     @Override
@@ -113,31 +103,31 @@ public class EntityAIShipAttackOnCollide extends EntityAIBase {
     		return;
     	}
     	
-        EntityLivingBase entitylivingbase = this.host.getTarget();
+        Entity target = this.host.getEntityTarget();
         
         //null check for target continue set null bug (set target -> clear target in one tick)
-        if(entitylivingbase == null || entitylivingbase.isDead) {
+        if(target == null || target.isDead) {
         	resetTask();
         	return;
         }
         
-        this.host2.getLookHelper().setLookPositionWithEntity(entitylivingbase, 30.0F, 30.0F);
+        this.host2.getLookHelper().setLookPositionWithEntity(target, 30.0F, 30.0F);
         
-        double distTarget = this.host2.getDistanceSq(entitylivingbase.posX, entitylivingbase.boundingBox.minY, entitylivingbase.posZ);
-        double distAttack = this.host2.width * this.host2.width * 10F + entitylivingbase.width * 3F;
+        double distTarget = this.host2.getDistanceSq(target.posX, target.boundingBox.minY, target.posZ);
+        double distAttack = this.host2.width * this.host2.width * 10F + target.width * 3F;
         
         --this.delayAttack;
 
         //官方內建的水平移動AI
-        if((this.longMemory || this.host2.getEntitySenses().canSee(entitylivingbase)) && this.delayAttack <= 0 && (this.tarX == 0.0D && this.tarY == 0.0D && this.tarZ == 0.0D || entitylivingbase.getDistanceSq(this.tarX, this.tarY, this.tarZ) >= 1.0D || this.host2.getRNG().nextFloat() < 0.1F)) {
-            this.tarX = entitylivingbase.posX;
-            this.tarY = entitylivingbase.boundingBox.minY;
-            this.tarZ = entitylivingbase.posZ;
+        if((this.longMemory || this.host2.getEntitySenses().canSee(target)) && this.delayAttack <= 0 && (this.tarX == 0.0D && this.tarY == 0.0D && this.tarZ == 0.0D || target.getDistanceSq(this.tarX, this.tarY, this.tarZ) >= 1.0D || this.host2.getRNG().nextFloat() < 0.1F)) {
+            this.tarX = target.posX;
+            this.tarY = target.boundingBox.minY;
+            this.tarZ = target.posZ;
             this.delayAttack = failedPathFindingPenalty + 4 + this.host2.getRNG().nextInt(7);
 
             if(this.host.getShipNavigate().getPath() != null) {
                 ShipPathPoint finalPathPoint = this.host.getShipNavigate().getPath().getFinalPathPoint();
-                if(finalPathPoint != null && entitylivingbase.getDistanceSq(finalPathPoint.xCoord, finalPathPoint.yCoord, finalPathPoint.zCoord) < 1) {
+                if(finalPathPoint != null && target.getDistanceSq(finalPathPoint.xCoord, finalPathPoint.yCoord, finalPathPoint.zCoord) < 1) {
                     failedPathFindingPenalty = 0;
                 }
                 else {
@@ -155,31 +145,10 @@ public class EntityAIShipAttackOnCollide extends EntityAIBase {
                 this.delayAttack += 5;
             }
 
-            if(!this.host.getShipNavigate().tryMoveToEntityLiving(entitylivingbase, speedTowardsTarget)) {
+            if(!this.host.getShipNavigate().tryMoveToEntityLiving(target, speedTowardsTarget)) {
                 this.delayAttack += 10;
             }
         }
-        
-//        //在水中時, 根據目標位置上下移動
-//        if(this.host2.isInWater()) {
-////        	LogHelper.info("DEBUG : melee water move");
-//        	double distY = this.tarY - this.host2.posY;
-//        	
-//        	if(distY > 1D) {
-//        		this.host2.motionY = 0.15D;
-//        	}
-//        	else if(distY < -1D) {
-//        		this.host2.motionY = -0.15D;
-//        	}
-//        	else {
-//        		this.host2.motionY = 0D;
-//        	}
-//        	
-//        	//若水平撞到東西, 則嘗試跳跳
-//    		if(this.host2.isCollidedHorizontally) {
-//    			this.host2.motionY += 0.25D;
-//    		}
-//        }
 
         this.attackTick = Math.max(this.attackTick - 1, 0);
 
@@ -190,7 +159,7 @@ public class EntityAIShipAttackOnCollide extends EntityAIBase {
                 this.host2.swingItem();
             }
 
-            this.host2.attackEntityAsMob(entitylivingbase);
+            this.host2.attackEntityAsMob(target);
         }
     }
 }

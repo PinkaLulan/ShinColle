@@ -1,6 +1,6 @@
 package com.lulan.shincolle.entity.other;
 
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.world.World;
 
@@ -17,11 +17,11 @@ public class EntityAirplaneTakoyaki extends BasicEntityAirplane {
 		this.setSize(0.6F, 0.6F);
 	}
 	
-	public EntityAirplaneTakoyaki(World world, BasicEntityShipLarge host, EntityLivingBase target, double launchPos) {
+	public EntityAirplaneTakoyaki(World world, BasicEntityShipLarge host, Entity target, double launchPos) {
 		super(world);
 		this.world = world;
         this.host = host;
-        this.targetEntity = target;
+        this.atkTarget = target;
         
         //basic attr
         this.atk = host.getStateFinal(ID.ATK_AH);
@@ -52,19 +52,6 @@ public class EntityAirplaneTakoyaki extends BasicEntityAirplane {
 				
 		//³]©wAI
 		this.setAIList();
-	}
-	
-	//setup AI
-	protected void setAIList() {
-		this.clearAITasks();
-		this.clearAITargetTasks();
-
-		this.getNavigator().setEnterDoors(true);
-		this.getNavigator().setAvoidsWater(false);
-		this.getNavigator().setCanSwim(true);
-		
-		this.tasks.addTask(1, new EntityAIShipAircraftAttack(this));
-		this.setAttackTarget(targetEntity);
 	}
 	
 	@Override

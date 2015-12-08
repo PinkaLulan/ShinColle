@@ -31,11 +31,11 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
 	
 	protected IShipAttackBase host;  		//host target
 	protected EntityLivingBase host2;
-	protected EntityLivingBase target;	//onImpact target (for entity)
 	protected World world;
 	protected ShipPathNavigate shipNavigator;	//水空移動用navigator
 	protected ShipMoveHelper shipMoveHelper;
-    
+	protected Entity atkTarget;
+	
     //attributes
 	protected float atk;				//damage
 	protected float atkSpeed;			//attack speed
@@ -63,12 +63,12 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
 		this.isImmuneToFire = true;
 	}
     
-    public EntityRensouhouBoss(World world, IShipAttackBase host, EntityLivingBase target) {
+    public EntityRensouhouBoss(World world, IShipAttackBase host, Entity target) {
 		super(world);
 		this.world = world;
         this.host = host;
         this.host2 = (EntityLivingBase) host;
-        this.target = target;
+        this.atkTarget = target;
         this.isImmuneToFire = true;
         shipNavigator = new ShipPathNavigate(this, worldObj);
 		shipMoveHelper = new ShipMoveHelper(this);
@@ -129,7 +129,7 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
 		this.getNavigator().setCanSwim(true);
 		
 		this.tasks.addTask(1, new EntityAIShipRangeAttack(this));
-		this.setAttackTarget(target);
+		this.setEntityTarget(atkTarget);
 	}
 	
 	@Override
@@ -215,11 +215,11 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
 				}
 
 				//target is dead
-				if(this.getAttackTarget() == null || this.getAttackTarget().isDead) {
+				if(this.getEntityTarget() == null || this.getEntityTarget().isDead) {
 					//change target
-					if(this.host != null && this.host.getTarget() != null &&
-					   this.host.getTarget().isEntityAlive()) {
-						this.target = this.host.getTarget();
+					if(this.host != null && this.host.getEntityTarget() != null &&
+					   this.host.getEntityTarget().isEntityAlive()) {
+						this.atkTarget = this.host.getEntityTarget();
 					}
 					else {
 						setdead = true;
@@ -324,11 +324,6 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
   	protected void clearAITargetTasks() {
   	   targetTasks.taskEntries.clear();
   	}
-    
-    @Override
-    public EntityLivingBase getAttackTarget() {
-        return this.target;
-    }
     
     @Override
 	//light attack
@@ -665,8 +660,13 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
 	}
 
 	@Override
-	public EntityLivingBase getTarget() {
-		return this.getAttackTarget();
+	public Entity getEntityTarget() {
+		return this.atkTarget;
+	}
+  	
+  	@Override
+	public void setEntityTarget(Entity target) {
+		this.atkTarget = target;
 	}
 	
 	@Override

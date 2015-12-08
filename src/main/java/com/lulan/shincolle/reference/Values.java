@@ -406,14 +406,15 @@ public class Values {
 							new int[] {2, 0, 43, 23, ID.Item.PolymIG},
 							new int[] {2, 0, 23, 43, ID.Item.PolymIG},
 							new int[] {2, 0, 81, 23, ID.Item.ModelZF}));
-	//		page 13:
+	//		page 13: desk
 	put(1013, Arrays.asList(new int[] {0, 0, 0, 0},
 							new int[] {0, 1, 0, 0},
 							new int[] {1, 0, 0, 0, 0, 100, 72, 100, 62},
 							new int[] {2, 0, 3,  3,  ID.Item.WoolB},
-							new int[] {2, 0, 23, 3,  ID.Item.GrudgeB},
+							new int[] {2, 0, 23, 3,  ID.Item.WoolB},
 							new int[] {2, 0, 43, 3,  ID.Item.WoolB},
 							new int[] {2, 0, 3,  23, ID.Item.ObsidianB},
+							new int[] {2, 0, 23, 23, ID.Item.GrudgeB},
 							new int[] {2, 0, 43, 23, ID.Item.ObsidianB},
 							new int[] {2, 0, 3,  43, ID.Item.ObsidianB},
 							new int[] {2, 0, 43, 43, ID.Item.ObsidianB},

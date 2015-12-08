@@ -53,6 +53,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	protected World world;
 	protected ShipPathNavigate shipNavigator;	//水空移動用navigator
 	protected ShipMoveHelper shipMoveHelper;
+	protected Entity atkTarget;
     
     //attributes
 	protected float atkRange;			//attack range
@@ -296,11 +297,13 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 				if(EntityHelper.checkSameOwner(player, this.host)) {
 					this.host.setSitting(!this.host.isSitting());
 		            this.isJumping = false;
-		            this.setPathToEntity((PathEntity)null);
-		            this.setTarget((Entity)null);
-		            this.host.setTarget((Entity)null);
-		            this.setAttackTarget((EntityLivingBase)null);
-		            this.host.setAttackTarget((EntityLivingBase)null);
+		            this.setPathToEntity(null);
+		            this.setTarget(null);
+		            this.host.setTarget(null);
+		            this.setAttackTarget(null);
+		            this.setEntityTarget(null);
+		            this.host.setAttackTarget(null);
+		            this.host.setEntityTarget(null);
 		            return true;
 				}	
 			}
@@ -442,12 +445,12 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 				
 				//get target every 8 ticks
 				if(this.ticksExisted % 8 == 0) {
-					this.setAttackTarget(this.host.getAttackTarget());
+					this.setEntityTarget(this.host.getEntityTarget());
 					
 					//clear dead or same team target 
-	      			if(this.getAttackTarget() != null) {
-	      				if(!this.getAttackTarget().isEntityAlive() || EntityHelper.checkSameOwner(this, getAttackTarget())) {
-	      					this.setAttackTarget(null);
+	      			if(this.getEntityTarget() != null) {
+	      				if(!this.getEntityTarget().isEntityAlive() || EntityHelper.checkSameOwner(this, getEntityTarget())) {
+	      					this.setEntityTarget(null);
 	      				}
 	      			}
 				}//end every 10 ticks
@@ -646,8 +649,13 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   	}
     
   	@Override
-	public EntityLivingBase getTarget() {
-		return this.getAttackTarget();
+	public Entity getEntityTarget() {
+		return this.atkTarget;
+	}
+  	
+  	@Override
+	public void setEntityTarget(Entity target) {
+		this.atkTarget = target;
 	}
   	
   	//change melee damage to 100%

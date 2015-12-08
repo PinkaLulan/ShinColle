@@ -240,7 +240,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
   	private void sendSyncPacket() {
   		//for other player, send ship state for display
   		TargetPoint point = new TargetPoint(host2.dimension, host2.posX, host2.posY, host2.posZ, 48D);
-  		CommonProxy.channelE.sendToAllAround(new S2CEntitySync(host2, 0, 9), point);
+  		CommonProxy.channelE.sendToAllAround(new S2CEntitySync(host2, 0, S2CEntitySync.PID.SyncEntity_PosRot), point);
   	}
 	
 	

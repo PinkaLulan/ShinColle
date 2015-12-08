@@ -2,26 +2,20 @@ package com.lulan.shincolle.entity;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
-import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAIOpenDoor;
 import net.minecraft.entity.ai.EntityAIOwnerHurtByTarget;
 import net.minecraft.entity.ai.EntityAIOwnerHurtTarget;
-import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.passive.EntityTameable;
-import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.pathfinding.PathEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
@@ -72,6 +66,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	protected ShipPathNavigate shipNavigator;	//水空移動用navigator
 	protected ShipMoveHelper shipMoveHelper;
 	protected Entity guardedEntity;
+	protected Entity atkTarget;
 	
 	//for AI calc
 	protected double ShipDepth;			//水深, 用於水中高度判定
@@ -136,7 +131,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		StateEmotion = new byte[] {0, 0, 0, 0, 0, 0};
 		StateFlag = new boolean[] {false, false, true, false, true,
 				                   true, true, true, false, true,
-								   true, false, false, true, true,
+								   true, false, true, true, true,
 								   true, true, false, false
 								   };
 		BonusPoint = new byte[] {0, 0, 0, 0, 0, 0};
@@ -312,6 +307,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	//clear target AI
 	protected void clearAITargetTasks() {
 		this.setAttackTarget(null);
+		this.setEntityTarget(null);
 		targetTasks.taskEntries.clear();
 	}
 	
@@ -416,8 +412,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	}
 	
 	@Override
-	public EntityLivingBase getTarget() {
-		return this.getAttackTarget();
+	public Entity getEntityTarget() {
+		return this.atkTarget;
+	}
+  	
+  	@Override
+	public void setEntityTarget(Entity target) {
+		this.atkTarget = target;
 	}
 	
 	@Override
@@ -742,14 +743,15 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.setSitting(!this.isSitting());
         this.isJumping = false;
         this.getShipNavigate().clearPathEntity();
-        this.setPathToEntity((PathEntity)null);
-        this.setTarget((Entity)null);
-        this.setAttackTarget((EntityLivingBase)null);
+        this.setPathToEntity(null);
+        this.setTarget(null);
+        this.setAttackTarget(null);
+        this.setEntityTarget(null);
         
         if(this.ridingEntity instanceof BasicEntityMount) {
         	((BasicEntityMount) this.ridingEntity).getShipNavigate().clearPathEntity();
         	((BasicEntityMount) this.ridingEntity).getNavigator().clearPathEntity();
-        	((BasicEntityMount) this.ridingEntity).setAttackTarget(null);
+        	((BasicEntityMount) this.ridingEntity).setEntityTarget(null);
         }
 	}
 	
@@ -1420,13 +1422,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         //server side check
         if((!worldObj.isRemote)) {
         	//clear dead target for vanilla AI bug
-  			if(this.getAttackTarget() != null && !this.getAttackTarget().isEntityAlive()) {
-  				this.setAttackTarget(null);
+  			if(this.getEntityTarget() != null && !this.getEntityTarget().isEntityAlive()) {
+  				this.setEntityTarget(null);
   			}
  			
   			//clear target if target is self/host
-			if(getAttackTarget() == this.ridingEntity) {
-				this.setAttackTarget(null);
+			if(getEntityTarget() == this.ridingEntity) {
+				this.setEntityTarget(null);
 			}
 			
         	//decr immune time
@@ -1476,9 +1478,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         		}
         		
         		//clear dead or same team target 
-      			if(this.getAttackTarget() != null) {
-      				if(!this.getAttackTarget().isEntityAlive() || EntityHelper.checkSameOwner(this, getAttackTarget())) {
-      					this.setAttackTarget(null);
+      			if(this.getEntityTarget() != null) {
+      				if(!this.getEntityTarget().isEntityAlive() || EntityHelper.checkSameOwner(this, getEntityTarget())) {
+      					this.setEntityTarget(null);
       				}
       			}
         		

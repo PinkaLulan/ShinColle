@@ -81,8 +81,8 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip implements IS
 		//server side
 		if(!this.worldObj.isRemote) {
 			//clear target if target dead (for unknow target bug)
-			if(this.getAttackTarget() != null && !this.getAttackTarget().isEntityAlive()) {
-				this.setAttackTarget(null);
+			if(this.getEntityTarget() != null && !this.getEntityTarget().isEntityAlive()) {
+				this.setEntityTarget(null);
 			}
 
 			//每一段時間回復一隻艦載機
@@ -112,7 +112,7 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip implements IS
 	public boolean attackEntityWithAircraft(Entity target) {
 //		LogHelper.info("DEBUG : launch LIGHT aircraft"+target);
 		//clear target every attack
-		this.setAttackTarget(null);
+		this.setEntityTarget(null);
 		
 		//num aircraft--, number check in carrier AI
 		this.setNumAircraftLight(this.getNumAircraftLight()-1);
@@ -157,7 +157,7 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip implements IS
 	public boolean attackEntityWithHeavyAircraft(Entity target) {
 //		LogHelper.info("DEBUG : launch HEAVY aircraft"+target);
 		//clear target every attack
-		this.setAttackTarget(null);
+		this.setEntityTarget(null);
 		
 		//num aircraft--, number check in carrier AI
 		this.setNumAircraftHeavy(this.getNumAircraftHeavy()-1);

@@ -195,7 +195,7 @@ gui.shincolle:book.chap1.text4d0=<br><br><br><br><br><br><br><br>§d§n修復桶
 gui.shincolle:book.chap1.text4d1=右鍵使用§d§n修復桶§r§0可以回復目標棲艦一定的耐久度。<br><br>讓棲艦隨身攜帶§d§n修復桶§r§0，棲艦受傷時將會自動使用來回復耐久度。
 gui.shincolle:book.chap1.title5=深海棲艦結婚戒指
 gui.shincolle:book.chap1.text5d0=<br><br><br><br><br><br><br><br>    §d§n深海棲艦結婚戒指§r§0<br><br>經典簡約的深海金屬爪鑲戒台搭配地獄星型切割工法，完美大方地呈現出地獄之星最美麗的光芒。
-gui.shincolle:book.chap1.text5d1=這款戒指象徵著地獄的美麗與擁有者的力量，同時也是你跟§c深海棲艦§0結為連理的重要證明。<br><br>§9蹲下+右鍵§0對棲艦使用即可跟棲艦結婚，§9右鍵§0使用戒指則能開啟特殊能力。<br><br>結婚棲艦數量將會影響戒指能發揮的能力。
+gui.shincolle:book.chap1.text5d1=這顆戒指象徵著地獄的美麗與擁有者的力量，同時也是你跟§c深海棲艦§0結為連理的重要證明。<br><br>§9蹲下+右鍵§0對棲艦使用即可跟棲艦結婚，§9右鍵§0使用戒指則能開啟特殊能力。<br><br>結婚棲艦數量將會影響戒指能發揮的能力。
 gui.shincolle:book.chap1.title6=深海棲艦所有權書
 gui.shincolle:book.chap1.text6d0=<br><br><br><br><br><br><br><br>這張§d§n深海棲艦所有權書§r§0詳細記載了所有權轉讓的雙方應履行的內容跟各種事項，只需雙方簽名後即可生效。
 gui.shincolle:book.chap1.text6d1=§9右鍵§0使用可以簽署該契約，交易雙方皆簽署後，棲艦所有權人對其棲艦§9右鍵§0使用即可轉讓該棲艦。
@@ -240,6 +240,9 @@ gui.shincolle:book.chap6.title=裝備列表
 gui.shincolle:radar.position=座標
 gui.shincolle:radar.height=高度
 gui.shincolle:radar.recall=召回
+
+# GUI: Target List
+gui.shincolle:target.remove=移  除
 
 # GUI: Ship Inventory: Top
 gui.shincolle:level=等級
@@ -308,3 +311,4 @@ gui.shincolle:antiss=反潛
 # Chat message
 chat.shincolle:bossspawn1=有艦娘出現在水面上!
 chat.shincolle:bossspawn2=偵測到艦娘入侵!
+chat.shincolle:addtargetclass=新增/移除攻擊目標類型: %s

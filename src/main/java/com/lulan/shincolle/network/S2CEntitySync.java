@@ -33,6 +33,20 @@ public class S2CEntitySync implements IMessage {
 	private Entity entity3;
 	private EntityMountSeat entity3s;
 	private int entityID, value, type;
+	
+	//packet id
+	public static final class PID {
+		public static final byte SyncShip_All = 0;
+		public static final byte SyncShip_Emo = 1;
+		public static final byte SyncShip_Flag = 2;
+		public static final byte SyncShip_Minor = 3;
+		public static final byte SyncEntity_Emo = 4;
+		public static final byte SyncMount_ByPlayer = 5;
+		public static final byte SyncSeat = 6;
+		public static final byte SyncMount_ByMount = 7;
+		public static final byte SyncMissile = 8;
+		public static final byte SyncEntity_PosRot = 9;
+	}
 
 	
 	public S2CEntitySync() {}	//必須要有空參數constructor, forge才能使用此class
@@ -88,13 +102,13 @@ public class S2CEntitySync implements IMessage {
 		
 		//get target entity
 		switch(this.type) {
-		case 0:
-		case 1:
-		case 2:
-		case 3:
-		case 4:
-		case 5:
-		case 7:
+		case PID.SyncShip_All:
+		case PID.SyncShip_Emo:
+		case PID.SyncShip_Flag:
+		case PID.SyncShip_Minor:
+		case PID.SyncEntity_Emo:
+		case PID.SyncMount_ByPlayer:
+		case PID.SyncMount_ByMount:
 //			LogHelper.info("DEBUG : sync entity: eid "+this.entityID+" type "+this.type);
 //			this.entity2 = (EntityLiving) EntityHelper.getEntityByID(entityID, 0, true);
 			Entity ent = EntityHelper.getEntityByID(entityID, 0, true);
@@ -115,7 +129,7 @@ public class S2CEntitySync implements IMessage {
 				}
 			}
 			break;
-		case 6:	//packet id 6: for mount seat2 sync
+		case PID.SyncSeat:	//packet id 6: for mount seat2 sync
 			this.entity3 = EntityHelper.getEntityByID(entityID, 0, true);
 			
 			if(entity3 instanceof EntityMountSeat) {
@@ -123,15 +137,15 @@ public class S2CEntitySync implements IMessage {
 				getSyncTarget = true;
 			}
 			break;
-		case 8:	//missile sync
+		case PID.SyncMissile:	//missile sync
 			this.entity3 = EntityHelper.getEntityByID(entityID, 0, true);
 			
 			if(entity3 != null) {
 				getSyncTarget = true;
 			}
 			break;
-		case 10: //player current item sync
-			this.entity3 = EntityHelper.getEntityPlayerByID(entityID, 0, true);
+		case PID.SyncEntity_PosRot: //entity pos and rotation sync
+			this.entity3 = EntityHelper.getEntityByID(entityID, 0, true);
 			if(entity3 != null) {
 				getSyncTarget = true;
 			}
@@ -140,7 +154,7 @@ public class S2CEntitySync implements IMessage {
 
 		if(getSyncTarget) {
 			switch(type) {
-			case 0:	//sync all attr
+			case PID.SyncShip_All:	//sync all attr
 				{
 					entity.setStateMinor(ID.M.ShipLevel, buf.readInt());
 					entity.setStateMinor(ID.M.Kills, buf.readInt());
@@ -207,7 +221,7 @@ public class S2CEntitySync implements IMessage {
 					entity.setEffectEquip(ID.EF_ASM, buf.readFloat());
 				}
 				break;
-			case 1: //entity emotion only
+			case PID.SyncShip_Emo: //entity emotion only
 				{
 					entity.setStateEmotion(ID.S.State, buf.readByte(), false);
 					entity.setStateEmotion(ID.S.State2, buf.readByte(), false);
@@ -217,7 +231,7 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateEmotion(ID.S.Phase, buf.readByte(), false);
 				}
 				break;
-			case 2: //entity flag only
+			case PID.SyncShip_Flag: //entity flag only
 				{
 					entity.setStateFlag(ID.F.CanFloatUp, buf.readBoolean());
 					entity.setStateFlag(ID.F.IsMarried, buf.readBoolean());
@@ -231,7 +245,7 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateFlag(ID.F.OnSightChase, buf.readBoolean());
 				}
 				break;
-			case 3: //entity minor only
+			case PID.SyncShip_Minor: //entity minor only
 				{
 					entity.setStateMinor(ID.M.ShipLevel, buf.readInt());
 					entity.setStateMinor(ID.M.Kills, buf.readInt());
@@ -256,7 +270,7 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateMinor(ID.M.PlayerEID, buf.readInt());
 				}
 				break;
-			case 4: //IShipEmotion sync emtion
+			case PID.SyncEntity_Emo: //IShipEmotion sync emtion
 				{
 					entity2e.setStateEmotion(ID.S.State, buf.readByte(), false);
 					entity2e.setStateEmotion(ID.S.State2, buf.readByte(), false);
@@ -266,7 +280,7 @@ public class S2CEntitySync implements IMessage {
 					entity2e.setStateEmotion(ID.S.Phase, buf.readByte(), false);
 				}
 				break;
-			case 5: //player mount sync (only send when player right click on mount)
+			case PID.SyncMount_ByPlayer: //player mount sync (only send when player right click on mount)
 				{
 					int playerId = buf.readInt();
 					int seatId = buf.readInt();
@@ -285,7 +299,7 @@ public class S2CEntitySync implements IMessage {
 					}	
 				}
 				break;
-			case 6:	//seat2 sync
+			case PID.SyncSeat:	//seat2 sync
 				{
 					int playerId = buf.readInt();
 					int hostId = buf.readInt();
@@ -316,7 +330,7 @@ public class S2CEntitySync implements IMessage {
 					}
 				}
 				break;
-			case 7:
+			case PID.SyncMount_ByMount:  //sync mount by mount entity
 				{
 					int hostid = buf.readInt();
 					int rider2id = buf.readInt();
@@ -352,7 +366,7 @@ public class S2CEntitySync implements IMessage {
 					}
 				}
 				break;
-			case 8:	//missile type sync
+			case PID.SyncMissile:	//missile type sync
 				{
 					this.value = buf.readInt();
 					
@@ -361,7 +375,7 @@ public class S2CEntitySync implements IMessage {
 					}
 				}
 				break;
-			case 9:	//entity position sync
+			case PID.SyncEntity_PosRot:	//entity position sync
 				{
 					double px = buf.readDouble();
 					double py = buf.readDouble();
@@ -384,9 +398,9 @@ public class S2CEntitySync implements IMessage {
 	@Override
 	public void toBytes(ByteBuf buf) {
 		switch(this.type) {
-		case 0:	//sync all data
+		case PID.SyncShip_All:	//sync all data
 			{
-				buf.writeByte(0);	//type 0
+				buf.writeByte(PID.SyncShip_All);	//type 0
 				buf.writeInt(this.entity.getEntityId());
 				buf.writeInt(this.entity.getStateMinor(ID.M.ShipLevel));
 				buf.writeInt(this.entity.getStateMinor(ID.M.Kills));
@@ -453,9 +467,9 @@ public class S2CEntitySync implements IMessage {
 				buf.writeFloat(this.entity.getEffectEquip(ID.EF_ASM));
 			}
 			break;
-		case 1:	//entity state only
+		case PID.SyncShip_Emo:	//entity state only
 			{
-				buf.writeByte(1);	//type 1
+				buf.writeByte(PID.SyncShip_Emo);	//type 1
 				buf.writeInt(this.entity.getEntityId());
 				buf.writeByte(this.entity.getStateEmotion(ID.S.State));
 				buf.writeByte(this.entity.getStateEmotion(ID.S.State2));
@@ -465,9 +479,9 @@ public class S2CEntitySync implements IMessage {
 				buf.writeByte(this.entity.getStateEmotion(ID.S.Phase));
 			}
 			break;
-		case 2:	//entity flag only
+		case PID.SyncShip_Flag:	//entity flag only
 			{
-				buf.writeByte(2);	//type 2
+				buf.writeByte(PID.SyncShip_Flag);	//type 2
 				buf.writeInt(this.entity.getEntityId());
 				buf.writeBoolean(this.entity.getStateFlag(ID.F.CanFloatUp));
 				buf.writeBoolean(this.entity.getStateFlag(ID.F.IsMarried));
@@ -481,9 +495,9 @@ public class S2CEntitySync implements IMessage {
 				buf.writeBoolean(this.entity.getStateFlag(ID.F.OnSightChase));
 			}
 			break;
-		case 3:	//sync minor only
+		case PID.SyncShip_Minor:	//sync minor only
 			{
-				buf.writeByte(3);	//type 3
+				buf.writeByte(PID.SyncShip_Minor);	//type 3
 				buf.writeInt(this.entity.getEntityId());
 				buf.writeInt(this.entity.getStateMinor(ID.M.ShipLevel));
 				buf.writeInt(this.entity.getStateMinor(ID.M.Kills));
@@ -508,9 +522,9 @@ public class S2CEntitySync implements IMessage {
 				buf.writeInt(this.entity.getStateMinor(ID.M.PlayerEID));
 			}
 			break;
-		case 4:	//IShipEmotion emotion only
+		case PID.SyncEntity_Emo:	//IShipEmotion emotion only
 			{
-				buf.writeByte(4);	//type 4
+				buf.writeByte(PID.SyncEntity_Emo);	//type 4
 				buf.writeInt(this.entity2.getEntityId());
 				buf.writeByte(this.entity2e.getStateEmotion(ID.S.State));
 				buf.writeByte(this.entity2e.getStateEmotion(ID.S.State2));
@@ -520,17 +534,17 @@ public class S2CEntitySync implements IMessage {
 				buf.writeByte(this.entity2e.getStateEmotion(ID.S.Phase));
 			}
 			break;
-		case 5:	//IShipEmotion player mount packet
+		case PID.SyncMount_ByPlayer:	//IShipEmotion player mount packet
 			{
-				buf.writeByte(5);	//type 5
+				buf.writeByte(PID.SyncMount_ByPlayer);	//type 5
 				buf.writeInt(this.entity2.getEntityId());
 				buf.writeInt(((BasicEntityMount)this.entity2e).riddenByEntity2.getEntityId());
 				buf.writeInt(((BasicEntityMount)this.entity2e).seat2.getEntityId());
 			}
 			break;
-		case 6:	//IShipEmotion player mount packet
+		case PID.SyncSeat:	//mount seat2 sync
 			{
-				buf.writeByte(6);	//type 6
+				buf.writeByte(PID.SyncSeat);	//type 6
 				
 				//dismount packet
 				if(entity3s.riddenByEntity == null || entity3s.host.seat2 == null) {
@@ -546,12 +560,12 @@ public class S2CEntitySync implements IMessage {
 				}
 			}
 			break;
-		case 7:	//mounts sync
+		case PID.SyncMount_ByMount:	//mounts sync
 			{
 				if(entity2 instanceof BasicEntityMount) {
 					BasicEntityMount mount = (BasicEntityMount) entity2;
 					
-					buf.writeByte(7);	//type 7
+					buf.writeByte(PID.SyncMount_ByMount);	//type 7
 					buf.writeInt(mount.getEntityId());
 					//get host id
 					if(mount.host != null) {
@@ -579,16 +593,16 @@ public class S2CEntitySync implements IMessage {
 				}
 			}
 			break;
-		case 8:	//missile tpye sync
+		case PID.SyncMissile:	//missile tpye sync
 			{
-				buf.writeByte(8);	//type 8
+				buf.writeByte(PID.SyncMissile);	//type 8
 				buf.writeInt(this.entity3.getEntityId());
 				buf.writeInt(this.value);
 			}
 			break;
-		case 9:	//entity position sync
+		case PID.SyncEntity_PosRot:	//entity position sync
 			{
-				buf.writeByte(9);	//type 9
+				buf.writeByte(PID.SyncEntity_PosRot);	//type 9
 				buf.writeInt(this.entity3.getEntityId());
 				buf.writeDouble(this.entity3.posX);
 				buf.writeDouble(this.entity3.posY);

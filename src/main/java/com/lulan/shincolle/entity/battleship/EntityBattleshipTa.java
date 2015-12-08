@@ -163,11 +163,11 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
 		//spawn airplane
         if(target instanceof EntityLivingBase) {
         	if(this.getStateEmotion(ID.S.State2) > ID.State.NORMAL_2) {
-        		EntityRensouhou rensoho1 = new EntityRensouhou(this.worldObj, this, (EntityLivingBase)target);
+        		EntityRensouhou rensoho1 = new EntityRensouhou(this.worldObj, this, target);
                 this.worldObj.spawnEntityInWorld(rensoho1);
         	}
         	else {
-        		EntityRensouhouS rensoho2 = new EntityRensouhouS(this.worldObj, this, (EntityLivingBase)target);
+        		EntityRensouhouS rensoho2 = new EntityRensouhouS(this.worldObj, this, target);
                 this.worldObj.spawnEntityInWorld(rensoho2);
         	}
             return true;

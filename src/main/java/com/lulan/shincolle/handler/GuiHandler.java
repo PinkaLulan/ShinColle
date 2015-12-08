@@ -2,6 +2,7 @@ package com.lulan.shincolle.handler;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
@@ -14,10 +15,14 @@ import com.lulan.shincolle.client.gui.inventory.ContainerLargeShipyard;
 import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
 import com.lulan.shincolle.client.gui.inventory.ContainerSmallShipyard;
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.ExtendPlayerProps;
+import com.lulan.shincolle.network.S2CGUIPackets;
+import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.TileEntityDesk;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
+import com.lulan.shincolle.utility.EntityHelper;
 
 import cpw.mods.fml.common.network.IGuiHandler;
 
@@ -35,28 +40,32 @@ public class GuiHandler implements IGuiHandler {
 				((TileEntitySmallShipyard)tile).sendSyncPacket(); //sync once when gui opened
 				return new ContainerSmallShipyard(player.inventory, (TileEntitySmallShipyard) tile);
 			}
-			return null;
+			break;
 		case ID.G.SHIPINVENTORY:	//GUI ship inventory
 			entity = world.getEntityByID(x);	//entity id存在x座標參數上
             if((entity != null) && (entity instanceof BasicEntityShip)){
             	((BasicEntityShip)entity).sendSyncPacket(); //sync once when gui opened
 				return new ContainerShipInventory(player.inventory,(BasicEntityShip)entity);
 			}
-			return null;
+            break;
 		case ID.G.LARGESHIPYARD:	//GUI large shipyard
 			tile = world.getTileEntity(x, y, z);  //確定抓到entity才開ui 以免噴出NPE
 			if((tile != null && tile instanceof TileMultiGrudgeHeavy)) {  //server取得container
 				((TileMultiGrudgeHeavy)tile).sendSyncPacket(); //sync once when gui opened
 				return new ContainerLargeShipyard(player.inventory, (TileMultiGrudgeHeavy) tile);
 			}
-			return null;
+			break;
 		case ID.G.ADMIRALDESK:	   //GUI admiral desk
 			tile = world.getTileEntity(x, y, z);  //確定抓到entity才開ui 以免噴出NPE
 			if((tile != null && tile instanceof TileEntityDesk)) {  //server取得container
-				((TileEntityDesk)tile).sendSyncPacket(); //sync once when gui opened
+				//sync once when gui opened
+				((TileEntityDesk)tile).sendSyncPacket();
+				//sync team list to client
+				ExtendPlayerProps props = EntityHelper.getExtendPlayerProps(player);
+				CommonProxy.channelG.sendTo(new S2CGUIPackets(props, S2CGUIPackets.PID.SyncPlayerProp_TargetClass), (EntityPlayerMP) player);
 				return new ContainerDesk(player.inventory, (TileEntityDesk) tile);
 			}
-			return null;
+			break;
 		}
 		return null;
 	}

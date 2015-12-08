@@ -21,7 +21,7 @@ public class EntityAirplane extends BasicEntityAirplane {
 		super(world);
 		this.world = world;
         this.host = host;
-        this.targetEntity = target;
+        this.atkTarget = target;
         
         //basic attr
         this.atk = host.getStateFinal(ID.ATK_AL);
@@ -53,19 +53,6 @@ public class EntityAirplane extends BasicEntityAirplane {
 		//³]©wAI
 		this.setAIList();
 	}
-	
-	//setup AI
-  	protected void setAIList() {
-  		this.clearAITasks();
-  		this.clearAITargetTasks();
-
-  		this.getNavigator().setEnterDoors(true);
-  		this.getNavigator().setAvoidsWater(false);
-  		this.getNavigator().setCanSwim(true);
-  		
-  		this.tasks.addTask(1, new EntityAIShipAircraftAttack(this));
-		this.setAttackTarget(targetEntity);
-  	}
 	
 	@Override
 	public void onUpdate() {

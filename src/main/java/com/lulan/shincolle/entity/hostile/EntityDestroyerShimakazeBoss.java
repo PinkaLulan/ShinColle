@@ -129,7 +129,7 @@ public class EntityDestroyerShimakazeBoss extends BasicEntityShipBoss {
   		
 		//spawn airplane
         if(target instanceof EntityLivingBase) {
-        	EntityRensouhouBoss rensoho = new EntityRensouhouBoss(this.worldObj, this, (EntityLivingBase)target);
+        	EntityRensouhouBoss rensoho = new EntityRensouhouBoss(this.worldObj, this, target);
             this.worldObj.spawnEntityInWorld(rensoho);
             return true;
         }

@@ -150,7 +150,7 @@ public class EntityAIShipFlee extends EntityAIBase {
   	private void sendSyncPacket() {
   		//for other player, send ship state for display
   		TargetPoint point = new TargetPoint(host.dimension, host.posX, host.posY, host.posZ, 48D);
-  		CommonProxy.channelE.sendToAllAround(new S2CEntitySync(host, 0, 9), point);
+  		CommonProxy.channelE.sendToAllAround(new S2CEntitySync(host, 0, S2CEntitySync.PID.SyncEntity_PosRot), point);
   	}
 	
 

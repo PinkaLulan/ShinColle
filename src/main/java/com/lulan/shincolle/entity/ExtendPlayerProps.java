@@ -3,11 +3,11 @@ package com.lulan.shincolle.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.ArrayUtils;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IExtendedEntityProperties;
 
@@ -39,11 +39,14 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 	private int[][] sidList;				//ship UID
 	private int saveId;						//current ship/empty slot, value = 0~5
 	private int teamId;						//current team
-	private List<Integer> shipEIDList;		//all ships' entity id list
+	private List<Integer> shipEIDList;		//all loaded ships' entity id list for radar
 	
 	//player id
 	private int playerUID;
 	private int playerTeamID;
+	
+	//target selector
+	private List<String> targetClassList;	//list temp for client side, used in GUI
 
 
 	@Override
@@ -60,6 +63,7 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		this.selectState = new boolean[9][6];
 		this.sidList = new int[9][6];
 		this.shipEIDList = new ArrayList();
+		this.targetClassList = new ArrayList();
 		this.initSID = false;
 		this.saveId = 0;
 		this.teamId = 0;
@@ -93,6 +97,17 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 			LogHelper.info("DEBUG : save player ExtNBT: "+this.getSIDofTeam(i)[0]);
 			nbtExt.setIntArray("TeamList"+i, this.getSIDofTeam(i));
 			nbtExt.setByteArray("SelectState"+i, this.getSelectStateOfTeam(i));
+		}
+		
+		//save custom target class list
+		if(this.targetClassList != null) {
+			NBTTagList list = new NBTTagList();
+			nbtExt.setTag("CustomTargetClass", list);
+			
+			for(String getc : targetClassList) {
+				NBTTagString str = new NBTTagString(getc);
+				list.appendTag(str);
+			}
 		}
 		
 		nbt.setTag(PLAYER_EXTPROP_NAME, nbtExt);
@@ -133,6 +148,17 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 				}
 			}
 		}
+		
+//		//load custom target class list
+//		NBTTagList list = nbt.getTagList(CUSTOM_TARGET_CLASS, Constants.NBT.TAG_STRING);
+//		this.targetClassList = new ArrayList();
+//		for(int i = 0; i < list.tagCount(); ++i) {
+//			String str = list.getStringTagAt(i);
+//
+//			if(str != null && str.length() > 1) {
+//				this.targetClassList.add(str);
+//			}
+//		}
 		
 		LogHelper.info("DEBUG : load player ExtNBT data on id: "+player.getEntityId()+" client? "+this.world.isRemote);
 	}
@@ -273,6 +299,10 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		return this.shipEIDList;
 	}
 	
+	public List<String> getTargetClassList() {
+		return this.targetClassList;
+	}
+	
 	//setter
 	public void setRingActive(boolean par1) {
 		isRingActive = par1;
@@ -337,6 +367,30 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 	
 	public void setShipEIDList(List<Integer> list) {
 		this.shipEIDList = list;	//shallow copy, ref only
+	}
+	
+	//set target class by string list
+	public void setTargetClass(List<String> list) {
+		if(list != null) {
+			this.targetClassList = list;
+		}
+	}
+	
+	//set target class by class string
+	public void setTargetClass(String str) {
+		if(str != null && str.length() > 1) {
+			//check str exist in list
+			for(String s : this.targetClassList) {
+				//find target in list, remove target
+				if(str.equals(s)) {
+					this.targetClassList.remove(s);
+					return;
+				}
+			}
+			
+			//target not found, add target to list
+			this.targetClassList.add(str);
+		}
 	}
 	
 	//add ship entity to slot
@@ -457,6 +511,11 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 			sidList[teamId][i] = -1;
 			selectState[teamId][i] = false;
 		}
+	}
+	
+	//clear all target class
+	public void clearAllTargetClass() {
+		this.targetClassList = new ArrayList();
 	}
 	
 	//get all ship UID in a team from entity (for init)

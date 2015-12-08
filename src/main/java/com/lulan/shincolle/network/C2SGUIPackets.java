@@ -12,11 +12,12 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
 import com.lulan.shincolle.item.PointerItem;
 import com.lulan.shincolle.proxy.CommonProxy;
+import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.BasicTileEntity;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 
+import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -33,6 +34,7 @@ public class C2SGUIPackets implements IMessage {
 	private EntityPlayer player;
 	private int entityID, worldID, type, button, value1, value2;
 	private int[] value3;
+	private String str;
 	
 	//packet id
 	public static final class PID {
@@ -47,6 +49,7 @@ public class C2SGUIPackets implements IMessage {
 		public static final byte SetShipTeamID = -8;
 		public static final byte SetMove = -9;
 		public static final byte SetSelect = -10;
+		public static final byte SetTarClass = -12;
 		//tile entity
 		public static final byte TileEntitySync = -11;
 	}
@@ -106,6 +109,17 @@ public class C2SGUIPackets implements IMessage {
         }
     }
 	
+	/**
+	 * type 13:(1 parm) add/remove target class: 0:class name
+	 * 
+	 */
+	public C2SGUIPackets(EntityPlayer player, int type, String str) {
+		this.player = player;
+		this.worldID = player.worldObj.provider.dimensionId;
+        this.type = type;
+        this.str = str;
+	}
+	
 	//接收packet方法
 	@Override
 	public void fromBytes(ByteBuf buf) {	
@@ -119,7 +133,7 @@ public class C2SGUIPackets implements IMessage {
 				worldID = buf.readInt();
 				button = buf.readByte();
 				value1 = buf.readByte();
-				
+
 				//get entity
 				entity = (BasicEntityShip) EntityHelper.getEntityByID(entityID, worldID, false);
 				
@@ -182,7 +196,7 @@ public class C2SGUIPackets implements IMessage {
 						}
 						
 						//sync team list to client
-						CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps), (EntityPlayerMP) player);
+						CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps, S2CGUIPackets.PID.SyncPlayerProp), (EntityPlayerMP) player);
 					}
 				}
 			}
@@ -301,7 +315,7 @@ public class C2SGUIPackets implements IMessage {
 										//focus ship j
 										extProps.setSelectStateOfCurrentTeam(j, true);
 										//sync team list
-										CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps), (EntityPlayerMP) player);
+										CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps, S2CGUIPackets.PID.SyncPlayerProp), (EntityPlayerMP) player);
 										break;
 									}
 								}
@@ -347,7 +361,7 @@ public class C2SGUIPackets implements IMessage {
 						extProps.clearAllShipOfCurrentTeam();
 						
 						//sync team list
-						CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps), (EntityPlayerMP) player);
+						CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps, S2CGUIPackets.PID.SyncPlayerProp), (EntityPlayerMP) player);
 					}
 				}
 			}
@@ -372,7 +386,7 @@ public class C2SGUIPackets implements IMessage {
 						
 						//send sync packet to client
 						//sync team list
-						CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps), (EntityPlayerMP) player);
+						CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps, S2CGUIPackets.PID.SyncPlayerProp), (EntityPlayerMP) player);
 					}
 				}
 			}
@@ -401,6 +415,31 @@ public class C2SGUIPackets implements IMessage {
 					}
 					EntityHelper.setTileEntityByGUI(tile, value1, value3);
 					break;
+				}
+			}
+			break;
+		case PID.SetTarClass:   //set target class
+			{
+				this.entityID = buf.readInt();
+				this.worldID = buf.readInt();
+				this.str = ByteBufUtils.readUTF8String(buf);
+				
+				EntityPlayer getEnt = EntityHelper.getEntityPlayerByID(entityID, worldID, false);
+				if(getEnt != null) {
+					this.player = getEnt;
+					ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+					
+					if(extProps != null) {
+						int uid = extProps.getPlayerUID();
+						
+						if(uid > 0) {
+							ServerProxy.setPlayerTargetClassList(uid, this.str);
+							
+							//send sync packet to client
+							//sync team list
+							CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps, S2CGUIPackets.PID.SyncPlayerProp_TargetClass), (EntityPlayerMP) player);
+						}
+					}
 				}
 			}
 			break;
@@ -464,6 +503,14 @@ public class C2SGUIPackets implements IMessage {
 				for(int val : value3) {
 					buf.writeInt(val);
 				}
+			}
+			break;
+		case PID.SetTarClass:
+			{
+				buf.writeByte(this.type);
+				buf.writeInt(this.player.getEntityId());
+				buf.writeInt(this.worldID);
+				ByteBufUtils.writeUTF8String(buf, str);
 			}
 			break;
 		}

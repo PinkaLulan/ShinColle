@@ -1,15 +1,16 @@
 package com.lulan.shincolle.server;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
 import net.minecraft.world.WorldSavedData;
 
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.LogHelper;
 
 /**伺服器端資料
  * 儲存player id等, 伺服器端判定用資料
@@ -71,6 +72,20 @@ public class ShinWorldData extends WorldSavedData {
 		    NBTTagCompound save = new NBTTagCompound();
 		    save.setInteger(TAG_PUID, uid);
 		    save.setIntArray(TAG_PDATA, data);
+		    
+		    //save target class list
+		    List<String> strList = ServerProxy.getPlayerTargetClassList(uid);
+			if(strList != null) {
+				NBTTagList tagList = new NBTTagList();
+				
+				for(String getc : strList) {
+					NBTTagString str = new NBTTagString(getc);
+					tagList.appendTag(str);
+				}
+				
+				save.setTag(ServerProxy.CUSTOM_TARGET_CLASS, tagList);
+			}
+		    
 		    list.appendTag(save);	//將save加入到list中, 不檢查是否有重複的tag, 而是新增一個tag
 		} 
 //		LogHelper.info("DEBUG : world data: save NBT: "+list.tagCount());

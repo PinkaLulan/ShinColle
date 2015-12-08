@@ -2,8 +2,8 @@ package com.lulan.shincolle.ai;
 
 import java.util.Random;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 
 import com.lulan.shincolle.entity.BasicEntityMount;
@@ -18,7 +18,7 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
 	private Random rand = new Random();
     private IShipAircraftAttack host;  	//entity with AI
     private EntityLiving host2;
-    private EntityLivingBase target;  	//entity of target
+    private Entity target;  	//entity of target
     private int launchDelay;			//aircraft launch delay
     private int launchDelayMax;			//max launch delay
     private boolean launchType;			//airplane type, true = light
@@ -59,7 +59,7 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
 			}
 		}
     	
-    	EntityLivingBase target = this.host.getTarget();
+    	Entity target = this.host.getEntityTarget();
 
         if((target != null && target.isEntityAlive()) &&
            ((this.host.getAttackType(ID.F.AtkType_AirLight) && this.host.getStateFlag(ID.F.UseAirLight) && this.host.hasAmmoLight() && this.host.hasAirLight()) || 
@@ -97,7 +97,7 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
 //    	LogHelper.info("DEBUG : air attack AI "+target);
         this.target = null;
         if(host != null) {
-        	this.host2.setAttackTarget(null);
+        	this.host.setEntityTarget(null);
         	this.host.getShipNavigate().clearPathEntity();
         }
     }

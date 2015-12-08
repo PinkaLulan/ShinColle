@@ -2,10 +2,12 @@ package com.lulan.shincolle.ai;
 
 import java.util.Random;
 
-import com.lulan.shincolle.entity.BasicEntityAirplane;
-import com.lulan.shincolle.utility.EntityHelper;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
+
+import com.lulan.shincolle.entity.BasicEntityAirplane;
+import com.lulan.shincolle.utility.EntityHelper;
 
 /**AIRCRAFT ATTACK AI
  * entity必須實作attackEntityWithAmmo, attackEntityWithHeavyAmmo 兩個方法
@@ -14,7 +16,7 @@ public class EntityAIShipAircraftAttack extends EntityAIBase {
 	
 	private Random rand = new Random();
     private BasicEntityAirplane host;  	//entity with AI
-    private EntityLivingBase target;  //entity of target
+    private Entity target;  //entity of target
     private int atkDelay = 0;		//attack delay (attack when time <= 0)
     private int maxDelay = 0;	    //attack max delay (calc from attack speed)  
     private float attackRange = 4F;	//attack range
@@ -38,7 +40,7 @@ public class EntityAIShipAircraftAttack extends EntityAIBase {
     //check ai start condition
     @Override
 	public boolean shouldExecute() {
-    	EntityLivingBase target = this.host.getAttackTarget();
+    	Entity target = this.host.getEntityTarget();
 
         if (this.host.ticksExisted > 18 && target != null && target.isEntityAlive() && 
         	((this.host.useAmmoLight && this.host.numAmmoLight > 0) || 

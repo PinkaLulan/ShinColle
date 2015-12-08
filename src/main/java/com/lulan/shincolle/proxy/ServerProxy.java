@@ -30,7 +30,7 @@ public class ServerProxy extends CommonProxy {
 	/**player extended data
 	 * all player extended data cache, delete when server close
 	 * 
-	 * extendedEntityData <player UUID, player NBT data>
+	 * extendedPlayerData <player UUID, player NBT data>
 	 * 
 	 * use:
 	 * 1. load from file: none
@@ -39,6 +39,21 @@ public class ServerProxy extends CommonProxy {
 	 * 4. set: player login/logout/death event
 	 */
 	private static Map<String, NBTTagCompound> extendedPlayerData = null;
+	
+	/**player custom target class map
+	 * all player's target class list, save at server side
+	 * for continually working if player offline
+	 * 
+	 * customTagetClassList <player UUID, player target list<String>>
+	 * 
+	 * use:
+	 * 1. load from file: server start
+	 * 2. save to file: server tick (auto), set new player data
+	 * 3. get: TargetHelper for target selection
+	 * 4. set: by client to server packet
+	 * 
+	 */
+	private static Map<Integer, List<String>> customTagetClassList = null;
 	
 	/**player id cache
 	 * for owner/team check, use map for data cache, save to .dat file when server close
@@ -99,6 +114,7 @@ public class ServerProxy extends CommonProxy {
 	public static boolean initServerFile = false;	//when open a save or world -> reset to false
 	
 	/**server global var */
+	public static final String CUSTOM_TARGET_CLASS = "CustomTargetClass";
 	public static int serverTicks = 0;
 	public static int updateRadarTicks = ConfigHandler.radarUpdate;
 
@@ -116,6 +132,7 @@ public class ServerProxy extends CommonProxy {
 		
 		//init data by default value
 		extendedPlayerData = new HashMap<String, NBTTagCompound>();
+		customTagetClassList = new HashMap<Integer, List<String>>();
 		mapPlayerID = new HashMap<Integer, int[]>();
 		mapShipID = new HashMap<Integer, int[]>();
 		nextPlayerID = -1;
@@ -139,8 +156,23 @@ public class ServerProxy extends CommonProxy {
 				NBTTagCompound getlist = list.getCompoundTagAt(i);
 				int uid = getlist.getInteger(ShinWorldData.TAG_PUID);
 				int[] data = getlist.getIntArray(ShinWorldData.TAG_PDATA);
-				LogHelper.info("DEBUG : init server proxy: get player data: UID "+uid+" DATA "+data[0]+" "+data[1]+" "+data[2]);
+				
+				//get target class list
+				//load custom target class list
+				NBTTagList strListTag = getlist.getTagList(CUSTOM_TARGET_CLASS, Constants.NBT.TAG_STRING);
+				List<String> strList = new ArrayList();
+				
+				for(int j = 0; j < strListTag.tagCount(); ++j) {
+					String str = strListTag.getStringTagAt(j);
+
+					if(str != null && str.length() > 1) {
+						strList.add(str);
+					}
+				}
+				
+				LogHelper.info("DEBUG : init server proxy: get player data: UID "+uid+" DATA "+data[0]+" "+data[1]+" "+data[2]+" "+strList.size());
 				setPlayerWorldData(uid, data);
+				setPlayerTargetClassList(uid, strList);
 			}
 			
 			initServerFile = true;
@@ -190,7 +222,42 @@ public class ServerProxy extends CommonProxy {
 	//get nbt data in map
 	public static NBTTagCompound getPlayerData(String name) {
 		return extendedPlayerData.get(name);
-	}	
+	}
+	
+	/** add/remove string in player target class list */
+	public static void setPlayerTargetClassList(int pid, String str) {
+		if(str != null && str.length() > 1 && pid > 0) {
+			//get target class list
+			List<String> tarList =  getPlayerTargetClassList(pid);
+			
+			if(tarList != null) {
+				//check str exist in list
+				for(String s : tarList) {
+					//find target in list, remove target
+					if(str.equals(s)) {
+						tarList.remove(s);
+						setPlayerTargetClassList(pid, tarList);
+						return;
+					}
+				}
+				
+				//target not found, add target to list
+				tarList.add(str);
+				setPlayerTargetClassList(pid, tarList);
+			}
+		}
+	}
+	
+	/** set player target class list */
+	public static void setPlayerTargetClassList(int pid, List<String> list) {
+		if(pid > 0) customTagetClassList.put(pid, list);
+	}
+	
+	/** get player target class list */
+	public static List<String> getPlayerTargetClassList(int pid) {
+		if(pid > 0) return customTagetClassList.get(pid);
+		return null;
+	}
 	
 	/** player world data for owner check...etc */
 	//get player world data
@@ -262,6 +329,10 @@ public class ServerProxy extends CommonProxy {
 			nextTeamID = par1;
 			serverData.markDirty();
 		}
+	}
+	
+	public static Map<Integer, List<String>> getAllPlayerTargetClassList() {
+		return customTagetClassList;
 	}
 	
 	public static Map<Integer, int[]> getAllPlayerWorldData() {
@@ -377,6 +448,12 @@ public class ServerProxy extends CommonProxy {
 			 */
 			if(serverTicks % updateRadarTicks == 0) {
 //				//DEBUG
+				List<String> getlist = getPlayerTargetClassList(100);
+				if(getlist != null) {
+					for(String s : getlist) {
+						LogHelper.info("DEBUG : server proxy tick: tar list "+s);
+					}
+				}
 //				serverData = (ShinWorldData) serverFile.loadData(ShinWorldData.class, ShinWorldData.SAVEID);
 //				NBTTagList list = serverData.nbtData.getTagList(ShinWorldData.TAG_PLAYERDATA, Constants.NBT.TAG_COMPOUND);
 //				NBTTagCompound getlist = list.getCompoundTagAt(1);

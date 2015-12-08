@@ -53,7 +53,7 @@ public class MarriageRing extends BasicItem {
 				}
 				
 				//sync ring state to client
-				CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps), (EntityPlayerMP) player);
+				CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps, S2CGUIPackets.PID.SyncPlayerProp), (EntityPlayerMP) player);
 			}
 		}
 		

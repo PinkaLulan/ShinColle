@@ -236,7 +236,7 @@ public class FML_COMMON_EventHandler {
 				
 				//send team list sync packet
 				if(syncTeamList) {
-					CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps), (EntityPlayerMP) event.player);
+					CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps, S2CGUIPackets.PID.SyncPlayerProp), (EntityPlayerMP) event.player);
 				}
 				
 //				//every 32 ticks
@@ -302,7 +302,7 @@ public class FML_COMMON_EventHandler {
         	LogHelper.info("DEBUG : player respawn: restore player data: eid: "+event.player.getEntityId()+" pid: "+extProps.getPlayerUID());
         	
         	//sync extProps state to client
-			CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps), (EntityPlayerMP) event.player);
+			CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps, S2CGUIPackets.PID.SyncPlayerProp), (EntityPlayerMP) event.player);
         }
 	}//end onPlayerRespawn
 	
@@ -438,7 +438,7 @@ public class FML_COMMON_EventHandler {
 	    		ServerProxy.setPlayerData(event.player.getUniqueID().toString(), nbt);
 	    		
 	    		//sync extProps state to client
-				CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps), (EntityPlayerMP) event.player);
+				CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps, S2CGUIPackets.PID.SyncPlayerProp), (EntityPlayerMP) event.player);
 			}//end server side
 		}//end player extProps not null
 	}

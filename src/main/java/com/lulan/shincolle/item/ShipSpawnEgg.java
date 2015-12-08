@@ -16,7 +16,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.pathfinding.PathEntity;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
@@ -157,8 +156,8 @@ public class ShipSpawnEgg extends Item {
   		LogHelper.info("DEBUG : init ship states");
   		//set init AI value and owner
   		entity.setTamed(true);
-  		entity.setPathToEntity((PathEntity)null);
-  		entity.setAttackTarget((EntityLivingBase)null);
+  		entity.setPathToEntity(null);
+  		entity.setEntityTarget(null);
   		
   		//指定ship egg, 讀取nbt來給屬性
 		if(itemstack.getItemDamage() > 1) {

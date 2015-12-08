@@ -4,7 +4,6 @@ import java.util.List;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -78,7 +77,6 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
     private float kbValue;			//knockback value
     private float missileHP;		//if hp = 0 -> onImpact
     private World world;
-
     
     //基本constructor, size必須在此設定
     public EntityAbyssMissile(World world) {
@@ -297,14 +295,14 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
             }
             
             //判定bounding box內是否有可以觸發爆炸的entity
-            EntityLivingBase hitEntity = null;
+            Entity hitEntity = null;
             List hitList = null;
-            hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, this.boundingBox.expand(1.0D, 1.0D, 1.0D));
+            hitList = this.worldObj.getEntitiesWithinAABB(Entity.class, this.boundingBox.expand(1.0D, 1.0D, 1.0D));
            
             //搜尋list, 找出第一個可以判定的目標, 即傳給onImpact
             if(hitList != null && !hitList.isEmpty()) {
                 for(int i=0; i<hitList.size(); ++i) { 
-                	hitEntity = (EntityLivingBase)hitList.get(i);
+                	hitEntity = (Entity) hitList.get(i);
                 	
                 	/**不會對自己主人觸發爆炸
             		 * isEntityEqual() is NOT working
@@ -354,7 +352,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
     }
 
     //check entity is not host or launcher
-    private boolean isNotHost(EntityLivingBase entity) {
+    private boolean isNotHost(Entity entity) {
 		if(host2 != null) {
 			//not launcher
 			if(host2.getEntityId() == entity.getEntityId()) {
@@ -372,29 +370,32 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
 	}
 
 	//撞擊判定時呼叫此方法
-    protected void onImpact(EntityLivingBase target) {
+    protected void onImpact(Entity target) {
     	//play sound
     	playSound(Reference.MOD_ID+":ship-explode", ConfigHandler.fireVolume * 1.5F, 0.7F / (this.rand.nextFloat() * 0.4F + 0.8F));
     	
     	//server side
     	if(!this.worldObj.isRemote) {
+    		//set dead
+        	this.setDead();
+        	
     		float missileAtk = atk;
 
             //計算範圍爆炸傷害: 判定bounding box內是否有可以吃傷害的entity
-            EntityLivingBase hitEntity = null;
+            Entity hitEntity = null;
             AxisAlignedBB impactBox = this.boundingBox.expand(3.5D, 3.5D, 3.5D); 
-            List hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, impactBox);
+            List hitList = this.worldObj.getEntitiesWithinAABB(Entity.class, impactBox);
             
             //對list中所有可攻擊entity做出傷害判定
             if(hitList != null && !hitList.isEmpty()) {
                 for(int i=0; i<hitList.size(); ++i) {
                 	missileAtk = this.atk;
-                	hitEntity = (EntityLivingBase)hitList.get(i);
+                	hitEntity = (Entity)hitList.get(i);
                 	
                 	//calc equip special dmg: AA, ASM
                 	missileAtk = CalcHelper.calcDamageByEquipEffect(this, hitEntity, missileAtk, 1);
                 	
-                	//目標不能是自己 or 主人
+                	//目標不能是自己 or 主人, 且可以被碰撞
                 	if(hitEntity.canBeCollidedWith() && isNotHost(hitEntity)) {
                 		//若owner相同, 則傷害設為0 (但是依然觸發擊飛特效)
                 		if(EntityHelper.checkSameOwner(host2, hitEntity)) {
@@ -441,8 +442,6 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
             //send packet to client for display partical effect
             TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
             CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 2, false), point);
-            
-            this.setDead();
         }//end if server side
     }
 
@@ -489,8 +488,13 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
         }
         
         //攻擊到飛彈會導致立刻爆炸
-        this.onImpact(null);
-        return true;
+        if(this.isEntityAlive()) {
+        	this.setDead();
+        	this.onImpact(null);
+        	return true;
+        }
+        
+        return false;
     }
 
     //render用, 陰影大小

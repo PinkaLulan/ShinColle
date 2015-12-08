@@ -1,7 +1,6 @@
 package com.lulan.shincolle.entity;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
@@ -15,7 +14,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.ai.EntityAIShipFloating;
-import com.lulan.shincolle.ai.EntityAIShipInRangeTargetHostile;
+import com.lulan.shincolle.ai.EntityAIShipInRangeTarget;
 import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
@@ -58,6 +57,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	public boolean canDrop;				//drop item flag
 	protected ShipPathNavigate shipNavigator;	//水空移動用navigator
 	protected ShipMoveHelper shipMoveHelper;
+	protected Entity atkTarget;
 		
 	
 	public BasicEntityShipHostile(World world) {
@@ -105,8 +105,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	public void setAITargetList() {
 		this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
 		this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, BasicEntityShip.class, 0, true, false));
-		this.targetTasks.addTask(3, new EntityAIShipInRangeTargetHostile(this, 16, 32, 1));
-//		this.targetTasks.addTask(4, new EntityAINearestAttackableTarget(this, EntityPlayer.class, 0, true, false));
+		this.targetTasks.addTask(3, new EntityAIShipInRangeTarget(this, 0.4F, 1));
 	}
 	
 	@Override
@@ -173,6 +172,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	//clear target AI
 	protected void clearAITargetTasks() {
 		this.setAttackTarget(null);
+		this.setEntityTarget(null);
 		targetTasks.taskEntries.clear();
 	}
 	
@@ -388,8 +388,13 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	}
 	
 	@Override
-	public EntityLivingBase getTarget() {
-		return this.getAttackTarget();
+	public Entity getEntityTarget() {
+		return this.atkTarget;
+	}
+  	
+  	@Override
+	public void setEntityTarget(Entity target) {
+		this.atkTarget = target;
 	}
 
 	@Override
@@ -586,11 +591,11 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
                 }
         		
         		//clear dead target for vanilla AI bug
-      			if(this.getAttackTarget() != null) {
-      				if(!this.getAttackTarget().isEntityAlive() || 
-      				   this.getAttackTarget() instanceof BasicEntityShipHostile ||
-      				   this.getAttackTarget() instanceof EntityRensouhouBoss) {
-      					this.setAttackTarget(null);
+      			if(this.getEntityTarget() != null) {
+      				if(!this.getEntityTarget().isEntityAlive() || 
+      				   this.getEntityTarget() instanceof BasicEntityShipHostile ||
+      				   this.getEntityTarget() instanceof EntityRensouhouBoss) {
+      					this.setEntityTarget(null);
       				}
       			}
         	}//end every 10 ticks	

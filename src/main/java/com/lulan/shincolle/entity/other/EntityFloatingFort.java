@@ -32,7 +32,7 @@ public class EntityFloatingFort extends BasicEntityAirplane {
 		super(world);
 		this.world = world;
         this.host = host;
-        this.targetEntity = target;
+        this.atkTarget = target;
         
         //basic attr
         this.atk = host.getStateFinal(ID.ATK_H) * 0.5F;
@@ -63,6 +63,7 @@ public class EntityFloatingFort extends BasicEntityAirplane {
 	}
 	
 	//setup AI
+	@Override
 	protected void setAIList() {
 		this.clearAITasks();
 		this.clearAITargetTasks();
@@ -71,7 +72,7 @@ public class EntityFloatingFort extends BasicEntityAirplane {
 		this.getNavigator().setAvoidsWater(false);
 		this.getNavigator().setCanSwim(true);
 		
-		this.setAttackTarget(targetEntity);
+		this.setEntityTarget(atkTarget);
 	}
 	
 	@Override
@@ -86,8 +87,8 @@ public class EntityFloatingFort extends BasicEntityAirplane {
 		//server side
 		else {
 			//目標消失或死亡, 直接移除此entity
-			if(this.targetEntity == null || !this.targetEntity.isEntityAlive() || this.ticksExisted >= 500) {
-				this.setDead();
+			if(this.atkTarget == null || !this.atkTarget.isEntityAlive() || this.ticksExisted >= 500) {
+				this.onImpact();
 				return;
 			}
 
@@ -100,17 +101,17 @@ public class EntityFloatingFort extends BasicEntityAirplane {
 	
 	//attack AI: move and call onImpact
 	private void updateAttackAI() {
-		if(this.targetEntity != null) {  //for lots of NPE issue-.-
+		if(this.atkTarget != null) {  //for lots of NPE issue-.-
             //目標距離計算
-            float distX = (float) (targetEntity.posX - this.posX);
-            float distY = (float) (targetEntity.posY + 1F - this.posY);
-            float distZ = (float) (targetEntity.posZ - this.posZ);	
+            float distX = (float) (atkTarget.posX - this.posX);
+            float distY = (float) (atkTarget.posY + 1F - this.posY);
+            float distZ = (float) (atkTarget.posZ - this.posZ);	
             float distSq = distX*distX + distY*distY + distZ*distZ;
 
             //每30 tick找一次路徑, 直到距離目標X格內
-        	if(this.ticksExisted % 20 == 0) {
+        	if(this.ticksExisted % 16 == 0) {
 	        	if(distSq > 4F) {	//距離約2格
-		        	this.getShipNavigate().tryMoveToEntityLiving(targetEntity, 1D);
+		        	this.getShipNavigate().tryMoveToEntityLiving(atkTarget, 1D);
 	        	}
         	}
         	

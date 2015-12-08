@@ -10,7 +10,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
@@ -21,7 +20,6 @@ import org.lwjgl.opengl.GL11;
 import com.lulan.shincolle.client.gui.inventory.ContainerDesk;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
-import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
@@ -46,6 +44,7 @@ public class GuiDesk extends GuiContainer {
 	private static final ResourceLocation guiTexture = new ResourceLocation(Reference.TEXTURES_GUI+"GuiDesk.png");
 	private static final ResourceLocation guiRadar = new ResourceLocation(Reference.TEXTURES_GUI+"GuiDeskRadar.png");
 	private static final ResourceLocation guiBook = new ResourceLocation(Reference.TEXTURES_GUI+"GuiDeskBook.png");
+	private static final ResourceLocation guiTarget = new ResourceLocation(Reference.TEXTURES_GUI+"GuiDeskTarget.png");
 	
 	private TileEntityDesk tile;
 	private int xClick, yClick, xMouse, yMouse;
@@ -65,6 +64,11 @@ public class GuiDesk extends GuiContainer {
 	//book
 	private int book_chapNum;
 	private int book_pageNum;
+	
+	//target list
+	private int target_listNum;
+	private int target_clicked;
+	private List<String> tarList;
 	
 	
 	//object: ship entity + pixel position
@@ -104,6 +108,11 @@ public class GuiDesk extends GuiContainer {
 		this.shipList = new ArrayList();
 		this.radar_listNum = 0;
 		this.radar_clicked = -1;
+		
+		//target
+		this.tarList = new ArrayList();
+		this.target_listNum = 0;
+		this.target_clicked = -1;
 	}
 	
 	//get new mouseX,Y and redraw gui
@@ -181,6 +190,11 @@ public class GuiDesk extends GuiContainer {
         	}
         	
 			break;  //end book
+//		case 3:		//team
+//			break;	//end team
+//		case 4:		//target
+//			
+//			break;	//end target
 		}//end func switch
 	}
 
@@ -195,6 +209,11 @@ public class GuiDesk extends GuiContainer {
 		case 2:  //book
 			GuiBook.drawBookContent(this, this.fontRendererObj, this.book_chapNum, this.book_pageNum);
 			break;
+		case 3:		//team
+			break;	//end team
+		case 4:		//target
+			drawTargetText();
+			break;	//end target
 		}
 		
 		//礶tooltip
@@ -221,6 +240,12 @@ public class GuiDesk extends GuiContainer {
         	break;
         case 2:		//book
         	drawTexturedModalRect(guiLeft+22, guiTop+2, 16, 192, 16, 16);
+        	break;
+        case 3:		//team
+        	drawTexturedModalRect(guiLeft+41, guiTop+2, 32, 192, 16, 16);
+        	break;
+        case 4:		//target
+        	drawTexturedModalRect(guiLeft+60, guiTop+2, 48, 192, 16, 16);
         	break;
         }
         
@@ -268,6 +293,22 @@ public class GuiDesk extends GuiContainer {
         	}
         	
         	break;  //end book
+        case 3:		//team
+        	break;	//end team
+        case 4:		//target
+        	//background
+        	Minecraft.getMinecraft().getTextureManager().bindTexture(guiTarget);
+        	drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
+        	
+        	//draw ship clicked circle
+        	if(this.target_clicked > -1 && this.target_clicked < 13) {
+        		int cirY = 25 + this.target_clicked * 12;
+            	drawTexturedModalRect(guiLeft+142, guiTop+cirY, 68, 192, 108, 31);
+        	}
+        	
+        	//draw target model
+        	drawTargetModel();
+        	break;	//end target
         }
 	}
 	
@@ -291,13 +332,35 @@ public class GuiDesk extends GuiContainer {
 					radar_clicked++;  //辈筁繷, 干1
 				}
 			}
+			
+			if(this.tarList.size() > 0) {
+				target_clicked--;
+				target_listNum++;
+				
+				if(target_listNum > this.tarList.size()-1) {
+					target_listNum = this.tarList.size()-1;
+					target_clicked++;
+				}
+				if(target_listNum < 0) {
+					target_listNum = 0;
+					target_clicked++;  //辈筁繷, 干1
+				}
+			}
 		}
 		else if(wheel > 0) {	//scroll up
 			radar_clicked++;
+			target_clicked++;
 			radar_listNum--;
+			target_listNum--;
+			
 			if(radar_listNum < 0) {
 				radar_listNum = 0;
 				radar_clicked--;  //辈筁繷, 干1
+			}
+			
+			if(target_listNum < 0) {
+				target_listNum = 0;
+				target_clicked--;  //辈筁繷, 干1
 			}
 		}
 	}
@@ -361,16 +424,40 @@ public class GuiDesk extends GuiContainer {
             	break;
             }
         	break;  //end book
+        case 3:		//team
+        	break;	//end team
+        case 4:     //target
+        	int targetBtn = GuiHelper.getButton(ID.G.ADMIRALDESK, 4, xClick, yClick);
+        	switch(targetBtn) {
+            case 0:	//remove target
+            	///////////////////////NNNNNNNYYYYYYYYYYYYYYIIIIIIIIIIII
+            	break;
+            case 1: //target slot
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+            case 10:
+            case 11:
+            case 12:
+            case 13:
+            	this.target_clicked = targetBtn - 1;
+            	break;
+            }
+        	break;  //end target
         }
         
         syncTileEntityC2S();
 	}
 	
-	@Override
-	protected void mouseClickMove(int mx, int my, int button, long time) {
-		super.mouseClickMove(mx, my, button, time);
-		
-	}
+//	@Override
+//	protected void mouseClickMove(int mx, int my, int button, long time) {
+//		super.mouseClickMove(mx, my, button, time);
+//	}
 	
 	private void setDeskFunction(int button) {
 		if(button >= 0) {
@@ -521,6 +608,33 @@ public class GuiDesk extends GuiContainer {
 					  (int)(s.ship.posY);
 				fontRendererObj.drawString(str, 146, texty, GuiHelper.pickColor(GuiHelper.pickColorName.YELLOW.ordinal()));
 				texty += 20;
+			}
+		}
+	}
+	
+	//draw target model
+	private void drawTargetModel() {
+
+	}//end target model
+	
+	//draw target class text in target screen
+	private void drawTargetText() {
+		//draw button text
+		String str = I18n.format("gui.shincolle:target.remove");
+		int strlen = (int) (this.fontRendererObj.getStringWidth(str) * 0.5F);
+		fontRendererObj.drawString(str, 31-strlen, 160, GuiHelper.pickColor(GuiHelper.pickColorName.WHITE.ordinal()));
+		
+		//draw target list
+		this.tarList = this.extProps.getTargetClassList();
+		int texty = 28;
+//		LogHelper.info("DEBUG : gui desk: get list "+tarList.size());
+		for(int i = this.target_listNum; i < tarList.size() && i < this.target_listNum + 13; ++i) {
+			//get ship position
+			str = tarList.get(i);
+			if(str != null) {
+				//draw name
+				fontRendererObj.drawString(str, 146, texty, GuiHelper.pickColor(GuiHelper.pickColorName.WHITE.ordinal()));
+				texty += 12;
 			}
 		}
 	}
