@@ -109,9 +109,10 @@ public class ServerProxy extends CommonProxy {
 	private static int nextTeamID = -1;
 	
 	/**server global files */
-	private static MapStorage serverFile = null;
-	private static ShinWorldData serverData = null;
+	public static MapStorage serverFile = null;
+	public static ShinWorldData serverData = null;
 	public static boolean initServerFile = false;	//when open a save or world -> reset to false
+	public static boolean savedServerFile = false;
 	
 	/**server global var */
 	public static final String CUSTOM_TARGET_CLASS = "CustomTargetClass";
@@ -170,7 +171,7 @@ public class ServerProxy extends CommonProxy {
 					}
 				}
 				
-				LogHelper.info("DEBUG : init server proxy: get player data: UID "+uid+" DATA "+data[0]+" "+data[1]+" "+data[2]+" "+strList.size());
+				LogHelper.info("DEBUG : init server proxy: get player data: UID "+uid+" DATA "+data[0]+" "+data[1]+" "+data[2]+" list size: "+strList.size()+" tag size: "+strListTag.tagCount());
 				setPlayerWorldData(uid, data);
 				setPlayerTargetClassList(uid, strList);
 			}
@@ -184,6 +185,14 @@ public class ServerProxy extends CommonProxy {
 			serverFile.setData(ShinWorldData.SAVEID, serverData);
 			initServerFile = true;
 		}
+	}
+	
+	//save server file when world unload (server close)
+	public static void saveServerProxy() {
+		if(serverData != null) serverData.markDirty();
+		if(serverFile != null) serverFile.saveAllData();
+		
+		savedServerFile = true;
 	}
 	
 	public static MinecraftServer getServer() {
@@ -244,6 +253,7 @@ public class ServerProxy extends CommonProxy {
 				//target not found, add target to list
 				tarList.add(str);
 				setPlayerTargetClassList(pid, tarList);
+				serverData.markDirty();
 			}
 		}
 	}
@@ -442,12 +452,8 @@ public class ServerProxy extends CommonProxy {
 		
 		//work after server start tick > 60
 		if(serverTicks > 60) {
-			/**every update radar tick
-			 * 1. create a map: key = player uid, value = ships eid
-			 * 2. sync map to each player
-			 */
-			if(serverTicks % updateRadarTicks == 0) {
-//				//DEBUG
+			if(serverTicks % 64 == 0) {
+				//DEBUG
 				List<String> getlist = getPlayerTargetClassList(100);
 				if(getlist != null) {
 					for(String s : getlist) {
@@ -459,7 +465,13 @@ public class ServerProxy extends CommonProxy {
 //				NBTTagCompound getlist = list.getCompoundTagAt(1);
 //				int uid = getlist.getInteger(ShinWorldData.TAG_PUID);
 //				LogHelper.info("DEBUG : server proxy tick: get player data count: "+mapPlayerID.size()+" "+getlist.toString()+" "+serverData.isDirty());
-				
+			}
+			
+			/**every update radar tick
+			 * 1. create a map: key = player uid, value = ships eid
+			 * 2. sync map to each player
+			 */
+			if(serverTicks % updateRadarTicks == 0) {
 				//check player online
 				boolean needUpdate = false;
 				World[] allWorld = getServerWorld();

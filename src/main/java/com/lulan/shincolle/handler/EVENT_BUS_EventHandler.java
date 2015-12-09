@@ -309,11 +309,17 @@ public class EVENT_BUS_EventHandler {
 //	 * save ship team list here, for SINGLEPLAYER ONLY
 //	 * for multiplayer: PlayerLoggedOutEvent
 //	 * 
-//	 * 由於不明原因, logout event只會在多人遊戲下發出, 單機遊戲必須使用此world unload event
+//	 * logout event只會在多人遊戲下發出, 單機遊戲必須使用此world unload event
 //	 */
 //	@SubscribeEvent
 //	public void onWorldUnload(WorldEvent.Unload event) {
-//		LogHelper.info("DEBUG : on world unload: "+event.world.provider.dimensionId);
+//		LogHelper.info("DEBUG : on world unload: "+event.world.provider.dimensionId+" phase "+event.getPhase());
+//		
+//		//save world file, mainly for single player
+//		if(!ServerProxy.savedServerFile) {  //if file not saved
+//			ServerProxy.saveServerProxy();
+//			LogHelper.info("DEBUG : on world unload: save world data to disk");
+//		}
 //	}
 
 	

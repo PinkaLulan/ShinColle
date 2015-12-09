@@ -450,8 +450,8 @@ public class FML_COMMON_EventHandler {
     	
     	LogHelper.info("DEBUG : player logout: "+event.player.getDisplayName()+" "+event.player.getUniqueID());
     	
+    	/** save player extend data in server proxy */
     	if(extProps != null) {
-    		/** save player extend data in server proxy */
     		LogHelper.info("DEBUG : player logout: save player extProps in ServerProxy");
     		//save player nbt data
     		NBTTagCompound nbt = new NBTTagCompound();

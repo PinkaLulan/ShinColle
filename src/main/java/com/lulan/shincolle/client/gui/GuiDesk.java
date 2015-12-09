@@ -20,7 +20,9 @@ import org.lwjgl.opengl.GL11;
 import com.lulan.shincolle.client.gui.inventory.ContainerDesk;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
+import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.proxy.ClientProxy;
+import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.reference.Values;
@@ -430,7 +432,15 @@ public class GuiDesk extends GuiContainer {
         	int targetBtn = GuiHelper.getButton(ID.G.ADMIRALDESK, 4, xClick, yClick);
         	switch(targetBtn) {
             case 0:	//remove target
-            	///////////////////////NNNNNNNYYYYYYYYYYYYYYIIIIIIIIIIII
+            	this.tarList = this.extProps.getTargetClassList();
+            	int clicked = this.target_listNum+this.target_clicked;
+            	
+            	if(clicked < this.tarList.size()) {
+            		String tarstr = this.tarList.get(clicked);
+                	LogHelper.info("DEBUG : desk: remove target class: "+tarstr);
+                	//remove clicked target
+    				CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetTarClass, tarstr));
+            	}
             	break;
             case 1: //target slot
             case 2:

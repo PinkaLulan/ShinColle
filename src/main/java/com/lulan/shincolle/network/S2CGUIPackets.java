@@ -288,11 +288,12 @@ public class S2CGUIPackets implements IMessage {
 					//get list data
 					for(int i = 0; i < listLen; ++i) {
 						data.add(ByteBufUtils.readUTF8String(buf));
+//						LogHelper.info("DEBUG : S2C gui packet: get "+data.get(i));
 					}
 					
 					if(extProps != null) {
 						extProps.setTargetClass(data);
-						LogHelper.info("DEBUG : S2C gui sync: get list "+data.get(0));
+//						LogHelper.info("DEBUG : S2C gui sync: get list size "+data.size());
 					}
 				}
 				else {
@@ -418,6 +419,7 @@ public class S2CGUIPackets implements IMessage {
 						}
 						break;
 					case PID.SyncPlayerProp_TargetClass:
+						LogHelper.info("DEBUG : S2C gui packet: send list size "+data.size());
 						while(iter.hasNext()) {
 							//string list
 							ByteBufUtils.writeUTF8String(buf, (String) iter.next());

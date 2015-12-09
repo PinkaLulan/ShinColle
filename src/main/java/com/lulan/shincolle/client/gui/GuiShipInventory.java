@@ -15,6 +15,7 @@ import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.GuiHelper;
+import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -270,8 +271,8 @@ public class GuiShipInventory extends GuiContainer {
         //draw left bottom name
         drawTexturedModalRect(guiLeft+166, guiTop+63, ICON_SHIPNAME[entity.getShipClass()][0], ICON_SHIPNAME[entity.getShipClass()][1], 11, 59);
         
-        //draw entity model
-        drawEntityModel(guiLeft+210, guiTop+100, entity.getModelPos(), guiLeft + 200 - xMouse, guiTop + 50 - yMouse, this.entity);
+        //draw entity model                                            guiLeft + 200 - xMouse  guiTop + 50 - yMouse
+        drawEntityModel(guiLeft+210, guiTop+100, entity.getModelPos(), guiLeft+215-xMouse, guiTop+60-yMouse, this.entity);
         
 	}
 	
@@ -373,15 +374,16 @@ public class GuiShipInventory extends GuiContainer {
 		entity.rotationYaw = (float) Math.atan(yaw / 40.0F) * 40.0F;
 		entity.rotationPitch = -((float) Math.atan(pitch / 40.0F)) * 20.0F;
 		entity.rotationYawHead = entity.rotationYaw;
-		entity.prevRotationYawHead = entity.rotationYaw;		
+		entity.prevRotationYawHead = entity.rotationYaw;	
+		LogHelper.info("DEBUG : ship inv: model "+entity.rotationYaw+" "+entity.rotationYawHead);
 		GL11.glTranslatef(0.0F, entity.yOffset, 0.0F);
 		RenderManager.instance.playerViewY = 180.0F;
 		RenderManager.instance.renderEntityWithPosYaw(entity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F);
-		entity.renderYawOffset = f2;
-		entity.rotationYaw = f3;
-		entity.rotationPitch = f4;
-		entity.prevRotationYawHead = f5;
-		entity.rotationYawHead = f6;
+//		entity.renderYawOffset = f2;
+//		entity.rotationYaw = f3;
+//		entity.rotationPitch = f4;
+//		entity.prevRotationYawHead = f5;
+//		entity.rotationYawHead = f6;
 		GL11.glPopMatrix();
 		RenderHelper.disableStandardItemLighting();
 		GL11.glDisable(GL12.GL_RESCALE_NORMAL);

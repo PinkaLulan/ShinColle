@@ -11,6 +11,7 @@ import net.minecraft.world.WorldSavedData;
 
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.LogHelper;
 
 /**伺服器端資料
  * 儲存player id等, 伺服器端判定用資料
@@ -77,7 +78,7 @@ public class ShinWorldData extends WorldSavedData {
 		    List<String> strList = ServerProxy.getPlayerTargetClassList(uid);
 			if(strList != null) {
 				NBTTagList tagList = new NBTTagList();
-				
+				LogHelper.info("DEBUG : save world data: save id "+uid+" list size: "+strList.size()); 
 				for(String getc : strList) {
 					NBTTagString str = new NBTTagString(getc);
 					tagList.appendTag(str);
