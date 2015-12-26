@@ -7,6 +7,7 @@ import net.minecraft.entity.ai.EntityAIBase;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.IShipCannonAttack;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.LogHelper;
 
 /**ENTITY RANGE ATTACK AI
  * 從骨弓的射箭AI修改而來
@@ -124,6 +125,8 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
     	boolean onSight = false;	//判定直射是否無障礙物
     	
     	if(this.host != null && this.target != null) {
+//    		LogHelper.info("DEBUG: update attack AI: "+this.host+" "+this.target);
+    		
     		//get update attributes every second
     		if(this.host2.ticksExisted % 64 == 0) {
     			this.updateAttackParms();

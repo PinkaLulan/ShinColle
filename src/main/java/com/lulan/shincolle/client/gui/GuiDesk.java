@@ -1,12 +1,19 @@
 package com.lulan.shincolle.client.gui;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -16,6 +23,7 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 
 import com.lulan.shincolle.client.gui.inventory.ContainerDesk;
 import com.lulan.shincolle.entity.BasicEntityShip;
@@ -46,11 +54,13 @@ public class GuiDesk extends GuiContainer {
 	private static final ResourceLocation guiTexture = new ResourceLocation(Reference.TEXTURES_GUI+"GuiDesk.png");
 	private static final ResourceLocation guiRadar = new ResourceLocation(Reference.TEXTURES_GUI+"GuiDeskRadar.png");
 	private static final ResourceLocation guiBook = new ResourceLocation(Reference.TEXTURES_GUI+"GuiDeskBook.png");
+	private static final ResourceLocation guiTeam = new ResourceLocation(Reference.TEXTURES_GUI+"GuiDeskTeam.png");
 	private static final ResourceLocation guiTarget = new ResourceLocation(Reference.TEXTURES_GUI+"GuiDeskTarget.png");
 	
 	private TileEntityDesk tile;
 	private int xClick, yClick, xMouse, yMouse;
 	private int tickGUI, guiFunc;
+	private int[] listNum, listClicked; //list var: 0:radar 1:team 2:target
 	private String errorMsg;
 	
 	//player data
@@ -59,18 +69,18 @@ public class GuiDesk extends GuiContainer {
 	
 	//radar
 	private int radar_zoomLv;			//0:256x256 1:64x64 2:16x16
-	private int radar_listNum;			//list index number
-	private int radar_clicked;			//clicked ship
-	private List<ShipEntity> shipList;
+	private List<ShipEntity> shipList;	//ship list
 	
 	//book
 	private int book_chapNum;
 	private int book_pageNum;
 	
+	//team
+	private List<String> teamList;		//team list
+	
 	//target list
-	private int target_listNum;
-	private int target_clicked;
-	private List<String> tarList;
+	Entity targetEntity = null;			//entity for model display
+	private List<String> tarList;		//target list
 	
 	
 	//object: ship entity + pixel position
@@ -106,15 +116,18 @@ public class GuiDesk extends GuiContainer {
 		player = ClientProxy.getClientPlayer();
 		extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 		
+		//list var: 0:radar 1:team 2:target
+		this.listNum = new int[] {0, 0, 0};
+		this.listClicked = new int[] {-1, -1, -1};
+		
 		//radar
 		this.shipList = new ArrayList();
-		this.radar_listNum = 0;
-		this.radar_clicked = -1;
+		
+		//team
+		this.teamList = new ArrayList();
 		
 		//target
 		this.tarList = new ArrayList();
-		this.target_listNum = 0;
-		this.target_clicked = -1;
 	}
 	
 	//get new mouseX,Y and redraw gui
@@ -148,7 +161,7 @@ public class GuiDesk extends GuiContainer {
 					}
 				}
 				
-				if(ship != null && ship instanceof BasicEntityShip) {
+				if(ship != null) {
 					String strName = obj.name;
 	    			list.add(strName);  //add string to draw list
 				}
@@ -178,7 +191,7 @@ public class GuiDesk extends GuiContainer {
         					int xa = getc[2] + GuiBook.Page0LX;              //at left page
         					if(getc[1] > 0) xa = getc[2] + GuiBook.Page0RX;  //at right page
         					int xb = xa + 16;
-        					int ya = getc[3] + GuiBook.Page0LY;
+        					int ya = getc[3] + GuiBook.Page0Y;
         					int yb = ya + 16;
         					ItemStack item = GuiBook.getItemStackForIcon(getc[4]);
         					
@@ -212,6 +225,7 @@ public class GuiDesk extends GuiContainer {
 			GuiBook.drawBookContent(this, this.fontRendererObj, this.book_chapNum, this.book_pageNum);
 			break;
 		case 3:		//team
+			drawTeamText();
 			break;	//end team
 		case 4:		//target
 			drawTargetText();
@@ -271,8 +285,8 @@ public class GuiDesk extends GuiContainer {
         	drawTexturedModalRect(guiLeft+9, guiTop+160, 24, texty, 44, 8);
         	
         	//draw ship clicked circle
-        	if(this.radar_clicked > -1 && this.radar_clicked < 5) {
-        		int cirY = 25 + this.radar_clicked * 32;
+        	if(this.listClicked[0] > -1 && this.listClicked[0] < 5) {
+        		int cirY = 25 + this.listClicked[0] * 32;
             	drawTexturedModalRect(guiLeft+142, guiTop+cirY, 68, 192, 108, 31);
         	}
         	
@@ -296,6 +310,10 @@ public class GuiDesk extends GuiContainer {
         	
         	break;  //end book
         case 3:		//team
+        	//background
+        	Minecraft.getMinecraft().getTextureManager().bindTexture(guiTeam);
+        	drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
+
         	break;	//end team
         case 4:		//target
         	//background
@@ -303,8 +321,8 @@ public class GuiDesk extends GuiContainer {
         	drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
         	
         	//draw ship clicked circle
-        	if(this.target_clicked > -1 && this.target_clicked < 13) {
-        		int cirY = 25 + this.target_clicked * 12;
+        	if(this.listClicked[2] > -1 && this.listClicked[2] < 13) {
+        		int cirY = 25 + this.listClicked[2] * 12;
             	drawTexturedModalRect(guiLeft+142, guiTop+cirY, 68, 192, 108, 31);
         	}
         	
@@ -321,48 +339,57 @@ public class GuiDesk extends GuiContainer {
 		
 		int wheel = Mouse.getEventDWheel();
 		if(wheel < 0) {			//scroll down
-			if(this.shipList.size() > 0) {
-				radar_clicked--;
-				radar_listNum++;
-				
-				if(radar_listNum > this.shipList.size()-1) {
-					radar_listNum = this.shipList.size()-1;
-					radar_clicked++;
-				}
-				if(radar_listNum < 0) {
-					radar_listNum = 0;
-					radar_clicked++;  //辈筁繷, 干1
-				}
-			}
-			
-			if(this.tarList.size() > 0) {
-				target_clicked--;
-				target_listNum++;
-				
-				if(target_listNum > this.tarList.size()-1) {
-					target_listNum = this.tarList.size()-1;
-					target_clicked++;
-				}
-				if(target_listNum < 0) {
-					target_listNum = 0;
-					target_clicked++;  //辈筁繷, 干1
-				}
-			}
+			handleWheelMove(false);
 		}
 		else if(wheel > 0) {	//scroll up
-			radar_clicked++;
-			target_clicked++;
-			radar_listNum--;
-			target_listNum--;
+			handleWheelMove(true);
+		}
+	}
+	
+	//handle mouse wheel move
+	private void handleWheelMove(boolean isWheelUp) {
+		//get list size
+		int listSize = 0;
+		int listID = -1;
+		
+		switch(this.guiFunc) {
+		case 1:  //radar
+			listSize = this.shipList.size();
+			listID = 0;
+			break;
+		case 3:  //team
+			listSize = this.teamList.size();
+			listID = 1;
+			break;
+		case 4:  //target
+			listSize = this.tarList.size();
+			listID = 2;
+			break;
+		}
+		if(listID < 0) return;
+		
+		if(isWheelUp) {
+			listClicked[listID]++;
+			listNum[listID]--;
 			
-			if(radar_listNum < 0) {
-				radar_listNum = 0;
-				radar_clicked--;  //辈筁繷, 干1
+			if(listNum[listID] < 0) {
+				listNum[listID] = 0;
+				listClicked[listID]--;  //辈筁繷, 干1
 			}
-			
-			if(target_listNum < 0) {
-				target_listNum = 0;
-				target_clicked--;  //辈筁繷, 干1
+		}
+		else {
+			if(this.shipList.size() > 0) {
+				listClicked[listID]--;
+				listNum[listID]++;
+				
+				if(listNum[listID] > listSize - 1) {
+					listNum[listID] = listSize - 1;
+					listClicked[listID]++;
+				}
+				if(listNum[listID] < 0) {
+					listNum[listID] = 0;
+					listClicked[listID]++;  //辈筁繷, 干1
+				}
 			}
 		}
 	}
@@ -394,7 +421,10 @@ public class GuiDesk extends GuiContainer {
             case 3:
             case 4:
             case 5:
-            	this.radar_clicked = radarBtn - 1;
+            	this.listClicked[0] = radarBtn - 1;
+            	break;
+            case 6: //open ship GUI
+            	this.openShipGUI();
             	break;
             }
         	break;  //end radar
@@ -433,7 +463,7 @@ public class GuiDesk extends GuiContainer {
         	switch(targetBtn) {
             case 0:	//remove target
             	this.tarList = this.extProps.getTargetClassList();
-            	int clicked = this.target_listNum+this.target_clicked;
+            	int clicked = this.listNum[2]+this.listClicked[2];
             	
             	if(clicked < this.tarList.size()) {
             		String tarstr = this.tarList.get(clicked);
@@ -455,7 +485,8 @@ public class GuiDesk extends GuiContainer {
             case 11:
             case 12:
             case 13:
-            	this.target_clicked = targetBtn - 1;
+            	this.listClicked[2] = targetBtn - 1;
+            	getEntityByClick();
             	break;
             }
         	break;  //end target
@@ -583,7 +614,7 @@ public class GuiDesk extends GuiContainer {
 					}
 					
 					//draw icon by radar zoom level, radar center = [70,89]
-					if(id == this.radar_listNum + this.radar_clicked) {
+					if(id == this.listNum[0] + this.listClicked[0]) {
 						drawTexturedModalRect(guiLeft+69+(int)px, guiTop+88+(int)pz, 0, 195, 3, 3);
 					}
 					else {
@@ -598,12 +629,17 @@ public class GuiDesk extends GuiContainer {
 	
 	//draw ship text in radar screen
 	private void drawRadarText() {
-		//draw ship list in radar
 		String str;
 		ShipEntity s;
 		int texty = 31;
 		
-		for(int i = this.radar_listNum; i < shipList.size() && i < this.radar_listNum + 5; ++i) {
+		//draw button text
+		str = I18n.format("gui.shincolle:radar.gui");
+		int strlen = (int) (this.fontRendererObj.getStringWidth(str) * 0.5F);
+		fontRendererObj.drawStringWithShadow(str, 32-strlen, 174, GuiHelper.pickColor(GuiHelper.pickColorName.YELLOW.ordinal()));
+		
+		//draw ship list in radar
+		for(int i = this.listNum[0]; i < shipList.size() && i < this.listNum[0] + 5; ++i) {
 			//get ship position
 			s = shipList.get(i);
 			if(s != null && s.ship != null) {
@@ -622,9 +658,100 @@ public class GuiDesk extends GuiContainer {
 		}
 	}
 	
+	//draw team text
+	private void drawTeamText() {
+		//draw button text
+		String str = I18n.format("gui.shincolle:team.join");
+		int strlen = (int) (this.fontRendererObj.getStringWidth(str) * 0.5F);
+		fontRendererObj.drawString(str, 31-strlen, 160, GuiHelper.pickColor(GuiHelper.pickColorName.YELLOW.ordinal()));
+		
+		str = I18n.format("gui.shincolle:team.leave");
+		strlen = (int) (this.fontRendererObj.getStringWidth(str) * 0.5F);
+		fontRendererObj.drawString(str, 31-strlen, 174, GuiHelper.pickColor(GuiHelper.pickColorName.WHITE.ordinal()));
+		
+		str = I18n.format("gui.shincolle:team.create");
+		strlen = (int) (this.fontRendererObj.getStringWidth(str) * 0.5F);
+		fontRendererObj.drawString(str, 82-strlen, 160, GuiHelper.pickColor(GuiHelper.pickColorName.WHITE.ordinal()));
+		
+		str = I18n.format("gui.shincolle:team.rename");
+		strlen = (int) (this.fontRendererObj.getStringWidth(str) * 0.5F);
+		fontRendererObj.drawString(str, 82-strlen, 174, GuiHelper.pickColor(GuiHelper.pickColorName.WHITE.ordinal()));
+		
+//		//draw team list
+//		this.teamList = this.extProps.getTargetClassList();
+//		int texty = 28;
+//		
+//		for(int i = this.listNum[2]; i < tarList.size() && i < this.listNum[2] + 13; ++i) {
+//			//get ship position
+//			str = tarList.get(i);
+//			if(str != null) {
+//				//draw name
+//				fontRendererObj.drawString(str, 146, texty, GuiHelper.pickColor(GuiHelper.pickColorName.WHITE.ordinal()));
+//				texty += 12;
+//			}
+//		}
+	}
+	
+	//get clicked entity by entity simple name
+	private void getEntityByClick() {
+		String tarStr = null;
+		int clicked = this.listClicked[2] + this.listNum[2];
+		
+		//get target simple name
+		if(clicked < this.tarList.size()) {
+			tarStr = this.tarList.get(clicked);
+		}
+		
+		if(tarStr != null) {
+			Iterator iter = EntityList.classToStringMapping.entrySet().iterator();
+			while(iter.hasNext()) {
+				Map.Entry getc = (Entry) iter.next();
+				Class key = (Class) getc.getKey();
+				String val = (String) getc.getValue();
+//				LogHelper.info("DEBUG: desk: clicked: "+key.getSimpleName()+"   "+val);
+				
+				if(tarStr.equals(key.getSimpleName())) {
+					this.targetEntity = EntityList.createEntityByName(val, this.player.worldObj);
+					break;
+				}
+			}
+		}
+	}
+	
 	//draw target model
 	private void drawTargetModel() {
-
+		if(this.targetEntity != null) {
+			int x = this.guiLeft + 72;
+			int y = this.guiTop + 136;
+			float scale = 40F;
+			
+			//set basic position and rotation
+			GL11.glEnable(GL11.GL_COLOR_MATERIAL);
+			GL11.glPushMatrix();
+			GL11.glTranslatef(x, y, 50.0F);
+			GL11.glScalef(-scale, scale, scale);
+			GL11.glRotatef(180.0F, 0.0F, 0.0F, 1.0F);
+			
+			//set the light of model (face to player)
+			GL11.glRotatef(135.0F, 0.0F, 1.0F, 0.0F);
+			RenderHelper.enableStandardItemLighting();
+			GL11.glRotatef(-135.0F, 0.0F, 1.0F, 0.0F);
+			
+			//set head look angle
+//			GL11.glRotatef(-((float) Math.atan(-120F / 40.0F)) * 20.0F, 1.0F, 0.0F, 0.0F);
+			GL11.glRotatef(-30F, 0.0F, 1.0F, 0.0F);
+//			this.targetEntity.rotationYaw = (float) Math.atan(2110F / 40.0F) * 40.0F;
+//			this.targetEntity.rotationPitch = -((float) Math.atan(90F / 40.0F)) * 20.0F;
+			GL11.glTranslatef(0.0F, this.targetEntity.yOffset, 0.0F);
+			RenderManager.instance.playerViewY = 180.0F;
+			RenderManager.instance.renderEntityWithPosYaw(this.targetEntity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F);
+			GL11.glPopMatrix();
+			RenderHelper.disableStandardItemLighting();
+			GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+			OpenGlHelper.setActiveTexture(OpenGlHelper.lightmapTexUnit);
+			GL11.glDisable(GL11.GL_TEXTURE_2D);
+			OpenGlHelper.setActiveTexture(OpenGlHelper.defaultTexUnit);
+		}
 	}//end target model
 	
 	//draw target class text in target screen
@@ -638,13 +765,30 @@ public class GuiDesk extends GuiContainer {
 		this.tarList = this.extProps.getTargetClassList();
 		int texty = 28;
 //		LogHelper.info("DEBUG : gui desk: get list "+tarList.size());
-		for(int i = this.target_listNum; i < tarList.size() && i < this.target_listNum + 13; ++i) {
+		for(int i = this.listNum[2]; i < tarList.size() && i < this.listNum[2] + 13; ++i) {
 			//get ship position
 			str = tarList.get(i);
 			if(str != null) {
 				//draw name
 				fontRendererObj.drawString(str, 146, texty, GuiHelper.pickColor(GuiHelper.pickColorName.WHITE.ordinal()));
 				texty += 12;
+			}
+		}
+	}
+	
+	//open ship GUI
+	private void openShipGUI() {
+		int clickid = this.listNum[0] + this.listClicked[0];
+		
+		if(clickid > -1 && clickid <= this.shipList.size()) {
+			Entity ent = this.shipList.get(clickid).ship;
+			LogHelper.info("DEBUG : guiiii  "+clickid);
+//			if(ent instanceof BasicEntityShip && EntityHelper.checkSameOwner(player, ent)) {
+			if(ent instanceof BasicEntityShip) {
+				LogHelper.info("DEBUG : guiiii  "+ent);
+				this.mc.thePlayer.closeScreen();
+				//send GUI packet
+				CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.OpenShipGUI, ent.getEntityId()));
 			}
 		}
 	}

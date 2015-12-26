@@ -488,7 +488,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
         }
         
         //攻擊到飛彈會導致立刻爆炸
-        if(this.isEntityAlive()) {
+        if(this.isEntityAlive() && atk > 10F) {
         	this.setDead();
         	this.onImpact(null);
         	return true;

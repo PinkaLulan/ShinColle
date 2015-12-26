@@ -15,6 +15,9 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
+/** HARD CODED VALUES
+ *
+ */
 public class Values {
 	
 	//numbers
@@ -283,40 +286,40 @@ public class Values {
 	//		page 0: grudge
 	put(1000, Arrays.asList(new int[] {0, 0, 0, 0},
 							new int[] {0, 1, 0, 0},
-							new int[] {1, 0, 0, 60, 0, 0, 0, 100, 56},
-							new int[] {2, 0, 13, 0, ID.Item.Grudge},
-							new int[] {2, 0, 43, 0, ID.Item.GrudgeB},
-							new int[] {2, 0, 73, 0, ID.Item.GrudgeBH}));
+							new int[] {1, 0, 0, 76, 0, 0, 0, 100, 56},
+							new int[] {2, 0, 13, -3, ID.Item.Grudge},
+							new int[] {2, 0, 43, -3, ID.Item.GrudgeB},
+							new int[] {2, 0, 73, -3, ID.Item.GrudgeBH}));
 	//		page 1: abyssium
 	put(1001, Arrays.asList(new int[] {0, 0, 0, 0},
 							new int[] {0, 1, 0, 0},
-							new int[] {1, 0, 0, 0, 0, 100, 72, 100, 62},
-							new int[] {2, 0, 3, 23, ID.Item.Grudge},
-							new int[] {2, 0, 23, 23, ID.Item.IronIG},
-							new int[] {2, 0, 81, 23, ID.Item.AbyssIG}));
+							new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
+							new int[] {2, 0, 3, 17, ID.Item.Grudge},
+							new int[] {2, 0, 23, 17, ID.Item.IronIG},
+							new int[] {2, 0, 81, 17, ID.Item.AbyssIG}));
 	//		page 2: polymetal
 	put(1002, Arrays.asList(new int[] {0, 0, 0, 0},
 							new int[] {0, 1, 0, 0},
-							new int[] {1, 0, 0, 0, 0, 0, 56, 100, 56},
-							new int[] {1, 1, 0, 70, 0, 0, 112, 100, 59},
-							new int[] {2, 0, 5, 60, ID.Item.PolymOre},
-							new int[] {2, 0, 30, 60, ID.Item.PolymIG},
-							new int[] {2, 0, 55, 60, ID.Item.PolymB},
-							new int[] {2, 0, 80, 60, ID.Item.PolymBG}));
+							new int[] {1, 0, 0, -6, 0, 0, 56, 100, 56},
+							new int[] {1, 1, 0, 73, 0, 0, 112, 100, 59},
+							new int[] {2, 0, 5, 52, ID.Item.PolymOre},
+							new int[] {2, 0, 30, 52, ID.Item.PolymIG},
+							new int[] {2, 0, 55, 52, ID.Item.PolymB},
+							new int[] {2, 0, 80, 52, ID.Item.PolymBG}));
 	//		page 3: ammo
 	put(1003, Arrays.asList(new int[] {0, 0, 0, 0},
 							new int[] {0, 1, 0, 0},
-							new int[] {1, 0, 0, 0, 0, 100, 72, 100, 62},
-							new int[] {2, 0, 3,  3,  ID.Item.IronIG},
-							new int[] {2, 0, 23, 3,  ID.Item.IronIG},
-							new int[] {2, 0, 43, 3,  ID.Item.IronIG},
-							new int[] {2, 0, 3,  23, ID.Item.IronIG},
-							new int[] {2, 0, 23, 23, ID.Item.Grudge},
-							new int[] {2, 0, 43, 23, ID.Item.IronIG},
-							new int[] {2, 0, 3,  43, ID.Item.IronIG},
-							new int[] {2, 0, 23, 43, ID.Item.Gunpowder},
-							new int[] {2, 0, 43, 43, ID.Item.IronIG},
-							new int[] {2, 0, 81, 23, ID.Item.AmmoL},
+							new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
+							new int[] {2, 0, 3,  -3,  ID.Item.IronIG},
+							new int[] {2, 0, 23, -3,  ID.Item.IronIG},
+							new int[] {2, 0, 43, -3,  ID.Item.IronIG},
+							new int[] {2, 0, 3,  17, ID.Item.IronIG},
+							new int[] {2, 0, 23, 17, ID.Item.Grudge},
+							new int[] {2, 0, 43, 17, ID.Item.IronIG},
+							new int[] {2, 0, 3,  37, ID.Item.IronIG},
+							new int[] {2, 0, 23, 37, ID.Item.Gunpowder},
+							new int[] {2, 0, 43, 37, ID.Item.IronIG},
+							new int[] {2, 0, 81, 17, ID.Item.AmmoL},
 							new int[] {2, 1, 3, 110, ID.Item.AmmoL},
 							new int[] {2, 1, 28, 110, ID.Item.AmmoLC},
 							new int[] {2, 1, 53, 110, ID.Item.AmmoH},
@@ -324,101 +327,111 @@ public class Values {
 	//		page 4: repair bucket
 	put(1004, Arrays.asList(new int[] {0, 0, 0, 0},
 							new int[] {0, 1, 0, 0},
-							new int[] {1, 0, 0, 0, 0, 100, 72, 100, 62},
-							new int[] {2, 0, 3,  23, ID.Item.LaBucket},
-							new int[] {2, 0, 23, 23, ID.Item.Grudge},
-							new int[] {2, 0, 81, 23, ID.Item.RpBucket}));
+							new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
+							new int[] {2, 0, 3,  17, ID.Item.LaBucket},
+							new int[] {2, 0, 23, 17, ID.Item.Grudge},
+							new int[] {2, 0, 81, 17, ID.Item.RpBucket}));
 	//		page 5: ring
 	put(1005, Arrays.asList(new int[] {0, 0, 0, 0},
 							new int[] {0, 1, 0, 0},
-							new int[] {1, 0, 0, 0, 0, 100, 72, 100, 62},
-							new int[] {2, 0, 3,  3,  ID.Item.AbyssIG},
-							new int[] {2, 0, 23, 3,  ID.Item.NStar},
-							new int[] {2, 0, 43, 3,  ID.Item.AbyssIG},
-							new int[] {2, 0, 3,  23, ID.Item.AbyssIG},
-							new int[] {2, 0, 43, 23, ID.Item.AbyssIG},
-							new int[] {2, 0, 3,  43, ID.Item.AbyssIG},
-							new int[] {2, 0, 23, 43, ID.Item.AbyssIG},
-							new int[] {2, 0, 43, 43, ID.Item.AbyssIG},
-							new int[] {2, 0, 81, 23, ID.Item.Ring}));
+							new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
+							new int[] {2, 0, 3,  -3,  ID.Item.AbyssIG},
+							new int[] {2, 0, 23, -3,  ID.Item.NStar},
+							new int[] {2, 0, 43, -3,  ID.Item.AbyssIG},
+							new int[] {2, 0, 3,  17, ID.Item.AbyssIG},
+							new int[] {2, 0, 43, 17, ID.Item.AbyssIG},
+							new int[] {2, 0, 3,  37, ID.Item.AbyssIG},
+							new int[] {2, 0, 23, 37, ID.Item.AbyssIG},
+							new int[] {2, 0, 43, 37, ID.Item.AbyssIG},
+							new int[] {2, 0, 81, 17, ID.Item.Ring}));
 	//		page 6: ownership paper
 	put(1006, Arrays.asList(new int[] {0, 0, 0, 0},
 							new int[] {0, 1, 0, 0},
-							new int[] {1, 0, 0, 0, 0, 100, 72, 100, 62},
-							new int[] {2, 0, 3,  23, ID.Item.Paper},
-							new int[] {2, 0, 23, 23, ID.Item.Grudge},
-							new int[] {2, 0, 81, 23, ID.Item.OwnPaper}));
+							new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
+							new int[] {2, 0, 3,  17, ID.Item.Paper},
+							new int[] {2, 0, 23, 17, ID.Item.Grudge},
+							new int[] {2, 0, 81, 17, ID.Item.OwnPaper}));
 	//		page 7: hammer
 	put(1007, Arrays.asList(new int[] {0, 0, 0, 0},
 							new int[] {0, 1, 0, 0},
-							new int[] {1, 0, 0, 0, 0, 100, 72, 100, 62},
-							new int[] {2, 0, 3,  3,  ID.Item.AbyssIG},
-							new int[] {2, 0, 23, 3,  ID.Item.AbyssIG},
-							new int[] {2, 0, 43, 3,  ID.Item.AbyssIG},
-							new int[] {2, 0, 3,  23, ID.Item.AbyssIG},
-							new int[] {2, 0, 23, 23, ID.Item.AbyssIG},
-							new int[] {2, 0, 43, 23, ID.Item.AbyssIG},
-							new int[] {2, 0, 23, 43, ID.Item.Stick},
-							new int[] {2, 0, 81, 23, ID.Item.KHammer}));
+							new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
+							new int[] {2, 0, 3,  -3,  ID.Item.AbyssIG},
+							new int[] {2, 0, 23, -3,  ID.Item.AbyssIG},
+							new int[] {2, 0, 43, -3,  ID.Item.AbyssIG},
+							new int[] {2, 0, 3,  17, ID.Item.AbyssIG},
+							new int[] {2, 0, 23, 17, ID.Item.AbyssIG},
+							new int[] {2, 0, 43, 17, ID.Item.AbyssIG},
+							new int[] {2, 0, 23, 37, ID.Item.Stick},
+							new int[] {2, 0, 81, 17, ID.Item.KHammer}));
 	//		page 8: modernization toolkit
 	put(1008, Arrays.asList(new int[] {0, 0, 0, 0},
 							new int[] {0, 1, 0, 0},
-							new int[] {1, 0, 0, 0, 0, 100, 72, 100, 62},
-							new int[] {2, 0, 3,  3,  ID.Item.KHammer},
-							new int[] {2, 0, 23, 3,  ID.Item.SpawnEgg2},
-							new int[] {2, 0, 43, 3,  ID.Item.SpawnEgg0},
-							new int[] {2, 0, 3,  23, ID.Item.SpawnEgg2},
-							new int[] {2, 0, 23, 23, ID.Item.SpawnEgg2},
-							new int[] {2, 0, 43, 23, ID.Item.SpawnEgg1},
-							new int[] {2, 0, 3,  43, ID.Item.SpawnEgg2},
-							new int[] {2, 0, 23, 43, ID.Item.SpawnEgg1},
-							new int[] {2, 0, 43, 43, ID.Item.SpawnEgg2},
-							new int[] {2, 0, 81, 23, ID.Item.ModTool}));
+							new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
+							new int[] {2, 0, 3,  -3,  ID.Item.KHammer},
+							new int[] {2, 0, 23, -3,  ID.Item.SpawnEgg2},
+							new int[] {2, 0, 43, -3,  ID.Item.SpawnEgg0},
+							new int[] {2, 0, 3,  17, ID.Item.SpawnEgg2},
+							new int[] {2, 0, 23, 17, ID.Item.SpawnEgg2},
+							new int[] {2, 0, 43, 17, ID.Item.SpawnEgg1},
+							new int[] {2, 0, 3,  37, ID.Item.SpawnEgg2},
+							new int[] {2, 0, 23, 37, ID.Item.SpawnEgg1},
+							new int[] {2, 0, 43, 37, ID.Item.SpawnEgg2},
+							new int[] {2, 0, 81, 17, ID.Item.ModTool}));
 	//		page 9: instant mats
 	put(1009, Arrays.asList(new int[] {0, 0, 0, 0},
 							new int[] {0, 1, 0, 0},
-							new int[] {1, 0, 0, 0, 0, 100, 72, 100, 62},
-							new int[] {2, 0, 3,  23, ID.Item.KHammer},
-							new int[] {2, 0, 23, 23, ID.Item.SpawnEgg0},
-							new int[] {2, 0, 81, 23, ID.Item.InstantMat}));
+							new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
+							new int[] {2, 0, 3,  17, ID.Item.KHammer},
+							new int[] {2, 0, 23, 17, ID.Item.SpawnEgg0},
+							new int[] {2, 0, 81, 17, ID.Item.InstantMat}));
 	//		page 10: abyssal goddess
 	put(1010, Arrays.asList(new int[] {0, 0, 0, 0},
 							new int[] {0, 1, 0, 0},
-							new int[] {1, 0, 0, 0, 0, 100, 72, 100, 62},
-							new int[] {2, 0, 3,  23, ID.Item.GrudgeBH},
-							new int[] {2, 0, 23, 23, ID.Item.DiamondB},
-							new int[] {2, 0, 81, 23, ID.Item.RpGod}));
+							new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
+							new int[] {2, 0, 3,  -3,  ID.Item.GrudgeB},
+							new int[] {2, 0, 23, -3,  ID.Item.GrudgeBH},
+							new int[] {2, 0, 43, -3,  ID.Item.GrudgeB},
+							new int[] {2, 0, 3,  17, ID.Item.GrudgeBH},
+							new int[] {2, 0, 23, 17, ID.Item.DiamondB},
+							new int[] {2, 0, 43, 17, ID.Item.GrudgeBH},
+							new int[] {2, 0, 3,  37, ID.Item.GrudgeB},
+							new int[] {2, 0, 23, 37, ID.Item.GrudgeBH},
+							new int[] {2, 0, 43, 37, ID.Item.GrudgeB},
+							new int[] {2, 0, 81, 17, ID.Item.RpGod}));
 	//		page 11: pointer
 	put(1011, Arrays.asList(new int[] {0, 0, 0, 0},
 							new int[] {0, 1, 0, 0},
-							new int[] {1, 0, 0, 0, 0, 100, 72, 100, 62},
-							new int[] {2, 0, 3,  43, ID.Item.PolymIG},
-							new int[] {2, 0, 23, 23, ID.Item.PolymIG},
-							new int[] {2, 0, 43, 3,  ID.Item.GrudgeB},
-							new int[] {2, 0, 81, 23, ID.Item.Pointer}));
-	//		page 12: model zero fighter
+							new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
+							new int[] {2, 0, 3,  37, ID.Item.PolymIG},
+							new int[] {2, 0, 23, 17, ID.Item.PolymIG},
+							new int[] {2, 0, 43, -3,  ID.Item.GrudgeB},
+							new int[] {2, 0, 81, 17, ID.Item.Pointer}));
+	//		page 12: pointer
 	put(1012, Arrays.asList(new int[] {0, 0, 0, 0},
-							new int[] {0, 1, 0, 0},
-							new int[] {1, 0, 0, 0, 0, 100, 72, 100, 62},
-							new int[] {2, 0, 23,  3, ID.Item.PolymIG},
-							new int[] {2, 0, 3,  23, ID.Item.PolymIG},
-							new int[] {2, 0, 23, 23, ID.Item.PolymIG},
-							new int[] {2, 0, 43, 23, ID.Item.PolymIG},
-							new int[] {2, 0, 23, 43, ID.Item.PolymIG},
-							new int[] {2, 0, 81, 23, ID.Item.ModelZF}));
-	//		page 13: desk
+							new int[] {0, 1, 0, 0}));
+	//		page 13: model zero fighter
 	put(1013, Arrays.asList(new int[] {0, 0, 0, 0},
 							new int[] {0, 1, 0, 0},
-							new int[] {1, 0, 0, 0, 0, 100, 72, 100, 62},
-							new int[] {2, 0, 3,  3,  ID.Item.WoolB},
-							new int[] {2, 0, 23, 3,  ID.Item.WoolB},
-							new int[] {2, 0, 43, 3,  ID.Item.WoolB},
-							new int[] {2, 0, 3,  23, ID.Item.ObsidianB},
-							new int[] {2, 0, 23, 23, ID.Item.GrudgeB},
-							new int[] {2, 0, 43, 23, ID.Item.ObsidianB},
-							new int[] {2, 0, 3,  43, ID.Item.ObsidianB},
-							new int[] {2, 0, 43, 43, ID.Item.ObsidianB},
-							new int[] {2, 0, 81, 23, ID.Item.Desk}));
+							new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
+							new int[] {2, 0, 23, -3, ID.Item.PolymIG},
+							new int[] {2, 0, 3,  17, ID.Item.PolymIG},
+							new int[] {2, 0, 23, 17, ID.Item.PolymIG},
+							new int[] {2, 0, 43, 17, ID.Item.PolymIG},
+							new int[] {2, 0, 23, 37, ID.Item.PolymIG},
+							new int[] {2, 0, 81, 17, ID.Item.ModelZF}));
+	//		page 14: desk
+	put(1014, Arrays.asList(new int[] {0, 0, 0, 0},
+							new int[] {0, 1, 0, 0},
+							new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
+							new int[] {2, 0, 3,  -3,  ID.Item.WoolB},
+							new int[] {2, 0, 23, -3,  ID.Item.WoolB},
+							new int[] {2, 0, 43, -3,  ID.Item.WoolB},
+							new int[] {2, 0, 3,  17, ID.Item.ObsidianB},
+							new int[] {2, 0, 23, 17, ID.Item.GrudgeBH},
+							new int[] {2, 0, 43, 17, ID.Item.ObsidianB},
+							new int[] {2, 0, 3,  37, ID.Item.ObsidianB},
+							new int[] {2, 0, 43, 37, ID.Item.ObsidianB},
+							new int[] {2, 0, 81, 17, ID.Item.Desk}));
 		
 	}});
 	

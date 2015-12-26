@@ -374,8 +374,8 @@ public class GuiShipInventory extends GuiContainer {
 		entity.rotationYaw = (float) Math.atan(yaw / 40.0F) * 40.0F;
 		entity.rotationPitch = -((float) Math.atan(pitch / 40.0F)) * 20.0F;
 		entity.rotationYawHead = entity.rotationYaw;
-		entity.prevRotationYawHead = entity.rotationYaw;	
-		LogHelper.info("DEBUG : ship inv: model "+entity.rotationYaw+" "+entity.rotationYawHead);
+		entity.prevRotationYawHead = entity.rotationYaw;
+//		LogHelper.info("DEBUG : ship inv: model "+entity.rotationYaw+" "+entity.rotationYawHead);
 		GL11.glTranslatef(0.0F, entity.yOffset, 0.0F);
 		RenderManager.instance.playerViewY = 180.0F;
 		RenderManager.instance.renderEntityWithPosYaw(entity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F);

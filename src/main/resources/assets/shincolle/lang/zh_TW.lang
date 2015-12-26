@@ -16,7 +16,7 @@ tile.shincolle:BlockPolymetalOre.name=多金屬礦
 tile.shincolle:BlockSmallShipyard.name=深海熱泉
 
 # Container
-container.shincolle:BlockDesk=深海提督的辦公桌
+container.shincolle:BlockDesk=深海提督辦公桌
 container.shincolle:SmallShipyard=深海熱泉
 container.shincolle:LargeShipyard=超深海熱漩
 
@@ -182,44 +182,47 @@ gui.shincolle:book.chap1.title0=怨念
 gui.shincolle:book.chap1.text0d0=<br><br><br>§d§n怨念§r§0是怪物死亡後感情的殘留，同時也是§c深海棲艦§0活動的能量來源。
 gui.shincolle:book.chap1.text0d1=大部分怪物死亡後都會掉落§d§n怨念§r§0，你可以建立一個怪物農場以便穩定獲得§d§n怨念§r§0來維持艦隊生活所需。<br><br><br>9個§d§n怨念§r§0可以合成為1個§9怨念團塊§0，進一步可以再合成為§9沉重的怨念團塊§0。
 gui.shincolle:book.chap1.title1=深海金屬
-gui.shincolle:book.chap1.text1d0=<br><br><br><br><br><br><br><br>§d§n深海金屬§r§0是將鐵以怨念附魔後得到的金屬，為構成§c深海棲艦§0跟棲艦們裝備的主要材料。
+gui.shincolle:book.chap1.text1d0=<br><br><br><br><br><br><br><br><br>§d§n深海金屬§r§0是將鐵以怨念附魔後得到的金屬，為構成§c深海棲艦§0跟棲艦們裝備的主要材料。
 gui.shincolle:book.chap1.text1d1=§d§n深海金屬§r§0可以在工作台以1個怨念跟1個鐵錠合成，且9個§d§n深海金屬§r§0可以進一步合成為§9深海金屬磚§0。
 gui.shincolle:book.chap1.title2=多金屬礦
-gui.shincolle:book.chap1.text2d0=<br><br><br><br><br><br><br><br><br>§d§n多金屬礦§r§0主要生成於海洋以及其他存在有大量水的生態系，為另一個構成§c深海棲艦§0跟棲艦們裝備的重要材料。
-gui.shincolle:book.chap1.text2d1=通常在海底可以找到大量的多金屬礫石沈積，這種鬆脆的多金屬礦球是使用艦載機的深海太太們最喜愛的零食之一。
+gui.shincolle:book.chap1.text2d0=<br><br><br><br><br><br><br><br><br><br><br>§d§n多金屬礦§r§0主要生成於海洋以及其他存在有大量水的生態系，為另一個構成§c深海棲艦§0跟棲艦們裝備的重要材料。
+gui.shincolle:book.chap1.text2d1=這種鬆脆的多金屬礦球是使用艦載機的深海太太們最喜愛的零食之一。<br><br>通常你可以在海底找到大量的多金屬礫石沈積。
 gui.shincolle:book.chap1.title3=怨念彈藥
-gui.shincolle:book.chap1.text3d0=<br><br><br><br><br><br><br><br>§d§n怨念彈藥§r§0是§c深海棲艦§0攻擊時的消耗品，彈藥不足時棲艦將無法進行攻擊。§r
+gui.shincolle:book.chap1.text3d0=<br><br><br><br><br><br><br><br><br>§d§n怨念彈藥§r§0是§c深海棲艦§0攻擊時的消耗品，彈藥不足時棲艦將無法進行攻擊。§r
 gui.shincolle:book.chap1.text3d1=除了鐵以外也可以使用銅、銀、金、鑽等材料製作彈藥，不同材料可以做出不同數量的彈藥。<br><br>使用§9烈焰粉§0取代§9火藥§0則能夠做出威力更強大的重型彈藥。
 gui.shincolle:book.chap1.title4=修復桶
-gui.shincolle:book.chap1.text4d0=<br><br><br><br><br><br><br><br>§d§n修復桶§r§0是以地球上最營養豐富的岩漿，加入些許怨念調味而成，對§c深海棲艦§0來說是最棒的精力補充飲料。
+gui.shincolle:book.chap1.text4d0=<br><br><br><br><br><br><br><br><br>§d§n修復桶§r§0是以大海中最營養豐富的岩漿，加入些許怨念調味而成，是最受§c深海棲艦§0歡迎的精力補充飲料。
 gui.shincolle:book.chap1.text4d1=右鍵使用§d§n修復桶§r§0可以回復目標棲艦一定的耐久度。<br><br>讓棲艦隨身攜帶§d§n修復桶§r§0，棲艦受傷時將會自動使用來回復耐久度。
 gui.shincolle:book.chap1.title5=深海棲艦結婚戒指
-gui.shincolle:book.chap1.text5d0=<br><br><br><br><br><br><br><br>    §d§n深海棲艦結婚戒指§r§0<br><br>經典簡約的深海金屬爪鑲戒台搭配地獄星型切割工法，完美大方地呈現出地獄之星最美麗的光芒。
-gui.shincolle:book.chap1.text5d1=這顆戒指象徵著地獄的美麗與擁有者的力量，同時也是你跟§c深海棲艦§0結為連理的重要證明。<br><br>§9蹲下+右鍵§0對棲艦使用即可跟棲艦結婚，§9右鍵§0使用戒指則能開啟特殊能力。<br><br>結婚棲艦數量將會影響戒指能發揮的能力。
+gui.shincolle:book.chap1.text5d0=<br><br><br><br><br><br><br><br><br>         §d§n深海棲艦結婚戒指§r§0<br><br>經典簡約的深海金屬爪鑲戒台搭配地獄星型切割工法，完美大方地呈現出地獄之星最美麗的光芒。
+gui.shincolle:book.chap1.text5d1=這顆戒指象徵著地獄的美麗與擁有者的力量，同時也是你跟§c深海棲艦§0永恆的愛的重要證明。<br><br>§9蹲下+右鍵§0對棲艦使用即可跟棲艦結婚，§9右鍵§0使用戒指則能開啟特殊能力。<br><br>結婚棲艦數量將會影響戒指能發揮的能力：水中挖掘加速、視野、移動能力。
 gui.shincolle:book.chap1.title6=深海棲艦所有權書
-gui.shincolle:book.chap1.text6d0=<br><br><br><br><br><br><br><br>這張§d§n深海棲艦所有權書§r§0詳細記載了所有權轉讓的雙方應履行的內容跟各種事項，只需雙方簽名後即可生效。
+gui.shincolle:book.chap1.text6d0=<br><br><br><br><br><br><br><br><br>這張§d§n深海棲艦所有權書§r§0詳細記載了所有權轉讓的雙方應履行的內容跟各種事項，只需雙方簽名後即可生效。
 gui.shincolle:book.chap1.text6d1=§9右鍵§0使用可以簽署該契約，交易雙方皆簽署後，棲艦所有權人對其棲艦§9右鍵§0使用即可轉讓該棲艦。
 gui.shincolle:book.chap1.title7=解體槌
-gui.shincolle:book.chap1.text7d0=<br><br><br><br><br><br><br><br>§d§n解體槌§r§0可以將§c深海棲艦§0分解並回收一些材料。
+gui.shincolle:book.chap1.text7d0=<br><br><br><br><br><br><br><br><br>§d§n解體槌§r§0可以將§c深海棲艦§0分解並回收一些材料。
 gui.shincolle:book.chap1.text7d1=§9左鍵§0使用可以一擊殺自己擁有的棲艦。<br><br>§9蹲下+右鍵§0使用則能分解該棲艦。<br><br>只有擁有者或是OP權限可以拆解該棲艦。
 gui.shincolle:book.chap1.title8=近代化改修工具
-gui.shincolle:book.chap1.text8d0=
-gui.shincolle:book.chap1.text8d1=
+gui.shincolle:book.chap1.text8d0=<br><br><br><br><br><br><br><br><br>§d§n近代化改修工具§r§0包含了各種最新研發的深海黑科技，可以升級§c深海棲艦§0的能力屬性。
+gui.shincolle:book.chap1.text8d1=§9右鍵§0使用會讓棲艦六種屬性隨機一種上升一級，屬性的等級會在棲艦物品欄GUI中以顏色來表示：<br>§f白§0(Lv1)<br>§e黃§0(Lv2)<br>§6橘§0(Lv3)<br>§4紅§0(Lv4)<br><br>最高為紅色(Lv4)等級。
 gui.shincolle:book.chap1.title9=高速建造材料
-gui.shincolle:book.chap1.text9d0=
-gui.shincolle:book.chap1.text9d1=
+gui.shincolle:book.chap1.text9d0=<br><br><br><br><br><br><br><br><br>§d§n高速建造材料§r§0包含了可以發出比地心溫度還高的焊接噴槍跟其他特殊材料，可以大幅強化深海船艦跟裝備的建造速度。
+gui.shincolle:book.chap1.text9d1=放置§d§n高速建造材料§r§0於§9深海熱泉§0或是§9超深海熱漩§0中，可以瞬間增加建造進度。<br><br>§d§n高速建造材料§r§0只能以尚未使用的深海棲艦建造道具來製造。
 gui.shincolle:book.chap1.title10=深海女神的怨念
-gui.shincolle:book.chap1.text10d0=
-gui.shincolle:book.chap1.text10d1=
+gui.shincolle:book.chap1.text10d0=<br><br><br><br><br><br><br><br><br>只要獻上鑽石跟強烈的怨念，§d深海女神§0就會保護§c深海棲艦§0免於致命的傷害並給予其有如深淵般的復仇意志。
+gui.shincolle:book.chap1.text10d1=放置§d§n深海女神的怨念§r§0於船艦的物品欄中，當該船艦受到致命傷害時將會自動消耗，使該船艦回復至全滿耐久度且暫時無敵。
 gui.shincolle:book.chap1.title11=ヲ級的指揮權杖
-gui.shincolle:book.chap1.text11d0=
-gui.shincolle:book.chap1.text11d1=
-gui.shincolle:book.chap1.title12=零式21型艦戰 (1/48)
-gui.shincolle:book.chap1.text12d0=
-gui.shincolle:book.chap1.text12d1=
-gui.shincolle:book.chap1.title13=深海提督的辦公桌
-gui.shincolle:book.chap1.text13d0=
-gui.shincolle:book.chap1.text13d1=
+gui.shincolle:book.chap1.text11d0=<br><br><br><br><br><br><br><br><br>§d§nヲ級的指揮權杖§r§0是魔法少女ヲ級用於指揮艦載機的裝備，不過深海提督無法變身為魔法少女控制艦載機，所以只能用來指揮所屬的§c深海棲艦§0。<br><br>§d§nヲ級的指揮權杖§r§0有3種控制模式，最多可以儲存9支編隊，每隊最多6艘船艦。
+gui.shincolle:book.chap1.text11d1=§2個別模式§0：可以設定一艘為§3專注目標§0，權杖指令只對§3專注目標§0有效。<br><br>§4團體模式§0：可以設定0~6個§3專注目標§0，權杖指令只對§3專注目標§0有效。<br><br>§6陣型模式§0：船艦會以陣型移動並獲得能力加成，權杖指令對全隊有效。<br><br>拿著權杖時會出現彩色圈圈代表：<br>§2綠色§0：船艦在§2個別模式§0中。<br>§3青色§0：船艦為§3專注目標§0。<br>§4紅色§0：船艦在§4團體模式§0中。<br>§6黃色§0：船艦在§6陣型模式§0中。<br>§7白色§0：守衛目標。
+gui.shincolle:book.chap1.title12=ヲ級的指揮權杖
+gui.shincolle:book.chap1.text12d0=§9左鍵§0：<br>將該船艦加入隊伍或是將非船艦目標加入到可攻擊目標清單中。<br><br>§9蹲下+左鍵§0：<br>改變權杖控制模式或將目標船艦移除隊伍。<br><br>§9跑步+蹲下+左鍵§0：<br>清除整個隊伍。
+gui.shincolle:book.chap1.text12d1=§9右鍵§0：<br>移動並守衛該點 / 攻擊目標 / 使船艦坐下。<br><br>§9跑步+右鍵§0：<br>守衛指定目標。<br><br>§9蹲下+右鍵§0：<br>開啟船艦物品欄。
+gui.shincolle:book.chap1.title13=零式21型艦戰 (1/48)
+gui.shincolle:book.chap1.text13d0=<br><br><br><br><br><br><br><br><br>§d§n零式21型艦戰§r§0<br><br>比例： 1/48<br><br>原料： 多金屬結核<br><br>每一份量： 2500g  本包裝含 1 份<br><br>保存期限： §k100§r 年
+gui.shincolle:book.chap1.text13d1=本模型飛機符合深海可食用玩具標準，完全零怨念，好玩、好吃、零負擔。<br><br>本產品含有豐富的多金屬礦，可幫助重金屬的消化吸收，有效促進兒童生長發育。<br><br><br><br><br><br>※避免保存於日光直射、高溫、高氧環境，開封後請儘早食用完畢。
+gui.shincolle:book.chap1.title14=深海提督辦公桌
+gui.shincolle:book.chap1.text14d0=<br><br><br><br><br><br><br><br><br>採用黑曜石打造的§d§n深海提督辦公桌§r§0非常堅固耐用，除了用來處理鎮守府的各項公務外，也可以用來抵擋憤怒秘書艦的砲火。<br><br><br>※添購家具前請先詢問秘書艦以免造成資源管理上的困擾。
+gui.shincolle:book.chap1.text14d1=            使用指南<br><br>§9雷達§0：<br>顯示附近所屬船艦位置以及列表，在列表點選船艦後可進行聯繫等動作。<br><br>§9深海日誌§0：<br>各項物品介紹及紀錄已知船艦訊息。<br><br>§9陣營§0：<br>建立或加入艦隊以開啟PVP模式。<br><br>§9攻擊目標列表§0：<br>調整船艦的攻擊目標類型。
 
 # GUI: Book Text Chap 2
 gui.shincolle:book.chap2.title=建造
@@ -239,10 +242,18 @@ gui.shincolle:book.chap6.title=裝備列表
 # GUI: Radar Screen
 gui.shincolle:radar.position=座標
 gui.shincolle:radar.height=高度
+gui.shincolle:radar.gui=聯繫
 gui.shincolle:radar.recall=召回
 
 # GUI: Target List
 gui.shincolle:target.remove=移  除
+
+# GUI: Team List
+gui.shincolle:team.name=艦隊名稱:
+gui.shincolle:team.create=建  立
+gui.shincolle:team.rename=更  名
+gui.shincolle:team.join=加  入
+gui.shincolle:team.leave=離  開
 
 # GUI: Ship Inventory: Top
 gui.shincolle:level=等級

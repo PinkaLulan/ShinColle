@@ -35,6 +35,8 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
 	protected ShipPathNavigate shipNavigator;	//水空移動用navigator
 	protected ShipMoveHelper shipMoveHelper;
 	protected Entity atkTarget;
+	protected Entity rvgTarget;					//revenge target
+	protected int revengeTime;					//revenge target time
 	
     //attributes
 	protected float atk;				//damage
@@ -795,6 +797,26 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
 	@Override
 	public int getDamageType() {
 		return ID.ShipDmgType.DESTROYER;
+	}
+	
+	@Override
+	public Entity getEntityRevengeTarget() {
+		return this.rvgTarget;
+	}
+
+	@Override
+	public int getEntityRevengeTime() {
+		return this.revengeTime;
+	}
+
+	@Override
+	public void setEntityRevengeTarget(Entity target) {
+		this.rvgTarget = target;
+	}
+  	
+  	@Override
+	public void setEntityRevengeTime() {
+		this.revengeTime = this.ticksExisted;
 	}
 	
 

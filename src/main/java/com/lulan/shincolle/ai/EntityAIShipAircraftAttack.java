@@ -77,6 +77,7 @@ public class EntityAIShipAircraftAttack extends EntityAIBase {
 	public void resetTask() {
         this.target = null;
         this.atkDelay = 0;
+        this.host.getShipNavigate().tryMoveToEntityLiving(this.host.getHostEntity(), 1D);
     }
 
     //∂i¶ÊAI

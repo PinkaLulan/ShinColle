@@ -8,6 +8,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntitySlime;
+import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 
 import com.lulan.shincolle.entity.BasicEntityAirplane;
@@ -84,11 +85,20 @@ public class TargetHelper {
         			int pid = ((IShipAttackBase) host).getPlayerUID();
         			List<String> tarList = ServerProxy.getPlayerTargetClassList(pid);
         			String tarClass = target2.getClass().getSimpleName();
-        			
-        			for(String s : tarList) {
-        				if(s.equals(tarClass)) {  //target class is in list
-        					return true;
-        				}
+        			if(tarList != null) {
+        				for(String s : tarList) {
+            				if(s.equals(tarClass)) {  //target class is in list
+            					//if tameable entity, check owner
+            					if(target2 instanceof EntityTameable) {
+            						if(!EntityHelper.checkSameOwner(host, target2)) {
+            							return true;
+            						}
+            					}
+            					else {
+            						return true;
+            					}
+            				}
+            			}
         			}
         		}
         	}
@@ -112,6 +122,12 @@ public class TargetHelper {
         	if((target2 instanceof EntityPlayer || target2 instanceof BasicEntityShip ||
         	   target2 instanceof BasicEntityAirplane || target2 instanceof BasicEntityMount) && 
         	   target2.isEntityAlive() && !target2.isInvisible()) {
+        		
+        		//do not attack OP player
+        		if(target2 instanceof EntityPlayer) {
+        			return !EntityHelper.checkOP((EntityPlayer) target2);
+        		}
+        		
         		return true;
         	}
         	return false;

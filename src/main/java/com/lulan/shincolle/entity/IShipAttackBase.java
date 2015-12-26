@@ -7,9 +7,15 @@ import net.minecraft.entity.Entity;
  */
 public interface IShipAttackBase extends IShipNavigator, IShipEmotion, IShipOwner, IShipAttributes {
 	
-	/**Get attack target, if entity is EntityLivingBase, return super.getAttackTarget() */
+	/** Get attack target */
 	public Entity getEntityTarget();
 	public void setEntityTarget(Entity target);
+	
+	/** Get revenge target for next attack target */
+	public Entity getEntityRevengeTarget();
+	public void setEntityRevengeTarget(Entity target);
+	public int getEntityRevengeTime();
+	public void setEntityRevengeTime();
 
 	/**Get attack attributes */
 	public float getAttackDamage();			//attack damage

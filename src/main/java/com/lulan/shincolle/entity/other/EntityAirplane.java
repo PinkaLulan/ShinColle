@@ -4,7 +4,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.world.World;
 
-import com.lulan.shincolle.ai.EntityAIShipAircraftAttack;
 import com.lulan.shincolle.entity.BasicEntityAirplane;
 import com.lulan.shincolle.entity.BasicEntityShipLarge;
 import com.lulan.shincolle.reference.ID;

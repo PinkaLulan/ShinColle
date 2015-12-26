@@ -24,7 +24,8 @@ public class BlockGrudgeHeavy extends BasicBlockMulti {
 		this.setHarvestLevel("shovel", 0);
 	    this.setHardness(3F);
 	    this.setLightLevel(1F);
-	    this.setStepSound(soundTypeSand);		
+	    this.setStepSound(soundTypeSand);
+	    this.setResistance(600F);
 	}
 
 	@Override

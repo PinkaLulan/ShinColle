@@ -37,6 +37,7 @@ import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.ai.path.ShipPathPoint;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipFloating;
@@ -126,7 +127,7 @@ public class EntityHelper {
 		int ida = getPlayerUID(enta);
 		int idb = getPlayerUID(entb);
 
-		//ida, idb != 0 or -1
+		//ida, idb != 0(other entity) or -1(ownerless ship)
 		if((ida > 0 || ida < -1) && (idb > 0 || idb < -1)) {
 			return (ida == idb);
 		}
@@ -823,10 +824,10 @@ public class EntityHelper {
     			        TargetPoint point = new TargetPoint(entity2.dimension, entity2.posX, entity2.posY, entity2.posZ, 48D);
     					//路徑點畫紅色, 目標點畫綠色
     					if(i == pathtemp.getCurrentPathIndex()) {
-    						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(entity2, 16, pointtemp.xCoord + entity2.width * 0.5D, pointtemp.yCoord + 0.5D, pointtemp.zCoord + entity2.width * 0.5D, 0F, 0F, 0F, false), point);
+    						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(entity2, 16, pointtemp.xCoord +0.5D, pointtemp.yCoord + 0.5D, pointtemp.zCoord +0.5D, 0F, 0F, 0F, false), point);
     					}
     					else {
-    						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(entity2, 18, pointtemp.xCoord + entity2.width * 0.5D, pointtemp.yCoord + 0.5D, pointtemp.zCoord + entity2.width * 0.5D, 0F, 0F, 0F, false), point);
+    						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(entity2, 18, pointtemp.xCoord +0.5D, pointtemp.yCoord + 0.5D, pointtemp.zCoord +0.5D, 0F, 0F, 0F, false), point);
     					}
     				}
     			}
@@ -854,10 +855,10 @@ public class EntityHelper {
 			        TargetPoint point = new TargetPoint(entity2.dimension, entity2.posX, entity2.posY, entity2.posZ, 48D);
 					//路徑點畫紅色, 目標點畫綠色
 					if(i == pathtemp2.getCurrentPathIndex()) {
-						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(entity2, 16, pointtemp2.xCoord + entity2.width * 0.5D, pointtemp2.yCoord + 0.5D, pointtemp2.zCoord + entity2.width * 0.5D, 0F, 0F, 0F, false), point);
+						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(entity2, 16, pointtemp2.xCoord +0.5D, pointtemp2.yCoord + 0.5D, pointtemp2.zCoord +0.5D, 0F, 0F, 0F, false), point);
 					}
 					else {
-						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(entity2, 17, pointtemp2.xCoord + entity2.width * 0.5D, pointtemp2.yCoord + 0.5D, pointtemp2.zCoord + entity2.width * 0.5D, 0F, 0F, 0F, false), point);
+						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(entity2, 17, pointtemp2.xCoord +0.5D, pointtemp2.yCoord + 0.5D, pointtemp2.zCoord +0.5D, 0F, 0F, 0F, false), point);
 					}
 				}
 			}
@@ -977,6 +978,10 @@ public class EntityHelper {
 			int gz = ship.getStateMinor(ID.M.GuardZ);
 			int gd = ship.getStateMinor(ID.M.GuardDim);
 			
+			//clear attack target
+			ship.setAttackTarget(null);
+			ship.setEntityTarget(null);
+			
 			//same guard position, cancel guard mode
 			if(gx == x && gy == y && gz == z && gd == ship.worldObj.provider.dimensionId) {
 				ship.setGuardedPos(-1, -1, -1, 0, 0);		//reset guard position
@@ -989,6 +994,7 @@ public class EntityHelper {
 				ship.setGuardedEntity(null);				//clear guard target
 				ship.setGuardedPos(x, y, z, ship.worldObj.provider.dimensionId, type);
 				ship.setStateFlag(ID.F.CanFollow, false);	//stop follow
+				
 				if(!ship.getStateFlag(ID.F.NoFuel)) {
 					if(ship.ridingEntity != null && ship.ridingEntity instanceof BasicEntityMount) {
 						((BasicEntityMount)ship.ridingEntity).getShipNavigate().tryMoveToXYZ(x, y, z, 1D);
@@ -1205,9 +1211,54 @@ public class EntityHelper {
 			
 			//sync team list to client
 			CommonProxy.channelG.sendTo(new S2CGUIPackets(props, S2CGUIPackets.PID.SyncPlayerProp), (EntityPlayerMP) player);
+		}	
+	}
+	
+	/** update target */
+	public static void updateTarget(IShipAttackBase host) {
+		//clear attack target
+		if(host.getEntityTarget() != null) {
+			//clear dead target
+			if(!host.getEntityTarget().isEntityAlive()) {
+				host.setEntityTarget(null);
+			}
+			//clear target if target is friendly
+			else if(checkSameOwner((Entity)host, host.getEntityTarget())) {
+				host.setEntityTarget(null);
+			}
+		}
+
+		//clear revenge target
+		if(host.getEntityRevengeTarget() != null) {
+            if(!host.getEntityRevengeTarget().isEntityAlive()) {
+            	host.setEntityRevengeTarget(null);
+            }
+            //clear target after 100 ticks
+            else if (host.getTickExisted() - host.getEntityRevengeTime() > 100) {
+            	host.setEntityRevengeTarget(null);
+            }
+        }
+		
+		//clear vanilla attack target
+		if(host instanceof BasicEntityShipHostile) {
+			EntityLivingBase gettar = ((BasicEntityShipHostile) host).getAttackTarget();
+			
+			if(gettar != null) {
+				if(!gettar.isEntityAlive()) {
+					((BasicEntityShipHostile) host).setAttackTarget(null);
+				}
+				else if(checkSameOwner((Entity)host, gettar)) {
+					((BasicEntityShipHostile) host).setAttackTarget(null);
+				}
+			}
 		}
 		
-		
+		//clear invisible target every 64 ticks
+		if(host.getTickExisted() % 64 == 0) {
+			if(host.getEntityTarget() != null && host.getEntityTarget().isInvisible()) {
+				host.setEntityTarget(null);
+			}
+		}
 	}
 	
 	

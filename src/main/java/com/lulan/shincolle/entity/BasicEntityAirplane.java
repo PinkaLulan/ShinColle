@@ -6,7 +6,6 @@ import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityFlying;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntitySlime;
@@ -40,6 +39,8 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 	protected ShipPathNavigate shipNavigator;	//水空移動用navigator
 	protected ShipMoveHelper shipMoveHelper;
 	protected Entity atkTarget;
+	protected Entity rvgTarget;					//revenge target
+	protected int revengeTime;					//revenge target time
 	
     //attributes
     public float atk;				//damage
@@ -197,25 +198,27 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
     
 	//ammo recycle
     protected void recycleAmmo() {
-    	//light cost 4, plane get 6 => -2
-		this.numAmmoLight -= 2;
-		if(this.numAmmoLight < 0) this.numAmmoLight = 0;
-		
-		//heavy cost 2, plane get 3 => -1
-		this.numAmmoHeavy -= 1;
-		if(this.numAmmoHeavy < 0) this.numAmmoHeavy = 0;
-		
-		//#ammo++
-		this.host.setStateMinor(ID.M.NumAmmoLight, this.host.getStateMinor(ID.M.NumAmmoLight) + this.numAmmoLight);
-		this.host.setStateMinor(ID.M.NumAmmoHeavy, this.host.getStateMinor(ID.M.NumAmmoHeavy) + this.numAmmoHeavy);
-	
-		//#plane++
-		if(this instanceof EntityAirplane) {
-			host.setNumAircraftLight(host.getNumAircraftLight()+1);
-		}
-		else {
-			host.setNumAircraftHeavy(host.getNumAircraftHeavy()+1);
-		}
+    	if(this.host != null) {
+    		//light cost 4, plane get 6 => -2
+    		this.numAmmoLight -= 2;
+    		if(this.numAmmoLight < 0) this.numAmmoLight = 0;
+    		
+    		//heavy cost 2, plane get 3 => -1
+    		this.numAmmoHeavy -= 1;
+    		if(this.numAmmoHeavy < 0) this.numAmmoHeavy = 0;
+    		
+    		//#ammo++
+    		this.host.setStateMinor(ID.M.NumAmmoLight, this.host.getStateMinor(ID.M.NumAmmoLight) + this.numAmmoLight);
+    		this.host.setStateMinor(ID.M.NumAmmoHeavy, this.host.getStateMinor(ID.M.NumAmmoHeavy) + this.numAmmoHeavy);
+    	
+    		//#plane++
+    		if(this instanceof EntityAirplane) {
+    			host.setNumAircraftLight(host.getNumAircraftLight()+1);
+    		}
+    		else {
+    			host.setNumAircraftHeavy(host.getNumAircraftHeavy()+1);
+    		}
+    	}
     }
 
 	@Override
@@ -226,7 +229,7 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 			if(this.getPlayerUID() <= 0) {	//no host, or host has no owner
 				this.setDead();
 			}
-			else {		
+			else {
 				//超過60秒自動消失
 				if(this.ticksExisted > 1200) {
 					this.recycleAmmo();
@@ -262,7 +265,7 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 				
 				//攻擊目標消失, 找附近目標 or 設為host目前目標
 				if(!this.backHome && (this.getEntityTarget() == null || !this.getEntityTarget().isEntityAlive()) &&
-					this.host != null && this.ticksExisted % 10 == 0) {	
+					this.host != null && this.ticksExisted % 8 == 0) {	
 					//entity list < range1
 					Entity newTarget;
 			        List list = this.worldObj.selectEntitiesWithinAABB(Entity.class, 
@@ -278,14 +281,15 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 			        
 			        if(newTarget != null && newTarget.isEntityAlive() && this.getDistanceSqToEntity(newTarget) < 1600F &&
 			           this.getEntitySenses().canSee(newTarget)) {
-			        	this.setEntityTarget(atkTarget);
+			        	this.setEntityTarget(newTarget);
 			        }
 		        	else {
 		        		this.backHome = true;
 		        	}
 				}
 				
-				if(this.isInWater() && this.ticksExisted % 100 == 0) {
+				//避免窒息
+				if(this.isInWater() && this.ticksExisted % 256 == 0) {
 					this.setAir(300);
 				}
 			}	
@@ -641,6 +645,27 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 	public int getDamageType() {
 		return ID.ShipDmgType.AIRPLANE;
 	}
+	
+	@Override
+	public Entity getEntityRevengeTarget() {
+		return this.rvgTarget;
+	}
+
+	@Override
+	public int getEntityRevengeTime() {
+		return this.revengeTime;
+	}
+
+	@Override
+	public void setEntityRevengeTarget(Entity target) {
+		this.rvgTarget = target;
+	}
+  	
+  	@Override
+	public void setEntityRevengeTime() {
+		this.revengeTime = this.ticksExisted;
+	}
+
     
 
 }

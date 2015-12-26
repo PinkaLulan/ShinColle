@@ -26,8 +26,11 @@ public class ShinWorldData extends WorldSavedData {
 	public static final String TAG_NEXTSHIPID = "nextShipID";
 	public static final String TAG_NEXTTEAMID = "nextTeamID";
 	public static final String TAG_PLAYERDATA = "playerData";
+	public static final String TAG_TEAMDATA = "teamData";
 	public static final String TAG_PUID = "pUID";
 	public static final String TAG_PDATA = "pData";
+	public static final String TAG_TUID = "tUID";
+	public static final String TAG_TDATA = "tData";
 	
 	//data
 	public static NBTTagCompound nbtData;
@@ -83,14 +86,29 @@ public class ShinWorldData extends WorldSavedData {
 					NBTTagString str = new NBTTagString(getc);
 					tagList.appendTag(str);
 				}
-				
 				save.setTag(ServerProxy.CUSTOM_TARGET_CLASS, tagList);
 			}
-		    
 		    list.appendTag(save);	//將save加入到list中, 不檢查是否有重複的tag, 而是新增一個tag
-		} 
-//		LogHelper.info("DEBUG : world data: save NBT: "+list.tagCount());
+		}
 		nbt.setTag(TAG_PLAYERDATA, list);	//將list加入到nbt中
+		
+		//save team data:  from team map to server save file
+		list = new NBTTagList();
+		iter = ServerProxy.getAllTeamWorldData().entrySet().iterator();
+		
+		while(iter.hasNext()) {
+		    Map.Entry entry = (Map.Entry) iter.next();
+		    int uid = (Integer) entry.getKey();
+		    String data = (String) entry.getValue();
+		    
+		    NBTTagCompound save = new NBTTagCompound();
+		    save.setInteger(TAG_TUID, uid);
+		    save.setString(TAG_TDATA, data);
+
+		    list.appendTag(save);	//將save加入到list中, 不檢查是否有重複的tag, 而是新增一個tag
+		}
+		nbt.setTag(TAG_TEAMDATA, list);	//將list加入到nbt中
+		
 	}//end write nbt
 
 }

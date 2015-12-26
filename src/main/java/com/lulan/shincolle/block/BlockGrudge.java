@@ -13,7 +13,7 @@ public class BlockGrudge extends BasicBlock implements IShipItemType {
 	    this.setHardness(1F);
 	    this.setLightLevel(1F);
 	    this.setStepSound(soundTypeSand);
-		
+	    this.setResistance(200F);
 	}
 	
 	@Override

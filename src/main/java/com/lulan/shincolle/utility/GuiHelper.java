@@ -54,15 +54,21 @@ public class GuiHelper {
 		 //0:radar scale	 1:ship slot 0     2:ship slot 1		//radar
 		 {{7,158,55,170},   {140,23,252,54},  {140,55,252,86},
 		 //3:ship slot 2     4:ship slot 3     5:ship slot 4
-		  {140,87,252,118}, {140,119,252,150},{140,151,252,187}},
+		  {140,87,252,118}, {140,119,252,150},{140,151,252,187},
+		 //6:openGUI 
+		  {7,172,55,184}},
 		 //0:left page       1:right page	   2:chap 0				//book
 		 {{52,180,72,193},  {174,180,194,193},{243,34,256,45},
 		 //3:chap 1          4:chap 2          5:chap 3
 		  {243,46,256,59},  {243,60,256,71},  {243,72,256,82},
 		 //6:chap 4          7:chap 5          8:chap 6
 		  {243,83,256,96},  {243,97,256,109}, {243,110,256,121}},
-		 //0:														//team
-		 {{}},
+		 //0:join team  	 1:team slot 0     2:team slot 1		//team
+		 {{7,158,55,170},   {140,23,252,54},  {140,55,252,86},
+		 //3:team slot 2     4:team slot 3     5:team slot 4
+		  {140,87,252,118}, {140,119,252,150},{140,151,252,187},
+		 //6:leave team      7:create team     8:rename team
+		  {7,172,55,184},   {58,158,106,170}, {58,172,106,184}},
 		 //0:target remove	 1:slot 0          2:slot 1				//target
 		 {{7,158,55,170},   {140,23,252,37},  {140,38,252,49},
 		 //3:slot 2	         4:slot 3          5:slot 4  
@@ -99,7 +105,7 @@ public class GuiHelper {
 	}
 	
 	public enum pickColorName {
-		WHITE, YELLOW, ORANGE, RED1, GRAY1, BLACK, RED2, GRAY2
+		WHITE, YELLOW, ORANGE, RED1, GRAY1, BLACK, RED2, GRAY2, PINK
 	}
 	
 	//color code
@@ -121,6 +127,8 @@ public class GuiHelper {
 			return 11141120;	//dark red, RED2
 		case 7:
 			return 11184810;	//light gray, GRAY2
+		case 8:
+			return 15515845;	//pink
 		default:
 			return 16724787;	//red
 		}

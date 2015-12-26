@@ -81,7 +81,7 @@ public class PointerItem extends BasicItem {
 	 *   ship(hostile):		-<br>
 	 *   player(friend):	-<br>
 	 *   player(hostile):	-<br>
-	 *   other:				-<br>
+	 *   other:				set target class<br>
 	 *<br>  
 	 * left + sprint:<br>
 	 *   air:				-<br>
@@ -91,7 +91,7 @@ public class PointerItem extends BasicItem {
 	 *   ship(hostile):		-<br>
 	 *   player(friend):	-<br>
 	 *   player(hostile):	-<br>
-	 *   other:				set target class<br>
+	 *   other:				-<br>
 	 *<br> 
 	 * left + sneak:<br>
 	 *   air:				change mode<br>

@@ -1,11 +1,9 @@
 package com.lulan.shincolle.entity;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAIOpenDoor;
-import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -14,11 +12,12 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.ai.EntityAIShipFloating;
-import com.lulan.shincolle.ai.EntityAIShipInRangeTarget;
+import com.lulan.shincolle.ai.EntityAIShipRangeTarget;
+import com.lulan.shincolle.ai.EntityAIShipRevengeTarget;
+import com.lulan.shincolle.ai.EntityAIShipWander;
 import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
-import com.lulan.shincolle.entity.hostile.EntityRensouhouBoss;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;
@@ -27,6 +26,7 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
@@ -58,6 +58,8 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	protected ShipPathNavigate shipNavigator;	//水空移動用navigator
 	protected ShipMoveHelper shipMoveHelper;
 	protected Entity atkTarget;
+	protected Entity rvgTarget;					//revenge target
+	protected int revengeTime;					//revenge target time
 		
 	
 	public BasicEntityShipHostile(World world) {
@@ -96,16 +98,16 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		this.tasks.addTask(21, new EntityAIOpenDoor(this, true));			   //0000
 		this.tasks.addTask(22, new EntityAIShipFloating(this));				   //0101
 		this.tasks.addTask(23, new EntityAIShipWatchClosest(this, EntityPlayer.class, 6F, 0.1F)); //0010
-		this.tasks.addTask(24, new EntityAIWander(this, 0.8D));				   //0001
+		this.tasks.addTask(24, new EntityAIShipWander(this, 0.8D));				   //0001
 		this.tasks.addTask(25, new EntityAILookIdle(this));					   //0011
 
 	}
 	
 	//setup target AI: par1: 0:passive 1:active
 	public void setAITargetList() {
-		this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
+		this.targetTasks.addTask(1, new EntityAIShipRevengeTarget(this));
 		this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, BasicEntityShip.class, 0, true, false));
-		this.targetTasks.addTask(3, new EntityAIShipInRangeTarget(this, 0.4F, 1));
+		this.targetTasks.addTask(3, new EntityAIShipRangeTarget(this, 0.4F, 1));
 	}
 	
 	@Override
@@ -143,6 +145,10 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
   	        	this.setDead();
   	        	return false;
   	        }
+  	        
+  	        //設置revenge target
+			this.setEntityRevengeTarget(entity);
+			this.setEntityRevengeTime();
 
   	        //def calc
   			float reduceAtk = atk;
@@ -590,14 +596,16 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
                 	setAir(300);
                 }
         		
-        		//clear dead target for vanilla AI bug
-      			if(this.getEntityTarget() != null) {
-      				if(!this.getEntityTarget().isEntityAlive() || 
-      				   this.getEntityTarget() instanceof BasicEntityShipHostile ||
-      				   this.getEntityTarget() instanceof EntityRensouhouBoss) {
-      					this.setEntityTarget(null);
-      				}
-      			}
+        		//update target
+            	EntityHelper.updateTarget(this);
+            	
+            	//get target from vanilla target AI
+            	if(this.getAttackTarget() != null) {
+            		this.setEntityTarget(this.getAttackTarget());
+            	}
+            	
+//      			LogHelper.info("DEBUG: update hostile ship: "+this.getEntityTarget());
+//      			LogHelper.info("DEBUG: taget:   "+this.getEntityTarget()+"      "+this.getAttackTarget());
         	}//end every 10 ticks	
         }
         //client side
@@ -763,6 +771,28 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	public Entity getHostEntity() {
 		return this;
 	}
+	
+	@Override
+	public Entity getEntityRevengeTarget() {
+		return this.rvgTarget;
+	}
+
+	@Override
+	public int getEntityRevengeTime() {
+		return this.revengeTime;
+	}
+
+	@Override
+	public void setEntityRevengeTarget(Entity target) {
+		this.rvgTarget = target;
+	}
+  	
+  	@Override
+	public void setEntityRevengeTime() {
+		this.revengeTime = this.ticksExisted;
+	}
+	
+	
 
 
 }

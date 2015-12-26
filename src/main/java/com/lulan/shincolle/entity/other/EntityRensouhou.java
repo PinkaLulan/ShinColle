@@ -2,7 +2,6 @@ package com.lulan.shincolle.entity.other;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
@@ -37,6 +36,8 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack {
 	protected ShipPathNavigate shipNavigator;	//水空移動用navigator
 	protected ShipMoveHelper shipMoveHelper;
 	protected Entity atkTarget;
+	protected Entity rvgTarget;					//revenge target
+	protected int revengeTime;					//revenge target time
     
     //attributes
 	protected float atk;				//damage
@@ -823,6 +824,26 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack {
 	@Override
 	public int getDamageType() {
 		return ID.ShipDmgType.DESTROYER;
+	}
+	
+	@Override
+	public Entity getEntityRevengeTarget() {
+		return this.rvgTarget;
+	}
+
+	@Override
+	public int getEntityRevengeTime() {
+		return this.revengeTime;
+	}
+
+	@Override
+	public void setEntityRevengeTarget(Entity target) {
+		this.rvgTarget = target;
+	}
+  	
+  	@Override
+	public void setEntityRevengeTime() {
+		this.revengeTime = this.ticksExisted;
 	}
 	
 

@@ -19,6 +19,7 @@ public class BlockDesk extends BasicBlockContainer {
 		this.setBlockName("BlockDesk");
 	    this.setHarvestLevel("pickaxe", 0);
 	    this.setHardness(1F);
+	    this.setResistance(60F);
 	}
 
 	//非標準方形方塊  要傳-1表示用自己的render

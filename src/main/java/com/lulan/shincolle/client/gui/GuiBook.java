@@ -32,9 +32,9 @@ import com.lulan.shincolle.utility.LogHelper;
  *  text: left:13,48 right:135,48 width:100
  *  
  *  for recipe picture:
- *  material pos: (3,3)  (23,3)  (43,3)
- *                (3,23) (23,23) (43,23)     (81,23)
- *                (3,43) (23,43) (43,43)
+ *  material pos: (3,-3) (23,-3) (43,-3)
+ *                (3,17) (23,17) (43,17)     (81,17)
+ *                (3,37) (23,37) (43,37)
  */
 public class GuiBook {
 	
@@ -48,12 +48,14 @@ public class GuiBook {
 	private static RenderItem itemRender = new RenderItem();
 	private static int numChap;
 	private static int numPage;
-	public static int PageWidth = 106; //page width
-	public static int Page0LX = 13;    //left page start X pos
-	public static int Page0LY = 50;    //left page start Y pos
-	public static int Page0RX = 133;   //right page start X pos
-	public static int Page0RY = 50;    //right page start Y pos
-	public static final int[] PageLimit = new int[] {1,13,0,0,0,0,0};  //max page number
+	public static int PageWidth = 150; //page width, no scale = 106
+	public static int Page0LX = 13;    //left page X pos, no scale = 13
+	public static int Page0RX = 133;   //right page X pos, no scale = 133
+	public static int Page0Y = 48;     //page Y pos, no scale = 48
+	public static int PageTLX = 18;    //left page X pos for text
+	public static int PageTRX = 186;   //right page X pos for text
+	public static int PageTY = 68;     //page Y pos for text
+	public static final int[] PageLimit = new int[] {1,14,0,0,0,0,0};  //max page number
 	
 	public GuiBook() {}
 	
@@ -70,13 +72,26 @@ public class GuiBook {
 		numChap = chap;
 		numPage = page;
 		
-		//DEBUG: test page
-//		if(numChap == 2 && numPage == 0) {
-//			cont =  Arrays.asList(new int[] {0, 0, 0, 0},
-//								new int[] {0, 1, 0, 0},
-//								new int[] {1, 0, 0, 0, 0, 100, 72, 100, 62},
-//								new int[] {2, 0, 81, 23, ID.Item.Desk}
-//		);}
+		
+		
+		/***********   DEBUG: test page      *********/
+		if(numChap == 1 && numPage == 99) {
+			cont =  Arrays.asList(new int[] {0, 0, 0, 0},
+					new int[] {0, 1, 0, 0},
+					new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
+					new int[] {2, 0, 3, 19, ID.Item.Grudge},
+					new int[] {2, 0, 23, 19, ID.Item.IronIG},
+					new int[] {2, 0, 81, 19, ID.Item.AbyssIG}
+		);}
+		PageWidth = 146; //page width, no scale = 106
+//		Page0LX = 13;    //left page start X pos, no scale = 13
+//		Page0RX = 133;   //right page start X pos, no scale = 133
+//		Page0Y = 48;    //left page start Y pos, no scale = 48
+		PageTLX = 13;    //left page start X pos, no scale = 13
+		PageTRX = 172;   //right page start X pos, no scale = 133
+		PageTY = 68;    //left page start Y pos, no scale = 48
+		
+		
 		
 		if(cont != null) {
 			for(int[] getc : cont) {
@@ -126,15 +141,18 @@ public class GuiBook {
 		int strlen = (int) (font.getStringWidth(str) * 0.5F);
 		str = EnumChatFormatting.UNDERLINE + str;
 		//draw title
-		font.drawString(str, 64-strlen, 32, GuiHelper.pickColor(GuiHelper.pickColorName.RED2.ordinal()));
+		GL11.glPushMatrix();
+		GL11.glScalef(0.75F, 0.75F, 0.75F);
+		font.drawString(str, 85-strlen, 43, GuiHelper.pickColor(GuiHelper.pickColorName.RED2.ordinal()));
+		GL11.glPopMatrix();
 	}
 	
 	/** draw page text */
 	private static void drawPageText(int pageSide, int offX, int offY) {
 		//set x, y offset
-		int picY = Page0LY + offY;        //add y offset
-		int picX = Page0LX;               //left page
-		if(pageSide > 0) picX = Page0RX;  //right page
+		int picY = PageTY + offY - 4;        //add y offset
+		int picX = PageTLX;               //left page
+		if(pageSide > 0) picX = PageTRX;  //right page
 		picX += offX;                     //add x offset
 		
 		//get text string
@@ -149,12 +167,15 @@ public class GuiBook {
 	 */
 	private static void drawStringWithSpecialSymbol(String str, int x, int y) {
 		String[] strArray = CalcHelper.stringConvNewlineToArray(str);
-		
+
 		int newY = y;
 		for(String s : strArray) {
+			GL11.glPushMatrix();
+			GL11.glScalef(0.75F, 0.75F, 0.75F);
 			//drawSplitString(string, x, y, split width, color)
 			font.drawSplitString(s, x, newY, PageWidth, 0);
 			newY += font.splitStringWidth(s, PageWidth);
+			GL11.glPopMatrix();
 		}
 	}
 	
@@ -181,7 +202,7 @@ public class GuiBook {
 		}
 		
 		//set x, y offset
-		int picY = Page0LY + posY;        //add y offset
+		int picY = Page0Y + posY;        //add y offset
 		int picX = Page0LX;               //left page
 		if(pageSide > 0) picX = Page0RX;  //right page
 		picX += posX;                     //add x offset
@@ -206,7 +227,7 @@ public class GuiBook {
 	/** draw book item icon */
 	private static void drawBookIcon(int pageSide, int offX, int offY, int iconID) {
 		//set x, y offset
-		int picY = Page0LY + offY;        //add y offset
+		int picY = Page0Y + offY;        //add y offset
 		int picX = Page0LX;               //left page
 		if(pageSide > 0) picX = Page0RX;  //right page
 		picX += offX;                     //add x offset

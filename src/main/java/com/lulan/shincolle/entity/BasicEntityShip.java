@@ -3,12 +3,9 @@ package com.lulan.shincolle.entity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
 import net.minecraft.entity.ai.EntityAIOpenDoor;
-import net.minecraft.entity.ai.EntityAIOwnerHurtByTarget;
-import net.minecraft.entity.ai.EntityAIOwnerHurtTarget;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
@@ -26,7 +23,8 @@ import com.lulan.shincolle.ai.EntityAIShipFlee;
 import com.lulan.shincolle.ai.EntityAIShipFloating;
 import com.lulan.shincolle.ai.EntityAIShipFollowOwner;
 import com.lulan.shincolle.ai.EntityAIShipGuarding;
-import com.lulan.shincolle.ai.EntityAIShipInRangeTarget;
+import com.lulan.shincolle.ai.EntityAIShipRangeTarget;
+import com.lulan.shincolle.ai.EntityAIShipRevengeTarget;
 import com.lulan.shincolle.ai.EntityAIShipSit;
 import com.lulan.shincolle.ai.EntityAIShipWander;
 import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
@@ -65,8 +63,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	protected ExtendShipProps ExtProps;			//entity額外NBT紀錄
 	protected ShipPathNavigate shipNavigator;	//水空移動用navigator
 	protected ShipMoveHelper shipMoveHelper;
-	protected Entity guardedEntity;
-	protected Entity atkTarget;
+	protected Entity guardedEntity;				//guarding target
+	protected Entity atkTarget;					//attack target
+	protected Entity rvgTarget;					//revenge target
+	protected int revengeTime;					//revenge target time
 	
 	//for AI calc
 	protected double ShipDepth;			//水深, 用於水中高度判定
@@ -283,16 +283,18 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	public void setAITargetList(int par1) {	
 		//passive target AI
 		if(par1 == 0) {
-			this.targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this));
-			this.targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this));
-			this.targetTasks.addTask(3, new EntityAIHurtByTarget(this, false));
+			this.targetTasks.addTask(1, new EntityAIShipRevengeTarget(this));
+//			this.targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this));
+//			this.targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this));
+//			this.targetTasks.addTask(3, new EntityAIHurtByTarget(this, false));
 		}
 		//active target AI
 		else {
-			this.targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this));
-			this.targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this));
-			this.targetTasks.addTask(3, new EntityAIHurtByTarget(this, false));
-			this.targetTasks.addTask(4, new EntityAIShipInRangeTarget(this, 0.4F, 1));
+			this.targetTasks.addTask(1, new EntityAIShipRevengeTarget(this));
+//			this.targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this));
+//			this.targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this));
+//			this.targetTasks.addTask(3, new EntityAIHurtByTarget(this, false));
+			this.targetTasks.addTask(4, new EntityAIShipRangeTarget(this, 0.4F, 1));
 		}
 		
 		//DEBUG
@@ -415,10 +417,15 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	public Entity getEntityTarget() {
 		return this.atkTarget;
 	}
-  	
-  	@Override
-	public void setEntityTarget(Entity target) {
-		this.atkTarget = target;
+	
+	@Override
+	public Entity getEntityRevengeTarget() {
+		return this.rvgTarget;
+	}
+
+	@Override
+	public int getEntityRevengeTime() {
+		return this.revengeTime;
 	}
 	
 	@Override
@@ -837,6 +844,22 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.setStateMinor(ID.M.PlayerUID, par1);
 	}
 	
+
+  	@Override
+	public void setEntityTarget(Entity target) {
+		this.atkTarget = target;
+	}
+  	
+  	@Override
+	public void setEntityRevengeTarget(Entity target) {
+		this.rvgTarget = target;
+	}
+  	
+  	@Override
+	public void setEntityRevengeTime() {
+		this.revengeTime = this.ticksExisted;
+	}
+	
 	/** send sync packet: sync all data */
 	public void sendSyncPacket() {
 		this.sendSyncPacket(0, false);
@@ -879,7 +902,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				}
 				
 				//owner在附近才需要sync
-				if(player != null && this.getDistanceToEntity(player) < 32F) {
+				if(player != null && this.getDistanceToEntity(player) < 65F) {
 					CommonProxy.channelE.sendTo(new S2CEntitySync(this, type), player);
 				}
 				
@@ -1421,46 +1444,16 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
       	
         //server side check
         if((!worldObj.isRemote)) {
-        	//clear dead target for vanilla AI bug
-  			if(this.getEntityTarget() != null && !this.getEntityTarget().isEntityAlive()) {
-  				this.setEntityTarget(null);
-  			}
- 			
-  			//clear target if target is self/host
-			if(getEntityTarget() == this.ridingEntity) {
-				this.setEntityTarget(null);
-			}
+        	//update target
+        	EntityHelper.updateTarget(this);
 			
+        	//update/init id
+        	this.updateShipID();
+        	
         	//decr immune time
         	if(this.StateMinor[ID.M.ImmuneTime] > 0) {
         		this.StateMinor[ID.M.ImmuneTime]--;
         	}
-        	
-        	//register or update ship id and owner id
-			if(!this.isUpdated && ticksExisted % updateTime == 0) {
-				LogHelper.info("DEBUG : update ship: initial SID, PID  cd: "+updateTime);
-				ServerProxy.updateShipID(this);		//update ship uid
-				
-				if(this.getPlayerUID() <= 0) {
-					ServerProxy.updateShipOwnerID(this);//update owner uid
-				}
-				
-				//update success
-				if(getPlayerUID() > 0 && getShipUID() > 0 && 
-				   ServerProxy.getShipWorldData(getShipUID()) != null &&
-				   ServerProxy.getShipWorldData(getShipUID())[0] > 0) {
-					this.sendSyncPacket();
-					this.isUpdated = true;
-				}
-				
-				//prolong update time
-				if(updateTime >= 4096) {
-					updateTime = 4096;
-				}
-				else {
-					updateTime *= 2;
-				}
-			}//end update id
         	
         	//check every 8 ticks
         	if(ticksExisted % 8 == 0) {
@@ -1476,13 +1469,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
             		
             		this.initAI = true;
         		}
-        		
-        		//clear dead or same team target 
-      			if(this.getEntityTarget() != null) {
-      				if(!this.getEntityTarget().isEntityAlive() || EntityHelper.checkSameOwner(this, getEntityTarget())) {
-      					this.setEntityTarget(null);
-      				}
-      			}
         		
         		//use bucket automatically
         		if((getMaxHealth() - getHealth()) > (getMaxHealth() * 0.1F + 5F)) {
@@ -1518,6 +1504,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         		}
         		
             	/** debug info */
+//        		LogHelper.info("DEBUG: taget:   "+this.getEntityTarget()+"      "+this.getEntityRevengeTarget()+"      "+this.getAttackTarget());
 //            	LogHelper.info("DEBUG : ship update: "+CalcHelper.NORM_TABLE[1999]/4.9867787F);
 //            	LogHelper.info("DEBUG : ship update: eid: "+ServerProxy.getNextShipID()+" "+ServerProxy.getNextPlayerID()+" "+ConfigHandler.nextPlayerID+" "+ConfigHandler.nextShipID);
 //        		if(this.worldObj.provider.dimensionId == 0) {	//main world
@@ -1976,6 +1963,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			//取消坐下動作
 			this.setSitting(false);
 			
+			//設置revenge target
+			this.setEntityRevengeTarget(entity);
+			this.setEntityRevengeTime();
+			LogHelper.info("DEBUG : set revenge target: "+entity+"  host: "+this);
+			
 			//若傷害力可能致死, 則尋找物品中有無repair goddess來取消掉此攻擊
 			if(reduceAtk >= (this.getHealth() - 1F)) {
 				if(this.decrSupplies(8)) {
@@ -2407,6 +2399,35 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 //		
 //		return super.getHeldItem();
 //	}
+	
+	//update ship id
+	protected void updateShipID() {
+		//register or update ship id and owner id
+		if(!this.isUpdated && ticksExisted % updateTime == 0) {
+			LogHelper.info("DEBUG : update ship: initial SID, PID  cd: "+updateTime);
+			ServerProxy.updateShipID(this);		//update ship uid
+			
+			if(this.getPlayerUID() <= 0) {
+				ServerProxy.updateShipOwnerID(this);//update owner uid
+			}
+			
+			//update success
+			if(getPlayerUID() > 0 && getShipUID() > 0 && 
+			   ServerProxy.getShipWorldData(getShipUID()) != null &&
+			   ServerProxy.getShipWorldData(getShipUID())[0] > 0) {
+				this.sendSyncPacket();
+				this.isUpdated = true;
+			}
+			
+			//prolong update time
+			if(updateTime >= 4096) {
+				updateTime = 4096;
+			}
+			else {
+				updateTime *= 2;
+			}
+		}//end update id
+	}
 
 	
 }

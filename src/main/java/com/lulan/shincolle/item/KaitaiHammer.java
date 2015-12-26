@@ -57,7 +57,7 @@ public class KaitaiHammer extends BasicItem {
 		//entity is ship
 		if(entity instanceof BasicEntityShip) {
 			//player is owner
-			if(EntityHelper.checkSameOwner(player, entity)) {
+			if(EntityHelper.checkSameOwner(player, entity) || EntityHelper.checkOP(player)) {
 				entity.attackEntityFrom(DamageSource.causePlayerDamage(player), ((BasicEntityShip) entity).getMaxHealth() * 1.01F);
 				
 				//item meta+1

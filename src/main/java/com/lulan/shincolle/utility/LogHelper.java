@@ -32,7 +32,9 @@ public class LogHelper {
 	}
 	
 	//debug: 紀錄debug訊息
-	public static void debug(Object object) { log(Level.DEBUG,object); }
+	public static void debug(Object object) { 
+		if(ConfigHandler.debugMode) log(Level.DEBUG,object);
+	}
 	
 	//trace: 同debug, 常用於追蹤程式動向
 	public static void trace(Object object) { log(Level.TRACE,object); }

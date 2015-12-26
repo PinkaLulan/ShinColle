@@ -214,8 +214,11 @@ public class C2SGUIPackets implements IMessage {
 				Entity getEnt2 = EntityHelper.getEntityByID(value2, worldID, false);
 				
 				if(getEnt != null) {
-					this.player = getEnt;
-					EntityHelper.applyTeamAttack(player, value1, getEnt2);
+					//不同主人才能攻擊
+					if(!EntityHelper.checkSameOwner(getEnt, getEnt2)) {
+						this.player = getEnt;
+						EntityHelper.applyTeamAttack(player, value1, getEnt2);
+					}
 				}
 			}
 			break;

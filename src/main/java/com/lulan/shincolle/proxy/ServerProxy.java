@@ -55,6 +55,20 @@ public class ServerProxy extends CommonProxy {
 	 */
 	private static Map<Integer, List<String>> customTagetClassList = null;
 	
+	/**team id cache
+	 * for team name display
+	 * 
+	 * mapTeamID <team ID, String>
+	 * 
+	 * use:
+	 * 1. load from file: server start
+	 * 2. save to file: server tick (auto), create new team
+	 * 3. get: view team
+	 * 4. set: create team, server tick (clear team which no ppl in team)
+	 * 
+	 */
+	private static Map<Integer, String> mapTeamID = null;
+	
 	/**player id cache
 	 * for owner/team check, use map for data cache, save to .dat file when server close
 	 * entity建立時會讀取此map來取得owner id, 並存在自己的nbt中, 以後就直接以該entity存的owner id來判斷owner
@@ -136,6 +150,7 @@ public class ServerProxy extends CommonProxy {
 		customTagetClassList = new HashMap<Integer, List<String>>();
 		mapPlayerID = new HashMap<Integer, int[]>();
 		mapShipID = new HashMap<Integer, int[]>();
+		mapTeamID = new HashMap<Integer, String>();
 		nextPlayerID = -1;
 		nextShipID = -1;
 		nextTeamID = -1;
@@ -174,6 +189,18 @@ public class ServerProxy extends CommonProxy {
 				LogHelper.info("DEBUG : init server proxy: get player data: UID "+uid+" DATA "+data[0]+" "+data[1]+" "+data[2]+" list size: "+strList.size()+" tag size: "+strListTag.tagCount());
 				setPlayerWorldData(uid, data);
 				setPlayerTargetClassList(uid, strList);
+			}
+			
+			//load team data:  from server save file to playerMap
+			NBTTagList list2 = serverData.nbtData.getTagList(ShinWorldData.TAG_TEAMDATA, Constants.NBT.TAG_COMPOUND);
+			LogHelper.info("DEBUG : init server proxy: get team data count: "+list2.tagCount());
+			for(int i = 0; i < list2.tagCount(); i++) {
+				NBTTagCompound getlist = list2.getCompoundTagAt(i);
+				int uid = getlist.getInteger(ShinWorldData.TAG_TUID);
+				String data = getlist.getString(ShinWorldData.TAG_TDATA);
+				
+				LogHelper.info("DEBUG : init server proxy: get team data: UID "+uid+" DATA "+data);
+				setTeamData(uid, data);
 			}
 			
 			initServerFile = true;
@@ -226,6 +253,7 @@ public class ServerProxy extends CommonProxy {
 	//map set: UUID, nbt data
 	public static void setPlayerData(String uuid, NBTTagCompound nbt) {
 		extendedPlayerData.put(uuid, nbt);
+		serverData.markDirty();
 	}
 
 	//get nbt data in map
@@ -258,12 +286,16 @@ public class ServerProxy extends CommonProxy {
 		}
 	}
 	
-	/** set player target class list */
+	/** player target class list for attack check */
+	//set
 	public static void setPlayerTargetClassList(int pid, List<String> list) {
-		if(pid > 0) customTagetClassList.put(pid, list);
+		if(pid > 0) {
+			customTagetClassList.put(pid, list);
+			serverData.markDirty();
+		}
 	}
 	
-	/** get player target class list */
+	//get
 	public static List<String> getPlayerTargetClassList(int pid) {
 		if(pid > 0) return customTagetClassList.get(pid);
 		return null;
@@ -282,12 +314,8 @@ public class ServerProxy extends CommonProxy {
 //		LogHelper.info("DEBUG : Server Proxy: set player data");
 		if(pid > 0 && pdata != null) {
 			mapPlayerID.put(pid, pdata);
+			serverData.markDirty();
 		}
-	}
-	
-	//check mapPlayerID is empty
-	public static boolean isPlayerWorldDataEmpty() {
-		return mapPlayerID.isEmpty();
 	}
 	
 	/** ship world data for owner check...etc */
@@ -303,6 +331,22 @@ public class ServerProxy extends CommonProxy {
 //		LogHelper.info("DEBUG : Server Proxy: set ship data");
 		if(pid > 0 && pdata != null) {
 			mapShipID.put(pid, pdata);
+			serverData.markDirty();
+		}
+	}
+	
+	/** team data */
+	//get
+	public static String getTeamData(int tid) {
+		if(tid > 0) return mapTeamID.get(tid);
+		return null;
+	}
+	
+	//set
+	public static void setTeamData(int tid, String teamName) {
+		if(tid > 0 && teamName != null && teamName.length() > 1) {
+			mapTeamID.put(tid, teamName);
+			serverData.markDirty();
 		}
 	}
 	
@@ -351,6 +395,10 @@ public class ServerProxy extends CommonProxy {
 	
 	public static Map<Integer, int[]> getAllShipWorldData() {
 		return mapShipID;
+	}
+	
+	public static Map<Integer, String> getAllTeamWorldData() {
+		return mapTeamID;
 	}
 	
 	/** update player id */
@@ -452,20 +500,20 @@ public class ServerProxy extends CommonProxy {
 		
 		//work after server start tick > 60
 		if(serverTicks > 60) {
-			if(serverTicks % 64 == 0) {
-				//DEBUG
-				List<String> getlist = getPlayerTargetClassList(100);
-				if(getlist != null) {
-					for(String s : getlist) {
-						LogHelper.info("DEBUG : server proxy tick: tar list "+s);
-					}
-				}
+//			if(serverTicks % 64 == 0) {
+//				//DEBUG
+//				List<String> getlist = getPlayerTargetClassList(100);
+//				if(getlist != null) {
+//					for(String s : getlist) {
+//						LogHelper.info("DEBUG : server proxy tick: tar list "+s);
+//					}
+//				}
 //				serverData = (ShinWorldData) serverFile.loadData(ShinWorldData.class, ShinWorldData.SAVEID);
 //				NBTTagList list = serverData.nbtData.getTagList(ShinWorldData.TAG_PLAYERDATA, Constants.NBT.TAG_COMPOUND);
 //				NBTTagCompound getlist = list.getCompoundTagAt(1);
 //				int uid = getlist.getInteger(ShinWorldData.TAG_PUID);
 //				LogHelper.info("DEBUG : server proxy tick: get player data count: "+mapPlayerID.size()+" "+getlist.toString()+" "+serverData.isDirty());
-			}
+//			}
 			
 			/**every update radar tick
 			 * 1. create a map: key = player uid, value = ships eid

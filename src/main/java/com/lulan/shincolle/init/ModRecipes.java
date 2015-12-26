@@ -43,7 +43,7 @@ public class ModRecipes {
 		
 		
 		ItemStack instantMat8 = new ItemStack(ModItems.InstantConMat, 8);
-		ItemStack instantMat32 = new ItemStack(ModItems.InstantConMat, 32);
+		ItemStack instantMat32 = new ItemStack(ModItems.InstantConMat, 64);
 		
 		
 		ItemStack ironBlock = new ItemStack(Blocks.iron_block);
@@ -84,7 +84,6 @@ public class ModRecipes {
 		GameRegistry.addRecipe(new ShapelessOreRecipe(instantMat32, kaitaiHammerAll, shipEggL));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(modernKit, kaitaiHammerAll, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(ownerPaper, grudeStack, Items.paper));
-		GameRegistry.addRecipe(new ShapelessOreRecipe(repairGoddess, grudeHeavyBlock, Blocks.diamond_block));
 		
 		//SHAPED RECIPE
 		//ammo material: copper/tin=8 iron/bronze=16 abyssium/gold/silver=32 diamond=64
@@ -113,7 +112,7 @@ public class ModRecipes {
 		GameRegistry.addRecipe(new ShapedOreRecipe(grudeHeavyBlock,"aaa","aaa","aaa",'a',grudeBlock));
 		GameRegistry.addRecipe(new ShapedOreRecipe(polymetalBlock,"aaa","aaa","aaa",'a',"dustManganese"));
 		//desk
-		GameRegistry.addRecipe(new ShapedOreRecipe(desk,"www","ogo","o o",'w',Blocks.wool,'g',grudeBlock,'o',Blocks.obsidian));
+		GameRegistry.addRecipe(new ShapedOreRecipe(desk,"www","ogo","o o",'w',Blocks.wool,'g',grudeHeavyBlock,'o',Blocks.obsidian));
 		//small shipyard
 		GameRegistry.addRecipe(new ShapedOreRecipe(smallshipyardStack,"glg","lol","ooo",'g',grudeStack,'l',Items.lava_bucket,'o',Blocks.obsidian));
 		//marriage ring
@@ -124,6 +123,9 @@ public class ModRecipes {
 		GameRegistry.addRecipe(new ShapedOreRecipe(pointer,"  g"," p ","p  ",'g',grudeBlock,'p',"dustManganese"));
 		//toy plane
 		GameRegistry.addRecipe(new ShapedOreRecipe(toyplane," a ","aaa"," a ",'a',"dustManganese"));
+		//goddess
+		GameRegistry.addRecipe(new ShapedOreRecipe(repairGoddess,"hgh","gdg","hgh",'d',Blocks.diamond_block,'g',grudeBlock,'h',grudeHeavyBlock));
+		GameRegistry.addRecipe(new ShapedOreRecipe(repairGoddess,"ghg","hdh","ghg",'d',Blocks.diamond_block,'g',grudeBlock,'h',grudeHeavyBlock));
 		
 	}
 

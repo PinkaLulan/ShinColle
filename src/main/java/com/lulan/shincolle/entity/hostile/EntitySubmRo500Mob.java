@@ -20,6 +20,7 @@ import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -92,7 +93,7 @@ public class EntitySubmRo500Mob extends BasicEntityShipHostile {
 
 		//use range attack
 		this.tasks.addTask(1, new EntityAIShipRangeAttack(this));			   //0011
-		this.tasks.addTask(2, new EntityAIMoveTowardsTarget(this, 1D, 40F));   //0001
+//		this.tasks.addTask(2, new EntityAIMoveTowardsTarget(this, 1D, 40F));   //0001
 	}
 	
 	//set invisible
@@ -101,10 +102,11 @@ public class EntitySubmRo500Mob extends BasicEntityShipHostile {
   		super.onLivingUpdate();
   		
   		if(!worldObj.isRemote) {
+//  			LogHelper.info("DEBUG: taget:   "+this.getEntityTarget()+"      "+this.getAttackTarget());
   			//add aura to master every N ticks
   			if(this.ticksExisted % 200 == 0) {
   				if(this.rand.nextInt(2) == 0) {
-  					this.addPotionEffect(new PotionEffect(Potion.invisibility.id, 200));
+  					this.addPotionEffect(new PotionEffect(Potion.invisibility.id, 120));
   				}
   			}
   		}    

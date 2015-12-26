@@ -9,7 +9,6 @@ import net.minecraft.entity.ai.EntityAIOpenDoor;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.pathfinding.PathEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
@@ -19,7 +18,6 @@ import com.lulan.shincolle.ai.EntityAIShipAttackOnCollide;
 import com.lulan.shincolle.ai.EntityAIShipFloating;
 import com.lulan.shincolle.ai.EntityAIShipFollowOwner;
 import com.lulan.shincolle.ai.EntityAIShipGuarding;
-import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.ai.EntityAIShipWander;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
@@ -54,6 +52,8 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	protected ShipPathNavigate shipNavigator;	//水空移動用navigator
 	protected ShipMoveHelper shipMoveHelper;
 	protected Entity atkTarget;
+	protected Entity rvgTarget;					//revenge target
+	protected int revengeTime;					//revenge target time
     
     //attributes
 	protected float atkRange;			//attack range
@@ -1250,6 +1250,27 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	public Entity getHostEntity() {
 		return this.host;
 	}
+	
+	@Override
+	public Entity getEntityRevengeTarget() {
+		return this.rvgTarget;
+	}
+
+	@Override
+	public int getEntityRevengeTime() {
+		return this.revengeTime;
+	}
+
+	@Override
+	public void setEntityRevengeTarget(Entity target) {
+		this.rvgTarget = target;
+	}
+  	
+  	@Override
+	public void setEntityRevengeTime() {
+		this.revengeTime = this.ticksExisted;
+	}
+
     
 	
 }
