@@ -21,7 +21,10 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CGUIPackets;
+import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.server.ShinWorldData;
+import com.lulan.shincolle.team.TeamData;
+import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
@@ -30,7 +33,7 @@ public class ServerProxy extends CommonProxy {
 	/**player extended data
 	 * all player extended data cache, delete when server close
 	 * 
-	 * extendedPlayerData <player UUID, player NBT data>
+	 * extendedPlayerData <player UUID: int, player NBT data: NBTTagCompound>
 	 * 
 	 * use:
 	 * 1. load from file: none
@@ -44,7 +47,7 @@ public class ServerProxy extends CommonProxy {
 	 * all player's target class list, save at server side
 	 * for continually working if player offline
 	 * 
-	 * customTagetClassList <player UUID, player target list<String>>
+	 * customTagetClassList <player UUID: int, player target: list<String>>
 	 * 
 	 * use:
 	 * 1. load from file: server start
@@ -55,10 +58,10 @@ public class ServerProxy extends CommonProxy {
 	 */
 	private static Map<Integer, List<String>> customTagetClassList = null;
 	
-	/**team id cache
-	 * for team name display
+	/**team data cache
+	 * for team data display, owner check, etc
 	 * 
-	 * mapTeamID <team ID, String>
+	 * mapTeamID <team ID: int, team data: String>
 	 * 
 	 * use:
 	 * 1. load from file: server start
@@ -67,7 +70,7 @@ public class ServerProxy extends CommonProxy {
 	 * 4. set: create team, server tick (clear team which no ppl in team)
 	 * 
 	 */
-	private static Map<Integer, String> mapTeamID = null;
+	private static Map<Integer, TeamData> mapTeamID = null;
 	
 	/**player id cache
 	 * for owner/team check, use map for data cache, save to .dat file when server close
@@ -150,7 +153,7 @@ public class ServerProxy extends CommonProxy {
 		customTagetClassList = new HashMap<Integer, List<String>>();
 		mapPlayerID = new HashMap<Integer, int[]>();
 		mapShipID = new HashMap<Integer, int[]>();
-		mapTeamID = new HashMap<Integer, String>();
+		mapTeamID = new HashMap<Integer, TeamData>();
 		nextPlayerID = -1;
 		nextShipID = -1;
 		nextTeamID = -1;
@@ -195,12 +198,22 @@ public class ServerProxy extends CommonProxy {
 			NBTTagList list2 = serverData.nbtData.getTagList(ShinWorldData.TAG_TEAMDATA, Constants.NBT.TAG_COMPOUND);
 			LogHelper.info("DEBUG : init server proxy: get team data count: "+list2.tagCount());
 			for(int i = 0; i < list2.tagCount(); i++) {
+				//get team data
 				NBTTagCompound getlist = list2.getCompoundTagAt(i);
-				int uid = getlist.getInteger(ShinWorldData.TAG_TUID);
-				String data = getlist.getString(ShinWorldData.TAG_TDATA);
+				int tUID = getlist.getInteger(ShinWorldData.TAG_TUID);
+				String tName = getlist.getString(ShinWorldData.TAG_TNAME);
+				int tLeader = getlist.getInteger(ShinWorldData.TAG_TLEADER);
+				int[] tMember = getlist.getIntArray(ShinWorldData.TAG_TMEMBER);
+				List<Integer> tList = CalcHelper.intArrayToList(tMember);
 				
-				LogHelper.info("DEBUG : init server proxy: get team data: UID "+uid+" DATA "+data);
-				setTeamData(uid, data);
+				//form team data
+				TeamData tData = new TeamData();
+				tData.setTeamName(tName);
+				tData.setTeamLeaderUID(tLeader);
+				tData.setTeamMemberUID(tList);
+				
+				LogHelper.info("DEBUG : init server proxy: get team data: UID "+tUID+" NAME "+tName);
+				setTeamData(tUID, tData);
 			}
 			
 			initServerFile = true;
@@ -335,17 +348,17 @@ public class ServerProxy extends CommonProxy {
 		}
 	}
 	
-	/** team data */
+	/** team name */
 	//get
-	public static String getTeamData(int tid) {
+	public static TeamData getTeamData(int tid) {
 		if(tid > 0) return mapTeamID.get(tid);
 		return null;
 	}
 	
 	//set
-	public static void setTeamData(int tid, String teamName) {
-		if(tid > 0 && teamName != null && teamName.length() > 1) {
-			mapTeamID.put(tid, teamName);
+	public static void setTeamData(int tid, TeamData data) {
+		if(tid > 0 && data != null) {
+			mapTeamID.put(tid, data);
 			serverData.markDirty();
 		}
 	}
@@ -397,7 +410,7 @@ public class ServerProxy extends CommonProxy {
 		return mapShipID;
 	}
 	
-	public static Map<Integer, String> getAllTeamWorldData() {
+	public static Map<Integer, TeamData> getAllTeamWorldData() {
 		return mapTeamID;
 	}
 	
@@ -412,7 +425,7 @@ public class ServerProxy extends CommonProxy {
 			int[] pdata = new int[3];
 			
 			pdata[0] = player.getEntityId();
-			pdata[1] = extProps.getPlayerTeamId();
+			pdata[1] = extProps.getPlayerTeamID();
 			pdata[2] = player.worldObj.provider.dimensionId;
 			
 			//update player data
@@ -468,6 +481,9 @@ public class ServerProxy extends CommonProxy {
 			ship.setShipUID(sid);
 			setShipWorldData(sid, sdata);	//cache in server proxy
 			setNextShipID(++sid);	//next id ++
+			
+			//init ship value for some reason
+			ship.setStateFlag(ID.F.OnSightChase, true);  //enable onSight
 		}
 		
 		serverData.markDirty();

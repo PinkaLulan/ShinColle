@@ -90,7 +90,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	/**EntityFlag: 0:canFloatUp 1:isMarried 2:noFuel 3:canMelee 4:canAmmoLight 5:canAmmoHeavy 
 	 * 6:canAirLight 7:canAirHeavy 8:headTilt(client only) 9:canRingEffect 10:canDrop 11:canFollow
 	 * 12:onSightChase 13:AtkType_Light 14:AtkType_Heavy 15:AtkType_AirLight 16:AtkType_AirHeavy 
-	 * 17:HaveRingEffect 18:AntiAir */
+	 * 17:HaveRingEffect 18:PVPFirst 19:AntiAir 20:AntiSS */
 	protected boolean[] StateFlag;
 	/**BonusPoint: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT */
 	protected byte[] BonusPoint;
@@ -132,8 +132,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		StateFlag = new boolean[] {false, false, true, false, true,
 				                   true, true, true, false, true,
 								   true, false, true, true, true,
-								   true, true, false, false
-								   };
+								   true, true, false, true, false,
+								   false
+								};
 		BonusPoint = new byte[] {0, 0, 0, 0, 0, 0};
 		TypeModify = new float[] {1F, 1F, 1F, 1F, 1F, 1F};
 		ModelPos = new float[] {0F, 0F, 0F, 50F};
@@ -284,17 +285,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		//passive target AI
 		if(par1 == 0) {
 			this.targetTasks.addTask(1, new EntityAIShipRevengeTarget(this));
-//			this.targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this));
-//			this.targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this));
-//			this.targetTasks.addTask(3, new EntityAIHurtByTarget(this, false));
 		}
 		//active target AI
 		else {
 			this.targetTasks.addTask(1, new EntityAIShipRevengeTarget(this));
-//			this.targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this));
-//			this.targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this));
-//			this.targetTasks.addTask(3, new EntityAIHurtByTarget(this, false));
-			this.targetTasks.addTask(4, new EntityAIShipRangeTarget(this, 0.4F, 1));
+			this.targetTasks.addTask(5, new EntityAIShipRangeTarget(this, 0.4F, 1, 0, Entity.class));
 		}
 		
 		//DEBUG

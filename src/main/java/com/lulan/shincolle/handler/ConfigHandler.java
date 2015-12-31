@@ -24,9 +24,11 @@ public class ConfigHandler {
 	public static boolean friendlyFire = true;
 	public static boolean useWakamoto = true;
 	public static boolean alwaysShowTeam = false;
-	public static int bossCooldown = 4800;
+	public static boolean polyAsMn = true;
 	public static float dropGrudge = 1.0F;
 	public static int closeGUIDist = 64;
+	public static int bossCooldown = 4800;
+	public static int allyCooldown = 12000;
 	
 	//DESK
 	public static int radarUpdate = 128;	//radar update interval (ticks)
@@ -62,6 +64,9 @@ public class ConfigHandler {
 		//是否顯示custom name tag
 		alwaysShowTeam = config.getBoolean("Always_Show_Team", "general", false, "Always show team circles");
 		
+		//ally改動cd (ticks)
+		allyCooldown = config.getInt("Ally_Cooldown", "general", 12000, 20, 1728000, "Change ally state cooldown");
+		
 		//boss生成cd設定 (ticks)
 		bossCooldown = config.getInt("Boss_Cooldown", "general", 4800, 20, 1728000, "Boss spawn cooldown");
 		
@@ -79,7 +84,10 @@ public class ConfigHandler {
 		
 		//是否開啟簡單模式 (spam debug/info message)
 		friendlyFire = config.getBoolean("Friendly_Fire", "general", true, "false: disable damage done by player (except owner)");
-				
+			
+		//是否把多金屬當成錳礦
+		polyAsMn = config.getBoolean("Polymetal_as_Mn", "general", true, "true: Polymetallic Nodules = Manganese Dust, Polymetallic Ore = Manganese Ore");
+		
 		//desk雷達更新間隔
 		radarUpdate = config.getInt("Radar_Update", "desk", 128, 20, 6000, "Radar update interval (ticks) in Admiral's Desk GUI");
 		

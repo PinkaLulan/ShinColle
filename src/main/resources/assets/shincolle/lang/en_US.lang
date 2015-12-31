@@ -221,7 +221,7 @@ gui.shincolle:book.chap1.title13=Model 21 Zero Fighter (1/48)
 gui.shincolle:book.chap1.text13d0=<br><br><br><br><br><br><br><br><br>§d§nModel 21 Zero Fighter§r§0<br><br>Scale:  1/48<br><br>Made From:  Polymetal<br><br>Serving Size:  2500g<br><br>Serving Per Container: 1<br><br>Shelf Life:  §k100§r YR
 gui.shincolle:book.chap1.text13d1=This model aircraft complies with Abyssal Edible Toys Standard, it's ZERO CALORIES, FUN and TASTY!<br><br>This product contains rich polymetal, helps digestion and absorption of heavy metal, effectively promotes children's growth.<br><br><br><br><br>**AVOID SUNSHINE, HIGH TEMPERATURE AND HIGH OXYGEN.
 gui.shincolle:book.chap1.title14=Abyssal Adrmiral's Desk
-gui.shincolle:book.chap1.text14d0=<br><br><br><br><br><br><br><br><br>This stable and durable §d§nAbyssal Adrmiral's Desk§r§0 is made of obsidian. In addition to deal with the official business, it can also block the gunfire of angry secretary ship.<br><br>**Please ask the secretary ship before purchasing the furniture.
+gui.shincolle:book.chap1.text14d0=<br><br><br><br><br><br><br><br><br>This stable and durable §d§nAbyssal Adrmiral's Desk§r§0 is made of obsidian. In addition to deal with the official business, it can also block the gunfire from angry secretary ship.<br><br>**Please ask the secretary ship before purchasing the furniture.
 gui.shincolle:book.chap1.text14d1=§9Radar§0:<br>Show a list of nearby owned ships, click ship on the list to carry out other action.<br><br>§9Abyssal Logbook§0:<br>Items, blocks and ships introduction.<br><br>§9Faction§0:<br>Create or add team with PVP mode.<br><br>§9Target List§0:<br>Browse attack target list.
 
 # GUI: Book Text Chap 2
@@ -239,6 +239,10 @@ gui.shincolle:book.chap5.title=Enemy List
 # GUI: Book Text Chap 6
 gui.shincolle:book.chap6.title=Equipments List
 
+# GUI: General
+gui.shincolle:general.ok=OK
+gui.shincolle:general.cancel=Cancel
+
 # GUI: Radar Screen
 gui.shincolle:radar.position=C
 gui.shincolle:radar.height=H
@@ -254,6 +258,12 @@ gui.shincolle:team.create=Create
 gui.shincolle:team.rename=Rename
 gui.shincolle:team.join=Join
 gui.shincolle:team.leave=Leave
+gui.shincolle:team.ally=Ally
+gui.shincolle:team.break=Break
+gui.shincolle:team.allied=Allied
+gui.shincolle:team.hostile=Hostile
+gui.shincolle:team.belong=Belong
+gui.shincolle:team.teamid=Fleet ID
 
 # GUI: Ship Inventory: Top
 gui.shincolle:level=Level
@@ -293,6 +303,9 @@ gui.shincolle:fleehp=Flee HP%%
 gui.shincolle:auraeffect=Aura Effect
 gui.shincolle:targetAI=Passive?
 gui.shincolle:onsightAI=Onsight?
+gui.shincolle:ai.PVP mode?
+gui.shincolle:ai.aa=Anti-Air?
+gui.shincolle:ai.asm=Anti-SS?
 
 # GUI: Shipyard
 gui.shincolle:nomaterial=Not Enough Materials

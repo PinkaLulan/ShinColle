@@ -239,6 +239,10 @@ gui.shincolle:book.chap5.title=敵方船艦列表
 # GUI: Book Text Chap 6
 gui.shincolle:book.chap6.title=裝備列表
 
+# GUI: General
+gui.shincolle:general.ok=確定
+gui.shincolle:general.cancel=取消
+
 # GUI: Radar Screen
 gui.shincolle:radar.position=座標
 gui.shincolle:radar.height=高度
@@ -246,14 +250,20 @@ gui.shincolle:radar.gui=聯繫
 gui.shincolle:radar.recall=召回
 
 # GUI: Target List
-gui.shincolle:target.remove=移  除
+gui.shincolle:target.remove=移除
 
 # GUI: Team List
 gui.shincolle:team.name=艦隊名稱:
-gui.shincolle:team.create=建  立
-gui.shincolle:team.rename=更  名
-gui.shincolle:team.join=加  入
-gui.shincolle:team.leave=離  開
+gui.shincolle:team.create=建立
+gui.shincolle:team.rename=更名
+gui.shincolle:team.join=加入
+gui.shincolle:team.leave=離開
+gui.shincolle:team.ally=同盟
+gui.shincolle:team.break=解盟
+gui.shincolle:team.allied=盟友
+gui.shincolle:team.hostile=敵對
+gui.shincolle:team.belong=所屬
+gui.shincolle:team.teamid=艦隊編號
 
 # GUI: Ship Inventory: Top
 gui.shincolle:level=等級
@@ -293,6 +303,9 @@ gui.shincolle:fleehp=逃跑血量(%%)
 gui.shincolle:auraeffect=主人強化效果
 gui.shincolle:targetAI=被動攻擊?
 gui.shincolle:onsightAI=視線內才追擊?
+gui.shincolle:ai.PVP模式?
+gui.shincolle:ai.aa=優先防空?
+gui.shincolle:ai.asm=優先反潛?
 
 # GUI: Shipyard
 gui.shincolle:nomaterial=資材不足

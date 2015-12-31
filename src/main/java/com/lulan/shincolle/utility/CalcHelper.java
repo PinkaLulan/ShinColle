@@ -191,5 +191,37 @@ public class CalcHelper {
     	return result;
     }
     
+    /** int[] to List<Integer> */
+    public static List<Integer> intArrayToList(int[] iarray) {
+    	if(iarray != null && iarray.length > 0) {
+    		List<Integer> ilist = new ArrayList();
+    		
+    		for(int i = 0; i < iarray.length; ++i) {
+    			ilist.add(iarray[i]);
+    		}
+    		
+    		return ilist;
+    	}
+    	
+    	return null;
+    }
+    
+    /** List<Integer> to int[] */
+    public static int[] intListToArray(List<Integer> ilist) {
+    	if(ilist != null  && !ilist.isEmpty()) {
+    		int[] iarray = new int[ilist.size()];
+    		
+    		for(int i = 0; i < ilist.size(); ++i) {
+    			iarray[i] = ilist.get(i);
+    		}
+    		
+    		return iarray;
+    	}
+    	
+    	return null;
+    }
+    
+    
+    
     
 }

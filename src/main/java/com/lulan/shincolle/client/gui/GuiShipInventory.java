@@ -51,11 +51,11 @@ public class GuiShipInventory extends GuiContainer {
 	               Kills, Exp, Grudge, Owner, AmmoLight, AmmoHeavy, AirLight, AirHeavy, TarAI,
 	               overText, strCri, strDhit, strThit, strMissMin, strMissMax, strMissAir,
 	               marriage, followMin, followMax, fleeHP, followMinValue, followMaxValue,
-	               fleeHPValue, barPosValue, auraEffect, strOnSight, strAA, strASM;
+	               fleeHPValue, barPosValue, auraEffect, strOnSight, strPVP, strAA, strASM;
 	private int hpCurrent, hpMax, color, showPage, showPageAI, pageIndicator, pageIndicatorAI, showAttack,
 				fMinPos, fMaxPos, fleeHPPos, barPos, mousePressBar;
 	private boolean switchMelee, switchLight, switchHeavy, switchAirLight, switchAirHeavy,
-				switchTarAI, mousePress, switchAura, switchOnSight;
+				switchTarAI, mousePress, switchAura, switchOnSight, switchPVP, switchAA, switchASM;
 
 	//ship type icon array
 	private static final short[][] ICON_SHIPTYPE = {
@@ -236,6 +236,9 @@ public class GuiShipInventory extends GuiContainer {
             	this.switchTarAI = false;
             }
     		this.switchOnSight = this.entity.getStateFlag(ID.F.OnSightChase);
+    		this.switchPVP = this.entity.getStateFlag(ID.F.PVPFirst);
+    		this.switchAA = this.entity.getStateFlag(ID.F.AntiAir);
+    		this.switchASM = this.entity.getStateFlag(ID.F.AntiSS);
     		
     		//draw button
             if(this.switchTarAI) {
@@ -249,6 +252,24 @@ public class GuiShipInventory extends GuiContainer {
             }
             else {
             	drawTexturedModalRect(guiLeft+174, guiTop+144, 11, 214, 11, 11);
+            }
+            if(this.switchPVP) {
+            	drawTexturedModalRect(guiLeft+174, guiTop+156, 0, 214, 11, 11);
+            }
+            else {
+            	drawTexturedModalRect(guiLeft+174, guiTop+156, 11, 214, 11, 11);
+            }
+            if(this.switchAA) {
+            	drawTexturedModalRect(guiLeft+174, guiTop+168, 0, 214, 11, 11);
+            }
+            else {
+            	drawTexturedModalRect(guiLeft+174, guiTop+168, 11, 214, 11, 11);
+            }
+            if(this.switchASM) {
+            	drawTexturedModalRect(guiLeft+174, guiTop+180, 0, 214, 11, 11);
+            }
+            else {
+            	drawTexturedModalRect(guiLeft+174, guiTop+180, 11, 214, 11, 11);
             }
   
     		break;
@@ -607,12 +628,15 @@ public class GuiShipInventory extends GuiContainer {
 			//draw string
 			TarAI = I18n.format("gui.shincolle:targetAI");
 			strOnSight = I18n.format("gui.shincolle:onsightAI");
+			strPVP = I18n.format("gui.shincolle:ai.PVP");
+			strAA = I18n.format("gui.shincolle:ai.aa");
+			strASM = I18n.format("gui.shincolle:ai.asm");
 			
 			this.fontRendererObj.drawString(TarAI, 187, 134, GuiHelper.pickColor(5));
 			this.fontRendererObj.drawString(strOnSight, 187, 146, GuiHelper.pickColor(5));
-//			this.fontRendererObj.drawString(canHATK, 187, 158, GuiHelper.pickColor(5));
-//			this.fontRendererObj.drawString(canALATK, 187, 170, GuiHelper.pickColor(5));
-//			this.fontRendererObj.drawString(canAHATK, 187, 182, GuiHelper.pickColor(5));
+			this.fontRendererObj.drawString(strPVP, 187, 158, GuiHelper.pickColor(5));
+			this.fontRendererObj.drawString(strAA, 187, 170, GuiHelper.pickColor(5));
+			this.fontRendererObj.drawString(strASM, 187, 182, GuiHelper.pickColor(5));
 //			this.fontRendererObj.drawString(auraEffect, 187, 194, GuiHelper.pickColor(5));
 			
 			}
@@ -731,17 +755,29 @@ public class GuiShipInventory extends GuiContainer {
         		this.switchHeavy = this.entity.getStateFlag(ID.F.UseAmmoHeavy);
         		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_AmmoHeavy, getInverseInt(this.switchHeavy)));
         	}
+        	else if(this.showPageAI == 3) {	//page 3: change PVP first AI
+        		this.switchPVP = this.entity.getStateFlag(ID.F.PVPFirst);
+        		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_PVPAI, getInverseInt(this.switchPVP)));
+        	}
         	break;
         case 6:	//AI operation 3
         	if(this.showPageAI == 1) {	//page 1: use air light button
         		this.switchAirLight = this.entity.getStateFlag(ID.F.UseAirLight);
         		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_AirLight, getInverseInt(this.switchAirLight)));
         	}
+        	else if(this.showPageAI == 3) {	//page 3: change onsight AI
+        		this.switchAA = this.entity.getStateFlag(ID.F.AntiAir);
+        		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_AAAI, getInverseInt(this.switchAA)));
+        	}
         	break;
         case 7:	//AI operation 4
         	if(this.showPageAI == 1) {	//page 1: use air heavy button
         		this.switchAirHeavy = this.entity.getStateFlag(ID.F.UseAirHeavy);
         		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_AirHeavy, getInverseInt(this.switchAirHeavy)));
+        	}
+        	else if(this.showPageAI == 3) {	//page 3: change onsight AI
+        		this.switchASM = this.entity.getStateFlag(ID.F.AntiSS);
+        		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_ASMAI, getInverseInt(this.switchASM)));
         	}
         	break;
         case 8:	//AI operation 5
@@ -786,7 +822,7 @@ public class GuiShipInventory extends GuiContainer {
 	public void updateScreen() {
 		super.updateScreen();
 		
-		if(this.entity == null || this.entity.isDead || this.entity.getDistanceToEntity(this.mc.thePlayer) > ConfigHandler.closeGUIDist) {
+		if(this.entity == null || !this.entity.isEntityAlive() || this.entity.getDistanceToEntity(this.mc.thePlayer) > ConfigHandler.closeGUIDist) {
             this.mc.thePlayer.closeScreen();
         }
 	}

@@ -70,7 +70,13 @@ public class FML_COMMON_EventHandler {
 				int spawnX, spawnY, spawnZ = 0;
 				BiomeGenBase biome = event.player.worldObj.getBiomeGenForCoords(blockX, blockZ);	
 				
-				//cooldown--
+				//ally cooldown--
+				int allycd = extProps.getAllyCooldown();
+				if(allycd > 0) {
+					extProps.setAllyCooldown(--allycd);
+				}
+				
+				//boss cooldown--
 				if((BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.WATER) || 
 					BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.BEACH) ||
 					BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.RIVER) ||

@@ -1,19 +1,17 @@
 package com.lulan.shincolle.reference;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.lulan.shincolle.init.ModBlocks;
-import com.lulan.shincolle.init.ModItems;
-
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+
+import com.lulan.shincolle.init.ModBlocks;
+import com.lulan.shincolle.init.ModItems;
 
 /** HARD CODED VALUES
  *
@@ -26,6 +24,23 @@ public class Values {
 		public static final float RAD_MUL = 0.0174532925F;
 	}
 	
+	//color code
+	public static class Color {
+		//normal
+		public static final int BLACK = 0;
+		public static final int CYAN = 65535;
+		public static final int GRAY = 3158064;
+		public static final int ORANGE = 16753920;
+		public static final int PINK = 15515845;
+		public static final int RED = 16724787;
+		public static final int WHITE = 16777215;
+		public static final int YELLOW = 16776960;
+		//dark
+		public static final int DARK_RED = 11141120;
+		//light
+		public static final int LIGHT_GRAY = 11184810;
+		public static final int LIGHT_RED = 16724787;
+	}
 	
 	/**SHIP ATTRIBUTES MAP
 	 * index by ID.ShipAttr

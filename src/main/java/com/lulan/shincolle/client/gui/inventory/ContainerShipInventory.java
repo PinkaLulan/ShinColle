@@ -27,7 +27,7 @@ public class ContainerShipInventory extends Container {
 	private int GuiKills, GuiExpCurrent, GuiNumAmmo, GuiNumAmmoHeavy, GuiNumGrudge, 
 	            GuiNumAirLight, GuiNumAirHeavy, GuiIsMarried,
 	            ButtonMelee, ButtonAmmoLight, ButtonAmmoHeavy, ButtonAirLight, ButtoAirHeavy,
-	            FollowMin, FollowMax, FleeHP, TarAI, AuraEffect, OnSightAI;
+	            FollowMin, FollowMax, FleeHP, TarAI, AuraEffect, OnSightAI, PVPAI, AAAI, ASMAI;
 	private float GuiCri, GuiDhit, GuiThit, GuiMiss;
 	
 	public ContainerShipInventory(InventoryPlayer invPlayer, BasicEntityShip entity1) {
@@ -166,6 +166,9 @@ public class ContainerShipInventory extends Container {
 		crafting.sendProgressBarUpdate(this, 16, this.entity.getStateMinor(ID.M.TargetAI));
 		crafting.sendProgressBarUpdate(this, 17, this.entity.getStateFlagI(ID.F.UseRingEffect));
 		crafting.sendProgressBarUpdate(this, 18, this.entity.getStateFlagI(ID.F.OnSightChase));
+		crafting.sendProgressBarUpdate(this, 19, this.entity.getStateFlagI(ID.F.PVPFirst));
+		crafting.sendProgressBarUpdate(this, 20, this.entity.getStateFlagI(ID.F.AntiAir));
+		crafting.sendProgressBarUpdate(this, 21, this.entity.getStateFlagI(ID.F.AntiSS));
 	}
 	
 	//偵測數值是否改變, 有改變時發送更新(此為server端偵測)
@@ -270,6 +273,21 @@ public class ContainerShipInventory extends Container {
                 icrafting.sendProgressBarUpdate(this, 18, getValue);
                 this.OnSightAI = getValue;
             }
+            getValue = this.entity.getStateFlagI(ID.F.PVPFirst);
+            if(this.PVPAI != getValue) {
+                icrafting.sendProgressBarUpdate(this, 19, getValue);
+                this.PVPAI = getValue;
+            }
+            getValue = this.entity.getStateFlagI(ID.F.AntiAir);
+            if(this.AAAI != getValue) {
+                icrafting.sendProgressBarUpdate(this, 20, getValue);
+                this.AAAI = getValue;
+            }
+            getValue = this.entity.getStateFlagI(ID.F.AntiSS);
+            if(this.ASMAI != getValue) {
+                icrafting.sendProgressBarUpdate(this, 21, getValue);
+                this.ASMAI = getValue;
+            }
         }
     }
 	
@@ -328,6 +346,15 @@ public class ContainerShipInventory extends Container {
 			break;
 		case 18:
 			this.entity.setEntityFlagI(ID.F.OnSightChase, updatedValue);
+			break;
+		case 19:
+			this.entity.setEntityFlagI(ID.F.PVPFirst, updatedValue);
+			break;
+		case 20:
+			this.entity.setEntityFlagI(ID.F.AntiAir, updatedValue);
+			break;
+		case 21:
+			this.entity.setEntityFlagI(ID.F.AntiSS, updatedValue);
 			break;
 		}
     }

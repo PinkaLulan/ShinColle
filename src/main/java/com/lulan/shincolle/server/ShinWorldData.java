@@ -11,6 +11,8 @@ import net.minecraft.world.WorldSavedData;
 
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.team.TeamData;
+import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
 /**伺服器端資料
@@ -30,7 +32,10 @@ public class ShinWorldData extends WorldSavedData {
 	public static final String TAG_PUID = "pUID";
 	public static final String TAG_PDATA = "pData";
 	public static final String TAG_TUID = "tUID";
-	public static final String TAG_TDATA = "tData";
+	public static final String TAG_TNAME = "tName";
+	public static final String TAG_TLEADER = "tLeader";
+	public static final String TAG_TMEMBER = "tMember";
+	public static final String TAG_TALLY = "tAlly";
 	
 	//data
 	public static NBTTagCompound nbtData;
@@ -59,23 +64,24 @@ public class ShinWorldData extends WorldSavedData {
 	 */
 	@Override
 	public void writeToNBT(NBTTagCompound nbt) {
-		//save common variable
+		/** save common variable */
 		nbt.setInteger(TAG_NEXTPLAYERID, ServerProxy.getNextPlayerID());
 		nbt.setInteger(TAG_NEXTSHIPID, ServerProxy.getNextShipID());
 		nbt.setInteger(TAG_NEXTTEAMID, ServerProxy.getNextTeamID());
 		
-		//save player data:  from playerMap to server save file
+		
+		/** save player data:  from playerMap to server save file */
 		NBTTagList list = new NBTTagList();
 		Iterator iter = ServerProxy.getAllPlayerWorldData().entrySet().iterator();
 		
 		while(iter.hasNext()) {
 		    Map.Entry entry = (Map.Entry) iter.next();
 		    int uid = (Integer) entry.getKey();
-		    int[] data = (int[]) entry.getValue();
+		    int[] data0 = (int[]) entry.getValue();
 		    
 		    NBTTagCompound save = new NBTTagCompound();
 		    save.setInteger(TAG_PUID, uid);
-		    save.setIntArray(TAG_PDATA, data);
+		    save.setIntArray(TAG_PDATA, data0);
 		    
 		    //save target class list
 		    List<String> strList = ServerProxy.getPlayerTargetClassList(uid);
@@ -92,23 +98,36 @@ public class ShinWorldData extends WorldSavedData {
 		}
 		nbt.setTag(TAG_PLAYERDATA, list);	//將list加入到nbt中
 		
-		//save team data:  from team map to server save file
+		
+		/** save team data */
 		list = new NBTTagList();
 		iter = ServerProxy.getAllTeamWorldData().entrySet().iterator();
 		
 		while(iter.hasNext()) {
 		    Map.Entry entry = (Map.Entry) iter.next();
 		    int uid = (Integer) entry.getKey();
-		    String data = (String) entry.getValue();
+		    TeamData data = (TeamData) entry.getValue();
 		    
 		    NBTTagCompound save = new NBTTagCompound();
 		    save.setInteger(TAG_TUID, uid);
-		    save.setString(TAG_TDATA, data);
+		    save.setInteger(TAG_TLEADER, data.getTeamLeaderUID());
+		    save.setString(TAG_TNAME, data.getTeamName());
+		    saveIntListToNBT(save, TAG_TMEMBER, data.getTeamMemberUID());  //save team member list
+		    saveIntListToNBT(save, TAG_TALLY, data.getTeamAlly());  //save team ally list
 
 		    list.appendTag(save);	//將save加入到list中, 不檢查是否有重複的tag, 而是新增一個tag
 		}
 		nbt.setTag(TAG_TEAMDATA, list);	//將list加入到nbt中
 		
 	}//end write nbt
+	
+	private static void saveIntListToNBT(NBTTagCompound save, String tagName, List<Integer> ilist) {
+		if(ilist != null) {
+	    	int[] tMember = CalcHelper.intListToArray(ilist);
+	    	save.setIntArray(tagName, tMember);
+	    }
+	}
+	
+	
 
 }

@@ -80,8 +80,6 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		nbtExt_add1.setFloat("ATK_H", this.entity.getStateFinal(ID.ATK_H));
 		nbtExt_add1.setFloat("ATK_AL", this.entity.getStateFinal(ID.ATK_AL));
 		nbtExt_add1.setFloat("ATK_AH", this.entity.getStateFinal(ID.ATK_AH));
-//		nbtExt_add1.setFloat("ATK_AA", this.entity.getStateFinal(ID.ATK_AH));
-//		nbtExt_add1.setFloat("ATK_ASM", this.entity.getStateFinal(ID.ATK_AH));
 		//save EntityState
 		nbtExt.setTag("Emotion", nbtExt_add2);	
 		nbtExt_add2.setByte("State", this.entity.getStateEmotion(ID.S.State));
@@ -111,6 +109,9 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		nbtExt_add4.setBoolean("CanDrop", this.entity.getStateFlag(ID.F.CanDrop));
 		nbtExt_add4.setBoolean("CanFollow", this.entity.getStateFlag(ID.F.CanFollow));
 		nbtExt_add4.setBoolean("OnSight", this.entity.getStateFlag(ID.F.OnSightChase));
+		nbtExt_add4.setBoolean("PVPFirst", this.entity.getStateFlag(ID.F.PVPFirst));
+		nbtExt_add4.setBoolean("AA", this.entity.getStateFlag(ID.F.AntiAir));
+		nbtExt_add4.setBoolean("ASM", this.entity.getStateFlag(ID.F.AntiSS));
 		//save EntityFlag
 		nbtExt.setTag("Equip", nbtExt_add5);
 		nbtExt_add5.setFloat("Cri", this.entity.getEffectEquip(ID.EF_CRI));
@@ -207,6 +208,9 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		entity.setStateFlag(ID.F.CanDrop, nbt_load.getBoolean("CanDrop"));
 		entity.setStateFlag(ID.F.CanFollow, nbt_load.getBoolean("CanFollow"));
 		entity.setStateFlag(ID.F.OnSightChase, nbt_load.getBoolean("OnSight"));
+		entity.setStateFlag(ID.F.PVPFirst, nbt_load.getBoolean("PVPFirst"));
+		entity.setStateFlag(ID.F.AntiAir, nbt_load.getBoolean("AA"));
+		entity.setStateFlag(ID.F.AntiSS, nbt_load.getBoolean("ASM"));
 		//load effect
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Equip");
 		entity.setEffectEquip(ID.EF_CRI, nbt_load.getFloat("Cri"));

@@ -52,8 +52,8 @@ public class GuiBook {
 	public static int Page0LX = 13;    //left page X pos, no scale = 13
 	public static int Page0RX = 133;   //right page X pos, no scale = 133
 	public static int Page0Y = 48;     //page Y pos, no scale = 48
-	public static int PageTLX = 18;    //left page X pos for text
-	public static int PageTRX = 186;   //right page X pos for text
+	public static int PageTLX = 13;    //left page X pos for text
+	public static int PageTRX = 172;   //right page X pos for text
 	public static int PageTY = 68;     //page Y pos for text
 	public static final int[] PageLimit = new int[] {1,14,0,0,0,0,0};  //max page number
 	
@@ -75,21 +75,21 @@ public class GuiBook {
 		
 		
 		/***********   DEBUG: test page      *********/
-		if(numChap == 1 && numPage == 99) {
-			cont =  Arrays.asList(new int[] {0, 0, 0, 0},
-					new int[] {0, 1, 0, 0},
-					new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
-					new int[] {2, 0, 3, 19, ID.Item.Grudge},
-					new int[] {2, 0, 23, 19, ID.Item.IronIG},
-					new int[] {2, 0, 81, 19, ID.Item.AbyssIG}
-		);}
-		PageWidth = 146; //page width, no scale = 106
+//		if(numChap == 1 && numPage == 99) {
+//			cont =  Arrays.asList(new int[] {0, 0, 0, 0},
+//					new int[] {0, 1, 0, 0},
+//					new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
+//					new int[] {2, 0, 3, 19, ID.Item.Grudge},
+//					new int[] {2, 0, 23, 19, ID.Item.IronIG},
+//					new int[] {2, 0, 81, 19, ID.Item.AbyssIG}
+//		);}
+//		PageWidth = 146; //page width, no scale = 106
 //		Page0LX = 13;    //left page start X pos, no scale = 13
 //		Page0RX = 133;   //right page start X pos, no scale = 133
 //		Page0Y = 48;    //left page start Y pos, no scale = 48
-		PageTLX = 13;    //left page start X pos, no scale = 13
-		PageTRX = 172;   //right page start X pos, no scale = 133
-		PageTY = 68;    //left page start Y pos, no scale = 48
+//		PageTLX = 13;    //left page start X pos, no scale = 13
+//		PageTRX = 172;   //right page start X pos, no scale = 133
+//		PageTY = 68;    //left page start Y pos, no scale = 48
 		
 		
 		

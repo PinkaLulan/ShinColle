@@ -43,7 +43,7 @@ public class S2CGUIPackets implements IMessage {
 	private ExtendPlayerProps props;
 	private BasicEntityShip ship;
 	private World world;
-	private int type, entityID, recvX, recvY, recvZ, value, value2;
+	private int type, entityID, recvX, recvY, recvZ, value, value2, playerUID;
 	private boolean flag;
 	private List data;
 	
@@ -57,6 +57,7 @@ public class S2CGUIPackets implements IMessage {
 		public static final byte FlagInitSID = 5;
 		public static final byte SyncShipList = 6;
 		public static final byte SyncPlayerProp_TargetClass = 7;
+		public static final byte SyncPlayerProp_TeamData = 8;
 	}
 	
 	
@@ -86,8 +87,11 @@ public class S2CGUIPackets implements IMessage {
         
         switch(type) {
         case PID.SyncPlayerProp_TargetClass:
-        	int uid = props.getPlayerUID();
-        	this.data = ServerProxy.getPlayerTargetClassList(uid);
+        	this.playerUID = props.getPlayerUID();
+        	this.data = ServerProxy.getPlayerTargetClassList(this.playerUID);
+        	break;
+        case PID.SyncPlayerProp_TeamData:
+        	this.playerUID = props.getPlayerUID();
         	break;
         }
     }
@@ -205,7 +209,6 @@ public class S2CGUIPackets implements IMessage {
 				
 				//player uid
 				propValues[2] = buf.readInt();	//player uid
-				propValues[3] = buf.readInt();	//player team id
 				
 				//ship team
 				teamID = buf.readInt();
@@ -363,12 +366,11 @@ public class S2CGUIPackets implements IMessage {
 				
 				//player uid
 				buf.writeInt(props.getPlayerUID());
-				buf.writeInt(props.getPlayerTeamId());
 				
-				//team id
+				//ship team id
 				buf.writeInt(props.getTeamId());
 				
-				//team list
+				//ship team list
 				for(int i = 0; i < 6; i++) {
 					//get entity id
 					if(props.getEntityOfCurrentTeam(i) != null) {
@@ -430,6 +432,14 @@ public class S2CGUIPackets implements IMessage {
 				else {
 					buf.writeInt(-1);
 				}
+			}
+			break;
+		case PID.SyncPlayerProp_TeamData:  //sync all team data to client
+			{
+				buf.writeByte(this.type);
+				buf.writeInt(this.playerUID);
+				
+				//TODO send team map and allyCD
 			}
 			break;
 		}

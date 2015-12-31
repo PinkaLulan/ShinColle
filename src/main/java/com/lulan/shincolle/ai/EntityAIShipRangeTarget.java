@@ -11,15 +11,22 @@ import net.minecraft.entity.player.EntityPlayerMP;
 
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.IShipAttackBase;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 
 
 /**GET TARGET WITHIN SPECIFIC RANGE
- * mode: 
- * 0:target between range1 and range2 only (只打外圈)
- * 1:target < range1 => < range2 (先打內圈, 再打外圈)
- * 2:target between range1 and range2 => < range1 (先打外圈, 再打內圈)
+ * 
+ * range mode: 
+ * 0: target between range1 and range2 only (只打外圈)
+ * 1: target < range1 => < range2 (先打內圈, 再打外圈)
+ * 2: target between range1 and range2 => < range1 (先打外圈, 再打內圈)
+ * 3: target < range1 only (只打內圈)
+ * 
+ * target mode:
+ * 0: attack all target
+ * 1: pvp first (attack BasicEntityShip first)
+ * 2: anti air (attack air entity first)
+ * 3: anti subm (attack subm or invisible target first)
  * 
  * @parm host, range proportion, mode
  */
@@ -33,16 +40,20 @@ public class EntityAIShipRangeTarget extends EntityAIBase {
     protected Entity targetEntity;
     protected int range1;
     protected int range2;
+    protected int rangeMode;
     protected int targetMode;
     protected float rangeMod;
     
 
     //將maxRange 乘上一個比例當作range1
-    public EntityAIShipRangeTarget(IShipAttackBase host, float rangeMod, int mode) {
+    public EntityAIShipRangeTarget(IShipAttackBase host, float rangeMod, int rangeMode, int targetMode, Class targetClass) {
     	this.setMutexBits(1);
     	this.host = host;
     	this.host2 = (EntityLiving) host;
-    	this.targetClass = Entity.class;
+    	
+        //攻擊類型指定
+        this.targetMode = targetMode;
+        this.targetClass = targetClass;
         this.targetSorter = new TargetHelper.Sorter(host2);
         
         if(host instanceof BasicEntityShipHostile) {
@@ -56,7 +67,7 @@ public class EntityAIShipRangeTarget extends EntityAIBase {
         this.rangeMod = rangeMod;
         this.range2 = (int)this.host.getAttackRange();
         this.range1 = (int)(this.rangeMod * this.range2);
-        this.targetMode = mode;
+        this.rangeMode = rangeMode;
         
         //檢查範圍, 使range2 > range1 > 1
         if(this.range1 < 1) {
@@ -98,7 +109,7 @@ public class EntityAIShipRangeTarget extends EntityAIBase {
             Collections.sort(list1, this.targetSorter);
             Collections.sort(list2, this.targetSorter);
             
-            switch(this.targetMode) {
+            switch(this.rangeMode) {
             case 0:  //mode 0:target between range1 and range2 only
             	list2.removeAll(list1);	 //list2排除range1以內的目標
             	if(list2.isEmpty()) {
@@ -152,6 +163,17 @@ public class EntityAIShipRangeTarget extends EntityAIBase {
                 	}
                     return true;
                 }
+            case 3:  //mode 3: target < range1 only
+            	if(list1.isEmpty()) {
+                    return false;
+                }
+                else {
+                	this.targetEntity = (Entity) list1.get(0);
+                	if(list1.size() > 2) {
+                		this.targetEntity = (Entity) list1.get(this.host2.worldObj.rand.nextInt(3));
+                	}             
+                    return true;
+                }
             }
     	}
     	
@@ -161,12 +183,13 @@ public class EntityAIShipRangeTarget extends EntityAIBase {
     @Override
     public void resetTask() {
 //    	LogHelper.info("DEBUG : target AI: reset "+this.host);
+    	if(this.host != null) this.host.setEntityTarget(null);
     }
 
     @Override
     public void startExecuting() {
 //    	LogHelper.info("DEBUG : target AI: "+this.host+"   "+this.targetEntity);
-        this.host.setEntityTarget(this.targetEntity);
+    	if(this.host != null) this.host.setEntityTarget(this.targetEntity);
     }
     
     @Override

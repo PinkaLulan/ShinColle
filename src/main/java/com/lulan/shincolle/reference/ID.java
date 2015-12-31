@@ -16,6 +16,9 @@ public class ID {
 		public static final byte ShipInv_TarAI = 8;
 		public static final byte ShipInv_AuraEffect = 9;
 		public static final byte ShipInv_OnSightAI = 10;
+		public static final byte ShipInv_PVPAI = 11;
+		public static final byte ShipInv_AAAI = 12;
+		public static final byte ShipInv_ASMAI = 13;
 		
 		public static final byte Shipyard_Type = 0;
 		public static final byte Shipyard_InvMode = 1;
@@ -114,7 +117,9 @@ public class ID {
 		public static final byte AtkType_AirLight = 15;
 		public static final byte AtkType_AirHeavy = 16;
 		public static final byte HaveRingEffect = 17;
-		public static final byte AntiAir = 18;
+		public static final byte PVPFirst = 18;
+		public static final byte AntiAir = 19;
+		public static final byte AntiSS = 20;
 	}
 	
 	/**GUI ID*/

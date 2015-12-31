@@ -63,12 +63,12 @@ public class GuiHelper {
 		  {243,46,256,59},  {243,60,256,71},  {243,72,256,82},
 		 //6:chap 4          7:chap 5          8:chap 6
 		  {243,83,256,96},  {243,97,256,109}, {243,110,256,121}},
-		 //0:join team  	 1:team slot 0     2:team slot 1		//team
+		 //0:left top   	 1:team slot 0     2:team slot 1		//team
 		 {{7,158,55,170},   {140,23,252,54},  {140,55,252,86},
 		 //3:team slot 2     4:team slot 3     5:team slot 4
 		  {140,87,252,118}, {140,119,252,150},{140,151,252,187},
-		 //6:leave team      7:create team     8:rename team
-		  {7,172,55,184},   {58,158,106,170}, {58,172,106,184}},
+		 //6:left bottom     7:right top       8:right bottom
+		  {7,172,55,184},   {86,158,134,170}, {86,172,135,184}},
 		 //0:target remove	 1:slot 0          2:slot 1				//target
 		 {{7,158,55,170},   {140,23,252,37},  {140,38,252,49},
 		 //3:slot 2	         4:slot 3          5:slot 4  

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
@@ -18,9 +19,11 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -34,6 +37,7 @@ import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.reference.Values;
+import com.lulan.shincolle.team.TeamData;
 import com.lulan.shincolle.tileentity.TileEntityDesk;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
@@ -60,7 +64,11 @@ public class GuiDesk extends GuiContainer {
 	private TileEntityDesk tile;
 	private int xClick, yClick, xMouse, yMouse;
 	private int tickGUI, guiFunc;
-	private int[] listNum, listClicked; //list var: 0:radar 1:team 2:target
+	private int[] listNum, listClicked; //list var: 0:radar 1:team 2:target 3:teamAlly
+	private static final int LISTCLICK_RADAR = 0;
+	private static final int LISTCLICK_TEAM = 1;
+	private static final int LISTCLICK_TARGET = 2;
+	private static final int LISTCLICK_ALLY = 3;
 	private String errorMsg;
 	
 	//player data
@@ -76,7 +84,12 @@ public class GuiDesk extends GuiContainer {
 	private int book_pageNum;
 	
 	//team
-	private List<String> teamList;		//team list
+	private int teamState;				//team operation state
+	private GuiTextField textField;
+	private static final int TEAMSTATE_MAIN = 0;
+	private static final int TEAMSTATE_CREATE = 1;
+	private static final int TEAMSTATE_ALLY = 2;
+	private static final int TEAMSTATE_RENAME = 3;
 	
 	//target list
 	Entity targetEntity = null;			//entity for model display
@@ -117,27 +130,48 @@ public class GuiDesk extends GuiContainer {
 		extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 		
 		//list var: 0:radar 1:team 2:target
-		this.listNum = new int[] {0, 0, 0};
-		this.listClicked = new int[] {-1, -1, -1};
+		this.listNum = new int[] {0, 0, 0, 0};
+		this.listClicked = new int[] {-1, -1, -1, -1};
 		
 		//radar
 		this.shipList = new ArrayList();
 		
 		//team
-		this.teamList = new ArrayList();
+		this.teamState = 0;
 		
 		//target
 		this.tarList = new ArrayList();
+	}
+	
+	@Override
+	public void initGui() {
+		super.initGui();
+		
+		//add text input field
+        Keyboard.enableRepeatEvents(true);
+        int i = (this.width - this.xSize) / 2;
+        int j = (this.height - this.ySize) / 2;
+        this.textField = new GuiTextField(this.fontRendererObj, i + 62, j + 24, 103, 12);
+        this.textField.setTextColor(-1);					//點選文字框時文字顏色
+        this.textField.setDisabledTextColour(-1);			//無點選文字框時文字顏色
+        this.textField.setEnableBackgroundDrawing(false);	//畫出文字框背景
+        this.textField.setMaxStringLength(40);				//文字輸入最大長度
 	}
 	
 	//get new mouseX,Y and redraw gui
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float f) {
 		super.drawScreen(mouseX, mouseY, f);
+		
+		//update GUI var
 		xMouse = mouseX;
 		yMouse = mouseY;
-		
 		tickGUI += 1;
+		
+		//draw GUI text input
+		GL11.glDisable(GL11.GL_LIGHTING);
+        GL11.glDisable(GL11.GL_BLEND);
+        this.textField.drawTextBox();
 	}
 	
 	//draw tooltip
@@ -285,8 +319,8 @@ public class GuiDesk extends GuiContainer {
         	drawTexturedModalRect(guiLeft+9, guiTop+160, 24, texty, 44, 8);
         	
         	//draw ship clicked circle
-        	if(this.listClicked[0] > -1 && this.listClicked[0] < 5) {
-        		int cirY = 25 + this.listClicked[0] * 32;
+        	if(this.listClicked[LISTCLICK_RADAR] > -1 && this.listClicked[LISTCLICK_RADAR] < 5) {
+        		int cirY = 25 + this.listClicked[LISTCLICK_RADAR] * 32;
             	drawTexturedModalRect(guiLeft+142, guiTop+cirY, 68, 192, 108, 31);
         	}
         	
@@ -313,7 +347,7 @@ public class GuiDesk extends GuiContainer {
         	//background
         	Minecraft.getMinecraft().getTextureManager().bindTexture(guiTeam);
         	drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
-
+        	drawTeamPic();
         	break;	//end team
         case 4:		//target
         	//background
@@ -321,8 +355,8 @@ public class GuiDesk extends GuiContainer {
         	drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
         	
         	//draw ship clicked circle
-        	if(this.listClicked[2] > -1 && this.listClicked[2] < 13) {
-        		int cirY = 25 + this.listClicked[2] * 12;
+        	if(this.listClicked[LISTCLICK_TARGET] > -1 && this.listClicked[LISTCLICK_TARGET] < 13) {
+        		int cirY = 25 + this.listClicked[LISTCLICK_TARGET] * 12;
             	drawTexturedModalRect(guiLeft+142, guiTop+cirY, 68, 192, 108, 31);
         	}
         	
@@ -355,15 +389,26 @@ public class GuiDesk extends GuiContainer {
 		switch(this.guiFunc) {
 		case 1:  //radar
 			listSize = this.shipList.size();
-			listID = 0;
+			listID = this.LISTCLICK_RADAR;
 			break;
 		case 3:  //team
-			listSize = this.teamList.size();
-			listID = 1;
+			if(xMouse - guiLeft > 138) {  //right side: team list
+				if(this.extProps.getAllTeamData() != null) {
+					listSize = this.extProps.getAllTeamData().size();
+					listID = this.LISTCLICK_TEAM;
+				}
+			}
+			else {  //left side: ally list
+				if(this.extProps.getPlayerTeamAlly() != null) {
+					listSize = this.extProps.getPlayerTeamAlly().size();
+					listID = this.LISTCLICK_ALLY;
+				}
+			}
+			
 			break;
 		case 4:  //target
 			listSize = this.tarList.size();
-			listID = 2;
+			listID = this.LISTCLICK_TARGET;
 			break;
 		}
 		if(listID < 0) return;
@@ -399,6 +444,10 @@ public class GuiDesk extends GuiContainer {
 	protected void mouseClicked(int posX, int posY, int mouseKey) {
         super.mouseClicked(posX, posY, mouseKey);
         LogHelper.info("DEBUG : click mouse "+mouseKey);
+
+        //set focus or not to textField
+        this.textField.mouseClicked(posX, posY, mouseKey);
+        
         //get click position
         xClick = posX - this.guiLeft;
         yClick = posY - this.guiTop;
@@ -421,7 +470,7 @@ public class GuiDesk extends GuiContainer {
             case 3:
             case 4:
             case 5:
-            	this.listClicked[0] = radarBtn - 1;
+            	this.listClicked[LISTCLICK_RADAR] = radarBtn - 1;
             	break;
             case 6: //open ship GUI
             	this.openShipGUI();
@@ -457,13 +506,67 @@ public class GuiDesk extends GuiContainer {
             }
         	break;  //end book
         case 3:		//team
+        	int teamBtn = GuiHelper.getButton(ID.G.ADMIRALDESK, 3, xClick, yClick);
+        	switch(teamBtn) {
+            case 0:	//left top button
+            	switch(this.teamState) {
+            	case TEAMSTATE_ALLY:
+            		handleClickTeamAlly(0);
+            		break;
+            	case TEAMSTATE_MAIN:
+            		handleClickTeamMain(0);
+        			break;
+            	}
+            	break;
+            case 1: //team slot 0~4
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            	this.listClicked[LISTCLICK_TEAM] = teamBtn - 1;
+            	this.listClicked[LISTCLICK_ALLY] = -1;  //clear ally clicked
+            	break;
+            case 6: //left bottom button
+            	switch(this.teamState) {
+            	case TEAMSTATE_ALLY:
+            		handleClickTeamAlly(1);
+            		break;
+            	case TEAMSTATE_CREATE:
+            		handleClickTeamCreate(1);
+        			break;
+            	case TEAMSTATE_RENAME:
+            		handleClickTeamRename(1);
+        			break;
+            	}
+            	break;
+            case 7: //right top button
+            	switch(this.teamState) {
+            	case TEAMSTATE_MAIN:
+            		handleClickTeamMain(2);
+            		break;
+            	}
+            	break;
+            case 8: //right bottom button
+            	switch(this.teamState) {
+            	case TEAMSTATE_MAIN:
+            		handleClickTeamMain(3);
+            		break;
+            	case TEAMSTATE_CREATE:
+            		handleClickTeamCreate(3);
+        			break;
+            	case TEAMSTATE_RENAME:
+            		handleClickTeamRename(3);
+        			break;
+            	}
+            	break;
+            }
         	break;	//end team
         case 4:     //target
         	int targetBtn = GuiHelper.getButton(ID.G.ADMIRALDESK, 4, xClick, yClick);
         	switch(targetBtn) {
             case 0:	//remove target
             	this.tarList = this.extProps.getTargetClassList();
-            	int clicked = this.listNum[2]+this.listClicked[2];
+            	int clicked = this.listNum[LISTCLICK_TARGET]+this.listClicked[LISTCLICK_TARGET];
             	
             	if(clicked < this.tarList.size()) {
             		String tarstr = this.tarList.get(clicked);
@@ -485,7 +588,7 @@ public class GuiDesk extends GuiContainer {
             case 11:
             case 12:
             case 13:
-            	this.listClicked[2] = targetBtn - 1;
+            	this.listClicked[LISTCLICK_TARGET] = targetBtn - 1;
             	getEntityByClick();
             	break;
             }
@@ -495,10 +598,12 @@ public class GuiDesk extends GuiContainer {
         syncTileEntityC2S();
 	}
 	
-//	@Override
-//	protected void mouseClickMove(int mx, int my, int button, long time) {
-//		super.mouseClickMove(mx, my, button, time);
-//	}
+	@Override
+	protected void mouseClickMove(int mx, int my, int button, long time) {
+		super.mouseClickMove(mx, my, button, time);
+		
+		
+	}
 	
 	private void setDeskFunction(int button) {
 		if(button >= 0) {
@@ -614,7 +719,7 @@ public class GuiDesk extends GuiContainer {
 					}
 					
 					//draw icon by radar zoom level, radar center = [70,89]
-					if(id == this.listNum[0] + this.listClicked[0]) {
+					if(id == this.listNum[LISTCLICK_RADAR] + this.listClicked[LISTCLICK_RADAR]) {
 						drawTexturedModalRect(guiLeft+69+(int)px, guiTop+88+(int)pz, 0, 195, 3, 3);
 					}
 					else {
@@ -636,15 +741,15 @@ public class GuiDesk extends GuiContainer {
 		//draw button text
 		str = I18n.format("gui.shincolle:radar.gui");
 		int strlen = (int) (this.fontRendererObj.getStringWidth(str) * 0.5F);
-		fontRendererObj.drawStringWithShadow(str, 32-strlen, 174, GuiHelper.pickColor(GuiHelper.pickColorName.YELLOW.ordinal()));
+		fontRendererObj.drawStringWithShadow(str, 32-strlen, 174, Values.Color.YELLOW);
 		
 		//draw ship list in radar
-		for(int i = this.listNum[0]; i < shipList.size() && i < this.listNum[0] + 5; ++i) {
+		for(int i = this.listNum[LISTCLICK_RADAR]; i < shipList.size() && i < this.listNum[LISTCLICK_RADAR] + 5; ++i) {
 			//get ship position
 			s = shipList.get(i);
 			if(s != null && s.ship != null) {
 				//draw name
-				fontRendererObj.drawString(s.name, 146, texty, GuiHelper.pickColor(GuiHelper.pickColorName.WHITE.ordinal()));
+				fontRendererObj.drawString(s.name, 146, texty, Values.Color.WHITE);
 				texty += 12;
 				//draw pos
 				str = I18n.format("gui.shincolle:radar.position") + " " + 
@@ -652,50 +757,160 @@ public class GuiDesk extends GuiContainer {
 					  MathHelper.ceiling_double_int(s.ship.posZ) + "  " +
 					  I18n.format("gui.shincolle:radar.height") + " " +
 					  (int)(s.ship.posY);
-				fontRendererObj.drawString(str, 146, texty, GuiHelper.pickColor(GuiHelper.pickColorName.YELLOW.ordinal()));
+				fontRendererObj.drawString(str, 146, texty, Values.Color.YELLOW);
 				texty += 20;
 			}
 		}
 	}
 	
 	//draw team text
+	private void drawTeamPic() {
+		//draw team select circle
+    	if(this.listClicked[LISTCLICK_TEAM] > -1 && this.listClicked[LISTCLICK_TEAM] < 5) {
+    		int cirY = 25 + this.listClicked[LISTCLICK_TEAM] * 32;
+        	drawTexturedModalRect(guiLeft+142, guiTop+cirY, 0, 192, 108, 31);
+    	}
+    	
+//    	//draw ally select circle
+//    	if(this.listClicked[LISTCLICK_ALLY] > -1 && this.listClicked[LISTCLICK_ALLY] < 5) {
+//    		int cirY = 25 + this.listClicked[LISTCLICK_ALLY] * 32;
+//        	drawTexturedModalRect(guiLeft+142, guiTop+cirY, 0, 192, 108, 31);
+//    	}
+	}
+	
+	//draw team text
 	private void drawTeamText() {
 		//draw button text
-		String str = I18n.format("gui.shincolle:team.join");
-		int strlen = (int) (this.fontRendererObj.getStringWidth(str) * 0.5F);
-		fontRendererObj.drawString(str, 31-strlen, 160, GuiHelper.pickColor(GuiHelper.pickColorName.YELLOW.ordinal()));
+		String strLT = null;
+		String strLB = null;
+		String strRT = null;
+		String strRB = null;
+		int colorLT = Values.Color.WHITE;
+		int colorLB = Values.Color.WHITE;
+		int colorRT = Values.Color.WHITE;
+		int colorRB = Values.Color.WHITE;
 		
-		str = I18n.format("gui.shincolle:team.leave");
-		strlen = (int) (this.fontRendererObj.getStringWidth(str) * 0.5F);
-		fontRendererObj.drawString(str, 31-strlen, 174, GuiHelper.pickColor(GuiHelper.pickColorName.WHITE.ordinal()));
+		//get button string
+		switch(this.teamState) {
+		case TEAMSTATE_ALLY:
+			int clicki = -1;
+			List tlist = null;
+			
+			//clicked team list
+			if(listClicked[LISTCLICK_TEAM] >= 0) {
+				clicki = listClicked[LISTCLICK_TEAM] + this.listNum[LISTCLICK_TEAM];
+				tlist = this.extProps.getAllTeamDataList();
+				
+				//get clicked team id
+				if(tlist != null && tlist.size() > clicki) {
+					TeamData getd = (TeamData) tlist.get(clicki);
+					
+					if(getd != null) {
+						//is ally, show break button
+						if(this.extProps.getPlayerTeamID() != getd.getTeamID() &&
+						   this.extProps.isTeamAlly(getd.getTeamID())) {
+							strLT = I18n.format("gui.shincolle:team.break");
+							colorLT = Values.Color.RED;
+						}
+						//not ally, show ally button
+						else {
+							strLT = I18n.format("gui.shincolle:team.ally");
+							colorLT = Values.Color.CYAN;
+						}
+					}
+				}
+			}
+			//clicked ally list
+			else if(listClicked[LISTCLICK_ALLY] >= 0) {
+				clicki = listClicked[LISTCLICK_ALLY] + this.listNum[LISTCLICK_ALLY];
+				tlist = this.extProps.getPlayerTeamAlly();
+				
+				//has clicked ally
+				if(tlist != null && tlist.size() > clicki) {
+					strLT = I18n.format("gui.shincolle:team.break");
+					colorLT = Values.Color.RED;
+				}
+			}
+			
+			strLB = I18n.format("gui.shincolle:general.ok");
+			colorLB = Values.Color.YELLOW;
+			break;
+		case TEAMSTATE_CREATE:
+		case TEAMSTATE_RENAME:
+			strLB = I18n.format("gui.shincolle:general.ok");
+			colorLB = Values.Color.YELLOW;
+			strRB = I18n.format("gui.shincolle:general.cancel");
+			break;
+		default:  //0: main state
+			if(this.extProps.getPlayerTeamID() > 0) {  //in team
+				strLT = I18n.format("gui.shincolle:team.leave");
+				colorLT = Values.Color.RED;
+				strRT = I18n.format("gui.shincolle:team.ally");
+				colorRT = Values.Color.CYAN;
+				
+				if(this.extProps.isTeamLeader()) {
+					strRB = I18n.format("gui.shincolle:team.rename");
+					colorRB = Values.Color.YELLOW;
+				}
+			}
+			else {  //no team
+				strLT = I18n.format("gui.shincolle:team.join");
+				colorLT = Values.Color.CYAN;
+				strRT = I18n.format("gui.shincolle:team.create");
+				colorRT = Values.Color.YELLOW;
+			}
+			break;
+		}
 		
-		str = I18n.format("gui.shincolle:team.create");
-		strlen = (int) (this.fontRendererObj.getStringWidth(str) * 0.5F);
-		fontRendererObj.drawString(str, 82-strlen, 160, GuiHelper.pickColor(GuiHelper.pickColorName.WHITE.ordinal()));
+		//draw button string
+		int strlen = (int) (this.fontRendererObj.getStringWidth(strLT) * 0.5F);
+		fontRendererObj.drawString(strLT, 31-strlen, 160, colorLT);
+
+		strlen = (int) (this.fontRendererObj.getStringWidth(strLB) * 0.5F);
+		fontRendererObj.drawString(strLB, 31-strlen, 174, colorLB);		
+
+		strlen = (int) (this.fontRendererObj.getStringWidth(strRT) * 0.5F);
+		fontRendererObj.drawString(strRT, 110-strlen, 160, colorRT);
+
+		strlen = (int) (this.fontRendererObj.getStringWidth(strRB) * 0.5F);
+		fontRendererObj.drawString(strRB, 110-strlen, 174, colorRB);		
 		
-		str = I18n.format("gui.shincolle:team.rename");
-		strlen = (int) (this.fontRendererObj.getStringWidth(str) * 0.5F);
-		fontRendererObj.drawString(str, 82-strlen, 174, GuiHelper.pickColor(GuiHelper.pickColorName.WHITE.ordinal()));
+		//draw team list
+		List<TeamData> tlist = this.extProps.getAllTeamDataList();
+		int texty = 28;
 		
-//		//draw team list
-//		this.teamList = this.extProps.getTargetClassList();
-//		int texty = 28;
-//		
-//		for(int i = this.listNum[2]; i < tarList.size() && i < this.listNum[2] + 13; ++i) {
-//			//get ship position
-//			str = tarList.get(i);
-//			if(str != null) {
-//				//draw name
-//				fontRendererObj.drawString(str, 146, texty, GuiHelper.pickColor(GuiHelper.pickColorName.WHITE.ordinal()));
-//				texty += 12;
-//			}
-//		}
+		//draw ship list in radar
+		for(int i = this.listNum[LISTCLICK_TEAM]; i < tlist.size() && i < this.listNum[LISTCLICK_TEAM] + 5; ++i) {
+			//get team data
+			TeamData tdata = tlist.get(i);
+			
+			if(tdata != null) {
+				//draw name
+				fontRendererObj.drawString(tdata.getTeamName(), 146, texty, Values.Color.WHITE);
+				texty += 12;
+				
+				//get ally string
+				String allyInfo = EnumChatFormatting.RED + I18n.format("gui.shincolle:team.hostile");
+				if(this.extProps.getPlayerTeamID() == tdata.getTeamID()) {
+					allyInfo = EnumChatFormatting.WHITE + I18n.format("gui.shincolle:team.belong");
+				}
+				else if(this.extProps.isTeamAlly(tdata.getTeamID())) {
+					allyInfo = EnumChatFormatting.AQUA + I18n.format("gui.shincolle:team.allied");
+				}
+					
+				//draw info
+				String str = EnumChatFormatting.YELLOW + I18n.format("gui.shincolle:team.teamid") +
+							 EnumChatFormatting.WHITE + tdata.getTeamID() +"   "+ allyInfo;
+				fontRendererObj.drawString(str, 146, texty, 0);
+				texty += 20;
+			}
+		}
 	}
 	
 	//get clicked entity by entity simple name
 	private void getEntityByClick() {
 		String tarStr = null;
-		int clicked = this.listClicked[2] + this.listNum[2];
+		int clicked = this.listClicked[LISTCLICK_TARGET] + this.listNum[LISTCLICK_TARGET];
 		
 		//get target simple name
 		if(clicked < this.tarList.size()) {
@@ -759,18 +974,18 @@ public class GuiDesk extends GuiContainer {
 		//draw button text
 		String str = I18n.format("gui.shincolle:target.remove");
 		int strlen = (int) (this.fontRendererObj.getStringWidth(str) * 0.5F);
-		fontRendererObj.drawString(str, 31-strlen, 160, GuiHelper.pickColor(GuiHelper.pickColorName.WHITE.ordinal()));
+		fontRendererObj.drawString(str, 31-strlen, 160, Values.Color.WHITE);
 		
 		//draw target list
 		this.tarList = this.extProps.getTargetClassList();
 		int texty = 28;
 //		LogHelper.info("DEBUG : gui desk: get list "+tarList.size());
-		for(int i = this.listNum[2]; i < tarList.size() && i < this.listNum[2] + 13; ++i) {
+		for(int i = this.listNum[LISTCLICK_TARGET]; i < tarList.size() && i < this.listNum[LISTCLICK_TARGET] + 13; ++i) {
 			//get ship position
 			str = tarList.get(i);
 			if(str != null) {
 				//draw name
-				fontRendererObj.drawString(str, 146, texty, GuiHelper.pickColor(GuiHelper.pickColorName.WHITE.ordinal()));
+				fontRendererObj.drawString(str, 146, texty, Values.Color.WHITE);
 				texty += 12;
 			}
 		}
@@ -778,9 +993,9 @@ public class GuiDesk extends GuiContainer {
 	
 	//open ship GUI
 	private void openShipGUI() {
-		int clickid = this.listNum[0] + this.listClicked[0];
+		int clickid = this.listNum[LISTCLICK_RADAR] + this.listClicked[LISTCLICK_RADAR];
 		
-		if(clickid > -1 && clickid <= this.shipList.size()) {
+		if(clickid > -1 && clickid < this.shipList.size()) {
 			Entity ent = this.shipList.get(clickid).ship;
 			LogHelper.info("DEBUG : guiiii  "+clickid);
 //			if(ent instanceof BasicEntityShip && EntityHelper.checkSameOwner(player, ent)) {
@@ -792,6 +1007,121 @@ public class GuiDesk extends GuiContainer {
 			}
 		}
 	}
+	
+	//按鍵按下時執行此方法, 此方法等同key input event
+	@Override
+	protected void keyTyped(char input, int keyID) {
+        if(this.textField.textboxKeyTyped(input, keyID)) {
+            //TODO get team name string
+        }
+        else {
+            super.keyTyped(input, keyID);
+        }
+    }
+	
+	/** btn: 0:left top, 1:left bottom, 2:right top, 3:right bottom*/
+	private void handleClickTeamAlly(int btn) {
+		switch(btn) {
+		case 0:  //left top btn: ally or break ally
+			int clicki = -1;
+			int getTeamID = 0;
+			boolean isAlly = false;
+			
+			/** get clicked team id */
+			//clicked team list
+			if(listClicked[LISTCLICK_TEAM] >= 0) {
+				clicki = listClicked[LISTCLICK_TEAM] + this.listNum[LISTCLICK_TEAM];
+				
+				List<TeamData> tlist = this.extProps.getAllTeamDataList();
+				
+				if(tlist != null && tlist.size() > clicki) {
+					TeamData getd = tlist.get(clicki);
+					
+					if(getd != null) {
+						//get team id
+						getTeamID = getd.getTeamID();
+						
+						//check is ally
+						if(this.extProps.isTeamAlly(getTeamID)) {
+							isAlly = true;
+						}
+					}
+				}
+			}
+			//clicked ally list
+			else if(listClicked[LISTCLICK_ALLY] >= 0) {
+				clicki = listClicked[LISTCLICK_ALLY] + this.listNum[LISTCLICK_ALLY];
+				
+				List<Integer> tlist = this.extProps.getPlayerTeamAlly();
+				
+				if(tlist != null && tlist.size() > clicki) {
+					//get team id
+					getTeamID = tlist.get(clicki);
+					isAlly = true;
+				}
+			}
+			
+			/** send ally or break packet */
+			//TODO send packet
+			
+			break;
+		case 1:  //left bottom btn: OK
+			//return to main state
+			this.teamState = TEAMSTATE_MAIN;
+			break;
+		}
+	}//end btn in team ally
+	
+	/** btn: 0:left top, 1:left bottom, 2:right top, 3:right bottom*/
+	private void handleClickTeamMain(int btn) {
+		switch(btn) {
+		case 0:  //left top btn: join or leave
+			if(this.extProps.getPlayerTeamID() > 0) {
+				//TODO leave team
+			}
+			else {
+				//TODO join team
+			}
+			break;
+		case 2:  //right top btn: ally page or create team
+			if(this.extProps.getPlayerTeamID() > 0) {
+				this.teamState = TEAMSTATE_ALLY;
+			}
+			else {
+				this.teamState = TEAMSTATE_CREATE;
+			}
+			break;
+		case 3:  //right bottom btn: rename page
+			if(this.extProps.isTeamLeader()) {
+				this.teamState = TEAMSTATE_RENAME;
+			}
+			break;
+		}
+	}//end btn in team main
+	
+	/** btn: 0:left top, 1:left bottom, 2:right top, 3:right bottom*/
+	private void handleClickTeamCreate(int btn) {
+		switch(btn) {
+		case 1:  //left bottom btn: OK
+			//TODO ok
+			break;
+		case 3:  //right bottom btn: cancel
+			this.teamState = TEAMSTATE_MAIN;  //return to main state
+			break;
+		}
+	}//end btn in team create
+	
+	/** btn: 0:left top, 1:left bottom, 2:right top, 3:right bottom*/
+	private void handleClickTeamRename(int btn) {
+		switch(btn) {
+		case 1:  //left bottom btn: OK
+			//TODO ok
+			break;
+		case 3:  //right bottom btn: cancel
+			this.teamState = TEAMSTATE_MAIN;  //return to main state
+			break;
+		}
+	}//end btn in team rename
 
 
 }

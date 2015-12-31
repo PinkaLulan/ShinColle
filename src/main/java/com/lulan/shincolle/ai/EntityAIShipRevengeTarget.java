@@ -1,5 +1,7 @@
 package com.lulan.shincolle.ai;
 
+import net.minecraft.entity.Entity;
+
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.utility.LogHelper;
 
@@ -15,7 +17,7 @@ public class EntityAIShipRevengeTarget extends EntityAIShipRangeTarget {
 
     
     public EntityAIShipRevengeTarget(IShipAttackBase host) {
-        super(host, 0.4F, 1);
+        super(host, 0.4F, 1, 0, Entity.class);
         this.setMutexBits(1);
         
         this.oldRevengeTime = 0;

@@ -394,7 +394,7 @@ public class EntityHelper {
 			}
 		}
 		
-		return -1;
+		return 0;
 	}
 	
 	/** get player UID by entity */
@@ -491,7 +491,6 @@ public class EntityHelper {
 			extProps.setRingActiveI(value[0]);
 			extProps.setMarriageNum(value[1]);
 			extProps.setPlayerUID(value[2]);
-			extProps.setPlayerTeamId(value[3]);
 			
 			//disable fly if non-active
 			if(!extProps.isRingActive() && !player.capabilities.isCreativeMode && extProps.isRingFlying()) {
@@ -600,6 +599,17 @@ public class EntityHelper {
 			case ID.B.ShipInv_OnSightAI:
 				entity.setEntityFlagI(ID.F.OnSightChase, value);
 				break;
+//			case ID.B.ShipInv_PVPAI:
+//				
+//				//TODO
+//				aaa
+//				break;
+//			case ID.B.ShipInv_PVPAI:
+//				aaa
+//				break;
+//			case ID.B.ShipInv_PVPAI:
+//				aaa
+//				break;
 			}
 		}
 		else {

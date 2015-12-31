@@ -3,6 +3,7 @@ package com.lulan.shincolle.init;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.Reference;
 
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -17,8 +18,10 @@ public class ModOres {
 
 	//登錄item到遊戲中 (在pre init階段登錄)
 	public static void oreDictRegister() {
-		//polymetal = manganese ore
-		OreDictionary.registerOre("dustManganese", PolymetalDust);
-		OreDictionary.registerOre("oreManganese", ModBlocks.BlockPolymetalOre);
+		if(ConfigHandler.polyAsMn) {
+			//polymetal = manganese ore
+			OreDictionary.registerOre("dustManganese", PolymetalDust);
+			OreDictionary.registerOre("oreManganese", ModBlocks.BlockPolymetalOre);
+		}
 	}
 }

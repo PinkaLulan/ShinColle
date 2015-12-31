@@ -26,7 +26,6 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
@@ -107,7 +106,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	public void setAITargetList() {
 		this.targetTasks.addTask(1, new EntityAIShipRevengeTarget(this));
 		this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, BasicEntityShip.class, 0, true, false));
-		this.targetTasks.addTask(3, new EntityAIShipRangeTarget(this, 0.4F, 1));
+		this.targetTasks.addTask(3, new EntityAIShipRangeTarget(this, 0.4F, 1, 0, Entity.class));
 	}
 	
 	@Override

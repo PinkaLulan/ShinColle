@@ -212,6 +212,9 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateFlag(ID.F.UseAirHeavy, buf.readBoolean());
 					entity.setStateFlag(ID.F.UseRingEffect, buf.readBoolean());
 					entity.setStateFlag(ID.F.OnSightChase, buf.readBoolean());
+					entity.setStateFlag(ID.F.PVPFirst, buf.readBoolean());
+					entity.setStateFlag(ID.F.AntiAir, buf.readBoolean());
+					entity.setStateFlag(ID.F.AntiSS, buf.readBoolean());
 					
 					entity.setEffectEquip(ID.EF_CRI, buf.readFloat());
 					entity.setEffectEquip(ID.EF_DHIT, buf.readFloat());
@@ -243,6 +246,9 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateFlag(ID.F.UseAirHeavy, buf.readBoolean());
 					entity.setStateFlag(ID.F.UseRingEffect, buf.readBoolean());
 					entity.setStateFlag(ID.F.OnSightChase, buf.readBoolean());
+					entity.setStateFlag(ID.F.PVPFirst, buf.readBoolean());
+					entity.setStateFlag(ID.F.AntiAir, buf.readBoolean());
+					entity.setStateFlag(ID.F.AntiSS, buf.readBoolean());
 				}
 				break;
 			case PID.SyncShip_Minor: //entity minor only
@@ -458,6 +464,9 @@ public class S2CEntitySync implements IMessage {
 				buf.writeBoolean(this.entity.getStateFlag(ID.F.UseAirHeavy));
 				buf.writeBoolean(this.entity.getStateFlag(ID.F.UseRingEffect));
 				buf.writeBoolean(this.entity.getStateFlag(ID.F.OnSightChase));
+				buf.writeBoolean(this.entity.getStateFlag(ID.F.PVPFirst));
+				buf.writeBoolean(this.entity.getStateFlag(ID.F.AntiAir));
+				buf.writeBoolean(this.entity.getStateFlag(ID.F.AntiSS));
 				
 				buf.writeFloat(this.entity.getEffectEquip(ID.EF_CRI));
 				buf.writeFloat(this.entity.getEffectEquip(ID.EF_DHIT));
@@ -493,6 +502,9 @@ public class S2CEntitySync implements IMessage {
 				buf.writeBoolean(this.entity.getStateFlag(ID.F.UseAirHeavy));
 				buf.writeBoolean(this.entity.getStateFlag(ID.F.UseRingEffect));
 				buf.writeBoolean(this.entity.getStateFlag(ID.F.OnSightChase));
+				buf.writeBoolean(this.entity.getStateFlag(ID.F.PVPFirst));
+				buf.writeBoolean(this.entity.getStateFlag(ID.F.AntiAir));
+				buf.writeBoolean(this.entity.getStateFlag(ID.F.AntiSS));
 			}
 			break;
 		case PID.SyncShip_Minor:	//sync minor only
