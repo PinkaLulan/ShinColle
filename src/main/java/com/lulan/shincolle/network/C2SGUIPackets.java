@@ -16,6 +16,7 @@ import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.BasicTileEntity;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.PacketHelper;
 
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
@@ -52,13 +53,22 @@ public class C2SGUIPackets implements IMessage {
 		public static final byte SetTarClass = -12;
 		//tile entity
 		public static final byte TileEntitySync = -11;
+		//desk function
+		public static final byte Desk_Create = -13;
+		public static final byte Desk_Rename = -14;
+		public static final byte Desk_Ally = -15;
+		public static final byte Desk_Break = -16;
+		public static final byte Desk_Ban = -17;
+		public static final byte Desk_Unban = -18;
+		public static final byte Desk_Disband = -19;
 	}
 	
 	
 	public C2SGUIPackets() {}	//必須要有空參數constructor, forge才能使用此class
 	
-	//GUI click: 
-	//type 0: ship entity gui click
+	/** GUI click: 
+	 *  type 0: ship entity gui click
+	 */
 	public C2SGUIPackets(BasicEntityShip entity, int button, int value1) {
         this.entity = entity;
         this.worldID = entity.worldObj.provider.dimensionId;
@@ -67,7 +77,9 @@ public class C2SGUIPackets implements IMessage {
         this.value1 = value1;
     }
 	
-	//type 1: tile entity gui click
+	/** GUI click: 
+	 *  type 0: tile entity gui click
+	 */
 	public C2SGUIPackets(BasicTileEntity tile, int button, int value1, int value2) {
         this.tile = tile;
         this.worldID = tile.getWorldObj().provider.dimensionId;
@@ -77,7 +89,9 @@ public class C2SGUIPackets implements IMessage {
         this.value2 = value2;
     }
 	
-	//tile entity gui click
+	/** GUI click: 
+	 *  type 0: tile entity gui click 2
+	 */
 	public C2SGUIPackets(BasicTileEntity tile, int value1, int[] value3) {
         this.tile = tile;
         this.worldID = tile.getWorldObj().provider.dimensionId;
@@ -87,30 +101,35 @@ public class C2SGUIPackets implements IMessage {
     }
 	
 	/**
-	 * type 3: (1 parm) add team: 0:entity id<br>
-	 * type 4: (2 parm) attack target: 0:meta 1:target id<br>
-	 * type 5: (5 parm) move: 0:meta 1:guard type 2:posX 3:posY 4:posZ<br>
-	 * type 6: (2 parm) set select: 0:meta 1:ship UID<br>
-	 * type 7: (2 parm) set sitting: 0:meta 1:entity id<br>
-	 * type 8: (1 parm) open ship GUI: 0:entity id<br>
-	 * type 9: (1 parm) sync player item: 0:meta<br>
-	 * type 10:(3 parm) guard entity: 0:meta 1:guard type 2:target id<br>
-	 * type 11:(1 parm) clear team: 0:always 0<br>
-	 * type 12:(2 parm) set team id: 0:team id 1:prev currentItem id<br>
-	 * 
+	 * type 0: (1 parm) add team: 0:entity id<br>
+	 * type 1: (2 parm) attack target: 0:meta 1:target id<br>
+	 * type 2: (5 parm) move: 0:meta 1:guard type 2:posX 3:posY 4:posZ<br>
+	 * type 3: (2 parm) set select: 0:meta 1:ship UID<br>
+	 * type 4: (2 parm) set sitting: 0:meta 1:entity id<br>
+	 * type 5: (1 parm) open ship GUI: 0:entity id<br>
+	 * type 6: (1 parm) sync player item: 0:meta<br>
+	 * type 7: (3 parm) guard entity: 0:meta 1:guard type 2:target id<br>
+	 * type 8: (1 parm) clear team: 0:always 0<br>
+	 * type 9: (2 parm) set team id: 0:team id 1:prev currentItem id<br>
+	 * type 10:(1 parm) disband playerTeam: 0:no use<br>
+	 * type 11:(1 parm) add ally: 0:team id<br>
+	 * type 12:(1 parm) break ally: 0:team id<br>
+	 * type 13:(1 parm) add banned team: 0:team id<br>
+	 * type 14:(1 parm) remove banned team: 0:team id<br>
 	 */
 	public C2SGUIPackets(EntityPlayer player, int type, int...parms) {
         this.player = player;
         this.worldID = player.worldObj.provider.dimensionId;
         this.type = type;
         
-        if(parms != null) {
+        if(parms != null && parms.length > 0) {
         	this.value3 = parms.clone();
         }
     }
 	
 	/**
-	 * type 13:(1 parm) add/remove target class: 0:class name
+	 * type 0: add/remove target class: 0:class name
+	 * type 1: desk: create team
 	 * 
 	 */
 	public C2SGUIPackets(EntityPlayer player, int type, String str) {
@@ -425,7 +444,7 @@ public class C2SGUIPackets implements IMessage {
 			{
 				this.entityID = buf.readInt();
 				this.worldID = buf.readInt();
-				this.str = ByteBufUtils.readUTF8String(buf);
+				this.str = PacketHelper.getString(buf);
 				
 				EntityPlayer getEnt = EntityHelper.getEntityPlayerByID(entityID, worldID, false);
 				if(getEnt != null) {
@@ -444,6 +463,82 @@ public class C2SGUIPackets implements IMessage {
 						}
 					}
 				}
+			}
+			break;
+		case PID.Desk_Create:
+		case PID.Desk_Rename:
+			{
+				this.entityID = buf.readInt();
+				this.worldID = buf.readInt();
+				this.str = PacketHelper.getString(buf);
+				
+				EntityPlayer getEnt = EntityHelper.getEntityPlayerByID(entityID, worldID, false);
+				if(getEnt != null) {
+					this.player = getEnt;
+					ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+					
+					if(extProps != null) {
+						int uid = extProps.getPlayerUID();
+						
+						if(uid > 0) {
+							switch(this.type) {
+							case PID.Desk_Create:
+								ServerProxy.teamCreate(this.player, this.str);
+								break;
+							case PID.Desk_Rename:
+								ServerProxy.teamRename(uid, this.str);
+								break;
+							}
+							
+							//sync team data
+							CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps, S2CGUIPackets.PID.SyncPlayerProp_TeamData), (EntityPlayerMP) player);
+						}
+					}
+				}
+			}
+			break;
+		case PID.Desk_Disband:
+		case PID.Desk_Ally:
+		case PID.Desk_Break:
+		case PID.Desk_Ban:
+		case PID.Desk_Unban:
+			{
+				this.entityID = buf.readInt();
+				this.worldID = buf.readInt();
+				this.value1 = buf.readInt();  //team id
+				
+				EntityPlayer getEnt = EntityHelper.getEntityPlayerByID(entityID, worldID, false);
+				if(getEnt != null) {
+					this.player = getEnt;
+					ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+					
+					if(extProps != null) {
+						int uid = extProps.getPlayerUID();
+						
+						if(uid > 0) {
+							switch(type) {
+							case PID.Desk_Disband:
+								ServerProxy.teamDisband(player);
+								break;
+							case PID.Desk_Ally:
+								ServerProxy.teamAddAlly(uid, this.value1);
+								break;
+							case PID.Desk_Break:
+								ServerProxy.teamRemoveAlly(uid, this.value1);
+								break;
+							case PID.Desk_Ban:
+								ServerProxy.teamAddBan(uid, this.value1);
+								break;
+							case PID.Desk_Unban:
+								ServerProxy.teamRemoveBan(uid, this.value1);
+								break;
+							}
+							
+							//sync team data to client
+							CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps, S2CGUIPackets.PID.SyncPlayerProp_TeamData), (EntityPlayerMP) player);
+						}//player UID != null
+					}//extProps != null
+				}//get player
 			}
 			break;
 		}
@@ -484,6 +579,11 @@ public class C2SGUIPackets implements IMessage {
 		case PID.SetShipTeamID:
 		case PID.SetSitting:
 		case PID.SyncPlayerItem:
+		case PID.Desk_Disband:
+		case PID.Desk_Ally:
+		case PID.Desk_Break:
+		case PID.Desk_Ban:
+		case PID.Desk_Unban:
 			{
 				buf.writeByte(this.type);
 				buf.writeInt(this.player.getEntityId());
@@ -509,11 +609,15 @@ public class C2SGUIPackets implements IMessage {
 			}
 			break;
 		case PID.SetTarClass:
+		case PID.Desk_Create:
+		case PID.Desk_Rename:
 			{
 				buf.writeByte(this.type);
 				buf.writeInt(this.player.getEntityId());
 				buf.writeInt(this.worldID);
-				ByteBufUtils.writeUTF8String(buf, str);
+
+				//send string
+				PacketHelper.sendString(buf, this.str);
 			}
 			break;
 		}

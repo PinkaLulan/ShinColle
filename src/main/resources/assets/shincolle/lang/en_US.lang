@@ -256,11 +256,15 @@ gui.shincolle:target.remove=Remove
 gui.shincolle:team.name=Fleet Name:
 gui.shincolle:team.create=Create
 gui.shincolle:team.rename=Rename
-gui.shincolle:team.join=Join
-gui.shincolle:team.leave=Leave
+gui.shincolle:team.disband=Disband
+gui.shincolle:team.allylist=Ally
 gui.shincolle:team.ally=Ally
 gui.shincolle:team.break=Break
+gui.shincolle:team.banlist=Battle
+gui.shincolle:team.ban=Battle
+gui.shincolle:team.unban=Truce
 gui.shincolle:team.allied=Allied
+gui.shincolle:team.neutral=Neutral
 gui.shincolle:team.hostile=Hostile
 gui.shincolle:team.belong=Belong
 gui.shincolle:team.teamid=Fleet ID
@@ -303,7 +307,7 @@ gui.shincolle:fleehp=Flee HP%%
 gui.shincolle:auraeffect=Aura Effect
 gui.shincolle:targetAI=Passive?
 gui.shincolle:onsightAI=Onsight?
-gui.shincolle:ai.PVP mode?
+gui.shincolle:ai.pvp=PVP mode?
 gui.shincolle:ai.aa=Anti-Air?
 gui.shincolle:ai.asm=Anti-SS?
 

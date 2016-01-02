@@ -3,8 +3,11 @@ package com.lulan.shincolle.network;
 import io.netty.buffer.ByteBuf;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -18,12 +21,14 @@ import com.lulan.shincolle.entity.renderentity.EntityRenderVortex;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.team.TeamData;
 import com.lulan.shincolle.tileentity.BasicTileEntity;
 import com.lulan.shincolle.tileentity.TileEntityDesk;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
+import com.lulan.shincolle.utility.PacketHelper;
 
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
@@ -43,9 +48,10 @@ public class S2CGUIPackets implements IMessage {
 	private ExtendPlayerProps props;
 	private BasicEntityShip ship;
 	private World world;
-	private int type, entityID, recvX, recvY, recvZ, value, value2, playerUID;
+	private int type, entityID, recvX, recvY, recvZ, value, value2;
 	private boolean flag;
-	private List data;
+	private List dataList;
+	private Map dataMap;
 	
 	//packet id
 	public static final class PID {
@@ -82,16 +88,12 @@ public class S2CGUIPackets implements IMessage {
 	
 	//player extend props sync (for team frame and radar GUI)
 	public S2CGUIPackets(ExtendPlayerProps extProps, int type) {
-        this.type = type;
+		this.type = type;
         this.props = extProps;
         
         switch(type) {
         case PID.SyncPlayerProp_TargetClass:
-        	this.playerUID = props.getPlayerUID();
-        	this.data = ServerProxy.getPlayerTargetClassList(this.playerUID);
-        	break;
-        case PID.SyncPlayerProp_TeamData:
-        	this.playerUID = props.getPlayerUID();
+        	this.dataList = ServerProxy.getPlayerTargetClassList(props.getPlayerUID());
         	break;
         }
     }
@@ -116,7 +118,7 @@ public class S2CGUIPackets implements IMessage {
 	//ship list sync
 	public S2CGUIPackets(int type, List list) {
 		this.type = type;
-		this.data = list;
+		this.dataList = list;
 	}
 	
 	//接收packet方法
@@ -307,6 +309,46 @@ public class S2CGUIPackets implements IMessage {
 				}
 			}
 			break;
+		case PID.SyncPlayerProp_TeamData:
+			{
+				EntityPlayer player = ClientProxy.getClientPlayer();
+				ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+				
+				this.value = buf.readInt();
+				extProps.setPlayerTeamID(this.value);
+				
+				//get team data
+				this.value = buf.readInt();  //get team data size
+				
+				Map<Integer, TeamData> tmap = new HashMap();
+				
+				for(int i = 0; i < this.value; ++i) {
+					TeamData tdata = new TeamData();
+					
+					tdata.setTeamID(buf.readInt());
+					
+					//get team banned list
+					this.dataList = PacketHelper.getListInt(buf);
+					tdata.setTeamBannedList(this.dataList);
+					
+					//get team ally list
+					this.dataList = PacketHelper.getListInt(buf);
+					tdata.setTeamAllyList(this.dataList);
+					
+					//get team name
+					String tname = PacketHelper.getString(buf);
+					tdata.setTeamName(tname);
+					
+					//get leader name
+					String lname = PacketHelper.getString(buf);
+					tdata.setTeamLeaderName(lname);
+					
+					tmap.put(tdata.getTeamID(), tdata);
+				}
+//				LogHelper.info("DEBUG : S2C GUI Packet: get team data: "+tmap.size());
+				extProps.setAllTeamData(tmap);
+			}
+			break;
 		}
 	}
 
@@ -406,12 +448,12 @@ public class S2CGUIPackets implements IMessage {
 				buf.writeByte(this.type);
 				
 				//send list
-				if(data != null) {
+				if(dataList != null) {
 					//send list length
-					buf.writeInt(data.size());
+					buf.writeInt(dataList.size());
 					
 					//send list data
-					Iterator iter = data.iterator();
+					Iterator iter = dataList.iterator();
 					
 					switch(this.type) {
 					case PID.SyncShipList:
@@ -421,7 +463,7 @@ public class S2CGUIPackets implements IMessage {
 						}
 						break;
 					case PID.SyncPlayerProp_TargetClass:
-						LogHelper.info("DEBUG : S2C gui packet: send list size "+data.size());
+						LogHelper.info("DEBUG : S2C gui packet: send list size "+dataList.size());
 						while(iter.hasNext()) {
 							//string list
 							ByteBufUtils.writeUTF8String(buf, (String) iter.next());
@@ -437,9 +479,42 @@ public class S2CGUIPackets implements IMessage {
 		case PID.SyncPlayerProp_TeamData:  //sync all team data to client
 			{
 				buf.writeByte(this.type);
-				buf.writeInt(this.playerUID);
+				buf.writeInt(this.props.getPlayerTeamID());
 				
-				//TODO send team map and allyCD
+				//get team data
+				this.dataMap = ServerProxy.getAllTeamWorldData();
+//				LogHelper.info("DEBUG : S2C GUI Packet: send team data: "+this.dataMap.size());
+				//has data
+				if(this.dataMap != null) {
+					int tsize = this.dataMap.size();
+					buf.writeInt(tsize);
+					
+					Iterator iter = this.dataMap.entrySet().iterator();
+					
+					while(iter.hasNext()) {
+						Map.Entry ent = (Entry) iter.next();
+						int tid = (Integer) ent.getKey();
+						TeamData tdata = (TeamData) ent.getValue();
+						
+						buf.writeInt(tid);
+
+						//send team banned list
+						PacketHelper.sendListInt(buf, tdata.getTeamBannedList());
+						
+						//send team ally list
+						PacketHelper.sendListInt(buf, tdata.getTeamAllyList());
+						
+						//send team name
+						PacketHelper.sendString(buf, tdata.getTeamName());
+						
+						//send leader name
+						PacketHelper.sendString(buf, tdata.getTeamLeaderName());
+					}
+				}
+				//no data
+				else {
+					buf.writeInt(-1);
+				}
 			}
 			break;
 		}

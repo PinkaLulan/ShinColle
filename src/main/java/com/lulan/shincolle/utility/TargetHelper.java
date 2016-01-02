@@ -15,6 +15,7 @@ import com.lulan.shincolle.entity.BasicEntityAirplane;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipAttackBase;
+import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
 
@@ -52,14 +53,20 @@ public class TargetHelper {
      * select target by class
      */
     public static class Selector implements IEntitySelector {
-    	private final Entity host;
+    	private Entity host;
     	
     	public Selector(Entity host) {
     		this.host = host;
     	}
-    	
-    	@Override
+
+		@Override
 		public boolean isEntityApplicable(Entity target2) {
+			//skip ship and special entity
+			if(target2 instanceof BasicEntityShip || target2 instanceof BasicEntityAirplane ||
+			   target2 instanceof BasicEntityMount || target2 instanceof EntityAbyssMissile) {
+				return false;
+			}
+			
         	if((target2 instanceof EntityMob || target2 instanceof EntitySlime) &&
         	   target2.isEntityAlive() && !target2.isInvisible()) {
         		//若host有設定必須on sight, 則檢查on sight
@@ -102,6 +109,55 @@ public class TargetHelper {
         			}
         		}
         	}
+        	
+        	return false;
+        }
+    }
+    
+    /**PVP TARGET SELECTOR
+     * select target and pvp target by class
+     */
+    public static class PVPSelector extends Selector {
+    	private Entity host;
+    	
+    	public PVPSelector(Entity host) {
+    		super(host);
+    	}
+    	
+    	@Override
+		public boolean isEntityApplicable(Entity target2) {
+    		if(!super.isEntityApplicable(target2)) {
+    			//is ship, mount or airplane
+    			if(target2 instanceof BasicEntityShip || target2 instanceof BasicEntityAirplane ||
+				   target2 instanceof BasicEntityMount) {
+    				//check is banned team
+    				if(EntityHelper.checkIsBanned(host, target2) && target2.isEntityAlive() &&
+    				   !target2.isInvisible()) {
+    					//check should onSight?
+    					if(host instanceof BasicEntityShip) {
+    	        			if(((BasicEntityShip)host).getStateFlag(ID.F.OnSightChase)) {
+    	            			if(((BasicEntityShip)host).getEntitySenses().canSee(target2)) {
+    	            				return true;
+    	            			}
+    	            			else {
+    	            				return false;
+    	            			}
+    	            		}
+    	        		}//end ship host
+    	        		//非ship類host
+    	        		else if(host instanceof EntityLiving) {
+    	        			if(((EntityLiving)host).getEntitySenses().canSee(target2)) {
+    	        				return true;
+    	        			}
+    	        			else {
+	            				return false;
+	            			}
+    	        		}//end other host
+    					
+    					return true;
+    				}//is banned team
+				}//is ship, mount or airplane
+    		}//filter by normal target
         	
         	return false;
         }

@@ -37,33 +37,43 @@ public class GuiHandler implements IGuiHandler {
 		case ID.G.SMALLSHIPYARD:	//GUI small shipyard
 			tile = world.getTileEntity(x, y, z);  //確定抓到entity才開ui 以免噴出NPE
 			if((tile != null) && (tile instanceof TileEntitySmallShipyard)) {  //server取得container
-				((TileEntitySmallShipyard)tile).sendSyncPacket(); //sync once when gui opened
+				//sync tile when gui opened
+				((TileEntitySmallShipyard)tile).sendSyncPacket();
+				
 				return new ContainerSmallShipyard(player.inventory, (TileEntitySmallShipyard) tile);
 			}
 			break;
 		case ID.G.SHIPINVENTORY:	//GUI ship inventory
 			entity = world.getEntityByID(x);	//entity id存在x座標參數上
             if((entity != null) && (entity instanceof BasicEntityShip)){
-            	((BasicEntityShip)entity).sendSyncPacket(); //sync once when gui opened
-				return new ContainerShipInventory(player.inventory,(BasicEntityShip)entity);
+            	//sync tile when gui opened
+            	((BasicEntityShip)entity).sendSyncPacket();
+				
+            	return new ContainerShipInventory(player.inventory,(BasicEntityShip)entity);
 			}
             break;
 		case ID.G.LARGESHIPYARD:	//GUI large shipyard
 			tile = world.getTileEntity(x, y, z);  //確定抓到entity才開ui 以免噴出NPE
 			if((tile != null && tile instanceof TileMultiGrudgeHeavy)) {  //server取得container
-				((TileMultiGrudgeHeavy)tile).sendSyncPacket(); //sync once when gui opened
+				//sync tile when gui opened
+				((TileMultiGrudgeHeavy)tile).sendSyncPacket();
+				
 				return new ContainerLargeShipyard(player.inventory, (TileMultiGrudgeHeavy) tile);
 			}
 			break;
 		case ID.G.ADMIRALDESK:	   //GUI admiral desk
 			tile = world.getTileEntity(x, y, z);  //確定抓到entity才開ui 以免噴出NPE
 			if((tile != null && tile instanceof TileEntityDesk)) {  //server取得container
-				//sync once when gui opened
+				
+				//sync tile when gui opened
 				((TileEntityDesk)tile).sendSyncPacket();
+				
 				//sync team list to client
 				ExtendPlayerProps props = EntityHelper.getExtendPlayerProps(player);
 				CommonProxy.channelG.sendTo(new S2CGUIPackets(props, S2CGUIPackets.PID.SyncPlayerProp_TargetClass), (EntityPlayerMP) player);
-				return new ContainerDesk(player.inventory, (TileEntityDesk) tile);
+				CommonProxy.channelG.sendTo(new S2CGUIPackets(props, S2CGUIPackets.PID.SyncPlayerProp_TeamData), (EntityPlayerMP) player);
+				
+				return new ContainerDesk(player.inventory, (TileEntityDesk) tile, player);
 			}
 			break;
 		}

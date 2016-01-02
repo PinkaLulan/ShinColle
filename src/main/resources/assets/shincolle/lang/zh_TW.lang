@@ -254,13 +254,17 @@ gui.shincolle:target.remove=移除
 
 # GUI: Team List
 gui.shincolle:team.name=艦隊名稱:
-gui.shincolle:team.create=建立
-gui.shincolle:team.rename=更名
-gui.shincolle:team.join=加入
-gui.shincolle:team.leave=離開
+gui.shincolle:team.create=建立艦隊
+gui.shincolle:team.rename=艦隊更名
+gui.shincolle:team.disband=解散艦隊
+gui.shincolle:team.allylist=盟友名單
 gui.shincolle:team.ally=同盟
 gui.shincolle:team.break=解盟
+gui.shincolle:team.banlist=宣戰名單
+gui.shincolle:team.ban=宣戰
+gui.shincolle:team.unban=停戰
 gui.shincolle:team.allied=盟友
+gui.shincolle:team.neutral=中立
 gui.shincolle:team.hostile=敵對
 gui.shincolle:team.belong=所屬
 gui.shincolle:team.teamid=艦隊編號
@@ -300,10 +304,10 @@ gui.shincolle:canairheavyattack=重型艦載機
 gui.shincolle:followmin=跟隨最短距離
 gui.shincolle:followmax=跟隨最長距離
 gui.shincolle:fleehp=逃跑血量(%%)
-gui.shincolle:auraeffect=主人強化效果
+gui.shincolle:auraeffect=開啟特殊能力
 gui.shincolle:targetAI=被動攻擊?
 gui.shincolle:onsightAI=視線內才追擊?
-gui.shincolle:ai.PVP模式?
+gui.shincolle:ai.pvp=PVP模式?
 gui.shincolle:ai.aa=優先防空?
 gui.shincolle:ai.asm=優先反潛?
 

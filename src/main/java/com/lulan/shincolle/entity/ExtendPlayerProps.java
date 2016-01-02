@@ -26,13 +26,14 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 	public EntityPlayer player;
 	public World world;
 	
-	//wedding ring
+	//player data
 	private boolean hasRing;
 	private boolean isRingActive;
 	private boolean isRingFlying;
 	private int[] ringEffect;			//0:haste 1:speed 2:jump 3:damage
 	private int marriageNum;
 	private int bossCooldown;			//spawn boss cooldown
+	private int teamCooldown;			//recreate team cooldown
 	
 	/**ship team list
 	 * 9 teams, 1 team = 6 ships
@@ -48,10 +49,9 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 	
 	//player id
 	private int playerUID;
-	
-	//player team var: for display only, set when player login
-	private int allyCooldown;
 	private int playerTeamID;
+	
+	//player team var: for client side GUI only, do not use these at server side
 	private Map<Integer, TeamData> mapTeamData;
 	private List<TeamData> listTeamData;
 	
@@ -81,7 +81,7 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		
 		//team
 		this.playerTeamID = 0;
-		this.allyCooldown = ConfigHandler.allyCooldown;
+		this.teamCooldown = 20;
 		this.mapTeamData = new HashMap();
 		this.listTeamData = new ArrayList();
 		
@@ -98,7 +98,8 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		nbtExt.setInteger("MarriageNum", marriageNum);
 		nbtExt.setInteger("BossCD", bossCooldown);
 		nbtExt.setInteger("PlayerUID", playerUID);
-		nbtExt.setInteger("AllyCD", allyCooldown);
+		nbtExt.setInteger("TeamCD", teamCooldown);
+		nbtExt.setInteger("PlayerTeamID", playerTeamID);
 		
 		/**save team list by ship UID
 		 * entity id will change after entity reconstruction
@@ -141,9 +142,8 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		marriageNum = nbtExt.getInteger("MarriageNum");
 		bossCooldown = nbtExt.getInteger("BossCD");
 		playerUID = nbtExt.getInteger("PlayerUID");
-		
-		//team
-		allyCooldown = nbtExt.getInteger("AllyCD");
+		teamCooldown = nbtExt.getInteger("TeamCD");
+		playerTeamID = nbtExt.getInteger("PlayerTeamID");
 		
 		/**load team list by ship UID
 		 * get entity by ship UID, SERVER SIDE ONLY
@@ -307,20 +307,20 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		return null;
 	}
 	
-	public List<Integer> getPlayerTeamMember() {
+	public List<Integer> getPlayerTeamBannedList() {
 		if(this.playerTeamID > 0) {
 			TeamData tdata = this.mapTeamData.get(this.playerTeamID);
 			
-			if(tdata != null) return tdata.getTeamMemberUID();
+			if(tdata != null) return tdata.getTeamBannedList();
 		}
 		return null;
 	}
 	
-	public List<Integer> getPlayerTeamAlly() {
+	public List<Integer> getPlayerTeamAllyList() {
 		if(this.playerTeamID > 0) {
 			TeamData tdata = this.mapTeamData.get(this.playerTeamID);
 			
-			if(tdata != null) return tdata.getTeamAlly();
+			if(tdata != null) return tdata.getTeamAllyList();
 		}
 		return null;
 	}
@@ -337,8 +337,12 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		return this.mapTeamData.get(par1);
 	}
 	
-	public int getAllyCooldown() {
-		return this.allyCooldown;
+	public int getTeamCooldown() {
+		return this.teamCooldown;
+	}
+	
+	public int getTeamCooldownInSec() {
+		return (int)((float)this.teamCooldown * 0.05F);
 	}
 	
 	public boolean getInitSID() {
@@ -412,23 +416,31 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 	}
 	
 	public void setAllTeamData(Map<Integer, TeamData> par1) {
-		if(this.mapTeamData != null && this.mapTeamData.size() > 0) {
+		//set team data
+		if(this.mapTeamData != null) {
 			this.mapTeamData = par1;
 			
 			//create team list
 			this.listTeamData = new ArrayList();
 			
-			Iterator iter = this.mapTeamData.entrySet().iterator();
-			while(iter.hasNext()) {
-				Map.Entry entry = (Map.Entry) iter.next();
-			    TeamData data = (TeamData) entry.getValue();
-			    this.listTeamData.add(data);
+			if(this.mapTeamData.size() > 0) {
+				Iterator iter = this.mapTeamData.entrySet().iterator();
+				while(iter.hasNext()) {
+					Map.Entry entry = (Map.Entry) iter.next();
+				    TeamData data = (TeamData) entry.getValue();
+				    this.listTeamData.add(data);
+				}
 			}
+		}
+		//clear team data
+		else {
+			this.mapTeamData = new HashMap();
+			this.listTeamData = new ArrayList();
 		}
 	}
 	
-	public void setAllyCooldown(int par1) {
-		this.allyCooldown = par1;
+	public void setTeamCooldown(int par1) {
+		this.teamCooldown = par1;
 	}
 	
 	public void setInitSID(boolean par1) {
@@ -623,12 +635,9 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		}
 	}
 	
-	//check is leader: member 0 = player
+	//check is leader = has team
 	public boolean isTeamLeader() {
-		if(this.getPlayerTeamID() > 0 && 
-		   this.getPlayerTeamMember() != null &&
-		   this.getPlayerTeamMember().size() > 0 && 
-		   this.getPlayerTeamMember().get(0) == this.playerUID) {
+		if(this.getPlayerTeamID() > 0) {
 			return true;
 		}
 		
@@ -642,21 +651,41 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		
 		//for client side
 		if(this.world.isRemote) {
-			if(this.getPlayerTeamID() > 0 &&
-			   this.getPlayerTeamMember() != null &&
-			   this.getPlayerTeamMember().size() > 0) {
+			if(this.getPlayerTeamID() > 0 && this.getPlayerTeamAllyList() != null) {
 				//check team ally id
-				for(int geti : this.getPlayerTeamAlly()) {
-					if(par1 == geti) return true;
-				}
+				if(this.getPlayerTeamAllyList().contains(par1)) return true;
 			}
 		}
-		//for server side
+		//for server side, get team data from server cache
 		else {
 			TeamData tdata = ServerProxy.getTeamData(EntityHelper.getPlayerTID(this.getPlayerUID()));
 		
 			if(tdata != null) {
 				tdata.isTeamAlly(par1);
+			}
+		}
+		
+		return false;
+	}
+	
+	//check team is player's attack target
+	public boolean isTeamBanned(int par1) {
+		//no team (id 0) = friendly to everyteam
+		if(par1 == 0) return false;
+		
+		//for client side
+		if(this.world.isRemote) {
+			if(this.getPlayerTeamID() > 0 && this.getPlayerTeamBannedList() != null) {
+				//check team ally id
+				if(this.getPlayerTeamBannedList().contains(par1)) return true;
+			}
+		}
+		//for server side, get team data from server cache
+		else {
+			TeamData tdata = ServerProxy.getTeamData(EntityHelper.getPlayerTID(this.getPlayerUID()));
+		
+			if(tdata != null) {
+				tdata.isTeamBanned(par1);
 			}
 		}
 		

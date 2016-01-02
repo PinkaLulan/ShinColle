@@ -628,7 +628,7 @@ public class GuiShipInventory extends GuiContainer {
 			//draw string
 			TarAI = I18n.format("gui.shincolle:targetAI");
 			strOnSight = I18n.format("gui.shincolle:onsightAI");
-			strPVP = I18n.format("gui.shincolle:ai.PVP");
+			strPVP = I18n.format("gui.shincolle:ai.pvp");
 			strAA = I18n.format("gui.shincolle:ai.aa");
 			strASM = I18n.format("gui.shincolle:ai.asm");
 			

@@ -64,11 +64,12 @@ public class GuiDesk extends GuiContainer {
 	private TileEntityDesk tile;
 	private int xClick, yClick, xMouse, yMouse;
 	private int tickGUI, guiFunc;
-	private int[] listNum, listClicked; //list var: 0:radar 1:team 2:target 3:teamAlly
+	private int[] listNum, listClicked; //list var: 0:radar 1:team 2:target 3:teamAlly 4:teamBan
 	private static final int LISTCLICK_RADAR = 0;
 	private static final int LISTCLICK_TEAM = 1;
 	private static final int LISTCLICK_TARGET = 2;
 	private static final int LISTCLICK_ALLY = 3;
+	private static final int LISTCLICK_BAN = 4;
 	private String errorMsg;
 	
 	//player data
@@ -85,11 +86,13 @@ public class GuiDesk extends GuiContainer {
 	
 	//team
 	private int teamState;				//team operation state
+	private int listFocus;				//list focus
 	private GuiTextField textField;
 	private static final int TEAMSTATE_MAIN = 0;
 	private static final int TEAMSTATE_CREATE = 1;
 	private static final int TEAMSTATE_ALLY = 2;
 	private static final int TEAMSTATE_RENAME = 3;
+	private static final int TEAMSTATE_BAN = 4;
 	
 	//target list
 	Entity targetEntity = null;			//entity for model display
@@ -118,7 +121,7 @@ public class GuiDesk extends GuiContainer {
 	
 	
 	public GuiDesk(InventoryPlayer par1, TileEntityDesk par2) {
-		super(new ContainerDesk(par1, par2));
+		super(new ContainerDesk(par1, par2, ClientProxy.getClientPlayer()));
 		this.xSize = 256;
 		this.ySize = 192;
 		
@@ -130,14 +133,15 @@ public class GuiDesk extends GuiContainer {
 		extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 		
 		//list var: 0:radar 1:team 2:target
-		this.listNum = new int[] {0, 0, 0, 0};
-		this.listClicked = new int[] {-1, -1, -1, -1};
+		this.listNum = new int[] {0, 0, 0, 0, 0};
+		this.listClicked = new int[] {-1, -1, -1, -1, -1};
 		
 		//radar
 		this.shipList = new ArrayList();
 		
 		//team
 		this.teamState = 0;
+		this.listFocus = LISTCLICK_TEAM;
 		
 		//target
 		this.tarList = new ArrayList();
@@ -147,15 +151,17 @@ public class GuiDesk extends GuiContainer {
 	public void initGui() {
 		super.initGui();
 		
-		//add text input field
-        Keyboard.enableRepeatEvents(true);
         int i = (this.width - this.xSize) / 2;
         int j = (this.height - this.ySize) / 2;
-        this.textField = new GuiTextField(this.fontRendererObj, i + 62, j + 24, 103, 12);
+        //textField: font, x, y, width, height
+        this.textField = new GuiTextField(this.fontRendererObj, this.guiLeft+10, this.guiTop+28, 121, 12);
         this.textField.setTextColor(-1);					//點選文字框時文字顏色
         this.textField.setDisabledTextColour(-1);			//無點選文字框時文字顏色
-        this.textField.setEnableBackgroundDrawing(false);	//畫出文字框背景
-        this.textField.setMaxStringLength(40);				//文字輸入最大長度
+        this.textField.setEnableBackgroundDrawing(true);	//畫出文字框背景
+        this.textField.setMaxStringLength(64);				//接受最大文字長度
+        this.textField.setEnabled(false);
+        //add text input field
+        Keyboard.enableRepeatEvents(true);
 	}
 	
 	//get new mouseX,Y and redraw gui
@@ -171,7 +177,17 @@ public class GuiDesk extends GuiContainer {
 		//draw GUI text input
 		GL11.glDisable(GL11.GL_LIGHTING);
         GL11.glDisable(GL11.GL_BLEND);
-        this.textField.drawTextBox();
+        
+        if(this.teamState == TEAMSTATE_CREATE || this.teamState == TEAMSTATE_RENAME) {
+        	this.textField.setEnabled(true);
+        	this.textField.drawTextBox();
+        }
+        else {
+        	this.textField.setEnabled(false);
+        }
+        
+        //DEBUG
+//        LogHelper.info("DEBUG : desk: "+this.extProps.getTeamData(extProps.getPlayerTeamID()).getTeamBannedList().contains(72));
 	}
 	
 	//draw tooltip
@@ -389,28 +405,33 @@ public class GuiDesk extends GuiContainer {
 		switch(this.guiFunc) {
 		case 1:  //radar
 			listSize = this.shipList.size();
-			listID = this.LISTCLICK_RADAR;
+			listID = LISTCLICK_RADAR;
 			break;
 		case 3:  //team
 			if(xMouse - guiLeft > 138) {  //right side: team list
 				if(this.extProps.getAllTeamData() != null) {
 					listSize = this.extProps.getAllTeamData().size();
-					listID = this.LISTCLICK_TEAM;
+					listID = LISTCLICK_TEAM;
 				}
 			}
 			else {  //left side: ally list
-				if(this.extProps.getPlayerTeamAlly() != null) {
-					listSize = this.extProps.getPlayerTeamAlly().size();
-					listID = this.LISTCLICK_ALLY;
+				if(this.teamState == TEAMSTATE_ALLY && this.extProps.getPlayerTeamAllyList() != null) {
+					listSize = this.extProps.getPlayerTeamAllyList().size();
+					listID = LISTCLICK_ALLY;
+				}
+				else if(this.teamState == TEAMSTATE_BAN && this.extProps.getPlayerTeamBannedList() != null) {
+					listSize = this.extProps.getPlayerTeamBannedList().size();
+					listID = LISTCLICK_BAN;
 				}
 			}
 			
 			break;
 		case 4:  //target
 			listSize = this.tarList.size();
-			listID = this.LISTCLICK_TARGET;
+			listID = LISTCLICK_TARGET;
 			break;
 		}
+		
 		if(listID < 0) return;
 		
 		if(isWheelUp) {
@@ -423,7 +444,7 @@ public class GuiDesk extends GuiContainer {
 			}
 		}
 		else {
-			if(this.shipList.size() > 0) {
+			if(listSize > 0) {
 				listClicked[listID]--;
 				listNum[listID]++;
 				
@@ -437,6 +458,7 @@ public class GuiDesk extends GuiContainer {
 				}
 			}
 		}
+//		LogHelper.info("DEBUG : desk: mouse wheel: "+listID+" "+listSize+" "+this.listNum[listID]+" "+this.listNum[listID]);
 	}
 	
 	//handle mouse click, @parm posX, posY, mouseKey (0:left 1:right 2:middle 3:...etc)
@@ -510,12 +532,21 @@ public class GuiDesk extends GuiContainer {
         	switch(teamBtn) {
             case 0:	//left top button
             	switch(this.teamState) {
-            	case TEAMSTATE_ALLY:
-            		handleClickTeamAlly(0);
-            		break;
             	case TEAMSTATE_MAIN:
             		handleClickTeamMain(0);
         			break;
+            	case TEAMSTATE_ALLY:
+            		handleClickTeamAlly(0);
+            		break;
+            	case TEAMSTATE_BAN:
+            		handleClickTeamBan(0);
+            		break;
+            	case TEAMSTATE_CREATE:
+            		handleClickTeamCreate(0);
+            		break;
+            	case TEAMSTATE_RENAME:
+            		handleClickTeamRename(0);
+            		break;
             	}
             	break;
             case 1: //team slot 0~4
@@ -523,20 +554,26 @@ public class GuiDesk extends GuiContainer {
             case 3:
             case 4:
             case 5:
+            	this.listFocus = LISTCLICK_TEAM;
             	this.listClicked[LISTCLICK_TEAM] = teamBtn - 1;
-            	this.listClicked[LISTCLICK_ALLY] = -1;  //clear ally clicked
             	break;
             case 6: //left bottom button
             	switch(this.teamState) {
+            	case TEAMSTATE_MAIN:
+            		handleClickTeamMain(1);
+        			break;
             	case TEAMSTATE_ALLY:
             		handleClickTeamAlly(1);
             		break;
+            	case TEAMSTATE_BAN:
+            		handleClickTeamBan(1);
+            		break;
             	case TEAMSTATE_CREATE:
             		handleClickTeamCreate(1);
-        			break;
+            		break;
             	case TEAMSTATE_RENAME:
             		handleClickTeamRename(1);
-        			break;
+            		break;
             	}
             	break;
             case 7: //right top button
@@ -550,12 +587,20 @@ public class GuiDesk extends GuiContainer {
             	switch(this.teamState) {
             	case TEAMSTATE_MAIN:
             		handleClickTeamMain(3);
-            		break;
-            	case TEAMSTATE_CREATE:
-            		handleClickTeamCreate(3);
         			break;
-            	case TEAMSTATE_RENAME:
-            		handleClickTeamRename(3);
+            	}
+            	break;
+            case 9:
+            case 10:
+            case 11:
+            	switch(this.teamState) {
+            	case TEAMSTATE_ALLY:
+            		this.listFocus = LISTCLICK_ALLY;
+                	this.listClicked[LISTCLICK_ALLY] = teamBtn - 9;
+        			break;
+            	case TEAMSTATE_BAN:
+            		this.listFocus = LISTCLICK_BAN;
+                	this.listClicked[LISTCLICK_BAN] = teamBtn - 9;
         			break;
             	}
             	break;
@@ -765,21 +810,57 @@ public class GuiDesk extends GuiContainer {
 	
 	//draw team text
 	private void drawTeamPic() {
+		int cirY = 0;
 		//draw team select circle
-    	if(this.listClicked[LISTCLICK_TEAM] > -1 && this.listClicked[LISTCLICK_TEAM] < 5) {
-    		int cirY = 25 + this.listClicked[LISTCLICK_TEAM] * 32;
+    	if(this.listFocus == LISTCLICK_TEAM && this.listClicked[LISTCLICK_TEAM] > -1 && this.listClicked[LISTCLICK_TEAM] < 5) {
+    		cirY = 25 + this.listClicked[LISTCLICK_TEAM] * 32;
         	drawTexturedModalRect(guiLeft+142, guiTop+cirY, 0, 192, 108, 31);
     	}
-    	
-//    	//draw ally select circle
-//    	if(this.listClicked[LISTCLICK_ALLY] > -1 && this.listClicked[LISTCLICK_ALLY] < 5) {
-//    		int cirY = 25 + this.listClicked[LISTCLICK_ALLY] * 32;
-//        	drawTexturedModalRect(guiLeft+142, guiTop+cirY, 0, 192, 108, 31);
-//    	}
+    	//draw ally select circle
+    	else if(this.listFocus == LISTCLICK_ALLY && this.listClicked[LISTCLICK_ALLY] > -1 && this.listClicked[LISTCLICK_ALLY] < 3) {
+    		cirY = 61 + this.listClicked[LISTCLICK_ALLY] * 31;
+        	drawTexturedModalRect(guiLeft+6, guiTop+cirY, 109, 192, 129, 31);
+    	}
+    	//draw ban select circle
+    	else if(this.listFocus == LISTCLICK_BAN && this.listClicked[LISTCLICK_BAN] > -1 && this.listClicked[LISTCLICK_BAN] < 3) {
+    		cirY = 61 + this.listClicked[LISTCLICK_BAN] * 31;
+        	drawTexturedModalRect(guiLeft+6, guiTop+cirY, 109, 192, 129, 31);
+    	}
+
 	}
 	
 	//draw team text
 	private void drawTeamText() {
+		//null check
+		if(this.extProps == null) return;
+		
+		String str = null;
+		TeamData tdata = null;
+		int tid = 0;
+		
+		//draw team name and id
+		tid = this.extProps.getPlayerTeamID();
+		if(tid > 0) {
+			tdata = extProps.getTeamData(tid);
+			if(tdata != null) {
+				GL11.glPushMatrix();
+				GL11.glScalef(0.75F, 0.75F, 0.75F);
+				//draw team id
+				str = EnumChatFormatting.GRAY + I18n.format("gui.shincolle:team.teamid") +":  "+
+					  EnumChatFormatting.YELLOW + tid +" : "+
+					  EnumChatFormatting.LIGHT_PURPLE + tdata.getTeamLeaderName();
+				GL11.glPushMatrix();
+				GL11.glScalef(0.75F, 0.75F, 0.75F);
+				fontRendererObj.drawString(str, 16, 49, 0);  //org pos: 11,42
+				GL11.glPopMatrix();
+				
+				//draw team name
+				str = EnumChatFormatting.WHITE + tdata.getTeamName();
+				fontRendererObj.drawSplitString(str, 11, 44, 160, 0);
+				GL11.glPopMatrix();
+			}
+		}
+		
 		//draw button text
 		String strLT = null;
 		String strLB = null;
@@ -797,67 +878,126 @@ public class GuiDesk extends GuiContainer {
 			List tlist = null;
 			
 			//clicked team list
-			if(listClicked[LISTCLICK_TEAM] >= 0) {
-				clicki = listClicked[LISTCLICK_TEAM] + this.listNum[LISTCLICK_TEAM];
-				tlist = this.extProps.getAllTeamDataList();
+			clicki = listClicked[LISTCLICK_TEAM] + this.listNum[LISTCLICK_TEAM];
+			tlist = this.extProps.getAllTeamDataList();
+			
+			//get clicked team id
+			if(this.listFocus == LISTCLICK_TEAM && tlist != null && clicki >= 0 && clicki < tlist.size()) {
+				TeamData getd = (TeamData) tlist.get(clicki);
 				
-				//get clicked team id
-				if(tlist != null && tlist.size() > clicki) {
-					TeamData getd = (TeamData) tlist.get(clicki);
-					
-					if(getd != null) {
-						//is ally, show break button
-						if(this.extProps.getPlayerTeamID() != getd.getTeamID() &&
-						   this.extProps.isTeamAlly(getd.getTeamID())) {
-							strLT = I18n.format("gui.shincolle:team.break");
-							colorLT = Values.Color.RED;
-						}
-						//not ally, show ally button
-						else {
-							strLT = I18n.format("gui.shincolle:team.ally");
-							colorLT = Values.Color.CYAN;
-						}
+				if(getd != null) {
+					//is ally, show break button
+					if(this.extProps.getPlayerTeamID() != getd.getTeamID() &&
+					   this.extProps.isTeamAlly(getd.getTeamID())) {
+						strLT = I18n.format("gui.shincolle:team.break");
+						colorLT = Values.Color.YELLOW;
+					}
+					//not ally, show ally button
+					else {
+						strLT = I18n.format("gui.shincolle:team.ally");
+						colorLT = Values.Color.CYAN;
 					}
 				}
 			}
-			//clicked ally list
-			else if(listClicked[LISTCLICK_ALLY] >= 0) {
+			//clicked ally list?
+			else if(this.listFocus == LISTCLICK_ALLY) {
 				clicki = listClicked[LISTCLICK_ALLY] + this.listNum[LISTCLICK_ALLY];
-				tlist = this.extProps.getPlayerTeamAlly();
+				tlist = this.extProps.getPlayerTeamAllyList();
 				
 				//has clicked ally
-				if(tlist != null && tlist.size() > clicki) {
+				if(tlist != null && clicki >= 0 && clicki < tlist.size()) {
 					strLT = I18n.format("gui.shincolle:team.break");
-					colorLT = Values.Color.RED;
+					colorLT = Values.Color.YELLOW;
 				}
 			}
 			
 			strLB = I18n.format("gui.shincolle:general.ok");
-			colorLB = Values.Color.YELLOW;
+			colorLB = Values.Color.WHITE;
+			break;
+		case TEAMSTATE_BAN:
+			int clicki2 = -1;
+			List tlist2 = null;
+			
+			//clicked team list
+			clicki2 = listClicked[LISTCLICK_TEAM] + this.listNum[LISTCLICK_TEAM];
+			tlist2 = this.extProps.getAllTeamDataList();
+			
+			//get clicked team id
+			if(this.listFocus == LISTCLICK_TEAM && tlist2 != null && clicki2 >= 0 && clicki2 < tlist2.size()) {
+				TeamData getd = (TeamData) tlist2.get(clicki2);
+				
+				if(getd != null) {
+					//is banned, show truce button
+					if(this.extProps.getPlayerTeamID() != getd.getTeamID() &&
+					   this.extProps.isTeamBanned(getd.getTeamID())) {
+						strLT = I18n.format("gui.shincolle:team.unban");
+						colorLT = Values.Color.CYAN;
+					}
+					//not banned, show battle button
+					else {
+						strLT = I18n.format("gui.shincolle:team.ban");
+						colorLT = Values.Color.YELLOW;
+					}
+				}
+			}
+			//clicked ban list?
+			else if(this.listFocus == LISTCLICK_BAN) {
+				clicki2 = listClicked[LISTCLICK_BAN] + this.listNum[LISTCLICK_BAN];
+				tlist2 = this.extProps.getPlayerTeamBannedList();
+				
+				//has clicked ally
+				if(tlist2 != null && clicki2 >= 0 && clicki2 < tlist2.size()) {
+					strLT = I18n.format("gui.shincolle:team.unban");
+					colorLT = Values.Color.CYAN;
+				}
+			}
+			
+			strLB = I18n.format("gui.shincolle:general.ok");
+			colorLB = Values.Color.WHITE;
 			break;
 		case TEAMSTATE_CREATE:
+			str = EnumChatFormatting.WHITE + I18n.format("gui.shincolle:team.teamid") +"  "+
+				  EnumChatFormatting.YELLOW + this.extProps.getPlayerUID();  //use pUID for team ID
+			fontRendererObj.drawString(str, 10, 43, 0);
+			
+			strLB = I18n.format("gui.shincolle:general.ok");
+			colorLB = Values.Color.WHITE;
+			strLT = I18n.format("gui.shincolle:general.cancel");
+			colorLT = Values.Color.LIGHT_GRAY;
+			break;
 		case TEAMSTATE_RENAME:
 			strLB = I18n.format("gui.shincolle:general.ok");
-			colorLB = Values.Color.YELLOW;
-			strRB = I18n.format("gui.shincolle:general.cancel");
+			colorLB = Values.Color.WHITE;
+			strLT = I18n.format("gui.shincolle:general.cancel");
+			colorLT = Values.Color.LIGHT_GRAY;
 			break;
 		default:  //0: main state
 			if(this.extProps.getPlayerTeamID() > 0) {  //in team
-				strLT = I18n.format("gui.shincolle:team.leave");
-				colorLT = Values.Color.RED;
-				strRT = I18n.format("gui.shincolle:team.ally");
-				colorRT = Values.Color.CYAN;
+				strLT = I18n.format("gui.shincolle:team.allylist");
+				colorLT = Values.Color.CYAN;
+				strLB = I18n.format("gui.shincolle:team.banlist");
+				colorLB = Values.Color.YELLOW;
+				strRT = I18n.format("gui.shincolle:team.rename");
+				colorRT = Values.Color.WHITE;
 				
-				if(this.extProps.isTeamLeader()) {
-					strRB = I18n.format("gui.shincolle:team.rename");
-					colorRB = Values.Color.YELLOW;
+				if(this.extProps.getTeamCooldown() > 0) {
+					strRB = String.valueOf(this.extProps.getTeamCooldownInSec());
+					colorRB = Values.Color.LIGHT_GRAY;
+				}
+				else {
+					strRB = I18n.format("gui.shincolle:team.disband");
+					colorRB = Values.Color.GRAY;
 				}
 			}
 			else {  //no team
-				strLT = I18n.format("gui.shincolle:team.join");
-				colorLT = Values.Color.CYAN;
-				strRT = I18n.format("gui.shincolle:team.create");
-				colorRT = Values.Color.YELLOW;
+				if(this.extProps.getTeamCooldown() > 0) {
+					strRB = String.valueOf(this.extProps.getTeamCooldownInSec());
+					colorRB = Values.Color.LIGHT_GRAY;
+				}
+				else {
+					strRB = I18n.format("gui.shincolle:team.create");
+					colorRB = Values.Color.CYAN;
+				}
 			}
 			break;
 		}
@@ -877,34 +1017,109 @@ public class GuiDesk extends GuiContainer {
 		
 		//draw team list
 		List<TeamData> tlist = this.extProps.getAllTeamDataList();
-		int texty = 28;
+		int texty = 36;
 		
-		//draw ship list in radar
+		GL11.glPushMatrix();
+		GL11.glScalef(0.75F, 0.75F, 0.75F);
 		for(int i = this.listNum[LISTCLICK_TEAM]; i < tlist.size() && i < this.listNum[LISTCLICK_TEAM] + 5; ++i) {
 			//get team data
-			TeamData tdata = tlist.get(i);
+			TeamData tdata2 = tlist.get(i);
 			
-			if(tdata != null) {
-				//draw name
-				fontRendererObj.drawString(tdata.getTeamName(), 146, texty, Values.Color.WHITE);
-				texty += 12;
-				
+			if(tdata2 != null) {
 				//get ally string
-				String allyInfo = EnumChatFormatting.RED + I18n.format("gui.shincolle:team.hostile");
-				if(this.extProps.getPlayerTeamID() == tdata.getTeamID()) {
-					allyInfo = EnumChatFormatting.WHITE + I18n.format("gui.shincolle:team.belong");
+				String allyInfo = EnumChatFormatting.WHITE +"("+ I18n.format("gui.shincolle:team.neutral") +")";
+				if(this.extProps.getPlayerTeamID() == tdata2.getTeamID()) {
+					allyInfo = EnumChatFormatting.GOLD +"("+ I18n.format("gui.shincolle:team.belong")+")";
 				}
-				else if(this.extProps.isTeamAlly(tdata.getTeamID())) {
-					allyInfo = EnumChatFormatting.AQUA + I18n.format("gui.shincolle:team.allied");
+				else if(this.extProps.isTeamAlly(tdata2.getTeamID())) {
+					allyInfo = EnumChatFormatting.AQUA +"("+ I18n.format("gui.shincolle:team.allied")+")";
 				}
-					
+				else if(this.extProps.isTeamBanned(tdata2.getTeamID())) {
+					allyInfo = EnumChatFormatting.RED +"("+ I18n.format("gui.shincolle:team.hostile")+")";
+				}
+				
 				//draw info
-				String str = EnumChatFormatting.YELLOW + I18n.format("gui.shincolle:team.teamid") +
-							 EnumChatFormatting.WHITE + tdata.getTeamID() +"   "+ allyInfo;
-				fontRendererObj.drawString(str, 146, texty, 0);
-				texty += 20;
+				str = EnumChatFormatting.YELLOW +""+ tdata2.getTeamID() +" : "+
+					  EnumChatFormatting.LIGHT_PURPLE + tdata2.getTeamLeaderName() +"  "+
+					  allyInfo;
+				GL11.glPushMatrix();
+				GL11.glScalef(0.75F, 0.75F, 0.75F);
+				//org pos: 146, texty
+				fontRendererObj.drawString(str, 259, (int)(texty*1.33F), Values.Color.WHITE);
+				GL11.glPopMatrix();
+				texty += 7;
+				
+				//draw name drawSplitString
+				fontRendererObj.drawSplitString(tdata2.getTeamName(), 194, texty, 136, Values.Color.WHITE);
+				texty += 36;
 			}
-		}
+			//get null team data, draw space to guarantee order
+			else {
+				texty += 43;
+			}
+		}//end draw team list
+		GL11.glPopMatrix();
+		
+		//draw ally or ban list
+		List<Integer> tlist3 = null;
+		texty = 85;
+		int listID = LISTCLICK_ALLY;
+		
+		if(tdata != null) {
+			if(this.teamState == TEAMSTATE_ALLY) {
+				tlist3 = tdata.getTeamAllyList();
+				listID = LISTCLICK_ALLY;
+			}
+			else if(this.teamState == TEAMSTATE_BAN) {
+				tlist3 = tdata.getTeamBannedList();
+				listID = LISTCLICK_BAN;
+			}
+			
+			if(tlist3 != null) {
+				GL11.glPushMatrix();
+				GL11.glScalef(0.75F, 0.75F, 0.75F);
+				for(int i = this.listNum[listID]; i < tlist3.size() && i < this.listNum[listID] + 3; ++i) {
+					//get team data
+					int getid = tlist3.get(i);
+					TeamData tdata3 = this.extProps.getTeamData(getid);
+					
+					if(tdata3 != null) {
+						//get ally string
+						String allyInfo = EnumChatFormatting.WHITE +"("+ I18n.format("gui.shincolle:team.neutral") +")";
+						if(this.extProps.getPlayerTeamID() == tdata3.getTeamID()) {
+							allyInfo = EnumChatFormatting.GOLD +"("+ I18n.format("gui.shincolle:team.belong")+")";
+						}
+						else if(this.extProps.isTeamAlly(tdata3.getTeamID())) {
+							allyInfo = EnumChatFormatting.AQUA +"("+ I18n.format("gui.shincolle:team.allied")+")";
+						}
+						else if(this.extProps.isTeamBanned(tdata3.getTeamID())) {
+							allyInfo = EnumChatFormatting.RED +"("+ I18n.format("gui.shincolle:team.hostile")+")";
+						}
+							
+						//draw info
+						str = EnumChatFormatting.GRAY + I18n.format("gui.shincolle:team.teamid") +":  "+
+							  EnumChatFormatting.YELLOW + tdata3.getTeamID() +" : "+
+							  EnumChatFormatting.LIGHT_PURPLE + tdata3.getTeamLeaderName() +"  "+
+							  allyInfo;
+						GL11.glPushMatrix();
+						GL11.glScalef(0.75F, 0.75F, 0.75F);
+						//org pos: 146, texty
+						fontRendererObj.drawString(str, 15, (int)(texty*1.33F), 0);
+						GL11.glPopMatrix();
+						texty += 6;
+						
+						//draw name
+						fontRendererObj.drawString(tdata3.getTeamName(), 11, texty, Values.Color.WHITE);
+						texty += 36;
+					}
+					//get null team data, draw space to guarantee order
+					else {
+						texty += 42;
+					}
+				}//end for all team id
+				GL11.glPopMatrix();
+			}
+		}//end draw ally or ban list
 	}
 	
 	//get clicked entity by entity simple name
@@ -1020,6 +1235,43 @@ public class GuiDesk extends GuiContainer {
     }
 	
 	/** btn: 0:left top, 1:left bottom, 2:right top, 3:right bottom*/
+	private void handleClickTeamMain(int btn) {
+		switch(btn) {
+		case 0:  //left top btn: ally page
+			if(this.extProps.getPlayerTeamID() > 0) {
+				this.teamState = TEAMSTATE_ALLY;
+			}
+			break;
+		case 1:  //left bottom btn: ban page
+			if(this.extProps.getPlayerTeamID() > 0) {
+				this.teamState = TEAMSTATE_BAN;
+			}
+			break;
+		case 2:  //right top btn: rename page
+			if(this.extProps.getPlayerTeamID() > 0) {
+				this.teamState = TEAMSTATE_RENAME;
+			}
+			break;
+		case 3:  //right bottom btn: disband or create team
+//			LogHelper.info("DEBUG : desk: team cooldown "+this.extProps.getTeamCooldown());
+			if(this.extProps.getTeamCooldown() <= 0) {
+				//has team
+				if(this.extProps.getPlayerTeamID() > 0) {
+					//disband team
+					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.Desk_Disband, 0));
+					//return to main state
+					this.teamState = TEAMSTATE_MAIN;
+				}
+				//no team
+				else {
+					this.teamState = TEAMSTATE_CREATE;
+				}
+			}
+			break;
+		}
+	}//end btn in team main
+	
+	/** btn: 0:left top, 1:left bottom, 2:right top, 3:right bottom*/
 	private void handleClickTeamAlly(int btn) {
 		switch(btn) {
 		case 0:  //left top btn: ally or break ally
@@ -1029,40 +1281,45 @@ public class GuiDesk extends GuiContainer {
 			
 			/** get clicked team id */
 			//clicked team list
-			if(listClicked[LISTCLICK_TEAM] >= 0) {
-				clicki = listClicked[LISTCLICK_TEAM] + this.listNum[LISTCLICK_TEAM];
+			clicki = listClicked[LISTCLICK_TEAM] + this.listNum[LISTCLICK_TEAM];
+			List tlist = this.extProps.getAllTeamDataList();
+			
+			if(this.listFocus == LISTCLICK_TEAM && tlist != null && clicki >= 0 && clicki < tlist.size()) {
+				TeamData getd = (TeamData) tlist.get(clicki);
 				
-				List<TeamData> tlist = this.extProps.getAllTeamDataList();
-				
-				if(tlist != null && tlist.size() > clicki) {
-					TeamData getd = tlist.get(clicki);
+				if(getd != null) {
+					//get team id
+					getTeamID = getd.getTeamID();
 					
-					if(getd != null) {
-						//get team id
-						getTeamID = getd.getTeamID();
-						
-						//check is ally
-						if(this.extProps.isTeamAlly(getTeamID)) {
-							isAlly = true;
-						}
+					//check is ally
+					if(this.extProps.isTeamAlly(getTeamID)) {
+						isAlly = true;
 					}
 				}
 			}
 			//clicked ally list
-			else if(listClicked[LISTCLICK_ALLY] >= 0) {
+			else if(this.listFocus == LISTCLICK_ALLY) {
 				clicki = listClicked[LISTCLICK_ALLY] + this.listNum[LISTCLICK_ALLY];
+				tlist = this.extProps.getPlayerTeamAllyList();
 				
-				List<Integer> tlist = this.extProps.getPlayerTeamAlly();
-				
-				if(tlist != null && tlist.size() > clicki) {
+				if(tlist != null && clicki >= 0 && clicki < tlist.size()) {
 					//get team id
-					getTeamID = tlist.get(clicki);
+					getTeamID = (Integer) tlist.get(clicki);
 					isAlly = true;
 				}
 			}
 			
-			/** send ally or break packet */
-			//TODO send packet
+			/** send ally or break ally packet */
+			if(getTeamID > 0) {
+				//break ally
+				if(isAlly) {
+					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.Desk_Break, getTeamID));
+				}
+				//ally
+				else {
+					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.Desk_Ally, getTeamID));
+				}
+			}
 			
 			break;
 		case 1:  //left bottom btn: OK
@@ -1073,40 +1330,23 @@ public class GuiDesk extends GuiContainer {
 	}//end btn in team ally
 	
 	/** btn: 0:left top, 1:left bottom, 2:right top, 3:right bottom*/
-	private void handleClickTeamMain(int btn) {
-		switch(btn) {
-		case 0:  //left top btn: join or leave
-			if(this.extProps.getPlayerTeamID() > 0) {
-				//TODO leave team
-			}
-			else {
-				//TODO join team
-			}
-			break;
-		case 2:  //right top btn: ally page or create team
-			if(this.extProps.getPlayerTeamID() > 0) {
-				this.teamState = TEAMSTATE_ALLY;
-			}
-			else {
-				this.teamState = TEAMSTATE_CREATE;
-			}
-			break;
-		case 3:  //right bottom btn: rename page
-			if(this.extProps.isTeamLeader()) {
-				this.teamState = TEAMSTATE_RENAME;
-			}
-			break;
-		}
-	}//end btn in team main
-	
-	/** btn: 0:left top, 1:left bottom, 2:right top, 3:right bottom*/
 	private void handleClickTeamCreate(int btn) {
 		switch(btn) {
-		case 1:  //left bottom btn: OK
-			//TODO ok
-			break;
-		case 3:  //right bottom btn: cancel
+		case 0:  //left top btn: cancel
 			this.teamState = TEAMSTATE_MAIN;  //return to main state
+			break;
+		case 1:  //left bottom btn: OK
+			if(this.extProps.getPlayerTeamID() <= 0) {  //not in team
+				String str = this.textField.getText();
+				
+				if(str != null && str.length() > 1) {
+					LogHelper.info("DEBUG : desk: create team: "+str);
+					//change team id
+					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.Desk_Create, str));
+					//return to main state
+					this.teamState = TEAMSTATE_MAIN;
+				}
+			}
 			break;
 		}
 	}//end btn in team create
@@ -1114,14 +1354,81 @@ public class GuiDesk extends GuiContainer {
 	/** btn: 0:left top, 1:left bottom, 2:right top, 3:right bottom*/
 	private void handleClickTeamRename(int btn) {
 		switch(btn) {
-		case 1:  //left bottom btn: OK
-			//TODO ok
-			break;
-		case 3:  //right bottom btn: cancel
+		case 0:  //left top btn: cancel
 			this.teamState = TEAMSTATE_MAIN;  //return to main state
+			break;
+		case 1:  //left bottom btn: OK
+			if(this.extProps.getPlayerTeamID() > 0) {  //not in team
+				String str = this.textField.getText();
+				
+				if(str != null && str.length() > 1) {
+					LogHelper.info("DEBUG : desk: rename team: "+str);
+					//change team name
+					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.Desk_Rename, str));
+					//return to main state
+					this.teamState = TEAMSTATE_MAIN;
+				}
+			}
 			break;
 		}
 	}//end btn in team rename
+	
+	/** btn: 0:left top, 1:left bottom, 2:right top, 3:right bottom*/
+	private void handleClickTeamBan(int btn) {
+		switch(btn) {
+		case 0:  //left top btn:
+			int clicki = -1;
+			int getTeamID = 0;
+			boolean isBanned = false;
+			
+			/** get clicked team id */
+			//clicked team list
+			clicki = listClicked[LISTCLICK_TEAM] + this.listNum[LISTCLICK_TEAM];
+			List tlist = this.extProps.getAllTeamDataList();
+			
+			if(this.listFocus == LISTCLICK_TEAM && tlist != null && clicki >= 0 && clicki < tlist.size()) {
+				TeamData getd = (TeamData) tlist.get(clicki);
+				
+				if(getd != null) {
+					//get team id
+					getTeamID = getd.getTeamID();
+					
+					//check is banned
+					if(this.extProps.isTeamBanned(getTeamID)) {
+						isBanned = true;
+					}
+				}
+			}
+			//clicked banned list
+			else if(this.listFocus == LISTCLICK_BAN) {
+				clicki = listClicked[LISTCLICK_BAN] + this.listNum[LISTCLICK_BAN];
+				tlist = this.extProps.getPlayerTeamBannedList();
+				
+				if(tlist != null && clicki >= 0 && clicki < tlist.size()) {
+					//get team id
+					getTeamID = (Integer) tlist.get(clicki);
+					isBanned = true;
+				}
+			}
+			
+			/** send ban or unban packet */
+			if(getTeamID > 0) {
+				//unban
+				if(isBanned) {
+					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.Desk_Unban, getTeamID));
+				}
+				//ban
+				else {
+					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.Desk_Ban, getTeamID));
+				}
+			}
+			break;
+		case 1:  //left bottom btn: return
+			//return to main state
+			this.teamState = TEAMSTATE_MAIN;
+			break;
+		}
+	}//end btn in team ban
 
 
 }

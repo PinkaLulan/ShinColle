@@ -1,15 +1,14 @@
 package com.lulan.shincolle.client.gui.inventory;
 
-import java.util.ArrayList;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ICrafting;
 import net.minecraft.item.ItemStack;
 
-import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.entity.ExtendPlayerProps;
 import com.lulan.shincolle.tileentity.TileEntityDesk;
+import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -23,12 +22,18 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ContainerDesk extends Container {
 	
 	private TileEntityDesk tile;
-	private InventoryPlayer player;
-	private int guiFunc, bookChap, bookPage;
+	private InventoryPlayer playerInv;
+	private EntityPlayer player;
+	private ExtendPlayerProps extProps;
+	private int guiFunc, bookChap, bookPage, allyCD;
 	
 	
-	public ContainerDesk(InventoryPlayer invPlayer, TileEntityDesk te) {
+	public ContainerDesk(InventoryPlayer invPlayer, TileEntityDesk te, EntityPlayer player) {
+		this.playerInv = invPlayer;
 		this.tile = te;
+		this.player = player;
+		this.extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+		
 	}
 
 	//玩家是否可以觸發右鍵點方塊事件
@@ -56,6 +61,7 @@ public class ContainerDesk extends Container {
 		crafting.sendProgressBarUpdate(this, 2, this.tile.book_chap);
 		crafting.sendProgressBarUpdate(this, 3, this.tile.book_page);
 		crafting.sendProgressBarUpdate(this, 4, this.tile.radar_zoomLv);
+		crafting.sendProgressBarUpdate(this, 5, this.extProps.getTeamCooldownInSec());
 	}
 	
 	//將container數值跟tile entity內的數值比對, 如果不同則發送更新給client使gui呈現新數值
@@ -63,21 +69,14 @@ public class ContainerDesk extends Container {
 	public void detectAndSendChanges() {
 		super.detectAndSendChanges();
 				
-//        for(Object crafter : this.crafters) {
-//            ICrafting icrafting = (ICrafting) crafter;
-//            
-//            if(this.guiFunc != this.tile.guiFunc ||
-//               this.bookChap != this.tile.book_chap ||
-//               this.bookPage != this.tile.book_page) {
-//                icrafting.sendProgressBarUpdate(this, 1, this.tile.guiFunc);
-//                icrafting.sendProgressBarUpdate(this, 2, this.tile.book_chap);
-//                icrafting.sendProgressBarUpdate(this, 3, this.tile.book_page);
-//                this.guiFunc = this.tile.guiFunc;
-//                this.bookChap = this.tile.book_chap;
-//                this.bookPage = this.tile.book_page;
-//                this.tile.sendSyncPacket();
-//            }
-//        }
+        for(Object crafter : this.crafters) {
+            ICrafting icrafting = (ICrafting) crafter;
+            
+            if(this.allyCD != this.extProps.getTeamCooldownInSec()) {
+                icrafting.sendProgressBarUpdate(this, 5, this.extProps.getTeamCooldownInSec());
+                this.allyCD = this.extProps.getTeamCooldownInSec();
+            }
+        }
     }
 
 	//client端container接收新值
@@ -96,6 +95,10 @@ public class ContainerDesk extends Container {
 			break;
 		case 4:
 			this.tile.radar_zoomLv = updatedValue;
+			break;
+		case 5:
+//			LogHelper.info("DEBUG : sync ally cd "+updatedValue);
+			this.extProps.setTeamCooldown(updatedValue * 20);  //second to tick
 			break;
 		}
     }

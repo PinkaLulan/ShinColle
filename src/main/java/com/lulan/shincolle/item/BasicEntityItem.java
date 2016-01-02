@@ -147,39 +147,46 @@ public class BasicEntityItem extends Entity {
             
             this.worldObj.playSoundAtEntity(player, "random.pop", 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
             
-            //ship spawn egg = owner pick only
-            if(itemstack.getItem() == ModItems.ShipSpawnEgg) {
-            	NBTTagCompound nbt = itemstack.getTagCompound();
-            	
-            	//ship egg with tag
-            	if(nbt != null) {
-            		int pid1 = nbt.getInteger("PlayerID");
-            		int pid2 = EntityHelper.getPlayerUID(player);
-            		
-            		//check player UID
-            		if(pid1 <= 0) {	//ship's player UID isn't inited (old ship)
-            			//check player UUID
-            			String uuid1 = nbt.getString("owner");
-            			String uuid2 = player.getUniqueID().toString();
-            			
-            			if(uuid2.equals(uuid1)) {
-            				player.inventory.addItemStackToInventory(itemstack);
-            			}
-            		}
-            		else {	//get legal player UID
-            			if(pid1 == pid2) {
-            				player.inventory.addItemStackToInventory(itemstack);
-            			}
-            		}
-            	}
-            	//ship egg w/o tag
-            	else {
-            		player.inventory.addItemStackToInventory(itemstack);
-            	}
-            }
-            //not ship spawn egg
-            else {
+            //is OP
+            if(EntityHelper.checkOP(player)) {
             	player.inventory.addItemStackToInventory(itemstack);
+            }
+            //not OP
+            else {
+            	//ship spawn egg = owner pick only
+                if(itemstack.getItem() == ModItems.ShipSpawnEgg) {
+                	NBTTagCompound nbt = itemstack.getTagCompound();
+                	
+                	//ship egg with tag
+                	if(nbt != null) {
+                		int pid1 = nbt.getInteger("PlayerID");
+                		int pid2 = EntityHelper.getPlayerUID(player);
+                		
+                		//check player UID
+                		if(pid1 <= 0) {	//ship's player UID isn't inited (old ship)
+                			//check player UUID
+                			String uuid1 = nbt.getString("owner");
+                			String uuid2 = player.getUniqueID().toString();
+                			
+                			if(uuid2.equals(uuid1)) {
+                				player.inventory.addItemStackToInventory(itemstack);
+                			}
+                		}
+                		else {	//get legal player UID
+                			if(pid1 == pid2) {
+                				player.inventory.addItemStackToInventory(itemstack);
+                			}
+                		}
+                	}
+                	//ship egg w/o tag
+                	else {
+                		player.inventory.addItemStackToInventory(itemstack);
+                	}
+                }
+                //not ship spawn egg
+                else {
+                	player.inventory.addItemStackToInventory(itemstack);
+                }
             }
             
             if(itemstack.stackSize <= 0) {

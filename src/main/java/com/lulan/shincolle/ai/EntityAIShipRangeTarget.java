@@ -60,7 +60,20 @@ public class EntityAIShipRangeTarget extends EntityAIBase {
         	this.targetSelector = new TargetHelper.SelectorForHostile(host2);
         }
         else {
-        	this.targetSelector = new TargetHelper.Selector(host2);
+        	switch(this.targetMode) {
+        	case 1:  //pvp first
+        		this.targetSelector = new TargetHelper.PVPSelector(host2);
+        		break;
+        	case 2:  //anti-air
+        		this.targetSelector = new TargetHelper.Selector(host2);
+        		break;
+        	case 3:  //anti-subm
+        		this.targetSelector = new TargetHelper.Selector(host2);
+        		break;
+    		default: //no pvp
+    			this.targetSelector = new TargetHelper.Selector(host2);
+    			break;
+        	}
         }
 
         //½d³ò«ü©w

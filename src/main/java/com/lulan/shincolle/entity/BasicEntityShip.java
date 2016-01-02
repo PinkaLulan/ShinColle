@@ -90,7 +90,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	/**EntityFlag: 0:canFloatUp 1:isMarried 2:noFuel 3:canMelee 4:canAmmoLight 5:canAmmoHeavy 
 	 * 6:canAirLight 7:canAirHeavy 8:headTilt(client only) 9:canRingEffect 10:canDrop 11:canFollow
 	 * 12:onSightChase 13:AtkType_Light 14:AtkType_Heavy 15:AtkType_AirLight 16:AtkType_AirHeavy 
-	 * 17:HaveRingEffect 18:PVPFirst 19:AntiAir 20:AntiSS */
+	 * 17:HaveRingEffect 18:PVPFirst 19:AntiAir 20:AntiSS 21:PassiveAI */
 	protected boolean[] StateFlag;
 	/**BonusPoint: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT */
 	protected byte[] BonusPoint;
@@ -133,7 +133,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				                   true, true, true, false, true,
 								   true, false, true, true, true,
 								   true, true, false, true, false,
-								   false
+								   false, false
 								};
 		BonusPoint = new byte[] {0, 0, 0, 0, 0, 0};
 		TypeModify = new float[] {1F, 1F, 1F, 1F, 1F, 1F};
@@ -280,9 +280,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.tasks.addTask(25, new EntityAILookIdle(this));			//0011
 	}
 	
-	//setup target AI: par1: 0:passive 1:active
+	//setup target AI: par1: 0:passive 1:active 2:pvp active 3:anti-air
 	public void setAITargetList(int par1) {	
 		//passive target AI
+		
+		
 		if(par1 == 0) {
 			this.targetTasks.addTask(1, new EntityAIShipRevengeTarget(this));
 		}

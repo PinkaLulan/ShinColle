@@ -60,8 +60,9 @@ public class ServerProxy extends CommonProxy {
 	
 	/**team data cache
 	 * for team data display, owner check, etc
+	 * team ID = player UID (1 player = 1 team), team has ally or banned team list
 	 * 
-	 * mapTeamID <team ID: int, team data: String>
+	 * mapTeamID <team ID: int, team data: TeamData>
 	 * 
 	 * use:
 	 * 1. load from file: server start
@@ -87,6 +88,7 @@ public class ServerProxy extends CommonProxy {
 	 * 
 	 * mapPlayerID <player UID(Integer), player data(int[])>
 	 * player data = 0:player entity id(int), 1:player team id(int) 2:world id(int)
+	 * player team id = 0:no team, >0:in team
 	 * 
 	 * use:
 	 * 1. load from file: player login event
@@ -123,9 +125,9 @@ public class ServerProxy extends CommonProxy {
 	 */
 	private static int nextPlayerID = -1;
 	private static int nextShipID = -1;
-	private static int nextTeamID = -1;
 	
 	/**server global files */
+	public static World world0;
 	public static MapStorage serverFile = null;
 	public static ShinWorldData serverData = null;
 	public static boolean initServerFile = false;	//when open a save or world -> reset to false
@@ -156,7 +158,7 @@ public class ServerProxy extends CommonProxy {
 		mapTeamID = new HashMap<Integer, TeamData>();
 		nextPlayerID = -1;
 		nextShipID = -1;
-		nextTeamID = -1;
+		world0 = world;
 		serverFile = world.mapStorage;
 		serverData = (ShinWorldData) serverFile.loadData(ShinWorldData.class, ShinWorldData.SAVEID);
 		
@@ -166,7 +168,6 @@ public class ServerProxy extends CommonProxy {
 			//load common variable
 			setNextPlayerID(serverData.nbtData.getInteger(ShinWorldData.TAG_NEXTPLAYERID));
 			setNextShipID(serverData.nbtData.getInteger(ShinWorldData.TAG_NEXTSHIPID));
-			setNextTeamID(serverData.nbtData.getInteger(ShinWorldData.TAG_NEXTTEAMID));
 			
 			//load player data:  from server save file to playerMap
 			NBTTagList list = serverData.nbtData.getTagList(ShinWorldData.TAG_PLAYERDATA, Constants.NBT.TAG_COMPOUND);
@@ -202,18 +203,22 @@ public class ServerProxy extends CommonProxy {
 				NBTTagCompound getlist = list2.getCompoundTagAt(i);
 				int tUID = getlist.getInteger(ShinWorldData.TAG_TUID);
 				String tName = getlist.getString(ShinWorldData.TAG_TNAME);
-				int tLeader = getlist.getInteger(ShinWorldData.TAG_TLEADER);
-				int[] tMember = getlist.getIntArray(ShinWorldData.TAG_TMEMBER);
-				List<Integer> tList = CalcHelper.intArrayToList(tMember);
+				String tLName = getlist.getString(ShinWorldData.TAG_TLNAME);
+				int[] tBan = getlist.getIntArray(ShinWorldData.TAG_TBAN);
+				List<Integer> tList1 = CalcHelper.intArrayToList(tBan);
+				int[] tAlly = getlist.getIntArray(ShinWorldData.TAG_TALLY);
+				List<Integer> tList2 = CalcHelper.intArrayToList(tAlly);
 				
 				//form team data
 				TeamData tData = new TeamData();
+				tData.setTeamID(tUID);
 				tData.setTeamName(tName);
-				tData.setTeamLeaderUID(tLeader);
-				tData.setTeamMemberUID(tList);
+				tData.setTeamLeaderName(tLName);
+				tData.setTeamBannedList(tList1);
+				tData.setTeamAllyList(tList2);
 				
 				LogHelper.info("DEBUG : init server proxy: get team data: UID "+tUID+" NAME "+tName);
-				setTeamData(tUID, tData);
+				setTeamData(tData);
 			}
 			
 			initServerFile = true;
@@ -227,8 +232,8 @@ public class ServerProxy extends CommonProxy {
 		}
 	}
 	
-	//save server file when world unload (server close)
-	public static void saveServerProxy() {
+	//force save server file when world unload (server close)
+	public static void saveServerDataToFile() {
 		if(serverData != null) serverData.markDirty();
 		if(serverFile != null) serverFile.saveAllData();
 		
@@ -348,17 +353,22 @@ public class ServerProxy extends CommonProxy {
 		}
 	}
 	
-	/** team name */
-	//get
+	/** team data */
 	public static TeamData getTeamData(int tid) {
 		if(tid > 0) return mapTeamID.get(tid);
 		return null;
 	}
 	
-	//set
-	public static void setTeamData(int tid, TeamData data) {
-		if(tid > 0 && data != null) {
-			mapTeamID.put(tid, data);
+	public static void setTeamData(TeamData data) {
+		if(data != null && data.getTeamID() > 0) {
+			mapTeamID.put(data.getTeamID(), data);
+			serverData.markDirty();
+		}
+	}
+	
+	public static void removeTeamData(int tid) {
+		if(tid > 0 && mapTeamID.containsKey(tid)) {
+			mapTeamID.remove(tid);
 			serverData.markDirty();
 		}
 	}
@@ -383,17 +393,6 @@ public class ServerProxy extends CommonProxy {
 		if(serverData != null) {
 			LogHelper.info("DEBUG : server proxy: set next ship id "+par1);
 			nextShipID = par1;
-			serverData.markDirty();
-		}
-	}
-	
-	public static int getNextTeamID() {
-		return nextTeamID;
-	}
-	
-	public static void setNextTeamID(int par1) {
-		if(serverData != null) {
-			nextTeamID = par1;
 			serverData.markDirty();
 		}
 	}
@@ -430,8 +429,17 @@ public class ServerProxy extends CommonProxy {
 			
 			//update player data
 			if(pid > 0) {
-				LogHelper.info("DEBUG : update player: update player id "+pid+" eid: "+pdata[0]+" world: "+pdata[2]);
+				LogHelper.info("DEBUG : update player: update player id "+pid+" eid: "+pdata[0]+" team: "+pdata[1]+" world: "+pdata[2]);
 				setPlayerWorldData(pid, pdata);
+				
+				/** server init wrong (lost all data or file deleted)
+				 *  try to generate a large next ID
+				 */
+				if(getNextPlayerID() <= 0 || getNextPlayerID() <= pid) {
+					LogHelper.info("DEBUG : update ship: find next layer id error");
+					int newNextID = pid + 100000;
+					setNextPlayerID(newNextID);
+				}
 			}
 			//player id < 0, create one
 			else {
@@ -468,6 +476,15 @@ public class ServerProxy extends CommonProxy {
 		if(sid > 0) {
 			LogHelper.info("DEBUG : update ship: update ship id "+sid+" eid: "+sdata[0]+" world: "+sdata[1]);
 			setShipWorldData(sid, sdata);	//cache in server proxy
+			
+			/** server init wrong (lost all data or file deleted)
+			 *  try to generate a large next ID
+			 */
+			if(getNextShipID() <= 0 || getNextShipID() <= sid) {
+				LogHelper.info("DEBUG : update ship: find next ship id error");
+				int newNextID = sid + 100000;
+				setNextShipID(newNextID);
+			}
 		}
 		//ship id < 0, create one
 		else {
@@ -515,9 +532,22 @@ public class ServerProxy extends CommonProxy {
 		if(serverTicks > 23999) serverTicks = 0;
 		
 		//work after server start tick > 60
-		if(serverTicks > 60) {
-//			if(serverTicks % 64 == 0) {
-//				//DEBUG
+		if(serverTicks > 100) {
+			if(serverTicks % 64 == 0) {
+//				//server init fail, try again
+//				if(!initServerFile) {
+//					LogHelper.info("DEBUG : server proxy tick: init fail, try init again");
+//					//backup cache, try init again and recovery cache
+//					Map extPropBK = extendedPlayerData;
+//					Map shipBK = mapShipID;
+//					
+//					initServerProxy(world0);
+//					
+//					extendedPlayerData = extPropBK;
+//					mapShipID = shipBK;
+//				}
+				
+				///////////////////////DEBUG
 //				List<String> getlist = getPlayerTargetClassList(100);
 //				if(getlist != null) {
 //					for(String s : getlist) {
@@ -527,9 +557,13 @@ public class ServerProxy extends CommonProxy {
 //				serverData = (ShinWorldData) serverFile.loadData(ShinWorldData.class, ShinWorldData.SAVEID);
 //				NBTTagList list = serverData.nbtData.getTagList(ShinWorldData.TAG_PLAYERDATA, Constants.NBT.TAG_COMPOUND);
 //				NBTTagCompound getlist = list.getCompoundTagAt(1);
-//				int uid = getlist.getInteger(ShinWorldData.TAG_PUID);
-//				LogHelper.info("DEBUG : server proxy tick: get player data count: "+mapPlayerID.size()+" "+getlist.toString()+" "+serverData.isDirty());
-//			}
+//				int uid = getlist.getInteger(ShinWorldData.TAG_TEAMDATA);
+//				LogHelper.info("DEBUG : server proxy tick: ");
+//				if(serverData != null && serverData.nbtData != null) {
+//					NBTTagList list2 = serverData.nbtData.getTagList(ShinWorldData.TAG_TEAMDATA, Constants.NBT.TAG_COMPOUND);
+//					LogHelper.info("DEBUG : server proxy tick: "+serverData.isDirty()+" "+mapTeamID.size()+" "+list2);
+//				}
+			}
 			
 			/**every update radar tick
 			 * 1. create a map: key = player uid, value = ships eid
@@ -601,9 +635,150 @@ public class ServerProxy extends CommonProxy {
 				}//end need update
 			}
 		}//end server start > 60 ticks
-		
 	}
-
 	
+	/** rename team */
+	public static void teamRename(int tid, String tname) {
+		//check team exist
+		if(tid > 0 && tname != null && tname.length() > 1 &&
+		   getAllTeamWorldData().containsKey(tid)) {
+			TeamData tdata = getTeamData(tid);
+			tdata.setTeamName(tname);
+			//TODO data saved?
+		}
+	}
+	
+	/** create team */
+	public static void teamCreate(EntityPlayer player, String tname) {
+		if(player != null) {
+			ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+			
+			if(extProps != null) {
+				int pUID = extProps.getPlayerUID();
+				
+				//check team data
+				if(pUID > 0 && tname != null && tname.length() > 1 && getAllTeamWorldData() != null) {
+					TeamData tdata = new TeamData();
+					tdata.setTeamID(pUID);
+					tdata.setTeamName(tname);
+					tdata.setTeamLeaderName(player.getDisplayName());
+					LogHelper.info("DEBUG : server proxy: create team: "+pUID+" "+tname);
+					
+					//save team data
+					setTeamData(tdata);
+					
+					//update player data
+					extProps.setPlayerTeamID(pUID);
+					extProps.setTeamCooldown(ConfigHandler.teamCooldown);
+					updatePlayerID(player);
+					
+					//TODO update all ship?
+					
+//					//DEBUG generate random team
+//					TeamData tdata2 = new TeamData(player.getRNG().nextInt(999),"sa"+player.getRNG().nextInt(999),"sa"+player.getRNG().nextInt(999));
+//					TeamData tdata3 = new TeamData(player.getRNG().nextInt(999),"sad4"+player.getRNG().nextInt(999),"sad4"+player.getRNG().nextInt(999));
+//					TeamData tdata4 = new TeamData(player.getRNG().nextInt(999),"sa7"+player.getRNG().nextInt(999),"sa7"+player.getRNG().nextInt(999));
+//					TeamData tdata5 = new TeamData(player.getRNG().nextInt(999),"ff"+player.getRNG().nextInt(999),"ff"+player.getRNG().nextInt(999));
+//					TeamData tdata6 = new TeamData(player.getRNG().nextInt(999),"sht"+player.getRNG().nextInt(999),"sht"+player.getRNG().nextInt(999));
+//					TeamData tdata7 = new TeamData(player.getRNG().nextInt(999),"dss"+player.getRNG().nextInt(999),"dss"+player.getRNG().nextInt(999));
+//					TeamData tdata8 = new TeamData(player.getRNG().nextInt(999),"ss"+player.getRNG().nextInt(999),"ss"+player.getRNG().nextInt(999));
+//					
+//					setTeamData(tdata2);
+//					setTeamData(tdata3);
+//					setTeamData(tdata4);
+//					setTeamData(tdata5);
+//					setTeamData(tdata6);
+//					setTeamData(tdata7);
+//					setTeamData(tdata8);
+				}
+			}
+		}
+	}
+	
+	/** disband team */
+	public static void teamDisband(EntityPlayer player) {
+		if(player != null) {
+			ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+			
+			if(extProps != null) {
+				int pUID = extProps.getPlayerUID();
+				
+				//check team existed
+				if(getAllTeamWorldData() != null && getAllTeamWorldData().containsKey(pUID)) {
+					LogHelper.info("DEBUG : server proxy: remove team: "+pUID);
+					
+					//save team data
+					removeTeamData(pUID);
+					
+					//update player data
+					extProps.setPlayerTeamID(0);
+					extProps.setTeamCooldown(ConfigHandler.teamCooldown);
+					updatePlayerID(player);
+					
+					//TODO update all ship?
+				}
+			}
+		}
+	}
+	
+	/** add ally team: add team2 as team1's ally, UNILATERAL relationship */
+	public static void teamAddAlly(int tid1, int tid2) {
+		//check team exist
+		if(tid1 > 0 && tid2 > 0 && tid1 != tid2 &&
+		   getAllTeamWorldData().containsKey(tid1) &&
+		   getAllTeamWorldData().containsKey(tid2)) {
+			LogHelper.info("DEBUG : server proxy: add ally: "+tid1+" add "+tid2);
+			TeamData tdata = getTeamData(tid1);
+			tdata.addTeamAlly(tid2);
+			//TODO data saved?
+//			ServerProxy.setTeamData(tdata);
+		}
+	}
+	
+	/** remove ally team: remove team2 from team1's ally, BILATERAL relationship */
+	public static void teamRemoveAlly(int tid1, int tid2) {
+		//check team exist
+		if(tid1 > 0 && tid2 > 0 &&
+		   getAllTeamWorldData().containsKey(tid1) &&
+		   getAllTeamWorldData().containsKey(tid2)) {
+			LogHelper.info("DEBUG : server proxy: remove ally: "+tid1+" and "+tid2);
+			TeamData tdata1 = getTeamData(tid1);
+			tdata1.removeTeamAlly(tid2);
+			TeamData tdata2 = getTeamData(tid2);
+			tdata2.removeTeamAlly(tid1);
+			//TODO data saved?
+//			ServerProxy.setTeamData(tdata);
+		}
+	}
+	
+	/** ban team: team1 ban team2, BILATERAL relationship */
+	public static void teamAddBan(int tid1, int tid2) {
+		//check team exist
+		if(tid1 > 0 && tid2 > 0 && tid1 != tid2 &&
+		   getAllTeamWorldData().containsKey(tid1) &&
+		   getAllTeamWorldData().containsKey(tid2)) {
+			LogHelper.info("DEBUG : server proxy: ban team: "+tid1+" ban "+tid2);
+			TeamData tdata1 = getTeamData(tid1);
+			tdata1.addTeamBanned(tid2);
+			TeamData tdata2 = getTeamData(tid2);
+			tdata2.addTeamBanned(tid1);
+			//TODO data saved?
+//			ServerProxy.setTeamData(tdata);
+		}
+	}
+	
+	/** unban team: team1 unban team2, UNILATERAL relationship */
+	public static void teamRemoveBan(int tid1, int tid2) {
+		//check team exist
+		if(tid1 > 0 && tid2 > 0 &&
+		   getAllTeamWorldData().containsKey(tid1) &&
+		   getAllTeamWorldData().containsKey(tid2)) {
+			LogHelper.info("DEBUG : server proxy: unban team: "+tid1+" unban "+tid2);
+			TeamData tdata1 = getTeamData(tid1);
+			tdata1.removeTeamBanned(tid2);
+			//TODO data saved?
+//			ServerProxy.setTeamData(tdata);
+		}
+	}
 
 }

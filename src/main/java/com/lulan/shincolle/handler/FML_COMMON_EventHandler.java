@@ -71,9 +71,9 @@ public class FML_COMMON_EventHandler {
 				BiomeGenBase biome = event.player.worldObj.getBiomeGenForCoords(blockX, blockZ);	
 				
 				//ally cooldown--
-				int allycd = extProps.getAllyCooldown();
+				int allycd = extProps.getTeamCooldown();
 				if(allycd > 0) {
-					extProps.setAllyCooldown(--allycd);
+					extProps.setTeamCooldown(--allycd);
 				}
 				
 				//boss cooldown--

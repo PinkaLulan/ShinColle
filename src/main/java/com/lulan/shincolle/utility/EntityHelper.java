@@ -51,6 +51,7 @@ import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
+import com.lulan.shincolle.team.TeamData;
 import com.lulan.shincolle.tileentity.TileEntityDesk;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
@@ -202,6 +203,48 @@ public class EntityHelper {
 			}
 		}
 		
+		return false;
+	}
+	
+	/** check target entity is host's ally, SERVER SIDE ONLY */
+	public static boolean checkIsAlly(Entity host, Entity target) {
+		if(host != null && target != null) {
+			int hostID = getPlayerUID(host);
+			int tarID = getPlayerUID(target);
+			
+			//host and target has player owner
+			if(hostID > 0 && tarID > 0) {
+				TeamData hostTeam = getTeamDataByUID(hostID);
+				TeamData tarTeam = getTeamDataByUID(hostID);
+				
+				//host has team
+				if(hostTeam != null && tarTeam != null) {
+					List alist = hostTeam.getTeamAllyList();
+					return alist.contains(tarTeam.getTeamID());
+				}
+			}
+		}
+		return false;
+	}
+	
+	/** check target entity is banned team, SERVER SIDE ONLY */
+	public static boolean checkIsBanned(Entity host, Entity target) {
+		if(host != null && target != null) {
+			int hostID = getPlayerUID(host);
+			int tarID = getPlayerUID(target);
+			
+			//host and target has player owner
+			if(hostID > 0 && tarID > 0) {
+				TeamData hostTeam = getTeamDataByUID(hostID);
+				TeamData tarTeam = getTeamDataByUID(hostID);
+				
+				//host has team
+				if(hostTeam != null && tarTeam != null) {
+					List alist = hostTeam.getTeamBannedList();
+					return alist.contains(tarTeam.getTeamID());
+				}
+			}
+		}
 		return false;
 	}
 	
@@ -402,7 +445,6 @@ public class EntityHelper {
 		//player entity
 		if(ent instanceof EntityPlayer) {
 			ExtendPlayerProps extProps = (ExtendPlayerProps) ent.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
-			
 			if(extProps != null) return extProps.getPlayerUID();
 		}
 		
@@ -417,7 +459,6 @@ public class EntityHelper {
 			//get player UID
 			if(owner instanceof EntityPlayer) {
 				ExtendPlayerProps extProps = (ExtendPlayerProps) owner.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
-				
 				if(extProps != null) return extProps.getPlayerUID();
 			}
 		}
@@ -429,6 +470,16 @@ public class EntityHelper {
 	public static String getPetPlayerUUID(EntityTameable pet) {
 		if(pet != null) {
 			return pet.func_152113_b();
+		}
+		
+		return null;
+	}
+	
+	/** get player team data by player UID, SERVER SIDE ONLY */
+	public static TeamData getTeamDataByUID(int uid) {
+		if(uid > 0) {
+			int tid = getPlayerTID(uid);
+			return ServerProxy.getTeamData(tid);
 		}
 		
 		return null;

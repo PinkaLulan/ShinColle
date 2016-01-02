@@ -28,7 +28,7 @@ public class ConfigHandler {
 	public static float dropGrudge = 1.0F;
 	public static int closeGUIDist = 64;
 	public static int bossCooldown = 4800;
-	public static int allyCooldown = 12000;
+	public static int teamCooldown = 6000;
 	
 	//DESK
 	public static int radarUpdate = 128;	//radar update interval (ticks)
@@ -64,8 +64,8 @@ public class ConfigHandler {
 		//是否顯示custom name tag
 		alwaysShowTeam = config.getBoolean("Always_Show_Team", "general", false, "Always show team circles");
 		
-		//ally改動cd (ticks)
-		allyCooldown = config.getInt("Ally_Cooldown", "general", 12000, 20, 1728000, "Change ally state cooldown");
+		//team改動cd (ticks)
+		teamCooldown = config.getInt("Team_Cooldown", "general", 6000, 20, 1728000, "Create/Disband team cooldown");
 		
 		//boss生成cd設定 (ticks)
 		bossCooldown = config.getInt("Boss_Cooldown", "general", 4800, 20, 1728000, "Boss spawn cooldown");

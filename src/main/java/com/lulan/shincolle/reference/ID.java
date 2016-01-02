@@ -120,6 +120,7 @@ public class ID {
 		public static final byte PVPFirst = 18;
 		public static final byte AntiAir = 19;
 		public static final byte AntiSS = 20;
+		public static final byte PassiveAI = 21;
 	}
 	
 	/**GUI ID*/
@@ -232,7 +233,7 @@ public class ID {
 		public static final byte FollowMin = 10;	//follow range min/max
 		public static final byte FollowMax = 11;	
 		public static final byte FleeHP = 12;		//flee hp%
-		public static final byte TargetAI = 13;		//active AI or passive AI 
+		public static final byte TargetAI = 13;		//NO USE
 		public static final byte GuardX = 14;		//guard xyz pos
 		public static final byte GuardY = 15;
 		public static final byte GuardZ = 16;

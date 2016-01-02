@@ -26,15 +26,14 @@ public class ShinWorldData extends WorldSavedData {
 	public static final String SAVEID = Reference.MOD_ID;
 	public static final String TAG_NEXTPLAYERID = "nextPlayerID";
 	public static final String TAG_NEXTSHIPID = "nextShipID";
-	public static final String TAG_NEXTTEAMID = "nextTeamID";
 	public static final String TAG_PLAYERDATA = "playerData";
 	public static final String TAG_TEAMDATA = "teamData";
 	public static final String TAG_PUID = "pUID";
 	public static final String TAG_PDATA = "pData";
 	public static final String TAG_TUID = "tUID";
 	public static final String TAG_TNAME = "tName";
-	public static final String TAG_TLEADER = "tLeader";
-	public static final String TAG_TMEMBER = "tMember";
+	public static final String TAG_TLNAME = "tLName";
+	public static final String TAG_TBAN = "tBan";
 	public static final String TAG_TALLY = "tAlly";
 	
 	//data
@@ -56,7 +55,7 @@ public class ShinWorldData extends WorldSavedData {
 	public void readFromNBT(NBTTagCompound nbt) {
 		//get data
 		nbtData = (NBTTagCompound) nbt.copy();
-//		LogHelper.info("DEBUG : world data: load NBT: "+nbtData.toString());
+		LogHelper.info("DEBUG : world data: load NBT: "+nbtData.toString());
 	}//end read nbt
 
 	/**write server save file
@@ -67,8 +66,7 @@ public class ShinWorldData extends WorldSavedData {
 		/** save common variable */
 		nbt.setInteger(TAG_NEXTPLAYERID, ServerProxy.getNextPlayerID());
 		nbt.setInteger(TAG_NEXTSHIPID, ServerProxy.getNextShipID());
-		nbt.setInteger(TAG_NEXTTEAMID, ServerProxy.getNextTeamID());
-		
+
 		
 		/** save player data:  from playerMap to server save file */
 		NBTTagList list = new NBTTagList();
@@ -82,12 +80,13 @@ public class ShinWorldData extends WorldSavedData {
 		    NBTTagCompound save = new NBTTagCompound();
 		    save.setInteger(TAG_PUID, uid);
 		    save.setIntArray(TAG_PDATA, data0);
+		    LogHelper.info("DEBUG : save world data: save id "+uid+" data: "+data0[0]+" "+data0[1]+" "+data0[2]);
 		    
 		    //save target class list
 		    List<String> strList = ServerProxy.getPlayerTargetClassList(uid);
 			if(strList != null) {
 				NBTTagList tagList = new NBTTagList();
-				LogHelper.info("DEBUG : save world data: save id "+uid+" list size: "+strList.size()); 
+				LogHelper.info("DEBUG : save world data: save id "+uid+" target list size: "+strList.size());
 				for(String getc : strList) {
 					NBTTagString str = new NBTTagString(getc);
 					tagList.appendTag(str);
@@ -110,11 +109,12 @@ public class ShinWorldData extends WorldSavedData {
 		    
 		    NBTTagCompound save = new NBTTagCompound();
 		    save.setInteger(TAG_TUID, uid);
-		    save.setInteger(TAG_TLEADER, data.getTeamLeaderUID());
 		    save.setString(TAG_TNAME, data.getTeamName());
-		    saveIntListToNBT(save, TAG_TMEMBER, data.getTeamMemberUID());  //save team member list
-		    saveIntListToNBT(save, TAG_TALLY, data.getTeamAlly());  //save team ally list
-
+		    save.setString(TAG_TLNAME, data.getTeamLeaderName());
+		    
+	    	saveIntListToNBT(save, TAG_TBAN, data.getTeamBannedList());
+	    	saveIntListToNBT(save, TAG_TALLY, data.getTeamAllyList());
+		    
 		    list.appendTag(save);	//將save加入到list中, 不檢查是否有重複的tag, 而是新增一個tag
 		}
 		nbt.setTag(TAG_TEAMDATA, list);	//將list加入到nbt中
@@ -122,9 +122,9 @@ public class ShinWorldData extends WorldSavedData {
 	}//end write nbt
 	
 	private static void saveIntListToNBT(NBTTagCompound save, String tagName, List<Integer> ilist) {
-		if(ilist != null) {
-	    	int[] tMember = CalcHelper.intListToArray(ilist);
-	    	save.setIntArray(tagName, tMember);
+		if(ilist != null && ilist.size() > 0) {
+	    	int[] intary = CalcHelper.intListToArray(ilist);
+	    	save.setIntArray(tagName, intary);
 	    }
 	}
 	
