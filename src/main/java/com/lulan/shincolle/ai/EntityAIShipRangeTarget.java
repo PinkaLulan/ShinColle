@@ -5,30 +5,27 @@ import java.util.List;
 
 import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityFlying;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.player.EntityPlayerMP;
 
+import com.lulan.shincolle.entity.BasicEntityAirplane;
+import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.IShipAttackBase;
+import com.lulan.shincolle.entity.IShipInvisible;
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 
 
 /**GET TARGET WITHIN SPECIFIC RANGE
  * 
- * range mode: 
- * 0: target between range1 and range2 only (只打外圈)
- * 1: target < range1 => < range2 (先打內圈, 再打外圈)
- * 2: target between range1 and range2 => < range1 (先打外圈, 再打內圈)
- * 3: target < range1 only (只打內圈)
+ * target priority:
+ * PVP > AntiAir > AntiSubm > normal target
  * 
- * target mode:
- * 0: attack all target
- * 1: pvp first (attack BasicEntityShip first)
- * 2: anti air (attack air entity first)
- * 3: anti subm (attack subm or invisible target first)
- * 
- * @parm host, range proportion, mode
  */
 public class EntityAIShipRangeTarget extends EntityAIBase {
 	
@@ -37,59 +34,38 @@ public class EntityAIShipRangeTarget extends EntityAIBase {
     protected IEntitySelector targetSelector;
     protected IShipAttackBase host;
     protected EntityLiving host2;
+    protected BasicEntityShip hostShip;
     protected Entity targetEntity;
-    protected int range1;
-    protected int range2;
-    protected int rangeMode;
-    protected int targetMode;
-    protected float rangeMod;
+    protected int range;
     
 
     //將maxRange 乘上一個比例當作range1
-    public EntityAIShipRangeTarget(IShipAttackBase host, float rangeMod, int rangeMode, int targetMode, Class targetClass) {
+    public EntityAIShipRangeTarget(IShipAttackBase host, Class targetClass) {
     	this.setMutexBits(1);
     	this.host = host;
     	this.host2 = (EntityLiving) host;
     	
         //攻擊類型指定
-        this.targetMode = targetMode;
         this.targetClass = targetClass;
         this.targetSorter = new TargetHelper.Sorter(host2);
         
         if(host instanceof BasicEntityShipHostile) {
         	this.targetSelector = new TargetHelper.SelectorForHostile(host2);
         }
+        else if(host instanceof BasicEntityShip) {
+        	this.hostShip = (BasicEntityShip) host;
+    		this.targetSelector = new TargetHelper.Selector(host2);
+        }
         else {
-        	switch(this.targetMode) {
-        	case 1:  //pvp first
-        		this.targetSelector = new TargetHelper.PVPSelector(host2);
-        		break;
-        	case 2:  //anti-air
-        		this.targetSelector = new TargetHelper.Selector(host2);
-        		break;
-        	case 3:  //anti-subm
-        		this.targetSelector = new TargetHelper.Selector(host2);
-        		break;
-    		default: //no pvp
-    			this.targetSelector = new TargetHelper.Selector(host2);
-    			break;
-        	}
+        	this.targetSelector = new TargetHelper.Selector(host2);
         }
 
         //範圍指定
-        this.rangeMod = rangeMod;
-        this.range2 = (int)this.host.getAttackRange();
-        this.range1 = (int)(this.rangeMod * this.range2);
-        this.rangeMode = rangeMode;
-        
-        //檢查範圍, 使range2 > range1 > 1
-        if(this.range1 < 1) {
-        	this.range1 = 1;
+        this.range = (int)this.host.getAttackRange();
+        //最小追蹤16格範圍
+        if(this.range < 16) {
+        	this.range = 16;
         }
-        if(this.range2 <= this.range1) {
-        	this.range2 = this.range1 + 1;
-        }
- 
     }
 
     @Override
@@ -99,105 +75,78 @@ public class EntityAIShipRangeTarget extends EntityAIBase {
 //    		LogHelper.info("DEBUG : target AI: should exec: "+host);
     		
     		//check if not sitting and every 8 ticks
-        	if(this.host.getIsSitting() || this.host.getTickExisted() % 8 != 0) return false;
+        	if(this.host.getIsSitting() || this.host.getTickExisted() % 8 != 0) {
+        		return false;
+        	}
     		
-    		this.range2 = (int)this.host.getAttackRange();
-            this.range1 = (int)(this.rangeMod * this.range2);
-            //檢查範圍, 使range2 > range1 > 1
-            if(this.range1 < 1) {
-            	this.range1 = 1;
+    		this.range = (int)this.host.getAttackRange();
+    		//最小追蹤16格範圍
+            if(this.range < 16) {
+            	this.range = 16;
             }
-            if(this.range2 <= this.range1) {
-            	this.range2 = this.range1 + 1;
-            }
-
-        	//entity list < range1
-            List list1 = this.host2.worldObj.selectEntitiesWithinAABB(this.targetClass, 
-            		this.host2.boundingBox.expand(this.range1, this.range1 * 0.6D, this.range1), this.targetSelector);
-            //entity list < range2
-            List list2 = this.host2.worldObj.selectEntitiesWithinAABB(this.targetClass, 
-            		this.host2.boundingBox.expand(this.range2, this.range2 * 0.6D, this.range2), this.targetSelector);
             
-            //對目標做distance sort, id=0為nearest target
-            Collections.sort(list1, this.targetSorter);
-            Collections.sort(list2, this.targetSorter);
+            //find target
+            List list1 = null;
+            List list2 = null;
             
-            switch(this.rangeMode) {
-            case 0:  //mode 0:target between range1 and range2 only
-            	list2.removeAll(list1);	 //list2排除range1以內的目標
-            	if(list2.isEmpty()) {
-                    return false;
-                }
-                else {
-                	this.targetEntity = (Entity) list2.get(0);
-                	if(list2.size() > 2) {
-                		this.targetEntity = (Entity) list2.get(this.host2.worldObj.rand.nextInt(3));
-                	}             
-                    return true;
-                }
-    		case 1:  //mode 1:target < range1 => < range2
-    			if(list1.isEmpty()) {	//range1以內沒有目標, 則找range2
-    				if(list2.isEmpty()) {
-    	                return false;
-    	            }
-    				else {				//range2以內有目標
-    					this.targetEntity = (Entity)list2.get(0);
-    					if(list2.size() > 2) {
-    	            		this.targetEntity = (Entity)list2.get(this.host2.worldObj.rand.nextInt(3));
-    	            	}
-    	                return true;
-    				}
-                }
-                else {					//range1以內有目標
-                    this.targetEntity = (Entity)list1.get(0);
-                    if(list1.size() > 2) {
-                		this.targetEntity = (Entity)list1.get(this.host2.worldObj.rand.nextInt(3));
+            if(this.hostShip != null) {  //ship: pvp, AA, ASM mode
+            	//Anti Air first
+            	if(this.hostShip.getStateFlag(ID.F.AntiAir)) {
+            		//find air target
+            		list1 = this.host2.worldObj.selectEntitiesWithinAABB(BasicEntityAirplane.class, 
+                    		this.host2.boundingBox.expand(this.range, this.range * 0.75D, this.range), this.targetSelector);
+            		list2 = this.host2.worldObj.selectEntitiesWithinAABB(EntityFlying.class, 
+                    		this.host2.boundingBox.expand(this.range, this.range * 0.75D, this.range), this.targetSelector);
+            		
+            		//union list
+            		list1 = CalcHelper.listUnion(list1, list2);
+            	}
+            	
+            	//if no AA target, find ASM target
+            	if(list1 == null || list1.isEmpty()) {
+            		if(this.hostShip.getStateFlag(ID.F.AntiSS)) {
+        				list1 = this.host2.worldObj.selectEntitiesWithinAABB(IShipInvisible.class, 
+                        		this.host2.boundingBox.expand(this.range, this.range * 0.75D, this.range), this.targetSelector);
                 	}
-                    return true;
-                }
-            case 2:  //mode 2:target between range1 and range2 => < range1
-            	list2.removeAll(list1);	 //list2排除range1以內的目標
-            	if(list2.isEmpty()) {	 //range2~range1中沒有目標, 改找range1以內
-            		if(list1.isEmpty()) {
-                        return false;
-                    }
-            		else {				 //range1以內有目標
-            			this.targetEntity = (Entity)list1.get(0);
-            			if(list1.size() > 2) {
-                    		this.targetEntity = (Entity)list1.get(this.host2.worldObj.rand.nextInt(3));
+            		
+            		//find PVP target
+            		if(list1 == null || list1.isEmpty()) {
+                    	if(this.hostShip.getStateFlag(ID.F.PVPFirst)) {
+                    		list1 = this.host2.worldObj.selectEntitiesWithinAABB(BasicEntityShip.class, 
+                            		this.host2.boundingBox.expand(this.range, this.range * 0.75D, this.range), this.targetSelector);
                     	}
-                        return true;
             		}
-                }
-                else {					 //range2以內有目標
-                    this.targetEntity = (Entity)list2.get(0);
-                    if(list2.size() > 2) {
-                		this.targetEntity = (Entity)list2.get(this.host2.worldObj.rand.nextInt(3));
-                	}
-                    return true;
-                }
-            case 3:  //mode 3: target < range1 only
-            	if(list1.isEmpty()) {
-                    return false;
-                }
-                else {
-                	this.targetEntity = (Entity) list1.get(0);
-                	if(list1.size() > 2) {
-                		this.targetEntity = (Entity) list1.get(this.host2.worldObj.rand.nextInt(3));
-                	}             
-                    return true;
-                }
+            	}
+            }//end host is ship
+            
+            //find normal target
+            if(list1 == null || list1.isEmpty()) {
+	        	list1 = this.host2.worldObj.selectEntitiesWithinAABB(this.targetClass, 
+	            		this.host2.boundingBox.expand(this.range, this.range * 0.75D, this.range), this.targetSelector);
             }
-    	}
+            
+            //若有抓到target
+            if(list1 != null && !list1.isEmpty()) {
+            	//對目標做distance sort, nearest target排最前面
+                Collections.sort(list1, this.targetSorter);
+
+            	//get nearest target
+            	this.targetEntity = (Entity) list1.get(0);
+            	
+            	//get random 0~2 target if >2 targets
+            	if(list1.size() > 2) {
+            		this.targetEntity = (Entity) list1.get(this.host2.worldObj.rand.nextInt(3));
+            	}
+            	
+                return true;
+            }//end list not null
+    	}//end host not null
     	
     	return false;
     }
     
     @Override
-    public void resetTask() {
-//    	LogHelper.info("DEBUG : target AI: reset "+this.host);
-    	if(this.host != null) this.host.setEntityTarget(null);
-    }
+    public void resetTask() {}
 
     @Override
     public void startExecuting() {
@@ -207,19 +156,21 @@ public class EntityAIShipRangeTarget extends EntityAIBase {
     
     @Override
     public boolean continueExecuting() {
-//    	LogHelper.info("DEBUG : target AI: cont exec: "+this.host);
         Entity target = this.host.getEntityTarget();
-
+//        LogHelper.info("DEBUG : target AI: cont exec: "+this.host2.getCustomNameTag()+" "+this.targetMode+" "+target);
+        
+        //target死亡或消失時停止偵測該target, 並重新開始偵測target
         if(target == null || !target.isEntityAlive()) {
             return false;
         }
         else {
-            double d0 = this.range2 * this.range2;
+            double d0 = this.range * this.range;
 
-            if(this.host2.getDistanceSqToEntity(target) > d0) {  //超出攻擊距離
+            //超出攻擊距離, 放棄該目標
+            if(this.host2.getDistanceSqToEntity(target) > d0) {
                 return false;
             }
-            //若target是玩家, 檢查是否在OP mode
+            //若target是玩家, 則不打OP
             return !(target instanceof EntityPlayerMP) || !((EntityPlayerMP)target).theItemInWorldManager.isCreative();
         }
     }

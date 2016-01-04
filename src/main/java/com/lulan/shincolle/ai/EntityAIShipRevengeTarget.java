@@ -2,8 +2,10 @@ package com.lulan.shincolle.ai;
 
 import net.minecraft.entity.Entity;
 
+import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.utility.LogHelper;
+import com.lulan.shincolle.utility.TargetHelper;
 
 /** Set attack target by revenge target
  * 
@@ -17,10 +19,16 @@ public class EntityAIShipRevengeTarget extends EntityAIShipRangeTarget {
 
     
     public EntityAIShipRevengeTarget(IShipAttackBase host) {
-        super(host, 0.4F, 1, 0, Entity.class);
+        super(host, Entity.class);
         this.setMutexBits(1);
-        
         this.oldRevengeTime = 0;
+        
+        if(host instanceof BasicEntityShipHostile) {
+        	this.targetSelector = new TargetHelper.RevengeSelectorForHostile(host2);
+        }
+        else {
+    		this.targetSelector = new TargetHelper.RevengeSelector(host2);
+        }
     }
 
     @Override

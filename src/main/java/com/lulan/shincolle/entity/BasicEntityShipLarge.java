@@ -80,11 +80,6 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip implements IS
 		
 		//server side
 		if(!this.worldObj.isRemote) {
-			//clear target if target dead (for unknow target bug)
-			if(this.getEntityTarget() != null && !this.getEntityTarget().isEntityAlive()) {
-				this.setEntityTarget(null);
-			}
-
 			//每一段時間回復一隻艦載機
 			delayAircraft--;
 			if(this.delayAircraft <= 0) {

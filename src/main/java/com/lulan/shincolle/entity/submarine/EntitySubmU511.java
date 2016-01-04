@@ -7,12 +7,14 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.entity.ExtendShipProps;
+import com.lulan.shincolle.entity.IShipInvisible;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CSpawnParticle;
@@ -24,8 +26,11 @@ import com.lulan.shincolle.utility.EntityHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
-public class EntitySubmU511 extends BasicEntityShipSmall {
+public class EntitySubmU511 extends BasicEntityShipSmall implements IShipInvisible {
 
+	private static float ilevel = 0.3F;
+	
+	
 	public EntitySubmU511(World world) {
 		super(world);
 		this.setSize(0.6F, 1.4F);	//碰撞大小 跟模型大小無關
@@ -120,6 +125,22 @@ public class EntitySubmU511 extends BasicEntityShipSmall {
 		return 0;
 	}
   	
+  	@Override
+    public boolean attackEntityFrom(DamageSource attacker, float atk) {
+  		if(attacker.getEntity() != null) {
+  			float dist = (float) this.getDistanceSqToEntity(attacker.getEntity());
+
+  			//dist > 6 blocks
+  			if(dist > 36F) {
+  				if(this.getRNG().nextFloat() < this.getInvisibleLevel()) {
+  					return false;
+  				}
+  			}
+  		}
+  		
+  		return super.attackEntityFrom(attacker, atk);
+  	}
+  	
   	//潛艇的輕攻擊一樣使用飛彈
   	@Override
   	//range attack method, cost heavy ammo, attack delay = 100 / attack speed, damage = 500% atk
@@ -205,6 +226,16 @@ public class EntitySubmU511 extends BasicEntityShipSmall {
   		else {
   			return (double)this.height * 0.5F;
   		}
+	}
+  	
+  	@Override
+	public float getInvisibleLevel() {
+		return this.ilevel;
+	}
+	
+	@Override
+	public void setInvisibleLevel(float level) {
+		this.ilevel = level;
 	}
   	
 

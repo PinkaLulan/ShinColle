@@ -78,12 +78,12 @@ public class ShipMoveHelper {
                 if(entityN.canFly()) {
 //                    if(x1 * x1 + z1 * z1 < 3.0D) {
                         if(y1 > 0D) {
-                        	this.entity.motionY += moveSpeed * 0.15D;
+                        	this.entity.motionY += moveSpeed * 0.12D;
                         	moveSpeed *= 0.8F;
                         }
                         else if(y1 < -0.2D){
-                        	this.entity.motionY -= moveSpeed * 0.2D;
-//                        	moveSpeed *= 0.5F;
+                        	this.entity.motionY -= moveSpeed * 0.16D;
+                        	moveSpeed *= 0.92F;
                         }
 //                    }
                 }
@@ -96,8 +96,8 @@ public class ShipMoveHelper {
 //                        	LogHelper.info("DEBUG : moveHelper: get up in water ");
                         }
                         else if(y1 < -0.2D){
-                        	this.entity.motionY -= moveSpeed * 0.15D;
-//                        	moveSpeed *= 0.7F;
+                        	this.entity.motionY -= moveSpeed * 0.12D;
+                        	moveSpeed *= 0.82F;
 //                        	LogHelper.info("DEBUG : moveHelper: get down in water ");
                         }
 //                	}

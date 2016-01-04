@@ -6,6 +6,7 @@ import java.util.List;
 import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.IEntityOwnable;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.passive.EntityTameable;
@@ -53,37 +54,61 @@ public class TargetHelper {
      * select target by class
      */
     public static class Selector implements IEntitySelector {
-    	private Entity host;
+    	protected Entity host;
+    	protected boolean isPVP;
     	
     	public Selector(Entity host) {
     		this.host = host;
+    		
+    		//PVP mode for ship
+    		if(host instanceof BasicEntityShip) {
+    			this.isPVP = ((BasicEntityShip) host).getStateFlag(ID.F.PVPFirst);
+    		}
+    		else {
+    			this.isPVP = false;
+    		}
     	}
 
 		@Override
 		public boolean isEntityApplicable(Entity target2) {
-			//skip ship and special entity
-			if(target2 instanceof BasicEntityShip || target2 instanceof BasicEntityAirplane ||
-			   target2 instanceof BasicEntityMount || target2 instanceof EntityAbyssMissile) {
+			//not self
+			if(this.host == null || host.equals(target2)) {
+				return false;
+			}
+			
+			//ship host should check onSight
+			if(host instanceof BasicEntityShip) {
+    			if(((BasicEntityShip)host).getStateFlag(ID.F.OnSightChase)) {
+        			if(!((BasicEntityShip)host).getEntitySenses().canSee(target2)) {
+        				return false;
+        			}
+        		}
+    		}
+			//非ship類host check onSight
+    		if(host instanceof EntityLiving) {
+    			if(!((EntityLiving)host).getEntitySenses().canSee(target2)) {
+    				return false;
+    			}
+    		}
+			
+			//check ship and special entity for BasicEntityShip
+			if(this.isPVP && (target2 instanceof BasicEntityShip || target2 instanceof BasicEntityAirplane ||
+			   target2 instanceof BasicEntityMount || target2 instanceof EntityAbyssMissile)) {
+				//must in banned list, NO ALLY or NEUTRAL target
+				if(!EntityHelper.checkIsBanned(host, target2)) {
+					return false;
+				}
+				
+				//check alive
+				if(target2.isEntityAlive() && !target2.isInvisible()) {
+					return true;
+				}//is alive
+				
 				return false;
 			}
 			
         	if((target2 instanceof EntityMob || target2 instanceof EntitySlime) &&
         	   target2.isEntityAlive() && !target2.isInvisible()) {
-        		//若host有設定必須on sight, 則檢查on sight
-        		if(host instanceof BasicEntityShip) {
-        			if(((BasicEntityShip)host).getStateFlag(ID.F.OnSightChase)) {
-            			if(!((BasicEntityShip)host).getEntitySenses().canSee(target2)) {
-            				return false;
-            			}
-            		}
-        		}//end ship host
-        		//非ship類host
-        		else if(host instanceof EntityLiving) {
-        			if(!((EntityLiving)host).getEntitySenses().canSee(target2)) {
-        				return false;
-        			}
-        		}//end other host
-        		
         		return true;
         	}//end is target class
         	else {  //custom class for mod interact
@@ -92,6 +117,69 @@ public class TargetHelper {
         			int pid = ((IShipAttackBase) host).getPlayerUID();
         			List<String> tarList = ServerProxy.getPlayerTargetClassList(pid);
         			String tarClass = target2.getClass().getSimpleName();
+        			
+        			if(tarList != null) {
+        				for(String s : tarList) {
+            				if(s.equals(tarClass)) {  //target class is in list
+            					//if tameable entity, check owner
+            					if(target2 instanceof IEntityOwnable) {
+            						if(!EntityHelper.checkSameOwner(host, target2)) {
+            							return true;
+            						}
+            					}
+            					else {
+            						return true;
+            					}
+            				}
+            			}
+        			}
+        		}
+        	}
+        	return false;
+        }
+    }
+    
+    /** REVENGE TARGET SELECTOR */
+    public static class RevengeSelector implements IEntitySelector {
+    	protected Entity host;
+    	
+    	public RevengeSelector(Entity host) {
+    		this.host = host;
+    	}
+
+		@Override
+		public boolean isEntityApplicable(Entity target2) {
+			//not self
+			if(this.host == null || host.equals(target2)) {
+				return false;
+			}
+			
+			//check ship target
+			if(target2 instanceof BasicEntityShip || target2 instanceof BasicEntityAirplane ||
+			   target2 instanceof BasicEntityMount || target2 instanceof EntityAbyssMissile) {
+				//do not attack ally
+				if(EntityHelper.checkIsAlly(host, target2)) {
+					return false;
+				}
+				
+				//check alive
+				if(target2.isEntityAlive() && !target2.isInvisible()) {
+					return true;
+				}
+			}
+			
+			//check mob target
+        	if((target2 instanceof EntityMob || target2 instanceof EntitySlime) &&
+        	   target2.isEntityAlive() && !target2.isInvisible()) {
+        		return true;
+        	}//end is target class
+        	else {  //custom class for mod interact
+        		if(target2 != null && target2.isEntityAlive() && !target2.isInvisible() &&
+        		   host instanceof IShipAttackBase) {
+        			int pid = ((IShipAttackBase) host).getPlayerUID();
+        			List<String> tarList = ServerProxy.getPlayerTargetClassList(pid);
+        			String tarClass = target2.getClass().getSimpleName();
+        			
         			if(tarList != null) {
         				for(String s : tarList) {
             				if(s.equals(tarClass)) {  //target class is in list
@@ -114,57 +202,8 @@ public class TargetHelper {
         }
     }
     
-    /**PVP TARGET SELECTOR
-     * select target and pvp target by class
-     */
-    public static class PVPSelector extends Selector {
-    	private Entity host;
-    	
-    	public PVPSelector(Entity host) {
-    		super(host);
-    	}
-    	
-    	@Override
-		public boolean isEntityApplicable(Entity target2) {
-    		if(!super.isEntityApplicable(target2)) {
-    			//is ship, mount or airplane
-    			if(target2 instanceof BasicEntityShip || target2 instanceof BasicEntityAirplane ||
-				   target2 instanceof BasicEntityMount) {
-    				//check is banned team
-    				if(EntityHelper.checkIsBanned(host, target2) && target2.isEntityAlive() &&
-    				   !target2.isInvisible()) {
-    					//check should onSight?
-    					if(host instanceof BasicEntityShip) {
-    	        			if(((BasicEntityShip)host).getStateFlag(ID.F.OnSightChase)) {
-    	            			if(((BasicEntityShip)host).getEntitySenses().canSee(target2)) {
-    	            				return true;
-    	            			}
-    	            			else {
-    	            				return false;
-    	            			}
-    	            		}
-    	        		}//end ship host
-    	        		//非ship類host
-    	        		else if(host instanceof EntityLiving) {
-    	        			if(((EntityLiving)host).getEntitySenses().canSee(target2)) {
-    	        				return true;
-    	        			}
-    	        			else {
-	            				return false;
-	            			}
-    	        		}//end other host
-    					
-    					return true;
-    				}//is banned team
-				}//is ship, mount or airplane
-    		}//filter by normal target
-        	
-        	return false;
-        }
-    }
-    
-    /**TARGET SELECTOR 2
-     * select target by class for hostile mob
+    /** TARGET SELECTOR FOR HOSTILE
+     *  select target by class for hostile mob
      */
     public static class SelectorForHostile implements IEntitySelector {
     	private final Entity host;
@@ -179,6 +218,31 @@ public class TargetHelper {
         	   target2 instanceof BasicEntityAirplane || target2 instanceof BasicEntityMount) && 
         	   target2.isEntityAlive() && !target2.isInvisible()) {
         		
+        		//do not attack OP player
+        		if(target2 instanceof EntityPlayer) {
+        			return !EntityHelper.checkOP((EntityPlayer) target2);
+        		}
+        		
+        		return true;
+        	}
+        	return false;
+        }
+
+    }
+    
+    /** REVENGE SELECTOR FOR HOSTILE
+     *  select target by class for hostile mob
+     */
+    public static class RevengeSelectorForHostile implements IEntitySelector {
+    	private final Entity host;
+    	
+    	public RevengeSelectorForHostile(Entity host) {
+    		this.host = host;
+    	}
+    	
+    	@Override
+		public boolean isEntityApplicable(Entity target2) {
+        	if(target2.isEntityAlive() && !target2.isInvisible()) {
         		//do not attack OP player
         		if(target2 instanceof EntityPlayer) {
         			return !EntityHelper.checkOP((EntityPlayer) target2);

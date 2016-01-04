@@ -104,6 +104,7 @@ public class Values {
 	
 	/**damage modifier array [damage type id][target type id]
 	 * index by ID.ShipDmgType
+	 * CARRIER  AVIATION  BATTLESHIP  CRUISER  DESTROYER   SUBMARINE  AIRPLANE
 	 */
 	public static final float[][] ModDmgDay = 		//for day battle
 		{{0.5F,  0.5F,  0.5F,  0.5F,  1F,    0F,    0.75F},
@@ -112,7 +113,7 @@ public class Values {
 		 {1F,    1F,    1F,    1F,    1.25F, 1.25F, 1F},
 		 {0.5F,  0.5F,  0.5F,  0.5F,  1F,    2F,    1.5F},
 		 {1.5F,  1.5F,  1.25F, 1.25F, 1.5F,  1.5F,  0F},
-		 {1.5F,  1.5F,  1.5F,  1.75F, 2F,    0.5F,  1.25F}
+		 {1.5F,  1.5F,  1.5F,  1.75F, 2F,    0.5F,  2F}
 		};
 	public static final float[][] ModDmgNight = 	//for night battle
 		{{0.25F, 0.25F, 0.25F, 0.25F, 0.5F,  0F,    0.5F},
@@ -121,7 +122,7 @@ public class Values {
 		 {0.75F, 0.75F, 0.75F, 0.75F, 1F,    1.25F, 0.75F},
 		 {0.5F,  0.5F,  0.5F,  0.5F,  0.75F, 1.75F, 1.25F},
 		 {1.5F,  1.5F,  1.25F, 1.25F, 1.5F,  1.5F,  0F},
-		 {0.5F,  0.5F,  0.5F,  0.75F, 0.75F, 0.25F, 0.75F}
+		 {0.5F,  0.5F,  0.5F,  0.75F, 0.75F, 0.25F, 1F}
 		};
 	
 	

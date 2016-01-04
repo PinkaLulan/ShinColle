@@ -36,13 +36,13 @@ public class ConfigHandler {
 	//SHIP SETTING
 	//scale: HP, ATK, DEF, SPD, MOV, HIT
 	public static Property propShip, propShipLimit, propBossSMKZ, propBossNGT, propMobU511;
-	public static double[] limitShip = new double[] {-1D, -1D, 75D, 4D, 0.8D, -1D};
+	public static double[] limitShip = new double[] {-1D, -1D, 75D, 4D, 0.6D, 64D};
 	public static double[] scaleShip = new double[] {1D, 1D, 1D, 1D, 1D, 1D};
 	public static double[] scaleBossSMKZ = new double[] {900D, 50D, 80D, 1D, 0.6D, 16D};
 	public static double[] scaleBossNGT = new double[] {2400D, 200D, 92D, 2D, 0.4D, 24D};
 	public static double[] scaleMobU511 = new double[] {100D, 20D, 30D, 1D, 0.4D, 12D, 200D};
 	
-	public static int dmgSvS = 20;		//ship vs ship damage modifier, 20 = dmg * 20%
+	public static int dmgSvS = 100;		//ship vs ship damage modifier, 20 = dmg * 20%
 	public static int dmgSummon = 100;	//summons damage modifier, 20 = dmg * 20%
 	public static int expMod = 20;		//ship exp per level, ex: 20 => lv 15 exp req = 15*20+20
 	
@@ -113,9 +113,9 @@ public class ConfigHandler {
 		propMobU511 = config.get("ship setting", "MobU511_scale", scaleMobU511, "Mob:U511/Ro500 Attrs: HP, firepower, armor, attack speed, move speed, range, spawnPerSquid");
 
 		//ship vs ship damage modifier
-		dmgSvS = config.getInt("SVS_DmgTaken", "ship setting", 20, 0, 10000, "Ship vs Ship damage modifier, 20 = damage * 20% ");
+		dmgSvS = config.getInt("SVS_DmgTaken", "ship setting", 100, 0, 10000, "Ship vs Ship damage modifier, 20 = damage * 20% ");
 		dmgSummon = config.getInt("Summon_DmgTaken", "ship setting", 100, 0, 10000, "summons (mounts, aircraft ...etc) damage modifier, 20 = damage * 20% ");
-		expMod = config.getInt("EXP_Modifier", "ship setting", 20, 0, 10000, "ship experience modifier, 20 = level 150: 150*20+20 = 3020");
+		expMod = config.getInt("EXP_Modifier", "ship setting", 20, 1, 10000, "ship experience modifier, 20 = level 150: 150*20+20 = 3020");
 		
 		//WORLD GEN
 		polyOreBaseRate = config.getInt("Polymetal_Ore", "world gen", 7, 0, 100, "Polymetallic Ore clusters in one chunk");

@@ -167,7 +167,6 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateMinor(ID.M.FollowMin, buf.readInt());
 					entity.setStateMinor(ID.M.FollowMax, buf.readInt());
 					entity.setStateMinor(ID.M.FleeHP, buf.readInt());
-					entity.setStateMinor(ID.M.TargetAI, buf.readInt());
 					entity.setStateMinor(ID.M.GuardX, buf.readInt());
 					entity.setStateMinor(ID.M.GuardY, buf.readInt());
 					entity.setStateMinor(ID.M.GuardZ, buf.readInt());
@@ -215,6 +214,7 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateFlag(ID.F.PVPFirst, buf.readBoolean());
 					entity.setStateFlag(ID.F.AntiAir, buf.readBoolean());
 					entity.setStateFlag(ID.F.AntiSS, buf.readBoolean());
+					entity.setStateFlag(ID.F.PassiveAI, buf.readBoolean());
 					
 					entity.setEffectEquip(ID.EF_CRI, buf.readFloat());
 					entity.setEffectEquip(ID.EF_DHIT, buf.readFloat());
@@ -249,6 +249,7 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateFlag(ID.F.PVPFirst, buf.readBoolean());
 					entity.setStateFlag(ID.F.AntiAir, buf.readBoolean());
 					entity.setStateFlag(ID.F.AntiSS, buf.readBoolean());
+					entity.setStateFlag(ID.F.PassiveAI, buf.readBoolean());
 				}
 				break;
 			case PID.SyncShip_Minor: //entity minor only
@@ -264,7 +265,6 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateMinor(ID.M.FollowMin, buf.readInt());
 					entity.setStateMinor(ID.M.FollowMax, buf.readInt());
 					entity.setStateMinor(ID.M.FleeHP, buf.readInt());
-					entity.setStateMinor(ID.M.TargetAI, buf.readInt());
 					entity.setStateMinor(ID.M.GuardX, buf.readInt());
 					entity.setStateMinor(ID.M.GuardY, buf.readInt());
 					entity.setStateMinor(ID.M.GuardZ, buf.readInt());
@@ -419,7 +419,6 @@ public class S2CEntitySync implements IMessage {
 				buf.writeInt(this.entity.getStateMinor(ID.M.FollowMin));
 				buf.writeInt(this.entity.getStateMinor(ID.M.FollowMax));
 				buf.writeInt(this.entity.getStateMinor(ID.M.FleeHP));
-				buf.writeInt(this.entity.getStateMinor(ID.M.TargetAI));
 				buf.writeInt(this.entity.getStateMinor(ID.M.GuardX));
 				buf.writeInt(this.entity.getStateMinor(ID.M.GuardY));
 				buf.writeInt(this.entity.getStateMinor(ID.M.GuardZ));
@@ -467,6 +466,7 @@ public class S2CEntitySync implements IMessage {
 				buf.writeBoolean(this.entity.getStateFlag(ID.F.PVPFirst));
 				buf.writeBoolean(this.entity.getStateFlag(ID.F.AntiAir));
 				buf.writeBoolean(this.entity.getStateFlag(ID.F.AntiSS));
+				buf.writeBoolean(this.entity.getStateFlag(ID.F.PassiveAI));
 				
 				buf.writeFloat(this.entity.getEffectEquip(ID.EF_CRI));
 				buf.writeFloat(this.entity.getEffectEquip(ID.EF_DHIT));
@@ -505,6 +505,7 @@ public class S2CEntitySync implements IMessage {
 				buf.writeBoolean(this.entity.getStateFlag(ID.F.PVPFirst));
 				buf.writeBoolean(this.entity.getStateFlag(ID.F.AntiAir));
 				buf.writeBoolean(this.entity.getStateFlag(ID.F.AntiSS));
+				buf.writeBoolean(this.entity.getStateFlag(ID.F.PassiveAI));
 			}
 			break;
 		case PID.SyncShip_Minor:	//sync minor only
@@ -522,7 +523,6 @@ public class S2CEntitySync implements IMessage {
 				buf.writeInt(this.entity.getStateMinor(ID.M.FollowMin));
 				buf.writeInt(this.entity.getStateMinor(ID.M.FollowMax));
 				buf.writeInt(this.entity.getStateMinor(ID.M.FleeHP));
-				buf.writeInt(this.entity.getStateMinor(ID.M.TargetAI));
 				buf.writeInt(this.entity.getStateMinor(ID.M.GuardX));
 				buf.writeInt(this.entity.getStateMinor(ID.M.GuardY));
 				buf.writeInt(this.entity.getStateMinor(ID.M.GuardZ));

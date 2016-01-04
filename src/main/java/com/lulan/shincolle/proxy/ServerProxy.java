@@ -644,7 +644,6 @@ public class ServerProxy extends CommonProxy {
 		   getAllTeamWorldData().containsKey(tid)) {
 			TeamData tdata = getTeamData(tid);
 			tdata.setTeamName(tname);
-			//TODO data saved?
 		}
 	}
 	
@@ -671,8 +670,6 @@ public class ServerProxy extends CommonProxy {
 					extProps.setPlayerTeamID(pUID);
 					extProps.setTeamCooldown(ConfigHandler.teamCooldown);
 					updatePlayerID(player);
-					
-					//TODO update all ship?
 					
 //					//DEBUG generate random team
 //					TeamData tdata2 = new TeamData(player.getRNG().nextInt(999),"sa"+player.getRNG().nextInt(999),"sa"+player.getRNG().nextInt(999));
@@ -714,8 +711,6 @@ public class ServerProxy extends CommonProxy {
 					extProps.setPlayerTeamID(0);
 					extProps.setTeamCooldown(ConfigHandler.teamCooldown);
 					updatePlayerID(player);
-					
-					//TODO update all ship?
 				}
 			}
 		}
@@ -730,8 +725,6 @@ public class ServerProxy extends CommonProxy {
 			LogHelper.info("DEBUG : server proxy: add ally: "+tid1+" add "+tid2);
 			TeamData tdata = getTeamData(tid1);
 			tdata.addTeamAlly(tid2);
-			//TODO data saved?
-//			ServerProxy.setTeamData(tdata);
 		}
 	}
 	
@@ -746,8 +739,6 @@ public class ServerProxy extends CommonProxy {
 			tdata1.removeTeamAlly(tid2);
 			TeamData tdata2 = getTeamData(tid2);
 			tdata2.removeTeamAlly(tid1);
-			//TODO data saved?
-//			ServerProxy.setTeamData(tdata);
 		}
 	}
 	
@@ -762,8 +753,6 @@ public class ServerProxy extends CommonProxy {
 			tdata1.addTeamBanned(tid2);
 			TeamData tdata2 = getTeamData(tid2);
 			tdata2.addTeamBanned(tid1);
-			//TODO data saved?
-//			ServerProxy.setTeamData(tdata);
 		}
 	}
 	
@@ -776,8 +765,6 @@ public class ServerProxy extends CommonProxy {
 			LogHelper.info("DEBUG : server proxy: unban team: "+tid1+" unban "+tid2);
 			TeamData tdata1 = getTeamData(tid1);
 			tdata1.removeTeamBanned(tid2);
-			//TODO data saved?
-//			ServerProxy.setTeamData(tdata);
 		}
 	}
 

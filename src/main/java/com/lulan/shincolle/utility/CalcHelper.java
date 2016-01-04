@@ -1,7 +1,9 @@
 package com.lulan.shincolle.utility;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.minecraft.entity.Entity;
 
@@ -134,7 +136,7 @@ public class CalcHelper {
   		//check target type
   		int targettype = EntityHelper.checkEntityTypeForEquipEffect(target);
   		
-  		if(targettype == 1) {			//air mob
+  		if(targettype == 1) {		//air mob
   			newDmg = newDmg + host.getEffectEquip(ID.EF_AA) * modDmg;
   		}
   		else if(targettype == 2) {	//water mob
@@ -219,6 +221,18 @@ public class CalcHelper {
     	}
     	
     	return null;
+    }
+    
+    /** union list */
+    public static <T> List<T> listUnion(List<T> list1, List<T> list2) {
+    	Set set1 = new HashSet();
+    	
+    	set1.addAll(list1);
+    	set1.addAll(list2);
+    	
+    	List retlist = new ArrayList(set1);
+    	
+    	return retlist;
     }
     
     

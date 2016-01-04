@@ -10,7 +10,7 @@ import net.minecraft.util.MathHelper;
 
 import org.lwjgl.opengl.GL11;
 
-import com.lulan.shincolle.entity.hostile.EntityDestroyerShimakazeBoss;
+import com.lulan.shincolle.entity.destroyer.EntityDestroyerShimakazeBoss;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EmotionHelper;
 

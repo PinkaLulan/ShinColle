@@ -280,22 +280,18 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.tasks.addTask(25, new EntityAILookIdle(this));			//0011
 	}
 	
-	//setup target AI: par1: 0:passive 1:active 2:pvp active 3:anti-air
-	public void setAITargetList(int par1) {	
+	//setup target AI
+	public void setAITargetList() {
 		//passive target AI
-		
-		
-		if(par1 == 0) {
+		if(this.getStateFlag(ID.F.PassiveAI)) {
 			this.targetTasks.addTask(1, new EntityAIShipRevengeTarget(this));
 		}
 		//active target AI
 		else {
 			this.targetTasks.addTask(1, new EntityAIShipRevengeTarget(this));
-			this.targetTasks.addTask(5, new EntityAIShipRangeTarget(this, 0.4F, 1, 0, Entity.class));
+			this.targetTasks.addTask(5, new EntityAIShipRangeTarget(this, Entity.class));
 		}
-		
-		//DEBUG
-//		this.targetTasks.addTask(5, new EntityAINearestAttackableTarget(this, EntitySheep.class, 0, false));
+		LogHelper.info("DEBUG : ship target AI list: "+this.targetTasks.taskEntries.size());
 	}
 
 	//clear AI
@@ -725,12 +721,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	@Override
 	public void setStateMinor(int state, int par1) {
 		StateMinor[state] = par1;
-		
-		//若修改melee flag, 則reload AI
-		if(state == ID.M.TargetAI) {
-			clearAITargetTasks();
-    		setAITargetList(par1);
-		}
 	}
 	
 	//called when GUI update
@@ -765,37 +755,31 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.StateFlag[id] = par1;
 		
 		//若修改melee flag, 則reload AI
-		if(!this.worldObj.isRemote && id == ID.F.UseMelee) {
-			clearAITasks();
-    		setAIList();
-    		
-    		//設定mount的AI
-			if(this.ridingEntity instanceof BasicEntityMount) {
-				((BasicEntityMount) this.ridingEntity).clearAITasks();
-				((BasicEntityMount) this.ridingEntity).setAIList();
+		if(!this.worldObj.isRemote) { 
+			if(id == ID.F.UseMelee) {
+				clearAITasks();
+	    		setAIList();
+	    		
+	    		//設定mount的AI
+				if(this.ridingEntity instanceof BasicEntityMount) {
+					((BasicEntityMount) this.ridingEntity).clearAITasks();
+					((BasicEntityMount) this.ridingEntity).setAIList();
+				}
+			}
+			else if(id == ID.F.PassiveAI) {
+				clearAITargetTasks();
+				setAITargetList();
 			}
 		}
 	}
 	
 	//called when load nbt data or GUI click
-	public void setEntityFlagI(int flag, int par1) {
-		if(par1 == 1) {
-			this.StateFlag[flag] = true;
+	public void setEntityFlagI(int id, int par1) {
+		if(par1 > 0) {
+			setStateFlag(id, true);
 		}
 		else {
-			this.StateFlag[flag] = false;
-		}
-		
-		//若修改melee flag, 則reload AI
-		if(!this.worldObj.isRemote && flag == ID.F.UseMelee) {
-			clearAITasks();
-    		setAIList();
-    		
-    		//設定mount的AI
-			if(this.ridingEntity instanceof BasicEntityMount) {
-				((BasicEntityMount) this.ridingEntity).clearAITasks();
-				((BasicEntityMount) this.ridingEntity).setAIList();
-			}
+			setStateFlag(id, false);
 		}
 	}
 	
@@ -1164,7 +1148,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			}//end owner paper
 			
 			//use lead
-			if(itemstack.getItem() == Items.lead && this.allowLeashing()) {
+			if(itemstack.getItem() == Items.lead && this.allowLeashing() && EntityHelper.checkSameOwner(this, player)) {
 				this.getShipNavigate().clearPathEntity();
 				this.setLeashedToEntity(player, true);
 				return true;
@@ -1443,7 +1427,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         if((!worldObj.isRemote)) {
         	//update target
         	EntityHelper.updateTarget(this);
-			
+//        	LogHelper.info("DEBUG: target:   "+this.getClass().getSimpleName()+" "+this.getEntityTarget()+"      "+this.getEntityRevengeTarget()+"      "+this.getAttackTarget());
+        	
         	//update/init id
         	this.updateShipID();
         	
@@ -1460,7 +1445,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
             		clearAITasks();
             		clearAITargetTasks();	//reset AI for get owner after loading NBT data
             		setAIList();
-            		setAITargetList(getStateMinor(ID.M.TargetAI));
+            		setAITargetList();
             		decrGrudgeNum(0);		//check grudge
             		sendSyncPacket();		//sync packet to client
             		
@@ -1501,8 +1486,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         		}
         		
             	/** debug info */
-//        		LogHelper.info("DEBUG: taget:   "+this.getEntityTarget()+"      "+this.getEntityRevengeTarget()+"      "+this.getAttackTarget());
-//            	LogHelper.info("DEBUG : ship update: "+CalcHelper.NORM_TABLE[1999]/4.9867787F);
+//        		LogHelper.info("DEBUG: target:   "+this.getClass().getSimpleName()+" "+this.getEntityTarget()+"      "+this.getEntityRevengeTarget()+"      "+this.getAttackTarget());
+//            	LogHelper.info("DEBUG : ship update: "+ServerProxy.getTeamData(900).getTeamBannedList());
 //            	LogHelper.info("DEBUG : ship update: eid: "+ServerProxy.getNextShipID()+" "+ServerProxy.getNextPlayerID()+" "+ConfigHandler.nextPlayerID+" "+ConfigHandler.nextShipID);
 //        		if(this.worldObj.provider.dimensionId == 0) {	//main world
 //        			LogHelper.info("DEBUG : ship pos dim "+ClientProxy.getClientWorld().provider.dimensionId+" "+this.dimension+" "+this.posX+" "+this.posY+" "+this.posZ);
@@ -1898,8 +1883,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     	}
     	
     	//若攻擊方為owner, 則直接回傳傷害, 不計def跟friendly fire
-		if(attacker.getSourceOfDamage() instanceof EntityPlayer &&
-		   EntityHelper.checkSameOwner(attacker.getSourceOfDamage(), this)) {
+		if(attacker.getEntity() instanceof EntityPlayer &&
+		   EntityHelper.checkSameOwner(attacker.getEntity(), this)) {
 			this.setSitting(false);
 			return super.attackEntityFrom(attacker, atk);
 		}
@@ -1920,8 +1905,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		if(this.isEntityInvulnerable()) {
             return false;
         }
-		else if(attacker.getSourceOfDamage() != null) {	//不為null才算傷害, 可免疫毒/掉落/窒息等傷害
-			Entity entity = attacker.getSourceOfDamage();
+		else if(attacker.getEntity() != null) {	//不為null才算傷害, 可免疫毒/掉落/窒息等傷害
+			Entity entity = attacker.getEntity();
 			
 			//不會對自己造成傷害, 可免疫毒/掉落/窒息等傷害 (此為自己對自己造成傷害)
 			if(entity.equals(this)) {
@@ -1963,7 +1948,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			//設置revenge target
 			this.setEntityRevengeTarget(entity);
 			this.setEntityRevengeTime();
-			LogHelper.info("DEBUG : set revenge target: "+entity+"  host: "+this);
+//			LogHelper.info("DEBUG : set revenge target: "+entity+"  host: "+this);
 			
 			//若傷害力可能致死, 則尋找物品中有無repair goddess來取消掉此攻擊
 			if(reduceAtk >= (this.getHealth() - 1F)) {
@@ -2212,7 +2197,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				clearAITasks();
 				clearAITargetTasks();
 				setAIList();
-				setAITargetList(getStateMinor(ID.M.TargetAI));
+				setAITargetList();
 				sendSyncPacket();
 				
 				//設定mount的AI

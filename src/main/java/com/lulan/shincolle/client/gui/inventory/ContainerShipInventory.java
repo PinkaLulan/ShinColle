@@ -163,7 +163,7 @@ public class ContainerShipInventory extends Container {
 		crafting.sendProgressBarUpdate(this, 13, this.entity.getStateMinor(ID.M.FollowMin));
 		crafting.sendProgressBarUpdate(this, 14, this.entity.getStateMinor(ID.M.FollowMax));
 		crafting.sendProgressBarUpdate(this, 15, this.entity.getStateMinor(ID.M.FleeHP));
-		crafting.sendProgressBarUpdate(this, 16, this.entity.getStateMinor(ID.M.TargetAI));
+		crafting.sendProgressBarUpdate(this, 16, this.entity.getStateFlagI(ID.F.PassiveAI));
 		crafting.sendProgressBarUpdate(this, 17, this.entity.getStateFlagI(ID.F.UseRingEffect));
 		crafting.sendProgressBarUpdate(this, 18, this.entity.getStateFlagI(ID.F.OnSightChase));
 		crafting.sendProgressBarUpdate(this, 19, this.entity.getStateFlagI(ID.F.PVPFirst));
@@ -258,7 +258,7 @@ public class ContainerShipInventory extends Container {
                 icrafting.sendProgressBarUpdate(this, 15, getValue);
                 this.FleeHP = getValue;
             }
-            getValue = this.entity.getStateMinor(ID.M.TargetAI);
+            getValue = this.entity.getStateFlagI(ID.F.PassiveAI);
             if(this.TarAI != getValue) {
                 icrafting.sendProgressBarUpdate(this, 16, getValue);
                 this.TarAI = getValue;
@@ -339,7 +339,7 @@ public class ContainerShipInventory extends Container {
 			this.entity.setStateMinor(ID.M.FleeHP, updatedValue);
 			break;
 		case 16:
-			this.entity.setStateMinor(ID.M.TargetAI, updatedValue);
+			this.entity.setEntityFlagI(ID.F.PassiveAI, updatedValue);
 			break;
 		case 17:
 			this.entity.setEntityFlagI(ID.F.UseRingEffect, updatedValue);

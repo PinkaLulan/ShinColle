@@ -9,6 +9,7 @@ import org.lwjgl.opengl.GL12;
 import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipLarge;
+import com.lulan.shincolle.entity.IShipInvisible;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -49,8 +50,7 @@ public class GuiShipInventory extends GuiContainer {
 	private String titlename, shiplevel, lvMark, hpMark, canMelee, canLATK, canHATK, canALATK, canAHATK, 
 	               strATK, strAATK, strLATK, strHATK, strALATK, strAHATK, strDEF, strSPD, strMOV, strHIT, 
 	               Kills, Exp, Grudge, Owner, AmmoLight, AmmoHeavy, AirLight, AirHeavy, TarAI,
-	               overText, strCri, strDhit, strThit, strMissMin, strMissMax, strMissAir,
-	               marriage, followMin, followMax, fleeHP, followMinValue, followMaxValue,
+	               overText, marriage, followMin, followMax, fleeHP, followMinValue, followMaxValue,
 	               fleeHPValue, barPosValue, auraEffect, strOnSight, strPVP, strAA, strASM;
 	private int hpCurrent, hpMax, color, showPage, showPageAI, pageIndicator, pageIndicatorAI, showAttack,
 				fMinPos, fMaxPos, fleeHPPos, barPos, mousePressBar;
@@ -80,6 +80,24 @@ public class GuiShipInventory extends GuiContainer {
 		this.showAttack = 1;		//show attack 1
 		this.mousePress = false;	//no key clicked
 		this.mousePressBar = -1;	//no bar pressed
+		
+		//string
+		lvMark = I18n.format("gui.shincolle:level");
+		hpMark = I18n.format("gui.shincolle:hp");
+		canMelee = I18n.format("gui.shincolle:canmelee");
+		canLATK = I18n.format("gui.shincolle:canlightattack");
+		canHATK = I18n.format("gui.shincolle:canheavyattack");
+		canALATK = I18n.format("gui.shincolle:canairlightattack");
+		canAHATK = I18n.format("gui.shincolle:canairheavyattack");
+		auraEffect = I18n.format("gui.shincolle:auraeffect");
+		followMin = I18n.format("gui.shincolle:followmin");
+		followMax = I18n.format("gui.shincolle:followmax");
+		fleeHP = I18n.format("gui.shincolle:fleehp");
+		TarAI = I18n.format("gui.shincolle:targetAI");
+		strOnSight = I18n.format("gui.shincolle:onsightAI");
+		strPVP = I18n.format("gui.shincolle:ai.pvp");
+		strAA = I18n.format("gui.shincolle:ai.aa");
+		strASM = I18n.format("gui.shincolle:ai.asm");
 	}
 	
 	//GUI«e´º: ¤å¦r 
@@ -229,12 +247,7 @@ public class GuiShipInventory extends GuiContainer {
     		this.pageIndicatorAI = 183;
     		
     		//get button value
-    		if(this.entity.getStateMinor(ID.M.TargetAI) == 0) {
-            	this.switchTarAI = true;
-            }
-            else {
-            	this.switchTarAI = false;
-            }
+            this.switchTarAI = this.entity.getStateFlag(ID.F.PassiveAI);
     		this.switchOnSight = this.entity.getStateFlag(ID.F.OnSightChase);
     		this.switchPVP = this.entity.getStateFlag(ID.F.PVPFirst);
     		this.switchAA = this.entity.getStateFlag(ID.F.AntiAir);
@@ -299,6 +312,8 @@ public class GuiShipInventory extends GuiContainer {
 	
 	//draw tooltip
 	private void handleHoveringText() {
+		String value, value2;
+		
 		//reset text
 		mouseoverList.clear();
 		
@@ -308,53 +323,61 @@ public class GuiShipInventory extends GuiContainer {
 				//show text at ATTACK
 				if(yMouse > 18+guiTop && yMouse < 40+guiTop) {
 //					LogHelper.info("DEBUg : get tag "+this.entity.getEffectEquip(ID.EF_CRI));
-					strCri = String.valueOf((int)(this.entity.getEffectEquip(ID.EF_CRI) * 100F));
-					strDhit = String.valueOf((int)(this.entity.getEffectEquip(ID.EF_DHIT) * 100F));
-					strThit = String.valueOf((int)(this.entity.getEffectEquip(ID.EF_THIT) * 100F));
-					strAA = String.valueOf((int)(this.entity.getEffectEquip(ID.EF_AA)));
-					strASM = String.valueOf((int)(this.entity.getEffectEquip(ID.EF_ASM)));
-					
 					//add mouseover text
 					overText = I18n.format("gui.shincolle:firepower1") + " " + strATK;
 					mouseoverList.add(overText);
 					overText = I18n.format("gui.shincolle:firepower2") + " " + strAATK;
 					mouseoverList.add(overText);
-					overText = I18n.format("gui.shincolle:critical") + " " + strCri + " %";
+					value = String.valueOf((int)(this.entity.getEffectEquip(ID.EF_CRI) * 100F));
+					overText = I18n.format("gui.shincolle:critical") + " " + value + " %";
 					mouseoverList.add(overText);
-					overText = I18n.format("gui.shincolle:doublehit") + " " + strDhit + " %";
+					value = String.valueOf((int)(this.entity.getEffectEquip(ID.EF_DHIT) * 100F));
+					overText = I18n.format("gui.shincolle:doublehit") + " " + value + " %";
 					mouseoverList.add(overText);
-					overText = I18n.format("gui.shincolle:triplehit") + " " + strThit + " %";
+					value = String.valueOf((int)(this.entity.getEffectEquip(ID.EF_THIT) * 100F));
+					overText = I18n.format("gui.shincolle:triplehit") + " " + value + " %";
 					mouseoverList.add(overText);
-					overText = I18n.format("gui.shincolle:antiair") + " " + strAA;
+					value = String.valueOf((int)(this.entity.getEffectEquip(ID.EF_AA)));
+					overText = I18n.format("gui.shincolle:antiair") + " " + value;
 					mouseoverList.add(overText);
-					overText = I18n.format("gui.shincolle:antiss") + " " + strASM;
+					value = String.valueOf((int)(this.entity.getEffectEquip(ID.EF_ASM)));
+					overText = I18n.format("gui.shincolle:antiss") + " " + value;
 					mouseoverList.add(overText);
+					
 					this.drawHoveringText(mouseoverList, 55, 143, this.fontRendererObj);
 				}
 				//show text at RANGE
 				else if(yMouse > 104+guiTop && yMouse < 126+guiTop) {
-					//calc min miss
+					//calc miss
 					int temp = (int) ((0.2F - this.entity.getEffectEquip(ID.EF_MISS) - 0.001F * this.entity.getStateMinor(ID.M.ShipLevel)) * 100F);
 					if(temp < 0) temp = 0;
 					if(temp > 35) temp = 35;
-					strMissMin = String.valueOf(temp);
-//					LogHelper.info("DEBUg : miss after "+this.entity.getStateFinal(ID.HIT));
-					//calc max miss
+					value = String.valueOf(temp);
+					
 					temp = (int) ((0.35F - this.entity.getEffectEquip(ID.EF_MISS) - 0.001F * this.entity.getStateMinor(ID.M.ShipLevel)) * 100F);
 					if(temp < 0) temp = 0;
 					if(temp > 35) temp = 35;
-					strMissMax = String.valueOf(temp);
+					value2 = String.valueOf(temp);
+					
+					overText = I18n.format("gui.shincolle:missrate") + " " + value + " ~ " + value2 + "%";
+					mouseoverList.add(overText);
 					
 					//calc air miss
 					temp = (int) ((0.25F - this.entity.getEffectEquip(ID.EF_MISS) - 0.001F * this.entity.getStateMinor(ID.M.ShipLevel)) * 100F);
 					if(temp < 0) temp = 0;
 					if(temp > 35) temp = 35;
-					strMissAir = String.valueOf(temp);		
-
-					overText = I18n.format("gui.shincolle:missrate") + " " + strMissMin + " ~ " + strMissMax + " %";
+					value = String.valueOf(temp);
+					
+					overText = I18n.format("gui.shincolle:missrateair") + " " + value + "%";
 					mouseoverList.add(overText);
-					overText = I18n.format("gui.shincolle:missrateair") + " " + strMissAir + " %";
-					mouseoverList.add(overText);
+					
+					//calc dodge
+					if(this.entity instanceof IShipInvisible) {
+						value = String.valueOf((int)(((IShipInvisible) this.entity).getInvisibleLevel() * 100F));
+						overText = I18n.format("gui.shincolle:dodge") + " " + value +"%";
+						mouseoverList.add(overText);
+					}
+					
 					this.drawHoveringText(mouseoverList, 55, 143, this.fontRendererObj);
 				}
 			}
@@ -417,8 +440,6 @@ public class GuiShipInventory extends GuiContainer {
 	private void drawAttributes() {
 		//draw hp, level
 		shiplevel = String.valueOf(entity.getStateMinor(ID.M.ShipLevel));
-		lvMark = I18n.format("gui.shincolle:level");
-		hpMark = I18n.format("gui.shincolle:hp");
 		hpCurrent = MathHelper.ceiling_float_int(entity.getHealth());
 		hpMax = MathHelper.ceiling_float_int(entity.getMaxHealth());
 		color = 0;
@@ -564,13 +585,6 @@ public class GuiShipInventory extends GuiContainer {
 		switch(this.showPageAI) {
 		case 1:	{	//attack AI page
 				//draw string
-				canMelee = I18n.format("gui.shincolle:canmelee");
-				canLATK = I18n.format("gui.shincolle:canlightattack");
-				canHATK = I18n.format("gui.shincolle:canheavyattack");
-				canALATK = I18n.format("gui.shincolle:canairlightattack");
-				canAHATK = I18n.format("gui.shincolle:canairheavyattack");
-				auraEffect = I18n.format("gui.shincolle:auraeffect");
-				
 				this.fontRendererObj.drawString(canMelee, 187, 134, GuiHelper.pickColor(5));
 				if(entity.getAttackType(ID.F.AtkType_Light))
 				this.fontRendererObj.drawString(canLATK, 187, 146, GuiHelper.pickColor(5));
@@ -586,10 +600,6 @@ public class GuiShipInventory extends GuiContainer {
 			break;
 		case 2:	{	//follow, flee AI page
 				//draw string
-				followMin = I18n.format("gui.shincolle:followmin");
-				followMax = I18n.format("gui.shincolle:followmax");
-				fleeHP = I18n.format("gui.shincolle:fleehp");
-				
 				this.fontRendererObj.drawString(followMin, 174, 134, GuiHelper.pickColor(5));
 				this.fontRendererObj.drawString(followMax, 174, 158, GuiHelper.pickColor(5));
 				this.fontRendererObj.drawString(fleeHP, 174, 182, GuiHelper.pickColor(5));
@@ -626,18 +636,11 @@ public class GuiShipInventory extends GuiContainer {
 			break;
 		case 3: {	//aura effect
 			//draw string
-			TarAI = I18n.format("gui.shincolle:targetAI");
-			strOnSight = I18n.format("gui.shincolle:onsightAI");
-			strPVP = I18n.format("gui.shincolle:ai.pvp");
-			strAA = I18n.format("gui.shincolle:ai.aa");
-			strASM = I18n.format("gui.shincolle:ai.asm");
-			
 			this.fontRendererObj.drawString(TarAI, 187, 134, GuiHelper.pickColor(5));
 			this.fontRendererObj.drawString(strOnSight, 187, 146, GuiHelper.pickColor(5));
 			this.fontRendererObj.drawString(strPVP, 187, 158, GuiHelper.pickColor(5));
 			this.fontRendererObj.drawString(strAA, 187, 170, GuiHelper.pickColor(5));
 			this.fontRendererObj.drawString(strASM, 187, 182, GuiHelper.pickColor(5));
-//			this.fontRendererObj.drawString(auraEffect, 187, 194, GuiHelper.pickColor(5));
 			
 			}
 			break;
@@ -731,12 +734,7 @@ public class GuiShipInventory extends GuiContainer {
         		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_Melee, getInverseInt(this.switchMelee)));
         	}
         	else if(this.showPageAI == 3) {	//page 3: change target AI
-        		if(this.entity.getStateMinor(ID.M.TargetAI) == 0) {
-        			this.switchTarAI = false;
-        		}
-        		else {
-        			this.switchTarAI = true;
-        		}
+        		this.switchTarAI = this.entity.getStateFlag(ID.F.PassiveAI);
         		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_TarAI, getInverseInt(this.switchTarAI)));
         	}
         	break;
@@ -750,7 +748,7 @@ public class GuiShipInventory extends GuiContainer {
         		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_OnSightAI, getInverseInt(this.switchOnSight)));
         	}
         	break;
-        case 5:	//AI operation 2 
+        case 5:	//AI operation 2
         	if(this.showPageAI == 1) {	//page 1: use ammo heavy button
         		this.switchHeavy = this.entity.getStateFlag(ID.F.UseAmmoHeavy);
         		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_AmmoHeavy, getInverseInt(this.switchHeavy)));

@@ -420,6 +420,16 @@ public class ParticleHelper {
 				world.spawnParticle("snowshovel", posX+lookX-0.5D+0.05D*i, posY+0.9D+ran1, posZ+lookZ-0.5D+0.05D*i, lookX*0.3D*ran3, 0.05D*ran3, lookZ*0.3D*ran3);
 			}
 			break;
+		case 32:	//transparent cyan spray
+			EntityFXSpray particleSpray10 = new EntityFXSpray(world, 
+            		posX, posY, posZ, lookX, lookY, lookZ, 0.5F, 1.0F, 1.0F, 0.2F);
+        	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray10);
+			break;
+		case 33:	//transparent red spray
+			EntityFXSpray particleSpray11 = new EntityFXSpray(world, 
+            		posX, posY, posZ, lookX, lookY, lookZ, 1.0F, 0.0F, 0.0F, 0.2F);
+        	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray11);
+			break;
 		default:
 			break;		
 		}

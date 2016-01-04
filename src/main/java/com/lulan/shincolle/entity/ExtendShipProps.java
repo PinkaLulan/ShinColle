@@ -59,7 +59,6 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		nbtExt_add0.setInteger("FMin", this.entity.getStateMinor(ID.M.FollowMin));
 		nbtExt_add0.setInteger("FMax", this.entity.getStateMinor(ID.M.FollowMax));
 		nbtExt_add0.setInteger("FHP", this.entity.getStateMinor(ID.M.FleeHP));
-		nbtExt_add0.setInteger("TarAI", this.entity.getStateMinor(ID.M.TargetAI));
 		nbtExt_add0.setInteger("GuardX", this.entity.getStateMinor(ID.M.GuardX));
 		nbtExt_add0.setInteger("GuardY", this.entity.getStateMinor(ID.M.GuardY));
 		nbtExt_add0.setInteger("GuardZ", this.entity.getStateMinor(ID.M.GuardZ));
@@ -112,6 +111,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		nbtExt_add4.setBoolean("PVPFirst", this.entity.getStateFlag(ID.F.PVPFirst));
 		nbtExt_add4.setBoolean("AA", this.entity.getStateFlag(ID.F.AntiAir));
 		nbtExt_add4.setBoolean("ASM", this.entity.getStateFlag(ID.F.AntiSS));
+		nbtExt_add4.setBoolean("PassiveAI", this.entity.getStateFlag(ID.F.PassiveAI));
 		//save EntityFlag
 		nbtExt.setTag("Equip", nbtExt_add5);
 		nbtExt_add5.setFloat("Cri", this.entity.getEffectEquip(ID.EF_CRI));
@@ -158,7 +158,6 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		entity.setStateMinor(ID.M.FollowMin, nbt_load.getInteger("FMin"));
 		entity.setStateMinor(ID.M.FollowMax, nbt_load.getInteger("FMax"));
 		entity.setStateMinor(ID.M.FleeHP, nbt_load.getInteger("FHP"));
-		entity.setStateMinor(ID.M.TargetAI, nbt_load.getInteger("TarAI"));
 		entity.setStateMinor(ID.M.GuardX, nbt_load.getInteger("GuardX"));
 		entity.setStateMinor(ID.M.GuardY, nbt_load.getInteger("GuardY"));
 		entity.setStateMinor(ID.M.GuardZ, nbt_load.getInteger("GuardZ"));
@@ -211,6 +210,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		entity.setStateFlag(ID.F.PVPFirst, nbt_load.getBoolean("PVPFirst"));
 		entity.setStateFlag(ID.F.AntiAir, nbt_load.getBoolean("AA"));
 		entity.setStateFlag(ID.F.AntiSS, nbt_load.getBoolean("ASM"));
+		entity.setStateFlag(ID.F.PassiveAI, nbt_load.getBoolean("PassiveAI"));
 		//load effect
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Equip");
 		entity.setEffectEquip(ID.EF_CRI, nbt_load.getFloat("Cri"));

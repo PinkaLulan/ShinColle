@@ -1,16 +1,11 @@
 package com.lulan.shincolle.entity;
 
+import java.util.Collections;
 import java.util.List;
 
 import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityFlying;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.boss.EntityDragon;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.monster.EntitySlime;
-import net.minecraft.entity.passive.EntityBat;
-import net.minecraft.entity.passive.EntityWaterMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
@@ -29,6 +24,8 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
+import com.lulan.shincolle.utility.TargetHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -54,31 +51,22 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
     public boolean useAmmoLight;
     public boolean useAmmoHeavy;
     public boolean backHome;		//clear target, back to carrier
-    public boolean antiAir;			//attack other airplane first
     
     //target selector
-    private static final IEntitySelector targetSelector = new IEntitySelector() {
-        @Override
-		public boolean isEntityApplicable(Entity target2) {
-        	if((target2 instanceof EntityMob || target2 instanceof EntitySlime ||
-        	   target2 instanceof EntityBat || target2 instanceof EntityDragon ||
-        	   target2 instanceof EntityFlying || target2 instanceof EntityWaterMob) &&
-        	   target2.isEntityAlive()) {
-        		return true;
-        	}
-        	return false;
-        }
-    };
+    protected TargetHelper.Sorter targetSorter;
+    protected IEntitySelector targetSelector;
 	
+    
     public BasicEntityAirplane(World world) {
         super(world);
         this.backHome = false;
-        this.antiAir = false;
         this.isImmuneToFire = true;
         this.shipNavigator = new ShipPathNavigate(this, worldObj);
         this.shipMoveHelper = new ShipMoveHelper(this);
 		this.shipNavigator.setCanFly(true);
 		this.stepHeight = 7F;
+		this.targetSelector = new TargetHelper.Selector(this);
+		this.targetSorter = new TargetHelper.Sorter(this);
     }
     
     @Override
@@ -230,22 +218,17 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 				this.setDead();
 			}
 			else {
-				//超過60秒自動消失
-				if(this.ticksExisted > 1200) {
-					this.recycleAmmo();
-					this.setDead();
-				}
-				
-				//達到30秒時強制歸宅, 沒彈藥也設定歸宅
-				if(this.ticksExisted >= 600) {
-					this.backHome = true;
-				}
-				
 				//歸宅
-				if(this.backHome && !this.isDead) {
-					if(this.getDistanceToEntity(this.host) > 2.7F) {
-						this.getShipNavigate().tryMoveToXYZ(this.host.posX, this.host.posY + 2.3D, this.host.posZ, 1D);
+				if(this.backHome && this.isEntityAlive()) {
+					float dist = this.getDistanceToEntity(this.host);
+					
+					//get home path
+					if(dist > 2.8F) {
+						if(this.ticksExisted % 16 == 0) {
+							this.getShipNavigate().tryMoveToXYZ(this.host.posX, this.host.posY + 2.3D, this.host.posZ, 1D);
+						}
 					}
+					//get home
 					else {	//歸還剩餘彈藥 (但是grudge不歸還)
 						this.recycleAmmo();
 						this.setDead();
@@ -253,7 +236,7 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 				}
 				
 				//前幾秒直線往目標移動
-				if(this.ticksExisted < 20 && this.getEntityTarget() != null) {
+				if(this.ticksExisted < 24 && this.getEntityTarget() != null) {
 					double distX = this.getEntityTarget().posX - this.posX;
 					double distZ = this.getEntityTarget().posZ - this.posZ;
 					double distSqrt = MathHelper.sqrt_double(distX*distX + distZ*distZ);
@@ -263,34 +246,71 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 					this.motionY = 0.05D;
 				}
 				
-				//攻擊目標消失, 找附近目標 or 設為host目前目標
-				if(!this.backHome && (this.getEntityTarget() == null || !this.getEntityTarget().isEntityAlive()) &&
-					this.host != null && this.ticksExisted % 8 == 0) {	
-					//entity list < range1
-					Entity newTarget;
-			        List list = this.worldObj.selectEntitiesWithinAABB(Entity.class, 
-			        				this.boundingBox.expand(16, 16, 16), this.targetSelector);
-			        
-			        //都找不到目標則給host目標, 但是host目標必須在xyz16格內
-			        if(list.isEmpty()) {
-			        	newTarget = this.host.getEntityTarget();
-			        }
-			        else {	//從艦載機附近找出的目標, 判定是否要去攻擊
-			        	newTarget = (Entity)list.get(0);
-			        }
-			        
-			        if(newTarget != null && newTarget.isEntityAlive() && this.getDistanceSqToEntity(newTarget) < 1600F &&
-			           this.getEntitySenses().canSee(newTarget)) {
-			        	this.setEntityTarget(newTarget);
-			        }
-		        	else {
-		        		this.backHome = true;
-		        	}
+				//check every 32 ticks
+				if(this.ticksExisted % 16 == 0) {
+					//set backhome
+					if(this.ticksExisted < 900) {
+						if(this.getEntityTarget() == null) {
+							this.backHome = true;
+						}
+						else {
+							if(this.getEntityTarget().isEntityAlive()) {
+								this.backHome = false;
+							}
+							else {
+								this.backHome = true;
+							}
+						}
+					}
+					
+					//攻擊目標消失, 找附近目標 or 設為host目前目標
+					if(this.ticksExisted >= 20) {
+						Entity newTarget = null;
+						List list = null;
+						
+						//if host Anti-Air, find airplane every 32 ticks
+						if(this.host.getStateFlag(ID.F.AntiAir)) {
+							list = this.worldObj.selectEntitiesWithinAABB(BasicEntityAirplane.class, this.boundingBox.expand(24D, 24D, 24D), this.targetSelector);
+						}
+						
+						//find new target if "target dead" or "no air target"
+						if(list == null || list.isEmpty()) {
+							list = this.worldObj.selectEntitiesWithinAABB(Entity.class, this.boundingBox.expand(16D, 16D, 16D), this.targetSelector);
+						}
+				        
+				        //get target in list
+						if(list != null && list.size() > 0) {
+							//從艦載機附近找出的目標, 判定是否要去攻擊
+				        	Collections.sort(list, this.targetSorter);
+				        	newTarget = (Entity) list.get(0);
+						}
+						
+						//no target in list, get host's target
+						if(list == null || list.isEmpty()) {
+				        	newTarget = this.host.getEntityTarget();
+				        }
+
+						//set attack target
+				        if(newTarget != null) {
+				        	this.setEntityTarget(newTarget);
+				        }
+					}
 				}
-				
+
 				//避免窒息
 				if(this.isInWater() && this.ticksExisted % 256 == 0) {
 					this.setAir(300);
+				}
+				
+				//超過90秒自動消失
+				if(this.ticksExisted > 1800) {
+					this.recycleAmmo();
+					this.setDead();
+				}
+				
+				//達到45秒時強制歸宅, 沒彈藥也設定歸宅
+				if(this.ticksExisted >= 900) {
+					this.backHome = true;
 				}
 			}	
 		}
@@ -325,7 +345,7 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 		}
 		
 		//ship vs ship, config傷害調整
-		Entity entity = source.getSourceOfDamage();
+		Entity entity = source.getEntity();
 		
 		if(entity instanceof BasicEntityShip || entity instanceof BasicEntityAirplane || 
 		   entity instanceof EntityRensouhou || entity instanceof BasicEntityMount) {

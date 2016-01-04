@@ -613,7 +613,7 @@ public class GuiDesk extends GuiContainer {
             	this.tarList = this.extProps.getTargetClassList();
             	int clicked = this.listNum[LISTCLICK_TARGET]+this.listClicked[LISTCLICK_TARGET];
             	
-            	if(clicked < this.tarList.size()) {
+            	if(clicked >= 0 && clicked < this.tarList.size()) {
             		String tarstr = this.tarList.get(clicked);
                 	LogHelper.info("DEBUG : desk: remove target class: "+tarstr);
                 	//remove clicked target
@@ -1128,7 +1128,7 @@ public class GuiDesk extends GuiContainer {
 		int clicked = this.listClicked[LISTCLICK_TARGET] + this.listNum[LISTCLICK_TARGET];
 		
 		//get target simple name
-		if(clicked < this.tarList.size()) {
+		if(clicked >= 0 && clicked < this.tarList.size()) {
 			tarStr = this.tarList.get(clicked);
 		}
 		
@@ -1210,7 +1210,7 @@ public class GuiDesk extends GuiContainer {
 	private void openShipGUI() {
 		int clickid = this.listNum[LISTCLICK_RADAR] + this.listClicked[LISTCLICK_RADAR];
 		
-		if(clickid > -1 && clickid < this.shipList.size()) {
+		if(clickid >= 0 && clickid < this.shipList.size()) {
 			Entity ent = this.shipList.get(clickid).ship;
 			LogHelper.info("DEBUG : guiiii  "+clickid);
 //			if(ent instanceof BasicEntityShip && EntityHelper.checkSameOwner(player, ent)) {
@@ -1227,7 +1227,7 @@ public class GuiDesk extends GuiContainer {
 	@Override
 	protected void keyTyped(char input, int keyID) {
         if(this.textField.textboxKeyTyped(input, keyID)) {
-            //TODO get team name string
+            //test
         }
         else {
             super.keyTyped(input, keyID);

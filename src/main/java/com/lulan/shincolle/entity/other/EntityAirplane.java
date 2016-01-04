@@ -1,12 +1,20 @@
 package com.lulan.shincolle.entity.other;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.entity.BasicEntityAirplane;
+import com.lulan.shincolle.entity.BasicEntityMount;
+import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipLarge;
+import com.lulan.shincolle.entity.IShipAttackBase;
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 public class EntityAirplane extends BasicEntityAirplane {
@@ -25,14 +33,13 @@ public class EntityAirplane extends BasicEntityAirplane {
         //basic attr
         this.atk = host.getStateFinal(ID.ATK_AL);
         this.atkSpeed = host.getStateFinal(ID.SPD);
-        this.movSpeed = host.getStateFinal(ID.MOV) * 0.2F + 0.3F;
+        this.movSpeed = host.getStateFinal(ID.MOV) * 0.2F + 0.26F;
         
         //AI flag
         this.numAmmoLight = 6;
         this.numAmmoHeavy = 0;
         this.useAmmoLight = true;
         this.useAmmoHeavy = false;
-        this.antiAir = host.getStateFlag(ID.F.AntiAir);
         
         //設定發射位置
         this.posX = host.posX;
@@ -41,7 +48,7 @@ public class EntityAirplane extends BasicEntityAirplane {
         this.setPosition(this.posX, this.posY, this.posZ);
 
 	    //設定基本屬性
-        double mhp = host.getLevel() + host.getStateFinal(ID.HP)*0.2D;
+        double mhp = host.getLevel() + host.getStateFinal(ID.HP)*0.1D;
         
 	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(mhp);
 		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(this.movSpeed);
@@ -63,6 +70,7 @@ public class EntityAirplane extends BasicEntityAirplane {
 	          		-this.motionX*0.5D, -this.motionY*0.5D, -this.motionZ*0.5D, (byte)17);
 		}
 		else {
+//			LogHelper.info("DEBUG : rand pos: "+this.backHome+" "+this.ticksExisted+" "+this);
 			if(!this.hasAmmoLight()) this.backHome = true;
 		}
 	}
@@ -76,6 +84,16 @@ public class EntityAirplane extends BasicEntityAirplane {
 	public boolean useAmmoHeavy() {
 		return false;
 	}
+	
+	@Override
+	public boolean attackEntityFrom(DamageSource source, float atk) {
+		//33% dodge heavy damage
+		if(atk > this.getMaxHealth() && this.getRNG().nextInt(3) == 0) {
+			return false;
+		}
+        
+        return super.attackEntityFrom(source, atk);
+    }
 
 
 }

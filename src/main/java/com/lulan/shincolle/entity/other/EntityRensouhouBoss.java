@@ -1,4 +1,4 @@
-package com.lulan.shincolle.entity.hostile;
+package com.lulan.shincolle.entity.other;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -14,7 +14,6 @@ import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipCannonAttack;
-import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;

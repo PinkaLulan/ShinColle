@@ -1,4 +1,4 @@
-package com.lulan.shincolle.entity.hostile;
+package com.lulan.shincolle.entity.destroyer;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -13,6 +13,7 @@ import net.minecraft.world.World;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipBoss;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
+import com.lulan.shincolle.entity.other.EntityRensouhouBoss;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.network.S2CSpawnParticle;

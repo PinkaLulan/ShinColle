@@ -7,12 +7,14 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.entity.ExtendShipProps;
+import com.lulan.shincolle.entity.IShipInvisible;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CSpawnParticle;
@@ -21,10 +23,14 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
-public class EntitySubmRo500 extends BasicEntityShipSmall {
+public class EntitySubmRo500 extends BasicEntityShipSmall implements IShipInvisible {
+	
+	private static float ilevel = 0.3F;
+	
 
 	public EntitySubmRo500(World world) {
 		super(world);
@@ -79,6 +85,9 @@ public class EntitySubmRo500 extends BasicEntityShipSmall {
   		super.onLivingUpdate();
           
   		if(!worldObj.isRemote) {
+  			//DEBUG
+//  			LogHelper.info("DEBUG : ro500 target: "+this.getCustomNameTag()+" "+this.getEntityRevengeTarget()+" "+this.getEntityTarget());
+  			
   			//add aura to master every 100 ticks
   			if(this.ticksExisted % 100 == 0) {
   				if(getStateFlag(ID.F.UseRingEffect)) {
@@ -136,6 +145,22 @@ public class EntitySubmRo500 extends BasicEntityShipSmall {
 	public int getKaitaiType() {
 		return 0;
 	}
+  	
+  	@Override
+    public boolean attackEntityFrom(DamageSource attacker, float atk) {
+  		if(attacker.getEntity() != null) {
+  			float dist = (float) this.getDistanceSqToEntity(attacker.getEntity());
+
+  			//dist > 6 blocks
+  			if(dist > 36F) {
+  				if(this.getRNG().nextFloat() < this.getInvisibleLevel()) {
+  					return false;
+  				}
+  			}
+  		}
+  		
+  		return super.attackEntityFrom(attacker, atk);
+  	}
   	
   	//潛艇的輕攻擊一樣使用飛彈
   	@Override
@@ -226,6 +251,16 @@ public class EntitySubmRo500 extends BasicEntityShipSmall {
   		else {
   			return (double)this.height * 0.5F;
   		}
+	}
+
+	@Override
+	public float getInvisibleLevel() {
+		return this.ilevel;
+	}
+	
+	@Override
+	public void setInvisibleLevel(float level) {
+		this.ilevel = level;
 	}
   	
 

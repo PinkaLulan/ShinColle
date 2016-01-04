@@ -150,6 +150,7 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
 	        else {
 	            this.onSightTime = 0;
 	            
+	            //若host要求onSight, 則看不到時馬上放棄目標, 停止AI
 	            if(host.getStateFlag(ID.F.OnSightChase)) {
 	            	this.resetTask();
 	            	return;

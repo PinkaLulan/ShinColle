@@ -10,6 +10,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityFlying;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.IEntityOwnable;
 import net.minecraft.entity.boss.EntityWither;
 import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.passive.EntityBat;
@@ -215,7 +216,7 @@ public class EntityHelper {
 			//host and target has player owner
 			if(hostID > 0 && tarID > 0) {
 				TeamData hostTeam = getTeamDataByUID(hostID);
-				TeamData tarTeam = getTeamDataByUID(hostID);
+				TeamData tarTeam = getTeamDataByUID(tarID);
 				
 				//host has team
 				if(hostTeam != null && tarTeam != null) {
@@ -236,8 +237,7 @@ public class EntityHelper {
 			//host and target has player owner
 			if(hostID > 0 && tarID > 0) {
 				TeamData hostTeam = getTeamDataByUID(hostID);
-				TeamData tarTeam = getTeamDataByUID(hostID);
-				
+				TeamData tarTeam = getTeamDataByUID(tarID);
 				//host has team
 				if(hostTeam != null && tarTeam != null) {
 					List alist = hostTeam.getTeamBannedList();
@@ -368,8 +368,7 @@ public class EntityHelper {
 				}
 			}
 		}
-			
-		LogHelper.info("DEBUG : player not found: eid: "+entityID+" world: "+worldID+" client: "+world.isRemote);
+//		LogHelper.info("DEBUG : player not found: eid: "+entityID+" world: "+worldID+" client: "+world.isRemote);
 		return null;
 	}
 	
@@ -405,8 +404,7 @@ public class EntityHelper {
 				return getEntityPlayerByID(pdata[0], world.provider.dimensionId, world.isRemote);
 			}
 		}
-		
-		LogHelper.info("DEBUG : player not found: uid: "+uid+" client? "+world.isRemote);
+//		LogHelper.info("DEBUG : player not found: uid: "+uid+" client? "+world.isRemote);
 		return null;
 	}
 	
@@ -454,8 +452,8 @@ public class EntityHelper {
 		}
 		
 		//tameable entity
-		if(ent instanceof EntityTameable) {
-			EntityLivingBase owner = ((EntityTameable) ent).getOwner();
+		if(ent instanceof IEntityOwnable) {
+			Entity owner = ((IEntityOwnable) ent).getOwner();
 			//get player UID
 			if(owner instanceof EntityPlayer) {
 				ExtendPlayerProps extProps = (ExtendPlayerProps) owner.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
@@ -642,7 +640,7 @@ public class EntityHelper {
 				entity.setStateMinor(ID.M.FleeHP, value);
 				break;
 			case ID.B.ShipInv_TarAI:
-				entity.setStateMinor(ID.M.TargetAI, value);
+				entity.setEntityFlagI(ID.F.PassiveAI, value);
 				break;
 			case ID.B.ShipInv_AuraEffect:
 				entity.setEntityFlagI(ID.F.UseRingEffect, value);
@@ -650,17 +648,15 @@ public class EntityHelper {
 			case ID.B.ShipInv_OnSightAI:
 				entity.setEntityFlagI(ID.F.OnSightChase, value);
 				break;
-//			case ID.B.ShipInv_PVPAI:
-//				
-//				//TODO
-//				aaa
-//				break;
-//			case ID.B.ShipInv_PVPAI:
-//				aaa
-//				break;
-//			case ID.B.ShipInv_PVPAI:
-//				aaa
-//				break;
+			case ID.B.ShipInv_PVPAI:
+				entity.setEntityFlagI(ID.F.PVPFirst, value);
+				break;
+			case ID.B.ShipInv_AAAI:
+				entity.setEntityFlagI(ID.F.AntiAir, value);
+				break;
+			case ID.B.ShipInv_ASMAI:
+				entity.setEntityFlagI(ID.F.AntiSS, value);
+				break;
 			}
 		}
 		else {
@@ -787,14 +783,12 @@ public class EntityHelper {
 		//try 25 times
 		for(int i = 0; i < 25; i++) {
 			switch(mode) {
-			case 0:	//y = y+1~y+3
-				newPos[1] = rand.nextDouble() * 2D + target.posY + 1D;
-				
+			case 0:	 //隨機選擇目標周圍四個象限
 				//find side position
 				newPos[0] = rand.nextDouble() * randDist + minDist;	//ran = min + randN
-				newPos[2] = rand.nextDouble() * randDist + minDist;	
+				newPos[1] = rand.nextDouble() * randDist + target.posY + 1D;
+				newPos[2] = rand.nextDouble() * randDist + minDist;
 
-				//隨機選象限法
 				switch(rand.nextInt(4)) {
 				case 0:
 					newPos[0] = target.posX + newPos[0];
@@ -814,10 +808,52 @@ public class EntityHelper {
 					break;
 				}//end inner switch
 				break;
-			case 1: //y = y-2~y+2, minDist unused
-				//NYI
+			case 1:  //繞背法, 隨機選擇背面兩個象限
+				//find side position
+				newPos[0] = rand.nextDouble() * randDist + minDist;	//ran = min + randN
+				newPos[1] = rand.nextDouble() * randDist + target.posY + 1D;
+				newPos[2] = rand.nextDouble() * randDist + minDist;
+				
+				//get direction
+				double dx = host.posX - target.posX;
+				double dz = host.posZ - target.posZ;
+				
+				if(dx > 0) {
+					newPos[0] = target.posX - newPos[0];
+				}
+				else {
+					newPos[0] = target.posX + newPos[0];
+				}
+				
+				if(dz > 0) {
+					newPos[2] = target.posZ - newPos[2];
+				}
+				else {
+					newPos[2] = target.posZ - newPos[2];
+				}
+				break;
+			case 2:  //直線前進法, 依照移動方向繼續往前
+				//find side position
+				newPos[0] = rand.nextDouble() * randDist + minDist;	//ran = min + randN
+				newPos[1] = rand.nextDouble() * randDist + target.posY + 1D;
+				newPos[2] = rand.nextDouble() * randDist + minDist;
+				
+				if(host.motionX < 0) {
+					newPos[0] = target.posX - newPos[0];
+				}
+				else {
+					newPos[0] = target.posX + newPos[0];
+				}
+				
+				if(host.motionZ < 0) {
+					newPos[2] = target.posZ - newPos[2];
+				}
+				else {
+					newPos[2] = target.posZ + newPos[2];
+				}
 				break;
 			}//end mode switch
+			
 			//check block
 			findBlock = host.worldObj.getBlock((int)newPos[0], (int)newPos[1], (int)newPos[2]);
 			if(findBlock != null && (findBlock == Blocks.air || findBlock == Blocks.water)) {
@@ -827,7 +863,7 @@ public class EntityHelper {
 		
 		//find block fail, return target position
 		newPos[0] = target.posX;
-		newPos[1] = target.posY + 1D;
+		newPos[1] = target.posY + 2.5D;
 		newPos[2] = target.posZ;
 		
 		return newPos;
@@ -885,10 +921,10 @@ public class EntityHelper {
     			        TargetPoint point = new TargetPoint(entity2.dimension, entity2.posX, entity2.posY, entity2.posZ, 48D);
     					//路徑點畫紅色, 目標點畫綠色
     					if(i == pathtemp.getCurrentPathIndex()) {
-    						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(entity2, 16, pointtemp.xCoord +0.5D, pointtemp.yCoord + 0.5D, pointtemp.zCoord +0.5D, 0F, 0F, 0F, false), point);
+    						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(entity2, 32, pointtemp.xCoord +0.5D, pointtemp.yCoord + 0.5D, pointtemp.zCoord +0.5D, 0F, 0F, 0F, false), point);
     					}
     					else {
-    						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(entity2, 18, pointtemp.xCoord +0.5D, pointtemp.yCoord + 0.5D, pointtemp.zCoord +0.5D, 0F, 0F, 0F, false), point);
+    						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(entity2, 33, pointtemp.xCoord +0.5D, pointtemp.yCoord + 0.5D, pointtemp.zCoord +0.5D, 0F, 0F, 0F, false), point);
     					}
     				}
     			}
@@ -1294,8 +1330,8 @@ public class EntityHelper {
             if(!host.getEntityRevengeTarget().isEntityAlive()) {
             	host.setEntityRevengeTarget(null);
             }
-            //clear target after 100 ticks
-            else if (host.getTickExisted() - host.getEntityRevengeTime() > 100) {
+            //clear target after 200 ticks
+            else if (host.getTickExisted() - host.getEntityRevengeTime() > 200) {
             	host.setEntityRevengeTarget(null);
             }
         }
@@ -1318,6 +1354,31 @@ public class EntityHelper {
 		if(host.getTickExisted() % 64 == 0) {
 			if(host.getEntityTarget() != null && host.getEntityTarget().isInvisible()) {
 				host.setEntityTarget(null);
+			}
+		}
+	}
+	
+	/** set ship's revenge target around player within X blocks */
+	public static void setRevengeTargetAroundPlayer(EntityPlayer player, double dist, Entity target) {
+		int pid = EntityHelper.getPlayerUID(player);
+		
+		if(pid > 0 && target != null) {
+			//get ship
+			int getpid = 0;
+			List<BasicEntityShip> list1 = player.worldObj.getEntitiesWithinAABB(BasicEntityShip.class,
+					player.boundingBox.expand(dist, dist, dist));
+			
+			if(list1 != null && !list1.isEmpty()) {
+				for(BasicEntityShip ship : list1) {
+					getpid = ship.getPlayerUID();
+					
+					//check same owner
+					if(!ship.equals(target) && getpid == pid) {
+						ship.setEntityRevengeTarget(target);
+						ship.setEntityRevengeTime();
+//						LogHelper.info("DEBUG : entity helper: revenge: "+ship+"  "+target);
+					}
+				}
 			}
 		}
 	}

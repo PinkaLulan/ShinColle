@@ -8,6 +8,7 @@ import net.minecraft.entity.ai.EntityAIBase;
 
 import com.lulan.shincolle.entity.BasicEntityAirplane;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
 
 /**AIRCRAFT ATTACK AI
  * entity必須實作attackEntityWithAmmo, attackEntityWithHeavyAmmo 兩個方法
@@ -56,8 +57,7 @@ public class EntityAIShipAircraftAttack extends EntityAIBase {
     @Override
     public void startExecuting() {
     	this.maxDelay = (int)(80F / (this.host.atkSpeed));
-    	this.atkDelay = 0;
-        this.attackRange = 6F;
+        this.attackRange = 7F;
         this.rangeSq = this.attackRange * this.attackRange;
         distSq = distX = distY = distZ = motX = motY = motZ = 0D;
         //AI移動設定
@@ -76,8 +76,9 @@ public class EntityAIShipAircraftAttack extends EntityAIBase {
     @Override
 	public void resetTask() {
         this.target = null;
-        this.atkDelay = 0;
-        this.host.getShipNavigate().tryMoveToEntityLiving(this.host.getHostEntity(), 1D);
+        //keep moving, do not stop in air
+        randPos = EntityHelper.findRandomPosition(this.host, this.host, 4D, 2D, 2);
+        this.host.getShipNavigate().tryMoveToXYZ(randPos[0], randPos[1], randPos[2], 1D);
     }
 
     //進行AI
@@ -85,17 +86,19 @@ public class EntityAIShipAircraftAttack extends EntityAIBase {
 	public void updateTask() {
     	boolean onSight = false;	//判定直射是否無障礙物
     	  	
-    	if(this.target != null) {  //for lots of NPE issue-.-
+    	if(this.target != null) {
             onSight = this.host.getEntitySenses().canSee(this.target);
+//            LogHelper.info("DEBUG : rand pos: "+this.target);
+            
             //目標距離計算
             this.distX = this.target.posX - this.host.posX;
     		this.distY = this.target.posY+2D - this.host.posY;
     		this.distZ = this.target.posZ - this.host.posZ;	
     		this.distSq = distX*distX + distY*distY + distZ*distZ;
 
-        	if(this.host.ticksExisted % 20 == 0) {
-	        	randPos = EntityHelper.findRandomPosition(this.host, this.target, 3D, 3D, 0);    	
-//	        	randPos[0] = target.posX;randPos[1] = target.posY;randPos[2] = target.posZ;	//for test
+        	if(this.host.ticksExisted % 16 == 0) {
+	        	randPos = EntityHelper.findRandomPosition(this.host, this.target, 3D, 3D, 1);
+//	        	LogHelper.info("DEBUG : rand pos: "+this.host+" "+randPos[0]+" "+randPos[1]+" "+randPos[2]);
 	        	//目標在射程外, 則100%速度前進
 	        	if(this.distSq > this.rangeSq) {
 		        	this.host.getShipNavigate().tryMoveToXYZ(randPos[0], randPos[1], randPos[2], 1D);
@@ -113,7 +116,7 @@ public class EntityAIShipAircraftAttack extends EntityAIBase {
 
 	        //若attack delay倒數完了且瞄準時間夠久, 則開始攻擊
 	        if(this.atkDelay <= 0 && onSight) {
-	        	//由於艦載機只會輕 or 重其中一種攻擊, 因此AI這邊共用cooldown, 不會造成影響
+	        	//由於艦載機只會輕 or 重其中一種攻擊, 因此AI這邊共用cooldown
 	        	if(this.distSq < this.rangeSq && this.host.numAmmoLight > 0 && this.host.useAmmoLight) {
 		            //attack method
 		            this.host.attackEntityWithAmmo(this.target);

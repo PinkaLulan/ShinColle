@@ -18,6 +18,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
@@ -31,7 +32,7 @@ import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
 import com.lulan.shincolle.entity.ExtendShipProps;
 import com.lulan.shincolle.entity.IShipAttackBase;
-import com.lulan.shincolle.entity.hostile.EntityRensouhouBoss;
+import com.lulan.shincolle.entity.other.EntityRensouhouBoss;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.BasicEntityItem;
 import com.lulan.shincolle.proxy.ServerProxy;
@@ -321,6 +322,41 @@ public class EVENT_BUS_EventHandler {
 //			LogHelper.info("DEBUG : on world unload: save world data to disk");
 //		}
 //	}
+	
+//	/** on player left click attack event, BOTH SIDE EVENT
+//	 *  set ship's revenge target when player attack
+//	 */
+//	@SubscribeEvent
+//	public void onPlayerAttack(AttackEntityEvent event) {
+//		if(event.entityPlayer != null && !event.entityPlayer.worldObj.isRemote) {
+//			LogHelper.info("DEBUG : get attack event: "+event.entityPlayer);
+//		}
+//	}
+	
+	/** on entity attack event, BOTH SIDE EVENT
+	 *  set ship's revenge target if player attack or be attacked
+	 */
+	@SubscribeEvent
+	public void onEntityAttack(LivingAttackEvent event) {
+		//server side only
+		if(event.entity != null && !event.entity.worldObj.isRemote) {
+			//attacker is player
+			if(event.source.getEntity() instanceof EntityPlayer) {
+				EntityPlayer player = (EntityPlayer) event.source.getEntity();
+				//get player's ship within 20 blocks
+				EntityHelper.setRevengeTargetAroundPlayer(player, 20D, event.entity);
+//				LogHelper.info("DEBUG : attack event: "+player+" "+event.entity);
+			}//end get player
+			
+			//player is attacked
+			if(event.entity instanceof EntityPlayer) {
+				EntityPlayer player = (EntityPlayer) event.entity;
+				//get player's ship within 20 blocks
+				EntityHelper.setRevengeTargetAroundPlayer(player, 20D, event.source.getEntity());
+//				LogHelper.info("DEBUG : attack event: "+player+" "+event.source.getEntity());
+			}
+		}//end server side
+	}
 
 	
 }

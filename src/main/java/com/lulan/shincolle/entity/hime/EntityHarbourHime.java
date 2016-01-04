@@ -24,6 +24,7 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -70,7 +71,8 @@ public class EntityHarbourHime extends BasicEntityShipLarge {
   	public void onLivingUpdate() {
   		//server side
   		if(!worldObj.isRemote) {
-  			//飛行場特殊能力
+//  			LogHelper.info("DEBUG : hb target "+this.getEntityTarget());
+  			//heal effect
         	if(this.ticksExisted % 160 == 0) {
         		//1: 增強被動回血
         		if(getStateMinor(ID.M.NumGrudge) > 0 && this.getHealth() < this.getMaxHealth()) {

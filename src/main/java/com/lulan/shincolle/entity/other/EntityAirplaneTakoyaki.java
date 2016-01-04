@@ -26,14 +26,13 @@ public class EntityAirplaneTakoyaki extends BasicEntityAirplane {
         //basic attr
         this.atk = host.getStateFinal(ID.ATK_AH);
         this.atkSpeed = host.getStateFinal(ID.SPD);
-        this.movSpeed = host.getStateFinal(ID.MOV) * 0.1F + 0.25F;
+        this.movSpeed = host.getStateFinal(ID.MOV) * 0.1F + 0.23F;
         
         //AI flag
         this.numAmmoLight = 0;
         this.numAmmoHeavy = 3;
         this.useAmmoLight = false;
         this.useAmmoHeavy = true;
-        this.antiAir = host.getStateFlag(ID.F.AntiAir);
         
         //設定發射位置
         this.posX = host.posX;
@@ -42,7 +41,7 @@ public class EntityAirplaneTakoyaki extends BasicEntityAirplane {
         this.setPosition(this.posX, this.posY, this.posZ);
  
 	    //設定基本屬性
-        double mhp = host.getLevel() + host.getStateFinal(ID.HP)*0.2D;
+        double mhp = host.getLevel() + host.getStateFinal(ID.HP)*0.15D;
         
 	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(mhp);
 		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(this.movSpeed);

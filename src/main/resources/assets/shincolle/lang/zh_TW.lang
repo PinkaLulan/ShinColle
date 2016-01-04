@@ -307,9 +307,9 @@ gui.shincolle:fleehp=逃跑血量(%%)
 gui.shincolle:auraeffect=開啟特殊能力
 gui.shincolle:targetAI=被動攻擊?
 gui.shincolle:onsightAI=視線內才追擊?
-gui.shincolle:ai.pvp=PVP模式?
-gui.shincolle:ai.aa=優先防空?
-gui.shincolle:ai.asm=優先反潛?
+gui.shincolle:ai.pvp=PVP模式
+gui.shincolle:ai.aa=防空模式
+gui.shincolle:ai.asm=反潛模式
 
 # GUI: Shipyard
 gui.shincolle:nomaterial=資材不足
@@ -335,6 +335,7 @@ gui.shincolle:pointer3=(蹲下左鍵以切換模式)
 gui.shincolle:pointer4=隊伍
 gui.shincolle:antiair=制空
 gui.shincolle:antiss=反潛
+gui.shincolle:dodge=閃避
 
 # Chat message
 chat.shincolle:bossspawn1=有艦娘出現在水面上!

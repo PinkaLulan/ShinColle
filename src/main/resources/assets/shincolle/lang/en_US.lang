@@ -307,9 +307,9 @@ gui.shincolle:fleehp=Flee HP%%
 gui.shincolle:auraeffect=Aura Effect
 gui.shincolle:targetAI=Passive?
 gui.shincolle:onsightAI=Onsight?
-gui.shincolle:ai.pvp=PVP mode?
-gui.shincolle:ai.aa=Anti-Air?
-gui.shincolle:ai.asm=Anti-SS?
+gui.shincolle:ai.pvp=PVP Mode
+gui.shincolle:ai.aa=Anti-Air
+gui.shincolle:ai.asm=Anti-SS
 
 # GUI: Shipyard
 gui.shincolle:nomaterial=Not Enough Materials
@@ -335,6 +335,7 @@ gui.shincolle:pointer3=(Sneaking Left Click to Change Mode)
 gui.shincolle:pointer4=Team
 gui.shincolle:antiair=Anti-Air
 gui.shincolle:antiss=Anti-SS
+gui.shincolle:dodge=Dodge
 
 # Chat message
 chat.shincolle:bossspawn1=A Fleet Walks on the Water!

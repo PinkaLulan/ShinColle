@@ -1,17 +1,18 @@
-package com.lulan.shincolle.entity.hostile;
+package com.lulan.shincolle.entity.submarine;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
+import com.lulan.shincolle.entity.IShipInvisible;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
@@ -24,8 +25,11 @@ import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
-public class EntitySubmRo500Mob extends BasicEntityShipHostile {
+public class EntitySubmRo500Mob extends BasicEntityShipHostile implements IShipInvisible {
 
+	private static float ilevel = 0.3F;
+	
+	
 	public EntitySubmRo500Mob(World world) {
 		super(world);
 		this.setSize(0.6F, 1.4F);
@@ -124,6 +128,22 @@ public class EntitySubmRo500Mob extends BasicEntityShipHostile {
 		
         return false;
     }
+	
+	@Override
+    public boolean attackEntityFrom(DamageSource attacker, float atk) {
+		if(attacker.getEntity() != null) {
+  			float dist = (float) this.getDistanceSqToEntity(attacker.getEntity());
+
+  			//dist > 6 blocks
+  			if(dist > 36F) {
+  				if(this.getRNG().nextFloat() < this.getInvisibleLevel()) {
+  					return false;
+  				}
+  			}
+  		}
+		
+  		return super.attackEntityFrom(attacker, atk);
+  	}
 	
 	//©Û³ê°ª³t³½¹p
   	@Override
@@ -237,6 +257,16 @@ public class EntitySubmRo500Mob extends BasicEntityShipHostile {
   	@Override
 	public int getDamageType() {
 		return ID.ShipDmgType.SUBMARINE;
+	}
+  	
+  	@Override
+	public float getInvisibleLevel() {
+		return this.ilevel;
+	}
+	
+	@Override
+	public void setInvisibleLevel(float level) {
+		this.ilevel = level;
 	}
   	
 

@@ -190,7 +190,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
     	 * 2. target AI = active attack
     	 * 3. guard type > 0
     	 */
-    	if(isMoving && ship != null && ship.getStateMinor(ID.M.TargetAI) > 0 && ship.getStateMinor(ID.M.GuardType) > 0) {
+    	if(isMoving && ship != null && !ship.getStateFlag(ID.F.PassiveAI)&& ship.getStateMinor(ID.M.GuardType) > 0) {
     		//update parms
     		if(host2.ticksExisted % 64 == 0) {
     			this.updateAttackParms();

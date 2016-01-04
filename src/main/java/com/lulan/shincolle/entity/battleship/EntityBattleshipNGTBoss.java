@@ -1,4 +1,4 @@
-package com.lulan.shincolle.entity.hostile;
+package com.lulan.shincolle.entity.battleship;
 
 import java.util.List;
 

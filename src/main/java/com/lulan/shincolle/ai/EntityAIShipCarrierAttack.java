@@ -9,6 +9,7 @@ import net.minecraft.entity.ai.EntityAIBase;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.IShipAircraftAttack;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.LogHelper;
 
 /**CARRIER RANGE ATTACK AI
  * entity必須實作IUseAircraft
@@ -60,7 +61,7 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
 		}
     	
     	Entity target = this.host.getEntityTarget();
-
+    	
         if((target != null && target.isEntityAlive()) &&
            ((this.host.getAttackType(ID.F.AtkType_AirLight) && this.host.getStateFlag(ID.F.UseAirLight) && this.host.hasAmmoLight() && this.host.hasAirLight()) || 
             (this.host.getAttackType(ID.F.AtkType_AirHeavy) && this.host.getStateFlag(ID.F.UseAirHeavy) && this.host.hasAmmoHeavy() && this.host.hasAirHeavy()))) {   
@@ -94,9 +95,9 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
     //重置AI方法, DO NOT reset delay time here
     @Override
 	public void resetTask() {
-//    	LogHelper.info("DEBUG : air attack AI "+target);
         this.target = null;
         if(host != null) {
+        	this.host2.setAttackTarget(null);
         	this.host.setEntityTarget(null);
         	this.host.getShipNavigate().clearPathEntity();
         }
@@ -107,7 +108,6 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
 	public void updateTask() {
     	if(this.target != null && host != null) {  //for lots of NPE issue-.-
     		boolean onSight = this.host2.getEntitySenses().canSee(this.target);
-//    		boolean onSight = true;		 //for debug
     		
     		//若不在視線內, 檢查flag
     		if(!onSight) {
@@ -173,7 +173,7 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
 	        }
 	        
 	        //若超過太久都打不到目標(或是追不到), 則重置目標
-	        if(this.launchDelay < -40) {
+	        if(this.launchDelay < -80) {
 	        	this.launchDelay = 20;
 	        	this.resetTask();
 	        	return;

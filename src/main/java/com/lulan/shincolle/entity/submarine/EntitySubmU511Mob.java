@@ -1,4 +1,4 @@
-package com.lulan.shincolle.entity.hostile;
+package com.lulan.shincolle.entity.submarine;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -7,11 +7,13 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
+import com.lulan.shincolle.entity.IShipInvisible;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
@@ -23,8 +25,11 @@ import com.lulan.shincolle.utility.CalcHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
-public class EntitySubmU511Mob extends BasicEntityShipHostile {
+public class EntitySubmU511Mob extends BasicEntityShipHostile implements IShipInvisible {
 
+	private static float ilevel = 0.3F;
+	
+	
 	public EntitySubmU511Mob(World world) {
 		super(world);
 		this.setSize(0.7F, 1.4F);
@@ -45,7 +50,7 @@ public class EntitySubmU511Mob extends BasicEntityShipHostile {
         
         //misc
         this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, ID.S_SubmarineU511+2);
- 
+        
 	    //設定基本屬性
 	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(ConfigHandler.scaleMobU511[ID.HP]);
 		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(this.movSpeed);
@@ -111,6 +116,22 @@ public class EntitySubmU511Mob extends BasicEntityShipHostile {
 		
         return false;
     }
+	
+	@Override
+    public boolean attackEntityFrom(DamageSource attacker, float atk) {
+		if(attacker.getEntity() != null) {
+  			float dist = (float) this.getDistanceSqToEntity(attacker.getEntity());
+
+  			//dist > 6 blocks
+  			if(dist > 36F) {
+  				if(this.getRNG().nextFloat() < this.getInvisibleLevel()) {
+  					return false;
+  				}
+  			}
+  		}
+		
+  		return super.attackEntityFrom(attacker, atk);
+  	}
 	
 	//招喚連裝砲進行攻擊
   	@Override
@@ -224,6 +245,16 @@ public class EntitySubmU511Mob extends BasicEntityShipHostile {
   	@Override
 	public int getDamageType() {
 		return ID.ShipDmgType.SUBMARINE;
+	}
+  	
+  	@Override
+	public float getInvisibleLevel() {
+		return this.ilevel;
+	}
+	
+	@Override
+	public void setInvisibleLevel(float level) {
+		this.ilevel = level;
 	}
   	
 

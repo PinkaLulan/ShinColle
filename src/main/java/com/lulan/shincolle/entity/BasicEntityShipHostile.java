@@ -105,8 +105,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	//setup target AI: par1: 0:passive 1:active
 	public void setAITargetList() {
 		this.targetTasks.addTask(1, new EntityAIShipRevengeTarget(this));
-		this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, BasicEntityShip.class, 0, true, false));
-		this.targetTasks.addTask(3, new EntityAIShipRangeTarget(this, 0.4F, 1, 0, Entity.class));
+		this.targetTasks.addTask(2, new EntityAIShipRangeTarget(this, Entity.class));
 	}
 	
 	@Override
