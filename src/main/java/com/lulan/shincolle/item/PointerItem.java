@@ -84,7 +84,7 @@ public class PointerItem extends BasicItem {
 	 *   other:				set target class<br>
 	 *<br>  
 	 * left + sprint:<br>
-	 *   air:				-<br>
+	 *   air:				change formaion<br>
 	 *   block:				-<br>
 	 *   ship(owner):		-<br>
 	 *   ship(friend):		-<br>
@@ -128,6 +128,17 @@ public class PointerItem extends BasicItem {
 				GameSettings keySet = ClientProxy.getGameSetting();
 				ExtendPlayerProps props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 				MovingObjectPosition hitObj = EntityHelper.getPlayerMouseOverEntity(64D, 1F);
+				
+				//press SPRINT (CTRL)
+				if(keySet.keyBindSprint.getIsKeyPressed()) {
+					//formation id++
+					//its already in team, remove ship
+					int fid = props.getFormatID()[props.getCurrentTeamID()] + 1;
+					if(fid > 5) fid = 0;
+					
+					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetFormation, fid));
+					return false;
+				}
 				
 				//hit entity
 				if(hitObj != null) {
@@ -268,7 +279,7 @@ public class PointerItem extends BasicItem {
 	 *   other:				attack<br>
 	 *<br>  
 	 * right + sprint:<br>
-	 *   air:				-<br>
+	 *   air:				guard(move only)<br>
 	 *   block:				guard(move only)<br>
 	 *   ship(owner):		guard(move only)<br>
 	 *   ship(friend):		guard(move only)<br>
@@ -278,9 +289,9 @@ public class PointerItem extends BasicItem {
 	 *   other:				guard(move only)<br>
 	 *<br> 
 	 * right + sneak:<br>
-	 *   air:				-<br>
+	 *   air:				Formation GUI<br>
 	 *   block:				-<br>
-	 *   ship(owner):		GUI<br>
+	 *   ship(owner):		Ship GUI<br>
 	 *   ship(friend):		-<br>
 	 *   ship(hostile):		-<br>
 	 *   player(friend):	-<br>
@@ -304,17 +315,13 @@ public class PointerItem extends BasicItem {
 		
 		//client side
 		if(world.isRemote) {
+			GameSettings keySet = ClientProxy.getGameSetting();  //get pressed key
 			ExtendPlayerProps props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
-			
-			//先用getPlayerMouseOverEntity抓entity
 			MovingObjectPosition hitObj = EntityHelper.getPlayerMouseOverEntity(64D, 1F);
 			
 			//get entity
 			if(hitObj != null && hitObj.typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
 				LogHelper.info("DEBUG : pointer right click: ENTITY "+hitObj.entityHit.getClass().getSimpleName());
-					
-				//get pressed key
-				GameSettings keySet = ClientProxy.getGameSetting();
 				
 				//right + sprint: entity: guard entity(move only)
 				if(keySet.keyBindSprint.getIsKeyPressed()) {
@@ -395,7 +402,7 @@ public class PointerItem extends BasicItem {
 			//若沒抓到entity, 則用getPlayerMouseOverBlock抓block
 			else {
 				MovingObjectPosition hitObj2 = EntityHelper.getPlayerMouseOverBlock(64D, 1F);
-				
+
 				if(hitObj2 != null) {
 					//抓到的是block
 					if(hitObj2.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
@@ -427,12 +434,10 @@ public class PointerItem extends BasicItem {
 						
 						LogHelper.info("DEBUG : pointer right click: BLOCK: side: "+hitObj2.sideHit+" xyz: "+x+" "+y+" "+z);
 						
-						//get pressed key
-						GameSettings keySet2 = ClientProxy.getGameSetting();
 						int guardType = 1;
 						
 						//right + sprint: entity: guard (move only)
-						if(keySet2.keyBindSprint.getIsKeyPressed()) {
+						if(keySet.keyBindSprint.getIsKeyPressed()) {
 							//set guard entity (move only: type = 0)
 							guardType = 0;
 						}
@@ -509,7 +514,7 @@ public class PointerItem extends BasicItem {
 			if(player instanceof EntityPlayer) {
 				//client side
 				if(world.isRemote) {
-					if(player.ticksExisted % 10 == 0) {
+					if(player.ticksExisted % 32 == 0) {
 						//抓視線上的東西 (debug)
 //						MovingObjectPosition hitObj = EntityHelper.getPlayerMouseOverEntity(64D, 1F);
 //						if(hitObj != null) {
@@ -585,27 +590,41 @@ public class PointerItem extends BasicItem {
 	//display equip information
     @Override
     public void addInformation(ItemStack itemstack, EntityPlayer player, List list, boolean par4) {  	
-    	switch(itemstack.getItemDamage()) {
-    	case 1:
-    		list.add(EnumChatFormatting.RED + I18n.format("gui.shincolle:pointer1"));
-    		list.add(EnumChatFormatting.GRAY + I18n.format("gui.shincolle:pointer3"));
-    		break;
-    	case 2:
-    		list.add(EnumChatFormatting.GOLD + I18n.format("gui.shincolle:pointer2"));
-    		list.add(EnumChatFormatting.GRAY + I18n.format("gui.shincolle:pointer3"));
-    		break;
-		default:
-			list.add(EnumChatFormatting.AQUA + I18n.format("gui.shincolle:pointer0"));
-			list.add(EnumChatFormatting.GRAY + I18n.format("gui.shincolle:pointer3"));
-			break;
-    	}
-    	
     	ExtendPlayerProps props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
     	
     	if(props != null) {
+    		String str1, str2;
+    		String str3 = null;
+    		
+    		//draw control mode and formation text
+    		int fid = props.getFormatID()[props.getCurrentTeamID()];
+    		if(fid > 0) {
+    			str3 = EnumChatFormatting.GOLD + I18n.format("gui.shincolle:formation.format"+fid);
+    		}
+    		
+    		switch(itemstack.getItemDamage()) {
+        	case 1:
+        		str1 = EnumChatFormatting.RED+I18n.format("gui.shincolle:pointer1")+"  "+str3;
+        		str2 = EnumChatFormatting.GRAY+I18n.format("gui.shincolle:pointer3");
+        		break;
+        	case 2:
+        		str1 = EnumChatFormatting.GOLD+I18n.format("gui.shincolle:pointer2")+"  "+str3;
+        		str2 = EnumChatFormatting.GRAY+I18n.format("gui.shincolle:pointer3");
+        		break;
+    		default:
+    			str1 = EnumChatFormatting.AQUA+I18n.format("gui.shincolle:pointer0")+"  "+str3;
+    			str2 = EnumChatFormatting.GRAY+I18n.format("gui.shincolle:pointer3");
+    			break;
+        	}
+        	
+        	list.add(str1);
+			list.add(str2);
+			
+			//draw current team id
     		list.add(EnumChatFormatting.YELLOW+""+EnumChatFormatting.UNDERLINE + 
-    				String.format("%s %d", I18n.format("gui.shincolle:pointer4"), props.getTeamId()+1));
+    				String.format("%s %d", I18n.format("gui.shincolle:pointer4"), props.getCurrentTeamID()+1));
     	
+    		//draw current team ship name
     		BasicEntityShip ship = null;
     		String name = null;
     		int level = 0;

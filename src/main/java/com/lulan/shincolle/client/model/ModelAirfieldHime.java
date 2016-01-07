@@ -615,7 +615,7 @@ public class ModelAirfieldHime extends ModelBase implements IModelEmotion {
 	    			if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {
 			    		GL11.glTranslatef(0F, 2.9F, 0F);
 				    	//Body
-				    	this.Head.rotateAngleX += 0.14F;
+				    	this.Head.rotateAngleX -= 0.15F;
 					  	this.BodyMain.rotateAngleX = -0.4363F;
 					  	this.BoobL.rotateAngleX -= 0.25F;
 					  	this.BoobR.rotateAngleX -= 0.25F;
@@ -642,7 +642,7 @@ public class ModelAirfieldHime extends ModelBase implements IModelEmotion {
 			    	else {
 				    	GL11.glTranslatef(0F, 2.9F, 0F);
 				    	//Body
-				    	this.Head.rotateAngleX += 0.14F;
+				    	this.Head.rotateAngleX -= 0.15F;
 					  	this.BodyMain.rotateAngleX = -0.5236F;
 					  	this.BoobL.rotateAngleX -= 0.2F;
 					  	this.BoobR.rotateAngleX -= 0.2F;

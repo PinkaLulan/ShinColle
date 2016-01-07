@@ -50,25 +50,25 @@ public class EntityFXTeam extends EntityFX {
         	this.particleRed = 0F;
         	this.particleGreen = 1F;
         	this.particleBlue = 0F;
-        	this.particleMaxAge = 9;
+        	this.particleMaxAge = 31;
         	break;
         case 1:		//cyan, single mode
         	this.particleRed = 0F;
         	this.particleGreen = 1F;
         	this.particleBlue = 1F;
-        	this.particleMaxAge = 9;
+        	this.particleMaxAge = 31;
         	break;
         case 2:		//red, group mode
         	this.particleRed = 1F;
         	this.particleGreen = 0F;
         	this.particleBlue = 0F;
-        	this.particleMaxAge = 9;
+        	this.particleMaxAge = 31;
         	break;
         case 3:		//yellow, formation mode
         	this.particleRed = 1F;
         	this.particleGreen = 0.9F;
         	this.particleBlue = 0F;
-        	this.particleMaxAge = 9;
+        	this.particleMaxAge = 31;
         	break;
         case 4:		//green, moving target
         	this.particleRed = 0F;
@@ -204,6 +204,10 @@ public class EntityFXTeam extends EntityFX {
     @Override
 	public void onUpdate() {
     	if(host != null) {
+    		//set interpolation position
+    		this.prevPosX = this.posX;
+            this.prevPosY = this.posY;
+            this.prevPosZ = this.posZ;
 			this.setPosition(host.posX, host.posY, host.posZ);
     	}
     	else {
@@ -220,8 +224,6 @@ public class EntityFXTeam extends EntityFX {
         if(this.particleAge++ > this.particleMaxAge) {
             this.setDead();
         }
-
-        this.moveEntity(this.motionX, this.motionY, this.motionZ);
     }
 }
 

@@ -1,6 +1,9 @@
 package com.lulan.shincolle.network;
 
 import io.netty.buffer.ByteBuf;
+
+import java.util.List;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -18,7 +21,6 @@ import com.lulan.shincolle.tileentity.BasicTileEntity;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.PacketHelper;
 
-import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -51,6 +53,7 @@ public class C2SGUIPackets implements IMessage {
 		public static final byte SetMove = -9;
 		public static final byte SetSelect = -10;
 		public static final byte SetTarClass = -12;
+		public static final byte SetFormation = -20;
 		//tile entity
 		public static final byte TileEntitySync = -11;
 		//desk function
@@ -116,6 +119,7 @@ public class C2SGUIPackets implements IMessage {
 	 * type 12:(1 parm) break ally: 0:team id<br>
 	 * type 13:(1 parm) add banned team: 0:team id<br>
 	 * type 14:(1 parm) remove banned team: 0:team id<br>
+	 * type 15:(1 parm) change formation: 0:formation id<br>
 	 */
 	public C2SGUIPackets(EntityPlayer player, int type, int...parms) {
         this.player = player;
@@ -202,7 +206,6 @@ public class C2SGUIPackets implements IMessage {
 						//get ship
 						if(value1 > 0) {
 							getEnt2 = EntityHelper.getEntityByID(value1, worldID, false);
-						
 						}
 						
 						//點到的是ship entity, 則add team
@@ -404,7 +407,7 @@ public class C2SGUIPackets implements IMessage {
 					ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 					
 					if(extProps != null) {
-						extProps.setTeamId(this.value1);
+						extProps.setCurrentTeamID(this.value1);
 						
 						//send sync packet to client
 						//sync team list
@@ -534,14 +537,38 @@ public class C2SGUIPackets implements IMessage {
 								break;
 							}
 							
-							//sync team data to client
-							CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps, S2CGUIPackets.PID.SyncPlayerProp_TeamData), (EntityPlayerMP) player);
+							//sync team data to all player using desk GUI
+							List<EntityPlayer> plist = EntityHelper.getEntityPlayerUsingGUI();
+							for(EntityPlayer p : plist) {
+								CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps, S2CGUIPackets.PID.SyncPlayerProp_TeamData), (EntityPlayerMP) p);
+							}
 						}//player UID != null
 					}//extProps != null
 				}//get player
 			}
 			break;
-		}
+		case PID.SetFormation:	//clear team, 1 parms
+			{
+				this.entityID = buf.readInt();
+				this.worldID = buf.readInt();
+				this.value1 = buf.readInt();	//formation id
+				
+				EntityPlayer getEnt = EntityHelper.getEntityPlayerByID(entityID, worldID, false);
+				
+				if(getEnt != null) {
+					this.player = getEnt;
+					ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+					
+					if(extProps != null) {
+						EntityHelper.setFormationIDandBuffs(extProps, this.value1);
+						
+						//sync team list
+						CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps, S2CGUIPackets.PID.SyncPlayerProp), (EntityPlayerMP) player);
+					}
+				}
+			}
+			break;
+		}//end packet type switch
 	}
 
 	//發出packet方法
@@ -584,6 +611,7 @@ public class C2SGUIPackets implements IMessage {
 		case PID.Desk_Break:
 		case PID.Desk_Ban:
 		case PID.Desk_Unban:
+		case PID.SetFormation:
 			{
 				buf.writeByte(this.type);
 				buf.writeInt(this.player.getEntityId());

@@ -34,18 +34,16 @@ public class ModRecipes {
 		ItemStack blazepowderStack = new ItemStack(Items.blaze_powder);
 		ItemStack bucketRepairStack = new ItemStack(ModItems.BucketRepair);	
 		ItemStack desk = new ItemStack(ModBlocks.BlockDesk);
+		ItemStack deskBook = new ItemStack(ModItems.DeskItemBook);
+		ItemStack deskRadar = new ItemStack(ModItems.DeskItemRadar);
 		ItemStack grudeStack = new ItemStack(ModItems.Grudge);
 		ItemStack grudeStack9 = new ItemStack(ModItems.Grudge,9,0);
 		ItemStack grudeBlock = new ItemStack(ModBlocks.BlockGrudge);
 		ItemStack grudeBlock9 = new ItemStack(ModBlocks.BlockGrudge,9,0);
 		ItemStack grudeHeavyBlock = new ItemStack(ModBlocks.BlockGrudgeHeavy);
 		ItemStack gunpowderStack = new ItemStack(Items.gunpowder);
-		
-		
 		ItemStack instantMat8 = new ItemStack(ModItems.InstantConMat, 8);
 		ItemStack instantMat32 = new ItemStack(ModItems.InstantConMat, 64);
-		
-		
 		ItemStack ironBlock = new ItemStack(Blocks.iron_block);
 		ItemStack kaitaiHammerNew = new ItemStack(ModItems.KaitaiHammer);
 		ItemStack kaitaiHammerAll = new ItemStack(ModItems.KaitaiHammer, 1, OreDictionary.WILDCARD_VALUE);
@@ -111,8 +109,10 @@ public class ModRecipes {
 		GameRegistry.addRecipe(new ShapedOreRecipe(grudeBlock,"aaa","aaa","aaa",'a',grudeStack));
 		GameRegistry.addRecipe(new ShapedOreRecipe(grudeHeavyBlock,"aaa","aaa","aaa",'a',grudeBlock));
 		GameRegistry.addRecipe(new ShapedOreRecipe(polymetalBlock,"aaa","aaa","aaa",'a',"dustManganese"));
-		//desk
-		GameRegistry.addRecipe(new ShapedOreRecipe(desk,"www","ogo","o o",'w',Blocks.wool,'g',grudeHeavyBlock,'o',Blocks.obsidian));
+		//desk item
+		GameRegistry.addRecipe(new ShapedOreRecipe(desk,"abc","ooo","o o",'a',deskRadar,'b',deskBook,'c',Blocks.wool,'o',Blocks.obsidian));
+		GameRegistry.addRecipe(new ShapedOreRecipe(deskBook,"ggg","gbg","ggg",'g',grudeStack,'b',Items.writable_book));
+		GameRegistry.addRecipe(new ShapedOreRecipe(deskRadar,"ggg","gbg","ggg",'g',grudeStack,'b',Items.compass));
 		//small shipyard
 		GameRegistry.addRecipe(new ShapedOreRecipe(smallshipyardStack,"glg","lol","ooo",'g',grudeStack,'l',Items.lava_bucket,'o',Blocks.obsidian));
 		//marriage ring

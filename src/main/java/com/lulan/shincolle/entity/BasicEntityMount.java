@@ -79,7 +79,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		stepHeight = 3F;
 		keyPressed = 0;
 		shipNavigator = new ShipPathNavigate(this, worldObj);
-		shipMoveHelper = new ShipMoveHelper(this);
+		shipMoveHelper = new ShipMoveHelper(this, 15F);
 		ridePos = new float[] {0F,0F,0F};
 		
 	}
@@ -175,6 +175,12 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 				return false;
 			}
 			
+			//calc dodge
+			float dist = (float) this.getDistanceSqToEntity(attacker.getEntity());
+			if(CalcHelper.canDodge(this, dist)) {
+				return false;
+			}
+			
 			//set host hurt face
 	    	if(this.host.getStateEmotion(ID.S.Emotion) != ID.Emotion.O_O) {
 	    		this.host.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
@@ -227,10 +233,15 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		return false;
 	}
 	
-	//BUG: NOT WORKING
-	@Override
-	public boolean canBePushed() {
-        return false;
+	//不跟ship碰撞
+  	protected void collideWithEntity(Entity target) {
+  		if(target.equals(this.riddenByEntity) ||
+  		   target.equals(this.riddenByEntity2) ||
+  		   target.equals(this.ridingEntity) ||
+  		   target instanceof BasicEntityAirplane) {
+  			return;
+  		}
+  		target.applyEntityCollision(this);
     }
 	
 	@Override
@@ -357,41 +368,6 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 			
 		//check depth
 		EntityHelper.checkDepth(this);
-		
-		//sync rotate angle
-		if(this.riddenByEntity != null) {
-//			if(!this.worldObj.isRemote) {
-			//若沒有在移動中, 則強制對齊rider朝向
-			if(this.getShipNavigate().noPath() && this.getNavigator().noPath()) {
-				this.rotationYawHead = ((EntityLivingBase)this.riddenByEntity).rotationYawHead;
-				this.prevRotationYaw = ((EntityLivingBase)this.riddenByEntity).prevRotationYaw;
-				this.rotationYaw = ((EntityLivingBase)this.riddenByEntity).rotationYaw;
-				this.renderYawOffset = ((EntityLivingBase)this.riddenByEntity).renderYawOffset;
-			}
-			//若移動中, 則rider對齊mount朝向
-			else {
-				((EntityLivingBase)this.riddenByEntity).rotationYawHead = this.rotationYawHead;
-				((EntityLivingBase)this.riddenByEntity).prevRotationYaw = this.prevRotationYaw;
-				((EntityLivingBase)this.riddenByEntity).rotationYaw = this.rotationYaw;
-				((EntityLivingBase)this.riddenByEntity).renderYawOffset = this.renderYawOffset;
-			}
-//			}
-			//若有rider2且移動時, 則改為rider2朝向
-			if(this.riddenByEntity2 != null && this.keyPressed != 0) {
-				this.rotationYawHead = riddenByEntity2.rotationYawHead;
-				this.prevRotationYaw = riddenByEntity2.prevRotationYaw;
-				this.rotationYaw = riddenByEntity2.rotationYaw;
-				this.renderYawOffset = riddenByEntity2.renderYawOffset;
-				
-				((EntityLivingBase)this.riddenByEntity).rotationYawHead = this.rotationYawHead;
-				((EntityLivingBase)this.riddenByEntity).prevRotationYaw = this.prevRotationYaw;
-				((EntityLivingBase)this.riddenByEntity).rotationYaw = this.rotationYaw;
-				((EntityLivingBase)this.riddenByEntity).renderYawOffset = this.renderYawOffset;
-
-				//清除AI自動走路, 以免妨礙玩家控制移動
-				this.getShipNavigate().clearPathEntity();
-			}
-		}
 
 		//client side
 		if(this.worldObj.isRemote) {
@@ -401,6 +377,13 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 				double motX = this.posX - this.prevPosX;
 				double motZ = this.posZ - this.prevPosZ;
 				double parH = this.posY - (int)this.posY;
+				double limit = 0.25D;
+				
+				if(motX > limit) motX = limit;
+				else if(motX < -limit) motX = -limit;
+				
+				if(motZ > limit) motZ = limit;
+				else if(motZ < -limit) motZ = -limit;
 				
 				if(motX != 0 || motZ != 0) {
 					ParticleHelper.spawnAttackParticleAt(this.posX + motX*1.5D, this.posY, this.posZ + motZ*1.5D, 
@@ -1149,7 +1132,6 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	@Override
 	protected void updateAITasks() {
 		super.updateAITasks();
-		
         EntityHelper.updateShipNavigator(this);
     }
 
@@ -1270,6 +1252,35 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	public void setEntityRevengeTime() {
 		this.revengeTime = this.ticksExisted;
 	}
+  	
+  	@Override
+  	public void updateRiderPosition() {
+        super.updateRiderPosition();
+        
+        //sync rotate angle
+  		if(this.riddenByEntity != null) {
+			((EntityLivingBase)this.riddenByEntity).rotationYawHead = this.rotationYawHead;
+			((EntityLivingBase)this.riddenByEntity).prevRotationYaw = this.prevRotationYaw;
+			((EntityLivingBase)this.riddenByEntity).rotationYaw = this.rotationYaw;
+			((EntityLivingBase)this.riddenByEntity).renderYawOffset = this.renderYawOffset;
+  			
+  			//若有rider2且移動時, 則改為rider2朝向
+  			if(this.riddenByEntity2 != null && this.keyPressed != 0) {
+  				this.rotationYawHead = riddenByEntity2.rotationYawHead;
+  				this.prevRotationYaw = riddenByEntity2.prevRotationYaw;
+  				this.rotationYaw = riddenByEntity2.rotationYaw;
+  				this.renderYawOffset = riddenByEntity2.renderYawOffset;
+  				
+  				((EntityLivingBase)this.riddenByEntity).rotationYawHead = this.rotationYawHead;
+  				((EntityLivingBase)this.riddenByEntity).prevRotationYaw = this.prevRotationYaw;
+  				((EntityLivingBase)this.riddenByEntity).rotationYaw = this.rotationYaw;
+  				((EntityLivingBase)this.riddenByEntity).renderYawOffset = this.renderYawOffset;
+
+  				//清除AI自動走路, 以免妨礙玩家控制移動
+  				this.getShipNavigate().clearPathEntity();
+  			}
+  		}
+    }
 
     
 	

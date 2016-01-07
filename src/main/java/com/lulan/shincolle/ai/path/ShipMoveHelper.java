@@ -19,14 +19,16 @@ public class ShipMoveHelper {
     /** The speed at which the entity should move */
     private double speed;
     private boolean update;
+    private float rotateLimit;  //每tick最多可以轉身的角度, 角度小則轉彎半徑大
 
 
-    public ShipMoveHelper(EntityLiving entity) {
+    public ShipMoveHelper(EntityLiving entity, float rotlimit) {
         this.entity = entity;
         this.entityN = (IShipNavigator) entity;
         this.posX = entity.posX;
         this.posY = entity.posY;
         this.posZ = entity.posZ;
+        this.rotateLimit = rotlimit;
     }
 
     public boolean isUpdating() {
@@ -69,7 +71,9 @@ public class ShipMoveHelper {
                 float f = (float)(Math.atan2(z1, x1) * 180.0D / Math.PI) - 90.0F;
                 float moveSpeed = (float)(this.speed * this.entity.getEntityAttribute(SharedMonsterAttributes.movementSpeed).getAttributeValue());
 //                LogHelper.info("DEBUG : moveHelper: update f "+(x1 * x1 + z1 * z1));
-                this.entity.rotationYaw = this.limitAngle(this.entity.rotationYaw, f, 45.0F);
+                
+                //設定每tick最多可以轉動的角度
+                this.entity.rotationYaw = this.limitAngle(this.entity.rotationYaw, f, this.rotateLimit);
 //                this.entity.setAIMoveSpeed(moveSpeed);
 
                 //y軸移動: 由於官方setAIMoveSpeed只提供水平移動, 因此y軸移動必須自行設定

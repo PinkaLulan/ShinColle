@@ -14,6 +14,7 @@ import com.lulan.shincolle.client.particle.EntityFXLaser;
 import com.lulan.shincolle.client.particle.EntityFXLaserNoTexture;
 import com.lulan.shincolle.client.particle.EntityFXLightning;
 import com.lulan.shincolle.client.particle.EntityFXSpray;
+import com.lulan.shincolle.client.particle.EntityFXStickyLightning;
 import com.lulan.shincolle.client.particle.EntityFXTeam;
 import com.lulan.shincolle.client.particle.EntityFXTexts;
 import com.lulan.shincolle.proxy.ClientProxy;
@@ -291,22 +292,22 @@ public class ParticleHelper {
 			break;
 		case 15:	//white spray
 			EntityFXSpray particleSpray = new EntityFXSpray(world, 
-            		posX, posY, posZ, lookX, lookY, lookZ, 1F, 1F, 1F, 1F);
+            		posX, posY, posZ, lookX, lookY, lookZ, 1);
         	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray);
 			break;
 		case 16:	//cyan spray
 			EntityFXSpray particleSpray2 = new EntityFXSpray(world, 
-            		posX, posY, posZ, lookX, lookY, lookZ, 0.5F, 1F, 1F, 1F);
+            		posX, posY, posZ, lookX, lookY, lookZ, 2);
         	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray2);
 			break;
 		case 17:	//green spray
 			EntityFXSpray particleSpray3 = new EntityFXSpray(world, 
-            		posX, posY, posZ, lookX, lookY, lookZ, 0.2F, 1.0F, 0.6F, 0.7F);
+            		posX, posY, posZ, lookX, lookY, lookZ, 3);
         	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray3);
 			break;
 		case 18:	//red spray
 			EntityFXSpray particleSpray4 = new EntityFXSpray(world, 
-            		posX, posY, posZ, lookX, lookY, lookZ, 1.0F, 0.0F, 0.0F, 0.8F);
+            		posX, posY, posZ, lookX, lookY, lookZ, 4);
         	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray4);
 			break;
 		case 19: 	//double largesmoke for 14~20 inch cannon
@@ -347,7 +348,7 @@ public class ParticleHelper {
 				newPos1 = rotateXZByAxis(1, 0, 6.28F / 20F * i, 1);
 				//motionY傳入4, 表示為特殊設定
 				EntityFXSpray particleSpray5 = new EntityFXSpray(world, 
-						lookX, lookY+0.3D, lookZ, newPos1[0]*0.4D, 4D, newPos1[1]*0.4D, 1.0F, 0F, 0F, 1.0F);
+						lookX, lookY+0.3D, lookZ, newPos1[0]*0.4D, 4D, newPos1[1]*0.4D, 0);
 	        	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray5);
 			}
 			
@@ -361,7 +362,7 @@ public class ParticleHelper {
 				newPos1 = rotateXZByAxis((float)lookX, 0, 6.28F / 20F * i, 1);
 				//motionY傳入4, 表示為特殊設定
 				EntityFXSpray particleSpray7 = new EntityFXSpray(world, 
-						posX+newPos1[0]*1.8D, posY+1.2D+lookY, posZ+newPos1[1]*1.8D, -newPos1[0]*0.06D, 0D, -newPos1[1]*0.06D, 1.0F, 1.0F, 1.0F, 0.5F);
+						posX+newPos1[0]*1.8D, posY+1.2D+lookY, posZ+newPos1[1]*1.8D, -newPos1[0]*0.06D, 0D, -newPos1[1]*0.06D, 5);
 	        	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray7);
 			}
 			break;
@@ -370,7 +371,7 @@ public class ParticleHelper {
 				newPos1 = rotateXZByAxis((float)lookX, 0, 6.28F / 20F * i, 1);
 				//motionY傳入4, 表示為特殊設定
 				EntityFXSpray particleSpray8 = new EntityFXSpray(world, 
-						posX, posY+0.3D+lookY, posZ, newPos1[0]*0.15D, 4D, newPos1[1]*0.15D, 1.0F, 1.0F, 1.0F, 0.5F);
+						posX, posY+0.3D+lookY, posZ, newPos1[0]*0.15D, 0D, newPos1[1]*0.15D, 6);
 	        	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray8);
 			}
 			break;
@@ -385,12 +386,12 @@ public class ParticleHelper {
 			break;
 		case 26:	//white spray
 			EntityFXSpray particleSpray7 = new EntityFXSpray(world, 
-            		posX, posY, posZ, lookX, lookY, lookZ, 0.7F, 0.94F, 1F, 1F);
+            		posX, posY, posZ, lookX, lookY, lookZ, 7);
         	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray7);
 			break;
 		case 27:	//yellow spray
 			EntityFXSpray particleSpray8 = new EntityFXSpray(world, 
-            		posX, posY, posZ, lookX, lookY, lookZ, 1F, 1F, 0.6F, 1F);
+            		posX, posY, posZ, lookX, lookY, lookZ, 8);
         	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray8);
 			break;
 		case 28:	//drip water
@@ -400,7 +401,7 @@ public class ParticleHelper {
 			break;
 		case 29:	//orange spray
 			EntityFXSpray particleSpray9 = new EntityFXSpray(world, 
-            		posX, posY, posZ, lookX, lookY, lookZ, 1.0F, 0.35F, 0.0F, 0.8F);
+            		posX, posY, posZ, lookX, lookY, lookZ, 9);
         	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray9);
 			break;
 		case 30:	//snow hit
@@ -422,13 +423,18 @@ public class ParticleHelper {
 			break;
 		case 32:	//transparent cyan spray
 			EntityFXSpray particleSpray10 = new EntityFXSpray(world, 
-            		posX, posY, posZ, lookX, lookY, lookZ, 0.5F, 1.0F, 1.0F, 0.2F);
+            		posX, posY, posZ, lookX, lookY, lookZ, 10);
         	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray10);
 			break;
 		case 33:	//transparent red spray
 			EntityFXSpray particleSpray11 = new EntityFXSpray(world, 
-            		posX, posY, posZ, lookX, lookY, lookZ, 1.0F, 0.0F, 0.0F, 0.2F);
+            		posX, posY, posZ, lookX, lookY, lookZ, 11);
         	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray11);
+			break;
+		case 34:	//dodge
+			EntityFXTexts particleTDodge = new EntityFXTexts(world, 
+	  		          posX, posY + lookY, posZ, 1F, 4);	    
+			Minecraft.getMinecraft().effectRenderer.addEffect(particleTDodge);
 			break;
 		default:
 			break;		
@@ -463,6 +469,10 @@ public class ParticleHelper {
 		case 3:
 			EntityFXLightning fxLightning = new EntityFXLightning(world, ent, (float)par1, (int)par2);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fxLightning);
+			break;
+		case 4:	//sticky lightning
+			EntityFXStickyLightning light1 = new EntityFXStickyLightning(world, ent, (float)par1, (int)par2);
+        	Minecraft.getMinecraft().effectRenderer.addEffect(light1);
 			break;
 		default:
 			break;

@@ -72,7 +72,7 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
         this.atkTarget = target;
         this.isImmuneToFire = true;
         shipNavigator = new ShipPathNavigate(this, worldObj);
-		shipMoveHelper = new ShipMoveHelper(this);
+		shipMoveHelper = new ShipMoveHelper(this, 40F);
         
         //basic attr
         this.atk = 30F;
@@ -137,6 +137,11 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
     public boolean attackEntityFrom(DamageSource attacker, float atk) {
 		//disable 
 		if(attacker.getDamageType() == "inWall") {
+			return false;
+		}
+		
+		//calc dodge
+		if(CalcHelper.canDodge(this, 0F)) {
 			return false;
 		}
 				
@@ -754,6 +759,8 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
 		case ID.EF_ASM:  //destroyer AA,ASM++
 		case ID.EF_AA:
 			return this.atk * 0.5F;
+		case ID.EF_DODGE:
+			return 20F;
 		default:
 			return 0F;
 		}

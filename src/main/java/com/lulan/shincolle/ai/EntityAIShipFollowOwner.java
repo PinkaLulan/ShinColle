@@ -158,7 +158,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
         	}
         	
         	//設定頭部轉向
-            this.host2.getLookHelper().setLookPositionWithEntity(this.owner, 30.0F, this.host2.getVerticalFaceSpeed());
+            this.host2.getLookHelper().setLookPositionWithEntity(this.owner, 30F, 40F);
 
         	//距離超過傳送距離, 直接傳送到目標上
         	if(this.distSq > EntityAIShipFollowOwner.TP_DIST) {

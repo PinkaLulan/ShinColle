@@ -28,7 +28,7 @@ import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
 public class EntitySubmU511 extends BasicEntityShipSmall implements IShipInvisible {
 
-	private static float ilevel = 0.3F;
+	private static float ilevel = 30F;
 	
 	
 	public EntitySubmU511(World world) {
@@ -124,22 +124,6 @@ public class EntitySubmU511 extends BasicEntityShipSmall implements IShipInvisib
 	public int getKaitaiType() {
 		return 0;
 	}
-  	
-  	@Override
-    public boolean attackEntityFrom(DamageSource attacker, float atk) {
-  		if(attacker.getEntity() != null) {
-  			float dist = (float) this.getDistanceSqToEntity(attacker.getEntity());
-
-  			//dist > 6 blocks
-  			if(dist > 36F) {
-  				if(this.getRNG().nextFloat() < this.getInvisibleLevel()) {
-  					return false;
-  				}
-  			}
-  		}
-  		
-  		return super.attackEntityFrom(attacker, atk);
-  	}
   	
   	//潛艇的輕攻擊一樣使用飛彈
   	@Override

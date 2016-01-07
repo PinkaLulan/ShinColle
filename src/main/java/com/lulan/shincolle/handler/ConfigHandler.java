@@ -36,7 +36,7 @@ public class ConfigHandler {
 	//SHIP SETTING
 	//scale: HP, ATK, DEF, SPD, MOV, HIT
 	public static Property propShip, propShipLimit, propBossSMKZ, propBossNGT, propMobU511;
-	public static double[] limitShip = new double[] {-1D, -1D, 75D, 4D, 0.6D, 64D};
+	public static double[] limitShip = new double[] {-1D, -1D, 75D, 4D, 0.6D, 64D, 75D};
 	public static double[] scaleShip = new double[] {1D, 1D, 1D, 1D, 1D, 1D};
 	public static double[] scaleBossSMKZ = new double[] {900D, 50D, 80D, 1D, 0.6D, 16D};
 	public static double[] scaleBossNGT = new double[] {2400D, 200D, 92D, 2D, 0.4D, 24D};
@@ -63,9 +63,6 @@ public class ConfigHandler {
 		
 		//是否顯示custom name tag
 		alwaysShowTeam = config.getBoolean("Always_Show_Team", "general", false, "Always show team circles");
-		
-		//team改動cd (ticks)
-		teamCooldown = config.getInt("Team_Cooldown", "general", 6000, 20, 1728000, "Create/Disband team cooldown");
 		
 		//boss生成cd設定 (ticks)
 		bossCooldown = config.getInt("Boss_Cooldown", "general", 4800, 20, 1728000, "Boss spawn cooldown");
@@ -97,6 +94,9 @@ public class ConfigHandler {
 		//是否顯示custom name tag
 		showTag = config.getBoolean("Show_Name_Tag", "general", true, "Show custom name tag?");
 		
+		//team改動cd (ticks)
+		teamCooldown = config.getInt("Battle_Cooldown", "general", 6000, 20, 1728000, "Create/Disband Team Cooldown");
+
 		//是否開啟簡單模式 (spam debug/info message)
 		useWakamoto = config.getBoolean("Sound_Wakamoto", "general", true, "enable Wakamoto sound for particular ship");
 		
@@ -107,7 +107,7 @@ public class ConfigHandler {
 		fireVolume = config.getFloat("Attack_Volume", "ship setting", 0.7F, 0F, 10F, "Attack sound volume");
 		
 		propShip = config.get("ship setting", "ship_scale", scaleShip, "Ship attributes SCALE: HP, firepower, armor, attack speed, move speed, range");
-		propShipLimit = config.get("ship setting", "ship_limit", limitShip, "Ship attributes LIMIT (-1 = no limit): HP, firepower, armor(%), attack speed(per second), move speed, range(blocks)");
+		propShipLimit = config.get("ship setting", "ship_limit", limitShip, "Ship attributes LIMIT (-1 = no limit): HP, firepower, armor%, attack speed, move speed, range(blocks), dodge%");
 		propBossSMKZ = config.get("ship setting", "ShimakazeBoss_scale", scaleBossSMKZ, "Boss:Shimakaze Attrs: HP, firepower, armor, attack speed, move speed, range");
 		propBossNGT = config.get("ship setting", "NagatoBoss_scale", scaleBossNGT, "Boss:Nagato Attrs: HP, firepower, armor, attack speed, move speed, range");
 		propMobU511 = config.get("ship setting", "MobU511_scale", scaleMobU511, "Mob:U511/Ro500 Attrs: HP, firepower, armor, attack speed, move speed, range, spawnPerSquid");
@@ -134,6 +134,11 @@ public class ConfigHandler {
 		scaleBossNGT = propBossNGT.getDoubleList();
 		scaleMobU511 = propMobU511.getDoubleList();
 		polyGravelBaseBlock = propPolyGravel.getBooleanList();
+	}
+	
+	//check get value
+	public static double[] getDoubleArrayFromConfig(double[] defaultValue, Property target) {
+		return null;
 	}
 	
 	//設定檔處理 初始化動作

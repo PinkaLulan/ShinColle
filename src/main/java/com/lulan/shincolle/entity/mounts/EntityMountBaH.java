@@ -3,12 +3,13 @@ package com.lulan.shincolle.entity.mounts;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 
-import com.lulan.shincolle.ai.EntityAIShipCarrierAttack;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.hime.EntityBattleshipHime;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Values;
+import com.lulan.shincolle.utility.ParticleHelper;
 
 public class EntityMountBaH extends BasicEntityMount {
 	
@@ -84,6 +85,19 @@ public class EntityMountBaH extends BasicEntityMount {
 		//use range attack
 		this.tasks.addTask(11, new EntityAIShipRangeAttack(this));			   //0011
 	}
+	
+	//special rider position
+	@Override
+  	public void updateRiderPosition() {
+        super.updateRiderPosition();
+        
+        //sync rotate angle
+  		if(this.riddenByEntity != null) {
+  			float[] ridePos = ParticleHelper.rotateXZByAxis(1.05F, 0F, this.renderYawOffset * Values.N.RAD_MUL, 1F);	
+			this.riddenByEntity.setPosition(this.host.posX + ridePos[1], this.host.posY + 0D, this.host.posZ + ridePos[0]);
+  		}
+    }
+	
 
 
 }

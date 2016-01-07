@@ -17,9 +17,12 @@ import net.minecraft.world.World;
 @SideOnly(Side.CLIENT)
 public class EntityFXSpray extends EntityFX {
 	
-    float Scale;
- 
-    public EntityFXSpray(World world, double posX, double posY, double posZ, double motionX, double motionY, double motionZ, float colorR, float colorG, float colorB, float colorA) {
+    private int ptype;
+    private float pScale;
+    private double speedLimit; 
+    
+    
+    public EntityFXSpray(World world, double posX, double posY, double posZ, double motionX, double motionY, double motionZ, int type) {
         super(world, posX, posY, posZ, 0.0D, 0.0D, 0.0D);
         this.motionX *= 0.1D;
         this.motionZ *= 0.1D;
@@ -28,29 +31,151 @@ public class EntityFXSpray extends EntityFX {
         this.motionZ += motionZ;
         this.motionY += motionY;
         
-        double limit = 0.3D;
-        //speed limit
-        if(this.motionX > limit) this.motionX = limit;
-        if(this.motionY > limit) this.motionY = limit;
-        if(this.motionZ > limit) this.motionZ = limit;
-        if(this.motionX < -limit) this.motionX = -limit;
-        if(this.motionY < -limit) this.motionY = -limit;
-        if(this.motionZ < -limit) this.motionZ = -limit;
+        this.ptype = type;
         
-        this.particleRed = colorR;
-        this.particleGreen = colorG;
-        this.particleBlue = colorB;
-        this.particleAlpha = colorA;
-        this.particleScale *= 1.5F;
-        this.Scale = this.particleScale;
-        this.particleMaxAge = 40;
-        this.noClip = false;
-
-        if(motionY >= 4D) {
-        	this.motionY = 0D;
-        	this.Scale = 15F;
+        switch(this.ptype) {
+        case 1:   //white
+        	this.speedLimit = 0.25D;
+        	this.particleRed = 1F;
+            this.particleGreen = 1F;
+            this.particleBlue = 1F;
+            this.particleAlpha = 1F;
+            this.particleScale *= 1.5F;
+            this.pScale = this.particleScale;
+            this.particleMaxAge = 40;
+            this.noClip = false;
+        	break;
+        case 2:   //cyan
+        	this.speedLimit = 0.3D;
+        	this.particleRed = 0.5F;
+            this.particleGreen = 1F;
+            this.particleBlue = 1F;
+            this.particleAlpha = 1F;
+            this.particleScale *= 1.5F;
+            this.pScale = this.particleScale;
+            this.particleMaxAge = 40;
+            this.noClip = false;
+        	break;
+        case 3:   //green
+        	this.speedLimit = 0.3D;
+        	this.particleRed = 0.2F;
+            this.particleGreen = 1F;
+            this.particleBlue = 0.6F;
+            this.particleAlpha = 0.7F;
+            this.particleScale *= 1.5F;
+            this.pScale = this.particleScale;
+            this.particleMaxAge = 40;
+            this.noClip = false;
+        	break;
+        case 4:   //0.8A red
+        	this.speedLimit = 0.3D;
+        	this.particleRed = 1F;
+            this.particleGreen = 0F;
+            this.particleBlue = 0F;
+            this.particleAlpha = 0.8F;
+            this.particleScale *= 1.5F;
+            this.pScale = this.particleScale;
+            this.particleMaxAge = 40;
+            this.noClip = false;
+        	break;
+        case 5:   //0.5A white
+        	this.speedLimit = 0.3D;
+        	this.particleRed = 1F;
+            this.particleGreen = 1F;
+            this.particleBlue = 1F;
+            this.particleAlpha = 0.5F;
+            this.particleScale *= 1.5F;
+            this.pScale = this.particleScale;
+            this.particleMaxAge = 40;
+            this.noClip = false;
+        	break;
+        case 6:   //0.5A LARGE white
+        	this.speedLimit = 0.3D;
+        	this.particleRed = 1F;
+            this.particleGreen = 1F;
+            this.particleBlue = 1F;
+            this.particleAlpha = 0.5F;
+            this.particleScale *= 1.5F;
+            this.pScale = 15F;
+            this.particleMaxAge = 40;
+            this.noClip = false;
+            this.motionY = 0D;
+        	break;
+        case 7:   //light cyan
+        	this.speedLimit = 0.3D;
+        	this.particleRed = 0.7F;
+            this.particleGreen = 0.94F;
+            this.particleBlue = 1F;
+            this.particleAlpha = 1F;
+            this.particleScale *= 1.5F;
+            this.pScale = this.particleScale;
+            this.particleMaxAge = 40;
+            this.noClip = false;
+        	break;
+        case 8:   //yellow
+        	this.speedLimit = 0.3D;
+        	this.particleRed = 1F;
+            this.particleGreen = 1F;
+            this.particleBlue = 0.6F;
+            this.particleAlpha = 1F;
+            this.particleScale *= 3F;
+            this.pScale = this.particleScale;
+            this.particleMaxAge = 20;
+            this.noClip = false;
+        	break;
+        case 9:   //orange
+        	this.speedLimit = 0.3D;
+        	this.particleRed = 1F;
+            this.particleGreen = 0.35F;
+            this.particleBlue = 0F;
+            this.particleAlpha = 0.8F;
+            this.particleScale *= 1.5F;
+            this.pScale = this.particleScale;
+            this.particleMaxAge = 40;
+            this.noClip = false;
+        	break;
+        case 10:   //transparent cyan
+        	this.speedLimit = 0.3D;
+        	this.particleRed = 0.5F;
+            this.particleGreen = 1F;
+            this.particleBlue = 1F;
+            this.particleAlpha = 0.2F;
+            this.particleScale *= 1.5F;
+            this.pScale = this.particleScale;
+            this.particleMaxAge = 40;
+            this.noClip = false;
+        	break;
+        case 11:   //transparent red
+        	this.speedLimit = 0.3D;
+        	this.particleRed = 1F;
+            this.particleGreen = 0F;
+            this.particleBlue = 0F;
+            this.particleAlpha = 0.2F;
+            this.particleScale *= 1.5F;
+            this.pScale = this.particleScale;
+            this.particleMaxAge = 40;
+            this.noClip = false;
+        	break;
+        default:  //default = type 0 = 1A red
+        	this.speedLimit = 0.3D;
+        	this.particleRed = 1F;
+            this.particleGreen = 0F;
+            this.particleBlue = 0F;
+            this.particleAlpha = 1F;
+            this.particleScale *= 1.5F;
+            this.pScale = this.particleScale;
+            this.particleMaxAge = 40;
+            this.noClip = false;
+        	break;
         }
-
+        
+        //speed limit
+        if(this.motionX > this.speedLimit) this.motionX = this.speedLimit;
+        if(this.motionY > this.speedLimit) this.motionY = this.speedLimit;
+        if(this.motionZ > this.speedLimit) this.motionZ = this.speedLimit;
+        if(this.motionX < -this.speedLimit) this.motionX = -this.speedLimit;
+        if(this.motionY < -this.speedLimit) this.motionY = -this.speedLimit;
+        if(this.motionZ < -this.speedLimit) this.motionZ = -this.speedLimit;
     }
     
     @Override
@@ -71,7 +196,7 @@ public class EntityFXSpray extends EntityFX {
             f6 = 1.0F;
         }
 //        LogHelper.info("DEBUG : par "+par5+" "+par7);
-        this.particleScale = this.Scale * f6;
+        this.particleScale = this.pScale * f6;
         GL11.glPushMatrix();
         GL11.glDisable(GL11.GL_LIGHTING);
         GL11.glDepthMask(false);	//¨¾¤îwater block»\¹Lparticle

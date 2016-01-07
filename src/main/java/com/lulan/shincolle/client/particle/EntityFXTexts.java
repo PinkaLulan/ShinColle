@@ -20,7 +20,7 @@ import net.minecraft.world.World;
 public class EntityFXTexts extends EntityFX {
 
 	private static final ResourceLocation TEXTURE = new ResourceLocation(Reference.TEXTURES_PARTICLE+"EntityFXTexts.png");
-	private int particleType;	//0:miss 1:critical 2:double hit 3:triple hit
+	private int particleType;	//0:miss 1:critical 2:double hit 3:triple hit 4:dodge
 
 	
     public EntityFXTexts(World world, double posX, double posY, double posZ, float scale, int type) {
@@ -52,8 +52,8 @@ public class EntityFXTexts extends EntityFX {
 		
 		float f6 = 0F;
 		float f7 = 1F;
-		float f8 = particleType / 4F;
-		float f9 = (particleType + 1F) / 4F;
+		float f8 = particleType / 5F;
+		float f9 = (particleType + 1F) / 5F;
 		
 		float f10 = 0.8F;
         float f11 = (float)(this.prevPosX + (this.posX - this.prevPosX) * ticks - interpPosX);

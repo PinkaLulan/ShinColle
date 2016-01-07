@@ -46,6 +46,7 @@ public class S2CEntitySync implements IMessage {
 		public static final byte SyncMount_ByMount = 7;
 		public static final byte SyncMissile = 8;
 		public static final byte SyncEntity_PosRot = 9;
+		public static final byte SyncEntity_Rot = 10;
 	}
 
 	
@@ -82,8 +83,9 @@ public class S2CEntitySync implements IMessage {
     }
 	
 	/**for mount seat sync
-	//type 8: entity type sync
-	//type 9: entity pos sync (for teleport)
+	 * type 8:  entity type sync
+	 * type 9:  entity pos sync (for teleport)
+	 * type 10: entity rot sync (for looking update)
 	 */
 	public S2CEntitySync(Entity entity, int value, int type) {
         this.entity3 = entity;
@@ -145,6 +147,7 @@ public class S2CEntitySync implements IMessage {
 			}
 			break;
 		case PID.SyncEntity_PosRot: //entity pos and rotation sync
+		case PID.SyncEntity_Rot:
 			this.entity3 = EntityHelper.getEntityByID(entityID, 0, true);
 			if(entity3 != null) {
 				getSyncTarget = true;
@@ -176,6 +179,8 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateMinor(ID.M.PlayerUID, buf.readInt());
 					entity.setStateMinor(ID.M.ShipUID, buf.readInt());
 					entity.setStateMinor(ID.M.PlayerEID, buf.readInt());
+					entity.setStateMinor(ID.M.FormatType, buf.readInt());
+					entity.setStateMinor(ID.M.FormatPos, buf.readInt());
 					
 					entity.setStateFinal(ID.HP, buf.readFloat());
 					entity.setStateFinal(ID.ATK, buf.readFloat());
@@ -222,6 +227,21 @@ public class S2CEntitySync implements IMessage {
 					entity.setEffectEquip(ID.EF_MISS, buf.readFloat());
 					entity.setEffectEquip(ID.EF_AA, buf.readFloat());
 					entity.setEffectEquip(ID.EF_ASM, buf.readFloat());
+					entity.setEffectEquip(ID.EF_DODGE, buf.readFloat());
+					
+					entity.setEffectFormation(ID.Formation.ATK_L, buf.readFloat());
+					entity.setEffectFormation(ID.Formation.ATK_H, buf.readFloat());
+					entity.setEffectFormation(ID.Formation.ATK_AL, buf.readFloat());
+					entity.setEffectFormation(ID.Formation.ATK_AH, buf.readFloat());
+					entity.setEffectFormation(ID.Formation.DEF, buf.readFloat());
+					entity.setEffectFormation(ID.Formation.MOV, buf.readFloat());
+					entity.setEffectFormation(ID.Formation.MISS, buf.readFloat());
+					entity.setEffectFormation(ID.Formation.DODGE, buf.readFloat());
+					entity.setEffectFormation(ID.Formation.CRI, buf.readFloat());
+					entity.setEffectFormation(ID.Formation.DHIT, buf.readFloat());
+					entity.setEffectFormation(ID.Formation.THIT, buf.readFloat());
+					entity.setEffectFormation(ID.Formation.AA, buf.readFloat());
+					entity.setEffectFormation(ID.Formation.ASM, buf.readFloat());
 				}
 				break;
 			case PID.SyncShip_Emo: //entity emotion only
@@ -274,6 +294,8 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateMinor(ID.M.PlayerUID, buf.readInt());
 					entity.setStateMinor(ID.M.ShipUID, buf.readInt());
 					entity.setStateMinor(ID.M.PlayerEID, buf.readInt());
+					entity.setStateMinor(ID.M.FormatType, buf.readInt());
+					entity.setStateMinor(ID.M.FormatPos, buf.readInt());
 				}
 				break;
 			case PID.SyncEntity_Emo: //IShipEmotion sync emtion
@@ -392,6 +414,27 @@ public class S2CEntitySync implements IMessage {
 					entity3.setPositionAndRotation(px, py, pz, yaw, pit);
 				}
 				break;
+			case PID.SyncEntity_Rot:	//entity rotation sync
+				{
+					float yaw = buf.readFloat();
+					float pit = buf.readFloat();
+					LogHelper.info("DEBUG : sync rotation: "+yaw);
+					
+					if(this.entity3 instanceof EntityLivingBase) {
+						((EntityLivingBase) entity3).rotationYawHead = yaw;
+						entity3.rotationPitch = pit;
+					}
+					else {
+						entity3.rotationYaw = yaw;
+						entity3.rotationPitch = pit;
+					}
+					
+					if(this.entity3.ridingEntity instanceof BasicEntityMount) {
+						((BasicEntityMount)this.entity3.ridingEntity).rotationYawHead = yaw;
+						((BasicEntityMount)this.entity3.ridingEntity).rotationYaw = yaw;
+					}
+				}
+				break;
 			}
 		}
 		else {
@@ -428,6 +471,8 @@ public class S2CEntitySync implements IMessage {
 				buf.writeInt(this.entity.getStateMinor(ID.M.PlayerUID));
 				buf.writeInt(this.entity.getStateMinor(ID.M.ShipUID));
 				buf.writeInt(this.entity.getStateMinor(ID.M.PlayerEID));
+				buf.writeInt(this.entity.getStateMinor(ID.M.FormatType));
+				buf.writeInt(this.entity.getStateMinor(ID.M.FormatPos));
 				
 				buf.writeFloat(this.entity.getStateFinal(ID.HP));
 				buf.writeFloat(this.entity.getStateFinal(ID.ATK));
@@ -474,6 +519,21 @@ public class S2CEntitySync implements IMessage {
 				buf.writeFloat(this.entity.getEffectEquip(ID.EF_MISS));
 				buf.writeFloat(this.entity.getEffectEquip(ID.EF_AA));
 				buf.writeFloat(this.entity.getEffectEquip(ID.EF_ASM));
+				buf.writeFloat(this.entity.getEffectEquip(ID.EF_DODGE));
+				
+				buf.writeFloat(this.entity.getEffectFormation(ID.Formation.ATK_L));
+				buf.writeFloat(this.entity.getEffectFormation(ID.Formation.ATK_H));
+				buf.writeFloat(this.entity.getEffectFormation(ID.Formation.ATK_AL));
+				buf.writeFloat(this.entity.getEffectFormation(ID.Formation.ATK_AH));
+				buf.writeFloat(this.entity.getEffectFormation(ID.Formation.DEF));
+				buf.writeFloat(this.entity.getEffectFormation(ID.Formation.MOV));
+				buf.writeFloat(this.entity.getEffectFormation(ID.Formation.MISS));
+				buf.writeFloat(this.entity.getEffectFormation(ID.Formation.DODGE));
+				buf.writeFloat(this.entity.getEffectFormation(ID.Formation.CRI));
+				buf.writeFloat(this.entity.getEffectFormation(ID.Formation.DHIT));
+				buf.writeFloat(this.entity.getEffectFormation(ID.Formation.THIT));
+				buf.writeFloat(this.entity.getEffectFormation(ID.Formation.AA));
+				buf.writeFloat(this.entity.getEffectFormation(ID.Formation.ASM));
 			}
 			break;
 		case PID.SyncShip_Emo:	//entity state only
@@ -532,6 +592,8 @@ public class S2CEntitySync implements IMessage {
 				buf.writeInt(this.entity.getStateMinor(ID.M.PlayerUID));
 				buf.writeInt(this.entity.getStateMinor(ID.M.ShipUID));
 				buf.writeInt(this.entity.getStateMinor(ID.M.PlayerEID));
+				buf.writeInt(this.entity.getStateMinor(ID.M.FormatType));
+				buf.writeInt(this.entity.getStateMinor(ID.M.FormatPos));
 			}
 			break;
 		case PID.SyncEntity_Emo:	//IShipEmotion emotion only
@@ -621,6 +683,21 @@ public class S2CEntitySync implements IMessage {
 				buf.writeDouble(this.entity3.posZ);
 				buf.writeFloat(this.entity3.rotationYaw);
 				buf.writeFloat(this.entity3.rotationPitch);
+			}
+			break;
+		case PID.SyncEntity_Rot:	//entity rotation sync
+			{
+				buf.writeByte(PID.SyncEntity_Rot);
+				buf.writeInt(this.entity3.getEntityId());
+				
+				if(this.entity3 instanceof EntityLivingBase) {
+					buf.writeFloat(((EntityLivingBase) this.entity3).rotationYawHead);
+					buf.writeFloat(this.entity3.rotationPitch);
+				}
+				else {
+					buf.writeFloat(this.entity3.rotationYaw);
+					buf.writeFloat(this.entity3.rotationPitch);
+				}
 			}
 			break;
 		}

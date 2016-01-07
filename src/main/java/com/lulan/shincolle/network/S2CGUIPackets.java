@@ -64,6 +64,7 @@ public class S2CGUIPackets implements IMessage {
 		public static final byte SyncShipList = 6;
 		public static final byte SyncPlayerProp_TargetClass = 7;
 		public static final byte SyncPlayerProp_TeamData = 8;
+		public static final byte SyncPlayerProp_FormatID = 9;
 	}
 	
 	
@@ -202,6 +203,7 @@ public class S2CGUIPackets implements IMessage {
 			{			
 				int[] propValues = new int[4];
 				int[] shipValues = new int[12];	//0:ship 0 eid  1: ship 0 uid  2: ship 1 eid...
+				int[] formatID = new int[9];
 				int teamID = 0;
 				boolean[] shipSelected = new boolean[6];
 				
@@ -212,30 +214,24 @@ public class S2CGUIPackets implements IMessage {
 				//player uid
 				propValues[2] = buf.readInt();	//player uid
 				
-				//ship team
+				//current team id
 				teamID = buf.readInt();
-				shipValues[0] = buf.readInt();			//ship 0 entity ID
-				shipValues[1] = buf.readInt();			//ship 0 ship UID
-				shipSelected[0] = buf.readBoolean();	//ship 0 select state
-				shipValues[2] = buf.readInt();			//ship 1
-				shipValues[3] = buf.readInt();
-				shipSelected[1] = buf.readBoolean();
-				shipValues[4] = buf.readInt();			//ship 2
-				shipValues[5] = buf.readInt();
-				shipSelected[2] = buf.readBoolean();
-				shipValues[6] = buf.readInt();			//ship 3
-				shipValues[7] = buf.readInt();
-				shipSelected[3] = buf.readBoolean();
-				shipValues[8] = buf.readInt();			//ship 4
-				shipValues[9] = buf.readInt();
-				shipSelected[4] = buf.readBoolean();
-				shipValues[10] = buf.readInt();			//ship 5
-				shipValues[11] = buf.readInt();
-				shipSelected[5] = buf.readBoolean();
+				
+				//formation id array
+				for(int i = 0; i < 9 ; ++i) {
+					formatID[i] = buf.readByte();
+				}
+				
+				//ship team array
+				for(int j = 0; j < 6; ++j) {
+					shipValues[j * 2] = buf.readInt();		//ship i entity ID
+					shipValues[j * 2 + 1] = buf.readInt();	//ship 0 ship UID
+					shipSelected[j] = buf.readBoolean();	//ship 0 select state
+				}
 				
 				//set value
 				EntityHelper.setPlayerExtProps(propValues);
-				EntityHelper.setPlayerExtProps(teamID, shipValues, shipSelected);
+				EntityHelper.setPlayerExtProps(teamID, formatID, shipValues, shipSelected);
 			}
 			break;
 		case PID.SyncShipInv:	//sync ship GUI
@@ -410,7 +406,13 @@ public class S2CGUIPackets implements IMessage {
 				buf.writeInt(props.getPlayerUID());
 				
 				//ship team id
-				buf.writeInt(props.getTeamId());
+				buf.writeInt(props.getCurrentTeamID());
+				
+				//ship formation id
+				int[] fid = props.getFormatID();
+				for(int j = 0; j < 9; ++j) {
+					buf.writeByte((byte) fid[j]);
+				}
 				
 				//ship team list
 				for(int i = 0; i < 6; i++) {
@@ -442,7 +444,7 @@ public class S2CGUIPackets implements IMessage {
 				buf.writeBoolean(flag);
 			}
 			break;
-		case PID.SyncShipList:	//sync ship list
+		case PID.SyncShipList:				  //sync ship list
 		case PID.SyncPlayerProp_TargetClass:  //sync target class
 			{
 				buf.writeByte(this.type);
@@ -457,6 +459,7 @@ public class S2CGUIPackets implements IMessage {
 					
 					switch(this.type) {
 					case PID.SyncShipList:
+						//send ship id array
 						while(iter.hasNext()) {
 							//int list
 							buf.writeInt((Integer) iter.next());
@@ -517,7 +520,7 @@ public class S2CGUIPackets implements IMessage {
 				}
 			}
 			break;
-		}
+		}//end send packet type switch
 	}
 	
 	//packet handler (inner class)

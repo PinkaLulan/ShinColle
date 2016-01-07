@@ -12,10 +12,14 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipLarge;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.network.S2CSpawnParticle;
+import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
+
+import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
 public class EntityAirplane extends BasicEntityAirplane {
 	
@@ -33,10 +37,10 @@ public class EntityAirplane extends BasicEntityAirplane {
         //basic attr
         this.atk = host.getStateFinal(ID.ATK_AL);
         this.atkSpeed = host.getStateFinal(ID.SPD);
-        this.movSpeed = host.getStateFinal(ID.MOV) * 0.2F + 0.26F;
+        this.movSpeed = host.getStateFinal(ID.MOV) * 0.2F + 0.3F;
         
         //AI flag
-        this.numAmmoLight = 6;
+        this.numAmmoLight = 9;
         this.numAmmoHeavy = 0;
         this.useAmmoLight = true;
         this.useAmmoHeavy = false;
@@ -69,9 +73,13 @@ public class EntityAirplane extends BasicEntityAirplane {
 			ParticleHelper.spawnAttackParticleAt(this.posX-this.motionX*1.5D, this.posY+0.5D-this.motionY*1.5D, this.posZ-this.motionZ*1.5D, 
 	          		-this.motionX*0.5D, -this.motionY*0.5D, -this.motionZ*0.5D, (byte)17);
 		}
+		//server side
 		else {
-//			LogHelper.info("DEBUG : rand pos: "+this.backHome+" "+this.ticksExisted+" "+this);
-			if(!this.hasAmmoLight()) this.backHome = true;
+			if(!this.hasAmmoLight()) {
+				this.backHome = true;
+				this.canFindTarget = false;
+				this.setEntityTarget(null);
+			}
 		}
 	}
 
@@ -88,7 +96,10 @@ public class EntityAirplane extends BasicEntityAirplane {
 	@Override
 	public boolean attackEntityFrom(DamageSource source, float atk) {
 		//33% dodge heavy damage
-		if(atk > this.getMaxHealth() && this.getRNG().nextInt(3) == 0) {
+		if(atk > this.getMaxHealth() * 0.5F && this.getRNG().nextInt(3) == 0) {
+			//spawn miss particle
+			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
+			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 34, false), point);
 			return false;
 		}
         

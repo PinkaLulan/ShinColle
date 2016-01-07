@@ -1,5 +1,6 @@
 package com.lulan.shincolle.utility;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -28,6 +29,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fluids.BlockFluidBase;
 import net.minecraftforge.fluids.IFluidBlock;
@@ -464,6 +466,26 @@ public class EntityHelper {
 		return -1;
 	}
 	
+	/** get player is using GUI, SERVER SIDE ONLY */
+	public static List<EntityPlayer> getEntityPlayerUsingGUI() {
+		WorldServer[] worlds = ServerProxy.getServerWorld();
+		List<EntityPlayer> plist = new ArrayList();
+	
+		for(World w : worlds) {
+			if(w != null) {
+				for(Object p : w.playerEntities) {
+					ExtendPlayerProps props = EntityHelper.getExtendPlayerProps((EntityPlayer) p);
+					
+					if(props != null && props.getIsOpeningGUI()) {
+						plist.add((EntityPlayer) p);
+					}
+				}
+			}
+		}
+		
+		return plist;
+	}
+	
 	/** get player uuid */
 	public static String getPetPlayerUUID(EntityTameable pet) {
 		if(pet != null) {
@@ -551,13 +573,16 @@ public class EntityHelper {
 	}
 	
 	/**set player extend props team list by packets, CLIENT SIDE ONLY */
-	public static void setPlayerExtProps(int teamid, int[] teamlist, boolean[] selstate) {
+	public static void setPlayerExtProps(int teamid, int[] formatID, int[] teamlist, boolean[] selstate) {
 		EntityPlayer player = ClientProxy.getClientPlayer();
 		ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 		
 		if(extProps != null) {
 			//set current team
-			extProps.setTeamId(teamid);
+			extProps.setCurrentTeamID(teamid);
+			
+			//set formation id
+			extProps.setFormatID(formatID);
 			
 			//set team selected
 			for(int i = 0; i < 6; i++) {
@@ -1095,9 +1120,11 @@ public class EntityHelper {
 				if(!ship.getStateFlag(ID.F.NoFuel)) {
 					if(ship.ridingEntity != null && ship.ridingEntity instanceof BasicEntityMount) {
 						((BasicEntityMount)ship.ridingEntity).getShipNavigate().tryMoveToXYZ(x, y, z, 1D);
+						((BasicEntityMount)ship.ridingEntity).getLookHelper().setLookPosition(x, y, z, 30F, 40F);
 					}
 					else {
 						ship.getShipNavigate().tryMoveToXYZ(x, y, z, 1D);
+						ship.getLookHelper().setLookPosition(x, y, z, 30F, 40F);
 					}
 				}
 			}
@@ -1380,6 +1407,22 @@ public class EntityHelper {
 					}
 				}
 			}
+		}
+	}
+	
+	/** set current team formation and set formation buffs, SERVER SIDE ONLY */
+	public static void setFormationIDandBuffs(ExtendPlayerProps props, int formatID) {
+		int[][] sidAry = props.getSIDArray();
+		
+		if(sidAry != null) {
+			//set current team formation
+			props.setCurrentFormatID(formatID);
+			
+			//apply formation buff to current team
+			
+			
+			//check if same ship in other team, clear the buff
+			//TODO
 		}
 	}
 	

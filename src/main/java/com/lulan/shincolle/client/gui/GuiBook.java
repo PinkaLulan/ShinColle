@@ -25,7 +25,7 @@ import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.GuiHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
-/** draw book text (no picture!)
+/** draw book text
  *  
  *  book range: left:15,32 ~ 115,172  right:135,32 ~ 235,172
  *  title: center: left:64 right:185 y:38
@@ -55,7 +55,7 @@ public class GuiBook {
 	public static int PageTLX = 13;    //left page X pos for text
 	public static int PageTRX = 172;   //right page X pos for text
 	public static int PageTY = 68;     //page Y pos for text
-	public static final int[] PageLimit = new int[] {1,14,0,0,0,0,0};  //max page number
+	public static final int[] PageLimit = new int[] {1,17,0,0,0,0,0};  //max page number
 	
 	public GuiBook() {}
 	

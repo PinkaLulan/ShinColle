@@ -14,10 +14,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 /**SLOT POSITION
- * S1:grudge(33,29) S2:abyssium(53,29) S3:ammo(73,29) S4:poly(93,29)
- * fuel(8,53) fuel bar(10,48 height=30) fuel color bar(176,46)
- * ship button(123,17) equip button(143,17)
- * output(134,44) player inv(8,87) action bar(8,145)
+ * no slot
  */
 public class ContainerDesk extends Container {
 	
@@ -33,7 +30,11 @@ public class ContainerDesk extends Container {
 		this.tile = te;
 		this.player = player;
 		this.extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
-		
+	
+		//server side flag
+		if(this.extProps != null) {
+			this.extProps.setIsOpeningGUI(true);
+		}
 	}
 
 	//玩家是否可以觸發右鍵點方塊事件
@@ -41,6 +42,16 @@ public class ContainerDesk extends Container {
 	public boolean canInteractWith(EntityPlayer player) {
 		return tile.isUseableByPlayer(player);
 	}
+	
+	/** Called when the container is closed */
+    public void onContainerClosed(EntityPlayer player) {
+    	ExtendPlayerProps props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+    	
+    	//server side flag
+		if(props != null) {
+			props.setIsOpeningGUI(false);
+		}
+    }
 	
 	/**使container支援shift點物品的動作, 此為ContainerFurnace中直接複製過來修改
 	 * shift點人物背包中的物品->判定物品類型送到指定格子, 點container中的物品->送到人物背包

@@ -28,6 +28,8 @@ item.shincolle:Ammo1.name=怨念彈集裝箱
 item.shincolle:Ammo2.name=重型怨念彈
 item.shincolle:Ammo3.name=重型怨念彈集裝箱
 item.shincolle:BucketRepair.name=修復桶
+item.shincolle:DeskItemBook.name=深海日誌
+item.shincolle:DeskItemRadar.name=攜帶型深海雷達
 item.shincolle:InstantConMat.name=高速建造材料
 item.shincolle:KaitaiHammer.name=解體槌
 item.shincolle:Grudge.name=怨念
@@ -217,12 +219,21 @@ gui.shincolle:book.chap1.text11d1=§2個別模式§0：可以設定一艘為§3�
 gui.shincolle:book.chap1.title12=ヲ級的指揮權杖
 gui.shincolle:book.chap1.text12d0=§9左鍵§0：<br>將該船艦加入隊伍或是將非船艦目標加入到可攻擊目標清單中。<br><br>§9蹲下+左鍵§0：<br>改變權杖控制模式或將目標船艦移除隊伍。<br><br>§9跑步+蹲下+左鍵§0：<br>清除整個隊伍。
 gui.shincolle:book.chap1.text12d1=§9右鍵§0：<br>移動並守衛該點 / 攻擊目標 / 使船艦坐下。<br><br>§9跑步+右鍵§0：<br>守衛指定目標。<br><br>§9蹲下+右鍵§0：<br>開啟船艦物品欄。
-gui.shincolle:book.chap1.title13=零式21型艦戰 (1/48)
-gui.shincolle:book.chap1.text13d0=<br><br><br><br><br><br><br><br><br>§d§n零式21型艦戰§r§0<br><br>比例： 1/48<br><br>原料： 多金屬結核<br><br>每一份量： 2500g  本包裝含 1 份<br><br>保存期限： §k100§r 年
-gui.shincolle:book.chap1.text13d1=本模型飛機符合深海可食用玩具標準，完全零怨念，好玩、好吃、零負擔。<br><br>本產品含有豐富的多金屬礦，可幫助重金屬的消化吸收，有效促進兒童生長發育。<br><br><br><br><br><br>※避免保存於日光直射、高溫、高氧環境，開封後請儘早食用完畢。
-gui.shincolle:book.chap1.title14=深海提督辦公桌
-gui.shincolle:book.chap1.text14d0=<br><br><br><br><br><br><br><br><br>採用黑曜石打造的§d§n深海提督辦公桌§r§0非常堅固耐用，除了用來處理鎮守府的各項公務外，也可以用來抵擋憤怒秘書艦的砲火。<br><br><br>※添購家具前請先詢問秘書艦以免造成資源管理上的困擾。
-gui.shincolle:book.chap1.text14d1=            使用指南<br><br>§9雷達§0：<br>顯示附近所屬船艦位置以及列表，在列表點選船艦後可進行聯繫等動作。<br><br>§9深海日誌§0：<br>各項物品介紹及紀錄已知船艦訊息。<br><br>§9陣營§0：<br>建立或加入艦隊以開啟PVP模式。<br><br>§9攻擊目標列表§0：<br>調整船艦的攻擊目標類型。
+gui.shincolle:book.chap1.title13=ヲ級的指揮權杖
+gui.shincolle:book.chap1.text13d0=
+gui.shincolle:book.chap1.text13d1=
+gui.shincolle:book.chap1.title14=零式21型艦戰 (1/48)
+gui.shincolle:book.chap1.text14d0=<br><br><br><br><br><br><br><br><br>§d§n零式21型艦戰§r§0<br><br>比例： 1/48<br><br>原料： 多金屬結核<br><br>每一份量： 2500g  本包裝含 1 份<br><br>保存期限： §k100§r 年
+gui.shincolle:book.chap1.text14d1=本模型飛機符合深海可食用玩具標準，完全零怨念，好玩、好吃、零負擔。<br><br>本產品含有豐富的多金屬礦，可幫助重金屬的消化吸收，有效促進兒童生長發育。<br><br><br><br><br><br>※避免保存於日光直射、高溫、高氧環境，開封後請儘早食用完畢。
+gui.shincolle:book.chap1.title15=深海日誌
+gui.shincolle:book.chap1.text15d0=<br><br><br><br><br><br><br><br><br>§d§n深海日誌§r§0紀錄了到目前為止發現的各種深海資源、§c深海棲艦§0以及§9艦娘§0的詳細資料。
+gui.shincolle:book.chap1.text15d1=
+gui.shincolle:book.chap1.title16=攜帶型深海雷達
+gui.shincolle:book.chap1.text16d0=<br><br><br><br><br><br><br><br><br>§d§n攜帶型深海雷達§r§0可以偵測出附近所屬的§c深海棲艦§0，並可以聯繫該棲艦或下達指令。
+gui.shincolle:book.chap1.text16d1=
+gui.shincolle:book.chap1.title17=深海提督辦公桌
+gui.shincolle:book.chap1.text17d0=<br><br><br><br><br><br><br><br><br>採用黑曜石打造的§d§n深海提督辦公桌§r§0非常堅固耐用，除了用來處理鎮守府的各項公務外，也可以用來抵擋憤怒秘書艦的砲火。<br><br><br>※添購家具前請先詢問秘書艦以免造成資源管理上的困擾。
+gui.shincolle:book.chap1.text17d1=            使用指南<br><br>§9雷達§0：<br>顯示附近所屬船艦位置以及列表，在列表點選船艦後可進行聯繫等動作。<br><br>§9深海日誌§0：<br>各項物品介紹及紀錄已知船艦訊息。<br><br>§9陣營§0：<br>建立或加入艦隊以開啟PVP模式。<br><br>§9攻擊目標列表§0：<br>調整船艦的攻擊目標類型。
 
 # GUI: Book Text Chap 2
 gui.shincolle:book.chap2.title=建造
@@ -268,6 +279,14 @@ gui.shincolle:team.neutral=中立
 gui.shincolle:team.hostile=敵對
 gui.shincolle:team.belong=所屬
 gui.shincolle:team.teamid=艦隊編號
+
+# GUI: Formation
+gui.shincolle:formation.formation=陣型
+gui.shincolle:formation.format1=單縱陣
+gui.shincolle:formation.format2=複縱陣
+gui.shincolle:formation.format3=輪形陣
+gui.shincolle:formation.format4=梯形陣
+gui.shincolle:formation.format5=單橫陣
 
 # GUI: Ship Inventory: Top
 gui.shincolle:level=等級

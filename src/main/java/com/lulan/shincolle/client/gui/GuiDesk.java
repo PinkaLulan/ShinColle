@@ -31,6 +31,7 @@ import org.lwjgl.opengl.GL12;
 import com.lulan.shincolle.client.gui.inventory.ContainerDesk;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -50,7 +51,8 @@ import com.lulan.shincolle.utility.LogHelper;
  *  0: no function
  *  1: radar
  *  2: book
- * 
+ *  3: fleet manage
+ *  4: target selector
  *
  */
 public class GuiDesk extends GuiContainer {
@@ -62,9 +64,10 @@ public class GuiDesk extends GuiContainer {
 	private static final ResourceLocation guiTarget = new ResourceLocation(Reference.TEXTURES_GUI+"GuiDeskTarget.png");
 	
 	private TileEntityDesk tile;
-	private int xClick, yClick, xMouse, yMouse;
+	private int xClick, yClick, xMouse, yMouse, tempCD;
 	private int tickGUI, guiFunc;
 	private int[] listNum, listClicked; //list var: 0:radar 1:team 2:target 3:teamAlly 4:teamBan
+	private static final int CLICKCD = 60;
 	private static final int LISTCLICK_RADAR = 0;
 	private static final int LISTCLICK_TEAM = 1;
 	private static final int LISTCLICK_TARGET = 2;
@@ -127,6 +130,13 @@ public class GuiDesk extends GuiContainer {
 		
 		this.tile = par2;
 		this.tickGUI = 0;				//ticks in gui (not game tick)
+		this.tempCD = CLICKCD;
+		
+		//get tile value
+  		this.guiFunc = this.tile.guiFunc;
+  		this.radar_zoomLv = this.tile.radar_zoomLv;
+  		this.book_chapNum = this.tile.book_chap;
+  		this.book_pageNum = this.tile.book_page;
 		
 		//player data
 		player = ClientProxy.getClientPlayer();
@@ -173,6 +183,7 @@ public class GuiDesk extends GuiContainer {
 		xMouse = mouseX;
 		yMouse = mouseY;
 		tickGUI += 1;
+		if(this.tempCD > 0) tempCD--;
 		
 		//draw GUI text input
 		GL11.glDisable(GL11.GL_LIGHTING);
@@ -874,83 +885,95 @@ public class GuiDesk extends GuiContainer {
 		//get button string
 		switch(this.teamState) {
 		case TEAMSTATE_ALLY:
-			int clicki = -1;
-			List tlist = null;
-			
-			//clicked team list
-			clicki = listClicked[LISTCLICK_TEAM] + this.listNum[LISTCLICK_TEAM];
-			tlist = this.extProps.getAllTeamDataList();
-			
-			//get clicked team id
-			if(this.listFocus == LISTCLICK_TEAM && tlist != null && clicki >= 0 && clicki < tlist.size()) {
-				TeamData getd = (TeamData) tlist.get(clicki);
+			if(this.tempCD > 0) {
+				strLT = String.valueOf((int)(tempCD * 0.05F));
+				colorLT = Values.Color.LIGHT_GRAY;
+			}
+			else {
+				int clicki = -1;
+				List tlist = null;
 				
-				if(getd != null) {
-					//is ally, show break button
-					if(this.extProps.getPlayerTeamID() != getd.getTeamID() &&
-					   this.extProps.isTeamAlly(getd.getTeamID())) {
+				//clicked team list
+				clicki = listClicked[LISTCLICK_TEAM] + this.listNum[LISTCLICK_TEAM];
+				tlist = this.extProps.getAllTeamDataList();
+				
+				//get clicked team id
+				if(this.listFocus == LISTCLICK_TEAM && tlist != null && clicki >= 0 && clicki < tlist.size()) {
+					TeamData getd = (TeamData) tlist.get(clicki);
+					
+					if(getd != null) {
+						//is ally, show break button
+						if(this.extProps.getPlayerTeamID() != getd.getTeamID() &&
+						   this.extProps.isTeamAlly(getd.getTeamID())) {
+							strLT = I18n.format("gui.shincolle:team.break");
+							colorLT = Values.Color.YELLOW;
+						}
+						//not ally, show ally button
+						else {
+							strLT = I18n.format("gui.shincolle:team.ally");
+							colorLT = Values.Color.CYAN;
+						}
+					}
+				}
+				//clicked ally list?
+				else if(this.listFocus == LISTCLICK_ALLY) {
+					clicki = listClicked[LISTCLICK_ALLY] + this.listNum[LISTCLICK_ALLY];
+					tlist = this.extProps.getPlayerTeamAllyList();
+					
+					//has clicked ally
+					if(tlist != null && clicki >= 0 && clicki < tlist.size()) {
 						strLT = I18n.format("gui.shincolle:team.break");
 						colorLT = Values.Color.YELLOW;
 					}
-					//not ally, show ally button
-					else {
-						strLT = I18n.format("gui.shincolle:team.ally");
-						colorLT = Values.Color.CYAN;
-					}
 				}
-			}
-			//clicked ally list?
-			else if(this.listFocus == LISTCLICK_ALLY) {
-				clicki = listClicked[LISTCLICK_ALLY] + this.listNum[LISTCLICK_ALLY];
-				tlist = this.extProps.getPlayerTeamAllyList();
-				
-				//has clicked ally
-				if(tlist != null && clicki >= 0 && clicki < tlist.size()) {
-					strLT = I18n.format("gui.shincolle:team.break");
-					colorLT = Values.Color.YELLOW;
-				}
-			}
+			}//end btn cd
 			
 			strLB = I18n.format("gui.shincolle:general.ok");
 			colorLB = Values.Color.WHITE;
 			break;
 		case TEAMSTATE_BAN:
-			int clicki2 = -1;
-			List tlist2 = null;
-			
-			//clicked team list
-			clicki2 = listClicked[LISTCLICK_TEAM] + this.listNum[LISTCLICK_TEAM];
-			tlist2 = this.extProps.getAllTeamDataList();
-			
-			//get clicked team id
-			if(this.listFocus == LISTCLICK_TEAM && tlist2 != null && clicki2 >= 0 && clicki2 < tlist2.size()) {
-				TeamData getd = (TeamData) tlist2.get(clicki2);
+			if(this.tempCD > 0) {
+				strLT = String.valueOf((int)(tempCD * 0.05F));
+				colorLT = Values.Color.LIGHT_GRAY;
+			}
+			else {
+				int clicki2 = -1;
+				List tlist2 = null;
 				
-				if(getd != null) {
-					//is banned, show truce button
-					if(this.extProps.getPlayerTeamID() != getd.getTeamID() &&
-					   this.extProps.isTeamBanned(getd.getTeamID())) {
+				//clicked team list
+				clicki2 = listClicked[LISTCLICK_TEAM] + this.listNum[LISTCLICK_TEAM];
+				tlist2 = this.extProps.getAllTeamDataList();
+				
+				//get clicked team id
+				if(this.listFocus == LISTCLICK_TEAM && tlist2 != null && clicki2 >= 0 && clicki2 < tlist2.size()) {
+					TeamData getd = (TeamData) tlist2.get(clicki2);
+					
+					if(getd != null) {
+						//is banned, show truce button
+						if(this.extProps.getPlayerTeamID() != getd.getTeamID() &&
+						   this.extProps.isTeamBanned(getd.getTeamID())) {
+							strLT = I18n.format("gui.shincolle:team.unban");
+							colorLT = Values.Color.CYAN;
+						}
+						//not banned, show battle button
+						else {
+							strLT = I18n.format("gui.shincolle:team.ban");
+							colorLT = Values.Color.YELLOW;
+						}
+					}
+				}
+				//clicked ban list?
+				else if(this.listFocus == LISTCLICK_BAN) {
+					clicki2 = listClicked[LISTCLICK_BAN] + this.listNum[LISTCLICK_BAN];
+					tlist2 = this.extProps.getPlayerTeamBannedList();
+					
+					//has clicked ally
+					if(tlist2 != null && clicki2 >= 0 && clicki2 < tlist2.size()) {
 						strLT = I18n.format("gui.shincolle:team.unban");
 						colorLT = Values.Color.CYAN;
 					}
-					//not banned, show battle button
-					else {
-						strLT = I18n.format("gui.shincolle:team.ban");
-						colorLT = Values.Color.YELLOW;
-					}
 				}
-			}
-			//clicked ban list?
-			else if(this.listFocus == LISTCLICK_BAN) {
-				clicki2 = listClicked[LISTCLICK_BAN] + this.listNum[LISTCLICK_BAN];
-				tlist2 = this.extProps.getPlayerTeamBannedList();
-				
-				//has clicked ally
-				if(tlist2 != null && clicki2 >= 0 && clicki2 < tlist2.size()) {
-					strLT = I18n.format("gui.shincolle:team.unban");
-					colorLT = Values.Color.CYAN;
-				}
-			}
+			}//end btn cd
 			
 			strLB = I18n.format("gui.shincolle:general.ok");
 			colorLB = Values.Color.WHITE;
@@ -977,8 +1000,15 @@ public class GuiDesk extends GuiContainer {
 				colorLT = Values.Color.CYAN;
 				strLB = I18n.format("gui.shincolle:team.banlist");
 				colorLB = Values.Color.YELLOW;
-				strRT = I18n.format("gui.shincolle:team.rename");
-				colorRT = Values.Color.WHITE;
+				
+				if(this.tempCD > 0) {
+					strRT = String.valueOf((int)(tempCD * 0.05F));
+					colorRT = Values.Color.LIGHT_GRAY;
+				}
+				else {
+					strRT = I18n.format("gui.shincolle:team.rename");
+					colorRT = Values.Color.WHITE;
+				}
 				
 				if(this.extProps.getTeamCooldown() > 0) {
 					strRB = String.valueOf(this.extProps.getTeamCooldownInSec());
@@ -1248,7 +1278,10 @@ public class GuiDesk extends GuiContainer {
 			}
 			break;
 		case 2:  //right top btn: rename page
-			if(this.extProps.getPlayerTeamID() > 0) {
+			if(this.tempCD > 0) {
+				break;
+			}
+			else if(this.extProps.getPlayerTeamID() > 0) {
 				this.teamState = TEAMSTATE_RENAME;
 			}
 			break;
@@ -1261,6 +1294,7 @@ public class GuiDesk extends GuiContainer {
 					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.Desk_Disband, 0));
 					//return to main state
 					this.teamState = TEAMSTATE_MAIN;
+					this.tempCD = CLICKCD;
 				}
 				//no team
 				else {
@@ -1275,6 +1309,10 @@ public class GuiDesk extends GuiContainer {
 	private void handleClickTeamAlly(int btn) {
 		switch(btn) {
 		case 0:  //left top btn: ally or break ally
+			if(this.tempCD > 0) {
+				break;
+			}
+			
 			int clicki = -1;
 			int getTeamID = 0;
 			boolean isAlly = false;
@@ -1319,6 +1357,7 @@ public class GuiDesk extends GuiContainer {
 				else {
 					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.Desk_Ally, getTeamID));
 				}
+				this.tempCD = CLICKCD;
 			}
 			
 			break;
@@ -1345,6 +1384,7 @@ public class GuiDesk extends GuiContainer {
 					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.Desk_Create, str));
 					//return to main state
 					this.teamState = TEAMSTATE_MAIN;
+					this.tempCD = CLICKCD;
 				}
 			}
 			break;
@@ -1367,6 +1407,7 @@ public class GuiDesk extends GuiContainer {
 					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.Desk_Rename, str));
 					//return to main state
 					this.teamState = TEAMSTATE_MAIN;
+					this.tempCD = CLICKCD;
 				}
 			}
 			break;
@@ -1377,6 +1418,10 @@ public class GuiDesk extends GuiContainer {
 	private void handleClickTeamBan(int btn) {
 		switch(btn) {
 		case 0:  //left top btn:
+			if(this.tempCD > 0) {
+				break;
+			}
+			
 			int clicki = -1;
 			int getTeamID = 0;
 			boolean isBanned = false;
@@ -1421,6 +1466,7 @@ public class GuiDesk extends GuiContainer {
 				else {
 					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.Desk_Ban, getTeamID));
 				}
+				this.tempCD = CLICKCD;
 			}
 			break;
 		case 1:  //left bottom btn: return
@@ -1429,6 +1475,16 @@ public class GuiDesk extends GuiContainer {
 			break;
 		}
 	}//end btn in team ban
+	
+	//close gui if tile dead or too far away
+	@Override
+	public void updateScreen() {
+		super.updateScreen();
+		
+		if(this.tile == null) {
+            this.mc.thePlayer.closeScreen();
+        }
+	}
 
 
 }

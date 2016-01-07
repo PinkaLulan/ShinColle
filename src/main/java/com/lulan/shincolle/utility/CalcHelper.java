@@ -3,13 +3,20 @@ package com.lulan.shincolle.utility;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import net.minecraft.entity.Entity;
 
 import com.lulan.shincolle.entity.IShipAttributes;
+import com.lulan.shincolle.entity.IShipInvisible;
+import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.network.S2CSpawnParticle;
+import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
+
+import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
 
 /**CALC HELPER
@@ -20,6 +27,7 @@ public class CalcHelper {
 	//normal table, resolution = 4000, calc half curve only
 	public static float[] NORM_TABLE = new float[2000];		//norm: mean = 0.5, sd = 0.2
 	private static float NORM_MIN = 0.2F;					//min value in norm table
+	private static Random rand = new Random();
 	
 	//init norm table (half curve)
 	static {
@@ -114,7 +122,7 @@ public class CalcHelper {
      *  host: attacker
      *  target: target
      *  dmg: attack damage
-     *  type: 0:light 1:heavy 2:
+     *  type: 0:light 1:heavy 2:nagato 3:yamato
      */
     public static float calcDamageByEquipEffect(IShipAttributes host, Entity target, float dmg, int type) {
     	float newDmg = dmg;
@@ -127,6 +135,9 @@ public class CalcHelper {
   			break;
   		case 2:  //nagato heavy attack
   			modDmg = 4F;
+  			break;
+  		case 3:  //yamato heavy attack
+  			modDmg = 2F;
   			break;
 		default:  //light or normal attack
 			modDmg = 1F;
@@ -233,6 +244,30 @@ public class CalcHelper {
     	List retlist = new ArrayList(set1);
     	
     	return retlist;
+    }
+    
+    /** calc can dodge */
+    public static boolean canDodge(IShipAttributes ent, float dist) {
+    	if(ent != null) {
+    		int dodge = (int) ent.getEffectEquip(ID.EF_DODGE);
+    		Entity ent2 = (Entity) ent;
+    		
+    		if(ent instanceof IShipInvisible && dist > 36F) {  //dist > 6 blocks
+    			dodge += (int) ((IShipInvisible)ent).getInvisibleLevel();
+    			//check limit
+    			if(dodge > (int) ConfigHandler.limitShip[6]) dodge = (int) ConfigHandler.limitShip[6];
+    		}
+    		
+    		//roll dodge
+    		if(rand.nextInt(101) <= dodge) {
+    			//spawn miss particle
+    			TargetPoint point = new TargetPoint(ent2.dimension, ent2.posX, ent2.posY, ent2.posZ, 32D);
+    			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(ent2, 34, false), point);
+    			return true;
+    		}
+    	}
+		
+		return false;
     }
     
     

@@ -83,8 +83,10 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip implements IS
 			//每一段時間回復一隻艦載機
 			delayAircraft--;
 			if(this.delayAircraft <= 0) {
-				delayAircraft = (int)(240F / (this.getStateFinal(ID.SPD)));	
-				if(delayAircraft > 250) delayAircraft = 250;	//fix: spd還沒設完值就除 會導致delay變超大 (除以0)
+				delayAircraft = (int)(1600 / (this.getStateFinal(ID.SPD)));	
+				if(delayAircraft > 1600) delayAircraft = 1600;	//fix: spd還沒設完值就除 會導致delay變超大 (除以0)
+				
+				delayAircraft += 200;
 				
 				this.setNumAircraftLight(this.getNumAircraftLight()+1);
 				this.setNumAircraftHeavy(this.getNumAircraftHeavy()+1);
@@ -139,6 +141,10 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip implements IS
         		summonHeight = posY+1D;
         	}
         	
+        	if(this.ridingEntity instanceof BasicEntityMount) {
+        		summonHeight -= 1.5D;
+        	}
+        	
         	EntityAirplane plane = new EntityAirplane(this.worldObj, this, (EntityLivingBase)target, summonHeight);
             this.worldObj.spawnEntityInWorld(plane);
             return true;
@@ -182,6 +188,10 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip implements IS
         	//check the summon block
         	if(!EntityHelper.checkBlockSafe(worldObj, (int)posX, (int)(posY+launchHeight), (int)(posZ))) {
         		summonHeight = posY+0.5D;
+        	}
+        	
+        	if(this.ridingEntity instanceof BasicEntityMount) {
+        		summonHeight -= 1.5D;
         	}
         	
         	EntityAirplaneTakoyaki plane = new EntityAirplaneTakoyaki(this.worldObj, this, (EntityLivingBase)target, summonHeight);

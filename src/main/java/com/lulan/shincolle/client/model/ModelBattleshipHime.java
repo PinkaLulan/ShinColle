@@ -473,6 +473,14 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion {
 				this.LegLeft02.rotateAngleX = angleX * 0.2F + 0.8F;
 				this.LegRight02.rotateAngleX = -angleX * 0.2F + 0.8F;
 				//hair
+				headX = 0F;
+				this.Hair01.rotateAngleX = angleX * 0.012F + 0.15F + headX;
+			  	this.Hair02.rotateAngleX = angleX * 0.015F - 0.05F + headX;
+			  	this.Hair03.rotateAngleX = angleX * 0.018F - 0.08F;
+			  	this.HairL01.rotateAngleX = angleX * 0.02F + headX - 0.14F;
+			  	this.HairL02.rotateAngleX = angleX * 0.02F + headX + 0.052F;
+			  	this.HairR01.rotateAngleX = angleX * 0.02F + headX - 0.14F;
+			  	this.HairR02.rotateAngleX = angleX * 0.02F + headX + 0.087F;
 				this.Hair01.rotateAngleX += 0.6354F;
 				this.Hair02.rotateAngleX += 0.5736F;  		
 	    	}
@@ -509,7 +517,7 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion {
 	    	if(((Entity)ent).ridingEntity instanceof BasicEntityMount) {
 	    		if(ent.getIsSitting()) {
 		    		if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {
-				    	GL11.glTranslatef(0F, 1.9F, -2F); 
+				    	GL11.glTranslatef(0F, 1.8F, 0F); 
 				    	//Body
 				    	this.Head.rotateAngleX = -1.2217F;
 				    	this.Head.rotateAngleY = this.Head.rotateAngleY / 2F;
@@ -527,11 +535,19 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion {
 						this.LegLeft02.rotateAngleX = angleX * 0.2F + 0.8F;
 						this.LegRight02.rotateAngleX = -angleX * 0.2F + 0.8F;
 						//hair
+						headX = 0F;
+						this.Hair01.rotateAngleX = angleX * 0.012F + 0.15F + headX;
+					  	this.Hair02.rotateAngleX = angleX * 0.015F - 0.05F + headX;
+					  	this.Hair03.rotateAngleX = angleX * 0.018F - 0.08F;
+					  	this.HairL01.rotateAngleX = angleX * 0.02F + headX - 0.14F;
+					  	this.HairL02.rotateAngleX = angleX * 0.02F + headX + 0.052F;
+					  	this.HairR01.rotateAngleX = angleX * 0.02F + headX - 0.14F;
+					  	this.HairR02.rotateAngleX = angleX * 0.02F + headX + 0.087F;
 						this.Hair01.rotateAngleX += 0.6354F;
 						this.Hair02.rotateAngleX += 0.5736F;
 			    	}
 			    	else {
-			    		GL11.glTranslatef(0F, 1.45F, -2.2F);
+			    		GL11.glTranslatef(0F, 1.3F, 0F);
 			    		//Body
 				    	this.Head.rotateAngleX += 0.14F;
 					  	this.BodyMain.rotateAngleX = -0.4363F;
@@ -559,7 +575,7 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion {
 			    	}
 		    	}//end if sitting
 		    	else {
-	    			GL11.glTranslatef(0F, 0.38F, -1.5F);
+	    			GL11.glTranslatef(0F, 0.32F, 0F);
 			    	//Body
 			    	this.Head.rotateAngleX += 0.1745F;
 				  	this.BodyMain.rotateAngleX = -0.35F;

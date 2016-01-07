@@ -26,6 +26,9 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 	public EntityPlayer player;
 	public World world;
 	
+	//temp var
+	private boolean isOpeningGUI;		//in using GUI
+	
 	//player data
 	private boolean hasRing;
 	private boolean isRingActive;
@@ -43,6 +46,7 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 	private boolean[][] selectState;		//ship selected, for command control target
 	private boolean initSID = false;		//ship UID init flag: false = not init
 	private int[][] sidList;				//ship UID
+	private int[] formatID;					//ship formation ID
 	private int saveId;						//current ship/empty slot, value = 0~5
 	private int teamId;						//current team
 	private List<Integer> shipEIDList;		//all loaded ships' entity id list for radar
@@ -72,12 +76,14 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		this.teamList = new BasicEntityShip[9][6];
 		this.selectState = new boolean[9][6];
 		this.sidList = new int[9][6];
+		this.formatID = new int[9];
 		this.shipEIDList = new ArrayList();
 		this.targetClassList = new ArrayList();
 		this.initSID = false;
 		this.saveId = 0;
 		this.teamId = 0;
 		this.playerUID = -1;
+		this.isOpeningGUI = false;
 		
 		//team
 		this.playerTeamID = 0;
@@ -95,6 +101,7 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		nbtExt.setBoolean("RingOn", isRingActive);
 		nbtExt.setBoolean("RingFly", isRingFlying);
 		nbtExt.setIntArray("RingEffect", ringEffect);
+		nbtExt.setIntArray("FormatID", formatID);
 		nbtExt.setInteger("MarriageNum", marriageNum);
 		nbtExt.setInteger("BossCD", bossCooldown);
 		nbtExt.setInteger("PlayerUID", playerUID);
@@ -139,6 +146,7 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		isRingActive = nbtExt.getBoolean("RingOn");
 		isRingFlying = nbtExt.getBoolean("RingFly");
 		ringEffect = nbtExt.getIntArray("RingEffect");
+		formatID = nbtExt.getIntArray("FormatID");
 		marriageNum = nbtExt.getInteger("MarriageNum");
 		bossCooldown = nbtExt.getInteger("BossCD");
 		playerUID = nbtExt.getInteger("PlayerUID");
@@ -281,12 +289,16 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		return null;
 	}
 	
+	public int[][] getSIDArray() {
+		return this.sidList;
+	}
+	
 	public int getSIDofCurrentTeam(int id) {	//get current team ship UID
 		if(id > 5) id = 0;
 		return sidList[teamId][id];
 	}
 	
-	public int getTeamId() {
+	public int getCurrentTeamID() {
 		return this.teamId;
 	}
 	
@@ -357,6 +369,18 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		return this.targetClassList;
 	}
 	
+	public boolean getIsOpeningGUI() {
+		return this.isOpeningGUI;
+	}
+	
+	public int[] getFormatID() {
+		return this.formatID;
+	}
+	
+	public int getCurrentFormatID() {
+		return this.formatID[teamId];
+	}
+	
 	//setter
 	public void setRingActive(boolean par1) {
 		isRingActive = par1;
@@ -402,7 +426,7 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		selectState[teamId][id] = par1;
 	}
 	
-	public void setTeamId(int par1) {
+	public void setCurrentTeamID(int par1) {
 		if(par1 > 9) par1 = 0;
 		this.teamId = par1;
 	}
@@ -472,6 +496,23 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 			
 			//target not found, add target to list
 			this.targetClassList.add(str);
+		}
+	}
+	
+	public void setIsOpeningGUI(boolean par1) {
+		this.isOpeningGUI = par1;
+	}
+	
+	public void setFormatID(int[] par1) {
+		this.formatID = par1;
+	}
+	
+	public void setCurrentFormatID(int fid) {
+		if(fid < 0 || fid > 5) {
+			this.formatID[teamId] = 0;
+		}
+		else {
+			this.formatID[teamId] = fid;
 		}
 	}
 	

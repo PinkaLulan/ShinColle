@@ -81,10 +81,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	 * 5:NumAmmoHeavy 6:NumGrudge 7:NumAirLight 8:NumAirHeavy 9:immunity time 
 	 * 10:followMin 11:followMax 12:FleeHP 13:TargetAIType 14:guardX 15:guardY 16:guardZ 17:guardDim
 	 * 18:guardID 19:shipType 20:shipClass 21:playerUID 22:shipUID 23:playerEID 24:guardType 
-	 * 25:damageType*/
+	 * 25:damageType 26:formationType 27:formationPos*/
 	protected int[] StateMinor;
-	/**equip effect: 0:critical 1:doubleHit 2:tripleHit 3:baseMiss 4:atk_AntiAir 5:atk_AntiSS*/
+	/**equip effect: 0:critical 1:doubleHit 2:tripleHit 3:baseMiss 4:atk_AntiAir 5:atk_AntiSS 6:dodge*/
 	protected float[] EffectEquip;
+	/**formation effect: 0:ATK_L 1:ATK_H 2:ATK_AL 3:ATK_AH 4:DEF 5:MOV 6:MISS 7:DODGE 8:CRI
+	 *                   9:DHIT 10:THIT 11:AA 12:ASM */
+	protected float[] EffectFormation;
 	/**EntityState: 0:State 1:Emotion 2:Emotion2 3:HP State 4:State2 5:AttackPhase*/
 	protected byte[] StateEmotion;
 	/**EntityFlag: 0:canFloatUp 1:isMarried 2:noFuel 3:canMelee 4:canAmmoLight 5:canAmmoHeavy 
@@ -125,9 +128,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				                3, 12, 35, 1, -1,
 				                -1, -1, 0, -1, 0,
 				                0, -1, -1, -1, 0,
-				                0
+				                0, 0, 0
 				                };
-		EffectEquip = new float[] {0F, 0F, 0F, 0F, 0F, 0F};
+		EffectEquip = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F};
+		EffectFormation = new float[] {0F, 0F, 0F, 0F, 0F,
+									   0F, 0F, 0F, 0F, 0F,
+									   0F, 0F, 0F};
 		StateEmotion = new byte[] {0, 0, 0, 0, 0, 0};
 		StateFlag = new boolean[] {false, false, true, false, true,
 				                   true, true, true, false, true,
@@ -147,7 +153,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		ownerName = "";
 		stepHeight = 1F;
 		shipNavigator = new ShipPathNavigate(this, worldObj);
-		shipMoveHelper = new ShipMoveHelper(this);
+		shipMoveHelper = new ShipMoveHelper(this, 25F);
 		
 		//for render
 		StartEmotion = -1;		//emotion start time
@@ -206,7 +212,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	//受傷音效
     @Override
 	protected String getHurtSound() {
-    	
         return Reference.MOD_ID+":ship-hurt";
     }
 
@@ -503,6 +508,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	public float getEffectEquip(int id) {
 		return EffectEquip[id];
 	}
+	public float getEffectFormation(int id) {
+		return EffectFormation[id];
+	}
 	@Override
 	public byte getStateEmotion(int id) {
 		return StateEmotion[id];
@@ -528,7 +536,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	 */
 	public void calcEquipAndUpdateState() {
 		ItemStack itemstack = null;
-		float[] equipStat = {0F,0F,0F,0F,0F,0F,0F,0F,0F,0F};
+		float[] equipStat = null;
 		
 		//init value
 		StateEquip[ID.HP] = 0F;
@@ -547,6 +555,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		EffectEquip[ID.EF_MISS] = 0F;
 		EffectEquip[ID.EF_AA] = 0F;
 		EffectEquip[ID.EF_ASM] = 0F;
+		EffectEquip[ID.EF_DODGE] = 0F;
 		
 		//calc equip slots
 		for(int i=0; i<ContainerShipInventory.SLOTS_SHIPINV; i++) {
@@ -570,6 +579,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				EffectEquip[ID.EF_MISS] += equipStat[ID.E.MISS];
 				EffectEquip[ID.EF_AA] += equipStat[ID.E.AA];
 				EffectEquip[ID.EF_ASM] += equipStat[ID.E.ASM];
+				EffectEquip[ID.EF_DODGE] += equipStat[ID.E.DODGE];
 			}
 		}
 		//update value
@@ -594,10 +604,14 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		//ATK = (base + equip + ((point + 1) * level / 3) * 0.5 * typeModify) * config scale
 		float atk = getStat[ID.ShipAttr.BaseATK] + ((float)(BonusPoint[ID.ATK]+1F) * ((float)StateMinor[ID.M.ShipLevel])/3F) * 0.4F * TypeModify[ID.ATK];
 		
+		//add equip
 		StateFinal[ID.ATK] = (atk + StateEquip[ID.ATK]) * (float)ConfigHandler.scaleShip[ID.ATK];
 		StateFinal[ID.ATK_H] = (atk * 3F + StateEquip[ID.ATK_H]) * (float)ConfigHandler.scaleShip[ID.ATK];
 		StateFinal[ID.ATK_AL] = (atk + StateEquip[ID.ATK_AL]) * (float)ConfigHandler.scaleShip[ID.ATK];
 		StateFinal[ID.ATK_AH] = (atk * 3F + StateEquip[ID.ATK_AH]) * (float)ConfigHandler.scaleShip[ID.ATK];
+		
+		//add formation
+		StateFinal[ID.ATK] = (EffectFormation[ID.Formation.ATK_L] * 0.01F + 1F) * StateFinal[ID.ATK];
 		
 		//KB Resistance
 		float resisKB = ((StateMinor[ID.M.ShipLevel])/10F) * 0.05F;
@@ -714,22 +728,25 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	}
 	
 	//ship attribute setter, sync packet in method: calcShipAttributes 
-	public void setStateFinal(int state, float par1) {
-		StateFinal[state] = par1;
+	public void setStateFinal(int id, float par1) {
+		StateFinal[id] = par1;
 	}
 	
 	@Override
-	public void setStateMinor(int state, int par1) {
-		StateMinor[state] = par1;
+	public void setStateMinor(int id, int par1) {
+		StateMinor[id] = par1;
 	}
 	
-	//called when GUI update
-	public void setEffectEquip(int state, float par1) {
-		EffectEquip[state] = par1;
+	public void setEffectEquip(int id, float par1) {
+		EffectEquip[id] = par1;
 	}
 	
-	public void setBonusPoint(int state, byte par1) {
-		BonusPoint[state] = par1;
+	public void setEffectFormation(int id, float par1) {
+		EffectFormation[id] = par1;
+	}
+	
+	public void setBonusPoint(int id, byte par1) {
+		BonusPoint[id] = par1;
 	}
 	
 	@Override
@@ -1342,6 +1359,14 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				double motX = this.posX - this.prevPosX;
 				double motZ = this.posZ - this.prevPosZ;
 				double parH = this.posY - (int)this.posY;
+				double limit = 0.25D;
+				
+				if(motX > limit) motX = limit;
+				else if(motX < -limit) motX = -limit;
+				
+				if(motZ > limit) motZ = limit;
+				else if(motZ < -limit) motZ = -limit;
+				
 				
 				if(motX != 0 || motZ != 0) {
 					ParticleHelper.spawnAttackParticleAt(this.posX + motX*1.5D, this.posY + 0.4D, this.posZ + motZ*1.5D, 
@@ -1405,8 +1430,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 							this.setStateMinor(ID.M.PlayerEID, -1);
 						}
 					}
-					
 				}//end show pointer target effect
+				
+				//TODO DEBUG TEST
+//				ParticleHelper.spawnAttackParticleAtEntity(this, 1D, 1D, 0D, (byte)4);
 			}//end every 32 ticks
 		}//end client side
 	}
@@ -1923,6 +1950,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				}
 			}
 			
+			//進行dodge計算
+			float dist = (float) this.getDistanceSqToEntity(attacker.getEntity());
+			if(CalcHelper.canDodge(this, dist)) {
+				return false;
+			}
+			
 			//進行def計算
 			float reduceAtk = atk * (1F - (StateFinal[ID.DEF] - rand.nextInt(20) + 10F) / 100F);    
 			
@@ -2070,27 +2103,27 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			else {				   //no ammo
 				return false;
 			}
-		case 4:  //use 4 light ammo
-			if(StateMinor[ID.M.NumAmmoLight] > 3) {
-				StateMinor[ID.M.NumAmmoLight] -= 4;
+		case 4:  //use 6 light ammo
+			if(StateMinor[ID.M.NumAmmoLight] > 5) {
+				StateMinor[ID.M.NumAmmoLight] -= 6;
 				return true;
 			}
 			else {
 				if(decrSupplies(0)) {  //find ammo item
 					if(ConfigHandler.easyMode) {
-						StateMinor[ID.M.NumAmmoLight] += 296;
+						StateMinor[ID.M.NumAmmoLight] += 294;
 					}
 					else {
-						StateMinor[ID.M.NumAmmoLight] += 26;
+						StateMinor[ID.M.NumAmmoLight] += 24;
 					}
 					return true;
 				}
 				else if(decrSupplies(2)) {  //find ammo item
 					if(ConfigHandler.easyMode) {
-						StateMinor[ID.M.NumAmmoLight] += 2696;
+						StateMinor[ID.M.NumAmmoLight] += 2694;
 					}
 					else {
-						StateMinor[ID.M.NumAmmoLight] += 266;
+						StateMinor[ID.M.NumAmmoLight] += 264;
 					}
 					return true;
 				}
@@ -2410,6 +2443,17 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			}
 		}//end update id
 	}
+	
+	//不跟aircraft, mount, rider碰撞
+  	protected void collideWithEntity(Entity target) {
+  		if(target instanceof BasicEntityAirplane ||
+  		   target.equals(this.riddenByEntity) ||
+  		   target.equals(this.ridingEntity)) {
+  			return;
+  		}
+  		target.applyEntityCollision(this);
+    }
+  	
 
 	
 }

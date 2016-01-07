@@ -50,7 +50,8 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
     public int numAmmoHeavy;
     public boolean useAmmoLight;
     public boolean useAmmoHeavy;
-    public boolean backHome;		//clear target, back to carrier
+    public boolean backHome;		//can back to carrier
+    public boolean canFindTarget;	//can find target
     
     //target selector
     protected TargetHelper.Sorter targetSorter;
@@ -60,9 +61,10 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
     public BasicEntityAirplane(World world) {
         super(world);
         this.backHome = false;
+        this.canFindTarget = true;
         this.isImmuneToFire = true;
         this.shipNavigator = new ShipPathNavigate(this, worldObj);
-        this.shipMoveHelper = new ShipMoveHelper(this);
+        this.shipMoveHelper = new ShipMoveHelper(this, 30F);
 		this.shipNavigator.setCanFly(true);
 		this.stepHeight = 7F;
 		this.targetSelector = new TargetHelper.Selector(this);
@@ -86,6 +88,15 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
   		this.tasks.addTask(1, new EntityAIShipAircraftAttack(this));
   		this.setEntityTarget(atkTarget);
   	}
+  	
+	//不跟ship碰撞
+  	protected void collideWithEntity(Entity target) {
+  		if(target instanceof BasicEntityShip ||
+  		   target instanceof BasicEntityMount) {
+  			return;
+  		}
+  		target.applyEntityCollision(this);
+    }
   	
     //clear AI
   	protected void clearAITasks() {
@@ -187,8 +198,8 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 	//ammo recycle
     protected void recycleAmmo() {
     	if(this.host != null) {
-    		//light cost 4, plane get 6 => -2
-    		this.numAmmoLight -= 2;
+    		//light cost 6, plane get 9 => -3
+    		this.numAmmoLight -= 3;
     		if(this.numAmmoLight < 0) this.numAmmoLight = 0;
     		
     		//heavy cost 2, plane get 3 => -1
@@ -223,7 +234,7 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 					float dist = this.getDistanceToEntity(this.host);
 					
 					//get home path
-					if(dist > 2.8F) {
+					if(dist > 2.7F) {
 						if(this.ticksExisted % 16 == 0) {
 							this.getShipNavigate().tryMoveToXYZ(this.host.posX, this.host.posY + 2.3D, this.host.posZ, 1D);
 						}
@@ -236,19 +247,19 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 				}
 				
 				//前幾秒直線往目標移動
-				if(this.ticksExisted < 24 && this.getEntityTarget() != null) {
+				if(this.ticksExisted < 34 && this.getEntityTarget() != null) {
 					double distX = this.getEntityTarget().posX - this.posX;
 					double distZ = this.getEntityTarget().posZ - this.posZ;
 					double distSqrt = MathHelper.sqrt_double(distX*distX + distZ*distZ);
 					
 					this.motionX = distX / distSqrt * 0.375D;
 					this.motionZ = distZ / distSqrt * 0.375D;
-					this.motionY = 0.05D;
+					this.motionY = 0.1D;
 				}
 				
 				//check every 32 ticks
-				if(this.ticksExisted % 16 == 0) {
-					//set backhome
+				if(this.ticksExisted % 16 == 0 && this.canFindTarget) {
+					//change backhome
 					if(this.ticksExisted < 900) {
 						if(this.getEntityTarget() == null) {
 							this.backHome = true;
@@ -295,7 +306,7 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 				        	this.setEntityTarget(newTarget);
 				        }
 					}
-				}
+				}//end can find target
 
 				//避免窒息
 				if(this.isInWater() && this.ticksExisted % 256 == 0) {
@@ -308,14 +319,16 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 					this.setDead();
 				}
 				
-				//達到45秒時強制歸宅, 沒彈藥也設定歸宅
+				//達到45秒時歸宅
 				if(this.ticksExisted >= 900) {
 					this.backHome = true;
+					this.canFindTarget = false;
+					this.setEntityTarget(null);
 				}
 			}	
 		}
 		
-		if(this.ticksExisted % 4 == 0) {
+		if(this.ticksExisted % 2 == 0) {
 			//面向計算 (for both side)
 			float[] degree = EntityHelper.getLookDegree(posX - prevPosX, posY - prevPosY, posZ - prevPosZ, true);
 			this.rotationYaw = degree[0];
@@ -327,13 +340,19 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 	
 	@Override
 	public boolean attackEntityFrom(DamageSource source, float atk) {
-		//disable 
+		//disable special damage
 		if(source.getDamageType() == "inWall") {
 			return false;
 		}
 		
 		if(source.getDamageType() == "outOfWorld") {
 			this.setDead();
+			return false;
+		}
+		
+		//calc dodge
+		float dist = (float) this.getDistanceSqToEntity(source.getEntity());
+		if(CalcHelper.canDodge(this, dist)) {
 			return false;
 		}
 		

@@ -372,11 +372,9 @@ public class GuiShipInventory extends GuiContainer {
 					mouseoverList.add(overText);
 					
 					//calc dodge
-					if(this.entity instanceof IShipInvisible) {
-						value = String.valueOf((int)(((IShipInvisible) this.entity).getInvisibleLevel() * 100F));
-						overText = I18n.format("gui.shincolle:dodge") + " " + value +"%";
-						mouseoverList.add(overText);
-					}
+					value = String.valueOf(this.entity.getEffectEquip(ID.EF_DODGE));
+					overText = I18n.format("gui.shincolle:dodge") + " " + value +"%";
+					mouseoverList.add(overText);
 					
 					this.drawHoveringText(mouseoverList, 55, 143, this.fontRendererObj);
 				}

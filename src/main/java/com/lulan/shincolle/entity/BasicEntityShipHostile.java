@@ -69,7 +69,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		stepHeight = 4F;
 		canDrop = true;
 		shipNavigator = new ShipPathNavigate(this, worldObj);
-		shipMoveHelper = new ShipMoveHelper(this);
+		shipMoveHelper = new ShipMoveHelper(this, 15F);
 		rotateAngle = new float[] {0F, 0F, 0F};
 	}
 	

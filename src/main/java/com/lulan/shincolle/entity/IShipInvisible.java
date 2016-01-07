@@ -6,9 +6,9 @@ package com.lulan.shincolle.entity;
  *  calc by distance, high level = hard to find even get close
  *  entity get dodge chance from invisible level
  *  
- *  ex: level = 0.45F = 45% dodge
+ *  ex: level = 45F = 45% dodge
  *  
- *  dodge = 0% when attack within 6 blocks
+ *  level = 0% when attack within 6 blocks
  * 
  */
 public interface IShipInvisible {

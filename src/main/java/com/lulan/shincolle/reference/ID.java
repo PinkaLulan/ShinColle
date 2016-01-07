@@ -57,6 +57,7 @@ public class ID {
 		public static final byte ASM = 15;
 		public static final byte RARE_TYPE = 16;
 		public static final byte RARE_MEAN = 17;
+		public static final byte DODGE = 18;
 	}
 	
 	/**Emotion*/
@@ -123,12 +124,30 @@ public class ID {
 		public static final byte PassiveAI = 21;
 	}
 	
+	/**Formation Effect*/
+	public static final class Formation {
+		public static final byte ATK_L = 0;
+		public static final byte ATK_H = 1;
+		public static final byte ATK_AL = 2;
+		public static final byte ATK_AH = 3;
+		public static final byte DEF = 4;
+		public static final byte MOV = 5;
+		public static final byte MISS = 6;
+		public static final byte DODGE = 7;
+		public static final byte CRI = 8;
+		public static final byte DHIT = 9;
+		public static final byte THIT = 10;
+		public static final byte AA = 11;
+		public static final byte ASM = 12;
+	}
+	
 	/**GUI ID*/
 	public static final class G {
 		public static final byte SHIPINVENTORY = 0;
 		public static final byte SMALLSHIPYARD = 1;
 		public static final byte LARGESHIPYARD = 2;
 		public static final byte ADMIRALDESK = 3;
+		public static final byte ADMIRALDESK_ITEM = 4;
 	}
 	
 	/**ICON ID for BOOK*/
@@ -183,6 +202,10 @@ public class ID {
 		public static final byte EqAirB = 47;
 		public static final byte EqAirR = 48;
 		public static final byte EqArmor = 49;
+		public static final byte DeskBook = 50;
+		public static final byte DeskRadar = 51;
+		public static final byte WriteBook = 52;
+		public static final byte Compass = 53;
 	}
 	
 	/**ship state2*/
@@ -246,6 +269,8 @@ public class ID {
 		public static final byte PlayerEID = 23;	//player entity id
 		public static final byte GuardType = 24;	//guard type: 0:move 1:move & attack
 		public static final byte DamageType = 25;	//damage type
+		public static final byte FormatType = 26;	//formation type
+		public static final byte FormatPos = 27;	//formation position
 	}
 	
 	/**ring effect*/
@@ -348,6 +373,7 @@ public class ID {
 	public static final byte EF_MISS = 3;
 	public static final byte EF_AA = 4;
 	public static final byte EF_ASM = 5;
+	public static final byte EF_DODGE = 6;
 	
 	/**Equip ID*/
 	//cannon

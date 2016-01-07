@@ -16,14 +16,11 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-/**LIGHTNING PARTICLE
- * 
- * 
+/** NO TEXTURE LIGHTNING PARTICLE
  */
 @SideOnly(Side.CLIENT)
 public class EntityFXLightning extends EntityFX {
 
-//	private static final ResourceLocation TEXTURE = new ResourceLocation(Reference.TEXTURES_PARTICLE+"EntityFXLightning.png");
 	private int particleType;		//0:red white lightning
 	private Entity host;
 	private int numStem;			//lightning length
@@ -82,21 +79,15 @@ public class EntityFXLightning extends EntityFX {
 //		GL11.glEnable(GL11.GL_DEPTH_TEST);	//DEPTH TEST開啟後才能使用glDepthFunc
 //		GL11.glDepthFunc(GL11.GL_ALWAYS);
 		
-		float f6 = 0F;
-		float f7 = 1F;
-		float f8 = 0F;
-		float f9 = 1F;
-		
-        float f11 = (float)(this.prevPosX + (this.posX - this.prevPosX) * ticks - interpPosX);
-        float f12 = (float)(this.prevPosY + (this.posY - this.prevPosY) * ticks - interpPosY);
-        float f13 = (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * ticks - interpPosZ);
+        float px = (float)(this.prevPosX + (this.posX - this.prevPosX) * ticks - interpPosX);
+        float py = (float)(this.prevPosY + (this.posY - this.prevPosY) * ticks - interpPosY);
+        float pz = (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * ticks - interpPosZ);
 
         //create lightning shape
 //        if(this.particleAge <= 1 || this.particleAge % 4 == 0) {
         	float offx = 0F;
             float offz = 0F;
             float offy = 0F;
-            float width = 0F;
             
             //越後面的step, random range越大 (閃電到後面分支分散)
             for(int i = 0; i < numStem; i++) {
@@ -104,25 +95,42 @@ public class EntityFXLightning extends EntityFX {
                 offx = (rand.nextFloat() - 0.5F) * 0.1F * (i + 1);
             	offz = (rand.nextFloat() - 0.5F) * 0.1F * (i + 1);
             	offy = rand.nextFloat() * 0.2F + 0.5F;
-            	width = rand.nextFloat() + 0.5F;	//100% ~ 150%
             	
             	//起始y高度 (y往下長)
             	if(i == 0) {
-            		prevShape[i][1] = f12 + par4 * scaleY;
+            		prevShape[i][1] = py + par4 * scaleY;
             		prevShape[i][4] = prevShape[i][1];
             	}
             	else {
-            		prevShape[i][1] = f12 + par4 * scaleY - i * scaleY;
+            		prevShape[i][1] = py + par4 * scaleY - i * scaleY;
             		prevShape[i][4] = prevShape[i][1];
             	}
             	
             	//從後面的step開始存: x1, y1, z1, x2, y2, z2
-            	prevShape[i][0] = f11 + offx + par3 * scaleXZ;
-            	prevShape[i][2] = f13 + offz + par5 * scaleXZ;
-            	prevShape[i][3] = f11 + offx - par3 * scaleXZ;
-            	prevShape[i][5] = f13 + offz - par5 * scaleXZ;
+            	prevShape[i][0] = px + offx + par3 * scaleXZ;
+            	prevShape[i][2] = pz + offz + par5 * scaleXZ;
+            	prevShape[i][3] = px + offx - par3 * scaleXZ;
+            	prevShape[i][5] = pz + offz - par5 * scaleXZ;
             }
 //        }
+            
+//        //test
+//        numStem = 2;
+//        prevShape[0][0] = px - par3 - par6;
+//        prevShape[0][1] = py - par4;
+//        prevShape[0][2] = pz - par5 - par7;
+//		
+//        prevShape[0][3] = px + par3 - par6;
+//        prevShape[0][4] = py - par4;
+//        prevShape[0][5] = pz + par5 - par7;
+//		
+//        prevShape[1][0] = px - par3 + par6;
+//        prevShape[1][1] = py + par4;
+//        prevShape[1][2] = pz - par5 + par7;
+//		
+//        prevShape[1][3] = px + par3 + par6;
+//        prevShape[1][4] = py + par4;
+//        prevShape[1][5] = pz + par5 + par7;
         
         //start tess
         tess.startDrawing(GL11.GL_QUAD_STRIP);

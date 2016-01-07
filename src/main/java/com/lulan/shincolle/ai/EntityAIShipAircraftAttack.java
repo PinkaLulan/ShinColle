@@ -42,8 +42,11 @@ public class EntityAIShipAircraftAttack extends EntityAIBase {
     @Override
 	public boolean shouldExecute() {
     	Entity target = this.host.getEntityTarget();
+    	
+    	//no ammo, go home
+    	if(!this.host.canFindTarget) return false;
 
-        if (this.host.ticksExisted > 18 && target != null && target.isEntityAlive() && 
+        if (this.host.ticksExisted > 20 && target != null && target.isEntityAlive() && 
         	((this.host.useAmmoLight && this.host.numAmmoLight > 0) || 
         	(this.host.useAmmoHeavy && this.host.numAmmoHeavy > 0))) {   
         	this.target = target;
@@ -56,8 +59,8 @@ public class EntityAIShipAircraftAttack extends EntityAIBase {
     //init AI parameter, call once every target
     @Override
     public void startExecuting() {
-    	this.maxDelay = (int)(80F / (this.host.atkSpeed));
-        this.attackRange = 7F;
+    	this.maxDelay = (int)(80F / (this.host.atkSpeed)) + 10;
+        this.attackRange = 7.5F;
         this.rangeSq = this.attackRange * this.attackRange;
         distSq = distX = distY = distZ = motX = motY = motZ = 0D;
         //AI移動設定
@@ -69,6 +72,10 @@ public class EntityAIShipAircraftAttack extends EntityAIBase {
     //判定是否繼續AI： 有target就繼續, 或者已經移動完畢就繼續
     @Override
 	public boolean continueExecuting() {
+    	//no ammo, go home
+    	if(!this.host.canFindTarget) return false;
+    	
+    	//跑should exec, 若false則檢查是否還在移動中, 若無法移動則結束
         return this.shouldExecute()  || (target != null && target.isEntityAlive() && !this.host.getShipNavigate().noPath());
     }
 
@@ -85,7 +92,7 @@ public class EntityAIShipAircraftAttack extends EntityAIBase {
     @Override
 	public void updateTask() {
     	boolean onSight = false;	//判定直射是否無障礙物
-    	  	
+    	
     	if(this.target != null) {
             onSight = this.host.getEntitySenses().canSee(this.target);
 //            LogHelper.info("DEBUG : rand pos: "+this.target);

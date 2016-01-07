@@ -3,6 +3,8 @@ package com.lulan.shincolle.init;
 import com.lulan.shincolle.item.AbyssMetal;
 import com.lulan.shincolle.item.Ammo;
 import com.lulan.shincolle.item.BasicItem;
+import com.lulan.shincolle.item.DeskItemBook;
+import com.lulan.shincolle.item.DeskItemRadar;
 import com.lulan.shincolle.item.EquipAirplane;
 import com.lulan.shincolle.item.EquipArmor;
 import com.lulan.shincolle.item.EquipCannon;
@@ -46,6 +48,8 @@ public class ModItems {
 	public static final BasicItem EquipTurbine = new EquipTurbine();
 	//misc
 	public static final BasicItem BucketRepair = new RepairBucket();
+	public static final BasicItem DeskItemBook = new DeskItemBook();
+	public static final BasicItem DeskItemRadar = new DeskItemRadar();
 	public static final BasicItem InstantConMat = new InstantConMat();
 	public static final BasicItem KaitaiHammer = new KaitaiHammer();
 	public static final BasicItem MarriageRing = new MarriageRing();
@@ -75,6 +79,8 @@ public class ModItems {
 		GameRegistry.registerItem(EquipTurbine, "EquipTurbine");
 		//misc
 		GameRegistry.registerItem(BucketRepair, "BucketRepair");
+		GameRegistry.registerItem(DeskItemBook, "DeskItemBook");
+		GameRegistry.registerItem(DeskItemRadar, "DeskItemRadar");
 		GameRegistry.registerItem(InstantConMat, "InstantConMat");
 		GameRegistry.registerItem(KaitaiHammer, "KaitaiHammer");
 		GameRegistry.registerItem(MarriageRing, "MarriageRing");

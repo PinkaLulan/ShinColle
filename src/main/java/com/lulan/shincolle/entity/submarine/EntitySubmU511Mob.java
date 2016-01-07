@@ -27,7 +27,7 @@ import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
 public class EntitySubmU511Mob extends BasicEntityShipHostile implements IShipInvisible {
 
-	private static float ilevel = 0.3F;
+	private static float ilevel = 35F;
 	
 	
 	public EntitySubmU511Mob(World world) {
@@ -116,22 +116,6 @@ public class EntitySubmU511Mob extends BasicEntityShipHostile implements IShipIn
 		
         return false;
     }
-	
-	@Override
-    public boolean attackEntityFrom(DamageSource attacker, float atk) {
-		if(attacker.getEntity() != null) {
-  			float dist = (float) this.getDistanceSqToEntity(attacker.getEntity());
-
-  			//dist > 6 blocks
-  			if(dist > 36F) {
-  				if(this.getRNG().nextFloat() < this.getInvisibleLevel()) {
-  					return false;
-  				}
-  			}
-  		}
-		
-  		return super.attackEntityFrom(attacker, atk);
-  	}
 	
 	//招喚連裝砲進行攻擊
   	@Override

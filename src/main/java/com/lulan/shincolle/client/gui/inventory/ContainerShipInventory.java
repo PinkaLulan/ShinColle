@@ -28,7 +28,6 @@ public class ContainerShipInventory extends Container {
 	            GuiNumAirLight, GuiNumAirHeavy, GuiIsMarried,
 	            ButtonMelee, ButtonAmmoLight, ButtonAmmoHeavy, ButtonAirLight, ButtoAirHeavy,
 	            FollowMin, FollowMax, FleeHP, TarAI, AuraEffect, OnSightAI, PVPAI, AAAI, ASMAI;
-	private float GuiCri, GuiDhit, GuiThit, GuiMiss;
 	
 	public ContainerShipInventory(InventoryPlayer invPlayer, BasicEntityShip entity1) {
 		int i,j;	//loop index

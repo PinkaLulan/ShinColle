@@ -7,10 +7,12 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.client.gui.GuiDesk;
+import com.lulan.shincolle.client.gui.GuiDeskItemForm;
 import com.lulan.shincolle.client.gui.GuiLargeShipyard;
 import com.lulan.shincolle.client.gui.GuiShipInventory;
 import com.lulan.shincolle.client.gui.GuiSmallShipyard;
 import com.lulan.shincolle.client.gui.inventory.ContainerDesk;
+import com.lulan.shincolle.client.gui.inventory.ContainerDeskItemForm;
 import com.lulan.shincolle.client.gui.inventory.ContainerLargeShipyard;
 import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
 import com.lulan.shincolle.client.gui.inventory.ContainerSmallShipyard;
@@ -76,6 +78,8 @@ public class GuiHandler implements IGuiHandler {
 				return new ContainerDesk(player.inventory, (TileEntityDesk) tile, player);
 			}
 			break;
+		case ID.G.ADMIRALDESK_ITEM:  //GUI admiral radar/book
+			return new ContainerDeskItemForm(player.inventory, player);
 		}
 		return null;
 	}
@@ -110,6 +114,8 @@ public class GuiHandler implements IGuiHandler {
 				return new GuiDesk(player.inventory, (TileEntityDesk) tile);
 			}
 			return null;
+		case ID.G.ADMIRALDESK_ITEM:  //GUI admiral radar/book
+			return new GuiDeskItemForm(player.inventory, x);
 		}
 	
 		return null;

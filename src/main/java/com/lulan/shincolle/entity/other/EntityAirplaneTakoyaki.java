@@ -64,7 +64,11 @@ public class EntityAirplaneTakoyaki extends BasicEntityAirplane {
 			}
 		}
 		else {
-			if(!this.hasAmmoHeavy()) this.backHome = true;
+			if(!this.hasAmmoHeavy()) {
+				this.backHome = true;
+				this.canFindTarget = false;
+				this.setEntityTarget(null);
+			}
 		}
 	}
 	

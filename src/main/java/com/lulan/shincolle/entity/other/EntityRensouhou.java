@@ -73,7 +73,7 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack {
         this.atkTarget = target;
         this.isImmuneToFire = true;
         shipNavigator = new ShipPathNavigate(this, worldObj);
-		shipMoveHelper = new ShipMoveHelper(this);
+		shipMoveHelper = new ShipMoveHelper(this, 45F);
         
         //basic attr
         this.atk = host.getStateFinal(ID.ATK);
@@ -140,6 +140,11 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack {
     public boolean attackEntityFrom(DamageSource attacker, float atk) {
 		//disable 
 		if(attacker.getDamageType() == "inWall") {
+			return false;
+		}
+		
+		//calc dodge
+		if(CalcHelper.canDodge(this, 0F)) {
 			return false;
 		}
 		

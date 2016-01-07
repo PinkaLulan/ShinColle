@@ -139,8 +139,8 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
         			distRiding = this.getDistanceToEntity(this.goRideEntity);
         		}
         		
-        		//每30 tick找一次路徑
-        		if(this.ticksExisted % 30 == 0) {
+        		//每32 tick找一次路徑
+        		if(this.ticksExisted % 32 == 0) {
         			if(distRiding > 2F) {
         				this.getShipNavigate().tryMoveToEntityLiving(this.goRideEntity, 1D);
         			}

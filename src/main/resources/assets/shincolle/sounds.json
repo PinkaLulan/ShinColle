@@ -96,7 +96,7 @@
         "category": "hostile", "replace": true, "sounds": [
         	"laser01",
        		"laser02",
-            "laser03"
+          "laser03"
         ]
     },
     
@@ -318,6 +318,18 @@
     "ship-garuru": {
         "category": "hostile", "replace": true, "sounds": [
         	"garuru"
+        ]
+    },
+    
+    "ship-yamato-ready": {
+        "category": "hostile", "replace": true, "sounds": [
+        	"laser05"
+        ]
+    },
+    
+    "ship-yamato-shot": {
+        "category": "hostile", "replace": true, "sounds": [
+        	"laser06"
         ]
     }
     

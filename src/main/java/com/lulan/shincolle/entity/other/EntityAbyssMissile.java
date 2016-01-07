@@ -66,7 +66,8 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
     private int midFlyTime;			//一半的飛行時間
    
     //for direct only
-    private float ACCE = 0.02F;		//預設加速度
+    private static final float ACC = 0.015F;
+    private float acce;	//預設加速度
     private float accX;				//三軸加速度
     private float accY;
     private float accZ;
@@ -102,14 +103,14 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
         this.posZ = pZ;
         this.isDirect = false;
         this.type = 4;
-        this.ACCE = 0.02F;
-        this.accParaY = this.ACCE * 0.5F;
+        this.acce = ACC;
+        this.accParaY = this.acce * 0.5F;
         
         if(mY > 0) mY = 0F;
         
         //acc and motion
         this.accX = mX * 0.1F;
-	    this.accY = -this.ACCE;
+	    this.accY = -this.acce;
 	    this.accZ = mZ * 0.1F;
 	    this.motionX = mX;
 	    this.motionY = mY;
@@ -147,7 +148,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
         
         //設定飛彈速度
         if(customAcc > 0F) {
-        	this.ACCE = customAcc;
+        	this.acce = customAcc;
         	if(customAcc > 0.09F) {
         		this.type = 2;
         	}
@@ -156,7 +157,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
         	}
         }
         else {
-        	this.ACCE = 0.02F;
+        	this.acce = ACC;
         }
         
         //check special type
@@ -167,17 +168,17 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
         
         //直射彈道, no gravity
     	float dist = MathHelper.sqrt_float(distX*distX + distY*distY + distZ*distZ);
-  	    this.accX = distX / dist * this.ACCE;
-	    this.accY = distY / dist * this.ACCE;
-	    this.accZ = distZ / dist * this.ACCE;
+  	    this.accX = distX / dist * this.acce;
+	    this.accY = distY / dist * this.acce;
+	    this.accZ = distZ / dist * this.acce;
 	    this.motionX = this.accX;
 	    this.motionY = this.accY;
 	    this.motionZ = this.accZ;
  
 	    //拋物線軌道計算, y軸初速加上 (一半飛行時間 * 額外y軸加速度)
 	    if(!this.isDirect) {
-	    	this.midFlyTime = (int) (0.5F * MathHelper.sqrt_float(2F * dist / this.ACCE));
-	    	this.accParaY = this.ACCE;
+	    	this.midFlyTime = (int) (0.5F * MathHelper.sqrt_float(2F * dist / this.acce));
+	    	this.accParaY = this.acce;
 	    	this.motionY = this.motionY + (double)this.midFlyTime * this.accParaY;
 	    }
     }
@@ -254,8 +255,8 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
     			return;
     		}
     		
-    		//發射超過20 sec, 設定為死亡(消失), 注意server restart後此值會歸零
-    		if(this.ticksExisted > 300) {
+    		//發射超過10 sec, 設定為死亡(消失), 注意server restart後此值會歸零
+    		if(this.ticksExisted > 200) {
     			this.setDead();	//直接抹消, 不觸發爆炸
     			return;
     		}
@@ -483,6 +484,11 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
     //entity被攻擊到時呼叫此方法
     @Override
 	public boolean attackEntityFrom(DamageSource attacker, float atk) {
+    	//進行dodge計算
+		if(CalcHelper.canDodge(this, 0F)) {
+			return false;
+		}
+    	
         if(this.isEntityInvulnerable()) {	//對無敵目標回傳false
             return false;
         }
@@ -538,6 +544,9 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
 
 	@Override
 	public float getEffectEquip(int id) {
+		//dodge = 50%
+		if(id == ID.EF_DODGE) return 50F;
+		
 		if(host != null) return host.getEffectEquip(id);
 		return 0F;
 	}
