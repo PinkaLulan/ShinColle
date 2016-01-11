@@ -4,8 +4,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.world.World;
 
+import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
 import com.lulan.shincolle.entity.other.EntityAirplane;
 import com.lulan.shincolle.entity.other.EntityAirplaneTakoyaki;
+import com.lulan.shincolle.item.EquipAirplane;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
@@ -100,8 +102,25 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip implements IS
 	public void calcShipAttributes() {
 		super.calcShipAttributes();
 		
+		//calc basic airplane
 		this.maxAircraftLight = 4 + StateMinor[ID.M.ShipLevel] / 5;
 		this.maxAircraftHeavy = 2 + StateMinor[ID.M.ShipLevel] / 10;
+		
+		//calc equip airplane
+		this.maxAircraftLight += (getNumOfAircraftEquip() * 6);
+		this.maxAircraftHeavy += (getNumOfAircraftEquip() * 3);
+	}
+	
+	//get number of aircraft equips
+	public int getNumOfAircraftEquip() {
+		int airNum = 0;
+		
+		for(int i = 0; i < ContainerShipInventory.SLOTS_SHIPINV; i++) {
+			if(ExtProps.slots[i] != null &&
+			   ExtProps.slots[i].getItem() instanceof EquipAirplane) airNum++;
+		}
+		
+		return airNum;
 	}
 	
 	//range attack method, cost light ammo, attack delay = 20 / attack speed, damage = 100% atk 

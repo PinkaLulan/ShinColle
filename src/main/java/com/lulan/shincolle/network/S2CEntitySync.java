@@ -47,6 +47,7 @@ public class S2CEntitySync implements IMessage {
 		public static final byte SyncMissile = 8;
 		public static final byte SyncEntity_PosRot = 9;
 		public static final byte SyncEntity_Rot = 10;
+		public static final byte SyncShip_Formation = 11;
 	}
 
 	
@@ -57,6 +58,7 @@ public class S2CEntitySync implements IMessage {
 	//type 1: entity emotion only
 	//type 2: entity flag only
 	//type 3: entity minor only
+	//type 11:ship formation data
 	 */
 	public S2CEntitySync(BasicEntityShip entity, int type) {
         this.entity = entity;
@@ -107,6 +109,7 @@ public class S2CEntitySync implements IMessage {
 		case PID.SyncShip_All:
 		case PID.SyncShip_Emo:
 		case PID.SyncShip_Flag:
+		case PID.SyncShip_Formation:
 		case PID.SyncShip_Minor:
 		case PID.SyncEntity_Emo:
 		case PID.SyncMount_ByPlayer:
@@ -116,7 +119,7 @@ public class S2CEntitySync implements IMessage {
 			Entity ent = EntityHelper.getEntityByID(entityID, 0, true);
 			
 			//確認有抓到要sync的entity
-			if(ent != null && ent instanceof EntityLiving) {
+			if(ent instanceof EntityLiving) {
 				this.entity2 = (EntityLiving) ent;
 				getSyncTarget = true;
 				
@@ -242,6 +245,8 @@ public class S2CEntitySync implements IMessage {
 					entity.setEffectFormation(ID.Formation.THIT, buf.readFloat());
 					entity.setEffectFormation(ID.Formation.AA, buf.readFloat());
 					entity.setEffectFormation(ID.Formation.ASM, buf.readFloat());
+					
+					entity.setEffectFormationFixed(ID.FormationFixed.MOV, buf.readFloat());
 				}
 				break;
 			case PID.SyncShip_Emo: //entity emotion only
@@ -270,6 +275,18 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateFlag(ID.F.AntiAir, buf.readBoolean());
 					entity.setStateFlag(ID.F.AntiSS, buf.readBoolean());
 					entity.setStateFlag(ID.F.PassiveAI, buf.readBoolean());
+				}
+				break;
+			case PID.SyncShip_Formation: //ship formation data only
+				{
+					entity.setStateMinor(ID.M.GuardX, buf.readInt());
+					entity.setStateMinor(ID.M.GuardY, buf.readInt());
+					entity.setStateMinor(ID.M.GuardZ, buf.readInt());
+					entity.setStateMinor(ID.M.GuardDim, buf.readInt());
+					entity.setStateMinor(ID.M.GuardType, buf.readInt());
+					entity.setStateMinor(ID.M.FormatType, buf.readInt());
+					entity.setStateMinor(ID.M.FormatPos, buf.readInt());
+					entity.setEffectFormationFixed(ID.FormationFixed.MOV, buf.readFloat());
 				}
 				break;
 			case PID.SyncShip_Minor: //entity minor only
@@ -534,6 +551,8 @@ public class S2CEntitySync implements IMessage {
 				buf.writeFloat(this.entity.getEffectFormation(ID.Formation.THIT));
 				buf.writeFloat(this.entity.getEffectFormation(ID.Formation.AA));
 				buf.writeFloat(this.entity.getEffectFormation(ID.Formation.ASM));
+				
+				buf.writeFloat(this.entity.getEffectFormationFixed(ID.FormationFixed.MOV));
 			}
 			break;
 		case PID.SyncShip_Emo:	//entity state only
@@ -698,6 +717,20 @@ public class S2CEntitySync implements IMessage {
 					buf.writeFloat(this.entity3.rotationYaw);
 					buf.writeFloat(this.entity3.rotationPitch);
 				}
+			}
+			break;
+		case PID.SyncShip_Formation: //ship formation data only
+			{
+				buf.writeByte(PID.SyncShip_Formation);	//type 3
+				buf.writeInt(this.entity.getEntityId());
+				buf.writeInt(this.entity.getStateMinor(ID.M.GuardX));
+				buf.writeInt(this.entity.getStateMinor(ID.M.GuardY));
+				buf.writeInt(this.entity.getStateMinor(ID.M.GuardZ));
+				buf.writeInt(this.entity.getStateMinor(ID.M.GuardDim));
+				buf.writeInt(this.entity.getStateMinor(ID.M.GuardType));
+				buf.writeInt(this.entity.getStateMinor(ID.M.FormatType));
+				buf.writeInt(this.entity.getStateMinor(ID.M.FormatPos));
+				buf.writeFloat(this.entity.getEffectFormationFixed(ID.FormationFixed.MOV));
 			}
 			break;
 		}

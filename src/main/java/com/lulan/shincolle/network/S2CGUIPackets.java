@@ -18,6 +18,7 @@ import net.minecraft.world.World;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
 import com.lulan.shincolle.entity.renderentity.EntityRenderVortex;
+import com.lulan.shincolle.network.C2SGUIPackets.PID;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
@@ -45,10 +46,12 @@ public class S2CGUIPackets implements IMessage {
 	private TileEntity tile;
 	private TileEntitySmallShipyard tile1;
 	private TileMultiGrudgeHeavy tile2;
+	private EntityPlayer player;
 	private ExtendPlayerProps props;
 	private BasicEntityShip ship;
 	private World world;
 	private int type, entityID, recvX, recvY, recvZ, value, value2;
+	private int[] value3;
 	private boolean flag;
 	private List dataList;
 	private Map dataMap;
@@ -61,10 +64,10 @@ public class S2CGUIPackets implements IMessage {
 		public static final byte SyncPlayerProp = 3;
 		public static final byte SyncShipInv = 4;
 		public static final byte FlagInitSID = 5;
-		public static final byte SyncShipList = 6;
+		public static final byte SyncShipList = 6;  //send loaded ship id to client
 		public static final byte SyncPlayerProp_TargetClass = 7;
 		public static final byte SyncPlayerProp_TeamData = 8;
-		public static final byte SyncPlayerProp_FormatID = 9;
+		public static final byte SyncPlayerProp_Formation = 9;
 	}
 	
 	
@@ -87,7 +90,7 @@ public class S2CGUIPackets implements IMessage {
 		}
     }
 	
-	//player extend props sync (for team frame and radar GUI)
+	//sync player extend props
 	public S2CGUIPackets(ExtendPlayerProps extProps, int type) {
 		this.type = type;
         this.props = extProps;
@@ -96,16 +99,19 @@ public class S2CGUIPackets implements IMessage {
         case PID.SyncPlayerProp_TargetClass:
         	this.dataList = ServerProxy.getPlayerTargetClassList(props.getPlayerUID());
         	break;
+        case PID.SyncPlayerProp_Formation:
+        	this.value3 = this.props.getFormatID();
+        	break;
         }
     }
 	
-	//ship inventory sync
+	//sync ship
 	public S2CGUIPackets(BasicEntityShip ship) {
         this.type = PID.SyncShipInv;
         this.ship = ship;
     }
 	
-	//player extend props sync type 2
+	//sync int + boolean data
 	public S2CGUIPackets(int type, int value, boolean flag) {
         this.type = type;
         
@@ -116,11 +122,23 @@ public class S2CGUIPackets implements IMessage {
         }
     }
 	
-	//ship list sync
+	//sync list data
 	public S2CGUIPackets(int type, List list) {
 		this.type = type;
 		this.dataList = list;
 	}
+	
+	/**sync int array data
+	 * 
+	 * 1. (2 parms) sync formation data: 0:teamID, 1:formatID
+	 */
+	public S2CGUIPackets(int type, int...parms) {
+        this.type = type;
+        
+        if(parms != null && parms.length > 0) {
+        	this.value3 = parms.clone();
+        }
+    }
 	
 	//接收packet方法
 	@Override
@@ -250,11 +268,11 @@ public class S2CGUIPackets implements IMessage {
 			{
 				this.flag = buf.readBoolean();
 				
-				EntityPlayer player = ClientProxy.getClientPlayer();
-				ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+				this.player = ClientProxy.getClientPlayer();
+				this.props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 				
-				if(extProps != null) {
-					extProps.setInitSID(this.flag);
+				if(props != null) {
+					props.setInitSID(this.flag);
 				}
 			}
 			break;
@@ -263,8 +281,8 @@ public class S2CGUIPackets implements IMessage {
 				int listLen = buf.readInt();
 
 				if(listLen > 0) {
-					EntityPlayer player = ClientProxy.getClientPlayer();
-					ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+					this.player = ClientProxy.getClientPlayer();
+					this.props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 					List<Integer> data = new ArrayList();
 					
 					//get list data
@@ -272,16 +290,16 @@ public class S2CGUIPackets implements IMessage {
 						data.add(buf.readInt());
 					}
 					
-					if(extProps != null) {
-						extProps.setShipEIDList(data);
+					if(props != null) {
+						props.setShipEIDList(data);
 					}
 				}
 			}
 			break;
 		case PID.SyncPlayerProp_TargetClass:	//sync ship list
 			{
-				EntityPlayer player = ClientProxy.getClientPlayer();
-				ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+				this.player = ClientProxy.getClientPlayer();
+				this.props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 				List<String> data = new ArrayList();
 				int listLen = buf.readInt();
 	
@@ -292,14 +310,14 @@ public class S2CGUIPackets implements IMessage {
 //						LogHelper.info("DEBUG : S2C gui packet: get "+data.get(i));
 					}
 					
-					if(extProps != null) {
-						extProps.setTargetClass(data);
+					if(props != null) {
+						props.setTargetClass(data);
 //						LogHelper.info("DEBUG : S2C gui sync: get list size "+data.size());
 					}
 				}
 				else {
-					if(extProps != null) {
-						extProps.clearAllTargetClass();
+					if(props != null) {
+						props.clearAllTargetClass();
 						LogHelper.info("DEBUG : S2C gui sync: clear target class list ");
 					}
 				}
@@ -307,11 +325,11 @@ public class S2CGUIPackets implements IMessage {
 			break;
 		case PID.SyncPlayerProp_TeamData:
 			{
-				EntityPlayer player = ClientProxy.getClientPlayer();
-				ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+				this.player = ClientProxy.getClientPlayer();
+				this.props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 				
 				this.value = buf.readInt();
-				extProps.setPlayerTeamID(this.value);
+				props.setPlayerTeamID(this.value);
 				
 				//get team data
 				this.value = buf.readInt();  //get team data size
@@ -342,7 +360,27 @@ public class S2CGUIPackets implements IMessage {
 					tmap.put(tdata.getTeamID(), tdata);
 				}
 //				LogHelper.info("DEBUG : S2C GUI Packet: get team data: "+tmap.size());
-				extProps.setAllTeamData(tmap);
+				props.setAllTeamData(tmap);
+			}
+			break;
+		case PID.SyncPlayerProp_Formation:
+			{
+				this.value = buf.readInt();		//array length
+				
+				if(this.value > 0) {			//get array data
+					this.value3 = new int[value];
+					
+					for(int i = 0; i < this.value; i++) {
+						this.value3[i] = buf.readInt();
+					}
+				}
+				
+				this.player = ClientProxy.getClientPlayer();
+				this.props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+				
+				if(props != null) {
+					props.setFormatID(this.value3);
+				}
 			}
 			break;
 		}
@@ -410,7 +448,7 @@ public class S2CGUIPackets implements IMessage {
 				
 				//ship formation id
 				int[] fid = props.getFormatID();
-				for(int j = 0; j < 9; ++j) {
+				for(int j = 0; j < 9; j++) {
 					buf.writeByte((byte) fid[j]);
 				}
 				
@@ -444,7 +482,7 @@ public class S2CGUIPackets implements IMessage {
 				buf.writeBoolean(flag);
 			}
 			break;
-		case PID.SyncShipList:				  //sync ship list
+		case PID.SyncShipList:				  //send ship list to client
 		case PID.SyncPlayerProp_TargetClass:  //sync target class
 			{
 				buf.writeByte(this.type);
@@ -517,6 +555,25 @@ public class S2CGUIPackets implements IMessage {
 				//no data
 				else {
 					buf.writeInt(-1);
+				}
+			}
+			break;
+		case PID.SyncPlayerProp_Formation:    //sync formation id
+			{
+				buf.writeByte(this.type);
+				
+				//send int array
+				if(this.value3 != null) {
+					//send list length
+					buf.writeInt(this.value3.length);
+					
+					for(int geti : this.value3) {
+						buf.writeInt(geti);
+					}
+				}
+				//if array null
+				else {
+					buf.writeInt(0);
 				}
 			}
 			break;

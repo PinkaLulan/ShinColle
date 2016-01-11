@@ -27,6 +27,7 @@ import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
+import com.lulan.shincolle.utility.TargetHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -595,7 +596,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
                 }
         		
         		//update target
-            	EntityHelper.updateTarget(this);
+            	TargetHelper.updateTarget(this);
             	
             	//get target from vanilla target AI
             	if(this.getAttackTarget() != null) {

@@ -24,12 +24,11 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
-public abstract class BasicEntityAirplane extends EntityLiving implements IShipCannonAttack {
+public abstract class BasicEntityAirplane extends EntityLiving implements IShipCannonAttack, IShipFlyable {
 
 	protected BasicEntityShipLarge host;  		//host target
 	protected World world;
@@ -351,9 +350,11 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 		}
 		
 		//calc dodge
-		float dist = (float) this.getDistanceSqToEntity(source.getEntity());
-		if(CalcHelper.canDodge(this, dist)) {
-			return false;
+		if(source.getEntity() != null) {
+			float dist = (float) this.getDistanceSqToEntity(source.getEntity());
+			if(CalcHelper.canDodge(this, dist)) {
+				return false;
+			}
 		}
 		
 		//def calc

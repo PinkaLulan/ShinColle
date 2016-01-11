@@ -25,6 +25,7 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 
@@ -51,7 +52,11 @@ public class GuiShipInventory extends GuiContainer {
 	               strATK, strAATK, strLATK, strHATK, strALATK, strAHATK, strDEF, strSPD, strMOV, strHIT, 
 	               Kills, Exp, Grudge, Owner, AmmoLight, AmmoHeavy, AirLight, AirHeavy, TarAI,
 	               overText, marriage, followMin, followMax, fleeHP, followMinValue, followMaxValue,
-	               fleeHPValue, barPosValue, auraEffect, strOnSight, strPVP, strAA, strASM;
+	               fleeHPValue, barPosValue, auraEffect, strOnSight, strPVP, strAA, strASM, Formation,
+	               strAttrAtk1, strAttrAtk2, strAttrDEF, strAttrSPD, strAttrMOV, strAttrHIT, strMiKills,
+	               strMiExp, strMiAirL, strMiAirH, strMiAmmoL, strMiAmmoH, strMiGrudge, strAttrCri,
+	               strAttrDHIT, strAttrTHIT, strAttrAA, strAttrASM, strAttrMiss, strAttrMissA, strAttrMissR,
+	               strAttrDodge, strAttrFPos, strAttrFormat, strAttrWedding, strAttrWedTrue, strAttrWedFalse;
 	private int hpCurrent, hpMax, color, showPage, showPageAI, pageIndicator, pageIndicatorAI, showAttack,
 				fMinPos, fMaxPos, fleeHPPos, barPos, mousePressBar;
 	private boolean switchMelee, switchLight, switchHeavy, switchAirLight, switchAirHeavy,
@@ -81,9 +86,45 @@ public class GuiShipInventory extends GuiContainer {
 		this.mousePress = false;	//no key clicked
 		this.mousePressBar = -1;	//no bar pressed
 		
-		//string
+		//general string
 		lvMark = I18n.format("gui.shincolle:level");
 		hpMark = I18n.format("gui.shincolle:hp");
+		
+		//attrs string
+		strAttrAtk1 = I18n.format("gui.shincolle:firepower1");
+		strAttrAtk2 = I18n.format("gui.shincolle:firepower2");
+		strAttrDEF = I18n.format("gui.shincolle:armor");
+		strAttrSPD = I18n.format("gui.shincolle:attackspeed");
+		strAttrMOV = I18n.format("gui.shincolle:movespeed");
+		strAttrHIT = I18n.format("gui.shincolle:range");
+		strAttrCri = I18n.format("gui.shincolle:critical");
+		strAttrDHIT = I18n.format("gui.shincolle:doublehit");
+		strAttrTHIT = I18n.format("gui.shincolle:triplehit");
+		strAttrAA = I18n.format("gui.shincolle:antiair");
+		strAttrASM = I18n.format("gui.shincolle:antiss");
+		strAttrMiss = I18n.format("gui.shincolle:missrate");
+		strAttrMissA = I18n.format("gui.shincolle:missrateair");
+		strAttrMissR = I18n.format("gui.shincolle:missreduce");
+		strAttrDodge = I18n.format("gui.shincolle:dodge");
+		strAttrFPos = I18n.format("gui.shincolle:formation.position");
+		strAttrFormat = I18n.format("gui.shincolle:formation.formation");
+		strAttrWedding = I18n.format("gui.shincolle:marriage");
+		strAttrWedTrue = I18n.format("gui.shincolle:married");
+		strAttrWedFalse = I18n.format("gui.shincolle:unmarried");
+		
+		//minor string
+		strMiKills = I18n.format("gui.shincolle:kills");
+		strMiExp = I18n.format("gui.shincolle:exp");
+		strMiAmmoL = I18n.format("gui.shincolle:ammolight");
+		strMiAmmoH = I18n.format("gui.shincolle:ammoheavy");
+		strMiGrudge = I18n.format("gui.shincolle:grudge");
+		strMiAirL = I18n.format("gui.shincolle:airplanelight");
+		strMiAirH = I18n.format("gui.shincolle:airplaneheavy");
+		
+		//formation
+		I18n.format("gui.shincolle:formation.position");
+		
+		//AI string
 		canMelee = I18n.format("gui.shincolle:canmelee");
 		canLATK = I18n.format("gui.shincolle:canlightattack");
 		canHATK = I18n.format("gui.shincolle:canheavyattack");
@@ -98,6 +139,7 @@ public class GuiShipInventory extends GuiContainer {
 		strPVP = I18n.format("gui.shincolle:ai.pvp");
 		strAA = I18n.format("gui.shincolle:ai.aa");
 		strASM = I18n.format("gui.shincolle:ai.asm");
+		
 	}
 	
 	//GUI前景: 文字 
@@ -312,72 +354,240 @@ public class GuiShipInventory extends GuiContainer {
 	
 	//draw tooltip
 	private void handleHoveringText() {
-		String value, value2;
+		String str, str2;
+		int temp, strWidth;
 		
 		//reset text
 		mouseoverList.clear();
 		
-		if(this.showPage == 2) {
-			//draw states value
-			if(xMouse > 65+guiLeft && xMouse < 120+guiLeft) {
-				//show text at ATTACK
-				if(yMouse > 18+guiTop && yMouse < 40+guiTop) {
+		//draw states value
+		if(xMouse > 65+guiLeft && xMouse < 120+guiLeft) {
+			//show text at ATTACK
+			if(showPage == 2 && yMouse > 18+guiTop && yMouse < 40+guiTop) {
 //					LogHelper.info("DEBUg : get tag "+this.entity.getEffectEquip(ID.EF_CRI));
-					//add mouseover text
-					overText = I18n.format("gui.shincolle:firepower1") + " " + strATK;
-					mouseoverList.add(overText);
-					overText = I18n.format("gui.shincolle:firepower2") + " " + strAATK;
-					mouseoverList.add(overText);
-					value = String.valueOf((int)(this.entity.getEffectEquip(ID.EF_CRI) * 100F));
-					overText = I18n.format("gui.shincolle:critical") + " " + value + " %";
-					mouseoverList.add(overText);
-					value = String.valueOf((int)(this.entity.getEffectEquip(ID.EF_DHIT) * 100F));
-					overText = I18n.format("gui.shincolle:doublehit") + " " + value + " %";
-					mouseoverList.add(overText);
-					value = String.valueOf((int)(this.entity.getEffectEquip(ID.EF_THIT) * 100F));
-					overText = I18n.format("gui.shincolle:triplehit") + " " + value + " %";
-					mouseoverList.add(overText);
-					value = String.valueOf((int)(this.entity.getEffectEquip(ID.EF_AA)));
-					overText = I18n.format("gui.shincolle:antiair") + " " + value;
-					mouseoverList.add(overText);
-					value = String.valueOf((int)(this.entity.getEffectEquip(ID.EF_ASM)));
-					overText = I18n.format("gui.shincolle:antiss") + " " + value;
-					mouseoverList.add(overText);
-					
-					this.drawHoveringText(mouseoverList, 55, 143, this.fontRendererObj);
+				//draw attack text
+				mouseoverList.add(EnumChatFormatting.RED + strAttrAtk1);
+				temp = this.fontRendererObj.getStringWidth(strAttrAtk1);
+				strWidth = temp;
+				
+				mouseoverList.add(EnumChatFormatting.RED + strAttrAtk2);
+				temp = this.fontRendererObj.getStringWidth(strAttrAtk2);
+				if(temp > strWidth) strWidth = temp;
+				
+				mouseoverList.add(EnumChatFormatting.AQUA + strAttrCri);
+				temp = this.fontRendererObj.getStringWidth(strAttrCri);
+				if(temp > strWidth) strWidth = temp;
+				
+				mouseoverList.add(EnumChatFormatting.YELLOW + strAttrDHIT);
+				temp = this.fontRendererObj.getStringWidth(strAttrDHIT);
+				if(temp > strWidth) strWidth = temp;
+				
+				mouseoverList.add(EnumChatFormatting.GOLD + strAttrTHIT);
+				temp = this.fontRendererObj.getStringWidth(strAttrTHIT);
+				if(temp > strWidth) strWidth = temp;
+				
+				mouseoverList.add(EnumChatFormatting.YELLOW + strAttrAA);
+				temp = this.fontRendererObj.getStringWidth(strAttrAA);
+				if(temp > strWidth) strWidth = temp;
+				
+				mouseoverList.add(EnumChatFormatting.AQUA + strAttrASM);
+				temp = this.fontRendererObj.getStringWidth(strAttrASM);
+				if(temp > strWidth) strWidth = temp;
+				
+				this.drawHoveringText(mouseoverList, 55, 143, this.fontRendererObj);
+				
+				
+				//draw attack value
+				mouseoverList.clear();
+				
+				mouseoverList.add(strATK);
+				
+				mouseoverList.add(strAATK);
+				
+				overText = String.valueOf((int)(this.entity.getEffectEquip(ID.EF_CRI) * 100F))+ " %";
+				mouseoverList.add(overText);
+				
+				overText = String.valueOf((int)(this.entity.getEffectEquip(ID.EF_DHIT) * 100F)) + " %";
+				mouseoverList.add(overText);
+				
+				overText = String.valueOf((int)(this.entity.getEffectEquip(ID.EF_THIT) * 100F)) + " %";
+				mouseoverList.add(overText);
+				
+				overText = String.valueOf((int)(this.entity.getEffectEquip(ID.EF_AA)));
+				mouseoverList.add(overText);
+				
+				overText = String.valueOf((int)(this.entity.getEffectEquip(ID.EF_ASM)));
+				mouseoverList.add(overText);
+				
+				this.drawHoveringText(mouseoverList, 61+strWidth, 143, this.fontRendererObj);
+			}
+			//show text at RANGE
+			else if(showPage == 2 && yMouse > 104+guiTop && yMouse < 126+guiTop) {
+				//draw text
+				mouseoverList.add(EnumChatFormatting.RED + strAttrMiss);
+				temp = this.fontRendererObj.getStringWidth(strAttrMiss);
+				strWidth = temp;
+				
+				mouseoverList.add(EnumChatFormatting.AQUA + strAttrMissA);
+				temp = this.fontRendererObj.getStringWidth(strAttrMissA);
+				if(temp > strWidth) strWidth = temp;
+				
+				mouseoverList.add(EnumChatFormatting.GOLD + strAttrDodge);
+				temp = this.fontRendererObj.getStringWidth(strAttrDodge);
+				if(temp > strWidth) strWidth = temp;
+				
+				this.drawHoveringText(mouseoverList, 55, 143, this.fontRendererObj);
+				
+				
+				//draw value
+				mouseoverList.clear();
+				
+				//calc miss
+				temp = (int) ((0.2F - this.entity.getEffectEquip(ID.EF_MISS) - 0.001F * this.entity.getStateMinor(ID.M.ShipLevel)) * 100F);
+				if(temp < 0) temp = 0;
+				if(temp > 35) temp = 35;
+				str = String.valueOf(temp);
+				
+				temp = (int) ((0.35F - this.entity.getEffectEquip(ID.EF_MISS) - 0.001F * this.entity.getStateMinor(ID.M.ShipLevel)) * 100F);
+				if(temp < 0) temp = 0;
+				if(temp > 35) temp = 35;
+				str2 = String.valueOf(temp);
+				
+				overText = str + " ~ " + str2 + " %";
+				mouseoverList.add(overText);
+				
+				//calc air miss
+				temp = (int) ((0.25F - this.entity.getEffectEquip(ID.EF_MISS) - 0.001F * this.entity.getStateMinor(ID.M.ShipLevel)) * 100F);
+				if(temp < 0) temp = 0;
+				if(temp > 35) temp = 35;
+				
+				overText = String.valueOf(temp) + " %";
+				mouseoverList.add(overText);
+				
+				//calc dodge
+				if(this.entity instanceof IShipInvisible) {
+					temp = (int) (this.entity.getEffectEquip(ID.EF_DODGE) +
+							   			((IShipInvisible)this.entity).getInvisibleLevel());
+					if(temp > ConfigHandler.limitShip[6]) temp = (int) ConfigHandler.limitShip[6];
+					overText = String.valueOf(temp) + " %";
 				}
-				//show text at RANGE
-				else if(yMouse > 104+guiTop && yMouse < 126+guiTop) {
-					//calc miss
-					int temp = (int) ((0.2F - this.entity.getEffectEquip(ID.EF_MISS) - 0.001F * this.entity.getStateMinor(ID.M.ShipLevel)) * 100F);
-					if(temp < 0) temp = 0;
-					if(temp > 35) temp = 35;
-					value = String.valueOf(temp);
-					
-					temp = (int) ((0.35F - this.entity.getEffectEquip(ID.EF_MISS) - 0.001F * this.entity.getStateMinor(ID.M.ShipLevel)) * 100F);
-					if(temp < 0) temp = 0;
-					if(temp > 35) temp = 35;
-					value2 = String.valueOf(temp);
-					
-					overText = I18n.format("gui.shincolle:missrate") + " " + value + " ~ " + value2 + "%";
-					mouseoverList.add(overText);
-					
-					//calc air miss
-					temp = (int) ((0.25F - this.entity.getEffectEquip(ID.EF_MISS) - 0.001F * this.entity.getStateMinor(ID.M.ShipLevel)) * 100F);
-					if(temp < 0) temp = 0;
-					if(temp > 35) temp = 35;
-					value = String.valueOf(temp);
-					
-					overText = I18n.format("gui.shincolle:missrateair") + " " + value + "%";
-					mouseoverList.add(overText);
-					
-					//calc dodge
-					value = String.valueOf(this.entity.getEffectEquip(ID.EF_DODGE));
-					overText = I18n.format("gui.shincolle:dodge") + " " + value +"%";
-					mouseoverList.add(overText);
-					
-					this.drawHoveringText(mouseoverList, 55, 143, this.fontRendererObj);
+				else {
+					overText = String.valueOf(this.entity.getEffectEquip(ID.EF_DODGE)) + " %";
 				}
+				
+				mouseoverList.add(overText);
+				
+				this.drawHoveringText(mouseoverList, 61+strWidth, 143, this.fontRendererObj);
+			}
+			//show text at FORMATION
+			else if(showPage == 3 && yMouse > 40+guiTop && yMouse < 62+guiTop && this.entity.getStateMinor(ID.M.FormatType) >= 1) {
+				overText = EnumChatFormatting.LIGHT_PURPLE + strAttrFPos;
+				mouseoverList.add(overText);
+				temp = this.fontRendererObj.getStringWidth(overText);
+				strWidth = temp;
+				
+				overText = EnumChatFormatting.RED + strAttrAtk1;
+				mouseoverList.add(overText);
+				temp = this.fontRendererObj.getStringWidth(overText);
+				if(temp > strWidth) strWidth = temp;
+				
+				overText = EnumChatFormatting.RED + strAttrAtk2;
+				mouseoverList.add(overText);
+				temp = this.fontRendererObj.getStringWidth(overText);
+				if(temp > strWidth) strWidth = temp;
+				
+				overText = EnumChatFormatting.WHITE + strAttrDEF;
+				mouseoverList.add(overText);
+				temp = this.fontRendererObj.getStringWidth(overText);
+				if(temp > strWidth) strWidth = temp;
+				
+				overText = EnumChatFormatting.GOLD + strAttrDodge;
+				mouseoverList.add(overText);
+				temp = this.fontRendererObj.getStringWidth(overText);
+				if(temp > strWidth) strWidth = temp;
+				
+				overText = EnumChatFormatting.RED + strAttrMissR;
+				mouseoverList.add(overText);
+				temp = this.fontRendererObj.getStringWidth(overText);
+				if(temp > strWidth) strWidth = temp;
+				
+				overText = EnumChatFormatting.AQUA + strAttrCri;
+				mouseoverList.add(overText);
+				temp = this.fontRendererObj.getStringWidth(overText);
+				if(temp > strWidth) strWidth = temp;
+				
+				overText = EnumChatFormatting.YELLOW + strAttrDHIT;
+				mouseoverList.add(overText);
+				temp = this.fontRendererObj.getStringWidth(overText);
+				if(temp > strWidth) strWidth = temp;
+				
+				overText = EnumChatFormatting.GOLD + strAttrTHIT;
+				mouseoverList.add(overText);
+				temp = this.fontRendererObj.getStringWidth(overText);
+				if(temp > strWidth) strWidth = temp;
+				
+				overText = EnumChatFormatting.YELLOW + strAttrAA;
+				mouseoverList.add(overText);
+				temp = this.fontRendererObj.getStringWidth(overText);
+				if(temp > strWidth) strWidth = temp;
+				
+				overText = EnumChatFormatting.AQUA + strAttrASM;
+				mouseoverList.add(overText);
+				temp = this.fontRendererObj.getStringWidth(overText);
+				if(temp > strWidth) strWidth = temp;
+				
+				overText = EnumChatFormatting.GRAY + strAttrMOV;
+				mouseoverList.add(overText);
+				temp = this.fontRendererObj.getStringWidth(overText);
+				if(temp > strWidth) strWidth = temp;
+				
+				this.drawHoveringText(mouseoverList, 55, 78, this.fontRendererObj);
+				
+				
+				//draw value
+				mouseoverList.clear();
+				
+				overText = String.valueOf(this.entity.getStateMinor(ID.M.FormatPos));
+				mouseoverList.add(overText);
+				
+				str = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.ATK_L) + 100);
+				str2 = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.ATK_H) + 100);
+				overText = str + " / " + str2 + " %";
+				mouseoverList.add(overText);
+				
+				str = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.ATK_AL) + 100);
+				str2 = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.ATK_AH) + 100);
+				overText = str + " / " + str2 + " %";
+				mouseoverList.add(overText);
+				
+				overText = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.DEF) + 100) + " %";
+				mouseoverList.add(overText);
+				
+				overText = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.DODGE) + 100) + " %";
+				mouseoverList.add(overText);
+				
+				overText = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.MISS) + 100) + " %";
+				mouseoverList.add(overText);
+				
+				overText = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.CRI) + 100) + " %";
+				mouseoverList.add(overText);
+				
+				overText = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.DHIT) + 100) + " %";
+				mouseoverList.add(overText);
+				
+				overText = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.THIT) + 100) + " %";
+				mouseoverList.add(overText);
+				
+				overText = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.AA) + 100) + " %";
+				mouseoverList.add(overText);
+				
+				overText = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.ASM) + 100) + " %";
+				mouseoverList.add(overText);
+				
+				overText = String.format("%.2f", this.entity.getEffectFormation(ID.Formation.MOV));
+				mouseoverList.add(overText);
+				
+				this.drawHoveringText(mouseoverList, 61+strWidth, 78, this.fontRendererObj);
 			}
 		}
 			
@@ -492,19 +702,19 @@ public class GuiShipInventory extends GuiContainer {
 			
 			//draw firepower
 			if(this.showAttack == 1) {	//show cannon attack
-				this.fontRendererObj.drawString(I18n.format("gui.shincolle:firepower1"), 67, 20, GuiHelper.pickColor(5));
+				this.fontRendererObj.drawString(strAttrAtk1, 67, 20, GuiHelper.pickColor(5));
 				color = GuiHelper.pickColor(entity.getBonusPoint(ID.ATK));
 				this.fontRendererObj.drawStringWithShadow(strATK, 125-this.fontRendererObj.getStringWidth(strATK), 30, color);
 			}
 			else {						//show aircraft attack
-				this.fontRendererObj.drawString(I18n.format("gui.shincolle:firepower2"), 67, 20, GuiHelper.pickColor(5));
+				this.fontRendererObj.drawString(strAttrAtk2, 67, 20, GuiHelper.pickColor(5));
 				color = GuiHelper.pickColor(entity.getBonusPoint(ID.ATK));
 				this.fontRendererObj.drawStringWithShadow(strAATK, 125-this.fontRendererObj.getStringWidth(strAATK), 30, color);
 			}
-			this.fontRendererObj.drawString(I18n.format("gui.shincolle:armor"), 67, 41, GuiHelper.pickColor(5));
-			this.fontRendererObj.drawString(I18n.format("gui.shincolle:attackspeed"), 67, 62, GuiHelper.pickColor(5));
-			this.fontRendererObj.drawString(I18n.format("gui.shincolle:movespeed"), 67, 83, GuiHelper.pickColor(5));
-			this.fontRendererObj.drawString(I18n.format("gui.shincolle:range"), 67, 104, GuiHelper.pickColor(5));
+			this.fontRendererObj.drawString(strAttrDEF, 67, 41, GuiHelper.pickColor(5));
+			this.fontRendererObj.drawString(strAttrSPD, 67, 62, GuiHelper.pickColor(5));
+			this.fontRendererObj.drawString(strAttrMOV, 67, 83, GuiHelper.pickColor(5));
+			this.fontRendererObj.drawString(strAttrHIT, 67, 104, GuiHelper.pickColor(5));
 			
 			//draw armor
 			color = GuiHelper.pickColor(entity.getBonusPoint(ID.DEF));
@@ -525,11 +735,11 @@ public class GuiShipInventory extends GuiContainer {
 			}
 		case 1:	{	//page 1: exp, kills, L&H ammo, fuel
 			//draw string
-			this.fontRendererObj.drawString(I18n.format("gui.shincolle:kills"), 67, 20, GuiHelper.pickColor(5));
-			this.fontRendererObj.drawString(I18n.format("gui.shincolle:exp"), 67, 41, GuiHelper.pickColor(5));
-			this.fontRendererObj.drawString(I18n.format("gui.shincolle:ammolight"), 67, 62, GuiHelper.pickColor(5));
-			this.fontRendererObj.drawString(I18n.format("gui.shincolle:ammoheavy"), 67, 83, GuiHelper.pickColor(5));
-			this.fontRendererObj.drawString(I18n.format("gui.shincolle:grudge"), 67, 104, GuiHelper.pickColor(5));
+			this.fontRendererObj.drawString(strMiKills, 67, 20, GuiHelper.pickColor(5));
+			this.fontRendererObj.drawString(strMiExp, 67, 41, GuiHelper.pickColor(5));
+			this.fontRendererObj.drawString(strMiAmmoL, 67, 62, GuiHelper.pickColor(5));
+			this.fontRendererObj.drawString(strMiAmmoH, 67, 83, GuiHelper.pickColor(5));
+			this.fontRendererObj.drawString(strMiGrudge, 67, 104, GuiHelper.pickColor(5));
 			//draw value
 			entity.setExpNext();  //update exp value
 			Exp = String.valueOf(this.entity.getStateMinor(ID.M.ExpCurrent))+"/"+String.valueOf(this.entity.getStateMinor(ID.M.ExpNext));
@@ -546,33 +756,35 @@ public class GuiShipInventory extends GuiContainer {
 						
 			break;
 			}
-		case 3: {	//page 3: owner name, light/heavy airplane, marriage
+		case 3: {	//page 3: light/heavy airplane, marriage
 			//draw string
-//			this.fontRendererObj.drawString(I18n.format("gui.shincolle:owner"), 67, 20, GuiHelper.pickColor(5));
-			this.fontRendererObj.drawString(I18n.format("gui.shincolle:marriage"), 67, 20, GuiHelper.pickColor(5));
+			this.fontRendererObj.drawString(strAttrWedding, 67, 20, GuiHelper.pickColor(5));
+			this.fontRendererObj.drawString(strAttrFormat, 67, 41, GuiHelper.pickColor(5));
 			
 			//draw value
-//			Owner = this.entity.getOwnerName();
-			
+			//draw marriage
 			if(this.entity.getStateFlag(ID.F.IsMarried)) {
-				marriage = I18n.format("gui.shincolle:married");
+				marriage = strAttrWedTrue;
 			}
 			else {
-				marriage = I18n.format("gui.shincolle:unmarried");
-			}	
+				marriage = strAttrWedFalse;
+			}
+			
+			//draw formation
+			int ftype = this.entity.getStateMinor(ID.M.FormatType);
+			this.Formation = I18n.format("gui.shincolle:formation.format"+ftype);
+			this.fontRendererObj.drawStringWithShadow(Formation, 125-this.fontRendererObj.getStringWidth(Formation), 51, GuiHelper.pickColor(0));
 			
 			//大型艦, 顯示艦載機數量
 			if(this.entity instanceof BasicEntityShipLarge) {
-				this.fontRendererObj.drawString(I18n.format("gui.shincolle:airplanelight"), 67, 83, GuiHelper.pickColor(5));
-				this.fontRendererObj.drawString(I18n.format("gui.shincolle:airplaneheavy"), 67, 104, GuiHelper.pickColor(5));
+				this.fontRendererObj.drawString(strMiAirL, 67, 83, GuiHelper.pickColor(5));
+				this.fontRendererObj.drawString(strMiAirH, 67, 104, GuiHelper.pickColor(5));
 				AirLight = String.valueOf(((BasicEntityShipLarge)this.entity).getNumAircraftLight());
 				AirHeavy = String.valueOf(((BasicEntityShipLarge)this.entity).getNumAircraftHeavy());
 				this.fontRendererObj.drawStringWithShadow(AirLight, 125-this.fontRendererObj.getStringWidth(AirLight), 93, GuiHelper.pickColor(1));
 				this.fontRendererObj.drawStringWithShadow(AirHeavy, 125-this.fontRendererObj.getStringWidth(AirHeavy), 114, GuiHelper.pickColor(1));	
-				
 			}
 			
-//			this.fontRendererObj.drawStringWithShadow(Owner, 125-this.fontRendererObj.getStringWidth(Owner), 30, GuiHelper.pickColor(1));
 			this.fontRendererObj.drawStringWithShadow(marriage, 125-this.fontRendererObj.getStringWidth(marriage), 30, GuiHelper.pickColor(1));
 			
 			break;

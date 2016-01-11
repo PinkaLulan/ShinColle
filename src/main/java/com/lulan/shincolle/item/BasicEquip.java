@@ -52,6 +52,7 @@ abstract public class BasicEquip extends BasicItem implements IShipItemType {
     		if(itemStat[ID.E.MISS] != 0F) list.add(EnumChatFormatting.RED + String.valueOf(itemStat[ID.E.MISS])+ " " + I18n.format("gui.shincolle:missreduce"));
     		if(itemStat[ID.E.AA] != 0F) list.add(EnumChatFormatting.YELLOW + String.valueOf(itemStat[ID.E.AA])+ " " + I18n.format("gui.shincolle:antiair"));
     		if(itemStat[ID.E.ASM] != 0F) list.add(EnumChatFormatting.AQUA + String.valueOf(itemStat[ID.E.ASM])+ " " + I18n.format("gui.shincolle:antiss"));
+    		if(itemStat[ID.E.DODGE] != 0F) list.add(EnumChatFormatting.GOLD + String.valueOf(itemStat[ID.E.DODGE])+ " " + I18n.format("gui.shincolle:dodge"));
         	
     		if(itemStat[ID.E.LEVEL] == 1F) {
     			list.add(EnumChatFormatting.DARK_RED + I18n.format("gui.shincolle:notforcarrier"));

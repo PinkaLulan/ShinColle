@@ -18,11 +18,13 @@ import com.lulan.shincolle.init.ModItems;
  */
 public class Values {
 	
+	
 	//numbers
 	public static final class N {
 		public static final float RAD_DIV = 57.295779513F;
 		public static final float RAD_MUL = 0.0174532925F;
 	}
+	
 	
 	//color code
 	public static class Color {
@@ -41,6 +43,7 @@ public class Values {
 		public static final int LIGHT_GRAY = 11184810;
 		public static final int LIGHT_RED = 16724787;
 	}
+	
 	
 	/**SHIP ATTRIBUTES MAP
 	 * index by ID.ShipAttr
@@ -211,6 +214,63 @@ public class Values {
 	put(ID.E_CATAPULT_H,         new float[]{3F, 0,   0F,  0F,  0F,  0F,  0F, 0.8F, -0.18F, 0F,   0F,    0F,    0F,    0F,    0F,  0F,  ID.EquipType.CATAPULT_LO,  500F,  0F});
 	put(ID.E_CATAPULT_C,         new float[]{3F, 0,   0F,  0F,  0F,  0F,  0F, 1.2F, -0.26F, 0F,   0F,    0F,    0F,    0F,    0F,  0F,  ID.EquipType.CATAPULT_HI,  800F,  0F});
 	put(ID.E_CATAPULT_E,         new float[]{3F, 0,   0F,  0F,  0F,  0F,  0F, 1.8F, -0.34F, 0F,   0F,    0F,    0F,    0F,    0F,  0F,  ID.EquipType.CATAPULT_HI,  1000F, 0F});
+	}});
+	
+	
+	//zero buff
+	public static final float[] zeros13 = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F};
+		
+
+	/** FORMATION BUFFS MAP
+	 * 
+	 *  attr id: ID.Formation
+	 *  put id: formatID * 10 + slotID
+	 *  
+	 *  ex: formation 2, slot 4 = 24
+	 */
+	public static final Map<Integer, float[]> FormationBuffsMap = Collections.unmodifiableMap(new HashMap<Integer, float[]>() {{
+		//Line Ahead          ATK_L ATK_H ATK_AL ATK_AH DEF   MOV    MISS DODGE CRI  DHIT THIT AA    ASM
+		put(10,  new float[] {75F,  75F,  30F,   30F,   -70F, 0.05F, 75F, -30F, 75F, 50F, 50F, -70F, -70F});
+		put(11,  new float[] {50F,  50F,  20F,   20F,   -60F, 0.05F, 50F, -25F, 50F, 45F, 45F, -64F, -64F});
+		put(12,  new float[] {45F,  45F,  15F,   15F,   -50F, 0.05F, 45F, -20F, 45F, 40F, 40F, -58F, -58F});
+		put(13,  new float[] {40F,  40F,  10F,   10F,   -40F, 0.05F, 40F, -15F, 40F, 35F, 35F, -52F, -52F});
+		put(14,  new float[] {35F,  35F,  5F,    5F,    -30F, 0.05F, 35F, -10F, 35F, 30F, 30F, -46F, -46F});
+		put(15,  new float[] {30F,  30F,  0F,    0F,    -20F, 0.05F, 30F, -5F,  30F, 25F, 25F, -40F, -40F});
+		//Double Line         ATK_L ATK_H ATK_AL ATK_AH DEF   MOV    MISS DODGE CRI  DHIT THIT AA    ASM
+		put(20,  new float[] {35F,  35F,  15F,   15F,   25F,  0F,    30F, -25F, 30F, 25F, 25F, 0F,   0F});
+		put(21,  new float[] {35F,  35F,  15F,   15F,   25F,  0F,    30F, -25F, 30F, 25F, 25F, 0F,   0F});
+		put(22,  new float[] {35F,  35F,  10F,   10F,   -25F, 0F,    20F, 15F,  20F, 25F, 25F, 0F,   0F});
+		put(23,  new float[] {35F,  35F,  10F,   10F,   -25F, 0F,    20F, 15F,  20F, 25F, 25F, 0F,   0F});
+		put(24,  new float[] {35F,  35F,  10F,   10F,   -25F, 0F,    20F, 15F,  20F, 25F, 25F, 0F,   0F});
+		put(25,  new float[] {35F,  35F,  10F,   10F,   -25F, 0F,    20F, 15F,  20F, 25F, 25F, 0F,   0F});
+		//Diamond             ATK_L ATK_H ATK_AL ATK_AH DEF   MOV    MISS DODGE CRI  DHIT THIT AA    ASM
+		put(30,  new float[] {-50F, -50F, 75F,   75F,   50F,  -0.1F, 0F,  -50F, 0F,  0F,  0F,  50F,  30F});
+		put(31,  new float[] {-50F, -50F, 75F,   75F,   50F,  -0.1F, 0F,  -50F, 0F,  0F,  0F,  50F,  30F});
+		put(32,  new float[] {-25F, -25F, 40F,   40F,   25F,  -0.1F, 10F, 0F,   10F, 0F,  0F,  100F, 75F});
+		put(33,  new float[] {-25F, -25F, 40F,   40F,   25F,  -0.1F, 10F, 0F,   10F, 0F,  0F,  100F, 75F});
+		put(34,  new float[] {-25F, -25F, 40F,   40F,   25F,  -0.1F, 10F, 0F,   10F, 0F,  0F,  100F, 75F});
+		put(35,  new float[] {-25F, -25F, 40F,   40F,   25F,  -0.1F, 10F, 0F,   10F, 0F,  0F,  100F, 75F});
+		//Echelon             ATK_L ATK_H ATK_AL ATK_AH DEF   MOV    MISS DODGE CRI  DHIT THIT AA    ASM
+		put(40,  new float[] {20F,  30F,  0F,    0F,    -25F, 0.15F, 25F, -25F, 25F, 25F, 25F, -25F, 25F});
+		put(41,  new float[] {15F,  25F,  0F,    0F,    -15F, 0.15F, 20F, -15F, 20F, 20F, 20F, -25F, 25F});
+		put(42,  new float[] {10F,  20F,  0F,    0F,    -5F,  0.15F, 15F, -5F,  15F, 15F, 15F, -25F, 25F});
+		put(43,  new float[] {5F,   15F,  0F,    0F,    5F,   0.15F, 10F, 5F,   10F, 10F, 10F, -25F, 25F});
+		put(44,  new float[] {0F,   10F,  0F,    0F,    15F,  0.15F, 5F,  15F,  5F,  5F,  5F,  -25F, 25F});
+		put(45,  new float[] {-5F,  5F,   0F,    0F,    25F,  0.15F, 0F,  25F,  0F,  0F,  0F,  -25F, 25F});
+		//Line Abreast        ATK_L ATK_H ATK_AL ATK_AH DEF   MOV    MISS DODGE CRI  DHIT THIT AA    ASM
+		put(50,  new float[] {-25F, -25F, -10F,  -10F,  15F,  0.05F, 15F, 75F,  15F, 0F,  0F, -30F,  100F});
+		put(51,  new float[] {-25F, -25F, -10F,  -10F,  15F,  0.05F, 15F, 75F,  15F, 0F,  0F, -30F,  100F});
+		put(52,  new float[] {-25F, -25F, -10F,  -10F,  15F,  0.05F, 15F, 75F,  15F, 0F,  0F, -30F,  100F});
+		put(53,  new float[] {-25F, -25F, -10F,  -10F,  15F,  0.05F, 15F, 75F,  15F, 0F,  0F, -30F,  100F});
+		put(54,  new float[] {-25F, -25F, -10F,  -10F,  15F,  0.05F, 15F, 75F,  15F, 0F,  0F, -30F,  100F});
+		put(55,  new float[] {-25F, -25F, -10F,  -10F,  15F,  0.05F, 15F, 75F,  15F, 0F,  0F, -30F,  100F});
+		//zero buff for formation 0
+		put(0,  zeros13);
+		put(1,  zeros13);
+		put(2,  zeros13);
+		put(3,  zeros13);
+		put(4,  zeros13);
+		put(5,  zeros13);
 	}});
 	
 	

@@ -19,6 +19,8 @@ import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.BasicTileEntity;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.FormationHelper;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.PacketHelper;
 
 import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
@@ -560,10 +562,7 @@ public class C2SGUIPackets implements IMessage {
 					ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 					
 					if(extProps != null) {
-						EntityHelper.setFormationIDandBuffs(extProps, this.value1);
-						
-						//sync team list
-						CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps, S2CGUIPackets.PID.SyncPlayerProp), (EntityPlayerMP) player);
+						FormationHelper.setFormationID(extProps, this.value1);
 					}
 				}
 			}

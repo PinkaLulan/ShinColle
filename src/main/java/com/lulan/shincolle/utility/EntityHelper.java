@@ -310,7 +310,7 @@ public class EntityHelper {
 				}
 			}
 			
-			LogHelper.info("DEBUG : entity not found: eid: "+entityID+" world: "+worldID+" client: "+world.isRemote);
+//			LogHelper.info("DEBUG : entity not found: eid: "+entityID+" world: "+worldID+" client: "+world.isRemote);
 		}
 			
 		return null;
@@ -333,7 +333,7 @@ public class EntityHelper {
 			return null;
 		}
 		
-		LogHelper.info("DEBUG : ship not found: sid: "+sid);
+//		LogHelper.info("DEBUG : ship not found: sid: "+sid);
 		return null;
 	}
 	
@@ -545,6 +545,12 @@ public class EntityHelper {
 			return getExtendPlayerProps(player);
 		}
 		return null;
+	}
+	
+	/** get player extend props by player UID */
+	public static ExtendPlayerProps getExtendPlayerProps(int pid) {
+		EntityPlayer player = getEntityPlayerByUID(pid);
+		return getExtendPlayerProps(player);
 	}
 	
 	/** get player extend props by player entity */
@@ -836,7 +842,7 @@ public class EntityHelper {
 			case 1:  //繞背法, 隨機選擇背面兩個象限
 				//find side position
 				newPos[0] = rand.nextDouble() * randDist + minDist;	//ran = min + randN
-				newPos[1] = rand.nextDouble() * randDist + target.posY + 1D;
+				newPos[1] = rand.nextDouble() * randDist + target.posY - 1D;
 				newPos[2] = rand.nextDouble() * randDist + minDist;
 				
 				//get direction
@@ -888,7 +894,7 @@ public class EntityHelper {
 		
 		//find block fail, return target position
 		newPos[0] = target.posX;
-		newPos[1] = target.posY + 2.5D;
+		newPos[1] = target.posY + 2D;
 		newPos[2] = target.posZ;
 		
 		return newPos;
@@ -1338,93 +1344,6 @@ public class EntityHelper {
 		}	
 	}
 	
-	/** update target */
-	public static void updateTarget(IShipAttackBase host) {
-		//clear attack target
-		if(host.getEntityTarget() != null) {
-			//clear dead target
-			if(!host.getEntityTarget().isEntityAlive()) {
-				host.setEntityTarget(null);
-			}
-			//clear target if target is friendly
-			else if(checkSameOwner((Entity)host, host.getEntityTarget())) {
-				host.setEntityTarget(null);
-			}
-		}
-
-		//clear revenge target
-		if(host.getEntityRevengeTarget() != null) {
-            if(!host.getEntityRevengeTarget().isEntityAlive()) {
-            	host.setEntityRevengeTarget(null);
-            }
-            //clear target after 200 ticks
-            else if (host.getTickExisted() - host.getEntityRevengeTime() > 200) {
-            	host.setEntityRevengeTarget(null);
-            }
-        }
-		
-		//clear vanilla attack target
-		if(host instanceof BasicEntityShipHostile) {
-			EntityLivingBase gettar = ((BasicEntityShipHostile) host).getAttackTarget();
-			
-			if(gettar != null) {
-				if(!gettar.isEntityAlive()) {
-					((BasicEntityShipHostile) host).setAttackTarget(null);
-				}
-				else if(checkSameOwner((Entity)host, gettar)) {
-					((BasicEntityShipHostile) host).setAttackTarget(null);
-				}
-			}
-		}
-		
-		//clear invisible target every 64 ticks
-		if(host.getTickExisted() % 64 == 0) {
-			if(host.getEntityTarget() != null && host.getEntityTarget().isInvisible()) {
-				host.setEntityTarget(null);
-			}
-		}
-	}
-	
-	/** set ship's revenge target around player within X blocks */
-	public static void setRevengeTargetAroundPlayer(EntityPlayer player, double dist, Entity target) {
-		int pid = EntityHelper.getPlayerUID(player);
-		
-		if(pid > 0 && target != null) {
-			//get ship
-			int getpid = 0;
-			List<BasicEntityShip> list1 = player.worldObj.getEntitiesWithinAABB(BasicEntityShip.class,
-					player.boundingBox.expand(dist, dist, dist));
-			
-			if(list1 != null && !list1.isEmpty()) {
-				for(BasicEntityShip ship : list1) {
-					getpid = ship.getPlayerUID();
-					
-					//check same owner
-					if(!ship.equals(target) && getpid == pid) {
-						ship.setEntityRevengeTarget(target);
-						ship.setEntityRevengeTime();
-//						LogHelper.info("DEBUG : entity helper: revenge: "+ship+"  "+target);
-					}
-				}
-			}
-		}
-	}
-	
-	/** set current team formation and set formation buffs, SERVER SIDE ONLY */
-	public static void setFormationIDandBuffs(ExtendPlayerProps props, int formatID) {
-		int[][] sidAry = props.getSIDArray();
-		
-		if(sidAry != null) {
-			//set current team formation
-			props.setCurrentFormatID(formatID);
-			
-			//apply formation buff to current team
-			
-			
-			//check if same ship in other team, clear the buff
-			//TODO
-		}
-	}
 	
 	
 }

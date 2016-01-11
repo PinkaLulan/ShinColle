@@ -16,6 +16,7 @@ import net.minecraft.world.World;
 
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipAttributes;
+import com.lulan.shincolle.entity.IShipFlyable;
 import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CEntitySync;
@@ -52,7 +53,7 @@ import cpw.mods.fml.relauncher.SideOnly;
  *   
  * 
  */
-public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttributes {
+public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttributes, IShipFlyable {
 	
     private IShipAttackBase host;	//main host type
     private EntityLiving host2;		//second host type: entity living
@@ -66,7 +67,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
     private int midFlyTime;			//一半的飛行時間
    
     //for direct only
-    private static final float ACC = 0.015F;
+    private static final float ACC = 0.01F;
     private float acce;	//預設加速度
     private float accX;				//三軸加速度
     private float accY;

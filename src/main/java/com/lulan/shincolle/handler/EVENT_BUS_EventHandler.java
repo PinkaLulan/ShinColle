@@ -39,6 +39,7 @@ import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
+import com.lulan.shincolle.utility.TargetHelper;
 
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -344,7 +345,7 @@ public class EVENT_BUS_EventHandler {
 			if(event.source.getEntity() instanceof EntityPlayer) {
 				EntityPlayer player = (EntityPlayer) event.source.getEntity();
 				//get player's ship within 20 blocks
-				EntityHelper.setRevengeTargetAroundPlayer(player, 20D, event.entity);
+				TargetHelper.setRevengeTargetAroundPlayer(player, 20D, event.entity);
 //				LogHelper.info("DEBUG : attack event: "+player+" "+event.entity);
 			}//end get player
 			
@@ -352,7 +353,7 @@ public class EVENT_BUS_EventHandler {
 			if(event.entity instanceof EntityPlayer) {
 				EntityPlayer player = (EntityPlayer) event.entity;
 				//get player's ship within 20 blocks
-				EntityHelper.setRevengeTargetAroundPlayer(player, 20D, event.source.getEntity());
+				TargetHelper.setRevengeTargetAroundPlayer(player, 20D, event.source.getEntity());
 //				LogHelper.info("DEBUG : attack event: "+player+" "+event.source.getEntity());
 			}
 		}//end server side

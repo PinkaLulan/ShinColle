@@ -8,6 +8,7 @@ import java.util.Map;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
@@ -15,7 +16,10 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.IExtendedEntityProperties;
 
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.network.S2CGUIPackets;
+import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
+import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.team.TeamData;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
@@ -76,7 +80,7 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		this.teamList = new BasicEntityShip[9][6];
 		this.selectState = new boolean[9][6];
 		this.sidList = new int[9][6];
-		this.formatID = new int[9];
+		this.formatID = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0};
 		this.shipEIDList = new ArrayList();
 		this.targetClassList = new ArrayList();
 		this.initSID = false;
@@ -227,8 +231,17 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 	}
 	
 	public BasicEntityShip getEntityOfCurrentTeam(int id) {
-		if(id > 5) id = 0;
-		return teamList[teamId][id];
+		return getEntityOfTeam(this.teamId, id);
+	}
+	
+	public BasicEntityShip getEntityOfTeam(int tid, int id) {
+		try {
+			return teamList[tid][id];
+		}
+		catch(Exception e) {
+			LogHelper.info("EXCEPTION : get ship entity from extProps fail: "+e);
+			return null;
+		}
 	}
 	
 	public BasicEntityShip[] getEntityOfCurrentMode(int mode) {	//meta¬°pointerªºitem damage
@@ -374,11 +387,64 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 	}
 	
 	public int[] getFormatID() {
+		//null check
+		if(this.formatID == null || this.formatID.length != 9) {
+			this.formatID = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0};
+		}
 		return this.formatID;
 	}
 	
+	public int getFormatID(int teamID) {
+		try {
+			return this.formatID[teamID];
+		}
+		catch(Exception e) {
+			LogHelper.info("EXCEPTION : get formation id fail: "+e);
+			return 0;
+		}
+	}
+	
 	public int getCurrentFormatID() {
-		return this.formatID[teamId];
+		return getFormatID(this.teamId);
+	}
+	
+	//get number of ship in the team
+	public int getNumberOfShip(int teamID) {
+		int num = 0;
+		
+		if(this.teamList != null) {
+			for(int i = 0; i < 6; ++i) {
+				if(this.teamList[teamID][i] != null && this.teamList[teamID][i].isEntityAlive()) num++;
+			}
+		}
+		
+		return num;
+	}
+	
+	/** get min move speed WITHOUT BUFF in team */
+	public float getMinMOVInTeam(int teamID) {
+		float mov = 10F;
+		float temp = 0F;
+		
+		try {
+			for(BasicEntityShip ship : this.teamList[teamID]) {
+				if(ship != null) {
+					temp = ship.getStateFinalBU(ID.MOV);
+					if(temp < mov) mov = temp;
+				}
+			}
+			
+			if(mov >= 10F) {
+				LogHelper.info("DEBUG : get min move speed: no ship in team");
+				mov = 0F;  //get no ship in team, bug?
+			}
+		}
+		catch(Exception e) {
+			LogHelper.info("EXCEPTION : get entity MOV from extProps fail: "+e);
+			return 0F;
+		}
+		
+		return mov;
 	}
 	
 	//setter
@@ -507,12 +573,21 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		this.formatID = par1;
 	}
 	
-	public void setCurrentFormatID(int fid) {
-		if(fid < 0 || fid > 5) {
-			this.formatID[teamId] = 0;
+	public void setFormatID(int tid, int fid) {
+		try {
+			this.formatID[tid] = fid;
 		}
-		else {
+		catch (Exception e) {
+			LogHelper.info("EXCEPTION : set team formation id fail: "+e);
+		}
+	}
+	
+	public void setCurrentFormatID(int fid) {
+		try {
 			this.formatID[teamId] = fid;
+		}
+		catch (Exception e) {
+			LogHelper.info("EXCEPTION : set current team formation id fail: "+e);
 		}
 	}
 	
@@ -597,17 +672,82 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		}//end server side
 	}
 	
-	//check target is in current team, return slot id
-	public int checkIsInCurrentTeam(int sid) {
-		for(int i = 0; i < 6; i++) {
-			if(this.teamList[teamId][i] != null) {
-				if(teamList[teamId][i].getShipUID() == sid) {
-					return i;
+	/** check target is in team, return {team id, slot id} */
+	public int[] checkIsInTeam(int shipID) {
+		int[] val = new int[] {-1, -1};
+		
+		if(shipID > 0) {
+			for(int i = 0; i < 9; i++) {
+				val[1] = checkIsInTeam(shipID, i)[1];  //get slot id
+				
+				if(val[1] > 0) {  //get ship in team i, return
+					val[0] = i;
+					break;
+				}
+				else {  //not in team, reset slot id to -1
+					val[1] = -1;
 				}
 			}
 		}
 		
-		return -1;
+		return val;
+	}
+	
+	/** check target is in team with #ship > 4, return {team id, slot id}*/
+	public int[] checkIsInFormationTeam(int shipID) {
+		int[] val = new int[] {-1, -1};
+		
+		if(shipID > 0) {
+			for(int i = 0; i < 9; i++) {
+				//val: 0:#ship, 1:slot id
+				val = checkIsInTeam(shipID, i);
+				
+				//#ship > 4 and ship existed
+				if(val[0] > 4 && val[1] >= 0) {
+					//set val[0] = team id, val[1] = slot id
+					val[0] = i;
+					break;
+				}
+			}
+		}
+		
+		//get no ship, reset team id to -1
+		if(val[1] < 0) val[0] = -1;
+		
+		return val;
+	}
+	
+	/** check target is in current team, return slot id, return slot id */
+	public int checkIsInCurrentTeam(int shipID) {
+		return checkIsInTeam(shipID, this.teamId)[1];
+	}
+	
+	/** check target is in team, return slot id, ONLY CHECK LOADED SHIP, return {#ship, slot id} */
+	public int[] checkIsInTeam(int shipID, int teamID) {
+		int[] val = new int[] {0, -1};  //slot id, #ships
+		
+		try {
+			for(int i = 0; i < 6; i++) {
+				if(this.teamList[teamID][i] != null && this.teamList[teamID][i].isEntityAlive()) {
+					//number++
+					val[0] += 1;
+					
+					//check is target ship
+					if(teamList[teamID][i].getShipUID() == shipID) {
+						val[1] = i;
+					}
+				}
+				else {
+					//clear dead entity
+					this.teamList[teamID][i] = null;
+				}
+			}
+		}
+		catch(Exception e) {
+			LogHelper.info("EXCEPTION : check ship in team fail: "+e);
+		}
+		
+		return val;
 	}
 	
 	//clear select state of a team
@@ -731,6 +871,17 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		}
 		
 		return false;
+	}
+	
+	/** sync props data to client, 0:sync formation */
+	public void sendSyncPacket(int type) {
+		if(world != null && !world.isRemote) {
+			switch(type) {
+			case 0:
+				CommonProxy.channelG.sendTo(new S2CGUIPackets(this, S2CGUIPackets.PID.SyncPlayerProp_Formation), (EntityPlayerMP) player);
+				break;
+			}
+		}
 	}
 
 

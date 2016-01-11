@@ -131,13 +131,19 @@ public class PointerItem extends BasicItem {
 				
 				//press SPRINT (CTRL)
 				if(keySet.keyBindSprint.getIsKeyPressed()) {
-					//formation id++
-					//its already in team, remove ship
-					int fid = props.getFormatID()[props.getCurrentTeamID()] + 1;
-					if(fid > 5) fid = 0;
-					
-					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetFormation, fid));
-					return false;
+					//in formation mode: change formation
+					if(meta == 2) {
+						//formation id++
+						//its already in team, remove ship
+						int fid = props.getFormatID()[props.getCurrentTeamID()] + 1;
+						if(fid > 5) fid = 0;
+						
+						String fstr = I18n.format("gui.shincolle:formation.format"+fid);
+						player.addChatMessage(new ChatComponentText(I18n.format("chat.shincolle:pointer.changeformation")+" "+fstr));
+						
+						CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetFormation, fid));
+						return false;
+					}
 				}
 				
 				//hit entity
@@ -229,7 +235,7 @@ public class PointerItem extends BasicItem {
 						if(hitObj.entityHit != null) {
 							String tarName = hitObj.entityHit.getClass().getSimpleName();
 							LogHelper.info("DEBUG : pointer add class: "+tarName);
-							player.addChatMessage(new ChatComponentText(I18n.format("chat.shincolle:addtargetclass", "  "+tarName)));
+							player.addChatMessage(new ChatComponentText(I18n.format("chat.shincolle:pointer.addtargetclass", "  "+tarName)));
 							//send sync packet to server
 							CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetTarClass, tarName));
 							return true;
@@ -598,21 +604,21 @@ public class PointerItem extends BasicItem {
     		
     		//draw control mode and formation text
     		int fid = props.getFormatID()[props.getCurrentTeamID()];
-    		if(fid > 0) {
+    		if(fid >= 0) {
     			str3 = EnumChatFormatting.GOLD + I18n.format("gui.shincolle:formation.format"+fid);
     		}
     		
     		switch(itemstack.getItemDamage()) {
         	case 1:
-        		str1 = EnumChatFormatting.RED+I18n.format("gui.shincolle:pointer1")+"  "+str3;
+        		str1 = EnumChatFormatting.RED+I18n.format("gui.shincolle:pointer1")+" : "+str3;
         		str2 = EnumChatFormatting.GRAY+I18n.format("gui.shincolle:pointer3");
         		break;
         	case 2:
-        		str1 = EnumChatFormatting.GOLD+I18n.format("gui.shincolle:pointer2")+"  "+str3;
+        		str1 = EnumChatFormatting.GOLD+I18n.format("gui.shincolle:pointer2")+" : "+str3;
         		str2 = EnumChatFormatting.GRAY+I18n.format("gui.shincolle:pointer3");
         		break;
     		default:
-    			str1 = EnumChatFormatting.AQUA+I18n.format("gui.shincolle:pointer0")+"  "+str3;
+    			str1 = EnumChatFormatting.AQUA+I18n.format("gui.shincolle:pointer0")+" : "+str3;
     			str2 = EnumChatFormatting.GRAY+I18n.format("gui.shincolle:pointer3");
     			break;
         	}

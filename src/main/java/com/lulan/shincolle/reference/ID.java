@@ -98,7 +98,7 @@ public class ID {
 		public static final byte CATAPULT_HI = 23;		//high level catapult
 	}
 	
-	/**EntityFlag*/
+	/** Entity Flag */
 	public static final class F {
 		public static final byte CanFloatUp = 0;
 		public static final byte IsMarried = 1;
@@ -124,7 +124,12 @@ public class ID {
 		public static final byte PassiveAI = 21;
 	}
 	
-	/**Formation Effect*/
+	/** Update Flag */
+	public static final class FU {
+		public static final byte FormationBuff = 0;
+	}
+	
+	/** Formation Effect */
 	public static final class Formation {
 		public static final byte ATK_L = 0;
 		public static final byte ATK_H = 1;
@@ -139,6 +144,11 @@ public class ID {
 		public static final byte THIT = 10;
 		public static final byte AA = 11;
 		public static final byte ASM = 12;
+	}
+	
+	/** Formation Fixed Effect */
+	public static final class FormationFixed {
+		public static final byte MOV = 0;
 	}
 	
 	/**GUI ID*/

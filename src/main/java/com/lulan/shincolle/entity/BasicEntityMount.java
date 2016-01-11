@@ -175,19 +175,19 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 				return false;
 			}
 			
-			//calc dodge
-			float dist = (float) this.getDistanceSqToEntity(attacker.getEntity());
-			if(CalcHelper.canDodge(this, dist)) {
-				return false;
-			}
-			
 			//set host hurt face
 	    	if(this.host.getStateEmotion(ID.S.Emotion) != ID.Emotion.O_O) {
 	    		this.host.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
 	    	}
 	        
-	        if(attacker.getSourceOfDamage() != null) {
-	  			Entity entity = attacker.getSourceOfDamage();
+	        if(attacker.getEntity() != null) {
+	  			Entity entity = attacker.getEntity();
+	  			
+	  			//calc dodge
+				float dist = (float) this.getDistanceSqToEntity(entity);
+				if(CalcHelper.canDodge(this, dist)) {
+					return false;
+				}
 	  			
 	  			//不會對自己造成傷害, 可免疫毒/掉落/窒息等傷害 (此為自己對自己造成傷害)
 	  			if(entity.equals(this)) {

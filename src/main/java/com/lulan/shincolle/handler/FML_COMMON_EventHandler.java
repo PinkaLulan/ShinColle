@@ -217,26 +217,26 @@ public class FML_COMMON_EventHandler {
 						}
 						//ship lost
 						else {
-							//clear slot if no ship UID
+							//clear slot if no ship UID (ship UID invalid)
 							if(extProps.getSIDofCurrentTeam(i) <= 0) {
 								extProps.addEntityToCurrentTeam(i, null);
 							}
+							
+							//clear ship entity
+							
 						}	
 					}
 					
 					syncTeamList = true;
 				}//end every 64 ticks
 				
-//				LogHelper.info("DEBUG : player tick: ship: "+
-//				ServerProxy.getPlayerWorldData(101)[0]);
-				
 				//init ship UID
 				if(!extProps.getInitSID() && event.player.ticksExisted % 16 == 0) {
-					LogHelper.info("DEBUG : player tick: update team entity");
 					//update ship temaList
 					extProps.updateShipEntityBySID();
-					//sync flag to client
+					//sync flag
 					CommonProxy.channelG.sendTo(new S2CGUIPackets(S2CGUIPackets.PID.FlagInitSID, 0, true), (EntityPlayerMP) event.player);
+					LogHelper.info("DEBUG : player tick: update team entity");
 					syncTeamList = true;
 				}//end init ship UID
 				

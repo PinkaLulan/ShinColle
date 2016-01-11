@@ -128,17 +128,38 @@ public class ConfigHandler {
 		}
 		
 		//設定新值
-		limitShip = propShipLimit.getDoubleList();
-		scaleShip = propShip.getDoubleList();
-		scaleBossSMKZ = propBossSMKZ.getDoubleList();
-		scaleBossNGT = propBossNGT.getDoubleList();
-		scaleMobU511 = propMobU511.getDoubleList();
-		polyGravelBaseBlock = propPolyGravel.getBooleanList();
+		limitShip = getDoubleArrayFromConfig(limitShip, propShipLimit);
+		scaleShip = getDoubleArrayFromConfig(scaleShip, propShip);
+		scaleBossSMKZ = getDoubleArrayFromConfig(scaleBossSMKZ, propBossSMKZ);
+		scaleBossNGT = getDoubleArrayFromConfig(scaleBossNGT, propBossNGT);
+		scaleMobU511 = getDoubleArrayFromConfig(scaleMobU511, propShipLimit);
+		polyGravelBaseBlock = getBooleanArrayFromConfig(polyGravelBaseBlock, propPolyGravel);
 	}
 	
 	//check get value
 	public static double[] getDoubleArrayFromConfig(double[] defaultValue, Property target) {
-		return null;
+		int size = defaultValue.length;
+		double[] getd = target.getDoubleList();
+		
+		if(getd != null && getd.length == size) {
+			return getd;
+		}
+		else {
+			return defaultValue;
+		}
+	}
+	
+	//check get value
+	public static boolean[] getBooleanArrayFromConfig(boolean[] defaultValue, Property target) {
+		int size = defaultValue.length;
+		boolean[] getd = target.getBooleanList();
+		
+		if(getd != null && getd.length == size) {
+			return getd;
+		}
+		else {
+			return defaultValue;
+		}
 	}
 	
 	//設定檔處理 初始化動作

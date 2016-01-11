@@ -40,12 +40,9 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		//save nbt data
 		NBTTagCompound nbtExt = new NBTTagCompound();
 		NBTTagCompound nbtExt_add0 = new NBTTagCompound();
-		NBTTagCompound nbtExt_add1 = new NBTTagCompound();
 		NBTTagCompound nbtExt_add2 = new NBTTagCompound();
 		NBTTagCompound nbtExt_add3 = new NBTTagCompound();
 		NBTTagCompound nbtExt_add4 = new NBTTagCompound();
-		NBTTagCompound nbtExt_add5 = new NBTTagCompound();
-		NBTTagCompound nbtExt_add6 = new NBTTagCompound();
 
 		//save values to NBT
 		nbtExt.setTag("Minor", nbtExt_add0);
@@ -71,17 +68,6 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		nbtExt_add0.setInteger("FType", this.entity.getStateMinor(ID.M.FormatType));
 		nbtExt_add0.setInteger("FPos", this.entity.getStateMinor(ID.M.FormatPos));
 		nbtExt_add0.setString("tagName", this.entity.getCustomNameTag());
-//		//save AttrFinal
-//		nbtExt.setTag("Final", nbtExt_add1);
-//		nbtExt_add1.setFloat("HP", this.entity.getStateFinal(ID.HP));
-//		nbtExt_add1.setFloat("ATK", this.entity.getStateFinal(ID.ATK));
-//		nbtExt_add1.setFloat("DEF", this.entity.getStateFinal(ID.DEF));
-//		nbtExt_add1.setFloat("SPD", this.entity.getStateFinal(ID.SPD));
-//		nbtExt_add1.setFloat("MOV", this.entity.getStateFinal(ID.MOV));
-//		nbtExt_add1.setFloat("HIT", this.entity.getStateFinal(ID.HIT));
-//		nbtExt_add1.setFloat("ATK_H", this.entity.getStateFinal(ID.ATK_H));
-//		nbtExt_add1.setFloat("ATK_AL", this.entity.getStateFinal(ID.ATK_AL));
-//		nbtExt_add1.setFloat("ATK_AH", this.entity.getStateFinal(ID.ATK_AH));
 		//save EntityState
 		nbtExt.setTag("Emotion", nbtExt_add2);	
 		nbtExt_add2.setByte("State", this.entity.getStateEmotion(ID.S.State));
@@ -115,31 +101,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		nbtExt_add4.setBoolean("AA", this.entity.getStateFlag(ID.F.AntiAir));
 		nbtExt_add4.setBoolean("ASM", this.entity.getStateFlag(ID.F.AntiSS));
 		nbtExt_add4.setBoolean("PassiveAI", this.entity.getStateFlag(ID.F.PassiveAI));
-//		//save EntityFlag
-//		nbtExt.setTag("Equip", nbtExt_add5);
-//		nbtExt_add5.setFloat("Cri", this.entity.getEffectEquip(ID.EF_CRI));
-//		nbtExt_add5.setFloat("DHit", this.entity.getEffectEquip(ID.EF_DHIT));
-//		nbtExt_add5.setFloat("THit", this.entity.getEffectEquip(ID.EF_THIT));
-//		nbtExt_add5.setFloat("Miss", this.entity.getEffectEquip(ID.EF_MISS));
-//		nbtExt_add5.setFloat("AA", this.entity.getEffectEquip(ID.EF_AA));
-//		nbtExt_add5.setFloat("ASM", this.entity.getEffectEquip(ID.EF_ASM));
-//		nbtExt_add5.setFloat("Dodge", this.entity.getEffectEquip(ID.EF_DODGE));
-		//save Formation
-		nbtExt.setTag("Formation", nbtExt_add6);
-		nbtExt_add5.setFloat("ATK_L", this.entity.getEffectFormation(ID.Formation.ATK_L));
-		nbtExt_add5.setFloat("ATK_H", this.entity.getEffectFormation(ID.Formation.ATK_H));
-		nbtExt_add5.setFloat("ATK_AL", this.entity.getEffectFormation(ID.Formation.ATK_AL));
-		nbtExt_add5.setFloat("ATK_AH", this.entity.getEffectFormation(ID.Formation.ATK_AH));
-		nbtExt_add5.setFloat("DEF", this.entity.getEffectFormation(ID.Formation.DEF));
-		nbtExt_add5.setFloat("MOV", this.entity.getEffectFormation(ID.Formation.MOV));
-		nbtExt_add5.setFloat("MISS", this.entity.getEffectFormation(ID.Formation.MISS));
-		nbtExt_add5.setFloat("DODGE", this.entity.getEffectFormation(ID.Formation.DODGE));
-		nbtExt_add5.setFloat("CRI", this.entity.getEffectFormation(ID.Formation.CRI));
-		nbtExt_add5.setFloat("DHIT", this.entity.getEffectFormation(ID.Formation.DHIT));
-		nbtExt_add5.setFloat("THIT", this.entity.getEffectFormation(ID.Formation.THIT));
-		nbtExt_add5.setFloat("AA", this.entity.getEffectFormation(ID.Formation.AA));
-		nbtExt_add5.setFloat("ASM", this.entity.getEffectFormation(ID.Formation.ASM));
-		
+
 		//save inventory
 		NBTTagList list = new NBTTagList();
 		nbt.setTag(tagName, list);
@@ -188,17 +150,6 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		entity.setStateMinor(ID.M.FormatType, nbt_load.getInteger("FType"));
 		entity.setStateMinor(ID.M.FormatPos, nbt_load.getInteger("FPos"));
 		entity.setNameTag(nbt_load.getString("tagName"));
-//		//load final state
-//		nbt_load = (NBTTagCompound) nbt_tag.getTag("Final");
-//		entity.setStateFinal(ID.HP, nbt_load.getFloat("HP"));
-//		entity.setStateFinal(ID.ATK, nbt_load.getFloat("ATK"));
-//		entity.setStateFinal(ID.DEF, nbt_load.getFloat("DEF"));
-//		entity.setStateFinal(ID.SPD, nbt_load.getFloat("SPD"));
-//		entity.setStateFinal(ID.MOV, nbt_load.getFloat("MOV"));
-//		entity.setStateFinal(ID.HIT, nbt_load.getFloat("HIT"));
-//		entity.setStateFinal(ID.HIT, nbt_load.getFloat("ATK_H"));
-//		entity.setStateFinal(ID.HIT, nbt_load.getFloat("ATK_AL"));
-//		entity.setStateFinal(ID.HIT, nbt_load.getFloat("ATK_AH"));
 		//load emotion state
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Emotion");
 		entity.setStateEmotion(ID.S.State, nbt_load.getByte("State"), false);
@@ -232,31 +183,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		entity.setStateFlag(ID.F.AntiAir, nbt_load.getBoolean("AA"));
 		entity.setStateFlag(ID.F.AntiSS, nbt_load.getBoolean("ASM"));
 		entity.setStateFlag(ID.F.PassiveAI, nbt_load.getBoolean("PassiveAI"));
-//		//load effect
-//		nbt_load = (NBTTagCompound) nbt_tag.getTag("Equip");
-//		entity.setEffectEquip(ID.EF_CRI, nbt_load.getFloat("Cri"));
-//		entity.setEffectEquip(ID.EF_DHIT, nbt_load.getFloat("DHit"));
-//		entity.setEffectEquip(ID.EF_THIT, nbt_load.getFloat("THit"));
-//		entity.setEffectEquip(ID.EF_MISS, nbt_load.getFloat("Miss"));
-//		entity.setEffectEquip(ID.EF_AA, nbt_load.getFloat("AA"));
-//		entity.setEffectEquip(ID.EF_ASM, nbt_load.getFloat("ASM"));
-//		entity.setEffectEquip(ID.EF_DODGE, nbt_load.getFloat("Dodge"));
-		//save Formation
-		nbt_load = (NBTTagCompound) nbt_tag.getTag("Formation");
-		entity.setEffectFormation(ID.Formation.ATK_L, nbt_load.getFloat("ATK_L"));
-		entity.setEffectFormation(ID.Formation.ATK_H, nbt_load.getFloat("ATK_H"));
-		entity.setEffectFormation(ID.Formation.ATK_AL, nbt_load.getFloat("ATK_AL"));
-		entity.setEffectFormation(ID.Formation.ATK_AH, nbt_load.getFloat("ATK_AH"));
-		entity.setEffectFormation(ID.Formation.DEF, nbt_load.getFloat("DEF"));
-		entity.setEffectFormation(ID.Formation.MOV, nbt_load.getFloat("MOV"));
-		entity.setEffectFormation(ID.Formation.MISS, nbt_load.getFloat("MISS"));
-		entity.setEffectFormation(ID.Formation.DODGE, nbt_load.getFloat("DODGE"));
-		entity.setEffectFormation(ID.Formation.CRI, nbt_load.getFloat("CRI"));
-		entity.setEffectFormation(ID.Formation.DHIT, nbt_load.getFloat("DHIT"));
-		entity.setEffectFormation(ID.Formation.THIT, nbt_load.getFloat("THIT"));
-		entity.setEffectFormation(ID.Formation.AA, nbt_load.getFloat("AA"));
-		entity.setEffectFormation(ID.Formation.ASM, nbt_load.getFloat("ASM"));
-		
+
 		//load inventory
 		NBTTagList list = nbt.getTagList(tagName, 10);	//tagList內為tagCompound, 代號=10
 
@@ -315,12 +242,15 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 	@Override
 	public void setInventorySlotContents(int i, ItemStack itemstack) {
 		slots[i] = itemstack;
+		
 		//若手上物品超過該格子限制數量, 則只能放進限制數量
 		if (itemstack != null && itemstack.stackSize > getInventoryStackLimit()) {
 			itemstack.stackSize = getInventoryStackLimit();
 		}
-		if(!world.isRemote) {
-			this.entity.calcEquipAndUpdateState();;  //update equip and attribute value
+		
+		//change equip slot
+		if(!world.isRemote && i < 6) {
+			this.entity.calcEquipAndUpdateState();  //update equip and attribute value
 		}
 	}
 

@@ -49,8 +49,10 @@ import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.FormationHelper;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
+import com.lulan.shincolle.utility.TargetHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
@@ -73,34 +75,40 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	protected double ShipPrevX;			//ship posX 5 sec ago
 	protected double ShipPrevY;			//ship posY 5 sec ago
 	protected double ShipPrevZ;			//ship posZ 5 sec ago
-	/**equip states: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT 6:ATK_Heavy 7:ATK_AirLight 8:ATK_AirHeavy*/
+	/** equip states: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT 6:ATK_Heavy 7:ATK_AirLight 8:ATK_AirHeavy*/
 	protected float[] StateEquip;
-	/**final states: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT 6:ATK_Heavy 7:ATK_AirLight 8:ATK_AirHeavy*/
+	/** final states: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT 6:ATK_Heavy 7:ATK_AirLight 8:ATK_AirHeavy*/
 	protected float[] StateFinal;
-	/**minor states: 0:ShipLevel 1:Kills 2:ExpCurrent 3:ExpNext 4:NumAmmoLight 
-	 * 5:NumAmmoHeavy 6:NumGrudge 7:NumAirLight 8:NumAirHeavy 9:immunity time 
-	 * 10:followMin 11:followMax 12:FleeHP 13:TargetAIType 14:guardX 15:guardY 16:guardZ 17:guardDim
-	 * 18:guardID 19:shipType 20:shipClass 21:playerUID 22:shipUID 23:playerEID 24:guardType 
-	 * 25:damageType 26:formationType 27:formationPos*/
+	/** final states before buffs: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT 6:ATK_Heavy 7:ATK_AirLight 8:ATK_AirHeavy*/
+	protected float[] StateFinalBU;
+	/** minor states: 0:ShipLevel 1:Kills 2:ExpCurrent 3:ExpNext 4:NumAmmoLight 
+	 *  5:NumAmmoHeavy 6:NumGrudge 7:NumAirLight 8:NumAirHeavy 9:immunity time 
+	 *  10:followMin 11:followMax 12:FleeHP 13:TargetAIType 14:guardX 15:guardY 16:guardZ 17:guardDim
+	 *  18:guardID 19:shipType 20:shipClass 21:playerUID 22:shipUID 23:playerEID 24:guardType 
+	 *  25:damageType 26:formationType 27:formationPos*/
 	protected int[] StateMinor;
-	/**equip effect: 0:critical 1:doubleHit 2:tripleHit 3:baseMiss 4:atk_AntiAir 5:atk_AntiSS 6:dodge*/
+	/** equip effect: 0:critical 1:doubleHit 2:tripleHit 3:baseMiss 4:atk_AntiAir 5:atk_AntiSS 6:dodge*/
 	protected float[] EffectEquip;
-	/**formation effect: 0:ATK_L 1:ATK_H 2:ATK_AL 3:ATK_AH 4:DEF 5:MOV 6:MISS 7:DODGE 8:CRI
-	 *                   9:DHIT 10:THIT 11:AA 12:ASM */
+	/** formation effect: 0:ATK_L 1:ATK_H 2:ATK_AL 3:ATK_AH 4:DEF 5:MOV 6:MISS 7:DODGE 8:CRI
+	 *                    9:DHIT 10:THIT 11:AA 12:ASM */
 	protected float[] EffectFormation;
-	/**EntityState: 0:State 1:Emotion 2:Emotion2 3:HP State 4:State2 5:AttackPhase*/
+	/** formation fixed effect: 0:MOV */
+	protected float[] EffectFormationFixed;
+	/** EntityState: 0:State 1:Emotion 2:Emotion2 3:HP State 4:State2 5:AttackPhase*/
 	protected byte[] StateEmotion;
-	/**EntityFlag: 0:canFloatUp 1:isMarried 2:noFuel 3:canMelee 4:canAmmoLight 5:canAmmoHeavy 
-	 * 6:canAirLight 7:canAirHeavy 8:headTilt(client only) 9:canRingEffect 10:canDrop 11:canFollow
-	 * 12:onSightChase 13:AtkType_Light 14:AtkType_Heavy 15:AtkType_AirLight 16:AtkType_AirHeavy 
-	 * 17:HaveRingEffect 18:PVPFirst 19:AntiAir 20:AntiSS 21:PassiveAI */
+	/** EntityFlag: 0:canFloatUp 1:isMarried 2:noFuel 3:canMelee 4:canAmmoLight 5:canAmmoHeavy 
+	 *  6:canAirLight 7:canAirHeavy 8:headTilt(client only) 9:canRingEffect 10:canDrop 11:canFollow
+	 *  12:onSightChase 13:AtkType_Light 14:AtkType_Heavy 15:AtkType_AirLight 16:AtkType_AirHeavy 
+	 *  17:HaveRingEffect 18:PVPFirst 19:AntiAir 20:AntiSS 21:PassiveAI */
 	protected boolean[] StateFlag;
-	/**BonusPoint: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT */
+	/** BonusPoint: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT */
 	protected byte[] BonusPoint;
-	/**TypeModify: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT */
+	/** TypeModify: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT */
 	protected float[] TypeModify;
-	/**ModelPos: posX, posY, posZ, scale (in ship inventory) */
+	/** ModelPos: posX, posY, posZ, scale (in ship inventory) */
 	protected float[] ModelPos;
+	/** Update Flag: 0:FormationBuff */
+	protected boolean[] UpdateFlag;
 	
 	//for model render
 	protected int StartEmotion;			//表情1開始時間
@@ -118,51 +126,55 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	
 	public BasicEntityShip(World world) {
 		super(world);
-		ignoreFrustumCheck = true;	//即使不在視線內一樣render
+		this.ignoreFrustumCheck = true;	//即使不在視線內一樣render
+		
 		//init value
-		isImmuneToFire = true;	//set ship immune to lava
-		StateEquip = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F};
-		StateFinal = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F};
-		StateMinor = new int[] {1, 0, 0, 40, 0,
-				                0, 0, 0, 0, 0,
-				                3, 12, 35, 1, -1,
-				                -1, -1, 0, -1, 0,
-				                0, -1, -1, -1, 0,
-				                0, 0, 0
-				                };
-		EffectEquip = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F};
-		EffectFormation = new float[] {0F, 0F, 0F, 0F, 0F,
-									   0F, 0F, 0F, 0F, 0F,
-									   0F, 0F, 0F};
-		StateEmotion = new byte[] {0, 0, 0, 0, 0, 0};
-		StateFlag = new boolean[] {false, false, true, false, true,
-				                   true, true, true, false, true,
-								   true, false, true, true, true,
-								   true, true, false, true, false,
-								   false, false
-								};
-		BonusPoint = new byte[] {0, 0, 0, 0, 0, 0};
-		TypeModify = new float[] {1F, 1F, 1F, 1F, 1F, 1F};
-		ModelPos = new float[] {0F, 0F, 0F, 50F};
+		this.isImmuneToFire = true;	//set ship immune to lava
+		this.StateEquip = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F};
+		this.StateFinal = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F};
+		this.StateFinalBU = this.StateFinal.clone();
+		this.StateMinor = new int[] {1, 0, 0, 40, 0,
+				                     0, 0, 0, 0, 0,
+				                     3, 12, 35, 1, -1,
+				                     -1, -1, 0, -1, 0,
+				                     0, -1, -1, -1, 0,
+				                     0, 0, 0
+				                    };
+		this.EffectEquip = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F};
+		this.EffectFormation = new float[] {0F, 0F, 0F, 0F, 0F,
+									        0F, 0F, 0F, 0F, 0F,
+									        0F, 0F, 0F};
+		this.EffectFormationFixed = new float[] {0F};
+		this.StateEmotion = new byte[] {0, 0, 0, 0, 0, 0};
+		this.StateFlag = new boolean[] {false, false, true, false, true,
+				                        true, true, true, false, true,
+								        true, false, true, true, true,
+								        true, true, false, true, false,
+								        false, false
+								       };
+		this.UpdateFlag = new boolean[] {false};
+		this.BonusPoint = new byte[] {0, 0, 0, 0, 0, 0};
+		this.TypeModify = new float[] {1F, 1F, 1F, 1F, 1F, 1F};
+		this.ModelPos = new float[] {0F, 0F, 0F, 50F};
 		
 		//for AI
-		ShipDepth = 0D;			//water block above ship (within ship position)
-		ShipPrevX = posX;		//ship position 5 sec ago
-		ShipPrevY = posY;
-		ShipPrevZ = posZ;
-		ownerName = "";
-		stepHeight = 1F;
-		shipNavigator = new ShipPathNavigate(this, worldObj);
-		shipMoveHelper = new ShipMoveHelper(this, 25F);
+		this.ShipDepth = 0D;			//water block above ship (within ship position)
+		this.ShipPrevX = posX;		//ship position 5 sec ago
+		this.ShipPrevY = posY;
+		this.ShipPrevZ = posZ;
+		this.ownerName = "";
+		this.stepHeight = 1F;
+		this.shipNavigator = new ShipPathNavigate(this, worldObj);
+		this.shipMoveHelper = new ShipMoveHelper(this, 25F);
 		
 		//for render
-		StartEmotion = -1;		//emotion start time
-		StartEmotion2 = -1;		//head tile cooldown
-		rotateAngle = new float[] {0F, 0F, 0F};		//model rotate angle (right hand)
+		this.StartEmotion = -1;		//emotion start time
+		this.StartEmotion2 = -1;		//head tile cooldown
+		this.rotateAngle = new float[] {0F, 0F, 0F};		//model rotate angle (right hand)
 		
 		//for init
-		initAI = false;
-		isUpdated = false;
+		this.initAI = false;
+		this.isUpdated = false;
 	}
 	
 	@Override
@@ -277,8 +289,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		}
 		
 		//idle AI
-		//moving
-		this.tasks.addTask(21, new EntityAIOpenDoor(this, true));	//0000
+//		this.tasks.addTask(21, new EntityAIOpenDoor(this, true));	//0000 //TODO ship door AI
 		this.tasks.addTask(23, new EntityAIShipFloating(this));		//0101
 		this.tasks.addTask(24, new EntityAIShipWatchClosest(this, EntityPlayer.class, 6F, 0.08F)); //0010
 		this.tasks.addTask(25, new EntityAIShipWander(this, 0.8D));	//0001
@@ -494,45 +505,70 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			return 0;
 		}
 	}
+	
 	public float getStateEquip(int id) {
 		return StateEquip[id];
 	}
+	
 	public float getStateFinal(int id) {
 		return StateFinal[id];
 	}
+	
+	public float getStateFinalBU(int id) {
+		return StateFinalBU[id];
+	}
+	
 	@Override
 	public int getStateMinor(int id) {
 		return StateMinor[id];
 	}
+	
 	@Override
 	public float getEffectEquip(int id) {
 		return EffectEquip[id];
 	}
+	
+	public boolean getUpdateFlag(int id) {
+		return UpdateFlag[id];
+	}
+	
 	public float getEffectFormation(int id) {
 		return EffectFormation[id];
 	}
+	
+	public float getEffectFormationFixed(int id) {
+		return EffectFormationFixed[id];
+	}
+	
 	@Override
 	public byte getStateEmotion(int id) {
 		return StateEmotion[id];
 	}
+	
 	public byte getBonusPoint(int id) {
 		return BonusPoint[id];
 	}
+	
 	public float getTypeModify(int id) {
 		return TypeModify[id];
 	}
+	
 	/** get model pos in GUI */
 	public float[] getModelPos() {
 		return ModelPos;
 	}
 	
-	/**calc equip and all attrs
+	/**calc equip, buff, debuff and all attrs
+	 * 
 	 * step:
 	 * 1. reset all attrs to 0
 	 * 2. calc 6 equip slots
 	 * 3. calc special attrs (if @Override calcShipAttributes())
 	 * 4. calc HP,DEF...etc
-	 * 5. send sync packet
+	 * 5. backup unbuff attrs
+	 * 6. calc buffs
+	 * 7. send sync packet
+	 * 
 	 */
 	public void calcEquipAndUpdateState() {
 		ItemStack itemstack = null;
@@ -557,12 +593,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		EffectEquip[ID.EF_ASM] = 0F;
 		EffectEquip[ID.EF_DODGE] = 0F;
 		
-		//calc equip slots
+		//calc equip attrs
 		for(int i=0; i<ContainerShipInventory.SLOTS_SHIPINV; i++) {
 			equipStat = EquipCalc.getEquipStat(this, this.ExtProps.slots[i]);
 			
 			if(equipStat != null) {
-//				LogHelper.info("DEBUG : equip stat "+equipStat[0]+" "+equipStat[1]+" "+equipStat[2]+" "+equipStat[3]+" "+equipStat[4]+" "+equipStat[5]+" "+equipStat[6]+" "+equipStat[7]+" "+equipStat[8]);
 				StateEquip[ID.HP] += equipStat[ID.E.HP];
 				StateEquip[ID.DEF] += equipStat[ID.E.DEF];
 				StateEquip[ID.SPD] += equipStat[ID.E.SPD];
@@ -582,7 +617,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				EffectEquip[ID.EF_DODGE] += equipStat[ID.E.DODGE];
 			}
 		}
-		//update value
+		
+		//calc attrs
 		calcShipAttributes();
 	}
 	
@@ -610,42 +646,39 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		StateFinal[ID.ATK_AL] = (atk + StateEquip[ID.ATK_AL]) * (float)ConfigHandler.scaleShip[ID.ATK];
 		StateFinal[ID.ATK_AH] = (atk * 3F + StateEquip[ID.ATK_AH]) * (float)ConfigHandler.scaleShip[ID.ATK];
 		
-		//add formation
-		StateFinal[ID.ATK] = (EffectFormation[ID.Formation.ATK_L] * 0.01F + 1F) * StateFinal[ID.ATK];
+		//backup state final before buffs
+		this.StateFinalBU = this.StateFinal.clone();
+		
+		//update formation buff
+		updateFormationBuffs();
+		
+		//apply formation buff
+		if(this.getStateMinor(ID.M.FormatType) > 0) {
+			//mul buff
+			StateFinal[ID.ATK] = (EffectFormation[ID.Formation.ATK_L] * 0.01F + 1F) * StateFinal[ID.ATK];
+			StateFinal[ID.ATK_H] = (EffectFormation[ID.Formation.ATK_H] * 0.01F + 1F) * StateFinal[ID.ATK_H];
+			StateFinal[ID.ATK_AL] = (EffectFormation[ID.Formation.ATK_AL] * 0.01F + 1F) * StateFinal[ID.ATK_AL];
+			StateFinal[ID.ATK_AH] = (EffectFormation[ID.Formation.ATK_AH] * 0.01F + 1F) * StateFinal[ID.ATK_AH];
+			StateFinal[ID.DEF] = (EffectFormation[ID.Formation.DEF] * 0.01F + 1F) * StateFinal[ID.DEF];
+			
+			EffectEquip[ID.EF_CRI] = (EffectFormation[ID.Formation.CRI] * 0.01F + 1F) * EffectEquip[ID.EF_CRI];
+			EffectEquip[ID.EF_DHIT] = (EffectFormation[ID.Formation.DHIT] * 0.01F + 1F) * EffectEquip[ID.EF_DHIT];
+			EffectEquip[ID.EF_THIT] = (EffectFormation[ID.Formation.THIT] * 0.01F + 1F) * EffectEquip[ID.EF_THIT];
+			EffectEquip[ID.EF_MISS] = (EffectFormation[ID.Formation.MISS] * 0.01F + 1F) * EffectEquip[ID.EF_MISS];
+			EffectEquip[ID.EF_AA] = (EffectFormation[ID.Formation.AA] * 0.01F + 1F) * EffectEquip[ID.EF_AA];
+			EffectEquip[ID.EF_ASM] = (EffectFormation[ID.Formation.ASM] * 0.01F + 1F) * EffectEquip[ID.EF_ASM];
+			EffectEquip[ID.EF_DODGE] = (EffectFormation[ID.Formation.DODGE] * 0.01F + 1F) * EffectEquip[ID.EF_DODGE];
+			
+			//fixed buff
+			StateFinal[ID.MOV] = getEffectFormationFixed(ID.FormationFixed.MOV);
+		}
 		
 		//KB Resistance
 		float resisKB = ((StateMinor[ID.M.ShipLevel])/10F) * 0.05F;
 
-		//max cap
-		for(int i = 0; i < ConfigHandler.limitShip.length; i++) {
-			if(ConfigHandler.limitShip[i] >= 0D && StateFinal[i] > ConfigHandler.limitShip[i]) {
-				StateFinal[i] = (float) ConfigHandler.limitShip[i];
-			}
-		}
-		
-		if(ConfigHandler.limitShip[ID.ATK] >= 0D && StateFinal[ID.ATK_H] > ConfigHandler.limitShip[ID.ATK]) {
-			StateFinal[ID.ATK_H] = (float) ConfigHandler.limitShip[ID.ATK];
-		}
-		if(ConfigHandler.limitShip[ID.ATK] >= 0D && StateFinal[ID.ATK_AL] > ConfigHandler.limitShip[ID.ATK]) {
-			StateFinal[ID.ATK_AL] = (float) ConfigHandler.limitShip[ID.ATK];
-		}
-		if(ConfigHandler.limitShip[ID.ATK] >= 0D && StateFinal[ID.ATK_AH] > ConfigHandler.limitShip[ID.ATK]) {
-			StateFinal[ID.ATK_AH] = (float) ConfigHandler.limitShip[ID.ATK];
-		}
-
-		//min cap
-		if(StateFinal[ID.HP] < 1F) {
-			StateFinal[ID.HP] = 1F;
-		}
-		if(StateFinal[ID.HIT] < 1F) {
-			StateFinal[ID.HIT] = 1F;
-		}
-		if(StateFinal[ID.SPD] < 0F) {
-			StateFinal[ID.SPD] = 0F;
-		}
-		if(StateFinal[ID.MOV] < 0F) {
-			StateFinal[ID.MOV] = 0F;
-		}
+		//check limit
+		this.StateFinal = this.checkStateLimit(this.StateFinal);
+		this.StateFinalBU = this.checkStateLimit(this.StateFinalBU);
 		
 		//set attribute by final value
 		/**
@@ -653,7 +686,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		 */
 		getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(StateFinal[ID.HP]);
 		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(StateFinal[ID.MOV]);
-		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(StateFinal[ID.HIT]+16); //此為找目標, 路徑的範圍
+		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(StateFinal[ID.HIT]+32); //此為找目標, 路徑的範圍
 		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(resisKB);
 //		this.jumpMovementFactor = (1F + StateFinal[ID.MOV]) * 0.05F;
 		
@@ -678,7 +711,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				//level up sound
 				this.worldObj.playSoundAtEntity(this, "random.levelup", 0.75F, 1.0F);
 				StateMinor[ID.M.ExpCurrent] -= StateMinor[ID.M.ExpNext];	//level up
-				StateMinor[ID.M.ExpNext] = (StateMinor[ID.M.ShipLevel] + 1) * ConfigHandler.expMod + ConfigHandler.expMod;
+				StateMinor[ID.M.ExpNext] = (StateMinor[ID.M.ShipLevel] + 2) * ConfigHandler.expMod;
 				setShipLevel(++StateMinor[ID.M.ShipLevel], true);
 			}
 		}	
@@ -727,14 +760,21 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.StateMinor[ID.M.NumAmmoHeavy] = num;
 	}
 	
-	//ship attribute setter, sync packet in method: calcShipAttributes 
 	public void setStateFinal(int id, float par1) {
 		StateFinal[id] = par1;
+	}
+	
+	public void setStateFinalBU(int id, float par1) {
+		StateFinalBU[id] = par1;
 	}
 	
 	@Override
 	public void setStateMinor(int id, int par1) {
 		StateMinor[id] = par1;
+	}
+	
+	public void setUpdateFlag(int id, boolean par1) {
+		UpdateFlag[id] = par1;
 	}
 	
 	public void setEffectEquip(int id, float par1) {
@@ -743,6 +783,14 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	
 	public void setEffectFormation(int id, float par1) {
 		EffectFormation[id] = par1;
+	}
+	
+	public void setEffectFormation(float[] par1) {
+		EffectFormation = par1;
+	}
+	
+	public void setEffectFormationFixed(int id, float par1) {
+		EffectFormationFixed[id] = par1;
 	}
 	
 	public void setBonusPoint(int id, byte par1) {
@@ -860,7 +908,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	
 	/** send sync packet: sync all data */
 	public void sendSyncPacket() {
-		this.sendSyncPacket(0, false);
+		this.sendSyncPacket(0, false, false);
+	}
+	
+	/** send sync packet: sync all data */
+	public void sendFormationSyncPacket() {
+		this.sendSyncPacket(S2CEntitySync.PID.SyncShip_Formation, false, false);
 	}
 	
 	/**  sync data for GUI display */
@@ -878,14 +931,15 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	
 	/** sync data for emotion display */
 	public void sendEmotionSyncPacket() {
-		this.sendSyncPacket(1, true);
+		this.sendSyncPacket(1, true, true);
 	}
 	
 	/** send sync packet:
 	 *  type: 0: all  1: emotion  2: flag  3: minor
-	 *  send all: send packet to all player
+	 *  send all: send packet to all around player
+	 *  sync emo: sync emotion to all around player
 	 */
-	public void sendSyncPacket(int type, boolean sendAll) {
+	public void sendSyncPacket(int type, boolean sendAll, boolean syncEmo) {
 		if(!worldObj.isRemote) {
 			//send to all player
 			if(sendAll) {
@@ -900,11 +954,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				}
 				
 				//owner在附近才需要sync
-				if(player != null && this.getDistanceToEntity(player) < 65F) {
+				if(player != null && this.getDistanceToEntity(player) <= 64F) {
 					CommonProxy.channelE.sendTo(new S2CEntitySync(this, type), player);
 				}
-				
-				//send ship state for display
+			}
+			
+			if(syncEmo) {
+				//send ship state for client display
 				TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
 				CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this, 1), point);
 			}
@@ -1149,7 +1205,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 								changeOwner = true;
 								
 								//send sync packet
-								this.sendSyncPacket(3, true);
+								this.sendSyncPacket(3, true, false);
 							}//end player has data
 						}//end target != null
 					}//end item has 2 signs
@@ -1453,7 +1509,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         //server side check
         if((!worldObj.isRemote)) {
         	//update target
-        	EntityHelper.updateTarget(this);
+        	TargetHelper.updateTarget(this);
 //        	LogHelper.info("DEBUG: target:   "+this.getClass().getSimpleName()+" "+this.getEntityTarget()+"      "+this.getEntityRevengeTarget()+"      "+this.getAttackTarget());
         	
         	//update/init id
@@ -1466,9 +1522,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	
         	//check every 8 ticks
         	if(ticksExisted % 8 == 0) {
+        		//update formation buff (fast update)
+        		if(this.getUpdateFlag(ID.FU.FormationBuff)) calcEquipAndUpdateState();
+        		
         		//reset AI and sync once
         		if(!this.initAI && ticksExisted > 10) {
-        			this.setStateFlag(ID.F.CanDrop, true);
+        			setUpdateFlag(ID.FU.FormationBuff, true);  //set update formation buff
+        			setStateFlag(ID.F.CanDrop, true);
             		clearAITasks();
             		clearAITargetTasks();	//reset AI for get owner after loading NBT data
             		setAIList();
@@ -1478,18 +1538,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
             		
             		this.initAI = true;
         		}
-        		
-        		//use bucket automatically
-        		if((getMaxHealth() - getHealth()) > (getMaxHealth() * 0.1F + 5F)) {
-	                if(decrSupplies(7)) {
-	                	if(this instanceof BasicEntityShipSmall) {
-		                	this.heal(this.getMaxHealth() * 0.1F + 5F);	//1 bucket = 10% hp for small ship
-		                }
-		                else {
-		                	this.heal(this.getMaxHealth() * 0.05F + 10F);	//1 bucket = 5% hp for large ship
-		                }
-	                }
-	            }
 //        		LogHelper.info("DEBUG : check spawn: "+this.worldObj.getChunkProvider().getPossibleCreatures(EnumCreatureType.waterCreature, (int)posX, (int)posY, (int)posZ));
         	}//end every 8 ticks
         	
@@ -1525,6 +1573,16 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         		
         	}//end every 16 ticks
         	
+        	//check every 32 ticks
+        	if(this.ticksExisted % 32 == 0) {
+        		//use bucket automatically
+        		if((getMaxHealth() - getHealth()) > (getMaxHealth() * 0.1F + 5F)) {
+	                if(decrSupplies(7)) {
+		                this.heal(this.getMaxHealth() * 0.08F + 15F);	//1 bucket = 5% hp for large ship
+	                }
+	            }
+        	}//end every 32 ticks
+        	
         	//check every 64 ticks
         	if(ticksExisted % 64 == 0) {
         		if(this.getPlayerUID() > 0) {
@@ -1536,110 +1594,32 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     					//update owner entity id (could be changed when owner change dimension or dead)
             			this.setStateMinor(ID.M.PlayerEID, player.getEntityId());
             			//sync guard
-            			this.sendSyncPacket(3, false);
+            			this.sendSyncPacket(3, false, false);
             		}
         		}
 	        }//end every 64 ticks
         	
         	//check every 128 ticks
         	if(ticksExisted % 128 == 0) {
-        		float hpState = this.getHealth() / this.getMaxHealth();
+        		//update hp state
+        		updateHPState();
         		
-        		//check hp state
-        		if(hpState > 0.75F) {		//normal
-        			this.setStateEmotion(ID.S.HPState, ID.HPState.NORMAL, false);
-        		}
-        		else if(hpState > 0.5F){	//minor damage
-        			this.setStateEmotion(ID.S.HPState, ID.HPState.MINOR, false);
-        		}
-				else if(hpState > 0.25F){	//moderate damage
-					this.setStateEmotion(ID.S.HPState, ID.HPState.MODERATE, false);   			
-				}
-				else {						//heavy damage
-					this.setStateEmotion(ID.S.HPState, ID.HPState.HEAVY, false);
-				}
-        		
-        		//roll emtion: hungry > T_T > bored > O_O
-        		if(getStateFlag(ID.F.NoFuel)) {
-        			if(this.getStateEmotion(ID.S.Emotion) != ID.Emotion.HUNGRY) {
-//        				LogHelper.info("DEBUG : set emotion HUNGRY");
-	    				this.setStateEmotion(ID.S.Emotion, ID.Emotion.HUNGRY, false);
-	    			}
-        		}
-        		else {
-        			if(hpState < 0.5F) {
-    	    			if(this.getStateEmotion(ID.S.Emotion) != ID.Emotion.T_T) {
-//    	    				LogHelper.info("DEBUG : set emotion T_T");
-    	    				this.setStateEmotion(ID.S.Emotion, ID.Emotion.T_T, false);
-    	    			}			
-    	    		}
-        			else {
-        				if(this.isSitting() && this.getRNG().nextInt(2) == 0) {	//50% for bored
-        	    			if(this.getStateEmotion(ID.S.Emotion) != ID.Emotion.BORED) {
-//        	    				LogHelper.info("DEBUG : set emotion BORED");
-        	    				this.setStateEmotion(ID.S.Emotion, ID.Emotion.BORED, false);
-        	    			}
-        	    		}
-        	    		else {	//back to normal face
-        	    			if(this.getStateEmotion(ID.S.Emotion) != ID.Emotion.NORMAL) {
-//        	    				LogHelper.info("DEBUG : set emotion NORMAL");
-        	    				this.setStateEmotion(ID.S.Emotion, ID.Emotion.NORMAL, false);
-        	    			}
-        	    		}
-        			}
-        		}
-        		
-        		//sync emotion
-        		this.sendEmotionSyncPacket();
+        		//update mount
+        		updateMountSummon();
 
-        		//set air value
-        		if(this.getAir() < 300) {
-                	setAir(300);
-                }
-        		
-        		//get ammo if no ammo
-        		if(!this.hasAmmoLight()) { this.decrAmmoNum(2); }
-        		if(!this.hasAmmoHeavy()) { this.decrAmmoNum(3); }
-        		
-        		//calc move distance and eat grudge (check position 5 sec ago)
-        		double distX = posX - ShipPrevX;
-        		double distY = posY - ShipPrevY;
-        		double distZ = posZ - ShipPrevZ;
-        		ShipPrevX = posX;
-        		ShipPrevY = posY;
-        		ShipPrevZ = posZ;
-	        	int distSqrt = (int) MathHelper.sqrt_double(distX*distX + distY*distY + distZ*distZ);
-	        	decrGrudgeNum(distSqrt+5);	//eat grudge or change movement speed
-        		
-	        	//summon mounts
-	        	if(this.canSummonMounts()) {
-	        		//summon mount if emotion state >= equip00
-	  	  	  		if(getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
-	  	  	  			if(!this.isRiding()) {
-	  	  	  				//summon mount entity
-	  	  	  	  			BasicEntityMount mount = this.summonMountEntity();
-	  	  	  	  			this.worldObj.spawnEntityInWorld(mount);
-	  	  	  	  			
-	  	  	  	  			//clear rider
-	  	  	  	  			if(this.riddenByEntity != null) {
-	  	  	  	  				this.riddenByEntity.mountEntity(null);
-	  	  	  	  			}
-	  	  	  	  			
-	  	  	  	  			//set riding entity
-		  	  	  			this.mountEntity(mount);
-		  	  	  			
-		  	  	  			//sync rider
-		  	  	  			mount.sendSyncPacket();
-	  	  	  			}
-	  	  	  		}
-	        	}
+        		//update consume item
+        		updateConsumeItem();
         	}//end every 128 ticks
         	
         	//auto recovery every 512 ticks
         	if(this.ticksExisted % 512 == 0) {
+        		//HP auto regen
         		if(this.getHealth() < this.getMaxHealth()) {
         			this.setHealth(this.getHealth() + this.getMaxHealth() * 0.0128F);
         		}
+        		
+        		//update buff (slow update)
+        		calcEquipAndUpdateState();
         	}//end every 512 ticks
         	
         	//play timekeeping sound
@@ -1951,7 +1931,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			}
 			
 			//進行dodge計算
-			float dist = (float) this.getDistanceSqToEntity(attacker.getEntity());
+			float dist = (float) this.getDistanceSqToEntity(entity);
 			if(CalcHelper.canDodge(this, dist)) {
 				return false;
 			}
@@ -2454,6 +2434,178 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		target.applyEntityCollision(this);
     }
   	
+  	//check state limit
+  	protected float[] checkStateLimit(float[] par1) {
+  		//max cap
+		for(int i = 0; i < ConfigHandler.limitShip.length; i++) {
+			if(ConfigHandler.limitShip[i] >= 0D && par1[i] > ConfigHandler.limitShip[i]) {
+				par1[i] = (float) ConfigHandler.limitShip[i];
+			}
+		}
+		
+		if(ConfigHandler.limitShip[ID.ATK] >= 0D && par1[ID.ATK_H] > ConfigHandler.limitShip[ID.ATK]) {
+			par1[ID.ATK_H] = (float) ConfigHandler.limitShip[ID.ATK];
+		}
+		if(ConfigHandler.limitShip[ID.ATK] >= 0D && par1[ID.ATK_AL] > ConfigHandler.limitShip[ID.ATK]) {
+			par1[ID.ATK_AL] = (float) ConfigHandler.limitShip[ID.ATK];
+		}
+		if(ConfigHandler.limitShip[ID.ATK] >= 0D && par1[ID.ATK_AH] > ConfigHandler.limitShip[ID.ATK]) {
+			par1[ID.ATK_AH] = (float) ConfigHandler.limitShip[ID.ATK];
+		}
 
-	
+		//min cap
+		if(par1[ID.HP] < 1F) {
+			par1[ID.HP] = 1F;
+		}
+		if(par1[ID.HIT] < 1F) {
+			par1[ID.HIT] = 1F;
+		}
+		if(par1[ID.SPD] < 0.1F) {
+			par1[ID.SPD] = 0.1F;
+		}
+		if(par1[ID.MOV] < 0F) {
+			par1[ID.MOV] = 0F;
+		}
+		
+		return par1;
+  	}
+
+  	//update hp state
+  	protected void updateHPState() {
+  		float hpState = this.getHealth() / this.getMaxHealth();
+		
+		//check hp state
+		if(hpState > 0.75F) {		//normal
+			this.setStateEmotion(ID.S.HPState, ID.HPState.NORMAL, false);
+		}
+		else if(hpState > 0.5F){	//minor damage
+			this.setStateEmotion(ID.S.HPState, ID.HPState.MINOR, false);
+		}
+		else if(hpState > 0.25F){	//moderate damage
+			this.setStateEmotion(ID.S.HPState, ID.HPState.MODERATE, false);   			
+		}
+		else {						//heavy damage
+			this.setStateEmotion(ID.S.HPState, ID.HPState.HEAVY, false);
+		}
+		
+		//roll emtion: hungry > T_T > bored > O_O
+		if(getStateFlag(ID.F.NoFuel)) {
+			if(this.getStateEmotion(ID.S.Emotion) != ID.Emotion.HUNGRY) {
+//				LogHelper.info("DEBUG : set emotion HUNGRY");
+				this.setStateEmotion(ID.S.Emotion, ID.Emotion.HUNGRY, false);
+			}
+		}
+		else {
+			if(hpState < 0.5F) {
+    			if(this.getStateEmotion(ID.S.Emotion) != ID.Emotion.T_T) {
+//    				LogHelper.info("DEBUG : set emotion T_T");
+    				this.setStateEmotion(ID.S.Emotion, ID.Emotion.T_T, false);
+    			}			
+    		}
+			else {
+				if(this.isSitting() && this.getRNG().nextInt(2) == 0) {	//50% for bored
+	    			if(this.getStateEmotion(ID.S.Emotion) != ID.Emotion.BORED) {
+//	    				LogHelper.info("DEBUG : set emotion BORED");
+	    				this.setStateEmotion(ID.S.Emotion, ID.Emotion.BORED, false);
+	    			}
+	    		}
+	    		else {	//back to normal face
+	    			if(this.getStateEmotion(ID.S.Emotion) != ID.Emotion.NORMAL) {
+//	    				LogHelper.info("DEBUG : set emotion NORMAL");
+	    				this.setStateEmotion(ID.S.Emotion, ID.Emotion.NORMAL, false);
+	    			}
+	    		}
+			}
+		}
+		
+		//sync emotion
+		this.sendEmotionSyncPacket();
+  	}
+  	
+	//update hp state
+  	protected void updateMountSummon() {
+    	if(this.canSummonMounts()) {
+    		//summon mount if emotion state >= equip00
+  	  		if(getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
+  	  			if(!this.isRiding()) {
+  	  				//summon mount entity
+  	  	  			BasicEntityMount mount = this.summonMountEntity();
+  	  	  			this.worldObj.spawnEntityInWorld(mount);
+  	  	  			
+  	  	  			//clear rider
+  	  	  			if(this.riddenByEntity != null) {
+  	  	  				this.riddenByEntity.mountEntity(null);
+  	  	  			}
+  	  	  			
+  	  	  			//set riding entity
+	  	  			this.mountEntity(mount);
+	  	  			
+	  	  			//sync rider
+	  	  			mount.sendSyncPacket();
+  	  			}
+  	  		}
+    	}
+  	}
+  	
+  	//update consume item
+  	protected void updateConsumeItem() {
+  		//set air value
+		if(this.getAir() < 300) {
+        	setAir(300);
+        }
+		
+		//get ammo if no ammo
+		if(!this.hasAmmoLight()) { this.decrAmmoNum(2); }
+		if(!this.hasAmmoHeavy()) { this.decrAmmoNum(3); }
+		
+		//calc move distance and eat grudge (check position 5 sec ago)
+		double distX = posX - ShipPrevX;
+		double distY = posY - ShipPrevY;
+		double distZ = posZ - ShipPrevZ;
+		ShipPrevX = posX;
+		ShipPrevY = posY;
+		ShipPrevZ = posZ;
+    	int distSqrt = (int) MathHelper.sqrt_double(distX*distX + distY*distY + distZ*distZ);
+    	decrGrudgeNum(distSqrt+5);	//eat grudge or change movement speed
+  	}
+  	
+  	//update formation buffs, SERVER SIDE ONLY
+  	protected void updateFormationBuffs() {
+  		//check update flag
+  		if(!worldObj.isRemote) {
+  			ExtendPlayerProps props = EntityHelper.getExtendPlayerProps(this.getPlayerUID());
+			
+  			if(props != null) {
+  				//check ship is in formation team
+  				int[] teamslot = props.checkIsInFormationTeam(getShipUID());
+  				
+  				//if in team and can apply buff, set formation data
+  				if(teamslot[0] >= 0 && teamslot[1] >= 0) {
+  					//set formation type and pos
+  					setStateMinor(ID.M.FormatType, props.getFormatID(teamslot[0]));
+  					setStateMinor(ID.M.FormatPos, teamslot[1]);
+  					
+  					//set buff value
+  					setEffectFormation(FormationHelper.getFormationBuffValue(getStateMinor(ID.M.FormatType), teamslot[1]));
+  					setEffectFormationFixed(ID.FormationFixed.MOV, FormationHelper.getFormationMOV(props, teamslot[0]));  					
+  				}
+  				//not in team, clear buff
+  				else {
+  				//set formation type and pos
+  					setStateMinor(ID.M.FormatType, 0);
+  					setStateMinor(ID.M.FormatPos, -1);
+  					
+  					//reset buff value
+  					setEffectFormation(Values.zeros13);
+  					setEffectFormationFixed(ID.FormationFixed.MOV, 0F);
+  				}
+  			}
+  			
+  			//set done flag
+  			this.setUpdateFlag(ID.FU.FormationBuff, false);
+  		}
+  	}
+  	
+  	
+  	
 }

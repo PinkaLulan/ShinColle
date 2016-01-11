@@ -282,6 +282,8 @@ gui.shincolle:team.teamid=艦隊編號
 
 # GUI: Formation
 gui.shincolle:formation.formation=陣型
+gui.shincolle:formation.position=陣型位置
+gui.shincolle:formation.format0=無陣型
 gui.shincolle:formation.format1=單縱陣
 gui.shincolle:formation.format2=複縱陣
 gui.shincolle:formation.format3=輪形陣
@@ -340,7 +342,7 @@ gui.shincolle:carrieronly=航母限定
 gui.shincolle:critical=爆擊率
 gui.shincolle:doublehit=二連擊
 gui.shincolle:triplehit=三連擊
-gui.shincolle:missreduce=提高命中率
+gui.shincolle:missreduce=降低失誤率
 gui.shincolle:missrate=失誤率
 gui.shincolle:missrateair=失誤率(艦載機)
 gui.shincolle:modernkit=右鍵使用使棲艦隨機屬性 +1
@@ -360,3 +362,4 @@ gui.shincolle:dodge=閃避
 chat.shincolle:bossspawn1=有艦娘出現在水面上!
 chat.shincolle:bossspawn2=偵測到艦娘入侵!
 chat.shincolle:addtargetclass=新增/移除攻擊目標類型: %s
+chat.shincolle:pointer.changeformation=陣型變換為

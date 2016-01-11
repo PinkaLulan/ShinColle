@@ -119,7 +119,7 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
     		
     		//get update attributes
         	if(this.host2.ticksExisted % 64 == 0) {	
-        		this.launchDelayMax = (int)(100F / (this.host.getAttackSpeed()));
+        		this.launchDelayMax = (int)(120F / (this.host.getAttackSpeed()));
                 this.range = this.host.getAttackRange();
                 this.rangeSq = this.range * this.range;
         	}

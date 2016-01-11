@@ -6,6 +6,7 @@ import java.util.List;
 import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityOwnable;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntitySlime;
@@ -15,6 +16,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import com.lulan.shincolle.entity.BasicEntityAirplane;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.proxy.ServerProxy;
@@ -85,7 +87,7 @@ public class TargetHelper {
         		}
     		}
 			//«DshipÃþhost check onSight
-    		if(host instanceof EntityLiving) {
+			else if(host instanceof EntityLiving) {
     			if(!((EntityLiving)host).getEntitySenses().canSee(target2)) {
     				return false;
     			}
@@ -247,12 +249,84 @@ public class TargetHelper {
         		if(target2 instanceof EntityPlayer) {
         			return !EntityHelper.checkOP((EntityPlayer) target2);
         		}
-        		
         		return true;
         	}
         	return false;
         }
-
     }
+    
+    /** update target */
+	public static void updateTarget(IShipAttackBase host) {
+		//clear attack target
+		if(host.getEntityTarget() != null) {
+			//clear dead target
+			if(!host.getEntityTarget().isEntityAlive()) {
+				host.setEntityTarget(null);
+			}
+			//clear target if target is friendly
+			else if(EntityHelper.checkSameOwner((Entity)host, host.getEntityTarget())) {
+				host.setEntityTarget(null);
+			}
+		}
+
+		//clear revenge target
+		if(host.getEntityRevengeTarget() != null) {
+            if(!host.getEntityRevengeTarget().isEntityAlive()) {
+            	host.setEntityRevengeTarget(null);
+            }
+            //clear target after 200 ticks
+            else if (host.getTickExisted() - host.getEntityRevengeTime() > 200) {
+            	host.setEntityRevengeTarget(null);
+            }
+        }
+		
+		//clear vanilla attack target
+		if(host instanceof BasicEntityShipHostile) {
+			EntityLivingBase gettar = ((BasicEntityShipHostile) host).getAttackTarget();
+			
+			if(gettar != null) {
+				if(!gettar.isEntityAlive()) {
+					((BasicEntityShipHostile) host).setAttackTarget(null);
+				}
+				else if(EntityHelper.checkSameOwner((Entity)host, gettar)) {
+					((BasicEntityShipHostile) host).setAttackTarget(null);
+				}
+			}
+		}
+		
+		//clear invisible target every 64 ticks
+		if(host.getTickExisted() % 64 == 0) {
+			if(host.getEntityTarget() != null && host.getEntityTarget().isInvisible()) {
+				host.setEntityTarget(null);
+			}
+		}
+	}
+	
+	/** set ship's revenge target around player within X blocks */
+	public static void setRevengeTargetAroundPlayer(EntityPlayer player, double dist, Entity target) {
+		int pid = EntityHelper.getPlayerUID(player);
+		
+		if(pid > 0 && target != null) {
+			//get ship
+			int getpid = 0;
+			List<BasicEntityShip> list1 = player.worldObj.getEntitiesWithinAABB(BasicEntityShip.class,
+					player.boundingBox.expand(dist, dist, dist));
+			
+			if(list1 != null && !list1.isEmpty()) {
+				for(BasicEntityShip ship : list1) {
+					getpid = ship.getPlayerUID();
+					
+					//check same owner
+					if(!ship.equals(target) && getpid == pid) {
+						ship.setEntityRevengeTarget(target);
+						ship.setEntityRevengeTime();
+//						LogHelper.info("DEBUG : entity helper: revenge: "+ship+"  "+target);
+					}
+				}
+			}
+		}
+	}
+	
+	
 
 }

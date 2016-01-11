@@ -10,14 +10,13 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.player.EntityPlayerMP;
 
-import com.lulan.shincolle.entity.BasicEntityAirplane;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.IShipAttackBase;
+import com.lulan.shincolle.entity.IShipFlyable;
 import com.lulan.shincolle.entity.IShipInvisible;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.CalcHelper;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 
 
@@ -93,9 +92,9 @@ public class EntityAIShipRangeTarget extends EntityAIBase {
             	//Anti Air first
             	if(this.hostShip.getStateFlag(ID.F.AntiAir)) {
             		//find air target
-            		list1 = this.host2.worldObj.selectEntitiesWithinAABB(BasicEntityAirplane.class, 
+            		list1 = this.host2.worldObj.selectEntitiesWithinAABB(IShipFlyable.class,
                     		this.host2.boundingBox.expand(this.range, this.range * 0.75D, this.range), this.targetSelector);
-            		list2 = this.host2.worldObj.selectEntitiesWithinAABB(EntityFlying.class, 
+            		list2 = this.host2.worldObj.selectEntitiesWithinAABB(EntityFlying.class,
                     		this.host2.boundingBox.expand(this.range, this.range * 0.75D, this.range), this.targetSelector);
             		
             		//union list
