@@ -1,6 +1,7 @@
 package com.lulan.shincolle.ai.path;
 
 import com.lulan.shincolle.entity.IShipNavigator;
+import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.LogHelper;
@@ -341,7 +342,7 @@ public class ShipPathNavigate {
              //往下找出第一個非air的方塊
              do {
                  if(block != Blocks.air && block != null) {
-                	 if(EntityHelper.checkBlockIsLiquid(block)) {
+                	 if(BlockHelper.checkBlockIsLiquid(block)) {
                 		 return i + 0.4D;
                 	 }
                 	 else {
@@ -547,7 +548,7 @@ public class ShipPathNavigate {
                         Block block = this.worldObj.getBlock(x1, y1, z1);
                         
                         //若為安全類方塊, 則視為clear
-                        if(EntityHelper.checkBlockSafe(block)) return true;
+                        if(BlockHelper.checkBlockSafe(block)) return true;
                         
                         if(block == Blocks.fence) {
                         	return false;

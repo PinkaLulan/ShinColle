@@ -185,7 +185,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	  			
 	  			//calc dodge
 				float dist = (float) this.getDistanceSqToEntity(entity);
-				if(CalcHelper.canDodge(this, dist)) {
+				if(EntityHelper.canDodge(this, dist)) {
 					return false;
 				}
 	  			

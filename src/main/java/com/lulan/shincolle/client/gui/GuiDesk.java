@@ -1080,7 +1080,7 @@ public class GuiDesk extends GuiContainer {
 				texty += 7;
 				
 				//draw name drawSplitString
-				fontRendererObj.drawSplitString(tdata2.getTeamName(), 194, texty, 136, Values.Color.WHITE);
+				fontRendererObj.drawSplitString(tdata2.getTeamName(), 194, texty, 140, Values.Color.WHITE);
 				texty += 36;
 			}
 			//get null team data, draw space to guarantee order
@@ -1139,7 +1139,7 @@ public class GuiDesk extends GuiContainer {
 						texty += 6;
 						
 						//draw name
-						fontRendererObj.drawString(tdata3.getTeamName(), 11, texty, Values.Color.WHITE);
+						fontRendererObj.drawSplitString(tdata3.getTeamName(), 11, texty, 170, Values.Color.WHITE);
 						texty += 36;
 					}
 					//get null team data, draw space to guarantee order

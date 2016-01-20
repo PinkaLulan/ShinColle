@@ -9,7 +9,7 @@ import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.relauncher.Side;
@@ -54,7 +54,7 @@ public class EntityFXLaserNoTexture extends EntityFX {
         switch(type) {
         default:
         case 0:		//¬õ¥ú§ô¯¥
-        	float[] lookDeg = EntityHelper.getLookDegree(tarX-posX, tarY-posY, tarZ-posZ, false);
+        	float[] lookDeg = CalcHelper.getLookDegree(tarX-posX, tarY-posY, tarZ-posZ, false);
         	float[] posOffset = ParticleHelper.rotateXYZByYawPitch((float)par1, 0F, 0.78F, lookDeg[0], lookDeg[1], 1F);
         	this.shotYaw = lookDeg[0];
         	this.shotPitch = lookDeg[1];
@@ -219,7 +219,7 @@ public class EntityFXLaserNoTexture extends EntityFX {
     	else {
     		switch(this.particleType) {
     		case 0:	//¬õ¥ú¯¥
-    			float[] lookDeg = EntityHelper.getLookDegree(tarX-posX, tarY-posY, tarZ-posZ, false);
+    			float[] lookDeg = CalcHelper.getLookDegree(tarX-posX, tarY-posY, tarZ-posZ, false);
             	float[] posOffset = ParticleHelper.rotateXYZByYawPitch((float)par1, 0F, 0.78F, lookDeg[0], lookDeg[1], 1F);
             	this.shotYaw = lookDeg[0];
             	this.shotPitch = lookDeg[1];

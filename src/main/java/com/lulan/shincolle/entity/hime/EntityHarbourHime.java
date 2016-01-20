@@ -24,6 +24,7 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
@@ -73,10 +74,10 @@ public class EntityHarbourHime extends BasicEntityShipLarge {
   		if(!worldObj.isRemote) {
 //  			LogHelper.info("DEBUG : hb target "+this.getEntityTarget());
   			//heal effect
-        	if(this.ticksExisted % 160 == 0) {
+        	if(this.ticksExisted % 128 == 0) {
         		//1: 增強被動回血
         		if(getStateMinor(ID.M.NumGrudge) > 0 && this.getHealth() < this.getMaxHealth()) {
-        			this.setHealth(this.getHealth() + this.getMaxHealth() * 0.03F);
+        			this.setHealth(this.getHealth() + this.getMaxHealth() * 0.03125F);
         		}
         		
         		//2: 結婚後, 周圍某一目標回血, 包括玩家, 回血目標依等級提昇
@@ -99,7 +100,7 @@ public class EntityHarbourHime extends BasicEntityShipLarge {
 	            				hitEntity.heal(4F + this.getLevel() * 0.06F);
 		            			healCount--;
 		            		}
-		            		else if(hitEntity instanceof BasicEntityShip) {
+		            		else if(hitEntity instanceof BasicEntityShip && EntityHelper.checkIsAlly(this, hitEntity)) {
 		            			hitEntity.heal(4F + hitEntity.getMaxHealth() * 0.06F + this.getLevel() * 0.2F);
 		            			healCount--;
 			            	}

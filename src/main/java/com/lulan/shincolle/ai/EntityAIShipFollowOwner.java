@@ -58,8 +58,8 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
             		return false;
             	}
             	
-            	float fMin = host.getStateMinor(ID.M.FollowMin);
-            	float fMax = host.getStateMinor(ID.M.FollowMax);
+            	float fMin = host.getStateMinor(ID.M.FollowMin) + host2.width * 0.75F;
+            	float fMax = host.getStateMinor(ID.M.FollowMax) + host2.width * 0.75F;
             	this.minDistSq = fMin * fMin;
                 this.maxDistSq = fMax * fMax;
 
@@ -127,7 +127,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
         	this.findCooldown--;
         	
         	//update follow range every 60 ticks
-        	if(host2.ticksExisted % 60 == 0){
+        	if(host2.ticksExisted % 64 == 0){
         		//update owner distance
             	EntityLivingBase OwnerEntity = EntityHelper.getEntityPlayerByUID(this.host.getPlayerUID(), this.host2.worldObj);
 
@@ -139,8 +139,8 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
                 		return;
                 	}
                 	
-                	float fMin = host.getStateMinor(ID.M.FollowMin);
-                	float fMax = host.getStateMinor(ID.M.FollowMax);
+                	float fMin = host.getStateMinor(ID.M.FollowMin) + host2.width * 0.75F;
+                	float fMax = host.getStateMinor(ID.M.FollowMax) + host2.width * 0.75F;
                 	this.minDistSq = fMin * fMin;
                     this.maxDistSq = fMax * fMax;
 
@@ -189,12 +189,11 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
     			
     			//check path result
             	if(this.host2.dimension == this.owner.dimension && !this.ShipNavigator.tryMoveToEntityLiving(this.owner, 1D)) {
-            		LogHelper.info("DEBUG : follow AI: fail to follow, cannot reach or too far away");
             		//若超過max dist持續240ticks, 則teleport
             		if(this.distSq > this.maxDistSq) {
             			this.checkTeleport2++;
                 		
-                		if(this.checkTeleport2 > 8) {
+                		if(this.checkTeleport2 > 12) {
                 			this.checkTeleport2 = 0;
                 			//相同dim才傳送
                 			LogHelper.info("DEBUG : follow AI: teleport entity: dimension check: "+host2.dimension+" "+owner.dimension);

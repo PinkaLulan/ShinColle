@@ -245,11 +245,11 @@ public class Values {
 		put(25,  new float[] {35F,  35F,  10F,   10F,   -25F, 0F,    20F, 15F,  20F, 25F, 25F, 0F,   0F});
 		//Diamond             ATK_L ATK_H ATK_AL ATK_AH DEF   MOV    MISS DODGE CRI  DHIT THIT AA    ASM
 		put(30,  new float[] {-50F, -50F, 75F,   75F,   50F,  -0.1F, 0F,  -50F, 0F,  0F,  0F,  50F,  30F});
-		put(31,  new float[] {-50F, -50F, 75F,   75F,   50F,  -0.1F, 0F,  -50F, 0F,  0F,  0F,  50F,  30F});
+		put(31,  new float[] {-25F, -25F, 40F,   40F,   25F,  -0.1F, 10F, 0F,   10F, 0F,  0F,  100F, 75F});
 		put(32,  new float[] {-25F, -25F, 40F,   40F,   25F,  -0.1F, 10F, 0F,   10F, 0F,  0F,  100F, 75F});
 		put(33,  new float[] {-25F, -25F, 40F,   40F,   25F,  -0.1F, 10F, 0F,   10F, 0F,  0F,  100F, 75F});
 		put(34,  new float[] {-25F, -25F, 40F,   40F,   25F,  -0.1F, 10F, 0F,   10F, 0F,  0F,  100F, 75F});
-		put(35,  new float[] {-25F, -25F, 40F,   40F,   25F,  -0.1F, 10F, 0F,   10F, 0F,  0F,  100F, 75F});
+		put(35,  new float[] {-50F, -50F, 75F,   75F,   50F,  -0.1F, 0F,  -50F, 0F,  0F,  0F,  50F,  30F});
 		//Echelon             ATK_L ATK_H ATK_AL ATK_AH DEF   MOV    MISS DODGE CRI  DHIT THIT AA    ASM
 		put(40,  new float[] {20F,  30F,  0F,    0F,    -25F, 0.15F, 25F, -25F, 25F, 25F, 25F, -25F, 25F});
 		put(41,  new float[] {15F,  25F,  0F,    0F,    -15F, 0.15F, 20F, -15F, 20F, 20F, 20F, -25F, 25F});

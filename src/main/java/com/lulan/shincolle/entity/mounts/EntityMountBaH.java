@@ -92,7 +92,7 @@ public class EntityMountBaH extends BasicEntityMount {
         super.updateRiderPosition();
         
         //sync rotate angle
-  		if(this.riddenByEntity != null) {
+  		if(this.riddenByEntity != null && this.host != null) {
   			float[] ridePos = ParticleHelper.rotateXZByAxis(1.05F, 0F, this.renderYawOffset * Values.N.RAD_MUL, 1F);	
 			this.riddenByEntity.setPosition(this.host.posX + ridePos[1], this.host.posY + 0D, this.host.posZ + ridePos[0]);
   		}

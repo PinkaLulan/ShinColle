@@ -421,6 +421,23 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		return num;
 	}
 	
+	/** get formation position in team, mainly for diamond formation, return 0~5 or -1: ship not found */
+	public int getFormationPos(int teamID, int sid) {
+		int pos = 0;
+		
+		for(int i = 0; i < 6; i++) {
+			if(teamList[teamID][i] != null) {
+				if(sidList[teamID][i] == sid) {
+					return pos;
+				}
+				
+				pos++;
+			}
+		}
+		
+		return -1;  //ship not found!!
+	}
+	
 	/** get min move speed WITHOUT BUFF in team */
 	public float getMinMOVInTeam(int teamID) {
 		float mov = 10F;
@@ -613,11 +630,11 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 	 * 
 	 * 若useTeamID = true, 表示不考慮是否重複之類的, 強制插入到slot的位置
 	 */
-	public void addEntityToTeam(int slot, BasicEntityShip entity, boolean useTeamID) {
+	public void addEntityToTeam(int slot, BasicEntityShip entity, boolean forceAdd) {
 		boolean canAdd = false;
 		
 		//client 收到sync packets
-		if(useTeamID) {
+		if(forceAdd) {
 			if(slot > 5) slot = 0;
 			addEntityToCurrentTeam(slot, entity);
 			return;
@@ -693,20 +710,25 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		return val;
 	}
 	
-	/** check target is in team with #ship > 4, return {team id, slot id}*/
+	/** check target is in team with #ship > 4 and formation type > 0
+	 * 
+	 *  return {team id, slot id}*/
 	public int[] checkIsInFormationTeam(int shipID) {
 		int[] val = new int[] {-1, -1};
 		
 		if(shipID > 0) {
 			for(int i = 0; i < 9; i++) {
-				//val: 0:#ship, 1:slot id
-				val = checkIsInTeam(shipID, i);
-				
-				//#ship > 4 and ship existed
-				if(val[0] > 4 && val[1] >= 0) {
-					//set val[0] = team id, val[1] = slot id
-					val[0] = i;
-					break;
+				//team is in formation
+				if(this.getFormatID(i) > 0) {
+					//val: 0:#ship, 1:slot id
+					val = checkIsInTeam(shipID, i);
+					
+					//ship in team and #ship > 4
+					if(val[0] > 4 && val[1] >= 0) {
+						//set val[0] = team id, val[1] = slot id
+						val[0] = i;
+						break;
+					}
 				}
 			}
 		}

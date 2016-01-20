@@ -80,10 +80,10 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
   		//server side
   		if(!worldObj.isRemote) {
   			//every 80 ticks
-        	if(this.ticksExisted % 80 == 0) {
+        	if(this.ticksExisted % 64 == 0) {
         		//1: 增強被動回血
         		if(getStateMinor(ID.M.NumGrudge) > 0 && this.getHealth() < this.getMaxHealth()) {
-        			this.setHealth(this.getHealth() + this.getMaxHealth() * 0.015F);
+        			this.setHealth(this.getHealth() + this.getMaxHealth() * 0.015625F);
         		}
         		
         		//2: 結婚後, 周圍某一目標回血, 包括玩家, 回血目標依等級提昇
@@ -92,7 +92,7 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
 					int healCount = this.getLevel() / 25 + 1;
 		            EntityLivingBase hitEntity = null;
 		            List hitList = null;
-		            hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, this.boundingBox.expand(6D, 6D, 6D));
+		            hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, this.boundingBox.expand(8D, 8D, 8D));
 		           
 		            for(int i = 0; i < hitList.size(); i++) {
 		            	//補血名額沒了, break
@@ -106,7 +106,7 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
 	            				hitEntity.heal(1F + this.getLevel() * 0.02F);
 		            			healCount--;
 		            		}
-		            		else if(hitEntity instanceof BasicEntityShip) {
+		            		else if(hitEntity instanceof BasicEntityShip && EntityHelper.checkIsAlly(this, hitEntity)) {
 		            			hitEntity.heal(1F + hitEntity.getMaxHealth() * 0.02F + this.getLevel() * 0.1F);
 		            			healCount--;
 			            	}
@@ -115,8 +115,8 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
 				}//end heal ability
         	}//end 80 ticks
         	
-        	//every 200 ticks
-        	if(this.ticksExisted % 200 == 0) {
+        	//every 256 ticks
+        	if(this.ticksExisted % 256 == 0) {
         		int roll = this.rand.nextInt(5);
 //        		LogHelper.info("DEBUG : hoppo go riding "+roll);
         		//每一段時間檢查是否要騎乘其他entity
@@ -220,7 +220,7 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
 	            	//只騎乘同主人的棲艦或者主人
 	            	if(getEnt instanceof BasicEntityShip || getEnt instanceof EntityPlayer) {
 	            		if(getEnt != this && !getEnt.isRiding() && getEnt.riddenByEntity == null &&
-	            			EntityHelper.checkSameOwner(this, getEnt)) {
+	            		   EntityHelper.checkSameOwner(this, getEnt)) {
 	            			this.goRidingTicks = 0;
 	            			this.goRiding = true;
 	            			this.goRideEntity = getEnt;

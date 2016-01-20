@@ -119,8 +119,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	protected String ownerName;
 	
 	//for initial
-	private boolean initAI;
-	private boolean isUpdated;	//updated ship id/owner id tag
+	private boolean initAI, initWaitAI;	//init flag
+	private boolean isUpdated;			//updated ship id/owner id tag
 	private int updateTime = 16;		//update check interval
 	
 	
@@ -159,7 +159,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		
 		//for AI
 		this.ShipDepth = 0D;			//water block above ship (within ship position)
-		this.ShipPrevX = posX;		//ship position 5 sec ago
+		this.ShipPrevX = posX;			//ship position 5 sec ago
 		this.ShipPrevY = posY;
 		this.ShipPrevZ = posZ;
 		this.ownerName = "";
@@ -168,12 +168,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.shipMoveHelper = new ShipMoveHelper(this, 25F);
 		
 		//for render
-		this.StartEmotion = -1;		//emotion start time
+		this.StartEmotion = -1;			//emotion start time
 		this.StartEmotion2 = -1;		//head tile cooldown
 		this.rotateAngle = new float[] {0F, 0F, 0F};		//model rotate angle (right hand)
 		
 		//for init
-		this.initAI = false;
+		this.initAI = false;			//normal init
+		this.initWaitAI = false;		//slow init after player entity loaded
 		this.isUpdated = false;
 	}
 	
@@ -307,7 +308,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			this.targetTasks.addTask(1, new EntityAIShipRevengeTarget(this));
 			this.targetTasks.addTask(5, new EntityAIShipRangeTarget(this, Entity.class));
 		}
-		LogHelper.info("DEBUG : ship target AI list: "+this.targetTasks.taskEntries.size());
 	}
 
 	//clear AI
@@ -1527,7 +1527,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         		
         		//reset AI and sync once
         		if(!this.initAI && ticksExisted > 10) {
-        			setUpdateFlag(ID.FU.FormationBuff, true);  //set update formation buff
         			setStateFlag(ID.F.CanDrop, true);
             		clearAITasks();
             		clearAITargetTasks();	//reset AI for get owner after loading NBT data
@@ -1601,6 +1600,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	
         	//check every 128 ticks
         	if(ticksExisted % 128 == 0) {
+        		//delayed init, waiting for player entity loaded
+        		if(!this.initWaitAI && ticksExisted == 128) {
+        			setUpdateFlag(ID.FU.FormationBuff, true);  //set update formation buff
+        			
+        			this.initWaitAI = true;
+        		}
+        		
         		//update hp state
         		updateHPState();
         		
@@ -1611,16 +1617,16 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         		updateConsumeItem();
         	}//end every 128 ticks
         	
-        	//auto recovery every 512 ticks
-        	if(this.ticksExisted % 512 == 0) {
-        		//HP auto regen
-        		if(this.getHealth() < this.getMaxHealth()) {
-        			this.setHealth(this.getHealth() + this.getMaxHealth() * 0.0128F);
-        		}
-        		
+        	//check every 256 ticks
+        	if(this.ticksExisted % 256 == 0) {
         		//update buff (slow update)
         		calcEquipAndUpdateState();
-        	}//end every 512 ticks
+        		
+        		//HP auto regen
+        		if(this.getHealth() < this.getMaxHealth()) {
+        			this.setHealth(this.getHealth() + this.getMaxHealth() * 0.015625F + 1);
+        		}
+        	}//end every 256 ticks
         	
         	//play timekeeping sound
         	if(ConfigHandler.timeKeeping) {
@@ -1932,7 +1938,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			
 			//進行dodge計算
 			float dist = (float) this.getDistanceSqToEntity(entity);
-			if(CalcHelper.canDodge(this, dist)) {
+			if(EntityHelper.canDodge(this, dist)) {
 				return false;
 			}
 			
@@ -2192,7 +2198,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		if(getStateFlag(ID.F.NoFuel)) {
 			//原本有AI, 則清除之
 			if(this.targetTasks.taskEntries.size() > 0) {
-				LogHelper.info("DEBUG : No fuel, clear AI "+this);
+//				LogHelper.info("DEBUG : No fuel, clear AI "+this);
 				clearAITasks();
 				clearAITargetTasks();
 				sendSyncPacket();
@@ -2206,7 +2212,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		//has fuel, set AI
 		else {
 			if(this.targetTasks.taskEntries.size() < 2) {
-				LogHelper.info("DEBUG : Get fuel, set AI "+this);
+//				LogHelper.info("DEBUG : Get fuel, set AI "+this);
 				clearAITasks();
 				clearAITargetTasks();
 				setAIList();
@@ -2574,20 +2580,34 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		//check update flag
   		if(!worldObj.isRemote) {
   			ExtendPlayerProps props = EntityHelper.getExtendPlayerProps(this.getPlayerUID());
-			
+  			
   			if(props != null) {
   				//check ship is in formation team
   				int[] teamslot = props.checkIsInFormationTeam(getShipUID());
   				
   				//if in team and can apply buff, set formation data
-  				if(teamslot[0] >= 0 && teamslot[1] >= 0) {
+  				if(teamslot[0] >= 0 && teamslot[1] >= 0 && props.getFormatID(teamslot[0]) > 0) {
   					//set formation type and pos
   					setStateMinor(ID.M.FormatType, props.getFormatID(teamslot[0]));
-  					setStateMinor(ID.M.FormatPos, teamslot[1]);
+  					
+  					//if diamond formation with 5 ships
+  					if(this.getStateMinor(ID.M.FormatType) == 3 &&
+  					   props.getNumberOfShip(teamslot[0]) == 5) {
+  						//diamond with 5 ship: formation position != team position
+  						int slotID = props.getFormationPos(teamslot[0], getShipUID());
+  						
+  						if(slotID >= 0) {
+  							setStateMinor(ID.M.FormatPos, slotID);
+  						}
+  					}
+  					//other formation
+  					else {
+  						setStateMinor(ID.M.FormatPos, teamslot[1]);
+  					}
   					
   					//set buff value
-  					setEffectFormation(FormationHelper.getFormationBuffValue(getStateMinor(ID.M.FormatType), teamslot[1]));
-  					setEffectFormationFixed(ID.FormationFixed.MOV, FormationHelper.getFormationMOV(props, teamslot[0]));  					
+  					setEffectFormation(FormationHelper.getFormationBuffValue(getStateMinor(ID.M.FormatType), getStateMinor(ID.M.FormatPos)));
+  					setEffectFormationFixed(ID.FormationFixed.MOV, FormationHelper.getFormationMOV(props, teamslot[0]));
   				}
   				//not in team, clear buff
   				else {

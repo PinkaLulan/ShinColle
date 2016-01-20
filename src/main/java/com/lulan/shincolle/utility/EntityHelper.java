@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityFlying;
@@ -19,7 +18,6 @@ import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.passive.EntityWaterMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
 import net.minecraft.pathfinding.PathEntity;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.server.MinecraftServer;
@@ -31,8 +29,6 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.fluids.BlockFluidBase;
-import net.minecraftforge.fluids.IFluidBlock;
 
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathEntity;
@@ -40,10 +36,11 @@ import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.ai.path.ShipPathPoint;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
 import com.lulan.shincolle.entity.IShipAttackBase;
+import com.lulan.shincolle.entity.IShipAttributes;
 import com.lulan.shincolle.entity.IShipFloating;
+import com.lulan.shincolle.entity.IShipInvisible;
 import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CEntitySync;
@@ -53,7 +50,6 @@ import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.team.TeamData;
 import com.lulan.shincolle.tileentity.TileEntityDesk;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
@@ -64,43 +60,22 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class EntityHelper {
-
+	
 	private static Random rand = new Random();
+
 	
 	public EntityHelper() {}
 
-	/**check block is safe (not solid block) */
-	public static boolean checkBlockSafe(World world, int x, int y, int z) {
-		Block block = world.getBlock(x, y, z);
-		return checkBlockSafe(block);
-	}
-	
-	/**check block is safe (not solid block) */
-	public static boolean checkBlockSafe(Block block) {
-		if(block.getMaterial() == Material.air || block == null || checkBlockIsLiquid(block)) {
-    		return true;
-    	}	
-		return false;
-	}
-	
-	/**check block is liquid (not air or solid block) */
-	public static boolean checkBlockIsLiquid(Block block) {
-        if(block instanceof BlockLiquid || block instanceof IFluidBlock || block instanceof BlockFluidBase) {
-            return true;
-        }		
-		return false;
-	}
-	
 	/**check entity is in (stand on, y+0D) liquid (not air or solid block) */
 	public static boolean checkEntityIsInLiquid(Entity entity) {
 		Block block = entity.worldObj.getBlock(MathHelper.floor_double(entity.posX), (int)(entity.boundingBox.minY), MathHelper.floor_double(entity.posZ));
-		return checkBlockIsLiquid(block);
+		return BlockHelper.checkBlockIsLiquid(block);
 	}
 	
-	/**check entity is free to move in (stand in, y+0.5D) the block */
+	/**check entity is free to move (stand in, y+0.5D) the block */
 	public static boolean checkEntityIsFree(Entity entity) {
 		Block block = entity.worldObj.getBlock(MathHelper.floor_double(entity.posX), (int)(entity.boundingBox.minY + 0.5D), MathHelper.floor_double(entity.posZ));
-		return checkBlockSafe(block);
+		return BlockHelper.checkBlockSafe(block);
 	}
 	
 	/**check entity is air or underwater mob, return 0:default 1:air 2:water */
@@ -145,13 +120,13 @@ public class EntityHelper {
 		Block BlockCheck = checkBlockWithOffset(entityCD, 0);
 		double depth = 0;
 		
-		if(EntityHelper.checkBlockIsLiquid(BlockCheck)) {
+		if(BlockHelper.checkBlockIsLiquid(BlockCheck)) {
 			depth = 1;
 
 			for(int i = 1; entityCD.posY + i < 255D; i++) {
 				BlockCheck = checkBlockWithOffset(entityCD, i);
 				
-				if(EntityHelper.checkBlockIsLiquid(BlockCheck)) {
+				if(BlockHelper.checkBlockIsLiquid(BlockCheck)) {
 					depth++;
 				}
 				else {	//最上面碰到空氣類方塊才可以上浮, 否則不上浮
@@ -217,6 +192,10 @@ public class EntityHelper {
 			
 			//host and target has player owner
 			if(hostID > 0 && tarID > 0) {
+				//if same owner, return true
+				if(hostID == tarID) return true;
+				
+				//not same owner, check team
 				TeamData hostTeam = getTeamDataByUID(hostID);
 				TeamData tarTeam = getTeamDataByUID(tarID);
 				
@@ -803,121 +782,6 @@ public class EntityHelper {
 		}	
 	}
 	
-	/**find random position with block check
-	//mode 0: find y = Y+1 ~ Y+3 and XZ at side of target
-	//mode 1: find y = Y-2 ~ Y+2 (NYI)
-	 */
-	public static double[] findRandomPosition(Entity host, Entity target, double minDist, double randDist, int mode) {
-		Block findBlock = null;
-		double[] newPos = new double[] {0D, 0D, 0D};
-		
-		//try 25 times
-		for(int i = 0; i < 25; i++) {
-			switch(mode) {
-			case 0:	 //隨機選擇目標周圍四個象限
-				//find side position
-				newPos[0] = rand.nextDouble() * randDist + minDist;	//ran = min + randN
-				newPos[1] = rand.nextDouble() * randDist + target.posY + 1D;
-				newPos[2] = rand.nextDouble() * randDist + minDist;
-
-				switch(rand.nextInt(4)) {
-				case 0:
-					newPos[0] = target.posX + newPos[0];
-					newPos[2] = target.posZ - newPos[2];
-					break;
-				case 1:
-					newPos[0] = target.posX - newPos[0];
-					newPos[2] = target.posZ + newPos[2];
-					break;
-				case 2:
-					newPos[0] = target.posX - newPos[0];
-					newPos[2] = target.posZ - newPos[2];
-					break;
-				case 3:
-					newPos[0] = target.posX + newPos[0];
-					newPos[2] = target.posZ + newPos[2];
-					break;
-				}//end inner switch
-				break;
-			case 1:  //繞背法, 隨機選擇背面兩個象限
-				//find side position
-				newPos[0] = rand.nextDouble() * randDist + minDist;	//ran = min + randN
-				newPos[1] = rand.nextDouble() * randDist + target.posY - 1D;
-				newPos[2] = rand.nextDouble() * randDist + minDist;
-				
-				//get direction
-				double dx = host.posX - target.posX;
-				double dz = host.posZ - target.posZ;
-				
-				if(dx > 0) {
-					newPos[0] = target.posX - newPos[0];
-				}
-				else {
-					newPos[0] = target.posX + newPos[0];
-				}
-				
-				if(dz > 0) {
-					newPos[2] = target.posZ - newPos[2];
-				}
-				else {
-					newPos[2] = target.posZ - newPos[2];
-				}
-				break;
-			case 2:  //直線前進法, 依照移動方向繼續往前
-				//find side position
-				newPos[0] = rand.nextDouble() * randDist + minDist;	//ran = min + randN
-				newPos[1] = rand.nextDouble() * randDist + target.posY + 1D;
-				newPos[2] = rand.nextDouble() * randDist + minDist;
-				
-				if(host.motionX < 0) {
-					newPos[0] = target.posX - newPos[0];
-				}
-				else {
-					newPos[0] = target.posX + newPos[0];
-				}
-				
-				if(host.motionZ < 0) {
-					newPos[2] = target.posZ - newPos[2];
-				}
-				else {
-					newPos[2] = target.posZ + newPos[2];
-				}
-				break;
-			}//end mode switch
-			
-			//check block
-			findBlock = host.worldObj.getBlock((int)newPos[0], (int)newPos[1], (int)newPos[2]);
-			if(findBlock != null && (findBlock == Blocks.air || findBlock == Blocks.water)) {
-				return newPos;
-			}	
-		}
-		
-		//find block fail, return target position
-		newPos[0] = target.posX;
-		newPos[1] = target.posY + 2D;
-		newPos[2] = target.posZ;
-		
-		return newPos;
-	}	
-	
-	/**由XYZ三個向量值計算 [XZ夾角(Yaw), XY夾角(Pitch)], return單位為度數
-	 */
-	public static float[] getLookDegree(double motX, double motY, double motZ, boolean getDegree) {
-		//計算模型要轉的角度 (RAD, not DEG)
-        double f1 = MathHelper.sqrt_double(motX*motX + motZ*motZ);
-        float[] degree = new float[2];
-        
-        degree[1] = -(float)(Math.atan2(motY, f1));
-        degree[0] = -(float)(Math.atan2(motX, motZ));
-
-        if(getDegree) {	//get degree value
-        	degree[0] *= Values.N.RAD_DIV;
-        	degree[1] *= Values.N.RAD_DIV;
-        }
-        
-        return degree;
-	}
-
 	/** update ship path navigator */
 	public static void updateShipNavigator(IShipAttackBase entity) {
 		EntityLiving entity2 = (EntityLiving) entity;
@@ -992,21 +856,6 @@ public class EntityHelper {
 			}
         }
 	}
-	
-	/**ray trace for block, include liquid block
-	 * 
-	 */
-	@SideOnly(Side.CLIENT)
-    public static MovingObjectPosition getPlayerMouseOverBlock(double dist, float duringTicks) {
-        EntityPlayer player = ClientProxy.getClientPlayer();
-		
-		Vec3 vec3 = player.getPosition(duringTicks);
-        Vec3 vec31 = player.getLook(duringTicks);
-        Vec3 vec32 = vec3.addVector(vec31.xCoord * dist, vec31.yCoord * dist, vec31.zCoord * dist);
-        
-        //func_147447_a(所有視線追蹤皆用此方法) 參數: entity位置, entity視線最遠位置, 是否抓液體方塊, ??, 距離內沒抓到任何東西回傳MISS(而不是回傳null)
-        return player.worldObj.func_147447_a(vec3, vec32, true, false, false);
-    }
 	
 	/**ray trace for entity: 
 	 * 1. get the farest block
@@ -1248,26 +1097,39 @@ public class EntityHelper {
 		BasicEntityShip[] ships = props.getEntityOfCurrentMode(parms[0]);
 		int worldID = player.worldObj.provider.dimensionId;
 		
+		
 		if(props != null) {
+			//get current team formation id
+			int formatID = props.getCurrentFormatID();
+			
 			switch(parms[0]) {
 			default:	//single mode
 				if(ships[0] != null && ships[0].worldObj.provider.dimensionId == worldID) {
-					//設定ship移動地點
-					applyShipGuard(ships[0], parms[1], parms[2], parms[3], parms[4]);
-					//sync guard
-					CommonProxy.channelE.sendTo(new S2CEntitySync(ships[0], 3), (EntityPlayerMP) player);
+					//不在formation中才能用single mode
+					if(formatID <= 0) {
+						//設定ship移動地點
+						applyShipGuard(ships[0], parms[1], parms[2], parms[3], parms[4]);
+						//sync guard
+						CommonProxy.channelE.sendTo(new S2CEntitySync(ships[0], 3), (EntityPlayerMP) player);
+					}
 				}
 				break;
 			case 1:		//group mode
-			case 2:		//formation mode
 				for(int i = 0;i < ships.length; i++) {
 					if(ships[i] != null && ships[i].worldObj.provider.dimensionId == worldID) {
-						//設定ship移動地點
-						applyShipGuard(ships[i], parms[1], parms[2], parms[3], parms[4]);
-						//sync guard
-						CommonProxy.channelE.sendTo(new S2CEntitySync(ships[i], 3), (EntityPlayerMP) player);
+						//不在formation中才能用single mode
+						if(formatID <= 0) {
+							//設定ship移動地點
+							applyShipGuard(ships[i], parms[1], parms[2], parms[3], parms[4]);
+							//sync guard
+							CommonProxy.channelE.sendTo(new S2CEntitySync(ships[i], 3), (EntityPlayerMP) player);
+						}
 					}
 				}
+				break;
+			case 2:		//formation mode
+				//set formation position
+				FormationHelper.applyFormationMoving(ships, formatID, parms[2], parms[3], parms[4]);
 				break;
 			}//end switch
 		}
@@ -1342,6 +1204,30 @@ public class EntityHelper {
 			//sync team list to client
 			CommonProxy.channelG.sendTo(new S2CGUIPackets(props, S2CGUIPackets.PID.SyncPlayerProp), (EntityPlayerMP) player);
 		}	
+	}
+
+	/** calc can dodge */
+	public static boolean canDodge(IShipAttributes ent, float dist) {
+		if(ent != null) {
+			int dodge = (int) ent.getEffectEquip(ID.EF_DODGE);
+			Entity ent2 = (Entity) ent;
+			
+			if(ent instanceof IShipInvisible && dist > 36F) {  //dist > 6 blocks
+				dodge += (int) ((IShipInvisible)ent).getInvisibleLevel();
+				//check limit
+				if(dodge > (int) ConfigHandler.limitShip[6]) dodge = (int) ConfigHandler.limitShip[6];
+			}
+			
+			//roll dodge
+			if(rand.nextInt(101) <= dodge) {
+				//spawn miss particle
+				TargetPoint point = new TargetPoint(ent2.dimension, ent2.posX, ent2.posY, ent2.posZ, 32D);
+				CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(ent2, 34, false), point);
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	

@@ -1,11 +1,13 @@
 package com.lulan.shincolle.ai;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipFloating;
+import com.lulan.shincolle.entity.IShipGuardian;
 import com.lulan.shincolle.reference.ID;
 
 /**SHIP FLOATING ON WATER AI
@@ -38,11 +40,24 @@ public class EntityAIShipFloating extends EntityAIBase {
 	public boolean shouldExecute() {
     	//ship類: 檢查host坐下
     	if(hostShip != null) {
+    		if(hostShip.isRiding()) {
+    			return false;
+    		}
+    		
+    		if(isInGuardPosition(hostShip)) {
+    			return false;
+    		}
+    		
+    		//其他情況
     		return !this.hostShip.isSitting() && this.hostShip.getStateFlag(ID.F.CanFloatUp);
     	}
     	//mount類: 檢查mount水深 & host坐下
     	else if(hostMount != null && hostMount.getHostEntity() != null) {
 			this.hostShip = (BasicEntityShip) hostMount.getHostEntity();
+			
+			if(isInGuardPosition(hostMount)) {
+    			return false;
+    		}
 			
 			return !this.hostShip.isSitting() && hostMount.getShipDepth() > 0.47D;
 		}
@@ -76,4 +91,28 @@ public class EntityAIShipFloating extends EntityAIBase {
     	}
     	   	
     }
+    
+    //check is in guard position
+    public boolean isInGuardPosition(IShipGuardian entity) {
+    	//若guard中, 則檢查是否達到guard距離
+		if(!entity.getStateFlag(ID.F.CanFollow)) {
+			float fMin = entity.getStateMinor(ID.M.FollowMin) + ((Entity)entity).width * 0.5F;
+			fMin = fMin * fMin;
+			
+			//若守衛entity, 檢查entity距離
+			if(entity.getGuardedEntity() != null) {
+				double distSq = ((Entity)entity).getDistanceSqToEntity(entity.getGuardedEntity());
+				if(distSq < fMin) return true;
+			}
+			//若守衛某地點, 則檢查與該點距離
+			else if(entity.getStateMinor(ID.M.GuardY) > 0) {
+				double distSq = ((Entity)entity).getDistanceSq(entity.getStateMinor(ID.M.GuardX), entity.getStateMinor(ID.M.GuardY), entity.getStateMinor(ID.M.GuardZ));
+				if(distSq < fMin && ((Entity)entity).posY >= entity.getStateMinor(ID.M.GuardY)) return true;
+			}
+		}
+		
+		return false;
+    }
+    
+    
 }

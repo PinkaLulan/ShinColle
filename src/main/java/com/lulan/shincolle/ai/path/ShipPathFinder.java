@@ -1,6 +1,6 @@
 package com.lulan.shincolle.ai.path;
 
-import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.block.Block;
@@ -139,7 +139,7 @@ public class ShipPathFinder {
         }
         else {					//回傳path entity
         	//將所有point做成path entity
-        	LogHelper.info("DEBUG : path navi: find count (pathing fail, cannot reach, find count = "+findCount+" times) ");
+//        	LogHelper.info("DEBUG : find path: fail: find count = "+findCount+" times");
             return this.createEntityPath(startpp, ppTemp);
         }
     }
@@ -292,10 +292,10 @@ public class ShipPathFinder {
      */
     public int getVerticalOffset(Entity entity, int x, int y, int z, ShipPathPoint entitySize) {
 //    	return func_82565_a(entity, x, y, z, point, this.isPathingInWater, this.isMovementBlockAllowed, this.isWoddenDoorAllowed);
-        return func_82565_a(entity, x, y, z, entitySize, this.isPathingInAir);
+        return getVerticalOffset(entity, x, y, z, entitySize, this.isPathingInAir);
     }
 
-    public static int func_82565_a(Entity entity, int x, int y, int z, ShipPathPoint entitySize, boolean inAir) {
+    public static int getVerticalOffset(Entity entity, int x, int y, int z, ShipPathPoint entitySize, boolean inAir) {
         boolean pathToDoor = false;		//特定條件可通過的flag: 陷阱門
         boolean pathInLiquid = true;	//是否是站在液體中的path (即高度y全為液體方塊)
         
@@ -308,7 +308,7 @@ public class ShipPathFinder {
                     //若碰撞到非空氣, 水, 岩漿方塊
                     if(block.getMaterial() != Material.air) {
                     	//檢查高度y是否全為液體
-                        if(pathInLiquid && i1 == y && !EntityHelper.checkBlockIsLiquid(block)) {
+                        if(pathInLiquid && i1 == y && !BlockHelper.checkBlockIsLiquid(block)) {
                         	pathInLiquid = false;
                         }
                         
@@ -330,7 +330,7 @@ public class ShipPathFinder {
                                 return -4;
                             }
                             //若非流體方塊, 則都判定為0
-                            if(!EntityHelper.checkBlockIsLiquid(block)) {
+                            if(!BlockHelper.checkBlockIsLiquid(block)) {
                                 return 0;
                             }
                         }

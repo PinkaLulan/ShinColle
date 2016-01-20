@@ -7,7 +7,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 
 import com.lulan.shincolle.entity.BasicEntityAirplane;
-import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
 /**AIRCRAFT ATTACK AI
@@ -84,7 +84,7 @@ public class EntityAIShipAircraftAttack extends EntityAIBase {
 	public void resetTask() {
         this.target = null;
         //keep moving, do not stop in air
-        randPos = EntityHelper.findRandomPosition(this.host, this.host, 4D, 2D, 2);
+        randPos = BlockHelper.findRandomPosition(this.host, this.host, 4D, 2D, 2);
         this.host.getShipNavigate().tryMoveToXYZ(randPos[0], randPos[1], randPos[2], 1D);
     }
 
@@ -104,7 +104,7 @@ public class EntityAIShipAircraftAttack extends EntityAIBase {
     		this.distSq = distX*distX + distY*distY + distZ*distZ;
 
         	if(this.host.ticksExisted % 16 == 0) {
-	        	randPos = EntityHelper.findRandomPosition(this.host, this.target, 3D, 3D, 1);
+	        	randPos = BlockHelper.findRandomPosition(this.host, this.target, 3D, 3D, 1);
 //	        	LogHelper.info("DEBUG : rand pos: "+this.host+" "+randPos[0]+" "+randPos[1]+" "+randPos[2]);
 	        	//目標在射程外, 則100%速度前進
 	        	if(this.distSq > this.rangeSq) {

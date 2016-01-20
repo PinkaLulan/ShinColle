@@ -212,7 +212,10 @@ public class C2SGUIPackets implements IMessage {
 						
 						//點到的是ship entity, 則add team
 						if(getEnt2 instanceof BasicEntityShip) {
+							//add ship to team
 							extProps.addEntityToTeam(0, (BasicEntityShip) getEnt2, false);
+							//reset formation id
+							extProps.setCurrentFormatID(0);
 						}
 						//其他entity or null, 則視為清空該team slot (表示entity可能抓錯或找不到)
 						else {
@@ -385,6 +388,10 @@ public class C2SGUIPackets implements IMessage {
 					ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 					
 					if(extProps != null) {
+						//clear formation, ships will update formation data every X ticks
+						extProps.setCurrentFormatID(0);
+						
+						//clear team
 						extProps.clearAllShipOfCurrentTeam();
 						
 						//sync team list
@@ -562,7 +569,12 @@ public class C2SGUIPackets implements IMessage {
 					ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 					
 					if(extProps != null) {
+						//set formation id
 						FormationHelper.setFormationID(extProps, this.value1);
+						
+						//update formation guard position
+						BasicEntityShip[] ships = extProps.getEntityOfCurrentMode(2);
+						FormationHelper.applyFormationMoving(ships, this.value1);
 					}
 				}
 			}

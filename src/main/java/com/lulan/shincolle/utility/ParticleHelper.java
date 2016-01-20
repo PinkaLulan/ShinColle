@@ -115,7 +115,7 @@ public class ParticleHelper {
 	 * 針對entity的某一軸做旋轉, 以目標的位置為參數
 	 */
 	public static float[] rotateXZByLook(float x, float y, float lookX, float lookY, float scale) {		
-		float[] degree = EntityHelper.getLookDegree(lookX, 0, lookY, false);
+		float[] degree = CalcHelper.getLookDegree(lookX, 0, lookY, false);
 		float cosZdeg = MathHelper.cos(degree[0]);
 		float sinZdeg = MathHelper.sin(degree[0]);
 		float[] newPos = new float[] {0F, 0F};
@@ -312,7 +312,7 @@ public class ParticleHelper {
 			break;
 		case 19: 	//double largesmoke for 14~20 inch cannon
 			//計算煙霧位置
-			degYaw = EntityHelper.getLookDegree(lookX, 0D, lookZ, false)[0];
+			degYaw = CalcHelper.getLookDegree(lookX, 0D, lookZ, false)[0];
 			newPos1 = ParticleHelper.rotateXZByAxis(0F, (float)lookY, degYaw, 1F);
 			newPos2 = ParticleHelper.rotateXZByAxis(0F, (float)-lookY, degYaw, 1F);
 			

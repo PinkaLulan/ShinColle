@@ -547,7 +547,7 @@ public class GuiShipInventory extends GuiContainer {
 				//draw value
 				mouseoverList.clear();
 				
-				overText = String.valueOf(this.entity.getStateMinor(ID.M.FormatPos));
+				overText = String.valueOf(this.entity.getStateMinor(ID.M.FormatPos)+1);
 				mouseoverList.add(overText);
 				
 				str = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.ATK_L) + 100);

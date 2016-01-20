@@ -20,6 +20,7 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
@@ -96,7 +97,7 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
         this.posZ = host2.posZ + rand.nextDouble() * 6D - 3D;
         
         //check the place is safe to summon
-    	if(!EntityHelper.checkBlockSafe(world, (int)posX, (int)posY, (int)posZ)) {
+    	if(!BlockHelper.checkBlockSafe(world, (int)posX, (int)posY, (int)posZ)) {
     		this.posX = host2.posX;
             this.posY = host2.posY;
             this.posZ = host2.posZ;
@@ -141,7 +142,7 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
 		}
 		
 		//calc dodge
-		if(CalcHelper.canDodge(this, 0F)) {
+		if(EntityHelper.canDodge(this, 0F)) {
 			return false;
 		}
 				

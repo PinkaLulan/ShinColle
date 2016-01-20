@@ -18,6 +18,7 @@ import com.lulan.shincolle.entity.ExtendShipProps;
 import com.lulan.shincolle.entity.IShipMount;
 import com.lulan.shincolle.entity.mounts.EntityMountAfH;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.EntityHelper;
 
 public class EntityAirfieldHime extends BasicEntityShipLarge {
 	
@@ -63,10 +64,10 @@ public class EntityAirfieldHime extends BasicEntityShipLarge {
   		//server side
   		if(!worldObj.isRemote) {
   			//飛行場特殊能力
-        	if(this.ticksExisted % 160 == 0) {
+        	if(this.ticksExisted % 128 == 0) {
         		//1: 增強被動回血
         		if(getStateMinor(ID.M.NumGrudge) > 0 && this.getHealth() < this.getMaxHealth()) {
-        			this.setHealth(this.getHealth() + this.getMaxHealth() * 0.03F);
+        			this.setHealth(this.getHealth() + this.getMaxHealth() * 0.03125F);
         		}
         		
         		//2: 結婚後, 周圍某一目標回血, 包括玩家, 回血目標依等級提昇
@@ -75,7 +76,7 @@ public class EntityAirfieldHime extends BasicEntityShipLarge {
 					int healCount = this.getLevel() / 15 + 2;
 		            EntityLivingBase hitEntity = null;
 		            List hitList = null;
-		            hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, this.boundingBox.expand(18D, 18D, 18D));
+		            hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, this.boundingBox.expand(12D, 12D, 12D));
 		           
 		            for(int i = 0; i < hitList.size(); i++) {
 		            	//補血名額沒了, break
@@ -84,13 +85,13 @@ public class EntityAirfieldHime extends BasicEntityShipLarge {
 		            	hitEntity = (EntityLivingBase) hitList.get(i);
 		            	
 		            	//抓可以補血的目標, 不包含自己
-		            	if(hitEntity != this && hitEntity.getHealth() / hitEntity.getMaxHealth() < 0.98F) {
+		            	if(hitEntity != this && hitEntity.getHealth() / hitEntity.getMaxHealth() < 0.96F) {
 	            			if(hitEntity instanceof EntityPlayer) {
-	            				hitEntity.heal(1F + this.getLevel() * 0.02F);
+	            				hitEntity.heal(1F + this.getLevel() * 0.04F);
 		            			healCount--;
 		            		}
-		            		else if(hitEntity instanceof BasicEntityShip) {
-		            			hitEntity.heal(1F + hitEntity.getMaxHealth() * 0.02F + this.getLevel() * 0.1F);
+		            		else if(hitEntity instanceof BasicEntityShip && EntityHelper.checkIsAlly(this, hitEntity)) {
+		            			hitEntity.heal(1F + hitEntity.getMaxHealth() * 0.04F + this.getLevel() * 0.1F);
 		            			healCount--;
 			            	}
 		            	}

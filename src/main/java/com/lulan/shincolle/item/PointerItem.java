@@ -5,6 +5,7 @@ import java.util.List;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.GameSettings;
+import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -24,6 +25,7 @@ import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
@@ -34,6 +36,10 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class PointerItem extends BasicItem {
 
 	IIcon[] icons = new IIcon[3];
+	private boolean formatFlag = false;
+	private int formatAddID = 0;
+	private int formatCD = 0;
+	
 	
 	public PointerItem() {
 		super();
@@ -128,23 +134,6 @@ public class PointerItem extends BasicItem {
 				GameSettings keySet = ClientProxy.getGameSetting();
 				ExtendPlayerProps props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 				MovingObjectPosition hitObj = EntityHelper.getPlayerMouseOverEntity(64D, 1F);
-				
-				//press SPRINT (CTRL)
-				if(keySet.keyBindSprint.getIsKeyPressed()) {
-					//in formation mode: change formation
-					if(meta == 2) {
-						//formation id++
-						//its already in team, remove ship
-						int fid = props.getFormatID()[props.getCurrentTeamID()] + 1;
-						if(fid > 5) fid = 0;
-						
-						String fstr = I18n.format("gui.shincolle:formation.format"+fid);
-						player.addChatMessage(new ChatComponentText(I18n.format("chat.shincolle:pointer.changeformation")+" "+fstr));
-						
-						CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetFormation, fid));
-						return false;
-					}
-				}
 				
 				//hit entity
 				if(hitObj != null) {
@@ -245,9 +234,6 @@ public class PointerItem extends BasicItem {
 				
 				//click on air
 				//蹲下左鍵 vs block or 非自己的寵物, 則切換pointer模式
-				//check key pressed
-				
-				
 				if(keySet.keyBindSneak.getIsKeyPressed()) {
 					//sneak+sprint: clear team
 					if(keySet.keyBindSprint.getIsKeyPressed()) {
@@ -265,6 +251,18 @@ public class PointerItem extends BasicItem {
 						//send sync packet to server
 						CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SyncPlayerItem, meta));
 						return true;
+					}
+				}
+				
+				//press SPRINT (CTRL) ONLY
+				if(keySet.keyBindSprint.getIsKeyPressed()) {
+					//in formation mode: change formation
+					if(meta == 2) {
+						this.formatFlag = true;
+						this.formatAddID++;  //format id++
+						this.formatCD = 20;  //set cd
+						
+						return false;
 					}
 				}
 			}//end client side
@@ -407,7 +405,7 @@ public class PointerItem extends BasicItem {
 			}//end hitObj = entity
 			//若沒抓到entity, 則用getPlayerMouseOverBlock抓block
 			else {
-				MovingObjectPosition hitObj2 = EntityHelper.getPlayerMouseOverBlock(64D, 1F);
+				MovingObjectPosition hitObj2 = BlockHelper.getPlayerMouseOverBlock(64D, 1F);
 
 				if(hitObj2 != null) {
 					//抓到的是block
@@ -501,16 +499,46 @@ public class PointerItem extends BasicItem {
  	 */
 	@Override
 	public void onUpdate(ItemStack item, World world, Entity player, int slot, boolean inUse) {
-		if(world.isRemote && !inUse) {
-			//restore hotbar position
-			if(item.hasTagCompound() && item.getTagCompound().getBoolean("chgHB")) {
-				int orgCurrentItem = item.getTagCompound().getInteger("orgHB");
-				LogHelper.info("DEBUG : change hotbar "+((EntityPlayer)player).inventory.currentItem+" to "+orgCurrentItem);
+		if(world.isRemote) {
+			//count format command cd, CLIENT SIDE ONLY
+			if(this.formatFlag) {
+				//cd--
+				this.formatCD--;
 				
-				if(((EntityPlayer)player).inventory.currentItem != orgCurrentItem) {
-					((EntityPlayer)player).inventory.currentItem = orgCurrentItem;
-					CommonProxy.channelG.sendToServer(new C2SInputPackets(2, orgCurrentItem));
-					item.getTagCompound().setBoolean("chgHB", false);
+				//cd = 0, send format packet
+				if(this.formatCD <= 0 && player instanceof EntityPlayer) {
+					ExtendPlayerProps props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+					
+					if(props != null) {
+						//calc formatID
+						int fid = props.getFormatID()[props.getCurrentTeamID()] + this.formatAddID;
+						fid %= 6;
+						
+						String fstr = I18n.format("gui.shincolle:formation.format"+fid);
+						((EntityPlayer)player).addChatMessage(new ChatComponentText(I18n.format("chat.shincolle:pointer.changeformation")+" "+fstr));
+						
+						//send formation packet
+						CommonProxy.channelG.sendToServer(new C2SGUIPackets((EntityPlayer) player, C2SGUIPackets.PID.SetFormation, fid));
+
+						//reset flag
+						this.formatCD = 0;
+						this.formatAddID = 0;
+						this.formatFlag = false;
+					}
+				}//end format CD
+			}//end format flag
+			
+			//restore hotbar position
+			if(!inUse) {
+				if(item.hasTagCompound() && item.getTagCompound().getBoolean("chgHB")) {
+					int orgCurrentItem = item.getTagCompound().getInteger("orgHB");
+					LogHelper.info("DEBUG : change hotbar "+((EntityPlayer)player).inventory.currentItem+" to "+orgCurrentItem);
+					
+					if(((EntityPlayer)player).inventory.currentItem != orgCurrentItem) {
+						((EntityPlayer)player).inventory.currentItem = orgCurrentItem;
+						CommonProxy.channelG.sendToServer(new C2SInputPackets(2, orgCurrentItem));
+						item.getTagCompound().setBoolean("chgHB", false);
+					}
 				}
 			}
 		}

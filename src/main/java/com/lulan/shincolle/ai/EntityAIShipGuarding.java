@@ -30,9 +30,14 @@ import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
  * move & attack mode:
  *   attack while moving with shorter range & longer delay
  * 
- *   1. if StateMinor[GuardType] = 1
+ *   1. if StateMinor[GuardType] > 0
  *   2. get target within attack range every X ticks
  *   3. attack target if delay = 0
+ *   
+ *   guard type:
+ *   0: none
+ *   1: normal
+ *   2: -
  */
 public class EntityAIShipGuarding extends EntityAIBase {
 
@@ -123,10 +128,18 @@ public class EntityAIShipGuarding extends EntityAIBase {
     			return false;
     		}
     		else {
-    			float fMin = host.getStateMinor(ID.M.FollowMin);
-            	float fMax = host.getStateMinor(ID.M.FollowMax);
-            	this.minDistSq = fMin * fMin;
-                this.maxDistSq = fMax * fMax;
+    			//host is in formation
+    			if(this.ship != null && this.ship.getStateMinor(ID.M.FormatType) > 0) {
+    				this.minDistSq = 1;
+                    this.maxDistSq = 4;
+    			}
+    			//not formation mode
+    			else {
+    				float fMin = host.getStateMinor(ID.M.FollowMin) + host2.width * 0.75F;
+                	float fMax = host.getStateMinor(ID.M.FollowMax) + host2.width * 0.75F;
+                	this.minDistSq = fMin * fMin;
+                    this.maxDistSq = fMax * fMax;
+    			}
                 
                 //計算直線距離
             	this.distX = this.gx - this.host2.posX;
@@ -190,7 +203,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
     	 * 2. target AI = active attack
     	 * 3. guard type > 0
     	 */
-    	if(isMoving && ship != null && !ship.getStateFlag(ID.F.PassiveAI)&& ship.getStateMinor(ID.M.GuardType) > 0) {
+    	if(isMoving && ship != null && !ship.getStateFlag(ID.F.PassiveAI) && ship.getStateMinor(ID.M.GuardType) > 0) {
     		//update parms
     		if(host2.ticksExisted % 64 == 0) {
     			this.updateAttackParms();
@@ -238,8 +251,8 @@ public class EntityAIShipGuarding extends EntityAIBase {
 //    		LogHelper.info("DEBUG : exec guarding");
         	this.findCooldown--;
         	
-        	//update position every 30 ticks
-        	if(host2.ticksExisted % 30 == 0) {
+        	//update position every 32 ticks
+        	if(host2.ticksExisted % 32 == 0) {
         		//check guarded entity
         		this.guarded = host.getGuardedEntity();
         		
@@ -269,10 +282,18 @@ public class EntityAIShipGuarding extends EntityAIBase {
         			return;
         		}
         		else {
-        			float fMin = host.getStateMinor(ID.M.FollowMin);
-                	float fMax = host.getStateMinor(ID.M.FollowMax);
-                	this.minDistSq = fMin * fMin;
-                    this.maxDistSq = fMax * fMax;
+        			//host is in formation
+        			if(this.ship != null && this.ship.getStateMinor(ID.M.FormatType) > 0) {
+        				this.minDistSq = 1;
+                        this.maxDistSq = 4;
+        			}
+        			//not formation mode
+        			else {
+        				float fMin = host.getStateMinor(ID.M.FollowMin) + host2.width * 0.75F;
+                    	float fMax = host.getStateMinor(ID.M.FollowMax) + host2.width * 0.75F;
+                    	this.minDistSq = fMin * fMin;
+                        this.maxDistSq = fMax * fMax;
+        			}
                     
                     //計算直線距離
                 	this.distX = this.gx - this.host2.posX;
@@ -295,8 +316,8 @@ public class EntityAIShipGuarding extends EntityAIBase {
         	if(this.distSq > this.maxDistSq && host2.dimension == host.getStateMinor(ID.M.GuardDim)) {
         		this.checkTeleport++;
         		
-        		if(this.checkTeleport > 256) {
-        			LogHelper.info("DEBUG : guarding AI: away from target > 256 ticks, teleport to target");
+        		if(this.checkTeleport > 512) {
+        			LogHelper.info("DEBUG : guarding AI: away from target > "+this.checkTeleport+" ticks, teleport to target");
         			this.checkTeleport = 0;
         			
         			//teleport
@@ -320,14 +341,14 @@ public class EntityAIShipGuarding extends EntityAIBase {
             		this.isMoving = this.ShipNavigator.tryMoveToXYZ(gx, gy, gz, 1D);
             		
             		if(!this.isMoving) {
-	            		LogHelper.info("DEBUG : guarding AI: fail to move, cannot reach or too far away "+gx+" "+gy+" "+gz+" "+this.host);
-	            		//若超過max dist持續120ticks, 則teleport
+	            		//若超過max dist則teleport
 	            		if(this.distSq > this.maxDistSq && host2.dimension == host.getStateMinor(ID.M.GuardDim)) {
 	            			this.checkTeleport2++;
 	                		
-	                		if(this.checkTeleport2 > 8) {
+	                		if(this.checkTeleport2 > 16) {
 	                			this.checkTeleport2 = 0;
-	                			
+	                			LogHelper.info("DEBUG : guarding AI: teleport entity: "+gx+" "+gy+" "+gz+" "+this.host);
+	    	            		
 	                			if(this.distSq > 1024) {	//32 blocks away, drop seat2
 	                				this.clearMountSeat2();
 	                			}

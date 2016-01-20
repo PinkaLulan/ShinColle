@@ -12,7 +12,7 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.BlockHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -85,8 +85,8 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip implements IS
 			//每一段時間回復一隻艦載機
 			delayAircraft--;
 			if(this.delayAircraft <= 0) {
-				delayAircraft = (int)(1600 / (this.getStateFinal(ID.SPD)));	
-				if(delayAircraft > 1600) delayAircraft = 1600;	//fix: spd還沒設完值就除 會導致delay變超大 (除以0)
+				delayAircraft = (int)(1000 / (this.getStateFinal(ID.SPD)));	
+				if(delayAircraft > 1000) delayAircraft = 1000;	//fix: spd還沒設完值就除 會導致delay變超大 (除以0)
 				
 				delayAircraft += 200;
 				
@@ -107,8 +107,8 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip implements IS
 		this.maxAircraftHeavy = 2 + StateMinor[ID.M.ShipLevel] / 10;
 		
 		//calc equip airplane
-		this.maxAircraftLight += (getNumOfAircraftEquip() * 6);
-		this.maxAircraftHeavy += (getNumOfAircraftEquip() * 3);
+		this.maxAircraftLight += (getNumOfAircraftEquip() * 4);
+		this.maxAircraftHeavy += (getNumOfAircraftEquip() * 2);
 	}
 	
 	//get number of aircraft equips
@@ -156,7 +156,7 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip implements IS
         	double summonHeight = this.posY+launchHeight;
         	
         	//check the summon block
-        	if(!EntityHelper.checkBlockSafe(worldObj, (int)posX, (int)(posY+launchHeight), (int)(posZ))) {
+        	if(!BlockHelper.checkBlockSafe(worldObj, (int)posX, (int)(posY+launchHeight), (int)(posZ))) {
         		summonHeight = posY+1D;
         	}
         	
@@ -205,7 +205,7 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip implements IS
         	double summonHeight = this.posY+launchHeight;
         	
         	//check the summon block
-        	if(!EntityHelper.checkBlockSafe(worldObj, (int)posX, (int)(posY+launchHeight), (int)(posZ))) {
+        	if(!BlockHelper.checkBlockSafe(worldObj, (int)posX, (int)(posY+launchHeight), (int)(posZ))) {
         		summonHeight = posY+0.5D;
         	}
         	

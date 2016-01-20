@@ -329,7 +329,7 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 		
 		if(this.ticksExisted % 2 == 0) {
 			//­±¦V­pºâ (for both side)
-			float[] degree = EntityHelper.getLookDegree(posX - prevPosX, posY - prevPosY, posZ - prevPosZ, true);
+			float[] degree = CalcHelper.getLookDegree(posX - prevPosX, posY - prevPosY, posZ - prevPosZ, true);
 			this.rotationYaw = degree[0];
 			this.rotationPitch = degree[1];
 		}
@@ -352,7 +352,7 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 		//calc dodge
 		if(source.getEntity() != null) {
 			float dist = (float) this.getDistanceSqToEntity(source.getEntity());
-			if(CalcHelper.canDodge(this, dist)) {
+			if(EntityHelper.canDodge(this, dist)) {
 				return false;
 			}
 		}

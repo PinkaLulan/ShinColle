@@ -486,7 +486,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
     @Override
 	public boolean attackEntityFrom(DamageSource attacker, float atk) {
     	//¶i¦ædodge­pºâ
-		if(CalcHelper.canDodge(this, 0F)) {
+		if(EntityHelper.canDodge(this, 0F)) {
 			return false;
 		}
     	
