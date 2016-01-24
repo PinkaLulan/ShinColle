@@ -25,7 +25,7 @@ public class ContainerDeskItemForm extends Container {
 		
 		//server side flag
 		if(this.extProps != null) {
-			this.extProps.setIsOpeningGUI(true);
+			this.extProps.setOpeningGUI(true);
 		}
 	}
 
@@ -36,12 +36,13 @@ public class ContainerDeskItemForm extends Container {
 	}
 	
 	/** Called when the container is closed */
+	@Override
     public void onContainerClosed(EntityPlayer player) {
     	ExtendPlayerProps props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
     	
     	//server side flag
 		if(props != null) {
-			props.setIsOpeningGUI(false);
+			props.setOpeningGUI(false);
 		}
     }
 	

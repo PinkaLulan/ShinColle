@@ -130,8 +130,8 @@ public class EntityAIShipGuarding extends EntityAIBase {
     		else {
     			//host is in formation
     			if(this.ship != null && this.ship.getStateMinor(ID.M.FormatType) > 0) {
-    				this.minDistSq = 1;
-                    this.maxDistSq = 4;
+    				this.minDistSq = 2;
+                    this.maxDistSq = 5;
     			}
     			//not formation mode
     			else {
@@ -284,8 +284,8 @@ public class EntityAIShipGuarding extends EntityAIBase {
         		else {
         			//host is in formation
         			if(this.ship != null && this.ship.getStateMinor(ID.M.FormatType) > 0) {
-        				this.minDistSq = 1;
-                        this.maxDistSq = 4;
+        				this.minDistSq = 2;
+                        this.maxDistSq = 5;
         			}
         			//not formation mode
         			else {
@@ -316,7 +316,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
         	if(this.distSq > this.maxDistSq && host2.dimension == host.getStateMinor(ID.M.GuardDim)) {
         		this.checkTeleport++;
         		
-        		if(this.checkTeleport > 512) {
+        		if(this.checkTeleport > 1000) {
         			LogHelper.info("DEBUG : guarding AI: away from target > "+this.checkTeleport+" ticks, teleport to target");
         			this.checkTeleport = 0;
         			
@@ -345,7 +345,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
 	            		if(this.distSq > this.maxDistSq && host2.dimension == host.getStateMinor(ID.M.GuardDim)) {
 	            			this.checkTeleport2++;
 	                		
-	                		if(this.checkTeleport2 > 16) {
+	                		if(this.checkTeleport2 > 30) {  //30 * 30 = 900 ticks
 	                			this.checkTeleport2 = 0;
 	                			LogHelper.info("DEBUG : guarding AI: teleport entity: "+gx+" "+gy+" "+gz+" "+this.host);
 	    	            		

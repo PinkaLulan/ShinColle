@@ -158,6 +158,7 @@ public class ID {
 		public static final byte LARGESHIPYARD = 2;
 		public static final byte ADMIRALDESK = 3;
 		public static final byte ADMIRALDESK_ITEM = 4;
+		public static final byte FORMATION = 5;
 	}
 	
 	/**ICON ID for BOOK*/

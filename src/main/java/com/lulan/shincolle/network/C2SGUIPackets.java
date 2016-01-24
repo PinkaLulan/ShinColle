@@ -56,8 +56,12 @@ public class C2SGUIPackets implements IMessage {
 		public static final byte SetSelect = -10;
 		public static final byte SetTarClass = -12;
 		public static final byte SetFormation = -20;
+		public static final byte OpenItemGUI = -21;
+		public static final byte SwapShip = -22;
+		
 		//tile entity
 		public static final byte TileEntitySync = -11;
+		
 		//desk function
 		public static final byte Desk_Create = -13;
 		public static final byte Desk_Rename = -14;
@@ -122,6 +126,7 @@ public class C2SGUIPackets implements IMessage {
 	 * type 13:(1 parm) add banned team: 0:team id<br>
 	 * type 14:(1 parm) remove banned team: 0:team id<br>
 	 * type 15:(1 parm) change formation: 0:formation id<br>
+	 * type 16:(3 parm) sawp ship position: 0:team id 1:posA 2:posB
 	 */
 	public C2SGUIPackets(EntityPlayer player, int type, int...parms) {
         this.player = player;
@@ -213,17 +218,17 @@ public class C2SGUIPackets implements IMessage {
 						//點到的是ship entity, 則add team
 						if(getEnt2 instanceof BasicEntityShip) {
 							//add ship to team
-							extProps.addEntityToTeam(0, (BasicEntityShip) getEnt2, false);
+							extProps.addShipEntity(0, (BasicEntityShip) getEnt2, false);
 							//reset formation id
-							extProps.setCurrentFormatID(0);
+							extProps.setFormatIDCurrentTeam(0);
 						}
 						//其他entity or null, 則視為清空該team slot (表示entity可能抓錯或找不到)
 						else {
-							extProps.addEntityToTeam(0, null, false);
+							extProps.addShipEntity(0, null, false);
 						}
 						
 						//sync team list to client
-						CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps, S2CGUIPackets.PID.SyncPlayerProp), (EntityPlayerMP) player);
+						extProps.sendSyncPacket(0);
 					}
 				}
 			}
@@ -338,14 +343,14 @@ public class C2SGUIPackets implements IMessage {
 							//is single mode, set focus ships to only 1 ship
 							if(value1 == 0) {
 								//reset focus ship
-								extProps.clearSelectStateOfCurrentTeam();
+								extProps.clearSelectStateCurrentTeam();
 								//set focus ship on first ship in team list
 								for(int j = 0; j < 6; j++) {
-									if(extProps.getEntityOfCurrentTeam(j) != null) {
+									if(extProps.getShipEntityCurrentTeam(j) != null) {
 										//focus ship j
-										extProps.setSelectStateOfCurrentTeam(j, true);
+										extProps.setSelectStateCurrentTeam(j, true);
 										//sync team list
-										CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps, S2CGUIPackets.PID.SyncPlayerProp), (EntityPlayerMP) player);
+										extProps.sendSyncPacket(0);
 										break;
 									}
 								}
@@ -389,13 +394,13 @@ public class C2SGUIPackets implements IMessage {
 					
 					if(extProps != null) {
 						//clear formation, ships will update formation data every X ticks
-						extProps.setCurrentFormatID(0);
+						extProps.setFormatIDCurrentTeam(0);
 						
 						//clear team
-						extProps.clearAllShipOfCurrentTeam();
+						extProps.removeShipCurrentTeam();
 						
 						//sync team list
-						CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps, S2CGUIPackets.PID.SyncPlayerProp), (EntityPlayerMP) player);
+						extProps.sendSyncPacket(0);
 					}
 				}
 			}
@@ -411,16 +416,17 @@ public class C2SGUIPackets implements IMessage {
 				
 				if(getEnt != null) {
 					this.player = getEnt;
-					this.player.inventory.currentItem = this.value2;
+					
+					//set current item id
+					if(this.value2 >= 0) this.player.inventory.currentItem = this.value2;
 	
 					ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 					
 					if(extProps != null) {
-						extProps.setCurrentTeamID(this.value1);
+						extProps.setPointerTeamID(this.value1);
 						
 						//send sync packet to client
-						//sync team list
-						CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps, S2CGUIPackets.PID.SyncPlayerProp), (EntityPlayerMP) player);
+						extProps.sendSyncPacket(0);
 					}
 				}
 			}
@@ -470,8 +476,7 @@ public class C2SGUIPackets implements IMessage {
 							ServerProxy.setPlayerTargetClassList(uid, this.str);
 							
 							//send sync packet to client
-							//sync team list
-							CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps, S2CGUIPackets.PID.SyncPlayerProp_TargetClass), (EntityPlayerMP) player);
+							extProps.sendSyncPacket(2);
 						}
 					}
 				}
@@ -503,7 +508,7 @@ public class C2SGUIPackets implements IMessage {
 							}
 							
 							//sync team data
-							CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps, S2CGUIPackets.PID.SyncPlayerProp_TeamData), (EntityPlayerMP) player);
+							extProps.sendSyncPacket(3);
 						}
 					}
 				}
@@ -549,7 +554,7 @@ public class C2SGUIPackets implements IMessage {
 							//sync team data to all player using desk GUI
 							List<EntityPlayer> plist = EntityHelper.getEntityPlayerUsingGUI();
 							for(EntityPlayer p : plist) {
-								CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps, S2CGUIPackets.PID.SyncPlayerProp_TeamData), (EntityPlayerMP) p);
+								extProps.sendSyncPacket(3);
 							}
 						}//player UID != null
 					}//extProps != null
@@ -569,12 +574,51 @@ public class C2SGUIPackets implements IMessage {
 					ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 					
 					if(extProps != null) {
-						//set formation id
+						//set current team formation id
 						FormationHelper.setFormationID(extProps, this.value1);
-						
-						//update formation guard position
-						BasicEntityShip[] ships = extProps.getEntityOfCurrentMode(2);
-						FormationHelper.applyFormationMoving(ships, this.value1);
+					}
+				}
+			}
+			break;
+		case PID.OpenItemGUI:	//open item GUI, 1 parm
+			{
+				this.entityID = buf.readInt();
+				this.worldID = buf.readInt();
+				this.value1 = buf.readInt();	//item type
+				
+				EntityPlayer getEnt = EntityHelper.getEntityPlayerByID(entityID, worldID, false);
+				
+				if(getEnt != null) {
+					this.player = getEnt;
+					
+					switch(this.value1) {
+					case 0:  //formation
+						FMLNetworkHandler.openGui(player, ShinColle.instance, ID.G.FORMATION, world, 0, 0, 0);
+						break;
+					}
+				}
+			}
+			break;
+		case PID.SwapShip:	//clear team, 1 parms
+			{
+				this.entityID = buf.readInt();
+				this.worldID = buf.readInt();
+
+				this.value3 = new int[3];
+				this.value3[0] = buf.readInt();  //team id
+				this.value3[1] = buf.readInt();  //pos A
+				this.value3[2] = buf.readInt();  //pos B
+				
+				EntityPlayer getEnt = EntityHelper.getEntityPlayerByID(entityID, worldID, false);
+				
+				if(getEnt != null) {
+					this.player = getEnt;
+					ExtendPlayerProps props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+					
+					if(props != null) {
+						//swap ship
+						props.swapShip(value3[0], value3[1], value3[2]);
+						props.syncShips(value3[0]);
 					}
 				}
 			}
@@ -623,6 +667,8 @@ public class C2SGUIPackets implements IMessage {
 		case PID.Desk_Ban:
 		case PID.Desk_Unban:
 		case PID.SetFormation:
+		case PID.OpenItemGUI:
+		case PID.SwapShip:
 			{
 				buf.writeByte(this.type);
 				buf.writeInt(this.player.getEntityId());

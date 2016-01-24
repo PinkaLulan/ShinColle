@@ -48,17 +48,19 @@ public class S2CEntitySync implements IMessage {
 		public static final byte SyncEntity_PosRot = 9;
 		public static final byte SyncEntity_Rot = 10;
 		public static final byte SyncShip_Formation = 11;
+		public static final byte SyncShip_Unbuff = 12;
 	}
 
 	
 	public S2CEntitySync() {}	//必須要有空參數constructor, forge才能使用此class
 	
 	/**entity sync: 
-	//type 0: all attribute
-	//type 1: entity emotion only
-	//type 2: entity flag only
-	//type 3: entity minor only
-	//type 11:ship formation data
+	 * type 0: all attribute
+	 * type 1: entity emotion only
+	 * type 2: entity flag only
+	 * type 3: entity minor only
+	 * type 11:ship formation data
+	 * type 12:ship unbuff data
 	 */
 	public S2CEntitySync(BasicEntityShip entity, int type) {
         this.entity = entity;
@@ -111,6 +113,7 @@ public class S2CEntitySync implements IMessage {
 		case PID.SyncShip_Flag:
 		case PID.SyncShip_Formation:
 		case PID.SyncShip_Minor:
+		case PID.SyncShip_Unbuff:
 		case PID.SyncEntity_Emo:
 		case PID.SyncMount_ByPlayer:
 		case PID.SyncMount_ByMount:
@@ -313,6 +316,27 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateMinor(ID.M.PlayerEID, buf.readInt());
 					entity.setStateMinor(ID.M.FormatType, buf.readInt());
 					entity.setStateMinor(ID.M.FormatPos, buf.readInt());
+				}
+				break;
+			case PID.SyncShip_Unbuff:	//sync unbuff attr
+				{
+					entity.setStateFinalBU(ID.HP, buf.readFloat());
+					entity.setStateFinalBU(ID.ATK, buf.readFloat());
+					entity.setStateFinalBU(ID.DEF, buf.readFloat());
+					entity.setStateFinalBU(ID.SPD, buf.readFloat());
+					entity.setStateFinalBU(ID.MOV, buf.readFloat());
+					entity.setStateFinalBU(ID.HIT, buf.readFloat());
+					entity.setStateFinalBU(ID.ATK_H, buf.readFloat());
+					entity.setStateFinalBU(ID.ATK_AL, buf.readFloat());
+					entity.setStateFinalBU(ID.ATK_AH, buf.readFloat());
+					
+					entity.setEffectEquipBU(ID.EF_CRI, buf.readFloat());
+					entity.setEffectEquipBU(ID.EF_DHIT, buf.readFloat());
+					entity.setEffectEquipBU(ID.EF_THIT, buf.readFloat());
+					entity.setEffectEquipBU(ID.EF_MISS, buf.readFloat());
+					entity.setEffectEquipBU(ID.EF_AA, buf.readFloat());
+					entity.setEffectEquipBU(ID.EF_ASM, buf.readFloat());
+					entity.setEffectEquipBU(ID.EF_DODGE, buf.readFloat());
 				}
 				break;
 			case PID.SyncEntity_Emo: //IShipEmotion sync emtion
@@ -613,6 +637,30 @@ public class S2CEntitySync implements IMessage {
 				buf.writeInt(this.entity.getStateMinor(ID.M.PlayerEID));
 				buf.writeInt(this.entity.getStateMinor(ID.M.FormatType));
 				buf.writeInt(this.entity.getStateMinor(ID.M.FormatPos));
+			}
+			break;
+		case PID.SyncShip_Unbuff:	//sync unbuff data
+			{
+				buf.writeByte(PID.SyncShip_Unbuff);	//type 0
+				buf.writeInt(this.entity.getEntityId());
+	
+				buf.writeFloat(this.entity.getStateFinalBU(ID.HP));
+				buf.writeFloat(this.entity.getStateFinalBU(ID.ATK));
+				buf.writeFloat(this.entity.getStateFinalBU(ID.DEF));
+				buf.writeFloat(this.entity.getStateFinalBU(ID.SPD));
+				buf.writeFloat(this.entity.getStateFinalBU(ID.MOV));
+				buf.writeFloat(this.entity.getStateFinalBU(ID.HIT));
+				buf.writeFloat(this.entity.getStateFinalBU(ID.ATK_H));
+				buf.writeFloat(this.entity.getStateFinalBU(ID.ATK_AL));
+				buf.writeFloat(this.entity.getStateFinalBU(ID.ATK_AH));
+				
+				buf.writeFloat(this.entity.getEffectEquipBU(ID.EF_CRI));
+				buf.writeFloat(this.entity.getEffectEquipBU(ID.EF_DHIT));
+				buf.writeFloat(this.entity.getEffectEquipBU(ID.EF_THIT));
+				buf.writeFloat(this.entity.getEffectEquipBU(ID.EF_MISS));
+				buf.writeFloat(this.entity.getEffectEquipBU(ID.EF_AA));
+				buf.writeFloat(this.entity.getEffectEquipBU(ID.EF_ASM));
+				buf.writeFloat(this.entity.getEffectEquipBU(ID.EF_DODGE));
 			}
 			break;
 		case PID.SyncEntity_Emo:	//IShipEmotion emotion only

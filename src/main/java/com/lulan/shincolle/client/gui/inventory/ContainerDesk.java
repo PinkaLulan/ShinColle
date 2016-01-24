@@ -33,7 +33,7 @@ public class ContainerDesk extends Container {
 	
 		//server side flag
 		if(this.extProps != null) {
-			this.extProps.setIsOpeningGUI(true);
+			this.extProps.setOpeningGUI(true);
 		}
 	}
 
@@ -49,7 +49,7 @@ public class ContainerDesk extends Container {
     	
     	//server side flag
 		if(props != null) {
-			props.setIsOpeningGUI(false);
+			props.setOpeningGUI(false);
 		}
     }
 	
@@ -72,7 +72,7 @@ public class ContainerDesk extends Container {
 		crafting.sendProgressBarUpdate(this, 2, this.tile.book_chap);
 		crafting.sendProgressBarUpdate(this, 3, this.tile.book_page);
 		crafting.sendProgressBarUpdate(this, 4, this.tile.radar_zoomLv);
-		crafting.sendProgressBarUpdate(this, 5, this.extProps.getTeamCooldownInSec());
+		crafting.sendProgressBarUpdate(this, 5, this.extProps.getPlayerTeamCooldownInSec());
 	}
 	
 	//將container數值跟tile entity內的數值比對, 如果不同則發送更新給client使gui呈現新數值
@@ -83,9 +83,9 @@ public class ContainerDesk extends Container {
         for(Object crafter : this.crafters) {
             ICrafting icrafting = (ICrafting) crafter;
             
-            if(this.allyCD != this.extProps.getTeamCooldownInSec()) {
-                icrafting.sendProgressBarUpdate(this, 5, this.extProps.getTeamCooldownInSec());
-                this.allyCD = this.extProps.getTeamCooldownInSec();
+            if(this.allyCD != this.extProps.getPlayerTeamCooldownInSec()) {
+                icrafting.sendProgressBarUpdate(this, 5, this.extProps.getPlayerTeamCooldownInSec());
+                this.allyCD = this.extProps.getPlayerTeamCooldownInSec();
             }
         }
     }
@@ -109,7 +109,7 @@ public class ContainerDesk extends Container {
 			break;
 		case 5:
 //			LogHelper.info("DEBUG : sync ally cd "+updatedValue);
-			this.extProps.setTeamCooldown(updatedValue * 20);  //second to tick
+			this.extProps.setPlayerTeamCooldown(updatedValue * 20);  //second to tick
 			break;
 		}
     }

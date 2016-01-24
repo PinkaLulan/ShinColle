@@ -4,7 +4,7 @@ public class GuiHelper {
 
 	//hard coded button position (x1,y1,x2,y2)
 	private static final int[][][][] BUTTON = {
-		{//gui0: ship inventory
+		{//gui 0: ship inventory
 		 //0: page0          1: page1          2: page2
 		 {{120,18,134,52},  {120,53,134,88},  {120,89,134,125},		//all
 		 //3: AI op0         4: AI op1         5: AI op2
@@ -18,11 +18,11 @@ public class GuiHelper {
 		 //0: AI page2 bar0  1: AI page2 bar1  2: AI page3 bar2
 		  {{187,145,238,154},{187,169,238,178},{187,193,238,202}}	//AI control
 		},
-		{//gui1: small shipyard
+		{//gui 1: small shipyard
 		 //0:ship button    1:equip button
 		 {{122,16,141,36}, {142,16,162,36}}							//all
 		},
-		{//gui2: large shipyard
+		{//gui 2: large shipyard
 		 //0:ship button    1:equip button   2:inventory mode
 		 {{157,24,175,42}, {177,24,195,42}, {23,93,48,112},			//all
 		 //3:grudge         4:abyssium       5:ammo
@@ -48,7 +48,7 @@ public class GuiHelper {
 		 //4:poly -1k    5:poly -100   6:poly -10    7:poly -1    
 		  {50,85,62,95},{62,85,74,95},{74,85,86,95},{86,85,98,95}}
 		},
-		{//gui3: admiral desk
+		{//gui 3: admiral desk
 		 //0:radar btn  1:book btn	  2:team btn   	3:target btn	//all
 		 {{3,2,19,18}, {22,2,38,18}, {41,2,57,18}, {60,2,76,18}},
 		 //0:radar scale	 1:ship slot 0     2:ship slot 1		//radar
@@ -81,6 +81,24 @@ public class GuiHelper {
 		  {140,122,252,133},{140,134,252,145},{140,146,252,157},
 		 //12:slot 11        13:slot 12        
 		  {140,158,252,169},{140,170,252,183}}
+		},
+		{//gui 4: formation
+		 //0:no format       1:LineAhead       2:DoubleLine
+		 {{17,148,34,165},  {35,148,52,165},  {53,148,70,165},
+		 //3:diamond         4:echelon         5:LineAbreast
+		  {71,148,88,165},  {89,148,106,165}, {107,148,124,165},
+		 //6:team 0          7:team 1          8:team 2
+		  {17,166,28,179},  {29,166,40,179},  {41,166,52,179},
+		 //9:team 3          10:team 4         11:team 5
+		  {53,166,64,179},  {65,166,76,179},  {77,166,88,179},
+		 //12:team 6         13:team 7         14:team 8
+		  {89,166,100,179}, {101,166,112,179},{113,166,124,179},
+		 //15:list 0         16:list 1         17:list 2
+		  {142,5,250,32},   {142,33,250,59},  {142,60,250,86},
+		 //18:list 3         19:list 4         20:list 5
+		  {142,87,250,113}, {142,114,250,140},{142,141,250,167},
+		 //21:btn DOWN       22:btn UP
+		  {159,170,189,180},{203,170,233,180}}
 		}
 	};
 	

@@ -28,7 +28,7 @@ public class FormationHelper {
 	/** set current team formation id */
 	public static void setFormationID(ExtendPlayerProps props, int formatID) {
 		if(props != null) {
-			setFormationID(props, props.getCurrentTeamID(), formatID);
+			setFormationID(props, props.getPointerTeamID(), formatID);
 		}
 	}
 	
@@ -40,6 +40,10 @@ public class FormationHelper {
 			if(num > 4 && formatID > 0) {	//can apply formation
 				setFormationForShip(props, teamID, formatID);
 				props.setFormatID(teamID, formatID);
+				
+				//update formation guard position
+				BasicEntityShip[] ships = props.getShipEntityByMode(2);
+				FormationHelper.applyFormationMoving(ships, formatID);
 			}
 			else {
 				setFormationForShip(props, teamID, 0);
@@ -47,7 +51,7 @@ public class FormationHelper {
 			}
 			
 			//sync formation data
-			props.sendSyncPacket(0);
+			props.sendSyncPacket(1);
 		}
 	}
 	
@@ -60,7 +64,7 @@ public class FormationHelper {
 		
 		//set buff value to ship
 		for(int i = 0; i < 6; i++) {
-			ship = props.getEntityOfTeam(teamID, i);
+			ship = props.getShipEntity(teamID, i);
 			
 			if(ship != null) {
 				ship.setUpdateFlag(ID.FU.FormationBuff, true);  //set update
@@ -74,7 +78,7 @@ public class FormationHelper {
 		maxMOV += buffMOV;  //moving speed for formation
 		
 		for(int j = 0; j < 6; j++) {
-			ship = props.getEntityOfTeam(teamID, j);
+			ship = props.getShipEntity(teamID, j);
 			
 			if(ship != null) {
 				ship.setEffectFormationFixed(ID.FormationFixed.MOV, maxMOV);		//set moving speed
@@ -93,7 +97,7 @@ public class FormationHelper {
 //							LogHelper.info("DEBUG : check format "+k+" "+temp2[0]+" "+temp2[1]+" "+ship);
 							//set ship update flag
 							for(int m = 0; m < 6; m++) {
-								ship = props.getEntityOfTeam(k, m);
+								ship = props.getShipEntity(k, m);
 								
 								if(ship != null) {
 									ship.setUpdateFlag(ID.FU.FormationBuff, true);  //set update
@@ -128,7 +132,7 @@ public class FormationHelper {
 		return Values.zeros13;
 	}
 	
-	/** apply ship moving by flag ship position */
+	/** apply ship moving by flag ship position, check is guard BLOCK or ENTITY */
 	public static void applyFormationMoving(BasicEntityShip[] ships, int formatID) {
 		if(ships != null) {
 			//get flag ship

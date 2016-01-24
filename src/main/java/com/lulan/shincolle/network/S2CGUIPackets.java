@@ -64,10 +64,12 @@ public class S2CGUIPackets implements IMessage {
 		public static final byte SyncPlayerProp = 3;
 		public static final byte SyncShipInv = 4;
 		public static final byte FlagInitSID = 5;
-		public static final byte SyncShipList = 6;  //send loaded ship id to client
+		public static final byte SyncShipList = 6;  	//send loaded ship id to client
 		public static final byte SyncPlayerProp_TargetClass = 7;
 		public static final byte SyncPlayerProp_TeamData = 8;
 		public static final byte SyncPlayerProp_Formation = 9;
+		public static final byte SyncPlayerProp_ShipsAll = 10;
+		public static final byte SyncPlayerProp_ShipsInTeam = 11;
 	}
 	
 	
@@ -92,17 +94,31 @@ public class S2CGUIPackets implements IMessage {
 	
 	//sync player extend props
 	public S2CGUIPackets(ExtendPlayerProps extProps, int type) {
-		this.type = type;
-        this.props = extProps;
-        
-        switch(type) {
-        case PID.SyncPlayerProp_TargetClass:
-        	this.dataList = ServerProxy.getPlayerTargetClassList(props.getPlayerUID());
-        	break;
-        case PID.SyncPlayerProp_Formation:
-        	this.value3 = this.props.getFormatID();
-        	break;
-        }
+		if(extProps != null) {
+			this.type = type;
+	        this.props = extProps;
+	        
+	        switch(type) {
+	        case PID.SyncPlayerProp_TargetClass:
+	        	this.dataList = ServerProxy.getPlayerTargetClassList(props.getPlayerUID());
+	        	break;
+	        case PID.SyncPlayerProp_Formation:
+	        	this.value3 = this.props.getFormatID();
+	        	break;
+	        }
+		}
+    }
+	
+	//sync player extend props
+	public S2CGUIPackets(ExtendPlayerProps extProps, int type, int...parms) {
+		if(extProps != null) {
+			this.type = type;
+	        this.props = extProps;
+	        
+	        if(parms != null && parms.length > 0) {
+	        	this.value3 = parms.clone();
+	        }
+		}
     }
 	
 	//sync ship
@@ -360,7 +376,7 @@ public class S2CGUIPackets implements IMessage {
 					tmap.put(tdata.getTeamID(), tdata);
 				}
 //				LogHelper.info("DEBUG : S2C GUI Packet: get team data: "+tmap.size());
-				props.setAllTeamData(tmap);
+				props.setPlayerTeamDataMap(tmap);
 			}
 			break;
 		case PID.SyncPlayerProp_Formation:
@@ -380,6 +396,77 @@ public class S2CGUIPackets implements IMessage {
 				
 				if(props != null) {
 					props.setFormatID(this.value3);
+				}
+			}
+			break;
+		case PID.SyncPlayerProp_ShipsAll:
+			{
+				this.value = buf.readInt();  	//current team id
+				
+				this.value3 = new int[9];
+				for(int i = 0; i < 9; i++) {
+					this.value3[i] = buf.readByte();
+				}
+				
+				this.value2 = buf.readByte();  	//has team data flag
+				
+				if(this.value2 > 0) {  			//get team data
+					BasicEntityShip[][] ships = new BasicEntityShip[9][6];
+					int[][] sids = new int[9][6];
+					boolean[][] sels = new boolean[9][6];
+					int temp;
+					
+					for(int k = 0; k < 9; k++) {
+						for(int i = 0; i < 6; i++) {
+							temp = buf.readInt();
+							ships[k][i] = (BasicEntityShip) EntityHelper.getEntityByID(temp, 0, true);
+							sids[k][i] = buf.readInt();
+							sels[k][i] = buf.readBoolean();
+						}
+					}
+					
+					this.player = ClientProxy.getClientPlayer();
+					this.props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+					
+					if(props != null) {
+						props.setPointerTeamID(value);
+						props.setFormatID(value3);
+						props.setTeamList(ships);
+						props.setSelectState(sels);
+						props.setSIDList(sids);
+					}
+				}
+			}
+			break;
+		case PID.SyncPlayerProp_ShipsInTeam:
+			{
+				this.value = buf.readInt();  	//team id
+				this.value2 = buf.readByte();	//format id
+				
+				int flag = buf.readByte();  	//has team data flag
+				
+				if(flag > 0) {  			//get team data
+					BasicEntityShip[] ships = new BasicEntityShip[6];
+					int[] sids = new int[6];
+					boolean[] sels = new boolean[6];
+					int temp;
+					
+					for(int i = 0; i < 6; i++) {
+						temp = buf.readInt();
+						ships[i] = (BasicEntityShip) EntityHelper.getEntityByID(temp, 0, true);
+						sids[i] = buf.readInt();
+						sels[i] = buf.readBoolean();
+					}
+					
+					this.player = ClientProxy.getClientPlayer();
+					this.props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+					
+					if(props != null) {
+						props.setFormatID(value, value2);
+						props.setTeamList(value, ships);
+						props.setSelectState(value, sels);
+						props.setSIDList(value, sids);
+					}
 				}
 			}
 			break;
@@ -444,7 +531,7 @@ public class S2CGUIPackets implements IMessage {
 				buf.writeInt(props.getPlayerUID());
 				
 				//ship team id
-				buf.writeInt(props.getCurrentTeamID());
+				buf.writeInt(props.getPointerTeamID());
 				
 				//ship formation id
 				int[] fid = props.getFormatID();
@@ -455,16 +542,16 @@ public class S2CGUIPackets implements IMessage {
 				//ship team list
 				for(int i = 0; i < 6; i++) {
 					//get entity id
-					if(props.getEntityOfCurrentTeam(i) != null) {
-						buf.writeInt(props.getEntityOfCurrentTeam(i).getEntityId());
+					if(props.getShipEntityCurrentTeam(i) != null) {
+						buf.writeInt(props.getShipEntityCurrentTeam(i).getEntityId());
 					}
 					else {
 						buf.writeInt(-1);
 					}
 					//get ship UID
-					buf.writeInt(props.getSIDofCurrentTeam(i));
+					buf.writeInt(props.getSIDCurrentTeam(i));
 					//get select state
-					buf.writeBoolean(props.getSelectStateOfCurrentTeam(i));
+					buf.writeBoolean(props.getSelectStateCurrentTeam(i));
 				}
 			}
 			break;
@@ -574,6 +661,89 @@ public class S2CGUIPackets implements IMessage {
 				//if array null
 				else {
 					buf.writeInt(0);
+				}
+			}
+			break;
+		case PID.SyncPlayerProp_ShipsAll:		//sync all ships in team list 0~8
+			{
+				buf.writeByte(this.type);
+				
+				//ship team id
+				buf.writeInt(props.getPointerTeamID());
+				
+				//ship formation id
+				int[] fid = props.getFormatID();
+				for(int j = 0; j < 9; j++) {
+					buf.writeByte((byte) fid[j]);
+				}
+				
+				BasicEntityShip[][] ships = props.getShipEntityAllTeams();
+				int[][] sids = props.getSID();
+				boolean[][] sels = props.getSelectStateAllTeams();
+				
+				if(ships != null && sids != null && sels != null) {
+					buf.writeByte(1);  //get data flag
+					
+					//ship team list
+					for(int k = 0; k < 9; k++) {
+						for(int i = 0; i < 6; i++) {
+							//get entity id
+							if(ships[k][i] != null) {
+								buf.writeInt(ships[k][i].getEntityId());
+							}
+							else {
+								buf.writeInt(-1);
+							}
+							
+							//get ship UID
+							buf.writeInt(sids[k][i]);
+							
+							//get select state
+							buf.writeBoolean(sels[k][i]);
+						}//end for all ships in team
+					}//end for all teams
+				}
+				else {
+					buf.writeByte(-1); //no data flag
+				}
+			}
+			break;
+		case PID.SyncPlayerProp_ShipsInTeam:  //sync ships in a team
+			{
+				buf.writeByte(this.type);
+				
+				//ship team id
+				buf.writeInt(this.value3[0]);
+				
+				//ship formation id
+				buf.writeByte(this.props.getFormatID(this.value3[0]));
+				
+				BasicEntityShip[] ships = props.getShipEntityAll(this.value3[0]);
+				int[] sids = props.getSID(this.value3[0]);
+				boolean[] sels = props.getSelectState(this.value3[0]);
+				
+				if(ships != null && sids != null && sels != null) {
+					buf.writeByte(1);  //get data flag
+					
+					//ship team list
+					for(int i = 0; i < 6; i++) {
+						//get entity id
+						if(ships[i] != null) {
+							buf.writeInt(ships[i].getEntityId());
+						}
+						else {
+							buf.writeInt(-1);
+						}
+						
+						//get ship UID
+						buf.writeInt(sids[i]);
+						
+						//get select state
+						buf.writeBoolean(sels[i]);
+					}//end for all ships in team
+				}
+				else {
+					buf.writeByte(-1); //no data flag
 				}
 			}
 			break;

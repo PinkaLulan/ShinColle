@@ -43,12 +43,10 @@ public class GuiDeskItemForm extends GuiContainer {
 	private static final ResourceLocation guiRadar = new ResourceLocation(Reference.TEXTURES_GUI+"GuiDeskRadar.png");
 	private static final ResourceLocation guiBook = new ResourceLocation(Reference.TEXTURES_GUI+"GuiDeskBook.png");
 	
-	private int xClick, yClick, xMouse, yMouse, tempCD;
+	private int xClick, yClick, xMouse, yMouse;
 	private int tickGUI, guiFunc;
 	private int[] listNum, listClicked; //list var: 0:radar
-	private static final int CLICKCD = 60;
 	private static final int LISTCLICK_RADAR = 0;
-	private String errorMsg;
 	
 	//player data
 	EntityPlayer player;
@@ -90,7 +88,6 @@ public class GuiDeskItemForm extends GuiContainer {
 		this.ySize = 192;
 		
 		this.tickGUI = 0;				//ticks in gui (not game tick)
-		this.tempCD = CLICKCD;
 		
 		//get new value
 		this.guiFunc = funType;
@@ -110,14 +107,6 @@ public class GuiDeskItemForm extends GuiContainer {
 		this.shipList = new ArrayList();
 	}
 	
-	@Override
-	public void initGui() {
-		super.initGui();
-		
-        int i = (this.width - this.xSize) / 2;
-        int j = (this.height - this.ySize) / 2;
-	}
-	
 	//get new mouseX,Y and redraw gui
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float f) {
@@ -126,9 +115,7 @@ public class GuiDeskItemForm extends GuiContainer {
 		//update GUI var
 		xMouse = mouseX;
 		yMouse = mouseY;
-		tickGUI += 1;
-		if(this.tempCD > 0) tempCD--;
-		
+		tickGUI++;
 	}
 	
 	//draw tooltip

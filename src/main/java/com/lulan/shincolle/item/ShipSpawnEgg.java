@@ -322,7 +322,7 @@ public class ShipSpawnEgg extends Item {
                             	initEntityAttribute(itemstack, player, entity);
                             	
                             	//send sync packet
-                            	entity.sendSyncPacket();
+                            	entity.sendSyncPacketAllValue();
                             }
                         }//end spawn entity
 //                    }//end position can spawn

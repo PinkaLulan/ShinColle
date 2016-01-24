@@ -8,11 +8,13 @@ import net.minecraft.world.World;
 
 import com.lulan.shincolle.client.gui.GuiDesk;
 import com.lulan.shincolle.client.gui.GuiDeskItemForm;
+import com.lulan.shincolle.client.gui.GuiFormation;
 import com.lulan.shincolle.client.gui.GuiLargeShipyard;
 import com.lulan.shincolle.client.gui.GuiShipInventory;
 import com.lulan.shincolle.client.gui.GuiSmallShipyard;
 import com.lulan.shincolle.client.gui.inventory.ContainerDesk;
 import com.lulan.shincolle.client.gui.inventory.ContainerDeskItemForm;
+import com.lulan.shincolle.client.gui.inventory.ContainerFormation;
 import com.lulan.shincolle.client.gui.inventory.ContainerLargeShipyard;
 import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
 import com.lulan.shincolle.client.gui.inventory.ContainerSmallShipyard;
@@ -49,7 +51,7 @@ public class GuiHandler implements IGuiHandler {
 			entity = world.getEntityByID(x);	//entity id存在x座標參數上
             if((entity != null) && (entity instanceof BasicEntityShip)){
             	//sync tile when gui opened
-            	((BasicEntityShip)entity).sendSyncPacket();
+            	((BasicEntityShip)entity).sendSyncPacketAllValue();
 				
             	return new ContainerShipInventory(player.inventory,(BasicEntityShip)entity);
 			}
@@ -63,7 +65,7 @@ public class GuiHandler implements IGuiHandler {
 				return new ContainerLargeShipyard(player.inventory, (TileMultiGrudgeHeavy) tile);
 			}
 			break;
-		case ID.G.ADMIRALDESK:	   //GUI admiral desk
+		case ID.G.ADMIRALDESK:		//GUI admiral desk
 			tile = world.getTileEntity(x, y, z);  //確定抓到entity才開ui 以免噴出NPE
 			if((tile != null && tile instanceof TileEntityDesk)) {  //server取得container
 				
@@ -72,14 +74,20 @@ public class GuiHandler implements IGuiHandler {
 				
 				//sync team list to client
 				ExtendPlayerProps props = EntityHelper.getExtendPlayerProps(player);
-				CommonProxy.channelG.sendTo(new S2CGUIPackets(props, S2CGUIPackets.PID.SyncPlayerProp_TargetClass), (EntityPlayerMP) player);
-				CommonProxy.channelG.sendTo(new S2CGUIPackets(props, S2CGUIPackets.PID.SyncPlayerProp_TeamData), (EntityPlayerMP) player);
+				props.sendSyncPacket(2);
+				props.sendSyncPacket(3);
 				
 				return new ContainerDesk(player.inventory, (TileEntityDesk) tile, player);
 			}
 			break;
-		case ID.G.ADMIRALDESK_ITEM:  //GUI admiral radar/book
+		case ID.G.ADMIRALDESK_ITEM:	//GUI admiral radar/book
 			return new ContainerDeskItemForm(player.inventory, player);
+		case ID.G.FORMATION:  		//GUI formation
+			//send sync packet
+			ExtendPlayerProps props = EntityHelper.getExtendPlayerProps(player);
+			props.sendSyncPacket(4);
+			
+			return new ContainerFormation(player.inventory, player);
 		}
 		return null;
 	}
@@ -114,8 +122,10 @@ public class GuiHandler implements IGuiHandler {
 				return new GuiDesk(player.inventory, (TileEntityDesk) tile);
 			}
 			return null;
-		case ID.G.ADMIRALDESK_ITEM:  //GUI admiral radar/book
+		case ID.G.ADMIRALDESK_ITEM:	//GUI admiral radar/book
 			return new GuiDeskItemForm(player.inventory, x);
+		case ID.G.FORMATION:		//GUI formation
+			return new GuiFormation(player.inventory);
 		}
 	
 		return null;

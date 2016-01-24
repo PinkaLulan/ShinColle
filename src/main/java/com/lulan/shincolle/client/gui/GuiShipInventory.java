@@ -468,11 +468,11 @@ public class GuiShipInventory extends GuiContainer {
 				if(this.entity instanceof IShipInvisible) {
 					temp = (int) (this.entity.getEffectEquip(ID.EF_DODGE) +
 							   			((IShipInvisible)this.entity).getInvisibleLevel());
-					if(temp > ConfigHandler.limitShip[6]) temp = (int) ConfigHandler.limitShip[6];
+					if(temp > ConfigHandler.limitShipEffect[6]) temp = (int) ConfigHandler.limitShipEffect[6];
 					overText = String.valueOf(temp) + " %";
 				}
 				else {
-					overText = String.valueOf(this.entity.getEffectEquip(ID.EF_DODGE)) + " %";
+					overText = String.valueOf((int)this.entity.getEffectEquip(ID.EF_DODGE)) + " %";
 				}
 				
 				mouseoverList.add(overText);

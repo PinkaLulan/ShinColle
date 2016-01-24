@@ -71,9 +71,9 @@ public class FML_COMMON_EventHandler {
 				BiomeGenBase biome = event.player.worldObj.getBiomeGenForCoords(blockX, blockZ);	
 				
 				//ally cooldown--
-				int allycd = extProps.getTeamCooldown();
+				int allycd = extProps.getPlayerTeamCooldown();
 				if(allycd > 0) {
-					extProps.setTeamCooldown(--allycd);
+					extProps.setPlayerTeamCooldown(--allycd);
 				}
 				
 				//boss cooldown--
@@ -202,24 +202,24 @@ public class FML_COMMON_EventHandler {
 				boolean syncTeamList = false;
 				
 				//sync team list every 64 ticks
-				if(event.player.ticksExisted % 64 == 0) {
+				if(event.player.ticksExisted % 128 == 0) {
 					//check entity is alive
 					BasicEntityShip getent = null;
 					for(int i = 0; i < 6; i++) {
 						//get ship by UID
-						getent = EntityHelper.getShipBySID(extProps.getSIDofCurrentTeam(i));
+						getent = EntityHelper.getShipBySID(extProps.getSIDCurrentTeam(i));
 
 //						LogHelper.info("DEBUG : player tick: update teamList: "+i+" "+extProps.getSIDofCurrentTeam(i)+" "+getent);
 						//get ship
 						if(getent != null) {
 							//update ship entity
-							extProps.addEntityToCurrentTeam(i, getent);
+							extProps.addShipEntityToCurrentTeam(i, getent);
 						}
 						//ship lost
 						else {
 							//clear slot if no ship UID (ship UID invalid)
-							if(extProps.getSIDofCurrentTeam(i) <= 0) {
-								extProps.addEntityToCurrentTeam(i, null);
+							if(extProps.getSIDCurrentTeam(i) <= 0) {
+								extProps.addShipEntityToCurrentTeam(i, null);
 							}
 							
 							//clear ship entity
@@ -228,7 +228,7 @@ public class FML_COMMON_EventHandler {
 					}
 					
 					syncTeamList = true;
-				}//end every 64 ticks
+				}//end every 128 ticks
 				
 				//init ship UID
 				if(!extProps.getInitSID() && event.player.ticksExisted % 16 == 0) {
@@ -242,7 +242,7 @@ public class FML_COMMON_EventHandler {
 				
 				//send team list sync packet
 				if(syncTeamList) {
-					CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps, S2CGUIPackets.PID.SyncPlayerProp), (EntityPlayerMP) event.player);
+					extProps.sendSyncPacket(0);
 				}
 				
 //				//every 32 ticks
@@ -260,8 +260,8 @@ public class FML_COMMON_EventHandler {
 				}
 			}
 			
-			//check ring item (check for first found ring only) every 20 ticks
-			if(event.player.ticksExisted % 20 == 0) {
+			//check ring item (check for first found ring only) every 32 ticks
+			if(event.player.ticksExisted % 32 == 0) {
 				boolean hasRing = false;
 				ItemStack itemRing = null;
 				
@@ -290,7 +290,7 @@ public class FML_COMMON_EventHandler {
 					}
 				}
 //				LogHelper.info("DEBUG : "+event.player.worldObj.isRemote+" "+extProps.player.getEntityId()+" "+event.player.getEntityId());
-			}//end player per 20 ticks
+			}//end player per 32 ticks
 		}//end player tick phase: START
 	}//end onPlayerTick
 	
@@ -308,7 +308,7 @@ public class FML_COMMON_EventHandler {
         	LogHelper.info("DEBUG : player respawn: restore player data: eid: "+event.player.getEntityId()+" pid: "+extProps.getPlayerUID());
         	
         	//sync extProps state to client
-			CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps, S2CGUIPackets.PID.SyncPlayerProp), (EntityPlayerMP) event.player);
+        	extProps.sendSyncPacket(0);
         }
 	}//end onPlayerRespawn
 	
@@ -444,7 +444,7 @@ public class FML_COMMON_EventHandler {
 	    		ServerProxy.setPlayerData(event.player.getUniqueID().toString(), nbt);
 	    		
 	    		//sync extProps state to client
-				CommonProxy.channelG.sendTo(new S2CGUIPackets(extProps, S2CGUIPackets.PID.SyncPlayerProp), (EntityPlayerMP) event.player);
+	    		extProps.sendSyncPacket(0);
 			}//end server side
 		}//end player extProps not null
 	}

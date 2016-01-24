@@ -6,6 +6,7 @@ import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.client.event.ConfigChangedEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -13,7 +14,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class ConfigHandler {
 	
-	public static Configuration config;	//宣告config檔實體
+	public static Configuration config;		//宣告config檔實體
 	
 	//設定檔變數
 	//GENERAL
@@ -35,12 +36,16 @@ public class ConfigHandler {
 	
 	//SHIP SETTING
 	//scale: HP, ATK, DEF, SPD, MOV, HIT
-	public static Property propShip, propShipLimit, propBossSMKZ, propBossNGT, propMobU511;
-	public static double[] limitShip = new double[] {-1D, -1D, 75D, 4D, 0.6D, 64D, 75D};
+	public static Property propShip, propShipLimitBasic, propShipLimitEffect,
+						   propBossSmall, propBossLarge, propMobSubm;
+	//                                                    HP, ATK, DEF, SPD, MOV, HIT
+	public static double[] limitShipBasic = new double[] {-1D, -1D, 75D, 4D, 0.6D, 64D};
+	//                                                    CRI, DHIT, THIT, MISS, AA, ASM, DODGE
+	public static double[] limitShipEffect = new double[] {-1D, -1D, -1D, -1D, -1D, -1D, 75D};
 	public static double[] scaleShip = new double[] {1D, 1D, 1D, 1D, 1D, 1D};
-	public static double[] scaleBossSMKZ = new double[] {900D, 50D, 80D, 1D, 0.6D, 16D};
-	public static double[] scaleBossNGT = new double[] {2400D, 200D, 92D, 2D, 0.4D, 24D};
-	public static double[] scaleMobU511 = new double[] {100D, 20D, 30D, 1D, 0.4D, 12D, 200D};
+	public static double[] scaleBossSmall = new double[] {900D, 50D, 80D, 1D, 0.6D, 16D};
+	public static double[] scaleBossLarge = new double[] {2400D, 200D, 92D, 2D, 0.4D, 24D};
+	public static double[] scaleMobSubm = new double[] {100D, 20D, 30D, 1D, 0.4D, 12D, 200D};
 	
 	public static int dmgSvS = 100;		//ship vs ship damage modifier, 20 = dmg * 20%
 	public static int dmgSummon = 100;	//summons damage modifier, 20 = dmg * 20%
@@ -107,10 +112,11 @@ public class ConfigHandler {
 		fireVolume = config.getFloat("Attack_Volume", "ship setting", 0.7F, 0F, 10F, "Attack sound volume");
 		
 		propShip = config.get("ship setting", "ship_scale", scaleShip, "Ship attributes SCALE: HP, firepower, armor, attack speed, move speed, range");
-		propShipLimit = config.get("ship setting", "ship_limit", limitShip, "Ship attributes LIMIT (-1 = no limit): HP, firepower, armor%, attack speed, move speed, range(blocks), dodge%");
-		propBossSMKZ = config.get("ship setting", "ShimakazeBoss_scale", scaleBossSMKZ, "Boss:Shimakaze Attrs: HP, firepower, armor, attack speed, move speed, range");
-		propBossNGT = config.get("ship setting", "NagatoBoss_scale", scaleBossNGT, "Boss:Nagato Attrs: HP, firepower, armor, attack speed, move speed, range");
-		propMobU511 = config.get("ship setting", "MobU511_scale", scaleMobU511, "Mob:U511/Ro500 Attrs: HP, firepower, armor, attack speed, move speed, range, spawnPerSquid");
+		propShipLimitBasic = config.get("ship setting", "ship_limit_basic", limitShipBasic, "Ship basic attributes LIMIT (-1 = no limit): HP, firepower, armor%, attack speed, move speed, range(blocks)");
+		propShipLimitEffect = config.get("ship setting", "ship_limit_effect", limitShipEffect, "Ship effect attributes LIMIT (-1 = no limit, 12 = limit 12%): critical%, double hit%, triple hit%, miss reduction%, anti-air, anti-ss, dodge%");
+		propBossSmall = config.get("ship setting", "SmallBoss_scale", scaleBossSmall, "Small Boss:Shimakaze  Values: HP, firepower, armor, attack speed, move speed, range");
+		propBossLarge = config.get("ship setting", "LargeBoss_scale", scaleBossLarge, "Large Boss:Nagato  Values: HP, firepower, armor, attack speed, move speed, range");
+		propMobSubm = config.get("ship setting", "Mob_Submarine_scale", scaleMobSubm, "Submarine:U511/Ro500  Values: HP, firepower, armor, attack speed, move speed, range, spawnPerSquid");
 
 		//ship vs ship damage modifier
 		dmgSvS = config.getInt("SVS_DmgTaken", "ship setting", 100, 0, 10000, "Ship vs Ship damage modifier, 20 = damage * 20% ");
@@ -122,18 +128,19 @@ public class ConfigHandler {
 		polyGravelBaseRate = config.getInt("Polymetal_Gravel", "world gen", 4, 0, 100, "Polymetallic Gravel clusters in one chunk");
 		propPolyGravel = config.get("world gen", "Polymetal_Gravel_Replace", polyGravelBaseBlock, "PolyGravel replaced block: stone, gravel, sand, dirt", true, 4);
 		
-		//若設定檔有更新過 則儲存
+		//設定新值
+		limitShipBasic = getDoubleArrayFromConfig(limitShipBasic, propShipLimitBasic);
+		limitShipEffect = getDoubleArrayFromConfig(limitShipEffect, propShipLimitEffect);
+		scaleShip = getDoubleArrayFromConfig(scaleShip, propShip);
+		scaleBossSmall = getDoubleArrayFromConfig(scaleBossSmall, propBossSmall);
+		scaleBossLarge = getDoubleArrayFromConfig(scaleBossLarge, propBossLarge);
+		scaleMobSubm = getDoubleArrayFromConfig(scaleMobSubm, propMobSubm);
+		polyGravelBaseBlock = getBooleanArrayFromConfig(polyGravelBaseBlock, propPolyGravel);
+		
+		//若設定檔有更新過, 則儲存
 		if(config.hasChanged()) {
 			config.save();
 		}
-		
-		//設定新值
-		limitShip = getDoubleArrayFromConfig(limitShip, propShipLimit);
-		scaleShip = getDoubleArrayFromConfig(scaleShip, propShip);
-		scaleBossSMKZ = getDoubleArrayFromConfig(scaleBossSMKZ, propBossSMKZ);
-		scaleBossNGT = getDoubleArrayFromConfig(scaleBossNGT, propBossNGT);
-		scaleMobU511 = getDoubleArrayFromConfig(scaleMobU511, propShipLimit);
-		polyGravelBaseBlock = getBooleanArrayFromConfig(polyGravelBaseBlock, propPolyGravel);
 	}
 	
 	//check get value
@@ -145,6 +152,7 @@ public class ConfigHandler {
 			return getd;
 		}
 		else {
+			target.set(defaultValue);
 			return defaultValue;
 		}
 	}
@@ -158,6 +166,7 @@ public class ConfigHandler {
 			return getd;
 		}
 		else {
+			target.set(defaultValue);
 			return defaultValue;
 		}
 	}
@@ -168,7 +177,7 @@ public class ConfigHandler {
 		if(config == null) {
 			config = new Configuration(configFile);	//建立config檔實體
 			loadConfiguration();
-		}		
+		}
 	}
 	
 	//若版本更新後 設定檔需要更新 則在此區塊增加更新方法

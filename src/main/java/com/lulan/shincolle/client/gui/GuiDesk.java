@@ -53,7 +53,12 @@ import com.lulan.shincolle.utility.LogHelper;
  *  2: book
  *  3: fleet manage
  *  4: target selector
- *
+ *  
+ *  NOTE:
+ *  修改radar/book方法時請注意必須同時修改GuiDeskItemForm.class
+ *  直到獨立共用方法之前都必須修改這兩處class
+ *  
+ *  NYI: 將radar方法獨立為另一個class
  */
 public class GuiDesk extends GuiContainer {
 
@@ -420,8 +425,8 @@ public class GuiDesk extends GuiContainer {
 			break;
 		case 3:  //team
 			if(xMouse - guiLeft > 138) {  //right side: team list
-				if(this.extProps.getAllTeamData() != null) {
-					listSize = this.extProps.getAllTeamData().size();
+				if(this.extProps.getPlayerTeamDataMap() != null) {
+					listSize = this.extProps.getPlayerTeamDataMap().size();
 					listID = LISTCLICK_TEAM;
 				}
 			}
@@ -852,7 +857,7 @@ public class GuiDesk extends GuiContainer {
 		//draw team name and id
 		tid = this.extProps.getPlayerTeamID();
 		if(tid > 0) {
-			tdata = extProps.getTeamData(tid);
+			tdata = extProps.getPlayerTeamData(tid);
 			if(tdata != null) {
 				GL11.glPushMatrix();
 				GL11.glScalef(0.75F, 0.75F, 0.75F);
@@ -895,7 +900,7 @@ public class GuiDesk extends GuiContainer {
 				
 				//clicked team list
 				clicki = listClicked[LISTCLICK_TEAM] + this.listNum[LISTCLICK_TEAM];
-				tlist = this.extProps.getAllTeamDataList();
+				tlist = this.extProps.getPlayerTeamDataList();
 				
 				//get clicked team id
 				if(this.listFocus == LISTCLICK_TEAM && tlist != null && clicki >= 0 && clicki < tlist.size()) {
@@ -942,7 +947,7 @@ public class GuiDesk extends GuiContainer {
 				
 				//clicked team list
 				clicki2 = listClicked[LISTCLICK_TEAM] + this.listNum[LISTCLICK_TEAM];
-				tlist2 = this.extProps.getAllTeamDataList();
+				tlist2 = this.extProps.getPlayerTeamDataList();
 				
 				//get clicked team id
 				if(this.listFocus == LISTCLICK_TEAM && tlist2 != null && clicki2 >= 0 && clicki2 < tlist2.size()) {
@@ -1010,8 +1015,8 @@ public class GuiDesk extends GuiContainer {
 					colorRT = Values.Color.WHITE;
 				}
 				
-				if(this.extProps.getTeamCooldown() > 0) {
-					strRB = String.valueOf(this.extProps.getTeamCooldownInSec());
+				if(this.extProps.getPlayerTeamCooldown() > 0) {
+					strRB = String.valueOf(this.extProps.getPlayerTeamCooldownInSec());
 					colorRB = Values.Color.LIGHT_GRAY;
 				}
 				else {
@@ -1020,8 +1025,8 @@ public class GuiDesk extends GuiContainer {
 				}
 			}
 			else {  //no team
-				if(this.extProps.getTeamCooldown() > 0) {
-					strRB = String.valueOf(this.extProps.getTeamCooldownInSec());
+				if(this.extProps.getPlayerTeamCooldown() > 0) {
+					strRB = String.valueOf(this.extProps.getPlayerTeamCooldownInSec());
 					colorRB = Values.Color.LIGHT_GRAY;
 				}
 				else {
@@ -1046,7 +1051,7 @@ public class GuiDesk extends GuiContainer {
 		fontRendererObj.drawString(strRB, 110-strlen, 174, colorRB);		
 		
 		//draw team list
-		List<TeamData> tlist = this.extProps.getAllTeamDataList();
+		List<TeamData> tlist = this.extProps.getPlayerTeamDataList();
 		int texty = 36;
 		
 		GL11.glPushMatrix();
@@ -1111,7 +1116,7 @@ public class GuiDesk extends GuiContainer {
 				for(int i = this.listNum[listID]; i < tlist3.size() && i < this.listNum[listID] + 3; ++i) {
 					//get team data
 					int getid = tlist3.get(i);
-					TeamData tdata3 = this.extProps.getTeamData(getid);
+					TeamData tdata3 = this.extProps.getPlayerTeamData(getid);
 					
 					if(tdata3 != null) {
 						//get ally string
@@ -1287,7 +1292,7 @@ public class GuiDesk extends GuiContainer {
 			break;
 		case 3:  //right bottom btn: disband or create team
 //			LogHelper.info("DEBUG : desk: team cooldown "+this.extProps.getTeamCooldown());
-			if(this.extProps.getTeamCooldown() <= 0) {
+			if(this.extProps.getPlayerTeamCooldown() <= 0) {
 				//has team
 				if(this.extProps.getPlayerTeamID() > 0) {
 					//disband team
@@ -1320,7 +1325,7 @@ public class GuiDesk extends GuiContainer {
 			/** get clicked team id */
 			//clicked team list
 			clicki = listClicked[LISTCLICK_TEAM] + this.listNum[LISTCLICK_TEAM];
-			List tlist = this.extProps.getAllTeamDataList();
+			List tlist = this.extProps.getPlayerTeamDataList();
 			
 			if(this.listFocus == LISTCLICK_TEAM && tlist != null && clicki >= 0 && clicki < tlist.size()) {
 				TeamData getd = (TeamData) tlist.get(clicki);
@@ -1429,7 +1434,7 @@ public class GuiDesk extends GuiContainer {
 			/** get clicked team id */
 			//clicked team list
 			clicki = listClicked[LISTCLICK_TEAM] + this.listNum[LISTCLICK_TEAM];
-			List tlist = this.extProps.getAllTeamDataList();
+			List tlist = this.extProps.getPlayerTeamDataList();
 			
 			if(this.listFocus == LISTCLICK_TEAM && tlist != null && clicki >= 0 && clicki < tlist.size()) {
 				TeamData getd = (TeamData) tlist.get(clicki);

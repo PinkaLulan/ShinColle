@@ -36,11 +36,11 @@ public class EntityBattleshipNGTBoss extends BasicEntityShipBoss {
 		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityBattleshipNGTBoss.name"));
         
         //basic attr
-		this.atk = (float) ConfigHandler.scaleBossNGT[ID.ATK];
-        this.atkSpeed = (float) ConfigHandler.scaleBossNGT[ID.SPD];
-        this.atkRange = (float) ConfigHandler.scaleBossNGT[ID.HIT];
-        this.defValue = (float) ConfigHandler.scaleBossNGT[ID.DEF];
-        this.movSpeed = (float) ConfigHandler.scaleBossNGT[ID.MOV];
+		this.atk = (float) ConfigHandler.scaleBossLarge[ID.ATK];
+        this.atkSpeed = (float) ConfigHandler.scaleBossLarge[ID.SPD];
+        this.atkRange = (float) ConfigHandler.scaleBossLarge[ID.HIT];
+        this.defValue = (float) ConfigHandler.scaleBossLarge[ID.DEF];
+        this.movSpeed = (float) ConfigHandler.scaleBossLarge[ID.MOV];
 
         //AI flag
         this.StartEmotion = 0;
@@ -51,7 +51,7 @@ public class EntityBattleshipNGTBoss extends BasicEntityShipBoss {
         this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, ID.S_BattleshipNagato+2);
  
 	    //設定基本屬性
-	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(ConfigHandler.scaleBossNGT[ID.HP]);
+	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(ConfigHandler.scaleBossLarge[ID.HP]);
 		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(this.movSpeed);
 		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(atkRange + 32); //此為找目標, 路徑的範圍
 		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(1D);

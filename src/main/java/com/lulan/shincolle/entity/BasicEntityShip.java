@@ -89,6 +89,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	protected int[] StateMinor;
 	/** equip effect: 0:critical 1:doubleHit 2:tripleHit 3:baseMiss 4:atk_AntiAir 5:atk_AntiSS 6:dodge*/
 	protected float[] EffectEquip;
+	/** equip effect: 0:critical 1:doubleHit 2:tripleHit 3:baseMiss 4:atk_AntiAir 5:atk_AntiSS 6:dodge*/
+	protected float[] EffectEquipBU;
 	/** formation effect: 0:ATK_L 1:ATK_H 2:ATK_AL 3:ATK_AH 4:DEF 5:MOV 6:MISS 7:DODGE 8:CRI
 	 *                    9:DHIT 10:THIT 11:AA 12:ASM */
 	protected float[] EffectFormation;
@@ -141,6 +143,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				                     0, 0, 0
 				                    };
 		this.EffectEquip = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F};
+		this.EffectEquipBU = this.EffectEquip.clone();
 		this.EffectFormation = new float[] {0F, 0F, 0F, 0F, 0F,
 									        0F, 0F, 0F, 0F, 0F,
 									        0F, 0F, 0F};
@@ -528,6 +531,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		return EffectEquip[id];
 	}
 	
+	public float getEffectEquipBU(int id) {
+		return EffectEquipBU[id];
+	}
+	
 	public boolean getUpdateFlag(int id) {
 		return UpdateFlag[id];
 	}
@@ -646,8 +653,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		StateFinal[ID.ATK_AL] = (atk + StateEquip[ID.ATK_AL]) * (float)ConfigHandler.scaleShip[ID.ATK];
 		StateFinal[ID.ATK_AH] = (atk * 3F + StateEquip[ID.ATK_AH]) * (float)ConfigHandler.scaleShip[ID.ATK];
 		
-		//backup state final before buffs
+		//backup value before buffs, for GUI display
 		this.StateFinalBU = this.StateFinal.clone();
+		this.EffectEquipBU = this.EffectEquip.clone();
 		
 		//update formation buff
 		updateFormationBuffs();
@@ -677,8 +685,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		float resisKB = ((StateMinor[ID.M.ShipLevel])/10F) * 0.05F;
 
 		//check limit
-		this.StateFinal = this.checkStateLimit(this.StateFinal);
-		this.StateFinalBU = this.checkStateLimit(this.StateFinalBU);
+		this.StateFinal = this.checkStateFinalLimit(this.StateFinal);
+		this.StateFinalBU = this.checkStateFinalLimit(this.StateFinalBU);
+		this.EffectEquip = this.checkEffectEquipLimit(EffectEquip);
+		this.EffectEquipBU = this.checkEffectEquipLimit(EffectEquipBU);
 		
 		//set attribute by final value
 		/**
@@ -690,9 +700,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(resisKB);
 //		this.jumpMovementFactor = (1F + StateFinal[ID.MOV]) * 0.05F;
 		
-		//for server side
+		//for server side, sync data to client
 		if(!worldObj.isRemote) {
-			sendSyncPacket();		//sync nbt data
+			sendSyncPacketAllValue();
+			sendSyncPacketUnbuffValue();
 		}
 	}
 	
@@ -779,6 +790,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	
 	public void setEffectEquip(int id, float par1) {
 		EffectEquip[id] = par1;
+	}
+	
+	public void setEffectEquipBU(int id, float par1) {
+		EffectEquipBU[id] = par1;
 	}
 	
 	public void setEffectFormation(int id, float par1) {
@@ -907,12 +922,17 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	}
 	
 	/** send sync packet: sync all data */
-	public void sendSyncPacket() {
+	public void sendSyncPacketAllValue() {
 		this.sendSyncPacket(0, false, false);
 	}
 	
-	/** send sync packet: sync all data */
-	public void sendFormationSyncPacket() {
+	/** send sync packet: sync unbuff data */
+	public void sendSyncPacketUnbuffValue() {
+		this.sendSyncPacket(S2CEntitySync.PID.SyncShip_Unbuff, false, false);
+	}
+	
+	/** send sync packet: sync formation data */
+	public void sendSyncPacketFormationValue() {
 		this.sendSyncPacket(S2CEntitySync.PID.SyncShip_Formation, false, false);
 	}
 	
@@ -1533,7 +1553,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
             		setAIList();
             		setAITargetList();
             		decrGrudgeNum(0);		//check grudge
-            		sendSyncPacket();		//sync packet to client
+            		sendSyncPacketAllValue();		//sync packet to client
             		
             		this.initAI = true;
         		}
@@ -2201,7 +2221,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 //				LogHelper.info("DEBUG : No fuel, clear AI "+this);
 				clearAITasks();
 				clearAITargetTasks();
-				sendSyncPacket();
+				sendSyncPacketAllValue();
 				
 				//設定mount的AI
 				if(this.ridingEntity instanceof BasicEntityMount) {
@@ -2217,7 +2237,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				clearAITargetTasks();
 				setAIList();
 				setAITargetList();
-				sendSyncPacket();
+				sendSyncPacketAllValue();
 				
 				//設定mount的AI
 				if(this.ridingEntity instanceof BasicEntityMount) {
@@ -2416,7 +2436,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			if(getPlayerUID() > 0 && getShipUID() > 0 && 
 			   ServerProxy.getShipWorldData(getShipUID()) != null &&
 			   ServerProxy.getShipWorldData(getShipUID())[0] > 0) {
-				this.sendSyncPacket();
+				this.sendSyncPacketAllValue();
 				this.isUpdated = true;
 			}
 			
@@ -2440,23 +2460,23 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		target.applyEntityCollision(this);
     }
   	
-  	//check state limit
-  	protected float[] checkStateLimit(float[] par1) {
+  	//check state final limit
+  	protected float[] checkStateFinalLimit(float[] par1) {
   		//max cap
-		for(int i = 0; i < ConfigHandler.limitShip.length; i++) {
-			if(ConfigHandler.limitShip[i] >= 0D && par1[i] > ConfigHandler.limitShip[i]) {
-				par1[i] = (float) ConfigHandler.limitShip[i];
-			}
-		}
+  		for(int i = 0; i < 6; i++) {
+  			if(ConfigHandler.limitShipBasic[i] >= 0D && par1[i] > ConfigHandler.limitShipBasic[i]) {
+  				par1[i] = (float) ConfigHandler.limitShipBasic[i];
+  			}
+  		}
 		
-		if(ConfigHandler.limitShip[ID.ATK] >= 0D && par1[ID.ATK_H] > ConfigHandler.limitShip[ID.ATK]) {
-			par1[ID.ATK_H] = (float) ConfigHandler.limitShip[ID.ATK];
+		if(ConfigHandler.limitShipBasic[ID.ATK] >= 0D && par1[ID.ATK_H] > ConfigHandler.limitShipBasic[ID.ATK]) {
+			par1[ID.ATK_H] = (float) ConfigHandler.limitShipBasic[ID.ATK];
 		}
-		if(ConfigHandler.limitShip[ID.ATK] >= 0D && par1[ID.ATK_AL] > ConfigHandler.limitShip[ID.ATK]) {
-			par1[ID.ATK_AL] = (float) ConfigHandler.limitShip[ID.ATK];
+		if(ConfigHandler.limitShipBasic[ID.ATK] >= 0D && par1[ID.ATK_AL] > ConfigHandler.limitShipBasic[ID.ATK]) {
+			par1[ID.ATK_AL] = (float) ConfigHandler.limitShipBasic[ID.ATK];
 		}
-		if(ConfigHandler.limitShip[ID.ATK] >= 0D && par1[ID.ATK_AH] > ConfigHandler.limitShip[ID.ATK]) {
-			par1[ID.ATK_AH] = (float) ConfigHandler.limitShip[ID.ATK];
+		if(ConfigHandler.limitShipBasic[ID.ATK] >= 0D && par1[ID.ATK_AH] > ConfigHandler.limitShipBasic[ID.ATK]) {
+			par1[ID.ATK_AH] = (float) ConfigHandler.limitShipBasic[ID.ATK];
 		}
 
 		//min cap
@@ -2472,6 +2492,25 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		if(par1[ID.MOV] < 0F) {
 			par1[ID.MOV] = 0F;
 		}
+		
+		return par1;
+  	}
+  	
+	//check equip effect limit
+  	protected float[] checkEffectEquipLimit(float[] par1) {
+  		//max cap
+  		for(int i = 0; i < 7; i++) {
+  			if(i != ID.EF_AA && i != ID.EF_ASM && i != ID.EF_DODGE) {
+  				if(ConfigHandler.limitShipEffect[i] >= 0D && par1[i] > ConfigHandler.limitShipEffect[i] * 0.01F) {
+  	  				par1[i] = (float) ConfigHandler.limitShipEffect[i] * 0.01F;
+  	  			}
+  			}
+  			else {
+  				if(ConfigHandler.limitShipEffect[i] >= 0D && par1[i] > ConfigHandler.limitShipEffect[i]) {
+  	  				par1[i] = (float) ConfigHandler.limitShipEffect[i];
+  	  			}
+  			}
+  		}
 		
 		return par1;
   	}

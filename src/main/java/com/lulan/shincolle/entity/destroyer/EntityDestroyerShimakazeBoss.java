@@ -34,11 +34,11 @@ public class EntityDestroyerShimakazeBoss extends BasicEntityShipBoss {
 		ignoreFrustumCheck = true;	//即使不在視線內一樣render
 		
         //basic attr
-        this.atk = (float) ConfigHandler.scaleBossSMKZ[ID.ATK];
-        this.atkSpeed = (float) ConfigHandler.scaleBossSMKZ[ID.SPD];
-        this.atkRange = (float) ConfigHandler.scaleBossSMKZ[ID.HIT];
-        this.defValue = (float) ConfigHandler.scaleBossSMKZ[ID.DEF];
-        this.movSpeed = (float) ConfigHandler.scaleBossSMKZ[ID.MOV];
+        this.atk = (float) ConfigHandler.scaleBossSmall[ID.ATK];
+        this.atkSpeed = (float) ConfigHandler.scaleBossSmall[ID.SPD];
+        this.atkRange = (float) ConfigHandler.scaleBossSmall[ID.HIT];
+        this.defValue = (float) ConfigHandler.scaleBossSmall[ID.DEF];
+        this.movSpeed = (float) ConfigHandler.scaleBossSmall[ID.MOV];
         this.numRensouhou = 10;
 
         //AI flag
@@ -50,7 +50,7 @@ public class EntityDestroyerShimakazeBoss extends BasicEntityShipBoss {
         this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, ID.S_DestroyerShimakaze+2);
  
 	    //設定基本屬性
-	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(ConfigHandler.scaleBossSMKZ[ID.HP]);
+	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(ConfigHandler.scaleBossSmall[ID.HP]);
 		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(this.movSpeed);
 		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(atkRange + 32); //此為找目標, 路徑的範圍
 		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(1D);

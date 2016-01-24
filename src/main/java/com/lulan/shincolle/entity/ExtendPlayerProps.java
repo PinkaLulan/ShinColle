@@ -22,6 +22,7 @@ import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.team.TeamData;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.FormationHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
 public class ExtendPlayerProps implements IExtendedEntityProperties {
@@ -122,9 +123,9 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		}
 		
 		for(int i = 0; i < 9; i++) {
-			LogHelper.info("DEBUG : save player ExtNBT: "+this.getSIDofTeam(i)[0]);
-			nbtExt.setIntArray("TeamList"+i, this.getSIDofTeam(i));
-			nbtExt.setByteArray("SelectState"+i, this.getSelectStateOfTeam(i));
+			LogHelper.info("DEBUG : save player ExtNBT: "+this.getSID(i)[0]);
+			nbtExt.setIntArray("TeamList"+i, this.getSID(i));
+			nbtExt.setByteArray("SelectState"+i, this.getSelectStateByte(i));
 		}
 		
 		//save custom target class list
@@ -230,11 +231,11 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		return eid;
 	}
 	
-	public BasicEntityShip getEntityOfCurrentTeam(int id) {
-		return getEntityOfTeam(this.teamId, id);
+	public BasicEntityShip getShipEntityCurrentTeam(int id) {
+		return getShipEntity(this.teamId, id);
 	}
 	
-	public BasicEntityShip getEntityOfTeam(int tid, int id) {
+	public BasicEntityShip getShipEntity(int tid, int id) {
 		try {
 			return teamList[tid][id];
 		}
@@ -244,14 +245,35 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		}
 	}
 	
-	public BasicEntityShip[] getEntityOfCurrentMode(int mode) {	//meta為pointer的item damage
+	public BasicEntityShip[] getShipEntityAll(int tid) {
+		try {
+			return teamList[tid];
+		}
+		catch(Exception e) {
+			LogHelper.info("EXCEPTION : get all ship entity from extProps fail: "+e);
+			return null;
+		}
+	}
+	
+	public BasicEntityShip[][] getShipEntityAllTeams() {
+		try {
+			return teamList;
+		}
+		catch(Exception e) {
+			LogHelper.info("EXCEPTION : get all ship entity from extProps fail: "+e);
+			return null;
+		}
+	}
+	
+	/** get ships for pointer by pointer's mode: 0:single, 1:group, 2:formation */
+	public BasicEntityShip[] getShipEntityByMode(int mode) {	//meta為pointer的item damage
 		BasicEntityShip[] ships = new BasicEntityShip[6];
 		
 		switch(mode) {
 		default:	//single mode
 			//return第一個找到的已選擇的ship
 			for(int i = 0; i < 6; i++) {
-				if(this.getSelectStateOfCurrentTeam(i)) {
+				if(this.getSelectStateCurrentTeam(i)) {
 					ships[0] = this.teamList[teamId][i];
 					return ships;
 				}
@@ -261,7 +283,7 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 			//return所有已選擇的ship
 			int j = 0;
 			for(int i = 0; i < 6; i++) {
-				if(this.getSelectStateOfCurrentTeam(i)) {
+				if(this.getSelectStateCurrentTeam(i)) {
 					ships[j] = this.teamList[teamId][i];
 					j++;
 				}
@@ -275,7 +297,7 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		return ships;
 	}
 	
-	public byte[] getSelectStateOfTeam(int tid) {	//get selected state (byte array)
+	public byte[] getSelectStateByte(int tid) {	//get selected state (byte array)
 		byte[] byteState = new byte[6];
 		
 		if(tid > 5) tid = 0;
@@ -289,12 +311,46 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		return byteState;
 	}
 	
-	public boolean getSelectStateOfCurrentTeam(int id) {	//get selected state
+	public boolean[][] getSelectStateAllTeams() {
+		return selectState;
+	}
+	
+	public boolean[] getSelectState(int tid) {	//get selected state
+		try {
+			return selectState[tid];
+		}
+		catch(Exception e) {
+			LogHelper.info("EXCEPTION : get ship select state fail: "+e);
+			return new boolean[6];
+		}
+	}
+	
+	public boolean getSelectState(int tid, int pos) {	//get selected state
+		try {
+			return selectState[tid][pos];
+		}
+		catch(Exception e) {
+			LogHelper.info("EXCEPTION : get ship select state fail: "+e);
+			return false;
+		}
+	}
+	
+	public boolean getSelectStateCurrentTeam(int id) {	//get selected state
 		if(id > 5) id = 0;
 		return selectState[teamId][id];
 	}
 	
-	public int[] getSIDofTeam(int tid) {	//get all ship UID in a team
+	public int getSID(int tid, int pos) {
+		try {
+			return this.sidList[tid][pos];
+		}
+		catch(Exception e) {
+			LogHelper.info("EXCEPTION : get ship ID fail: "+e);
+			return -1;
+		}
+	}
+	
+	public int[] getSID(int tid) {	//get all ship UID in a team
 		if(sidList != null && sidList[tid] != null) {
 			return sidList[tid];
 		}
@@ -302,16 +358,16 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		return null;
 	}
 	
-	public int[][] getSIDArray() {
+	public int[][] getSID() {
 		return this.sidList;
 	}
 	
-	public int getSIDofCurrentTeam(int id) {	//get current team ship UID
+	public int getSIDCurrentTeam(int id) {	//get current team ship UID
 		if(id > 5) id = 0;
 		return sidList[teamId][id];
 	}
 	
-	public int getCurrentTeamID() {
+	public int getPointerTeamID() {
 		return this.teamId;
 	}
 	
@@ -350,23 +406,23 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		return null;
 	}
 	
-	public Map<Integer, TeamData> getAllTeamData() {  //for client GUI display
+	public Map<Integer, TeamData> getPlayerTeamDataMap() {  //for client GUI display
 		return this.mapTeamData;
 	}
 	
-	public List<TeamData> getAllTeamDataList() {  //for client GUI display
+	public List<TeamData> getPlayerTeamDataList() {  //for client GUI display
 		return this.listTeamData;
 	}
 	
-	public TeamData getTeamData(int par1) {  //for client GUI display
+	public TeamData getPlayerTeamData(int par1) {  //for client GUI display
 		return this.mapTeamData.get(par1);
 	}
 	
-	public int getTeamCooldown() {
+	public int getPlayerTeamCooldown() {
 		return this.teamCooldown;
 	}
 	
-	public int getTeamCooldownInSec() {
+	public int getPlayerTeamCooldownInSec() {
 		return (int)((float)this.teamCooldown * 0.05F);
 	}
 	
@@ -382,7 +438,7 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		return this.targetClassList;
 	}
 	
-	public boolean getIsOpeningGUI() {
+	public boolean isOpeningGUI() {
 		return this.isOpeningGUI;
 	}
 	
@@ -404,7 +460,7 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		}
 	}
 	
-	public int getCurrentFormatID() {
+	public int getFormatIDCurrentTeam() {
 		return getFormatID(this.teamId);
 	}
 	
@@ -495,21 +551,47 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 	}
 	
 	public void setBossCooldown(int par1) {
-		this.bossCooldown = par1;
+		bossCooldown = par1;
+	}
+	
+	public void setSID(int tid, int pos, int sid) {
+		try {
+			sidList[tid][pos] = sid;
+		}
+		catch (Exception e) {
+			LogHelper.info("EXCEPTION : set ship ID fail: "+e);
+		}
 	}
 	
 	//set ship UID (for CLIENT SIDE sync only)
-	public void setSIDofCurrentTeam(int id, int sid) {
-		if(id > 5) id = 0;
-		sidList[teamId][id] = sid;
+	public void setSIDCurrentTeam(int pos, int sid) {
+		try {
+			sidList[teamId][pos] = sid;
+		}
+		catch (Exception e) {
+			LogHelper.info("EXCEPTION : set current team ship ID fail: "+e);
+		}
 	}
 	
-	public void setSelectStateOfCurrentTeam(int id, boolean par1) {
-		if(id > 5) id = 0;
-		selectState[teamId][id] = par1;
+	public void setSelectState(int tid, int pos, boolean par1) {	//get selected state
+		try {
+			selectState[tid][pos] = par1;
+		}
+		catch(Exception e) {
+			LogHelper.info("EXCEPTION : set ship select state fail: "+e);
+		}
 	}
 	
-	public void setCurrentTeamID(int par1) {
+	public void setSelectStateCurrentTeam(int id, boolean par1) {
+		try {
+			selectState[teamId][id] = par1;
+		}
+		catch (Exception e) {
+			LogHelper.info("EXCEPTION : set current team select state fail: "+e);
+		}
+	}
+	
+	public void setPointerTeamID(int par1) {
 		if(par1 > 9) par1 = 0;
 		this.teamId = par1;
 	}
@@ -522,7 +604,7 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		this.playerTeamID = par1;
 	}
 	
-	public void setAllTeamData(Map<Integer, TeamData> par1) {
+	public void setPlayerTeamDataMap(Map<Integer, TeamData> par1) {
 		//set team data
 		if(this.mapTeamData != null) {
 			this.mapTeamData = par1;
@@ -546,7 +628,7 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		}
 	}
 	
-	public void setTeamCooldown(int par1) {
+	public void setPlayerTeamCooldown(int par1) {
 		this.teamCooldown = par1;
 	}
 	
@@ -582,7 +664,7 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		}
 	}
 	
-	public void setIsOpeningGUI(boolean par1) {
+	public void setOpeningGUI(boolean par1) {
 		this.isOpeningGUI = par1;
 	}
 	
@@ -595,11 +677,11 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 			this.formatID[tid] = fid;
 		}
 		catch (Exception e) {
-			LogHelper.info("EXCEPTION : set team formation id fail: "+e);
+			LogHelper.info("EXCEPTION : set ship team formation id fail: "+e);
 		}
 	}
 	
-	public void setCurrentFormatID(int fid) {
+	public void setFormatIDCurrentTeam(int fid) {
 		try {
 			this.formatID[teamId] = fid;
 		}
@@ -608,8 +690,47 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		}
 	}
 	
-	//add ship entity to slot
-	public void addEntityToCurrentTeam(int slot, BasicEntityShip entity) {
+	public void setTeamList(BasicEntityShip[][] par1) {
+		this.teamList = par1;
+	}
+	
+	public void setSelectState(boolean[][] par1) {
+		this.selectState = par1;
+	}
+	
+	public void setSIDList(int[][] par1) {
+		this.sidList = par1;
+	}
+	
+	public void setTeamList(int tid, BasicEntityShip[] par1) {
+		try {
+			this.teamList[tid] = par1;
+		}
+		catch(Exception e) {
+			LogHelper.info("EXCEPTION : set ship team entity fail: "+e);
+		}
+	}
+	
+	public void setSelectState(int tid, boolean[] par1) {
+		try {
+			this.selectState[tid] = par1;
+		}
+		catch(Exception e) {
+			LogHelper.info("EXCEPTION : set ship team select state fail: "+e);
+		}
+	}
+	
+	public void setSIDList(int tid, int[] par1) {
+		try {
+			this.sidList[tid] = par1;
+		}
+		catch(Exception e) {
+			LogHelper.info("EXCEPTION : set ship team SID list fail: "+e);
+		}
+	}
+	
+	/** add ship entity to slot and update SID list */
+	public void addShipEntityToCurrentTeam(int slot, BasicEntityShip entity) {
 		if(slot > 5) return;
 		
 		if(entity == null) {	//clear slot
@@ -630,13 +751,13 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 	 * 
 	 * 若useTeamID = true, 表示不考慮是否重複之類的, 強制插入到slot的位置
 	 */
-	public void addEntityToTeam(int slot, BasicEntityShip entity, boolean forceAdd) {
+	public void addShipEntity(int slot, BasicEntityShip entity, boolean forceAdd) {
 		boolean canAdd = false;
 		
 		//client 收到sync packets
 		if(forceAdd) {
 			if(slot > 5) slot = 0;
-			addEntityToCurrentTeam(slot, entity);
+			addShipEntityToCurrentTeam(slot, entity);
 			return;
 		}
 		else {
@@ -655,17 +776,17 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 				//找有無重複ship, 有的話則清除該ship, id指到該slot
 				int inTeam = this.checkIsInCurrentTeam(entity.getShipUID());
 				if(inTeam >= 0) {
-					addEntityToCurrentTeam(inTeam, null);
+					addShipEntityToCurrentTeam(inTeam, null);
 					this.saveId = inTeam;
-					this.setSelectStateOfCurrentTeam(inTeam, false);
+					this.setSelectStateCurrentTeam(inTeam, false);
 					return;
 				}
 				
 				//若無重複entity, 則挑null空位存, id指示為下一個slot
 				for(int i = 0; i < 6; i++) {
 					if(this.teamList[teamId][i] == null) {
-						this.setSelectStateOfCurrentTeam(i, false);
-						addEntityToCurrentTeam(i, entity);
+						this.setSelectStateCurrentTeam(i, false);
+						addShipEntityToCurrentTeam(i, entity);
 						this.saveId = i + 1;
 						if(saveId > 5) saveId = 0;
 						return;
@@ -673,8 +794,8 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 				}
 				
 				//都沒空位, 則挑id指的位置存
-				this.setSelectStateOfCurrentTeam(this.saveId, false);
-				addEntityToCurrentTeam(saveId, entity);
+				this.setSelectStateCurrentTeam(this.saveId, false);
+				addShipEntityToCurrentTeam(saveId, entity);
 				//id++, 且在0~5之間變動
 				saveId++;
 				if(saveId > 5) saveId = 0;
@@ -682,32 +803,11 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 			}
 			else {
 				if(slot > 5) slot = 0;
-				this.setSelectStateOfCurrentTeam(slot, false);
-				addEntityToCurrentTeam(slot, null);
+				this.setSelectStateCurrentTeam(slot, false);
+				addShipEntityToCurrentTeam(slot, null);
 				return;
 			}
 		}//end server side
-	}
-	
-	/** check target is in team, return {team id, slot id} */
-	public int[] checkIsInTeam(int shipID) {
-		int[] val = new int[] {-1, -1};
-		
-		if(shipID > 0) {
-			for(int i = 0; i < 9; i++) {
-				val[1] = checkIsInTeam(shipID, i)[1];  //get slot id
-				
-				if(val[1] > 0) {  //get ship in team i, return
-					val[0] = i;
-					break;
-				}
-				else {  //not in team, reset slot id to -1
-					val[1] = -1;
-				}
-			}
-		}
-		
-		return val;
 	}
 	
 	/** check target is in team with #ship > 4 and formation type > 0
@@ -744,7 +844,30 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		return checkIsInTeam(shipID, this.teamId)[1];
 	}
 	
-	/** check target is in team, return slot id, ONLY CHECK LOADED SHIP, return {#ship, slot id} */
+	/** check target is in team
+	 *  return {team id, slot id} */
+	public int[] checkIsInTeam(int shipID) {
+		int[] val = new int[] {-1, -1};
+		
+		if(shipID > 0) {
+			for(int i = 0; i < 9; i++) {
+				val[1] = checkIsInTeam(shipID, i)[1];  //get slot id
+				
+				if(val[1] > 0) {  //get ship in team i, return
+					val[0] = i;
+					break;
+				}
+				else {  //not in team, reset slot id to -1
+					val[1] = -1;
+				}
+			}
+		}
+		
+		return val;
+	}
+	
+	/** check target is in team, return slot id, ONLY CHECK LOADED SHIP
+	 *  return {#ship, slot id} */
 	public int[] checkIsInTeam(int shipID, int teamID) {
 		int[] val = new int[] {0, -1};  //slot id, #ships
 		
@@ -773,7 +896,7 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 	}
 	
 	//clear select state of a team
-	public void clearSelectStateOfCurrentTeam() {
+	public void clearSelectStateCurrentTeam() {
 		selectState[teamId][0] = false;
 		selectState[teamId][1] = false;
 		selectState[teamId][2] = false;
@@ -783,14 +906,14 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 	}
 	
 	//clear a ship slot
-	public void clearOneShipOfCurrentTeam(int id) {
+	public void removeShipCurrentTeam(int id) {
 		teamList[teamId][id] = null;
 		sidList[teamId][id] = -1;
 		selectState[teamId][id] = false;
 	}
 	
 	//clear all slot
-	public void clearAllShipOfCurrentTeam() {
+	public void removeShipCurrentTeam() {
 		for(int i = 0; i < 6; i++) {
 			teamList[teamId][i] = null;
 			sidList[teamId][i] = -1;
@@ -803,7 +926,7 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		this.targetClassList = new ArrayList();
 	}
 	
-	//get all ship UID in a team from entity (for init)
+	/** update SID of loaded ship, ONLY FOR INIT */
 	public void updateSID() {
 		if(sidList != null && teamList != null) {
 			//get ship sid
@@ -812,15 +935,12 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 					if(this.teamList[i][j] != null) {
 						this.sidList[i][j] = this.teamList[i][j].getShipUID();
 					}
-//					else {
-//						this.sidList[i][j] = -1;
-//					}
 				}
 			}
 		}
 	}
 	
-	//get ship entity by SID (for init)
+	/** get entity by SID, ONLY FOR INIT */
 	public void updateShipEntityBySID() {
 		if(this.sidList != null) {
 			for(int i = 0; i < 9; i++) {
@@ -895,15 +1015,71 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		return false;
 	}
 	
-	/** sync props data to client, 0:sync formation */
+	/** sync props data to client<br>
+	 *  0:ring state and current team data<br>
+	 *  1:formation data<br>
+	 *  2:target class list<br>
+	 *  3:team data<br>
+	 *  4:all ships in team list<br>
+	 */
 	public void sendSyncPacket(int type) {
 		if(world != null && !world.isRemote) {
 			switch(type) {
 			case 0:
+				CommonProxy.channelG.sendTo(new S2CGUIPackets(this, S2CGUIPackets.PID.SyncPlayerProp), (EntityPlayerMP) player);
+				break;
+			case 1:
 				CommonProxy.channelG.sendTo(new S2CGUIPackets(this, S2CGUIPackets.PID.SyncPlayerProp_Formation), (EntityPlayerMP) player);
+				break;
+			case 2:
+				CommonProxy.channelG.sendTo(new S2CGUIPackets(this, S2CGUIPackets.PID.SyncPlayerProp_TargetClass), (EntityPlayerMP) player);
+				break;
+			case 3:
+				CommonProxy.channelG.sendTo(new S2CGUIPackets(this, S2CGUIPackets.PID.SyncPlayerProp_TeamData), (EntityPlayerMP) player);
+				break;
+			case 4:
+				CommonProxy.channelG.sendTo(new S2CGUIPackets(this, S2CGUIPackets.PID.SyncPlayerProp_ShipsAll), (EntityPlayerMP) player);
 				break;
 			}
 		}
+	}
+	
+	/** sync all ships in team list to client */
+	public void syncShips() {
+		sendSyncPacket(4);
+	}
+	
+	/** sync ships in a team to client */
+	public void syncShips(int teamID) {
+		if(world != null && !world.isRemote) {
+			CommonProxy.channelG.sendTo(new S2CGUIPackets(this, S2CGUIPackets.PID.SyncPlayerProp_ShipsInTeam, teamID), (EntityPlayerMP) player);
+		}
+	}
+	
+	/** swap ship position in team */
+	public void swapShip(int tid, int posA, int posB) {
+		//number check
+		if(tid < 0 || tid > 8 || posA < 0 || posA > 5 || posB < 0 || posB > 5) return;
+		
+		BasicEntityShip shipA = this.teamList[tid][posA];
+		int sidA = this.sidList[tid][posA];
+		boolean selA = this.selectState[tid][posA];
+		
+		//swap ship
+		this.teamList[tid][posA] = this.teamList[tid][posB];
+		this.sidList[tid][posA] = this.sidList[tid][posB];
+		this.selectState[tid][posA] = this.selectState[tid][posB];
+		
+		this.teamList[tid][posB] = shipA;
+		this.sidList[tid][posB] = sidA;
+		this.selectState[tid][posB] = selA;
+		
+		//set ship formation update
+		if(this.teamList[tid][posA] != null) this.teamList[tid][posA].setUpdateFlag(ID.FU.FormationBuff, true);
+		if(this.teamList[tid][posB] != null) this.teamList[tid][posB].setUpdateFlag(ID.FU.FormationBuff, true);
+	
+		//update formation guard position
+		FormationHelper.applyFormationMoving(this.teamList[tid], getFormatID(tid));
 	}
 
 

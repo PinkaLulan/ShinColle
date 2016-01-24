@@ -16,6 +16,7 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 
+import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
@@ -30,6 +31,7 @@ import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
+import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -181,9 +183,9 @@ public class PointerItem extends BasicItem {
 									//if single mode, set other ship focus
 									if(meta == 0) {
 										for(int j = 0; j < 6; j++) {
-											if(j != i && props.getEntityOfCurrentTeam(j) != null) {
+											if(j != i && props.getShipEntityCurrentTeam(j) != null) {
 												//focus ship j
-												CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetSelect, meta, props.getEntityOfCurrentTeam(j).getShipUID()));
+												CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetSelect, meta, props.getShipEntityCurrentTeam(j).getShipUID()));
 												break;
 											}
 										}
@@ -405,6 +407,13 @@ public class PointerItem extends BasicItem {
 			}//end hitObj = entity
 			//若沒抓到entity, 則用getPlayerMouseOverBlock抓block
 			else {
+				//若按住shift, 則開啟formation GUI
+				if(keySet.keyBindSneak.getIsKeyPressed()) {
+					//send GUI packet
+					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.OpenItemGUI, 0));
+					return item;
+				}
+	    			
 				MovingObjectPosition hitObj2 = BlockHelper.getPlayerMouseOverBlock(64D, 1F);
 
 				if(hitObj2 != null) {
@@ -511,7 +520,7 @@ public class PointerItem extends BasicItem {
 					
 					if(props != null) {
 						//calc formatID
-						int fid = props.getFormatID()[props.getCurrentTeamID()] + this.formatAddID;
+						int fid = props.getFormatID()[props.getPointerTeamID()] + this.formatAddID;
 						fid %= 6;
 						
 						String fstr = I18n.format("gui.shincolle:formation.format"+fid);
@@ -574,7 +583,7 @@ public class PointerItem extends BasicItem {
 						
 						if(extProps != null) {
 							for(int i = 0; i < 6; i++) {
-								teamship = extProps.getEntityOfCurrentTeam(i);
+								teamship = extProps.getShipEntityCurrentTeam(i);
 								
 //								//debug
 //								if(player.ticksExisted % 40 == 0) {
@@ -582,7 +591,7 @@ public class PointerItem extends BasicItem {
 //								}
 								
 								if(teamship != null) {
-									select = extProps.getSelectStateOfCurrentTeam(i);
+									select = extProps.getSelectStateCurrentTeam(i);
 									
 									//若是控制目標, 則顯示為pointer顏色
 									if(select) {
@@ -631,7 +640,7 @@ public class PointerItem extends BasicItem {
     		String str3 = null;
     		
     		//draw control mode and formation text
-    		int fid = props.getFormatID()[props.getCurrentTeamID()];
+    		int fid = props.getFormatID()[props.getPointerTeamID()];
     		if(fid >= 0) {
     			str3 = EnumChatFormatting.GOLD + I18n.format("gui.shincolle:formation.format"+fid);
     		}
@@ -656,7 +665,7 @@ public class PointerItem extends BasicItem {
 			
 			//draw current team id
     		list.add(EnumChatFormatting.YELLOW+""+EnumChatFormatting.UNDERLINE + 
-    				String.format("%s %d", I18n.format("gui.shincolle:pointer4"), props.getCurrentTeamID()+1));
+    				String.format("%s %d", I18n.format("gui.shincolle:pointer4"), props.getPointerTeamID()+1));
     	
     		//draw current team ship name
     		BasicEntityShip ship = null;
@@ -665,7 +674,7 @@ public class PointerItem extends BasicItem {
     		int j = 1;
     		for(int i = 0; i < 6; i++) {
     			//get entity
-    			ship = props.getEntityOfCurrentTeam(i);
+    			ship = props.getShipEntityCurrentTeam(i);
     			
     			if(ship != null) {
     				//get level
@@ -680,7 +689,7 @@ public class PointerItem extends BasicItem {
 	    			}
 	    			
 	    			//add info string
-    				if(props.getSelectStateOfCurrentTeam(i)) {
+    				if(props.getSelectStateCurrentTeam(i)) {
     					list.add(EnumChatFormatting.WHITE + String.format("%d: %s - Lv %d", j, name, level));
 	    			}
 	    			else {
@@ -692,8 +701,8 @@ public class PointerItem extends BasicItem {
     			//ship is null, check ship UID
     			else {
     				//check ship UID
-    				if(props.getSIDofCurrentTeam(i) > 0) {
-    					list.add(EnumChatFormatting.DARK_RED+""+EnumChatFormatting.OBFUSCATED+"NO_SIGNAL");
+    				if(props.getSIDCurrentTeam(i) > 0) {
+    					list.add(EnumChatFormatting.DARK_RED+""+EnumChatFormatting.OBFUSCATED+I18n.format("gui.shincolle:formation.nosignal"));
     					j++;
     				}
     			}//end ship is null

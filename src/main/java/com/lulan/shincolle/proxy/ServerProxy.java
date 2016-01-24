@@ -668,7 +668,7 @@ public class ServerProxy extends CommonProxy {
 					
 					//update player data
 					extProps.setPlayerTeamID(pUID);
-					extProps.setTeamCooldown(ConfigHandler.teamCooldown);
+					extProps.setPlayerTeamCooldown(ConfigHandler.teamCooldown);
 					updatePlayerID(player);
 					
 //					//DEBUG generate random team
@@ -709,7 +709,7 @@ public class ServerProxy extends CommonProxy {
 					
 					//update player data
 					extProps.setPlayerTeamID(0);
-					extProps.setTeamCooldown(ConfigHandler.teamCooldown);
+					extProps.setPlayerTeamCooldown(ConfigHandler.teamCooldown);
 					updatePlayerID(player);
 				}
 			}
