@@ -1,11 +1,12 @@
 package com.lulan.shincolle.utility;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.MathHelper;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
+import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
@@ -132,12 +133,13 @@ public class FormationHelper {
 		return Values.zeros13;
 	}
 	
-	/** apply ship moving by flag ship position, check is guard BLOCK or ENTITY */
+	/** apply ship guarding position by flagship position, check is guard BLOCK or ENTITY */
 	public static void applyFormationMoving(BasicEntityShip[] ships, int formatID) {
 		if(ships != null) {
 			//get flag ship
 			for(BasicEntityShip s : ships) {
-				if(s != null) {
+				//ship is NOT guarding entity and NOT follow owner
+				if(s != null && s.getStateMinor(ID.M.GuardType) != 2 && !s.getStateFlag(ID.F.CanFollow)) {
 					applyFormationMoving(ships, formatID, (int)s.posX, (int)s.posY, (int)s.posZ);
 					break;
 				}
@@ -180,9 +182,6 @@ public class FormationHelper {
 	 */
 	public static void applyFormationMoving(BasicEntityShip[] ships, int formatID, int x, int y, int z) {
 		//get flag ship
-		int formatPos = 0;
-		double dx, dy, dz;
-		boolean alongX, faceP;  //along x axis, face positive direction
 		BasicEntityShip flagShip = null;
 		EntityPlayer owner = null;
 		
@@ -196,27 +195,8 @@ public class FormationHelper {
 		}
 		
 		if(flagShip != null && owner != null) {
-			//calc moving direction
-			dx = (double)x - flagShip.posX;
-			dz = (double)z - flagShip.posZ;
-			alongX = CalcHelper.isAbsGreater(dx, dz);
-			
-			if(alongX) {		//along X
-				if(dx >= 0) {	//face positive
-					faceP = true;
-				}
-				else {			//face negative
-					faceP = false;
-				}
-			}
-			else {				//along Z
-				if(dz >= 0) {	//face positive
-					faceP = true;
-				}
-				else {			//face negative
-					faceP = false;
-				}
-			}
+			//along x axis, face positive direction
+			boolean[] faceXP = getFormationDirection(x, z, flagShip.posX, flagShip.posZ);
 			
 			/** calc position
 			 *  
@@ -237,16 +217,16 @@ public class FormationHelper {
 					case 1:  //line ahead
 					case 4:  //echelon
 						//get next pos
-						newPos = setFormationPos1(s, formatID, alongX, faceP, newPos[0], newPos[1], newPos[2]);
+						newPos = setFormationPosAndApplyGuardPos1(s, formatID, faceXP[0], faceXP[1], newPos[0], newPos[1], newPos[2]);
 						break;
 					case 2:  //double line
 					case 3:  //diamond
 					case 5:  //line abreast
-						setFormationPos2(s, formatID, alongX, faceP, newPos[0], newPos[1], newPos[2]);
+						setFormationPosAndApplyGuardPos2(s, formatID, faceXP[0], faceXP[1], newPos[0], newPos[1], newPos[2]);
 						break;
 					default:
 						//apply moving
-						EntityHelper.applyShipGuard(s, 1, x, y, z);
+						EntityHelper.applyShipGuard(s, x, y, z);
 						break;
 					}
 					
@@ -265,13 +245,13 @@ public class FormationHelper {
 	 *  exec:   apply ship guard
 	 *  return: next target pos
 	 */
-	public static int[] setFormationPos1(BasicEntityShip ship, int formatType, boolean alongX, boolean faceP, int x, int y, int z) {
+	public static int[] setFormationPosAndApplyGuardPos1(BasicEntityShip ship, int formatType, boolean alongX, boolean faceP, int x, int y, int z) {
 		//get safe pos
 		int[] pos = BlockHelper.getSafeBlockWithin5x5(ship.worldObj, x, y, z);
 		
 		if(pos != null) {
 			//apply moving
-			EntityHelper.applyShipGuard(ship, 1, pos[0], pos[1], pos[2]);
+			EntityHelper.applyShipGuard(ship, pos[0], pos[1], pos[2]);
 			LogHelper.info("DEBUG : apply formation move: safe: "+pos[0]+" "+pos[1]+" "+pos[2]);
 			
 			//return next pos
@@ -285,7 +265,7 @@ public class FormationHelper {
 		}
 		else {
 			//apply moving
-			EntityHelper.applyShipGuard(ship, 1, x, y, z);
+			EntityHelper.applyShipGuard(ship, x, y, z);
 			LogHelper.info("DEBUG : apply formation move: not safe: "+x+" "+y+" "+z);
 			
 			return new int[] {x, y, z};
@@ -299,7 +279,7 @@ public class FormationHelper {
 	 *  input: flag ship pos
 	 *  exec:  apply ship guard
 	 */
-	public static void setFormationPos2(BasicEntityShip ship, int formatType, boolean alongX, boolean faceP, int x, int y, int z) {
+	public static void setFormationPosAndApplyGuardPos2(BasicEntityShip ship, int formatType, boolean alongX, boolean faceP, int x, int y, int z) {
 		int formatPos = ship.getStateMinor(ID.M.FormatPos);
 		int[] pos = new int[] {x, y, z};
 		
@@ -324,12 +304,12 @@ public class FormationHelper {
 		
 		if(pos != null) {
 			//apply moving
-			EntityHelper.applyShipGuard(ship, 1, pos[0], pos[1], pos[2]);
+			EntityHelper.applyShipGuard(ship, pos[0], pos[1], pos[2]);
 			LogHelper.info("DEBUG : apply formation move: safe: "+pos[0]+" "+pos[1]+" "+pos[2]);
 		}
 		else {
 			//apply moving
-			EntityHelper.applyShipGuard(ship, 1, x, y, z);
+			EntityHelper.applyShipGuard(ship, x, y, z);
 			LogHelper.info("DEBUG : apply formation move: not safe: "+x+" "+y+" "+z);
 		}
 	}
@@ -661,6 +641,97 @@ public class FormationHelper {
 		}
 		
 		return pos;
+	}
+	
+	/** calc formation face direction
+	 *  return {along X axis, face positive}
+	 */
+	public static boolean[] getFormationDirection(double toX, double toZ, double fromX, double fromZ) {
+		double dx = toX - fromX;
+		double dz = toZ - fromZ;
+		boolean[] face = new boolean[2];
+		
+		face[0] = CalcHelper.isAbsGreater(dx, dz);
+		
+		if(face[0]) {		//along X
+			face[1] = dx >= 0 ? true : false;
+		}
+		else {				//along Z
+			face[1] = dz >= 0 ? true : false;
+		}
+		
+		return face;
+	}
+	
+	/** return guarding entity position in formation
+	 *  
+	 *  1. set guard target as flagship position
+	 *  2. calc formation position by guard target posXZ and oldXZ
+	 */
+	public static double[] getFormationGuardingPos(IShipAttackBase host, Entity target, double oldX, double oldZ) {
+		int formatID = host.getStateMinor(ID.M.FormatType);  //get formation ID
+		int formatPos = host.getStateMinor(ID.M.FormatPos);
+		double[] pos = new double[] {target.posX, target.posY, target.posZ};
+		int[] tempPos = null;
+		
+		//no formation, return target position
+		if(formatID <= 0) return pos;
+		
+		//check error position
+		if(formatPos < 0 || formatPos > 5) formatPos = 0;
+		
+		//calc formation position by formation type
+		boolean[] faceXP = getFormationDirection(target.posX, target.posZ, oldX, oldZ);
+		
+		tempPos = calcFormationPos(formatID, formatPos, pos, faceXP);
+		
+		if(tempPos != null) {
+			//check block is safe
+			tempPos = BlockHelper.getSafeBlockWithin5x5(target.worldObj, tempPos[0], tempPos[1], tempPos[2]);
+			
+			if(tempPos != null) {
+				pos[0] = tempPos[0];
+				pos[1] = tempPos[1];
+				pos[2] = tempPos[2];
+			}
+		}
+		
+		return pos;
+	}
+	
+	/** calc formation position */
+	public static int[] calcFormationPos(int formatID, int formatPos, double[] flagshipPos, boolean[] faceXP) {
+		int[] newPos = new int[] {(int)flagshipPos[0], (int)(flagshipPos[1]+0.5D), (int)flagshipPos[2]};
+		
+		//host is flagship
+		if(formatPos == 0) {
+			return newPos;
+		}
+		else {
+			switch(formatID) {
+			case 1:  //line ahead
+				for(int i = 0; i < formatPos; i++) {
+					newPos = nextLineAheadPos(faceXP[0], faceXP[1], newPos[0], newPos[1], newPos[2]);
+				}
+				break;
+			case 4:  //echelon
+				for(int i = 0; i < formatPos; i++) {
+					newPos = nextEchelonPos(faceXP[1], newPos[0], newPos[1], newPos[2]);
+				}
+				break;
+			case 2:  //double line
+				newPos = nextDoubleLinePos(faceXP[0], faceXP[1], formatPos, newPos[0], newPos[1], newPos[2]);
+				break;
+			case 3:  //diamond
+				newPos = nextDiamondPos(faceXP[0], faceXP[1], formatPos, newPos[0], newPos[1], newPos[2]);
+				break;
+			case 5:  //line abreast
+				newPos = nextLineAbreastPos(faceXP[0], formatPos, newPos[0], newPos[1], newPos[2]);
+				break;
+			}
+			
+			return newPos;
+		}
 	}
 	
 	

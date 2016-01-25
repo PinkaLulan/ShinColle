@@ -7,15 +7,22 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.entity.BasicEntityMount;
+import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipAircraftAttack;
 import com.lulan.shincolle.entity.IShipCannonAttack;
 import com.lulan.shincolle.entity.IShipGuardian;
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CEntitySync;
+import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.FormationHelper;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 
@@ -36,13 +43,14 @@ import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
  *   
  *   guard type:
  *   0: none
- *   1: normal
- *   2: -
+ *   1: guard a block
+ *   2: guard an entity
  */
 public class EntityAIShipGuarding extends EntityAIBase {
 
     private IShipGuardian host;
     private EntityLiving host2;
+    private EntityPlayer owner;
     private Entity guarded;
     private ShipPathNavigate ShipNavigator;
     private final TargetHelper.Sorter targetSorter;
@@ -51,7 +59,8 @@ public class EntityAIShipGuarding extends EntityAIBase {
     private int checkTeleport, checkTeleport2;	//> 200 = use teleport
     private double maxDistSq, minDistSq;
     private double distSq, distSqrt, distX, distY, distZ;	//跟目標的直線距離
-    private int gx, gy, gz;				//guard position (block position)
+    private double[] pos;				//guard position
+    private double[] guardPosOld;			//last update position
     
     //attack parms, for BasicEntityShip only
     private IShipCannonAttack ship;  	//host can use cannon
@@ -87,7 +96,13 @@ public class EntityAIShipGuarding extends EntityAIBase {
         	}
         }
         
+        if(entity instanceof BasicEntityShip || entity instanceof BasicEntityMount) {
+        	owner = EntityHelper.getEntityPlayerByUID(entity.getPlayerUID());
+        }
+        
         //init value
+        this.pos = new double[] {-1D, -1D, -1D};
+        this.guardPosOld = new double[] {-1D, -100D, -1D};
     	this.delayTime = new int[] {20, 20, 20};
     	this.maxDelayTime = new int[] {20, 40, 40};
     	this.onSightTime = 0;
@@ -101,56 +116,8 @@ public class EntityAIShipGuarding extends EntityAIBase {
 	public boolean shouldExecute() {
     	//非坐下, 非騎乘, 非被綁, 非可跟隨, 且有fuel才執行
     	if(host != null && !host.getIsRiding() && !host.getIsSitting() && !host.getStateFlag(ID.F.NoFuel) && !host.getStateFlag(ID.F.CanFollow)) {
-    		//check guarded entity
-    		this.guarded = host.getGuardedEntity();
-    		
     		//get guard target
-    		if(this.guarded != null) {
-    			if(!this.guarded.isEntityAlive()) {
-    				host.setGuardedEntity(null);
-    				return false;
-    			}
-    			else {
-    				this.gx = (int) this.guarded.posX;
-        			this.gy = (int) this.guarded.posY;
-        			this.gz = (int) this.guarded.posZ;
-    			}
-    		}
-    		else {
-    			this.gx = host.getStateMinor(ID.M.GuardX);
-        		this.gy = host.getStateMinor(ID.M.GuardY);
-        		this.gz = host.getStateMinor(ID.M.GuardZ);
-    		}
-    		
-    		//若gy=0, 表示這entity剛初始化, 還不能執行AI
-    		if(gy <= 0) {
-    			host.setStateFlag(ID.F.CanFollow, true);
-    			return false;
-    		}
-    		else {
-    			//host is in formation
-    			if(this.ship != null && this.ship.getStateMinor(ID.M.FormatType) > 0) {
-    				this.minDistSq = 2;
-                    this.maxDistSq = 5;
-    			}
-    			//not formation mode
-    			else {
-    				float fMin = host.getStateMinor(ID.M.FollowMin) + host2.width * 0.75F;
-                	float fMax = host.getStateMinor(ID.M.FollowMax) + host2.width * 0.75F;
-                	this.minDistSq = fMin * fMin;
-                    this.maxDistSq = fMax * fMax;
-    			}
-                
-                //計算直線距離
-            	this.distX = this.gx - this.host2.posX;
-        		this.distY = this.gy - this.host2.posY;
-        		this.distZ = this.gz - this.host2.posZ;
-            	this.distSq = this.distX*this.distX + this.distY*this.distY + this.distZ*this.distZ;
-
-            	if(distSq > this.maxDistSq) {
-            		return true;
-            	}
-    		}
+    		return checkGuardTarget();
     	}
         return false;
     }
@@ -162,7 +129,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
     		//非坐下, 非騎乘, 非被綁, 非可跟隨, 且有fuel才執行
     		if(!host.getIsRiding() && !host.getIsSitting() && !host.getStateFlag(ID.F.NoFuel) && !host.getStateFlag(ID.F.CanFollow)) {
     			//還沒走進min follow range, 繼續走
-	        	if(this.distSq > this.minDistSq) {		
+	        	if(this.distSq > this.minDistSq) {
 	        		return true;	//need update guard position
 	        	}
 	        	
@@ -253,54 +220,8 @@ public class EntityAIShipGuarding extends EntityAIBase {
         	
         	//update position every 32 ticks
         	if(host2.ticksExisted % 32 == 0) {
-        		//check guarded entity
-        		this.guarded = host.getGuardedEntity();
-        		
         		//get guard target
-        		if(this.guarded != null) {
-        			if(!this.guarded.isEntityAlive()) {
-        				host.setGuardedEntity(null);
-        				this.resetTask();
-        				return;
-        			}
-        			else {
-        				this.gx = (int) this.guarded.posX;
-            			this.gy = (int) this.guarded.posY;
-            			this.gz = (int) this.guarded.posZ;
-        			}
-        		}
-        		else {
-        			this.gx = host.getStateMinor(ID.M.GuardX);
-            		this.gy = host.getStateMinor(ID.M.GuardY);
-            		this.gz = host.getStateMinor(ID.M.GuardZ);
-        		}
-        		
-        		//若gy<=0, 表示這entity停止定點防守, 改跟隨owner
-        		if(gy <= 0) {
-        			host.setStateFlag(ID.F.CanFollow, true);
-        			this.resetTask();
-        			return;
-        		}
-        		else {
-        			//host is in formation
-        			if(this.ship != null && this.ship.getStateMinor(ID.M.FormatType) > 0) {
-        				this.minDistSq = 2;
-                        this.maxDistSq = 5;
-        			}
-        			//not formation mode
-        			else {
-        				float fMin = host.getStateMinor(ID.M.FollowMin) + host2.width * 0.75F;
-                    	float fMax = host.getStateMinor(ID.M.FollowMax) + host2.width * 0.75F;
-                    	this.minDistSq = fMin * fMin;
-                        this.maxDistSq = fMax * fMax;
-        			}
-                    
-                    //計算直線距離
-                	this.distX = this.gx - this.host2.posX;
-            		this.distY = this.gy - this.host2.posY;
-            		this.distZ = this.gz - this.host2.posZ;
-                	this.distSq = this.distX*this.distX + this.distY*this.distY + this.distZ*this.distZ;
-        		}
+        		if(!checkGuardTarget()) return;
         	}//end update
         	
         	//end move
@@ -310,7 +231,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
         	}
         	
         	//設定頭部轉向
-            this.host2.getLookHelper().setLookPosition(gx, gy, gz, 30F, this.host2.getVerticalFaceSpeed());
+            this.host2.getLookHelper().setLookPosition(pos[0], pos[1], pos[2], 30F, this.host2.getVerticalFaceSpeed());
 
         	//距離超過傳送距離, 直接傳送到目標上
         	if(this.distSq > this.maxDistSq && host2.dimension == host.getStateMinor(ID.M.GuardDim)) {
@@ -325,7 +246,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
         				this.clearMountSeat2();
         			}
         			
-    				this.host2.setLocationAndAngles(this.gx+0.5D, this.gy+0.5D, this.gz+0.5D, this.host2.rotationYaw, this.host2.rotationPitch);
+    				this.host2.setLocationAndAngles(pos[0], pos[1], pos[2], this.host2.rotationYaw, this.host2.rotationPitch);
     				this.ShipNavigator.clearPathEntity();
     				this.sendSyncPacket();
                     return;
@@ -334,27 +255,27 @@ public class EntityAIShipGuarding extends EntityAIBase {
         	
         	//每cd到找一次路徑
         	if(this.findCooldown <= 0) {
-    			this.findCooldown = 30;
+    			this.findCooldown = 32;
 //    			LogHelper.info("DEBUG : guarding AI: find path cd");
     			//check path result
             	if(host2.dimension == host.getStateMinor(ID.M.GuardDim)) {
-            		this.isMoving = this.ShipNavigator.tryMoveToXYZ(gx, gy, gz, 1D);
+            		this.isMoving = this.ShipNavigator.tryMoveToXYZ(pos[0], pos[1], pos[2], 1D);
             		
             		if(!this.isMoving) {
 	            		//若超過max dist則teleport
 	            		if(this.distSq > this.maxDistSq && host2.dimension == host.getStateMinor(ID.M.GuardDim)) {
 	            			this.checkTeleport2++;
 	                		
-	                		if(this.checkTeleport2 > 30) {  //30 * 30 = 900 ticks
+	                		if(this.checkTeleport2 > 32) {  //32 * 32 = 1024 ticks
 	                			this.checkTeleport2 = 0;
-	                			LogHelper.info("DEBUG : guarding AI: teleport entity: "+gx+" "+gy+" "+gz+" "+this.host);
+	                			LogHelper.info("DEBUG : guarding AI: teleport entity: "+pos[0]+" "+pos[1]+" "+pos[2]+" "+this.host);
 	    	            		
 	                			if(this.distSq > 1024) {	//32 blocks away, drop seat2
 	                				this.clearMountSeat2();
 	                			}
 	                			
 	                			//teleport
-	                			this.host2.setLocationAndAngles(this.gx+0.5D, this.gy+0.5D, this.gz+0.5D, this.host2.rotationYaw, this.host2.rotationPitch);
+	                			this.host2.setLocationAndAngles(pos[0], pos[1], pos[2], this.host2.rotationYaw, this.host2.rotationPitch);
 	            				this.ShipNavigator.clearPathEntity();
 	            				this.sendSyncPacket();
 	                            return;
@@ -473,6 +394,106 @@ public class EntityAIShipGuarding extends EntityAIBase {
         	
         	this.launchType = !this.launchType;		//change type
         }
+	}
+	
+	private boolean checkGuardTarget() {
+		//check guarded entity
+		this.guarded = host.getGuardedEntity();
+		
+		if(this.guarded != null) {
+			//target is alive and same dimension
+			if(!this.guarded.isEntityAlive() || this.guarded.worldObj.provider.dimensionId != this.host2.worldObj.provider.dimensionId) {
+				host.setGuardedEntity(null);
+				this.resetTask();
+				return false;
+			}
+			else {
+				//if guard with formation
+				if(host.getStateMinor(ID.M.FormatType) > 0) {
+					//if target moving distSQ > 7, get new position
+					double dx = guardPosOld[0] - guarded.posX;
+					double dy = guardPosOld[1] - guarded.posY;
+					double dz = guardPosOld[2] - guarded.posZ;
+					double dsq = dx * dx + dy * dy + dz * dz;
+					
+					if(dsq > 7) {
+						//get new position
+						pos = FormationHelper.getFormationGuardingPos(host, guarded, guardPosOld[0], guardPosOld[2]);
+					
+						//backup old position
+						guardPosOld[0] = guarded.posX;
+						guardPosOld[1] = guarded.posY;
+						guardPosOld[2] = guarded.posZ;
+						
+						//draw moving particle
+						if(ConfigHandler.alwaysShowTeamParticle || EntityHelper.checkInUsePointer(owner)) {
+							CommonProxy.channelP.sendTo(new S2CSpawnParticle(25, 0, pos[0], pos[1], pos[2], 0.3, 4, 0), (EntityPlayerMP) owner);
+						}
+					}
+					
+					//DEBUG
+					if(this.host2.ticksExisted % 16 == 0) {
+						//draw moving particle
+						if(ConfigHandler.alwaysShowTeamParticle || EntityHelper.checkInUsePointer(owner)) {
+							CommonProxy.channelP.sendTo(new S2CSpawnParticle(25, 0, pos[0], pos[1], pos[2], 0.3, 6, 0), (EntityPlayerMP) owner);
+						}
+					}
+				}
+				//no formation
+				else {
+					pos[0] = guarded.posX;
+					pos[1] = guarded.posY;
+					pos[2] = guarded.posZ;
+				}
+			}
+		}
+		else {
+			pos[0] = host.getStateMinor(ID.M.GuardX) + 0.5D;  //int to double block position
+			pos[1] = host.getStateMinor(ID.M.GuardY) + 0.5D;
+			pos[2] = host.getStateMinor(ID.M.GuardZ) + 0.5D;
+		}
+		
+		//若gy<=0, 表示這entity停止定點防守, 改跟隨owner
+		if(pos[1] <= 0) {
+			host.setStateFlag(ID.F.CanFollow, true);
+			this.resetTask();
+			return false;
+		}
+		else {
+			//host is in formation
+			if(this.ship != null && this.ship.getStateMinor(ID.M.FormatType) > 0){
+				//guard entity
+				if(this.ship.getStateMinor(ID.M.GuardType) == 2) {
+					this.minDistSq = 5;
+	                this.maxDistSq = 9;
+				}
+				//guard block
+				else {
+					this.minDistSq = 4;
+	                this.maxDistSq = 7;
+				}
+				
+			}
+			//not formation mode
+			else {
+				float fMin = host.getStateMinor(ID.M.FollowMin) + host2.width * 0.75F;
+            	float fMax = host.getStateMinor(ID.M.FollowMax) + host2.width * 0.75F;
+            	this.minDistSq = fMin * fMin;
+                this.maxDistSq = fMax * fMax;
+			}
+            
+            //計算直線距離
+        	this.distX = pos[0] - this.host2.posX;
+    		this.distY = pos[1] - this.host2.posY;
+    		this.distZ = pos[2] - this.host2.posZ;
+        	this.distSq = this.distX*this.distX + this.distY*this.distY + this.distZ*this.distZ;
+        	
+        	if(this.distSq > this.maxDistSq && host2.dimension == host.getStateMinor(ID.M.GuardDim)) {
+        		return true;
+        	}
+		}
+		
+		return false;
 	}
 
 	

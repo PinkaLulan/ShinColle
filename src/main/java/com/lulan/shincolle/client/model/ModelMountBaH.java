@@ -446,6 +446,7 @@ public class ModelMountBaH extends ModelBase {
     //雙腳移動計算
   	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {   
   		float angleX = MathHelper.cos(f2*0.08F);
+  		float angleFast = MathHelper.cos(f2*1F);
   		float angleAdd1 = MathHelper.cos(f * 0.7F) * f1 * 0.7F;
   		float angleAdd2 = MathHelper.cos(f * 0.7F + 3.1415927F) * f1 * 0.7F;
   		float addk1 = 0F;
@@ -458,6 +459,10 @@ public class ModelMountBaH extends ModelBase {
 	  	addk2 = angleAdd2 - 1.6755F;
 
 	    //正常站立動作
+	  	//頭部煙囪
+	  	this.HeadBack01.rotateAngleX = angleFast * 0.04F * rand.nextFloat() + 0.68F;
+	  	this.HeadBack02.rotateAngleX = angleFast * 0.06F * rand.nextFloat() + 0.77F;
+	  	this.HeadBack03.rotateAngleX = angleFast * 0.05F * rand.nextFloat() + 0.6F;
 	  	//嘴巴
 	  	this.Jaw.rotateAngleX = angleX * 0.12F + 0.83F;
 	    //arm 

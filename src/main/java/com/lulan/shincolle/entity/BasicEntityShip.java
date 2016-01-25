@@ -1491,7 +1491,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 						if(player != null) {
 							ItemStack item = player.inventory.getCurrentItem();
 							
-							if(ConfigHandler.alwaysShowTeam || (item != null && item.getItem() instanceof PointerItem)) {
+							if(ConfigHandler.alwaysShowTeamParticle || (item != null && item.getItem() instanceof PointerItem)) {
 								//標記在entity上
 								if(this.getGuardedEntity() != null) {
 									ParticleHelper.spawnAttackParticleAtEntity(this.getGuardedEntity(), 0.3D, 6D, 0D, (byte)2);
@@ -2231,7 +2231,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		}
 		//has fuel, set AI
 		else {
-			if(this.targetTasks.taskEntries.size() < 2) {
+			if(this.targetTasks.taskEntries.size() < 1) {
 //				LogHelper.info("DEBUG : Get fuel, set AI "+this);
 				clearAITasks();
 				clearAITargetTasks();

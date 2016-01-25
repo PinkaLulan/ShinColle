@@ -24,7 +24,7 @@ public class ConfigHandler {
 	public static boolean showTag = true;
 	public static boolean friendlyFire = true;
 	public static boolean useWakamoto = true;
-	public static boolean alwaysShowTeam = false;
+	public static boolean alwaysShowTeamParticle = false;
 	public static boolean polyAsMn = true;
 	public static float dropGrudge = 1.0F;
 	public static int closeGUIDist = 64;
@@ -67,7 +67,7 @@ public class ConfigHandler {
 	private static void loadConfiguration() {
 		
 		//是否顯示custom name tag
-		alwaysShowTeam = config.getBoolean("Always_Show_Team", "general", false, "Always show team circles");
+		alwaysShowTeamParticle = config.getBoolean("Always_Show_Team", "general", false, "Always show team circle animation");
 		
 		//boss生成cd設定 (ticks)
 		bossCooldown = config.getInt("Boss_Cooldown", "general", 4800, 20, 1728000, "Boss spawn cooldown");

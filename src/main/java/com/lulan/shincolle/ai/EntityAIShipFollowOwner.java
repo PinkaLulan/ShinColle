@@ -3,14 +3,20 @@ package com.lulan.shincolle.ai;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.entity.BasicEntityMount;
+import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipAttackBase;
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CEntitySync;
+import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.FormationHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
@@ -23,6 +29,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
     private IShipAttackBase host;
     private EntityLiving host2;
     private EntityLivingBase owner;
+    private EntityPlayer player;
     private static final double TP_DIST = 2048D;	//teleport condition ~ 45 blocks
     private ShipPathNavigate ShipNavigator;
     private int findCooldown;
@@ -32,6 +39,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
     private double distSq;
     private double distSqrt;
     private double distX, distY, distZ;	//跟目標的直線距離(的平方)
+    private double[] pos, ownerPosOld;  //moving target, owner prev position
 
     
     public EntityAIShipFollowOwner(IShipAttackBase entity) {
@@ -40,7 +48,15 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
         this.ShipNavigator = entity.getShipNavigate();
         this.distSq = 1D;
         this.distSqrt = 1D;
-        this.setMutexBits(7);  
+        this.setMutexBits(7);
+        
+        //init vars
+        this.pos = new double[] {host2.posX, host2.posY, host2.posZ};
+        this.ownerPosOld = new double[] {host2.posX, host2.posY, host2.posZ};
+        
+        if(entity instanceof BasicEntityShip || entity instanceof BasicEntityMount) {
+        	player = EntityHelper.getEntityPlayerByUID(entity.getPlayerUID());
+        }
     }
     
     //有owner且目標超過max dist時觸發AI, 觸發後此方法不再執行, 改為持續執行cont exec
@@ -58,16 +74,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
             		return false;
             	}
             	
-            	float fMin = host.getStateMinor(ID.M.FollowMin) + host2.width * 0.75F;
-            	float fMax = host.getStateMinor(ID.M.FollowMax) + host2.width * 0.75F;
-            	this.minDistSq = fMin * fMin;
-                this.maxDistSq = fMax * fMax;
-
-            	//計算直線距離
-            	this.distX = this.owner.posX - this.host2.posX;
-        		this.distY = this.owner.posY - this.host2.posY;
-        		this.distZ = this.owner.posZ - this.host2.posZ;
-            	this.distSq = this.distX*this.distX + this.distY*this.distY + this.distZ*this.distZ;
+            	updateDistance();
 
             	if(distSq > this.maxDistSq) {
             		return true;
@@ -126,8 +133,8 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
 //    		LogHelper.info("DEBUG : exec follow owner");
         	this.findCooldown--;
         	
-        	//update follow range every 60 ticks
-        	if(host2.ticksExisted % 64 == 0){
+        	//update follow range every 32 ticks
+        	if(host2.ticksExisted % 32 == 0){
         		//update owner distance
             	EntityLivingBase OwnerEntity = EntityHelper.getEntityPlayerByUID(this.host.getPlayerUID(), this.host2.worldObj);
 
@@ -139,16 +146,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
                 		return;
                 	}
                 	
-                	float fMin = host.getStateMinor(ID.M.FollowMin) + host2.width * 0.75F;
-                	float fMax = host.getStateMinor(ID.M.FollowMax) + host2.width * 0.75F;
-                	this.minDistSq = fMin * fMin;
-                    this.maxDistSq = fMax * fMax;
-
-                	//計算直線距離
-                	this.distX = this.owner.posX - this.host2.posX;
-            		this.distY = this.owner.posY - this.host2.posY;
-            		this.distZ = this.owner.posZ - this.host2.posZ;
-                	this.distSq = this.distX*this.distX + this.distY*this.distY + this.distZ*this.distZ;
+                	updateDistance();
                 }
         	}//end update
         	
@@ -158,7 +156,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
         	}
         	
         	//設定頭部轉向
-            this.host2.getLookHelper().setLookPositionWithEntity(this.owner, 30F, 40F);
+            this.host2.getLookHelper().setLookPositionWithEntity(this.owner, 20F, 40F);
 
         	//距離超過傳送距離, 直接傳送到目標上
         	if(this.distSq > EntityAIShipFollowOwner.TP_DIST) {
@@ -188,7 +186,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
     			this.findCooldown = 30;
     			
     			//check path result
-            	if(this.host2.dimension == this.owner.dimension && !this.ShipNavigator.tryMoveToEntityLiving(this.owner, 1D)) {
+            	if(this.host2.dimension == this.owner.dimension && !this.ShipNavigator.tryMoveToXYZ(pos[0], pos[1], pos[2], 1D)) {
             		//若超過max dist持續240ticks, 則teleport
             		if(this.distSq > this.maxDistSq) {
             			this.checkTeleport2++;
@@ -240,6 +238,61 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
   		//for other player, send ship state for display
   		TargetPoint point = new TargetPoint(host2.dimension, host2.posX, host2.posY, host2.posZ, 48D);
   		CommonProxy.channelE.sendToAllAround(new S2CEntitySync(host2, 0, S2CEntitySync.PID.SyncEntity_PosRot), point);
+  	}
+  	
+  	//update distance
+  	private void updateDistance() {
+  		//if ship with formation
+		if(host.getStateMinor(ID.M.FormatType) > 0) {
+			this.minDistSq = 4;
+            this.maxDistSq = 7;
+			
+            //if owner moving distSQ > 7, get new position
+			double dx = ownerPosOld[0] - owner.posX;
+			double dy = ownerPosOld[1] - owner.posY;
+			double dz = ownerPosOld[2] - owner.posZ;
+			double dsq = dx * dx + dy * dy + dz * dz;
+			
+			if(dsq > 7) {
+				//get new position
+				pos = FormationHelper.getFormationGuardingPos(host, owner, ownerPosOld[0], ownerPosOld[2]);
+				
+				//backup old position
+				ownerPosOld[0] = owner.posX;
+				ownerPosOld[1] = owner.posY;
+				ownerPosOld[2] = owner.posZ;
+					
+				//draw moving particle
+				if(ConfigHandler.alwaysShowTeamParticle || EntityHelper.checkInUsePointer(player)) {
+					CommonProxy.channelP.sendTo(new S2CSpawnParticle(25, 0, pos[0], pos[1], pos[2], 0.3, 4, 0), (EntityPlayerMP) player);
+				}
+			}
+			
+			if(this.host2.ticksExisted % 16 == 0) {
+				//draw moving particle
+				if(ConfigHandler.alwaysShowTeamParticle || EntityHelper.checkInUsePointer(player)) {
+					CommonProxy.channelP.sendTo(new S2CSpawnParticle(25, 0, pos[0], pos[1], pos[2], 0.3, 6, 0), (EntityPlayerMP) player);
+				}
+			}
+		}
+		//no formation
+		else {
+			float fMin = host.getStateMinor(ID.M.FollowMin) + host2.width * 0.75F;
+	    	float fMax = host.getStateMinor(ID.M.FollowMax) + host2.width * 0.75F;
+	    	this.minDistSq = fMin * fMin;
+	        this.maxDistSq = fMax * fMax;
+	        
+	        pos[0] = owner.posX;
+			pos[1] = owner.posY;
+			pos[2] = owner.posZ;
+		}
+
+    	//計算直線距離
+    	this.distX = pos[0] - this.host2.posX;
+		this.distY = pos[1] - this.host2.posY;
+		this.distZ = pos[2] - this.host2.posZ;
+    	this.distSq = this.distX*this.distX + this.distY*this.distY + this.distZ*this.distZ;
+    
   	}
 	
 	

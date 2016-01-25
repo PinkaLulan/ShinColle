@@ -43,6 +43,7 @@ import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.entity.IShipInvisible;
 import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.item.PointerItem;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.network.S2CSpawnParticle;
@@ -235,6 +236,18 @@ public class EntityHelper {
 			if(!player.worldObj.isRemote) {
 				MinecraftServer server = ServerProxy.getServer();
 				return server.getConfigurationManager().func_152596_g(player.getGameProfile());
+			}
+		}
+		
+		return false;
+	}
+	
+	/** check player is holding a pointer */
+	public static boolean checkInUsePointer(EntityPlayer player) {
+		if(player != null) {
+			if(player.inventory.getCurrentItem() != null &&
+			   player.inventory.getCurrentItem().getItem() instanceof PointerItem) {
+				return true;
 			}
 		}
 		
@@ -946,8 +959,11 @@ public class EntityHelper {
         return lookBlock;
     }
 	
-	/** set ship guard, and check guard position is not same */
-	public static void applyShipGuard(BasicEntityShip ship, int type, int x, int y, int z) {
+	/** set ship guard, and check guard position is not same
+	 * 
+	 *  GuardType = 1: guard a block
+	 */
+	public static void applyShipGuard(BasicEntityShip ship, int x, int y, int z) {
 		if(ship != null) {
 			int gx = ship.getStateMinor(ID.M.GuardX);
 			int gy = ship.getStateMinor(ID.M.GuardY);
@@ -968,7 +984,7 @@ public class EntityHelper {
 			else {
 				ship.setSitting(false);						//stop sitting
 				ship.setGuardedEntity(null);				//clear guard target
-				ship.setGuardedPos(x, y, z, ship.worldObj.provider.dimensionId, type);
+				ship.setGuardedPos(x, y, z, ship.worldObj.provider.dimensionId, 1);
 				ship.setStateFlag(ID.F.CanFollow, false);	//stop follow
 				
 				if(!ship.getStateFlag(ID.F.NoFuel)) {
@@ -985,8 +1001,11 @@ public class EntityHelper {
 		}
 	}
 	
-	/** set ship guard, and check guard position is not same */
-	public static void applyShipGuardEntity(BasicEntityShip ship, Entity guarded, int type) {
+	/** set ship guard, and check guard position is not same
+	 * 
+	 *  GuardType = 2: guard an entity
+	 */
+	public static void applyShipGuardEntity(BasicEntityShip ship, Entity guarded) {
 		if(ship != null) {
 			Entity getEnt = ship.getGuardedEntity();
 			
@@ -999,7 +1018,7 @@ public class EntityHelper {
 			//apply guard
 			else {
 				ship.setSitting(false);						//stop sitting
-				ship.setGuardedPos(-1, -1, -1, guarded.worldObj.provider.dimensionId, type);
+				ship.setGuardedPos(-1, -1, -1, guarded.worldObj.provider.dimensionId, 2);
 				ship.setGuardedEntity(guarded);
 				ship.setStateFlag(ID.F.CanFollow, false);	//stop follow
 				
@@ -1057,30 +1076,47 @@ public class EntityHelper {
 		}
 	}
 	
-	/** set ship move with team list */
+	/** set ship move with team list
+	 * 
+	 *  parms: type: no use for now
+	 */
 	public static void applyTeamGuard(EntityPlayer player, Entity guarded, int meta, int type) {
 		ExtendPlayerProps props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 		BasicEntityShip[] ships = props.getShipEntityByMode(meta);
 		int worldID = player.worldObj.provider.dimensionId;
 		
 		if(props != null) {
+			//get current team formation id
+			int formatID = props.getFormatIDCurrentTeam();
+			
 			switch(meta) {
 			default:	//single mode
-				if(ships[0] != null && ships[0].worldObj.provider.dimensionId == worldID) {
+				if(ships[0] != null && ships[0].worldObj.provider.dimensionId == worldID && formatID <= 0) {
 					//設定ship移動地點
-					applyShipGuardEntity(ships[0], guarded, type);
+					applyShipGuardEntity(ships[0], guarded);
 					//sync guard
 					CommonProxy.channelE.sendTo(new S2CEntitySync(ships[0], 3), (EntityPlayerMP) player);
 				}
 				break;
 			case 1:		//group mode
-			case 2:		//formation mode
 				for(int i = 0;i < ships.length; i++) {
-					if(ships[i] != null && ships[i].worldObj.provider.dimensionId == worldID) {
+					if(ships[i] != null && ships[i].worldObj.provider.dimensionId == worldID && formatID <= 0) {
 						//設定ship移動地點
-						applyShipGuardEntity(ships[i], guarded, type);
+						applyShipGuardEntity(ships[i], guarded);
 						//sync guard
 						CommonProxy.channelE.sendTo(new S2CEntitySync(ships[i], 3), (EntityPlayerMP) player);
+					}
+				}
+				break;
+			case 2:		//formation mode
+				if(props.getNumberOfShip(props.getPointerTeamID()) > 4) {
+					for(int i = 0;i < ships.length; i++) {
+						if(ships[i] != null && ships[i].worldObj.provider.dimensionId == worldID) {
+							//設定ship移動地點
+							applyShipGuardEntity(ships[i], guarded);
+							//sync guard
+							CommonProxy.channelE.sendTo(new S2CEntitySync(ships[i], 3), (EntityPlayerMP) player);
+						}
 					}
 				}
 				break;
@@ -1090,12 +1126,13 @@ public class EntityHelper {
 
 	/** set ship move with team list 
 	 *  parms: 0:meta 1:guard type 2:posX 3:posY 4:posZ
+	 *  
+	 *  1:guard type: no use for now
 	 */
 	public static void applyTeamMove(EntityPlayer player, int[] parms) {
 		ExtendPlayerProps props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 		BasicEntityShip[] ships = props.getShipEntityByMode(parms[0]);
 		int worldID = player.worldObj.provider.dimensionId;
-		
 		
 		if(props != null) {
 			//get current team formation id
@@ -1103,31 +1140,25 @@ public class EntityHelper {
 			
 			switch(parms[0]) {
 			default:	//single mode
-				if(ships[0] != null && ships[0].worldObj.provider.dimensionId == worldID) {
-					//不在formation中才能用single mode
-					if(formatID <= 0) {
-						//設定ship移動地點
-						applyShipGuard(ships[0], parms[1], parms[2], parms[3], parms[4]);
-						//sync guard
-						CommonProxy.channelE.sendTo(new S2CEntitySync(ships[0], 3), (EntityPlayerMP) player);
-					}
+				if(ships[0] != null && ships[0].worldObj.provider.dimensionId == worldID && formatID <= 0) {
+					//設定ship移動地點
+					applyShipGuard(ships[0], parms[2], parms[3], parms[4]);
+					//sync guard
+					CommonProxy.channelE.sendTo(new S2CEntitySync(ships[0], 3), (EntityPlayerMP) player);
 				}
 				break;
 			case 1:		//group mode
 				for(int i = 0;i < ships.length; i++) {
-					if(ships[i] != null && ships[i].worldObj.provider.dimensionId == worldID) {
-						//不在formation中才能用single mode
-						if(formatID <= 0) {
-							//設定ship移動地點
-							applyShipGuard(ships[i], parms[1], parms[2], parms[3], parms[4]);
-							//sync guard
-							CommonProxy.channelE.sendTo(new S2CEntitySync(ships[i], 3), (EntityPlayerMP) player);
-						}
+					if(ships[i] != null && ships[i].worldObj.provider.dimensionId == worldID && formatID <= 0) {
+						//設定ship移動地點
+						applyShipGuard(ships[i], parms[2], parms[3], parms[4]);
+						//sync guard
+						CommonProxy.channelE.sendTo(new S2CEntitySync(ships[i], 3), (EntityPlayerMP) player);
 					}
 				}
 				break;
 			case 2:		//formation mode
-				if(props.getNumberOfShip(props.getPointerTeamID()) > 4) {
+				if(props.getNumberOfShip(props.getPointerTeamID()) > 4 || formatID == 0) {
 					//set formation position
 					FormationHelper.applyFormationMoving(ships, formatID, parms[2], parms[3], parms[4]);
 				}

@@ -98,6 +98,19 @@ public class EntityMountBaH extends BasicEntityMount {
   		}
     }
 	
+	@Override
+	public void onUpdate() {
+		super.onUpdate();
+		
+		//client side
+		if(this.worldObj.isRemote) {
+			//add smoke particle
+			if(this.ticksExisted % 5 == 0) {
+  				//生成裝備冒煙特效
+  				ParticleHelper.spawnAttackParticleAt(posX, posY + 3D, posZ, 0D, 0D, 0D, (byte)20);
+  			}
+		}
+	}
 
 
 }

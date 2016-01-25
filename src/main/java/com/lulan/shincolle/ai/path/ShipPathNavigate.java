@@ -266,7 +266,7 @@ public class ShipPathNavigate {
             	if(!currentPath.isFinished()) {
             		float dx = (float) (theEntity.posX - currentPath.getVectorFromIndex(this.theEntity, currentPath.getCurrentPathIndex()).xCoord);
                 	float dz = (float) (theEntity.posZ - currentPath.getVectorFromIndex(this.theEntity, currentPath.getCurrentPathIndex()).zCoord);
-                	LogHelper.info("DEBUG : path navi: get stand block: "+dx+" "+dz);
+//                	LogHelper.info("DEBUG : path navi: get stand block: "+dx+" "+dz);
                 	double targetX = theEntity.posX;
                 	double targetZ = theEntity.posZ;
                 	

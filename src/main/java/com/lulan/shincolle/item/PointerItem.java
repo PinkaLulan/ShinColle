@@ -553,7 +553,7 @@ public class PointerItem extends BasicItem {
 		}
 		
 		//show team mark
-		if(inUse || ConfigHandler.alwaysShowTeam) {
+		if(inUse || ConfigHandler.alwaysShowTeamParticle) {
 			if(player instanceof EntityPlayer) {
 				//client side
 				if(world.isRemote) {
