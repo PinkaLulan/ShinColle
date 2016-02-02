@@ -19,7 +19,7 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
 		super(world);
 		this.setSize(0.6F, 1.8F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.STANDARD_CARRIER);
-		this.setStateMinor(ID.M.ShipClass, ID.S_CarrierWO);
+		this.setStateMinor(ID.M.ShipClass, ID.Ship.CarrierWO);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CARRIER);
 		this.ModelPos = new float[] {0F, 15F, 0F, 30F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
@@ -146,18 +146,23 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
 	public double getMountedYOffset() {
     	if(this.getStateEmotion(ID.S.State) > ID.State.NORMAL) {
     		if(this.isSitting()) {
-      			return (double)this.height * 1.3F;
+      			if(getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {
+					return (double)this.height * 0.9D;
+	  			}
+	  			else {
+	  				return (double)this.height * 1.3D;
+	  			}
       		}
       		else {
-      			return (double)this.height * 1.35F;
+      			return (double)this.height * 1.35D;
       		}
     	}
     	else {
     		if(this.isSitting()) {
-      			return (double)this.height * 0.68F;
+      			return (double)this.height * 0.68D;
       		}
       		else {
-      			return (double)this.height * 0.68F;
+      			return (double)this.height * 0.68D;
       		}
     	}
 	}

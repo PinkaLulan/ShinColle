@@ -3,6 +3,17 @@ package com.lulan.shincolle.client.gui;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.ResourceLocation;
+
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
@@ -15,19 +26,9 @@ import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.GuiHelper;
 import com.lulan.shincolle.utility.LogHelper;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.ResourceLocation;
 
 /**ICON_SHIPTYPE(157,18) 
  * NameIcon: LargeShip(0,0)(40x42) SmallShip(0,43)(30x30) 
@@ -58,24 +59,16 @@ public class GuiShipInventory extends GuiContainer {
 	               strAttrDHIT, strAttrTHIT, strAttrAA, strAttrASM, strAttrMiss, strAttrMissA, strAttrMissR,
 	               strAttrDodge, strAttrFPos, strAttrFormat, strAttrWedding, strAttrWedTrue, strAttrWedFalse;
 	private int hpCurrent, hpMax, color, showPage, showPageAI, pageIndicator, pageIndicatorAI, showAttack,
-				fMinPos, fMaxPos, fleeHPPos, barPos, mousePressBar;
+				fMinPos, fMaxPos, fleeHPPos, barPos, mousePressBar, shipType, shipClass;
 	private boolean switchMelee, switchLight, switchHeavy, switchAirLight, switchAirHeavy,
 				switchTarAI, mousePress, switchAura, switchOnSight, switchPVP, switchAA, switchASM;
-
-	//ship type icon array
-	private static final short[][] ICON_SHIPTYPE = {
-		{41,0}, {41,29}, {41,58}, {41,87}, {70,58}, {70,29}, {70,0}, {12,74}, {99,0},
-		{99,58}, {70,87}, {99,29}};
-	//ship name icon array
-	private static final short[][] ICON_SHIPNAME = {
-		{128,0}, {139,0}, {150,0}, {161,0}, {172,0}, {183,0}, {194,0}, {205,0}, {216,0}, {227,0}, {238,0}, 
-		{128,60}, {139,60}, {150,60}, {161,60}, {172,60}, {183,60}, {194,60}, {205,60}, {216,60}, {227,60}, {238,60}, 
-		{128,120}, {139,120}, {150,120}, {161,120}, {172,120}, {183,120}, {194,120}, {205,120}, {216,120}, {227,120}, {238,120}, 
-		{128,180}, {139,180}, {150,180}, {0,120}, {11,120}, {22,120}, {33,120}};
+	private int[][] iconXY;  //icon array:  [ship type, ship name][file,x,y]
 	
+
 	public GuiShipInventory(InventoryPlayer invPlayer, BasicEntityShip entity1) {
 		super(new ContainerShipInventory(invPlayer, entity1));
-		mouseoverList = new ArrayList();			
+		
+		this.mouseoverList = new ArrayList();			
 		this.entity = entity1;
 		this.player = invPlayer;
 		this.xSize = 250;
@@ -85,6 +78,15 @@ public class GuiShipInventory extends GuiContainer {
 		this.showAttack = 1;		//show attack 1
 		this.mousePress = false;	//no key clicked
 		this.mousePressBar = -1;	//no bar pressed
+		
+		if(this.entity != null) {
+			this.shipType = this.entity.getShipType();
+			this.shipClass = this.entity.getShipClass();
+			
+			this.iconXY = new int[2][3];
+			this.iconXY[0] = Values.ShipTypeIconMap.get((byte)this.shipType);
+			this.iconXY[1] = Values.ShipNameIconMap.get((short)this.shipClass);
+		}
 		
 		//general string
 		lvMark = I18n.format("gui.shincolle:level");
@@ -333,19 +335,38 @@ public class GuiShipInventory extends GuiContainer {
         //draw AI page indicator
         drawTexturedModalRect(guiLeft+239, guiTop+this.pageIndicatorAI, 250, 0, 6, 24);
         
-        //draw level, ship type icon
+        //draw level, ship type/name icon
         Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE_ICON);
         if(entity.getStateMinor(ID.M.ShipLevel) > 99) {
         	drawTexturedModalRect(guiLeft+157, guiTop+18, 0, 0, 40, 42);
-        	drawTexturedModalRect(guiLeft+159, guiTop+22, ICON_SHIPTYPE[entity.getShipType()][0], ICON_SHIPTYPE[entity.getShipType()][1], 28, 28);
+        	
+        	try{
+        		drawTexturedModalRect(guiLeft+159, guiTop+22, this.iconXY[0][0], this.iconXY[0][1], 28, 28);
+
+        		//use name icon file 0
+        		if(iconXY[1][0] == 0) {
+        			drawTexturedModalRect(guiLeft+166, guiTop+63, this.iconXY[1][1], this.iconXY[1][2], 11, 59);
+        		}
+        	}
+        	catch(Exception e) {
+//        		LogHelper.info("Exception : get name icon fail "+e);
+        	}
         }
         else {
         	drawTexturedModalRect(guiLeft+157, guiTop+18, 0, 43, 30, 30);
-        	drawTexturedModalRect(guiLeft+157, guiTop+18, ICON_SHIPTYPE[entity.getShipType()][0], ICON_SHIPTYPE[entity.getShipType()][1], 28, 28);
+        	
+        	try {
+        		drawTexturedModalRect(guiLeft+157, guiTop+18, this.iconXY[0][0], this.iconXY[0][1], 28, 28);
+        		
+        		//use name icon file 0
+        		if(iconXY[1][0] == 0) {
+        			drawTexturedModalRect(guiLeft+166, guiTop+63, this.iconXY[1][1], this.iconXY[1][2], 11, 59);
+        		}
+        	}
+        	catch(Exception e) {
+//        		LogHelper.info("Exception : get name icon fail "+e);
+        	}
         }
-        
-        //draw left bottom name
-        drawTexturedModalRect(guiLeft+166, guiTop+63, ICON_SHIPNAME[entity.getShipClass()][0], ICON_SHIPNAME[entity.getShipClass()][1], 11, 59);
         
         //draw entity model                                            guiLeft + 200 - xMouse  guiTop + 50 - yMouse
         drawEntityModel(guiLeft+210, guiTop+100, entity.getModelPos(), guiLeft+215-xMouse, guiTop+60-yMouse, this.entity);
@@ -702,19 +723,19 @@ public class GuiShipInventory extends GuiContainer {
 			
 			//draw firepower
 			if(this.showAttack == 1) {	//show cannon attack
-				this.fontRendererObj.drawString(strAttrAtk1, 67, 20, GuiHelper.pickColor(5));
+				this.fontRendererObj.drawString(strAttrAtk1, 67, 20, 0);
 				color = GuiHelper.pickColor(entity.getBonusPoint(ID.ATK));
 				this.fontRendererObj.drawStringWithShadow(strATK, 125-this.fontRendererObj.getStringWidth(strATK), 30, color);
 			}
 			else {						//show aircraft attack
-				this.fontRendererObj.drawString(strAttrAtk2, 67, 20, GuiHelper.pickColor(5));
+				this.fontRendererObj.drawString(strAttrAtk2, 67, 20, 0);
 				color = GuiHelper.pickColor(entity.getBonusPoint(ID.ATK));
 				this.fontRendererObj.drawStringWithShadow(strAATK, 125-this.fontRendererObj.getStringWidth(strAATK), 30, color);
 			}
-			this.fontRendererObj.drawString(strAttrDEF, 67, 41, GuiHelper.pickColor(5));
-			this.fontRendererObj.drawString(strAttrSPD, 67, 62, GuiHelper.pickColor(5));
-			this.fontRendererObj.drawString(strAttrMOV, 67, 83, GuiHelper.pickColor(5));
-			this.fontRendererObj.drawString(strAttrHIT, 67, 104, GuiHelper.pickColor(5));
+			this.fontRendererObj.drawString(strAttrDEF, 67, 41, 0);
+			this.fontRendererObj.drawString(strAttrSPD, 67, 62, 0);
+			this.fontRendererObj.drawString(strAttrMOV, 67, 83, 0);
+			this.fontRendererObj.drawString(strAttrHIT, 67, 104, 0);
 			
 			//draw armor
 			color = GuiHelper.pickColor(entity.getBonusPoint(ID.DEF));
@@ -735,11 +756,11 @@ public class GuiShipInventory extends GuiContainer {
 			}
 		case 1:	{	//page 1: exp, kills, L&H ammo, fuel
 			//draw string
-			this.fontRendererObj.drawString(strMiKills, 67, 20, GuiHelper.pickColor(5));
-			this.fontRendererObj.drawString(strMiExp, 67, 41, GuiHelper.pickColor(5));
-			this.fontRendererObj.drawString(strMiAmmoL, 67, 62, GuiHelper.pickColor(5));
-			this.fontRendererObj.drawString(strMiAmmoH, 67, 83, GuiHelper.pickColor(5));
-			this.fontRendererObj.drawString(strMiGrudge, 67, 104, GuiHelper.pickColor(5));
+			this.fontRendererObj.drawString(strMiKills, 67, 20, 0);
+			this.fontRendererObj.drawString(strMiExp, 67, 41, 0);
+			this.fontRendererObj.drawString(strMiAmmoL, 67, 62, 0);
+			this.fontRendererObj.drawString(strMiAmmoH, 67, 83, 0);
+			this.fontRendererObj.drawString(strMiGrudge, 67, 104, 0);
 			//draw value
 			entity.setExpNext();  //update exp value
 			Exp = String.valueOf(this.entity.getStateMinor(ID.M.ExpCurrent))+"/"+String.valueOf(this.entity.getStateMinor(ID.M.ExpNext));
@@ -748,18 +769,18 @@ public class GuiShipInventory extends GuiContainer {
 			AmmoHeavy = String.valueOf(this.entity.getStateMinor(ID.M.NumAmmoHeavy));
 			Grudge = String.valueOf(this.entity.getStateMinor(ID.M.NumGrudge));
 				
-			this.fontRendererObj.drawStringWithShadow(Kills, 125-this.fontRendererObj.getStringWidth(Kills), 30, GuiHelper.pickColor(0));
-			this.fontRendererObj.drawStringWithShadow(Exp, 125-this.fontRendererObj.getStringWidth(Exp), 51, GuiHelper.pickColor(0));
-			this.fontRendererObj.drawStringWithShadow(AmmoLight, 125-this.fontRendererObj.getStringWidth(AmmoLight), 72, GuiHelper.pickColor(0));
-			this.fontRendererObj.drawStringWithShadow(AmmoHeavy, 125-this.fontRendererObj.getStringWidth(AmmoHeavy), 93, GuiHelper.pickColor(0));
-			this.fontRendererObj.drawStringWithShadow(Grudge, 125-this.fontRendererObj.getStringWidth(Grudge), 114, GuiHelper.pickColor(0));
+			this.fontRendererObj.drawStringWithShadow(Kills, 125-this.fontRendererObj.getStringWidth(Kills), 30, Values.Color.WHITE);
+			this.fontRendererObj.drawStringWithShadow(Exp, 125-this.fontRendererObj.getStringWidth(Exp), 51, Values.Color.WHITE);
+			this.fontRendererObj.drawStringWithShadow(AmmoLight, 125-this.fontRendererObj.getStringWidth(AmmoLight), 72, Values.Color.WHITE);
+			this.fontRendererObj.drawStringWithShadow(AmmoHeavy, 125-this.fontRendererObj.getStringWidth(AmmoHeavy), 93, Values.Color.WHITE);
+			this.fontRendererObj.drawStringWithShadow(Grudge, 125-this.fontRendererObj.getStringWidth(Grudge), 114, Values.Color.WHITE);
 						
 			break;
 			}
 		case 3: {	//page 3: light/heavy airplane, marriage
 			//draw string
-			this.fontRendererObj.drawString(strAttrWedding, 67, 20, GuiHelper.pickColor(5));
-			this.fontRendererObj.drawString(strAttrFormat, 67, 41, GuiHelper.pickColor(5));
+			this.fontRendererObj.drawString(strAttrWedding, 67, 20, 0);
+			this.fontRendererObj.drawString(strAttrFormat, 67, 41, 0);
 			
 			//draw value
 			//draw marriage
@@ -773,19 +794,19 @@ public class GuiShipInventory extends GuiContainer {
 			//draw formation
 			int ftype = this.entity.getStateMinor(ID.M.FormatType);
 			this.Formation = I18n.format("gui.shincolle:formation.format"+ftype);
-			this.fontRendererObj.drawStringWithShadow(Formation, 125-this.fontRendererObj.getStringWidth(Formation), 51, GuiHelper.pickColor(0));
+			this.fontRendererObj.drawStringWithShadow(Formation, 125-this.fontRendererObj.getStringWidth(Formation), 51, Values.Color.WHITE);
 			
 			//大型艦, 顯示艦載機數量
 			if(this.entity instanceof BasicEntityShipLarge) {
-				this.fontRendererObj.drawString(strMiAirL, 67, 83, GuiHelper.pickColor(5));
-				this.fontRendererObj.drawString(strMiAirH, 67, 104, GuiHelper.pickColor(5));
+				this.fontRendererObj.drawString(strMiAirL, 67, 83, 0);
+				this.fontRendererObj.drawString(strMiAirH, 67, 104, 0);
 				AirLight = String.valueOf(((BasicEntityShipLarge)this.entity).getNumAircraftLight());
 				AirHeavy = String.valueOf(((BasicEntityShipLarge)this.entity).getNumAircraftHeavy());
-				this.fontRendererObj.drawStringWithShadow(AirLight, 125-this.fontRendererObj.getStringWidth(AirLight), 93, GuiHelper.pickColor(1));
-				this.fontRendererObj.drawStringWithShadow(AirHeavy, 125-this.fontRendererObj.getStringWidth(AirHeavy), 114, GuiHelper.pickColor(1));	
+				this.fontRendererObj.drawStringWithShadow(AirLight, 125-this.fontRendererObj.getStringWidth(AirLight), 93, Values.Color.YELLOW);
+				this.fontRendererObj.drawStringWithShadow(AirHeavy, 125-this.fontRendererObj.getStringWidth(AirHeavy), 114, Values.Color.YELLOW);	
 			}
 			
-			this.fontRendererObj.drawStringWithShadow(marriage, 125-this.fontRendererObj.getStringWidth(marriage), 30, GuiHelper.pickColor(1));
+			this.fontRendererObj.drawStringWithShadow(marriage, 125-this.fontRendererObj.getStringWidth(marriage), 30, Values.Color.YELLOW);
 			
 			break;
 			}//end case 3
@@ -795,24 +816,24 @@ public class GuiShipInventory extends GuiContainer {
 		switch(this.showPageAI) {
 		case 1:	{	//attack AI page
 				//draw string
-				this.fontRendererObj.drawString(canMelee, 187, 134, GuiHelper.pickColor(5));
+				this.fontRendererObj.drawString(canMelee, 187, 134, 0);
 				if(entity.getAttackType(ID.F.AtkType_Light))
-				this.fontRendererObj.drawString(canLATK, 187, 146, GuiHelper.pickColor(5));
+				this.fontRendererObj.drawString(canLATK, 187, 146, 0);
 				if(entity.getAttackType(ID.F.AtkType_Heavy))
-				this.fontRendererObj.drawString(canHATK, 187, 158, GuiHelper.pickColor(5));
+				this.fontRendererObj.drawString(canHATK, 187, 158, 0);
 				if(entity.getAttackType(ID.F.AtkType_AirLight))
-				this.fontRendererObj.drawString(canALATK, 187, 170, GuiHelper.pickColor(5));
+				this.fontRendererObj.drawString(canALATK, 187, 170, 0);
 				if(entity.getAttackType(ID.F.AtkType_AirHeavy))
-				this.fontRendererObj.drawString(canAHATK, 187, 182, GuiHelper.pickColor(5));
+				this.fontRendererObj.drawString(canAHATK, 187, 182, 0);
 				if(entity.getAttackType(ID.F.HaveRingEffect))
-				this.fontRendererObj.drawString(auraEffect, 187, 194, GuiHelper.pickColor(5));
+				this.fontRendererObj.drawString(auraEffect, 187, 194, 0);
 			}
 			break;
 		case 2:	{	//follow, flee AI page
 				//draw string
-				this.fontRendererObj.drawString(followMin, 174, 134, GuiHelper.pickColor(5));
-				this.fontRendererObj.drawString(followMax, 174, 158, GuiHelper.pickColor(5));
-				this.fontRendererObj.drawString(fleeHP, 174, 182, GuiHelper.pickColor(5));
+				this.fontRendererObj.drawString(followMin, 174, 134, 0);
+				this.fontRendererObj.drawString(followMax, 174, 158, 0);
+				this.fontRendererObj.drawString(fleeHP, 174, 182, 0);
 				
 				//draw value
 				followMinValue = String.valueOf(entity.getStateMinor(ID.M.FollowMin));
@@ -821,36 +842,36 @@ public class GuiShipInventory extends GuiContainer {
 				
 				if(this.mousePressBar == 0) {
 					barPosValue = String.valueOf((int)(barPos / 42F * 30F + 1F));
-					this.fontRendererObj.drawStringWithShadow(barPosValue, 174, 145, GuiHelper.pickColor(3));
+					this.fontRendererObj.drawStringWithShadow(barPosValue, 174, 145, Values.Color.RED);
 				}
 				else {
-					this.fontRendererObj.drawStringWithShadow(followMinValue, 174, 145, GuiHelper.pickColor(1));
+					this.fontRendererObj.drawStringWithShadow(followMinValue, 174, 145, Values.Color.YELLOW);
 				}
 				
 				if(this.mousePressBar == 1) {
 					barPosValue = String.valueOf((int)(barPos / 42F * 30F + 2F));
-					this.fontRendererObj.drawStringWithShadow(barPosValue, 174, 169, GuiHelper.pickColor(3));		
+					this.fontRendererObj.drawStringWithShadow(barPosValue, 174, 169, Values.Color.RED);		
 				}
 				else {
-					this.fontRendererObj.drawStringWithShadow(followMaxValue, 174, 169, GuiHelper.pickColor(1));
+					this.fontRendererObj.drawStringWithShadow(followMaxValue, 174, 169, Values.Color.YELLOW);
 				}
 				
 				if(this.mousePressBar == 2) {
 					barPosValue = String.valueOf((int)(barPos / 42F * 100F));
-					this.fontRendererObj.drawStringWithShadow(barPosValue, 174, 193, GuiHelper.pickColor(3));
+					this.fontRendererObj.drawStringWithShadow(barPosValue, 174, 193, Values.Color.RED);
 				}
 				else {
-					this.fontRendererObj.drawStringWithShadow(fleeHPValue, 174, 193, GuiHelper.pickColor(1));
+					this.fontRendererObj.drawStringWithShadow(fleeHPValue, 174, 193, Values.Color.YELLOW);
 				}	
 			}
 			break;
 		case 3: {	//aura effect
 			//draw string
-			this.fontRendererObj.drawString(TarAI, 187, 134, GuiHelper.pickColor(5));
-			this.fontRendererObj.drawString(strOnSight, 187, 146, GuiHelper.pickColor(5));
-			this.fontRendererObj.drawString(strPVP, 187, 158, GuiHelper.pickColor(5));
-			this.fontRendererObj.drawString(strAA, 187, 170, GuiHelper.pickColor(5));
-			this.fontRendererObj.drawString(strASM, 187, 182, GuiHelper.pickColor(5));
+			this.fontRendererObj.drawString(TarAI, 187, 134, 0);
+			this.fontRendererObj.drawString(strOnSight, 187, 146, 0);
+			this.fontRendererObj.drawString(strPVP, 187, 158, 0);
+			this.fontRendererObj.drawString(strAA, 187, 170, 0);
+			this.fontRendererObj.drawString(strASM, 187, 182, 0);
 			
 			}
 			break;

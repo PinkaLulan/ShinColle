@@ -39,7 +39,7 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
 		super(world);
 		this.setSize(0.6F, 1.1F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
-		this.setStateMinor(ID.M.ShipClass, ID.S_NorthernHime);
+		this.setStateMinor(ID.M.ShipClass, ID.Ship.NorthernHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
 		this.ModelPos = new float[] {-6F, 8F, 0F, 50F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	

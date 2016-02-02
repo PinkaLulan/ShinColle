@@ -18,7 +18,7 @@ public class EntityHeavyCruiserRi extends BasicEntityShipSmall {
 		super(world);
 		this.setSize(0.6F, 1.8F);	//碰撞大小 跟模型大小無關
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HEAVY_CRUISER);
-		this.setStateMinor(ID.M.ShipClass, ID.S_HeavyCruiserRI);
+		this.setStateMinor(ID.M.ShipClass, ID.Ship.HeavyCruiserRI);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CRUISER);
 		this.ModelPos = new float[] {0F, 10F, 0F, 30F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	

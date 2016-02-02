@@ -252,7 +252,7 @@ public class ID {
 		public static final byte EquipTurbine = 21;
 	}
 	
-	/**Minor State*/
+	/** Minor State */
 	public static final class M {
 		public static final byte ShipLevel = 0;
 		public static final byte Kills = 1;
@@ -284,7 +284,7 @@ public class ID {
 		public static final byte FormatPos = 27;	//formation position
 	}
 	
-	/**ring effect*/
+	/** ring effect, no used for now */
 	public static final class R {
 		public static final byte Haste = 0;
 		public static final byte Speed = 1;
@@ -292,7 +292,7 @@ public class ID {
 		public static final byte Damage = 3;
 	}
 	
-	/**Entity State*/
+	/** Entity State */
 	public static final class S {
 		public static final byte State = 0;				//equip state
 		public static final byte Emotion = 1;			//emotion
@@ -302,7 +302,67 @@ public class ID {
 		public static final byte Phase = 5;				//entity phase
 	}
 	
-	/**ship attrs id, for Values.ShipAttrMap */
+	/** ship id */
+	public static final class Ship {
+		public static final short DestroyerI = 0;
+		public static final short DestroyerRO = 1;
+		public static final short DestroyerHA = 2;
+		public static final short DestroyerNI = 3;
+		
+		public static final short LightCruiserHO = 4;
+		public static final short LightCruiserHE = 5;
+		public static final short LightCruiserTO = 6;
+		public static final short LightCruiserTSU = 7;
+		
+		public static final short TorpedoCruiserCHI = 8;
+		public static final short HeavyCruiserRI = 9;
+		public static final short HeavyCruiserNE = 10;
+		
+		public static final short LightCarrierNU = 11;
+		public static final short CarrierWO = 12;
+		
+		public static final short BattleshipRU = 13;
+		public static final short BattleshipTA = 14;
+		public static final short BattleshipRE = 15;
+		
+		public static final short TransportWA = 16;
+		public static final short SubmarineKA = 17;
+		public static final short SubmarineYO = 18;
+		public static final short SubmarineSO = 19;
+		
+		public static final short CarrierHime = 20;
+		public static final short AirfieldHime = 21;
+		public static final short ArmoredCarrierHime = 22;
+		public static final short AnchorageHime = 23;
+		public static final short HarbourWD = 24;
+		public static final short AnchorageWD = 25;
+		public static final short BattleshipHime = 26;
+		public static final short DestroyerHime = 27;
+		public static final short HarbourHime = 28;
+		public static final short IsolatedDemon = 29;
+		public static final short MidwayHime = 30;
+		public static final short NorthernHime = 31;
+		public static final short SouthernHime = 32;
+		public static final short CarrierWD = 33;
+		public static final short LightCruiserDemon = 34;
+		public static final short BattleshipWD = 35;
+		
+		public static final short DestroyerShimakaze = 36;
+		public static final short BattleshipNagato = 37;
+		public static final short SubmarineU511 = 38;
+		public static final short SubmarineRo500 = 39;
+		
+		public static final short SeaplaneHime = 40;
+		public static final short AirdefenseHime = 41;
+		public static final short PTImp = 42;
+		public static final short LightCruiserHime = 43;
+		public static final short SubmarineHime = 44;
+		public static final short DestroyerWD = 45;
+		
+		public static final short BattleshipYamato = 46;
+	}
+	
+	/** ship attrs id, for Values.ShipAttrMap */
 	public static final class ShipAttr {
 		public static final byte BaseHP = 0;
 		public static final byte BaseATK = 1;
@@ -341,9 +401,8 @@ public class ID {
 		public static final byte BATTLESHIP	= 6;		//戰艦
 		public static final byte TRANSPORT = 7;			//運輸艦
 		public static final byte SUBMARINE = 8;			//潛水艇
-		public static final byte DEMON = 9;				//鬼級
+		public static final byte DEMON = 9;				//鬼級, 水鬼級
 		public static final byte HIME = 10;				//姬級
-		public static final byte FORTRESS = 11;			//浮游要塞
 	}
 	
 	/**ship state*/
@@ -456,62 +515,5 @@ public class ID {
 	public static final byte E_CATAPULT_C = 102;
 	public static final byte E_CATAPULT_E = 103;
 	
-	/**Ship ID*/
-	public static final byte S_DestroyerI = 0;
-	public static final byte S_DestroyerRO = 1;
-	public static final byte S_DestroyerHA = 2;
-	public static final byte S_DestroyerNI = 3;
-	
-	public static final byte S_LightCruiserHO = 4;
-	public static final byte S_LightCruiserHE = 5;
-	public static final byte S_LightCruiserTO = 6;
-	public static final byte S_LightCruiserTSU = 7;
-	
-	public static final byte S_TorpedoCruiserCHI = 8;
-	public static final byte S_HeavyCruiserRI = 9;
-	public static final byte S_HeavyCruiserNE = 10;
-	
-	public static final byte S_LightCarrierNU = 11;
-	public static final byte S_CarrierWO = 12;
-	
-	public static final byte S_BattleshipRU = 13;
-	public static final byte S_BattleshipTA = 14;
-	public static final byte S_BattleshipRE = 15;
-	
-	public static final byte S_TransportWA = 16;
-	public static final byte S_SubmarineKA = 17;
-	public static final byte S_SubmarineYO = 18;
-	public static final byte S_SubmarineSO = 19;
-	
-	public static final byte S_CarrierHime = 20;
-	public static final byte S_AirfieldHime = 21;
-	public static final byte S_ArmoredCarrierHime = 22;
-	public static final byte S_AnchorageHime = 23;
-	public static final byte S_HarbourWD = 24;
-	public static final byte S_AnchorageWD = 25;
-	public static final byte S_BattleshipHime = 26;
-	public static final byte S_DestroyerHime = 27;
-	public static final byte S_HarbourHime = 28;
-	public static final byte S_IsolatedDemon = 29;
-	public static final byte S_MidwayHime = 30;
-	public static final byte S_NorthernHime = 31;
-	public static final byte S_SouthernHime = 32;
-	public static final byte S_CarrierWD = 33;
-	public static final byte S_LightCruiserDemon = 34;
-	public static final byte S_BattleshipWD = 35;
-	
-	public static final byte S_DestroyerShimakaze = 36;
-	public static final byte S_BattleshipNagato = 37;
-	public static final byte S_SubmarineU511 = 38;
-	public static final byte S_SubmarineRo500 = 39;
-	
-	public static final byte S_SeaplaneHime = 40;
-	public static final byte S_AirdefenseHime = 41;
-	public static final byte S_PTImp = 42;
-	public static final byte S_LightCruiserHime = 43;
-	public static final byte S_SubmarineHime = 44;
-	public static final byte S_DestroyerWD = 45;
-	
-	public static final byte S_BattleshipYamato = 100;
 		
 }

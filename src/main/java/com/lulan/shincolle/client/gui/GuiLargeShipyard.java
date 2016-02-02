@@ -8,6 +8,7 @@ import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 import com.lulan.shincolle.utility.GuiHelper;
 import com.lulan.shincolle.utility.LogHelper;
@@ -79,24 +80,24 @@ public class GuiLargeShipyard extends GuiContainer {
 		}
 		//µe¥X¼Æ¦r
 		int colorNum = 0;
-		if(this.tile.getMatBuild(0) < 100) colorNum = GuiHelper.pickColor(3);
-		else if(this.tile.getMatBuild(0) == 1000) colorNum = GuiHelper.pickColor(1);
-		else colorNum = GuiHelper.pickColor(0);
+		if(this.tile.getMatBuild(0) < 100) colorNum = Values.Color.RED;
+		else if(this.tile.getMatBuild(0) == 1000) colorNum = Values.Color.YELLOW;
+		else colorNum = Values.Color.WHITE;
 		this.fontRendererObj.drawString(matBuild0, 73 - this.fontRendererObj.getStringWidth(matBuild0) / 2, 20, colorNum);
 		
-		if(this.tile.getMatBuild(1) < 100) colorNum = GuiHelper.pickColor(3);
-		else if(this.tile.getMatBuild(1) == 1000) colorNum = GuiHelper.pickColor(1);
-		else colorNum = GuiHelper.pickColor(0);
+		if(this.tile.getMatBuild(1) < 100) colorNum = Values.Color.RED;
+		else if(this.tile.getMatBuild(1) == 1000) colorNum = Values.Color.YELLOW;
+		else colorNum = Values.Color.WHITE;
 		this.fontRendererObj.drawString(matBuild1, 73 - this.fontRendererObj.getStringWidth(matBuild1) / 2, 39, colorNum);
 		
-		if(this.tile.getMatBuild(2) < 100) colorNum = GuiHelper.pickColor(3);
-		else if(this.tile.getMatBuild(2) == 1000) colorNum = GuiHelper.pickColor(1);
-		else colorNum = GuiHelper.pickColor(0);
+		if(this.tile.getMatBuild(2) < 100) colorNum = Values.Color.RED;
+		else if(this.tile.getMatBuild(2) == 1000) colorNum = Values.Color.YELLOW;
+		else colorNum = Values.Color.WHITE;
 		this.fontRendererObj.drawString(matBuild2, 73 - this.fontRendererObj.getStringWidth(matBuild2) / 2, 58, colorNum);
 		
-		if(this.tile.getMatBuild(3) < 100) colorNum = GuiHelper.pickColor(3);
-		else if(this.tile.getMatBuild(3) == 1000) colorNum = GuiHelper.pickColor(1);
-		else colorNum = GuiHelper.pickColor(0);
+		if(this.tile.getMatBuild(3) < 100) colorNum = Values.Color.RED;
+		else if(this.tile.getMatBuild(3) == 1000) colorNum = Values.Color.YELLOW;
+		else colorNum = Values.Color.WHITE;
 		this.fontRendererObj.drawString(matBuild3, 73 - this.fontRendererObj.getStringWidth(matBuild3) / 2, 77, colorNum);
 		
 		this.fontRendererObj.drawString(matStock0, 125 - this.fontRendererObj.getStringWidth(matStock0) / 2, 20, 16776960);

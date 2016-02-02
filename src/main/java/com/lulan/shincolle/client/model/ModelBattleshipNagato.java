@@ -103,7 +103,7 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion {
         this.textureWidth = 256;
         this.textureHeight = 128;
         
-        switch(scaleType) {
+        switch(scaleType) {  //type 1: boss scale
         case 1:
         	scale = 1.7F;
         	offsetY = -2.1F;
@@ -555,22 +555,28 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion {
 		this.LegRight.rotateAngleY = 0F;
 		this.LegRight.rotateAngleZ = -0.05F;
 		//cannon
-		if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
+		if(ent.getStateEmotion(ID.S.State) > ID.State.EQUIP00) {
 			this.EquipBase.rotateAngleX = 0.17F;
 			
-			this.EquipLCBase02.rotateAngleX = angleX * 0.15F - 0.15F;
+			if(this.Head.rotateAngleX <= 0F) {
+				this.EquipLC201.rotateAngleX = this.Head.rotateAngleX * 0.9F;
+				this.EquipLC203.rotateAngleX = this.Head.rotateAngleX * 1.2F;
+				this.EquipRC201.rotateAngleX = this.Head.rotateAngleX * 1.1F;
+				this.EquipRC203.rotateAngleX = this.Head.rotateAngleX * 0.85F;
+			}
+			
+			this.EquipLCBase02.rotateAngleX = this.Head.rotateAngleX;
 			this.EquipLC2Base01.rotateAngleX = 0F;
+			this.EquipLC2Base02.rotateAngleY = this.Head.rotateAngleY;
 			this.EquipLC01.rotateAngleY = angleX * 0.1F - 0.26F;
 			this.EquipLC03.rotateAngleY = -angleX * 0.08F - 0.15F;
-			this.EquipLC201.rotateAngleX = -angleX * 0.09F - 0.15F;
-			this.EquipLC203.rotateAngleX = angleX * 0.1F - 0.1F;
+
 			
-			this.EquipRCBase02.rotateAngleX = -angleX * 0.15F - 0.15F;
+			this.EquipRCBase02.rotateAngleX = this.Head.rotateAngleX;
 			this.EquipRC2Base01.rotateAngleX = 0F;
+			this.EquipRC2Base02.rotateAngleY = this.Head.rotateAngleY;
 			this.EquipRC01.rotateAngleY = angleX * 0.08F + 0.2F;
 			this.EquipRC03.rotateAngleY = -angleX * 0.1F + 0.1F;
-			this.EquipRC201.rotateAngleX = angleX * 0.11F - 0.1F;
-			this.EquipRC203.rotateAngleX = -angleX * 0.09F - 0.2F;
 		}
 
 
@@ -591,7 +597,7 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion {
 			this.LegLeft.rotateAngleZ = 0F;
 			this.LegRight.rotateAngleZ = 0F;
 			//cannon
-			if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
+			if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP01) {
 				this.EquipLCBase02.rotateAngleX -= 0.45F;
 				this.EquipLC201.rotateAngleX -= 0.5F;
 				this.EquipLC203.rotateAngleX -= 0.55F;
@@ -666,7 +672,7 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion {
 			this.LegLeft.rotateAngleZ = 0F;
 			this.LegRight.rotateAngleZ = 0F;
 			//cannon
-			if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
+			if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP01) {
 				this.EquipLCBase02.rotateAngleX -= 0.45F;
 				this.EquipLC201.rotateAngleX -= 0.5F;
 				this.EquipLC203.rotateAngleX -= 0.55F;
@@ -678,7 +684,7 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion {
   		}//end if sneaking
   		
 	    if(ent.getIsSitting() || ent.getIsRiding()) {  //騎乘動作
-	    	if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
+	    	if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP01) {
 	    		GL11.glTranslatef(0F, offsetY + 1.3F, 0F);
 		    	//Body
 			  	this.BodyMain.rotateAngleX = -0.09F;
@@ -814,12 +820,28 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion {
   	}
   	
   	private void showEquip(IShipEmotion ent) {
-		if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
-			this.EquipBase.isHidden = false;
-		}
-		else {
-			this.EquipBase.isHidden = true;
-		}
+		switch(ent.getStateEmotion(ID.S.State)) {
+  		case ID.State.EQUIP00:
+  			this.HeadEquip.isHidden = false;
+  			this.HeadEquip05.isHidden = false;
+  			this.EquipBase.isHidden = true;
+  			break;
+  		case ID.State.EQUIP01:
+  			this.HeadEquip.isHidden = true;
+  			this.HeadEquip05.isHidden = true;
+  			this.EquipBase.isHidden = false;
+  			break;
+  		case ID.State.EQUIP02:
+  			this.HeadEquip.isHidden = false;
+  			this.HeadEquip05.isHidden = false;
+  			this.EquipBase.isHidden = false;
+  			break;
+  		default:  //normal
+  			this.HeadEquip.isHidden = true;
+  			this.HeadEquip05.isHidden = true;
+  			this.EquipBase.isHidden = true;
+  			break;
+  		}
   	}
   	
     //設定顯示的臉型

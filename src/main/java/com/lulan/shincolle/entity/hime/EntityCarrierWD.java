@@ -29,7 +29,7 @@ public class EntityCarrierWD extends BasicEntityShipLarge {
 		super(world);
 		this.setSize(0.6F, 1.8F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.DEMON);
-		this.setStateMinor(ID.M.ShipClass, ID.S_CarrierWD);
+		this.setStateMinor(ID.M.ShipClass, ID.Ship.CarrierWD);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CARRIER);
 		this.ModelPos = new float[] {-6F, 15F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	

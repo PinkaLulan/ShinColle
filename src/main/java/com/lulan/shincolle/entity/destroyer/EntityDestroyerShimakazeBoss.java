@@ -35,7 +35,7 @@ public class EntityDestroyerShimakazeBoss extends BasicEntityShipBoss {
 		
         //basic attr
         this.atk = (float) ConfigHandler.scaleBossSmall[ID.ATK];
-        this.atkSpeed = (float) ConfigHandler.scaleBossSmall[ID.SPD];
+        this.atkSpeed = (float) ConfigHandler.scaleBossSmall[ID.SPD] * 1.5F;
         this.atkRange = (float) ConfigHandler.scaleBossSmall[ID.HIT];
         this.defValue = (float) ConfigHandler.scaleBossSmall[ID.DEF];
         this.movSpeed = (float) ConfigHandler.scaleBossSmall[ID.MOV];
@@ -47,7 +47,7 @@ public class EntityDestroyerShimakazeBoss extends BasicEntityShipBoss {
         this.headTilt = false;
         
         //misc
-        this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, ID.S_DestroyerShimakaze+2);
+        this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, ID.Ship.DestroyerShimakaze+2);
  
 	    //設定基本屬性
 	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(ConfigHandler.scaleBossSmall[ID.HP]);
@@ -94,19 +94,6 @@ public class EntityDestroyerShimakazeBoss extends BasicEntityShipBoss {
   			}
   		}    
   	}
-	
-	@Override
-	protected boolean interact(EntityPlayer player) {
-		//use kaitai hammer to kill boss (creative mode only)
-		if(!this.worldObj.isRemote && player.capabilities.isCreativeMode) {
-			if(player.inventory.getCurrentItem() != null && 
-			   player.inventory.getCurrentItem().getItem() == ModItems.KaitaiHammer) {
-				this.setDead();
-			}
-		}
-		
-        return false;
-    }
 	
 	//招喚連裝砲進行攻擊
   	@Override

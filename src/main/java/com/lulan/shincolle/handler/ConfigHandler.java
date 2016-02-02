@@ -43,9 +43,11 @@ public class ConfigHandler {
 	//                                                    CRI, DHIT, THIT, MISS, AA, ASM, DODGE
 	public static double[] limitShipEffect = new double[] {-1D, -1D, -1D, -1D, -1D, -1D, 75D};
 	public static double[] scaleShip = new double[] {1D, 1D, 1D, 1D, 1D, 1D};
-	public static double[] scaleBossSmall = new double[] {900D, 50D, 80D, 1D, 0.6D, 16D};
-	public static double[] scaleBossLarge = new double[] {2400D, 200D, 92D, 2D, 0.4D, 24D};
-	public static double[] scaleMobSubm = new double[] {100D, 20D, 30D, 1D, 0.4D, 12D, 200D};
+	//													  HP, ATK, DEF, SPD, MOV, HIT
+	public static double[] scaleBossSmall = new double[] {2000D, 120D, 80D, 1D, 0.6D, 20D};
+	public static double[] scaleBossLarge = new double[] {5000D, 200D, 92D, 2D, 0.36D, 24D};
+	//	  												HP, ATK, DEF, SPD, MOV, HIT, spawnPerSquid
+	public static double[] scaleMobSubm = new double[] {200D, 36D, 20D, 0.8D, 0.3D, 12D, 200D};
 	
 	public static int dmgSvS = 100;		//ship vs ship damage modifier, 20 = dmg * 20%
 	public static int dmgSummon = 100;	//summons damage modifier, 20 = dmg * 20%

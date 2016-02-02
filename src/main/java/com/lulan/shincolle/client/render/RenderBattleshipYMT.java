@@ -11,12 +11,12 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RenderBattleshipNagato extends RenderLiving {
+public class RenderBattleshipYMT extends RenderLiving {
 	
 	//∂Kπœ¿…∏ÙÆ|
-	private static final ResourceLocation mobTextures = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityBattleshipNagato.png");
+	private static final ResourceLocation mobTextures = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityBattleshipYamato.png");
 
-	public RenderBattleshipNagato(ModelBase par1, float par2) {
+	public RenderBattleshipYMT(ModelBase par1, float par2) {
 		super(par1, par2);	
 	}
 
@@ -26,6 +26,3 @@ public class RenderBattleshipNagato extends RenderLiving {
 	}
 
 }
-
-
-

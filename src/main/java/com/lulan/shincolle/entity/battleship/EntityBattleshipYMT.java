@@ -30,13 +30,14 @@ import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
  * 用StateEmotion[ID.S.Phase]來儲存攻擊階段
  * Phase 1:集氣 2:爆氣 3:集氣 
  */
-public class EntityBattleshipNGT extends BasicEntityShipSmall {
+public class EntityBattleshipYMT extends BasicEntityShipSmall {
 
-	public EntityBattleshipNGT(World world) {
+	
+	public EntityBattleshipYMT(World world) {
 		super(world);
 		this.setSize(0.6F, 1.8F);	//碰撞大小 跟模型大小無關
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
-		this.setStateMinor(ID.M.ShipClass, ID.Ship.BattleshipNagato);
+		this.setStateMinor(ID.M.ShipClass, ID.Ship.BattleshipYamato);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
 		this.ModelPos = new float[] {0F, 15F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);
@@ -82,9 +83,9 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
   			}
 			
   			if(this.ticksExisted % 5 == 0) {
-  				if(getStateEmotion(ID.S.State) >= ID.State.EQUIP01) {
-  					double smokeY = posY + 1.6D;
-  					if(this.isSitting()) smokeY = posY + 0.9D;
+  				if(getStateEmotion(ID.S.State) >= ID.State.EQUIP00 && !this.isSitting()) {
+  					double smokeY = posY + 1.75D;
+  					if(this.isSitting()) smokeY = posY + 0.5D;
   					
   					//計算煙霧位置
   	  				float[] partPos = ParticleHelper.rotateXZByAxis(-0.55F, 0F, (this.renderYawOffset % 360) / 57.2957F, 1F);
@@ -102,19 +103,37 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
 		//use cake to change state
 		if(itemstack != null) {
 			if(itemstack.getItem() == Items.cake) {
-				switch(getStateEmotion(ID.S.State)) {
-				case ID.State.NORMAL:
-					setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
-					break;
-				case ID.State.EQUIP00:
-					setStateEmotion(ID.S.State, ID.State.EQUIP01, true);
-					break;
-				case ID.State.EQUIP01:
-					setStateEmotion(ID.S.State, ID.State.EQUIP02, true);
-					break;
-				default:
-					setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-					break;
+				if(player.isSneaking()) {
+					switch(getStateEmotion(ID.S.State2)) {
+					case ID.State.NORMAL_2:
+						setStateEmotion(ID.S.State2, ID.State.EQUIP00_2, true);
+						break;
+					case ID.State.EQUIP00_2:
+						setStateEmotion(ID.S.State2, ID.State.EQUIP01_2, true);
+						break;
+					case ID.State.EQUIP01_2:
+						setStateEmotion(ID.S.State2, ID.State.EQUIP02_2, true);
+						break;
+					default:
+						setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
+						break;
+					}
+				}
+				else {
+					switch(getStateEmotion(ID.S.State)) {
+					case ID.State.NORMAL:
+						setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+						break;
+					case ID.State.EQUIP00:
+						setStateEmotion(ID.S.State, ID.State.EQUIP01, true);
+						break;
+					case ID.State.EQUIP01:
+						setStateEmotion(ID.S.State, ID.State.EQUIP02, true);
+						break;
+					default:
+						setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+						break;
+					}
 				}
 				return true;
 			}
@@ -147,7 +166,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
       
         //發射者煙霧特效
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 19, this.posX, this.posY+0.3D, this.posZ, distX, 1F, distZ, true), point);
+		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 19, this.posX, this.posY+0.7D, this.posZ, distX, 1F, distZ, true), point);
 
 		//play cannon fire sound at attacker
         playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
@@ -452,5 +471,6 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
 
 
 }
+
 
 

@@ -116,6 +116,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	protected int StartEmotion;			//表情1開始時間
 	protected int StartEmotion2;		//表情2開始時間
 	protected float[] rotateAngle;		//模型旋轉角度, 用於手持物品render
+	protected int StartSoundHurt;		//hurt sound ticks
 	
 	//for GUI display, no use
 	protected String ownerName;
@@ -129,6 +130,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	public BasicEntityShip(World world) {
 		super(world);
 		this.ignoreFrustumCheck = true;	//即使不在視線內一樣render
+		this.maxHurtResistantTime = 2;
+		this.StartSoundHurt = 0;
 		
 		//init value
 		this.isImmuneToFire = true;	//set ship immune to lava
@@ -228,7 +231,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	//受傷音效
     @Override
 	protected String getHurtSound() {
-        return Reference.MOD_ID+":ship-hurt";
+    	if(this.StartSoundHurt <= 0) {
+    		this.StartSoundHurt = 20 + this.getRNG().nextInt(40);
+    		return Reference.MOD_ID+":ship-hurt";
+    	}
+    	return null;
     }
 
     //死亡音效
@@ -355,8 +362,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	}
 	
 	//ShipID = ship CLASS ID
-	public byte getShipClass() {
-		return (byte)getStateMinor(ID.M.ShipClass);
+	public short getShipClass() {
+		return (short) getStateMinor(ID.M.ShipClass);
 	}
 	
 	//ShipUID = ship UNIQUE ID
@@ -1426,6 +1433,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	public void onUpdate() {
 		super.onUpdate();
 		EntityHelper.checkDepth(this);	//both side
+		
+		//both side
+		if(this.StartSoundHurt > 0) this.StartSoundHurt--;
 		
 		//client side
 		if(this.worldObj.isRemote) {

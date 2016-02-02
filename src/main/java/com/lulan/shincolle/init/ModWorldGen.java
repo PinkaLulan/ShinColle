@@ -25,8 +25,8 @@ public class ModWorldGen {
 		ItemStack instantCon = new ItemStack(ModItems.InstantConMat, 1);
 		ItemStack desk = new ItemStack(ModBlocks.BlockDesk);
 		//ship egg
-		ItemStack spawneggRE = new ItemStack(ModItems.ShipSpawnEgg, 1, ID.S_BattleshipRE+2);
-		ItemStack spawneggWO = new ItemStack(ModItems.ShipSpawnEgg, 1, ID.S_CarrierWO+2);
+		ItemStack spawneggRE = new ItemStack(ModItems.ShipSpawnEgg, 1, ID.Ship.BattleshipRE+2);
+		ItemStack spawneggWO = new ItemStack(ModItems.ShipSpawnEgg, 1, ID.Ship.CarrierWO+2);
 		//rare item, equips
 		ItemStack ring = new ItemStack(ModItems.MarriageRing, 1);
 		ItemStack cannon = new ItemStack(ModItems.EquipCannon, 1, 10);

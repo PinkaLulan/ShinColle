@@ -94,30 +94,30 @@ public class ShipSpawnEgg extends Item {
   	public void getSubItems(Item item, CreativeTabs tab, List list) {
   		list.add(new ItemStack(item, 1, 0));
   		list.add(new ItemStack(item, 1, 1));
-  		list.add(new ItemStack(item, 1, ID.S_DestroyerI+2));
-  		list.add(new ItemStack(item, 1, ID.S_DestroyerRO+2));
-  		list.add(new ItemStack(item, 1, ID.S_DestroyerHA+2));
-  		list.add(new ItemStack(item, 1, ID.S_DestroyerNI+2));
-  		list.add(new ItemStack(item, 1, ID.S_HeavyCruiserRI+2));
-//  		list.add(new ItemStack(item, 1, ID.S_HeavyCruiserNE+2));
-  		list.add(new ItemStack(item, 1, ID.S_CarrierWO+2));
-  		list.add(new ItemStack(item, 1, ID.S_BattleshipTA+2));
-  		list.add(new ItemStack(item, 1, ID.S_BattleshipRE+2));
-  		list.add(new ItemStack(item, 1, ID.S_AirfieldHime+2));
-  		list.add(new ItemStack(item, 1, ID.S_BattleshipHime+2));
-  		list.add(new ItemStack(item, 1, ID.S_HarbourHime+2));
-  		list.add(new ItemStack(item, 1, ID.S_NorthernHime+2));
-  		list.add(new ItemStack(item, 1, ID.S_CarrierWD+2));
-  		list.add(new ItemStack(item, 1, ID.S_DestroyerShimakaze+2));
-  		list.add(new ItemStack(item, 1, ID.S_DestroyerShimakaze+202));	//mob entity
-  		list.add(new ItemStack(item, 1, ID.S_BattleshipNagato+2));
-  		list.add(new ItemStack(item, 1, ID.S_BattleshipNagato+202));	//mob entity
-//  		list.add(new ItemStack(item, 1, ID.S_BattleshipYamato+2));
-//  		list.add(new ItemStack(item, 1, ID.S_BattleshipYamato+202));	//mob entity
-  		list.add(new ItemStack(item, 1, ID.S_SubmarineU511+2));
-  		list.add(new ItemStack(item, 1, ID.S_SubmarineU511+202));		//mob entity
-  		list.add(new ItemStack(item, 1, ID.S_SubmarineRo500+2));
-  		list.add(new ItemStack(item, 1, ID.S_SubmarineRo500+202));		//mob entity
+  		list.add(new ItemStack(item, 1, ID.Ship.DestroyerI+2));
+  		list.add(new ItemStack(item, 1, ID.Ship.DestroyerRO+2));
+  		list.add(new ItemStack(item, 1, ID.Ship.DestroyerHA+2));
+  		list.add(new ItemStack(item, 1, ID.Ship.DestroyerNI+2));
+  		list.add(new ItemStack(item, 1, ID.Ship.HeavyCruiserRI+2));
+  		list.add(new ItemStack(item, 1, ID.Ship.HeavyCruiserNE+2));
+  		list.add(new ItemStack(item, 1, ID.Ship.CarrierWO+2));
+  		list.add(new ItemStack(item, 1, ID.Ship.BattleshipTA+2));
+  		list.add(new ItemStack(item, 1, ID.Ship.BattleshipRE+2));
+  		list.add(new ItemStack(item, 1, ID.Ship.AirfieldHime+2));
+  		list.add(new ItemStack(item, 1, ID.Ship.BattleshipHime+2));
+  		list.add(new ItemStack(item, 1, ID.Ship.HarbourHime+2));
+  		list.add(new ItemStack(item, 1, ID.Ship.NorthernHime+2));
+  		list.add(new ItemStack(item, 1, ID.Ship.CarrierWD+2));
+  		list.add(new ItemStack(item, 1, ID.Ship.DestroyerShimakaze+2));
+  		list.add(new ItemStack(item, 1, ID.Ship.DestroyerShimakaze+2002));	//mob entity
+  		list.add(new ItemStack(item, 1, ID.Ship.BattleshipNagato+2));
+  		list.add(new ItemStack(item, 1, ID.Ship.BattleshipNagato+2002));	//mob entity
+  		list.add(new ItemStack(item, 1, ID.Ship.BattleshipYamato+2));
+  		list.add(new ItemStack(item, 1, ID.Ship.BattleshipYamato+2002));	//mob entity
+  		list.add(new ItemStack(item, 1, ID.Ship.SubmarineU511+2));
+  		list.add(new ItemStack(item, 1, ID.Ship.SubmarineU511+2002));		//mob entity
+  		list.add(new ItemStack(item, 1, ID.Ship.SubmarineRo500+2));
+  		list.add(new ItemStack(item, 1, ID.Ship.SubmarineRo500+2002));		//mob entity
   	}
   	
   	/** VANILLA SPAWN METHOD edited by Jabelar
@@ -125,18 +125,25 @@ public class ShipSpawnEgg extends Item {
      * the last three parameters.
      * Parameters: world, metadata, x, y, z
      */
-  	private Entity spawnEntity(World parWorld, ItemStack item, double parX, double parY, double parZ) {   	
+  	private Entity spawnEntity(EntityPlayer player, ItemStack item, double parX, double parY, double parZ, boolean checkPlayer) {   	
         int entityType = 0;
   		
-  		if (!parWorld.isRemote) {	// never spawn entity on client side
+        //server side
+    	if(player != null && !player.worldObj.isRemote) {
+    		//check player is real player
+    		if(checkPlayer) {
+    			int uid = EntityHelper.getPlayerUID(player);
+        		if(uid <= 0) return null;
+    		}
+    		
 			entityType = ShipCalc.rollShipType(item);
   			entityToSpawnName = ShipCalc.getEntityToSpawnName(entityType);
             LogHelper.info("DEBUG : spawn entity: "+entityToSpawnName);
             
             if (EntityList.stringToClassMapping.containsKey(entityToSpawnName)) {
-                entityToSpawn = (EntityLiving) EntityList.createEntityByName(entityToSpawnName, parWorld);
-                entityToSpawn.setLocationAndAngles(parX, parY, parZ, MathHelper.wrapAngleTo180_float(parWorld.rand.nextFloat()* 360.0F), 0.0F);
-                parWorld.spawnEntityInWorld(entityToSpawn);
+                entityToSpawn = (EntityLiving) EntityList.createEntityByName(entityToSpawnName, player.worldObj);
+                entityToSpawn.setLocationAndAngles(parX, parY, parZ, MathHelper.wrapAngleTo180_float(player.worldObj.rand.nextFloat()* 360.0F), 0.0F);
+                player.worldObj.spawnEntityInWorld(entityToSpawn);
                 entityToSpawn.onSpawnWithEgg((IEntityLivingData)null);	//for vanilla random spawn, disable
                 entityToSpawn.playLivingSound();
             } 
@@ -260,10 +267,12 @@ public class ShipSpawnEgg extends Item {
     @Override
     public ItemStack onItemRightClick(ItemStack itemstack, World world, EntityPlayer player) {
         
-    	if(world.isRemote) {	//client side
+    	//client side
+    	if(world.isRemote) {
             return itemstack;
         }
-        else {						//server side     
+    	//server side
+        else {
             MovingObjectPosition movingobjectposition = getMovingObjectPositionFromPlayer(world, player, true);
 
             if (movingobjectposition == null) {
@@ -306,11 +315,11 @@ public class ShipSpawnEgg extends Item {
                         //spawn entity in front of player (1 block)
                         if(itemstack.getItemDamage() > 200) {	//BOSS egg
                         	LogHelper.info("DEBUG : use boss egg");
-                        	EntityLivingBase entity = (EntityLivingBase) spawnEntity(world, itemstack, i, j+1D, k);
+                        	spawnEntity(player, itemstack, i, j+1D, k, false);
                         }
                         else {									//normal egg
                         	LogHelper.info("DEBUG : use normal egg");
-                        	BasicEntityShip entity = (BasicEntityShip) spawnEntity(world, itemstack, i, j+1D, k);
+                        	BasicEntityShip entity = (BasicEntityShip) spawnEntity(player, itemstack, i, j+1D, k, true);
 
                             if(entity != null) {
                             	//for egg with nameTag

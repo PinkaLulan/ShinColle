@@ -59,6 +59,7 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
     
     public BasicEntityAirplane(World world) {
         super(world);
+        this.maxHurtResistantTime = 2;
         this.backHome = false;
         this.canFindTarget = true;
         this.isImmuneToFire = true;

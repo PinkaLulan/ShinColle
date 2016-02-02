@@ -354,7 +354,7 @@ public class ParticleHelper {
 			
 			//draw hit text
 			EntityFX91Type particleSpray6 = new EntityFX91Type(world, 
-					lookX, lookY+2.5D, lookZ, 0.6F);
+					lookX, lookY+4D, lookZ, 0.6F);
         	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray6);
 			break;
 		case 22:	//Type 91 AP Fist: phase 1,3 particle

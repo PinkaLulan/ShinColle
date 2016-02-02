@@ -7,6 +7,8 @@ import com.lulan.shincolle.entity.battleship.EntityBattleshipNGT;
 import com.lulan.shincolle.entity.battleship.EntityBattleshipNGTBoss;
 import com.lulan.shincolle.entity.battleship.EntityBattleshipRe;
 import com.lulan.shincolle.entity.battleship.EntityBattleshipTa;
+import com.lulan.shincolle.entity.battleship.EntityBattleshipYMT;
+import com.lulan.shincolle.entity.battleship.EntityBattleshipYMTBoss;
 import com.lulan.shincolle.entity.carrier.EntityCarrierWo;
 import com.lulan.shincolle.entity.cruiser.EntityHeavyCruiserRi;
 import com.lulan.shincolle.entity.destroyer.EntityDestroyerHa;
@@ -74,6 +76,8 @@ public class ModEntity {
 		createEntity(EntityBattleshipHime.class, "EntityBattleshipHime", modEntityID++);
 		createEntity(EntityBattleshipNGT.class, "EntityBattleshipNGT", modEntityID++);
 		createEntity(EntityBattleshipNGTBoss.class, "EntityBattleshipNGTBoss", modEntityID++);
+		createEntity(EntityBattleshipYMT.class, "EntityBattleshipYMT", modEntityID++);
+		createEntity(EntityBattleshipYMTBoss.class, "EntityBattleshipYMTBoss", modEntityID++);
 		createEntity(EntityBattleshipRe.class, "EntityBattleshipRe", modEntityID++);
 		createEntity(EntityBattleshipTa.class, "EntityBattleshipTa", modEntityID++);
 		createEntity(EntityCarrierWD.class, "EntityCarrierWD", modEntityID++);

@@ -52,22 +52,22 @@ public class ShipCalc {
 		 * modified material type: mat can increase build rate: -1:none 0:grudge 1:metal 2:ammo 3:poly
 		 */
 		//small build
-		EquipSmall.add(new int[] {ID.S_DestroyerI,      80,   0});
-		EquipSmall.add(new int[] {ID.S_DestroyerRO,     90,   0});
-		EquipSmall.add(new int[] {ID.S_DestroyerHA,     100,  0});
-		EquipSmall.add(new int[] {ID.S_DestroyerNI,     110,  0});
-		EquipSmall.add(new int[] {ID.S_HeavyCruiserRI,  200,  2});
-//		EquipSmall.add(new int[] {ID.S_HeavyCruiserNE,  256,  2});
+		EquipSmall.add(new int[] {ID.Ship.DestroyerI,      80,   0});
+		EquipSmall.add(new int[] {ID.Ship.DestroyerRO,     90,   0});
+		EquipSmall.add(new int[] {ID.Ship.DestroyerHA,     100,  0});
+		EquipSmall.add(new int[] {ID.Ship.DestroyerNI,     110,  0});
+		EquipSmall.add(new int[] {ID.Ship.HeavyCruiserRI,  200,  2});
+//		EquipSmall.add(new int[] {ID.Ship.HeavyCruiserNE,  256,  2});
 		
 		//large build
-		EquipLarge.add(new int[] {ID.S_CarrierWO,       500,  3});
-		EquipLarge.add(new int[] {ID.S_BattleshipTA,    800,  2});
-		EquipLarge.add(new int[] {ID.S_NorthernHime,    2600, 1});
-		EquipLarge.add(new int[] {ID.S_HarbourHime,     2800, 1});
-		EquipLarge.add(new int[] {ID.S_AirfieldHime,    3000, 1});
-		EquipLarge.add(new int[] {ID.S_BattleshipRE,    3800, 2});	
-		EquipLarge.add(new int[] {ID.S_BattleshipHime,  4600, 2});
-		EquipLarge.add(new int[] {ID.S_CarrierWD,       5000, 3});
+		EquipLarge.add(new int[] {ID.Ship.CarrierWO,       500,  3});
+		EquipLarge.add(new int[] {ID.Ship.BattleshipTA,    800,  2});
+		EquipLarge.add(new int[] {ID.Ship.NorthernHime,    2600, 1});
+		EquipLarge.add(new int[] {ID.Ship.HarbourHime,     2800, 1});
+		EquipLarge.add(new int[] {ID.Ship.AirfieldHime,    3000, 1});
+		EquipLarge.add(new int[] {ID.Ship.BattleshipRE,    3800, 2});	
+		EquipLarge.add(new int[] {ID.Ship.BattleshipHime,  4600, 2});
+		EquipLarge.add(new int[] {ID.Ship.CarrierWD,       5000, 3});
 	}
 	
 
@@ -193,53 +193,53 @@ public class ShipCalc {
   	 */
   	public static String getEntityToSpawnName(int type) {
   		switch(type) {
-  		case ID.S_DestroyerI:
+  		case ID.Ship.DestroyerI:
   			return "shincolle.EntityDestroyerI";
-  		case ID.S_DestroyerRO:
+  		case ID.Ship.DestroyerRO:
   			return "shincolle.EntityDestroyerRo";
-  		case ID.S_DestroyerHA:
+  		case ID.Ship.DestroyerHA:
   			return "shincolle.EntityDestroyerHa";
-  		case ID.S_DestroyerNI:
+  		case ID.Ship.DestroyerNI:
   			return "shincolle.EntityDestroyerNi";
-  		case ID.S_HeavyCruiserRI:
+  		case ID.Ship.HeavyCruiserRI:
   			return "shincolle.EntityHeavyCruiserRi";
-  		case ID.S_HeavyCruiserNE:
+  		case ID.Ship.HeavyCruiserNE:
   			return "shincolle.EntityHeavyCruiserNe";
-  		case ID.S_CarrierWO:
+  		case ID.Ship.CarrierWO:
   			return "shincolle.EntityCarrierWo";
-  		case ID.S_BattleshipTA:
+  		case ID.Ship.BattleshipTA:
   			return "shincolle.EntityBattleshipTa";
-  		case ID.S_BattleshipRE:
+  		case ID.Ship.BattleshipRE:
   			return "shincolle.EntityBattleshipRe";
-  		case ID.S_AirfieldHime:
+  		case ID.Ship.AirfieldHime:
   			return "shincolle.EntityAirfieldHime";
-  		case ID.S_BattleshipHime:
+  		case ID.Ship.BattleshipHime:
   			return "shincolle.EntityBattleshipHime";
-  		case ID.S_HarbourHime:
+  		case ID.Ship.HarbourHime:
   			return "shincolle.EntityHarbourHime";
-  		case ID.S_NorthernHime:
+  		case ID.Ship.NorthernHime:
   			return "shincolle.EntityNorthernHime";
-  		case ID.S_CarrierWD:
+  		case ID.Ship.CarrierWD:
   			return "shincolle.EntityCarrierWD";
-  		case ID.S_DestroyerShimakaze:
+  		case ID.Ship.DestroyerShimakaze:
   			return "shincolle.EntityDestroyerShimakaze";
-  		case ID.S_DestroyerShimakaze+200:
+  		case ID.Ship.DestroyerShimakaze+2000:
   			return "shincolle.EntityDestroyerShimakazeBoss";
-  		case ID.S_BattleshipNagato:
+  		case ID.Ship.BattleshipNagato:
   			return "shincolle.EntityBattleshipNGT";
-  		case ID.S_BattleshipNagato+200:
+  		case ID.Ship.BattleshipNagato+2000:
   			return "shincolle.EntityBattleshipNGTBoss";
-  		case ID.S_BattleshipYamato:
+  		case ID.Ship.BattleshipYamato:
   			return "shincolle.EntityBattleshipYMT";
-  		case ID.S_BattleshipYamato+200:
+  		case ID.Ship.BattleshipYamato+2000:
   			return "shincolle.EntityBattleshipYMTBoss";
-  		case ID.S_SubmarineU511:
+  		case ID.Ship.SubmarineU511:
   			return "shincolle.EntitySubmU511";
-  		case ID.S_SubmarineU511+200:
+  		case ID.Ship.SubmarineU511+2000:
   			return "shincolle.EntitySubmU511Mob";
-  		case ID.S_SubmarineRo500:
+  		case ID.Ship.SubmarineRo500:
   			return "shincolle.EntitySubmRo500";
-  		case ID.S_SubmarineRo500+200:
+  		case ID.Ship.SubmarineRo500+2000:
   			return "shincolle.EntitySubmRo500Mob";
   		default:
   			return "shincolle.EntityDestroyerI";

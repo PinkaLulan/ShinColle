@@ -48,7 +48,7 @@ public class EntityBattleshipNGTBoss extends BasicEntityShipBoss {
         this.headTilt = false;
         
         //misc
-        this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, ID.S_BattleshipNagato+2);
+        this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, ID.Ship.BattleshipNagato+2);
  
 	    //設定基本屬性
 	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(ConfigHandler.scaleBossLarge[ID.HP]);
@@ -60,6 +60,9 @@ public class EntityBattleshipNGTBoss extends BasicEntityShipBoss {
 		//設定AI
 		this.setAIList();
 		this.setAITargetList();
+		
+		//model display
+		this.setStateEmotion(ID.S.State, ID.State.EQUIP02, false);
 	}
 	
 	@Override
@@ -104,19 +107,6 @@ public class EntityBattleshipNGTBoss extends BasicEntityShipBoss {
   			}
   		}
   	}
-	
-	@Override
-	protected boolean interact(EntityPlayer player) {
-		//use kaitai hammer to kill boss (creative mode only)
-		if(!this.worldObj.isRemote && player.capabilities.isCreativeMode) {
-			if(player.inventory.getCurrentItem() != null && 
-			   player.inventory.getCurrentItem().getItem() == ModItems.KaitaiHammer) {
-				this.setDead();
-			}
-		}
-		
-        return false;
-    }
 	
 	//修改煙霧位置
   	@Override

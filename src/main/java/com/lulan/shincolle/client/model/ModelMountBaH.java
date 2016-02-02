@@ -469,12 +469,18 @@ public class ModelMountBaH extends ModelBase {
 	  	this.ArmLeft01.rotateAngleX = angleAdd2 * 1.2F - 0.7F;
 	    this.ArmRight01.rotateAngleX = angleAdd1 * 1.2F - 0.7F;
 	    //cannon
-	    this.EquipCannon01.rotateAngleX = angleX * 0.08F - 0.14F;
-	    this.EquipCannon02.rotateAngleX = -angleX * 0.14F - 0.45F;
-	    this.EquipCannon03.rotateAngleX = angleX * 0.1F - 0.27F;
-	    this.EquipCannon01_1.rotateAngleX = -angleX * 0.12F - 0.08F;
-	    this.EquipCannon02_1.rotateAngleX = angleX * 0.08F - 0.18F;
-	    this.EquipCannon03_1.rotateAngleX = -angleX * 0.1F - 0.27F;
+	    float headX = f4 * 0.0174532925F;
+	    float headY = f3 * 0.008F;
+	    this.EquipCannon01.rotateAngleX = headX * 0.85F;
+	    this.EquipCannon02.rotateAngleX = headX * 0.95F;
+	    this.EquipCannon03.rotateAngleX = headX * 0.75F;
+	    this.EquipCannon01_1.rotateAngleX = headX * 0.95F;
+	    this.EquipCannon02_1.rotateAngleX = headX * 1.1F;
+	    this.EquipCannon03_1.rotateAngleX = headX * 0.85F;
+	    this.EquipL02.rotateAngleY = headY;
+	    this.EquipR02.rotateAngleY = headY;
+	    this.GlowEquipL02.rotateAngleY = headY;
+	    this.GlowEquipR02.rotateAngleY = headY;
 	    
 	    if(ent.getStateEmotion(ID.S.Emotion) > 0) {
 	    	this.ArmRight01.rotateAngleX = -1.57F;

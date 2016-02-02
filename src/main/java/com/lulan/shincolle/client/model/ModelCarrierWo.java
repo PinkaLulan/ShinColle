@@ -550,6 +550,9 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 		this.Staff.offsetZ = -1.4F;
 		//Ä²¤â®Ì°Ê (equip only)
 		if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
+			this.EquipLC01.rotateAngleX = this.Head.rotateAngleX;
+			this.EquipRC01.rotateAngleX = this.Head.rotateAngleX;
+			
 			this.EquipT01L.rotateAngleX = angleZ * 0.05F + -0.2618F;
 			this.EquipT01L.rotateAngleZ = angleZ * 0.05F + -0.2618F;
 			this.EquipT02L.rotateAngleX = angleZ * 0.1F;

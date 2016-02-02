@@ -49,7 +49,7 @@ public class EntitySubmU511Mob extends BasicEntityShipHostile implements IShipIn
         this.headTilt = false;
         
         //misc
-        this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, ID.S_SubmarineU511+2);
+        this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, ID.Ship.SubmarineU511+2);
         
 	    //設定基本屬性
 	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(ConfigHandler.scaleMobSubm[ID.HP]);
@@ -103,19 +103,6 @@ public class EntitySubmU511Mob extends BasicEntityShipHostile implements IShipIn
   			}
   		}    
   	}
-	
-	@Override
-	protected boolean interact(EntityPlayer player) {
-		//use kaitai hammer to kill boss (creative mode only)
-		if(!this.worldObj.isRemote && player.capabilities.isCreativeMode) {
-			if(player.inventory.getCurrentItem() != null && 
-			   player.inventory.getCurrentItem().getItem() == ModItems.KaitaiHammer) {
-				this.setDead();
-			}
-		}
-		
-        return false;
-    }
 	
 	//招喚連裝砲進行攻擊
   	@Override

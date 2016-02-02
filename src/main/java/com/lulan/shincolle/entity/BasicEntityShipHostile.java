@@ -2,7 +2,6 @@ package com.lulan.shincolle.entity;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAILookIdle;
-import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAIOpenDoor;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,6 +18,7 @@ import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -49,6 +49,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	protected int StartEmotion2;		//表情2 開始時間
 	protected boolean headTilt;
 	protected float[] rotateAngle;		//模型旋轉角度, 用於手持物品render
+	protected int StartSoundHurt;		//hurt sound ticks
 	
 	//misc
 	protected ItemStack dropItem;
@@ -66,12 +67,16 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		super(world);
 		isImmuneToFire = true;	//set ship immune to lava
 		ignoreFrustumCheck = true;	//即使不在視線內一樣render
-		StateEmotion = new byte[] {ID.State.EQUIP00, 0, 0, 0, 0, 0};
+		maxHurtResistantTime = 2;
 		stepHeight = 4F;
 		canDrop = true;
 		shipNavigator = new ShipPathNavigate(this, worldObj);
 		shipMoveHelper = new ShipMoveHelper(this, 15F);
 		rotateAngle = new float[] {0F, 0F, 0F};
+		
+		//model display
+		StartSoundHurt = 0;
+		StateEmotion = new byte[] {ID.State.EQUIP00, 0, 0, 0, 0, 0};
 	}
 	
 	@Override
@@ -195,8 +200,11 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	//受傷音效
 	@Override
     protected String getHurtSound() {
-    	
-        return Reference.MOD_ID+":ship-hurt";
+		if(this.StartSoundHurt <= 0) {
+    		this.StartSoundHurt = 20 + this.getRNG().nextInt(40);
+    		return Reference.MOD_ID+":ship-hurt";
+    	}
+    	return null;
     }
 
     //死亡音效
@@ -563,8 +571,12 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	public void onUpdate() {
 		super.onUpdate();
 		
+		//both side
 		//check depth
 		EntityHelper.checkDepth(this);
+		
+		//time --
+		if(this.StartSoundHurt > 0) this.StartSoundHurt--;
 		
 		//client side
 		if(this.worldObj.isRemote && this.isInWater()) {
@@ -790,8 +802,19 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	public void setEntityRevengeTime() {
 		this.revengeTime = this.ticksExisted;
 	}
-	
-	
+  	
+  	@Override
+	protected boolean interact(EntityPlayer player) {
+		//use kaitai hammer to kill hostile ship (creative mode only)
+		if(!this.worldObj.isRemote && player.capabilities.isCreativeMode) {
+			if(player.inventory.getCurrentItem() != null && 
+			   player.inventory.getCurrentItem().getItem() == ModItems.KaitaiHammer) {
+				this.setDead();
+			}
+		}
+		
+        return false;
+    }
 
 
 }
