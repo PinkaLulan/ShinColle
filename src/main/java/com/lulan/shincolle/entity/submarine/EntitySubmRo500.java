@@ -153,9 +153,6 @@ public class EntitySubmRo500 extends BasicEntityShipSmall implements IShipInvisi
   		//get attack value
   		float atk = StateFinal[ID.ATK];
   		
-  		//calc equip special dmg: AA, ASM
-  		atk = CalcHelper.calcDamageByEquipEffect(this, target, atk, 0);
-  		
   		//set knockback value (testing)
   		float kbValue = 0.15F;
   		//飛彈是否採用直射

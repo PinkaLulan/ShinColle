@@ -681,11 +681,8 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   	//light attack
     @Override
 	public boolean attackEntityWithAmmo(Entity target) {
-		float atkLight = this.host.getStateFinal(ID.ATK);
+		float atkLight = CalcHelper.calcDamageByEquipEffect(this, target, this.host.getStateFinal(ID.ATK), 0);
 		float kbValue = 0.03F;
-		
-		//calc equip special dmg: AA, ASM
-		atkLight = CalcHelper.calcDamageByEquipEffect(this, target, atkLight, 0);
 
 		//play cannon fire sound at attacker
         playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));

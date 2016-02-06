@@ -69,12 +69,9 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
 	//range attack method, cost light ammo, attack delay = 20 / attack speed, damage = 100% atk 
 	public boolean attackEntityWithAmmo(Entity target) {
 		//get attack value
-		float atk = StateFinal[ID.ATK];
+		float atk = CalcHelper.calcDamageByEquipEffect(this, target, StateFinal[ID.ATK], 0);
 		//set knockback value (testing)
 		float kbValue = 0.05F;
-		
-		//calc equip special dmg: AA, ASM
-		atk = CalcHelper.calcDamageByEquipEffect(this, target, atk, 0);
 		
 		//update entity look at vector (for particle spawn)
         //此方法比getLook還正確 (client sync問題)

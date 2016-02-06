@@ -112,12 +112,9 @@ public class EntityBattleshipNGTBoss extends BasicEntityShipBoss {
   	@Override
   	public boolean attackEntityWithAmmo(Entity target) {
   		//get attack value
-		float atk = this.atk;
+		float atk = CalcHelper.calcDamageByEquipEffect(this, target, this.atk, 0);
 		//set knockback value (testing)
 		float kbValue = 0.05F;
-		
-		//calc equip special dmg: AA, ASM
-		atk = CalcHelper.calcDamageByEquipEffect(this, target, atk, 0);
 		
 		//update entity look at vector (for particle spawn)
         //此方法比getLook還正確 (client sync問題)
@@ -207,10 +204,8 @@ public class EntityBattleshipNGTBoss extends BasicEntityShipBoss {
   	@Override
   	public boolean attackEntityWithHeavyAmmo(Entity target) {	
   		//get attack value
-		float atk1 = this.atk * 4F;
-		float atk2 = this.atk;
-		
-		//NO AA,ASM effect
+		float atk1 = CalcHelper.calcDamageByEquipEffect(this, target, this.atk * 3F, 2);
+		float atk2 = this.atk * 3F; //AE dmg without modifier
 		
 		//set knockback value (testing)
 		float kbValue = 0.15F;

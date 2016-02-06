@@ -388,11 +388,8 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 	//light attack
 	@Override
 	public boolean attackEntityWithAmmo(Entity target) {
-		float atkLight = this.atk;
+		float atkLight = CalcHelper.calcDamageByEquipEffect(this, target, this.atk, 0);
 		float kbValue = 0.03F;
-		
-		//calc equip special dmg: AA, ASM
-		atkLight = CalcHelper.calcDamageByEquipEffect(this, target, atkLight, 0);
 
 		//play cannon fire sound at attacker
         playSound(Reference.MOD_ID+":ship-machinegun", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));

@@ -74,6 +74,16 @@ public class S2CSpawnParticle implements IMessage {
         this.posZ = (float)par3;
 	}
 	
+	//type 4: spawn particle with entity and 3 double parms
+	public S2CSpawnParticle(Entity entity, int type, double par1, double par2, double par3) {
+		this.entity = entity;
+        this.type = 4;
+        this.particleType = (byte)type;
+        this.posX = (float)par1;
+        this.posY = (float)par2;
+        this.posZ = (float)par3;
+    }
+	
 	//接收packet方法
 	@Override
 	public void fromBytes(ByteBuf buf) {
@@ -138,6 +148,19 @@ public class S2CSpawnParticle implements IMessage {
 				ParticleHelper.spawnAttackParticleAtEntity(entity, entity2, posX, posY, posZ, particleType, isShip);
 			}
 			break;
+		case 4: //spawn particle with entity and 3 parms
+			{
+				this.entityID = buf.readInt();
+				
+				entity = EntityHelper.getEntityByID(entityID, 0, true);
+				
+				this.particleType = buf.readByte();
+				this.posX = buf.readFloat();
+				this.posY = buf.readFloat();
+				this.posZ = buf.readFloat();
+				ParticleHelper.spawnAttackParticleAtEntity(entity, posX, posY, posZ, particleType);
+			}
+			break;
 		}
 	}
 
@@ -186,6 +209,16 @@ public class S2CSpawnParticle implements IMessage {
 				buf.writeBoolean(this.isShip);
 				buf.writeInt(this.entityID);
 				buf.writeInt(this.entityID2);
+				buf.writeFloat(this.posX);
+				buf.writeFloat(this.posY);
+				buf.writeFloat(this.posZ);
+			}
+			break;
+		case 4:	//spawn particle with entity and position
+			{
+				buf.writeByte(4);	//type 1
+				buf.writeInt(this.entity.getEntityId());
+				buf.writeByte(this.particleType);
 				buf.writeFloat(this.posX);
 				buf.writeFloat(this.posY);
 				buf.writeFloat(this.posZ);

@@ -11,6 +11,7 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.mounts.EntityMountSeat;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
+import com.lulan.shincolle.entity.other.EntityProjectileBeam;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
@@ -44,7 +45,7 @@ public class S2CEntitySync implements IMessage {
 		public static final byte SyncMount_ByPlayer = 5;
 		public static final byte SyncSeat = 6;
 		public static final byte SyncMount_ByMount = 7;
-		public static final byte SyncMissile = 8;
+		public static final byte SyncProjectile = 8;
 		public static final byte SyncEntity_PosRot = 9;
 		public static final byte SyncEntity_Rot = 10;
 		public static final byte SyncShip_Formation = 11;
@@ -87,7 +88,7 @@ public class S2CEntitySync implements IMessage {
     }
 	
 	/**for mount seat sync
-	 * type 8:  entity type sync
+	 * type 8:  projectile type sync
 	 * type 9:  entity pos sync (for teleport)
 	 * type 10: entity rot sync (for looking update)
 	 */
@@ -145,7 +146,7 @@ public class S2CEntitySync implements IMessage {
 				getSyncTarget = true;
 			}
 			break;
-		case PID.SyncMissile:	//missile sync
+		case PID.SyncProjectile:	//missile sync
 			this.entity3 = EntityHelper.getEntityByID(entityID, 0, true);
 			
 			if(entity3 != null) {
@@ -435,12 +436,15 @@ public class S2CEntitySync implements IMessage {
 					}
 				}
 				break;
-			case PID.SyncMissile:	//missile type sync
+			case PID.SyncProjectile:	//missile type sync
 				{
 					this.value = buf.readInt();
 					
 					if(entity3 instanceof EntityAbyssMissile) {
 						((EntityAbyssMissile)entity3).setMissileType(value);
+					}
+					if(entity3 instanceof EntityProjectileBeam) {
+						((EntityProjectileBeam)entity3).setProjectileType(value);
 					}
 				}
 				break;
@@ -734,9 +738,9 @@ public class S2CEntitySync implements IMessage {
 				}
 			}
 			break;
-		case PID.SyncMissile:	//missile tpye sync
+		case PID.SyncProjectile:	//missile tpye sync
 			{
-				buf.writeByte(PID.SyncMissile);	//type 8
+				buf.writeByte(PID.SyncProjectile);	//type 8
 				buf.writeInt(this.entity3.getEntityId());
 				buf.writeInt(this.value);
 			}

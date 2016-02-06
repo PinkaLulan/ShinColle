@@ -31,6 +31,7 @@ import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.entity.other.EntityAirplane;
 import com.lulan.shincolle.entity.other.EntityAirplaneTakoyaki;
 import com.lulan.shincolle.entity.other.EntityFloatingFort;
+import com.lulan.shincolle.entity.other.EntityProjectileBeam;
 import com.lulan.shincolle.entity.other.EntityRensouhou;
 import com.lulan.shincolle.entity.other.EntityRensouhouBoss;
 import com.lulan.shincolle.entity.other.EntityRensouhouS;
@@ -111,6 +112,7 @@ public class ModEntity {
 		createProjectileEntity(EntityAirplane.class, "EntityAirplane", modEntityID++);
 		createProjectileEntity(EntityAirplaneTakoyaki.class, "EntityAirplaneTakoyaki", modEntityID++);
 		createProjectileEntity(EntityFloatingFort.class, "EntityFloatingFort", modEntityID++);
+		createProjectileEntity(EntityProjectileBeam.class, "EntityProjectileBeam", modEntityID++);
 		
 		//register render entity
 		createProjectileEntity(EntityRenderLargeShipyard.class, "EntityRenderLargeShipyard", modEntityID++);
@@ -142,14 +144,14 @@ public class ModEntity {
 	public static void createEntity(Class entityClass, String entityName, int entityId){
 		LogHelper.info("DEBUG : register entity: "+entityId+" "+entityClass+" "+entityName);
 		//登錄參數: 生物class, 生物名稱, 生物id, mod副本, 追蹤更新距離, 更新時間間隔, 是否發送同步封包(高速entity必須true才會顯示平順)
-		EntityRegistry.registerModEntity(entityClass, entityName, entityId, ShinColle.instance, 48, 1, true);
+		EntityRegistry.registerModEntity(entityClass, entityName, entityId, ShinColle.instance, 64, 1, true);
 	}
 	
 	//登錄非生物方法 (無生怪蛋)
 	//參數: 該生物class, 生物名稱, 生物id
 	public static void createProjectileEntity(Class entityClass, String entityName, int entityId){
 		//登錄參數: 生物class, 生物名稱, 生物id, mod副本, 追蹤更新距離, 更新時間間隔, 是否發送速度封包
-		EntityRegistry.registerModEntity(entityClass, entityName, entityId, ShinColle.instance, 48, 1, true);
+		EntityRegistry.registerModEntity(entityClass, entityName, entityId, ShinColle.instance, 64, 1, true);
 	}
 	
 	//登錄item entity方法 (無生怪蛋)

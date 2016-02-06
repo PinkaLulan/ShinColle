@@ -263,8 +263,8 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
     		}
     		//sync missile type at start
     		else if(this.ticksExisted == 1) {
-    			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
-    			CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this, this.type, 8), point);
+    			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+    			CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this, this.type, S2CEntitySync.PID.SyncProjectile), point);
     		}
     		
     		//spawn cluster sub missile
@@ -272,7 +272,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
     			if(this.ticksExisted % 8 == 0) {
     				EntityAbyssMissile subm = new EntityAbyssMissile(this.worldObj, this.host, 
     						(float)this.motionX, (float)this.motionY, (float)this.motionZ, 
-    						(float)this.posX, (float)this.posY - 1F, (float)this.posZ,
+    						(float)this.posX, (float)this.posY - 0.75F, (float)this.posZ,
     		        		atk, kbValue);
     		        this.worldObj.spawnEntityInWorld(subm);
     			}
@@ -290,7 +290,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
             
             vec3 = Vec3.createVectorHelper(this.posX, this.posY, this.posZ);
             vec31 = Vec3.createVectorHelper(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
-
+            
             if(movingobjectposition != null) {
                 vec31 = Vec3.createVectorHelper(movingobjectposition.hitVec.xCoord, movingobjectposition.hitVec.yCoord, movingobjectposition.hitVec.zCoord);
                 this.onImpact(null);
@@ -300,7 +300,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
             Entity hitEntity = null;
             List hitList = null;
             hitList = this.worldObj.getEntitiesWithinAABB(Entity.class, this.boundingBox.expand(1.0D, 1.0D, 1.0D));
-           
+            
             //搜尋list, 找出第一個可以判定的目標, 即傳給onImpact
             if(hitList != null && !hitList.isEmpty()) {
                 for(int i=0; i<hitList.size(); ++i) { 
@@ -322,7 +322,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
             //call onImpact
             if(hitEntity != null) {
             	this.onImpact(hitEntity);
-            } 
+            }
             
     	}//end server side
     	/**********client side***********/
@@ -355,17 +355,11 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
 
     //check entity is not host or launcher
     private boolean isNotHost(Entity entity) {
-		if(host2 != null) {
-			//not launcher
-			if(host2.getEntityId() == entity.getEntityId()) {
-				return false;
-			}
-			//not friendly target (owner or same team)
-			else if(entity instanceof IShipOwner) {
-				if(((IShipOwner) entity).getPlayerUID() == this.getPlayerUID()) {
-					return true;
-				}
-			}
+    	//not self
+    	if(entity.equals(this)) return false;
+    	//not launcher
+		if(host2 != null && host2.getEntityId() == entity.getEntityId()) {
+			return false;
 		}
 
 		return true;
@@ -395,7 +389,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
                 	hitEntity = (Entity)hitList.get(i);
                 	
                 	//calc equip special dmg: AA, ASM
-                	missileAtk = CalcHelper.calcDamageByEquipEffect(this, hitEntity, missileAtk, 1);
+                	missileAtk = CalcHelper.calcDamageByEquipEffect(this, hitEntity, missileAtk, 0);
                 	
                 	//目標不能是自己 or 主人, 且可以被碰撞
                 	if(hitEntity.canBeCollidedWith() && isNotHost(hitEntity)) {
@@ -470,7 +464,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
         this.atk = nbt.getFloat("atk");
     }
 
-    //設定true可使其他生物判定是否要閃開此entity
+    //設定true可使其他生物判定是否可碰撞此entity
     @Override
 	public boolean canBeCollidedWith() {
         return true;

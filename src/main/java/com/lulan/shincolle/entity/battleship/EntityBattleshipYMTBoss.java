@@ -24,6 +24,7 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
@@ -39,7 +40,7 @@ public class EntityBattleshipYMTBoss extends BasicEntityShipBoss {
 		this.atk = (float) ConfigHandler.scaleBossLarge[ID.ATK] * 1.2F;
         this.atkSpeed = (float) ConfigHandler.scaleBossLarge[ID.SPD] * 1.2F;
         this.atkRange = (float) ConfigHandler.scaleBossLarge[ID.HIT] * 1.2F;
-        this.defValue = (float) ConfigHandler.scaleBossLarge[ID.DEF] * 1.2F;
+        this.defValue = (float) ConfigHandler.scaleBossLarge[ID.DEF];
         this.movSpeed = (float) ConfigHandler.scaleBossLarge[ID.MOV] * 0.8F;
 
         //AI flag
@@ -90,7 +91,7 @@ public class EntityBattleshipYMTBoss extends BasicEntityShipBoss {
 	@Override
   	public void onLivingUpdate() {
   		super.onLivingUpdate();
-
+//  		LogHelper.info("DEBUG : boss target "+this.getEntityTarget());
   		//client side
   		if(worldObj.isRemote) {
   			if(this.ticksExisted % 10 == 0) {
@@ -113,12 +114,9 @@ public class EntityBattleshipYMTBoss extends BasicEntityShipBoss {
   	@Override
   	public boolean attackEntityWithAmmo(Entity target) {
   		//get attack value
-		float atk = this.atk;
+		float atk = CalcHelper.calcDamageByEquipEffect(this, target, this.atk, 0);
 		//set knockback value (testing)
 		float kbValue = 0.05F;
-		
-		//calc equip special dmg: AA, ASM
-		atk = CalcHelper.calcDamageByEquipEffect(this, target, atk, 0);
 		
 		//update entity look at vector (for particle spawn)
         //此方法比getLook還正確 (client sync問題)
@@ -132,7 +130,8 @@ public class EntityBattleshipYMTBoss extends BasicEntityShipBoss {
       
         //發射者煙霧特效
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 19, this.posX, this.posY+4D, this.posZ, distX, 3.5D, distZ, true), point);
+		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 5, 3.4D, 3.2D, 5D), point);
+		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 5, 3.4D, 3.2D, 3D), point);
 
 		//play cannon fire sound at attacker
         playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
@@ -178,7 +177,7 @@ public class EntityBattleshipYMTBoss extends BasicEntityShipBoss {
   			atk *= 0.25F;
   			
     		if(atk > 159F) {
-    			atk = 159F;	//same with TNT
+    			atk = 159F;
     		}
   		}
   		
@@ -207,161 +206,8 @@ public class EntityBattleshipYMTBoss extends BasicEntityShipBoss {
   	//TYPE 91 AP FIST
   	@Override
   	public boolean attackEntityWithHeavyAmmo(Entity target) {	
-  		//get attack value
-		float atk1 = this.atk * 4F;
-		float atk2 = this.atk;
-		
-		//NO AA,ASM effect
-		
-		//set knockback value (testing)
-		float kbValue = 0.15F;
-		
-		boolean isTargetHurt = false;
-
-		//計算目標距離
-		float tarX = (float)target.posX;	//for miss chance calc
-		float tarY = (float)target.posY;
-		float tarZ = (float)target.posZ;
-		float distX = tarX - (float)this.posX;
-		float distY = tarY - (float)this.posY;
-		float distZ = tarZ - (float)this.posZ;
-        float distSqrt = MathHelper.sqrt_float(distX*distX + distY*distY + distZ*distZ);
-        float dX = distX / distSqrt;
-        float dY = distY / distSqrt;
-        float dZ = distZ / distSqrt;
-	
-		//play cannon fire sound at attacker
-		int atkPhase = getStateEmotion(ID.S.Phase);
-		
-        switch(atkPhase) {
-        case 0:
-        case 2:
-        	this.playSound(Reference.MOD_ID+":ship-ap_phase1", ConfigHandler.fireVolume, 1F);
-        	break;
-        case 1:
-        	this.playSound(Reference.MOD_ID+":ship-ap_phase2", ConfigHandler.fireVolume, 1F);
-        	break;
-        case 3:
-        	this.playSound(Reference.MOD_ID+":ship-ap_attack", ConfigHandler.fireVolume, 1F);
-        	break;
-    	default:
-    		this.playSound(Reference.MOD_ID+":ship-ap_phase1", ConfigHandler.fireVolume, 1F);
-    		break;
-        }
-        
-        //play entity attack sound
-        if(this.getRNG().nextInt(10) > 7) {
-        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-        }
-        
-        //phase++
-        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-        atkPhase++;
-      
-        if(atkPhase > 3) {	//攻擊準備完成, 計算攻擊傷害
-        	//display hit particle on target
-	        CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 21, posX, posY, posZ, target.posX, target.posY, target.posZ, true), point);
-        	
-        	//calc miss chance, miss: atk1 = 0, atk2 = 50%
-            if(this.rand.nextFloat() < 0.2F) {	//MISS
-            	atk1 = 0F;
-            	atk2 *= 0.5F;
-            	//spawn miss particle
-            	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
-            }
-            else if(this.rand.nextFloat() < 0.15F) {	//CRI
-        		atk1 *= 1.5F;
-        		atk2 *= 1.5F;
-        		//spawn critical particle
-        		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 11, false), point);
-            }
-            
-            //vs player = 25% dmg
-      		if(target instanceof EntityPlayer) {
-      			atk1 *= 0.25F;
-      			atk2 *= 0.25F;
-      			
-        		if(atk2 > 40F) {
-        			atk1 = 160F;	//charge creeper
-        			atk2 = 40F;		//TNT
-        		}
-      		}
-      		
-      		//對本體造成atk1傷害
-      		isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this), atk1);
-      		
-      		this.motionX = 0D;
-  			this.motionY = 0D;
-  			this.motionZ = 0D;
-  			this.posX = tarX+dX*2F;
-  			this.posY = tarY;
-  			this.posZ = tarZ+dZ*2F;
-  			this.setPosition(posX, posY, posZ);
-      		
-      		//對範圍造成atk2傷害
-            EntityLivingBase hitEntity = null;
-            AxisAlignedBB impactBox = this.boundingBox.expand(4.5D, 4.5D, 4.5D); 
-            List hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, impactBox);
-            float atkTemp = atk2;
-            
-            //搜尋list, 找出第一個可以判定的目標, 即傳給onImpact
-            if(hitList != null && !hitList.isEmpty()) {
-                for(int i=0; i<hitList.size(); ++i) {
-                	atkTemp = atk2;
-                	hitEntity = (EntityLivingBase)hitList.get(i);
-                	
-                	//目標不能是自己 or 主人
-                	if(hitEntity != this && hitEntity.canBeCollidedWith() && EntityHelper.checkNotSameEntityID(this, hitEntity)) {
-                		//calc miss and cri
-                		if(this.rand.nextFloat() < 0.2F) {	//MISS
-                        	atkTemp *= 0.5F;
-                        }
-                        else if(this.rand.nextFloat() < 0.15F) {	//CRI
-                    		atkTemp *= 1.5F;
-                        }
-                		
-                		//若攻擊到同陣營entity (ex: owner), 則傷害設為0 (但是依然觸發擊飛特效)
-                		if(EntityHelper.checkSameOwner(this, hitEntity)) {
-                			atkTemp = 0F;
-                    	}
-                		
-                		//若攻擊到玩家, 最大傷害固定為TNT傷害 (non-owner)
-                    	if(hitEntity instanceof EntityPlayer) {
-                    		atkTemp *= 0.25F;
-                    		
-                    		if(atkTemp > 59F) {
-                    			atkTemp = 59F;	//same with TNT
-                    		}
-                    	}
-
-                		//if attack success
-                	    if(hitEntity.attackEntityFrom(DamageSource.causeMobDamage(this), atkTemp)) {
-                	    	//calc kb effect
-                	        if(kbValue > 0) {
-                	        	hitEntity.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
-                	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
-                	            motionX *= 0.6D;
-                	            motionZ *= 0.6D;
-                	        }             	 
-                	    }
-                	}//end can be collided with
-                }//end hit target list for loop
-            }//end hit target list != null
-        	
-        	this.setStateEmotion(ID.S.Phase, 0, true);
-        }
-        else {
-        	if(atkPhase == 2) {
-        		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 23, this.posX, this.posY, this.posZ, 3D, 0.3D, 0D, true), point);
-        	}
-        	else {
-        		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 22, this.posX, this.posY, this.posZ, 3D, 3D, 0D, true), point);
-        	}
-    		
-        	this.setStateEmotion(ID.S.Phase, atkPhase, true);
-        }
-        
-        return isTargetHurt;
+  		
+        return false;
 	}
 
 	@Override

@@ -4,12 +4,14 @@ import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.relauncher.Side;
@@ -20,13 +22,15 @@ import cpw.mods.fml.relauncher.SideOnly;
  * 給定host, target -> 生成雷射特效
  * 此為柱狀3D雷射(即六面長方體)
  * 
- * type: 0: par1為X軸位置(分左右光炮), par2為發射高度
+ * type:
+ *   0: 雙紅雷射: par1為X軸位置(分左右光炮), par2為發射高度
+ *   1: 大和波動砲: 
  */
 @SideOnly(Side.CLIENT)
 public class EntityFXLaserNoTexture extends EntityFX {
 
 	private int particleType;
-	private float shotYaw, shotPitch;
+	private float shotYaw, shotPitch, scaleOut, scaleIn, alphaOut, alphaIn;
 	private double tarX, tarY, tarZ, par1, par2, par3;
 	private double[][] vt, vt2;				//cube vertex
 	private EntityLivingBase host;
@@ -43,7 +47,7 @@ public class EntityFXLaserNoTexture extends EntityFX {
         this.particleType = type;
         this.noClip = true;
         this.tarX = target.posX;
-        this.tarY = target.posY + target.height * 0.5D;
+        this.tarY = target.posY + target.height * 0.75D;
         this.tarZ = target.posZ;
         this.par1 = par1;
         this.par2 = par2;
@@ -51,11 +55,19 @@ public class EntityFXLaserNoTexture extends EntityFX {
         this.vt = new double[8][3];
         this.vt2 = new double[8][3];
         
+        float[] lookDeg;
+        float[] posOffset;
+        
         switch(type) {
-        default:
-        case 0:		//紅光束砲
-        	float[] lookDeg = CalcHelper.getLookDegree(tarX-posX, tarY-posY, tarZ-posZ, false);
-        	float[] posOffset = ParticleHelper.rotateXYZByYawPitch((float)par1, 0F, 0.78F, lookDeg[0], lookDeg[1], 1F);
+        case 1:		//大和波動砲
+        	this.particleMaxAge = 30;
+        	this.particleRed = 1F;
+        	this.particleGreen = 0.8F;
+        	this.particleBlue = 0.9F;
+        	break;
+        default:	//紅光束砲
+        	lookDeg = CalcHelper.getLookDegree(tarX-posX, tarY-posY, tarZ-posZ, false);
+        	posOffset = ParticleHelper.rotateXYZByYawPitch((float)par1, 0F, 0.78F, lookDeg[0], lookDeg[1], 1F);
         	this.shotYaw = lookDeg[0];
         	this.shotPitch = lookDeg[1];
         	this.posX += posOffset[0];
@@ -65,7 +77,10 @@ public class EntityFXLaserNoTexture extends EntityFX {
         	this.particleRed = 1F;
         	this.particleGreen = 0F;
         	this.particleBlue = 0F;
-        	this.particleAlpha = 0.2F;
+        	this.scaleOut = this.particleScale * 0.5F;
+        	this.scaleIn = this.particleScale * 0.125F;
+        	this.alphaOut = 0.1F;
+        	this.alphaIn = 0.2F;
         	break;
         }
         
@@ -82,20 +97,17 @@ public class EntityFXLaserNoTexture extends EntityFX {
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);	//disable texture
 		
-		//計算角度造成的位移
-		float s = this.particleScale * 0.5F;
 		//外層紅色
-		float[] v1 = ParticleHelper.rotateXYZByYawPitch(1F, -1F, 0F, shotYaw, shotPitch, s);
-		float[] v2 = ParticleHelper.rotateXYZByYawPitch(1F, 1F, 0F, shotYaw, shotPitch, s);
-		float[] v3 = ParticleHelper.rotateXYZByYawPitch(-1F, 1F, 0F, shotYaw, shotPitch, s);
-		float[] v4 = ParticleHelper.rotateXYZByYawPitch(-1F, -1F, 0F, shotYaw, shotPitch, s);
+		float[] v1 = ParticleHelper.rotateXYZByYawPitch(1F, -1F, 0F, shotYaw, shotPitch, this.scaleOut);
+		float[] v2 = ParticleHelper.rotateXYZByYawPitch(1F, 1F, 0F, shotYaw, shotPitch, this.scaleOut);
+		float[] v3 = ParticleHelper.rotateXYZByYawPitch(-1F, 1F, 0F, shotYaw, shotPitch, this.scaleOut);
+		float[] v4 = ParticleHelper.rotateXYZByYawPitch(-1F, -1F, 0F, shotYaw, shotPitch, this.scaleOut);
 		//內層白色
-		float[] v5 = ParticleHelper.rotateXYZByYawPitch(0.25F, -0.25F, 0F, shotYaw, shotPitch, s);
-		float[] v6 = ParticleHelper.rotateXYZByYawPitch(0.25F, 0.25F, 0F, shotYaw, shotPitch, s);
-		float[] v7 = ParticleHelper.rotateXYZByYawPitch(-0.25F, 0.25F, 0F, shotYaw, shotPitch, s);
-		float[] v8 = ParticleHelper.rotateXYZByYawPitch(-0.25F, -0.25F, 0F, shotYaw, shotPitch, s);
+		float[] v5 = ParticleHelper.rotateXYZByYawPitch(1F, -1F, 0F, shotYaw, shotPitch, this.scaleIn);
+		float[] v6 = ParticleHelper.rotateXYZByYawPitch(1F, 1F, 0F, shotYaw, shotPitch, this.scaleIn);
+		float[] v7 = ParticleHelper.rotateXYZByYawPitch(-1F, 1F, 0F, shotYaw, shotPitch, this.scaleIn);
+		float[] v8 = ParticleHelper.rotateXYZByYawPitch(-1F, -1F, 0F, shotYaw, shotPitch, this.scaleIn);
 		
-		this.host.renderYawOffset = shotYaw * Values.N.RAD_DIV;
 		//particle是以玩家視野來render, 因此座標要扣掉interpPos轉換為玩家視野座標
         double hx = this.posX - interpPosX;
         double hy = this.posY - interpPosY;
@@ -125,9 +137,11 @@ public class EntityFXLaserNoTexture extends EntityFX {
 
         //start tess
         tess.startDrawingQuads();
+        
         //內層白色
-        tess.setColorRGBA_F(1F, 1F, 1F, this.particleAlpha + 0.2F);
+        tess.setColorRGBA_F(1F, 1F, 1F, this.alphaIn);
         tess.setBrightness(240);
+        
         tess.addVertex(vt2[3][0], vt2[3][1], vt2[3][2]);
         tess.addVertex(vt2[2][0], vt2[2][1], vt2[2][2]);
         tess.addVertex(vt2[1][0], vt2[1][1], vt2[1][2]);
@@ -159,8 +173,8 @@ public class EntityFXLaserNoTexture extends EntityFX {
         tess.addVertex(vt2[7][0], vt2[7][1], vt2[7][2]);
         
         //外層紅色
-        tess.setColorRGBA_F(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha * 0.5F);
-        tess.setBrightness(240);
+        tess.setColorRGBA_F(this.particleRed, this.particleGreen, this.particleBlue, this.alphaOut);
+//        tess.setBrightness(240);
         tess.addVertex(vt[3][0], vt[3][1], vt[3][2]);
         tess.addVertex(vt[2][0], vt[2][1], vt[2][2]);
         tess.addVertex(vt[1][0], vt[1][1], vt[1][2]);
@@ -217,10 +231,61 @@ public class EntityFXLaserNoTexture extends EntityFX {
     	}
     	//update pos
     	else {
+    		float[] lookDeg;
+    		float[] posOffset;
+    		
     		switch(this.particleType) {
-    		case 0:	//紅光砲
-    			float[] lookDeg = CalcHelper.getLookDegree(tarX-posX, tarY-posY, tarZ-posZ, false);
-            	float[] posOffset = ParticleHelper.rotateXYZByYawPitch((float)par1, 0F, 0.78F, lookDeg[0], lookDeg[1], 1F);
+    		case 1:		//大和波動砲
+    			lookDeg = CalcHelper.getLookDegree(this.par1, this.par2, this.par3, false);
+            	posOffset = ParticleHelper.rotateXYZByYawPitch(0F, 0F, 1F, lookDeg[0], lookDeg[1], 1F);
+            	this.posX = host.posX + posOffset[0];
+            	this.posY = host.posY + host.height * 0.75D;
+            	this.posZ = host.posZ + posOffset[2];
+            	this.shotYaw = lookDeg[0];
+            	this.shotPitch = lookDeg[1];
+        		this.tarX = target.posX;
+        		this.tarY = target.posY + target.height * 0.5F;
+        		this.tarZ = target.posZ;
+        		
+        		//change alpha
+        		if(this.particleAge > 20) {
+        			this.alphaIn = 1F + (20 - particleAge) * 0.1F;
+        			this.alphaOut = this.alphaIn * 0.25F;
+        		}
+        		else if(this.particleAge < 4) {
+        			this.alphaIn = 0.2F + particleAge * 0.2F;
+        			this.alphaOut = this.alphaIn * 0.25F;
+        		}
+        		else {
+        			this.alphaIn = 1F;
+        			this.alphaOut = 0.1F + this.rand.nextFloat() * 0.25F;
+        		}
+        		
+        		//change scale
+        		if(this.particleAge > 20) {
+        			this.scaleOut = this.particleScale * (1F + (particleAge - 20));
+                	this.scaleIn = this.particleScale * 0.35F  * (1F - (particleAge - 20) * 0.1F);
+        		}
+        		else if(this.particleAge < 8) {
+        			this.scaleOut = this.particleScale * 0.3F * (particleAge * 0.3F);
+                	this.scaleIn = this.particleScale * 0.35F * (particleAge * 0.125F);
+        		}
+        		else {
+        			this.scaleOut = this.particleScale * 1F;
+                	this.scaleIn = this.particleScale * 0.35F;
+        		}
+        		
+        		//random scale effect
+	        	this.scaleOut += this.rand.nextFloat() * 0.2F - 0.05F;
+	        	this.scaleIn += this.rand.nextFloat() * 0.08F - 0.04F;
+	        	
+        		break;
+    		default:	//紅光砲
+    			//force host look vector
+    			this.host.renderYawOffset = shotYaw * Values.N.RAD_DIV;
+    			
+    			lookDeg = CalcHelper.getLookDegree(tarX-posX, tarY-posY, tarZ-posZ, false);
+            	posOffset = ParticleHelper.rotateXYZByYawPitch((float)par1, 0F, 0.78F, lookDeg[0], lookDeg[1], 1F);
             	this.shotYaw = lookDeg[0];
             	this.shotPitch = lookDeg[1];
             	this.posX = host.posX + posOffset[0];
@@ -230,10 +295,12 @@ public class EntityFXLaserNoTexture extends EntityFX {
         		this.tarY = target.posY;
         		this.tarZ = target.posZ;
         		if(this.particleAge > 4) {
-        			this.particleAlpha = 1.0F + (4 - particleAge) * 0.2F;
+        			this.alphaIn = 1.0F + (4 - particleAge) * 0.2F;
+        			this.alphaOut = this.alphaIn * 0.5F;
         		}
         		else {
-        			this.particleAlpha = 0.2F + particleAge * 0.2F;
+        			this.alphaIn = 0.2F + particleAge * 0.2F;
+        			this.alphaOut = this.alphaIn * 0.5F;
         		}
     			break;
     		}

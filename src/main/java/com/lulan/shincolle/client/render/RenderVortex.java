@@ -1,12 +1,5 @@
 package com.lulan.shincolle.client.render;
 
-import org.lwjgl.opengl.GL11;
-
-import com.lulan.shincolle.client.model.ModelVortex;
-import com.lulan.shincolle.entity.renderentity.EntityRenderVortex;
-import com.lulan.shincolle.reference.Reference;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.entity.Render;
@@ -14,6 +7,15 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
+
+import org.lwjgl.opengl.GL11;
+
+import com.lulan.shincolle.client.model.ModelVortex;
+import com.lulan.shincolle.entity.renderentity.EntityRenderVortex;
+import com.lulan.shincolle.reference.Reference;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class RenderVortex extends Render {

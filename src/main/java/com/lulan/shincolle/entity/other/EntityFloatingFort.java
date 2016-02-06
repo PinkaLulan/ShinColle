@@ -35,7 +35,7 @@ public class EntityFloatingFort extends BasicEntityAirplane {
         this.atkTarget = target;
         
         //basic attr
-        this.atk = host.getStateFinal(ID.ATK_H) * 0.5F;
+        this.atk = host.getStateFinal(ID.ATK_H) * 0.75F;
         this.atkSpeed = host.getStateFinal(ID.SPD);
         this.movSpeed = 0.3F;
         
@@ -126,7 +126,7 @@ public class EntityFloatingFort extends BasicEntityAirplane {
 	private void onImpact() {
 		boolean isTargetHurt = false;
 		//get attack value
-		float atk2 = this.atk;
+		float atk2;
 		float kbValue = 0.08F;
 		
 		//calc miss chance, if not miss, calc cri/multi hit
@@ -142,7 +142,7 @@ public class EntityFloatingFort extends BasicEntityAirplane {
             	hitEntity = (EntityLivingBase)hitList.get(i);
             	
             	//calc equip special dmg: AA, ASM
-            	atk2 = CalcHelper.calcDamageByEquipEffect(this, hitEntity, atk2, 1);
+            	atk2 = CalcHelper.calcDamageByEquipEffect(this, hitEntity, atk2, 0);
             	
             	//目標可以被碰撞, 且目標不同主人, 則判定可傷害
             	if(hitEntity.canBeCollidedWith() && !EntityHelper.checkSameOwner(this.host, hitEntity)) {

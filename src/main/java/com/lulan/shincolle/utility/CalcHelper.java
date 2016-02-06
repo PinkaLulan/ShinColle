@@ -123,18 +123,15 @@ public class CalcHelper {
     	float newDmg = dmg;
     	float modDmg = 1F;
   		
-  		//light, heavy or special attack
+  		//normal or special attack
   		switch(type) {
-  		case 1:  //heavy
-  			modDmg = 3F;
-  			break;
-  		case 2:  //nagato heavy attack
+  		case 2:   //nagato heavy attack
   			modDmg = 4F;
   			break;
-  		case 3:  //yamato heavy attack
-  			modDmg = 2F;
+  		case 3:   //yamato heavy attack
+  			modDmg = 1.5F;
   			break;
-		default:  //light or normal attack
+		default:  //normal attack
 			modDmg = 1F;
 			break;
   		}

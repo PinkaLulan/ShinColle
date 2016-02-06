@@ -374,11 +374,8 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack {
     @Override
 	//light attack
 	public boolean attackEntityWithAmmo(Entity target) {
-		float atkLight = this.atk;
+		float atkLight = CalcHelper.calcDamageByEquipEffect(this, target, this.atk, 0);
 		float kbValue = 0.03F;
-		
-		//calc equip special dmg: AA, ASM
-  		atk = CalcHelper.calcDamageByEquipEffect(this, target, atk, 0);
 
 		//play cannon fire sound at attacker
         playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
@@ -479,63 +476,7 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack {
 
 	@Override
 	public boolean attackEntityWithHeavyAmmo(Entity target) {
-		//get attack value
-		float atkHeavy = this.atk;
-		float kbValue = 0.08F;
-
-		//play cannon fire sound at attacker
-        this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-        
-        //飛彈是否採用直射
-  		boolean isDirect = false;
-  		//計算目標距離
-  		float tarX = (float)target.posX;	//for miss chance calc
-  		float tarY = (float)target.posY;
-  		float tarZ = (float)target.posZ;
-  		float distX = tarX - (float)this.posX;
-  		float distY = tarY - (float)this.posY;
-  		float distZ = tarZ - (float)this.posZ;
-        float distSqrt = MathHelper.sqrt_float(distX*distX + distY*distY + distZ*distZ);
-        float launchPos = (float)posY + height * 0.7F;
-          
-        //超過一定距離/水中 , 則採用拋物線,  在水中時發射高度較低
-        if((distX*distX+distY*distY+distZ*distZ) < 36F) {
-        	isDirect = true;
-        }
-        
-        if(this.isInWater()) {
-          	isDirect = true;
-          	launchPos = (float)posY;
-        }
-        
-        //calc miss chance, miss: add random offset(0~6) to missile target 
-        float missChance = 0.2F + 0.15F * (distSqrt / host.getEffectEquip(ID.EF_DHIT)) - 0.001F * host.getLevel();
-        missChance -= this.host.getEffectEquip(ID.EF_MISS);	//equip miss reduce
-        if(missChance > 0.35F) missChance = 0.35F;	//max miss chance = 30%
-		
-        //calc miss chance
-        if(this.rand.nextFloat() < missChance) {
-        	atkHeavy = 0;	//still attack, but no damage
-        	//spawn miss particle
-        	TargetPoint point = new TargetPoint(this.dimension, this.host.posX, this.host.posY, this.host.posZ, 64D);
-        	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this.host, 10, false), point);
-        }
-
-        //spawn missile
-        EntityAbyssMissile missile = new EntityAbyssMissile(this.worldObj, this, 
-        		tarX, tarY+target.height*0.2F, tarZ, launchPos, atkHeavy, kbValue, isDirect, -1F);
-        this.worldObj.spawnEntityInWorld(missile);
-        
-        //消耗彈藥計算
-  		if(numAmmoHeavy > 0) {
-  			numAmmoHeavy--;
-  			
-  			if(numAmmoHeavy <= 0) {
-  				this.setDead();
-  			}
-  		}
-  		
-        return true;
+		return false;
 	}
     
     //水中跟岩漿中不會下沉

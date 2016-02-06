@@ -123,9 +123,6 @@ public class EntitySubmRo500Mob extends BasicEntityShipHostile implements IShipI
   		float atk = this.atk;
   		float kbValue = 0.05F;
   		
-  		//calc equip special dmg: AA, ASM
-  		atk = CalcHelper.calcDamageByEquipEffect(this, target, atk, 0);
-  		
   		//飛彈是否採用直射
   		boolean isDirect = false;
   		//計算目標距離

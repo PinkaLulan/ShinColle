@@ -18,6 +18,7 @@ import com.lulan.shincolle.client.particle.EntityFXStickyLightning;
 import com.lulan.shincolle.client.particle.EntityFXTeam;
 import com.lulan.shincolle.client.particle.EntityFXTexts;
 import com.lulan.shincolle.proxy.ClientProxy;
+import com.lulan.shincolle.reference.Values;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -164,7 +165,7 @@ public class ParticleHelper {
 		//get target position
 		if(target != null) {
 			if(type > 9) {
-				lookY = target.height;
+				lookY = target.height * 1.3D;
 			}
 			else if(target.getLookVec() != null) {
 				lookX = target.getLookVec().xCoord;
@@ -436,6 +437,24 @@ public class ParticleHelper {
 	  		          posX, posY + lookY, posZ, 1F, 4);	    
 			Minecraft.getMinecraft().effectRenderer.addEffect(particleTDodge);
 			break;
+		case 35: 	//triple largesmoke for boss ship
+			//­pºâ·ÏÃú¦ì¸m
+			degYaw = CalcHelper.getLookDegree(lookX, 0D, lookZ, false)[0];
+			newPos1 = ParticleHelper.rotateXZByAxis(0F, (float)lookY, degYaw, 1F);
+			newPos2 = ParticleHelper.rotateXZByAxis(0F, (float)-lookY, degYaw, 1F);
+			
+			for(int i=0; i<12; i++) {
+				ran1 = rand.nextFloat() - 0.5F;
+				ran2 = rand.nextFloat();
+				ran3 = rand.nextFloat();
+				world.spawnParticle("largesmoke", posX+lookX-0.6D+0.1D*i+newPos1[1]+ran2, posY+ran1, posZ+lookZ-0.6D+0.1D*i+newPos1[0]+ran2, lookX*0.3D*ran2, 0.05D*ran2, lookZ*0.3D*ran2);
+				world.spawnParticle("largesmoke", posX+lookX-0.6D+0.1D*i+newPos2[1]+ran3, posY+ran1, posZ+lookZ-0.6D+0.1D*i+newPos2[0]+ran3, lookX*0.3D*ran3, 0.05D*ran3, lookZ*0.3D*ran3);
+				world.spawnParticle("largesmoke", posX+lookX-0.6D+0.1D*i+newPos1[1]+ran3, posY+0.3D+ran1, posZ+lookZ-0.6D+0.1D*i+newPos1[0]+ran3, lookX*0.3D*ran3, 0.05D*ran3, lookZ*0.3D*ran3);
+				world.spawnParticle("largesmoke", posX+lookX-0.6D+0.1D*i+newPos2[1]+ran2, posY+0.3D+ran1, posZ+lookZ-0.6D+0.1D*i+newPos2[0]+ran2, lookX*0.3D*ran2, 0.05D*ran2, lookZ*0.3D*ran2);
+				world.spawnParticle("largesmoke", posX+lookX-0.6D+0.1D*i+newPos1[1]+ran2, posY+0.6D+ran1, posZ+lookZ-0.6D+0.1D*i+newPos1[0]+ran2, lookX*0.3D*ran3, 0.05D*ran3, lookZ*0.3D*ran3);
+				world.spawnParticle("largesmoke", posX+lookX-0.6D+0.1D*i+newPos2[1]+ran3, posY+0.6D+ran1, posZ+lookZ-0.6D+0.1D*i+newPos2[0]+ran3, lookX*0.3D*ran2, 0.05D*ran2, lookZ*0.3D*ran2);
+			}
+			break;
 		default:
 			break;		
 		}
@@ -452,8 +471,10 @@ public class ParticleHelper {
 		double ran1 = 0D;
 		double ran2 = 0D;
 		double ran3 = 0D;
+		double ran4 = 0D;
 		float[] newPos1;
 		float[] newPos2;
+		float[] newPos3;
 		float degYaw = 0F;
 		
 		//spawn particle
@@ -470,9 +491,47 @@ public class ParticleHelper {
 			EntityFXLightning fxLightning = new EntityFXLightning(world, ent, (float)par1, (int)par2);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fxLightning);
 			break;
-		case 4:	//sticky lightning
-			EntityFXStickyLightning light1 = new EntityFXStickyLightning(world, ent, (float)par1, (int)par2);
+		case 4:		//sticky lightning
+			EntityFXStickyLightning light1 = new EntityFXStickyLightning(world, ent, (float)par1, (int)par2, (int)par3);
         	Minecraft.getMinecraft().effectRenderer.addEffect(light1);
+        	EntityFXStickyLightning light2 = new EntityFXStickyLightning(world, ent, (float)par1, (int)par2, (int)par3);
+        	Minecraft.getMinecraft().effectRenderer.addEffect(light2);
+        	EntityFXStickyLightning light3 = new EntityFXStickyLightning(world, ent, (float)par1, (int)par2, (int)par3);
+        	Minecraft.getMinecraft().effectRenderer.addEffect(light3);
+        	EntityFXStickyLightning light4 = new EntityFXStickyLightning(world, ent, (float)par1, (int)par2, (int)par3);
+        	Minecraft.getMinecraft().effectRenderer.addEffect(light4);
+			break;
+		case 5: 	//custom largesmoke: par1:wide, par2:length, par3:height, EntityLivingBase ONLY
+			//­pºâ·ÏÃú¦ì¸m
+			degYaw = (((EntityLivingBase)ent).renderYawOffset % 360) * Values.N.RAD_MUL;
+			newPos1 = ParticleHelper.rotateXZByAxis((float)par2, (float)par1, degYaw, 1F);
+			newPos2 = ParticleHelper.rotateXZByAxis((float)par2, (float)-par1, degYaw, 1F);
+			newPos3 = ParticleHelper.rotateXZByAxis(0.25F, 0F, degYaw, 1F);
+			
+			for(int i = 0; i < 25; i++) {
+				ran1 = (rand.nextFloat() - 0.5F) * 2F;
+				ran2 = (rand.nextFloat() - 0.5F) * 2F;
+				ran3 = (rand.nextFloat() - 0.5F) * 2F;
+				ran4 = rand.nextFloat() * 2F;
+				world.spawnParticle("largesmoke", ent.posX+newPos1[1]+ran1, ent.posY+par3+ran2, ent.posZ+newPos1[0]+ran3, newPos3[1]*ran4, 0.05D*ran4, newPos3[0]*ran4);
+				world.spawnParticle("largesmoke", ent.posX+newPos2[1]+ran1, ent.posY+par3+ran3, ent.posZ+newPos2[0]+ran2, newPos3[1]*ran4, 0.05D*ran4, newPos3[0]*ran4);
+				world.spawnParticle("largesmoke", ent.posX+newPos1[1]+ran2, ent.posY+par3+ran1, ent.posZ+newPos1[0]+ran3, newPos3[1]*ran4, 0.05D*ran4, newPos3[0]*ran4);
+				world.spawnParticle("largesmoke", ent.posX+newPos2[1]+ran2, ent.posY+par3+ran3, ent.posZ+newPos2[0]+ran1, newPos3[1]*ran4, 0.05D*ran4, newPos3[0]*ran4);
+				world.spawnParticle("largesmoke", ent.posX+newPos1[1]+ran3, ent.posY+par3+ran1, ent.posZ+newPos1[0]+ran2, newPos3[1]*ran4, 0.05D*ran4, newPos3[0]*ran4);
+				world.spawnParticle("largesmoke", ent.posX+newPos2[1]+ran3, ent.posY+par3+ran2, ent.posZ+newPos2[0]+ran1, newPos3[1]*ran4, 0.05D*ran4, newPos3[0]*ran4);
+			}
+			break;
+		case 6:		//lightning sphere + lightning radiation
+			//in
+			for(int i = 0; i < 4; i++) {
+				EntityFXStickyLightning light11 = new EntityFXStickyLightning(world, ent, (float)par1, (int)par2, 2);
+	        	Minecraft.getMinecraft().effectRenderer.addEffect(light11);
+			}
+			//out
+			for(int i = 0; i < 4; i++) {
+				EntityFXStickyLightning light21 = new EntityFXStickyLightning(world, ent, (float)par1, (int)par2, 3);
+	        	Minecraft.getMinecraft().effectRenderer.addEffect(light21);
+			}
 			break;
 		default:
 			break;
@@ -522,7 +581,15 @@ public class ParticleHelper {
 			
 			EntityFXLaserNoTexture laser2 = new EntityFXLaserNoTexture(world, host2, target, -0.78F, par1, 0F, 0.05F, 0);
 			Minecraft.getMinecraft().effectRenderer.addEffect(laser2);
-
+			break;
+		case 1:		//yamato cannon beam
+			//host check
+			if(!(host instanceof EntityLivingBase)) {
+				return;
+			}
+			
+			EntityFXLaserNoTexture laser3 = new EntityFXLaserNoTexture(world, (EntityLivingBase) host, target, par1, par2, par3, 2F, 1);
+			Minecraft.getMinecraft().effectRenderer.addEffect(laser3);
 			break;
 		default:
 			break;

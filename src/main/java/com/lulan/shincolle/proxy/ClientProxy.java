@@ -67,6 +67,7 @@ import com.lulan.shincolle.client.render.RenderMountBaH;
 import com.lulan.shincolle.client.render.RenderMountCaWD;
 import com.lulan.shincolle.client.render.RenderMountHbH;
 import com.lulan.shincolle.client.render.RenderNorthernHime;
+import com.lulan.shincolle.client.render.RenderProjectileBeam;
 import com.lulan.shincolle.client.render.RenderRensouhou;
 import com.lulan.shincolle.client.render.RenderRensouhouS;
 import com.lulan.shincolle.client.render.RenderSmallShipyard;
@@ -101,6 +102,7 @@ import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.entity.other.EntityAirplane;
 import com.lulan.shincolle.entity.other.EntityAirplaneTakoyaki;
 import com.lulan.shincolle.entity.other.EntityFloatingFort;
+import com.lulan.shincolle.entity.other.EntityProjectileBeam;
 import com.lulan.shincolle.entity.other.EntityRensouhou;
 import com.lulan.shincolle.entity.other.EntityRensouhouBoss;
 import com.lulan.shincolle.entity.other.EntityRensouhouS;
@@ -195,6 +197,7 @@ public class ClientProxy extends CommonProxy {
 		RenderingRegistry.registerEntityRenderingHandler(EntityAirplane.class, new RenderAirplane(new ModelAirplane(), 0.5F));
 		RenderingRegistry.registerEntityRenderingHandler(EntityAirplaneTakoyaki.class, new RenderAirplaneTakoyaki(new ModelTakoyaki(), 0.5F));
 		RenderingRegistry.registerEntityRenderingHandler(EntityFloatingFort.class, new RenderFloatingFort(new ModelFloatingFort(), 0.5F));
+		RenderingRegistry.registerEntityRenderingHandler(EntityProjectileBeam.class, new RenderProjectileBeam());
 
 		//render entity render
 		RenderingRegistry.registerEntityRenderingHandler(EntityRenderLargeShipyard.class, new RenderLargeShipyard());

@@ -8,69 +8,121 @@ import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
 
-import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.IShipFloating;
+import com.lulan.shincolle.reference.Values;
+import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-/** NO TEXTURE STICKY LIGHTNING PARTICLE
+/** NO TEXTURE LIGHTNING PARTICLE
  * 
- *  lightning will link from start point to entity point
+ *  WITHOUT rotate to player viewing angle
+ *  
+ *  shape: all stem with random wide and random Y length
+ *  
+ *  parms: world, host, scale, type
  */
 @SideOnly(Side.CLIENT)
 public class EntityFXStickyLightning extends EntityFX {
 
 	private int particleType;		//0:red white lightning
 	private Entity host;
-	private int numStem;			//lightning length
-	private double[][] strip;	//prev lightning shape
-	private float scaleXZ, scaleY;
-	private double orgPosX, orgPosY, orgPosZ;
+	private int numStem;			//lightning length number
+	private double[][] prevShape;	//prev lightning shape
+	private float scaleX, scaleZ, scaleY, stemWidth;
 	
-    public EntityFXStickyLightning(World world, Entity entity, float scale, int type) {
+	
+    public EntityFXStickyLightning(World world, Entity entity, float scale, int life, int type) {
         super(world, entity.posX, entity.posY, entity.posZ, 0.0D, 0.0D, 0.0D);  
         this.host = entity;
         this.motionX = 0D;
         this.motionZ = 0D;
         this.motionY = 0D;
-        this.orgPosX = this.host.posX;
-        this.orgPosY = this.host.posY + this.host.height * 0.5D;
-        this.orgPosZ = this.host.posZ;
         this.particleScale = scale;
         this.noClip = true;
         this.particleType = type;
 
         switch(type) {
+        case 1:  //yamato cannon charge steady state
+        	this.particleRed = 1F;
+            this.particleGreen = 0.5F;
+            this.particleBlue = 0.7F;
+            this.particleAlpha = 1F;
+            this.particleMaxAge = life;
+            this.numStem = 4;
+            this.scaleX = 0.5F;
+            this.scaleY = 0.5F;
+            this.scaleZ = 0.5F;
+            this.stemWidth = 0.0015F;
+            
+            //random position
+            this.posX = this.host.posX + rand.nextFloat() * 2F - 1F;
+        	this.posY = this.host.posY + host.height * 0.6D;
+            this.posZ = this.host.posZ + rand.nextFloat() * 2F - 1F;
+            break;
+        case 2:  //yamato cannon charging state IN, EntityLivingBase ONLY
+        	this.particleRed = 1F;
+            this.particleGreen = 0.5F;
+            this.particleBlue = 0.7F;
+            this.particleAlpha = 1F;
+            this.particleMaxAge = life;
+            this.numStem = 12;
+            this.scaleX = 0.25F;
+            this.scaleY = 0.25F;
+            this.scaleZ = 0.25F;
+            this.stemWidth = 0.005F;
+            
+            //particle position
+			float[] partPos = ParticleHelper.rotateXZByAxis(1F, 0F, (((EntityLivingBase)host).renderYawOffset % 360) * Values.N.RAD_MUL, 1F);
+        	
+            this.posX = this.host.posX + partPos[1];
+        	this.posY = this.host.posY + host.height * 0.8D;
+            this.posZ = this.host.posZ + partPos[0];
+            break;
+        case 3:  //yamato cannon charging state OUT, EntityLivingBase ONLY
+        	this.particleRed = 1F;
+            this.particleGreen = 0.5F;
+            this.particleBlue = 0.7F;
+            this.particleAlpha = 1F;
+            this.particleMaxAge = life;
+            this.numStem = 3;
+            this.scaleX = 1.5F;
+            this.scaleY = 1.5F;
+            this.scaleZ = 1.5F;
+            this.stemWidth = 0.0015F;
+            
+            //particle position
+			float[] partPos2 = ParticleHelper.rotateXZByAxis(0.55F, 0F, (((EntityLivingBase)host).renderYawOffset % 360) * Values.N.RAD_MUL, 1F);
+        	
+            this.posX = this.host.posX + partPos2[1];
+        	this.posY = this.host.posY + host.height * 0.8D;
+            this.posZ = this.host.posZ + partPos2[0];
+            break;
         default:
         	this.particleRed = 1F;
-            this.particleGreen = 0.3F;
-            this.particleBlue = 0.3F;
-            this.particleAlpha = 0.5F;
-            this.particleMaxAge = 31;
-            this.numStem = 4;
-            this.scaleXZ = 0.01F;
-            this.scaleY = 0.12F;
-            this.posY += 3D;
-            this.orgPosX = 0D;
-            this.orgPosY = 0D;
-            this.orgPosZ = 0D;
+            this.particleGreen = 0.5F;
+            this.particleBlue = 0.7F;
+            this.particleAlpha = 1F;
+            this.particleMaxAge = life;
+            this.numStem = 8;
+            this.scaleX = 1.75F;
+            this.scaleY = 1.75F;
+            this.scaleZ = 1.75F;
+            this.stemWidth = 0.003F;
             
-//            //calc particle position for MountHbH
-//        	float randx = rand.nextFloat() + 0.1F;
-//        	float[] newPos = ParticleHelper.rotateXZByAxis(0.8F+rand.nextFloat()*0.2F, randx, ((EntityLivingBase)host).renderYawOffset * -0.01745F, 1F);
-//            if(this.host != null) {
-//            	this.posX = this.host.posX + newPos[0];
-//            	this.posY = this.host.posY + 1.53D + randx * 0.25D;
-//                this.posZ = this.host.posZ + newPos[1];
-//            }
-        	break;
+            //random position
+            this.posX = this.host.posX + rand.nextFloat() * 2F - 1F;
+        	this.posY = this.host.posY + host.height * 0.5D + rand.nextFloat() * 2F - 1F;
+            this.posZ = this.host.posZ + rand.nextFloat() * 2F - 1F;
+            break;
         }
         
-        this.strip = new double[numStem][6];	//prev lightning shape
+        this.prevShape = new double[numStem][6];	//prev lightning shape
     }
 
     @Override
@@ -79,6 +131,8 @@ public class EntityFXStickyLightning extends EntityFX {
 //    	tess.draw();
     	
     	GL11.glPushMatrix();
+		//使用自帶的貼圖檔
+//		Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE);
 		GL11.glDepthMask(true);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -87,48 +141,63 @@ public class EntityFXStickyLightning extends EntityFX {
 //		GL11.glEnable(GL11.GL_DEPTH_TEST);	//DEPTH TEST開啟後才能使用glDepthFunc
 //		GL11.glDepthFunc(GL11.GL_ALWAYS);
 		
-		float f6 = 0F;
-		float f7 = 1F;
-		float f8 = 0F;
-		float f9 = 1F;
-		
         float px = (float)(this.prevPosX + (this.posX - this.prevPosX) * ticks - interpPosX);
         float py = (float)(this.prevPosY + (this.posY - this.prevPosY) * ticks - interpPosY);
         float pz = (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * ticks - interpPosZ);
-
     	float offx = 0F;
         float offz = 0F;
         float offy = 0F;
         
-        /**從起點開始
-         * 越後面的step, random range越大 (閃電到後面分支分散)
-         * 
-         */
-        for(int i = 0; i < numStem; i++) {
-        	
+        if(this.particleAge % 2 == 0) {
+	        //越後面的step, random range越大 (閃電到後面分支分散)
+	        for(int i = 0; i < numStem; i++) {
+	        	//stem random position
+	            offx = (rand.nextFloat() - 0.5F) * this.scaleX;
+	        	offz = (rand.nextFloat() - 0.5F) * this.scaleZ;
+	        	offy = (rand.nextFloat() - 0.5F) * this.scaleY;
+	        	
+	        	//xyz position: 0:x1, 1:y1, 2:z1, 3:x2, 4:y2, 5:z2
+	        	if(i == 0) {
+	        		prevShape[i][0] = px + offx;
+	        		prevShape[i][1] = py + offy;
+	        		prevShape[i][2] = pz + offz;
+	        		prevShape[i][3] = px + offx + this.stemWidth;
+	        		prevShape[i][4] = py + offy + this.stemWidth;
+	            	prevShape[i][5] = pz + offz + this.stemWidth;
+	        	}
+	        	else {
+	        		prevShape[i][0] = prevShape[i-1][0] + offx;
+	        		prevShape[i][1] = prevShape[i-1][1] + offy;
+	        		prevShape[i][2] = prevShape[i-1][2] + offz;
+	        		prevShape[i][3] = prevShape[i-1][3] + offx + this.stemWidth;
+	        		prevShape[i][4] = prevShape[i-1][4] + offy + this.stemWidth;
+	            	prevShape[i][5] = prevShape[i-1][5] + offz + this.stemWidth;
+	        	}
+	        }
         }
-        
-        //test
-        
-        
-		
-		
-        
-        //start tess
+  
+        //quad strip必須先指定下方兩點(左下 -> 右下), 再指定上方兩點(左上 -> 右上), 該面才會朝向玩家
+    	//跟quad不同 (右下 -> 右上 -> 左上 -> 左下)
+        //畫出正面
         tess.startDrawing(GL11.GL_QUAD_STRIP);
         tess.setColorRGBA_F(particleRed, particleGreen, particleBlue, particleAlpha);
         tess.setBrightness(240);
-        
-    	//QUAD STRIP 必須先指定下方兩點(左下 -> 右下), 再指定上方兩點(左上 -> 右上), 該面才會朝向玩家
-    	//跟 QUAD 不同 (右下 -> 右上 -> 左上 -> 左下)
         for(int i = numStem - 1; i >= 0; i--) {
-        	tess.addVertex(strip[i][0],strip[i][1],strip[i][2]);
-        	tess.addVertex(strip[i][3],strip[i][4],strip[i][5]);
+        	tess.addVertex(prevShape[i][0],prevShape[i][1],prevShape[i][2]);
+        	tess.addVertex(prevShape[i][3],prevShape[i][4],prevShape[i][5]);
         }
-        
-        //stop tess for restore texture
         tess.draw();
         
+        //畫出反面
+        tess.startDrawing(GL11.GL_QUAD_STRIP);
+        tess.setColorRGBA_F(particleRed, particleGreen, particleBlue, particleAlpha);
+        tess.setBrightness(240);
+        for(int i = numStem - 1; i >= 0; i--) {
+        	tess.addVertex(prevShape[i][3],prevShape[i][4],prevShape[i][5]);
+        	tess.addVertex(prevShape[i][0],prevShape[i][1],prevShape[i][2]);
+        }
+        tess.draw();
+
 //        GL11.glDepthFunc(GL11.GL_LEQUAL);
 //		GL11.glDisable(GL11.GL_DEPTH_TEST);	//DEPTH TEST關閉
         GL11.glEnable(GL11.GL_LIGHTING);
@@ -153,24 +222,29 @@ public class EntityFXStickyLightning extends EntityFX {
 		this.prevPosX = this.posX;
         this.prevPosY = this.posY;
         this.prevPosZ = this.posZ;
+        this.setPosition(this.posX, this.posY, this.posZ);
 
         if(this.particleAge++ > this.particleMaxAge) {
             this.setDead();
         }
-        
-        //type 0: HarbourHime Mount
-//        if(this.particleType == 0 && host != null) {
-//        	float randx = rand.nextFloat() + 0.1F;
-//        	float[] newPos = ParticleHelper.rotateXZByAxis(0.8F+rand.nextFloat()*0.2F, randx, ((EntityLivingBase)host).renderYawOffset * -0.01745F, 1F);
-//
-//        	//x=1 y=1.8, x=0.7 y=1.72, x=0.5 y=1.65, x=0.3 y=1.6, x=0.1 y=1.55
-//            if(this.host != null) {
-//            	this.posX = this.host.posX + newPos[0];
-//            	this.posY = this.host.posY + 1.76D + randx * 0.25D;
-//                this.posZ = this.host.posZ + newPos[1];
-//            }
-//        }
-    }
-}
 
+        //change color
+        switch(this.particleType) {
+        case 1:   //yamato cannon charge lightning
+        case 2:   //yamato cannon charging in
+        case 3:   //yamato cannon charging out
+        default:  //yamato cannon beam lightning
+        	if(this.particleMaxAge - this.particleAge < 6 ) {
+        		this.particleAlpha = (this.particleMaxAge - this.particleAge) * 0.15F + 0.2F;
+        	}
+        	
+        	this.particleGreen = 0.4F + rand.nextFloat() * 0.75F;
+        	this.particleBlue = 0.1F + this.particleGreen;
+        	break;
+        }
+        
+    }
+    
+    
+}
 

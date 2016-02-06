@@ -47,6 +47,7 @@ public class FormationHelper {
 				FormationHelper.applyFormationMoving(ships, formatID);
 			}
 			else {
+				LogHelper.info("DEBUG : reset formation ID");
 				setFormationForShip(props, teamID, 0);
 				props.setFormatID(teamID, 0);
 			}

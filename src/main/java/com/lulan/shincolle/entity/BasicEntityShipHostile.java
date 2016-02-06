@@ -111,7 +111,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	//setup target AI: par1: 0:passive 1:active
 	public void setAITargetList() {
 		this.targetTasks.addTask(1, new EntityAIShipRevengeTarget(this));
-		this.targetTasks.addTask(2, new EntityAIShipRangeTarget(this, Entity.class));
+		this.targetTasks.addTask(3, new EntityAIShipRangeTarget(this, Entity.class));
 	}
 	
 	@Override
@@ -289,12 +289,8 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	@Override
 	public boolean attackEntityWithAmmo(Entity target) {
 		//get attack value
-		float atk = this.atk;
-		//set knockback value (testing)
+		float atk = CalcHelper.calcDamageByEquipEffect(this, target, this.atk, 0);
 		float kbValue = 0.05F;
-		
-		//calc equip special dmg: AA, ASM
-		atk = CalcHelper.calcDamageByEquipEffect(this, target, atk, 0);
 		
 		//update entity look at vector (for particle spawn)
         //此方法比getLook還正確 (client sync問題)

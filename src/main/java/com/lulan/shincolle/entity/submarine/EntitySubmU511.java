@@ -133,9 +133,6 @@ public class EntitySubmU511 extends BasicEntityShipSmall implements IShipInvisib
   		float atk = StateFinal[ID.ATK];
   		float kbValue = 0.15F;
   		
-  		//calc equip special dmg: AA, ASM
-  		atk = CalcHelper.calcDamageByEquipEffect(this, target, atk, 0);
-  		
   		//飛彈是否採用直射
   		boolean isDirect = false;
   		//計算目標距離

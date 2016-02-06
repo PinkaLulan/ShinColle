@@ -1134,7 +1134,7 @@ public class EntityHelper {
 		BasicEntityShip[] ships = props.getShipEntityByMode(parms[0]);
 		int worldID = player.worldObj.provider.dimensionId;
 		
-		if(props != null) {
+		if(props != null && ships != null && ships.length > 0) {
 			//get current team formation id
 			int formatID = props.getFormatIDCurrentTeam();
 			
@@ -1159,8 +1159,22 @@ public class EntityHelper {
 				break;
 			case 2:		//formation mode
 				if(props.getNumberOfShip(props.getPointerTeamID()) > 4 || formatID == 0) {
-					//set formation position
-					FormationHelper.applyFormationMoving(ships, formatID, parms[2], parms[3], parms[4]);
+					boolean canMove = true;
+					
+					//check formation id is same
+					for(BasicEntityShip s : ships) {
+						if(s != null) {
+							if(s.getStateMinor(ID.M.FormatType) != formatID) {
+								canMove = false;
+								break;
+							}
+						}
+					}
+					
+					if(canMove) {
+						//set formation position
+						FormationHelper.applyFormationMoving(ships, formatID, parms[2], parms[3], parms[4]);
+					}
 				}
 				break;
 			}//end switch

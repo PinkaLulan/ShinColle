@@ -17,6 +17,10 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 
 /** NO TEXTURE LIGHTNING PARTICLE
+ * 
+ *  shape: stem with increase wide & same Y length
+ * 
+ *  parms: world, host, scale, type
  */
 @SideOnly(Side.CLIENT)
 public class EntityFXLightning extends EntityFX {
@@ -131,7 +135,7 @@ public class EntityFXLightning extends EntityFX {
 //        prevShape[1][3] = px + par3 + par6;
 //        prevShape[1][4] = py + par4;
 //        prevShape[1][5] = pz + par5 + par7;
-        
+            
         //start tess
         tess.startDrawing(GL11.GL_QUAD_STRIP);
         tess.setColorRGBA_F(particleRed, particleGreen, particleBlue, particleAlpha);

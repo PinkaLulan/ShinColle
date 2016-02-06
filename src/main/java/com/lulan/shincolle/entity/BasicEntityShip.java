@@ -1738,7 +1738,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	@Override
 	public boolean attackEntityWithAmmo(Entity target) {	
 		//get attack value
-		float atk = StateFinal[ID.ATK];
+		float atk = CalcHelper.calcDamageByEquipEffect(this, target, StateFinal[ID.ATK], 0);
 		
 		//set knockback value (testing)
 		float kbValue = 0.05F;
@@ -1748,9 +1748,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		
   		//grudge--
   		decrGrudgeNum(1);
-        
-  		//calc equip special dmg: AA, ASM
-  		atk = CalcHelper.calcDamageByEquipEffect(this, target, atk, 0);
   		
         //light ammo -1
         if(!decrAmmoNum(0)) {		//not enough ammo
@@ -2194,19 +2191,19 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		else {
 			if(decrSupplies(4)) {		//find grudge
 				if(ConfigHandler.easyMode) {
-					StateMinor[ID.M.NumGrudge] += 3600;
+					StateMinor[ID.M.NumGrudge] += 360;
 				}
 				else {
-					StateMinor[ID.M.NumGrudge] += 1200;
+					StateMinor[ID.M.NumGrudge] += 120;
 				}
 				StateMinor[ID.M.NumGrudge] -= par1;
 			}
 			else if(decrSupplies(5)) {	//find grudge block
 				if(ConfigHandler.easyMode) {
-					StateMinor[ID.M.NumGrudge] += 32400;
+					StateMinor[ID.M.NumGrudge] += 3240;
 				}
 				else {
-					StateMinor[ID.M.NumGrudge] += 10800;
+					StateMinor[ID.M.NumGrudge] += 1080;
 				}
 				StateMinor[ID.M.NumGrudge] -= par1;
 			}

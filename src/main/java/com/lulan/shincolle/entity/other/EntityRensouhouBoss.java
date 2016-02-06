@@ -335,11 +335,8 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
     @Override
 	//light attack
 	public boolean attackEntityWithAmmo(Entity target) {
-		float atkLight = this.atk;
+		float atkLight = CalcHelper.calcDamageByEquipEffect(this, target, this.atk, 0);
 		float kbValue = 0.001F;
-		
-		//calc equip special dmg: AA, ASM
-  		atk = CalcHelper.calcDamageByEquipEffect(this, target, atk, 0);
 
 		//play cannon fire sound at attacker
         playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
