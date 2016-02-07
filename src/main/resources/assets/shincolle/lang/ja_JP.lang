@@ -30,6 +30,8 @@ item.shincolle:Ammo1.name=怨念ガ コモッタ弾薬箱
 item.shincolle:Ammo2.name=怨念ガ コモッタ重弾薬
 item.shincolle:Ammo3.name=怨念ガ コモッタ重弾薬箱
 item.shincolle:BucketRepair.name=高速修復材
+item.shincolle:DeskItemBook.name=深海ノ日誌
+item.shincolle:DeskItemRadar.name=深海ノ携帯型レーダー
 item.shincolle:InstantConMat.name=高速建造材
 item.shincolle:KaitaiHammer.name=解体ハンマー
 item.shincolle:Grudge.name=怨念
@@ -170,13 +172,128 @@ entity.shincolle.EntitySubmU511Mob.name=潜水艦 U-511 改
 # formatting codes:
 # new line: <br>, <BR>, <br/> or <BR/> can set next line manually. (String can wrap to next line automatically to fit gui width.)
 # other code: §0, §1 ...etc. check: http://minecraft.gamepedia.com/Formatting_codes
+
+# GUI: Book Text Chap 0
 gui.shincolle:book.chap0.title=Introduction
+gui.shincolle:book.chap0.text0d0=§cShinkeiseikan§0 is a group of lovely ship girls born from iron and grudge, they live freely in the ocean originally.<br><br>But someday, a fleet called §9Kanmusu§0 appeared with horrible weapons and began to attack §cShinkeiseikan§0's habitat without reason.
+gui.shincolle:book.chap0.text0d1=Because the vandalism, §cShinkeiseikan§0 is facing a serious crisis of survival.<br><br>Only one person can lead the ladies get out of despair, it is YOU... become an §4Abyssal Admiral§0 and save them from the crisis!
+gui.shincolle:book.chap0.text1d0=Exploring the world and collecting four resources: §dGrudge§0, §dAbyssium§0, §dGrudgeful Ammo§0 and §dPolymetal§0 to construct §cShinkeiseikan§0.<br><br>§cShinkeiseikan§0 will protect the owner and attack any hostile mobs at a sufficient supply of resources.
+gui.shincolle:book.chap0.text1d1=Now go to collect these lovely ladies!
+
+# GUI: Book Text Chap 1
 gui.shincolle:book.chap1.title=Resources
+gui.shincolle:book.chap1.title0=Grudge
+gui.shincolle:book.chap1.text0d0=<br><br><br>§d§nGrudge§r§0 is the residue after mob death, it is also the energy source for §cShinkeiseikan§0.
+gui.shincolle:book.chap1.text0d1=Kill mobs to get §d§nGrudge§r§0, you can build a mob farm to stably produce §d§nGrudge§r§0.<br><br><br>Combine 9 §d§nGrudge§r§0 to get 1 §9Grudge Lump§0, and further combine to §9Heavy Grudge Lump§0.
+gui.shincolle:book.chap1.title1=Abyssium
+gui.shincolle:book.chap1.text1d0=<br><br><br><br><br><br><br><br><br>§d§nAbyssium§r§0 is a metal enchanted by grudge. It's the main material to build §cShinkeiseikan§0 and equipments.
+gui.shincolle:book.chap1.text1d1=Combine 1 Grudge and 1 Iron Ingot to get 1 §d§nAbyssium§r§0, 9 ingots can be combined to 1 §9Abyssium Block§0.
+gui.shincolle:book.chap1.title2=Polymetal
+gui.shincolle:book.chap1.text2d0=<br><br><br><br><br><br><br><br><br><br><br>§d§nPolymetal§r§0 mainly spawned in the water type biomes (ocean, river, beach). It's the main material to build §cShinkeiseikan§0 and equipments.
+gui.shincolle:book.chap1.text2d1=This crunchy metal ball is one of aircraft carrier's favorite snack.<br><br>You can find lots §d§nPolymetallic Gravel§r§0 on the seabed.
+gui.shincolle:book.chap1.title3=Grudgeful Ammo
+gui.shincolle:book.chap1.text3d0=<br><br><br><br><br><br><br><br><br>§cShinkeiseikan§0's attack will consume §d§nGrudgeful Ammo§r§0.
+gui.shincolle:book.chap1.text3d1=In addition to iron, you can also use copper, gold and diamond to make different quantity of ammo.<br><br>Replace §9Gunpowder§0 with §9Blazepowder§0 to make heavy ammo.
+gui.shincolle:book.chap1.title4=Repair Bucket
+gui.shincolle:book.chap1.text4d0=<br><br><br><br><br><br><br><br><br>§d§nRepair Bucket§r§0 is made from the most nutritious lava of the ocean and seasoned with grudge, it's the most popular §cShinkeiseikan§0 drinks.
+gui.shincolle:book.chap1.text4d1=Right click on ship to repair the ship.<br><br>Ship can automatically use the §d§nRepair Bucket§r§0 in the ship's inventory.
+gui.shincolle:book.chap1.title5=Seikan Wedding Ring
+gui.shincolle:book.chap1.text5d0=<br><br><br><br><br><br><br><br><br>§d§nShinkeiseikan Wedding Ring§r<br><br>With the classic minimalist style of prong mount and Nether Star Cut, it generously showcase the light of Nether Star.
+gui.shincolle:book.chap1.text5d1=It symbolizes the beauty of Nether and the owner's strength, and it's also the important sign of lasting love.<br><br>§9Sneaking+Right Click§0:<br>Marry the ship.<br>§9Right Click§0:<br>Activate the ring.<br><br>The number of married will activate different abilities: digging speed, vision, mobility in the water.
+gui.shincolle:book.chap1.title6=Seikan Ownership Paper
+gui.shincolle:book.chap1.text6d0=<br><br><br><br><br><br><br><br><br>The §d§nShinkeiseikan Ownership Paper§r§0 described the contents of the various items in detail with the transfer of ownership of the two sides should fulfill, just to take effect after signature of the parties.
+gui.shincolle:book.chap1.text6d1=§9Right Click§0:<br>Sign the paper.<br><br>After the signature of the parties, the owner can right click the paper on the ship to transfer the ownership to other player.
+gui.shincolle:book.chap1.title7=Dismantle Hammer
+gui.shincolle:book.chap1.text7d0=<br><br><br><br><br><br><br><br><br>§d§nDismantle Hammer§r§0 can decompose the ship and recycle some of the material.
+gui.shincolle:book.chap1.text7d1=§9Left Click§0:<br>One shot kill the ship. (OWNER/OP ONLY)<br><br>§9Sneaking + Right Click§0:<br>Decompose the ship. (OWNER/OP ONLY)
+gui.shincolle:book.chap1.title8=Modernization Toolkit
+gui.shincolle:book.chap1.text8d0=<br><br><br><br><br><br><br><br><br>§d§nModernization Toolkit§r§0 contains a variety of the latest abyssal black technology, can be used to upgrade the ship's attributes.
+gui.shincolle:book.chap1.text8d1=§9Right Click§0 on ship to upgrade one of the ship's attributes randomly. The level of attributes is represented by color in ship's inventory GUI:<br><br>§fWHITE§0 (Lv1)<br>§eYELLOW§0 (Lv2)<br>§6ORANGE§0 (Lv3)<br>§4RED§0 (Lv4)<br><br>The maximum level is §4RED§0 (Lv4).
+gui.shincolle:book.chap1.title9=Instant Construction Material
+gui.shincolle:book.chap1.text9d0=<br><br><br><br><br><br><br><br><br>§d§nInstant Construction Material§r§0 contains some rare materials and the welding gun which provides the temperature higher than geocentric, it can improve the construction speed of abyssal ships and equipments.
+gui.shincolle:book.chap1.text9d1=Put the §d§nInstant Construction Material§r§0 in §9Abyssal Hydrothermal Vent§0 or §9Hadal Hydrothermal Vortex§0 to increase the construction progress.<br><br>§d§nInstant Construction Material§r§0 can only be crafted from NOT USED ship construction item.
+gui.shincolle:book.chap1.title10=The Grudge of Abyssal Goddess
+gui.shincolle:book.chap1.text10d0=<br><br><br><br><br><br><br><br><br>Offering the heaviest grudge and diamonds to pray for Abyssal Goddess's prontection, §d§nThe Grudge of Abyssal Goddess§r§0 will protect the §cShinkeiseikan§0 from fatal damage and give her the revenge will as deep as abyss.
+gui.shincolle:book.chap1.text10d1=Put §d§nThe Grudge of Abyssal Goddess§r§0 in ship's inventory, it will be consumed when ship get fatal damage. The ship will recovery to full HP and immune to damage for a while.
+gui.shincolle:book.chap1.title11=Wo-Class Command Scepter
+gui.shincolle:book.chap1.text11d0=<br><br><br><br><br><br><br><br><br>§d§nWo-Class Command Scepter§r§0 is the aircraft command equipment for magic girl Wo-Class. However the Abyssal Adrmiral cannot transform into magic girl, it can only be used to command ships for Abyssal Adrmiral.
+gui.shincolle:book.chap1.text11d1=There are 3 command modes, store up to 9 teams and each team 6 ships maximum.<br><br>§2Single Mode§0:<br>Only 1 §3Focus Target§0, command will ONLY apply to the §3Focus Target§0.<br><br>§4Group Mode§0:<br>0~6 §3Focus Target§0, command will ONLY apply to the §3Focus Target§0.<br><br>§6Formation Mode§0:<br>Ship move in specific formation and gain additional effect, command will apply to ALL ships.
+gui.shincolle:book.chap1.title12=Wo-Class Command Scepter
+gui.shincolle:book.chap1.text12d0=The color circle will appear when holding command scepter:<br><br>§2GREEN§0:<br>Ship in §2Single Mode§0.<br>§3CYAN§0:<br>Ship is §3Focus Target§0.<br>§4RED§0:<br>Ship in §4Group Mode§0.<br>§6YELLOW§0:<br>Ship in §6Formation Mode§0.<br>§7WHITE§0:<br>Guard target.<br><br>§9Left Click§0:<br>Add ship to the team / Add target to attackable list / Set focus target.
+gui.shincolle:book.chap1.text12d1=§9Sprint+Left Click§0:<br>Change formation.<br><br>§9Sneak+Left Click§0:<br>Remove team / Change command mode.<br><br>§9Sneak+Sprint+Left Click§0:<br>Clear team.<br><br>§9Right Click§0:<br>Move and guard / Attack / Sit.<br><br>§9Sprint+Right Click§0:<br>Guard target.<br><br>§9Sneak+Right Click§0:<br>Open ship's inventory / Formation GUI.
+gui.shincolle:book.chap1.title13=Wo-Class Command Scepter
+gui.shincolle:book.chap1.text13d0=§9Formation§0:<br>Ships will move in formation at same speed and gain formation buffs, you need 5 or 6 ships in a team to use formation mode.<br><br>If a ship is in formation mode, move/guard command in single/group mode will be disabled.<br><br>And if a ship exists in different teams, the formation buff will apply to only one team.
+gui.shincolle:book.chap1.text13d1=§2Line Ahead§0:<br>Artillery combat formation, increase firepower but lost defence.<br><br>§3Double Line§0:<br>A cruising formation with slight firepower buff.<br><br>§4Diamond§0:<br>Defence formation for aerial combat.<br><br>§6Echelon§0:<br>Charge formation with high moving speed buff.<br><br>§7Line Abreast§0:<br>Defence formation for anti-submarine combat.
+gui.shincolle:book.chap1.title14=Model 21 Zero Fighter (1/48)
+gui.shincolle:book.chap1.text14d0=<br><br><br><br><br><br><br><br><br>§d§nModel 21 Zero Fighter§r§0<br><br>Scale:  1/48<br><br>Made From:  Polymetal<br><br>Serving Size:  2500g<br><br>Serving Per Container: 1<br><br>Shelf Life:  §k100§r YR
+gui.shincolle:book.chap1.text14d1=This model aircraft complies with Abyssal Edible Toys Standard, it's ZERO CALORIES, FUN and TASTY!<br><br>This product contains rich polymetal, helps digestion and absorption of heavy metal, effectively promotes children's growth.<br><br><br><br><br>**AVOID SUNSHINE, HIGH TEMPERATURE AND HIGH OXYGEN.
+gui.shincolle:book.chap1.title15=Abyssal Logbook
+gui.shincolle:book.chap1.text15d0=<br><br><br><br><br><br><br><br><br>The §d§nAbyssal Logbook§r§0 contains detailed information of the abyssal resources, §cShinkeiseikan§0 and §9Kanmusu§0 found so far.
+gui.shincolle:book.chap1.text15d1=
+gui.shincolle:book.chap1.title16=Abyssal Portable Radar
+gui.shincolle:book.chap1.text16d0=<br><br><br><br><br><br><br><br><br>The §d§nAbyssal Portable Radar§r§0 can detect nearby owned ships and further contact the ship or give orders.
+gui.shincolle:book.chap1.text16d1=
+gui.shincolle:book.chap1.title17=Abyssal Adrmiral's Desk
+gui.shincolle:book.chap1.text17d0=<br><br><br><br><br><br><br><br><br>This stable and durable §d§nAbyssal Adrmiral's Desk§r§0 is made of obsidian. In addition to deal with the official business, it can also block the gunfire from angry secretary ship.<br><br>**Please ask the secretary ship before purchasing the furniture.
+gui.shincolle:book.chap1.text17d1=§9Radar§0:<br>Show a list of nearby owned ships, click ship on the list to carry out other action.<br><br>§9Abyssal Logbook§0:<br>Items, blocks and ships introduction.<br><br>§9Faction§0:<br>Create or add team with PVP mode.<br><br>§9Target List§0:<br>Browse attack target list.
+
+# GUI: Book Text Chap 2
 gui.shincolle:book.chap2.title=Construction
+
+# GUI: Book Text Chap 3
 gui.shincolle:book.chap3.title=Ship Attributes
+
+# GUI: Book Text Chap 4
 gui.shincolle:book.chap4.title=Ship List
+
+# GUI: Book Text Chap 5
 gui.shincolle:book.chap5.title=Enemy List
+
+# GUI: Book Text Chap 6
 gui.shincolle:book.chap6.title=Equipments List
+
+# GUI: General
+gui.shincolle:general.ok=確定
+gui.shincolle:general.cancel=取り消し
+
+# GUI: Radar Screen
+gui.shincolle:radar.position=座標
+gui.shincolle:radar.height=高度
+gui.shincolle:radar.gui=会敵
+gui.shincolle:radar.recall=帰隊
+
+# GUI: Target List
+gui.shincolle:target.remove=削除
+
+# GUI: Team List
+gui.shincolle:team.name=艦隊名:
+gui.shincolle:team.create=艦隊作成
+gui.shincolle:team.rename=艦隊名変更
+gui.shincolle:team.disband=艦隊解散
+gui.shincolle:team.allylist=同盟一覧
+gui.shincolle:team.ally=同盟
+gui.shincolle:team.break=同盟解除
+gui.shincolle:team.banlist=宣戦一覧
+gui.shincolle:team.ban=宣戦
+gui.shincolle:team.unban=停戦
+gui.shincolle:team.allied=同盟
+gui.shincolle:team.neutral=中立
+gui.shincolle:team.hostile=敵対
+gui.shincolle:team.belong=所属
+gui.shincolle:team.teamid=艦隊番号
+
+# GUI: Formation
+gui.shincolle:formation.formation=陣形
+gui.shincolle:formation.position=陣形位置
+gui.shincolle:formation.format0=無陣形
+gui.shincolle:formation.format1=単縦陣
+gui.shincolle:formation.format2=複縦陣
+gui.shincolle:formation.format3=輪形陣
+gui.shincolle:formation.format4=梯形陣
+gui.shincolle:formation.format5=単横陣
+gui.shincolle:formation.notenough=陣形ニハ5カ6隻必要デス！
+gui.shincolle:formation.totalfirepower=艦隊火力
+gui.shincolle:formation.nosignal=信号ナシ
 
 # GUI: Ship Inventory Top
 gui.shincolle:level=レベル
@@ -216,6 +333,9 @@ gui.shincolle:fleehp=撤退スル HP(%%)
 gui.shincolle:auraeffect=オーナー強化
 gui.shincolle:targetAI=受動的ニ攻撃?
 gui.shincolle:onsightAI=視界内ノミ追撃?
+gui.shincolle:ai.pvp=PVPモード
+gui.shincolle:ai.aa=対空
+gui.shincolle:ai.asm=対潜
 
 # GUI: Shipyard
 gui.shincolle:nomaterial=資材不足
@@ -241,6 +361,7 @@ gui.shincolle:pointer3=(シフト左クリック デ モード切替)
 gui.shincolle:pointer4=チーム
 gui.shincolle:antiair=対空
 gui.shincolle:antiss=対潜
+gui.shincolle:dodge=回避
 
 # Chat message
 chat.shincolle:bossspawn1=水面ニ艦娘ガ出現!
