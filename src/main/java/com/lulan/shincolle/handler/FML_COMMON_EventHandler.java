@@ -23,6 +23,7 @@ import com.lulan.shincolle.entity.BasicEntityShipBoss;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
 import com.lulan.shincolle.entity.battleship.EntityBattleshipNGTBoss;
+import com.lulan.shincolle.entity.battleship.EntityBattleshipYMTBoss;
 import com.lulan.shincolle.entity.destroyer.EntityDestroyerShimakazeBoss;
 import com.lulan.shincolle.entity.mounts.EntityMountSeat;
 import com.lulan.shincolle.entity.submarine.EntitySubmRo500Mob;
@@ -57,7 +58,9 @@ public class FML_COMMON_EventHandler {
 	private boolean isViewChanged = false;
 	private boolean isViewPlayer = false;
 	
-
+/*********TODO rewrite boss spawn methods**********/
+/*********TODO rewrite boss spawn methods**********/
+/*********TODO rewrite boss spawn methods**********/
 	//player update tick, tick TWICE every tick (preTick + postTick) and BOTH SIDE (client + server)
 	@SubscribeEvent
 	public void onPlayerTick(PlayerTickEvent event) {
@@ -142,8 +145,8 @@ public class FML_COMMON_EventHandler {
 					            	 */
 					            	//roll生成mob
 					            	int[] spawnList = new int[] {0,0,0,0,0,0};
-					            	spawnList[0] = event.player.worldObj.rand.nextInt(2);	//boss 1
-					            	spawnList[1] = event.player.worldObj.rand.nextInt(2);	//boss 2
+					            	spawnList[0] = event.player.worldObj.rand.nextInt(3);	//boss 1
+					            	spawnList[1] = event.player.worldObj.rand.nextInt(3);	//boss 2
 					            	spawnList[2] = event.player.worldObj.rand.nextInt(2);	//mob 1
 					            	spawnList[3] = event.player.worldObj.rand.nextInt(2);	//mob 2
 					            	spawnList[4] = event.player.worldObj.rand.nextInt(2);	//mob 3
@@ -157,11 +160,15 @@ public class FML_COMMON_EventHandler {
 					            		case 1:
 					            			spawnMobs[i] = new EntityDestroyerShimakazeBoss(event.player.worldObj);
 					            			break;
+					            		case 2:
+					            			spawnMobs[i] = new EntityBattleshipYMTBoss(event.player.worldObj);
+					            			break;
 					            		default:
 					            			spawnMobs[i] = new EntityBattleshipNGTBoss(event.player.worldObj);
 					            			break;
 					            		}
 					            	}	
+					            	
 					            	//new mobs
 					            	for(i = 2; i < 6; i++) {
 					            		switch(spawnList[i]) {
@@ -173,12 +180,14 @@ public class FML_COMMON_EventHandler {
 					            			break;
 					            		}
 					            	}
+					            	
 					            	//set mob position and spawn to the world
 					            	for(i = 0; i < 6; i++) {
 					            		spawnMobs[i].setPosition(spawnX, spawnY, spawnZ);
 					            		event.player.worldObj.spawnEntityInWorld(spawnMobs[i]);
 					            	}
-					            	//發出spawn公告
+					            	
+					            	//發出spawn msg
 					            	String spawnText = null;
 					            	if(event.player.worldObj.rand.nextInt(2) == 0) {
 					            		spawnText = StatCollector.translateToLocal("chat.shincolle:bossspawn1");

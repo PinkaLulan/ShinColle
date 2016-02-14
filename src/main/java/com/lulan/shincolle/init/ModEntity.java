@@ -10,6 +10,7 @@ import com.lulan.shincolle.entity.battleship.EntityBattleshipTa;
 import com.lulan.shincolle.entity.battleship.EntityBattleshipYMT;
 import com.lulan.shincolle.entity.battleship.EntityBattleshipYMTBoss;
 import com.lulan.shincolle.entity.carrier.EntityCarrierWo;
+import com.lulan.shincolle.entity.cruiser.EntityHeavyCruiserNe;
 import com.lulan.shincolle.entity.cruiser.EntityHeavyCruiserRi;
 import com.lulan.shincolle.entity.destroyer.EntityDestroyerHa;
 import com.lulan.shincolle.entity.destroyer.EntityDestroyerI;
@@ -91,6 +92,7 @@ public class ModEntity {
 		createEntity(EntityDestroyerShimakazeBoss.class, "EntityDestroyerShimakazeBoss", modEntityID++);
 		createEntity(EntityHarbourHime.class, "EntityHarbourHime", modEntityID++);
 		createEntity(EntityHeavyCruiserRi.class, "EntityHeavyCruiserRi", modEntityID++);
+		createEntity(EntityHeavyCruiserNe.class, "EntityHeavyCruiserNe", modEntityID++);
 		createEntity(EntityNorthernHime.class, "EntityNorthernHime", modEntityID++);
 		createEntity(EntityRensouhou.class, "EntityRensouhou", modEntityID++);
 		createEntity(EntityRensouhouBoss.class, "EntityRensouhouBoss", modEntityID++);

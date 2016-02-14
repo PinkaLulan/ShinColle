@@ -35,7 +35,7 @@ public class EntityBattleshipYMTBoss extends BasicEntityShipBoss {
 
 	public EntityBattleshipYMTBoss(World world) {
 		super(world);
-		this.setSize(1.7F, 8F);
+		this.setSize(1.5F, 8F);
 		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityBattleshipYMTBoss.name"));
         
         //basic attr
