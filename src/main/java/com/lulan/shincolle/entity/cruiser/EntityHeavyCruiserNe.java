@@ -16,7 +16,7 @@ public class EntityHeavyCruiserNe extends BasicEntityShipSmall {
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HEAVY_CRUISER);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.HeavyCruiserNE);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CRUISER);
-		this.ModelPos = new float[] {0F, 10F, 0F, 30F};
+		this.ModelPos = new float[] {0F, 10F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();
 		
@@ -44,17 +44,16 @@ public class EntityHeavyCruiserNe extends BasicEntityShipSmall {
 		this.tasks.addTask(11, new EntityAIShipRangeAttack(this));			   //0011
 	}
 
-    @Override
-    public void onLivingUpdate() {
+//    @Override
+//    public void onLivingUpdate() {
 //    	//check server side
 //    	if(!this.worldObj.isRemote) {
 //    	}
-    	
-    	super.onLivingUpdate();
-    }
+//    	super.onLivingUpdate();
+//    }
     
-    @Override
-  	public boolean interact(EntityPlayer player) {	
+//    @Override
+//  	public boolean interact(EntityPlayer player) {	
 //		ItemStack itemstack = player.inventory.getCurrentItem();  //get item in hand
 //		
 //		//use cake to change state
@@ -64,9 +63,8 @@ public class EntityHeavyCruiserNe extends BasicEntityShipSmall {
 //				return true;
 //			}
 //		}
-		
-		return super.interact(player);
-  	}
+//		return super.interact(player);
+//  	}
     
     @Override
 	public int getKaitaiType() {
