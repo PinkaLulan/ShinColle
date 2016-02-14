@@ -246,7 +246,15 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAtt
 
             //計算範圍爆炸傷害: 判定bounding box內是否有可以吃傷害的entity
             Entity hitEntity = null;
-            AxisAlignedBB impactBox = this.boundingBox.expand(1.5D, 1.5D, 1.5D); 
+            AxisAlignedBB impactBox;
+            
+            if(this.type == 1) {  //boss beam
+            	impactBox = this.boundingBox.expand(3D, 3D, 3D);
+            }
+            else {
+            	impactBox = this.boundingBox.expand(1.5D, 1.5D, 1.5D);
+            }
+            
             List hitList = this.worldObj.getEntitiesWithinAABB(Entity.class, impactBox);
             TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
             

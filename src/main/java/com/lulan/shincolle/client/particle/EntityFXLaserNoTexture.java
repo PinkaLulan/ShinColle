@@ -36,6 +36,7 @@ public class EntityFXLaserNoTexture extends EntityFX {
 	private EntityLivingBase host;
 	private Entity target;
 	
+	
     public EntityFXLaserNoTexture(World world, EntityLivingBase host, Entity target, double par1, double par2, double par3, float scale, int type) {
         super(world, host.posX, host.posY, host.posZ, 0.0D, 0.0D, 0.0D);
         this.host = host;
@@ -97,18 +98,18 @@ public class EntityFXLaserNoTexture extends EntityFX {
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);	//disable texture
 		
-		//外層紅色
-		float[] v1 = ParticleHelper.rotateXYZByYawPitch(1F, -1F, 0F, shotYaw, shotPitch, this.scaleOut);
-		float[] v2 = ParticleHelper.rotateXYZByYawPitch(1F, 1F, 0F, shotYaw, shotPitch, this.scaleOut);
-		float[] v3 = ParticleHelper.rotateXYZByYawPitch(-1F, 1F, 0F, shotYaw, shotPitch, this.scaleOut);
-		float[] v4 = ParticleHelper.rotateXYZByYawPitch(-1F, -1F, 0F, shotYaw, shotPitch, this.scaleOut);
-		//內層白色
+		//out
+		float[] v1 = ParticleHelper.rotateXYZByYawPitch(1F, -1F, -1F, shotYaw, shotPitch, this.scaleOut);
+		float[] v2 = ParticleHelper.rotateXYZByYawPitch(1F, 1F, -1F, shotYaw, shotPitch, this.scaleOut);
+		float[] v3 = ParticleHelper.rotateXYZByYawPitch(-1F, 1F, -1F, shotYaw, shotPitch, this.scaleOut);
+		float[] v4 = ParticleHelper.rotateXYZByYawPitch(-1F, -1F, -1F, shotYaw, shotPitch, this.scaleOut);
+		//in
 		float[] v5 = ParticleHelper.rotateXYZByYawPitch(1F, -1F, 0F, shotYaw, shotPitch, this.scaleIn);
 		float[] v6 = ParticleHelper.rotateXYZByYawPitch(1F, 1F, 0F, shotYaw, shotPitch, this.scaleIn);
 		float[] v7 = ParticleHelper.rotateXYZByYawPitch(-1F, 1F, 0F, shotYaw, shotPitch, this.scaleIn);
 		float[] v8 = ParticleHelper.rotateXYZByYawPitch(-1F, -1F, 0F, shotYaw, shotPitch, this.scaleIn);
 		
-		//particle是以玩家視野來render, 因此座標要扣掉interpPos轉換為玩家視野座標
+		//particle是以client端視野來render, 因此座標要扣掉interpPos轉換為玩家視野座標
         double hx = this.posX - interpPosX;
         double hy = this.posY - interpPosY;
         double hz = this.posZ - interpPosZ;
@@ -235,11 +236,12 @@ public class EntityFXLaserNoTexture extends EntityFX {
     		float[] posOffset;
     		
     		switch(this.particleType) {
-    		case 1:		//大和波動砲
+    		case 1:		//yamato cannon beam
     			lookDeg = CalcHelper.getLookDegree(this.par1, this.par2, this.par3, false);
-            	posOffset = ParticleHelper.rotateXYZByYawPitch(0F, 0F, 1F, lookDeg[0], lookDeg[1], 1F);
-            	this.posX = host.posX + posOffset[0];
-            	this.posY = host.posY + host.height * 0.75D;
+            	posOffset = ParticleHelper.rotateXYZByYawPitch(0F, 0F, host.width * 2F, lookDeg[0], lookDeg[1], 1F);
+            	
+        		this.posX = host.posX + posOffset[0];
+            	this.posY = host.posY + host.height * 0.6D;
             	this.posZ = host.posZ + posOffset[2];
             	this.shotYaw = lookDeg[0];
             	this.shotPitch = lookDeg[1];
@@ -280,7 +282,7 @@ public class EntityFXLaserNoTexture extends EntityFX {
 	        	this.scaleIn += this.rand.nextFloat() * 0.08F - 0.04F;
 	        	
         		break;
-    		default:	//紅光砲
+    		default:	//red laser
     			//force host look vector
     			this.host.renderYawOffset = shotYaw * Values.N.RAD_DIV;
     			

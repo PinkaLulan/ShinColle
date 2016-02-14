@@ -55,10 +55,10 @@ public class EntityFXStickyLightning extends EntityFX {
             this.particleAlpha = 1F;
             this.particleMaxAge = life;
             this.numStem = 4;
-            this.scaleX = 0.5F;
-            this.scaleY = 0.5F;
-            this.scaleZ = 0.5F;
-            this.stemWidth = 0.0015F;
+            this.scaleX = 0.5F + host.width * 0.5F;
+            this.scaleY = 0.5F + host.width * 0.5F;
+            this.scaleZ = 0.5F + host.width * 0.5F;
+            this.stemWidth = 0.01F * host.width;
             
             //random position
             this.posX = this.host.posX + rand.nextFloat() * 2F - 1F;
@@ -90,18 +90,11 @@ public class EntityFXStickyLightning extends EntityFX {
             this.particleBlue = 0.7F;
             this.particleAlpha = 1F;
             this.particleMaxAge = life;
-            this.numStem = 3;
-            this.scaleX = 1.5F;
-            this.scaleY = 1.5F;
-            this.scaleZ = 1.5F;
-            this.stemWidth = 0.0015F;
-            
-            //particle position
-			float[] partPos2 = ParticleHelper.rotateXZByAxis(0.55F, 0F, (((EntityLivingBase)host).renderYawOffset % 360) * Values.N.RAD_MUL, 1F);
-        	
-            this.posX = this.host.posX + partPos2[1];
-        	this.posY = this.host.posY + host.height * 0.8D;
-            this.posZ = this.host.posZ + partPos2[0];
+            this.numStem = 4;
+            this.scaleX = 1F;
+            this.scaleY = 1F;
+            this.scaleZ = 1F;
+            this.stemWidth = 0.025F;
             break;
         default:
         	this.particleRed = 1F;
@@ -157,15 +150,23 @@ public class EntityFXStickyLightning extends EntityFX {
 	        	offy = (rand.nextFloat() - 0.5F) * this.scaleY;
 	        	
 	        	//xyz position: 0:x1, 1:y1, 2:z1, 3:x2, 4:y2, 5:z2
-	        	if(i == 0) {
+	        	if(i == 0) {  //first stem
 	        		prevShape[i][0] = px + offx;
 	        		prevShape[i][1] = py + offy;
 	        		prevShape[i][2] = pz + offz;
-	        		prevShape[i][3] = px + offx + this.stemWidth;
-	        		prevShape[i][4] = py + offy + this.stemWidth;
-	            	prevShape[i][5] = pz + offz + this.stemWidth;
+	        		prevShape[i][3] = prevShape[i][0];
+	        		prevShape[i][4] = prevShape[i][1];
+	            	prevShape[i][5] = prevShape[i][2];
 	        	}
-	        	else {
+	        	else if(i == numStem - 1) {  //last stem
+	        		prevShape[i][0] = prevShape[i-1][0] + offx;
+	        		prevShape[i][1] = prevShape[i-1][1] + offy;
+	        		prevShape[i][2] = prevShape[i-1][2] + offz;
+	        		prevShape[i][3] = prevShape[i][0];
+	        		prevShape[i][4] = prevShape[i][1];
+	            	prevShape[i][5] = prevShape[i][2];
+	        	}
+	        	else {   //middle stem
 	        		prevShape[i][0] = prevShape[i-1][0] + offx;
 	        		prevShape[i][1] = prevShape[i-1][1] + offy;
 	        		prevShape[i][2] = prevShape[i-1][2] + offz;
@@ -227,7 +228,18 @@ public class EntityFXStickyLightning extends EntityFX {
         if(this.particleAge++ > this.particleMaxAge) {
             this.setDead();
         }
-
+        
+        //change position
+        switch(this.particleType) {
+        case 3:   //yamato cannon charging out
+	        //particle position
+			float[] partPos2 = ParticleHelper.rotateXZByAxis(this.host.width * 2F, 0F, (((EntityLivingBase)host).renderYawOffset % 360) * Values.N.RAD_MUL, 1F);
+	    	
+	        this.posX = this.host.posX + partPos2[1];
+	    	this.posY = this.host.posY + host.height * 0.6D;
+	        this.posZ = this.host.posZ + partPos2[0];
+	        break;
+        }
         //change color
         switch(this.particleType) {
         case 1:   //yamato cannon charge lightning

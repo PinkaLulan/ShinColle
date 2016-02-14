@@ -10,6 +10,7 @@ import net.minecraft.world.World;
 
 import com.lulan.shincolle.client.particle.EntityFX91Type;
 import com.lulan.shincolle.client.particle.EntityFXChi;
+import com.lulan.shincolle.client.particle.EntityFXCube;
 import com.lulan.shincolle.client.particle.EntityFXLaser;
 import com.lulan.shincolle.client.particle.EntityFXLaserNoTexture;
 import com.lulan.shincolle.client.particle.EntityFXLightning;
@@ -533,6 +534,26 @@ public class ParticleHelper {
 	        	Minecraft.getMinecraft().effectRenderer.addEffect(light21);
 			}
 			break;
+		case 7:		//vibrate cube
+			//host check
+			EntityLivingBase host2 = null;
+			if(ent instanceof EntityLivingBase) {
+				host2 = (EntityLivingBase) ent;
+			}
+			else {
+				return;
+			}
+			
+			//in
+			EntityFXCube cube1 = new EntityFXCube(world, host2, par1, par2, par3, 1.5F, 0);
+        	Minecraft.getMinecraft().effectRenderer.addEffect(cube1);
+        	
+        	//out
+			for(int i = 0; i < 6; i++) {
+				EntityFXStickyLightning light21 = new EntityFXStickyLightning(world, ent, (float)par1, 40, 3);
+	        	Minecraft.getMinecraft().effectRenderer.addEffect(light21);
+			}
+			break;
 		default:
 			break;
 		}
@@ -544,6 +565,7 @@ public class ParticleHelper {
 	@SideOnly(Side.CLIENT)
 	public static void spawnAttackParticleAtEntity(Entity host, Entity target, double par1, double par2, double par3, byte type, boolean setAtkTime) {
 		World world = Minecraft.getMinecraft().theWorld;
+		EntityLivingBase host2 = null;
 		
 		//null check
 		if(host == null || target == null) {
@@ -568,7 +590,6 @@ public class ParticleHelper {
 		switch(type) {
 		case 0:		//Âù¥ú§ô¯¥
 			//host check
-			EntityLivingBase host2 = null;
 			if(host instanceof EntityLivingBase) {
 				host2 = (EntityLivingBase) host;
 			}
@@ -584,12 +605,37 @@ public class ParticleHelper {
 			break;
 		case 1:		//yamato cannon beam
 			//host check
-			if(!(host instanceof EntityLivingBase)) {
+			if(host instanceof EntityLivingBase) {
+				host2 = (EntityLivingBase) host;
+			}
+			else {
 				return;
 			}
 			
-			EntityFXLaserNoTexture laser3 = new EntityFXLaserNoTexture(world, (EntityLivingBase) host, target, par1, par2, par3, 2F, 1);
+			//beam head
+			EntityFXCube cube1 = new EntityFXCube(world, host2, par1, par2, par3, 2.5F, 1);
+        	Minecraft.getMinecraft().effectRenderer.addEffect(cube1);
+        	
+        	//beam body
+			EntityFXLaserNoTexture laser3 = new EntityFXLaserNoTexture(world, host2, target, par1, par2, par3, 2F, 1);
 			Minecraft.getMinecraft().effectRenderer.addEffect(laser3);
+			break;
+		case 2:		//yamato cannon beam for boss
+			//host check
+			if(host instanceof EntityLivingBase) {
+				host2 = (EntityLivingBase) host;
+			}
+			else {
+				return;
+			}
+			
+			//beam head
+			EntityFXCube cube2 = new EntityFXCube(world, host2, par1, par2, par3, 5F, 1);
+        	Minecraft.getMinecraft().effectRenderer.addEffect(cube2);
+        	
+        	//beam body
+			EntityFXLaserNoTexture laser4 = new EntityFXLaserNoTexture(world, host2, target, par1, par2, par3, 4F, 1);
+			Minecraft.getMinecraft().effectRenderer.addEffect(laser4);
 			break;
 		default:
 			break;
