@@ -13,6 +13,7 @@ import org.lwjgl.opengl.GL11;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EmotionHelper;
+import com.lulan.shincolle.utility.LogHelper;
 
 /**
  * ModelBattleshipNagato - PinkaLulan 2015/4/2
@@ -599,12 +600,12 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion {
 			//cannon
 			if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP01) {
 				this.EquipLCBase02.rotateAngleX -= 0.45F;
-				this.EquipLC201.rotateAngleX -= 0.5F;
-				this.EquipLC203.rotateAngleX -= 0.55F;
+//				this.EquipLC201.rotateAngleX -= 0.5F;
+//				this.EquipLC203.rotateAngleX -= 0.55F;
 				
 				this.EquipRCBase02.rotateAngleX -= 0.5F;
-				this.EquipRC201.rotateAngleX -= 0.6F;
-				this.EquipRC203.rotateAngleX -= 0.5F;
+//				this.EquipRC201.rotateAngleX -= 0.6F;
+//				this.EquipRC203.rotateAngleX -= 0.5F;
 			}
   		}
 	    else {
@@ -674,12 +675,12 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion {
 			//cannon
 			if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP01) {
 				this.EquipLCBase02.rotateAngleX -= 0.45F;
-				this.EquipLC201.rotateAngleX -= 0.5F;
-				this.EquipLC203.rotateAngleX -= 0.55F;
+//				this.EquipLC201.rotateAngleX -= 0.5F;
+//				this.EquipLC203.rotateAngleX -= 0.55F;
 				
 				this.EquipRCBase02.rotateAngleX -= 0.5F;
-				this.EquipRC201.rotateAngleX -= 0.6F;
-				this.EquipRC203.rotateAngleX -= 0.5F;
+//				this.EquipRC201.rotateAngleX -= 0.6F;
+//				this.EquipRC203.rotateAngleX -= 0.5F;
 			}
   		}//end if sneaking
   		
@@ -786,11 +787,11 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion {
 	    		//equip
 	    		this.EquipBase.rotateAngleX = -1.22F;	
 	    		this.EquipLCBase02.rotateAngleX -= 0.5F;
-	    		this.EquipLC201.rotateAngleX -= 0.5F;
-	    		this.EquipLC203.rotateAngleX -= 0.5F;   		
+//	    		this.EquipLC201.rotateAngleX -= 0.5F;
+//	    		this.EquipLC203.rotateAngleX -= 0.5F;   		
 	    		this.EquipRCBase02.rotateAngleX -= 0.5F;
-	    		this.EquipRC201.rotateAngleX -= 0.5F;
-	    		this.EquipRC203.rotateAngleX -= 0.5F;
+//	    		this.EquipRC201.rotateAngleX -= 0.5F;
+//	    		this.EquipRC203.rotateAngleX -= 0.5F;
 	    		break;
 	    	default:	//cannon or heavy atk phase 1,3
 //	    		setFace(3);

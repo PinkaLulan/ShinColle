@@ -28,10 +28,6 @@ import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
  * Phase 1:集氣 2:爆氣 3:集氣 
  */
 public class EntityBattleshipYMT extends BasicEntityShipSmall {
-
-	private int beamTick;		//yamato cannon
-	private Entity beamTarget;
-	
 	
 	public EntityBattleshipYMT(World world) {
 		super(world);
@@ -47,10 +43,6 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall {
 		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
 		
 		this.initTypeModify();
-		
-		//other var
-		this.beamTick = 0;
-		this.beamTarget = null;
 	}
 	
 	//for morph
@@ -78,6 +70,7 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall {
   	public void onLivingUpdate() {
   		super.onLivingUpdate();
           
+  		//client side
   		if(worldObj.isRemote) {
   			if(this.ticksExisted % 4 == 0) {
   				if(getStateEmotion(ID.S.State) >= ID.State.EQUIP00 && !this.isSitting()) {
@@ -97,7 +90,7 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall {
     	        	ParticleHelper.spawnAttackParticleAtEntity(this, 0D, 16, 1D, (byte)4);
   				}
   			}
-  		}    
+  		}
   	}
   	
   	@Override
@@ -271,7 +264,7 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall {
 		
 		//計算目標距離
 		float tarX = (float)target.posX;	//for miss chance calc
-		float tarY = (float)target.posY;
+		float tarY = (float)(target.posY + target.height * 0.5F);
 		float tarZ = (float)target.posZ;
 		float distX = tarX - (float)this.posX;
 		float distY = tarY - (float)this.posY;
@@ -321,7 +314,7 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall {
         	this.playSound(Reference.MOD_ID+":ship-yamato-ready", ConfigHandler.fireVolume, 1F);
         	
 			//cannon charging particle
-        	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 6, 0, 32, 0), point);
+        	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 7, 1D, 0, 0), point);
         	
         	this.setStateEmotion(ID.S.Phase, 1, true);
         }

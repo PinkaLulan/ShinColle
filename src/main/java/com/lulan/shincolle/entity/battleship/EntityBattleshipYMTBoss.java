@@ -16,12 +16,14 @@ import net.minecraft.world.World;
 
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipBoss;
+import com.lulan.shincolle.entity.other.EntityProjectileBeam;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
@@ -33,7 +35,7 @@ public class EntityBattleshipYMTBoss extends BasicEntityShipBoss {
 
 	public EntityBattleshipYMTBoss(World world) {
 		super(world);
-		this.setSize(1.5F, 7F);
+		this.setSize(1.5F, 8F);
 		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityBattleshipYMTBoss.name"));
         
         //basic attr
@@ -91,21 +93,23 @@ public class EntityBattleshipYMTBoss extends BasicEntityShipBoss {
 	@Override
   	public void onLivingUpdate() {
   		super.onLivingUpdate();
-//  		LogHelper.info("DEBUG : boss target "+this.getEntityTarget());
+  		
   		//client side
   		if(worldObj.isRemote) {
-  			if(this.ticksExisted % 10 == 0) {
-  				if(getStateEmotion(ID.S.Phase) == 1 || getStateEmotion(ID.S.Phase) == 3) {
-   	  				//生成氣彈特效
-  	  				ParticleHelper.spawnAttackParticleAtEntity(this, 0.3D, 2D, 0D, (byte)1);
+  			if(this.ticksExisted % 4 == 0) {
+				double smokeY = posY + 5.5D;
+				
+				//計算煙霧位置
+  				float[] partPos = ParticleHelper.rotateXZByAxis(-2.3F, 0F, (this.renderYawOffset % 360) * Values.N.RAD_MUL, 1F);
+  				//生成裝備冒煙特效
+  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], smokeY, posZ+partPos[0], 0D, 0D, 0D, (byte)20);
+  			}
+  			
+  			if(this.ticksExisted % 16 == 0) {
+  				if(getStateEmotion(ID.S.Phase) > 0) {
+  					//spawn beam charge lightning
+    	        	ParticleHelper.spawnAttackParticleAtEntity(this, 0D, 16, 1D, (byte)4);
   				}
-			
-  				if(getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
-  					//計算煙霧位置
-  	  				float[] partPos = ParticleHelper.rotateXZByAxis(-1.8F, 0F, (this.renderYawOffset % 360) / 57.2957F, 1F);	
-  	  				//生成裝備冒煙特效
-  	  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], posY+5.5D, posZ+partPos[0], 0D, 0D, 0D, (byte)24);
-  				}	
   			}
   		}
   	}
@@ -206,7 +210,55 @@ public class EntityBattleshipYMTBoss extends BasicEntityShipBoss {
   	//TYPE 91 AP FIST
   	@Override
   	public boolean attackEntityWithHeavyAmmo(Entity target) {	
-  		
+  		//get attack value
+  		float atk = CalcHelper.calcDamageByEquipEffect(this, target, this.atk * 3F, 3);
+		
+		//計算目標距離
+		float tarX = (float)target.posX;	//for miss chance calc
+		float tarY = (float)target.posY;
+		float tarZ = (float)target.posZ;
+		float distX = tarX - (float)this.posX;
+		float distY = tarY - (float)(this.posY + this.height * 0.5F);
+		float distZ = tarZ - (float)this.posZ;
+        float distSqrt = MathHelper.sqrt_float(distX*distX + distY*distY + distZ*distZ);
+        if(distSqrt < 0.001F) distSqrt = 0.001F; //prevent large dXYZ
+        float dX = distX / distSqrt;
+        float dY = distY / distSqrt;
+        float dZ = distZ / distSqrt;
+
+        //play entity attack sound
+        if(this.getRNG().nextInt(10) > 7) {
+        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        }
+        
+        //check phase
+        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+        
+        if(getStateEmotion(ID.S.Phase) > 0) {  //spawn beam particle & entity
+        	//shot sound
+        	this.playSound(Reference.MOD_ID+":ship-yamato-shot", ConfigHandler.fireVolume, 1F);
+        	
+        	//spawn beam entity
+            EntityProjectileBeam beam = new EntityProjectileBeam(this.worldObj, this, 0, 
+            							dX, dY, dZ, atk, 0.12F);
+            this.worldObj.spawnEntityInWorld(beam);
+            
+            //spawn beam particle
+            CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, beam, dX, dY, dZ, 2, true), point);
+        	
+        	this.setStateEmotion(ID.S.Phase, 0, true);
+        	return true;
+        }
+        else {
+        	//charge sound
+        	this.playSound(Reference.MOD_ID+":ship-yamato-ready", ConfigHandler.fireVolume, 1F);
+        	
+			//cannon charging particle
+        	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 7, 2D, 0, 0), point);
+        	
+        	this.setStateEmotion(ID.S.Phase, 1, true);
+        }
+        
         return false;
 	}
 
