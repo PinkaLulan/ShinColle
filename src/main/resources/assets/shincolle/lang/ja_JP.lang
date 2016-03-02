@@ -11,14 +11,14 @@ itemGroup.shincolle=ShinColle
 tile.shincolle:BlockAbyssium.name=深海金属ブロック
 tile.shincolle:BlockDesk.name=深海ノ提督ノ机
 tile.shincolle:BlockGrudge.name=怨念ノ塊
-tile.shincolle:BlockGrudgeHeavy.name=大量ノ怨念ノ塊
+tile.shincolle:BlockGrudgeHeavy.name=重苦シイ怨念ノ塊
 tile.shincolle:BlockPolymetal.name=多金属ブロック
 tile.shincolle:BlockPolymetalGravel.name=多金属砂利
 tile.shincolle:BlockPolymetalOre.name=多金属鉱石
 tile.shincolle:BlockSmallShipyard.name=深海ノ熱水噴出孔
 
 # Container
-container.shincolle:BlockDesk=深海ノ提督ノ机
+container.shincolle:BlockDesk=深海提督ノ机
 container.shincolle:SmallShipyard=深海ノ熱水噴出孔
 container.shincolle:LargeShipyard=超深海ノ熱水噴出孔
 
@@ -30,13 +30,15 @@ item.shincolle:Ammo1.name=怨念ガ コモッタ弾薬箱
 item.shincolle:Ammo2.name=怨念ガ コモッタ重弾薬
 item.shincolle:Ammo3.name=怨念ガ コモッタ重弾薬箱
 item.shincolle:BucketRepair.name=高速修復材
+item.shincolle:DeskItemBook.name=深海ノ日誌
+item.shincolle:DeskItemRadar.name=深海ノ携帯型レーダー
 item.shincolle:InstantConMat.name=高速建造材
 item.shincolle:KaitaiHammer.name=解体ハンマー
 item.shincolle:Grudge.name=怨念
-item.shincolle:MarriageRing.name=棲艦ノ結婚指輪
+item.shincolle:MarriageRing.name=深海棲艦ノ結婚指輪
 item.shincolle:ModernKit.name=近代化改修ツール
-item.shincolle:OwnerPaper.name=棲艦オーナー変更用紙
-item.shincolle:PointerItem.name=ヲ級ノ命令ノ杖
+item.shincolle:OwnerPaper.name=深海棲艦提督変更用紙
+item.shincolle:PointerItem.name=ヲ級ノ指揮ノ杖
 item.shincolle:RepairGoddess.name=深海ノ女神ノ怨念
 item.shincolle:ToyAirplane.name=零式艦戦21型 (1/48スケール)
 
@@ -120,15 +122,15 @@ item.shincolle:shipegg30.name=港湾棲姫
 item.shincolle:shipegg33.name=北方棲姫
 item.shincolle:shipegg35.name=空母水鬼
 item.shincolle:shipegg38.name=駆逐艦 島風
-item.shincolle:shipegg238.name=駆逐艦 島風 改
+item.shincolle:shipegg2038.name=駆逐艦 島風 改
 item.shincolle:shipegg39.name=戦艦 長門
-item.shincolle:shipegg239.name=戦艦 長門 改
+item.shincolle:shipegg2039.name=戦艦 長門 改
 item.shincolle:shipegg40.name=潜水艦 U-511
-item.shincolle:shipegg240.name=潜水艦 U-511 改
+item.shincolle:shipegg2040.name=潜水艦 U-511 改
 item.shincolle:shipegg41.name=潜水艦 呂500
-item.shincolle:shipegg241.name=潜水艦 呂500 (Mob)
-item.shincolle:shipegg102.name=戦艦 大和
-item.shincolle:shipegg302.name=戦艦 大和 改
+item.shincolle:shipegg2041.name=潜水艦 呂500 (Mob)
+item.shincolle:shipegg48.name=戦艦 大和
+item.shincolle:shipegg2048.name=戦艦 大和 改
 
 # Entity
 entity.shincolle.EntityAirfieldHime.name=飛行場姫
@@ -170,13 +172,128 @@ entity.shincolle.EntitySubmU511Mob.name=潜水艦 U-511 改
 # formatting codes:
 # new line: <br>, <BR>, <br/> or <BR/> can set next line manually. (String can wrap to next line automatically to fit gui width.)
 # other code: §0, §1 ...etc. check: http://minecraft.gamepedia.com/Formatting_codes
-gui.shincolle:book.chap0.title=Introduction
-gui.shincolle:book.chap1.title=Resources
-gui.shincolle:book.chap2.title=Construction
-gui.shincolle:book.chap3.title=Ship Attributes
-gui.shincolle:book.chap4.title=Ship List
-gui.shincolle:book.chap5.title=Enemy List
-gui.shincolle:book.chap6.title=Equipments List
+
+# GUI: Book Text Chap 0
+gui.shincolle:book.chap0.title=紹介
+gui.shincolle:book.chap0.text0d0=§c深海棲艦§0ハ 鉄ト怨念カラ生マレタ カワイラシイグループデ、彼女タチハ 本来海デ自由ニ暮ラシテイマス。<br><br>シカシ アル日、§9艦娘§0ト呼バレテイル　謎ノ生物ガ 強力ナ武器ヲ装備シテ 理由モ無ク §c深海棲艦§0ノ生息地ヲ攻撃シ始メマシタ。
+gui.shincolle:book.chap0.text0d1=§9艦娘§0ノ理不尽ナ攻撃ニヨッテ、§c深海棲艦§0ハ生残ノ危機ニ直面シテイマス。<br><br>彼女タチヲ絶望カラ救イ出セルノハ一人シカイマセン、 ソレハ アナタデス §4深海提督§0ニナッテ彼女タチヲ危機カラ救ッテクダサイ！
+gui.shincolle:book.chap0.text1d0=世界中ヲ探索シ、4種類ﾉ資源ヲ集メテクダサイ: §d怨念§0, §d深海金属§0, §d怨念ガ コモッタ弾薬§0 §d多金属§0 カラ §c深海棲艦§0ヲ建造デキマス。<br><br>§c深海棲艦§0ハ十分ナ資源ヲ供給サレレバ 提督ヲ守リ 敵対スル生物ヲ攻撃シマス。
+gui.shincolle:book.chap0.text1d1=サァ カワイイ彼女タチヲ集メニ行キマショウ！
+
+# GUI: Book Text Chap 1
+gui.shincolle:book.chap1.title=アイテムニツイテ
+gui.shincolle:book.chap1.title0=怨念
+gui.shincolle:book.chap1.text0d0=<br><br><br>§d§n怨念§r§0トハ 生物ガ死ンダトキニ残リ、§c深海棲艦§0ノ エネルギーノ源ニナルモノデス。
+gui.shincolle:book.chap1.text0d1=Mobヲ殺スト§d§n怨念§r§0ガ手ニ入ルノデ、トラップタワーナドヲ作レバ安定的ニ§d§n怨念§r§0ヲ生ミ出スコトガ デキマス。<br><br><br>§d§n怨念§r§0ヲ 9個ヲ固メルト §9怨念ノ塊§0 1個ガ、サラニソレヲ固メルト §9重苦シイ怨念ノ塊§0 1個ヲ作ルコトガデキマス。
+gui.shincolle:book.chap1.title1=深海金属
+gui.shincolle:book.chap1.text1d0=<br><br><br><br><br><br><br><br><br>§d§n深海金属§r§0 トハ 怨念ヲ込メタ金属デス。 §c深海棲艦§0ト装備ヲ 建造スルトキニ 必要トナル資源デス。
+gui.shincolle:book.chap1.text1d1=怨念ト鉄インゴット1個ズツカラ §d§n深海金属インゴット§r§0 1個ガ、 ソレヲサラニ9個固メルト §9深海金属ブロック§0ヲ 作ルコトガデキマス。
+gui.shincolle:book.chap1.title2=多金属
+gui.shincolle:book.chap1.text2d0=<br><br><br><br><br><br><br><br><br><br><br>§d§n多金属§r§0トハ主ニ水関連ノバイオーム(海, 川, 浜辺)ニ生成サレルモノデス。 §c深海棲艦§0ト装備ヲ 建造スルトキニ 必要トナル資源デス。
+gui.shincolle:book.chap1.text2d1=コノ カリカリシタ金属ノ球ハ空母ノ好キナ スナックノ 一ツデス。<br><br>海底デ沢山ノ§d§n多金属砂利§r§0ヲ見ツケルコトガデキマス.
+gui.shincolle:book.chap1.title3=怨念ガ コモッタ弾薬
+gui.shincolle:book.chap1.text3d0=<br><br><br><br><br><br><br><br><br>§c深海棲艦§0ハ§d§n怨念ガ コモッタ弾薬§r§0ヲ消費シテ攻撃シマス。
+gui.shincolle:book.chap1.text3d1=ココデハ鉄ヲ使ッテイマスガ、 銅ヤ、金、ダイヤモンド ヲ使ウコトデ サラニ多クノ弾薬ヲ作ルコトガデキマス。<br><br>§9火薬§0ヲ §9ブレイズパウダー§0ニ置キ換エルコトデ 重弾薬ヲ作ルコトガデキマス。
+gui.shincolle:book.chap1.title4=高速修復材
+gui.shincolle:book.chap1.text4d0=<br><br><br><br><br><br><br><br><br>§d§n高速修復材§r§0トハ海ノ中デ モットモ栄養ガ高イ溶岩ヲ怨念デ味付ケシタモノデ、一番人気ノアル§c深海棲艦§0ノ飲ミ物デス。
+gui.shincolle:book.chap1.text4d1=深海棲艦ニ右クリック スルコトデHPヲ回復スルコトガデキマス。<br><br>深海棲艦ノ インベントリニ§n高速修復材§r§0ヲ入レテオケバ 自動デ使ッテクレマス。
+gui.shincolle:book.chap1.title5=深海棲艦ノ結婚指輪
+gui.shincolle:book.chap1.text5d0=<br><br><br><br><br><br><br><br><br>§d§n深海棲艦ノ結婚指輪§r<br><br>最小限ノ クラッシックナ台座ト ネザースターカット、ソレハ ネザースターノ寛大ナ美シイ輝キヲ見セテクレマス。
+gui.shincolle:book.chap1.text5d1=ネザーノ美シサト提督ノ力強サヲ象徴シテイルダケデハナク ソレハマタ §c深海棲艦§0トノ永遠ノ愛ヲ証明シテクレマス。<br><br>§9シフト+右クリック§0:<br>深海棲艦ト結婚。<br>§9右クリック§0:<br>リングヲ有効化。<br><br>結婚シタ数ニヨッテ イロイロナ能力ヲ発揮シマス:水中デノ 採掘速度上昇, 視界拡大, 移動速度上昇。
+gui.shincolle:book.chap1.title6=深海棲艦提督変更用紙
+gui.shincolle:book.chap1.text6d0=<br><br><br><br><br><br><br><br><br>§d§n深海棲艦提督変更用紙§r§0トハ 所有権ノ移転ト詳細ニ関スル様々ナ事項ガ記載サレテイルモノデ、署名ノ直後ニ当事者ニ効力ヲ発シマス。
+gui.shincolle:book.chap1.text6d1=§9右クリック§0:<br>用紙ニ署名。<br><br>当事者ガ署名シタ後、 提督ハ§c深海棲艦§0ニ向カッテ用紙ヲ§9右クリック§0スルコトデ　他ノ提督ニ所有権ヲ渡スコトガデキマス。
+gui.shincolle:book.chap1.title7=解体ハンマー
+gui.shincolle:book.chap1.text7d0=<br><br><br><br><br><br><br><br><br>§d§n解体ハンマー§r§0ハ§c深海棲艦§0ヲ解体シ 材料ノ一部ヲリサイクル スルコトガデキマス。
+gui.shincolle:book.chap1.text7d1=§9左クリック§0:<br>一撃デ深海棲艦ヲ倒ス。(提督/OPノミ)<br><br>§9シフト+右クリック§0:<br>深海棲艦ヲ解体スル。(提督/OPノミ)
+gui.shincolle:book.chap1.title8=近代化改修ツール
+gui.shincolle:book.chap1.text8d0=<br><br><br><br><br><br><br><br><br>§d§n近代化改修ツール§r§0ハ様々ナ深海ノ ブラックナ最新技術ガ含マレテオリ、 §c深海棲艦§0ニ使ウコトデ能力ヲ上ゲル コトガデキマス。
+gui.shincolle:book.chap1.text8d1=深海棲艦ニ向カッテ§9右クリック§0スルコトデ ランダムニ 一ツノ能力ヲ上ゲルコトガデキマス。 能力ノレベルハ 深海棲艦ノ インベントリGUIノ中デ色デ表サレマス:<br><br>§f白§0 (Lv1)<br>§e黄色§0 (Lv2)<br>§6オレンジ§0 (Lv3)<br>§4赤§0 (Lv4)<br><br>最高レベルハ§4赤§0 (Lv4)。
+gui.shincolle:book.chap1.title9=高速建造材
+gui.shincolle:book.chap1.text9d0=<br><br><br><br><br><br><br><br><br>§d§n高速建造材§r§0ハ イクツカノ レア ナ材料ト地球ノ中心ヨリモ高イ温度ガ出セル溶接機ガ含マレテオリ、 深海棲艦ヤ装備ノ建造速度ヲ早メルコトガ デキマス。
+gui.shincolle:book.chap1.text9d1=§d§n高速建造材§r§0ヲ§9深海ノ熱水噴出孔§0ノ燃料スロット マタハ§9超深海ノ熱水噴出孔x§0ノスロット ニ入レルト建造ノ進捗ガ早マリマス。<br><br>§d§n高速建造材§r§0ハ使ワレテイナイ棲艦建造アイテムカラノミ 作ルコトガデキマス。
+gui.shincolle:book.chap1.title10=深海ノ女神ノ怨念
+gui.shincolle:book.chap1.text10d0=<br><br><br><br><br><br><br><br><br>最モ重イ怨念トダイヤモンドヲ献上シ祈リ、 深海ノ女神ノ保護ヲ承ルコトデ、§d§n深海ノ女神ノ怨念§r§0ガ§c深海棲艦§0ヲ致命的ナダメージカラ守リ ソシテ深イ深イ復讐ノ意思ヲ与エマス。
+gui.shincolle:book.chap1.text10d1=§d§n深海ノ女神ノ怨念§r§0ヲ深海棲艦ノインベントリニ入レテオクト、深海棲艦ガ致命的ナ ダメージヲ受ケタトキ ニ消費サレマス。 消費サレル トHPガ全回復シ シバラクノ間ダメージ ヲ受ケマセン。
+gui.shincolle:book.chap1.title11=ヲ級ノ指揮ノ杖
+gui.shincolle:book.chap1.text11d0=<br><br><br><br><br><br><br><br><br>§d§nヲ級ノ命令ノ杖§r§0ハ魔法少女ヲ級ガ航空機ノ指揮ヲ取ルタメ ニ装備シテイルモノデス。シカシ深海提督ハ魔法少女ニ変身スルコトガデキマセン, §c深海棲艦§0ノ指揮ヲ執ルコトダケ ニ使ウコトガデキマス。
+gui.shincolle:book.chap1.text11d1=三ツノ指揮モード ガアリ、最大九ツ ノ艦隊ヲ各艦隊最大6隻ヲ保存デキマス。<br><br>§2シングルモード§0:<br>§3選択シタターゲット§0一ツ ノミ、§3選択シタターゲット§0一ツ ノミ ヲ指揮スル。<br><br>§4Gグループモード§0:<br>0~6ノ§3選択シタターゲット§0、 c§3選択シタターゲット§0ヲ指揮スル。<br><br>§6フォーメーションモード§0:<br>艦隊ヲ特定ノ陣形デ動 カシ サラニ陣形ノ効果ヲ得ル、艦隊全テヲ指揮スル。
+gui.shincolle:book.chap1.title12=ヲ級ノ指揮ノ杖
+gui.shincolle:book.chap1.text12d0=指揮ノ杖ヲ持ッテイルト色付キ ノ円ガ表示サレル:<br><br>§2緑§0:<br>棲艦ガ§2シングルモード§0。<br>§3シアン§0:<br>棲艦ガ§3選択サレテイル§0。<br>§4赤§0:<br>棲艦ガ§4Gグループモード§0。<br>§6黄色§0:<br>棲艦ガ§6フォーメーションモード§0。<br>§7白§0:<br>防衛スル目標。<br><br>§9左クリック§0:<br>棲艦ヲ艦隊ニ入レル / 選択シタ目標ヲ攻撃リスト ニ追加スル / 目標ヲ選択スル。
+gui.shincolle:book.chap1.text12d1=§9Ctrl+左クリック§0:<br>陣形ノ変更。<br><br>§9シフト+左クリック§0:<br>艦隊カラ削除 / コマンドモードノ切リ替エ。<br><br>§9シフト+Ctrl+左クリック§0:<br>艦隊解除。<br><br>§9右クリック§0:<br>移動ト防衛 / 攻撃 / 座ラセル。<br><br>§9Ctrl+右クリック§0:<br>目標ノ防衛。<br><br>§9シフト+右クリック§0:<br>棲艦ノ インベントリヲ開ク / 陣形ノGUIヲ開ク。
+gui.shincolle:book.chap1.title13=ヲ級ノ指揮ノ杖
+gui.shincolle:book.chap1.text13d0=§9陣形§0:<br>棲艦ガ陣形ヲ保チ同ジ速度デ移動スルヨウ　ニナリ陣形ニヨル効果ヲ得ラレル、 陣形ヲ組ム ニハ5カ6隻ノ艦隊ガ必要。<br><br>フォーメーションモード デハ、シングル/グループモードノ 移動/防衛 ノ指示 ハ無効化サレマス。<br><br>ソシテ棲艦ガ ホカノ艦隊ニモ所属シテイル場合、陣形ノ効果ハ 一ツノ艦隊カラ ノミ受ケ取リマス。
+gui.shincolle:book.chap1.text13d1=§2単縦陣§0:<br>砲撃戦用ノ陣形、火力ヲ増ヤシマス ガ防御力ヲ失イマス。<br><br>§3複縦陣§0:<br>巡航向ケノ陣形デ、少シ火力ヲ増加サセマス。<br><br>§4輪形陣§0:<br>対空向ケノ防衛陣形デス。<br><br>§6梯形陣§0:<br>突撃用ノ陣形デ移動速度ガ上ガリマス。<br><br>§7単横陣§0:<br>対潜向ケノ防衛陣形デス。
+gui.shincolle:book.chap1.title14=零式艦戦21型 (1/48スケール)
+gui.shincolle:book.chap1.text14d0=<br><br><br><br><br><br><br><br><br>§d§n零式艦戦21型§r§0<br><br>スケール:  1/48<br><br>原料:  多金属ノ小サナ塊<br><br>一人分ノ量:  2500g<br><br>内容量: 1<br><br>賞味期限:  §k100§r年
+gui.shincolle:book.chap1.text14d1=コノ航空機ノ 模型ハ 深海ノ食用オモチャノ規格ニ沿ッテオリ、ゼロカロリーデ 遊ンデ楽シイ上ニ オイシイ！<br><br>コノ製品ハ、多金属ガ豊富ニ含マレテオリ、重金属ノ消化吸収ヲ助ケ、子供ノ成長ヲ効果的ニ促進シマス。<br><br><br><br><br>※直射日光、高温、高酸素環境ヲ避ケテ保存シ、開封後ハデキルダケ早メニ食ベテクダサイ。
+gui.shincolle:book.chap1.title15=深海ノ日誌
+gui.shincolle:book.chap1.text15d0=<br><br><br><br><br><br><br><br><br>§d§n深海ノ日誌§r§0ニハ 深海ノ資源ヤ、コレマデニ見ツケタ§c深海棲艦§0ト§9艦娘§0ノ詳シイ情報ガ記録サレテイマス。
+gui.shincolle:book.chap1.text15d1=
+gui.shincolle:book.chap1.title16=深海ノ携帯型レーダー
+gui.shincolle:book.chap1.text16d0=<br><br><br><br><br><br><br><br><br>§d§n深海ノ携帯型レーダー§r§0ハ 近くノ所属シテイル§c深海棲艦§0ヲ検出スルコトガ デキ、 遠隔デ棲艦ニ連絡ヤ指示ヲ与エルコトガ デキマス。
+gui.shincolle:book.chap1.text16d1=
+gui.shincolle:book.chap1.title17=深海提督ノ机
+gui.shincolle:book.chap1.text17d0=<br><br><br><br><br><br><br><br><br>コノ非常ニ硬クテ耐久性ノアル§d§n深海提督ノ机§r§0ハ黒曜石カラ作ラレテ イマス。正式ナ鎮守府ノ業務ニ対処スルコトニ クワエ、怒ッテイル秘書艦カラノ砲撃ヲブロック スルコトガ デキマス。<br><br>※家具ヲ購入スル前ニ秘書艦ニ相談シテクダサイ.
+gui.shincolle:book.chap1.text17d1=使用方法<br><br>§9レーダー§0:<br>近ク ニイル所属シテイル棲艦ノ一覧ヲ表示シマス、一覧ノ棲艦ヲ クリックスルコトデ 他ノアクションヲ実行デキマス。<br><br>§9深海ノ日誌§0:<br>アイテム ヤ、ブロック、棲艦ノ紹介。<br><br>§9陣営§0:<br>PVPモードデ艦隊ヲ作ッタリ加入ッタリ デキマス。<br><br>§9攻撃目標§0:<br>攻撃目標ノ一覧ヲ見ルコトガ デキマス。
+
+# GUI: Book Text Chap 2
+gui.shincolle:book.chap2.title=建造ニツイテ
+
+# GUI: Book Text Chap 3
+gui.shincolle:book.chap3.title=船ノ属性
+
+# GUI: Book Text Chap 4
+gui.shincolle:book.chap4.title=艦隊リスト
+
+# GUI: Book Text Chap 5
+gui.shincolle:book.chap5.title=敵艦リスト
+
+# GUI: Book Text Chap 6
+gui.shincolle:book.chap6.title=装備リスト
+
+# GUI: General
+gui.shincolle:general.ok=確定
+gui.shincolle:general.cancel=取リ消シ
+
+# GUI: Radar Screen
+gui.shincolle:radar.position=座標
+gui.shincolle:radar.height=高度
+gui.shincolle:radar.gui=交信
+gui.shincolle:radar.recall=帰隊
+
+# GUI: Target List
+gui.shincolle:target.remove=削除
+
+# GUI: Team List
+gui.shincolle:team.name=艦隊名:
+gui.shincolle:team.create=艦隊作成
+gui.shincolle:team.rename=艦隊名変更
+gui.shincolle:team.disband=艦隊解散
+gui.shincolle:team.allylist=同盟一覧
+gui.shincolle:team.ally=同盟
+gui.shincolle:team.break=同盟解除
+gui.shincolle:team.banlist=宣戦一覧
+gui.shincolle:team.ban=宣戦
+gui.shincolle:team.unban=停戦
+gui.shincolle:team.allied=同盟
+gui.shincolle:team.neutral=中立
+gui.shincolle:team.hostile=敵対
+gui.shincolle:team.belong=所属
+gui.shincolle:team.teamid=艦隊番号
+
+# GUI: Formation
+gui.shincolle:formation.formation=陣形
+gui.shincolle:formation.position=陣形位置
+gui.shincolle:formation.format0=無陣形
+gui.shincolle:formation.format1=単縦陣
+gui.shincolle:formation.format2=複縦陣
+gui.shincolle:formation.format3=輪形陣
+gui.shincolle:formation.format4=梯形陣
+gui.shincolle:formation.format5=単横陣
+gui.shincolle:formation.notenough=陣形ニハ5カ6隻必要デス！
+gui.shincolle:formation.totalfirepower=艦隊火力
+gui.shincolle:formation.nosignal=信号ナシ
 
 # GUI: Ship Inventory Top
 gui.shincolle:level=レベル
@@ -197,7 +314,7 @@ gui.shincolle:exp=経験値
 gui.shincolle:ammolight=軽型弾薬
 gui.shincolle:ammoheavy=重型弾薬
 gui.shincolle:grudge=怨念
-gui.shincolle:owner=オーナー
+gui.shincolle:owner=提督
 gui.shincolle:marriage=婚姻状態
 gui.shincolle:married=既婚
 gui.shincolle:unmarried=未婚
@@ -213,9 +330,12 @@ gui.shincolle:canairheavyattack=重型艦載機ノ使用
 gui.shincolle:followmin=フォロー最短距離
 gui.shincolle:followmax=フォロー最長距離
 gui.shincolle:fleehp=撤退スル HP(%%)
-gui.shincolle:auraeffect=オーナー強化
+gui.shincolle:auraeffect=提督強化
 gui.shincolle:targetAI=受動的ニ攻撃?
 gui.shincolle:onsightAI=視界内ノミ追撃?
+gui.shincolle:ai.pvp=PVPモード
+gui.shincolle:ai.aa=対空
+gui.shincolle:ai.asm=対潜
 
 # GUI: Shipyard
 gui.shincolle:nomaterial=資材不足
@@ -241,7 +361,10 @@ gui.shincolle:pointer3=(シフト左クリック デ モード切替)
 gui.shincolle:pointer4=チーム
 gui.shincolle:antiair=対空
 gui.shincolle:antiss=対潜
+gui.shincolle:dodge=回避
 
 # Chat message
 chat.shincolle:bossspawn1=水面ニ艦娘ガ出現!
 chat.shincolle:bossspawn2=艦娘ノ侵略ヲ観測!
+chat.shincolle:pointer.addtargetclass= 追加/削除 攻撃リストニターゲットノタイプ: %s
+chat.shincolle:pointer.changeformation=陣形変更
