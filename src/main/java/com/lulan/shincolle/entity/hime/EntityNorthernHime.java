@@ -1,5 +1,6 @@
 package com.lulan.shincolle.entity.hime;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.entity.Entity;
@@ -116,7 +117,7 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
         	}//end 80 ticks
         	
         	//every 256 ticks
-        	if(this.ticksExisted % 256 == 0) {
+        	if(this.ticksExisted % 25 == 0) {
         		int roll = this.rand.nextInt(5);
 //        		LogHelper.info("DEBUG : hoppo go riding "+roll);
         		//每一段時間檢查是否要騎乘其他entity
@@ -211,6 +212,7 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
 			EntityLivingBase getEnt = null;
 	        AxisAlignedBB impactBox = this.boundingBox.expand(6D, 4D, 6D); 
 	        List hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, impactBox);
+	        List<EntityLivingBase> canRideList = new ArrayList();
 	        
 	        //搜尋list, 找出第一個可以騎乘的目標
 	        if(hitList != null && !hitList.isEmpty()) {
@@ -221,13 +223,17 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
 	            	if(getEnt instanceof BasicEntityShip || getEnt instanceof EntityPlayer) {
 	            		if(getEnt != this && !getEnt.isRiding() && getEnt.riddenByEntity == null &&
 	            		   EntityHelper.checkSameOwner(this, getEnt)) {
-	            			this.goRidingTicks = 0;
-	            			this.goRiding = true;
-	            			this.goRideEntity = getEnt;
-	            			break;
+	            			canRideList.add(getEnt);
 	            		 }
 	            	}
 	            }
+	        }
+	        
+	        //從可騎乘目標中挑出一個目標騎乘
+	        if(canRideList.size() > 0) {
+	        	this.goRideEntity = canRideList.get(rand.nextInt(canRideList.size()));
+	        	this.goRidingTicks = 0;
+    			this.goRiding = true;
 	        }
 		}//end not riding
 	}

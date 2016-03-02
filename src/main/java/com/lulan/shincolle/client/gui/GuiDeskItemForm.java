@@ -84,8 +84,8 @@ public class GuiDeskItemForm extends GuiContainer {
 	
 	public GuiDeskItemForm(InventoryPlayer par1, int funType) {
 		super(new ContainerDeskItemForm(par1, ClientProxy.getClientPlayer()));
-		this.xSize = 256;
-		this.ySize = 192;
+		this.xSize = 512;
+		this.ySize = 384;
 		
 		this.tickGUI = 0;				//ticks in gui (not game tick)
 		

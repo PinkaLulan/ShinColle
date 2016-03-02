@@ -60,10 +60,12 @@ public class EntityAIShipFloating extends EntityAIBase {
     		}
 			
 			return !this.hostShip.isSitting() && hostMount.getShipDepth() > 0.47D;
+//			return !this.hostShip.isSitting() && hostMount.getShipDepth() > 0.7D;
 		}
     	//¨ä¥LÃþ
     	else {
     		return host.getShipDepth() > 0.47D;
+//    		return host.getShipDepth() > 0.7D;
     	}
     }
 

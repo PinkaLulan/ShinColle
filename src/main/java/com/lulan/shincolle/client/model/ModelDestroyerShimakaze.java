@@ -19,8 +19,6 @@ import com.lulan.shincolle.utility.EmotionHelper;
 public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion {
     public ModelRenderer BodyMain;
     public ModelRenderer NeckCloth;
-    public ModelRenderer BoobR;
-    public ModelRenderer BoobL;
     public ModelRenderer ArmLeft;
     public ModelRenderer ArmRight;
     public ModelRenderer Butt;
@@ -111,11 +109,6 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion 
         this.EquipT05 = new ModelRenderer(this, 85, 65);
         this.EquipT05.setRotationPoint(-8.1F, -8.0F, 1.0F);
         this.EquipT05.addBox(0.0F, 0.0F, 0.0F, 3, 31, 3, 0.0F);
-        this.BoobL = new ModelRenderer(this, 0, 88);
-        this.BoobL.mirror = true;
-        this.BoobL.setRotationPoint(3.6F, -9.0F, -3.0F);
-        this.BoobL.addBox(-3.0F, 0.0F, 0.0F, 6, 4, 4, 0.0F);
-        this.setRotateAngle(BoobL, -0.7853981633974483F, -0.12217304763960307F, -0.08726646259971647F);
         this.HairR01 = new ModelRenderer(this, 102, 0);
         this.HairR01.setRotationPoint(-5.5F, 0.0F, -3.0F);
         this.HairR01.addBox(-1.0F, 0.0F, 0.0F, 2, 9, 4, 0.0F);
@@ -165,10 +158,6 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion 
         this.Butt.setRotationPoint(0.0F, 0.0F, 0.0F);
         this.Butt.addBox(-8.0F, 4.0F, -5.4F, 16, 8, 7, 0.0F);
         this.setRotateAngle(Butt, 0.2617993877991494F, 0.0F, 0.0F);
-        this.BoobR = new ModelRenderer(this, 0, 88);
-        this.BoobR.setRotationPoint(-3.6F, -9.0F, -3.0F);
-        this.BoobR.addBox(-3.0F, 0.0F, 0.0F, 6, 4, 4, 0.0F);
-        this.setRotateAngle(BoobR, -0.7853981633974483F, 0.12217304763960307F, 0.08726646259971647F);
         this.EquipT03 = new ModelRenderer(this, 85, 65);
         this.EquipT03.setRotationPoint(-1.5F, -8.0F, 1.0F);
         this.EquipT03.addBox(0.0F, 0.0F, 0.0F, 3, 31, 3, 0.0F);
@@ -231,7 +220,6 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion 
         this.HairL01.addChild(this.HairL02);
         this.HairMain.addChild(this.EarBase);
         this.EquipBase.addChild(this.EquipT05);
-        this.BodyMain.addChild(this.BoobL);
         this.Hair.addChild(this.HairR01);
         this.EquipBase.addChild(this.EquipT01); 
         this.BodyMain.addChild(this.NeckCloth);
@@ -241,7 +229,6 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion 
         this.LegLeft.addChild(this.ShoesL);
         this.EquipBase.addChild(this.EquipT04);
         this.BodyMain.addChild(this.Butt);
-        this.BodyMain.addChild(this.BoobR);
         this.EquipBase.addChild(this.EquipT03);
         this.BodyMain.addChild(this.EquipBase);
         this.NeckCloth.addChild(this.Head);
@@ -355,9 +342,6 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion 
 	  	this.Head.rotateAngleY = f3 / 57.29578F;	//左右角度 角度轉成rad 即除以57.29578
 	    
 	    //正常站立動作
-	    //胸部
-  	    this.BoobL.rotateAngleX = angleX * 0.06F - 0.7854F;
-  	    this.BoobR.rotateAngleX = angleX * 0.06F - 0.7854F;
   	    //ear
   	    this.EarL01.rotateAngleX = angleX * 0.1F - 0.8727F;
   	    this.EarL01.rotateAngleY = 1.0472F;

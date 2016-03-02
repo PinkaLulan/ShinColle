@@ -38,7 +38,7 @@ public class GuiFormation extends GuiContainer {
 	private int listClicked, teamClicked, formatClicked;
 	private int strLen;
 	private String attrAmmoL, attrAmmoH, attrAirL, attrAirH, attrDEF, attrMOV, attrMISS, attrDODGE,
-				   attrCRI, attrDHIT, attrTHIT, attrAA, attrASM, attrTotalFP, attrLV;
+				   attrCRI, attrDHIT, attrTHIT, attrAA, attrASM, attrTotalFP;
 	private String strPos, strMOV, strMOVBuff, strErr01;
 	private List mouseoverList;
 	
@@ -115,7 +115,6 @@ public class GuiFormation extends GuiContainer {
 		attrAA = EnumChatFormatting.YELLOW+I18n.format("gui.shincolle:antiair");
 		attrASM = EnumChatFormatting.AQUA+I18n.format("gui.shincolle:antiss");
 		attrTotalFP = EnumChatFormatting.LIGHT_PURPLE+I18n.format("gui.shincolle:formation.totalfirepower");
-		attrLV = I18n.format("gui.shincolle:level");
 		
 		strPos = I18n.format("gui.shincolle:formation.position");
 		strErr01 = I18n.format("gui.shincolle:formation.notenough");
@@ -647,19 +646,22 @@ public class GuiFormation extends GuiContainer {
     		GL11.glPushMatrix();
     		GL11.glScalef(0.75F, 0.75F, 0.75F);
     		
-    		//draw ship list in radar
+    		//draw ship list
     		if(this.shipList != null) {
-    			int texty = 13;
+    			int texty = 14;
     			
     			for(int i = 0; i < 6; i++) {
         			if(shipList[i] != null) {
         				//draw name
-        				fontRendererObj.drawString(shipName[i], 195, texty, Values.Color.YELLOW);
-        				texty += 16;
+        				fontRendererObj.drawString(shipName[i], 195, texty, Values.Color.WHITE);
+        				texty += 14;
         				//draw pos
-        				str = EnumChatFormatting.LIGHT_PURPLE+attrLV+" "+EnumChatFormatting.WHITE+shipList[i].getStateMinor(ID.M.ShipLevel);
+        				str = EnumChatFormatting.AQUA + "LV " + EnumChatFormatting.YELLOW +
+        					  shipList[i].getLevel() + "   " + EnumChatFormatting.GOLD +
+        					  (int)shipList[i].getHealth() + " / " + EnumChatFormatting.RED +
+        					  (int)shipList[i].getMaxHealth();
         				fontRendererObj.drawString(str, 195, texty, 0);
-        				texty += 20;
+        				texty += 22;
         				//get mov speed
         				mov = shipList[i].getStateFinal(ID.MOV);
         			}
@@ -808,8 +810,6 @@ public class GuiFormation extends GuiContainer {
 			//calc buff bar
 			this.buffBarFinal[i] = getValueBarLength(value[i]);
 		}
-		
-		//TODO
 	}
 	
 	//formation buff value to bar length, 100% = 25 pixels

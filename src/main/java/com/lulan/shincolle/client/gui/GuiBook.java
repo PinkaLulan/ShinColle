@@ -48,13 +48,13 @@ public class GuiBook {
 	private static RenderItem itemRender = new RenderItem();
 	private static int numChap;
 	private static int numPage;
-	public static int PageWidth = 150; //page width, no scale = 106
+	public static int PageWidth = 135; //page width, no scale = 106
 	public static int Page0LX = 13;    //left page X pos, no scale = 13
 	public static int Page0RX = 133;   //right page X pos, no scale = 133
 	public static int Page0Y = 48;     //page Y pos, no scale = 48
 	public static int PageTLX = 13;    //left page X pos for text
-	public static int PageTRX = 172;   //right page X pos for text
-	public static int PageTY = 68;     //page Y pos for text
+	public static int PageTRX = 162;   //right page X pos for text
+	public static int PageTY = 58;     //page Y pos for text
 	public static final int[] PageLimit = new int[] {1,17,0,0,0,0,0};  //max page number
 	
 	public GuiBook() {}
@@ -73,7 +73,6 @@ public class GuiBook {
 		numPage = page;
 		
 		
-		
 		/***********   DEBUG: test page      *********/
 //		if(numChap == 1 && numPage == 99) {
 //			cont =  Arrays.asList(new int[] {0, 0, 0, 0},
@@ -83,14 +82,13 @@ public class GuiBook {
 //					new int[] {2, 0, 23, 19, ID.Item.IronIG},
 //					new int[] {2, 0, 81, 19, ID.Item.AbyssIG}
 //		);}
-//		PageWidth = 146; //page width, no scale = 106
-//		Page0LX = 13;    //left page start X pos, no scale = 13
-//		Page0RX = 133;   //right page start X pos, no scale = 133
-//		Page0Y = 48;    //left page start Y pos, no scale = 48
-//		PageTLX = 13;    //left page start X pos, no scale = 13
-//		PageTRX = 172;   //right page start X pos, no scale = 133
-//		PageTY = 68;    //left page start Y pos, no scale = 48
-		
+//		PageWidth = 135;  //page width, no scale = 106
+//		Page0LX = 13;	  //left page start X pos, no scale = 13
+//		Page0RX = 133;	  //right page start X pos, no scale = 133
+//		Page0Y = 48;	  //left page start Y pos, no scale = 48
+//		PageTLX = 13;	  //left page start X pos, no scale = 13
+//		PageTRX = 162;	  //right page start X pos, no scale = 133
+//		PageTY = 58;	  //left page start Y pos, no scale = 48
 		
 		
 		if(cont != null) {
@@ -142,8 +140,8 @@ public class GuiBook {
 		str = EnumChatFormatting.UNDERLINE + str;
 		//draw title
 		GL11.glPushMatrix();
-		GL11.glScalef(0.75F, 0.75F, 0.75F);
-		font.drawString(str, 85-strlen, 43, GuiHelper.pickColor(GuiHelper.pickColorName.RED2.ordinal()));
+		GL11.glScalef(0.8F, 0.8F, 0.8F);
+		font.drawString(str, 82-strlen, 40, GuiHelper.pickColor(GuiHelper.pickColorName.RED2.ordinal()));
 		GL11.glPopMatrix();
 	}
 	
@@ -167,16 +165,18 @@ public class GuiBook {
 	 */
 	private static void drawStringWithSpecialSymbol(String str, int x, int y) {
 		String[] strArray = CalcHelper.stringConvNewlineToArray(str);
-
+		
+		GL11.glPushMatrix();
+		GL11.glScalef(0.8F, 0.8F, 0.8F);
+		
 		int newY = y;
 		for(String s : strArray) {
-			GL11.glPushMatrix();
-			GL11.glScalef(0.75F, 0.75F, 0.75F);
 			//drawSplitString(string, x, y, split width, color)
 			font.drawSplitString(s, x, newY, PageWidth, 0);
 			newY += font.splitStringWidth(s, PageWidth);
-			GL11.glPopMatrix();
 		}
+		
+		GL11.glPopMatrix();
 	}
 	
 	/** draw book picture 

@@ -364,5 +364,5 @@ gui.shincolle:dodge=閃避
 # Chat message
 chat.shincolle:bossspawn1=有艦娘出現在水面上!
 chat.shincolle:bossspawn2=偵測到艦娘入侵!
-chat.shincolle:addtargetclass=新增/移除攻擊目標類型: %s
+chat.shincolle:addtargetclass=新增攻擊目標類型: %s
 chat.shincolle:pointer.changeformation=陣型變換為

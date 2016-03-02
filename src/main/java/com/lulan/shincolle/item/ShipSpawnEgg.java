@@ -36,7 +36,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 /**custom spawn egg
 *  read egg NBTdata to spawn different ship
-*  metadata:0: all small ship, 1: all large ship 2+:specific ship for debug
+*  
+*  metadata: 0: random small ship, 1: random large ship 2+:specific ship
 **/
 public class ShipSpawnEgg extends Item {
 	
@@ -47,6 +48,7 @@ public class ShipSpawnEgg extends Item {
     private EntityLiving entityToSpawn = null;
     private String entityToSpawnName = null;
 
+    
     public ShipSpawnEgg() {
         super();
         this.setHasSubtypes(true);	//true for enable metadata
@@ -140,7 +142,7 @@ public class ShipSpawnEgg extends Item {
   			entityToSpawnName = ShipCalc.getEntityToSpawnName(entityType);
             LogHelper.info("DEBUG : spawn entity: "+entityToSpawnName);
             
-            if (EntityList.stringToClassMapping.containsKey(entityToSpawnName)) {
+            if(EntityList.stringToClassMapping.containsKey(entityToSpawnName)) {
                 entityToSpawn = (EntityLiving) EntityList.createEntityByName(entityToSpawnName, player.worldObj);
                 entityToSpawn.setLocationAndAngles(parX, parY, parZ, MathHelper.wrapAngleTo180_float(player.worldObj.rand.nextFloat()* 360.0F), 0.0F);
                 player.worldObj.spawnEntityInWorld(entityToSpawn);
@@ -171,8 +173,6 @@ public class ShipSpawnEgg extends Item {
 			NBTTagCompound nbt = itemstack.getTagCompound();
 			
 			if(nbt != null) {
-				LogHelper.info("DEBUG : old spawn egg");
-				
 				NBTTagList list = nbt.getTagList("ShipInv", 10);
 				ExtendShipProps extProps = entity.getExtProps();
 				int[] attrs = nbt.getIntArray("Attrs");
@@ -187,17 +187,19 @@ public class ShipSpawnEgg extends Item {
 					}
 				}
 				
-				//load bonus point
-				entity.setBonusPoint(ID.HP, (byte)attrs[1]);
-				entity.setBonusPoint(ID.ATK, (byte)attrs[2]);
-				entity.setBonusPoint(ID.DEF, (byte)attrs[3]);
-				entity.setBonusPoint(ID.SPD, (byte)attrs[4]);
-				entity.setBonusPoint(ID.MOV, (byte)attrs[5]);
-				entity.setBonusPoint(ID.HIT, (byte)attrs[6]);
-				entity.setEntityFlagI(ID.F.IsMarried, attrs[7]);
+				if(attrs != null && attrs.length > 7) {
+					//load bonus point
+					entity.setBonusPoint(ID.HP, (byte)attrs[1]);
+					entity.setBonusPoint(ID.ATK, (byte)attrs[2]);
+					entity.setBonusPoint(ID.DEF, (byte)attrs[3]);
+					entity.setBonusPoint(ID.SPD, (byte)attrs[4]);
+					entity.setBonusPoint(ID.MOV, (byte)attrs[5]);
+					entity.setBonusPoint(ID.HIT, (byte)attrs[6]);
+					entity.setEntityFlagI(ID.F.IsMarried, attrs[7]);
 
-				//load ship level
-				entity.setShipLevel(attrs[0], true);
+					//load ship level
+					entity.setShipLevel(attrs[0], true);
+				}
 				
 				//set custom name
 				String customname = nbt.getString("customname");
@@ -225,6 +227,7 @@ public class ShipSpawnEgg extends Item {
 				if(pid > 0) {
 					entity.setStateMinor(ID.M.PlayerUID, pid);
 				}
+				
 				if(sid > 0) {
 					entity.setStateMinor(ID.M.ShipUID, sid);
 				}
@@ -232,7 +235,6 @@ public class ShipSpawnEgg extends Item {
 				EntityHelper.setPetPlayerUUID(pid, entity);	//set owner uuid
 			}
 			else {
-				LogHelper.info("DEBUG : new spawn egg");
 				entity.setShipLevel(1, true);
 				
 				//set owner
@@ -292,49 +294,47 @@ public class ShipSpawnEgg extends Item {
                         return itemstack;
                     }
 
-//                    if(world.getBlock(i, j, k) instanceof BlockLiquid) {
-                    	//if creative mode = item not consume
-                        if(!player.capabilities.isCreativeMode) {
-                        	//cost exp if use specific egg
-                            if(itemstack.getItemDamage() > 1 && itemstack.hasTagCompound()) {
-                            	NBTTagCompound nbt = itemstack.getTagCompound();
-                            	int costLevel = nbt.getIntArray("Attrs")[0] / 3;
-                            	
-                            	if(player.experienceLevel < costLevel) {
-                            		return itemstack;
-                            	}
-                            	else {
-                            		player.addExperienceLevel(-costLevel);
-                            	}
-                            }
-                            	
-                            //item -1
-                            --itemstack.stackSize;
+                	//if creative mode = item not consume
+                    if(!player.capabilities.isCreativeMode) {
+                    	//cost exp if use specific egg
+                        if(itemstack.getItemDamage() > 1 && itemstack.hasTagCompound()) {
+                        	NBTTagCompound nbt = itemstack.getTagCompound();
+                        	int costLevel = nbt.getIntArray("Attrs")[0] / 3;
+                        	
+                        	if(player.experienceLevel < costLevel) {
+                        		return itemstack;
+                        	}
+                        	else {
+                        		player.addExperienceLevel(-costLevel);
+                        	}
                         }
-                        
-                        //spawn entity in front of player (1 block)
-                        if(itemstack.getItemDamage() > 200) {	//BOSS egg
-                        	LogHelper.info("DEBUG : use boss egg");
-                        	spawnEntity(player, itemstack, i, j+1D, k, false);
-                        }
-                        else {									//normal egg
-                        	LogHelper.info("DEBUG : use normal egg");
-                        	BasicEntityShip entity = (BasicEntityShip) spawnEntity(player, itemstack, i, j+1D, k, true);
+                        	
+                        //item -1
+                        --itemstack.stackSize;
+                    }
+                    
+                    //spawn entity in front of player (1 block)
+                    if(itemstack.getItemDamage() > 2000) {	//BOSS egg
+                    	LogHelper.info("DEBUG : use boss egg");
+                    	spawnEntity(player, itemstack, i, j+1D, k, false);
+                    }
+                    else {									//normal egg
+                    	LogHelper.info("DEBUG : use normal egg");
+                    	BasicEntityShip entity = (BasicEntityShip) spawnEntity(player, itemstack, i, j+1D, k, true);
 
-                            if(entity != null) {
-                            	//for egg with nameTag
-                                if(itemstack.hasDisplayName()) {
-                                    entity.setCustomNameTag(itemstack.getDisplayName());    
-                                }
-                                
-                            	//calc bonus point, set custom name and owner name
-                            	initEntityAttribute(itemstack, player, entity);
-                            	
-                            	//send sync packet
-                            	entity.sendSyncPacketAllValue();
+                        if(entity != null) {
+                        	//for egg with nameTag
+                            if(itemstack.hasDisplayName()) {
+                                entity.setCustomNameTag(itemstack.getDisplayName());    
                             }
-                        }//end spawn entity
-//                    }//end position can spawn
+                            
+                        	//calc bonus point, set custom name and owner name
+                        	initEntityAttribute(itemstack, player, entity);
+                        	
+                        	//send sync packet
+                        	entity.sendSyncPacketAllValue();
+                        }
+                    }//end spawn entity
                 }//end get position
 
                 return itemstack;
@@ -342,67 +342,6 @@ public class ShipSpawnEgg extends Item {
         }
     }
   	
-    
-//  	/** VANILLA SPAWN EGG onItemUse event (use item to block)
-//     * Callback for item usage. If the item does something special on right clicking, he will have one of those. Return
-//     * True if something happen and false if it don't. This is for ITEMS, not BLOCKS
-//     */
-//    @Override
-//    public boolean onItemUse(ItemStack itemstack, EntityPlayer player, World world, int par4, int par5, int par6, int par7, float par8, float par9, float par10) {
-//        
-//    	if(world.isRemote) {	//client side
-//            return false;
-//        }
-//        else {					//server side
-//        	//if creative mode = item not consume
-//            if(!player.capabilities.isCreativeMode) {
-//            	//cost exp if use specific egg
-//                if(itemstack.getItemDamage() > 1 && itemstack.hasTagCompound()) {
-//                	NBTTagCompound nbt = itemstack.getTagCompound();
-//                	int costLevel = nbt.getIntArray("Attrs")[0] / 3;
-//                	
-//                	if(player.experienceLevel < costLevel) return false;
-//                	else {
-//                		player.experienceLevel = player.experienceLevel - costLevel;
-//                	}
-//                }
-//                	
-//                //item -1
-//                --itemstack.stackSize;
-//            }
-//            
-//            Block block = world.getBlock(par4, par5, par6);		//get spawn position
-//            par4 += Facing.offsetsXForSide[par7];
-//            par5 += Facing.offsetsYForSide[par7];
-//            par6 += Facing.offsetsZForSide[par7];
-//            double d0 = 0.0D;
-//
-//            if(par7 == 1 && block.getRenderType() == 11) {			//type11 = fence
-//                d0 = 0.5D;
-//            }
-//            
-//            //spawn entity in front of player (1 block)
-//            if(itemstack.getItemDamage() > 200) {	//BOSS egg
-//            	EntityLivingBase entity = (EntityLivingBase) spawnEntity(world, itemstack, par4 + 0.5D, par5 + d0, par6 + 0.5D);
-//            }
-//            else {									//normal egg
-//            	BasicEntityShip entity = (BasicEntityShip) spawnEntity(world, itemstack, par4 + 0.5D, par5 + d0, par6 + 0.5D);
-//
-//                if(entity != null) {
-//                	//calc bonus point, set custom name and owner name
-//                	initEntityAttribute(itemstack, player, entity);
-//             	
-//                	//for egg with nameTag
-//                    if(itemstack.hasDisplayName()) {
-//                        entity.setCustomNameTag(itemstack.getDisplayName());    
-//                    }
-//                }
-//            }
-//
-//            return true;
-//        }
-//    }
-     
     //display egg information
     @Override
     public void addInformation(ItemStack itemstack, EntityPlayer player, List list, boolean par4) {

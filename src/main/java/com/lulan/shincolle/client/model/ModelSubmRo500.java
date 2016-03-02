@@ -22,8 +22,6 @@ import com.lulan.shincolle.utility.EmotionHelper;
 public class ModelSubmRo500 extends ModelBase implements IModelEmotion {
     public ModelRenderer BodyMain;
     public ModelRenderer Neck;
-    public ModelRenderer BoobR;
-    public ModelRenderer BoobL;
     public ModelRenderer ArmLeft01;
     public ModelRenderer ArmRight01;
     public ModelRenderer Butt;
@@ -219,19 +217,10 @@ public class ModelSubmRo500 extends ModelBase implements IModelEmotion {
         this.Flower4.setRotationPoint(0.0F, 0.0F, 0.0F);
         this.Flower4.addBox(0.0F, 0.0F, -1.5F, 0, 4, 3, 0.0F);
         this.setRotateAngle(Flower4, -1.2217304763960306F, 0.0F, 0.0F);
-        this.BoobR = new ModelRenderer(this, 33, 103);
-        this.BoobR.setRotationPoint(-3.4F, -9.0F, -2.7F);
-        this.BoobR.addBox(-3.0F, 0.0F, 0.0F, 6, 4, 4, 0.0F);
-        this.setRotateAngle(BoobR, -0.6981317007977318F, -0.08726646259971647F, -0.08726646259971647F);
         this.Equip102 = new ModelRenderer(this, 28, 73);
         this.Equip102.setRotationPoint(-22.0F, 0.0F, 0.0F);
         this.Equip102.addBox(0.0F, -3.0F, -1.0F, 7, 6, 2, 0.0F);
         this.setRotateAngle(Equip102, 0.7853981633974483F, 0.0F, 0.0F);
-        this.BoobL = new ModelRenderer(this, 33, 103);
-        this.BoobL.mirror = true;
-        this.BoobL.setRotationPoint(3.4F, -9.0F, -2.7F);
-        this.BoobL.addBox(-3.0F, 0.0F, 0.0F, 6, 4, 4, 0.0F);
-        this.setRotateAngle(BoobL, -0.6981317007977318F, 0.08726646259971647F, 0.08726646259971647F);
         this.Face4 = new ModelRenderer(this, 98, 113);
         this.Face4.setRotationPoint(0.0F, 0.0F, -0.1F);
         this.Face4.addBox(-7.0F, -14.2F, -6.5F, 14, 14, 1, 0.0F);
@@ -264,9 +253,7 @@ public class ModelSubmRo500 extends ModelBase implements IModelEmotion {
         this.BodyMain.addChild(this.ArmLeft01);
         this.Hair.addChild(this.Ahoke);
         this.HairR01.addChild(this.HairR02);
-        this.BodyMain.addChild(this.BoobR);
         this.Equip101.addChild(this.Equip102);
-        this.BodyMain.addChild(this.BoobL);
         
         //發光支架
         this.GlowBodyMain = new ModelRenderer(this, 0, 0);
@@ -367,9 +354,6 @@ public class ModelSubmRo500 extends ModelBase implements IModelEmotion {
 	  	this.Head.rotateAngleY = f3 / 57.29578F;	//左右角度 角度轉成rad 即除以57.29578
 	    
 	    //正常站立動作
-	    //胸部
-  	    this.BoobL.rotateAngleX = angleX * 0.06F - 0.7F;
-  	    this.BoobR.rotateAngleX = angleX * 0.06F - 0.7F;
 	  	//body
   	    this.Ahoke.rotateAngleY = angleX * 0.25F + 0.5236F;
 	  	this.BodyMain.rotateAngleX = -0.1F;

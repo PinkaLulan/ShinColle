@@ -535,6 +535,11 @@ public class ModelHeavyCruiserNe extends ModelBase implements IModelEmotion {
   		}//end if sneaking
   		
 	    if(ent.getIsSitting() || ent.getIsRiding()) {  //ÃM­¼°Ê§@
+	    	//change riding height
+	    	if(ent.getIsRiding()) {
+	    		GL11.glTranslatef(0F, -0.6F, 0F);
+	    	}
+	    	
 	    	if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {
 		    	GL11.glTranslatef(0F, 0.8F, 0F);
 		    	//head
@@ -581,6 +586,8 @@ public class ModelHeavyCruiserNe extends ModelBase implements IModelEmotion {
 	    	else {
 		    	GL11.glTranslatef(0F, 0.8F, 0F);
 		    	//head
+		    	this.Head.rotateAngleX -= 0.5F;
+		    	this.GlowHead.rotateAngleX -= 0.5F;
 		    	this.Head.offsetY = 0.25F;
 		    	this.GlowHead.offsetY = 0.25F;
 		    	//arm

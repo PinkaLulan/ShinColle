@@ -1,6 +1,8 @@
 package com.lulan.shincolle.entity.cruiser;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
@@ -28,7 +30,7 @@ public class EntityHeavyCruiserNe extends BasicEntityShipSmall {
 	//for morph
 	@Override
 	public float getEyeHeight() {
-		return 1.7375F;
+		return 1F;
 	}
 	
 	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc
@@ -43,28 +45,30 @@ public class EntityHeavyCruiserNe extends BasicEntityShipSmall {
 		//use range attack (light)
 		this.tasks.addTask(11, new EntityAIShipRangeAttack(this));			   //0011
 	}
+	
+	//NE級額外增加屬性
+	@Override
+	public void calcShipAttributes() {
+		EffectEquip[ID.EF_CRI] = EffectEquip[ID.EF_CRI] + 0.15F;
+		
+		super.calcShipAttributes();	
+	}
 
-//    @Override
-//    public void onLivingUpdate() {
-//    	//check server side
-//    	if(!this.worldObj.isRemote) {
-//    	}
-//    	super.onLivingUpdate();
-//    }
-    
-//    @Override
-//  	public boolean interact(EntityPlayer player) {	
-//		ItemStack itemstack = player.inventory.getCurrentItem();  //get item in hand
-//		
-//		//use cake to change state
-//		if(itemstack != null) {
-//			if(itemstack.getItem() == Items.cake) {
-//				
-//				return true;
-//			}
-//		}
-//		return super.interact(player);
-//  	}
+    @Override
+    public void onLivingUpdate() {
+    	//check server side
+    	if(!this.worldObj.isRemote) {
+    		//check every 5 sec
+    		if(this.ticksExisted % 100 == 0) {
+	    		//apply potion effect in the night
+	        	if(!this.worldObj.isDaytime() && this.getStateFlag(ID.F.UseRingEffect)) {	
+        			this.addPotionEffect(new PotionEffect(Potion.moveSpeed.id, 300, 1));
+        			this.addPotionEffect(new PotionEffect(Potion.jump.id, 300, 2));
+        		}
+        	}
+    	}
+    	super.onLivingUpdate();
+    }
     
     @Override
 	public int getKaitaiType() {
@@ -74,10 +78,10 @@ public class EntityHeavyCruiserNe extends BasicEntityShipSmall {
     @Override
 	public double getMountedYOffset() {
     	if(this.isSitting()) {
-  			return (double)this.height * 0.2F;
+  			return (double)this.height * -0.15F;
   		}
   		else {
-  			return (double)this.height * 0.6F;
+  			return (double)this.height * 0.15F;
   		}
 	}
 

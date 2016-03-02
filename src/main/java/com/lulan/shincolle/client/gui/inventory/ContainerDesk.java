@@ -22,15 +22,16 @@ public class ContainerDesk extends Container {
 	private InventoryPlayer playerInv;
 	private EntityPlayer player;
 	private ExtendPlayerProps extProps;
-	private int guiFunc, bookChap, bookPage, allyCD;
+	private int guiFunc, bookChap, bookPage, allyCD, type;
 	
 	
-	public ContainerDesk(InventoryPlayer invPlayer, TileEntityDesk te, EntityPlayer player) {
+	public ContainerDesk(InventoryPlayer invPlayer, TileEntityDesk te, EntityPlayer player, int type) {
 		this.playerInv = invPlayer;
 		this.tile = te;
 		this.player = player;
 		this.extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
-	
+		this.type = type;
+		
 		//server side flag
 		if(this.extProps != null) {
 			this.extProps.setOpeningGUI(true);
@@ -40,10 +41,15 @@ public class ContainerDesk extends Container {
 	//玩家是否可以觸發右鍵點方塊事件
 	@Override
 	public boolean canInteractWith(EntityPlayer player) {
-		return tile.isUseableByPlayer(player);
+		//open GUI with TileEntity
+		if(type == 0) {
+			return tile.isUseableByPlayer(player);
+		}
+		//open GUI with item
+		return true;
 	}
 	
-	/** Called when the container is closed */
+	/** Called when the container is closed, used for team list sync */
     public void onContainerClosed(EntityPlayer player) {
     	ExtendPlayerProps props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
     	
@@ -68,26 +74,29 @@ public class ContainerDesk extends Container {
 	@Override
 	public void addCraftingToCrafters (ICrafting crafting) {
 		super.addCraftingToCrafters(crafting);
-		crafting.sendProgressBarUpdate(this, 1, this.tile.guiFunc);
-		crafting.sendProgressBarUpdate(this, 2, this.tile.book_chap);
-		crafting.sendProgressBarUpdate(this, 3, this.tile.book_page);
-		crafting.sendProgressBarUpdate(this, 4, this.tile.radar_zoomLv);
-		crafting.sendProgressBarUpdate(this, 5, this.extProps.getPlayerTeamCooldownInSec());
+		if(type == 0) {
+			crafting.sendProgressBarUpdate(this, 1, this.tile.guiFunc);
+			crafting.sendProgressBarUpdate(this, 2, this.tile.book_chap);
+			crafting.sendProgressBarUpdate(this, 3, this.tile.book_page);
+			crafting.sendProgressBarUpdate(this, 4, this.tile.radar_zoomLv);
+			crafting.sendProgressBarUpdate(this, 5, this.extProps.getPlayerTeamCooldownInSec());
+		}
 	}
 	
 	//將container數值跟tile entity內的數值比對, 如果不同則發送更新給client使gui呈現新數值
 	@Override
 	public void detectAndSendChanges() {
 		super.detectAndSendChanges();
-				
-        for(Object crafter : this.crafters) {
-            ICrafting icrafting = (ICrafting) crafter;
-            
-            if(this.allyCD != this.extProps.getPlayerTeamCooldownInSec()) {
-                icrafting.sendProgressBarUpdate(this, 5, this.extProps.getPlayerTeamCooldownInSec());
-                this.allyCD = this.extProps.getPlayerTeamCooldownInSec();
-            }
-        }
+		if(type == 0) {	
+	        for(Object crafter : this.crafters) {
+	            ICrafting icrafting = (ICrafting) crafter;
+	            
+	            if(this.allyCD != this.extProps.getPlayerTeamCooldownInSec()) {
+	                icrafting.sendProgressBarUpdate(this, 5, this.extProps.getPlayerTeamCooldownInSec());
+	                this.allyCD = this.extProps.getPlayerTeamCooldownInSec();
+	            }
+	        }
+		}
     }
 
 	//client端container接收新值
@@ -108,7 +117,6 @@ public class ContainerDesk extends Container {
 			this.tile.radar_zoomLv = updatedValue;
 			break;
 		case 5:
-//			LogHelper.info("DEBUG : sync ally cd "+updatedValue);
 			this.extProps.setPlayerTeamCooldown(updatedValue * 20);  //second to tick
 			break;
 		}

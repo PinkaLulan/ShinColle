@@ -232,7 +232,7 @@ gui.shincolle:book.chap1.title16=Abyssal Portable Radar
 gui.shincolle:book.chap1.text16d0=<br><br><br><br><br><br><br><br><br>The §d§nAbyssal Portable Radar§r§0 can detect nearby owned ships and further contact the ship or give orders.
 gui.shincolle:book.chap1.text16d1=
 gui.shincolle:book.chap1.title17=Abyssal Adrmiral's Desk
-gui.shincolle:book.chap1.text17d0=<br><br><br><br><br><br><br><br><br>This stable and durable §d§nAbyssal Adrmiral's Desk§r§0 is made of obsidian. In addition to deal with the official business, it can also block the gunfire from angry secretary ship.<br><br>**Please ask the secretary ship before purchasing the furniture.
+gui.shincolle:book.chap1.text17d0=<br><br><br><br><br><br><br><br><br>This stable and durable §d§nAbyssal Adrmiral's Desk§r§0 is made of obsidian. In addition to deal with the official business, it can also block the gunfire from angry secretary ship.<br>**Please ask the secretary ship before purchasing the furniture.
 gui.shincolle:book.chap1.text17d1=§9Radar§0:<br>Show a list of nearby owned ships, click ship on the list to carry out other action.<br><br>§9Abyssal Logbook§0:<br>Items, blocks and ships introduction.<br><br>§9Faction§0:<br>Create or add team with PVP mode.<br><br>§9Target List§0:<br>Browse attack target list.
 
 # GUI: Book Text Chap 2
@@ -364,5 +364,5 @@ gui.shincolle:dodge=Dodge
 # Chat message
 chat.shincolle:bossspawn1=A Fleet Walks on the Water!
 chat.shincolle:bossspawn2=Detecte An Invasion Fleet!
-chat.shincolle:pointer.addtargetclass=Add/Remove target type to attack list: %s
+chat.shincolle:pointer.addtargetclass=Add target type to attack list: %s
 chat.shincolle:pointer.changeformation=Change formation to

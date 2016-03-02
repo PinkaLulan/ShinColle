@@ -40,7 +40,7 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileFurnace
 	public static final int POWERMAX = 1382400; //max power storage
 	public static final int SLOTS_NUM = 10;
 	public static final int SLOTS_OUT = 0;
-	public static final int[] SLOTS_ALL = new int[] {0,1,2,3,4,5,6,7,8,9};
+	public static final int[] SLOTS_ALL = new int[] {0,2,3,4,5,6,7,8,9}; //slot 1 for fuel
 
 	
 	public TileMultiGrudgeHeavy() {
@@ -59,6 +59,7 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileFurnace
 	//依照輸出入口設定, 決定漏斗等裝置如何輸出入物品到特定slot中
 	@Override
 	public int[] getAccessibleSlotsFromSide(int side) {
+		//type 1/2: large shipyard
 		//slot 0:output 2~10:inventory
 		//side 0:bottom 1:top 2~5:side
 		if(this.structType == 1 || this.structType == 2) {

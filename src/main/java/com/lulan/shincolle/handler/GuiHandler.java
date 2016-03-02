@@ -67,8 +67,9 @@ public class GuiHandler implements IGuiHandler {
 			break;
 		case ID.G.ADMIRALDESK:		//GUI admiral desk
 			tile = world.getTileEntity(x, y, z);  //確定抓到entity才開ui 以免噴出NPE
+			
+			//open GUI with TileEntity
 			if((tile != null && tile instanceof TileEntityDesk)) {  //server取得container
-				
 				//sync tile when gui opened
 				((TileEntityDesk)tile).sendSyncPacket();
 				
@@ -77,9 +78,12 @@ public class GuiHandler implements IGuiHandler {
 				props.sendSyncPacket(2);
 				props.sendSyncPacket(3);
 				
-				return new ContainerDesk(player.inventory, (TileEntityDesk) tile, player);
+				return new ContainerDesk(player.inventory, (TileEntityDesk) tile, player, 0);
 			}
-			break;
+			//open GUI with item
+			else {
+				return new ContainerDesk(player.inventory, null, player, x);
+			}
 		case ID.G.ADMIRALDESK_ITEM:	//GUI admiral radar/book
 			return new ContainerDeskItemForm(player.inventory, player);
 		case ID.G.FORMATION:  		//GUI formation
@@ -118,10 +122,15 @@ public class GuiHandler implements IGuiHandler {
 			return null;
 		case ID.G.ADMIRALDESK:	//GUI large shipyard
 			tile = world.getTileEntity(x, y, z);  //確定抓到entity才開ui 以免噴出NPE
+			
+			//open GUI with TileEntity
 			if((tile != null && tile instanceof TileEntityDesk)) {  //server取得container
-				return new GuiDesk(player.inventory, (TileEntityDesk) tile);
+				return new GuiDesk(player.inventory, (TileEntityDesk) tile, 0);
 			}
-			return null;
+			//open GUI with item
+			else {
+				return new GuiDesk(player.inventory, null, x);
+			}
 		case ID.G.ADMIRALDESK_ITEM:	//GUI admiral radar/book
 			return new GuiDeskItemForm(player.inventory, x);
 		case ID.G.FORMATION:		//GUI formation

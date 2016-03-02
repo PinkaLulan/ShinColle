@@ -21,8 +21,6 @@ import com.lulan.shincolle.utility.EmotionHelper;
 public class ModelSubmU511 extends ModelBase implements IModelEmotion {
     public ModelRenderer BodyMain;
     public ModelRenderer Neck;
-    public ModelRenderer BoobR;
-    public ModelRenderer BoobL;
     public ModelRenderer ArmLeft01;
     public ModelRenderer ArmRight01;
     public ModelRenderer Butt;
@@ -95,11 +93,6 @@ public class ModelSubmU511 extends ModelBase implements IModelEmotion {
         this.Neck.setRotationPoint(0.0F, -10.5F, 0.0F);
         this.Neck.addBox(-4.5F, -2.0F, -6.0F, 9, 4, 10, 0.0F);
         this.setRotateAngle(Neck, 0.05235987755982988F, 0.0F, 0.0F);
-        this.BoobL = new ModelRenderer(this, 33, 103);
-        this.BoobL.mirror = true;
-        this.BoobL.setRotationPoint(3.3F, -8.8F, -2.7F);
-        this.BoobL.addBox(-3.0F, 0.0F, 0.0F, 6, 4, 4, 0.0F);
-        this.setRotateAngle(BoobL, -0.6981317007977318F, 0.08726646259971647F, 0.08726646259971647F);
         this.ArmRight03 = new ModelRenderer(this, 28, 78);
         this.ArmRight03.setRotationPoint(0.0F, 3.0F, 1.0F);
         this.ArmRight03.addBox(-2.5F, 0.0F, -4.0F, 5, 12, 5, 0.0F);
@@ -135,10 +128,6 @@ public class ModelSubmU511 extends ModelBase implements IModelEmotion {
         this.Skirt.setRotationPoint(0.0F, 5.0F, -2.0F);
         this.Skirt.addBox(-8.0F, 0.0F, -4.5F, 16, 9, 8, 0.0F);
         this.setRotateAngle(Skirt, 0.3490658503988659F, -3.141592653589793F, 0.0F);
-        this.BoobR = new ModelRenderer(this, 33, 103);
-        this.BoobR.setRotationPoint(-3.3F, -8.8F, -2.7F);
-        this.BoobR.addBox(-3.0F, 0.0F, 0.0F, 6, 4, 4, 0.0F);
-        this.setRotateAngle(BoobR, -0.6981317007977318F, -0.08726646259971647F, -0.08726646259971647F);
         this.EquipR = new ModelRenderer(this, 0, 23);
         this.EquipR.setRotationPoint(-11.5F, 0.0F, 4.0F);
         this.EquipR.addBox(-5.0F, 0.0F, -20.0F, 5, 13, 20, 0.0F);
@@ -228,7 +217,6 @@ public class ModelSubmU511 extends ModelBase implements IModelEmotion {
         this.EquipMid.addChild(this.EquipL);
         this.Hair.addChild(this.HairL01);
         this.BodyMain.addChild(this.Neck);
-        this.BodyMain.addChild(this.BoobL);
         this.ArmRight02.addChild(this.ArmRight03);
         this.HairR01.addChild(this.HairR02);
         this.BodyMain.addChild(this.Butt);
@@ -237,7 +225,6 @@ public class ModelSubmU511 extends ModelBase implements IModelEmotion {
         this.BodyMain.addChild(this.ArmLeft01);
         this.Hair.addChild(this.HairR01);
         this.Butt.addChild(this.Skirt);
-        this.BodyMain.addChild(this.BoobR);
         this.EquipMid.addChild(this.EquipR);
         this.ArmLeft02.addChild(this.ArmLeft03);
         this.EquipBase.addChild(this.EquipMid);
@@ -350,9 +337,6 @@ public class ModelSubmU511 extends ModelBase implements IModelEmotion {
 	  	this.Head.rotateAngleY = f3 / 57.29578F;	//左右角度 角度轉成rad 即除以57.29578
 	    
 	    //正常站立動作
-	    //胸部
-  	    this.BoobL.rotateAngleX = angleX * 0.06F - 0.7F;
-  	    this.BoobR.rotateAngleX = angleX * 0.06F - 0.7F;
 	  	//Body
   	    this.Ahoke.rotateAngleY = angleX * 0.25F + 0.5236F;
 	  	this.BodyMain.rotateAngleX = 0F;
