@@ -103,8 +103,8 @@ item.shincolle:EquipArmor.name=深海裝甲
 item.shincolle:EquipArmor1.name=重型深海裝甲
 
 # Spawn Egg
-item.shincolle:smallegg.name=建造小型棲艦
-item.shincolle:largeegg.name=建造大型棲艦
+item.shincolle:smallegg.name=深海棲艦蛋(初級)
+item.shincolle:largeegg.name=深海棲艦蛋(高級)
 item.shincolle:shipegg2.name=驅逐イ級
 item.shincolle:shipegg3.name=驅逐ロ級
 item.shincolle:shipegg4.name=驅逐ハ級
@@ -237,6 +237,21 @@ gui.shincolle:book.chap1.text17d1=            使用指南<br><br>§9雷達§0�
 
 # GUI: Book Text Chap 2
 gui.shincolle:book.chap2.title=建造
+gui.shincolle:book.chap2.title0=建造初級深海棲艦
+gui.shincolle:book.chap2.text0d0=<br><br><br><br><br><br><br><br><br><br><br>§4深海提督§0收集到足夠資源後，就能在§9深海熱泉§0開始建造各種初級§c深海棲艦§0。
+gui.shincolle:book.chap2.text0d1=<br><br><br><br><br><br><br><br>§9深海熱泉§0建造的材料需求為四種資材各§916~64§0個，並且需要消耗§4大量岩漿§0作為能源。
+gui.shincolle:book.chap2.title1=
+gui.shincolle:book.chap2.text1d0=<br><br><br><br>投入資材及足夠岩漿後，點選介面右邊的§4棲艦生怪蛋圖示§0即可開始建造。<br><br>§9連點兩次§0棲艦生怪蛋圖示會出現§4紅色邊框§0，此時會紀錄目前材料量並進入§c連續建造模式§0，只要補充足夠材料就會持續以紀錄的材料量連續建造。
+gui.shincolle:book.chap2.text1d1=建造完成後會得到§9棲艦生怪蛋§0，使用後會製造出一隻§c深海棲艦§0。<br><br>四種材料的投入數量會影響產生的棲艦種類，像是§d多金屬礦§0會影響§d航空母艦§0類出現機率。<br><br>一般來說投入越多資源建造，就有越高機率製造出高級深海棲艦。
+gui.shincolle:book.chap2.title2=
+gui.shincolle:book.chap2.text2d0=<br><br><br><br>點選介面右邊的§9艦砲圖示§0，則為§4開發裝備§0，開發條件同建造§c深海棲艦§0。
+gui.shincolle:book.chap2.text2d1=§c小提示：§0<br><br>1. 燃料欄位放入§9高速建造材料§0可以立刻加快建造進度。<br><br>2. 可以將§9EnderTank§4 (mod: EnderStorage)§0等容器放在燃料欄位中持續補充岩漿。
+gui.shincolle:book.chap2.title3=大型建造
+gui.shincolle:book.chap2.text3d0=<br>當§4深海提督§0累積了相當充足的資源後，就可以開始進行§c大型建造§0。<br><br>進行§c大型建造§0需要先建造出§9超深海熱漩§0，是一個3x3x3的大型結構物，可以吸納大量資源的漩渦。
+gui.shincolle:book.chap2.text3d1=<br><br><br><br>§9建造方法：§0<br>§c底層：§33x3的多金屬磚§0<br><br>§c中層：§3四個角落擺放多金屬磚§0<br><br>§c頂層：§3正中央擺放一個沉重的怨念團塊§0<br><br>擺放好方塊之後§9右鍵§0點擊沉重的怨念團塊，漩渦就會成形。
+gui.shincolle:book.chap2.title4=
+gui.shincolle:book.chap2.text4d0=§9使用介面：§0<br>1. 正下方九格物品欄可以投入/取出資源。<br><br>2. 點選四種資源圖示，調整四種資源建造使用量。<br><br>3. 點選§4棲艦生怪蛋§0開始大型建造。<br><br>4. §9雙擊§0圖示則進入§4連續建造模式§0。
+gui.shincolle:book.chap2.text4d1=上下§4紅色箭頭§0可以選擇要§9取出§0或是§9投入§0資源。<br><br>每種建造材料最少需要§9100§0個，最多為§91000§0個，並且會消耗大量岩漿作為能源。<br><br>同樣地資源消耗量會影響棲艦種類跟等級，投入越多資源建造，就有越高機率製造出較高級的§c深海棲艦§0。
 
 # GUI: Book Text Chap 3
 gui.shincolle:book.chap3.title=船艦屬性

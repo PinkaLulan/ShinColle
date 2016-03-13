@@ -103,8 +103,8 @@ item.shincolle:EquipArmor.name=Abyssal Armor
 item.shincolle:EquipArmor1.name=Heavy Abyssal Armor
 
 # Spawn Egg
-item.shincolle:smallegg.name=Construct Small Seikan
-item.shincolle:largeegg.name=Construct Large Seikan
+item.shincolle:smallegg.name=Shinkeiseikan Spawn Egg (Primary Class)
+item.shincolle:largeegg.name=Shinkeiseikan Spawn Egg (Advanced Class)
 item.shincolle:shipegg2.name=Destroyer I-Class
 item.shincolle:shipegg3.name=Destroyer Ro-Class
 item.shincolle:shipegg4.name=Destroyer Ha-Class
@@ -237,6 +237,21 @@ gui.shincolle:book.chap1.text17d1=§9Radar§0:<br>Show a list of nearby owned sh
 
 # GUI: Book Text Chap 2
 gui.shincolle:book.chap2.title=Construction
+gui.shincolle:book.chap2.title0=Primary Class Shinkeiseikan
+gui.shincolle:book.chap2.text0d0=<br><br><br><br><br><br><br><br><br><br><br>You can start building primary class §cShinkeiseikan§0 in §9Abyssal Hydrothermal Vent§0 if you have collected enough resources.
+gui.shincolle:book.chap2.text0d1=<br><br><br><br><br><br><br><br><br><br>You need §916~64§0 §4Grudge / Abyssium Ingot / Polymetallic Nodules / Grudgeful Ammo§0 and a large amount of lava as power.
+gui.shincolle:book.chap2.title1=
+gui.shincolle:book.chap2.text1d0=<br><br><br><br>After putting resources into the §9Abyssal Hydrothermal Vent§0, click the §4"Ship Spawn Egg"§0 icon on the right side to start building §cShinkeiseikan§0.<br><br>§9Double Click§0 the icon to enter a §cContinuously Build Mode§0, the amounts of four resources will be recorded and every construction will consume the recorded resources.
+gui.shincolle:book.chap2.text1d1=You can get a §9Ship Spawn Egg§0 when construction is completed, use the egg to create a random §cShinkeiseikan§0.<br><br>The spawn egg user will become the §cShinkeiseikan§0's owner.<br><br>The amounts of four resources will affect the kind of §cShinkeiseikan§0, ex: §dPolymetal§0 will §9increase§0 the prob of §dAircraft Carrier§0.
+gui.shincolle:book.chap2.title2=
+gui.shincolle:book.chap2.text2d0=<br><br><br><br>In general, the more materials consumed, the better Shinkeiseikan you get.<br><br>To §9Develop Equipments§0, click the §4"Cannon"§0 icon, the construction condition is same with ship building.
+gui.shincolle:book.chap2.text2d1=§cTips:§0<br><br>1. Put §9Instant Construction Material§0 into fuel slot to speed up build progress.<br><br>2. Put §9EnderTank§4 (mod: EnderStorage)§0 into fuel slot to refuel lava.
+gui.shincolle:book.chap2.title3=Large Construction
+gui.shincolle:book.chap2.text3d0=<br>When you have accumulated a lot of resources, you can try to build advanced class §cShinkeiseikan§0 in §9Hadal Hydrothermal Vortex§0.
+gui.shincolle:book.chap2.text3d1=<br><br><br><br>§9Hadal Hydrothermal Vortex§0 is a 3x3x3 multiblock building:<br><br>§cBottom Layer:§3 3x3 Polymetallic Block§0<br><br>§cMiddle Layer: §34 corners of Polymetallic Block§0<br><br>§cTop Layer: §3Heavy Grudge Lump§0<br><br>§9Right click§0 the §4Heavy Grudge Lump§0 to activate the vortex.
+gui.shincolle:book.chap2.title4=
+gui.shincolle:book.chap2.text4d0=§9To construct advanced §cShinkeiseikan§0:<br><br>1. Put resources into the 9 slots.<br><br>2. Click 4 resources icon and adjust the value by arrows.<br><br>3. Click §4"Ship Spawn Egg"§0 icon to start construction.<br><br>4. §9Double Click§0 to enter §4Continuously Build Mode§0.
+gui.shincolle:book.chap2.text4d1=Click the §4Red Arrow§0 to change resources mode: §9Release§0 or §9Suck In§0.<br><br>The large construction requires §9100~1000§0 each resources and lots of lava to process.<br><br>And the more materials consumed, the better §cShinkeiseikan§0 you get.
 
 # GUI: Book Text Chap 3
 gui.shincolle:book.chap3.title=Ship Attributes

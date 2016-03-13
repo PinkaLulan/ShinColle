@@ -13,7 +13,7 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-import com.lulan.shincolle.client.gui.inventory.ContainerDeskItemForm;
+import com.lulan.shincolle.client.gui.inventory.ContainerFormation;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
 import com.lulan.shincolle.network.C2SGUIPackets;
@@ -56,7 +56,7 @@ public class GuiFormation extends GuiContainer {
 	
 	
 	public GuiFormation(InventoryPlayer par1) {
-		super(new ContainerDeskItemForm(par1, ClientProxy.getClientPlayer()));
+		super(new ContainerFormation(par1, ClientProxy.getClientPlayer()));
 		this.xSize = 256;
 		this.ySize = 192;
 		

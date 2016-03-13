@@ -122,7 +122,7 @@ public class EntitySubmU511 extends BasicEntityShipSmall implements IShipInvisib
   	
   	@Override
 	public int getKaitaiType() {
-		return 0;
+		return 2;
 	}
   	
   	//潛艇的輕攻擊一樣使用飛彈

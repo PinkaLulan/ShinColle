@@ -423,7 +423,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
 
 	@Override
 	public int getKaitaiType() {
-		return 1;
+		return 3;
 	}
 	
 	@Override

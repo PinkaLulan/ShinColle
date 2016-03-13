@@ -264,7 +264,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
   	
   	@Override
 	public int getKaitaiType() {
-		return 0;
+		return 2;
 	}
   	
   	@Override

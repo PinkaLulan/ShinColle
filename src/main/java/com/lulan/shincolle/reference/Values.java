@@ -433,8 +433,8 @@ public class Values {
 	/** BOOK CONTENT MAP
 	 *  map<int, List<int[]>> = <ChapPage#, Content List<Content Array>>
 	 *  
-	 *  ChapPage#: ex: 01020 = chap 1, page 20
-	 *                 02018 = chap 2, page 18
+	 *  ChapPage#: ex: 1020 = chap 1, page 20
+	 *                 2018 = chap 2, page 18
 	 *                 
 	 *  Content List: list of content in int array               
 	 *  
@@ -638,6 +638,42 @@ public class Values {
 								new int[] {2, 0, 3,  37, ID.Item.ObsidianB},
 								new int[] {2, 0, 43, 37, ID.Item.ObsidianB},
 								new int[] {2, 0, 81, 17, ID.Item.Desk}));
+		//chap 2: construction
+		//page 0: vent
+		put(2000, Arrays.asList(new int[] {0, 0, 0, 0},
+								new int[] {0, 1, 0, 0},
+								new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
+								new int[] {1, 1, 0, -6, 0, 100, 134, 100, 46},
+								new int[] {2, 0, 3,  -3, ID.Item.Grudge},
+								new int[] {2, 0, 23, -3, ID.Item.LaBucket},
+								new int[] {2, 0, 43, -3, ID.Item.Grudge},
+								new int[] {2, 0, 3,  17, ID.Item.LaBucket},
+								new int[] {2, 0, 23, 17, ID.Item.ObsidianB},
+								new int[] {2, 0, 43, 17, ID.Item.LaBucket},
+								new int[] {2, 0, 3,  37, ID.Item.ObsidianB},
+								new int[] {2, 0, 23, 37, ID.Item.ObsidianB},
+								new int[] {2, 0, 43, 37, ID.Item.ObsidianB},
+								new int[] {2, 0, 81, 17, ID.Item.SmallSY}));
+		//page 1: vent
+		put(2001, Arrays.asList(new int[] {0, 0, 0, 0},
+								new int[] {0, 1, 0, 0},
+								new int[] {1, 0, 25, -12, 0, 0, 230, 50, 26}));
+		//page 2: vent
+		put(2002, Arrays.asList(new int[] {0, 0, 0, 0},
+								new int[] {0, 1, 0, 0},
+								new int[] {1, 0, 25, -12, 0, 50, 230, 50, 26}));
+		//page 3: vortex
+		put(2003, Arrays.asList(new int[] {0, 0, 0, 0},
+								new int[] {0, 1, 0, 0},
+								new int[] {1, 0, 0, 60, 0, 100, 180, 100, 68},
+								new int[] {1, 1, -7, -18, 0, 200, 0, 38, 38},
+								new int[] {1, 1, 31, -18, 0, 200, 38, 38, 38},
+								new int[] {1, 1, 69, -18, 0, 200, 76, 38, 38}));
+		//page 4: vortex
+		put(2004, Arrays.asList(new int[] {0, 0, 0, 0},
+								new int[] {0, 1, 0, 0}));
+
+		
 	}});
 	
 	

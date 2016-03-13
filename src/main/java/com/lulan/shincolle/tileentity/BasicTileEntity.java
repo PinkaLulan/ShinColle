@@ -141,7 +141,7 @@ abstract public class BasicTileEntity extends TileEntity implements ISidedInvent
 	//sync data for GUI display
 	public void sendSyncPacket() {
 		if(!this.worldObj.isRemote) {
-			TargetPoint point = new TargetPoint(this.worldObj.provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, 30D);
+			TargetPoint point = new TargetPoint(this.worldObj.provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, 48D);
 			CommonProxy.channelG.sendToAllAround(new S2CGUIPackets(this), point);
 		}
 	}

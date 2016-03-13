@@ -274,9 +274,9 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileFurnace
 					}
 				}
 				
-				//sync render entity every 40 ticks
+				//sync render entity every 32 ticks
 				//set render entity state
-				if(this.syncTime % 40 == 0) {
+				if(this.syncTime % 32 == 0) {
 					this.sendSyncPacket();
 					sendUpdate = true;
 					this.syncTime = 0;

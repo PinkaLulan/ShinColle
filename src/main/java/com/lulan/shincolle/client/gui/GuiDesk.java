@@ -392,14 +392,12 @@ public class GuiDesk extends GuiContainer {
         	drawTexturedModalRect(guiLeft, guiTop, 0, 0, 256, 192);
         	
         	//if mouse on page button, change button color
-        	if(yMouse > guiTop+179 && yMouse < guiTop+193) {
-        		if(xMouse > guiLeft+51 && xMouse < guiLeft+73) {
-        			drawTexturedModalRect(guiLeft+53, guiTop+182, 0, 192, 18, 10);
-        		}
-        		else if(xMouse > guiLeft+173 && xMouse < guiLeft+195) {
-        			drawTexturedModalRect(guiLeft+175, guiTop+182, 0, 202, 18, 10);
-        		}
-        	}
+    		if(xMouse < guiLeft + 137 * this.GuiScale) {
+    			drawTexturedModalRect(guiLeft+53, guiTop+182, 0, 192, 18, 10);
+    		}
+    		else {
+    			drawTexturedModalRect(guiLeft+175, guiTop+182, 0, 202, 18, 10);
+    		}
         	
         	break;  //end book
         case 3:		//team

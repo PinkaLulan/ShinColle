@@ -143,7 +143,7 @@ public class EntitySubmRo500 extends BasicEntityShipSmall implements IShipInvisi
   	
   	@Override
 	public int getKaitaiType() {
-		return 0;
+		return 2;
 	}
   	
   	//潛艇的輕攻擊一樣使用飛彈

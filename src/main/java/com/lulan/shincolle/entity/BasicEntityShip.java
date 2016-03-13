@@ -1048,10 +1048,14 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	 	                itemstack.setItemDamage(itemstack.getItemDamage() + 1);
 	                    
 	                    //set item amount
-	                    ItemStack item0, item1, item2, item3;
+	                    ItemStack item0 = null;
+	                    ItemStack item1 = null;
+	                    ItemStack item2 = null;
+	                    ItemStack item3 = null;
 	                                
-	                    //large ship -> more materials
-	                    if(this.getKaitaiType() == 1) {
+	                    //calc materials amount
+	                    switch(this.getKaitaiType()) {
+	                    case 1:	  //large ship -> more materials
 	                    	if(ConfigHandler.easyMode) {	//easy mode
 	                    		item0 = new ItemStack(ModBlocks.BlockGrudge, 1);
 	                        	item1 = new ItemStack(ModBlocks.BlockAbyssium, 1);
@@ -1059,19 +1063,30 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	                        	item3 = new ItemStack(ModBlocks.BlockPolymetal, 1);
 	                    	}
 	                    	else {						
-	                    		item0 = new ItemStack(ModBlocks.BlockGrudge, 8 + rand.nextInt(3));
-	                        	item1 = new ItemStack(ModBlocks.BlockAbyssium, 8 + rand.nextInt(3));
-	                        	item2 = new ItemStack(ModItems.Ammo, 8 + rand.nextInt(3), 1);
-	                        	item3 = new ItemStack(ModBlocks.BlockPolymetal, 8 + rand.nextInt(3));
+	                    		item0 = new ItemStack(ModBlocks.BlockGrudge, 10 + rand.nextInt(3));
+	                        	item1 = new ItemStack(ModBlocks.BlockAbyssium, 10 + rand.nextInt(3));
+	                        	item2 = new ItemStack(ModItems.Ammo, 10 + rand.nextInt(3), 1);
+	                        	item3 = new ItemStack(ModBlocks.BlockPolymetal, 10 + rand.nextInt(3));
 	                    	}
-	                        
-	                    }
-	                    //small ship
-	                    else {
-	                        item0 = new ItemStack(ModItems.Grudge, 10 + rand.nextInt(8));
-	                    	item1 = new ItemStack(ModItems.AbyssMetal, 10 + rand.nextInt(8), 0);
-	                    	item2 = new ItemStack(ModItems.Ammo, 10 + rand.nextInt(8), 0);
-	                    	item3 = new ItemStack(ModItems.AbyssMetal, 10 + rand.nextInt(8), 1);
+	                    	break;
+	                    case 2:	  //mob small ship
+	                    	item0 = new ItemStack(ModItems.Grudge, ConfigHandler.kaitaiAmountSmall + rand.nextInt((int)(ConfigHandler.kaitaiAmountSmall * 0.25F) + 1));
+	                    	item1 = new ItemStack(ModItems.AbyssMetal, ConfigHandler.kaitaiAmountSmall + rand.nextInt((int)(ConfigHandler.kaitaiAmountSmall * 0.25F) + 1), 0);
+	                    	item2 = new ItemStack(ModItems.Ammo, ConfigHandler.kaitaiAmountSmall + rand.nextInt((int)(ConfigHandler.kaitaiAmountSmall * 0.25F) + 1), 0);
+	                    	item3 = new ItemStack(ModItems.AbyssMetal, ConfigHandler.kaitaiAmountSmall + rand.nextInt((int)(ConfigHandler.kaitaiAmountSmall * 0.25F) + 1), 1);
+	                    	break;
+	                    case 3:	  //mob large ship
+	                    	item0 = new ItemStack(ModBlocks.BlockGrudge, ConfigHandler.kaitaiAmountLarge + rand.nextInt((int)(ConfigHandler.kaitaiAmountLarge * 0.25F) + 1));
+                        	item1 = new ItemStack(ModBlocks.BlockAbyssium, ConfigHandler.kaitaiAmountLarge + rand.nextInt((int)(ConfigHandler.kaitaiAmountLarge * 0.25F) + 1));
+                        	item2 = new ItemStack(ModItems.Ammo, ConfigHandler.kaitaiAmountLarge + rand.nextInt((int)(ConfigHandler.kaitaiAmountLarge * 0.25F) + 1), 1);
+                        	item3 = new ItemStack(ModBlocks.BlockPolymetal, ConfigHandler.kaitaiAmountLarge + rand.nextInt((int)(ConfigHandler.kaitaiAmountLarge * 0.25F) + 1));
+	                    	break;
+                    	default:  //small ship
+                    		item0 = new ItemStack(ModItems.Grudge, 12 + rand.nextInt(8));
+	                    	item1 = new ItemStack(ModItems.AbyssMetal, 12 + rand.nextInt(8), 0);
+	                    	item2 = new ItemStack(ModItems.Ammo, 12 + rand.nextInt(8), 0);
+	                    	item3 = new ItemStack(ModItems.AbyssMetal, 12 + rand.nextInt(8), 1);
+                    		break;
 	                    }
 	                    
 	                    EntityItem entityItem0 = new EntityItem(worldObj, posX+0.5D, posY+0.8D, posZ+0.5D, item0);

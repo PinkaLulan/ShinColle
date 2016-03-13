@@ -2,26 +2,21 @@ package com.lulan.shincolle.handler;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.client.gui.GuiDesk;
-import com.lulan.shincolle.client.gui.GuiDeskItemForm;
 import com.lulan.shincolle.client.gui.GuiFormation;
 import com.lulan.shincolle.client.gui.GuiLargeShipyard;
 import com.lulan.shincolle.client.gui.GuiShipInventory;
 import com.lulan.shincolle.client.gui.GuiSmallShipyard;
 import com.lulan.shincolle.client.gui.inventory.ContainerDesk;
-import com.lulan.shincolle.client.gui.inventory.ContainerDeskItemForm;
 import com.lulan.shincolle.client.gui.inventory.ContainerFormation;
 import com.lulan.shincolle.client.gui.inventory.ContainerLargeShipyard;
 import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
 import com.lulan.shincolle.client.gui.inventory.ContainerSmallShipyard;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
-import com.lulan.shincolle.network.S2CGUIPackets;
-import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.TileEntityDesk;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
@@ -84,8 +79,6 @@ public class GuiHandler implements IGuiHandler {
 			else {
 				return new ContainerDesk(player.inventory, null, player, x);
 			}
-		case ID.G.ADMIRALDESK_ITEM:	//GUI admiral radar/book
-			return new ContainerDeskItemForm(player.inventory, player);
 		case ID.G.FORMATION:  		//GUI formation
 			//send sync packet
 			ExtendPlayerProps props = EntityHelper.getExtendPlayerProps(player);
@@ -131,8 +124,6 @@ public class GuiHandler implements IGuiHandler {
 			else {
 				return new GuiDesk(player.inventory, null, x);
 			}
-		case ID.G.ADMIRALDESK_ITEM:	//GUI admiral radar/book
-			return new GuiDeskItemForm(player.inventory, x);
 		case ID.G.FORMATION:		//GUI formation
 			return new GuiFormation(player.inventory);
 		}

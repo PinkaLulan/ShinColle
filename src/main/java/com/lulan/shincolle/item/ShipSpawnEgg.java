@@ -177,17 +177,22 @@ public class ShipSpawnEgg extends Item {
 				ExtendShipProps extProps = entity.getExtProps();
 				int[] attrs = nbt.getIntArray("Attrs");
 				
-				//load inventory
-				for(int i = 0; i < list.tagCount(); i++) {
-					NBTTagCompound item = list.getCompoundTagAt(i);
-					byte sid = item.getByte("Slot");
+				try {
+					//load inventory
+					for(int i = 0; i < list.tagCount(); i++) {
+						NBTTagCompound item = list.getCompoundTagAt(i);
+						byte sid = item.getByte("Slot");
 
-					if(sid >= 0 && sid < extProps.slots.length) {
-						extProps.slots[sid] = ItemStack.loadItemStackFromNBT(item);
+						if(sid >= 0 && sid < extProps.slots.length) {
+							extProps.slots[sid] = ItemStack.loadItemStackFromNBT(item);
+						}
 					}
 				}
+				catch(Exception e) {
+					LogHelper.info("EXCEPTION : init ship inventory fail: "+e);
+				}
 				
-				if(attrs != null && attrs.length > 7) {
+				try {
 					//load bonus point
 					entity.setBonusPoint(ID.HP, (byte)attrs[1]);
 					entity.setBonusPoint(ID.ATK, (byte)attrs[2]);
@@ -199,6 +204,9 @@ public class ShipSpawnEgg extends Item {
 
 					//load ship level
 					entity.setShipLevel(attrs[0], true);
+				}
+				catch(Exception e) {
+					LogHelper.info("EXCEPTION : init ship attrs fail: "+e);
 				}
 				
 				//set custom name

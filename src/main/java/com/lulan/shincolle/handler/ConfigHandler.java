@@ -30,6 +30,8 @@ public class ConfigHandler {
 	public static int closeGUIDist = 64;
 	public static int bossCooldown = 4800;
 	public static int teamCooldown = 6000;
+	public static int kaitaiAmountSmall = 20;
+	public static int kaitaiAmountLarge = 20;
 	
 	//DESK
 	public static int radarUpdate = 128;	//radar update interval (ticks)
@@ -89,6 +91,10 @@ public class ConfigHandler {
 		//是否開啟簡單模式 (spam debug/info message)
 		friendlyFire = config.getBoolean("Friendly_Fire", "general", true, "false: disable damage done by player (except owner)");
 			
+		//解體獲得材料量設定, mob drop類ship限定
+		kaitaiAmountSmall = config.getInt("Recycle_Small", "general", 20, 0, 1000, "Recycle amount by Dismantle Hammer (SMALL Mob Drop Ship)");
+		kaitaiAmountLarge = config.getInt("Recycle_Large", "general", 20, 0, 1000, "Recycle amount by Dismantle Hammer (LARGE Mob Drop Ship)");
+				
 		//是否把多金屬當成錳礦
 		polyAsMn = config.getBoolean("Polymetal_as_Mn", "general", true, "true: Polymetallic Nodules = Manganese Dust, Polymetallic Ore = Manganese Ore");
 		
