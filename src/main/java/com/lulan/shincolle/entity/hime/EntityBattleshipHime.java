@@ -32,6 +32,7 @@ public class EntityBattleshipHime extends BasicEntityShip {
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.BattleshipHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
+		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BB]);
 		this.ModelPos = new float[] {-6F, 15F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();
@@ -110,7 +111,7 @@ public class EntityBattleshipHime extends BasicEntityShip {
 		addShipExp(1);
 		
 		//grudge--
-		decrGrudgeNum(1);
+		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
 				
 	    //將atk跟attacker傳給目標的attackEntityFrom方法, 在目標class中計算傷害
 	    //並且回傳是否成功傷害到目標
@@ -181,7 +182,7 @@ public class EntityBattleshipHime extends BasicEntityShip {
   		addShipExp(2);
   		
   		//grudge--
-  		decrGrudgeNum(1);
+  		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
         
         //light ammo -1
         if(!decrAmmoNum(0)) {		//not enough ammo
@@ -293,7 +294,7 @@ public class EntityBattleshipHime extends BasicEntityShip {
 		addShipExp(16);
 		
 		//grudge--
-		decrGrudgeNum(1);
+		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
 	
 		//play cannon fire sound at attacker
         this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));

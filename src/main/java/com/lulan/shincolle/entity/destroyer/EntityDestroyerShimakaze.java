@@ -37,6 +37,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.DESTROYER);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.DestroyerShimakaze);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
+		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.DD]);
 		this.ModelPos = new float[] {0F, 15F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);
 		
@@ -155,7 +156,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
   		addShipExp(8);
   		
   		//grudge--
-  		decrGrudgeNum(2);
+  		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk] * 4);
 
         //發射者煙霧特效 (招喚連裝砲不使用特效, 但是要發送封包來設定attackTime)
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
@@ -209,7 +210,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
 		addShipExp(16);
 		
 		//grudge--
-		decrGrudgeNum(1);
+		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
 	
 		//play cannon fire sound at attacker
         this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));

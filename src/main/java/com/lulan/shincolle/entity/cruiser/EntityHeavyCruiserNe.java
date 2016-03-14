@@ -8,6 +8,7 @@ import net.minecraft.world.World;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.entity.ExtendShipProps;
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
 
 public class EntityHeavyCruiserNe extends BasicEntityShipSmall {
@@ -18,6 +19,7 @@ public class EntityHeavyCruiserNe extends BasicEntityShipSmall {
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HEAVY_CRUISER);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.HeavyCruiserNE);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CRUISER);
+		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CA]);
 		this.ModelPos = new float[] {0F, 10F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();

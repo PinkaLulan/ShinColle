@@ -31,6 +31,7 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.BattleshipTA);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
+		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BB]);
 		this.ModelPos = new float[] {-6F, 10F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();
@@ -154,7 +155,7 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
   		addShipExp(8);
   		
   		//grudge--
-  		decrGrudgeNum(2);
+  		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk] * 4);
 
         //發射者煙霧特效 (招喚連裝砲不使用特效, 但是要發送封包來設定attackTime)
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);

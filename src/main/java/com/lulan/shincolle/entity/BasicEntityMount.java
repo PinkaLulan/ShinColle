@@ -704,7 +704,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   		host.addShipExp(2);
   		
   		//grudge--
-  		host.decrGrudgeNum(1);
+  		host.decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
   		
   		//light ammo -1
         if(!host.decrAmmoNum(0)) {			//not enough ammo
@@ -833,7 +833,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
       	host.addShipExp(16);
       		
       	//grudge--
-      	host.decrGrudgeNum(1);
+      	host.decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
       	
       	//heavy ammo -1
         if(!host.decrAmmoNum(1)) {	//not enough ammo

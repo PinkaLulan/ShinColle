@@ -42,6 +42,7 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.NorthernHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
+		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BBV]);
 		this.ModelPos = new float[] {-6F, 8F, 0F, 50F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();
@@ -309,7 +310,7 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
   		addShipExp(2);
   		
   		//grudge--
-  		decrGrudgeNum(1);
+  		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
         
         //light ammo -1
         if(!decrAmmoNum(0)) {		//not enough ammo
@@ -433,7 +434,7 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
 		addShipExp(16);
 		
 		//grudge--
-		decrGrudgeNum(1);
+		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
 		
 		//發射者煙霧特效 (不使用特效, 但是要發送封包來設定attackTime)
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);

@@ -37,6 +37,7 @@ public class EntitySubmU511 extends BasicEntityShipSmall implements IShipInvisib
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.SUBMARINE);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.SubmarineU511);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.SUBMARINE);
+		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.SS]);
 		this.ModelPos = new float[] {0F, 10F, 0F, 45F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		
@@ -158,7 +159,7 @@ public class EntitySubmU511 extends BasicEntityShipSmall implements IShipInvisib
   		addShipExp(2);
   		
   		//grudge--
-  		decrGrudgeNum(1);
+  		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
   	
   		//play cannon fire sound at attacker
           this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));

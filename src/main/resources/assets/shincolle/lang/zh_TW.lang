@@ -129,6 +129,10 @@ item.shincolle:shipegg41.name=潛水艇 呂500
 item.shincolle:shipegg2041.name=潛水艇 呂500 (Mob)
 item.shincolle:shipegg48.name=戰艦 大和
 item.shincolle:shipegg2048.name=戰艦 大和 (Mob)
+item.shincolle:shipegg49.name=空母 加賀
+item.shincolle:shipegg2049.name=空母 加賀 (Mob)
+item.shincolle:shipegg50.name=空母 赤城
+item.shincolle:shipegg2050.name=空母 赤城 (Mob)
 
 # Entity
 entity.shincolle.EntityAirfieldHime.name=飛行場姬
@@ -141,6 +145,10 @@ entity.shincolle.EntityBattleshipRe.name=航空戰艦レ級
 entity.shincolle.EntityBattleshipTa.name=戰艦タ級
 entity.shincolle.EntityBattleshipYMT.name=戰艦 大和
 entity.shincolle.EntityBattleshipYMTBoss.name=戰艦 大和
+entity.shincolle.EntityCarrierAkagi.name=空母 赤城
+entity.shincolle.EntityCarrierAkagiBoss.name=空母 赤城
+entity.shincolle.EntityCarrierKaga.name=空母 加賀
+entity.shincolle.EntityCarrierKagaBoss.name=空母 加賀
 entity.shincolle.EntityCarrierWD.name=空母水鬼
 entity.shincolle.EntityCarrierWo.name=空母ヲ級
 entity.shincolle.EntityDestroyerHa.name=驅逐ハ級
@@ -254,16 +262,52 @@ gui.shincolle:book.chap2.text4d0=§9使用介面：§0<br>1. 正下方九格物�
 gui.shincolle:book.chap2.text4d1=上下§4紅色箭頭§0可以選擇要§9取出§0或是§9投入§0資源。<br><br>每種建造材料最少需要§9100§0個，最多為§91000§0個，並且會消耗大量岩漿作為能源。<br><br>同樣地資源消耗量會影響棲艦種類跟等級，投入越多資源建造，就有越高機率製造出較高級的§c深海棲艦§0。
 
 # GUI: Book Text Chap 3
-gui.shincolle:book.chap3.title=船艦屬性
+gui.shincolle:book.chap3.title=棲艦養成指南
+gui.shincolle:book.chap3.title0=棲艦獲得方法
+gui.shincolle:book.chap3.text0d0=§91.§0花費資源建造。<br><br>§92.§0地牢寶箱發現。<br><br>§93.§0擊敗海上出現的敵對艦娘。<br><br><br>花費資源建造是取得初級棲艦的最簡單方法，探索地牢寶箱則有機會發現較高級棲艦跟稀有道具。
+gui.shincolle:book.chap3.text0d1=若身上帶有§d深海棲艦結婚戒指§0並且處於§9海邊或海洋§0生態系，則海面上可能會出現敵對的艦娘，擊敗後有機率獲得該艦娘的生怪蛋。
+gui.shincolle:book.chap3.title1=維持消耗
+gui.shincolle:book.chap3.text1d0=§91.§0棲艦消耗§c怨念§0作為燃料，§c怨念§0不足時棲艦不會做任何動作。<br><br>§92.§0閒置不動時每天會消耗約§98§0個§c怨念§0。<br><br>§93.§0移動會額外消耗§c怨念§0。<br><br>§94.§0攻擊會消耗§c怨念§0跟§d彈藥§0。<br><br>§95.§0空母發射艦載機攻擊會消耗§3艦載機§0數量。
+gui.shincolle:book.chap3.text1d1=§96.§0艦載機數量會隨時間恢復。<br><br>§97.§0將消耗品放置於該艦物品欄內，怨念/彈藥不足時會自動使用。
+gui.shincolle:book.chap3.title2=船艦控制 & 升級
+gui.shincolle:book.chap3.text2d0=§91.右鍵§0：坐下/起立。<br><br>§92.蹲下+右鍵§0：開啟物品欄介面。<br><br>§93.§0使用ヲ級的指揮權杖可以進行隊伍/陣型控制。<br><br><br>請參閱第二章關於ヲ級的指揮權杖的說明。
+gui.shincolle:book.chap3.text2d1=§91.§0棲艦做出任何攻擊都會得到經驗，不管有沒有打中目標。<br><br>§92.§0經驗值達到上限就會升級。<br><br>§93.§0一般最高等級為§9100§0級，若§d已婚§0則為§c150§0級。
+gui.shincolle:book.chap3.title3=主要屬性值 & 裝備
+gui.shincolle:book.chap3.text3d0=§91.§0棲艦主要有六大屬性：§c耐久度§0/§c火力§0/§c護甲§0/§c攻擊速度§0/§c移動速度§0/§c射程§0<br><br>§92.§0屬性值依照§4屬性等級§0跟§3船艦等級§0決定。<br><br>§93.§0屬性等級分為四級，以顏色表示：§f白§9(1)§0/§e黃§9(2)§0/§6橘§9(3)§0/§4紅§9(4)§0<br><br>§94.§0使用§4近代化改修工具§0可以隨機提昇屬性等級。
+gui.shincolle:book.chap3.text3d1=§91.§0裝備可提高一些屬性值。<br><br>§92.§0裝備可以在§4深海熱泉/超深海熱漩§0製作。<br><br>§93.§0每個棲艦最多可使用§4六個§0裝備。<br><br>§94.§0裝備類型分為三類：§9通用裝備§0/§3空母限定§0/§4非空母限定§0。<br><br>§95.§0航空戰艦可以使用所有裝備。
+gui.shincolle:book.chap3.title4=次要屬性值
+gui.shincolle:book.chap3.text4d0=§91.爆擊率§0：使攻擊造成§c1.5§0倍傷害，不會跟二連擊/三連擊重複發動。§4魚雷/飛彈類§0爆擊時造成§c3§0倍傷害。<br><br>§92.二連擊§0：使攻擊造成§c2§0倍傷害，§4魚雷/飛彈類§0攻擊不會造成二連擊。<br><br>§93.三連擊§0：使該次攻擊造成§c3§0倍傷害，§4魚雷/飛彈類§0攻擊不會造成三連擊。
+gui.shincolle:book.chap3.text4d1=§94.失誤率§0：該攻擊不造成傷害，只觸發擊退效果。§4魚雷/飛彈類§0仍會造成正常傷害，但是彈道會大幅偏移目標。<br><br>§95.制空§0：對§4飛行類§0目標產生額外傷害。<br><br>§96.反潛§0：對§4潛艇類§0目標產生額外傷害。<br><br>§97.閃避§0：無視該次攻擊跟擊退效果。
+gui.shincolle:book.chap3.title5=戰鬥
+gui.shincolle:book.chap3.text5d0=§91.§0只要§c怨念§0跟§d彈藥§0足夠，棲艦會自動攻擊敵對生物。<br><br>§92.坐下§0時不會主動攻擊怪物。<br><br>§93.騎乘§0時仍然會主動攻擊怪物。<br><br>§94.§0使用§cヲ級的指揮權杖§0可以手動控制攻擊。<br><br>§95.§0打開棲艦物品欄有更多AI選項可以設定。
+gui.shincolle:book.chap3.text5d1=§96.§0棲艦會定時自動回復少量耐久度。<br><br>§97.§0對棲艦使用§c修復桶§0可以回復一定量耐久度。<br><br>§98.§c耐久度低於0§0時棲艦會§c死亡§0並變成§d生怪蛋§0掉落在地上。<br><br>§99.§0棲艦變回生怪蛋§c等級會降1§0。<br><br>§910.§0棲艦生怪蛋需要花費玩家的§c經驗值§0才能復活。
+gui.shincolle:book.chap3.title6=
+gui.shincolle:book.chap3.text6d0=§911.§0在棲艦物品欄中放§c深海女神的怨念§0可以避免死亡一次。<br><br>§912.§0在棲艦物品欄中放§c修復桶§0，耐久度不足時會自動使用。<br><br>§913.§0艦種間有相剋關係，攻防加成表：§chttps://goo.gl/jmR3Wd§0<br><br>§914.晚上§0除了潛艇以外攻擊力都會降低。
+gui.shincolle:book.chap3.text6d1=
+gui.shincolle:book.chap3.title7=AI設定說明
+gui.shincolle:book.chap3.text7d0=開啟棲艦物品欄介面，右下即為AI設定選項，點選可開關各種設定。<br><br><br>§91.使用衝撞攻擊§0：不消耗彈藥的近距離攻擊。<br><br>§92.使用輕型彈藥§0：消耗§c怨念彈§0的攻擊。<br><br>§93.使用重型彈藥§0：消耗§c重型怨念彈§0的攻擊。<br><br>§94.輕型艦載機§0：消耗§c怨念彈§0的艦載機攻擊。<br><br>§95.重型艦載機§0：消耗§c重型怨念彈§0的艦載機攻擊。
+gui.shincolle:book.chap3.text7d1=§96.開啟特殊能力§0：開關該艦種帶有的§c特殊能力§0以及§d結婚能力§0。<br><br>§97.跟隨最短距離§0：跟隨模式下，低於此距離時停止跟隨。<br><br>§98.跟隨最長距離§0：跟隨模式下，超過此距離時開始跟隨。<br><br>§99.逃跑血量(%%)§0：低於此血量時強制轉為跟隨模式。<br><br>§910.被動攻擊？§0：只有被攻擊時才會還手攻擊。
+gui.shincolle:book.chap3.title8=
+gui.shincolle:book.chap3.text8d0=§911.視線內才追擊？§0：只有沒被方塊阻擋的目標才會攻擊。<br><br>§912.PVP模式§0：若在PVP模式下，自動攻擊時會尋找§cPVP類§0目標。<br><br>§913.防空模式§0：自動攻擊時優先攻擊§c飛行目標§0。<br><br>§914.反潛模式§0：自動攻擊時優先攻擊§c潛水艇§0。
+gui.shincolle:book.chap3.text8d1=§9優先度§0： §d防空§0 > §3反潛§0 > §cPVP§0 > 其他目標
 
 # GUI: Book Text Chap 4
 gui.shincolle:book.chap4.title=船艦列表
+gui.shincolle:book.chap4.title0=
+gui.shincolle:book.chap4.text0d0=
+gui.shincolle:book.chap4.text0d1=
 
 # GUI: Book Text Chap 5
 gui.shincolle:book.chap5.title=敵方船艦列表
+gui.shincolle:book.chap5.title0=
+gui.shincolle:book.chap5.text0d0=
+gui.shincolle:book.chap5.text0d1=
 
 # GUI: Book Text Chap 6
 gui.shincolle:book.chap6.title=裝備列表
+gui.shincolle:book.chap6.title0=
+gui.shincolle:book.chap6.text0d0=
+gui.shincolle:book.chap6.text0d1=
 
 # GUI: General
 gui.shincolle:general.ok=確定

@@ -37,6 +37,7 @@ public class EntityHarbourHime extends BasicEntityShipLarge {
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.HarbourHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
+		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BBV]);
 		this.ModelPos = new float[] {-6F, 15F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();
@@ -222,7 +223,7 @@ public class EntityHarbourHime extends BasicEntityShipLarge {
   		addShipExp(16);
   		
   		//grudge--
-  		decrGrudgeNum(1);
+  		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
   	
   		//play cannon fire sound at attacker
   		this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));

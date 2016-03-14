@@ -7,6 +7,7 @@ import net.minecraft.world.World;
 import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
 import com.lulan.shincolle.entity.other.EntityAirplane;
 import com.lulan.shincolle.entity.other.EntityAirplaneTakoyaki;
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.item.EquipAirplane;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -145,7 +146,7 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip implements IS
   		addShipExp(8);
   		
   		//grudge--
-  		decrGrudgeNum(2);
+  		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAir]);
         
         //發射者煙霧特效 (發射飛機不使用特效, 但是要發送封包來設定attackTime)
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
@@ -189,7 +190,7 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip implements IS
   		addShipExp(32);
   		
   		//grudge--
-  		decrGrudgeNum(3);
+  		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAir]);
         
         //light ammo -1
         if(!decrAmmoNum(5)) {		//not enough ammo

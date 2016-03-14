@@ -31,6 +31,7 @@ public class EntityCarrierWD extends BasicEntityShipLarge {
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.DEMON);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.CarrierWD);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CARRIER);
+		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CV]);
 		this.ModelPos = new float[] {-6F, 15F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();
@@ -117,7 +118,7 @@ public class EntityCarrierWD extends BasicEntityShipLarge {
   		addShipExp(2);
   		
   		//grudge--
-  		decrGrudgeNum(1);
+  		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
         
         //light ammo -1
         if(!decrAmmoNum(0)) {		//not enough ammo

@@ -129,6 +129,10 @@ item.shincolle:shipegg41.name=Submarine Ro-500
 item.shincolle:shipegg2041.name=Submarine Ro-500 (Mob)
 item.shincolle:shipegg48.name=Battleship Yamato
 item.shincolle:shipegg2048.name=Battleship Yamato (Mob)
+item.shincolle:shipegg49.name=Standard Carrier Kaga
+item.shincolle:shipegg2049.name=Standard Carrier Kaga (Mob)
+item.shincolle:shipegg50.name=Standard Carrier Akagi
+item.shincolle:shipegg2050.name=Standard Carrier Akagi (Mob)
 
 # Entity
 entity.shincolle.EntityAirfieldHime.name=Airfield Princess
@@ -141,6 +145,10 @@ entity.shincolle.EntityBattleshipRe.name=Battleship Re-Class
 entity.shincolle.EntityBattleshipTa.name=Battleship Ta-Class
 entity.shincolle.EntityBattleshipYMT.name=Battleship Yamato
 entity.shincolle.EntityBattleshipYMTBoss.name=Battleship Yamato
+entity.shincolle.EntityCarrierAkagi.name=Standard Carrier Akagi
+entity.shincolle.EntityCarrierAkagiBoss.name=Standard Carrier Akagi
+entity.shincolle.EntityCarrierKaga.name=Standard Carrier Kaga
+entity.shincolle.EntityCarrierKagaBoss.name=Standard Carrier Kaga
 entity.shincolle.EntityCarrierWD.name=Aircraft Carrier Water Demon
 entity.shincolle.EntityCarrierWo.name=Standard Carrier Wo-Class
 entity.shincolle.EntityDestroyerHa.name=Destroyer Ha-Class
@@ -254,16 +262,52 @@ gui.shincolle:book.chap2.text4d0=§9To construct advanced §cShinkeiseikan§0:<b
 gui.shincolle:book.chap2.text4d1=Click the §4Red Arrow§0 to change resources mode: §9Release§0 or §9Suck In§0.<br><br>The large construction requires §9100~1000§0 each resources and lots of lava to process.<br><br>And the more materials consumed, the better §cShinkeiseikan§0 you get.
 
 # GUI: Book Text Chap 3
-gui.shincolle:book.chap3.title=Ship Attributes
+gui.shincolle:book.chap3.title=Ship Maintenance Guide
+gui.shincolle:book.chap3.title0=How to Obtain Ships
+gui.shincolle:book.chap3.text0d0=§91.§0 By construction.<br><br>§92.§0 Found in dungeon chest.<br><br>§93.§0 Defeating the spawned hostile ship.<br><br><br>The easiest way is spending resources to build ship, and you can find some advanced class ship and equipment in dungeon chest.
+gui.shincolle:book.chap3.text0d1=If you have §dShinkeiseikan Wedding Ring§0 in inventory and in the §9Sea/Beach§0 biome, the hostile fleet may appear on the sea.<br><br>You can get ship spawn egg by defeating the spawned hostile ship.
+gui.shincolle:book.chap3.title1=Maintenance Cost
+gui.shincolle:book.chap3.text1d0=§91.§0 Ship consume §cGrudge§0 as fuel. Ship can not do anything if not enough §cGrudge§0.<br><br>§92.§0 Ship consume §98 §cGrudge§0 per day in idle mode.<br><br>§93.§0 Moving consume extra §cGrudge§0.<br><br>§94.§0 Attack consume §cGrudge§0 and §dAmmo§0.<br><br>§95.§0 Aircraft attack consume §cGrudge§0, §dAmmo§0 and an §3Airplane§0.
+gui.shincolle:book.chap3.text1d1=§96.§0 The amount of airplane recover over time.<br><br>§97.§0 Put consumable items into ship's inventory, ship will automatically use them.
+gui.shincolle:book.chap3.title2=Ship Control & Leveling
+gui.shincolle:book.chap3.text2d0=§91. Right Click§0: sit/stand.<br><br>§92. Sneaking + Right Click§0: Open ship's GUI.<br><br>§93.§0 You can set party/formation by §cWo-Class Command Scepter§0.
+gui.shincolle:book.chap3.text2d1=§91.§0 Ship gained exp on attacking, whether or not hit the target.<br><br>§92.§0 Ship level up when exp reaches the limit.<br><br>§93.§0 Max level is §9100§0 / §c150§0 for §dMarried§0 ship.
+gui.shincolle:book.chap3.title3=Main Attributes & Equipments
+gui.shincolle:book.chap3.text3d0=§91.§0 6 Attributes: §cHP§0/§cFirepower§0/§cArmor§0/§cAttack Speed§0/§cMoving Speed§0/§cAttack Range§0.<br><br>§92.§0 Attribute value is calculated by §3Ship Level§0 and §dAttribute Level§0.<br><br>§93.§0 4 Attribute Level: §fWhite§9(1)§0/§eYellow§9(2)§0/§6Orange§9(3)§0/§4Red§9(4)§0.<br><br>§94.§0 Upgrade attribute level by §cModernization Toolkit§0.
+gui.shincolle:book.chap3.text3d1=§91.§0 Equipment provide some attribute values.<br><br>§92.§0 Develop equips in §cAbyssal Hydrothermal Vent / Vortex§0.<br><br>§93.§0 Up to §96§0 equips for a ship.<br><br>§94.§0 3 type of equips: §9General§0 / §3Carrier Only§0 / §4Non-Carrier Only§0.<br><br>§95.§0 Aviation Battleship can use all type of equips.
+gui.shincolle:book.chap3.title4=Minor Attributes
+gui.shincolle:book.chap3.text4d0=§91. Critical§0: Deals §c150%%§0 damage. (§c300%%§0 for §4Torpedo/Missile§0 attack.) Critical attack does not overlap with Double/Triple Hit.<br><br>§92. Double Hit§0: Deals §c200%%§0 damage. §4Torpedo/Missile§0 attack does not cause Double Hit. Double Hit does not overlap with Triple Hit.<br><br>§93. Triple Hit§0: Deals §c300%%§0 damage. §4Torpedo/Missile§0 attack does not cause Triple Hit.
+gui.shincolle:book.chap3.text4d1=§94. Miss§0: Deals §c0%%§0 damage and knockback only. §4Torpedo/Missile§0 attack deals §c100%%§0 damage but the trajectory will deviate from target.<br><br>§95. Anti-Air§0: Deal additional damage to §4Fly§0 target.<br><br>§96. Anti-SS§0: Deal additional damage to §4Submarine§0 target.<br><br>§97. Dodge§0: Ignore the damage and knockback effect.
+gui.shincolle:book.chap3.title5=Combat
+gui.shincolle:book.chap3.text5d0=§91.§0 Ship will attack mob automatically with sufficient §cGrudge§0 and §dAmmo§0.<br><br>§92.§0 Ship stop attacking when §4Sitting§0.<br><br>§93.§0 Ship can attack while §4Riding§0.<br><br>§94.§0 Owner can control attacking by §4Wo-Class Command Scepter§0.<br><br>§95.§0 Owner can adjust the attack AI in ship's GUI.
+gui.shincolle:book.chap3.text5d1=§96.§0 Ship will recovery HP over time.<br><br>§97.§0 Use §4Repair Bucket§0 to recovery HP immediately.<br><br>§98.§0 Ship will turn to §4Spawn Egg§0 and drop on the ground if §cHP < 0§0.<br><br>§99.§0 Ship's level §4decrease 1§0 if §cHP < 0§0.<br><br>§910.§0 Owner has to spend exp to use the ship spawn egg.
+gui.shincolle:book.chap3.title6=
+gui.shincolle:book.chap3.text6d0=§911.§0 Put §4The Grudge of Abyssal Goddess§0 into ship's inventory to avoid death once.<br><br>§912.§0 Ship can use §4Repair Bucket§0 automatically in ship's inventory.<br><br>§913.§0 There are restraint relations between ships, check: §9https://goo.gl/jmR3Wd§0<br><br>§914.§0 In addition to the submarine, all damage will decrease in night.
+gui.shincolle:book.chap3.text6d1=
+gui.shincolle:book.chap3.title7=AI Option
+gui.shincolle:book.chap3.text7d0=Owner can adjust some AI in ship's inventory GUI.<br><br>§91. Can Melee§0: Use melee attack, cost no ammo.<br><br>§92. Use L.Ammo§0: Attack by §cGrudgeful Ammo§0.<br><br>§93. Use H.Ammo§0: Attack by §cHeavy Grudgeful Ammo§0.<br><br>§94. Use L.Air§0: Attack by light aircraft and §cGrudgeful Ammo§0.<br><br>§95. Use H.Air§0: Attack by heavy aircraft and §cHeavy Grudgeful Ammo§0.
+gui.shincolle:book.chap3.text7d1=§96. Aura Effect§0: Enable special power and wedding ring power.<br><br>§97. Follow (Min)§0: Ship stop following within the min distance.<br><br>§98. Follow (Max)§0: Ship start to follow owner at the max distance.<br><br>§99. Flee HP%%§0: Force the ship to follow owner if HP < Flee HP%%.<br><br>§910. Passive?§0: Only attack back when attacked.
+gui.shincolle:book.chap3.title8=
+gui.shincolle:book.chap3.text8d0=§911. Onsight?§0: Only attack target on sight.<br><br>§912. PVP Mode§0: Attack §cPVP§0 target first.<br><br>§913. Anti-Air§0: Attack §cAircraft§0 first.<br><br>§914. Anti-SS§0: Attack §cSubmarine§0 first.<br><br>§9Priority§0: §dAnti-Air§0 > §3Anti-SS§0 > §cPVP§0 > Other
+gui.shincolle:book.chap3.text8d1=
 
 # GUI: Book Text Chap 4
 gui.shincolle:book.chap4.title=Ship List
+gui.shincolle:book.chap4.title0=
+gui.shincolle:book.chap4.text0d0=
+gui.shincolle:book.chap4.text0d1=
 
 # GUI: Book Text Chap 5
 gui.shincolle:book.chap5.title=Enemy List
+gui.shincolle:book.chap5.title0=
+gui.shincolle:book.chap5.text0d0=
+gui.shincolle:book.chap5.text0d1=
 
 # GUI: Book Text Chap 6
 gui.shincolle:book.chap6.title=Equipments List
+gui.shincolle:book.chap6.title0=
+gui.shincolle:book.chap6.text0d0=
+gui.shincolle:book.chap6.text0d1=
 
 # GUI: General
 gui.shincolle:general.ok=OK

@@ -85,7 +85,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	 *  5:NumAmmoHeavy 6:NumGrudge 7:NumAirLight 8:NumAirHeavy 9:immunity time 
 	 *  10:followMin 11:followMax 12:FleeHP 13:TargetAIType 14:guardX 15:guardY 16:guardZ 17:guardDim
 	 *  18:guardID 19:shipType 20:shipClass 21:playerUID 22:shipUID 23:playerEID 24:guardType 
-	 *  25:damageType 26:formationType 27:formationPos*/
+	 *  25:damageType 26:formationType 27:formationPos 28:grudgeConsumption*/
 	protected int[] StateMinor;
 	/** equip effect: 0:critical 1:doubleHit 2:tripleHit 3:baseMiss 4:atk_AntiAir 5:atk_AntiSS 6:dodge*/
 	protected float[] EffectEquip;
@@ -143,7 +143,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				                     3, 12, 35, 1, -1,
 				                     -1, -1, 0, -1, 0,
 				                     0, -1, -1, -1, 0,
-				                     0, 0, 0
+				                     0, 0, 0, 0
 				                    };
 		this.EffectEquip = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F};
 		this.EffectEquipBU = this.EffectEquip.clone();
@@ -572,6 +572,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		return ModelPos;
 	}
 	
+	public int getGrudgeConsumption() {
+		return getStateMinor(ID.M.GrudgeCon);
+	}
+	
 	/**calc equip, buff, debuff and all attrs
 	 * 
 	 * step:
@@ -927,6 +931,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	public void setEntityRevengeTime() {
 		this.revengeTime = this.ticksExisted;
 	}
+  	
+  	public void setGrudgeConsumption(int par1) {
+  		this.setStateMinor(ID.M.GrudgeCon, par1);
+  	}
 	
 	/** send sync packet: sync all data */
 	public void sendSyncPacketAllValue() {
@@ -1629,6 +1637,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	
         	//check every 64 ticks
         	if(ticksExisted % 64 == 0) {
+        		//check owner online
         		if(this.getPlayerUID() > 0) {
         			//get owner
         			EntityPlayer player = EntityHelper.getEntityPlayerByUID(this.getPlayerUID(), this.worldObj);
@@ -1657,7 +1666,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         		
         		//update mount
         		updateMountSummon();
-
+        		
         		//update consume item
         		updateConsumeItem();
         	}//end every 128 ticks
@@ -1718,7 +1727,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		addShipExp(1);
 		
 		//grudge--
-		decrGrudgeNum(1);
+		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
 				
 	    //將atk跟attacker傳給目標的attackEntityFrom方法, 在目標class中計算傷害
 	    //並且回傳是否成功傷害到目標
@@ -1762,7 +1771,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		addShipExp(2);
   		
   		//grudge--
-  		decrGrudgeNum(1);
+  		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
   		
         //light ammo -1
         if(!decrAmmoNum(0)) {		//not enough ammo
@@ -1893,7 +1902,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		addShipExp(16);
 		
 		//grudge--
-		decrGrudgeNum(1);
+		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
 	
 		//play cannon fire sound at attacker
         this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
@@ -2206,7 +2215,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		else {
 			if(decrSupplies(4)) {		//find grudge
 				if(ConfigHandler.easyMode) {
-					StateMinor[ID.M.NumGrudge] += 360;
+					StateMinor[ID.M.NumGrudge] += 1200;
 				}
 				else {
 					StateMinor[ID.M.NumGrudge] += 120;
@@ -2215,18 +2224,14 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			}
 			else if(decrSupplies(5)) {	//find grudge block
 				if(ConfigHandler.easyMode) {
-					StateMinor[ID.M.NumGrudge] += 3240;
+					StateMinor[ID.M.NumGrudge] += 10800;
 				}
 				else {
 					StateMinor[ID.M.NumGrudge] += 1080;
 				}
 				StateMinor[ID.M.NumGrudge] -= par1;
 			}
-//避免吃掉含有儲存資訊的方塊, 因此停用此方塊作為grudge補充道具
-//			else if(decrSupplies(6)) {	//find grudge heavy block
-//				NumGrudge += 97200;
-//				NumGrudge -= (int)par1;
-//			}
+			//避免吃掉含有儲存資訊的方塊, 因此停用heavy grudge block作為補充道具
 		}
 		
 		if(StateMinor[ID.M.NumGrudge] <= 0) {
@@ -2625,15 +2630,21 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		if(!this.hasAmmoLight()) { this.decrAmmoNum(2); }
 		if(!this.hasAmmoHeavy()) { this.decrAmmoNum(3); }
 		
-		//calc move distance and eat grudge (check position 5 sec ago)
+		//calc move distance
 		double distX = posX - ShipPrevX;
 		double distY = posY - ShipPrevY;
 		double distZ = posZ - ShipPrevZ;
 		ShipPrevX = posX;
 		ShipPrevY = posY;
 		ShipPrevZ = posZ;
-    	int distSqrt = (int) MathHelper.sqrt_double(distX*distX + distY*distY + distZ*distZ);
-    	decrGrudgeNum(distSqrt+5);	//eat grudge or change movement speed
+		
+		//calc total consumption
+    	int valueConsume = (int) MathHelper.sqrt_double(distX*distX + distY*distY + distZ*distZ);
+    	valueConsume = valueConsume * ConfigHandler.consumeGrudgeAction[ID.ShipConsume.Move] + getGrudgeConsumption();
+    	if(valueConsume > 120) valueConsume = 120;
+    	
+    	//eat grudge
+    	decrGrudgeNum(valueConsume);
   	}
   	
   	//update formation buffs, SERVER SIDE ONLY

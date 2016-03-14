@@ -37,9 +37,8 @@ public class ConfigHandler {
 	public static int radarUpdate = 128;	//radar update interval (ticks)
 	
 	//SHIP SETTING
-	//scale: HP, ATK, DEF, SPD, MOV, HIT
 	public static Property propShip, propShipLimitBasic, propShipLimitEffect,
-						   propBossSmall, propBossLarge, propMobSubm;
+						   propBossSmall, propBossLarge, propMobSubm, propGrudgeShip, propGrudgeAction;
 	//                                                    HP, ATK, DEF, SPD, MOV, HIT
 	public static double[] limitShipBasic = new double[] {-1D, -1D, 75D, 4D, 0.6D, 64D};
 	//                                                    CRI, DHIT, THIT, MISS, AA, ASM, DODGE
@@ -50,6 +49,10 @@ public class ConfigHandler {
 	public static double[] scaleBossLarge = new double[] {5000D, 200D, 92D, 2D, 0.36D, 24D};
 	//	  												HP, ATK, DEF, SPD, MOV, HIT, spawnPerSquid
 	public static double[] scaleMobSubm = new double[] {200D, 36D, 20D, 0.8D, 0.3D, 12D, 200D};
+	//grudge consumption:                              DD CL CA CAV CLT CVL CV BB BBV SS AP 
+	public static int[] consumeGrudgeShip = new int[] {5, 7, 8, 9,  8,  11, 12,15,14, 4, 3};
+	//grudge consumption:                                LAtk, HAtk, LAir, HAir, moving
+	public static int[] consumeGrudgeAction = new int[] {2,    6,    3,    9,    2};
 	
 	public static int dmgSvS = 100;		//ship vs ship damage modifier, 20 = dmg * 20%
 	public static int dmgSummon = 100;	//summons damage modifier, 20 = dmg * 20%
@@ -86,7 +89,7 @@ public class ConfigHandler {
 		dropGrudge = config.getFloat("DropRate_Grudge", "general", 1F, 0F, 64F, "Grudge drop rate (ex: 0.5 = 50% drop 1 grudge, 5.5 = drop 5 grudge + 50% drop 1 grudge)");
 		
 		//是否開啟簡單模式 (spam debug/info message)
-		easyMode = config.getBoolean("Easy_Mode", "general", false, "Easy mode: decrease Large Construction requirement, ammo / grudge consumption of seikan activity");
+		easyMode = config.getBoolean("Easy_Mode", "general", false, "Easy mode: decrease Large Construction resources requirement, increase ammo / grudge gained from items");
 		
 		//是否開啟簡單模式 (spam debug/info message)
 		friendlyFire = config.getBoolean("Friendly_Fire", "general", true, "false: disable damage done by player (except owner)");
@@ -125,7 +128,9 @@ public class ConfigHandler {
 		propBossSmall = config.get("ship setting", "SmallBoss_scale", scaleBossSmall, "Small Boss:Shimakaze  Values: HP, firepower, armor, attack speed, move speed, range");
 		propBossLarge = config.get("ship setting", "LargeBoss_scale", scaleBossLarge, "Large Boss:Nagato  Values: HP, firepower, armor, attack speed, move speed, range");
 		propMobSubm = config.get("ship setting", "Mob_Submarine_scale", scaleMobSubm, "Submarine:U511/Ro500  Values: HP, firepower, armor, attack speed, move speed, range, spawnPerSquid");
-
+		propGrudgeShip = config.get("ship setting", "Grudge_Ship", consumeGrudgeShip, "Grudge consumption for ship type: DD CL CA CAV CLT CVL CV BB BBV SS AP (MAX = 120)");
+		propGrudgeAction = config.get("ship setting", "Grudge_Action", consumeGrudgeAction, "Grudge consumption for ship action: Light attack, Heavy attack, Light aircraft, Heavy aircraft, Moving per block");
+		
 		//ship vs ship damage modifier
 		dmgSvS = config.getInt("SVS_DmgTaken", "ship setting", 100, 0, 10000, "Ship vs Ship damage modifier, 20 = damage * 20% ");
 		dmgSummon = config.getInt("Summon_DmgTaken", "ship setting", 100, 0, 10000, "summons (mounts, aircraft ...etc) damage modifier, 20 = damage * 20% ");
@@ -144,10 +149,26 @@ public class ConfigHandler {
 		scaleBossLarge = getDoubleArrayFromConfig(scaleBossLarge, propBossLarge);
 		scaleMobSubm = getDoubleArrayFromConfig(scaleMobSubm, propMobSubm);
 		polyGravelBaseBlock = getBooleanArrayFromConfig(polyGravelBaseBlock, propPolyGravel);
+		consumeGrudgeShip = getIntArrayFromConfig(consumeGrudgeShip, propGrudgeShip);
+		consumeGrudgeAction = getIntArrayFromConfig(consumeGrudgeAction, propGrudgeAction);
 		
 		//若設定檔有更新過, 則儲存
 		if(config.hasChanged()) {
 			config.save();
+		}
+	}
+	
+	//check get value
+	public static int[] getIntArrayFromConfig(int[] defaultValue, Property target) {
+		int size = defaultValue.length;
+		int[] geti = target.getIntList();
+		
+		if(geti != null && geti.length == size) {
+			return geti;
+		}
+		else {
+			target.set(defaultValue);
+			return defaultValue;
 		}
 	}
 	

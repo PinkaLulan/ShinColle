@@ -38,6 +38,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.BattleshipNagato);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
+		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BB]);
 		this.ModelPos = new float[] {0F, 15F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);
 		
@@ -157,7 +158,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
   		addShipExp(2);
   		
   		//grudge--
-  		decrGrudgeNum(1);
+  		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
         
         //light ammo -1
         if(!decrAmmoNum(0)) {		//not enough ammo
@@ -266,7 +267,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
 		addShipExp(16);
 		
 		//grudge--
-		decrGrudgeNum(1);
+		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
 		
 		//heavy ammo -1
         if(!decrAmmoNum(1)) {	//not enough ammo

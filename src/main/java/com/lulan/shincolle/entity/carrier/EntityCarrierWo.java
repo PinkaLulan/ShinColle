@@ -8,6 +8,7 @@ import net.minecraft.world.World;
 import com.lulan.shincolle.ai.EntityAIShipCarrierAttack;
 import com.lulan.shincolle.entity.BasicEntityShipLarge;
 import com.lulan.shincolle.entity.ExtendShipProps;
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.LogHelper;
@@ -21,6 +22,7 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.STANDARD_CARRIER);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.CarrierWO);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CARRIER);
+		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CV]);
 		this.ModelPos = new float[] {0F, 15F, 0F, 30F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();
