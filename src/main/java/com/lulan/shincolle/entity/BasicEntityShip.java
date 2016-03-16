@@ -1286,7 +1286,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         }
 	
 		//shift+right click時打開GUI
-		if(player.isSneaking() && EntityHelper.checkSameOwner(this, player)) {  
+		if(player.isSneaking() && EntityHelper.checkSameOwner(this, player)) {
 			FMLNetworkHandler.openGui(player, ShinColle.instance, ID.G.SHIPINVENTORY, this.worldObj, this.getEntityId(), 0, 0);
     		return true;
 		}
@@ -2204,15 +2204,19 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	//eat grudge and change movement speed
 	protected void decrGrudgeNum(int par1) {
 //		LogHelper.info("DEBUG : check grudge num");
-		
-		if(par1 > 215) {	//max cost = 215 (calc from speed 1 moving 5 sec)
+		//check max cost < 120
+		if(par1 > 215) {
 			par1 = 215;
 		}
 		
-		if(StateMinor[ID.M.NumGrudge] >= par1) { //has enough fuel
+		//check fuel flag
+		if(!getStateFlag(ID.F.NoFuel)) {  //has fuel
 			StateMinor[ID.M.NumGrudge] -= par1;
 		}
-		else {
+		
+		//eat one grudge if fuel <= 0
+		if(StateMinor[ID.M.NumGrudge] <= 0) {
+			//try to find grudge
 			if(decrSupplies(4)) {		//find grudge
 				if(ConfigHandler.easyMode) {
 					StateMinor[ID.M.NumGrudge] += 1200;
@@ -2220,20 +2224,21 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				else {
 					StateMinor[ID.M.NumGrudge] += 120;
 				}
-				StateMinor[ID.M.NumGrudge] -= par1;
 			}
-			else if(decrSupplies(5)) {	//find grudge block
-				if(ConfigHandler.easyMode) {
-					StateMinor[ID.M.NumGrudge] += 10800;
+			else{
+				if(decrSupplies(5)) {	//find grudge block
+					if(ConfigHandler.easyMode) {
+						StateMinor[ID.M.NumGrudge] += 10800;
+					}
+					else {
+						StateMinor[ID.M.NumGrudge] += 1080;
+					}
 				}
-				else {
-					StateMinor[ID.M.NumGrudge] += 1080;
-				}
-				StateMinor[ID.M.NumGrudge] -= par1;
 			}
 			//避免吃掉含有儲存資訊的方塊, 因此停用heavy grudge block作為補充道具
 		}
 		
+		//check fuel again and set fuel flag
 		if(StateMinor[ID.M.NumGrudge] <= 0) {
 			setStateFlag(ID.F.NoFuel, true);
 		}
@@ -2241,8 +2246,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			setStateFlag(ID.F.NoFuel, false);
 		}
 		
-		//no fuel, clear AI
-		if(getStateFlag(ID.F.NoFuel)) {
+		//check fuel flag and set AI
+		if(getStateFlag(ID.F.NoFuel)) { //no fuel, clear AI
 			//原本有AI, 則清除之
 			if(this.targetTasks.taskEntries.size() > 0) {
 //				LogHelper.info("DEBUG : No fuel, clear AI "+this);
@@ -2256,8 +2261,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				}
 			}	
 		}
-		//has fuel, set AI
-		else {
+		else { //has fuel, set AI
 			if(this.targetTasks.taskEntries.size() < 1) {
 //				LogHelper.info("DEBUG : Get fuel, set AI "+this);
 				clearAITasks();
@@ -2277,7 +2281,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	
 	//decrese ammo/grudge/repair item, return true or false(not enough item)
 	protected boolean decrSupplies(int type) {
-		boolean isEnoughItem = true;
 		int itemNum = 1;
 		ItemStack itemType = null;
 		
@@ -2324,9 +2327,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		if(getItem.stackSize >= itemNum) {
 			getItem.stackSize -= itemNum;
 		}
-		else {	//not enough item
-			getItem.stackSize = 0;
-			isEnoughItem = false;
+		else {	//not enough item, return false
+			return false;
 		}
 				
 		if(getItem.stackSize == 0) {
@@ -2337,7 +2339,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		//no need to sync because no GUI opened
 		this.ExtProps.slots[i] = getItem;	
 		
-		return isEnoughItem;	
+		return true;	
 	}
 
 	//find item in ship inventory
@@ -2641,7 +2643,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		//calc total consumption
     	int valueConsume = (int) MathHelper.sqrt_double(distX*distX + distY*distY + distZ*distZ);
     	valueConsume = valueConsume * ConfigHandler.consumeGrudgeAction[ID.ShipConsume.Move] + getGrudgeConsumption();
-    	if(valueConsume > 120) valueConsume = 120;
+    	if(valueConsume > 200) valueConsume = 200;  //max moving cost = 200
     	
     	//eat grudge
     	decrGrudgeNum(valueConsume);

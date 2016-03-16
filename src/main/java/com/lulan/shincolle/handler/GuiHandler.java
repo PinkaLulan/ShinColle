@@ -29,13 +29,13 @@ public class GuiHandler implements IGuiHandler {
 
 	@Override
 	public Object getServerGuiElement(int guiId, EntityPlayer player, World world, int x, int y, int z) {
-		TileEntity tile;
-		Entity entity;
+		TileEntity tile = null;
+		Entity entity = null;
 		
 		switch(guiId) {		//判定gui種類
 		case ID.G.SMALLSHIPYARD:	//GUI small shipyard
 			tile = world.getTileEntity(x, y, z);  //確定抓到entity才開ui 以免噴出NPE
-			if((tile != null) && (tile instanceof TileEntitySmallShipyard)) {  //server取得container
+			if(tile != null && tile instanceof TileEntitySmallShipyard) {  //server取得container
 				//sync tile when gui opened
 				((TileEntitySmallShipyard)tile).sendSyncPacket();
 				
@@ -44,7 +44,12 @@ public class GuiHandler implements IGuiHandler {
 			break;
 		case ID.G.SHIPINVENTORY:	//GUI ship inventory
 			entity = world.getEntityByID(x);	//entity id存在x座標參數上
-            if((entity != null) && (entity instanceof BasicEntityShip)){
+			
+            if(entity != null && entity instanceof BasicEntityShip){
+            	//get ship class id and register to player data for ship list recording
+            	int cid = ((BasicEntityShip)entity).getShipClass();
+            	EntityHelper.addPlayerShipListData(cid, player);
+            	
             	//sync tile when gui opened
             	((BasicEntityShip)entity).sendSyncPacketAllValue();
 				
@@ -53,7 +58,7 @@ public class GuiHandler implements IGuiHandler {
             break;
 		case ID.G.LARGESHIPYARD:	//GUI large shipyard
 			tile = world.getTileEntity(x, y, z);  //確定抓到entity才開ui 以免噴出NPE
-			if((tile != null && tile instanceof TileMultiGrudgeHeavy)) {  //server取得container
+			if(tile != null && tile instanceof TileMultiGrudgeHeavy) {  //server取得container
 				//sync tile when gui opened
 				((TileMultiGrudgeHeavy)tile).sendSyncPacket();
 				
@@ -64,7 +69,7 @@ public class GuiHandler implements IGuiHandler {
 			tile = world.getTileEntity(x, y, z);  //確定抓到entity才開ui 以免噴出NPE
 			
 			//open GUI with TileEntity
-			if((tile != null && tile instanceof TileEntityDesk)) {  //server取得container
+			if(tile != null && tile instanceof TileEntityDesk) {  //server取得container
 				//sync tile when gui opened
 				((TileEntityDesk)tile).sendSyncPacket();
 				
@@ -91,25 +96,25 @@ public class GuiHandler implements IGuiHandler {
 
 	@Override
 	public Object getClientGuiElement(int guiId, EntityPlayer player, World world, int x, int y, int z) {
-		TileEntity tile;
-		Entity entity;
+		TileEntity tile = null;
+		Entity entity = null;
 		
 		switch(guiId) {		//判定gui種類
 		case ID.G.SMALLSHIPYARD:	//GUI small shipyard
 			tile = world.getTileEntity(x, y, z);  //確定抓到entity才開ui 以免噴出NPE
-			if ((tile!=null) && (tile instanceof TileEntitySmallShipyard)) {  //client取得gui
+			if (tile != null && tile instanceof TileEntitySmallShipyard) {  //client取得gui
 				return new GuiSmallShipyard(player.inventory, (TileEntitySmallShipyard) tile);
 			}
 			return null;
 		case ID.G.SHIPINVENTORY:	//GUI ship inventory
 			entity = world.getEntityByID(x);	//entity id存在x座標參數上
-            if((entity!=null) && (entity instanceof BasicEntityShip)){
+            if(entity != null && entity instanceof BasicEntityShip) {
 				return new GuiShipInventory(player.inventory,(BasicEntityShip)entity);
 			}
 			return null;
 		case ID.G.LARGESHIPYARD:	//GUI large shipyard
 			tile = world.getTileEntity(x, y, z);  //確定抓到entity才開ui 以免噴出NPE
-			if((tile != null && tile instanceof TileMultiGrudgeHeavy)) {  //server取得container
+			if(tile != null && tile instanceof TileMultiGrudgeHeavy) {  //server取得container
 				return new GuiLargeShipyard(player.inventory, (TileMultiGrudgeHeavy) tile);
 			}
 			return null;
@@ -117,7 +122,7 @@ public class GuiHandler implements IGuiHandler {
 			tile = world.getTileEntity(x, y, z);  //確定抓到entity才開ui 以免噴出NPE
 			
 			//open GUI with TileEntity
-			if((tile != null && tile instanceof TileEntityDesk)) {  //server取得container
+			if(tile != null && tile instanceof TileEntityDesk) {  //server取得container
 				return new GuiDesk(player.inventory, (TileEntityDesk) tile, 0);
 			}
 			//open GUI with item

@@ -21,6 +21,7 @@ import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.team.TeamData;
+import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.FormationHelper;
 import com.lulan.shincolle.utility.LogHelper;
@@ -54,7 +55,9 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 	private int[] formatID;					//ship formation ID
 	private int saveId;						//current ship/empty slot, value = 0~5
 	private int teamId;						//current team
-	private List<Integer> shipEIDList;		//all loaded ships' entity id list for radar
+	private List<Integer> listShipEID;		//all loaded ships' entity id list for radar
+	private List<Integer> listColleShip;		//all obtained ships list
+	private List<Integer> listColleEquip;		//all obtained equipment list
 	
 	//player id
 	private int playerUID;
@@ -82,7 +85,9 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		this.selectState = new boolean[9][6];
 		this.sidList = new int[9][6];
 		this.formatID = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0};
-		this.shipEIDList = new ArrayList();
+		this.listShipEID = new ArrayList();
+		this.listColleShip = new ArrayList();
+		this.listColleEquip = new ArrayList();
 		this.targetClassList = new ArrayList();
 		this.initSID = false;
 		this.saveId = 0;
@@ -128,6 +133,12 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 			nbtExt.setByteArray("SelectState"+i, this.getSelectStateByte(i));
 		}
 		
+		//save colle list
+		int[] arrtemp = CalcHelper.intListToArray(this.listColleShip);
+		nbtExt.setIntArray("ColleShip", arrtemp);
+		arrtemp = CalcHelper.intListToArray(this.listColleEquip);
+		nbtExt.setIntArray("ColleEquip", arrtemp);
+		
 		//save custom target class list
 		if(this.targetClassList != null) {
 			NBTTagList list = new NBTTagList();
@@ -157,6 +168,12 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		playerUID = nbtExt.getInteger("PlayerUID");
 		teamCooldown = nbtExt.getInteger("TeamCD");
 		playerTeamID = nbtExt.getInteger("PlayerTeamID");
+		
+		//load colle list
+		int[] arrtemp = nbtExt.getIntArray("ColleShip");
+		this.listColleShip = CalcHelper.intArrayToList(arrtemp);
+		arrtemp = nbtExt.getIntArray("ColleEquip");
+		this.listColleEquip = CalcHelper.intArrayToList(arrtemp);
 		
 		/**load team list by ship UID
 		 * get entity by ship UID, SERVER SIDE ONLY
@@ -431,7 +448,15 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 	}
 	
 	public List<Integer> getShipEIDList() {
-		return this.shipEIDList;
+		return this.listShipEID;
+	}
+	
+	public List<Integer> getColleShipList() {
+		return this.listColleShip;
+	}
+	
+	public List<Integer> getColleEquipList() {
+		return this.listColleEquip;
 	}
 	
 	public List<String> getTargetClassList() {
@@ -637,7 +662,27 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 	}
 	
 	public void setShipEIDList(List<Integer> list) {
-		this.shipEIDList = list;	//shallow copy, ref only
+		this.listShipEID = list;	//shallow copy, ref only
+	}
+	
+	public void setColleShipList(List<Integer> list) {
+		this.listColleShip = list;
+	}
+	
+	public void setColleEquipList(List<Integer> list) {
+		this.listColleEquip = list;
+	}
+	
+	public void setColleShip(int shipID) {
+		if(!this.listColleShip.contains(shipID)) {
+			this.listColleShip.add(shipID);
+		}
+	}
+	
+	public void setColleEquip(int equipID) {
+		if(!this.listColleEquip.contains(equipID)) {
+			this.listColleEquip.add(equipID);
+		}
 	}
 	
 	//set target class by string list

@@ -710,7 +710,13 @@ public class Values {
 		//page 8:
 		put(3008, Arrays.asList(new int[] {0, 0, 0, 0},
 								new int[] {0, 1, 0, 0}));
-
+		//page 9:
+		put(3009, Arrays.asList(new int[] {0, 0, 0, 0},
+								new int[] {0, 1, 0, 0}));
+		//chap 4: ship list
+		//page 0:
+		put(4000, Arrays.asList(new int[] {0, 0, 0, 0},
+								new int[] {0, 1, 0, 0}));
 		
 	}});
 	

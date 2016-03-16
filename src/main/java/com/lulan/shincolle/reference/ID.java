@@ -303,7 +303,7 @@ public class ID {
 		public static final byte Phase = 5;				//entity phase
 	}
 	
-	/** ship id */
+	/** ship class id */
 	public static final class Ship {
 		public static final short DestroyerI = 0;
 		public static final short DestroyerRO = 1;

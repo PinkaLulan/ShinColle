@@ -550,6 +550,24 @@ public class EntityHelper {
 		 return null;
 	}
 	
+	/** add player ship list data */
+	public static void addPlayerShipListData(int classID, EntityPlayer player) {
+		ExtendPlayerProps extProps = getExtendPlayerProps(player);
+		
+		if(extProps != null) {
+			extProps.setColleShip(classID);
+		}
+	}
+	
+	/** add player ship list data */
+	public static void addPlayerEquipListData(int equipID, EntityPlayer player) {
+		ExtendPlayerProps extProps = getExtendPlayerProps(player);
+		
+		if(extProps != null) {
+			extProps.setColleEquip(equipID);
+		}
+	}
+	
 	/**set player extend props data by packets, CLIENT SIDE ONLY */
 	public static void setPlayerExtProps(int[] value) {
 		EntityPlayer player = ClientProxy.getClientPlayer();
@@ -616,7 +634,7 @@ public class EntityHelper {
 		}//end props != null
 	}
 	
-	/**process player sync data */
+	/** process player sync data */
 	public static void setPlayerByGUI(int value, int value2) {
 		EntityPlayer player = ClientProxy.getClientPlayer();
 		ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
@@ -633,7 +651,7 @@ public class EntityHelper {
 		}
 	}
 	
-	/**process GUI click */
+	/** process GUI click */
 	public static void setEntityByGUI(BasicEntityShip entity, int button, int value) {
 		if(entity != null) {
 			switch(button) {

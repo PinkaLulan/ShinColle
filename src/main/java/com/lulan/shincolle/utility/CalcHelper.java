@@ -208,7 +208,7 @@ public class CalcHelper {
     		return ilist;
     	}
     	
-    	return null;
+    	return new ArrayList();
     }
     
     /** List<Integer> to int[] */
@@ -223,17 +223,17 @@ public class CalcHelper {
     		return iarray;
     	}
     	
-    	return null;
+    	return new int[] {};
     }
     
     /** union list */
     public static <T> List<T> listUnion(List<T> list1, List<T> list2) {
     	Set set1 = new HashSet();
     	
-    	set1.addAll(list1);
-    	set1.addAll(list2);
+    	set1.addAll(list1);  //將list1加入set
+    	set1.addAll(list2);  //將list2加入set, 因為是hashset, 所以重複項不會加入
     	
-    	List retlist = new ArrayList(set1);
+    	List retlist = new ArrayList(set1);  //set轉為list
     	
     	return retlist;
     }

@@ -290,6 +290,12 @@ gui.shincolle:book.chap3.text7d1=§96. Aura Effect§0: Enable special power and 
 gui.shincolle:book.chap3.title8=
 gui.shincolle:book.chap3.text8d0=§911. Onsight?§0: Only attack target on sight.<br><br>§912. PVP Mode§0: Attack §cPVP§0 target first.<br><br>§913. Anti-Air§0: Attack §cAircraft§0 first.<br><br>§914. Anti-SS§0: Attack §cSubmarine§0 first.<br><br>§9Priority§0: §dAnti-Air§0 > §3Anti-SS§0 > §cPVP§0 > Other
 gui.shincolle:book.chap3.text8d1=
+gui.shincolle:book.chap3.title9=PVP Mode
+gui.shincolle:book.chap3.text9d0=§91.§0 Enable PVP Mode by §cCreating a Fleet§0 in §3Abyssal Adrmiral's Desk§0.<br><br>§92.§0 Default PVP state is §7Neutral§0 to other fleets.<br><br>§93.§0 You can §cAlly/Declare War§0 against other fleets in §3Abyssal Adrmiral's Desk§0.<br><br>§94.§0 Ship will attack other hostile fleets by enabling §cPVP Mode§0 in AI option.<br><br>§95.§0 If §cFriendlyFire§0 = §3false§0, AoE attack will not damage to allies.
+gui.shincolle:book.chap3.text9d1=§96. §cAlly§0 is §3UNILATERAL§0, other side can still be hostile, friendly or neutral.<br><br>§97. §cDeclaration of War§0 is §3BILATERAL§0, other side will be hostile too.<br><br>§98.§0 Other side will become neutral to you when §cBreaking Alliance§0.<br><br>§99.§0 Other side will keep hostile when §cCalling a Truce§0.<br><br>§910.§0 You can not declare war against the fleet in the ally list, vice versa.
+gui.shincolle:book.chap3.title10=
+gui.shincolle:book.chap3.text10d0=
+gui.shincolle:book.chap3.text10d1=
 
 # GUI: Book Text Chap 4
 gui.shincolle:book.chap4.title=Ship List
