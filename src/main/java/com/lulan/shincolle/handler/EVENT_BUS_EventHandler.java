@@ -237,7 +237,7 @@ public class EVENT_BUS_EventHandler {
 	    		NBTTagCompound nbt = new NBTTagCompound();
 	    		extProps.saveNBTData(nbt);
 	    		
-	    		//save nbt to commonproxy variable
+	    		//save nbt to ServerProxy variable
 	    		ServerProxy.setPlayerData(player.getUniqueID().toString(), nbt);
 	    	}
 	    }
@@ -253,7 +253,8 @@ public class EVENT_BUS_EventHandler {
 		}
 
 		//player ext props
-		if(event.entity instanceof EntityPlayer && !(event.entity instanceof FakePlayer) && event.entity.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME) == null) {
+		if(event.entity instanceof EntityPlayer && !(event.entity instanceof FakePlayer) &&
+		   event.entity.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME) == null) {
 			LogHelper.info("DEBUG : entity constructing: on player constructing "+event.entity.getEntityId()+" "+event.entity.getClass().getSimpleName());
 			EntityPlayer player = (EntityPlayer) event.entity;
 			player.registerExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME, new ExtendPlayerProps());
@@ -356,6 +357,8 @@ public class EVENT_BUS_EventHandler {
 				TargetHelper.setRevengeTargetAroundPlayer(player, 20D, event.source.getEntity());
 //				LogHelper.info("DEBUG : attack event: "+player+" "+event.source.getEntity());
 			}
+			
+			//TODO hostile ship call for help
 		}//end server side
 	}
 

@@ -39,7 +39,7 @@ public class ServerProxy extends CommonProxy {
 	 * 1. load from file: none
 	 * 2. save to file: none
 	 * 3. get: player respawn event
-	 * 4. set: player login/logout/death event
+	 * 4. set: player login/logout/death/saveNBTData event
 	 */
 	private static Map<String, NBTTagCompound> extendedPlayerData = null;
 	
@@ -60,7 +60,7 @@ public class ServerProxy extends CommonProxy {
 	
 	/**team data cache
 	 * for team data display, owner check, etc
-	 * team ID = player UID (1 player = 1 team), team has ally or banned team list
+	 * team ID = player UID (1 player = 1 team for now), team keeps 1 ally and 1 banned team list
 	 * 
 	 * mapTeamID <team ID: int, team data: TeamData>
 	 * 
@@ -436,17 +436,17 @@ public class ServerProxy extends CommonProxy {
 				 *  try to generate a large next ID
 				 */
 				if(getNextPlayerID() <= 0 || getNextPlayerID() <= pid) {
-					LogHelper.info("DEBUG : update ship: find next layer id error");
-					int newNextID = pid + 100000;
+					LogHelper.info("DEBUG : update player: find next player UID fail, shift id 100000");
+					int newNextID = pid + 100000;  //shift 100000 to prevent overlap
 					setNextPlayerID(newNextID);
 				}
 			}
-			//player id < 0, create one
+			//player id < 0, load from create one
 			else {
 				pid = getNextPlayerID();
-				//pid isn't init, set init value
+				//set init pid value
 				if(pid <= 0) {
-					pid = 100;	//player id init value = 100
+					pid = 100;	//player UID init value = 100
 				}
 				
 				LogHelper.info("DEBUG : update player: create pid: "+pid+" eid: "+pdata[0]+" world: "+pdata[2]);

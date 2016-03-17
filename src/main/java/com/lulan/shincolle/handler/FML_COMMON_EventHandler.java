@@ -66,8 +66,40 @@ public class FML_COMMON_EventHandler {
 	public void onPlayerTick(PlayerTickEvent event) {
 		if(event.phase == Phase.START) {
 			ExtendPlayerProps extProps = (ExtendPlayerProps) event.player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
-			//spawn boss in ocean biome, server side
+			
 			if(extProps != null && !event.player.worldObj.isRemote) {
+				//every 32 ticks
+				if(event.player.ticksExisted > 0 && event.player.ticksExisted % 32 == 0) {
+					/** check player UID
+					 *  FIX: PlayerUID become -1 when changing body with SyncMod.
+					 */
+					if(extProps.getPlayerUID() < 100) {
+						//player data lost? restore player data from ServerProxy variable
+				        NBTTagCompound nbt = ServerProxy.getPlayerData(event.player.getUniqueID().toString());
+				        
+				        if(nbt != null) {
+				        	extProps.loadNBTData(nbt);  //get data from nbt to player's extProps
+				        	LogHelper.info("DEBUG : player tick: restore player data: eid: "+event.player.getEntityId()+" pid: "+extProps.getPlayerUID()+" uuid: "+event.player.getUniqueID().toString());
+				        }
+				        
+				        //check player UID again, if no UID, set new UID for player
+				        if(extProps.getPlayerUID() < 100) {
+				        	//get new UID
+				        	ServerProxy.updatePlayerID(event.player);
+							
+							//save extProps to ServerProxy
+							LogHelper.info("DEBUG : player tick: generate new player UID, save player extProps in ServerProxy");
+				    		nbt = new NBTTagCompound();
+				    		extProps.saveNBTData(nbt);  //get data from player's extProps
+				    		ServerProxy.setPlayerData(event.player.getUniqueID().toString(), nbt);
+				        }
+				        
+				        //sync extProps to client
+			        	extProps.sendSyncPacket(0);
+					}
+				}//end every 32 ticks
+				
+				/** spawn boss in ocean biome, server side */
 				int blockX = (int) event.player.posX;
 				int blockZ = (int) event.player.posZ;
 				int spawnX, spawnY, spawnZ = 0;
@@ -210,7 +242,7 @@ public class FML_COMMON_EventHandler {
 				
 				boolean syncTeamList = false;
 				
-				//sync team list every 64 ticks
+				//sync team list every 128 ticks
 				if(event.player.ticksExisted % 128 == 0) {
 					//check entity is alive
 					BasicEntityShip getent = null;
@@ -253,13 +285,6 @@ public class FML_COMMON_EventHandler {
 				if(syncTeamList) {
 					extProps.sendSyncPacket(0);
 				}
-				
-//				//every 32 ticks
-//				if(event.player.ticksExisted % 32 == 0) {
-//					//DEBUG
-//					LogHelper.info("DEBUG : player tick: get #data "+ServerProxy.getAllPlayerWorldData().size());
-//				}//end every 32 ticks
-				
 			}//end server side, extProps != null
 			
 			//count down key cooldown

@@ -152,49 +152,76 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		
 		nbt.setTag(PLAYER_EXTPROP_NAME, nbtExt);
 		LogHelper.info("DEBUG : save player ExtNBT data on id: "+player.getEntityId());
+		
+		//backup data in ServerProxy
+		LogHelper.info("DEBUG : player saveNBTData: backup player extProps in ServerProxy");
+		ServerProxy.setPlayerData(player.getUniqueID().toString(), nbtExt);
 	}
 
 	@Override
 	public void loadNBTData(NBTTagCompound nbt) {
 		NBTTagCompound nbtExt = (NBTTagCompound) nbt.getTag(PLAYER_EXTPROP_NAME);
 		
-		hasRing = nbtExt.getBoolean("hasRing");
-		isRingActive = nbtExt.getBoolean("RingOn");
-		isRingFlying = nbtExt.getBoolean("RingFly");
-		ringEffect = nbtExt.getIntArray("RingEffect");
-		formatID = nbtExt.getIntArray("FormatID");
-		marriageNum = nbtExt.getInteger("MarriageNum");
-		bossCooldown = nbtExt.getInteger("BossCD");
-		playerUID = nbtExt.getInteger("PlayerUID");
-		teamCooldown = nbtExt.getInteger("TeamCD");
-		playerTeamID = nbtExt.getInteger("PlayerTeamID");
-		
-		//load colle list
-		int[] arrtemp = nbtExt.getIntArray("ColleShip");
-		this.listColleShip = CalcHelper.intArrayToList(arrtemp);
-		arrtemp = nbtExt.getIntArray("ColleEquip");
-		this.listColleEquip = CalcHelper.intArrayToList(arrtemp);
-		
-		/**load team list by ship UID
-		 * get entity by ship UID, SERVER SIDE ONLY
-		 * 
-		 * player entity can be loaded between ship entities,
-		 * the teamList have to sync after all entity loaded (not here)
+		/** FIX: check empty player data for iChun:SyncMod
+		 *       sometimes the input nbt data has content but no tag name
+		 *       nbtExt will be null because find no data with the tag name
 		 */
-		if(!this.world.isRemote) {
-			for(int i = 0; i < 9; ++i) {
-				byte[] byteSelect = nbtExt.getByteArray("SelectState"+i);
-				int[] sid = nbtExt.getIntArray("TeamList"+i);
-						
-				if(sid != null && sid.length > 5) {  //null check for new player
-					for(int j = 0; j < 6; ++j) {
-						//set select state
-						this.selectState[i][j] = byteSelect[j] == 1 ? true : false;
-						//set ship UID
-						this.sidList[i][j] = sid[j];
+		if(nbtExt == null) {
+			//check data without data tag
+			if(!nbt.hasKey("PlayerUID")) {
+				LogHelper.info("DEBUG : player loadNBTData: fail, data is null "+nbt+" "+nbtExt);
+				return;
+			}
+			else {
+				LogHelper.info("DEBUG : player loadNBTData: get data without tag name");
+				nbtExt = nbt;
+			}
+		}
+		
+		//load data
+		LogHelper.info("DEBUG : player loadNBTData: get data "+nbt+" "+nbtExt);
+		try {
+			hasRing = nbtExt.getBoolean("hasRing");
+			isRingActive = nbtExt.getBoolean("RingOn");
+			isRingFlying = nbtExt.getBoolean("RingFly");
+			ringEffect = nbtExt.getIntArray("RingEffect");
+			formatID = nbtExt.getIntArray("FormatID");
+			marriageNum = nbtExt.getInteger("MarriageNum");
+			bossCooldown = nbtExt.getInteger("BossCD");
+			playerUID = nbtExt.getInteger("PlayerUID");
+			teamCooldown = nbtExt.getInteger("TeamCD");
+			playerTeamID = nbtExt.getInteger("PlayerTeamID");
+			
+			//load colle list
+			int[] arrtemp = nbtExt.getIntArray("ColleShip");
+			this.listColleShip = CalcHelper.intArrayToList(arrtemp);
+			arrtemp = nbtExt.getIntArray("ColleEquip");
+			this.listColleEquip = CalcHelper.intArrayToList(arrtemp);
+			
+			/**load team list by ship UID
+			 * get entity by ship UID, SERVER SIDE ONLY
+			 * 
+			 * player entity can be loaded between ship entities,
+			 * the teamList have to sync after all entity loaded (not here)
+			 */
+			if(!this.world.isRemote) {
+				for(int i = 0; i < 9; ++i) {
+					byte[] byteSelect = nbtExt.getByteArray("SelectState"+i);
+					int[] sid = nbtExt.getIntArray("TeamList"+i);
+							
+					if(sid != null && sid.length > 5) {  //null check for new player
+						for(int j = 0; j < 6; ++j) {
+							//set select state
+							this.selectState[i][j] = byteSelect[j] == 1 ? true : false;
+							//set ship UID
+							this.sidList[i][j] = sid[j];
+						}
 					}
 				}
 			}
+		}
+		catch(Exception e) {
+			LogHelper.info("DEBUG : player loadNBTData: load fail: "+e);
 		}
 		
 		LogHelper.info("DEBUG : load player ExtNBT data on id: "+player.getEntityId()+" client? "+this.world.isRemote);

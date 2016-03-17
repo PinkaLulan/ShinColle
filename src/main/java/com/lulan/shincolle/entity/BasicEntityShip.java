@@ -1006,7 +1006,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	@Override
 	public boolean interact(EntityPlayer player) {	
 		ItemStack itemstack = player.inventory.getCurrentItem();  //get item in hand
-
+		
 		//use item
 		if(itemstack != null) {
 			//use name tag, owner only
