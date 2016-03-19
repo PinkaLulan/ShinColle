@@ -924,6 +924,11 @@ public class EntityHelper {
 			}
         }
 	}
+	
+	@SideOnly(Side.CLIENT)
+	public static MovingObjectPosition getPlayerMouseOverEntity(double dist, float duringTicks) {
+		return getMouseOverEntity(ClientProxy.getMineraft().renderViewEntity, dist, duringTicks);
+	}
 
 	/**ray trace for entity: 
 	 * 1. get the farest block
@@ -933,8 +938,7 @@ public class EntityHelper {
 	 * 5. return nearest entity
 	 */
 	@SideOnly(Side.CLIENT)
-	public static MovingObjectPosition getPlayerMouseOverEntity(double dist, float duringTicks) {
-		EntityLivingBase viewer = ClientProxy.getMineraft().renderViewEntity;
+	public static MovingObjectPosition getMouseOverEntity(EntityLivingBase viewer, double dist, float duringTicks) {
 		MovingObjectPosition lookBlock = null;
 		
         if(viewer != null && viewer.worldObj != null) {
@@ -1354,13 +1358,35 @@ public class EntityHelper {
 				//send change owner packet to server
 				sender.addChatMessage(new ChatComponentText("Command: ShipChangeOwner: ship: "+EnumChatFormatting.AQUA+hitObj.entityHit));
 				CommonProxy.channelG.sendToServer(new C2SInputPackets(C2SInputPackets.PID.CmdChOwner, ownerEID, hitObj.entityHit.getEntityId(), hitObj.entityHit.worldObj.provider.dimensionId));
-			}//get target ship
+			}//end get target ship
 			else {
 				sender.addChatMessage(new ChatComponentText("Command: ShipChangeOwner: entity is not ship!"));
 			}
 		}
 	}
 	
+	@SideOnly(Side.CLIENT)
+	public static void processShowShipInfo(int senderEID) {
+		//get sender entity
+		EntityPlayer sender = getEntityPlayerByID(senderEID, 0, true);
+		
+		if(sender != null) {
+			//get sender's mouse over target
+			MovingObjectPosition hitObj = getPlayerMouseOverEntity(32D, 1F);
+			
+			if(hitObj != null && hitObj.entityHit instanceof BasicEntityShip) {
+				BasicEntityShip ship = (BasicEntityShip) hitObj.entityHit;
+				
+				//show ship info
+				sender.addChatMessage(new ChatComponentText("Command: ShipInfo: User: "+EnumChatFormatting.LIGHT_PURPLE+sender.getDisplayName()+EnumChatFormatting.RESET+" UUID: "+EnumChatFormatting.GOLD+sender.getUniqueID()));
+				sender.addChatMessage(new ChatComponentText("Ship Name: "+EnumChatFormatting.AQUA+ship.getCustomNameTag()));
+				sender.addChatMessage(new ChatComponentText("Ship EntityID: "+EnumChatFormatting.GOLD+ship.getEntityId()));
+				sender.addChatMessage(new ChatComponentText("Ship UID: "+EnumChatFormatting.GREEN+ship.getShipUID()));
+				sender.addChatMessage(new ChatComponentText("Ship Owner UID: "+EnumChatFormatting.RED+ship.getPlayerUID()));
+				sender.addChatMessage(new ChatComponentText("Ship Owner UUID: "+EnumChatFormatting.YELLOW+EntityHelper.getPetPlayerUUID(ship)));
+			}
+		}
+	}
 	
 	
 }

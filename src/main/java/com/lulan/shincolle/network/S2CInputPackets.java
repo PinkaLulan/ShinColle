@@ -1,11 +1,12 @@
 package com.lulan.shincolle.network;
 
-import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
+
+import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
+
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
@@ -23,6 +24,7 @@ public class S2CInputPackets implements IMessage {
 	//packet id
 	public static final class PID {
 		public static final byte CmdChOwner = 0;
+		public static final byte CmdShipInfo = 1;
 	}
 	
 	
@@ -47,6 +49,7 @@ public class S2CInputPackets implements IMessage {
 	
 		switch(type) {
 		case PID.CmdChOwner:	//cmd: change owner packet
+		case PID.CmdShipInfo:	//cmd: show ship info
 			{
 				try {
 					this.value = buf.readInt();  //int array length
@@ -58,13 +61,10 @@ public class S2CInputPackets implements IMessage {
 						for(int i = 0; i < this.value; i++) {
 							this.value3[i] = buf.readInt();
 						}
-						
-						//ship change owner process
-						EntityHelper.processShipChangeOwner(value3[0], value3[1]);
 					}
 				}
 				catch(Exception e) {
-					LogHelper.info("DEBUG : S2C input packet: change owner fail: "+e);
+					LogHelper.info("DEBUG : S2C input packet: get data fail: "+e);
 				}
 			}
 			break;
@@ -76,6 +76,7 @@ public class S2CInputPackets implements IMessage {
 	public void toBytes(ByteBuf buf) {
 		switch(this.type) {
 		case PID.CmdChOwner:	//cmd: change owner packet
+		case PID.CmdShipInfo:	//cmd: show ship info
 			{
 				buf.writeByte((byte)this.type);
 
@@ -102,8 +103,17 @@ public class S2CInputPackets implements IMessage {
 		//收到封包時顯示debug訊息, client side
 		@Override
 		public IMessage onMessage(S2CInputPackets message, MessageContext ctx) {		
-//			EntityPlayerMP player = ctx.getServerHandler().playerEntity;
-//			LogHelper.info("DEBUG : get input packet");
+			switch(message.type) {
+			case PID.CmdChOwner:	//cmd: change owner packet
+				//ship change owner process
+				EntityHelper.processShipChangeOwner(message.value3[0], message.value3[1]);
+				break;
+			case PID.CmdShipInfo:	//cmd: show ship info
+				//ship change owner process
+				EntityHelper.processShowShipInfo(message.value3[0]);
+				break;
+			}
+			
 			return null;
 		}
     }
