@@ -399,6 +399,7 @@ gui.shincolle:onsightAI=Onsight?
 gui.shincolle:ai.pvp=PVP Mode
 gui.shincolle:ai.aa=Anti-Air
 gui.shincolle:ai.asm=Anti-SS
+gui.shincolle:ai.timekeeper=TimeKeeper
 
 # GUI: Shipyard
 gui.shincolle:nomaterial=Not Enough Materials

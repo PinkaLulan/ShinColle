@@ -27,7 +27,7 @@ public class ContainerShipInventory extends Container {
 	private int GuiKills, GuiExpCurrent, GuiNumAmmo, GuiNumAmmoHeavy, GuiNumGrudge, 
 	            GuiNumAirLight, GuiNumAirHeavy, GuiIsMarried,
 	            ButtonMelee, ButtonAmmoLight, ButtonAmmoHeavy, ButtonAirLight, ButtoAirHeavy,
-	            FollowMin, FollowMax, FleeHP, TarAI, AuraEffect, OnSightAI, PVPAI, AAAI, ASMAI;
+	            FollowMin, FollowMax, FleeHP, TarAI, AuraEffect, OnSightAI, PVPAI, AAAI, ASMAI, TIMEKEEPAI;
 	
 	public ContainerShipInventory(InventoryPlayer invPlayer, BasicEntityShip entity1) {
 		int i,j;	//loop index
@@ -168,6 +168,7 @@ public class ContainerShipInventory extends Container {
 		crafting.sendProgressBarUpdate(this, 19, this.entity.getStateFlagI(ID.F.PVPFirst));
 		crafting.sendProgressBarUpdate(this, 20, this.entity.getStateFlagI(ID.F.AntiAir));
 		crafting.sendProgressBarUpdate(this, 21, this.entity.getStateFlagI(ID.F.AntiSS));
+		crafting.sendProgressBarUpdate(this, 22, this.entity.getStateFlagI(ID.F.TimeKeeper));
 	}
 	
 	//偵測數值是否改變, 有改變時發送更新(此為server端偵測)
@@ -287,6 +288,11 @@ public class ContainerShipInventory extends Container {
                 icrafting.sendProgressBarUpdate(this, 21, getValue);
                 this.ASMAI = getValue;
             }
+            getValue = this.entity.getStateFlagI(ID.F.TimeKeeper);
+            if(this.TIMEKEEPAI != getValue) {
+                icrafting.sendProgressBarUpdate(this, 22, getValue);
+                this.TIMEKEEPAI = getValue;
+            }
         }
     }
 	
@@ -354,6 +360,9 @@ public class ContainerShipInventory extends Container {
 			break;
 		case 21:
 			this.entity.setEntityFlagI(ID.F.AntiSS, updatedValue);
+			break;
+		case 22:
+			this.entity.setEntityFlagI(ID.F.TimeKeeper, updatedValue);
 			break;
 		}
     }

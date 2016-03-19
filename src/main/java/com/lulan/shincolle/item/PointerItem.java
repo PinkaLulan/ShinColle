@@ -558,22 +558,6 @@ public class PointerItem extends BasicItem {
 				//client side
 				if(world.isRemote) {
 					if(player.ticksExisted % 32 == 0) {
-						//抓視線上的東西 (debug)
-//						MovingObjectPosition hitObj = EntityHelper.getPlayerMouseOverEntity(64D, 1F);
-//						if(hitObj != null) {
-//							if(hitObj.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-//								LogHelper.info("DEBUG : hit BLOCK "+world.getBlock(hitObj.blockX, hitObj.blockY, hitObj.blockZ).getLocalizedName()+" "+hitObj.blockX+" "+hitObj.blockY+" "+hitObj.blockZ);
-//								float[] look = EntityHelper.getLookDegree(hitObj.blockX-player.posX, hitObj.blockY-player.posY, hitObj.blockZ-player.posZ, true);
-//								LogHelper.info("DEBUG : look "+look[0]+" "+look[1]);
-//							}
-//							else if(hitObj.typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
-//								LogHelper.info("DEBUG : hit ENTITY "+hitObj.entityHit.getClass().getSimpleName());
-//							}
-//							else {
-//								LogHelper.info("DEBUG : hit MISS ");
-//							}
-//						}
-						
 						//顯示隊伍圈圈, 選擇圈圈, 可控制圈圈等
 						ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 						BasicEntityShip teamship = null;

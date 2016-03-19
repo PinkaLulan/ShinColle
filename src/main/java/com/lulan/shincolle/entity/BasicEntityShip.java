@@ -101,7 +101,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	/** EntityFlag: 0:canFloatUp 1:isMarried 2:noFuel 3:canMelee 4:canAmmoLight 5:canAmmoHeavy 
 	 *  6:canAirLight 7:canAirHeavy 8:headTilt(client only) 9:canRingEffect 10:canDrop 11:canFollow
 	 *  12:onSightChase 13:AtkType_Light 14:AtkType_Heavy 15:AtkType_AirLight 16:AtkType_AirHeavy 
-	 *  17:HaveRingEffect 18:PVPFirst 19:AntiAir 20:AntiSS 21:PassiveAI */
+	 *  17:HaveRingEffect 18:PVPFirst 19:AntiAir 20:AntiSS 21:PassiveAI 22:TimeKeeper */
 	protected boolean[] StateFlag;
 	/** BonusPoint: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT */
 	protected byte[] BonusPoint;
@@ -156,7 +156,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				                        true, true, true, false, true,
 								        true, false, true, true, true,
 								        true, true, false, true, false,
-								        false, false
+								        false, false, true
 								       };
 		this.UpdateFlag = new boolean[] {false};
 		this.BonusPoint = new byte[] {0, 0, 0, 0, 0, 0};
@@ -1285,15 +1285,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
             return true;
         }
 	
-//		//shift+right click時打開GUI
-//		if(player.isSneaking() && EntityHelper.checkSameOwner(this, player)) {
-//			FMLNetworkHandler.openGui(player, ShinColle.instance, ID.G.SHIPINVENTORY, this.worldObj, this.getEntityId(), 0, 0);
-//    		return true;
-//		}
-		
 		//shift+right click時打開GUI
-		LogHelper.info("AAAAAAAA "+player.worldObj.isRemote+" "+player.getUniqueID()+" "+this.func_152113_b());
-		if(player.isSneaking() && player.getUniqueID().toString().equals(this.func_152113_b())) {
+		if(player.isSneaking() && EntityHelper.checkSameOwner(this, player)) {
 			FMLNetworkHandler.openGui(player, ShinColle.instance, ID.G.SHIPINVENTORY, this.worldObj, this.getEntityId(), 0, 0);
     		return true;
 		}
@@ -1522,31 +1515,37 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 						//reset guard entity
 						this.setGuardedEntity(null);
 					}
+				}//end show pointer target effect
+				
+				//display circle particle, 只有owner才會接收到該ship同步的EID, 非owner讀取到的EID <= 0
+				//get owner entity
+				EntityPlayer player = null;
+				if(this.getStateMinor(ID.M.PlayerEID) > 0) {
+					player = EntityHelper.getEntityPlayerByID(getStateMinor(ID.M.PlayerEID), 0, true);
+				}
+				
+				//show circle particle on ship and guard target
+				if(player != null) {
+					ItemStack item = player.inventory.getCurrentItem();
 					
-					//display pointer target effect, 只有owner才會接收到該ship同步的EID, 非owner讀取到的EID <= 0
-					EntityPlayer player = null;
-					if(this.getStateMinor(ID.M.PlayerEID) > 0) {
-						player = EntityHelper.getEntityPlayerByID(getStateMinor(ID.M.PlayerEID), 0, true);
-					
-						if(player != null) {
-							ItemStack item = player.inventory.getCurrentItem();
-							
-							if(ConfigHandler.alwaysShowTeamParticle || (item != null && item.getItem() instanceof PointerItem)) {
-								//標記在entity上
-								if(this.getGuardedEntity() != null) {
-									ParticleHelper.spawnAttackParticleAtEntity(this.getGuardedEntity(), 0.3D, 6D, 0D, (byte)2);
-								}
-								//標記在block上
-								else if(this.getGuardedPos(1) >= 0) {
-									ParticleHelper.spawnAttackParticleAt(this.getGuardedPos(0)+0.5D, this.getGuardedPos(1), this.getGuardedPos(2)+0.5D, 0.3D, 6D, 0D, (byte)25);
-								}
-							}
+					if(ConfigHandler.alwaysShowTeamParticle || (item != null && item.getItem() instanceof PointerItem)) {
+						//show friendly particle
+						ParticleHelper.spawnAttackParticleAtEntity(this, 0.3D, 7D, 0D, (byte)2);
+						
+						//show guard particle
+						//標記在entity上
+						if(this.getGuardedEntity() != null) {
+							ParticleHelper.spawnAttackParticleAtEntity(this.getGuardedEntity(), 0.3D, 6D, 0D, (byte)2);
 						}
-						else {
-							this.setStateMinor(ID.M.PlayerEID, -1);
+						//標記在block上
+						else if(this.getGuardedPos(1) >= 0) {
+							ParticleHelper.spawnAttackParticleAt(this.getGuardedPos(0)+0.5D, this.getGuardedPos(1), this.getGuardedPos(2)+0.5D, 0.3D, 6D, 0D, (byte)25);
 						}
 					}
-				}//end show pointer target effect
+				}
+				else {
+					this.setStateMinor(ID.M.PlayerEID, -1);
+				}
 				
 				//TODO DEBUG TEST
 //				ParticleHelper.spawnAttackParticleAtEntity(this, 1D, 1D, 0D, (byte)4);
@@ -1642,29 +1641,16 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	            }
         	}//end every 32 ticks
         	
-        	//check every 64 ticks
-        	if(ticksExisted % 64 == 0) {
-        		//check owner online
-        		if(this.getPlayerUID() > 0) {
-        			//get owner
-        			EntityPlayer player = EntityHelper.getEntityPlayerByUID(this.getPlayerUID(), this.worldObj);
-        					
-        			//owner exists (online and same world)
-        			if(player != null) {
-    					//update owner entity id (could be changed when owner change dimension or dead)
-            			this.setStateMinor(ID.M.PlayerEID, player.getEntityId());
-            			//sync guard
-            			this.sendSyncPacket(3, false, false);
-            		}
-        		}
-	        }//end every 64 ticks
+//        	//check every 64 ticks
+//        	if(ticksExisted % 64 == 0) {
+//        		
+//	        }//end every 64 ticks
         	
         	//check every 128 ticks
         	if(ticksExisted % 128 == 0) {
         		//delayed init, waiting for player entity loaded
-        		if(!this.initWaitAI && ticksExisted == 128) {
+        		if(!this.initWaitAI && ticksExisted >= 128) {
         			setUpdateFlag(ID.FU.FormationBuff, true);  //set update formation buff
-        			
         			this.initWaitAI = true;
         		}
         		
@@ -1680,6 +1666,20 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	
         	//check every 256 ticks
         	if(this.ticksExisted % 256 == 0) {
+        		//check owner online
+        		if(this.getPlayerUID() > 0) {
+        			//get owner
+        			EntityPlayer player = EntityHelper.getEntityPlayerByUID(this.getPlayerUID(), this.worldObj);
+
+        			//owner exists (online and same world)
+        			if(player != null) {
+    					//update owner entity id (could be changed when owner change dimension or dead)
+            			this.setStateMinor(ID.M.PlayerEID, player.getEntityId());
+            			//sync guard
+            			this.sendSyncPacket(3, false, false);
+            		}
+        		}
+        		
         		//update buff (slow update)
         		calcEquipAndUpdateState();
         		
@@ -1690,9 +1690,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	}//end every 256 ticks
         	
         	//play timekeeping sound
-        	if(ConfigHandler.timeKeeping) {
+        	if(ConfigHandler.timeKeeping && this.getStateFlag(ID.F.TimeKeeper)) {
         		long time = this.worldObj.provider.getWorldTime();
             	int checkTime = (int)(time % 1000L);
+            	
             	if(checkTime == 0) {
             		playTimeSound((int)(time / 1000L) % 24);
             	}

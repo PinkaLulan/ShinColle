@@ -101,6 +101,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		nbtExt_add4.setBoolean("AA", this.entity.getStateFlag(ID.F.AntiAir));
 		nbtExt_add4.setBoolean("ASM", this.entity.getStateFlag(ID.F.AntiSS));
 		nbtExt_add4.setBoolean("PassiveAI", this.entity.getStateFlag(ID.F.PassiveAI));
+		nbtExt_add4.setBoolean("TimeKeeper", this.entity.getStateFlag(ID.F.TimeKeeper));
 
 		//save inventory
 		NBTTagList list = new NBTTagList();
@@ -183,6 +184,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		entity.setStateFlag(ID.F.AntiAir, nbt_load.getBoolean("AA"));
 		entity.setStateFlag(ID.F.AntiSS, nbt_load.getBoolean("ASM"));
 		entity.setStateFlag(ID.F.PassiveAI, nbt_load.getBoolean("PassiveAI"));
+		entity.setStateFlag(ID.F.TimeKeeper, nbt_load.getBoolean("TimeKeeper"));
 
 		//load inventory
 		NBTTagList list = nbt.getTagList(tagName, 10);	//tagList內為tagCompound, 代號=10

@@ -29,6 +29,7 @@ public class EntityFXTeam extends EntityFX {
 	private static final ResourceLocation TEXTURE = new ResourceLocation(Reference.TEXTURES_PARTICLE+"EntityFXTeam.png");
 	private int particleType;	//0:green 1:cyan 2:red 3:yellow
 	private double height;
+	private float particleAlphaA, particleAlphaC;  //arrow alpha, circle alpha
 	private Entity host;
 	
 	
@@ -41,7 +42,8 @@ public class EntityFXTeam extends EntityFX {
         this.motionY = 0D;
         this.motionZ = 0D;
         this.particleScale = scale;
-        this.particleAlpha = 1F;
+        this.particleAlphaA = 1F;
+        this.particleAlphaC = 0.8F;
         this.noClip = true;
         this.particleType = type;
         
@@ -88,6 +90,14 @@ public class EntityFXTeam extends EntityFX {
         	this.particleBlue = 1F;
         	this.particleMaxAge = 30;
         	break;
+        case 7:		//translucent green, friendly target
+        	this.particleRed = 0F;
+        	this.particleGreen = 1F;
+        	this.particleBlue = 0F;
+        	this.particleMaxAge = 31;
+        	this.particleAlphaA = 0F;
+            this.particleAlphaC = 0.35F;
+        	break;
         }
     }
     
@@ -99,7 +109,8 @@ public class EntityFXTeam extends EntityFX {
         this.motionZ = 0D;
         this.height = 1.5D;
         this.particleScale = scale;
-        this.particleAlpha = 1F;
+        this.particleAlphaA = 1F;
+        this.particleAlphaC = 0.5F;
         this.noClip = true;
         this.particleType = type;
         
@@ -160,8 +171,8 @@ public class EntityFXTeam extends EntityFX {
 		
         //start tess
         tess.startDrawingQuads();
-        tess.setColorRGBA_F(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha);
         tess.setBrightness(240);
+        tess.setColorRGBA_F(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlphaA);
         //畫出箭頭
         //X跟Z位置不加頭部轉動偏移, 只有Y軸會偏向玩家方向
         tess.addVertexWithUV(f11 - par3 * particleScale, f12 - par4 * particleScale * 2.0F, f13 - par5 * particleScale, xmax, y1max);
@@ -171,7 +182,7 @@ public class EntityFXTeam extends EntityFX {
 
         halfScale = particleScale * 3F;
         
-        tess.setColorRGBA_F(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha * 0.5F);
+        tess.setColorRGBA_F(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlphaC);
         //畫出圈圈(朝上)
         tess.addVertexWithUV(f11 + halfScale, f12b, f13 + halfScale, xmax, y2max);
         tess.addVertexWithUV(f11 + halfScale, f12b, f13 - halfScale, xmax, y2min);
@@ -204,11 +215,22 @@ public class EntityFXTeam extends EntityFX {
     @Override
 	public void onUpdate() {
     	if(host != null) {
-    		//set interpolation position
-    		this.prevPosX = this.posX;
-            this.prevPosY = this.posY;
-            this.prevPosZ = this.posZ;
-			this.setPosition(host.posX, host.posY, host.posZ);
+    		switch(this.particleType) {
+    		case 7:
+        		//set interpolation position
+        		this.prevPosX = this.posX;
+                this.prevPosY = this.posY;
+                this.prevPosZ = this.posZ;
+    			this.setPosition(host.posX, host.posY, host.posZ);
+        		break;
+    		default:
+    			//set interpolation position
+        		this.prevPosX = this.posX;
+                this.prevPosY = this.posY;
+                this.prevPosZ = this.posZ;
+    			this.setPosition(host.posX, host.posY+0.02D, host.posZ);
+    			break;
+    		}
     	}
     	else {
     		if(particleType < 4) {
@@ -216,14 +238,23 @@ public class EntityFXTeam extends EntityFX {
     		}
     	}
     	
-    	//fade out effect
-    	if(particleType > 3 && particleAge > 10) {
-    		this.particleAlpha = 1F - ((particleAge - 10F) / 20F);
+    	switch(this.particleType) {
+    	case 4:
+    	case 5:
+    	case 6:
+    		//fade out effect
+        	if(particleAge > 10) {
+        		this.particleAlphaA = 1F - ((particleAge - 10F) / 20F);
+        		this.particleAlphaC = this.particleAlphaA * 0.5F;
+        	}
+    		break;
     	}
     	
         if(this.particleAge++ > this.particleMaxAge) {
             this.setDead();
         }
     }
+    
+    
 }
 

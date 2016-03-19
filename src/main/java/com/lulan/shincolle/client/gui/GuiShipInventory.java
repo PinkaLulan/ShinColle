@@ -57,11 +57,12 @@ public class GuiShipInventory extends GuiContainer {
 	               strAttrAtk1, strAttrAtk2, strAttrDEF, strAttrSPD, strAttrMOV, strAttrHIT, strMiKills,
 	               strMiExp, strMiAirL, strMiAirH, strMiAmmoL, strMiAmmoH, strMiGrudge, strAttrCri,
 	               strAttrDHIT, strAttrTHIT, strAttrAA, strAttrASM, strAttrMiss, strAttrMissA, strAttrMissR,
-	               strAttrDodge, strAttrFPos, strAttrFormat, strAttrWedding, strAttrWedTrue, strAttrWedFalse;
+	               strAttrDodge, strAttrFPos, strAttrFormat, strAttrWedding, strAttrWedTrue, strAttrWedFalse,
+	               strTimeKeep;
 	private int hpCurrent, hpMax, color, showPage, showPageAI, pageIndicator, pageIndicatorAI, showAttack,
 				fMinPos, fMaxPos, fleeHPPos, barPos, mousePressBar, shipType, shipClass;
 	private boolean switchMelee, switchLight, switchHeavy, switchAirLight, switchAirHeavy,
-				switchTarAI, mousePress, switchAura, switchOnSight, switchPVP, switchAA, switchASM;
+				switchTarAI, mousePress, switchAura, switchOnSight, switchPVP, switchAA, switchASM, switchTimeKeep;
 	private int[][] iconXY;  //icon array:  [ship type, ship name][file,x,y]
 	
 
@@ -141,6 +142,7 @@ public class GuiShipInventory extends GuiContainer {
 		strPVP = I18n.format("gui.shincolle:ai.pvp");
 		strAA = I18n.format("gui.shincolle:ai.aa");
 		strASM = I18n.format("gui.shincolle:ai.asm");
+		strTimeKeep = I18n.format("gui.shincolle:ai.timekeeper");
 		
 	}
 	
@@ -296,6 +298,7 @@ public class GuiShipInventory extends GuiContainer {
     		this.switchPVP = this.entity.getStateFlag(ID.F.PVPFirst);
     		this.switchAA = this.entity.getStateFlag(ID.F.AntiAir);
     		this.switchASM = this.entity.getStateFlag(ID.F.AntiSS);
+    		this.switchTimeKeep = this.entity.getStateFlag(ID.F.TimeKeeper);
     		
     		//draw button
             if(this.switchTarAI) {
@@ -327,6 +330,12 @@ public class GuiShipInventory extends GuiContainer {
             }
             else {
             	drawTexturedModalRect(guiLeft+174, guiTop+180, 11, 214, 11, 11);
+            }
+            if(this.switchTimeKeep) {
+            	drawTexturedModalRect(guiLeft+174, guiTop+192, 0, 214, 11, 11);
+            }
+            else {
+            	drawTexturedModalRect(guiLeft+174, guiTop+192, 11, 214, 11, 11);
             }
   
     		break;
@@ -814,7 +823,7 @@ public class GuiShipInventory extends GuiContainer {
 		
 		//draw AI page
 		switch(this.showPageAI) {
-		case 1:	{	//attack AI page
+		case 1:	{	//AI page 1
 				//draw string
 				this.fontRendererObj.drawString(canMelee, 187, 134, 0);
 				if(entity.getAttackType(ID.F.AtkType_Light))
@@ -829,7 +838,7 @@ public class GuiShipInventory extends GuiContainer {
 				this.fontRendererObj.drawString(auraEffect, 187, 194, 0);
 			}
 			break;
-		case 2:	{	//follow, flee AI page
+		case 2:	{	//AI page 2
 				//draw string
 				this.fontRendererObj.drawString(followMin, 174, 134, 0);
 				this.fontRendererObj.drawString(followMax, 174, 158, 0);
@@ -865,14 +874,14 @@ public class GuiShipInventory extends GuiContainer {
 				}	
 			}
 			break;
-		case 3: {	//aura effect
+		case 3: {	//AI page 3
 			//draw string
 			this.fontRendererObj.drawString(TarAI, 187, 134, 0);
 			this.fontRendererObj.drawString(strOnSight, 187, 146, 0);
 			this.fontRendererObj.drawString(strPVP, 187, 158, 0);
 			this.fontRendererObj.drawString(strAA, 187, 170, 0);
 			this.fontRendererObj.drawString(strASM, 187, 182, 0);
-			
+			this.fontRendererObj.drawString(strTimeKeep, 187, 194, 0);
 			}
 			break;
 		}//end AI page switch
@@ -1013,6 +1022,10 @@ public class GuiShipInventory extends GuiContainer {
         	if(this.showPageAI == 1) {	//page 1: apply aura effect
         		this.switchAura = this.entity.getStateFlag(ID.F.UseRingEffect);
         		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_AuraEffect, getInverseInt(this.switchAura)));
+        	}
+        	else if(this.showPageAI == 3) {	//page 3: timekeeper AI
+        		this.switchTimeKeep = this.entity.getStateFlag(ID.F.TimeKeeper);
+        		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_TIMEKEEPAI, getInverseInt(this.switchTimeKeep)));
         	}
         	break;
         case 9:		//AI page 1

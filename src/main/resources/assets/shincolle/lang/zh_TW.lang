@@ -399,6 +399,7 @@ gui.shincolle:onsightAI=視線內才追擊?
 gui.shincolle:ai.pvp=PVP模式
 gui.shincolle:ai.aa=防空模式
 gui.shincolle:ai.asm=反潛模式
+gui.shincolle:ai.timekeeper=報時語音
 
 # GUI: Shipyard
 gui.shincolle:nomaterial=資材不足

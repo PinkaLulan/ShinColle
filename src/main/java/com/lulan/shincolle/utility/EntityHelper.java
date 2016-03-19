@@ -733,6 +733,9 @@ public class EntityHelper {
 			case ID.B.ShipInv_ASMAI:
 				entity.setEntityFlagI(ID.F.AntiSS, value);
 				break;
+			case ID.B.ShipInv_TIMEKEEPAI:
+				entity.setEntityFlagI(ID.F.TimeKeeper, value);
+				break;
 			}
 		}
 		else {
