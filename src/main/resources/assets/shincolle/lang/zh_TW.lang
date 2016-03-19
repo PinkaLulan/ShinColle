@@ -293,6 +293,9 @@ gui.shincolle:book.chap3.text8d1=§9優先度§0： §d防空§0 > §3反潛§0 
 gui.shincolle:book.chap3.title9=PVP模式
 gui.shincolle:book.chap3.text9d0=§91.§0在§c深海提督的辦公桌§0中§3建立艦隊§0後即進入PVP模式。<br><br>§92.§0PVP初始狀態為中立。<br><br>§93.§0在深海提督的辦公桌中可以對其他艦隊§c宣戰§0，§3同盟§0或恢復§7中立§0。<br><br>§94.§0若船艦AI勾選了§cPVP模式§0，則船艦會自動攻擊其他敵對隊伍。<br><br>§95.§0若設定檔§cFriendlyFire§0設為§3false§0，則範圍攻擊不會傷害到同盟隊伍。
 gui.shincolle:book.chap3.text9d1=§96.§c結盟§0只是§3單向關係§0，對方仍然可以對你選擇敵對。<br><br>§97.§c宣戰§0是§3雙向關係§0，宣戰後對方也會自動對你宣戰。<br><br>§98.§c解除同盟§0時，對方也會同時解除同盟恢復到中立關係。<br><br>§99.§c解除宣戰§0時，對方仍然會對你保持敵對關係。<br><br>§910.§0§若已經跟對方宣戰，必須先解除宣戰關係才能選擇同盟，反之亦然。
+gui.shincolle:book.chap3.title10=指令說明
+gui.shincolle:book.chap3.text10d0=§9/shipchangeowner§c <玩家名稱><br>§d權限:§0 僅限OP<br>§d功能:§0 更改船的主人<br><br>OP、主人還有船三者都必須上線並處在相同維度(世界)下，OP輸入以上指令並加上玩家名稱後，OP游標所指到的船的主人就會修改為指令所指定的玩家。
+gui.shincolle:book.chap3.text10d1=§9/shipupdateowneruid§3 [玩家名稱]<br>§d權限:§0 全部玩家 or 僅限OP<br>§d功能:§0 更新擁有船的主人ID<br><br>在某些bug下導致船艦對主人沒有反應時，可輸入此指令嘗試更新主人ID。一般玩家輸入後會更新玩家所擁有的已載入的船艦的主人ID，OP可以額外輸入玩家名稱，就會更新該玩家所擁有船艦的主人ID。<br><br>注意船艦若處在非載入的地圖區塊中，不會被此指令影響，需移動到該船艦附近輸入指令才能生效。<br><br>判定擁有船艦是以船艦紀錄的主人UUID為準，若UUID出現bug則此指令可能無效，請改用/shipchangeowner單獨對每個船艦修改主人。
 
 # GUI: Book Text Chap 4
 gui.shincolle:book.chap4.title=船艦列表
@@ -428,3 +431,4 @@ chat.shincolle:bossspawn1=有艦娘出現在水面上!
 chat.shincolle:bossspawn2=偵測到艦娘入侵!
 chat.shincolle:addtargetclass=新增攻擊目標類型: %s
 chat.shincolle:pointer.changeformation=陣型變換為
+chat.shincolle:spawnegg.lowlevel=玩家等級太低!

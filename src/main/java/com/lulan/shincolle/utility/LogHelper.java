@@ -26,7 +26,12 @@ public class LogHelper {
 	//warn: 紀錄可能導致error的問題
 	public static void warn(Object object) { log(Level.WARN,object); }
 	
-	//info: 紀錄提示訊息
+	//log: 紀錄非debug模式也能顯示的訊息
+	public static void log(Object object) { 
+		log(Level.INFO,object); 
+	}
+	
+	//info: 紀錄簡易的debug訊息
 	public static void info(Object object) { 
 		if(ConfigHandler.debugMode) log(Level.INFO,object); 
 	}
@@ -41,4 +46,6 @@ public class LogHelper {
 	
 	//all: 紀錄全部訊息
 	public static void all(Object object) { log(Level.ALL,object); }
+	
+	
 }

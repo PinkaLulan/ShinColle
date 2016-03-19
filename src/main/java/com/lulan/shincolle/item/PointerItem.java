@@ -483,13 +483,13 @@ public class PointerItem extends BasicItem {
 	//按住物品時
 	@Override
 	public void onUsingTick(ItemStack stack, EntityPlayer player, int count) {
-		LogHelper.info("DEBUG : using pointer "+count);
+//		LogHelper.info("DEBUG : using pointer "+count);
     }
 
 	//right click on solid block
 	@Override
 	public boolean onItemUse(ItemStack item, EntityPlayer player, World world, int x, int y, int z, int side, float hitx, float hity, float hitz) {
-		LogHelper.info("DEBUG : use pointer "+world.isRemote+" "+player.getDisplayName()+" "+x+" "+y+" "+z+" "+side+" "+hitx+" "+hity+" "+hitz);
+//		LogHelper.info("DEBUG : use pointer "+world.isRemote+" "+player.getDisplayName()+" "+x+" "+y+" "+z+" "+side+" "+hitx+" "+hity+" "+hitz);
 		return false;
     }
 	

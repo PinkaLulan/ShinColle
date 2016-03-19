@@ -129,8 +129,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	
 	public BasicEntityShip(World world) {
 		super(world);
-		this.ignoreFrustumCheck = true;	//即使不在視線內一樣render
-		this.maxHurtResistantTime = 2;
+		this.ignoreFrustumCheck = true;  //即使不在視線內一樣render
+		this.maxHurtResistantTime = 2;   //受傷無敵時間降為2 ticks
 		this.StartSoundHurt = 0;
 		
 		//init value
@@ -1285,8 +1285,15 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
             return true;
         }
 	
+//		//shift+right click時打開GUI
+//		if(player.isSneaking() && EntityHelper.checkSameOwner(this, player)) {
+//			FMLNetworkHandler.openGui(player, ShinColle.instance, ID.G.SHIPINVENTORY, this.worldObj, this.getEntityId(), 0, 0);
+//    		return true;
+//		}
+		
 		//shift+right click時打開GUI
-		if(player.isSneaking() && EntityHelper.checkSameOwner(this, player)) {
+		LogHelper.info("AAAAAAAA "+player.worldObj.isRemote+" "+player.getUniqueID()+" "+this.func_152113_b());
+		if(player.isSneaking() && player.getUniqueID().toString().equals(this.func_152113_b())) {
 			FMLNetworkHandler.openGui(player, ShinColle.instance, ID.G.SHIPINVENTORY, this.worldObj, this.getEntityId(), 0, 0);
     		return true;
 		}
@@ -2694,12 +2701,22 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   					setEffectFormationFixed(ID.FormationFixed.MOV, 0F);
   				}
   			}
-  			
+
   			//set done flag
   			this.setUpdateFlag(ID.FU.FormationBuff, false);
   		}
   	}
   	
+  	/** setDead() must to check entity health <= 0
+  	 *  FIX: probably fix ship dupe bug that killing ship when server lag
+  	 */
+  	@Override
+  	public void setDead() {
+  		if(!this.worldObj.isRemote) {
+  	        this.setHealth(-1F);
+  	    }
+  	    super.setDead();
+    }
   	
   	
 }

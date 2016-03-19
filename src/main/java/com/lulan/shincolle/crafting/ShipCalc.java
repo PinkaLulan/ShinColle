@@ -108,6 +108,7 @@ public class ShipCalc {
 
     	List<int[]> shiplistOrg = null;  //raw ship list: 0:ship ID, 1:mean 2:specific material
 		float te = 4000F;	//debug
+		
 		//get equip list by build type
 		if(item.getItemDamage() == 0) {	 //small egg
 			shiplistOrg = EquipSmall;

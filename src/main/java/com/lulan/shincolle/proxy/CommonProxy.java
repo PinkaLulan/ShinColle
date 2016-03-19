@@ -4,8 +4,9 @@ import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CGUIPackets;
+import com.lulan.shincolle.network.S2CInputPackets;
 import com.lulan.shincolle.network.S2CSpawnParticle;
-import com.lulan.shincolle.reference.Names;
+import com.lulan.shincolle.reference.ID;
 
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
@@ -38,13 +39,14 @@ public abstract class CommonProxy implements IProxy {
 		
 		//register packets
 		//entity sync packet
-		channelE.registerMessage(S2CEntitySync.Handler.class, S2CEntitySync.class, Names.Packets.ENTITY_SYNC, Side.CLIENT);
+		channelE.registerMessage(S2CEntitySync.Handler.class, S2CEntitySync.class, ID.Packets.S2C_EntitySync, Side.CLIENT);
 		//particle packet
-		channelP.registerMessage(S2CSpawnParticle.Handler.class, S2CSpawnParticle.class, Names.Packets.SPAWN_PARTICLE, Side.CLIENT);
-		//GUI packet
-		channelG.registerMessage(S2CGUIPackets.Handler.class, S2CGUIPackets.class, Names.Packets.GUI_SYNC, Side.CLIENT);
-		channelG.registerMessage(C2SGUIPackets.Handler.class, C2SGUIPackets.class, Names.Packets.GUI_CLICK, Side.SERVER);
-		channelG.registerMessage(C2SInputPackets.Handler.class, C2SInputPackets.class, Names.Packets.KEY_INPUT, Side.SERVER);
+		channelP.registerMessage(S2CSpawnParticle.Handler.class, S2CSpawnParticle.class, ID.Packets.S2C_Particle, Side.CLIENT);
+		//GUI/Input packet
+		channelG.registerMessage(S2CGUIPackets.Handler.class, S2CGUIPackets.class, ID.Packets.S2C_GUISync, Side.CLIENT);
+		channelG.registerMessage(C2SGUIPackets.Handler.class, C2SGUIPackets.class, ID.Packets.C2S_GUIInput, Side.SERVER);
+		channelG.registerMessage(S2CInputPackets.Handler.class, S2CInputPackets.class, ID.Packets.S2C_CmdSync, Side.CLIENT);
+		channelG.registerMessage(C2SInputPackets.Handler.class, C2SInputPackets.class, ID.Packets.C2S_CmdInput, Side.SERVER);
 		
 	}
 	

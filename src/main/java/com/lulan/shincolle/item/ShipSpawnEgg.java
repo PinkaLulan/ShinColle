@@ -16,6 +16,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
@@ -310,6 +311,7 @@ public class ShipSpawnEgg extends Item {
                         	int costLevel = nbt.getIntArray("Attrs")[0] / 3;
                         	
                         	if(player.experienceLevel < costLevel) {
+                        		player.addChatMessage(new ChatComponentText(I18n.format("chat.shincolle:spawnegg.lowlevel")));
                         		return itemstack;
                         	}
                         	else {

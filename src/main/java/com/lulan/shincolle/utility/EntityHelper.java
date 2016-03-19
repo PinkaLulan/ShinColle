@@ -23,6 +23,8 @@ import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
@@ -44,8 +46,8 @@ import com.lulan.shincolle.entity.IShipInvisible;
 import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.item.PointerItem;
+import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.network.S2CEntitySync;
-import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -343,7 +345,7 @@ public class EntityHelper {
 		return null;
 	}
 	
-	/** get player by entity ID */
+	/** get (online) player by entity ID */
 	public static EntityPlayer getEntityPlayerByID(int entityID, int worldID, boolean isClient) {
 		World world;
 		
@@ -365,15 +367,48 @@ public class EntityHelper {
 		return null;
 	}
 	
+	/** get (online) player by player name, SERVER SIDE ONLY */
+	public static EntityPlayer getEntityPlayerByName(String name) {
+		if(name != null) {
+			//get all worlds
+			World[] worlds = ServerProxy.getServerWorld();
+			
+			try {
+				//check world list
+				for(World w : worlds) {
+					//check entity list
+					for(Object obj : w.playerEntities) {
+						//check player name
+						if(obj instanceof EntityPlayer) {
+							if(((EntityPlayer) obj).getDisplayName().equals(name)) {
+								return (EntityPlayer) obj;
+							}
+						}
+					}
+				}
+			}
+			catch(Exception e) {
+				LogHelper.info("DEBUG : get EntityPlayer by name fail: "+e);
+			}
+		}
+		
+		return null;
+	}
+	
 	/** get (online) player by player UID, SERVER SIDE ONLY (get world id from player cache) */
 	public static EntityPlayer getEntityPlayerByUID(int uid) {
 		if(uid > 0) {
-			int[] pdata = ServerProxy.getPlayerWorldData(uid);
+			int[] pdata = null;
+			World world = null;
 			
-			//get world
-			int worldID = 0;
-			if(pdata != null) worldID = pdata[2];
-			World world = ServerProxy.getServerWorldByWorldID(worldID);
+			try {
+				//get world
+				if(uid > 0) pdata = ServerProxy.getPlayerWorldData(uid);
+				if(pdata != null) world = ServerProxy.getServerWorldByWorldID(pdata[2]);
+			}
+			catch(Exception e) {
+				LogHelper.info("DEBUG : get player by UID fail: "+e);
+			}
 			
 			return getEntityPlayerByUID(uid, world);
 		}
@@ -383,7 +418,7 @@ public class EntityHelper {
 	
 	/** get (online) player by player UID, SERVER SIDE ONLY */
 	public static EntityPlayer getEntityPlayerByUID(int uid, World world) {
-		if(!world.isRemote && uid > 0) {
+		if(world != null && !world.isRemote && uid > 0) {
 			//從server proxy抓出player uid cache
 			int[] pdata = ServerProxy.getPlayerWorldData(uid);
 			
@@ -510,9 +545,10 @@ public class EntityHelper {
 	
 	/** set owner uuid for pet by player UID and pet entity */
 	public static void setPetPlayerUUID(int pid, EntityTameable pet) {
-		EntityPlayer owner = EntityHelper.getEntityPlayerByUID(pid, pet.worldObj);
-		
-		setPetPlayerUUID(owner, pet);
+		if(pet != null) {
+			EntityPlayer owner = EntityHelper.getEntityPlayerByUID(pid, pet.worldObj);
+			setPetPlayerUUID(owner, pet);
+		}
 	}
 	
 	/** set owner uuid for pet by player entity and pet entity */
@@ -706,67 +742,66 @@ public class EntityHelper {
 	
 	/**process Shipyard GUI click */
 	public static void setTileEntityByGUI(TileEntity tile, int button, int value, int value2) {
-		if(tile != null) {
-			if(tile instanceof TileEntitySmallShipyard) {
-				TileEntitySmallShipyard smalltile = (TileEntitySmallShipyard) tile;
+		if(tile instanceof TileEntitySmallShipyard) {
+			TileEntitySmallShipyard smalltile = (TileEntitySmallShipyard) tile;
 //				LogHelper.info("DEBUG : set tile entity value "+button+" "+value);
-				smalltile.setBuildType(value);
+			smalltile.setBuildType(value);
+			
+			//set build record
+			if(value == ID.Build.EQUIP_LOOP || value == ID.Build.SHIP_LOOP) {
+				int[] getMat = new int[] {0,0,0,0};
 				
-				//set build record
-				if(value == ID.Build.EQUIP_LOOP || value == ID.Build.SHIP_LOOP) {
-					int[] getMat = new int[] {0,0,0,0};
-					
-					for(int i = 0; i < 4; i++) {
-						if(smalltile.getStackInSlot(i) != null) {
-							getMat[i] = smalltile.getStackInSlot(i).stackSize;
-						}
+				for(int i = 0; i < 4; i++) {
+					if(smalltile.getStackInSlot(i) != null) {
+						getMat[i] = smalltile.getStackInSlot(i).stackSize;
 					}
-					
-					smalltile.setBuildRecord(getMat);
 				}
 				
-				return;
+				smalltile.setBuildRecord(getMat);
 			}
-			else if(tile instanceof TileMultiGrudgeHeavy) {
+			
+			return;
+		}
+		else if(tile instanceof TileMultiGrudgeHeavy) {
 //				LogHelper.info("DEBUG : set tile entity value "+button+" "+value+" "+value2);
-				
-				switch(button) {
-				case ID.B.Shipyard_Type:		//build type
-					((TileMultiGrudgeHeavy)tile).setBuildType(value);
-					break;
-				case ID.B.Shipyard_InvMode:		//select inventory mode
-					((TileMultiGrudgeHeavy)tile).setInvMode(value);
-					break;
-				case ID.B.Shipyard_SelectMat:	//select material
-					((TileMultiGrudgeHeavy)tile).setSelectMat(value);
-					break;
-				case ID.B.Shipyard_INCDEC:		//material inc,dec
-					setLargeShipyardBuildMats((TileMultiGrudgeHeavy)tile, button, value, value2);
-					break;
-				}	
-			}
+			
+			switch(button) {
+			case ID.B.Shipyard_Type:		//build type
+				((TileMultiGrudgeHeavy)tile).setBuildType(value);
+				break;
+			case ID.B.Shipyard_InvMode:		//select inventory mode
+				((TileMultiGrudgeHeavy)tile).setInvMode(value);
+				break;
+			case ID.B.Shipyard_SelectMat:	//select material
+				((TileMultiGrudgeHeavy)tile).setSelectMat(value);
+				break;
+			case ID.B.Shipyard_INCDEC:		//material inc,dec
+				setLargeShipyardBuildMats((TileMultiGrudgeHeavy)tile, button, value, value2);
+				break;
+			}	
 		}
 		else {
-			LogHelper.info("DEBUG : set tile entity by GUI fail, tile is null");
+			LogHelper.info("DEBUG : set tile entity by GUI fail: tile: "+tile);
 		}	
 	}
 	
 	/**process tile entity GUI click */
 	public static void setTileEntityByGUI(TileEntity tile, int value1, int[] value3) {
-		if(tile != null) {
-			if(tile instanceof TileEntityDesk) {  //admiral desk sync
-				if(value1 == ID.B.Desk_Sync) {
-					((TileEntityDesk)tile).setSyncData(value3);
-				}
+		if(tile instanceof TileEntityDesk) {  //admiral desk sync
+			if(value1 == ID.B.Desk_Sync) {
+				((TileEntityDesk)tile).setSyncData(value3);
 			}
 		}
 		else {
-			LogHelper.info("DEBUG : set tile entity by GUI fail, tile is null");
+			LogHelper.info("DEBUG : set tile entity by GUI fail: tile: "+tile);
 		}
 	}
 
 	/**增減large shipyard的matBuild[] */
 	private static void setLargeShipyardBuildMats(TileMultiGrudgeHeavy tile, int button, int matType, int value) {
+		//null check
+		if(tile == null) return;
+		
 		int num = 0;
 		int num2 = 0;
 		boolean stockToBuild = true;	//false = build -> stock , true = stock -> build
@@ -814,6 +849,9 @@ public class EntityHelper {
 	
 	/** update ship path navigator */
 	public static void updateShipNavigator(IShipAttackBase entity) {
+		//null check
+		if(entity == null) return;
+		
 		EntityLiving entity2 = (EntityLiving) entity;
 		ShipPathNavigate pathNavi = entity.getShipNavigate();
 		ShipMoveHelper moveHelper = entity.getShipMoveHelper();
@@ -886,7 +924,7 @@ public class EntityHelper {
 			}
         }
 	}
-	
+
 	/**ray trace for entity: 
 	 * 1. get the farest block
 	 * 2. create collision box (rectangle, diagonal vertex = player and farest block)
@@ -1292,6 +1330,35 @@ public class EntityHelper {
 		}
 		
 		return false;
+	}
+	
+	/** ship change owner method, CLIENT process
+	 * 
+	 *    1. (done) check command sender is OP (server)
+	 *    2. (done) check owner exists (server)
+	 *    3. (done) send sender eid to client (s to c)
+	 *    4. check sender mouse over target is ship (client)
+	 *    5. send ship eid to server (c to s)
+	 *    6. change ship's owner UUID and PlayerUID (server)
+	 */
+	@SideOnly(Side.CLIENT)
+	public static void processShipChangeOwner(int senderEID, int ownerEID) {
+		//get sender entity
+		EntityPlayer sender = getEntityPlayerByID(senderEID, 0, true);
+		
+		if(sender != null) {
+			//get sender's mouse over target
+			MovingObjectPosition hitObj = getPlayerMouseOverEntity(32D, 1F);
+			
+			if(hitObj != null && hitObj.entityHit instanceof BasicEntityShip) {
+				//send change owner packet to server
+				sender.addChatMessage(new ChatComponentText("Command: ShipChangeOwner: ship: "+EnumChatFormatting.AQUA+hitObj.entityHit));
+				CommonProxy.channelG.sendToServer(new C2SInputPackets(C2SInputPackets.PID.CmdChOwner, ownerEID, hitObj.entityHit.getEntityId(), hitObj.entityHit.worldObj.provider.dimensionId));
+			}//get target ship
+			else {
+				sender.addChatMessage(new ChatComponentText("Command: ShipChangeOwner: entity is not ship!"));
+			}
+		}
 	}
 	
 	

@@ -73,9 +73,9 @@ public class Values {
 		//transport
 //		put(ID.Ship.TransportWA,        new float[] {70F,  2F,  10F, 0.8F, 0.3F,  5F,  0.6F,  0.25F, 0.16F, 0.5F,  0.6F,  0.3F});
 		//submarine
-//		put(ID.Ship.SubmarineKA,        new float[] {50F,  25F, 7F,  0.6F, 0.3F,  5F,  0.35F, 0.63F, 0.13F, 0.5F,  0.6F,  0.3F});
-//		put(ID.Ship.SubmarineYO,        new float[] {44F,  28F, 8F,  0.6F, 0.3F,  5F,  0.33F, 0.7F,  0.14F, 0.5F,  0.6F,  0.3F});
-//		put(ID.Ship.SubmarineSO,        new float[] {35F,  35F, 10F, 0.6F, 0.28F, 5F,  0.3F,  0.8F,  0.16F, 0.5F,  0.56F, 0.3F});
+//		put(ID.Ship.SubmarineKA,        new float[] {40F,  23F, 9F,  0.6F, 0.3F,  5F,  0.35F, 0.63F, 0.14F, 0.7F,  0.6F,  0.3F});
+//		put(ID.Ship.SubmarineYO,        new float[] {36F,  26F, 10F, 0.6F, 0.3F,  5F,  0.33F, 0.7F,  0.16F, 0.7F,  0.6F,  0.3F});
+//		put(ID.Ship.SubmarineSO,        new float[] {34F,  35F, 12F, 0.6F, 0.28F, 5.5F,0.3F,  0.78F, 0.18F, 0.7F,  0.6F,  0.3F});
 		//demon                                      HP    ATK  DEF  SPD   MOV    HIT  HP     ATK    DEF    SPD    MOV    HIT
 //		put(ID.Ship.IsolatedDemon,      new float[] {225F, 13F, 34F, 0.7F, 0.22F, 24F, 1.3F,  0.4F,  0.29F, 0.6F,  0.44F, 0.8F});
 //		put(ID.Ship.LightCruiserDemon,  new float[] {130F, 30F, 25F, 0.8F, 0.45F, 13F, 0.8F,  0.65F, 0.25F, 0.6F,  0.9F,  0.55F});
@@ -104,13 +104,14 @@ public class Values {
 //		put(ID.Ship.HarbourWD,          new float[] {300F, 35F, 45F, 0.8F, 0.35F, 29F, 1.5F,  0.63F, 0.34F, 0.7F,  0.7F,  1F});
 //		put(ID.Ship.DestroyerWD,        new float[] {150F, 23F, 25F, 0.8F, 0.55F, 15F, 0.9F,  0.8F,  0.3F,  0.7F,  1F,    0.6F});
 		//hostile ship                               HP    ATK  DEF  SPD   MOV    HIT  HP     ATK    DEF    SPD    MOV    HIT
-		put(ID.Ship.DestroyerShimakaze, new float[] {35F,  9F,  10F, 0.8F, 0.6F,  9F,  0.35F, 0.35F, 0.16F, 0.55F, 1.2F,  0.45F});
+		put(ID.Ship.DestroyerShimakaze, new float[] {38F,  11F, 12F, 0.8F, 0.6F,  9F,  0.35F, 0.38F, 0.16F, 0.55F, 1.2F,  0.45F});
 		put(ID.Ship.BattleshipNagato,   new float[] {135F, 40F, 26F, 0.8F, 0.32F, 14F, 0.85F, 0.8F,  0.25F, 0.63F, 0.64F, 0.6F});
 		put(ID.Ship.BattleshipYamato,   new float[] {150F, 55F, 36F, 0.8F, 0.3F,  20F, 1F,    1F,    0.3F,  0.7F,  0.6F,  0.7F});
 		put(ID.Ship.SubmarineU511,      new float[] {28F,  30F, 7F,  0.6F, 0.3F,  7F,  0.3F,  0.7F,  0.13F, 0.7F,  0.6F,  0.4F});
 		put(ID.Ship.SubmarineRo500,     new float[] {32F,  32F, 10F, 0.6F, 0.3F,  8F,  0.33F, 0.75F, 0.16F, 0.7F,  0.6F,  0.4F});
 		put(ID.Ship.CarrierKaga,        new float[] {70F,  22F, 21F, 0.8F, 0.34F, 16F, 0.65f, 0.6F,  0.23F, 0.6F,  0.72F, 0.6F});
 		put(ID.Ship.CarrierAkagi,       new float[] {75F,  22F, 20F, 0.8F, 0.32F, 16F, 0.65f, 0.6F,  0.23F, 0.6F,  0.72F, 0.6F});
+
 	}});
 	
 	
@@ -712,6 +713,9 @@ public class Values {
 								new int[] {0, 1, 0, 0}));
 		//page 9:
 		put(3009, Arrays.asList(new int[] {0, 0, 0, 0},
+								new int[] {0, 1, 0, 0}));
+		//page 10:
+		put(3010, Arrays.asList(new int[] {0, 0, 0, 0},
 								new int[] {0, 1, 0, 0}));
 		//chap 4: ship list
 		//page 0:

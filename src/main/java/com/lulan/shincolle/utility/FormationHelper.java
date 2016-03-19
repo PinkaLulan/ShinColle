@@ -214,6 +214,7 @@ public class FormationHelper {
 			
 			for(BasicEntityShip s : ships) {
 				if(s != null) {
+					
 					switch(formatID) {
 					case 1:  //line ahead
 					case 4:  //echelon

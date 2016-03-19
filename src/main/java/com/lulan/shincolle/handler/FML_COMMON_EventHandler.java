@@ -244,6 +244,16 @@ public class FML_COMMON_EventHandler {
 				
 				//sync team list every 128 ticks
 				if(event.player.ticksExisted % 128 == 0) {
+					/** check player entity id and update player data to ServerProxy cache */
+					//get server cache
+					int[] pdata = ServerProxy.getPlayerWorldData(extProps.getPlayerUID());
+					//if entity id is different, update new eid
+					if(pdata != null && pdata[0] != event.player.getEntityId()) {
+						LogHelper.info("DEBUG : player tick: player entity id changed, update new eid: "+pdata[0]+" to "+event.player.getEntityId());
+						ServerProxy.updatePlayerID(event.player);
+					}
+					
+					/** update ships in pointer team list */
 					//check entity is alive
 					BasicEntityShip getent = null;
 					for(int i = 0; i < 6; i++) {
@@ -323,7 +333,8 @@ public class FML_COMMON_EventHandler {
 						}
 					}
 				}
-//				LogHelper.info("DEBUG : "+event.player.worldObj.isRemote+" "+extProps.player.getEntityId()+" "+event.player.getEntityId());
+				
+//				LogHelper.info("DEBUG : "+event.player.worldObj.isRemote+" "+event.player.getUniqueID());
 			}//end player per 32 ticks
 		}//end player tick phase: START
 	}//end onPlayerTick

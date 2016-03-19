@@ -266,7 +266,7 @@ public class C2SGUIPackets implements IMessage {
 				}
 				
 				EntityPlayer getEnt = EntityHelper.getEntityPlayerByID(entityID, worldID, false);
-				
+
 				if(getEnt != null) {
 					EntityHelper.applyTeamMove(getEnt, value3);
 				}

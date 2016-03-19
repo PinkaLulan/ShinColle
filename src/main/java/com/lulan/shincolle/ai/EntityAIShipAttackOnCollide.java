@@ -1,6 +1,7 @@
 package com.lulan.shincolle.ai;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
@@ -18,7 +19,7 @@ public class EntityAIShipAttackOnCollide extends EntityAIBase {
 	
     World worldObj;
     IShipAttackBase host;
-    BasicEntityShip host2;
+    EntityLiving host2;
     /** An amount of decrementing ticks that allows the entity to attack once the tick reaches 0. */
     int attackTick;
     /** The speed with which the mob will approach the target */
@@ -36,7 +37,7 @@ public class EntityAIShipAttackOnCollide extends EntityAIBase {
 
     public EntityAIShipAttackOnCollide(IShipAttackBase host, double speed, boolean longMemory) {
         this.host = host;
-        this.host2 = (BasicEntityShip) host;
+        this.host2 = (EntityLiving) host;
         this.worldObj = host2.worldObj;
         this.speedTowardsTarget = speed;
         this.longMemory = longMemory;
@@ -77,12 +78,8 @@ public class EntityAIShipAttackOnCollide extends EntityAIBase {
     	}
     	
         Entity target = this.host.getEntityTarget();
-        
-        return (target == null || !target.isEntityAlive()) ? false : 
-        	   (!this.longMemory ? !this.host.getShipNavigate().noPath() : 
-        	   this.host2.isWithinHomeDistance(MathHelper.floor_double(target.posX), 
-        			   						   MathHelper.floor_double(target.posY), 
-        			   						   MathHelper.floor_double(target.posZ)));
+        //chase target until dead
+        return (target == null || !target.isEntityAlive()) ? false : true;
     }
 
     @Override
@@ -94,7 +91,7 @@ public class EntityAIShipAttackOnCollide extends EntityAIBase {
     @Override
 	public void resetTask() {
         this.host.getShipNavigate().clearPathEntity();
-        this.host2.setEntityTarget(null);
+        this.host.setEntityTarget(null);
     }
 
     @Override

@@ -50,7 +50,7 @@ public class GuiHandler implements IGuiHandler {
             	int cid = ((BasicEntityShip)entity).getShipClass();
             	EntityHelper.addPlayerShipListData(cid, player);
             	
-            	//sync tile when gui opened
+            	//sync ship when gui opened
             	((BasicEntityShip)entity).sendSyncPacketAllValue();
 				
             	return new ContainerShipInventory(player.inventory,(BasicEntityShip)entity);

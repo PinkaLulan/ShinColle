@@ -1,6 +1,7 @@
 package com.lulan.shincolle;
 
 
+import com.lulan.shincolle.handler.CommandHandler;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.handler.GuiHandler;
 import com.lulan.shincolle.init.ModBlocks;
@@ -23,6 +24,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;	//mod init
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;//mod post init
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;	//mod pre init
 import cpw.mods.fml.common.event.FMLServerAboutToStartEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 
 @Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.MOD_VERSION)
@@ -107,6 +109,17 @@ public class ShinColle {
 //		GuiHelper.printButtons();
 		
 		LogHelper.info("DEBUG : postInit complete.");	//debug
+	}
+	
+	/** server starting event
+	 *  
+	 */
+	@Mod.EventHandler
+	public void onServerStarting(FMLServerStartingEvent event) {
+		LogHelper.info("DEBUG : server starting event: is MP server? "+event.getSide().isServer());	//debug
+		//rehister command
+		CommandHandler.init(event);
+		
 	}
 	
 	/** server about to start event 

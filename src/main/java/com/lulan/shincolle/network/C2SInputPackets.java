@@ -1,6 +1,7 @@
 package com.lulan.shincolle.network;
 
 import io.netty.buffer.ByteBuf;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.World;
@@ -11,29 +12,47 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.mounts.EntityMountSeat;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
+
 import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 
-/**CLIENT TO SERVER: KEY INPUT PACKETS (NO-GUI)
- * 將client端的按鍵發送到server
+/** CLIENT TO SERVER: INPUT PACKETS (NO-GUI)
+ *  將client端的按鍵發送到server
+ *  或是發送client端command類型封包
  */
 public class C2SInputPackets implements IMessage {
 	
 	private World world;
 	private EntityPlayer player;
 	private int type, worldID, entityID, value;
+	private int[] value3;
+	
+	//packet id
+	public static final class PID {
+		public static final byte MountMove = 0;
+		public static final byte MountGUI = 1;
+		public static final byte SyncHandheld = 2;
+		public static final byte CmdChOwner = 3;
+	}
 	
 	
 	public C2SInputPackets() {}	//必須要有空參數constructor, forge才能使用此class
 	
-	//type 0: mount move key input
-	//type 1: mount GUI key input
-	//type 2: sync current item
-	public C2SInputPackets(int type, int value) {
+	/**type 0:(1 parms) mount move key input: 0:key
+	 * type 1:(1 parms) mount GUI key input: 0:key
+	 * type 2:(1 parms) sync current item: 0:item slot
+	 * type 3:(2 parms) command: change owner: 0:owner eid, 1:ship eid
+	 * 
+	 */
+	public C2SInputPackets(int type, int...parms) {
         this.type = type;
-        this.value = value;
+        
+        if(parms != null && parms.length > 0) {
+        	this.value3 = parms.clone();
+        }
     }
 	
 	//接收packet方法, server side
@@ -42,12 +61,28 @@ public class C2SInputPackets implements IMessage {
 		//get type and entityID
 		this.type = buf.readByte();
 	
+		//get data
 		switch(type) {
-		case 0:	//mount move key input
-		case 1:	//mount GUI input
-		case 2:	//sync current item
+		case PID.MountMove:		//mount move key input
+		case PID.MountGUI:		//mount GUI input
+		case PID.SyncHandheld:	//sync current item
+		case PID.CmdChOwner:    //command: change owner
 			{
-				this.value = buf.readInt();
+				try {
+					this.value = buf.readInt();  //int array length
+					
+					//get int array data
+					if(this.value > 0) {
+						this.value3 = new int[this.value];
+						
+						for(int i = 0; i < this.value; i++) {
+							this.value3[i] = buf.readInt();
+						}
+					}
+				}
+				catch(Exception e) {
+					LogHelper.info("DEBUG : C2S input packet: change owner fail: "+e);
+				}
 			}
 			break;
 		}
@@ -57,12 +92,26 @@ public class C2SInputPackets implements IMessage {
 	@Override
 	public void toBytes(ByteBuf buf) {
 		switch(this.type) {
-		case 0:	//mount move key input
-		case 1:	//mount GUI input
-		case 2:	//sync current item
+		case PID.MountMove:		//mount move key input
+		case PID.MountGUI:		//mount GUI input
+		case PID.SyncHandheld:	//sync current item
+		case PID.CmdChOwner:    //command: change owner
 			{
 				buf.writeByte((byte)this.type);
-				buf.writeInt(this.value);
+				
+				//send int array
+				if(this.value3 != null) {
+					//send array length
+					buf.writeInt(this.value3.length);
+					
+					for(int geti : this.value3) {
+						buf.writeInt(geti);
+					}
+				}
+				//if array null
+				else {
+					buf.writeInt(0);
+				}
 			}
 			break;
 		}
@@ -74,48 +123,76 @@ public class C2SInputPackets implements IMessage {
 		@Override
 		public IMessage onMessage(C2SInputPackets message, MessageContext ctx) {		
 			EntityPlayerMP player = ctx.getServerHandler().playerEntity;
-//			LogHelper.info("DEBUG : get input packet");
-			switch(message.type) {
-			case 0:	//mounts key input packet
-				//set player's mount movement
-				if(player.isRiding() && player.ridingEntity instanceof EntityMountSeat) {
-					BasicEntityMount mount = ((EntityMountSeat)player.ridingEntity).host;
-					
-					if(mount != null) {
-						BasicEntityShip ship = (BasicEntityShip) mount.getHostEntity();
+			
+			try {
+				switch(message.type) {
+				case PID.MountMove:	//mounts key input packet
+					//set player's mount movement
+					if(player.isRiding() && player.ridingEntity instanceof EntityMountSeat) {
+						BasicEntityMount mount = ((EntityMountSeat)player.ridingEntity).host;
 						
-						//check ship owner is player
-						if(ship != null && EntityHelper.checkSameOwner(player, ship.getHostEntity())) {
-							//set mount movement
-							mount.keyPressed = message.value;
-						}
-					}
-				}
-				break;
-			case 1:	//mounts GUI input packet
-				//set player's mount movement
-				if(player.isRiding() && player.ridingEntity instanceof EntityMountSeat) {
-					BasicEntityMount mount = ((EntityMountSeat)player.ridingEntity).host;
-					
-					if(mount != null) {
-						BasicEntityShip ship = (BasicEntityShip) mount.getHostEntity();
-						
-						//check ship owner is player
-						if(ship != null && EntityHelper.checkSameOwner(player, ship.getHostEntity())) {
-							//open ship GUI
-							if(mount.getHostEntity() != null) {
-								FMLNetworkHandler.openGui(player, ShinColle.instance, ID.G.SHIPINVENTORY, player.worldObj, mount.getHostEntity().getEntityId(), 0, 0);
+						if(mount != null) {
+							BasicEntityShip ship = (BasicEntityShip) mount.getHostEntity();
+							
+							//check ship owner is player
+							if(ship != null && EntityHelper.checkSameOwner(player, ship.getHostEntity())) {
+								//set mount movement
+								mount.keyPressed = message.value3[0];
 							}
 						}
 					}
-				}
-				break;
-			case 2:	//sync current item
-				player.inventory.currentItem = message.value;
-				break;
-			}//end switch
+					break;
+				case PID.MountGUI:	//mounts open GUI
+					//set player's mount movement
+					if(player.isRiding() && player.ridingEntity instanceof EntityMountSeat) {
+						BasicEntityMount mount = ((EntityMountSeat)player.ridingEntity).host;
+						
+						if(mount != null) {
+							BasicEntityShip ship = (BasicEntityShip) mount.getHostEntity();
+							
+							//check ship owner is player
+							if(ship != null && EntityHelper.checkSameOwner(player, ship.getHostEntity())) {
+								//open ship GUI
+								if(mount.getHostEntity() != null) {
+									FMLNetworkHandler.openGui(player, ShinColle.instance, ID.G.SHIPINVENTORY, player.worldObj, mount.getHostEntity().getEntityId(), 0, 0);
+								}
+							}
+						}
+					}
+					break;
+				case PID.SyncHandheld:	//sync current item
+					player.inventory.currentItem = message.value3[0];
+					break;
+				case PID.CmdChOwner:    //command: change owner
+					{
+						/** ship change owner
+						 *    1. (done) check command sender is OP (server)
+						 *    2. (done) check owner exists (server)
+						 *    3. (done) send sender eid to client (s to c)
+						 *    4. (done) check sender mouse over target is ship (client)
+						 *    5. (done) send ship eid to server (c to s)
+						 *    6. change ship's owner UUID and PlayerUID (server)
+						 */
+						//value3: 0:owner eid, 1:ship eid, 2:world id
+						EntityPlayer owner = EntityHelper.getEntityPlayerByID(message.value3[0], message.value3[2], false);
+						Entity ent = EntityHelper.getEntityByID(message.value3[1], message.value3[2], false);
+						
+						if(owner != null && ent instanceof BasicEntityShip) {
+							//set owner
+							EntityHelper.setPetPlayerUUID(owner.getUniqueID().toString(), (BasicEntityShip)ent);
+							EntityHelper.setPetPlayerUID(owner, (BasicEntityShip)ent);
+							LogHelper.info("DEBUG : C2S input packet: command: change owner "+owner+" "+ent);
+							((BasicEntityShip)ent).sendSyncPacketAllValue();
+						}
+					}
+					break;
+				}//end switch
+			}
+			catch(Exception e) {
+				LogHelper.info("DEBUG : C2S input packet: handler: "+e);
+			}
 			
-			return null;
+			return null; 
 		}
     }
 	

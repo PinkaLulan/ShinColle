@@ -285,6 +285,18 @@ public class ID {
 		public static final byte GrudgeCon = 28;	//grudge consumption when idle
 	}
 	
+	/** packet type ID */
+	public static final class Packets {
+		public static final byte TEST = 0;
+		public static final byte S2C_EntitySync = 1;
+		public static final byte S2C_Particle = 2;
+		public static final byte C2S_GUIInput = 3;
+		public static final byte S2C_GUISync = 4;
+		public static final byte S2C_PlayerSync = 5;  //no use for now
+		public static final byte C2S_CmdInput = 6;
+		public static final byte S2C_CmdSync = 7;
+	}
+	
 	/** ring effect, no used for now */
 	public static final class R {
 		public static final byte Haste = 0;
