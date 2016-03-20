@@ -296,6 +296,9 @@ gui.shincolle:book.chap3.text9d1=§96. §cAlly§0 is §3UNILATERAL§0, other sid
 gui.shincolle:book.chap3.title10=Commands
 gui.shincolle:book.chap3.text10d0=§9/shipinfo§c<br>§dAuthority:§0 All Player<br>§dPurpose:§0 show ship info<br><br>§9/shipchangeowner§c <Player Name><br>§dAuthority:§0 OP only<br>§dPurpose:§0 change ship's owner<br><br>OP, Ship and Player A must be online and in the same dimension (world).<br><br>The OP's mouseover ship's owner will be changed to the Player A.
 gui.shincolle:book.chap3.text10d1=§9/shipupdateowneruid§3 [Player Name]<br>§dAuthority:§0 All Player<br>§dPurpose:§0 update ship's owner UID<br><br>If the ship does no response, try this command to fix the bug. OP can specify a player to update the UID.<br><br>This command only affect the ship in the loaded chunk and the player must be online.<br>If the command is not work, try /shipchangeowner to change ship's owner 1 by 1.
+gui.shincolle:book.chap3.title11=
+gui.shincolle:book.chap3.text11d0=§9/shipattrs <Ship LV> <HP LV> <ATK LV> <DEF LV> <A.SPD LV> <M.SPD LV> <Range LV>§c<br>§dAuthority:§0 OP only<br>§ddPurpose:§0 change ship attributes<br><br>Change mouseover ship's level and six main attributes level. Valid value: Ship LV = 1~150, Attrs LV = 0~100.
+gui.shincolle:book.chap3.text11d1=
 
 # GUI: Book Text Chap 4
 gui.shincolle:book.chap4.title=Ship List

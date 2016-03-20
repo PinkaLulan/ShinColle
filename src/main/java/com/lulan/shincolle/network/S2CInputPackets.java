@@ -25,12 +25,15 @@ public class S2CInputPackets implements IMessage {
 	public static final class PID {
 		public static final byte CmdChOwner = 0;
 		public static final byte CmdShipInfo = 1;
+		public static final byte CmdShipAttr = 2;
 	}
 	
 	
 	public S2CInputPackets() {}  //必須要有空參數constructor, forge才能使用此class
 
 	/**type 0:(2 parms) command: change owner: 0:sender eid, 1:owner eid
+	 * type 1:(1 parms) command: show ship info: 0:sender eid
+	 * type 2:(8 parms) command: change ship attrs: 0:sender eid, 1:ship lv, 2~7:bonus value
 	 * 
 	 */
 	public S2CInputPackets(int type, int...parms) {
@@ -50,6 +53,7 @@ public class S2CInputPackets implements IMessage {
 		switch(type) {
 		case PID.CmdChOwner:	//cmd: change owner packet
 		case PID.CmdShipInfo:	//cmd: show ship info
+		case PID.CmdShipAttr:	//cmd: change ship attrs
 			{
 				try {
 					this.value = buf.readInt();  //int array length
@@ -77,6 +81,7 @@ public class S2CInputPackets implements IMessage {
 		switch(this.type) {
 		case PID.CmdChOwner:	//cmd: change owner packet
 		case PID.CmdShipInfo:	//cmd: show ship info
+		case PID.CmdShipAttr:	//cmd: change ship attrs
 			{
 				buf.writeByte((byte)this.type);
 
@@ -105,12 +110,13 @@ public class S2CInputPackets implements IMessage {
 		public IMessage onMessage(S2CInputPackets message, MessageContext ctx) {		
 			switch(message.type) {
 			case PID.CmdChOwner:	//cmd: change owner packet
-				//ship change owner process
 				EntityHelper.processShipChangeOwner(message.value3[0], message.value3[1]);
 				break;
 			case PID.CmdShipInfo:	//cmd: show ship info
-				//ship change owner process
 				EntityHelper.processShowShipInfo(message.value3[0]);
+				break;
+			case PID.CmdShipAttr:	//cmd: change ship attrs
+				EntityHelper.processSetShipAttrs(message.value3);
 				break;
 			}
 			

@@ -296,6 +296,9 @@ gui.shincolle:book.chap3.text9d1=§96.§c結盟§0只是§3單向關係§0，對
 gui.shincolle:book.chap3.title10=指令說明
 gui.shincolle:book.chap3.text10d0=§9/shipinfo§c<br>§d權限:§0 全部玩家<br>§d功能:§0 顯示船艦資訊<br><br>§9/shipchangeowner§c <玩家名稱><br>§d權限:§0 僅限OP<br>§d功能:§0 更改船的主人<br><br>OP、主人還有船三者都必須上線並處在相同維度(世界)下，OP輸入以上指令並加上玩家名稱後，OP游標所指到的船的主人就會修改為指令所指定的玩家。
 gui.shincolle:book.chap3.text10d1=§9/shipupdateowneruid§3 [玩家名稱]<br>§d權限:§0 全部玩家 or 僅限OP<br>§d功能:§0 更新擁有船的主人ID<br><br>在某些bug下導致船艦對主人沒有反應時，可輸入此指令嘗試更新主人ID。一般玩家輸入後會更新玩家所擁有的已載入的船艦的主人ID，OP可以額外輸入玩家名稱，就會更新該玩家所擁有船艦的主人ID。<br><br>注意船艦若處在非載入的地圖區塊中，不會被此指令影響，需移動到該船艦附近輸入指令才能生效。<br><br>判定擁有船艦是以船艦紀錄的主人UUID為準，若UUID出現bug則此指令可能無效，請改用/shipchangeowner單獨對每個船艦修改主人。
+gui.shincolle:book.chap3.title11=
+gui.shincolle:book.chap3.text11d0=§9/shipattrs <船艦等級> <HP等級> <ATK等級> <DEF等級> <攻速等級> <跑速等級> <射程等級>§c<br>§d權限:§0 僅限OP<br>§d功能:§0 修改船艦數值<br><br>OP對游標指向的船艦輸入指令後，可以修改目標的等級跟六大屬性的等級。船艦等級可設為1~150，屬性等級可設0~100。
+gui.shincolle:book.chap3.text11d1=
 
 # GUI: Book Text Chap 4
 gui.shincolle:book.chap4.title=船艦列表

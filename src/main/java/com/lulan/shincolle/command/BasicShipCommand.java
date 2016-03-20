@@ -5,6 +5,8 @@ import java.util.List;
 
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.command.NumberInvalidException;
+import net.minecraft.util.ChatComponentText;
 
 abstract public class BasicShipCommand implements ICommand {
 
@@ -65,6 +67,17 @@ abstract public class BasicShipCommand implements ICommand {
      */
     public static boolean doesStringStartWith(String str1, String str2) {
         return str2.regionMatches(true, 0, str1, 0, str1.length());
+    }
+    
+    /** get integer from string */
+    public static int parseInt(ICommandSender sender, String str) {
+        try {
+            return Integer.parseInt(str);
+        }
+        catch(Exception e) {
+        	sender.addChatMessage(new ChatComponentText("Command: parse number fail! "+e));
+            return 0;
+        }
     }
 	
 	

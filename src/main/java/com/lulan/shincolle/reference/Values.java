@@ -717,6 +717,9 @@ public class Values {
 		//page 10:
 		put(3010, Arrays.asList(new int[] {0, 0, 0, 0},
 								new int[] {0, 1, 0, 0}));
+		//page 11:
+		put(3011, Arrays.asList(new int[] {0, 0, 0, 0},
+								new int[] {0, 1, 0, 0}));
 		//chap 4: ship list
 		//page 0:
 		put(4000, Arrays.asList(new int[] {0, 0, 0, 0},

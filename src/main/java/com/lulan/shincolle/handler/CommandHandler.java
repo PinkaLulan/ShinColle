@@ -1,6 +1,7 @@
 package com.lulan.shincolle.handler;
 
 import com.lulan.shincolle.command.ShipCmdChangeShipOwner;
+import com.lulan.shincolle.command.ShipCmdShipAttrs;
 import com.lulan.shincolle.command.ShipCmdShipInfo;
 import com.lulan.shincolle.command.ShipCmdUpdateOwnerUID;
 
@@ -15,6 +16,7 @@ public class CommandHandler {
 	public CommandHandler() {}
 	
 	public static void init(FMLServerStartingEvent event) {
+		event.registerServerCommand(new ShipCmdShipAttrs());
 		event.registerServerCommand(new ShipCmdChangeShipOwner());
 		event.registerServerCommand(new ShipCmdShipInfo());
 		event.registerServerCommand(new ShipCmdUpdateOwnerUID());

@@ -36,6 +36,7 @@ public class C2SInputPackets implements IMessage {
 		public static final byte MountGUI = 1;
 		public static final byte SyncHandheld = 2;
 		public static final byte CmdChOwner = 3;
+		public static final byte CmdShipAttr = 4;
 	}
 	
 	
@@ -45,6 +46,7 @@ public class C2SInputPackets implements IMessage {
 	 * type 1:(1 parms) mount GUI key input: 0:key
 	 * type 2:(1 parms) sync current item: 0:item slot
 	 * type 3:(2 parms) command: change owner: 0:owner eid, 1:ship eid
+	 * type 4:(9 parms) command: set ship attrs: 0:ship id, 1:world id, 2:ship level, 3~8:bonus value
 	 * 
 	 */
 	public C2SInputPackets(int type, int...parms) {
@@ -67,6 +69,7 @@ public class C2SInputPackets implements IMessage {
 		case PID.MountGUI:		//mount GUI input
 		case PID.SyncHandheld:	//sync current item
 		case PID.CmdChOwner:    //command: change owner
+		case PID.CmdShipAttr:   //command: set ship attrs
 			{
 				try {
 					this.value = buf.readInt();  //int array length
@@ -96,6 +99,7 @@ public class C2SInputPackets implements IMessage {
 		case PID.MountGUI:		//mount GUI input
 		case PID.SyncHandheld:	//sync current item
 		case PID.CmdChOwner:    //command: change owner
+		case PID.CmdShipAttr:   //command: set ship attrs
 			{
 				buf.writeByte((byte)this.type);
 				
@@ -183,6 +187,28 @@ public class C2SInputPackets implements IMessage {
 							EntityHelper.setPetPlayerUID(owner, (BasicEntityShip)ent);
 							LogHelper.info("DEBUG : C2S input packet: command: change owner "+owner+" "+ent);
 							((BasicEntityShip)ent).sendSyncPacketAllValue();
+						}
+					}
+					break;
+				case PID.CmdShipAttr:   //command: set ship attrs
+					{
+						/**
+						 *	  1.(done) check command sender is OP (server)
+						 *    2.(done) send sender eid to client (s to c)
+						 *    3.(done) check sender mouse over target is ship (client)
+						 *    4.(done) send ship eid to server (c to s)
+						 *    5. change ship's attributes (server)
+						 */
+						Entity ent = EntityHelper.getEntityByID(message.value3[0], message.value3[1], false);
+						
+						if(ent instanceof BasicEntityShip) {
+							((BasicEntityShip) ent).setBonusPoint(0, (byte)message.value3[3]);
+							((BasicEntityShip) ent).setBonusPoint(1, (byte)message.value3[4]);
+							((BasicEntityShip) ent).setBonusPoint(2, (byte)message.value3[5]);
+							((BasicEntityShip) ent).setBonusPoint(3, (byte)message.value3[6]);
+							((BasicEntityShip) ent).setBonusPoint(4, (byte)message.value3[7]);
+							((BasicEntityShip) ent).setBonusPoint(5, (byte)message.value3[8]);
+							((BasicEntityShip) ent).setShipLevel(message.value3[2], true);
 						}
 					}
 					break;

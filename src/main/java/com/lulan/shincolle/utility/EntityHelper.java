@@ -1339,7 +1339,7 @@ public class EntityHelper {
 		return false;
 	}
 	
-	/** ship change owner method, CLIENT process
+	/** command process: ship change owner
 	 * 
 	 *    1. (done) check command sender is OP (server)
 	 *    2. (done) check owner exists (server)
@@ -1368,6 +1368,7 @@ public class EntityHelper {
 		}
 	}
 	
+	/** command process: show ship info */
 	@SideOnly(Side.CLIENT)
 	public static void processShowShipInfo(int senderEID) {
 		//get sender entity
@@ -1387,6 +1388,43 @@ public class EntityHelper {
 				sender.addChatMessage(new ChatComponentText("Ship UID: "+EnumChatFormatting.GREEN+ship.getShipUID()));
 				sender.addChatMessage(new ChatComponentText("Ship Owner UID: "+EnumChatFormatting.RED+ship.getPlayerUID()));
 				sender.addChatMessage(new ChatComponentText("Ship Owner UUID: "+EnumChatFormatting.YELLOW+EntityHelper.getPetPlayerUUID(ship)));
+			}
+		}
+	}
+	
+	/** command process: set ship attrs
+	 * 
+	 *  cmdData: 0:sender eid, 1:ship level, 2~7:bonus value
+	 * 
+	 *    1. (done) check command sender is OP (server)
+	 *    2. (done) send sender eid to client (s to c)
+	 *    3. check sender mouse over target is ship (client)
+	 *    4. send ship eid to server (c to s)
+	 *    5. change ship's attributes (server)
+	 */
+	@SideOnly(Side.CLIENT)
+	public static void processSetShipAttrs(int[] cmdData) {
+		//get sender entity
+		EntityPlayer sender = getEntityPlayerByID(cmdData[0], 0, true);
+		
+		if(sender != null) {
+			//get sender's mouse over target
+			MovingObjectPosition hitObj = getPlayerMouseOverEntity(32D, 1F);
+			
+			if(hitObj != null && hitObj.entityHit instanceof BasicEntityShip) {
+				BasicEntityShip ship = (BasicEntityShip) hitObj.entityHit;
+				
+				//show msg
+				sender.addChatMessage(new ChatComponentText("Command: ShipAttrs: Set ship value: LV: "+
+										EnumChatFormatting.LIGHT_PURPLE+cmdData[1]+EnumChatFormatting.RESET+" BonusValue: "+
+										EnumChatFormatting.RED+cmdData[2]+" "+cmdData[3]+" "+cmdData[4]+" "+
+										cmdData[5]+" "+cmdData[6]+" "+cmdData[7]));
+				sender.addChatMessage(new ChatComponentText("Target Ship: "+EnumChatFormatting.AQUA+ship));
+				
+				//send packet to server: entity id, world id, level, bonus 1~6
+				CommonProxy.channelG.sendToServer(new C2SInputPackets(C2SInputPackets.PID.CmdShipAttr,
+						ship.getEntityId(), ship.worldObj.provider.dimensionId, cmdData[1], cmdData[2],
+						cmdData[3], cmdData[4], cmdData[5], cmdData[6], cmdData[7]));
 			}
 		}
 	}
