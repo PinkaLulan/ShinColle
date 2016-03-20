@@ -467,6 +467,7 @@ public class ParticleHelper {
 	@SideOnly(Side.CLIENT)
 	public static void spawnAttackParticleAtEntity(Entity ent, double par1, double par2, double par3, byte type) {
 		World world = Minecraft.getMinecraft().theWorld;
+		EntityLivingBase host = null;
 		
 		//get target position
 		double ran1 = 0D;
@@ -536,16 +537,15 @@ public class ParticleHelper {
 			break;
 		case 7:		//vibrate cube
 			//host check
-			EntityLivingBase host2 = null;
 			if(ent instanceof EntityLivingBase) {
-				host2 = (EntityLivingBase) ent;
+				host = (EntityLivingBase) ent;
 			}
 			else {
 				return;
 			}
 			
 			//in
-			EntityFXCube cube1 = new EntityFXCube(world, host2, par1, par2, par3, 1.5F, 0);
+			EntityFXCube cube1 = new EntityFXCube(world, host, par1, par2, par3, 1.5F, 0);
         	Minecraft.getMinecraft().effectRenderer.addEffect(cube1);
         	
         	//out
@@ -553,6 +553,18 @@ public class ParticleHelper {
 				EntityFXStickyLightning light21 = new EntityFXStickyLightning(world, ent, (float)par1, 40, 3);
 	        	Minecraft.getMinecraft().effectRenderer.addEffect(light21);
 			}
+			break;
+		case 8:		//守衛標示線: block類
+			//host check
+			if(ent instanceof EntityLivingBase) {
+				host = (EntityLivingBase) ent;
+			}
+			else {
+				return;
+			}
+			
+			EntityFXLaserNoTexture laser1 = new EntityFXLaserNoTexture(world, host, par1, par2, par3, 0.1F, 3);
+			Minecraft.getMinecraft().effectRenderer.addEffect(laser1);
 			break;
 		default:
 			break;
@@ -636,6 +648,18 @@ public class ParticleHelper {
         	//beam body
 			EntityFXLaserNoTexture laser4 = new EntityFXLaserNoTexture(world, host2, target, par1, par2, par3, 4F, 1);
 			Minecraft.getMinecraft().effectRenderer.addEffect(laser4);
+			break;
+		case 3:		//守衛標示線: entity類
+			//host check
+			if(host instanceof EntityLivingBase) {
+				host2 = (EntityLivingBase) host;
+			}
+			else {
+				return;
+			}
+			
+			EntityFXLaserNoTexture laser5 = new EntityFXLaserNoTexture(world, host2, target, 0D, 0D, 0D, 0.1F, 2);
+			Minecraft.getMinecraft().effectRenderer.addEffect(laser5);
 			break;
 		default:
 			break;

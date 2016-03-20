@@ -1536,10 +1536,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 						//標記在entity上
 						if(this.getGuardedEntity() != null) {
 							ParticleHelper.spawnAttackParticleAtEntity(this.getGuardedEntity(), 0.3D, 6D, 0D, (byte)2);
+							ParticleHelper.spawnAttackParticleAtEntity(this, this.getGuardedEntity(), 0D, 0D, 0D, (byte)3, false);
 						}
 						//標記在block上
 						else if(this.getGuardedPos(1) >= 0) {
 							ParticleHelper.spawnAttackParticleAt(this.getGuardedPos(0)+0.5D, this.getGuardedPos(1), this.getGuardedPos(2)+0.5D, 0.3D, 6D, 0D, (byte)25);
+							ParticleHelper.spawnAttackParticleAtEntity(this, this.getGuardedPos(0)+0.5D, this.getGuardedPos(1)+0.2D, this.getGuardedPos(2)+0.5D, (byte)8);
 						}
 					}
 				}
@@ -1597,97 +1599,91 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
             		this.initAI = true;
         		}
 //        		LogHelper.info("DEBUG : check spawn: "+this.worldObj.getChunkProvider().getPossibleCreatures(EnumCreatureType.waterCreature, (int)posX, (int)posY, (int)posZ));
-        	}//end every 8 ticks
         	
-        	//check every 16 ticks
-        	if(ticksExisted % 16 == 0) {
-        		//cancel mounts
-        		if(this.canSummonMounts()) {
-        			if(getStateEmotion(ID.S.State) < ID.State.EQUIP00) {
-      	  	  			//cancel riding
-      	  	  			if(this.isRiding() && this.ridingEntity instanceof BasicEntityMount) {
-      	  	  				BasicEntityMount mount = (BasicEntityMount) this.ridingEntity;
-      	  	  				
-      	  	  				if(mount.seat2 != null ) {
-      	  	  					mount.seat2.setRiderNull();	
-      	  	  				}
-      	  	  				
-      	  	  				mount.setRiderNull();
-      	  	  				this.ridingEntity = null;
-      	  	  			}
-      	  	  		}
-        		}
-        		
-            	/** debug info */
-//        		LogHelper.info("DEBUG: target:   "+this.getClass().getSimpleName()+" "+this.getEntityTarget()+"      "+this.getEntityRevengeTarget()+"      "+this.getAttackTarget());
-//            	LogHelper.info("DEBUG : ship update: "+ServerProxy.getTeamData(900).getTeamBannedList());
-//            	LogHelper.info("DEBUG : ship update: eid: "+ServerProxy.getNextShipID()+" "+ServerProxy.getNextPlayerID()+" "+ConfigHandler.nextPlayerID+" "+ConfigHandler.nextShipID);
-//        		if(this.worldObj.provider.dimensionId == 0) {	//main world
-//        			LogHelper.info("DEBUG : ship pos dim "+ClientProxy.getClientWorld().provider.dimensionId+" "+this.dimension+" "+this.posX+" "+this.posY+" "+this.posZ);
-//        		}
-//        		else {	//other world
-//        			LogHelper.info("DEBUG : ship pos dim "+ClientProxy.getClientWorld().provider.dimensionId+" "+this.dimension+" "+this.posX+" "+this.posY+" "+this.posZ);
-//        		}
-        		
-        	}//end every 16 ticks
-        	
-        	//check every 32 ticks
-        	if(this.ticksExisted % 32 == 0) {
-        		//use bucket automatically
-        		if((getMaxHealth() - getHealth()) > (getMaxHealth() * 0.1F + 5F)) {
-	                if(decrSupplies(7)) {
-		                this.heal(this.getMaxHealth() * 0.08F + 15F);	//1 bucket = 5% hp for large ship
-	                }
-	            }
-        	}//end every 32 ticks
-        	
-//        	//check every 64 ticks
-//        	if(ticksExisted % 64 == 0) {
-//        		
-//	        }//end every 64 ticks
-        	
-        	//check every 128 ticks
-        	if(ticksExisted % 128 == 0) {
-        		//delayed init, waiting for player entity loaded
-        		if(!this.initWaitAI && ticksExisted >= 128) {
-        			setUpdateFlag(ID.FU.FormationBuff, true);  //set update formation buff
-        			this.initWaitAI = true;
-        		}
-        		
-        		//update hp state
-        		updateHPState();
-        		
-        		//update mount
-        		updateMountSummon();
-        		
-        		//update consume item
-        		updateConsumeItem();
-        	}//end every 128 ticks
-        	
-        	//check every 256 ticks
-        	if(this.ticksExisted % 256 == 0) {
-        		//check owner online
-        		if(this.getPlayerUID() > 0) {
-        			//get owner
-        			EntityPlayer player = EntityHelper.getEntityPlayerByUID(this.getPlayerUID(), this.worldObj);
-
-        			//owner exists (online and same world)
-        			if(player != null) {
-    					//update owner entity id (could be changed when owner change dimension or dead)
-            			this.setStateMinor(ID.M.PlayerEID, player.getEntityId());
-            			//sync guard
-            			this.sendSyncPacket(3, false, false);
+        		//check every 16 ticks
+            	if(ticksExisted % 16 == 0) {
+            		//cancel mounts
+            		if(this.canSummonMounts()) {
+            			if(getStateEmotion(ID.S.State) < ID.State.EQUIP00) {
+          	  	  			//cancel riding
+          	  	  			if(this.isRiding() && this.ridingEntity instanceof BasicEntityMount) {
+          	  	  				BasicEntityMount mount = (BasicEntityMount) this.ridingEntity;
+          	  	  				
+          	  	  				if(mount.seat2 != null ) {
+          	  	  					mount.seat2.setRiderNull();	
+          	  	  				}
+          	  	  				
+          	  	  				mount.setRiderNull();
+          	  	  				this.ridingEntity = null;
+          	  	  			}
+          	  	  		}
             		}
-        		}
-        		
-        		//update buff (slow update)
-        		calcEquipAndUpdateState();
-        		
-        		//HP auto regen
-        		if(this.getHealth() < this.getMaxHealth()) {
-        			this.setHealth(this.getHealth() + this.getMaxHealth() * 0.015625F + 1);
-        		}
-        	}//end every 256 ticks
+            		
+                	/** debug info */
+//            		LogHelper.info("DEBUG: target:   "+this.getClass().getSimpleName()+" "+this.getEntityTarget()+"      "+this.getEntityRevengeTarget()+"      "+this.getAttackTarget());
+//                	LogHelper.info("DEBUG : ship update: "+ServerProxy.getTeamData(900).getTeamBannedList());
+//                	LogHelper.info("DEBUG : ship update: eid: "+ServerProxy.getNextShipID()+" "+ServerProxy.getNextPlayerID()+" "+ConfigHandler.nextPlayerID+" "+ConfigHandler.nextShipID);
+//            		if(this.worldObj.provider.dimensionId == 0) {	//main world
+//            			LogHelper.info("DEBUG : ship pos dim "+ClientProxy.getClientWorld().provider.dimensionId+" "+this.dimension+" "+this.posX+" "+this.posY+" "+this.posZ);
+//            		}
+//            		else {	//other world
+//            			LogHelper.info("DEBUG : ship pos dim "+ClientProxy.getClientWorld().provider.dimensionId+" "+this.dimension+" "+this.posX+" "+this.posY+" "+this.posZ);
+//            		}
+            		
+            		//check every 32 ticks
+                	if(this.ticksExisted % 32 == 0) {
+                		//use bucket automatically
+                		if((getMaxHealth() - getHealth()) > (getMaxHealth() * 0.1F + 5F)) {
+        	                if(decrSupplies(7)) {
+        		                this.heal(this.getMaxHealth() * 0.08F + 15F);	//1 bucket = 5% hp for large ship
+        	                }
+        	            }
+               		
+                		//check every 128 ticks
+                    	if(ticksExisted % 128 == 0) {
+                    		//delayed init, waiting for player entity loaded
+                    		if(!this.initWaitAI && ticksExisted >= 128) {
+                    			setUpdateFlag(ID.FU.FormationBuff, true);  //set update formation buff
+                    			this.initWaitAI = true;
+                    		}
+                    		
+                    		//check owner online
+                    		if(this.getPlayerUID() > 0) {
+                    			//get owner
+                    			EntityPlayer player = EntityHelper.getEntityPlayerByUID(this.getPlayerUID(), this.worldObj);
+
+                    			//owner exists (online and same world)
+                    			if(player != null) {
+                					//update owner entity id (could be changed when owner change dimension or dead)
+                        			this.setStateMinor(ID.M.PlayerEID, player.getEntityId());
+                        			//sync guard
+                        			this.sendSyncPacket(3, false, false);
+                        		}
+                    		}
+                    		
+                    		//update hp state
+                    		updateHPState();
+                    		
+                    		//update mount
+                    		updateMountSummon();
+                    		
+                    		//update consume item
+                    		updateConsumeItem();
+                    		
+                    		//check every 256 ticks
+                        	if(this.ticksExisted % 256 == 0) {
+                        		//update buff (slow update)
+                        		calcEquipAndUpdateState();
+                        		
+                        		//HP auto regen
+                        		if(this.getHealth() < this.getMaxHealth()) {
+                        			this.setHealth(this.getHealth() + this.getMaxHealth() * 0.015625F + 1);
+                        		}
+                        	}//end every 256 ticks
+                    	}//end every 128 ticks
+                	}//end every 32 ticks
+            	}//end every 16 ticks
+        	}//end every 8 ticks
         	
         	//play timekeeping sound
         	if(ConfigHandler.timeKeeping && this.getStateFlag(ID.F.TimeKeeper)) {
@@ -1700,21 +1696,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	}//end timekeeping
         	
         }//end if(server side)
-        //client side
-//        else {
-//        	LogHelper.info("DEBUG : emotion "+this.getStateEmotion(ID.S.Emotion)+" "+getStartEmotion());
-//        	//set client side owner
-//        	if(this.ticksExisted % 20 == 0) {
-//        		LogHelper.info("DEBUG : entity sync 3: get owner id "+this.getStateMinor(ID.M.OwnerID));
-//        	}
-//        }
-        
-//        //both side
-//        if(this.ridingEntity instanceof BasicEntityMount) {
-//    		((BasicEntityMount)this.ridingEntity).prevRotationYaw = this.prevRotationYaw;
-//    		((BasicEntityMount)this.ridingEntity).rotationYaw = this.rotationYaw;
-//    		((BasicEntityMount)this.ridingEntity).renderYawOffset = this.renderYawOffset;
-//		}
     }
 
 	//timekeeping method

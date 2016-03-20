@@ -55,12 +55,14 @@ public class EntityAIShipGuarding extends EntityAIBase {
     private ShipPathNavigate ShipNavigator;
     private final TargetHelper.Sorter targetSorter;
     private final TargetHelper.Selector targetSelector;
-    private int findCooldown;
-    private int checkTeleport, checkTeleport2;	//> 200 = use teleport
+    private static final double TP_DIST = 1600D;	//40 block for tp dist
+    private static final int TP_TIME = 400;			//20 sec for can't move time
+    private int checkTP_T, checkTP_D;				//teleport cooldown count
+    private int findCooldown;						//path navi cooldown
     private double maxDistSq, minDistSq;
-    private double distSq, distSqrt, distX, distY, distZ;	//跟目標的直線距離
-    private double[] pos;				//guard position
-    private double[] guardPosOld;			//last update position
+    private double distSq, distX, distY, distZ;	//跟目標的直線距離
+    private double[] pos;							//guard position
+    private double[] guardPosOld;					//last update position
     
     //attack parms, for BasicEntityShip only
     private IShipCannonAttack ship;  	//host can use cannon
@@ -83,7 +85,6 @@ public class EntityAIShipGuarding extends EntityAIBase {
         this.targetSorter = new TargetHelper.Sorter(host2);
         this.targetSelector = new TargetHelper.Selector(host2);
         this.distSq = 1D;
-        this.distSqrt = 1D;
         this.isMoving = false;
         this.setMutexBits(7);
         
@@ -147,18 +148,16 @@ public class EntityAIShipGuarding extends EntityAIBase {
 
     @Override
 	public void startExecuting() {
-        this.findCooldown = 20;
-        this.checkTeleport = 0;
-        this.checkTeleport2 = 0;
+        this.findCooldown = 10;
+        this.checkTP_T = 0;
+        this.checkTP_D = 0;
     }
 
     @Override
 	public void resetTask() {
     	this.guarded = null;
     	this.isMoving = false;
-    	this.findCooldown = 20;
-        this.checkTeleport = 0;
-        this.checkTeleport2 = 0;
+    	this.findCooldown = 10;
         this.ShipNavigator.clearPathEntity();
     }
 
@@ -217,6 +216,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
     	if(host != null) {
 //    		LogHelper.info("DEBUG : exec guarding");
         	this.findCooldown--;
+        	this.checkTP_T++;
         	
         	//update position every 32 ticks
         	if(host2.ticksExisted % 32 == 0) {
@@ -230,88 +230,92 @@ public class EntityAIShipGuarding extends EntityAIBase {
         		this.ShipNavigator.clearPathEntity();
         	}
         	
-        	//設定頭部轉向
-            this.host2.getLookHelper().setLookPosition(pos[0], pos[1], pos[2], 30F, this.host2.getVerticalFaceSpeed());
-
-        	//距離超過傳送距離, 直接傳送到目標上
-        	if(this.distSq > this.maxDistSq && host2.dimension == host.getStateMinor(ID.M.GuardDim)) {
-        		this.checkTeleport++;
-        		
-        		if(this.checkTeleport > 1000) {
-        			LogHelper.info("DEBUG : guarding AI: away from target > "+this.checkTeleport+" ticks, teleport to target");
-        			this.checkTeleport = 0;
-        			
-        			//teleport
-        			if(this.distSq > 1024) {	//32 blocks away, drop seat2
-        				this.clearMountSeat2();
-        			}
-        			
-    				this.host2.setLocationAndAngles(pos[0], pos[1], pos[2], this.host2.rotationYaw, this.host2.rotationPitch);
-    				this.ShipNavigator.clearPathEntity();
-    				this.sendSyncPacket();
-                    return;
-        		}
-        	}
-        	
         	//每cd到找一次路徑
         	if(this.findCooldown <= 0) {
     			this.findCooldown = 32;
-//    			LogHelper.info("DEBUG : guarding AI: find path cd");
-    			//check path result
-            	if(host2.dimension == host.getStateMinor(ID.M.GuardDim)) {
-            		this.isMoving = this.ShipNavigator.tryMoveToXYZ(pos[0], pos[1], pos[2], 1D);
-            		
-            		if(!this.isMoving) {
-	            		//若超過max dist則teleport
-	            		if(this.distSq > this.maxDistSq && host2.dimension == host.getStateMinor(ID.M.GuardDim)) {
-	            			this.checkTeleport2++;
-	                		
-	                		if(this.checkTeleport2 > 32) {  //32 * 32 = 1024 ticks
-	                			this.checkTeleport2 = 0;
-	                			LogHelper.info("DEBUG : guarding AI: teleport entity: "+pos[0]+" "+pos[1]+" "+pos[2]+" "+this.host);
-	    	            		
-	                			if(this.distSq > 1024) {	//32 blocks away, drop seat2
-	                				this.clearMountSeat2();
-	                			}
-	                			
-	                			//teleport
-	                			this.host2.setLocationAndAngles(pos[0], pos[1], pos[2], this.host2.rotationYaw, this.host2.rotationPitch);
-	            				this.ShipNavigator.clearPathEntity();
-	            				this.sendSyncPacket();
-	                            return;
-	                		}	
-	                    }
-            		}
-                }//end !try move
-            }//end path find cooldown
+    			this.isMoving = this.ShipNavigator.tryMoveToXYZ(pos[0], pos[1], pos[2], 1D);
+        	}
+        	
+        	//設定頭部轉向
+            this.host2.getLookHelper().setLookPosition(pos[0], pos[1], pos[2], 30F, this.host2.getVerticalFaceSpeed());
+
+            //check teleport conditions: same DIM and (dist > TP_DIST or time > TP_TIME)
+        	if(this.host2.dimension == this.host.getStateMinor(ID.M.GuardDim)) {
+        		//check dist
+        		if(this.distSq > TP_DIST) {
+        			this.checkTP_D++;
+        			
+        			if(this.checkTP_D > TP_TIME) {
+        				this.checkTP_D = 0;
+        				
+        				LogHelper.info("DEBUG : guard AI: distSQ > "+TP_DIST+" , teleport to target. dim: "+host2.dimension+" "+owner.dimension);
+            			this.applyTeleport();
+            			return;
+        			}
+        		}
+        		
+        		//check moving time
+        		if(this.checkTP_T > TP_TIME) {
+        			this.checkTP_T = 0;
+        			
+        			LogHelper.info("DEBUG : guard AI: teleport entity: dimension check: "+host2.dimension+" "+owner.dimension);
+        			this.applyTeleport();
+        			return;
+        		}
+        	}//end same dim
     	}//end guard entity
+    }
+    
+    //do teleport
+    private void applyTeleport() {
+    	if(this.host2 instanceof BasicEntityMount) {
+    		BasicEntityShip ship = (BasicEntityShip) ((BasicEntityMount) this.host2).getHostEntity();
+    		
+    		if(this.distSq > 1024) {
+    			this.clearMountSeat2(this.host2);  //too far away, drop mount
+    			this.clearMountSeat2(ship);
+    		}
+    		
+    		this.ShipNavigator.clearPathEntity();
+    		ship.setLocationAndAngles(pos[0], pos[1]+0.5D, pos[2], this.host2.rotationYaw, this.host2.rotationPitch);
+    		this.sendSyncPacket(ship);
+    	}
+    	else {
+    		if(this.distSq > 1024) {
+    			this.clearMountSeat2(this.host2);  //too far away, drop mount
+    		}
+        	
+    		this.ShipNavigator.clearPathEntity();
+    		this.host2.setLocationAndAngles(pos[0], pos[1]+0.5D, pos[2], this.host2.rotationYaw, this.host2.rotationPitch);
+    		this.sendSyncPacket(this.host2);
+    	}
     }
 
     //clear seat2
-	private void clearMountSeat2() {
+	private void clearMountSeat2(EntityLiving entity) {
 		//若座位2有人, 要先把座位2的乘客踢掉
-  		if(host2.ridingEntity != null) {
-  			if(host2.ridingEntity instanceof BasicEntityMount) {
-	  			BasicEntityMount mount = (BasicEntityMount) host2.ridingEntity;
+  		if(entity.ridingEntity != null) {
+  			if(entity.ridingEntity instanceof BasicEntityMount) {
+	  			BasicEntityMount mount = (BasicEntityMount) entity.ridingEntity;
 	  			if(mount.seat2 != null) {
 	  				mount.seat2.setRiderNull();
 	  			}
   			}
-  			host2.mountEntity(null);
+  			entity.mountEntity(null);
   		}
   		
   		//清空騎乘的人
-  		if(host2.riddenByEntity != null) {
-  			host2.riddenByEntity.mountEntity(null);
-  			host2.riddenByEntity = null;
+  		if(entity.riddenByEntity != null) {
+  			entity.riddenByEntity.mountEntity(null);
+  			entity.riddenByEntity = null;
   		}
 	}
 	
 	//sync position
-	private void sendSyncPacket() {
+	private void sendSyncPacket(Entity ent) {
 		//for other player, send ship state for display
-		TargetPoint point = new TargetPoint(host2.dimension, host2.posX, host2.posY, host2.posZ, 48D);
-		CommonProxy.channelE.sendToAllAround(new S2CEntitySync(host2, 0, S2CEntitySync.PID.SyncEntity_PosRot), point);
+		TargetPoint point = new TargetPoint(ent.dimension, ent.posX, ent.posY, ent.posZ, 64D);
+		CommonProxy.channelE.sendToAllAround(new S2CEntitySync(ent, 0, S2CEntitySync.PID.SyncEntity_PosRot), point);
 	}
 	
 	//update attack parms

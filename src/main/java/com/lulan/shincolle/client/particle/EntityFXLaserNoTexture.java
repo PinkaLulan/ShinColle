@@ -24,7 +24,9 @@ import cpw.mods.fml.relauncher.SideOnly;
  * 
  * type:
  *   0: 雙紅雷射: par1為X軸位置(分左右光炮), par2為發射高度
- *   1: 大和波動砲: 
+ *   1: 大和波動砲: 主砲光束
+ *   2: 守衛目標線: 指示船艦到守衛目標的連結線標示
+ *   
  */
 @SideOnly(Side.CLIENT)
 public class EntityFXLaserNoTexture extends EntityFX {
@@ -66,6 +68,19 @@ public class EntityFXLaserNoTexture extends EntityFX {
         	this.particleGreen = 0.8F;
         	this.particleBlue = 0.9F;
         	break;
+        case 2:		//守衛標示線: entity類
+        	lookDeg = CalcHelper.getLookDegree(tarX-posX, tarY-posY, tarZ-posZ, false);
+        	this.shotYaw = lookDeg[0];
+        	this.shotPitch = lookDeg[1];
+        	this.particleMaxAge = 8;
+        	this.particleRed = 1F;
+        	this.particleGreen = 1F;
+        	this.particleBlue = 1F;
+        	this.scaleOut = this.particleScale * 0.5F;
+        	this.scaleIn = this.particleScale * 0.125F;
+        	this.alphaOut = 0.1F;
+        	this.alphaIn = 0.2F;
+        	break;
         default:	//紅光束砲
         	lookDeg = CalcHelper.getLookDegree(tarX-posX, tarY-posY, tarZ-posZ, false);
         	posOffset = ParticleHelper.rotateXYZByYawPitch((float)par1, 0F, 0.78F, lookDeg[0], lookDeg[1], 1F);
@@ -78,6 +93,45 @@ public class EntityFXLaserNoTexture extends EntityFX {
         	this.particleRed = 1F;
         	this.particleGreen = 0F;
         	this.particleBlue = 0F;
+        	this.scaleOut = this.particleScale * 0.5F;
+        	this.scaleIn = this.particleScale * 0.125F;
+        	this.alphaOut = 0.1F;
+        	this.alphaIn = 0.2F;
+        	break;
+        }
+    }
+    
+    public EntityFXLaserNoTexture(World world, EntityLivingBase host, double tarX, double tarY, double tarZ, float scale, int type) {
+        super(world, host.posX, host.posY, host.posZ, 0.0D, 0.0D, 0.0D);
+        this.host = host;
+        this.target = host;
+        this.motionX = 0D;
+        this.motionZ = 0D;
+        this.motionY = 0D;
+        this.particleScale = scale;
+        this.particleType = type;
+        this.noClip = true;
+        this.tarX = tarX;
+        this.tarY = tarY;
+        this.tarZ = tarZ;
+        this.par1 = 0D;
+        this.par2 = 0D;
+        this.par3 = 0D;
+        this.vt = new double[8][3];
+        this.vt2 = new double[8][3];
+        
+        float[] lookDeg;
+        float[] posOffset;
+        
+        switch(type) {
+        case 3:		//守衛標示線: block類
+        	lookDeg = CalcHelper.getLookDegree(tarX-posX, tarY-posY, tarZ-posZ, false);
+        	this.shotYaw = lookDeg[0];
+        	this.shotPitch = lookDeg[1];
+        	this.particleMaxAge = 8;
+        	this.particleRed = 1F;
+        	this.particleGreen = 1F;
+        	this.particleBlue = 1F;
         	this.scaleOut = this.particleScale * 0.5F;
         	this.scaleIn = this.particleScale * 0.125F;
         	this.alphaOut = 0.1F;
@@ -282,6 +336,27 @@ public class EntityFXLaserNoTexture extends EntityFX {
 	        	this.scaleIn += this.rand.nextFloat() * 0.08F - 0.04F;
 	        	
         		break;
+    		case 2:		//守衛標示線: entity類
+    			this.tarX = target.posX;
+        		this.tarY = target.posY;
+        		this.tarZ = target.posZ;
+    		case 3:		//守衛標示線: block類
+    			this.posX = host.posX;
+            	this.posY = host.posY;
+            	this.posZ = host.posZ;
+    			lookDeg = CalcHelper.getLookDegree(tarX-posX, tarY-posY, tarZ-posZ, false);
+            	this.shotYaw = lookDeg[0];
+            	this.shotPitch = lookDeg[1];
+            	
+        		if(this.particleAge > 4) {
+        			this.alphaIn = 1.0F + (4 - particleAge) * 0.2F;
+        			this.alphaOut = this.alphaIn * 0.5F;
+        		}
+        		else {
+        			this.alphaIn = 0.2F + particleAge * 0.2F;
+        			this.alphaOut = this.alphaIn * 0.5F;
+        		}
+    			break;
     		default:	//red laser
     			//force host look vector
     			this.host.renderYawOffset = shotYaw * Values.N.RAD_DIV;
