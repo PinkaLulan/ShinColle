@@ -67,11 +67,25 @@ public class ShinWorldData extends WorldSavedData {
 		nbt.setInteger(TAG_NEXTPLAYERID, ServerProxy.getNextPlayerID());
 		nbt.setInteger(TAG_NEXTSHIPID, ServerProxy.getNextShipID());
 
-		
+		//unattackable list
+	    List<String> strList = ServerProxy.getUnattackableTargetClassList();
+	    if(strList != null) {
+	    	NBTTagList tagList = new NBTTagList();
+			LogHelper.info("DEBUG : save world data: save unattackable target list: size: "+strList.size());
+			
+			for(String getc : strList) {
+				NBTTagString str = new NBTTagString(getc);
+				tagList.appendTag(str);
+			}
+			
+			nbt.setTag(ServerProxy.UNATK_TARGET_CLASS, tagList);
+	    }
+	    
 		/** save player data:  from playerMap to server save file */
 		NBTTagList list = new NBTTagList();
 		Iterator iter = ServerProxy.getAllPlayerWorldData().entrySet().iterator();
 		
+	    //save each player data
 		while(iter.hasNext()) {
 		    Map.Entry entry = (Map.Entry) iter.next();
 		    int uid = (Integer) entry.getKey();
@@ -83,16 +97,19 @@ public class ShinWorldData extends WorldSavedData {
 		    LogHelper.info("DEBUG : save world data: save id "+uid+" data: "+data0[0]+" "+data0[1]+" "+data0[2]);
 		    
 		    //save target class list
-		    List<String> strList = ServerProxy.getPlayerTargetClassList(uid);
+		    strList = ServerProxy.getPlayerTargetClassList(uid);
 			if(strList != null) {
 				NBTTagList tagList = new NBTTagList();
 				LogHelper.info("DEBUG : save world data: save id "+uid+" target list size: "+strList.size());
+				
 				for(String getc : strList) {
 					NBTTagString str = new NBTTagString(getc);
 					tagList.appendTag(str);
 				}
+				
 				save.setTag(ServerProxy.CUSTOM_TARGET_CLASS, tagList);
 			}
+			
 		    list.appendTag(save);	//將save加入到list中, 不檢查是否有重複的tag, 而是新增一個tag
 		}
 		nbt.setTag(TAG_PLAYERDATA, list);	//將list加入到nbt中

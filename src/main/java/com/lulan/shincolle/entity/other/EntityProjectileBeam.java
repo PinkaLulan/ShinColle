@@ -264,52 +264,55 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAtt
                 	beamAtk = this.atk;
                 	hitEntity = (Entity)hitList.get(i);
                 	
-                	//calc equip special dmg: AA, ASM
-                	beamAtk = CalcHelper.calcDamageByEquipEffect(this, hitEntity, beamAtk, 1);
-                	
-                	//目標不能是自己 or 主人, 且可以被碰撞
-                	if(hitEntity.canBeCollidedWith() && isNotHost(hitEntity)) {
-                		//若owner相同, 則傷害設為0 (但是依然觸發擊飛特效)
-                		if(EntityHelper.checkSameOwner(host2, hitEntity)) {
-                			beamAtk = 0F;
-                    	}
-                		else {
-                			//calc critical
-                    		if(this.host != null && (this.rand.nextFloat() < this.host.getEffectEquip(ID.EF_CRI))) {
-                    			beamAtk *= 3F;
-                        		//spawn critical particle
-                            	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(host2, 11, false), point);
+                	//check target attackable
+              		if(EntityHelper.checkAttackable(hitEntity)) {
+              			//calc equip special dmg: AA, ASM
+                    	beamAtk = CalcHelper.calcDamageByEquipEffect(this, hitEntity, beamAtk, 1);
+                    	
+                    	//目標不能是自己 or 主人, 且可以被碰撞
+                    	if(hitEntity.canBeCollidedWith() && isNotHost(hitEntity)) {
+                    		//若owner相同, 則傷害設為0 (但是依然觸發擊飛特效)
+                    		if(EntityHelper.checkSameOwner(host2, hitEntity)) {
+                    			beamAtk = 0F;
                         	}
-                    		
-                    		//若攻擊到玩家, 最大傷害固定為TNT傷害 (non-owner)
-                        	if(hitEntity instanceof EntityPlayer) {
-                        		beamAtk *= 0.25F;
+                    		else {
+                    			//calc critical
+                        		if(this.host != null && (this.rand.nextFloat() < this.host.getEffectEquip(ID.EF_CRI))) {
+                        			beamAtk *= 3F;
+                            		//spawn critical particle
+                                	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(host2, 11, false), point);
+                            	}
                         		
-                        		if(beamAtk > 59F) {
-                        			beamAtk = 59F;	//same with TNT
-                        		}
-                        		
-                        		//check friendly fire
-                        		if(!EntityHelper.doFriendlyFire(this.host, (EntityPlayer) hitEntity)) {
+                        		//若攻擊到玩家, 最大傷害固定為TNT傷害 (non-owner)
+                            	if(hitEntity instanceof EntityPlayer) {
+                            		beamAtk *= 0.25F;
+                            		
+                            		if(beamAtk > 59F) {
+                            			beamAtk = 59F;	//same with TNT
+                            		}
+                            	}
+                            	
+                            	//check friendly fire
+                        		if(!EntityHelper.doFriendlyFire(this.host, hitEntity)) {
                         			beamAtk = 0F;
                         		}
-                        	}
-                		}
-                		
-                		//if attack success
-                	    if(hitEntity.attackEntityFrom(DamageSource.causeIndirectMagicDamage(this, host2).setExplosion(), beamAtk)) {
-                	    	//calc kb effect
-                	        if(this.kbValue > 0) {
-                	        	hitEntity.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
-                	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
-                	            motionX *= 0.6D;
-                	            motionZ *= 0.6D;
-                	        }
-                	        
-                	        //send packet to client for display partical effect
-                            CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(hitEntity, 9, false), point);
-                	    }
-                	}//end can be collided with
+                    		}
+                    		
+                    		//if attack success
+                    	    if(hitEntity.attackEntityFrom(DamageSource.causeIndirectMagicDamage(this, host2).setExplosion(), beamAtk)) {
+                    	    	//calc kb effect
+                    	        if(this.kbValue > 0) {
+                    	        	hitEntity.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
+                    	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
+                    	            motionX *= 0.6D;
+                    	            motionZ *= 0.6D;
+                    	        }
+                    	        
+                    	        //send packet to client for display partical effect
+                                CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(hitEntity, 9, false), point);
+                    	    }
+                    	}//end can be collided with
+              		}//end is attackable
                 }//end hit target list for loop
             }//end hit target list != null
     	}//end if server side

@@ -7,7 +7,6 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
@@ -21,9 +20,7 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -39,6 +36,7 @@ public class EntitySubmRo500 extends BasicEntityShipSmall implements IShipInvisi
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.SubmarineRo500);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.SUBMARINE);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.SS]);
+		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.SS]);
 		this.ModelPos = new float[] {0F, 10F, 0F, 45F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		
@@ -194,9 +192,9 @@ public class EntitySubmRo500 extends BasicEntityShipSmall implements IShipInvisi
           	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
           }
           
-          //heavy ammo -1
-          if(!decrAmmoNum(0)) {	//not enough ammo
-          	atk = atk * 0.125F;	//reduce damage to 12.5%
+          //heavy ammo--
+          if(!decrAmmoNum(0, this.getAmmoConsumption())) {
+        	  return false;
           }
           
           //calc miss chance, miss: add random offset(0~6) to missile target 

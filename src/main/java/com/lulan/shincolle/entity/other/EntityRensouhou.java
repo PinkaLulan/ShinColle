@@ -256,19 +256,16 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack {
 			if(setdead) {
 				//歸還彈藥
 				if(this.host != null) {
-					//彈藥預設多給50%, 歸還時要扣回來
+					//召喚時消耗4 light ammo, 連裝砲可6次攻擊, 回收時次數要-2
 					this.numAmmoLight -= 2;
 					if(this.numAmmoLight < 0) this.numAmmoLight = 0;
-					this.numAmmoHeavy -= 1;
-					if(this.numAmmoHeavy < 0) this.numAmmoHeavy = 0;
 					
 					//連裝砲數量+1
 					int numR = ((IShipSummonAttack)host).getNumServant();
-					if(numR < 6) ((IShipSummonAttack)host).setNumServant(numR+1);
+					if(numR < 6) ((IShipSummonAttack)host).setNumServant(numR + 1);
 					
 					//歸還彈藥
-					host.setAmmoLight(host.getAmmoLight() + this.getAmmoLight());
-					host.setAmmoHeavy(host.getAmmoHeavy() + this.getAmmoHeavy());
+					host.setAmmoLight(host.getAmmoLight() + this.getAmmoLight() * host.getAmmoConsumption());
 				}
 				
 				this.setDead();

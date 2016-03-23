@@ -18,4 +18,5 @@ public interface ITileFurnace {
 	public int getPowerMax();
 	public void setPowerMax(int par1);
 	
+	
 }

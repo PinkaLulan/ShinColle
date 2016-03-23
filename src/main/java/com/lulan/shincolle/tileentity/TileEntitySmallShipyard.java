@@ -6,6 +6,14 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidContainerRegistry;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTank;
+import net.minecraftforge.fluids.FluidTankInfo;
+import net.minecraftforge.fluids.IFluidHandler;
 
 import com.lulan.shincolle.block.BlockSmallShipyard;
 import com.lulan.shincolle.crafting.SmallRecipes;
@@ -23,13 +31,18 @@ import com.lulan.shincolle.utility.TileEntityHelper;
  * 	MaxMaterial / MaxFuelCost = 64*4 / 460800
  *  MinMaterial / MinFuelCost = 16*4 / 57600 = BaseCost(57600) CostPerMaterial(2100)
  */
-public class TileEntitySmallShipyard extends BasicTileEntity implements ITileFurnace {
-		
+public class TileEntitySmallShipyard extends BasicTileEntity implements ITileLiquidFurnace, IFluidHandler {
+	//fluid tank
+	private static final int TANKCAPA = FluidContainerRegistry.BUCKET_VOLUME;
+	private static final Fluid F_LAVA = FluidRegistry.LAVA;
+	private FluidTank tank = new FluidTank(new FluidStack(F_LAVA, 0), TANKCAPA);
+	
+	//furnace
 	private int consumedPower = 0;	//已花費的能量
 	private int remainedPower = 0;	//剩餘燃料
 	private int goalPower = 0;		//需要達成的目標能量
 	private int buildType = 0;		//type 0:none 1:ship 2:equip 3:ship loop 4: equip loop
-	private int[] buildRecord;
+	private int[] buildRecord = new int[] {0, 0, 0, 0};
 	private boolean isActive;		//是否正在建造中, 此為紀錄isBuilding是否有變化用
 	private static int buildSpeed = 48;  			//power cost per tick
 	private static final int MAXPOWER = 460800; 	//max power storage
@@ -266,11 +279,7 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ITileFur
 
 		//null check
 		if(this.buildRecord == null || this.buildRecord.length < 1) {
-			this.buildRecord = new int[4];
-			this.buildRecord[0] = 0;
-			this.buildRecord[1] = 0;
-			this.buildRecord[2] = 0;
-			this.buildRecord[3] = 0;
+			this.buildRecord = new int[] {0, 0, 0, 0};
 		}
 		
 		//server side
@@ -283,10 +292,13 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ITileFur
 				this.goalPower = 0;
 			}
 			
-			//fuel補充
-			if(TileEntityHelper.checkItemFuel(this)) {
+			//add item fuel
+			if(TileEntityHelper.decrItemFuel(this)) {
 				sendUpdate = true;
 			}
+			
+			//add liquid fuel
+			TileEntityHelper.decrLiquidFuel(this);
 			
 			//判定是否建造中, 每tick進行進度值更新, 若非建造中則重置進度值
 			if(this.isBuilding()) {
@@ -413,6 +425,54 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ITileFur
 
 	@Override
 	public void setPowerMax(int par1) {}
+
+	@Override
+	public int fill(ForgeDirection from, FluidStack fluid, boolean doFill) {
+		if(TileEntityHelper.checkLiquidIsLava(fluid)) {
+			return tank.fill(fluid, doFill);
+		}
+		
+		return 0;
+	}
+
+	@Override
+	public FluidStack drain(ForgeDirection from, FluidStack fluid, boolean doDrain) {
+		return null;
+	}
+
+	@Override
+	public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain) {
+		return null;
+	}
+
+	@Override
+	public boolean canFill(ForgeDirection from, Fluid fluid) {
+		if(TileEntityHelper.checkLiquidIsLava(fluid)) {
+			return true;
+		}
+		
+		return false;
+	}
+
+	@Override
+	public boolean canDrain(ForgeDirection from, Fluid fluid) {
+		return false;
+	}
+
+	@Override
+	public FluidTankInfo[] getTankInfo(ForgeDirection from) {
+		return new FluidTankInfo[] { tank.getInfo() };
+	}
+
+	@Override
+	public int getFluidFuelAmount() {
+		return this.tank.getFluidAmount();
+	}
+
+	@Override
+	public FluidStack drainFluidFuel(int amount) {
+		return this.tank.drain(amount, true);
+	}
 
 	
 }

@@ -2,17 +2,23 @@ package com.lulan.shincolle.item;
 
 import java.util.List;
 
-import com.lulan.shincolle.reference.ID;
-
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 
-public class Ammo extends BasicItem implements IShipItemType {
+/** meta:
+ *     0: ammo 
+ *     1: ammo container
+ *     2: heavy ammo
+ *     3: heavy ammo container
+ *
+ */
+public class Ammo extends BasicItem implements IShipResourceItem {
 	byte types = 4;
 	IIcon[] icons = new IIcon[4];
+	
 	
 	public Ammo() {
 		super();
@@ -42,8 +48,19 @@ public class Ammo extends BasicItem implements IShipItemType {
 	}
 	
 	@Override
-	public int getItemType() {
-		return ID.ItemType.Ammo;
+	public int[] getResourceValue(int meta) {
+		switch(meta) {
+		case 0:
+			return new int[] {0, 0, 1, 0};
+		case 1:
+			return new int[] {0, 0, 9, 0};
+		case 2:
+			return new int[] {0, 0, 4, 0};
+		case 3:
+			return new int[] {0, 0, 36, 0};
+		default:
+			return new int[] {0, 0, 0, 0};
+		}
 	}
 	
 	

@@ -54,7 +54,7 @@ public class EntitySubmRo500Mob extends BasicEntityShipHostile implements IShipI
 	    //設定基本屬性
 	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(ConfigHandler.scaleMobSubm[ID.HP]);
 		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(this.movSpeed);
-		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(atkRange + 16); //此為找目標, 路徑的範圍
+		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(atkRange + 48); //此為找目標, 路徑的範圍
 		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(0.3D);
 		if(this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
 				

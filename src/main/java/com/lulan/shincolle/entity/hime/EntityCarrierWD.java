@@ -32,6 +32,7 @@ public class EntityCarrierWD extends BasicEntityShipLarge {
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.CarrierWD);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CARRIER);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CV]);
+		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CV]);
 		this.ModelPos = new float[] {-6F, 15F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();
@@ -120,9 +121,9 @@ public class EntityCarrierWD extends BasicEntityShipLarge {
   		//grudge--
   		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
         
-        //light ammo -1
-        if(!decrAmmoNum(0)) {		//not enough ammo
-        	atk = atk * 0.125F;	//reduce damage to 12.5%
+        //light ammo--
+        if(!decrAmmoNum(0, this.getAmmoConsumption())) {
+        	return false;
         }
         
         //calc dist to target

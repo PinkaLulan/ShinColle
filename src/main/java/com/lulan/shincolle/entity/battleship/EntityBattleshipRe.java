@@ -28,6 +28,7 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.BattleshipRE);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BBV]);
+		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BBV]);
 		this.ModelPos = new float[] {-6F, 10F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();
@@ -105,8 +106,8 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
   		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
         
         //light ammo -1
-        if(!decrAmmoNum(0)) {		//not enough ammo
-        	atk = atk * 0.125F;	//reduce damage to 12.5%
+        if(!decrAmmoNum(0, this.getAmmoConsumption())) {		//not enough ammo
+        	return false;
         }
 
         //calc miss chance, if not miss, calc cri/multi hit

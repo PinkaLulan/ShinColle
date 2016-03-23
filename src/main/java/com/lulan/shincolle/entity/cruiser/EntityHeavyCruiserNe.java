@@ -20,6 +20,7 @@ public class EntityHeavyCruiserNe extends BasicEntityShipSmall {
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.HeavyCruiserNE);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CRUISER);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CA]);
+		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CA]);
 		this.ModelPos = new float[] {0F, 10F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();

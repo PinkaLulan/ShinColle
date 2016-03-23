@@ -52,6 +52,16 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip implements IS
 		return StateMinor[ID.M.NumAirHeavy] > 0;
 	}
 	
+	@Override
+	public boolean hasAmmoLight() {
+		return StateMinor[ID.M.NumAmmoLight] >= 6 * StateMinor[ID.M.AmmoCon];
+	}
+	
+	@Override
+	public boolean hasAmmoHeavy() {
+		return StateMinor[ID.M.NumAmmoHeavy] >= 2 * StateMinor[ID.M.AmmoCon];
+	}
+	
 	//setter
 	@Override
 	public void setNumAircraftLight(int par1) {
@@ -138,7 +148,7 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip implements IS
         playSound(Reference.MOD_ID+":ship-aircraft", 0.4F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         
         //light ammo--
-        if(!decrAmmoNum(4)) {		//not enough ammo
+        if(!decrAmmoNum(0, 6 * this.getAmmoConsumption())) {
         	return false;
         }
         
@@ -192,8 +202,8 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip implements IS
   		//grudge--
   		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAir]);
         
-        //light ammo -1
-        if(!decrAmmoNum(5)) {		//not enough ammo
+        //heavy ammo--
+        if(!decrAmmoNum(1, 2 * this.getAmmoConsumption())) {
         	return false;
         }
         

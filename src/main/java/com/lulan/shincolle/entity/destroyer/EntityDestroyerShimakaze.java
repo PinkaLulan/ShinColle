@@ -38,6 +38,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.DestroyerShimakaze);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.DD]);
+		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.DD]);
 		this.ModelPos = new float[] {0F, 15F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);
 		
@@ -75,8 +76,8 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
   		super.onLivingUpdate();
           
   		if(!worldObj.isRemote) {
-  			//add aura to master every 100 ticks
-  			if(this.ticksExisted % 100 == 0) {
+  			//add aura to master every 128 ticks
+  			if(this.ticksExisted % 128 == 0) {
   				//add num of rensouhou
   				if(this.numRensouhou < 6) numRensouhou++;
   				
@@ -148,7 +149,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
         }
         
         //light ammo--
-        if(!decrAmmoNum(4)) {		//not enough ammo
+        if(!decrAmmoNum(0, 4 * this.getAmmoConsumption())) {
         	return false;
         }
         
@@ -219,9 +220,9 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
         	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         }
         
-        //heavy ammo -1
-        if(!decrAmmoNum(1)) {	//not enough ammo
-        	atk = atk * 0.125F;	//reduce damage to 12.5%
+        //heavy ammo--
+        if(!decrAmmoNum(1, this.getAmmoConsumption())) {
+        	return false;
         }
         
         //calc miss chance, miss: add random offset(0~6) to missile target 

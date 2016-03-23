@@ -38,6 +38,7 @@ item.shincolle:ModernKit.name=Modernization Toolkit
 item.shincolle:OwnerPaper.name=Shinkeiseikan Ownership Paper
 item.shincolle:PointerItem.name=Wo-Class Command Scepter
 item.shincolle:RepairGoddess.name=The Grudge of Abyssal Goddess
+item.shincolle:TargetWrench.name=Target Wrench
 item.shincolle:ToyAirplane.name=Model 21 Zero Fighter (1/48)
 
 # Equip
@@ -53,8 +54,8 @@ item.shincolle:EquipCannon8.name=20-Inch Twin Cannon
 item.shincolle:EquipCannon9.name=8-Inch Triple Cannon
 item.shincolle:EquipCannon10.name=16-Inch Triple Cannon
 item.shincolle:EquipCannon11.name=15-Inch Fortress Gun
-item.shincolle:EquipMachinegun.name=3-Inch Single High-Angle Gun Mount	
-item.shincolle:EquipMachinegun1.name=5-Inch Single High-Angle Gun Mount 
+item.shincolle:EquipMachinegun.name=3-Inch Single High-Angle Gun Mount
+item.shincolle:EquipMachinegun1.name=5-Inch Single High-Angle Gun Mount
 item.shincolle:EquipMachinegun2.name=12.7mm Abyssal Machine Gun
 item.shincolle:EquipMachinegun3.name=20mm Abyssal Machine Gun
 item.shincolle:EquipMachinegun4.name=40mm Abyssal Twin Autocannon Mount
@@ -242,6 +243,9 @@ gui.shincolle:book.chap1.text16d1=
 gui.shincolle:book.chap1.title17=Abyssal Adrmiral's Desk
 gui.shincolle:book.chap1.text17d0=<br><br><br><br><br><br><br><br><br>This stable and durable §d§nAbyssal Adrmiral's Desk§r§0 is made of obsidian. In addition to deal with the official business, it can also block the gunfire from angry secretary ship.<br>**Please ask the secretary ship before purchasing the furniture.
 gui.shincolle:book.chap1.text17d1=§9Radar§0:<br>Show a list of nearby owned ships, click ship on the list to carry out other action.<br><br>§9Abyssal Logbook§0:<br>Items, blocks and ships introduction.<br><br>§9Faction§0:<br>Create or add team with PVP mode.<br><br>§9Target List§0:<br>Browse attack target list.
+gui.shincolle:book.chap1.title18=Target Wrench
+gui.shincolle:book.chap1.text18d0=<br><br><br><br><br><br><br><br><br>§9Left Click:§0<br>§cADD/REMOVE§0 entity to §dUnattackable Target List§0. §4(OP ONLY!!)§0<br><br>§9Right Click:§0 Show §dUnattackable Target List§0.
+gui.shincolle:book.chap1.text18d1=§dUnattackable Target§0 will not be damaged by AoE attack, and can't be targeted. You can add entity like leash knot, item frame, airplane, mounts or boat.<br><br>This list apply to hostile mob ship too.<br><br>Ship and hostile ship can't be unattackable entity.
 
 # GUI: Book Text Chap 2
 gui.shincolle:book.chap2.title=Construction
@@ -429,6 +433,9 @@ gui.shincolle:pointer4=Team
 gui.shincolle:antiair=Anti-Air
 gui.shincolle:antiss=Anti-SS
 gui.shincolle:dodge=Dodge
+gui.shincolle:oponly=OP ONLY
+gui.shincolle:wrench1=Left Click: ADD/REMOVE unattackable target
+gui.shincolle:wrench2=Right Click: Show unattackable target list
 
 # Chat message
 chat.shincolle:bossspawn1=A Fleet Walks on the Water!

@@ -1,16 +1,16 @@
 package com.lulan.shincolle.item;
 
-import com.lulan.shincolle.reference.ID;
 
-public class Grudge extends BasicItem implements IShipItemType {
+public class Grudge extends BasicItem implements IShipResourceItem {
+	
 	public Grudge() {
 		super();
 		this.setUnlocalizedName("Grudge");
 	}
 	
 	@Override
-	public int getItemType() {
-		return ID.ItemType.Grudge;
+	public int[] getResourceValue(int meta) {
+		return new int[] {1, 0, 0, 0};
 	}
 	
 	

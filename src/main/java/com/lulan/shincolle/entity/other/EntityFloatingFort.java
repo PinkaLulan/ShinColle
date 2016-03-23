@@ -141,51 +141,55 @@ public class EntityFloatingFort extends BasicEntityAirplane {
             	atk2 = this.atk;
             	hitEntity = (EntityLivingBase)hitList.get(i);
             	
-            	//calc equip special dmg: AA, ASM
-            	atk2 = CalcHelper.calcDamageByEquipEffect(this, hitEntity, atk2, 0);
-            	
-            	//目標可以被碰撞, 且目標不同主人, 則判定可傷害
-            	if(hitEntity.canBeCollidedWith() && !EntityHelper.checkSameOwner(this.host, hitEntity)) {
-        			//calc critical, only for type:ship
-            		if(host != null && (this.rand.nextFloat() < this.host.getEffectEquip(ID.EF_CRI))) {
-            			atk2 *= 3F;
-                		//spawn critical particle
-                		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
-                    	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(host, 11, false), point);
-                	}
-            		
-            		//若攻擊到玩家, 則傷害減為25%, 且最大傷害固定為TNT傷害 (non-owner)
-                	if(hitEntity instanceof EntityPlayer) {
-                		atk2 *= 0.25F;
+            	//check target attackable
+          		if(EntityHelper.checkAttackable(hitEntity)) {
+          			//calc equip special dmg: AA, ASM
+                	atk2 = CalcHelper.calcDamageByEquipEffect(this, hitEntity, atk2, 0);
+                	
+                	//目標可以被碰撞, 且目標不同主人, 則判定可傷害
+                	if(hitEntity.canBeCollidedWith() && !EntityHelper.checkSameOwner(this.host, hitEntity)) {
+            			//calc critical, only for type:ship
+                		if(host != null && (this.rand.nextFloat() < this.host.getEffectEquip(ID.EF_CRI))) {
+                			atk2 *= 3F;
+                    		//spawn critical particle
+                    		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
+                        	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(host, 11, false), point);
+                    	}
                 		
-                		if(atk2 > 59F) {
-                			atk2 = 59F;	//same with TNT
-                		}
-                		
-                		//check friendly fire
-                		if(!EntityHelper.doFriendlyFire(this.host, (EntityPlayer) hitEntity)) {
+                		//若攻擊到玩家, 則傷害減為25%, 且最大傷害固定為TNT傷害 (non-owner)
+                    	if(hitEntity instanceof EntityPlayer) {
+                    		atk2 *= 0.25F;
+                    		
+                    		if(atk2 > 59F) {
+                    			atk2 = 59F;	//same with TNT
+                    		}
+                    	}
+                    	
+                    	//check friendly fire
+                		if(!EntityHelper.doFriendlyFire(this.host, hitEntity)) {
                 			atk2 = 0F;
                 		}
-                	}
-                	
-            		//對entity造成傷害
-                	if(host != null) {
-                		isTargetHurt = hitEntity.attackEntityFrom(DamageSource.causeMobDamage(host).setExplosion(), atk2);
-                	}
-                	else {
-                		isTargetHurt = hitEntity.attackEntityFrom(DamageSource.causeMobDamage(this).setExplosion(), atk2);
-                	}
-            		//if attack success
-            	    if(isTargetHurt) {
-            	    	//calc kb effect
-            	        if(this.kbValue > 0) {
-            	        	hitEntity.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
-            	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
-            	            motionX *= 0.6D;
-            	            motionZ *= 0.6D;
-            	        }             	 
-            	    }
-            	}//end can be collided with
+                    	
+                		//對entity造成傷害
+                    	if(host != null) {
+                    		isTargetHurt = hitEntity.attackEntityFrom(DamageSource.causeMobDamage(host).setExplosion(), atk2);
+                    	}
+                    	else {
+                    		isTargetHurt = hitEntity.attackEntityFrom(DamageSource.causeMobDamage(this).setExplosion(), atk2);
+                    	}
+                    	
+                		//if attack success
+                	    if(isTargetHurt) {
+                	    	//calc kb effect
+                	        if(this.kbValue > 0) {
+                	        	hitEntity.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
+                	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
+                	            motionX *= 0.6D;
+                	            motionZ *= 0.6D;
+                	        }             	 
+                	    }
+                	}//end can be collided with
+          		}//end is attackable
             }//end hit target list for loop
         }//end hit target list != null
 

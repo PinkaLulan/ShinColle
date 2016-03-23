@@ -2,10 +2,10 @@ package com.lulan.shincolle.block;
 
 import java.util.Random;
 
-import com.lulan.shincolle.init.ModItems;
-
 import net.minecraft.item.Item;
 import net.minecraft.world.IBlockAccess;
+
+import com.lulan.shincolle.init.ModItems;
 
 public class BlockPolymetalOre extends BasicBlock {
 	

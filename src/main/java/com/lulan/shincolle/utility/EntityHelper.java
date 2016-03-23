@@ -193,22 +193,34 @@ public class EntityHelper {
 			int hostID = getPlayerUID(host);
 			int tarID = getPlayerUID(target);
 			
-			//host and target has player owner
-			if(hostID > 0 && tarID > 0) {
-				//if same owner, return true
-				if(hostID == tarID) return true;
-				
-				//not same owner, check team
-				TeamData hostTeam = getTeamDataByUID(hostID);
-				TeamData tarTeam = getTeamDataByUID(tarID);
-				
-				//host has team
-				if(hostTeam != null && tarTeam != null) {
-					List alist = hostTeam.getTeamAllyList();
-					return alist.contains(tarTeam.getTeamID());
-				}
+			return checkIsAlly(hostID, tarID);
+		}
+		return false;
+	}
+	
+	/** check target entity is host's ally, SERVER SIDE ONLY */
+	public static boolean checkIsAlly(int hostPID, int tarPID) {
+		//hostile vs hostile ship
+		if(hostPID < -1 && tarPID < -1) {
+			return true;
+		}
+		
+		//player vs player team
+		if(hostPID > 0 && tarPID > 0) {
+			//if same owner, return true
+			if(hostPID == tarPID) return true;
+			
+			//not same owner, check team
+			TeamData hostTeam = getTeamDataByUID(hostPID);
+			TeamData tarTeam = getTeamDataByUID(tarPID);
+			
+			//host has team
+			if(hostTeam != null && tarTeam != null) {
+				List alist = hostTeam.getTeamAllyList();
+				return alist.contains(tarTeam.getTeamID());
 			}
 		}
+		
 		return false;
 	}
 	
@@ -256,27 +268,53 @@ public class EntityHelper {
 		return false;
 	}
 	
-	/**check friendly fire for EntityPlayer (false = no damage) */
-	public static boolean doFriendlyFire(IShipOwner attacker, EntityPlayer target) {
+	/** check target is attackable, SERVER SIDE */
+	public static boolean checkAttackable(Entity target) {
+		//check unattackable list
+		List<String> unatklist = ServerProxy.getUnattackableTargetClassList();
+		String tarClass = target.getClass().getSimpleName();
+		
+		if(unatklist != null) {
+			for(String s : unatklist) {
+				if(s.equals(tarClass)) {  //target class is in list
+					return false;
+				}
+			}
+		}
+		
+		return true;
+	}
+	
+	/** check friendly fire (false = no damage) */
+	public static boolean doFriendlyFire(IShipOwner attacker, Entity target) {
 		if(attacker != null && target != null) {
 			int ida = attacker.getPlayerUID();	//attacker's owner id
+			int idb = getPlayerUID(target);
 			
-			//is friendly fire
+			//enable friendly fire
 			if(ConfigHandler.friendlyFire) {
 				//attacker = normal ship
 				if(ida > 0) {
-					int idb = getPlayerUID(target);
-					//same owner, no damage
+					//check is same owner
 					if(ida == idb) {
 						return false;
 					}
-					//diff owner, do damage
 				}
 			}
 			//no friendly fire
 			else {
-				//ship can't hurt player
-				if(ida >= -1) {
+				//hostile vs hostile ship = no damage
+				if(ida < 0 && idb < 0) {
+					return false;
+				}
+				
+				//friendly ship can't hurt player
+				if(ida >= -1 && target instanceof EntityPlayer) {
+					return false;
+				}
+				
+				//no damage to ally ship
+				if(checkIsAlly(ida, idb)) {
 					return false;
 				}
 			}

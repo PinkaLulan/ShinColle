@@ -346,7 +346,7 @@ public class EVENT_BUS_EventHandler {
 			if(event.source.getEntity() instanceof EntityPlayer) {
 				EntityPlayer player = (EntityPlayer) event.source.getEntity();
 				//get player's ship within 20 blocks
-				TargetHelper.setRevengeTargetAroundPlayer(player, 20D, event.entity);
+				TargetHelper.setRevengeTargetAroundPlayer(player, 32D, event.entity);
 //				LogHelper.info("DEBUG : attack event: "+player+" "+event.entity);
 			}//end get player
 			
@@ -354,11 +354,15 @@ public class EVENT_BUS_EventHandler {
 			if(event.entity instanceof EntityPlayer) {
 				EntityPlayer player = (EntityPlayer) event.entity;
 				//get player's ship within 20 blocks
-				TargetHelper.setRevengeTargetAroundPlayer(player, 20D, event.source.getEntity());
+				TargetHelper.setRevengeTargetAroundPlayer(player, 32D, event.source.getEntity());
 //				LogHelper.info("DEBUG : attack event: "+player+" "+event.source.getEntity());
 			}
 			
-			//TODO hostile ship call for help
+			//hostile ship is attacked, call for help
+			if(event.entity instanceof BasicEntityShipHostile) {
+				TargetHelper.setRevengeTargetAroundHostileShip((BasicEntityShipHostile) event.entity, 64D, event.source.getEntity());
+			}
+			
 		}//end server side
 	}
 

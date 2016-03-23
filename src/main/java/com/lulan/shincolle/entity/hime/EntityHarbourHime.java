@@ -25,7 +25,6 @@ import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -38,6 +37,7 @@ public class EntityHarbourHime extends BasicEntityShipLarge {
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.HarbourHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BBV]);
+		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BBV]);
 		this.ModelPos = new float[] {-6F, 15F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();
@@ -202,7 +202,7 @@ public class EntityHarbourHime extends BasicEntityShipLarge {
   	 */
   	public boolean attackEntityWithSpecialAmmo(Entity target) {	
   		//get attack value
-  		float atk = StateFinal[ID.ATK_H] * 0.5F;
+  		float atk = StateFinal[ID.ATK_H] * 0.75F;
   		float kbValue = 0.15F;
 		
   		//計算目標距離
@@ -232,9 +232,9 @@ public class EntityHarbourHime extends BasicEntityShipLarge {
   			this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
   		}
           
-  		//heavy ammo -1
-  		if(!decrAmmoNum(1)) {	//not enough ammo
-  			atk = atk * 0.125F;	//reduce damage to 12.5%
+  		//heavy ammo--
+  		if(!decrAmmoNum(1, this.getAmmoConsumption())) {
+  			return false;
   		}
   		
   		//發射者煙霧特效 (發射飛機不使用特效, 但是要發送封包來設定attackTime)

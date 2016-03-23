@@ -11,7 +11,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 //基本item class 定義各種item基本方法
-public class BasicItem extends Item {
+abstract public class BasicItem extends Item {
 	
 	public BasicItem() {
 		super();	//先跑一次原本的item初始化 下面才繼續設定詳細item數值 如堆疊數等
@@ -51,5 +51,6 @@ public class BasicItem extends Item {
 	public void registerIcons(IIconRegister iconRegister) {
 		itemIcon = iconRegister.registerIcon(this.getUnlocalizedName().substring(this.getUnlocalizedName().indexOf(".")+1));
 	}
+
 
 }

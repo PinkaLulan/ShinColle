@@ -43,6 +43,7 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.NorthernHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BBV]);
+		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BBV]);
 		this.ModelPos = new float[] {-6F, 8F, 0F, 50F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();
@@ -312,9 +313,9 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
   		//grudge--
   		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
         
-        //light ammo -1
-        if(!decrAmmoNum(0)) {		//not enough ammo
-        	atk = atk * 0.125F;	//reduce damage to 12.5%
+        //light ammo--
+        if(!decrAmmoNum(0, this.getAmmoConsumption())) {
+        	return false;
         }
         
         //calc dist to target
@@ -448,8 +449,8 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
         	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         }
         
-        //heavy ammo -1
-        if(!decrAmmoNum(1)) {	//not enough ammo
+        //heavy ammo--
+        if(!decrAmmoNum(1, this.getAmmoConsumption())) {
         	return false;
         }
         

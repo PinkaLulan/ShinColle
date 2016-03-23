@@ -33,6 +33,7 @@ public class EntityBattleshipHime extends BasicEntityShip {
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.BattleshipHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BB]);
+		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BB]);
 		this.ModelPos = new float[] {-6F, 15F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();
@@ -184,9 +185,9 @@ public class EntityBattleshipHime extends BasicEntityShip {
   		//grudge--
   		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
         
-        //light ammo -1
-        if(!decrAmmoNum(0)) {		//not enough ammo
-        	atk = atk * 0.125F;	//reduce damage to 12.5%
+        //light ammo--
+        if(!decrAmmoNum(0, this.getAmmoConsumption())) {
+        	return false;
         }
 
         //calc miss chance, if not miss, calc cri/multi hit
@@ -277,7 +278,7 @@ public class EntityBattleshipHime extends BasicEntityShip {
   	/** cluster bomb */
   	public boolean attackEntityWithSpecialAmmo(Entity target) {
   		//get attack value
-		float atk = StateFinal[ID.ATK_H] * 0.8F;
+		float atk = StateFinal[ID.ATK_H] * 0.75F;
 		float kbValue = 0.15F;
 		
 		//­pºâ¥Ø¼Ð¶ZÂ÷
@@ -303,9 +304,9 @@ public class EntityBattleshipHime extends BasicEntityShip {
         	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         }
         
-        //heavy ammo -1
-        if(!decrAmmoNum(1)) {	//not enough ammo
-        	atk = atk * 0.125F;	//reduce damage to 12.5%
+        //heavy ammo--
+        if(!decrAmmoNum(1, this.getAmmoConsumption())) {
+        	return false;
         }
         
         //calc miss chance, miss: add random offset(0~6) to missile target 

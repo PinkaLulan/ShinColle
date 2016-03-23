@@ -32,6 +32,7 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.BattleshipTA);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BB]);
+		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BB]);
 		this.ModelPos = new float[] {-6F, 10F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();
@@ -147,7 +148,7 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
         }
         
         //light ammo--
-        if(!decrAmmoNum(4)) {		//not enough ammo
+        if(!decrAmmoNum(0, 4 * this.getAmmoConsumption())) {		//not enough ammo
         	return false;
         }
         

@@ -707,8 +707,8 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   		host.decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
   		
   		//light ammo -1
-        if(!host.decrAmmoNum(0)) {			//not enough ammo
-        	atkLight = atkLight * 0.125F;	//reduce damage to 12.5%
+        if(!host.decrAmmoNum(0, host.getAmmoConsumption())) {			//not enough ammo
+        	return false;
         }
 		
 		//發射者煙霧特效
@@ -835,9 +835,9 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
       	//grudge--
       	host.decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
       	
-      	//heavy ammo -1
-        if(!host.decrAmmoNum(1)) {	//not enough ammo
-        	atkHeavy = atkHeavy * 0.125F;	//reduce damage to 12.5%
+      	//heavy ammo--
+        if(!host.decrAmmoNum(1, host.getAmmoConsumption())) {
+        	return false;
         }
         
         //calc miss chance, miss: add random offset(0~6) to missile target 

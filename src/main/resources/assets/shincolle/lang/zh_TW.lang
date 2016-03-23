@@ -38,6 +38,7 @@ item.shincolle:ModernKit.name=近代化改修工具
 item.shincolle:OwnerPaper.name=深海棲艦所有權書
 item.shincolle:PointerItem.name=ヲ級的指揮權杖
 item.shincolle:RepairGoddess.name=深海女神的怨念
+item.shincolle:TargetWrench.name=目標設定扳手
 item.shincolle:ToyAirplane.name=零式21型艦戰 (1/48)
 
 # Equip
@@ -242,6 +243,9 @@ gui.shincolle:book.chap1.text16d1=
 gui.shincolle:book.chap1.title17=深海提督辦公桌
 gui.shincolle:book.chap1.text17d0=<br><br><br><br><br><br><br><br><br>採用黑曜石打造的§d§n深海提督辦公桌§r§0非常堅固耐用，除了用來處理鎮守府的各項公務外，也可以用來抵擋憤怒秘書艦的砲火。<br><br><br>※添購家具前請先詢問秘書艦以免造成資源管理上的困擾。
 gui.shincolle:book.chap1.text17d1=            使用指南<br><br>§9雷達§0：<br>顯示附近所屬船艦位置以及列表，在列表點選船艦後可進行聯繫等動作。<br><br>§9深海日誌§0：<br>各項物品介紹及紀錄已知船艦訊息。<br><br>§9陣營§0：<br>建立或加入艦隊以開啟PVP模式。<br><br>§9攻擊目標列表§0：<br>調整船艦的攻擊目標類型。
+gui.shincolle:book.chap1.title18=目標設定扳手
+gui.shincolle:book.chap1.text18d0=<br><br><br><br><br><br><br><br><br>§9左鍵:§0<br>§c新增/移除§0目標到§d不可攻擊清單§0。   §4(僅限OP使用)§0<br><br>§9右鍵:§0 顯示§d不可攻擊目標清單§0。
+gui.shincolle:book.chap1.text18d1=§d不可攻擊目標§0不會被範圍攻擊傷害到，也不會被AI設為目標。你可以把繩子的頭、物品框、木船、飛機跟棲艦的坐騎設為不可攻擊目標。<br><br>野生的艦娘攻擊時也會檢查此清單，不過你不能把棲艦跟艦娘設為不可攻擊目標。
 
 # GUI: Book Text Chap 2
 gui.shincolle:book.chap2.title=建造
@@ -429,6 +433,9 @@ gui.shincolle:pointer4=隊伍
 gui.shincolle:antiair=制空
 gui.shincolle:antiss=反潛
 gui.shincolle:dodge=閃避
+gui.shincolle:oponly=僅限OP使用
+gui.shincolle:wrench1=左鍵: 新增/移除不可攻擊目標
+gui.shincolle:wrench2=右鍵: 顯示不可攻擊目標清單
 
 # Chat message
 chat.shincolle:bossspawn1=有艦娘出現在水面上!

@@ -29,6 +29,7 @@ import com.lulan.shincolle.entity.mounts.EntityMountSeat;
 import com.lulan.shincolle.entity.submarine.EntitySubmRo500Mob;
 import com.lulan.shincolle.entity.submarine.EntitySubmU511Mob;
 import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.item.BasicEquip;
 import com.lulan.shincolle.item.PointerItem;
 import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.network.C2SInputPackets;
@@ -97,6 +98,19 @@ public class FML_COMMON_EventHandler {
 				        //sync extProps to client
 			        	extProps.sendSyncPacket(0);
 					}
+					
+//					//TODO DEBUG
+//					ItemStack hitem = event.player.inventory.getCurrentItem();
+//					if(hitem != null && hitem.getItem() instanceof BasicEquip) {
+//						try {
+//							int[] rvalue = ((BasicEquip)hitem.getItem()).getRecycleValue(hitem.getItemDamage());
+//							LogHelper.info("DEBUG : player tick: AAAAAAAAAAAAA "+rvalue[0]+" "+rvalue[1]+" "+rvalue[2]+" "+rvalue[3]);
+//						}
+//						catch(Exception e) {
+//							LogHelper.info("DEBUG : player tick: BBBBBBBBBBBBB "+e);
+//						}
+//					}
+					
 				}//end every 32 ticks
 				
 				/** spawn boss in ocean biome, server side */

@@ -3,11 +3,6 @@ package com.lulan.shincolle.block;
 import java.util.ArrayList;
 import java.util.Random;
 
-import com.lulan.shincolle.init.ModBlocks;
-import com.lulan.shincolle.item.BasicEntityItem;
-import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityLivingBase;
@@ -16,6 +11,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+
+import com.lulan.shincolle.init.ModBlocks;
+import com.lulan.shincolle.item.BasicEntityItem;
+import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockGrudgeHeavy extends BasicBlockMulti {
 	public BlockGrudgeHeavy() {
@@ -48,13 +50,16 @@ public class BlockGrudgeHeavy extends BasicBlockMulti {
 		if(tile != null && tile instanceof TileMultiGrudgeHeavy) {
 			//將mats資料存到matStock中
 			if(itemstack.hasTagCompound()) {
+				TileMultiGrudgeHeavy tile2 = (TileMultiGrudgeHeavy) tile;
 				NBTTagCompound nbt = itemstack.getTagCompound();
 				int[] mats = nbt.getIntArray("mats");
+				int fuel = nbt.getInteger("fuel");
 		        
-				((TileMultiGrudgeHeavy)tile).setMatStock(0, mats[0]);
-				((TileMultiGrudgeHeavy)tile).setMatStock(1, mats[1]);
-				((TileMultiGrudgeHeavy)tile).setMatStock(2, mats[2]);
-				((TileMultiGrudgeHeavy)tile).setMatStock(3, mats[3]);
+				tile2.setMatStock(0, mats[0]);
+				tile2.setMatStock(1, mats[1]);
+				tile2.setMatStock(2, mats[2]);
+				tile2.setMatStock(3, mats[3]);
+				tile2.setPowerRemained(fuel);
 			}
 		}
 	}
@@ -112,15 +117,16 @@ public class BlockGrudgeHeavy extends BasicBlockMulti {
 			mats[2] = tile.getMatBuild(2) + tile.getMatStock(2);
 			mats[3] = tile.getMatBuild(3) + tile.getMatStock(3);		
 			
-			//只要有一個材料不為0就存nbt, 若皆為0就不需要存
+			//save nbt
 			nbt.setIntArray("mats", mats);
-			if(mats[0] != 0 || mats[1] != 0 || mats[2] != 0 || mats[3] != 0) {
-				item.getEntityItem().setTagCompound(nbt);	//將nbt存到entity item中
-			}
-			world.spawnEntityInWorld(item);				//生成item entity
+			nbt.setInteger("fuel", tile.getPowerRemained());
+			item.getEntityItem().setTagCompound(nbt);	//將nbt存到entity item中
 			
+			//spawn entity item
+			world.spawnEntityInWorld(item);				//生成item entity
 			world.func_147453_f(x, y, z, block);		//alert block changed
 		}
+		
 		//呼叫原先的breakBlock, 會把tile entity移除掉
 		super.breakBlock(world, x, y, z, block, meta);
 	}

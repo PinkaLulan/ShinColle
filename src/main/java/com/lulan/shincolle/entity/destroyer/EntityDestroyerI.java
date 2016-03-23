@@ -25,6 +25,7 @@ public class EntityDestroyerI extends BasicEntityShipSmall {
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.DestroyerI);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.DD]);
+		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.DD]);
 		this.ModelPos = new float[] {0F, 0F, 0F, 25F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		

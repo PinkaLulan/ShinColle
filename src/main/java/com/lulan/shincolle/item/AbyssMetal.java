@@ -2,8 +2,6 @@ package com.lulan.shincolle.item;
 
 import java.util.List;
 
-import com.lulan.shincolle.reference.ID;
-
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
@@ -14,9 +12,11 @@ import net.minecraft.util.IIcon;
  * 0: abyssium ingot
  * 1: polymetallic nodules
  */
-public class AbyssMetal extends BasicItem implements IShipItemType {	
+public class AbyssMetal extends BasicItem implements IShipResourceItem {	
+	
 	byte types = 2;
 	IIcon[] icons = new IIcon[2];
+	
 	
 	public AbyssMetal() {
 		super();
@@ -44,8 +44,14 @@ public class AbyssMetal extends BasicItem implements IShipItemType {
 	}
 
 	@Override
-	public int getItemType() {
-		return ID.ItemType.AbyssMetal;
+	public int[] getResourceValue(int meta) {
+		if(meta == 0) {
+			return new int[] {0, 1, 0, 0};
+		}
+		else {
+			return new int[] {0, 0, 0, 1};
+		}
 	}
 
+	
 }

@@ -1,11 +1,8 @@
 package com.lulan.shincolle.block;
 
-import com.lulan.shincolle.item.IShipItemType;
-import com.lulan.shincolle.reference.ID;
-
 import net.minecraft.block.material.Material;
 
-public class BlockGrudge extends BasicBlock implements IShipItemType {
+public class BlockGrudge extends BasicBlock {
 	public BlockGrudge() {
 		super(Material.sand);
 		this.setBlockName("BlockGrudge");
@@ -14,11 +11,6 @@ public class BlockGrudge extends BasicBlock implements IShipItemType {
 	    this.setLightLevel(1F);
 	    this.setStepSound(soundTypeSand);
 	    this.setResistance(200F);
-	}
-	
-	@Override
-	public int getItemType() {
-		return ID.ItemType.BlockGrudge;
 	}
 	
 	

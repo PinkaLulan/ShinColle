@@ -388,50 +388,53 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
                 	missileAtk = this.atk;
                 	hitEntity = (Entity)hitList.get(i);
                 	
-                	//calc equip special dmg: AA, ASM
-                	missileAtk = CalcHelper.calcDamageByEquipEffect(this, hitEntity, missileAtk, 0);
-                	
-                	//目標不能是自己 or 主人, 且可以被碰撞
-                	if(hitEntity.canBeCollidedWith() && isNotHost(hitEntity)) {
-                		//若owner相同, 則傷害設為0 (但是依然觸發擊飛特效)
-                		if(EntityHelper.checkSameOwner(host2, hitEntity)) {
-                    		missileAtk = 0F;
-                    	}
-                		else {
-                			//calc critical, only for type:ship
-                    		if(this.host != null && (this.rand.nextFloat() < this.host.getEffectEquip(ID.EF_CRI))) {
-                        		missileAtk *= 3F;
-                        		//spawn critical particle
-                        		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-                            	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(host2, 11, false), point);
+                	//check target attackable
+              		if(EntityHelper.checkAttackable(hitEntity)) {
+              		//calc equip special dmg: AA, ASM
+                    	missileAtk = CalcHelper.calcDamageByEquipEffect(this, hitEntity, missileAtk, 0);
+                    	
+                    	//目標不能是自己 or 主人, 且可以被碰撞
+                    	if(hitEntity.canBeCollidedWith() && isNotHost(hitEntity)) {
+                    		//若owner相同, 則傷害設為0 (但是依然觸發擊飛特效)
+                    		if(EntityHelper.checkSameOwner(host2, hitEntity)) {
+                        		missileAtk = 0F;
                         	}
-                    		
-                    		//若攻擊到玩家, 最大傷害固定為TNT傷害 (non-owner)
-                        	if(hitEntity instanceof EntityPlayer) {
-                        		missileAtk *= 0.25F;
+                    		else {
+                    			//calc critical, only for type:ship
+                        		if(this.host != null && (this.rand.nextFloat() < this.host.getEffectEquip(ID.EF_CRI))) {
+                            		missileAtk *= 3F;
+                            		//spawn critical particle
+                            		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+                                	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(host2, 11, false), point);
+                            	}
                         		
-                        		if(missileAtk > 59F) {
-                        			missileAtk = 59F;	//same with TNT
-                        		}
-                        		
-                        		//check friendly fire
-                        		if(!EntityHelper.doFriendlyFire(this.host, (EntityPlayer) hitEntity)) {
+                        		//若攻擊到玩家, 最大傷害固定為TNT傷害 (non-owner)
+                            	if(hitEntity instanceof EntityPlayer) {
+                            		missileAtk *= 0.25F;
+                            		
+                            		if(missileAtk > 59F) {
+                            			missileAtk = 59F;	//same with TNT
+                            		}
+                            	}
+                            	
+                            	//check friendly fire
+                        		if(!EntityHelper.doFriendlyFire(this.host, hitEntity)) {
                         			missileAtk = 0F;
                         		}
-                        	}
-                		}
-//                		LogHelper.info("DEBUG: missile onImpact: dmg "+missileAtk+" tar "+hitEntity+" host "+this.host);
-                		//if attack success
-                	    if(hitEntity.attackEntityFrom(DamageSource.causeMobDamage(host2).setExplosion(), missileAtk)) {
-                	    	//calc kb effect
-                	        if(this.kbValue > 0) {
-                	        	hitEntity.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
-                	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
-                	            motionX *= 0.6D;
-                	            motionZ *= 0.6D;
-                	        }
-                	    }
-                	}//end can be collided with
+                    		}
+//                    		LogHelper.info("DEBUG: missile onImpact: dmg "+missileAtk+" tar "+hitEntity+" host "+this.host);
+                    		//if attack success
+                    	    if(hitEntity.attackEntityFrom(DamageSource.causeMobDamage(host2).setExplosion(), missileAtk)) {
+                    	    	//calc kb effect
+                    	        if(this.kbValue > 0) {
+                    	        	hitEntity.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
+                    	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
+                    	            motionX *= 0.6D;
+                    	            motionZ *= 0.6D;
+                    	        }
+                    	    }
+                    	}//end can be collided with
+              		}//end is attackable
                 }//end hit target list for loop
             }//end hit target list != null
   

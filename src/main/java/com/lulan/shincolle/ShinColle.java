@@ -88,8 +88,6 @@ public class ShinColle {
 		//world gen跟entity spawn放在postInit, 以便能讀取到其他mod的biome
 		ModWorldGen.init();
 		
-//		ModEntity.initNaturalSpawn();	//NOT WORKING WITH WATER MOB
-		
 //		//list all entity
 //		Iterator iter = EntityList.classToStringMapping.entrySet().iterator();
 //		while(iter.hasNext()) {
@@ -98,15 +96,10 @@ public class ShinColle {
 //		    Object val = entry.getValue();
 //		    LogHelper.info("DEBUG : list entity class: "+key+" , "+val);
 //		}	
-		
 //		LogHelper.info("DEBUG : biome spawn: "+this.worldObj.getBiomeGenForCoords((int)this.posX, (int)this.posZ).getSpawnableList(EnumCreatureType.waterCreature).get(1));
-		
 //		for(String oreName : OreDictionary.getOreNames()) {	//list all oreDictionary  (DEBUG)
 //			LogHelper.info(oreName);
 //		}
-		
-//		MulitBlockHelper.printPattern();
-//		GuiHelper.printButtons();
 		
 		LogHelper.info("DEBUG : postInit complete.");	//debug
 	}

@@ -6,7 +6,6 @@ import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.client.event.ConfigChangedEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -38,7 +37,8 @@ public class ConfigHandler {
 	
 	//SHIP SETTING
 	public static Property propShip, propShipLimitBasic, propShipLimitEffect,
-						   propBossSmall, propBossLarge, propMobSubm, propGrudgeShip, propGrudgeAction;
+						   propBossSmall, propBossLarge, propMobSubm, propGrudgeShip, propGrudgeAction,
+						   propAmmoShip;
 	//                                                    HP, ATK, DEF, SPD, MOV, HIT
 	public static double[] limitShipBasic = new double[] {-1D, -1D, 75D, 4D, 0.6D, 64D};
 	//                                                    CRI, DHIT, THIT, MISS, AA, ASM, DODGE
@@ -49,6 +49,8 @@ public class ConfigHandler {
 	public static double[] scaleBossLarge = new double[] {5000D, 200D, 92D, 2D, 0.36D, 24D};
 	//	  												HP, ATK, DEF, SPD, MOV, HIT, spawnPerSquid
 	public static double[] scaleMobSubm = new double[] {200D, 36D, 20D, 0.8D, 0.3D, 12D, 200D};
+	//ammo consumption:                              DD CL CA CAV CLT CVL CV BB BBV SS AP 
+	public static int[] consumeAmmoShip = new int[] {1, 2, 2, 2,  2,  3,  3, 4, 4,  1, 1};
 	//grudge consumption:                              DD CL CA CAV CLT CVL CV BB BBV SS AP 
 	public static int[] consumeGrudgeShip = new int[] {5, 7, 8, 9,  8,  11, 12,15,14, 4, 3};
 	//grudge consumption:                                LAtk, HAtk, LAir, HAir, moving
@@ -125,9 +127,10 @@ public class ConfigHandler {
 		propShip = config.get("ship setting", "ship_scale", scaleShip, "Ship attributes SCALE: HP, firepower, armor, attack speed, move speed, range");
 		propShipLimitBasic = config.get("ship setting", "ship_limit_basic", limitShipBasic, "Ship basic attributes LIMIT (-1 = no limit): HP, firepower, armor%, attack speed, move speed, range(blocks)");
 		propShipLimitEffect = config.get("ship setting", "ship_limit_effect", limitShipEffect, "Ship effect attributes LIMIT (-1 = no limit, 12 = limit 12%): critical%, double hit%, triple hit%, miss reduction%, anti-air, anti-ss, dodge%");
-		propBossSmall = config.get("ship setting", "SmallBoss_scale", scaleBossSmall, "Small Boss:Shimakaze  Values: HP, firepower, armor, attack speed, move speed, range");
-		propBossLarge = config.get("ship setting", "LargeBoss_scale", scaleBossLarge, "Large Boss:Nagato  Values: HP, firepower, armor, attack speed, move speed, range");
-		propMobSubm = config.get("ship setting", "Mob_Submarine_scale", scaleMobSubm, "Submarine:U511/Ro500  Values: HP, firepower, armor, attack speed, move speed, range, spawnPerSquid");
+		propBossSmall = config.get("ship setting", "SmallBoss_scale", scaleBossSmall, "Small Boss: Values: HP, firepower, armor, attack speed, move speed, range");
+		propBossLarge = config.get("ship setting", "LargeBoss_scale", scaleBossLarge, "Large Boss: Values: HP, firepower, armor, attack speed, move speed, range");
+		propMobSubm = config.get("ship setting", "Mob_Submarine_scale", scaleMobSubm, "Submarine: Values: HP, firepower, armor, attack speed, move speed, range, spawnPerSquid");
+		propAmmoShip = config.get("ship setting", "Ammo_Ship", consumeAmmoShip, "Ammo consumption for ship type: DD CL CA CAV CLT CVL CV BB BBV SS AP (MAX = 45)");
 		propGrudgeShip = config.get("ship setting", "Grudge_Ship", consumeGrudgeShip, "Grudge consumption for ship type: DD CL CA CAV CLT CVL CV BB BBV SS AP (MAX = 120)");
 		propGrudgeAction = config.get("ship setting", "Grudge_Action", consumeGrudgeAction, "Grudge consumption for ship action: Light attack, Heavy attack, Light aircraft, Heavy aircraft, Moving per block");
 		
@@ -149,6 +152,7 @@ public class ConfigHandler {
 		scaleBossLarge = getDoubleArrayFromConfig(scaleBossLarge, propBossLarge);
 		scaleMobSubm = getDoubleArrayFromConfig(scaleMobSubm, propMobSubm);
 		polyGravelBaseBlock = getBooleanArrayFromConfig(polyGravelBaseBlock, propPolyGravel);
+		consumeAmmoShip = getIntArrayFromConfig(consumeAmmoShip, propAmmoShip);
 		consumeGrudgeShip = getIntArrayFromConfig(consumeGrudgeShip, propGrudgeShip);
 		consumeGrudgeAction = getIntArrayFromConfig(consumeGrudgeAction, propGrudgeAction);
 		

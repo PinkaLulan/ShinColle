@@ -4,7 +4,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.StatCollector;
@@ -88,7 +87,7 @@ public class EntityDestroyerShimakazeBoss extends BasicEntityShipBoss {
           
   		if(!worldObj.isRemote) {
   			//add aura to master every N ticks
-  			if(this.ticksExisted % 100 == 0) {
+  			if(this.ticksExisted % 128 == 0) {
   				//add num of rensouhou
   				if(this.numRensouhou < 10) numRensouhou++;
   			}

@@ -5,7 +5,6 @@ import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
-import net.minecraft.entity.ai.EntityAIOpenDoor;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
@@ -85,7 +84,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	 *  5:NumAmmoHeavy 6:NumGrudge 7:NumAirLight 8:NumAirHeavy 9:immunity time 
 	 *  10:followMin 11:followMax 12:FleeHP 13:TargetAIType 14:guardX 15:guardY 16:guardZ 17:guardDim
 	 *  18:guardID 19:shipType 20:shipClass 21:playerUID 22:shipUID 23:playerEID 24:guardType 
-	 *  25:damageType 26:formationType 27:formationPos 28:grudgeConsumption*/
+	 *  25:damageType 26:formationType 27:formationPos 28:grudgeConsumption 29:ammoConsumption*/
 	protected int[] StateMinor;
 	/** equip effect: 0:critical 1:doubleHit 2:tripleHit 3:baseMiss 4:atk_AntiAir 5:atk_AntiSS 6:dodge*/
 	protected float[] EffectEquip;
@@ -138,12 +137,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.StateEquip = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F};
 		this.StateFinal = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F};
 		this.StateFinalBU = this.StateFinal.clone();
-		this.StateMinor = new int[] {1, 0, 0, 40, 0,
-				                     0, 0, 0, 0, 0,
-				                     3, 12, 35, 1, -1,
-				                     -1, -1, 0, -1, 0,
-				                     0, -1, -1, -1, 0,
-				                     0, 0, 0, 0
+		this.StateMinor = new int[] {1,  0,  0,  40, 0,
+				                     0,  0,  0,  0,  0,
+				                     3,  12, 35, 1,  -1,
+				                     -1, -1, 0,  -1, 0,
+				                     0,  -1, -1, -1, 0,
+				                     0,  0,  0,  0,  0
 				                    };
 		this.EffectEquip = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F};
 		this.EffectEquipBU = this.EffectEquip.clone();
@@ -479,12 +478,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	
 	@Override
 	public boolean hasAmmoLight() {
-		return StateMinor[ID.M.NumAmmoLight] > 0;
+		return StateMinor[ID.M.NumAmmoLight] >= StateMinor[ID.M.AmmoCon];
 	}
 	
 	@Override
 	public boolean hasAmmoHeavy() {
-		return StateMinor[ID.M.NumAmmoHeavy] > 0;
+		return StateMinor[ID.M.NumAmmoHeavy] >= StateMinor[ID.M.AmmoCon];
 	}
 
 	@Override
@@ -572,8 +571,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		return ModelPos;
 	}
 	
+	/** grudge consumption when IDLE */
 	public int getGrudgeConsumption() {
 		return getStateMinor(ID.M.GrudgeCon);
+	}
+	
+	public int getAmmoConsumption() {
+		return getStateMinor(ID.M.AmmoCon);
 	}
 	
 	/**calc equip, buff, debuff and all attrs
@@ -933,7 +937,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	}
   	
   	public void setGrudgeConsumption(int par1) {
+  		if(par1 > 120) par1 = 120;
   		this.setStateMinor(ID.M.GrudgeCon, par1);
+  	}
+  	
+  	public void setAmmoConsumption(int par1) {
+  		if(par1 > 45) par1 = 45;
+  		this.setStateMinor(ID.M.AmmoCon, par1);
   	}
 	
 	/** send sync packet: sync all data */
@@ -1763,8 +1773,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
   		
         //light ammo -1
-        if(!decrAmmoNum(0)) {		//not enough ammo
-        	atk = atk * 0.125F;	//reduce damage to 12.5%
+        if(!decrAmmoNum(0, this.getAmmoConsumption())) {		//not enough ammo
+        	return false;
         }
         
         //calc dist to target
@@ -1900,9 +1910,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         }
         
-        //heavy ammo -1
-        if(!decrAmmoNum(1)) {	//not enough ammo
-        	atk = atk * 0.125F;	//reduce damage to 12.5%
+        //heavy ammo--
+        if(!decrAmmoNum(1, this.getAmmoConsumption())) {
+        	return false;
         }
         
         //calc miss chance, miss: add random offset(0~6) to missile target 
@@ -2014,6 +2024,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				if(this.decrSupplies(8)) {
 					this.setHealth(this.getMaxHealth());
 					this.StateMinor[ID.M.ImmuneTime] = 60;
+					
+					//TODO add repair goddess particle
+					
 					return false;
 				}
 			}
@@ -2026,173 +2039,59 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		return false;
     }
 	
-	//decrese ammo number with type, or find ammo item from inventory
-	protected boolean decrAmmoNum(int type) {
+	/** decr ammo, type: 0:light, 1:heavy */
+	protected boolean decrAmmoNum(int type, int amount) {
+		int ammoType = ID.M.NumAmmoLight;
+		
 		switch(type) {
-		case 0:  //use 1 light ammo
-			if(hasAmmoLight()) { 
-				--StateMinor[ID.M.NumAmmoLight];
-				return true;
-			}
-			else {
-				if(decrSupplies(0)) {  //find ammo item
-					if(ConfigHandler.easyMode) {
-						StateMinor[ID.M.NumAmmoLight] += 299;
-					}
-					else {
-						StateMinor[ID.M.NumAmmoLight] += 29;
-					}
-					return true;
-				}
-				else if(decrSupplies(2)) {  //find ammo item
-					if(ConfigHandler.easyMode) {
-						StateMinor[ID.M.NumAmmoLight] += 2699;
-					}
-					else {
-						StateMinor[ID.M.NumAmmoLight] += 269;
-					}
-					return true;
-				}
-				else {				   //no ammo
-					return false;
-				}
-			}
-		case 1:  //use 1 heavy ammo
-			if(hasAmmoHeavy()) { 
-				--StateMinor[ID.M.NumAmmoHeavy];
-				return true;
-			}
-			else {
-				if(decrSupplies(1)) {  //find ammo item
-					if(ConfigHandler.easyMode) {
-						StateMinor[ID.M.NumAmmoHeavy] += 149;
-					}
-					else {
-						StateMinor[ID.M.NumAmmoHeavy] += 14;
-					}
-					return true;
-				}
-				else if(decrSupplies(3)) {  //find ammo item
-					if(ConfigHandler.easyMode) {
-						StateMinor[ID.M.NumAmmoHeavy] += 1349;
-					}
-					else {
-						StateMinor[ID.M.NumAmmoHeavy] += 134;
-					}
-					return true;
-				}
-				else {				   //no ammo
-					return false;
-				}
-			}
-		case 2:	//no ammo light, use item
-			if(decrSupplies(0)) {  //find ammo item
-				if(ConfigHandler.easyMode) {
-					StateMinor[ID.M.NumAmmoLight] += 300;
-				}
-				else {
-					StateMinor[ID.M.NumAmmoLight] += 30;
-				}
-				return true;
-			}
-			else if(decrSupplies(2)) {  //find ammo item
-				if(ConfigHandler.easyMode) {
-					StateMinor[ID.M.NumAmmoLight] += 2700;
-				}
-				else {
-					StateMinor[ID.M.NumAmmoLight] += 270;
-				}
-				return true;
-			}
-			else {				   //no ammo
-				return false;
-			}
-		case 3:	//no ammo heavy, use item
-			if(decrSupplies(1)) {  //find ammo item
-				if(ConfigHandler.easyMode) {
-					StateMinor[ID.M.NumAmmoHeavy] += 150;
-				}
-				else {
-					StateMinor[ID.M.NumAmmoHeavy] += 15;
-				}
-				return true;
-			}
-			else if(decrSupplies(3)) {  //find ammo item
-				if(ConfigHandler.easyMode) {
-					StateMinor[ID.M.NumAmmoHeavy] += 1350;
-				}
-				else {
-					StateMinor[ID.M.NumAmmoHeavy] += 135;
-				}
-				return true;
-			}
-			else {				   //no ammo
-				return false;
-			}
-		case 4:  //use 6 light ammo
-			if(StateMinor[ID.M.NumAmmoLight] > 5) {
-				StateMinor[ID.M.NumAmmoLight] -= 6;
-				return true;
-			}
-			else {
-				if(decrSupplies(0)) {  //find ammo item
-					if(ConfigHandler.easyMode) {
-						StateMinor[ID.M.NumAmmoLight] += 294;
-					}
-					else {
-						StateMinor[ID.M.NumAmmoLight] += 24;
-					}
-					return true;
-				}
-				else if(decrSupplies(2)) {  //find ammo item
-					if(ConfigHandler.easyMode) {
-						StateMinor[ID.M.NumAmmoLight] += 2694;
-					}
-					else {
-						StateMinor[ID.M.NumAmmoLight] += 264;
-					}
-					return true;
-				}
-				else {				   //no ammo
-					return false;
-				}
-			}
-		case 5:  //use 2 heavy ammo
-			if(StateMinor[ID.M.NumAmmoHeavy] > 1) { 
-				StateMinor[ID.M.NumAmmoHeavy] -= 2;
-				return true;
-			}
-			else {
-				if(decrSupplies(1)) {  //find ammo item
-					if(ConfigHandler.easyMode) {
-						StateMinor[ID.M.NumAmmoHeavy] += 148;
-					}
-					else {
-						StateMinor[ID.M.NumAmmoHeavy] += 13;
-					}
-					return true;
-				}
-				else if(decrSupplies(3)) {  //find ammo item
-					if(ConfigHandler.easyMode) {
-						StateMinor[ID.M.NumAmmoHeavy] += 1348;
-					}
-					else {
-						StateMinor[ID.M.NumAmmoHeavy] += 133;
-					}
-					return true;
-				}
-				else {				   //no ammo
-					return false;
-				}
-			}
+		case 1:   //use heavy ammo
+			ammoType = ID.M.NumAmmoHeavy;
+			break;
 		}
 		
-		return false;	//unknow attack type
+		//check ammo first time
+		if(StateMinor[ammoType] <= amount || StateMinor[ammoType] <= this.getAmmoConsumption()) {
+			int addAmmo = 0;
+			
+			//use light ammo item
+			if(ammoType == ID.M.NumAmmoLight) {
+				if(decrSupplies(0)) {  //use ammo item
+					addAmmo = 30;
+				}
+				else if(decrSupplies(2)) {  //use ammo container item
+					addAmmo = 270;
+				}
+			}
+			//use heavy ammo item
+			else {
+				if(decrSupplies(1)) {  //use ammo item
+					addAmmo = 15;
+				}
+				else if(decrSupplies(3)) {  //use ammo container item
+					addAmmo = 135;
+				}
+			}
+			
+			//check easy mode
+			if(ConfigHandler.easyMode) {
+				addAmmo *= 10;
+			}
+			
+			StateMinor[ammoType] += addAmmo;
+		}
+		
+		//check ammo second time
+		if(StateMinor[ammoType] < amount) {
+			return false;
+		}
+		else {
+			StateMinor[ammoType] -= amount;
+			return true;
+		}
 	}
 	
 	//eat grudge and change movement speed
 	protected void decrGrudgeNum(int par1) {
-//		LogHelper.info("DEBUG : check grudge num");
 		//check max cost < 120
 		if(par1 > 215) {
 			par1 = 215;
@@ -2618,8 +2517,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         }
 		
 		//get ammo if no ammo
-		if(!this.hasAmmoLight()) { this.decrAmmoNum(2); }
-		if(!this.hasAmmoHeavy()) { this.decrAmmoNum(3); }
+		if(!this.hasAmmoLight()) { this.decrAmmoNum(0, 0); }
+		if(!this.hasAmmoHeavy()) { this.decrAmmoNum(1, 0); }
 		
 		//calc move distance
 		double distX = posX - ShipPrevX;

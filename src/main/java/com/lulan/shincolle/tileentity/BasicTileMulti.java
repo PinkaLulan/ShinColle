@@ -1,6 +1,7 @@
 package com.lulan.shincolle.tileentity;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.block.BasicBlockMulti;
@@ -11,18 +12,19 @@ import com.lulan.shincolle.block.BasicBlockMulti;
  */
 abstract public class BasicTileMulti extends BasicTileEntity {
 
+	protected TileEntity mastertile = null;
 	protected boolean hasMaster, isMaster;					//master or servant flag
 	protected int masterX, masterY, masterZ, structType;	//struct info
 	protected String customName;
 	
 	
 	public BasicTileMulti() {
-        customName = "";
+		this.customName = "";
     }
 	
 	@Override
 	public String getCustomName() {
-        return customName;
+        return this.customName;
     }
 
     @Override
@@ -32,7 +34,7 @@ abstract public class BasicTileMulti extends BasicTileEntity {
     
     @Override
 	public boolean hasCustomName() {
-        return customName != null && customName.length() > 0;
+        return this.customName != null && this.customName.length() > 0;
     }
 
     @Override
@@ -59,22 +61,42 @@ abstract public class BasicTileMulti extends BasicTileEntity {
 
     //getter
     public int getStructType() {
-    	return structType;
+    	return this.structType;
     }
+    
+    public TileEntity getMaster() {
+    	if(this.mastertile != null) {
+    		return this.mastertile;
+    	}
+    	else {
+    		if(hasMaster) {
+            	TileEntity tile = this.worldObj.getTileEntity(this.masterX, this.masterY, this.masterZ);
+        		this.setMaster(tile);
+        		return this.mastertile; 
+            }
+    	}
+    	
+    	return null;
+    }
+    
     public boolean hasMaster() {
-        return hasMaster;
+        return this.hasMaster;
     }
+    
     public boolean isMaster() {
-        return isMaster;
+        return this.isMaster;
     }
+    
     public int getMasterX() {
-        return masterX;
+        return this.masterX;
     }
+    
     public int getMasterY() {
-        return masterY;
+        return this.masterY;
     }
+    
     public int getMasterZ() {
-        return masterZ;
+        return this.masterZ;
     }
 
     //setter
@@ -82,18 +104,34 @@ abstract public class BasicTileMulti extends BasicTileEntity {
         //set block metadata
         //type 0001: meta=1:off 2:on  type 0010: meta=3:off 4:on
     	BasicBlockMulti.updateBlockState(world, this.xCoord, this.yCoord, this.zCoord, type);
-    	structType = type;
+    	this.structType = type;
     }
-    public void setHasMaster(boolean bool) {
-        hasMaster = bool;
+    
+    /** set mater tile, separate from setHasMaster */
+    public void setMaster(TileEntity master) {
+    	if(master != null) {
+    		this.mastertile = master;
+    		this.setMasterCoords(master.xCoord, master.yCoord, master.zCoord);
+    	}
+    	else {
+    		this.mastertile = null;
+    	}
     }
-    public void setIsMaster(boolean bool) {
-        isMaster = bool;
+    
+    /** set master flag, separate from setMaster due to tile loading order problem */
+    public void setHasMaster(boolean par1) {
+    	this.hasMaster = par1;
     }
+    
+    public void setIsMaster(boolean par1) {
+    	this.isMaster = par1;
+    }
+    
     public void setMasterCoords(int x, int y, int z) {
-        masterX = x;
-        masterY = y;
-        masterZ = z;
+    	this.masterX = x;
+    	this.masterY = y;
+    	this.masterZ = z;
     }
+    
 
 }

@@ -207,15 +207,15 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
     		if(this.numAmmoHeavy < 0) this.numAmmoHeavy = 0;
     		
     		//#ammo++
-    		this.host.setStateMinor(ID.M.NumAmmoLight, this.host.getStateMinor(ID.M.NumAmmoLight) + this.numAmmoLight);
-    		this.host.setStateMinor(ID.M.NumAmmoHeavy, this.host.getStateMinor(ID.M.NumAmmoHeavy) + this.numAmmoHeavy);
+    		this.host.setStateMinor(ID.M.NumAmmoLight, this.host.getStateMinor(ID.M.NumAmmoLight) + this.numAmmoLight * this.host.getAmmoConsumption());
+    		this.host.setStateMinor(ID.M.NumAmmoHeavy, this.host.getStateMinor(ID.M.NumAmmoHeavy) + this.numAmmoHeavy * this.host.getAmmoConsumption());
     	
     		//#plane++
     		if(this instanceof EntityAirplane) {
-    			host.setNumAircraftLight(host.getNumAircraftLight()+1);
+    			host.setNumAircraftLight(host.getNumAircraftLight() + 1);
     		}
     		else {
-    			host.setNumAircraftHeavy(host.getNumAircraftHeavy()+1);
+    			host.setNumAircraftHeavy(host.getNumAircraftHeavy() + 1);
     		}
     	}
     }

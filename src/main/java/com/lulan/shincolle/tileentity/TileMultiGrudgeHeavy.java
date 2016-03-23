@@ -7,6 +7,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidContainerRegistry;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTank;
+import net.minecraftforge.fluids.FluidTankInfo;
+import net.minecraftforge.fluids.IFluidHandler;
 
 import com.lulan.shincolle.crafting.LargeRecipes;
 import com.lulan.shincolle.entity.renderentity.EntityRenderVortex;
@@ -15,7 +23,6 @@ import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.CalcHelper;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.TileEntityHelper;
 
 /** Fuel Cost = BaseCost + CostPerMaterial * ( TotalMaterialAmount - minAmount * 4 )
@@ -25,8 +32,14 @@ import com.lulan.shincolle.utility.TileEntityHelper;
  * 	MaxMaterial / MaxFuelCost = 1000*4 / 1382400
  *  MinMaterial / MinFuelCost = 100*4 / 460800 = BaseCost(460800) CostPerMaterial(256)
  */
-public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileFurnace {	
+public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileLiquidFurnace, IFluidHandler {	
 	
+	//fluid tank
+	private static final int TANKCAPA = FluidContainerRegistry.BUCKET_VOLUME;
+	private static final Fluid F_LAVA = FluidRegistry.LAVA;
+	private FluidTank tank = new FluidTank(new FluidStack(F_LAVA, 0), TANKCAPA);
+	
+	//furnace
 	private int powerConsumed = 0;	//已花費的能量
 	private int powerRemained = 0;	//剩餘燃料
 	private int powerGoal = 0;		//需要達成的目標能量
@@ -36,7 +49,7 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileFurnace
 	private boolean isActive;		//是否正在建造中, 此為紀錄isBuilding是否有變化用
 	private int[] matsBuild;		//建造材料量
 	private int[] matsStock;		//庫存材料量
-	public static int buildSpeed = 48;  	//power cost per tick
+	public static int buildSpeed = 48;  		//power cost per tick
 	public static final int POWERMAX = 1382400; //max power storage
 	public static final int SLOTS_NUM = 10;
 	public static final int SLOTS_OUT = 0;
@@ -89,8 +102,9 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileFurnace
 	//讀取nbt資料
 	@Override
     public void readFromNBT(NBTTagCompound compound) {
-        super.readFromNBT(compound);	//從nbt讀取方塊的xyz座標
-
+        super.readFromNBT(compound);
+        tank.readFromNBT(compound);
+        
         NBTTagList list = compound.getTagList("Items", 10);	//抓nbt tag: Items (此為類型10:TagCompound)
         
         for(int i=0; i<list.tagCount(); i++) {			//將tag列出的所有物品抓出來
@@ -116,6 +130,7 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileFurnace
 	@Override
 	public void writeToNBT(NBTTagCompound compound) {
 		super.writeToNBT(compound);
+		tank.writeToNBT(compound);
 		
 		NBTTagList list = new NBTTagList();
 		compound.setTag("Items", list);
@@ -189,6 +204,9 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileFurnace
 	//資料必須以markDirty標記block更新, 以及讀寫NBT tag來保存
 	@Override
 	public void updateEntity() {
+		//do not update if no structure
+		if(this.getStructType() == 0) return;
+		
 		boolean sendUpdate = false;	//標紀要block update, 有要更新metadata時設為true
 		
 		//update goalPower
@@ -201,35 +219,31 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileFurnace
 		
 		//server side
 		if(!worldObj.isRemote) {
-			this.syncTime++;
-			
-			//fuel補充
-			if(TileEntityHelper.checkItemFuel(this)) {
+			//add item fuel
+			if(TileEntityHelper.decrItemFuel(this)) {
 				sendUpdate = true;
 			}
 			
+			//add liquid fuel
+			TileEntityHelper.decrLiquidFuel(this);
+			
 			//inventory mode 0:收入物品 1:放出物品
-			int itemType;
-			if(invMode == 0) {	//收入物品
+			if(invMode == 0) {  //ADD MODE
 				for(int i = SLOTS_OUT + 1; i < SLOTS_NUM; i++) {
-					itemType = LargeRecipes.getMaterialType(slots[i]);
-//					LogHelper.info("DEBUG : large build: slot "+i+" item type "+itemType);
-					//add material into stock
-					if(itemType > 0) {	//is material
-						if(LargeRecipes.addMaterialStock(this, i, itemType, slots[i])) {
-							slots[i].stackSize--;
-							
-							if(slots[i].stackSize == 0) {
-								slots[i] = null;
-							}
-							
-							sendUpdate = true;
-							break;		//新增材料成功, 跳到下個tick
+					//add material
+					if(LargeRecipes.addMaterialStock(this, slots[i])) {
+						slots[i].stackSize--;
+						
+						if(slots[i].stackSize == 0) {
+							slots[i] = null;
 						}
+						
+						sendUpdate = true;
+						break;		//新增材料成功, 跳到下個tick
 					}
 				}
 			}
-			else {				//放出物品
+			else {				//RELEASE MODE
 				int compressNum = 9;	//output block
 				int normalNum = 1;		//output single item
 				
@@ -256,6 +270,7 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileFurnace
 
 			//判定是否建造中, 每tick進行進度值更新, 若非建造中則重置進度值
 			if(this.isBuilding()) {
+				this.syncTime++;
 				this.powerRemained -= buildSpeed;	//fuel bar --
 				this.powerConsumed += buildSpeed;	//build bar ++
 				
@@ -274,12 +289,11 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileFurnace
 					}
 				}
 				
-				//sync render entity every 32 ticks
-				//set render entity state
-				if(this.syncTime % 32 == 0) {
+				//sync render entity every 60 ticks if building
+				if(this.syncTime > 60) {
 					this.sendSyncPacket();
-					sendUpdate = true;
 					this.syncTime = 0;
+					sendUpdate = true;
 				}
 				
 				//power達標, 建造完成
@@ -314,26 +328,27 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileFurnace
 				this.powerConsumed = 0;
 			}
 			
-			//若狀態有改變過, 則發送更新  ex:本來active 而燃料用光導致無法active時
+			//若狀態有改變過, 則發送更新
 			if(this.isActive != this.isBuilding()) {
 				this.isActive = this.isBuilding();
-				sendUpdate = true;
+				
+				//set render entity state
+				AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(xCoord-1.5D, yCoord-1.5D, zCoord-1.5D, xCoord+1.5D, yCoord+0.5D, zCoord+1.5D);
+				List renderEntityList = this.worldObj.getEntitiesWithinAABB(EntityRenderVortex.class, aabb);
+				
+	            for(int i = 0; i < renderEntityList.size(); i++) { 
+	            	((EntityRenderVortex)renderEntityList.get(i)).setIsActive(this.isBuilding());
+	            }
+	            
+	            //sync to client
+	            this.sendSyncPacket();
 			}
 		}
 		
-		//標紀要更新
-		if(sendUpdate) {
-			//set render entity state
-			AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(xCoord-1.5D, yCoord-2D, zCoord-1.5D, xCoord+1.5D, yCoord+1D, zCoord+1.5D);
-			List renderEntityList = this.worldObj.getEntitiesWithinAABB(EntityRenderVortex.class, aabb);
-			
-            for(int i = 0; i < renderEntityList.size(); i++) { 
-//            	LogHelper.info("DEBUG : set render entity state (Tile class) "+this.isBuilding()+" "+renderEntityList.get(i)+xCoord+" "+yCoord+" "+zCoord);
-            	((EntityRenderVortex)renderEntityList.get(i)).setIsActive(this.isBuilding());
-            }
-
-			this.markDirty();
-		}
+//		//mark block update, no use for now (only for block metadata changed)
+//		if(sendUpdate) {
+//			this.markDirty();
+//		}
 	}
 	
 	//set materials for repeat build
@@ -445,6 +460,65 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileFurnace
 	@Override
 	public int getFuelSlotMax() {
 		return SLOTS_NUM-1;
+	}
+
+	//only accept LAVA
+	@Override
+	public int fill(ForgeDirection from, FluidStack fluid, boolean doFill) {
+//		//show fill animation
+//		if(amount > 0 && doFill) { 
+//			waterheight = resource.amount; 
+//			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord); 
+//		}
+		if(TileEntityHelper.checkLiquidIsLava(fluid)) {
+			return tank.fill(fluid, doFill);
+		}
+		
+		return 0;
+	}
+
+	@Override
+	public FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain) {
+//		if(resource == null || !resource.isFluidEqual(tank.getFluid())) {
+//            return null;
+//        }
+//        return tank.drain(resource.amount, doDrain);
+		return null;
+	}
+
+	@Override
+	public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain) {
+//		return tank.drain(maxDrain, doDrain);
+		return null;
+	}
+
+	@Override
+	public boolean canFill(ForgeDirection from, Fluid fluid) {
+		if(TileEntityHelper.checkLiquidIsLava(fluid)) {
+			return true;
+		}
+		
+		return false;
+	}
+
+	@Override
+	public boolean canDrain(ForgeDirection from, Fluid fluid) {
+		return false;
+	}
+
+	@Override
+	public FluidTankInfo[] getTankInfo(ForgeDirection from) {
+		return new FluidTankInfo[] { tank.getInfo() };
+	}
+
+	@Override
+	public int getFluidFuelAmount() {
+		return this.tank.getFluidAmount();
+	}
+
+	@Override
+	public FluidStack drainFluidFuel(int amount) {
+		return this.tank.drain(amount, true);
 	}
 
 	

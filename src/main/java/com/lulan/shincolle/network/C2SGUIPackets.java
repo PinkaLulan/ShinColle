@@ -7,6 +7,7 @@ import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 
@@ -58,6 +59,7 @@ public class C2SGUIPackets implements IMessage {
 		public static final byte SetFormation = -20;
 		public static final byte OpenItemGUI = -21;
 		public static final byte SwapShip = -22;
+		public static final byte SetOPTarClass = -23;
 		
 		//tile entity
 		public static final byte TileEntitySync = -11;
@@ -141,6 +143,7 @@ public class C2SGUIPackets implements IMessage {
 	/**
 	 * type 0: add/remove target class: 0:class name
 	 * type 1: desk: create team
+	 * type 2: add/remove unattackable class: 0:class name
 	 * 
 	 */
 	public C2SGUIPackets(EntityPlayer player, int type, String str) {
@@ -247,7 +250,8 @@ public class C2SGUIPackets implements IMessage {
 				
 				if(getEnt != null) {
 					//不同主人才能攻擊
-					if(!EntityHelper.checkSameOwner(getEnt, getEnt2)) {
+					if(EntityHelper.checkAttackable(getEnt2) &&
+					   !EntityHelper.checkSameOwner(getEnt, getEnt2)) {
 						this.player = getEnt;
 						EntityHelper.applyTeamAttack(player, value1, getEnt2);
 					}
@@ -623,6 +627,37 @@ public class C2SGUIPackets implements IMessage {
 				}
 			}
 			break;
+		case PID.SetOPTarClass:   //set unattackable list
+			{
+				this.entityID = buf.readInt();
+				this.worldID = buf.readInt();
+				this.str = PacketHelper.getString(buf);
+				
+				/** process:
+				 *  1.(done) get mouseover entity (client)
+				 *  2.(done) send player eid and entity to server (c 2 s)
+				 *  3. check player is OP (server)
+				 *  4. add/remove entity to list (server)
+				 */
+				EntityPlayer getEnt = EntityHelper.getEntityPlayerByID(entityID, worldID, false);
+				
+				if(getEnt != null) {
+					//check OP
+					if(EntityHelper.checkOP(getEnt)) {
+						//add target to list	
+						if(ServerProxy.addUnattackableTargetClassList(this.str)) {
+							getEnt.addChatMessage(new ChatComponentText("Target Wrench: ADD entity: "+this.str));
+						}
+						else {
+							getEnt.addChatMessage(new ChatComponentText("Target Wrench: REMOVE entity: "+this.str));
+						}
+					}
+					else {
+						getEnt.addChatMessage(new ChatComponentText("Target Wrench: This item is OP ONLY!"));
+					}
+				}//end get player
+			}
+			break;
 		}//end packet type switch
 	}
 
@@ -694,6 +729,7 @@ public class C2SGUIPackets implements IMessage {
 			}
 			break;
 		case PID.SetTarClass:
+		case PID.SetOPTarClass:
 		case PID.Desk_Create:
 		case PID.Desk_Rename:
 			{

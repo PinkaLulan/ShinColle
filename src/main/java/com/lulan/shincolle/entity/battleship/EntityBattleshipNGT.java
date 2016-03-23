@@ -39,6 +39,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.BattleshipNagato);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BB]);
+		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BB]);
 		this.ModelPos = new float[] {0F, 15F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);
 		
@@ -161,8 +162,8 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
   		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
         
         //light ammo -1
-        if(!decrAmmoNum(0)) {		//not enough ammo
-        	atk = atk * 0.125F;	//reduce damage to 12.5%
+        if(!decrAmmoNum(0, this.getAmmoConsumption())) {		//not enough ammo
+        	return false;
         }
 
         //calc miss chance, if not miss, calc cri/multi hit
@@ -241,6 +242,11 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
   	 */
   	@Override
   	public boolean attackEntityWithHeavyAmmo(Entity target) {
+  		//check target attackable
+  		if(!EntityHelper.checkAttackable(target)) {
+  			return false;
+  		}
+  		
   		//get attack value
 		float atk1, atk2;
 		float kbValue = 0.15F;
@@ -269,10 +275,9 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
 		//grudge--
 		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
 		
-		//heavy ammo -1
-        if(!decrAmmoNum(1)) {	//not enough ammo
-        	atk1 = atk1 * 0.125F;	//reduce damage to 12.5%
-        	atk2 = atk2 * 0.125F;	//reduce damage to 12.5%
+		//heavy ammo--
+        if(!decrAmmoNum(1, this.getAmmoConsumption())) {
+        	return false;
         }
 	
 		//play cannon fire sound at attacker
@@ -364,7 +369,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
                 	hitEntity = (EntityLivingBase)hitList.get(i);
                 	
                 	//目標不能是自己 or 主人
-                	if(hitEntity != this && hitEntity.canBeCollidedWith() && EntityHelper.checkNotSameEntityID(this, hitEntity)) {
+                	if(hitEntity != this && EntityHelper.checkAttackable(hitEntity) && hitEntity.canBeCollidedWith() && EntityHelper.checkNotSameEntityID(this, hitEntity)) {
                 		//calc miss and cri
                 		if(this.rand.nextFloat() < missChance) {	//MISS
                         	atkTemp *= 0.5F;
@@ -385,12 +390,12 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
                     		if(atkTemp > 59F) {
                     			atkTemp = 59F;	//same with TNT
                     		}
-                    		
-                    		//check friendly fire
-                    		if(!EntityHelper.doFriendlyFire(this, (EntityPlayer) hitEntity)) {
-                    			atkTemp = 0F;
-                    		}
                     	}
+                    	
+                    	//check friendly fire
+                		if(!EntityHelper.doFriendlyFire(this, hitEntity)) {
+                			atkTemp = 0F;
+                		}
 
                 		//if attack success
                 	    if(hitEntity.attackEntityFrom(DamageSource.causeMobDamage(this), atkTemp)) {

@@ -78,6 +78,18 @@ public class TargetHelper {
 				return false;
 			}
 			
+			//check unattackable list
+			List<String> unatklist = ServerProxy.getUnattackableTargetClassList();
+			String tarClass = target2.getClass().getSimpleName();
+			
+			if(unatklist != null) {
+				for(String s : unatklist) {
+    				if(s.equals(tarClass)) {  //target class is in list
+    					return false;
+    				}
+    			}
+			}
+			
 			//ship host should check onSight
 			if(host instanceof BasicEntityShip) {
     			if(((BasicEntityShip)host).getStateFlag(ID.F.OnSightChase)) {
@@ -118,7 +130,6 @@ public class TargetHelper {
         		   host instanceof IShipAttackBase) {
         			int pid = ((IShipAttackBase) host).getPlayerUID();
         			List<String> tarList = ServerProxy.getPlayerTargetClassList(pid);
-        			String tarClass = target2.getClass().getSimpleName();
         			
         			if(tarList != null) {
         				for(String s : tarList) {
@@ -156,6 +167,18 @@ public class TargetHelper {
 				return false;
 			}
 			
+			//check unattackable list
+			List<String> unatklist = ServerProxy.getUnattackableTargetClassList();
+			String tarClass = target2.getClass().getSimpleName();
+			
+			if(unatklist != null) {
+				for(String s : unatklist) {
+    				if(s.equals(tarClass)) {  //target class is in list
+    					return false;
+    				}
+    			}
+			}
+			
 			//check ship target
 			if(target2 instanceof BasicEntityShip || target2 instanceof BasicEntityAirplane ||
 			   target2 instanceof BasicEntityMount || target2 instanceof EntityAbyssMissile) {
@@ -180,7 +203,6 @@ public class TargetHelper {
         		   host instanceof IShipAttackBase) {
         			int pid = ((IShipAttackBase) host).getPlayerUID();
         			List<String> tarList = ServerProxy.getPlayerTargetClassList(pid);
-        			String tarClass = target2.getClass().getSimpleName();
         			
         			if(tarList != null) {
         				for(String s : tarList) {
@@ -216,6 +238,18 @@ public class TargetHelper {
     	
     	@Override
 		public boolean isEntityApplicable(Entity target2) {
+    		//check unattackable list
+			List<String> unatklist = ServerProxy.getUnattackableTargetClassList();
+			String tarClass = target2.getClass().getSimpleName();
+			
+			if(unatklist != null) {
+				for(String s : unatklist) {
+    				if(s.equals(tarClass)) {  //target class is in list
+    					return false;
+    				}
+    			}
+			}
+    		
         	if((target2 instanceof EntityPlayer || target2 instanceof BasicEntityShip ||
         	   target2 instanceof BasicEntityAirplane || target2 instanceof BasicEntityMount) && 
         	   target2.isEntityAlive() && !target2.isInvisible()) {
@@ -244,6 +278,18 @@ public class TargetHelper {
     	
     	@Override
 		public boolean isEntityApplicable(Entity target2) {
+    		//check unattackable list
+			List<String> unatklist = ServerProxy.getUnattackableTargetClassList();
+			String tarClass = target2.getClass().getSimpleName();
+			
+			if(unatklist != null) {
+				for(String s : unatklist) {
+    				if(s.equals(tarClass)) {  //target class is in list
+    					return false;
+    				}
+    			}
+			}
+			
         	if(target2.isEntityAlive() && !target2.isInvisible()) {
         		//do not attack OP player
         		if(target2 instanceof EntityPlayer) {
@@ -320,8 +366,24 @@ public class TargetHelper {
 					if(!ship.equals(target) && getpid == pid) {
 						ship.setEntityRevengeTarget(target);
 						ship.setEntityRevengeTime();
-//						LogHelper.info("DEBUG : entity helper: revenge: "+ship+"  "+target);
 					}
+				}
+			}
+		}
+	}
+	
+	/** set mob ship's revenge target within X blocks */
+	public static void setRevengeTargetAroundHostileShip(BasicEntityShipHostile host, double dist, Entity target) {
+		if(host != null && target != null) {
+			//get hostile ship
+			int getpid = 0;
+			List<BasicEntityShipHostile> list1 = host.worldObj.getEntitiesWithinAABB(BasicEntityShipHostile.class,
+					host.boundingBox.expand(dist, dist, dist));
+			
+			if(list1 != null && !list1.isEmpty()) {
+				for(BasicEntityShipHostile ship : list1) {
+					ship.setEntityRevengeTarget(target);
+					ship.setEntityRevengeTime();
 				}
 			}
 		}

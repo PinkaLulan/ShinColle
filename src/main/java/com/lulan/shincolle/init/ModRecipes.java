@@ -62,6 +62,7 @@ public class ModRecipes {
 		ItemStack shipEggL = new ItemStack(ModItems.ShipSpawnEgg, 1, 1);
 		ItemStack smallshipyardStack = new ItemStack(ModBlocks.BlockSmallShipyard);
 		ItemStack toyplane = new ItemStack(ModItems.ToyAirplane);
+		ItemStack wrench = new ItemStack(ModItems.TargetWrench);
 		
 		//SHAPELESS RECIPE
 		//abyssium material:
@@ -126,7 +127,10 @@ public class ModRecipes {
 		//goddess
 		GameRegistry.addRecipe(new ShapedOreRecipe(repairGoddess,"hgh","gdg","hgh",'d',Blocks.diamond_block,'g',grudeBlock,'h',grudeHeavyBlock));
 		GameRegistry.addRecipe(new ShapedOreRecipe(repairGoddess,"ghg","hdh","ghg",'d',Blocks.diamond_block,'g',grudeBlock,'h',grudeHeavyBlock));
+		//wrench
+		GameRegistry.addRecipe(new ShapedOreRecipe(wrench,"a a","aaa"," a ",'a',abyssiumStack));
 		
 	}
 
+	
 }

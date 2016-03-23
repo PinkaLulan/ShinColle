@@ -23,6 +23,7 @@ import com.lulan.shincolle.item.PointerItem;
 import com.lulan.shincolle.item.RepairBucket;
 import com.lulan.shincolle.item.RepairGoddess;
 import com.lulan.shincolle.item.ShipSpawnEgg;
+import com.lulan.shincolle.item.TargetWrench;
 import com.lulan.shincolle.item.ToyAirplane;
 import com.lulan.shincolle.reference.Reference;
 
@@ -57,6 +58,7 @@ public class ModItems {
 	public static final BasicItem OwnerPaper = new OwnerPaper();
 	public static final BasicItem PointerItem = new PointerItem();
 	public static final BasicItem RepairGoddess = new RepairGoddess();
+	public static final BasicItem TargetWrench = new TargetWrench();
 	//toy
 	public static final BasicItem ToyAirplane = new ToyAirplane();
 
@@ -88,6 +90,7 @@ public class ModItems {
 		GameRegistry.registerItem(OwnerPaper, "OwnerPaper");
 		GameRegistry.registerItem(PointerItem, "PointerItem");
 		GameRegistry.registerItem(RepairGoddess, "RepairGoddess");
+		GameRegistry.registerItem(TargetWrench, "TargetWrench");
 		//toy
 		GameRegistry.registerItem(ToyAirplane, "ToyAirplane");
 	}

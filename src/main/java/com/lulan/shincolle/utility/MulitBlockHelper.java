@@ -1,5 +1,6 @@
 package com.lulan.shincolle.utility;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.block.Block;
@@ -108,7 +109,7 @@ public class MulitBlockHelper {
 	    			}
 	    			typeMatch = (typeMatch & typeTemp);		//進行and運算, 刪去不符合的type
 	    			
-	    			LogHelper.info("DEBUG : check MB: type "+typeMatch+" "+typeTemp);
+	    			LogHelper.info("DEBUG : check structure: type "+typeMatch+" "+typeTemp);
 	    			if(typeMatch == 0) return -1;	//全部pattern都被濾掉, 無符合, 結束檢查
 	    			
 	    			//3.若為MultiBlock則再抓TileEntity, 檢查其主從, 無主方塊才能加入, 有主方塊則結束檢查
@@ -121,43 +122,51 @@ public class MulitBlockHelper {
 	            }//end z for
 	        }//end y for
 	    }//end x for
-	    LogHelper.info("DEBUG : check MB: type "+typeMatch);
+	    LogHelper.info("DEBUG : check structure: type "+typeMatch);
 	    return typeMatch;
 	}
 	
-	//setup multi block struct, add tile entity
+	/** setup multi block struct
+	 * 
+	 *  input: world, masterX, masterY, masterZ, structure type
+	 *  
+	 *  type: 0:large shipyard off, 1:large shipyard on
+	 */
 	public static void setupStructure(World world, int xCoord, int yCoord, int zCoord, int type) {
-		LogHelper.info("DEBUG : setup MB");
+		List<BasicTileMulti> tiles = new ArrayList<BasicTileMulti>();  //all tile in structure
+		BasicTileMulti masterte = null;  //master tile
+		LogHelper.info("DEBUG : setup structure type: "+type);
+		
+		//get all tile and master tile
 		for(int x = xCoord - 1; x < xCoord + 2; x++) {
 	        for(int y = yCoord - 2; y < yCoord + 1; y++) {
 	            for(int z = zCoord - 1; z < zCoord + 2; z++) {
 	                TileEntity tile = world.getTileEntity(x, y, z);
 	                
 	                // Check if block is master or servant
-	                boolean master = (x == xCoord && y == yCoord && z == zCoord);
+	                boolean mflag = (x == xCoord && y == yCoord && z == zCoord);
 	                
 	                if(tile != null && (tile instanceof BasicTileMulti)) {
-	                    ((BasicTileMulti)tile).setMasterCoords(xCoord, yCoord, zCoord);
-	                    ((BasicTileMulti)tile).setHasMaster(true);
-	                    ((BasicTileMulti)tile).setIsMaster(master);
-	                    //type: 0:normal 1:large shipyard off 2:large shipyard on 
-	                    //      3:large workshop off 4:large workshop on
-	                    //servant block is always = off type
-	                    if(type == 1) {	//large shipyard
-	                    	LogHelper.info("DEBUG : set MB: type 1");
-	                    	((BasicTileMulti)tile).setStructType(1, world);
-	                    }
-//	                    if(type == 2) {	//large workshop
-//	                    	((BasicTileMulti)tile).setStructType(3, world);
-//	                    }
-//	                    if(type == 4) {	//large
-//	                    	((BasicTileMulti)tile).setStructType(5, world);
-//	                    }
-	                    
+	                	BasicTileMulti tile2 = (BasicTileMulti) tile;
+	                	
+	                	tiles.add(tile2);
+	                	tile2.setIsMaster(mflag);
+	                	tile2.setHasMaster(true);
+	                	tile2.setStructType(type, world);
+	                	tile2.setMasterCoords(xCoord, yCoord, zCoord);
+	                	
+	                	if(mflag) {
+	                		masterte = tile2;
+	                	}
 	                }
 	            }//end z loop
 	        }//end y loop
 	    }//end x loop
+		
+		//set master value
+		for(BasicTileMulti te : tiles) {
+			te.setMaster(masterte);
+		}
 		
 		//spawn render entity at position master y-1
 		LogHelper.info("DEBUG : spawn render entity "+xCoord+" "+yCoord+" "+zCoord);
@@ -171,6 +180,7 @@ public class MulitBlockHelper {
 	//reset(remove) tile multi
 	private static void resetTileMulti(BasicTileMulti parTile) {
 		parTile.setMasterCoords(0, 0, 0);
+		parTile.setMaster(null);
 		parTile.setHasMaster(false);
 		parTile.setIsMaster(false);
 		parTile.setStructType(0, parTile.getWorldObj());	

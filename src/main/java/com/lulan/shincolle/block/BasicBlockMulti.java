@@ -78,8 +78,8 @@ abstract public class BasicBlockMulti extends BasicBlockContainer {
 				if(entity.hasMaster()) {	//該方塊已經成形, 則打開GUI
 					LogHelper.info("DEBUG : open multi block GUI");
 					switch(entity.getStructType()) {
-					case 1:	//large shipyard
-					case 2:
+					case 1:  //large shipyard off
+					case 2:  //large shipyard on
 						FMLNetworkHandler.openGui(player, ShinColle.instance, ID.G.LARGESHIPYARD, world, 
 								entity.getMasterX(), entity.getMasterY(), entity.getMasterZ());
 						break;
