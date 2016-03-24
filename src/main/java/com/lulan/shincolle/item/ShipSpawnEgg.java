@@ -149,7 +149,7 @@ public class ShipSpawnEgg extends Item {
                 player.worldObj.spawnEntityInWorld(entityToSpawn);
                 entityToSpawn.onSpawnWithEgg((IEntityLivingData)null);	//for vanilla random spawn, disable
                 entityToSpawn.playLivingSound();
-            } 
+            }
             else {
                 LogHelper.info("Entity not found "+entityToSpawnName);	//debug
             }

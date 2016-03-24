@@ -244,6 +244,22 @@ public class EntityHelper {
 		return false;
 	}
 	
+	/** check ship is in colled list */
+	public static boolean checkShipColled(int classID, ExtendPlayerProps props) {
+		if(props != null && props.getColleShipList() != null && props.getColleShipList().contains(classID)) {
+			return true;
+		}
+		return false;
+	}
+	
+	/** check ship is in colled list */
+	public static boolean checkEquipColled(int equipID, ExtendPlayerProps props) {
+		if(props != null && props.getColleEquipList() != null && props.getColleEquipList().contains(equipID)) {
+			return true;
+		}
+		return false;
+	}
+	
 	/** check player is OP */
 	public static boolean checkOP(EntityPlayer player) {
 		if(player != null) {
@@ -625,7 +641,7 @@ public class EntityHelper {
 	}
 	
 	/** add player ship list data */
-	public static void addPlayerShipListData(int classID, EntityPlayer player) {
+	public static void addPlayerColledShip(int classID, EntityPlayer player) {
 		ExtendPlayerProps extProps = getExtendPlayerProps(player);
 		
 		if(extProps != null) {
@@ -634,7 +650,7 @@ public class EntityHelper {
 	}
 	
 	/** add player ship list data */
-	public static void addPlayerEquipListData(int equipID, EntityPlayer player) {
+	public static void addPlayerColledEquip(int equipID, EntityPlayer player) {
 		ExtendPlayerProps extProps = getExtendPlayerProps(player);
 		
 		if(extProps != null) {

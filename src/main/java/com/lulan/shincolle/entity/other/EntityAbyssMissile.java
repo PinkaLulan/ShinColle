@@ -327,27 +327,30 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
     	}//end server side
     	/**********client side***********/
     	else {
-    		//spawn particle by speed type
-    		byte smokeType = 15;
-    		
-    		switch(this.type) {
-    		case 1:
-    			smokeType = 16;
-    			break;
-    		case 2:
-    			smokeType = 27;
-    			break;
-    		case 3:
-    		case 4:
-    			smokeType = 18;
-    			break;
-    		default:
-    			break;
+    		if(this.type != 2) {
+    			//spawn particle by speed type
+        		byte smokeType = 15;
+        		
+        		switch(this.type) {
+        		case 1:
+        			smokeType = 16;
+        			break;
+        		case 3:
+        		case 4:
+        			smokeType = 18;
+        			break;
+        		default:
+        			break;
+        		}
+        		
+        		for (int j = 0; j < 3; ++j) {
+                	ParticleHelper.spawnAttackParticleAt(this.posX-this.motionX*1.5D*j, this.posY+1D-this.motionY*1.5D*j, this.posZ-this.motionZ*1.5D*j, 
+                    		-this.motionX*0.1D, -this.motionY*0.1D, -this.motionZ*0.1D, smokeType);
+        		}
     		}
-    		
-    		for (int j = 0; j < 3; ++j) {
-            	ParticleHelper.spawnAttackParticleAt(this.posX-this.motionX*1.5D*j, this.posY+1D-this.motionY*1.5D*j, this.posZ-this.motionZ*1.5D*j, 
-                		-this.motionX*0.1D, -this.motionY*0.1D, -this.motionZ*0.1D, smokeType);
+    		else {
+    			//spawn beam head particle
+            	ParticleHelper.spawnAttackParticleAtEntity(this, 0D, 10, 4D, (byte)9);
     		}
     	}//end client side
     	   	

@@ -50,6 +50,7 @@ public class S2CEntitySync implements IMessage {
 		public static final byte SyncEntity_Rot = 10;
 		public static final byte SyncShip_Formation = 11;
 		public static final byte SyncShip_Unbuff = 12;
+		public static final byte SyncEntity_Motion = 13;
 	}
 
 	
@@ -91,6 +92,7 @@ public class S2CEntitySync implements IMessage {
 	 * type 8:  projectile type sync
 	 * type 9:  entity pos sync (for teleport)
 	 * type 10: entity rot sync (for looking update)
+	 * type 13: entity motion sync (for knockback)
 	 */
 	public S2CEntitySync(Entity entity, int value, int type) {
         this.entity3 = entity;
@@ -153,8 +155,9 @@ public class S2CEntitySync implements IMessage {
 				getSyncTarget = true;
 			}
 			break;
-		case PID.SyncEntity_PosRot: //entity pos and rotation sync
+		case PID.SyncEntity_PosRot: //entity position, rotation, motion sync
 		case PID.SyncEntity_Rot:
+		case PID.SyncEntity_Motion:
 			this.entity3 = EntityHelper.getEntityByID(entityID, 0, true);
 			if(entity3 != null) {
 				getSyncTarget = true;
@@ -482,6 +485,15 @@ public class S2CEntitySync implements IMessage {
 					}
 				}
 				break;
+			case PID.SyncEntity_Motion:	//entity motion sync
+				{
+					double px = buf.readFloat();
+					double py = buf.readFloat();
+					double pz = buf.readFloat();
+					
+					entity3.setVelocity(px, px, pz);
+				}
+				break;
 			}
 		}
 		else {
@@ -787,6 +799,15 @@ public class S2CEntitySync implements IMessage {
 				buf.writeInt(this.entity.getStateMinor(ID.M.FormatType));
 				buf.writeInt(this.entity.getStateMinor(ID.M.FormatPos));
 				buf.writeFloat(this.entity.getEffectFormationFixed(ID.FormationFixed.MOV));
+			}
+			break;
+		case PID.SyncEntity_Motion:	//entity motion sync
+			{
+				buf.writeByte(PID.SyncEntity_Motion);
+				buf.writeInt(this.entity3.getEntityId());
+				buf.writeFloat((float) this.entity3.motionX);
+				buf.writeFloat((float) this.entity3.motionY);
+				buf.writeFloat((float) this.entity3.motionZ);
 			}
 			break;
 		}

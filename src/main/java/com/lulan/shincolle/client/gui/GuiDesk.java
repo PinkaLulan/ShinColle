@@ -29,9 +29,9 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
 import com.lulan.shincolle.client.gui.inventory.ContainerDesk;
+import com.lulan.shincolle.crafting.ShipCalc;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
-import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -65,8 +65,10 @@ public class GuiDesk extends GuiContainer {
 	private static final ResourceLocation guiTexture = new ResourceLocation(Reference.TEXTURES_GUI+"GuiDesk.png");
 	private static final ResourceLocation guiRadar = new ResourceLocation(Reference.TEXTURES_GUI+"GuiDeskRadar.png");
 	private static final ResourceLocation guiBook = new ResourceLocation(Reference.TEXTURES_GUI+"GuiDeskBook.png");
+	private static final ResourceLocation guiBook2 = new ResourceLocation(Reference.TEXTURES_GUI+"GuiDeskBook2.png");
 	private static final ResourceLocation guiTeam = new ResourceLocation(Reference.TEXTURES_GUI+"GuiDeskTeam.png");
 	private static final ResourceLocation guiTarget = new ResourceLocation(Reference.TEXTURES_GUI+"GuiDeskTarget.png");
+	private static final ResourceLocation guiNameIcon = new ResourceLocation(Reference.TEXTURES_GUI+"GuiNameIcon.png");
 	
 	private TileEntityDesk tile;
 	private int xClick, yClick, xMouse, yMouse, tempCD, lastXMouse, lastYMouse;
@@ -107,7 +109,11 @@ public class GuiDesk extends GuiContainer {
 	Entity targetEntity = null;			//entity for model display
 	private List<String> tarList;		//target list
 	private float mScale, mRotateX, mRotateY;  //target model parms
-
+	
+	//ship model
+	BasicEntityShip shipModel = null;
+	private int shipType, shipClass;
+	private int[][] iconXY = null;
 	
 	//object: ship entity + pixel position
 	private class ShipEntity {
@@ -178,9 +184,12 @@ public class GuiDesk extends GuiContainer {
 		
 		//target
 		this.tarList = new ArrayList();
-		this.mScale = 40F;
+		this.mScale = 30F;
 		this.mRotateX = 0F;
 		this.mRotateY = -30F;
+		
+		//ship model
+		setShipModel(this.book_chapNum, this.book_pageNum);
 	}
 	
 	@Override
@@ -309,7 +318,26 @@ public class GuiDesk extends GuiContainer {
 			drawRadarText();
 			break;  //end radar
 		case 2:  //book
-			GuiBook.drawBookContent(this, this.fontRendererObj, this.book_chapNum, this.book_pageNum);
+			boolean canDrawText = true;
+			//chap 4,5,6, check list first
+			if(this.book_pageNum > 0) {
+				if(this.book_chapNum == 4 || this.book_chapNum == 5) {
+					//set draw model
+					if(this.shipModel == null) {
+						canDrawText = false;
+					}
+					
+					//draw page number
+					String str = "No. "+this.book_pageNum;
+					int strlen = (int)(fontRendererObj.getStringWidth(str) * 0.5F);
+					fontRendererObj.drawStringWithShadow(str, 55, 32, this.book_chapNum == 4 ? Values.Color.DARK_RED : Values.Color.CYAN);
+				}
+				else if(this.book_chapNum == 6) {
+					//TODO
+				}
+			}
+			
+			if(canDrawText) GuiBook.drawBookContent(this, this.fontRendererObj, this.book_chapNum, this.book_pageNum);
 			break;
 		case 3:		//team
 			drawTeamText();
@@ -398,6 +426,11 @@ public class GuiDesk extends GuiContainer {
     		else {
     			drawTexturedModalRect(guiLeft+175, guiTop+182, 0, 202, 18, 10);
     		}
+    		
+    		//draw ship model if chap = 4,5
+    		if(this.book_pageNum > 0 && (this.book_chapNum == 4 || this.book_chapNum == 5)) {
+    			drawShipModel();
+    		}
         	
         	break;  //end book
         case 3:		//team
@@ -447,6 +480,16 @@ public class GuiDesk extends GuiContainer {
 		case 1:  //radar
 			listSize = this.shipList.size();
 			listID = LISTCLICK_RADAR;
+			break;
+		case 2:  //book
+			if(isWheelUp) {
+				this.mScale += 2F;
+				if(this.mScale > 200F) this.mScale = 200F;
+			}
+			else {
+				this.mScale -= 2F;
+				if(this.mScale < 5F) this.mScale = 5F;
+			}
 			break;
 		case 3:  //team
 			if(xMouse - guiLeft > 138) {  //right side: team list
@@ -558,32 +601,87 @@ public class GuiDesk extends GuiContainer {
             }
         	break;  //end radar
         case 2:     //book
-        	int getbtn = GuiHelper.getButton(ID.G.ADMIRALDESK, 2, xClick, yClick);
-        	switch(getbtn) {
-            case 0:	//left
-            	this.book_pageNum--;
-            	if(this.book_pageNum < 0) this.book_pageNum = 0;
-            	LogHelper.info("DEBUG : desk: book page: "+book_pageNum);
-            	break;
-            case 1: //right
-            	this.book_pageNum++;
-            	if(this.book_pageNum > GuiBook.getMaxPageNumber(book_chapNum)) {
-            		this.book_pageNum = GuiBook.getMaxPageNumber(book_chapNum);
-            	}
-            	LogHelper.info("DEBUG : desk: book page: "+book_pageNum);
-            	break;
-            case 2: //chap 0
-            case 3: //chap 1
-            case 4: //chap 2
-            case 5: //chap 3
-            case 6: //chap 4
-            case 7: //chap 5
-            case 8: //chap 6
-            	this.book_chapNum = getbtn - 2;
-            	this.book_pageNum = 0;
-            	LogHelper.info("DEBUG : desk: book chap: "+book_chapNum);
-            	break;
-            }
+        	int getbtn2 = -1;
+        	
+        	if(this.book_chapNum == 4 || this.book_chapNum == 5) {
+        		getbtn2 = GuiHelper.getButton(ID.G.ADMIRALDESK, 5, xClick, yClick);
+        	}
+
+        	if(getbtn2 < 0) {  //get no button
+        		int getbtn = GuiHelper.getButton(ID.G.ADMIRALDESK, 2, xClick, yClick);
+            	switch(getbtn) {
+                case 0:	//left
+                	if(mouseKey == 0) {
+                		this.book_pageNum--;
+                	}
+                	else {
+                		this.book_pageNum -= 10;
+                	}
+                	
+                	if(this.book_pageNum < 0) this.book_pageNum = 0;
+                	setShipModel(this.book_chapNum, this.book_pageNum);
+                	LogHelper.info("DEBUG : desk: book page: "+book_pageNum);
+                	break;
+                case 1: //right
+                	if(mouseKey == 0) {
+                		this.book_pageNum++;
+                	}
+                	else {
+                		this.book_pageNum += 10;
+                	}
+                	
+                	if(this.book_pageNum > GuiBook.getMaxPageNumber(book_chapNum)) {
+                		this.book_pageNum = GuiBook.getMaxPageNumber(book_chapNum);
+                	}
+                	setShipModel(this.book_chapNum, this.book_pageNum);
+                	LogHelper.info("DEBUG : desk: book page: "+book_pageNum);
+                	break;
+                case 2: //chap 0
+                case 3: //chap 1
+                case 4: //chap 2
+                case 5: //chap 3
+                case 6: //chap 4
+                case 7: //chap 5
+                case 8: //chap 6
+                	this.book_chapNum = getbtn - 2;
+                	this.book_pageNum = 0;
+                	LogHelper.info("DEBUG : desk: book chap: "+book_chapNum);
+                	break;
+                }
+        	}
+        	else {  //get ship model button
+        		if(this.shipModel != null) {
+        			switch(getbtn2) {
+            		case 0:  //ship model
+            			break;
+            		case 1:  //cake
+            			this.shipModel.setShipOutfit(false);
+            			break;
+            		case 2:  //cake sneaking
+            			this.shipModel.setShipOutfit(true);
+            			break;
+            		case 3:  //sit
+            			this.shipModel.setSitting(!this.shipModel.isSitting());
+            			
+            			if(this.tickGUI % 2 == 0) {
+            				this.shipModel.setStateEmotion(ID.S.Emotion, ID.Emotion.BORED, false);
+            			}
+            			else {
+            				this.shipModel.setStateEmotion(ID.S.Emotion, ID.Emotion.NORMAL, false);
+            			}
+            			break;
+            		case 4:  //run
+            			this.shipModel.setSprinting(!this.shipModel.isSprinting());
+            			break;
+            		case 5:  //attack
+            			this.shipModel.attackTime = 50;
+            			break;
+            		case 6:  //emotion
+            			this.shipModel.setStateEmotion(ID.S.Emotion, this.shipModel.getRNG().nextInt(6), false);
+            			break;
+            		}
+        		}
+        	}
         	break;  //end book
         case 3:		//team
         	int teamBtn = GuiHelper.getButton(ID.G.ADMIRALDESK, 3, xClick, yClick);
@@ -709,7 +807,7 @@ public class GuiDesk extends GuiContainer {
 		int dy = my - this.lastYMouse;
 		
 		//func: target list
-		if(this.guiFunc == 4) {
+		if(this.guiFunc == 4 || this.guiFunc == 2) {
 			if(dx > 0) {
 				this.mRotateY += 6F;
 			}
@@ -1567,6 +1665,124 @@ public class GuiDesk extends GuiContainer {
 		if(this.type == 0 && this.tile == null) {
             this.mc.thePlayer.closeScreen();
         }
+	}
+	
+	private void setShipModel(int chap, int page) {
+		int classID = -1;
+		String shipName = null;
+		
+		//get ship
+		try {
+			if(chap == 4) {
+				classID = Values.ShipBookList.get(page - 1);
+			}
+			else if(chap == 5) {
+				classID = Values.EnemyBookList.get(page - 1);
+			}
+		}
+		catch(Exception e) {
+			LogHelper.info("DEBUG : page number > list length: "+e);
+		}
+		
+		//get no ship
+		if(classID < 0) {
+			this.shipModel = null;
+			return;
+		}
+		
+		//get ship but not in colled list
+		if(!EntityHelper.checkShipColled(classID, this.extProps)) {
+			this.shipModel = null;
+			return;
+		}
+		
+		//get entity name
+		shipName = ShipCalc.getEntityToSpawnName(classID);
+		
+		//set ship model
+        if(EntityList.stringToClassMapping.containsKey(shipName)) {
+            this.shipModel = (BasicEntityShip) EntityList.createEntityByName(shipName, player.worldObj);
+            
+            if(this.shipModel != null) {
+            	this.shipType = this.shipModel.getShipType();
+    			this.shipClass = this.shipModel.getShipClass();
+    			
+    			this.iconXY = new int[2][3];
+    			this.iconXY[0] = Values.ShipTypeIconMap.get((byte)this.shipType);
+    			this.iconXY[1] = Values.ShipNameIconMap.get((short)this.shipClass);
+            }
+        }
+	}
+	
+	private void drawShipModel() {
+		if(this.shipModel != null) {
+			Minecraft.getMinecraft().getTextureManager().bindTexture(guiBook2);
+			if(this.book_chapNum == 4) {  //shinkei
+				drawTexturedModalRect(guiLeft+20, guiTop+48, 0, 0, 87, 125);
+			}
+			else {  //kanmusu
+				drawTexturedModalRect(guiLeft+20, guiTop+48, 0, 125, 87, 125);
+			}
+	    	
+	    	Minecraft.getMinecraft().getTextureManager().bindTexture(guiNameIcon);
+	    	
+        	try{
+        		drawTexturedModalRect(guiLeft+23, guiTop+53, this.iconXY[0][0], this.iconXY[0][1], 28, 28);
+
+        		//use name icon file 0
+        		if(iconXY[1][0] == 0) {
+        			drawTexturedModalRect(guiLeft+30, guiTop+94, this.iconXY[1][1], this.iconXY[1][2], 11, 59);
+        		}
+        	}
+        	catch(Exception e) {
+//        		LogHelper.info("Exception : get name icon fail "+e);
+        	}
+        	
+        	//tick time
+        	if(this.tickGUI % 3 == 0) {
+        		this.shipModel.ticksExisted++;
+            	if(this.shipModel.attackTime > 0) this.shipModel.attackTime--;
+            	
+            	//set moving motion
+            	if(this.shipModel.isSprinting()) {
+            		this.shipModel.moveEntityWithHeading(1F, 0F);
+            	}
+        	}
+        	
+			int x = this.guiLeft + 72;
+			int y = this.guiTop + 136;
+			
+			//set basic position and rotation
+			GL11.glEnable(GL11.GL_COLOR_MATERIAL);
+			GL11.glPushMatrix();
+			GL11.glTranslatef(x, y, 50.0F);
+			GL11.glScalef(-this.mScale, this.mScale, this.mScale);
+			GL11.glRotatef(180.0F, 0.0F, 0.0F, 1.0F);
+			
+			//set the light of model (face to player)
+			GL11.glRotatef(135.0F, 0.0F, 1.0F, 0.0F);
+			RenderHelper.enableStandardItemLighting();
+			GL11.glRotatef(-135.0F, 0.0F, 1.0F, 0.0F);
+			
+			//set head look angle
+//			GL11.glRotatef(-((float) Math.atan(-120F / 40.0F)) * 20.0F, 1.0F, 0.0F, 0.0F);
+			GL11.glRotatef(this.mRotateY, 0.0F, 1.0F, 0.0F);
+			GL11.glRotatef(this.mRotateX, 1.0F, 0.0F, 0.0F);
+			GL11.glTranslatef(0.0F, this.shipModel.yOffset, 0.0F);
+			RenderManager.instance.playerViewY = 180.0F;
+			RenderManager.instance.renderEntityWithPosYaw(this.shipModel, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F);
+			GL11.glPopMatrix();
+			RenderHelper.disableStandardItemLighting();
+			GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+			OpenGlHelper.setActiveTexture(OpenGlHelper.lightmapTexUnit);
+			GL11.glDisable(GL11.GL_TEXTURE_2D);
+			OpenGlHelper.setActiveTexture(OpenGlHelper.defaultTexUnit);
+		}
+		//no ship
+		else {
+			Minecraft.getMinecraft().getTextureManager().bindTexture(guiBook2);
+	    	drawTexturedModalRect(guiLeft+20, guiTop+48, 87, 0, 87, 125);
+		}
 	}
 
 

@@ -74,7 +74,7 @@ public class EquipCatapult extends BasicEquip {
 			return new int[] {itemRand.nextInt(70) + 190,
 							  itemRand.nextInt(85) + 230,
 							  itemRand.nextInt(55) + 150,
-							  itemRand.nextInt(100) + 270};
+							  itemRand.nextInt(90) + 250};
 		default:
 			return new int[] {0, 0, 0, 0};
 		}

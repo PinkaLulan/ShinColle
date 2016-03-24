@@ -74,7 +74,7 @@ public class EntitySubmU511 extends BasicEntityShipSmall implements IShipInvisib
           
   		if(!worldObj.isRemote) {
   			//add aura to master every 100 ticks
-  			if(this.ticksExisted % 100 == 0) {
+  			if(this.ticksExisted % 128 == 0) {
   				if(getStateFlag(ID.F.UseRingEffect)) {
   					//apply ability to player
   					EntityPlayerMP player = (EntityPlayerMP) EntityHelper.getEntityPlayerByUID(this.getPlayerUID(), this.worldObj);
@@ -82,36 +82,26 @@ public class EntitySubmU511 extends BasicEntityShipSmall implements IShipInvisib
   	  					//potion effect: id, time, level
   	  	  	  			player.addPotionEffect(new PotionEffect(Potion.invisibility.id, 60 + getLevel() * 10));
   	  				}
-  				}	
-  			}
-  			
-  			if(this.ticksExisted % 300 == 0) {
-  				if(getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.M.NumGrudge) > 0) {
-  					//apply ability to ship
-  					this.addPotionEffect(new PotionEffect(Potion.invisibility.id, 100 + getLevel()));
   				}
-  			}
+  				
+  				if(this.ticksExisted % 256 == 0) {
+  	  				if(getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.M.NumGrudge) > 0) {
+  	  					//apply ability to ship
+  	  					this.addPotionEffect(new PotionEffect(Potion.invisibility.id, 46 + getLevel()));
+  	  				}
+  	  			}//end 256 ticks
+  			}//end 128 ticks
   		}    
   	}
   	
   	@Override
-  	public boolean interact(EntityPlayer player) {	
+  	public boolean interact(EntityPlayer player) {
 		ItemStack itemstack = player.inventory.getCurrentItem();  //get item in hand
 		
 		//use cake to change state
 		if(itemstack != null) {
 			if(itemstack.getItem() == Items.cake) {
-				switch(getStateEmotion(ID.S.State)) {
-				case ID.State.NORMAL:
-					setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
-					break;
-				case ID.State.EQUIP00:
-					setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-					break;
-				default:
-					setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-					break;
-				}
+				this.setShipOutfit(player.isSneaking());
 				return true;
 			}
 		}
@@ -217,6 +207,21 @@ public class EntitySubmU511 extends BasicEntityShipSmall implements IShipInvisib
 	@Override
 	public void setInvisibleLevel(float level) {
 		this.ilevel = level;
+	}
+
+	@Override
+	public void setShipOutfit(boolean isSneaking) {
+		switch(getStateEmotion(ID.S.State)) {
+		case ID.State.NORMAL:
+			setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+			break;
+		case ID.State.EQUIP00:
+			setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+			break;
+		default:
+			setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+			break;
+		}
 	}
   	
 

@@ -10,11 +10,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 
-import com.lulan.shincolle.entity.ExtendPlayerProps;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 
 abstract public class BasicEquip extends BasicItem implements IShipResourceItem {	
 	byte types;
@@ -44,8 +42,7 @@ abstract public class BasicEquip extends BasicItem implements IShipResourceItem 
 		//server side
 		if(!world.isRemote) {
 			//add item to equip list
-			ExtendPlayerProps props = EntityHelper.getExtendPlayerProps(player);
-			props.setColleEquip(this.getEquipID(meta));
+			EntityHelper.addPlayerColledEquip(this.getEquipID(meta), player);
 		}
 		
 		return item;

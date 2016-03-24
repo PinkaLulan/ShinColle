@@ -134,7 +134,7 @@ public class EquipAirplane extends BasicEquip {
 			return new int[] {itemRand.nextInt(50) + 130,
 			  		  		  itemRand.nextInt(60) + 170,
 			  		  		  itemRand.nextInt(70) + 210,
-			  		  		  itemRand.nextInt(80) + 250};
+			  		  		  itemRand.nextInt(75) + 230};
 		case ID.EquipType.AIR_R_LO:  //256
 			return new int[] {itemRand.nextInt(12) + 3,
 							  itemRand.nextInt(14) + 5,

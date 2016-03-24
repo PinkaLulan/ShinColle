@@ -96,15 +96,15 @@ public class EntitySubmRo500 extends BasicEntityShipSmall implements IShipInvisi
   	  					//potion effect: id, time, level
   	  	  	  			player.addPotionEffect(new PotionEffect(Potion.invisibility.id, 60 + getLevel() * 10));
   	  				}
-  				}	
-  			}
-  			
-  			if(this.ticksExisted % 300 == 0) {
-  				if(getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.M.NumGrudge) > 0) {
-  					//apply ability to ship
-  					this.addPotionEffect(new PotionEffect(Potion.invisibility.id, 100 + getLevel()));
   				}
-  			}
+  				
+  				if(this.ticksExisted % 256 == 0) {
+  	  				if(getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.M.NumGrudge) > 0) {
+  	  					//apply ability to ship
+  	  					this.addPotionEffect(new PotionEffect(Potion.invisibility.id, 46 + getLevel()));
+  	  				}
+  	  			}//end 256 ticks
+  			}//end 128 ticks
   		}    
   	}
   	
@@ -115,23 +115,7 @@ public class EntitySubmRo500 extends BasicEntityShipSmall implements IShipInvisi
 		//use cake to change state
 		if(itemstack != null) {
 			if(itemstack.getItem() == Items.cake) {
-				switch(getStateEmotion(ID.S.State)) {
-				case ID.State.NORMAL:
-					setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
-					break;
-				case ID.State.EQUIP00:
-					setStateEmotion(ID.S.State, ID.State.EQUIP01, true);
-					break;
-				case ID.State.EQUIP01:
-					setStateEmotion(ID.S.State, ID.State.EQUIP02, true);
-					break;
-				case ID.State.EQUIP02:
-					setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-					break;
-				default:
-					setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-					break;
-				}
+				this.setShipOutfit(player.isSneaking());
 				return true;
 			}
 		}
@@ -241,6 +225,27 @@ public class EntitySubmRo500 extends BasicEntityShipSmall implements IShipInvisi
 	@Override
 	public void setInvisibleLevel(float level) {
 		this.ilevel = level;
+	}
+
+	@Override
+	public void setShipOutfit(boolean isSneaking) {
+		switch(getStateEmotion(ID.S.State)) {
+		case ID.State.NORMAL:
+			setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+			break;
+		case ID.State.EQUIP00:
+			setStateEmotion(ID.S.State, ID.State.EQUIP01, true);
+			break;
+		case ID.State.EQUIP01:
+			setStateEmotion(ID.S.State, ID.State.EQUIP02, true);
+			break;
+		case ID.State.EQUIP02:
+			setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+			break;
+		default:
+			setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+			break;
+		}
 	}
   	
 

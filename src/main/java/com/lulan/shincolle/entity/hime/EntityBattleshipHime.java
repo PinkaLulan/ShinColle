@@ -68,18 +68,7 @@ public class EntityBattleshipHime extends BasicEntityShip {
 		//use cake to change state
 		if(itemstack != null) {
 			if(itemstack.getItem() == Items.cake) {
-				switch(getStateEmotion(ID.S.State)) {
-				case ID.State.NORMAL:
-					setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
-					break;
-				case ID.State.EQUIP00:
-					setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-					this.setPositionAndUpdate(posX, posY + 2D, posZ);
-					break;
-				default:
-					setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-					break;
-				}
+				this.setShipOutfit(player.isSneaking());
 				return true;
 			}
 		}
@@ -104,7 +93,7 @@ public class EntityBattleshipHime extends BasicEntityShip {
   		}
   		
 		//get attack value
-		float atk = StateFinal[ID.ATK];
+		float atk = StateFinal[ID.ATK] * 3F;
 		//set knockback value (testing)
 		float kbValue = 0.15F;
 		
@@ -373,6 +362,22 @@ public class EntityBattleshipHime extends BasicEntityShip {
   		else {
   			return (double)this.height * 0.8F;
   		}
+	}
+
+	@Override
+	public void setShipOutfit(boolean isSneaking) {
+		switch(getStateEmotion(ID.S.State)) {
+		case ID.State.NORMAL:
+			setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+			break;
+		case ID.State.EQUIP00:
+			setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+			this.setPositionAndUpdate(posX, posY + 2D, posZ);
+			break;
+		default:
+			setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+			break;
+		}
 	}
 
 	

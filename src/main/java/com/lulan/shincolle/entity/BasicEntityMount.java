@@ -264,7 +264,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 					host.setStateEmotion(ID.S.State, ID.State.NORMAL, true);
 					break;
 				}
-				this.host.setPositionAndUpdate(posX, posY + 2D, posZ);
+				this.host.setPositionAndUpdate(posX, posY + 1.5D, posZ);
 				return true;
 			}
 			
@@ -643,7 +643,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   	
   	//change melee damage to 100%
   	@Override
-  	public boolean attackEntityAsMob(Entity target) {	
+  	public boolean attackEntityAsMob(Entity target) {
   		//get attack value
   		float atk = host.getStateFinal(ID.ATK);
   		//set knockback value (testing)

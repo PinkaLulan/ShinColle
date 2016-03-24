@@ -439,8 +439,8 @@ public class ModelHarbourHime extends ModelBase implements IModelEmotion {
 			this.Hair02.rotateAngleX += 0.43F;
 			this.Hair03.rotateAngleX += 0.49F;
 			//¯Ý³¡
-	  	    this.BoobL.rotateAngleX = angleAdd1 * 0.1F - 0.83F;
-	  	    this.BoobR.rotateAngleX = angleAdd2 * 0.1F - 0.83F;
+	  	    this.BoobL.rotateAngleX = angleAdd2 * 0.1F - 0.83F;
+	  	    this.BoobR.rotateAngleX = angleAdd1 * 0.1F - 0.83F;
 	    	//arm 
 		  	this.ArmLeft01.rotateAngleX = angleAdd2 * 0.8F + 0.1745F;
 		  	this.ArmLeft01.rotateAngleY = 0F;

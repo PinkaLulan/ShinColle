@@ -104,20 +104,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
 		//use cake to change state
 		if(itemstack != null) {
 			if(itemstack.getItem() == Items.cake) {
-				switch(getStateEmotion(ID.S.State)) {
-				case ID.State.NORMAL:
-					setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
-					break;
-				case ID.State.EQUIP00:
-					setStateEmotion(ID.S.State, ID.State.EQUIP01, true);
-					break;
-				case ID.State.EQUIP01:
-					setStateEmotion(ID.S.State, ID.State.EQUIP02, true);
-					break;
-				default:
-					setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-					break;
-				}
+				setShipOutfit(player.isSneaking());
 				return true;
 			}
 		}
@@ -253,7 +240,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
 		
 		//calc equip special dmg: AA, ASM
   		atk1 = CalcHelper.calcDamageByEquipEffect(this, target, StateFinal[ID.ATK_H], 2);
-  		atk2 = StateFinal[ID.ATK_H];  //AE dmg without modifier
+  		atk2 = StateFinal[ID.ATK_H] * 2F;  //AE dmg without modifier
 		
 		boolean isTargetHurt = false;
 
@@ -450,6 +437,24 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
   		else {
   			return (double)this.height * 0.8F;
   		}
+	}
+
+	@Override
+	public void setShipOutfit(boolean isSneaking) {
+		switch(getStateEmotion(ID.S.State)) {
+		case ID.State.NORMAL:
+			setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+			break;
+		case ID.State.EQUIP00:
+			setStateEmotion(ID.S.State, ID.State.EQUIP01, true);
+			break;
+		case ID.State.EQUIP01:
+			setStateEmotion(ID.S.State, ID.State.EQUIP02, true);
+			break;
+		default:
+			setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+			break;
+		}
 	}
 
 

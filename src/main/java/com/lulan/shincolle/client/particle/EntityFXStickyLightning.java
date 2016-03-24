@@ -96,6 +96,23 @@ public class EntityFXStickyLightning extends EntityFX {
             this.scaleZ = 1F;
             this.stemWidth = 0.025F;
             break;
+        case 4:  //railgun
+        	this.particleRed = 0F;
+            this.particleGreen = 0.7F;
+            this.particleBlue = 1F;
+            this.particleAlpha = 1F;
+            this.particleMaxAge = life;
+            this.numStem = 8;
+            this.scaleX = 0.75F;
+            this.scaleY = 0.75F;
+            this.scaleZ = 0.75F;
+            this.stemWidth = 0.005F;
+            
+            //random position
+            this.posX = this.host.posX + rand.nextFloat() * 0.25F - 0.125F;
+        	this.posY = this.host.posY + host.height * 0.5D + rand.nextFloat() * 0.25F - 0.125F;
+            this.posZ = this.host.posZ + rand.nextFloat() * 0.25F - 0.125F;
+            break;
         default:
         	this.particleRed = 1F;
             this.particleGreen = 0.5F;
@@ -240,8 +257,17 @@ public class EntityFXStickyLightning extends EntityFX {
 	        this.posZ = this.host.posZ + partPos2[0];
 	        break;
         }
+        
         //change color
         switch(this.particleType) {
+        case 4:   //railgun
+        	if(this.particleMaxAge - this.particleAge < 6 ) {
+        		this.particleAlpha = (this.particleMaxAge - this.particleAge) * 0.15F + 0.2F;
+        	}
+        	
+        	this.particleGreen = 0.6F + rand.nextFloat() * 0.6F;
+        	this.particleRed = this.particleGreen - 0.3F;
+        	break;
         case 1:   //yamato cannon charge lightning
         case 2:   //yamato cannon charging in
         case 3:   //yamato cannon charging out

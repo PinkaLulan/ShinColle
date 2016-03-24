@@ -91,38 +91,7 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
 		//use cake to change state
 		if(itemstack != null) {
 			if(itemstack.getItem() == Items.cake) {
-				if(player.isSneaking()) {
-					switch(getStateEmotion(ID.S.State2)) {
-					case ID.State.NORMAL_2:
-						setStateEmotion(ID.S.State2, ID.State.EQUIP00_2, true);
-						break;
-					case ID.State.EQUIP00_2:
-						setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
-						break;	
-					default:
-						setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
-						break;
-					}
-				}
-				else {
-					switch(getStateEmotion(ID.S.State)) {
-					case ID.State.NORMAL:	//都沒有
-						setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
-						break;
-					case ID.State.EQUIP00:	//只有披風
-						setStateEmotion(ID.S.State, ID.State.EQUIP01, true);
-						break;
-					case ID.State.EQUIP01:	//只有護肩
-						setStateEmotion(ID.S.State, ID.State.EQUIP02, true);
-						break;
-					case ID.State.EQUIP02:	//披風+護肩
-						setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-						break;
-					default:
-						setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-						break;
-					}
-				}
+				this.setShipOutfit(player.isSneaking());
 				return true;
 			}
 		}
@@ -206,6 +175,42 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
   		else {
   			return (double)this.height * 0.68F;
   		}
+	}
+
+	@Override
+	public void setShipOutfit(boolean isSneaking) {
+		if(isSneaking) {
+			switch(getStateEmotion(ID.S.State2)) {
+			case ID.State.NORMAL_2:
+				setStateEmotion(ID.S.State2, ID.State.EQUIP00_2, true);
+				break;
+			case ID.State.EQUIP00_2:
+				setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
+				break;	
+			default:
+				setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
+				break;
+			}
+		}
+		else {
+			switch(getStateEmotion(ID.S.State)) {
+			case ID.State.NORMAL:	//都沒有
+				setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+				break;
+			case ID.State.EQUIP00:	//只有披風
+				setStateEmotion(ID.S.State, ID.State.EQUIP01, true);
+				break;
+			case ID.State.EQUIP01:	//只有護肩
+				setStateEmotion(ID.S.State, ID.State.EQUIP02, true);
+				break;
+			case ID.State.EQUIP02:	//披風+護肩
+				setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+				break;
+			default:
+				setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+				break;
+			}
+		}
 	}
 	
 	

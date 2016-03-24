@@ -121,41 +121,7 @@ public class EntityHarbourHime extends BasicEntityShipLarge {
 		//use cake to change state
 		if(itemstack != null) {
 			if(itemstack.getItem() == Items.cake) {
-				//ち传杆称陪ボ
-				if(player.isSneaking()) {
-					switch(getStateEmotion(ID.S.State2)) {
-					case ID.State.NORMAL_2:
-						setStateEmotion(ID.S.State2, ID.State.EQUIP00_2, true);
-						break;
-					case ID.State.EQUIP00_2:
-						setStateEmotion(ID.S.State2, ID.State.EQUIP01_2, true);
-						break;
-					case ID.State.EQUIP01_2:
-						setStateEmotion(ID.S.State2, ID.State.EQUIP02_2, true);
-						break;
-					case ID.State.EQUIP02_2:
-						setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
-						break;
-					default:
-						setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
-						break;
-					}
-				}
-				//ち传琌肕畒肕
-				else {
-					switch(getStateEmotion(ID.S.State)) {
-					case ID.State.NORMAL:
-						setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
-						break;
-					case ID.State.EQUIP00:
-						setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-						this.setPositionAndUpdate(posX, posY + 2D, posZ);
-						break;
-					default:
-						setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-						break;
-					}
-				}
+				this.setShipOutfit(player.isSneaking());
 				return true;
 			}
 		}
@@ -304,6 +270,45 @@ public class EntityHarbourHime extends BasicEntityShipLarge {
   		else {
   			return (double)this.height * 0.85F;
   		}
+	}
+
+	@Override
+	public void setShipOutfit(boolean isSneaking) {
+		//ち传杆称陪ボ
+		if(isSneaking) {
+			switch(getStateEmotion(ID.S.State2)) {
+			case ID.State.NORMAL_2:
+				setStateEmotion(ID.S.State2, ID.State.EQUIP00_2, true);
+				break;
+			case ID.State.EQUIP00_2:
+				setStateEmotion(ID.S.State2, ID.State.EQUIP01_2, true);
+				break;
+			case ID.State.EQUIP01_2:
+				setStateEmotion(ID.S.State2, ID.State.EQUIP02_2, true);
+				break;
+			case ID.State.EQUIP02_2:
+				setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
+				break;
+			default:
+				setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
+				break;
+			}
+		}
+		//ち传琌肕畒肕
+		else {
+			switch(getStateEmotion(ID.S.State)) {
+			case ID.State.NORMAL:
+				setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+				break;
+			case ID.State.EQUIP00:
+				setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+				this.setPositionAndUpdate(posX, posY + 2D, posZ);
+				break;
+			default:
+				setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+				break;
+			}
+		}
 	}
 
 

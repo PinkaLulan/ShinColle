@@ -70,6 +70,8 @@ public class S2CGUIPackets implements IMessage {
 		public static final byte SyncPlayerProp_Formation = 9;
 		public static final byte SyncPlayerProp_ShipsAll = 10;
 		public static final byte SyncPlayerProp_ShipsInTeam = 11;
+		public static final byte SyncPlayerProp_ColledShip = 12;
+		public static final byte SyncPlayerProp_ColledEquip = 13;
 	}
 	
 	
@@ -292,7 +294,9 @@ public class S2CGUIPackets implements IMessage {
 				}
 			}
 			break;
-		case PID.SyncShipList:	//sync ship list
+		case PID.SyncShipList:				  //sync loaded ship list
+		case PID.SyncPlayerProp_ColledShip:   //sync colled ship list
+		case PID.SyncPlayerProp_ColledEquip:  //sync colled equip list
 			{
 				int listLen = buf.readInt();
 
@@ -307,7 +311,17 @@ public class S2CGUIPackets implements IMessage {
 					}
 					
 					if(props != null) {
-						props.setShipEIDList(data);
+						switch(type) {
+						case PID.SyncShipList:				  //sync loaded ship list
+							props.setShipEIDList(data);
+							break;
+						case PID.SyncPlayerProp_ColledShip:   //sync colled ship list
+							props.setColleShipList(data);
+							break;
+						case PID.SyncPlayerProp_ColledEquip:  //sync colled equip list
+							props.setColleEquipList(data);
+							break;
+						}
 					}
 				}
 			}
@@ -323,12 +337,10 @@ public class S2CGUIPackets implements IMessage {
 					//get list data
 					for(int i = 0; i < listLen; ++i) {
 						data.add(ByteBufUtils.readUTF8String(buf));
-//						LogHelper.info("DEBUG : S2C gui packet: get "+data.get(i));
 					}
 					
 					if(props != null) {
 						props.setTargetClass(data);
-//						LogHelper.info("DEBUG : S2C gui sync: get list size "+data.size());
 					}
 				}
 				else {
@@ -571,6 +583,8 @@ public class S2CGUIPackets implements IMessage {
 			break;
 		case PID.SyncShipList:				  //send ship list to client
 		case PID.SyncPlayerProp_TargetClass:  //sync target class
+		case PID.SyncPlayerProp_ColledShip:   //sync colled ship list
+		case PID.SyncPlayerProp_ColledEquip:  //sync colled equip list
 			{
 				buf.writeByte(this.type);
 				
@@ -584,6 +598,8 @@ public class S2CGUIPackets implements IMessage {
 					
 					switch(this.type) {
 					case PID.SyncShipList:
+					case PID.SyncPlayerProp_ColledShip:
+					case PID.SyncPlayerProp_ColledEquip:
 						//send ship id array
 						while(iter.hasNext()) {
 							//int list

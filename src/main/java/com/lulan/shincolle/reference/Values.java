@@ -1,5 +1,6 @@
 package com.lulan.shincolle.reference;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,14 +20,13 @@ import com.lulan.shincolle.init.ModItems;
 public class Values {
 	
 	
-	//numbers
+	/** numbers */
 	public static final class N {
 		public static final float RAD_DIV = 57.295779513F;
 		public static final float RAD_MUL = 0.0174532925F;
 	}
 	
-	
-	//color code
+	/** color code */
 	public static class Color {
 		//normal
 		public static final int BLACK = 0;
@@ -184,6 +184,47 @@ public class Values {
 		put(ID.Ship.BattleshipYamato,	new int[] {0, 44, 120});
 		put(ID.Ship.CarrierKaga,		new int[] {0, 55, 120});
 		put(ID.Ship.CarrierAkagi,		new int[] {0, 66, 120});
+	}});
+	
+	/**SHIP LIST for guidebook
+	 * 
+	 * index by page number
+	 */
+	public static final List<Integer> ShipBookList = Collections.unmodifiableList(new ArrayList<Integer>() {{
+		add((int)ID.Ship.DestroyerI);
+		add((int)ID.Ship.DestroyerRO);
+		add((int)ID.Ship.DestroyerHA);
+		add((int)ID.Ship.DestroyerNI);
+		
+		add((int)ID.Ship.HeavyCruiserRI);
+		add((int)ID.Ship.HeavyCruiserNE);
+		
+		add((int)ID.Ship.CarrierWO);
+		
+		add((int)ID.Ship.BattleshipTA);
+		add((int)ID.Ship.BattleshipRE);
+		
+		add((int)ID.Ship.AirfieldHime);
+		add((int)ID.Ship.BattleshipHime);
+		add((int)ID.Ship.HarbourHime);
+		add((int)ID.Ship.NorthernHime);
+		add((int)ID.Ship.CarrierWD);
+
+	}});
+	
+	/**ENEMY LIST for guidebook
+	 * 
+	 * index by page number
+	 */
+	public static final List<Integer> EnemyBookList = Collections.unmodifiableList(new ArrayList<Integer>() {{
+		add((int)ID.Ship.DestroyerShimakaze);
+		add((int)ID.Ship.BattleshipNagato);
+		add((int)ID.Ship.SubmarineU511);
+		add((int)ID.Ship.SubmarineRo500);
+		
+		add((int)ID.Ship.BattleshipYamato);
+		add((int)ID.Ship.CarrierKaga);
+		add((int)ID.Ship.CarrierAkagi);
 	}});
 	
 	
@@ -696,47 +737,6 @@ public class Values {
 								new int[] {1, 1, 69, -18, 0, 200, 76, 38, 38}));
 		//page 4: vortex
 		put(2004, Arrays.asList(new int[] {0, 0, 0, 0},
-								new int[] {0, 1, 0, 0}));
-		//chap 3: maintenance
-		//page 0: obtain ship
-		put(3000, Arrays.asList(new int[] {0, 0, 0, 0},
-								new int[] {0, 1, 0, 0}));
-		//page 1:
-		put(3001, Arrays.asList(new int[] {0, 0, 0, 0},
-								new int[] {0, 1, 0, 0}));
-		//page 2:
-		put(3002, Arrays.asList(new int[] {0, 0, 0, 0},
-								new int[] {0, 1, 0, 0}));
-		//page 3:
-		put(3003, Arrays.asList(new int[] {0, 0, 0, 0},
-								new int[] {0, 1, 0, 0}));
-		//page 4:
-		put(3004, Arrays.asList(new int[] {0, 0, 0, 0},
-								new int[] {0, 1, 0, 0}));
-		//page 5:
-		put(3005, Arrays.asList(new int[] {0, 0, 0, 0},
-								new int[] {0, 1, 0, 0}));
-		//page 6:
-		put(3006, Arrays.asList(new int[] {0, 0, 0, 0},
-								new int[] {0, 1, 0, 0}));
-		//page 7:
-		put(3007, Arrays.asList(new int[] {0, 0, 0, 0},
-								new int[] {0, 1, 0, 0}));
-		//page 8:
-		put(3008, Arrays.asList(new int[] {0, 0, 0, 0},
-								new int[] {0, 1, 0, 0}));
-		//page 9:
-		put(3009, Arrays.asList(new int[] {0, 0, 0, 0},
-								new int[] {0, 1, 0, 0}));
-		//page 10:
-		put(3010, Arrays.asList(new int[] {0, 0, 0, 0},
-								new int[] {0, 1, 0, 0}));
-		//page 11:
-		put(3011, Arrays.asList(new int[] {0, 0, 0, 0},
-								new int[] {0, 1, 0, 0}));
-		//chap 4: ship list
-		//page 0:
-		put(4000, Arrays.asList(new int[] {0, 0, 0, 0},
 								new int[] {0, 1, 0, 0}));
 		
 	}});

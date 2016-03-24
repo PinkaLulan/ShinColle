@@ -1,17 +1,32 @@
 package com.lulan.shincolle.entity.cruiser;
 
-import net.minecraft.entity.player.EntityPlayer;
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.entity.ExtendShipProps;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.network.S2CEntitySync;
+import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Reference;
+
+import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
 public class EntityHeavyCruiserNe extends BasicEntityShipSmall {
+	
+	private boolean isPushing = false;
+	private int tickPush = 0;
+	private EntityLivingBase targetPush = null;
+	
 	
 	public EntityHeavyCruiserNe(World world) {
 		super(world);
@@ -61,16 +76,92 @@ public class EntityHeavyCruiserNe extends BasicEntityShipSmall {
     public void onLivingUpdate() {
     	//check server side
     	if(!this.worldObj.isRemote) {
-    		//check every 5 sec
-    		if(this.ticksExisted % 100 == 0) {
+    		//check every 128 ticks
+    		if(this.ticksExisted % 128 == 0) {
 	    		//apply potion effect in the night
 	        	if(!this.worldObj.isDaytime() && this.getStateFlag(ID.F.UseRingEffect)) {	
         			this.addPotionEffect(new PotionEffect(Potion.moveSpeed.id, 300, 1));
         			this.addPotionEffect(new PotionEffect(Potion.jump.id, 300, 2));
         		}
+	        	
+	        	//push other people every 256 ticks
+	        	if(this.ticksExisted % 256 == 0) {
+	        		if(this.getRNG().nextInt(5) == 0 && !this.isSitting() && !this.isRiding() &&
+	        		   !this.getStateFlag(ID.F.NoFuel) && !this.getIsLeashed()) {
+	        			//find target
+	        			this.findTargetPush();
+	        		}
+	        	}
         	}
+    		
+    		//若要找騎乘目標
+        	if(this.isPushing) {
+        		this.tickPush++;
+        		
+        		//找太久, 放棄騎乘目標
+        		if(this.tickPush > 200 || this.targetPush == null) {
+        			this.cancelPush();
+        		}
+        		else {
+        			float distPush = this.getDistanceToEntity(this.targetPush);
+        			
+        			//每32 tick找一次路徑
+            		if(this.ticksExisted % 32 == 0) {
+            			if(distPush > 2F) {
+            				this.getShipNavigate().tryMoveToEntityLiving(this.targetPush, 1D);
+            			}
+            		}
+            		
+            		if(distPush <= 2.5F) {
+            			this.targetPush.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * 0.5F, 
+         	                   0.5D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * 0.5F);
+            			
+            			//for other player, send ship state for display
+            	  		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
+            	  		CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this.targetPush, 0, S2CEntitySync.PID.SyncEntity_Motion), point);
+					    
+					    //play entity attack sound
+					    this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+					    
+					    this.cancelPush();
+            		}
+        		}
+        	}//end push target
     	}
     	super.onLivingUpdate();
+    }
+    
+    private void cancelPush() {
+    	this.isPushing = false;
+    	this.tickPush = 0;
+    	this.targetPush = null;
+    }
+    
+    //find target to push
+    private void findTargetPush() {
+    	EntityLivingBase getEnt = null;
+        AxisAlignedBB impactBox = this.boundingBox.expand(12D, 6D, 12D); 
+        List hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, impactBox);
+        List<EntityLivingBase> canPushList = new ArrayList();
+        
+        //搜尋list, 找出第一個可以騎乘的目標
+        if(hitList != null && !hitList.isEmpty()) {
+            for(int i = 0; i < hitList.size(); ++i) {
+            	getEnt = (EntityLivingBase)hitList.get(i);
+            	
+            	//只騎乘同主人的棲艦或者主人
+        		if(getEnt != this) {
+        			canPushList.add(getEnt);
+        		}
+            }
+        }
+        
+        //從可騎乘目標中挑出一個目標騎乘
+        if(canPushList.size() > 0) {
+        	this.targetPush = canPushList.get(rand.nextInt(canPushList.size()));
+        	this.tickPush = 0;
+			this.isPushing = true;
+        }
     }
     
     @Override
@@ -87,6 +178,9 @@ public class EntityHeavyCruiserNe extends BasicEntityShipSmall {
   			return (double)this.height * 0.15F;
   		}
 	}
+
+	@Override
+	public void setShipOutfit(boolean isSneaking) {}
 
 
 }

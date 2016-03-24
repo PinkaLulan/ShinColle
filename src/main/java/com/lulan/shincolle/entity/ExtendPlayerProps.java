@@ -1093,6 +1093,8 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 	 *  2:target class list<br>
 	 *  3:team data<br>
 	 *  4:all ships in team list<br>
+	 *  5:collected ship list<br>
+	 *  6:collected equip list<br>
 	 */
 	public void sendSyncPacket(int type) {
 		if(world != null && !world.isRemote) {
@@ -1111,6 +1113,12 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 				break;
 			case 4:
 				CommonProxy.channelG.sendTo(new S2CGUIPackets(this, S2CGUIPackets.PID.SyncPlayerProp_ShipsAll), (EntityPlayerMP) player);
+				break;
+			case 5:
+				CommonProxy.channelG.sendTo(new S2CGUIPackets(S2CGUIPackets.PID.SyncPlayerProp_ColledShip, this.getColleShipList()), (EntityPlayerMP) player);
+				break;
+			case 6:
+				CommonProxy.channelG.sendTo(new S2CGUIPackets(S2CGUIPackets.PID.SyncPlayerProp_ColledEquip, this.getColleEquipList()), (EntityPlayerMP) player);
 				break;
 			}
 		}

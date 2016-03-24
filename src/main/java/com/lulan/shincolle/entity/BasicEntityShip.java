@@ -1672,7 +1672,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                     		}
                     		
                     		//update hp state
-                    		updateHPState();
+                    		updateEmotionState();
                     		
                     		//update mount
                     		updateMountSummon();
@@ -1743,8 +1743,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	        if(kbValue > 0) {
 	            target.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
 	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
-	            motionX *= 0.6D;
-	            motionZ *= 0.6D;
+	            this.motionX *= 0.6D;
+	            this.motionZ *= 0.6D;
 	        }
 
 	        //send packet to client for display partical effect   
@@ -2042,15 +2042,17 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	/** decr ammo, type: 0:light, 1:heavy */
 	protected boolean decrAmmoNum(int type, int amount) {
 		int ammoType = ID.M.NumAmmoLight;
+		boolean useItem = !hasAmmoLight();
 		
 		switch(type) {
 		case 1:   //use heavy ammo
 			ammoType = ID.M.NumAmmoHeavy;
+			useItem = !hasAmmoHeavy();
 			break;
 		}
 		
 		//check ammo first time
-		if(StateMinor[ammoType] <= amount || StateMinor[ammoType] <= this.getAmmoConsumption()) {
+		if(StateMinor[ammoType] <= amount || useItem) {
 			int addAmmo = 0;
 			
 			//use light ammo item
@@ -2433,7 +2435,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	}
 
   	//update hp state
-  	protected void updateHPState() {
+  	protected void updateEmotionState() {
   		float hpState = this.getHealth() / this.getMaxHealth();
 		
 		//check hp state
@@ -2598,6 +2600,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	    }
   	    super.setDead();
     }
+  	
+  	
+  	/** change ship outfit by right click cake on ship */
+  	abstract public void setShipOutfit(boolean isSneaking); 
   	
   	
 }

@@ -566,6 +566,12 @@ public class ParticleHelper {
 			EntityFXLaserNoTexture laser1 = new EntityFXLaserNoTexture(world, host, par1, par2, par3, 0.1F, 3);
 			Minecraft.getMinecraft().effectRenderer.addEffect(laser1);
 			break;
+		case 9:		//small sticky lightning
+			EntityFXStickyLightning light5 = new EntityFXStickyLightning(world, ent, (float)par1, (int)par2, (int)par3);
+        	Minecraft.getMinecraft().effectRenderer.addEffect(light5);
+        	EntityFXStickyLightning light6 = new EntityFXStickyLightning(world, ent, (float)par1, (int)par2, (int)par3);
+        	Minecraft.getMinecraft().effectRenderer.addEffect(light6);
+			break;
 		default:
 			break;
 		}

@@ -48,7 +48,7 @@ public class GuiHandler implements IGuiHandler {
             if(entity != null && entity instanceof BasicEntityShip){
             	//get ship class id and register to player data for ship list recording
             	int cid = ((BasicEntityShip)entity).getShipClass();
-            	EntityHelper.addPlayerShipListData(cid, player);
+            	EntityHelper.addPlayerColledShip(cid, player);
             	
             	//sync ship when gui opened
             	((BasicEntityShip)entity).sendSyncPacketAllValue();
@@ -73,10 +73,12 @@ public class GuiHandler implements IGuiHandler {
 				//sync tile when gui opened
 				((TileEntityDesk)tile).sendSyncPacket();
 				
-				//sync team list to client
+				//sync data to client
 				ExtendPlayerProps props = EntityHelper.getExtendPlayerProps(player);
 				props.sendSyncPacket(2);
 				props.sendSyncPacket(3);
+				props.sendSyncPacket(5);
+				props.sendSyncPacket(6);
 				
 				return new ContainerDesk(player.inventory, (TileEntityDesk) tile, player, 0);
 			}

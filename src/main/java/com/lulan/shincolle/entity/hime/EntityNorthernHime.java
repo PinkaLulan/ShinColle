@@ -247,36 +247,7 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
 		//use cake to change state
 		if(itemstack != null) {
 			if(itemstack.getItem() == Items.cake) {
-				//切換裝備顯示
-				if(player.isSneaking()) {
-					switch(getStateEmotion(ID.S.State2)) {
-					case ID.State.EQUIP00_2:
-						setStateEmotion(ID.S.State2, ID.State.EQUIP01_2, true);
-						break;
-					case ID.State.EQUIP01_2:
-						setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
-						break;
-					default:
-						setStateEmotion(ID.S.State2, ID.State.EQUIP00_2, true);
-						break;
-					}
-				}
-				else {
-					switch(getStateEmotion(ID.S.State)) {
-					case ID.State.EQUIP00:
-						setStateEmotion(ID.S.State, ID.State.EQUIP01, true);
-						break;
-					case ID.State.EQUIP01:
-						setStateEmotion(ID.S.State, ID.State.EQUIP02, true);
-						break;
-					case ID.State.EQUIP02:
-						setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-						break;
-					default:
-						setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
-						break;
-					}
-				}
+				this.setShipOutfit(player.isSneaking());
 				return true;
 			}
 		}
@@ -474,6 +445,40 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
   		else {
   			return (double)this.height * 0.3F;
   		}
+	}
+
+	@Override
+	public void setShipOutfit(boolean isSneaking) {
+		//切換裝備顯示
+		if(isSneaking) {
+			switch(getStateEmotion(ID.S.State2)) {
+			case ID.State.EQUIP00_2:
+				setStateEmotion(ID.S.State2, ID.State.EQUIP01_2, true);
+				break;
+			case ID.State.EQUIP01_2:
+				setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
+				break;
+			default:
+				setStateEmotion(ID.S.State2, ID.State.EQUIP00_2, true);
+				break;
+			}
+		}
+		else {
+			switch(getStateEmotion(ID.S.State)) {
+			case ID.State.EQUIP00:
+				setStateEmotion(ID.S.State, ID.State.EQUIP01, true);
+				break;
+			case ID.State.EQUIP01:
+				setStateEmotion(ID.S.State, ID.State.EQUIP02, true);
+				break;
+			case ID.State.EQUIP02:
+				setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+				break;
+			default:
+				setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+				break;
+			}
+		}
 	}
 
 

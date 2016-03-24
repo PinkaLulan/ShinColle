@@ -11,7 +11,6 @@ import com.lulan.shincolle.entity.ExtendShipProps;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 public class EntityCarrierWo extends BasicEntityShipLarge {
@@ -59,8 +58,8 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
   	public void calcShipAttributes() {
   		super.calcShipAttributes();
   		
-  		this.maxAircraftLight += 10;
-  		this.maxAircraftHeavy += 8;
+  		this.maxAircraftLight += this.getLevel() * 0.2F;
+  		this.maxAircraftHeavy += this.getLevel() * 0.1F;
   	}
       
     @Override
@@ -121,17 +120,7 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
 		//use cake to change state
 		if(itemstack != null) {
 			if(itemstack.getItem() == Items.cake) {
-				switch(getStateEmotion(ID.S.State)) {
-				case ID.State.NORMAL:
-					setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
-					break;
-				case ID.State.EQUIP00:
-					setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-					break;
-				default:
-					setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-					break;
-				}
+				this.setShipOutfit(player.isSneaking());
 				return true;
 			}
 		}
@@ -168,6 +157,21 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
       			return (double)this.height * 0.68D;
       		}
     	}
+	}
+
+	@Override
+	public void setShipOutfit(boolean isSneaking) {
+		switch(getStateEmotion(ID.S.State)) {
+		case ID.State.NORMAL:
+			setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+			break;
+		case ID.State.EQUIP00:
+			setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+			break;
+		default:
+			setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+			break;
+		}
 	}
 	
 

@@ -261,7 +261,7 @@ public class ModelCarrierWDemon extends ModelBase implements IModelEmotion {
         this.Butt.setRotationPoint(0.0F, 4.0F, 1.3F);
         this.Butt.addBox(-7.5F, 0.0F, -5.7F, 15, 8, 8, 0.0F);
         this.Face0 = new ModelRenderer(this, 98, 53);
-        this.Face0.setRotationPoint(0.0F, 0.0F, -0.8F);
+        this.Face0.setRotationPoint(0.0F, 0.0F, -0.1F);
         this.Face0.addBox(-7.0F, -14.2F, -6.5F, 14, 14, 1, 0.0F);
         this.Face3 = new ModelRenderer(this, 98, 98);
         this.Face3.setRotationPoint(0.0F, 0.0F, -0.1F);
@@ -572,8 +572,8 @@ public class ModelCarrierWDemon extends ModelBase implements IModelEmotion {
 			this.Hair02.rotateAngleX += 0.43F;
 			this.Hair03.rotateAngleX += 0.49F;
 			//¯Ý³¡
-	  	    this.BoobL.rotateAngleX = angleAdd1 * 0.1F - 0.83F;
-	  	    this.BoobR.rotateAngleX = angleAdd2 * 0.1F - 0.83F;
+	  	    this.BoobL.rotateAngleX = angleAdd2 * 0.1F - 0.83F;
+	  	    this.BoobR.rotateAngleX = angleAdd1 * 0.1F - 0.83F;
 	    	//arm 
 		  	this.ArmLeft01.rotateAngleX = angleAdd2 * 0.6F + 0.2618F;
 		  	this.ArmLeft01.rotateAngleY = 0F;
