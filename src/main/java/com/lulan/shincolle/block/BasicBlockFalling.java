@@ -11,33 +11,33 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 
 public class BasicBlockFalling extends BlockFalling {
 
-	//«ü©w¤è¶ôÃş«¬block
+	//æŒ‡å®šæ–¹å¡Šé¡å‹block
 	public BasicBlockFalling(Material material) {
 		super(material);
-		this.setCreativeTab(CreativeTabSC.SC_TAB);	//¥[¤J¨ìcreative tab¤¤
+		this.setCreativeTab(CreativeTabSC.SC_TAB);	//åŠ å…¥åˆ°creative tabä¸­
 	}
 	
-	//µL«ü©wÃş«¬®É ¹w³]¬°rock«¬
+	//ç„¡æŒ‡å®šé¡å‹æ™‚ é è¨­ç‚ºrockå‹
 	public BasicBlockFalling() {
 		this(Material.rock);
-		this.setCreativeTab(CreativeTabSC.SC_TAB);	//¥[¤J¨ìcreative tab¤¤
+		this.setCreativeTab(CreativeTabSC.SC_TAB);	//åŠ å…¥åˆ°creative tabä¸­
 	}
 	
-	//name³]©w¥Î¤èªk: ±N­ì¥»mcµ¹ªºblock¦WºÙ ¥h±¼.¤§«eªº¦r¦ê ¥H«K¥t¥~¦ê¤Wmod¦WºÙ§Î¦¨ªº¦r¦ê
+	//nameè¨­å®šç”¨æ–¹æ³•: å°‡åŸæœ¬mcçµ¦çš„blockåç¨± å»æ‰.ä¹‹å‰çš„å­—ä¸² ä»¥ä¾¿å¦å¤–ä¸²ä¸Šmodåç¨±å½¢æˆçš„å­—ä¸²
 	protected String getUnwrappedUnlocalizedName(String unlocalizedName) {
 		return unlocalizedName.substring(unlocalizedName.indexOf(".")+1);
 	}
 	
-	//±Nname«a¤Wmod¦WºÙ ¥Î©ó¤§«áµ¹¦U»y¨tÀÉ®×©ñ¤W¥¿½T¦WºÙ
-	//®æ¦¡¬°tile.MOD¦WºÙ:¤è¶ô¦WºÙ.name
+	//å°‡nameå† ä¸Šmodåç¨± ç”¨æ–¼ä¹‹å¾Œçµ¦å„èªç³»æª”æ¡ˆæ”¾ä¸Šæ­£ç¢ºåç¨±
+	//æ ¼å¼ç‚ºtile.MODåç¨±:æ–¹å¡Šåç¨±.name
 	@Override
 	public String getUnlocalizedName() {
 		return String.format("tile.%s%s", Reference.MOD_ID+":", getUnwrappedUnlocalizedName(super.getUnlocalizedName()));
 	}
 	
-	//¤è¶ô¹Ï¥Üµn¿ı
-	//¨ú¥X¤è¶ô¦WºÙ(¤£§tmod¦WºÙ)§@¬°°Ñ¼Æ¥áµ¹icon register¨Óµn¿ıicon
-	//ª`·Nicon¥u¦bclientºİ¤~»İ­n°õ¦æ
+	//æ–¹å¡Šåœ–ç¤ºç™»éŒ„
+	//å–å‡ºæ–¹å¡Šåç¨±(ä¸å«modåç¨±)ä½œç‚ºåƒæ•¸ä¸Ÿçµ¦icon registerä¾†ç™»éŒ„icon
+	//æ³¨æ„iconåªåœ¨clientç«¯æ‰éœ€è¦åŸ·è¡Œ
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerBlockIcons(IIconRegister iconRegister) {

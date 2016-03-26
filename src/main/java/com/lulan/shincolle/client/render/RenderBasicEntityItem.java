@@ -15,7 +15,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderBasicEntityItem extends Render {
     
-	//¶K¹ÏÀÉ¸ô®|
+	//è²¼åœ–æª”è·¯å¾‘
 	private static final ResourceLocation entityTexture = new ResourceLocation(Reference.TEXTURES_ENTITY+"ModelBasicEntityItem.png");
 	private ModelBasicEntityItem model;
 
@@ -35,18 +35,18 @@ public class RenderBasicEntityItem extends Render {
         
         //render start
         GL11.glPushMatrix();
-//        GL11.glDisable(GL11.GL_CULL_FACE);	//«OÃÒmodel¥ş³¡³£µe¥X¨Ó, ¤£¬O¥uµe¬İ±o¨ìªº­±
+//        GL11.glDisable(GL11.GL_CULL_FACE);	//ä¿è­‰modelå…¨éƒ¨éƒ½ç•«å‡ºä¾†, ä¸æ˜¯åªç•«çœ‹å¾—åˆ°çš„é¢
         
         //model position set to center
         GL11.glTranslatef((float)offsetX, (float)offsetY+0.3F, (float)offsetZ);   		
 
-        //parm: entity, f¨Ì²¾°Ê³t«×, f1¨Ì²¾°Ê³t«×, f2»¼¼W, f3¥ª¥k¨¤«×, f4¤W¤U¨¤«×, f5(scale)
+        //parm: entity, fä¾ç§»å‹•é€Ÿåº¦, f1ä¾ç§»å‹•é€Ÿåº¦, f2éå¢, f3å·¦å³è§’åº¦, f4ä¸Šä¸‹è§’åº¦, f5(scale)
         this.model.render(entity, entity.ticksExisted, 0F, 0F, 0F, 0F, 0.0625F);
 
         GL11.glPopMatrix();       
     }
 
-    //¶Ç¤Jentityªº³£Âà¦¨abyssmissile
+    //å‚³å…¥entityçš„éƒ½è½‰æˆabyssmissile
     @Override
 	public void doRender(Entity entity, double offsetX, double offsetY, double offsetZ, float p_76986_8_, float p_76986_9_) {
     	this.doRender((BasicEntityItem)entity, offsetX, offsetY, offsetZ, p_76986_8_, p_76986_9_);

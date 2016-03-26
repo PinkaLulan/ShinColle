@@ -83,13 +83,11 @@ public class EntityCarrierWD extends BasicEntityShipLarge {
 		return 1;
 	}
 	
-	//»´§ğÀ», ¯S®Ä¬°Âù¥ú§ô¯¥
+	//è¼•æ”»æ“Š, ç‰¹æ•ˆç‚ºé›™å…‰æŸç ²
 	@Override
 	public boolean attackEntityWithAmmo(Entity target) {
 		//get attack value
 		float atk = CalcHelper.calcDamageByEquipEffect(this, target, StateFinal[ID.ATK], 0);
-		//set knockback value (testing)
-		float kbValue = 0.05F;
 				
         //experience++
   		addShipExp(2);
@@ -124,7 +122,7 @@ public class EntityCarrierWD extends BasicEntityShipLarge {
         	shotHeight = 0.8D;
         }
         
-        //µo®gªÌ·ÏÃú¯S®Ä
+        //ç™¼å°„è€…ç…™éœ§ç‰¹æ•ˆ
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, target, shotHeight, 0D, 0D, 0, true), point);
 
@@ -178,20 +176,12 @@ public class EntityCarrierWD extends BasicEntityShipLarge {
       		}
   		}
       		
-	    //±Natk¸òattacker¶Çµ¹¥Ø¼ĞªºattackEntityFrom¤èªk, ¦b¥Ø¼Ğclass¤¤­pºâ¶Ë®`
-	    //¨Ã¥B¦^¶Ç¬O§_¦¨¥\¶Ë®`¨ì¥Ø¼Ğ
+	    //å°‡atkè·Ÿattackerå‚³çµ¦ç›®æ¨™çš„attackEntityFromæ–¹æ³•, åœ¨ç›®æ¨™classä¸­è¨ˆç®—å‚·å®³
+	    //ä¸¦ä¸”å›å‚³æ˜¯å¦æˆåŠŸå‚·å®³åˆ°ç›®æ¨™
 	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this).setProjectile(), atk);
 
 	    //if attack success
 	    if(isTargetHurt) {
-	    	//calc kb effect
-	        if(kbValue > 0) {
-	            target.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
-	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
-	            motionX *= 0.6D;
-	            motionZ *= 0.6D;
-	        }
-	        
         	//display hit particle on target
 	        TargetPoint point1 = new TargetPoint(this.dimension, target.posX, target.posY, target.posZ, 64D);
 			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 9, false), point1);
@@ -200,13 +190,13 @@ public class EntityCarrierWD extends BasicEntityShipLarge {
 	    return isTargetHurt;
 	}
   	
-  	//¸T¥Î­««¬§ğÀ»
+  	//ç¦ç”¨é‡å‹æ”»æ“Š
   	@Override
   	public boolean attackEntityWithHeavyAmmo(Entity target) {
   		return false;
   	}
 	
-  	//Á×§K¸òrider2¸I¼²
+  	//é¿å…è·Ÿrider2ç¢°æ’
   	@Override
 	public boolean canBePushed() {
         return this.ridingEntity == null;
@@ -235,7 +225,7 @@ public class EntityCarrierWD extends BasicEntityShipLarge {
 		return ModelPos;
 	}
   	
-  	//³QÃM­¼ªº°ª«×
+  	//è¢«é¨ä¹˜çš„é«˜åº¦
   	@Override
 	public double getMountedYOffset() {
   		if(this.isSitting()) {
@@ -248,7 +238,7 @@ public class EntityCarrierWD extends BasicEntityShipLarge {
 
 	@Override
 	public void setShipOutfit(boolean isSneaking) {
-		//¤Á´«¸Ë³ÆÅã¥Ü
+		//åˆ‡æ›è£å‚™é¡¯ç¤º
 		if(isSneaking) {
 			switch(getStateEmotion(ID.S.State2)) {
 			default:
@@ -260,7 +250,7 @@ public class EntityCarrierWD extends BasicEntityShipLarge {
 				break;
 			}
 		}
-		//¤Á´«¬O§_ÃM­¼®yÃM
+		//åˆ‡æ›æ˜¯å¦é¨ä¹˜åº§é¨
 		else {
 			switch(getStateEmotion(ID.S.State)) {
 			default:

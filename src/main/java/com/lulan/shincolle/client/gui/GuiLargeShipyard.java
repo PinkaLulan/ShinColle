@@ -49,10 +49,10 @@ public class GuiLargeShipyard extends GuiContainer {
 		tickGUI += 0.125F;
 	}
 	
-	//GUI«e´º: ¤å¦r 
+	//GUIå‰æ™¯: æ–‡å­— 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int i, int j) {
-		//¨ú±oguiÅã¥Ü¦WºÙ
+		//å–å¾—guié¡¯ç¤ºåç¨±
 		name = I18n.format("container.shincolle:LargeShipyard");
 		time = this.tile.getBuildTimeString();
 		matBuild0 = String.valueOf(this.tile.getMatBuild(0));
@@ -64,12 +64,12 @@ public class GuiLargeShipyard extends GuiContainer {
 		matStock2 = String.valueOf(this.tile.getMatStock(2));
 		matStock3 = String.valueOf(this.tile.getMatStock(3));
 		
-		//µe¥X¦r¦ê parm: string, x, y, color, (¬O§_dropShadow)
-		//µe¥X¸Ó¤è¶ô¦WºÙ, ¦ì¸m: x=gui¼e«×ªº¤@¥b¦©±¼¦r¦êªø«×¤@¥b, y=6, ÃC¦â¬°4210752
+		//ç•«å‡ºå­—ä¸² parm: string, x, y, color, (æ˜¯å¦dropShadow)
+		//ç•«å‡ºè©²æ–¹å¡Šåç¨±, ä½ç½®: x=guiå¯¬åº¦çš„ä¸€åŠæ‰£æ‰å­—ä¸²é•·åº¦ä¸€åŠ, y=6, é¡è‰²ç‚º4210752
 		this.fontRendererObj.drawString(name, this.xSize / 2 - this.fontRendererObj.getStringWidth(name) / 2, 6, 4210752);
-		//µe¥X­Ë¼Æ®É¶¡
+		//ç•«å‡ºå€’æ•¸æ™‚é–“
 		this.fontRendererObj.drawString(time, 176 - this.fontRendererObj.getStringWidth(time) / 2, 77, 4210752);
-		//µe¥X´£¥Ü°T®§
+		//ç•«å‡ºæç¤ºè¨Šæ¯
 		if(tile.getPowerGoal() <= 0 && tile.getBuildType() != 0) {
 			errorMsg = I18n.format("gui.shincolle:nomaterial");
 			this.fontRendererObj.drawString(errorMsg, 105 - this.fontRendererObj.getStringWidth(errorMsg) / 2, 99, 16724787);
@@ -78,7 +78,7 @@ public class GuiLargeShipyard extends GuiContainer {
 			errorMsg = I18n.format("gui.shincolle:nofuel");
 			this.fontRendererObj.drawString(errorMsg, 105 - this.fontRendererObj.getStringWidth(errorMsg) / 2, 99, 16724787);
 		}
-		//µe¥X¼Æ¦r
+		//ç•«å‡ºæ•¸å­—
 		int colorNum = 0;
 		if(this.tile.getMatBuild(0) < 100) colorNum = Values.Color.RED;
 		else if(this.tile.getMatBuild(0) == 1000) colorNum = Values.Color.YELLOW;
@@ -108,21 +108,21 @@ public class GuiLargeShipyard extends GuiContainer {
 		handleHoveringText();
 	}
 
-	//GUI­I´º: ­I´º¹Ï¤ù
+	//GUIèƒŒæ™¯: èƒŒæ™¯åœ–ç‰‡
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float par1,int par2, int par3) {
 //		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);	//RGBA
-        Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE_BG); //GUI¹ÏÀÉ
-        drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);	//GUI¤j¤p³]©w
+        Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE_BG); //GUIåœ–æª”
+        drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);	//GUIå¤§å°è¨­å®š
        
-        //µe¥Xfuel¦s¶q±ø
+        //ç•«å‡ºfuelå­˜é‡æ¢
         int scaleBar; 
         if(tile.hasPowerRemained()) {
-            scaleBar = tile.getPowerRemainingScaled(64);	//±m¦â¶i«×±øªø«×64	
+            scaleBar = tile.getPowerRemainingScaled(64);	//å½©è‰²é€²åº¦æ¢é•·åº¦64	
             drawTexturedModalRect(guiLeft+9, guiTop+83-scaleBar, 208, 64-scaleBar, 12, scaleBar);
         }
 
-        //µe¥Xtype¿ï¾Ü®Ø
+        //ç•«å‡ºtypeé¸æ“‡æ¡†
         switch(tile.getBuildType()) {
         case ID.Build.SHIP:
         	drawTexturedModalRect(guiLeft+157, guiTop+24, 208, 64, 18, 18);
@@ -180,13 +180,13 @@ public class GuiLargeShipyard extends GuiContainer {
         	break;
         }
         
-        //µe¥X¸ê§÷¼Æ¶q«ö¶s (50,8)
+        //ç•«å‡ºè³‡ææ•¸é‡æŒ‰éˆ• (50,8)
         drawTexturedModalRect(guiLeft+50, guiTop+8+tile.getSelectMat()*19, 0, 223, 48, 30);
         
-        //µe¥X¸ê§÷¿ï¾Ü®Ø (27,14)
+        //ç•«å‡ºè³‡æé¸æ“‡æ¡† (27,14)
         drawTexturedModalRect(guiLeft+27, guiTop+14+tile.getSelectMat()*19, 208, 64, 18, 18);
 	
-        //µe¥Xinventory mode«ö¶s (23,92)
+        //ç•«å‡ºinventory modeæŒ‰éˆ• (23,92)
         if(tile.getInvMode() == 1) {	//iutput mode
         	drawTexturedModalRect(guiLeft+23, guiTop+92, 208, 82, 25, 20);
         }   
@@ -194,7 +194,7 @@ public class GuiLargeShipyard extends GuiContainer {
 	
 	//draw tooltip
 	private void handleHoveringText() {		
-		//µe¥Xfuel¦s¶q (8,19,22,84)
+		//ç•«å‡ºfuelå­˜é‡ (8,19,22,84)
 		if(xMouse > 8+guiLeft && xMouse < 22+guiLeft && yMouse > 19+guiTop && yMouse < 84+guiTop) {
 			List list = new ArrayList();
 			String strFuel = String.valueOf(tile.getPowerRemained());
@@ -259,7 +259,7 @@ public class GuiLargeShipyard extends GuiContainer {
         	break;
         case 2:	//inventory mode
         	if(invMode == 0) {
-        		invMode = 1;	//­ì¥»¬°input mode, §ï¬°output mode
+        		invMode = 1;	//åŸæœ¬ç‚ºinput mode, æ”¹ç‚ºoutput mode
         	}
         	else {
         		invMode = 0;

@@ -301,7 +301,7 @@ public class ID {
 	
 	/**ship state2*/
 	public static final class HPState {
-		public static final byte NORMAL = 0;	//無受損
+		public static final byte NORMAL = 0;	//正常
 		public static final byte MINOR = 1;		//小破
 		public static final byte MODERATE = 2;	//中破
 		public static final byte HEAVY = 3;		//大破
@@ -452,73 +452,73 @@ public class ID {
 		public static final byte ModHIT = 11;
 	}
 	
-	/** ship damage type for damage calc */
+	/** ship type for damage calc */
 	public static final class ShipDmgType {
-		public static final byte UNDEFINED = 0;			//其他, 未定義
-		public static final byte CARRIER = 1;			//空母
+		public static final byte UNDEFINED = 0;			//未定義
+		public static final byte CARRIER = 1;			//航母
 		public static final byte AVIATION = 2;			//航戰
 		public static final byte BATTLESHIP	= 3;		//戰艦
 		public static final byte CRUISER = 4;			//巡洋
 		public static final byte DESTROYER = 5;			//驅逐
 		public static final byte SUBMARINE = 6;			//潛艇
-		public static final byte AIRPLANE = 7;			//飛行物
+		public static final byte AIRPLANE = 7;			//飛機
 	}
 	
 	/** ship type for GUI display */
 	public static final class ShipType {				//for GUI display
-		public static final byte DESTROYER = 0;			//驅逐艦DD
-		public static final byte LIGHT_CRUISER = 1;		//輕巡洋艦CL
-		public static final byte HEAVY_CRUISER = 2;		//重巡洋艦CA 航巡CAV
-		public static final byte TORPEDO_CRUISER = 3;	//重雷裝巡洋艦CLT
-		public static final byte LIGHT_CARRIER = 4;		//輕航空母艦CVL
-		public static final byte STANDARD_CARRIER = 5;	//正規航空母艦CV
-		public static final byte BATTLESHIP	= 6;		//戰艦BB 航戰BBV
-		public static final byte TRANSPORT = 7;			//運輸艦AP
-		public static final byte SUBMARINE = 8;			//潛水艇SS
-		public static final byte DEMON = 9;				//鬼級, 水鬼級
-		public static final byte HIME = 10;				//姬級
+		public static final byte DESTROYER = 0;			//DD
+		public static final byte LIGHT_CRUISER = 1;		//CL
+		public static final byte HEAVY_CRUISER = 2;		//CA CAV
+		public static final byte TORPEDO_CRUISER = 3;	//CLT
+		public static final byte LIGHT_CARRIER = 4;		//CVL
+		public static final byte STANDARD_CARRIER = 5;	//CV
+		public static final byte BATTLESHIP	= 6;		//BB BBV
+		public static final byte TRANSPORT = 7;			//AR AO
+		public static final byte SUBMARINE = 8;			//SS
+		public static final byte DEMON = 9;				//demon + water demon
+		public static final byte HIME = 10;				//princess
 	}
 	
-	/** ship consumption ID */
+	/** ship type for consumption ID */
 	public static final class ShipConsume {
 		/** ship type */
-		public static final byte DD = 0;  //驅逐
-		public static final byte CL = 1;  //輕巡
-		public static final byte CA = 2;  //重巡
-		public static final byte CAV = 3; //航巡
-		public static final byte CLT = 4; //雷巡
-		public static final byte CVL = 5; //輕母
-		public static final byte CV	= 6;  //空母
-		public static final byte BB = 7;  //戰艦
-		public static final byte BBV = 8; //航戰
-		public static final byte SS = 9;  //潛艇
-		public static final byte AP = 10; //運輸
+		public static final byte DD = 0;
+		public static final byte CL = 1;
+		public static final byte CA = 2;
+		public static final byte CAV = 3;
+		public static final byte CLT = 4;
+		public static final byte CVL = 5;
+		public static final byte CV	= 6;
+		public static final byte BB = 7;
+		public static final byte BBV = 8;
+		public static final byte SS = 9;
+		public static final byte AP = 10;
 		/** ship action */
-		public static final byte LAtk = 0;	//輕攻擊
-		public static final byte HAtk = 1;	//重攻擊
-		public static final byte LAir = 2;	//輕艦載機
-		public static final byte HAir = 3;	//重艦載機
-		public static final byte Move = 4;	//移動
+		public static final byte LAtk = 0;
+		public static final byte HAtk = 1;
+		public static final byte LAir = 2;
+		public static final byte HAir = 3;
+		public static final byte Move = 4;
 	}
 	
-	/** ship state */
+	/** ship state for equip model display */
 	public static final class State {
 		/** for ID.S.State */
-		public static final byte NORMAL = 0;		//無狀態
-		public static final byte EQUIP00 = 20;		//艤裝狀態0
-		public static final byte EQUIP01 = 30;		//艤裝狀態1
-		public static final byte EQUIP02 = 40;		//艤裝狀態2
-		public static final byte EQUIP03 = 50;		//艤裝狀態3
-		public static final byte EQUIP04 = 60;		//艤裝狀態4
-		public static final byte EQUIP05 = 70;		//艤裝狀態5
+		public static final byte NORMAL = 0;
+		public static final byte EQUIP00 = 20;
+		public static final byte EQUIP01 = 30;
+		public static final byte EQUIP02 = 40;
+		public static final byte EQUIP03 = 50;
+		public static final byte EQUIP04 = 60;
+		public static final byte EQUIP05 = 70;
 		/** for ID.S.State2 */
-		public static final byte NORMAL_2 = 0;		//無狀態
-		public static final byte EQUIP00_2 = 1;		//艤裝狀態0
-		public static final byte EQUIP01_2 = 2;		//艤裝狀態1
-		public static final byte EQUIP02_2 = 3;		//艤裝狀態2
-		public static final byte EQUIP03_2 = 4;		//艤裝狀態3
-		public static final byte EQUIP04_2 = 5;		//艤裝狀態4
-		public static final byte EQUIP05_2 = 6;		//艤裝狀態5
+		public static final byte NORMAL_2 = 0;
+		public static final byte EQUIP00_2 = 1;
+		public static final byte EQUIP01_2 = 2;
+		public static final byte EQUIP02_2 = 3;
+		public static final byte EQUIP03_2 = 4;
+		public static final byte EQUIP04_2 = 5;
+		public static final byte EQUIP05_2 = 6;
 	}
 
 	/** StateEquip, StateFinal, BonusPoint, TypeModify */

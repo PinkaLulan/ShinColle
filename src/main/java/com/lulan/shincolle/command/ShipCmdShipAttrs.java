@@ -91,12 +91,7 @@ public class ShipCmdShipAttrs extends BasicShipCommand {
 		int senderEID = -1;
 		boolean isOP = false;
 		
-		//client
-		if(world.isRemote) {
-//			LogHelper.info("DEBUG : cmd client "+sender+" "+cmd);
-		}
-		//server
-		else {
+		if(!world.isRemote) {
 			//check sender is player
 			if(sender instanceof EntityPlayer) {
 				op = (EntityPlayer) sender;
@@ -105,7 +100,7 @@ public class ShipCmdShipAttrs extends BasicShipCommand {
 				
 				//need owner parm
 				if(cmd.length != 7) {
-					sender.addChatMessage(new ChatComponentText("Command: ShipAttrs: invalid parameter!"));
+					sender.addChatMessage(new ChatComponentText("Command: ShipAttrs: invalid parameter! (required 7 parms)"));
 					return;
 				}
 				//has owner parm and sender is OP

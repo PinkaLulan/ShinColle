@@ -33,7 +33,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
 	
 	public EntityDestroyerShimakaze(World world) {
 		super(world);
-		this.setSize(0.6F, 1.8F);	//¸I¼²¤j¤p ¸ò¼Ò«¬¤j¤pµLÃö
+		this.setSize(0.6F, 1.8F);	//ç¢°æ’å¤§å° è·Ÿæ¨¡å‹å¤§å°ç„¡é—œ
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.DESTROYER);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.DestroyerShimakaze);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
@@ -107,7 +107,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
 		return false;
   	}
   	
-  	//©Û³ê³s¸Ë¯¥¶i¦æ§ğÀ»
+  	//æ‹›å–šé€£è£ç ²é€²è¡Œæ”»æ“Š
   	@Override
   	public boolean attackEntityWithAmmo(Entity target) {
   		//check num rensouhou
@@ -134,7 +134,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
   		//grudge--
   		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk] * 4);
 
-        //µo®gªÌ·ÏÃú¯S®Ä (©Û³ê³s¸Ë¯¥¤£¨Ï¥Î¯S®Ä, ¦ı¬O­nµo°e«Ê¥]¨Ó³]©wattackTime)
+        //ç™¼å°„è€…ç…™éœ§ç‰¹æ•ˆ (æ‹›å–šé€£è£ç ²ä¸ä½¿ç”¨ç‰¹æ•ˆ, ä½†æ˜¯è¦ç™¼é€å°åŒ…ä¾†è¨­å®šattackTime)
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
   		
@@ -154,16 +154,16 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
         return false;
 	}
   	
-  	//¤­³s¸Ë»Ä¯À³½¹p
+  	//äº”é€£è£é…¸ç´ é­šé›·
   	@Override
   	public boolean attackEntityWithHeavyAmmo(Entity target) {	
 		//get attack value
 		float atk = StateFinal[ID.ATK_H] * 0.3F;
 		float kbValue = 0.15F;
 		
-		//­¸¼u¬O§_±Ä¥Îª½®g
+		//é£›å½ˆæ˜¯å¦æ¡ç”¨ç›´å°„
 		boolean isDirect = false;
-		//­pºâ¥Ø¼Ğ¶ZÂ÷
+		//è¨ˆç®—ç›®æ¨™è·é›¢
 		float tarX = (float)target.posX;	//for miss chance calc
 		float tarY = (float)target.posY;
 		float tarZ = (float)target.posZ;
@@ -173,7 +173,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
         float distSqrt = MathHelper.sqrt_float(distX*distX + distY*distY + distZ*distZ);
         float launchPos = (float)posY + height * 0.7F;
         
-        //¶W¹L¤@©w¶ZÂ÷/¤ô¤¤ , «h±Ä¥Î©ßª«½u,  ¦b¤ô¤¤®Éµo®g°ª«×¸û§C
+        //è¶…éä¸€å®šè·é›¢/æ°´ä¸­ , å‰‡æ¡ç”¨æ‹‹ç‰©ç·š,  åœ¨æ°´ä¸­æ™‚ç™¼å°„é«˜åº¦è¼ƒä½
         if((distX*distX+distY*distY+distZ*distZ) < 36F) {
         	isDirect = true;
         }
@@ -214,7 +214,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
         	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
         }
         
-        //µo®gªÌ·ÏÃú¯S®Ä (¤£¨Ï¥Î¯S®Ä, ¦ı¬O­nµo°e«Ê¥]¨Ó³]©wattackTime)
+        //ç™¼å°„è€…ç…™éœ§ç‰¹æ•ˆ (ä¸ä½¿ç”¨ç‰¹æ•ˆ, ä½†æ˜¯è¦ç™¼é€å°åŒ…ä¾†è¨­å®šattackTime)
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
 

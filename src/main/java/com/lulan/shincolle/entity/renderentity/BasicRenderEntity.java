@@ -10,7 +10,7 @@ abstract public class BasicRenderEntity extends Entity {
 	
 	public BasicRenderEntity(World world) {
 		super(world);
-		this.ignoreFrustumCheck = true;	//§Y¨Ï¤£¦bµø½u¤º¤@¼Ërender
+		this.ignoreFrustumCheck = true;	//å³ä½¿ä¸åœ¨è¦–ç·šå…§ä¸€æ¨£render
 	}
 	
 	@Override

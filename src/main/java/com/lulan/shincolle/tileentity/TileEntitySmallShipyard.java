@@ -38,12 +38,12 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ITileLiq
 	private FluidTank tank = new FluidTank(new FluidStack(F_LAVA, 0), TANKCAPA);
 	
 	//furnace
-	private int consumedPower = 0;	//¤wªá¶Oªº¯à¶q
-	private int remainedPower = 0;	//³Ñ¾l¿U®Æ
-	private int goalPower = 0;		//»İ­n¹F¦¨ªº¥Ø¼Ğ¯à¶q
+	private int consumedPower = 0;	//å·²èŠ±è²»çš„èƒ½é‡
+	private int remainedPower = 0;	//å‰©é¤˜ç‡ƒæ–™
+	private int goalPower = 0;		//éœ€è¦é”æˆçš„ç›®æ¨™èƒ½é‡
 	private int buildType = 0;		//type 0:none 1:ship 2:equip 3:ship loop 4: equip loop
 	private int[] buildRecord = new int[] {0, 0, 0, 0};
-	private boolean isActive;		//¬O§_¥¿¦b«Ø³y¤¤, ¦¹¬°¬ö¿ıisBuilding¬O§_¦³ÅÜ¤Æ¥Î
+	private boolean isActive;		//æ˜¯å¦æ­£åœ¨å»ºé€ ä¸­, æ­¤ç‚ºç´€éŒ„isBuildingæ˜¯å¦æœ‰è®ŠåŒ–ç”¨
 	private static int buildSpeed = 48;  			//power cost per tick
 	private static final int MAXPOWER = 460800; 	//max power storage
 	private static final int[] ALLSLOTS = new int[] {0, 1, 2, 3, 4, 5};  //dont care side
@@ -60,43 +60,43 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ITileLiq
 		}
 	}
 
-	//¨Ì·Ó¿é¥X¤J¤f³]©w, ¨M©wº|¤æµ¥¸Ë¸m¦p¦ó¿é¥X¤Jª««~¨ì¯S©wslot¤¤
+	//ä¾ç…§è¼¸å‡ºå…¥å£è¨­å®š, æ±ºå®šæ¼æ–—ç­‰è£ç½®å¦‚ä½•è¼¸å‡ºå…¥ç‰©å“åˆ°ç‰¹å®šslotä¸­
 	@Override
 	public int[] getAccessibleSlotsFromSide(int i) {
 		return ALLSLOTS;
 		//return i == 0 ? slots_bottom : (i == 1 ? slots_top : slots_side);
 	}
 
-	//GUIÅã¥Üªº¦WºÙ, ¦³custom name«h¥Î, ¤£µM´N¥Î¹w³]¦WºÙ
+	//GUIé¡¯ç¤ºçš„åç¨±, æœ‰custom nameå‰‡ç”¨, ä¸ç„¶å°±ç”¨é è¨­åç¨±
 	@Override
 	public String getInventoryName() {
 		return this.hasCustomInventoryName() ? this.customName : "container."+Reference.MOD_ID+":SmallShipyard";
 	}
 
-	//¬O§_¥i¥H¥kÁäÂI¶}¤è¶ô
+	//æ˜¯å¦å¯ä»¥å³éµé»é–‹æ–¹å¡Š
 	@Override
 	public boolean isUseableByPlayer(EntityPlayer player) {
-		//¥Ñ©ó·|¦³¦h­Ótile entity°Æ¥», ­n¥ı½T»{®y¼Ğ¬Û¦Pªº°Æ¥»¤~¯à¨Ï¥Î
+		//ç”±æ–¼æœƒæœ‰å¤šå€‹tile entityå‰¯æœ¬, è¦å…ˆç¢ºèªåº§æ¨™ç›¸åŒçš„å‰¯æœ¬æ‰èƒ½ä½¿ç”¨
 		if (worldObj.getTileEntity(xCoord, yCoord, zCoord) != this) {
 			return false;
 		}
-		else {	//½T»{player­n¦b¸Ótile entity 8®æ¤º, ¥H§K¶W¥XÅª¨ú½d³ò or ²£¥Í¨ä¥L¤£©úbug
+		else {	//ç¢ºèªplayerè¦åœ¨è©²tile entity 8æ ¼å…§, ä»¥å…è¶…å‡ºè®€å–ç¯„åœ or ç”¢ç”Ÿå…¶ä»–ä¸æ˜bug
 			return player.getDistanceSq(xCoord+0.5D, yCoord+0.5D, zCoord+0.5D) <= 64;
 		}
 	}
 
-	//Åª¨únbt¸ê®Æ
+	//è®€å–nbtè³‡æ–™
 	@Override
     public void readFromNBT(NBTTagCompound compound) {
-        super.readFromNBT(compound);	//±qnbtÅª¨ú¤è¶ôªºxyz®y¼Ğ
+        super.readFromNBT(compound);	//å¾nbtè®€å–æ–¹å¡Šçš„xyzåº§æ¨™
 
-        NBTTagList list = compound.getTagList("Items", 10);	//§ìnbt tag: Items (¦¹¬°Ãş«¬10:TagCompound)
+        NBTTagList list = compound.getTagList("Items", 10);	//æŠ“nbt tag: Items (æ­¤ç‚ºé¡å‹10:TagCompound)
         
-        for(int i=0; i<list.tagCount(); i++) {			//±Ntag¦C¥Xªº©Ò¦³ª««~§ì¥X¨Ó
+        for(int i=0; i<list.tagCount(); i++) {			//å°‡tagåˆ—å‡ºçš„æ‰€æœ‰ç‰©å“æŠ“å‡ºä¾†
             NBTTagCompound item = list.getCompoundTagAt(i);
             byte sid = item.getByte("Slot");
             
-            if (sid>=0 && sid<slots.length) {	//Åª¨únbt¬ö¿ıªºª««~, ¥Í¦¨¨ì¦Uslot¤¤ 
+            if (sid>=0 && sid<slots.length) {	//è®€å–nbtç´€éŒ„çš„ç‰©å“, ç”Ÿæˆåˆ°å„slotä¸­ 
             	slots[sid] = ItemStack.loadItemStackFromNBT(item);
             }
         }
@@ -108,19 +108,19 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ITileLiq
         buildRecord = compound.getIntArray("buildRecord");
     }
 	
-	//±N¸ê®Æ¼g¶inbt
+	//å°‡è³‡æ–™å¯«é€²nbt
 	@Override
 	public void writeToNBT(NBTTagCompound compound) {
 		super.writeToNBT(compound);
 		
 		NBTTagList list = new NBTTagList();
 		compound.setTag("Items", list);
-		for(int i=0; i<slots.length; i++) {		//±Nslots[]¸ê®Æ¼g¶inbt
+		for(int i=0; i<slots.length; i++) {		//å°‡slots[]è³‡æ–™å¯«é€²nbt
 			if (slots[i] != null) {
 				NBTTagCompound item = new NBTTagCompound();
-				item.setByte("Slot", (byte)i);	//¦btag: Slot¤UÀx¦s¸ê®Æi
-				slots[i].writeToNBT(item);		//¦btag: Slot¤UÀx¦sslots[i]¸ê®Æ
-				list.appendTag(item);			//¼W¥[¤U¤@­ÓÄæ¦ì
+				item.setByte("Slot", (byte)i);	//åœ¨tag: Slotä¸‹å„²å­˜è³‡æ–™i
+				slots[i].writeToNBT(item);		//åœ¨tag: Slotä¸‹å„²å­˜slots[i]è³‡æ–™
+				list.appendTag(item);			//å¢åŠ ä¸‹ä¸€å€‹æ¬„ä½
 			}
 		}
 			
@@ -131,8 +131,8 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ITileLiq
 		compound.setIntArray("buildRecord", buildRecord);
 	}
 	
-	//§P©wª««~¬O§_¯à©ñ¤J¸Ó®æ¤l, ¥Î©ócanExtractItemµ¥¤èªk
-	//®æ¤l¥Î³~:0:grudge 1:abyss 2:ammo 3:poly 4:fuel 5:output
+	//åˆ¤å®šç‰©å“æ˜¯å¦èƒ½æ”¾å…¥è©²æ ¼å­, ç”¨æ–¼canExtractItemç­‰æ–¹æ³•
+	//æ ¼å­ç”¨é€”:0:grudge 1:abyss 2:ammo 3:poly 4:fuel 5:output
 	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack itemstack) {
 		if(itemstack != null) {
@@ -159,30 +159,30 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ITileLiq
 		}
 	}
 
-	//¨Ï¥ÎºŞ½u/º|¤æ¿é¥X®É©I¥s, ¤£¾A¥Î©ó¤â°Ê¸m¤J
+	//ä½¿ç”¨ç®¡ç·š/æ¼æ–—è¼¸å‡ºæ™‚å‘¼å«, ä¸é©ç”¨æ–¼æ‰‹å‹•ç½®å…¥
 	@Override
 	public boolean canExtractItem(int slot, ItemStack itemstack, int side) {
-		//¥u¦³output slot¸òfuel slotªºªÅbucket¥i¥H¿é¥X
+		//åªæœ‰output slotè·Ÿfuel slotçš„ç©ºbucketå¯ä»¥è¼¸å‡º
 		return (slot == 5) || (itemstack.getItem() == Items.bucket);
 	}
 	
-	//«Ø³yship¤èªk
+	//å»ºé€ shipæ–¹æ³•
 	public void buildComplete() {
-		//­Y¬°µL­­loop«Ø³y, «hÀË¬drecordªº¬ö¿ı
+		//è‹¥ç‚ºç„¡é™loopå»ºé€ , å‰‡æª¢æŸ¥recordçš„ç´€éŒ„
 		if(this.buildType == ID.Build.EQUIP_LOOP || this.buildType == ID.Build.SHIP_LOOP) {
 			for(int i = 0; i < 4; i++) {
-				//ÀË¬d§÷®Æ¬O§_¨¬°÷
+				//æª¢æŸ¥ææ–™æ˜¯å¦è¶³å¤ 
 				if(slots[i] == null || slots[i].stackSize < this.buildRecord[i]) {
 					return;
 				}
-				//¦Y±¼§÷®Æ
+				//åƒæ‰ææ–™
 				else {
 					slots[i].stackSize -= this.buildRecord[i];
 					if(slots[i].stackSize <= 0) slots[i] = null;
 				}
 			}
 
-			//¿é¤J§÷®Æ¼Æ¶q, ¨ú±obuild output¨ìslot 5
+			//è¼¸å…¥ææ–™æ•¸é‡, å–å¾—build outputåˆ°slot 5
 			switch(this.buildType) {
 			default:
 			case ID.Build.SHIP_LOOP:
@@ -195,16 +195,16 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ITileLiq
 		}
 		else {
 			int[] matAmount = new int[4];
-			//¨ú±o¥|¼Ë§÷®Æ¼Æ¶q
+			//å–å¾—å››æ¨£ææ–™æ•¸é‡
 			matAmount = SmallRecipes.getMaterialAmount(slots);
 
-			//±N¿é¤J§÷®Æ¥ş³¡¦Y±¼
+			//å°‡è¼¸å…¥ææ–™å…¨éƒ¨åƒæ‰
 			slots[0] = null;
 			slots[1] = null;
 			slots[2] = null;
 			slots[3] = null;
 			
-			//¿é¤J§÷®Æ¼Æ¶q, ¨ú±obuild output¨ìslot 5
+			//è¼¸å…¥ææ–™æ•¸é‡, å–å¾—build outputåˆ°slot 5
 			switch(this.buildType) {
 			default:
 			case ID.Build.SHIP:			//build ship
@@ -219,23 +219,23 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ITileLiq
 		}
 	}
 	
-	//§P©w¬O§_«Ø³y¤¤
+	//åˆ¤å®šæ˜¯å¦å»ºé€ ä¸­
 	public boolean isBuilding() {
 		return hasRemainedPower() && canBuild();
 	}
 	
-	//§P©w¬O§_¦³¿U®Æ
+	//åˆ¤å®šæ˜¯å¦æœ‰ç‡ƒæ–™
 	public boolean hasRemainedPower() {
 		return remainedPower > buildSpeed;
 	}
 	
-	//§P©w¬O§_¯à«Ø³y
+	//åˆ¤å®šæ˜¯å¦èƒ½å»ºé€ 
 	public boolean canBuild() {
-		//­Y¬°µL­­loop«Ø³y, «hÀË¬drecordªº¬ö¿ı
+		//è‹¥ç‚ºç„¡é™loopå»ºé€ , å‰‡æª¢æŸ¥recordçš„ç´€éŒ„
 		if(this.buildType == ID.Build.EQUIP_LOOP || this.buildType == ID.Build.SHIP_LOOP) {		
-			//ÀË¬d¬ö¿ı¬O§_¥i¥H«Ø³y
+			//æª¢æŸ¥ç´€éŒ„æ˜¯å¦å¯ä»¥å»ºé€ 
 			if(SmallRecipes.canRecipeBuild(buildRecord)) {
-				//ÀË¬d§÷®Æ¬O§_¨¬°÷
+				//æª¢æŸ¥ææ–™æ˜¯å¦è¶³å¤ 
 				for(int i = 0; i < 4; i++) {
 					if(slots[i] == null || slots[i].stackSize < this.buildRecord[i]) return false;
 				}
@@ -250,11 +250,11 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ITileLiq
 		return false;
 	}
 	
-	//¨ú±o«Ø³yªá¶O
+	//å–å¾—å»ºé€ èŠ±è²»
 	public void getGoalPower() {
-		//­Y¬°µL­­loop«Ø³y, «h­pºârecordªº¬ö¿ı
+		//è‹¥ç‚ºç„¡é™loopå»ºé€ , å‰‡è¨ˆç®—recordçš„ç´€éŒ„
 		if(this.buildType == ID.Build.EQUIP_LOOP || this.buildType == ID.Build.SHIP_LOOP) {
-			//ÀË¬d¬ö¿ı¬O§_¥i¥H«Ø³y
+			//æª¢æŸ¥ç´€éŒ„æ˜¯å¦å¯ä»¥å»ºé€ 
 			if(SmallRecipes.canRecipeBuild(buildRecord)) {
 				goalPower = SmallRecipes.calcGoalPower(buildRecord);
 			}
@@ -264,18 +264,18 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ITileLiq
 		}
 		else {
 			int[] itemAmount = new int[4];
-			//­pºâ§÷®Æ¶q
+			//è¨ˆç®—ææ–™é‡
 			itemAmount = SmallRecipes.getMaterialAmount(slots);
-			//¨Ì·Ó§÷®Æ¶q­pºâgoalPower, ­Y§÷®Æ¨S¹FminAmount«hgoalPower·|±o¨ì0
+			//ä¾ç…§ææ–™é‡è¨ˆç®—goalPower, è‹¥ææ–™æ²’é”minAmountå‰‡goalPoweræœƒå¾—åˆ°0
 			goalPower = SmallRecipes.calcGoalPower(itemAmount);
 		}
 	}
 	
-	//¤è¶ôªº¬yµ{¶i¦æ¤èªk
-	//¸ê®Æ¥²¶·¥HmarkDirty¼Ğ°Oblock§ó·s, ¥H¤ÎÅª¼gNBT tag¨Ó«O¦s
+	//æ–¹å¡Šçš„æµç¨‹é€²è¡Œæ–¹æ³•
+	//è³‡æ–™å¿…é ˆä»¥markDirtyæ¨™è¨˜blockæ›´æ–°, ä»¥åŠè®€å¯«NBT tagä¾†ä¿å­˜
 	@Override
 	public void updateEntity() {
-		boolean sendUpdate = false;	//¼Ğ¬ö­nblock update, ¦³­n§ó·smetadata®É³]¬°true
+		boolean sendUpdate = false;	//æ¨™ç´€è¦block update, æœ‰è¦æ›´æ–°metadataæ™‚è¨­ç‚ºtrue
 
 		//null check
 		if(this.buildRecord == null || this.buildRecord.length < 1) {
@@ -300,9 +300,9 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ITileLiq
 			//add liquid fuel
 			TileEntityHelper.decrLiquidFuel(this);
 			
-			//§P©w¬O§_«Ø³y¤¤, ¨Ctick¶i¦æ¶i«×­È§ó·s, ­Y«D«Ø³y¤¤«h­«¸m¶i«×­È
+			//åˆ¤å®šæ˜¯å¦å»ºé€ ä¸­, æ¯tické€²è¡Œé€²åº¦å€¼æ›´æ–°, è‹¥éå»ºé€ ä¸­å‰‡é‡ç½®é€²åº¦å€¼
 			if(this.isBuilding()) {
-				//¦b¿U®Æ®æ¨Ï¥Î§Ö³t«Ø³y§÷®Æ
+				//åœ¨ç‡ƒæ–™æ ¼ä½¿ç”¨å¿«é€Ÿå»ºé€ ææ–™
 				if(slots[4] != null && slots[4].getItem() == ModItems.InstantConMat) {
 					slots[4].stackSize--;
 					this.consumedPower += 115200;
@@ -317,9 +317,9 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ITileLiq
 				this.remainedPower -= buildSpeed;	//fuel bar --
 				this.consumedPower += buildSpeed;	//build bar ++
 				
-				//power¹F¼Ğ, «Ø³y§¹¦¨
+				//poweré”æ¨™, å»ºé€ å®Œæˆ
 				if (this.consumedPower >= this.goalPower) {
-					this.buildComplete();	//«Ø³y¥X¦¨«~©ñ¨ìoutput slot
+					this.buildComplete();	//å»ºé€ å‡ºæˆå“æ”¾åˆ°output slot
 					this.consumedPower = 0;
 					this.goalPower = 0;
 					
@@ -339,35 +339,35 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ITileLiq
 				}
 			}
 			
-			if(!this.canBuild()) {	//«D«Ø³y¤¤, ­«¸mbuild bar
+			if(!this.canBuild()) {	//éå»ºé€ ä¸­, é‡ç½®build bar
 				this.consumedPower = 0;
 			}
 			
-			//­Yª¬ºA¦³§ïÅÜ¹L, «hµo°e§ó·s  ex:¥»¨Óactive ¦Ó¿U®Æ¥Î¥ú¾É­PµLªkactive®É
+			//è‹¥ç‹€æ…‹æœ‰æ”¹è®Šé, å‰‡ç™¼é€æ›´æ–°  ex:æœ¬ä¾†active è€Œç‡ƒæ–™ç”¨å…‰å°è‡´ç„¡æ³•activeæ™‚
 			if(isActive != this.isBuilding()) {
 				isActive = this.isBuilding();
 				sendUpdate = true;
 			}
 		}
 		
-		//¼Ğ¬ö­n§ó·s
+		//æ¨™ç´€è¦æ›´æ–°
 		if(sendUpdate) {
-			//§ó·s¤è¶ômetadata
+			//æ›´æ–°æ–¹å¡Šmetadata
 			BlockSmallShipyard.updateBlockState(this.isBuilding(), this.worldObj, this.xCoord, this.yCoord, this.zCoord);
-			//¼Ğ°O¦¹¤è¶ô­n§ó·s, ¥H«OÃÒ¸ê®Æ·|¦s¨ìµwºĞ
+			//æ¨™è¨˜æ­¤æ–¹å¡Šè¦æ›´æ–°, ä»¥ä¿è­‰è³‡æ–™æœƒå­˜åˆ°ç¡¬ç¢Ÿ
 			this.markDirty();
 		}
 	}
 
-	//­pºâfuel¦s¶q±ø
+	//è¨ˆç®—fuelå­˜é‡æ¢
 	public int getPowerRemainingScaled(int i) {
 		return (remainedPower * i) / MAXPOWER;
 	}
 	
-	//­pºâ«Ø³y®É¶¡ (´«ºâ¦¨¯u¹ê®É¶¡)
+	//è¨ˆç®—å»ºé€ æ™‚é–“ (æ›ç®—æˆçœŸå¯¦æ™‚é–“)
 	public String getBuildTimeString() {
-		//³Ñ¾l¬í¼Æ = (¥Ø¼Ğ¯à¶q - ¥Ø«e¯à¶q) / (¨Ctick¼W¥[¯à¶q) / 20
-		int timeSec = (goalPower - consumedPower) / buildSpeed / 20;	//get time (³æ¦ì: sec)		
+		//å‰©é¤˜ç§’æ•¸ = (ç›®æ¨™èƒ½é‡ - ç›®å‰èƒ½é‡) / (æ¯tickå¢åŠ èƒ½é‡) / 20
+		int timeSec = (goalPower - consumedPower) / buildSpeed / 20;	//get time (å–®ä½: sec)		
 		return CalcHelper.getTimeFormated(timeSec);
 	}
 	

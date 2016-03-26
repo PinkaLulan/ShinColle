@@ -3,7 +3,7 @@ package com.lulan.shincolle.reference;
 /**REFERENCE (STRING or PATH)
  */
 public class Reference {
-	//³oÃä¥D­n©ñ¸m¦UºØ±`¥Î°Ñ¦Ò, ¥D­n¬°path, package
+	//é€™é‚Šä¸»è¦æ”¾ç½®å„ç¨®å¸¸ç”¨åƒè€ƒ, ä¸»è¦ç‚ºpath, package
 	public static final String MOD_ID = "shincolle";
 	public static final String MOD_NAME = "Shinkeiseikan Collection";
 	public static final String MOD_VERSION = "1.7.10.rv23";

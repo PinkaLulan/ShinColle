@@ -104,7 +104,7 @@ public class EntityHelper {
 		return 0;
 	}
 	
-	/**check is same owner for ship (host's owner == target's owner) */
+	/** check is same owner for ship (host's owner == target's owner) */
 	public static boolean checkSameOwner(Entity enta, Entity entb) {
 		int ida = getPlayerUID(enta);
 		int idb = getPlayerUID(entb);
@@ -132,7 +132,7 @@ public class EntityHelper {
 				if(BlockHelper.checkBlockIsLiquid(BlockCheck)) {
 					depth++;
 				}
-				else {	//³Ì¤W­±¸I¨ìªÅ®ğÃş¤è¶ô¤~¥i¥H¤W¯B, §_«h¤£¤W¯B
+				else {	//æœ€ä¸Šé¢ç¢°åˆ°ç©ºæ°£é¡æ–¹å¡Šæ‰å¯ä»¥ä¸Šæµ®, å¦å‰‡ä¸ä¸Šæµ®
 					if(BlockCheck.getMaterial() == Material.air) {
 						entity.setStateFlag(ID.F.CanFloatUp, true);
 					}
@@ -473,11 +473,11 @@ public class EntityHelper {
 	/** get (online) player by player UID, SERVER SIDE ONLY */
 	public static EntityPlayer getEntityPlayerByUID(int uid, World world) {
 		if(world != null && !world.isRemote && uid > 0) {
-			//±qserver proxy§ì¥Xplayer uid cache
+			//å¾server proxyæŠ“å‡ºplayer uid cache
 			int[] pdata = ServerProxy.getPlayerWorldData(uid);
 			
 			if(pdata != null && pdata.length > 2) {
-				//¦¨¥\§ì¨ìdata, ¥Bplayerªºworld¸ò©I¥sªÌªºworld¬Û¦P
+				//æˆåŠŸæŠ“åˆ°data, ä¸”playerçš„worldè·Ÿå‘¼å«è€…çš„worldç›¸åŒ
 				if(pdata[2] != world.provider.dimensionId) {
 //					LogHelper.info("DEBUG : player not found: different world: "+world.provider.dimensionId+" vs "+pdata[2]);
 					return null;
@@ -493,10 +493,10 @@ public class EntityHelper {
 	/** get (online) player entity id by player UID, SERVER SIDE ONLY */
 	public static int getPlayerEID(int uid) {
 		if(uid > 0) {
-			//±qserver proxy§ì¥Xplayer uid cache
+			//å¾server proxyæŠ“å‡ºplayer uid cache
 			int[] pdata = ServerProxy.getPlayerWorldData(uid);
 			
-			//¦¨¥\§ì¨ìdata
+			//æˆåŠŸæŠ“åˆ°data
 			if(pdata != null && pdata.length > 2) {
 				return pdata[0];
 			}
@@ -508,10 +508,10 @@ public class EntityHelper {
 	/** get (online) player team id by player UID, SERVER SIDE ONLY */
 	public static int getPlayerTID(int uid) {
 		if(uid > 0) {
-			//±qserver proxy§ì¥Xplayer uid cache
+			//å¾server proxyæŠ“å‡ºplayer uid cache
 			int[] pdata = ServerProxy.getPlayerWorldData(uid);
 			
-			//¦¨¥\§ì¨ìdata
+			//æˆåŠŸæŠ“åˆ°data
 			if(pdata != null && pdata.length > 2) {
 				return pdata[1];
 			}
@@ -713,12 +713,12 @@ public class EntityHelper {
 				extProps.setSIDCurrentTeam(i, teamlist[i * 2 + 1]);
 				
 				/**NOTE:
-				 * clientºİ¥i¯à±µ¦¬¨ì¤£¦Pworldªºentity, ¾É­PgetEntityByIDµ²ªG¬°null
-				 * ¦¹®É·|ÅıteamList¦snull, ¦ı¬OsidList¦³¦sship UID
-				 * pointer item¥i¥HÂÇ¦¹±N¸Óslot¼Ğ°O¬°ship lost
-				 * ÂÇ¦¹«O¯d¸Óslotª½¨ì¤Á´«¨ì¬Û¦Pworld¬°¤î
+				 * clientç«¯å¯èƒ½æ¥æ”¶åˆ°ä¸åŒworldçš„entity, å°è‡´getEntityByIDçµæœç‚ºnull
+				 * æ­¤æ™‚æœƒè®“teamListå­˜null, ä½†æ˜¯sidListæœ‰å­˜ship UID
+				 * pointer itemå¯ä»¥è—‰æ­¤å°‡è©²slotæ¨™è¨˜ç‚ºship lost
+				 * è—‰æ­¤ä¿ç•™è©²slotç›´åˆ°åˆ‡æ›åˆ°ç›¸åŒworldç‚ºæ­¢
 				 * 
-				 * serverºİ¥i¥¿½T§ä¨ìentity, ¥H¤W¥u°w¹ïclientºİªºª¬ªp»¡©ú
+				 * serverç«¯å¯æ­£ç¢ºæ‰¾åˆ°entity, ä»¥ä¸Šåªé‡å°clientç«¯çš„ç‹€æ³èªªæ˜
 				 */
 			}//end for loop
 		}//end props != null
@@ -854,7 +854,7 @@ public class EntityHelper {
 		}
 	}
 
-	/**¼W´îlarge shipyardªºmatBuild[] */
+	/**å¢æ¸›large shipyardçš„matBuild[] */
 	private static void setLargeShipyardBuildMats(TileMultiGrudgeHeavy tile, int button, int matType, int value) {
 		//null check
 		if(tile == null) return;
@@ -863,7 +863,7 @@ public class EntityHelper {
 		int num2 = 0;
 		boolean stockToBuild = true;	//false = build -> stock , true = stock -> build
 		
-		//value2Âà´«¬°¼Æ¶q
+		//value2è½‰æ›ç‚ºæ•¸é‡
 		switch(value) {
 		case 0:
 		case 4:
@@ -885,18 +885,18 @@ public class EntityHelper {
 		
 		if(value > 3) stockToBuild = false;
 		
-		//§P©wnum¬O§_­n­×§ï, ¦A¼W´îMatStock¸òMatBuild
+		//åˆ¤å®šnumæ˜¯å¦è¦ä¿®æ”¹, å†å¢æ¸›MatStockè·ŸMatBuild
 		if(stockToBuild) {	//matStock -> matBuild
-			//§÷®Æ¤£°÷«ü©w¼Æ¶q, «hnum§ï¬°³Ñ¾l¥ş³¡§÷®Æ¼Æ¶q
+			//ææ–™ä¸å¤ æŒ‡å®šæ•¸é‡, å‰‡numæ”¹ç‚ºå‰©é¤˜å…¨éƒ¨ææ–™æ•¸é‡
 			if(num > tile.getMatStock(matType)) num = tile.getMatStock(matType);
-			//§÷®Æ¶W¹L»s³y¤W­­(1000), «hnum­°¬°¤W­­¼Æ¶q
+			//ææ–™è¶…éè£½é€ ä¸Šé™(1000), å‰‡numé™ç‚ºä¸Šé™æ•¸é‡
 			if(num + tile.getMatBuild(matType) > 1000) num = 1000 - tile.getMatBuild(matType);
 			
 			tile.addMatStock(matType, -num);
 			tile.addMatBuild(matType, num);
 		}
 		else {			//matBuild -> matStock
-			//§÷®Æ¤£°÷«ü©w¼Æ¶q, «hnum§ï¬°³Ñ¾l¥ş³¡§÷®Æ¼Æ¶q
+			//ææ–™ä¸å¤ æŒ‡å®šæ•¸é‡, å‰‡numæ”¹ç‚ºå‰©é¤˜å…¨éƒ¨ææ–™æ•¸é‡
 			if(num > tile.getMatBuild(matType)) num = tile.getMatBuild(matType);
 			
 			tile.addMatBuild(matType, -num);
@@ -913,14 +913,14 @@ public class EntityHelper {
 		ShipPathNavigate pathNavi = entity.getShipNavigate();
 		ShipMoveHelper moveHelper = entity.getShipMoveHelper();
 		
-		//­Y¦³¤ôªÅpath, «h§ó·sship navigator
+		//è‹¥æœ‰æ°´ç©ºpath, å‰‡æ›´æ–°ship navigator
         if(pathNavi != null && moveHelper != null && !pathNavi.noPath()) {
-        	//­Y¦P®É¦³©x¤èaiªº¸ô®|, «h²M°£©x¤èai¸ô®|
+        	//è‹¥åŒæ™‚æœ‰å®˜æ–¹aiçš„è·¯å¾‘, å‰‡æ¸…é™¤å®˜æ–¹aiè·¯å¾‘
         	if(!entity2.getNavigator().noPath()) {
         		entity2.getNavigator().clearPathEntity();
         	}
 
-        	//­Y§¤¤U©Î¸j¦í, «h²M°£¸ô®|
+        	//è‹¥åä¸‹æˆ–ç¶ä½, å‰‡æ¸…é™¤è·¯å¾‘
         	if(entity.getIsSitting() || entity.getIsLeashed()) {
         		entity.getShipNavigate().clearPathEntity();
         	}
@@ -929,7 +929,7 @@ public class EntityHelper {
 //            	LogHelper.info("DEBUG : AI tick: path length A "+this.getShipNavigate().getPath().getCurrentPathIndex()+" / "+this.getShipNavigate().getPath().getCurrentPathLength());
 //            	LogHelper.info("DEBUG : AI tick: path length A "+this.getShipNavigate().getPath().getCurrentPathIndex());
     			
-        		//¥ÎparticleÅã¥Üpath point
+        		//ç”¨particleé¡¯ç¤ºpath point
     			if(ConfigHandler.debugMode && entity2.ticksExisted % 20 == 0) {
     				ShipPathEntity pathtemp = pathNavi.getPath();
     				ShipPathPoint pointtemp;
@@ -937,9 +937,9 @@ public class EntityHelper {
     				
     				for(int i = 0; i < pathtemp.getCurrentPathLength(); i++) {
     					pointtemp = pathtemp.getPathPointFromIndex(i);
-    					//µo®gªÌ·ÏÃú¯S®Ä
+    					//ç™¼å°„è€…ç…™éœ§ç‰¹æ•ˆ
     			        TargetPoint point = new TargetPoint(entity2.dimension, entity2.posX, entity2.posY, entity2.posZ, 48D);
-    					//¸ô®|ÂIµe¬õ¦â, ¥Ø¼ĞÂIµeºñ¦â
+    					//è·¯å¾‘é»ç•«ç´…è‰², ç›®æ¨™é»ç•«ç¶ è‰²
     					if(i == pathtemp.getCurrentPathIndex()) {
     						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(entity2, 32, pointtemp.xCoord +0.5D, pointtemp.yCoord + 0.5D, pointtemp.zCoord +0.5D, 0F, 0F, 0F, false), point);
     					}
@@ -960,7 +960,7 @@ public class EntityHelper {
 
         if(!entity2.getNavigator().noPath()) {
 //        	LogHelper.info("DEBUG : AI tick: path length B "+this.getNavigator().getPath().getCurrentPathIndex()+" / "+this.getNavigator().getPath().getCurrentPathLength());
-			//¥ÎparticleÅã¥Üpath point
+			//ç”¨particleé¡¯ç¤ºpath point
         	if(ConfigHandler.debugMode && entity2.ticksExisted % 20 == 0) {
 				PathEntity pathtemp2 = entity2.getNavigator().getPath();
 				PathPoint pointtemp2;
@@ -968,9 +968,9 @@ public class EntityHelper {
 //				LogHelper.info("DEBUG : AI tick: path length B "+pathtemp2.getCurrentPathIndex());
 				for(int i = 0; i < pathtemp2.getCurrentPathLength(); i++) {
 					pointtemp2 = pathtemp2.getPathPointFromIndex(i);
-					//µo®gªÌ·ÏÃú¯S®Ä
+					//ç™¼å°„è€…ç…™éœ§ç‰¹æ•ˆ
 			        TargetPoint point = new TargetPoint(entity2.dimension, entity2.posX, entity2.posY, entity2.posZ, 48D);
-					//¸ô®|ÂIµe¬õ¦â, ¥Ø¼ĞÂIµeºñ¦â
+					//è·¯å¾‘é»ç•«ç´…è‰², ç›®æ¨™é»ç•«ç¶ è‰²
 					if(i == pathtemp2.getCurrentPathIndex()) {
 						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(entity2, 16, pointtemp2.xCoord +0.5D, pointtemp2.yCoord + 0.5D, pointtemp2.zCoord +0.5D, 0F, 0F, 0F, false), point);
 					}
@@ -1002,7 +1002,7 @@ public class EntityHelper {
             lookBlock = viewer.rayTrace(dist, duringTicks);
             Vec3 vec3 = viewer.getPosition(duringTicks);
 
-            //­Y¦³§ì¨ì¤è¶ô, «hd1§ï¬°§ì¨ì¤è¶ôªº¶ZÂ÷
+            //è‹¥æœ‰æŠ“åˆ°æ–¹å¡Š, å‰‡d1æ”¹ç‚ºæŠ“åˆ°æ–¹å¡Šçš„è·é›¢
             double d1 = dist;
             if(lookBlock != null) {
                 d1 = lookBlock.hitVec.distanceTo(vec3);
@@ -1017,46 +1017,46 @@ public class EntityHelper {
             MovingObjectPosition lookEntity = null;
             Entity pointedEntity = null;
             
-            //±qª±®a¨ì¥Ø¼Ğ¤è¶ô¤§¶¡, °µ¥XÂX®i1®æªº¤è§Îcollision box, §ì¥X¨ä¤¤¸I¨ìªºentity
+            //å¾ç©å®¶åˆ°ç›®æ¨™æ–¹å¡Šä¹‹é–“, åšå‡ºæ“´å±•1æ ¼çš„æ–¹å½¢collision box, æŠ“å‡ºå…¶ä¸­ç¢°åˆ°çš„entity
             double f1 = 1D;
             List list = viewer.worldObj.getEntitiesWithinAABBExcludingEntity(viewer, viewer.boundingBox.addCoord(vec3x, vec3y, vec3z).expand(f1, f1, f1));
             double d2 = d1;
 
-            //ÀË¬d§ì¨ìªºentity, ¬O§_¦bª±®a~¥Ø¼Ğ¤è¶ôªºµø½u¤W
+            //æª¢æŸ¥æŠ“åˆ°çš„entity, æ˜¯å¦åœ¨ç©å®¶~ç›®æ¨™æ–¹å¡Šçš„è¦–ç·šä¸Š
             for(int i = 0; i < list.size(); ++i) {
                 Entity entity = (Entity)list.get(i);
 
                 if(entity.canBeCollidedWith()) {
-                	//ÀË¬d¸I¨ìªºentity¬O§_¦bµø½u¤W
+                	//æª¢æŸ¥ç¢°åˆ°çš„entityæ˜¯å¦åœ¨è¦–ç·šä¸Š
                     double f2 = entity.getCollisionBorderSize();
                     AxisAlignedBB targetBox = entity.boundingBox.expand(f2, f2, f2);
                     MovingObjectPosition getObj = targetBox.calculateIntercept(vec3, vec32);
 
-                    //­Yviewer§¹¥ş¶ë¦b¥Ø¼Ğªºbox¸Ì­±
+                    //è‹¥viewerå®Œå…¨å¡åœ¨ç›®æ¨™çš„boxè£¡é¢
                     if(targetBox.isVecInside(vec3)) {
                         if(d2 >= 0D) {
                         	pointedEntity = entity;
-                        	//§ì¨ì¦ì¸mª±®a¦ì¸m©ÎªÌ¥Ø¼Ğbox¦ì¸m
+                        	//æŠ“åˆ°ä½ç½®ç©å®¶ä½ç½®æˆ–è€…ç›®æ¨™boxä½ç½®
                             vec33 = (getObj == null ? vec3 : getObj.hitVec);
-                            //§ì¨ì¶ZÂ÷§ï¬°0
+                            //æŠ“åˆ°è·é›¢æ”¹ç‚º0
                             d2 = 0D;
                         }
                     }
-                    //¨ä¥L¦³§ì¨ì¥Ø¼Ğªº±¡ªp
+                    //å…¶ä»–æœ‰æŠ“åˆ°ç›®æ¨™çš„æƒ…æ³
                     else if(getObj != null) {
-                        double d3 = vec3.distanceTo(getObj.hitVec);	//§ì¨ì¶ZÂ÷
+                        double d3 = vec3.distanceTo(getObj.hitVec);	//æŠ“åˆ°è·é›¢
 
-                        //­Y§ì¨ì¶ZÂ÷¦bdist¤§¤º, «h§P©w¬°§ì¨ì¥Ø¼Ğ
+                        //è‹¥æŠ“åˆ°è·é›¢åœ¨distä¹‹å…§, å‰‡åˆ¤å®šç‚ºæŠ“åˆ°ç›®æ¨™
                         if(d3 < d2 || d2 == 0D) {
-                        	//­Y§ì¨ìªº¬Oª±®a¦Û¤vªº®yÃM, ¥BÄİ©ó¤£¯à¤¬°Êªº®yÃM
+                        	//è‹¥æŠ“åˆ°çš„æ˜¯ç©å®¶è‡ªå·±çš„åº§é¨, ä¸”å±¬æ–¼ä¸èƒ½äº’å‹•çš„åº§é¨
                             if(entity == viewer.ridingEntity && !entity.canRiderInteract()) {
-                                //­Ydist³]¬°0D, ¤~·|§ì¨ì¦Û¤vªº®yÃM, §_«h³£µLµø®yÃM
+                                //è‹¥distè¨­ç‚º0D, æ‰æœƒæŠ“åˆ°è‡ªå·±çš„åº§é¨, å¦å‰‡éƒ½ç„¡è¦–åº§é¨
                             	if(d2 == 0D) {
                                     pointedEntity = entity;
                                     vec33 = getObj.hitVec;
                                 }
                             }
-                            //¨ä¥L«D®yÃMentity
+                            //å…¶ä»–éåº§é¨entity
                             else {
                                 pointedEntity = entity;
                                 vec33 = getObj.hitVec;
@@ -1067,7 +1067,7 @@ public class EntityHelper {
                 }
             }
 
-            //­Y¦³§ì¨ìentity, ¥B§ì¨ì¶ZÂ÷¦bµø½u¸I¨ìªº³Ì»·¤è¶ô¤§¤º, ¤~ºâ¦³§ì¨ìentity
+            //è‹¥æœ‰æŠ“åˆ°entity, ä¸”æŠ“åˆ°è·é›¢åœ¨è¦–ç·šç¢°åˆ°çš„æœ€é æ–¹å¡Šä¹‹å…§, æ‰ç®—æœ‰æŠ“åˆ°entity
             if(pointedEntity != null && (d2 < d1 || lookBlock == null)) {
             	lookBlock = new MovingObjectPosition(pointedEntity, vec33);
             }
@@ -1158,16 +1158,16 @@ public class EntityHelper {
 			BasicEntityShip[] ships = props.getShipEntityByMode(meta);
 			BasicEntityMount mounts = null;
 			int worldID = player.worldObj.provider.dimensionId;
-			
+
 			if(props != null) {
 				switch(meta) {
 				default:	//single mode
 					if(ships[0] != null && ships[0].worldObj.provider.dimensionId == worldID) {
-						//³]©wship§ğÀ»¥Ø¼Ğ
+						//è¨­å®šshipæ”»æ“Šç›®æ¨™
 						ships[0].setSitting(false);
 						ships[0].setEntityTarget(target);
 						
-						//­Y¸Óship¦³ÃM­¼®yÃM, ±N®yÃM¥Ø¼Ğ¤]³]©w
+						//è‹¥è©²shipæœ‰é¨ä¹˜åº§é¨, å°‡åº§é¨ç›®æ¨™ä¹Ÿè¨­å®š
 						if(ships[0].ridingEntity instanceof BasicEntityMount) {
 							((BasicEntityMount)ships[0].ridingEntity).setEntityTarget(target);
 						}
@@ -1177,11 +1177,11 @@ public class EntityHelper {
 				case 2:		//formation mode
 					for(int i = 0; i < ships.length; i++) {
 						if(ships[i] != null && ships[i].worldObj.provider.dimensionId == worldID) {
-							//³]©wship§ğÀ»¥Ø¼Ğ
+							//è¨­å®šshipæ”»æ“Šç›®æ¨™
 							ships[i].setSitting(false);
 							ships[i].setEntityTarget(target);
 							
-							//­Y¸Óship¦³ÃM­¼®yÃM, ±N®yÃM¥Ø¼Ğ¤]³]©w
+							//è‹¥è©²shipæœ‰é¨ä¹˜åº§é¨, å°‡åº§é¨ç›®æ¨™ä¹Ÿè¨­å®š
 							if(ships[i].ridingEntity instanceof BasicEntityMount) {
 								((BasicEntityMount)ships[i].ridingEntity).setEntityTarget(target);
 							}
@@ -1209,7 +1209,7 @@ public class EntityHelper {
 			switch(meta) {
 			default:	//single mode
 				if(ships[0] != null && ships[0].worldObj.provider.dimensionId == worldID && formatID <= 0) {
-					//³]©wship²¾°Ê¦aÂI
+					//è¨­å®šshipç§»å‹•åœ°é»
 					applyShipGuardEntity(ships[0], guarded);
 					//sync guard
 					CommonProxy.channelE.sendTo(new S2CEntitySync(ships[0], 3), (EntityPlayerMP) player);
@@ -1218,7 +1218,7 @@ public class EntityHelper {
 			case 1:		//group mode
 				for(int i = 0;i < ships.length; i++) {
 					if(ships[i] != null && ships[i].worldObj.provider.dimensionId == worldID && formatID <= 0) {
-						//³]©wship²¾°Ê¦aÂI
+						//è¨­å®šshipç§»å‹•åœ°é»
 						applyShipGuardEntity(ships[i], guarded);
 						//sync guard
 						CommonProxy.channelE.sendTo(new S2CEntitySync(ships[i], 3), (EntityPlayerMP) player);
@@ -1229,7 +1229,7 @@ public class EntityHelper {
 				if(props.getNumberOfShip(props.getPointerTeamID()) > 4) {
 					for(int i = 0;i < ships.length; i++) {
 						if(ships[i] != null && ships[i].worldObj.provider.dimensionId == worldID) {
-							//³]©wship²¾°Ê¦aÂI
+							//è¨­å®šshipç§»å‹•åœ°é»
 							applyShipGuardEntity(ships[i], guarded);
 							//sync guard
 							CommonProxy.channelE.sendTo(new S2CEntitySync(ships[i], 3), (EntityPlayerMP) player);
@@ -1258,7 +1258,7 @@ public class EntityHelper {
 			switch(parms[0]) {
 			default:	//single mode
 				if(ships[0] != null && ships[0].worldObj.provider.dimensionId == worldID && formatID <= 0) {
-					//³]©wship²¾°Ê¦aÂI
+					//è¨­å®šshipç§»å‹•åœ°é»
 					applyShipGuard(ships[0], parms[2], parms[3], parms[4]);
 					//sync guard
 					CommonProxy.channelE.sendTo(new S2CEntitySync(ships[0], 3), (EntityPlayerMP) player);
@@ -1267,7 +1267,7 @@ public class EntityHelper {
 			case 1:		//group mode
 				for(int i = 0;i < ships.length; i++) {
 					if(ships[i] != null && ships[i].worldObj.provider.dimensionId == worldID && formatID <= 0) {
-						//³]©wship²¾°Ê¦aÂI
+						//è¨­å®šshipç§»å‹•åœ°é»
 						applyShipGuard(ships[i], parms[2], parms[3], parms[4]);
 						//sync guard
 						CommonProxy.channelE.sendTo(new S2CEntitySync(ships[i], 3), (EntityPlayerMP) player);
@@ -1299,27 +1299,27 @@ public class EntityHelper {
 	}
 	
 	/** set ship sitting with team list, only called at server side
-	 *  1. ­Y¥Ø¼Ğ¤£¦b¶¤¥î, «h³æ¿W³]©w¥Ø¼Ğ§¤¤U
-	 *  2. ­Y¥Ø¼Ğ¦b¶¤¥î, «h¨Ì·Ó pointerÃş«¬³]©w¥Ø¼Ğ§¤¤U
+	 *  1. è‹¥ç›®æ¨™ä¸åœ¨éšŠä¼, å‰‡å–®ç¨è¨­å®šç›®æ¨™åä¸‹
+	 *  2. è‹¥ç›®æ¨™åœ¨éšŠä¼, å‰‡ä¾ç…§ pointeré¡å‹è¨­å®šç›®æ¨™åä¸‹
 	 */
 	public static void applyTeamSit(EntityPlayer player, int meta, int shipUID) {
 		ExtendPlayerProps props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 		BasicEntityShip[] ships = props.getShipEntityByMode(meta);
 		int worldID = player.worldObj.provider.dimensionId;
-		
+
 		if(props != null) {
-			//¤£¦b¶¤¥î¦W³æ¸Ì­±
+			//ä¸åœ¨éšŠä¼åå–®è£¡é¢
 			if(props.checkIsInCurrentTeam(shipUID) < 0) {
 				BasicEntityShip target = getShipBySID(shipUID);
 				
 				target.setEntitySit();
 			}
-			//¦³¦b¶¤¥î¤¤, «h¨Ì·ÓpointerÃş«¬§ì¥Ø¼Ğ
+			//æœ‰åœ¨éšŠä¼ä¸­, å‰‡ä¾ç…§pointeré¡å‹æŠ“ç›®æ¨™
 			else {
 				switch(meta) {
 				default:	//single mode
 					if(ships[0] != null && ships[0].worldObj.provider.dimensionId == worldID) {
-						//³]©wship sit
+						//è¨­å®šship sit
 						ships[0].setEntitySit();
 					}
 					break;
@@ -1327,7 +1327,7 @@ public class EntityHelper {
 				case 2:		//formation mode
 					for(int i = 0; i < ships.length; i++) {
 						if(ships[i] != null && ships[i].worldObj.provider.dimensionId == worldID) {
-							//³]©wship sit
+							//è¨­å®šship sit
 							ships[i].setEntitySit();
 						}
 					}
@@ -1348,16 +1348,16 @@ public class EntityHelper {
 			//check entity is in team
 			if(i >= 0) {
 				switch(meta) {
-				default:	//single mode (¶È¤@°¦¥i¥Hfocus)
-					/**single mode¤£¯à¨ú®øfocus, ¤@©w¦³¤@°¦·|¬Ofocusª¬ºA*/
+				default:	//single mode (åƒ…ä¸€éš»å¯ä»¥focus)
+					/**single modeä¸èƒ½å–æ¶ˆfocus, ä¸€å®šæœ‰ä¸€éš»æœƒæ˜¯focusç‹€æ…‹*/
 					props.clearSelectStateCurrentTeam();
 					props.setSelectStateCurrentTeam(i, true);
 					break;
-				case 1:		//group mode (¤£­­focus¼Æ¶q)
+				case 1:		//group mode (ä¸é™focusæ•¸é‡)
 					props.setSelectStateCurrentTeam(i, !props.getSelectStateCurrentTeam(i));
 					break;
-//				case 2:		//formation mode (¶È¤@°¦¥i¥Hfocus, ·|³]¬°flagship)
-//					/**formation mode¤£¯à¨ú®øfocus, ¤@©w¦³¤@°¦·|¬Ofocus (flagship)ª¬ºA*/
+//				case 2:		//formation mode (åƒ…ä¸€éš»å¯ä»¥focus, æœƒè¨­ç‚ºflagship)
+//					/**formation modeä¸èƒ½å–æ¶ˆfocus, ä¸€å®šæœ‰ä¸€éš»æœƒæ˜¯focus (flagship)ç‹€æ…‹*/
 //					props.clearSelectStateCurrentTeam();
 //					props.setSelectStateCurrentTeam(i, true);
 //					break;

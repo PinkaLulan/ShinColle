@@ -252,7 +252,7 @@ public class ModelDestroyerShimakazeBoss extends ModelBase implements IModelEmot
         this.HairMidL01.addChild(this.HairMidL02);
         this.HairMidR01.addChild(this.HairMidR02);
         
-        //µo¥ú¤ä¬[
+        //ç™¼å…‰æ”¯æž¶
         this.GlowBodyMain = new ModelRenderer(this, 0, 0);
         this.GlowBodyMain.setRotationPoint(0.0F, -12.0F, 0.0F);
         this.GlowNeckCloth = new ModelRenderer(this, 0, 0);
@@ -288,7 +288,7 @@ public class ModelDestroyerShimakazeBoss extends ModelBase implements IModelEmot
     	this.BodyMain.render(f5);
     	GL11.glDisable(GL11.GL_BLEND);
     	
-    	//«G«×³]¬°240
+    	//äº®åº¦è¨­ç‚º240
     	GL11.glDisable(GL11.GL_LIGHTING);
     	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
     	this.GlowBodyMain.render(f5);
@@ -311,9 +311,9 @@ public class ModelDestroyerShimakazeBoss extends ModelBase implements IModelEmot
 		setGlowRotation();
     }
     
-    //³]©w¼Ò«¬µo¥ú³¡¥÷ªºrotation
+    //è¨­å®šæ¨¡åž‹ç™¼å…‰éƒ¨ä»½çš„rotation
     private void setGlowRotation() {
-    	//ÀY³¡
+    	//é ­éƒ¨
 		this.GlowBodyMain.rotateAngleX = this.BodyMain.rotateAngleX;
 		this.GlowBodyMain.rotateAngleY = this.BodyMain.rotateAngleY;
 		this.GlowBodyMain.rotateAngleZ = this.BodyMain.rotateAngleZ;
@@ -325,7 +325,7 @@ public class ModelDestroyerShimakazeBoss extends ModelBase implements IModelEmot
 		this.GlowHead.rotateAngleZ = this.Head.rotateAngleZ;
     }
     
-    //Âù¸}²¾°Ê­pºâ
+    //é›™è…³ç§»å‹•è¨ˆç®—
   	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, EntityDestroyerShimakazeBoss ent) {   
   		float angleX = MathHelper.cos(f2*0.08F);
   		float angleRun = MathHelper.cos(f * 1.5F) * f1;
@@ -338,11 +338,11 @@ public class ModelDestroyerShimakazeBoss extends ModelBase implements IModelEmot
   		addk1 = MathHelper.cos(f * 0.7F) * f1 - 0.2618F;
 	  	addk2 = MathHelper.cos(f * 0.7F + 3.1415927F) * f1 - 0.2618F;
 
-  	    //²¾°ÊÀY³¡¨Ï¨ä¬Ý¤H
-	  	this.Head.rotateAngleX = f4 / 57.29578F; 	//¤W¤U¨¤«×
-	  	this.Head.rotateAngleY = f3 / 57.29578F;	//¥ª¥k¨¤«× ¨¤«×Âà¦¨rad §Y°£¥H57.29578
+  	    //ç§»å‹•é ­éƒ¨ä½¿å…¶çœ‹äºº
+	  	this.Head.rotateAngleX = f4 / 57.29578F; 	//ä¸Šä¸‹è§’åº¦
+	  	this.Head.rotateAngleY = f3 / 57.29578F;	//å·¦å³è§’åº¦ è§’åº¦è½‰æˆrad å³é™¤ä»¥57.29578
 	    
-	    //¥¿±`¯¸¥ß°Ê§@
+	    //æ­£å¸¸ç«™ç«‹å‹•ä½œ
   	    //ear
   	    this.EarL01.rotateAngleX = angleX * 0.1F - 0.8727F;
   	    this.EarL01.rotateAngleY = 1.0472F;
@@ -375,7 +375,7 @@ public class ModelDestroyerShimakazeBoss extends ModelBase implements IModelEmot
 		//equip
 		this.EquipBase.rotateAngleZ = 0.52F;
 
-	    if(f1 > 0.5F) {	//©b¶]°Ê§@
+	    if(f1 > 0.5F) {	//å¥”è·‘å‹•ä½œ
 	    	setFace(3);
 	    	//body
 	    	this.Head.rotateAngleX -= 0.2618F;
@@ -410,7 +410,7 @@ public class ModelDestroyerShimakazeBoss extends ModelBase implements IModelEmot
 	    else {
 	    	startEmo2 = ent.getStartEmotion2();
 	    	
-	    	//ÀY³¡¶É±×°Ê§@, ¥u¦b©b¶]¥H¥~®Éroll
+	    	//é ­éƒ¨å‚¾æ–œå‹•ä½œ, åªåœ¨å¥”è·‘ä»¥å¤–æ™‚roll
 	    	if(startEmo2 > 0) {
 	    		--startEmo2;
 	    		ent.setStartEmotion2(startEmo2);
@@ -429,9 +429,9 @@ public class ModelDestroyerShimakazeBoss extends ModelBase implements IModelEmot
 		    }
 	    }//end if sprint
 	    
-	  //rollÀY³¡¶É±×ªí±¡
+	  //rollé ­éƒ¨å‚¾æ–œè¡¨æƒ…
 	    if(ent.getStateFlag(ID.F.HeadTilt)) {
-	    	if(ent.getStateEmotion(ID.S.Emotion2) == 1) {	//¤§«e¤w¸g¶É±×, «hÄ~Äò¶É±×
+	    	if(ent.getStateEmotion(ID.S.Emotion2) == 1) {	//ä¹‹å‰å·²ç¶“å‚¾æ–œ, å‰‡ç¹¼çºŒå‚¾æ–œ
 	    		this.Head.rotateAngleZ = -0.24F;
 	    	}
 	    	else {
@@ -444,7 +444,7 @@ public class ModelDestroyerShimakazeBoss extends ModelBase implements IModelEmot
 	    	}	
 	    }
 	    else {
-	    	if(ent.getStateEmotion(ID.S.Emotion2) == 0) {	//ºû«ù¤§«e¨¤«×
+	    	if(ent.getStateEmotion(ID.S.Emotion2) == 0) {	//ç¶­æŒä¹‹å‰è§’åº¦
 	    		this.Head.rotateAngleZ = 0F;
 	    	}
 	    	else {
@@ -457,7 +457,7 @@ public class ModelDestroyerShimakazeBoss extends ModelBase implements IModelEmot
 	    	}
 	    }
   		
-	    if(ent.isRiding()) {  //ÃM­¼°Ê§@
+	    if(ent.isRiding()) {  //é¨Žä¹˜å‹•ä½œ
 	    	if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {	
 	    		GL11.glTranslatef(0F, 2.0F, 0F);
 		    	//body
@@ -500,7 +500,7 @@ public class ModelDestroyerShimakazeBoss extends ModelBase implements IModelEmot
 	    	}
   		}//end if sitting
 	    
-	    //§ðÀ»°Ê§@    
+	    //æ”»æ“Šå‹•ä½œ    
 	    if(ent.attackTime > 0) {
 	    	GL11.glTranslatef(0F, 0.5F, 0F);
 	    	//body
@@ -527,7 +527,7 @@ public class ModelDestroyerShimakazeBoss extends ModelBase implements IModelEmot
 	    
   	}
   	
-    //³]©wÅã¥ÜªºÁy«¬
+    //è¨­å®šé¡¯ç¤ºçš„è‡‰åž‹
   	@Override
   	public void setFace(int emo) {
   		switch(emo) {

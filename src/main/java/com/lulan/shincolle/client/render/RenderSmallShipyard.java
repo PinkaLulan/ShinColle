@@ -16,7 +16,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderSmallShipyard extends TileEntitySpecialRenderer {
 
-	//¶K¹ÏÀÉ¸ô®|
+	//è²¼åœ–æª”è·¯å¾‘
 	private static final ResourceLocation textureOn = new ResourceLocation(Reference.TEXTURES_BLOCKS+"BlockSmallShipyardOn.png");
 	private static final ResourceLocation textureOff = new ResourceLocation(Reference.TEXTURES_BLOCKS+"BlockSmallShipyardOff.png");
 		
@@ -53,11 +53,11 @@ public class RenderSmallShipyard extends TileEntitySpecialRenderer {
 			GL11.glTranslatef((float)x+0.5F, (float)y+1.5F, (float)z+0.5F);
 			GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
 			GL11.glRotatef(angle, 0F, 1F, 0F);
-			//º]©wmodel¶K¹Ï
+			//æ¦œå®šmodelè²¼åœ–
 			Minecraft.getMinecraft().renderEngine.bindTexture(textures);	//client side only
 			//this.bindTexture(textures);
 //			GL11.glPushMatrix();			
-				this.model.renderModel(0.0625F);  //Á×§KrenderModel¸Ì­±¦³¥­²¾±ÛÂà  ¥²¶·push pop¤@¦¸¥H§K¤£¥¿±`¦ì²¾
+				this.model.renderModel(0.0625F);  //é¿å…renderModelè£¡é¢æœ‰å¹³ç§»æ—‹è½‰  å¿…é ˆpush popä¸€æ¬¡ä»¥å…ä¸æ­£å¸¸ä½ç§»
 //			GL11.glPopMatrix();
 		GL11.glPopMatrix();
 		

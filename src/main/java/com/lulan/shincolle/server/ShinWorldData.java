@@ -15,9 +15,9 @@ import com.lulan.shincolle.team.TeamData;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
-/**¦øªA¾¹ºİ¸ê®Æ
- * Àx¦splayer idµ¥, ¦øªA¾¹ºİ§P©w¥Î¸ê®Æ
- * ¦¹class¥Î¨Ó³B²zServerProxy¸òMapStorage¤§¶¡ªº¸ê®Æ¦s¨ú°Ê§@
+/**ä¼ºæœå™¨ç«¯è³‡æ–™
+ * å„²å­˜player idç­‰, ä¼ºæœå™¨ç«¯åˆ¤å®šç”¨è³‡æ–™
+ * æ­¤classç”¨ä¾†è™•ç†ServerProxyè·ŸMapStorageä¹‹é–“çš„è³‡æ–™å­˜å–å‹•ä½œ
  *
  * tut tag: diesieben07, worldsaveddata
  */
@@ -110,9 +110,9 @@ public class ShinWorldData extends WorldSavedData {
 				save.setTag(ServerProxy.CUSTOM_TARGET_CLASS, tagList);
 			}
 			
-		    list.appendTag(save);	//±Nsave¥[¤J¨ìlist¤¤, ¤£ÀË¬d¬O§_¦³­«½Æªºtag, ¦Ó¬O·s¼W¤@­Ótag
+		    list.appendTag(save);	//å°‡saveåŠ å…¥åˆ°listä¸­, ä¸æª¢æŸ¥æ˜¯å¦æœ‰é‡è¤‡çš„tag, è€Œæ˜¯æ–°å¢ä¸€å€‹tag
 		}
-		nbt.setTag(TAG_PLAYERDATA, list);	//±Nlist¥[¤J¨ìnbt¤¤
+		nbt.setTag(TAG_PLAYERDATA, list);	//å°‡liståŠ å…¥åˆ°nbtä¸­
 		
 		
 		/** save team data */
@@ -132,9 +132,9 @@ public class ShinWorldData extends WorldSavedData {
 	    	saveIntListToNBT(save, TAG_TBAN, data.getTeamBannedList());
 	    	saveIntListToNBT(save, TAG_TALLY, data.getTeamAllyList());
 		    
-		    list.appendTag(save);	//±Nsave¥[¤J¨ìlist¤¤, ¤£ÀË¬d¬O§_¦³­«½Æªºtag, ¦Ó¬O·s¼W¤@­Ótag
+		    list.appendTag(save);	//å°‡saveåŠ å…¥åˆ°listä¸­, ä¸æª¢æŸ¥æ˜¯å¦æœ‰é‡è¤‡çš„tag, è€Œæ˜¯æ–°å¢ä¸€å€‹tag
 		}
-		nbt.setTag(TAG_TEAMDATA, list);	//±Nlist¥[¤J¨ìnbt¤¤
+		nbt.setTag(TAG_TEAMDATA, list);	//å°‡liståŠ å…¥åˆ°nbtä¸­
 		
 	}//end write nbt
 	

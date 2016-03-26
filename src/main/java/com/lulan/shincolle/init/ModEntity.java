@@ -126,7 +126,7 @@ public class ModEntity {
 	}
 	
 	//NOT WORKING
-//	//mob¦ÛµM¥Í¦¨¤èªk, ¥²¶·©ñ¦bpostInit¤~©I¥s, ¥H¨ú±o¥ş³¡modµù¥Uªº¥ş³¡biome
+//	//mobè‡ªç„¶ç”Ÿæˆæ–¹æ³•, å¿…é ˆæ”¾åœ¨postInitæ‰å‘¼å«, ä»¥å–å¾—å…¨éƒ¨modè¨»å†Šçš„å…¨éƒ¨biome
 //	public static void initNaturalSpawn() {
 //		//register entity natrual spawn
 //		//spawn in ALL ocean biome
@@ -141,37 +141,37 @@ public class ModEntity {
 //		}
 //	}
 	
-	//µn¿ı¥Íª«¤èªk
-	//°Ñ¼Æ: ¸Ó¥Íª«class, ¥Íª«¦WºÙ, ¥Íª«id
+	//ç™»éŒ„ç”Ÿç‰©æ–¹æ³•
+	//åƒæ•¸: è©²ç”Ÿç‰©class, ç”Ÿç‰©åç¨±, ç”Ÿç‰©id
 	public static void createEntity(Class entityClass, String entityName, int entityId){
 		LogHelper.info("DEBUG : register entity: "+entityId+" "+entityClass+" "+entityName);
-		//µn¿ı°Ñ¼Æ: ¥Íª«class, ¥Íª«¦WºÙ, ¥Íª«id, mod°Æ¥», °lÂÜ§ó·s¶ZÂ÷, §ó·s®É¶¡¶¡¹j, ¬O§_µo°e¦P¨B«Ê¥](°ª³tentity¥²¶·true¤~·|Åã¥Ü¥­¶¶)
+		//ç™»éŒ„åƒæ•¸: ç”Ÿç‰©class, ç”Ÿç‰©åç¨±, ç”Ÿç‰©id, modå‰¯æœ¬, è¿½è¹¤æ›´æ–°è·é›¢, æ›´æ–°æ™‚é–“é–“éš”, æ˜¯å¦ç™¼é€åŒæ­¥å°åŒ…(é«˜é€Ÿentityå¿…é ˆtrueæ‰æœƒé¡¯ç¤ºå¹³é †)
 		EntityRegistry.registerModEntity(entityClass, entityName, entityId, ShinColle.instance, 64, 1, true);
 	}
 	
-	//µn¿ı«D¥Íª«¤èªk (µL¥Í©Ç³J)
-	//°Ñ¼Æ: ¸Ó¥Íª«class, ¥Íª«¦WºÙ, ¥Íª«id
+	//ç™»éŒ„éç”Ÿç‰©æ–¹æ³• (ç„¡ç”Ÿæ€ªè›‹)
+	//åƒæ•¸: è©²ç”Ÿç‰©class, ç”Ÿç‰©åç¨±, ç”Ÿç‰©id
 	public static void createProjectileEntity(Class entityClass, String entityName, int entityId){
-		//µn¿ı°Ñ¼Æ: ¥Íª«class, ¥Íª«¦WºÙ, ¥Íª«id, mod°Æ¥», °lÂÜ§ó·s¶ZÂ÷, §ó·s®É¶¡¶¡¹j, ¬O§_µo°e³t«×«Ê¥]
+		//ç™»éŒ„åƒæ•¸: ç”Ÿç‰©class, ç”Ÿç‰©åç¨±, ç”Ÿç‰©id, modå‰¯æœ¬, è¿½è¹¤æ›´æ–°è·é›¢, æ›´æ–°æ™‚é–“é–“éš”, æ˜¯å¦ç™¼é€é€Ÿåº¦å°åŒ…
 		EntityRegistry.registerModEntity(entityClass, entityName, entityId, ShinColle.instance, 64, 1, true);
 	}
 	
-	//µn¿ıitem entity¤èªk (µL¥Í©Ç³J)
-	//°Ñ¼Æ: ¸Ó¥Íª«class, ¥Íª«¦WºÙ, ¥Íª«id
+	//ç™»éŒ„item entityæ–¹æ³• (ç„¡ç”Ÿæ€ªè›‹)
+	//åƒæ•¸: è©²ç”Ÿç‰©class, ç”Ÿç‰©åç¨±, ç”Ÿç‰©id
 	public static void createItemEntity(Class entityClass, String entityName, int entityId){
-		//µn¿ı°Ñ¼Æ: ¥Íª«class, ¥Íª«¦WºÙ, ¥Íª«id, mod°Æ¥», °lÂÜ§ó·s¶ZÂ÷, §ó·s®É¶¡¶¡¹j, ¬O§_µo°e³t«×«Ê¥]
+		//ç™»éŒ„åƒæ•¸: ç”Ÿç‰©class, ç”Ÿç‰©åç¨±, ç”Ÿç‰©id, modå‰¯æœ¬, è¿½è¹¤æ›´æ–°è·é›¢, æ›´æ–°æ™‚é–“é–“éš”, æ˜¯å¦ç™¼é€é€Ÿåº¦å°åŒ…
 		EntityRegistry.registerModEntity(entityClass, entityName, entityId, ShinColle.instance, 48, 1, false);
 	}
 	
-	//¨Ï¥Î©x¤è¦@³qidµn¿ı¥Íª«
-	//°Ñ¼Æ: ¸Ó¥Íª«class, ¥Íª«¦WºÙ, ¥Í©Ç³J­I´º¦â, ¥Í©Ç³J´³ÂI¦â
+	//ä½¿ç”¨å®˜æ–¹å…±é€šidç™»éŒ„ç”Ÿç‰©
+	//åƒæ•¸: è©²ç”Ÿç‰©class, ç”Ÿç‰©åç¨±, ç”Ÿæ€ªè›‹èƒŒæ™¯è‰², ç”Ÿæ€ªè›‹æ–‘é»è‰²
 	public static void createEntityGlobalID(Class entityClass, String entityName, int backColor, int spotColor){
 		int entityId = modEntityID++;
 		
 		EntityRegistry.registerGlobalEntityID(entityClass, entityName, entityId);
-		//µn¿ı°Ñ¼Æ: ¥Íª«class, ¥Íª«¦WºÙ, ¥Íª«id, mod°Æ¥», °lÂÜ§ó·s¶ZÂ÷, §ó·s®É¶¡¶¡¹j, ¬O§_µo°e³t«×«Ê¥]
+		//ç™»éŒ„åƒæ•¸: ç”Ÿç‰©class, ç”Ÿç‰©åç¨±, ç”Ÿç‰©id, modå‰¯æœ¬, è¿½è¹¤æ›´æ–°è·é›¢, æ›´æ–°æ™‚é–“é–“éš”, æ˜¯å¦ç™¼é€é€Ÿåº¦å°åŒ…
 		EntityRegistry.registerModEntity(entityClass, entityName, entityId, ShinColle.instance, 64, 1, false);
-		//µn¿ı©Çª«¥Íª«³J: ¥Íª«id, ¥Í¦¨³J¸ê°T(¥Íª«id,­I´º¦â,´³ÂI¦â)
+		//ç™»éŒ„æ€ªç‰©ç”Ÿç‰©è›‹: ç”Ÿç‰©id, ç”Ÿæˆè›‹è³‡è¨Š(ç”Ÿç‰©id,èƒŒæ™¯è‰²,æ–‘é»è‰²)
 		EntityList.entityEggs.put(Integer.valueOf(entityId), new EntityList.EntityEggInfo(entityId, backColor, spotColor));
 	}
 	

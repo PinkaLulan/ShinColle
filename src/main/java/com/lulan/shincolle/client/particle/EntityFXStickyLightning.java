@@ -141,14 +141,14 @@ public class EntityFXStickyLightning extends EntityFX {
 //    	tess.draw();
     	
     	GL11.glPushMatrix();
-		//¨Ï¥Î¦Û±aªº¶K¹ÏÀÉ
+		//ä½¿ç”¨è‡ªå¸¶çš„è²¼åœ–æª”
 //		Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE);
 		GL11.glDepthMask(true);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);	//disable texture
-//		GL11.glEnable(GL11.GL_DEPTH_TEST);	//DEPTH TEST¶}±Ò«á¤~¯à¨Ï¥ÎglDepthFunc
+//		GL11.glEnable(GL11.GL_DEPTH_TEST);	//DEPTH TESTé–‹å•Ÿå¾Œæ‰èƒ½ä½¿ç”¨glDepthFunc
 //		GL11.glDepthFunc(GL11.GL_ALWAYS);
 		
         float px = (float)(this.prevPosX + (this.posX - this.prevPosX) * ticks - interpPosX);
@@ -159,7 +159,7 @@ public class EntityFXStickyLightning extends EntityFX {
         float offy = 0F;
         
         if(this.particleAge % 2 == 0) {
-	        //¶V«á­±ªºstep, random range¶V¤j (°{¹q¨ì«á­±¤À¤ä¤À´²)
+	        //è¶Šå¾Œé¢çš„step, random rangeè¶Šå¤§ (é–ƒé›»åˆ°å¾Œé¢åˆ†æ”¯åˆ†æ•£)
 	        for(int i = 0; i < numStem; i++) {
 	        	//stem random position
 	            offx = (rand.nextFloat() - 0.5F) * this.scaleX;
@@ -194,9 +194,9 @@ public class EntityFXStickyLightning extends EntityFX {
 	        }
         }
   
-        //quad strip¥²¶·¥ı«ü©w¤U¤è¨âÂI(¥ª¤U -> ¥k¤U), ¦A«ü©w¤W¤è¨âÂI(¥ª¤W -> ¥k¤W), ¸Ó­±¤~·|´Â¦Vª±®a
-    	//¸òquad¤£¦P (¥k¤U -> ¥k¤W -> ¥ª¤W -> ¥ª¤U)
-        //µe¥X¥¿­±
+        //quad stripå¿…é ˆå…ˆæŒ‡å®šä¸‹æ–¹å…©é»(å·¦ä¸‹ -> å³ä¸‹), å†æŒ‡å®šä¸Šæ–¹å…©é»(å·¦ä¸Š -> å³ä¸Š), è©²é¢æ‰æœƒæœå‘ç©å®¶
+    	//è·Ÿquadä¸åŒ (å³ä¸‹ -> å³ä¸Š -> å·¦ä¸Š -> å·¦ä¸‹)
+        //ç•«å‡ºæ­£é¢
         tess.startDrawing(GL11.GL_QUAD_STRIP);
         tess.setColorRGBA_F(particleRed, particleGreen, particleBlue, particleAlpha);
         tess.setBrightness(240);
@@ -206,7 +206,7 @@ public class EntityFXStickyLightning extends EntityFX {
         }
         tess.draw();
         
-        //µe¥X¤Ï­±
+        //ç•«å‡ºåé¢
         tess.startDrawing(GL11.GL_QUAD_STRIP);
         tess.setColorRGBA_F(particleRed, particleGreen, particleBlue, particleAlpha);
         tess.setBrightness(240);
@@ -217,7 +217,7 @@ public class EntityFXStickyLightning extends EntityFX {
         tess.draw();
 
 //        GL11.glDepthFunc(GL11.GL_LEQUAL);
-//		GL11.glDisable(GL11.GL_DEPTH_TEST);	//DEPTH TESTÃö³¬
+//		GL11.glDisable(GL11.GL_DEPTH_TEST);	//DEPTH TESTé—œé–‰
         GL11.glEnable(GL11.GL_LIGHTING);
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glEnable(GL11.GL_TEXTURE_2D);

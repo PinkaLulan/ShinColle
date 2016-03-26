@@ -14,14 +14,14 @@ import net.minecraft.world.World;
 
 
 /**TEAM CIRCLE PARTICLE
- * Åã¥Üteam°é¿ïªº¥Ø¼Ğ, ÂIÀ»ªº¥Ø¼Ğ, ¯à±±¨îªº¥Ø¼Ğ
+ * é¡¯ç¤ºteamåœˆé¸çš„ç›®æ¨™, é»æ“Šçš„ç›®æ¨™, èƒ½æ§åˆ¶çš„ç›®æ¨™
  * type:
- * 0: ºñ¦â, ¥Ø«e©Ò¦³¦b¶¤¥î¤¤ªº¦Ü¤Ö³£·|Åã¥Üºñ¦â°é¿ï¹Ï
- * 1: «C¦â, pointer¬°single mode®É·|±±¨îªº¥Ø¼Ğ
- * 2: ¬õ¦â, pointer¬°group mode·|±±¨îªº¥Ø¼Ğ
- * 3: ¶À¦â, pointer¬°formation mode·|±±¨îªº¥Ø¼Ğ
- * 4: ºñ¦â, moving target (show 20 ticks), alpha fade out
- * 5: ¬õ¦â, attack target (show 20 ticks), alpha fade out
+ * 0: ç¶ è‰², ç›®å‰æ‰€æœ‰åœ¨éšŠä¼ä¸­çš„è‡³å°‘éƒ½æœƒé¡¯ç¤ºç¶ è‰²åœˆé¸åœ–
+ * 1: é’è‰², pointerç‚ºsingle modeæ™‚æœƒæ§åˆ¶çš„ç›®æ¨™
+ * 2: ç´…è‰², pointerç‚ºgroup modeæœƒæ§åˆ¶çš„ç›®æ¨™
+ * 3: é»ƒè‰², pointerç‚ºformation modeæœƒæ§åˆ¶çš„ç›®æ¨™
+ * 4: ç¶ è‰², moving target (show 20 ticks), alpha fade out
+ * 5: ç´…è‰², attack target (show 20 ticks), alpha fade out
  */
 @SideOnly(Side.CLIENT)
 public class EntityFXTeam extends EntityFX {
@@ -143,7 +143,7 @@ public class EntityFXTeam extends EntityFX {
     @Override
 	public void renderParticle(Tessellator tess, float ticks, float par3, float par4, float par5, float par6, float par7) {
 		GL11.glPushMatrix();
-		//¨Ï¥Î¦Û±aªº¶K¹ÏÀÉ
+		//ä½¿ç”¨è‡ªå¸¶çš„è²¼åœ–æª”
 		Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE);
 		GL11.glDepthMask(true);
 		GL11.glDisable(GL11.GL_LIGHTING);
@@ -152,13 +152,13 @@ public class EntityFXTeam extends EntityFX {
 		
 		float xmin = 0F;
 		float xmax = 1F;
-		float y1min = 0F;	//½bÀY¹Ï®×
+		float y1min = 0F;	//ç®­é ­åœ–æ¡ˆ
 		float y1max = 0.5F;
-		float y2min = 0.5F;	//°é°é¹Ï®×
+		float y2min = 0.5F;	//åœˆåœˆåœ–æ¡ˆ
 		float y2max = 1F;
 		float halfScale = particleScale * 0.5F;
 		
-		//particle¬O¥Hª±®aµø³¥¨Órender, ¦]¦¹®y¼Ğ­n¦©±¼interpPosÂà´«¬°ª±®aµø³¥®y¼Ğ
+		//particleæ˜¯ä»¥ç©å®¶è¦–é‡ä¾†render, å› æ­¤åº§æ¨™è¦æ‰£æ‰interpPosè½‰æ›ç‚ºç©å®¶è¦–é‡åº§æ¨™
 //		double f11 = (float)(this.prevPosX + (this.posX - this.prevPosX) * (double)ticks - interpPosX);
 //		double f12 = (float)(this.prevPosY + (this.posY - this.prevPosY) * (double)ticks - interpPosY + this.height + 1.3D);
 //		double f12b = (float)(this.prevPosY + (this.posY - this.prevPosY) * (double)ticks - interpPosY + 0.3D);
@@ -173,8 +173,8 @@ public class EntityFXTeam extends EntityFX {
         tess.startDrawingQuads();
         tess.setBrightness(240);
         tess.setColorRGBA_F(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlphaA);
-        //µe¥X½bÀY
-        //X¸òZ¦ì¸m¤£¥[ÀY³¡Âà°Ê°¾²¾, ¥u¦³Y¶b·|°¾¦Vª±®a¤è¦V
+        //ç•«å‡ºç®­é ­
+        //Xè·ŸZä½ç½®ä¸åŠ é ­éƒ¨è½‰å‹•åç§», åªæœ‰Yè»¸æœƒåå‘ç©å®¶æ–¹å‘
         tess.addVertexWithUV(f11 - par3 * particleScale, f12 - par4 * particleScale * 2.0F, f13 - par5 * particleScale, xmax, y1max);
         tess.addVertexWithUV(f11 - par3 * particleScale, f12 + par4 * particleScale * 2.0F, f13 - par5 * particleScale, xmax, y1min);
         tess.addVertexWithUV(f11 + par3 * particleScale, f12 + par4 * particleScale * 2.0F, f13 + par5 * particleScale, xmin, y1min);
@@ -183,13 +183,13 @@ public class EntityFXTeam extends EntityFX {
         halfScale = particleScale * 3F;
         
         tess.setColorRGBA_F(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlphaC);
-        //µe¥X°é°é(´Â¤W)
+        //ç•«å‡ºåœˆåœˆ(æœä¸Š)
         tess.addVertexWithUV(f11 + halfScale, f12b, f13 + halfScale, xmax, y2max);
         tess.addVertexWithUV(f11 + halfScale, f12b, f13 - halfScale, xmax, y2min);
         tess.addVertexWithUV(f11 - halfScale, f12b, f13 - halfScale, xmin, y2min);
         tess.addVertexWithUV(f11 - halfScale, f12b, f13 + halfScale, xmin, y2max);
 
-        //µe¥X°é°é(´Â¤U)
+        //ç•«å‡ºåœˆåœˆ(æœä¸‹)
         tess.addVertexWithUV(f11 + halfScale, f12b, f13 - halfScale, xmax, y2max);
         tess.addVertexWithUV(f11 + halfScale, f12b, f13 + halfScale, xmax, y2min);
         tess.addVertexWithUV(f11 - halfScale, f12b, f13 + halfScale, xmin, y2min);

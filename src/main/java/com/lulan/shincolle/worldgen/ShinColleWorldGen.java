@@ -18,36 +18,36 @@ public class ShinColleWorldGen implements IWorldGenerator {
 	
 	private WorldGenerator genPolymetal, genPolyGravel;
 
-	//ºû«×§P©w
+	//ç¶­åº¦åˆ¤å®š
 	@Override
 	public void generate(Random random, int chunkX, int chunkZ, World world,
 			IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
-		//¨Ì·Óºû«×id©I¥s¤£¦P¥Í¦¨¤èªk
+		//ä¾ç…§ç¶­åº¦idå‘¼å«ä¸åŒç”Ÿæˆæ–¹æ³•
 		switch(world.provider.dimensionId) {
-		case 0:		//¤@¯ë¥@¬É
-			generateSurface(world, random, chunkX*16, chunkZ*16);	//±Nchunk¦ì¸mx16 Âà¦¨block¦ì¸m
+		case 0:		//ä¸€èˆ¬ä¸–ç•Œ
+			generateSurface(world, random, chunkX*16, chunkZ*16);	//å°‡chunkä½ç½®x16 è½‰æˆblockä½ç½®
 			generateSea(world, random, chunkX*16, chunkZ*16);
 			break;
-		case -1:	//¦aº»
+		case -1:	//åœ°ç„
 		//	generateNether(world, random, chunkX*16, chunkZ*16);
 			break;
-		case 1:		//²×¬É
+		case 1:		//çµ‚ç•Œ
 		//	generateEnd(world, random, chunkX*16, chunkZ*16);
 			break;
-		default:	//¨ä¥Lºû«×
+		default:	//å…¶ä»–ç¶­åº¦
 			generateSurface(world, random, chunkX*16, chunkZ*16);
 			generateSea(world, random, chunkX*16, chunkZ*16);
 			break;		
 		}		
 	}
 
-	//ÀH¾÷¥Í¦¨¾¹
-	//°Ñ¼Æ: Äq¥Û,¥Í¦¨¥@¬É,ÀH¾÷¼Æ,x°_ÂI,z°_ÂI,¥Í¦¨¦¸¼Æ,³Ì§C°ª«×,³Ì°ª°ª«×
-	//¥Í¦¨¦¸¼Æ:ÅK/¬õ¥Û~10 Æp¥Û/ª÷~2
+	//éš¨æ©Ÿç”Ÿæˆå™¨
+	//åƒæ•¸: ç¤¦çŸ³,ç”Ÿæˆä¸–ç•Œ,éš¨æ©Ÿæ•¸,xèµ·é»,zèµ·é»,ç”Ÿæˆæ¬¡æ•¸,æœ€ä½é«˜åº¦,æœ€é«˜é«˜åº¦
+	//ç”Ÿæˆæ¬¡æ•¸:éµ/ç´…çŸ³~10 é‘½çŸ³/é‡‘~2
 	private void oreGenerator(WorldGenerator genOres, World world, Random rand, int blockX, int blockZ, int spawnNum, int minY, int maxY) {	
-		//NYI: ¨Ì·Ó¥ÍºA¨tid¥Í¦¨¤£¦P¼Æ¶qªºÄq
-		//¥H°_ÂIblockX,blockZÀH¾÷¥[¤W0~15(§Y¤@­Óchunk½d³ò¤º)  ¥Í¦¨°ª«×«h¬°minY~maxY¤§¶¡
-		//¨C­Óchunk°õ¦æspawnChance¦¸¥Í¦¨°Ê§@
+		//NYI: ä¾ç…§ç”Ÿæ…‹ç³»idç”Ÿæˆä¸åŒæ•¸é‡çš„ç¤¦
+		//ä»¥èµ·é»blockX,blockZéš¨æ©ŸåŠ ä¸Š0~15(å³ä¸€å€‹chunkç¯„åœå…§)  ç”Ÿæˆé«˜åº¦å‰‡ç‚ºminY~maxYä¹‹é–“
+		//æ¯å€‹chunkåŸ·è¡ŒspawnChanceæ¬¡ç”Ÿæˆå‹•ä½œ
 		int x,y,z = 0;
 		int spawnN = spawnNum;
 		
@@ -65,15 +65,15 @@ public class ShinColleWorldGen implements IWorldGenerator {
 		}
 	}
 
-	//¤@¯ë¥@¬É¥Í¦¨¤èªk  ¨C­Óchunk³£·|©I¥s¤@¦¸
+	//ä¸€èˆ¬ä¸–ç•Œç”Ÿæˆæ–¹æ³•  æ¯å€‹chunkéƒ½æœƒå‘¼å«ä¸€æ¬¡
 	private void generateSurface(World world, Random rand, int x, int z) {
-		//Polymetal¥Í¦¨: ¥Í¦¨¤j¤p4~8­Óblock ¨Cchunk¥Í¦¨¦¸¼Æ10¦¸ ¥Í¦¨°ª«×2~40
-		genPolymetal = new WorldGenMinable(ModBlocks.BlockPolymetalOre, 4 + rand.nextInt(4));  //¨C­Óchunk·|­«·sÀH¾÷¤@¦¸¥Í¦¨Äqª«¤j¤p
+		//Polymetalç”Ÿæˆ: ç”Ÿæˆå¤§å°4~8å€‹block æ¯chunkç”Ÿæˆæ¬¡æ•¸10æ¬¡ ç”Ÿæˆé«˜åº¦2~40
+		genPolymetal = new WorldGenMinable(ModBlocks.BlockPolymetalOre, 4 + rand.nextInt(4));  //æ¯å€‹chunkæœƒé‡æ–°éš¨æ©Ÿä¸€æ¬¡ç”Ÿæˆç¤¦ç‰©å¤§å°
 		oreGenerator(genPolymetal, world, rand, x, z, ConfigHandler.polyOreBaseRate, 3, 50);
 		
 	}
 	
-	//®ü¬v¬ÛÃö¥ÍºA¨t: polymetallic gravel¥Í¦¨¤èªk
+	//æµ·æ´‹ç›¸é—œç”Ÿæ…‹ç³»: polymetallic gravelç”Ÿæˆæ–¹æ³•
 	private void generateSea(World world, Random rand, int x, int z) {
 		BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
 		
@@ -84,7 +84,7 @@ public class ShinColleWorldGen implements IWorldGenerator {
 			for(int i = 0; i < ConfigHandler.polyGravelBaseRate; i++) {
 				posX = x + rand.nextInt(16);
 				posZ = z + rand.nextInt(16);
-				posY = world.getTopSolidOrLiquidBlock(posX, posZ);	//¨ú±o°ª«×³Ì°ªªº¹êÅé¤è¶ô+1®æ(§Y¤ô©³+1)
+				posY = world.getTopSolidOrLiquidBlock(posX, posZ);	//å–å¾—é«˜åº¦æœ€é«˜çš„å¯¦é«”æ–¹å¡Š+1æ ¼(å³æ°´åº•+1)
 				
 				genPolyGravel.generate(world, rand, posX, posY, posZ);
 			}
@@ -92,12 +92,12 @@ public class ShinColleWorldGen implements IWorldGenerator {
 	}
 	
 /*
-	//¦aº»¥Í¦¨¤èªk  ¨C­Óchunk³£·|©I¥s¤@¦¸
+	//åœ°ç„ç”Ÿæˆæ–¹æ³•  æ¯å€‹chunkéƒ½æœƒå‘¼å«ä¸€æ¬¡
 	private void generateNether(World world, Random rand, int x, int z) {
 				
 	}
 
-	//²×¬É¥Í¦¨¤èªk  ¨C­Óchunk³£·|©I¥s¤@¦¸
+	//çµ‚ç•Œç”Ÿæˆæ–¹æ³•  æ¯å€‹chunkéƒ½æœƒå‘¼å«ä¸€æ¬¡
 	private void generateEnd(World world, Random rand, int x, int z) {
 			
 	}

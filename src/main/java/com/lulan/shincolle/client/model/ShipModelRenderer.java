@@ -9,7 +9,7 @@ import net.minecraft.client.model.ModelRenderer;
 
 public class ShipModelRenderer extends ModelRenderer {
 	
-	//ÃB¥~³]©wªº¤j¤p­È, ¦ì²¾­È, ±ÛÂà­È
+	//é¡å¤–è¨­å®šçš„å¤§å°å€¼, ä½ç§»å€¼, æ—‹è½‰å€¼
 	public boolean tweakModel;
 	public float scale2x, scale2y, scale2z, trans2x, trans2y, trans2z, rotat2x, rotat2y, rotat2z;
 

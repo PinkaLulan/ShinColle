@@ -190,11 +190,11 @@ public class ModelDestroyerHa extends ModelBase implements IModelEmotion {
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
 
     	GL11.glPushMatrix();
-    	GL11.glScalef(0.45F, 0.45F, 0.45F);	//debug¥Î
+    	GL11.glScalef(0.45F, 0.45F, 0.45F);	//debugç”¨
     	
     	this.Back.render(f5);
     	
-    	//«G«×³]¬°240
+    	//äº®åº¦è¨­ç‚º240
     	GL11.glDisable(GL11.GL_LIGHTING);
     	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
     	this.GlowBack.render(f5);
@@ -237,7 +237,7 @@ public class ModelDestroyerHa extends ModelBase implements IModelEmotion {
 		setGlowRotation();
     }
     
-    //³]©w¼Ò«¬µo¥ú³¡¥÷ªºrotation
+    //è¨­å®šæ¨¡å‹ç™¼å…‰éƒ¨ä»½çš„rotation
     private void setGlowRotation() {
 		this.GlowBack.rotateAngleX = this.Back.rotateAngleX;
 		this.GlowBack.rotateAngleY = this.Back.rotateAngleY;
@@ -250,7 +250,7 @@ public class ModelDestroyerHa extends ModelBase implements IModelEmotion {
 		this.GlowHead.rotateAngleZ = this.Head.rotateAngleZ;
 	}
     
-    //§¤¤U°Ê§@
+    //åä¸‹å‹•ä½œ
   	private void motionSit(EntityDestroyerHa ent, float f2) {
   		float angle1 = MathHelper.cos(f2 * 1F);
   		
@@ -285,13 +285,13 @@ public class ModelDestroyerHa extends ModelBase implements IModelEmotion {
   		
   	}
     
-    //±`®ÉÂ\°Ê§À¤Ú
+    //å¸¸æ™‚æ“ºå‹•å°¾å·´
   	private void motionTail(float angleX) {
   		TailBack.rotateAngleX = angleX * 0.05F + 0.1745F;
 	    TailEnd1.rotateAngleX = angleX * 0.1F + 0.2618F;
   	}
     
-    //Âù¸}²¾°Ê­pºâ
+    //é›™è…³ç§»å‹•è¨ˆç®—
   	private void motionLeg(EntityDestroyerHa ent, float f, float f1) {
   		float angle1 = MathHelper.cos(f * 0.6662F) * 0.5F * f1;
   		float angle2 = MathHelper.sin(f * 0.6662F) * 0.5F * f1;
@@ -302,17 +302,17 @@ public class ModelDestroyerHa extends ModelBase implements IModelEmotion {
 	    LegLeftEnd.rotateAngleX = -angle2 + 1F;
 	}
     
-    //ÀY³¡¬İ¤HÂà°Ê­pºâ
+    //é ­éƒ¨çœ‹äººè½‰å‹•è¨ˆç®—
   	private void motionWatch(float f3, float f4, float angleX) {
-  		//²¾°ÊÀY³¡ ¨Ï¨ä¬İ¤H, ¤£¬İ¤H®É«ùÄòÂ\°ÊÀY³¡
+  		//ç§»å‹•é ­éƒ¨ ä½¿å…¶çœ‹äºº, ä¸çœ‹äººæ™‚æŒçºŒæ“ºå‹•é ­éƒ¨
   	    if(f4 != 0) {
-  	    	NeckBack.rotateAngleX = f4 / 200F; 	//¤W¤U¨¤«×
-  		    NeckBack.rotateAngleY = f3 / 200F;	//¥ª¥k¨¤«× ¨¤«×Âà¦¨rad §Y°£¥H57.29578
+  	    	NeckBack.rotateAngleX = f4 / 200F; 	//ä¸Šä¸‹è§’åº¦
+  		    NeckBack.rotateAngleY = f3 / 200F;	//å·¦å³è§’åº¦ è§’åº¦è½‰æˆrad å³é™¤ä»¥57.29578
   		    Head.rotateAngleX = f4 / 200F;
   		    Head.rotateAngleY = f3 / 200F;
   		    HeadD01.rotateAngleX = angleX * 0.05F - 0.05F;
   		    TailBack.rotateAngleX = 0.15F;
-  		    TailBack.rotateAngleY = f3 / -200F;	//§À¤Ú¥H¤Ï¤è¦VÂ\°Ê
+  		    TailBack.rotateAngleY = f3 / -200F;	//å°¾å·´ä»¥åæ–¹å‘æ“ºå‹•
   		    TailEnd1.rotateAngleX = 0.2F;
 		    TailEnd1.rotateAngleY = f3 / -200F;
   	    }
@@ -330,7 +330,7 @@ public class ModelDestroyerHa extends ModelBase implements IModelEmotion {
 		}
   	}
     
-    //ÀH¾÷©â¨úÅã¥Üªºªí±¡ 
+    //éš¨æ©ŸæŠ½å–é¡¯ç¤ºçš„è¡¨æƒ… 
     private void rollEmotion(EntityDestroyerHa ent) {   	
     	switch(ent.getStateEmotion(ID.S.Emotion)) {
     	case ID.Emotion.BLINK:	//blink
@@ -364,7 +364,7 @@ public class ModelDestroyerHa extends ModelBase implements IModelEmotion {
     	}	
     }
 	
-	//³]©wÅã¥ÜªºÁy«¬
+	//è¨­å®šé¡¯ç¤ºçš„è‡‰å‹
     @Override
   	public void setFace(int emo) {
 		switch(emo) {

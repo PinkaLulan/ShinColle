@@ -6,7 +6,6 @@ import java.util.List;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
@@ -15,13 +14,11 @@ import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
 import com.lulan.shincolle.item.PointerItem;
-import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.BasicTileEntity;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.FormationHelper;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.PacketHelper;
 
 import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
@@ -30,7 +27,7 @@ import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 
 /**CLIENT TO SERVER : GUI INPUT PACKETS
- * ¥Î©ó±NGUIªº¾Ş§@µo°e¨ìserver
+ * ç”¨æ–¼å°‡GUIçš„æ“ä½œç™¼é€åˆ°server
  */
 public class C2SGUIPackets implements IMessage {
 	
@@ -75,7 +72,7 @@ public class C2SGUIPackets implements IMessage {
 	}
 	
 	
-	public C2SGUIPackets() {}	//¥²¶·­n¦³ªÅ°Ñ¼Æconstructor, forge¤~¯à¨Ï¥Î¦¹class
+	public C2SGUIPackets() {}	//å¿…é ˆè¦æœ‰ç©ºåƒæ•¸constructor, forgeæ‰èƒ½ä½¿ç”¨æ­¤class
 	
 	/** GUI click: 
 	 *  type 0: ship entity gui click
@@ -153,7 +150,7 @@ public class C2SGUIPackets implements IMessage {
         this.str = str;
 	}
 	
-	//±µ¦¬packet¤èªk
+	//æ¥æ”¶packetæ–¹æ³•
 	@Override
 	public void fromBytes(ByteBuf buf) {	
 		//get type and entityID
@@ -218,14 +215,14 @@ public class C2SGUIPackets implements IMessage {
 							getEnt2 = EntityHelper.getEntityByID(value1, worldID, false);
 						}
 						
-						//ÂI¨ìªº¬Oship entity, «hadd team
+						//é»åˆ°çš„æ˜¯ship entity, å‰‡add team
 						if(getEnt2 instanceof BasicEntityShip) {
 							//add ship to team
 							extProps.addShipEntity(0, (BasicEntityShip) getEnt2, false);
 							//reset formation id
 							extProps.setFormatIDCurrentTeam(0);
 						}
-						//¨ä¥Lentity or null, «hµø¬°²MªÅ¸Óteam slot (ªí¥Üentity¥i¯à§ì¿ù©Î§ä¤£¨ì)
+						//å…¶ä»–entity or null, å‰‡è¦–ç‚ºæ¸…ç©ºè©²team slot (è¡¨ç¤ºentityå¯èƒ½æŠ“éŒ¯æˆ–æ‰¾ä¸åˆ°)
 						else {
 							extProps.addShipEntity(0, null, false);
 						}
@@ -249,9 +246,10 @@ public class C2SGUIPackets implements IMessage {
 				Entity getEnt2 = EntityHelper.getEntityByID(value2, worldID, false);
 				
 				if(getEnt != null) {
-					//¤£¦P¥D¤H¤~¯à§ğÀ»
+					//éç¦æ­¢æ”»æ“Šç›®æ¨™ or ä¸åŒä¸»äºº or æ•µå°/ä¸­ç«‹é™£ç‡Ÿæ‰èƒ½æ”»æ“Š
 					if(EntityHelper.checkAttackable(getEnt2) &&
-					   !EntityHelper.checkSameOwner(getEnt, getEnt2)) {
+					   !EntityHelper.checkSameOwner(getEnt, getEnt2) &&
+					   !EntityHelper.checkIsAlly(getEnt, getEnt2)) {
 						this.player = getEnt;
 						EntityHelper.applyTeamAttack(player, value1, getEnt2);
 					}
@@ -661,7 +659,7 @@ public class C2SGUIPackets implements IMessage {
 		}//end packet type switch
 	}
 
-	//µo¥Xpacket¤èªk
+	//ç™¼å‡ºpacketæ–¹æ³•
 	@Override
 	public void toBytes(ByteBuf buf) {
 		switch(this.type) {
@@ -746,7 +744,7 @@ public class C2SGUIPackets implements IMessage {
 	
 	//packet handler (inner class)
 	public static class Handler implements IMessageHandler<C2SGUIPackets, IMessage> {
-		//¦¬¨ì«Ê¥]®ÉÅã¥Üdebug°T®§
+		//æ”¶åˆ°å°åŒ…æ™‚é¡¯ç¤ºdebugè¨Šæ¯
 		@Override
 		public IMessage onMessage(C2SGUIPackets message, MessageContext ctx) {
 //          System.out.println(String.format("Received %s from %s", message.text, ctx.getServerHandler().playerEntity.getDisplayName()));

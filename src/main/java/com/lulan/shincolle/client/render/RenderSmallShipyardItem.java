@@ -33,15 +33,15 @@ public class RenderSmallShipyardItem implements IItemRenderer  {
 
 	@Override
 	public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
-		//type:ENTITY=¥á¦b¦a¤W, EQUIPPED=®³¦b¤â¤W, EQUIPPED_FIRST_PERSON=®³¦b¤â¤W²Ä¤@¤HºÙ
-		//     INVENTORY=¦bª««~Äæ¤¤, FIRST_PERSON_MAP=¦a¹ÏÃş«¬ª««~
+		//type:ENTITY=ä¸Ÿåœ¨åœ°ä¸Š, EQUIPPED=æ‹¿åœ¨æ‰‹ä¸Š, EQUIPPED_FIRST_PERSON=æ‹¿åœ¨æ‰‹ä¸Šç¬¬ä¸€äººç¨±
+		//     INVENTORY=åœ¨ç‰©å“æ¬„ä¸­, FIRST_PERSON_MAP=åœ°åœ–é¡å‹ç‰©å“
 		if(type == IItemRenderer.ItemRenderType.ENTITY) {
 			GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
 		}
 		if(type == IItemRenderer.ItemRenderType.EQUIPPED_FIRST_PERSON) {
 			GL11.glTranslatef(0F, 0.3F, 0F);
 		}
-		//µe¥Xmodel
+		//ç•«å‡ºmodel
 		this.tesr.renderTileEntityAt(RenderSmallShipyardItem.entity, 0D, 0D, 0D, 0F);
 
 	}

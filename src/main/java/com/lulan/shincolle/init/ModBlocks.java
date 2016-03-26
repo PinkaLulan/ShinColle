@@ -16,7 +16,7 @@ import com.lulan.shincolle.reference.Reference;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@GameRegistry.ObjectHolder(Reference.MOD_ID)	//µn¿ıobject holder¨Ïmodªºª«¥ó®e©ö¬y³q ¨ä¥L¤H¥i¥Hª½±µÅª¨ú¸Óª«¥ó
+@GameRegistry.ObjectHolder(Reference.MOD_ID)	//ç™»éŒ„object holderä½¿modçš„ç‰©ä»¶å®¹æ˜“æµé€š å…¶ä»–äººå¯ä»¥ç›´æ¥è®€å–è©²ç‰©ä»¶
 public class ModBlocks {
 
 	public static final Block BlockAbyssium = new BlockAbyssium();

@@ -31,11 +31,11 @@ public class TileEntityHelper {
 				//get normal fuel value
 				fuelx = TileEntityFurnace.getItemBurnTime(stack);
 				
-				//­Y¤@¯ëªºgetFuelValueµL®Ä, «h§ï¬d¸ßliquid fuel
+				//è‹¥ä¸€èˆ¬çš„getFuelValueç„¡æ•ˆ, å‰‡æ”¹æŸ¥è©¢liquid fuel
 				if(fuelx <= 0) {
 					FluidStack fluid = FluidContainerRegistry.getFluidForFilledItem(stack);
 
-					//¥u±µ¨ü©¥¼ß¬°²GÅé¿U®Æ : fluid.tile.lava
+					//åªæŽ¥å—å²©æ¼¿ç‚ºæ¶²é«”ç‡ƒæ–™ : fluid.tile.lava
 					if(checkLiquidIsLava1000(fluid)) {
 						//not support for large container
 						if(fluid.amount > 1000) {
@@ -57,7 +57,7 @@ public class TileEntityHelper {
 					stack.stackSize--;	//fuel size -1
 					tile2.setPowerRemained(tile2.getPowerRemained() + fuelx);	//fuel++
 					
-					//­Y¸Óª««~¥Î§¹, ¥ÎgetContainerItem³B²z¬O§_­n²MªÅÁÙ¬O¯d¤U±í¤l ex: lava bucket -> empty bucket
+					//è‹¥è©²ç‰©å“ç”¨å®Œ, ç”¨getContainerItemè™•ç†æ˜¯å¦è¦æ¸…ç©ºé‚„æ˜¯ç•™ä¸‹æ¡¶å­ ex: lava bucket -> empty bucket
 					if(stack.stackSize <= 0) {
 						stack = stack.getItem().getContainerItem(stack);
 					}
@@ -128,11 +128,11 @@ public class TileEntityHelper {
 		//check fuel item
 		fuelx = TileEntityFurnace.getItemBurnTime(fuel);
 		
-		//­Y¤@¯ëªºgetFuelValueµL®Ä, «h§ï¬d¸ßliquid fuel
+		//è‹¥ä¸€èˆ¬çš„getFuelValueç„¡æ•ˆ, å‰‡æ”¹æŸ¥è©¢liquid fuel
 		if(fuelx <= 0) {
 			FluidStack fluid = FluidContainerRegistry.getFluidForFilledItem(fuel);
 
-			//¥u±µ¨ü©¥¼ß¬°²GÅé¿U®Æ : fluid.tile.lava
+			//åªæŽ¥å—å²©æ¼¿ç‚ºæ¶²é«”ç‡ƒæ–™ : fluid.tile.lava
 			if(checkLiquidIsLava1000(fluid)) {
 				//not support for large container
 				if(fluid.amount > 1000) {

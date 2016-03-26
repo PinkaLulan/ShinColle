@@ -24,8 +24,8 @@ import com.lulan.shincolle.reference.Values;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-/**²É¤l¯S®Ä³B²zclass
- * ¥]§t©I¥s¯S®Ä, ±ÛÂà¯S®Ä¦ì¸m(NxNxN±ÛÂà), 
+/**ç²’å­ç‰¹æ•ˆè™•ç†class
+ * åŒ…å«å‘¼å«ç‰¹æ•ˆ, æ—‹è½‰ç‰¹æ•ˆä½ç½®(NxNxNæ—‹è½‰), 
  */
 public class ParticleHelper {
 	
@@ -33,15 +33,15 @@ public class ParticleHelper {
 	
 	
 	/**ROTATE PARTICLE POSITION (NxNxN)
-	 * in:­ì©l®y¼Ğ, Ãäªø, ¥H¤Î­nÂàªº­±¦V 	out:Âà§¹ªº·s¦ì¸m
-	 * ²{¶¥¬q¨S¦³°µ¤W¤UÂ½Âà, ©Ò¥Hy­È¤£·|ÅÜ°Ê
+	 * in:åŸå§‹åº§æ¨™, é‚Šé•·, ä»¥åŠè¦è½‰çš„é¢å‘ 	out:è½‰å®Œçš„æ–°ä½ç½®
+	 * ç¾éšæ®µæ²’æœ‰åšä¸Šä¸‹ç¿»è½‰, æ‰€ä»¥yå€¼ä¸æœƒè®Šå‹•
 	 * f = face = 0,4:north  1,5:east  2,6:south  3,7:west
 	 */
 	public static double[] rotateParticleByFace(double x, double y, double z, int f, int len) {
 		double[] newParm = new double[3];
 		newParm[1] = y;
 		
-		//¨Ì·Ó­±¦V, ±ÛÂà­ì©l¦ì¸m
+		//ä¾ç…§é¢å‘, æ—‹è½‰åŸå§‹ä½ç½®
 		switch(f) {
 		case 1:		//turn east
 		case 5:
@@ -68,8 +68,8 @@ public class ParticleHelper {
 	}
 	
 	/**ROTATE PARTICLE FOR ENTITY
-	 * entity±M¥Îªº¯S®Ä¦ì¸m±ÛÂà¤èªk, ¨Ï¥Îyaw¸òpitch¬°°Ñ¼Æ
-	 * ¼Ò«¬¬O¥HZ¶b¥¿¦VÂàX¶b­t¦V¬°¥¿¨¤«×, ¥BZ¶b¥¿¦V¬°0«×
+	 * entityå°ˆç”¨çš„ç‰¹æ•ˆä½ç½®æ—‹è½‰æ–¹æ³•, ä½¿ç”¨yawè·Ÿpitchç‚ºåƒæ•¸
+	 * æ¨¡å‹æ˜¯ä»¥Zè»¸æ­£å‘è½‰Xè»¸è² å‘ç‚ºæ­£è§’åº¦, ä¸”Zè»¸æ­£å‘ç‚º0åº¦
 	 */
 	public static float[] rotateXYZByYawPitch(float x, float y, float z, float yaw, float pitch, float scale) {
 		float cosYaw = MathHelper.cos(yaw);
@@ -78,15 +78,15 @@ public class ParticleHelper {
 		float sinPitch = MathHelper.sin(-pitch);
 		float[] newPos = new float[] {x, y, z};
 		
-		//­pºâpitch±ÛÂà: z,y
+		//è¨ˆç®—pitchæ—‹è½‰: z,y
 		newPos[2] = z * cosPitch - y * sinPitch;
 		newPos[1] = y * cosPitch + z * sinPitch;
 		
-		//­pºâyaw±ÛÂà: x,z
+		//è¨ˆç®—yawæ—‹è½‰: x,z
 		newPos[0] = x * cosYaw - newPos[2] * sinYaw;
 		newPos[2] = newPos[2] * cosYaw + x * sinYaw;
 		
-		//­pºâscale
+		//è¨ˆç®—scale
 		newPos[0] *= scale;
 		newPos[1] *= scale;
 		newPos[2] *= scale;
@@ -95,15 +95,15 @@ public class ParticleHelper {
 	}
 	
 	/**ROTATE BY AXIS
-	 * °w¹ïentityªº¬Y¤@¶b°µ±ÛÂà, ¨¤«×³æ¦ì¬°RAD
-	 * ª`·Nentity«e«á¬°Z¶b, ¥ª¥k¬°X¶b
+	 * é‡å°entityçš„æŸä¸€è»¸åšæ—‹è½‰, è§’åº¦å–®ä½ç‚ºRAD
+	 * æ³¨æ„entityå‰å¾Œç‚ºZè»¸, å·¦å³ç‚ºXè»¸
 	 */
 	public static float[] rotateXZByAxis(float z, float x, float rad, float scale) {
 		float cosD = MathHelper.cos(rad);
 		float sinD = MathHelper.sin(rad);
 		float[] newPos = new float[] {0F, 0F};
 		
-		//­pºâ¤ô¥­±ÛÂà: X+Z
+		//è¨ˆç®—æ°´å¹³æ—‹è½‰: X+Z
 		newPos[0] = z * cosD + x * sinD;
 		newPos[1] = x* cosD - z * sinD;
 		
@@ -114,7 +114,7 @@ public class ParticleHelper {
 	}
 	
 	/**ROTATE PARTICLE FOR ENTITY
-	 * °w¹ïentityªº¬Y¤@¶b°µ±ÛÂà, ¥H¥Ø¼Ğªº¦ì¸m¬°°Ñ¼Æ
+	 * é‡å°entityçš„æŸä¸€è»¸åšæ—‹è½‰, ä»¥ç›®æ¨™çš„ä½ç½®ç‚ºåƒæ•¸
 	 */
 	public static float[] rotateXZByLook(float x, float y, float lookX, float lookY, float scale) {		
 		float[] degree = CalcHelper.getLookDegree(lookX, 0, lookY, false);
@@ -122,7 +122,7 @@ public class ParticleHelper {
 		float sinZdeg = MathHelper.sin(degree[0]);
 		float[] newPos = new float[] {0F, 0F};
 		
-		//­pºâ¤ô¥­±ÛÂà: X+Z
+		//è¨ˆç®—æ°´å¹³æ—‹è½‰: X+Z
 		newPos[0] = x * cosZdeg + y * sinZdeg;
 		newPos[1] = y* cosZdeg - x * sinZdeg;
 		
@@ -183,7 +183,7 @@ public class ParticleHelper {
 	 */
 	@SideOnly(Side.CLIENT)
 	public static void spawnAttackParticleAt(double posX, double posY, double posZ, double lookX, double lookY, double lookZ, byte type) {
-		//ª`·N¦¹world¤£¯à³]¬°staticÅÜ¼Æ, §_«hclientºİ­«µn«áworld¨ÌµM¬OÂÂworld¦Ó«D­«µn«áªº·sworld
+		//æ³¨æ„æ­¤worldä¸èƒ½è¨­ç‚ºstaticè®Šæ•¸, å¦å‰‡clientç«¯é‡ç™»å¾Œworldä¾ç„¶æ˜¯èˆŠworldè€Œéé‡ç™»å¾Œçš„æ–°world
 //		World world = Minecraft.getMinecraft().theWorld;
 		World world = ClientProxy.getClientWorld();
 		
@@ -313,7 +313,7 @@ public class ParticleHelper {
         	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray4);
 			break;
 		case 19: 	//double largesmoke for 14~20 inch cannon
-			//­pºâ·ÏÃú¦ì¸m
+			//è¨ˆç®—ç…™éœ§ä½ç½®
 			degYaw = CalcHelper.getLookDegree(lookX, 0D, lookZ, false)[0];
 			newPos1 = ParticleHelper.rotateXZByAxis(0F, (float)lookY, degYaw, 1F);
 			newPos2 = ParticleHelper.rotateXZByAxis(0F, (float)-lookY, degYaw, 1F);
@@ -348,7 +348,7 @@ public class ParticleHelper {
 			//draw hit particle
 			for(int i = 0; i < 20; ++i) {
 				newPos1 = rotateXZByAxis(1, 0, 6.28F / 20F * i, 1);
-				//motionY¶Ç¤J4, ªí¥Ü¬°¯S®í³]©w
+				//motionYå‚³å…¥4, è¡¨ç¤ºç‚ºç‰¹æ®Šè¨­å®š
 				EntityFXSpray particleSpray5 = new EntityFXSpray(world, 
 						lookX, lookY+0.3D, lookZ, newPos1[0]*0.4D, 4D, newPos1[1]*0.4D, 0);
 	        	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray5);
@@ -362,7 +362,7 @@ public class ParticleHelper {
 		case 22:	//Type 91 AP Fist: phase 1,3 particle
 			for(int i = 0; i < 20; ++i) {
 				newPos1 = rotateXZByAxis((float)lookX, 0, 6.28F / 20F * i, 1);
-				//motionY¶Ç¤J4, ªí¥Ü¬°¯S®í³]©w
+				//motionYå‚³å…¥4, è¡¨ç¤ºç‚ºç‰¹æ®Šè¨­å®š
 				EntityFXSpray particleSpray7 = new EntityFXSpray(world, 
 						posX+newPos1[0]*1.8D, posY+1.2D+lookY, posZ+newPos1[1]*1.8D, -newPos1[0]*0.06D, 0D, -newPos1[1]*0.06D, 5);
 	        	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray7);
@@ -371,7 +371,7 @@ public class ParticleHelper {
 		case 23:	//Type 91 AP Fist: phase 2 particle
 			for(int i = 0; i < 20; ++i) {
 				newPos1 = rotateXZByAxis((float)lookX, 0, 6.28F / 20F * i, 1);
-				//motionY¶Ç¤J4, ªí¥Ü¬°¯S®í³]©w
+				//motionYå‚³å…¥4, è¡¨ç¤ºç‚ºç‰¹æ®Šè¨­å®š
 				EntityFXSpray particleSpray8 = new EntityFXSpray(world, 
 						posX, posY+0.3D+lookY, posZ, newPos1[0]*0.15D, 0D, newPos1[1]*0.15D, 6);
 	        	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray8);
@@ -439,7 +439,7 @@ public class ParticleHelper {
 			Minecraft.getMinecraft().effectRenderer.addEffect(particleTDodge);
 			break;
 		case 35: 	//triple largesmoke for boss ship
-			//­pºâ·ÏÃú¦ì¸m
+			//è¨ˆç®—ç…™éœ§ä½ç½®
 			degYaw = CalcHelper.getLookDegree(lookX, 0D, lookZ, false)[0];
 			newPos1 = ParticleHelper.rotateXZByAxis(0F, (float)lookY, degYaw, 1F);
 			newPos2 = ParticleHelper.rotateXZByAxis(0F, (float)-lookY, degYaw, 1F);
@@ -481,11 +481,11 @@ public class ParticleHelper {
 		
 		//spawn particle
 		switch(type) {
-		case 1:		//®ğ¼u¯S®Ä par1:scale par2:type
+		case 1:		//æ°£å½ˆç‰¹æ•ˆ par1:scale par2:type
 			EntityFXChi fxChi1 = new EntityFXChi(world, ent, (float)par1, (int)par2);
         	Minecraft.getMinecraft().effectRenderer.addEffect(fxChi1);
 			break;
-		case 2:		//¶¤¥î°é¿ï¯S®Ä par1:scale par2:type
+		case 2:		//éšŠä¼åœˆé¸ç‰¹æ•ˆ par1:scale par2:type
 			EntityFXTeam fxTeam = new EntityFXTeam(world, ent, (float)par1, (int)par2);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fxTeam);
 			break;
@@ -504,7 +504,7 @@ public class ParticleHelper {
         	Minecraft.getMinecraft().effectRenderer.addEffect(light4);
 			break;
 		case 5: 	//custom largesmoke: par1:wide, par2:length, par3:height, EntityLivingBase ONLY
-			//­pºâ·ÏÃú¦ì¸m
+			//è¨ˆç®—ç…™éœ§ä½ç½®
 			degYaw = (((EntityLivingBase)ent).renderYawOffset % 360) * Values.N.RAD_MUL;
 			newPos1 = ParticleHelper.rotateXZByAxis((float)par2, (float)par1, degYaw, 1F);
 			newPos2 = ParticleHelper.rotateXZByAxis((float)par2, (float)-par1, degYaw, 1F);
@@ -554,7 +554,7 @@ public class ParticleHelper {
 	        	Minecraft.getMinecraft().effectRenderer.addEffect(light21);
 			}
 			break;
-		case 8:		//¦u½Ã¼Ğ¥Ü½u: blockÃş
+		case 8:		//å®ˆè¡›æ¨™ç¤ºç·š: blocké¡
 			//host check
 			if(ent instanceof EntityLivingBase) {
 				host = (EntityLivingBase) ent;
@@ -606,7 +606,7 @@ public class ParticleHelper {
 		
 		//spawn particle
 		switch(type) {
-		case 0:		//Âù¥ú§ô¯¥
+		case 0:		//é›™å…‰æŸç ²
 			//host check
 			if(host instanceof EntityLivingBase) {
 				host2 = (EntityLivingBase) host;
@@ -655,7 +655,7 @@ public class ParticleHelper {
 			EntityFXLaserNoTexture laser4 = new EntityFXLaserNoTexture(world, host2, target, par1, par2, par3, 4F, 1);
 			Minecraft.getMinecraft().effectRenderer.addEffect(laser4);
 			break;
-		case 3:		//¦u½Ã¼Ğ¥Ü½u: entityÃş
+		case 3:		//å®ˆè¡›æ¨™ç¤ºç·š: entityé¡
 			//host check
 			if(host instanceof EntityLivingBase) {
 				host2 = (EntityLivingBase) host;

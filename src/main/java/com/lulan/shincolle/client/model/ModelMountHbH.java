@@ -232,7 +232,7 @@ public class ModelMountHbH extends ModelBase {
         this.Neck.addChild(this.Jaw);
         
         
-        //µo¥ú¤ä¬[
+        //ç™¼å…‰æ”¯æž¶
         this.GlowBodyMain = new ModelRenderer(this, 0, 0);
         this.GlowBodyMain.setRotationPoint(0.0F, 0.0F, 0.0F);
         this.GlowEquipBaseL = new ModelRenderer(this, 64, 30);
@@ -335,7 +335,7 @@ public class ModelMountHbH extends ModelBase {
     	this.BodyMain.render(f5);
     	GL11.glDisable(GL11.GL_BLEND);
     	
-    	//«G«×³]¬°240
+    	//äº®åº¦è¨­ç‚º240
     	GL11.glDisable(GL11.GL_LIGHTING);
     	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
     	this.GlowBodyMain.render(f5);
@@ -355,7 +355,7 @@ public class ModelMountHbH extends ModelBase {
 
     }
     
-  //Âù¸}²¾°Ê­pºâ
+  //é›™è…³ç§»å‹•è¨ˆç®—
   	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {   
   		float angleX = MathHelper.cos(f2*0.08F);
   		
@@ -371,8 +371,8 @@ public class ModelMountHbH extends ModelBase {
     		GL11.glTranslatef(0F, 1.0F, 0F);
     	}
 
-	    //¥¿±`¯¸¥ß°Ê§@
-	  	//¼L¤Ú
+	    //æ­£å¸¸ç«™ç«‹å‹•ä½œ
+	  	//å˜´å·´
 	  	this.Jaw.rotateAngleX = angleX * 0.1F + 0.7F;
 	  	this.GlowJaw.rotateAngleX = this.Jaw.rotateAngleX;
 	    //cannon

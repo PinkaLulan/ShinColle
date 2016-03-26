@@ -11,8 +11,8 @@ import com.lulan.shincolle.entity.IShipGuardian;
 import com.lulan.shincolle.reference.ID;
 
 /**SHIP FLOATING ON WATER AI
- * ­Y¦b¤ô¤¤, ¥B¤ô¤W¤@®æ¬°ªÅ®ğ, «h·|¹Á¸Õ¤W¯B¨Ã¯¸¦b¤ô­±¤W
- * (entity¥»Åé¨ÌµM¦b¤ô¤¤)
+ * è‹¥åœ¨æ°´ä¸­, ä¸”æ°´ä¸Šä¸€æ ¼ç‚ºç©ºæ°£, å‰‡æœƒå˜—è©¦ä¸Šæµ®ä¸¦ç«™åœ¨æ°´é¢ä¸Š
+ * (entityæœ¬é«”ä¾ç„¶åœ¨æ°´ä¸­)
  */
 public class EntityAIShipFloating extends EntityAIBase {
 	
@@ -38,40 +38,37 @@ public class EntityAIShipFloating extends EntityAIBase {
 
     @Override
 	public boolean shouldExecute() {
-    	//shipÃş: ÀË¬dhost§¤¤U
+    	//shipé¡: æª¢æŸ¥hoståä¸‹
     	if(hostShip != null) {
-    		if(hostShip.isRiding()) {
+    		//é¨ä¹˜ä¸­, å®ˆè¡›ä¸­, ç§»å‹•ä¸­: ç¦æ­¢ä¸Šæµ®
+    		if(hostShip.isRiding() || isInGuardPosition(hostShip) ||
+    		   !hostShip.getShipNavigate().noPath()) {
     			return false;
     		}
     		
-    		if(isInGuardPosition(hostShip)) {
-    			return false;
-    		}
-    		
-    		//¨ä¥L±¡ªp
+    		//å…¶ä»–æƒ…æ³
     		return !this.hostShip.isSitting() && this.hostShip.getStateFlag(ID.F.CanFloatUp);
     	}
-    	//mountÃş: ÀË¬dmount¤ô²` & host§¤¤U
+    	//mounté¡: æª¢æŸ¥mountæ°´æ·± & hoståä¸‹
     	else if(hostMount != null && hostMount.getHostEntity() != null) {
 			this.hostShip = (BasicEntityShip) hostMount.getHostEntity();
 			
-			if(isInGuardPosition(hostMount)) {
+			//é¨ä¹˜ä¸­, å®ˆè¡›ä¸­, ç§»å‹•ä¸­: ç¦æ­¢ä¸Šæµ®
+			if(isInGuardPosition(hostMount)  || !hostShip.getShipNavigate().noPath()) {
     			return false;
     		}
 			
 			return !this.hostShip.isSitting() && hostMount.getShipDepth() > 0.47D;
-//			return !this.hostShip.isSitting() && hostMount.getShipDepth() > 0.7D;
 		}
-    	//¨ä¥LÃş
+    	//å…¶ä»–é¡
     	else {
     		return host.getShipDepth() > 0.47D;
-//    		return host.getShipDepth() > 0.7D;
     	}
     }
 
     @Override
 	public void updateTask() {
-    	//¤W¯B¨ì«ü©w°ª«× (¥»Åé¤´¦b¤ô¤¤)
+    	//ä¸Šæµ®åˆ°æŒ‡å®šé«˜åº¦ (æœ¬é«”ä»åœ¨æ°´ä¸­)
     	if(this.host.getShipDepth() > 4D) {
     		this.hostLiving.motionY += 0.025D;
     		return;
@@ -96,17 +93,17 @@ public class EntityAIShipFloating extends EntityAIBase {
     
     //check is in guard position
     public boolean isInGuardPosition(IShipGuardian entity) {
-    	//­Yguard¤¤, «hÀË¬d¬O§_¹F¨ìguard¶ZÂ÷
+    	//è‹¥guardä¸­, å‰‡æª¢æŸ¥æ˜¯å¦é”åˆ°guardè·é›¢
 		if(!entity.getStateFlag(ID.F.CanFollow)) {
 			float fMin = entity.getStateMinor(ID.M.FollowMin) + ((Entity)entity).width * 0.5F;
 			fMin = fMin * fMin;
 			
-			//­Y¦u½Ãentity, ÀË¬dentity¶ZÂ÷
+			//è‹¥å®ˆè¡›entity, æª¢æŸ¥entityè·é›¢
 			if(entity.getGuardedEntity() != null) {
 				double distSq = ((Entity)entity).getDistanceSqToEntity(entity.getGuardedEntity());
 				if(distSq < fMin) return true;
 			}
-			//­Y¦u½Ã¬Y¦aÂI, «hÀË¬d»P¸ÓÂI¶ZÂ÷
+			//è‹¥å®ˆè¡›æŸåœ°é», å‰‡æª¢æŸ¥èˆ‡è©²é»è·é›¢
 			else if(entity.getStateMinor(ID.M.GuardY) > 0) {
 				double distSq = ((Entity)entity).getDistanceSq(entity.getStateMinor(ID.M.GuardX), entity.getStateMinor(ID.M.GuardY), entity.getStateMinor(ID.M.GuardZ));
 				if(distSq < fMin && ((Entity)entity).posY >= entity.getStateMinor(ID.M.GuardY)) return true;

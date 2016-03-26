@@ -56,7 +56,7 @@ public class ContainerLargeShipyard extends Container {
 		}
 	}
 	
-	//µo°e§ó·sgui¶i«×±ø§ó·s, ¤ñdetectAndSendChangesÁÙ­nÀu¥ı(¦b¦¹©ñ¸minit¤èªkµ¥)
+	//ç™¼é€æ›´æ–°guié€²åº¦æ¢æ›´æ–°, æ¯”detectAndSendChangesé‚„è¦å„ªå…ˆ(åœ¨æ­¤æ”¾ç½®initæ–¹æ³•ç­‰)
 	@Override
 	public void addCraftingToCrafters (ICrafting crafting) {
 		super.addCraftingToCrafters(crafting);
@@ -69,15 +69,15 @@ public class ContainerLargeShipyard extends Container {
 		crafting.sendProgressBarUpdate(this, 6, this.tile.getMatBuild(3));
 	}
 
-	//ª±®a¬O§_¥i¥HÄ²µo¥kÁäÂI¤è¶ô¨Æ¥ó
+	//ç©å®¶æ˜¯å¦å¯ä»¥è§¸ç™¼å³éµé»æ–¹å¡Šäº‹ä»¶
 	@Override
 	public boolean canInteractWith(EntityPlayer player) {
 		return tile.isUseableByPlayer(player);
 	}
 	
-	/**¨Ïcontainer¤ä´©shiftÂIª««~ªº°Ê§@
-	 * shiftÂI¤Hª«­I¥]¤¤ªºª««~->°e¨ì¤è¶ôinventory, ÂI¤è¶ôinventory¤¤ªºª««~->°e¨ì¤Hª«­I¥]
-	 * mergeItemStack: parm: item,start slot,end slot(¦¹®æ¤£§P©w©ñ¤J),¬O§_¥ı©ñ¨ìhot bar
+	/**ä½¿containeræ”¯æ´shifté»ç‰©å“çš„å‹•ä½œ
+	 * shifté»äººç‰©èƒŒåŒ…ä¸­çš„ç‰©å“->é€åˆ°æ–¹å¡Šinventory, é»æ–¹å¡Šinventoryä¸­çš„ç‰©å“->é€åˆ°äººç‰©èƒŒåŒ…
+	 * mergeItemStack: parm: item,start slot,end slot(æ­¤æ ¼ä¸åˆ¤å®šæ”¾å…¥),æ˜¯å¦å…ˆæ”¾åˆ°hot bar
 	 * slot id: 0:output 1~9:inventory 10~36:player inventory 37~45:hot bar
 	 */
 	@Override
@@ -85,45 +85,45 @@ public class ContainerLargeShipyard extends Container {
         ItemStack newStack = null;
         Slot slot = (Slot)this.inventorySlots.get(slotid);
 
-        if(slot != null && slot.getHasStack()) { 	//­Yslot¦³ªF¦è
-            ItemStack orgStack = slot.getStack();	//orgStack¨ú±o¸Óslotª««~
-            newStack = orgStack.copy();				//newStack¬°orgStack½Æ»s
+        if(slot != null && slot.getHasStack()) { 	//è‹¥slotæœ‰æ±è¥¿
+            ItemStack orgStack = slot.getStack();	//orgStackå–å¾—è©²slotç‰©å“
+            newStack = orgStack.copy();				//newStackç‚ºorgStackè¤‡è£½
 
-            //ÂIÀ»output slot®É
+            //é»æ“Šoutput slotæ™‚
             if(slotid == SLOT_OUTPUT) {
-            	//±Noutput slotªºª««~¹Á¸Õ¸ò¾ã­Óinventoryªºslot¦X¨Ö, ¤£¯à¦X¨Ö«h¶Ç¦^null
+            	//å°‡output slotçš„ç‰©å“å˜—è©¦è·Ÿæ•´å€‹inventoryçš„slotåˆä½µ, ä¸èƒ½åˆä½µå‰‡å‚³å›null
             	if(!this.mergeItemStack(orgStack, SLOT_INVENTORY, SLOT_ALL, true)) 
             		return null;
             }  
-            //ÂIÀ»hot bar => ²¾°Ê¨ìinventory or player inv
+            //é»æ“Šhot bar => ç§»å‹•åˆ°inventory or player inv
             else if (slotid >= SLOT_HOTBAR) {
             	if(!this.mergeItemStack(orgStack, SLOT_INVENTORY, SLOT_HOTBAR, false))
             		return null;
             }
-            //ÂIÀ»player inv => ²¾°Ê¨ìinventory or hot bar
+            //é»æ“Šplayer inv => ç§»å‹•åˆ°inventory or hot bar
             else if(slotid >= SLOT_PLAYERINV && slotid < SLOT_HOTBAR) {
             	if(!this.mergeItemStack(orgStack, SLOT_INVENTORY, SLOT_PLAYERINV, true))
             		return null;
             } 
-            //ÂIÀ»inventory => ²¾°Ê¨ìplayer inv or hot bar
+            //é»æ“Šinventory => ç§»å‹•åˆ°player inv or hot bar
             else {
             	if(!this.mergeItemStack(orgStack, SLOT_PLAYERINV, SLOT_ALL, false))
             		return null;
             }
 
-            //¦pªGª««~³£©ñ§¹¤F, «h³]¦¨null²MªÅ¸Óª««~
+            //å¦‚æœç‰©å“éƒ½æ”¾å®Œäº†, å‰‡è¨­æˆnullæ¸…ç©ºè©²ç‰©å“
             if (orgStack.stackSize <= 0) {
                 slot.putStack(null);
             }
-            else { //ÁÙ¨S©ñ§¹, ¥ı¶]¤@¦¸slot update
+            else { //é‚„æ²’æ”¾å®Œ, å…ˆè·‘ä¸€æ¬¡slot update
                 slot.onSlotChanged();
             }
         }
 
-        return newStack;	//ª««~²¾°Ê§¹¦¨, ¦^¶Ç³Ñ¤Uªºª««~
+        return newStack;	//ç‰©å“ç§»å‹•å®Œæˆ, å›å‚³å‰©ä¸‹çš„ç‰©å“
     }
 	
-	//±Ncontainer¼Æ­È¸òtile entity¤ºªº¼Æ­È¤ñ¹ï, ¦pªG¤£¦P«hµo°e§ó·sµ¹client¨Ïgui§e²{·s¼Æ­È
+	//å°‡containeræ•¸å€¼è·Ÿtile entityå…§çš„æ•¸å€¼æ¯”å°, å¦‚æœä¸åŒå‰‡ç™¼é€æ›´æ–°çµ¦clientä½¿guiå‘ˆç¾æ–°æ•¸å€¼
 	@Override
 	public void detectAndSendChanges() {
 		super.detectAndSendChanges();
@@ -148,17 +148,17 @@ public class ContainerLargeShipyard extends Container {
         for(Object crafter : this.crafters) {
             ICrafting icrafting = (ICrafting) crafter;
             
-            if(this.guiBuildType != this.tile.getBuildType()) {  			//§ó·s«Ø³yÃş«¬
+            if(this.guiBuildType != this.tile.getBuildType()) {  			//æ›´æ–°å»ºé€ é¡å‹
                 icrafting.sendProgressBarUpdate(this, 0, this.tile.getBuildType());
                 this.guiBuildType = this.tile.getBuildType();
             }
             
-            if(this.guiSelectMat != this.tile.getSelectMat()) {  			//§ó·s¸ê§÷¿ï¾Ü
+            if(this.guiSelectMat != this.tile.getSelectMat()) {  			//æ›´æ–°è³‡æé¸æ“‡
                 icrafting.sendProgressBarUpdate(this, 1, this.tile.getSelectMat());
                 this.guiSelectMat = this.tile.getSelectMat();
             }
             
-            if(this.guiInvMode != this.tile.getInvMode()) {  				//§ó·sinv mode
+            if(this.guiInvMode != this.tile.getInvMode()) {  				//æ›´æ–°inv mode
                 icrafting.sendProgressBarUpdate(this, 2, this.tile.getInvMode());
                 this.guiInvMode = this.tile.getInvMode();
             }
@@ -185,7 +185,7 @@ public class ContainerLargeShipyard extends Container {
         }  
     }
 
-	//clientºİcontainer±µ¦¬·s­È, ³o¸Ì«Ê¥]¥u·|¶Ç°eshort¤j¤p, ¦]¦¹int­È¥²¶·¥t¥~¼g¦b«Ê¥]¨t²Î¤¤sync
+	//clientç«¯containeræ¥æ”¶æ–°å€¼, é€™è£¡å°åŒ…åªæœƒå‚³é€shortå¤§å°, å› æ­¤intå€¼å¿…é ˆå¦å¤–å¯«åœ¨å°åŒ…ç³»çµ±ä¸­sync
 	@Override
 	@SideOnly(Side.CLIENT)
     public void updateProgressBar(int valueType, int updatedValue) {

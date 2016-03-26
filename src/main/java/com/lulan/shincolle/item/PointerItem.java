@@ -77,8 +77,8 @@ public class PointerItem extends BasicItem {
     }
 	
 	/**left click (swing item)
-	 * ¥ªÁä´ÏÄ¥ = ¬O¥D¤H´N¥[¤J¶¤¥î, ¤w¸g¦b¶¤¥î«h³]¬°focus
-	 * ÃÛ¤U¥ªÁä = ¤Á´«ª««~¼Ò¦¡ or ²¾°£¤w¸g¦b¶¤¥î¤¤ªºship
+	 * å·¦éµæ£²è‰¦ = æ˜¯ä¸»äººå°±åŠ å…¥éšŠä¼, å·²ç¶“åœ¨éšŠä¼å‰‡è¨­ç‚ºfocus
+	 * è¹²ä¸‹å·¦éµ = åˆ‡æ›ç‰©å“æ¨¡å¼ or ç§»é™¤å·²ç¶“åœ¨éšŠä¼ä¸­çš„ship
 	 */
 	/**left click:<br>
 	 * left:<br>
@@ -131,7 +131,7 @@ public class PointerItem extends BasicItem {
 		if(entityLiving instanceof EntityPlayer) {
 			player = (EntityPlayer) entityLiving;
 			
-			//ª±®a¥ªÁä¨Ï¥Î¦¹ªZ¾¹®É (client side only)
+			//ç©å®¶å·¦éµä½¿ç”¨æ­¤æ­¦å™¨æ™‚ (client side only)
 			if(entityLiving.worldObj.isRemote) {
 				GameSettings keySet = ClientProxy.getGameSetting();
 				ExtendPlayerProps props = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
@@ -156,7 +156,7 @@ public class PointerItem extends BasicItem {
 //						}
 //					}
 					
-					//­Y¬°ship or mounts
+					//è‹¥ç‚ºship or mounts
 					if(hitObj.entityHit instanceof BasicEntityShip || hitObj.entityHit instanceof BasicEntityMount) {
 						BasicEntityShip ship = null;
 						//get ship entity
@@ -170,12 +170,12 @@ public class PointerItem extends BasicItem {
 						//null check
 						if(ship == null) return false;
 						
-						//¬O¥D¤H: ¥ªÁä: add team/set focus ÃÛ¤U¥ªÁä:remove team
+						//æ˜¯ä¸»äºº: å·¦éµ: add team/set focus è¹²ä¸‹å·¦éµ:remove team
 						if(EntityHelper.checkSameOwner(player, ship) && props != null) {
 							//check is in team
 							int i = props.checkIsInCurrentTeam(ship.getShipUID());
 							
-							//ÃÛ¤U¥ªÁä: remove team if in team
+							//è¹²ä¸‹å·¦éµ: remove team if in team
 							if(player.isSneaking()) {
 								//if in team
 								if(i >= 0) {
@@ -196,7 +196,7 @@ public class PointerItem extends BasicItem {
 									return true;
 								}
 							}
-							//¥ªÁä: add team or set focus if in team
+							//å·¦éµ: add team or set focus if in team
 							else {
 								//in team, set focus
 								if(i >= 0) {
@@ -208,7 +208,7 @@ public class PointerItem extends BasicItem {
 									LogHelper.info("DEBUG : pointer add team: "+hitObj.entityHit);
 									CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.AddTeam, ship.getEntityId()));
 								
-									//­Ysingle mode, «h¨Cadd¤@°¦´N³]¸Ó°¦¬°focus
+									//è‹¥single mode, å‰‡æ¯addä¸€éš»å°±è¨­è©²éš»ç‚ºfocus
 									if(meta == 0) {
 										CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetSelect, meta, ship.getShipUID()));
 									}
@@ -216,12 +216,12 @@ public class PointerItem extends BasicItem {
 								return true;
 							}
 						}
-//						//shipÃş«D¥D¤H
+//						//shipé¡éä¸»äºº
 //						else {
-//							//¥\¯à¥¼©w
+//							//åŠŸèƒ½æœªå®š
 //						}
 					}
-					//¨ä¥LÃşentity
+					//å…¶ä»–é¡entity
 					else {
 						if(hitObj.entityHit != null) {
 							String tarName = hitObj.entityHit.getClass().getSimpleName();
@@ -235,7 +235,7 @@ public class PointerItem extends BasicItem {
 				}//end hit != null
 				
 				//click on air
-				//ÃÛ¤U¥ªÁä vs block or «D¦Û¤vªºÃdª«, «h¤Á´«pointer¼Ò¦¡
+				//è¹²ä¸‹å·¦éµ vs block or éè‡ªå·±çš„å¯µç‰©, å‰‡åˆ‡æ›pointeræ¨¡å¼
 				if(keySet.keyBindSneak.getIsKeyPressed()) {
 					//sneak+sprint: clear team
 					if(keySet.keyBindSprint.getIsKeyPressed()) {
@@ -336,7 +336,7 @@ public class PointerItem extends BasicItem {
 					return item;
 				}
 				
-				//­Y¬°ship or mounts
+				//è‹¥ç‚ºship or mounts
 				if(hitObj.entityHit instanceof BasicEntityShip || hitObj.entityHit instanceof BasicEntityMount) {
 					BasicEntityShip ship = null;
 					//get ship entity
@@ -349,65 +349,65 @@ public class PointerItem extends BasicItem {
 					//null check
 					if(ship == null) return item;
 					
-					//¬O¥D¤H: ¥kÁä: set sitting
+					//æ˜¯ä¸»äºº: å³éµ: set sitting
 					if(EntityHelper.checkSameOwner(player, ship)) {
-						//ÃÛ¤U¥kÁä: open GUI
+						//è¹²ä¸‹å³éµ: open GUI
 						if(player.isSneaking()) {
 							//send GUI packet
 							CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.OpenShipGUI, ship.getEntityId()));
 						}
-						//¥kÁä: set sitting
+						//å³éµ: set sitting
 						else {
 							//send sit packet
 							CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetSitting, meta, ship.getShipUID()));
 						}
 						return item;
 					}
-					//shipÃş«D¥D¤H
+					//shipé¡éä¸»äºº
 					else {
-						//ÀË¬dfriendly fire, §P©w­nattackÁÙ¬O­nmove
+						//æª¢æŸ¥friendly fire, åˆ¤å®šè¦attacké‚„æ˜¯è¦move
 						if(ConfigHandler.friendlyFire) {
 							//attack target
 							CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.AttackTarget, meta, hitObj.entityHit.getEntityId()));
-							//¦b¥Ø¼Ğ¤Wµe¥X¼Ğ°O
+							//åœ¨ç›®æ¨™ä¸Šç•«å‡ºæ¨™è¨˜
 							ParticleHelper.spawnAttackParticleAtEntity(hitObj.entityHit, 0.3D, 5D, 0D, (byte)2);
 						}
 						else {
-							//²¾°Ê¨ì¸Óship®ÇÃä
+							//ç§»å‹•åˆ°è©²shipæ—é‚Š
 							CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetMove, meta, 1, (int)hitObj.entityHit.posX, (int)hitObj.entityHit.posY, (int)hitObj.entityHit.posZ));
-							//¦b¥Ø¼Ğ¤Wµe¥X¼Ğ°O
+							//åœ¨ç›®æ¨™ä¸Šç•«å‡ºæ¨™è¨˜
 							ParticleHelper.spawnAttackParticleAtEntity(hitObj.entityHit, 0.3D, 4D, 0D, (byte)2);
 						}
 					}
 				}
-				//¨ä¥LÃşentity
+				//å…¶ä»–é¡entity
 				else {
 					if(hitObj.entityHit instanceof EntityPlayer) {
-						//ÀË¬dfriendly fire, §P©w­nattackÁÙ¬O­nmove
+						//æª¢æŸ¥friendly fire, åˆ¤å®šè¦attacké‚„æ˜¯è¦move
 						if(ConfigHandler.friendlyFire) {
 							//attack target
 							CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.AttackTarget, meta, hitObj.entityHit.getEntityId()));
-							//¦b¥Ø¼Ğ¤Wµe¥X¼Ğ°O
+							//åœ¨ç›®æ¨™ä¸Šç•«å‡ºæ¨™è¨˜
 							ParticleHelper.spawnAttackParticleAtEntity(hitObj.entityHit, 0.3D, 5D, 0D, (byte)2);
 						}
 						else {
-							//²¾°Ê¨ì¸ÓPLAYER®ÇÃä
+							//ç§»å‹•åˆ°è©²PLAYERæ—é‚Š
 							CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetMove, meta, 1, (int)hitObj.entityHit.posX, (int)hitObj.entityHit.posY, (int)hitObj.entityHit.posZ));
-							//¦b¥Ø¼Ğ¤Wµe¥X¼Ğ°O
+							//åœ¨ç›®æ¨™ä¸Šç•«å‡ºæ¨™è¨˜
 							ParticleHelper.spawnAttackParticleAtEntity(hitObj.entityHit, 0.3D, 4D, 0D, (byte)2);
 						}
 					}
 					else {
 						//attack target
 						CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.AttackTarget, meta, hitObj.entityHit.getEntityId()));
-						//¦b¥Ø¼Ğ¤Wµe¥X¼Ğ°O
+						//åœ¨ç›®æ¨™ä¸Šç•«å‡ºæ¨™è¨˜
 						ParticleHelper.spawnAttackParticleAtEntity(hitObj.entityHit, 0.3D, 5D, 0D, (byte)2);
 					}
 				}
 			}//end hitObj = entity
-			//­Y¨S§ì¨ìentity, «h¥ÎgetPlayerMouseOverBlock§ìblock
+			//è‹¥æ²’æŠ“åˆ°entity, å‰‡ç”¨getPlayerMouseOverBlockæŠ“block
 			else {
-				//­Y«ö¦íshift, «h¶}±Òformation GUI
+				//è‹¥æŒ‰ä½shift, å‰‡é–‹å•Ÿformation GUI
 				if(keySet.keyBindSneak.getIsKeyPressed()) {
 					//send GUI packet
 					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.OpenItemGUI, 0));
@@ -417,9 +417,9 @@ public class PointerItem extends BasicItem {
 				MovingObjectPosition hitObj2 = BlockHelper.getPlayerMouseOverBlock(64D, 1F);
 
 				if(hitObj2 != null) {
-					//§ì¨ìªº¬Oblock
+					//æŠ“åˆ°çš„æ˜¯block
 					if(hitObj2.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-						/**hit side (¾A¦X²¾°Ê¦ì¸m): 0:¤U¤è(y-1) 1:¤W¤è(y+1) 2:¥_¤è(z-1) 3:«n¤è(z+1) 4:¦è¤è(x-1) 5:ªF¤è(x+1)*/
+						/**hit side (é©åˆç§»å‹•ä½ç½®): 0:ä¸‹æ–¹(y-1) 1:ä¸Šæ–¹(y+1) 2:åŒ—æ–¹(z-1) 3:å—æ–¹(z+1) 4:è¥¿æ–¹(x-1) 5:æ±æ–¹(x+1)*/
 						int x = hitObj2.blockX;
 						int y = hitObj2.blockY;
 						int z = hitObj2.blockZ;
@@ -458,16 +458,16 @@ public class PointerItem extends BasicItem {
 						//move to xyz
 						CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetMove, meta, guardType, x, y, z));
 						
-						//¦b¥Ø¼Ğ¤Wµe¥X¼Ğ°O
+						//åœ¨ç›®æ¨™ä¸Šç•«å‡ºæ¨™è¨˜
 						ParticleHelper.spawnAttackParticleAt(x+0.5D, y, z+0.5D, 0.3D, 4D, 0D, (byte)25);
 					}
-//					//§ì¨ìentity («D¹w´Áª¬ªp, ¥¿±`À³¸Ó¤£·|¦A§ì¨ìentity)
+//					//æŠ“åˆ°entity (éé æœŸç‹€æ³, æ­£å¸¸æ‡‰è©²ä¸æœƒå†æŠ“åˆ°entity)
 //					else if(hitObj2.typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY){
 //						LogHelper.info("DEBUG : pointer right click: ENTITY (method 2) "+hitObj2.entityHit.getClass().getSimpleName());
 //						//move to entity
-//						//²¾°Ê¨ì¸Óship®ÇÃä
+//						//ç§»å‹•åˆ°è©²shipæ—é‚Š
 //						CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetMove, meta, 1, (int)hitObj2.entityHit.posX, (int)hitObj2.entityHit.posY, (int)hitObj2.entityHit.posZ));
-//						//¦b¥Ø¼Ğ¤Wµe¥X¼Ğ°O
+//						//åœ¨ç›®æ¨™ä¸Šç•«å‡ºæ¨™è¨˜
 //						ParticleHelper.spawnAttackParticleAt(hitObj2.entityHit.posX+0.5D, hitObj2.entityHit.posY, hitObj2.entityHit.posZ+0.5D, 0.3D, 4D, 0D, (byte)25);
 //					}
 					else {
@@ -480,7 +480,7 @@ public class PointerItem extends BasicItem {
 		return item;
     }
 	
-	//«ö¦íª««~®É
+	//æŒ‰ä½ç‰©å“æ™‚
 	@Override
 	public void onUsingTick(ItemStack stack, EntityPlayer player, int count) {
 //		LogHelper.info("DEBUG : using pointer "+count);
@@ -499,12 +499,12 @@ public class PointerItem extends BasicItem {
 		return true;	//prevent this item to attack entity
     }
 	
-	/**°»´ú¥Ø«eª±®a«üµÛªºªF¦è
-	 * ¤èªk1: player.rayTrace(¶ZÂ÷, ticks) ÂÇ¥ÑplayerÀY©Ò´Â¦Vªº¤è¦V§ì¥X¸I¨ìªºªF¦è, ¦Û­q¶ZÂ÷, ¤£§ì²GÅé¤è¶ô
-	 * ¤èªk2: ClientProxy.getMineraft().renderViewEntity ¦C¥X©Ò¦³¦bclient playerµe­±¤¤¥X²{ªºentity, ¶È§ìentity
-	 * ¤èªk3: ClientProxy.getMineraft().objectMouseOver ¦C¥X©Ò¦³·Æ¹«´å¼Ğ«ü¨ìªºªF¦è, ¥u­­ªñ¶ZÂ÷, ¤£§ì²GÅé¤è¶ô
-	 * ¤èªk4: ItemStack.getMovingObjectPositionFromPlayer ¦C¥X´å¼Ğ«ü¨ìªºªF¦è, ¥u­­ªñ¶ZÂ÷, ¥i§ì²GÅé¤è¶ô
-	 * ¤èªk5: ¦Û­qfunc_147447_a ¦Û¦æ­×§ï°Ñ¼Æ, ¤£­­ªñ¶ZÂ÷¥B¥i¥H§ì²GÅé¤è¶ô (¥H¤W¤èªk¥ş³£¨Ï¥Îfunc_147447_a¤èªk)
+	/**åµæ¸¬ç›®å‰ç©å®¶æŒ‡è‘—çš„æ±è¥¿
+	 * æ–¹æ³•1: player.rayTrace(è·é›¢, ticks) è—‰ç”±playeré ­æ‰€æœå‘çš„æ–¹å‘æŠ“å‡ºç¢°åˆ°çš„æ±è¥¿, è‡ªè¨‚è·é›¢, ä¸æŠ“æ¶²é«”æ–¹å¡Š
+	 * æ–¹æ³•2: ClientProxy.getMineraft().renderViewEntity åˆ—å‡ºæ‰€æœ‰åœ¨client playerç•«é¢ä¸­å‡ºç¾çš„entity, åƒ…æŠ“entity
+	 * æ–¹æ³•3: ClientProxy.getMineraft().objectMouseOver åˆ—å‡ºæ‰€æœ‰æ»‘é¼ æ¸¸æ¨™æŒ‡åˆ°çš„æ±è¥¿, åªé™è¿‘è·é›¢, ä¸æŠ“æ¶²é«”æ–¹å¡Š
+	 * æ–¹æ³•4: ItemStack.getMovingObjectPositionFromPlayer åˆ—å‡ºæ¸¸æ¨™æŒ‡åˆ°çš„æ±è¥¿, åªé™è¿‘è·é›¢, å¯æŠ“æ¶²é«”æ–¹å¡Š
+	 * æ–¹æ³•5: è‡ªè¨‚func_147447_a è‡ªè¡Œä¿®æ”¹åƒæ•¸, ä¸é™è¿‘è·é›¢ä¸”å¯ä»¥æŠ“æ¶²é«”æ–¹å¡Š (ä»¥ä¸Šæ–¹æ³•å…¨éƒ½ä½¿ç”¨func_147447_aæ–¹æ³•)
  	 */
 	@Override
 	public void onUpdate(ItemStack item, World world, Entity player, int slot, boolean inUse) {
@@ -558,7 +558,7 @@ public class PointerItem extends BasicItem {
 				//client side
 				if(world.isRemote) {
 					if(player.ticksExisted % 32 == 0) {
-						//Åã¥Ü¶¤¥î°é°é, ¿ï¾Ü°é°é, ¥i±±¨î°é°éµ¥
+						//é¡¯ç¤ºéšŠä¼åœˆåœˆ, é¸æ“‡åœˆåœˆ, å¯æ§åˆ¶åœˆåœˆç­‰
 						ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 						BasicEntityShip teamship = null;
 						boolean select = false;
@@ -577,7 +577,7 @@ public class PointerItem extends BasicItem {
 								if(teamship != null) {
 									select = extProps.getSelectStateCurrentTeam(i);
 									
-									//­Y¬O±±¨î¥Ø¼Ğ, «hÅã¥Ü¬°pointerÃC¦â
+									//è‹¥æ˜¯æ§åˆ¶ç›®æ¨™, å‰‡é¡¯ç¤ºç‚ºpointeré¡è‰²
 									if(select) {
 										switch(meta) {
 										default:	//default mode
@@ -591,7 +591,7 @@ public class PointerItem extends BasicItem {
 											break;
 										}
 									}
-									//«D±±¨î¥Ø¼Ğ, ³£Åã¥Ü¬°ºñ¦â, formation mode«O«ù¶À¦â
+									//éæ§åˆ¶ç›®æ¨™, éƒ½é¡¯ç¤ºç‚ºç¶ è‰², formation modeä¿æŒé»ƒè‰²
 									else {
 										switch(meta) {
 										default:	//default mode
@@ -603,7 +603,7 @@ public class PointerItem extends BasicItem {
 										}
 									}
 									
-									//¦b¸Óship¤WÅã¥Ü¶¤¥î°é°é
+									//åœ¨è©²shipä¸Šé¡¯ç¤ºéšŠä¼åœˆåœˆ
 									ParticleHelper.spawnAttackParticleAtEntity(teamship, 0.3D, type, 0D, (byte)2);
 								}
 							}//end team list for loop

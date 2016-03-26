@@ -19,7 +19,7 @@ public class EntityDestroyerHa extends BasicEntityShipSmall {
 
 	public EntityDestroyerHa(World world) {
 		super(world);
-		this.setSize(0.7F, 1.6F);	//¸I¼²¤j¤p ¸ò¼Ò«¬¤j¤pµLÃö
+		this.setSize(0.7F, 1.6F);	//ç¢°æ’å¤§å° è·Ÿæ¨¡å‹å¤§å°ç„¡é—œ
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.DESTROYER);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.DestroyerHA);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);

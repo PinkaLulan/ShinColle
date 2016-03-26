@@ -31,7 +31,7 @@ public class EntitySubmU511 extends BasicEntityShipSmall implements IShipInvisib
 	
 	public EntitySubmU511(World world) {
 		super(world);
-		this.setSize(0.6F, 1.4F);	//¸I¼²¤j¤p ¸ò¼Ò«¬¤j¤pµLÃö
+		this.setSize(0.6F, 1.4F);	//ç¢°æ’å¤§å° è·Ÿæ¨¡å‹å¤§å°ç„¡é—œ
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.SUBMARINE);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.SubmarineU511);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.SUBMARINE);
@@ -115,7 +115,7 @@ public class EntitySubmU511 extends BasicEntityShipSmall implements IShipInvisib
 		return 2;
 	}
   	
-  	//¼ç¸¥ªº»´§ğÀ»¤@¼Ë¨Ï¥Î­¸¼u
+  	//æ½›è‰‡çš„è¼•æ”»æ“Šä¸€æ¨£ä½¿ç”¨é£›å½ˆ
   	@Override
   	//range attack method, cost heavy ammo, attack delay = 100 / attack speed, damage = 500% atk
   	public boolean attackEntityWithAmmo(Entity target) {	
@@ -123,9 +123,9 @@ public class EntitySubmU511 extends BasicEntityShipSmall implements IShipInvisib
   		float atk = StateFinal[ID.ATK];
   		float kbValue = 0.15F;
   		
-  		//­¸¼u¬O§_±Ä¥Îª½®g
+  		//é£›å½ˆæ˜¯å¦æ¡ç”¨ç›´å°„
   		boolean isDirect = false;
-  		//­pºâ¥Ø¼Ğ¶ZÂ÷
+  		//è¨ˆç®—ç›®æ¨™è·é›¢
   		float tarX = (float)target.posX;	//for miss chance calc
   		float tarY = (float)target.posY;
   		float tarZ = (float)target.posZ;
@@ -135,7 +135,7 @@ public class EntitySubmU511 extends BasicEntityShipSmall implements IShipInvisib
           float distSqrt = MathHelper.sqrt_float(distX*distX + distY*distY + distZ*distZ);
           float launchPos = (float)posY + height * 0.7F;
           
-          //¶W¹L¤@©w¶ZÂ÷/¤ô¤¤ , «h±Ä¥Î©ßª«½u,  ¦b¤ô¤¤®Éµo®g°ª«×¸û§C
+          //è¶…éä¸€å®šè·é›¢/æ°´ä¸­ , å‰‡æ¡ç”¨æ‹‹ç‰©ç·š,  åœ¨æ°´ä¸­æ™‚ç™¼å°„é«˜åº¦è¼ƒä½
           if((distX*distX+distY*distY+distZ*distZ) < 36F) {
           	isDirect = true;
           }

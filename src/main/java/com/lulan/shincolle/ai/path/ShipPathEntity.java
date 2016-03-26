@@ -86,14 +86,14 @@ public class ShipPathEntity {
      * Returns true if the EntityPath are the same. Non instance related equals.
      */
     public boolean isSamePath(ShipPathEntity path) {
-        if(path == null) {	//¨Spath, µLªk§PÂ_, ªğ¦^false
+        if(path == null) {	//æ²’path, ç„¡æ³•åˆ¤æ–·, è¿”å›false
             return false;
         }
-        else if(path.points.length != this.points.length) {	//ªø«×¤£¦P = ¸ô®|¤£¦P
+        else if(path.points.length != this.points.length) {	//é•·åº¦ä¸åŒ = è·¯å¾‘ä¸åŒ
             return false;
         }
         else {
-            for(int i = 0; i < this.points.length; ++i) {	//¤ñ¸û¥ş³¡ÂI¬O§_¬Û¦P
+            for(int i = 0; i < this.points.length; ++i) {	//æ¯”è¼ƒå…¨éƒ¨é»æ˜¯å¦ç›¸åŒ
                 if (this.points[i].xCoord != path.points[i].xCoord || this.points[i].yCoord != path.points[i].yCoord || this.points[i].zCoord != path.points[i].zCoord) {
                     return false;
                 }

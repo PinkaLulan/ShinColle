@@ -13,7 +13,7 @@ import net.minecraft.world.World;
 
 
 /**MISS PARTICLE
- * §ğÀ»miss®Éµo¥X¤å¦r¯S®Ä type:0:miss 1:critical 2:double hit 3:triple hit
+ * æ”»æ“Šmissæ™‚ç™¼å‡ºæ–‡å­—ç‰¹æ•ˆ type:0:miss 1:critical 2:double hit 3:triple hit
  * tut: https://github.com/Draco18s/Artifacts/blob/master/main/java/com/draco18s/artifacts/client/RadarParticle.java
  */
 @SideOnly(Side.CLIENT)
@@ -42,12 +42,12 @@ public class EntityFXTexts extends EntityFX {
 //    	tess.draw();
     	
 		GL11.glPushMatrix();
-		//¨Ï¥Î¦Û±aªº¶K¹ÏÀÉ
+		//ä½¿ç”¨è‡ªå¸¶çš„è²¼åœ–æª”
 		Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE);
 		GL11.glDepthMask(true);
 //		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glDisable(GL11.GL_LIGHTING);
-//		GL11.glEnable(GL11.GL_DEPTH_TEST);	//DEPTH TEST¶}±Ò«á¤~¯à¨Ï¥ÎglDepthFunc
+//		GL11.glEnable(GL11.GL_DEPTH_TEST);	//DEPTH TESTé–‹å•Ÿå¾Œæ‰èƒ½ä½¿ç”¨glDepthFunc
 //		GL11.glDepthFunc(GL11.GL_ALWAYS);
 		
 		float f6 = 0F;
@@ -63,7 +63,7 @@ public class EntityFXTexts extends EntityFX {
         //start tess
         tess.startDrawingQuads();
         tess.setBrightness(240);
-        //X¸òZ¦ì¸m¤£¥[ÀY³¡Âà°Ê°¾²¾, ¥u¦³Y¶b·|°¾¦Vª±®a¤è¦V
+        //Xè·ŸZä½ç½®ä¸åŠ é ­éƒ¨è½‰å‹•åç§», åªæœ‰Yè»¸æœƒåå‘ç©å®¶æ–¹å‘
         tess.addVertexWithUV(f11 - par3 * f10, f12 - par4 * 0.2F, f13 - par5 * f10, f7, f9);
         tess.addVertexWithUV(f11 - par3 * f10, f12 + par4 * 0.2F, f13 - par5 * f10, f7, f8);
         tess.addVertexWithUV(f11 + par3 * f10, f12 + par4 * 0.2F, f13 + par5 * f10, f6, f8);
@@ -71,7 +71,7 @@ public class EntityFXTexts extends EntityFX {
         //stop tess for restore texture
         tess.draw();
 //
-//        //restore texture, ±N¶K¹ÏÀÉ¦^´_¬°©x¤è¥Îªºparticles.png
+//        //restore texture, å°‡è²¼åœ–æª”å›å¾©ç‚ºå®˜æ–¹ç”¨çš„particles.png
 //        try {
 //        	Minecraft.getMinecraft().renderEngine.bindTexture((ResourceLocation)ReflectionHelper.getPrivateValue(EffectRenderer.class, null, new String[] { "particleTextures", "b", "field_110737_b" })); 
 //		} 
@@ -80,7 +80,7 @@ public class EntityFXTexts extends EntityFX {
 //        }
         
 //        GL11.glDepthFunc(GL11.GL_LEQUAL);
-//		GL11.glDisable(GL11.GL_DEPTH_TEST);	//DEPTH TESTÃö³¬
+//		GL11.glDisable(GL11.GL_DEPTH_TEST);	//DEPTH TESTé—œé–‰
       GL11.glEnable(GL11.GL_LIGHTING);
 //        GL11.glDisable(GL11.GL_BLEND);
 //		GL11.glDepthMask(false);

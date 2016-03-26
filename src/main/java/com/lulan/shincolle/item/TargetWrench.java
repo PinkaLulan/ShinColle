@@ -61,7 +61,7 @@ public class TargetWrench extends BasicItem {
 		if(entityLiving instanceof EntityPlayer) {
 			player = (EntityPlayer) entityLiving;
 			
-			//ª±®a¥ªÁä¨Ï¥Î¦¹ªZ¾¹®É (client side only)
+			//ç©å®¶å·¦éµä½¿ç”¨æ­¤æ­¦å™¨æ™‚ (client side only)
 			if(entityLiving.worldObj.isRemote) {
 				MovingObjectPosition hitObj = EntityHelper.getPlayerMouseOverEntity(64D, 1F);
 				
@@ -73,13 +73,13 @@ public class TargetWrench extends BasicItem {
 						LogHelper.info("DEBUG : target wrench get class: "+tarName);
 						//send packet to server
 						CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetOPTarClass, tarName));
-						return true;
+						return false;
 					}//end not ship
 				}//end hit != null
 			}//end client side
 		}//end player not null
 		
-        return true;	//both side
+        return false;	//both side
     }
 	
 	/**right click: show unattackable target list

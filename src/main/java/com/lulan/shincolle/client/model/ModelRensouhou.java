@@ -164,7 +164,7 @@ public class ModelRensouhou extends ModelBase implements IModelEmotion {
 		motionHumanPos(f, f1, f2, f3, f4, ent);
     }
     
-  //Âù¸}²¾°Ê­pºâ
+  //é›™è…³ç§»å‹•è¨ˆç®—
   	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {   
   		float angleX = MathHelper.cos(f2 * 0.08F);
   		float angleRun = MathHelper.cos(f) * f1;
@@ -177,7 +177,7 @@ public class ModelRensouhou extends ModelBase implements IModelEmotion {
   		addk1 = MathHelper.cos(f * 0.7F) * f1 + 0.7F;
 	  	addk2 = MathHelper.cos(f * 0.7F + 3.1415927F) * f1 + 0.7F;
 
-	    //¥¿±`¯¸¥ß°Ê§@
+	    //æ­£å¸¸ç«™ç«‹å‹•ä½œ
 	  	//Body
 	  	this.Head.rotateAngleY = f3 / 57F;
 	  	this.BodyMain.rotateAngleX = 0F;
@@ -190,7 +190,7 @@ public class ModelRensouhou extends ModelBase implements IModelEmotion {
 		//propeller
 		this.Propeller.rotateAngleZ = (f2 / 4) % 360;
 
-	    if(f1 > 0.9F) {	//©b¶]°Ê§@
+	    if(f1 > 0.9F) {	//å¥”è·‘å‹•ä½œ
 	    	setFace(2);
 	    	//body
 	    	this.BodyMain.rotateAngleX = 0.2618F;
@@ -204,7 +204,7 @@ public class ModelRensouhou extends ModelBase implements IModelEmotion {
 			this.Propeller.rotateAngleZ = (f / 2) % 360;
   		}
 	    
-	    //§ðÀ»°Ê§@    
+	    //æ”»æ“Šå‹•ä½œ    
 	    if(ent.getAttackTime() > 0) {
 	    	setFace(2);
 	    }
@@ -214,7 +214,7 @@ public class ModelRensouhou extends ModelBase implements IModelEmotion {
 	    this.LegRight.rotateAngleX = addk2;    
   	}
   	
-    //³]©wÅã¥ÜªºÁy«¬
+    //è¨­å®šé¡¯ç¤ºçš„è‡‰åž‹
     @Override
   	public void setFace(int emo) {
   		switch(emo) {

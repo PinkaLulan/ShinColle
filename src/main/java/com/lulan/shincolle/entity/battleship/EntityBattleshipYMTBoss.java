@@ -35,7 +35,7 @@ public class EntityBattleshipYMTBoss extends BasicEntityShipBoss {
 
 	public EntityBattleshipYMTBoss(World world) {
 		super(world);
-		this.setSize(1.5F, 8F);
+		this.setSize(1.8F, 7.5F);
 		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityBattleshipYMTBoss.name"));
         
         //basic attr
@@ -53,14 +53,14 @@ public class EntityBattleshipYMTBoss extends BasicEntityShipBoss {
         //misc
         this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, ID.Ship.BattleshipYamato+2);
  
-	    //³]©w°ò¥»Äİ©Ê
+	    //è¨­å®šåŸºæœ¬å±¬æ€§
 	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(ConfigHandler.scaleBossLarge[ID.HP] * 1.2F);
 		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(this.movSpeed);
-		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(atkRange + 32); //¦¹¬°§ä¥Ø¼Ğ, ¸ô®|ªº½d³ò
+		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(atkRange + 32); //æ­¤ç‚ºæ‰¾ç›®æ¨™, è·¯å¾‘çš„ç¯„åœ
 		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(1D);
 		if(this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
 				
-		//³]©wAI
+		//è¨­å®šAI
 		this.setAIList();
 		this.setAITargetList();
 		
@@ -99,9 +99,9 @@ public class EntityBattleshipYMTBoss extends BasicEntityShipBoss {
   			if(this.ticksExisted % 4 == 0) {
 				double smokeY = posY + 5.5D;
 				
-				//­pºâ·ÏÃú¦ì¸m
+				//è¨ˆç®—ç…™éœ§ä½ç½®
   				float[] partPos = ParticleHelper.rotateXZByAxis(-2.3F, 0F, (this.renderYawOffset % 360) * Values.N.RAD_MUL, 1F);
-  				//¥Í¦¨¸Ë³Æ«_·Ï¯S®Ä
+  				//ç”Ÿæˆè£å‚™å†’ç…™ç‰¹æ•ˆ
   				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], smokeY, posZ+partPos[0], 0D, 0D, 0D, (byte)20);
   			}
   			
@@ -114,16 +114,14 @@ public class EntityBattleshipYMTBoss extends BasicEntityShipBoss {
   		}
   	}
 	
-	//­×§ï·ÏÃú¦ì¸m
+	//ä¿®æ”¹ç…™éœ§ä½ç½®
   	@Override
   	public boolean attackEntityWithAmmo(Entity target) {
   		//get attack value
 		float atk = CalcHelper.calcDamageByEquipEffect(this, target, this.atk, 0);
-		//set knockback value (testing)
-		float kbValue = 0.05F;
 		
 		//update entity look at vector (for particle spawn)
-        //¦¹¤èªk¤ñgetLookÁÙ¥¿½T (client sync°İÃD)
+        //æ­¤æ–¹æ³•æ¯”getLooké‚„æ­£ç¢º (client syncå•é¡Œ)
         float distX = (float) (target.posX - this.posX);
         float distY = (float) (target.posY - this.posY);
         float distZ = (float) (target.posZ - this.posZ);
@@ -132,7 +130,7 @@ public class EntityBattleshipYMTBoss extends BasicEntityShipBoss {
         distY = distY / distSqrt;
         distZ = distZ / distSqrt;
       
-        //µo®gªÌ·ÏÃú¯S®Ä
+        //ç™¼å°„è€…ç…™éœ§ç‰¹æ•ˆ
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 5, 3.4D, 3.2D, 5D), point);
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 5, 3.4D, 3.2D, 3D), point);
@@ -185,20 +183,12 @@ public class EntityBattleshipYMTBoss extends BasicEntityShipBoss {
     		}
   		}
   		
-	    //±Natk¸òattacker¶Çµ¹¥Ø¼ĞªºattackEntityFrom¤èªk, ¦b¥Ø¼Ğclass¤¤­pºâ¶Ë®`
-	    //¨Ã¥B¦^¶Ç¬O§_¦¨¥\¶Ë®`¨ì¥Ø¼Ğ
+	    //å°‡atkè·Ÿattackerå‚³çµ¦ç›®æ¨™çš„attackEntityFromæ–¹æ³•, åœ¨ç›®æ¨™classä¸­è¨ˆç®—å‚·å®³
+	    //ä¸¦ä¸”å›å‚³æ˜¯å¦æˆåŠŸå‚·å®³åˆ°ç›®æ¨™
 	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this).setProjectile(), atk);
 
 	    //if attack success
 	    if(isTargetHurt) {
-	    	//calc kb effect
-	        if(kbValue > 0) {
-	            target.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
-	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
-	            motionX *= 0.6D;
-	            motionZ *= 0.6D;
-	        }
-	        
         	//display hit particle on target
 	        TargetPoint point1 = new TargetPoint(this.dimension, target.posX, target.posY, target.posZ, 64D);
 			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 9, false), point1);
@@ -213,7 +203,7 @@ public class EntityBattleshipYMTBoss extends BasicEntityShipBoss {
   		//get attack value
   		float atk = CalcHelper.calcDamageByEquipEffect(this, target, this.atk * 3F, 3);
 		
-		//­pºâ¥Ø¼Ğ¶ZÂ÷
+		//è¨ˆç®—ç›®æ¨™è·é›¢
 		float tarX = (float)target.posX;	//for miss chance calc
 		float tarY = (float)target.posY;
 		float tarZ = (float)target.posZ;

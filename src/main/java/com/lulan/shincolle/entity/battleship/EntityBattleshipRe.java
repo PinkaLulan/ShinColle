@@ -68,7 +68,7 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
 		this.tasks.addTask(12, new EntityAIShipRangeAttack(this));			   //0011
 	}
 
-	//¼W¥[Ä¥¸ü¾÷¼Æ¶q­pºâ
+	//å¢åŠ è‰¦è¼‰æ©Ÿæ•¸é‡è¨ˆç®—
 	@Override
 	public void calcShipAttributes() {
 		EffectEquip[ID.EF_DHIT] = EffectEquip[ID.EF_DHIT] + 0.1F;
@@ -93,18 +93,18 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
         		}
         	}
     		
-    		//­Y­n§äÃM­¼¥Ø¼Ğ
+    		//è‹¥è¦æ‰¾é¨ä¹˜ç›®æ¨™
         	if(this.isPushing) {
         		this.tickPush++;
         		
-        		//§ä¤Ó¤[, ©ñ±óÃM­¼¥Ø¼Ğ
+        		//æ‰¾å¤ªä¹…, æ”¾æ£„é¨ä¹˜ç›®æ¨™
         		if(this.tickPush > 200 || this.targetPush == null) {
         			this.cancelPush();
         		}
         		else {
         			float distPush = this.getDistanceToEntity(this.targetPush);
         			
-        			//¨C32 tick§ä¤@¦¸¸ô®|
+        			//æ¯32 tickæ‰¾ä¸€æ¬¡è·¯å¾‘
             		if(this.ticksExisted % 32 == 0) {
             			if(distPush > 2F) {
             				this.getShipNavigate().tryMoveToEntityLiving(this.targetPush, 1D);
@@ -143,19 +143,19 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
         List hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, impactBox);
         List<EntityLivingBase> canPushList = new ArrayList();
         
-        //·j´Mlist, §ä¥X²Ä¤@­Ó¥i¥HÃM­¼ªº¥Ø¼Ğ
+        //æœå°‹list, æ‰¾å‡ºç¬¬ä¸€å€‹å¯ä»¥é¨ä¹˜çš„ç›®æ¨™
         if(hitList != null && !hitList.isEmpty()) {
             for(int i = 0; i < hitList.size(); ++i) {
             	getEnt = (EntityLivingBase)hitList.get(i);
             	
-            	//¥uÃM­¼¦P¥D¤Hªº´ÏÄ¥©ÎªÌ¥D¤H
+            	//åªé¨ä¹˜åŒä¸»äººçš„æ£²è‰¦æˆ–è€…ä¸»äºº
         		if(getEnt != this) {
         			canPushList.add(getEnt);
         		}
             }
         }
         
-        //±q¥iÃM­¼¥Ø¼Ğ¤¤¬D¥X¤@­Ó¥Ø¼ĞÃM­¼
+        //å¾å¯é¨ä¹˜ç›®æ¨™ä¸­æŒ‘å‡ºä¸€å€‹ç›®æ¨™é¨ä¹˜
         if(canPushList.size() > 0) {
         	this.targetPush = canPushList.get(rand.nextInt(canPushList.size()));
         	this.tickPush = 0;
@@ -168,11 +168,9 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
 	public boolean attackEntityWithAmmo(Entity target) {
 		//get attack value
 		float atk = CalcHelper.calcDamageByEquipEffect(this, target, StateFinal[ID.ATK], 0);
-		//set knockback value (testing)
-		float kbValue = 0.05F;
 		
 		//update entity look at vector (for particle spawn)
-        //¦¹¤èªk¤ñgetLookÁÙ¥¿½T (client sync°İÃD)
+        //æ­¤æ–¹æ³•æ¯”getLooké‚„æ­£ç¢º (client syncå•é¡Œ)
         float distX = (float) (target.posX - this.posX);
         float distY = (float) (target.posY - this.posY);
         float distZ = (float) (target.posZ - this.posZ);
@@ -252,20 +250,12 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
     		}
   		}
 
-	    //±Natk¸òattacker¶Çµ¹¥Ø¼ĞªºattackEntityFrom¤èªk, ¦b¥Ø¼Ğclass¤¤­pºâ¶Ë®`
-	    //¨Ã¥B¦^¶Ç¬O§_¦¨¥\¶Ë®`¨ì¥Ø¼Ğ
+	    //å°‡atkè·Ÿattackerå‚³çµ¦ç›®æ¨™çš„attackEntityFromæ–¹æ³•, åœ¨ç›®æ¨™classä¸­è¨ˆç®—å‚·å®³
+	    //ä¸¦ä¸”å›å‚³æ˜¯å¦æˆåŠŸå‚·å®³åˆ°ç›®æ¨™
 	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this).setMagicDamage(), atk);
 
 	    //if attack success
 	    if(isTargetHurt) {
-	    	//calc kb effect
-	        if(kbValue > 0) {
-	            target.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
-	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
-	            motionX *= 0.6D;
-	            motionZ *= 0.6D;
-	        }
-	        
         	//display hit particle on target
 	        TargetPoint point1 = new TargetPoint(this.dimension, target.posX, target.posY, target.posZ, 64D);
 			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 9, false), point1);

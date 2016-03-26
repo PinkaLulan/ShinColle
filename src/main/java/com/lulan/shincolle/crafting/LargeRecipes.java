@@ -38,12 +38,12 @@ public class LargeRecipes {
 	
 	public LargeRecipes() {}
 		
-	//ÀË¬d§÷®Æ¬O§_¯à°÷«Ø³y
+	//æª¢æŸ¥ææ–™æ˜¯å¦èƒ½å¤ å»ºé€ 
 	public static boolean canRecipeBuild(int[] matAmount) {
 		return matAmount[0]>=MIN_AMOUNT && matAmount[1]>=MIN_AMOUNT && matAmount[2]>=MIN_AMOUNT && matAmount[3]>=MIN_AMOUNT;
 	}
 	
-	//­pºâÁ`¦@»İ­nªº¿U®Æ
+	//è¨ˆç®—ç¸½å…±éœ€è¦çš„ç‡ƒæ–™
 	public static int calcGoalPower(int[] matAmount) {
 		int extraAmount;
 		
@@ -57,10 +57,10 @@ public class LargeRecipes {
 	
 	//add or set item to slot
 	private static void addSlotContents(TileMultiGrudgeHeavy tile, Item item, int meta, int slot) {
-		if(tile.getStackInSlot(slot) == null) {	//ªÅslot, ·s¼Witemstack
+		if(tile.getStackInSlot(slot) == null) {	//ç©ºslot, æ–°å¢itemstack
 			tile.setInventorySlotContents(slot, new ItemStack(item, 1, meta));
 		}
-		else {	//slot¤w¦û¥Î, ª««~¼Æ+1
+		else {	//slotå·²ä½”ç”¨, ç‰©å“æ•¸+1
 			tile.getStackInSlot(slot).stackSize++;
 		}
 	}
@@ -69,7 +69,7 @@ public class LargeRecipes {
 	private static int getFitSlot(TileMultiGrudgeHeavy tile, Item item, int meta) {
 		//search slot 1~10
 		for(int i = TileMultiGrudgeHeavy.SLOTS_OUT + 1; i < TileMultiGrudgeHeavy.SLOTS_NUM; i++) {
-			//slot¬°ªÅ or ª««~¬Û¦P¥B©|¥¼¹F¨ì³Ì¤j°ïÅ|¼Æ
+			//slotç‚ºç©º or ç‰©å“ç›¸åŒä¸”å°šæœªé”åˆ°æœ€å¤§å †ç–Šæ•¸
 			if((tile.getStackInSlot(i) == null) ||
 			   (tile.getStackInSlot(i).getItem() == item &&
 			    tile.getStackInSlot(i).getItemDamage() == meta &&
@@ -80,14 +80,14 @@ public class LargeRecipes {
 		return -1;	//no fit slot
 	}
 	
-	//·s¼W¸ê§÷¨ìslots¤¤
+	//æ–°å¢è³‡æåˆ°slotsä¸­
 	public static boolean outputMaterialToSlot(TileMultiGrudgeHeavy tile, int selectMat, boolean compress) {
 		Item matchItem = null;
 		int meta = 0;
 		int slot = -1;
 		
-		//³]©w´M§äªºª««~
-		if(compress) {	//¿é¥Xblock, containerµ¥À£ÁYª««~
+		//è¨­å®šå°‹æ‰¾çš„ç‰©å“
+		if(compress) {	//è¼¸å‡ºblock, containerç­‰å£“ç¸®ç‰©å“
 			switch(selectMat) {
 			case 0:		//block grudge
 				matchItem = Item.getItemFromBlock(ModBlocks.BlockGrudge);
@@ -107,7 +107,7 @@ public class LargeRecipes {
 				break;
 			}	
 		}
-		else {			//¿é¥X³æ¥óª««~
+		else {			//è¼¸å‡ºå–®ä»¶ç‰©å“
 			switch(selectMat) {
 			case 0:		//item grudge
 				matchItem = ModItems.Grudge;
@@ -128,10 +128,10 @@ public class LargeRecipes {
 			}
 		}
 		
-		//§ä¥X¹ïÀ³slot
+		//æ‰¾å‡ºå°æ‡‰slot
 		if(matchItem != null) {
 			slot = getFitSlot(tile, matchItem, meta);	
-			//¿é¥Xª««~¨ì¸Óslot
+			//è¼¸å‡ºç‰©å“åˆ°è©²slot
 			if(slot > -1) {
 				addSlotContents(tile, matchItem, meta, slot);
 				return true;
@@ -141,7 +141,7 @@ public class LargeRecipes {
 		return false;
 	}
 
-	//·s¼W¸ê§÷¨ìmatsStock¤¤
+	//æ–°å¢è³‡æåˆ°matsStockä¸­
 	public static boolean addMaterialStock(TileMultiGrudgeHeavy tile, ItemStack item) {
 		boolean canAdd = false;
 		
@@ -188,7 +188,7 @@ public class LargeRecipes {
 		return canAdd;
 	}
 
-	//±N§÷®Æ¼Æ¶q¼g¶iitemstack¦^¶Ç
+	//å°‡ææ–™æ•¸é‡å¯«é€²itemstackå›å‚³
 	public static ItemStack getBuildResultShip(int[] matAmount) {
 		ItemStack buildResult = new ItemStack(ModItems.ShipSpawnEgg, 1, 1);
 		buildResult.stackTagCompound = new NBTTagCompound();

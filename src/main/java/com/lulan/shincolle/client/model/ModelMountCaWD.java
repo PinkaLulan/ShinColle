@@ -274,7 +274,7 @@ public class ModelMountCaWD extends ModelBase {
         this.BodyMain.addChild(this.CannonL01);
         this.BodyMain.addChild(this.Tube02a);
         
-        //µo¥ú¤ä¬[1
+        //ç™¼å…‰æ”¯æž¶1
         this.GlowBodyMain = new ModelRenderer(this, 0, 0);
         this.GlowBodyMain.setRotationPoint(0.0F, 0.0F, 8.0F);
         this.GlowNeck = new ModelRenderer(this, 0, 0);
@@ -335,7 +335,7 @@ public class ModelMountCaWD extends ModelBase {
         this.GlowCannonM01.addChild(this.GlowCannonM04);
         this.GlowCannonM04.addChild(this.CannonM05);
         
-        //µo¥ú¤ä¬[2
+        //ç™¼å…‰æ”¯æž¶2
         this.GlowBodyMain2 = new ModelRenderer(this, 0, 0);
         this.GlowBodyMain2.setRotationPoint(0.0F, 0.0F, 8.0F);
         this.GlowWingL01a2 = new ModelRenderer(this, 0, 0);
@@ -381,7 +381,7 @@ public class ModelMountCaWD extends ModelBase {
     	this.BodyMain.render(f5);
     	GL11.glDisable(GL11.GL_BLEND);
     	
-    	//«G«×³]¬°240
+    	//äº®åº¦è¨­ç‚º240
     	GL11.glDisable(GL11.GL_LIGHTING);
     	
     	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
@@ -407,7 +407,7 @@ public class ModelMountCaWD extends ModelBase {
 
     }
     
-    //Âù¸}²¾°Ê­pºâ
+    //é›™è…³ç§»å‹•è¨ˆç®—
   	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {   
   		float angleX = MathHelper.cos(f2*0.08F);
   		float angleAdd1 = MathHelper.cos(f * 0.7F) * f1 * 0.7F;
@@ -417,8 +417,8 @@ public class ModelMountCaWD extends ModelBase {
   		
     	GL11.glTranslatef(0F, -0.25F, 0F);
 
-	    //¥¿±`¯¸¥ß°Ê§@
-	  	//¼L¤Ú
+	    //æ­£å¸¸ç«™ç«‹å‹•ä½œ
+	  	//å˜´å·´
 	  	this.Jaw01.rotateAngleX = angleX * 0.025F + 0.32F;
 	    //cannon
 	  	this.CannonL02.rotateAngleX = angleX * 0.05F - 0.3F;
@@ -426,12 +426,12 @@ public class ModelMountCaWD extends ModelBase {
 	  	this.CannonM03.rotateAngleX = -angleX * 0.05F;
 	  	this.CannonM05.rotateAngleX = angleX * 0.05F;
 	    
-    	//seat2 ¦³¸ü¤H°Ê§@
+    	//seat2 æœ‰è¼‰äººå‹•ä½œ
 	    if(ent.getStateEmotion(ID.S.Emotion) > 0) {
 	    	this.Jaw01.rotateAngleX = 1.0F;
 	    }
 	    
-	    //²¾°Ê®ÉÅã¥Ü±À¶i¾¹¤õµK
+	    //ç§»å‹•æ™‚é¡¯ç¤ºæŽ¨é€²å™¨ç«ç„°
 	    if(f1 > 0.2F) {
 	    	this.WingL01Fire.isHidden = false;
 	    	this.WingR01Fire.isHidden = false;
@@ -441,7 +441,7 @@ public class ModelMountCaWD extends ModelBase {
 	    	this.WingR01Fire.isHidden = true;
 	    }
 	    
-	    //µo¥ú¤ä¬[
+	    //ç™¼å…‰æ”¯æž¶
 	    this.GlowJaw01.rotateAngleX = this.Jaw01.rotateAngleX;
   	}
 

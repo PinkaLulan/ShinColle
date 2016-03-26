@@ -28,10 +28,10 @@ import com.lulan.shincolle.utility.TargetHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 /**SHIP GUARDING AI
- * CanFollow = false®É¥i¥H°õ¦æ
- * «ùÄò©T¦u¬Y¤@ÂIfollowMax®æ¤§¤º, ¶ZÂ÷¸ÓÂIfollowMax®æ¥H¤W´N·|¹Á¸Õ¦^¥h¸ÓÂIª½¨ì¾aªñfollowMin®æ¤º
- * ¶ZÂ÷¶W¹Lmax®æ¶W¹L«ü©w®É¶¡«á, ±j¨î¶Ç°e¦^¸ÓÂI
- * ­Yhostªºgy<=0, «hµø¬°¥²¶·¸òÀHowner, ·|³]©wCanFollow = true
+ * CanFollow = falseæ™‚å¯ä»¥åŸ·è¡Œ
+ * æŒçºŒå›ºå®ˆæŸä¸€é»followMaxæ ¼ä¹‹å…§, è·é›¢è©²é»followMaxæ ¼ä»¥ä¸Šå°±æœƒå˜—è©¦å›å»è©²é»ç›´åˆ°é è¿‘followMinæ ¼å…§
+ * è·é›¢è¶…émaxæ ¼è¶…éæŒ‡å®šæ™‚é–“å¾Œ, å¼·åˆ¶å‚³é€å›è©²é»
+ * è‹¥hostçš„gy<=0, å‰‡è¦–ç‚ºå¿…é ˆè·Ÿéš¨owner, æœƒè¨­å®šCanFollow = true
  * 
  * 2015/9/30:
  * move & attack mode:
@@ -60,8 +60,8 @@ public class EntityAIShipGuarding extends EntityAIBase {
     private int checkTP_T, checkTP_D;				//teleport cooldown count
     private int findCooldown;						//path navi cooldown
     private double maxDistSq, minDistSq;
-    private double distSq, distX, distY, distZ;	//¸ò¥Ø¼Ğªºª½½u¶ZÂ÷
-    private double[] pos;							//guard position
+    private double distSq, distX, distY, distZ;		//è·Ÿç›®æ¨™çš„ç›´ç·šè·é›¢
+    private double[] pos;							//guard position: x, y, z, dim
     private double[] guardPosOld;					//last update position
     
     //attack parms, for BasicEntityShip only
@@ -75,7 +75,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
     private float range, rangeSq;		//attack range
     private boolean launchType;			//airplane type, true = light
     private boolean isMoving;			//is moving
-    private double tarDist, tarDistSqrt, tarDistX, tarDistY, tarDistZ;	//¸ò¥Ø¼Ğªºª½½u¶ZÂ÷
+    private double tarDist, tarDistSqrt, tarDistX, tarDistY, tarDistZ;	//è·Ÿç›®æ¨™çš„ç›´ç·šè·é›¢
 
     
     public EntityAIShipGuarding(IShipGuardian entity) {
@@ -88,7 +88,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
         this.isMoving = false;
         this.setMutexBits(7);
         
-        //mountÃş, ³]©wship¬°host
+        //mounté¡, è¨­å®šshipç‚ºhost
         if(entity instanceof IShipCannonAttack) {
         	this.ship = (IShipCannonAttack) entity;
         	
@@ -112,10 +112,10 @@ public class EntityAIShipGuarding extends EntityAIBase {
     	this.rangeSq = 1;
     }
     
-    //§P©w¬O§_¶}©l°õ¦æAI
+    //åˆ¤å®šæ˜¯å¦é–‹å§‹åŸ·è¡ŒAI
     @Override
 	public boolean shouldExecute() {
-    	//«D§¤¤U, «DÃM­¼, «D³Q¸j, «D¥i¸òÀH, ¥B¦³fuel¤~°õ¦æ
+    	//éåä¸‹, éé¨ä¹˜, éè¢«ç¶, éå¯è·Ÿéš¨, ä¸”æœ‰fuelæ‰åŸ·è¡Œ
     	if(host != null && !host.getIsRiding() && !host.getIsSitting() && !host.getStateFlag(ID.F.NoFuel) && !host.getStateFlag(ID.F.CanFollow)) {
     		//get guard target
     		return checkGuardTarget();
@@ -123,21 +123,21 @@ public class EntityAIShipGuarding extends EntityAIBase {
         return false;
     }
 
-    //¥Ø¼ĞÁÙ¨S±µªñmin dist©ÎªÌ¶ZÂ÷¶W¹LTP_DIST®ÉÄ~ÄòAI
+    //ç›®æ¨™é‚„æ²’æ¥è¿‘min distæˆ–è€…è·é›¢è¶…éTP_DISTæ™‚ç¹¼çºŒAI
     @Override
 	public boolean continueExecuting() {
     	if(host != null) {
-    		//«D§¤¤U, «DÃM­¼, «D³Q¸j, «D¥i¸òÀH, ¥B¦³fuel¤~°õ¦æ
+    		//éåä¸‹, éé¨ä¹˜, éè¢«ç¶, éå¯è·Ÿéš¨, ä¸”æœ‰fuelæ‰åŸ·è¡Œ
     		if(!host.getIsRiding() && !host.getIsSitting() && !host.getStateFlag(ID.F.NoFuel) && !host.getStateFlag(ID.F.CanFollow)) {
-    			//ÁÙ¨S¨«¶imin follow range, Ä~Äò¨«
+    			//é‚„æ²’èµ°é€²min follow range, ç¹¼çºŒèµ°
 	        	if(this.distSq > this.minDistSq) {
 	        		return true;	//need update guard position
 	        	}
 	        	
-	        	//¨ä¥L±¡ªp
+	        	//å…¶ä»–æƒ…æ³
 	        	return !ShipNavigator.noPath() || shouldExecute();
     		}
-    		else {	//­Y¬°§¤¤U, ÃM­¼, ³Q¸j, «h­«¸mAI
+    		else {	//è‹¥ç‚ºåä¸‹, é¨ä¹˜, è¢«ç¶, å‰‡é‡ç½®AI
     			this.resetTask();
     			return false;
     		}
@@ -163,6 +163,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
 
     @Override
 	public void updateTask() {
+    	
     	/**update attack while moving
     	 * active when:
     	 * 1. is ship entity
@@ -230,17 +231,17 @@ public class EntityAIShipGuarding extends EntityAIBase {
         		this.ShipNavigator.clearPathEntity();
         	}
         	
-        	//¨Ccd¨ì§ä¤@¦¸¸ô®|
+        	//æ¯cdåˆ°æ‰¾ä¸€æ¬¡è·¯å¾‘
         	if(this.findCooldown <= 0) {
     			this.findCooldown = 32;
     			this.isMoving = this.ShipNavigator.tryMoveToXYZ(pos[0], pos[1], pos[2], 1D);
         	}
         	
-        	//³]©wÀY³¡Âà¦V
+        	//è¨­å®šé ­éƒ¨è½‰å‘
             this.host2.getLookHelper().setLookPosition(pos[0], pos[1], pos[2], 30F, this.host2.getVerticalFaceSpeed());
-
+//            LogHelper.info("AAAAAAAAAAAAAAAAAAAAA "+this.host2.dimension+" "+this.host.getStateMinor(ID.M.GuardDim));
             //check teleport conditions: same DIM and (dist > TP_DIST or time > TP_TIME)
-        	if(this.host2.dimension == this.host.getStateMinor(ID.M.GuardDim)) {
+        	if(this.host2.dimension == this.host.getGuardedPos(3)) {
         		//check dist
         		if(this.distSq > TP_DIST) {
         			this.checkTP_D++;
@@ -248,6 +249,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
         			if(this.checkTP_D > TP_TIME) {
         				this.checkTP_D = 0;
         				
+        				if(host2 != null && owner != null)
         				LogHelper.info("DEBUG : guard AI: distSQ > "+TP_DIST+" , teleport to target. dim: "+host2.dimension+" "+owner.dimension);
             			this.applyTeleport();
             			return;
@@ -258,11 +260,18 @@ public class EntityAIShipGuarding extends EntityAIBase {
         		if(this.checkTP_T > TP_TIME) {
         			this.checkTP_T = 0;
         			
+        			if(host2 != null && owner != null)
         			LogHelper.info("DEBUG : guard AI: teleport entity: dimension check: "+host2.dimension+" "+owner.dimension);
         			this.applyTeleport();
         			return;
         		}
         	}//end same dim
+        	else {
+        		//dim changed, reset guard mode
+        		host.setGuardedPos(-1, -1, -1, 0, 0);		//reset guard position
+        		host.setGuardedEntity(null);
+        		host.setStateFlag(ID.F.CanFollow, true);	//set follow
+        	}
     	}//end guard entity
     }
     
@@ -293,7 +302,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
 
     //clear seat2
 	private void clearMountSeat2(EntityLiving entity) {
-		//­Y®y¦ì2¦³¤H, ­n¥ı§â®y¦ì2ªº­¼«È½ğ±¼
+		//è‹¥åº§ä½2æœ‰äºº, è¦å…ˆæŠŠåº§ä½2çš„ä¹˜å®¢è¸¢æ‰
   		if(entity.ridingEntity != null) {
   			if(entity.ridingEntity instanceof BasicEntityMount) {
 	  			BasicEntityMount mount = (BasicEntityMount) entity.ridingEntity;
@@ -304,7 +313,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
   			entity.mountEntity(null);
   		}
   		
-  		//²MªÅÃM­¼ªº¤H
+  		//æ¸…ç©ºé¨ä¹˜çš„äºº
   		if(entity.riddenByEntity != null) {
   			entity.riddenByEntity.mountEntity(null);
   			entity.riddenByEntity = null;
@@ -324,7 +333,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
     		//attack range = 70% normal range
     		this.range = (int)(this.ship.getAttackRange() * 0.7F);
     		
-    		//ÀË¬d½d³ò, ¨Ïrange2 > range1 > 1
+    		//æª¢æŸ¥ç¯„åœ, ä½¿range2 > range1 > 1
             if(this.range < 1) {
             	this.range = 1;
             }
@@ -376,7 +385,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
     	
     	//aircraft light attack
         if(this.ship2 != null && (this.ship2.getStateFlag(ID.F.UseAirLight) || this.ship2.getStateFlag(ID.F.UseAirHeavy)) && this.delayTime[2] <= 0) {
-        	//­Y¥u¨Ï¥Î³æ¤@ºØ¼uÃÄ, «h°±¥Î«¬ºA¤Á´«, ¥uµo®g¦P¤@ºØ­¸¾÷
+        	//è‹¥åªä½¿ç”¨å–®ä¸€ç¨®å½ˆè—¥, å‰‡åœç”¨å‹æ…‹åˆ‡æ›, åªç™¼å°„åŒä¸€ç¨®é£›æ©Ÿ
             if(!this.ship2.getStateFlag(ID.F.UseAirLight)) {
             	this.launchType = false;
             }
@@ -407,7 +416,9 @@ public class EntityAIShipGuarding extends EntityAIBase {
 		if(this.guarded != null) {
 			//target is alive and same dimension
 			if(!this.guarded.isEntityAlive() || this.guarded.worldObj.provider.dimensionId != this.host2.worldObj.provider.dimensionId) {
-				host.setGuardedEntity(null);
+        		host.setGuardedPos(-1, -1, -1, 0, 0);		//reset guard position
+        		host.setGuardedEntity(null);
+        		host.setStateFlag(ID.F.CanFollow, true);	//set follow
 				this.resetTask();
 				return false;
 			}
@@ -420,7 +431,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
 					double dz = guardPosOld[2] - guarded.posZ;
 					double dsq = dx * dx + dy * dy + dz * dz;
 					
-					if(dsq > 7) {
+					if(dsq > 6) {
 						//get new position
 						pos = FormationHelper.getFormationGuardingPos(host, guarded, guardPosOld[0], guardPosOld[2]);
 					
@@ -430,16 +441,18 @@ public class EntityAIShipGuarding extends EntityAIBase {
 						guardPosOld[2] = guarded.posZ;
 						
 						//draw moving particle
-						if(ConfigHandler.alwaysShowTeamParticle || EntityHelper.checkInUsePointer(owner)) {
-							CommonProxy.channelP.sendTo(new S2CSpawnParticle(25, 0, pos[0], pos[1], pos[2], 0.3, 4, 0), (EntityPlayerMP) owner);
+						if((ConfigHandler.alwaysShowTeamParticle || EntityHelper.checkInUsePointer(owner)) &&
+							owner != null && owner.dimension == host.getGuardedPos(3)) {
+							CommonProxy.channelP.sendTo(new S2CSpawnParticle(25, pos[0], pos[1], pos[2], 0.3, 4, 0), (EntityPlayerMP) owner);
 						}
 					}
 					
 					//DEBUG
 					if(this.host2.ticksExisted % 16 == 0) {
 						//draw moving particle
-						if(ConfigHandler.alwaysShowTeamParticle || EntityHelper.checkInUsePointer(owner)) {
-							CommonProxy.channelP.sendTo(new S2CSpawnParticle(25, 0, pos[0], pos[1], pos[2], 0.3, 6, 0), (EntityPlayerMP) owner);
+						if((ConfigHandler.alwaysShowTeamParticle || EntityHelper.checkInUsePointer(owner)) &&
+							owner != null && owner.dimension == host.getGuardedPos(3)) {
+							CommonProxy.channelP.sendTo(new S2CSpawnParticle(25, pos[0], pos[1], pos[2], 0.3, 6, 0), (EntityPlayerMP) owner);
 						}
 					}
 				}
@@ -457,9 +470,11 @@ public class EntityAIShipGuarding extends EntityAIBase {
 			pos[2] = host.getStateMinor(ID.M.GuardZ) + 0.5D;
 		}
 		
-		//­Ygy<=0, ªí¥Ü³oentity°±¤î©wÂI¨¾¦u, §ï¸òÀHowner
-		if(pos[1] <= 0) {
-			host.setStateFlag(ID.F.CanFollow, true);
+		//è‹¥gy<=0 or è¢«å‚³é€åˆ°ä¸åŒdim, å‰‡å–æ¶ˆé˜²å®ˆæ¨¡å¼
+		if(pos[1] <= 0 || this.host2.dimension != this.host.getGuardedPos(3)) {
+    		host.setGuardedPos(-1, -1, -1, 0, 0);		//reset guard position
+    		host.setGuardedEntity(null);
+    		host.setStateFlag(ID.F.CanFollow, true);	//set follow
 			this.resetTask();
 			return false;
 		}
@@ -486,7 +501,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
                 this.maxDistSq = fMax * fMax;
 			}
             
-            //­pºâª½½u¶ZÂ÷
+            //è¨ˆç®—ç›´ç·šè·é›¢
         	this.distX = pos[0] - this.host2.posX;
     		this.distY = pos[1] - this.host2.posY;
     		this.distZ = pos[2] - this.host2.posZ;

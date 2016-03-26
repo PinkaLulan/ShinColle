@@ -19,10 +19,10 @@ import net.minecraft.world.ChunkCache;
 import net.minecraft.world.World;
 
 /**SHIP PATH NAVIGATE
- * ship or airplane­­©wpath ai, ¸Óentity¥²¶·¹ê§@IShipNavigator
- * µLµø­«¤O©ÎªÌ¯B¤O§@¥Î§ä¥XªÅ¤¤ or ¤ô¤¤¸ô®|, ­Yentity¦b³°¤W²¾°Ê«h¤£»İ­n§ó·s¦¹navigator
- * update moveªº³¡¥÷¤£±Ä¥Î¦ÛµM¼Y¸¨¸òjump, ¦Ó¬Oª½±µ¥[¤W¤@­ÓmotionY
- * ª`·N¦¹path navigator¨Ï¥Î®É, ¥²¶·§âship floatingÃö³¬¥H§KªıÃªy¶b²¾°Ê
+ * ship or airplaneé™å®špath ai, è©²entityå¿…é ˆå¯¦ä½œIShipNavigator
+ * ç„¡è¦–é‡åŠ›æˆ–è€…æµ®åŠ›ä½œç”¨æ‰¾å‡ºç©ºä¸­ or æ°´ä¸­è·¯å¾‘, è‹¥entityåœ¨é™¸ä¸Šç§»å‹•å‰‡ä¸éœ€è¦æ›´æ–°æ­¤navigator
+ * update moveçš„éƒ¨ä»½ä¸æ¡ç”¨è‡ªç„¶å¢œè½è·Ÿjump, è€Œæ˜¯ç›´æ¥åŠ ä¸Šä¸€å€‹motionY
+ * æ³¨æ„æ­¤path navigatorä½¿ç”¨æ™‚, å¿…é ˆæŠŠship floatingé—œé–‰ä»¥å…é˜»ç¤™yè»¸ç§»å‹•
  */
 public class ShipPathNavigate {
     private EntityLiving theEntity;
@@ -91,8 +91,8 @@ public class ShipPathNavigate {
     
     public ShipPathEntity getShipPathToXYZ(Entity entity, int x, int y, int z, float range, boolean canFly) {
         this.worldObj.theProfiler.startSection("pathfind");
-        //xyz1¬°­ì©l¦ì¸m  xyz2¬°¥ª½d³ò xyz3¬°¥k½d³ò
-        //§Y±Nentity¦ì¸m, ©¹¤»¤è¦VÂX±irange+8®æ, ¦b¦¹½d³ò¤º­pºâ¸ô®|
+        //xyz1ç‚ºåŸå§‹ä½ç½®  xyz2ç‚ºå·¦ç¯„åœ xyz3ç‚ºå³ç¯„åœ
+        //å³å°‡entityä½ç½®, å¾€å…­æ–¹å‘æ“´å¼µrange+8æ ¼, åœ¨æ­¤ç¯„åœå…§è¨ˆç®—è·¯å¾‘
         int x1 = MathHelper.floor_double(entity.posX);
         int y1 = MathHelper.floor_double(entity.posY);
         int z1 = MathHelper.floor_double(entity.posZ);
@@ -119,8 +119,8 @@ public class ShipPathNavigate {
     
     public ShipPathEntity getPathEntityToEntity(Entity entity, Entity targetEntity, float range, boolean canFly) {
         this.worldObj.theProfiler.startSection("pathfind");
-        //xyz1¬°­ì©l¦ì¸m  xyz2¬°¥ª½d³ò xyz3¬°¥k½d³ò
-        //§Y±Nentity¦ì¸m, ©¹¤»¤è¦VÂX±irange+8®æ, ¦b¦¹½d³ò¤º­pºâ¸ô®|
+        //xyz1ç‚ºåŸå§‹ä½ç½®  xyz2ç‚ºå·¦ç¯„åœ xyz3ç‚ºå³ç¯„åœ
+        //å³å°‡entityä½ç½®, å¾€å…­æ–¹å‘æ“´å¼µrange+8æ ¼, åœ¨æ­¤ç¯„åœå…§è¨ˆç®—è·¯å¾‘
         int x1 = MathHelper.floor_double(entity.posX);
         int y1 = MathHelper.floor_double(entity.posY + 1.0D);
         int z1 = MathHelper.floor_double(entity.posZ);
@@ -150,21 +150,21 @@ public class ShipPathNavigate {
      * ents and stores end coords
      */
     public boolean setPath(ShipPathEntity pathEntity, double speed) {
-        //­Y¸ô®|¬°null, ªí¥Ü§ä¤£¨ì¸ô®|
+        //è‹¥è·¯å¾‘ç‚ºnull, è¡¨ç¤ºæ‰¾ä¸åˆ°è·¯å¾‘
     	if(pathEntity == null) {
             this.currentPath = null;
             return false;
         }
         else {
-        	//¤ñ¸û·sÂÂ¸ô®|¬O§_¬Û¦P, ¤£¦P®É±NÂÂ¸ô®|»\±¼
+        	//æ¯”è¼ƒæ–°èˆŠè·¯å¾‘æ˜¯å¦ç›¸åŒ, ä¸åŒæ™‚å°‡èˆŠè·¯å¾‘è“‹æ‰
             if(!pathEntity.isSamePath(this.currentPath)) {
                 this.currentPath = pathEntity;
             }
-            //­Y¸ô®|ªø«×¬°0, ªí¥Ü¨Spath
+            //è‹¥è·¯å¾‘é•·åº¦ç‚º0, è¡¨ç¤ºæ²’path
             if(this.currentPath.getCurrentPathLength() == 0) {
                 return false;
             }
-            else {	//¦¨¥\³]©wpath
+            else {	//æˆåŠŸè¨­å®špath
                 this.speed = speed;
                 Vec3 vec3 = this.getEntityPosition();
                 this.ticksAtLastPos = this.totalTicks;
@@ -188,20 +188,20 @@ public class ShipPathNavigate {
     	//wait 100 ticks, prevent login delay
     	if(theEntity.ticksExisted > 20) {
     		++this.totalTicks;
-            //­Y¦³path
+            //è‹¥æœ‰path
             if(!this.noPath()) {
-                //­YpathFollow¨S§âpath²M°£, ªí¥ÜÁÙ¥i¥HÄ~Äò²¾°Ê
-            	//¨ú±o¤U¤@­Ó¥Ø¼ĞÂI
+                //è‹¥pathFollowæ²’æŠŠpathæ¸…é™¤, è¡¨ç¤ºé‚„å¯ä»¥ç¹¼çºŒç§»å‹•
+            	//å–å¾—ä¸‹ä¸€å€‹ç›®æ¨™é»
                 Vec3 vec3 = this.currentPath.getPosition(this.theEntity);
 //                    LogHelper.info("DEBUG : path navi: path vec "+this.currentPath.getCurrentPathIndex()+" / "+this.currentPath.getCurrentPathLength()+" "+vec3.xCoord+" "+vec3.yCoord+" "+vec3.zCoord);
 //                    LogHelper.info("DEBUG : path navi: path pp  "+currentPath.getPathPointFromIndex(currentPath.getCurrentPathIndex()).xCoord+" "+currentPath.getPathPointFromIndex(currentPath.getCurrentPathIndex()).yCoord+" "+currentPath.getPathPointFromIndex(currentPath.getCurrentPathIndex()).zCoord+" ");
 //                    LogHelper.info("DEBUG : path navi: path pos "+this.theEntity.posX+" "+this.theEntity.posY+" "+this.theEntity.posZ+" ");
-                //­YÁÙ¦³¤U¤@­ÓÂI­n²¾°Ê, «h³]©w²¾°Ê¶q¨Ïmove helper¥i¥H¹ê»Ú²¾°Êentity
+                //è‹¥é‚„æœ‰ä¸‹ä¸€å€‹é»è¦ç§»å‹•, å‰‡è¨­å®šç§»å‹•é‡ä½¿move helperå¯ä»¥å¯¦éš›ç§»å‹•entity
                 if(vec3 != null) {
                     this.theEntity2.getShipMoveHelper().setMoveTo(vec3.xCoord, vec3.yCoord, vec3.zCoord, this.speed);
                 }
                 
-                //­Y¥i¥H°õ¦æ²¾°Ê, «h¶]pathFollow¤èªk§ó·s¤U¤@­Ó¥Ø¼ĞÂI
+                //è‹¥å¯ä»¥åŸ·è¡Œç§»å‹•, å‰‡è·‘pathFollowæ–¹æ³•æ›´æ–°ä¸‹ä¸€å€‹ç›®æ¨™é»
                 if(this.canNavigate()) {
 //                	LogHelper.info("DEBUG : path navi: path follow");
                     this.pathFollow();
@@ -214,14 +214,14 @@ public class ShipPathNavigate {
     	}
     }
 
-    /** §P©wentity¬O§_¥d¦í(¶W¹L100 tick¤´¦b­ì¦a) or entity¬O§_¥i¥H§Û±¶®|¥H¬Ù²¤¤@¨Ç¸ô®|ÂI 
-     *  ¥Hy°ª«×§P©w¬O§_¦³¨ÇÂI¥i¥H¬Ù²¤ (¤£§P©w¤ô¥­¶ZÂ÷)
+    /** åˆ¤å®šentityæ˜¯å¦å¡ä½(è¶…é100 tickä»åœ¨åŸåœ°) or entityæ˜¯å¦å¯ä»¥æŠ„æ·å¾‘ä»¥çœç•¥ä¸€äº›è·¯å¾‘é» 
+     *  ä»¥yé«˜åº¦åˆ¤å®šæ˜¯å¦æœ‰äº›é»å¯ä»¥çœç•¥ (ä¸åˆ¤å®šæ°´å¹³è·é›¢)
      */
     private void pathFollow() {
         Vec3 entityPos = this.getEntityPosition();
         int pptemp = this.currentPath.getCurrentPathLength();
 
-//        //±½´yÁÙ¨S¨«ªº¸ô®|ÂI, §ä¥X¬O§_¦³y°ª«×®t¶Z±µªñ1®æªºÂI
+//        //æƒæé‚„æ²’èµ°çš„è·¯å¾‘é», æ‰¾å‡ºæ˜¯å¦æœ‰yé«˜åº¦å·®è·æ¥è¿‘1æ ¼çš„é»
 //        for(int j = this.currentPath.getCurrentPathIndex(); j < this.currentPath.getCurrentPathLength(); ++j) {
 ////            if(this.currentPath.getPathPointFromIndex(j).yCoord != (int)entityPos.yCoord) {
 //        	float diff = (float) (this.currentPath.getPathPointFromIndex(j).yCoord - entityPos.yCoord);
@@ -237,11 +237,11 @@ public class ShipPathNavigate {
         float widthSq = this.theEntity.width * this.theEntity.width;
         int k;
 
-        //±½´y¥Ø«eªºÂI¨ìy°ª«×¤£¦Por³Ì«áªºÂI, ­Y¶ZÂ÷¤£¨ìentity¤j¤p, «h§P©wentity¤w¸g¨ì¹F¸ÓÂI
+        //æƒæç›®å‰çš„é»åˆ°yé«˜åº¦ä¸åŒoræœ€å¾Œçš„é», è‹¥è·é›¢ä¸åˆ°entityå¤§å°, å‰‡åˆ¤å®šentityå·²ç¶“åˆ°é”è©²é»
         for(k = this.currentPath.getCurrentPathIndex(); k < pptemp; ++k) {
             if(entityPos.squareDistanceTo(this.currentPath.getVectorFromIndex(this.theEntity, k)) < widthSq) {
 //            	LogHelper.info("DEBUG : path navi: get path+1 "+k+" "+entityPos.squareDistanceTo(this.currentPath.getVectorFromIndex(this.theEntity, k)));
-            	this.currentPath.setCurrentPathIndex(++k);	//¤w¨ì¹F¥Ø¼ĞÂI, ³]©w¥Ø¼ĞÂI¬°¤U¤@ÂI
+            	this.currentPath.setCurrentPathIndex(++k);	//å·²åˆ°é”ç›®æ¨™é», è¨­å®šç›®æ¨™é»ç‚ºä¸‹ä¸€é»
             }
         }
 
@@ -249,7 +249,7 @@ public class ShipPathNavigate {
         int heighInt = (int)this.theEntity.height;
         int widthInt = k;
 
-        //±qy°ª«×¤£¦XªºÂI©¹¦^±½´y, §ä¬O§_¦³ÂI¯à±q¥Ø«eÂIª½½u¨«¹L¥h, ¦³ªº¸Ü±N¸ÓÂI³]¬°¥Ø¼ĞÂI¨Ïentity©¹¸ÓÂIª½½u«e¶i
+        //å¾yé«˜åº¦ä¸åˆçš„é»å¾€å›æƒæ, æ‰¾æ˜¯å¦æœ‰é»èƒ½å¾ç›®å‰é»ç›´ç·šèµ°éå», æœ‰çš„è©±å°‡è©²é»è¨­ç‚ºç›®æ¨™é»ä½¿entityå¾€è©²é»ç›´ç·šå‰é€²
         for(int j1 = pptemp - 1; j1 >= this.currentPath.getCurrentPathIndex(); --j1) {
             if(this.isDirectPathBetweenPoints(entityPos, this.currentPath.getVectorFromIndex(this.theEntity, j1), k, heighInt, widthInt)) {
                 this.currentPath.setCurrentPathIndex(j1);
@@ -257,12 +257,12 @@ public class ShipPathNavigate {
             }
         }
 
-        //¨CN ticksÀË¬d¤@¦¸²¾°Ê¶ZÂ÷
+        //æ¯N ticksæª¢æŸ¥ä¸€æ¬¡ç§»å‹•è·é›¢
         if(this.totalTicks - this.ticksAtLastPos > 25) {
-        	//­Y¶ZÂ÷¤W¤@¦¸¦¨¥\²¾°ÊªºÂI¤£¨ì1.5®æ, «hªí¥Ü¬YºØ­ì¦]³y¦¨´X¥G¨S²¾°Ê, ²M°£¸Ópath
+        	//è‹¥è·é›¢ä¸Šä¸€æ¬¡æˆåŠŸç§»å‹•çš„é»ä¸åˆ°1.5æ ¼, å‰‡è¡¨ç¤ºæŸç¨®åŸå› é€ æˆå¹¾ä¹æ²’ç§»å‹•, æ¸…é™¤è©²path
             if(entityPos.squareDistanceTo(this.lastPosCheck) < 2.25D) {
-            	//¥i¯à¥»¨­¦b¬]Äæ¤è¶ô¤¤(°_ÂI´N¦b¬]Äæ¤è¶ô), §P©w­n²¾°Ê¨ì¬]Äæ¹j¾ÀªÅ¦a¤è¶ô, ¦ı¬O­n¬ï¹L¬]Äæ, AIµLªk§PÂ_¤H¦b¬]Äæ­ş¤@°¼
-            	//¼È©w¸Ñªk: ÀH¾÷©¹¸ô®|¤è¦Vªº¥ª¥k²¾°Ê¤@®æ, ¹Á¸Õ²æÂ÷¬]Äæ
+            	//å¯èƒ½æœ¬èº«åœ¨æŸµæ¬„æ–¹å¡Šä¸­(èµ·é»å°±åœ¨æŸµæ¬„æ–¹å¡Š), åˆ¤å®šè¦ç§»å‹•åˆ°æŸµæ¬„éš”å£ç©ºåœ°æ–¹å¡Š, ä½†æ˜¯è¦ç©¿éæŸµæ¬„, AIç„¡æ³•åˆ¤æ–·äººåœ¨æŸµæ¬„å“ªä¸€å´
+            	//æš«å®šè§£æ³•: éš¨æ©Ÿå¾€è·¯å¾‘æ–¹å‘çš„å·¦å³ç§»å‹•ä¸€æ ¼, å˜—è©¦è„«é›¢æŸµæ¬„
             	if(!currentPath.isFinished()) {
             		float dx = (float) (theEntity.posX - currentPath.getVectorFromIndex(this.theEntity, currentPath.getCurrentPathIndex()).xCoord);
                 	float dz = (float) (theEntity.posZ - currentPath.getVectorFromIndex(this.theEntity, currentPath.getCurrentPathIndex()).zCoord);
@@ -271,7 +271,7 @@ public class ShipPathNavigate {
                 	double targetZ = theEntity.posZ;
                 	
                 	//get random position
-                	if(dx > 0.2 || dx < -0.2) {	//­Y¥Ø¼ĞÂIÂ÷x¤è¦V¤@©w¶ZÂ÷, «h¦bz¤è¦VÀH¾÷¿ï+-1
+                	if(dx > 0.2 || dx < -0.2) {	//è‹¥ç›®æ¨™é»é›¢xæ–¹å‘ä¸€å®šè·é›¢, å‰‡åœ¨zæ–¹å‘éš¨æ©Ÿé¸+-1
                 		targetZ = theEntity.getRNG().nextInt(2) == 0 ? targetZ - 1.5D : targetZ + 1.5D;
                 	}
                 	
@@ -283,13 +283,13 @@ public class ShipPathNavigate {
                 	this.theEntity2.getShipMoveHelper().setMoveTo(targetX, theEntity.posY, targetZ, this.speed);
             	}
             	
-            	//¶W¹L5¬íµLªk²¾°Ê, clear path
+            	//è¶…é5ç§’ç„¡æ³•ç§»å‹•, clear path
                 if(this.totalTicks - this.ticksAtLastPos > 100) {
                 	this.clearPathEntity();
                 }
             }
 
-            //§ó·s¦¨¥\²¾°Êªº¬ö¿ı
+            //æ›´æ–°æˆåŠŸç§»å‹•çš„ç´€éŒ„
             this.ticksAtLastPos = this.totalTicks;
             this.lastPosCheck.xCoord = entityPos.xCoord;
             this.lastPosCheck.yCoord = entityPos.yCoord;
@@ -312,7 +312,7 @@ public class ShipPathNavigate {
     }
 
     /** 
-     * ±Nentity¦ì¸m¸ê°T¥Hvec3ªí¥Ü
+     * å°‡entityä½ç½®è³‡è¨Šä»¥vec3è¡¨ç¤º
      */
     private Vec3 getEntityPosition() {
 //        return Vec3.createVectorHelper(this.theEntity.posX, this.getPathableYPos(), this.theEntity.posZ);
@@ -320,18 +320,18 @@ public class ShipPathNavigate {
     }
 
     /**CHANGE:
-     * ­Y¯à­¸, «h¥H¥Ø«ey¬°°_ÂI
-     * ­Y¤£¯à­¸, «h©¹¤U§ä¨ì²Ä¤@­Ó«DªÅ®ğªº¤è¶ô¬°°_ÂI (¤ô­± or ¹êÅé¤è¶ô)
+     * è‹¥èƒ½é£›, å‰‡ä»¥ç›®å‰yç‚ºèµ·é»
+     * è‹¥ä¸èƒ½é£›, å‰‡å¾€ä¸‹æ‰¾åˆ°ç¬¬ä¸€å€‹éç©ºæ°£çš„æ–¹å¡Šç‚ºèµ·é» (æ°´é¢ or å¯¦é«”æ–¹å¡Š)
      * 
      * ORIGIN:
-     * ­Y¯à´åªa, «h§ä¥X²æÂ÷¤ô­±ªº°ª«×y§@¬°path°_ÂI
-     * ­Y¤£¯à´åªa, «h¥H¥Ø«ey§@¬°path°_ÂI
+     * è‹¥èƒ½æ¸¸æ³³, å‰‡æ‰¾å‡ºè„«é›¢æ°´é¢çš„é«˜åº¦yä½œç‚ºpathèµ·é»
+     * è‹¥ä¸èƒ½æ¸¸æ³³, å‰‡ä»¥ç›®å‰yä½œç‚ºpathèµ·é»
      * Gets the safe pathing Y position for the entity depending on if it can path swim or not
      */
     private double getPathableYPos() {
     	if(this.canFly) {
 //    	LogHelper.info("DEBUG : path navi: path y "+(int)(this.theEntity.boundingBox.minY + 0.5D));
-    		//¥i¥H­¸, ª½±µ¥H¥Ø«ey¬°°_ÂI
+    		//å¯ä»¥é£›, ç›´æ¥ä»¥ç›®å‰yç‚ºèµ·é»
 //            return (int)(this.theEntity.boundingBox.minY + 0.5D);
     		return this.theEntity.posY;
         }
@@ -339,7 +339,7 @@ public class ShipPathNavigate {
         	 int i = (int)this.theEntity.boundingBox.minY;
              Block block = this.worldObj.getBlock(MathHelper.floor_double(this.theEntity.posX), i, MathHelper.floor_double(this.theEntity.posZ));
              int j = 0;
-             //©¹¤U§ä¥X²Ä¤@­Ó«Dairªº¤è¶ô
+             //å¾€ä¸‹æ‰¾å‡ºç¬¬ä¸€å€‹éairçš„æ–¹å¡Š
              do {
                  if(block != Blocks.air && block != null) {
                 	 if(BlockHelper.checkBlockIsLiquid(block)) {
@@ -354,13 +354,13 @@ public class ShipPathNavigate {
                  block = this.worldObj.getBlock(MathHelper.floor_double(this.theEntity.posX), i, MathHelper.floor_double(this.theEntity.posZ));
                  ++j;
              }
-             while (j <= 16);	//³Ì¦h©¹¤U§ä16®æ´N°±¤î
-             //§ä¶W¹L16®æ³£¨S©³, «hª½±µ¦^¶Ç¥Ø«ey
+             while (j <= 16);	//æœ€å¤šå¾€ä¸‹æ‰¾16æ ¼å°±åœæ­¢
+             //æ‰¾è¶…é16æ ¼éƒ½æ²’åº•, å‰‡ç›´æ¥å›å‚³ç›®å‰y
              return (int)this.theEntity.boundingBox.minY;
         }
     }
 
-    /**«DÃM­¼¤¤, ¥B¸Óentity¥i¥H­¸ or ¯¸¦b¦a­± or ¦b¥i¬ï³z¤è¶ô¤¤
+    /**éé¨ä¹˜ä¸­, ä¸”è©²entityå¯ä»¥é£› or ç«™åœ¨åœ°é¢ or åœ¨å¯ç©¿é€æ–¹å¡Šä¸­
      */
     private boolean canNavigate() {
         return !theEntity.isRiding() && (this.canFly || this.theEntity.onGround || EntityHelper.checkEntityIsFree(theEntity));
@@ -389,8 +389,8 @@ public class ShipPathNavigate {
         }
     }
 
-    /**entity§Û±¶®|ªº¤èªk, ­Yª½½u¥iµøµLªıÃª, «h·|ª½½u©¹¸ÓÂI²¾°Ê
-     * NEW: ¥[¤Jy¶b§P©w, ¨Ï¨ä¥i¥H§Ûy¶b±¶®|
+    /**entityæŠ„æ·å¾‘çš„æ–¹æ³•, è‹¥ç›´ç·šå¯è¦–ç„¡é˜»ç¤™, å‰‡æœƒç›´ç·šå¾€è©²é»ç§»å‹•
+     * NEW: åŠ å…¥yè»¸åˆ¤å®š, ä½¿å…¶å¯ä»¥æŠ„yè»¸æ·å¾‘
      * Returns true when an entity of specified size could safely walk in a straight line between the two points. Args:
      * pos1, pos2, entityXSize, entityYSize, entityZSize
      */
@@ -404,35 +404,35 @@ public class ShipPathNavigate {
         double xzOffsetSq = xOffset * xOffset + zOffset * zOffset + yOffset * yOffset;
 //        double xzOffsetSq = xOffset * xOffset + zOffset * zOffset;
 
-        if(xzOffsetSq < 1.0E-12D) {	//­Y¶ZÂ÷·¥¤p, «h§P©w¤£¶·¸õÂI (²¾°Ê³Ì¤p³æ¦ì¬O0.01 ¦]¦¹xzSq³Ì¤p¬°E-8)
+        if(xzOffsetSq < 1.0E-12D) {	//è‹¥è·é›¢æ¥µå°, å‰‡åˆ¤å®šä¸é ˆè·³é» (ç§»å‹•æœ€å°å–®ä½æ˜¯0.01 å› æ­¤xzSqæœ€å°ç‚ºE-8)
             return false;
         }
-        else {						//·j´M¥i¸õªºÂI
+        else {						//æœå°‹å¯è·³çš„é»
             double xzOffset = 1.0D / Math.sqrt(xzOffsetSq);
             xOffset *= xzOffset;	//normalize offset
             zOffset *= xzOffset;
             yOffset *= xzOffset;
-            xSize += 2;				//sizeÂX±i2, ¥HÀË¬d©P³ò¤è¶ô
+            xSize += 2;				//sizeæ“´å¼µ2, ä»¥æª¢æŸ¥å‘¨åœæ–¹å¡Š
             zSize += 2;
             ySize += 2;
             
             if(!this.isSafeToStandAt(x1, y1, z1, xSize, ySize, zSize, pos1, xOffset, zOffset)) {
-                return false;		//­Y¸ÓÂI¤£¯à¦w¥ş¯¸¥ß, «hfalse
+                return false;		//è‹¥è©²é»ä¸èƒ½å®‰å…¨ç«™ç«‹, å‰‡false
             }
-            else {					//¸ÓÂI¥i¦w¥ş¯¸¥ß
-            	//ÁY¦^­ìsize
+            else {					//è©²é»å¯å®‰å…¨ç«™ç«‹
+            	//ç¸®å›åŸsize
                 xSize -= 2;
                 zSize -= 2;
                 ySize -= 2; 
-                //offset¨úµ´¹ï­È
+                //offsetå–çµ•å°å€¼
                 double xOffAbs = 1.0D / Math.abs(xOffset);
                 double zOffAbs = 1.0D / Math.abs(zOffset);
                 double yOffAbs = 1.0D / Math.abs(yOffset);  
-                //int®y¼Ğ-double®y¼Ğ, ¨ú±o¦ì²¾theta­È
+                //intåº§æ¨™-doubleåº§æ¨™, å–å¾—ä½ç§»thetaå€¼
                 double x1Theta = x1*1 - pos1.xCoord;
                 double z1Theta = z1*1 - pos1.zCoord;
                 double y1Theta = y1*1 - pos1.yCoord;     
-                //­Yoffset¬°¥¿¦V, «htheta+1ÅÜ¦^¥¿­È
+                //è‹¥offsetç‚ºæ­£å‘, å‰‡theta+1è®Šå›æ­£å€¼
                 if(xOffset >= 0.0D) {
                     ++x1Theta;
                 }
@@ -442,32 +442,32 @@ public class ShipPathNavigate {
                 if(yOffset >= 0.0D) {
                     ++y1Theta;
                 }       
-                //normalize theta­È (normalize¥B¥ş³¡ÅÜ¬°¥¿­È, ¤ñ¸û¤j¤p¥Î)
+                //normalize thetaå€¼ (normalizeä¸”å…¨éƒ¨è®Šç‚ºæ­£å€¼, æ¯”è¼ƒå¤§å°ç”¨)
                 x1Theta /= xOffset;
                 z1Theta /= zOffset;
                 y1Theta /= yOffset;
-                //xz¤è¦V, ¥Î©ó§ì¤è¶ô¦ì¸m
+                //xzæ–¹å‘, ç”¨æ–¼æŠ“æ–¹å¡Šä½ç½®
                 int xDir = xOffset < 0.0D ? -1 : 1;
                 int zDir = zOffset < 0.0D ? -1 : 1;
                 int yDir = yOffset < 0.0D ? -1 : 1;
-                //¨ú±opos2¾ã¼Æ®y¼Ğ
+                //å–å¾—pos2æ•´æ•¸åº§æ¨™
                 int x2 = MathHelper.floor_double(pos2.xCoord);
                 int z2 = MathHelper.floor_double(pos2.zCoord);
                 int y2 = MathHelper.floor_double(pos2.yCoord);
-                //­pºâpos1,2¾ã¼Æ¶ZÂ÷
+                //è¨ˆç®—pos1,2æ•´æ•¸è·é›¢
                 int xIntOffset = x2 - x1;
                 int zIntOffset = z2 - z1;
                 int yIntOffset = y2 - y1;
                 
-                //¥Htheta­È°µ»¼¼W, ÀË¬d¸Ó½u¤W¸g¹L·|¸I¨ìªº©Ò¦³¤è¶ô, ¬O§_³£¯à¦w¥ş¯¸¥ß, ­Y³£³q¹L´ú¸Õ, «h¦^¶Çtrue
+                //ä»¥thetaå€¼åšéå¢, æª¢æŸ¥è©²ç·šä¸Šç¶“éæœƒç¢°åˆ°çš„æ‰€æœ‰æ–¹å¡Š, æ˜¯å¦éƒ½èƒ½å®‰å…¨ç«™ç«‹, è‹¥éƒ½é€šéæ¸¬è©¦, å‰‡å›å‚³true
                 do {
-                	//­Y¤T¤è¦V³£¨S¦³¶ZÂ÷®t, «hµ²§ô
+                	//è‹¥ä¸‰æ–¹å‘éƒ½æ²’æœ‰è·é›¢å·®, å‰‡çµæŸ
                     if(xIntOffset * xDir <= 0 && zIntOffset * zDir <= 0 && yIntOffset * yDir <= 0) {
 //                    if(xIntOffset * xDir <= 0 && zIntOffset * zDir <= 0) {
                         return true;
                     }
                     
-                    //§ä¥Xtheta³Ì¤pªº­È (³Ì¨S¦³³Q±À¶i¹Lªº¤è¦V), ¸Ó¤è¦V+1®æ
+                    //æ‰¾å‡ºthetaæœ€å°çš„å€¼ (æœ€æ²’æœ‰è¢«æ¨é€²éçš„æ–¹å‘), è©²æ–¹å‘+1æ ¼
                     switch(CalcHelper.min(x1Theta, y1Theta, z1Theta)) {
                     case 1:
                     	x1Theta += xOffAbs;
@@ -489,7 +489,7 @@ public class ShipPathNavigate {
                     }
                 }
                 while(this.isSafeToStandAt(x1, y1, z1, xSize, ySize, zSize, pos1, xOffset, zOffset));
-                //µLªk³q¹LÀË¬d, ¦^¶Çfalse
+                //ç„¡æ³•é€šéæª¢æŸ¥, å›å‚³false
                 return false;
             }
         }
@@ -503,25 +503,25 @@ public class ShipPathNavigate {
         int xSize2 = xOffset - xSize / 2;
         int zSize2 = zOffset - zSize / 2;
         
-        //·|­¸ªºentity¤£¶·ÀË¬d¸¨¸}ÂI
+        //æœƒé£›çš„entityä¸é ˆæª¢æŸ¥è½è…³é»
     	if(this.canFly) return true;
         
-        //­Y¸Ó¦ì¸m¦³¤è¶ô¥d¦í, «hfalse
+        //è‹¥è©²ä½ç½®æœ‰æ–¹å¡Šå¡ä½, å‰‡false
         if(!this.isPositionClear(xSize2, yOffset, zSize2, xSize, ySize, zSize, orgPos, vecX, vecZ)) {
             return false;
         }
         else {
-        	//¤£·|­¸ªºentity¥²¶·ÀË¬d¥ş³¡¸¨¸}¤è¶ô
+        	//ä¸æœƒé£›çš„entityå¿…é ˆæª¢æŸ¥å…¨éƒ¨è½è…³æ–¹å¡Š
             for(int x1 = xSize2; x1 < xSize2 + xSize; ++x1) {
                 for(int z1 = zSize2; z1 < zSize2 + zSize; ++z1) {
                     double x2 = x1 + 0.5D - orgPos.xCoord;
                     double z2 = z1 + 0.5D - orgPos.zCoord;
 
-                    //ÀË¬d©³¤U¤è¶ô¬O§_¥i¦w¥ş¯¸¥ß
+                    //æª¢æŸ¥åº•ä¸‹æ–¹å¡Šæ˜¯å¦å¯å®‰å…¨ç«™ç«‹
                     if(x2 * vecX + z2 * vecZ >= 0.0D) {
                         Block block = this.worldObj.getBlock(x1, yOffset - 1, z1);
                         Material material = block.getMaterial();
-                        //­Y¤£¯à­¸, ©³¤U¤S¬Oair, «hfalse
+                        //è‹¥ä¸èƒ½é£›, åº•ä¸‹åˆæ˜¯air, å‰‡false
                         if(block == null || material == Material.air) {
                             return false;
                         }
@@ -547,14 +547,14 @@ public class ShipPathNavigate {
                     if(x2 * vecX + z2 * vecZ >= 0.0D) {
                         Block block = this.worldObj.getBlock(x1, y1, z1);
                         
-                        //­Y¬°¦w¥şÃş¤è¶ô, «hµø¬°clear
+                        //è‹¥ç‚ºå®‰å…¨é¡æ–¹å¡Š, å‰‡è¦–ç‚ºclear
                         if(BlockHelper.checkBlockSafe(block)) return true;
                         
                         if(block == Blocks.fence) {
                         	return false;
                         }
                         
-                        //­Y¸Ó¤è¶ô¬°¨ä¥L¤£¥i³q¹L¤è¶ô, «hµø¬°¦³»ÙÃªª«
+                        //è‹¥è©²æ–¹å¡Šç‚ºå…¶ä»–ä¸å¯é€šéæ–¹å¡Š, å‰‡è¦–ç‚ºæœ‰éšœç¤™ç‰©
                         if(!block.getBlocksMovement(this.worldObj, x1, y1, z1)) {
                         	return false;
                         }

@@ -65,7 +65,7 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip implements IS
 	//setter
 	@Override
 	public void setNumAircraftLight(int par1) {
-		if(this.worldObj.isRemote) {	//clientºİ¨S¦³max­È¥i¥H§P©w, ¦]¦¹ª½±µ³]©w§Y¥i
+		if(this.worldObj.isRemote) {	//clientç«¯æ²’æœ‰maxå€¼å¯ä»¥åˆ¤å®š, å› æ­¤ç›´æ¥è¨­å®šå³å¯
 			StateMinor[ID.M.NumAirLight] = par1;
 		}
 		else {
@@ -77,7 +77,7 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip implements IS
 	
 	@Override
 	public void setNumAircraftHeavy(int par1) {
-		if(this.worldObj.isRemote) {	//clientºİ¨S¦³max­È¥i¥H§P©w, ¦]¦¹ª½±µ³]©w§Y¥i
+		if(this.worldObj.isRemote) {	//clientç«¯æ²’æœ‰maxå€¼å¯ä»¥åˆ¤å®š, å› æ­¤ç›´æ¥è¨­å®šå³å¯
 			StateMinor[ID.M.NumAirHeavy] = par1;
 		}
 		else {
@@ -93,11 +93,11 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip implements IS
 		
 		//server side
 		if(!this.worldObj.isRemote) {
-			//¨C¤@¬q®É¶¡¦^´_¤@°¦Ä¥¸ü¾÷
+			//æ¯ä¸€æ®µæ™‚é–“å›å¾©ä¸€éš»è‰¦è¼‰æ©Ÿ
 			delayAircraft--;
 			if(this.delayAircraft <= 0) {
 				delayAircraft = (int)(1000 / (this.getStateFinal(ID.SPD)));	
-				if(delayAircraft > 1000) delayAircraft = 1000;	//fix: spdÁÙ¨S³]§¹­È´N°£ ·|¾É­PdelayÅÜ¶W¤j (°£¥H0)
+				if(delayAircraft > 1000) delayAircraft = 1000;	//fix: spdé‚„æ²’è¨­å®Œå€¼å°±é™¤ æœƒå°è‡´delayè®Šè¶…å¤§ (é™¤ä»¥0)
 				
 				delayAircraft += 200;
 				
@@ -108,7 +108,7 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip implements IS
 		}
 	}
 	
-	//¼W¥[Ä¥¸ü¾÷¼Æ¶q­pºâ
+	//å¢åŠ è‰¦è¼‰æ©Ÿæ•¸é‡è¨ˆç®—
 	@Override
 	public void calcShipAttributes() {
 		super.calcShipAttributes();
@@ -158,7 +158,7 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip implements IS
   		//grudge--
   		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAir]);
         
-        //µo®gªÌ·ÏÃú¯S®Ä (µo®g­¸¾÷¤£¨Ï¥Î¯S®Ä, ¦ı¬O­nµo°e«Ê¥]¨Ó³]©wattackTime)
+        //ç™¼å°„è€…ç…™éœ§ç‰¹æ•ˆ (ç™¼å°„é£›æ©Ÿä¸ä½¿ç”¨ç‰¹æ•ˆ, ä½†æ˜¯è¦ç™¼é€å°åŒ…ä¾†è¨­å®šattackTime)
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
         
@@ -207,7 +207,7 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip implements IS
         	return false;
         }
         
-        //µo®gªÌ·ÏÃú¯S®Ä (µo®g­¸¾÷¤£¨Ï¥Î¯S®Ä, ¦ı¬O­nµo°e«Ê¥]¨Ó³]©wattackTime)
+        //ç™¼å°„è€…ç…™éœ§ç‰¹æ•ˆ (ç™¼å°„é£›æ©Ÿä¸ä½¿ç”¨ç‰¹æ•ˆ, ä½†æ˜¯è¦ç™¼é€å°åŒ…ä¾†è¨­å®šattackTime)
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
         

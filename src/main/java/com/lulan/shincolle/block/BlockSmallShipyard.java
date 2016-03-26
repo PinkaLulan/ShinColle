@@ -21,32 +21,32 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockSmallShipyard extends BasicBlockContainer {
 
-	private static final double[] smoke1 = new double[] {0.72, 1.1, 0.55};	//¥D·Ï§w ²É¤l¦ì¸m
-	private static final double[] smoke2 = new double[] {0.22, 0.8, 0.7};	//¤¤·Ï§w ²É¤l¦ì¸m
-	private static final double[] smoke3 = new double[] {0.47, 0.6, 0.25};	//¤p·Ï§w ²É¤l¦ì¸m
+	private static final double[] smoke1 = new double[] {0.72, 1.1, 0.55};	//ä¸»ç…™å›ª ç²’å­ä½ç½®
+	private static final double[] smoke2 = new double[] {0.22, 0.8, 0.7};	//ä¸­ç…™å›ª ç²’å­ä½ç½®
+	private static final double[] smoke3 = new double[] {0.47, 0.6, 0.25};	//å°ç…™å›ª ç²’å­ä½ç½®
 	
 	
 	public BlockSmallShipyard() {
-		super(); //¤£«ü©w«¬ºA ¹w³]§Y¬°rock
+		super(); //ä¸æŒ‡å®šå‹æ…‹ é è¨­å³ç‚ºrock
 		this.setBlockName("BlockSmallShipyard");
 		this.setHardness(10F);
 	    this.setHarvestLevel("pickaxe", 3);
 	    this.setLightLevel(4);
 	}
 	
-	//«D¼Ğ·Ç¤è§Î¤è¶ô  ­n¶Ç-1ªí¥Ü¥Î¦Û¤vªºrender
+	//éæ¨™æº–æ–¹å½¢æ–¹å¡Š  è¦å‚³-1è¡¨ç¤ºç”¨è‡ªå·±çš„render
 	@Override
 	public int getRenderType() {
 		return -1;	//-1 = non standard render
 	}
 	
-	//«D¼Ğ·Ç¤è§Î¤è¶ô  ³]¬°false
+	//éæ¨™æº–æ–¹å½¢æ–¹å¡Š  è¨­ç‚ºfalse
 	@Override
 	public boolean isOpaqueCube() {
 		return false;
 	}
 	
-	//«D¼Ğ·Ç¤è§Î¤è¶ô  ³]¬°false
+	//éæ¨™æº–æ–¹å½¢æ–¹å¡Š  è¨­ç‚ºfalse
 	@Override
 	public boolean renderAsNormalBlock() {
 		return false;
@@ -57,59 +57,59 @@ public class BlockSmallShipyard extends BasicBlockContainer {
 		return new TileEntitySmallShipyard();
 	}
 	
-	//¥´±¼¤è¶ô«á, ±¼¸¨¨ä¤º®eª«
+	//æ‰“æ‰æ–¹å¡Šå¾Œ, æ‰è½å…¶å…§å®¹ç‰©
 	@Override
 	public void breakBlock(World world, int x, int y, int z, Block block, int meta) {
 		TileEntitySmallShipyard tileentity = (TileEntitySmallShipyard)world.getTileEntity(x, y, z);
 	
-		//§ì¨ìtile entity«á, ±½´y¥ş³¡slot¤º®eª«, µM«á°µ¦¨entity±¼¸¨¥X¨Ó
+		//æŠ“åˆ°tile entityå¾Œ, æƒæå…¨éƒ¨slotå…§å®¹ç‰©, ç„¶å¾Œåšæˆentityæ‰è½å‡ºä¾†
 		if(tileentity != null) {
 			for(int i = 0; i < tileentity.getSizeInventory(); i++) {  //check all slots
 				ItemStack itemstack = tileentity.getStackInSlot(i);
 	
 				if(itemstack != null) {
-					float f = world.rand.nextFloat() * 0.8F + 0.1F;  //³]©w­nÀH¾÷¼Q¥Xªºrange
+					float f = world.rand.nextFloat() * 0.8F + 0.1F;  //è¨­å®šè¦éš¨æ©Ÿå™´å‡ºçš„range
 					float f1 = world.rand.nextFloat() * 0.8F + 0.1F;
 					float f2 = world.rand.nextFloat() * 0.8F + 0.1F;
 	
 					while(itemstack.stackSize > 0) {
 						int j = world.rand.nextInt(21) + 10;
-						//¦pªGª««~¶W¹L¤@­ÓÀH¾÷¼Æ¶q, ·|¤À§ó¦hÅ|¼Q¥X
+						//å¦‚æœç‰©å“è¶…éä¸€å€‹éš¨æ©Ÿæ•¸é‡, æœƒåˆ†æ›´å¤šç–Šå™´å‡º
 						if(j > itemstack.stackSize) {  
 							j = itemstack.stackSize;
 						}
 	
 						itemstack.stackSize -= j;
-						//±Nitem°µ¦¨entity, ¥Í¦¨¨ì¥@¬É¤W
+						//å°‡itemåšæˆentity, ç”Ÿæˆåˆ°ä¸–ç•Œä¸Š
 						EntityItem item = new EntityItem(world, x + f, y + f1, z + f2, new ItemStack(itemstack.getItem(), j, itemstack.getItemDamage()));
-						//¦pªG¦³NBT tag, ¤]­n½Æ»s¨ìª««~¤W
+						//å¦‚æœæœ‰NBT tag, ä¹Ÿè¦è¤‡è£½åˆ°ç‰©å“ä¸Š
 						if(itemstack.hasTagCompound()) {
 							item.getEntityItem().setTagCompound((NBTTagCompound)itemstack.getTagCompound().copy());
 						}
 	
-					world.spawnEntityInWorld(item);	//¥Í¦¨entity
+					world.spawnEntityInWorld(item);	//ç”Ÿæˆentity
 					}
 				}
 			}	
 			world.func_147453_f(x, y, z, block);	//alert block changed
 		}
 
-		//©I¥s­ì¥ıªºbreakBlock, ·|§âtile entity²¾°£±¼
+		//å‘¼å«åŸå…ˆçš„breakBlock, æœƒæŠŠtile entityç§»é™¤æ‰
 		super.breakBlock(world, x, y, z, block, meta);
 	}
 	
-	/**¥kÁäÂI¨ì¤è¶ô®É©I¥s¦¹¤èªk
-	 * °Ñ¼Æ: world,¤è¶ôx,y,z,ª±®a,ª±®a­±¦V,ª±®aÂI¨ìªºx,y,z
+	/**å³éµé»åˆ°æ–¹å¡Šæ™‚å‘¼å«æ­¤æ–¹æ³•
+	 * åƒæ•¸: world,æ–¹å¡Šx,y,z,ç©å®¶,ç©å®¶é¢å‘,ç©å®¶é»åˆ°çš„x,y,z
 	 */	
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ) {
-		if (world.isRemote) {	//clientºİ¥u»İ­n¦¬¨ìtrue
+		if (world.isRemote) {	//clientç«¯åªéœ€è¦æ”¶åˆ°true
     		return true;
     	}
-		else if (!player.isSneaking()) {  //serverºİ»İ­n³B²zª±®a°Ê§@, ¦pshiftµ¥
+		else if (!player.isSneaking()) {  //serverç«¯éœ€è¦è™•ç†ç©å®¶å‹•ä½œ, å¦‚shiftç­‰
     		TileEntitySmallShipyard entity = (TileEntitySmallShipyard) world.getTileEntity(x, y, z);
     		
-    		if (entity != null) {	//¶}±Ò¤è¶ôGUI °Ñ¼Æ:ª±®a,mod instance,gui ID,world,®y¼Ğxyz
+    		if (entity != null) {	//é–‹å•Ÿæ–¹å¡ŠGUI åƒæ•¸:ç©å®¶,mod instance,gui ID,world,åº§æ¨™xyz
     			FMLNetworkHandler.openGui(player, ShinColle.instance, ID.G.SMALLSHIPYARD, world, x, y, z);
     		}
     		return true;
@@ -125,7 +125,7 @@ public class BlockSmallShipyard extends BasicBlockContainer {
 	public void randomDisplayTick(World world, int x, int y, int z, Random rand) {
 		int meta = world.getBlockMetadata(x, y, z);
 		
-		//¨ú±o±ÛÂà«áªº·s¦ì¸m
+		//å–å¾—æ—‹è½‰å¾Œçš„æ–°ä½ç½®
 		double[] smokeR1 = new double[3];
 		double[] smokeR2 = new double[3];
 		double[] smokeR3 = new double[3];
@@ -137,30 +137,30 @@ public class BlockSmallShipyard extends BasicBlockContainer {
 		//if active -> spawn smoke
 		if(meta>3) {	//meta=4~7 = active
 			//world.setBlockMetadataWithNotify(x, y, z, 0, 2);	//send meta update packet
-			switch(rand.nextInt(3)) {	//¨Ï¤T®Ú·Ï§w¤À¶}«_·Ï
+			switch(rand.nextInt(3)) {	//ä½¿ä¸‰æ ¹ç…™å›ªåˆ†é–‹å†’ç…™
 			case 0:
-				//¥D·Ï§w¯S®Ä
+				//ä¸»ç…™å›ªç‰¹æ•ˆ
 				world.spawnParticle("smoke", x+smokeR1[0], y+smokeR1[1], z+smokeR1[2], 0.0D, 0D, 0.0D);
 				world.spawnParticle("smoke", x+smokeR1[0], y+smokeR1[1]+0.1D, z+smokeR1[2], 0.0D, 0.005D, 0.0D);
 				world.spawnParticle("smoke", x+smokeR1[0], y+smokeR1[1]+0.2D, z+smokeR1[2], 0.0D, 0.01D, 0.0D);
-				//¤p·Ï§w¯S®Ä
+				//å°ç…™å›ªç‰¹æ•ˆ
 				world.spawnParticle("smoke", x+smokeR3[0], y+smokeR3[1], z+smokeR3[2], 0.0D, 0D, 0.0D);
 				world.spawnParticle("smoke", x+smokeR3[0], y+smokeR3[1]+0.1D, z+smokeR3[2], 0.0D, 0.01D, 0.0D);
 				break;
 			case 1:
-				//¥D·Ï§w¯S®Ä
+				//ä¸»ç…™å›ªç‰¹æ•ˆ
 				world.spawnParticle("smoke", x+smokeR1[0], y+smokeR1[1], z+smokeR1[2], 0.0D, 0D, 0.0D);
 				world.spawnParticle("smoke", x+smokeR1[0], y+smokeR1[1]+0.1D, z+smokeR1[2], 0.0D, 0.005D, 0.0D);
 				world.spawnParticle("smoke", x+smokeR1[0], y+smokeR1[1]+0.2D, z+smokeR1[2], 0.0D, 0.01D, 0.0D);
-				//¤¤·Ï§w¯S®Ä
+				//ä¸­ç…™å›ªç‰¹æ•ˆ
 				world.spawnParticle("smoke", x+smokeR2[0], y+smokeR2[1], z+smokeR2[2], 0.0D, 0D, 0.0D);
 				world.spawnParticle("smoke", x+smokeR2[0], y+smokeR2[1]+0.1D, z+smokeR2[2], 0.0D, 0.01D, 0.0D);
 				break;
 			case 2:
-				//¤¤·Ï§w¯S®Ä
+				//ä¸­ç…™å›ªç‰¹æ•ˆ
 				world.spawnParticle("smoke", x+smokeR2[0], y+smokeR2[1], z+smokeR2[2], 0.0D, 0D, 0.0D);
 				world.spawnParticle("smoke", x+smokeR2[0], y+smokeR2[1]+0.1D, z+smokeR2[2], 0.0D, 0.01D, 0.0D);
-				//¤p·Ï§w¯S®Ä
+				//å°ç…™å›ªç‰¹æ•ˆ
 				world.spawnParticle("smoke", x+smokeR3[0], y+smokeR3[1], z+smokeR3[2], 0.0D, 0D, 0.0D);
 				world.spawnParticle("smoke", x+smokeR3[0], y+smokeR3[1]+0.1D, z+smokeR3[2], 0.0D, 0.01D, 0.0D);
 				break;
@@ -170,18 +170,18 @@ public class BlockSmallShipyard extends BasicBlockContainer {
 		}//end if
 	}
 
-	//±Ntile entity¸ê®Æ¼g¨ìblock metadata¤¤
+	//å°‡tile entityè³‡æ–™å¯«åˆ°block metadataä¸­
 	public static void updateBlockState(boolean isBuilding, World world, int x, int y, int z) {
 		int meta = world.getBlockMetadata(x, y, z);
 		TileEntity entity = world.getTileEntity(x, y, z);
 
-		if (isBuilding) {	//±Ò°Ê¤¤, ±Nmeta³]¬°4~7
-			if(meta < 4) {	//ÀË¬d¤@¤Umeta < 4 ¤~»İ­n§ó·smeta
+		if (isBuilding) {	//å•Ÿå‹•ä¸­, å°‡metaè¨­ç‚º4~7
+			if(meta < 4) {	//æª¢æŸ¥ä¸€ä¸‹meta < 4 æ‰éœ€è¦æ›´æ–°meta
 				world.setBlockMetadataWithNotify(x, y, z, meta+4, 2);
 			}
 		}
-		else {				//±Ò°Ê¤¤, ±Nmeta³]¬°0~3
-			if(meta > 3) {	//ÀË¬d¤@¤Umeta > 3 ¤~»İ­n§ó·smeta
+		else {				//å•Ÿå‹•ä¸­, å°‡metaè¨­ç‚º0~3
+			if(meta > 3) {	//æª¢æŸ¥ä¸€ä¸‹meta > 3 æ‰éœ€è¦æ›´æ–°meta
 				world.setBlockMetadataWithNotify(x, y, z, meta-4, 2);
 			}
 		}

@@ -18,7 +18,7 @@ import net.minecraft.util.ResourceLocation;
 @SideOnly(Side.CLIENT)
 public class RenderLargeShipyard extends Render {
 
-	//¶K¹ÏÀÉ¸ô®|
+	//è²¼åœ–æª”è·¯å¾‘
 	private static final ResourceLocation TEXTURE = new ResourceLocation(Reference.TEXTURES_BLOCKS+"BlockLargeShipyard.png");
 
 	private ModelBase model;
@@ -37,7 +37,7 @@ public class RenderLargeShipyard extends Render {
 		return ConfigHandler.staticMode;
 	}
 	
-	//¶Ç¤Jentityªº³£Âà¦¨abyssmissile
+	//å‚³å…¥entityçš„éƒ½è½‰æˆabyssmissile
     @Override
 	public void doRender(Entity entity, double offsetX, double offsetY, double offsetZ, float p_76986_8_, float p_76986_9_) {
         this.doRender((BasicRenderEntity)entity, offsetX, offsetY, offsetZ, p_76986_8_, p_76986_9_);

@@ -29,33 +29,33 @@ public class WorldGenPolyGravel extends WorldGenerator {
 	public boolean generate(World world, Random rand, int x, int y, int z) {
     	boolean notFrozen = true;
     	
-    	//¸I¨ìfrozen ocean, ·|§ì¨ì®ü­±ªº¦B¶ô, ¥²¶·©¹¤U§ä®ü©³
+    	//ç¢°åˆ°frozen ocean, æœƒæŠ“åˆ°æµ·é¢çš„å†°å¡Š, å¿…é ˆå¾€ä¸‹æ‰¾æµ·åº•
     	if(world.getBlock(x, y - 1, z).getMaterial() == Material.ice &&
     	   world.getBlock(x, y - 2, z).getMaterial() == Material.water) {
     		Block getblock = null;
     		int newy = 1;
     		
-    		//±q¥Ø«ey©¹¤U¨â®æ¶}©l§ä®ü©³
+    		//å¾ç›®å‰yå¾€ä¸‹å…©æ ¼é–‹å§‹æ‰¾æµ·åº•
     		for(newy = y - 3; newy > 3; newy--) {
     			getblock = world.getBlock(x, newy, z);
-    			//§ä¨ì«D¤ô¤è¶ô, ¬°®ü©³
+    			//æ‰¾åˆ°éæ°´æ–¹å¡Š, ç‚ºæµ·åº•
     			if(getblock.getMaterial() != Material.water) {
-    				y = newy;	//«ü©w·s°ª«×
+    				y = newy;	//æŒ‡å®šæ–°é«˜åº¦
     				notFrozen = false;
     				break;
     			}
     		}
     	}
     	
-    	//­Yy°ª«×¤è¶ô¤£¬O¤ô(ªí¥Ü«D®ü©³), ©Î°ª«×¶W¹L55, «h¤£¥Í¦¨
+    	//è‹¥yé«˜åº¦æ–¹å¡Šä¸æ˜¯æ°´(è¡¨ç¤ºéæµ·åº•), æˆ–é«˜åº¦è¶…é55, å‰‡ä¸ç”Ÿæˆ
         if(notFrozen && (world.getBlock(x, y, z).getMaterial() != Material.water || y > 55)) {
             return false;
         }
         else {
-            int l = rand.nextInt(this.numberOfBlocks - 1) + 1;	//¥Í¦¨¼Æ¶q
-            byte b0 = 1;										//¥Í¦¨«p«×1ªºpolymetal
+            int l = rand.nextInt(this.numberOfBlocks - 1) + 1;	//ç”Ÿæˆæ•¸é‡
+            byte b0 = 1;										//ç”Ÿæˆåšåº¦1çš„polymetal
 
-            //¥Hx,z¬°¤¤¤ß, ¥b®|©µ¦ùlªø«×
+            //ä»¥x,zç‚ºä¸­å¿ƒ, åŠå¾‘å»¶ä¼¸lé•·åº¦
             for(int i1 = x - l; i1 <= x + l; ++i1) {
                 for(int j1 = z - l; j1 <= z + l; ++j1) {
                     int k1 = i1 - x;
@@ -63,10 +63,10 @@ public class WorldGenPolyGravel extends WorldGenerator {
 
                     //check radius of cluster <= num
                     if(k1 * k1 + l1 * l1 <= l * l) {
-                    	//¦by°ª«×+-lªº½d³ò¤º¥Í¦¨
+                    	//åœ¨yé«˜åº¦+-lçš„ç¯„åœå…§ç”Ÿæˆ
                         for(int i2 = y - b0; i2 <= y + b0; ++i2) {
                             Block block = world.getBlock(i1, i2, j1);
-                            //­Y¸Ó¤è¶ô¬°¤g/¨F/Ät¥Û/¥ÛÀY, «h¨ú¥N¬°polymetal gravel
+                            //è‹¥è©²æ–¹å¡Šç‚ºåœŸ/æ²™/ç¤«çŸ³/çŸ³é ­, å‰‡å–ä»£ç‚ºpolymetal gravel
                             if((ConfigHandler.polyGravelBaseBlock[0] && block == Blocks.stone) ||
                                (ConfigHandler.polyGravelBaseBlock[1] && block == Blocks.gravel) ||
                                (ConfigHandler.polyGravelBaseBlock[2] && block == Blocks.sand) ||

@@ -6,17 +6,17 @@ import com.lulan.shincolle.reference.Reference;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 
-//«Ø¥ßmodªºcreative tab
+//å»ºç«‹modçš„creative tab
 public class CreativeTabSC {
 		
 	public static final CreativeTabs SC_TAB = new CreativeTabs(Reference.MOD_ID) {
-		//tabªºicon
+		//tabçš„icon
 		@Override
 		public Item getTabIconItem() {
-			return ModItems.Grudge;	//¥Î¨ä¤¤¤@­Óª««~ªºicon·í§@creative tabªºicon
+			return ModItems.Grudge;	//ç”¨å…¶ä¸­ä¸€å€‹ç‰©å“çš„iconç•¶ä½œcreative tabçš„icon
 		}	
-		//tabÅã¥Üªº¦WºÙ·|¦Û°Ê§ä»y¨tÀÉªº¦r¦ê¶ñ¤J  ¤£¥²¨Ï¥ÎgetTranslatedTabLabel
-		//¥u­n¦b»y¨tÀÉ¤¤¥[¤J  itemGroup.MOD¦WºÙ=­nÅã¥Üªºtab¦WºÙ  §Y¥i
+		//tabé¡¯ç¤ºçš„åç¨±æœƒè‡ªå‹•æ‰¾èªç³»æª”çš„å­—ä¸²å¡«å…¥  ä¸å¿…ä½¿ç”¨getTranslatedTabLabel
+		//åªè¦åœ¨èªç³»æª”ä¸­åŠ å…¥  itemGroup.MODåç¨±=è¦é¡¯ç¤ºçš„tabåç¨±  å³å¯
 	};
 
 	

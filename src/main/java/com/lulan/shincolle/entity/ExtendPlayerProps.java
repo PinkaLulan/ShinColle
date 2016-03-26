@@ -310,12 +310,26 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 	}
 	
 	/** get ships for pointer by pointer's mode: 0:single, 1:group, 2:formation */
-	public BasicEntityShip[] getShipEntityByMode(int mode) {	//meta¬°pointerªºitem damage
+	public BasicEntityShip[] getShipEntityByMode(int mode) {	//metaç‚ºpointerçš„item damage
 		BasicEntityShip[] ships = new BasicEntityShip[6];
+		boolean shouldSync = false;
+		
+		//check same owner here again, some ship may have changed owner
+		for(int k = 0; k < 6; k++) {
+			if(this.teamList[teamId][k] != null &&
+			   !EntityHelper.checkSameOwner(this.teamList[teamId][k], player)) {
+				addShipEntityToCurrentTeam(k, null);  //clear ship
+				shouldSync = true;
+			}
+		}
+		
+		if(shouldSync) {
+			sendSyncPacket(0);
+		}
 		
 		switch(mode) {
 		default:	//single mode
-			//return²Ä¤@­Ó§ä¨ìªº¤w¿ï¾Üªºship
+			//returnç¬¬ä¸€å€‹æ‰¾åˆ°çš„å·²é¸æ“‡çš„ship
 			for(int i = 0; i < 6; i++) {
 				if(this.getSelectStateCurrentTeam(i)) {
 					ships[0] = this.teamList[teamId][i];
@@ -324,7 +338,7 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 			}
 			break;
 		case 1:		//group mode
-			//return©Ò¦³¤w¿ï¾Üªºship
+			//returnæ‰€æœ‰å·²é¸æ“‡çš„ship
 			int j = 0;
 			for(int i = 0; i < 6; i++) {
 				if(this.getSelectStateCurrentTeam(i)) {
@@ -334,7 +348,7 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 			}
 			break;
 		case 2:		//formation mode
-			//return¾ã­Óteam
+			//returnæ•´å€‹team
 			return this.teamList[teamId];
 		}
 		
@@ -816,36 +830,36 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		}
 	}
 	
-	/**±Nship¥[¤J¶¤¥î¦W³æ
-	 * ­Yentity != null, ªí¥Ü­n¥[¤J¦W³æ -> §ä¥Ø«e«DnullÄæ¦ì¤ñ¹ï¬O§_¦Pid -> ¦Pidªí¥Üremove¸Óentity
-	 *                                                        -> ¤£¦Pidªí¥Ü¥i·s¼Wentity
-	 * ­Yentity = null, ªí¥Ü²MªÅ¸Óslot
+	/**å°‡shipåŠ å…¥éšŠä¼åå–®
+	 * è‹¥entity != null, è¡¨ç¤ºè¦åŠ å…¥åå–® -> æ‰¾ç›®å‰énullæ¬„ä½æ¯”å°æ˜¯å¦åŒid -> åŒidè¡¨ç¤ºremoveè©²entity
+	 *                                                        -> ä¸åŒidè¡¨ç¤ºå¯æ–°å¢entity
+	 * è‹¥entity = null, è¡¨ç¤ºæ¸…ç©ºè©²slot
 	 * 
-	 * ­YuseTeamID = true, ªí¥Ü¤£¦Ò¼{¬O§_­«½Æ¤§Ãşªº, ±j¨î´¡¤J¨ìslotªº¦ì¸m
+	 * è‹¥useTeamID = true, è¡¨ç¤ºä¸è€ƒæ…®æ˜¯å¦é‡è¤‡ä¹‹é¡çš„, å¼·åˆ¶æ’å…¥åˆ°slotçš„ä½ç½®
 	 */
 	public void addShipEntity(int slot, BasicEntityShip entity, boolean forceAdd) {
 		boolean canAdd = false;
 		
-		//client ¦¬¨ìsync packets
+		//client æ”¶åˆ°sync packets
 		if(forceAdd) {
 			if(slot > 5) slot = 0;
 			addShipEntityToCurrentTeam(slot, entity);
 			return;
 		}
 		else {
-			//entity¤£¬°null¤~§äÄæ¦ì¦s
+			//entityä¸ç‚ºnullæ‰æ‰¾æ¬„ä½å­˜
 			if(entity != null) {
 //				//debug: show team
 //				for(int k = 0; k < 6; k++) {
 //					LogHelper.info("DEBUG : team list (before add) "+this.saveId+" "+k+" "+this.teamList[k]);
 //				}
 				
-				//­Yentity«D¦Û¤v©ÒÄİ, «h¤£¯àadd team
+				//è‹¥entityéè‡ªå·±æ‰€å±¬, å‰‡ä¸èƒ½add team
 				if(player != null && !EntityHelper.checkSameOwner(player, entity)) {
 					return;
 				}
 				
-				//§ä¦³µL­«½Æship, ¦³ªº¸Ü«h²M°£¸Óship, id«ü¨ì¸Óslot
+				//æ‰¾æœ‰ç„¡é‡è¤‡ship, æœ‰çš„è©±å‰‡æ¸…é™¤è©²ship, idæŒ‡åˆ°è©²slot
 				int inTeam = this.checkIsInCurrentTeam(entity.getShipUID());
 				if(inTeam >= 0) {
 					addShipEntityToCurrentTeam(inTeam, null);
@@ -854,7 +868,7 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 					return;
 				}
 				
-				//­YµL­«½Æentity, «h¬DnullªÅ¦ì¦s, id«ü¥Ü¬°¤U¤@­Óslot
+				//è‹¥ç„¡é‡è¤‡entity, å‰‡æŒ‘nullç©ºä½å­˜, idæŒ‡ç¤ºç‚ºä¸‹ä¸€å€‹slot
 				for(int i = 0; i < 6; i++) {
 					if(this.teamList[teamId][i] == null) {
 						this.setSelectStateCurrentTeam(i, false);
@@ -865,10 +879,10 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 					}
 				}
 				
-				//³£¨SªÅ¦ì, «h¬Did«üªº¦ì¸m¦s
+				//éƒ½æ²’ç©ºä½, å‰‡æŒ‘idæŒ‡çš„ä½ç½®å­˜
 				this.setSelectStateCurrentTeam(this.saveId, false);
 				addShipEntityToCurrentTeam(saveId, entity);
-				//id++, ¥B¦b0~5¤§¶¡ÅÜ°Ê
+				//id++, ä¸”åœ¨0~5ä¹‹é–“è®Šå‹•
 				saveId++;
 				if(saveId > 5) saveId = 0;
 				return;

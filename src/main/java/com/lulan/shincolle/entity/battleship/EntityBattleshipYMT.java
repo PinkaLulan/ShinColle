@@ -23,15 +23,15 @@ import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
-/**¯S®íheavy attack:
- * ¥ÎStateEmotion[ID.S.Phase]¨ÓÀx¦s§ğÀ»¶¥¬q
- * Phase 1:¶°®ğ 2:Ãz®ğ 3:¶°®ğ 
+/**ç‰¹æ®Šheavy attack:
+ * ç”¨StateEmotion[ID.S.Phase]ä¾†å„²å­˜æ”»æ“Šéšæ®µ
+ * Phase 1:é›†æ°£ 2:çˆ†æ°£ 3:é›†æ°£ 
  */
 public class EntityBattleshipYMT extends BasicEntityShipSmall {
 	
 	public EntityBattleshipYMT(World world) {
 		super(world);
-		this.setSize(0.6F, 1.8F);	//¸I¼²¤j¤p ¸ò¼Ò«¬¤j¤pµLÃö
+		this.setSize(0.6F, 1.8F);	//ç¢°æ’å¤§å° è·Ÿæ¨¡å‹å¤§å°ç„¡é—œ
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.BattleshipYamato);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
@@ -75,13 +75,12 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall {
   		//client side
   		if(worldObj.isRemote) {
   			if(this.ticksExisted % 4 == 0) {
-  				if(getStateEmotion(ID.S.State) >= ID.State.EQUIP00 && !this.isSitting()) {
+  				if(getStateEmotion(ID.S.State) >= ID.State.EQUIP01 && !this.isSitting()) {
   					double smokeY = posY + 1.75D;
-  					if(this.isSitting()) smokeY = posY + 0.5D;
   					
-  					//­pºâ·ÏÃú¦ì¸m
+  					//è¨ˆç®—ç…™éœ§ä½ç½®
   	  				float[] partPos = ParticleHelper.rotateXZByAxis(-0.55F, 0F, (this.renderYawOffset % 360) * Values.N.RAD_MUL, 1F);
-  	  				//¥Í¦¨¸Ë³Æ«_·Ï¯S®Ä
+  	  				//ç”Ÿæˆè£å‚™å†’ç…™ç‰¹æ•ˆ
   	  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], smokeY, posZ+partPos[0], 0D, 0D, 0D, (byte)20);
   				}
   			}
@@ -111,16 +110,14 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall {
 		return false;
   	}
   	
-  	//­×§ï·ÏÃú¯S®Ä
+  	//ä¿®æ”¹ç…™éœ§ç‰¹æ•ˆ
   	@Override
   	public boolean attackEntityWithAmmo(Entity target) {
   		//get attack value
 		float atk = CalcHelper.calcDamageByEquipEffect(this, target, StateFinal[ID.ATK], 0);
-		//set knockback value (testing)
-		float kbValue = 0.05F;
 		
 		//update entity look at vector (for particle spawn)
-        //¦¹¤èªk¤ñgetLookÁÙ¥¿½T (client sync°İÃD)
+        //æ­¤æ–¹æ³•æ¯”getLooké‚„æ­£ç¢º (client syncå•é¡Œ)
         float distX = (float) (target.posX - this.posX);
         float distY = (float) (target.posY - this.posY);
         float distZ = (float) (target.posZ - this.posZ);
@@ -129,7 +126,7 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall {
         distY = distY / distSqrt;
         distZ = distZ / distSqrt;
       
-        //µo®gªÌ·ÏÃú¯S®Ä
+        //ç™¼å°„è€…ç…™éœ§ç‰¹æ•ˆ
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
         CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 5, 1D, 1D, 1.5D), point);
 
@@ -200,20 +197,12 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall {
     		}
   		}
   		
-	    //±Natk¸òattacker¶Çµ¹¥Ø¼ĞªºattackEntityFrom¤èªk, ¦b¥Ø¼Ğclass¤¤­pºâ¶Ë®`
-	    //¨Ã¥B¦^¶Ç¬O§_¦¨¥\¶Ë®`¨ì¥Ø¼Ğ
+	    //å°‡atkè·Ÿattackerå‚³çµ¦ç›®æ¨™çš„attackEntityFromæ–¹æ³•, åœ¨ç›®æ¨™classä¸­è¨ˆç®—å‚·å®³
+	    //ä¸¦ä¸”å›å‚³æ˜¯å¦æˆåŠŸå‚·å®³åˆ°ç›®æ¨™
 	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this).setProjectile(), atk);
 
 	    //if attack success
 	    if(isTargetHurt) {
-	    	//calc kb effect
-	        if(kbValue > 0) {
-	            target.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
-	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
-	            motionX *= 0.6D;
-	            motionZ *= 0.6D;
-	        }
-	        
         	//display hit particle on target
 	        TargetPoint point1 = new TargetPoint(this.dimension, target.posX, target.posY, target.posZ, 64D);
 			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 9, false), point1);
@@ -233,7 +222,7 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall {
   		//get attack value
 		float atk = CalcHelper.calcDamageByEquipEffect(this, target, StateFinal[ID.ATK_H], 3);
 		
-		//­pºâ¥Ø¼Ğ¶ZÂ÷
+		//è¨ˆç®—ç›®æ¨™è·é›¢
 		float tarX = (float)target.posX;	//for miss chance calc
 		float tarY = (float)(target.posY + target.height * 0.5F);
 		float tarZ = (float)target.posZ;

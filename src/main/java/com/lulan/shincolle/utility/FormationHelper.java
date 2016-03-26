@@ -150,31 +150,31 @@ public class FormationHelper {
 	
 	/** calc formation guard position
 	 * 
-	 *  «e¸m±ø¥ó:
-	 *  ship¥²¶·³]©w¦bStatesMinor³]©wformatPos / formatType
-	 *  ¦¹¤èªk®Ú¾Útype¸òpos³]©w²¾°Ê¦ì¸m
+	 *  å‰ç½®æ¢ä»¶:
+	 *  shipå¿…é ˆè¨­å®šåœ¨StatesMinorè¨­å®šformatPos / formatType
+	 *  æ­¤æ–¹æ³•æ ¹æ“štypeè·Ÿposè¨­å®šç§»å‹•ä½ç½®
 	 *  
-	 *  0. °}«¬ID
-	 *     1: ³æÁa°}, LineAhead
-	 *     2: ½ÆÁa°}, Double Line
-	 *     3: ½ü§Î°}, Diamond
-	 *     4: ±è§Î°}, Echelon
-	 *     5: ³æ¾î°}, Line Abreast
+	 *  0. é™£å‹ID
+	 *     1: å–®ç¸±é™£, LineAhead
+	 *     2: è¤‡ç¸±é™£, Double Line
+	 *     3: è¼ªå½¢é™£, Diamond
+	 *     4: æ¢¯å½¢é™£, Echelon
+	 *     5: å–®æ©«é™£, Line Abreast
 	 * 
-	 *  1. °}«¬¤è¦V
-	 *     ¥H1 or 2¸¹¦ì·í¶¤ªø, ­pºâ¶¤ªø­ì¥»¦ì¸m¸ò¥Ø¼Ğ¦ì¸mªºx,z®y¼Ğ®t
-	 *     x,z®y¼Ğ®t¸û¤jªº¨º­Ó§@¬°°}«¬ªº«e«á¤è¦V, ex: ­Yx¸û¤j, «h¶¤¥î«e«á¤è¦V¥Hx¶b¬°·Ç
+	 *  1. é™£å‹æ–¹å‘
+	 *     ä»¥1 or 2è™Ÿä½ç•¶éšŠé•·, è¨ˆç®—éšŠé•·åŸæœ¬ä½ç½®è·Ÿç›®æ¨™ä½ç½®çš„x,zåº§æ¨™å·®
+	 *     x,zåº§æ¨™å·®è¼ƒå¤§çš„é‚£å€‹ä½œç‚ºé™£å‹çš„å‰å¾Œæ–¹å‘, ex: è‹¥xè¼ƒå¤§, å‰‡éšŠä¼å‰å¾Œæ–¹å‘ä»¥xè»¸ç‚ºæº–
 	 *  
-	 *  2. °}«¬¦ì¸m: 1 or 2¬°ºXÄ¥
+	 *  2. é™£å‹ä½ç½®: 1 or 2ç‚ºæ——è‰¦
 	 *  
-	 *     a. ³æÁa°}         1      b. ½ÆÁa°}                                c. ½ü«¬°}(6²î)       (5²î, ²î¦ì¥H·j´M¨ì¶¶§Ç¬°·Ç)
+	 *     a. å–®ç¸±é™£         1      b. è¤‡ç¸±é™£                                c. è¼ªå‹é™£(6èˆ¹)       (5èˆ¹, èˆ¹ä½ä»¥æœå°‹åˆ°é †åºç‚ºæº–)
 	 *                2               3  4              2             2
 	 *                3               1  2          3   6   4     3       4
 	 *                4               5  6              1             1
 	 *                5                                 5             5
 	 *                6
 	 *                
-	 *     d. ±è§Î°}               1    e. ³æ¾î°}
+	 *     d. æ¢¯å½¢é™£               1    e. å–®æ©«é™£
  	 *                 2
  	 *               3            5 3 1 2 4 6
  	 *             4 
@@ -202,12 +202,12 @@ public class FormationHelper {
 			/** calc position
 			 *  
 			 *  1. line ahead:
-			 *     applyLineAheadPos¶Ç¤J¥Ø«e°}«¬¦ì¸m, ¦^¶Ç¤U¤@²î¦ì¸m, ¤£»İ­nformatPos
-			 *     ¥u®Ú¾Ú¶Ç¤J¦ì¸m¦Û°Ê¦V°}«¬¤è¦V©µ¦ù3®æ
+			 *     applyLineAheadPoså‚³å…¥ç›®å‰é™£å‹ä½ç½®, å›å‚³ä¸‹ä¸€èˆ¹ä½ç½®, ä¸éœ€è¦formatPos
+			 *     åªæ ¹æ“šå‚³å…¥ä½ç½®è‡ªå‹•å‘é™£å‹æ–¹å‘å»¶ä¼¸3æ ¼
 			 *     
 			 *  2. other:
-			 *     ¶Ç¤Jflag ship¦ì¸m¸òformatPos, µL¦^¶Ç­È
-			 *     ®Ú¾Úflag ship¦ì¸m¸òformatPos­pºâ¦U²î¦ì¸m
+			 *     å‚³å…¥flag shipä½ç½®è·ŸformatPos, ç„¡å›å‚³å€¼
+			 *     æ ¹æ“šflag shipä½ç½®è·ŸformatPosè¨ˆç®—å„èˆ¹ä½ç½®
 			 *     
 			 */
 			int[] newPos = new int[] {x, y, z};
@@ -241,7 +241,7 @@ public class FormationHelper {
 	
 	/** apply formation position type 1
 	 * 
-	 *  ¾A¥Î©óª½½u©µ¦ù°}«¬: line ahead / echelon
+	 *  é©ç”¨æ–¼ç›´ç·šå»¶ä¼¸é™£å‹: line ahead / echelon
 	 *  
 	 *  input:  prev target pos
 	 *  exec:   apply ship guard
@@ -276,7 +276,7 @@ public class FormationHelper {
 	
 	/** apply formation position type 2
 	 *  
-	 *  ¾A¥Î©ó«Dª½½u©µ¦ù°}«¬: double line / diamond / line abreast
+	 *  é©ç”¨æ–¼éç›´ç·šå»¶ä¼¸é™£å‹: double line / diamond / line abreast
 	 * 
 	 *  input: flag ship pos
 	 *  exec:  apply ship guard
@@ -317,7 +317,7 @@ public class FormationHelper {
 	}
 	
 	/** calc next LINE AHEAD pos
-	 *  ³æÁa°}         0
+	 *  å–®ç¸±é™£         0
 	 *          1
 	 *          2
 	 *          3
@@ -349,7 +349,7 @@ public class FormationHelper {
 	}
 	
 	/** calc next DOUBLE LINE pos
-	 *  ½ÆÁa°}      2  3
+	 *  è¤‡ç¸±é™£      2  3
 	 *         0  1
 	 *         4  5
 	 */
@@ -452,7 +452,7 @@ public class FormationHelper {
 	}
 	
 	/** calc next DIAMOND pos
-	 *  ½ü«¬°}              1
+	 *  è¼ªå‹é™£              1
 	 *         2  5  3
 	 *            0
 	 *            4
@@ -566,7 +566,7 @@ public class FormationHelper {
 	}
 	
 	/** calc next ECHELON pos
-	 *  ±è§Î°}                       0
+	 *  æ¢¯å½¢é™£                       0
 	 *              1
 	 *            2
 	 *          3
@@ -590,7 +590,7 @@ public class FormationHelper {
 	}
 	
 	/** calc next LINE ABREAST pos
-	 *  ³æ¾î°}
+	 *  å–®æ©«é™£
 	 *  
 	 *  4  2  0  1  3  5
 	 *  

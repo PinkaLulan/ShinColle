@@ -287,7 +287,7 @@ public class Values {
 	 *       2:aircraft-R, engine, armor, radar
 	 *       3:aircraft-T/F/B
 	 *       
-	 * note: ·s¼W¸Ë³Æ­n°O±o¦bLargeRecipe·s¼W¦^¦¬»ù®æ
+	 * note: æ–°å¢è£å‚™è¦è¨˜å¾—åœ¨LargeRecipeæ–°å¢å›æ”¶åƒ¹æ ¼
 	 */
 	public static final Map<Integer, float[]> EquipMap = Collections.unmodifiableMap(new HashMap<Integer, float[]>() {{
 		//single cannon                                                                             Typ HP   LA   HA   LAA  HAA  DEF SPD   MOV     RNG   CRI    DHit   THit   Miss   AA   ASM  Rare Type/Mean                    Dodge

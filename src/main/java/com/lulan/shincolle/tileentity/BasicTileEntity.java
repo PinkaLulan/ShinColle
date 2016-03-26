@@ -32,7 +32,7 @@ abstract public class BasicTileEntity extends TileEntity implements ISidedInvent
         return customName != null && customName.length() > 0;
     }
     
-    //½T»{¬O§_¦³¦Û­q¦WºÙ(¨Ï¥Îname tag¨ú¦W¹Lªº¸Ü)
+    //ç¢ºèªæ˜¯å¦æœ‰è‡ªè¨‚åç¨±(ä½¿ç”¨name tagå–åéçš„è©±)
   	@Override
   	public boolean hasCustomInventoryName() {
   		return this.customName != null && this.customName.length() > 0;
@@ -55,26 +55,26 @@ abstract public class BasicTileEntity extends TileEntity implements ISidedInvent
   	//get fule slot max number
   	abstract public int getFuelSlotMax();
   	
-    //²¾°£slot i¤¤, ¼Æ¶qj­Óª««~, ¦^¶Ç¬°itemstack, ¥ª¥kÁäµ¥°Ê§@¦s¨úslot®É·|©I¥s¦¹¤èªk
-  	//(«Dshift°Ê§@) shift°Ê§@¦bcontainer¤¤ªºtransferStackInSlot¤¤¹ê§@
+    //ç§»é™¤slot iä¸­, æ•¸é‡jå€‹ç‰©å“, å›å‚³ç‚ºitemstack, å·¦å³éµç­‰å‹•ä½œå­˜å–slotæ™‚æœƒå‘¼å«æ­¤æ–¹æ³•
+  	//(éshiftå‹•ä½œ) shiftå‹•ä½œåœ¨containerä¸­çš„transferStackInSlotä¸­å¯¦ä½œ
   	@Override
   	public ItemStack decrStackSize(int i, int j) {
   		ItemStack itemStack = getStackInSlot(i);
           if (itemStack != null) {
-              if (itemStack.stackSize <= j) {			  //­Y¼Æ¶q<=j­Ó
-                  setInventorySlotContents(i, null);	  //«h¸Óslot²MªÅ
+              if (itemStack.stackSize <= j) {			  //è‹¥æ•¸é‡<=jå€‹
+                  setInventorySlotContents(i, null);	  //å‰‡è©²slotæ¸…ç©º
               }
-              else {									  //­Y¼Æ¶q >j­Ó
-                  itemStack = itemStack.splitStack(j);  //¸Óitemstack¼Æ¶q-j
+              else {									  //è‹¥æ•¸é‡ >jå€‹
+                  itemStack = itemStack.splitStack(j);  //è©²itemstackæ•¸é‡-j
                   if (itemStack.stackSize == 0) {
-                      setInventorySlotContents(i, null);//¥ş³¡®³¥ú, slot²MªÅ
+                      setInventorySlotContents(i, null);//å…¨éƒ¨æ‹¿å…‰, slotæ¸…ç©º
                   }
               }
           }
           return itemStack;
   	}
   	
-    //Ãö³¬gui®É¬O§_¨ú¥Xslot¤¤ªºª««~, ¥H«KÅıª««~±¼¸¨¥X¨Ó, ¥Î©ó¦X¦¨¥xµ¥¤è¶ô (¦¹¤è¶ô¨S¦³¥Î¨ì)
+    //é—œé–‰guiæ™‚æ˜¯å¦å–å‡ºslotä¸­çš„ç‰©å“, ä»¥ä¾¿è®“ç‰©å“æ‰è½å‡ºä¾†, ç”¨æ–¼åˆæˆå°ç­‰æ–¹å¡Š (æ­¤æ–¹å¡Šæ²’æœ‰ç”¨åˆ°)
   	@Override
   	public ItemStack getStackInSlotOnClosing(int i) {
 //  		ItemStack itemStack = getStackInSlot(i);
@@ -85,32 +85,32 @@ abstract public class BasicTileEntity extends TileEntity implements ISidedInvent
   		return null;
   	}
   	
-    //±Nslot³]¦¨¥Ø¼Ğitemstack(¤]¥i¥H³]¦¨null) ¥Î©ódecrStackSizeµ¥¤èªk
+    //å°‡slotè¨­æˆç›®æ¨™itemstack(ä¹Ÿå¯ä»¥è¨­æˆnull) ç”¨æ–¼decrStackSizeç­‰æ–¹æ³•
   	@Override
   	public void setInventorySlotContents(int i, ItemStack itemstack) {
   		slots[i] = itemstack;
-  		//­Y¤â¤Wª««~¶W¹L¸Ó®æ¤l­­¨î¼Æ¶q, «h¥u¯à©ñ¶i­­¨î¼Æ¶q
+  		//è‹¥æ‰‹ä¸Šç‰©å“è¶…éè©²æ ¼å­é™åˆ¶æ•¸é‡, å‰‡åªèƒ½æ”¾é€²é™åˆ¶æ•¸é‡
   		if (itemstack != null && itemstack.stackSize > getInventoryStackLimit()) {
   			itemstack.stackSize = getInventoryStackLimit();
   		}	
   	}
   	
-    //¨C®æ¥i©ñªº³Ì¤j¼Æ¶q¤W­­
+    //æ¯æ ¼å¯æ”¾çš„æœ€å¤§æ•¸é‡ä¸Šé™
   	@Override
   	public int getInventoryStackLimit() {
   		return 64;
   	}
   	
-    //¦¹¨â¤èªk¤£¯à¸òcontainer¨Ã¥Î
+    //æ­¤å…©æ–¹æ³•ä¸èƒ½è·Ÿcontainerä¸¦ç”¨
   	@Override
 	public void openInventory() {}
   	@Override
 	public void closeInventory() {}
   	
-    //¨Ï¥ÎºŞ½u/º|¤æ¿é¤J®É©I¥s, ¤£¾A¥Î©ó¤â°Ê¸m¤J
+    //ä½¿ç”¨ç®¡ç·š/æ¼æ–—è¼¸å…¥æ™‚å‘¼å«, ä¸é©ç”¨æ–¼æ‰‹å‹•ç½®å…¥
   	@Override
   	public boolean canInsertItem(int slot, ItemStack itemstack, int side) {
-  		return this.isItemValidForSlot(slot, itemstack);  //¤£ºŞside ¬Ò¥Î¦¹§P©w
+  		return this.isItemValidForSlot(slot, itemstack);  //ä¸ç®¡side çš†ç”¨æ­¤åˆ¤å®š
   	}
 
 	@Override

@@ -35,18 +35,18 @@ public class EntityMountAfH extends BasicEntityMountLarge {
         this.StartEmotion2 = 0;
         this.headTilt = false;
            
-        //³]©w¦ì¸m
+        //è¨­å®šä½ç½®
         this.posX = host.posX;
         this.posY = host.posY;
         this.posZ = host.posZ;
         this.setPosition(this.posX, this.posY, this.posZ);
  
-	    //³]©w°ò¥»Äİ©Ê
+	    //è¨­å®šåŸºæœ¬å±¬æ€§
         setupAttrs();
         
 		if(this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
 				
-		//³]©wAI
+		//è¨­å®šAI
 		this.setAIList();
 	}
     
@@ -68,7 +68,7 @@ public class EntityMountAfH extends BasicEntityMountLarge {
 		//client side
 		if(this.worldObj.isRemote) {
 			if(this.ticksExisted % 8 == 0) {
-				//¼L¤Ú«_¬õ·Ï¯S®Ä
+				//å˜´å·´å†’ç´…ç…™ç‰¹æ•ˆ
 				float[] partPos1 = ParticleHelper.rotateXZByAxis(0F, -1.0F, this.renderYawOffset / 57.2958F, 1F);
 				float[] partPos2 = ParticleHelper.rotateXZByAxis(0F, -1.8F, this.renderYawOffset / 57.2958F, 1F);
 				ParticleHelper.spawnAttackParticleAt(this.posX + partPos1[1], this.posY + 0.9F, this.posZ + partPos1[0], 

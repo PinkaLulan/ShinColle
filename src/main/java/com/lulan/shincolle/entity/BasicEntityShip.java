@@ -61,8 +61,8 @@ import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
  */
 public abstract class BasicEntityShip extends EntityTameable implements IShipCannonAttack, IShipGuardian, IShipFloating {
 
-	protected ExtendShipProps ExtProps;			//entityÃB¥~NBT¬ö¿ı
-	protected ShipPathNavigate shipNavigator;	//¤ôªÅ²¾°Ê¥Înavigator
+	protected ExtendShipProps ExtProps;			//entityé¡å¤–NBTç´€éŒ„
+	protected ShipPathNavigate shipNavigator;	//æ°´ç©ºç§»å‹•ç”¨navigator
 	protected ShipMoveHelper shipMoveHelper;
 	protected Entity guardedEntity;				//guarding target
 	protected Entity atkTarget;					//attack target
@@ -70,7 +70,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	protected int revengeTime;					//revenge target time
 	
 	//for AI calc
-	protected double ShipDepth;			//¤ô²`, ¥Î©ó¤ô¤¤°ª«×§P©w
+	protected double ShipDepth;			//æ°´æ·±, ç”¨æ–¼æ°´ä¸­é«˜åº¦åˆ¤å®š
 	protected double ShipPrevX;			//ship posX 5 sec ago
 	protected double ShipPrevY;			//ship posY 5 sec ago
 	protected double ShipPrevZ;			//ship posZ 5 sec ago
@@ -112,9 +112,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	protected boolean[] UpdateFlag;
 	
 	//for model render
-	protected int StartEmotion;			//ªí±¡1¶}©l®É¶¡
-	protected int StartEmotion2;		//ªí±¡2¶}©l®É¶¡
-	protected float[] rotateAngle;		//¼Ò«¬±ÛÂà¨¤«×, ¥Î©ó¤â«ùª««~render
+	protected int StartEmotion;			//è¡¨æƒ…1é–‹å§‹æ™‚é–“
+	protected int StartEmotion2;		//è¡¨æƒ…2é–‹å§‹æ™‚é–“
+	protected float[] rotateAngle;		//æ¨¡å‹æ—‹è½‰è§’åº¦, ç”¨æ–¼æ‰‹æŒç‰©å“render
 	protected int StartSoundHurt;		//hurt sound ticks
 	
 	//for GUI display, no use
@@ -128,8 +128,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	
 	public BasicEntityShip(World world) {
 		super(world);
-		this.ignoreFrustumCheck = true;  //§Y¨Ï¤£¦bµø½u¤º¤@¼Ërender
-		this.maxHurtResistantTime = 2;   //¨ü¶ËµL¼Ä®É¶¡­°¬°2 ticks
+		this.ignoreFrustumCheck = true;  //å³ä½¿ä¸åœ¨è¦–ç·šå…§ä¸€æ¨£render
+		this.maxHurtResistantTime = 2;   //å—å‚·ç„¡æ•µæ™‚é–“é™ç‚º2 ticks
 		this.StartSoundHurt = 0;
 		
 		//init value
@@ -211,7 +211,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         return false;
     }
 	
-	//¥­±`­µ®Ä
+	//å¹³å¸¸éŸ³æ•ˆ
 	@Override
 	protected String getLivingSound() {
 		if(this.getStateFlag(ID.F.IsMarried)) {
@@ -227,7 +227,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		}
     }
 	
-	//¨ü¶Ë­µ®Ä
+	//å—å‚·éŸ³æ•ˆ
     @Override
 	protected String getHurtSound() {
     	if(this.StartSoundHurt <= 0) {
@@ -237,13 +237,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     	return null;
     }
 
-    //¦º¤`­µ®Ä
+    //æ­»äº¡éŸ³æ•ˆ
     @Override
 	protected String getDeathSound() {
     	return Reference.MOD_ID+":ship-death";
     }
 
-    //­µ®Ä¤j¤p
+    //éŸ³æ•ˆå¤§å°
     @Override
 	protected float getSoundVolume() {
         return ConfigHandler.shipVolume;
@@ -711,7 +711,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		 */
 		getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(StateFinal[ID.HP]);
 		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(StateFinal[ID.MOV]);
-		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(StateFinal[ID.HIT]+32); //¦¹¬°§ä¥Ø¼Ğ, ¸ô®|ªº½d³ò
+		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(StateFinal[ID.HIT]+32); //æ­¤ç‚ºæ‰¾ç›®æ¨™, è·¯å¾‘çš„ç¯„åœ
 		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(resisKB);
 //		this.jumpMovementFactor = (1F + StateFinal[ID.MOV]) * 0.05F;
 		
@@ -849,13 +849,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	public void setStateFlag(int id, boolean par1) {
 		this.StateFlag[id] = par1;
 		
-		//­Y­×§ïmelee flag, «hreload AI
+		//è‹¥ä¿®æ”¹melee flag, å‰‡reload AI
 		if(!this.worldObj.isRemote) { 
 			if(id == ID.F.UseMelee) {
 				clearAITasks();
 	    		setAIList();
 	    		
-	    		//³]©wmountªºAI
+	    		//è¨­å®šmountçš„AI
 				if(this.ridingEntity instanceof BasicEntityMount) {
 					((BasicEntityMount) this.ridingEntity).clearAITasks();
 					((BasicEntityMount) this.ridingEntity).setAIList();
@@ -966,7 +966,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		if(!this.worldObj.isRemote) {
 			if(this.getPlayerUID() > 0) {
 				EntityPlayerMP player = (EntityPlayerMP) EntityHelper.getEntityPlayerByUID(this.getPlayerUID(), this.worldObj);
-				//owner¦bªşªñ¤~»İ­nsync
+				//owneråœ¨é™„è¿‘æ‰éœ€è¦sync
 				if(player != null && this.getDistanceToEntity(player) < 32F) {
 					CommonProxy.channelG.sendTo(new S2CGUIPackets(this), player);
 				}
@@ -998,7 +998,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 					player = (EntityPlayerMP) EntityHelper.getEntityPlayerByUID(this.getPlayerUID(), this.worldObj);
 				}
 				
-				//owner¦bªşªñ¤~»İ­nsync
+				//owneråœ¨é™„è¿‘æ‰éœ€è¦sync
 				if(player != null && this.getDistanceToEntity(player) <= 64F) {
 					CommonProxy.channelE.sendTo(new S2CEntitySync(this, type), player);
 				}
@@ -1021,7 +1021,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		if(itemstack != null) {
 			//use name tag, owner only
 			if(itemstack.getItem() == Items.name_tag && EntityHelper.checkSameOwner(player, this)) {
-	            //­Y¸Óname tag¦³¨ú¦W¹L, «h±N¦W¦r¶K¨ìentity¤W
+	            //è‹¥è©²name tagæœ‰å–åé, å‰‡å°‡åå­—è²¼åˆ°entityä¸Š
 				if(itemstack.hasDisplayName()) {
 					this.setNameTag(itemstack.getDisplayName());
 					return false;
@@ -1030,7 +1030,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			
 			//use repair bucket
 			if(itemstack.getItem() == ModItems.BucketRepair) {
-				//hp¤£¨ìmax hp®É¥i¥H¨Ï¥Îbucket
+				//hpä¸åˆ°max hpæ™‚å¯ä»¥ä½¿ç”¨bucket
 				if(this.getHealth() < this.getMaxHealth()) {
 					if(!player.capabilities.isCreativeMode) {  //item-1 in non-creative mode
 						--itemstack.stackSize;
@@ -1061,7 +1061,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				}
 				//server
 				else {
-					//³Ğ³y¼Ò¦¡¤£®ø¯Óª««~
+					//å‰µé€ æ¨¡å¼ä¸æ¶ˆè€—ç‰©å“
 	                if(!player.capabilities.isCreativeMode) {  //damage +1 in non-creative mode
 	 	                itemstack.setItemDamage(itemstack.getItemDamage() + 1);
 	                    
@@ -1123,27 +1123,27 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	            				ItemStack invitem = ExtProps.slots[i];
 
 	            				if(invitem != null) {
-	            					//³]©w­nÀH¾÷¼Q¥Xªºrange
+	            					//è¨­å®šè¦éš¨æ©Ÿå™´å‡ºçš„range
 	            					float f = rand.nextFloat() * 0.8F + 0.1F;
 	            					float f1 = rand.nextFloat() * 0.8F + 0.1F;
 	            					float f2 = rand.nextFloat() * 0.8F + 0.1F;
 
 	            					while(invitem.stackSize > 0) {
 	            						int j = rand.nextInt(21) + 10;
-	            						//¦pªGª««~¶W¹L¤@­ÓÀH¾÷¼Æ¶q, ·|¤À§ó¦hÅ|¼Q¥X
+	            						//å¦‚æœç‰©å“è¶…éä¸€å€‹éš¨æ©Ÿæ•¸é‡, æœƒåˆ†æ›´å¤šç–Šå™´å‡º
 	            						if(j > invitem.stackSize) {  
 	            							j = invitem.stackSize;
 	            						}
 
 	            						invitem.stackSize -= j;
-	            						//±Nitem°µ¦¨entity, ¥Í¦¨¨ì¥@¬É¤W
+	            						//å°‡itemåšæˆentity, ç”Ÿæˆåˆ°ä¸–ç•Œä¸Š
 	            						EntityItem item = new EntityItem(this.worldObj, this.posX+f, this.posY+f1, this.posZ+f2, new ItemStack(invitem.getItem(), j, invitem.getItemDamage()));
-	            						//¦pªG¦³NBT tag, ¤]­n½Æ»s¨ìª««~¤W
+	            						//å¦‚æœæœ‰NBT tag, ä¹Ÿè¦è¤‡è£½åˆ°ç‰©å“ä¸Š
 	            						if(invitem.hasTagCompound()) {
 	            							item.getEntityItem().setTagCompound((NBTTagCompound)invitem.getTagCompound().copy());
 	            						}
 	            						
-	            						worldObj.spawnEntityInWorld(item);	//¥Í¦¨item entity
+	            						worldObj.spawnEntityInWorld(item);	//ç”Ÿæˆitem entity
 	            					}
 	            				}
 	            			}
@@ -1153,8 +1153,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	                    playSound(Reference.MOD_ID+":ship-death", ConfigHandler.shipVolume, 1.0F);
 	                }
 	                
-	                //ª««~¥Î§¹®É­n³]©w¬°null²MªÅ¸Óslot
-	                if(itemstack.getItemDamage() >= itemstack.getMaxDamage()) {  //ª««~­@¤[«×¥Î§¹®É­n³]©w¬°null²MªÅ¸Óslot
+	                //ç‰©å“ç”¨å®Œæ™‚è¦è¨­å®šç‚ºnullæ¸…ç©ºè©²slot
+	                if(itemstack.getItemDamage() >= itemstack.getMaxDamage()) {  //ç‰©å“è€ä¹…åº¦ç”¨å®Œæ™‚è¦è¨­å®šç‚ºnullæ¸…ç©ºè©²slot
 	                	player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
 	                }
 	                 
@@ -1195,7 +1195,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     	        
     	        this.calcEquipAndUpdateState();
     	        
-                if(itemstack.stackSize <= 0) {  //ª««~¥Î§¹®É­n³]©w¬°null²MªÅ¸Óslot
+                if(itemstack.stackSize <= 0) {  //ç‰©å“ç”¨å®Œæ™‚è¦è¨­å®šç‚ºnullæ¸…ç©ºè©²slot
                 	player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
                 }
                 
@@ -1208,7 +1208,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 					if(!player.capabilities.isCreativeMode) {
 	                    --itemstack.stackSize;
 	                    
-	                    if(itemstack.stackSize <= 0) {  //ª««~¥Î§¹®É­n³]©w¬°null²MªÅ¸Óslot
+	                    if(itemstack.stackSize <= 0) {  //ç‰©å“ç”¨å®Œæ™‚è¦è¨­å®šç‚ºnullæ¸…ç©ºè©²slot
 	                    	player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
 	                    }
 	                }
@@ -1289,13 +1289,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			
 		}//end item != null
 		
-		//¦pªG¤w¸g³Q¸i¸j, ¦AÂI¤@¤U¥i¥H¸Ñ°£¸i¸j
+		//å¦‚æœå·²ç¶“è¢«ç¶‘ç¶, å†é»ä¸€ä¸‹å¯ä»¥è§£é™¤ç¶‘ç¶
 		if(this.getLeashed() && this.getLeashedToEntity() == player) {
             this.clearLeashed(true, !player.capabilities.isCreativeMode);
             return true;
         }
 	
-		//shift+right click®É¥´¶}GUI
+		//shift+right clickæ™‚æ‰“é–‹GUI
 		if(player.isSneaking() && EntityHelper.checkSameOwner(this, player)) {
 			FMLNetworkHandler.openGui(player, ShinColle.instance, ID.G.SHIPINVENTORY, this.worldObj, this.getEntityId(), 0, 0);
     		return true;
@@ -1338,30 +1338,30 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		return false;
 	}
 
-	/**­×§ï²¾°Ê¤èªk, ¨Ï¨äwater¸òlava¤¤²¾°Ê®É¹³¬Oflying entity
+	/**ä¿®æ”¹ç§»å‹•æ–¹æ³•, ä½¿å…¶waterè·Ÿlavaä¸­ç§»å‹•æ™‚åƒæ˜¯flying entity
      * Moves the entity based on the specified heading.  Args: strafe, forward
      */
 	@Override
     public void moveEntityWithHeading(float movX, float movZ) {
         double d0;
 
-        if(EntityHelper.checkEntityIsInLiquid(this)) { //§P©w¬°²GÅé¤¤®É, ¤£·|¦Û°Ê¤U¨I
+        if(EntityHelper.checkEntityIsInLiquid(this)) { //åˆ¤å®šç‚ºæ¶²é«”ä¸­æ™‚, ä¸æœƒè‡ªå‹•ä¸‹æ²‰
             d0 = this.posY;
-            this.moveFlying(movX, movZ, this.getStateFinal(ID.MOV)*0.4F); //¤ô¤¤ªº³t«×­pºâ(§tº}²¾®ÄªG)
+            this.moveFlying(movX, movZ, this.getStateFinal(ID.MOV)*0.4F); //æ°´ä¸­çš„é€Ÿåº¦è¨ˆç®—(å«æ¼‚ç§»æ•ˆæœ)
             this.moveEntity(this.motionX, this.motionY, this.motionZ);
-            //¤ô¤¤ªı¤O
+            //æ°´ä¸­é˜»åŠ›
             this.motionX *= 0.8D;
             this.motionY *= 0.8D;
             this.motionZ *= 0.8D;
-            //¤ô¤¤¼²¨ìªF¦è·|¤W¤É
+            //æ°´ä¸­æ’åˆ°æ±è¥¿æœƒä¸Šå‡
             if (this.isCollidedHorizontally && this.isOffsetPositionInLiquid(this.motionX, this.motionY + 0.6D - this.posY + d0, this.motionZ)) {
                 this.motionY = 0.3D;
             }
         }
-        else {									//¨ä¥L²¾°Êª¬ºA
+        else {									//å…¶ä»–ç§»å‹•ç‹€æ…‹
             float f2 = 0.91F;
             
-            if(this.onGround) {					//¦b¦a­±²¾°Ê
+            if(this.onGround) {					//åœ¨åœ°é¢ç§»å‹•
                 f2 = this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.boundingBox.minY) - 1, MathHelper.floor_double(this.posZ)).slipperiness * 0.91F;
             }
 
@@ -1371,7 +1371,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
             if(this.onGround) {
                 f4 = this.getAIMoveSpeed() * f3;
             }
-            else {								//¸õÅD¤¤
+            else {								//è·³èºä¸­
                 f4 = this.jumpMovementFactor;
             }
             this.moveFlying(movX, movZ, f4);
@@ -1381,9 +1381,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                 f2 = this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.boundingBox.minY) - 1, MathHelper.floor_double(this.posZ)).slipperiness * 0.91F;
             }
 
-            if(this.isOnLadder()) {				//ª¦¼Ó±è¤¤
+            if(this.isOnLadder()) {				//çˆ¬æ¨“æ¢¯ä¸­
                 float f5 = 0.15F;
-                //­­¨îª¦¼Ó±è®Éªº¾î¦V²¾°Ê³t«×
+                //é™åˆ¶çˆ¬æ¨“æ¢¯æ™‚çš„æ©«å‘ç§»å‹•é€Ÿåº¦
                 if(this.motionX < (-f5)) {
                     this.motionX = (-f5);
                 }
@@ -1398,27 +1398,27 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                 }
 
                 this.fallDistance = 0.0F;
-                //­­¨îª¦¼Ó±èªº¸¨¤U³t«×
+                //é™åˆ¶çˆ¬æ¨“æ¢¯çš„è½ä¸‹é€Ÿåº¦
                 if (this.motionY < -0.15D) {
                     this.motionY = -0.15D;
                 }
 
                 boolean flag = this.isSneaking();
-                //­Y¬Oª¦¼Ó±è®É¬°sneaking, «h¤£·|¸¨¤U(¥d¦b¼Ó±è¤W)
+                //è‹¥æ˜¯çˆ¬æ¨“æ¢¯æ™‚ç‚ºsneaking, å‰‡ä¸æœƒè½ä¸‹(å¡åœ¨æ¨“æ¢¯ä¸Š)
                 if(flag && this.motionY < 0D) {
                     this.motionY = 0D;
                 }
             }
 
             this.moveEntity(this.motionX, this.motionY, this.motionZ);
-            //©¹¼Ó±è±ÀÀ½, «h·|©¹¤Wª¦
+            //å¾€æ¨“æ¢¯æ¨æ“ , å‰‡æœƒå¾€ä¸Šçˆ¬
             if(this.isCollidedHorizontally && this.isOnLadder()) {
                 this.motionY = 0.4D;
             }
-            //¦ÛµM±¼¸¨
+            //è‡ªç„¶æ‰è½
             if(this.worldObj.isRemote && (!this.worldObj.blockExists((int)this.posX, 0, (int)this.posZ) || !this.worldObj.getChunkFromBlockCoords((int)this.posX, (int)this.posZ).isChunkLoaded)) {
                 if (this.posY > 0.0D) {
-                    this.motionY = -0.1D;	//ªÅ®ğ¤¤ªºgravity¬°0.1D
+                    this.motionY = -0.1D;	//ç©ºæ°£ä¸­çš„gravityç‚º0.1D
                 }
                 else {
                     this.motionY = 0.0D;
@@ -1427,13 +1427,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
             else {
                 this.motionY -= 0.08D;
             }
-            //ªÅ®ğ¤¤ªº¤T¤è¦Vªı¤O
+            //ç©ºæ°£ä¸­çš„ä¸‰æ–¹å‘é˜»åŠ›
             this.motionY *= 0.98D;			
             this.motionX *= f2;
             this.motionZ *= f2;
 //            LogHelper.info("DEBUG : f2 "+f2+" ");
         }
-        //­pºâ¥|ªÏÂ\°Ê­È
+        //è¨ˆç®—å››è‚¢æ“ºå‹•å€¼
         this.prevLimbSwingAmount = this.limbSwingAmount;
         d0 = this.posX - this.prevPosX;
         double d1 = this.posZ - this.prevPosZ;
@@ -1457,7 +1457,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     }
 	
 	/** update entity 
-	 *  ¦b¦¹¥ÎonUpdate¸òonLivingUpdate°Ï¤Àserver¸òclient update
+	 *  åœ¨æ­¤ç”¨onUpdateè·ŸonLivingUpdateå€åˆ†serverè·Ÿclient update
 	 *  for shincolle:
 	 *  onUpdate = client update only
 	 *  onLivingUpdate = server update only
@@ -1472,9 +1472,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		
 		//client side
 		if(this.worldObj.isRemote) {
-			//¦³²¾°Ê®É, ²£¥Í¤ôªá¯S®Ä
+			//æœ‰ç§»å‹•æ™‚, ç”¢ç”Ÿæ°´èŠ±ç‰¹æ•ˆ
 			if(this.getShipDepth() > 0D) {
-				//(ª`·N¦¹entity¦]¬°³]¬°«D°ª³t§ó·s, clientºİ¤£·|§ó·smotionXµ¥¼Æ­È, »İ¦Û¦æ­pºâ)
+				//(æ³¨æ„æ­¤entityå› ç‚ºè¨­ç‚ºéé«˜é€Ÿæ›´æ–°, clientç«¯ä¸æœƒæ›´æ–°motionXç­‰æ•¸å€¼, éœ€è‡ªè¡Œè¨ˆç®—)
 				double motX = this.posX - this.prevPosX;
 				double motZ = this.posZ - this.prevPosZ;
 				double parH = this.posY - (int)this.posY;
@@ -1527,7 +1527,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 					}
 				}//end show pointer target effect
 				
-				//display circle particle, ¥u¦³owner¤~·|±µ¦¬¨ì¸Óship¦P¨BªºEID, «DownerÅª¨ú¨ìªºEID <= 0
+				//display circle particle, åªæœ‰owneræ‰æœƒæ¥æ”¶åˆ°è©²shipåŒæ­¥çš„EID, éownerè®€å–åˆ°çš„EID <= 0
 				//get owner entity
 				EntityPlayer player = null;
 				if(this.getStateMinor(ID.M.PlayerEID) > 0) {
@@ -1535,7 +1535,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				}
 				
 				//show circle particle on ship and guard target
-				if(player != null) {
+				if(player != null && player.dimension == this.getGuardedPos(3)) {
 					ItemStack item = player.inventory.getCurrentItem();
 					
 					if(ConfigHandler.alwaysShowTeamParticle || (item != null && item.getItem() instanceof PointerItem)) {
@@ -1543,12 +1543,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 						ParticleHelper.spawnAttackParticleAtEntity(this, 0.3D, 7D, 0D, (byte)2);
 						
 						//show guard particle
-						//¼Ğ°O¦bentity¤W
+						//æ¨™è¨˜åœ¨entityä¸Š
 						if(this.getGuardedEntity() != null) {
 							ParticleHelper.spawnAttackParticleAtEntity(this.getGuardedEntity(), 0.3D, 6D, 0D, (byte)2);
 							ParticleHelper.spawnAttackParticleAtEntity(this, this.getGuardedEntity(), 0D, 0D, 0D, (byte)3, false);
 						}
-						//¼Ğ°O¦bblock¤W
+						//æ¨™è¨˜åœ¨blockä¸Š
 						else if(this.getGuardedPos(1) >= 0) {
 							ParticleHelper.spawnAttackParticleAt(this.getGuardedPos(0)+0.5D, this.getGuardedPos(1), this.getGuardedPos(2)+0.5D, 0.3D, 6D, 0D, (byte)25);
 							ParticleHelper.spawnAttackParticleAtEntity(this, this.getGuardedPos(0)+0.5D, this.getGuardedPos(1)+0.2D, this.getGuardedPos(2)+0.5D, (byte)8);
@@ -1566,7 +1566,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	}
 
 	/** update living entity 
-	 *  ¦b¦¹¥ÎonUpdate¸òonLivingUpdate°Ï¤Àserver¸òclient update
+	 *  åœ¨æ­¤ç”¨onUpdateè·ŸonLivingUpdateå€åˆ†serverè·Ÿclient update
 	 *  onUpdate = client update only
 	 *  onLivingUpdate = server update only
 	 */
@@ -1719,8 +1719,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	public boolean attackEntityAsMob(Entity target) {
 		//get attack value
 		float atk = StateFinal[ID.ATK] * 0.125F;
-		//set knockback value (testing)
-		float kbValue = 0.15F;
 		
 		//experience++
 		addShipExp(1);
@@ -1728,8 +1726,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		//grudge--
 		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
 				
-	    //±Natk¸òattacker¶Çµ¹¥Ø¼ĞªºattackEntityFrom¤èªk, ¦b¥Ø¼Ğclass¤¤­pºâ¶Ë®`
-	    //¨Ã¥B¦^¶Ç¬O§_¦¨¥\¶Ë®`¨ì¥Ø¼Ğ
+	    //å°‡atkè·Ÿattackerå‚³çµ¦ç›®æ¨™çš„attackEntityFromæ–¹æ³•, åœ¨ç›®æ¨™classä¸­è¨ˆç®—å‚·å®³
+	    //ä¸¦ä¸”å›å‚³æ˜¯å¦æˆåŠŸå‚·å®³åˆ°ç›®æ¨™
 	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this), atk);
 
 	    //play entity attack sound
@@ -1739,14 +1737,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	    
 	    //if attack success
 	    if(isTargetHurt) {
-	    	//calc kb effect
-	        if(kbValue > 0) {
-	            target.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
-	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
-	            this.motionX *= 0.6D;
-	            this.motionZ *= 0.6D;
-	        }
-
 	        //send packet to client for display partical effect   
 	        if (!worldObj.isRemote) {
 	        	TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
@@ -1762,9 +1752,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	public boolean attackEntityWithAmmo(Entity target) {	
 		//get attack value
 		float atk = CalcHelper.calcDamageByEquipEffect(this, target, StateFinal[ID.ATK], 0);
-		
-		//set knockback value (testing)
-		float kbValue = 0.05F;
         
         //experience++
   		addShipExp(2);
@@ -1793,7 +1780,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         }
         
-        //µo®gªÌ·ÏÃú¯S®Ä
+        //ç™¼å°„è€…ç…™éœ§ç‰¹æ•ˆ
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 6, this.posX, this.posY, this.posZ, distX, distY, distZ, true), point);
 
@@ -1847,20 +1834,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
       		}
   		}
       		
-	    //±Natk¸òattacker¶Çµ¹¥Ø¼ĞªºattackEntityFrom¤èªk, ¦b¥Ø¼Ğclass¤¤­pºâ¶Ë®`
-	    //¨Ã¥B¦^¶Ç¬O§_¦¨¥\¶Ë®`¨ì¥Ø¼Ğ
+	    //å°‡atkè·Ÿattackerå‚³çµ¦ç›®æ¨™çš„attackEntityFromæ–¹æ³•, åœ¨ç›®æ¨™classä¸­è¨ˆç®—å‚·å®³
+	    //ä¸¦ä¸”å›å‚³æ˜¯å¦æˆåŠŸå‚·å®³åˆ°ç›®æ¨™
 	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this).setProjectile(), atk);
 
 	    //if attack success
 	    if(isTargetHurt) {
-	    	//calc kb effect
-	        if(kbValue > 0) {
-	            target.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
-	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
-	            motionX *= 0.6D;
-	            motionZ *= 0.6D;
-	        }
-	        
         	//display hit particle on target
 	        TargetPoint point1 = new TargetPoint(this.dimension, target.posX, target.posY, target.posZ, 64D);
 			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 9, false), point1);
@@ -1876,9 +1855,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		float atk = StateFinal[ID.ATK_H];
 		float kbValue = 0.15F;
 		
-		//­¸¼u¬O§_±Ä¥Îª½®g
+		//é£›å½ˆæ˜¯å¦æ¡ç”¨ç›´å°„
 		boolean isDirect = false;
-		//­pºâ¥Ø¼Ğ¶ZÂ÷
+		//è¨ˆç®—ç›®æ¨™è·é›¢
 		float tarX = (float)target.posX;	//for miss chance calc
 		float tarY = (float)target.posY;
 		float tarZ = (float)target.posZ;
@@ -1888,7 +1867,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         float distSqrt = MathHelper.sqrt_float(distX*distX + distY*distY + distZ*distZ);
         float launchPos = (float)posY + height * 0.7F;
         
-        //¶W¹L¤@©w¶ZÂ÷/¤ô¤¤ , «h±Ä¥Î©ßª«½u,  ¦b¤ô¤¤®Éµo®g°ª«×¸û§C
+        //è¶…éä¸€å®šè·é›¢/æ°´ä¸­ , å‰‡æ¡ç”¨æ‹‹ç‰©ç·š,  åœ¨æ°´ä¸­æ™‚ç™¼å°„é«˜åº¦è¼ƒä½
         if((distX*distX+distY*distY+distZ*distZ) < 36F) {
         	isDirect = true;
         }
@@ -1937,24 +1916,24 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         return true;
 	}
 	
-	//be attacked method, ¥]¬A¨ä¥Lentity§ğÀ», anvil§ğÀ», arrow§ğÀ», fall damage³£¨Ï¥Î¦¹¤èªk 
+	//be attacked method, åŒ…æ‹¬å…¶ä»–entityæ”»æ“Š, anvilæ”»æ“Š, arrowæ”»æ“Š, fall damageéƒ½ä½¿ç”¨æ­¤æ–¹æ³• 
 	@Override
     public boolean attackEntityFrom(DamageSource attacker, float atk) {
 		//set hurt face
     	if(this.getStateEmotion(ID.S.Emotion) != ID.Emotion.O_O) {
     		this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
     	}
-    	
-    	//­Y§ğÀ»¤è¬°owner, «hª½±µ¦^¶Ç¶Ë®`, ¤£­pdef¸òfriendly fire
+
+    	//è‹¥æ”»æ“Šæ–¹ç‚ºowner, å‰‡ç›´æ¥å›å‚³å‚·å®³, ä¸è¨ˆdefè·Ÿfriendly fire
 		if(attacker.getEntity() instanceof EntityPlayer &&
 		   EntityHelper.checkSameOwner(attacker.getEntity(), this)) {
 			this.setSitting(false);
 			return super.attackEntityFrom(attacker, atk);
 		}
         
-        //­Y±¼¨ì¥@¬É¥~, «h¶Ç°e¦^y=4
+        //è‹¥æ‰åˆ°ä¸–ç•Œå¤–, å‰‡å‚³é€å›y=4
         if(attacker.getDamageType().equals("outOfWorld")) {
-        	//¨ú®ø§¤¤U°Ê§@
+        	//å–æ¶ˆåä¸‹å‹•ä½œ
 			this.setSitting(false);
 			this.mountEntity(null);
         	this.setPositionAndUpdate(this.posX, 4D, this.posZ);
@@ -1964,62 +1943,62 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	return false;
         }
         
-        //µL¼Äªºentity¶Ë®`µL®Ä
+        //ç„¡æ•µçš„entityå‚·å®³ç„¡æ•ˆ
 		if(this.isEntityInvulnerable()) {
             return false;
         }
-		else if(attacker.getEntity() != null) {	//¤£¬°null¤~ºâ¶Ë®`, ¥i§K¬Ì¬r/±¼¸¨/²¿®§µ¥¶Ë®`
+		else if(attacker.getEntity() != null) {	//ä¸ç‚ºnullæ‰ç®—å‚·å®³, å¯å…ç–«æ¯’/æ‰è½/çª’æ¯ç­‰å‚·å®³
 			Entity entity = attacker.getEntity();
 			
-			//¤£·|¹ï¦Û¤v³y¦¨¶Ë®`, ¥i§K¬Ì¬r/±¼¸¨/²¿®§µ¥¶Ë®` (¦¹¬°¦Û¤v¹ï¦Û¤v³y¦¨¶Ë®`)
+			//ä¸æœƒå°è‡ªå·±é€ æˆå‚·å®³, å¯å…ç–«æ¯’/æ‰è½/çª’æ¯ç­‰å‚·å®³ (æ­¤ç‚ºè‡ªå·±å°è‡ªå·±é€ æˆå‚·å®³)
 			if(entity.equals(this)) {
-				//¨ú®ø§¤¤U°Ê§@
+				//å–æ¶ˆåä¸‹å‹•ä½œ
 				this.setSitting(false);
 				return false;
 			}
 			
-			//­Y§ğÀ»¤è¬°player, «hÀË¬dfriendly fire
+			//è‹¥æ”»æ“Šæ–¹ç‚ºplayer, å‰‡æª¢æŸ¥friendly fire
 			if(entity instanceof EntityPlayer) {
-				//­Y¸T¤îfriendlyFire, «h¤£³y¦¨¶Ë®`
+				//è‹¥ç¦æ­¢friendlyFire, å‰‡ä¸é€ æˆå‚·å®³
 				if(!ConfigHandler.friendlyFire) {
 					return false;
 				}
 			}
 			
-			//¶i¦ædodge­pºâ
+			//é€²è¡Œdodgeè¨ˆç®—
 			float dist = (float) this.getDistanceSqToEntity(entity);
 			if(EntityHelper.canDodge(this, dist)) {
 				return false;
 			}
 			
-			//¶i¦ædef­pºâ
+			//é€²è¡Œdefè¨ˆç®—
 			float reduceAtk = atk * (1F - (StateFinal[ID.DEF] - rand.nextInt(20) + 10F) / 100F);    
 			
-			//ship vs ship, config¶Ë®`½Õ¾ã
+			//ship vs ship, configå‚·å®³èª¿æ•´
 			if(entity instanceof BasicEntityShip || entity instanceof BasicEntityAirplane || 
 			   entity instanceof EntityRensouhou || entity instanceof BasicEntityMount) {
 				reduceAtk = reduceAtk * (float)ConfigHandler.dmgSvS * 0.01F;
 			}
 			
-			//ship vs ship, damage type¶Ë®`½Õ¾ã
+			//ship vs ship, damage typeå‚·å®³èª¿æ•´
 			if(entity instanceof IShipAttackBase) {
 				//get attack time for damage modifier setting (day, night or ...etc)
 				int modSet = this.worldObj.provider.isDaytime() ? 0 : 1;
 				reduceAtk = CalcHelper.calcDamageByType(reduceAtk, ((IShipAttackBase) entity).getDamageType(), this.getDamageType(), modSet);
 			}
 			
-			//min damage³]¬°1
+			//min damageè¨­ç‚º1
 	        if(reduceAtk < 1) reduceAtk = 1;
 
-			//¨ú®ø§¤¤U°Ê§@
+			//å–æ¶ˆåä¸‹å‹•ä½œ
 			this.setSitting(false);
 			
-			//³]¸mrevenge target
+			//è¨­ç½®revenge target
 			this.setEntityRevengeTarget(entity);
 			this.setEntityRevengeTime();
 //			LogHelper.info("DEBUG : set revenge target: "+entity+"  host: "+this);
 			
-			//­Y¶Ë®`¤O¥i¯à­P¦º, «h´M§äª««~¤¤¦³µLrepair goddess¨Ó¨ú®ø±¼¦¹§ğÀ»
+			//è‹¥å‚·å®³åŠ›å¯èƒ½è‡´æ­», å‰‡å°‹æ‰¾ç‰©å“ä¸­æœ‰ç„¡repair goddessä¾†å–æ¶ˆæ‰æ­¤æ”»æ“Š
 			if(reduceAtk >= (this.getHealth() - 1F)) {
 				if(this.decrSupplies(8)) {
 					this.setHealth(this.getMaxHealth());
@@ -2031,8 +2010,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				}
 			}
    
-            //°õ¦æ¤÷classªº³Q§ğÀ»§P©w, ¥]¬A­«¸mlove®É¶¡, ­pºâ¤õ¬r§Ü©Ê, ­pºâÅK¯z/±¼¸¨¶Ë®`, 
-            //hurtResistantTime(0.5secµL¼Ä®É¶¡)­pºâ, 
+            //åŸ·è¡Œçˆ¶classçš„è¢«æ”»æ“Šåˆ¤å®š, åŒ…æ‹¬é‡ç½®loveæ™‚é–“, è¨ˆç®—ç«æ¯’æŠ—æ€§, è¨ˆç®—éµç §/æ‰è½å‚·å®³, 
+            //hurtResistantTime(0.5secç„¡æ•µæ™‚é–“)è¨ˆç®—, 
             return super.attackEntityFrom(attacker, reduceAtk);
         }
 		
@@ -2125,7 +2104,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 					}
 				}
 			}
-			//Á×§K¦Y±¼§t¦³Àx¦s¸ê°Tªº¤è¶ô, ¦]¦¹°±¥Îheavy grudge block§@¬°¸É¥R¹D¨ã
+			//é¿å…åƒæ‰å«æœ‰å„²å­˜è³‡è¨Šçš„æ–¹å¡Š, å› æ­¤åœç”¨heavy grudge blockä½œç‚ºè£œå……é“å…·
 		}
 		
 		//check fuel again and set fuel flag
@@ -2138,14 +2117,14 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		
 		//check fuel flag and set AI
 		if(getStateFlag(ID.F.NoFuel)) { //no fuel, clear AI
-			//­ì¥»¦³AI, «h²M°£¤§
+			//åŸæœ¬æœ‰AI, å‰‡æ¸…é™¤ä¹‹
 			if(this.targetTasks.taskEntries.size() > 0) {
 //				LogHelper.info("DEBUG : No fuel, clear AI "+this);
 				clearAITasks();
 				clearAITargetTasks();
 				sendSyncPacketAllValue();
 				
-				//³]©wmountªºAI
+				//è¨­å®šmountçš„AI
 				if(this.ridingEntity instanceof BasicEntityMount) {
 					((BasicEntityMount) this.ridingEntity).clearAITasks();
 				}
@@ -2160,7 +2139,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				setAITargetList();
 				sendSyncPacketAllValue();
 				
-				//³]©wmountªºAI
+				//è¨­å®šmountçš„AI
 				if(this.ridingEntity instanceof BasicEntityMount) {
 					((BasicEntityMount) this.ridingEntity).clearAITasks();
 					((BasicEntityMount) this.ridingEntity).setAIList();
@@ -2369,7 +2348,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		}//end update id
 	}
 	
-	//¤£¸òaircraft, mount, rider¸I¼²
+	//ä¸è·Ÿaircraft, mount, riderç¢°æ’
   	protected void collideWithEntity(Entity target) {
   		if(target instanceof BasicEntityAirplane ||
   		   target.equals(this.riddenByEntity) ||
@@ -2590,17 +2569,16 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		}
   	}
   	
-  	/** setDead() must to check entity health <= 0
-  	 *  FIX: probably fix ship dupe bug that killing ship when server lag
-  	 */
-  	@Override
-  	public void setDead() {
-  		if(!this.worldObj.isRemote) {
-  	        this.setHealth(-1F);
-  	    }
-  	    super.setDead();
-    }
-  	
+//  	/** setDead() must to check entity health <= 0
+//  	 *  FIX: probably fix ship dupe bug that killing ship when server lag
+//  	 */
+//  	@Override
+//  	public void setDead() {
+//  		if(!this.worldObj.isRemote && this.getHealth() > 0) {
+//  	        return;
+//  	    }
+//  	    super.setDead();
+//    }
   	
   	/** change ship outfit by right click cake on ship */
   	abstract public void setShipOutfit(boolean isSneaking); 

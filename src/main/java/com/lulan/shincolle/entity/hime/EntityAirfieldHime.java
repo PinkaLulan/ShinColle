@@ -66,28 +66,28 @@ public class EntityAirfieldHime extends BasicEntityShipLarge {
   	public void onLivingUpdate() {
   		//server side
   		if(!worldObj.isRemote) {
-  			//­¸¦æ³õ¯S®í¯à¤O
+  			//é£›è¡Œå ´ç‰¹æ®Šèƒ½åŠ›
         	if(this.ticksExisted % 128 == 0) {
-        		//1: ¼W±j³Q°Ê¦^¦å
+        		//1: å¢å¼·è¢«å‹•å›è¡€
         		if(getStateMinor(ID.M.NumGrudge) > 0 && this.getHealth() < this.getMaxHealth()) {
         			this.setHealth(this.getHealth() + this.getMaxHealth() * 0.03125F);
         		}
         		
-        		//2: µ²±B«á, ©P³ò¬Y¤@¥Ø¼Ğ¦^¦å, ¥]¬Aª±®a, ¦^¦å¥Ø¼Ğ¨Ìµ¥¯Å´£ª@
+        		//2: çµå©šå¾Œ, å‘¨åœæŸä¸€ç›®æ¨™å›è¡€, åŒ…æ‹¬ç©å®¶, å›è¡€ç›®æ¨™ä¾ç­‰ç´šææ˜‡
 				if(getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.M.NumGrudge) > 0) {
-					//§P©wbounding box¤º¬O§_¦³¥i¥H¦^¦åªº¥Ø¼Ğ
+					//åˆ¤å®šbounding boxå…§æ˜¯å¦æœ‰å¯ä»¥å›è¡€çš„ç›®æ¨™
 					int healCount = this.getLevel() / 15 + 2;
 		            EntityLivingBase hitEntity = null;
 		            List hitList = null;
 		            hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, this.boundingBox.expand(12D, 12D, 12D));
 		           
 		            for(int i = 0; i < hitList.size(); i++) {
-		            	//¸É¦å¦WÃB¨S¤F, break
+		            	//è£œè¡€åé¡æ²’äº†, break
 		            	if(healCount <= 0) break;
 		            	
 		            	hitEntity = (EntityLivingBase) hitList.get(i);
 		            	
-		            	//§ì¥i¥H¸É¦åªº¥Ø¼Ğ, ¤£¥]§t¦Û¤v
+		            	//æŠ“å¯ä»¥è£œè¡€çš„ç›®æ¨™, ä¸åŒ…å«è‡ªå·±
 		            	if(hitEntity != this && hitEntity.getHealth() / hitEntity.getMaxHealth() < 0.96F) {
 	            			if(hitEntity instanceof EntityPlayer) {
 	            				hitEntity.heal(1F + this.getLevel() * 0.04F);
@@ -126,7 +126,7 @@ public class EntityAirfieldHime extends BasicEntityShipLarge {
 		return 1;
 	}
 	
-	//­×§ï·ÏÃú¯S®Ä & ÀË¬d¬O§_riding
+	//ä¿®æ”¹ç…™éœ§ç‰¹æ•ˆ & æª¢æŸ¥æ˜¯å¦riding
   	@Override
   	public boolean attackEntityWithAmmo(Entity target) {
   		//check riding
@@ -140,7 +140,7 @@ public class EntityAirfieldHime extends BasicEntityShipLarge {
   		return super.attackEntityWithAmmo(target);
 	}
   	
-  	//ÀË¬d¬O§_riding
+  	//æª¢æŸ¥æ˜¯å¦riding
   	@Override
   	public boolean attackEntityWithHeavyAmmo(Entity target) {
   		//check riding
@@ -154,7 +154,7 @@ public class EntityAirfieldHime extends BasicEntityShipLarge {
   		return super.attackEntityWithHeavyAmmo(target);
   	}
 	
-	//Á×§K¸òrider2¸I¼²
+	//é¿å…è·Ÿrider2ç¢°æ’
   	@Override
 	public boolean canBePushed() {
         return this.ridingEntity == null;
@@ -195,7 +195,7 @@ public class EntityAirfieldHime extends BasicEntityShipLarge {
 
 	@Override
 	public void setShipOutfit(boolean isSneaking) {
-		//¤Á´«¸Ë³ÆÅã¥Ü
+		//åˆ‡æ›è£å‚™é¡¯ç¤º
 		if(isSneaking) {
 			switch(getStateEmotion(ID.S.State2)) {
 			case ID.State.NORMAL_2:
@@ -215,7 +215,7 @@ public class EntityAirfieldHime extends BasicEntityShipLarge {
 				break;
 			}
 		}
-		//¤Á´«¬O§_ÃM­¼®yÃM
+		//åˆ‡æ›æ˜¯å¦é¨ä¹˜åº§é¨
 		else {
 			switch(getStateEmotion(ID.S.State)) {
 			case ID.State.NORMAL:

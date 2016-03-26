@@ -15,10 +15,10 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 
 /**LASER PARTICLE
- * µ¹©whost, target -> ¥Í¦¨¹p®g¯S®Ä
- * RE-CLASS, ³¡¤À®V¯Å¥Î
+ * çµ¦å®šhost, target -> ç”Ÿæˆé›·å°„ç‰¹æ•ˆ
+ * RE-CLASS, éƒ¨åˆ†å§¬ç´šç”¨
  * 
- * type: 0:«ùÄò11 ticks 
+ * type: 0:æŒçºŒ11 ticks 
  *       1:
  */
 @SideOnly(Side.CLIENT)
@@ -63,7 +63,7 @@ public class EntityFXLaser extends EntityFX {
     @Override
 	public void renderParticle(Tessellator tess, float ticks, float par3, float par4, float par5, float par6, float par7) {	
 		GL11.glPushMatrix();
-		//¨Ï¥Î¦Û±aªº¶K¹ÏÀÉ
+		//ä½¿ç”¨è‡ªå¸¶çš„è²¼åœ–æª”
 		Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE);
 		GL11.glDepthMask(true);
 		GL11.glEnable(GL11.GL_BLEND);
@@ -76,7 +76,7 @@ public class EntityFXLaser extends EntityFX {
 		float minV = this.particleAge % 12 / 12F;
 		float maxV = minV + 0.08333333F;
 		
-		//particle¬O¥Hª±®aµø³¥¨Órender, ¦]¦¹®y¼Ð­n¦©±¼interpPosÂà´«¬°ª±®aµø³¥®y¼Ð
+		//particleæ˜¯ä»¥çŽ©å®¶è¦–é‡Žä¾†render, å› æ­¤åº§æ¨™è¦æ‰£æŽ‰interpPosè½‰æ›ç‚ºçŽ©å®¶è¦–é‡Žåº§æ¨™
         double f11 = (float)(this.posX - interpPosX);
         double f12 = (float)(this.posY - interpPosY);
         double f13 = (float)(this.posZ - interpPosZ);
@@ -87,8 +87,8 @@ public class EntityFXLaser extends EntityFX {
         //start tess
         tess.startDrawingQuads();
         tess.setColorRGBA_F(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha);
-        //ª`·N4­ÓÂI§Î¦¨ªº­±¥u¦³¥¿­±·|¶K¤W¶K¹Ï, ­Yª±®a¦b¸Ó­±­I­±·|¬Ý¤£¨ì¥¿­±¶K¹Ï, ¦]¦¹­nµe¨â­±¦@8­ÓÂI
-        //­n¨Ïª±®a¬Ý¨ì¥¿­±, 4­Ó®y¼Ðadd¶¶§Ç¥²¶·¬°: ¥k¤U -> ¥k¤W -> ¥ª¤W -> ¥ª¤U
+        //æ³¨æ„4å€‹é»žå½¢æˆçš„é¢åªæœ‰æ­£é¢æœƒè²¼ä¸Šè²¼åœ–, è‹¥çŽ©å®¶åœ¨è©²é¢èƒŒé¢æœƒçœ‹ä¸åˆ°æ­£é¢è²¼åœ–, å› æ­¤è¦ç•«å…©é¢å…±8å€‹é»ž
+        //è¦ä½¿çŽ©å®¶çœ‹åˆ°æ­£é¢, 4å€‹åº§æ¨™addé †åºå¿…é ˆç‚º: å³ä¸‹ -> å³ä¸Š -> å·¦ä¸Š -> å·¦ä¸‹
         //add front plane
         tess.setBrightness(240);
         tess.addVertexWithUV(f21, f22, f23, maxU, maxV);

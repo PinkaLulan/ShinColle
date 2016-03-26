@@ -102,7 +102,7 @@ public class ModelRensouhouS extends ModelBase {
         this.HeadBase.addChild(this.TailHeadCR1);
         this.HeadBase.addChild(this.TailHeadCL1);
         
-        //µo¥ú¤ä¬[
+        //ç™¼å…‰æ”¯æž¶
         this.GlowBodyMain = new ModelRenderer(this, 0, 0);
         this.GlowBodyMain.setRotationPoint(0.0F, 0.0F, 0.0F);
         this.GlowHeadBase = new ModelRenderer(this, 0, 0);
@@ -145,7 +145,7 @@ public class ModelRensouhouS extends ModelBase {
     	
     	GL11.glDisable(GL11.GL_BLEND);
     	
-    	//«G«×³]¬°240
+    	//äº®åº¦è¨­ç‚º240
     	GL11.glDisable(GL11.GL_LIGHTING);
     	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
     	this.GlowBodyMain.render(f5);
@@ -170,7 +170,7 @@ public class ModelRensouhouS extends ModelBase {
 		this.HeadCannon1.rotateAngleX = angleX * 0.1F + 0.15F;
 		this.HeadCannon2.rotateAngleX = -angleX * 0.1F + 0.15F;
 		
-		//§ðÀ»°Ê§@    
+		//æ”»æ“Šå‹•ä½œ    
 	    if(ent.getAttackTime() > 0) {
 	    	this.TailJaw1.rotateAngleX = angleX * 0.3F - 0.8F;
 	    }

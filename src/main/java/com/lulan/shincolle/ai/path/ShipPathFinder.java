@@ -13,7 +13,7 @@ import net.minecraft.world.IBlockAccess;
 
 /**SHIP PATH FINDER
  * for ship path navigator
- * «Ø¥ßªÅ¤¤ or ¤ô¤¤path, µLµø­«¤O¸ò¯B¤O
+ * å»ºç«‹ç©ºä¸­ or æ°´ä¸­path, ç„¡è¦–é‡åŠ›è·Ÿæµ®åŠ›
  */
 public class ShipPathFinder {
     /** Used to find obstacles */
@@ -60,12 +60,12 @@ public class ShipPathFinder {
 
     	i = MathHelper.floor_double(entity.boundingBox.minY + 0.5D);
 
-        //±N°_ÂI²×ÂI¥[¤Jpoint map
+        //å°‡èµ·é»çµ‚é»åŠ å…¥point map
         ShipPathPoint startpp = this.openPoint(MathHelper.floor_double(entity.boundingBox.minX), i, MathHelper.floor_double(entity.boundingBox.minZ));
         ShipPathPoint endpp = this.openPoint(MathHelper.floor_double(x - entity.width / 2.0F), MathHelper.floor_double(y), MathHelper.floor_double(z - entity.width / 2.0F));
-        //¥Ø¼Ğªºªø¼e°ª+1«Ø¥ß¬°¤@­Ópath point, ¥Î©ó§P©w¸ô®|¼e°ª¬O§_·|¥d¦í¸Óentity
+        //ç›®æ¨™çš„é•·å¯¬é«˜+1å»ºç«‹ç‚ºä¸€å€‹path point, ç”¨æ–¼åˆ¤å®šè·¯å¾‘å¯¬é«˜æ˜¯å¦æœƒå¡ä½è©²entity
         ShipPathPoint entitySize = new ShipPathPoint(MathHelper.floor_float(entity.width + 1.0F), MathHelper.floor_float(entity.height + 1.0F), MathHelper.floor_float(entity.width + 1.0F));
-        //­pºâ¥X°_ÂI²×ÂI¤§¶¡©Ò¦³ÂI
+        //è¨ˆç®—å‡ºèµ·é»çµ‚é»ä¹‹é–“æ‰€æœ‰é»
         ShipPathEntity pathentity = this.addToPath(entity, startpp, endpp, entitySize, range);
         
         return pathentity;
@@ -83,48 +83,48 @@ public class ShipPathFinder {
         ShipPathPoint ppTemp = startpp;
         int findCount = 0;
 
-        /**path«Ø¥ß¤èªk
-         * ±q°_ÂI¶}©l, 
+        /**pathå»ºç«‹æ–¹æ³•
+         * å¾èµ·é»é–‹å§‹, 
          */
         while(!this.path.isPathEmpty()) {
-        	//±qpath¤¤¨ú¥X¤@ÂI
+        	//å¾pathä¸­å–å‡ºä¸€é»
         	ShipPathPoint ppDequeue = this.path.dequeue();
         	findCount++;
-        	//­Y¨ú¥XÂI=²×ÂI, «h§¹¦¨path
+        	//è‹¥å–å‡ºé»=çµ‚é», å‰‡å®Œæˆpath
             if(ppDequeue.equals(endpp)) {						
-            	//±N©Ò¦³point°µ¦¨path entity
+            	//å°‡æ‰€æœ‰pointåšæˆpath entity
 //            	LogHelper.info("DEBUG : path navi: find count (pathing done) "+findCount);
                 return this.createEntityPath(startpp, endpp);
             }
             
-            //­Ywhile¶]¤Ó¦h¦¸, ±j¨î¤¤¤î
+            //è‹¥whileè·‘å¤ªå¤šæ¬¡, å¼·åˆ¶ä¸­æ­¢
             if(findCount > 600) {
             	break;
             }
             
-            //­Y¨ú¥XÂIªº²×ÂI¶ZÂ÷¸ûtempÂI¤p (§ó±µªñ²×ÂI)
+            //è‹¥å–å‡ºé»çš„çµ‚é»è·é›¢è¼ƒtempé»å° (æ›´æ¥è¿‘çµ‚é»)
             if(ppDequeue.distanceToSquared(endpp) < ppTemp.distanceToSquared(endpp)) {
-                ppTemp = ppDequeue;	//±NtempÂI³]¬°¨ú¥XÂI
+                ppTemp = ppDequeue;	//å°‡tempé»è¨­ç‚ºå–å‡ºé»
             }
             
-            //±N¨ú¥XÂI¼Ğ°O¬°°_ÂI, §P©w¦¹ÂI©¹¥Ø¼Ğªº¥i¨«¤è¦V¦³­ş¨Ç
+            //å°‡å–å‡ºé»æ¨™è¨˜ç‚ºèµ·é», åˆ¤å®šæ­¤é»å¾€ç›®æ¨™çš„å¯èµ°æ–¹å‘æœ‰å“ªäº›
             ppDequeue.isFirst = true;
-            int i = this.findPathOptions(entity, ppDequeue, entitySize, endpp, range); //¨ú±o¥i¨«¤è¦V
-            //±N©Ò¦³¥i¨«¤è¦V³£¹Á¸Õ¨«¬İ¬İ
+            int i = this.findPathOptions(entity, ppDequeue, entitySize, endpp, range); //å–å¾—å¯èµ°æ–¹å‘
+            //å°‡æ‰€æœ‰å¯èµ°æ–¹å‘éƒ½å˜—è©¦èµ°çœ‹çœ‹
             for(int j = 0; j < i; ++j) {
             	ShipPathPoint ppTemp2 = this.pathOptions[j];
                 float f1 = ppDequeue.totalPathDistance + ppDequeue.distanceToSquared(ppTemp2);
-                //­Y¸ÓÂIÁÙ¨S¥[¤J¹Lpath, ©Î¸ÓÂI¤w¥[¤J¨ìpath¤¤¦ı¸ÓÂI¤§«eºâ¥X¨Óªºpathªø«×¸ûªø, «h»İ­n¦A§ó·s¤@¦¸pathªø«×
+                //è‹¥è©²é»é‚„æ²’åŠ å…¥épath, æˆ–è©²é»å·²åŠ å…¥åˆ°pathä¸­ä½†è©²é»ä¹‹å‰ç®—å‡ºä¾†çš„pathé•·åº¦è¼ƒé•·, å‰‡éœ€è¦å†æ›´æ–°ä¸€æ¬¡pathé•·åº¦
                 if(!ppTemp2.isAssigned() || f1 < ppTemp2.totalPathDistance) {
-                	//±N¸ÓÂI¥¿¦¡¥[¤J¨ìpath¤¤, ³]©w¨ä«e«áÂI¸òpathªø«×­È
-                    ppTemp2.previous = ppDequeue;		//«e¤@ÂI³]¬°¨ú¥XÂI
-                    ppTemp2.totalPathDistance = f1;		//¦s¤U¨äpathªø«×­È
-                    ppTemp2.distanceToNext = ppTemp2.distanceToSquared(endpp);	//¤U¤@ÂI³]¬°²×ÂI
-                    //­Y¸ÓÂI¥»¨Ó´N¦bpath¤¤, «h§ó·s¨äpathªø«×­È
+                	//å°‡è©²é»æ­£å¼åŠ å…¥åˆ°pathä¸­, è¨­å®šå…¶å‰å¾Œé»è·Ÿpathé•·åº¦å€¼
+                    ppTemp2.previous = ppDequeue;		//å‰ä¸€é»è¨­ç‚ºå–å‡ºé»
+                    ppTemp2.totalPathDistance = f1;		//å­˜ä¸‹å…¶pathé•·åº¦å€¼
+                    ppTemp2.distanceToNext = ppTemp2.distanceToSquared(endpp);	//ä¸‹ä¸€é»è¨­ç‚ºçµ‚é»
+                    //è‹¥è©²é»æœ¬ä¾†å°±åœ¨pathä¸­, å‰‡æ›´æ–°å…¶pathé•·åº¦å€¼
                     if(ppTemp2.isAssigned()) {
                         this.path.changeDistance(ppTemp2, ppTemp2.totalPathDistance + ppTemp2.distanceToNext);
                     }
-                    else {	//¤£¦bpath¤¤, ¥¿¦¡¥[¤Jpath
+                    else {	//ä¸åœ¨pathä¸­, æ­£å¼åŠ å…¥path
                         ppTemp2.distanceToTarget = ppTemp2.totalPathDistance + ppTemp2.distanceToNext;
                         this.path.addPoint(ppTemp2);
                     }
@@ -132,19 +132,19 @@ public class ShipPathFinder {
             }
         }
         
-        if(ppTemp == startpp) {	//­Y§¹¥ş§ä¤£¨ìÂI¥i¥H¥[¤J, «h¦^¶Çnull, ªí¥Ü§ä¤£¨ìpath
-//        if(this.path.getCount() <= 0) {	//­Y§¹¥ş§ä¤£¨ìÂI¥i¥H¥[¤J, «h¦^¶Çnull, ªí¥Ü§ä¤£¨ìpath
+        if(ppTemp == startpp) {	//è‹¥å®Œå…¨æ‰¾ä¸åˆ°é»å¯ä»¥åŠ å…¥, å‰‡å›å‚³null, è¡¨ç¤ºæ‰¾ä¸åˆ°path
+//        if(this.path.getCount() <= 0) {	//è‹¥å®Œå…¨æ‰¾ä¸åˆ°é»å¯ä»¥åŠ å…¥, å‰‡å›å‚³null, è¡¨ç¤ºæ‰¾ä¸åˆ°path
 //        	LogHelper.info("DEBUG : path navi: no path");
             return null;
         }
-        else {					//¦^¶Çpath entity
-        	//±N©Ò¦³point°µ¦¨path entity
+        else {					//å›å‚³path entity
+        	//å°‡æ‰€æœ‰pointåšæˆpath entity
 //        	LogHelper.info("DEBUG : find path: fail: find count = "+findCount+" times");
             return this.createEntityPath(startpp, ppTemp);
         }
     }
 
-    /**§P©w¦¹ÂI¨ì²×ÂIªºpath¦³´X­Ó¤è¦V¥i¨«
+    /**åˆ¤å®šæ­¤é»åˆ°çµ‚é»çš„pathæœ‰å¹¾å€‹æ–¹å‘å¯èµ°
      * populates pathOptions with available points and returns the number of options found (args: unused1, currentPoint,
      * unused2, targetPoint, maxDistance)
      */
@@ -152,31 +152,31 @@ public class ShipPathFinder {
         int i = 0;
         byte pathCase = 0;	
 
-        //­YÀY³»¨S¥d¨ìªF¦è, «hpathCase = 1, ªí¥Ü¥i©¹¤W1®æ§ä¸ô®|
+        //è‹¥é ­é ‚æ²’å¡åˆ°æ±è¥¿, å‰‡pathCase = 1, è¡¨ç¤ºå¯å¾€ä¸Š1æ ¼æ‰¾è·¯å¾‘
         int j = this.getVerticalOffset(entity, currentpp.xCoord, currentpp.yCoord + 1, currentpp.zCoord, entitySize);
         if(j == 1 || j == 3) {
             pathCase = 1;
         }
-        //±´¬d¥ª¥k«e«á¥|­ÓÂIªºª¬ªp: ¤U->¥ª¥k«e«á->¤W
+        //æ¢æŸ¥å·¦å³å‰å¾Œå››å€‹é»çš„ç‹€æ³: ä¸‹->å·¦å³å‰å¾Œ->ä¸Š
         ShipPathPoint pathpoint2 = this.getSafePoint(entity, currentpp.xCoord, currentpp.yCoord - 1, currentpp.zCoord, entitySize, pathCase);
         ShipPathPoint pathpoint3 = this.getSafePoint(entity, currentpp.xCoord, currentpp.yCoord, currentpp.zCoord + 1, entitySize, pathCase);
         ShipPathPoint pathpoint4 = this.getSafePoint(entity, currentpp.xCoord - 1, currentpp.yCoord, currentpp.zCoord, entitySize, pathCase);
         ShipPathPoint pathpoint5 = this.getSafePoint(entity, currentpp.xCoord + 1, currentpp.yCoord, currentpp.zCoord, entitySize, pathCase);
         ShipPathPoint pathpoint6 = this.getSafePoint(entity, currentpp.xCoord, currentpp.yCoord, currentpp.zCoord - 1, entitySize, pathCase);
         ShipPathPoint pathpoint7 = null;
-        //¤W­±¬°²GÅé¤è¶ô¤~¤¹³\©¹¤W§ä¸ô®|, ­Y¤W­±¬°ªÅ®ğ, «h¥u¦³¥i¥H­¸ªº¤~©¹¤W§ä¸ô®|
+        //ä¸Šé¢ç‚ºæ¶²é«”æ–¹å¡Šæ‰å…è¨±å¾€ä¸Šæ‰¾è·¯å¾‘, è‹¥ä¸Šé¢ç‚ºç©ºæ°£, å‰‡åªæœ‰å¯ä»¥é£›çš„æ‰å¾€ä¸Šæ‰¾è·¯å¾‘
         if(j == 3 || (j == 1 && this.canEntityFly)) {
         	pathpoint7 = this.getSafePoint(entity, currentpp.xCoord, currentpp.yCoord + 1, currentpp.zCoord, entitySize, pathCase);
         }       
         
-        //­Y¸ÓÂI¬°¦w¥şÂI, ¥B¤£¬O°_©lÂI, ¥B¦b´M¸ô³Ì¤j½d³ò¤º
+        //è‹¥è©²é»ç‚ºå®‰å…¨é», ä¸”ä¸æ˜¯èµ·å§‹é», ä¸”åœ¨å°‹è·¯æœ€å¤§ç¯„åœå…§
         if(pathpoint2 != null && !pathpoint2.isFirst && pathpoint2.distanceTo(targetpp) < range) {
 //        	LogHelper.info("DEBUG : path navi: down path find: "+pathpoint2.yCoord);
-        	this.pathOptions[i++] = pathpoint2;	//¥[¤J¨ì¥i¿ï¿ï¶µ¤¤
+        	this.pathOptions[i++] = pathpoint2;	//åŠ å…¥åˆ°å¯é¸é¸é …ä¸­
         }
         if(pathpoint3 != null && !pathpoint3.isFirst && pathpoint3.distanceTo(targetpp) < range) {
 //        	LogHelper.info("DEBUG : path navi: horz path A find: "+pathpoint3.yCoord);
-        	this.pathOptions[i++] = pathpoint3;	//¥[¤J¨ì¥i¿ï¿ï¶µ¤¤
+        	this.pathOptions[i++] = pathpoint3;	//åŠ å…¥åˆ°å¯é¸é¸é …ä¸­
         }
         if(pathpoint4 != null && !pathpoint4.isFirst && pathpoint4.distanceTo(targetpp) < range) {
             this.pathOptions[i++] = pathpoint4;
@@ -194,58 +194,58 @@ public class ShipPathFinder {
         return i;
     }
 
-    /**§ä«ü©wÂI(x,y,z)¬O§_¥i¦w¥ş²¾°Ê¹L¥h, ¥]¬A¸ÓÂI¤U­±¬O§_¥i¦w¥ş¯¸¥ß (change: ­×§ï¤ô¸ò©¥¼ß¤]ºâ¥i¯¸¥ß¤è¶ô)
+    /**æ‰¾æŒ‡å®šé»(x,y,z)æ˜¯å¦å¯å®‰å…¨ç§»å‹•éå», åŒ…æ‹¬è©²é»ä¸‹é¢æ˜¯å¦å¯å®‰å…¨ç«™ç«‹ (change: ä¿®æ”¹æ°´è·Ÿå²©æ¼¿ä¹Ÿç®—å¯ç«™ç«‹æ–¹å¡Š)
      * Returns a point that the entity can safely move to
      * pathOption:  0:blocked  1:clear
      */
     private ShipPathPoint getSafePoint(Entity entity, int x, int y, int z, ShipPathPoint entitySize, int pathOption) {
     	ShipPathPoint pathpoint1 = null;
-        int pathCase = this.getVerticalOffset(entity, x, y, z, entitySize);	//¨ú±o¸ÓÂI¸ôªp
+        int pathCase = this.getVerticalOffset(entity, x, y, z, entitySize);	//å–å¾—è©²é»è·¯æ³
         
-        if(pathCase == 2 || pathCase == 3) {//­Y¸ÓÂI¸ôªp¬°: open trapdoor or ²GÅé, «h±µ¨ü¬°safe point
-            return this.openPoint(x, y, z);	//¥[¤J¸ÓÂI¨ìpath
+        if(pathCase == 2 || pathCase == 3) {//è‹¥è©²é»è·¯æ³ç‚º: open trapdoor or æ¶²é«”, å‰‡æ¥å—ç‚ºsafe point
+            return this.openPoint(x, y, z);	//åŠ å…¥è©²é»åˆ°path
         }
-        else {				//¨ä¥L¸ôªp
-        	//­Y¸ôªp¬°clear, «h§â¸ÓÂI¥[¤J¨ìpath
+        else {				//å…¶ä»–è·¯æ³
+        	//è‹¥è·¯æ³ç‚ºclear, å‰‡æŠŠè©²é»åŠ å…¥åˆ°path
             if(pathCase == 1) {
                 pathpoint1 = this.openPoint(x, y, z);
             }
-            //­Y¸ôªp«Dclear¦Ó¬O¹êÅé¤è¶ô, ¥B¤¹³\©¹¤W§ä¸ô®|, «h©¹¤W§ä
+            //è‹¥è·¯æ³éclearè€Œæ˜¯å¯¦é«”æ–¹å¡Š, ä¸”å…è¨±å¾€ä¸Šæ‰¾è·¯å¾‘, å‰‡å¾€ä¸Šæ‰¾
             if(pathpoint1 == null && pathOption > 0 && pathCase != -3 && pathCase != -4 && 
                this.getVerticalOffset(entity, x, y + pathOption, z, entitySize) == 1) {
-                pathpoint1 = this.openPoint(x, y + pathOption, z);	//§â©¹¤W¤@ÂI¥[¤J¨ìpath
+                pathpoint1 = this.openPoint(x, y + pathOption, z);	//æŠŠå¾€ä¸Šä¸€é»åŠ å…¥åˆ°path
                 y += pathOption;
             }
-            //­Y¦³§ä¨ì¥i¥[¤JpathªºÂI, «h©¹¤U§ä¸ÓÂI©³¤U¤è¶ô¬O§_¥i¦w¥ş¯¸¥ß(¥u©¹¤U§äX®æ, X¨Ì·Óentity¦Û¤vªºgetMaxSafePointTries¨M©w)
+            //è‹¥æœ‰æ‰¾åˆ°å¯åŠ å…¥pathçš„é», å‰‡å¾€ä¸‹æ‰¾è©²é»åº•ä¸‹æ–¹å¡Šæ˜¯å¦å¯å®‰å…¨ç«™ç«‹(åªå¾€ä¸‹æ‰¾Xæ ¼, Xä¾ç…§entityè‡ªå·±çš„getMaxSafePointTriesæ±ºå®š)
             if(pathpoint1 != null) {
-            	//­Y¥i¥H­¸, «hª½±µ¦^¶Çpathpoint
+            	//è‹¥å¯ä»¥é£›, å‰‡ç›´æ¥å›å‚³pathpoint
             	if(this.canEntityFly) {
             		return pathpoint1;
             	}
             	
-            	//­Y¤£¯à­¸, «h©¹¤U§ä¦w¥ş¸¨¦aÂI
+            	//è‹¥ä¸èƒ½é£›, å‰‡å¾€ä¸‹æ‰¾å®‰å…¨è½åœ°é»
                 int j1 = 0;
                 int downCase = 0;
                 
                 while(y > 0) {
                     downCase = this.getVerticalOffset(entity, x, y - 1, z, entitySize);
-                    //­Y©³¤U¥ş³£¬°²GÅé(¥»Åé¦bªÅ¤¤, ¦]¦¹·|±¼¨ì²GÅé¤è¶ô¤¤), «hpathÂI°ª«×§ï¬°¦b²GÅé¤¤
+                    //è‹¥åº•ä¸‹å…¨éƒ½ç‚ºæ¶²é«”(æœ¬é«”åœ¨ç©ºä¸­, å› æ­¤æœƒæ‰åˆ°æ¶²é«”æ–¹å¡Šä¸­), å‰‡pathé»é«˜åº¦æ”¹ç‚ºåœ¨æ¶²é«”ä¸­
                     if(downCase == 3) {
                     	pathpoint1 = this.openPoint(x, y - 1, z);
                         break;
                     }
                     
-                    //­YµLªk©¹¤U, ªí¥Ü¤w¸g¸¨¦a, «h¥H¦¹ÂI§@¬°pathÂI
+                    //è‹¥ç„¡æ³•å¾€ä¸‹, è¡¨ç¤ºå·²ç¶“è½åœ°, å‰‡ä»¥æ­¤é»ä½œç‚ºpathé»
                     if(downCase != 1) {
                         break;
                     }
                     
-                    //­Y¹Á¸Õ¶W¹L¯S©w¦¸¼Æ, «h§P©w¨S¦³¦w¥ş¸¨¦a, ¶Ç¦^null
+                    //è‹¥å˜—è©¦è¶…éç‰¹å®šæ¬¡æ•¸, å‰‡åˆ¤å®šæ²’æœ‰å®‰å…¨è½åœ°, å‚³å›null
                     if(j1++ >= 32) {
                         return null;
                     }
                     
-                    //©¹¤U§ä¸¨¦aÂI, ±N¸¨¦aÂI¥[¤J¨ìpath
+                    //å¾€ä¸‹æ‰¾è½åœ°é», å°‡è½åœ°é»åŠ å…¥åˆ°path
                     --y;
                     if(y > 0) {
                         pathpoint1 = this.openPoint(x, y, z);
@@ -265,10 +265,10 @@ public class ShipPathFinder {
      * Returns a mapped point or creates and adds one
      */
     private final ShipPathPoint openPoint(int x, int y, int z) {
-        int l = ShipPathPoint.makeHash(x, y, z);	//®y¼Ğ­Èºâhash
-        ShipPathPoint pathpoint = (ShipPathPoint)this.pointMap.lookup(l);	//¥Îhash­È§ä¸ô®|¤¤¬O§_¦³¸ÓÂI
+        int l = ShipPathPoint.makeHash(x, y, z);	//åº§æ¨™å€¼ç®—hash
+        ShipPathPoint pathpoint = (ShipPathPoint)this.pointMap.lookup(l);	//ç”¨hashå€¼æ‰¾è·¯å¾‘ä¸­æ˜¯å¦æœ‰è©²é»
 
-        //path¤¤§ä¤£¨ì¸ÓÂI, «h«Ø¥ß¤§
+        //pathä¸­æ‰¾ä¸åˆ°è©²é», å‰‡å»ºç«‹ä¹‹
         if(pathpoint == null) {
             pathpoint = new ShipPathPoint(x, y, z);
             this.pointMap.addKey(l, pathpoint);
@@ -296,47 +296,47 @@ public class ShipPathFinder {
     }
 
     public static int getVerticalOffset(Entity entity, int x, int y, int z, ShipPathPoint entitySize, boolean inAir) {
-        boolean pathToDoor = false;		//¯S©w±ø¥ó¥i³q¹Lªºflag: ³´¨Àªù
-        boolean pathInLiquid = true;	//¬O§_¬O¯¸¦b²GÅé¤¤ªºpath (§Y°ª«×y¥ş¬°²GÅé¤è¶ô)
+        boolean pathToDoor = false;		//ç‰¹å®šæ¢ä»¶å¯é€šéçš„flag: é™·é˜±é–€
+        boolean pathInLiquid = true;	//æ˜¯å¦æ˜¯ç«™åœ¨æ¶²é«”ä¸­çš„path (å³é«˜åº¦yå…¨ç‚ºæ¶²é«”æ–¹å¡Š)
         
-        //§P©w¸Ópoint¥[¤Wentityªºªø¼e°ª«á, ¬O§_·|¸I¼²¨ì¨ä¥L¤è¶ô
+        //åˆ¤å®šè©²pointåŠ ä¸Šentityçš„é•·å¯¬é«˜å¾Œ, æ˜¯å¦æœƒç¢°æ’åˆ°å…¶ä»–æ–¹å¡Š
         for(int l = x; l < x + entitySize.xCoord; ++l) {
             for(int i1 = y; i1 < y + entitySize.yCoord; ++i1) {
                 for(int j1 = z; j1 < z + entitySize.zCoord; ++j1) {
                 	Block block = entity.worldObj.getBlock(l, i1, j1);
 
-                    //­Y¸I¼²¨ì«DªÅ®ğ, ¤ô, ©¥¼ß¤è¶ô
+                    //è‹¥ç¢°æ’åˆ°éç©ºæ°£, æ°´, å²©æ¼¿æ–¹å¡Š
                     if(block.getMaterial() != Material.air) {
-                    	//ÀË¬d°ª«×y¬O§_¥ş¬°²GÅé
+                    	//æª¢æŸ¥é«˜åº¦yæ˜¯å¦å…¨ç‚ºæ¶²é«”
                         if(pathInLiquid && i1 == y && !BlockHelper.checkBlockIsLiquid(block)) {
                         	pathInLiquid = false;
                         }
                         
-//                    	//¸I¨ìªº¬O³´¨Àªù
+//                    	//ç¢°åˆ°çš„æ˜¯é™·é˜±é–€
 //                        if(block == Blocks.trapdoor) {
-//                        	pathToDoor = true;	//¦¹¬°¯S©w±¡ªp¤~¯à³q¹L
+//                        	pathToDoor = true;	//æ­¤ç‚ºç‰¹å®šæƒ…æ³æ‰èƒ½é€šé
 //                        }
 
                         int k1 = block.getRenderType();
                         
-                        //­Y¸I¨ì¤£¯à¬ï¹Lªº¤è¶ô: Ãö³¬ªºªù, ³´¨Àªù, ¬]Äæªù
+                        //è‹¥ç¢°åˆ°ä¸èƒ½ç©¿éçš„æ–¹å¡Š: é—œé–‰çš„é–€, é™·é˜±é–€, æŸµæ¬„é–€
                         if(!block.getBlocksMovement(entity.worldObj, l, i1, j1)) {
-                        	//­Y¦b¬]Äæ, Àğ¾À, ¬]Äæªù¤è¶ô¤¤, ¦^¶Ç-3
+                        	//è‹¥åœ¨æŸµæ¬„, ç‰†å£, æŸµæ¬„é–€æ–¹å¡Šä¸­, å›å‚³-3
                             if(k1 == 11 || block == Blocks.fence_gate || k1 == 32) {
                                 return -3;
                             }
-                            //­Y¬OÃö³¬ªº³´¨Àªù, ¦^¶Ç-4
+                            //è‹¥æ˜¯é—œé–‰çš„é™·é˜±é–€, å›å‚³-4
                             if(block == Blocks.trapdoor) {
                                 return -4;
                             }
-                            //­Y«D¬yÅé¤è¶ô, «h³£§P©w¬°0
+                            //è‹¥éæµé«”æ–¹å¡Š, å‰‡éƒ½åˆ¤å®šç‚º0
                             if(!BlockHelper.checkBlockIsLiquid(block)) {
                                 return 0;
                             }
                         }
                     }
-                    else {	//­Y¬°air¤è¶ô
-                    	//ÀË¬d°ª«×y¬O§_¬°²GÅé
+                    else {	//è‹¥ç‚ºairæ–¹å¡Š
+                    	//æª¢æŸ¥é«˜åº¦yæ˜¯å¦ç‚ºæ¶²é«”
                         if(pathInLiquid && i1 == y) {
                         	pathInLiquid = false;
                         }
@@ -355,7 +355,7 @@ public class ShipPathFinder {
         int i = 1;
         ShipPathPoint pathpoint2;
 
-        //§ä¥XpathÁ`ÂI¼Æ, ¦s¬°i
+        //æ‰¾å‡ºpathç¸½é»æ•¸, å­˜ç‚ºi
         for(pathpoint2 = endpp; pathpoint2.previous != null; pathpoint2 = pathpoint2.previous) {
             ++i;
         }
@@ -364,7 +364,7 @@ public class ShipPathFinder {
         pathpoint2 = endpp;
         --i;
 
-        //±Npath©Ò¦³ÂI¦s¨ìpathtemp
+        //å°‡pathæ‰€æœ‰é»å­˜åˆ°pathtemp
         for(pathtemp[i] = endpp; pathpoint2.previous != null; pathtemp[i] = pathpoint2) {
             pathpoint2 = pathpoint2.previous;
             --i;

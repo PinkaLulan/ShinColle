@@ -27,7 +27,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderNorthernHime extends RenderLiving {
 	
-	//¶K¹ÏÀÉ¸ô®|
+	//è²¼åœ–æª”è·¯å¾‘
 	private static final ResourceLocation mobTextures = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityNorthernHime.png");
 	private ModelNorthernHime model = null;
 	private ItemStack holdItem = new ItemStack(ModItems.ToyAirplane);
@@ -45,25 +45,25 @@ public class RenderNorthernHime extends RenderLiving {
 
 	@Override
 	protected void renderEquippedItems(EntityLivingBase host, float swing) {
-		//«ì´_¥¿±`ÃC¦â
+		//æ¢å¾©æ­£å¸¸é¡è‰²
 		GL11.glColor3f(1.0F, 1.0F, 1.0F);
 
 		IShipEmotion host1 = (IShipEmotion) host;
-        ItemStack itemstack = host.getHeldItem();	//¤â«ùª««~(¥Î©ómorph®É)
+        ItemStack itemstack = host.getHeldItem();	//æ‰‹æŒç‰©å“(ç”¨æ–¼morphæ™‚)
         Item item;
         float f1;
         
-        //³¡¥÷°Ê§@¤£µe¥Xª««~
+        //éƒ¨ä»½å‹•ä½œä¸ç•«å‡ºç‰©å“
         if(((IShipEmotion)host).getIsSitting()) {
         	return;
         }
         
-        //­Y¨S¦³¤â«ùª««~, «h¹w³]¬°ª±¨ã­¸¾÷
+        //è‹¥æ²’æœ‰æ‰‹æŒç‰©å“, å‰‡é è¨­ç‚ºç©å…·é£›æ©Ÿ
         if(itemstack == null) {
         	itemstack = holdItem;
         }
 
-        //±Nª««~µe¦b¤â¤W
+        //å°‡ç‰©å“ç•«åœ¨æ‰‹ä¸Š
         if(itemstack != null && itemstack.getItem() != null) {
             item = itemstack.getItem();
             GL11.glPushMatrix();
@@ -71,20 +71,20 @@ public class RenderNorthernHime extends RenderLiving {
             IItemRenderer customRenderer = MinecraftForgeClient.getItemRenderer(itemstack, IItemRenderer.ItemRenderType.EQUIPPED);
             boolean is3D = (customRenderer != null && customRenderer.shouldUseRenderHelper(IItemRenderer.ItemRenderType.EQUIPPED, itemstack, IItemRenderer.ItemRendererHelper.BLOCK_3D));
 
-            //¨Ì·Ó¼Ò«¬¤âÁu¦ì¸m¤Îª««~Ãş«¬, ³]©w±ÛÂàÂI, ¨Ï±ÛÂàÂI²Å¦X¤âÁuÂà°Ê­ìÂI
-            //­Y¸Óª««~¬°¤è¶ôÃş
+            //ä¾ç…§æ¨¡å‹æ‰‹è‡‚ä½ç½®åŠç‰©å“é¡å‹, è¨­å®šæ—‹è½‰é», ä½¿æ—‹è½‰é»ç¬¦åˆæ‰‹è‡‚è½‰å‹•åŸé»
+            //è‹¥è©²ç‰©å“ç‚ºæ–¹å¡Šé¡
             if(item instanceof ItemBlock && (is3D || RenderBlocks.renderItemIn3d(Block.getBlockFromItem(item).getRenderType()))) {
             	f1 = 0.2F;
             	GL11.glTranslatef(0F, 0.9F, 0F);
                 GL11.glScalef(f1, f1, f1);
             }
-            //­Y¸Óª««~­n¥Î3Dµe¥X ex: ªZ¾¹, ¤u¨ãÃş
+            //è‹¥è©²ç‰©å“è¦ç”¨3Dç•«å‡º ex: æ­¦å™¨, å·¥å…·é¡
             else if(item.isFull3D()) {
                 f1 = 0.375F;
                 GL11.glScalef(f1, f1, f1);
                 GL11.glTranslatef(0F, 2.7F, 0F);
             }
-            //¨ä¥L¤@¯ëª««~
+            //å…¶ä»–ä¸€èˆ¬ç‰©å“
             else {
                 f1 = 0.25F;	//SIZE
                 GL11.glScalef(f1, f1, f1);
@@ -99,33 +99,33 @@ public class RenderNorthernHime extends RenderLiving {
 	    		GL11.glTranslatef(0F, 7.6F, 1.0F);
 	    	}
             
-            //©I¥s¤â³¡post render, ¨Ïª««~¯à¨Ì·Ó¤â³¡¼Ò«¬¨¤«×§ïÅÜ¦ì¸m
-            //©Ò¦³©I¥s¹Lpost renderªº³¡¦ì³y¦¨ªº²¾°Ê, ³£·|®M¥Î¨ìª««~²¾°Ê¤W
+            //å‘¼å«æ‰‹éƒ¨post render, ä½¿ç‰©å“èƒ½ä¾ç…§æ‰‹éƒ¨æ¨¡å‹è§’åº¦æ”¹è®Šä½ç½®
+            //æ‰€æœ‰å‘¼å«épost renderçš„éƒ¨ä½é€ æˆçš„ç§»å‹•, éƒ½æœƒå¥—ç”¨åˆ°ç‰©å“ç§»å‹•ä¸Š
             GL11.glPushMatrix();
             this.model.BodyMain.postRender(0.0625F);
             this.model.ArmRight01.postRender(0.0625F);
             this.model.ArmRight02.postRender(0.0625F);
             
-            //¨Ì·Ó¼Ò«¬¤âÁu¦ì¸m¤Îª««~Ãş«¬, ¥­²¾ª««~¦ì¸m, ¨ÏÂà°Ê¶bªø«×²Å¦X¤âÁuªø«×
-            //­Y¸Óª««~¬°¤è¶ôÃş
+            //ä¾ç…§æ¨¡å‹æ‰‹è‡‚ä½ç½®åŠç‰©å“é¡å‹, å¹³ç§»ç‰©å“ä½ç½®, ä½¿è½‰å‹•è»¸é•·åº¦ç¬¦åˆæ‰‹è‡‚é•·åº¦
+            //è‹¥è©²ç‰©å“ç‚ºæ–¹å¡Šé¡
             if(item instanceof ItemBlock && (is3D || RenderBlocks.renderItemIn3d(Block.getBlockFromItem(item).getRenderType()))) {
             	GL11.glTranslatef(0.1F, 1.6F, -0.7F);
                 GL11.glRotatef(-90.0F, 1.0F, 0.0F, 0.0F);
                 GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
             }
-            //­Y¸Óª««~­n¥Î3Dµe¥X ex: ªZ¾¹, ¤u¨ãÃş
+            //è‹¥è©²ç‰©å“è¦ç”¨3Dç•«å‡º ex: æ­¦å™¨, å·¥å…·é¡
             else if(item.isFull3D()) {
                 if(item.shouldRotateAroundWhenRendering()) {
                     GL11.glRotatef(180.0F, 0.0F, 0.0F, 1.0F);
                     GL11.glTranslatef(0.0F, -0.125F, 0.0F);
                 }
-            	//Âà°ÊªZ¾¹¨¤«×
+            	//è½‰å‹•æ­¦å™¨è§’åº¦
             	GL11.glTranslatef(0F, 0.6F, 0F);
             	GL11.glRotatef(-60.0F, 1.0F, 0.0F, 0.0F);
                 GL11.glRotatef(35.0F, 0.0F, 1.0F, 0.0F);
                 GL11.glRotatef(180.0F, 0.0F, 1.0F, 0.0F);
             }
-            //¨ä¥L¤@¯ëª««~
+            //å…¶ä»–ä¸€èˆ¬ç‰©å“
             else {
             	GL11.glTranslatef(-0.4F, 1.5F, -0.4F);
             	GL11.glRotatef(180.0F, 0.0F, 0.0F, 1.0F);
@@ -133,11 +133,11 @@ public class RenderNorthernHime extends RenderLiving {
             	GL11.glRotatef(50.0F, 0.0F, 0.0F, 1.0F);
             }
             
-            //µe¥X¸Óª««~
+            //ç•«å‡ºè©²ç‰©å“
             float f2;
             float f5;
             int i;
-            //­Y¸Óª««~¦³¯S®írender pass, ex:¦B, ³z©ú¤è¶ôµ¥
+            //è‹¥è©²ç‰©å“æœ‰ç‰¹æ®Šrender pass, ex:å†°, é€æ˜æ–¹å¡Šç­‰
             if(itemstack.getItem().requiresMultipleRenderPasses()) {
                 for(i = 0; i < itemstack.getItem().getRenderPasses(itemstack.getItemDamage()); ++i) {
                     int j = itemstack.getItem().getColorFromItemStack(itemstack, i);
@@ -148,7 +148,7 @@ public class RenderNorthernHime extends RenderLiving {
                     this.renderManager.itemRenderer.renderItem(host, itemstack, i);
                 }
             }
-            //¨ä¥L¤@¯ëª««~
+            //å…¶ä»–ä¸€èˆ¬ç‰©å“
             else {
                 i = itemstack.getItem().getColorFromItemStack(itemstack, 0);
                 float f4 = (i >> 16 & 255) / 255.0F;

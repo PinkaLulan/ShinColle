@@ -13,9 +13,9 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class ConfigHandler {
 	
-	public static Configuration config;		//«Å§iconfigÀÉ¹êÅé
+	public static Configuration config;		//å®£å‘Šconfigæª”å¯¦é«”
 	
-	//³]©wÀÉÅÜ¼Æ
+	//è¨­å®šæª”è®Šæ•¸
 	//GENERAL
 	public static boolean debugMode = false;
 	public static boolean easyMode = false;
@@ -72,53 +72,53 @@ public class ConfigHandler {
 	public static Property propPolyGravel;
 	
 	
-	//Åª¨ú³]©wÀÉ°Ñ¼Æ
+	//è®€å–è¨­å®šæª”åƒæ•¸
 	private static void loadConfiguration() {
 		
-		//¬O§_Åã¥Ücustom name tag
+		//æ˜¯å¦é¡¯ç¤ºcustom name tag
 		alwaysShowTeamParticle = config.getBoolean("Always_Show_Team", "general", false, "Always show team circle animation");
 		
-		//boss¥Í¦¨cd³]©w (ticks)
+		//bossç”Ÿæˆcdè¨­å®š (ticks)
 		bossCooldown = config.getInt("Boss_Cooldown", "general", 4800, 20, 1728000, "Boss spawn cooldown");
 		
-		//ª±®aÂ÷¶}¦h»·®ÉÃö³¬GUI
+		//ç©å®¶é›¢é–‹å¤šé æ™‚é—œé–‰GUI
 		closeGUIDist = config.getInt("Close_GUI_Distance", "general", 64, 2, 64, "Close inventory GUI if ship away from player X blocks");
 		
-		//¬O§_¶}±Òdebug mode (spam debug/info message)
+		//æ˜¯å¦é–‹å•Ÿdebug mode (spam debug/info message)
 		debugMode = config.getBoolean("Debug_Mode", "general", false, "Enable debug message (SPAM WARNING)");
 		
-		//grudge±¼¸¨²v³]©w
+		//grudgeæ‰è½ç‡è¨­å®š
 		dropGrudge = config.getFloat("DropRate_Grudge", "general", 1F, 0F, 64F, "Grudge drop rate (ex: 0.5 = 50% drop 1 grudge, 5.5 = drop 5 grudge + 50% drop 1 grudge)");
 		
-		//¬O§_¶}±ÒÂ²³æ¼Ò¦¡ (spam debug/info message)
+		//æ˜¯å¦é–‹å•Ÿç°¡å–®æ¨¡å¼ (spam debug/info message)
 		easyMode = config.getBoolean("Easy_Mode", "general", false, "Easy mode: decrease Large Construction resources requirement, increase ammo / grudge gained from items");
 		
-		//¬O§_¶}±ÒÂ²³æ¼Ò¦¡ (spam debug/info message)
+		//æ˜¯å¦é–‹å•Ÿç°¡å–®æ¨¡å¼ (spam debug/info message)
 		friendlyFire = config.getBoolean("Friendly_Fire", "general", true, "false: disable damage done by player (except owner)");
 			
-		//¸ÑÅéÀò±o§÷®Æ¶q³]©w, mob dropÃşship­­©w
+		//è§£é«”ç²å¾—ææ–™é‡è¨­å®š, mob dropé¡shipé™å®š
 		kaitaiAmountSmall = config.getInt("Recycle_Small", "general", 20, 0, 1000, "Recycle amount by Dismantle Hammer (SMALL Mob Drop Ship)");
 		kaitaiAmountLarge = config.getInt("Recycle_Large", "general", 20, 0, 1000, "Recycle amount by Dismantle Hammer (LARGE Mob Drop Ship)");
 				
-		//¬O§_§â¦hª÷Äİ·í¦¨¿øÄq
+		//æ˜¯å¦æŠŠå¤šé‡‘å±¬ç•¶æˆéŒ³ç¤¦
 		polyAsMn = config.getBoolean("Polymetal_as_Mn", "general", true, "true: Polymetallic Nodules = Manganese Dust, Polymetallic Ore = Manganese Ore");
 		
-		//desk¹p¹F§ó·s¶¡¹j
+		//deské›·é”æ›´æ–°é–“éš”
 		radarUpdate = config.getInt("Radar_Update", "desk", 128, 20, 6000, "Radar update interval (ticks) in Admiral's Desk GUI");
 		
-		//¬O§_§âlarge shipyard³]¬°static entity (¥uµe¤@¦¸, ¦ı¬O¦¹¥\¯à¸òNEI¬Û½Ä)
+		//æ˜¯å¦æŠŠlarge shipyardè¨­ç‚ºstatic entity (åªç•«ä¸€æ¬¡, ä½†æ˜¯æ­¤åŠŸèƒ½è·ŸNEIç›¸è¡)
 		staticMode = config.getBoolean("Static_Mode", "general", false, "Render LargeShipyard as static or normal entity (for NotEnoughItem: 1283: Stack overflow bug)");
 		
-		//¬O§_Åã¥Ücustom name tag
+		//æ˜¯å¦é¡¯ç¤ºcustom name tag
 		showTag = config.getBoolean("Show_Name_Tag", "general", true, "Show custom name tag?");
 		
-		//team§ï°Êcd (ticks)
+		//teamæ”¹å‹•cd (ticks)
 		teamCooldown = config.getInt("Battle_Cooldown", "general", 6000, 20, 1728000, "Create/Disband Team Cooldown");
 
-		//¬O§_¶}±ÒÂ²³æ¼Ò¦¡ (spam debug/info message)
+		//æ˜¯å¦é–‹å•Ÿç°¡å–®æ¨¡å¼ (spam debug/info message)
 		useWakamoto = config.getBoolean("Sound_Wakamoto", "general", true, "enable Wakamoto sound for particular ship");
 		
-		//Åª¨ú ship setting³]©w
+		//è®€å– ship settingè¨­å®š
 		timeKeeping = config.getBoolean("Timekeeping", "ship setting", true, "Play timekeeping sound every 1000 ticks (1 minecraft hour)");
 		timeKeepingVolume = config.getFloat("Timekeeping_Volume", "ship setting", 1.0F, 0F, 10F, "Timekeeping sound volume");
 		shipVolume = config.getFloat("Ship_Volume", "ship setting", 1.0F, 0F, 10F, "Other sound volume");
@@ -144,7 +144,7 @@ public class ConfigHandler {
 		polyGravelBaseRate = config.getInt("Polymetal_Gravel", "world gen", 4, 0, 100, "Polymetallic Gravel clusters in one chunk");
 		propPolyGravel = config.get("world gen", "Polymetal_Gravel_Replace", polyGravelBaseBlock, "PolyGravel replaced block: stone, gravel, sand, dirt", true, 4);
 		
-		//³]©w·s­È
+		//è¨­å®šæ–°å€¼
 		limitShipBasic = getDoubleArrayFromConfig(limitShipBasic, propShipLimitBasic);
 		limitShipEffect = getDoubleArrayFromConfig(limitShipEffect, propShipLimitEffect);
 		scaleShip = getDoubleArrayFromConfig(scaleShip, propShip);
@@ -156,7 +156,7 @@ public class ConfigHandler {
 		consumeGrudgeShip = getIntArrayFromConfig(consumeGrudgeShip, propGrudgeShip);
 		consumeGrudgeAction = getIntArrayFromConfig(consumeGrudgeAction, propGrudgeAction);
 		
-		//­Y³]©wÀÉ¦³§ó·s¹L, «hÀx¦s
+		//è‹¥è¨­å®šæª”æœ‰æ›´æ–°é, å‰‡å„²å­˜
 		if(config.hasChanged()) {
 			config.save();
 		}
@@ -204,19 +204,19 @@ public class ConfigHandler {
 		}
 	}
 	
-	//³]©wÀÉ³B²z ªì©l¤Æ°Ê§@
+	//è¨­å®šæª”è™•ç† åˆå§‹åŒ–å‹•ä½œ
 	public static void init(File configFile) {		
-		//¦pªG³]©wÀÉ¹êÅéÁÙ¥¼«Ø¥ß «h«Ø¥ß¤§
+		//å¦‚æœè¨­å®šæª”å¯¦é«”é‚„æœªå»ºç«‹ å‰‡å»ºç«‹ä¹‹
 		if(config == null) {
-			config = new Configuration(configFile);	//«Ø¥ßconfigÀÉ¹êÅé
+			config = new Configuration(configFile);	//å»ºç«‹configæª”å¯¦é«”
 			loadConfiguration();
 		}
 	}
 	
-	//­Yª©¥»§ó·s«á ³]©wÀÉ»İ­n§ó·s «h¦b¦¹°Ï¶ô¼W¥[§ó·s¤èªk
+	//è‹¥ç‰ˆæœ¬æ›´æ–°å¾Œ è¨­å®šæª”éœ€è¦æ›´æ–° å‰‡åœ¨æ­¤å€å¡Šå¢åŠ æ›´æ–°æ–¹æ³•
 	@SubscribeEvent
 	public void onConfigurationChangedEvent(ConfigChangedEvent.OnConfigChangedEvent event) {
-		//­Y³]©wÀÉªºmod id¸ò¥Ø«emod id¤£¦P®É «h¶i¦æ§ó·s
+		//è‹¥è¨­å®šæª”çš„mod idè·Ÿç›®å‰mod idä¸åŒæ™‚ å‰‡é€²è¡Œæ›´æ–°
 		if(event.modID.equalsIgnoreCase(Reference.MOD_ID)) {
 			loadConfiguration();
 		}

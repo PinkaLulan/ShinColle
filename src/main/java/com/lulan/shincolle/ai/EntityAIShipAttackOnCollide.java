@@ -13,7 +13,7 @@ import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipEmotion;
 
 /**ATTACK ON COLLIDE SHIP VERSION
- * host¥²¶·¹ê§@IShipAttack¸òIShipEmotion, ¥Bextend EntityCreature
+ * hostå¿…é ˆå¯¦ä½œIShipAttackè·ŸIShipEmotion, ä¸”extend EntityCreature
  */
 public class EntityAIShipAttackOnCollide extends EntityAIBase {
 	
@@ -52,7 +52,7 @@ public class EntityAIShipAttackOnCollide extends EntityAIBase {
     	
         Entity target = this.host.getEntityTarget();
 
-        //µL¥Ø¼Ğ or ¥Ø¼Ğ¦º¤` or ¥¿¦b§¤¤U®É ¤£±Ò°ÊAI
+        //ç„¡ç›®æ¨™ or ç›®æ¨™æ­»äº¡ or æ­£åœ¨åä¸‹æ™‚ ä¸å•Ÿå‹•AI
         if(target == null || ((IShipEmotion)host).getIsSitting()) {
             return false;
         }
@@ -115,7 +115,7 @@ public class EntityAIShipAttackOnCollide extends EntityAIBase {
         
         --this.delayAttack;
 
-        //©x¤è¤º«Øªº¤ô¥­²¾°ÊAI
+        //å®˜æ–¹å…§å»ºçš„æ°´å¹³ç§»å‹•AI
         if((this.longMemory || this.host2.getEntitySenses().canSee(target)) && this.delayAttack <= 0 && (this.tarX == 0.0D && this.tarY == 0.0D && this.tarZ == 0.0D || target.getDistanceSq(this.tarX, this.tarY, this.tarZ) >= 1.0D || this.host2.getRNG().nextFloat() < 0.1F)) {
             this.tarX = target.posX;
             this.tarY = target.boundingBox.minY;

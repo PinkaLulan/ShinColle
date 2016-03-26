@@ -125,7 +125,7 @@ import cpw.mods.fml.client.registry.RenderingRegistry;
 
 public class ClientProxy extends CommonProxy {
 
-	//client world·|ÀHª±®a©Ò¦b¦ì¸m«ùÄò§ïÅÜ, ¦ı¬Odim id¥Ã»·³£¬O0¤£ÅÜ, µLªk¤Ï±Àdim id?
+	//client worldæœƒéš¨ç©å®¶æ‰€åœ¨ä½ç½®æŒçºŒæ”¹è®Š, ä½†æ˜¯dim idæ°¸é éƒ½æ˜¯0ä¸è®Š, ç„¡æ³•åæ¨dim id?
 	public static World getClientWorld() {
 		return Minecraft.getMinecraft().theWorld;
 	}
@@ -145,14 +145,14 @@ public class ClientProxy extends CommonProxy {
 		return Minecraft.getMinecraft();
 	}
 
-	//µn¿ı°»´ú«öÁä
+	//ç™»éŒ„åµæ¸¬æŒ‰éµ
 	@Override
 	public void registerKeyBindings() {
 	//	ClientRegistry.registerKeyBinding(KeyBindings.repair);
 		
 	}
 	
-	//µn¿ı¼Ò«¬render
+	//ç™»éŒ„æ¨¡å‹render
 	@Override
 	public void registerRender() {
 		

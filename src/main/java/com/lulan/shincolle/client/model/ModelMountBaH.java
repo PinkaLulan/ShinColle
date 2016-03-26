@@ -312,7 +312,7 @@ public class ModelMountBaH extends ModelBase {
         this.BodyMain.addChild(this.Neck);
         this.LegLeft01.addChild(this.LefLeft02); 
         
-        //µo¥ú¤ä¬[
+        //ç™¼å…‰æ”¯æž¶
         this.GlowBodyMain = new ModelRenderer(this, 0, 0);
         this.GlowBodyMain.setRotationPoint(0.0F, -10.0F, 0.0F);
         this.setRotateAngle(GlowBodyMain, 1.0471975511965976F, 0.0F, 0.0F);
@@ -423,7 +423,7 @@ public class ModelMountBaH extends ModelBase {
     	this.BodyMain.render(f5);
     	GL11.glDisable(GL11.GL_BLEND);
     	
-    	//«G«×³]¬°240
+    	//äº®åº¦è¨­ç‚º240
     	GL11.glDisable(GL11.GL_LIGHTING);
     	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
     	this.GlowBodyMain.render(f5);
@@ -443,7 +443,7 @@ public class ModelMountBaH extends ModelBase {
 
     }
     
-    //Âù¸}²¾°Ê­pºâ
+    //é›™è…³ç§»å‹•è¨ˆç®—
   	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {   
   		float angleX = MathHelper.cos(f2*0.08F);
   		float angleFast = MathHelper.cos(f2*1F);
@@ -458,12 +458,12 @@ public class ModelMountBaH extends ModelBase {
   		addk1 = angleAdd1 - 1.6755F;
 	  	addk2 = angleAdd2 - 1.6755F;
 
-	    //¥¿±`¯¸¥ß°Ê§@
-	  	//ÀY³¡·Ï§w
+	    //æ­£å¸¸ç«™ç«‹å‹•ä½œ
+	  	//é ­éƒ¨ç…™å›ª
 	  	this.HeadBack01.rotateAngleX = angleFast * 0.04F * rand.nextFloat() + 0.68F;
 	  	this.HeadBack02.rotateAngleX = angleFast * 0.06F * rand.nextFloat() + 0.77F;
 	  	this.HeadBack03.rotateAngleX = angleFast * 0.05F * rand.nextFloat() + 0.6F;
-	  	//¼L¤Ú
+	  	//å˜´å·´
 	  	this.Jaw.rotateAngleX = angleX * 0.12F + 0.83F;
 	    //arm 
 	  	this.ArmLeft01.rotateAngleX = angleAdd2 * 1.2F - 0.7F;

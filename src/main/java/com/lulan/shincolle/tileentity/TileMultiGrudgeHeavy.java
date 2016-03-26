@@ -40,15 +40,15 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileLiquidF
 	private FluidTank tank = new FluidTank(new FluidStack(F_LAVA, 0), TANKCAPA);
 	
 	//furnace
-	private int powerConsumed = 0;	//¤wªá¶Oªº¯à¶q
-	private int powerRemained = 0;	//³Ñ¾l¿U®Æ
-	private int powerGoal = 0;		//»İ­n¹F¦¨ªº¥Ø¼Ğ¯à¶q
+	private int powerConsumed = 0;	//å·²èŠ±è²»çš„èƒ½é‡
+	private int powerRemained = 0;	//å‰©é¤˜ç‡ƒæ–™
+	private int powerGoal = 0;		//éœ€è¦é”æˆçš„ç›®æ¨™èƒ½é‡
 	private int buildType = 0;		//type 0:none 1:ship 2:equip 3:ship loop 4: equip loop
-	private int invMode = 0;		//ª««~Äæ¼Ò¦¡ 0:¦¬ª««~ 1:©ñ¥Xª««~
-	private int selectMat = 0;		//ª««~¿ï¾Ü¼Ò¦¡, ¥Î©óª««~¿é¥X 0:grudge 1:abyss 2:ammo 3:poly
-	private boolean isActive;		//¬O§_¥¿¦b«Ø³y¤¤, ¦¹¬°¬ö¿ıisBuilding¬O§_¦³ÅÜ¤Æ¥Î
-	private int[] matsBuild;		//«Ø³y§÷®Æ¶q
-	private int[] matsStock;		//®w¦s§÷®Æ¶q
+	private int invMode = 0;		//ç‰©å“æ¬„æ¨¡å¼ 0:æ”¶ç‰©å“ 1:æ”¾å‡ºç‰©å“
+	private int selectMat = 0;		//ç‰©å“é¸æ“‡æ¨¡å¼, ç”¨æ–¼ç‰©å“è¼¸å‡º 0:grudge 1:abyss 2:ammo 3:poly
+	private boolean isActive;		//æ˜¯å¦æ­£åœ¨å»ºé€ ä¸­, æ­¤ç‚ºç´€éŒ„isBuildingæ˜¯å¦æœ‰è®ŠåŒ–ç”¨
+	private int[] matsBuild;		//å»ºé€ ææ–™é‡
+	private int[] matsStock;		//åº«å­˜ææ–™é‡
 	public static int buildSpeed = 48;  		//power cost per tick
 	public static final int POWERMAX = 1382400; //max power storage
 	public static final int SLOTS_NUM = 10;
@@ -69,7 +69,7 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileLiquidF
 		}
 	}
 	
-	//¨Ì·Ó¿é¥X¤J¤f³]©w, ¨M©wº|¤æµ¥¸Ë¸m¦p¦ó¿é¥X¤Jª««~¨ì¯S©wslot¤¤
+	//ä¾ç…§è¼¸å‡ºå…¥å£è¨­å®š, æ±ºå®šæ¼æ–—ç­‰è£ç½®å¦‚ä½•è¼¸å‡ºå…¥ç‰©å“åˆ°ç‰¹å®šslotä¸­
 	@Override
 	public int[] getAccessibleSlotsFromSide(int side) {
 		//type 1/2: large shipyard
@@ -81,37 +81,37 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileLiquidF
 		return new int[] {};
 	}
 	
-	//GUIÅã¥Üªº¦WºÙ, ¦³custom name«h¥Î, ¤£µM´N¥Î¹w³]¦WºÙ
+	//GUIé¡¯ç¤ºçš„åç¨±, æœ‰custom nameå‰‡ç”¨, ä¸ç„¶å°±ç”¨é è¨­åç¨±
 	@Override
 	public String getInventoryName() {
 		return this.hasCustomInventoryName() ? this.customName : "container."+Reference.MOD_ID+":LargeShipyard";
 	}
 	
-	//¬O§_¥i¥H¥kÁäÂI¶}¤è¶ô
+	//æ˜¯å¦å¯ä»¥å³éµé»é–‹æ–¹å¡Š
 	@Override
 	public boolean isUseableByPlayer(EntityPlayer player) {
-		//¥Ñ©ó·|¦³¦h­Ótile entity°Æ¥», ­n¥ı½T»{®y¼Ğ¬Û¦Pªº°Æ¥»¤~¯à¨Ï¥Î
+		//ç”±æ–¼æœƒæœ‰å¤šå€‹tile entityå‰¯æœ¬, è¦å…ˆç¢ºèªåº§æ¨™ç›¸åŒçš„å‰¯æœ¬æ‰èƒ½ä½¿ç”¨
 		if (worldObj.getTileEntity(xCoord, yCoord, zCoord) != this) {
 			return false;
 		}
-		else {	//½T»{player­n¦b¸Ótile entity 64®æ¤º, ¥H§K¶W¥XÅª¨ú½d³ò or ²£¥Í¨ä¥L¤£©úbug
+		else {	//ç¢ºèªplayerè¦åœ¨è©²tile entity 64æ ¼å…§, ä»¥å…è¶…å‡ºè®€å–ç¯„åœ or ç”¢ç”Ÿå…¶ä»–ä¸æ˜bug
 			return player.getDistanceSq(xCoord+0.5D, yCoord+0.5D, zCoord+0.5D) <= 64;
 		}
 	}
 	
-	//Åª¨únbt¸ê®Æ
+	//è®€å–nbtè³‡æ–™
 	@Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
         tank.readFromNBT(compound);
         
-        NBTTagList list = compound.getTagList("Items", 10);	//§ìnbt tag: Items (¦¹¬°Ãş«¬10:TagCompound)
+        NBTTagList list = compound.getTagList("Items", 10);	//æŠ“nbt tag: Items (æ­¤ç‚ºé¡å‹10:TagCompound)
         
-        for(int i=0; i<list.tagCount(); i++) {			//±Ntag¦C¥Xªº©Ò¦³ª««~§ì¥X¨Ó
+        for(int i=0; i<list.tagCount(); i++) {			//å°‡tagåˆ—å‡ºçš„æ‰€æœ‰ç‰©å“æŠ“å‡ºä¾†
             NBTTagCompound item = list.getCompoundTagAt(i);
             byte sid = item.getByte("Slot");
             
-            if (sid>=0 && sid<slots.length) {	//Åª¨únbt¬ö¿ıªºª««~, ¥Í¦¨¨ì¦Uslot¤¤ 
+            if (sid>=0 && sid<slots.length) {	//è®€å–nbtç´€éŒ„çš„ç‰©å“, ç”Ÿæˆåˆ°å„slotä¸­ 
             	slots[sid] = ItemStack.loadItemStackFromNBT(item);
             }
         }
@@ -126,7 +126,7 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileLiquidF
         matsStock = compound.getIntArray("matsStock");
     }
 	
-	//±N¸ê®Æ¼g¶inbt
+	//å°‡è³‡æ–™å¯«é€²nbt
 	@Override
 	public void writeToNBT(NBTTagCompound compound) {
 		super.writeToNBT(compound);
@@ -134,12 +134,12 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileLiquidF
 		
 		NBTTagList list = new NBTTagList();
 		compound.setTag("Items", list);
-		for(int i=0; i<slots.length; i++) {		//±Nslots[]¸ê®Æ¼g¶inbt
+		for(int i=0; i<slots.length; i++) {		//å°‡slots[]è³‡æ–™å¯«é€²nbt
 			if (slots[i] != null) {
 				NBTTagCompound item = new NBTTagCompound();
-				item.setByte("Slot", (byte)i);	//¦btag: Slot¤UÀx¦s¸ê®Æi
-				slots[i].writeToNBT(item);		//¦btag: Slot¤UÀx¦sslots[i]¸ê®Æ
-				list.appendTag(item);			//¼W¥[¤U¤@­ÓÄæ¦ì
+				item.setByte("Slot", (byte)i);	//åœ¨tag: Slotä¸‹å„²å­˜è³‡æ–™i
+				slots[i].writeToNBT(item);		//åœ¨tag: Slotä¸‹å„²å­˜slots[i]è³‡æ–™
+				list.appendTag(item);			//å¢åŠ ä¸‹ä¸€å€‹æ¬„ä½
 			}
 		}
 			
@@ -153,8 +153,8 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileLiquidF
 		compound.setIntArray("matsStock", matsStock);
 	}
 	
-	//§P©wª««~¬O§_¯à©ñ¤J¸Ó®æ¤l, ¥Î©ócanExtractItemµ¥¤èªk
-	//®æ¤l¥Î³~:0:grudge 1:abyss 2:ammo 3:poly 4:fuel 5:output
+	//åˆ¤å®šç‰©å“æ˜¯å¦èƒ½æ”¾å…¥è©²æ ¼å­, ç”¨æ–¼canExtractItemç­‰æ–¹æ³•
+	//æ ¼å­ç”¨é€”:0:grudge 1:abyss 2:ammo 3:poly 4:fuel 5:output
 	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack itemstack) {
 		if(slot == 0) {	//output slot
@@ -163,15 +163,15 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileLiquidF
 		return true;
 	}
 	
-	//¨Ï¥ÎºŞ½u/º|¤æ¿é¥X®É©I¥s, ¤£¾A¥Î©ó¤â°Ê¸m¤J
+	//ä½¿ç”¨ç®¡ç·š/æ¼æ–—è¼¸å‡ºæ™‚å‘¼å«, ä¸é©ç”¨æ–¼æ‰‹å‹•ç½®å…¥
 	@Override
 	public boolean canExtractItem(int slot, ItemStack itemstack, int side) {
 		return true;
 	}
 	
-	//«Ø³yship¤èªk
+	//å»ºé€ shipæ–¹æ³•
 	public void buildComplete() {
-		//¿é¤J§÷®Æ¼Æ¶q, ¨ú±obuild output¨ìslot 5
+		//è¼¸å…¥ææ–™æ•¸é‡, å–å¾—build outputåˆ°slot 5
 		switch(this.buildType) {
 		default:
 		case ID.Build.SHIP:			//build ship
@@ -185,29 +185,29 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileLiquidF
 		}
 	}
 	
-	//§P©w¬O§_«Ø³y¤¤
+	//åˆ¤å®šæ˜¯å¦å»ºé€ ä¸­
 	public boolean isBuilding() {
 		return hasPowerRemained() && canBuild();
 	}
 	
-	//§P©w¬O§_¦³¿U®Æ
+	//åˆ¤å®šæ˜¯å¦æœ‰ç‡ƒæ–™
 	public boolean hasPowerRemained() {
 		return powerRemained > buildSpeed;
 	}
 	
-	//§P©w¬O§_¦³«Ø³y¥Ø¼Ğ
+	//åˆ¤å®šæ˜¯å¦æœ‰å»ºé€ ç›®æ¨™
 	public boolean canBuild() {
 		return powerGoal > 0 && slots[0] == null;
 	}
 	
-	//¤è¶ôªº¬yµ{¶i¦æ¤èªk
-	//¸ê®Æ¥²¶·¥HmarkDirty¼Ğ°Oblock§ó·s, ¥H¤ÎÅª¼gNBT tag¨Ó«O¦s
+	//æ–¹å¡Šçš„æµç¨‹é€²è¡Œæ–¹æ³•
+	//è³‡æ–™å¿…é ˆä»¥markDirtyæ¨™è¨˜blockæ›´æ–°, ä»¥åŠè®€å¯«NBT tagä¾†ä¿å­˜
 	@Override
 	public void updateEntity() {
 		//do not update if no structure
 		if(this.getStructType() == 0) return;
 		
-		boolean sendUpdate = false;	//¼Ğ¬ö­nblock update, ¦³­n§ó·smetadata®É³]¬°true
+		boolean sendUpdate = false;	//æ¨™ç´€è¦block update, æœ‰è¦æ›´æ–°metadataæ™‚è¨­ç‚ºtrue
 		
 		//update goalPower
 		if(this.buildType != 0) {
@@ -227,7 +227,7 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileLiquidF
 			//add liquid fuel
 			TileEntityHelper.decrLiquidFuel(this);
 			
-			//inventory mode 0:¦¬¤Jª««~ 1:©ñ¥Xª««~
+			//inventory mode 0:æ”¶å…¥ç‰©å“ 1:æ”¾å‡ºç‰©å“
 			if(invMode == 0) {  //ADD MODE
 				for(int i = SLOTS_OUT + 1; i < SLOTS_NUM; i++) {
 					//add material
@@ -239,7 +239,7 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileLiquidF
 						}
 						
 						sendUpdate = true;
-						break;		//·s¼W§÷®Æ¦¨¥\, ¸õ¨ì¤U­Ótick
+						break;		//æ–°å¢ææ–™æˆåŠŸ, è·³åˆ°ä¸‹å€‹tick
 					}
 				}
 			}
@@ -247,20 +247,20 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileLiquidF
 				int compressNum = 9;	//output block
 				int normalNum = 1;		//output single item
 				
-				//©â¥Xª««~ªº¼Æ¶q
+				//æŠ½å‡ºç‰©å“çš„æ•¸é‡
 				if(ConfigHandler.easyMode) {	
 					compressNum = 90;
 					normalNum = 10;
 				}
 				
-				//©ñ¥Xblock or containerµ¥À£ÁY«¬ºA
+				//æ”¾å‡ºblock or containerç­‰å£“ç¸®å‹æ…‹
 				if(getMatStock(selectMat) >= compressNum) {
 					if(LargeRecipes.outputMaterialToSlot(this, selectMat, true)) {
 						this.addMatStock(selectMat, -compressNum);
 						sendUpdate = true;
 					}
 				}
-				else if(getMatStock(selectMat) >= normalNum) {	//©ñ¥X³æ¥óª««~«¬ºA
+				else if(getMatStock(selectMat) >= normalNum) {	//æ”¾å‡ºå–®ä»¶ç‰©å“å‹æ…‹
 					if(LargeRecipes.outputMaterialToSlot(this, selectMat, false)) {
 						this.addMatStock(selectMat, -normalNum);
 						sendUpdate = true;
@@ -268,13 +268,13 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileLiquidF
 				}
 			}
 
-			//§P©w¬O§_«Ø³y¤¤, ¨Ctick¶i¦æ¶i«×­È§ó·s, ­Y«D«Ø³y¤¤«h­«¸m¶i«×­È
+			//åˆ¤å®šæ˜¯å¦å»ºé€ ä¸­, æ¯tické€²è¡Œé€²åº¦å€¼æ›´æ–°, è‹¥éå»ºé€ ä¸­å‰‡é‡ç½®é€²åº¦å€¼
 			if(this.isBuilding()) {
 				this.syncTime++;
 				this.powerRemained -= buildSpeed;	//fuel bar --
 				this.powerConsumed += buildSpeed;	//build bar ++
 				
-				//®ø¯Ó°ª³t«Ø³y§÷®Æ
+				//æ¶ˆè€—é«˜é€Ÿå»ºé€ ææ–™
 				for(int i = SLOTS_OUT + 1; i < SLOTS_NUM; i++) {
 					if(slots[i] != null && slots[i].getItem() == ModItems.InstantConMat) {
 						slots[i].stackSize--;
@@ -296,9 +296,9 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileLiquidF
 					sendUpdate = true;
 				}
 				
-				//power¹F¼Ğ, «Ø³y§¹¦¨
+				//poweré”æ¨™, å»ºé€ å®Œæˆ
 				if (this.powerConsumed >= this.powerGoal) {
-					this.buildComplete();	//«Ø³y¥X¦¨«~©ñ¨ìoutput slot
+					this.buildComplete();	//å»ºé€ å‡ºæˆå“æ”¾åˆ°output slot
 					this.powerConsumed = 0;
 					this.powerGoal = 0;
 
@@ -308,7 +308,7 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileLiquidF
 					case ID.Build.SHIP:
 					case ID.Build.EQUIP:		//reset build type
 						this.buildType = ID.Build.NONE;
-						//±N«Ø³y§÷®Æ²M°£
+						//å°‡å»ºé€ ææ–™æ¸…é™¤
 						matsBuild[0] = 0;
 						matsBuild[1] = 0;
 						matsBuild[2] = 0;
@@ -324,11 +324,11 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileLiquidF
 				}
 			}			
 			
-			if(!this.canBuild()) {	//«D«Ø³y¤¤, ­«¸mbuild bar
+			if(!this.canBuild()) {	//éå»ºé€ ä¸­, é‡ç½®build bar
 				this.powerConsumed = 0;
 			}
 			
-			//­Yª¬ºA¦³§ïÅÜ¹L, «hµo°e§ó·s
+			//è‹¥ç‹€æ…‹æœ‰æ”¹è®Šé, å‰‡ç™¼é€æ›´æ–°
 			if(this.isActive != this.isBuilding()) {
 				this.isActive = this.isBuilding();
 				
@@ -367,15 +367,15 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileLiquidF
 		}
 	}
 
-	//­pºâfuel¦s¶q±ø
+	//è¨ˆç®—fuelå­˜é‡æ¢
 	public int getPowerRemainingScaled(int i) {
 		return (powerRemained * i) / POWERMAX;
 	}
 	
-	//­pºâ«Ø³y®É¶¡ (´«ºâ¦¨¯u¹ê®É¶¡)
+	//è¨ˆç®—å»ºé€ æ™‚é–“ (æ›ç®—æˆçœŸå¯¦æ™‚é–“)
 	public String getBuildTimeString() {
-		//³Ñ¾l¬í¼Æ = (¥Ø¼Ğ¯à¶q - ¥Ø«e¯à¶q) / (¨Ctick¼W¥[¯à¶q) / 20
-		int timeSec = (powerGoal - powerConsumed) / buildSpeed / 20;	//get time (³æ¦ì: sec)		
+		//å‰©é¤˜ç§’æ•¸ = (ç›®æ¨™èƒ½é‡ - ç›®å‰èƒ½é‡) / (æ¯tickå¢åŠ èƒ½é‡) / 20
+		int timeSec = (powerGoal - powerConsumed) / buildSpeed / 20;	//get time (å–®ä½: sec)		
 		return CalcHelper.getTimeFormated(timeSec);
 	}
 	

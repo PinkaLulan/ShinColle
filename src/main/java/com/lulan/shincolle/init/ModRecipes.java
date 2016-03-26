@@ -9,12 +9,12 @@ import net.minecraftforge.oredict.ShapelessOreRecipe;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ModRecipes {
-	//°t¤è½d¨Ò
-	//GameRegistry.addSmelting(¨ú±oª«, §÷®Æ, 0.1f¸gÅç);
-	//GameRegistry.addRecipe(new ShapedOreRecipe(¨ú±oª«, " s ", "sss", " s ", 's', "stickWood" §÷®Æ°}¦C));
-    //GameRegistry.addRecipe(new ShapelessOreRecipe(¨ú±oª«, §÷®ÆA, §÷®ÆB, ...));		
+	//é…æ–¹ç¯„ä¾‹
+	//GameRegistry.addSmelting(å–å¾—ç‰©, ææ–™, 0.1fç¶“é©—);
+	//GameRegistry.addRecipe(new ShapedOreRecipe(å–å¾—ç‰©, " s ", "sss", " s ", 's', "stickWood" ææ–™é™£åˆ—));
+    //GameRegistry.addRecipe(new ShapelessOreRecipe(å–å¾—ç‰©, ææ–™A, ææ–™B, ...));		
 	public static void init() {
-		//°t¤è§÷®Æor¦¨«~
+		//é…æ–¹ææ–™oræˆå“
 		ItemStack abyssiumBlock = new ItemStack(ModBlocks.BlockAbyssium);
 		ItemStack abyssiumStack = new ItemStack(ModItems.AbyssMetal,1,0);
 		ItemStack abyssiumStack9 = new ItemStack(ModItems.AbyssMetal,9,0);

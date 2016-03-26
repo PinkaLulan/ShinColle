@@ -18,7 +18,7 @@ import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.LogHelper;
 
-import cpw.mods.fml.common.Mod;		//mod°ò¥»¸ê°T
+import cpw.mods.fml.common.Mod;		//modåŸºæœ¬è³‡è¨Š
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;	//mod init
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;//mod post init
@@ -85,7 +85,7 @@ public class ShinColle {
 	/** post initial: mod interact */
 	@Mod.EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
-		//world gen¸òentity spawn©ñ¦bpostInit, ¥H«K¯àÅª¨ú¨ì¨ä¥Lmodªºbiome
+		//world genè·Ÿentity spawnæ”¾åœ¨postInit, ä»¥ä¾¿èƒ½è®€å–åˆ°å…¶ä»–modçš„biome
 		ModWorldGen.init();
 		
 //		//list all entity
@@ -116,9 +116,9 @@ public class ShinColle {
 	}
 	
 	/** server about to start event 
-	 *  ·í¶}±Ò¤@­Ó¦sÀÉ©ÎªÌMP¦øªA¾¹¶}±Ò®É·|¥á¥X¦¹¨Æ¥ó
-	 *  ¦b¦¹¨Æ¥ó¤¤±NMapStorageªºÅª¨ú¬ö¿ı³]¬°false
-	 *  ¨Ï¨C¦¸¶}¤£¦P¦sÀÉ³£·|­«Åª¸Ó¦sÀÉªºMapStorage
+	 *  ç•¶é–‹å•Ÿä¸€å€‹å­˜æª”æˆ–è€…MPä¼ºæœå™¨é–‹å•Ÿæ™‚æœƒä¸Ÿå‡ºæ­¤äº‹ä»¶
+	 *  åœ¨æ­¤äº‹ä»¶ä¸­å°‡MapStorageçš„è®€å–ç´€éŒ„è¨­ç‚ºfalse
+	 *  ä½¿æ¯æ¬¡é–‹ä¸åŒå­˜æª”éƒ½æœƒé‡è®€è©²å­˜æª”çš„MapStorage
 	 */
 	@Mod.EventHandler
 	public void onServerStarted(FMLServerAboutToStartEvent event) {

@@ -73,14 +73,14 @@ public class EntityFXLightning extends EntityFX {
 //    	tess.draw();
     	
     	GL11.glPushMatrix();
-		//¨Ï¥Î¦Û±aªº¶K¹ÏÀÉ
+		//ä½¿ç”¨è‡ªå¸¶çš„è²¼åœ–æª”
 //		Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE);
 		GL11.glDepthMask(true);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);	//disable texture
-//		GL11.glEnable(GL11.GL_DEPTH_TEST);	//DEPTH TEST¶}±Ò«á¤~¯à¨Ï¥ÎglDepthFunc
+//		GL11.glEnable(GL11.GL_DEPTH_TEST);	//DEPTH TESTé–‹å•Ÿå¾Œæ‰èƒ½ä½¿ç”¨glDepthFunc
 //		GL11.glDepthFunc(GL11.GL_ALWAYS);
 		
         float px = (float)(this.prevPosX + (this.posX - this.prevPosX) * ticks - interpPosX);
@@ -93,14 +93,14 @@ public class EntityFXLightning extends EntityFX {
             float offz = 0F;
             float offy = 0F;
             
-            //¶V«á­±ªºstep, random range¶V¤j (°{¹q¨ì«á­±¤À¤ä¤À´²)
+            //è¶Šå¾Œé¢çš„step, random rangeè¶Šå¤§ (é–ƒé›»åˆ°å¾Œé¢åˆ†æ”¯åˆ†æ•£)
             for(int i = 0; i < numStem; i++) {
-            	//¶V«á­±ªºªK·F¤À´²½d³ò¶V¤j
+            	//è¶Šå¾Œé¢çš„æå¹¹åˆ†æ•£ç¯„åœè¶Šå¤§
                 offx = (rand.nextFloat() - 0.5F) * 0.1F * (i + 1);
             	offz = (rand.nextFloat() - 0.5F) * 0.1F * (i + 1);
             	offy = rand.nextFloat() * 0.2F + 0.5F;
             	
-            	//°_©ly°ª«× (y©¹¤Uªø)
+            	//èµ·å§‹yé«˜åº¦ (yå¾€ä¸‹é•·)
             	if(i == 0) {
             		prevShape[i][1] = py + par4 * scaleY;
             		prevShape[i][4] = prevShape[i][1];
@@ -110,7 +110,7 @@ public class EntityFXLightning extends EntityFX {
             		prevShape[i][4] = prevShape[i][1];
             	}
             	
-            	//±q«á­±ªºstep¶}©l¦s: x1, y1, z1, x2, y2, z2
+            	//å¾å¾Œé¢çš„stepé–‹å§‹å­˜: x1, y1, z1, x2, y2, z2
             	prevShape[i][0] = px + offx + par3 * scaleXZ;
             	prevShape[i][2] = pz + offz + par5 * scaleXZ;
             	prevShape[i][3] = px + offx - par3 * scaleXZ;
@@ -141,8 +141,8 @@ public class EntityFXLightning extends EntityFX {
         tess.setColorRGBA_F(particleRed, particleGreen, particleBlue, particleAlpha);
         tess.setBrightness(240);
         
-    	//quad strip¥²¶·¥ı«ü©w¤U¤è¨âÂI(¥ª¤U -> ¥k¤U), ¦A«ü©w¤W¤è¨âÂI(¥ª¤W -> ¥k¤W), ¸Ó­±¤~·|´Â¦Vª±®a
-    	//¸òquad¤£¦P (¥k¤U -> ¥k¤W -> ¥ª¤W -> ¥ª¤U)
+    	//quad stripå¿…é ˆå…ˆæŒ‡å®šä¸‹æ–¹å…©é»(å·¦ä¸‹ -> å³ä¸‹), å†æŒ‡å®šä¸Šæ–¹å…©é»(å·¦ä¸Š -> å³ä¸Š), è©²é¢æ‰æœƒæœå‘ç©å®¶
+    	//è·Ÿquadä¸åŒ (å³ä¸‹ -> å³ä¸Š -> å·¦ä¸Š -> å·¦ä¸‹)
         for(int i = numStem - 1; i >= 0; i--) {
         	tess.addVertex(prevShape[i][0],prevShape[i][1],prevShape[i][2]);
         	tess.addVertex(prevShape[i][3],prevShape[i][4],prevShape[i][5]);
@@ -152,7 +152,7 @@ public class EntityFXLightning extends EntityFX {
         tess.draw();
 
 //        GL11.glDepthFunc(GL11.GL_LEQUAL);
-//		GL11.glDisable(GL11.GL_DEPTH_TEST);	//DEPTH TESTÃö³¬
+//		GL11.glDisable(GL11.GL_DEPTH_TEST);	//DEPTH TESTé—œé–‰
         GL11.glEnable(GL11.GL_LIGHTING);
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glEnable(GL11.GL_TEXTURE_2D);

@@ -32,7 +32,7 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
 	protected IShipAttackBase host;  		//host target
 	protected EntityLivingBase host2;
 	protected World world;
-	protected ShipPathNavigate shipNavigator;	//¤ôªÅ²¾°Ê¥Înavigator
+	protected ShipPathNavigate shipNavigator;	//æ°´ç©ºç§»å‹•ç”¨navigator
 	protected ShipMoveHelper shipMoveHelper;
 	protected Entity atkTarget;
 	protected Entity rvgTarget;					//revenge target
@@ -52,10 +52,10 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
     
     //model display
     /**EntityState: 0:HP State 1:Emotion 2:Emotion2*/
-	protected byte StateEmotion;		//ªí±¡1
-	protected byte StateEmotion2;		//ªí±¡2
-	protected int StartEmotion;			//ªí±¡1 ¶}©l®É¶¡
-	protected int StartEmotion2;		//ªí±¡2 ¶}©l®É¶¡
+	protected byte StateEmotion;		//è¡¨æƒ…1
+	protected byte StateEmotion2;		//è¡¨æƒ…2
+	protected int StartEmotion;			//è¡¨æƒ…1 é–‹å§‹æ™‚é–“
+	protected int StartEmotion2;		//è¡¨æƒ…2 é–‹å§‹æ™‚é–“
 	protected boolean headTilt;
 
 	
@@ -91,7 +91,7 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
         this.StartEmotion2 = 0;
         this.headTilt = false;
            
-        //³]©wµo®g¦ì¸m
+        //è¨­å®šç™¼å°„ä½ç½®
         this.posX = host2.posX + rand.nextDouble() * 6D - 3D;
         this.posY = host2.posY + 0.5D;
         this.posZ = host2.posZ + rand.nextDouble() * 6D - 3D;
@@ -105,14 +105,14 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
         
         this.setPosition(this.posX, this.posY, this.posZ);
  
-	    //³]©w°ò¥»Äİ©Ê
+	    //è¨­å®šåŸºæœ¬å±¬æ€§
 	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(ConfigHandler.scaleBossSmall[ID.HP] * 0.125D);
 		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(this.movSpeed);
-		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(this.atkRange + 32); //¦¹¬°§ä¥Ø¼Ğ, ¸ô®|ªº½d³ò
+		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(this.atkRange + 32); //æ­¤ç‚ºæ‰¾ç›®æ¨™, è·¯å¾‘çš„ç¯„åœ
 		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(0.2D);
 		if(this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
 				
-		//³]©wAI
+		//è¨­å®šAI
 		this.setAIList();
 	}
     
@@ -151,7 +151,7 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
     		this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
     	}
         
-        //µL¼Äªºentity¶Ë®`µL®Ä
+        //ç„¡æ•µçš„entityå‚·å®³ç„¡æ•ˆ
   		if(this.isEntityInvulnerable()) {	
         	return false;
         }
@@ -159,12 +159,12 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
   		if(attacker.getSourceOfDamage() != null) {
   			Entity entity = attacker.getSourceOfDamage();
   			
-  			//¤£·|¹ï¦Û¤v³y¦¨¶Ë®`
+  			//ä¸æœƒå°è‡ªå·±é€ æˆå‚·å®³
   			if(entity.equals(this)) {  
   				return false;
   			}
   			
-  			//­Y±¼¨ì¥@¬É¥~, «hª½±µ¨Ï¸Óentity®ø¥¢
+  			//è‹¥æ‰åˆ°ä¸–ç•Œå¤–, å‰‡ç›´æ¥ä½¿è©²entityæ¶ˆå¤±
   	        if(attacker.getDamageType().equals("outOfWorld")) {
   	        	this.setDead();
   	        	return false;
@@ -175,7 +175,7 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
   			
   			reduceAtk = atk * (1F - this.getDefValue() * 0.01F);
   			
-  			//ship vs ship, damage type¶Ë®`½Õ¾ã
+  			//ship vs ship, damage typeå‚·å®³èª¿æ•´
   			if(entity instanceof IShipAttackBase) {
   				//get attack time for damage modifier setting (day, night or ...etc)
   				int modSet = this.worldObj.provider.isDaytime() ? 0 : 1;
@@ -196,8 +196,8 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
 		
 		//client side
 		if(this.worldObj.isRemote) {
-			//¦³²¾°Ê®É, ²£¥Í¤ôªá¯S®Ä
-			//(ª`·N¦¹entity¦]¬°³]¬°«D°ª³t§ó·s, clientºİ¤£·|§ó·smotionXµ¥¼Æ­È, »İ¦Û¦æ­pºâ)
+			//æœ‰ç§»å‹•æ™‚, ç”¢ç”Ÿæ°´èŠ±ç‰¹æ•ˆ
+			//(æ³¨æ„æ­¤entityå› ç‚ºè¨­ç‚ºéé«˜é€Ÿæ›´æ–°, clientç«¯ä¸æœƒæ›´æ–°motionXç­‰æ•¸å€¼, éœ€è‡ªè¡Œè¨ˆç®—)
 			double motX = this.posX - this.prevPosX;
 			double motZ = this.posZ - this.prevPosZ;
 			double parH = this.posY - (int)this.posY;
@@ -211,12 +211,12 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
 		else {
 			boolean setdead = false;
 			
-			//owner®ø¥¢(³q±`¬Oserver restart)
+			//owneræ¶ˆå¤±(é€šå¸¸æ˜¯server restart)
 			if(this.host == null) {
 				setdead = true;
 			}
 			else {
-				//¶W¹L60¬í¦Û°Ê®ø¥¢
+				//è¶…é60ç§’è‡ªå‹•æ¶ˆå¤±
 				if(this.ticksExisted > 1200) {
 					setdead = true;
 				}
@@ -233,7 +233,7 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
 					}	
 				}
 				
-				//¨¾¤î·Ä¦º
+				//é˜²æ­¢æººæ­»
 				if(this.isInWater() && this.ticksExisted % 100 == 0) {
 					this.setAir(300);
 				}
@@ -336,12 +336,11 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
 	//light attack
 	public boolean attackEntityWithAmmo(Entity target) {
 		float atkLight = CalcHelper.calcDamageByEquipEffect(this, target, this.atk, 0);
-		float kbValue = 0.001F;
 
 		//play cannon fire sound at attacker
         playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         
-        //¦¹¤èªk¤ñgetLookÁÙ¥¿½T (client sync°İÃD)
+        //æ­¤æ–¹æ³•æ¯”getLooké‚„æ­£ç¢º (client syncå•é¡Œ)
         float distX = (float) (target.posX - this.posX);
         float distY = (float) (target.posY - this.posY);
         float distZ = (float) (target.posZ - this.posZ);
@@ -350,7 +349,7 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
         distY = distY / distSqrt;
         distZ = distZ / distSqrt;
 		
-		//µo®gªÌ·ÏÃú¯S®Ä
+		//ç™¼å°„è€…ç…™éœ§ç‰¹æ•ˆ
         TargetPoint point0 = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 6, this.posX, this.posY+1.5D, this.posZ, distX, distY, distZ, true), point0);
 		
@@ -404,24 +403,18 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
     		}
   		}
 
-	    //±Natk¸òattacker¶Çµ¹¥Ø¼ĞªºattackEntityFrom¤èªk, ¦b¥Ø¼Ğclass¤¤­pºâ¶Ë®`
-	    //¨Ã¥B¦^¶Ç¬O§_¦¨¥\¶Ë®`¨ì¥Ø¼Ğ
+	    //å°‡atkè·Ÿattackerå‚³çµ¦ç›®æ¨™çš„attackEntityFromæ–¹æ³•, åœ¨ç›®æ¨™classä¸­è¨ˆç®—å‚·å®³
+	    //ä¸¦ä¸”å›å‚³æ˜¯å¦æˆåŠŸå‚·å®³åˆ°ç›®æ¨™
 	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this).setProjectile(), atkLight);
 
 	    //if attack success
 	    if(isTargetHurt) {
-	    	//calc kb effect
-	        if(kbValue > 0) {
-	            target.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
-	                   0.02D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
-	        }
-	        
 	        //display hit particle on target
 	        TargetPoint point1 = new TargetPoint(this.dimension, target.posX, target.posY, target.posZ, 64D);
 			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 9, false), point1);
         }
 	    
-	    //®ø¯Ó¼uÃÄ­pºâ
+	    //æ¶ˆè€—å½ˆè—¥è¨ˆç®—
   		if(numAmmoLight > 0) {
   			numAmmoLight--;
   			
@@ -442,9 +435,9 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
 		//play cannon fire sound at attacker
         this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         
-        //­¸¼u¬O§_±Ä¥Îª½®g
+        //é£›å½ˆæ˜¯å¦æ¡ç”¨ç›´å°„
   		boolean isDirect = false;
-  		//­pºâ¥Ø¼Ğ¶ZÂ÷
+  		//è¨ˆç®—ç›®æ¨™è·é›¢
   		float tarX = (float)target.posX;	//for miss chance calc
   		float tarY = (float)target.posY;
   		float tarZ = (float)target.posZ;
@@ -454,7 +447,7 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
         float distSqrt = MathHelper.sqrt_float(distX*distX + distY*distY + distZ*distZ);
         float launchPos = (float)posY + height * 0.7F;
           
-        //¶W¹L¤@©w¶ZÂ÷/¤ô¤¤ , «h±Ä¥Î©ßª«½u,  ¦b¤ô¤¤®Éµo®g°ª«×¸û§C
+        //è¶…éä¸€å®šè·é›¢/æ°´ä¸­ , å‰‡æ¡ç”¨æ‹‹ç‰©ç·š,  åœ¨æ°´ä¸­æ™‚ç™¼å°„é«˜åº¦è¼ƒä½
         if((distX*distX+distY*distY+distZ*distZ) < 36F) {
         	isDirect = true;
         }
@@ -480,7 +473,7 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
         		tarX, tarY+target.height*0.2F, tarZ, launchPos, atkHeavy, kbValue, isDirect, -1F);
         this.worldObj.spawnEntityInWorld(missile);
         
-        //®ø¯Ó¼uÃÄ­pºâ
+        //æ¶ˆè€—å½ˆè—¥è¨ˆç®—
   		if(numAmmoHeavy > 0) {
   			numAmmoHeavy--;
   			
@@ -492,7 +485,7 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
         return true;
 	}
     
-    //¤ô¤¤¸ò©¥¼ß¤¤¤£·|¤U¨I
+    //æ°´ä¸­è·Ÿå²©æ¼¿ä¸­ä¸æœƒä¸‹æ²‰
     @Override
     public void moveEntityWithHeading(float p_70612_1_, float p_70612_2_) {
         double d0;

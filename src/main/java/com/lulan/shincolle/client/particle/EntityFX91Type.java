@@ -13,7 +13,7 @@ import net.minecraft.world.World;
 
 
 /**91TYPE PARTICLE
- * §ğÀ»¤å¦r¯S®Ä
+ * æ”»æ“Šæ–‡å­—ç‰¹æ•ˆ
  */
 @SideOnly(Side.CLIENT)
 public class EntityFX91Type extends EntityFX {
@@ -36,8 +36,8 @@ public class EntityFX91Type extends EntityFX {
         this.noClip = true;
     }
 
-    //par3,4,5¬°ª±®aµø¨¤Yaw°Ñ¼Æ, ¥Î©ó½Õ¾ãx,y,z­È¹ïÀ³¨ìª±®a¤ô¥­µø¨¤ªº¤ô¥­¸ò««ª½²¾°Ê
-    //par6,7¬°ª±®aµø¨¤Pitch°Ñ¼Æ, ¥Î©ó½Õ¾ãx,z­È¹ïÀ³¨ìª±®a««ª½µø¨¤ªº¤ô¥­²¾°Ê
+    //par3,4,5ç‚ºç©å®¶è¦–è§’Yawåƒæ•¸, ç”¨æ–¼èª¿æ•´x,y,zå€¼å°æ‡‰åˆ°ç©å®¶æ°´å¹³è¦–è§’çš„æ°´å¹³è·Ÿå‚ç›´ç§»å‹•
+    //par6,7ç‚ºç©å®¶è¦–è§’Pitchåƒæ•¸, ç”¨æ–¼èª¿æ•´x,zå€¼å°æ‡‰åˆ°ç©å®¶å‚ç›´è¦–è§’çš„æ°´å¹³ç§»å‹•
     @Override
 	public void renderParticle(Tessellator tess, float ticks, float par3, float par4, float par5, float par6, float par7) {
     	
@@ -45,12 +45,12 @@ public class EntityFX91Type extends EntityFX {
 //    	tess.draw();
     	
 		GL11.glPushMatrix();
-		//¥ıµe¥X¤å¦r
+		//å…ˆç•«å‡ºæ–‡å­—
 		GL11.glDepthMask(true);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glDisable(GL11.GL_LIGHTING);
-//		GL11.glEnable(GL11.GL_DEPTH_TEST);	//DEPTH TEST¶}±Ò«á¤~¯à¨Ï¥ÎglDepthFunc
+//		GL11.glEnable(GL11.GL_DEPTH_TEST);	//DEPTH TESTé–‹å•Ÿå¾Œæ‰èƒ½ä½¿ç”¨glDepthFunc
 //		GL11.glDepthFunc(GL11.GL_ALWAYS);
         
         //start tess
@@ -97,7 +97,7 @@ public class EntityFX91Type extends EntityFX {
         tess.draw();
         
 //        GL11.glDepthFunc(GL11.GL_LEQUAL);
-//		GL11.glDisable(GL11.GL_DEPTH_TEST);	//DEPTH TESTÃö³¬
+//		GL11.glDisable(GL11.GL_DEPTH_TEST);	//DEPTH TESTé—œé–‰
         GL11.glEnable(GL11.GL_LIGHTING);
         GL11.glDisable(GL11.GL_BLEND);
 //		GL11.glDepthMask(false);

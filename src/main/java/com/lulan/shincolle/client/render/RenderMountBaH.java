@@ -9,7 +9,7 @@ import net.minecraft.util.ResourceLocation;
 
 public class RenderMountBaH extends RenderLiving {
 	
-	//¶K¹ÏÀÉ¸ô®|
+	//è²¼åœ–æª”è·¯å¾‘
 	private static final ResourceLocation mobTextures = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityMountBaH.png");
 
 	public RenderMountBaH(ModelBase par1, float par2) {

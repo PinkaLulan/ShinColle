@@ -30,7 +30,7 @@ public class EntityHeavyCruiserNe extends BasicEntityShipSmall {
 	
 	public EntityHeavyCruiserNe(World world) {
 		super(world);
-		this.setSize(0.6F, 1.2F);	//¸I¼²¤j¤p ¸ò¼Ò«¬¤j¤pµLÃö
+		this.setSize(0.6F, 1.2F);	//ç¢°æ’å¤§å° è·Ÿæ¨¡å‹å¤§å°ç„¡é—œ
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HEAVY_CRUISER);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.HeavyCruiserNE);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CRUISER);
@@ -64,7 +64,7 @@ public class EntityHeavyCruiserNe extends BasicEntityShipSmall {
 		this.tasks.addTask(11, new EntityAIShipRangeAttack(this));			   //0011
 	}
 	
-	//NE¯ÅÃB¥~¼W¥[Äİ©Ê
+	//NEç´šé¡å¤–å¢åŠ å±¬æ€§
 	@Override
 	public void calcShipAttributes() {
 		EffectEquip[ID.EF_CRI] = EffectEquip[ID.EF_CRI] + 0.15F;
@@ -94,18 +94,18 @@ public class EntityHeavyCruiserNe extends BasicEntityShipSmall {
 	        	}
         	}
     		
-    		//­Y­n§äÃM­¼¥Ø¼Ğ
+    		//è‹¥è¦æ‰¾é¨ä¹˜ç›®æ¨™
         	if(this.isPushing) {
         		this.tickPush++;
         		
-        		//§ä¤Ó¤[, ©ñ±óÃM­¼¥Ø¼Ğ
+        		//æ‰¾å¤ªä¹…, æ”¾æ£„é¨ä¹˜ç›®æ¨™
         		if(this.tickPush > 200 || this.targetPush == null) {
         			this.cancelPush();
         		}
         		else {
         			float distPush = this.getDistanceToEntity(this.targetPush);
         			
-        			//¨C32 tick§ä¤@¦¸¸ô®|
+        			//æ¯32 tickæ‰¾ä¸€æ¬¡è·¯å¾‘
             		if(this.ticksExisted % 32 == 0) {
             			if(distPush > 2F) {
             				this.getShipNavigate().tryMoveToEntityLiving(this.targetPush, 1D);
@@ -144,19 +144,19 @@ public class EntityHeavyCruiserNe extends BasicEntityShipSmall {
         List hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, impactBox);
         List<EntityLivingBase> canPushList = new ArrayList();
         
-        //·j´Mlist, §ä¥X²Ä¤@­Ó¥i¥HÃM­¼ªº¥Ø¼Ğ
+        //æœå°‹list, æ‰¾å‡ºç¬¬ä¸€å€‹å¯ä»¥é¨ä¹˜çš„ç›®æ¨™
         if(hitList != null && !hitList.isEmpty()) {
             for(int i = 0; i < hitList.size(); ++i) {
             	getEnt = (EntityLivingBase)hitList.get(i);
             	
-            	//¥uÃM­¼¦P¥D¤Hªº´ÏÄ¥©ÎªÌ¥D¤H
+            	//åªé¨ä¹˜åŒä¸»äººçš„æ£²è‰¦æˆ–è€…ä¸»äºº
         		if(getEnt != this) {
         			canPushList.add(getEnt);
         		}
             }
         }
         
-        //±q¥iÃM­¼¥Ø¼Ğ¤¤¬D¥X¤@­Ó¥Ø¼ĞÃM­¼
+        //å¾å¯é¨ä¹˜ç›®æ¨™ä¸­æŒ‘å‡ºä¸€å€‹ç›®æ¨™é¨ä¹˜
         if(canPushList.size() > 0) {
         	this.targetPush = canPushList.get(rand.nextInt(canPushList.size()));
         	this.tickPush = 0;

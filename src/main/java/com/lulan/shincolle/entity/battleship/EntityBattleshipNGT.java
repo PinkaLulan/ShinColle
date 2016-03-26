@@ -26,15 +26,15 @@ import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
-/**¯S®íheavy attack:
- * ¥ÎStateEmotion[ID.S.Phase]¨ÓÀx¦s§ğÀ»¶¥¬q
- * Phase 1:¶°®ğ 2:Ãz®ğ 3:¶°®ğ 
+/**ç‰¹æ®Šheavy attack:
+ * ç”¨StateEmotion[ID.S.Phase]ä¾†å„²å­˜æ”»æ“Šéšæ®µ
+ * Phase 1:é›†æ°£ 2:çˆ†æ°£ 3:é›†æ°£ 
  */
 public class EntityBattleshipNGT extends BasicEntityShipSmall {
 
 	public EntityBattleshipNGT(World world) {
 		super(world);
-		this.setSize(0.6F, 1.8F);	//¸I¼²¤j¤p ¸ò¼Ò«¬¤j¤pµLÃö
+		this.setSize(0.6F, 1.8F);	//ç¢°æ’å¤§å° è·Ÿæ¨¡å‹å¤§å°ç„¡é—œ
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.BattleshipNagato);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
@@ -78,19 +78,18 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
   		if(worldObj.isRemote) {
   			if(this.ticksExisted % 10 == 0) {
   				if(getStateEmotion(ID.S.Phase) > 0) {
-   	  				//¥Í¦¨®ğ¼u¯S®Ä
+   	  				//ç”Ÿæˆæ°£å½ˆç‰¹æ•ˆ
   	  				ParticleHelper.spawnAttackParticleAtEntity(this, 0.1D, 1D, 0D, (byte)1);
   				}
   			}
 			
-  			if(this.ticksExisted % 5 == 0) {
-  				if(getStateEmotion(ID.S.State) >= ID.State.EQUIP01) {
+  			if(this.ticksExisted % 4 == 0) {
+  				if(getStateEmotion(ID.S.State) >= ID.State.EQUIP01 && !this.isSitting()) {
   					double smokeY = posY + 1.6D;
-  					if(this.isSitting()) smokeY = posY + 0.9D;
   					
-  					//­pºâ·ÏÃú¦ì¸m
+  					//è¨ˆç®—ç…™éœ§ä½ç½®
   	  				float[] partPos = ParticleHelper.rotateXZByAxis(-0.55F, 0F, (this.renderYawOffset % 360) / 57.2957F, 1F);
-  	  				//¥Í¦¨¸Ë³Æ«_·Ï¯S®Ä
+  	  				//ç”Ÿæˆè£å‚™å†’ç…™ç‰¹æ•ˆ
   	  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], smokeY, posZ+partPos[0], 0D, 0D, 0D, (byte)20);
   				}	
   			}
@@ -113,16 +112,14 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
 		return false;
   	}
   	
-  	//­×§ï·ÏÃú¯S®Ä
+  	//ä¿®æ”¹ç…™éœ§ç‰¹æ•ˆ
   	@Override
   	public boolean attackEntityWithAmmo(Entity target) {
   		//get attack value
 		float atk = CalcHelper.calcDamageByEquipEffect(this, target, StateFinal[ID.ATK], 0);
-		//set knockback value (testing)
-		float kbValue = 0.05F;
 		
 		//update entity look at vector (for particle spawn)
-        //¦¹¤èªk¤ñgetLookÁÙ¥¿½T (client sync°İÃD)
+        //æ­¤æ–¹æ³•æ¯”getLooké‚„æ­£ç¢º (client syncå•é¡Œ)
         float distX = (float) (target.posX - this.posX);
         float distY = (float) (target.posY - this.posY);
         float distZ = (float) (target.posZ - this.posZ);
@@ -131,7 +128,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
         distY = distY / distSqrt;
         distZ = distZ / distSqrt;
       
-        //µo®gªÌ·ÏÃú¯S®Ä
+        //ç™¼å°„è€…ç…™éœ§ç‰¹æ•ˆ
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 19, this.posX, this.posY+0.3D, this.posZ, distX, 1F, distZ, true), point);
 
@@ -202,20 +199,12 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
     		}
   		}
   		
-	    //±Natk¸òattacker¶Çµ¹¥Ø¼ĞªºattackEntityFrom¤èªk, ¦b¥Ø¼Ğclass¤¤­pºâ¶Ë®`
-	    //¨Ã¥B¦^¶Ç¬O§_¦¨¥\¶Ë®`¨ì¥Ø¼Ğ
+	    //å°‡atkè·Ÿattackerå‚³çµ¦ç›®æ¨™çš„attackEntityFromæ–¹æ³•, åœ¨ç›®æ¨™classä¸­è¨ˆç®—å‚·å®³
+	    //ä¸¦ä¸”å›å‚³æ˜¯å¦æˆåŠŸå‚·å®³åˆ°ç›®æ¨™
 	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this).setProjectile(), atk);
 
 	    //if attack success
 	    if(isTargetHurt) {
-	    	//calc kb effect
-	        if(kbValue > 0) {
-	            target.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
-	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
-	            motionX *= 0.6D;
-	            motionZ *= 0.6D;
-	        }
-	        
         	//display hit particle on target
 	        TargetPoint point1 = new TargetPoint(this.dimension, target.posX, target.posY, target.posZ, 64D);
 			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 9, false), point1);
@@ -225,7 +214,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
 	}
   	
   	/**Type 91 Armor-Piercing Fist
-  	 * »İ­n¶i¦æ4¶¥¬q§ğÀ»(3¶¥¬q·Ç³Æ), ¹ï¥Ø¼Ğ³y¦¨­«§ğÀ»ªº4­¿¶Ë®`, ÃB¥~°l¥[8x8½d³ò1­¿¶Ë®`
+  	 * éœ€è¦é€²è¡Œ4éšæ®µæ”»æ“Š(3éšæ®µæº–å‚™), å°ç›®æ¨™é€ æˆé‡æ”»æ“Šçš„4å€å‚·å®³, é¡å¤–è¿½åŠ 8x8ç¯„åœ1å€å‚·å®³
   	 */
   	@Override
   	public boolean attackEntityWithHeavyAmmo(Entity target) {
@@ -244,7 +233,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
 		
 		boolean isTargetHurt = false;
 
-		//­pºâ¥Ø¼Ğ¶ZÂ÷
+		//è¨ˆç®—ç›®æ¨™è·é›¢
 		float tarX = (float)target.posX;	//for miss chance calc
 		float tarY = (float)target.posY;
 		float tarZ = (float)target.posZ;
@@ -295,7 +284,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
         atkPhase++;
       
-        if(atkPhase > 3) {	//§ğÀ»·Ç³Æ§¹¦¨, ­pºâ§ğÀ»¶Ë®`
+        if(atkPhase > 3) {	//æ”»æ“Šæº–å‚™å®Œæˆ, è¨ˆç®—æ”»æ“Šå‚·å®³
         	//display hit particle on target
 	        CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 21, posX, posY, posZ, target.posX, target.posY, target.posZ, true), point);
         	
@@ -332,7 +321,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
         		}
       		}
       		
-      		//¹ï¥»Åé³y¦¨atk1¶Ë®`
+      		//å°æœ¬é«”é€ æˆatk1å‚·å®³
       		isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this), atk1);
       		
   			this.motionX = 0D;
@@ -343,19 +332,19 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
   			this.posZ = tarZ+dZ*2F;
   			this.setPosition(posX, posY, posZ);
       		
-      		//¹ï½d³ò³y¦¨atk2¶Ë®`
+      		//å°ç¯„åœé€ æˆatk2å‚·å®³
             EntityLivingBase hitEntity = null;
             AxisAlignedBB impactBox = this.boundingBox.expand(3.5D, 3.5D, 3.5D); 
             List hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, impactBox);
             float atkTemp = atk2;
             
-            //·j´Mlist, §ä¥X²Ä¤@­Ó¥i¥H§P©wªº¥Ø¼Ğ, §Y¶Çµ¹onImpact
+            //æœå°‹list, æ‰¾å‡ºç¬¬ä¸€å€‹å¯ä»¥åˆ¤å®šçš„ç›®æ¨™, å³å‚³çµ¦onImpact
             if(hitList != null && !hitList.isEmpty()) {
                 for(int i=0; i<hitList.size(); ++i) {
                 	atkTemp = atk2;
                 	hitEntity = (EntityLivingBase)hitList.get(i);
                 	
-                	//¥Ø¼Ğ¤£¯à¬O¦Û¤v or ¥D¤H
+                	//ç›®æ¨™ä¸èƒ½æ˜¯è‡ªå·± or ä¸»äºº
                 	if(hitEntity != this && EntityHelper.checkAttackable(hitEntity) && hitEntity.canBeCollidedWith() && EntityHelper.checkNotSameEntityID(this, hitEntity)) {
                 		//calc miss and cri
                 		if(this.rand.nextFloat() < missChance) {	//MISS
@@ -365,12 +354,12 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
                     		atkTemp *= 1.5F;
                         }
                 		
-                		//­Y§ğÀ»¨ì¦P°}Àçentity (ex: owner), «h¶Ë®`³]¬°0 (¦ı¬O¨ÌµMÄ²µoÀ»­¸¯S®Ä)
+                		//è‹¥æ”»æ“Šåˆ°åŒé™£ç‡Ÿentity (ex: owner), å‰‡å‚·å®³è¨­ç‚º0 (ä½†æ˜¯ä¾ç„¶è§¸ç™¼æ“Šé£›ç‰¹æ•ˆ)
                 		if(EntityHelper.checkSameOwner(this, hitEntity)) {
                 			atkTemp = 0F;
                     	}
                 		
-                		//­Y§ğÀ»¨ìª±®a, ³Ì¤j¶Ë®`©T©w¬°TNT¶Ë®` (non-owner)
+                		//è‹¥æ”»æ“Šåˆ°ç©å®¶, æœ€å¤§å‚·å®³å›ºå®šç‚ºTNTå‚·å®³ (non-owner)
                     	if(hitEntity instanceof EntityPlayer) {
                     		atkTemp *= 0.25F;
                     		
@@ -384,16 +373,8 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
                 			atkTemp = 0F;
                 		}
 
-                		//if attack success
-                	    if(hitEntity.attackEntityFrom(DamageSource.causeMobDamage(this), atkTemp)) {
-                	    	//calc kb effect
-                	        if(kbValue > 0) {
-                	        	hitEntity.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
-                	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
-                	            motionX *= 0.6D;
-                	            motionZ *= 0.6D;
-                	        }             	 
-                	    }
+                		//attack
+                	    hitEntity.attackEntityFrom(DamageSource.causeMobDamage(this), atkTemp);
                 	}//end can be collided with
                 }//end hit target list for loop
             }//end hit target list != null

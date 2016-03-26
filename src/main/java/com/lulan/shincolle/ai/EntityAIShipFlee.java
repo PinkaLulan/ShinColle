@@ -26,8 +26,8 @@ public class EntityAIShipFlee extends EntityAIBase {
 	private float distSq, distSqrt;
 	private float fleehp;		//flee HP (percent)
 	private int findCooldown;	//find path cooldown
-	//ª½½u«e¶i¥ÎÀ\¼Æ
-    private double distX, distY, distZ, motX, motY, motZ;	//¸ò¥Ø¼Ğªºª½½u¶ZÂ÷(ªº¥­¤è)
+	//ç›´ç·šå‰é€²ç”¨é¤æ•¸
+    private double distX, distY, distZ, motX, motY, motZ;	//è·Ÿç›®æ¨™çš„ç›´ç·šè·é›¢(çš„å¹³æ–¹)
     private float rotYaw;
 
 	public EntityAIShipFlee(BasicEntityShip entity) {
@@ -40,7 +40,7 @@ public class EntityAIShipFlee extends EntityAIBase {
 	public boolean shouldExecute() {
 		this.fleehp = host.getStateMinor(ID.M.FleeHP) / 100F;
 		
-		//¦å¶q§C©ófleeHP ¥B¤£¬O§¤¤U¤]¤£¬O¸j¦íªºª¬ºA¤~°õ¦æflee AI
+		//è¡€é‡ä½æ–¼fleeHP ä¸”ä¸æ˜¯åä¸‹ä¹Ÿä¸æ˜¯ç¶ä½çš„ç‹€æ…‹æ‰åŸ·è¡Œflee AI
 		if(!host.isSitting() && !host.getLeashed() && 
 		   (host.getHealth() / host.getMaxHealth()) <= fleehp) {
 			
@@ -49,7 +49,7 @@ public class EntityAIShipFlee extends EntityAIBase {
 			if(OwnerEntity != null) {
 				owner = OwnerEntity;
 				
-				//­pºâª½½u¶ZÂ÷
+				//è¨ˆç®—ç›´ç·šè·é›¢
 		    	this.distX = this.owner.posX - this.host.posX;
 				this.distY = this.owner.posY - this.host.posY;
 				this.distZ = this.owner.posZ - this.host.posZ;
@@ -83,10 +83,10 @@ public class EntityAIShipFlee extends EntityAIBase {
     	this.findCooldown--;
     	this.motY = 0D;
     	
-    	//³]©wÀY³¡Âà¦V
+    	//è¨­å®šé ­éƒ¨è½‰å‘
         this.host.getLookHelper().setLookPositionWithEntity(this.owner, 10.0F, this.host.getVerticalFaceSpeed());
 
-    	//¶ZÂ÷¶W¹L¶Ç°e¶ZÂ÷, ª½±µ¶Ç°e¨ì¥Ø¼Ğ¤W
+    	//è·é›¢è¶…éå‚³é€è·é›¢, ç›´æ¥å‚³é€åˆ°ç›®æ¨™ä¸Š
     	if(this.distSq > EntityAIShipFlee.TP_DIST) {
     		this.host.posX = this.owner.posX;
     		this.host.posY = this.owner.posY + 1D;
@@ -94,7 +94,7 @@ public class EntityAIShipFlee extends EntityAIBase {
     		this.host.setPosition(this.host.posX, this.host.posY, this.host.posZ);
     	}
     	
-    	//¨Ccd¨ì§ä¤@¦¸¸ô®|
+    	//æ¯cdåˆ°æ‰¾ä¸€æ¬¡è·¯å¾‘
     	if(this.findCooldown <= 0) {
 			this.findCooldown = 16;
 
@@ -109,7 +109,7 @@ public class EntityAIShipFlee extends EntityAIBase {
 			if(!canMove) {
         		LogHelper.info("DEBUG : flee AI: moving fail, teleport entity "+this.host);
         		if(this.distSq > 200F) {
-        			//¬Û¦Pdim¤~¶Ç°e
+        			//ç›¸åŒdimæ‰å‚³é€
         			if(this.host.dimension == this.owner.dimension) {
         				//clear mount
             			if(this.distSq > 1024F) {	//32 blocks away, drop mount
@@ -128,7 +128,7 @@ public class EntityAIShipFlee extends EntityAIBase {
     
 	//clear seat2
   	private void clearMountSeat2() {
-  		//­Y®y¦ì2¦³¤H, ­n¥ı§â®y¦ì2ªº­¼«È½ğ±¼
+  		//è‹¥åº§ä½2æœ‰äºº, è¦å…ˆæŠŠåº§ä½2çš„ä¹˜å®¢è¸¢æ‰
   		if(host.ridingEntity != null) {
   			if(host.ridingEntity instanceof BasicEntityMount) {
 	  			BasicEntityMount mount = (BasicEntityMount) host.ridingEntity;
@@ -139,7 +139,7 @@ public class EntityAIShipFlee extends EntityAIBase {
   			host.mountEntity(null);
   		}
   		
-  		//²MªÅÃM­¼ªº¤H
+  		//æ¸…ç©ºé¨ä¹˜çš„äºº
   		if(host.riddenByEntity != null) {
   			host.riddenByEntity.mountEntity(null);
   			host.riddenByEntity = null;

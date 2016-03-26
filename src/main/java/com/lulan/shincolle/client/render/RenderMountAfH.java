@@ -9,7 +9,7 @@ import com.lulan.shincolle.reference.Reference;
 
 public class RenderMountAfH extends RenderLiving {
 	
-	//¶K¹ÏÀÉ¸ô®|
+	//è²¼åœ–æª”è·¯å¾‘
 	private static final ResourceLocation mobTextures = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityMountAfH.png");
 
 	public RenderMountAfH(ModelBase par1, float par2) {

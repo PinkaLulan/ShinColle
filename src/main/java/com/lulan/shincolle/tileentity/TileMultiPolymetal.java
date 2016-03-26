@@ -10,7 +10,7 @@ import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 
 /**SERVANT BLOCK: POLYMETAL
- * servant blockªº©Ò¦³¤èªk³£¬O¸òmaster block©I¥s
+ * servant blockçš„æ‰€æœ‰æ–¹æ³•éƒ½æ˜¯è·Ÿmaster blockå‘¼å«
  */
 public class TileMultiPolymetal extends BasicTileMulti implements IFluidHandler{
 

@@ -14,37 +14,37 @@ public class LogHelper {
 		FMLLog.log(Reference.MOD_NAME,logLevel,String.valueOf(object));
 	}
 	
-	//off: ¤£¬ö¿ılog
+	//off: ä¸ç´€éŒ„log
 	public static void off(Object object) { log(Level.OFF,object); }
 	
-	//fatal: ¬ö¿ıµ{¦¡°±¤î¹B§@ªº­P©R°İÃD
+	//fatal: ç´€éŒ„ç¨‹å¼åœæ­¢é‹ä½œçš„è‡´å‘½å•é¡Œ
 	public static void fatal(Object object) { log(Level.FATAL,object); }
 	
-	//error: ¬ö¿ıµ{¦¡¥i¯à°±¤î¹B§@ªº°İÃD
+	//error: ç´€éŒ„ç¨‹å¼å¯èƒ½åœæ­¢é‹ä½œçš„å•é¡Œ
 	public static void error(Object object) { log(Level.ERROR,object); }
 	
-	//warn: ¬ö¿ı¥i¯à¾É­Perrorªº°İÃD
+	//warn: ç´€éŒ„å¯èƒ½å°è‡´errorçš„å•é¡Œ
 	public static void warn(Object object) { log(Level.WARN,object); }
 	
-	//log: ¬ö¿ı«Ddebug¼Ò¦¡¤]¯àÅã¥Üªº°T®§
+	//log: ç´€éŒ„édebugæ¨¡å¼ä¹Ÿèƒ½é¡¯ç¤ºçš„è¨Šæ¯
 	public static void log(Object object) { 
 		log(Level.INFO,object); 
 	}
 	
-	//info: ¬ö¿ıÂ²©öªºdebug°T®§
+	//info: ç´€éŒ„ç°¡æ˜“çš„debugè¨Šæ¯
 	public static void info(Object object) { 
 		if(ConfigHandler.debugMode) log(Level.INFO,object); 
 	}
 	
-	//debug: ¬ö¿ıdebug°T®§
+	//debug: ç´€éŒ„debugè¨Šæ¯
 	public static void debug(Object object) { 
 		if(ConfigHandler.debugMode) log(Level.DEBUG,object);
 	}
 	
-	//trace: ¦Pdebug, ±`¥Î©ó°lÂÜµ{¦¡°Ê¦V
+	//trace: åŒdebug, å¸¸ç”¨æ–¼è¿½è¹¤ç¨‹å¼å‹•å‘
 	public static void trace(Object object) { log(Level.TRACE,object); }
 	
-	//all: ¬ö¿ı¥ş³¡°T®§
+	//all: ç´€éŒ„å…¨éƒ¨è¨Šæ¯
 	public static void all(Object object) { log(Level.ALL,object); }
 	
 	

@@ -2,7 +2,7 @@ package com.lulan.shincolle.reference;
 
 public final class Names {
 
-	//«öÁä³]©w¥Î°Ñ¦Ò¦r¦ê  ¦¹³B·|°Ñ¦Ò»y¨tÀÉ¨Ã§ì¥X³Ì«áÅã¥Üªº¦r¦ê
+	//æŒ‰éµè¨­å®šç”¨åƒè€ƒå­—ä¸²  æ­¤è™•æœƒåƒè€ƒèªç³»æª”ä¸¦æŠ“å‡ºæœ€å¾Œé¡¯ç¤ºçš„å­—ä¸²
 	public static final class Keys {
 		public static final String CATEGORY = "keys.shincolle.category";
 		public static final String REPAIR = "keys.shincolle.repair";

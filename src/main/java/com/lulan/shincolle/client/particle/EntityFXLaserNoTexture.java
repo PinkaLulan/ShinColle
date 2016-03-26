@@ -19,13 +19,13 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 
 /**LASER NO TEXTURE PARTICLE
- * µ¹©whost, target -> ¥Í¦¨¹p®g¯S®Ä
- * ¦¹¬°¬Wª¬3D¹p®g(§Y¤»­±ªø¤èÅé)
+ * çµ¦å®šhost, target -> ç”Ÿæˆé›·å°„ç‰¹æ•ˆ
+ * æ­¤ç‚ºæŸ±ç‹€3Dé›·å°„(å³å…­é¢é•·æ–¹é«”)
  * 
  * type:
- *   0: Âù¬õ¹p®g: par1¬°X¶b¦ì¸m(¤À¥ª¥k¥ú¬¶), par2¬°µo®g°ª«×
- *   1: ¤j©Mªi°Ê¯¥: ¥D¯¥¥ú§ô
- *   2: ¦u½Ã¥Ø¼Ğ½u: «ü¥Ü²îÄ¥¨ì¦u½Ã¥Ø¼Ğªº³sµ²½u¼Ğ¥Ü
+ *   0: é›™ç´…é›·å°„: par1ç‚ºXè»¸ä½ç½®(åˆ†å·¦å³å…‰ç‚®), par2ç‚ºç™¼å°„é«˜åº¦
+ *   1: å¤§å’Œæ³¢å‹•ç ²: ä¸»ç ²å…‰æŸ
+ *   2: å®ˆè¡›ç›®æ¨™ç·š: æŒ‡ç¤ºèˆ¹è‰¦åˆ°å®ˆè¡›ç›®æ¨™çš„é€£çµç·šæ¨™ç¤º
  *   
  */
 @SideOnly(Side.CLIENT)
@@ -62,13 +62,13 @@ public class EntityFXLaserNoTexture extends EntityFX {
         float[] posOffset;
         
         switch(type) {
-        case 1:		//¤j©Mªi°Ê¯¥
+        case 1:		//å¤§å’Œæ³¢å‹•ç ²
         	this.particleMaxAge = 30;
         	this.particleRed = 1F;
         	this.particleGreen = 0.8F;
         	this.particleBlue = 0.9F;
         	break;
-        case 2:		//¦u½Ã¼Ğ¥Ü½u: entityÃş
+        case 2:		//å®ˆè¡›æ¨™ç¤ºç·š: entityé¡
         	lookDeg = CalcHelper.getLookDegree(tarX-posX, tarY-posY, tarZ-posZ, false);
         	this.shotYaw = lookDeg[0];
         	this.shotPitch = lookDeg[1];
@@ -81,7 +81,7 @@ public class EntityFXLaserNoTexture extends EntityFX {
         	this.alphaOut = 0.1F;
         	this.alphaIn = 0.2F;
         	break;
-        default:	//¬õ¥ú§ô¯¥
+        default:	//ç´…å…‰æŸç ²
         	lookDeg = CalcHelper.getLookDegree(tarX-posX, tarY-posY, tarZ-posZ, false);
         	posOffset = ParticleHelper.rotateXYZByYawPitch((float)par1, 0F, 0.78F, lookDeg[0], lookDeg[1], 1F);
         	this.shotYaw = lookDeg[0];
@@ -124,7 +124,7 @@ public class EntityFXLaserNoTexture extends EntityFX {
         float[] posOffset;
         
         switch(type) {
-        case 3:		//¦u½Ã¼Ğ¥Ü½u: blockÃş
+        case 3:		//å®ˆè¡›æ¨™ç¤ºç·š: blocké¡
         	lookDeg = CalcHelper.getLookDegree(tarX-posX, tarY-posY, tarZ-posZ, false);
         	this.shotYaw = lookDeg[0];
         	this.shotPitch = lookDeg[1];
@@ -141,8 +141,8 @@ public class EntityFXLaserNoTexture extends EntityFX {
         
     }
 
-    //par3 = Yawªºcos­È, par4 = Pitchªºcos­È, par5 = Yawªºsin­È
-    //par6 = Yawªºsin­È­¼¤W-Pitchªºsin­È, par7 = Yawªºcos­È­¼¤WPitchªºsin­È
+    //par3 = Yawçš„coså€¼, par4 = Pitchçš„coså€¼, par5 = Yawçš„sinå€¼
+    //par6 = Yawçš„sinå€¼ä¹˜ä¸Š-Pitchçš„sinå€¼, par7 = Yawçš„coså€¼ä¹˜ä¸ŠPitchçš„sinå€¼
     @Override
 	public void renderParticle(Tessellator tess, float ticks, float par3, float par4, float par5, float par6, float par7) {	
 		GL11.glPushMatrix();
@@ -163,7 +163,7 @@ public class EntityFXLaserNoTexture extends EntityFX {
 		float[] v7 = ParticleHelper.rotateXYZByYawPitch(-1F, 1F, 0F, shotYaw, shotPitch, this.scaleIn);
 		float[] v8 = ParticleHelper.rotateXYZByYawPitch(-1F, -1F, 0F, shotYaw, shotPitch, this.scaleIn);
 		
-		//particle¬O¥Hclientºİµø³¥¨Órender, ¦]¦¹®y¼Ğ­n¦©±¼interpPosÂà´«¬°ª±®aµø³¥®y¼Ğ
+		//particleæ˜¯ä»¥clientç«¯è¦–é‡ä¾†render, å› æ­¤åº§æ¨™è¦æ‰£æ‰interpPosè½‰æ›ç‚ºç©å®¶è¦–é‡åº§æ¨™
         double hx = this.posX - interpPosX;
         double hy = this.posY - interpPosY;
         double hz = this.posZ - interpPosZ;
@@ -171,7 +171,7 @@ public class EntityFXLaserNoTexture extends EntityFX {
         double ty = this.tarY - interpPosY;
         double tz = this.tarZ - interpPosZ;
         
-        //­pºâ¥~¼h¬õ¦âªº8­Óvertex
+        //è¨ˆç®—å¤–å±¤ç´…è‰²çš„8å€‹vertex
         vt[0][0] = hx+v1[0];	vt[0][1] = hy+v1[1];	vt[0][2] = hz+v1[2];
         vt[1][0] = hx+v2[0];	vt[1][1] = hy+v2[1];	vt[1][2] = hz+v2[2];
         vt[2][0] = hx+v3[0];	vt[2][1] = hy+v3[1];	vt[2][2] = hz+v3[2];
@@ -180,7 +180,7 @@ public class EntityFXLaserNoTexture extends EntityFX {
         vt[5][0] = tx+v2[0];	vt[5][1] = ty+v2[1];	vt[5][2] = tz+v2[2];
         vt[6][0] = tx+v3[0];	vt[6][1] = ty+v3[1];	vt[6][2] = tz+v3[2];
         vt[7][0] = tx+v4[0];	vt[7][1] = ty+v4[1];	vt[7][2] = tz+v4[2];
-        //­pºâ¤º¼h¥Õ¦âªº8­Óvertex
+        //è¨ˆç®—å…§å±¤ç™½è‰²çš„8å€‹vertex
         vt2[0][0] = hx+v5[0];	vt2[0][1] = hy+v5[1];	vt2[0][2] = hz+v5[2];
         vt2[1][0] = hx+v6[0];	vt2[1][1] = hy+v6[1];	vt2[1][2] = hz+v6[2];
         vt2[2][0] = hx+v7[0];	vt2[2][1] = hy+v7[1];	vt2[2][2] = hz+v7[2];
@@ -193,7 +193,7 @@ public class EntityFXLaserNoTexture extends EntityFX {
         //start tess
         tess.startDrawingQuads();
         
-        //¤º¼h¥Õ¦â
+        //å…§å±¤ç™½è‰²
         tess.setColorRGBA_F(1F, 1F, 1F, this.alphaIn);
         tess.setBrightness(240);
         
@@ -227,7 +227,7 @@ public class EntityFXLaserNoTexture extends EntityFX {
         tess.addVertex(vt2[4][0], vt2[4][1], vt2[4][2]);
         tess.addVertex(vt2[7][0], vt2[7][1], vt2[7][2]);
         
-        //¥~¼h¬õ¦â
+        //å¤–å±¤ç´…è‰²
         tess.setColorRGBA_F(this.particleRed, this.particleGreen, this.particleBlue, this.alphaOut);
 //        tess.setBrightness(240);
         tess.addVertex(vt[3][0], vt[3][1], vt[3][2]);
@@ -336,11 +336,11 @@ public class EntityFXLaserNoTexture extends EntityFX {
 	        	this.scaleIn += this.rand.nextFloat() * 0.08F - 0.04F;
 	        	
         		break;
-    		case 2:		//¦u½Ã¼Ğ¥Ü½u: entityÃş
+    		case 2:		//å®ˆè¡›æ¨™ç¤ºç·š: entityé¡
     			this.tarX = target.posX;
         		this.tarY = target.posY;
         		this.tarZ = target.posZ;
-    		case 3:		//¦u½Ã¼Ğ¥Ü½u: blockÃş
+    		case 3:		//å®ˆè¡›æ¨™ç¤ºç·š: blocké¡
     			this.posX = host.posX;
             	this.posY = host.posY;
             	this.posZ = host.posZ;

@@ -40,15 +40,15 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	protected float defValue;			//def value
 	protected float movSpeed;			//def value
     protected float kbValue;			//knockback value
-    protected double ShipDepth;			//¤ô²`, ¥Î©ó¤ô¤¤°ª«×§P©w
+    protected double ShipDepth;			//æ°´æ·±, ç”¨æ–¼æ°´ä¸­é«˜åº¦åˆ¤å®š
     
     //model display
     /**EntityState: 0:HP State 1:Emotion 2:Emotion2*/
-	protected byte[] StateEmotion;		//ªí±¡1
-	protected int StartEmotion;			//ªí±¡1 ¶}©l®É¶¡
-	protected int StartEmotion2;		//ªí±¡2 ¶}©l®É¶¡
+	protected byte[] StateEmotion;		//è¡¨æƒ…1
+	protected int StartEmotion;			//è¡¨æƒ…1 é–‹å§‹æ™‚é–“
+	protected int StartEmotion2;		//è¡¨æƒ…2 é–‹å§‹æ™‚é–“
 	protected boolean headTilt;
-	protected float[] rotateAngle;		//¼Ò«¬±ÛÂà¨¤«×, ¥Î©ó¤â«ùª««~render
+	protected float[] rotateAngle;		//æ¨¡å‹æ—‹è½‰è§’åº¦, ç”¨æ–¼æ‰‹æŒç‰©å“render
 	protected int StartSoundHurt;		//hurt sound ticks
 	
 	//misc
@@ -56,7 +56,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	
 	//AI
 	public boolean canDrop;				//drop item flag
-	protected ShipPathNavigate shipNavigator;	//¤ôªÅ²¾°Ê¥Înavigator
+	protected ShipPathNavigate shipNavigator;	//æ°´ç©ºç§»å‹•ç”¨navigator
 	protected ShipMoveHelper shipMoveHelper;
 	protected Entity atkTarget;
 	protected Entity rvgTarget;					//revenge target
@@ -66,7 +66,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	public BasicEntityShipHostile(World world) {
 		super(world);
 		isImmuneToFire = true;	//set ship immune to lava
-		ignoreFrustumCheck = true;	//§Y¨Ï¤£¦bµø½u¤º¤@¼Ërender
+		ignoreFrustumCheck = true;	//å³ä½¿ä¸åœ¨è¦–ç·šå…§ä¸€æ¨£render
 		maxHurtResistantTime = 2;
 		stepHeight = 4F;
 		canDrop = true;
@@ -131,7 +131,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
     		this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
     	}
         
-        //µL¼Äªºentity¶Ë®`µL®Ä
+        //ç„¡æ•µçš„entityå‚·å®³ç„¡æ•ˆ
   		if(this.isEntityInvulnerable()) {	
         	return false;
         }
@@ -139,18 +139,18 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
   		if(attacker.getSourceOfDamage() != null) {
   			Entity entity = attacker.getSourceOfDamage();
   			
-  			//¤£·|¹ï¦Û¤v³y¦¨¶Ë®`
+  			//ä¸æœƒå°è‡ªå·±é€ æˆå‚·å®³
   			if(entity.equals(this)) {  
   				return false;
   			}
   			
-  			//­Y±¼¨ì¥@¬É¥~, «hª½±µ¨Ï¸Óentity®ø¥¢
+  			//è‹¥æ‰åˆ°ä¸–ç•Œå¤–, å‰‡ç›´æ¥ä½¿è©²entityæ¶ˆå¤±
   	        if(attacker.getDamageType().equals("outOfWorld")) {
   	        	this.setDead();
   	        	return false;
   	        }
   	        
-  	        //³]¸mrevenge target
+  	        //è¨­ç½®revenge target
 			this.setEntityRevengeTarget(entity);
 			this.setEntityRevengeTime();
 
@@ -159,7 +159,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
   			
   			reduceAtk = atk * (1F - this.getDefValue() * 0.01F);
   			
-  			//ship vs ship, damage type¶Ë®`½Õ¾ã
+  			//ship vs ship, damage typeå‚·å®³èª¿æ•´
   			if(entity instanceof IShipAttackBase) {
   				//get attack time for damage modifier setting (day, night or ...etc)
   				int modSet = this.worldObj.provider.isDaytime() ? 0 : 1;
@@ -186,18 +186,18 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		targetTasks.taskEntries.clear();
 	}
 	
-	//±¼¸¨egg³]©w
+	//æ‰è½eggè¨­å®š
 	public ItemStack getDropEgg() {
 		return this.dropItem;
 	}
 	
-	//¥­±`­µ®Ä
+	//å¹³å¸¸éŸ³æ•ˆ
 	@Override
 	protected String getLivingSound() {
 		return Reference.MOD_ID+":ship-say";
     }
 	
-	//¨ü¶Ë­µ®Ä
+	//å—å‚·éŸ³æ•ˆ
 	@Override
     protected String getHurtSound() {
 		if(this.StartSoundHurt <= 0) {
@@ -207,13 +207,13 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
     	return null;
     }
 
-    //¦º¤`­µ®Ä
+    //æ­»äº¡éŸ³æ•ˆ
     @Override
     protected String getDeathSound() {
     	return Reference.MOD_ID+":ship-death";
     }
 
-    //­µ®Ä¤j¤p
+    //éŸ³æ•ˆå¤§å°
     @Override
     protected float getSoundVolume() {
         return ConfigHandler.shipVolume;
@@ -290,10 +290,9 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	public boolean attackEntityWithAmmo(Entity target) {
 		//get attack value
 		float atk = CalcHelper.calcDamageByEquipEffect(this, target, this.atk, 0);
-		float kbValue = 0.05F;
 		
 		//update entity look at vector (for particle spawn)
-        //¦¹¤èªk¤ñgetLookÁÙ¥¿½T (client sync°İÃD)
+        //æ­¤æ–¹æ³•æ¯”getLooké‚„æ­£ç¢º (client syncå•é¡Œ)
         float distX = (float) (target.posX - this.posX);
         float distY = (float) (target.posY - this.posY);
         float distZ = (float) (target.posZ - this.posZ);
@@ -302,7 +301,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
         distY = distY / distSqrt;
         distZ = distZ / distSqrt;
       
-        //µo®gªÌ·ÏÃú¯S®Ä
+        //ç™¼å°„è€…ç…™éœ§ç‰¹æ•ˆ
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 6, this.posX, this.posY+3.5D, this.posZ, distX, 2.8D, distZ, true), point);
 
@@ -354,20 +353,12 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
     		}
   		}
   		
-	    //±Natk¸òattacker¶Çµ¹¥Ø¼ĞªºattackEntityFrom¤èªk, ¦b¥Ø¼Ğclass¤¤­pºâ¶Ë®`
-	    //¨Ã¥B¦^¶Ç¬O§_¦¨¥\¶Ë®`¨ì¥Ø¼Ğ
+	    //å°‡atkè·Ÿattackerå‚³çµ¦ç›®æ¨™çš„attackEntityFromæ–¹æ³•, åœ¨ç›®æ¨™classä¸­è¨ˆç®—å‚·å®³
+	    //ä¸¦ä¸”å›å‚³æ˜¯å¦æˆåŠŸå‚·å®³åˆ°ç›®æ¨™
 	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this).setProjectile(), atk);
 
 	    //if attack success
-	    if(isTargetHurt) {
-	    	//calc kb effect
-	        if(kbValue > 0) {
-	            target.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
-	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
-	            motionX *= 0.6D;
-	            motionZ *= 0.6D;
-	        }
-	        
+	    if(isTargetHurt) { 
         	//display hit particle on target
 	        TargetPoint point1 = new TargetPoint(this.dimension, target.posX, target.posY, target.posZ, 64D);
 			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 9, false), point1);
@@ -461,23 +452,23 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
     public void moveEntityWithHeading(float movX, float movZ) {
         double d0;
 
-        if(this.isInWater() || this.handleLavaMovement()) { //§P©w¬°²GÅé¤¤®É, ¤£·|¦Û°Ê¤U¨I
+        if(this.isInWater() || this.handleLavaMovement()) { //åˆ¤å®šç‚ºæ¶²é«”ä¸­æ™‚, ä¸æœƒè‡ªå‹•ä¸‹æ²‰
             d0 = this.posY;
-            this.moveFlying(movX, movZ, this.movSpeed*0.4F); //¤ô¤¤ªº³t«×­pºâ(§tº}²¾®ÄªG)
+            this.moveFlying(movX, movZ, this.movSpeed*0.4F); //æ°´ä¸­çš„é€Ÿåº¦è¨ˆç®—(å«æ¼‚ç§»æ•ˆæœ)
             this.moveEntity(this.motionX, this.motionY, this.motionZ);
-            //¤ô¤¤ªı¤O
+            //æ°´ä¸­é˜»åŠ›
             this.motionX *= 0.8D;
             this.motionY *= 0.8D;
             this.motionZ *= 0.8D;
-            //¤ô¤¤¼²¨ìªF¦è·|¤W¤É
+            //æ°´ä¸­æ’åˆ°æ±è¥¿æœƒä¸Šå‡
             if (this.isCollidedHorizontally && this.isOffsetPositionInLiquid(this.motionX, this.motionY + 0.6D - this.posY + d0, this.motionZ)) {
                 this.motionY = 0.3D;
             }
         }
-        else {									//¨ä¥L²¾°Êª¬ºA
+        else {									//å…¶ä»–ç§»å‹•ç‹€æ…‹
             float f2 = 0.91F;
             
-            if(this.onGround) {					//¦b¦a­±²¾°Ê
+            if(this.onGround) {					//åœ¨åœ°é¢ç§»å‹•
                 f2 = this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.boundingBox.minY) - 1, MathHelper.floor_double(this.posZ)).slipperiness * 0.91F;
             }
 
@@ -487,7 +478,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
             if(this.onGround) {
                 f4 = this.getAIMoveSpeed() * f3;
             }
-            else {								//¸õÅD¤¤
+            else {								//è·³èºä¸­
                 f4 = this.jumpMovementFactor;
             }
             this.moveFlying(movX, movZ, f4);
@@ -497,9 +488,9 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
                 f2 = this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.boundingBox.minY) - 1, MathHelper.floor_double(this.posZ)).slipperiness * 0.91F;
             }
 
-            if(this.isOnLadder()) {				//ª¦¼Ó±è¤¤
+            if(this.isOnLadder()) {				//çˆ¬æ¨“æ¢¯ä¸­
                 float f5 = 0.15F;
-                //­­¨îª¦¼Ó±è®Éªº¾î¦V²¾°Ê³t«×
+                //é™åˆ¶çˆ¬æ¨“æ¢¯æ™‚çš„æ©«å‘ç§»å‹•é€Ÿåº¦
                 if(this.motionX < (-f5)) {
                     this.motionX = (-f5);
                 }
@@ -514,27 +505,27 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
                 }
 
                 this.fallDistance = 0.0F;
-                //­­¨îª¦¼Ó±èªº¸¨¤U³t«×
+                //é™åˆ¶çˆ¬æ¨“æ¢¯çš„è½ä¸‹é€Ÿåº¦
                 if (this.motionY < -0.15D) {
                     this.motionY = -0.15D;
                 }
 
                 boolean flag = this.isSneaking();
-                //­Y¬Oª¦¼Ó±è®É¬°sneaking, «h¤£·|¸¨¤U(¥d¦b¼Ó±è¤W)
+                //è‹¥æ˜¯çˆ¬æ¨“æ¢¯æ™‚ç‚ºsneaking, å‰‡ä¸æœƒè½ä¸‹(å¡åœ¨æ¨“æ¢¯ä¸Š)
                 if(flag && this.motionY < 0D) {
                     this.motionY = 0D;
                 }
             }
 
             this.moveEntity(this.motionX, this.motionY, this.motionZ);
-            //©¹¼Ó±è±ÀÀ½, «h·|©¹¤Wª¦
+            //å¾€æ¨“æ¢¯æ¨æ“ , å‰‡æœƒå¾€ä¸Šçˆ¬
             if(this.isCollidedHorizontally && this.isOnLadder()) {
                 this.motionY = 0.4D;
             }
-            //¦ÛµM±¼¸¨
+            //è‡ªç„¶æ‰è½
             if(this.worldObj.isRemote && (!this.worldObj.blockExists((int)this.posX, 0, (int)this.posZ) || !this.worldObj.getChunkFromBlockCoords((int)this.posX, (int)this.posZ).isChunkLoaded)) {
                 if (this.posY > 0.0D) {
-                    this.motionY = -0.1D;	//ªÅ®ğ¤¤ªºgravity¬°0.1D
+                    this.motionY = -0.1D;	//ç©ºæ°£ä¸­çš„gravityç‚º0.1D
                 }
                 else {
                     this.motionY = 0.0D;
@@ -543,12 +534,12 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
             else {
                 this.motionY -= 0.08D;
             }
-            //ªÅ®ğ¤¤ªº¤T¤è¦Vªı¤O
+            //ç©ºæ°£ä¸­çš„ä¸‰æ–¹å‘é˜»åŠ›
             this.motionY *= 0.98D;			
             this.motionX *= f2;
             this.motionZ *= f2;
         }
-        //­pºâ¥|ªÏÂ\°Ê­È
+        //è¨ˆç®—å››è‚¢æ“ºå‹•å€¼
         this.prevLimbSwingAmount = this.limbSwingAmount;
         d0 = this.posX - this.prevPosX;
         double d1 = this.posZ - this.prevPosZ;
@@ -576,8 +567,8 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		
 		//client side
 		if(this.worldObj.isRemote && this.isInWater()) {
-			//¦³²¾°Ê®É, ²£¥Í¤ôªá¯S®Ä
-			//(ª`·N¦¹entity¦]¬°³]¬°«D°ª³t§ó·s, clientºİ¤£·|§ó·smotionXµ¥¼Æ­È, »İ¦Û¦æ­pºâ)
+			//æœ‰ç§»å‹•æ™‚, ç”¢ç”Ÿæ°´èŠ±ç‰¹æ•ˆ
+			//(æ³¨æ„æ­¤entityå› ç‚ºè¨­ç‚ºéé«˜é€Ÿæ›´æ–°, clientç«¯ä¸æœƒæ›´æ–°motionXç­‰æ•¸å€¼, éœ€è‡ªè¡Œè¨ˆç®—)
 			double motX = this.posX - this.prevPosX;
 			double motZ = this.posZ - this.prevPosZ;
 			double parH = this.posY - (int)this.posY;

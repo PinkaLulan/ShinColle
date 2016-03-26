@@ -13,7 +13,7 @@ public class EmotionHelper {
 	
 	public EmotionHelper() {}
 	
-	/** ÀH¾÷©â¨úÅã¥Üªºªí±¡ */
+	/** éš¨æ©ŸæŠ½å–é¡¯ç¤ºçš„è¡¨æƒ… */
     public static void rollEmotion(IModelEmotion model, IShipEmotion ent) { 
     	switch(ent.getStateEmotion(ID.S.Emotion)) {
     	case ID.Emotion.BLINK:	//blink
@@ -50,11 +50,11 @@ public class EmotionHelper {
     	}	
     }
     
-    /** ¯w²´°Ê§@, this emotion is CLIENT ONLY, no sync packet required */
+    /** çœ¨çœ¼å‹•ä½œ, this emotion is CLIENT ONLY, no sync packet required */
     public static void EmotionBlink(IModelEmotion model, IShipEmotion ent) {
-  		if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.NORMAL) {	//­n¦b¨Sªí±¡ª¬ºA¤~°µªí±¡		
-  			ent.setStartEmotion(ent.getTickExisted());		//ªí±¡¶}©l®É¶¡
-  			ent.setStateEmotion(ID.S.Emotion, ID.Emotion.BLINK, false);	//¼Ğ°Oªí±¡¬°blink
+  		if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.NORMAL) {	//è¦åœ¨æ²’è¡¨æƒ…ç‹€æ…‹æ‰åšè¡¨æƒ…		
+  			ent.setStartEmotion(ent.getTickExisted());		//è¡¨æƒ…é–‹å§‹æ™‚é–“
+  			ent.setStateEmotion(ID.S.Emotion, ID.Emotion.BLINK, false);	//æ¨™è¨˜è¡¨æƒ…ç‚ºblink
   			model.setFace(1);
   		}
   		
@@ -78,10 +78,10 @@ public class EmotionHelper {
     	}		
   	}
   	
-  	/** Àü¤Hªí±¡ */
+  	/** çªäººè¡¨æƒ… */
     public static void EmotionStaring(IModelEmotion model, IShipEmotion ent) {	
     	if(ent.getStartEmotion() == -1) {
-			ent.setStartEmotion(ent.getTickExisted());	//ªí±¡¶}©l®É¶¡
+			ent.setStartEmotion(ent.getTickExisted());	//è¡¨æƒ…é–‹å§‹æ™‚é–“
 		}
     	
     	int EmoTime = ent.getTickExisted() - ent.getStartEmotion();

@@ -99,12 +99,7 @@ public class ShipCmdChangeShipOwner extends BasicShipCommand {
 		int ownerEID = -1;
 		boolean isOP = false;
 		
-		//client
-		if(world.isRemote) {
-//			LogHelper.info("DEBUG : cmd client "+sender+" "+cmd);
-		}
-		//server
-		else {
+		if(!world.isRemote) {
 			//check sender is player
 			if(sender instanceof EntityPlayer) {
 				op = (EntityPlayer) sender;

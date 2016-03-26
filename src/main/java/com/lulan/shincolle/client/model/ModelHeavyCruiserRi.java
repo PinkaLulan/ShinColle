@@ -264,8 +264,8 @@ public class ModelHeavyCruiserRi extends ModelBase implements IModelEmotion {
         this.HeadTail0.addChild(this.HeadTail1);
         this.HeadTail1.addChild(this.HeadTail2);
         
-        //¥H¤U¬°µo¥ú¼Ò«¬¤ä¬[, ¦¹³¡¥÷¼Ò«¬¾ã­Ó«G«×³]¬°240
-        //Áy³¡¤ä¬[
+        //ä»¥ä¸‹ç‚ºç™¼å…‰æ¨¡åž‹æ”¯æž¶, æ­¤éƒ¨ä»½æ¨¡åž‹æ•´å€‹äº®åº¦è¨­ç‚º240
+        //è‡‰éƒ¨æ”¯æž¶
         this.GlowBodyMain = new ModelRenderer(this, 0, 0);
         this.GlowBodyMain.setRotationPoint(0.0F, -14.0F, 0.0F);
         this.GlowNeck = new ModelRenderer(this, 0, 0);
@@ -273,7 +273,7 @@ public class ModelHeavyCruiserRi extends ModelBase implements IModelEmotion {
         this.GlowHead = new ModelRenderer(this, 42, 100);
         this.GlowHead.setRotationPoint(0.0F, 0.0F, 0.0F);
         
-        //¸Ë³Æ¤ú¾¦¤ä¬[, ¥Ñ©ó¸Ë³Æ¤£°Ê, ¥i¦X¨Ö¨ì¤âÁu¤ä¬[
+        //è£å‚™ç‰™é½’æ”¯æž¶, ç”±æ–¼è£å‚™ä¸å‹•, å¯åˆä½µåˆ°æ‰‹è‡‚æ”¯æž¶
         this.GlowArmLeft = new ModelRenderer(this, 0, 0);
         this.GlowArmLeft.setRotationPoint(7F, -10F, 0F);
         this.setRotateAngle(GlowArmLeft, 0.0F, 0.0F, -0.2617993877991494F);      
@@ -319,7 +319,7 @@ public class ModelHeavyCruiserRi extends ModelBase implements IModelEmotion {
     @Override
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) { 
     	GL11.glPushMatrix();
-    	GL11.glEnable(GL11.GL_BLEND);			//¶}±Ò³z©ú«×¼Ò¦¡
+    	GL11.glEnable(GL11.GL_BLEND);			//é–‹å•Ÿé€æ˜Žåº¦æ¨¡å¼
     	GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
     	GL11.glScalef(0.45F, 0.45F, 0.45F); 	
     	
@@ -327,13 +327,13 @@ public class ModelHeavyCruiserRi extends ModelBase implements IModelEmotion {
     	
     	this.BodyMain.render(f5);
     	
-    	//«G«×³]¬°240
+    	//äº®åº¦è¨­ç‚º240
     	GL11.glDisable(GL11.GL_LIGHTING);
     	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
     	this.GlowBodyMain.render(f5);	
     	GL11.glEnable(GL11.GL_LIGHTING);
     	
-    	GL11.glDisable(GL11.GL_BLEND);			//¶}±Ò³z©ú«×¼Ò¦¡
+    	GL11.glDisable(GL11.GL_BLEND);			//é–‹å•Ÿé€æ˜Žåº¦æ¨¡å¼
     	GL11.glPopMatrix();
     }
 
@@ -362,7 +362,7 @@ public class ModelHeavyCruiserRi extends ModelBase implements IModelEmotion {
       setGlowRotation();
     }
     
-    //³]©w¼Ò«¬µo¥ú³¡¥÷ªºrotation
+    //è¨­å®šæ¨¡åž‹ç™¼å…‰éƒ¨ä»½çš„rotation
     private void setGlowRotation() {
 		this.GlowArmLeft.rotateAngleX = this.ArmLeft.rotateAngleX;
 		this.GlowArmLeft.rotateAngleY = this.ArmLeft.rotateAngleY;
@@ -381,7 +381,7 @@ public class ModelHeavyCruiserRi extends ModelBase implements IModelEmotion {
 		this.GlowHead.rotateAngleZ = this.Head.rotateAngleZ;
 	}
 
-	//Âù¸}²¾°Ê­pºâ
+	//é›™è…³ç§»å‹•è¨ˆç®—
   	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, BasicEntityShip ent) {   
   		float angleZ = MathHelper.cos(f2*0.08F);
   		float addk1 = 0;
@@ -391,11 +391,11 @@ public class ModelHeavyCruiserRi extends ModelBase implements IModelEmotion {
   		addk1 = MathHelper.cos(f * 0.6662F) * 1.4F * f1 + 0.15F;
 	  	addk2 = MathHelper.cos(f * 0.6662F + 3.1415927F) * 1.4F * f1 + 0.15F;
 
-  	    //²¾°ÊÀY³¡ ¨Ï¨ä¬Ý¤H, ¤£¬Ý¤H®É«ùÄòÂ\°ÊÀY³¡
-	    this.Head.rotateAngleY = f3 / 57.29578F;	//¥ª¥k¨¤«× ¨¤«×Âà¦¨rad §Y°£¥H57.29578
-	    this.Head.rotateAngleX = f4 / 57.29578F; 	//¤W¤U¨¤«×
+  	    //ç§»å‹•é ­éƒ¨ ä½¿å…¶çœ‹äºº, ä¸çœ‹äººæ™‚æŒçºŒæ“ºå‹•é ­éƒ¨
+	    this.Head.rotateAngleY = f3 / 57.29578F;	//å·¦å³è§’åº¦ è§’åº¦è½‰æˆrad å³é™¤ä»¥57.29578
+	    this.Head.rotateAngleX = f4 / 57.29578F; 	//ä¸Šä¸‹è§’åº¦
 	    
-	    //¥¿±`¯¸¥ß°Ê§@
+	    //æ­£å¸¸ç«™ç«‹å‹•ä½œ
 	    GL11.glTranslatef(0F, 1.9F, 0F);
 	    this.Cloak.rotateAngleX = angleZ * 0.2F + 1F;	    
   	    this.BoobL.rotateAngleX = -angleZ * 0.06F - 0.73F;
@@ -416,7 +416,7 @@ public class ModelHeavyCruiserRi extends ModelBase implements IModelEmotion {
 		this.HeadTail0.rotateAngleX = angleZ * 0.05F + 0.26F;
 		this.HeadTail1.rotateAngleX = angleZ * 0.1F + 0.09F;
 	    
-	    if(ent.isSprinting() || f1 > 0.9F) {	//©b¶]°Ê§@
+	    if(ent.isSprinting() || f1 > 0.9F) {	//å¥”è·‘å‹•ä½œ
   			this.ArmLeft.rotateAngleX = 1F;
   			this.ArmRight.rotateAngleX = 1F;
   			this.BodyMain.rotateAngleX = 0.5F;
@@ -427,7 +427,7 @@ public class ModelHeavyCruiserRi extends ModelBase implements IModelEmotion {
 	    else {
 	    	startEmo2 = ent.getStartEmotion2();
 	    	
-	    	//ÀY³¡¶É±×°Ê§@, ¥u¦b©b¶]¥H¥~®Éroll
+	    	//é ­éƒ¨å‚¾æ–œå‹•ä½œ, åªåœ¨å¥”è·‘ä»¥å¤–æ™‚roll
 	    	if(startEmo2 > 0) {
 	    		--startEmo2;
 	    		ent.setStartEmotion2(startEmo2);
@@ -446,9 +446,9 @@ public class ModelHeavyCruiserRi extends ModelBase implements IModelEmotion {
 		    }
 	    }//end if sprint
 	    
-	    //rollÀY³¡¶É±×ªí±¡
+	    //rollé ­éƒ¨å‚¾æ–œè¡¨æƒ…
 	    if(ent.getStateFlag(ID.F.HeadTilt)) {
-	    	if(ent.getStateEmotion(ID.S.Emotion2) == 1) {	//¤§«e¤w¸g¶É±×, «hÄ~Äò¶É±×
+	    	if(ent.getStateEmotion(ID.S.Emotion2) == 1) {	//ä¹‹å‰å·²ç¶“å‚¾æ–œ, å‰‡ç¹¼çºŒå‚¾æ–œ
 	    		this.Head.rotateAngleZ = -0.24F;
 	    	}
 	    	else {
@@ -461,7 +461,7 @@ public class ModelHeavyCruiserRi extends ModelBase implements IModelEmotion {
 	    	}	
 	    }
 	    else {
-	    	if(ent.getStateEmotion(ID.S.Emotion2) == 0) {	//ºû«ù¤§«e¨¤«×
+	    	if(ent.getStateEmotion(ID.S.Emotion2) == 0) {	//ç¶­æŒä¹‹å‰è§’åº¦
 	    		this.Head.rotateAngleZ = 0F;
 	    	}
 	    	else {
@@ -474,7 +474,7 @@ public class ModelHeavyCruiserRi extends ModelBase implements IModelEmotion {
 	    	}
 	    }
   		
-	    if(ent.isSneaking()) {		//¼ç¦æ°Ê§@
+	    if(ent.isSneaking()) {		//æ½›è¡Œå‹•ä½œ
   			this.ArmLeft.rotateAngleX = 0.7F;
   			this.ArmRight.rotateAngleX = 0.7F;
   			this.BodyMain.rotateAngleX = 0.5F;
@@ -482,7 +482,7 @@ public class ModelHeavyCruiserRi extends ModelBase implements IModelEmotion {
 			addk2 -= 0.6F;
   		}
   		
-	    if(ent.isSitting() || ent.isRiding()) {  //ÃM­¼°Ê§@ 			
+	    if(ent.isSitting() || ent.isRiding()) {  //é¨Žä¹˜å‹•ä½œ 			
   			if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {
 		    	GL11.glTranslatef(0F, 1.4F, 0F);
 				this.ArmLeft.rotateAngleX = 0.6F;
@@ -520,7 +520,7 @@ public class ModelHeavyCruiserRi extends ModelBase implements IModelEmotion {
 	    this.LegLeft.rotateAngleX = addk1;
 	    this.LegRight.rotateAngleX = addk2;
 	    
-	    //§ðÀ»®É¶¶«K±N¥ª¤â«ü¦V¹ï¤è	    
+	    //æ”»æ“Šæ™‚é †ä¾¿å°‡å·¦æ‰‹æŒ‡å‘å°æ–¹	    
 	    if(ent.attackTime > 0) {
 	    	this.ArmLeft.rotateAngleX = f4 / 57.29578F - 1.5F;
 	    	this.ArmRight.rotateAngleZ = 0.7F; 
@@ -554,7 +554,7 @@ public class ModelHeavyCruiserRi extends ModelBase implements IModelEmotion {
     	}
   	}
 
-  	//³]©wÅã¥ÜªºÁy«¬
+  	//è¨­å®šé¡¯ç¤ºçš„è‡‰åž‹
 	@Override
   	public void setFace(int emo) {
   		switch(emo) {

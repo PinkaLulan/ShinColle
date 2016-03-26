@@ -16,7 +16,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderBattleshipNGTBoss extends RenderLiving {
 	
-	//¶K¹ÏÀÉ¸ô®|
+	//è²¼åœ–æª”è·¯å¾‘
 	private static final ResourceLocation mobTextures = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityBattleshipNagato.png");
 
 	public RenderBattleshipNGTBoss(ModelBase par1, float par2) {
@@ -28,7 +28,7 @@ public class RenderBattleshipNGTBoss extends RenderLiving {
 		return mobTextures;
 	}
 	
-	//Åã¥Üboss¦å±ø
+	//é¡¯ç¤ºbossè¡€æ¢
 	@Override
     protected void preRenderCallback(EntityLivingBase entity, float f1) {
 		BossStatus.setBossStatus((IBossDisplayData) entity, true);

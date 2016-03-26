@@ -37,9 +37,9 @@ import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 
 /**SERVER TO CLIENT : GUI SYNC PACKET
- * ¥Î©óGUI¤¤¤j¤p¶W¹Lshortªº­È¦P¨B / clientºİ¨Ï¥Îª««~¦P¨B / clientºİª««~Åã¥Ü°T®§¦P¨B
+ * ç”¨æ–¼GUIä¸­å¤§å°è¶…éshortçš„å€¼åŒæ­¥ / clientç«¯ä½¿ç”¨ç‰©å“åŒæ­¥ / clientç«¯ç‰©å“é¡¯ç¤ºè¨Šæ¯åŒæ­¥
  * 
- * ¦]sendProgressBarUpdate¥u¯à¦P¨Bshort, »İ¥t¥~¹ê°µ«Ê¥]¦P¨Bfloat, string, int
+ * å› sendProgressBarUpdateåªèƒ½åŒæ­¥short, éœ€å¦å¤–å¯¦åšå°åŒ…åŒæ­¥float, string, int
  */
 public class S2CGUIPackets implements IMessage {
 	
@@ -75,7 +75,7 @@ public class S2CGUIPackets implements IMessage {
 	}
 	
 	
-	public S2CGUIPackets() {}	//¥²¶·­n¦³ªÅ°Ñ¼Æconstructor, forge¤~¯à¨Ï¥Î¦¹class
+	public S2CGUIPackets() {}	//å¿…é ˆè¦æœ‰ç©ºåƒæ•¸constructor, forgeæ‰èƒ½ä½¿ç”¨æ­¤class
 	
 	//GUI sync: 
 	//sync tile entity
@@ -158,7 +158,7 @@ public class S2CGUIPackets implements IMessage {
         }
     }
 	
-	//±µ¦¬packet¤èªk
+	//æ¥æ”¶packetæ–¹æ³•
 	@Override
 	public void fromBytes(ByteBuf buf) {
 		world = ClientProxy.getClientWorld();
@@ -485,7 +485,7 @@ public class S2CGUIPackets implements IMessage {
 		}
 	}
 
-	//µo¥Xpacket¤èªk
+	//ç™¼å‡ºpacketæ–¹æ³•
 	@Override
 	public void toBytes(ByteBuf buf) {
 		switch(this.type) {
@@ -768,7 +768,7 @@ public class S2CGUIPackets implements IMessage {
 	
 	//packet handler (inner class)
 	public static class Handler implements IMessageHandler<S2CGUIPackets, IMessage> {
-		//¦¬¨ì«Ê¥]®ÉÅã¥Üdebug°T®§
+		//æ”¶åˆ°å°åŒ…æ™‚é¡¯ç¤ºdebugè¨Šæ¯
 		@Override
 		public IMessage onMessage(S2CGUIPackets message, MessageContext ctx) {
 //          System.out.println(String.format("Received %s from %s", message.text, ctx.getServerHandler().playerEntity.getDisplayName()));

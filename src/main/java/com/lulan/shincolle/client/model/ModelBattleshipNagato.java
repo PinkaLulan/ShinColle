@@ -441,7 +441,7 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion {
         this.EquipLC01.addChild(this.EquipLC02);
         this.EquipRCBase01.addChild(this.EquipRCBase02);
         
-        //µo¥ú¤ä¬[
+        //ç™¼å…‰æ”¯æž¶
         this.GlowBodyMain = new ModelRenderer(this, 0, 0);
         this.GlowBodyMain.setRotationPoint(0.0F, -14.0F, 0.0F);
         this.GlowNeck = new ModelRenderer(this, 0, 0);
@@ -475,7 +475,7 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion {
     	this.BodyMain.render(f5);
     	GL11.glDisable(GL11.GL_BLEND);
     	
-    	//«G«×³]¬°240
+    	//äº®åº¦è¨­ç‚º240
     	GL11.glDisable(GL11.GL_LIGHTING);
     	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
     	this.GlowBodyMain.render(f5);
@@ -500,9 +500,9 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion {
 		setGlowRotation();
     }
     
-    //³]©w¼Ò«¬µo¥ú³¡¥÷ªºrotation
+    //è¨­å®šæ¨¡åž‹ç™¼å…‰éƒ¨ä»½çš„rotation
     private void setGlowRotation() {
-    	//ÀY³¡
+    	//é ­éƒ¨
 		this.GlowBodyMain.rotateAngleX = this.BodyMain.rotateAngleX;
 		this.GlowBodyMain.rotateAngleY = this.BodyMain.rotateAngleY;
 		this.GlowBodyMain.rotateAngleZ = this.BodyMain.rotateAngleZ;
@@ -514,7 +514,7 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion {
 		this.GlowHead.rotateAngleZ = this.Head.rotateAngleZ;
     }
     
-    //Âù¸}²¾°Ê­pºâ
+    //é›™è…³ç§»å‹•è¨ˆç®—
   	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {   
   		float angleX = MathHelper.cos(f2*0.08F);
   		float angleAdd1 = MathHelper.cos(f * 0.7F) * f1;
@@ -528,12 +528,12 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion {
   		addk1 = angleAdd1 - 0.2618F;
 	  	addk2 = angleAdd2 - 0.2618F;
 
-  	    //²¾°ÊÀY³¡¨Ï¨ä¬Ý¤H
-	  	this.Head.rotateAngleX = f4 / 57.29578F; 	//¤W¤U¨¤«×
-	  	this.Head.rotateAngleY = f3 / 57.29578F;	//¥ª¥k¨¤«× ¨¤«×Âà¦¨rad §Y°£¥H57.29578
+  	    //ç§»å‹•é ­éƒ¨ä½¿å…¶çœ‹äºº
+	  	this.Head.rotateAngleX = f4 / 57.29578F; 	//ä¸Šä¸‹è§’åº¦
+	  	this.Head.rotateAngleY = f3 / 57.29578F;	//å·¦å³è§’åº¦ è§’åº¦è½‰æˆrad å³é™¤ä»¥57.29578
 	    
-	    //¥¿±`¯¸¥ß°Ê§@
-	    //¯Ý³¡
+	    //æ­£å¸¸ç«™ç«‹å‹•ä½œ
+	    //èƒ¸éƒ¨
   	    this.BoobL.rotateAngleX = angleX * 0.06F - 0.7854F;
   	    this.BoobR.rotateAngleX = angleX * 0.06F - 0.7854F;
 	  	//Body
@@ -581,7 +581,7 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion {
 		}
 
 
-	    if(ent.getIsSprinting() || f1 > 0.9F) {	//©b¶]°Ê§@
+	    if(ent.getIsSprinting() || f1 > 0.9F) {	//å¥”è·‘å‹•ä½œ
 	    	//Body
 	    	this.Head.rotateAngleX -= 0.35F;
 		  	this.BodyMain.rotateAngleX = 0.5236F;
@@ -611,7 +611,7 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion {
 	    else {
 	    	startEmo2 = ent.getStartEmotion2();
 	    	
-	    	//ÀY³¡¶É±×°Ê§@, ¥u¦b©b¶]¥H¥~®Éroll
+	    	//é ­éƒ¨å‚¾æ–œå‹•ä½œ, åªåœ¨å¥”è·‘ä»¥å¤–æ™‚roll
 	    	if(startEmo2 > 0) {
 	    		--startEmo2;
 	    		ent.setStartEmotion2(startEmo2);
@@ -630,9 +630,9 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion {
 		    }
 	    }//end if sprint
 	    
-	    //rollÀY³¡¶É±×ªí±¡
+	    //rollé ­éƒ¨å‚¾æ–œè¡¨æƒ…
 	    if(ent.getStateFlag(ID.F.HeadTilt)) {
-	    	if(ent.getStateEmotion(ID.S.Emotion2) == 1) {	//¤§«e¤w¸g¶É±×, «hÄ~Äò¶É±×
+	    	if(ent.getStateEmotion(ID.S.Emotion2) == 1) {	//ä¹‹å‰å·²ç¶“å‚¾æ–œ, å‰‡ç¹¼çºŒå‚¾æ–œ
 	    		this.Head.rotateAngleZ = -0.24F;
 	    	}
 	    	else {
@@ -645,7 +645,7 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion {
 	    	}	
 	    }
 	    else {
-	    	if(ent.getStateEmotion(ID.S.Emotion2) == 0) {	//ºû«ù¤§«e¨¤«×
+	    	if(ent.getStateEmotion(ID.S.Emotion2) == 0) {	//ç¶­æŒä¹‹å‰è§’åº¦
 	    		this.Head.rotateAngleZ = 0F;
 	    	}
 	    	else {
@@ -658,7 +658,7 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion {
 	    	}
 	    }
 	    
-	    if(ent.getIsSneaking()) {		//¼ç¦æ, ÃÛ¤U°Ê§@
+	    if(ent.getIsSneaking()) {		//æ½›è¡Œ, è¹²ä¸‹å‹•ä½œ
 	    	//Body
 	    	this.Head.rotateAngleX -= 0.35F;
 		  	this.BodyMain.rotateAngleX = 0.5236F;
@@ -684,7 +684,7 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion {
 			}
   		}//end if sneaking
   		
-	    if(ent.getIsSitting() || ent.getIsRiding()) {  //ÃM­¼°Ê§@
+	    if(ent.getIsSitting() || ent.getIsRiding()) {  //é¨Žä¹˜å‹•ä½œ
 	    	if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP01) {
 	    		GL11.glTranslatef(0F, offsetY + 1.3F, 0F);
 		    	//Body
@@ -757,7 +757,7 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion {
 	    	}
   		}//end if sitting
 	    
-	    //§ðÀ»°Ê§@    
+	    //æ”»æ“Šå‹•ä½œ    
 	    if(ent.getAttackTime() > 0) {
 	    	switch(ent.getStateEmotion(ID.S.Phase)) {
 	    	case 0:		//heavy atk phase 2
@@ -845,7 +845,7 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion {
   		}
   	}
   	
-    //³]©wÅã¥ÜªºÁy«¬
+    //è¨­å®šé¡¯ç¤ºçš„è‡‰åž‹
   	@Override
   	public void setFace(int emo) {
   		switch(emo) {

@@ -10,8 +10,8 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.LogHelper;
 
 /**ENTITY RANGE ATTACK AI
- * ±q°©¤}ªº®g½bAI­×§ï¦Ó¨Ó
- * entity¥²¶·¹ê§@attackEntityWithAmmo, attackEntityWithHeavyAmmo ¨â­Ó¤èªk
+ * å¾éª¨å¼“çš„å°„ç®­AIä¿®æ”¹è€Œä¾†
+ * entityå¿…é ˆå¯¦ä½œattackEntityWithAmmo, attackEntityWithHeavyAmmo å…©å€‹æ–¹æ³•
  */
 public class EntityAIShipRangeAttack extends EntityAIBase {
 	
@@ -26,7 +26,7 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
     private float range;				//attack range
     private float rangeSq;				//attack range square
     private int aimTime;				//time before fire
-    private double distSq, distSqrt, distX, distY, distZ;	//¸ò¥Ø¼Ğªºª½½u¶ZÂ÷(ªº¥­¤è)
+    private double distSq, distSqrt, distX, distY, distZ;	//è·Ÿç›®æ¨™çš„ç›´ç·šè·é›¢(çš„å¹³æ–¹)
     
     
     //parm: host, move speed, p4, attack delay, p6
@@ -52,10 +52,10 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
 	public boolean shouldExecute() {
     	//for entity ship
     	if(host2 != null) {
-    		//§¤¤U¤¤¤£§ğÀ»
+    		//åä¸‹ä¸­ä¸æ”»æ“Š
     		if(this.host.getIsSitting()) return false;
     		
-    		//­YÃM­¼shipÃş®yÃM, «h§ğÀ»¥æµ¹mount§P©w
+    		//è‹¥é¨ä¹˜shipé¡åº§é¨, å‰‡æ”»æ“Šäº¤çµ¦mountåˆ¤å®š
     		if(this.host.getIsRiding()) {
     			if(this.host2.ridingEntity instanceof BasicEntityMount) {
     				return false;
@@ -93,7 +93,7 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
     	}      
     }
 
-    //§P©w¬O§_Ä~ÄòAI¡G ¦³target´NÄ~Äò, ©ÎªÌ¤w¸g²¾°Ê§¹²¦´NÄ~Äò
+    //åˆ¤å®šæ˜¯å¦ç¹¼çºŒAIï¼š æœ‰targetå°±ç¹¼çºŒ, æˆ–è€…å·²ç¶“ç§»å‹•å®Œç•¢å°±ç¹¼çºŒ
     @Override
 	public boolean continueExecuting() {
     	if(host != null) {
@@ -107,7 +107,7 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
     	return false;
     }
 
-    //­«¸mAI¤èªk
+    //é‡ç½®AIæ–¹æ³•
     @Override
 	public void resetTask() {
         this.target = null;
@@ -119,10 +119,10 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
         }
     }
 
-    //¶i¦æAI
+    //é€²è¡ŒAI
     @Override
 	public void updateTask() {
-    	boolean onSight = false;	//§P©wª½®g¬O§_µL»ÙÃªª«
+    	boolean onSight = false;	//åˆ¤å®šç›´å°„æ˜¯å¦ç„¡éšœç¤™ç‰©
     	
     	if(this.host != null && this.target != null) {
 //    		LogHelper.info("DEBUG: update attack AI: "+this.host+" "+this.target);
@@ -143,54 +143,54 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
     		    		
             onSight = this.host2.getEntitySenses().canSee(this.target);
 
-	        //¥iª½µø, «hon sight time++, §_«h­«¸m¬°0
+	        //å¯ç›´è¦–, å‰‡on sight time++, å¦å‰‡é‡ç½®ç‚º0
 	        if(onSight) {
 	            ++this.onSightTime;
 	        }
 	        else {
 	            this.onSightTime = 0;
 	            
-	            //­Yhost­n¨DonSight, «h¬İ¤£¨ì®É°¨¤W©ñ±ó¥Ø¼Ğ, °±¤îAI
+	            //è‹¥hostè¦æ±‚onSight, å‰‡çœ‹ä¸åˆ°æ™‚é¦¬ä¸Šæ”¾æ£„ç›®æ¨™, åœæ­¢AI
 	            if(host.getStateFlag(ID.F.OnSightChase)) {
 	            	this.resetTask();
 	            	return;
 	            }
 	        }
 	
-	        //­Y¥Ø¼Ğ¶i¤J®gµ{, ¥B¥Ø¼ĞµL»ÙÃªª«ªı¾×, «h²MªÅAI²¾°Êªº¥Ø¼Ğ, ¥H°±¤îÄ~Äò²¾°Ê      
+	        //è‹¥ç›®æ¨™é€²å…¥å°„ç¨‹, ä¸”ç›®æ¨™ç„¡éšœç¤™ç‰©é˜»æ“‹, å‰‡æ¸…ç©ºAIç§»å‹•çš„ç›®æ¨™, ä»¥åœæ­¢ç¹¼çºŒç§»å‹•      
 	        if(distSq < this.rangeSq && onSight) {
 	        	this.host.getShipNavigate().clearPathEntity();
 	        }
-	        else {	//¥Ø¼Ğ²¾°Ê, «hÄ~Äò°l	        	
+	        else {	//ç›®æ¨™ç§»å‹•, å‰‡ç¹¼çºŒè¿½	        	
 	        	if(host2.ticksExisted % 32 == 0) {
 	        		this.host.getShipNavigate().tryMoveToEntityLiving(this.target, 1D);
 	        	}
             }
 	
-	        //³]©w§ğÀ»®É, ÀY³¡Æ[¬İªº¨¤«×
+	        //è¨­å®šæ”»æ“Šæ™‚, é ­éƒ¨è§€çœ‹çš„è§’åº¦
 	        this.host2.getLookHelper().setLookPositionWithEntity(this.target, 30.0F, 30.0F);
 	        
 	        if(host2.isRiding() && host2.ridingEntity instanceof BasicEntityMount) {
 	        	((BasicEntityMount)host2.ridingEntity).getLookHelper().setLookPositionWithEntity(this.target, 30.0F, 30.0F);
 	        }
 
-	        //­Yattack delay­Ë¼Æ§¹¤F¥BºË·Ç®É¶¡°÷¤[, «h¶}©l§ğÀ»
+	        //è‹¥attack delayå€’æ•¸å®Œäº†ä¸”ç„æº–æ™‚é–“å¤ ä¹…, å‰‡é–‹å§‹æ”»æ“Š
 	        if(onSight && distSq <= this.rangeSq && this.onSightTime >= this.aimTime) {
-	        	//¨Ï¥Î»´§ğÀ»
+	        	//ä½¿ç”¨è¼•æ”»æ“Š
 	        	if(this.delayLight <= 0 && this.host.useAmmoLight() && this.host.hasAmmoLight()) {
 	        		this.host.attackEntityWithAmmo(this.target);
 		            this.delayLight = this.maxDelayLight;
 //		            LogHelper.info("dEBUG: ranged attack: host: "+this.host);
 	        	}
 	        	
-	        	//¨Ï¥Î­«§ğÀ»
+	        	//ä½¿ç”¨é‡æ”»æ“Š
 	        	if(this.delayHeavy <= 0 && this.host.useAmmoHeavy() && this.host.hasAmmoHeavy()) {
 	        		this.host.attackEntityWithHeavyAmmo(this.target);
 		            this.delayHeavy = this.maxDelayHeavy;
 	        	}
 	        }
 	        
-	        //­Y¶W¹L¤Ó¤[³£¥´¤£¨ì¥Ø¼Ğ(©Î¬O°l¤£¨ì), «h­«¸m¥Ø¼Ğ
+	        //è‹¥è¶…éå¤ªä¹…éƒ½æ‰“ä¸åˆ°ç›®æ¨™(æˆ–æ˜¯è¿½ä¸åˆ°), å‰‡é‡ç½®ç›®æ¨™
 	        if(this.delayHeavy < -40 || this.delayLight < -40) {
 	        	this.delayLight = 20;
 	        	this.delayHeavy = 20;

@@ -19,7 +19,7 @@ public class ItemBlockGrudgeHeavy extends BasicItemBlock {
     public void addInformation(ItemStack itemstack, EntityPlayer player, List list, boolean par4) {
     	int[] mats = new int[4];
     	
-    	if (itemstack.stackTagCompound != null) { 	//¥¿±`»s³yegg, ·|¦³¥|­Ó§÷®Ætag		
+    	if (itemstack.stackTagCompound != null) { 	//æ­£å¸¸è£½é€ egg, æœƒæœ‰å››å€‹ææ–™tag		
     		mats = itemstack.stackTagCompound.getIntArray("mats"); 
     		
     		list.add(EnumChatFormatting.WHITE + "" + mats[0] + " " + I18n.format("item.shincolle:Grudge.name"));

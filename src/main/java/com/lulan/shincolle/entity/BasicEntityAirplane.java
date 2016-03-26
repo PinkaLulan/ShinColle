@@ -32,7 +32,7 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 
 	protected BasicEntityShipLarge host;  		//host target
 	protected World world;
-	protected ShipPathNavigate shipNavigator;	//¤ôªÅ²¾°Ê¥Înavigator
+	protected ShipPathNavigate shipNavigator;	//æ°´ç©ºç§»å‹•ç”¨navigator
 	protected ShipMoveHelper shipMoveHelper;
 	protected Entity atkTarget;
 	protected Entity rvgTarget;					//revenge target
@@ -89,7 +89,7 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
   		this.setEntityTarget(atkTarget);
   	}
   	
-	//¤£¸òship¸I¼²
+	//ä¸è·Ÿshipç¢°æ’
   	protected void collideWithEntity(Entity target) {
   		if(target instanceof BasicEntityShip ||
   		   target instanceof BasicEntityMount) {
@@ -108,7 +108,7 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
   	   targetTasks.taskEntries.clear();
   	}
 
-    //¸T¤î¥ô¦ó±¼¸¨­pºâ
+    //ç¦æ­¢ä»»ä½•æ‰è½è¨ˆç®—
     @Override
 	protected void fall(float world) {}
     @Override
@@ -168,16 +168,16 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 		this.numAmmoHeavy = num;
 	}
 
-    //²¾°Ê­pºâ, ¥h°£gravity³¡¥÷
+    //ç§»å‹•è¨ˆç®—, å»é™¤gravityéƒ¨ä»½
     @Override
 	public void moveEntityWithHeading(float movX, float movZ) { 	
-        this.moveFlying(movX, movZ, this.movSpeed*0.4F); //¤ô¤¤ªº³t«×­pºâ(§tº}²¾®ÄªG)
+        this.moveFlying(movX, movZ, this.movSpeed*0.4F); //æ°´ä¸­çš„é€Ÿåº¦è¨ˆç®—(å«æ¼‚ç§»æ•ˆæœ)
         this.moveEntity(this.motionX, this.motionY, this.motionZ);
 
         this.motionX *= 0.91D;
         this.motionY *= 0.91D;
         this.motionZ *= 0.91D;
-        //¼²¨ìªF¦è·|¤W¤É
+        //æ’åˆ°æ±è¥¿æœƒä¸Šå‡
         if (this.isCollidedHorizontally && this.isOffsetPositionInLiquid(this.motionX, this.motionY + 0.6D, this.motionZ)) {
             this.motionY += 0.2D;
         }
@@ -229,7 +229,7 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 				this.setDead();
 			}
 			else {
-				//Âk¦v
+				//æ­¸å®…
 				if(this.backHome && this.isEntityAlive()) {
 					float dist = this.getDistanceToEntity(this.host);
 					
@@ -240,13 +240,13 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 						}
 					}
 					//get home
-					else {	//ÂkÁÙ³Ñ¾l¼uÃÄ (¦ı¬Ogrudge¤£ÂkÁÙ)
+					else {	//æ­¸é‚„å‰©é¤˜å½ˆè—¥ (ä½†æ˜¯grudgeä¸æ­¸é‚„)
 						this.recycleAmmo();
 						this.setDead();
 					}
 				}
 				
-				//«e´X¬íª½½u©¹¥Ø¼Ğ²¾°Ê
+				//å‰å¹¾ç§’ç›´ç·šå¾€ç›®æ¨™ç§»å‹•
 				if(this.ticksExisted < 34 && this.getEntityTarget() != null) {
 					double distX = this.getEntityTarget().posX - this.posX;
 					double distZ = this.getEntityTarget().posZ - this.posZ;
@@ -274,7 +274,7 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 						}
 					}
 					
-					//§ğÀ»¥Ø¼Ğ®ø¥¢, §äªşªñ¥Ø¼Ğ or ³]¬°host¥Ø«e¥Ø¼Ğ
+					//æ”»æ“Šç›®æ¨™æ¶ˆå¤±, æ‰¾é™„è¿‘ç›®æ¨™ or è¨­ç‚ºhostç›®å‰ç›®æ¨™
 					if(this.ticksExisted >= 20) {
 						Entity newTarget = null;
 						List list = null;
@@ -291,7 +291,7 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 				        
 				        //get target in list
 						if(list != null && list.size() > 0) {
-							//±qÄ¥¸ü¾÷ªşªñ§ä¥Xªº¥Ø¼Ğ, §P©w¬O§_­n¥h§ğÀ»
+							//å¾è‰¦è¼‰æ©Ÿé™„è¿‘æ‰¾å‡ºçš„ç›®æ¨™, åˆ¤å®šæ˜¯å¦è¦å»æ”»æ“Š
 				        	Collections.sort(list, this.targetSorter);
 				        	newTarget = (Entity) list.get(0);
 						}
@@ -308,18 +308,18 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 					}
 				}//end can find target
 
-				//Á×§K²¿®§
+				//é¿å…çª’æ¯
 				if(this.isInWater() && this.ticksExisted % 256 == 0) {
 					this.setAir(300);
 				}
 				
-				//¶W¹L90¬í¦Û°Ê®ø¥¢
+				//è¶…é90ç§’è‡ªå‹•æ¶ˆå¤±
 				if(this.ticksExisted > 1800) {
 					this.recycleAmmo();
 					this.setDead();
 				}
 				
-				//¹F¨ì45¬í®ÉÂk¦v
+				//é”åˆ°45ç§’æ™‚æ­¸å®…
 				if(this.ticksExisted >= 900) {
 					this.backHome = true;
 					this.canFindTarget = false;
@@ -329,7 +329,7 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 		}
 		
 		if(this.ticksExisted % 2 == 0) {
-			//­±¦V­pºâ (for both side)
+			//é¢å‘è¨ˆç®— (for both side)
 			float[] degree = CalcHelper.getLookDegree(posX - prevPosX, posY - prevPosY, posZ - prevPosZ, true);
 			this.rotationYaw = degree[0];
 			this.rotationPitch = degree[1];
@@ -365,7 +365,7 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 			reduceAtk = atk * (1F - this.getDefValue() * 0.01F);
 		}
 		
-		//ship vs ship, config¶Ë®`½Õ¾ã
+		//ship vs ship, configå‚·å®³èª¿æ•´
 		Entity entity = source.getEntity();
 		
 		if(entity instanceof BasicEntityShip || entity instanceof BasicEntityAirplane || 
@@ -373,7 +373,7 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 			reduceAtk = reduceAtk * (float)ConfigHandler.dmgSummon * 0.01F;
 		}
 		
-		//ship vs ship, damage type¶Ë®`½Õ¾ã
+		//ship vs ship, damage typeå‚·å®³èª¿æ•´
 		if(entity instanceof IShipAttackBase) {
 			//get attack time for damage modifier setting (day, night or ...etc)
 			int modSet = this.worldObj.provider.isDaytime() ? 0 : 1;
@@ -389,7 +389,6 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 	@Override
 	public boolean attackEntityWithAmmo(Entity target) {
 		float atkLight = CalcHelper.calcDamageByEquipEffect(this, target, this.atk, 0);
-		float kbValue = 0.03F;
 
 		//play cannon fire sound at attacker
         playSound(Reference.MOD_ID+":ship-machinegun", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
@@ -449,8 +448,8 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
     		}
   		}
 
-	    //±Natk¸òattacker¶Çµ¹¥Ø¼ĞªºattackEntityFrom¤èªk, ¦b¥Ø¼Ğclass¤¤­pºâ¶Ë®`
-	    //¨Ã¥B¦^¶Ç¬O§_¦¨¥\¶Ë®`¨ì¥Ø¼Ğ
+	    //å°‡atkè·Ÿattackerå‚³çµ¦ç›®æ¨™çš„attackEntityFromæ–¹æ³•, åœ¨ç›®æ¨™classä¸­è¨ˆç®—å‚·å®³
+	    //ä¸¦ä¸”å›å‚³æ˜¯å¦æˆåŠŸå‚·å®³åˆ°ç›®æ¨™
   		boolean isTargetHurt = false;
   		
   		if(this.host != null) {
@@ -459,18 +458,12 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
 	    
 	    //if attack success
 	    if(isTargetHurt) {
-	    	//calc kb effect
-	        if(kbValue > 0) {
-	            target.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
-	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
-	        }
-	        
         	//send packet to client for display partical effect  
 	        TargetPoint point1 = new TargetPoint(this.dimension, target.posX, target.posY, target.posZ, 64D);
 			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 0, false), point1);
         }
 	    
-	    //®ø¯Ó¼uÃÄ­pºâ
+	    //æ¶ˆè€—å½ˆè—¥è¨ˆç®—
   		if(numAmmoLight > 0) {
   			numAmmoLight--;
   		}
@@ -505,7 +498,7 @@ public abstract class BasicEntityAirplane extends EntityLiving implements IShipC
         		(float)target.posX, (float)(target.posY+target.height*0.2F), (float)target.posZ, (float)(this.posY-0.8F), atkHeavy, kbValue, true, -1F);
         this.worldObj.spawnEntityInWorld(missile);
         
-        //®ø¯Ó¼uÃÄ­pºâ
+        //æ¶ˆè€—å½ˆè—¥è¨ˆç®—
   		if(numAmmoHeavy > 0) {
   			numAmmoHeavy--;
   		}

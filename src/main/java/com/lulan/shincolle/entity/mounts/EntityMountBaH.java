@@ -45,18 +45,18 @@ public class EntityMountBaH extends BasicEntityMount {
         this.StartEmotion2 = 0;
         this.headTilt = false;
            
-        //³]©w¦ì¸m
+        //è¨­å®šä½ç½®
         this.posX = host.posX;
         this.posY = host.posY;
         this.posZ = host.posZ;
         this.setPosition(this.posX, this.posY, this.posZ);
  
-        //³]©w°ò¥»Äİ©Ê
+        //è¨­å®šåŸºæœ¬å±¬æ€§
         setupAttrs();
         
 		if(this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
 				
-		//³]©wAI
+		//è¨­å®šAI
 		this.setAIList();
 	}
     
@@ -80,11 +80,9 @@ public class EntityMountBaH extends BasicEntityMount {
   	public boolean attackEntityAsMob(Entity target) {
   		//get attack value
   		float atk = host.getStateFinal(ID.ATK) * 3F;
-  		//set knockback value (testing)
-  		float kbValue = 0.15F;
   				
-  	    //±Natk¸òattacker¶Çµ¹¥Ø¼ĞªºattackEntityFrom¤èªk, ¦b¥Ø¼Ğclass¤¤­pºâ¶Ë®`
-  	    //¨Ã¥B¦^¶Ç¬O§_¦¨¥\¶Ë®`¨ì¥Ø¼Ğ
+  	    //å°‡atkè·Ÿattackerå‚³çµ¦ç›®æ¨™çš„attackEntityFromæ–¹æ³•, åœ¨ç›®æ¨™classä¸­è¨ˆç®—å‚·å®³
+  	    //ä¸¦ä¸”å›å‚³æ˜¯å¦æˆåŠŸå‚·å®³åˆ°ç›®æ¨™
   	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this), atk);
 
   	    //play entity attack sound
@@ -94,14 +92,6 @@ public class EntityMountBaH extends BasicEntityMount {
   	    
   	    //if attack success
   	    if(isTargetHurt) {
-  	    	//calc kb effect
-  	        if(kbValue > 0) {
-  	            target.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
-  	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
-  	            motionX *= 0.6D;
-  	            motionZ *= 0.6D;
-  	        }
-
   	        //send packet to client for display partical effect   
   	        if (!worldObj.isRemote) {
   	        	TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
@@ -151,7 +141,7 @@ public class EntityMountBaH extends BasicEntityMount {
 		if(this.worldObj.isRemote) {
 			//add smoke particle
 			if(this.ticksExisted % 5 == 0) {
-  				//¥Í¦¨¸Ë³Æ«_·Ï¯S®Ä
+  				//ç”Ÿæˆè£å‚™å†’ç…™ç‰¹æ•ˆ
   				ParticleHelper.spawnAttackParticleAt(posX, posY + 3D, posZ, 0D, 0D, 0D, (byte)20);
   			}
 		}

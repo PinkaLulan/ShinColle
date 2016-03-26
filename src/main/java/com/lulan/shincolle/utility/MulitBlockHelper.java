@@ -75,13 +75,13 @@ public class MulitBlockHelper {
 		//init 15 = 1111
 		int typeTemp = 0;
 		int typeMatch = NUM_PATTERN;
-		int checkX, checkY, checkZ;		//ÀË¬dblockªº¦ì¸m
+		int checkX, checkY, checkZ;		//æª¢æŸ¥blockçš„ä½ç½®
 	    
-		//°ª«×4¥H¤U¤£¶·°»´ú
+		//é«˜åº¦4ä»¥ä¸‹ä¸é ˆåµæ¸¬
 		if(yCoord < 4) return -1;
 		
 	    //scan a 3x3x3 area
-		//1.ÀË¬dblock¨Ã³]©w¥N¸¹(code) 2.§P©w¬O§_²Å¦Xpattern 3.ÀË¬dtile entity¬O§_¦³master
+		//1.æª¢æŸ¥blockä¸¦è¨­å®šä»£è™Ÿ(code) 2.åˆ¤å®šæ˜¯å¦ç¬¦åˆpattern 3.æª¢æŸ¥tile entityæ˜¯å¦æœ‰master
 	    for(int x = 0; x < 3; x++) {
 	    	for(int y = 0; y < 3; y++) {
 	    		for(int z = 0; z < 3; z++) {
@@ -89,7 +89,7 @@ public class MulitBlockHelper {
 	    			checkY = yCoord - 2 + y;
 	    			checkZ = zCoord - 1 + z;
 	    			
-	    			//1.ÀË¬dblock¨Ã³]©w¥N¸¹
+	    			//1.æª¢æŸ¥blockä¸¦è¨­å®šä»£è™Ÿ
 	    			block = world.getBlock(checkX, checkY, checkZ);
 	    			
 	    			code = -1;
@@ -100,19 +100,19 @@ public class MulitBlockHelper {
 		    			LogHelper.info("DEBUG : multi block check: pos "+checkX+" "+checkY+" "+checkZ+" "+block.getLocalizedName()+" "+code);
 	    			}
 	    			
-	    			//2.§P©w¬O§_²Å¦Xpattern
+	    			//2.åˆ¤å®šæ˜¯å¦ç¬¦åˆpattern
 	    			typeTemp = 0;
 	    			for(int t = 0; t < PATTERN.length; t++) {
 	    				if(code == PATTERN[t][x][y][z]) {
 	    					typeTemp += Math.pow(2, t);		//match pattern t
 	    				}
 	    			}
-	    			typeMatch = (typeMatch & typeTemp);		//¶i¦æand¹Bºâ, §R¥h¤£²Å¦Xªºtype
+	    			typeMatch = (typeMatch & typeTemp);		//é€²è¡Œandé‹ç®—, åˆªå»ä¸ç¬¦åˆçš„type
 	    			
 	    			LogHelper.info("DEBUG : check structure: type "+typeMatch+" "+typeTemp);
-	    			if(typeMatch == 0) return -1;	//¥ş³¡pattern³£³QÂo±¼, µL²Å¦X, µ²§ôÀË¬d
+	    			if(typeMatch == 0) return -1;	//å…¨éƒ¨patternéƒ½è¢«æ¿¾æ‰, ç„¡ç¬¦åˆ, çµæŸæª¢æŸ¥
 	    			
-	    			//3.­Y¬°MultiBlock«h¦A§ìTileEntity, ÀË¬d¨ä¥D±q, µL¥D¤è¶ô¤~¯à¥[¤J, ¦³¥D¤è¶ô«hµ²§ôÀË¬d
+	    			//3.è‹¥ç‚ºMultiBlockå‰‡å†æŠ“TileEntity, æª¢æŸ¥å…¶ä¸»å¾, ç„¡ä¸»æ–¹å¡Šæ‰èƒ½åŠ å…¥, æœ‰ä¸»æ–¹å¡Šå‰‡çµæŸæª¢æŸ¥
 	    			if(code > 0) tile = (BasicTileMulti)world.getTileEntity(checkX, checkY, checkZ);
 	    			if(tile != null) {
 	    				if(tile.hasMaster()) {

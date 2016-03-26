@@ -23,13 +23,13 @@ public class SlotShipInventory extends Slot {
 		this.slotIndex = slotIndex;
 	}
 	
-	//³]©w¨C­Óslot¥i¥H©ñ¶iªºª««~: 0:
+	//è¨­å®šæ¯å€‹slotå¯ä»¥æ”¾é€²çš„ç‰©å“: 0:
 	@Override
 	public boolean isItemValid(ItemStack itemstack) {	
 		if(itemstack != null) {
 			Item item = itemstack.getItem();
 			
-			if(slotIndex < ContainerShipInventory.SLOTS_SHIPINV) {	//¥u¦³equip item¥i¥H¶ë¶iequip slot
+			if(slotIndex < ContainerShipInventory.SLOTS_SHIPINV) {	//åªæœ‰equip itemå¯ä»¥å¡é€²equip slot
 				if(item instanceof BasicEquip) {
 					return true;
 				}

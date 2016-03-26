@@ -51,14 +51,14 @@ public class EntitySubmRo500Mob extends BasicEntityShipHostile implements IShipI
         //misc
         this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, ID.Ship.SubmarineRo500+2);
  
-	    //³]©w°ò¥»Äİ©Ê
+	    //è¨­å®šåŸºæœ¬å±¬æ€§
 	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(ConfigHandler.scaleMobSubm[ID.HP]);
 		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(this.movSpeed);
-		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(atkRange + 48); //¦¹¬°§ä¥Ø¼Ğ, ¸ô®|ªº½d³ò
+		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(atkRange + 48); //æ­¤ç‚ºæ‰¾ç›®æ¨™, è·¯å¾‘çš„ç¯„åœ
 		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(0.3D);
 		if(this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
 				
-		//³]©wAI
+		//è¨­å®šAI
 		this.setAIList();
 		this.setAITargetList();
 	}
@@ -73,7 +73,7 @@ public class EntitySubmRo500Mob extends BasicEntityShipHostile implements IShipI
 		return 1.28F;
 	}
 	
-	//¥­±`­µ®Ä·s¼W: garuru
+	//å¹³å¸¸éŸ³æ•ˆæ–°å¢: garuru
 	@Override
 	protected String getLivingSound() {
 		if(rand.nextInt(8) == 0) {
@@ -116,16 +116,16 @@ public class EntitySubmRo500Mob extends BasicEntityShipHostile implements IShipI
   		}    
   	}
 	
-	//©Û³ê°ª³t³½¹p
+	//æ‹›å–šé«˜é€Ÿé­šé›·
   	@Override
   	public boolean attackEntityWithAmmo(Entity target) {
   		//get attack value
   		float atk = this.atk;
   		float kbValue = 0.05F;
   		
-  		//­¸¼u¬O§_±Ä¥Îª½®g
+  		//é£›å½ˆæ˜¯å¦æ¡ç”¨ç›´å°„
   		boolean isDirect = false;
-  		//­pºâ¥Ø¼Ğ¶ZÂ÷
+  		//è¨ˆç®—ç›®æ¨™è·é›¢
   		float tarX = (float)target.posX;	//for miss chance calc
   		float tarY = (float)target.posY;
   		float tarZ = (float)target.posZ;
@@ -135,7 +135,7 @@ public class EntitySubmRo500Mob extends BasicEntityShipHostile implements IShipI
   		float distSqrt = MathHelper.sqrt_float(distX*distX + distY*distY + distZ*distZ);
   		float launchPos = (float)posY + height * 0.7F;
           
-  		//¶W¹L¤@©w¶ZÂ÷/¤ô¤¤ , «h±Ä¥Î©ßª«½u,  ¦b¤ô¤¤®Éµo®g°ª«×¸û§C
+  		//è¶…éä¸€å®šè·é›¢/æ°´ä¸­ , å‰‡æ¡ç”¨æ‹‹ç‰©ç·š,  åœ¨æ°´ä¸­æ™‚ç™¼å°„é«˜åº¦è¼ƒä½
   		if((distX*distX+distY*distY+distZ*distZ) < 36F) {
   			isDirect = true;
   		}
@@ -169,16 +169,16 @@ public class EntitySubmRo500Mob extends BasicEntityShipHostile implements IShipI
   		return true;
 	}
   	
-  	//¤@¯ë³½¹p
+  	//ä¸€èˆ¬é­šé›·
   	@Override
   	public boolean attackEntityWithHeavyAmmo(Entity target) {	
 		//get attack value
 		float atkHeavy = this.atk * 3F;
 		float kbValue = 0.08F;
 		
-		//­¸¼u¬O§_±Ä¥Îª½®g
+		//é£›å½ˆæ˜¯å¦æ¡ç”¨ç›´å°„
 		boolean isDirect = false;
-		//­pºâ¥Ø¼Ğ¶ZÂ÷
+		//è¨ˆç®—ç›®æ¨™è·é›¢
 		float tarX = (float)target.posX;	//for miss chance calc
 		float tarY = (float)target.posY;
 		float tarZ = (float)target.posZ;
@@ -188,7 +188,7 @@ public class EntitySubmRo500Mob extends BasicEntityShipHostile implements IShipI
         float distSqrt = MathHelper.sqrt_float(distX*distX + distY*distY + distZ*distZ);
         float launchPos = (float)posY + height * 0.5F;
         
-        //¶W¹L¤@©w¶ZÂ÷/¤ô¤¤ , «h±Ä¥Î©ßª«½u,  ¦b¤ô¤¤®Éµo®g°ª«×¸û§C
+        //è¶…éä¸€å®šè·é›¢/æ°´ä¸­ , å‰‡æ¡ç”¨æ‹‹ç‰©ç·š,  åœ¨æ°´ä¸­æ™‚ç™¼å°„é«˜åº¦è¼ƒä½
         if((distX*distX+distY*distY+distZ*distZ) < 36F || this.getShipDepth() > 0D) {
         	isDirect = true;
         }
@@ -210,7 +210,7 @@ public class EntitySubmRo500Mob extends BasicEntityShipHostile implements IShipI
         	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
         }
         
-        //µo®gªÌ·ÏÃú¯S®Ä (¤£¨Ï¥Î¯S®Ä, ¦ı¬O­nµo°e«Ê¥]¨Ó³]©wattackTime)
+        //ç™¼å°„è€…ç…™éœ§ç‰¹æ•ˆ (ä¸ä½¿ç”¨ç‰¹æ•ˆ, ä½†æ˜¯è¦ç™¼é€å°åŒ…ä¾†è¨­å®šattackTime)
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
 

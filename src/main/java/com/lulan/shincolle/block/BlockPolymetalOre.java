@@ -17,41 +17,41 @@ public class BlockPolymetalOre extends BasicBlock {
    
 	}
 	
-	//«õÄq¸gÅç³]©w
+	//æŒ–ç¤¦ç¶“é©—è¨­å®š
 	//getExpDrop(IBlockAccess world, int metadata, int fortune)
 	private Random rand = new Random();
 	@Override
 	public int getExpDrop(IBlockAccess world, int metadata, int fortune){
-		if (this.getItemDropped(metadata, rand, fortune) != Item.getItemFromBlock(this)) { //¤£¬Oµ·º÷«õªº¸Üµ¹¸gÅç
-			return (rand.nextInt(4)+1)*(fortune+1);	//µ¹(ªşÅ]µ¥¯Å+1)x(1~4)ªº¸gÅç
+		if (this.getItemDropped(metadata, rand, fortune) != Item.getItemFromBlock(this)) { //ä¸æ˜¯çµ²ç¶¢æŒ–çš„è©±çµ¦ç¶“é©—
+			return (rand.nextInt(4)+1)*(fortune+1);	//çµ¦(é™„é­”ç­‰ç´š+1)x(1~4)çš„ç¶“é©—
 		}
-		return 0;	//µ·º÷«õªº¸Ü µ¹0
+		return 0;	//çµ²ç¶¢æŒ–çš„è©± çµ¦0
 	}
 
-	//±¼¸¨ª«³]©w
+	//æ‰è½ç‰©è¨­å®š
 	@Override
     public Item getItemDropped(int metadata, Random random, int fortune) {
         return ModItems.AbyssMetal;
     }
 	
-	//±¼¸¨meta=1 (polymetalª««~)
+	//æ‰è½meta=1 (polymetalç‰©å“)
 	@Override
 	public int damageDropped(int meta) {
         return 1;
     }
 	
-	//±¼¸¨¼Æ¶q³]©w: ®Ú¾Ú¾÷²v¸òªşÅ]µ¥¯Å¨M©w±¼¸¨¼Æ¶q
-	//­YªşÅ]µ¥¯Å>0  ¨Ì·Óµ¥¯ÅÀH¾÷¼W¥[¼Æ¶q  ³Ì¤Ö2Áû  ³Ì¦h¬°(1+ªşÅ]µ¥¯Å)­Ó
+	//æ‰è½æ•¸é‡è¨­å®š: æ ¹æ“šæ©Ÿç‡è·Ÿé™„é­”ç­‰ç´šæ±ºå®šæ‰è½æ•¸é‡
+	//è‹¥é™„é­”ç­‰ç´š>0  ä¾ç…§ç­‰ç´šéš¨æ©Ÿå¢åŠ æ•¸é‡  æœ€å°‘2é¡†  æœ€å¤šç‚º(1+é™„é­”ç­‰ç´š)å€‹
 	@Override
 	public int quantityDroppedWithBonus(int fortune, Random rand) {
 		if (fortune > 0) {
 			return 2 + rand.nextInt(fortune+1);
 		}
-		return 1 + rand.nextInt(2);  //µLªşÅ] «h±¼¸¨1~2
+		return 1 + rand.nextInt(2);  //ç„¡é™„é­” å‰‡æ‰è½1~2
 	}
 	
 	
-//	//½c¤lÃş¤è¶ô¥´±¼¤~¨Ï¥ÎdamageDropped ¨Ï¨ä±¼¸¨metadata¤ºªºª««~  (quantityDropped¤]¦³metadataª©¥»)
+//	//ç®±å­é¡æ–¹å¡Šæ‰“æ‰æ‰ä½¿ç”¨damageDropped ä½¿å…¶æ‰è½metadataå…§çš„ç‰©å“  (quantityDroppedä¹Ÿæœ‰metadataç‰ˆæœ¬)
 //	@Override
 //	public int damageDropped(int metadata) {
 //	    return this.meta;

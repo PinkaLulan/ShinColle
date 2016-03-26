@@ -12,7 +12,7 @@ public class EntityRenderLargeShipyard extends BasicRenderEntity {
 	
 	public EntityRenderLargeShipyard(World world, int x, int y, int z) {
 		this(world);
-		this.posX = x + 0.1D;	//¦ì¸m¿ù¶}¤¤¶¡, ¥H§KÀ½¨ìvortex
+		this.posX = x + 0.1D;	//ä½ç½®éŒ¯é–‹ä¸­é–“, ä»¥å…æ“ åˆ°vortex
 		this.posY = y - 1D;
 		this.posZ = z + 0.1D;
 		this.setPosition(posX, posY, posZ);

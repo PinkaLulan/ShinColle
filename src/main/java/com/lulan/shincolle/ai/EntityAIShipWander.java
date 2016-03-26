@@ -34,7 +34,7 @@ public class EntityAIShipWander extends EntityAIBase {
 
     /** should begin checking */
     public boolean shouldExecute() {
-    	//¥­§¡¨C 120 tick ·|µo°Ê¤@¦¸
+    	//å¹³å‡æ¯ 120 tick æœƒç™¼å‹•ä¸€æ¬¡
         if(this.host.getIsRiding() || this.host.getIsSitting() ||
            this.host2.getRNG().nextInt(180) != 0) {
             return false;

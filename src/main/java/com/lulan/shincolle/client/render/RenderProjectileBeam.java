@@ -15,7 +15,7 @@ public class RenderProjectileBeam extends Render {
 	
 	public RenderProjectileBeam() {}
 	
-	//¶Ç¤Jentityªº³£Âà¦¨abyssmissile
+	//å‚³å…¥entityçš„éƒ½è½‰æˆabyssmissile
     @Override
 	public void doRender(Entity entity, double offsetX, double offsetY, double offsetZ, float p_76986_8_, float p_76986_9_) {
     }

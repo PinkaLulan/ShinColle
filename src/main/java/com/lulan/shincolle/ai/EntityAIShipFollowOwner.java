@@ -22,8 +22,8 @@ import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 /**SHIP FOLLOW OWNER AI
- * ¶ZÂ÷¶W¹Lmax dist®ÉÄ²µo²¾°Ê, ª½¨ì¨«¶imin dist¶ZÂ÷®É°±¤î
- * ¶ZÂ÷¶W¹LTP_DIST·|ª½±µteleport¨ìowner®ÇÃä
+ * è·é›¢è¶…émax distæ™‚è§¸ç™¼ç§»å‹•, ç›´åˆ°èµ°é€²min distè·é›¢æ™‚åœæ­¢
+ * è·é›¢è¶…éTP_DISTæœƒç›´æ¥teleportåˆ°owneræ—é‚Š
  */
 public class EntityAIShipFollowOwner extends EntityAIBase {
 
@@ -59,7 +59,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
         }
     }
     
-    //¦³owner¥B¥Ø¼Ğ¶W¹Lmax dist®ÉÄ²µoAI, Ä²µo«á¦¹¤èªk¤£¦A°õ¦æ, §ï¬°«ùÄò°õ¦æcont exec
+    //æœ‰ownerä¸”ç›®æ¨™è¶…émax distæ™‚è§¸ç™¼AI, è§¸ç™¼å¾Œæ­¤æ–¹æ³•ä¸å†åŸ·è¡Œ, æ”¹ç‚ºæŒçºŒåŸ·è¡Œcont exec
     @Override
 	public boolean shouldExecute() {
     	if(!host.getIsSitting() && !host.getIsRiding() && !host.getIsLeashed() && 
@@ -84,22 +84,22 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
         return false;
     }
 
-    //¥Ø¼ĞÁÙ¨S±µªñmin dist©ÎªÌ¶ZÂ÷¶W¹LTP_DIST®ÉÄ~ÄòAI
+    //ç›®æ¨™é‚„æ²’æ¥è¿‘min distæˆ–è€…è·é›¢è¶…éTP_DISTæ™‚ç¹¼çºŒAI
     @Override
 	public boolean continueExecuting() {
-    	//«D§¤¤U, ÃM­¼, ³Q¸j¦í®É¥i¥HÄ~Äò°õ¦æAI
-    	if(host != null) { 
+    	//éåä¸‹, é¨ä¹˜, è¢«ç¶ä½æ™‚å¯ä»¥ç¹¼çºŒåŸ·è¡ŒAI
+    	if(host != null && owner != null) { 
     		if(!host.getIsSitting() && !host.getIsRiding() && !host.getIsLeashed() && 
     		   !host.getStateFlag(ID.F.NoFuel) && host.getStateFlag(ID.F.CanFollow)) {
-	        	//ÁÙ¨S¨«¶imin follow range, Ä~Äò¨«
-	        	if(this.distSq > this.minDistSq ) {		
+	        	//é‚„æ²’èµ°é€²min follow range, ç¹¼çºŒèµ°
+	        	if(this.distSq > this.minDistSq) {		
 	        		return true;
 	        	}
 	        	
-	        	//¨ä¥L±¡ªp
+	        	//å…¶ä»–æƒ…æ³
 	        	return !ShipNavigator.noPath() || shouldExecute();
     		}
-    		else {	//­Y¬°§¤¤U, ÃM­¼, ³Q¸j, «h­«¸mAI
+    		else {	//è‹¥ç‚ºåä¸‹, é¨ä¹˜, è¢«ç¶, å‰‡é‡ç½®AI
     			this.resetTask();
     			return false;
     		}
@@ -156,13 +156,13 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
         		this.ShipNavigator.clearPathEntity();
         	}
         	
-        	//¨Ccd¨ì§ä¤@¦¸¸ô®|
+        	//æ¯cdåˆ°æ‰¾ä¸€æ¬¡è·¯å¾‘
         	if(this.findCooldown <= 0) {
     			this.findCooldown = 32;
     			this.ShipNavigator.tryMoveToXYZ(pos[0], pos[1], pos[2], 1D);
         	}
         	
-        	//³]©wÀY³¡Âà¦V
+        	//è¨­å®šé ­éƒ¨è½‰å‘
             this.host2.getLookHelper().setLookPositionWithEntity(this.owner, 20F, 40F);
             
         	//check teleport conditions: same DIM and (dist > TP_DIST or time > TP_TIME)
@@ -219,7 +219,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
     
 	//clear seat2
   	private void clearMountSeat2(EntityLiving entity) {
-  		//­Y®y¦ì2¦³¤H, ­n¥ı§â®y¦ì2ªº­¼«È½ğ±¼
+  		//è‹¥åº§ä½2æœ‰äºº, è¦å…ˆæŠŠåº§ä½2çš„ä¹˜å®¢è¸¢æ‰
   		if(entity.ridingEntity != null) {
   			if(entity.ridingEntity instanceof BasicEntityMount) {
 	  			BasicEntityMount mount = (BasicEntityMount) entity.ridingEntity;
@@ -230,7 +230,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
   			entity.mountEntity(null);
   		}
   		
-  		//²MªÅÃM­¼ªº¤H
+  		//æ¸…ç©ºé¨ä¹˜çš„äºº
   		if(entity.riddenByEntity != null) {
   			entity.riddenByEntity.mountEntity(null);
   			entity.riddenByEntity = null;
@@ -267,15 +267,17 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
 				ownerPosOld[2] = owner.posZ;
 					
 				//draw moving particle
-				if(ConfigHandler.alwaysShowTeamParticle || EntityHelper.checkInUsePointer(player)) {
-					CommonProxy.channelP.sendTo(new S2CSpawnParticle(25, 0, pos[0], pos[1], pos[2], 0.3, 4, 0), (EntityPlayerMP) player);
+				if((ConfigHandler.alwaysShowTeamParticle || EntityHelper.checkInUsePointer(player)) &&
+					player != null) {
+					CommonProxy.channelP.sendTo(new S2CSpawnParticle(25, pos[0], pos[1], pos[2], 0.3, 4, 0), (EntityPlayerMP) player);
 				}
 			}
 			
 			if(this.host2.ticksExisted % 16 == 0) {
 				//draw moving particle
-				if(ConfigHandler.alwaysShowTeamParticle || EntityHelper.checkInUsePointer(player)) {
-					CommonProxy.channelP.sendTo(new S2CSpawnParticle(25, 0, pos[0], pos[1], pos[2], 0.3, 6, 0), (EntityPlayerMP) player);
+				if((ConfigHandler.alwaysShowTeamParticle || EntityHelper.checkInUsePointer(player)) &&
+					player != null) {
+					CommonProxy.channelP.sendTo(new S2CSpawnParticle(25, pos[0], pos[1], pos[2], 0.3, 6, 0), (EntityPlayerMP) player);
 				}
 			}
 		}
@@ -291,7 +293,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
 			pos[2] = owner.posZ;
 		}
 
-    	//­pºâª½½u¶ZÂ÷
+    	//è¨ˆç®—ç›´ç·šè·é›¢
     	this.distX = pos[0] - this.host2.posX;
 		this.distY = pos[1] - this.host2.posY;
 		this.distZ = pos[2] - this.host2.posZ;

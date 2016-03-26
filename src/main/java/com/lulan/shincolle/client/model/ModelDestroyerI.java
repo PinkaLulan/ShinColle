@@ -14,8 +14,8 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EmotionHelper;
 
 /**Created in 2015/1/9
- * ª`·N: model class¤º©Ò¦³¤èªk³£¬Ofps 60¼Ò¦¡
- *      ¤]´N¬O¥ş³¡¤èªk¤@¬í³£·|call 60¦¸, ¸òentity¤º³¡¤@¬í¬O20¦¸ªº®É¶¡ÅÜ¤Æ³t«×¤£¦P
+ * æ³¨æ„: model classå…§æ‰€æœ‰æ–¹æ³•éƒ½æ˜¯fps 60æ¨¡å¼
+ *      ä¹Ÿå°±æ˜¯å…¨éƒ¨æ–¹æ³•ä¸€ç§’éƒ½æœƒcall 60æ¬¡, è·Ÿentityå…§éƒ¨ä¸€ç§’æ˜¯20æ¬¡çš„æ™‚é–“è®ŠåŒ–é€Ÿåº¦ä¸åŒ
  */
 public class ModelDestroyerI extends ModelBase implements IModelEmotion {
     //fields
@@ -203,7 +203,7 @@ public class ModelDestroyerI extends ModelBase implements IModelEmotion {
       PTail.addChild(PTailEnd);
       PBack.addChild(PTail);
       
-      //µo¥ú¼Ò«¬¤ä¬[, «G«×¬°240
+      //ç™¼å…‰æ¨¡å‹æ”¯æ¶, äº®åº¦ç‚º240
       GlowPBack = new ModelRenderer(this, "GlowPBack");
       GlowPBack.setRotationPoint(-8F, -16F, 0F);
       setRotation(GlowPBack, 0F, 0F, -0.31F);   
@@ -236,20 +236,20 @@ public void render(Entity entity, float f, float f1, float f2, float f3, float f
 	GL11.glPushMatrix();
 //  Scale, Translate, Rotate
 //  GL11.glScalef(this.scale, this.scale, this.scale);
-//	GL11.glEnable(GL11.GL_BLEND);			//¶}±Ò³z©ú«×¼Ò¦¡
+//	GL11.glEnable(GL11.GL_BLEND);			//é–‹å•Ÿé€æ˜åº¦æ¨¡å¼
 //	GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-	GL11.glScalef(0.45F, 0.4F, 0.4F);	//debug¥Î
-	GL11.glRotatef(90F, 0F, 1F, 0F);	//¦¹¼Ò«¬ÀY³¡¤è¦V¿ù»~ ¦]¦¹render®É½Õ¾ã¦^¨Ó
+	GL11.glScalef(0.45F, 0.4F, 0.4F);	//debugç”¨
+	GL11.glRotatef(90F, 0F, 1F, 0F);	//æ­¤æ¨¡å‹é ­éƒ¨æ–¹å‘éŒ¯èª¤ å› æ­¤renderæ™‚èª¿æ•´å›ä¾†
 	
 	PBack.render(f5);
 	
-	//«G«×³]¬°240
+	//äº®åº¦è¨­ç‚º240
 	GL11.glDisable(GL11.GL_LIGHTING);
 	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
 	this.GlowPBack.render(f5);
 	GL11.glEnable(GL11.GL_LIGHTING);
 	
-//	GL11.glDisable(GL11.GL_BLEND);		//Ãö³¬³z©ú«×¼Ò¦¡
+//	GL11.glDisable(GL11.GL_BLEND);		//é—œé–‰é€æ˜åº¦æ¨¡å¼
 	GL11.glPopMatrix();
   }
   
@@ -287,7 +287,7 @@ public void setRotationAngles(float f, float f1, float f2, float f3, float f4, f
     setGlowRotation();
   }
 
-  	//³]©wµo¥ú¼Ò«¬rrotation
+  	//è¨­å®šç™¼å…‰æ¨¡å‹rrotation
 	private void setGlowRotation() {
 		this.GlowPBack.rotateAngleX = this.PBack.rotateAngleX;
 		this.GlowPBack.rotateAngleY = this.PBack.rotateAngleY;
@@ -316,7 +316,7 @@ public void setRotationAngles(float f, float f1, float f2, float f3, float f4, f
 	
   	}
 	
-	//§¤¤U°Ê§@
+	//åä¸‹å‹•ä½œ
   	private void motionSit(EntityDestroyerI ent, float angleZ) {		
   		if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {
   			GL11.glTranslatef(0F, 0.9F, 0F);
@@ -346,42 +346,42 @@ public void setRotationAngles(float f, float f1, float f2, float f3, float f4, f
   		}
   	}
 
-	//±`®ÉÂ\°Ê§À¤Ú¸ò¤U¤Ú
+	//å¸¸æ™‚æ“ºå‹•å°¾å·´è·Ÿä¸‹å·´
   	private void motionTail(float angleZ) { 	
   	    PTail.rotateAngleZ = angleZ * 0.2F;
   	    PTailEnd.rotateAngleZ = angleZ * 0.3F;
   	    PJawBottom.rotateAngleZ = angleZ * 0.2F -0.3F;
   	}
 
-	//Âù¸}²¾°Ê­pºâ
+	//é›™è…³ç§»å‹•è¨ˆç®—
   	private void motionLeg(float f, float f1) {
-		//²¾°ÊÂù¸} ¦¹¼Ò«¬¤è¦V³]¿ù ¦]¦¹§ï¦¨ÂàZ
+		//ç§»å‹•é›™è…³ æ­¤æ¨¡å‹æ–¹å‘è¨­éŒ¯ å› æ­¤æ”¹æˆè½‰Z
 	    PLegRight.rotateAngleZ = MathHelper.cos(f * 0.6662F) * 1.4F * f1 - 0.6F;
 	    PLegLeft.rotateAngleZ = MathHelper.cos(f * 0.6662F + 3.1415927F) * 1.4F * f1 - 0.6F;
 	    PLegRightEnd.rotateAngleZ = MathHelper.sin(f * 0.6662F) * f1 - 0.4F;
 	    PLegLeftEnd.rotateAngleZ = MathHelper.sin(f * 0.6662F + 3.1415927F) * f1 - 0.4F;	
 	}
 
-  	//ÀY³¡¬İ¤HÂà°Ê­pºâ
+  	//é ­éƒ¨çœ‹äººè½‰å‹•è¨ˆç®—
 	private void motionWatch(float f3, float f4, float angleZ) {
-		//²¾°ÊÀY³¡ ¨Ï¨ä¬İ¤H, ¤£¬İ¤H®É«ùÄòÂ\°ÊÀY³¡
+		//ç§»å‹•é ­éƒ¨ ä½¿å…¶çœ‹äºº, ä¸çœ‹äººæ™‚æŒçºŒæ“ºå‹•é ­éƒ¨
 	    if(f4 != 0) {
-		    PNeck.rotateAngleY = f3 / 160F;		//¥ª¥k¨¤«× ¨¤«×Âà¦¨rad §Y°£¥H57.29578
-		    PNeck.rotateAngleZ = f4 / 130F; 	//¤W¤U¨¤«×
+		    PNeck.rotateAngleY = f3 / 160F;		//å·¦å³è§’åº¦ è§’åº¦è½‰æˆrad å³é™¤ä»¥57.29578
+		    PNeck.rotateAngleZ = f4 / 130F; 	//ä¸Šä¸‹è§’åº¦
 		    PHead.rotateAngleY = f3 / 160F;
 		    PHead.rotateAngleZ = f4 / 130F;
-		    PTail.rotateAngleY = f3 / -130F;	//§À¤Ú¥H¤Ï¤è¦VÂ\°Ê
+		    PTail.rotateAngleY = f3 / -130F;	//å°¾å·´ä»¥åæ–¹å‘æ“ºå‹•
 	    }
 	    else {
-	    	PNeck.rotateAngleY = 0;			//¥ª¥k¨¤«× ¨¤«×Âà¦¨rad §Y°£¥H57.29578
-		    PNeck.rotateAngleZ = 0.2F; 		//¤W¤U¨¤«×
+	    	PNeck.rotateAngleY = 0;			//å·¦å³è§’åº¦ è§’åº¦è½‰æˆrad å³é™¤ä»¥57.29578
+		    PNeck.rotateAngleZ = 0.2F; 		//ä¸Šä¸‹è§’åº¦
 		    PHead.rotateAngleY = 0;
 		    PHead.rotateAngleZ = angleZ * 0.15F + 0.2F;
 		    PTail.rotateAngleY = 0;  	
 	    }	
 	}
 
-	//ÀH¾÷©â¨úÅã¥Üªºªí±¡ 
+	//éš¨æ©ŸæŠ½å–é¡¯ç¤ºçš„è¡¨æƒ… 
     private void rollEmotion(EntityDestroyerI ent) {   	
     	switch(ent.getStateEmotion(ID.S.Emotion)) {
     	case ID.Emotion.BLINK:	//blink
@@ -415,7 +415,7 @@ public void setRotationAngles(float f, float f1, float f2, float f3, float f4, f
     	}	
     }
 	
-	//³]©wÅã¥ÜªºÁy«¬
+	//è¨­å®šé¡¯ç¤ºçš„è‡‰å‹
     @Override
   	public void setFace(int emo) {
 		switch(emo) {

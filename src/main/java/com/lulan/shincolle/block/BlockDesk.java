@@ -15,26 +15,26 @@ public class BlockDesk extends BasicBlockContainer {
 	
 	
 	public BlockDesk() {
-		super(Material.rock); //¤£«ü©w«¬ºA ¹w³]§Y¬°rock
+		super(Material.rock); //ä¸æŒ‡å®šå‹æ…‹ é è¨­å³ç‚ºrock
 		this.setBlockName("BlockDesk");
 	    this.setHarvestLevel("pickaxe", 0);
 	    this.setHardness(1F);
 	    this.setResistance(60F);
 	}
 
-	//«D¼Ğ·Ç¤è§Î¤è¶ô  ­n¶Ç-1ªí¥Ü¥Î¦Û¤vªºrender
+	//éæ¨™æº–æ–¹å½¢æ–¹å¡Š  è¦å‚³-1è¡¨ç¤ºç”¨è‡ªå·±çš„render
 	@Override
 	public int getRenderType() {
 		return -1;	//-1 = non standard render
 	}
 	
-	//«D¼Ğ·Ç¤è§Î¤è¶ô  ³]¬°false
+	//éæ¨™æº–æ–¹å½¢æ–¹å¡Š  è¨­ç‚ºfalse
 	@Override
 	public boolean isOpaqueCube() {
 		return false;
 	}
 	
-	//«D¼Ğ·Ç¤è§Î¤è¶ô  ³]¬°false
+	//éæ¨™æº–æ–¹å½¢æ–¹å¡Š  è¨­ç‚ºfalse
 	@Override
 	public boolean renderAsNormalBlock() {
 		return false;
@@ -45,18 +45,18 @@ public class BlockDesk extends BasicBlockContainer {
 		return new TileEntityDesk();
 	}
 	
-	/**¥kÁäÂI¨ì¤è¶ô®É©I¥s¦¹¤èªk
-	 * °Ñ¼Æ: world,¤è¶ôx,y,z,ª±®a,ª±®a­±¦V,ª±®aÂI¨ìªºx,y,z
+	/**å³éµé»åˆ°æ–¹å¡Šæ™‚å‘¼å«æ­¤æ–¹æ³•
+	 * åƒæ•¸: world,æ–¹å¡Šx,y,z,ç©å®¶,ç©å®¶é¢å‘,ç©å®¶é»åˆ°çš„x,y,z
 	 */	
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ) {
-		if (world.isRemote) {	//clientºİ¥u»İ­n¦¬¨ìtrue
+		if (world.isRemote) {	//clientç«¯åªéœ€è¦æ”¶åˆ°true
     		return true;
     	}
-		else if(!player.isSneaking()) {  //serverºİ: «ö¦íshift¤£¯àÂI¶}¤è¶ôgui
+		else if(!player.isSneaking()) {  //serverç«¯: æŒ‰ä½shiftä¸èƒ½é»é–‹æ–¹å¡Šgui
 			TileEntity entity = world.getTileEntity(x, y, z);
     		
-    		if (entity != null) {	//¶}±Ò¤è¶ôGUI °Ñ¼Æ:ª±®a,mod instance,gui ID,world,®y¼Ğxyz
+    		if (entity != null) {	//é–‹å•Ÿæ–¹å¡ŠGUI åƒæ•¸:ç©å®¶,mod instance,gui ID,world,åº§æ¨™xyz
     			FMLNetworkHandler.openGui(player, ShinColle.instance, ID.G.ADMIRALDESK, world, x, y, z);
     		}
     		return true;

@@ -124,9 +124,9 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAtt
 
 	@Override
 	protected void writeEntityToNBT(NBTTagCompound nbt) {
-		if(nbt.hasKey("speed", 9)) {  //9¬°tag list
-            NBTTagList nbttaglist = nbt.getTagList("speed", 6);  //6¬°tag double
-            this.accX = (float) nbttaglist.func_150309_d(0);	//¦¹¬°get double
+		if(nbt.hasKey("speed", 9)) {  //9ç‚ºtag list
+            NBTTagList nbttaglist = nbt.getTagList("speed", 6);  //6ç‚ºtag double
+            this.accX = (float) nbttaglist.func_150309_d(0);	//æ­¤ç‚ºget double
             this.accY = (float) nbttaglist.func_150309_d(1);
             this.accZ = (float) nbttaglist.func_150309_d(2);
         }
@@ -195,17 +195,17 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAtt
     			CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this, this.type, S2CEntitySync.PID.SyncProjectile), point);
     		}
         	
-    		//§P©wbounding box¤º¬O§_¦³¥i¥HÄ²µoÃz¬µªºentity
+    		//åˆ¤å®šbounding boxå…§æ˜¯å¦æœ‰å¯ä»¥è§¸ç™¼çˆ†ç‚¸çš„entity
             Entity hitEntity = null;
             List hitList = null;
             hitList = this.worldObj.getEntitiesWithinAABB(Entity.class, this.boundingBox.expand(1.5D, 1.5D, 1.5D));
             
-            //·j´Mlist, §ä¥X²Ä¤@­Ó¥i¥H§P©wªº¥Ø¼Ğ, §Y¶Çµ¹onImpact
+            //æœå°‹list, æ‰¾å‡ºç¬¬ä¸€å€‹å¯ä»¥åˆ¤å®šçš„ç›®æ¨™, å³å‚³çµ¦onImpact
             if(hitList != null && !hitList.isEmpty()) {
                 for(int i=0; i<hitList.size(); ++i) { 
                 	hitEntity = (Entity) hitList.get(i);
                 	
-                	/**¤£·|¹ï¦Û¤v¥D¤HÄ²µoÃz¬µ
+                	/**ä¸æœƒå°è‡ªå·±ä¸»äººè§¸ç™¼çˆ†ç‚¸
             		 * isEntityEqual() is NOT working
             		 * use entity id to check entity  */
                 	if(hitEntity.canBeCollidedWith() && isNotHost(hitEntity) && 
@@ -235,7 +235,7 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAtt
     	return false;
     }
     
-	//¼²À»§P©w®É©I¥s¦¹¤èªk
+	//æ’æ“Šåˆ¤å®šæ™‚å‘¼å«æ­¤æ–¹æ³•
     protected void onImpact() {
     	//play sound
     	playSound(Reference.MOD_ID+":ship-explode", ConfigHandler.fireVolume * 1.5F, 0.7F / (this.rand.nextFloat() * 0.4F + 0.8F));
@@ -244,7 +244,7 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAtt
     	if(!this.worldObj.isRemote) {
     		float beamAtk = atk;
 
-            //­pºâ½d³òÃz¬µ¶Ë®`: §P©wbounding box¤º¬O§_¦³¥i¥H¦Y¶Ë®`ªºentity
+            //è¨ˆç®—ç¯„åœçˆ†ç‚¸å‚·å®³: åˆ¤å®šbounding boxå…§æ˜¯å¦æœ‰å¯ä»¥åƒå‚·å®³çš„entity
             Entity hitEntity = null;
             AxisAlignedBB impactBox;
             
@@ -258,7 +258,7 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAtt
             List hitList = this.worldObj.getEntitiesWithinAABB(Entity.class, impactBox);
             TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
             
-            //¹ïlist¤¤©Ò¦³¥i§ğÀ»entity°µ¥X¶Ë®`§P©w
+            //å°listä¸­æ‰€æœ‰å¯æ”»æ“Šentityåšå‡ºå‚·å®³åˆ¤å®š
             if(hitList != null && !hitList.isEmpty()) {
                 for(int i=0; i<hitList.size(); ++i) {
                 	beamAtk = this.atk;
@@ -269,9 +269,9 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAtt
               			//calc equip special dmg: AA, ASM
                     	beamAtk = CalcHelper.calcDamageByEquipEffect(this, hitEntity, beamAtk, 1);
                     	
-                    	//¥Ø¼Ğ¤£¯à¬O¦Û¤v or ¥D¤H, ¥B¥i¥H³Q¸I¼²
+                    	//ç›®æ¨™ä¸èƒ½æ˜¯è‡ªå·± or ä¸»äºº, ä¸”å¯ä»¥è¢«ç¢°æ’
                     	if(hitEntity.canBeCollidedWith() && isNotHost(hitEntity)) {
-                    		//­Yowner¬Û¦P, «h¶Ë®`³]¬°0 (¦ı¬O¨ÌµMÄ²µoÀ»­¸¯S®Ä)
+                    		//è‹¥ownerç›¸åŒ, å‰‡å‚·å®³è¨­ç‚º0 (ä½†æ˜¯ä¾ç„¶è§¸ç™¼æ“Šé£›ç‰¹æ•ˆ)
                     		if(EntityHelper.checkSameOwner(host2, hitEntity)) {
                     			beamAtk = 0F;
                         	}
@@ -283,7 +283,7 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAtt
                                 	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(host2, 11, false), point);
                             	}
                         		
-                        		//­Y§ğÀ»¨ìª±®a, ³Ì¤j¶Ë®`©T©w¬°TNT¶Ë®` (non-owner)
+                        		//è‹¥æ”»æ“Šåˆ°ç©å®¶, æœ€å¤§å‚·å®³å›ºå®šç‚ºTNTå‚·å®³ (non-owner)
                             	if(hitEntity instanceof EntityPlayer) {
                             		beamAtk *= 0.25F;
                             		
@@ -300,14 +300,6 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAtt
                     		
                     		//if attack success
                     	    if(hitEntity.attackEntityFrom(DamageSource.causeIndirectMagicDamage(this, host2).setExplosion(), beamAtk)) {
-                    	    	//calc kb effect
-                    	        if(this.kbValue > 0) {
-                    	        	hitEntity.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
-                    	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
-                    	            motionX *= 0.6D;
-                    	            motionZ *= 0.6D;
-                    	        }
-                    	        
                     	        //send packet to client for display partical effect
                                 CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(hitEntity, 9, false), point);
                     	    }

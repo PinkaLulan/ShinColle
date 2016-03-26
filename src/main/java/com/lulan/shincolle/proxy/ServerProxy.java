@@ -83,7 +83,7 @@ public class ServerProxy extends CommonProxy {
 	
 	/**player id cache
 	 * for owner/team check, use map for data cache, save to .dat file when server close
-	 * entity«Ø¥ß®É·|Åª¨ú¦¹map¨Ó¨ú±oowner id, ¨Ã¦s¦b¦Û¤vªºnbt¤¤, ¥H«á´Nª½±µ¥H¸Óentity¦sªºowner id¨Ó§PÂ_owner
+	 * entityå»ºç«‹æ™‚æœƒè®€å–æ­¤mapä¾†å–å¾—owner id, ä¸¦å­˜åœ¨è‡ªå·±çš„nbtä¸­, ä»¥å¾Œå°±ç›´æ¥ä»¥è©²entityå­˜çš„owner idä¾†åˆ¤æ–·owner
 	 * 
 	 * player UID in other entity (owner check):
 	 * -1/0 = no owner
@@ -107,7 +107,7 @@ public class ServerProxy extends CommonProxy {
 	private static Map<Integer, int[]> mapPlayerID = null;
 	
 	/**ship id cache
-	 * for pointer command, UIDºû«ù©T©w, entity id¨C¦¸«Ø¥ßentity®É§ó·s
+	 * for pointer command, UIDç¶­æŒå›ºå®š, entity idæ¯æ¬¡å»ºç«‹entityæ™‚æ›´æ–°
 	 * delete when server close
 	 * 
 	 * mapShipID <ship UID, ship data>
@@ -308,7 +308,7 @@ public class ServerProxy extends CommonProxy {
 		return extendedPlayerData.get(name);
 	}
 	
-	/** add/remove string in player target class list */
+	/** add/remove string in player target class list *///TODO return boolean to check add/remove msg
 	public static void setPlayerTargetClassList(int pid, String str) {
 		if(str != null && str.length() > 1 && pid > 0) {
 			//get target class list
@@ -671,7 +671,7 @@ public class ServerProxy extends CommonProxy {
 					    
 					    int[] pdata = getPlayerWorldData(puid);	//get owner's data
 					    
-					    //ÀË¬d¬O§_¦b¦Pworld, ¬Û¦Pworldªºship¤~¥[¤Jlist
+					    //æª¢æŸ¥æ˜¯å¦åœ¨åŒworld, ç›¸åŒworldçš„shipæ‰åŠ å…¥list
 					    if(sdata != null && pdata != null && sdata[1] == pdata[2]) {
 					    	//add ship's entity id to player's shipList
 					    	List shipList = allShipMapByPlayer.get(puid);

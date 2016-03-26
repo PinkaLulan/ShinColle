@@ -49,15 +49,15 @@ public class ContainerSmallShipyard extends Container {
 		}
 	}
 
-	//ª±®a¬O§_¥i¥HÄ²µo¥kÁäÂI¤è¶ô¨Æ¥ó
+	//ç©å®¶æ˜¯å¦å¯ä»¥è§¸ç™¼å³éµé»æ–¹å¡Šäº‹ä»¶
 	@Override
 	public boolean canInteractWith(EntityPlayer player) {
 		return te.isUseableByPlayer(player);
 	}
 	
-	/**¨Ïcontainer¤ä´©shiftÂIª««~ªº°Ê§@, ¦¹¬°ContainerFurnace¤¤ª½±µ½Æ»s¹L¨Ó­×§ï
-	 * shiftÂI¤Hª«­I¥]¤¤ªºª««~->§P©wª««~Ãş«¬°e¨ì«ü©w®æ¤l, ÂIcontainer¤¤ªºª««~->°e¨ì¤Hª«­I¥]
-	 * mergeItemStack: parm: item,start slot,end slot(¦¹®æ¤£§P©w©ñ¤J),¬O§_¥ı©ñ¨ìhot bar
+	/**ä½¿containeræ”¯æ´shifté»ç‰©å“çš„å‹•ä½œ, æ­¤ç‚ºContainerFurnaceä¸­ç›´æ¥è¤‡è£½éä¾†ä¿®æ”¹
+	 * shifté»äººç‰©èƒŒåŒ…ä¸­çš„ç‰©å“->åˆ¤å®šç‰©å“é¡å‹é€åˆ°æŒ‡å®šæ ¼å­, é»containerä¸­çš„ç‰©å“->é€åˆ°äººç‰©èƒŒåŒ…
+	 * mergeItemStack: parm: item,start slot,end slot(æ­¤æ ¼ä¸åˆ¤å®šæ”¾å…¥),æ˜¯å¦å…ˆæ”¾åˆ°hot bar
 	 * slot id: 0:grudge 1:abyssium 2:ammo 3:polymetal 4:fuel 5:output
 	 *          6~32:player inventory 33~41:hot bar
 	 */
@@ -67,67 +67,67 @@ public class ContainerSmallShipyard extends Container {
         Slot slot = (Slot)this.inventorySlots.get(slotid);
         int itemID = -1;
 
-        if(slot != null && slot.getHasStack()) { 			//­Yslot¦³ªF¦è
-            ItemStack itemstack1 = slot.getStack();			//itemstack1¨ú±o¸Óslotª««~
-            itemstack = itemstack1.copy();					//itemstack½Æ»s¤@¥÷itemstack1
-            itemID = SmallRecipes.getMaterialType(itemstack1);//¨ú±oª««~ºØÃş(¹ïÀ³slot id)
+        if(slot != null && slot.getHasStack()) { 			//è‹¥slotæœ‰æ±è¥¿
+            ItemStack itemstack1 = slot.getStack();			//itemstack1å–å¾—è©²slotç‰©å“
+            itemstack = itemstack1.copy();					//itemstackè¤‡è£½ä¸€ä»½itemstack1
+            itemID = SmallRecipes.getMaterialType(itemstack1);//å–å¾—ç‰©å“ç¨®é¡(å°æ‡‰slot id)
 
-            if(slotid == 5) {  //­YÂIÀ»output slot®É
-            	//±Noutput slotªºª««~¹Á¸Õ¸òplayer inventory or hot barªºslot¦X¨Ö, ¤£¯à¦X¨Ö«h¶Ç¦^null
+            if(slotid == 5) {  //è‹¥é»æ“Šoutput slotæ™‚
+            	//å°‡output slotçš„ç‰©å“å˜—è©¦è·Ÿplayer inventory or hot barçš„slotåˆä½µ, ä¸èƒ½åˆä½µå‰‡å‚³å›null
             	if(!this.mergeItemStack(itemstack1, 6, 42, true)) {
                 	return null;
                 }
-                slot.onSlotChange(itemstack1, itemstack); //­Yª««~¦¨¥\·h°Ê¹L, «h©I¥sslot change¨Æ¥ó
+                slot.onSlotChange(itemstack1, itemstack); //è‹¥ç‰©å“æˆåŠŸæ¬å‹•é, å‰‡å‘¼å«slot changeäº‹ä»¶
             }
-            //¦pªG¬OÂIÀ»player inventory slot®É, §P©w¬O§_¯à¥á¶iinput slot
+            //å¦‚æœæ˜¯é»æ“Šplayer inventory slotæ™‚, åˆ¤å®šæ˜¯å¦èƒ½ä¸Ÿé€²input slot
             else if(slotid > 5) {        	          	
             	if(itemID >= 0) {  //item ID: -1:other 0~3:material 4:fuel
-            		if(!this.mergeItemStack(itemstack1, itemID, itemID+1, false)) { //¹Á¸Õ¶ë¶islot 0~4¤¤
+            		if(!this.mergeItemStack(itemstack1, itemID, itemID+1, false)) { //å˜—è©¦å¡é€²slot 0~4ä¸­
             			return null;
                     }
                 }
-            	//­Yª««~¤£¬O¥i¥Î§÷®Æ, ¥Bª««~¦bplayer inventory, «h§ï©ñ¨ìhot bar
+            	//è‹¥ç‰©å“ä¸æ˜¯å¯ç”¨ææ–™, ä¸”ç‰©å“åœ¨player inventory, å‰‡æ”¹æ”¾åˆ°hot bar
                 else if (slotid > 5 && slotid < 33) {
                 	if (!this.mergeItemStack(itemstack1, 33, 42, false)) {
                         return null;
                     }
                 }
-            	//­Yª««~¤£¬O¥i¥Î§÷®Æ, ¥Bª««~¦bhot bar, «h§ï©ñ¨ìplayer inventory
+            	//è‹¥ç‰©å“ä¸æ˜¯å¯ç”¨ææ–™, ä¸”ç‰©å“åœ¨hot bar, å‰‡æ”¹æ”¾åˆ°player inventory
                 else if (slotid > 32 && !this.mergeItemStack(itemstack1, 6, 33, false)) {
                     return null;
                 }
             }
-            //¦pªG¬OÂIÀ»slot 0~4, «h§ï©ñ¨ìplayer inventory or hot bar
+            //å¦‚æœæ˜¯é»æ“Šslot 0~4, å‰‡æ”¹æ”¾åˆ°player inventory or hot bar
             else if (!this.mergeItemStack(itemstack1, 6, 42, true)) {
                 return null;
             }
 
-            //¦pªGª««~³£©ñ§¹¤F, «h³]¦¨null²MªÅ¸Óª««~
+            //å¦‚æœç‰©å“éƒ½æ”¾å®Œäº†, å‰‡è¨­æˆnullæ¸…ç©ºè©²ç‰©å“
             if (itemstack1.stackSize == 0) {
                 slot.putStack((ItemStack)null);
             }
-            else { //ÁÙ¨S©ñ§¹, ¥ı¶]¤@¦¸slot update
+            else { //é‚„æ²’æ”¾å®Œ, å…ˆè·‘ä¸€æ¬¡slot update
                 slot.onSlotChanged();
             }
 
-            //¦pªGitemstackªº¼Æ¶q¸ò­ì¥ıªº¼Æ¶q¬Û¦P, ªí¥Ü³£¤£¯à²¾°Êª««~
+            //å¦‚æœitemstackçš„æ•¸é‡è·ŸåŸå…ˆçš„æ•¸é‡ç›¸åŒ, è¡¨ç¤ºéƒ½ä¸èƒ½ç§»å‹•ç‰©å“
             if (itemstack1.stackSize == itemstack.stackSize) {
                 return null;
             }
-            //³Ì«á¦Aµo°e¤@¦¸slot update
+            //æœ€å¾Œå†ç™¼é€ä¸€æ¬¡slot update
             slot.onPickupFromSlot(player, itemstack1);
         }
-        return itemstack;	//ª««~²¾°Ê§¹¦¨, ¦^¶Ç³Ñ¤Uªºª««~
+        return itemstack;	//ç‰©å“ç§»å‹•å®Œæˆ, å›å‚³å‰©ä¸‹çš„ç‰©å“
     }
 	
-	//µo°e§ó·sgui¶i«×±ø§ó·s, ¤ñdetectAndSendChangesÁÙ­nÀu¥ı(¦b¦¹©ñ¸minit¤èªkµ¥)
+	//ç™¼é€æ›´æ–°guié€²åº¦æ¢æ›´æ–°, æ¯”detectAndSendChangesé‚„è¦å„ªå…ˆ(åœ¨æ­¤æ”¾ç½®initæ–¹æ³•ç­‰)
 	@Override
 	public void addCraftingToCrafters (ICrafting crafting) {
 		super.addCraftingToCrafters(crafting);
-		crafting.sendProgressBarUpdate(this, 0, this.te.getBuildType());		//«Ø³yÃş«¬
+		crafting.sendProgressBarUpdate(this, 0, this.te.getBuildType());		//å»ºé€ é¡å‹
 	}
 	
-	//±Ncontainer¼Æ­È¸òtile entity¤ºªº¼Æ­È¤ñ¹ï, ¦pªG¤£¦P«hµo°e§ó·sµ¹client¨Ïgui§e²{·s¼Æ­È
+	//å°‡containeræ•¸å€¼è·Ÿtile entityå…§çš„æ•¸å€¼æ¯”å°, å¦‚æœä¸åŒå‰‡ç™¼é€æ›´æ–°çµ¦clientä½¿guiå‘ˆç¾æ–°æ•¸å€¼
 	@Override
 	public void detectAndSendChanges() {
 		super.detectAndSendChanges();
@@ -135,7 +135,7 @@ public class ContainerSmallShipyard extends Container {
         for(Object crafter : this.crafters) {
             ICrafting icrafting = (ICrafting) crafter;
             
-            if(this.guiBuildType != this.te.getBuildType()) {  			//§ó·s«Ø³yÃş«¬
+            if(this.guiBuildType != this.te.getBuildType()) {  			//æ›´æ–°å»ºé€ é¡å‹
                 icrafting.sendProgressBarUpdate(this, 0, this.te.getBuildType());
                 this.guiBuildType = this.te.getBuildType();
             }
@@ -148,18 +148,18 @@ public class ContainerSmallShipyard extends Container {
                 this.guiRemainedPower = this.te.getPowerRemained();
                 this.guiGoalPower = this.te.getPowerGoal();
                 
-                //¥ÎsendProgressBarUpdate·í§@updateªºflag, ¦ı¬O¤£±q³oÃä¶Ç¹ê»Ú­È, ¦Ó¬O¥t¥~¥Î¦Û­q«Ê¥]¶Ç
+                //ç”¨sendProgressBarUpdateç•¶ä½œupdateçš„flag, ä½†æ˜¯ä¸å¾é€™é‚Šå‚³å¯¦éš›å€¼, è€Œæ˜¯å¦å¤–ç”¨è‡ªè¨‚å°åŒ…å‚³
                 icrafting.sendProgressBarUpdate(this, 1, 0);
             }
         } 
     }
 
-	//clientºİcontainer±µ¦¬·s­È
+	//clientç«¯containeræ¥æ”¶æ–°å€¼
 	@Override
 	@SideOnly(Side.CLIENT)
     public void updateProgressBar(int valueType, int updatedValue) {
 		World world = Minecraft.getMinecraft().theWorld;
-		//§ì¹ê»Úclientºİªºtile, ª`·N§ì¨ìªºtile¸òcontainer¤ºªºtile«D¬Û¦P°Æ¥»(¦¹¬°serverºİ°Æ¥», §Y¨Ï¼ĞCLIENT¤]¤£¬Oclientºİ)
+		//æŠ“å¯¦éš›clientç«¯çš„tile, æ³¨æ„æŠ“åˆ°çš„tileè·Ÿcontainerå…§çš„tileéç›¸åŒå‰¯æœ¬(æ­¤ç‚ºserverç«¯å‰¯æœ¬, å³ä½¿æ¨™CLIENTä¹Ÿä¸æ˜¯clientç«¯)
 		TileEntitySmallShipyard tile = (TileEntitySmallShipyard) world.getTileEntity(this.te.xCoord, this.te.yCoord, this.te.zCoord);
 		
 		

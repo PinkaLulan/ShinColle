@@ -97,7 +97,7 @@ public class ShipCalc {
 		}
 		
 		//get materials amount
-    	if (item.stackTagCompound != null) { 	//¥¿±`»s³yegg, ·|¦³¥|­Ó§÷®Ætag		
+    	if (item.stackTagCompound != null) { 	//æ­£å¸¸è£½é€ egg, æœƒæœ‰å››å€‹ææ–™tag		
     		material[0] = item.stackTagCompound.getInteger("Grudge");
     		material[1] = item.stackTagCompound.getInteger("Abyssium");
     		material[2] = item.stackTagCompound.getInteger("Ammo");

@@ -38,13 +38,13 @@ public class EntityAIShipRangeTarget extends EntityAIBase {
     protected int range;
     
 
-    //±NmaxRange ­¼¤W¤@­Ó¤ñ¨Ò·í§@range1
+    //å°‡maxRange ä¹˜ä¸Šä¸€å€‹æ¯”ä¾‹ç•¶ä½œrange1
     public EntityAIShipRangeTarget(IShipAttackBase host, Class targetClass) {
     	this.setMutexBits(1);
     	this.host = host;
     	this.host2 = (EntityLiving) host;
     	
-        //§ğÀ»Ãş«¬«ü©w
+        //æ”»æ“Šé¡å‹æŒ‡å®š
         this.targetClass = targetClass;
         this.targetSorter = new TargetHelper.Sorter(host2);
         
@@ -59,9 +59,9 @@ public class EntityAIShipRangeTarget extends EntityAIBase {
         	this.targetSelector = new TargetHelper.Selector(host2);
         }
 
-        //½d³ò«ü©w
+        //ç¯„åœæŒ‡å®š
         this.range = (int)this.host.getAttackRange();
-        //³Ì¤p°lÂÜ16®æ½d³ò
+        //æœ€å°è¿½è¹¤16æ ¼ç¯„åœ
         if(this.range < 16) {
         	this.range = 16;
         }
@@ -79,7 +79,7 @@ public class EntityAIShipRangeTarget extends EntityAIBase {
         	}
     		
     		this.range = (int)this.host.getAttackRange();
-    		//³Ì¤p°lÂÜ16®æ½d³ò
+    		//æœ€å°è¿½è¹¤16æ ¼ç¯„åœ
             if(this.range < 16) {
             	this.range = 16;
             }
@@ -124,9 +124,9 @@ public class EntityAIShipRangeTarget extends EntityAIBase {
 	            		this.host2.boundingBox.expand(this.range, this.range * 0.75D, this.range), this.targetSelector);
             }
             
-            //­Y¦³§ì¨ìtarget
+            //è‹¥æœ‰æŠ“åˆ°target
             if(list1 != null && !list1.isEmpty()) {
-            	//¹ï¥Ø¼Ğ°µdistance sort, nearest target±Æ³Ì«e­±
+            	//å°ç›®æ¨™åšdistance sort, nearest targetæ’æœ€å‰é¢
                 Collections.sort(list1, this.targetSorter);
 
             	//get nearest target
@@ -158,18 +158,18 @@ public class EntityAIShipRangeTarget extends EntityAIBase {
         Entity target = this.host.getEntityTarget();
 //        LogHelper.info("DEBUG : target AI: cont exec: "+this.host2.getCustomNameTag()+" "+this.targetMode+" "+target);
         
-        //target¦º¤`©Î®ø¥¢®É°±¤î°»´ú¸Ótarget, ¨Ã­«·s¶}©l°»´útarget
+        //targetæ­»äº¡æˆ–æ¶ˆå¤±æ™‚åœæ­¢åµæ¸¬è©²target, ä¸¦é‡æ–°é–‹å§‹åµæ¸¬target
         if(target == null || !target.isEntityAlive()) {
             return false;
         }
         else {
             double d0 = this.range * this.range;
 
-            //¶W¥X§ğÀ»¶ZÂ÷, ©ñ±ó¸Ó¥Ø¼Ğ
+            //è¶…å‡ºæ”»æ“Šè·é›¢, æ”¾æ£„è©²ç›®æ¨™
             if(this.host2.getDistanceSqToEntity(target) > d0) {
                 return false;
             }
-            //­Ytarget¬Oª±®a, «h¤£¥´OP
+            //è‹¥targetæ˜¯ç©å®¶, å‰‡ä¸æ‰“OP
             return !(target instanceof EntityPlayerMP) || !((EntityPlayerMP)target).theItemInWorldManager.isCreative();
         }
     }

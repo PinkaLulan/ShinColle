@@ -224,7 +224,7 @@ public class ModelMountAfH extends ModelBase {
         this.EquipL01.addChild(this.EquipL02);
         this.BodyMain.addChild(this.ChestCannon02a);
         
-        //µo¥ú¤ä¬[
+        //ç™¼å…‰æ”¯æž¶
         this.GlowBodyMain = new ModelRenderer(this, 0, 0);
         this.GlowBodyMain.setRotationPoint(0.0F, 0.0F, 0.0F);
         this.GlowNeck = new ModelRenderer(this, 0, 0);
@@ -301,7 +301,7 @@ public class ModelMountAfH extends ModelBase {
     	this.BodyMain.render(f5);
     	GL11.glDisable(GL11.GL_BLEND);
     	
-    	//«G«×³]¬°240
+    	//äº®åº¦è¨­ç‚º240
     	GL11.glDisable(GL11.GL_LIGHTING);
     	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
     	this.GlowBodyMain.render(f5);
@@ -321,7 +321,7 @@ public class ModelMountAfH extends ModelBase {
 
     }
     
-    //Âù¸}²¾°Ê­pºâ
+    //é›™è…³ç§»å‹•è¨ˆç®—
   	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {   
   		float angleX = MathHelper.cos(f2*0.08F);
   		float angleAdd1 = MathHelper.cos(f * 0.7F) * f1 * 0.7F;
@@ -336,8 +336,8 @@ public class ModelMountAfH extends ModelBase {
     		GL11.glTranslatef(0F, 0.8F, 0F);
     	}
 
-	    //¥¿±`¯¸¥ß°Ê§@
-	  	//¼L¤Ú
+	    //æ­£å¸¸ç«™ç«‹å‹•ä½œ
+	  	//å˜´å·´
 	  	this.Jaw.rotateAngleX = angleX * 0.1F + 0.4F;
 	  	this.GlowJaw.rotateAngleX = this.Jaw.rotateAngleX;
 	    //cannon

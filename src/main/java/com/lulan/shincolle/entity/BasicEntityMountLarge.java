@@ -38,17 +38,17 @@ abstract public class BasicEntityMountLarge extends BasicEntityMount implements 
 	}
 
 	@Override
-	public void setNumAircraftLight(int par1) {}	//¦¬¦^­¸¾÷¥Ñhost°õ¦æ, mount¤£¶·¦¬¦^
+	public void setNumAircraftLight(int par1) {}	//æ”¶å›é£›æ©Ÿç”±hoståŸ·è¡Œ, mountä¸é ˆæ”¶å›
 
 	@Override
-	public void setNumAircraftHeavy(int par1) {}	//¦¬¦^­¸¾÷¥Ñhost°õ¦æ, mount¤£¶·¦¬¦^
+	public void setNumAircraftHeavy(int par1) {}	//æ”¶å›é£›æ©Ÿç”±hoståŸ·è¡Œ, mountä¸é ˆæ”¶å›
 
-	//­¸¾÷§ğÀ», ¥Ñhost°õ¦æ
+	//é£›æ©Ÿæ”»æ“Š, ç”±hoståŸ·è¡Œ
 	@Override
 	public boolean attackEntityWithAircraft(Entity target) {
 		return ((IShipAircraftAttack)host).attackEntityWithAircraft(target);
 	}
-	//­¸¾÷§ğÀ», ¥Ñhost°õ¦æ
+	//é£›æ©Ÿæ”»æ“Š, ç”±hoståŸ·è¡Œ
 	@Override
 	public boolean attackEntityWithHeavyAircraft(Entity target) {
 		return ((IShipAircraftAttack)host).attackEntityWithHeavyAircraft(target);

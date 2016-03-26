@@ -14,7 +14,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderMountCaWD extends RenderLiving {
 	
-	//¶K¹ÏÀÉ¸ô®|
+	//è²¼åœ–æª”è·¯å¾‘
 	private static final ResourceLocation mobTextures = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityMountCaWD.png");
 	private ModelMountCaWD model = null;
 	
@@ -31,7 +31,7 @@ public class RenderMountCaWD extends RenderLiving {
 	//render item
 	@Override
 	protected void renderEquippedItems(EntityLivingBase host, float swing) {
-//		//«ì´_¥¿±`ÃC¦â
+//		//æ¢å¾©æ­£å¸¸é¡è‰²
 //		GL11.glColor3f(1.0F, 1.0F, 1.0F);
 //		GL11.glPushMatrix();
 //		GL11.glScalef(0.5F, 0.5F, 0.5F);
@@ -40,7 +40,7 @@ public class RenderMountCaWD extends RenderLiving {
 //		GL11.glPopMatrix();
 	}
 	
-	//ÃB¥~­×§ï¶K¹Ï, §ïÃC¦â¤j¤pµ¥°Ê§@
+	//é¡å¤–ä¿®æ”¹è²¼åœ–, æ”¹é¡è‰²å¤§å°ç­‰å‹•ä½œ
 	@Override
 	protected int shouldRenderPass(EntityLivingBase entity, int pass, float scale) {
 //		if(pass != 0) {

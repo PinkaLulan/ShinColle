@@ -406,7 +406,7 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
         this.BodyMain.addChild(this.Butt);
         this.Cloak02.addChild(this.Cloak03);
         
-        //¥H¤U¬°µo¥ú¼Ò«¬¤ä¬[, ¦¹³¡¥÷¼Ò«¬¾ã­Ó«G«×³]¬°240
+        //ä»¥ä¸‹ç‚ºç™¼å…‰æ¨¡å‹æ”¯æ¶, æ­¤éƒ¨ä»½æ¨¡å‹æ•´å€‹äº®åº¦è¨­ç‚º240
         this.GlowBodyMain = new ModelRenderer(this, 0, 0);
         this.GlowBodyMain.setRotationPoint(0.0F, -11.0F, 0.0F);
         this.setRotateAngle(GlowBodyMain, -0.3490658503988659F, 0.0F, 0.0F);
@@ -447,7 +447,7 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
     	this.BodyMain.render(f5);
     	GL11.glDisable(GL11.GL_BLEND);
     	
-    	//«G«×³]¬°240
+    	//äº®åº¦è¨­ç‚º240
     	GL11.glDisable(GL11.GL_LIGHTING);
     	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
     	this.GlowBodyMain.render(f5); 	
@@ -472,7 +472,7 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
       setGlowRotation();
     }
     
-    //³]©w¼Ò«¬µo¥ú³¡¥÷ªºrotation
+    //è¨­å®šæ¨¡å‹ç™¼å…‰éƒ¨ä»½çš„rotation
     private void setGlowRotation() {
 		this.GlowBodyMain.rotateAngleX = this.BodyMain.rotateAngleX;
 		this.GlowBodyMain.rotateAngleY = this.BodyMain.rotateAngleY;
@@ -485,7 +485,7 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 		this.GlowHead.rotateAngleZ = this.Head.rotateAngleZ;
 	}
 
-	//Âù¸}²¾°Ê­pºâ
+	//é›™è…³ç§»å‹•è¨ˆç®—
   	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, BasicEntityShip ent) {   
   		float angleZ = MathHelper.cos(f2*0.08F);
   		float addk1 = 0;
@@ -497,16 +497,16 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
   		addk1 = MathHelper.cos(f * 0.4F) * 0.5F * f1;
 	  	addk2 = MathHelper.cos(f * 0.4F + 3.1415927F) * 0.5F * f1;
 
-  	    //²¾°ÊÀY³¡ ¨Ï¨ä¬İ¤H, ¤£¬İ¤H®É«ùÄòÂ\°ÊÀY³¡
-	  	this.Head.rotateAngleY = f3 / 57.29578F;	//¥ª¥k¨¤«× ¨¤«×Âà¦¨rad §Y°£¥H57.29578
-	    this.Head.rotateAngleX = (f4 / 57.29578F) * 0.7F; 	//¤W¤U¨¤«×
-	    //¥¿±`¯¸¥ß°Ê§@
-	    //¯İ³¡
+  	    //ç§»å‹•é ­éƒ¨ ä½¿å…¶çœ‹äºº, ä¸çœ‹äººæ™‚æŒçºŒæ“ºå‹•é ­éƒ¨
+	  	this.Head.rotateAngleY = f3 / 57.29578F;	//å·¦å³è§’åº¦ è§’åº¦è½‰æˆrad å³é™¤ä»¥57.29578
+	    this.Head.rotateAngleX = (f4 / 57.29578F) * 0.7F; 	//ä¸Šä¸‹è§’åº¦
+	    //æ­£å¸¸ç«™ç«‹å‹•ä½œ
+	    //èƒ¸éƒ¨
   	    this.BoobL.rotateAngleX = -angleZ * 0.06F - 0.63F;
   	    this.BoobR.rotateAngleX = -angleZ * 0.06F - 0.63F;
-  	    //§b¤ò
+  	    //å‘†æ¯›
   	    this.Ahoke.rotateAngleY = angleZ * 0.25F + 0.5236F;
-  	    //¤âÁu®Ì°Ê 
+  	    //æ‰‹è‡‚æ™ƒå‹• 
 	  	this.ArmLeft01.rotateAngleX = -0.3F;
   	    this.ArmRight01.rotateAngleX = -0.3F;
 	    this.ArmLeft01.rotateAngleY = 0F;
@@ -519,14 +519,14 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 	    this.ArmRight02.rotateAngleY = 0F;
 		this.ArmLeft02.rotateAngleZ = 0F;
 		this.ArmRight02.rotateAngleZ = 0F;
-		//¨­Åé¨¤«×
+		//èº«é«”è§’åº¦
 		this.BodyMain.rotateAngleX = -0.1745F;
 		this.BodyMain.rotateAngleY = 0F;
 		this.BodyMain.rotateAngleZ = 0F;
 		this.Butt.rotateAngleX = 0.5236F;
 		this.Butt.offsetY = 0F;
 		this.Butt.offsetZ = 0F;
-		//»LÂ\°Ê
+		//è…¿æ“ºå‹•
 		addk1 += -0.349F;
 		addk2 += -0.349F;
 		this.LegLeft01.rotateAngleY = 0F;
@@ -537,18 +537,18 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 		this.LegRight01.rotateAngleZ = -0.052F;
 		this.LegRight02.rotateAngleX = 0F;
 		this.LegRight02.offsetZ = 0F;
-		//©Ü­·Â\°Ê
+		//æŠ«é¢¨æ“ºå‹•
 		this.Cloak01.rotateAngleX = angleZ * 0.05F + 0.2618F;
 		this.Cloak02.rotateAngleX = angleZ * 0.1F + 0.1745F;
 		this.Cloak03.rotateAngleX = angleZ * 0.15F + 0.2618F;
-		//§ú¦ì¸m
+		//æ–ä½ç½®
 		this.Staff.rotateAngleX = 0F;
 		this.Staff.rotateAngleY = 0F;
 		this.Staff.rotateAngleZ = 1.8326F;
 		this.Staff.offsetX = -0.7F;
 		this.Staff.offsetY = -1.7F;
 		this.Staff.offsetZ = -1.4F;
-		//Ä²¤â®Ì°Ê (equip only)
+		//è§¸æ‰‹æ™ƒå‹• (equip only)
 		if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
 			this.EquipLC01.rotateAngleX = this.Head.rotateAngleX;
 			this.EquipRC01.rotateAngleX = this.Head.rotateAngleX;
@@ -582,38 +582,38 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 			this.EquipTB03R.rotateAngleZ = -angleZ * 0.25F;
 		}
 
-	    if(ent.isSprinting() || f1 > 0.9F) {	//©b¶]°Ê§@
+	    if(ent.isSprinting() || f1 > 0.9F) {	//å¥”è·‘å‹•ä½œ
 			float angleZFast = MathHelper.cos(f2*0.3F);
-	    	//°ª«×
+	    	//é«˜åº¦
 //		    GL11.glTranslatef(0F, -0.2F, 0F);
-	  	    //¤âÁu®Ì°Ê 
+	  	    //æ‰‹è‡‚æ™ƒå‹• 
 		  	this.ArmLeft01.rotateAngleX = -0.6981F;
 	  	    this.ArmRight01.rotateAngleX = -0.6981F;
 		    this.ArmLeft01.rotateAngleY = 0.4F;
 			this.ArmRight01.rotateAngleY = -0.4F;
 			this.ArmLeft01.rotateAngleZ = 0F;
 			this.ArmRight01.rotateAngleZ = 0F;
-			//¨­Åé¨¤«×
+			//èº«é«”è§’åº¦
 			this.BodyMain.rotateAngleX = -0.349F;
-			//»LÂ\°Ê
+			//è…¿æ“ºå‹•
 			addk1 = 0F;
 			addk2 = 0F;
 			this.LegLeft01.rotateAngleY = 0F;
 			this.LegRight01.rotateAngleY = 0F;
 			this.LegLeft01.rotateAngleZ = 0.05236F;
 			this.LegRight01.rotateAngleZ = -0.05236F;
-			//©Ü­·Â\°Ê
+			//æŠ«é¢¨æ“ºå‹•
 			this.Cloak01.rotateAngleX = angleZFast * 0.1F + 1.2F;
 			this.Cloak02.rotateAngleX = angleZFast * 0.25F;
 			this.Cloak03.rotateAngleX = angleZFast * 0.15F;
-			//§ú¦ì¸m
+			//æ–ä½ç½®
 			this.Staff.rotateAngleX = 1.3F;
 			this.Staff.rotateAngleY = -0.1820F;
 			this.Staff.rotateAngleZ = -1.2292F;
 			this.Staff.offsetX = 0.2F;
 			this.Staff.offsetY = -1F;
 			this.Staff.offsetZ = -0.1F;
-			//Ä²¤â®Ì°Ê (equip only)
+			//è§¸æ‰‹æ™ƒå‹• (equip only)
 			if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
 				this.EquipT01L.rotateAngleX = angleZFast * 0.05F + 0.2618F;
 				this.EquipT01L.rotateAngleZ = -0.2618F;
@@ -647,7 +647,7 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 	    else {
 	    	startEmo2 = ent.getStartEmotion2();
 	    	
-	    	//ÀY³¡¶É±×°Ê§@, ¥u¦b©b¶]¥H¥~®Éroll
+	    	//é ­éƒ¨å‚¾æ–œå‹•ä½œ, åªåœ¨å¥”è·‘ä»¥å¤–æ™‚roll
 	    	if(startEmo2 > 0) {
 	    		--startEmo2;
 	    		ent.setStartEmotion2(startEmo2);
@@ -666,9 +666,9 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 		    }
 	    }//end if sprint
     
-	    //rollÀY³¡¶É±×ªí±¡
+	    //rollé ­éƒ¨å‚¾æ–œè¡¨æƒ…
 	    if(ent.getStateFlag(ID.F.HeadTilt)) {
-	    	if(ent.getStateEmotion(ID.S.Emotion2) == 1) {	//¤§«e¤w¸g¶É±×, «hÄ~Äò¶É±×
+	    	if(ent.getStateEmotion(ID.S.Emotion2) == 1) {	//ä¹‹å‰å·²ç¶“å‚¾æ–œ, å‰‡ç¹¼çºŒå‚¾æ–œ
 	    		this.Head.rotateAngleZ = -0.24F;
 	    	}
 	    	else {
@@ -681,7 +681,7 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 	    	}	
 	    }
 	    else {
-	    	if(ent.getStateEmotion(ID.S.Emotion2) == 0) {	//ºû«ù¤§«e¨¤«×
+	    	if(ent.getStateEmotion(ID.S.Emotion2) == 0) {	//ç¶­æŒä¹‹å‰è§’åº¦
 	    		this.Head.rotateAngleZ = 0F;
 	    	}
 	    	else {
@@ -695,7 +695,7 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 	    }
 
   		
-	    if(ent.isSneaking()) {		//¼ç¦æ, ÃÛ¤U°Ê§@
+	    if(ent.isSneaking()) {		//æ½›è¡Œ, è¹²ä¸‹å‹•ä½œ
   			this.ArmLeft01.rotateAngleX = 0.7F;
   			this.ArmRight01.rotateAngleX = 0.7F;
   			this.BodyMain.rotateAngleX = 0.5F;
@@ -708,18 +708,18 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 			this.Head.rotateAngleX += 0.2F;
 	    }
   		
-	    if(ent.isSitting() || ent.isRiding()) {  //ÃM­¼°Ê§@
+	    if(ent.isSitting() || ent.isRiding()) {  //é¨ä¹˜å‹•ä½œ
 	    	if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {
 		    	GL11.glTranslatef(0F, 1.35F, 0F);
-		    	//¨­Åé¨¤«×
+		    	//èº«é«”è§’åº¦
 				this.BodyMain.rotateAngleX = 0.2094F;
 				this.BodyMain.rotateAngleY = 0F;
 				this.BodyMain.rotateAngleZ = 0F;
 				this.Butt.rotateAngleX = -0.4189F;
 				this.Butt.offsetZ = -0.12F;
-				//ÀY
+				//é ­
 				this.Head.rotateAngleY *= 0.5F;
-		    	//¤âÁu
+		    	//æ‰‹è‡‚
 			  	this.ArmLeft01.rotateAngleX = -1.0472F;
 			    this.ArmLeft01.rotateAngleY = 0F;
 			    this.ArmLeft01.rotateAngleZ = 0.4189F;
@@ -730,7 +730,7 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 				this.ArmRight01.rotateAngleY = 0F;
 				this.ArmRight01.rotateAngleZ = -0.0873F;
 				this.ArmRight02.rotateAngleZ = -1.1345F;
-				//»LÂ\°Ê
+				//è…¿æ“ºå‹•
 				addk1 = -2.2689F;
 				addk2 = -2.2689F;
 				this.LegLeft01.rotateAngleY = -0.2094F;
@@ -741,18 +741,18 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 				this.LegRight01.rotateAngleZ = 0.0873F;
 				this.LegRight02.rotateAngleX = 1.5708F;
 				this.LegRight02.offsetZ = 0.3F;
-				//©Ü­·Â\°Ê
+				//æŠ«é¢¨æ“ºå‹•
 				this.Cloak01.rotateAngleX = 0.2618F;
 				this.Cloak02.rotateAngleX = -1.3963F;
 				this.Cloak03.rotateAngleX = -0.9425F;
-				//§ú¦ì¸m
+				//æ–ä½ç½®
 				this.Staff.rotateAngleX = 1.309F;
 				this.Staff.rotateAngleY = -0.5934F;
 				this.Staff.rotateAngleZ = -0.2094F;
 				this.Staff.offsetX = -0.3F;
 				this.Staff.offsetY = -1.5F;
 				this.Staff.offsetZ = -1.7F;
-				//Ä²¤â®Ì°Ê (equip only)
+				//è§¸æ‰‹æ™ƒå‹• (equip only)
 				if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
 					this.EquipT01L.rotateAngleX = angleZ * 0.01F - 0.2618F;
 					this.EquipT01L.rotateAngleZ = -0.2618F;
@@ -784,40 +784,40 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 	  			}
 	    	}
 	    	else {
-	    		//¤âÁu®Ì°Ê 
+	    		//æ‰‹è‡‚æ™ƒå‹• 
 			  	this.ArmLeft01.rotateAngleX = 0.4F;
 			    this.ArmLeft01.rotateAngleY = 0F;
 			    this.ArmLeft01.rotateAngleZ = -0.32F;
 			    this.ArmRight01.rotateAngleX = 0.34F;
 				this.ArmRight01.rotateAngleY = 0F;
 				this.ArmRight01.rotateAngleZ = 0.5236F;
-				//¨­Åé¨¤«×
+				//èº«é«”è§’åº¦
 				this.BodyMain.rotateAngleX = -0.349F;
 				this.BodyMain.rotateAngleY = -1.57F;
 				this.BodyMain.rotateAngleZ = -0.0873F;
-				//²ä¤l¨¤«×
+				//è„–å­è§’åº¦
 				this.Head.rotateAngleX += -0.25F;
 				this.Head.rotateAngleY += 0.4F;
 				this.Head.rotateAngleZ += 0F;
-				//»LÂ\°Ê
+				//è…¿æ“ºå‹•
 				addk1 = angleZ * 0.3F + -1.0472F;
 				addk2 = -angleZ * 0.3F + -1.0472F;
 				this.LegLeft01.rotateAngleY = 0F;
 				this.LegRight01.rotateAngleY = 0F;
 				this.LegLeft01.rotateAngleZ = 0.05236F;
 				this.LegRight01.rotateAngleZ = -0.05236F;
-				//©Ü­·Â\°Ê
+				//æŠ«é¢¨æ“ºå‹•
 				this.Cloak01.rotateAngleX = angleZ * 0.1F + 0.4F;
 				this.Cloak02.rotateAngleX = angleZ * 0.15F;
 				this.Cloak03.rotateAngleX = angleZ * 0.15F;
-				//§ú¦ì¸m
+				//æ–ä½ç½®
 				this.Staff.rotateAngleX = 0.2F;
 				this.Staff.rotateAngleY = 0F;
 				this.Staff.rotateAngleZ = -2.0F;
 				this.Staff.offsetX = 1.1F;
 				this.Staff.offsetY = -1.95F;
 				this.Staff.offsetZ = -1.4F;
-				//Ä²¤â®Ì°Ê (equip only)
+				//è§¸æ‰‹æ™ƒå‹• (equip only)
 				if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
 					this.EquipT01L.rotateAngleX = -angleZ * 0.05F + 0.2618F;
 					this.EquipT01L.rotateAngleZ = -0.2618F;
@@ -854,12 +854,12 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 	    this.LegLeft01.rotateAngleX = addk1;
 	    this.LegRight01.rotateAngleX = addk2;
 	    
-	    //§ğÀ»®É¶¶«K±N¥ª¤â«ü¦V¹ï¤è	    
+	    //æ”»æ“Šæ™‚é †ä¾¿å°‡å·¦æ‰‹æŒ‡å‘å°æ–¹	    
 	    if(ent.attackTime > 0) {
 	    	this.ArmLeft01.rotateAngleX = f4 / 57.29578F - 1.5F;
 	    	this.ArmRight01.rotateAngleZ = 0.7F;
 	    	this.ArmRight01.rotateAngleX = 0.4F;
-	    	//§ú¦ì¸m
+	    	//æ–ä½ç½®
 			this.Staff.rotateAngleX = 1.5F;
 			this.Staff.rotateAngleY = 0F;
 			this.Staff.rotateAngleZ = -1.2F;
@@ -882,7 +882,7 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 		}
   	}
   	
-    //³]©wÅã¥ÜªºÁy«¬
+    //è¨­å®šé¡¯ç¤ºçš„è‡‰å‹
   	@Override
   	public void setFace(int emo) {
   		switch(emo) {

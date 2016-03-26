@@ -47,7 +47,7 @@ public class GuiSmallShipyard extends GuiContainer {
 	
 	//draw tooltip
 	private void handleHoveringText() {		
-		//µe¥Xfuel¦s¶q (8,19,22,84)
+		//ç•«å‡ºfuelå­˜é‡ (8,19,22,84)
 		if(xMouse > 9+guiLeft && xMouse < 23+guiLeft && yMouse > 17+guiTop && yMouse < 49+guiTop) {
 			List list = new ArrayList();
 			String strFuel = String.valueOf(tile.getPowerRemained());
@@ -57,19 +57,19 @@ public class GuiSmallShipyard extends GuiContainer {
 		}	
 	}
 	
-	//GUI«e´º: ¤å¦r 
+	//GUIå‰æ™¯: æ–‡å­— 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int i, int j) {
-		//¨ú±oguiÅã¥Ü¦WºÙ
+		//å–å¾—guié¡¯ç¤ºåç¨±
 		String name = I18n.format("container.shincolle:SmallShipyard");
 		String time = this.tile.getBuildTimeString();
 		
-		//µe¥X¦r¦ê parm: string, x, y, color, (¬O§_dropShadow)
-		//µe¥X¸Ó¤è¶ô¦WºÙ, ¦ì¸m: x=gui¼e«×ªº¤@¥b¦©±¼¦r¦êªø«×¤@¥b, y=6, ÃC¦â¬°4210752
+		//ç•«å‡ºå­—ä¸² parm: string, x, y, color, (æ˜¯å¦dropShadow)
+		//ç•«å‡ºè©²æ–¹å¡Šåç¨±, ä½ç½®: x=guiå¯¬åº¦çš„ä¸€åŠæ‰£æ‰å­—ä¸²é•·åº¦ä¸€åŠ, y=6, é¡è‰²ç‚º4210752
 		this.fontRendererObj.drawString(name, this.xSize / 2 - this.fontRendererObj.getStringWidth(name) / 2, 6, 4210752);
-		//µe¥X­Ë¼Æ®É¶¡
+		//ç•«å‡ºå€’æ•¸æ™‚é–“
 		this.fontRendererObj.drawString(time, 71 - this.fontRendererObj.getStringWidth(time) / 2, 51, 4210752);
-		//µe¥X´£¥Ü°T®§
+		//ç•«å‡ºæç¤ºè¨Šæ¯
 		if(tile.getPowerGoal() <= 0) {
 			errorMsg = I18n.format("gui.shincolle:nomaterial");
 			this.fontRendererObj.drawString(errorMsg, 80 - this.fontRendererObj.getStringWidth(errorMsg) / 2, 67, 16724787);
@@ -79,25 +79,25 @@ public class GuiSmallShipyard extends GuiContainer {
 			this.fontRendererObj.drawString(errorMsg, 80 - this.fontRendererObj.getStringWidth(errorMsg) / 2, 67, 16724787);
 		}
 		
-		//µe¥Xtooltip
+		//ç•«å‡ºtooltip
 		handleHoveringText();
 	}
 
-	//GUI­I´º: ­I´º¹Ï¤ù
+	//GUIèƒŒæ™¯: èƒŒæ™¯åœ–ç‰‡
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float par1,int par2, int par3) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);	//RGBA
-        Minecraft.getMinecraft().getTextureManager().bindTexture(guiTexture); //GUI¹ÏÀÉ
-        drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);	//GUI¤j¤p³]©w
+        Minecraft.getMinecraft().getTextureManager().bindTexture(guiTexture); //GUIåœ–æª”
+        drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);	//GUIå¤§å°è¨­å®š
        
-        //µe¥Xfuel¦s¶q±ø
+        //ç•«å‡ºfuelå­˜é‡æ¢
         int scaleBar; 
         if(tile.getPowerRemained() > 0) {
-            scaleBar = tile.getPowerRemainingScaled(31);	//±m¦â¶i«×±øªø«×31	
+            scaleBar = tile.getPowerRemainingScaled(31);	//å½©è‰²é€²åº¦æ¢é•·åº¦31	
             drawTexturedModalRect(guiLeft+10, guiTop+48-scaleBar, 176, 47-scaleBar, 12, scaleBar);
         }
         
-        //µe¥Xtype¿ï¾Ü®Ø
+        //ç•«å‡ºtypeé¸æ“‡æ¡†
         switch(tile.getBuildType()) {
         case ID.Build.SHIP:
         	drawTexturedModalRect(guiLeft+123, guiTop+17, 176, 47, 18, 18);

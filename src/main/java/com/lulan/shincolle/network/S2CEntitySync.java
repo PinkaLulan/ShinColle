@@ -21,8 +21,8 @@ import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 
 /**SERVER TO CLIENT : ENTITY SYNC PACKET
- * ¥Î©óentityªº¸ê®Æ¦P¨B
- * packet handler¦P¼Ë«Ø¥ß¦b¦¹class¤¤
+ * ç”¨æ–¼entityçš„è³‡æ–™åŒæ­¥
+ * packet handleråŒæ¨£å»ºç«‹åœ¨æ­¤classä¸­
  * 
  * tut by diesieben07: http://www.minecraftforge.net/forum/index.php/topic,20135.0.html
  */
@@ -54,7 +54,7 @@ public class S2CEntitySync implements IMessage {
 	}
 
 	
-	public S2CEntitySync() {}	//¥²¶·­n¦³ªÅ°Ñ¼Æconstructor, forge¤~¯à¨Ï¥Î¦¹class
+	public S2CEntitySync() {}	//å¿…é ˆè¦æœ‰ç©ºåƒæ•¸constructor, forgeæ‰èƒ½ä½¿ç”¨æ­¤class
 	
 	/**entity sync: 
 	 * type 0: all attribute
@@ -100,7 +100,7 @@ public class S2CEntitySync implements IMessage {
         this.type = type;
     }
 
-	//±µ¦¬packet¤èªk (CLIENT SIDE)
+	//æ¥æ”¶packetæ–¹æ³• (CLIENT SIDE)
 	@Override
 	public void fromBytes(ByteBuf buf) {
 		boolean getSyncTarget = false;
@@ -124,7 +124,7 @@ public class S2CEntitySync implements IMessage {
 //			this.entity2 = (EntityLiving) EntityHelper.getEntityByID(entityID, 0, true);
 			Entity ent = EntityHelper.getEntityByID(entityID, 0, true);
 			
-			//½T»{¦³§ì¨ì­nsyncªºentity
+			//ç¢ºèªæœ‰æŠ“åˆ°è¦syncçš„entity
 			if(ent instanceof EntityLiving) {
 				this.entity2 = (EntityLiving) ent;
 				getSyncTarget = true;
@@ -380,7 +380,7 @@ public class S2CEntitySync implements IMessage {
 					int hostId = buf.readInt();
 							
 					//dismount packet
-					if(playerId < 0) {	//id³]¬°-1ªí¥Ü¬°dismount packet
+					if(playerId < 0) {	//idè¨­ç‚º-1è¡¨ç¤ºç‚ºdismount packet
 						entity3s.setRiderNull();
 					}
 					//mount sync packet
@@ -502,7 +502,7 @@ public class S2CEntitySync implements IMessage {
 		}
 	}
 
-	//µo¥Xpacket¤èªk
+	//ç™¼å‡ºpacketæ–¹æ³•
 	@Override
 	public void toBytes(ByteBuf buf) {
 		switch(this.type) {
@@ -815,7 +815,7 @@ public class S2CEntitySync implements IMessage {
 	
 	//packet handler (inner class)
 	public static class Handler implements IMessageHandler<S2CEntitySync, IMessage> {
-		//¦¬¨ì«Ê¥]®ÉÅã¥Üdebug°T®§
+		//æ”¶åˆ°å°åŒ…æ™‚é¡¯ç¤ºdebugè¨Šæ¯
 		@Override
 		public IMessage onMessage(S2CEntitySync message, MessageContext ctx) {
 //			System.out.println(String.format("Received %s from %s", message.text, ctx.getServerHandler().playerEntity.getDisplayName()));

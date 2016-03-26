@@ -44,7 +44,7 @@ public class TargetHelper {
             return this.compare((Entity)target1, (Entity)target2);
         }
 
-        //­t­È·|±Æ¦blist«e­±, ­È¶V¤j¶V«á­±, list(0)·|¬O¶ZÂ÷³Ìªñªº¥Ø¼Ğ
+        //è² å€¼æœƒæ’åœ¨listå‰é¢, å€¼è¶Šå¤§è¶Šå¾Œé¢, list(0)æœƒæ˜¯è·é›¢æœ€è¿‘çš„ç›®æ¨™
         public int compare(Entity target1, Entity target2) {
             double d0 = this.targetEntity.getDistanceSqToEntity(target1);
             double d1 = this.targetEntity.getDistanceSqToEntity(target2);
@@ -98,7 +98,7 @@ public class TargetHelper {
         			}
         		}
     		}
-			//«DshipÃşhost check onSight
+			//éshipé¡host check onSight
 			else if(host instanceof EntityLiving) {
     			if(!((EntityLiving)host).getEntitySenses().canSee(target2)) {
     				return false;

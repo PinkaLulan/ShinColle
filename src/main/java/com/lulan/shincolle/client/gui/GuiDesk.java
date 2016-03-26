@@ -199,10 +199,10 @@ public class GuiDesk extends GuiContainer {
 
         //textField: font, x, y, width, height
         this.textField = new GuiTextField(this.fontRendererObj, (int)((this.guiLeft+10)*this.GuiScale), (int)((this.guiTop+24)*this.GuiScale), 153, 12);
-        this.textField.setTextColor(-1);					//ÂI¿ï¤å¦r®Ø®É¤å¦rÃC¦â
-        this.textField.setDisabledTextColour(-1);			//µLÂI¿ï¤å¦r®Ø®É¤å¦rÃC¦â
-        this.textField.setEnableBackgroundDrawing(true);	//µe¥X¤å¦r®Ø­I´º
-        this.textField.setMaxStringLength(64);				//±µ¨ü³Ì¤j¤å¦rªø«×
+        this.textField.setTextColor(-1);					//é»é¸æ–‡å­—æ¡†æ™‚æ–‡å­—é¡è‰²
+        this.textField.setDisabledTextColour(-1);			//ç„¡é»é¸æ–‡å­—æ¡†æ™‚æ–‡å­—é¡è‰²
+        this.textField.setEnableBackgroundDrawing(true);	//ç•«å‡ºæ–‡å­—æ¡†èƒŒæ™¯
+        this.textField.setMaxStringLength(64);				//æ¥å—æœ€å¤§æ–‡å­—é•·åº¦
         this.textField.setEnabled(false);
         
         //add text input field
@@ -309,7 +309,7 @@ public class GuiDesk extends GuiContainer {
 		}//end func switch
 	}
 
-	//GUI«e´º: ¤å¦r 
+	//GUIå‰æ™¯: æ–‡å­— 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int i, int j) {
 		//draw ship data in radar function
@@ -347,17 +347,17 @@ public class GuiDesk extends GuiContainer {
 			break;	//end target
 		}
 		
-		//µe¥Xtooltip
+		//ç•«å‡ºtooltip
 		handleHoveringText();
 	}
 
-	//GUI­I´º: ­I´º¹Ï¤ù
+	//GUIèƒŒæ™¯: èƒŒæ™¯åœ–ç‰‡
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float par1,int par2, int par3) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);	//RGBA
 		
-        Minecraft.getMinecraft().getTextureManager().bindTexture(guiTexture); //GUI¹ÏÀÉ
-        //­Ygui¶K¹Ï¤£¬°256x256, «h¨Ï¥Î¥H¤U¨â­Ó¤èªkµe¶K¹Ï
+        Minecraft.getMinecraft().getTextureManager().bindTexture(guiTexture); //GUIåœ–æª”
+        //è‹¥guiè²¼åœ–ä¸ç‚º256x256, å‰‡ä½¿ç”¨ä»¥ä¸‹å…©å€‹æ–¹æ³•ç•«è²¼åœ–
         //func_146110_a(x, y, u, v, xSize, ySize, textXSize, textYSize)
         //func_152125_a(x, y, u, v, xSize, ySize, drawXSize, drawYSize textXSize, textYSize)
         if(this.type == 0) {
@@ -369,7 +369,7 @@ public class GuiDesk extends GuiContainer {
       		this.book_chapNum = this.tile.book_chap;
       		this.book_pageNum = this.tile.book_page;
       		
-      		//µe¥X¥\¯à«ö¶s
+      		//ç•«å‡ºåŠŸèƒ½æŒ‰éˆ•
             switch(this.guiFunc) {
             case 1:		//radar
             	drawTexturedModalRect(guiLeft+3, guiTop+2, 0, 192, 16, 16);
@@ -386,7 +386,7 @@ public class GuiDesk extends GuiContainer {
             }
 		}
         
-        //µe¥X¥\¯à¤¶­±
+        //ç•«å‡ºåŠŸèƒ½ä»‹é¢
         switch(this.guiFunc) {
         case 1:		//radar
         	//background
@@ -536,7 +536,7 @@ public class GuiDesk extends GuiContainer {
 			
 			if(listNum[listID] < 0) {
 				listNum[listID] = 0;
-				listClicked[listID]--;  //±²¹LÀY, ¸É¦^1
+				listClicked[listID]--;  //æ²éé ­, è£œå›1
 			}
 		}
 		else {
@@ -550,7 +550,7 @@ public class GuiDesk extends GuiContainer {
 				}
 				if(listNum[listID] < 0) {
 					listNum[listID] = 0;
-					listClicked[listID]++;  //±²¹LÀY, ¸É¦^1
+					listClicked[listID]++;  //æ²éé ­, è£œå›1
 				}
 			}
 		}
@@ -1434,7 +1434,7 @@ public class GuiDesk extends GuiContainer {
 		}
 	}
 	
-	//«öÁä«ö¤U®É°õ¦æ¦¹¤èªk, ¦¹¤èªkµ¥¦Pkey input event
+	//æŒ‰éµæŒ‰ä¸‹æ™‚åŸ·è¡Œæ­¤æ–¹æ³•, æ­¤æ–¹æ³•ç­‰åŒkey input event
 	@Override
 	protected void keyTyped(char input, int keyID) {
         if(this.textField.textboxKeyTyped(input, keyID)) {

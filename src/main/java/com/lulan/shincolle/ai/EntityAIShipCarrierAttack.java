@@ -12,7 +12,7 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.LogHelper;
 
 /**CARRIER RANGE ATTACK AI
- * entity¥²¶·¹ê§@IUseAircraft
+ * entityå¿…é ˆå¯¦ä½œIUseAircraft
  */
 public class EntityAIShipCarrierAttack extends EntityAIBase {
 	
@@ -26,8 +26,8 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
     private float range;			//attack range
     private float rangeSq;				//attack range square
     
-    //ª½½u«e¶i¥ÎÀ\¼Æ
-    private double distSq, distX, distY, distZ;	//¸ò¥Ø¼Ğªºª½½u¶ZÂ÷(ªº¥­¤è)
+    //ç›´ç·šå‰é€²ç”¨é¤æ•¸
+    private double distSq, distX, distY, distZ;	//è·Ÿç›®æ¨™çš„ç›´ç·šè·é›¢(çš„å¹³æ–¹)
     
  
     //parm: host, move speed, p4, attack delay, p6
@@ -53,7 +53,7 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
 //    	LogHelper.info("DEBUG : carrier attack "+target);
     	if(this.host.getIsSitting()) return false;
     	
-    	//­YÃM­¼shipÃş®yÃM, «h§ğÀ»¥æµ¹mount§P©w
+    	//è‹¥é¨ä¹˜shipé¡åº§é¨, å‰‡æ”»æ“Šäº¤çµ¦mountåˆ¤å®š
 		if(this.host.getIsRiding()) {
 			if(this.host2.ridingEntity instanceof BasicEntityMount) {
 				return false;
@@ -78,7 +78,7 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
         distSq = distX = distY = distZ = 0D;
     }
 
-    //§P©w¬O§_Ä~ÄòAI¡G ¦³target´NÄ~Äò, ©ÎªÌÁÙ¦b²¾°Ê¤¤«hÄ~Äò
+    //åˆ¤å®šæ˜¯å¦ç¹¼çºŒAIï¼š æœ‰targetå°±ç¹¼çºŒ, æˆ–è€…é‚„åœ¨ç§»å‹•ä¸­å‰‡ç¹¼çºŒ
     @Override
 	public boolean continueExecuting() {
     	if(host != null) {
@@ -92,7 +92,7 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
     	return false;
     }
 
-    //­«¸mAI¤èªk, DO NOT reset delay time here
+    //é‡ç½®AIæ–¹æ³•, DO NOT reset delay time here
     @Override
 	public void resetTask() {
         this.target = null;
@@ -103,13 +103,13 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
         }
     }
 
-    //¶i¦æAI
+    //é€²è¡ŒAI
     @Override
 	public void updateTask() {
     	if(this.target != null && host != null) {  //for lots of NPE issue-.-
     		boolean onSight = this.host2.getEntitySenses().canSee(this.target);
     		
-    		//­Y¤£¦bµø½u¤º, ÀË¬dflag
+    		//è‹¥ä¸åœ¨è¦–ç·šå…§, æª¢æŸ¥flag
     		if(!onSight) {
     			if(host.getStateFlag(ID.F.OnSightChase)) {
 	            	this.resetTask();
@@ -130,24 +130,24 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
         		this.distZ = this.target.posZ - this.host2.posZ;	
         		this.distSq = distX*distX + distY*distY + distZ*distZ;
     	
-        		//­Y¥Ø¼Ğ¶i¤J®gµ{, ¥B¥Ø¼ĞµL»ÙÃªª«ªı¾×, «h²MªÅAI²¾°Êªº¥Ø¼Ğ, ¥H°±¤îÄ~Äò²¾°Ê      
+        		//è‹¥ç›®æ¨™é€²å…¥å°„ç¨‹, ä¸”ç›®æ¨™ç„¡éšœç¤™ç‰©é˜»æ“‹, å‰‡æ¸…ç©ºAIç§»å‹•çš„ç›®æ¨™, ä»¥åœæ­¢ç¹¼çºŒç§»å‹•      
 		        if(distSq < this.rangeSq && onSight) {
 		        	this.host.getShipNavigate().clearPathEntity();
 		        }
-		        else {	//¥Ø¼Ğ²¾°Ê, «hÄ~Äò°lÀ»		        	
+		        else {	//ç›®æ¨™ç§»å‹•, å‰‡ç¹¼çºŒè¿½æ“Š		        	
 		        	if(host2.ticksExisted % 32 == 0) {
 		        		this.host.getShipNavigate().tryMoveToEntityLiving(this.target, 1D);
 		        	}
 	            }
     		}//end dist > range
 	
-	        //³]©w§ğÀ»®É, ÀY³¡Æ[¬İªº¨¤«×
+	        //è¨­å®šæ”»æ“Šæ™‚, é ­éƒ¨è§€çœ‹çš„è§’åº¦
     		this.host2.getLookHelper().setLookPosition(this.target.posX, this.target.posY+2D, this.target.posZ, 30.0F, 60.0F);
 	         
 	        //delay time decr
 	        this.launchDelay--;
 
-	        //­Y¥u¨Ï¥Î³æ¤@ºØ¼uÃÄ, «h°±¥Î«¬ºA¤Á´«, ¥uµo®g¦P¤@ºØ­¸¾÷
+	        //è‹¥åªä½¿ç”¨å–®ä¸€ç¨®å½ˆè—¥, å‰‡åœç”¨å‹æ…‹åˆ‡æ›, åªç™¼å°„åŒä¸€ç¨®é£›æ©Ÿ
 	        if(!this.host.getStateFlag(ID.F.UseAirLight)) {
 	        	this.launchType = false;
 	        }
@@ -155,15 +155,15 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
 	        	this.launchType = true;
 	        }
 	        
-	        //­Yattack delay­Ë¼Æ§¹¤F, «h¶}©l§ğÀ»
+	        //è‹¥attack delayå€’æ•¸å®Œäº†, å‰‡é–‹å§‹æ”»æ“Š
 	        if(onSight && this.distSq <= this.rangeSq && this.launchDelay <= 0) {
-	        	//¨Ï¥Î»´§ğÀ»
+	        	//ä½¿ç”¨è¼•æ”»æ“Š
 	        	if(this.launchType && this.host.hasAmmoLight() && this.host.hasAirLight()) {
 	        		this.host.attackEntityWithAircraft(this.target);
 		            this.launchDelay = this.launchDelayMax;	//reset delay
 	        	}
 	        	
-	        	//¨Ï¥Î­«§ğÀ»
+	        	//ä½¿ç”¨é‡æ”»æ“Š
 	        	if(!this.launchType && this.host.hasAmmoHeavy() && this.host.hasAirHeavy()) {
 	        		this.host.attackEntityWithHeavyAircraft(this.target);
 	        		this.launchDelay = this.launchDelayMax;	//reset delay
@@ -172,7 +172,7 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
 	        	this.launchType = !this.launchType;		//change type
 	        }
 	        
-	        //­Y¶W¹L¤Ó¤[³£¥´¤£¨ì¥Ø¼Ğ(©Î¬O°l¤£¨ì), «h­«¸m¥Ø¼Ğ
+	        //è‹¥è¶…éå¤ªä¹…éƒ½æ‰“ä¸åˆ°ç›®æ¨™(æˆ–æ˜¯è¿½ä¸åˆ°), å‰‡é‡ç½®ç›®æ¨™
 	        if(this.launchDelay < -80) {
 	        	this.launchDelay = 20;
 	        	this.resetTask();

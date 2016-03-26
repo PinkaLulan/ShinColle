@@ -11,8 +11,8 @@ import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 
 /**SERVER TO CLIENT : SPAWN PARTICLE PACKET
- * •Œ©Û´¸©w¶Ï∏m•Õ¶®particle
- * packet handler¶PºÀ´ÿ•ﬂ¶b¶πclass§§
+ * Áî®ÊñºÊåáÂÆö‰ΩçÁΩÆÁîüÊàêparticle
+ * packet handlerÂêåÊ®£Âª∫Á´ãÂú®Ê≠§class‰∏≠
  * 
  * tut by diesieben07: http://www.minecraftforge.net/forum/index.php/topic,20135.0.html
  */
@@ -25,7 +25,7 @@ public class S2CSpawnParticle implements IMessage {
 	private float posX, posY, posZ, lookX, lookY, lookZ;
 	
 	
-	public S2CSpawnParticle() {}	//•≤∂∑≠n¶≥™≈∞—º∆constructor, forge§~Ø‡®œ•Œ¶πclass
+	public S2CSpawnParticle() {}	//ÂøÖÈ†àË¶ÅÊúâÁ©∫ÂèÉÊï∏constructor, forgeÊâçËÉΩ‰ΩøÁî®Ê≠§class
 	
 	//spawn particle: 
 	//type 0: spawn particle with entity, if isShip -> set ship attackTime
@@ -51,7 +51,7 @@ public class S2CSpawnParticle implements IMessage {
     }
 	
 	//type 2: spawn particle with position
-	public S2CSpawnParticle(int type, int worldID, double posX, double posY, double posZ, double lookX, double lookY, double lookZ) {
+	public S2CSpawnParticle(int type, double posX, double posY, double posZ, double lookX, double lookY, double lookZ) {
         this.type = 2;
         this.particleType = (byte)type;
         this.posX = (float)posX;
@@ -84,7 +84,7 @@ public class S2CSpawnParticle implements IMessage {
         this.posZ = (float)par3;
     }
 	
-	//±µ¶¨packet§Ë™k
+	//Êé•Êî∂packetÊñπÊ≥ï
 	@Override
 	public void fromBytes(ByteBuf buf) {
 		//get type and entityID
@@ -164,12 +164,14 @@ public class S2CSpawnParticle implements IMessage {
 		}
 	}
 
-	//µo•Xpacket§Ë™k
+	//ÁôºÂá∫packetÊñπÊ≥ï
 	@Override
 	public void toBytes(ByteBuf buf) {
 		switch(this.type) {
 		case 0:	//spawn particle with entity
 			{
+				if(this.entity == null) return;
+				
 				buf.writeByte(0);	//type 0
 				buf.writeInt(this.entity.getEntityId());
 				buf.writeByte(this.particleType);
@@ -178,6 +180,8 @@ public class S2CSpawnParticle implements IMessage {
 			break;
 		case 1:	//spawn particle with entity and position
 			{
+				if(this.entity == null) return;
+				
 				buf.writeByte(1);	//type 1
 				buf.writeInt(this.entity.getEntityId());
 				buf.writeByte(this.particleType);
@@ -216,6 +220,8 @@ public class S2CSpawnParticle implements IMessage {
 			break;
 		case 4:	//spawn particle with entity and position
 			{
+				if(this.entity == null) return;
+				
 				buf.writeByte(4);	//type 1
 				buf.writeInt(this.entity.getEntityId());
 				buf.writeByte(this.particleType);
@@ -229,7 +235,7 @@ public class S2CSpawnParticle implements IMessage {
 	
 	//packet handler (inner class)
 	public static class Handler implements IMessageHandler<S2CSpawnParticle, IMessage> {
-		//¶¨®Ï´ •]Æ…≈„•‹debug∞TÆß
+		//Êî∂Âà∞Â∞ÅÂåÖÊôÇÈ°ØÁ§∫debugË®äÊÅØ
 		@Override
 		public IMessage onMessage(S2CSpawnParticle message, MessageContext ctx) {
 //          System.out.println(String.format("Received %s from %s", message.text, ctx.getServerHandler().playerEntity.getDisplayName()));
