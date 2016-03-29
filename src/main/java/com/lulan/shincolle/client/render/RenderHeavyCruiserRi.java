@@ -13,7 +13,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderHeavyCruiserRi extends RenderLiving {
 	
-	//¶K¹ÏÀÉ¸ô®|
+	//è²¼åœ–æª”è·¯å¾‘
 	private static final ResourceLocation mobTextures = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityHeavyCruiserRi.png");
 
 	public RenderHeavyCruiserRi(ModelBase par1, float par2) {

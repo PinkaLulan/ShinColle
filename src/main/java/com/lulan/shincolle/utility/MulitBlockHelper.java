@@ -1,5 +1,6 @@
 package com.lulan.shincolle.utility;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.block.Block;
@@ -74,13 +75,13 @@ public class MulitBlockHelper {
 		//init 15 = 1111
 		int typeTemp = 0;
 		int typeMatch = NUM_PATTERN;
-		int checkX, checkY, checkZ;		//ÀË¬dblockªº¦ì¸m
+		int checkX, checkY, checkZ;		//æª¢æŸ¥blockçš„ä½ç½®
 	    
-		//°ª«×4¥H¤U¤£¶·°»´ú
+		//é«˜åº¦4ä»¥ä¸‹ä¸é ˆåµæ¸¬
 		if(yCoord < 4) return -1;
 		
 	    //scan a 3x3x3 area
-		//1.ÀË¬dblock¨Ã³]©w¥N¸¹(code) 2.§P©w¬O§_²Å¦Xpattern 3.ÀË¬dtile entity¬O§_¦³master
+		//1.æª¢æŸ¥blockä¸¦è¨­å®šä»£è™Ÿ(code) 2.åˆ¤å®šæ˜¯å¦ç¬¦åˆpattern 3.æª¢æŸ¥tile entityæ˜¯å¦æœ‰master
 	    for(int x = 0; x < 3; x++) {
 	    	for(int y = 0; y < 3; y++) {
 	    		for(int z = 0; z < 3; z++) {
@@ -88,7 +89,7 @@ public class MulitBlockHelper {
 	    			checkY = yCoord - 2 + y;
 	    			checkZ = zCoord - 1 + z;
 	    			
-	    			//1.ÀË¬dblock¨Ã³]©w¥N¸¹
+	    			//1.æª¢æŸ¥blockä¸¦è¨­å®šä»£è™Ÿ
 	    			block = world.getBlock(checkX, checkY, checkZ);
 	    			
 	    			code = -1;
@@ -99,19 +100,19 @@ public class MulitBlockHelper {
 		    			LogHelper.info("DEBUG : multi block check: pos "+checkX+" "+checkY+" "+checkZ+" "+block.getLocalizedName()+" "+code);
 	    			}
 	    			
-	    			//2.§P©w¬O§_²Å¦Xpattern
+	    			//2.åˆ¤å®šæ˜¯å¦ç¬¦åˆpattern
 	    			typeTemp = 0;
 	    			for(int t = 0; t < PATTERN.length; t++) {
 	    				if(code == PATTERN[t][x][y][z]) {
 	    					typeTemp += Math.pow(2, t);		//match pattern t
 	    				}
 	    			}
-	    			typeMatch = (typeMatch & typeTemp);		//¶i¦æand¹Bºâ, §R¥h¤£²Å¦Xªºtype
+	    			typeMatch = (typeMatch & typeTemp);		//é€²è¡Œandé‹ç®—, åˆªå»ä¸ç¬¦åˆçš„type
 	    			
-	    			LogHelper.info("DEBUG : check MB: type "+typeMatch+" "+typeTemp);
-	    			if(typeMatch == 0) return -1;	//¥ş³¡pattern³£³QÂo±¼, µL²Å¦X, µ²§ôÀË¬d
+	    			LogHelper.info("DEBUG : check structure: type "+typeMatch+" "+typeTemp);
+	    			if(typeMatch == 0) return -1;	//å…¨éƒ¨patternéƒ½è¢«æ¿¾æ‰, ç„¡ç¬¦åˆ, çµæŸæª¢æŸ¥
 	    			
-	    			//3.­Y¬°MultiBlock«h¦A§ìTileEntity, ÀË¬d¨ä¥D±q, µL¥D¤è¶ô¤~¯à¥[¤J, ¦³¥D¤è¶ô«hµ²§ôÀË¬d
+	    			//3.è‹¥ç‚ºMultiBlockå‰‡å†æŠ“TileEntity, æª¢æŸ¥å…¶ä¸»å¾, ç„¡ä¸»æ–¹å¡Šæ‰èƒ½åŠ å…¥, æœ‰ä¸»æ–¹å¡Šå‰‡çµæŸæª¢æŸ¥
 	    			if(code > 0) tile = (BasicTileMulti)world.getTileEntity(checkX, checkY, checkZ);
 	    			if(tile != null) {
 	    				if(tile.hasMaster()) {
@@ -121,43 +122,51 @@ public class MulitBlockHelper {
 	            }//end z for
 	        }//end y for
 	    }//end x for
-	    LogHelper.info("DEBUG : check MB: type "+typeMatch);
+	    LogHelper.info("DEBUG : check structure: type "+typeMatch);
 	    return typeMatch;
 	}
 	
-	//setup multi block struct, add tile entity
+	/** setup multi block struct
+	 * 
+	 *  input: world, masterX, masterY, masterZ, structure type
+	 *  
+	 *  type: 0:large shipyard off, 1:large shipyard on
+	 */
 	public static void setupStructure(World world, int xCoord, int yCoord, int zCoord, int type) {
-		LogHelper.info("DEBUG : setup MB");
+		List<BasicTileMulti> tiles = new ArrayList<BasicTileMulti>();  //all tile in structure
+		BasicTileMulti masterte = null;  //master tile
+		LogHelper.info("DEBUG : setup structure type: "+type);
+		
+		//get all tile and master tile
 		for(int x = xCoord - 1; x < xCoord + 2; x++) {
 	        for(int y = yCoord - 2; y < yCoord + 1; y++) {
 	            for(int z = zCoord - 1; z < zCoord + 2; z++) {
 	                TileEntity tile = world.getTileEntity(x, y, z);
 	                
 	                // Check if block is master or servant
-	                boolean master = (x == xCoord && y == yCoord && z == zCoord);
+	                boolean mflag = (x == xCoord && y == yCoord && z == zCoord);
 	                
 	                if(tile != null && (tile instanceof BasicTileMulti)) {
-	                    ((BasicTileMulti)tile).setMasterCoords(xCoord, yCoord, zCoord);
-	                    ((BasicTileMulti)tile).setHasMaster(true);
-	                    ((BasicTileMulti)tile).setIsMaster(master);
-	                    //type: 0:normal 1:large shipyard off 2:large shipyard on 
-	                    //      3:large workshop off 4:large workshop on
-	                    //servant block is always = off type
-	                    if(type == 1) {	//large shipyard
-	                    	LogHelper.info("DEBUG : set MB: type 1");
-	                    	((BasicTileMulti)tile).setStructType(1, world);
-	                    }
-//	                    if(type == 2) {	//large workshop
-//	                    	((BasicTileMulti)tile).setStructType(3, world);
-//	                    }
-//	                    if(type == 4) {	//large
-//	                    	((BasicTileMulti)tile).setStructType(5, world);
-//	                    }
-	                    
+	                	BasicTileMulti tile2 = (BasicTileMulti) tile;
+	                	
+	                	tiles.add(tile2);
+	                	tile2.setIsMaster(mflag);
+	                	tile2.setHasMaster(true);
+	                	tile2.setStructType(type, world);
+	                	tile2.setMasterCoords(xCoord, yCoord, zCoord);
+	                	
+	                	if(mflag) {
+	                		masterte = tile2;
+	                	}
 	                }
 	            }//end z loop
 	        }//end y loop
 	    }//end x loop
+		
+		//set master value
+		for(BasicTileMulti te : tiles) {
+			te.setMaster(masterte);
+		}
 		
 		//spawn render entity at position master y-1
 		LogHelper.info("DEBUG : spawn render entity "+xCoord+" "+yCoord+" "+zCoord);
@@ -171,6 +180,7 @@ public class MulitBlockHelper {
 	//reset(remove) tile multi
 	private static void resetTileMulti(BasicTileMulti parTile) {
 		parTile.setMasterCoords(0, 0, 0);
+		parTile.setMaster(null);
 		parTile.setHasMaster(false);
 		parTile.setIsMaster(false);
 		parTile.setStructType(0, parTile.getWorldObj());	

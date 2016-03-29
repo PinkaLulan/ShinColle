@@ -37,9 +37,9 @@ import cpw.mods.fml.relauncher.SideOnly;
  * @parm world, host entity, tarX, tarY, tarZ, damage, knockback value
  * 
  * Parabola Orbit(for distance 7~65)
- * §Îª¬³]©w:
- * ¦b¸g¹L¶ZÂ÷¤¤ÂI¤§«e, ¥[¤WÃB¥~motionY¦V¤W¥H¤ÎaccY¦V¤U
- * ¨ì¤¤ÂI®É, Vy = 0
+ * å½¢ç‹€è¨­å®š:
+ * åœ¨ç¶“éè·é›¢ä¸­é»ä¹‹å‰, åŠ ä¸Šé¡å¤–motionYå‘ä¸Šä»¥åŠaccYå‘ä¸‹
+ * åˆ°ä¸­é»æ™‚, Vy = 0
  * 
  * speical type:
  * type 1:  high speed torpedo
@@ -63,13 +63,13 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
     private boolean isDirect;		//false:parabola  true:direct
   
     //for parabola y position
-    private float accParaY;			//ÃB¥~y¶b¥[³t«×
-    private int midFlyTime;			//¤@¥bªº­¸¦æ®É¶¡
+    private float accParaY;			//é¡å¤–yè»¸åŠ é€Ÿåº¦
+    private int midFlyTime;			//ä¸€åŠçš„é£›è¡Œæ™‚é–“
    
     //for direct only
     private static final float ACC = 0.01F;
-    private float acce;	//¹w³]¥[³t«×
-    private float accX;				//¤T¶b¥[³t«×
+    private float acce;	//é è¨­åŠ é€Ÿåº¦
+    private float accX;				//ä¸‰è»¸åŠ é€Ÿåº¦
     private float accY;
     private float accZ;
     
@@ -80,7 +80,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
     private float missileHP;		//if hp = 0 -> onImpact
     private World world;
     
-    //°ò¥»constructor, size¥²¶·¦b¦¹³]©w
+    //åŸºæœ¬constructor, sizeå¿…é ˆåœ¨æ­¤è¨­å®š
     public EntityAbyssMissile(World world) {
     	super(world);
     	this.setSize(1.0F, 1.0F);
@@ -91,7 +91,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
         super(world);
         this.world = world;
 //        LogHelper.info("DEBUG : const new missile "+pX+" "+pY+" "+pZ);
-        //³]©whost¸òowner
+        //è¨­å®šhostè·Ÿowner
         this.host = host;
         this.host2 = (EntityLiving) host;
         this.setPlayerUID(host.getPlayerUID());
@@ -122,7 +122,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
         super(world);
         this.world = world;
 //        LogHelper.info("DEBUG : const normal missile ");
-        //³]©whost¸òowner
+        //è¨­å®šhostè·Ÿowner
         this.host = host;
         this.host2 = (EntityLiving) host;
         this.setPlayerUID(host.getPlayerUID());
@@ -134,7 +134,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
         this.posZ = this.host2.posZ;
         this.posY = launchPos;
              
-        //­pºâ¶ZÂ÷, ¨ú±o¤è¦Vvector, ¨Ã¥Bªì©l¤Æ³t«×, ¨Ï­¸¼u¤è¦V´Â¦V¥Ø¼Ğ
+        //è¨ˆç®—è·é›¢, å–å¾—æ–¹å‘vector, ä¸¦ä¸”åˆå§‹åŒ–é€Ÿåº¦, ä½¿é£›å½ˆæ–¹å‘æœå‘ç›®æ¨™
         float distX = (float) (tarX - this.posX);
         float distY = (float) (tarY - this.posY);
         float distZ = (float) (tarZ - this.posZ);
@@ -143,11 +143,11 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
         if(MathHelper.abs(distY) < 0.001F) distY = 0F;
         if(MathHelper.abs(distZ) < 0.001F) distZ = 0F;
         
-        //³]©wª½®g©ÎªÌ©ßª«½u
+        //è¨­å®šç›´å°„æˆ–è€…æ‹‹ç‰©ç·š
         this.isDirect = isDirect;
         this.type = 0;
         
-        //³]©w­¸¼u³t«×
+        //è¨­å®šé£›å½ˆé€Ÿåº¦
         if(customAcc > 0F) {
         	this.acce = customAcc;
         	if(customAcc > 0.09F) {
@@ -167,7 +167,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
         	LogHelper.info("DEBUG : const type 3 missile ");
         }
         
-        //ª½®g¼u¹D, no gravity
+        //ç›´å°„å½ˆé“, no gravity
     	float dist = MathHelper.sqrt_float(distX*distX + distY*distY + distZ*distZ);
   	    this.accX = distX / dist * this.acce;
 	    this.accY = distY / dist * this.acce;
@@ -176,7 +176,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
 	    this.motionY = this.accY;
 	    this.motionZ = this.accZ;
  
-	    //©ßª«½u­y¹D­pºâ, y¶bªì³t¥[¤W (¤@¥b­¸¦æ®É¶¡ * ÃB¥~y¶b¥[³t«×)
+	    //æ‹‹ç‰©ç·šè»Œé“è¨ˆç®—, yè»¸åˆé€ŸåŠ ä¸Š (ä¸€åŠé£›è¡Œæ™‚é–“ * é¡å¤–yè»¸åŠ é€Ÿåº¦)
 	    if(!this.isDirect) {
 	    	this.midFlyTime = (int) (0.5F * MathHelper.sqrt_float(2F * dist / this.acce));
 	    	this.accParaY = this.acce;
@@ -192,7 +192,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
      * comparing it to its average bounding box edge length * 64 * renderDistanceWeight 
      * Args: distance
      * 
-     * ¥Ñ©óentity¥i¯à¤£¬°¥¿¤èÅé, ¬G¨ú¥­§¡Ãäªø¤j¤p¨Ó­pºâ¶ZÂ÷, ¦¹¤èªk¹w³]¬°256­¿Ãäªø¤j¤p
+     * ç”±æ–¼entityå¯èƒ½ä¸ç‚ºæ­£æ–¹é«”, æ•…å–å¹³å‡é‚Šé•·å¤§å°ä¾†è¨ˆç®—è·é›¢, æ­¤æ–¹æ³•é è¨­ç‚º256å€é‚Šé•·å¤§å°
      */
     @Override
 	@SideOnly(Side.CLIENT)
@@ -202,15 +202,15 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
     }
 
     //update entity
-    //ª`·N: ²¾°Ê­n¦bserver+client³£°µµe­±¤~¯àÅã¥Ü¥­¶¶, particle«h¥u¯à¦bclient°µ
+    //æ³¨æ„: ç§»å‹•è¦åœ¨server+clientéƒ½åšç•«é¢æ‰èƒ½é¡¯ç¤ºå¹³é †, particleå‰‡åªèƒ½åœ¨clientåš
     @Override
 	public void onUpdate() {
     	/**********both side***********/
-    	//±N¦ì¸m§ó·s (¥]§tserver, client¶¡¦P¨B¦ì¸m, ¤~¯à¨Ïbounding box¹B§@¥¿±`)
+    	//å°‡ä½ç½®æ›´æ–° (åŒ…å«server, clienté–“åŒæ­¥ä½ç½®, æ‰èƒ½ä½¿bounding boxé‹ä½œæ­£å¸¸)
         this.setPosition(this.posX, this.posY, this.posZ);
 
-        //­pºâµo®gÅéªº°ª«×
-    	if(!this.isDirect) {  //ª½®g­y¹D­pºâ  	
+        //è¨ˆç®—ç™¼å°„é«”çš„é«˜åº¦
+    	if(!this.isDirect) {  //ç›´å°„è»Œé“è¨ˆç®—  	
 			this.motionY = this.motionY + this.accY - this.accParaY;                   
     	}
     	else {
@@ -223,21 +223,21 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
     		this.motionZ *= 0.8F;
     	}
     	
-    	//­pºânext tickªº³t«×
+    	//è¨ˆç®—next tickçš„é€Ÿåº¦
         this.motionX += this.accX;
         this.motionZ += this.accZ;
         
-    	//³]©wµo®gÅéªº¤U¤@­Ó¦ì¸m
+    	//è¨­å®šç™¼å°„é«”çš„ä¸‹ä¸€å€‹ä½ç½®
 		this.posX += this.motionX;
 		this.posY += this.motionY;
         this.posZ += this.motionZ;
            	
-    	//­pºâ¼Ò«¬­nÂàªº¨¤«× (RAD, not DEG)
+    	//è¨ˆç®—æ¨¡å‹è¦è½‰çš„è§’åº¦ (RAD, not DEG)
         float f1 = MathHelper.sqrt_double(this.motionX*this.motionX + this.motionZ*this.motionZ);
         this.rotationPitch = (float)(Math.atan2(this.motionY, f1));
         this.rotationYaw = (float)(Math.atan2(this.motionX, this.motionZ));    
         
-        //¨Ì·Óx,z¶b¥¿­t¦V­×¥¿¨¤«×(Âà180)
+        //ä¾ç…§x,zè»¸æ­£è² å‘ä¿®æ­£è§’åº¦(è½‰180)
         if(this.motionX > 0) {
         	this.rotationYaw -= Math.PI;
         }
@@ -245,20 +245,20 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
         	this.rotationYaw += Math.PI;
         }
         
-        //§ó·s¦ì¸mµ¥µ¥°ò¥»¸ê°T, ¦P®É§ó·sprePosXYZ
+        //æ›´æ–°ä½ç½®ç­‰ç­‰åŸºæœ¬è³‡è¨Š, åŒæ™‚æ›´æ–°prePosXYZ
         super.onUpdate();
         
         /**********server side***********/
     	if(!this.worldObj.isRemote) {
-    		//¨S¦³host¸ê®Æ, ®ø°£¦¹­¸¼u
+    		//æ²’æœ‰hostè³‡æ–™, æ¶ˆé™¤æ­¤é£›å½ˆ
     		if(this.host == null) {
-    			this.setDead();	//ª½±µ©Ù®ø, ¤£Ä²µoÃz¬µ
+    			this.setDead();	//ç›´æ¥æŠ¹æ¶ˆ, ä¸è§¸ç™¼çˆ†ç‚¸
     			return;
     		}
     		
-    		//µo®g¶W¹L10 sec, ³]©w¬°¦º¤`(®ø¥¢), ª`·Nserver restart«á¦¹­È·|Âk¹s
+    		//ç™¼å°„è¶…é10 sec, è¨­å®šç‚ºæ­»äº¡(æ¶ˆå¤±), æ³¨æ„server restartå¾Œæ­¤å€¼æœƒæ­¸é›¶
     		if(this.ticksExisted > 200) {
-    			this.setDead();	//ª½±µ©Ù®ø, ¤£Ä²µoÃz¬µ
+    			this.setDead();	//ç›´æ¥æŠ¹æ¶ˆ, ä¸è§¸ç™¼çˆ†ç‚¸
     			return;
     		}
     		//sync missile type at start
@@ -278,12 +278,12 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
     			}
     		}
     		
-    		//¸Ó¦ì¸m¸I¨ì¤è¶ô, «h³]©wÃz¬µ (¤èªk1: ª½±µ¥Î®y¼Ğ§ä¤è¶ô) ¦¹¤èªk¥Ñ©ó§â®y¼Ğ¨úint, «Ü¦h®É­Ô¬İ°_¨Ó¦³¼²¨ì¦ı¬O¨ÌµM§ì¤£¨ì¤è¶ô
+    		//è©²ä½ç½®ç¢°åˆ°æ–¹å¡Š, å‰‡è¨­å®šçˆ†ç‚¸ (æ–¹æ³•1: ç›´æ¥ç”¨åº§æ¨™æ‰¾æ–¹å¡Š) æ­¤æ–¹æ³•ç”±æ–¼æŠŠåº§æ¨™å–int, å¾ˆå¤šæ™‚å€™çœ‹èµ·ä¾†æœ‰æ’åˆ°ä½†æ˜¯ä¾ç„¶æŠ“ä¸åˆ°æ–¹å¡Š
     		if(!this.worldObj.blockExists((int)this.posX, (int)this.posY, (int)this.posZ)) {
     			this.onImpact(null);
     		}
     		
-    		//¸Ó¦ì¸m¸I¨ì¤è¶ô, «h³]©wÃz¬µ (¤èªk2: ¥Îraytrace§ä¤è¶ô)
+    		//è©²ä½ç½®ç¢°åˆ°æ–¹å¡Š, å‰‡è¨­å®šçˆ†ç‚¸ (æ–¹æ³•2: ç”¨raytraceæ‰¾æ–¹å¡Š)
     		Vec3 vec3 = Vec3.createVectorHelper(this.posX, this.posY, this.posZ);
             Vec3 vec31 = Vec3.createVectorHelper(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
             MovingObjectPosition movingobjectposition = this.worldObj.rayTraceBlocks(vec3, vec31);          
@@ -296,17 +296,17 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
                 this.onImpact(null);
             }
             
-            //§P©wbounding box¤º¬O§_¦³¥i¥HÄ²µoÃz¬µªºentity
+            //åˆ¤å®šbounding boxå…§æ˜¯å¦æœ‰å¯ä»¥è§¸ç™¼çˆ†ç‚¸çš„entity
             Entity hitEntity = null;
             List hitList = null;
             hitList = this.worldObj.getEntitiesWithinAABB(Entity.class, this.boundingBox.expand(1.0D, 1.0D, 1.0D));
             
-            //·j´Mlist, §ä¥X²Ä¤@­Ó¥i¥H§P©wªº¥Ø¼Ğ, §Y¶Çµ¹onImpact
+            //æœå°‹list, æ‰¾å‡ºç¬¬ä¸€å€‹å¯ä»¥åˆ¤å®šçš„ç›®æ¨™, å³å‚³çµ¦onImpact
             if(hitList != null && !hitList.isEmpty()) {
                 for(int i=0; i<hitList.size(); ++i) { 
                 	hitEntity = (Entity) hitList.get(i);
                 	
-                	/**¤£·|¹ï¦Û¤v¥D¤HÄ²µoÃz¬µ
+                	/**ä¸æœƒå°è‡ªå·±ä¸»äººè§¸ç™¼çˆ†ç‚¸
             		 * isEntityEqual() is NOT working
             		 * use entity id to check entity  */
                 	if(hitEntity.canBeCollidedWith() && isNotHost(hitEntity) && 
@@ -327,27 +327,30 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
     	}//end server side
     	/**********client side***********/
     	else {
-    		//spawn particle by speed type
-    		byte smokeType = 15;
-    		
-    		switch(this.type) {
-    		case 1:
-    			smokeType = 16;
-    			break;
-    		case 2:
-    			smokeType = 27;
-    			break;
-    		case 3:
-    		case 4:
-    			smokeType = 18;
-    			break;
-    		default:
-    			break;
+    		if(this.type != 2) {
+    			//spawn particle by speed type
+        		byte smokeType = 15;
+        		
+        		switch(this.type) {
+        		case 1:
+        			smokeType = 16;
+        			break;
+        		case 3:
+        		case 4:
+        			smokeType = 18;
+        			break;
+        		default:
+        			break;
+        		}
+        		
+        		for (int j = 0; j < 3; ++j) {
+                	ParticleHelper.spawnAttackParticleAt(this.posX-this.motionX*1.5D*j, this.posY+1D-this.motionY*1.5D*j, this.posZ-this.motionZ*1.5D*j, 
+                    		-this.motionX*0.1D, -this.motionY*0.1D, -this.motionZ*0.1D, smokeType);
+        		}
     		}
-    		
-    		for (int j = 0; j < 3; ++j) {
-            	ParticleHelper.spawnAttackParticleAt(this.posX-this.motionX*1.5D*j, this.posY+1D-this.motionY*1.5D*j, this.posZ-this.motionZ*1.5D*j, 
-                		-this.motionX*0.1D, -this.motionY*0.1D, -this.motionZ*0.1D, smokeType);
+    		else {
+    			//spawn beam head particle
+            	ParticleHelper.spawnAttackParticleAtEntity(this, 0D, 10, 4D, (byte)9);
     		}
     	}//end client side
     	   	
@@ -365,7 +368,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
 		return true;
 	}
 
-	//¼²À»§P©w®É©I¥s¦¹¤èªk
+	//æ’æ“Šåˆ¤å®šæ™‚å‘¼å«æ­¤æ–¹æ³•
     protected void onImpact(Entity target) {
     	//play sound
     	playSound(Reference.MOD_ID+":ship-explode", ConfigHandler.fireVolume * 1.5F, 0.7F / (this.rand.nextFloat() * 0.4F + 0.8F));
@@ -377,61 +380,56 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
         	
     		float missileAtk = atk;
 
-            //­pºâ½d³òÃz¬µ¶Ë®`: §P©wbounding box¤º¬O§_¦³¥i¥H¦Y¶Ë®`ªºentity
+            //è¨ˆç®—ç¯„åœçˆ†ç‚¸å‚·å®³: åˆ¤å®šbounding boxå…§æ˜¯å¦æœ‰å¯ä»¥åƒå‚·å®³çš„entity
             Entity hitEntity = null;
             AxisAlignedBB impactBox = this.boundingBox.expand(3.5D, 3.5D, 3.5D); 
             List hitList = this.worldObj.getEntitiesWithinAABB(Entity.class, impactBox);
             
-            //¹ïlist¤¤©Ò¦³¥i§ğÀ»entity°µ¥X¶Ë®`§P©w
+            //å°listä¸­æ‰€æœ‰å¯æ”»æ“Šentityåšå‡ºå‚·å®³åˆ¤å®š
             if(hitList != null && !hitList.isEmpty()) {
                 for(int i=0; i<hitList.size(); ++i) {
                 	missileAtk = this.atk;
                 	hitEntity = (Entity)hitList.get(i);
                 	
-                	//calc equip special dmg: AA, ASM
-                	missileAtk = CalcHelper.calcDamageByEquipEffect(this, hitEntity, missileAtk, 0);
-                	
-                	//¥Ø¼Ğ¤£¯à¬O¦Û¤v or ¥D¤H, ¥B¥i¥H³Q¸I¼²
-                	if(hitEntity.canBeCollidedWith() && isNotHost(hitEntity)) {
-                		//­Yowner¬Û¦P, «h¶Ë®`³]¬°0 (¦ı¬O¨ÌµMÄ²µoÀ»­¸¯S®Ä)
-                		if(EntityHelper.checkSameOwner(host2, hitEntity)) {
-                    		missileAtk = 0F;
-                    	}
-                		else {
-                			//calc critical, only for type:ship
-                    		if(this.host != null && (this.rand.nextFloat() < this.host.getEffectEquip(ID.EF_CRI))) {
-                        		missileAtk *= 3F;
-                        		//spawn critical particle
-                        		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-                            	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(host2, 11, false), point);
+                	//check target attackable
+              		if(EntityHelper.checkAttackable(hitEntity)) {
+              		//calc equip special dmg: AA, ASM
+                    	missileAtk = CalcHelper.calcDamageByEquipEffect(this, hitEntity, missileAtk, 0);
+                    	
+                    	//ç›®æ¨™ä¸èƒ½æ˜¯è‡ªå·± or ä¸»äºº, ä¸”å¯ä»¥è¢«ç¢°æ’
+                    	if(hitEntity.canBeCollidedWith() && isNotHost(hitEntity)) {
+                    		//è‹¥ownerç›¸åŒ, å‰‡å‚·å®³è¨­ç‚º0 (ä½†æ˜¯ä¾ç„¶è§¸ç™¼æ“Šé£›ç‰¹æ•ˆ)
+                    		if(EntityHelper.checkSameOwner(host2, hitEntity)) {
+                        		missileAtk = 0F;
                         	}
-                    		
-                    		//­Y§ğÀ»¨ìª±®a, ³Ì¤j¶Ë®`©T©w¬°TNT¶Ë®` (non-owner)
-                        	if(hitEntity instanceof EntityPlayer) {
-                        		missileAtk *= 0.25F;
+                    		else {
+                    			//calc critical, only for type:ship
+                        		if(this.host != null && (this.rand.nextFloat() < this.host.getEffectEquip(ID.EF_CRI))) {
+                            		missileAtk *= 3F;
+                            		//spawn critical particle
+                            		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+                                	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(host2, 11, false), point);
+                            	}
                         		
-                        		if(missileAtk > 59F) {
-                        			missileAtk = 59F;	//same with TNT
-                        		}
-                        		
-                        		//check friendly fire
-                        		if(!EntityHelper.doFriendlyFire(this.host, (EntityPlayer) hitEntity)) {
+                        		//è‹¥æ”»æ“Šåˆ°ç©å®¶, æœ€å¤§å‚·å®³å›ºå®šç‚ºTNTå‚·å®³ (non-owner)
+                            	if(hitEntity instanceof EntityPlayer) {
+                            		missileAtk *= 0.25F;
+                            		
+                            		if(missileAtk > 59F) {
+                            			missileAtk = 59F;	//same with TNT
+                            		}
+                            	}
+                            	
+                            	//check friendly fire
+                        		if(!EntityHelper.doFriendlyFire(this.host, hitEntity)) {
                         			missileAtk = 0F;
                         		}
-                        	}
-                		}
-//                		LogHelper.info("DEBUG: missile onImpact: dmg "+missileAtk+" tar "+hitEntity+" host "+this.host);
-                		//if attack success
-                	    if(hitEntity.attackEntityFrom(DamageSource.causeMobDamage(host2).setExplosion(), missileAtk)) {
-                	    	//calc kb effect
-                	        if(this.kbValue > 0) {
-                	        	hitEntity.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
-                	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
-                	            motionX *= 0.6D;
-                	            motionZ *= 0.6D;
-                	        }
-                	    }
-                	}//end can be collided with
+                    		}
+//                    		LogHelper.info("DEBUG: missile onImpact: dmg "+missileAtk+" tar "+hitEntity+" host "+this.host);
+                    		//attack
+                    	    hitEntity.attackEntityFrom(DamageSource.causeMobDamage(host2).setExplosion(), missileAtk);
+                    	}//end can be collided with
+              		}//end is attackable
                 }//end hit target list for loop
             }//end hit target list != null
   
@@ -441,19 +439,19 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
         }//end if server side
     }
 
-	//Àx¦sentityªºnbt
+	//å„²å­˜entityçš„nbt
     @Override
 	public void writeEntityToNBT(NBTTagCompound nbt) {
     	nbt.setTag("direction", this.newDoubleNBTList(new double[] {this.motionX, this.motionY, this.motionZ}));  
     	nbt.setFloat("atk", this.atk);
     }
 
-    //Åª¨úentityªºnbt
+    //è®€å–entityçš„nbt
     @Override
 	public void readEntityFromNBT(NBTTagCompound nbt) {
-        if(nbt.hasKey("direction", 9)) {	//9¬°tag list
-            NBTTagList nbttaglist = nbt.getTagList("direction", 6);	//6¬°tag double
-            this.motionX = nbttaglist.func_150309_d(0);	//¦¹¬°get double
+        if(nbt.hasKey("direction", 9)) {	//9ç‚ºtag list
+            NBTTagList nbttaglist = nbt.getTagList("direction", 6);	//6ç‚ºtag double
+            this.motionX = nbttaglist.func_150309_d(0);	//æ­¤ç‚ºget double
             this.motionY = nbttaglist.func_150309_d(1);
             this.motionZ = nbttaglist.func_150309_d(2);
         }
@@ -464,31 +462,31 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
         this.atk = nbt.getFloat("atk");
     }
 
-    //³]©wtrue¥i¨Ï¨ä¥L¥Íª«§P©w¬O§_¥i¸I¼²¦¹entity
+    //è¨­å®štrueå¯ä½¿å…¶ä»–ç”Ÿç‰©åˆ¤å®šæ˜¯å¦å¯ç¢°æ’æ­¤entity
     @Override
 	public boolean canBeCollidedWith() {
         return true;
     }
 
-    //¨ú±o¦¹entityªºbounding box¤j¤p
+    //å–å¾—æ­¤entityçš„bounding boxå¤§å°
     @Override
 	public float getCollisionBorderSize() {
         return 1.0F;
     }
 
-    //entity³Q§ğÀ»¨ì®É©I¥s¦¹¤èªk
+    //entityè¢«æ”»æ“Šåˆ°æ™‚å‘¼å«æ­¤æ–¹æ³•
     @Override
 	public boolean attackEntityFrom(DamageSource attacker, float atk) {
-    	//¶i¦ædodge­pºâ
+    	//é€²è¡Œdodgeè¨ˆç®—
 		if(EntityHelper.canDodge(this, 0F)) {
 			return false;
 		}
     	
-        if(this.isEntityInvulnerable()) {	//¹ïµL¼Ä¥Ø¼Ğ¦^¶Çfalse
+        if(this.isEntityInvulnerable()) {	//å°ç„¡æ•µç›®æ¨™å›å‚³false
             return false;
         }
         
-        //§ğÀ»¨ì­¸¼u·|¾É­P¥ß¨èÃz¬µ
+        //æ”»æ“Šåˆ°é£›å½ˆæœƒå°è‡´ç«‹åˆ»çˆ†ç‚¸
         if(this.isEntityAlive() && atk > 10F) {
         	this.setDead();
         	this.onImpact(null);
@@ -498,20 +496,20 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
         return false;
     }
 
-    //render¥Î, ³±¼v¤j¤p
+    //renderç”¨, é™°å½±å¤§å°
     @Override
 	@SideOnly(Side.CLIENT)
     public float getShadowSize() {
         return 0.0F;
     }
 
-    //­pºâ¥ú½u¥Î
+    //è¨ˆç®—å…‰ç·šç”¨
     @Override
 	public float getBrightness(float p_70013_1_) {
         return 1.0F;
     }
 
-    //render¥Î, «G«×­ÈÄİ©ó«Gµµ¦â
+    //renderç”¨, äº®åº¦å€¼å±¬æ–¼äº®ç´«è‰²
     @Override
 	@SideOnly(Side.CLIENT)
     public int getBrightnessForRender(float p_70070_1_) {

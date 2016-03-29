@@ -13,7 +13,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderTest extends RenderLiving {
 		
-	//¶K¹ÏÀÉ¸ô®|
+	//è²¼åœ–æª”è·¯å¾‘
 	private static final ResourceLocation mobTextures = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityTest.png");
 
 	public RenderTest(ModelBase par1, float par2) {

@@ -37,7 +37,7 @@ public class ShipCmdUpdateOwnerUID extends BasicShipCommand {
 	}};
 
 	
-    public ShipCmdUpdateOwnerUID() {   
+    public ShipCmdUpdateOwnerUID() {
     }
 
     /** command name */
@@ -82,7 +82,7 @@ public class ShipCmdUpdateOwnerUID extends BasicShipCommand {
 		return cmd.length > 0 && index == 0;
 	}
 	
-	/** command process */
+	/** command process, SERVER SIDE ONLY */
 	@Override
 	public void processCommand(ICommandSender sender, String[] cmd) {
 		World world = sender.getEntityWorld();
@@ -90,13 +90,8 @@ public class ShipCmdUpdateOwnerUID extends BasicShipCommand {
 		String uuid = null;
 		int pid = -1;
 		boolean isOP = false;
-		
-		//client
-		if(world.isRemote) {
-//			LogHelper.info("DEBUG : cmd client "+sender+" "+cmd);
-		}
-		//server
-		else {
+
+		if(!world.isRemote) {
 			/** command type:
 			 *  1: command with 0 parm
 			 *     used by all player

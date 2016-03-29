@@ -32,8 +32,8 @@ import com.lulan.shincolle.utility.LogHelper;
 
 /**ICON_SHIPTYPE(157,18) 
  * NameIcon: LargeShip(0,0)(40x42) SmallShip(0,43)(30x30) 
- *           ÅX³v(41,0)(28x28) »´¨µ(41,29) ­«¨µ(41,58) ¹p¨µ(41,87) ¸Éµ¹(12,74)
- *           ¾ÔÄ¥(70,0) ¯è¥À(70,29) »´¥À(70,58) ®V(70,87) ¼ç¤ô(99,0) ¯B´å(99,29)
+ *           é©…é€(41,0)(28x28) è¼•å·¡(41,29) é‡å·¡(41,58) é›·å·¡(41,87) è£œçµ¦(12,74)
+ *           æˆ°è‰¦(70,0) èˆªæ¯(70,29) è¼•æ¯(70,58) å§¬(70,87) æ½›æ°´(99,0) æµ®æ¸¸(99,29)
  *           
  * Color note:gold:16766720 gray:4210752 dark-gray:3158064 white:16777215 green:65280
  *            yellow:16776960 orange:16753920 red:16711680 cyan:65535
@@ -146,13 +146,13 @@ public class GuiShipInventory extends GuiContainer {
 		
 	}
 	
-	//GUI«e´º: ¤å¦r 
+	//GUIå‰æ™¯: æ–‡å­— 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int i, int j) {
-		//¨ú±oguiÅã¥Ü¦WºÙ
+		//å–å¾—guié¡¯ç¤ºåç¨±
 		titlename = entity.getCustomNameTag();	//get type name from nbt
 		
-		//µe¥X¦r¦ê parm: string, x, y, color, (¬O§_dropShadow)
+		//ç•«å‡ºå­—ä¸² parm: string, x, y, color, (æ˜¯å¦dropShadow)
 		//draw entity name (title) 
 		this.fontRendererObj.drawString(titlename, 8, 6, 0);
 		
@@ -161,7 +161,7 @@ public class GuiShipInventory extends GuiContainer {
 		handleHoveringText();
 	}
 
-	//GUI­I´º: ­I´º¹Ï¤ù
+	//GUIèƒŒæ™¯: èƒŒæ™¯åœ–ç‰‡
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float par1,int par2, int par3) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);	//RGBA
@@ -805,7 +805,7 @@ public class GuiShipInventory extends GuiContainer {
 			this.Formation = I18n.format("gui.shincolle:formation.format"+ftype);
 			this.fontRendererObj.drawStringWithShadow(Formation, 125-this.fontRendererObj.getStringWidth(Formation), 51, Values.Color.WHITE);
 			
-			//¤j«¬Ä¥, Åã¥ÜÄ¥¸ü¾÷¼Æ¶q
+			//å¤§å‹è‰¦, é¡¯ç¤ºè‰¦è¼‰æ©Ÿæ•¸é‡
 			if(this.entity instanceof BasicEntityShipLarge) {
 				this.fontRendererObj.drawString(strMiAirL, 67, 83, 0);
 				this.fontRendererObj.drawString(strMiAirH, 67, 104, 0);

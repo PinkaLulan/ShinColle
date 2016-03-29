@@ -28,8 +28,8 @@ public interface IShipEmotion extends IShipFlags {
 	public void setStartEmotion2(int par1);
 	
 	/**GET/SET model rotation XYZ (for client model postRender)
-	 * ¦bmodel class¤¤³]©w­È, ¨Ïrender class¯à§ì¨ì¸Ó­È¨Ã¥B°µ¶i¤@¨Bpost render
-	 * ¥Ø«e¥Î©ó¤â«ùª««~render
+	 * åœ¨model classä¸­è¨­å®šå€¼, ä½¿render classèƒ½æŠ“åˆ°è©²å€¼ä¸¦ä¸”åšé€²ä¸€æ­¥post render
+	 * ç›®å‰ç”¨æ–¼æ‰‹æŒç‰©å“render
 	 * par1: 0:X 1:Y 2:Z
 	 * par2: angle (rad)
 	 */

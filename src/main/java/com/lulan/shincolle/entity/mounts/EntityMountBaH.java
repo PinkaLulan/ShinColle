@@ -1,15 +1,23 @@
 package com.lulan.shincolle.entity.mounts;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.hime.EntityBattleshipHime;
+import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.network.S2CSpawnParticle;
+import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.ParticleHelper;
+
+import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
 public class EntityMountBaH extends BasicEntityMount {
 	
@@ -37,18 +45,18 @@ public class EntityMountBaH extends BasicEntityMount {
         this.StartEmotion2 = 0;
         this.headTilt = false;
            
-        //�]�w��m
+        //設定位置
         this.posX = host.posX;
         this.posY = host.posY;
         this.posZ = host.posZ;
         this.setPosition(this.posX, this.posY, this.posZ);
  
-        //�]�w���ݩ�
+        //設定基本屬性
         setupAttrs();
         
 		if(this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
 				
-		//�]�wAI
+		//設定AI
 		this.setAIList();
 	}
     
@@ -66,6 +74,33 @@ public class EntityMountBaH extends BasicEntityMount {
 	public int getDamageType() {
 		return ID.ShipDmgType.BATTLESHIP;
 	}
+	
+	//change melee damage to 100%
+  	@Override
+  	public boolean attackEntityAsMob(Entity target) {
+  		//get attack value
+  		float atk = host.getStateFinal(ID.ATK) * 3F;
+  				
+  	    //將atk跟attacker傳給目標的attackEntityFrom方法, 在目標class中計算傷害
+  	    //並且回傳是否成功傷害到目標
+  	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this), atk);
+
+  	    //play entity attack sound
+  	    if(this.getRNG().nextInt(10) > 8) {
+  	    	this.playSound(Reference.MOD_ID+":ship-waka_attack", ConfigHandler.shipVolume * 0.5F, 1F);
+  	    }
+  	    
+  	    //if attack success
+  	    if(isTargetHurt) {
+  	        //send packet to client for display partical effect   
+  	        if (!worldObj.isRemote) {
+  	        	TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+  	    		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 1, false), point);
+  			}
+  	    }
+
+  	    return isTargetHurt;
+  	}
 	
 	//use host's cluster bomb
 	@Override
@@ -106,7 +141,7 @@ public class EntityMountBaH extends BasicEntityMount {
 		if(this.worldObj.isRemote) {
 			//add smoke particle
 			if(this.ticksExisted % 5 == 0) {
-  				//�ͦ��˳ƫ_�ϯS��
+  				//生成裝備冒煙特效
   				ParticleHelper.spawnAttackParticleAt(posX, posY + 3D, posZ, 0D, 0D, 0D, (byte)20);
   			}
 		}

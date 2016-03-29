@@ -15,9 +15,9 @@ import com.lulan.shincolle.team.TeamData;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
-/**¦øªA¾¹ºİ¸ê®Æ
- * Àx¦splayer idµ¥, ¦øªA¾¹ºİ§P©w¥Î¸ê®Æ
- * ¦¹class¥Î¨Ó³B²zServerProxy¸òMapStorage¤§¶¡ªº¸ê®Æ¦s¨ú°Ê§@
+/**ä¼ºæœå™¨ç«¯è³‡æ–™
+ * å„²å­˜player idç­‰, ä¼ºæœå™¨ç«¯åˆ¤å®šç”¨è³‡æ–™
+ * æ­¤classç”¨ä¾†è™•ç†ServerProxyè·ŸMapStorageä¹‹é–“çš„è³‡æ–™å­˜å–å‹•ä½œ
  *
  * tut tag: diesieben07, worldsaveddata
  */
@@ -67,11 +67,25 @@ public class ShinWorldData extends WorldSavedData {
 		nbt.setInteger(TAG_NEXTPLAYERID, ServerProxy.getNextPlayerID());
 		nbt.setInteger(TAG_NEXTSHIPID, ServerProxy.getNextShipID());
 
-		
+		//unattackable list
+	    List<String> strList = ServerProxy.getUnattackableTargetClassList();
+	    if(strList != null) {
+	    	NBTTagList tagList = new NBTTagList();
+			LogHelper.info("DEBUG : save world data: save unattackable target list: size: "+strList.size());
+			
+			for(String getc : strList) {
+				NBTTagString str = new NBTTagString(getc);
+				tagList.appendTag(str);
+			}
+			
+			nbt.setTag(ServerProxy.UNATK_TARGET_CLASS, tagList);
+	    }
+	    
 		/** save player data:  from playerMap to server save file */
 		NBTTagList list = new NBTTagList();
 		Iterator iter = ServerProxy.getAllPlayerWorldData().entrySet().iterator();
 		
+	    //save each player data
 		while(iter.hasNext()) {
 		    Map.Entry entry = (Map.Entry) iter.next();
 		    int uid = (Integer) entry.getKey();
@@ -83,19 +97,22 @@ public class ShinWorldData extends WorldSavedData {
 		    LogHelper.info("DEBUG : save world data: save id "+uid+" data: "+data0[0]+" "+data0[1]+" "+data0[2]);
 		    
 		    //save target class list
-		    List<String> strList = ServerProxy.getPlayerTargetClassList(uid);
+		    strList = ServerProxy.getPlayerTargetClassList(uid);
 			if(strList != null) {
 				NBTTagList tagList = new NBTTagList();
 				LogHelper.info("DEBUG : save world data: save id "+uid+" target list size: "+strList.size());
+				
 				for(String getc : strList) {
 					NBTTagString str = new NBTTagString(getc);
 					tagList.appendTag(str);
 				}
+				
 				save.setTag(ServerProxy.CUSTOM_TARGET_CLASS, tagList);
 			}
-		    list.appendTag(save);	//±Nsave¥[¤J¨ìlist¤¤, ¤£ÀË¬d¬O§_¦³­«½Æªºtag, ¦Ó¬O·s¼W¤@­Ótag
+			
+		    list.appendTag(save);	//å°‡saveåŠ å…¥åˆ°listä¸­, ä¸æª¢æŸ¥æ˜¯å¦æœ‰é‡è¤‡çš„tag, è€Œæ˜¯æ–°å¢ä¸€å€‹tag
 		}
-		nbt.setTag(TAG_PLAYERDATA, list);	//±Nlist¥[¤J¨ìnbt¤¤
+		nbt.setTag(TAG_PLAYERDATA, list);	//å°‡liståŠ å…¥åˆ°nbtä¸­
 		
 		
 		/** save team data */
@@ -115,9 +132,9 @@ public class ShinWorldData extends WorldSavedData {
 	    	saveIntListToNBT(save, TAG_TBAN, data.getTeamBannedList());
 	    	saveIntListToNBT(save, TAG_TALLY, data.getTeamAllyList());
 		    
-		    list.appendTag(save);	//±Nsave¥[¤J¨ìlist¤¤, ¤£ÀË¬d¬O§_¦³­«½Æªºtag, ¦Ó¬O·s¼W¤@­Ótag
+		    list.appendTag(save);	//å°‡saveåŠ å…¥åˆ°listä¸­, ä¸æª¢æŸ¥æ˜¯å¦æœ‰é‡è¤‡çš„tag, è€Œæ˜¯æ–°å¢ä¸€å€‹tag
 		}
-		nbt.setTag(TAG_TEAMDATA, list);	//±Nlist¥[¤J¨ìnbt¤¤
+		nbt.setTag(TAG_TEAMDATA, list);	//å°‡liståŠ å…¥åˆ°nbtä¸­
 		
 	}//end write nbt
 	

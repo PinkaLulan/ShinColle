@@ -9,7 +9,7 @@ public class EntityTest extends EntityLiving implements IShipEmotion {
 
 	public EntityTest(World world) {
 		super(world);
-		this.setSize(1F, 1.5F);	//¸I¼²¤j¤p ¸ò¼Ò«¬¤j¤pµLÃö
+		this.setSize(1F, 1.5F);	//ç¢°æ’å¤§å° è·Ÿæ¨¡å‹å¤§å°ç„¡é—œ
 	}
 
 	@Override

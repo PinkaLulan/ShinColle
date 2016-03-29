@@ -45,20 +45,20 @@ public class EntityFloatingFort extends BasicEntityAirplane {
         this.useAmmoLight = false;
         this.useAmmoHeavy = true;
         
-        //³]©wµo®g¦ì¸m
+        //è¨­å®šç™¼å°„ä½ç½®
         this.posX = host.posX;
         this.posY = launchPos;
         this.posZ = host.posZ;
         this.setPosition(this.posX, this.posY, this.posZ);
  
-	    //³]©w°ò¥»Äİ©Ê
+	    //è¨­å®šåŸºæœ¬å±¬æ€§
 	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(host.getStateFinal(ID.HP)*0.1D);
 		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(this.movSpeed);
-		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(host.getStateFinal(ID.HIT)+32D); //¦¹¬°§ä¥Ø¼Ğ, ¸ô®|ªº½d³ò
+		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(host.getStateFinal(ID.HIT)+32D); //æ­¤ç‚ºæ‰¾ç›®æ¨™, è·¯å¾‘çš„ç¯„åœ
 		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(0.5D);
 		if(this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
 				
-		//³]©wAI
+		//è¨­å®šAI
 		this.setAIList();
 	}
 	
@@ -86,13 +86,13 @@ public class EntityFloatingFort extends BasicEntityAirplane {
 		}
 		//server side
 		else {
-			//¥Ø¼Ğ®ø¥¢©Î¦º¤`, ª½±µ²¾°£¦¹entity
+			//ç›®æ¨™æ¶ˆå¤±æˆ–æ­»äº¡, ç›´æ¥ç§»é™¤æ­¤entity
 			if(this.atkTarget == null || !this.atkTarget.isEntityAlive() || this.ticksExisted >= 500) {
 				this.onImpact();
 				return;
 			}
 
-			//«ùÄò¦V¥Ø¼Ğ²¾°Ê
+			//æŒçºŒå‘ç›®æ¨™ç§»å‹•
 			updateAttackAI();
 		}
 		
@@ -102,15 +102,15 @@ public class EntityFloatingFort extends BasicEntityAirplane {
 	//attack AI: move and call onImpact
 	private void updateAttackAI() {
 		if(this.atkTarget != null) {  //for lots of NPE issue-.-
-            //¥Ø¼Ğ¶ZÂ÷­pºâ
+            //ç›®æ¨™è·é›¢è¨ˆç®—
             float distX = (float) (atkTarget.posX - this.posX);
             float distY = (float) (atkTarget.posY + 1F - this.posY);
             float distZ = (float) (atkTarget.posZ - this.posZ);	
             float distSq = distX*distX + distY*distY + distZ*distZ;
 
-            //¨C30 tick§ä¤@¦¸¸ô®|, ª½¨ì¶ZÂ÷¥Ø¼ĞX®æ¤º
+            //æ¯30 tickæ‰¾ä¸€æ¬¡è·¯å¾‘, ç›´åˆ°è·é›¢ç›®æ¨™Xæ ¼å…§
         	if(this.ticksExisted % 16 == 0) {
-	        	if(distSq > 4F) {	//¶ZÂ÷¬ù2®æ
+	        	if(distSq > 4F) {	//è·é›¢ç´„2æ ¼
 		        	this.getShipNavigate().tryMoveToEntityLiving(atkTarget, 1D);
 	        	}
         	}
@@ -122,70 +122,62 @@ public class EntityFloatingFort extends BasicEntityAirplane {
     	}//end attack target != null
 	}
 
-	//Ä²µoÃz¬µ§ğÀ»
+	//è§¸ç™¼çˆ†ç‚¸æ”»æ“Š
 	private void onImpact() {
 		boolean isTargetHurt = false;
 		//get attack value
 		float atk2;
-		float kbValue = 0.08F;
 		
 		//calc miss chance, if not miss, calc cri/multi hit
-		//­pºâ½d³òÃz¬µ¶Ë®`: §P©wbounding box¤º¬O§_¦³¥i¥H¦Y¶Ë®`ªºentity
+		//è¨ˆç®—ç¯„åœçˆ†ç‚¸å‚·å®³: åˆ¤å®šbounding boxå…§æ˜¯å¦æœ‰å¯ä»¥åƒå‚·å®³çš„entity
         EntityLivingBase hitEntity = null;
         AxisAlignedBB impactBox = this.boundingBox.expand(4.5D, 4.5D, 4.5D); 
         List hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, impactBox);
         
-        //·j´Mlist, §ä¥X²Ä¤@­Ó¥i¥H§P©wªº¥Ø¼Ğ, §Y¶Çµ¹onImpact
+        //æœå°‹list, æ‰¾å‡ºç¬¬ä¸€å€‹å¯ä»¥åˆ¤å®šçš„ç›®æ¨™, å³å‚³çµ¦onImpact
         if(hitList != null && !hitList.isEmpty()) {
             for(int i = 0; i < hitList.size(); ++i) {
             	atk2 = this.atk;
             	hitEntity = (EntityLivingBase)hitList.get(i);
             	
-            	//calc equip special dmg: AA, ASM
-            	atk2 = CalcHelper.calcDamageByEquipEffect(this, hitEntity, atk2, 0);
-            	
-            	//¥Ø¼Ğ¥i¥H³Q¸I¼², ¥B¥Ø¼Ğ¤£¦P¥D¤H, «h§P©w¥i¶Ë®`
-            	if(hitEntity.canBeCollidedWith() && !EntityHelper.checkSameOwner(this.host, hitEntity)) {
-        			//calc critical, only for type:ship
-            		if(host != null && (this.rand.nextFloat() < this.host.getEffectEquip(ID.EF_CRI))) {
-            			atk2 *= 3F;
-                		//spawn critical particle
-                		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
-                    	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(host, 11, false), point);
-                	}
-            		
-            		//­Y§ğÀ»¨ìª±®a, «h¶Ë®`´î¬°25%, ¥B³Ì¤j¶Ë®`©T©w¬°TNT¶Ë®` (non-owner)
-                	if(hitEntity instanceof EntityPlayer) {
-                		atk2 *= 0.25F;
+            	//check target attackable
+          		if(EntityHelper.checkAttackable(hitEntity)) {
+          			//calc equip special dmg: AA, ASM
+                	atk2 = CalcHelper.calcDamageByEquipEffect(this, hitEntity, atk2, 0);
+                	
+                	//ç›®æ¨™å¯ä»¥è¢«ç¢°æ’, ä¸”ç›®æ¨™ä¸åŒä¸»äºº, å‰‡åˆ¤å®šå¯å‚·å®³
+                	if(hitEntity.canBeCollidedWith() && !EntityHelper.checkSameOwner(this.host, hitEntity)) {
+            			//calc critical, only for type:ship
+                		if(host != null && (this.rand.nextFloat() < this.host.getEffectEquip(ID.EF_CRI))) {
+                			atk2 *= 3F;
+                    		//spawn critical particle
+                    		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
+                        	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(host, 11, false), point);
+                    	}
                 		
-                		if(atk2 > 59F) {
-                			atk2 = 59F;	//same with TNT
-                		}
-                		
-                		//check friendly fire
-                		if(!EntityHelper.doFriendlyFire(this.host, (EntityPlayer) hitEntity)) {
+                		//è‹¥æ”»æ“Šåˆ°ç©å®¶, å‰‡å‚·å®³æ¸›ç‚º25%, ä¸”æœ€å¤§å‚·å®³å›ºå®šç‚ºTNTå‚·å®³ (non-owner)
+                    	if(hitEntity instanceof EntityPlayer) {
+                    		atk2 *= 0.25F;
+                    		
+                    		if(atk2 > 59F) {
+                    			atk2 = 59F;	//same with TNT
+                    		}
+                    	}
+                    	
+                    	//check friendly fire
+                		if(!EntityHelper.doFriendlyFire(this.host, hitEntity)) {
                 			atk2 = 0F;
                 		}
-                	}
-                	
-            		//¹ïentity³y¦¨¶Ë®`
-                	if(host != null) {
-                		isTargetHurt = hitEntity.attackEntityFrom(DamageSource.causeMobDamage(host).setExplosion(), atk2);
-                	}
-                	else {
-                		isTargetHurt = hitEntity.attackEntityFrom(DamageSource.causeMobDamage(this).setExplosion(), atk2);
-                	}
-            		//if attack success
-            	    if(isTargetHurt) {
-            	    	//calc kb effect
-            	        if(this.kbValue > 0) {
-            	        	hitEntity.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
-            	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
-            	            motionX *= 0.6D;
-            	            motionZ *= 0.6D;
-            	        }             	 
-            	    }
-            	}//end can be collided with
+                    	
+                		//å°entityé€ æˆå‚·å®³
+                    	if(host != null) {
+                    		isTargetHurt = hitEntity.attackEntityFrom(DamageSource.causeMobDamage(host).setExplosion(), atk2);
+                    	}
+                    	else {
+                    		isTargetHurt = hitEntity.attackEntityFrom(DamageSource.causeMobDamage(this).setExplosion(), atk2);
+                    	}
+                	}//end can be collided with
+          		}//end is attackable
             }//end hit target list for loop
         }//end hit target list != null
 

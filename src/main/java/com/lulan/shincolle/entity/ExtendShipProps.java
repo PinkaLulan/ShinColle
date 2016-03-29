@@ -14,8 +14,8 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.LogHelper;
 
 /**Extend Entity NBT data
- * IExtendedEntityProperties·|¦bNBT¥[¤W·sªºtag: SHIP_EXTPROP_NAME
- * IInventory¬°¼W¥[ÃB¥~ª««~Äæ, tag: ShipInv
+ * IExtendedEntityPropertiesæœƒåœ¨NBTåŠ ä¸Šæ–°çš„tag: SHIP_EXTPROP_NAME
+ * IInventoryç‚ºå¢åŠ é¡å¤–ç‰©å“æ¬„, tag: ShipInv
  */
 public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 
@@ -187,7 +187,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		entity.setStateFlag(ID.F.TimeKeeper, nbt_load.getBoolean("TimeKeeper"));
 
 		//load inventory
-		NBTTagList list = nbt.getTagList(tagName, 10);	//tagList¤º¬°tagCompound, ¥N¸¹=10
+		NBTTagList list = nbt.getTagList(tagName, 10);	//tagListå…§ç‚ºtagCompound, ä»£è™Ÿ=10
 
 		for(int i=0; i<list.tagCount(); i++) {
 			NBTTagCompound item = list.getCompoundTagAt(i);
@@ -219,13 +219,13 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 	public ItemStack decrStackSize(int i, int j) {
 		ItemStack itemStack = getStackInSlot(i);
         if (itemStack != null) {
-            if (itemStack.stackSize <= j) {			  //­Y¼Æ¶q<=j­Ó
-                setInventorySlotContents(i, null);	  //«h¸Óslot²MªÅ
+            if (itemStack.stackSize <= j) {			  //è‹¥æ•¸é‡<=jå€‹
+                setInventorySlotContents(i, null);	  //å‰‡è©²slotæ¸…ç©º
             }
-            else {									  //­Y¼Æ¶q >j­Ó
-                itemStack = itemStack.splitStack(j);  //¸Óitemstack¼Æ¶q-j
+            else {									  //è‹¥æ•¸é‡ >jå€‹
+                itemStack = itemStack.splitStack(j);  //è©²itemstackæ•¸é‡-j
                 if (itemStack.stackSize == 0) {
-                    setInventorySlotContents(i, null);//¥ş³¡®³¥ú, slot²MªÅ
+                    setInventorySlotContents(i, null);//å…¨éƒ¨æ‹¿å…‰, slotæ¸…ç©º
                 }
             }
         }
@@ -245,7 +245,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 	public void setInventorySlotContents(int i, ItemStack itemstack) {
 		slots[i] = itemstack;
 		
-		//­Y¤â¤Wª««~¶W¹L¸Ó®æ¤l­­¨î¼Æ¶q, «h¥u¯à©ñ¶i­­¨î¼Æ¶q
+		//è‹¥æ‰‹ä¸Šç‰©å“è¶…éè©²æ ¼å­é™åˆ¶æ•¸é‡, å‰‡åªèƒ½æ”¾é€²é™åˆ¶æ•¸é‡
 		if (itemstack != null && itemstack.stackSize > getInventoryStackLimit()) {
 			itemstack.stackSize = getInventoryStackLimit();
 		}

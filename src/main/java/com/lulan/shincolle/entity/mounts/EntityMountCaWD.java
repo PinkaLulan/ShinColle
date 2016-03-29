@@ -35,18 +35,18 @@ public class EntityMountCaWD extends BasicEntityMountLarge {
         this.StartEmotion2 = 0;
         this.headTilt = false;
            
-        //³]©w¦ì¸m
+        //è¨­å®šä½ç½®
         this.posX = host.posX;
         this.posY = host.posY;
         this.posZ = host.posZ;
         this.setPosition(this.posX, this.posY, this.posZ);
  
-	    //³]©w°ò¥»Äİ©Ê
+	    //è¨­å®šåŸºæœ¬å±¬æ€§
         setupAttrs();
         
 		if(this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
 				
-		//³]©wAI
+		//è¨­å®šAI
 		this.setAIList();
 	}
     
@@ -60,7 +60,7 @@ public class EntityMountCaWD extends BasicEntityMountLarge {
     	return this.height;
     }
 	
-	//»´§ğÀ», ¯S®Ä¬°Âù¥ú§ô¯¥
+	//è¼•æ”»æ“Š, ç‰¹æ•ˆç‚ºé›™å…‰æŸç ²
 	@Override
 	public boolean attackEntityWithAmmo(Entity target) {
 		if(this.host != null) {
@@ -70,7 +70,7 @@ public class EntityMountCaWD extends BasicEntityMountLarge {
 		return false;
 	}
 	
-	//°±¥Î­«§ğÀ»
+	//åœç”¨é‡æ”»æ“Š
 	@Override
 	public boolean attackEntityWithHeavyAmmo(Entity target) {
 		return false;

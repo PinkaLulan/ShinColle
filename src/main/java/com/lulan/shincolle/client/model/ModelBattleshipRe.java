@@ -388,15 +388,15 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
         this.TailHeadBase.addChild(this.TailHead1);
         this.TailHeadBase.addChild(this.TailJaw1);
         
-        //¥H¤U¬°µo¥ú¼Ò«¬¤ä¬[, ¦¹³¡¥÷¼Ò«¬¾ã­Ó«G«×³]¬°240
-        //Áy³¡¤ä¬[
+        //ä»¥ä¸‹ç‚ºç™¼å…‰æ¨¡åž‹æ”¯æž¶, æ­¤éƒ¨ä»½æ¨¡åž‹æ•´å€‹äº®åº¦è¨­ç‚º240
+        //è‡‰éƒ¨æ”¯æž¶
         this.GlowBodyMain = new ModelRenderer(this, 0, 0);
         this.GlowBodyMain.setRotationPoint(0.0F, -8.0F, 0.0F);
         this.GlowNeck = new ModelRenderer(this, 0, 0);
         this.GlowNeck.setRotationPoint(0.0F, -11.5F, 0.5F);
         this.GlowHead = new ModelRenderer(this, 0, 0);
         this.GlowHead.setRotationPoint(0.0F, -0.5F, 0.0F);
-        //§À¤Ú¤ä¬[
+        //å°¾å·´æ”¯æž¶
         this.GlowTailBase = new ModelRenderer(this, 0, 0);
         this.GlowTailBase.setRotationPoint(0.0F, 7.5F, 0.0F);
         this.GlowTail1 = new ModelRenderer(this, 0, 0);
@@ -411,7 +411,7 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
         this.GlowTail5.setRotationPoint(0.0F, 0.0F, 9.0F);
         this.GlowTail6 = new ModelRenderer(this, 0, 0);
         this.GlowTail6.setRotationPoint(0.0F, 0.0F, 9.0F);
-        //§À¤Ú¤ú¾¦¤ä¬[
+        //å°¾å·´ç‰™é½’æ”¯æž¶
         this.GlowTailHeadBase = new ModelRenderer(this, 157, 96);
         this.GlowTailHeadBase.setRotationPoint(0.0F, 0.0F, 9.0F);
         this.GlowTailHeadBase.addBox(-5.0F, -7.0F, 0.0F, 10, 14, 12, 0.0F);
@@ -419,7 +419,7 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
         this.GlowTailHead1.setRotationPoint(0.0F, -8.5F, 4.0F);
         this.GlowTailJaw1 = new ModelRenderer(this, 0, 0);
         this.GlowTailJaw1.setRotationPoint(0.0F, 3.0F, 5.0F);
-        //Áy³¡
+        //è‡‰éƒ¨
         this.GlowBodyMain.addChild(this.GlowNeck);
         this.GlowNeck.addChild(this.GlowHead);
         this.GlowHead.addChild(this.Face0);
@@ -427,7 +427,7 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
         this.GlowHead.addChild(this.Face2);
         this.GlowHead.addChild(this.Face3);
         this.GlowHead.addChild(this.Face4);
-        //§À¤Ú
+        //å°¾å·´
         this.GlowBodyMain.addChild(this.GlowTailBase);
         this.GlowTailBase.addChild(this.GlowTail1);
         this.GlowTail1.addChild(this.GlowTail2);
@@ -435,7 +435,7 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
         this.GlowTail3.addChild(this.GlowTail4);
         this.GlowTail4.addChild(this.GlowTail5);
         this.GlowTail5.addChild(this.GlowTail6);
-        //§À¤ÚÅì¤ù
+        //å°¾å·´é±—ç‰‡
         this.GlowTailBase.addChild(this.TailBack0);
         this.GlowTail1.addChild(this.TailBack1);
         this.GlowTail2.addChild(this.TailBack2);
@@ -443,7 +443,7 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
         this.GlowTail4.addChild(this.TailBack4);
         this.GlowTail5.addChild(this.TailBack5);
         this.GlowTail6.addChild(this.TailBack6);
-        //§À¤Ú¤ú¾¦
+        //å°¾å·´ç‰™é½’
         this.GlowTail6.addChild(this.GlowTailHeadBase);
         this.GlowTailHeadBase.addChild(this.GlowTailHead1);
         this.GlowTailHead1.addChild(this.TailHeadT01);
@@ -473,7 +473,7 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
     	this.BodyMain.render(f5);
     	GL11.glDisable(GL11.GL_BLEND);
     	
-    	//«G«×³]¬°240
+    	//äº®åº¦è¨­ç‚º240
     	GL11.glDisable(GL11.GL_LIGHTING);
     	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
     	this.GlowBodyMain.render(f5);
@@ -498,9 +498,9 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
       setGlowRotation();
     }
     
-    //³]©w¼Ò«¬µo¥ú³¡¥÷ªºrotation
+    //è¨­å®šæ¨¡åž‹ç™¼å…‰éƒ¨ä»½çš„rotation
     private void setGlowRotation() {
-    	//ÀY³¡
+    	//é ­éƒ¨
 		this.GlowBodyMain.rotateAngleX = this.BodyMain.rotateAngleX;
 		this.GlowBodyMain.rotateAngleY = this.BodyMain.rotateAngleY;
 		this.GlowBodyMain.rotateAngleZ = this.BodyMain.rotateAngleZ;
@@ -510,7 +510,7 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
 		this.GlowHead.rotateAngleX = this.Head.rotateAngleX;
 		this.GlowHead.rotateAngleY = this.Head.rotateAngleY;
 		this.GlowHead.rotateAngleZ = this.Head.rotateAngleZ;
-		//§À¤Ú
+		//å°¾å·´
 		this.GlowTailBase.rotateAngleX = this.TailBase.rotateAngleX;
 		this.GlowTailBase.rotateAngleY = this.TailBase.rotateAngleY;
 		this.GlowTailBase.rotateAngleZ = this.TailBase.rotateAngleZ;
@@ -532,7 +532,7 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
 		this.GlowTail6.rotateAngleX = this.Tail6.rotateAngleX;
 		this.GlowTail6.rotateAngleY = this.Tail6.rotateAngleY;
 		this.GlowTail6.rotateAngleZ = this.Tail6.rotateAngleZ;
-		//§À¤Ú¤ú¾¦
+		//å°¾å·´ç‰™é½’
 		this.GlowTailHeadBase.rotateAngleX = this.TailHeadBase.rotateAngleX;
 		this.GlowTailHeadBase.rotateAngleY = this.TailHeadBase.rotateAngleY;
 		this.GlowTailHeadBase.rotateAngleZ = this.TailHeadBase.rotateAngleZ;
@@ -544,7 +544,7 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
 		this.GlowTailJaw1.rotateAngleZ = this.TailJaw1.rotateAngleZ;
 	}
     
-  //Âù¸}²¾°Ê­pºâ
+  //é›™è…³ç§»å‹•è¨ˆç®—
   	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, BasicEntityShip ent) {   
   		float angleX = MathHelper.cos(f2*0.08F);
   		float addk1 = 0;
@@ -556,12 +556,12 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
   		addk1 = MathHelper.cos(f * 0.7F) * f1;
 	  	addk2 = MathHelper.cos(f * 0.7F + 3.1415927F) * f1;
 
-  	    //²¾°ÊÀY³¡¨Ï¨ä¬Ý¤H
-	  	this.Head.rotateAngleX = f4 / 57.29578F; 	//¤W¤U¨¤«×
-	  	this.Head.rotateAngleY = f3 / 57.29578F;	//¥ª¥k¨¤«× ¨¤«×Âà¦¨rad §Y°£¥H57.29578
+  	    //ç§»å‹•é ­éƒ¨ä½¿å…¶çœ‹äºº
+	  	this.Head.rotateAngleX = f4 / 57.29578F; 	//ä¸Šä¸‹è§’åº¦
+	  	this.Head.rotateAngleY = f3 / 57.29578F;	//å·¦å³è§’åº¦ è§’åº¦è½‰æˆrad å³é™¤ä»¥57.29578
 	    
-	    //¥¿±`¯¸¥ß°Ê§@
-	    //¯Ý³¡
+	    //æ­£å¸¸ç«™ç«‹å‹•ä½œ
+	    //èƒ¸éƒ¨
   	    this.BoobL.rotateAngleX = -angleX * 0.06F - 0.73F;
   	    this.BoobR.rotateAngleX = -angleX * 0.06F - 0.73F;
 	  	//Body
@@ -618,26 +618,26 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
 		this.TailHead1.rotateAngleX = 0.1745F;
 		this.TailJaw1.rotateAngleX = angleX * 0.1F - 0.15F;
 
-	    if(ent.isSprinting() || f1 > 0.9F) {	//©b¶]°Ê§@
+	    if(ent.isSprinting() || f1 > 0.9F) {	//å¥”è·‘å‹•ä½œ
 	    	setFace(3);
 			//change run type base on tickExisted
 			if(ent.ticksExisted % 900 > 600) {			//run type 1
-				//°ª«×
+				//é«˜åº¦
 			    GL11.glTranslatef(0F, 0.5F, 0F);
-		  	    //¤âÁu®Ì°Ê
+		  	    //æ‰‹è‡‚æ™ƒå‹•
 			  	this.ArmLeft01.rotateAngleX = MathHelper.cos(f * 0.8F) * 0.1F -2.0944F;
 			    this.ArmLeft01.rotateAngleY = -0.5236F;
 			    this.ArmLeft01.rotateAngleZ = 0F;
 			    this.ArmRight01.rotateAngleX = -MathHelper.cos(f * 0.8F) * 0.1F -2.0944F;
 				this.ArmRight01.rotateAngleY = 0.5236F;
 				this.ArmRight01.rotateAngleZ = 0F;
-				//ÀY³¡¨¤«×
+				//é ­éƒ¨è§’åº¦
 				this.Head.rotateAngleX -= 0.5236F;
-				//¨­Åé¨¤«×
+				//èº«é«”è§’åº¦
 				this.BodyMain.rotateAngleX = 0.5236F;
 				this.BodyMain.rotateAngleY = 3.1416F;
 				this.Cloth2.rotateAngleX = -0.7854F;
-				//»LÂ\°Ê
+				//è…¿æ“ºå‹•
 				addk1 = addk1 * 0.1F - 1.2708F;
 				addk2 = addk2 * 0.1F - 1.2708F;
 				this.LegLeft.rotateAngleY = -0.2618F;
@@ -649,8 +649,8 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
 				this.BagStrap2.rotateAngleX = 0.0872F;
 				this.BagStrap2.rotateAngleY = 0.3491F;
 				//tail
-				//X±ÛÂà¹L, ­nÄ~ÄòÂàY®É, ´N­n¸É¤WZ­×¥¿
-				//X¶V¤j, Z­×¥¿­n¶V¤j, ¥B¸òX¨¤«×¤Ï¸¹, ¨ãÅé¨¤«×»Ý¦Û¦æÆ[¹î
+				//Xæ—‹è½‰éŽ, è¦ç¹¼çºŒè½‰Yæ™‚, å°±è¦è£œä¸ŠZä¿®æ­£
+				//Xè¶Šå¤§, Zä¿®æ­£è¦è¶Šå¤§, ä¸”è·ŸXè§’åº¦åè™Ÿ, å…·é«”è§’åº¦éœ€è‡ªè¡Œè§€å¯Ÿ
 				this.TailBase.rotateAngleX = -1.3F;
 				this.TailBase.rotateAngleY = -MathHelper.cos(f * 0.25F - 5.0F) * 0.2F * f1;
 				this.TailBase.rotateAngleZ = MathHelper.cos(f * 0.25F - 5.0F) * 0.4F * f1;
@@ -679,21 +679,21 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
 				this.TailJaw1.rotateAngleX = angleX * 0.2F - 0.3F;
 			}
 			else if(ent.ticksExisted % 900 > 300) {	//run type 2
-				//°ª«×
+				//é«˜åº¦
 			    GL11.glTranslatef(0F, 0.3F, 0F);
-		  	    //¤âÁu®Ì°Ê 
+		  	    //æ‰‹è‡‚æ™ƒå‹• 
 			  	this.ArmLeft01.rotateAngleX = -1.0472F;
 			    this.ArmLeft01.rotateAngleY = 0.2618F;
 			    this.ArmLeft01.rotateAngleZ = 0F;
 			    this.ArmRight01.rotateAngleX = -2.7925F;
 				this.ArmRight01.rotateAngleY = 0F;
 				this.ArmRight01.rotateAngleZ = f3 / -57F;
-				//ÀY³¡¨¤«×
+				//é ­éƒ¨è§’åº¦
 				this.Head.rotateAngleX -= 1.2217F;
-				//¨­Åé¨¤«×
+				//èº«é«”è§’åº¦
 				this.BodyMain.rotateAngleX = 1.2217F;
 				this.Cloth2.rotateAngleX = -0.3491F;
-				//»LÂ\°Ê
+				//è…¿æ“ºå‹•
 				addk1 = -1.0472F;
 				addk2 =-1.0472F;
 				this.LegLeft.rotateAngleY = -0.3491F;
@@ -733,21 +733,21 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
 				this.TailJaw1.rotateAngleX = angleX * 0.15F - 0.3F;
 			}
 			else {										//run type 3
-				//°ª«×
+				//é«˜åº¦
 			    GL11.glTranslatef(0F, 0.5F, 0F);
-		  	    //¤âÁu®Ì°Ê 
+		  	    //æ‰‹è‡‚æ™ƒå‹• 
 			  	this.ArmLeft01.rotateAngleX = MathHelper.cos(f * 0.8F) * 0.1F + 0.6981F;
 			    this.ArmLeft01.rotateAngleY = 0F;
 			    this.ArmLeft01.rotateAngleZ = -0.6981F;
 			    this.ArmRight01.rotateAngleX = MathHelper.cos(f * 0.8F) * 0.1F + 0.6981F;
 				this.ArmRight01.rotateAngleY = 0F;
 				this.ArmRight01.rotateAngleZ = 0.6981F;
-				//ÀY³¡¨¤«×
+				//é ­éƒ¨è§’åº¦
 				this.Head.rotateAngleX -= 1.0472F;
-				//¨­Åé¨¤«×
+				//èº«é«”è§’åº¦
 				this.BodyMain.rotateAngleX = 0.8727F;
 				this.Cloth2.rotateAngleX = -0.5236F;
-				//»LÂ\°Ê
+				//è…¿æ“ºå‹•
 				addk1 -= 0.5F;
 				addk2 -= 0.5F;
 				this.LegLeft.rotateAngleY = 0F;
@@ -790,7 +790,7 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
 	    else {
 	    	startEmo2 = ent.getStartEmotion2();
 	    	
-	    	//ÀY³¡¶É±×°Ê§@, ¥u¦b©b¶]¥H¥~®Éroll
+	    	//é ­éƒ¨å‚¾æ–œå‹•ä½œ, åªåœ¨å¥”è·‘ä»¥å¤–æ™‚roll
 	    	if(startEmo2 > 0) {
 	    		--startEmo2;
 	    		ent.setStartEmotion2(startEmo2);
@@ -809,9 +809,9 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
 		    }
 	    }//end if sprint
 	    
-	    //rollÀY³¡¶É±×ªí±¡
+	    //rollé ­éƒ¨å‚¾æ–œè¡¨æƒ…
 	    if(ent.getStateFlag(ID.F.HeadTilt)) {
-	    	if(ent.getStateEmotion(ID.S.Emotion2) == 1) {	//¤§«e¤w¸g¶É±×, «hÄ~Äò¶É±×
+	    	if(ent.getStateEmotion(ID.S.Emotion2) == 1) {	//ä¹‹å‰å·²ç¶“å‚¾æ–œ, å‰‡ç¹¼çºŒå‚¾æ–œ
 	    		this.Head.rotateAngleZ = -0.24F;
 	    	}
 	    	else {
@@ -824,7 +824,7 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
 	    	}	
 	    }
 	    else {
-	    	if(ent.getStateEmotion(ID.S.Emotion2) == 0) {	//ºû«ù¤§«e¨¤«×
+	    	if(ent.getStateEmotion(ID.S.Emotion2) == 0) {	//ç¶­æŒä¹‹å‰è§’åº¦
 	    		this.Head.rotateAngleZ = 0F;
 	    	}
 	    	else {
@@ -837,22 +837,22 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
 	    	}
 	    }
   		
-	    if(ent.isSneaking()) {		//¼ç¦æ, ÃÛ¤U°Ê§@
-  			//°ª«×
+	    if(ent.isSneaking()) {		//æ½›è¡Œ, è¹²ä¸‹å‹•ä½œ
+  			//é«˜åº¦
 		    GL11.glTranslatef(0F, 0.2F, 0F);
-	  	    //¤âÁu®Ì°Ê 
+	  	    //æ‰‹è‡‚æ™ƒå‹• 
 		  	this.ArmLeft01.rotateAngleX = 0.5236F;
 		    this.ArmLeft01.rotateAngleY = 0F;
 		    this.ArmLeft01.rotateAngleZ = -0.5236F;
 		    this.ArmRight01.rotateAngleX = 0.5236F;
 			this.ArmRight01.rotateAngleY = 0F;
 			this.ArmRight01.rotateAngleZ = 0.5236F;
-			//ÀY³¡¨¤«×
+			//é ­éƒ¨è§’åº¦
 			this.Head.rotateAngleX = -1.2217F;
-			//¨­Åé¨¤«×
+			//èº«é«”è§’åº¦
 			this.BodyMain.rotateAngleX = 1.0472F;
 			this.Cloth2.rotateAngleX = -0.5236F;
-			//»LÂ\°Ê
+			//è…¿æ“ºå‹•
 			addk1 = addk1 - 0.95F;
 			addk2 = addk2 - 0.95F;
 			this.LegLeft.rotateAngleY = 0F;
@@ -892,7 +892,7 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
 			this.TailJaw1.rotateAngleX = -0.2F;
   		}//end if sneaking
   		
-	    if(ent.isSitting() || ent.isRiding()) {  //ÃM­¼°Ê§@
+	    if(ent.isSitting() || ent.isRiding()) {  //é¨Žä¹˜å‹•ä½œ
 	    	if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {	
 				GL11.glTranslatef(0F, 0.5F, 0F);
 		    	//Body
@@ -1005,24 +1005,24 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
 	    	}
   		}//end if sitting
 	    
-	    //§ðÀ»°Ê§@    
+	    //æ”»æ“Šå‹•ä½œ    
 	    if(ent.attackTime > 0) {
-	    	//°ª«×
+	    	//é«˜åº¦
 		    GL11.glTranslatef(0F, 0.6F, 0F);
-	  	    //¤âÁu®Ì°Ê 
+	  	    //æ‰‹è‡‚æ™ƒå‹• 
 		  	this.ArmLeft01.rotateAngleX = 0.5236F;
 		    this.ArmLeft01.rotateAngleY = 0F;
 		    this.ArmLeft01.rotateAngleZ = -0.5236F;
 		    this.ArmRight01.rotateAngleX = -2.7925F;
 			this.ArmRight01.rotateAngleY = 0F;
 			this.ArmRight01.rotateAngleZ = -0.2618F;
-			//ÀY³¡¨¤«×
+			//é ­éƒ¨è§’åº¦
 			this.Head.rotateAngleX = -1.2217F;
 			this.Head.rotateAngleY = 0F;
-			//¨­Åé¨¤«×
+			//èº«é«”è§’åº¦
 			this.BodyMain.rotateAngleX = 1.0472F;
 			this.Cloth2.rotateAngleX = -0.5236F;
-			//»LÂ\°Ê
+			//è…¿æ“ºå‹•
 			addk1 = addk1 - 1.48F;
 			addk2 = addk2 - 0.26F;
 			this.LegLeft.rotateAngleY = 0F;
@@ -1078,7 +1078,7 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
 	    this.LegRight.rotateAngleX = addk2;
 	}
   	
-    //³]©wÅã¥ÜªºÁy«¬
+    //è¨­å®šé¡¯ç¤ºçš„è‡‰åž‹
   	@Override
   	public void setFace(int emo) {
   		switch(emo) {

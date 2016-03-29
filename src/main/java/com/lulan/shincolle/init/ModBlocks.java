@@ -11,11 +11,12 @@ import com.lulan.shincolle.block.BlockPolymetalGravel;
 import com.lulan.shincolle.block.BlockPolymetalOre;
 import com.lulan.shincolle.block.BlockSmallShipyard;
 import com.lulan.shincolle.block.ItemBlockGrudgeHeavy;
+import com.lulan.shincolle.block.ItemBlockResourceBlock;
 import com.lulan.shincolle.reference.Reference;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@GameRegistry.ObjectHolder(Reference.MOD_ID)	//µn¿ıobject holder¨Ïmodªºª«¥ó®e©ö¬y³q ¨ä¥L¤H¥i¥Hª½±µÅª¨ú¸Óª«¥ó
+@GameRegistry.ObjectHolder(Reference.MOD_ID)	//ç™»éŒ„object holderä½¿modçš„ç‰©ä»¶å®¹æ˜“æµé€š å…¶ä»–äººå¯ä»¥ç›´æ¥è®€å–è©²ç‰©ä»¶
 public class ModBlocks {
 
 	public static final Block BlockAbyssium = new BlockAbyssium();
@@ -29,15 +30,15 @@ public class ModBlocks {
 
 	
 	public static void init() {
-		GameRegistry.registerBlock(BlockAbyssium, "BlockAbyssium");
 		GameRegistry.registerBlock(BlockDesk, "BlockDesk");
-		GameRegistry.registerBlock(BlockGrudge, "BlockGrudge");
-		GameRegistry.registerBlock(BlockPolymetal, "BlockPolymetal");
-		GameRegistry.registerBlock(BlockPolymetalGravel, "BlockPolymetalGravel");
 		GameRegistry.registerBlock(BlockPolymetalOre, "BlockPolymetalOre");
 		GameRegistry.registerBlock(BlockSmallShipyard, "BlockSmallShipyard");
 		
 		//reg with itemblock
+		GameRegistry.registerBlock(BlockAbyssium, ItemBlockResourceBlock.class, "BlockAbyssium");
+		GameRegistry.registerBlock(BlockGrudge, ItemBlockResourceBlock.class, "BlockGrudge");
+		GameRegistry.registerBlock(BlockPolymetal, ItemBlockResourceBlock.class, "BlockPolymetal");
+		GameRegistry.registerBlock(BlockPolymetalGravel, ItemBlockResourceBlock.class, "BlockPolymetalGravel");
 		GameRegistry.registerBlock(BlockGrudgeHeavy, ItemBlockGrudgeHeavy.class, "BlockGrudgeHeavy");
 		
 	}

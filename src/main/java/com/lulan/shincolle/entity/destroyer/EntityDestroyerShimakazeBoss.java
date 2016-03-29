@@ -4,7 +4,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.StatCollector;
@@ -31,7 +30,7 @@ public class EntityDestroyerShimakazeBoss extends BasicEntityShipBoss {
 		super(world);
 		this.setSize(1.4F, 6F);
 		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityDestroyerShimakazeBoss.name"));
-		ignoreFrustumCheck = true;	//§Y¨Ï¤£¦bµø½u¤º¤@¼Ërender
+		ignoreFrustumCheck = true;	//å³ä½¿ä¸åœ¨è¦–ç·šå…§ä¸€æ¨£render
 		
         //basic attr
         this.atk = (float) ConfigHandler.scaleBossSmall[ID.ATK];
@@ -49,14 +48,14 @@ public class EntityDestroyerShimakazeBoss extends BasicEntityShipBoss {
         //misc
         this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, ID.Ship.DestroyerShimakaze+2);
  
-	    //³]©w°ò¥»Äİ©Ê
+	    //è¨­å®šåŸºæœ¬å±¬æ€§
 	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(ConfigHandler.scaleBossSmall[ID.HP]);
 		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(this.movSpeed);
-		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(atkRange + 32); //¦¹¬°§ä¥Ø¼Ğ, ¸ô®|ªº½d³ò
+		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(atkRange + 32); //æ­¤ç‚ºæ‰¾ç›®æ¨™, è·¯å¾‘çš„ç¯„åœ
 		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(1D);
 		if(this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
 				
-		//³]©wAI
+		//è¨­å®šAI
 		this.setAIList();
 		this.setAITargetList();
 	}
@@ -88,14 +87,14 @@ public class EntityDestroyerShimakazeBoss extends BasicEntityShipBoss {
           
   		if(!worldObj.isRemote) {
   			//add aura to master every N ticks
-  			if(this.ticksExisted % 100 == 0) {
+  			if(this.ticksExisted % 128 == 0) {
   				//add num of rensouhou
   				if(this.numRensouhou < 10) numRensouhou++;
   			}
   		}    
   	}
 	
-	//©Û³ê³s¸Ë¯¥¶i¦æ§ğÀ»
+	//æ‹›å–šé€£è£ç ²é€²è¡Œæ”»æ“Š
   	@Override
   	public boolean attackEntityWithAmmo(Entity target) {
   		//check num rensouhou
@@ -111,7 +110,7 @@ public class EntityDestroyerShimakazeBoss extends BasicEntityShipBoss {
         	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         }
 
-        //µo®gªÌ·ÏÃú¯S®Ä (©Û³ê³s¸Ë¯¥¤£¨Ï¥Î¯S®Ä, ¦ı¬O­nµo°e«Ê¥]¨Ó³]©wattackTime)
+        //ç™¼å°„è€…ç…™éœ§ç‰¹æ•ˆ (æ‹›å–šé€£è£ç ²ä¸ä½¿ç”¨ç‰¹æ•ˆ, ä½†æ˜¯è¦ç™¼é€å°åŒ…ä¾†è¨­å®šattackTime)
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
   		
@@ -125,16 +124,16 @@ public class EntityDestroyerShimakazeBoss extends BasicEntityShipBoss {
         return false;
 	}
   	
-  	//¤­³s¸Ë»Ä¯À³½¹p
+  	//äº”é€£è£é…¸ç´ é­šé›·
   	@Override
   	public boolean attackEntityWithHeavyAmmo(Entity target) {	
 		//get attack value
 		float atkHeavy = this.atk * 0.3F;
 		float kbValue = 0.08F;
 		
-		//­¸¼u¬O§_±Ä¥Îª½®g
+		//é£›å½ˆæ˜¯å¦æ¡ç”¨ç›´å°„
 		boolean isDirect = false;
-		//­pºâ¥Ø¼Ğ¶ZÂ÷
+		//è¨ˆç®—ç›®æ¨™è·é›¢
 		float tarX = (float)target.posX;	//for miss chance calc
 		float tarY = (float)target.posY;
 		float tarZ = (float)target.posZ;
@@ -144,7 +143,7 @@ public class EntityDestroyerShimakazeBoss extends BasicEntityShipBoss {
         float distSqrt = MathHelper.sqrt_float(distX*distX + distY*distY + distZ*distZ);
         float launchPos = (float)posY + height * 0.5F;
         
-        //¶W¹L¤@©w¶ZÂ÷/¤ô¤¤ , «h±Ä¥Î©ßª«½u,  ¦b¤ô¤¤®Éµo®g°ª«×¸û§C
+        //è¶…éä¸€å®šè·é›¢/æ°´ä¸­ , å‰‡æ¡ç”¨æ‹‹ç‰©ç·š,  åœ¨æ°´ä¸­æ™‚ç™¼å°„é«˜åº¦è¼ƒä½
         if((distX*distX+distY*distY+distZ*distZ) < 36F || this.getShipDepth() > 0D) {
         	isDirect = true;
         }
@@ -168,7 +167,7 @@ public class EntityDestroyerShimakazeBoss extends BasicEntityShipBoss {
         	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
         }
         
-        //µo®gªÌ·ÏÃú¯S®Ä (¤£¨Ï¥Î¯S®Ä, ¦ı¬O­nµo°e«Ê¥]¨Ó³]©wattackTime)
+        //ç™¼å°„è€…ç…™éœ§ç‰¹æ•ˆ (ä¸ä½¿ç”¨ç‰¹æ•ˆ, ä½†æ˜¯è¦ç™¼é€å°åŒ…ä¾†è¨­å®šattackTime)
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
 

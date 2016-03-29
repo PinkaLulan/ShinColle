@@ -12,7 +12,7 @@ import net.minecraft.world.World;
 
 
 /**SPRAY PARTICLE
- * ±qcloud­×§ï¨Ó, ¥Î©ó²GÅé¤¤²¾°Êªº¯S®Ä
+ * å¾cloudä¿®æ”¹ä¾†, ç”¨æ–¼æ¶²é«”ä¸­ç§»å‹•çš„ç‰¹æ•ˆ
  */
 @SideOnly(Side.CLIENT)
 public class EntityFXSpray extends EntityFX {
@@ -199,7 +199,7 @@ public class EntityFXSpray extends EntityFX {
         this.particleScale = this.pScale * f6;
         GL11.glPushMatrix();
         GL11.glDisable(GL11.GL_LIGHTING);
-        GL11.glDepthMask(false);	//¨¾¤îwater block»\¹Lparticle
+        GL11.glDepthMask(false);	//é˜²æ­¢water blockè“‹éparticle
 //        GL11.glEnable(GL11.GL_BLEND);
 //        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         super.renderParticle(tess, ticks, par3, par4, par5, par6, par7);

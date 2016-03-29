@@ -38,6 +38,7 @@ item.shincolle:ModernKit.name=近代化改修工具
 item.shincolle:OwnerPaper.name=深海棲艦所有權書
 item.shincolle:PointerItem.name=ヲ級的指揮權杖
 item.shincolle:RepairGoddess.name=深海女神的怨念
+item.shincolle:TargetWrench.name=目標設定扳手
 item.shincolle:ToyAirplane.name=零式21型艦戰 (1/48)
 
 # Equip
@@ -242,6 +243,9 @@ gui.shincolle:book.chap1.text16d1=
 gui.shincolle:book.chap1.title17=深海提督辦公桌
 gui.shincolle:book.chap1.text17d0=<br><br><br><br><br><br><br><br><br>採用黑曜石打造的§d§n深海提督辦公桌§r§0非常堅固耐用，除了用來處理鎮守府的各項公務外，也可以用來抵擋憤怒秘書艦的砲火。<br><br><br>※添購家具前請先詢問秘書艦以免造成資源管理上的困擾。
 gui.shincolle:book.chap1.text17d1=            使用指南<br><br>§9雷達§0：<br>顯示附近所屬船艦位置以及列表，在列表點選船艦後可進行聯繫等動作。<br><br>§9深海日誌§0：<br>各項物品介紹及紀錄已知船艦訊息。<br><br>§9陣營§0：<br>建立或加入艦隊以開啟PVP模式。<br><br>§9攻擊目標列表§0：<br>調整船艦的攻擊目標類型。
+gui.shincolle:book.chap1.title18=目標設定扳手
+gui.shincolle:book.chap1.text18d0=<br><br><br><br><br><br><br><br><br>§9左鍵:§0<br>§c新增/移除§0目標到§d不可攻擊清單§0。   §4(僅限OP使用)§0<br><br>§9右鍵:§0 顯示§d不可攻擊目標清單§0。
+gui.shincolle:book.chap1.text18d1=§d不可攻擊目標§0不會被範圍攻擊傷害到，也不會被AI設為目標。你可以把繩子的頭、物品框、木船、飛機跟棲艦的坐騎設為不可攻擊目標。<br><br>野生的艦娘攻擊時也會檢查此清單，不過你不能把棲艦跟艦娘設為不可攻擊目標。
 
 # GUI: Book Text Chap 2
 gui.shincolle:book.chap2.title=建造
@@ -293,24 +297,90 @@ gui.shincolle:book.chap3.text8d1=§9優先度§0： §d防空§0 > §3反潛§0 
 gui.shincolle:book.chap3.title9=PVP模式
 gui.shincolle:book.chap3.text9d0=§91.§0在§c深海提督的辦公桌§0中§3建立艦隊§0後即進入PVP模式。<br><br>§92.§0PVP初始狀態為中立。<br><br>§93.§0在深海提督的辦公桌中可以對其他艦隊§c宣戰§0，§3同盟§0或恢復§7中立§0。<br><br>§94.§0若船艦AI勾選了§cPVP模式§0，則船艦會自動攻擊其他敵對隊伍。<br><br>§95.§0若設定檔§cFriendlyFire§0設為§3false§0，則範圍攻擊不會傷害到同盟隊伍。
 gui.shincolle:book.chap3.text9d1=§96.§c結盟§0只是§3單向關係§0，對方仍然可以對你選擇敵對。<br><br>§97.§c宣戰§0是§3雙向關係§0，宣戰後對方也會自動對你宣戰。<br><br>§98.§c解除同盟§0時，對方也會同時解除同盟恢復到中立關係。<br><br>§99.§c解除宣戰§0時，對方仍然會對你保持敵對關係。<br><br>§910.§0§若已經跟對方宣戰，必須先解除宣戰關係才能選擇同盟，反之亦然。
-gui.shincolle:book.chap3.title10=指令說明
-gui.shincolle:book.chap3.text10d0=§9/shipinfo§c<br>§d權限:§0 全部玩家<br>§d功能:§0 顯示船艦資訊<br><br>§9/shipchangeowner§c <玩家名稱><br>§d權限:§0 僅限OP<br>§d功能:§0 更改船的主人<br><br>OP、主人還有船三者都必須上線並處在相同維度(世界)下，OP輸入以上指令並加上玩家名稱後，OP游標所指到的船的主人就會修改為指令所指定的玩家。
-gui.shincolle:book.chap3.text10d1=§9/shipupdateowneruid§3 [玩家名稱]<br>§d權限:§0 全部玩家 or 僅限OP<br>§d功能:§0 更新擁有船的主人ID<br><br>在某些bug下導致船艦對主人沒有反應時，可輸入此指令嘗試更新主人ID。一般玩家輸入後會更新玩家所擁有的已載入的船艦的主人ID，OP可以額外輸入玩家名稱，就會更新該玩家所擁有船艦的主人ID。<br><br>注意船艦若處在非載入的地圖區塊中，不會被此指令影響，需移動到該船艦附近輸入指令才能生效。<br><br>判定擁有船艦是以船艦紀錄的主人UUID為準，若UUID出現bug則此指令可能無效，請改用/shipchangeowner單獨對每個船艦修改主人。
-gui.shincolle:book.chap3.title11=
-gui.shincolle:book.chap3.text11d0=§9/shipattrs <船艦等級> <HP等級> <ATK等級> <DEF等級> <攻速等級> <跑速等級> <射程等級>§c<br>§d權限:§0 僅限OP<br>§d功能:§0 修改船艦數值<br><br>OP對游標指向的船艦輸入指令後，可以修改目標的等級跟六大屬性的等級。船艦等級可設為1~150，屬性等級可設0~100。
-gui.shincolle:book.chap3.text11d1=
+gui.shincolle:book.chap3.title10=艦種說明
+gui.shincolle:book.chap3.text10d0=艦種之間有攻擊相剋關係，實際數值見：§chttps://goo.gl/jmR3Wd§0。<br><br>§9驅逐艦：§0<br>§c高速低耐久§0，克制潛艇跟飛行/投射物。<br><br>§9巡洋艦：§0<br>包含輕巡/重巡/雷巡，能力平均的艦種。<br><br>§9航空母艦：§0<br>包含輕母跟正規空母，§c攻擊距離最長§0。<br><br>§9航空戰艦：§0<br>包含一般航戰跟陸上基地類型，能力處於戰艦跟航戰之間。陸上基地則是§c傷害低耐久高§0。
+gui.shincolle:book.chap3.text10d1=§9戰艦：<br>§c低速高耐久高消耗高傷害§0，克制潛艇跟飛行/投射物以外的艦種。<br><br>§9潛艇：<br>§c低速低耐久低消耗且高傷害§0，克制飛行/投射物以外全部艦種。<br><br>§9飛行/投射物：§0<br>飛機跟投射物，空母的艦載機攻擊屬於此類，克制除了潛艇以外的艦種。
+gui.shincolle:book.chap3.title11=指令說明
+gui.shincolle:book.chap3.text11d0=§9/shipinfo§c<br>§d權限:§0 全部玩家<br>§d功能:§0 顯示船艦資訊<br><br>§9/shipchangeowner§c <玩家名稱><br>§d權限:§0 僅限OP<br>§d功能:§0 更改船的主人<br><br>OP、主人還有船三者都必須上線並處在相同維度(世界)下，OP輸入以上指令並加上玩家名稱後，OP游標所指到的船的主人就會修改為指令所指定的玩家。
+gui.shincolle:book.chap3.text11d1=§9/shipupdateowneruid§3 [玩家名稱]<br>§d權限:§0 全部玩家 or 僅限OP<br>§d功能:§0 更新擁有船的主人ID<br><br>在某些bug下導致船艦對主人沒有反應時，可輸入此指令嘗試更新主人ID。一般玩家輸入後會更新玩家所擁有的已載入的船艦的主人ID，OP可以額外輸入玩家名稱，就會更新該玩家所擁有船艦的主人ID。<br><br>注意船艦若處在非載入的地圖區塊中，不會被此指令影響，需移動到該船艦附近輸入指令才能生效。<br><br>判定擁有船艦是以船艦紀錄的主人UUID為準，若UUID出現bug則此指令可能無效，請改用/shipchangeowner單獨對每個船艦修改主人。
+gui.shincolle:book.chap3.title12=
+gui.shincolle:book.chap3.text12d0=§9/shipattrs <船艦等級> <HP等級> <ATK等級> <DEF等級> <攻速等級> <跑速等級> <射程等級>§c<br>§d權限:§0 僅限OP<br>§d功能:§0 修改船艦數值<br><br>OP對游標指向的船艦輸入指令後，可以修改目標的等級跟六大屬性的等級。船艦等級可設為1~150，屬性等級可設0~100。
+gui.shincolle:book.chap3.text12d1=
 
 # GUI: Book Text Chap 4
-gui.shincolle:book.chap4.title=船艦列表
-gui.shincolle:book.chap4.title0=
-gui.shincolle:book.chap4.text0d0=
-gui.shincolle:book.chap4.text0d1=
+gui.shincolle:book.chap4.title=深海棲艦列表
+gui.shincolle:book.chap4.title0=深海棲艦
+gui.shincolle:book.chap4.text0d0=只要開啟過棲艦的物品欄GUI，該艦就會登錄到圖鑑中。<br><br>§9圖鑑說明：§0<br>§9名稱：§0<br>深海棲艦名稱。<br><br>§9艦種：§0<br>船艦種類，艦種間有攻擊相剋關係。<br><br>§9建造所：§0<br>建造該艦的地方。
+gui.shincolle:book.chap4.text0d1=§9建造加成：§0<br>建造時使用該材料時會讓建造機率提高。數字代表加成計算前，出現機率最高的總材料量。<br>§4範例：§d怨念 (4000)§0 = 總材料量需求4000，若怨念使用1000個，則總材料量需求降為3000。<br><br>§9特殊能力：§0<br>結婚後會出現的能力，可以在AI選項開關該能力。<br><br>§9其他能力：§0<br>其他自帶的能力，通常是被動的屬性加成。
+gui.shincolle:book.chap4.title1=
+gui.shincolle:book.chap4.text1d0=
+gui.shincolle:book.chap4.text1d1=§9名稱：§0 イ級<br><br>§9艦種：§0 驅逐艦<br><br>§9建造所：§0 深海熱泉<br><br>§9建造加成：§0 怨念 (80)<br><br>§9特殊能力：§0 主人移動速度加成<br><br>§9其他能力：§0 無<br><br>深海的吉祥物代表，廣受深海太太們的喜愛。
+gui.shincolle:book.chap4.title2=
+gui.shincolle:book.chap4.text2d0=
+gui.shincolle:book.chap4.text2d1=§9名稱：§0 ロ級<br><br>§9艦種：§0 驅逐艦<br><br>§9建造所：§0 深海熱泉<br><br>§9建造加成：§0 怨念 (90)<br><br>§9特殊能力：§0 主人挖掘速度加成<br><br>§9其他能力：§0 無<br><br>充滿活力的深海吉祥物，廣受深海太太們的喜愛。
+gui.shincolle:book.chap4.title3=
+gui.shincolle:book.chap4.text3d0=
+gui.shincolle:book.chap4.text3d1=§9名稱：§0 ハ級<br><br>§9艦種：§0 驅逐艦<br><br>§9建造所：§0 深海熱泉<br><br>§9建造加成：§0 怨念 (100)<br><br>§9特殊能力：§0 主人跳躍力加成<br><br>§9其他能力：§0 無<br><br>常保笑容的深海吉祥物。
+gui.shincolle:book.chap4.title4=
+gui.shincolle:book.chap4.text4d0=
+gui.shincolle:book.chap4.text4d1=§9名稱：§0 ニ級<br><br>§9艦種：§0 驅逐艦<br><br>§9建造所：§0 深海熱泉<br><br>§9建造加成：§0 怨念 (110)<br><br>§9特殊能力：§0 主人攻擊力加成<br><br>§9其他能力：§0 無<br><br>持續倒立移動，充滿謎團的深海吉祥物。
+gui.shincolle:book.chap4.title5=
+gui.shincolle:book.chap4.text5d0=
+gui.shincolle:book.chap4.text5d1=§9名稱：§0 リ級<br><br>§9艦種：§0 重巡洋艦<br><br>§9建造所：§0 深海熱泉<br><br>§9建造加成：§0 怨念彈 (200)<br><br>§9特殊能力：§0 夜晚時跳躍/移動力加成<br><br>§9其他能力：§0 無<br><br>深海的夜戰笨蛋，是ヲ級大人的貼身護衛。據說身上衣服是海帶做的。
+gui.shincolle:book.chap4.title6=
+gui.shincolle:book.chap4.text6d0=
+gui.shincolle:book.chap4.text6d1=§9名稱：§0 ネ級<br><br>§9艦種：§0 重巡洋艦<br><br>§9建造所：§0 深海熱泉<br><br>§9建造加成：§0 怨念彈 (256)<br><br>§9特殊能力：§0 夜晚時跳躍/移動力加成<br><br>§9其他能力：§0 無<br><br>雙尾喵！！
+gui.shincolle:book.chap4.title7=
+gui.shincolle:book.chap4.text7d0=
+gui.shincolle:book.chap4.text7d1=§9名稱：§0 ヲ級<br><br>§9艦種：§0 航空母艦<br><br>§9建造所：§0 超深海熱漩<br><br>§9建造加成：§0 多金屬 (500)<br><br>§9特殊能力：§0 無<br><br>§9其他能力：§0 無<br><br>深海的魔法少女又自帶觸手可謂毫無破綻。
+gui.shincolle:book.chap4.title8=
+gui.shincolle:book.chap4.text8d0=
+gui.shincolle:book.chap4.text8d1=§9名稱：§0 タ級<br><br>§9艦種：§0 戰艦<br><br>§9建造所：§0 超深海熱漩<br><br>§9建造加成：§0 怨念彈 (800)<br><br>§9特殊能力：§0 無<br><br>§9其他能力：§0 爆擊率/降低失誤率+10%%<br><br>穿著暴露的深海太太，喜歡露肚子但其實肚子意外地很敏感。<br>蹲下+使用蛋糕可以切換召喚連裝砲類型。
+gui.shincolle:book.chap4.title9=
+gui.shincolle:book.chap4.text9d0=
+gui.shincolle:book.chap4.text9d1=§9名稱：§0 レ級<br><br>§9艦種：§0 航空戰艦<br><br>§9建造所：§0 超深海熱漩<br><br>§9建造加成：§0 怨念彈 (3800)<br><br>§9特殊能力：§0 無<br><br>§9其他能力：§0 二連擊/三連擊+10%%<br><br>重雷裝航空巡洋裝甲宇宙戰艦，簡稱雷爺，是深海喵中的老大。<br><br>帽子底下隱藏著貓耳。
+gui.shincolle:book.chap4.title10=
+gui.shincolle:book.chap4.text10d0=
+gui.shincolle:book.chap4.text10d1=§9名稱：§0 飛行場姬<br><br>§9艦種：§0 姬級 陸上基地<br><br>§9建造所：§0 超深海熱漩<br><br>§9建造加成：§0 深海金屬 (3000)<br><br>§9特殊能力：§0 修復附近船艦<br><br>§9其他能力：§0 增強被動修復能力<br><br>看到紅色又粗又大的東西會感到混亂，吃過蛋糕就會擺JOJO立嘲諷對手。<br><br>雖然叫飛行場姬，卻是個巨乳 ლ(́◉◞౪◟◉ლ‵)
+gui.shincolle:book.chap4.title11=
+gui.shincolle:book.chap4.text11d0=
+gui.shincolle:book.chap4.text11d1=§9名稱：§0 戰艦棲姬<br><br>§9艦種：§0 姬級 戰艦<br><br>§9建造所：§0 超深海熱漩<br><br>§9建造加成：§0 怨念彈 (4600)<br><br>§9特殊能力：§0 無<br><br>§9其他能力：§0 近戰增強為3倍砲擊傷害<br><br>深海的院長大人，會踩在三連裝砲醬頭上出巡。若主人頭抬太高的話就會被三連裝砲醬丟出去(未實裝)。<br>重型攻擊：集束炸彈，分裂每發造成75%%雷裝傷害。
+gui.shincolle:book.chap4.title12=
+gui.shincolle:book.chap4.text12d0=
+gui.shincolle:book.chap4.text12d1=§9名稱：§0 港灣棲姬<br><br>§9艦種：§0 姬級 陸上基地<br><br>§9建造所：§0 超深海熱漩<br><br>§9建造加成：§0 深海金屬 (2800)<br><br>§9特殊能力：§0 修復附近船艦<br><br>§9其他能力：§0 增強被動修復能力<br><br>深海的爆乳大要塞，媽媽力就跟胸部裝甲一樣可以包容整個大海。<br>重型攻擊：深海電磁砲，可造成75%%雷裝傷害。
+gui.shincolle:book.chap4.title13=
+gui.shincolle:book.chap4.text13d0=
+gui.shincolle:book.chap4.text13d1=§9名稱：§0 北方棲姬<br><br>§9艦種：§0 姬級 陸上基地<br><br>§9建造所：§0 超深海熱漩<br><br>§9建造加成：§0 深海金屬 (2600)<br><br>§9特殊能力：§0 修復附近船艦<br><br>§9其他能力：§0 增強被動修復能力 / 隨機騎乘附近棲艦<br><br>深海蘿莉，喜歡玩艦載機。胸部大小目前是0x0x0，不過總有一天會長成港灣太太的8x6x6的。<br>重型攻擊：投擲艦載機，可造成75%%雷裝傷害。
+gui.shincolle:book.chap4.title14=
+gui.shincolle:book.chap4.text14d0=
+gui.shincolle:book.chap4.text14d1=§9名稱：§0 空母水鬼<br><br>§9艦種：§0 姬級 航空母艦<br><br>§9建造所：§0 超深海熱漩<br><br>§9建造加成：§0 多金屬 (5000)<br><br>§9特殊能力：§0 無<br><br>§9其他能力：§0 無<br><br>懶散的深海太太，實力強大不過毅力不足，具有符合水鬼級的胸部裝甲。加裝了最新的深海黑科技浮游砲，可造成100%%砲擊傷害。<br>總之深海的科技力世界一ィィィ ＜(゜∀。)
 
 # GUI: Book Text Chap 5
-gui.shincolle:book.chap5.title=敵方船艦列表
-gui.shincolle:book.chap5.title0=
-gui.shincolle:book.chap5.text0d0=
-gui.shincolle:book.chap5.text0d1=
+gui.shincolle:book.chap5.title=敵艦列表
+gui.shincolle:book.chap5.title0=艦娘
+gui.shincolle:book.chap5.text0d0=艦娘，是一種毫無理由就侵略過來的邪惡生物，是深海太太們最大的敵人。<br><br>當深海提督身上帶有§d深海棲艦結婚戒指§0，並且在充滿水的生態系中活動時，艦娘就有可能出現在附近襲擊過來。
+gui.shincolle:book.chap5.text0d1=打敗艦娘後有機率得到其生怪蛋，同樣開啟該艦的物品欄GUI後就可以登錄到圖鑑中。
+gui.shincolle:book.chap5.title1=
+gui.shincolle:book.chap5.text1d0=
+gui.shincolle:book.chap5.text1d1=§9名稱：§0 島風<br><br>§9艦種：§0 島風級 驅逐艦<br><br>§9特殊能力：§0 主人移動速度加成<br><br>§9其他能力：§0 無<br><br>移動速度非常快的艦娘，還會召喚大量連裝砲醬攻擊，讓人感到非常煩躁的對手。<br>蹲下+使用蛋糕可以切換召喚連裝砲類型。<br><br>重型攻擊：五連裝氧氣魚雷，每發各造成30%%雷裝傷害。
+gui.shincolle:book.chap5.title2=
+gui.shincolle:book.chap5.text2d0=
+gui.shincolle:book.chap5.text2d1=§9名稱：§0 長門<br><br>§9艦種：§0 長門級 戰艦<br><br>§9特殊能力：§0 無<br><br>§9其他能力：§0 無<br><br>是目前對艦武術：九一式徹甲拳的最強傳人，可以輕鬆地把一整群深海棲艦打回海底，建議使用大量召喚物分散傷害來進行攻略。<br><br>重型攻擊：九一式徹甲拳，需要四輪攻擊時間，對主目標造成400%%雷裝傷害以及200%%雷裝傷害的範圍傷害。
+gui.shincolle:book.chap5.title3=
+gui.shincolle:book.chap5.text3d0=
+gui.shincolle:book.chap5.text3d1=§9名稱：§0 U-511<br><br>§9艦種：§0 IXC型 潛水艇<br><br>§9特殊能力：§0 定期隱形<br><br>§9其他能力：§0 潛艇基礎迴避30%%<br><br>進化前的がるる怪，野外水域到處可以看到，經常偷偷摸走深海太太們的資源。<br><br>潛艇的輕型攻擊為發射魚雷，可造成100%%砲擊傷害。
+gui.shincolle:book.chap5.title4=
+gui.shincolle:book.chap5.text4d0=
+gui.shincolle:book.chap5.text4d1=§9名稱：§0 呂500<br><br>§9艦種：§0 呂型 潛水艇<br><br>§9特殊能力：§0 定期隱形<br><br>§9其他能力：§0 潛艇基礎迴避35%%<br><br>U511長期偷深海太太的資源，最後進化的がるる怪，各方面屬性都比U511略強一點，尤其是色氣方面。<br><br>潛艇的輕型攻擊為發射魚雷，可造成100%%砲擊傷害。
+gui.shincolle:book.chap5.title5=
+gui.shincolle:book.chap5.text5d0=
+gui.shincolle:book.chap5.text5d1=§9名稱：§0 大和<br><br>§9艦種：§0 大和級 戰艦<br><br>§9特殊能力：§0 無<br><br>§9其他能力：§0 無<br><br>頂級的頂級火力裝甲跟耐久，外加一發入魂的大和波動砲，野外碰到時請準備逃命吧！<br><br>重型攻擊：大和波動砲，需兩輪攻擊時間，可造成150%%砲擊傷害，光束最遠約可達120格。
+gui.shincolle:book.chap5.title6=
+gui.shincolle:book.chap5.text6d0=
+gui.shincolle:book.chap5.text6d1=§9名稱：§0 加賀<br><br>§9艦種：§0 加賀級 航空母艦<br><br>§9特殊能力：§0 無<br><br>§9其他能力：§0 無<br><br>
+gui.shincolle:book.chap5.title7=
+gui.shincolle:book.chap5.text7d0=
+gui.shincolle:book.chap5.text7d1=§9名稱：§0 赤城<br><br>§9艦種：§0 赤城級 航空母艦<br><br>§9特殊能力：§0 無<br><br>§9其他能力：§0 無<br><br>
 
 # GUI: Book Text Chap 6
 gui.shincolle:book.chap6.title=裝備列表
@@ -429,6 +499,9 @@ gui.shincolle:pointer4=隊伍
 gui.shincolle:antiair=制空
 gui.shincolle:antiss=反潛
 gui.shincolle:dodge=閃避
+gui.shincolle:oponly=僅限OP使用
+gui.shincolle:wrench1=左鍵: 新增/移除不可攻擊目標
+gui.shincolle:wrench2=右鍵: 顯示不可攻擊目標清單
 
 # Chat message
 chat.shincolle:bossspawn1=有艦娘出現在水面上!

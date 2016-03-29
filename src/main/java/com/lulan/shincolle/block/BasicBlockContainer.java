@@ -15,31 +15,31 @@ import net.minecraft.world.World;
 
 abstract public class BasicBlockContainer extends BlockContainer {
 
-	//«ü©w¤è¶ôÃþ«¬block
+	//æŒ‡å®šæ–¹å¡Šé¡žåž‹block
 	public BasicBlockContainer(Material material) {
 		super(material);
-		this.setCreativeTab(CreativeTabSC.SC_TAB);	//¥[¤J¨ìcreative tab¤¤
+		this.setCreativeTab(CreativeTabSC.SC_TAB);	//åŠ å…¥åˆ°creative tabä¸­
 	}
 	
-	//µL«ü©wÃþ«¬®É ¹w³]¬°rock«¬
+	//ç„¡æŒ‡å®šé¡žåž‹æ™‚ é è¨­ç‚ºrockåž‹
 	public BasicBlockContainer() {
 		this(Material.rock);
-		this.setCreativeTab(CreativeTabSC.SC_TAB);	//¥[¤J¨ìcreative tab¤¤
+		this.setCreativeTab(CreativeTabSC.SC_TAB);	//åŠ å…¥åˆ°creative tabä¸­
 	}
 	
-	//name³]©w¥Î¤èªk: ±N­ì¥»mcµ¹ªºblock¦WºÙ ¥h±¼.¤§«eªº¦r¦ê ¥H«K¥t¥~¦ê¤Wmod¦WºÙ§Î¦¨ªº¦r¦ê
+	//nameè¨­å®šç”¨æ–¹æ³•: å°‡åŽŸæœ¬mcçµ¦çš„blockåç¨± åŽ»æŽ‰.ä¹‹å‰çš„å­—ä¸² ä»¥ä¾¿å¦å¤–ä¸²ä¸Šmodåç¨±å½¢æˆçš„å­—ä¸²
 	protected String getUnwrappedUnlocalizedName(String unlocalizedName) {
 		return unlocalizedName.substring(unlocalizedName.indexOf(".")+1);
 	}
 	
-	//±Nname«a¤Wmod¦WºÙ ¥Î©ó¤§«áµ¹¦U»y¨tÀÉ®×©ñ¤W¥¿½T¦WºÙ
-	//®æ¦¡¬°tile.MOD¦WºÙ:¤è¶ô¦WºÙ.name
+	//å°‡nameå† ä¸Šmodåç¨± ç”¨æ–¼ä¹‹å¾Œçµ¦å„èªžç³»æª”æ¡ˆæ”¾ä¸Šæ­£ç¢ºåç¨±
+	//æ ¼å¼ç‚ºtile.MODåç¨±:æ–¹å¡Šåç¨±.name
 	@Override
 	public String getUnlocalizedName() {
 		return String.format("tile.%s%s", Reference.MOD_ID+":", getUnwrappedUnlocalizedName(super.getUnlocalizedName()));
 	}
 	
-	//¤£µ¹icon, ¥þ³£¥Îcustom render block
+	//ä¸çµ¦icon, å…¨éƒ½ç”¨custom render block
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerBlockIcons(IIconRegister iconRegister) {
@@ -49,15 +49,15 @@ abstract public class BasicBlockContainer extends BlockContainer {
 	@Override
 	abstract public TileEntity createNewTileEntity(World world, int i);
 	
-	/**¤è¶ô©ñ¤U®É³]©w¨ä´Â¦V
-	 * parm: world,x®y¼Ð,y®y¼Ð,z®y¼Ð,ª±®a,ª««~
-	 * ³]©wmeta¤èªk: setBlockMetadataWithNotify parm:x,y,z,metadata,flag(1:³]©w¦¹¤è¶ô­nupdate  2:°£¤F1ÁÙµo°e§ó·s«Ê¥]µ¹client)
-	 * metadata¥Nªíªº¤è¦V­n¦Û¦æ¨M©w  ¤@¯ë¨Ì·Óblock¤»¤è¦V¶K¹Ïªº¶¶§Ç: 
+	/**æ–¹å¡Šæ”¾ä¸‹æ™‚è¨­å®šå…¶æœå‘
+	 * parm: world,xåº§æ¨™,yåº§æ¨™,zåº§æ¨™,çŽ©å®¶,ç‰©å“
+	 * è¨­å®šmetaæ–¹æ³•: setBlockMetadataWithNotify parm:x,y,z,metadata,flag(1:è¨­å®šæ­¤æ–¹å¡Šè¦update  2:é™¤äº†1é‚„ç™¼é€æ›´æ–°å°åŒ…çµ¦client)
+	 * metadataä»£è¡¨çš„æ–¹å‘è¦è‡ªè¡Œæ±ºå®š  ä¸€èˆ¬ä¾ç…§blockå…­æ–¹å‘è²¼åœ–çš„é †åº: 
 	 * 0:bottom 1:top 2:north 3:south 4:west 5:east
 	 */
 	@Override
 	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack itemstack) {		
-		//¥Ñª±®aªº±ÛÂà¨¤«×¨M©w¤è¶ôªº´Â¦V
+		//ç”±çŽ©å®¶çš„æ—‹è½‰è§’åº¦æ±ºå®šæ–¹å¡Šçš„æœå‘
 		int facecase = MathHelper.floor_double(entity.rotationYaw * 4.0F / 360.0F + 0.5D) & 3;
 		
 		if (facecase == 0) {	//player face south , block -> 2:north

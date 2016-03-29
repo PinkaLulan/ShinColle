@@ -20,7 +20,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderVortex extends Render {
 
-	//¶K¹ÏÀÉ¸ô®|
+	//è²¼åœ–æª”è·¯å¾‘
 	private static final ResourceLocation TEXTURE_OFF = new ResourceLocation(Reference.TEXTURES_ENTITY+"ModelVortex.png");
 	private static final ResourceLocation TEXTURE_ON = new ResourceLocation(Reference.TEXTURES_ENTITY+"ModelVortexOn.png");
 
@@ -30,7 +30,7 @@ public class RenderVortex extends Render {
 		this.model = new ModelVortex();
 	}
 	
-	//¶Ç¤Jentityªº³£Âà¦¨abyssmissile
+	//å‚³å…¥entityçš„éƒ½è½‰æˆabyssmissile
     @Override
 	public void doRender(Entity entity, double offsetX, double offsetY, double offsetZ, float p_76986_8_, float p_76986_9_) {
         this.doRender((EntityRenderVortex)entity, offsetX, offsetY, offsetZ, p_76986_8_, p_76986_9_);
@@ -47,7 +47,7 @@ public class RenderVortex extends Render {
         float yaw = (float)(Math.atan2(distX, distZ));
         float angle = -entity.ticksExisted % 360F;
         
-        //¨Ì·Óx,z¶b¥¿­t¦V­×¥¿¨¤«×(Âà180)
+        //ä¾ç…§x,zè»¸æ­£è² å‘ä¿®æ­£è§’åº¦(è½‰180)
         if(distZ > 0) {
         	pitch -= (Math.PI / 2F);
         }

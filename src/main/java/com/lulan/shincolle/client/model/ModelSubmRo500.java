@@ -255,7 +255,7 @@ public class ModelSubmRo500 extends ModelBase implements IModelEmotion {
         this.HairR01.addChild(this.HairR02);
         this.Equip101.addChild(this.Equip102);
         
-        //µo¥ú¤ä¬[
+        //ç™¼å…‰æ”¯æž¶
         this.GlowBodyMain = new ModelRenderer(this, 0, 0);
         this.GlowBodyMain.setRotationPoint(0.0F, -13.5F, 0.0F);
         this.setRotateAngle(GlowBodyMain, -0.10471975511965977F, 0.0F, 0.0F);
@@ -297,7 +297,7 @@ public class ModelSubmRo500 extends ModelBase implements IModelEmotion {
     	this.BodyMain.render(f5);
     	GL11.glDisable(GL11.GL_BLEND);
     	
-    	//«G«×³]¬°240
+    	//äº®åº¦è¨­ç‚º240
     	GL11.glDisable(GL11.GL_LIGHTING);
     	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
     	this.GlowBodyMain.render(f5);
@@ -322,7 +322,7 @@ public class ModelSubmRo500 extends ModelBase implements IModelEmotion {
 		setGlowRotation();
     }
     
-    //³]©w¼Ò«¬µo¥ú³¡¥÷ªºrotation
+    //è¨­å®šæ¨¡åž‹ç™¼å…‰éƒ¨ä»½çš„rotation
     private void setGlowRotation() {
 		this.GlowBodyMain.rotateAngleX = this.BodyMain.rotateAngleX;
 		this.GlowBodyMain.rotateAngleY = this.BodyMain.rotateAngleY;
@@ -349,11 +349,11 @@ public class ModelSubmRo500 extends ModelBase implements IModelEmotion {
   		addk1 = angleAdd1 - 0.122F;
 	  	addk2 = angleAdd2 - 0.122F;
 
-  	    //²¾°ÊÀY³¡¨Ï¨ä¬Ý¤H
-	  	this.Head.rotateAngleX = f4 / 57.29578F; 	//¤W¤U¨¤«×
-	  	this.Head.rotateAngleY = f3 / 57.29578F;	//¥ª¥k¨¤«× ¨¤«×Âà¦¨rad §Y°£¥H57.29578
+  	    //ç§»å‹•é ­éƒ¨ä½¿å…¶çœ‹äºº
+	  	this.Head.rotateAngleX = f4 / 57.29578F; 	//ä¸Šä¸‹è§’åº¦
+	  	this.Head.rotateAngleY = f3 / 57.29578F;	//å·¦å³è§’åº¦ è§’åº¦è½‰æˆrad å³é™¤ä»¥57.29578
 	    
-	    //¥¿±`¯¸¥ß°Ê§@
+	    //æ­£å¸¸ç«™ç«‹å‹•ä½œ
 	  	//body
   	    this.Ahoke.rotateAngleY = angleX * 0.25F + 0.5236F;
 	  	this.BodyMain.rotateAngleX = -0.1F;
@@ -378,7 +378,7 @@ public class ModelSubmRo500 extends ModelBase implements IModelEmotion {
     	this.EquipBase2.offsetY = 0F;
     	this.EquipBase2.rotateAngleX = 0.3142F;
 
-	    if(ent.getIsSprinting() || f1 > 0.9F) {	//©b¶]°Ê§@
+	    if(ent.getIsSprinting() || f1 > 0.9F) {	//å¥”è·‘å‹•ä½œ
 	    	setFace(3);
 	    	//Body
 			this.BodyMain.rotateAngleX = 0.1745F;
@@ -404,7 +404,7 @@ public class ModelSubmRo500 extends ModelBase implements IModelEmotion {
 	    else {
 	    	startEmo2 = ent.getStartEmotion2();
 	    	
-	    	//ÀY³¡¶É±×°Ê§@, ¥u¦b©b¶]¥H¥~®Éroll
+	    	//é ­éƒ¨å‚¾æ–œå‹•ä½œ, åªåœ¨å¥”è·‘ä»¥å¤–æ™‚roll
 	    	if(startEmo2 > 0) {
 	    		--startEmo2;
 	    		ent.setStartEmotion2(startEmo2);
@@ -423,9 +423,9 @@ public class ModelSubmRo500 extends ModelBase implements IModelEmotion {
 		    }
 	    }//end if sprint
 	    
-	    //rollÀY³¡¶É±×ªí±¡
+	    //rollé ­éƒ¨å‚¾æ–œè¡¨æƒ…
 	    if(ent.getStateFlag(ID.F.HeadTilt)) {
-	    	if(ent.getStateEmotion(ID.S.Emotion2) == 1) {	//¤§«e¤w¸g¶É±×, «hÄ~Äò¶É±×
+	    	if(ent.getStateEmotion(ID.S.Emotion2) == 1) {	//ä¹‹å‰å·²ç¶“å‚¾æ–œ, å‰‡ç¹¼çºŒå‚¾æ–œ
 	    		this.Head.rotateAngleZ = -0.24F;
 	    	}
 	    	else {
@@ -438,7 +438,7 @@ public class ModelSubmRo500 extends ModelBase implements IModelEmotion {
 	    	}	
 	    }
 	    else {
-	    	if(ent.getStateEmotion(ID.S.Emotion2) == 0) {	//ºû«ù¤§«e¨¤«×
+	    	if(ent.getStateEmotion(ID.S.Emotion2) == 0) {	//ç¶­æŒä¹‹å‰è§’åº¦
 	    		this.Head.rotateAngleZ = 0F;
 	    	}
 	    	else {
@@ -451,7 +451,7 @@ public class ModelSubmRo500 extends ModelBase implements IModelEmotion {
 	    	}
 	    }
 	    
-	    if(ent.getIsSneaking()) {		//¼ç¦æ, ÃÛ¤U°Ê§@
+	    if(ent.getIsSneaking()) {		//æ½›è¡Œ, è¹²ä¸‹å‹•ä½œ
 	    	//body
 	    	this.Head.rotateAngleX -= 0.8727F;
 	    	this.BodyMain.rotateAngleX = 1.0472F;
@@ -462,7 +462,7 @@ public class ModelSubmRo500 extends ModelBase implements IModelEmotion {
 		  	addk2 -= 1.0472F;
   		}//end if sneaking
   		
-	    if(ent.getIsSitting() || ent.getIsRiding()) {  //ÃM­¼°Ê§@
+	    if(ent.getIsSitting() || ent.getIsRiding()) {  //é¨Žä¹˜å‹•ä½œ
 	    	if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {
 	    		if(((IShipFloating)ent).getShipDepth() > 0) {
 		    		GL11.glTranslatef(0F, 1F, 0F);
@@ -516,7 +516,7 @@ public class ModelSubmRo500 extends ModelBase implements IModelEmotion {
 	    	}    	
   		}//end if sitting
 	    
-	    //§ðÀ»°Ê§@
+	    //æ”»æ“Šå‹•ä½œ
 	    if(ent.getAttackTime() > 0) {
 	    	setFace(3);
 	    	//arm
@@ -552,7 +552,7 @@ public class ModelSubmRo500 extends ModelBase implements IModelEmotion {
 		}
   	}
   	
-    //³]©wÅã¥ÜªºÁy«¬
+    //è¨­å®šé¡¯ç¤ºçš„è‡‰åž‹
   	@Override
   	public void setFace(int emo) {
   		switch(emo) {

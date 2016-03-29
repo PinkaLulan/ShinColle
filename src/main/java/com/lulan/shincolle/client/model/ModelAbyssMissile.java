@@ -57,8 +57,8 @@ public class ModelAbyssMissile extends ModelBase {
     //for idle/run animation
     @Override
 	public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity) {  
-    	this.Body.rotateAngleY = f3;	//¥ª¥k¨¤«×
-    	this.Body.rotateAngleX = f4; 	//¤W¤U¨¤«×
+    	this.Body.rotateAngleY = f3;	//å·¦å³è§’åº¦
+    	this.Body.rotateAngleX = f4; 	//ä¸Šä¸‹è§’åº¦
     }
 
 }

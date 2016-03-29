@@ -11,7 +11,7 @@ import net.minecraft.util.ResourceLocation;
 @SideOnly(Side.CLIENT)
 public class RenderDestroyerI extends RenderLiving {
 	
-	//¶K¹ÏÀÉ¸ô®|
+	//è²¼åœ–æª”è·¯å¾‘
 	private static final ResourceLocation mobTextures = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityDestroyerI.png");
 
 	public RenderDestroyerI(ModelBase par1, float par2) {
@@ -23,7 +23,7 @@ public class RenderDestroyerI extends RenderLiving {
 		return mobTextures;
 	}
 /*
-	//render«e­nµeªºªF¦è³£¦b¦¹³]©w, ¨Ò¦p¦å±øÅã¥Ü
+	//renderå‰è¦ç•«çš„æ±è¥¿éƒ½åœ¨æ­¤è¨­å®š, ä¾‹å¦‚è¡€æ¢é¡¯ç¤º
 	@Override	
     protected void preRenderCallback(EntityLivingBase entity, float f1) {
 		BossStatus.setBossStatus((IBossDisplayData) entity, true);	

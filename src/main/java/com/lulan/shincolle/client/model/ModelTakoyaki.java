@@ -101,7 +101,7 @@ public class ModelTakoyaki extends ModelBase {
         this.BodyMain.render(f5);
     	GL11.glDisable(GL11.GL_BLEND);
     	
-    	//«G«×³]¬°240
+    	//äº®åº¦è¨­ç‚º240
     	GL11.glDisable(GL11.GL_LIGHTING);
     	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
     	this.GlowBodyMain.render(f5);	
@@ -122,8 +122,8 @@ public class ModelTakoyaki extends ModelBase {
     //for idle/run animation
     @Override
 	public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity) {  
-    	this.BodyMain.rotateAngleY = f3 / 57F;	//¥ª¥k¨¤«×
-    	this.BodyMain.rotateAngleX = f4 / 57F; 	//¤W¤U¨¤«×
+    	this.BodyMain.rotateAngleY = f3 / 57F;	//å·¦å³è§’åº¦
+    	this.BodyMain.rotateAngleX = f4 / 57F; 	//ä¸Šä¸‹è§’åº¦
     	this.GlowBodyMain.rotateAngleY = f3 / 57F;
     	this.GlowBodyMain.rotateAngleX = f4 / 57F;
     	this.JawMain.rotateAngleZ = 0F;

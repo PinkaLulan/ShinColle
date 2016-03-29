@@ -33,6 +33,7 @@ public class EntityBattleshipHime extends BasicEntityShip {
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.BattleshipHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BB]);
+		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BB]);
 		this.ModelPos = new float[] {-6F, 15F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();
@@ -67,18 +68,7 @@ public class EntityBattleshipHime extends BasicEntityShip {
 		//use cake to change state
 		if(itemstack != null) {
 			if(itemstack.getItem() == Items.cake) {
-				switch(getStateEmotion(ID.S.State)) {
-				case ID.State.NORMAL:
-					setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
-					break;
-				case ID.State.EQUIP00:
-					setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-					this.setPositionAndUpdate(posX, posY + 2D, posZ);
-					break;
-				default:
-					setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-					break;
-				}
+				this.setShipOutfit(player.isSneaking());
 				return true;
 			}
 		}
@@ -103,9 +93,7 @@ public class EntityBattleshipHime extends BasicEntityShip {
   		}
   		
 		//get attack value
-		float atk = StateFinal[ID.ATK];
-		//set knockback value (testing)
-		float kbValue = 0.15F;
+		float atk = StateFinal[ID.ATK] * 3F;
 		
 		//experience++
 		addShipExp(1);
@@ -113,8 +101,8 @@ public class EntityBattleshipHime extends BasicEntityShip {
 		//grudge--
 		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
 				
-	    //±Natk∏Úattacker∂«µπ•ÿº–™∫attackEntityFrom§Ë™k, ¶b•ÿº–class§§≠p∫‚∂ÀÆ`
-	    //®√•B¶^∂«¨Oß_¶®•\∂ÀÆ`®Ï•ÿº–
+	    //Â∞áatkË∑üattackerÂÇ≥Áµ¶ÁõÆÊ®ôÁöÑattackEntityFromÊñπÊ≥ï, Âú®ÁõÆÊ®ôclass‰∏≠Ë®àÁÆóÂÇ∑ÂÆ≥
+	    //‰∏¶‰∏îÂõûÂÇ≥ÊòØÂê¶ÊàêÂäüÂÇ∑ÂÆ≥Âà∞ÁõÆÊ®ô
 	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this), atk);
 
 	    //play entity attack sound
@@ -124,14 +112,6 @@ public class EntityBattleshipHime extends BasicEntityShip {
 	    
 	    //if attack success
 	    if(isTargetHurt) {
-	    	//calc kb effect
-	        if(kbValue > 0) {
-	            target.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
-	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
-	            motionX *= 0.6D;
-	            motionZ *= 0.6D;
-	        }
-
 	        //send packet to client for display partical effect   
 	        if (!worldObj.isRemote) {
 	        	TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
@@ -142,7 +122,7 @@ public class EntityBattleshipHime extends BasicEntityShip {
 	    return isTargetHurt;
 	}
 	
-	//≠◊ßÔ∑œ√˙ØSÆƒ & ¿À¨d¨Oß_riding
+	//‰øÆÊîπÁÖôÈúßÁâπÊïà & Ê™¢Êü•ÊòØÂê¶riding
   	@Override
   	public boolean attackEntityWithAmmo(Entity target) {
   		//check riding
@@ -155,10 +135,9 @@ public class EntityBattleshipHime extends BasicEntityShip {
   		
   		//get attack value
 		float atk = CalcHelper.calcDamageByEquipEffect(this, target, StateFinal[ID.ATK], 0);
-		float kbValue = 0.05F;
 		
 		//update entity look at vector (for particle spawn)
-        //¶π§Ë™k§ÒgetLook¡Ÿ•øΩT (client sync∞›√D)
+        //Ê≠§ÊñπÊ≥ïÊØîgetLookÈÇÑÊ≠£Á¢∫ (client syncÂïèÈ°å)
         float distX = (float) (target.posX - this.posX);
         float distY = (float) (target.posY - this.posY);
         float distZ = (float) (target.posZ - this.posZ);
@@ -167,7 +146,7 @@ public class EntityBattleshipHime extends BasicEntityShip {
         distY = distY / distSqrt;
         distZ = distZ / distSqrt;
       
-        //µoÆg™Ã∑œ√˙ØSÆƒ
+        //ÁôºÂ∞ÑËÄÖÁÖôÈúßÁâπÊïà
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 19, this.posX, this.posY+0.3D, this.posZ, distX, 1F, distZ, true), point);
 
@@ -184,9 +163,9 @@ public class EntityBattleshipHime extends BasicEntityShip {
   		//grudge--
   		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
         
-        //light ammo -1
-        if(!decrAmmoNum(0)) {		//not enough ammo
-        	atk = atk * 0.125F;	//reduce damage to 12.5%
+        //light ammo--
+        if(!decrAmmoNum(0, this.getAmmoConsumption())) {
+        	return false;
         }
 
         //calc miss chance, if not miss, calc cri/multi hit
@@ -238,20 +217,12 @@ public class EntityBattleshipHime extends BasicEntityShip {
     		}
   		}
   		
-	    //±Natk∏Úattacker∂«µπ•ÿº–™∫attackEntityFrom§Ë™k, ¶b•ÿº–class§§≠p∫‚∂ÀÆ`
-	    //®√•B¶^∂«¨Oß_¶®•\∂ÀÆ`®Ï•ÿº–
+	    //Â∞áatkË∑üattackerÂÇ≥Áµ¶ÁõÆÊ®ôÁöÑattackEntityFromÊñπÊ≥ï, Âú®ÁõÆÊ®ôclass‰∏≠Ë®àÁÆóÂÇ∑ÂÆ≥
+	    //‰∏¶‰∏îÂõûÂÇ≥ÊòØÂê¶ÊàêÂäüÂÇ∑ÂÆ≥Âà∞ÁõÆÊ®ô
 	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this).setProjectile(), atk);
 
 	    //if attack success
 	    if(isTargetHurt) {
-	    	//calc kb effect
-	        if(kbValue > 0) {
-	            target.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
-	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
-	            motionX *= 0.6D;
-	            motionZ *= 0.6D;
-	        }
-	        
         	//display hit particle on target
 	        TargetPoint point1 = new TargetPoint(this.dimension, target.posX, target.posY, target.posZ, 64D);
 			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 9, false), point1);
@@ -277,10 +248,10 @@ public class EntityBattleshipHime extends BasicEntityShip {
   	/** cluster bomb */
   	public boolean attackEntityWithSpecialAmmo(Entity target) {
   		//get attack value
-		float atk = StateFinal[ID.ATK_H] * 0.8F;
+		float atk = StateFinal[ID.ATK_H] * 0.75F;
 		float kbValue = 0.15F;
 		
-		//≠p∫‚•ÿº–∂Z¬˜
+		//Ë®àÁÆóÁõÆÊ®ôË∑ùÈõ¢
 		float tarX = (float)target.posX;	//for miss chance calc
 		float tarY = (float)target.posY;
 		float tarZ = (float)target.posZ;
@@ -303,9 +274,9 @@ public class EntityBattleshipHime extends BasicEntityShip {
         	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         }
         
-        //heavy ammo -1
-        if(!decrAmmoNum(1)) {	//not enough ammo
-        	atk = atk * 0.125F;	//reduce damage to 12.5%
+        //heavy ammo--
+        if(!decrAmmoNum(1, this.getAmmoConsumption())) {
+        	return false;
         }
         
         //calc miss chance, miss: add random offset(0~6) to missile target 
@@ -330,7 +301,7 @@ public class EntityBattleshipHime extends BasicEntityShip {
         return true;
   	}
 	
-	//¡◊ßK∏Úrider2∏Iº≤
+	//ÈÅøÂÖçË∑ürider2Á¢∞Êíû
   	@Override
 	public boolean canBePushed() {
         return this.ridingEntity == null;
@@ -372,6 +343,22 @@ public class EntityBattleshipHime extends BasicEntityShip {
   		else {
   			return (double)this.height * 0.8F;
   		}
+	}
+
+	@Override
+	public void setShipOutfit(boolean isSneaking) {
+		switch(getStateEmotion(ID.S.State)) {
+		case ID.State.NORMAL:
+			setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+			break;
+		case ID.State.EQUIP00:
+			setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+			this.setPositionAndUpdate(posX, posY + 2D, posZ);
+			break;
+		default:
+			setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+			break;
+		}
 	}
 
 	

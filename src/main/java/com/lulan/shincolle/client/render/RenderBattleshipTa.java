@@ -11,7 +11,7 @@ import net.minecraft.util.ResourceLocation;
 @SideOnly(Side.CLIENT)
 public class RenderBattleshipTa extends RenderLiving {
 	
-	//¶K¹ÏÀÉ¸ô®|
+	//è²¼åœ–æª”è·¯å¾‘
 	private static final ResourceLocation mobTextures = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityBattleshipTa.png");
 
 	public RenderBattleshipTa(ModelBase par1, float par2) {

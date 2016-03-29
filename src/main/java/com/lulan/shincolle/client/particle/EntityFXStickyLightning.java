@@ -96,6 +96,23 @@ public class EntityFXStickyLightning extends EntityFX {
             this.scaleZ = 1F;
             this.stemWidth = 0.025F;
             break;
+        case 4:  //railgun
+        	this.particleRed = 0F;
+            this.particleGreen = 0.7F;
+            this.particleBlue = 1F;
+            this.particleAlpha = 1F;
+            this.particleMaxAge = life;
+            this.numStem = 8;
+            this.scaleX = 0.75F;
+            this.scaleY = 0.75F;
+            this.scaleZ = 0.75F;
+            this.stemWidth = 0.005F;
+            
+            //random position
+            this.posX = this.host.posX + rand.nextFloat() * 0.25F - 0.125F;
+        	this.posY = this.host.posY + host.height * 0.5D + rand.nextFloat() * 0.25F - 0.125F;
+            this.posZ = this.host.posZ + rand.nextFloat() * 0.25F - 0.125F;
+            break;
         default:
         	this.particleRed = 1F;
             this.particleGreen = 0.5F;
@@ -124,14 +141,14 @@ public class EntityFXStickyLightning extends EntityFX {
 //    	tess.draw();
     	
     	GL11.glPushMatrix();
-		//¨Ï¥Î¦Û±aªº¶K¹ÏÀÉ
+		//ä½¿ç”¨è‡ªå¸¶çš„è²¼åœ–æª”
 //		Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE);
 		GL11.glDepthMask(true);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);	//disable texture
-//		GL11.glEnable(GL11.GL_DEPTH_TEST);	//DEPTH TEST¶}±Ò«á¤~¯à¨Ï¥ÎglDepthFunc
+//		GL11.glEnable(GL11.GL_DEPTH_TEST);	//DEPTH TESTé–‹å•Ÿå¾Œæ‰èƒ½ä½¿ç”¨glDepthFunc
 //		GL11.glDepthFunc(GL11.GL_ALWAYS);
 		
         float px = (float)(this.prevPosX + (this.posX - this.prevPosX) * ticks - interpPosX);
@@ -142,7 +159,7 @@ public class EntityFXStickyLightning extends EntityFX {
         float offy = 0F;
         
         if(this.particleAge % 2 == 0) {
-	        //¶V«á­±ªºstep, random range¶V¤j (°{¹q¨ì«á­±¤À¤ä¤À´²)
+	        //è¶Šå¾Œé¢çš„step, random rangeè¶Šå¤§ (é–ƒé›»åˆ°å¾Œé¢åˆ†æ”¯åˆ†æ•£)
 	        for(int i = 0; i < numStem; i++) {
 	        	//stem random position
 	            offx = (rand.nextFloat() - 0.5F) * this.scaleX;
@@ -177,9 +194,9 @@ public class EntityFXStickyLightning extends EntityFX {
 	        }
         }
   
-        //quad strip¥²¶·¥ı«ü©w¤U¤è¨âÂI(¥ª¤U -> ¥k¤U), ¦A«ü©w¤W¤è¨âÂI(¥ª¤W -> ¥k¤W), ¸Ó­±¤~·|´Â¦Vª±®a
-    	//¸òquad¤£¦P (¥k¤U -> ¥k¤W -> ¥ª¤W -> ¥ª¤U)
-        //µe¥X¥¿­±
+        //quad stripå¿…é ˆå…ˆæŒ‡å®šä¸‹æ–¹å…©é»(å·¦ä¸‹ -> å³ä¸‹), å†æŒ‡å®šä¸Šæ–¹å…©é»(å·¦ä¸Š -> å³ä¸Š), è©²é¢æ‰æœƒæœå‘ç©å®¶
+    	//è·Ÿquadä¸åŒ (å³ä¸‹ -> å³ä¸Š -> å·¦ä¸Š -> å·¦ä¸‹)
+        //ç•«å‡ºæ­£é¢
         tess.startDrawing(GL11.GL_QUAD_STRIP);
         tess.setColorRGBA_F(particleRed, particleGreen, particleBlue, particleAlpha);
         tess.setBrightness(240);
@@ -189,7 +206,7 @@ public class EntityFXStickyLightning extends EntityFX {
         }
         tess.draw();
         
-        //µe¥X¤Ï­±
+        //ç•«å‡ºåé¢
         tess.startDrawing(GL11.GL_QUAD_STRIP);
         tess.setColorRGBA_F(particleRed, particleGreen, particleBlue, particleAlpha);
         tess.setBrightness(240);
@@ -200,7 +217,7 @@ public class EntityFXStickyLightning extends EntityFX {
         tess.draw();
 
 //        GL11.glDepthFunc(GL11.GL_LEQUAL);
-//		GL11.glDisable(GL11.GL_DEPTH_TEST);	//DEPTH TESTÃö³¬
+//		GL11.glDisable(GL11.GL_DEPTH_TEST);	//DEPTH TESTé—œé–‰
         GL11.glEnable(GL11.GL_LIGHTING);
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -240,8 +257,17 @@ public class EntityFXStickyLightning extends EntityFX {
 	        this.posZ = this.host.posZ + partPos2[0];
 	        break;
         }
+        
         //change color
         switch(this.particleType) {
+        case 4:   //railgun
+        	if(this.particleMaxAge - this.particleAge < 6 ) {
+        		this.particleAlpha = (this.particleMaxAge - this.particleAge) * 0.15F + 0.2F;
+        	}
+        	
+        	this.particleGreen = 0.6F + rand.nextFloat() * 0.6F;
+        	this.particleRed = this.particleGreen - 0.3F;
+        	break;
         case 1:   //yamato cannon charge lightning
         case 2:   //yamato cannon charging in
         case 3:   //yamato cannon charging out

@@ -23,12 +23,13 @@ import com.lulan.shincolle.item.PointerItem;
 import com.lulan.shincolle.item.RepairBucket;
 import com.lulan.shincolle.item.RepairGoddess;
 import com.lulan.shincolle.item.ShipSpawnEgg;
+import com.lulan.shincolle.item.TargetWrench;
 import com.lulan.shincolle.item.ToyAirplane;
 import com.lulan.shincolle.reference.Reference;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@GameRegistry.ObjectHolder(Reference.MOD_ID)	//µn¿ıobject holder¨Ïmodªºª«¥ó®e©ö¬y³q ¨ä¥L¤H¥i¥Hª½±µÅª¨ú¸Óª«¥ó
+@GameRegistry.ObjectHolder(Reference.MOD_ID)	//ç™»éŒ„object holderä½¿modçš„ç‰©ä»¶å®¹æ˜“æµé€š å…¶ä»–äººå¯ä»¥ç›´æ¥è®€å–è©²ç‰©ä»¶
 public class ModItems {
 
 	//spawn egg
@@ -57,10 +58,11 @@ public class ModItems {
 	public static final BasicItem OwnerPaper = new OwnerPaper();
 	public static final BasicItem PointerItem = new PointerItem();
 	public static final BasicItem RepairGoddess = new RepairGoddess();
+	public static final BasicItem TargetWrench = new TargetWrench();
 	//toy
 	public static final BasicItem ToyAirplane = new ToyAirplane();
 
-	//µn¿ıitem¨ì¹CÀ¸¤¤ (¦bpre init¶¥¬qµn¿ı)
+	//ç™»éŒ„itemåˆ°éŠæˆ²ä¸­ (åœ¨pre initéšæ®µç™»éŒ„)
 	public static void init() {
 		//spawn egg
 		GameRegistry.registerItem(ShipSpawnEgg, "ShipSpawnEgg");
@@ -88,6 +90,7 @@ public class ModItems {
 		GameRegistry.registerItem(OwnerPaper, "OwnerPaper");
 		GameRegistry.registerItem(PointerItem, "PointerItem");
 		GameRegistry.registerItem(RepairGoddess, "RepairGoddess");
+		GameRegistry.registerItem(TargetWrench, "TargetWrench");
 		//toy
 		GameRegistry.registerItem(ToyAirplane, "ToyAirplane");
 	}

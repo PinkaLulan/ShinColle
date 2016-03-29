@@ -11,7 +11,7 @@ import cpw.mods.fml.common.FMLCommonHandler;
 public class ModEvents {
 	
 	public static void init() {
-		//µn¿ý¥H¤Uhandler¨ìevent bus¤¤ ¨Ï¨ä¯à±µ¦¬event
+		//ç™»éŒ„ä»¥ä¸‹handleråˆ°event busä¸­ ä½¿å…¶èƒ½æŽ¥æ”¶event
 		//FML bus
 		FMLCommonHandler.instance().bus().register(new ConfigHandler());	 //config event handler
 		FMLCommonHandler.instance().bus().register(new FML_COMMON_EventHandler());

@@ -37,9 +37,9 @@ import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 
 /**SERVER TO CLIENT : GUI SYNC PACKET
- * ¥Î©óGUI¤¤¤j¤p¶W¹Lshortªº­È¦P¨B / clientºİ¨Ï¥Îª««~¦P¨B / clientºİª««~Åã¥Ü°T®§¦P¨B
+ * ç”¨æ–¼GUIä¸­å¤§å°è¶…éshortçš„å€¼åŒæ­¥ / clientç«¯ä½¿ç”¨ç‰©å“åŒæ­¥ / clientç«¯ç‰©å“é¡¯ç¤ºè¨Šæ¯åŒæ­¥
  * 
- * ¦]sendProgressBarUpdate¥u¯à¦P¨Bshort, »İ¥t¥~¹ê°µ«Ê¥]¦P¨Bfloat, string, int
+ * å› sendProgressBarUpdateåªèƒ½åŒæ­¥short, éœ€å¦å¤–å¯¦åšå°åŒ…åŒæ­¥float, string, int
  */
 public class S2CGUIPackets implements IMessage {
 	
@@ -70,10 +70,12 @@ public class S2CGUIPackets implements IMessage {
 		public static final byte SyncPlayerProp_Formation = 9;
 		public static final byte SyncPlayerProp_ShipsAll = 10;
 		public static final byte SyncPlayerProp_ShipsInTeam = 11;
+		public static final byte SyncPlayerProp_ColledShip = 12;
+		public static final byte SyncPlayerProp_ColledEquip = 13;
 	}
 	
 	
-	public S2CGUIPackets() {}	//¥²¶·­n¦³ªÅ°Ñ¼Æconstructor, forge¤~¯à¨Ï¥Î¦¹class
+	public S2CGUIPackets() {}	//å¿…é ˆè¦æœ‰ç©ºåƒæ•¸constructor, forgeæ‰èƒ½ä½¿ç”¨æ­¤class
 	
 	//GUI sync: 
 	//sync tile entity
@@ -156,7 +158,7 @@ public class S2CGUIPackets implements IMessage {
         }
     }
 	
-	//±µ¦¬packet¤èªk
+	//æ¥æ”¶packetæ–¹æ³•
 	@Override
 	public void fromBytes(ByteBuf buf) {
 		world = ClientProxy.getClientWorld();
@@ -292,7 +294,9 @@ public class S2CGUIPackets implements IMessage {
 				}
 			}
 			break;
-		case PID.SyncShipList:	//sync ship list
+		case PID.SyncShipList:				  //sync loaded ship list
+		case PID.SyncPlayerProp_ColledShip:   //sync colled ship list
+		case PID.SyncPlayerProp_ColledEquip:  //sync colled equip list
 			{
 				int listLen = buf.readInt();
 
@@ -307,7 +311,17 @@ public class S2CGUIPackets implements IMessage {
 					}
 					
 					if(props != null) {
-						props.setShipEIDList(data);
+						switch(type) {
+						case PID.SyncShipList:				  //sync loaded ship list
+							props.setShipEIDList(data);
+							break;
+						case PID.SyncPlayerProp_ColledShip:   //sync colled ship list
+							props.setColleShipList(data);
+							break;
+						case PID.SyncPlayerProp_ColledEquip:  //sync colled equip list
+							props.setColleEquipList(data);
+							break;
+						}
 					}
 				}
 			}
@@ -323,12 +337,10 @@ public class S2CGUIPackets implements IMessage {
 					//get list data
 					for(int i = 0; i < listLen; ++i) {
 						data.add(ByteBufUtils.readUTF8String(buf));
-//						LogHelper.info("DEBUG : S2C gui packet: get "+data.get(i));
 					}
 					
 					if(props != null) {
 						props.setTargetClass(data);
-//						LogHelper.info("DEBUG : S2C gui sync: get list size "+data.size());
 					}
 				}
 				else {
@@ -473,7 +485,7 @@ public class S2CGUIPackets implements IMessage {
 		}
 	}
 
-	//µo¥Xpacket¤èªk
+	//ç™¼å‡ºpacketæ–¹æ³•
 	@Override
 	public void toBytes(ByteBuf buf) {
 		switch(this.type) {
@@ -571,6 +583,8 @@ public class S2CGUIPackets implements IMessage {
 			break;
 		case PID.SyncShipList:				  //send ship list to client
 		case PID.SyncPlayerProp_TargetClass:  //sync target class
+		case PID.SyncPlayerProp_ColledShip:   //sync colled ship list
+		case PID.SyncPlayerProp_ColledEquip:  //sync colled equip list
 			{
 				buf.writeByte(this.type);
 				
@@ -584,6 +598,8 @@ public class S2CGUIPackets implements IMessage {
 					
 					switch(this.type) {
 					case PID.SyncShipList:
+					case PID.SyncPlayerProp_ColledShip:
+					case PID.SyncPlayerProp_ColledEquip:
 						//send ship id array
 						while(iter.hasNext()) {
 							//int list
@@ -752,7 +768,7 @@ public class S2CGUIPackets implements IMessage {
 	
 	//packet handler (inner class)
 	public static class Handler implements IMessageHandler<S2CGUIPackets, IMessage> {
-		//¦¬¨ì«Ê¥]®ÉÅã¥Üdebug°T®§
+		//æ”¶åˆ°å°åŒ…æ™‚é¡¯ç¤ºdebugè¨Šæ¯
 		@Override
 		public IMessage onMessage(S2CGUIPackets message, MessageContext ctx) {
 //          System.out.println(String.format("Received %s from %s", message.text, ctx.getServerHandler().playerEntity.getDisplayName()));

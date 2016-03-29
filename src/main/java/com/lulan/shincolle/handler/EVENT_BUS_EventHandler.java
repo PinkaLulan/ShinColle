@@ -78,12 +78,12 @@ public class EVENT_BUS_EventHandler {
 	    		//if config has drop rate setting
 	    		int numGrudge = (int) ConfigHandler.dropGrudge;
 //	    		LogHelper.info("DEBUG : drop grudge "+numGrudge+" "+ConfigHandler.dropGrudge);
-	    		//­Y³]©w¶W¹L1, «h±¼¸¨¦h­Ó (ex: 5.5 = 5Áû)
+	    		//è‹¥è¨­å®šè¶…é1, å‰‡æ‰è½å¤šå€‹ (ex: 5.5 = 5é¡†)
 	    		if(numGrudge > 0) {
 	    			ItemStack drop = new ItemStack(ModItems.Grudge, numGrudge);
 			        event.drops.add(new EntityItem(event.entity.worldObj, event.entity.posX, event.entity.posY, event.entity.posZ, drop));
 	    		}
-	    		//­È¤£¨ì1, ¾÷²v±¼¸¨1­Ó
+	    		//å€¼ä¸åˆ°1, æ©Ÿç‡æ‰è½1å€‹
 	    		else {
 	    			if(event.entity.worldObj.rand.nextFloat() <= ConfigHandler.dropGrudge) {
 	    				ItemStack drop = new ItemStack(ModItems.Grudge, 1);
@@ -91,7 +91,7 @@ public class EVENT_BUS_EventHandler {
 	    			}
 	    		}
 	    		
-	    		//³Ñ¾l¤£¨ì1ªº­È, §ï¬°¾÷²v±¼¸¨
+	    		//å‰©é¤˜ä¸åˆ°1çš„å€¼, æ”¹ç‚ºæ©Ÿç‡æ‰è½
 	    		if(event.entity.worldObj.rand.nextFloat() < (ConfigHandler.dropGrudge - numGrudge)) {
     				ItemStack drop = new ItemStack(ModItems.Grudge, 1);
 			        event.drops.add(new EntityItem(event.entity.worldObj, event.entity.posX, event.entity.posY, event.entity.posZ, drop));
@@ -193,8 +193,8 @@ public class EVENT_BUS_EventHandler {
 				
 				if(fogDen < 0.01F) fogDen = 0.001F;
 				
-				event.setCanceled(true);	//¨ú®ø­ì¥»ªºfog render
-	            event.density = fogDen;		//­«³]fog¿@«×
+				event.setCanceled(true);	//å–æ¶ˆåŸæœ¬çš„fog render
+	            event.density = fogDen;		//é‡è¨­fogæ¿ƒåº¦
 	            GL11.glFogi(GL11.GL_FOG_MODE, GL11.GL_EXP);
 			}   
             
@@ -213,10 +213,10 @@ public class EVENT_BUS_EventHandler {
 		
 		//add kills number
 	    if(ent != null) {
-	    	if(ent instanceof BasicEntityShip) {	//¥»ÅéÀ»±ş
+	    	if(ent instanceof BasicEntityShip) {	//æœ¬é«”æ“Šæ®º
 	    		((BasicEntityShip)ent).addKills();
 	    	}
-	    	else if(ent instanceof IShipAttackBase) {	//¨ä¥L¥l³êª«À»±ş
+	    	else if(ent instanceof IShipAttackBase) {	//å…¶ä»–å¬å–šç‰©æ“Šæ®º
 	    		if(((IShipAttackBase) ent).getHostEntity() != null &&
 	    		   ((IShipAttackBase) ent).getHostEntity() instanceof BasicEntityShip) {
 	    			((BasicEntityShip)((IShipAttackBase) ent).getHostEntity()).addKills();
@@ -272,7 +272,7 @@ public class EVENT_BUS_EventHandler {
 				AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(event.x-32D, event.y-32D, event.z-32D, event.x+32D, event.y+32D, event.z+32D);
 				List ListMob = event.world.getEntitiesWithinAABB(BasicEntityShipHostile.class, aabb);
 
-				//list§C©ó1­Óªí¥Ü¨S¦³§ä¨ì¨ä¥Lboss
+				//listä½æ–¼1å€‹è¡¨ç¤ºæ²’æœ‰æ‰¾åˆ°å…¶ä»–boss
 	            if(ListMob.size() < 1) {
 	            	LogHelper.info("DEBUG : spawn ship mob at "+event.x+" "+event.y+" "+event.z+" rate "+ConfigHandler.scaleMobSubm[6]);
 	            	EntityLiving entityToSpawn;
@@ -296,8 +296,8 @@ public class EVENT_BUS_EventHandler {
 	
 	/**world load event
 	 * init MapStorage here
-	 * ¥Ñ©óglobal mapstorage¤£ºŞ¦bworld³£¬OÅª¨ú¦P¤@­Óhandler, ©Ò¥H¤£ÀË¬dworld id, ÀH«K¤@­Óworld¬Ò¥i
-	 * ­Y¬°perMapStorage, «h¬O¤£¦Pworld¦U¦³¤@¥÷
+	 * ç”±æ–¼global mapstorageä¸ç®¡åœ¨worldéƒ½æ˜¯è®€å–åŒä¸€å€‹handler, æ‰€ä»¥ä¸æª¢æŸ¥world id, éš¨ä¾¿ä¸€å€‹worldçš†å¯
+	 * è‹¥ç‚ºperMapStorage, å‰‡æ˜¯ä¸åŒworldå„æœ‰ä¸€ä»½
 	 */
 	@SubscribeEvent
 	public void onWorldLoad(WorldEvent.Load event) {
@@ -312,7 +312,7 @@ public class EVENT_BUS_EventHandler {
 //	 * save ship team list here, for SINGLEPLAYER ONLY
 //	 * for multiplayer: PlayerLoggedOutEvent
 //	 * 
-//	 * logout event¥u·|¦b¦h¤H¹CÀ¸¤Uµo¥X, ³æ¾÷¹CÀ¸¥²¶·¨Ï¥Î¦¹world unload event
+//	 * logout eventåªæœƒåœ¨å¤šäººéŠæˆ²ä¸‹ç™¼å‡º, å–®æ©ŸéŠæˆ²å¿…é ˆä½¿ç”¨æ­¤world unload event
 //	 */
 //	@SubscribeEvent
 //	public void onWorldUnload(WorldEvent.Unload event) {
@@ -346,7 +346,7 @@ public class EVENT_BUS_EventHandler {
 			if(event.source.getEntity() instanceof EntityPlayer) {
 				EntityPlayer player = (EntityPlayer) event.source.getEntity();
 				//get player's ship within 20 blocks
-				TargetHelper.setRevengeTargetAroundPlayer(player, 20D, event.entity);
+				TargetHelper.setRevengeTargetAroundPlayer(player, 32D, event.entity);
 //				LogHelper.info("DEBUG : attack event: "+player+" "+event.entity);
 			}//end get player
 			
@@ -354,11 +354,15 @@ public class EVENT_BUS_EventHandler {
 			if(event.entity instanceof EntityPlayer) {
 				EntityPlayer player = (EntityPlayer) event.entity;
 				//get player's ship within 20 blocks
-				TargetHelper.setRevengeTargetAroundPlayer(player, 20D, event.source.getEntity());
+				TargetHelper.setRevengeTargetAroundPlayer(player, 32D, event.source.getEntity());
 //				LogHelper.info("DEBUG : attack event: "+player+" "+event.source.getEntity());
 			}
 			
-			//TODO hostile ship call for help
+			//hostile ship is attacked, call for help
+			if(event.entity instanceof BasicEntityShipHostile) {
+				TargetHelper.setRevengeTargetAroundHostileShip((BasicEntityShipHostile) event.entity, 64D, event.source.getEntity());
+			}
+			
 		}//end server side
 	}
 

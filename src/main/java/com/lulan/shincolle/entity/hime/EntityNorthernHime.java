@@ -32,9 +32,9 @@ import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
 public class EntityNorthernHime extends BasicEntityShipLarge {
 	
-	private int goRidingTicks;		//ÃM­¼¥Ø¼Ğ´M§ä®É¶¡
-	private boolean goRiding;		//¬O§_­n§ä¥Ø¼ĞÃM­¼
-	private Entity goRideEntity;	//ÃM­¼¥Ø¼Ğ
+	private int goRidingTicks;		//é¨ä¹˜ç›®æ¨™å°‹æ‰¾æ™‚é–“
+	private boolean goRiding;		//æ˜¯å¦è¦æ‰¾ç›®æ¨™é¨ä¹˜
+	private Entity goRideEntity;	//é¨ä¹˜ç›®æ¨™
 	
 	public EntityNorthernHime(World world) {
 		super(world);
@@ -43,6 +43,7 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.NorthernHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BBV]);
+		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BBV]);
 		this.ModelPos = new float[] {-6F, 8F, 0F, 50F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();
@@ -83,26 +84,26 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
   		if(!worldObj.isRemote) {
   			//every 80 ticks
         	if(this.ticksExisted % 64 == 0) {
-        		//1: ¼W±j³Q°Ê¦^¦å
+        		//1: å¢å¼·è¢«å‹•å›è¡€
         		if(getStateMinor(ID.M.NumGrudge) > 0 && this.getHealth() < this.getMaxHealth()) {
         			this.setHealth(this.getHealth() + this.getMaxHealth() * 0.015625F);
         		}
         		
-        		//2: µ²±B«á, ©P³ò¬Y¤@¥Ø¼Ğ¦^¦å, ¥]¬Aª±®a, ¦^¦å¥Ø¼Ğ¨Ìµ¥¯Å´£ª@
+        		//2: çµå©šå¾Œ, å‘¨åœæŸä¸€ç›®æ¨™å›è¡€, åŒ…æ‹¬ç©å®¶, å›è¡€ç›®æ¨™ä¾ç­‰ç´šææ˜‡
 				if(getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.M.NumGrudge) > 0) {
-					//§P©wbounding box¤º¬O§_¦³¥i¥H¦^¦åªº¥Ø¼Ğ
+					//åˆ¤å®šbounding boxå…§æ˜¯å¦æœ‰å¯ä»¥å›è¡€çš„ç›®æ¨™
 					int healCount = this.getLevel() / 25 + 1;
 		            EntityLivingBase hitEntity = null;
 		            List hitList = null;
 		            hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, this.boundingBox.expand(8D, 8D, 8D));
 		           
 		            for(int i = 0; i < hitList.size(); i++) {
-		            	//¸É¦å¦WÃB¨S¤F, break
+		            	//è£œè¡€åé¡æ²’äº†, break
 		            	if(healCount <= 0) break;
 		            	
 		            	hitEntity = (EntityLivingBase) hitList.get(i);
 		            	
-		            	//§ì¥i¥H¸É¦åªº¥Ø¼Ğ, ¤£¥]§t¦Û¤v
+		            	//æŠ“å¯ä»¥è£œè¡€çš„ç›®æ¨™, ä¸åŒ…å«è‡ªå·±
 		            	if(hitEntity != this && hitEntity.getHealth() / hitEntity.getMaxHealth() < 0.98F) {
 	            			if(hitEntity instanceof EntityPlayer) {
 	            				hitEntity.heal(1F + this.getLevel() * 0.02F);
@@ -121,17 +122,17 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
         	if(this.ticksExisted % 25 == 0) {
         		int roll = this.rand.nextInt(5);
 //        		LogHelper.info("DEBUG : hoppo go riding "+roll);
-        		//¨C¤@¬q®É¶¡ÀË¬d¬O§_­nÃM­¼¨ä¥Lentity
+        		//æ¯ä¸€æ®µæ™‚é–“æª¢æŸ¥æ˜¯å¦è¦é¨ä¹˜å…¶ä»–entity
         		if(roll == 0) {
         			this.checkRiding();
         		}
         	}
         	
-        	//­Y­n§äÃM­¼¥Ø¼Ğ
+        	//è‹¥è¦æ‰¾é¨ä¹˜ç›®æ¨™
         	if(this.goRiding) {
         		this.goRidingTicks++;
         		
-        		//§ä¤Ó¤[, ©ñ±óÃM­¼¥Ø¼Ğ
+        		//æ‰¾å¤ªä¹…, æ”¾æ£„é¨ä¹˜ç›®æ¨™
         		if(this.goRidingTicks > 200) {
         			this.cancelGoRiding();
         		}
@@ -141,14 +142,14 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
         			distRiding = this.getDistanceToEntity(this.goRideEntity);
         		}
         		
-        		//¨C32 tick§ä¤@¦¸¸ô®|
+        		//æ¯32 tickæ‰¾ä¸€æ¬¡è·¯å¾‘
         		if(this.ticksExisted % 32 == 0) {
         			if(distRiding > 2F) {
         				this.getShipNavigate().tryMoveToEntityLiving(this.goRideEntity, 1D);
         			}
         		}
         		
-        		//¶ZÂ÷2®æ¤º«hÃM­¼¥Ø¼Ğ
+        		//è·é›¢2æ ¼å…§å‰‡é¨ä¹˜ç›®æ¨™
         		if(distRiding <= 2F) {
         			if(goRideEntity != null && !goRideEntity.isRiding() && this.riddenByEntity == null) {
         				this.mountEntity(goRideEntity);
@@ -158,9 +159,9 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
         		}
         	}
         	
-        	//ÃM­¼¤¤
+        	//é¨ä¹˜ä¸­
         	if(this.isRiding()) { 	
-        		//­YÃM­¼¥Ø¼Ğsneaking, «h¨ú®ø´Áµ{¥Ø¼Ğ
+        		//è‹¥é¨ä¹˜ç›®æ¨™sneaking, å‰‡å–æ¶ˆæœŸç¨‹ç›®æ¨™
     			if(this.ridingEntity.isSneaking()) {
         			this.mountEntity(null);
         		}
@@ -181,7 +182,7 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
   				}
   			}
   			
-  			//¦P¨BÃM­¼¤è¦V
+  			//åŒæ­¥é¨ä¹˜æ–¹å‘
   			if(this.isRiding() && this.ridingEntity instanceof EntityLivingBase) {
   				this.renderYawOffset = ((EntityLivingBase)ridingEntity).renderYawOffset;
   				this.rotationYaw = ridingEntity.rotationYaw;
@@ -205,7 +206,7 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
 			return;
 		}
 		
-		//¤w¸g¦bÃM­¼, «h¾÷²v¤U§¤ÃM
+		//å·²ç¶“åœ¨é¨ä¹˜, å‰‡æ©Ÿç‡ä¸‹åé¨
 		if(this.isRiding()) {
 			this.mountEntity(null);
 		}
@@ -215,12 +216,12 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
 	        List hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, impactBox);
 	        List<EntityLivingBase> canRideList = new ArrayList();
 	        
-	        //·j´Mlist, §ä¥X²Ä¤@­Ó¥i¥HÃM­¼ªº¥Ø¼Ğ
+	        //æœå°‹list, æ‰¾å‡ºç¬¬ä¸€å€‹å¯ä»¥é¨ä¹˜çš„ç›®æ¨™
 	        if(hitList != null && !hitList.isEmpty()) {
 	            for(int i = 0; i < hitList.size(); ++i) {
 	            	getEnt = (EntityLivingBase)hitList.get(i);
 	            	
-	            	//¥uÃM­¼¦P¥D¤Hªº´ÏÄ¥©ÎªÌ¥D¤H
+	            	//åªé¨ä¹˜åŒä¸»äººçš„æ£²è‰¦æˆ–è€…ä¸»äºº
 	            	if(getEnt instanceof BasicEntityShip || getEnt instanceof EntityPlayer) {
 	            		if(getEnt != this && !getEnt.isRiding() && getEnt.riddenByEntity == null &&
 	            		   EntityHelper.checkSameOwner(this, getEnt)) {
@@ -230,7 +231,7 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
 	            }
 	        }
 	        
-	        //±q¥iÃM­¼¥Ø¼Ğ¤¤¬D¥X¤@­Ó¥Ø¼ĞÃM­¼
+	        //å¾å¯é¨ä¹˜ç›®æ¨™ä¸­æŒ‘å‡ºä¸€å€‹ç›®æ¨™é¨ä¹˜
 	        if(canRideList.size() > 0) {
 	        	this.goRideEntity = canRideList.get(rand.nextInt(canRideList.size()));
 	        	this.goRidingTicks = 0;
@@ -246,36 +247,7 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
 		//use cake to change state
 		if(itemstack != null) {
 			if(itemstack.getItem() == Items.cake) {
-				//¤Á´«¸Ë³ÆÅã¥Ü
-				if(player.isSneaking()) {
-					switch(getStateEmotion(ID.S.State2)) {
-					case ID.State.EQUIP00_2:
-						setStateEmotion(ID.S.State2, ID.State.EQUIP01_2, true);
-						break;
-					case ID.State.EQUIP01_2:
-						setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
-						break;
-					default:
-						setStateEmotion(ID.S.State2, ID.State.EQUIP00_2, true);
-						break;
-					}
-				}
-				else {
-					switch(getStateEmotion(ID.S.State)) {
-					case ID.State.EQUIP00:
-						setStateEmotion(ID.S.State, ID.State.EQUIP01, true);
-						break;
-					case ID.State.EQUIP01:
-						setStateEmotion(ID.S.State, ID.State.EQUIP02, true);
-						break;
-					case ID.State.EQUIP02:
-						setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-						break;
-					default:
-						setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
-						break;
-					}
-				}
+				this.setShipOutfit(player.isSneaking());
 				return true;
 			}
 		}
@@ -290,7 +262,7 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
 	
 	@Override
     public boolean attackEntityFrom(DamageSource attacker, float atk) {
-		//­YÃM­¼§Oªºship, «h¨ú®øÃM­¼
+		//è‹¥é¨ä¹˜åˆ¥çš„ship, å‰‡å–æ¶ˆé¨ä¹˜
 		if(this.isRiding() && (ridingEntity instanceof BasicEntityShip || ridingEntity instanceof EntityPlayer)) {
 			this.mountEntity(null);
 		}
@@ -303,8 +275,6 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
 	public boolean attackEntityWithAmmo(Entity target) {	
 		//get attack value
 		float atk = CalcHelper.calcDamageByEquipEffect(this, target, StateFinal[ID.ATK], 0);
-		//set knockback value (testing)
-		float kbValue = 0.05F;
         
         //experience++
   		addShipExp(2);
@@ -312,9 +282,9 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
   		//grudge--
   		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
         
-        //light ammo -1
-        if(!decrAmmoNum(0)) {		//not enough ammo
-        	atk = atk * 0.125F;	//reduce damage to 12.5%
+        //light ammo--
+        if(!decrAmmoNum(0, this.getAmmoConsumption())) {
+        	return false;
         }
         
         //calc dist to target
@@ -334,7 +304,7 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
         	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         }
         
-        //µo®gªÌ·ÏÃú¯S®Ä
+        //ç™¼å°„è€…ç…™éœ§ç‰¹æ•ˆ
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 31, this.posX, this.posY, this.posZ, distX, distY, distZ, true), point);
 
@@ -388,20 +358,12 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
       		}
   		}
       		
-	    //±Natk¸òattacker¶Çµ¹¥Ø¼ĞªºattackEntityFrom¤èªk, ¦b¥Ø¼Ğclass¤¤­pºâ¶Ë®`
-	    //¨Ã¥B¦^¶Ç¬O§_¦¨¥\¶Ë®`¨ì¥Ø¼Ğ
+	    //å°‡atkè·Ÿattackerå‚³çµ¦ç›®æ¨™çš„attackEntityFromæ–¹æ³•, åœ¨ç›®æ¨™classä¸­è¨ˆç®—å‚·å®³
+	    //ä¸¦ä¸”å›å‚³æ˜¯å¦æˆåŠŸå‚·å®³åˆ°ç›®æ¨™
 	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this).setProjectile(), atk);
 
 	    //if attack success
 	    if(isTargetHurt) {
-	    	//calc kb effect
-	        if(kbValue > 0) {
-	            target.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
-	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
-	            motionX *= 0.6D;
-	            motionZ *= 0.6D;
-	        }
-	        
         	//display hit particle on target
 	        TargetPoint point1 = new TargetPoint(this.dimension, target.posX, target.posY, target.posZ, 64D);
 			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 30, false), point1);
@@ -410,13 +372,13 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
 	    return isTargetHurt;
 	}
   	
-  	//¿ß³¹³½¿N§ğÀ»
+  	//è²“ç« é­šç‡’æ”»æ“Š
   	@Override
   	public boolean attackEntityWithHeavyAmmo(Entity target) {
 		//set knockback value (testing)
 		float kbValue = 0.15F;
 
-		//­pºâ¥Ø¼Ğ¶ZÂ÷
+		//è¨ˆç®—ç›®æ¨™è·é›¢
 		float tarX = (float)target.posX;	//for miss chance calc
 		float tarY = (float)target.posY;
 		float tarZ = (float)target.posZ;
@@ -436,7 +398,7 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
 		//grudge--
 		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
 		
-		//µo®gªÌ·ÏÃú¯S®Ä (¤£¨Ï¥Î¯S®Ä, ¦ı¬O­nµo°e«Ê¥]¨Ó³]©wattackTime)
+		//ç™¼å°„è€…ç…™éœ§ç‰¹æ•ˆ (ä¸ä½¿ç”¨ç‰¹æ•ˆ, ä½†æ˜¯è¦ç™¼é€å°åŒ…ä¾†è¨­å®šattackTime)
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
 	
@@ -448,8 +410,8 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
         	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         }
         
-        //heavy ammo -1
-        if(!decrAmmoNum(1)) {	//not enough ammo
+        //heavy ammo--
+        if(!decrAmmoNum(1, this.getAmmoConsumption())) {
         	return false;
         }
         
@@ -473,6 +435,40 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
   		else {
   			return (double)this.height * 0.3F;
   		}
+	}
+
+	@Override
+	public void setShipOutfit(boolean isSneaking) {
+		//åˆ‡æ›è£å‚™é¡¯ç¤º
+		if(isSneaking) {
+			switch(getStateEmotion(ID.S.State2)) {
+			case ID.State.EQUIP00_2:
+				setStateEmotion(ID.S.State2, ID.State.EQUIP01_2, true);
+				break;
+			case ID.State.EQUIP01_2:
+				setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
+				break;
+			default:
+				setStateEmotion(ID.S.State2, ID.State.EQUIP00_2, true);
+				break;
+			}
+		}
+		else {
+			switch(getStateEmotion(ID.S.State)) {
+			case ID.State.EQUIP00:
+				setStateEmotion(ID.S.State, ID.State.EQUIP01, true);
+				break;
+			case ID.State.EQUIP01:
+				setStateEmotion(ID.S.State, ID.State.EQUIP02, true);
+				break;
+			case ID.State.EQUIP02:
+				setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+				break;
+			default:
+				setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+				break;
+			}
+		}
 	}
 
 

@@ -19,7 +19,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 
 /**CHI PARTICLE
- * ®ğ¼uÀôÂ¶¯S®Ä, entity¥²¶·¬°IShipEmotion
+ * æ°£å½ˆç’°ç¹ç‰¹æ•ˆ, entityå¿…é ˆç‚ºIShipEmotion
  */
 @SideOnly(Side.CLIENT)
 public class EntityFXChi extends EntityFX {
@@ -69,17 +69,17 @@ public class EntityFXChi extends EntityFX {
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);	//disable texture
 		
-		//particle¬O¥Hª±®aµø³¥¨Órender, ¦]¦¹®y¼Ğ­n¦©±¼interpPosÂà´«¬°ª±®aµø³¥®y¼Ğ
+		//particleæ˜¯ä»¥ç©å®¶è¦–é‡ä¾†render, å› æ­¤åº§æ¨™è¦æ‰£æ‰interpPosè½‰æ›ç‚ºç©å®¶è¦–é‡åº§æ¨™
         double f11 = (float)(this.posX - interpPosX);
         double f12 = (float)(this.posY - interpPosY);
         double f13 = (float)(this.posZ - interpPosZ);
       
         //start tess
         tess.startDrawingQuads();
-        //ª`·N4­ÓÂI§Î¦¨ªº­±¥u¦³¥¿­±·|¶K¤W¶K¹Ï, ­Yª±®a¦b¸Ó­±­I­±·|¬İ¤£¨ì¥¿­±¶K¹Ï, ¦]¦¹­nµe¨â­±¦@8­ÓÂI
-        //­n¨Ïª±®a¬İ¨ì¥¿­±, 4­Ó®y¼Ğadd¶¶§Ç¥²¶·¬°: ¥k¤U -> ¥k¤W -> ¥ª¤W -> ¥ª¤U
-        //chiªº§Îª¬¬°¤K­±Åé, Á`¦@4­ÓµÙ§Î6­Ó³»ÂI
-        //­Y¸Ó­±°_ÂI¬°y¸û§CªºÂI, ­±·|§e²{¤º¥W, ­Y°_ÂI¿ï¸û°ªªºÂI, ¸Ó­±·|¥~¥Y (­Y¥|³»ÂI¤£¦A¦P¤@¥­­±¤W®É)
+        //æ³¨æ„4å€‹é»å½¢æˆçš„é¢åªæœ‰æ­£é¢æœƒè²¼ä¸Šè²¼åœ–, è‹¥ç©å®¶åœ¨è©²é¢èƒŒé¢æœƒçœ‹ä¸åˆ°æ­£é¢è²¼åœ–, å› æ­¤è¦ç•«å…©é¢å…±8å€‹é»
+        //è¦ä½¿ç©å®¶çœ‹åˆ°æ­£é¢, 4å€‹åº§æ¨™addé †åºå¿…é ˆç‚º: å³ä¸‹ -> å³ä¸Š -> å·¦ä¸Š -> å·¦ä¸‹
+        //chiçš„å½¢ç‹€ç‚ºå…«é¢é«”, ç¸½å…±4å€‹è±å½¢6å€‹é ‚é»
+        //è‹¥è©²é¢èµ·é»ç‚ºyè¼ƒä½çš„é», é¢æœƒå‘ˆç¾å…§å‡¹, è‹¥èµ·é»é¸è¼ƒé«˜çš„é», è©²é¢æœƒå¤–å‡¸ (è‹¥å››é ‚é»ä¸å†åŒä¸€å¹³é¢ä¸Šæ™‚)
         //face1
         tess.setColorRGBA_F(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha);
         tess.setBrightness(240);
@@ -103,7 +103,7 @@ public class EntityFXChi extends EntityFX {
         tess.addVertex(f11, f12+particleScale, f13);
         tess.addVertex(f11-particleScale, f12, f13);
         
-        //¥b³z©ú¥~´ß
+        //åŠé€æ˜å¤–æ®¼
         //face1
         tess.setColorRGBA_F(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha * 0.5F);
         tess.addVertex(f11, f12-particleScale*1.3, f13);

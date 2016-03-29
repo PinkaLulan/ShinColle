@@ -38,7 +38,7 @@ public class SmallRecipes {
 	
 	public SmallRecipes() {}
 		
-	//ÀË¬d§÷®Æ¬O§_¯à°÷«Ø³y
+	//æª¢æŸ¥ææ–™æ˜¯å¦èƒ½å¤ å»ºé€ 
 	public static boolean canRecipeBuild(int[] matAmount) {
 		return matAmount[0] >= minAmount &&
 			   matAmount[1] >= minAmount &&
@@ -46,7 +46,7 @@ public class SmallRecipes {
 			   matAmount[3] >= minAmount;
 	}
 	
-	//­pºâÁ`¦@»İ­nªº¿U®Æ
+	//è¨ˆç®—ç¸½å…±éœ€è¦çš„ç‡ƒæ–™
 	public static int calcGoalPower(int[] matAmount) {
 		int extraAmount;
 		
@@ -58,7 +58,7 @@ public class SmallRecipes {
 		return 0;
 	}
 	
-	//§P©wª««~¬O§_¬°§÷®Æ
+	//åˆ¤å®šç‰©å“æ˜¯å¦ç‚ºææ–™
 	public static boolean isMaterial(ItemStack itemstack) {
 		if(itemstack != null) {
 			Item item = itemstack.getItem();
@@ -71,7 +71,7 @@ public class SmallRecipes {
 		return false;
 	}
 	
-	//§P©w§÷®ÆºØÃş: 0:grudge 1:abyss 2:ammo 3:poly 4:fuel -1:other
+	//åˆ¤å®šææ–™ç¨®é¡: 0:grudge 1:abyss 2:ammo 3:poly 4:fuel -1:other
 	public static int getMaterialType(ItemStack itemstack) {
 		Item item = itemstack.getItem();
 		int meta = itemstack.getItemDamage();
@@ -87,13 +87,13 @@ public class SmallRecipes {
 		return itemID;
 	}
 	
-	//¨ú±o¥|¼Ë§÷®Æ­Ó¼Æwith null check
+	//å–å¾—å››æ¨£ææ–™å€‹æ•¸with null check
 	//itemstack:0:grudge 1:abyss 2:ammo 3:poly 4:fuel 5:output
 	public static int[] getMaterialAmount(ItemStack[] item) {
 		int[] itemAmount = new int[4];
 		
-		for(int i=0; i<4; i++) {	//¨ú±oitem 0~3ªº¸ê®Æ, §Y¥|¼Ë§÷®Æ¸ê®Æ
-			if(item[i] != null) {	//¥[¤Wnull§PÂ_¥H§KNPE
+		for(int i=0; i<4; i++) {	//å–å¾—item 0~3çš„è³‡æ–™, å³å››æ¨£ææ–™è³‡æ–™
+			if(item[i] != null) {	//åŠ ä¸Šnullåˆ¤æ–·ä»¥å…NPE
 				itemAmount[i] = item[i].stackSize;
 			}
 			else {
@@ -104,7 +104,7 @@ public class SmallRecipes {
 		return itemAmount;		
 	}
 	
-	//±N§÷®Æ¼Æ¶q¼g¶iitemstack¦^¶Ç
+	//å°‡ææ–™æ•¸é‡å¯«é€²itemstackå›å‚³
 	public static ItemStack getBuildResultShip(int[] matAmount) {
 		ItemStack buildResult = new ItemStack(ModItems.ShipSpawnEgg);
 		buildResult.setItemDamage(0);

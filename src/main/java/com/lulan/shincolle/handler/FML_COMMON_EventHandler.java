@@ -29,6 +29,7 @@ import com.lulan.shincolle.entity.mounts.EntityMountSeat;
 import com.lulan.shincolle.entity.submarine.EntitySubmRo500Mob;
 import com.lulan.shincolle.entity.submarine.EntitySubmU511Mob;
 import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.item.BasicEquip;
 import com.lulan.shincolle.item.PointerItem;
 import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.network.C2SInputPackets;
@@ -68,6 +69,8 @@ public class FML_COMMON_EventHandler {
 			ExtendPlayerProps extProps = (ExtendPlayerProps) event.player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 			
 			if(extProps != null && !event.player.worldObj.isRemote) {
+				boolean syncTeamList = false;
+				
 				//every 32 ticks
 				if(event.player.ticksExisted > 0 && event.player.ticksExisted % 32 == 0) {
 					/** check player UID
@@ -97,6 +100,59 @@ public class FML_COMMON_EventHandler {
 				        //sync extProps to client
 			        	extProps.sendSyncPacket(0);
 					}
+					
+//					//TODO DEBUG
+//					ItemStack hitem = event.player.inventory.getCurrentItem();
+//					if(hitem != null && hitem.getItem() instanceof BasicEquip) {
+//						try {
+//							int[] rvalue = ((BasicEquip)hitem.getItem()).getRecycleValue(hitem.getItemDamage());
+//							LogHelper.info("DEBUG : player tick: AAAAAAAAAAAAA "+rvalue[0]+" "+rvalue[1]+" "+rvalue[2]+" "+rvalue[3]);
+//						}
+//						catch(Exception e) {
+//							LogHelper.info("DEBUG : player tick: BBBBBBBBBBBBB "+event.player.dimension);
+//						}
+//					}
+					
+					//sync team list every 256 ticks
+					if(event.player.ticksExisted == 96 || event.player.ticksExisted % 256 == 0) {
+						/** check player entity id and update player data to ServerProxy cache */
+						//get server cache
+						int[] pdata = ServerProxy.getPlayerWorldData(extProps.getPlayerUID());
+						//if entity id is different, update new eid
+						if(pdata != null && pdata[0] != event.player.getEntityId()) {
+							LogHelper.info("DEBUG : player tick: player entity id changed, update new eid: "+pdata[0]+" to "+event.player.getEntityId());
+							ServerProxy.updatePlayerID(event.player);
+						}
+						
+						/** update ships in pointer team list */
+						//check entity is alive
+						BasicEntityShip getent = null;
+						for(int i = 0; i < 6; i++) {
+							//get ship by UID
+							getent = EntityHelper.getShipBySID(extProps.getSIDCurrentTeam(i));
+
+							//get ship
+							if(getent != null) {
+								if(EntityHelper.checkSameOwner(getent, event.player)) {
+									//update ship entity
+									extProps.addShipEntityToCurrentTeam(i, getent);
+								}
+								else {
+									//owner changed, remove ship
+									extProps.addShipEntityToCurrentTeam(i, null);
+								}
+							}
+							//ship lost
+							else {
+								//clear slot if no ship UID (ship UID invalid)
+								if(extProps.getSIDCurrentTeam(i) <= 0) {
+									extProps.addShipEntityToCurrentTeam(i, null);
+								}
+							}	
+						}
+						
+						syncTeamList = true;
+					}//end every 256 ticks
 				}//end every 32 ticks
 				
 				/** spawn boss in ocean biome, server side */
@@ -126,7 +182,7 @@ public class FML_COMMON_EventHandler {
 					int rolli = event.player.getRNG().nextInt(4);
 					LogHelper.info("DEBUG : spawn boss: roll spawn "+rolli);
 					if(rolli == 0) {
-						//´M§ä10¦¸¦aÂI, §ä¨ì¤@­Ó¥i¥Í¦¨¦aÂI§Y¥Í¦¨«á¸õ¥Xloop
+						//å°‹æ‰¾10æ¬¡åœ°é»ž, æ‰¾åˆ°ä¸€å€‹å¯ç”Ÿæˆåœ°é»žå³ç”Ÿæˆå¾Œè·³å‡ºloop
 						int i;
 						for(i = 0; i < 10; i++) {
 							int offX = event.player.getRNG().nextInt(32) + 32;
@@ -160,7 +216,7 @@ public class FML_COMMON_EventHandler {
 							Block blockY = event.player.worldObj.getBlock(spawnX, spawnY, spawnZ);
 							
 							LogHelper.info("DEBUG : spawn boss: get block "+blockY.getLocalizedName()+" "+spawnX+" "+spawnY+" "+spawnZ);
-							//¥Í¦¨¦b¤ô­±
+							//ç”Ÿæˆåœ¨æ°´é¢
 							if(blockY.getMaterial() == Material.water) {
 								//check 64x64 range
 								AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(spawnX-64D, spawnY-64D, spawnZ-64D, spawnX+64D, spawnY+64D, spawnZ+64D);
@@ -168,14 +224,14 @@ public class FML_COMMON_EventHandler {
 
 								LogHelper.info("DEBUG : spawn boss: check existed boss "+listBoss.size());
 								
-								//­Y96x96x96½d³ò¤ºboss¼Æ¶q1°¦¥H¤U, «h§P©w¥i¥H¥Í¦¨boss
+								//è‹¥96x96x96ç¯„åœå…§bossæ•¸é‡1éš»ä»¥ä¸‹, å‰‡åˆ¤å®šå¯ä»¥ç”Ÿæˆboss
 					            if(listBoss.size() < 2) {
-					            	/**Ä¥¶¤²Õ¦¨:
+					            	/**è‰¦éšŠçµ„æˆ:
 					            	 * boss x2 + destroyer x4
 					            	 * boss id: 0:Nagato 1:Shimakaze
 					            	 * mob id: 0:U511 1:Ro500
 					            	 */
-					            	//roll¥Í¦¨mob
+					            	//rollç”Ÿæˆmob
 					            	int[] spawnList = new int[] {0,0,0,0,0,0};
 					            	spawnList[0] = event.player.worldObj.rand.nextInt(3);	//boss 1
 					            	spawnList[1] = event.player.worldObj.rand.nextInt(3);	//boss 2
@@ -184,7 +240,7 @@ public class FML_COMMON_EventHandler {
 					            	spawnList[4] = event.player.worldObj.rand.nextInt(2);	//mob 3
 					            	spawnList[5] = event.player.worldObj.rand.nextInt(2);	//mob 4
 					            	
-					            	//new¥Í¦¨mob
+					            	//newç”Ÿæˆmob
 					            	BasicEntityShipHostile[] spawnMobs = new BasicEntityShipHostile[6];
 					            	//new bosses
 					            	for(i = 0; i < 2; i++) {
@@ -219,7 +275,7 @@ public class FML_COMMON_EventHandler {
 					            		event.player.worldObj.spawnEntityInWorld(spawnMobs[i]);
 					            	}
 					            	
-					            	//µo¥Xspawn msg
+					            	//ç™¼å‡ºspawn msg
 					            	String spawnText = null;
 					            	if(event.player.worldObj.rand.nextInt(2) == 0) {
 					            		spawnText = StatCollector.translateToLocal("chat.shincolle:bossspawn1");
@@ -239,47 +295,6 @@ public class FML_COMMON_EventHandler {
 						}
 					}//end roll spawn boss
 				}//end boss cooldown <= 0
-				
-				boolean syncTeamList = false;
-				
-				//sync team list every 128 ticks
-				if(event.player.ticksExisted % 128 == 0) {
-					/** check player entity id and update player data to ServerProxy cache */
-					//get server cache
-					int[] pdata = ServerProxy.getPlayerWorldData(extProps.getPlayerUID());
-					//if entity id is different, update new eid
-					if(pdata != null && pdata[0] != event.player.getEntityId()) {
-						LogHelper.info("DEBUG : player tick: player entity id changed, update new eid: "+pdata[0]+" to "+event.player.getEntityId());
-						ServerProxy.updatePlayerID(event.player);
-					}
-					
-					/** update ships in pointer team list */
-					//check entity is alive
-					BasicEntityShip getent = null;
-					for(int i = 0; i < 6; i++) {
-						//get ship by UID
-						getent = EntityHelper.getShipBySID(extProps.getSIDCurrentTeam(i));
-
-//						LogHelper.info("DEBUG : player tick: update teamList: "+i+" "+extProps.getSIDofCurrentTeam(i)+" "+getent);
-						//get ship
-						if(getent != null) {
-							//update ship entity
-							extProps.addShipEntityToCurrentTeam(i, getent);
-						}
-						//ship lost
-						else {
-							//clear slot if no ship UID (ship UID invalid)
-							if(extProps.getSIDCurrentTeam(i) <= 0) {
-								extProps.addShipEntityToCurrentTeam(i, null);
-							}
-							
-							//clear ship entity
-							
-						}	
-					}
-					
-					syncTeamList = true;
-				}//end every 128 ticks
 				
 				//init ship UID
 				if(!extProps.getInitSID() && event.player.ticksExisted % 16 == 0) {
@@ -319,7 +334,7 @@ public class FML_COMMON_EventHandler {
 				}
 				
 				if(extProps != null) {
-					//­ì¥»¦³ring, ÅÜ¦¨¨S¦³, «h¨ú®ø­¸¦æª¬ºA
+					//åŽŸæœ¬æœ‰ring, è®Šæˆæ²’æœ‰, å‰‡å–æ¶ˆé£›è¡Œç‹€æ…‹
 					if(extProps.hasRing() && !hasRing) {
 						event.player.capabilities.isFlying = false;
 					}
@@ -359,8 +374,8 @@ public class FML_COMMON_EventHandler {
 	
 	//
 	
-	/**get input, «ö¤U+©ñ¶}³£·|µo¥X¤@¦¸, ¥B¨C­Ó«öÁä¤À¶}µo¥X, CLIENT side only event
-	 * getIsKeyPressed = ¸Ó«öÁä¬O§_«öµÛ, isPressed = ³o¦¸event¬O§_¬°¸Ó«öÁä
+	/**get input, æŒ‰ä¸‹+æ”¾é–‹éƒ½æœƒç™¼å‡ºä¸€æ¬¡, ä¸”æ¯å€‹æŒ‰éµåˆ†é–‹ç™¼å‡º, CLIENT side only event
+	 * getIsKeyPressed = è©²æŒ‰éµæ˜¯å¦æŒ‰è‘—, isPressed = é€™æ¬¡eventæ˜¯å¦ç‚ºè©²æŒ‰éµ
 	 * 
 	 */
 	@SubscribeEvent
@@ -382,7 +397,7 @@ public class FML_COMMON_EventHandler {
 					if(keySet.keyBindsHotbar[i].getIsKeyPressed()) {
 						getKey = i;
 						
-						//Àx¦s§Ö±¶¦ì¸m¨ìÅv§ú, ¨ÏÅv§ú¯à±N§Ö±¶¦C¦^´_¨ìÅv§ú¤W (CLIENT ONLY)
+						//å„²å­˜å¿«æ·ä½ç½®åˆ°æ¬Šæ–, ä½¿æ¬Šæ–èƒ½å°‡å¿«æ·åˆ—å›žå¾©åˆ°æ¬Šæ–ä¸Š (CLIENT ONLY)
 						if(!pointer.hasTagCompound()) {
 							pointer.setTagCompound(new NBTTagCompound());
 						}
@@ -443,7 +458,7 @@ public class FML_COMMON_EventHandler {
 					newKeys = newKeys | 16;
 				}
 				
-				//server¸òclient¦P®É³]©w, ²¾°ÊÅã¥Ü¤~·|¶¶ºZ, ¥u¾aserver³]©w²¾°Ê·|¤£³sÄò
+				//serverè·ŸclientåŒæ™‚è¨­å®š, ç§»å‹•é¡¯ç¤ºæ‰æœƒé †æš¢, åªé serverè¨­å®šç§»å‹•æœƒä¸é€£çºŒ
 				BasicEntityMount mount = ((EntityMountSeat)player.ridingEntity).host;
 	
 				if(mount != null) {
@@ -534,20 +549,20 @@ public class FML_COMMON_EventHandler {
     public void renderTick(TickEvent.RenderTickEvent event) {
 		EntityPlayer player = ClientProxy.getClientPlayer();
 		
-		//¦brender«e, ¨Ì·ÓÃM­¼Ãþ«¬½Õ¾ãeye height
+		//åœ¨renderå‰, ä¾ç…§é¨Žä¹˜é¡žåž‹èª¿æ•´eye height
 		if(player != null) {
 			if(event.phase == TickEvent.Phase.START) {
 				if(player.isRiding() && player.ridingEntity instanceof EntityMountSeat) {
 					EntityMountSeat seat = (EntityMountSeat) player.ridingEntity;
 					
 					if(seat.host != null) {
-						//±Nview point¤Á´«¨ìship¨­¤W
+						//å°‡view pointåˆ‡æ›åˆ°shipèº«ä¸Š
 						if(seat.host.host != null && !this.isViewChanged && !this.isViewPlayer) {
 							ClientProxy.getMineraft().renderViewEntity = seat.host.host;
 							this.isViewChanged = true;
 						}
 						
-						//±N¤Hª«µø³¥Âà°Ê®M¥Î¨ìship¨­¤W
+						//å°‡äººç‰©è¦–é‡Žè½‰å‹•å¥—ç”¨åˆ°shipèº«ä¸Š
 						if(this.isViewChanged) {
 							EntityLivingBase camera = ClientProxy.getMineraft().renderViewEntity;
 							
@@ -568,7 +583,7 @@ public class FML_COMMON_EventHandler {
 				}//end riding SEAT
 			}//end phase START
 			else if(event.phase == TickEvent.Phase.END) {
-				//¸Órender tickµ²§ô«á¥²¶·§âµø¨¤¤Á¦^ª±®a, ¥H§K¨ä¥L§Q¥Îview entityªº¤èªk¥X¿ù
+				//è©²render tickçµæŸå¾Œå¿…é ˆæŠŠè¦–è§’åˆ‡å›žçŽ©å®¶, ä»¥å…å…¶ä»–åˆ©ç”¨view entityçš„æ–¹æ³•å‡ºéŒ¯
 				if(this.isViewChanged) {
 					ClientProxy.getMineraft().renderViewEntity = ClientProxy.getClientPlayer();
 					this.isViewChanged = false;
@@ -583,7 +598,7 @@ public class FML_COMMON_EventHandler {
 	 */
 	@SubscribeEvent
     public void serverTick(TickEvent.ServerTickEvent event) {
-		if(event.phase == Phase.END) {	//¦bserver tick³B²z§¹¥þ³¡¨Æ±¡«áµo°Ê
+		if(event.phase == Phase.END) {	//åœ¨server tickè™•ç†å®Œå…¨éƒ¨äº‹æƒ…å¾Œç™¼å‹•
 			ServerProxy.updateServerTick();
 		}
 	}

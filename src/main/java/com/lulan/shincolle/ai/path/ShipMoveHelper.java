@@ -2,12 +2,14 @@ package com.lulan.shincolle.ai.path;
 
 import com.lulan.shincolle.entity.IShipNavigator;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
+
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.util.MathHelper;
 
 /**SHIP MOVE HELPER
- * °t¦Xship navigator¨Ï¥Î, ÃB¥~¼W¥[y¶b²¾°Ê¶q, ¾A¥Î©ó¤ô¤¤©Î­¸¦æentity
+ * é…åˆship navigatorä½¿ç”¨, é¡å¤–å¢åŠ yè»¸ç§»å‹•é‡, é©ç”¨æ–¼æ°´ä¸­æˆ–é£›è¡Œentity
  */
 public class ShipMoveHelper {
     /** The EntityLiving that is being moved */
@@ -19,7 +21,7 @@ public class ShipMoveHelper {
     /** The speed at which the entity should move */
     private double speed;
     private boolean update;
-    private float rotateLimit;  //¨Ctick³Ì¦h¥i¥HÂà¨­ªº¨¤«×, ¨¤«×¤p«hÂàÅs¥b®|¤j
+    private float rotateLimit;  //æ¯tickæœ€å¤šå¯ä»¥è½‰èº«çš„è§’åº¦, è§’åº¦å°å‰‡è½‰å½åŠå¾‘å¤§
 
 
     public ShipMoveHelper(EntityLiving entity, float rotlimit) {
@@ -50,8 +52,8 @@ public class ShipMoveHelper {
         this.update = true;
     }
 
-    /**CHANGE: ¼W¥[y¶b²¾°Ê­pºâ, ¤£¾a¦ÛµM±¼¸¨©ÎªÌ¸õÅD¨Ó²¾°Êy¶b
-     * ¾A¥Î©óship¸òairplane
+    /**CHANGE: å¢åŠ yè»¸ç§»å‹•è¨ˆç®—, ä¸é è‡ªç„¶æ‰è½æˆ–è€…è·³èºä¾†ç§»å‹•yè»¸
+     * é©ç”¨æ–¼shipè·Ÿairplane
      */
     public void onUpdateMoveHelper() {
         this.entity.setMoveForward(0.0F);
@@ -59,25 +61,25 @@ public class ShipMoveHelper {
         if(this.update) {
             this.update = false;
             
-            //­pºâ¥Ø¼ĞÂI¸ò¥Ø«eÂI®t¶Z
+            //è¨ˆç®—ç›®æ¨™é»è·Ÿç›®å‰é»å·®è·
             int i = MathHelper.floor_double(this.entity.boundingBox.minY + 0.5D);
             double x1 = this.posX - this.entity.posX;
             double z1 = this.posZ - this.entity.posZ;
             double y1 = this.posY - this.entity.posY;
             double moveSq = x1 * x1 + y1 * y1 + z1 * z1;
             
-            //­Y²¾°Ê­È°÷¤j, «h­pºâ¨­Åé­±¦V¤è¦V, ¥H¤Îy¶b²¾°Ê°Ê§@
-            if(moveSq >= 0.1D) {
+            //è‹¥ç§»å‹•å€¼å¤ å¤§, å‰‡è¨ˆç®—èº«é«”é¢å‘æ–¹å‘, ä»¥åŠyè»¸ç§»å‹•å‹•ä½œ
+            if(moveSq >= 0.001D) {
                 float f = (float)(Math.atan2(z1, x1) * 180.0D / Math.PI) - 90.0F;
                 float moveSpeed = (float)(this.speed * this.entity.getEntityAttribute(SharedMonsterAttributes.movementSpeed).getAttributeValue());
 //                LogHelper.info("DEBUG : moveHelper: update f "+(x1 * x1 + z1 * z1));
                 
-                //³]©w¨Ctick³Ì¦h¥i¥HÂà°Êªº¨¤«×
+                //è¨­å®šæ¯tickæœ€å¤šå¯ä»¥è½‰å‹•çš„è§’åº¦
                 this.entity.rotationYaw = this.limitAngle(this.entity.rotationYaw, f, this.rotateLimit);
 //                this.entity.setAIMoveSpeed(moveSpeed);
 
-                //y¶b²¾°Ê: ¥Ñ©ó©x¤èsetAIMoveSpeed¥u´£¨Ñ¤ô¥­²¾°Ê, ¦]¦¹y¶b²¾°Ê¥²¶·¦Û¦æ³]©w
-                //ª¦¤É®É³t«×¸ûºC, ¸¨¤U®É³t«×§Ö
+                //yè»¸ç§»å‹•: ç”±æ–¼å®˜æ–¹setAIMoveSpeedåªæä¾›æ°´å¹³ç§»å‹•, å› æ­¤yè»¸ç§»å‹•å¿…é ˆè‡ªè¡Œè¨­å®š
+                //çˆ¬å‡æ™‚é€Ÿåº¦è¼ƒæ…¢, è½ä¸‹æ™‚é€Ÿåº¦å¿«
                 //fly entity
                 if(entityN.canFly()) {
 //                    if(x1 * x1 + z1 * z1 < 3.0D) {
@@ -100,13 +102,13 @@ public class ShipMoveHelper {
 //                        	LogHelper.info("DEBUG : moveHelper: get up in water ");
                         }
                         else if(y1 < -0.2D){
-                        	this.entity.motionY -= moveSpeed * 0.12D;
+                        	this.entity.motionY -= moveSpeed * 0.2D;
                         	moveSpeed *= 0.82F;
 //                        	LogHelper.info("DEBUG : moveHelper: get down in water ");
                         }
 //                	}
                 }
-                else if(y1 > 0.0D && x1 * x1 + z1 * z1 < 3.0D) {	//¥Î©ó³°¤W¸õÅD
+                else if(y1 > 0.0D && x1 * x1 + z1 * z1 < 3.0D) {	//ç”¨æ–¼é™¸ä¸Šè·³èº
 //                	LogHelper.info("DEBUG : moveHelper: get up on land ");
                     this.entity.getJumpHelper().setJumping();
                 }

@@ -8,7 +8,7 @@ import com.lulan.shincolle.reference.Reference;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@GameRegistry.ObjectHolder(Reference.MOD_ID)	//µn¿ıobject holder¨Ïmodªºª«¥ó®e©ö¬y³q ¨ä¥L¤H¥i¥Hª½±µÅª¨ú¸Óª«¥ó
+@GameRegistry.ObjectHolder(Reference.MOD_ID)	//ç™»éŒ„object holderä½¿modçš„ç‰©ä»¶å®¹æ˜“æµé€š å…¶ä»–äººå¯ä»¥ç›´æ¥è®€å–è©²ç‰©ä»¶
 public class ModOres {
 
 	//ore
@@ -16,7 +16,7 @@ public class ModOres {
 	public static ItemStack PolymetalOre = new ItemStack(ModBlocks.BlockPolymetalOre, 1, 0);
 
 
-	//µn¿ıitem¨ì¹CÀ¸¤¤ (¦bpre init¶¥¬qµn¿ı)
+	//ç™»éŒ„itemåˆ°éŠæˆ²ä¸­ (åœ¨pre initéšæ®µç™»éŒ„)
 	public static void oreDictRegister() {
 		if(ConfigHandler.polyAsMn) {
 			//polymetal = manganese ore

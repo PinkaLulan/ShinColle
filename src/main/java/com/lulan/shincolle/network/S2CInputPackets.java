@@ -12,7 +12,7 @@ import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 
 /** CLIENT TO SERVER: INPUT PACKETS (NO-GUI)
- *  serverºİ°w¹ïinput packetªº¦^À³
+ *  serverç«¯é‡å°input packetçš„å›æ‡‰
  */
 public class S2CInputPackets implements IMessage {
 	
@@ -29,7 +29,7 @@ public class S2CInputPackets implements IMessage {
 	}
 	
 	
-	public S2CInputPackets() {}  //¥²¶·­n¦³ªÅ°Ñ¼Æconstructor, forge¤~¯à¨Ï¥Î¦¹class
+	public S2CInputPackets() {}  //å¿…é ˆè¦æœ‰ç©ºåƒæ•¸constructor, forgeæ‰èƒ½ä½¿ç”¨æ­¤class
 
 	/**type 0:(2 parms) command: change owner: 0:sender eid, 1:owner eid
 	 * type 1:(1 parms) command: show ship info: 0:sender eid
@@ -44,7 +44,7 @@ public class S2CInputPackets implements IMessage {
         }
     }
 	
-	//±µ¦¬packet¤èªk, client side
+	//æ¥æ”¶packetæ–¹æ³•, client side
 	@Override
 	public void fromBytes(ByteBuf buf) {	
 		//get type and entityID
@@ -75,7 +75,7 @@ public class S2CInputPackets implements IMessage {
 		}
 	}
 
-	//µo¥Xpacket¤èªk, server side
+	//ç™¼å‡ºpacketæ–¹æ³•, server side
 	@Override
 	public void toBytes(ByteBuf buf) {
 		switch(this.type) {
@@ -105,7 +105,7 @@ public class S2CInputPackets implements IMessage {
 	
 	//packet handler (inner class)
 	public static class Handler implements IMessageHandler<S2CInputPackets, IMessage> {
-		//¦¬¨ì«Ê¥]®ÉÅã¥Üdebug°T®§, client side
+		//æ”¶åˆ°å°åŒ…æ™‚é¡¯ç¤ºdebugè¨Šæ¯, client side
 		@Override
 		public IMessage onMessage(S2CInputPackets message, MessageContext ctx) {		
 			switch(message.type) {

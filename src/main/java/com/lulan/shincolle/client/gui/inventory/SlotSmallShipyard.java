@@ -17,7 +17,7 @@ public class SlotSmallShipyard extends Slot {
 		this.tile = (TileEntitySmallShipyard)entity;
 	}
 	
-	//³]©w¨C­Óslot¥i¥H©ñ¶iªºª««~: 0:grudge 1:abyssium 2:ammo 3:polymetal 4:fuel 5:output
+	//è¨­å®šæ¯å€‹slotå¯ä»¥æ”¾é€²çš„ç‰©å“: 0:grudge 1:abyssium 2:ammo 3:polymetal 4:fuel 5:output
 	@Override
 	public boolean isItemValid(ItemStack itemstack) {
 		return tile.isItemValidForSlot(this.slotIndex, itemstack);

@@ -45,22 +45,22 @@ public class EntityAirplane extends BasicEntityAirplane {
         this.useAmmoLight = true;
         this.useAmmoHeavy = false;
         
-        //³]©wµo®g¦ì¸m
+        //è¨­å®šç™¼å°„ä½ç½®
         this.posX = host.posX;
         this.posY = launchPos;
         this.posZ = host.posZ;
         this.setPosition(this.posX, this.posY, this.posZ);
 
-	    //³]©w°ò¥»Äİ©Ê
+	    //è¨­å®šåŸºæœ¬å±¬æ€§
         double mhp = host.getLevel() + host.getStateFinal(ID.HP)*0.1D;
         
 	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(mhp);
 		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(this.movSpeed);
-		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(host.getStateFinal(ID.HIT)+32D); //¦¹¬°§ä¥Ø¼Ğ, ¸ô®|ªº½d³ò
+		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(host.getStateFinal(ID.HIT)+32D); //æ­¤ç‚ºæ‰¾ç›®æ¨™, è·¯å¾‘çš„ç¯„åœ
 		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(1D);
 		if(this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
 				
-		//³]©wAI
+		//è¨­å®šAI
 		this.setAIList();
 	}
 	

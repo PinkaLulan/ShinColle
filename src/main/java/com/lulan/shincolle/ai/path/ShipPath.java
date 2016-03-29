@@ -1,8 +1,8 @@
 package com.lulan.shincolle.ai.path;
 
 /**SHIP PATH
- * ¦s©ñ©Ò¦³path point, ¨Ã¥B¨Ì·Ó²×ÂI¶ZÂ÷°µ±Æ§Ç
- * point¦bpath array¤¤ªº¶¶§Ç¸òpoint¦b¹ê»Ú¸ô®|¤Wªº¶¶§Ç(index)µLÃö, ³æ¯Â¬O¶ZÂ÷¤j¤p±Æ§Ç
+ * å­˜æ”¾æ‰€æœ‰path point, ä¸¦ä¸”ä¾ç…§çµ‚é»žè·é›¢åšæŽ’åº
+ * pointåœ¨path arrayä¸­çš„é †åºè·Ÿpointåœ¨å¯¦éš›è·¯å¾‘ä¸Šçš„é †åº(index)ç„¡é—œ, å–®ç´”æ˜¯è·é›¢å¤§å°æŽ’åº
  */
 public class ShipPath {
     /** Contains the points in this path */
@@ -51,15 +51,15 @@ public class ShipPath {
      * Returns and removes the first point in the path
      */
     public ShipPathPoint dequeue() {
-    	ShipPathPoint pathpoint = this.pathPoints[0];		//¼È¦s¤U²Ä¤@­ÓÂI
-        this.pathPoints[0] = this.pathPoints[--this.count];	//±N³Ì«á¤@­ÓÂI¦s¨ì¦a¤@­ÓÂI¦ì¸m
-        this.pathPoints[this.count] = null;					//³Ì«á¤@­ÓÂI+1ªº¦ì¸m³]¬°null
+    	ShipPathPoint pathpoint = this.pathPoints[0];		//æš«å­˜ä¸‹ç¬¬ä¸€å€‹é»ž
+        this.pathPoints[0] = this.pathPoints[--this.count];	//å°‡æœ€å¾Œä¸€å€‹é»žå­˜åˆ°åœ°ä¸€å€‹é»žä½ç½®
+        this.pathPoints[this.count] = null;					//æœ€å¾Œä¸€å€‹é»ž+1çš„ä½ç½®è¨­ç‚ºnull
 
-        if(this.count > 0) {	//±N²Ä¤@­ÓÂI©¹¥k°µ¤@¦¸±Æ§Ç
+        if(this.count > 0) {	//å°‡ç¬¬ä¸€å€‹é»žå¾€å³åšä¸€æ¬¡æŽ’åº
             this.sortForward(0);
         }
 
-        pathpoint.index = -1;	//¨ú¥XªºÂIid³]¬°-1
+        pathpoint.index = -1;	//å–å‡ºçš„é»židè¨­ç‚º-1
         return pathpoint;
     }
 
@@ -86,7 +86,7 @@ public class ShipPath {
         ShipPathPoint pathpoint = this.pathPoints[id];
         int j;
 
-        //¥Ø«eªºÂI¸ò«e­±¥þ³¡ªºÂI¤ñ¸û²×ÂI¶ZÂ÷, ª½¨ì¸I¨ì²×ÂI¶ZÂ÷§ó¤jªÌ°±¤î (²×ÂI¶ZÂ÷¤j = Â÷¥Ø¼Ð»·ªºÂI)
+        //ç›®å‰çš„é»žè·Ÿå‰é¢å…¨éƒ¨çš„é»žæ¯”è¼ƒçµ‚é»žè·é›¢, ç›´åˆ°ç¢°åˆ°çµ‚é»žè·é›¢æ›´å¤§è€…åœæ­¢ (çµ‚é»žè·é›¢å¤§ = é›¢ç›®æ¨™é çš„é»ž)
         for(float f = pathpoint.distanceToTarget; id > 0; id = j) {
             j = id - 1 >> 1;
             ShipPathPoint pathpoint1 = this.pathPoints[j];

@@ -12,6 +12,7 @@ import net.minecraft.util.MathHelper;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.item.BasicEquip;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
@@ -68,52 +69,19 @@ public class EquipCalc {
 	
 	//get equip state
 	public static float[] getEquipStat(BasicEntityShip entity, ItemStack item) {
-		if(item != null && entity != null) {
-			byte equipID = getEquipID(item);
-			float[] getStat = Values.EquipMap.get(equipID);	//get item attributes
+		if(entity != null && item != null && item.getItem() instanceof BasicEquip) {
+			float[] itemStat = Values.EquipMap.get(((BasicEquip)item.getItem()).getEquipID(item.getItemDamage()));
 			
-			if(getStat != null) {
+			if(itemStat != null) {
 				//cannot use this equip, return null
-				if(entity.getEquipType() != 2 && getStat[0] != 2) {
-					if(entity.getEquipType() != getStat[0]) return null;
+				if(entity.getEquipType() != 2 && itemStat[0] != 2) {
+					if(entity.getEquipType() != itemStat[0]) return null;
 				}
 	//			LogHelper.info("DEBUG : equip stat "+equipID+" "+getStat[0]+" "+getStat[1]+" "+getStat[2]+" "+getStat[3]+" "+getStat[4]+" "+getStat[5]+" "+getStat[6]+" "+getStat[7]+" "+getStat[8]);
-				return getStat;
+				return itemStat;
 			}	
 		}
 		return null;
-	}
-	
-	//get equip id
-	public static byte getEquipID(ItemStack itemstack) {
-		byte equipID = 0;
-		
-		if(itemstack.getItem() == ModItems.EquipAirplane) {
-			return (byte) (ID.E_AIRCRAFT_TMK1 + itemstack.getItemDamage());
-		}
-		if(itemstack.getItem() == ModItems.EquipArmor) {
-			return (byte) (ID.E_ARMOR + itemstack.getItemDamage());
-		}
-		if(itemstack.getItem() == ModItems.EquipCannon) {
-			return (byte) (ID.E_CANNON_SINGLE_5 + itemstack.getItemDamage());
-		}
-		if(itemstack.getItem() == ModItems.EquipRadar) {
-			return (byte) (ID.E_RADAR_AIRMK1 + itemstack.getItemDamage());
-		}
-		if(itemstack.getItem() == ModItems.EquipTorpedo) {
-			return (byte) (ID.E_TORPEDO_21MK1 + itemstack.getItemDamage());
-		}
-		if(itemstack.getItem() == ModItems.EquipTurbine) {
-			return (byte) (ID.E_TURBINE + itemstack.getItemDamage());
-		}
-		if(itemstack.getItem() == ModItems.EquipMachinegun) {
-			return (byte) (ID.E_GUN_HA_3 + itemstack.getItemDamage());
-		}
-		if(itemstack.getItem() == ModItems.EquipCatapult) {
-			return (byte) (ID.E_CATAPULT_F + itemstack.getItemDamage());
-		}
-
-		return -1;
 	}
 	
 	/**roll equip type by total amount of materials
@@ -138,10 +106,10 @@ public class EquipCalc {
 		}
 		
 		/**roll equip type
-		 * 0. tweak roll list by mat.amount: specific material decrease the mean value
+		 * 0. tweak roll list by mats amount: specific material decrease the mean value
 		 * 1. get prob of equips in roll list
 		 * 2. roll 0~1 to get equip type
-		 * 3. return equip type
+		 * 3. return equip type (key value in EquipSmall/EquipLarge)
 		 */
 		//prob list: map<equip ID, prob parameter>
 		Map<Integer, Float> probList = new HashMap<Integer, Float>();
@@ -150,7 +118,7 @@ public class EquipCalc {
 		float prob = 0F;
 		
 		for(int[] i : eqlistOrg) {
-			//get equip modified material type
+			//get material discount, reduce the mean
 			if(i[2] >= 0 && i[2] <= 3) {
 				meanNew = i[1] - matAmount[i[2]];
 			}
@@ -221,28 +189,31 @@ public class EquipCalc {
 		//equip roll list: <equip id, float[0:mean value  1:prob parameter]>
 		Map<Integer, Float> equipList = new HashMap<Integer, Float>();
 
-		//get equip list
+		//get equip list, compare the equip type = input type
 		Iterator iter = Values.EquipMap.entrySet().iterator();
 		while(iter.hasNext()) {
 			Map.Entry entry = (Map.Entry)iter.next();
-			int eid = (Byte) entry.getKey();
+			int eid = (Integer) entry.getKey();
 			float[] val = (float[]) entry.getValue();
 			
 			if(val[ID.E.RARE_TYPE] == type) {
 				float prob = 0F;
 				int totalMat = 0;
 				int meanDist = 0;
-				float te = 4000F;	//debug
+				float te = 4000F;  //large build base (for log only)
 				
-				//tweak mean distance: resolution from 256 to 4000
+				//if SMALL BUILD, tweak mean distance: change resolution from 256 to 4000
 				if(buildType == 0) {	//for small build
 					totalMat = (int)(totalMatParam * 15.625F);	// = mats / 256 * 4000
-					te = 256F;
+					te = 256F;  //small build base (for log only)
 				}
+				
 				//get mean distance
 				meanDist = MathHelper.abs_int(totalMat - (int)val[ID.E.RARE_MEAN]);
+				
 				//get prob by mean dist
 				prob = CalcHelper.getNormDist(meanDist);
+				
 				//put into map
 				equipList.put(eid, prob);
 				LogHelper.info("DEBUG: calc equip: prob list: ID "+eid+" MEAN "+val[ID.E.RARE_MEAN]+" MEAN(P) "+(val[ID.E.RARE_MEAN]/te)+" MD "+meanDist+" PR "+prob);
@@ -282,109 +253,70 @@ public class EquipCalc {
 	}
 	
 	//get equip itemstack from id
-	private static ItemStack getItemStackFromId(int itemId) {
+	private static ItemStack getItemStackFromId(int itemID) {
+		//itemID = Equip Type ID + Equip Sub ID * 100
 		ItemStack item = null;
-		int itemType = 0;
-
-		//get itemstack, itemId - 該類item的起始值 = 該類item的meta值
-		switch(itemId) {
+		int itemType = itemID % 100;	 //item type value
+		int itemSubType = itemID / 100;  //item meta value
+		
+		switch(itemType) {
 		//cannon
-		case ID.E_CANNON_SINGLE_5:
-		case ID.E_CANNON_SINGLE_6:
-		case ID.E_CANNON_TWIN_5:
-		case ID.E_CANNON_TWIN_6:
-		case ID.E_CANNON_TWIN_5DP:
-		case ID.E_CANNON_TWIN_125:
-		case ID.E_CANNON_TWIN_14:
-		case ID.E_CANNON_TWIN_16:
-		case ID.E_CANNON_TWIN_20:
-		case ID.E_CANNON_TRI_8:
-		case ID.E_CANNON_TRI_16:
-		case ID.E_CANNON_FG_15:
+		case ID.EquipType.CANNON_SI:
+		case ID.EquipType.CANNON_TW_LO:
+		case ID.EquipType.CANNON_TW_HI:
+		case ID.EquipType.CANNON_TR:
 			item = new ItemStack(ModItems.EquipCannon);
-			item.setItemDamage(itemId);
 			break;
 		//machine gun
-		case ID.E_GUN_HA_3:
-		case ID.E_GUN_HA_5:
-		case ID.E_GUN_SINGLE_12:
-		case ID.E_GUN_SINGLE_20:
-		case ID.E_GUN_TWIN_40:
-		case ID.E_GUN_QUAD_40:
-		case ID.E_GUN_TWIN_4_CIC:
+		case ID.EquipType.GUN_LO:
+		case ID.EquipType.GUN_HI:
 			item = new ItemStack(ModItems.EquipMachinegun);
-			item.setItemDamage(itemId - ID.E_GUN_HA_3);
 			break;
 		//torpedo
-		case ID.E_TORPEDO_21MK1:
-		case ID.E_TORPEDO_21MK2:
-		case ID.E_TORPEDO_22MK1:
-		case ID.E_TORPEDO_CUTTLEFISH:
-		case ID.E_TORPEDO_HIGHSPEED:
+		case ID.EquipType.TORPEDO_LO:
+		case ID.EquipType.TORPEDO_HI:
 			item = new ItemStack(ModItems.EquipTorpedo);
-			item.setItemDamage(itemId - ID.E_TORPEDO_21MK1);
 			break;
 		//aircraft
-		case ID.E_AIRCRAFT_TMK1:
-		case ID.E_AIRCRAFT_TMK2:
-		case ID.E_AIRCRAFT_TMK3:
-		case ID.E_AIRCRAFT_TAVENGER:
-		case ID.E_AIRCRAFT_TAVENGERK:
-		case ID.E_AIRCRAFT_FMK1:
-		case ID.E_AIRCRAFT_FMK2:
-		case ID.E_AIRCRAFT_FMK3:
-		case ID.E_AIRCRAFT_FFLYFISH:
-		case ID.E_AIRCRAFT_FHELLCAT:
-		case ID.E_AIRCRAFT_FHELLCATK:
-		case ID.E_AIRCRAFT_BMK1:
-		case ID.E_AIRCRAFT_BMK2:
-		case ID.E_AIRCRAFT_BFLYFISH:
-		case ID.E_AIRCRAFT_BHELL:
-		case ID.E_AIRCRAFT_BHELLK:
-		case ID.E_AIRCRAFT_R:
-		case ID.E_AIRCRAFT_RFLYFISH:
+		case ID.EquipType.AIR_T_LO:
+		case ID.EquipType.AIR_T_HI:
+		case ID.EquipType.AIR_F_LO:
+		case ID.EquipType.AIR_F_HI:
+		case ID.EquipType.AIR_B_LO:
+		case ID.EquipType.AIR_B_HI:
+		case ID.EquipType.AIR_R_LO:
+		case ID.EquipType.AIR_R_HI:
 			item = new ItemStack(ModItems.EquipAirplane);
-			item.setItemDamage(itemId - ID.E_AIRCRAFT_TMK1);
 			break;
 		//radar
-		case ID.E_RADAR_AIRMK1:
-		case ID.E_RADAR_AIRMK2:
-		case ID.E_RADAR_SURMK1:
-		case ID.E_RADAR_SURMK2:
-		case ID.E_RADAR_SONAR:
-		case ID.E_RADAR_AIRABYSS:
-		case ID.E_RADAR_SURABYSS:
-		case ID.E_RADAR_SONARMK2:
-		case ID.E_RADAR_FCSCIC:
+		case ID.EquipType.RADAR_LO:
+		case ID.EquipType.RADAR_HI:
 			item = new ItemStack(ModItems.EquipRadar);
-			item.setItemDamage(itemId - ID.E_RADAR_AIRMK1);
 			break;
 		//turbine 
-		case ID.E_TURBINE:
-		case ID.E_TURBINE_IMP:
-		case ID.E_TURBINE_ENH:
+		case ID.EquipType.TURBINE_LO:
+		case ID.EquipType.TURBINE_HI:
 			item = new ItemStack(ModItems.EquipTurbine);
-			item.setItemDamage(itemId - ID.E_TURBINE);
 			break;
 		//armor
-		case ID.E_ARMOR:
-		case ID.E_ARMOR_ENH:
+		case ID.EquipType.ARMOR_LO:
+		case ID.EquipType.ARMOR_HI:
 			item = new ItemStack(ModItems.EquipArmor);
-			item.setItemDamage(itemId - ID.E_ARMOR);
 			break;
 		//catapult
-		case ID.E_CATAPULT_F:
-		case ID.E_CATAPULT_H:
-		case ID.E_CATAPULT_C:
-		case ID.E_CATAPULT_E:
+		case ID.EquipType.CATAPULT_LO:
+		case ID.EquipType.CATAPULT_HI:
 			item = new ItemStack(ModItems.EquipCatapult);
-			item.setItemDamage(itemId - ID.E_CATAPULT_F);
 			break;
 		default:
 			item = null;
 			break;
 		}
 		
+		//set item sub type
+		if(item != null) item.setItemDamage(itemSubType);
+		
+		LogHelper.info("DEBUG : equip calc: get itemstack: "+itemType+" "+itemSubType+" "+item);
 		return item;
 	}
 	

@@ -69,7 +69,7 @@ public class EntityMountSeat extends Entity {
 			//sync every 32 ticks
 			if(this.ticksExisted % 32 == 0) {
 				if(host != null) {
-					//­Yrider¤£¦b©ÎªÌhostªºseat´«¤H, «h®ø°£¦¹entity
+					//è‹¥riderä¸åœ¨æˆ–è€…hostçš„seatæ›äºº, å‰‡æ¶ˆé™¤æ­¤entity
 					if(host.getHealth() <= 1F || this.riddenByEntity == null || this.host.seat2 != this) {
 		  	  			this.setRiderNull();
 		  	  			return;
@@ -122,13 +122,13 @@ public class EntityMountSeat extends Entity {
 			this.riddenByEntity = null;		//clear seat2 rider
 		}
 		
-		//­Y¬Oserver«hµo°esync packet
+		//è‹¥æ˜¯serverå‰‡ç™¼é€sync packet
 		if(!this.worldObj.isRemote) {
 			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
 			CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this, 6), point);
 		}
 
-		this.setDead();	//¦¹setDead¥u¦³µo¥Í¦bserver side, client side¥²¶·¥Ñsync packet³B²z
+		this.setDead();	//æ­¤setDeadåªæœ‰ç™¼ç”Ÿåœ¨server side, client sideå¿…é ˆç”±sync packetè™•ç†
 	}
 	
 	

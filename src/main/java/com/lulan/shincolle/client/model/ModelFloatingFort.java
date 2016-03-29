@@ -98,8 +98,8 @@ public class ModelFloatingFort extends ModelBase {
     //for idle/run animation
     @Override
 	public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity) {  
-    	this.BodyMain.rotateAngleY = f3 * 0.0174533F;	//¥ª¥k¨¤«×
-    	this.BodyMain.rotateAngleX = f4 * 0.0174533F; 	//¤W¤U¨¤«×
+    	this.BodyMain.rotateAngleY = f3 * 0.0174533F;	//å·¦å³è§’åº¦
+    	this.BodyMain.rotateAngleX = f4 * 0.0174533F; 	//ä¸Šä¸‹è§’åº¦
     	this.JawMain.rotateAngleZ = 0F;
     	this.JawMain.rotateAngleX = MathHelper.cos(f2) * 0.25F + 0.375F;
     }

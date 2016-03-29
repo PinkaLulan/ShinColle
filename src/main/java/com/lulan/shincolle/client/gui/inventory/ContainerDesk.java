@@ -38,7 +38,7 @@ public class ContainerDesk extends Container {
 		}
 	}
 
-	//ª±®a¬O§_¥i¥HÄ²µo¥kÁäÂI¤è¶ô¨Æ¥ó
+	//ç©å®¶æ˜¯å¦å¯ä»¥è§¸ç™¼å³éµé»æ–¹å¡Šäº‹ä»¶
 	@Override
 	public boolean canInteractWith(EntityPlayer player) {
 		//open GUI with TileEntity
@@ -59,9 +59,9 @@ public class ContainerDesk extends Container {
 		}
     }
 	
-	/**¨Ïcontainer¤ä´©shiftÂIª««~ªº°Ê§@, ¦¹¬°ContainerFurnace¤¤ª½±µ½Æ»s¹L¨Ó­×§ï
-	 * shiftÂI¤Hª«­I¥]¤¤ªºª««~->§P©wª««~Ãş«¬°e¨ì«ü©w®æ¤l, ÂIcontainer¤¤ªºª««~->°e¨ì¤Hª«­I¥]
-	 * mergeItemStack: parm: item,start slot,end slot(¦¹®æ¤£§P©w©ñ¤J),¬O§_¥ı©ñ¨ìhot bar
+	/**ä½¿containeræ”¯æ´shifté»ç‰©å“çš„å‹•ä½œ, æ­¤ç‚ºContainerFurnaceä¸­ç›´æ¥è¤‡è£½éä¾†ä¿®æ”¹
+	 * shifté»äººç‰©èƒŒåŒ…ä¸­çš„ç‰©å“->åˆ¤å®šç‰©å“é¡å‹é€åˆ°æŒ‡å®šæ ¼å­, é»containerä¸­çš„ç‰©å“->é€åˆ°äººç‰©èƒŒåŒ…
+	 * mergeItemStack: parm: item,start slot,end slot(æ­¤æ ¼ä¸åˆ¤å®šæ”¾å…¥),æ˜¯å¦å…ˆæ”¾åˆ°hot bar
 	 *        
 	 * slot id: 0~26:player inventory  27~35:hot bar        
 	 */
@@ -70,7 +70,7 @@ public class ContainerDesk extends Container {
         return null;
     }
 	
-	//µo°egui§ó·s, ¨C¦¸¶}±Ò¤è¶ô®É©I¥s¤@¦¸ 
+	//ç™¼é€guiæ›´æ–°, æ¯æ¬¡é–‹å•Ÿæ–¹å¡Šæ™‚å‘¼å«ä¸€æ¬¡ 
 	@Override
 	public void addCraftingToCrafters (ICrafting crafting) {
 		super.addCraftingToCrafters(crafting);
@@ -83,7 +83,7 @@ public class ContainerDesk extends Container {
 		}
 	}
 	
-	//±Ncontainer¼Æ­È¸òtile entity¤ºªº¼Æ­È¤ñ¹ï, ¦pªG¤£¦P«hµo°e§ó·sµ¹client¨Ïgui§e²{·s¼Æ­È
+	//å°‡containeræ•¸å€¼è·Ÿtile entityå…§çš„æ•¸å€¼æ¯”å°, å¦‚æœä¸åŒå‰‡ç™¼é€æ›´æ–°çµ¦clientä½¿guiå‘ˆç¾æ–°æ•¸å€¼
 	@Override
 	public void detectAndSendChanges() {
 		super.detectAndSendChanges();
@@ -99,7 +99,7 @@ public class ContainerDesk extends Container {
 		}
     }
 
-	//clientºİcontainer±µ¦¬·s­È
+	//clientç«¯containeræ¥æ”¶æ–°å€¼
 	@Override
 	@SideOnly(Side.CLIENT)
     public void updateProgressBar(int valueType, int updatedValue) {

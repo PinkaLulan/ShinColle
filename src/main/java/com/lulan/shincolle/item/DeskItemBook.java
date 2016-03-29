@@ -18,7 +18,7 @@ public class DeskItemBook extends BasicItem {
 	
 	@Override
 	public ItemStack onItemRightClick(ItemStack itemstack, World world, EntityPlayer player) {
-		if(player != null) {  //秨币よ遏GUI 把计:產, mod instance, gui ID, world, 璹把计1,2,3
+		if(player != null) {  //闁嬪暉鏂瑰GUI 鍙冩暩:鐜╁, mod instance, gui ID, world, 鑷▊鍙冩暩1,2,3
 			FMLNetworkHandler.openGui(player, ShinColle.instance, ID.G.ADMIRALDESK, world, 2, 0, 0);
 		}
 		return itemstack;

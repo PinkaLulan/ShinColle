@@ -9,7 +9,6 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -149,7 +148,7 @@ public class ShipSpawnEgg extends Item {
                 player.worldObj.spawnEntityInWorld(entityToSpawn);
                 entityToSpawn.onSpawnWithEgg((IEntityLivingData)null);	//for vanilla random spawn, disable
                 entityToSpawn.playLivingSound();
-            } 
+            }
             else {
                 LogHelper.info("Entity not found "+entityToSpawnName);	//debug
             }
@@ -169,7 +168,7 @@ public class ShipSpawnEgg extends Item {
   		entity.setPathToEntity(null);
   		entity.setEntityTarget(null);
   		
-  		//«ü©wship egg, Åª¨únbt¨Óµ¹Äİ©Ê
+  		//æŒ‡å®šship egg, è®€å–nbtä¾†çµ¦å±¬æ€§
 		if(itemstack.getItemDamage() > 1) {
 			NBTTagCompound nbt = itemstack.getTagCompound();
 			
@@ -251,7 +250,7 @@ public class ShipSpawnEgg extends Item {
 				EntityHelper.setPetPlayerUID(player, entity);
 			}
 		}
-		//«D«ü©wship egg, «hÀH¾÷»ëÄİ©Ê
+		//éæŒ‡å®šship egg, å‰‡éš¨æ©Ÿéª°å±¬æ€§
 		else {
 			LogHelper.info("DEBUG : new spawn egg (random)");
 			
@@ -311,7 +310,7 @@ public class ShipSpawnEgg extends Item {
                         	int costLevel = nbt.getIntArray("Attrs")[0] / 3;
                         	
                         	if(player.experienceLevel < costLevel) {
-                        		player.addChatMessage(new ChatComponentText(I18n.format("chat.shincolle:spawnegg.lowlevel")));
+                        		player.addChatMessage(new ChatComponentText("LEVEL is too LOW!"));
                         		return itemstack;
                         	}
                         	else {
@@ -357,7 +356,7 @@ public class ShipSpawnEgg extends Item {
     public void addInformation(ItemStack itemstack, EntityPlayer player, List list, boolean par4) {
     	int[] material = new int[4];
 
-    	if(itemstack.hasTagCompound()) { 	//¥¿±`»s³yegg, ·|¦³¥|­Ó§÷®Ætag	
+    	if(itemstack.hasTagCompound()) { 	//æ­£å¸¸è£½é€ egg, æœƒæœ‰å››å€‹ææ–™tag	
     		NBTTagCompound nbt = itemstack.getTagCompound();
 
     		if(nbt.hasKey("Attrs")) {

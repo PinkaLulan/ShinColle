@@ -63,9 +63,9 @@ public class ContainerShipInventory extends Container {
 		return true;
 	}
 	
-	/**¨Ïcontainer¤ä´©shiftÂIª««~ªº°Ê§@
-	 * shiftÂI¤Hª«­I¥]¤¤ªºª««~->§P©wª««~Ãş«¬°e¨ì«ü©w®æ¤l, ÂIcontainer¤¤ªºª««~->°e¨ì¤Hª«­I¥]
-	 * mergeItemStack: parm: item,start slot,end slot(¦¹®æ¤£§P©w©ñ¤J),¬O§_¥Ñhotbar¶}©l§P©w
+	/**ä½¿containeræ”¯æ´shifté»ç‰©å“çš„å‹•ä½œ
+	 * shifté»äººç‰©èƒŒåŒ…ä¸­çš„ç‰©å“->åˆ¤å®šç‰©å“é¡å‹é€åˆ°æŒ‡å®šæ ¼å­, é»containerä¸­çš„ç‰©å“->é€åˆ°äººç‰©èƒŒåŒ…
+	 * mergeItemStack: parm: item,start slot,end slot(æ­¤æ ¼ä¸åˆ¤å®šæ”¾å…¥),æ˜¯å¦ç”±hotbaré–‹å§‹åˆ¤å®š
 	 * slot id: 0~4:equip  5~22:ship inventory 
 	 *          23~49:player inventory  50~58:hot bar
 	 *          
@@ -83,21 +83,21 @@ public class ContainerShipInventory extends Container {
         Slot slot = (Slot)this.inventorySlots.get(slotid);
         boolean isEquip = false;
 
-        if(slot != null && slot.getHasStack()) { 			//­Yslot¦³ªF¦è
-            ItemStack itemstack1 = slot.getStack();			//itemstack1¨ú±o¸Óslotª««~
-            itemstack = itemstack1.copy();					//itemstack½Æ»s¤@¥÷itemstack1
+        if(slot != null && slot.getHasStack()) { 			//è‹¥slotæœ‰æ±è¥¿
+            ItemStack itemstack1 = slot.getStack();			//itemstack1å–å¾—è©²slotç‰©å“
+            itemstack = itemstack1.copy();					//itemstackè¤‡è£½ä¸€ä»½itemstack1
             
-            if(itemstack1.getItem() instanceof BasicEquip) isEquip = true;	//§P©w¬O§_¬°equip
+            if(itemstack1.getItem() instanceof BasicEquip) isEquip = true;	//åˆ¤å®šæ˜¯å¦ç‚ºequip
 
             if(slotid < SLOTS_SHIPINV) {  		//click equip slot
             	if(!this.mergeItemStack(itemstack1, SLOTS_SHIPINV, 60, true)) { //take out equip
                 	return null;
                 }	
-                slot.onSlotChange(itemstack1, itemstack); //­Yª««~¦¨¥\·h°Ê¹L, «h©I¥sslot change¨Æ¥ó
+                slot.onSlotChange(itemstack1, itemstack); //è‹¥ç‰©å“æˆåŠŸæ¬å‹•é, å‰‡å‘¼å«slot changeäº‹ä»¶
             }
             else {					//slot is ship or player inventory (5~58)
             	if(slotid < SLOTS_PLAYERINV) {	//if ship inventory (0~23)
-            		if(isEquip) {	//§âequip¶ë¶islot 0~4, ¶ë¤£¤U«h©ñplayer inventory (24~58)
+            		if(isEquip) {	//æŠŠequipå¡é€²slot 0~4, å¡ä¸ä¸‹å‰‡æ”¾player inventory (24~58)
             			if(!this.mergeItemStack(itemstack1, 0, SLOTS_SHIPINV, false)) {
                 			if(!this.mergeItemStack(itemstack1, SLOTS_PLAYERINV, 60, true)) {
                 				return null;
@@ -111,7 +111,7 @@ public class ContainerShipInventory extends Container {
             		}
             	}
             	else {				//if player inventory (23~58)
-            		if(isEquip) {	//§âequip¶ë¶islot 0~4, ¶ë¤£¤U«h©ñship inventory (5~22)
+            		if(isEquip) {	//æŠŠequipå¡é€²slot 0~4, å¡ä¸ä¸‹å‰‡æ”¾ship inventory (5~22)
             			if(!this.mergeItemStack(itemstack1, 0, SLOTS_SHIPINV, false)) {
                 			if(!this.mergeItemStack(itemstack1, SLOTS_SHIPINV, SLOTS_PLAYERINV, true)) {
                 				return null;
@@ -126,25 +126,25 @@ public class ContainerShipInventory extends Container {
             	}
             }
 
-            //¦pªGª««~³£©ñ§¹¤F, «h³]¦¨null²MªÅ¸Óª««~
+            //å¦‚æœç‰©å“éƒ½æ”¾å®Œäº†, å‰‡è¨­æˆnullæ¸…ç©ºè©²ç‰©å“
             if (itemstack1.stackSize <= 0) {
                 slot.putStack((ItemStack)null);
             }
-            else { //ÁÙ¨S©ñ§¹, ¥ı¶]¤@¦¸slot update
+            else { //é‚„æ²’æ”¾å®Œ, å…ˆè·‘ä¸€æ¬¡slot update
                 slot.onSlotChanged();
             }
 
-            //¦pªGitemstackªº¼Æ¶q¸ò­ì¥ıªº¼Æ¶q¬Û¦P, ªí¥Ü³£¤£¯à²¾°Êª««~
+            //å¦‚æœitemstackçš„æ•¸é‡è·ŸåŸå…ˆçš„æ•¸é‡ç›¸åŒ, è¡¨ç¤ºéƒ½ä¸èƒ½ç§»å‹•ç‰©å“
             if (itemstack1.stackSize == itemstack.stackSize) {
                 return null;
             }
-            //³Ì«á¦Aµo°e¤@¦¸slot update
+            //æœ€å¾Œå†ç™¼é€ä¸€æ¬¡slot update
             slot.onPickupFromSlot(player, itemstack1);
         }
-        return itemstack;	//ª««~²¾°Ê§¹¦¨, ¦^¶Ç³Ñ¤Uªºª««~
+        return itemstack;	//ç‰©å“ç§»å‹•å®Œæˆ, å›å‚³å‰©ä¸‹çš„ç‰©å“
     }
 	
-	//µo°e§ó·sgui¶i«×±ø§ó·s, ¤ñdetectAndSendChangesÁÙ­nÀu¥ı(¦b¦¹©ñ¸minit¤èªkµ¥)
+	//ç™¼é€æ›´æ–°guié€²åº¦æ¢æ›´æ–°, æ¯”detectAndSendChangesé‚„è¦å„ªå…ˆ(åœ¨æ­¤æ”¾ç½®initæ–¹æ³•ç­‰)
 	@Override
 	public void addCraftingToCrafters (ICrafting crafting) {
 		super.addCraftingToCrafters(crafting);
@@ -171,7 +171,7 @@ public class ContainerShipInventory extends Container {
 		crafting.sendProgressBarUpdate(this, 22, this.entity.getStateFlagI(ID.F.TimeKeeper));
 	}
 	
-	//°»´ú¼Æ­È¬O§_§ïÅÜ, ¦³§ïÅÜ®Éµo°e§ó·s(¦¹¬°serverºİ°»´ú)
+	//åµæ¸¬æ•¸å€¼æ˜¯å¦æ”¹è®Š, æœ‰æ”¹è®Šæ™‚ç™¼é€æ›´æ–°(æ­¤ç‚ºserverç«¯åµæ¸¬)
 	@Override
 	public void detectAndSendChanges() {
 		super.detectAndSendChanges();
@@ -296,7 +296,7 @@ public class ContainerShipInventory extends Container {
         }
     }
 	
-	//clientºİcontainer±µ¦¬·s­È
+	//clientç«¯containeræ¥æ”¶æ–°å€¼
 	@Override
 	@SideOnly(Side.CLIENT)
     public void updateProgressBar(int valueType, int updatedValue) {     

@@ -37,18 +37,18 @@ public class EntityMountHbH extends BasicEntityMountLarge {
         this.StartEmotion2 = 0;
         this.headTilt = false;
            
-        //³]©w¦ì¸m
+        //è¨­å®šä½ç½®
         this.posX = host.posX;
         this.posY = host.posY;
         this.posZ = host.posZ;
         this.setPosition(this.posX, this.posY, this.posZ);
  
-	    //³]©w°ò¥»Äİ©Ê
+	    //è¨­å®šåŸºæœ¬å±¬æ€§
         setupAttrs();
         
 		if(this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
 				
-		//³]©wAI
+		//è¨­å®šAI
 		this.setAIList();
 	}
     

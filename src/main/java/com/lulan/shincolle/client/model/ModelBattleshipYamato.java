@@ -1094,9 +1094,9 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
 		setGlowRotation();
     }
     
-	//³]©w¼Ò«¬µo¥ú³¡¥÷ªºrotation
+	//è¨­å®šæ¨¡åž‹ç™¼å…‰éƒ¨ä»½çš„rotation
     private void setGlowRotation() {
-    	//ÀY³¡
+    	//é ­éƒ¨
 		this.GlowBodyMain.rotateAngleX = this.BodyMain.rotateAngleX;
 		this.GlowBodyMain.rotateAngleY = this.BodyMain.rotateAngleY;
 		this.GlowBodyMain.rotateAngleZ = this.BodyMain.rotateAngleZ;
@@ -1109,7 +1109,7 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
     }
     
     
-	//Âù¸}²¾°Ê­pºâ
+	//é›™è…³ç§»å‹•è¨ˆç®—
   	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {   
   		float angleX = MathHelper.cos(f2*0.08F + f * 0.25F);
   		float angleX1 = MathHelper.cos(f2*0.08F + 0.3F + f * 0.5F);
@@ -1126,12 +1126,12 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
   		addk1 = angleAdd1 * 0.5F - 0.2793F;  //LegLeft01
 	  	addk2 = angleAdd2 * 0.5F - 0.1396F;  //LegRight01
 
-  	    //²¾°ÊÀY³¡¨Ï¨ä¬Ý¤H
-	  	this.Head.rotateAngleX = f4 * 0.0174532925F - 0.1047F; 	//¤W¤U¨¤«×
-	  	this.Head.rotateAngleY = f3 * 0.008F;	//¥ª¥k¨¤«× ¨¤«×Âà¦¨rad §Y°£¥H57.29578
+  	    //ç§»å‹•é ­éƒ¨ä½¿å…¶çœ‹äºº
+	  	this.Head.rotateAngleX = f4 * 0.0174532925F - 0.1047F; 	//ä¸Šä¸‹è§’åº¦
+	  	this.Head.rotateAngleY = f3 * 0.008F;	//å·¦å³è§’åº¦ è§’åº¦è½‰æˆrad å³é™¤ä»¥57.29578
 	    
-	    //¥¿±`¯¸¥ß°Ê§@
-	    //¯Ý³¡
+	    //æ­£å¸¸ç«™ç«‹å‹•ä½œ
+	    //èƒ¸éƒ¨
   	    this.BoobL.rotateAngleX = angleX * 0.06F - 0.75F;
   	    this.BoobR.rotateAngleX = angleX * 0.06F - 0.75F;
   	    this.Cloth02a.rotateAngleX = angleX * 0.06F - 0.7F;
@@ -1237,7 +1237,7 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
 		}
 
 
-	    if(ent.getIsSprinting() || f1 > 0.1F) {	//©b¶]°Ê§@
+	    if(ent.getIsSprinting() || f1 > 0.1F) {	//å¥”è·‘å‹•ä½œ
 	    	//hair
 	    	this.Hair01.rotateAngleX += f1 * 0.25F;
 		    //arm 
@@ -1246,7 +1246,7 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
 	    else {
 	    	startEmo2 = ent.getStartEmotion2();
 	    	
-	    	//ÀY³¡¶É±×°Ê§@, ¥u¦b©b¶]¥H¥~®Éroll
+	    	//é ­éƒ¨å‚¾æ–œå‹•ä½œ, åªåœ¨å¥”è·‘ä»¥å¤–æ™‚roll
 	    	if(startEmo2 > 0) {
 	    		--startEmo2;
 	    		ent.setStartEmotion2(startEmo2);
@@ -1265,9 +1265,9 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
 		    }
 	    }//end if sprint
 
-	    //rollÀY³¡¶É±×ªí±¡
+	    //rollé ­éƒ¨å‚¾æ–œè¡¨æƒ…
 	    if(ent.getStateFlag(ID.F.HeadTilt)) {
-	    	if(ent.getStateEmotion(ID.S.Emotion2) == 1) {	//¤§«e¤w¸g¶É±×, «hÄ~Äò¶É±×
+	    	if(ent.getStateEmotion(ID.S.Emotion2) == 1) {	//ä¹‹å‰å·²ç¶“å‚¾æ–œ, å‰‡ç¹¼çºŒå‚¾æ–œ
 	    		this.Head.rotateAngleZ = -0.24F;
 	    	}
 	    	else {
@@ -1280,7 +1280,7 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
 	    	}	
 	    }
 	    else {
-	    	if(ent.getStateEmotion(ID.S.Emotion2) == 0) {	//ºû«ù¤§«e¨¤«×
+	    	if(ent.getStateEmotion(ID.S.Emotion2) == 0) {	//ç¶­æŒä¹‹å‰è§’åº¦
 	    		this.Head.rotateAngleZ = 0F;
 	    	}
 	    	else {
@@ -1293,7 +1293,7 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
 	    	}
 	    }
 	    
-	    if(ent.getIsSneaking()) {		//¼ç¦æ, ÃÛ¤U°Ê§@
+	    if(ent.getIsSneaking()) {		//æ½›è¡Œ, è¹²ä¸‹å‹•ä½œ
 	    	GL11.glTranslatef(0F, 0.1F, 0F);
 	    	//Body
 	    	this.Head.rotateAngleX -= 1.0472F;
@@ -1326,7 +1326,7 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
 			}
   		}//end if sneaking
   		
-	    if(ent.getIsSitting() || ent.getIsRiding()) {  //ÃM­¼°Ê§@
+	    if(ent.getIsSitting() || ent.getIsRiding()) {  //é¨Žä¹˜å‹•ä½œ
 	    	if(ent.getStateEmotion(ID.S.State) > ID.State.EQUIP00) {
 		    	GL11.glTranslatef(0F, offsetY + 1.2F, 0F);
 		    	//Body
@@ -1457,14 +1457,14 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
 	    	}
   		}//end if sitting
 	    
-	    //§ðÀ»°Ê§@    
+	    //æ”»æ“Šå‹•ä½œ    
 	    if(ent.getAttackTime() > 0) {
 	    	this.ArmLeft01.rotateAngleX = -1.5708F;
 		    this.ArmLeft01.rotateAngleY = -0.2F + this.Head.rotateAngleY;
 		  	this.ArmLeft01.rotateAngleZ = 0F;
 	    }
 	    
-	    //ÆK¤ò½Õ¾ã
+	    //é¬¢æ¯›èª¿æ•´
 	    float headZ = this.Head.rotateAngleZ * -0.5F;
 	    float headX = this.Head.rotateAngleX * -0.5F - 0.05F;
 	    this.Hair01.rotateAngleX += headX;
@@ -1537,7 +1537,7 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
   		}
   	}
   	
-    //³]©wÅã¥ÜªºÁy«¬
+    //è¨­å®šé¡¯ç¤ºçš„è‡‰åž‹
   	@Override
   	public void setFace(int emo) {
   		switch(emo) {

@@ -370,7 +370,7 @@ public class GuiFormation extends GuiContainer {
 		}
 	}
 
-	//GUI«e´º: ¤å¦r 
+	//GUIå‰æ™¯: æ–‡å­— 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int i, int j) {
 		//draw button wait time
@@ -386,7 +386,7 @@ public class GuiFormation extends GuiContainer {
 		handleHoveringText();
 	}
 
-	//GUI­I´º: ­I´º¹Ï¤ù
+	//GUIèƒŒæ™¯: èƒŒæ™¯åœ–ç‰‡
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float par1,int par2, int par3) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);	//RGBA

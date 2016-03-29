@@ -58,6 +58,14 @@ public class ServerProxy extends CommonProxy {
 	 */
 	private static Map<Integer, List<String>> customTagetClassList = null;
 	
+	/**unattackable target list
+	 * entity in this list will not hurt by ship attack
+	 * 
+	 * unattackableTargetClassList List<class name>
+	 * 
+	 */
+	private static List<String> unattackableTargetClassList = null;
+	
 	/**team data cache
 	 * for team data display, owner check, etc
 	 * team ID = player UID (1 player = 1 team for now), team keeps 1 ally and 1 banned team list
@@ -75,7 +83,7 @@ public class ServerProxy extends CommonProxy {
 	
 	/**player id cache
 	 * for owner/team check, use map for data cache, save to .dat file when server close
-	 * entity«Ø¥ß®É·|Åª¨ú¦¹map¨Ó¨ú±oowner id, ¨Ã¦s¦b¦Û¤vªºnbt¤¤, ¥H«á´Nª½±µ¥H¸Óentity¦sªºowner id¨Ó§PÂ_owner
+	 * entityå»ºç«‹æ™‚æœƒè®€å–æ­¤mapä¾†å–å¾—owner id, ä¸¦å­˜åœ¨è‡ªå·±çš„nbtä¸­, ä»¥å¾Œå°±ç›´æ¥ä»¥è©²entityå­˜çš„owner idä¾†åˆ¤æ–·owner
 	 * 
 	 * player UID in other entity (owner check):
 	 * -1/0 = no owner
@@ -99,7 +107,7 @@ public class ServerProxy extends CommonProxy {
 	private static Map<Integer, int[]> mapPlayerID = null;
 	
 	/**ship id cache
-	 * for pointer command, UIDºû«ù©T©w, entity id¨C¦¸«Ø¥ßentity®É§ó·s
+	 * for pointer command, UIDç¶­æŒå›ºå®š, entity idæ¯æ¬¡å»ºç«‹entityæ™‚æ›´æ–°
 	 * delete when server close
 	 * 
 	 * mapShipID <ship UID, ship data>
@@ -135,6 +143,7 @@ public class ServerProxy extends CommonProxy {
 	
 	/**server global var */
 	public static final String CUSTOM_TARGET_CLASS = "CustomTargetClass";
+	public static final String UNATK_TARGET_CLASS = "UnatkTargetClass";
 	public static int serverTicks = 0;
 	public static int updateRadarTicks = ConfigHandler.radarUpdate;
 
@@ -153,6 +162,7 @@ public class ServerProxy extends CommonProxy {
 		//init data by default value
 		extendedPlayerData = new HashMap<String, NBTTagCompound>();
 		customTagetClassList = new HashMap<Integer, List<String>>();
+		unattackableTargetClassList = new ArrayList<String>();
 		mapPlayerID = new HashMap<Integer, int[]>();
 		mapShipID = new HashMap<Integer, int[]>();
 		mapTeamID = new HashMap<Integer, TeamData>();
@@ -169,9 +179,27 @@ public class ServerProxy extends CommonProxy {
 			setNextPlayerID(serverData.nbtData.getInteger(ShinWorldData.TAG_NEXTPLAYERID));
 			setNextShipID(serverData.nbtData.getInteger(ShinWorldData.TAG_NEXTSHIPID));
 			
+			
+			//load unattackable list
+			NBTTagList unatktag = serverData.nbtData.getTagList(UNATK_TARGET_CLASS, Constants.NBT.TAG_COMPOUND);
+			LogHelper.info("DEBUG : init server proxy: get unattackable target list: count: "+unatktag.tagCount());
+			List<String> unatklist = new ArrayList();
+			
+			for(int j = 0; j < unatktag.tagCount(); ++j) {
+				String str = unatktag.getStringTagAt(j);
+
+				if(str != null && str.length() > 1) {
+					unatklist.add(str);
+				}
+			}
+			
+			setUnattackableTargetClassList(unatklist);
+			
+			
 			//load player data:  from server save file to playerMap
 			NBTTagList list = serverData.nbtData.getTagList(ShinWorldData.TAG_PLAYERDATA, Constants.NBT.TAG_COMPOUND);
 			LogHelper.info("DEBUG : init server proxy: get player data count: "+list.tagCount());
+			
 			for(int i = 0; i < list.tagCount(); i++) {
 				NBTTagCompound getlist = list.getCompoundTagAt(i);
 				int uid = getlist.getInteger(ShinWorldData.TAG_PUID);
@@ -194,6 +222,7 @@ public class ServerProxy extends CommonProxy {
 				setPlayerWorldData(uid, data);
 				setPlayerTargetClassList(uid, strList);
 			}
+			
 			
 			//load team data:  from server save file to playerMap
 			NBTTagList list2 = serverData.nbtData.getTagList(ShinWorldData.TAG_TEAMDATA, Constants.NBT.TAG_COMPOUND);
@@ -279,7 +308,7 @@ public class ServerProxy extends CommonProxy {
 		return extendedPlayerData.get(name);
 	}
 	
-	/** add/remove string in player target class list */
+	/** add/remove string in player target class list *///TODO return boolean to check add/remove msg
 	public static void setPlayerTargetClassList(int pid, String str) {
 		if(str != null && str.length() > 1 && pid > 0) {
 			//get target class list
@@ -302,6 +331,40 @@ public class ServerProxy extends CommonProxy {
 				serverData.markDirty();
 			}
 		}
+	}
+	
+	/** unattackable target list, return true = add target, false = remove target or do nothing */
+	//add
+	public static boolean addUnattackableTargetClassList(String target) {
+		boolean result = false;
+		
+		if(target != null) {
+			//target in list, remove it
+			if(unattackableTargetClassList.contains(target)) {
+				unattackableTargetClassList.remove(target);
+			}
+			//add target to list
+			else {
+				unattackableTargetClassList.add(target);
+				result = true;
+			}
+			
+			serverData.markDirty();
+		}
+		
+		return result;
+	}
+	
+	//set
+	public static void setUnattackableTargetClassList(List<String> data) {
+		if(data != null) {
+			unattackableTargetClassList = data;
+		}
+	}
+	
+	//get
+	public static List<String> getUnattackableTargetClassList() {
+		return unattackableTargetClassList;
 	}
 	
 	/** player target class list for attack check */
@@ -608,7 +671,7 @@ public class ServerProxy extends CommonProxy {
 					    
 					    int[] pdata = getPlayerWorldData(puid);	//get owner's data
 					    
-					    //ÀË¬d¬O§_¦b¦Pworld, ¬Û¦Pworldªºship¤~¥[¤Jlist
+					    //æª¢æŸ¥æ˜¯å¦åœ¨åŒworld, ç›¸åŒworldçš„shipæ‰åŠ å…¥list
 					    if(sdata != null && pdata != null && sdata[1] == pdata[2]) {
 					    	//add ship's entity id to player's shipList
 					    	List shipList = allShipMapByPlayer.get(puid);

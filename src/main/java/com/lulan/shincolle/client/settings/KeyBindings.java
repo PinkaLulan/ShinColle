@@ -2,7 +2,7 @@ package com.lulan.shincolle.client.settings;
 
 public class KeyBindings {
 	
-	//­×´_«öÁä (debug¥Î)
+	//ä¿®å¾©æŒ‰éµ (debugç”¨)
 //	public static KeyBinding repair = new KeyBinding(Names.Keys.REPAIR, Keyboard.KEY_R, Names.Keys.CATEGORY);
 
 }

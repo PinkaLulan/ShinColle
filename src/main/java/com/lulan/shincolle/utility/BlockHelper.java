@@ -165,7 +165,7 @@ public class BlockHelper {
 		//try 25 times
 		for(int i = 0; i < 25; i++) {
 			switch(mode) {
-			case 0:	 //ÀH¾÷¿ï¾Ü¥Ø¼Ð©P³ò¥|­Ó¶H­­
+			case 0:	 //éš¨æ©Ÿé¸æ“‡ç›®æ¨™å‘¨åœå››å€‹è±¡é™
 				//find side position
 				newPos[0] = rand.nextDouble() * randDist + minDist;	//ran = min + randN
 				newPos[1] = rand.nextDouble() * randDist + target.posY + 1D;
@@ -190,7 +190,7 @@ public class BlockHelper {
 					break;
 				}//end inner switch
 				break;
-			case 1:  //Â¶­Iªk, ÀH¾÷¿ï¾Ü­I­±¨â­Ó¶H­­
+			case 1:  //ç¹žèƒŒæ³•, éš¨æ©Ÿé¸æ“‡èƒŒé¢å…©å€‹è±¡é™
 				//find side position
 				newPos[0] = rand.nextDouble() * randDist + minDist;	//ran = min + randN
 				newPos[1] = rand.nextDouble() * randDist + target.posY - 1D;
@@ -214,7 +214,7 @@ public class BlockHelper {
 					newPos[2] = target.posZ - newPos[2];
 				}
 				break;
-			case 2:  //ª½½u«e¶iªk, ¨Ì·Ó²¾°Ê¤è¦VÄ~Äò©¹«e
+			case 2:  //ç›´ç·šå‰é€²æ³•, ä¾ç…§ç§»å‹•æ–¹å‘ç¹¼çºŒå¾€å‰
 				//find side position
 				newPos[0] = rand.nextDouble() * randDist + minDist;	//ran = min + randN
 				newPos[1] = rand.nextDouble() * randDist + target.posY + 1D;
@@ -262,7 +262,7 @@ public class BlockHelper {
 	    Vec3 vec31 = player.getLook(duringTicks);
 	    Vec3 vec32 = vec3.addVector(vec31.xCoord * dist, vec31.yCoord * dist, vec31.zCoord * dist);
 	    
-	    //func_147447_a(©Ò¦³µø½u°lÂÜ¬Ò¥Î¦¹¤èªk) °Ñ¼Æ: entity¦ì¸m, entityµø½u³Ì»·¦ì¸m, ¬O§_§ì²GÅé¤è¶ô, ??, ¶ZÂ÷¤º¨S§ì¨ì¥ô¦óªF¦è¦^¶ÇMISS(¦Ó¤£¬O¦^¶Çnull)
+	    //func_147447_a(æ‰€æœ‰è¦–ç·šè¿½è¹¤çš†ç”¨æ­¤æ–¹æ³•) åƒæ•¸: entityä½ç½®, entityè¦–ç·šæœ€é ä½ç½®, æ˜¯å¦æŠ“æ¶²é«”æ–¹å¡Š, ??, è·é›¢å…§æ²’æŠ“åˆ°ä»»ä½•æ±è¥¿å›žå‚³MISS(è€Œä¸æ˜¯å›žå‚³null)
 	    return player.worldObj.func_147447_a(vec3, vec32, true, false, false);
 	}
 	

@@ -40,28 +40,28 @@ public class TileEntityDesk extends BasicTileEntity {
 		return 0;
 	}
 
-	//GUIÅã¥Üªº¦WºÙ, ¦³custom name«h¥Î, ¤£µM´N¥Î¹w³]¦WºÙ
+	//GUIé¡¯ç¤ºçš„åç¨±, æœ‰custom nameå‰‡ç”¨, ä¸ç„¶å°±ç”¨é è¨­åç¨±
 	@Override
 	public String getInventoryName() {
 		return this.hasCustomInventoryName() ? this.customName : "container."+Reference.MOD_ID+":BlockDesk";
 	}
 	
-	//¬O§_¥i¥H¥kÁäÂI¶}¤è¶ô
+	//æ˜¯å¦å¯ä»¥å³éµé»é–‹æ–¹å¡Š
 	@Override
 	public boolean isUseableByPlayer(EntityPlayer player) {
-		//¥Ñ©ó·|¦³¦h­Ótile entity°Æ¥», ­n¥ı½T»{®y¼Ğ¬Û¦Pªº°Æ¥»¤~¯à¨Ï¥Î
+		//ç”±æ–¼æœƒæœ‰å¤šå€‹tile entityå‰¯æœ¬, è¦å…ˆç¢ºèªåº§æ¨™ç›¸åŒçš„å‰¯æœ¬æ‰èƒ½ä½¿ç”¨
 		if (worldObj.getTileEntity(xCoord, yCoord, zCoord) != this) {
 			return false;
 		}
-		else {	//½T»{player­n¦b¸Ótile entity 8®æ¤º, ¥H§K¶W¥XÅª¨ú½d³ò or ²£¥Í¨ä¥L¤£©úbug
+		else {	//ç¢ºèªplayerè¦åœ¨è©²tile entity 8æ ¼å…§, ä»¥å…è¶…å‡ºè®€å–ç¯„åœ or ç”¢ç”Ÿå…¶ä»–ä¸æ˜bug
 			return player.getDistanceSq(xCoord+0.5D, yCoord+0.5D, zCoord+0.5D) <= 64;
 		}
 	}
 	
-	//Åª¨únbt¸ê®Æ
+	//è®€å–nbtè³‡æ–™
 	@Override
     public void readFromNBT(NBTTagCompound compound) {
-        super.readFromNBT(compound);	//±qnbtÅª¨ú¤è¶ôªºxyz®y¼Ğ
+        super.readFromNBT(compound);	//å¾nbtè®€å–æ–¹å¡Šçš„xyzåº§æ¨™
         
         guiFunc = compound.getInteger("guiFunc");
         radar_zoomLv = compound.getInteger("radarZoom");
@@ -69,7 +69,7 @@ public class TileEntityDesk extends BasicTileEntity {
         book_page = compound.getInteger("bookPage");
     }
 	
-	//±N¸ê®Æ¼g¶inbt
+	//å°‡è³‡æ–™å¯«é€²nbt
 	@Override
 	public void writeToNBT(NBTTagCompound compound) {
 		super.writeToNBT(compound);

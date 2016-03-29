@@ -20,7 +20,7 @@ public class KaitaiHammer extends BasicItem {
 		this.setMaxDamage(12);
 	}
 	
-	//¦¹Âñ¤l¥i¥Î©ó¦X¦¨¨ä¥L¹D¨ã, ¥B¤£¬°®ø¯Ó«~, ¬GContainerItem¬°­@¤[«×-1ªº¦Û¤v¥»¨­
+	//æ­¤éšå­å¯ç”¨æ–¼åˆæˆå…¶ä»–é“å…·, ä¸”ä¸ç‚ºæ¶ˆè€—å“, æ•…ContainerItemç‚ºè€ä¹…åº¦-1çš„è‡ªå·±æœ¬èº«
 	@Override
 	public boolean hasContainerItem(ItemStack stack) {
 		return true;
@@ -30,9 +30,9 @@ public class KaitaiHammer extends BasicItem {
 	public ItemStack getContainerItem(ItemStack stack) {
 		int meta = stack.getItemDamage() + 1;
 		
-		stack.setItemDamage(meta);	//­@¤[«×--
+		stack.setItemDamage(meta);	//è€ä¹…åº¦--
 		
-		if(meta >= this.getMaxDamage()) {	//ª««~¹F¨ì­@¤[«×¤W­­, ¦^¶ÇªÅª««~
+		if(meta >= this.getMaxDamage()) {	//ç‰©å“é”åˆ°è€ä¹…åº¦ä¸Šé™, å›å‚³ç©ºç‰©å“
 			return null;
 		}
 		
@@ -41,17 +41,17 @@ public class KaitaiHammer extends BasicItem {
 	
 	@Override
 	public boolean doesContainerItemLeaveCraftingGrid(ItemStack stack) {
-        return false;	//¦X¦¨«á¦¹ª««~·|Ä~Äò¯d¦b¦X¦¨¥x¤º
+        return false;	//åˆæˆå¾Œæ­¤ç‰©å“æœƒç¹¼çºŒç•™åœ¨åˆæˆå°å…§
     }
 	
-	//¦PgetUnlocalizedName() ¦¹¬°¥[¤Witemstackª©¥»
-	//®æ¦¡¬°item.MOD¦WºÙ:ª««~¦WºÙ.name
+	//åŒgetUnlocalizedName() æ­¤ç‚ºåŠ ä¸Šitemstackç‰ˆæœ¬
+	//æ ¼å¼ç‚ºitem.MODåç¨±:ç‰©å“åç¨±.name
 	@Override
 	public String getUnlocalizedName(ItemStack itemstack) {
 		return String.format("item.%s", Reference.MOD_ID+":KaitaiHammer");
 	}
 	
-	//¥ªÁä¥Î©ó¦Û¤vªº´ÏÄ¥, ¥i¨Ï¸Ó´ÏÄ¥¤@À»¦º¤` (Âà¦^ª««~«¬ºA, µ¥¯Å-1)
+	//å·¦éµç”¨æ–¼è‡ªå·±çš„æ£²è‰¦, å¯ä½¿è©²æ£²è‰¦ä¸€æ“Šæ­»äº¡ (è½‰å›ç‰©å“å‹æ…‹, ç­‰ç´š-1)
 	@Override
 	public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity) {
 		//entity is ship

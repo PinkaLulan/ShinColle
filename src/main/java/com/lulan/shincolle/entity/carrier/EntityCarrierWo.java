@@ -11,7 +11,6 @@ import com.lulan.shincolle.entity.ExtendShipProps;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 public class EntityCarrierWo extends BasicEntityShipLarge {
@@ -23,6 +22,7 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.CarrierWO);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CARRIER);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CV]);
+		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CV]);
 		this.ModelPos = new float[] {0F, 15F, 0F, 30F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();
@@ -53,13 +53,13 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
 		this.tasks.addTask(11, new EntityAIShipCarrierAttack(this));		   //0011
 	}
     
-    //¼W¥[Ä¥¸ü¾÷¼Æ¶q­pºâ
+    //å¢åŠ è‰¦è¼‰æ©Ÿæ•¸é‡è¨ˆç®—
   	@Override
   	public void calcShipAttributes() {
   		super.calcShipAttributes();
   		
-  		this.maxAircraftLight += 10;
-  		this.maxAircraftHeavy += 8;
+  		this.maxAircraftLight += this.getLevel() * 0.2F;
+  		this.maxAircraftHeavy += this.getLevel() * 0.1F;
   	}
       
     @Override
@@ -67,7 +67,7 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
     	//check client side
     	if(this.worldObj.isRemote) {
     		if(this.ticksExisted % 5 ==  0) {
-    			//­YÅã¥Ü¸Ë³Æ®É, «h¥Í¦¨²´·ú·ÏÃú¯S®Ä (client only)
+    			//è‹¥é¡¯ç¤ºè£å‚™æ™‚, å‰‡ç”Ÿæˆçœ¼ç›ç…™éœ§ç‰¹æ•ˆ (client only)
     			if(getStateEmotion(ID.S.State) >= ID.State.EQUIP00 &&
     			   getStateEmotion(ID.S.Emotion) != ID.Emotion.BORED) {
     				//set origin position
@@ -76,7 +76,7 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
     				float radYaw = this.rotationYawHead * Values.N.RAD_MUL;
     				float radPitch = this.rotationPitch * Values.N.RAD_MUL;
     				
-    				//§¤¤U¦ì¸m­pºâ
+    				//åä¸‹ä½ç½®è¨ˆç®—
     				if(this.isSitting()) {
     					eyePosL = new float[] {-0.3F, 1.2F, -0.4F};
         				eyePosR = new float[] {-0.7F, 1.0F, 0.6F};
@@ -86,7 +86,7 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
         				eyePosR = new float[] {-0.55F, 1.2F, 0.2F};
     				}
     				
-    				//°¼¬nÀY¦ì¸m­pºâ, ¬nÀY¥u·|­×§ïY°ª«×¸òX¦ì¸m
+    				//å´æ­ªé ­ä½ç½®è¨ˆç®—, æ­ªé ­åªæœƒä¿®æ”¹Yé«˜åº¦è·ŸXä½ç½®
     				if(getStateEmotion(ID.S.Emotion2) == 1 && !this.isSitting()) {
     					float[] tiltLeft = ParticleHelper.rotateXZByAxis(eyePosL[0], eyePosL[1], -0.24F, 1F);
     					float[] tiltRight = ParticleHelper.rotateXZByAxis(eyePosR[0], eyePosR[1], -0.24F, 1F);
@@ -96,11 +96,11 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
     					eyePosR[1] = tiltRight[1];
     				}
 
-    				//¨Ì·Ó·s¦ì¸m, Ä~Äò±ÛÂàY¶b
+    				//ä¾ç…§æ–°ä½ç½®, ç¹¼çºŒæ—‹è½‰Yè»¸
     				eyePosL = ParticleHelper.rotateXYZByYawPitch(eyePosL[0], eyePosL[1], eyePosL[2], radYaw, radPitch, 1F);
     				eyePosR = ParticleHelper.rotateXYZByYawPitch(eyePosR[0], eyePosR[1], eyePosR[2], radYaw, radPitch, 1F);		
     				
-    				//±ÛÂà§¹¤T¶b, ¥Í¦¨¯S®Ä
+    				//æ—‹è½‰å®Œä¸‰è»¸, ç”Ÿæˆç‰¹æ•ˆ
     				ParticleHelper.spawnAttackParticleAt(this.posX+eyePosL[0], this.posY+1.5D+eyePosL[1], this.posZ+eyePosL[2], 
                     		0D, 0.05D, 0D, (byte)16);
     				
@@ -120,17 +120,7 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
 		//use cake to change state
 		if(itemstack != null) {
 			if(itemstack.getItem() == Items.cake) {
-				switch(getStateEmotion(ID.S.State)) {
-				case ID.State.NORMAL:
-					setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
-					break;
-				case ID.State.EQUIP00:
-					setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-					break;
-				default:
-					setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-					break;
-				}
+				this.setShipOutfit(player.isSneaking());
 				return true;
 			}
 		}
@@ -167,6 +157,21 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
       			return (double)this.height * 0.68D;
       		}
     	}
+	}
+
+	@Override
+	public void setShipOutfit(boolean isSneaking) {
+		switch(getStateEmotion(ID.S.State)) {
+		case ID.State.NORMAL:
+			setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+			break;
+		case ID.State.EQUIP00:
+			setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+			break;
+		default:
+			setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+			break;
+		}
 	}
 	
 

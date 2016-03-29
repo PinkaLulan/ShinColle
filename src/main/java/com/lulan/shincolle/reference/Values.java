@@ -1,5 +1,6 @@
 package com.lulan.shincolle.reference;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,14 +20,13 @@ import com.lulan.shincolle.init.ModItems;
 public class Values {
 	
 	
-	//numbers
+	/** numbers */
 	public static final class N {
 		public static final float RAD_DIV = 57.295779513F;
 		public static final float RAD_MUL = 0.0174532925F;
 	}
 	
-	
-	//color code
+	/** color code */
 	public static class Color {
 		//normal
 		public static final int BLACK = 0;
@@ -186,6 +186,47 @@ public class Values {
 		put(ID.Ship.CarrierAkagi,		new int[] {0, 66, 120});
 	}});
 	
+	/**SHIP LIST for guidebook
+	 * 
+	 * index by page number
+	 */
+	public static final List<Integer> ShipBookList = Collections.unmodifiableList(new ArrayList<Integer>() {{
+		add((int)ID.Ship.DestroyerI);
+		add((int)ID.Ship.DestroyerRO);
+		add((int)ID.Ship.DestroyerHA);
+		add((int)ID.Ship.DestroyerNI);
+		
+		add((int)ID.Ship.HeavyCruiserRI);
+		add((int)ID.Ship.HeavyCruiserNE);
+		
+		add((int)ID.Ship.CarrierWO);
+		
+		add((int)ID.Ship.BattleshipTA);
+		add((int)ID.Ship.BattleshipRE);
+		
+		add((int)ID.Ship.AirfieldHime);
+		add((int)ID.Ship.BattleshipHime);
+		add((int)ID.Ship.HarbourHime);
+		add((int)ID.Ship.NorthernHime);
+		add((int)ID.Ship.CarrierWD);
+
+	}});
+	
+	/**ENEMY LIST for guidebook
+	 * 
+	 * index by page number
+	 */
+	public static final List<Integer> EnemyBookList = Collections.unmodifiableList(new ArrayList<Integer>() {{
+		add((int)ID.Ship.DestroyerShimakaze);
+		add((int)ID.Ship.BattleshipNagato);
+		add((int)ID.Ship.SubmarineU511);
+		add((int)ID.Ship.SubmarineRo500);
+		
+		add((int)ID.Ship.BattleshipYamato);
+		add((int)ID.Ship.CarrierKaga);
+		add((int)ID.Ship.CarrierAkagi);
+	}});
+	
 	
 	/** SHIP TYPE ICON MAP
 	 * 
@@ -238,88 +279,90 @@ public class Values {
 	/**EQUIP MAP
 	 * index by ID.E
 	 * 
+	 * EquipID = EquipType + EquipSubID * 100
+	 * 
 	 * equip type:
 	 * 		 0:unused
 	 *       1:cannon, torpedo
 	 *       2:aircraft-R, engine, armor, radar
 	 *       3:aircraft-T/F/B
 	 *       
-	 * note: ∑sºW∏À≥∆≠n∞O±o¶bLargeRecipe∑sºW¶^¶¨ª˘ÆÊ
+	 * note: Êñ∞Â¢ûË£ùÂÇôË¶ÅË®òÂæóÂú®LargeRecipeÊñ∞Â¢ûÂõûÊî∂ÂÉπÊ†º
 	 */
-	public static final Map<Byte, float[]> EquipMap = Collections.unmodifiableMap(new HashMap<Byte, float[]>() {{
-		//single cannon                          Typ HP   LA   HA   LAA  HAA  DEF SPD   MOV     RNG   CRI    DHit   THit   Miss   AA   ASM  Rare Type/Mean                    Dodge
-		put(ID.E_CANNON_SINGLE_5,    new float[]{1F, 0F,  2F,  0F,  0F,  0F,  0F, 0.1F, -0.01F, 1F,   0F,    0F,    0F,    0F,    0F,  0F,  ID.EquipType.CANNON_SI,    1000F, 0F});
-		put(ID.E_CANNON_SINGLE_6,    new float[]{1F, 0F,  3F,  0F,  0F,  0F,  0F, 0.1F, -0.02F, 1F,   0F,    0F,    0F,    0F,    0F,  0F,  ID.EquipType.CANNON_SI,    4000F, 0F});
+	public static final Map<Integer, float[]> EquipMap = Collections.unmodifiableMap(new HashMap<Integer, float[]>() {{
+		//single cannon                                                                             Typ HP   LA   HA   LAA  HAA  DEF SPD   MOV     RNG   CRI    DHit   THit   Miss   AA   ASM  Rare Type/Mean                    Dodge
+		put((int)ID.EquipType.CANNON_SI + (int)ID.EquipSubID.CANNON_SINGLE_5 * 100,     new float[]{1F, 0F,  2F,  0F,  0F,  0F,  0F, 0.1F, -0.01F, 1F,   0F,    0F,    0F,    0F,    0F,  0F,  ID.EquipType.CANNON_SI,    1000F, 0F});
+		put((int)ID.EquipType.CANNON_SI + (int)ID.EquipSubID.CANNON_SINGLE_6 * 100,     new float[]{1F, 0F,  3F,  0F,  0F,  0F,  0F, 0.1F, -0.02F, 1F,   0F,    0F,    0F,    0F,    0F,  0F,  ID.EquipType.CANNON_SI,    4000F, 0F});
 		//twin cannon                            
-		put(ID.E_CANNON_TWIN_5,      new float[]{1F, 0F,  4F,  0F,  0F,  0F,  0F, 0.2F, -0.04F, 1F,   0F,    0.05F, 0F,    0F,    0F,  0F,  ID.EquipType.CANNON_TW_LO, 1000F, 0F});
-		put(ID.E_CANNON_TWIN_6,      new float[]{1F, 0F,  5F,  0F,  0F,  0F,  0F, 0.4F, -0.06F, 1F,   0F,    0.05F, 0F,    0F,    0F,  0F,  ID.EquipType.CANNON_TW_LO, 2000F, 0F});
-		put(ID.E_CANNON_TWIN_5DP,    new float[]{1F, 0F,  5F,  0F,  0F,  0F,  0F, 0.25F,-0.08F, 1F,   0F,    0.06F, 0F,    0F,    12F, 0F,  ID.EquipType.CANNON_TW_LO, 3200F, 0F});
-		put(ID.E_CANNON_TWIN_125,    new float[]{1F, 0F,  8F,  0F,  0F,  0F,  0F, 0.2F, -0.1F,  1.5F, 0F,    0.06F, 0F,    0F,    0F,  0F,  ID.EquipType.CANNON_TW_LO, 4000F, 0F});
-		put(ID.E_CANNON_TWIN_14,     new float[]{1F, 0F,  11F, 0F,  0F,  0F,  0F, 0.2F, -0.12F, 2F,   0F,    0.07F, 0F,    0F,    0F,  0F,  ID.EquipType.CANNON_TW_HI, 1000F, 0F});
-		put(ID.E_CANNON_TWIN_16,     new float[]{1F, 0F,  15F, 0F,  0F,  0F,  0F, 0.2F, -0.15F, 2F,   0F,    0.08F, 0F,    0F,    0F,  0F,  ID.EquipType.CANNON_TW_HI, 2400F, 0F});
-		put(ID.E_CANNON_TWIN_20,     new float[]{1F, 0F,  20F, 0F,  0F,  0F,  0F, 0.2F, -0.2F,  2.5F, 0F,    0.10F, 0F,    0F,    0F,  0F,  ID.EquipType.CANNON_TW_HI, 4000F, 0F});
+		put((int)ID.EquipType.CANNON_TW_LO + (int)ID.EquipSubID.CANNON_TWIN_5 * 100,    new float[]{1F, 0F,  4F,  0F,  0F,  0F,  0F, 0.2F, -0.04F, 1F,   0F,    0.05F, 0F,    0F,    0F,  0F,  ID.EquipType.CANNON_TW_LO, 1000F, 0F});
+		put((int)ID.EquipType.CANNON_TW_LO + (int)ID.EquipSubID.CANNON_TWIN_6 * 100,    new float[]{1F, 0F,  5F,  0F,  0F,  0F,  0F, 0.4F, -0.06F, 1F,   0F,    0.05F, 0F,    0F,    0F,  0F,  ID.EquipType.CANNON_TW_LO, 2000F, 0F});
+		put((int)ID.EquipType.CANNON_TW_LO + (int)ID.EquipSubID.CANNON_TWIN_5DP * 100,  new float[]{1F, 0F,  5F,  0F,  0F,  0F,  0F, 0.25F,-0.08F, 1F,   0F,    0.06F, 0F,    0F,    24F, 0F,  ID.EquipType.CANNON_TW_LO, 3200F, 0F});
+		put((int)ID.EquipType.CANNON_TW_LO + (int)ID.EquipSubID.CANNON_TWIN_125 * 100,  new float[]{1F, 0F,  8F,  0F,  0F,  0F,  0F, 0.2F, -0.1F,  1.5F, 0F,    0.06F, 0F,    0F,    0F,  0F,  ID.EquipType.CANNON_TW_LO, 4000F, 0F});
+		put((int)ID.EquipType.CANNON_TW_HI + (int)ID.EquipSubID.CANNON_TWIN_14 * 100,   new float[]{1F, 0F,  11F, 0F,  0F,  0F,  0F, 0.2F, -0.12F, 2F,   0F,    0.07F, 0F,    0F,    0F,  0F,  ID.EquipType.CANNON_TW_HI, 1000F, 0F});
+		put((int)ID.EquipType.CANNON_TW_HI + (int)ID.EquipSubID.CANNON_TWIN_16 * 100,   new float[]{1F, 0F,  15F, 0F,  0F,  0F,  0F, 0.2F, -0.15F, 2F,   0F,    0.08F, 0F,    0F,    0F,  0F,  ID.EquipType.CANNON_TW_HI, 2400F, 0F});
+		put((int)ID.EquipType.CANNON_TW_HI + (int)ID.EquipSubID.CANNON_TWIN_20 * 100,   new float[]{1F, 0F,  20F, 0F,  0F,  0F,  0F, 0.2F, -0.2F,  2.5F, 0F,    0.10F, 0F,    0F,    0F,  0F,  ID.EquipType.CANNON_TW_HI, 4000F, 0F});
 		//triple cannon
-		put(ID.E_CANNON_TRI_8,       new float[]{1F, 0F,  9F,  0F,  0F,  0F,  0F, 0.4F, -0.2F,  1.5F, 0F,    0.06F, 0.06F, 0F,    0F,  0F,  ID.EquipType.CANNON_TR,    1000F, 0F});
-		put(ID.E_CANNON_TRI_16,      new float[]{1F, 0F,  17F, 0F,  0F,  0F,  0F, 0.4F, -0.25F, 2F,   0F,    0.08F, 0.08F, 0F,    0F,  0F,  ID.EquipType.CANNON_TR,    2400F, 0F});
-		put(ID.E_CANNON_FG_15,       new float[]{1F, 220F,6F,  0F,  0F,  0F,  8F, 0.2F, -0.25F, 2F,   0F,    0.04F, 0.04F, 0F,    0F,  0F,  ID.EquipType.CANNON_TR,    4000F, 0F});
+		put((int)ID.EquipType.CANNON_TR + (int)ID.EquipSubID.CANNON_TRI_8 * 100,        new float[]{1F, 0F,  9F,  0F,  0F,  0F,  0F, 0.4F, -0.2F,  1.5F, 0F,    0.06F, 0.06F, 0F,    0F,  0F,  ID.EquipType.CANNON_TR,    1000F, 0F});
+		put((int)ID.EquipType.CANNON_TR + (int)ID.EquipSubID.CANNON_TRI_16 * 100,       new float[]{1F, 0F,  17F, 0F,  0F,  0F,  0F, 0.4F, -0.25F, 2F,   0F,    0.08F, 0.08F, 0F,    0F,  0F,  ID.EquipType.CANNON_TR,    2400F, 0F});
+		put((int)ID.EquipType.CANNON_TR + (int)ID.EquipSubID.CANNON_FG_15 * 100,        new float[]{1F, 220F,6F,  0F,  0F,  0F,  8F, 0.2F, -0.25F, 2F,   0F,    0.04F, 0.04F, 0F,    0F,  0F,  ID.EquipType.CANNON_TR,    4000F, 0F});
 		//machine gun
-		put(ID.E_GUN_HA_3,           new float[]{2F, 0F,  1F,  0F,  0F,  0F,  0F, 0F,   -0.01F, 0F,   0F,    0F,    0F,    0F,    3F,  0F,  ID.EquipType.GUN_LO,       1000F, 0F});
-		put(ID.E_GUN_HA_5,           new float[]{2F, 0F,  2F,  0F,  0F,  0F,  0F, 0F,   -0.01F, 0F,   0F,    0F,    0F,    0F,    5F,  0F,  ID.EquipType.GUN_LO,       2000F, 0F});
-		put(ID.E_GUN_SINGLE_12,      new float[]{2F, 0F,  0F,  0F,  0F,  0F,  0F, 0F,   -0.01F, 0F,   0F,    0F,    0F,    0F,    8F,  0F,  ID.EquipType.GUN_LO,       3200F, 0F});
-		put(ID.E_GUN_SINGLE_20,      new float[]{2F, 0F,  0F,  0F,  0F,  0F,  0F, 0F,   -0.01F, 0F,   0F,    0F,    0F,    0F,    16F, 0F,  ID.EquipType.GUN_LO,       4000F, 0F});
-		put(ID.E_GUN_TWIN_40,        new float[]{2F, 0F,  0F,  0F,  0F,  0F,  0F, 0F,   -0.02F, 0F,   0.01F, 0F,    0F,    0F,    24F, 0F,  ID.EquipType.GUN_HI,       1000F, 0F});
-		put(ID.E_GUN_QUAD_40,        new float[]{2F, 0F,  0F,  0F,  0F,  0F,  0F, 0F,   -0.04F, 0F,   0.02F, 0F,    0F,    0F,    32F, 0F,  ID.EquipType.GUN_HI,       2400F, 0F});
-		put(ID.E_GUN_TWIN_4_CIC,     new float[]{2F, 0F,  3F,  0F,  0F,  0F,  0F, 0F,   -0.06F, 2F,   0.04F, 0F,    0F,    0.06F, 48F, 0F,  ID.EquipType.GUN_HI,       4000F, 0F});
-		//torpedo                                Typ HP   LA   HA   LAA  HAA  DEF SPD   MOV     RNG   CRI    DHit   THit   Miss   AA   ASM  Rare Type/Mean                    Dodge
-		put(ID.E_TORPEDO_21MK1,      new float[]{1F, 0F,  0F,  6F,  0F,  0F,  0F, 0F,   -0.05F, 0F,   0.03F, 0F,    0F,    0F,    0F,  0F,  ID.EquipType.TORPEDO_LO,   1000F, 0F});
-		put(ID.E_TORPEDO_21MK2,      new float[]{1F, 0F,  0F,  12F, 0F,  0F,  0F, 0F,   -0.08F, 0.5F, 0.05F, 0F,    0F,    0F,    0F,  0F,  ID.EquipType.TORPEDO_LO,   2400F, 0F});
-		put(ID.E_TORPEDO_22MK1,      new float[]{1F, 0F,  0F,  28F, 0F,  0F,  0F, 0.1F, -0.11F, 0.5F, 0.07F, 0F,    0F,    0F,    0F,  0F,  ID.EquipType.TORPEDO_LO,   4000F, 0F});
-		put(ID.E_TORPEDO_CUTTLEFISH, new float[]{1F, 0F,  0F,  40F, 0F,  0F,  0F, 0.1F, -0.14F, 1F,   0.09F, 0F,    0F,    0F,    0F,  0F,  ID.EquipType.TORPEDO_HI,   1000F, 0F});
-		put(ID.E_TORPEDO_HIGHSPEED,  new float[]{1F, 0F,  0F,  50F, 0F,  0F,  0F, 0.15F,-0.18F, 1.5F, 0.11F, 0F,    0F,    0F,    0F,  0F,  ID.EquipType.TORPEDO_HI,   4000F, 0F});
+		put((int)ID.EquipType.GUN_LO + (int)ID.EquipSubID.GUN_HA_3 * 100,          		new float[]{2F, 0F,  1F,  0F,  0F,  0F,  0F, 0F,   -0.01F, 0F,   0F,    0F,    0F,    0F,    12F,  0F, ID.EquipType.GUN_LO,       1000F, 0F});
+		put((int)ID.EquipType.GUN_LO + (int)ID.EquipSubID.GUN_HA_5 * 100,          		new float[]{2F, 0F,  2F,  0F,  0F,  0F,  0F, 0F,   -0.01F, 0F,   0F,    0F,    0F,    0F,    24F,  0F, ID.EquipType.GUN_LO,       2000F, 0F});
+		put((int)ID.EquipType.GUN_LO + (int)ID.EquipSubID.GUN_SINGLE_12 * 100,     		new float[]{2F, 0F,  0F,  0F,  0F,  0F,  0F, 0F,   -0.01F, 0F,   0F,    0F,    0F,    0F,    36F,  0F, ID.EquipType.GUN_LO,       3200F, 0F});
+		put((int)ID.EquipType.GUN_LO + (int)ID.EquipSubID.GUN_SINGLE_20 * 100,      	new float[]{2F, 0F,  0F,  0F,  0F,  0F,  0F, 0F,   -0.01F, 0F,   0F,    0F,    0F,    0F,    48F, 0F,  ID.EquipType.GUN_LO,       4000F, 0F});
+		put((int)ID.EquipType.GUN_HI + (int)ID.EquipSubID.GUN_TWIN_40 * 100,        	new float[]{2F, 0F,  0F,  0F,  0F,  0F,  0F, 0F,   -0.02F, 0F,   0.01F, 0F,    0F,    0F,    60F, 0F,  ID.EquipType.GUN_HI,       1000F, 0F});
+		put((int)ID.EquipType.GUN_HI + (int)ID.EquipSubID.GUN_QUAD_40 * 100,        	new float[]{2F, 0F,  0F,  0F,  0F,  0F,  0F, 0F,   -0.04F, 0F,   0.02F, 0F,    0F,    0F,    72F, 0F,  ID.EquipType.GUN_HI,       2400F, 0F});
+		put((int)ID.EquipType.GUN_HI + (int)ID.EquipSubID.GUN_TWIN_4_CIC * 100,     	new float[]{2F, 0F,  3F,  0F,  0F,  0F,  0F, 0F,   -0.06F, 2F,   0.04F, 0F,    0F,    0.06F, 84F, 0F,  ID.EquipType.GUN_HI,       4000F, 0F});
+		//torpedo                                                                                   Typ HP   LA   HA   LAA  HAA  DEF SPD   MOV     RNG   CRI    DHit   THit   Miss   AA   ASM  Rare Type/Mean                    Dodge
+		put((int)ID.EquipType.TORPEDO_LO + (int)ID.EquipSubID.TORPEDO_21MK1 * 100,      new float[]{1F, 0F,  0F,  6F,  0F,  0F,  0F, 0F,   -0.05F, 0F,   0.03F, 0F,    0F,    0F,    0F,  0F,  ID.EquipType.TORPEDO_LO,   1000F, 0F});
+		put((int)ID.EquipType.TORPEDO_LO + (int)ID.EquipSubID.TORPEDO_21MK2 * 100,      new float[]{1F, 0F,  0F,  12F, 0F,  0F,  0F, 0F,   -0.08F, 0.5F, 0.05F, 0F,    0F,    0F,    0F,  0F,  ID.EquipType.TORPEDO_LO,   2400F, 0F});
+		put((int)ID.EquipType.TORPEDO_LO + (int)ID.EquipSubID.TORPEDO_22MK1 * 100,      new float[]{1F, 0F,  0F,  28F, 0F,  0F,  0F, 0.1F, -0.11F, 0.5F, 0.07F, 0F,    0F,    0F,    0F,  0F,  ID.EquipType.TORPEDO_LO,   4000F, 0F});
+		put((int)ID.EquipType.TORPEDO_HI + (int)ID.EquipSubID.TORPEDO_CUTTLEFISH * 100, new float[]{1F, 0F,  0F,  40F, 0F,  0F,  0F, 0.1F, -0.14F, 1F,   0.09F, 0F,    0F,    0F,    0F,  0F,  ID.EquipType.TORPEDO_HI,   1000F, 0F});
+		put((int)ID.EquipType.TORPEDO_HI + (int)ID.EquipSubID.TORPEDO_HIGHSPEED * 100,  new float[]{1F, 0F,  0F,  50F, 0F,  0F,  0F, 0.15F,-0.18F, 1.5F, 0.11F, 0F,    0F,    0F,    0F,  0F,  ID.EquipType.TORPEDO_HI,   4000F, 0F});
 		//Torpedo aircraft
-		put(ID.E_AIRCRAFT_TMK1,      new float[]{3F, 0F,  0F,  0F,  4F,  16F, 0F, 0F,   -0.06F, 2F,   0F,    0F,    0F,    0F,    2F,  4F,  ID.EquipType.AIR_T_LO,     250F,  0F});
-		put(ID.E_AIRCRAFT_TMK2,      new float[]{3F, 0F,  0F,  0F,  8F,  32F, 0F, 0F,   -0.08F, 2F,   0F,    0F,    0F,    0F,    4F,  8F,  ID.EquipType.AIR_T_LO,     600F,  0F});
-		put(ID.E_AIRCRAFT_TMK3,      new float[]{3F, 0F,  0F,  0F,  12F, 54F, 0F, 0F,   -0.11F, 2.5F, 0F,    0F,    0F,    0F,    8F,  12F, ID.EquipType.AIR_T_LO,     1000F, 0F});
-		put(ID.E_AIRCRAFT_TAVENGER,  new float[]{3F, 0F,  0F,  0F,  10F, 90F, 0F, 0F,   -0.15F, 2.5F, 0F,    0F,    0F,    0F,    12F, 16F, ID.EquipType.AIR_T_HI,     250F,  0F});
-		put(ID.E_AIRCRAFT_TAVENGERK, new float[]{3F, 0F,  0F,  0F,  12F, 128F,0F, 0.1F, -0.18F, 3F,   0F,    0F,    0F,    0F,    16F, 24F, ID.EquipType.AIR_T_HI,     1000F, 0F});
+		put((int)ID.EquipType.AIR_T_LO + (int)ID.EquipSubID.AIRCRAFT_TMK1 * 100,      	new float[]{3F, 0F,  0F,  0F,  4F,  16F, 0F, 0F,   -0.06F, 2F,   0F,    0F,    0F,    0F,    3F,  4F,  ID.EquipType.AIR_T_LO,     250F,  0F});
+		put((int)ID.EquipType.AIR_T_LO + (int)ID.EquipSubID.AIRCRAFT_TMK2 * 100,      	new float[]{3F, 0F,  0F,  0F,  8F,  32F, 0F, 0F,   -0.08F, 2F,   0F,    0F,    0F,    0F,    6F,  8F,  ID.EquipType.AIR_T_LO,     600F,  0F});
+		put((int)ID.EquipType.AIR_T_LO + (int)ID.EquipSubID.AIRCRAFT_TMK3 * 100,      	new float[]{3F, 0F,  0F,  0F,  12F, 54F, 0F, 0F,   -0.11F, 2.5F, 0F,    0F,    0F,    0F,    9F,  12F, ID.EquipType.AIR_T_LO,     1000F, 0F});
+		put((int)ID.EquipType.AIR_T_HI + (int)ID.EquipSubID.AIRCRAFT_TAVENGER * 100,  	new float[]{3F, 0F,  0F,  0F,  10F, 90F, 0F, 0F,   -0.15F, 2.5F, 0F,    0F,    0F,    0F,    15F, 16F, ID.EquipType.AIR_T_HI,     250F,  0F});
+		put((int)ID.EquipType.AIR_T_HI + (int)ID.EquipSubID.AIRCRAFT_TAVENGERK * 100, 	new float[]{3F, 0F,  0F,  0F,  12F, 128F,0F, 0.1F, -0.18F, 3F,   0F,    0F,    0F,    0F,    20F, 24F, ID.EquipType.AIR_T_HI,     1000F, 0F});
 		//Fighter aircraft
-		put(ID.E_AIRCRAFT_FMK1,      new float[]{3F, 0F,  0F,  0F,  8F,  0F,  0F, 0F,   -0.04F, 4F,   0F,    0F,    0F,    0F,    9F,  0F,  ID.EquipType.AIR_F_LO,     250F,  0F});
-		put(ID.E_AIRCRAFT_FMK2,      new float[]{3F, 0F,  0F,  0F,  12F, 0F,  0F, 0F,   -0.06F, 4F,   0F,    0F,    0F,    0F,    18F, 0F,  ID.EquipType.AIR_F_LO,     600F,  0F});
-		put(ID.E_AIRCRAFT_FMK3,      new float[]{3F, 0F,  0F,  0F,  18F, 0F,  0F, 0.05F,-0.08F, 4.5F, 0F,    0F,    0F,    0F,    27F, 0F,  ID.EquipType.AIR_F_LO,     1000F, 0F});
-		put(ID.E_AIRCRAFT_FFLYFISH,  new float[]{3F, 0F,  0F,  0F,  24F, 0F,  0F, 0.05F,-0.1F,  4.5F, 0F,    0F,    0F,    0.01F, 36F, 0F,  ID.EquipType.AIR_F_HI,     250F,  0F});
-		put(ID.E_AIRCRAFT_FHELLCAT,  new float[]{3F, 0F,  0F,  0F,  28F, 0F,  0F, 0.1F, -0.12F, 5F,   0F,    0F,    0F,    0.02F, 40F, 0F,  ID.EquipType.AIR_F_HI,     600F,  0F});
-		put(ID.E_AIRCRAFT_FHELLCATK, new float[]{3F, 0F,  0F,  0F,  36F, 0F,  0F, 0.15F,-0.15F, 5F,   0F,    0F,    0F,    0.04F, 48F, 0F,  ID.EquipType.AIR_F_HI,     1000F, 0F});
-		//Bomber aircraft                        Typ HP   LA   HA   LAA  HAA  DEF SPD   MOV     RNG   CRI    DHit   THit   Miss   AA   ASM  Rare Type/Mean                    Dodge
-		put(ID.E_AIRCRAFT_BMK1,      new float[]{3F, 0F,  0F,  0F,  3F,  9F,  0F, 0F,   -0.08F, 2F,   0.04F, 0F,    0F,    0F,    1F,  2F,  ID.EquipType.AIR_B_LO,     250F,  0F});
-		put(ID.E_AIRCRAFT_BMK2,      new float[]{3F, 0F,  0F,  0F,  6F,  18F, 0F, 0F,   -0.1F,  2F,   0.06F, 0F,    0F,    0F,    2F,  4F,  ID.EquipType.AIR_B_LO,     1000F, 0F});
-		put(ID.E_AIRCRAFT_BFLYFISH,  new float[]{3F, 0F,  0F,  0F,  10F, 30F, 0F, 0F,   -0.15F, 2.5F, 0.08F, 0F,    0F,    0F,    4F,  8F,  ID.EquipType.AIR_B_HI,     250F,  0F});
-		put(ID.E_AIRCRAFT_BHELL,     new float[]{3F, 0F,  0F,  0F,  8F,  24F, 0F, 0F,   -0.2F,  2.5F, 0.10F, 0F,    0F,    0F,    8F,  12F, ID.EquipType.AIR_B_HI,     600F,  0F});
-		put(ID.E_AIRCRAFT_BHELLK,    new float[]{3F, 0F,  0F,  0F,  10F, 30F, 0F, 0.1F, -0.24F, 3F,   0.12F, 0F,    0F,    0F,    12F, 16F, ID.EquipType.AIR_B_HI,     1000F, 0F});
+		put((int)ID.EquipType.AIR_F_LO + (int)ID.EquipSubID.AIRCRAFT_FMK1 * 100,      	new float[]{3F, 0F,  0F,  0F,  8F,  0F,  0F, 0F,   -0.04F, 4F,   0F,    0F,    0F,    0F,    30F, 0F,  ID.EquipType.AIR_F_LO,     250F,  0F});
+		put((int)ID.EquipType.AIR_F_LO + (int)ID.EquipSubID.AIRCRAFT_FMK2 * 100,      	new float[]{3F, 0F,  0F,  0F,  12F, 0F,  0F, 0F,   -0.06F, 4F,   0F,    0F,    0F,    0F,    50F, 0F,  ID.EquipType.AIR_F_LO,     600F,  0F});
+		put((int)ID.EquipType.AIR_F_LO + (int)ID.EquipSubID.AIRCRAFT_FMK3 * 100,      	new float[]{3F, 0F,  0F,  0F,  18F, 0F,  0F, 0.05F,-0.08F, 4.5F, 0F,    0F,    0F,    0F,    70F, 0F,  ID.EquipType.AIR_F_LO,     1000F, 0F});
+		put((int)ID.EquipType.AIR_F_HI + (int)ID.EquipSubID.AIRCRAFT_FFLYFISH * 100,  	new float[]{3F, 0F,  0F,  0F,  24F, 0F,  0F, 0.05F,-0.1F,  4.5F, 0F,    0F,    0F,    0.01F, 90F, 0F,  ID.EquipType.AIR_F_HI,     250F,  0F});
+		put((int)ID.EquipType.AIR_F_HI + (int)ID.EquipSubID.AIRCRAFT_FHELLCAT * 100,  	new float[]{3F, 0F,  0F,  0F,  28F, 0F,  0F, 0.1F, -0.12F, 5F,   0F,    0F,    0F,    0.02F, 110F,0F,  ID.EquipType.AIR_F_HI,     600F,  0F});
+		put((int)ID.EquipType.AIR_F_HI + (int)ID.EquipSubID.AIRCRAFT_FHELLCATK * 100, 	new float[]{3F, 0F,  0F,  0F,  36F, 0F,  0F, 0.15F,-0.15F, 5F,   0F,    0F,    0F,    0.04F, 130F,0F,  ID.EquipType.AIR_F_HI,     1000F, 0F});
+		//Bomber aircraft                                                                           Typ HP   LA   HA   LAA  HAA  DEF SPD   MOV     RNG   CRI    DHit   THit   Miss   AA   ASM  Rare Type/Mean                    Dodge
+		put((int)ID.EquipType.AIR_B_LO + (int)ID.EquipSubID.AIRCRAFT_BMK1 * 100,      	new float[]{3F, 0F,  0F,  0F,  3F,  9F,  0F, 0F,   -0.06F, 1.5F, 0.04F, 0F,    0F,    0F,    2F,  2F,  ID.EquipType.AIR_B_LO,     250F,  0F});
+		put((int)ID.EquipType.AIR_B_LO + (int)ID.EquipSubID.AIRCRAFT_BMK2 * 100,      	new float[]{3F, 0F,  0F,  0F,  6F,  18F, 0F, 0F,   -0.1F,  2F,   0.06F, 0F,    0F,    0F,    3F,  4F,  ID.EquipType.AIR_B_LO,     1000F, 0F});
+		put((int)ID.EquipType.AIR_B_HI + (int)ID.EquipSubID.AIRCRAFT_BFLYFISH * 100,  	new float[]{3F, 0F,  0F,  0F,  10F, 30F, 0F, 0F,   -0.15F, 2F,   0.08F, 0F,    0F,    0F,    4F,  8F,  ID.EquipType.AIR_B_HI,     250F,  0F});
+		put((int)ID.EquipType.AIR_B_HI + (int)ID.EquipSubID.AIRCRAFT_BHELL * 100,     	new float[]{3F, 0F,  0F,  0F,  8F,  24F, 0F, 0F,   -0.2F,  2.5F, 0.10F, 0F,    0F,    0F,    8F,  12F, ID.EquipType.AIR_B_HI,     600F,  0F});
+		put((int)ID.EquipType.AIR_B_HI + (int)ID.EquipSubID.AIRCRAFT_BHELLK * 100,    	new float[]{3F, 0F,  0F,  0F,  10F, 30F, 0F, 0.1F, -0.25F, 2.5F, 0.15F, 0F,    0F,    0F,    12F, 16F, ID.EquipType.AIR_B_HI,     1000F, 0F});
 		//Recon aircraft
-		put(ID.E_AIRCRAFT_R,         new float[]{2F, 0F,  2F,  2F,  2F,  2F,  0F, 0F,   -0.08F, 3.5F, 0.03F, 0F,    0F,    0.04F, 8F,  4F,  ID.EquipType.AIR_R_LO,     500F,  0F});
-		put(ID.E_AIRCRAFT_RFLYFISH,  new float[]{2F, 0F,  4F,  4F,  4F,  4F,  0F, 0F,   -0.15F, 5.5F, 0.05F, 0F,    0F,    0.08F, 12F, 8F,  ID.EquipType.AIR_R_HI,     500F,  0F});
+		put((int)ID.EquipType.AIR_R_LO + (int)ID.EquipSubID.AIRCRAFT_R * 100,         	new float[]{2F, 0F,  2F,  2F,  2F,  2F,  0F, 0F,   -0.08F, 3.5F, 0.03F, 0F,    0F,    0.04F, 8F,  4F,  ID.EquipType.AIR_R_LO,     500F,  0F});
+		put((int)ID.EquipType.AIR_R_HI + (int)ID.EquipSubID.AIRCRAFT_RFLYFISH * 100,  	new float[]{2F, 0F,  4F,  4F,  4F,  4F,  0F, 0F,   -0.15F, 5.5F, 0.05F, 0F,    0F,    0.08F, 12F, 8F,  ID.EquipType.AIR_R_HI,     500F,  0F});
 		//radar
-		put(ID.E_RADAR_AIRMK1,       new float[]{2F, 0F,  2F,  0F,  2F,  0F,  3F, 0F,   -0.04F, 1F,   0F,    0F,    0F,    0.04F, 8F,  0F,  ID.EquipType.RADAR_LO,     250F,  2F});
-		put(ID.E_RADAR_AIRMK2,       new float[]{2F, 0F,  4F,  0F,  4F,  0F,  6F, 0F,   -0.06F, 2F,   0.03F, 0F,    0F,    0.08F, 16F, 0F,  ID.EquipType.RADAR_LO,     450F,  2F});
-		put(ID.E_RADAR_SURMK1,       new float[]{2F, 0F,  0F,  6F,  0F,  8F,  3F, 0F,   -0.04F, 1F,   0F,    0F,    0F,    0.04F, 0F,  0F,  ID.EquipType.RADAR_LO,     650F,  2F});
-		put(ID.E_RADAR_SURMK2,       new float[]{2F, 0F,  0F,  12F, 0F,  16F, 6F, 0F,   -0.06F, 2F,   0.03F, 0F,    0F,    0.08F, 0F,  0F,  ID.EquipType.RADAR_LO,     850F,  2F});
-		put(ID.E_RADAR_SONAR,        new float[]{2F, 0F,  2F,  4F,  2F,  4F,  3F, 0F,   -0.02F, 1F,   0F,    0F,    0F,    0.03F, 0F,  16F, ID.EquipType.RADAR_LO,     1000F, 3F});
-		put(ID.E_RADAR_AIRABYSS,     new float[]{2F, 0F,  6F,  0F,  6F,  0F,  10F,0F,   -0.08F, 2F,   0.04F, 0F,    0F,    0.12F, 32F, 0F,  ID.EquipType.RADAR_HI,     250F,  4F});
-		put(ID.E_RADAR_SURABYSS,     new float[]{2F, 0F,  0F,  14F, 0F,  20F, 10F,0F,   -0.08F, 2F,   0.04F, 0F,    0F,    0.12F, 0F,  0F,  ID.EquipType.RADAR_HI,     500F,  4F});	
-		put(ID.E_RADAR_SONARMK2,     new float[]{2F, 0F,  4F,  8F,  4F,  10F, 6F, 0F,   -0.04F, 1F,   0.02F, 0F,    0F,    0.06F, 0F,  32F, ID.EquipType.RADAR_HI,     800F,  4F});
-		put(ID.E_RADAR_FCSCIC,       new float[]{2F, 0F,  6F,  18F, 6F,  18F, 10F,0F,   -0.12F, 2F,   0.04F, 0F,    0F,    0.1F,  32F, 32F, ID.EquipType.RADAR_HI,     1000F, 6F});
-		//turbine                                Typ HP   LA   HA   LAA  HAA  DEF SPD   MOV     RNG   CRI    DHit   THit   Miss   AA   ASM  Rare Type/Mean                    Dodge
-		put(ID.E_TURBINE,            new float[]{2F, 0F,  0F,  0F,  0F,  0F,  0F, 0F,   0.15F,  0F,   0F,    0F,    0F,    0F,    0F,  0F,  ID.EquipType.TURBINE_LO,   250F,  6F});
-		put(ID.E_TURBINE_IMP,        new float[]{2F, 0F,  0F,  0F,  0F,  0F,  0F, 0F,   0.2F,   0F,   0F,    0F,    0F,    0F,    0F,  0F,  ID.EquipType.TURBINE_LO,   1000F, 8F});
-		put(ID.E_TURBINE_ENH,        new float[]{2F, 0F,  0F,  0F,  0F,  0F,  0F, 0F,   0.25F,  0F,   0F,    0F,    0F,    0F,    0F,  0F,  ID.EquipType.TURBINE_HI,   500F,  10F});
+		put((int)ID.EquipType.RADAR_LO + (int)ID.EquipSubID.RADAR_AIRMK1 * 100,       	new float[]{2F, 0F,  2F,  0F,  2F,  0F,  3F, 0F,   -0.04F, 1F,   0F,    0F,    0F,    0.04F, 14F, 0F,  ID.EquipType.RADAR_LO,     250F,  2F});
+		put((int)ID.EquipType.RADAR_LO + (int)ID.EquipSubID.RADAR_AIRMK2 * 100,       	new float[]{2F, 0F,  4F,  0F,  4F,  0F,  6F, 0F,   -0.06F, 2F,   0.03F, 0F,    0F,    0.08F, 28F, 0F,  ID.EquipType.RADAR_LO,     450F,  2F});
+		put((int)ID.EquipType.RADAR_LO + (int)ID.EquipSubID.RADAR_SURMK1 * 100,       	new float[]{2F, 0F,  0F,  6F,  0F,  8F,  3F, 0F,   -0.04F, 1F,   0F,    0F,    0F,    0.04F, 0F,  0F,  ID.EquipType.RADAR_LO,     650F,  2F});
+		put((int)ID.EquipType.RADAR_LO + (int)ID.EquipSubID.RADAR_SURMK2 * 100,       	new float[]{2F, 0F,  0F,  12F, 0F,  16F, 6F, 0F,   -0.06F, 2F,   0.03F, 0F,    0F,    0.08F, 0F,  0F,  ID.EquipType.RADAR_LO,     850F,  2F});
+		put((int)ID.EquipType.RADAR_LO + (int)ID.EquipSubID.RADAR_SONAR * 100,        	new float[]{2F, 0F,  2F,  4F,  2F,  4F,  3F, 0F,   -0.02F, 1F,   0F,    0F,    0F,    0.03F, 0F,  16F, ID.EquipType.RADAR_LO,     1000F, 3F});
+		put((int)ID.EquipType.RADAR_HI + (int)ID.EquipSubID.RADAR_AIRABYSS * 100,     	new float[]{2F, 0F,  6F,  0F,  6F,  0F,  10F,0F,   -0.08F, 2F,   0.04F, 0F,    0F,    0.12F, 40F, 0F,  ID.EquipType.RADAR_HI,     250F,  4F});
+		put((int)ID.EquipType.RADAR_HI + (int)ID.EquipSubID.RADAR_SURABYSS * 100,     	new float[]{2F, 0F,  0F,  14F, 0F,  20F, 10F,0F,   -0.08F, 2F,   0.04F, 0F,    0F,    0.12F, 0F,  0F,  ID.EquipType.RADAR_HI,     500F,  4F});	
+		put((int)ID.EquipType.RADAR_HI + (int)ID.EquipSubID.RADAR_SONARMK2 * 100,     	new float[]{2F, 0F,  4F,  8F,  4F,  10F, 6F, 0F,   -0.04F, 1F,   0.02F, 0F,    0F,    0.06F, 0F,  32F, ID.EquipType.RADAR_HI,     800F,  4F});
+		put((int)ID.EquipType.RADAR_HI + (int)ID.EquipSubID.RADAR_FCSCIC * 100,       	new float[]{2F, 0F,  6F,  18F, 6F,  18F, 10F,0F,   -0.12F, 2F,   0.04F, 0F,    0F,    0.1F,  40F, 40F, ID.EquipType.RADAR_HI,     1000F, 6F});
+		//turbine                                                                                   Typ HP   LA   HA   LAA  HAA  DEF SPD   MOV     RNG   CRI    DHit   THit   Miss   AA   ASM  Rare Type/Mean                    Dodge
+		put((int)ID.EquipType.TURBINE_LO + (int)ID.EquipSubID.TURBINE * 100,            new float[]{2F, 0F,  0F,  0F,  0F,  0F,  0F, 0F,   0.15F,  0F,   0F,    0F,    0F,    0F,    0F,  0F,  ID.EquipType.TURBINE_LO,   250F,  6F});
+		put((int)ID.EquipType.TURBINE_LO + (int)ID.EquipSubID.TURBINE_IMP * 100,        new float[]{2F, 0F,  0F,  0F,  0F,  0F,  0F, 0F,   0.2F,   0F,   0F,    0F,    0F,    0F,    0F,  0F,  ID.EquipType.TURBINE_LO,   1000F, 8F});
+		put((int)ID.EquipType.TURBINE_HI + (int)ID.EquipSubID.TURBINE_ENH * 100,        new float[]{2F, 0F,  0F,  0F,  0F,  0F,  0F, 0F,   0.25F,  0F,   0F,    0F,    0F,    0F,    0F,  0F,  ID.EquipType.TURBINE_HI,   500F,  10F});
 		//armor
-		put(ID.E_ARMOR,              new float[]{2F, 60F, 0F,  0F,  0F,  0F,  8F, 0F,   -0.1F,  0F,   0F,    0F,    0F,    0F,    0F,  0F,  ID.EquipType.ARMOR_LO,     500F,  0F});
-		put(ID.E_ARMOR_ENH,          new float[]{2F, 300F,0F,  0F,  0F,  0F,  16F,0F,   -0.2F,  0F,   0F,    0F,    0F,    0F,    0F,  0F,  ID.EquipType.ARMOR_HI,     500F,  0F});
+		put((int)ID.EquipType.ARMOR_LO + (int)ID.EquipSubID.ARMOR * 100,              	new float[]{2F, 100F,0F,  0F,  0F,  0F,  8F, 0F,   -0.1F,  0F,   0F,    0F,    0F,    0F,    0F,  0F,  ID.EquipType.ARMOR_LO,     500F,  0F});
+		put((int)ID.EquipType.ARMOR_HI + (int)ID.EquipSubID.ARMOR_ENH * 100,          	new float[]{2F, 320F,0F,  0F,  0F,  0F,  16F,0F,   -0.2F,  0F,   0F,    0F,    0F,    0F,    0F,  0F,  ID.EquipType.ARMOR_HI,     500F,  0F});
 		//catapult
-		put(ID.E_CATAPULT_F,         new float[]{3F, 0,   0F,  0F,  0F,  0F,  0F, 0.5F, -0.1F,  2F,   0F,    0F,    0F,    0F,    0F,  0F,  ID.EquipType.CATAPULT_LO,  250F,  0F});
-		put(ID.E_CATAPULT_H,         new float[]{3F, 0,   0F,  0F,  0F,  0F,  0F, 0.8F, -0.18F, 4F,   0F,    0F,    0F,    0F,    0F,  0F,  ID.EquipType.CATAPULT_LO,  500F,  0F});
-		put(ID.E_CATAPULT_C,         new float[]{3F, 0,   0F,  0F,  0F,  0F,  0F, 1.2F, -0.26F, 6F,   0F,    0F,    0F,    0F,    0F,  0F,  ID.EquipType.CATAPULT_HI,  800F,  0F});
-		put(ID.E_CATAPULT_E,         new float[]{3F, 0,   0F,  0F,  0F,  0F,  0F, 1.8F, -0.34F, 8F,   0F,    0F,    0F,    0F,    0F,  0F,  ID.EquipType.CATAPULT_HI,  1000F, 0F});
+		put((int)ID.EquipType.CATAPULT_LO + (int)ID.EquipSubID.CATAPULT_F * 100,        new float[]{3F, 0,   0F,  0F,  0F,  0F,  0F, 0.5F, -0.1F,  2F,   0F,    0F,    0F,    0F,    0F,  0F,  ID.EquipType.CATAPULT_LO,  250F,  0F});
+		put((int)ID.EquipType.CATAPULT_LO + (int)ID.EquipSubID.CATAPULT_H * 100,        new float[]{3F, 0,   0F,  0F,  0F,  0F,  0F, 0.8F, -0.18F, 4F,   0F,    0F,    0F,    0F,    0F,  0F,  ID.EquipType.CATAPULT_LO,  500F,  0F});
+		put((int)ID.EquipType.CATAPULT_HI + (int)ID.EquipSubID.CATAPULT_C * 100,        new float[]{3F, 0,   0F,  0F,  0F,  0F,  0F, 1.2F, -0.26F, 6F,   0F,    0F,    0F,    0F,    0F,  0F,  ID.EquipType.CATAPULT_HI,  800F,  0F});
+		put((int)ID.EquipType.CATAPULT_HI + (int)ID.EquipSubID.CATAPULT_E * 100,        new float[]{3F, 0,   0F,  0F,  0F,  0F,  0F, 2.0F, -0.34F, 8F,   0F,    0F,    0F,    0F,    0F,  0F,  ID.EquipType.CATAPULT_HI,  1000F, 0F});
 	}});
 	
 	
@@ -384,60 +427,61 @@ public class Values {
 	 *  
 	 */
 	public static final Map<Byte, ItemStack> ItemIconMap = Collections.unmodifiableMap(new HashMap<Byte, ItemStack>() {{
-		put(ID.Item.IronIG,     new ItemStack(Items.iron_ingot));
-		put(ID.Item.Grudge,     new ItemStack(ModItems.Grudge));
-		put(ID.Item.GrudgeB,    new ItemStack(ModBlocks.BlockGrudge));
-		put(ID.Item.GrudgeBH,   new ItemStack(ModBlocks.BlockGrudgeHeavy));
-		put(ID.Item.AbyssIG,    new ItemStack(ModItems.AbyssMetal, 1, 0));
-		put(ID.Item.AbyssB,     new ItemStack(ModBlocks.BlockAbyssium));
-		put(ID.Item.PolymIG,    new ItemStack(ModItems.AbyssMetal, 1, 1));
-		put(ID.Item.PolymOre,   new ItemStack(ModBlocks.BlockPolymetalOre));
-		put(ID.Item.PolymB,     new ItemStack(ModBlocks.BlockPolymetal));
-		put(ID.Item.PolymBG,    new ItemStack(ModBlocks.BlockPolymetalGravel));
-		put(ID.Item.Gunpowder,  new ItemStack(Items.gunpowder));
-		put(ID.Item.Blazepowder,new ItemStack(Items.blaze_powder));
-		put(ID.Item.AmmoL,      new ItemStack(ModItems.Ammo, 1, 0));
-		put(ID.Item.AmmoLC,     new ItemStack(ModItems.Ammo, 1, 1));
-		put(ID.Item.AmmoH,      new ItemStack(ModItems.Ammo, 1, 2));
-		put(ID.Item.AmmoHC,     new ItemStack(ModItems.Ammo, 1, 3));
-		put(ID.Item.RpBucket,   new ItemStack(ModItems.BucketRepair));
-		put(ID.Item.LaBucket,   new ItemStack(Items.lava_bucket));
-		put(ID.Item.NStar,      new ItemStack(Items.nether_star));
-		put(ID.Item.Ring,       new ItemStack(ModItems.MarriageRing));
-		put(ID.Item.Paper,      new ItemStack(Items.paper));
-		put(ID.Item.OwnPaper,   new ItemStack(ModItems.OwnerPaper));
-		put(ID.Item.Stick,      new ItemStack(Items.stick));
-		put(ID.Item.KHammer,    new ItemStack(ModItems.KaitaiHammer));
-		put(ID.Item.ModTool,    new ItemStack(ModItems.ModernKit));
-		put(ID.Item.SpawnEgg0,  new ItemStack(ModItems.ShipSpawnEgg, 1, 0));
-		put(ID.Item.SpawnEgg1,  new ItemStack(ModItems.ShipSpawnEgg, 1, 1));
-		put(ID.Item.SpawnEgg2,  new ItemStack(ModItems.ShipSpawnEgg, 1, 2));
-		put(ID.Item.InstantMat, new ItemStack(ModItems.InstantConMat));
-		put(ID.Item.DiamondB,   new ItemStack(Blocks.diamond_block));
-		put(ID.Item.RpGod,      new ItemStack(ModItems.RepairGoddess));
-		put(ID.Item.Pointer,    new ItemStack(ModItems.PointerItem));
-		put(ID.Item.ModelZF,    new ItemStack(ModItems.ToyAirplane));
-		put(ID.Item.Desk,       new ItemStack(ModBlocks.BlockDesk));
-		put(ID.Item.DeskBook,    new ItemStack(ModItems.DeskItemBook));
-		put(ID.Item.DeskRadar,    new ItemStack(ModItems.DeskItemRadar));
-		put(ID.Item.WriteBook,    new ItemStack(Items.writable_book));
-		put(ID.Item.Compass,    new ItemStack(Items.compass));
-		put(ID.Item.ObsidianB,  new ItemStack(Blocks.obsidian));
-		put(ID.Item.WoolB,      new ItemStack(Blocks.wool));
-		put(ID.Item.SmallSY,    new ItemStack(ModBlocks.BlockSmallShipyard));
-		put(ID.Item.EqCannon0,  new ItemStack(ModItems.EquipCannon, 1, 0));
-		put(ID.Item.EqCannon1,  new ItemStack(ModItems.EquipCannon, 1, 2));
-		put(ID.Item.EqCannon2,  new ItemStack(ModItems.EquipCannon, 1, 9));
-		put(ID.Item.EqMGun,     new ItemStack(ModItems.EquipMachinegun));
-		put(ID.Item.EqCatap,    new ItemStack(ModItems.EquipCatapult));
-		put(ID.Item.EqRadar,    new ItemStack(ModItems.EquipRadar));
-		put(ID.Item.EqTurbine,  new ItemStack(ModItems.EquipTurbine));
-		put(ID.Item.EqTorpedo,  new ItemStack(ModItems.EquipTorpedo));
-		put(ID.Item.EqAirT,     new ItemStack(ModItems.EquipAirplane, 1, 0));
-		put(ID.Item.EqAirF,     new ItemStack(ModItems.EquipAirplane, 1, 4));
-		put(ID.Item.EqAirB,     new ItemStack(ModItems.EquipAirplane, 1, 9));
-		put(ID.Item.EqAirR,     new ItemStack(ModItems.EquipAirplane, 1, 13));
-		put(ID.Item.EqArmor,    new ItemStack(ModItems.EquipArmor));
+		put(ID.Icon.IronIG,     new ItemStack(Items.iron_ingot));
+		put(ID.Icon.Grudge,     new ItemStack(ModItems.Grudge));
+		put(ID.Icon.GrudgeB,    new ItemStack(ModBlocks.BlockGrudge));
+		put(ID.Icon.GrudgeBH,   new ItemStack(ModBlocks.BlockGrudgeHeavy));
+		put(ID.Icon.AbyssIG,    new ItemStack(ModItems.AbyssMetal, 1, 0));
+		put(ID.Icon.AbyssB,     new ItemStack(ModBlocks.BlockAbyssium));
+		put(ID.Icon.PolymIG,    new ItemStack(ModItems.AbyssMetal, 1, 1));
+		put(ID.Icon.PolymOre,   new ItemStack(ModBlocks.BlockPolymetalOre));
+		put(ID.Icon.PolymB,     new ItemStack(ModBlocks.BlockPolymetal));
+		put(ID.Icon.PolymBG,    new ItemStack(ModBlocks.BlockPolymetalGravel));
+		put(ID.Icon.Gunpowder,  new ItemStack(Items.gunpowder));
+		put(ID.Icon.Blazepowder,new ItemStack(Items.blaze_powder));
+		put(ID.Icon.AmmoL,      new ItemStack(ModItems.Ammo, 1, 0));
+		put(ID.Icon.AmmoLC,     new ItemStack(ModItems.Ammo, 1, 1));
+		put(ID.Icon.AmmoH,      new ItemStack(ModItems.Ammo, 1, 2));
+		put(ID.Icon.AmmoHC,     new ItemStack(ModItems.Ammo, 1, 3));
+		put(ID.Icon.RpBucket,   new ItemStack(ModItems.BucketRepair));
+		put(ID.Icon.LaBucket,   new ItemStack(Items.lava_bucket));
+		put(ID.Icon.NStar,      new ItemStack(Items.nether_star));
+		put(ID.Icon.Ring,       new ItemStack(ModItems.MarriageRing));
+		put(ID.Icon.Paper,      new ItemStack(Items.paper));
+		put(ID.Icon.OwnPaper,   new ItemStack(ModItems.OwnerPaper));
+		put(ID.Icon.Stick,      new ItemStack(Items.stick));
+		put(ID.Icon.KHammer,    new ItemStack(ModItems.KaitaiHammer));
+		put(ID.Icon.ModTool,    new ItemStack(ModItems.ModernKit));
+		put(ID.Icon.SpawnEgg0,  new ItemStack(ModItems.ShipSpawnEgg, 1, 0));
+		put(ID.Icon.SpawnEgg1,  new ItemStack(ModItems.ShipSpawnEgg, 1, 1));
+		put(ID.Icon.SpawnEgg2,  new ItemStack(ModItems.ShipSpawnEgg, 1, 2));
+		put(ID.Icon.InstantMat, new ItemStack(ModItems.InstantConMat));
+		put(ID.Icon.DiamondB,   new ItemStack(Blocks.diamond_block));
+		put(ID.Icon.RpGod,      new ItemStack(ModItems.RepairGoddess));
+		put(ID.Icon.Pointer,    new ItemStack(ModItems.PointerItem));
+		put(ID.Icon.ModelZF,    new ItemStack(ModItems.ToyAirplane));
+		put(ID.Icon.Desk,       new ItemStack(ModBlocks.BlockDesk));
+		put(ID.Icon.DeskBook,   new ItemStack(ModItems.DeskItemBook));
+		put(ID.Icon.DeskRadar,  new ItemStack(ModItems.DeskItemRadar));
+		put(ID.Icon.WriteBook,  new ItemStack(Items.writable_book));
+		put(ID.Icon.Compass,    new ItemStack(Items.compass));
+		put(ID.Icon.ObsidianB,  new ItemStack(Blocks.obsidian));
+		put(ID.Icon.WoolB,      new ItemStack(Blocks.wool));
+		put(ID.Icon.SmallSY,    new ItemStack(ModBlocks.BlockSmallShipyard));
+		put(ID.Icon.Wrench,     new ItemStack(ModItems.TargetWrench));
+		put(ID.Icon.EqCannon0,  new ItemStack(ModItems.EquipCannon, 1, 0));
+		put(ID.Icon.EqCannon1,  new ItemStack(ModItems.EquipCannon, 1, 2));
+		put(ID.Icon.EqCannon2,  new ItemStack(ModItems.EquipCannon, 1, 9));
+		put(ID.Icon.EqMGun,     new ItemStack(ModItems.EquipMachinegun));
+		put(ID.Icon.EqCatap,    new ItemStack(ModItems.EquipCatapult));
+		put(ID.Icon.EqRadar,    new ItemStack(ModItems.EquipRadar));
+		put(ID.Icon.EqTurbine,  new ItemStack(ModItems.EquipTurbine));
+		put(ID.Icon.EqTorpedo,  new ItemStack(ModItems.EquipTorpedo));
+		put(ID.Icon.EqAirT,     new ItemStack(ModItems.EquipAirplane, 1, 0));
+		put(ID.Icon.EqAirF,     new ItemStack(ModItems.EquipAirplane, 1, 4));
+		put(ID.Icon.EqAirB,     new ItemStack(ModItems.EquipAirplane, 1, 9));
+		put(ID.Icon.EqAirR,     new ItemStack(ModItems.EquipAirplane, 1, 13));
+		put(ID.Icon.EqArmor,    new ItemStack(ModItems.EquipArmor));
 	}});
 	
 	
@@ -473,125 +517,125 @@ public class Values {
 		put(1000, Arrays.asList(new int[] {0, 0, 0, 0},
 								new int[] {0, 1, 0, 0},
 								new int[] {1, 0, 0, 76, 0, 0, 0, 100, 56},
-								new int[] {2, 0, 13, -3, ID.Item.Grudge},
-								new int[] {2, 0, 43, -3, ID.Item.GrudgeB},
-								new int[] {2, 0, 73, -3, ID.Item.GrudgeBH}));
+								new int[] {2, 0, 13, -3, ID.Icon.Grudge},
+								new int[] {2, 0, 43, -3, ID.Icon.GrudgeB},
+								new int[] {2, 0, 73, -3, ID.Icon.GrudgeBH}));
 		//page 1: abyssium
 		put(1001, Arrays.asList(new int[] {0, 0, 0, 0},
 								new int[] {0, 1, 0, 0},
 								new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
-								new int[] {2, 0, 3, 17, ID.Item.Grudge},
-								new int[] {2, 0, 23, 17, ID.Item.IronIG},
-								new int[] {2, 0, 81, 17, ID.Item.AbyssIG}));
+								new int[] {2, 0, 3, 17, ID.Icon.Grudge},
+								new int[] {2, 0, 23, 17, ID.Icon.IronIG},
+								new int[] {2, 0, 81, 17, ID.Icon.AbyssIG}));
 		//page 2: polymetal
 		put(1002, Arrays.asList(new int[] {0, 0, 0, 0},
 								new int[] {0, 1, 0, 0},
 								new int[] {1, 0, 0, -6, 0, 0, 56, 100, 56},
 								new int[] {1, 1, 0, 73, 0, 0, 112, 100, 59},
-								new int[] {2, 0, 5, 52, ID.Item.PolymOre},
-								new int[] {2, 0, 30, 52, ID.Item.PolymIG},
-								new int[] {2, 0, 55, 52, ID.Item.PolymB},
-								new int[] {2, 0, 80, 52, ID.Item.PolymBG}));
+								new int[] {2, 0, 5, 52, ID.Icon.PolymOre},
+								new int[] {2, 0, 30, 52, ID.Icon.PolymIG},
+								new int[] {2, 0, 55, 52, ID.Icon.PolymB},
+								new int[] {2, 0, 80, 52, ID.Icon.PolymBG}));
 		//page 3: ammo
 		put(1003, Arrays.asList(new int[] {0, 0, 0, 0},
 								new int[] {0, 1, 0, 0},
 								new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
-								new int[] {2, 0, 3,  -3,  ID.Item.IronIG},
-								new int[] {2, 0, 23, -3,  ID.Item.IronIG},
-								new int[] {2, 0, 43, -3,  ID.Item.IronIG},
-								new int[] {2, 0, 3,  17, ID.Item.IronIG},
-								new int[] {2, 0, 23, 17, ID.Item.Grudge},
-								new int[] {2, 0, 43, 17, ID.Item.IronIG},
-								new int[] {2, 0, 3,  37, ID.Item.IronIG},
-								new int[] {2, 0, 23, 37, ID.Item.Gunpowder},
-								new int[] {2, 0, 43, 37, ID.Item.IronIG},
-								new int[] {2, 0, 81, 17, ID.Item.AmmoL},
-								new int[] {2, 1, 3, 110, ID.Item.AmmoL},
-								new int[] {2, 1, 28, 110, ID.Item.AmmoLC},
-								new int[] {2, 1, 53, 110, ID.Item.AmmoH},
-								new int[] {2, 1, 78, 110, ID.Item.AmmoHC}));
+								new int[] {2, 0, 3,  -3,  ID.Icon.IronIG},
+								new int[] {2, 0, 23, -3,  ID.Icon.IronIG},
+								new int[] {2, 0, 43, -3,  ID.Icon.IronIG},
+								new int[] {2, 0, 3,  17, ID.Icon.IronIG},
+								new int[] {2, 0, 23, 17, ID.Icon.Grudge},
+								new int[] {2, 0, 43, 17, ID.Icon.IronIG},
+								new int[] {2, 0, 3,  37, ID.Icon.IronIG},
+								new int[] {2, 0, 23, 37, ID.Icon.Gunpowder},
+								new int[] {2, 0, 43, 37, ID.Icon.IronIG},
+								new int[] {2, 0, 81, 17, ID.Icon.AmmoL},
+								new int[] {2, 1, 3, 110, ID.Icon.AmmoL},
+								new int[] {2, 1, 28, 110, ID.Icon.AmmoLC},
+								new int[] {2, 1, 53, 110, ID.Icon.AmmoH},
+								new int[] {2, 1, 78, 110, ID.Icon.AmmoHC}));
 		//page 4: repair bucket
 		put(1004, Arrays.asList(new int[] {0, 0, 0, 0},
 								new int[] {0, 1, 0, 0},
 								new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
-								new int[] {2, 0, 3,  17, ID.Item.LaBucket},
-								new int[] {2, 0, 23, 17, ID.Item.Grudge},
-								new int[] {2, 0, 81, 17, ID.Item.RpBucket}));
+								new int[] {2, 0, 3,  17, ID.Icon.LaBucket},
+								new int[] {2, 0, 23, 17, ID.Icon.Grudge},
+								new int[] {2, 0, 81, 17, ID.Icon.RpBucket}));
 		//page 5: ring
 		put(1005, Arrays.asList(new int[] {0, 0, 0, 0},
 								new int[] {0, 1, 0, 0},
 								new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
-								new int[] {2, 0, 3,  -3,  ID.Item.AbyssIG},
-								new int[] {2, 0, 23, -3,  ID.Item.NStar},
-								new int[] {2, 0, 43, -3,  ID.Item.AbyssIG},
-								new int[] {2, 0, 3,  17, ID.Item.AbyssIG},
-								new int[] {2, 0, 43, 17, ID.Item.AbyssIG},
-								new int[] {2, 0, 3,  37, ID.Item.AbyssIG},
-								new int[] {2, 0, 23, 37, ID.Item.AbyssIG},
-								new int[] {2, 0, 43, 37, ID.Item.AbyssIG},
-								new int[] {2, 0, 81, 17, ID.Item.Ring}));
+								new int[] {2, 0, 3,  -3,  ID.Icon.AbyssIG},
+								new int[] {2, 0, 23, -3,  ID.Icon.NStar},
+								new int[] {2, 0, 43, -3,  ID.Icon.AbyssIG},
+								new int[] {2, 0, 3,  17, ID.Icon.AbyssIG},
+								new int[] {2, 0, 43, 17, ID.Icon.AbyssIG},
+								new int[] {2, 0, 3,  37, ID.Icon.AbyssIG},
+								new int[] {2, 0, 23, 37, ID.Icon.AbyssIG},
+								new int[] {2, 0, 43, 37, ID.Icon.AbyssIG},
+								new int[] {2, 0, 81, 17, ID.Icon.Ring}));
 		//page 6: ownership paper
 		put(1006, Arrays.asList(new int[] {0, 0, 0, 0},
 								new int[] {0, 1, 0, 0},
 								new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
-								new int[] {2, 0, 3,  17, ID.Item.Paper},
-								new int[] {2, 0, 23, 17, ID.Item.Grudge},
-								new int[] {2, 0, 81, 17, ID.Item.OwnPaper}));
+								new int[] {2, 0, 3,  17, ID.Icon.Paper},
+								new int[] {2, 0, 23, 17, ID.Icon.Grudge},
+								new int[] {2, 0, 81, 17, ID.Icon.OwnPaper}));
 		//page 7: hammer
 		put(1007, Arrays.asList(new int[] {0, 0, 0, 0},
 								new int[] {0, 1, 0, 0},
 								new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
-								new int[] {2, 0, 3,  -3, ID.Item.AbyssIG},
-								new int[] {2, 0, 23, -3, ID.Item.AbyssIG},
-								new int[] {2, 0, 43, -3, ID.Item.AbyssIG},
-								new int[] {2, 0, 3,  17, ID.Item.AbyssIG},
-								new int[] {2, 0, 23, 17, ID.Item.AbyssIG},
-								new int[] {2, 0, 43, 17, ID.Item.AbyssIG},
-								new int[] {2, 0, 23, 37, ID.Item.Stick},
-								new int[] {2, 0, 81, 17, ID.Item.KHammer}));
+								new int[] {2, 0, 3,  -3, ID.Icon.AbyssIG},
+								new int[] {2, 0, 23, -3, ID.Icon.AbyssIG},
+								new int[] {2, 0, 43, -3, ID.Icon.AbyssIG},
+								new int[] {2, 0, 3,  17, ID.Icon.AbyssIG},
+								new int[] {2, 0, 23, 17, ID.Icon.AbyssIG},
+								new int[] {2, 0, 43, 17, ID.Icon.AbyssIG},
+								new int[] {2, 0, 23, 37, ID.Icon.Stick},
+								new int[] {2, 0, 81, 17, ID.Icon.KHammer}));
 		//page 8: modernization toolkit
 		put(1008, Arrays.asList(new int[] {0, 0, 0, 0},
 								new int[] {0, 1, 0, 0},
 								new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
-								new int[] {2, 0, 3,  -3, ID.Item.KHammer},
-								new int[] {2, 0, 23, -3, ID.Item.SpawnEgg2},
-								new int[] {2, 0, 43, -3, ID.Item.SpawnEgg0},
-								new int[] {2, 0, 3,  17, ID.Item.SpawnEgg2},
-								new int[] {2, 0, 23, 17, ID.Item.SpawnEgg2},
-								new int[] {2, 0, 43, 17, ID.Item.SpawnEgg1},
-								new int[] {2, 0, 3,  37, ID.Item.SpawnEgg2},
-								new int[] {2, 0, 23, 37, ID.Item.SpawnEgg1},
-								new int[] {2, 0, 43, 37, ID.Item.SpawnEgg2},
-								new int[] {2, 0, 81, 17, ID.Item.ModTool}));
+								new int[] {2, 0, 3,  -3, ID.Icon.KHammer},
+								new int[] {2, 0, 23, -3, ID.Icon.SpawnEgg2},
+								new int[] {2, 0, 43, -3, ID.Icon.SpawnEgg0},
+								new int[] {2, 0, 3,  17, ID.Icon.SpawnEgg2},
+								new int[] {2, 0, 23, 17, ID.Icon.SpawnEgg2},
+								new int[] {2, 0, 43, 17, ID.Icon.SpawnEgg1},
+								new int[] {2, 0, 3,  37, ID.Icon.SpawnEgg2},
+								new int[] {2, 0, 23, 37, ID.Icon.SpawnEgg1},
+								new int[] {2, 0, 43, 37, ID.Icon.SpawnEgg2},
+								new int[] {2, 0, 81, 17, ID.Icon.ModTool}));
 		//page 9: instant mats
 		put(1009, Arrays.asList(new int[] {0, 0, 0, 0},
 								new int[] {0, 1, 0, 0},
 								new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
-								new int[] {2, 0, 3,  17, ID.Item.KHammer},
-								new int[] {2, 0, 23, 17, ID.Item.SpawnEgg0},
-								new int[] {2, 0, 81, 17, ID.Item.InstantMat}));
+								new int[] {2, 0, 3,  17, ID.Icon.KHammer},
+								new int[] {2, 0, 23, 17, ID.Icon.SpawnEgg0},
+								new int[] {2, 0, 81, 17, ID.Icon.InstantMat}));
 		//page 10: abyssal goddess
 		put(1010, Arrays.asList(new int[] {0, 0, 0, 0},
 								new int[] {0, 1, 0, 0},
 								new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
-								new int[] {2, 0, 3,  -3, ID.Item.GrudgeB},
-								new int[] {2, 0, 23, -3, ID.Item.GrudgeBH},
-								new int[] {2, 0, 43, -3, ID.Item.GrudgeB},
-								new int[] {2, 0, 3,  17, ID.Item.GrudgeBH},
-								new int[] {2, 0, 23, 17, ID.Item.DiamondB},
-								new int[] {2, 0, 43, 17, ID.Item.GrudgeBH},
-								new int[] {2, 0, 3,  37, ID.Item.GrudgeB},
-								new int[] {2, 0, 23, 37, ID.Item.GrudgeBH},
-								new int[] {2, 0, 43, 37, ID.Item.GrudgeB},
-								new int[] {2, 0, 81, 17, ID.Item.RpGod}));
+								new int[] {2, 0, 3,  -3, ID.Icon.GrudgeB},
+								new int[] {2, 0, 23, -3, ID.Icon.GrudgeBH},
+								new int[] {2, 0, 43, -3, ID.Icon.GrudgeB},
+								new int[] {2, 0, 3,  17, ID.Icon.GrudgeBH},
+								new int[] {2, 0, 23, 17, ID.Icon.DiamondB},
+								new int[] {2, 0, 43, 17, ID.Icon.GrudgeBH},
+								new int[] {2, 0, 3,  37, ID.Icon.GrudgeB},
+								new int[] {2, 0, 23, 37, ID.Icon.GrudgeBH},
+								new int[] {2, 0, 43, 37, ID.Icon.GrudgeB},
+								new int[] {2, 0, 81, 17, ID.Icon.RpGod}));
 		//page 11: pointer
 		put(1011, Arrays.asList(new int[] {0, 0, 0, 0},
 								new int[] {0, 1, 0, 0},
 								new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
-								new int[] {2, 0, 3,  37, ID.Item.PolymIG},
-								new int[] {2, 0, 23, 17, ID.Item.PolymIG},
-								new int[] {2, 0, 43, -3, ID.Item.GrudgeB},
-								new int[] {2, 0, 81, 17, ID.Item.Pointer}));
+								new int[] {2, 0, 3,  37, ID.Icon.PolymIG},
+								new int[] {2, 0, 23, 17, ID.Icon.PolymIG},
+								new int[] {2, 0, 43, -3, ID.Icon.GrudgeB},
+								new int[] {2, 0, 81, 17, ID.Icon.Pointer}));
 		//page 12: pointer
 		put(1012, Arrays.asList(new int[] {0, 0, 0, 0},
 								new int[] {0, 1, 0, 0}));
@@ -602,69 +646,80 @@ public class Values {
 		put(1014, Arrays.asList(new int[] {0, 0, 0, 0},
 								new int[] {0, 1, 0, 0},
 								new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
-								new int[] {2, 0, 23, -3, ID.Item.PolymIG},
-								new int[] {2, 0, 3,  17, ID.Item.PolymIG},
-								new int[] {2, 0, 23, 17, ID.Item.PolymIG},
-								new int[] {2, 0, 43, 17, ID.Item.PolymIG},
-								new int[] {2, 0, 23, 37, ID.Item.PolymIG},
-								new int[] {2, 0, 81, 17, ID.Item.ModelZF}));
+								new int[] {2, 0, 23, -3, ID.Icon.PolymIG},
+								new int[] {2, 0, 3,  17, ID.Icon.PolymIG},
+								new int[] {2, 0, 23, 17, ID.Icon.PolymIG},
+								new int[] {2, 0, 43, 17, ID.Icon.PolymIG},
+								new int[] {2, 0, 23, 37, ID.Icon.PolymIG},
+								new int[] {2, 0, 81, 17, ID.Icon.ModelZF}));
 		//page 15: desk item book
 		put(1015, Arrays.asList(new int[] {0, 0, 0, 0},
 								new int[] {0, 1, 0, 0},
 								new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
-								new int[] {2, 0, 3,  -3, ID.Item.Grudge},
-								new int[] {2, 0, 23, -3, ID.Item.Grudge},
-								new int[] {2, 0, 43, -3, ID.Item.Grudge},
-								new int[] {2, 0, 3,  17, ID.Item.Grudge},
-								new int[] {2, 0, 23, 17, ID.Item.WriteBook},
-								new int[] {2, 0, 43, 17, ID.Item.Grudge},
-								new int[] {2, 0, 3,  37, ID.Item.Grudge},
-								new int[] {2, 0, 23, 37, ID.Item.Grudge},
-								new int[] {2, 0, 43, 37, ID.Item.Grudge},
-								new int[] {2, 0, 81, 17, ID.Item.DeskBook}));
+								new int[] {2, 0, 3,  -3, ID.Icon.Grudge},
+								new int[] {2, 0, 23, -3, ID.Icon.Grudge},
+								new int[] {2, 0, 43, -3, ID.Icon.Grudge},
+								new int[] {2, 0, 3,  17, ID.Icon.Grudge},
+								new int[] {2, 0, 23, 17, ID.Icon.WriteBook},
+								new int[] {2, 0, 43, 17, ID.Icon.Grudge},
+								new int[] {2, 0, 3,  37, ID.Icon.Grudge},
+								new int[] {2, 0, 23, 37, ID.Icon.Grudge},
+								new int[] {2, 0, 43, 37, ID.Icon.Grudge},
+								new int[] {2, 0, 81, 17, ID.Icon.DeskBook}));
 		//page 16: desk item radar
 		put(1016, Arrays.asList(new int[] {0, 0, 0, 0},
 								new int[] {0, 1, 0, 0},
 								new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
-								new int[] {2, 0, 3,  -3, ID.Item.Grudge},
-								new int[] {2, 0, 23, -3, ID.Item.Grudge},
-								new int[] {2, 0, 43, -3, ID.Item.Grudge},
-								new int[] {2, 0, 3,  17, ID.Item.Grudge},
-								new int[] {2, 0, 23, 17, ID.Item.Compass},
-								new int[] {2, 0, 43, 17, ID.Item.Grudge},
-								new int[] {2, 0, 3,  37, ID.Item.Grudge},
-								new int[] {2, 0, 23, 37, ID.Item.Grudge},
-								new int[] {2, 0, 43, 37, ID.Item.Grudge},
-								new int[] {2, 0, 81, 17, ID.Item.DeskRadar}));
+								new int[] {2, 0, 3,  -3, ID.Icon.Grudge},
+								new int[] {2, 0, 23, -3, ID.Icon.Grudge},
+								new int[] {2, 0, 43, -3, ID.Icon.Grudge},
+								new int[] {2, 0, 3,  17, ID.Icon.Grudge},
+								new int[] {2, 0, 23, 17, ID.Icon.Compass},
+								new int[] {2, 0, 43, 17, ID.Icon.Grudge},
+								new int[] {2, 0, 3,  37, ID.Icon.Grudge},
+								new int[] {2, 0, 23, 37, ID.Icon.Grudge},
+								new int[] {2, 0, 43, 37, ID.Icon.Grudge},
+								new int[] {2, 0, 81, 17, ID.Icon.DeskRadar}));
 		//page 17: desk
 		put(1017, Arrays.asList(new int[] {0, 0, 0, 0},
 								new int[] {0, 1, 0, 0},
 								new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
-								new int[] {2, 0, 3,  -3, ID.Item.DeskRadar},
-								new int[] {2, 0, 23, -3, ID.Item.DeskBook},
-								new int[] {2, 0, 43, -3, ID.Item.WoolB},
-								new int[] {2, 0, 3,  17, ID.Item.ObsidianB},
-								new int[] {2, 0, 23, 17, ID.Item.ObsidianB},
-								new int[] {2, 0, 43, 17, ID.Item.ObsidianB},
-								new int[] {2, 0, 3,  37, ID.Item.ObsidianB},
-								new int[] {2, 0, 43, 37, ID.Item.ObsidianB},
-								new int[] {2, 0, 81, 17, ID.Item.Desk}));
+								new int[] {2, 0, 3,  -3, ID.Icon.DeskRadar},
+								new int[] {2, 0, 23, -3, ID.Icon.DeskBook},
+								new int[] {2, 0, 43, -3, ID.Icon.WoolB},
+								new int[] {2, 0, 3,  17, ID.Icon.ObsidianB},
+								new int[] {2, 0, 23, 17, ID.Icon.ObsidianB},
+								new int[] {2, 0, 43, 17, ID.Icon.ObsidianB},
+								new int[] {2, 0, 3,  37, ID.Icon.ObsidianB},
+								new int[] {2, 0, 43, 37, ID.Icon.ObsidianB},
+								new int[] {2, 0, 81, 17, ID.Icon.Desk}));
+		//page 18: wrench
+		put(1018, Arrays.asList(new int[] {0, 0, 0, 0},
+								new int[] {0, 1, 0, 0},
+								new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
+								new int[] {2, 0, 3,  -3, ID.Icon.AbyssIG},
+								new int[] {2, 0, 43, -3, ID.Icon.AbyssIG},
+								new int[] {2, 0, 3,  17, ID.Icon.AbyssIG},
+								new int[] {2, 0, 23, 17, ID.Icon.AbyssIG},
+								new int[] {2, 0, 43, 17, ID.Icon.AbyssIG},
+								new int[] {2, 0, 23, 37, ID.Icon.AbyssIG},
+								new int[] {2, 0, 81, 17, ID.Icon.Wrench}));
 		//chap 2: construction
 		//page 0: vent
 		put(2000, Arrays.asList(new int[] {0, 0, 0, 0},
 								new int[] {0, 1, 0, 0},
 								new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
 								new int[] {1, 1, 0, -6, 0, 100, 134, 100, 46},
-								new int[] {2, 0, 3,  -3, ID.Item.Grudge},
-								new int[] {2, 0, 23, -3, ID.Item.LaBucket},
-								new int[] {2, 0, 43, -3, ID.Item.Grudge},
-								new int[] {2, 0, 3,  17, ID.Item.LaBucket},
-								new int[] {2, 0, 23, 17, ID.Item.ObsidianB},
-								new int[] {2, 0, 43, 17, ID.Item.LaBucket},
-								new int[] {2, 0, 3,  37, ID.Item.ObsidianB},
-								new int[] {2, 0, 23, 37, ID.Item.ObsidianB},
-								new int[] {2, 0, 43, 37, ID.Item.ObsidianB},
-								new int[] {2, 0, 81, 17, ID.Item.SmallSY}));
+								new int[] {2, 0, 3,  -3, ID.Icon.Grudge},
+								new int[] {2, 0, 23, -3, ID.Icon.LaBucket},
+								new int[] {2, 0, 43, -3, ID.Icon.Grudge},
+								new int[] {2, 0, 3,  17, ID.Icon.LaBucket},
+								new int[] {2, 0, 23, 17, ID.Icon.ObsidianB},
+								new int[] {2, 0, 43, 17, ID.Icon.LaBucket},
+								new int[] {2, 0, 3,  37, ID.Icon.ObsidianB},
+								new int[] {2, 0, 23, 37, ID.Icon.ObsidianB},
+								new int[] {2, 0, 43, 37, ID.Icon.ObsidianB},
+								new int[] {2, 0, 81, 17, ID.Icon.SmallSY}));
 		//page 1: vent
 		put(2001, Arrays.asList(new int[] {0, 0, 0, 0},
 								new int[] {0, 1, 0, 0},
@@ -682,47 +737,6 @@ public class Values {
 								new int[] {1, 1, 69, -18, 0, 200, 76, 38, 38}));
 		//page 4: vortex
 		put(2004, Arrays.asList(new int[] {0, 0, 0, 0},
-								new int[] {0, 1, 0, 0}));
-		//chap 3: maintenance
-		//page 0: obtain ship
-		put(3000, Arrays.asList(new int[] {0, 0, 0, 0},
-								new int[] {0, 1, 0, 0}));
-		//page 1:
-		put(3001, Arrays.asList(new int[] {0, 0, 0, 0},
-								new int[] {0, 1, 0, 0}));
-		//page 2:
-		put(3002, Arrays.asList(new int[] {0, 0, 0, 0},
-								new int[] {0, 1, 0, 0}));
-		//page 3:
-		put(3003, Arrays.asList(new int[] {0, 0, 0, 0},
-								new int[] {0, 1, 0, 0}));
-		//page 4:
-		put(3004, Arrays.asList(new int[] {0, 0, 0, 0},
-								new int[] {0, 1, 0, 0}));
-		//page 5:
-		put(3005, Arrays.asList(new int[] {0, 0, 0, 0},
-								new int[] {0, 1, 0, 0}));
-		//page 6:
-		put(3006, Arrays.asList(new int[] {0, 0, 0, 0},
-								new int[] {0, 1, 0, 0}));
-		//page 7:
-		put(3007, Arrays.asList(new int[] {0, 0, 0, 0},
-								new int[] {0, 1, 0, 0}));
-		//page 8:
-		put(3008, Arrays.asList(new int[] {0, 0, 0, 0},
-								new int[] {0, 1, 0, 0}));
-		//page 9:
-		put(3009, Arrays.asList(new int[] {0, 0, 0, 0},
-								new int[] {0, 1, 0, 0}));
-		//page 10:
-		put(3010, Arrays.asList(new int[] {0, 0, 0, 0},
-								new int[] {0, 1, 0, 0}));
-		//page 11:
-		put(3011, Arrays.asList(new int[] {0, 0, 0, 0},
-								new int[] {0, 1, 0, 0}));
-		//chap 4: ship list
-		//page 0:
-		put(4000, Arrays.asList(new int[] {0, 0, 0, 0},
 								new int[] {0, 1, 0, 0}));
 		
 	}});

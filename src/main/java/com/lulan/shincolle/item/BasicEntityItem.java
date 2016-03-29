@@ -98,7 +98,7 @@ public class BasicEntityItem extends Entity {
 	@Override
     public void onUpdate() {
 		this.setPosition(posX, posY, posZ);
-//        onEntityUpdate();	//DO NOT run onEntityUpdate (¤£»İ­n§ó·sentity movement¤§Ãşªº)
+//        onEntityUpdate();	//DO NOT run onEntityUpdate (ä¸éœ€è¦æ›´æ–°entity movementä¹‹é¡çš„)
 
 		//play ender portal sound
 		if (this.worldObj.isRemote && this.worldObj.rand.nextInt(50) == 0) {

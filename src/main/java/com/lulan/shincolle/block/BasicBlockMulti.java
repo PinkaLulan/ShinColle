@@ -25,23 +25,23 @@ abstract public class BasicBlockMulti extends BasicBlockContainer {
 	protected IIcon iconInvsible;
 	
 	
-	//«ü©w¤è¶ôÃş«¬block
+	//æŒ‡å®šæ–¹å¡Šé¡å‹block
 	public BasicBlockMulti(Material material) {
 		super(material);
 	}
 	
-	//µL«ü©wÃş«¬®É ¹w³]¬°rock«¬
+	//ç„¡æŒ‡å®šé¡å‹æ™‚ é è¨­ç‚ºrockå‹
 	public BasicBlockMulti() {
 		super();
 	}
 
-	//multi block³£·|¨Ì·Ómeta¤Á´«¬O§_Åã¥Ü¬°³z©ú¤è¶ô, ¦]¦¹³]false¨Ï³z©úª¬ºA®É¥¿±`render
+	//multi blockéƒ½æœƒä¾ç…§metaåˆ‡æ›æ˜¯å¦é¡¯ç¤ºç‚ºé€æ˜æ–¹å¡Š, å› æ­¤è¨­falseä½¿é€æ˜ç‹€æ…‹æ™‚æ­£å¸¸render
 	@Override
 	public boolean isOpaqueCube() {
 		return false;
 	}
 	
-	//¨Ï¥Î¨âºØicon: ¤@¯ëicon¸ò³z©úª¬ºAicon
+	//ä½¿ç”¨å…©ç¨®icon: ä¸€èˆ¬iconè·Ÿé€æ˜ç‹€æ…‹icon
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerBlockIcons(IIconRegister iconRegister) {
@@ -49,7 +49,7 @@ abstract public class BasicBlockMulti extends BasicBlockContainer {
 		this.iconInvsible = iconRegister.registerIcon(Reference.MOD_ID+":BlockInvisible");
 	}
 	
-	//meta«D0®Éªí¥Ü¤w¸g§Î¦¨multi blockµ²ºc, ¦]¦¹±N¤è¶ô§ï¬°³z©ú¶K¹Ï
+	//metaé0æ™‚è¡¨ç¤ºå·²ç¶“å½¢æˆmulti blockçµæ§‹, å› æ­¤å°‡æ–¹å¡Šæ”¹ç‚ºé€æ˜è²¼åœ–
 	@Override
 	public IIcon getIcon(int side, int meta) {
 	    if(meta > 0) {
@@ -64,29 +64,29 @@ abstract public class BasicBlockMulti extends BasicBlockContainer {
 	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack itemstack) {
 	}
 
-	//¥kÁäÂI¨ì¤è¶ô®É©I¥s¦¹¤èªk
-	//°Ñ¼Æ: world,¤è¶ôx,y,z,ª±®a,ª±®a­±¦V,ª±®aÂI¨ìªºx,y,z	
+	//å³éµé»åˆ°æ–¹å¡Šæ™‚å‘¼å«æ­¤æ–¹æ³•
+	//åƒæ•¸: world,æ–¹å¡Šx,y,z,ç©å®¶,ç©å®¶é¢å‘,ç©å®¶é»åˆ°çš„x,y,z	
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ) {
-		if(world.isRemote) {	//clientºİ¥u»İ­n¦¬¨ìtrue
+		if(world.isRemote) {	//clientç«¯åªéœ€è¦æ”¶åˆ°true
     		return true;
     	}
-		else if(!player.isSneaking()) {	//serverºİ°»´ú¬O§_¥i¥H¦¨§Î	
+		else if(!player.isSneaking()) {	//serverç«¯åµæ¸¬æ˜¯å¦å¯ä»¥æˆå½¢	
 			BasicTileMulti entity = (BasicTileMulti)world.getTileEntity(x, y, z);
 
 			if(entity != null) {
-				if(entity.hasMaster()) {	//¸Ó¤è¶ô¤w¸g¦¨§Î, «h¥´¶}GUI
+				if(entity.hasMaster()) {	//è©²æ–¹å¡Šå·²ç¶“æˆå½¢, å‰‡æ‰“é–‹GUI
 					LogHelper.info("DEBUG : open multi block GUI");
 					switch(entity.getStructType()) {
-					case 1:	//large shipyard
-					case 2:
+					case 1:  //large shipyard off
+					case 2:  //large shipyard on
 						FMLNetworkHandler.openGui(player, ShinColle.instance, ID.G.LARGESHIPYARD, world, 
 								entity.getMasterX(), entity.getMasterY(), entity.getMasterZ());
 						break;
 					}
-					return true;			//¤w¶}±ÒGUI, ¦^¶ÇtrueÁ×§K¤â¤WªºªF¦è¥Î¥X¥h
+					return true;			//å·²é–‹å•ŸGUI, å›å‚³trueé¿å…æ‰‹ä¸Šçš„æ±è¥¿ç”¨å‡ºå»
 				}
-				else {						//¸Ó¤è¶ô©|¥¼¦¨§Î, ÀË¬d¬O§_¥i¥H¦¨§Î
+				else {						//è©²æ–¹å¡Šå°šæœªæˆå½¢, æª¢æŸ¥æ˜¯å¦å¯ä»¥æˆå½¢
 					if(entity instanceof TileMultiGrudgeHeavy) {
 						int type = MulitBlockHelper.checkMultiBlockForm(world, x, y, z);
 						if(type > 0) {
@@ -100,15 +100,15 @@ abstract public class BasicBlockMulti extends BasicBlockContainer {
 			}
 		}
 
-    	return false;	//¨S¨Æ±¡°µ, ¦^¶Çfalse«h·|ÅÜ¦¨¨Ï¥Î¤â¤Wªºª««~
+    	return false;	//æ²’äº‹æƒ…åš, å›å‚³falseå‰‡æœƒè®Šæˆä½¿ç”¨æ‰‹ä¸Šçš„ç‰©å“
     }
 	
-	//­Yblock©P³ò¦³¤è¶ô§ïÅÜ, «h°»´ú¤@¦¸µ²ºc¬O§_§¹¾ã
+	//è‹¥blockå‘¨åœæœ‰æ–¹å¡Šæ”¹è®Š, å‰‡åµæ¸¬ä¸€æ¬¡çµæ§‹æ˜¯å¦å®Œæ•´
 	@Override
 	public void onNeighborBlockChange(World world, int x, int y, int z, Block block) {
 //		BasicTileMulti tile = (BasicTileMulti) world.getTileEntity(x, y, z);
 //	    
-//	    if(tile != null && tile.hasMaster()) {	//­Y¤w¸g¦¨§Î, «hÀË¬d§Îª¬¬O§_¤´µM§¹¾ã
+//	    if(tile != null && tile.hasMaster()) {	//è‹¥å·²ç¶“æˆå½¢, å‰‡æª¢æŸ¥å½¢ç‹€æ˜¯å¦ä»ç„¶å®Œæ•´
 //            if(MulitBlockHelper.checkMultiBlockForm(world, tile.getMasterX(), tile.getMasterY(), tile.getMasterZ()) <= 0) {
 //            	MulitBlockHelper.resetStructure(world, tile.getMasterX(), tile.getMasterY(), tile.getMasterZ());
 //            }
@@ -120,55 +120,55 @@ abstract public class BasicBlockMulti extends BasicBlockContainer {
 	public void breakBlock(World world, int x, int y, int z, Block block, int meta) {
 		BasicTileMulti tile = (BasicTileMulti)world.getTileEntity(x, y, z);
 
-		//­ì¥»§Î¦¨µ²ºc, «h¸Ñ°£¤§
+		//åŸæœ¬å½¢æˆçµæ§‹, å‰‡è§£é™¤ä¹‹
 		if(!world.isRemote && tile != null && tile.hasMaster()) {
 			MulitBlockHelper.resetStructure(world, tile.getMasterX(), tile.getMasterY(), tile.getMasterZ());
 		}
 		
-//			//§ì¨ìtile entity«á, ±½´y¥ş³¡slot¤º®eª«, µM«á°µ¦¨entity±¼¸¨¥X¨Ó
+//			//æŠ“åˆ°tile entityå¾Œ, æƒæå…¨éƒ¨slotå…§å®¹ç‰©, ç„¶å¾Œåšæˆentityæ‰è½å‡ºä¾†
 //			if(tile != null) {
 //				for(int i = 0; i < tile.getSizeInventory(); i++) {  //check all slots
 //					ItemStack itemstack = tile.getStackInSlot(i);
 //	
 //					if(itemstack != null) {
-//						float f = world.rand.nextFloat() * 0.8F + 0.1F;  //³]©w­nÀH¾÷¼Q¥Xªºrange
+//						float f = world.rand.nextFloat() * 0.8F + 0.1F;  //è¨­å®šè¦éš¨æ©Ÿå™´å‡ºçš„range
 //						float f1 = world.rand.nextFloat() * 0.8F + 0.1F;
 //						float f2 = world.rand.nextFloat() * 0.8F + 0.1F;
 //	
 //						while(itemstack.stackSize > 0) {
 //							int j = world.rand.nextInt(21) + 10;
-//							//¦pªGª««~¶W¹L¤@­ÓÀH¾÷¼Æ¶q, ·|¤À§ó¦hÅ|¼Q¥X
+//							//å¦‚æœç‰©å“è¶…éä¸€å€‹éš¨æ©Ÿæ•¸é‡, æœƒåˆ†æ›´å¤šç–Šå™´å‡º
 //							if(j > itemstack.stackSize) {  
 //								j = itemstack.stackSize;
 //							}
 //	
 //							itemstack.stackSize -= j;
-//							//±Nitem°µ¦¨entity, ¥Í¦¨¨ì¥@¬É¤W
+//							//å°‡itemåšæˆentity, ç”Ÿæˆåˆ°ä¸–ç•Œä¸Š
 //							EntityItem item = new EntityItem(world, (double)((float)x + f), (double)((float)y + f1), (double)((float)z + f2), new ItemStack(itemstack.getItem(), j, itemstack.getItemDamage()));
-//							//¦pªG¦³NBT tag, ¤]­n½Æ»s¨ìª««~¤W
+//							//å¦‚æœæœ‰NBT tag, ä¹Ÿè¦è¤‡è£½åˆ°ç‰©å“ä¸Š
 //							if(itemstack.hasTagCompound()) {
 //								item.getEntityItem().setTagCompound((NBTTagCompound)itemstack.getTagCompound().copy());
 //							}
 //	
-//						world.spawnEntityInWorld(item);	//¥Í¦¨entity
+//						world.spawnEntityInWorld(item);	//ç”Ÿæˆentity
 //						}
 //					}
 //				}	
 //				world.func_147453_f(x, y, z, block);	//alert block changed
 //			}
 
-		//©I¥s­ì¥ıªºbreakBlock, ·|§âtile entity²¾°£±¼
+		//å‘¼å«åŸå…ˆçš„breakBlock, æœƒæŠŠtile entityç§»é™¤æ‰
 		super.breakBlock(world, x, y, z, block, meta);
 	}
 	
-	//±Ntile entity¸ê®Æ¼g¨ìblock metadata¤¤, ¿é¤Jworld¥i¥H§P©w¬OclientÁÙserverºİ
+	//å°‡tile entityè³‡æ–™å¯«åˆ°block metadataä¸­, è¼¸å…¥worldå¯ä»¥åˆ¤å®šæ˜¯clienté‚„serverç«¯
 	//type: 0:normal 1:large shipyard off 2:large shipyard on 3:large workshop off 4:large workshop on
 	public static void updateBlockState(World world, int x, int y, int z, int type) {
 		BasicTileMulti tile = (BasicTileMulti)world.getTileEntity(x, y, z);
 		world.setBlockMetadataWithNotify(x, y, z, type, 2);
 	}
 	
-	//¥´¯}master¤è¶ô®É, ±¼¸¨ª««O¯dtile entityªº¸ê®Æ
+	//æ‰“ç ´masteræ–¹å¡Šæ™‚, æ‰è½ç‰©ä¿ç•™tile entityçš„è³‡æ–™
 //	@Override
 //	public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune) {
 //        ArrayList<ItemStack> ret = new ArrayList<ItemStack>();

@@ -70,7 +70,7 @@ public class MarriageRing extends BasicItem {
         return false;
     }
 	
-	//³o¸Ì¦³³\¦hclientºİ§P©w, ¦]¦¹¤£¯à³]¬°server only, ¦p¦¹°Ê§@¤~·|¥¿½T (ex: change dig speed, fly mode...)
+	//é€™è£¡æœ‰è¨±å¤šclientç«¯åˆ¤å®š, å› æ­¤ä¸èƒ½è¨­ç‚ºserver only, å¦‚æ­¤å‹•ä½œæ‰æœƒæ­£ç¢º (ex: change dig speed, fly mode...)
 	@Override
 	public void onUpdate(ItemStack item, World world, Entity entity, int slot, boolean inUse) {
 		ExtendPlayerProps extProps = null;

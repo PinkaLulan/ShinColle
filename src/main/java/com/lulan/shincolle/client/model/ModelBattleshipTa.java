@@ -227,7 +227,7 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion {
         this.BodyMain.addChild(this.BoobL);
         this.BodyMain.addChild(this.EquipRight);
         
-        //µo¥ú¤ä¬[
+        //ç™¼å…‰æ”¯æ¶
         this.GlowBodyMain = new ModelRenderer(this, 0, 0);
         this.GlowBodyMain.setRotationPoint(0.0F, -12.0F, 0.0F);
         this.GlowNeckCloth = new ModelRenderer(this, 0, 0);
@@ -261,7 +261,7 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion {
     	this.BodyMain.render(f5);
     	GL11.glDisable(GL11.GL_BLEND);
     	
-    	//«G«×³]¬°240
+    	//äº®åº¦è¨­ç‚º240
     	GL11.glDisable(GL11.GL_LIGHTING);
     	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
     	this.GlowBodyMain.render(f5);
@@ -285,7 +285,7 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion {
 		setGlowRotation();
     }
     
-    //³]©w¼Ò«¬µo¥ú³¡¥÷ªºrotation
+    //è¨­å®šæ¨¡å‹ç™¼å…‰éƒ¨ä»½çš„rotation
     private void setGlowRotation() {
 		this.GlowBodyMain.rotateAngleX = this.BodyMain.rotateAngleX;
 		this.GlowBodyMain.rotateAngleY = this.BodyMain.rotateAngleY;
@@ -298,7 +298,7 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion {
 		this.GlowHead.rotateAngleZ = this.Head.rotateAngleZ;
     }
     
-  //Âù¸}²¾°Ê­pºâ
+  //é›™è…³ç§»å‹•è¨ˆç®—
   	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, BasicEntityShip ent) {   
   		float angleX = MathHelper.cos(f2*0.08F);
   		float angleRun = MathHelper.cos(f * 0.7F) * f1 * 0.6F;
@@ -312,12 +312,12 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion {
   		addk1 = angleRun - 0.35F;
 	  	addk2 = angleRun2  - 0.087F;
 
-  	    //²¾°ÊÀY³¡¨Ï¨ä¬İ¤H
-	  	this.Head.rotateAngleX = f4 / 57.29578F; 	//¤W¤U¨¤«×
-	  	this.Head.rotateAngleY = f3 / 57.29578F;	//¥ª¥k¨¤«× ¨¤«×Âà¦¨rad §Y°£¥H57.29578
+  	    //ç§»å‹•é ­éƒ¨ä½¿å…¶çœ‹äºº
+	  	this.Head.rotateAngleX = f4 / 57.29578F; 	//ä¸Šä¸‹è§’åº¦
+	  	this.Head.rotateAngleY = f3 / 57.29578F;	//å·¦å³è§’åº¦ è§’åº¦è½‰æˆrad å³é™¤ä»¥57.29578
 	    
-	    //¥¿±`¯¸¥ß°Ê§@
-	    //¯İ³¡
+	    //æ­£å¸¸ç«™ç«‹å‹•ä½œ
+	    //èƒ¸éƒ¨
   	    this.BoobL.rotateAngleX = -angleX * 0.06F - 0.7854F;
   	    this.BoobR.rotateAngleX = -angleX * 0.06F - 0.7854F;
   	    this.NeckTie.rotateAngleX = -angleX * 0.1F - 0.7F;
@@ -345,7 +345,7 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion {
 		this.Cloak04.rotateAngleX = angleX * 0.05F + 0.15F;
 		this.Cloak05.rotateAngleX = 0.2F;
 
-	    if(ent.isSprinting() || f1 > 0.9F) {	//©b¶]°Ê§@
+	    if(ent.isSprinting() || f1 > 0.9F) {	//å¥”è·‘å‹•ä½œ
 	    	//leg move parm
 		  	addk2 -= 0.35F;
 	  	    //hair
@@ -371,7 +371,7 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion {
 	    else {
 	    	startEmo2 = ent.getStartEmotion2();
 	    	
-	    	//ÀY³¡¶É±×°Ê§@, ¥u¦b©b¶]¥H¥~®Éroll
+	    	//é ­éƒ¨å‚¾æ–œå‹•ä½œ, åªåœ¨å¥”è·‘ä»¥å¤–æ™‚roll
 	    	if(startEmo2 > 0) {
 	    		--startEmo2;
 	    		ent.setStartEmotion2(startEmo2);
@@ -390,9 +390,9 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion {
 		    }
 	    }//end if sprint
 	    
-	    //rollÀY³¡¶É±×ªí±¡
+	    //rollé ­éƒ¨å‚¾æ–œè¡¨æƒ…
 	    if(ent.getStateFlag(ID.F.HeadTilt)) {
-	    	if(ent.getStateEmotion(ID.S.Emotion2) == 1) {	//¤§«e¤w¸g¶É±×, «hÄ~Äò¶É±×
+	    	if(ent.getStateEmotion(ID.S.Emotion2) == 1) {	//ä¹‹å‰å·²ç¶“å‚¾æ–œ, å‰‡ç¹¼çºŒå‚¾æ–œ
 	    		this.Head.rotateAngleZ = -0.24F;
 	    	}
 	    	else {
@@ -405,7 +405,7 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion {
 	    	}	
 	    }
 	    else {
-	    	if(ent.getStateEmotion(ID.S.Emotion2) == 0) {	//ºû«ù¤§«e¨¤«×
+	    	if(ent.getStateEmotion(ID.S.Emotion2) == 0) {	//ç¶­æŒä¹‹å‰è§’åº¦
 	    		this.Head.rotateAngleZ = 0F;
 	    	}
 	    	else {
@@ -418,7 +418,7 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion {
 	    	}
 	    }
 	    
-	    if(ent.isSneaking()) {		//¼ç¦æ, ÃÛ¤U°Ê§@
+	    if(ent.isSneaking()) {		//æ½›è¡Œ, è¹²ä¸‹å‹•ä½œ
 	    	//leg move parm
 	    	addk1 -= 0.52F;
 		  	addk2 -= 1F;
@@ -439,7 +439,7 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion {
 			this.Cloak05.rotateAngleX = angleX * 0.05F + 0.2F;
   		}//end if sneaking
   		
-	    if(ent.isSitting() || ent.isRiding()) {  //ÃM­¼°Ê§@
+	    if(ent.isSitting() || ent.isRiding()) {  //é¨ä¹˜å‹•ä½œ
 	    	if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {
 		    	GL11.glTranslatef(0F, 1.9F, 0F);
 		    	//leg move parm
@@ -497,7 +497,7 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion {
 	    	}
   		}//end if sitting
 	    
-	    //§ğÀ»°Ê§@    
+	    //æ”»æ“Šå‹•ä½œ    
 	    if(ent.attackTime > 0) {
 	    	//arm
 	    	this.ArmLeft01.rotateAngleX = -1.3F;
@@ -516,22 +516,22 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion {
   	
   	private void showEquip(BasicEntityShip ent) {
   		switch(ent.getStateEmotion(ID.S.State)) {
-  		case ID.State.EQUIP00:	//¥u¦³©Ü­·
+  		case ID.State.EQUIP00:	//åªæœ‰æŠ«é¢¨
   			this.Cloak01.isHidden = false;
 			this.EquipLeft.isHidden = true;
 			this.EquipRight.isHidden = true;
 			break;
-  		case ID.State.EQUIP01:	//¥u¦³Å@ªÓ
+  		case ID.State.EQUIP01:	//åªæœ‰è­·è‚©
   			this.Cloak01.isHidden = true;
 			this.EquipLeft.isHidden = false;
 			this.EquipRight.isHidden = false;
 			break;
-  		case ID.State.EQUIP02:	//©Ü­·+Å@ªÓ
+  		case ID.State.EQUIP02:	//æŠ«é¢¨+è­·è‚©
   			this.Cloak01.isHidden = false;
 			this.EquipLeft.isHidden = false;
 			this.EquipRight.isHidden = false;
 			break;
-		default:				//³£¨S¦³
+		default:				//éƒ½æ²’æœ‰
 			this.Cloak01.isHidden = true;
 			this.EquipLeft.isHidden = true;
 			this.EquipRight.isHidden = true;
@@ -539,7 +539,7 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion {
   		}
   	}
   	
-    //³]©wÅã¥ÜªºÁy«¬
+    //è¨­å®šé¡¯ç¤ºçš„è‡‰å‹
   	@Override
   	public void setFace(int emo) {
   		switch(emo) {

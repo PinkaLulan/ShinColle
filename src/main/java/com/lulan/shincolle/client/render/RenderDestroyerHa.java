@@ -13,7 +13,7 @@ import cpw.mods.fml.relauncher.Side;
 @SideOnly(Side.CLIENT)
 public class RenderDestroyerHa extends RenderLiving {
 	
-	//¶K¹ÏÀÉ¸ô®|
+	//è²¼åœ–æª”è·¯å¾‘
 	private static final ResourceLocation mobTextures = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityDestroyerHa.png");
 
 	public RenderDestroyerHa(ModelBase par1, float par2) {

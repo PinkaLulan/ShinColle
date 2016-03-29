@@ -1,7 +1,14 @@
 package com.lulan.shincolle.entity.battleship;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
@@ -11,6 +18,7 @@ import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipLarge;
 import com.lulan.shincolle.entity.ExtendShipProps;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
@@ -21,6 +29,11 @@ import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
 public class EntityBattleshipRe extends BasicEntityShipLarge {
 	
+	private boolean isPushing = false;
+	private int tickPush = 0;
+	private EntityLivingBase targetPush = null;
+	
+	
 	public EntityBattleshipRe(World world) {
 		super(world);
 		this.setSize(0.6F, 1.8F);
@@ -28,6 +41,7 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.BattleshipRE);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BBV]);
+		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BBV]);
 		this.ModelPos = new float[] {-6F, 10F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();
@@ -54,28 +68,109 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
 		this.tasks.addTask(12, new EntityAIShipRangeAttack(this));			   //0011
 	}
 
-	//�W�[ĥ�����ƶq�p��
+	//增加艦載機數量計算
 	@Override
 	public void calcShipAttributes() {
-		EffectEquip[ID.EF_DHIT] = EffectEquip[ID.EF_DHIT] + 0.2F;
-		EffectEquip[ID.EF_THIT] = EffectEquip[ID.EF_THIT] + 0.2F;
+		EffectEquip[ID.EF_DHIT] = EffectEquip[ID.EF_DHIT] + 0.1F;
+		EffectEquip[ID.EF_THIT] = EffectEquip[ID.EF_THIT] + 0.1F;
 		
-		this.maxAircraftLight += 6;
-		this.maxAircraftHeavy += 4;
+		this.maxAircraftLight += this.getLevel() * 0.1F;
+		this.maxAircraftHeavy += this.getLevel() * 0.05F;
 		
 		super.calcShipAttributes();	
 	}
+	
+	@Override
+    public void onLivingUpdate() {
+    	//check server side
+    	if(!this.worldObj.isRemote) {
+        	//push other people every 256 ticks
+        	if(this.ticksExisted % 256 == 0) {
+        		if(this.getRNG().nextInt(5) == 0 && !this.isSitting() && !this.isRiding() &&
+        		   !this.getStateFlag(ID.F.NoFuel) && !this.getIsLeashed()) {
+        			//find target
+        			this.findTargetPush();
+        		}
+        	}
+    		
+    		//若要找騎乘目標
+        	if(this.isPushing) {
+        		this.tickPush++;
+        		
+        		//找太久, 放棄騎乘目標
+        		if(this.tickPush > 200 || this.targetPush == null) {
+        			this.cancelPush();
+        		}
+        		else {
+        			float distPush = this.getDistanceToEntity(this.targetPush);
+        			
+        			//每32 tick找一次路徑
+            		if(this.ticksExisted % 32 == 0) {
+            			if(distPush > 2F) {
+            				this.getShipNavigate().tryMoveToEntityLiving(this.targetPush, 1D);
+            			}
+            		}
+            		
+            		if(distPush <= 2.5F) {
+            			this.targetPush.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * 0.5F, 
+         	                   0.5D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * 0.5F);
+            			
+            			//for other player, send ship state for display
+            	  		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
+            	  		CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this.targetPush, 0, S2CEntitySync.PID.SyncEntity_Motion), point);
+					    
+					    //play entity attack sound
+					    this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+					    
+					    this.cancelPush();
+            		}
+        		}
+        	}//end push target
+    	}
+    	super.onLivingUpdate();
+    }
+    
+    private void cancelPush() {
+    	this.isPushing = false;
+    	this.tickPush = 0;
+    	this.targetPush = null;
+    }
+    
+    //find target to push
+    private void findTargetPush() {
+    	EntityLivingBase getEnt = null;
+        AxisAlignedBB impactBox = this.boundingBox.expand(12D, 6D, 12D); 
+        List hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, impactBox);
+        List<EntityLivingBase> canPushList = new ArrayList();
+        
+        //搜尋list, 找出第一個可以騎乘的目標
+        if(hitList != null && !hitList.isEmpty()) {
+            for(int i = 0; i < hitList.size(); ++i) {
+            	getEnt = (EntityLivingBase)hitList.get(i);
+            	
+            	//只騎乘同主人的棲艦或者主人
+        		if(getEnt != this) {
+        			canPushList.add(getEnt);
+        		}
+            }
+        }
+        
+        //從可騎乘目標中挑出一個目標騎乘
+        if(canPushList.size() > 0) {
+        	this.targetPush = canPushList.get(rand.nextInt(canPushList.size()));
+        	this.tickPush = 0;
+			this.isPushing = true;
+        }
+    }
 	
 	@Override
 	//range attack method, cost light ammo, attack delay = 20 / attack speed, damage = 100% atk 
 	public boolean attackEntityWithAmmo(Entity target) {
 		//get attack value
 		float atk = CalcHelper.calcDamageByEquipEffect(this, target, StateFinal[ID.ATK], 0);
-		//set knockback value (testing)
-		float kbValue = 0.05F;
 		
 		//update entity look at vector (for particle spawn)
-        //����k��getLook�٥��T (client sync���D)
+        //此方法比getLook還正確 (client sync問題)
         float distX = (float) (target.posX - this.posX);
         float distY = (float) (target.posY - this.posY);
         float distZ = (float) (target.posZ - this.posZ);
@@ -84,11 +179,8 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
         distY = distY / distSqrt;
         distZ = distZ / distSqrt;
      
-        //set attackTime
-        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-//		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
         //spawn laser particle
-//		CommonProxy.channel.sendToAllAround(new S2CSpawnParticle(14, worldObj.provider.dimensionId, posX, posY + 1.5D, posZ, target.posX, target.posY+target.height/2F, target.posZ), point);
+        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 14, posX, posY + 1.5D, posZ, target.posX, target.posY+target.height/2F, target.posZ, true), point);
 	
 		//play sound: (sound name, volume, pitch) 
@@ -105,8 +197,8 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
   		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
         
         //light ammo -1
-        if(!decrAmmoNum(0)) {		//not enough ammo
-        	atk = atk * 0.125F;	//reduce damage to 12.5%
+        if(!decrAmmoNum(0, this.getAmmoConsumption())) {		//not enough ammo
+        	return false;
         }
 
         //calc miss chance, if not miss, calc cri/multi hit
@@ -158,20 +250,12 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
     		}
   		}
 
-	    //�Natk��attacker�ǵ��ؼЪ�attackEntityFrom��k, �b�ؼ�class���p��ˮ`
-	    //�åB�^�ǬO�_���\�ˮ`��ؼ�
+	    //將atk跟attacker傳給目標的attackEntityFrom方法, 在目標class中計算傷害
+	    //並且回傳是否成功傷害到目標
 	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this).setMagicDamage(), atk);
 
 	    //if attack success
 	    if(isTargetHurt) {
-	    	//calc kb effect
-	        if(kbValue > 0) {
-	            target.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
-	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
-	            motionX *= 0.6D;
-	            motionZ *= 0.6D;
-	        }
-	        
         	//display hit particle on target
 	        TargetPoint point1 = new TargetPoint(this.dimension, target.posX, target.posY, target.posZ, 64D);
 			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 9, false), point1);
@@ -194,6 +278,9 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
   			return (double)this.height * 0.4F;
   		}
 	}
+
+	@Override
+	public void setShipOutfit(boolean isSneaking) {}
 	
 	
 }

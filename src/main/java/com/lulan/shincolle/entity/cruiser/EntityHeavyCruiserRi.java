@@ -17,11 +17,12 @@ public class EntityHeavyCruiserRi extends BasicEntityShipSmall {
 	
 	public EntityHeavyCruiserRi(World world) {
 		super(world);
-		this.setSize(0.6F, 1.8F);	//∏Iº≤§j§p ∏Úº“´¨§j§pµL√ˆ
+		this.setSize(0.6F, 1.8F);	//Á¢∞ÊíûÂ§ßÂ∞è Ë∑üÊ®°ÂûãÂ§ßÂ∞èÁÑ°Èóú
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HEAVY_CRUISER);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.HeavyCruiserRI);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CRUISER);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CA]);
+		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CA]);
 		this.ModelPos = new float[] {0F, 10F, 0F, 30F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();
@@ -75,32 +76,7 @@ public class EntityHeavyCruiserRi extends BasicEntityShipSmall {
 		//use cake to change state
 		if(itemstack != null) {
 			if(itemstack.getItem() == Items.cake) {
-				if(player.isSneaking()) {
-					switch(getStateEmotion(ID.S.State2)) {
-					case ID.State.NORMAL_2:
-						setStateEmotion(ID.S.State2, ID.State.EQUIP00_2, true);
-						break;
-					case ID.State.EQUIP00_2:
-						setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
-						break;	
-					default:
-						setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
-						break;
-					}
-				}
-				else {
-					switch(getStateEmotion(ID.S.State)) {
-					case ID.State.NORMAL:
-						setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
-						break;
-					case ID.State.EQUIP00:
-						setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-						break;
-					default:
-						setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-						break;
-					}
-				}
+				this.setShipOutfit(player.isSneaking());
 				return true;
 			}
 		}
@@ -122,6 +98,36 @@ public class EntityHeavyCruiserRi extends BasicEntityShipSmall {
   		else {
   			return (double)this.height * 0.6F;
   		}
+	}
+
+	@Override
+	public void setShipOutfit(boolean isSneaking) {
+		if(isSneaking) {
+			switch(getStateEmotion(ID.S.State2)) {
+			case ID.State.NORMAL_2:
+				setStateEmotion(ID.S.State2, ID.State.EQUIP00_2, true);
+				break;
+			case ID.State.EQUIP00_2:
+				setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
+				break;	
+			default:
+				setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
+				break;
+			}
+		}
+		else {
+			switch(getStateEmotion(ID.S.State)) {
+			case ID.State.NORMAL:
+				setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+				break;
+			case ID.State.EQUIP00:
+				setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+				break;
+			default:
+				setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+				break;
+			}
+		}
 	}
 
 

@@ -37,7 +37,7 @@ public class CalcHelper {
 	
 	public CalcHelper() {}
 	
-	/** ±NsecondÂà¦¨®æ¦¡ 00:00:00 */
+	/** å°‡secondè½‰æˆæ ¼å¼ 00:00:00 */
 	public static String getTimeFormated(int sec) {
 		int timeSec = 0;
 		int timeMin = 0;
@@ -50,7 +50,7 @@ public class CalcHelper {
 		return get2Digit(timeHr) + ":" + get2Digit(timeMin) + ":" + get2Digit(timeSec);
 	}
 
-	/** ±N¼Æ¦rÂà¬°2¦r¥À¦r¦ê, ª`·Nnum > 0 */
+	/** å°‡æ•¸å­—è½‰ç‚º2å­—æ¯å­—ä¸², æ³¨æ„num > 0 */
 	public static String get2Digit(int num) {
 	    if(num == 0) {
 	        return "00";
@@ -230,10 +230,10 @@ public class CalcHelper {
     public static <T> List<T> listUnion(List<T> list1, List<T> list2) {
     	Set set1 = new HashSet();
     	
-    	set1.addAll(list1);  //±Nlist1¥[¤Jset
-    	set1.addAll(list2);  //±Nlist2¥[¤Jset, ¦]¬°¬Ohashset, ©Ò¥H­«½Æ¶µ¤£·|¥[¤J
+    	set1.addAll(list1);  //å°‡list1åŠ å…¥set
+    	set1.addAll(list2);  //å°‡list2åŠ å…¥set, å› ç‚ºæ˜¯hashset, æ‰€ä»¥é‡è¤‡é …ä¸æœƒåŠ å…¥
     	
-    	List retlist = new ArrayList(set1);  //setÂà¬°list
+    	List retlist = new ArrayList(set1);  //setè½‰ç‚ºlist
     	
     	return retlist;
     }
@@ -251,10 +251,10 @@ public class CalcHelper {
          return a > b ? true : false;
     }
 
-	/**¥ÑXYZ¤T­Ó¦V¶q­È­pºâ [XZ§¨¨¤(Yaw), XY§¨¨¤(Pitch)], return³æ¦ì¬°«×¼Æ
+	/**ç”±XYZä¸‰å€‹å‘é‡å€¼è¨ˆç®— [XZå¤¾è§’(Yaw), XYå¤¾è§’(Pitch)], returnå–®ä½ç‚ºåº¦æ•¸
 	 */
 	public static float[] getLookDegree(double motX, double motY, double motZ, boolean getDegree) {
-		//­pºâ¼Ò«¬­nÂàªº¨¤«× (RAD, not DEG)
+		//è¨ˆç®—æ¨¡å‹è¦è½‰çš„è§’åº¦ (RAD, not DEG)
 	    double f1 = MathHelper.sqrt_double(motX*motX + motZ*motZ);
 	    float[] degree = new float[2];
 	    

@@ -33,11 +33,12 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
 	
 	public EntityDestroyerShimakaze(World world) {
 		super(world);
-		this.setSize(0.6F, 1.8F);	//∏Iº≤§j§p ∏Úº“´¨§j§pµL√ˆ
+		this.setSize(0.6F, 1.8F);	//Á¢∞ÊíûÂ§ßÂ∞è Ë∑üÊ®°ÂûãÂ§ßÂ∞èÁÑ°Èóú
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.DESTROYER);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.DestroyerShimakaze);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.DD]);
+		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.DD]);
 		this.ModelPos = new float[] {0F, 15F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);
 		
@@ -75,8 +76,8 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
   		super.onLivingUpdate();
           
   		if(!worldObj.isRemote) {
-  			//add aura to master every 100 ticks
-  			if(this.ticksExisted % 100 == 0) {
+  			//add aura to master every 128 ticks
+  			if(this.ticksExisted % 128 == 0) {
   				//add num of rensouhou
   				if(this.numRensouhou < 6) numRensouhou++;
   				
@@ -97,32 +98,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
 		//use cake to change state
 		if(itemstack != null) {
 			if(itemstack.getItem() == Items.cake) {
-				if(player.isSneaking()) {
-					switch(getStateEmotion(ID.S.State2)) {
-					case ID.State.NORMAL_2:
-						setStateEmotion(ID.S.State2, ID.State.EQUIP00_2, true);
-						break;
-					case ID.State.EQUIP00_2:
-						setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
-						break;	
-					default:
-						setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
-						break;
-					}
-				}
-				else {
-					switch(getStateEmotion(ID.S.State)) {
-					case ID.State.NORMAL:
-						setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
-						break;
-					case ID.State.EQUIP00:
-						setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-						break;
-					default:
-						setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-						break;
-					}
-				}
+				this.setShipOutfit(player.isSneaking());
 				return true;
 			}
 		}
@@ -131,7 +107,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
 		return false;
   	}
   	
-  	//©€≥Í≥s∏ÀØ•∂i¶Êß¿ª
+  	//ÊãõÂñöÈÄ£Ë£ùÁ†≤ÈÄ≤Ë°åÊîªÊìä
   	@Override
   	public boolean attackEntityWithAmmo(Entity target) {
   		//check num rensouhou
@@ -148,7 +124,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
         }
         
         //light ammo--
-        if(!decrAmmoNum(4)) {		//not enough ammo
+        if(!decrAmmoNum(0, 4 * this.getAmmoConsumption())) {
         	return false;
         }
         
@@ -158,7 +134,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
   		//grudge--
   		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk] * 4);
 
-        //µoÆg™Ã∑œ√˙ØSÆƒ (©€≥Í≥s∏ÀØ•§£®œ•ŒØSÆƒ, ¶˝¨O≠nµo∞e´ •]®”≥]©wattackTime)
+        //ÁôºÂ∞ÑËÄÖÁÖôÈúßÁâπÊïà (ÊãõÂñöÈÄ£Ë£ùÁ†≤‰∏ç‰ΩøÁî®ÁâπÊïà, ‰ΩÜÊòØË¶ÅÁôºÈÄÅÂ∞ÅÂåÖ‰æÜË®≠ÂÆöattackTime)
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
   		
@@ -178,16 +154,16 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
         return false;
 	}
   	
-  	//§≠≥s∏ÀªƒØ¿≥Ωπp
+  	//‰∫îÈÄ£Ë£ùÈÖ∏Á¥†È≠öÈõ∑
   	@Override
   	public boolean attackEntityWithHeavyAmmo(Entity target) {	
 		//get attack value
 		float atk = StateFinal[ID.ATK_H] * 0.3F;
 		float kbValue = 0.15F;
 		
-		//≠∏ºu¨Oß_±ƒ•Œ™ΩÆg
+		//È£õÂΩàÊòØÂê¶Êé°Áî®Áõ¥Â∞Ñ
 		boolean isDirect = false;
-		//≠p∫‚•ÿº–∂Z¬˜
+		//Ë®àÁÆóÁõÆÊ®ôË∑ùÈõ¢
 		float tarX = (float)target.posX;	//for miss chance calc
 		float tarY = (float)target.posY;
 		float tarZ = (float)target.posZ;
@@ -197,7 +173,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
         float distSqrt = MathHelper.sqrt_float(distX*distX + distY*distY + distZ*distZ);
         float launchPos = (float)posY + height * 0.7F;
         
-        //∂WπL§@©w∂Z¬˜/§Ù§§ , ´h±ƒ•Œ©ﬂ™´Ωu,  ¶b§Ù§§Æ…µoÆg∞™´◊∏˚ßC
+        //Ë∂ÖÈÅé‰∏ÄÂÆöË∑ùÈõ¢/Ê∞¥‰∏≠ , ÂâáÊé°Áî®ÊããÁâ©Á∑ö,  Âú®Ê∞¥‰∏≠ÊôÇÁôºÂ∞ÑÈ´òÂ∫¶ËºÉ‰Ωé
         if((distX*distX+distY*distY+distZ*distZ) < 36F) {
         	isDirect = true;
         }
@@ -219,9 +195,9 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
         	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         }
         
-        //heavy ammo -1
-        if(!decrAmmoNum(1)) {	//not enough ammo
-        	atk = atk * 0.125F;	//reduce damage to 12.5%
+        //heavy ammo--
+        if(!decrAmmoNum(1, this.getAmmoConsumption())) {
+        	return false;
         }
         
         //calc miss chance, miss: add random offset(0~6) to missile target 
@@ -238,7 +214,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
         	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
         }
         
-        //µoÆg™Ã∑œ√˙ØSÆƒ (§£®œ•ŒØSÆƒ, ¶˝¨O≠nµo∞e´ •]®”≥]©wattackTime)
+        //ÁôºÂ∞ÑËÄÖÁÖôÈúßÁâπÊïà (‰∏ç‰ΩøÁî®ÁâπÊïà, ‰ΩÜÊòØË¶ÅÁôºÈÄÅÂ∞ÅÂåÖ‰æÜË®≠ÂÆöattackTime)
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
 
@@ -291,6 +267,36 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
   		else {
   			return (double)this.height * 0.45F;
   		}
+	}
+
+	@Override
+	public void setShipOutfit(boolean isSneaking) {
+		if(isSneaking) {
+			switch(getStateEmotion(ID.S.State2)) {
+			case ID.State.NORMAL_2:
+				setStateEmotion(ID.S.State2, ID.State.EQUIP00_2, true);
+				break;
+			case ID.State.EQUIP00_2:
+				setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
+				break;	
+			default:
+				setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
+				break;
+			}
+		}
+		else {
+			switch(getStateEmotion(ID.S.State)) {
+			case ID.State.NORMAL:
+				setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+				break;
+			case ID.State.EQUIP00:
+				setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+				break;
+			default:
+				setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+				break;
+			}
+		}
 	}
 
 

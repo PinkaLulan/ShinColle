@@ -11,7 +11,7 @@ import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
 /**AIRCRAFT ATTACK AI
- * entity¥²¶·¹ê§@attackEntityWithAmmo, attackEntityWithHeavyAmmo ¨â­Ó¤èªk
+ * entityå¿…é ˆå¯¦ä½œattackEntityWithAmmo, attackEntityWithHeavyAmmo å…©å€‹æ–¹æ³•
  */
 public class EntityAIShipAircraftAttack extends EntityAIBase {
 	
@@ -24,9 +24,9 @@ public class EntityAIShipAircraftAttack extends EntityAIBase {
     private float rangeSq;			//attack range square
     private double[] randPos = new double[3];		//random position
     
-    //ª½½u«e¶i¥ÎÀ\¼Æ
-    private double distSq, distX, distY, distZ, motX, motY, motZ;	//¸ò¥Ø¼Ðªºª½½u¶ZÂ÷(ªº¥­¤è)    
-    private double distRanSqrt, distRanX, distRanY, distRanZ, ranX, ranY, ranZ;	//ÀH¾÷§äªº¥Øªº¦a
+    //ç›´ç·šå‰é€²ç”¨é¤æ•¸
+    private double distSq, distX, distY, distZ, motX, motY, motZ;	//è·Ÿç›®æ¨™çš„ç›´ç·šè·é›¢(çš„å¹³æ–¹)    
+    private double distRanSqrt, distRanX, distRanY, distRanZ, ranX, ranY, ranZ;	//éš¨æ©Ÿæ‰¾çš„ç›®çš„åœ°
     
     public EntityAIShipAircraftAttack(BasicEntityAirplane host) {
         if (!(host instanceof BasicEntityAirplane)) {
@@ -63,23 +63,23 @@ public class EntityAIShipAircraftAttack extends EntityAIBase {
         this.attackRange = 7.5F;
         this.rangeSq = this.attackRange * this.attackRange;
         distSq = distX = distY = distZ = motX = motY = motZ = 0D;
-        //AI²¾°Ê³]©w
+        //AIç§»å‹•è¨­å®š
         randPos[0] = target.posX;
         randPos[1] = target.posX;
         randPos[2] = target.posX;
     }
 
-    //§P©w¬O§_Ä~ÄòAI¡G ¦³target´NÄ~Äò, ©ÎªÌ¤w¸g²¾°Ê§¹²¦´NÄ~Äò
+    //åˆ¤å®šæ˜¯å¦ç¹¼çºŒAIï¼š æœ‰targetå°±ç¹¼çºŒ, æˆ–è€…å·²ç¶“ç§»å‹•å®Œç•¢å°±ç¹¼çºŒ
     @Override
 	public boolean continueExecuting() {
     	//no ammo, go home
     	if(!this.host.canFindTarget) return false;
     	
-    	//¶]should exec, ­Yfalse«hÀË¬d¬O§_ÁÙ¦b²¾°Ê¤¤, ­YµLªk²¾°Ê«hµ²§ô
+    	//è·‘should exec, è‹¥falseå‰‡æª¢æŸ¥æ˜¯å¦é‚„åœ¨ç§»å‹•ä¸­, è‹¥ç„¡æ³•ç§»å‹•å‰‡çµæŸ
         return this.shouldExecute()  || (target != null && target.isEntityAlive() && !this.host.getShipNavigate().noPath());
     }
 
-    //­«¸mAI¤èªk
+    //é‡ç½®AIæ–¹æ³•
     @Override
 	public void resetTask() {
         this.target = null;
@@ -88,16 +88,16 @@ public class EntityAIShipAircraftAttack extends EntityAIBase {
         this.host.getShipNavigate().tryMoveToXYZ(randPos[0], randPos[1], randPos[2], 1D);
     }
 
-    //¶i¦æAI
+    //é€²è¡ŒAI
     @Override
 	public void updateTask() {
-    	boolean onSight = false;	//§P©wª½®g¬O§_µL»ÙÃªª«
+    	boolean onSight = false;	//åˆ¤å®šç›´å°„æ˜¯å¦ç„¡éšœç¤™ç‰©
     	
     	if(this.target != null) {
             onSight = this.host.getEntitySenses().canSee(this.target);
 //            LogHelper.info("DEBUG : rand pos: "+this.target);
             
-            //¥Ø¼Ð¶ZÂ÷­pºâ
+            //ç›®æ¨™è·é›¢è¨ˆç®—
             this.distX = this.target.posX - this.host.posX;
     		this.distY = this.target.posY+2D - this.host.posY;
     		this.distZ = this.target.posZ - this.host.posZ;	
@@ -106,11 +106,11 @@ public class EntityAIShipAircraftAttack extends EntityAIBase {
         	if(this.host.ticksExisted % 16 == 0) {
 	        	randPos = BlockHelper.findRandomPosition(this.host, this.target, 3D, 3D, 1);
 //	        	LogHelper.info("DEBUG : rand pos: "+this.host+" "+randPos[0]+" "+randPos[1]+" "+randPos[2]);
-	        	//¥Ø¼Ð¦b®gµ{¥~, «h100%³t«×«e¶i
+	        	//ç›®æ¨™åœ¨å°„ç¨‹å¤–, å‰‡100%é€Ÿåº¦å‰é€²
 	        	if(this.distSq > this.rangeSq) {
 		        	this.host.getShipNavigate().tryMoveToXYZ(randPos[0], randPos[1], randPos[2], 1D);
 	        	}
-	        	//¥Ø¼Ð¦b®gµ{¤º, «h½w³t²¾°Ê
+	        	//ç›®æ¨™åœ¨å°„ç¨‹å…§, å‰‡ç·©é€Ÿç§»å‹•
 	        	else {
 		        	this.host.getShipNavigate().tryMoveToXYZ(randPos[0], randPos[1], randPos[2], 0.4D);
 	        	}
@@ -121,9 +121,9 @@ public class EntityAIShipAircraftAttack extends EntityAIBase {
 	        
 	        onSight = this.host.getEntitySenses().canSee(this.target);
 
-	        //­Yattack delay­Ë¼Æ§¹¤F¥BºË·Ç®É¶¡°÷¤[, «h¶}©l§ðÀ»
+	        //è‹¥attack delayå€’æ•¸å®Œäº†ä¸”çž„æº–æ™‚é–“å¤ ä¹…, å‰‡é–‹å§‹æ”»æ“Š
 	        if(this.atkDelay <= 0 && onSight) {
-	        	//¥Ñ©óÄ¥¸ü¾÷¥u·|»´ or ­«¨ä¤¤¤@ºØ§ðÀ», ¦]¦¹AI³oÃä¦@¥Îcooldown
+	        	//ç”±æ–¼è‰¦è¼‰æ©Ÿåªæœƒè¼• or é‡å…¶ä¸­ä¸€ç¨®æ”»æ“Š, å› æ­¤AIé€™é‚Šå…±ç”¨cooldown
 	        	if(this.distSq < this.rangeSq && this.host.numAmmoLight > 0 && this.host.useAmmoLight) {
 		            //attack method
 		            this.host.attackEntityWithAmmo(this.target);

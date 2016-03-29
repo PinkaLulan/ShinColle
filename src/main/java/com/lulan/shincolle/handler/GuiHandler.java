@@ -32,10 +32,10 @@ public class GuiHandler implements IGuiHandler {
 		TileEntity tile = null;
 		Entity entity = null;
 		
-		switch(guiId) {		//§P©wguiºØÃş
+		switch(guiId) {		//åˆ¤å®šguiç¨®é¡
 		case ID.G.SMALLSHIPYARD:	//GUI small shipyard
-			tile = world.getTileEntity(x, y, z);  //½T©w§ì¨ìentity¤~¶}ui ¥H§K¼Q¥XNPE
-			if(tile != null && tile instanceof TileEntitySmallShipyard) {  //server¨ú±ocontainer
+			tile = world.getTileEntity(x, y, z);  //ç¢ºå®šæŠ“åˆ°entityæ‰é–‹ui ä»¥å…å™´å‡ºNPE
+			if(tile != null && tile instanceof TileEntitySmallShipyard) {  //serverå–å¾—container
 				//sync tile when gui opened
 				((TileEntitySmallShipyard)tile).sendSyncPacket();
 				
@@ -43,12 +43,12 @@ public class GuiHandler implements IGuiHandler {
 			}
 			break;
 		case ID.G.SHIPINVENTORY:	//GUI ship inventory
-			entity = world.getEntityByID(x);	//entity id¦s¦bx®y¼Ğ°Ñ¼Æ¤W
+			entity = world.getEntityByID(x);	//entity idå­˜åœ¨xåº§æ¨™åƒæ•¸ä¸Š
 			
             if(entity != null && entity instanceof BasicEntityShip){
             	//get ship class id and register to player data for ship list recording
             	int cid = ((BasicEntityShip)entity).getShipClass();
-            	EntityHelper.addPlayerShipListData(cid, player);
+            	EntityHelper.addPlayerColledShip(cid, player);
             	
             	//sync ship when gui opened
             	((BasicEntityShip)entity).sendSyncPacketAllValue();
@@ -57,8 +57,8 @@ public class GuiHandler implements IGuiHandler {
 			}
             break;
 		case ID.G.LARGESHIPYARD:	//GUI large shipyard
-			tile = world.getTileEntity(x, y, z);  //½T©w§ì¨ìentity¤~¶}ui ¥H§K¼Q¥XNPE
-			if(tile != null && tile instanceof TileMultiGrudgeHeavy) {  //server¨ú±ocontainer
+			tile = world.getTileEntity(x, y, z);  //ç¢ºå®šæŠ“åˆ°entityæ‰é–‹ui ä»¥å…å™´å‡ºNPE
+			if(tile != null && tile instanceof TileMultiGrudgeHeavy) {  //serverå–å¾—container
 				//sync tile when gui opened
 				((TileMultiGrudgeHeavy)tile).sendSyncPacket();
 				
@@ -66,17 +66,19 @@ public class GuiHandler implements IGuiHandler {
 			}
 			break;
 		case ID.G.ADMIRALDESK:		//GUI admiral desk
-			tile = world.getTileEntity(x, y, z);  //½T©w§ì¨ìentity¤~¶}ui ¥H§K¼Q¥XNPE
+			tile = world.getTileEntity(x, y, z);  //ç¢ºå®šæŠ“åˆ°entityæ‰é–‹ui ä»¥å…å™´å‡ºNPE
 			
 			//open GUI with TileEntity
-			if(tile != null && tile instanceof TileEntityDesk) {  //server¨ú±ocontainer
+			if(tile != null && tile instanceof TileEntityDesk) {  //serverå–å¾—container
 				//sync tile when gui opened
 				((TileEntityDesk)tile).sendSyncPacket();
 				
-				//sync team list to client
+				//sync data to client
 				ExtendPlayerProps props = EntityHelper.getExtendPlayerProps(player);
 				props.sendSyncPacket(2);
 				props.sendSyncPacket(3);
+				props.sendSyncPacket(5);
+				props.sendSyncPacket(6);
 				
 				return new ContainerDesk(player.inventory, (TileEntityDesk) tile, player, 0);
 			}
@@ -99,30 +101,30 @@ public class GuiHandler implements IGuiHandler {
 		TileEntity tile = null;
 		Entity entity = null;
 		
-		switch(guiId) {		//§P©wguiºØÃş
+		switch(guiId) {		//åˆ¤å®šguiç¨®é¡
 		case ID.G.SMALLSHIPYARD:	//GUI small shipyard
-			tile = world.getTileEntity(x, y, z);  //½T©w§ì¨ìentity¤~¶}ui ¥H§K¼Q¥XNPE
-			if (tile != null && tile instanceof TileEntitySmallShipyard) {  //client¨ú±ogui
+			tile = world.getTileEntity(x, y, z);  //ç¢ºå®šæŠ“åˆ°entityæ‰é–‹ui ä»¥å…å™´å‡ºNPE
+			if (tile != null && tile instanceof TileEntitySmallShipyard) {  //clientå–å¾—gui
 				return new GuiSmallShipyard(player.inventory, (TileEntitySmallShipyard) tile);
 			}
 			return null;
 		case ID.G.SHIPINVENTORY:	//GUI ship inventory
-			entity = world.getEntityByID(x);	//entity id¦s¦bx®y¼Ğ°Ñ¼Æ¤W
+			entity = world.getEntityByID(x);	//entity idå­˜åœ¨xåº§æ¨™åƒæ•¸ä¸Š
             if(entity != null && entity instanceof BasicEntityShip) {
 				return new GuiShipInventory(player.inventory,(BasicEntityShip)entity);
 			}
 			return null;
 		case ID.G.LARGESHIPYARD:	//GUI large shipyard
-			tile = world.getTileEntity(x, y, z);  //½T©w§ì¨ìentity¤~¶}ui ¥H§K¼Q¥XNPE
-			if(tile != null && tile instanceof TileMultiGrudgeHeavy) {  //server¨ú±ocontainer
+			tile = world.getTileEntity(x, y, z);  //ç¢ºå®šæŠ“åˆ°entityæ‰é–‹ui ä»¥å…å™´å‡ºNPE
+			if(tile != null && tile instanceof TileMultiGrudgeHeavy) {  //serverå–å¾—container
 				return new GuiLargeShipyard(player.inventory, (TileMultiGrudgeHeavy) tile);
 			}
 			return null;
 		case ID.G.ADMIRALDESK:	//GUI large shipyard
-			tile = world.getTileEntity(x, y, z);  //½T©w§ì¨ìentity¤~¶}ui ¥H§K¼Q¥XNPE
+			tile = world.getTileEntity(x, y, z);  //ç¢ºå®šæŠ“åˆ°entityæ‰é–‹ui ä»¥å…å™´å‡ºNPE
 			
 			//open GUI with TileEntity
-			if(tile != null && tile instanceof TileEntityDesk) {  //server¨ú±ocontainer
+			if(tile != null && tile instanceof TileEntityDesk) {  //serverå–å¾—container
 				return new GuiDesk(player.inventory, (TileEntityDesk) tile, 0);
 			}
 			//open GUI with item

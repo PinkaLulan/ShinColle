@@ -7,7 +7,6 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
@@ -21,9 +20,7 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -34,11 +31,12 @@ public class EntitySubmRo500 extends BasicEntityShipSmall implements IShipInvisi
 
 	public EntitySubmRo500(World world) {
 		super(world);
-		this.setSize(0.6F, 1.4F);	//¸I¼²¤j¤p ¸ò¼Ò«¬¤j¤pµLÃö
+		this.setSize(0.6F, 1.4F);	//ç¢°æ’å¤§å° è·Ÿæ¨¡å‹å¤§å°ç„¡é—œ
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.SUBMARINE);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.SubmarineRo500);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.SUBMARINE);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.SS]);
+		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.SS]);
 		this.ModelPos = new float[] {0F, 10F, 0F, 45F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		
@@ -62,7 +60,7 @@ public class EntitySubmRo500 extends BasicEntityShipSmall implements IShipInvisi
 		return 1;
 	}
 	
-	//¥­±`­µ®Ä·s¼W: garuru
+	//å¹³å¸¸éŸ³æ•ˆæ–°å¢: garuru
 	@Override
 	protected String getLivingSound() {
 		if(rand.nextInt(8) == 0) {
@@ -98,15 +96,15 @@ public class EntitySubmRo500 extends BasicEntityShipSmall implements IShipInvisi
   	  					//potion effect: id, time, level
   	  	  	  			player.addPotionEffect(new PotionEffect(Potion.invisibility.id, 60 + getLevel() * 10));
   	  				}
-  				}	
-  			}
-  			
-  			if(this.ticksExisted % 300 == 0) {
-  				if(getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.M.NumGrudge) > 0) {
-  					//apply ability to ship
-  					this.addPotionEffect(new PotionEffect(Potion.invisibility.id, 100 + getLevel()));
   				}
-  			}
+  				
+  				if(this.ticksExisted % 256 == 0) {
+  	  				if(getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.M.NumGrudge) > 0) {
+  	  					//apply ability to ship
+  	  					this.addPotionEffect(new PotionEffect(Potion.invisibility.id, 46 + getLevel()));
+  	  				}
+  	  			}//end 256 ticks
+  			}//end 128 ticks
   		}    
   	}
   	
@@ -117,23 +115,7 @@ public class EntitySubmRo500 extends BasicEntityShipSmall implements IShipInvisi
 		//use cake to change state
 		if(itemstack != null) {
 			if(itemstack.getItem() == Items.cake) {
-				switch(getStateEmotion(ID.S.State)) {
-				case ID.State.NORMAL:
-					setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
-					break;
-				case ID.State.EQUIP00:
-					setStateEmotion(ID.S.State, ID.State.EQUIP01, true);
-					break;
-				case ID.State.EQUIP01:
-					setStateEmotion(ID.S.State, ID.State.EQUIP02, true);
-					break;
-				case ID.State.EQUIP02:
-					setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-					break;
-				default:
-					setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-					break;
-				}
+				this.setShipOutfit(player.isSneaking());
 				return true;
 			}
 		}
@@ -147,7 +129,7 @@ public class EntitySubmRo500 extends BasicEntityShipSmall implements IShipInvisi
 		return 2;
 	}
   	
-  	//¼ç¸¥ªº»´§ğÀ»¤@¼Ë¨Ï¥Î­¸¼u
+  	//æ½›è‰‡çš„è¼•æ”»æ“Šä¸€æ¨£ä½¿ç”¨é£›å½ˆ
   	@Override
   	//range attack method, cost heavy ammo, attack delay = 100 / attack speed, damage = 500% atk
   	public boolean attackEntityWithAmmo(Entity target) {	
@@ -156,9 +138,9 @@ public class EntitySubmRo500 extends BasicEntityShipSmall implements IShipInvisi
   		
   		//set knockback value (testing)
   		float kbValue = 0.15F;
-  		//­¸¼u¬O§_±Ä¥Îª½®g
+  		//é£›å½ˆæ˜¯å¦æ¡ç”¨ç›´å°„
   		boolean isDirect = false;
-  		//­pºâ¥Ø¼Ğ¶ZÂ÷
+  		//è¨ˆç®—ç›®æ¨™è·é›¢
   		float tarX = (float)target.posX;	//for miss chance calc
   		float tarY = (float)target.posY;
   		float tarZ = (float)target.posZ;
@@ -168,7 +150,7 @@ public class EntitySubmRo500 extends BasicEntityShipSmall implements IShipInvisi
   		float distSqrt = MathHelper.sqrt_float(distX*distX + distY*distY + distZ*distZ);
   		float launchPos = (float)posY + height * 0.7F;
           
-  		//¶W¹L¤@©w¶ZÂ÷/¤ô¤¤ , «h±Ä¥Î©ßª«½u,  ¦b¤ô¤¤®Éµo®g°ª«×¸û§C
+  		//è¶…éä¸€å®šè·é›¢/æ°´ä¸­ , å‰‡æ¡ç”¨æ‹‹ç‰©ç·š,  åœ¨æ°´ä¸­æ™‚ç™¼å°„é«˜åº¦è¼ƒä½
   		if((distX*distX+distY*distY+distZ*distZ) < 36F) {
   			isDirect = true;
   		}
@@ -177,7 +159,7 @@ public class EntitySubmRo500 extends BasicEntityShipSmall implements IShipInvisi
   			launchPos = (float)posY;
   		}
   		
-  		//µo®gªÌ·ÏÃú¯S®Ä (µo®g­¸¾÷¤£¨Ï¥Î¯S®Ä, ¦ı¬O­nµo°e«Ê¥]¨Ó³]©wattackTime)
+  		//ç™¼å°„è€…ç…™éœ§ç‰¹æ•ˆ (ç™¼å°„é£›æ©Ÿä¸ä½¿ç”¨ç‰¹æ•ˆ, ä½†æ˜¯è¦ç™¼é€å°åŒ…ä¾†è¨­å®šattackTime)
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
   		
@@ -194,9 +176,9 @@ public class EntitySubmRo500 extends BasicEntityShipSmall implements IShipInvisi
           	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
           }
           
-          //heavy ammo -1
-          if(!decrAmmoNum(0)) {	//not enough ammo
-          	atk = atk * 0.125F;	//reduce damage to 12.5%
+          //heavy ammo--
+          if(!decrAmmoNum(0, this.getAmmoConsumption())) {
+        	  return false;
           }
           
           //calc miss chance, miss: add random offset(0~6) to missile target 
@@ -243,6 +225,27 @@ public class EntitySubmRo500 extends BasicEntityShipSmall implements IShipInvisi
 	@Override
 	public void setInvisibleLevel(float level) {
 		this.ilevel = level;
+	}
+
+	@Override
+	public void setShipOutfit(boolean isSneaking) {
+		switch(getStateEmotion(ID.S.State)) {
+		case ID.State.NORMAL:
+			setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+			break;
+		case ID.State.EQUIP00:
+			setStateEmotion(ID.S.State, ID.State.EQUIP01, true);
+			break;
+		case ID.State.EQUIP01:
+			setStateEmotion(ID.S.State, ID.State.EQUIP02, true);
+			break;
+		case ID.State.EQUIP02:
+			setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+			break;
+		default:
+			setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+			break;
+		}
 	}
   	
 

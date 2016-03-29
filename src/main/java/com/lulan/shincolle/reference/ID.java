@@ -29,7 +29,7 @@ public class ID {
 		public static final byte Desk_Sync = 0;
 	}
 	
-	/**shipyard build type*/
+	/** Shipyard build type*/
 	public static final class Build {
 		public static final byte NONE = 0;
 		public static final byte SHIP = 1;
@@ -38,7 +38,7 @@ public class ID {
 		public static final byte EQUIP_LOOP = 4;
 	}
 	
-	/**Equip Map*/
+	/**Equip Attrs Map*/
 	public static final class E {
 		public static final byte LEVEL = 0;
 		public static final byte HP = 1;
@@ -97,6 +97,82 @@ public class ID {
 		public static final byte GUN_HI = 21;			//high level machine gun
 		public static final byte CATAPULT_LO = 22;		//low level catapult
 		public static final byte CATAPULT_HI = 23;		//high level catapult
+	}
+	
+	/** Equip Sub ID = item meta value
+	 * 
+	 *  EquipID = EquipType + EquipSubID * 100
+	 * 
+	 */
+	public static final class EquipSubID {
+		//cannon 0
+		public static final byte CANNON_SINGLE_5 = 0;
+		public static final byte CANNON_SINGLE_6 = 1;
+		public static final byte CANNON_TWIN_5 = 2;
+		public static final byte CANNON_TWIN_6 = 3;
+		public static final byte CANNON_TWIN_5DP = 4;
+		public static final byte CANNON_TWIN_125 = 5;
+		public static final byte CANNON_TWIN_14 = 6;
+		public static final byte CANNON_TWIN_16 = 7;
+		public static final byte CANNON_TWIN_20 = 8;
+		public static final byte CANNON_TRI_8 = 9;
+		public static final byte CANNON_TRI_16 = 10;
+		public static final byte CANNON_FG_15 = 11;
+		//torpedo 20
+		public static final byte TORPEDO_21MK1 = 0;
+		public static final byte TORPEDO_21MK2 = 1;
+		public static final byte TORPEDO_22MK1 = 2;
+		public static final byte TORPEDO_CUTTLEFISH = 3;
+		public static final byte TORPEDO_HIGHSPEED = 4;
+		//aircraft 30
+		public static final byte AIRCRAFT_TMK1 = 0;
+		public static final byte AIRCRAFT_TMK2 = 1;
+		public static final byte AIRCRAFT_TMK3 = 2;
+		public static final byte AIRCRAFT_TAVENGER = 3;
+		public static final byte AIRCRAFT_FMK1 = 4;
+		public static final byte AIRCRAFT_FMK2 = 5;
+		public static final byte AIRCRAFT_FMK3 = 6;
+		public static final byte AIRCRAFT_FFLYFISH = 7;
+		public static final byte AIRCRAFT_FHELLCAT = 8;
+		public static final byte AIRCRAFT_BMK1 = 9;
+		public static final byte AIRCRAFT_BMK2 = 10;
+		public static final byte AIRCRAFT_BFLYFISH = 11;
+		public static final byte AIRCRAFT_BHELL = 12;
+		public static final byte AIRCRAFT_R = 13;
+		public static final byte AIRCRAFT_RFLYFISH = 14;
+		public static final byte AIRCRAFT_TAVENGERK = 15;
+		public static final byte AIRCRAFT_FHELLCATK = 16;
+		public static final byte AIRCRAFT_BHELLK = 17;
+		//radar 50
+		public static final byte RADAR_AIRMK1 = 0;
+		public static final byte RADAR_AIRMK2 = 1;
+		public static final byte RADAR_SURMK1 = 2;
+		public static final byte RADAR_SURMK2 = 3;
+		public static final byte RADAR_SONAR = 4;
+		public static final byte RADAR_AIRABYSS = 5;
+		public static final byte RADAR_SURABYSS = 6;
+		public static final byte RADAR_SONARMK2 = 7;
+		public static final byte RADAR_FCSCIC = 8;
+		//turbine 60
+		public static final byte TURBINE = 0;
+		public static final byte TURBINE_IMP = 1;
+		public static final byte TURBINE_ENH = 2;
+		//armor 70
+		public static final byte ARMOR = 0;
+		public static final byte ARMOR_ENH = 1;
+		//machine gun 80
+		public static final byte GUN_HA_3 = 0;
+		public static final byte GUN_HA_5 = 1;
+		public static final byte GUN_SINGLE_12 = 2;
+		public static final byte GUN_SINGLE_20 = 3;
+		public static final byte GUN_TWIN_40 = 4;
+		public static final byte GUN_QUAD_40 = 5;
+		public static final byte GUN_TWIN_4_CIC = 6;
+		//catapult 100
+		public static final byte CATAPULT_F = 0;
+		public static final byte CATAPULT_H = 1;
+		public static final byte CATAPULT_C = 2;
+		public static final byte CATAPULT_E = 3;
 	}
 	
 	/** Entity Flag */
@@ -164,8 +240,8 @@ public class ID {
 		public static final byte DEBUGGER = 6;
 	}
 	
-	/**ICON ID for BOOK*/
-	public static final class Item {
+	/** ICON ID for BOOK */
+	public static final class Icon {
 		public static final byte IronIG = 0;
 		public static final byte Grudge = 1;
 		public static final byte GrudgeB = 2;
@@ -220,39 +296,15 @@ public class ID {
 		public static final byte DeskRadar = 51;
 		public static final byte WriteBook = 52;
 		public static final byte Compass = 53;
+		public static final byte Wrench = 54;
 	}
 	
 	/**ship state2*/
 	public static final class HPState {
-		public static final byte NORMAL = 0;	//無受損
+		public static final byte NORMAL = 0;	//正常
 		public static final byte MINOR = 1;		//小破
 		public static final byte MODERATE = 2;	//中破
 		public static final byte HEAVY = 3;		//大破
-	}
-	
-	/** item type for part of item */
-	public static final class ItemType {
-		public static final byte AbyssMetal = 1;
-		public static final byte AbyssMetal_Abyssium = 2;
-		public static final byte AbyssMetal_Polymetal = 3;
-		public static final byte Ammo = 4;
-		public static final byte Ammo_L = 5;
-		public static final byte Ammo_H = 6;
-		public static final byte Ammo_LC = 7;
-		public static final byte Ammo_HC = 8;
-		public static final byte Grudge = 9;
-		public static final byte BlockAbyssium = 10;
-		public static final byte BlockGrudge = 11;
-		public static final byte BlockPolymetal = 12;
-		public static final byte BlockPolymetalGravel = 13;
-		public static final byte EquipAirplane = 14;
-		public static final byte EquipArmor = 15;
-		public static final byte EquipCannon = 16;
-		public static final byte EquipCatapult = 17;
-		public static final byte EquipMachinegun = 18;
-		public static final byte EquipRadar = 19;
-		public static final byte EquipTorpedo = 20;
-		public static final byte EquipTurbine = 21;
 	}
 	
 	/** Minor State */
@@ -286,6 +338,7 @@ public class ID {
 		public static final byte FormatType = 26;	//formation type
 		public static final byte FormatPos = 27;	//formation position
 		public static final byte GrudgeCon = 28;	//grudge consumption when idle
+		public static final byte AmmoCon = 29;		//ammo base consumption
 	}
 	
 	/** packet type ID */
@@ -399,73 +452,73 @@ public class ID {
 		public static final byte ModHIT = 11;
 	}
 	
-	/** ship damage type */
+	/** ship type for damage calc */
 	public static final class ShipDmgType {
-		public static final byte UNDEFINED = 0;			//其他, 未定義
-		public static final byte CARRIER = 1;			//空母
+		public static final byte UNDEFINED = 0;			//未定義
+		public static final byte CARRIER = 1;			//航母
 		public static final byte AVIATION = 2;			//航戰
 		public static final byte BATTLESHIP	= 3;		//戰艦
 		public static final byte CRUISER = 4;			//巡洋
 		public static final byte DESTROYER = 5;			//驅逐
 		public static final byte SUBMARINE = 6;			//潛艇
-		public static final byte AIRPLANE = 7;			//飛行物
+		public static final byte AIRPLANE = 7;			//飛機
 	}
 	
-	/** ship type */
+	/** ship type for GUI display */
 	public static final class ShipType {				//for GUI display
-		public static final byte DESTROYER = 0;			//驅逐艦DD
-		public static final byte LIGHT_CRUISER = 1;		//輕巡洋艦CL
-		public static final byte HEAVY_CRUISER = 2;		//重巡洋艦CA 航巡CAV
-		public static final byte TORPEDO_CRUISER = 3;	//重雷裝巡洋艦CLT
-		public static final byte LIGHT_CARRIER = 4;		//輕航空母艦CVL
-		public static final byte STANDARD_CARRIER = 5;	//正規航空母艦CV
-		public static final byte BATTLESHIP	= 6;		//戰艦BB 航戰BBV
-		public static final byte TRANSPORT = 7;			//運輸艦AP
-		public static final byte SUBMARINE = 8;			//潛水艇SS
-		public static final byte DEMON = 9;				//鬼級, 水鬼級
-		public static final byte HIME = 10;				//姬級
+		public static final byte DESTROYER = 0;			//DD
+		public static final byte LIGHT_CRUISER = 1;		//CL
+		public static final byte HEAVY_CRUISER = 2;		//CA CAV
+		public static final byte TORPEDO_CRUISER = 3;	//CLT
+		public static final byte LIGHT_CARRIER = 4;		//CVL
+		public static final byte STANDARD_CARRIER = 5;	//CV
+		public static final byte BATTLESHIP	= 6;		//BB BBV
+		public static final byte TRANSPORT = 7;			//AR AO
+		public static final byte SUBMARINE = 8;			//SS
+		public static final byte DEMON = 9;				//demon + water demon
+		public static final byte HIME = 10;				//princess
 	}
 	
-	/** ship consumption ID */
+	/** ship type for consumption ID */
 	public static final class ShipConsume {
 		/** ship type */
-		public static final byte DD = 0;  //驅逐
-		public static final byte CL = 1;  //輕巡
-		public static final byte CA = 2;  //重巡
-		public static final byte CAV = 3; //航巡
-		public static final byte CLT = 4; //雷巡
-		public static final byte CVL = 5; //輕母
-		public static final byte CV	= 6;  //空母
-		public static final byte BB = 7;  //戰艦
-		public static final byte BBV = 8; //航戰
-		public static final byte SS = 9;  //潛艇
-		public static final byte AP = 10; //運輸
+		public static final byte DD = 0;
+		public static final byte CL = 1;
+		public static final byte CA = 2;
+		public static final byte CAV = 3;
+		public static final byte CLT = 4;
+		public static final byte CVL = 5;
+		public static final byte CV	= 6;
+		public static final byte BB = 7;
+		public static final byte BBV = 8;
+		public static final byte SS = 9;
+		public static final byte AP = 10;
 		/** ship action */
-		public static final byte LAtk = 0;	//輕攻擊
-		public static final byte HAtk = 1;	//重攻擊
-		public static final byte LAir = 2;	//輕艦載機
-		public static final byte HAir = 3;	//重艦載機
-		public static final byte Move = 4;	//移動
+		public static final byte LAtk = 0;
+		public static final byte HAtk = 1;
+		public static final byte LAir = 2;
+		public static final byte HAir = 3;
+		public static final byte Move = 4;
 	}
 	
-	/** ship state */
+	/** ship state for equip model display */
 	public static final class State {
 		/** for ID.S.State */
-		public static final byte NORMAL = 0;		//無狀態
-		public static final byte EQUIP00 = 20;		//艤裝狀態0
-		public static final byte EQUIP01 = 30;		//艤裝狀態1
-		public static final byte EQUIP02 = 40;		//艤裝狀態2
-		public static final byte EQUIP03 = 50;		//艤裝狀態3
-		public static final byte EQUIP04 = 60;		//艤裝狀態4
-		public static final byte EQUIP05 = 70;		//艤裝狀態5
+		public static final byte NORMAL = 0;
+		public static final byte EQUIP00 = 20;
+		public static final byte EQUIP01 = 30;
+		public static final byte EQUIP02 = 40;
+		public static final byte EQUIP03 = 50;
+		public static final byte EQUIP04 = 60;
+		public static final byte EQUIP05 = 70;
 		/** for ID.S.State2 */
-		public static final byte NORMAL_2 = 0;		//無狀態
-		public static final byte EQUIP00_2 = 1;		//艤裝狀態0
-		public static final byte EQUIP01_2 = 2;		//艤裝狀態1
-		public static final byte EQUIP02_2 = 3;		//艤裝狀態2
-		public static final byte EQUIP03_2 = 4;		//艤裝狀態3
-		public static final byte EQUIP04_2 = 5;		//艤裝狀態4
-		public static final byte EQUIP05_2 = 6;		//艤裝狀態5
+		public static final byte NORMAL_2 = 0;
+		public static final byte EQUIP00_2 = 1;
+		public static final byte EQUIP01_2 = 2;
+		public static final byte EQUIP02_2 = 3;
+		public static final byte EQUIP03_2 = 4;
+		public static final byte EQUIP04_2 = 5;
+		public static final byte EQUIP05_2 = 6;
 	}
 
 	/** StateEquip, StateFinal, BonusPoint, TypeModify */
@@ -487,76 +540,6 @@ public class ID {
 	public static final byte EF_AA = 4;
 	public static final byte EF_ASM = 5;
 	public static final byte EF_DODGE = 6;
-	
-	/** Equip ID */
-	//cannon
-	public static final byte E_CANNON_SINGLE_5 = 0;
-	public static final byte E_CANNON_SINGLE_6 = 1;
-	public static final byte E_CANNON_TWIN_5 = 2;
-	public static final byte E_CANNON_TWIN_6 = 3;
-	public static final byte E_CANNON_TWIN_5DP = 4;
-	public static final byte E_CANNON_TWIN_125 = 5;
-	public static final byte E_CANNON_TWIN_14 = 6;
-	public static final byte E_CANNON_TWIN_16 = 7;
-	public static final byte E_CANNON_TWIN_20 = 8;
-	public static final byte E_CANNON_TRI_8 = 9;
-	public static final byte E_CANNON_TRI_16 = 10;
-	public static final byte E_CANNON_FG_15 = 11;
-	//torpedo
-	public static final byte E_TORPEDO_21MK1 = 20;
-	public static final byte E_TORPEDO_21MK2 = 21;
-	public static final byte E_TORPEDO_22MK1 = 22;
-	public static final byte E_TORPEDO_CUTTLEFISH = 23;
-	public static final byte E_TORPEDO_HIGHSPEED = 24;
-	//aircraft
-	public static final byte E_AIRCRAFT_TMK1 = 30;
-	public static final byte E_AIRCRAFT_TMK2 = 31;
-	public static final byte E_AIRCRAFT_TMK3 = 32;
-	public static final byte E_AIRCRAFT_TAVENGER = 33;
-	public static final byte E_AIRCRAFT_FMK1 = 34;
-	public static final byte E_AIRCRAFT_FMK2 = 35;
-	public static final byte E_AIRCRAFT_FMK3 = 36;
-	public static final byte E_AIRCRAFT_FFLYFISH = 37;
-	public static final byte E_AIRCRAFT_FHELLCAT = 38;
-	public static final byte E_AIRCRAFT_BMK1 = 39;
-	public static final byte E_AIRCRAFT_BMK2 = 40;
-	public static final byte E_AIRCRAFT_BFLYFISH = 41;
-	public static final byte E_AIRCRAFT_BHELL = 42;
-	public static final byte E_AIRCRAFT_R = 43;
-	public static final byte E_AIRCRAFT_RFLYFISH = 44;
-	public static final byte E_AIRCRAFT_TAVENGERK = 45;
-	public static final byte E_AIRCRAFT_FHELLCATK = 46;
-	public static final byte E_AIRCRAFT_BHELLK = 47;
-	//radar
-	public static final byte E_RADAR_AIRMK1 = 50;
-	public static final byte E_RADAR_AIRMK2 = 51;
-	public static final byte E_RADAR_SURMK1 = 52;
-	public static final byte E_RADAR_SURMK2 = 53;
-	public static final byte E_RADAR_SONAR = 54;
-	public static final byte E_RADAR_AIRABYSS = 55;
-	public static final byte E_RADAR_SURABYSS = 56;
-	public static final byte E_RADAR_SONARMK2 = 57;
-	public static final byte E_RADAR_FCSCIC = 58;
-	//turbine
-	public static final byte E_TURBINE = 60;
-	public static final byte E_TURBINE_IMP = 61;
-	public static final byte E_TURBINE_ENH = 62;
-	//armor
-	public static final byte E_ARMOR = 70;
-	public static final byte E_ARMOR_ENH = 71;
-	//machine gun
-	public static final byte E_GUN_HA_3 = 80;
-	public static final byte E_GUN_HA_5 = 81;
-	public static final byte E_GUN_SINGLE_12 = 82;
-	public static final byte E_GUN_SINGLE_20 = 83;
-	public static final byte E_GUN_TWIN_40 = 84;
-	public static final byte E_GUN_QUAD_40 = 85;
-	public static final byte E_GUN_TWIN_4_CIC = 86;
-	//catapult
-	public static final byte E_CATAPULT_F = 100;
-	public static final byte E_CATAPULT_H = 101;
-	public static final byte E_CATAPULT_C = 102;
-	public static final byte E_CATAPULT_E = 103;
 	
 		
 }

@@ -10,28 +10,28 @@ import com.lulan.shincolle.reference.Reference;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-//°ò¥»item class ©w¸q¦UºØitem°ò¥»¤èªk
-public class BasicItem extends Item {
+//åŸºæœ¬item class å®šç¾©å„ç¨®itemåŸºæœ¬æ–¹æ³•
+abstract public class BasicItem extends Item {
 	
 	public BasicItem() {
-		super();	//¥ı¶]¤@¦¸­ì¥»ªºitemªì©l¤Æ ¤U­±¤~Ä~Äò³]©w¸Ô²Óitem¼Æ­È ¦p°ïÅ|¼Æµ¥
-		this.setCreativeTab(CreativeTabSC.SC_TAB);	//¥[¤J¨ìcreative tab¤¤
+		super();	//å…ˆè·‘ä¸€æ¬¡åŸæœ¬çš„itemåˆå§‹åŒ– ä¸‹é¢æ‰ç¹¼çºŒè¨­å®šè©³ç´°itemæ•¸å€¼ å¦‚å †ç–Šæ•¸ç­‰
+		this.setCreativeTab(CreativeTabSC.SC_TAB);	//åŠ å…¥åˆ°creative tabä¸­
 	}
 	
-	//name³]©w¥Î¤èªk: ¥h±¼.¤§«eªº¦r¦ê ¥H«K¥t¥~¦ê¤Wmod¦WºÙ§Î¦¨ªº¦r¦ê
+	//nameè¨­å®šç”¨æ–¹æ³•: å»æ‰.ä¹‹å‰çš„å­—ä¸² ä»¥ä¾¿å¦å¤–ä¸²ä¸Šmodåç¨±å½¢æˆçš„å­—ä¸²
 	protected String getUnwrappedUnlocalizedName(String unlocalizedName) {
 		return unlocalizedName.substring(unlocalizedName.indexOf(".")+1);
 	}
 	
-	//±Nname«a¤Wmod¦WºÙ ¥Î©ó¤§«áµ¹¦U»y¨tÀÉ®×©ñ¤W¥¿½T¦WºÙ
-	//®æ¦¡¬°item.MOD¦WºÙ:ª««~¦WºÙ.name
+	//å°‡nameå† ä¸Šmodåç¨± ç”¨æ–¼ä¹‹å¾Œçµ¦å„èªç³»æª”æ¡ˆæ”¾ä¸Šæ­£ç¢ºåç¨±
+	//æ ¼å¼ç‚ºitem.MODåç¨±:ç‰©å“åç¨±.name
 	@Override
 	public String getUnlocalizedName() {
 		return String.format("item.%s%s", Reference.MOD_ID+":", getUnwrappedUnlocalizedName(super.getUnlocalizedName()));
 	}
 	
-	//¦PgetUnlocalizedName() ¦¹¬°¥[¤Witemstackª©¥»
-	//®æ¦¡¬°item.MOD¦WºÙ:ª««~¦WºÙ.name
+	//åŒgetUnlocalizedName() æ­¤ç‚ºåŠ ä¸Šitemstackç‰ˆæœ¬
+	//æ ¼å¼ç‚ºitem.MODåç¨±:ç‰©å“åç¨±.name
 	@Override
 	public String getUnlocalizedName(ItemStack itemstack) {
 		int meta = itemstack.getItemDamage();
@@ -43,13 +43,14 @@ public class BasicItem extends Item {
 		}		
 	}
 	
-	//ª««~¹Ï¥Üµn¿ı
-	//¨ú¥Xª««~¦WºÙ(¤£§tmod¦WºÙ)§@¬°°Ñ¼Æ¥áµ¹icon register¨Óµn¿ıicon
-	//ª`·Nicon¥u¦bclientºİ¤~»İ­n°õ¦æ
+	//ç‰©å“åœ–ç¤ºç™»éŒ„
+	//å–å‡ºç‰©å“åç¨±(ä¸å«modåç¨±)ä½œç‚ºåƒæ•¸ä¸Ÿçµ¦icon registerä¾†ç™»éŒ„icon
+	//æ³¨æ„iconåªåœ¨clientç«¯æ‰éœ€è¦åŸ·è¡Œ
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerIcons(IIconRegister iconRegister) {
 		itemIcon = iconRegister.registerIcon(this.getUnlocalizedName().substring(this.getUnlocalizedName().indexOf(".")+1));
 	}
+
 
 }

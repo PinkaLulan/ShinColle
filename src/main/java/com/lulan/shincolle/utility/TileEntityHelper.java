@@ -2,6 +2,7 @@ package com.lulan.shincolle.utility;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityFurnace;
+import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidContainerItem;
@@ -9,13 +10,14 @@ import net.minecraftforge.fluids.IFluidContainerItem;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.tileentity.BasicTileEntity;
 import com.lulan.shincolle.tileentity.ITileFurnace;
+import com.lulan.shincolle.tileentity.ITileLiquidFurnace;
 
 public class TileEntityHelper {
 	
 	public TileEntityHelper() {}
 	
-	/** check fuel item for ITileFurnace, return true = add fuel success */
-	public static boolean checkItemFuel(BasicTileEntity tile) {
+	/** consume fuel item for ITileFurnace, return true = add fuel success */
+	public static boolean decrItemFuel(BasicTileEntity tile) {
 		ITileFurnace tile2 = (ITileFurnace) tile;
 		ItemStack stack = null;
 		boolean sendUpdate = false;
@@ -29,15 +31,12 @@ public class TileEntityHelper {
 				//get normal fuel value
 				fuelx = TileEntityFurnace.getItemBurnTime(stack);
 				
-				//­Y¤@¯ëªºgetFuelValueµL®Ä, «h§ï¬d¸ßliquid fuel
+				//è‹¥ä¸€èˆ¬çš„getFuelValueç„¡æ•ˆ, å‰‡æ”¹æŸ¥è©¢liquid fuel
 				if(fuelx <= 0) {
 					FluidStack fluid = FluidContainerRegistry.getFluidForFilledItem(stack);
-					
-//					if(fluid != null) LogHelper.info("DEBUG : container "+fluid.amount);
 
-					//¥u±µ¨ü©¥¼ß¬°²GÅé¿U®Æ : fluid.tile.lava
-					if(checkLiquidIsLava(fluid)) {
-//						LogHelper.info("DEBUG : lava fluid registry");
+					//åªæŽ¥å—å²©æ¼¿ç‚ºæ¶²é«”ç‡ƒæ–™ : fluid.tile.lava
+					if(checkLiquidIsLava1000(fluid)) {
 						//not support for large container
 						if(fluid.amount > 1000) {
 							LogHelper.info("DEBUG : fluid registry: lava amount > 1000 mb");
@@ -58,7 +57,7 @@ public class TileEntityHelper {
 					stack.stackSize--;	//fuel size -1
 					tile2.setPowerRemained(tile2.getPowerRemained() + fuelx);	//fuel++
 					
-					//­Y¸Óª««~¥Î§¹, ¥ÎgetContainerItem³B²z¬O§_­n²MªÅÁÙ¬O¯d¤U±í¤l ex: lava bucket -> empty bucket
+					//è‹¥è©²ç‰©å“ç”¨å®Œ, ç”¨getContainerItemè™•ç†æ˜¯å¦è¦æ¸…ç©ºé‚„æ˜¯ç•™ä¸‹æ¡¶å­ ex: lava bucket -> empty bucket
 					if(stack.stackSize <= 0) {
 						stack = stack.getItem().getContainerItem(stack);
 					}
@@ -78,7 +77,7 @@ public class TileEntityHelper {
 					if(stack.stackSize > 1) {
 						LogHelper.info("DEBUG : lava fluid container stackSize > 1, no drain");
 					}
-					else if(checkLiquidIsLava(fluid)) {
+					else if(checkLiquidIsLava1000(fluid)) {
 						//lava fuel = 20k
 						fuelx = 20000;
 						
@@ -99,11 +98,27 @@ public class TileEntityHelper {
 						}
 					}//has enough lava
 				}//end fluid container fuel
-				
 			}//end stack != null
 		}//end all slots for loop
 		
 		return sendUpdate;
+	}
+	
+	/** consume fuel liquid for ITileFurnace, return true = add fuel success */
+	public static boolean decrLiquidFuel(ITileLiquidFurnace tile) {
+		//lava to fuel: 1k lava = 20k fuel value
+		if(tile.getPowerMax() - tile.getPowerRemained() >= 800) {
+			if(tile.getFluidFuelAmount() >= 40) {
+				//drain liquid
+				FluidStack getf = tile.drainFluidFuel(40);
+				//add liquid to fuel value
+				tile.setPowerRemained(tile.getPowerRemained() + getf.amount * 20);
+				
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	/** get item burn time, include fluid container, used for fuel item check */
@@ -113,12 +128,12 @@ public class TileEntityHelper {
 		//check fuel item
 		fuelx = TileEntityFurnace.getItemBurnTime(fuel);
 		
-		//­Y¤@¯ëªºgetFuelValueµL®Ä, «h§ï¬d¸ßliquid fuel
+		//è‹¥ä¸€èˆ¬çš„getFuelValueç„¡æ•ˆ, å‰‡æ”¹æŸ¥è©¢liquid fuel
 		if(fuelx <= 0) {
 			FluidStack fluid = FluidContainerRegistry.getFluidForFilledItem(fuel);
 
-			//¥u±µ¨ü©¥¼ß¬°²GÅé¿U®Æ : fluid.tile.lava
-			if(checkLiquidIsLava(fluid)) {
+			//åªæŽ¥å—å²©æ¼¿ç‚ºæ¶²é«”ç‡ƒæ–™ : fluid.tile.lava
+			if(checkLiquidIsLava1000(fluid)) {
 				//not support for large container
 				if(fluid.amount > 1000) {
 					LogHelper.info("DEBUG : fluid registry: lava amount > 1000 mb");
@@ -146,7 +161,7 @@ public class TileEntityHelper {
 			}
 			
 			//check is lava
-			if(checkLiquidIsLava(fluid)) {
+			if(checkLiquidIsLava1000(fluid)) {
 				//lava fuel = 20k
 				fuelx = 20000;
 				
@@ -160,14 +175,33 @@ public class TileEntityHelper {
 		return fuelx;
 	}
 	
+	/** check liquid is a bucket of lava */
+	public static boolean checkLiquidIsLava1000(FluidStack fluid) {
+		return checkLiquidIsLavaWithAmount(fluid, 1000);
+	}
+	
 	/** check liquid is lava */
 	public static boolean checkLiquidIsLava(FluidStack fluid) {
-		//is lava and > 1000 mb
-		if(fluid != null && fluid.getFluid() != null && fluid.getUnlocalizedName().equals("fluid.tile.lava") && fluid.amount >= 1000) {
+		return checkLiquidIsLavaWithAmount(fluid, 0);
+	}
+	
+	/** check liquid is lava and enough amount */
+	public static boolean checkLiquidIsLavaWithAmount(FluidStack fluid, int amount) {
+		if(fluid != null && checkLiquidIsLava(fluid.getFluid()) && fluid.amount >= amount) {
 			return true;
 		}
 		
 		return false;
 	}
+	
+	/** check liquid is lava */
+	public static boolean checkLiquidIsLava(Fluid fluid) {
+		if(fluid != null && fluid.getUnlocalizedName().equals("fluid.tile.lava")) {
+			return true;
+		}
+		
+		return false;
+	}
+	
 
 }

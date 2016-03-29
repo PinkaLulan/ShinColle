@@ -19,11 +19,12 @@ public class EntityDestroyerRo extends BasicEntityShipSmall {
 
 	public EntityDestroyerRo(World world) {
 		super(world);
-		this.setSize(0.7F, 1.6F);	//∏Iº≤§j§p ∏Úº“´¨§j§pµL√ˆ
+		this.setSize(0.7F, 1.6F);	//Á¢∞ÊíûÂ§ßÂ∞è Ë∑üÊ®°ÂûãÂ§ßÂ∞èÁÑ°Èóú
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.DESTROYER);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.DestroyerRO);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.DD]);
+		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.DD]);
 		this.ModelPos = new float[] {0F, 0F, 0F, 25F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		
@@ -78,17 +79,7 @@ public class EntityDestroyerRo extends BasicEntityShipSmall {
 		//use cake to change state
 		if(itemstack != null) {
 			if(itemstack.getItem() == Items.cake) {
-				switch(getStateEmotion(ID.S.State)) {
-				case ID.State.NORMAL:
-					setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
-					break;
-				case ID.State.EQUIP00:
-					setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-					break;
-				default:
-					setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-					break;
-				}
+				this.setShipOutfit(player.isSneaking());
 				return true;
 			}
 		}
@@ -110,6 +101,21 @@ public class EntityDestroyerRo extends BasicEntityShipSmall {
   		else {
   			return (double)this.height * 0.6F;
   		}
+	}
+
+	@Override
+	public void setShipOutfit(boolean isSneaking) {
+		switch(getStateEmotion(ID.S.State)) {
+		case ID.State.NORMAL:
+			setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+			break;
+		case ID.State.EQUIP00:
+			setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+			break;
+		default:
+			setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+			break;
+		}
 	}
 
 

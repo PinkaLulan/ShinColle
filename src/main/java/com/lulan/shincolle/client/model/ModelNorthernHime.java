@@ -526,7 +526,7 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion {
         this.BodyMain.addChild(this.ArmLeft01);
         this.ArmRight02.addChild(this.ArmRight03);
         
-        //µo¥ú¤ä¬[
+        //ç™¼å…‰æ”¯æž¶
         this.GlowBodyMain = new ModelRenderer(this, 0, 114);
         this.GlowBodyMain.setRotationPoint(0.0F, 2.0F, 0.0F);
         this.setRotateAngle(GlowBodyMain, -0.08726646259971647F, 0.0F, 0.0F);
@@ -627,7 +627,7 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion {
     	this.BodyMain.render(f5);
     	GL11.glDisable(GL11.GL_BLEND);
     	
-    	//«G«×³]¬°240
+    	//äº®åº¦è¨­ç‚º240
     	GL11.glDisable(GL11.GL_LIGHTING);
     	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
     	this.GlowBodyMain.render(f5);
@@ -654,7 +654,7 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion {
 //		saveModelRotation(ent);
     }
     
-//    //Àx¦s¨¤«×, ¨Ïrender class¯à§ì¨¤«×¥X¨Ó¶i¦æpost render
+//    //å„²å­˜è§’åº¦, ä½¿render classèƒ½æŠ“è§’åº¦å‡ºä¾†é€²è¡Œpost render
 //    private void saveModelRotation(IShipEmotion entity) {
 //    	LogHelper.info("DEBUg : get angle model "+this.ArmRight05.rotateAngleX);
 //		entity.setModelRotate(0, this.ArmRight05.rotateAngleX);
@@ -662,7 +662,7 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion {
 //		entity.setModelRotate(2, this.ArmRight05.rotateAngleZ);
 //	}
 
-	//³]©w¼Ò«¬µo¥ú³¡¥÷ªºrotation
+	//è¨­å®šæ¨¡åž‹ç™¼å…‰éƒ¨ä»½çš„rotation
     private void setGlowRotation() {
 		this.GlowBodyMain.rotateAngleX = this.BodyMain.rotateAngleX;
 		this.GlowBodyMain.rotateAngleY = this.BodyMain.rotateAngleY;
@@ -693,11 +693,11 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion {
   		addk1 = angleAdd1 - 0.1745F;
 	  	addk2 = angleAdd2 - 0.1745F;
 
-  	    //²¾°ÊÀY³¡¨Ï¨ä¬Ý¤H
-	  	this.Head.rotateAngleX = f4 / 57.29578F; 	//¤W¤U¨¤«×
-	  	this.Head.rotateAngleY = f3 / 57.29578F;	//¥ª¥k¨¤«× ¨¤«×Âà¦¨rad §Y°£¥H57.29578
+  	    //ç§»å‹•é ­éƒ¨ä½¿å…¶çœ‹äºº
+	  	this.Head.rotateAngleX = f4 / 57.29578F; 	//ä¸Šä¸‹è§’åº¦
+	  	this.Head.rotateAngleY = f3 / 57.29578F;	//å·¦å³è§’åº¦ è§’åº¦è½‰æˆrad å³é™¤ä»¥57.29578
 	  	headX = this.Head.rotateAngleX * -0.5F;
-	    //¥¿±`¯¸¥ß°Ê§@
+	    //æ­£å¸¸ç«™ç«‹å‹•ä½œ
 	  	//body
   	    this.Ahoke.rotateAngleX = angleX * 0.25F + 0.2618F;
 	  	this.BodyMain.rotateAngleX = -0.087F;
@@ -747,7 +747,7 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion {
     		this.EquipUmbre03b.rotateAngleY = angleX * 0.3F + 0.7F;
     	}
     	
-	    if(ent.getIsSprinting() || f1 > 0.9F) {	//©b¶]°Ê§@
+	    if(ent.getIsSprinting() || f1 > 0.9F) {	//å¥”è·‘å‹•ä½œ
 	    	setFace(3);
 	    	//arm
 	    	this.ArmLeft01.rotateAngleZ = -1F;
@@ -761,7 +761,7 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion {
 	    else {
 	    	startEmo2 = ent.getStartEmotion2();
 	    	
-	    	//ÀY³¡¶É±×°Ê§@, ¥u¦b©b¶]¥H¥~®Éroll
+	    	//é ­éƒ¨å‚¾æ–œå‹•ä½œ, åªåœ¨å¥”è·‘ä»¥å¤–æ™‚roll
 	    	if(startEmo2 > 0) {
 	    		--startEmo2;
 	    		ent.setStartEmotion2(startEmo2);
@@ -780,9 +780,9 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion {
 		    }
 	    }//end if sprint
 	    
-	    //rollÀY³¡¶É±×ªí±¡
+	    //rollé ­éƒ¨å‚¾æ–œè¡¨æƒ…
 	    if(ent.getStateFlag(ID.F.HeadTilt)) {
-	    	if(ent.getStateEmotion(ID.S.Emotion2) == 1) {	//¤§«e¤w¸g¶É±×, «hÄ~Äò¶É±×
+	    	if(ent.getStateEmotion(ID.S.Emotion2) == 1) {	//ä¹‹å‰å·²ç¶“å‚¾æ–œ, å‰‡ç¹¼çºŒå‚¾æ–œ
 	    		this.Head.rotateAngleZ = -0.24F;
 	    	}
 	    	else {
@@ -795,7 +795,7 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion {
 	    	}	
 	    }
 	    else {
-	    	if(ent.getStateEmotion(ID.S.Emotion2) == 0) {	//ºû«ù¤§«e¨¤«×
+	    	if(ent.getStateEmotion(ID.S.Emotion2) == 0) {	//ç¶­æŒä¹‹å‰è§’åº¦
 	    		this.Head.rotateAngleZ = 0F;
 	    	}
 	    	else {
@@ -808,7 +808,7 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion {
 	    	}
 	    }
 	    
-	    //²¾°ÊÀY¾vÁ×§K¬ï¹L¨­Åé
+	    //ç§»å‹•é ­é«®é¿å…ç©¿éŽèº«é«”
 	    headZ = this.Head.rotateAngleZ * -0.5F;
 	    this.Hair01.rotateAngleZ = headZ;
 	  	this.Hair02.rotateAngleZ = headZ;
@@ -817,7 +817,7 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion {
 	  	this.HairR01.rotateAngleZ = headZ + 0.14F;
 	  	this.HairR02.rotateAngleZ = headZ - 0.052F;
 	  	
-	    if(ent.getIsSneaking()) {		//¼ç¦æ, ÃÛ¤U°Ê§@
+	    if(ent.getIsSneaking()) {		//æ½›è¡Œ, è¹²ä¸‹å‹•ä½œ
 	    	GL11.glTranslatef(0F, -0.1F, 0F);
 	    	//body
 	    	this.Head.rotateAngleX -= 0.8727F;
@@ -837,7 +837,7 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion {
 		  	}
   		}//end if sneaking
   		
-	    if(ent.getIsSitting() && !ent.getIsRiding()) {  //§¤¤U°Ê§@
+	    if(ent.getIsSitting() && !ent.getIsRiding()) {  //åä¸‹å‹•ä½œ
 	    	if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {
 		    	GL11.glTranslatef(0F, 1.0F, 0F);
 		    	//body
@@ -875,7 +875,7 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion {
   		}//end if sitting
 	    
 	    
-	    if(ent.getIsRiding()) {	//ÃM­¼°Ê§@
+	    if(ent.getIsRiding()) {	//é¨Žä¹˜å‹•ä½œ
 	    	if(((Entity)ent).ridingEntity instanceof BasicEntityShip) {
 	    		GL11.glTranslatef(0F, 0F, 0.8F);
 	    	}
@@ -926,7 +926,7 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion {
 	    	}
 	    }//end if riding
 	    
-	    //§ðÀ»°Ê§@
+	    //æ”»æ“Šå‹•ä½œ
 	    if(ent.getAttackTime() > 49) {
 	    	this.ArmRight01.rotateAngleX = -3.5F;
 	    	this.ArmRight01.rotateAngleY = 0F;
@@ -1002,7 +1002,7 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion {
 		}
   	}
 	
-    //³]©wÅã¥ÜªºÁy«¬
+    //è¨­å®šé¡¯ç¤ºçš„è‡‰åž‹
   	@Override
   	public void setFace(int emo) {
   		switch(emo) {

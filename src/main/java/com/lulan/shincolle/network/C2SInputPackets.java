@@ -20,8 +20,8 @@ import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 
 /** CLIENT TO SERVER: INPUT PACKETS (NO-GUI)
- *  ±Nclientºİªº«öÁäµo°e¨ìserver
- *  ©Î¬Oµo°eclientºİcommandÃş«¬«Ê¥]
+ *  å°‡clientç«¯çš„æŒ‰éµç™¼é€åˆ°server
+ *  æˆ–æ˜¯ç™¼é€clientç«¯commandé¡å‹å°åŒ…
  */
 public class C2SInputPackets implements IMessage {
 	
@@ -40,7 +40,7 @@ public class C2SInputPackets implements IMessage {
 	}
 	
 	
-	public C2SInputPackets() {}	//¥²¶·­n¦³ªÅ°Ñ¼Æconstructor, forge¤~¯à¨Ï¥Î¦¹class
+	public C2SInputPackets() {}	//å¿…é ˆè¦æœ‰ç©ºåƒæ•¸constructor, forgeæ‰èƒ½ä½¿ç”¨æ­¤class
 	
 	/**type 0:(1 parms) mount move key input: 0:key
 	 * type 1:(1 parms) mount GUI key input: 0:key
@@ -57,7 +57,7 @@ public class C2SInputPackets implements IMessage {
         }
     }
 	
-	//±µ¦¬packet¤èªk, server side
+	//æ¥æ”¶packetæ–¹æ³•, server side
 	@Override
 	public void fromBytes(ByteBuf buf) {	
 		//get type and entityID
@@ -91,7 +91,7 @@ public class C2SInputPackets implements IMessage {
 		}
 	}
 
-	//µo¥Xpacket¤èªk, client side
+	//ç™¼å‡ºpacketæ–¹æ³•, client side
 	@Override
 	public void toBytes(ByteBuf buf) {
 		switch(this.type) {
@@ -123,7 +123,7 @@ public class C2SInputPackets implements IMessage {
 	
 	//packet handler (inner class)
 	public static class Handler implements IMessageHandler<C2SInputPackets, IMessage> {
-		//¦¬¨ì«Ê¥]®ÉÅã¥Üdebug°T®§, server side
+		//æ”¶åˆ°å°åŒ…æ™‚é¡¯ç¤ºdebugè¨Šæ¯, server side
 		@Override
 		public IMessage onMessage(C2SInputPackets message, MessageContext ctx) {		
 			EntityPlayerMP player = ctx.getServerHandler().playerEntity;

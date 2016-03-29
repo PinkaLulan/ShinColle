@@ -19,10 +19,10 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 
 /** CUBE PARTICLE
- *  ¥Í¦¨¨â¼h¤è¶ô, ¥~´ß¥b³z©ú, ¤è¶ô¥iÅÜ¤j¤p¸ò¾_°Êµ¥
+ *  ç”Ÿæˆå…©å±¤æ–¹å¡Š, å¤–æ®¼åŠé€æ˜, æ–¹å¡Šå¯è®Šå¤§å°è·Ÿéœ‡å‹•ç­‰
  * 
  * type:
- *   0: ¤j©Mªi°Ê¯¥¶°®ğ¯S®Ä: ¾_°ÊÂù¼h¤è¶ô
+ *   0: å¤§å’Œæ³¢å‹•ç ²é›†æ°£ç‰¹æ•ˆ: éœ‡å‹•é›™å±¤æ–¹å¡Š
  *   
  */
 @SideOnly(Side.CLIENT)
@@ -71,8 +71,8 @@ public class EntityFXCube extends EntityFX {
         
     }
 
-    //par3 = Yawªºcos­È, par4 = Pitchªºcos­È, par5 = Yawªºsin­È
-    //par6 = Yawªºsin­È­¼¤W-Pitchªºsin­È, par7 = Yawªºcos­È­¼¤WPitchªºsin­È
+    //par3 = Yawçš„coså€¼, par4 = Pitchçš„coså€¼, par5 = Yawçš„sinå€¼
+    //par6 = Yawçš„sinå€¼ä¹˜ä¸Š-Pitchçš„sinå€¼, par7 = Yawçš„coså€¼ä¹˜ä¸ŠPitchçš„sinå€¼
     @Override
 	public void renderParticle(Tessellator tess, float ticks, float par3, float par4, float par5, float par6, float par7) {	
 		GL11.glPushMatrix();
@@ -102,7 +102,7 @@ public class EntityFXCube extends EntityFX {
 		float[] t7 = ParticleHelper.rotateXYZByYawPitch(1F, 1F, 1F, shotYaw, shotPitch, this.scaleIn);
 		float[] t8 = ParticleHelper.rotateXYZByYawPitch(1F, -1F, 1F, shotYaw, shotPitch, this.scaleIn);
 		
-		//particle¬O¥Hclientµø³¥¨Órender, ¦]¦¹®y¼Ğ­n¦©±¼interpPosÂà´«¬°ª±®aµø³¥®y¼Ğ
+		//particleæ˜¯ä»¥clientè¦–é‡ä¾†render, å› æ­¤åº§æ¨™è¦æ‰£æ‰interpPosè½‰æ›ç‚ºç©å®¶è¦–é‡åº§æ¨™
 		double hx = this.posX - interpPosX;
         double hy = this.posY - interpPosY;
         double hz = this.posZ - interpPosZ;

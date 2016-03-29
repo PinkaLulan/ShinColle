@@ -49,7 +49,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	public EntityMountSeat seat2;				//seat 2
 	public EntityLivingBase riddenByEntity2;	//second rider
 	protected World world;
-	protected ShipPathNavigate shipNavigator;	//¤ôªÅ²¾°Ê¥Înavigator
+	protected ShipPathNavigate shipNavigator;	//æ°´ç©ºç§»å‹•ç”¨navigator
 	protected ShipMoveHelper shipMoveHelper;
 	protected Entity atkTarget;
 	protected Entity rvgTarget;					//revenge target
@@ -61,21 +61,21 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
     
     //model display
     /**EntityState: 0:HP State 1:Emotion 2:Emotion2*/
-	protected byte StateEmotion;		//ªí±¡1
-	protected byte StateEmotion2;		//ªí±¡2
-	protected int StartEmotion;			//ªí±¡1 ¶}©l®É¶¡
-	protected int StartEmotion2;		//ªí±¡2 ¶}©l®É¶¡
+	protected byte StateEmotion;		//è¡¨æƒ…1
+	protected byte StateEmotion2;		//è¡¨æƒ…2
+	protected int StartEmotion;			//è¡¨æƒ…1 é–‹å§‹æ™‚é–“
+	protected int StartEmotion2;		//è¡¨æƒ…2 é–‹å§‹æ™‚é–“
 	protected boolean headTilt;
 	protected float[] ridePos;
 	
 	//AI
-	protected double ShipDepth;			//¤ô²`, ¥Î©ó¤ô¤¤°ª«×§P©w
+	protected double ShipDepth;			//æ°´æ·±, ç”¨æ–¼æ°´ä¸­é«˜åº¦åˆ¤å®š
 	public int keyPressed;				//key(bit): 0:W 1:S 2:A 3:D 4:Jump
 	
     public BasicEntityMount(World world) {	//client side
 		super(world);
 		isImmuneToFire = true;
-		ignoreFrustumCheck = true;	//§Y¨Ï¤£¦bµø½u¤º¤@¼Ërender
+		ignoreFrustumCheck = true;	//å³ä½¿ä¸åœ¨è¦–ç·šå…§ä¸€æ¨£render
 		stepHeight = 3F;
 		keyPressed = 0;
 		shipNavigator = new ShipPathNavigate(this, worldObj);
@@ -84,7 +84,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		
 	}
     
-    //¥­±`­µ®Ä
+    //å¹³å¸¸éŸ³æ•ˆ
     @Override
 	protected String getLivingSound() {
 		if(ConfigHandler.useWakamoto && rand.nextInt(30) == 0) {
@@ -93,7 +93,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		return null;
 	}
   	
-  	//¨ü¶Ë­µ®Ä
+  	//å—å‚·éŸ³æ•ˆ
     @Override
 	protected String getHurtSound() {
 		if(ConfigHandler.useWakamoto && rand.nextInt(30) == 0) {
@@ -102,7 +102,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		return null;
 	}
 
-	//¦º¤`­µ®Ä
+	//æ­»äº¡éŸ³æ•ˆ
     @Override
 	protected String getDeathSound() {
 		if(ConfigHandler.useWakamoto) {
@@ -111,13 +111,13 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		return null;
 	}
 
-	//­µ®Ä¤j¤p
+	//éŸ³æ•ˆå¤§å°
     @Override
 	protected float getSoundVolume() {
 		return ConfigHandler.shipVolume * 0.4F;
 	}
 	
-    //­µ®Ä­µ°ª
+    //éŸ³æ•ˆéŸ³é«˜
     @Override
 	protected float getSoundPitch() {
     	return 1F;
@@ -163,7 +163,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 			return false;
 		}
      
-        //µL¼Äªºentity¶Ë®`µL®Ä
+        //ç„¡æ•µçš„entityå‚·å®³ç„¡æ•ˆ
   		if(this.isEntityInvulnerable()) {	
         	return false;
         }
@@ -189,39 +189,39 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 					return false;
 				}
 	  			
-	  			//¤£·|¹ï¦Û¤v³y¦¨¶Ë®`, ¥i§K¬Ì¬r/±¼¸¨/²¿®§µ¥¶Ë®` (¦¹¬°¦Û¤v¹ï¦Û¤v³y¦¨¶Ë®`)
+	  			//ä¸æœƒå°è‡ªå·±é€ æˆå‚·å®³, å¯å…ç–«æ¯’/æ‰è½/çª’æ¯ç­‰å‚·å®³ (æ­¤ç‚ºè‡ªå·±å°è‡ªå·±é€ æˆå‚·å®³)
 	  			if(entity.equals(this)) {
 	  				return false;
 	  			}
 	  			
-	  			//­Y§ğÀ»¤è¬°player, «h­×¥¿¶Ë®`
+	  			//è‹¥æ”»æ“Šæ–¹ç‚ºplayer, å‰‡ä¿®æ­£å‚·å®³
 	  			if(entity instanceof EntityPlayer) {
-					//­Y¸T¤îfriendlyFire, «h¶Ë®`³]¬°0
+					//è‹¥ç¦æ­¢friendlyFire, å‰‡å‚·å®³è¨­ç‚º0
 					if(!ConfigHandler.friendlyFire) {
 						return false;
 					}
 	  			}
 	  			
-	  			//¶i¦ædef­pºâ
+	  			//é€²è¡Œdefè¨ˆç®—
 				float reduceAtk = atk * (1F - (this.getDefValue() - rand.nextInt(20) + 10F) * 0.01F);    
 				
-				//ship vs ship, config¶Ë®`½Õ¾ã
+				//ship vs ship, configå‚·å®³èª¿æ•´
 				if(entity instanceof BasicEntityShip || entity instanceof BasicEntityAirplane || 
 				   entity instanceof EntityRensouhou || entity instanceof BasicEntityMount) {
 					reduceAtk = reduceAtk * (float)ConfigHandler.dmgSummon * 0.01F;
 				}
 				
-				//ship vs ship, damage type¶Ë®`½Õ¾ã
+				//ship vs ship, damage typeå‚·å®³èª¿æ•´
 				if(entity instanceof IShipAttackBase) {
 					//get attack time for damage modifier setting (day, night or ...etc)
 					int modSet = this.worldObj.provider.isDaytime() ? 0 : 1;
 					reduceAtk = CalcHelper.calcDamageByType(reduceAtk, ((IShipAttackBase) entity).getDamageType(), this.getDamageType(), modSet);
 				}
 				
-				//min damage³]¬°1
+				//min damageè¨­ç‚º1
 		        if(reduceAtk < 1) reduceAtk = 1;
 		        
-		        //¨ú®øhostªº§¤¤U°Ê§@
+		        //å–æ¶ˆhostçš„åä¸‹å‹•ä½œ
 		        if(host != null) {
 		        	this.host.setSitting(false);
 		        }
@@ -233,7 +233,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		return false;
 	}
 	
-	//¤£¸òship¸I¼²
+	//ä¸è·Ÿshipç¢°æ’
   	protected void collideWithEntity(Entity target) {
   		if(target.equals(this.riddenByEntity) ||
   		   target.equals(this.riddenByEntity2) ||
@@ -253,10 +253,10 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 			//use cake
 			if(itemstack.getItem() == Items.cake) {
 				switch(host.getStateEmotion(ID.S.State)) {
-				case ID.State.NORMAL:	//´¶³qÂàÃM­¼
+				case ID.State.NORMAL:	//æ™®é€šè½‰é¨ä¹˜
 					host.setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
 					break;
-				case ID.State.EQUIP00:	//ÃM­¼Âà´¶³q
+				case ID.State.EQUIP00:	//é¨ä¹˜è½‰æ™®é€š
 					host.setStateEmotion(ID.S.State, ID.State.NORMAL, true);
 					this.setRiderNull();
 					break;
@@ -264,7 +264,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 					host.setStateEmotion(ID.S.State, ID.State.NORMAL, true);
 					break;
 				}
-				this.host.setPositionAndUpdate(posX, posY + 2D, posZ);
+				this.host.setPositionAndUpdate(posX, posY + 1.5D, posZ);
 				return true;
 			}
 			
@@ -275,7 +275,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	        }
 		}
 		
-		//¦pªG¤w¸g³Q¸i¸j, ¦AÂI¤@¤U¥i¥H¸Ñ°£¸i¸j
+		//å¦‚æœå·²ç¶“è¢«ç¶‘ç¶, å†é»ä¸€ä¸‹å¯ä»¥è§£é™¤ç¶‘ç¶
 		if(this.getLeashed() && this.getLeashedToEntity() == player) {
             this.clearLeashed(true, !player.capabilities.isCreativeMode);
             return true;
@@ -283,9 +283,9 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 
 		//click without shift = host set sitting
 		if(!this.worldObj.isRemote && !player.isSneaking()) {			
-			//­Y®y¦ì¤G¤w¸g¦³¤H, «h¥kÁä§ï¬°§¤¤U
+			//è‹¥åº§ä½äºŒå·²ç¶“æœ‰äºº, å‰‡å³éµæ”¹ç‚ºåä¸‹
 			if(this.riddenByEntity2 != null) {
-				//seat2¤w¸g¨S¤HÃM, «hrider 2³]¬°null
+				//seat2å·²ç¶“æ²’äººé¨, å‰‡rider 2è¨­ç‚ºnull
 				if(this.seat2 == null) {
 					//summon seat entity
   	  	  			EntityMountSeat seat = new EntityMountSeat(worldObj, this);
@@ -304,7 +304,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 					return true;
 				}
 				
-				//¥u¦³¥D¤H¥i¥H³]¬°§¤¤U
+				//åªæœ‰ä¸»äººå¯ä»¥è¨­ç‚ºåä¸‹
 				if(EntityHelper.checkSameOwner(player, this.host)) {
 					this.host.setSitting(!this.host.isSitting());
 		            this.isJumping = false;
@@ -318,7 +318,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		            return true;
 				}	
 			}
-			//®y¦ì¤G¨S¤H, «hÃM¤W®yÃM (©Ò¦³ª±®a¬Ò¾A¥Î)
+			//åº§ä½äºŒæ²’äºº, å‰‡é¨ä¸Šåº§é¨ (æ‰€æœ‰ç©å®¶çš†é©ç”¨)
 			else {
 				if(this.seat2 == null) {
 					//summon seat entity
@@ -340,7 +340,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 			}
         }
 		
-		//shift+right click®É¥´¶}host GUI
+		//shift+right clickæ™‚æ‰“é–‹host GUI
 		if(player.isSneaking() && EntityHelper.checkSameOwner(player, this.host)) {  
 			int eid = this.host.getEntityId();
 			//player.openGui vs FMLNetworkHandler ?
@@ -372,8 +372,8 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		//client side
 		if(this.worldObj.isRemote) {
 			if(ShipDepth > 0D) {
-				//¤ô¤¤²¾°Ê®É, ²£¥Í¤ôªá¯S®Ä
-				//(ª`·N¦¹entity¦]¬°³]¬°«D°ª³t§ó·s, clientºİ¤£·|§ó·smotionXµ¥¼Æ­È, »İ¦Û¦æ­pºâ)
+				//æ°´ä¸­ç§»å‹•æ™‚, ç”¢ç”Ÿæ°´èŠ±ç‰¹æ•ˆ
+				//(æ³¨æ„æ­¤entityå› ç‚ºè¨­ç‚ºéé«˜é€Ÿæ›´æ–°, clientç«¯ä¸æœƒæ›´æ–°motionXç­‰æ•¸å€¼, éœ€è‡ªè¡Œè¨ˆç®—)
 				double motX = this.posX - this.prevPosX;
 				double motZ = this.posZ - this.prevPosZ;
 				double parH = this.posY - (int)this.posY;
@@ -393,12 +393,12 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		}
 		//server side
 		else {
-			//owner®ø¥¢(³q±`¬Oserver restart)
+			//owneræ¶ˆå¤±(é€šå¸¸æ˜¯server restart)
 			if(this.host == null) {
 				this.setDead();
 			}
 			else {		
-				//ownerÁÙ¦b, ¦ı¬O¤w¸gÃM­¼§O¤H, «h®ø°£¦¹entity
+				//owneré‚„åœ¨, ä½†æ˜¯å·²ç¶“é¨ä¹˜åˆ¥äºº, å‰‡æ¶ˆé™¤æ­¤entity
 				if(this.host.ridingEntity != this) {
 					LogHelper.info("DEBUG : ride change "+this.riddenByEntity); 
 					this.setDead();
@@ -420,7 +420,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 					//update attribute
 					setupAttrs();
 					
-					//¨¾¤î·Ä¦º
+					//é˜²æ­¢æººæ­»
 					if(this.isInWater()) {
 						this.setAir(300);
 					}
@@ -449,11 +449,11 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	//set movement by key pressed, pitch/yaw is RAD not DEGREE
 	private void applyMovement(float pitch, float yaw) {
 		//calc move direction by yaw
-		float[] movez = ParticleHelper.rotateXZByAxis(movSpeed, 0F, yaw, 1F);	//«e«á
-		float[] movex = ParticleHelper.rotateXZByAxis(0F, movSpeed, yaw, 1F);	//¥ª¥k
+		float[] movez = ParticleHelper.rotateXZByAxis(movSpeed, 0F, yaw, 1F);	//å‰å¾Œ
+		float[] movex = ParticleHelper.rotateXZByAxis(0F, movSpeed, yaw, 1F);	//å·¦å³
 		
 		if(this.onGround || EntityHelper.checkEntityIsInLiquid(this)) {
-			//horizontal move, ¦Ü¤Ö­n4 tick¤~¯à¥[¨ì³Ì°ª³t
+			//horizontal move, è‡³å°‘è¦4 tickæ‰èƒ½åŠ åˆ°æœ€é«˜é€Ÿ
 			//W (bit 1)
 			if((keyPressed & 1) > 0) {
 				motionX += movez[1] / 4F;
@@ -497,7 +497,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 				if(motionY > movSpeed / 2F) motionY = movSpeed / 2F;
 			}
 			
-			//­Y¤ô¥­¼²¨ìªF¦è, «h¹Á¸Õ¸õ¸õ
+			//è‹¥æ°´å¹³æ’åˆ°æ±è¥¿, å‰‡å˜—è©¦è·³è·³
 			if(this.isCollidedHorizontally) {
 				this.motionY += 0.4D;
 			}
@@ -511,7 +511,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 			}	
 		}
 		else {
-			//¤£¦b¦a­±®É, ¦U¤è¦VªºªÅ¤¤¥[³t«×¤£¦P, ©¹«e¤£ÅÜ, ©¹«á´î¤Ö, ¥ª¥k¤j´T´î¤Ö
+			//ä¸åœ¨åœ°é¢æ™‚, å„æ–¹å‘çš„ç©ºä¸­åŠ é€Ÿåº¦ä¸åŒ, å¾€å‰ä¸è®Š, å¾€å¾Œæ¸›å°‘, å·¦å³å¤§å¹…æ¸›å°‘
 			//W (bit 1)
 			if((keyPressed & 1) > 0) {
 				motionX += movez[1] / 4F;
@@ -643,14 +643,12 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   	
   	//change melee damage to 100%
   	@Override
-  	public boolean attackEntityAsMob(Entity target) {	
+  	public boolean attackEntityAsMob(Entity target) {
   		//get attack value
   		float atk = host.getStateFinal(ID.ATK);
-  		//set knockback value (testing)
-  		float kbValue = 0.15F;
   				
-  	    //±Natk¸òattacker¶Çµ¹¥Ø¼ĞªºattackEntityFrom¤èªk, ¦b¥Ø¼Ğclass¤¤­pºâ¶Ë®`
-  	    //¨Ã¥B¦^¶Ç¬O§_¦¨¥\¶Ë®`¨ì¥Ø¼Ğ
+  	    //å°‡atkè·Ÿattackerå‚³çµ¦ç›®æ¨™çš„attackEntityFromæ–¹æ³•, åœ¨ç›®æ¨™classä¸­è¨ˆç®—å‚·å®³
+  	    //ä¸¦ä¸”å›å‚³æ˜¯å¦æˆåŠŸå‚·å®³åˆ°ç›®æ¨™
   	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this), atk);
 
   	    //play entity attack sound
@@ -660,14 +658,6 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   	    
   	    //if attack success
   	    if(isTargetHurt) {
-  	    	//calc kb effect
-  	        if(kbValue > 0) {
-  	            target.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
-  	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
-  	            motionX *= 0.6D;
-  	            motionZ *= 0.6D;
-  	        }
-
   	        //send packet to client for display partical effect   
   	        if (!worldObj.isRemote) {
   	        	TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
@@ -682,7 +672,6 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
     @Override
 	public boolean attackEntityWithAmmo(Entity target) {
 		float atkLight = CalcHelper.calcDamageByEquipEffect(this, target, this.host.getStateFinal(ID.ATK), 0);
-		float kbValue = 0.03F;
 
 		//play cannon fire sound at attacker
         playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
@@ -691,7 +680,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
         	this.playSound(Reference.MOD_ID+":ship-waka_attack", ConfigHandler.shipVolume * 0.5F, 1F);
         }
         
-        //¦¹¤èªk¤ñgetLookÁÙ¥¿½T (client sync°İÃD)
+        //æ­¤æ–¹æ³•æ¯”getLooké‚„æ­£ç¢º (client syncå•é¡Œ)
         float distX = (float) (target.posX - this.posX);
         float distY = (float) (target.posY - this.posY);
         float distZ = (float) (target.posZ - this.posZ);
@@ -707,15 +696,15 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   		host.decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
   		
   		//light ammo -1
-        if(!host.decrAmmoNum(0)) {			//not enough ammo
-        	atkLight = atkLight * 0.125F;	//reduce damage to 12.5%
+        if(!host.decrAmmoNum(0, host.getAmmoConsumption())) {			//not enough ammo
+        	return false;
         }
 		
-		//µo®gªÌ·ÏÃú¯S®Ä
+		//ç™¼å°„è€…ç…™éœ§ç‰¹æ•ˆ
         TargetPoint point0 = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
         CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 19, this.posX, this.posY+1.5D, this.posZ, distX, 1.2F, distZ, true), point0);
 
-        //µo°e§ğÀ»flagµ¹host, ³]©w¨äattack time
+        //ç™¼é€æ”»æ“Šflagçµ¦host, è¨­å®šå…¶attack time
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this.host, 0, true), point0);
 		
 		//calc miss chance, if not miss, calc cri/multi hit
@@ -770,8 +759,8 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
     		}
   		}
 
-	    //±Natk¸òattacker¶Çµ¹¥Ø¼ĞªºattackEntityFrom¤èªk, ¦b¥Ø¼Ğclass¤¤­pºâ¶Ë®`
-	    //¨Ã¥B¦^¶Ç¬O§_¦¨¥\¶Ë®`¨ì¥Ø¼Ğ
+	    //å°‡atkè·Ÿattackerå‚³çµ¦ç›®æ¨™çš„attackEntityFromæ–¹æ³•, åœ¨ç›®æ¨™classä¸­è¨ˆç®—å‚·å®³
+	    //ä¸¦ä¸”å›å‚³æ˜¯å¦æˆåŠŸå‚·å®³åˆ°ç›®æ¨™
 	    boolean isTargetHurt = false;
 	    
 	    if(this.host != null) {
@@ -780,12 +769,6 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	    		
 	    //if attack success
 	    if(isTargetHurt) {
-	    	//calc kb effect
-	        if(kbValue > 0) {
-	            target.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * kbValue, 
-	                   0.1D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * kbValue);
-	        }
-	        
 	        //display hit particle on target
 	        TargetPoint point1 = new TargetPoint(this.dimension, target.posX, target.posY, target.posZ, 64D);
 			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 9, false), point1);
@@ -807,9 +790,9 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
         	this.playSound(Reference.MOD_ID+":ship-waka_attack", ConfigHandler.shipVolume * 0.5F, 1F);
         }
         
-        //­¸¼u¬O§_±Ä¥Îª½®g
+        //é£›å½ˆæ˜¯å¦æ¡ç”¨ç›´å°„
   		boolean isDirect = false;
-  		//­pºâ¥Ø¼Ğ¶ZÂ÷
+  		//è¨ˆç®—ç›®æ¨™è·é›¢
   		float tarX = (float)target.posX;	//for miss chance calc
   		float tarY = (float)target.posY;
   		float tarZ = (float)target.posZ;
@@ -819,7 +802,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
         float distSqrt = MathHelper.sqrt_float(distX*distX + distY*distY + distZ*distZ);
         float launchPos = (float)posY + height * 0.7F;
           
-        //¶W¹L¤@©w¶ZÂ÷/¤ô¤¤ , «h±Ä¥Î©ßª«½u,  ¦b¤ô¤¤®Éµo®g°ª«×¸û§C
+        //è¶…éä¸€å®šè·é›¢/æ°´ä¸­ , å‰‡æ¡ç”¨æ‹‹ç‰©ç·š,  åœ¨æ°´ä¸­æ™‚ç™¼å°„é«˜åº¦è¼ƒä½
         if((distX*distX+distY*distY+distZ*distZ) < 36F) {
         	isDirect = true;
         }
@@ -835,9 +818,9 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
       	//grudge--
       	host.decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
       	
-      	//heavy ammo -1
-        if(!host.decrAmmoNum(1)) {	//not enough ammo
-        	atkHeavy = atkHeavy * 0.125F;	//reduce damage to 12.5%
+      	//heavy ammo--
+        if(!host.decrAmmoNum(1, host.getAmmoConsumption())) {
+        	return false;
         }
         
         //calc miss chance, miss: add random offset(0~6) to missile target 
@@ -863,31 +846,31 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
         return true;
 	}
 	
-	/**­×§ï²¾°Ê¤èªk, ¨Ï¨äwater¸òlava¤¤²¾°Ê®É¹³¬Oflying entity
+	/**ä¿®æ”¹ç§»å‹•æ–¹æ³•, ä½¿å…¶waterè·Ÿlavaä¸­ç§»å‹•æ™‚åƒæ˜¯flying entity
      * Moves the entity based on the specified heading.  Args: strafe, forward
      */
 	@Override
     public void moveEntityWithHeading(float movX, float movZ) {
         double d0;
 
-//        if(this.isInWater() || this.handleLavaMovement()) { //§P©w¬°²GÅé¤¤®É, ¤£·|¦Û°Ê¤U¨I
-        if(EntityHelper.checkEntityIsInLiquid(this)) { //§P©w¬°²GÅé¤¤®É, ¤£·|¦Û°Ê¤U¨I
+//        if(this.isInWater() || this.handleLavaMovement()) { //åˆ¤å®šç‚ºæ¶²é«”ä¸­æ™‚, ä¸æœƒè‡ªå‹•ä¸‹æ²‰
+        if(EntityHelper.checkEntityIsInLiquid(this)) { //åˆ¤å®šç‚ºæ¶²é«”ä¸­æ™‚, ä¸æœƒè‡ªå‹•ä¸‹æ²‰
             d0 = this.posY;
-            this.moveFlying(movX, movZ, this.movSpeed*0.4F); //¤ô¤¤ªº³t«×­pºâ(§tº}²¾®ÄªG)
+            this.moveFlying(movX, movZ, this.movSpeed*0.4F); //æ°´ä¸­çš„é€Ÿåº¦è¨ˆç®—(å«æ¼‚ç§»æ•ˆæœ)
             this.moveEntity(this.motionX, this.motionY, this.motionZ);
-            //¤ô¤¤ªı¤O
+            //æ°´ä¸­é˜»åŠ›
             this.motionX *= 0.8D;
             this.motionY *= 0.8D;
             this.motionZ *= 0.8D;
-            //¤ô¤¤¼²¨ìªF¦è·|¤W¤É
+            //æ°´ä¸­æ’åˆ°æ±è¥¿æœƒä¸Šå‡
             if (this.isCollidedHorizontally && this.isOffsetPositionInLiquid(this.motionX, this.motionY + 0.6D - this.posY + d0, this.motionZ)) {
                 this.motionY = 0.3D;
             }
         }
-        else {									//¨ä¥L²¾°Êª¬ºA
+        else {									//å…¶ä»–ç§»å‹•ç‹€æ…‹
             float f2 = 0.91F;
             
-            if(this.onGround) {					//¦b¦a­±²¾°Ê
+            if(this.onGround) {					//åœ¨åœ°é¢ç§»å‹•
                 f2 = this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.boundingBox.minY) - 1, MathHelper.floor_double(this.posZ)).slipperiness * 0.91F;
             }
 
@@ -897,7 +880,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
             if(this.onGround) {
                 f4 = this.getAIMoveSpeed() * f3;
             }
-            else {								//¸õÅD¤¤
+            else {								//è·³èºä¸­
                 f4 = this.jumpMovementFactor;
             }
             this.moveFlying(movX, movZ, f4);
@@ -907,9 +890,9 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
                 f2 = this.worldObj.getBlock(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.boundingBox.minY) - 1, MathHelper.floor_double(this.posZ)).slipperiness * 0.91F;
             }
 
-            if(this.isOnLadder()) {				//ª¦¼Ó±è¤¤
+            if(this.isOnLadder()) {				//çˆ¬æ¨“æ¢¯ä¸­
                 float f5 = 0.15F;
-                //­­¨îª¦¼Ó±è®Éªº¾î¦V²¾°Ê³t«×
+                //é™åˆ¶çˆ¬æ¨“æ¢¯æ™‚çš„æ©«å‘ç§»å‹•é€Ÿåº¦
                 if(this.motionX < (-f5)) {
                     this.motionX = (-f5);
                 }
@@ -924,27 +907,27 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
                 }
 
                 this.fallDistance = 0.0F;
-                //­­¨îª¦¼Ó±èªº¸¨¤U³t«×
+                //é™åˆ¶çˆ¬æ¨“æ¢¯çš„è½ä¸‹é€Ÿåº¦
                 if (this.motionY < -0.15D) {
                     this.motionY = -0.15D;
                 }
 
                 boolean flag = this.isSneaking();
-                //­Y¬Oª¦¼Ó±è®É¬°sneaking, «h¤£·|¸¨¤U(¥d¦b¼Ó±è¤W)
+                //è‹¥æ˜¯çˆ¬æ¨“æ¢¯æ™‚ç‚ºsneaking, å‰‡ä¸æœƒè½ä¸‹(å¡åœ¨æ¨“æ¢¯ä¸Š)
                 if(flag && this.motionY < 0D) {
                     this.motionY = 0D;
                 }
             }
 
             this.moveEntity(this.motionX, this.motionY, this.motionZ);
-            //©¹¼Ó±è±ÀÀ½, «h·|©¹¤Wª¦
+            //å¾€æ¨“æ¢¯æ¨æ“ , å‰‡æœƒå¾€ä¸Šçˆ¬
             if(this.isCollidedHorizontally && this.isOnLadder()) {
                 this.motionY = 0.4D;
             }
-            //¦ÛµM±¼¸¨
+            //è‡ªç„¶æ‰è½
             if(this.worldObj.isRemote && (!this.worldObj.blockExists((int)this.posX, 0, (int)this.posZ) || !this.worldObj.getChunkFromBlockCoords((int)this.posX, (int)this.posZ).isChunkLoaded)) {
                 if (this.posY > 0.0D) {
-                    this.motionY = -0.1D;	//ªÅ®ğ¤¤ªºgravity¬°0.1D
+                    this.motionY = -0.1D;	//ç©ºæ°£ä¸­çš„gravityç‚º0.1D
                 }
                 else {
                     this.motionY = 0.0D;
@@ -953,12 +936,12 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
             else {
                 this.motionY -= 0.08D;
             }
-            //ªÅ®ğ¤¤ªº¤T¤è¦Vªı¤O
+            //ç©ºæ°£ä¸­çš„ä¸‰æ–¹å‘é˜»åŠ›
             this.motionY *= 0.98D;			
             this.motionX *= f2;
             this.motionZ *= f2;
         }
-        //­pºâ¥|ªÏÂ\°Ê­È
+        //è¨ˆç®—å››è‚¢æ“ºå‹•å€¼
         this.prevLimbSwingAmount = this.limbSwingAmount;
         d0 = this.posX - this.prevPosX;
         double d1 = this.posZ - this.prevPosZ;
@@ -998,7 +981,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	}
 	
 	@Override
-	public boolean getIsLeashed() {		//¸j¦íhost©ÎªÌ¦Û¤v³£ºâ¸j¦í
+	public boolean getIsLeashed() {		//ç¶ä½hostæˆ–è€…è‡ªå·±éƒ½ç®—ç¶ä½
 		if(host != null) {
 			return this.host.getIsLeashed() || this.getLeashed();
 		}
@@ -1149,16 +1132,16 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	
 	//for clear rider process
 	public void setRiderNull() {
-		//²M°£®y¦ì2 entity
+		//æ¸…é™¤åº§ä½2 entity
 		if(this.seat2 != null) {
 			seat2.setRiderNull();
 		}
-		//²M°£®yÃM¥D¤H
+		//æ¸…é™¤åº§é¨ä¸»äºº
 		if(this.riddenByEntity != null) {
 			riddenByEntity.ridingEntity = null;
 			riddenByEntity = null;
 		}
-		//²M°£®y¦ì2¤W­±§¤ªº¤H
+		//æ¸…é™¤åº§ä½2ä¸Šé¢åçš„äºº
 		this.riddenByEntity2 = null;
 		this.setDead();
 	}
@@ -1167,7 +1150,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	public void setupAttrs() {
 		getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(host.getStateFinal(ID.HP) * 0.5D);
 		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(movSpeed);
-		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(host.getStateFinal(ID.HIT) + 32); //¦¹¬°§ä¥Ø¼Ğ, ¸ô®|ªº½d³ò
+		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(host.getStateFinal(ID.HIT) + 32); //æ­¤ç‚ºæ‰¾ç›®æ¨™, è·¯å¾‘çš„ç¯„åœ
 		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(host.getLevel() / 150D);
 	}
 	
@@ -1261,7 +1244,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 			((EntityLivingBase)this.riddenByEntity).rotationYaw = this.rotationYaw;
 			((EntityLivingBase)this.riddenByEntity).renderYawOffset = this.renderYawOffset;
   			
-  			//­Y¦³rider2¥B²¾°Ê®É, «h§ï¬°rider2´Â¦V
+  			//è‹¥æœ‰rider2ä¸”ç§»å‹•æ™‚, å‰‡æ”¹ç‚ºrider2æœå‘
   			if(this.riddenByEntity2 != null && this.keyPressed != 0) {
   				this.rotationYawHead = riddenByEntity2.rotationYawHead;
   				this.prevRotationYaw = riddenByEntity2.prevRotationYaw;
@@ -1273,7 +1256,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   				((EntityLivingBase)this.riddenByEntity).rotationYaw = this.rotationYaw;
   				((EntityLivingBase)this.riddenByEntity).renderYawOffset = this.renderYawOffset;
 
-  				//²M°£AI¦Û°Ê¨«¸ô, ¥H§K§«Ãªª±®a±±¨î²¾°Ê
+  				//æ¸…é™¤AIè‡ªå‹•èµ°è·¯, ä»¥å…å¦¨ç¤™ç©å®¶æ§åˆ¶ç§»å‹•
   				this.getShipNavigate().clearPathEntity();
   			}
   		}

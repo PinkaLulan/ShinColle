@@ -6,7 +6,7 @@ import net.minecraft.entity.ai.EntityAIBase;
 import com.lulan.shincolle.entity.BasicEntityShip;
 
 /**SIT AI FOR SHIP
- * ¥i¥H¦b²GÅé¤¤§¤¤U
+ * å¯ä»¥åœ¨æ¶²é«”ä¸­åä¸‹
  */
 public class EntityAIShipSit extends EntityAIBase
 {

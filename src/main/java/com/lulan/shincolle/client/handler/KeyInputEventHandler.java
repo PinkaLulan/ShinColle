@@ -5,7 +5,7 @@ import cpw.mods.fml.common.gameevent.InputEvent;
 
 public class KeyInputEventHandler {
 	
-/*	//°»´ú«öÁäÃş«¬¥Î¤èªk
+/*	//åµæ¸¬æŒ‰éµé¡å‹ç”¨æ–¹æ³•
 	private static Key getPressedKeyBinding() {
 		
 		if(KeyBindings.repair.isPressed()) {
@@ -14,14 +14,14 @@ public class KeyInputEventHandler {
 		else if() {
 			
 		}
-		return Key.UNKNOWN;	//¨ä¥L«öÁäÃş«¬ ¦^¶ÇUNKNOWN
+		return Key.UNKNOWN;	//å…¶ä»–æŒ‰éµé¡å‹ å›å‚³UNKNOWN
 	}*/
 	
-	//±µ¦¬«öÁäevent ®Ú¾Ú«öÁä°µ¥X¦^À³
+	//æ¥æ”¶æŒ‰éµevent æ ¹æ“šæŒ‰éµåšå‡ºå›æ‡‰
 	@SubscribeEvent
 	public void handleKeyInputEvent(InputEvent.KeyInputEvent event) {
 	
-		//debug¥Î: «ö¤U«öÁä ¦bconsoleÅã¥Ü«ö¤U¸Ó«öÁä
+		//debugç”¨: æŒ‰ä¸‹æŒ‰éµ åœ¨consoleé¡¯ç¤ºæŒ‰ä¸‹è©²æŒ‰éµ
 	/*	LogHelper.info(KeyBindings.repair.isPressed());
 		LogHelper.info(KeyBindings.repair.getIsKeyPressed());*/
 		

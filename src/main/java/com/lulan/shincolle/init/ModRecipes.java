@@ -9,12 +9,12 @@ import net.minecraftforge.oredict.ShapelessOreRecipe;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ModRecipes {
-	//°t¤è½d¨Ò
-	//GameRegistry.addSmelting(¨ú±oª«, §÷®Æ, 0.1f¸gÅç);
-	//GameRegistry.addRecipe(new ShapedOreRecipe(¨ú±oª«, " s ", "sss", " s ", 's', "stickWood" §÷®Æ°}¦C));
-    //GameRegistry.addRecipe(new ShapelessOreRecipe(¨ú±oª«, §÷®ÆA, §÷®ÆB, ...));		
+	//é…æ–¹ç¯„ä¾‹
+	//GameRegistry.addSmelting(å–å¾—ç‰©, ææ–™, 0.1fç¶“é©—);
+	//GameRegistry.addRecipe(new ShapedOreRecipe(å–å¾—ç‰©, " s ", "sss", " s ", 's', "stickWood" ææ–™é™£åˆ—));
+    //GameRegistry.addRecipe(new ShapelessOreRecipe(å–å¾—ç‰©, ææ–™A, ææ–™B, ...));		
 	public static void init() {
-		//°t¤è§÷®Æor¦¨«~
+		//é…æ–¹ææ–™oræˆå“
 		ItemStack abyssiumBlock = new ItemStack(ModBlocks.BlockAbyssium);
 		ItemStack abyssiumStack = new ItemStack(ModItems.AbyssMetal,1,0);
 		ItemStack abyssiumStack9 = new ItemStack(ModItems.AbyssMetal,9,0);
@@ -62,6 +62,7 @@ public class ModRecipes {
 		ItemStack shipEggL = new ItemStack(ModItems.ShipSpawnEgg, 1, 1);
 		ItemStack smallshipyardStack = new ItemStack(ModBlocks.BlockSmallShipyard);
 		ItemStack toyplane = new ItemStack(ModItems.ToyAirplane);
+		ItemStack wrench = new ItemStack(ModItems.TargetWrench);
 		
 		//SHAPELESS RECIPE
 		//abyssium material:
@@ -126,7 +127,10 @@ public class ModRecipes {
 		//goddess
 		GameRegistry.addRecipe(new ShapedOreRecipe(repairGoddess,"hgh","gdg","hgh",'d',Blocks.diamond_block,'g',grudeBlock,'h',grudeHeavyBlock));
 		GameRegistry.addRecipe(new ShapedOreRecipe(repairGoddess,"ghg","hdh","ghg",'d',Blocks.diamond_block,'g',grudeBlock,'h',grudeHeavyBlock));
+		//wrench
+		GameRegistry.addRecipe(new ShapedOreRecipe(wrench,"a a","aaa"," a ",'a',abyssiumStack));
 		
 	}
 
+	
 }

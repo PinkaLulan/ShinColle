@@ -24,13 +24,13 @@ public class ContainerFormation extends Container {
 		
 	}
 
-	//ª±®a¬O§_¥i¥HÄ²µo¥kÁäÂI¤è¶ô¨Æ¥ó
+	//ç©å®¶æ˜¯å¦å¯ä»¥è§¸ç™¼å³éµé»æ–¹å¡Šäº‹ä»¶
 	@Override
 	public boolean canInteractWith(EntityPlayer player) {
 		return true;
 	}
 	
-	/** shiftÂIª««~ªº°Ê§@ */
+	/** shifté»ç‰©å“çš„å‹•ä½œ */
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer player, int slotid) {
         return null;

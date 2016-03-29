@@ -32,6 +32,7 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.BattleshipTA);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BB]);
+		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BB]);
 		this.ModelPos = new float[] {-6F, 10F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.initTypeModify();
@@ -74,7 +75,7 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
   		}    
   	}
 
-	//Ta¯ÅÃB¥~¼W¥[Äİ©Ê
+	//Taç´šé¡å¤–å¢åŠ å±¬æ€§
 	@Override
 	public void calcShipAttributes() {
 		EffectEquip[ID.EF_CRI] = EffectEquip[ID.EF_CRI] + 0.1F;
@@ -90,38 +91,7 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
 		//use cake to change state
 		if(itemstack != null) {
 			if(itemstack.getItem() == Items.cake) {
-				if(player.isSneaking()) {
-					switch(getStateEmotion(ID.S.State2)) {
-					case ID.State.NORMAL_2:
-						setStateEmotion(ID.S.State2, ID.State.EQUIP00_2, true);
-						break;
-					case ID.State.EQUIP00_2:
-						setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
-						break;	
-					default:
-						setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
-						break;
-					}
-				}
-				else {
-					switch(getStateEmotion(ID.S.State)) {
-					case ID.State.NORMAL:	//³£¨S¦³
-						setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
-						break;
-					case ID.State.EQUIP00:	//¥u¦³©Ü­·
-						setStateEmotion(ID.S.State, ID.State.EQUIP01, true);
-						break;
-					case ID.State.EQUIP01:	//¥u¦³Å@ªÓ
-						setStateEmotion(ID.S.State, ID.State.EQUIP02, true);
-						break;
-					case ID.State.EQUIP02:	//©Ü­·+Å@ªÓ
-						setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-						break;
-					default:
-						setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-						break;
-					}
-				}
+				this.setShipOutfit(player.isSneaking());
 				return true;
 			}
 		}
@@ -147,7 +117,7 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
         }
         
         //light ammo--
-        if(!decrAmmoNum(4)) {		//not enough ammo
+        if(!decrAmmoNum(0, 4 * this.getAmmoConsumption())) {		//not enough ammo
         	return false;
         }
         
@@ -157,7 +127,7 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
   		//grudge--
   		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk] * 4);
 
-        //µo®gªÌ·ÏÃú¯S®Ä (©Û³ê³s¸Ë¯¥¤£¨Ï¥Î¯S®Ä, ¦ı¬O­nµo°e«Ê¥]¨Ó³]©wattackTime)
+        //ç™¼å°„è€…ç…™éœ§ç‰¹æ•ˆ (æ‹›å–šé€£è£ç ²ä¸ä½¿ç”¨ç‰¹æ•ˆ, ä½†æ˜¯è¦ç™¼é€å°åŒ…ä¾†è¨­å®šattackTime)
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
   		
@@ -205,6 +175,42 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
   		else {
   			return (double)this.height * 0.68F;
   		}
+	}
+
+	@Override
+	public void setShipOutfit(boolean isSneaking) {
+		if(isSneaking) {
+			switch(getStateEmotion(ID.S.State2)) {
+			case ID.State.NORMAL_2:
+				setStateEmotion(ID.S.State2, ID.State.EQUIP00_2, true);
+				break;
+			case ID.State.EQUIP00_2:
+				setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
+				break;	
+			default:
+				setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
+				break;
+			}
+		}
+		else {
+			switch(getStateEmotion(ID.S.State)) {
+			case ID.State.NORMAL:	//éƒ½æ²’æœ‰
+				setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+				break;
+			case ID.State.EQUIP00:	//åªæœ‰æŠ«é¢¨
+				setStateEmotion(ID.S.State, ID.State.EQUIP01, true);
+				break;
+			case ID.State.EQUIP01:	//åªæœ‰è­·è‚©
+				setStateEmotion(ID.S.State, ID.State.EQUIP02, true);
+				break;
+			case ID.State.EQUIP02:	//æŠ«é¢¨+è­·è‚©
+				setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+				break;
+			default:
+				setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+				break;
+			}
+		}
 	}
 	
 	

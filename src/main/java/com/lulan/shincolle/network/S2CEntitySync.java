@@ -21,8 +21,8 @@ import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 
 /**SERVER TO CLIENT : ENTITY SYNC PACKET
- * ¥Î©óentityªº¸ê®Æ¦P¨B
- * packet handler¦P¼Ë«Ø¥ß¦b¦¹class¤¤
+ * ç”¨æ–¼entityçš„è³‡æ–™åŒæ­¥
+ * packet handleråŒæ¨£å»ºç«‹åœ¨æ­¤classä¸­
  * 
  * tut by diesieben07: http://www.minecraftforge.net/forum/index.php/topic,20135.0.html
  */
@@ -50,10 +50,11 @@ public class S2CEntitySync implements IMessage {
 		public static final byte SyncEntity_Rot = 10;
 		public static final byte SyncShip_Formation = 11;
 		public static final byte SyncShip_Unbuff = 12;
+		public static final byte SyncEntity_Motion = 13;
 	}
 
 	
-	public S2CEntitySync() {}	//¥²¶·­n¦³ªÅ°Ñ¼Æconstructor, forge¤~¯à¨Ï¥Î¦¹class
+	public S2CEntitySync() {}	//å¿…é ˆè¦æœ‰ç©ºåƒæ•¸constructor, forgeæ‰èƒ½ä½¿ç”¨æ­¤class
 	
 	/**entity sync: 
 	 * type 0: all attribute
@@ -91,6 +92,7 @@ public class S2CEntitySync implements IMessage {
 	 * type 8:  projectile type sync
 	 * type 9:  entity pos sync (for teleport)
 	 * type 10: entity rot sync (for looking update)
+	 * type 13: entity motion sync (for knockback)
 	 */
 	public S2CEntitySync(Entity entity, int value, int type) {
         this.entity3 = entity;
@@ -98,7 +100,7 @@ public class S2CEntitySync implements IMessage {
         this.type = type;
     }
 
-	//±µ¦¬packet¤èªk (CLIENT SIDE)
+	//æ¥æ”¶packetæ–¹æ³• (CLIENT SIDE)
 	@Override
 	public void fromBytes(ByteBuf buf) {
 		boolean getSyncTarget = false;
@@ -122,7 +124,7 @@ public class S2CEntitySync implements IMessage {
 //			this.entity2 = (EntityLiving) EntityHelper.getEntityByID(entityID, 0, true);
 			Entity ent = EntityHelper.getEntityByID(entityID, 0, true);
 			
-			//½T»{¦³§ì¨ì­nsyncªºentity
+			//ç¢ºèªæœ‰æŠ“åˆ°è¦syncçš„entity
 			if(ent instanceof EntityLiving) {
 				this.entity2 = (EntityLiving) ent;
 				getSyncTarget = true;
@@ -153,8 +155,9 @@ public class S2CEntitySync implements IMessage {
 				getSyncTarget = true;
 			}
 			break;
-		case PID.SyncEntity_PosRot: //entity pos and rotation sync
+		case PID.SyncEntity_PosRot: //entity position, rotation, motion sync
 		case PID.SyncEntity_Rot:
+		case PID.SyncEntity_Motion:
 			this.entity3 = EntityHelper.getEntityByID(entityID, 0, true);
 			if(entity3 != null) {
 				getSyncTarget = true;
@@ -377,7 +380,7 @@ public class S2CEntitySync implements IMessage {
 					int hostId = buf.readInt();
 							
 					//dismount packet
-					if(playerId < 0) {	//id³]¬°-1ªí¥Ü¬°dismount packet
+					if(playerId < 0) {	//idè¨­ç‚º-1è¡¨ç¤ºç‚ºdismount packet
 						entity3s.setRiderNull();
 					}
 					//mount sync packet
@@ -482,6 +485,15 @@ public class S2CEntitySync implements IMessage {
 					}
 				}
 				break;
+			case PID.SyncEntity_Motion:	//entity motion sync
+				{
+					double px = buf.readFloat();
+					double py = buf.readFloat();
+					double pz = buf.readFloat();
+					
+					entity3.setVelocity(px, px, pz);
+				}
+				break;
 			}
 		}
 		else {
@@ -490,7 +502,7 @@ public class S2CEntitySync implements IMessage {
 		}
 	}
 
-	//µo¥Xpacket¤èªk
+	//ç™¼å‡ºpacketæ–¹æ³•
 	@Override
 	public void toBytes(ByteBuf buf) {
 		switch(this.type) {
@@ -789,12 +801,21 @@ public class S2CEntitySync implements IMessage {
 				buf.writeFloat(this.entity.getEffectFormationFixed(ID.FormationFixed.MOV));
 			}
 			break;
+		case PID.SyncEntity_Motion:	//entity motion sync
+			{
+				buf.writeByte(PID.SyncEntity_Motion);
+				buf.writeInt(this.entity3.getEntityId());
+				buf.writeFloat((float) this.entity3.motionX);
+				buf.writeFloat((float) this.entity3.motionY);
+				buf.writeFloat((float) this.entity3.motionZ);
+			}
+			break;
 		}
 	}
 	
 	//packet handler (inner class)
 	public static class Handler implements IMessageHandler<S2CEntitySync, IMessage> {
-		//¦¬¨ì«Ê¥]®ÉÅã¥Üdebug°T®§
+		//æ”¶åˆ°å°åŒ…æ™‚é¡¯ç¤ºdebugè¨Šæ¯
 		@Override
 		public IMessage onMessage(S2CEntitySync message, MessageContext ctx) {
 //			System.out.println(String.format("Received %s from %s", message.text, ctx.getServerHandler().playerEntity.getDisplayName()));

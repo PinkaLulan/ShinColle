@@ -86,12 +86,7 @@ public class ShipCmdShipInfo extends BasicShipCommand {
 	public void processCommand(ICommandSender sender, String[] cmd) {
 		World world = sender.getEntityWorld();
 		
-		//client
-		if(world.isRemote) {
-//			LogHelper.info("DEBUG : cmd client "+sender+" "+cmd);
-		}
-		//server
-		else {
+		if(!world.isRemote) {
 			//check sender is player
 			if(sender instanceof EntityPlayer) {
 				//send sender and owner eid to client

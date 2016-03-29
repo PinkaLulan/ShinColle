@@ -3,11 +3,6 @@ package com.lulan.shincolle.block;
 import java.util.ArrayList;
 import java.util.Random;
 
-import com.lulan.shincolle.init.ModBlocks;
-import com.lulan.shincolle.item.BasicEntityItem;
-import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityLivingBase;
@@ -16,6 +11,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+
+import com.lulan.shincolle.init.ModBlocks;
+import com.lulan.shincolle.item.BasicEntityItem;
+import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockGrudgeHeavy extends BasicBlockMulti {
 	public BlockGrudgeHeavy() {
@@ -33,76 +35,79 @@ public class BlockGrudgeHeavy extends BasicBlockMulti {
 		return new TileMultiGrudgeHeavy();
 	}
 		
-	//¸T¤î¸Ó¤è¶ô²£¥Í±¼¸¨ª«, ©Ò¦³±¼¸¨ª«³£§ï¦bbreakBlock¥Í¦¨
+	//ç¦æ­¢è©²æ–¹å¡Šç”¢ç”Ÿæ‰è½ç‰©, æ‰€æœ‰æ‰è½ç‰©éƒ½æ”¹åœ¨breakBlockç”Ÿæˆ
 	@Override
 	public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune) {
 		ArrayList<ItemStack> ret = new ArrayList<ItemStack>();
-		return ret;	//ª½±µ¦^¶ÇªÅªºarray (¤£¯à¶Çnull·|¼Q¥XNPE)
+		return ret;	//ç›´æ¥å›å‚³ç©ºçš„array (ä¸èƒ½å‚³nullæœƒå™´å‡ºNPE)
     }
 	
-	//¤è¶ô©ñ¸m®É, ±Nª««~ªºmats¼Æ¶q¨ú¥X¦s¨ìtileªºnbt¤¤
+	//æ–¹å¡Šæ”¾ç½®æ™‚, å°‡ç‰©å“çš„matsæ•¸é‡å–å‡ºå­˜åˆ°tileçš„nbtä¸­
 	@Override
 	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack itemstack) {
 		TileEntity tile = world.getTileEntity(x, y, z);
 		
 		if(tile != null && tile instanceof TileMultiGrudgeHeavy) {
-			//±Nmats¸ê®Æ¦s¨ìmatStock¤¤
+			//å°‡matsè³‡æ–™å­˜åˆ°matStockä¸­
 			if(itemstack.hasTagCompound()) {
+				TileMultiGrudgeHeavy tile2 = (TileMultiGrudgeHeavy) tile;
 				NBTTagCompound nbt = itemstack.getTagCompound();
 				int[] mats = nbt.getIntArray("mats");
+				int fuel = nbt.getInteger("fuel");
 		        
-				((TileMultiGrudgeHeavy)tile).setMatStock(0, mats[0]);
-				((TileMultiGrudgeHeavy)tile).setMatStock(1, mats[1]);
-				((TileMultiGrudgeHeavy)tile).setMatStock(2, mats[2]);
-				((TileMultiGrudgeHeavy)tile).setMatStock(3, mats[3]);
+				tile2.setMatStock(0, mats[0]);
+				tile2.setMatStock(1, mats[1]);
+				tile2.setMatStock(2, mats[2]);
+				tile2.setMatStock(3, mats[3]);
+				tile2.setPowerRemained(fuel);
 			}
 		}
 	}
 	
-	//¥´±¼¤è¶ô«á, ±¼¸¨¨ä¤º®eª«
-	//heavy grudge¥´±¼®É, ·|§âmatBuild¸òmatStock¦s¦bitemªºnbt¤¤
-	//ª`·Ntile·|¦b³oÃä®ø·À±¼, ©Ò¥HgetDrops©I¥s®É¤w¸g§ì¤£¨ìtile, ¥ô¦ótile¸ê®Æ­n¯d¤Uªº³£­n¦b¦¹¤èªk°µ§¹
+	//æ‰“æ‰æ–¹å¡Šå¾Œ, æ‰è½å…¶å…§å®¹ç‰©
+	//heavy grudgeæ‰“æ‰æ™‚, æœƒæŠŠmatBuildè·ŸmatStockå­˜åœ¨itemçš„nbtä¸­
+	//æ³¨æ„tileæœƒåœ¨é€™é‚Šæ¶ˆæ»…æ‰, æ‰€ä»¥getDropså‘¼å«æ™‚å·²ç¶“æŠ“ä¸åˆ°tile, ä»»ä½•tileè³‡æ–™è¦ç•™ä¸‹çš„éƒ½è¦åœ¨æ­¤æ–¹æ³•åšå®Œ
 	@Override
 	public void breakBlock(World world, int x, int y, int z, Block block, int meta) {
 		TileEntity getTile = world.getTileEntity(x, y, z);
 		TileMultiGrudgeHeavy tile = null;
 		
-		//½T»{§ì¨ìªº¬Ogrudge heavy, ¥H¨¾·N¥~
+		//ç¢ºèªæŠ“åˆ°çš„æ˜¯grudge heavy, ä»¥é˜²æ„å¤–
 		if(getTile instanceof TileMultiGrudgeHeavy) {
 			tile = (TileMultiGrudgeHeavy)getTile;
 		}
 		
 		if(tile != null) {
-			//±½´y¥ş³¡slot¤º®eª«, µM«á°µ¦¨entity±¼¸¨¥X¨Ó
+			//æƒæå…¨éƒ¨slotå…§å®¹ç‰©, ç„¶å¾Œåšæˆentityæ‰è½å‡ºä¾†
 			for(int i = 0; i < tile.getSizeInventory(); i++) {
 				ItemStack itemstack = tile.getStackInSlot(i);
 
 				if(itemstack != null) {
-					//³]©w­nÀH¾÷¼Q¥Xªºrange
+					//è¨­å®šè¦éš¨æ©Ÿå™´å‡ºçš„range
 					float f = world.rand.nextFloat() * 0.8F + 0.1F;
 					float f1 = world.rand.nextFloat() * 0.8F + 0.1F;
 					float f2 = world.rand.nextFloat() * 0.8F + 0.1F;
 
 					while(itemstack.stackSize > 0) {
 						int j = world.rand.nextInt(21) + 10;
-						//¦pªGª««~¶W¹L¤@­ÓÀH¾÷¼Æ¶q, ·|¤À§ó¦hÅ|¼Q¥X
+						//å¦‚æœç‰©å“è¶…éä¸€å€‹éš¨æ©Ÿæ•¸é‡, æœƒåˆ†æ›´å¤šç–Šå™´å‡º
 						if(j > itemstack.stackSize) {  
 							j = itemstack.stackSize;
 						}
 
 						itemstack.stackSize -= j;
-						//±Nitem°µ¦¨entity, ¥Í¦¨¨ì¥@¬É¤W
+						//å°‡itemåšæˆentity, ç”Ÿæˆåˆ°ä¸–ç•Œä¸Š
 						EntityItem item = new EntityItem(world, x + f, y + f1, z + f2, new ItemStack(itemstack.getItem(), j, itemstack.getItemDamage()));
-						//¦pªG¦³NBT tag, ¤]­n½Æ»s¨ìª««~¤W
+						//å¦‚æœæœ‰NBT tag, ä¹Ÿè¦è¤‡è£½åˆ°ç‰©å“ä¸Š
 						if(itemstack.hasTagCompound()) {
 							item.getEntityItem().setTagCompound((NBTTagCompound)itemstack.getTagCompound().copy());
 						}
-					world.spawnEntityInWorld(item);	//¥Í¦¨item entity
+					world.spawnEntityInWorld(item);	//ç”Ÿæˆitem entity
 					}
 				}
 			}
 			
-			//±½´ymatBuild¸òmatStock¬O§_¦³¦s­È, ¦³ªº¸ÜÂà¦s¨ìblock item¤W¨Ã¥Í¦¨¨ìworld¤¤
+			//æƒæmatBuildè·ŸmatStockæ˜¯å¦æœ‰å­˜å€¼, æœ‰çš„è©±è½‰å­˜åˆ°block itemä¸Šä¸¦ç”Ÿæˆåˆ°worldä¸­
 			BasicEntityItem item = new BasicEntityItem(world, x, y+0.5D, z, new ItemStack(ModBlocks.BlockGrudgeHeavy, 1 ,0));
 			NBTTagCompound nbt = new NBTTagCompound();
 			
@@ -112,20 +117,21 @@ public class BlockGrudgeHeavy extends BasicBlockMulti {
 			mats[2] = tile.getMatBuild(2) + tile.getMatStock(2);
 			mats[3] = tile.getMatBuild(3) + tile.getMatStock(3);		
 			
-			//¥u­n¦³¤@­Ó§÷®Æ¤£¬°0´N¦snbt, ­Y¬Ò¬°0´N¤£»İ­n¦s
+			//save nbt
 			nbt.setIntArray("mats", mats);
-			if(mats[0] != 0 || mats[1] != 0 || mats[2] != 0 || mats[3] != 0) {
-				item.getEntityItem().setTagCompound(nbt);	//±Nnbt¦s¨ìentity item¤¤
-			}
-			world.spawnEntityInWorld(item);				//¥Í¦¨item entity
+			nbt.setInteger("fuel", tile.getPowerRemained());
+			item.getEntityItem().setTagCompound(nbt);	//å°‡nbtå­˜åˆ°entity itemä¸­
 			
+			//spawn entity item
+			world.spawnEntityInWorld(item);				//ç”Ÿæˆitem entity
 			world.func_147453_f(x, y, z, block);		//alert block changed
 		}
-		//©I¥s­ì¥ıªºbreakBlock, ·|§âtile entity²¾°£±¼
+		
+		//å‘¼å«åŸå…ˆçš„breakBlock, æœƒæŠŠtile entityç§»é™¤æ‰
 		super.breakBlock(world, x, y, z, block, meta);
 	}
 	
-	//ÀH¾÷µo¥X¶Ç°eªù­µ®Ä
+	//éš¨æ©Ÿç™¼å‡ºå‚³é€é–€éŸ³æ•ˆ
 	@Override
 	@SideOnly(Side.CLIENT)
     public void randomDisplayTick(World p_149734_1_, int p_149734_2_, int p_149734_3_, int p_149734_4_, Random p_149734_5_) {

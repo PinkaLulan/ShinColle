@@ -16,7 +16,7 @@ import cpw.mods.fml.relauncher.Side;
 @SideOnly(Side.CLIENT)
 public class RenderDestroyerShimakazeBoss extends RenderLiving {
 	
-	//¶K¹ÏÀÉ¸ô®|
+	//è²¼åœ–æª”è·¯å¾‘
 	private static final ResourceLocation mobTextures = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityDestroyerShimakaze.png");
 
 	public RenderDestroyerShimakazeBoss(ModelBase par1, float par2) {
@@ -28,7 +28,7 @@ public class RenderDestroyerShimakazeBoss extends RenderLiving {
 		return mobTextures;
 	}
 	
-	//Åã¥Üboss¦å±ø
+	//é¡¯ç¤ºbossè¡€æ¢
 	@Override
     protected void preRenderCallback(EntityLivingBase entity, float f1) {
 		BossStatus.setBossStatus((IBossDisplayData) entity, true);

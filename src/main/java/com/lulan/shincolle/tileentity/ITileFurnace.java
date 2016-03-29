@@ -2,20 +2,21 @@ package com.lulan.shincolle.tileentity;
 
 public interface ITileFurnace {
 
-	/** ¥»¦¸³B²z¤w¸g®ø¯Ó±¼ªº¿U®Æ­È */
+	/** æœ¬æ¬¡è™•ç†å·²ç¶“æ¶ˆè€—æ‰çš„ç‡ƒæ–™å€¼ */
 	public int getPowerConsumed();
 	public void setPowerConsumed(int par1);
 	
-	/** ¥»¦¸³B²z­n¹F¨ìªº¥Ø¼Ğ¿U®Æ­È */
+	/** æœ¬æ¬¡è™•ç†è¦é”åˆ°çš„ç›®æ¨™ç‡ƒæ–™å€¼ */
 	public int getPowerGoal();
 	public void setPowerGoal(int par1);
 	
-	/** ³Ñ¤Uªº¿U®Æ­È */
+	/** å‰©ä¸‹çš„ç‡ƒæ–™å€¼ */
 	public int getPowerRemained();
 	public void setPowerRemained(int par1);
 	
-	/** ¿U®Æ­È¤W­­ */
+	/** ç‡ƒæ–™å€¼ä¸Šé™ */
 	public int getPowerMax();
 	public void setPowerMax(int par1);
+	
 	
 }
