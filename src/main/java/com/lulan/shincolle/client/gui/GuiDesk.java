@@ -30,6 +30,7 @@ import org.lwjgl.opengl.GL12;
 
 import com.lulan.shincolle.client.gui.inventory.ContainerDesk;
 import com.lulan.shincolle.crafting.ShipCalc;
+import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
 import com.lulan.shincolle.network.C2SGUIPackets;
@@ -112,6 +113,7 @@ public class GuiDesk extends GuiContainer {
 	
 	//ship model
 	BasicEntityShip shipModel = null;
+	BasicEntityMount shipMount = null;
 	private int shipType, shipClass;
 	private int[][] iconXY = null;
 	
@@ -619,6 +621,7 @@ public class GuiDesk extends GuiContainer {
                 	}
                 	
                 	if(this.book_pageNum < 0) this.book_pageNum = 0;
+    	  	  		
                 	setShipModel(this.book_chapNum, this.book_pageNum);
                 	LogHelper.info("DEBUG : desk: book page: "+book_pageNum);
                 	break;
@@ -633,6 +636,7 @@ public class GuiDesk extends GuiContainer {
                 	if(this.book_pageNum > GuiBook.getMaxPageNumber(book_chapNum)) {
                 		this.book_pageNum = GuiBook.getMaxPageNumber(book_chapNum);
                 	}
+    	  	  		
                 	setShipModel(this.book_chapNum, this.book_pageNum);
                 	LogHelper.info("DEBUG : desk: book page: "+book_pageNum);
                 	break;
@@ -656,6 +660,7 @@ public class GuiDesk extends GuiContainer {
             			break;
             		case 1:  //cake
             			this.shipModel.setShipOutfit(false);
+            			setShipMount();
             			break;
             		case 2:  //cake sneaking
             			this.shipModel.setShipOutfit(true);
@@ -672,12 +677,15 @@ public class GuiDesk extends GuiContainer {
             			break;
             		case 4:  //run
             			this.shipModel.setSprinting(!this.shipModel.isSprinting());
+            			if(this.shipMount != null) this.shipMount.setSprinting(!this.shipMount.isSprinting());
             			break;
             		case 5:  //attack
             			this.shipModel.attackTime = 50;
+            			if(this.shipMount != null) this.shipMount.attackTime = 50;
             			break;
             		case 6:  //emotion
             			this.shipModel.setStateEmotion(ID.S.Emotion, this.shipModel.getRNG().nextInt(6), false);
+            			if(this.shipMount != null) this.shipMount.setStateEmotion(ID.S.Emotion, this.shipMount.getRNG().nextInt(6), false);
             			break;
             		}
         		}
@@ -1671,6 +1679,15 @@ public class GuiDesk extends GuiContainer {
 		int classID = -1;
 		String shipName = null;
 		
+		//clear mount
+		if(this.shipModel != null) {
+			this.shipModel.mountEntity(null);
+	  		this.shipMount = null;
+		}
+		else {
+			this.shipMount = null;
+		}
+		
 		//get ship
 		try {
 			if(chap == 4) {
@@ -1714,8 +1731,29 @@ public class GuiDesk extends GuiContainer {
         }
 	}
 	
+	private void setShipMount() {
+		if(this.shipModel != null && this.shipModel.canSummonMounts()) {
+			//summon mount if emotion state >= equip00
+  	  		if(this.shipModel.getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
+  	  			if(!this.shipModel.isRiding()) {
+  	  				//summon mount entity
+  	  				this.shipMount = this.shipModel.summonMountEntity();
+
+  	  	  			//set riding entity
+  	  	  			this.shipModel.mountEntity(this.shipMount);
+  	  			}
+  	  		}
+  	  		else {
+	  	  		//clear mount
+	  	  		this.shipModel.mountEntity(null);
+	  	  		this.shipMount = null;
+  	  		}
+		}
+	}
+	
 	private void drawShipModel() {
 		if(this.shipModel != null) {
+			//draw background
 			Minecraft.getMinecraft().getTextureManager().bindTexture(guiBook2);
 			if(this.book_chapNum == 4) {  //shinkei
 				drawTexturedModalRect(guiLeft+20, guiTop+48, 0, 0, 87, 125);
@@ -1726,6 +1764,7 @@ public class GuiDesk extends GuiContainer {
 	    	
 	    	Minecraft.getMinecraft().getTextureManager().bindTexture(guiNameIcon);
 	    	
+	    	//draw name icon
         	try{
         		drawTexturedModalRect(guiLeft+23, guiTop+53, this.iconXY[0][0], this.iconXY[0][1], 28, 28);
 
@@ -1737,7 +1776,7 @@ public class GuiDesk extends GuiContainer {
         	catch(Exception e) {
 //        		LogHelper.info("Exception : get name icon fail "+e);
         	}
-        	
+
         	//tick time
         	if(this.tickGUI % 3 == 0) {
         		this.shipModel.ticksExisted++;
@@ -1746,6 +1785,16 @@ public class GuiDesk extends GuiContainer {
             	//set moving motion
             	if(this.shipModel.isSprinting()) {
             		this.shipModel.moveEntityWithHeading(1F, 0F);
+            	}
+            	
+            	if(this.shipMount != null) {
+            		this.shipMount.ticksExisted++;
+                	if(this.shipMount.attackTime > 0) this.shipMount.attackTime--;
+                	
+                	//set mount moving motion
+                	if(this.shipMount.isSprinting()) {
+                		this.shipMount.moveEntityWithHeading(1F, 0F);
+                	}
             	}
         	}
         	
@@ -1770,7 +1819,19 @@ public class GuiDesk extends GuiContainer {
 			GL11.glRotatef(this.mRotateX, 1.0F, 0.0F, 0.0F);
 			GL11.glTranslatef(0.0F, this.shipModel.yOffset, 0.0F);
 			RenderManager.instance.playerViewY = 180.0F;
-			RenderManager.instance.renderEntityWithPosYaw(this.shipModel, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F);
+			
+			//draw mount
+			if(this.shipMount != null) {
+				//ship必須先畫才畫mounts
+				GL11.glTranslatef(0F, (float)(this.shipMount.getMountedYOffset()), 0F);
+				RenderManager.instance.renderEntityWithPosYaw(this.shipModel, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F);
+				GL11.glTranslatef(0F, -(float)(this.shipMount.getMountedYOffset()), 0F);
+				RenderManager.instance.renderEntityWithPosYaw(this.shipMount, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F);
+			}
+			else {
+				RenderManager.instance.renderEntityWithPosYaw(this.shipModel, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F);
+			}
+			
 			GL11.glPopMatrix();
 			RenderHelper.disableStandardItemLighting();
 			GL11.glDisable(GL12.GL_RESCALE_NORMAL);

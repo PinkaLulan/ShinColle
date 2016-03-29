@@ -134,7 +134,7 @@ public class EntityBattleshipHime extends BasicEntityShip {
   		}
   		
   		//get attack value
-		float atk = CalcHelper.calcDamageByEquipEffect(this, target, StateFinal[ID.ATK], 0);
+		float atk = CalcHelper.calcDamageBySpecialEffect(this, target, StateFinal[ID.ATK], 0);
 		
 		//update entity look at vector (for particle spawn)
         //此方法比getLook還正確 (client sync問題)

@@ -31,6 +31,7 @@ public class GuiHandler implements IGuiHandler {
 	public Object getServerGuiElement(int guiId, EntityPlayer player, World world, int x, int y, int z) {
 		TileEntity tile = null;
 		Entity entity = null;
+		ExtendPlayerProps props = null;
 		
 		switch(guiId) {		//判定gui種類
 		case ID.G.SMALLSHIPYARD:	//GUI small shipyard
@@ -68,17 +69,20 @@ public class GuiHandler implements IGuiHandler {
 		case ID.G.ADMIRALDESK:		//GUI admiral desk
 			tile = world.getTileEntity(x, y, z);  //確定抓到entity才開ui 以免噴出NPE
 			
-			//open GUI with TileEntity
-			if(tile != null && tile instanceof TileEntityDesk) {  //server取得container
-				//sync tile when gui opened
-				((TileEntityDesk)tile).sendSyncPacket();
-				
-				//sync data to client
-				ExtendPlayerProps props = EntityHelper.getExtendPlayerProps(player);
+			//sync data to client
+			props = EntityHelper.getExtendPlayerProps(player);
+			
+			if(props != null) {
 				props.sendSyncPacket(2);
 				props.sendSyncPacket(3);
 				props.sendSyncPacket(5);
 				props.sendSyncPacket(6);
+			}
+			
+			//open GUI with TileEntity
+			if(tile != null && tile instanceof TileEntityDesk) {  //server取得container
+				//sync tile when gui opened
+				((TileEntityDesk)tile).sendSyncPacket();
 				
 				return new ContainerDesk(player.inventory, (TileEntityDesk) tile, player, 0);
 			}
@@ -88,7 +92,7 @@ public class GuiHandler implements IGuiHandler {
 			}
 		case ID.G.FORMATION:  		//GUI formation
 			//send sync packet
-			ExtendPlayerProps props = EntityHelper.getExtendPlayerProps(player);
+			props = EntityHelper.getExtendPlayerProps(player);
 			props.sendSyncPacket(4);
 			
 			return new ContainerFormation(player.inventory, player);

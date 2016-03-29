@@ -113,13 +113,13 @@ public class CalcHelper {
     	return dmg * mod;
     }
     
-    /** damage calc by equip effect: AA, ASM
+    /** damage calc by special effect: AA, ASM
      *  host: attacker
      *  target: target
      *  dmg: attack damage
      *  type: 0:light 1:heavy 2:nagato 3:yamato
      */
-    public static float calcDamageByEquipEffect(IShipAttributes host, Entity target, float dmg, int type) {
+    public static float calcDamageBySpecialEffect(IShipAttributes host, Entity target, float dmg, int type) {
     	float newDmg = dmg;
     	float modDmg = 1F;
   		

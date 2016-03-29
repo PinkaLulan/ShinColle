@@ -7,6 +7,7 @@ import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 
@@ -470,12 +471,17 @@ public class C2SGUIPackets implements IMessage {
 				if(getEnt != null) {
 					this.player = getEnt;
 					ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
-					
+
 					if(extProps != null) {
 						int uid = extProps.getPlayerUID();
 						
 						if(uid > 0) {
-							ServerProxy.setPlayerTargetClassList(uid, this.str);
+							if(ServerProxy.setPlayerTargetClassList(uid, this.str)) {
+								player.addChatMessage(new ChatComponentText(EnumChatFormatting.AQUA+"ADD: "+EnumChatFormatting.YELLOW+this.str));
+							}
+							else {
+								player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED+"REMOVE: "+EnumChatFormatting.YELLOW+this.str));
+							}
 							
 							//send sync packet to client
 							extProps.sendSyncPacket(2);

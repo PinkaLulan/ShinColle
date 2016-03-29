@@ -4,11 +4,12 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.world.World;
 
-import com.lulan.shincolle.ai.EntityAIShipAircraftAttack;
 import com.lulan.shincolle.entity.BasicEntityAirplane;
-import com.lulan.shincolle.entity.BasicEntityShipLarge;
+import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.IShipAircraftAttack;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.ParticleHelper;
+import com.lulan.shincolle.utility.TargetHelper;
 
 public class EntityAirplaneTakoyaki extends BasicEntityAirplane {
 	
@@ -17,40 +18,53 @@ public class EntityAirplaneTakoyaki extends BasicEntityAirplane {
 		this.setSize(0.6F, 0.6F);
 	}
 	
-	public EntityAirplaneTakoyaki(World world, BasicEntityShipLarge host, Entity target, double launchPos) {
-		super(world);
+	@Override
+	public void setAttrs(World world, IShipAircraftAttack host, Entity target, double launchPos) {
 		this.world = world;
         this.host = host;
         this.atkTarget = target;
-        
-        //basic attr
-        this.atk = host.getStateFinal(ID.ATK_AH);
-        this.atkSpeed = host.getStateFinal(ID.SPD);
-        this.movSpeed = host.getStateFinal(ID.MOV) * 0.1F + 0.23F;
-        
-        //AI flag
-        this.numAmmoLight = 0;
-        this.numAmmoHeavy = 3;
-        this.useAmmoLight = false;
-        this.useAmmoHeavy = true;
-        
-        //設定發射位置
-        this.posX = host.posX;
-        this.posY = launchPos;
-        this.posZ = host.posZ;
-        this.setPosition(this.posX, this.posY, this.posZ);
- 
-	    //設定基本屬性
-        double mhp = host.getLevel() + host.getStateFinal(ID.HP)*0.15D;
-        
-	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(mhp);
-		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(this.movSpeed);
-		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(host.getStateFinal(ID.HIT)+32D); //此為找目標, 路徑的範圍
-		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(1D);
-		if(this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
-				
-		//設定AI
-		this.setAIList();
+		
+		if(host instanceof BasicEntityShip) {
+        	BasicEntityShip ship = (BasicEntityShip) host;
+        	
+        	this.targetSelector = new TargetHelper.Selector(this);
+    		this.targetSorter = new TargetHelper.Sorter(this);
+    		
+            //basic attr
+            this.atk = ship.getStateFinal(ID.ATK_AH);
+            this.def = ship.getStateFinal(ID.DEF) * 0.5F;
+            this.atkSpeed = ship.getStateFinal(ID.SPD);
+            this.movSpeed = ship.getStateFinal(ID.MOV) * 0.1F + 0.23F;
+            
+            //設定發射位置
+            this.posX = ship.posX;
+            this.posY = launchPos;
+            this.posZ = ship.posZ;
+            this.setPosition(this.posX, this.posY, this.posZ);
+            
+            double mhp = ship.getLevel() + ship.getStateFinal(ID.HP)*0.15D;
+            
+    	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(mhp);
+    		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(this.movSpeed);
+    		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(ship.getStateFinal(ID.HIT)+64D); //此為找目標, 路徑的範圍
+    		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(1D);
+    		if(this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
+            
+            //AI flag
+            this.numAmmoLight = 0;
+            this.numAmmoHeavy = 3;
+            this.useAmmoLight = false;
+            this.useAmmoHeavy = true;
+            this.backHome = false;
+            this.canFindTarget = true;
+    				
+    		//設定AI
+    		this.setAIList();
+        }
+        //not ship
+        else {
+        	return;
+        }
 	}
 	
 	@Override
@@ -59,8 +73,7 @@ public class EntityAirplaneTakoyaki extends BasicEntityAirplane {
 		
 		if(this.worldObj.isRemote) {
 			if(this.ticksExisted % 2 == 0) {
-				ParticleHelper.spawnAttackParticleAt(this.posX, this.posY+0.1D, this.posZ, 
-			      		-this.motionX*0.5D, 0.07D, -this.motionZ*0.5D, (byte)18);
+				applyFlyParticle();
 			}
 		}
 		else {
@@ -80,6 +93,11 @@ public class EntityAirplaneTakoyaki extends BasicEntityAirplane {
 	@Override
 	public boolean useAmmoHeavy() {
 		return true;
+	}
+	
+	protected void applyFlyParticle() {
+		ParticleHelper.spawnAttackParticleAt(this.posX, this.posY+0.1D, this.posZ, 
+	      		-this.motionX*0.5D, 0.07D, -this.motionZ*0.5D, (byte)18);
 	}
 
 

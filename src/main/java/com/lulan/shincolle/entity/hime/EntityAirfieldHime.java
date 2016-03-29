@@ -13,7 +13,7 @@ import com.lulan.shincolle.ai.EntityAIShipCarrierAttack;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.entity.BasicEntityShipLarge;
+import com.lulan.shincolle.entity.BasicEntityShipCV;
 import com.lulan.shincolle.entity.ExtendShipProps;
 import com.lulan.shincolle.entity.IShipMount;
 import com.lulan.shincolle.entity.mounts.EntityMountAfH;
@@ -21,7 +21,7 @@ import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
 
-public class EntityAirfieldHime extends BasicEntityShipLarge {
+public class EntityAirfieldHime extends BasicEntityShipCV {
 	
 	public EntityAirfieldHime(World world) {
 		super(world);

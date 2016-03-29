@@ -83,11 +83,11 @@ public class ShipMoveHelper {
                 //fly entity
                 if(entityN.canFly()) {
 //                    if(x1 * x1 + z1 * z1 < 3.0D) {
-                        if(y1 > 0D) {
+                        if(y1 > 0.5D) {
                         	this.entity.motionY += moveSpeed * 0.12D;
                         	moveSpeed *= 0.8F;
                         }
-                        else if(y1 < -0.2D){
+                        else if(y1 < -0.5D){
                         	this.entity.motionY -= moveSpeed * 0.16D;
                         	moveSpeed *= 0.92F;
                         }

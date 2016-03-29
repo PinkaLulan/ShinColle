@@ -3,12 +3,10 @@ package com.lulan.shincolle.ai;
 import java.util.Random;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 
 import com.lulan.shincolle.entity.BasicEntityAirplane;
 import com.lulan.shincolle.utility.BlockHelper;
-import com.lulan.shincolle.utility.LogHelper;
 
 /**AIRCRAFT ATTACK AI
  * entity必須實作attackEntityWithAmmo, attackEntityWithHeavyAmmo 兩個方法
@@ -44,11 +42,11 @@ public class EntityAIShipAircraftAttack extends EntityAIBase {
     	Entity target = this.host.getEntityTarget();
     	
     	//no ammo, go home
-    	if(!this.host.canFindTarget) return false;
+    	if(!this.host.canFindTarget()) return false;
 
         if (this.host.ticksExisted > 20 && target != null && target.isEntityAlive() && 
-        	((this.host.useAmmoLight && this.host.numAmmoLight > 0) || 
-        	(this.host.useAmmoHeavy && this.host.numAmmoHeavy > 0))) {   
+        	((this.host.useAmmoLight() && this.host.hasAmmoLight()) || 
+        	(this.host.useAmmoHeavy() && this.host.hasAmmoHeavy()))) {   
         	this.target = target;
 
             return true;
@@ -59,10 +57,11 @@ public class EntityAIShipAircraftAttack extends EntityAIBase {
     //init AI parameter, call once every target
     @Override
     public void startExecuting() {
-    	this.maxDelay = (int)(80F / (this.host.atkSpeed)) + 10;
+    	this.maxDelay = (int)(100F / (this.host.getAttackSpeed())) + 15;
         this.attackRange = 7.5F;
         this.rangeSq = this.attackRange * this.attackRange;
         distSq = distX = distY = distZ = motX = motY = motZ = 0D;
+        
         //AI移動設定
         randPos[0] = target.posX;
         randPos[1] = target.posX;
@@ -73,7 +72,7 @@ public class EntityAIShipAircraftAttack extends EntityAIBase {
     @Override
 	public boolean continueExecuting() {
     	//no ammo, go home
-    	if(!this.host.canFindTarget) return false;
+    	if(!this.host.canFindTarget()) return false;
     	
     	//跑should exec, 若false則檢查是否還在移動中, 若無法移動則結束
         return this.shouldExecute()  || (target != null && target.isEntityAlive() && !this.host.getShipNavigate().noPath());
@@ -83,6 +82,7 @@ public class EntityAIShipAircraftAttack extends EntityAIBase {
     @Override
 	public void resetTask() {
         this.target = null;
+        
         //keep moving, do not stop in air
         randPos = BlockHelper.findRandomPosition(this.host, this.host, 4D, 2D, 2);
         this.host.getShipNavigate().tryMoveToXYZ(randPos[0], randPos[1], randPos[2], 1D);
@@ -95,7 +95,6 @@ public class EntityAIShipAircraftAttack extends EntityAIBase {
     	
     	if(this.target != null) {
             onSight = this.host.getEntitySenses().canSee(this.target);
-//            LogHelper.info("DEBUG : rand pos: "+this.target);
             
             //目標距離計算
             this.distX = this.target.posX - this.host.posX;
@@ -124,13 +123,13 @@ public class EntityAIShipAircraftAttack extends EntityAIBase {
 	        //若attack delay倒數完了且瞄準時間夠久, 則開始攻擊
 	        if(this.atkDelay <= 0 && onSight) {
 	        	//由於艦載機只會輕 or 重其中一種攻擊, 因此AI這邊共用cooldown
-	        	if(this.distSq < this.rangeSq && this.host.numAmmoLight > 0 && this.host.useAmmoLight) {
+	        	if(this.distSq < this.rangeSq && this.host.hasAmmoLight() && this.host.useAmmoLight()) {
 		            //attack method
 		            this.host.attackEntityWithAmmo(this.target);
 		            this.atkDelay = this.maxDelay;
 	        	}
 	        	
-	        	if(this.distSq < this.rangeSq && this.host.numAmmoHeavy > 0 && this.host.useAmmoHeavy) {
+	        	if(this.distSq < this.rangeSq && this.host.hasAmmoHeavy() && this.host.useAmmoHeavy()) {
 		            //attack method
 		            this.host.attackEntityWithHeavyAmmo(this.target);
 		            this.atkDelay = this.maxDelay;
@@ -138,4 +137,6 @@ public class EntityAIShipAircraftAttack extends EntityAIBase {
 	        }
     	}//end attack target != null
     }
+    
+    
 }

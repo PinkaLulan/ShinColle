@@ -19,7 +19,7 @@ import org.lwjgl.opengl.GL12;
 
 import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
 import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.entity.BasicEntityShipLarge;
+import com.lulan.shincolle.entity.BasicEntityShipCV;
 import com.lulan.shincolle.entity.IShipInvisible;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.C2SGUIPackets;
@@ -806,11 +806,11 @@ public class GuiShipInventory extends GuiContainer {
 			this.fontRendererObj.drawStringWithShadow(Formation, 125-this.fontRendererObj.getStringWidth(Formation), 51, Values.Color.WHITE);
 			
 			//大型艦, 顯示艦載機數量
-			if(this.entity instanceof BasicEntityShipLarge) {
+			if(this.entity instanceof BasicEntityShipCV) {
 				this.fontRendererObj.drawString(strMiAirL, 67, 83, 0);
 				this.fontRendererObj.drawString(strMiAirH, 67, 104, 0);
-				AirLight = String.valueOf(((BasicEntityShipLarge)this.entity).getNumAircraftLight());
-				AirHeavy = String.valueOf(((BasicEntityShipLarge)this.entity).getNumAircraftHeavy());
+				AirLight = String.valueOf(((BasicEntityShipCV)this.entity).getNumAircraftLight());
+				AirHeavy = String.valueOf(((BasicEntityShipCV)this.entity).getNumAircraftHeavy());
 				this.fontRendererObj.drawStringWithShadow(AirLight, 125-this.fontRendererObj.getStringWidth(AirLight), 93, Values.Color.YELLOW);
 				this.fontRendererObj.drawStringWithShadow(AirHeavy, 125-this.fontRendererObj.getStringWidth(AirHeavy), 114, Values.Color.YELLOW);	
 			}

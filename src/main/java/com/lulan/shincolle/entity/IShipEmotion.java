@@ -21,11 +21,15 @@ public interface IShipEmotion extends IShipFlags {
 	
 	/**GET/SET emotion start time
 	 * emotion start time for individual entity
+	 * 
+	 * note: attack ani tick is render tick (60FPS), NOT game tick (20FPS)
 	 */
-	public int getStartEmotion();
-	public int getStartEmotion2();
-	public void setStartEmotion(int par1);
-	public void setStartEmotion2(int par1);
+	public int getFaceTick();
+	public int getHeadTiltTick();
+	public int getAttackAniTick();
+	public void setFaceTick(int par1);
+	public void setHeadTiltTick(int par1);
+	public void setAttackAniTick(int par1);
 	
 	/**GET/SET model rotation XYZ (for client model postRender)
 	 * 在model class中設定值, 使render class能抓到該值並且做進一步post render

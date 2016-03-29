@@ -54,7 +54,7 @@ public class ConfigHandler {
 	//grudge consumption:                              DD CL CA CAV CLT CVL CV BB BBV SS AP 
 	public static int[] consumeGrudgeShip = new int[] {5, 7, 8, 9,  8,  11, 12,15,14, 4, 3};
 	//grudge consumption:                                LAtk, HAtk, LAir, HAir, moving
-	public static int[] consumeGrudgeAction = new int[] {2,    6,    3,    9,    2};
+	public static int[] consumeGrudgeAction = new int[] {4,    8,    6,    12,   3};
 	
 	public static int dmgSvS = 100;		//ship vs ship damage modifier, 20 = dmg * 20%
 	public static int dmgSummon = 100;	//summons damage modifier, 20 = dmg * 20%

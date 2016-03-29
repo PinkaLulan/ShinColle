@@ -7,24 +7,26 @@ import net.minecraft.entity.Entity;
  */
 public interface IShipAttackBase extends IShipNavigator, IShipEmotion, IShipOwner, IShipAttributes {
 	
-	/** Get attack target */
+	/** get attack target */
 	public Entity getEntityTarget();
 	public void setEntityTarget(Entity target);
 	
-	/** Get revenge target for next attack target */
+	/** get revenge target for next attack target */
 	public Entity getEntityRevengeTarget();
 	public void setEntityRevengeTarget(Entity target);
 	public int getEntityRevengeTime();
 	public void setEntityRevengeTime();
 
-	/**Get attack attributes */
+	/** get attack attributes */
 	public float getAttackDamage();			//attack damage
 	public float getAttackSpeed();			//attack speed
 	public float getAttackRange();			//attack range
 	
-	public int getDamageType();				//damage type, ref: ID.ShipDmgType
+	/** damage type, ref: ID.ShipDmgType */
+	public int getDamageType();
 	
-	public boolean getAttackType(int par1);	//check available attack type: light, heavy, air, etc.
+	/** available attack method: light, heavy, air light, air heavy */
+	public boolean getAttackType(int par1);
 	
 	public float getDefValue();				//defence value (%)
 	

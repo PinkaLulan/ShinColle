@@ -112,8 +112,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	protected boolean[] UpdateFlag;
 	
 	//for model render
-	protected int StartEmotion;			//表情1開始時間
-	protected int StartEmotion2;		//表情2開始時間
+	/** EmotionTicks: 0:FaceTick 1:HeadTiltTick 2:AttackEmoCount */
+	protected int[] EmotionTicks;		//表情開始時間 or 表情計時時間
 	protected float[] rotateAngle;		//模型旋轉角度, 用於手持物品render
 	protected int StartSoundHurt;		//hurt sound ticks
 	
@@ -173,8 +173,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.shipMoveHelper = new ShipMoveHelper(this, 25F);
 		
 		//for render
-		this.StartEmotion = -1;			//emotion start time
-		this.StartEmotion2 = -1;		//head tile cooldown
+		this.EmotionTicks = new int[] {0,  0,  0};
 		this.rotateAngle = new float[] {0F, 0F, 0F};		//model rotate angle (right hand)
 		
 		//for init
@@ -348,8 +347,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	
 	abstract public int getEquipType();
 	
-	/** 0=small 1=large */
-	abstract public int getKaitaiType();	//0 = small, 1 = large
+	/** 0:small, 1:large, 2:mob small, 3:mob large*/
+	abstract public int getKaitaiType();
 	
 	@Override
 	public int getLevel() {
@@ -387,13 +386,18 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	}
 	
 	@Override
-	public int getStartEmotion() {
-		return StartEmotion;
+	public int getFaceTick() {
+		return this.EmotionTicks[0];
 	}
 	
 	@Override
-	public int getStartEmotion2() {
-		return StartEmotion2;
+	public int getHeadTiltTick() {
+		return this.EmotionTicks[1];
+	}
+	
+	@Override
+	public int getAttackAniTick() {
+		return this.EmotionTicks[2];
 	}
 	
 	@Override
@@ -902,13 +906,18 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	
 	//emotion start time (CLIENT ONLY), called from model class
 	@Override
-	public void setStartEmotion(int par1) {
-		StartEmotion = par1;
+	public void setFaceTick(int par1) {
+		this.EmotionTicks[0] = par1;
 	}
 	
 	@Override
-	public void setStartEmotion2(int par1) {
-		StartEmotion2 = par1;
+	public void setHeadTiltTick(int par1) {
+		this.EmotionTicks[1] = par1;
+	}
+	
+	@Override
+	public void setAttackAniTick(int par1) {
+		this.EmotionTicks[2] = par1;
 	}
 	
 	public void setShipUID(int par1) {
@@ -1041,6 +1050,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	                }
 	                else {
 	                	this.heal(this.getMaxHealth() * 0.05F + 10F);	//1 bucket = 5% hp for large ship
+	                }
+	                
+	                //airplane++
+	                if(this instanceof BasicEntityShipCV)  {
+	                	BasicEntityShipCV ship = (BasicEntityShipCV) this;
+	                	ship.setNumAircraftLight(ship.getNumAircraftLight() + 1);
+	                	ship.setNumAircraftHeavy(ship.getNumAircraftHeavy() + 1);
 	                }
 	                
 	                if (itemstack.stackSize <= 0) {  
@@ -1581,7 +1597,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         if((!worldObj.isRemote)) {
         	//update target
         	TargetHelper.updateTarget(this);
-//        	LogHelper.info("DEBUG: target:   "+this.getClass().getSimpleName()+" "+this.getEntityTarget()+"      "+this.getEntityRevengeTarget()+"      "+this.getAttackTarget());
         	
         	//update/init id
         	this.updateShipID();
@@ -1646,6 +1661,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                 		if((getMaxHealth() - getHealth()) > (getMaxHealth() * 0.1F + 5F)) {
         	                if(decrSupplies(7)) {
         		                this.heal(this.getMaxHealth() * 0.08F + 15F);	//1 bucket = 5% hp for large ship
+        	                
+        		                //airplane++
+        		                if(this instanceof BasicEntityShipCV)  {
+        		                	BasicEntityShipCV ship = (BasicEntityShipCV) this;
+        		                	ship.setNumAircraftLight(ship.getNumAircraftLight() + 1);
+        		                	ship.setNumAircraftHeavy(ship.getNumAircraftHeavy() + 1);
+        		                }
         	                }
         	            }
                		
@@ -1751,7 +1773,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	@Override
 	public boolean attackEntityWithAmmo(Entity target) {	
 		//get attack value
-		float atk = CalcHelper.calcDamageByEquipEffect(this, target, StateFinal[ID.ATK], 0);
+		float atk = CalcHelper.calcDamageBySpecialEffect(this, target, StateFinal[ID.ATK], 0);
         
         //experience++
   		addShipExp(2);
@@ -2088,19 +2110,19 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			//try to find grudge
 			if(decrSupplies(4)) {		//find grudge
 				if(ConfigHandler.easyMode) {
-					StateMinor[ID.M.NumGrudge] += 1200;
+					StateMinor[ID.M.NumGrudge] += 3000;
 				}
 				else {
-					StateMinor[ID.M.NumGrudge] += 120;
+					StateMinor[ID.M.NumGrudge] += 300;
 				}
 			}
-			else{
+			else {
 				if(decrSupplies(5)) {	//find grudge block
 					if(ConfigHandler.easyMode) {
-						StateMinor[ID.M.NumGrudge] += 10800;
+						StateMinor[ID.M.NumGrudge] += 27000;
 					}
 					else {
-						StateMinor[ID.M.NumGrudge] += 1080;
+						StateMinor[ID.M.NumGrudge] += 2700;
 					}
 				}
 			}
@@ -2434,14 +2456,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		//roll emtion: hungry > T_T > bored > O_O
 		if(getStateFlag(ID.F.NoFuel)) {
 			if(this.getStateEmotion(ID.S.Emotion) != ID.Emotion.HUNGRY) {
-//				LogHelper.info("DEBUG : set emotion HUNGRY");
 				this.setStateEmotion(ID.S.Emotion, ID.Emotion.HUNGRY, false);
 			}
 		}
 		else {
 			if(hpState < 0.5F) {
     			if(this.getStateEmotion(ID.S.Emotion) != ID.Emotion.T_T) {
-//    				LogHelper.info("DEBUG : set emotion T_T");
     				this.setStateEmotion(ID.S.Emotion, ID.Emotion.T_T, false);
     			}			
     		}
@@ -2511,8 +2531,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		
 		//calc total consumption
     	int valueConsume = (int) MathHelper.sqrt_double(distX*distX + distY*distY + distZ*distZ);
-    	valueConsume = valueConsume * ConfigHandler.consumeGrudgeAction[ID.ShipConsume.Move] + getGrudgeConsumption();
-    	if(valueConsume > 200) valueConsume = 200;  //max moving cost = 200
+    	//moving grudge cost per block
+    	valueConsume *= ConfigHandler.consumeGrudgeAction[ID.ShipConsume.Move];
+    	//max moving cost = 200
+    	if(valueConsume > 200) valueConsume = 200;
+    	//add base grudge cost
+    	valueConsume += this.getGrudgeConsumption();
     	
     	//eat grudge
     	decrGrudgeNum(valueConsume);

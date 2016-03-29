@@ -6,6 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.boss.IBossDisplayData;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -19,17 +20,16 @@ import net.minecraftforge.common.BiomeDictionary;
 
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.entity.BasicEntityShipBoss;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
 import com.lulan.shincolle.entity.battleship.EntityBattleshipNGTBoss;
 import com.lulan.shincolle.entity.battleship.EntityBattleshipYMTBoss;
+import com.lulan.shincolle.entity.carrier.EntityCarrierKagaBoss;
 import com.lulan.shincolle.entity.destroyer.EntityDestroyerShimakazeBoss;
 import com.lulan.shincolle.entity.mounts.EntityMountSeat;
 import com.lulan.shincolle.entity.submarine.EntitySubmRo500Mob;
 import com.lulan.shincolle.entity.submarine.EntitySubmU511Mob;
 import com.lulan.shincolle.init.ModItems;
-import com.lulan.shincolle.item.BasicEquip;
 import com.lulan.shincolle.item.PointerItem;
 import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.network.C2SInputPackets;
@@ -114,7 +114,7 @@ public class FML_COMMON_EventHandler {
 //					}
 					
 					//sync team list every 256 ticks
-					if(event.player.ticksExisted == 96 || event.player.ticksExisted % 256 == 0) {
+					if(event.player.ticksExisted == 128 || event.player.ticksExisted % 256 == 0) {
 						/** check player entity id and update player data to ServerProxy cache */
 						//get server cache
 						int[] pdata = ServerProxy.getPlayerWorldData(extProps.getPlayerUID());
@@ -220,12 +220,21 @@ public class FML_COMMON_EventHandler {
 							if(blockY.getMaterial() == Material.water) {
 								//check 64x64 range
 								AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(spawnX-64D, spawnY-64D, spawnZ-64D, spawnX+64D, spawnY+64D, spawnZ+64D);
-								List listBoss = event.player.worldObj.getEntitiesWithinAABB(BasicEntityShipBoss.class, aabb);
-
-								LogHelper.info("DEBUG : spawn boss: check existed boss "+listBoss.size());
+								List<BasicEntityShipHostile> listBoss = event.player.worldObj.getEntitiesWithinAABB(BasicEntityShipHostile.class, aabb);
+								int bossNum = 0;
 								
-								//若96x96x96範圍內boss數量1隻以下, 則判定可以生成boss
-					            if(listBoss.size() < 2) {
+								//check boss in list
+								if(listBoss.size() > 0) {
+									for(BasicEntityShipHostile mob : listBoss) {
+										if(mob instanceof IBossDisplayData) {
+											bossNum++;
+										}
+									}
+								}
+								LogHelper.info("DEBUG : spawn boss: check existed boss: "+bossNum+" all mob: "+listBoss.size());
+								
+								//若範圍內不到2隻boss, 則可以再生成新boss
+					            if(bossNum < 2) {
 					            	/**艦隊組成:
 					            	 * boss x2 + destroyer x4
 					            	 * boss id: 0:Nagato 1:Shimakaze
@@ -233,8 +242,8 @@ public class FML_COMMON_EventHandler {
 					            	 */
 					            	//roll生成mob
 					            	int[] spawnList = new int[] {0,0,0,0,0,0};
-					            	spawnList[0] = event.player.worldObj.rand.nextInt(3);	//boss 1
-					            	spawnList[1] = event.player.worldObj.rand.nextInt(3);	//boss 2
+					            	spawnList[0] = event.player.worldObj.rand.nextInt(4);	//boss 1
+					            	spawnList[1] = event.player.worldObj.rand.nextInt(4);	//boss 2
 					            	spawnList[2] = event.player.worldObj.rand.nextInt(2);	//mob 1
 					            	spawnList[3] = event.player.worldObj.rand.nextInt(2);	//mob 2
 					            	spawnList[4] = event.player.worldObj.rand.nextInt(2);	//mob 3
@@ -250,6 +259,9 @@ public class FML_COMMON_EventHandler {
 					            			break;
 					            		case 2:
 					            			spawnMobs[i] = new EntityBattleshipYMTBoss(event.player.worldObj);
+					            			break;
+					            		case 3:
+					            			spawnMobs[i] = new EntityCarrierKagaBoss(event.player.worldObj);
 					            			break;
 					            		default:
 					            			spawnMobs[i] = new EntityBattleshipNGTBoss(event.player.worldObj);

@@ -402,17 +402,17 @@ public class ModelSubmRo500 extends ModelBase implements IModelEmotion {
 			}	
   		}
 	    else {
-	    	startEmo2 = ent.getStartEmotion2();
+	    	startEmo2 = ent.getHeadTiltTick();
 	    	
 	    	//頭部傾斜動作, 只在奔跑以外時roll
 	    	if(startEmo2 > 0) {
 	    		--startEmo2;
-	    		ent.setStartEmotion2(startEmo2);
+	    		ent.setHeadTiltTick(startEmo2);
 	    	}
 	    	
 		    if(startEmo2 <= 0) {
 		    	startEmo2 = 360;
-		    	ent.setStartEmotion2(startEmo2);	//cd = 6sec  	
+		    	ent.setHeadTiltTick(startEmo2);	//cd = 6sec  	
 		    	
 		    	if(rand.nextInt(3) == 0) {
 		    		ent.setStateFlag(ID.F.HeadTilt, true);

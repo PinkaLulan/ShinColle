@@ -225,8 +225,8 @@ public class PointerItem extends BasicItem {
 					else {
 						if(hitObj.entityHit != null) {
 							String tarName = hitObj.entityHit.getClass().getSimpleName();
-							LogHelper.info("DEBUG : pointer add class: "+tarName);
-							player.addChatMessage(new ChatComponentText(I18n.format("chat.shincolle:pointer.addtargetclass", "  "+tarName)));
+							LogHelper.info("DEBUG : pointer get target class: "+tarName);
+							player.addChatMessage(new ChatComponentText(I18n.format("chat.shincolle:pointer.settargetclass", "  "+tarName)));
 							//send sync packet to server
 							CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetTarClass, tarName));
 							return true;

@@ -242,6 +242,10 @@ public class ShipCalc {
   			return "shincolle.EntitySubmRo500";
   		case ID.Ship.SubmarineRo500+2000:
   			return "shincolle.EntitySubmRo500Mob";
+  		case ID.Ship.CarrierKaga:
+  			return "shincolle.EntityCarrierKaga";
+  		case ID.Ship.CarrierKaga+2000:
+  			return "shincolle.EntityCarrierKagaBoss";
   		default:
   			return "shincolle.EntityDestroyerI";
   		}	

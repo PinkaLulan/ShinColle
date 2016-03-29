@@ -360,6 +360,8 @@ public class EVENT_BUS_EventHandler {
 			
 			//hostile ship is attacked, call for help
 			if(event.entity instanceof BasicEntityShipHostile) {
+				if(event.source.getEntity() instanceof BasicEntityShipHostile) return;
+				
 				TargetHelper.setRevengeTargetAroundHostileShip((BasicEntityShipHostile) event.entity, 64D, event.source.getEntity());
 			}
 			

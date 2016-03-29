@@ -195,19 +195,25 @@ public class EntityHelper {
 			
 			return checkIsAlly(hostID, tarID);
 		}
+		
 		return false;
 	}
 	
 	/** check target entity is host's ally, SERVER SIDE ONLY */
 	public static boolean checkIsAlly(int hostPID, int tarPID) {
-		//hostile vs hostile ship
+		//mob vs mob
 		if(hostPID < -1 && tarPID < -1) {
 			return true;
 		}
 		
-		//player vs player team
+		//player vs mob
+		if((hostPID < -1 && tarPID > 0) || (hostPID > 0 && tarPID < -1)) {
+			return false;
+		}
+		
+		//player vs player
 		if(hostPID > 0 && tarPID > 0) {
-			//if same owner, return true
+			//is same owner
 			if(hostPID == tarPID) return true;
 			
 			//not same owner, check team
@@ -224,23 +230,42 @@ public class EntityHelper {
 		return false;
 	}
 	
-	/** check target entity is banned team, SERVER SIDE ONLY */
+	/** check target entity is host's ally, SERVER SIDE ONLY */
 	public static boolean checkIsBanned(Entity host, Entity target) {
 		if(host != null && target != null) {
 			int hostID = getPlayerUID(host);
 			int tarID = getPlayerUID(target);
 			
-			//host and target has player owner
-			if(hostID > 0 && tarID > 0) {
-				TeamData hostTeam = getTeamDataByUID(hostID);
-				TeamData tarTeam = getTeamDataByUID(tarID);
-				//host has team
-				if(hostTeam != null && tarTeam != null) {
-					List alist = hostTeam.getTeamBannedList();
-					return alist.contains(tarTeam.getTeamID());
-				}
+			return checkIsBanned(hostID, tarID);
+		}
+		
+		return false;
+	}
+	
+	/** check target entity is banned team, SERVER SIDE ONLY */
+	public static boolean checkIsBanned(int hostPID, int tarPID) {
+		//mob vs mob
+		if(hostPID < -1 && tarPID < -1) {
+			return false;
+		}
+		
+		//player vs mob
+		if((hostPID < -1 && tarPID > 0) || (hostPID > 0 && tarPID < -1)) {
+			return true;
+		}
+		
+		//player vs player
+		if(hostPID > 0 && tarPID > 0) {
+			TeamData hostTeam = getTeamDataByUID(hostPID);
+			TeamData tarTeam = getTeamDataByUID(tarPID);
+			
+			//host has team
+			if(hostTeam != null && tarTeam != null) {
+				List alist = hostTeam.getTeamBannedList();
+				return alist.contains(tarTeam.getTeamID());
 			}
 		}
+		
 		return false;
 	}
 	

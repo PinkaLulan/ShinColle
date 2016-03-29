@@ -116,7 +116,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
   	@Override
   	public boolean attackEntityWithAmmo(Entity target) {
   		//get attack value
-		float atk = CalcHelper.calcDamageByEquipEffect(this, target, StateFinal[ID.ATK], 0);
+		float atk = CalcHelper.calcDamageBySpecialEffect(this, target, StateFinal[ID.ATK], 0);
 		
 		//update entity look at vector (for particle spawn)
         //此方法比getLook還正確 (client sync問題)
@@ -228,7 +228,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
 		float kbValue = 0.15F;
 		
 		//calc equip special dmg: AA, ASM
-  		atk1 = CalcHelper.calcDamageByEquipEffect(this, target, StateFinal[ID.ATK_H], 2);
+  		atk1 = CalcHelper.calcDamageBySpecialEffect(this, target, StateFinal[ID.ATK_H], 2);
   		atk2 = StateFinal[ID.ATK_H] * 2F;  //AE dmg without modifier
 		
 		boolean isTargetHurt = false;

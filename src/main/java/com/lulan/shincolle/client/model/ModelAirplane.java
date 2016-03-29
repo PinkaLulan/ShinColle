@@ -134,5 +134,7 @@ public class ModelAirplane extends ModelBase {
     	this.GlowBodyMain.rotateAngleY = f3 / 57F;
     	this.GlowBodyMain.rotateAngleX = f4 / 57F;
     }
+    
+    
 }
 

@@ -394,7 +394,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
                 	//check target attackable
               		if(EntityHelper.checkAttackable(hitEntity)) {
               		//calc equip special dmg: AA, ASM
-                    	missileAtk = CalcHelper.calcDamageByEquipEffect(this, hitEntity, missileAtk, 0);
+                    	missileAtk = CalcHelper.calcDamageBySpecialEffect(this, hitEntity, missileAtk, 0);
                     	
                     	//目標不能是自己 or 主人, 且可以被碰撞
                     	if(hitEntity.canBeCollidedWith() && isNotHost(hitEntity)) {

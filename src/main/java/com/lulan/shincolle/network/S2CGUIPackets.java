@@ -99,7 +99,7 @@ public class S2CGUIPackets implements IMessage {
 		if(extProps != null) {
 			this.type = type;
 	        this.props = extProps;
-	        
+
 	        switch(type) {
 	        case PID.SyncPlayerProp_TargetClass:
 	        	this.dataList = ServerProxy.getPlayerTargetClassList(props.getPlayerUID());

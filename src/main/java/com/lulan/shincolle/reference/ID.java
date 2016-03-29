@@ -505,12 +505,16 @@ public class ID {
 	public static final class State {
 		/** for ID.S.State */
 		public static final byte NORMAL = 0;
-		public static final byte EQUIP00 = 20;
-		public static final byte EQUIP01 = 30;
-		public static final byte EQUIP02 = 40;
-		public static final byte EQUIP03 = 50;
-		public static final byte EQUIP04 = 60;
-		public static final byte EQUIP05 = 70;
+		public static final byte EQUIP00 = 1;
+		public static final byte EQUIP01 = 2;
+		public static final byte EQUIP02 = 3;
+		public static final byte EQUIP03 = 4;
+		public static final byte EQUIP04 = 5;
+		public static final byte EQUIP05 = 6;
+		public static final byte EQUIP06 = 7;
+		public static final byte EQUIP07 = 8;
+		public static final byte EQUIP08 = 9;
+		public static final byte EQUIP09 = 10;
 		/** for ID.S.State2 */
 		public static final byte NORMAL_2 = 0;
 		public static final byte EQUIP00_2 = 1;
@@ -519,6 +523,10 @@ public class ID {
 		public static final byte EQUIP03_2 = 4;
 		public static final byte EQUIP04_2 = 5;
 		public static final byte EQUIP05_2 = 6;
+		public static final byte EQUIP06_2 = 7;
+		public static final byte EQUIP07_2 = 8;
+		public static final byte EQUIP08_2 = 9;
+		public static final byte EQUIP09_2 = 10;
 	}
 
 	/** StateEquip, StateFinal, BonusPoint, TypeModify */
