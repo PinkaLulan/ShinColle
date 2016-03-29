@@ -25,6 +25,7 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
@@ -53,6 +54,7 @@ abstract public class BasicEntityAirplane extends EntityLiving implements IShipC
     protected boolean useAmmoHeavy;
     protected boolean backHome;  	//can back to carrier
     protected boolean canFindTarget;	//can find target
+    protected int deadTick;			//setDead count time
     
     //target selector
     protected TargetHelper.Sorter targetSorter = null;
@@ -69,6 +71,7 @@ abstract public class BasicEntityAirplane extends EntityLiving implements IShipC
         this.shipMoveHelper = new ShipMoveHelper(this, 30F);
 		this.shipNavigator.setCanFly(true);
 		this.stepHeight = 7F;
+		this.deadTick = 0;
 		
     }
     
@@ -235,8 +238,16 @@ abstract public class BasicEntityAirplane extends EntityLiving implements IShipC
 	public void onUpdate() {
 		//server side
 		if(!this.worldObj.isRemote) {
+			//dead tick++ if no movement
+			if(Math.abs(this.posX + this.posY + this.posZ - this.prevPosX - this.prevPosY - this.prevPosZ) < 0.01D) {
+				this.deadTick++;
+			}
+			else {
+				this.deadTick = 0;
+			}
+			
 			//host check
-			if(this.getPlayerUID() == 0 || this.getPlayerUID() == -1) {
+			if(this.getPlayerUID() == 0 || this.getPlayerUID() == -1 || this.deadTick > 10) {
 				//no host, or host has no owner
 				this.setDead();
 			}

@@ -21,7 +21,7 @@ public class EntityCarrierKagaBoss extends BasicEntityShipHostileCV implements I
         
         //basic attr
 		this.atk = (float) ConfigHandler.scaleBossLarge[ID.ATK] * 0.9F;
-        this.atkSpeed = (float) ConfigHandler.scaleBossLarge[ID.SPD] * 0.9F;
+        this.atkSpeed = (float) ConfigHandler.scaleBossLarge[ID.SPD] * 0.5F;
         this.atkRange = (float) ConfigHandler.scaleBossLarge[ID.HIT] * 1.2F;
         this.defValue = (float) ConfigHandler.scaleBossLarge[ID.DEF] * 0.9F;
         this.movSpeed = (float) ConfigHandler.scaleBossLarge[ID.MOV] * 0.8F;

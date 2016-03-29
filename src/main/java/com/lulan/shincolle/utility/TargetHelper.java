@@ -17,6 +17,7 @@ import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.IShipAttackBase;
+import com.lulan.shincolle.entity.IShipInvisible;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
@@ -57,6 +58,8 @@ public class TargetHelper {
     public static class Selector implements IEntitySelector {
     	protected Entity host;
     	protected boolean isPVP;
+    	protected boolean isAA;
+    	protected boolean isASM;
     	
     	public Selector(Entity host) {
     		this.host = host;
@@ -64,6 +67,8 @@ public class TargetHelper {
     		//PVP mode for ship
     		if(host instanceof BasicEntityShip) {
     			this.isPVP = ((BasicEntityShip) host).getStateFlag(ID.F.PVPFirst);
+    			this.isAA = ((BasicEntityShip) host).getStateFlag(ID.F.AntiAir);
+    			this.isASM = ((BasicEntityShip) host).getStateFlag(ID.F.AntiSS);
     		}
     		else {
     			this.isPVP = false;
@@ -98,8 +103,21 @@ public class TargetHelper {
 			if(target2.isEntityAlive() && !target2.isInvisible()) {
 				//anti air target, no pvp checking
 				if(target2 instanceof BasicEntityAirplane || target2 instanceof EntityAbyssMissile) {
-					if(EntityHelper.checkIsBanned(host, target2)) {
+					if(isAA && EntityHelper.checkIsBanned(host, target2)) {
 						return true;
+					}
+					else {
+						return false;
+					}
+				}
+				
+				//anti SS target
+				if(target2 instanceof IShipInvisible) {
+					if(isASM && EntityHelper.checkIsBanned(host, target2)) {
+						return true;
+					}
+					else {
+						return false;
 					}
 				}
 				

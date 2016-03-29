@@ -46,7 +46,7 @@ public class EntityAirplaneTakoyaki extends BasicEntityAirplane {
             
     	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(mhp);
     		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(this.movSpeed);
-    		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(ship.getStateFinal(ID.HIT)+32D); //此為找目標, 路徑的範圍
+    		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(ship.getStateFinal(ID.HIT)+64D); //此為找目標, 路徑的範圍
     		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(1D);
     		if(this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
             

@@ -45,7 +45,7 @@ public class EntityAirplaneZeroHostile extends EntityAirplaneZero {
             
     	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(mhp);
     		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(this.movSpeed);
-    		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(ship.getAttackRange()+32D);
+    		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(ship.getAttackRange()+64D);
     		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(1D);
     		if(this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
         

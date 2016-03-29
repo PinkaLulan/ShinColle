@@ -1052,6 +1052,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	                	this.heal(this.getMaxHealth() * 0.05F + 10F);	//1 bucket = 5% hp for large ship
 	                }
 	                
+	                //airplane++
+	                if(this instanceof BasicEntityShipCV)  {
+	                	BasicEntityShipCV ship = (BasicEntityShipCV) this;
+	                	ship.setNumAircraftLight(ship.getNumAircraftLight() + 1);
+	                	ship.setNumAircraftHeavy(ship.getNumAircraftHeavy() + 1);
+	                }
+	                
 	                if (itemstack.stackSize <= 0) {  
 	                	player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
 	                }
@@ -1590,7 +1597,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         if((!worldObj.isRemote)) {
         	//update target
         	TargetHelper.updateTarget(this);
-//        	LogHelper.info("AAAAAAAAAAAAAA "+ServerProxy.getAllPlayerTargetClassList());
         	
         	//update/init id
         	this.updateShipID();
@@ -1655,6 +1661,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                 		if((getMaxHealth() - getHealth()) > (getMaxHealth() * 0.1F + 5F)) {
         	                if(decrSupplies(7)) {
         		                this.heal(this.getMaxHealth() * 0.08F + 15F);	//1 bucket = 5% hp for large ship
+        	                
+        		                //airplane++
+        		                if(this instanceof BasicEntityShipCV)  {
+        		                	BasicEntityShipCV ship = (BasicEntityShipCV) this;
+        		                	ship.setNumAircraftLight(ship.getNumAircraftLight() + 1);
+        		                	ship.setNumAircraftHeavy(ship.getNumAircraftHeavy() + 1);
+        		                }
         	                }
         	            }
                		
