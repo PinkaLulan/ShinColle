@@ -1,21 +1,18 @@
 package com.lulan.shincolle.entity.battleship;
 
-import java.util.List;
-
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
+import net.minecraft.entity.boss.IBossDisplayData;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
-import com.lulan.shincolle.entity.BasicEntityShipBoss;
+import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.other.EntityProjectileBeam;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
@@ -25,13 +22,11 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
-import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
-public class EntityBattleshipYMTBoss extends BasicEntityShipBoss {
+public class EntityBattleshipYMTBoss extends BasicEntityShipHostile implements IBossDisplayData {
 
 	public EntityBattleshipYMTBoss(World world) {
 		super(world);
@@ -41,7 +36,7 @@ public class EntityBattleshipYMTBoss extends BasicEntityShipBoss {
         //basic attr
 		this.atk = (float) ConfigHandler.scaleBossLarge[ID.ATK] * 1.2F;
         this.atkSpeed = (float) ConfigHandler.scaleBossLarge[ID.SPD] * 1.2F;
-        this.atkRange = (float) ConfigHandler.scaleBossLarge[ID.HIT] * 1.2F;
+        this.atkRange = (float) ConfigHandler.scaleBossLarge[ID.HIT] * 1.1F;
         this.defValue = (float) ConfigHandler.scaleBossLarge[ID.DEF];
         this.movSpeed = (float) ConfigHandler.scaleBossLarge[ID.MOV] * 0.8F;
 
@@ -118,7 +113,7 @@ public class EntityBattleshipYMTBoss extends BasicEntityShipBoss {
   	@Override
   	public boolean attackEntityWithAmmo(Entity target) {
   		//get attack value
-		float atk = CalcHelper.calcDamageByEquipEffect(this, target, this.atk, 0);
+		float atk = CalcHelper.calcDamageBySpecialEffect(this, target, this.atk, 0);
 		
 		//update entity look at vector (for particle spawn)
         //此方法比getLook還正確 (client sync問題)
@@ -201,7 +196,7 @@ public class EntityBattleshipYMTBoss extends BasicEntityShipBoss {
   	@Override
   	public boolean attackEntityWithHeavyAmmo(Entity target) {	
   		//get attack value
-  		float atk = CalcHelper.calcDamageByEquipEffect(this, target, this.atk * 3F, 3);
+  		float atk = CalcHelper.calcDamageBySpecialEffect(this, target, this.atk * 3F, 3);
 		
 		//計算目標距離
 		float tarX = (float)target.posX;	//for miss chance calc

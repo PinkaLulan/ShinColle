@@ -2,16 +2,17 @@ package com.lulan.shincolle.entity.other;
 
 import java.util.List;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.entity.BasicEntityAirplane;
-import com.lulan.shincolle.entity.BasicEntityShipLarge;
+import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.IShipAircraftAttack;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
@@ -28,38 +29,46 @@ public class EntityFloatingFort extends BasicEntityAirplane {
 		this.setSize(0.5F, 0.5F);
 	}
 	
-	public EntityFloatingFort(World world, BasicEntityShipLarge host, EntityLivingBase target, double launchPos) {
-		super(world);
+	@Override
+	public void setAttrs(World world, IShipAircraftAttack host, Entity target, double launchPos) {
 		this.world = world;
         this.host = host;
         this.atkTarget = target;
         
-        //basic attr
-        this.atk = host.getStateFinal(ID.ATK_H) * 0.75F;
-        this.atkSpeed = host.getStateFinal(ID.SPD);
-        this.movSpeed = 0.3F;
-        
-        //AI flag
-        this.numAmmoLight = 0;
-        this.numAmmoHeavy = 1;
-        this.useAmmoLight = false;
-        this.useAmmoHeavy = true;
-        
-        //設定發射位置
-        this.posX = host.posX;
-        this.posY = launchPos;
-        this.posZ = host.posZ;
-        this.setPosition(this.posX, this.posY, this.posZ);
- 
-	    //設定基本屬性
-	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(host.getStateFinal(ID.HP)*0.1D);
-		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(this.movSpeed);
-		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(host.getStateFinal(ID.HIT)+32D); //此為找目標, 路徑的範圍
-		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(0.5D);
-		if(this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
-				
-		//設定AI
-		this.setAIList();
+        if(host instanceof BasicEntityShip) {
+        	BasicEntityShip ship = (BasicEntityShip) host;
+        	
+        	//basic attr
+            this.atk = ship.getStateFinal(ID.ATK_H) * 0.75F;
+            this.def = ship.getStateFinal(ID.DEF) * 0.75F;
+            this.atkSpeed = ship.getStateFinal(ID.SPD);
+            this.movSpeed = 0.3F;
+            
+            //AI flag
+            this.numAmmoLight = 0;
+            this.numAmmoHeavy = 1;
+            this.useAmmoLight = false;
+            this.useAmmoHeavy = true;
+            
+            //設定發射位置
+            this.posX = ship.posX;
+            this.posY = launchPos;
+            this.posZ = ship.posZ;
+            this.setPosition(this.posX, this.posY, this.posZ);
+     
+    	    //設定基本屬性
+    	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(ship.getStateFinal(ID.HP)*0.1D);
+    		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(this.movSpeed);
+    		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(ship.getStateFinal(ID.HIT)+32D); //此為找目標, 路徑的範圍
+    		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(0.5D);
+    		if(this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
+    				
+    		//設定AI
+    		this.setAIList();
+        }
+        else {
+        	return;
+        }
 	}
 	
 	//setup AI
@@ -124,9 +133,17 @@ public class EntityFloatingFort extends BasicEntityAirplane {
 
 	//觸發爆炸攻擊
 	private void onImpact() {
-		boolean isTargetHurt = false;
 		//get attack value
 		float atk2;
+		boolean isTargetHurt = false;
+		EntityLivingBase hostent = null;
+		
+		if(this.host instanceof EntityLivingBase) {
+			hostent = (EntityLivingBase) this.host;
+		}
+		else {
+			return;
+		}
 		
 		//calc miss chance, if not miss, calc cri/multi hit
 		//計算範圍爆炸傷害: 判定bounding box內是否有可以吃傷害的entity
@@ -143,16 +160,16 @@ public class EntityFloatingFort extends BasicEntityAirplane {
             	//check target attackable
           		if(EntityHelper.checkAttackable(hitEntity)) {
           			//calc equip special dmg: AA, ASM
-                	atk2 = CalcHelper.calcDamageByEquipEffect(this, hitEntity, atk2, 0);
+                	atk2 = CalcHelper.calcDamageBySpecialEffect(this, hitEntity, atk2, 0);
                 	
                 	//目標可以被碰撞, 且目標不同主人, 則判定可傷害
-                	if(hitEntity.canBeCollidedWith() && !EntityHelper.checkSameOwner(this.host, hitEntity)) {
+                	if(hitEntity.canBeCollidedWith() && !EntityHelper.checkSameOwner(hostent, hitEntity)) {
             			//calc critical, only for type:ship
                 		if(host != null && (this.rand.nextFloat() < this.host.getEffectEquip(ID.EF_CRI))) {
                 			atk2 *= 3F;
                     		//spawn critical particle
                     		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
-                        	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(host, 11, false), point);
+                        	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(hostent, 11, false), point);
                     	}
                 		
                 		//若攻擊到玩家, 則傷害減為25%, 且最大傷害固定為TNT傷害 (non-owner)
@@ -171,7 +188,7 @@ public class EntityFloatingFort extends BasicEntityAirplane {
                     	
                 		//對entity造成傷害
                     	if(host != null) {
-                    		isTargetHurt = hitEntity.attackEntityFrom(DamageSource.causeMobDamage(host).setExplosion(), atk2);
+                    		isTargetHurt = hitEntity.attackEntityFrom(DamageSource.causeMobDamage(hostent).setExplosion(), atk2);
                     	}
                     	else {
                     		isTargetHurt = hitEntity.attackEntityFrom(DamageSource.causeMobDamage(this).setExplosion(), atk2);

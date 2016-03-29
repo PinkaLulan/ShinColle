@@ -1,7 +1,6 @@
 package com.lulan.shincolle.entity;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
@@ -19,15 +18,15 @@ import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
 /**LARGE SHIP = Use Aircraft
  */
-abstract public class BasicEntityShipLarge extends BasicEntityShip implements IShipAircraftAttack {
+abstract public class BasicEntityShipCV extends BasicEntityShip implements IShipAircraftAttack {
 
 	protected int maxAircraftLight;		//max airplane at same time
 	protected int maxAircraftHeavy;
-	protected int delayAircraft = 0;		//airplane recover delay
+	protected int delayAircraft = 0;	//airplane recover delay
 	protected double launchHeight;		//airplane launch height
 
 	
-	public BasicEntityShipLarge(World world) {
+	public BasicEntityShipCV(World world) {
 		super(world);
 	}
 	
@@ -118,8 +117,9 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip implements IS
 		this.maxAircraftHeavy = 2 + StateMinor[ID.M.ShipLevel] / 10;
 		
 		//calc equip airplane
-		this.maxAircraftLight += (getNumOfAircraftEquip() * 4);
-		this.maxAircraftHeavy += (getNumOfAircraftEquip() * 2);
+		int numair = getNumOfAircraftEquip();
+		this.maxAircraftLight += (numair * 4);
+		this.maxAircraftHeavy += (numair * 2);
 	}
 	
 	//get number of aircraft equips
@@ -134,10 +134,19 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip implements IS
 		return airNum;
 	}
 	
+	/** get airplane entity: isLightAirplane: is light aircraft attack */
+	protected BasicEntityAirplane getAirplane(boolean isLightAirplane) {
+		if(isLightAirplane) {
+			return new EntityAirplane(this.worldObj);
+		}
+		else {
+			return new EntityAirplaneTakoyaki(this.worldObj);
+		}
+	}
+	
 	//range attack method, cost light ammo, attack delay = 20 / attack speed, damage = 100% atk 
 	@Override
 	public boolean attackEntityWithAircraft(Entity target) {
-//		LogHelper.info("DEBUG : launch LIGHT aircraft"+target);
 		//clear target every attack
 		this.setEntityTarget(null);
 		
@@ -162,31 +171,26 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip implements IS
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
         
-        //spawn airplane
-        if(target instanceof EntityLivingBase) {
-        	double summonHeight = this.posY+launchHeight;
-        	
-        	//check the summon block
-        	if(!BlockHelper.checkBlockSafe(worldObj, (int)posX, (int)(posY+launchHeight), (int)(posZ))) {
-        		summonHeight = posY+1D;
-        	}
-        	
-        	if(this.ridingEntity instanceof BasicEntityMount) {
-        		summonHeight -= 1.5D;
-        	}
-        	
-        	EntityAirplane plane = new EntityAirplane(this.worldObj, this, (EntityLivingBase)target, summonHeight);
-            this.worldObj.spawnEntityInWorld(plane);
-            return true;
-        }
-
-        return false;
+    	double summonHeight = this.posY + launchHeight;
+    	
+    	//check the summon block
+    	if(!BlockHelper.checkBlockSafe(worldObj, (int)posX, (int)(posY+launchHeight), (int)(posZ))) {
+    		summonHeight = posY + 1D;
+    	}
+    	
+    	if(this.ridingEntity instanceof BasicEntityMount) {
+    		summonHeight -= 1.5D;
+    	}
+    	
+    	BasicEntityAirplane plane = getAirplane(true);
+        plane.setAttrs(this.worldObj, this, target, summonHeight);
+    	this.worldObj.spawnEntityInWorld(plane);
+        return true;
 	}
 
 	//range attack method, cost heavy ammo, attack delay = 100 / attack speed, damage = 500% atk
 	@Override
 	public boolean attackEntityWithHeavyAircraft(Entity target) {
-//		LogHelper.info("DEBUG : launch HEAVY aircraft"+target);
 		//clear target every attack
 		this.setEntityTarget(null);
 		
@@ -211,24 +215,21 @@ abstract public class BasicEntityShipLarge extends BasicEntityShip implements IS
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
         
-        //spawn airplane
-        if(target instanceof EntityLivingBase) {
-        	double summonHeight = this.posY+launchHeight;
-        	
-        	//check the summon block
-        	if(!BlockHelper.checkBlockSafe(worldObj, (int)posX, (int)(posY+launchHeight), (int)(posZ))) {
-        		summonHeight = posY+0.5D;
-        	}
-        	
-        	if(this.ridingEntity instanceof BasicEntityMount) {
-        		summonHeight -= 1.5D;
-        	}
-        	
-        	EntityAirplaneTakoyaki plane = new EntityAirplaneTakoyaki(this.worldObj, this, (EntityLivingBase)target, summonHeight);
-            this.worldObj.spawnEntityInWorld(plane);
-            return true;
-        }
-        return false;
+    	double summonHeight = this.posY + launchHeight;
+    	
+    	//check the summon block
+    	if(!BlockHelper.checkBlockSafe(worldObj, (int)posX, (int)(posY+launchHeight), (int)(posZ))) {
+    		summonHeight = posY + 0.5D;
+    	}
+    	
+    	if(this.ridingEntity instanceof BasicEntityMount) {
+    		summonHeight -= 1.5D;
+    	}
+    	
+    	BasicEntityAirplane plane = getAirplane(false);
+    	plane.setAttrs(this.worldObj, this, target, summonHeight);
+    	this.worldObj.spawnEntityInWorld(plane);
+        return true;
 	}
 	
 }

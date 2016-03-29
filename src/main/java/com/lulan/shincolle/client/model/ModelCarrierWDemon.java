@@ -586,17 +586,17 @@ public class ModelCarrierWDemon extends ModelBase implements IModelEmotion {
 		    this.ArmRight01.rotateAngleZ = 0.3F;
   		}
 	    else {
-	    	startEmo2 = ent.getStartEmotion2();
+	    	startEmo2 = ent.getHeadTiltTick();
 	    	
 	    	//頭部傾斜動作, 只在奔跑以外時roll
 	    	if(startEmo2 > 0) {
 	    		--startEmo2;
-	    		ent.setStartEmotion2(startEmo2);
+	    		ent.setHeadTiltTick(startEmo2);
 	    	}
 	    	
 		    if(startEmo2 <= 0) {
 		    	startEmo2 = 360;
-		    	ent.setStartEmotion2(startEmo2);	//cd = 6sec  	
+		    	ent.setHeadTiltTick(startEmo2);	//cd = 6sec  	
 		    	
 		    	if(rand.nextInt(3) == 0) {
 		    		ent.setStateFlag(ID.F.HeadTilt, true);
@@ -665,16 +665,16 @@ public class ModelCarrierWDemon extends ModelBase implements IModelEmotion {
 		    	GL11.glTranslatef(0F, 1.4F, 0F);
 		    	//head
 		    	int nodf2 = (int)f2 % 60;
-		    	this.Head.rotateAngleX = 0.2F;
+		    	this.Head.rotateAngleX = 0.3F;
 		    	if(nodf2 < 30) {
 		    		if(nodf2 < 6) {
-		    			this.Head.rotateAngleX = nodf2 * 0.02F + 0.2F;
+		    			this.Head.rotateAngleX = nodf2 * 0.02F + 0.3F;
 		    		}
 		    		else if(nodf2 < 11) {
-		    			this.Head.rotateAngleX = (nodf2 - 5) * 0.03F + 0.3F;
+		    			this.Head.rotateAngleX = (nodf2 - 5) * 0.03F + 0.4F;
 		    		}
 		    		else if(nodf2 < 14) {
-		    			this.Head.rotateAngleX = (nodf2 - 10) * -0.09F + 0.45F;
+		    			this.Head.rotateAngleX = (nodf2 - 10) * -0.09F + 0.55F;
 		    		}
 		    	}
 		    	this.Head.rotateAngleY = 0F;
@@ -763,16 +763,16 @@ public class ModelCarrierWDemon extends ModelBase implements IModelEmotion {
 				    	GL11.glTranslatef(0F, 1.4F, 0F);
 				    	//head
 				    	int nodf2 = (int)f2 % 60;
-				    	this.Head.rotateAngleX = 0.2F;
+				    	this.Head.rotateAngleX = 0.3F;
 				    	if(nodf2 < 30) {
 				    		if(nodf2 < 6) {
-				    			this.Head.rotateAngleX = nodf2 * 0.02F + 0.2F;
+				    			this.Head.rotateAngleX = nodf2 * 0.02F + 0.3F;
 				    		}
 				    		else if(nodf2 < 11) {
-				    			this.Head.rotateAngleX = (nodf2 - 5) * 0.03F + 0.3F;
+				    			this.Head.rotateAngleX = (nodf2 - 5) * 0.03F + 0.4F;
 				    		}
 				    		else if(nodf2 < 14) {
-				    			this.Head.rotateAngleX = (nodf2 - 10) * -0.09F + 0.45F;
+				    			this.Head.rotateAngleX = (nodf2 - 10) * -0.09F + 0.55F;
 				    		}
 				    	}
 				    	this.Head.rotateAngleY = 0F;

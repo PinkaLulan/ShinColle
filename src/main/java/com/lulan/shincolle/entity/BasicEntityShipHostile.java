@@ -45,8 +45,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
     //model display
     /**EntityState: 0:HP State 1:Emotion 2:Emotion2*/
 	protected byte[] StateEmotion;		//表情1
-	protected int StartEmotion;			//表情1 開始時間
-	protected int StartEmotion2;		//表情2 開始時間
+	protected int StartEmotion, StartEmotion2, StartEmotion3;		//表情2 開始時間
 	protected boolean headTilt;
 	protected float[] rotateAngle;		//模型旋轉角度, 用於手持物品render
 	protected int StartSoundHurt;		//hurt sound ticks
@@ -252,22 +251,22 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	}
 
 	@Override
-	public int getStartEmotion() {
+	public int getFaceTick() {
 		return this.StartEmotion;
 	}
 
 	@Override
-	public int getStartEmotion2() {
+	public int getHeadTiltTick() {
 		return this.StartEmotion2;
 	}
 
 	@Override
-	public void setStartEmotion(int par1) {
+	public void setFaceTick(int par1) {
 		this.StartEmotion = par1;
 	}
 
 	@Override
-	public void setStartEmotion2(int par1) {
+	public void setHeadTiltTick(int par1) {
 		this.StartEmotion2 = par1;
 	}
 
@@ -289,7 +288,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	@Override
 	public boolean attackEntityWithAmmo(Entity target) {
 		//get attack value
-		float atk = CalcHelper.calcDamageByEquipEffect(this, target, this.atk, 0);
+		float atk = CalcHelper.calcDamageBySpecialEffect(this, target, this.atk, 0);
 		
 		//update entity look at vector (for particle spawn)
         //此方法比getLook還正確 (client sync問題)
@@ -802,6 +801,16 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		
         return false;
     }
+  	
+  	@Override
+	public int getAttackAniTick() {
+		return this.StartEmotion3;
+	}
+
+	@Override
+	public void setAttackAniTick(int par1) {
+		this.StartEmotion3 = par1;
+	}
 
 
 }

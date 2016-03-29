@@ -7,7 +7,6 @@ import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.IEntityOwnable;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.passive.EntityTameable;
@@ -79,16 +78,7 @@ public class TargetHelper {
 			}
 			
 			//check unattackable list
-			List<String> unatklist = ServerProxy.getUnattackableTargetClassList();
-			String tarClass = target2.getClass().getSimpleName();
-			
-			if(unatklist != null) {
-				for(String s : unatklist) {
-    				if(s.equals(tarClass)) {  //target class is in list
-    					return false;
-    				}
-    			}
-			}
+    		if(checkUnattackTarget(target2)) return false;
 			
 			//ship host should check onSight
 			if(host instanceof BasicEntityShip) {
@@ -105,49 +95,33 @@ public class TargetHelper {
     			}
     		}
 			
-			//check ship and special entity for BasicEntityShip
-			if(this.isPVP && (target2 instanceof BasicEntityShip || target2 instanceof BasicEntityAirplane ||
-			   target2 instanceof BasicEntityMount || target2 instanceof EntityAbyssMissile)) {
-				//must in banned list, NO ALLY or NEUTRAL target
-				if(!EntityHelper.checkIsBanned(host, target2)) {
-					return false;
+			if(target2.isEntityAlive() && !target2.isInvisible()) {
+				//anti air target, no pvp checking
+				if(target2 instanceof BasicEntityAirplane || target2 instanceof EntityAbyssMissile) {
+					if(EntityHelper.checkIsBanned(host, target2)) {
+						return true;
+					}
 				}
 				
-				//check alive
-				if(target2.isEntityAlive() && !target2.isInvisible()) {
-					return true;
-				}//is alive
+				//check pvp
+				if(this.isPVP && (target2 instanceof BasicEntityShip || target2 instanceof BasicEntityMount)) {
+					//attack hostile team
+					if(EntityHelper.checkIsBanned(host, target2)) {
+						return true;
+					}
+				}
 				
-				return false;
+				//check mob
+	        	if(target2 instanceof EntityMob || target2 instanceof EntitySlime) {
+	        		return true;
+	        	}
+	        	
+	        	//check custom target (including pet check)
+	        	if(checkAttackTargetClass(host, target2)) {
+	        		return true;
+	        	}
 			}
-			
-        	if((target2 instanceof EntityMob || target2 instanceof EntitySlime) &&
-        	   target2.isEntityAlive() && !target2.isInvisible()) {
-        		return true;
-        	}//end is target class
-        	else {  //custom class for mod interact
-        		if(target2 != null && target2.isEntityAlive() && !target2.isInvisible() &&
-        		   host instanceof IShipAttackBase) {
-        			int pid = ((IShipAttackBase) host).getPlayerUID();
-        			List<String> tarList = ServerProxy.getPlayerTargetClassList(pid);
-        			
-        			if(tarList != null) {
-        				for(String s : tarList) {
-            				if(s.equals(tarClass)) {  //target class is in list
-            					//if tameable entity, check owner
-            					if(target2 instanceof IEntityOwnable) {
-            						if(!EntityHelper.checkSameOwner(host, target2)) {
-            							return true;
-            						}
-            					}
-            					else {
-            						return true;
-            					}
-            				}
-            			}
-        			}
-        		}
-        	}
+        	
         	return false;
         }
     }
@@ -168,59 +142,30 @@ public class TargetHelper {
 			}
 			
 			//check unattackable list
-			List<String> unatklist = ServerProxy.getUnattackableTargetClassList();
-			String tarClass = target2.getClass().getSimpleName();
+    		if(checkUnattackTarget(target2)) return false;
 			
-			if(unatklist != null) {
-				for(String s : unatklist) {
-    				if(s.equals(tarClass)) {  //target class is in list
+    		if(target2.isEntityAlive() && !target2.isInvisible()) {
+    			//check ship target
+    			if(target2 instanceof BasicEntityShip || target2 instanceof BasicEntityAirplane ||
+    			   target2 instanceof BasicEntityMount || target2 instanceof EntityAbyssMissile) {
+    				//do not attack ally
+    				if(EntityHelper.checkIsAlly(host, target2)) {
     					return false;
     				}
+    				
+    				return true;
     			}
-			}
-			
-			//check ship target
-			if(target2 instanceof BasicEntityShip || target2 instanceof BasicEntityAirplane ||
-			   target2 instanceof BasicEntityMount || target2 instanceof EntityAbyssMissile) {
-				//do not attack ally
-				if(EntityHelper.checkIsAlly(host, target2)) {
-					return false;
-				}
-				
-				//check alive
-				if(target2.isEntityAlive() && !target2.isInvisible()) {
-					return true;
-				}
-			}
-			
-			//check mob target
-        	if((target2 instanceof EntityMob || target2 instanceof EntitySlime) &&
-        	   target2.isEntityAlive() && !target2.isInvisible()) {
-        		return true;
-        	}//end is target class
-        	else {  //custom class for mod interact
-        		if(target2 != null && target2.isEntityAlive() && !target2.isInvisible() &&
-        		   host instanceof IShipAttackBase) {
-        			int pid = ((IShipAttackBase) host).getPlayerUID();
-        			List<String> tarList = ServerProxy.getPlayerTargetClassList(pid);
-        			
-        			if(tarList != null) {
-        				for(String s : tarList) {
-            				if(s.equals(tarClass)) {  //target class is in list
-            					//if tameable entity, check owner
-            					if(target2 instanceof EntityTameable) {
-            						if(!EntityHelper.checkSameOwner(host, target2)) {
-            							return true;
-            						}
-            					}
-            					else {
-            						return true;
-            					}
-            				}
-            			}
-        			}
-        		}
-        	}
+    			
+    			//check mob target
+            	if(target2 instanceof EntityMob || target2 instanceof EntitySlime) {
+            		return true;
+            	}
+
+            	//check faction
+        		if(!EntityHelper.checkSameOwner(host, target2)) {
+    				return true;
+    			}
+    		}
         	
         	return false;
         }
@@ -239,28 +184,35 @@ public class TargetHelper {
     	@Override
 		public boolean isEntityApplicable(Entity target2) {
     		//check unattackable list
-			List<String> unatklist = ServerProxy.getUnattackableTargetClassList();
-			String tarClass = target2.getClass().getSimpleName();
-			
-			if(unatklist != null) {
-				for(String s : unatklist) {
-    				if(s.equals(tarClass)) {  //target class is in list
-    					return false;
-    				}
-    			}
-			}
-    		
-        	if((target2 instanceof EntityPlayer || target2 instanceof BasicEntityShip ||
-        	   target2 instanceof BasicEntityAirplane || target2 instanceof BasicEntityMount) && 
-        	   target2.isEntityAlive() && !target2.isInvisible()) {
-        		
-        		//do not attack OP player
+    		if(checkUnattackTarget(target2)) return false;
+
+			if(target2.isEntityAlive() && !target2.isInvisible()) {
+				//do not attack hostile ship
+        		if(target2 instanceof BasicEntityShipHostile) {
+        			return false;
+        		}
+				
+				//do not attack OP player
         		if(target2 instanceof EntityPlayer) {
         			return !EntityHelper.checkOP((EntityPlayer) target2);
         		}
         		
-        		return true;
-        	}
+        		//attack ship
+				if(target2 instanceof BasicEntityShip || target2 instanceof BasicEntityMount) {
+	    			return true;
+	        	}
+				
+				//check aircraft
+    			if(target2 instanceof BasicEntityAirplane || target2 instanceof EntityAbyssMissile) {
+    				//do not attack ally
+    				if(EntityHelper.checkSameOwner(host, target2)) {
+    					return false;
+    				}
+    				
+    				return true;
+    			}
+			}
+    		
         	return false;
         }
 
@@ -279,27 +231,86 @@ public class TargetHelper {
     	@Override
 		public boolean isEntityApplicable(Entity target2) {
     		//check unattackable list
-			List<String> unatklist = ServerProxy.getUnattackableTargetClassList();
-			String tarClass = target2.getClass().getSimpleName();
-			
-			if(unatklist != null) {
-				for(String s : unatklist) {
-    				if(s.equals(tarClass)) {  //target class is in list
-    					return false;
-    				}
-    			}
-			}
+    		if(checkUnattackTarget(target2)) return false;
 			
         	if(target2.isEntityAlive() && !target2.isInvisible()) {
+        		//do not attack hostile ship
+        		if(target2 instanceof BasicEntityShipHostile) {
+        			return false;
+        		}
+        		
         		//do not attack OP player
         		if(target2 instanceof EntityPlayer) {
         			return !EntityHelper.checkOP((EntityPlayer) target2);
         		}
-        		return true;
+        		
+        		//attack ship
+				if(target2 instanceof BasicEntityShip || target2 instanceof BasicEntityMount) {
+	    			return true;
+	        	}
+				
+				//check aircraft
+    			if(target2 instanceof BasicEntityAirplane || target2 instanceof EntityAbyssMissile) {
+    				//do not attack ally
+    				if(EntityHelper.checkSameOwner(host, target2)) {
+    					return false;
+    				}
+    				
+    				return true;
+    			}
+
+        		//check faction
+        		if(!EntityHelper.checkSameOwner(host, target2)) {
+    				return true;
+    			}
         	}
+        	
         	return false;
         }
     }
+    
+    /** check target is unattackable, SERVER SIDE only */
+    public static boolean checkUnattackTarget(Entity target) {
+		List<String> unatklist = ServerProxy.getUnattackableTargetClassList();
+		String tarClass = target.getClass().getSimpleName();
+		
+		if(unatklist != null) {
+			for(String s : unatklist) {
+				if(s.equals(tarClass)) {  //target class is in list
+					return true;
+				}
+			}
+		}
+		
+		return false;
+    }
+    
+    /** check target is in attack target class list */
+    public static boolean checkAttackTargetClass(Entity host, Entity target) {
+    	if(target != null && host instanceof IShipAttackBase) {
+ 			int pid = ((IShipAttackBase) host).getPlayerUID();
+ 			List<String> tarList = ServerProxy.getPlayerTargetClassList(pid);
+ 			String tarClass = target.getClass().getSimpleName();
+ 			
+ 			if(tarList != null) {
+ 				for(String s : tarList) {
+     				if(s.equals(tarClass)) {  //target class is in list
+     					//if tameable entity, check owner
+     					if(target instanceof EntityTameable) {
+     						if(!EntityHelper.checkSameOwner(host, target)) {
+     							return true;
+     						}
+     					}
+     					
+     					return true;
+     				}
+     			}
+ 			}
+ 		}
+    	
+    	return false;
+    }
+    
     
     /** update target */
 	public static void updateTarget(IShipAttackBase host) {

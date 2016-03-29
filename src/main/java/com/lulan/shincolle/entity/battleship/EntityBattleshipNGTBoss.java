@@ -6,6 +6,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
+import net.minecraft.entity.boss.IBossDisplayData;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
@@ -15,7 +16,7 @@ import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
-import com.lulan.shincolle.entity.BasicEntityShipBoss;
+import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.network.S2CSpawnParticle;
@@ -28,7 +29,7 @@ import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
-public class EntityBattleshipNGTBoss extends BasicEntityShipBoss {
+public class EntityBattleshipNGTBoss extends BasicEntityShipHostile implements IBossDisplayData {
 
 	public EntityBattleshipNGTBoss(World world) {
 		super(world);
@@ -112,7 +113,7 @@ public class EntityBattleshipNGTBoss extends BasicEntityShipBoss {
   	@Override
   	public boolean attackEntityWithAmmo(Entity target) {
   		//get attack value
-		float atk = CalcHelper.calcDamageByEquipEffect(this, target, this.atk, 0);
+		float atk = CalcHelper.calcDamageBySpecialEffect(this, target, this.atk, 0);
 		
 		//update entity look at vector (for particle spawn)
         //此方法比getLook還正確 (client sync問題)
@@ -194,7 +195,7 @@ public class EntityBattleshipNGTBoss extends BasicEntityShipBoss {
   	@Override
   	public boolean attackEntityWithHeavyAmmo(Entity target) {	
   		//get attack value
-		float atk1 = CalcHelper.calcDamageByEquipEffect(this, target, this.atk * 3F, 2);
+		float atk1 = CalcHelper.calcDamageBySpecialEffect(this, target, this.atk * 3F, 2);
 		float atk2 = this.atk * 3F; //AE dmg without modifier
 		
 		//set knockback value (testing)

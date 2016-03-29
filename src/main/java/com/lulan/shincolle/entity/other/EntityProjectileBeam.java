@@ -267,7 +267,7 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAtt
                 	//check target attackable
               		if(EntityHelper.checkAttackable(hitEntity)) {
               			//calc equip special dmg: AA, ASM
-                    	beamAtk = CalcHelper.calcDamageByEquipEffect(this, hitEntity, beamAtk, 1);
+                    	beamAtk = CalcHelper.calcDamageBySpecialEffect(this, hitEntity, beamAtk, 1);
                     	
                     	//目標不能是自己 or 主人, 且可以被碰撞
                     	if(hitEntity.canBeCollidedWith() && isNotHost(hitEntity)) {

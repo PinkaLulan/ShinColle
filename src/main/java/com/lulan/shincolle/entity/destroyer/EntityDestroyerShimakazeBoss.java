@@ -4,13 +4,14 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
+import net.minecraft.entity.boss.IBossDisplayData;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
-import com.lulan.shincolle.entity.BasicEntityShipBoss;
+import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.entity.other.EntityRensouhouBoss;
 import com.lulan.shincolle.handler.ConfigHandler;
@@ -22,7 +23,7 @@ import com.lulan.shincolle.reference.Reference;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
-public class EntityDestroyerShimakazeBoss extends BasicEntityShipBoss {
+public class EntityDestroyerShimakazeBoss extends BasicEntityShipHostile implements IBossDisplayData {
 
 	public int numRensouhou;
 	
@@ -128,7 +129,7 @@ public class EntityDestroyerShimakazeBoss extends BasicEntityShipBoss {
   	@Override
   	public boolean attackEntityWithHeavyAmmo(Entity target) {	
 		//get attack value
-		float atkHeavy = this.atk * 0.3F;
+		float atkHeavy = this.atk * 0.9F;
 		float kbValue = 0.08F;
 		
 		//飛彈是否採用直射

@@ -15,7 +15,7 @@ import net.minecraft.world.World;
 
 import com.lulan.shincolle.ai.EntityAIShipCarrierAttack;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
-import com.lulan.shincolle.entity.BasicEntityShipLarge;
+import com.lulan.shincolle.entity.BasicEntityShipCV;
 import com.lulan.shincolle.entity.ExtendShipProps;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CEntitySync;
@@ -27,7 +27,7 @@ import com.lulan.shincolle.utility.CalcHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
-public class EntityBattleshipRe extends BasicEntityShipLarge {
+public class EntityBattleshipRe extends BasicEntityShipCV {
 	
 	private boolean isPushing = false;
 	private int tickPush = 0;
@@ -167,7 +167,7 @@ public class EntityBattleshipRe extends BasicEntityShipLarge {
 	//range attack method, cost light ammo, attack delay = 20 / attack speed, damage = 100% atk 
 	public boolean attackEntityWithAmmo(Entity target) {
 		//get attack value
-		float atk = CalcHelper.calcDamageByEquipEffect(this, target, StateFinal[ID.ATK], 0);
+		float atk = CalcHelper.calcDamageBySpecialEffect(this, target, StateFinal[ID.ATK], 0);
 		
 		//update entity look at vector (for particle spawn)
         //此方法比getLook還正確 (client sync問題)

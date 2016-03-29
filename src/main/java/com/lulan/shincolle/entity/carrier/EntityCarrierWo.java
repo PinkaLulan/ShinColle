@@ -6,14 +6,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.ai.EntityAIShipCarrierAttack;
-import com.lulan.shincolle.entity.BasicEntityShipLarge;
+import com.lulan.shincolle.entity.BasicEntityShipCV;
 import com.lulan.shincolle.entity.ExtendShipProps;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.ParticleHelper;
 
-public class EntityCarrierWo extends BasicEntityShipLarge {
+public class EntityCarrierWo extends BasicEntityShipCV {
 	
 	public EntityCarrierWo(World world) {
 		super(world);
@@ -58,8 +58,8 @@ public class EntityCarrierWo extends BasicEntityShipLarge {
   	public void calcShipAttributes() {
   		super.calcShipAttributes();
   		
-  		this.maxAircraftLight += this.getLevel() * 0.2F;
-  		this.maxAircraftHeavy += this.getLevel() * 0.1F;
+  		this.maxAircraftLight += this.getLevel() * 0.25F;
+  		this.maxAircraftHeavy += this.getLevel() * 0.15F;
   	}
       
     @Override

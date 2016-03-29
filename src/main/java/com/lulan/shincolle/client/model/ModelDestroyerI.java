@@ -390,14 +390,14 @@ public void setRotationAngles(float f, float f1, float f2, float f3, float f4, f
     	case ID.Emotion.T_T:	//cry
     	case ID.Emotion.O_O:
     	case ID.Emotion.HUNGRY:
-    		if(ent.getStartEmotion() <= 0) setFace(2);
+    		if(ent.getFaceTick() <= 0) setFace(2);
     		break;
     	case ID.Emotion.BORED:	//cry
-    		if(ent.getStartEmotion() <= 0) setFace(1);
+    		if(ent.getFaceTick() <= 0) setFace(1);
     		break;
     	default:						//normal face
     		//reset face to 0 or blink if emotion time > 0
-    		if(ent.getStartEmotion() <= 0) {
+    		if(ent.getFaceTick() <= 0) {
     			setFace(0);
     		}
     		else {

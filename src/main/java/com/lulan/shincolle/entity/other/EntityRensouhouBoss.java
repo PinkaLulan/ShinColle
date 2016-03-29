@@ -54,8 +54,7 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
     /**EntityState: 0:HP State 1:Emotion 2:Emotion2*/
 	protected byte StateEmotion;		//表情1
 	protected byte StateEmotion2;		//表情2
-	protected int StartEmotion;			//表情1 開始時間
-	protected int StartEmotion2;		//表情2 開始時間
+	protected int StartEmotion, StartEmotion2, StartEmotion3;		//表情開始時間
 	protected boolean headTilt;
 
 	
@@ -288,22 +287,22 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
 	}
 
 	@Override
-	public int getStartEmotion() {
+	public int getFaceTick() {
 		return this.StartEmotion;
 	}
 
 	@Override
-	public int getStartEmotion2() {
+	public int getHeadTiltTick() {
 		return this.StartEmotion2;
 	}
 
 	@Override
-	public void setStartEmotion(int par1) {
+	public void setFaceTick(int par1) {
 		this.StartEmotion = par1;
 	}
 
 	@Override
-	public void setStartEmotion2(int par1) {
+	public void setHeadTiltTick(int par1) {
 		this.StartEmotion2 = par1;
 	}
 
@@ -335,7 +334,7 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
     @Override
 	//light attack
 	public boolean attackEntityWithAmmo(Entity target) {
-		float atkLight = CalcHelper.calcDamageByEquipEffect(this, target, this.atk, 0);
+		float atkLight = CalcHelper.calcDamageBySpecialEffect(this, target, this.atk, 0);
 
 		//play cannon fire sound at attacker
         playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
@@ -814,6 +813,16 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
   	@Override
 	public void setEntityRevengeTime() {
 		this.revengeTime = this.ticksExisted;
+	}
+  	
+  	@Override
+	public int getAttackAniTick() {
+		return this.StartEmotion3;
+	}
+
+	@Override
+	public void setAttackAniTick(int par1) {
+		this.StartEmotion3 = par1;
 	}
 	
 

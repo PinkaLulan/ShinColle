@@ -175,13 +175,14 @@ public class ServerProxy extends CommonProxy {
 		//init data by MapStorage data
 		if(serverData != null && serverData.nbtData != null) {
 			LogHelper.info("DEBUG : init server proxy: get data from .dat file");
+			
 			//load common variable
 			setNextPlayerID(serverData.nbtData.getInteger(ShinWorldData.TAG_NEXTPLAYERID));
 			setNextShipID(serverData.nbtData.getInteger(ShinWorldData.TAG_NEXTSHIPID));
 			
 			
 			//load unattackable list
-			NBTTagList unatktag = serverData.nbtData.getTagList(UNATK_TARGET_CLASS, Constants.NBT.TAG_COMPOUND);
+			NBTTagList unatktag = serverData.nbtData.getTagList(UNATK_TARGET_CLASS, Constants.NBT.TAG_STRING);
 			LogHelper.info("DEBUG : init server proxy: get unattackable target list: count: "+unatktag.tagCount());
 			List<String> unatklist = new ArrayList();
 			
@@ -308,12 +309,14 @@ public class ServerProxy extends CommonProxy {
 		return extendedPlayerData.get(name);
 	}
 	
-	/** add/remove string in player target class list *///TODO return boolean to check add/remove msg
-	public static void setPlayerTargetClassList(int pid, String str) {
+	/** add/remove string in player target class list, return true = add target */
+	public static boolean setPlayerTargetClassList(int pid, String str) {
+		boolean result = true;
+		
 		if(str != null && str.length() > 1 && pid > 0) {
 			//get target class list
 			List<String> tarList =  getPlayerTargetClassList(pid);
-			
+
 			if(tarList != null) {
 				//check str exist in list
 				for(String s : tarList) {
@@ -321,7 +324,7 @@ public class ServerProxy extends CommonProxy {
 					if(str.equals(s)) {
 						tarList.remove(s);
 						setPlayerTargetClassList(pid, tarList);
-						return;
+						return false;
 					}
 				}
 				
@@ -330,7 +333,16 @@ public class ServerProxy extends CommonProxy {
 				setPlayerTargetClassList(pid, tarList);
 				serverData.markDirty();
 			}
+			//target list null, generate one for player uid
+			else {
+				tarList = new ArrayList<String>();
+				tarList.add(str);
+				setPlayerTargetClassList(pid, tarList);
+				serverData.markDirty();
+			}
 		}
+		
+		return result;
 	}
 	
 	/** unattackable target list, return true = add target, false = remove target or do nothing */
@@ -356,9 +368,9 @@ public class ServerProxy extends CommonProxy {
 	}
 	
 	//set
-	public static void setUnattackableTargetClassList(List<String> data) {
-		if(data != null) {
-			unattackableTargetClassList = data;
+	public static void setUnattackableTargetClassList(List<String> list) {
+		if(list != null) {
+			unattackableTargetClassList = list;
 		}
 	}
 	
@@ -504,7 +516,7 @@ public class ServerProxy extends CommonProxy {
 					setNextPlayerID(newNextID);
 				}
 			}
-			//player id < 0, load from create one
+			//player id < 0, create new one
 			else {
 				pid = getNextPlayerID();
 				//set init pid value
@@ -562,7 +574,7 @@ public class ServerProxy extends CommonProxy {
 			setShipWorldData(sid, sdata);	//cache in server proxy
 			setNextShipID(++sid);	//next id ++
 			
-			//init ship value for some reason
+			//init ship value for old ship (before rv.22)
 			ship.setStateFlag(ID.F.OnSightChase, true);  //enable onSight
 		}
 		

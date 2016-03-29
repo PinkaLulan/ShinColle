@@ -11,7 +11,7 @@ import net.minecraft.world.World;
 import com.lulan.shincolle.ai.EntityAIShipCarrierAttack;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityMount;
-import com.lulan.shincolle.entity.BasicEntityShipLarge;
+import com.lulan.shincolle.entity.BasicEntityShipCV;
 import com.lulan.shincolle.entity.ExtendShipProps;
 import com.lulan.shincolle.entity.mounts.EntityMountCaWD;
 import com.lulan.shincolle.handler.ConfigHandler;
@@ -23,7 +23,7 @@ import com.lulan.shincolle.utility.CalcHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
-public class EntityCarrierWD extends BasicEntityShipLarge {
+public class EntityCarrierWD extends BasicEntityShipCV {
 	
 	public EntityCarrierWD(World world) {
 		super(world);
@@ -87,7 +87,7 @@ public class EntityCarrierWD extends BasicEntityShipLarge {
 	@Override
 	public boolean attackEntityWithAmmo(Entity target) {
 		//get attack value
-		float atk = CalcHelper.calcDamageByEquipEffect(this, target, StateFinal[ID.ATK], 0);
+		float atk = CalcHelper.calcDamageBySpecialEffect(this, target, StateFinal[ID.ATK], 0);
 				
         //experience++
   		addShipExp(2);

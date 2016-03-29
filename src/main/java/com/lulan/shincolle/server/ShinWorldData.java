@@ -69,6 +69,7 @@ public class ShinWorldData extends WorldSavedData {
 
 		//unattackable list
 	    List<String> strList = ServerProxy.getUnattackableTargetClassList();
+	    
 	    if(strList != null) {
 	    	NBTTagList tagList = new NBTTagList();
 			LogHelper.info("DEBUG : save world data: save unattackable target list: size: "+strList.size());
@@ -135,7 +136,6 @@ public class ShinWorldData extends WorldSavedData {
 		    list.appendTag(save);	//將save加入到list中, 不檢查是否有重複的tag, 而是新增一個tag
 		}
 		nbt.setTag(TAG_TEAMDATA, list);	//將list加入到nbt中
-		
 	}//end write nbt
 	
 	private static void saveIntListToNBT(NBTTagCompound save, String tagName, List<Integer> ilist) {

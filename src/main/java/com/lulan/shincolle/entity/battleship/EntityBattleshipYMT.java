@@ -114,7 +114,7 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall {
   	@Override
   	public boolean attackEntityWithAmmo(Entity target) {
   		//get attack value
-		float atk = CalcHelper.calcDamageByEquipEffect(this, target, StateFinal[ID.ATK], 0);
+		float atk = CalcHelper.calcDamageBySpecialEffect(this, target, StateFinal[ID.ATK], 0);
 		
 		//update entity look at vector (for particle spawn)
         //此方法比getLook還正確 (client sync問題)
@@ -220,7 +220,7 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall {
   	@Override
   	public boolean attackEntityWithHeavyAmmo(Entity target) {
   		//get attack value
-		float atk = CalcHelper.calcDamageByEquipEffect(this, target, StateFinal[ID.ATK_H], 3);
+		float atk = CalcHelper.calcDamageBySpecialEffect(this, target, StateFinal[ID.ATK_H], 3);
 		
 		//計算目標距離
 		float tarX = (float)target.posX;	//for miss chance calc

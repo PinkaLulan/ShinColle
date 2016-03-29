@@ -16,7 +16,7 @@ import net.minecraft.world.World;
 import com.lulan.shincolle.ai.EntityAIShipCarrierAttack;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.entity.BasicEntityShipLarge;
+import com.lulan.shincolle.entity.BasicEntityShipCV;
 import com.lulan.shincolle.entity.ExtendShipProps;
 import com.lulan.shincolle.entity.other.EntityFloatingFort;
 import com.lulan.shincolle.handler.ConfigHandler;
@@ -30,7 +30,7 @@ import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
-public class EntityNorthernHime extends BasicEntityShipLarge {
+public class EntityNorthernHime extends BasicEntityShipCV {
 	
 	private int goRidingTicks;		//騎乘目標尋找時間
 	private boolean goRiding;		//是否要找目標騎乘
@@ -274,7 +274,7 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
 	@Override
 	public boolean attackEntityWithAmmo(Entity target) {	
 		//get attack value
-		float atk = CalcHelper.calcDamageByEquipEffect(this, target, StateFinal[ID.ATK], 0);
+		float atk = CalcHelper.calcDamageBySpecialEffect(this, target, StateFinal[ID.ATK], 0);
         
         //experience++
   		addShipExp(2);
@@ -416,7 +416,8 @@ public class EntityNorthernHime extends BasicEntityShipLarge {
         }
         
         //spawn missile
-        EntityFloatingFort ffort = new EntityFloatingFort(this.worldObj, this, (EntityLivingBase) target, launchPos);
+        EntityFloatingFort ffort = new EntityFloatingFort(this.worldObj);
+        ffort.setAttrs(this.worldObj, this, target, launchPos);
         this.worldObj.spawnEntityInWorld(ffort);
         
         return true;

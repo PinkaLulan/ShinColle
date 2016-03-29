@@ -37,25 +37,25 @@ public class EntityTest extends EntityLiving implements IShipEmotion {
 	}
 
 	@Override
-	public int getStartEmotion() {
+	public int getFaceTick() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public int getStartEmotion2() {
+	public int getHeadTiltTick() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public void setStartEmotion(int par1) {
+	public void setFaceTick(int par1) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void setStartEmotion2(int par1) {
+	public void setHeadTiltTick(int par1) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -124,6 +124,18 @@ public class EntityTest extends EntityLiving implements IShipEmotion {
 
 	@Override
 	public void setModelRotate(int par1, float par2) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getAttackAniTick() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setAttackAniTick(int par1) {
 		// TODO Auto-generated method stub
 		
 	}
