@@ -25,7 +25,6 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
@@ -317,7 +316,7 @@ abstract public class BasicEntityAirplane extends EntityLiving implements IShipC
 						}
 				        
 				        //get target in list
-						if(list != null && list.size() > 0) {
+						if(list != null && !list.isEmpty()) {
 							//從艦載機附近找出的目標, 判定是否要去攻擊
 				        	Collections.sort(list, this.targetSorter);
 				        	newTarget = (Entity) list.get(0);
@@ -761,7 +760,11 @@ abstract public class BasicEntityAirplane extends EntityLiving implements IShipC
 	@Override
 	public void setAttackAniTick(int par1) {}
 
-    
+	@Override
+	public boolean canBePushed() {
+        return false;
+    }
 
+	
 }
 

@@ -75,7 +75,7 @@ abstract public class BasicShipCommand implements ICommand {
             return Integer.parseInt(str);
         }
         catch(Exception e) {
-        	sender.addChatMessage(new ChatComponentText("Command: parse number fail! "+e));
+        	sender.addChatMessage(new ChatComponentText("Command: parameter is NOT number! "+e));
             return 0;
         }
     }

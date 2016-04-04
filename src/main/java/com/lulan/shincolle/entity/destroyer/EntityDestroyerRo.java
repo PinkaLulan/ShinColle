@@ -63,7 +63,7 @@ public class EntityDestroyerRo extends BasicEntityShipSmall {
   		if(!worldObj.isRemote) {
   			//add aura to master every 100 ticks
   			if(this.ticksExisted % 100 == 0) {
-  				EntityPlayerMP player = (EntityPlayerMP) EntityHelper.getEntityPlayerByUID(this.getPlayerUID(), this.worldObj);
+  				EntityPlayerMP player = (EntityPlayerMP) EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
   				if(getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.M.NumGrudge) > 0 && player != null && getDistanceSqToEntity(player) < 256D) {
   					//potion effect: id, time, level
   	  	  			player.addPotionEffect(new PotionEffect(Potion.digSpeed.id, 300, getStateMinor(ID.M.ShipLevel) / 30));

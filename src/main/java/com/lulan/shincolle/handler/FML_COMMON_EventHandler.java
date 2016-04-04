@@ -1,6 +1,7 @@
 package com.lulan.shincolle.handler;
 
 import java.util.List;
+import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -15,6 +16,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
+import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.BiomeDictionary;
 
@@ -113,200 +115,54 @@ public class FML_COMMON_EventHandler {
 //						}
 //					}
 					
-					//sync team list every 256 ticks
-					if(event.player.ticksExisted == 128 || event.player.ticksExisted % 256 == 0) {
+					//every 128 ticks
+					if(event.player.ticksExisted % 128 == 0) {
 						/** check player entity id and update player data to ServerProxy cache */
 						//get server cache
-						int[] pdata = ServerProxy.getPlayerWorldData(extProps.getPlayerUID());
+						int peid = EntityHelper.getPlayerEID(extProps.getPlayerUID());
+						
 						//if entity id is different, update new eid
-						if(pdata != null && pdata[0] != event.player.getEntityId()) {
-							LogHelper.info("DEBUG : player tick: player entity id changed, update new eid: "+pdata[0]+" to "+event.player.getEntityId());
+						if(peid != event.player.getEntityId()) {
+							LogHelper.info("DEBUG : player tick: player entity id changed, update new eid: "+peid+" to "+event.player.getEntityId());
 							ServerProxy.updatePlayerID(event.player);
 						}
 						
-						/** update ships in pointer team list */
-						//check entity is alive
-						BasicEntityShip getent = null;
-						for(int i = 0; i < 6; i++) {
-							//get ship by UID
-							getent = EntityHelper.getShipBySID(extProps.getSIDCurrentTeam(i));
+						//every 256 ticks
+						if(event.player.ticksExisted % 256 == 0) {
+							/** update ships in pointer team list */
+							//check entity is alive
+							BasicEntityShip getent = null;
+							for(int i = 0; i < 6; i++) {
+								//get ship by UID
+								getent = EntityHelper.getShipBySID(extProps.getSIDCurrentTeam(i));
 
-							//get ship
-							if(getent != null) {
-								if(EntityHelper.checkSameOwner(getent, event.player)) {
-									//update ship entity
-									extProps.addShipEntityToCurrentTeam(i, getent);
-								}
-								else {
-									//owner changed, remove ship
-									extProps.addShipEntityToCurrentTeam(i, null);
-								}
-							}
-							//ship lost
-							else {
-								//clear slot if no ship UID (ship UID invalid)
-								if(extProps.getSIDCurrentTeam(i) <= 0) {
-									extProps.addShipEntityToCurrentTeam(i, null);
-								}
-							}	
-						}
-						
-						syncTeamList = true;
-					}//end every 256 ticks
-				}//end every 32 ticks
-				
-				/** spawn boss in ocean biome, server side */
-				int blockX = (int) event.player.posX;
-				int blockZ = (int) event.player.posZ;
-				int spawnX, spawnY, spawnZ = 0;
-				BiomeGenBase biome = event.player.worldObj.getBiomeGenForCoords(blockX, blockZ);	
-				
-				//ally cooldown--
-				int allycd = extProps.getPlayerTeamCooldown();
-				if(allycd > 0) {
-					extProps.setPlayerTeamCooldown(--allycd);
-				}
-				
-				//boss cooldown--
-				if((BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.WATER) || 
-					BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.BEACH) ||
-					BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.RIVER) ||
-					BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.OCEAN)) && extProps.hasRing()) {
-					extProps.setBossCooldown(extProps.getBossCooldown() - 1);
-				}
-				
-				//cooldown = 0, roll spawn
-				if(extProps.getBossCooldown() <= 0) {
-					extProps.setBossCooldown(ConfigHandler.bossCooldown);
-					
-					int rolli = event.player.getRNG().nextInt(4);
-					LogHelper.info("DEBUG : spawn boss: roll spawn "+rolli);
-					if(rolli == 0) {
-						//尋找10次地點, 找到一個可生成地點即生成後跳出loop
-						int i;
-						for(i = 0; i < 10; i++) {
-							int offX = event.player.getRNG().nextInt(32) + 32;
-							int offZ = event.player.getRNG().nextInt(32) + 32;
-							
-							switch(event.player.getRNG().nextInt(4)) {
-							case 0:
-								spawnX = blockX + offX;
-								spawnZ = blockZ + offZ;
-								break;
-							case 1:
-								spawnX = blockX - offX;
-								spawnZ = blockZ - offZ;
-								break;
-							case 2:
-								spawnX = blockX + offX;
-								spawnZ = blockZ - offZ;
-								break;
-							case 3:
-								spawnX = blockX - offX;
-								spawnZ = blockZ + offZ;
-								break;
-							default:
-								spawnX = blockX + offX;
-								spawnZ = blockZ + offZ;
-								break;		
-							}
-
-							spawnY = 64 - event.player.getRNG().nextInt(4);
-							
-							Block blockY = event.player.worldObj.getBlock(spawnX, spawnY, spawnZ);
-							
-							LogHelper.info("DEBUG : spawn boss: get block "+blockY.getLocalizedName()+" "+spawnX+" "+spawnY+" "+spawnZ);
-							//生成在水面
-							if(blockY.getMaterial() == Material.water) {
-								//check 64x64 range
-								AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(spawnX-64D, spawnY-64D, spawnZ-64D, spawnX+64D, spawnY+64D, spawnZ+64D);
-								List<BasicEntityShipHostile> listBoss = event.player.worldObj.getEntitiesWithinAABB(BasicEntityShipHostile.class, aabb);
-								int bossNum = 0;
-								
-								//check boss in list
-								if(listBoss.size() > 0) {
-									for(BasicEntityShipHostile mob : listBoss) {
-										if(mob instanceof IBossDisplayData) {
-											bossNum++;
-										}
+								//get ship
+								if(getent != null) {
+									if(EntityHelper.checkSameOwner(getent, event.player)) {
+										//update ship entity
+										extProps.addShipEntityToCurrentTeam(i, getent);
+									}
+									else {
+										//owner changed, remove ship
+										extProps.addShipEntityToCurrentTeam(i, null);
 									}
 								}
-								LogHelper.info("DEBUG : spawn boss: check existed boss: "+bossNum+" all mob: "+listBoss.size());
-								
-								//若範圍內不到2隻boss, 則可以再生成新boss
-					            if(bossNum < 2) {
-					            	/**艦隊組成:
-					            	 * boss x2 + destroyer x4
-					            	 * boss id: 0:Nagato 1:Shimakaze
-					            	 * mob id: 0:U511 1:Ro500
-					            	 */
-					            	//roll生成mob
-					            	int[] spawnList = new int[] {0,0,0,0,0,0};
-					            	spawnList[0] = event.player.worldObj.rand.nextInt(4);	//boss 1
-					            	spawnList[1] = event.player.worldObj.rand.nextInt(4);	//boss 2
-					            	spawnList[2] = event.player.worldObj.rand.nextInt(2);	//mob 1
-					            	spawnList[3] = event.player.worldObj.rand.nextInt(2);	//mob 2
-					            	spawnList[4] = event.player.worldObj.rand.nextInt(2);	//mob 3
-					            	spawnList[5] = event.player.worldObj.rand.nextInt(2);	//mob 4
-					            	
-					            	//new生成mob
-					            	BasicEntityShipHostile[] spawnMobs = new BasicEntityShipHostile[6];
-					            	//new bosses
-					            	for(i = 0; i < 2; i++) {
-					            		switch(spawnList[i]) {
-					            		case 1:
-					            			spawnMobs[i] = new EntityDestroyerShimakazeBoss(event.player.worldObj);
-					            			break;
-					            		case 2:
-					            			spawnMobs[i] = new EntityBattleshipYMTBoss(event.player.worldObj);
-					            			break;
-					            		case 3:
-					            			spawnMobs[i] = new EntityCarrierKagaBoss(event.player.worldObj);
-					            			break;
-					            		default:
-					            			spawnMobs[i] = new EntityBattleshipNGTBoss(event.player.worldObj);
-					            			break;
-					            		}
-					            	}	
-					            	
-					            	//new mobs
-					            	for(i = 2; i < 6; i++) {
-					            		switch(spawnList[i]) {
-					            		case 1:
-					            			spawnMobs[i] = new EntitySubmRo500Mob(event.player.worldObj);
-					            			break;
-					            		default:
-					            			spawnMobs[i] = new EntitySubmU511Mob(event.player.worldObj);
-					            			break;
-					            		}
-					            	}
-					            	
-					            	//set mob position and spawn to the world
-					            	for(i = 0; i < 6; i++) {
-					            		spawnMobs[i].setPosition(spawnX, spawnY, spawnZ);
-					            		event.player.worldObj.spawnEntityInWorld(spawnMobs[i]);
-					            	}
-					            	
-					            	//發出spawn msg
-					            	String spawnText = null;
-					            	if(event.player.worldObj.rand.nextInt(2) == 0) {
-					            		spawnText = StatCollector.translateToLocal("chat.shincolle:bossspawn1");
-					            	}
-					            	else {
-					            		spawnText = StatCollector.translateToLocal("chat.shincolle:bossspawn2");
-					            	}
-					            	
-					            	ServerProxy.getServer().getConfigurationManager().sendChatMsg(
-					            			new ChatComponentText(EnumChatFormatting.YELLOW+spawnText+
-					            					EnumChatFormatting.AQUA+" "+spawnX+" "+spawnY+" "+spawnZ));
-					            	
-					            	LogHelper.info("DEBUG : spawn fleet "+spawnX+" "+spawnY+" "+spawnZ);
-									break;
-					            }	
+								//ship lost
+								else {
+									//clear slot if no ship UID (ship UID invalid)
+									if(extProps.getSIDCurrentTeam(i) <= 0) {
+										extProps.addShipEntityToCurrentTeam(i, null);
+									}
+								}	
 							}
-						}
-					}//end roll spawn boss
-				}//end boss cooldown <= 0
+							
+							syncTeamList = true;
+						}//end every 256 ticks
+					}//end every 128 ticks
+				}//end every 32 ticks
+				
+				//spawn boss ticking
+				spawnBoss(event.player, extProps);
 				
 				//init ship UID
 				if(!extProps.getInitSID() && event.player.ticksExisted % 16 == 0) {
@@ -365,6 +221,163 @@ public class FML_COMMON_EventHandler {
 			}//end player per 32 ticks
 		}//end player tick phase: START
 	}//end onPlayerTick
+	
+	/** spawn boss ticking */
+	private void spawnBoss(EntityPlayer player, ExtendPlayerProps extProps) {
+		int blockX = (int) player.posX;
+		int blockZ = (int) player.posZ;
+		int spawnX, spawnY, spawnZ = 0;
+		BiomeGenBase biome = player.worldObj.getBiomeGenForCoords(blockX, blockZ);
+		World w = player.worldObj;
+		Random rng = player.getRNG();
+		
+		//ally cooldown--
+		int allycd = extProps.getPlayerTeamCooldown();
+		if(allycd > 0) {
+			extProps.setPlayerTeamCooldown(--allycd);
+		}
+		
+		//boss cooldown--
+		if((BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.WATER) || 
+			BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.BEACH) ||
+			BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.RIVER) ||
+			BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.OCEAN)) && extProps.hasRing()) {
+			extProps.setBossCooldown(extProps.getBossCooldown() - 1);
+		}
+		
+		//cooldown = 0, roll spawn
+		if(extProps.getBossCooldown() <= 0) {
+			extProps.setBossCooldown(ConfigHandler.bossCooldown);
+			
+			int rolli = rng.nextInt(4);
+			LogHelper.info("DEBUG : spawn boss: roll spawn "+rolli);
+			if(rolli == 0) {
+				//尋找10次地點, 找到一個可生成地點即生成後跳出loop
+				int i;
+				for(i = 0; i < 10; i++) {
+					int offX = rng.nextInt(32) + 32;
+					int offZ = rng.nextInt(32) + 32;
+					
+					switch(rng.nextInt(4)) {
+					case 0:
+						spawnX = blockX + offX;
+						spawnZ = blockZ + offZ;
+						break;
+					case 1:
+						spawnX = blockX - offX;
+						spawnZ = blockZ - offZ;
+						break;
+					case 2:
+						spawnX = blockX + offX;
+						spawnZ = blockZ - offZ;
+						break;
+					case 3:
+						spawnX = blockX - offX;
+						spawnZ = blockZ + offZ;
+						break;
+					default:
+						spawnX = blockX + offX;
+						spawnZ = blockZ + offZ;
+						break;		
+					}
+
+					spawnY = 64 - rng.nextInt(4);
+					
+					Block blockY = w.getBlock(spawnX, spawnY, spawnZ);
+					
+					LogHelper.info("DEBUG : spawn boss: get block "+blockY.getLocalizedName()+" "+spawnX+" "+spawnY+" "+spawnZ);
+					//生成在水面
+					if(blockY.getMaterial() == Material.water) {
+						//check 64x64 range
+						AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(spawnX-64D, spawnY-64D, spawnZ-64D, spawnX+64D, spawnY+64D, spawnZ+64D);
+						List<BasicEntityShipHostile> listBoss = w.getEntitiesWithinAABB(BasicEntityShipHostile.class, aabb);
+						int bossNum = 0;
+						
+						//check boss in list
+						if(listBoss.size() > 0) {
+							for(BasicEntityShipHostile mob : listBoss) {
+								if(mob instanceof IBossDisplayData) {
+									bossNum++;
+								}
+							}
+						}
+						LogHelper.info("DEBUG : spawn boss: check existed boss: "+bossNum+" all mob: "+listBoss.size());
+						
+						//若範圍內不到2隻boss, 則可以再生成新boss
+			            if(bossNum < 2) {
+			            	/**艦隊組成:
+			            	 * boss x2 + destroyer x4
+			            	 * boss id: 0:Nagato 1:Shimakaze
+			            	 * mob id: 0:U511 1:Ro500
+			            	 */
+			            	//roll生成mob
+			            	int[] spawnList = new int[] {0,0,0,0,0,0};
+			            	spawnList[0] = rng.nextInt(4);	//boss 1
+			            	spawnList[1] = rng.nextInt(4);	//boss 2
+			            	spawnList[2] = rng.nextInt(2);	//mob 1
+			            	spawnList[3] = rng.nextInt(2);	//mob 2
+			            	spawnList[4] = rng.nextInt(2);	//mob 3
+			            	spawnList[5] = rng.nextInt(2);	//mob 4
+			            	
+			            	//new生成mob
+			            	BasicEntityShipHostile[] spawnMobs = new BasicEntityShipHostile[6];
+			            	//new bosses
+			            	for(i = 0; i < 2; i++) {
+			            		switch(spawnList[i]) {
+			            		case 1:
+			            			spawnMobs[i] = new EntityDestroyerShimakazeBoss(w);
+			            			break;
+			            		case 2:
+			            			spawnMobs[i] = new EntityBattleshipYMTBoss(w);
+			            			break;
+			            		case 3:
+			            			spawnMobs[i] = new EntityCarrierKagaBoss(w);
+			            			break;
+			            		default:
+			            			spawnMobs[i] = new EntityBattleshipNGTBoss(w);
+			            			break;
+			            		}
+			            	}	
+			            	
+			            	//new mobs
+			            	for(i = 2; i < 6; i++) {
+			            		switch(spawnList[i]) {
+			            		case 1:
+			            			spawnMobs[i] = new EntitySubmRo500Mob(w);
+			            			break;
+			            		default:
+			            			spawnMobs[i] = new EntitySubmU511Mob(w);
+			            			break;
+			            		}
+			            	}
+			            	
+			            	//set mob position and spawn to the world
+			            	for(i = 0; i < 6; i++) {
+			            		spawnMobs[i].setPosition(spawnX, spawnY, spawnZ);
+			            		w.spawnEntityInWorld(spawnMobs[i]);
+			            	}
+			            	
+			            	//發出spawn msg
+			            	String spawnText = null;
+			            	if(rng.nextInt(2) == 0) {
+			            		spawnText = StatCollector.translateToLocal("chat.shincolle:bossspawn1");
+			            	}
+			            	else {
+			            		spawnText = StatCollector.translateToLocal("chat.shincolle:bossspawn2");
+			            	}
+			            	
+			            	ServerProxy.getServer().getConfigurationManager().sendChatMsg(
+			            			new ChatComponentText(EnumChatFormatting.YELLOW+spawnText+
+			            					EnumChatFormatting.AQUA+" "+spawnX+" "+spawnY+" "+spawnZ));
+			            	
+			            	LogHelper.info("DEBUG : spawn fleet "+spawnX+" "+spawnY+" "+spawnZ);
+							break;
+			            }	
+					}
+				}
+			}//end roll spawn boss
+		}//end boss cooldown <= 0
+	}
 	
 	//restore player extProps data, this is SERVER side
 	@SubscribeEvent
@@ -504,9 +517,7 @@ public class FML_COMMON_EventHandler {
 		
 		if(extProps != null) {
 			if(!event.player.worldObj.isRemote) {
-				/**update player id
-				 * NOTE: this is VERY SLOW op with disk access
-				 */
+				/** update player id */
 				ServerProxy.updatePlayerID(event.player);
 				
 				/** save player extend data in server proxy */
@@ -540,20 +551,19 @@ public class FML_COMMON_EventHandler {
 	}
 	
 	/**player change dimension, need to update player data
+	 * 
+	 * TODO BUG: no trigger when End(1) -> Overworld(0) 
 	 */
 	@SubscribeEvent
 	public void onPlayerChangeDim(PlayerEvent.PlayerChangedDimensionEvent event) {
 		/**load player extend data
 		 */
 		LogHelper.info("DEBUG : player change dim: "+event.player.getDisplayName()+" "+event.player.getUniqueID());
-		ExtendPlayerProps extProps = (ExtendPlayerProps) event.player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 		
-		if(extProps != null) {
-			if(!event.player.worldObj.isRemote) {
-				/** update player id */
-				ServerProxy.updatePlayerID(event.player);
-			}//end server side
-		}//end player extProps not null
+		if(event.player != null && !event.player.worldObj.isRemote) {
+			/** update player id */
+			ServerProxy.updatePlayerID(event.player);
+		}//end server side
 	}
 	
 	//change eye height when riding mounts, this is CLIENT ONLY event

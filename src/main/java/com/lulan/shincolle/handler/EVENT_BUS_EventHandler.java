@@ -139,17 +139,16 @@ public class EVENT_BUS_EventHandler {
 		    	attrs[7] = entity.getStateFlagI(ID.F.IsMarried);
 		    	
 		    	/** OWNER SETTING
-		    	 *  1. check player UID first (after rv.22)
-		    	 *  2. if (1) fail, check player UUID string (before rv.22)
+		    	 *  1. check player UID first
+		    	 *  2. if (1) fail, check player UUID string
 		    	 */
 		    	
-		    	/** set owner info by player's UUID (before rv.22) */
+		    	//save owner UUID
 		    	String ownerUUID = EntityHelper.getPetPlayerUUID(entity);
 		    	nbt.setString("owner", ownerUUID);
 		    	
-		    	/** set owner info by player's UID (after rv.22) */
-		    	//save nbt and spawn entity item
-		    	EntityPlayer owner = EntityHelper.getEntityPlayerByUID(entity.getStateMinor(ID.M.PlayerUID), entity.worldObj);
+		    	//save owner UID & name
+		    	EntityPlayer owner = EntityHelper.getEntityPlayerByUID(entity.getStateMinor(ID.M.PlayerUID));
 		    	
 		    	if(owner != null) {
 		    		nbt.setString("ownername", owner.getDisplayName());

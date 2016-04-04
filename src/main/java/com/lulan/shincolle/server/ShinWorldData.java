@@ -12,8 +12,8 @@ import net.minecraft.world.WorldSavedData;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.team.TeamData;
-import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.LogHelper;
+import com.lulan.shincolle.utility.NBTHelper;
 
 /**伺服器端資料
  * 儲存player id等, 伺服器端判定用資料
@@ -95,7 +95,7 @@ public class ShinWorldData extends WorldSavedData {
 		    NBTTagCompound save = new NBTTagCompound();
 		    save.setInteger(TAG_PUID, uid);
 		    save.setIntArray(TAG_PDATA, data0);
-		    LogHelper.info("DEBUG : save world data: save id "+uid+" data: "+data0[0]+" "+data0[1]+" "+data0[2]);
+		    LogHelper.info("DEBUG : save world data: save id "+uid+" data: "+data0[0]);
 		    
 		    //save target class list
 		    strList = ServerProxy.getPlayerTargetClassList(uid);
@@ -130,21 +130,13 @@ public class ShinWorldData extends WorldSavedData {
 		    save.setString(TAG_TNAME, data.getTeamName());
 		    save.setString(TAG_TLNAME, data.getTeamLeaderName());
 		    
-	    	saveIntListToNBT(save, TAG_TBAN, data.getTeamBannedList());
-	    	saveIntListToNBT(save, TAG_TALLY, data.getTeamAllyList());
+		    NBTHelper.saveIntListToNBT(save, TAG_TBAN, data.getTeamBannedList());
+		    NBTHelper.saveIntListToNBT(save, TAG_TALLY, data.getTeamAllyList());
 		    
 		    list.appendTag(save);	//將save加入到list中, 不檢查是否有重複的tag, 而是新增一個tag
 		}
 		nbt.setTag(TAG_TEAMDATA, list);	//將list加入到nbt中
 	}//end write nbt
 	
-	private static void saveIntListToNBT(NBTTagCompound save, String tagName, List<Integer> ilist) {
-		if(ilist != null && ilist.size() > 0) {
-	    	int[] intary = CalcHelper.intListToArray(ilist);
-	    	save.setIntArray(tagName, intary);
-	    }
-	}
 	
-	
-
 }

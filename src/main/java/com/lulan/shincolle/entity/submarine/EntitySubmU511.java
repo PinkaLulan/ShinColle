@@ -77,7 +77,7 @@ public class EntitySubmU511 extends BasicEntityShipSmall implements IShipInvisib
   			if(this.ticksExisted % 128 == 0) {
   				if(getStateFlag(ID.F.UseRingEffect)) {
   					//apply ability to player
-  					EntityPlayerMP player = (EntityPlayerMP) EntityHelper.getEntityPlayerByUID(this.getPlayerUID(), this.worldObj);
+  					EntityPlayerMP player = (EntityPlayerMP) EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
   	  				if(getStateFlag(ID.F.IsMarried) && getStateMinor(ID.M.NumGrudge) > 0 && player != null && getDistanceSqToEntity(player) < 256D) {
   	  					//potion effect: id, time, level
   	  	  	  			player.addPotionEffect(new PotionEffect(Potion.invisibility.id, 60 + getLevel() * 10));

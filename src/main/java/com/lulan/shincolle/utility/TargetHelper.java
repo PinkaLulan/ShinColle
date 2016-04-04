@@ -210,9 +210,9 @@ public class TargetHelper {
         			return false;
         		}
 				
-				//do not attack OP player
+				//do not attack creative mode player
         		if(target2 instanceof EntityPlayer) {
-        			return !EntityHelper.checkOP((EntityPlayer) target2);
+        			return !((EntityPlayer)target2).capabilities.isCreativeMode;
         		}
         		
         		//attack ship
@@ -257,9 +257,9 @@ public class TargetHelper {
         			return false;
         		}
         		
-        		//do not attack OP player
+        		//do not attack creative mode player
         		if(target2 instanceof EntityPlayer) {
-        			return !EntityHelper.checkOP((EntityPlayer) target2);
+        			return !((EntityPlayer)target2).capabilities.isCreativeMode;
         		}
         		
         		//attack ship

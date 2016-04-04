@@ -409,21 +409,6 @@ public class EntityHelper {
 		return null;
 	}
 	
-	/** get player by ship entity */
-	public static EntityPlayer getEntityPlayerByShip(BasicEntityShip ship, boolean isClient) {
-		if(ship != null) {
-			int pUID = ship.getPlayerUID();
-			
-			if(isClient) { //client side method
-				return (EntityPlayer) ship.getOwner();
-			}
-			else {         //server side method
-				return getEntityPlayerByUID(pUID);
-			}
-		}
-		return null;
-	}
-	
 	/** get (online) player by entity ID */
 	public static EntityPlayer getEntityPlayerByID(int entityID, int worldID, boolean isClient) {
 		World world;
@@ -474,75 +459,46 @@ public class EntityHelper {
 		return null;
 	}
 	
-	/** get (online) player by player UID, SERVER SIDE ONLY (get world id from player cache) */
+	/** get cached player entity by player UID, no world id check, SERVER SIDE ONLY */
 	public static EntityPlayer getEntityPlayerByUID(int uid) {
 		if(uid > 0) {
-			int[] pdata = null;
-			World world = null;
+			//get all worlds
+			World[] worlds = ServerProxy.getServerWorld();
 			
+			//get player data
+			int peid = getPlayerEID(uid);
+
+			//get player entity
 			try {
-				//get world
-				if(uid > 0) pdata = ServerProxy.getPlayerWorldData(uid);
-				if(pdata != null) world = ServerProxy.getServerWorldByWorldID(pdata[2]);
+				for(World w : worlds) {  //check all world
+					for(Object obj : w.playerEntities) {  //check player entity list
+						if(obj instanceof EntityPlayer && ((EntityPlayer)obj).getEntityId() == peid) {
+							return (EntityPlayer) obj;
+						}
+					}
+				}
 			}
 			catch(Exception e) {
-				LogHelper.info("DEBUG : get player by UID fail: "+e);
+				LogHelper.info("DEBUG : get EntityPlayer by name fail: "+e);
 			}
-			
-			return getEntityPlayerByUID(uid, world);
 		}
 		
 		return null;
 	}
 	
-	/** get (online) player by player UID, SERVER SIDE ONLY */
-	public static EntityPlayer getEntityPlayerByUID(int uid, World world) {
-		if(world != null && !world.isRemote && uid > 0) {
-			//從server proxy抓出player uid cache
-			int[] pdata = ServerProxy.getPlayerWorldData(uid);
-			
-			if(pdata != null && pdata.length > 2) {
-				//成功抓到data, 且player的world跟呼叫者的world相同
-				if(pdata[2] != world.provider.dimensionId) {
-//					LogHelper.info("DEBUG : player not found: different world: "+world.provider.dimensionId+" vs "+pdata[2]);
-					return null;
-				}
-				
-				return getEntityPlayerByID(pdata[0], world.provider.dimensionId, world.isRemote);
-			}
-		}
-//		LogHelper.info("DEBUG : player not found: uid: "+uid+" client? "+world.isRemote);
-		return null;
-	}
-	
-	/** get (online) player entity id by player UID, SERVER SIDE ONLY */
+	/** get cached player entity id by player UID, SERVER SIDE ONLY */
 	public static int getPlayerEID(int uid) {
 		if(uid > 0) {
 			//從server proxy抓出player uid cache
 			int[] pdata = ServerProxy.getPlayerWorldData(uid);
 			
-			//成功抓到data
-			if(pdata != null && pdata.length > 2) {
+			//get data
+			if(pdata != null) {
 				return pdata[0];
 			}
 		}
 		
 		return -1;
-	}
-	
-	/** get (online) player team id by player UID, SERVER SIDE ONLY */
-	public static int getPlayerTID(int uid) {
-		if(uid > 0) {
-			//從server proxy抓出player uid cache
-			int[] pdata = ServerProxy.getPlayerWorldData(uid);
-			
-			//成功抓到data
-			if(pdata != null && pdata.length > 2) {
-				return pdata[1];
-			}
-		}
-		
-		return 0;
 	}
 	
 	/** get player UID by entity */
@@ -603,8 +559,7 @@ public class EntityHelper {
 	/** get player team data by player UID, SERVER SIDE ONLY */
 	public static TeamData getTeamDataByUID(int uid) {
 		if(uid > 0) {
-			int tid = getPlayerTID(uid);
-			return ServerProxy.getTeamData(tid);
+			return ServerProxy.getTeamData(uid);
 		}
 		
 		return null;
@@ -622,10 +577,10 @@ public class EntityHelper {
 		}
 	}
 	
-	/** set owner uuid for pet by player UID and pet entity */
+	/** set owner uuid for pet by player UID and pet entity, SERVER SIDE ONLY */
 	public static void setPetPlayerUUID(int pid, EntityTameable pet) {
 		if(pet != null) {
-			EntityPlayer owner = EntityHelper.getEntityPlayerByUID(pid, pet.worldObj);
+			EntityPlayer owner = getEntityPlayerByUID(pid);
 			setPetPlayerUUID(owner, pet);
 		}
 	}
@@ -637,7 +592,7 @@ public class EntityHelper {
 		}
 	}
 	
-	/** set owner uuid for pet by player uuid and pet entity*/
+	/** set owner uuid for pet by player uuid and pet entity */
 	public static void setPetPlayerUUID(String uuid, EntityTameable pet) {
 		if(pet != null) {
 			pet.func_152115_b(uuid);

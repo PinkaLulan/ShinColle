@@ -974,9 +974,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	public void sendGUISyncPacket() {
 		if(!this.worldObj.isRemote) {
 			if(this.getPlayerUID() > 0) {
-				EntityPlayerMP player = (EntityPlayerMP) EntityHelper.getEntityPlayerByUID(this.getPlayerUID(), this.worldObj);
+				EntityPlayerMP player = (EntityPlayerMP) EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
+				
 				//owner在附近才需要sync
-				if(player != null && this.getDistanceToEntity(player) < 32F) {
+				if(player != null && player.dimension == this.dimension &&
+				   this.getDistanceToEntity(player) < 32F) {
 					CommonProxy.channelG.sendTo(new S2CGUIPackets(this), player);
 				}
 			}
@@ -1002,9 +1004,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			}
 			else {
 				EntityPlayerMP player = null;
+				
 				//for owner, send all data
 				if(this.getPlayerUID() > 0) {
-					player = (EntityPlayerMP) EntityHelper.getEntityPlayerByUID(this.getPlayerUID(), this.worldObj);
+					player = (EntityPlayerMP) EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
 				}
 				
 				//owner在附近才需要sync
@@ -1264,7 +1267,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 						}
 						
 						//3. check player online
-						EntityPlayer target = EntityHelper.getEntityPlayerByUID(idtarget, this.worldObj);
+						EntityPlayer target = EntityHelper.getEntityPlayerByUID(idtarget);
 						
 						if(target != null) {
 							ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
@@ -1574,11 +1577,14 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				else {
 					this.setStateMinor(ID.M.PlayerEID, -1);
 				}
-				
-				//TODO DEBUG TEST
-//				ParticleHelper.spawnAttackParticleAtEntity(this, 1D, 1D, 0D, (byte)4);
 			}//end every 32 ticks
 		}//end client side
+		
+		
+//		//TODO debug
+//		if(this.ticksExisted % 32 == 0) {
+//			LogHelper.info("AAAAAAAAAAAA "+this.worldObj.isRemote+" "+this.getStateMinor(ID.M.PlayerUID)+" "+this.getStateMinor(ID.M.PlayerEID)+" "+EntityHelper.getEntityPlayerByID(getStateMinor(ID.M.PlayerEID), 0, true));
+//		}
 	}
 
 	/** update living entity 
@@ -1682,7 +1688,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                     		//check owner online
                     		if(this.getPlayerUID() > 0) {
                     			//get owner
-                    			EntityPlayer player = EntityHelper.getEntityPlayerByUID(this.getPlayerUID(), this.worldObj);
+                    			EntityPlayer player = EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
 
                     			//owner exists (online and same world)
                     			if(player != null) {
@@ -2319,7 +2325,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	@Override
 	public Entity getHostEntity() {
 		if(this.getPlayerUID() > 0) {
-			return EntityHelper.getEntityPlayerByUID(this.getPlayerUID(), this.worldObj);
+			return EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
 		}
 		else {
 			return this.getOwner();

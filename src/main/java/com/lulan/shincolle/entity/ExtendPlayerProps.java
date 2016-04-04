@@ -63,7 +63,7 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 	private int playerUID;
 	private int playerTeamID;
 	
-	//player team var: for client side GUI only, do not use these at server side
+	//player team: for client side GUI only, do not use these at server side
 	private Map<Integer, TeamData> mapTeamData;
 	private List<TeamData> listTeamData;
 	
@@ -1053,7 +1053,7 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 		return false;
 	}
 	
-	//check team is player's ally
+	/** check team is ally, CLIENT SIDE ONLY for GUI display */
 	public boolean isTeamAlly(int par1) {
 		//no team (id 0) = friendly to everyteam
 		if(par1 == 0) return true;
@@ -1065,19 +1065,11 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 				if(this.getPlayerTeamAllyList().contains(par1)) return true;
 			}
 		}
-		//for server side, get team data from server cache
-		else {
-			TeamData tdata = ServerProxy.getTeamData(EntityHelper.getPlayerTID(this.getPlayerUID()));
-		
-			if(tdata != null) {
-				tdata.isTeamAlly(par1);
-			}
-		}
 		
 		return false;
 	}
 	
-	//check team is player's attack target
+	/** check team is enemy, CLIENT SIDE ONLY for GUI display */
 	public boolean isTeamBanned(int par1) {
 		//no team (id 0) = friendly to everyteam
 		if(par1 == 0) return false;
@@ -1087,14 +1079,6 @@ public class ExtendPlayerProps implements IExtendedEntityProperties {
 			if(this.getPlayerTeamID() > 0 && this.getPlayerTeamBannedList() != null) {
 				//check team ally id
 				if(this.getPlayerTeamBannedList().contains(par1)) return true;
-			}
-		}
-		//for server side, get team data from server cache
-		else {
-			TeamData tdata = ServerProxy.getTeamData(EntityHelper.getPlayerTID(this.getPlayerUID()));
-		
-			if(tdata != null) {
-				tdata.isTeamBanned(par1);
 			}
 		}
 		

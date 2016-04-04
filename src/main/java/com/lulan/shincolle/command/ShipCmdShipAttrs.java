@@ -65,10 +65,8 @@ public class ShipCmdShipAttrs extends BasicShipCommand {
 		if(sender instanceof EntityPlayer){
             return true;
 	    } 
-	    else {
-	    	sender.addChatMessage(new ChatComponentText("Command: ShipAttrs: sender is not player!"));
-	    	return false;
-	    }
+
+		return false;
 	}
 	
 	/** parms auto input method */
@@ -100,6 +98,7 @@ public class ShipCmdShipAttrs extends BasicShipCommand {
 				
 				//need owner parm
 				if(cmd.length != 7) {
+					sender.addChatMessage(new ChatComponentText(getCommandUsage(sender)));
 					sender.addChatMessage(new ChatComponentText("Command: ShipAttrs: invalid parameter! (required 7 parms)"));
 					return;
 				}
@@ -113,12 +112,14 @@ public class ShipCmdShipAttrs extends BasicShipCommand {
 					
 					//check data
 					if(data[0] <= 0 || data[0] > 150) {
+						sender.addChatMessage(new ChatComponentText(getCommandUsage(sender)));
 						sender.addChatMessage(new ChatComponentText("Command: ShipAttrs: invalid ship level! (1~150)"));
 						return;
 					}
 					
 					if(data[1] < 0 || data[2] < 0 || data[3] < 0 || data[4] < 0 || data[5] < 0 || data[6] < 0 ||
 					   data[1] > 100 || data[2] > 100 || data[3] > 100 || data[4] > 100 || data[5] > 100 || data[6] > 100) {
+						sender.addChatMessage(new ChatComponentText(getCommandUsage(sender)));
 						sender.addChatMessage(new ChatComponentText("Command: ShipAttrs: invalid bonus level! (0~100)"));
 						return;
 					}

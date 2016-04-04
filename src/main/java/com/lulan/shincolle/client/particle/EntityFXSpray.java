@@ -64,7 +64,7 @@ public class EntityFXSpray extends EntityFX {
             this.particleAlpha = 0.7F;
             this.particleScale *= 1.5F;
             this.pScale = this.particleScale;
-            this.particleMaxAge = 40;
+            this.particleMaxAge = 10;
             this.noClip = false;
         	break;
         case 4:   //0.8A red
@@ -164,7 +164,7 @@ public class EntityFXSpray extends EntityFX {
             this.particleAlpha = 1F;
             this.particleScale *= 1.5F;
             this.pScale = this.particleScale;
-            this.particleMaxAge = 40;
+            this.particleMaxAge = 10;
             this.noClip = false;
         	break;
         }

@@ -70,10 +70,8 @@ public class ShipCmdChangeShipOwner extends BasicShipCommand {
 		if(sender instanceof EntityPlayer){
             return true;
 	    } 
-	    else {
-	    	sender.addChatMessage(new ChatComponentText("Command: ShipChangeOwner: sender is not player!"));
-	    	return false;
-	    }
+
+		return false;
 	}
 	
 	/** parms auto input method */
@@ -108,6 +106,7 @@ public class ShipCmdChangeShipOwner extends BasicShipCommand {
 				
 				//need owner parm
 				if(cmd.length < 1) {
+					sender.addChatMessage(new ChatComponentText(getCommandUsage(sender)));
 					sender.addChatMessage(new ChatComponentText("Command: ShipChangeOwner: player parameter is null!"));
 					return;
 				}

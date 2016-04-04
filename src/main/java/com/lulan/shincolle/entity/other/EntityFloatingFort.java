@@ -19,6 +19,7 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
+import com.lulan.shincolle.utility.TargetHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -38,6 +39,9 @@ public class EntityFloatingFort extends BasicEntityAirplane {
         if(host instanceof BasicEntityShip) {
         	BasicEntityShip ship = (BasicEntityShip) host;
         	
+        	this.targetSelector = new TargetHelper.Selector(ship);
+    		this.targetSorter = new TargetHelper.Sorter(ship);
+    		
         	//basic attr
             this.atk = ship.getStateFinal(ID.ATK_H) * 0.75F;
             this.def = ship.getStateFinal(ID.DEF) * 0.75F;
@@ -49,6 +53,8 @@ public class EntityFloatingFort extends BasicEntityAirplane {
             this.numAmmoHeavy = 1;
             this.useAmmoLight = false;
             this.useAmmoHeavy = true;
+            this.backHome = false;
+            this.canFindTarget = false;
             
             //設定發射位置
             this.posX = ship.posX;
@@ -96,7 +102,7 @@ public class EntityFloatingFort extends BasicEntityAirplane {
 		//server side
 		else {
 			//目標消失或死亡, 直接移除此entity
-			if(this.atkTarget == null || !this.atkTarget.isEntityAlive() || this.ticksExisted >= 500) {
+			if(this.backHome || this.atkTarget == null || !this.atkTarget.isEntityAlive() || this.ticksExisted >= 500) {
 				this.onImpact();
 				return;
 			}
