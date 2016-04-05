@@ -27,8 +27,8 @@ public class EntityAirplaneTakoyaki extends BasicEntityAirplane {
 		if(host instanceof BasicEntityShip) {
         	BasicEntityShip ship = (BasicEntityShip) host;
         	
-        	this.targetSelector = new TargetHelper.Selector(this);
-    		this.targetSorter = new TargetHelper.Sorter(this);
+        	this.targetSelector = new TargetHelper.Selector(ship);
+    		this.targetSorter = new TargetHelper.Sorter(ship);
     		
             //basic attr
             this.atk = ship.getStateFinal(ID.ATK_AH);

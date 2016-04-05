@@ -191,7 +191,14 @@ public class FormationHelper {
 			if(s != null) {
 				flagShip = s;
 				owner = EntityHelper.getEntityPlayerByUID(flagShip.getPlayerUID());
-				break;
+				
+				//check owner is same dimension
+				if(owner.dimension == s.dimension) {
+					break;
+				}
+				else {
+					owner = null;  //clear
+				}
 			}
 		}
 		

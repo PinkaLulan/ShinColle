@@ -63,10 +63,8 @@ public class ShipCmdShipInfo extends BasicShipCommand {
 		if(sender instanceof EntityPlayer){
             return true;
 	    } 
-	    else {
-	    	sender.addChatMessage(new ChatComponentText("Command: ShipInfo: sender is not player!"));
-	    	return false;
-	    }
+
+		return false;
 	}
 	
 	/** parms auto input method */

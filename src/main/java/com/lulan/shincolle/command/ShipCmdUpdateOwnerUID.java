@@ -64,10 +64,8 @@ public class ShipCmdUpdateOwnerUID extends BasicShipCommand {
 		if(sender instanceof EntityPlayer){
             return true;
 	    } 
-	    else {
-	    	sender.addChatMessage(new ChatComponentText("Command: ShipUpdateOwnerUID: sender is not player!"));
-	    	return false;
-	    }
+
+		return false;
 	}
 	
 	/** parms auto input method */

@@ -64,7 +64,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
 	public boolean shouldExecute() {
     	if(!host.getIsSitting() && !host.getIsRiding() && !host.getIsLeashed() && 
     	   !host.getStateFlag(ID.F.NoFuel) && host.getStateFlag(ID.F.CanFollow)) {
-    		EntityLivingBase OwnerEntity = EntityHelper.getEntityPlayerByUID(this.host.getPlayerUID(), this.host2.worldObj);
+    		EntityLivingBase OwnerEntity = EntityHelper.getEntityPlayerByUID(this.host.getPlayerUID());
 
     		//get owner distance
             if(OwnerEntity != null) {
@@ -131,7 +131,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
         	//update follow range every 32 ticks
         	if(host2.ticksExisted % 32 == 0){
         		//update owner distance
-            	EntityLivingBase OwnerEntity = EntityHelper.getEntityPlayerByUID(this.host.getPlayerUID(), this.host2.worldObj);
+            	EntityLivingBase OwnerEntity = EntityHelper.getEntityPlayerByUID(this.host.getPlayerUID());
 
                 if(OwnerEntity != null) {
                 	this.owner = OwnerEntity;
