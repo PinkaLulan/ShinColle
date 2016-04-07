@@ -15,7 +15,7 @@ public class EntityAIShipSit extends EntityAIBase
 
     public EntityAIShipSit(BasicEntityShip entity) {
         this.host = entity;
-        this.setMutexBits(5);
+        this.setMutexBits(7);
     }
 
     @Override

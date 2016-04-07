@@ -1,5 +1,6 @@
 package com.lulan.shincolle.entity.carrier;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -13,13 +14,14 @@ import com.lulan.shincolle.entity.other.EntityAirplaneT;
 import com.lulan.shincolle.entity.other.EntityAirplaneZero;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Reference;
 
 
 public class EntityCarrierKaga extends BasicEntityShipCV {
 	
 	public EntityCarrierKaga(World world) {
 		super(world);
-		this.setSize(0.6F, 1.8F);	//碰撞大小 跟模型大小無關
+		this.setSize(0.7F, 1.85F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.STANDARD_CARRIER);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.CarrierKaga);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CARRIER);
@@ -33,6 +35,9 @@ public class EntityCarrierKaga extends BasicEntityShipCV {
 		//set attack type
 		this.StateFlag[ID.F.AtkType_Light] = false;
 		this.StateFlag[ID.F.AtkType_Heavy] = false;
+		
+		//misc
+		this.setFoodSaturationMax(20);
 		
 		this.initTypeModify();
 	}
@@ -63,14 +68,14 @@ public class EntityCarrierKaga extends BasicEntityShipCV {
 		super.setAIList();
 
 		//attack AI
-		this.tasks.addTask(11, new EntityAIShipCarrierAttack(this));		   //0011
+		this.tasks.addTask(11, new EntityAIShipCarrierAttack(this));
 	}
     
     //check entity state every tick
   	@Override
   	public void onLivingUpdate() {
   		super.onLivingUpdate();
-          
+  		
 //  		//client side
 //  		if(worldObj.isRemote) {
 //
@@ -133,7 +138,7 @@ public class EntityCarrierKaga extends BasicEntityShipCV {
 	}
 	
 	@Override
-	protected BasicEntityAirplane getAirplane(boolean isLightAirplane) {
+	protected BasicEntityAirplane getAttackAirplane(boolean isLightAirplane) {
 		if(isLightAirplane) {
 			return new EntityAirplaneZero(this.worldObj);
 		}
@@ -142,6 +147,41 @@ public class EntityCarrierKaga extends BasicEntityShipCV {
 		}
 	}
 	
+	/** change aircraft launch sound to bow sound */
+	@Override
+	protected void applySoundAtAttacker(int type, Entity target) {
+  		switch(type) {
+  		case 1:  //light cannon
+  			//fire sound
+  			playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  	        
+  			//entity sound
+  			if(this.rand.nextInt(10) > 7) {
+  	        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  	        }
+  			break;
+  		case 2:  //heavy cannon
+  			//fire sound
+  	        this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+
+  	        //entity sound
+  	        if(this.getRNG().nextInt(10) > 7) {
+  	        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  	        }
+  			break;
+  		case 3:  //light aircraft
+  			playSound("random.bow", ConfigHandler.fireVolume + 0.2F, 1.0F / (this.rand.nextFloat() * 0.4F + 1.2F) + 0.5F);
+  			break;
+  		case 4:  //heavy aircraft
+  			playSound("random.bow", ConfigHandler.fireVolume + 0.2F, 1.0F / (this.rand.nextFloat() * 0.4F + 1.2F) + 0.5F);
+  			break;
+		default: //melee
+			if(this.getRNG().nextInt(10) > 6) {
+	        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+	        }
+			break;
+  		}
+  	}
 
 
 }

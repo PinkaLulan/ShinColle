@@ -2,12 +2,9 @@ package com.lulan.shincolle.entity.submarine;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
@@ -21,7 +18,6 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.CalcHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -85,8 +81,7 @@ public class EntitySubmU511Mob extends BasicEntityShipHostile implements IShipIn
 		super.setAIList();
 
 		//use range attack
-		this.tasks.addTask(1, new EntityAIShipRangeAttack(this));			   //0011
-		this.tasks.addTask(2, new EntityAIMoveTowardsTarget(this, 1D, 40F));   //0001
+		this.tasks.addTask(1, new EntityAIShipRangeAttack(this));
 	}
 	
 	//set invisible

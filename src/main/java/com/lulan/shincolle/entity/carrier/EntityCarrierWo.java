@@ -17,7 +17,7 @@ public class EntityCarrierWo extends BasicEntityShipCV {
 	
 	public EntityCarrierWo(World world) {
 		super(world);
-		this.setSize(0.6F, 1.8F);
+		this.setSize(0.7F, 2F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.STANDARD_CARRIER);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.CarrierWO);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CARRIER);
@@ -32,6 +32,9 @@ public class EntityCarrierWo extends BasicEntityShipCV {
 		//set attack type
 		this.StateFlag[ID.F.AtkType_Light] = false;
 		this.StateFlag[ID.F.AtkType_Heavy] = false;
+		
+		//misc
+		this.setFoodSaturationMax(18);
 	}
 	
 	//for morph
@@ -50,7 +53,7 @@ public class EntityCarrierWo extends BasicEntityShipCV {
 	public void setAIList() {
 		super.setAIList();
 		//use range attack
-		this.tasks.addTask(11, new EntityAIShipCarrierAttack(this));		   //0011
+		this.tasks.addTask(11, new EntityAIShipCarrierAttack(this));
 	}
     
     //增加艦載機數量計算
@@ -64,6 +67,7 @@ public class EntityCarrierWo extends BasicEntityShipCV {
       
     @Override
     public void onLivingUpdate() {
+    	
     	//check client side
     	if(this.worldObj.isRemote) {
     		if(this.ticksExisted % 5 ==  0) {

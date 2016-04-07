@@ -48,6 +48,9 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 /**for EVENT_BUS event only <br>
  * (not for FML event)
+ * 
+ * priority=EventPriority.NORMAL 事件優先權, 同事件會由高優先權的mod先跑
+ * receiveCanceled=true 使事件被其他mod取消, 本mod依然可以接收
  */
 public class EVENT_BUS_EventHandler {
 
@@ -213,7 +216,9 @@ public class EVENT_BUS_EventHandler {
 		//add kills number
 	    if(ent != null) {
 	    	if(ent instanceof BasicEntityShip) {	//本體擊殺
-	    		((BasicEntityShip)ent).addKills();
+	    		BasicEntityShip ship = (BasicEntityShip) ent;
+	    		ship.addKills();
+	    		ship.setStateMinor(ID.M.Morale, ship.getStateMinor(ID.M.Morale) + 1);
 	    	}
 	    	else if(ent instanceof IShipAttackBase) {	//其他召喚物擊殺
 	    		if(((IShipAttackBase) ent).getHostEntity() != null &&
@@ -243,7 +248,7 @@ public class EVENT_BUS_EventHandler {
 	}
 	
 	//add extend props to entity
-	@SubscribeEvent
+	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
 	public void onEntityConstructing(EntityConstructing event) {
 	    //ship ext props
 		if(event.entity instanceof BasicEntityShip && event.entity.getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME) == null) {
@@ -263,7 +268,7 @@ public class EVENT_BUS_EventHandler {
 	/**Add ship mob spawn in squid event
 	 * FIX: add spawn limit (1 spawn within 32 blocks)
 	 */
-	@SubscribeEvent
+	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
 	public void onSquidSpawn(LivingSpawnEvent.CheckSpawn event) {
 		if(event.entityLiving instanceof EntitySquid) {
 			if(event.world.rand.nextInt((int)ConfigHandler.scaleMobSubm[6]) == 0) {
@@ -298,7 +303,7 @@ public class EVENT_BUS_EventHandler {
 	 * 由於global mapstorage不管在world都是讀取同一個handler, 所以不檢查world id, 隨便一個world皆可
 	 * 若為perMapStorage, 則是不同world各有一份
 	 */
-	@SubscribeEvent
+	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
 	public void onWorldLoad(WorldEvent.Load event) {
 		LogHelper.info("DEBUG : on world load: "+event.world.provider.dimensionId);
 		
@@ -337,7 +342,7 @@ public class EVENT_BUS_EventHandler {
 	/** on entity attack event, BOTH SIDE EVENT
 	 *  set ship's revenge target if player attack or be attacked
 	 */
-	@SubscribeEvent
+	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
 	public void onEntityAttack(LivingAttackEvent event) {
 		//server side only
 		if(event.entity != null && !event.entity.worldObj.isRemote) {

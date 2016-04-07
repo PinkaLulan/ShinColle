@@ -2,7 +2,6 @@ package com.lulan.shincolle.entity.battleship;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
 import net.minecraft.entity.boss.IBossDisplayData;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -80,8 +79,7 @@ public class EntityBattleshipYMTBoss extends BasicEntityShipHostile implements I
 		super.setAIList();
 
 		//use range attack
-		this.tasks.addTask(1, new EntityAIShipRangeAttack(this));			   //0011
-		this.tasks.addTask(2, new EntityAIMoveTowardsTarget(this, 1D, 40F));   //0001
+		this.tasks.addTask(1, new EntityAIShipRangeAttack(this));
 	}
 	
 	//num rensouhou++

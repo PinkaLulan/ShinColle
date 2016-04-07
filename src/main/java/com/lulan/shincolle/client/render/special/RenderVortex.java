@@ -1,4 +1,4 @@
-package com.lulan.shincolle.client.render;
+package com.lulan.shincolle.client.render.special;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;

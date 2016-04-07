@@ -5,7 +5,6 @@ import java.util.List;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.GameSettings;
-import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,7 +15,6 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 
-import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
@@ -31,7 +29,6 @@ import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
-import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -65,8 +62,16 @@ public class PointerItem extends BasicItem {
 	
 	@Override
 	public IIcon getIconFromDamage(int meta) {
-		if(meta > 2) meta = 0;
-		return icons[meta];
+		switch(meta) {
+		case 1:
+		case 4:
+			return icons[1];
+		case 2:
+		case 5:
+			return icons[2];
+		default:
+			return icons[0];
+		}
 	}
 	
 	//item glow effect
@@ -246,8 +251,21 @@ public class PointerItem extends BasicItem {
 					}
 					//sneak only: change pointer mode
 					else {
-						meta++;
-						if(meta > 2) meta = 0;
+						//meta++ and cancel caress head mode
+						switch(meta) {
+						case 1:
+						case 4:
+							meta = 2;
+							break;
+						case 2:
+						case 5:
+							meta = 0;
+							break;
+						default:
+							meta = 1;
+							break;
+						}
+
 						item.setItemDamage(meta);
 						
 						//send sync packet to server
@@ -314,6 +332,9 @@ public class PointerItem extends BasicItem {
 	 *   player(hostile):	-<br>
 	 *   other:				-<br>
 	 *<br>
+	 *
+	 * if meta > 2<br>
+	 *   caress head mode
 	 */
 	@Override
     public ItemStack onItemRightClick(ItemStack item, World world, EntityPlayer player) {
@@ -339,6 +360,7 @@ public class PointerItem extends BasicItem {
 				//若為ship or mounts
 				if(hitObj.entityHit instanceof BasicEntityShip || hitObj.entityHit instanceof BasicEntityMount) {
 					BasicEntityShip ship = null;
+					
 					//get ship entity
 					if(hitObj.entityHit instanceof BasicEntityShip) {
 						ship = (BasicEntityShip)hitObj.entityHit;
@@ -346,6 +368,7 @@ public class PointerItem extends BasicItem {
 					else {
 						ship = (BasicEntityShip) ((BasicEntityMount)hitObj.entityHit).getHostEntity();
 					}
+					
 					//null check
 					if(ship == null) return item;
 					
@@ -483,13 +506,11 @@ public class PointerItem extends BasicItem {
 	//按住物品時
 	@Override
 	public void onUsingTick(ItemStack stack, EntityPlayer player, int count) {
-//		LogHelper.info("DEBUG : using pointer "+count);
     }
 
 	//right click on solid block
 	@Override
 	public boolean onItemUse(ItemStack item, EntityPlayer player, World world, int x, int y, int z, int side, float hitx, float hity, float hitz) {
-//		LogHelper.info("DEBUG : use pointer "+world.isRemote+" "+player.getDisplayName()+" "+x+" "+y+" "+z+" "+side+" "+hitx+" "+hity+" "+hitz);
 		return false;
     }
 	
@@ -550,10 +571,10 @@ public class PointerItem extends BasicItem {
 					}
 				}
 			}
-		}
+		}//end client side
 		
 		//show team mark
-		if(inUse || ConfigHandler.alwaysShowTeamParticle) {
+		if((inUse || ConfigHandler.alwaysShowTeamParticle) && item.getItemDamage() < 3) {
 			if(player instanceof EntityPlayer) {
 				//client side
 				if(world.isRemote) {
@@ -584,9 +605,11 @@ public class PointerItem extends BasicItem {
 											type = 1;
 											break;
 										case 1:		//group mode
+										case 4:
 											type = 2;
 											break;
 										case 2:		//formation mode
+										case 5:
 											type = 3;
 											break;
 										}
@@ -598,6 +621,7 @@ public class PointerItem extends BasicItem {
 											type = 0;
 											break;
 										case 2:		//formation mode
+										case 5:
 											type = 3;
 											break;
 										}

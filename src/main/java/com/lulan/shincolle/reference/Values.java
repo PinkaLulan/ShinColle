@@ -731,13 +731,18 @@ public class Values {
 		//page 3: vortex
 		put(2003, Arrays.asList(new int[] {0, 0, 0, 0},
 								new int[] {0, 1, 0, 0},
-								new int[] {1, 0, 0, 60, 0, 100, 180, 100, 68},
+								new int[] {1, 0, 0, 60, 0, 100, 180, 100, 65},
 								new int[] {1, 1, -7, -18, 0, 200, 0, 38, 38},
 								new int[] {1, 1, 31, -18, 0, 200, 38, 38, 38},
 								new int[] {1, 1, 69, -18, 0, 200, 76, 38, 38}));
 		//page 4: vortex
 		put(2004, Arrays.asList(new int[] {0, 0, 0, 0},
 								new int[] {0, 1, 0, 0}));
+		//chap 3:
+		//page 13: morale
+		put(3013, Arrays.asList(new int[] {0, 0, 0, 0},
+								new int[] {0, 1, 0, 0},
+								new int[] {1, 0, 0, 120, 0, 100, 245, 100, 11}));
 		
 	}});
 	

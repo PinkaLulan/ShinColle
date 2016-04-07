@@ -4,7 +4,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
@@ -31,7 +30,7 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall {
 	
 	public EntityBattleshipYMT(World world) {
 		super(world);
-		this.setSize(0.6F, 1.8F);	//碰撞大小 跟模型大小無關
+		this.setSize(0.8F, 2.1F);	//碰撞大小 跟模型大小無關
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.BattleshipYamato);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
@@ -43,6 +42,9 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall {
 		//set attack type
 		this.StateFlag[ID.F.AtkType_AirLight] = false;
 		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
+		
+		//misc
+		this.setFoodSaturationMax(30);
 		
 		this.initTypeModify();
 	}
@@ -64,14 +66,14 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall {
 		super.setAIList();
 
 		//use range attack (light)
-		this.tasks.addTask(11, new EntityAIShipRangeAttack(this));			   //0011
+		this.tasks.addTask(11, new EntityAIShipRangeAttack(this));
 	}
     
     //check entity state every tick
   	@Override
   	public void onLivingUpdate() {
   		super.onLivingUpdate();
-          
+  		
   		//client side
   		if(worldObj.isRemote) {
   			if(this.ticksExisted % 4 == 0) {
@@ -110,107 +112,6 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall {
 		return false;
   	}
   	
-  	//修改煙霧特效
-  	@Override
-  	public boolean attackEntityWithAmmo(Entity target) {
-  		//get attack value
-		float atk = CalcHelper.calcDamageBySpecialEffect(this, target, StateFinal[ID.ATK], 0);
-		
-		//update entity look at vector (for particle spawn)
-        //此方法比getLook還正確 (client sync問題)
-        float distX = (float) (target.posX - this.posX);
-        float distY = (float) (target.posY - this.posY);
-        float distZ = (float) (target.posZ - this.posZ);
-        float distSqrt = MathHelper.sqrt_float(distX*distX + distY*distY + distZ*distZ);
-        distX = distX / distSqrt;
-        distY = distY / distSqrt;
-        distZ = distZ / distSqrt;
-      
-        //發射者煙霧特效
-        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-        CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 5, 1D, 1D, 1.5D), point);
-
-		//play cannon fire sound at attacker
-        playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-        //play entity attack sound
-        if(this.rand.nextInt(10) > 7) {
-        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-        }
-        
-        //experience++
-  		addShipExp(2);
-  		
-  		//grudge--
-  		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
-        
-        //light ammo--
-        if(!decrAmmoNum(0, this.getAmmoConsumption())) {
-        	return false;
-        }
-
-        //calc miss chance, if not miss, calc cri/multi hit
-        float missChance = 0.2F + 0.15F * (distSqrt / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.M.ShipLevel];
-        missChance -= EffectEquip[ID.EF_MISS];		//equip miss reduce
-        if(missChance > 0.35F) missChance = 0.35F;	//max miss chance
-        
-        if(this.rand.nextFloat() < missChance) {
-        	atk = 0;	//still attack, but no damage
-        	//spawn miss particle
-    		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
-        }
-        else {
-        	//roll cri -> roll double hit -> roll triple hit (triple hit more rare)
-        	//calc critical
-        	if(this.rand.nextFloat() < EffectEquip[ID.EF_CRI]) {
-        		atk *= 1.5F;
-        		//spawn critical particle
-        		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 11, false), point);
-        	}
-        	else {
-        		//calc double hit
-            	if(this.rand.nextFloat() < EffectEquip[ID.EF_DHIT]) {
-            		atk *= 2F;
-            		//spawn double hit particle
-            		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 12, false), point);
-            	}
-            	else {
-            		//calc double hit
-                	if(this.rand.nextFloat() < EffectEquip[ID.EF_THIT]) {
-                		atk *= 3F;
-                		//spawn triple hit particle
-                		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 13, false), point);
-                	}
-            	}
-        	}
-        }
-        
-        //vs player = 25% dmg
-  		if(target instanceof EntityPlayer) {
-  			atk *= 0.25F;
-  			
-  			//check friendly fire
-    		if(!ConfigHandler.friendlyFire) {
-    			atk = 0F;
-    		}
-    		else if(atk > 59F) {
-    			atk = 59F;	//same with TNT
-    		}
-  		}
-  		
-	    //將atk跟attacker傳給目標的attackEntityFrom方法, 在目標class中計算傷害
-	    //並且回傳是否成功傷害到目標
-	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this).setProjectile(), atk);
-
-	    //if attack success
-	    if(isTargetHurt) {
-        	//display hit particle on target
-	        TargetPoint point1 = new TargetPoint(this.dimension, target.posX, target.posY, target.posZ, 64D);
-			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 9, false), point1);
-        }
-
-	    return isTargetHurt;
-	}
-  	
   	/** Yamato Cannon
   	 *  phase: 0:charge, 1:attack
   	 *  
@@ -226,14 +127,17 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall {
 		float tarX = (float)target.posX;	//for miss chance calc
 		float tarY = (float)(target.posY + target.height * 0.5F);
 		float tarZ = (float)target.posZ;
-		float distX = tarX - (float)this.posX;
-		float distY = tarY - (float)this.posY;
-		float distZ = tarZ - (float)this.posZ;
-        float distSqrt = MathHelper.sqrt_float(distX*distX + distY*distY + distZ*distZ);
-        if(distSqrt < 0.001F) distSqrt = 0.001F; //prevent large dXYZ
-        float dX = distX / distSqrt;
-        float dY = distY / distSqrt;
-        float dZ = distZ / distSqrt;
+		float[] distVec = new float[4];
+		
+		distVec[0] = tarX - (float)this.posX;
+		distVec[1] = tarY - (float)this.posY;
+		distVec[2] = tarZ - (float)this.posZ;
+		distVec[3] = MathHelper.sqrt_float(distVec[0]*distVec[0] + distVec[1]*distVec[1] + distVec[2]*distVec[2]);
+        if(distVec[3] < 0.001F) distVec[3] = 0.001F; //prevent large dXYZ
+        
+        distVec[0] = distVec[0] / distVec[3];
+        distVec[1] = distVec[1] / distVec[3];
+        distVec[2] = distVec[2] / distVec[3];
 		
 		//experience++
 		addShipExp(16);
@@ -241,15 +145,16 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall {
 		//grudge--
 		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
 		
+  		//morale--
+  		this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - 1);
+		
 		//heavy ammo--
         if(!decrAmmoNum(1, this.getAmmoConsumption())) {
         	return false;
         }
 
-        //play entity attack sound
-        if(this.getRNG().nextInt(10) > 7) {
-        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-        }
+        //play attack effect
+        applySoundAtAttacker(2, target);
         
         //check phase
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
@@ -259,12 +164,11 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall {
         	this.playSound(Reference.MOD_ID+":ship-yamato-shot", ConfigHandler.fireVolume, 1F);
         	
         	//spawn beam entity
-            EntityProjectileBeam beam = new EntityProjectileBeam(this.worldObj, this, 0, 
-            							dX, dY, dZ, atk, 0.12F);
+            EntityProjectileBeam beam = new EntityProjectileBeam(this.worldObj, this, 0, distVec[0], distVec[1], distVec[2], atk, 0.12F);
             this.worldObj.spawnEntityInWorld(beam);
             
             //spawn beam particle
-            CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, beam, dX, dY, dZ, 1, true), point);
+            CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, beam, distVec[0], distVec[1], distVec[2], 1, true), point);
         	
         	this.setStateEmotion(ID.S.Phase, 0, true);
         	return true;
@@ -342,6 +246,61 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall {
 			}
 		}
 	}
+	
+	@Override
+	protected void applyParticleAtAttacker(int type, Entity target, float[] vec) {
+  		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+        
+  		switch(type) {
+  		case 1:  //light cannon
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 5, 1D, 1D, 1.5D), point);
+  			break;
+  		case 2:  //heavy cannon
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
+  			break;
+  		case 3:  //light aircraft
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
+  			break;
+  		case 4:  //heavy aircraft
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
+  			break;
+		default: //melee
+			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
+			break;
+  		}
+  	}
+	
+	@Override
+	protected void applySoundAtAttacker(int type, Entity target) {
+  		switch(type) {
+  		case 1:  //light cannon
+  			//fire sound
+  			playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  	        
+  			//entity sound
+  	        if(this.getRNG().nextInt(10) > 7) {
+  	        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  	        }
+  			break;
+  		case 2:  //heavy cannon
+  	        //entity sound
+  	        if(this.getRNG().nextInt(10) > 7) {
+  	        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  	        }
+  			break;
+  		case 3:  //light aircraft
+  	        playSound(Reference.MOD_ID+":ship-aircraft", ConfigHandler.fireVolume * 0.5F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  			break;
+  		case 4:  //heavy aircraft
+  	        playSound(Reference.MOD_ID+":ship-aircraft", ConfigHandler.fireVolume * 0.5F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  			break;
+		default: //melee
+			if(this.getRNG().nextInt(10) > 6) {
+	        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+	        }
+			break;
+  		}
+  	}
 
 
 }

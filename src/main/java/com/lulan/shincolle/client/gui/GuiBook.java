@@ -55,7 +55,7 @@ public class GuiBook {
 	public static int PageTLX = 13;    //left page X pos for text
 	public static int PageTRX = 162;   //right page X pos for text
 	public static int PageTY = 58;     //page Y pos for text
-	public static final int[] PageLimit = new int[] {1,18,4,12,14,6,30};  //max page number
+	public static final int[] PageLimit = new int[] {1,18,4,14,14,6,30};  //max page number
 	
 	public GuiBook() {}
 	
@@ -73,9 +73,10 @@ public class GuiBook {
 		numPage = page;
 		
 //		/***********   DEBUG: test page      *********/
-//		if(numChap == 4 && numPage == 1) {
+//		if(numChap == 3 && numPage == 13) {
 //			cont =  Arrays.asList(new int[] {0, 0, 0, 0},
-//					new int[] {0, 1, 0, 0}
+//					new int[] {0, 1, 0, 0},
+//					new int[] {1, 0, 0, 120, 0, 100, 245, 100, 11}
 //		);}
 //		PageWidth = 135;  //page width, no scale = 106
 //		Page0LX = 13;	  //left page start X pos, no scale = 13

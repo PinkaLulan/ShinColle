@@ -37,7 +37,7 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
         else {
             this.host = host;
             this.host2 = (EntityLiving) host;
-            this.setMutexBits(3);
+            this.setMutexBits(1);
             
             //init value
             this.delayLight = 20;
@@ -112,11 +112,6 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
 	public void resetTask() {
         this.target = null;
         this.onSightTime = 0;
-        if(host != null) {
-        	this.host2.setAttackTarget(null);
-        	this.host.setEntityTarget(null);
-        	this.host.getShipNavigate().clearPathEntity();
-        }
     }
 
     //進行AI
@@ -125,8 +120,6 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
     	boolean onSight = false;	//判定直射是否無障礙物
     	
     	if(this.host != null && this.target != null) {
-//    		LogHelper.info("DEBUG: update attack AI: "+this.host+" "+this.target);
-    		
     		//get update attributes every second
     		if(this.host2.ticksExisted % 64 == 0) {
     			this.updateAttackParms();
@@ -158,7 +151,7 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
 	        }
 	
 	        //若目標進入射程, 且目標無障礙物阻擋, 則清空AI移動的目標, 以停止繼續移動      
-	        if(distSq < this.rangeSq && onSight) {
+	        if(distSq < this.rangeSq && onSight && !host.getStateFlag(ID.F.UseMelee)) {
 	        	this.host.getShipNavigate().clearPathEntity();
 	        }
 	        else {	//目標移動, 則繼續追	        	

@@ -63,7 +63,7 @@ public class EntityFXTeam extends EntityFX {
         case 2:		//red, group mode
         	this.particleRed = 1F;
         	this.particleGreen = 0F;
-        	this.particleBlue = 0F;
+        	this.particleBlue = 1F;
         	this.particleMaxAge = 31;
         	break;
         case 3:		//yellow, formation mode

@@ -1,4 +1,4 @@
-package com.lulan.shincolle.client.render;
+package com.lulan.shincolle.client.render.block;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;

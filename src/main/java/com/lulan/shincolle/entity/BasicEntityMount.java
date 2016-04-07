@@ -4,7 +4,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
 import net.minecraft.entity.ai.EntityAIOpenDoor;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -25,6 +24,7 @@ import com.lulan.shincolle.entity.mounts.EntityMountSeat;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.entity.other.EntityRensouhou;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -138,15 +138,14 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 			
 			//use melee attack
 			if(this.getStateFlag(ID.F.UseMelee)) {
-				this.tasks.addTask(12, new EntityAIShipAttackOnCollide(this, 1D, true));//0011
-				this.tasks.addTask(13, new EntityAIMoveTowardsTarget(this, 1D, 48F));	//0001
+				this.tasks.addTask(12, new EntityAIShipAttackOnCollide(this, 1D));
 			}
 			
 			//idle AI
 			//moving
 			this.tasks.addTask(21, new EntityAIOpenDoor(this, true));	//0000
-			this.tasks.addTask(22, new EntityAIShipFloating(this));		//0101
-			this.tasks.addTask(25, new EntityAIShipWander(this, 0.8D));	//0001
+			this.tasks.addTask(22, new EntityAIShipFloating(this));		//0111
+			this.tasks.addTask(25, new EntityAIShipWander(this, 0.8D));	//0111
 		}
 	}
 	
@@ -272,7 +271,23 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 				this.setLeashedToEntity(player, true);
 				return true;
 	        }
-		}
+			
+			//caress head mode: morale +3
+			if(itemstack.getItem() == ModItems.PointerItem && itemstack.getItemDamage() > 2) {
+				//add little morale to host
+				int t = this.host.ticksExisted - this.host.getMoraleTick();
+				int m = this.host.getStateMinor(ID.M.Morale);
+				
+				if(t > 3 && m < 6000) {  //if caress > 3 ticks
+					this.host.setMoraleTick(this.ticksExisted);
+					this.host.setStateMinor(ID.M.Morale, m + 3);
+				}
+				
+				//TODO show mounts emotion
+				
+				return true;
+			}
+		}//end use item
 		
 		//如果已經被綑綁, 再點一下可以解除綑綁
 		if(this.getLeashed() && this.getLeashedToEntity() == player) {
@@ -281,7 +296,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
         }
 
 		//click without shift = host set sitting
-		if(!this.worldObj.isRemote && !player.isSneaking()) {			
+		if(!this.worldObj.isRemote && !player.isSneaking()) {
 			//若座位二已經有人, 則右鍵改為坐下
 			if(this.riddenByEntity2 != null) {
 				//seat2已經沒人騎, 則rider 2設為null

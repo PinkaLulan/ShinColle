@@ -1,4 +1,4 @@
-package com.lulan.shincolle.client.render;
+package com.lulan.shincolle.client.render.special;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;

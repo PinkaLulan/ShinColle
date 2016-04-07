@@ -339,6 +339,9 @@ public class ID {
 		public static final byte FormatPos = 27;	//formation position
 		public static final byte GrudgeCon = 28;	//grudge consumption when idle
 		public static final byte AmmoCon = 29;		//ammo base consumption
+		public static final byte Morale = 30;		//morale value
+		public static final byte Food = 31;			//food saturation
+		public static final byte FoodMax = 32;		//max food saturation
 	}
 	
 	/** packet type ID */

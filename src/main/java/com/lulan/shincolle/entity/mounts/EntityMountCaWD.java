@@ -8,6 +8,7 @@ import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityMountLarge;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.LogHelper;
 
 public class EntityMountCaWD extends BasicEntityMountLarge {
 	
@@ -86,8 +87,8 @@ public class EntityMountCaWD extends BasicEntityMountLarge {
 		super.setAIList();
 		
 		//use range attack
-		this.tasks.addTask(10, new EntityAIShipCarrierAttack(this));		   //0100
-		this.tasks.addTask(11, new EntityAIShipRangeAttack(this));			   //0011
+		this.tasks.addTask(10, new EntityAIShipCarrierAttack(this));
+		this.tasks.addTask(11, new EntityAIShipRangeAttack(this));
 	}
 	
 

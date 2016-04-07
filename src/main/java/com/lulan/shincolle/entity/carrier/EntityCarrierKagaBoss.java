@@ -73,7 +73,7 @@ public class EntityCarrierKagaBoss extends BasicEntityShipHostileCV implements I
 		super.setAIList();
 
 		//use range attack TODO
-		this.tasks.addTask(11, new EntityAIShipCarrierAttack(this));		   //0011
+		this.tasks.addTask(11, new EntityAIShipCarrierAttack(this));
 	}
 	
 	//num rensouhou++

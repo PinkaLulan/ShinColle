@@ -27,7 +27,7 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
 	
 	public EntityBattleshipTa(World world) {
 		super(world);
-		this.setSize(0.6F, 1.8F);
+		this.setSize(0.7F, 1.9F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.BattleshipTA);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
@@ -58,14 +58,14 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
 		super.setAIList();
 
 		//use range attack
-		this.tasks.addTask(12, new EntityAIShipRangeAttack(this));			   //0011
+		this.tasks.addTask(12, new EntityAIShipRangeAttack(this));
 	}
 	
 	//check entity state every tick
   	@Override
   	public void onLivingUpdate() {
   		super.onLivingUpdate();
-          
+  		
   		if(!worldObj.isRemote) {
   			//add aura to master every 100 ticks
   			if(this.ticksExisted % 100 == 0) {
@@ -126,6 +126,9 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
   		
   		//grudge--
   		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk] * 4);
+  		
+  		//morale--
+  		this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - 1);
 
         //發射者煙霧特效 (招喚連裝砲不使用特效, 但是要發送封包來設定attackTime)
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);

@@ -57,14 +57,14 @@ public class EntityMountAfH extends BasicEntityMountLarge {
     
     @Override
     public double getMountedYOffset() {
-    	return this.height;
+    	return 1.3F;
     }
 
 	@Override
 	public void onUpdate() {
 		super.onUpdate();
 //		LogHelper.info("DEBUG : mount depth "+this.ShipDepth);
-		
+
 		//client side
 		if(this.worldObj.isRemote) {
 			if(this.ticksExisted % 8 == 0) {
@@ -89,8 +89,8 @@ public class EntityMountAfH extends BasicEntityMountLarge {
 		super.setAIList();
 		
 		//use range attack
-		this.tasks.addTask(10, new EntityAIShipCarrierAttack(this));		   //0100
-		this.tasks.addTask(11, new EntityAIShipRangeAttack(this));			   //0011
+		this.tasks.addTask(10, new EntityAIShipCarrierAttack(this));
+		this.tasks.addTask(11, new EntityAIShipRangeAttack(this));
 	}
 
 

@@ -113,8 +113,8 @@ abstract public class BasicEntityShipCV extends BasicEntityShip implements IShip
 		super.calcShipAttributes();
 		
 		//calc basic airplane
-		this.maxAircraftLight = 4 + StateMinor[ID.M.ShipLevel] / 5;
-		this.maxAircraftHeavy = 2 + StateMinor[ID.M.ShipLevel] / 10;
+		this.maxAircraftLight = 8 + StateMinor[ID.M.ShipLevel] / 5;
+		this.maxAircraftHeavy = 4 + StateMinor[ID.M.ShipLevel] / 10;
 		
 		//calc equip airplane
 		int numair = getNumOfAircraftEquip();
@@ -135,7 +135,7 @@ abstract public class BasicEntityShipCV extends BasicEntityShip implements IShip
 	}
 	
 	/** get airplane entity: isLightAirplane: is light aircraft attack */
-	protected BasicEntityAirplane getAirplane(boolean isLightAirplane) {
+	protected BasicEntityAirplane getAttackAirplane(boolean isLightAirplane) {
 		if(isLightAirplane) {
 			return new EntityAirplane(this.worldObj);
 		}
@@ -147,15 +147,12 @@ abstract public class BasicEntityShipCV extends BasicEntityShip implements IShip
 	//range attack method, cost light ammo, attack delay = 20 / attack speed, damage = 100% atk 
 	@Override
 	public boolean attackEntityWithAircraft(Entity target) {
-		//clear target every attack
-		this.setEntityTarget(null);
+		//50% clear target every attack
+		if(this.rand.nextInt(2) == 0) this.setEntityTarget(null);
 		
 		//num aircraft--, number check in carrier AI
 		this.setNumAircraftLight(this.getNumAircraftLight()-1);
 		
-		//play cannon fire sound at attacker
-        playSound(Reference.MOD_ID+":ship-aircraft", 0.4F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-        
         //light ammo--
         if(!decrAmmoNum(0, 6 * this.getAmmoConsumption())) {
         	return false;
@@ -166,10 +163,13 @@ abstract public class BasicEntityShipCV extends BasicEntityShip implements IShip
   		
   		//grudge--
   		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAir]);
+  		
+  		//morale--
+  		this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - 1);
         
-        //發射者煙霧特效 (發射飛機不使用特效, 但是要發送封包來設定attackTime)
-        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
-		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
+  		//play attacker effect
+        applySoundAtAttacker(3, target);
+	    applyParticleAtAttacker(3, target, new float[4]);
         
     	double summonHeight = this.posY + launchHeight;
     	
@@ -182,38 +182,44 @@ abstract public class BasicEntityShipCV extends BasicEntityShip implements IShip
     		summonHeight -= 1.5D;
     	}
     	
-    	BasicEntityAirplane plane = getAirplane(true);
+    	//spawn airplane
+    	BasicEntityAirplane plane = getAttackAirplane(true);
         plane.setAttrs(this.worldObj, this, target, summonHeight);
     	this.worldObj.spawnEntityInWorld(plane);
+    	
+    	//play target effect
+    	applySoundAtTarget(3, target);
+        applyParticleAtTarget(3, target, new float[4]);
+        
         return true;
 	}
 
 	//range attack method, cost heavy ammo, attack delay = 100 / attack speed, damage = 500% atk
 	@Override
 	public boolean attackEntityWithHeavyAircraft(Entity target) {
-		//clear target every attack
-		this.setEntityTarget(null);
+		//50% clear target every attack
+		if(this.rand.nextInt(2) == 0) this.setEntityTarget(null);
 		
 		//num aircraft--, number check in carrier AI
 		this.setNumAircraftHeavy(this.getNumAircraftHeavy()-1);
 		
-		//play cannon fire sound at attacker
-        playSound(Reference.MOD_ID+":ship-aircraft", 0.4F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-        
         //experience++
   		addShipExp(32);
   		
   		//grudge--
   		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAir]);
+  		
+  		//morale--
+  		this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - 1);
         
         //heavy ammo--
         if(!decrAmmoNum(1, 2 * this.getAmmoConsumption())) {
         	return false;
         }
         
-        //發射者煙霧特效 (發射飛機不使用特效, 但是要發送封包來設定attackTime)
-        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
+        //play attacker effect
+        applySoundAtAttacker(4, target);
+	    applyParticleAtAttacker(4, target, new float[4]);
         
     	double summonHeight = this.posY + launchHeight;
     	
@@ -226,9 +232,15 @@ abstract public class BasicEntityShipCV extends BasicEntityShip implements IShip
     		summonHeight -= 1.5D;
     	}
     	
-    	BasicEntityAirplane plane = getAirplane(false);
+    	//spawn airplane
+    	BasicEntityAirplane plane = getAttackAirplane(false);
     	plane.setAttrs(this.worldObj, this, target, summonHeight);
     	this.worldObj.spawnEntityInWorld(plane);
+    	
+    	//play target effect
+    	applySoundAtTarget(4, target);
+        applyParticleAtTarget(4, target, new float[4]);
+        
         return true;
 	}
 	

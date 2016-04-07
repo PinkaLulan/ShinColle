@@ -100,9 +100,9 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		//idle AI
 		//moving
 		this.tasks.addTask(21, new EntityAIOpenDoor(this, true));			   //0000
-		this.tasks.addTask(22, new EntityAIShipFloating(this));				   //0101
+		this.tasks.addTask(22, new EntityAIShipFloating(this));				   //0111
 		this.tasks.addTask(23, new EntityAIShipWatchClosest(this, EntityPlayer.class, 6F, 0.1F)); //0010
-		this.tasks.addTask(24, new EntityAIShipWander(this, 0.8D));				   //0001
+		this.tasks.addTask(24, new EntityAIShipWander(this, 0.8D));			   //0111
 		this.tasks.addTask(25, new EntityAILookIdle(this));					   //0011
 
 	}

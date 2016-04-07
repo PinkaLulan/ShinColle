@@ -2,7 +2,6 @@ package com.lulan.shincolle.entity.mounts;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
@@ -23,7 +22,7 @@ public class EntityMountBaH extends BasicEntityMount {
 	
     public EntityMountBaH(World world) {	//client side
 		super(world);
-		this.setSize(1.9F, 2.7F);
+		this.setSize(1.9F, 3.1F);
 		this.isImmuneToFire = true;
 		this.ridePos = new float[] {1.2F, -1.3F, 1.1F};
 	}
@@ -106,7 +105,7 @@ public class EntityMountBaH extends BasicEntityMount {
 	@Override
 	public boolean attackEntityWithHeavyAmmo(Entity target) {
 		if(this.host instanceof EntityBattleshipHime) {
-			return ((EntityBattleshipHime) host).attackEntityWithSpecialAmmo(target);
+			return ((EntityBattleshipHime) host).attackEntityWithHeavyAmmo(target);
 		}
 		else {
 			return super.attackEntityWithHeavyAmmo(target);
@@ -118,7 +117,7 @@ public class EntityMountBaH extends BasicEntityMount {
 		super.setAIList();
 		
 		//use range attack
-		this.tasks.addTask(11, new EntityAIShipRangeAttack(this));			   //0011
+		this.tasks.addTask(11, new EntityAIShipRangeAttack(this));
 	}
 	
 	//special rider position
