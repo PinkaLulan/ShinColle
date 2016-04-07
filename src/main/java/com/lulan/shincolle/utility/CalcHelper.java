@@ -121,18 +121,18 @@ public class CalcHelper {
      */
     public static float calcDamageBySpecialEffect(IShipAttributes host, Entity target, float dmg, int type) {
     	float newDmg = dmg;
-    	float modDmg = 1F;
+    	float modEffect = 1F;
   		
   		//normal or special attack
   		switch(type) {
   		case 2:   //nagato heavy attack
-  			modDmg = 4F;
+  			modEffect = 4F;
   			break;
   		case 3:   //yamato heavy attack
-  			modDmg = 1.5F;
+  			modEffect = 1.5F;
   			break;
 		default:  //normal attack
-			modDmg = 1F;
+			modEffect = 1F;
 			break;
   		}
   		
@@ -140,10 +140,10 @@ public class CalcHelper {
   		int targettype = EntityHelper.checkEntityTypeForEquipEffect(target);
   		
   		if(targettype == 1) {		//air mob
-  			newDmg = newDmg + host.getEffectEquip(ID.EF_AA) * modDmg;
+  			newDmg = newDmg + host.getEffectEquip(ID.EF_AA) * modEffect;
   		}
   		else if(targettype == 2) {	//water mob
-  			newDmg = newDmg + host.getEffectEquip(ID.EF_ASM) * modDmg;
+  			newDmg = newDmg + host.getEffectEquip(ID.EF_ASM) * modEffect;
   		}
   		
   		return newDmg;

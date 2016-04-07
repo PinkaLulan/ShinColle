@@ -2,11 +2,22 @@ package com.lulan.shincolle.entity.other;
 
 import net.minecraft.world.World;
 
+import com.lulan.shincolle.reference.Reference;
+
 public class EntityAirplaneT extends EntityAirplaneTakoyaki {
 	
 	public EntityAirplaneT(World world) {
 		super(world);
 		this.setSize(0.5F, 0.5F);
+	}
+	
+	@Override
+	public void onUpdate() {
+		super.onUpdate();
+		
+		if(this.ticksExisted == 6) {
+			playSound(Reference.MOD_ID+":ship-aircraft", 0.4F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+		}
 	}
 	
 	@Override

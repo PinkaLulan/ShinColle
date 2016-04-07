@@ -4,8 +4,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.ai.EntityAIShipCarrierAttack;
@@ -19,7 +17,6 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.CalcHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -27,7 +24,7 @@ public class EntityCarrierWD extends BasicEntityShipCV {
 	
 	public EntityCarrierWD(World world) {
 		super(world);
-		this.setSize(0.6F, 1.8F);
+		this.setSize(0.7F, 1.9F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.DEMON);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.CarrierWD);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CARRIER);
@@ -41,6 +38,9 @@ public class EntityCarrierWD extends BasicEntityShipCV {
 		
 		//set attack type
 		this.StateFlag[ID.F.AtkType_Heavy] = false;
+		
+		//misc
+		this.setFoodSaturationMax(24);
 	}
 	
 	@Override
@@ -59,8 +59,8 @@ public class EntityCarrierWD extends BasicEntityShipCV {
 		super.setAIList();
 		
 		//use range attack
-		this.tasks.addTask(11, new EntityAIShipCarrierAttack(this));		   //0100
-		this.tasks.addTask(12, new EntityAIShipRangeAttack(this));			   //0011
+		this.tasks.addTask(11, new EntityAIShipCarrierAttack(this));
+		this.tasks.addTask(12, new EntityAIShipRangeAttack(this));
 	}
 	
 	@Override
@@ -83,112 +83,71 @@ public class EntityCarrierWD extends BasicEntityShipCV {
 		return 1;
 	}
 	
-	//輕攻擊, 特效為雙光束砲
-	@Override
-	public boolean attackEntityWithAmmo(Entity target) {
-		//get attack value
-		float atk = CalcHelper.calcDamageBySpecialEffect(this, target, StateFinal[ID.ATK], 0);
-				
-        //experience++
-  		addShipExp(2);
-  		
-  		//grudge--
-  		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
+	//change light cannon particle
+    @Override
+    protected void applyParticleAtAttacker(int type, Entity target, float[] vec) {
+  		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
         
-        //light ammo--
-        if(!decrAmmoNum(0, this.getAmmoConsumption())) {
-        	return false;
-        }
-        
-        //calc dist to target
-        float distX = (float) (target.posX - this.posX);
-        float distY = (float) (target.posY - this.posY);
-        float distZ = (float) (target.posZ - this.posZ);
-        float distSqrt = MathHelper.sqrt_float(distX*distX + distY*distY + distZ*distZ);
-        distX = distX / distSqrt;
-        distY = distY / distSqrt;
-        distZ = distZ / distSqrt;
-        
-        //play cannon fire sound at attacker
-        playSound(Reference.MOD_ID+":ship-laser", 0.2F, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-        //play entity attack sound
-        if(this.rand.nextInt(10) > 7) {
-        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-        }
-        
-        //calc parrticle height
-        double shotHeight = 1.85D;
-        if(this.isRiding() && this.ridingEntity instanceof BasicEntityMount) {
-        	shotHeight = 0.8D;
-        }
-        
-        //發射者煙霧特效
-        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, target, shotHeight, 0D, 0D, 0, true), point);
-
-        //calc miss chance, if not miss, calc cri/multi hit
-        float missChance = 0.2F + 0.15F * (distSqrt / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.M.ShipLevel];
-        missChance -= EffectEquip[ID.EF_MISS];		//equip miss reduce
-        if(missChance > 0.35F) missChance = 0.35F;	//max miss chance
-        
-        //calc miss -> crit -> double -> tripple
-  		if(rand.nextFloat() < missChance) {
-          	atk = 0F;	//still attack, but no damage
-          	//spawn miss particle
-      		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
+  		switch(type) {
+  		case 1:  //light cannon
+  	        double shotHeight = 1.85D;
+  	        
+  	        if(this.isRiding() && this.ridingEntity instanceof BasicEntityMount) {
+  	        	shotHeight = 0.8D;
+  	        }
+  	        
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, target, shotHeight, 0D, 0D, 0, true), point);
+  			break;
+  		case 2:  //heavy cannon
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
+  			break;
+  		case 3:  //light aircraft
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
+  			break;
+  		case 4:  //heavy aircraft
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
+  			break;
+		default: //melee
+			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
+			break;
   		}
-  		else {
-  			//roll cri -> roll double hit -> roll triple hit (triple hit more rare)
-  			//calc critical
-          	if(rand.nextFloat() < this.getEffectEquip(ID.EF_CRI)) {
-          		atk *= 1.5F;
-          		//spawn critical particle
-          		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 11, false), point);
-          	}
-          	else {
-          		//calc double hit
-              	if(rand.nextFloat() < this.getEffectEquip(ID.EF_DHIT)) {
-              		atk *= 2F;
-              		//spawn double hit particle
-              		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 12, false), point);
-              	}
-              	else {
-              		//calc double hit
-                  	if(rand.nextFloat() < this.getEffectEquip(ID.EF_THIT)) {
-                  		atk *= 3F;
-                  		//spawn triple hit particle
-                  		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 13, false), point);
-                  	}
-              	}
-          	}
-  		}
-  		
-  		//calc damage to player
-  		if(target instanceof EntityPlayer) {
-  			atk *= 0.25F;
-    			
-  			//check friendly fire
-      		if(!ConfigHandler.friendlyFire) {
-      			atk = 0F;
-      		}
-      		else if(atk > 59F) {
-      			atk = 59F;	//same with TNT
-      		}
-  		}
-      		
-	    //將atk跟attacker傳給目標的attackEntityFrom方法, 在目標class中計算傷害
-	    //並且回傳是否成功傷害到目標
-	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this).setProjectile(), atk);
+  	}
 
-	    //if attack success
-	    if(isTargetHurt) {
-        	//display hit particle on target
-	        TargetPoint point1 = new TargetPoint(this.dimension, target.posX, target.posY, target.posZ, 64D);
-			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 9, false), point1);
-        }
+    //change light cannon sound
+    @Override
+    protected void applySoundAtAttacker(int type, Entity target) {
+  		switch(type) {
+  		case 1:  //light cannon
+  			//fire sound
+  	        playSound(Reference.MOD_ID+":ship-laser", 0.2F, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+	        
+  			//entity sound
+  			if(this.rand.nextInt(10) > 7) {
+  	        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  	        }
+  			break;
+  		case 2:  //heavy cannon
+  			//fire sound
+  	        this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
 
-	    return isTargetHurt;
-	}
+  	        //entity sound
+  	        if(this.getRNG().nextInt(10) > 7) {
+  	        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  	        }
+  			break;
+  		case 3:  //light aircraft
+  	        playSound(Reference.MOD_ID+":ship-aircraft", 0.4F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  			break;
+  		case 4:  //heavy aircraft
+  	        playSound(Reference.MOD_ID+":ship-aircraft", 0.4F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  			break;
+		default: //melee
+			if(this.getRNG().nextInt(10) > 6) {
+	        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+	        }
+			break;
+  		}
+  	}
   	
   	//禁用重型攻擊
   	@Override

@@ -1141,7 +1141,7 @@ public class EntityHelper {
 
 			if(props != null) {
 				switch(meta) {
-				default:	//single mode
+				case 0:	//single mode
 					if(ships[0] != null && ships[0].worldObj.provider.dimensionId == worldID) {
 						//設定ship攻擊目標
 						ships[0].setSitting(false);
@@ -1187,7 +1187,7 @@ public class EntityHelper {
 			int formatID = props.getFormatIDCurrentTeam();
 			
 			switch(meta) {
-			default:	//single mode
+			case 0:	//single mode
 				if(ships[0] != null && ships[0].worldObj.provider.dimensionId == worldID && formatID <= 0) {
 					//設定ship移動地點
 					applyShipGuardEntity(ships[0], guarded);
@@ -1236,7 +1236,7 @@ public class EntityHelper {
 			int formatID = props.getFormatIDCurrentTeam();
 			
 			switch(parms[0]) {
-			default:	//single mode
+			case 0:	//single mode
 				if(ships[0] != null && ships[0].worldObj.provider.dimensionId == worldID && formatID <= 0) {
 					//設定ship移動地點
 					applyShipGuard(ships[0], parms[2], parms[3], parms[4]);
@@ -1289,7 +1289,7 @@ public class EntityHelper {
 
 		if(props != null) {
 			//不在隊伍名單裡面
-			if(props.checkIsInCurrentTeam(shipUID) < 0) {
+			if(props.checkIsInCurrentTeam(shipUID) < 0 && meta < 3) {
 				BasicEntityShip target = getShipBySID(shipUID);
 				
 				target.setEntitySit();
@@ -1297,7 +1297,7 @@ public class EntityHelper {
 			//有在隊伍中, 則依照pointer類型抓目標
 			else {
 				switch(meta) {
-				default:	//single mode
+				case 0:	//single mode
 					if(ships[0] != null && ships[0].worldObj.provider.dimensionId == worldID) {
 						//設定ship sit
 						ships[0].setEntitySit();
@@ -1328,7 +1328,7 @@ public class EntityHelper {
 			//check entity is in team
 			if(i >= 0) {
 				switch(meta) {
-				default:	//single mode (僅一隻可以focus)
+				case 0:	//single mode (僅一隻可以focus)
 					/**single mode不能取消focus, 一定有一隻會是focus狀態*/
 					props.clearSelectStateCurrentTeam();
 					props.setSelectStateCurrentTeam(i, true);
@@ -1336,11 +1336,6 @@ public class EntityHelper {
 				case 1:		//group mode (不限focus數量)
 					props.setSelectStateCurrentTeam(i, !props.getSelectStateCurrentTeam(i));
 					break;
-//				case 2:		//formation mode (僅一隻可以focus, 會設為flagship)
-//					/**formation mode不能取消focus, 一定有一隻會是focus (flagship)狀態*/
-//					props.clearSelectStateCurrentTeam();
-//					props.setSelectStateCurrentTeam(i, true);
-//					break;
 				}
 			}
 			

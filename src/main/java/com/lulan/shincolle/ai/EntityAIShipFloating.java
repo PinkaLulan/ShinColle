@@ -33,7 +33,7 @@ public class EntityAIShipFloating extends EntityAIBase {
     		this.hostMount = (BasicEntityMount) entity;
     	}
     	
-        this.setMutexBits(5);
+        this.setMutexBits(7);
     }
 
     @Override

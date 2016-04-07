@@ -15,17 +15,17 @@ import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipCV;
 import com.lulan.shincolle.entity.ExtendShipProps;
-import com.lulan.shincolle.entity.IShipMount;
 import com.lulan.shincolle.entity.mounts.EntityMountAfH;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 
 public class EntityAirfieldHime extends BasicEntityShipCV {
 	
 	public EntityAirfieldHime(World world) {
 		super(world);
-		this.setSize(0.6F, 1.8F);
+		this.setSize(0.7F, 1.9F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.AirfieldHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
@@ -39,6 +39,9 @@ public class EntityAirfieldHime extends BasicEntityShipCV {
 		
 		//set attack type
 		this.StateFlag[ID.F.HaveRingEffect] = true;
+		
+		//misc
+		this.setFoodSaturationMax(16);
 	}
 	
 	@Override
@@ -57,13 +60,14 @@ public class EntityAirfieldHime extends BasicEntityShipCV {
 		super.setAIList();
 		
 		//use range attack
-		this.tasks.addTask(11, new EntityAIShipCarrierAttack(this));		   //0100
-		this.tasks.addTask(12, new EntityAIShipRangeAttack(this));			   //0011
+		this.tasks.addTask(11, new EntityAIShipCarrierAttack(this));
+		this.tasks.addTask(12, new EntityAIShipRangeAttack(this));
 	}
 	
 	//check entity state every tick
   	@Override
   	public void onLivingUpdate() {
+  		
   		//server side
   		if(!worldObj.isRemote) {
   			//飛行場特殊能力
@@ -125,34 +129,6 @@ public class EntityAirfieldHime extends BasicEntityShipCV {
 	public int getKaitaiType() {
 		return 1;
 	}
-	
-	//修改煙霧特效 & 檢查是否riding
-  	@Override
-  	public boolean attackEntityWithAmmo(Entity target) {
-  		//check riding
-  		if(this.isRiding()) {
-  			//stop attack if riding ship mount
-  			if(this.ridingEntity instanceof IShipMount) {
-  				return false;
-  			}
-  		}
-  		
-  		return super.attackEntityWithAmmo(target);
-	}
-  	
-  	//檢查是否riding
-  	@Override
-  	public boolean attackEntityWithHeavyAmmo(Entity target) {
-  		//check riding
-  		if(this.isRiding()) {
-  			//stop attack if riding ship mount
-  			if(this.ridingEntity instanceof IShipMount) {
-  				return false;
-  			}
-  		}
-  		
-  		return super.attackEntityWithHeavyAmmo(target);
-  	}
 	
 	//避免跟rider2碰撞
   	@Override
@@ -231,6 +207,22 @@ public class EntityAirfieldHime extends BasicEntityShipCV {
 			}
 		}
 	}
+	
+	@Override
+	public float getAttackBaseDamage(int type, Entity target) {
+  		switch(type) {
+  		case 1:  //light cannon
+  			return CalcHelper.calcDamageBySpecialEffect(this, target, StateFinal[ID.ATK], 0);
+  		case 2:  //heavy cannon
+  			return StateFinal[ID.ATK_H];
+  		case 3:  //light aircraft
+  			return StateFinal[ID.ATK_AL];
+  		case 4:  //heavy aircraft
+  			return StateFinal[ID.ATK_AH];
+		default: //melee
+			return StateFinal[ID.ATK];
+  		}
+  	}
 
 
 }

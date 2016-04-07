@@ -40,13 +40,11 @@ import com.lulan.shincolle.client.model.ModelRensouhouS;
 import com.lulan.shincolle.client.model.ModelSubmRo500;
 import com.lulan.shincolle.client.model.ModelSubmU511;
 import com.lulan.shincolle.client.model.ModelTakoyaki;
-import com.lulan.shincolle.client.render.RenderAbyssMissile;
 import com.lulan.shincolle.client.render.RenderAirfieldHime;
 import com.lulan.shincolle.client.render.RenderAirplane;
 import com.lulan.shincolle.client.render.RenderAirplaneT;
 import com.lulan.shincolle.client.render.RenderAirplaneTakoyaki;
 import com.lulan.shincolle.client.render.RenderAirplaneZero;
-import com.lulan.shincolle.client.render.RenderBasicEntityItem;
 import com.lulan.shincolle.client.render.RenderBattleshipHime;
 import com.lulan.shincolle.client.render.RenderBattleshipNGT;
 import com.lulan.shincolle.client.render.RenderBattleshipNGTBoss;
@@ -70,20 +68,23 @@ import com.lulan.shincolle.client.render.RenderFloatingFort;
 import com.lulan.shincolle.client.render.RenderHarbourHime;
 import com.lulan.shincolle.client.render.RenderHeavyCruiserNe;
 import com.lulan.shincolle.client.render.RenderHeavyCruiserRi;
-import com.lulan.shincolle.client.render.RenderLargeShipyard;
 import com.lulan.shincolle.client.render.RenderMountAfH;
 import com.lulan.shincolle.client.render.RenderMountBaH;
 import com.lulan.shincolle.client.render.RenderMountCaWD;
 import com.lulan.shincolle.client.render.RenderMountHbH;
 import com.lulan.shincolle.client.render.RenderNorthernHime;
-import com.lulan.shincolle.client.render.RenderProjectileBeam;
 import com.lulan.shincolle.client.render.RenderRensouhou;
 import com.lulan.shincolle.client.render.RenderRensouhouS;
-import com.lulan.shincolle.client.render.RenderSmallShipyard;
-import com.lulan.shincolle.client.render.RenderSmallShipyardItem;
 import com.lulan.shincolle.client.render.RenderSubmRo500;
 import com.lulan.shincolle.client.render.RenderSubmU511;
-import com.lulan.shincolle.client.render.RenderVortex;
+import com.lulan.shincolle.client.render.block.RenderLargeShipyard;
+import com.lulan.shincolle.client.render.block.RenderSmallShipyard;
+import com.lulan.shincolle.client.render.block.RenderSmallShipyardItem;
+import com.lulan.shincolle.client.render.item.RenderBasicEntityItem;
+import com.lulan.shincolle.client.render.item.RenderPointerItem;
+import com.lulan.shincolle.client.render.special.RenderAbyssMissile;
+import com.lulan.shincolle.client.render.special.RenderProjectileBeam;
+import com.lulan.shincolle.client.render.special.RenderVortex;
 import com.lulan.shincolle.entity.battleship.EntityBattleshipNGT;
 import com.lulan.shincolle.entity.battleship.EntityBattleshipNGTBoss;
 import com.lulan.shincolle.entity.battleship.EntityBattleshipRe;
@@ -129,6 +130,7 @@ import com.lulan.shincolle.entity.submarine.EntitySubmRo500Mob;
 import com.lulan.shincolle.entity.submarine.EntitySubmU511;
 import com.lulan.shincolle.entity.submarine.EntitySubmU511Mob;
 import com.lulan.shincolle.init.ModBlocks;
+import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.BasicEntityItem;
 import com.lulan.shincolle.tileentity.TileEntityDesk;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
@@ -233,7 +235,8 @@ public class ClientProxy extends CommonProxy {
 		//custom block item render
 		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ModBlocks.BlockDesk), new RenderBlockDeskItem(new RenderBlockDesk(), new TileEntityDesk()));
 		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ModBlocks.BlockSmallShipyard), new RenderSmallShipyardItem(tesrBlockSmallShipyard, new TileEntitySmallShipyard()));
-
+		MinecraftForgeClient.registerItemRenderer(ModItems.PointerItem, new RenderPointerItem());
+		
 		//custom item entity render
 		RenderingRegistry.registerEntityRenderingHandler(BasicEntityItem.class, new RenderBasicEntityItem(0.4F));
 	}

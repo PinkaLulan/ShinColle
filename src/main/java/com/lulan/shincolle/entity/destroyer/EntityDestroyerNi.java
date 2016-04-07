@@ -19,7 +19,7 @@ public class EntityDestroyerNi extends BasicEntityShipSmall {
 
 	public EntityDestroyerNi(World world) {
 		super(world);
-		this.setSize(0.7F, 1.6F);	//碰撞大小 跟模型大小無關
+		this.setSize(0.9F, 1.9F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.DESTROYER);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.DestroyerNI);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
@@ -55,14 +55,14 @@ public class EntityDestroyerNi extends BasicEntityShipSmall {
 	public void setAIList() {
 		super.setAIList();
 		//use range attack (light)
-		this.tasks.addTask(11, new EntityAIShipRangeAttack(this));			   //0011
+		this.tasks.addTask(11, new EntityAIShipRangeAttack(this));
 	}
     
     //check entity state every tick
   	@Override
   	public void onLivingUpdate() {
   		super.onLivingUpdate();
-          
+  		
   		if(!worldObj.isRemote) {
   			//add aura to master every 100 ticks
   			if(this.ticksExisted % 100 == 0) {

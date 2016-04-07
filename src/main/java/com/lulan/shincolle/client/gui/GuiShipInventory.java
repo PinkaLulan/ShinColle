@@ -47,6 +47,7 @@ public class GuiShipInventory extends GuiContainer {
 	private int xClick, yClick;
 	private static final ResourceLocation TEXTURE_BG = new ResourceLocation(Reference.TEXTURES_GUI+"GuiShipInventory.png");
 	private static final ResourceLocation TEXTURE_ICON = new ResourceLocation(Reference.TEXTURES_GUI+"GuiNameIcon.png");
+	
 	//draw string
 	private List mouseoverList;
 	private String titlename, shiplevel, lvMark, hpMark, canMelee, canLATK, canHATK, canALATK, canAHATK, 
@@ -58,7 +59,7 @@ public class GuiShipInventory extends GuiContainer {
 	               strMiExp, strMiAirL, strMiAirH, strMiAmmoL, strMiAmmoH, strMiGrudge, strAttrCri,
 	               strAttrDHIT, strAttrTHIT, strAttrAA, strAttrASM, strAttrMiss, strAttrMissA, strAttrMissR,
 	               strAttrDodge, strAttrFPos, strAttrFormat, strAttrWedding, strAttrWedTrue, strAttrWedFalse,
-	               strTimeKeep;
+	               strTimeKeep, strM0, strM1, strM2, strM3, strM4;
 	private int hpCurrent, hpMax, color, showPage, showPageAI, pageIndicator, pageIndicatorAI, showAttack,
 				fMinPos, fMaxPos, fleeHPPos, barPos, mousePressBar, shipType, shipClass;
 	private boolean switchMelee, switchLight, switchHeavy, switchAirLight, switchAirHeavy,
@@ -92,6 +93,11 @@ public class GuiShipInventory extends GuiContainer {
 		//general string
 		lvMark = I18n.format("gui.shincolle:level");
 		hpMark = I18n.format("gui.shincolle:hp");
+		strM0 = I18n.format("gui.shincolle:morale0");
+		strM1 = I18n.format("gui.shincolle:morale1");
+		strM2 = I18n.format("gui.shincolle:morale2");
+		strM3 = I18n.format("gui.shincolle:morale3");
+		strM4 = I18n.format("gui.shincolle:morale4");
 		
 		//attrs string
 		strAttrAtk1 = I18n.format("gui.shincolle:firepower1");
@@ -346,6 +352,7 @@ public class GuiShipInventory extends GuiContainer {
         
         //draw level, ship type/name icon
         Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE_ICON);
+        
         if(entity.getStateMinor(ID.M.ShipLevel) > 99) {
         	drawTexturedModalRect(guiLeft+157, guiTop+18, 0, 0, 40, 42);
         	
@@ -377,9 +384,33 @@ public class GuiShipInventory extends GuiContainer {
         	}
         }
         
+        //draw ship morale
+        drawIconMorale();
+        
         //draw entity model                                            guiLeft + 200 - xMouse  guiTop + 50 - yMouse
         drawEntityModel(guiLeft+210, guiTop+100, entity.getModelPos(), guiLeft+215-xMouse, guiTop+60-yMouse, this.entity);
         
+	}
+	
+	//draw ship morale
+	private void drawIconMorale() {
+		int m = this.entity.getStateMinor(ID.M.Morale);
+        int ix = 0;
+        
+        if(m < 901) {
+        	ix = 44;
+        }
+        else if(m < 2101) {
+        	ix = 33;
+        }
+        else if(m < 3901) {
+        	ix = 22;
+        }
+        else if(m < 5101) {
+        	ix = 11;
+        }
+        
+        drawTexturedModalRect(guiLeft+231, guiTop+18, ix, 240, 11, 11);
 	}
 	
 	//draw tooltip
@@ -389,6 +420,31 @@ public class GuiShipInventory extends GuiContainer {
 		
 		//reset text
 		mouseoverList.clear();
+		
+		//draw morale string
+		if(xMouse > 230+guiLeft && xMouse < 243+guiLeft && yMouse > 17+guiTop && yMouse < 30+guiTop) {
+			mouseoverList.clear();
+			
+			temp = this.entity.getStateMinor(ID.M.Morale);
+			
+			if(temp > 5100) {
+				mouseoverList.add(strM0);
+			}
+			else if(temp > 3900) {
+				mouseoverList.add(strM1);
+			}
+			else if(temp > 2100) {
+				mouseoverList.add(strM2);
+			}
+			else if(temp > 900) {
+				mouseoverList.add(strM3);
+			}
+			else {
+				mouseoverList.add(strM4);
+			}
+			
+			this.drawHoveringText(mouseoverList, 210, 45, this.fontRendererObj);
+		}
 		
 		//draw states value
 		if(xMouse > 65+guiLeft && xMouse < 120+guiLeft) {

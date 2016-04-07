@@ -42,6 +42,7 @@ import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
+import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent;
 import cpw.mods.fml.common.gameevent.InputEvent.KeyInputEvent;
@@ -65,7 +66,7 @@ public class FML_COMMON_EventHandler {
 /*********TODO rewrite boss spawn methods**********/
 /*********TODO rewrite boss spawn methods**********/
 	//player update tick, tick TWICE every tick (preTick + postTick) and BOTH SIDE (client + server)
-	@SubscribeEvent
+	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
 	public void onPlayerTick(PlayerTickEvent event) {
 		if(event.phase == Phase.START) {
 			ExtendPlayerProps extProps = (ExtendPlayerProps) event.player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
@@ -380,7 +381,7 @@ public class FML_COMMON_EventHandler {
 	}
 	
 	//restore player extProps data, this is SERVER side
-	@SubscribeEvent
+	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
 	public void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
 		LogHelper.info("DEBUG : get player respawn event "+event.player.getDisplayName()+" "+event.player.getUniqueID());
     	
@@ -403,7 +404,7 @@ public class FML_COMMON_EventHandler {
 	 * getIsKeyPressed = 該按鍵是否按著, isPressed = 這次event是否為該按鍵
 	 * 
 	 */
-	@SubscribeEvent
+	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
 	public void onKeyInput(InputEvent event) {
 		EntityPlayer player = ClientProxy.getClientPlayer();
 		this.keySet = ClientProxy.getGameSetting();
@@ -412,10 +413,12 @@ public class FML_COMMON_EventHandler {
 		if(event instanceof KeyInputEvent && player.inventory.getCurrentItem() != null && player.inventory.getCurrentItem().getItem() instanceof PointerItem) {
 			//get pointer item
 			ItemStack pointer = player.inventory.getCurrentItem();
+			int meta = pointer.getItemDamage();
 			
 			//ctrl + xx
 			int getKey = -1;
 			int orgCurrentItem = player.inventory.currentItem;
+			
 			if(keySet.keyBindSprint.getIsKeyPressed()) {
 				//check hotbar key 0~8
 				for(int i = 0; i < keySet.keyBindsHotbar.length; i++) {
@@ -432,10 +435,41 @@ public class FML_COMMON_EventHandler {
 						break;
 					}
 				}
+				
 				LogHelper.info("DEBUG : key input: pointer set team: "+getKey+" currItem: "+orgCurrentItem);
+				//send key input packet
 				if(getKey >= 0) {
 					//change team id
 					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetShipTeamID, getKey, orgCurrentItem));
+				}
+				//change pointer mode to caress head mode (meta+3)
+				else {
+					//switch caress head mode
+					switch(meta) {
+					case 1:
+						meta = 4;
+						break;
+					case 2:
+						meta = 5;
+						break;
+					case 3:
+						meta = 0;
+						break;
+					case 4:
+						meta = 1;
+						break;
+					case 5:
+						meta = 2;
+						break;
+					default:
+						meta = 3;
+						break;
+					}
+					
+					player.inventory.getCurrentItem().setItemDamage(meta);
+					
+					//send sync packet to server
+					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SyncPlayerItem, meta));
 				}
 			}
 		}
@@ -508,7 +542,7 @@ public class FML_COMMON_EventHandler {
 
 	/**player login, called after extProps loaded, SERVER ONLY event
 	 */
-	@SubscribeEvent
+	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
 	public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
 		/**load player extend data
 		 */
@@ -533,7 +567,7 @@ public class FML_COMMON_EventHandler {
 	}
 	
 	//player loggout, NO USE in singleplayer
-	@SubscribeEvent
+	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
 	public void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
 		ExtendPlayerProps extProps = (ExtendPlayerProps) event.player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
     	
@@ -554,7 +588,7 @@ public class FML_COMMON_EventHandler {
 	 * 
 	 * TODO BUG: no trigger when End(1) -> Overworld(0) 
 	 */
-	@SubscribeEvent
+	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
 	public void onPlayerChangeDim(PlayerEvent.PlayerChangedDimensionEvent event) {
 		/**load player extend data
 		 */
@@ -567,7 +601,7 @@ public class FML_COMMON_EventHandler {
 	}
 	
 	//change eye height when riding mounts, this is CLIENT ONLY event
-	@SubscribeEvent
+	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
     public void renderTick(TickEvent.RenderTickEvent event) {
 		EntityPlayer player = ClientProxy.getClientPlayer();
 		
@@ -618,7 +652,7 @@ public class FML_COMMON_EventHandler {
 	/** Server tick
 	 * 
 	 */
-	@SubscribeEvent
+	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
     public void serverTick(TickEvent.ServerTickEvent event) {
 		if(event.phase == Phase.END) {	//在server tick處理完全部事情後發動
 			ServerProxy.updateServerTick();

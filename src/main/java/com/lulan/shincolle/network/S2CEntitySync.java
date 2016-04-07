@@ -191,6 +191,7 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateMinor(ID.M.PlayerEID, buf.readInt());
 					entity.setStateMinor(ID.M.FormatType, buf.readInt());
 					entity.setStateMinor(ID.M.FormatPos, buf.readInt());
+					entity.setStateMinor(ID.M.Morale, buf.readInt());
 					
 					entity.setStateFinal(ID.HP, buf.readFloat());
 					entity.setStateFinal(ID.ATK, buf.readFloat());
@@ -322,6 +323,7 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateMinor(ID.M.PlayerEID, buf.readInt());
 					entity.setStateMinor(ID.M.FormatType, buf.readInt());
 					entity.setStateMinor(ID.M.FormatPos, buf.readInt());
+					entity.setStateMinor(ID.M.Morale, buf.readInt());
 				}
 				break;
 			case PID.SyncShip_Unbuff:	//sync unbuff attr
@@ -532,6 +534,7 @@ public class S2CEntitySync implements IMessage {
 				buf.writeInt(this.entity.getStateMinor(ID.M.PlayerEID));
 				buf.writeInt(this.entity.getStateMinor(ID.M.FormatType));
 				buf.writeInt(this.entity.getStateMinor(ID.M.FormatPos));
+				buf.writeInt(this.entity.getStateMinor(ID.M.Morale));
 				
 				buf.writeFloat(this.entity.getStateFinal(ID.HP));
 				buf.writeFloat(this.entity.getStateFinal(ID.ATK));
@@ -657,6 +660,7 @@ public class S2CEntitySync implements IMessage {
 				buf.writeInt(this.entity.getStateMinor(ID.M.PlayerEID));
 				buf.writeInt(this.entity.getStateMinor(ID.M.FormatType));
 				buf.writeInt(this.entity.getStateMinor(ID.M.FormatPos));
+				buf.writeInt(this.entity.getStateMinor(ID.M.Morale));
 			}
 			break;
 		case PID.SyncShip_Unbuff:	//sync unbuff data

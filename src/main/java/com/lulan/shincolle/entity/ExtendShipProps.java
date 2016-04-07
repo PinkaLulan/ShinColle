@@ -67,6 +67,8 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		nbtExt_add0.setInteger("ShipUID", this.entity.getStateMinor(ID.M.ShipUID));
 		nbtExt_add0.setInteger("FType", this.entity.getStateMinor(ID.M.FormatType));
 		nbtExt_add0.setInteger("FPos", this.entity.getStateMinor(ID.M.FormatPos));
+		nbtExt_add0.setInteger("Morale", this.entity.getStateMinor(ID.M.Morale));
+		nbtExt_add0.setInteger("Food", this.entity.getStateMinor(ID.M.Food));
 		nbtExt_add0.setString("tagName", this.entity.getCustomNameTag());
 		//save EntityState
 		nbtExt.setTag("Emotion", nbtExt_add2);	
@@ -150,6 +152,8 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		entity.setStateMinor(ID.M.ShipUID, nbt_load.getInteger("ShipUID"));
 		entity.setStateMinor(ID.M.FormatType, nbt_load.getInteger("FType"));
 		entity.setStateMinor(ID.M.FormatPos, nbt_load.getInteger("FPos"));
+		entity.setStateMinor(ID.M.Morale, nbt_load.getInteger("Morale"));
+		entity.setStateMinor(ID.M.Food, nbt_load.getInteger("Food"));
 		entity.setNameTag(nbt_load.getString("tagName"));
 		//load emotion state
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Emotion");

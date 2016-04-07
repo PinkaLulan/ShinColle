@@ -31,7 +31,7 @@ public class EntitySubmU511 extends BasicEntityShipSmall implements IShipInvisib
 	
 	public EntitySubmU511(World world) {
 		super(world);
-		this.setSize(0.6F, 1.4F);	//碰撞大小 跟模型大小無關
+		this.setSize(0.6F, 1.5F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.SUBMARINE);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.SubmarineU511);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.SUBMARINE);
@@ -64,7 +64,7 @@ public class EntitySubmU511 extends BasicEntityShipSmall implements IShipInvisib
 	public void setAIList() {
 		super.setAIList();
 		//use range attack (light)
-		this.tasks.addTask(11, new EntityAIShipRangeAttack(this));			   //0011
+		this.tasks.addTask(11, new EntityAIShipRangeAttack(this));
 	}
 
     //check entity state every tick
@@ -149,6 +149,9 @@ public class EntitySubmU511 extends BasicEntityShipSmall implements IShipInvisib
   		
   		//grudge--
   		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
+  		
+  		//morale--
+  		this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - 1);
   	
   		//play cannon fire sound at attacker
           this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));

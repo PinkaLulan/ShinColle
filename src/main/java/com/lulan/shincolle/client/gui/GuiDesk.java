@@ -415,6 +415,9 @@ public class GuiDesk extends GuiContainer {
         	
         	//draw radar ship icon
         	drawRadarIcon();
+        	
+        	//draw morale icon
+        	drawMoraleIcon();
         	break;	//end radar
         case 2:		//book
         	//background
@@ -976,7 +979,48 @@ public class GuiDesk extends GuiContainer {
 			}//end for all ship
 			GL11.glDisable(GL11.GL_BLEND);
 		}//end get player
+		
+		
 	}//end draw radar icon
+	
+	//draw morale icon
+	private void drawMoraleIcon() {
+		Minecraft.getMinecraft().getTextureManager().bindTexture(guiNameIcon);
+		
+		//draw ship list
+		if(this.shipList != null) {
+			int texty = 37;
+			
+			for(int i = this.listNum[LISTCLICK_RADAR]; i < shipList.size() && i < this.listNum[LISTCLICK_RADAR] + 5; ++i) {
+				//get ship
+				ShipEntity s = shipList.get(i);
+				
+				if(s != null && s.ship instanceof BasicEntityShip) {
+					BasicEntityShip s2 = (BasicEntityShip) s.ship;
+					
+					int m = s2.getStateMinor(ID.M.Morale);
+    		        int ix = 0;
+    		        
+    		        if(m < 901) {
+    		        	ix = 44;
+    		        }
+    		        else if(m < 2101) {
+    		        	ix = 33;
+    		        }
+    		        else if(m < 3901) {
+    		        	ix = 22;
+    		        }
+    		        else if(m < 5101) {
+    		        	ix = 11;
+    		        }
+    		        
+    		        drawTexturedModalRect(guiLeft+237, guiTop+texty-1, ix, 240, 11, 11);
+				}
+				
+				texty += 32;
+			}
+		}
+	}
 	
 	//draw ship text in radar screen
 	private void drawRadarText() {

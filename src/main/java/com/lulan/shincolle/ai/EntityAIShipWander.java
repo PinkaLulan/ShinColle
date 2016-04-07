@@ -29,7 +29,7 @@ public class EntityAIShipWander extends EntityAIBase {
     	}
         
         this.speed = speed;
-        this.setMutexBits(1);
+        this.setMutexBits(7);
     }
 
     /** should begin checking */

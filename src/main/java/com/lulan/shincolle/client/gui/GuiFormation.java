@@ -6,6 +6,7 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.EnumChatFormatting;
@@ -32,6 +33,7 @@ import com.lulan.shincolle.utility.LogHelper;
 public class GuiFormation extends GuiContainer {
 
 	private static final ResourceLocation guiFormat = new ResourceLocation(Reference.TEXTURES_GUI+"GuiFormation.png");
+	private static final ResourceLocation guiNameIcon = new ResourceLocation(Reference.TEXTURES_GUI+"GuiNameIcon.png");
 	
 	private int xClick, yClick, xMouse, yMouse;
 	private int tickGUI, tickTooltip, tickWaitSync;
@@ -414,6 +416,42 @@ public class GuiFormation extends GuiContainer {
     	drawFormationPosSpot();
     	
     	drawFormationBuffBar();
+    	
+    	drawMoraleIcon();
+	}
+	
+	//draw morale icon
+	private void drawMoraleIcon() {
+		Minecraft.getMinecraft().getTextureManager().bindTexture(guiNameIcon);
+		
+		//draw ship list
+		if(this.shipList != null) {
+			int texty = 9;
+			
+			for(int i = 0; i < 6; i++) {
+    			if(shipList[i] != null) {
+    				int m = this.shipList[i].getStateMinor(ID.M.Morale);
+    		        int ix = 0;
+    		        
+    		        if(m < 901) {
+    		        	ix = 44;
+    		        }
+    		        else if(m < 2101) {
+    		        	ix = 33;
+    		        }
+    		        else if(m < 3901) {
+    		        	ix = 22;
+    		        }
+    		        else if(m < 5101) {
+    		        	ix = 11;
+    		        }
+    		        
+    		        drawTexturedModalRect(guiLeft+145, guiTop+texty-1, ix, 240, 11, 11);
+    			}
+    			
+    			texty += 27;
+			}
+		}
 	}
 	
 	//handle mouse click, @parm posX, posY, mouseKey (0:left 1:right 2:middle 3:...etc)
@@ -472,12 +510,26 @@ public class GuiFormation extends GuiContainer {
         case 22: //up button
         	if(this.tickWaitSync <= 0) changeFormationPos(true);
         	break;
+        case 23: //open GUI
+        	openShipGUI();
+        	break;
         }
     	
     	//set buff bar value
     	if(btn >= 0) {
 			this.setFormationBuffBar(this.formatClicked, this.listClicked);
     	}
+	}
+	
+	//open ship GUI
+	private void openShipGUI() {
+		try {
+			if(shipList[listClicked] != null) {
+				this.mc.thePlayer.closeScreen();
+				CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.OpenShipGUI, shipList[listClicked].getEntityId()));
+			}
+		}
+		catch(Exception e) {}
 	}
 	
 	//send position change packet
@@ -640,6 +692,11 @@ public class GuiFormation extends GuiContainer {
 		float mov = 0F;
 		float movBuff = 0F;
 		
+		//draw button text
+		str = I18n.format("gui.shincolle:radar.gui");
+		len = (int) (this.fontRendererObj.getStringWidth(str) * 0.5F);
+		fontRendererObj.drawStringWithShadow(str, 70-len, 182, Values.Color.YELLOW);
+		
 		//draw ship name
     	if(this.extProps != null) {
 			//icon setting
@@ -653,8 +710,9 @@ public class GuiFormation extends GuiContainer {
     			for(int i = 0; i < 6; i++) {
         			if(shipList[i] != null) {
         				//draw name
-        				fontRendererObj.drawString(shipName[i], 195, texty, Values.Color.WHITE);
+        				fontRendererObj.drawString(shipName[i], 210, texty, Values.Color.WHITE);
         				texty += 14;
+        				
         				//draw pos
         				str = EnumChatFormatting.AQUA + "LV " + EnumChatFormatting.YELLOW +
         					  shipList[i].getLevel() + "   " + EnumChatFormatting.GOLD +

@@ -1,4 +1,4 @@
-package com.lulan.shincolle.client.render;
+package com.lulan.shincolle.client.render.special;
 
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.entity.Entity;

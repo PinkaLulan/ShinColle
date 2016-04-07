@@ -8,6 +8,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 
@@ -337,28 +338,31 @@ public class C2SGUIPackets implements IMessage {
 					   this.player.inventory.getCurrentItem().getItem() instanceof PointerItem) {
 						
 						//sync item damage value
+						int oldmeta = this.player.inventory.getCurrentItem().getItemDamage();
 						this.player.inventory.getCurrentItem().setItemDamage(value1);
 						
-						//change focus target if pointer mode = 0
-						ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
-						
-						if(extProps != null) {
-							//is single mode, set focus ships to only 1 ship
-							if(value1 == 0) {
-								//reset focus ship
-								extProps.clearSelectStateCurrentTeam();
-								//set focus ship on first ship in team list
-								for(int j = 0; j < 6; j++) {
-									if(extProps.getShipEntityCurrentTeam(j) != null) {
-										//focus ship j
-										extProps.setSelectStateCurrentTeam(j, true);
-										//sync team list
-										extProps.sendSyncPacket(0);
-										break;
+						//mode changed, reset focus target
+						if(MathHelper.abs_int(value1 - oldmeta) != 3) {
+							ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+							
+							if(extProps != null) {
+								//is single mode, set focus ships to only 1 ship
+								if(value1 == 0) {
+									//reset focus ship
+									extProps.clearSelectStateCurrentTeam();
+									//set focus ship on first ship in team list
+									for(int j = 0; j < 6; j++) {
+										if(extProps.getShipEntityCurrentTeam(j) != null) {
+											//focus ship j
+											extProps.setSelectStateCurrentTeam(j, true);
+											//sync team list
+											extProps.sendSyncPacket(0);
+											break;
+										}
 									}
-								}
-							}//end meta = 0
-						}//end props != null
+								}//end meta = 0
+							}//end props != null
+						}
 					}//end pointer sync
 				}
 			}

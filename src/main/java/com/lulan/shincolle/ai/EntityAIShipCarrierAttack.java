@@ -38,7 +38,7 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
         else {
             this.host = host;
             this.host2 = (EntityLiving) host;
-            this.setMutexBits(4);
+            this.setMutexBits(2);
             
             //init value
             this.launchDelay = 20;
@@ -96,11 +96,12 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
     @Override
 	public void resetTask() {
         this.target = null;
-        if(host != null) {
-        	this.host2.setAttackTarget(null);
-        	this.host.setEntityTarget(null);
-        	this.host.getShipNavigate().clearPathEntity();
-        }
+        
+//        if(host != null) {
+//        	this.host2.setAttackTarget(null);
+//        	this.host.setEntityTarget(null);
+//        	this.host.getShipNavigate().clearPathEntity();
+//        }
     }
 
     //進行AI
@@ -131,7 +132,7 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
         		this.distSq = distX*distX + distY*distY + distZ*distZ;
     	
         		//若目標進入射程, 且目標無障礙物阻擋, 則清空AI移動的目標, 以停止繼續移動      
-		        if(distSq < this.rangeSq && onSight) {
+		        if(distSq < this.rangeSq && onSight && !host.getStateFlag(ID.F.UseMelee)) {
 		        	this.host.getShipNavigate().clearPathEntity();
 		        }
 		        else {	//目標移動, 則繼續追擊		        	

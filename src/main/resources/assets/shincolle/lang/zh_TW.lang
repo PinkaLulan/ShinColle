@@ -230,8 +230,8 @@ gui.shincolle:book.chap1.title11=ヲ級的指揮權杖
 gui.shincolle:book.chap1.text11d0=<br><br><br><br><br><br><br><br><br>§d§nヲ級的指揮權杖§r§0是魔法少女ヲ級用於指揮艦載機的裝備，不過深海提督無法變身為魔法少女控制艦載機，所以只能用來指揮所屬的§c深海棲艦§0。<br><br>§d§nヲ級的指揮權杖§r§0有3種控制模式，最多可以儲存9支編隊，每隊最多6艘船艦。
 gui.shincolle:book.chap1.text11d1=§2個別模式§0：可以設定一艘為§3專注目標§0，權杖指令只對§3專注目標§0有效。<br><br>§4團體模式§0：可以設定0~6個§3專注目標§0，權杖指令只對§3專注目標§0有效。<br><br>§6陣型模式§0：船艦會以陣型移動並獲得能力加成，權杖指令對全隊有效。<br><br>拿著權杖時會出現彩色圈圈代表：<br>§2綠色§0：船艦在§2個別模式§0中。<br>§3青色§0：船艦為§3專注目標§0。<br>§4紅色§0：船艦在§4團體模式§0中。<br>§6黃色§0：船艦在§6陣型模式§0中。<br>§7白色§0：守衛目標。
 gui.shincolle:book.chap1.title12=ヲ級的指揮權杖
-gui.shincolle:book.chap1.text12d0=§9左鍵§0：<br>將該船艦加入隊伍 / 將非船艦目標加入到可攻擊目標清單 / 設為專注目標。<br><br>§9跑步+左鍵§0:<br>改變陣型。<br><br><br><br>§9蹲下+左鍵§0：<br>改變權杖控制模式或將目標船艦移除隊伍。<br><br>§9跑步+蹲下+左鍵§0：<br>清除整個隊伍。
-gui.shincolle:book.chap1.text12d1=§9右鍵§0：<br>移動並守衛該點 / 攻擊目標 / 使船艦坐下。<br><br>§9跑步+右鍵§0：<br>守衛指定目標。<br><br>§9蹲下+右鍵§0：<br>開啟船艦物品欄 / 開啟陣型GUI。
+gui.shincolle:book.chap1.text12d0=§9左鍵§0：<br>將該船艦加入隊伍 / 將非船艦目標加入到可攻擊目標清單 / 設為專注目標。<br><br>§9跑步+左鍵§0:<br>改變陣型。<br><br>§9蹲下+左鍵§0：<br>改變權杖控制模式或將目標船艦移除隊伍。<br><br>§9跑步+蹲下+左鍵§0：<br>清除整個隊伍。
+gui.shincolle:book.chap1.text12d1=§9右鍵§0：<br>移動並守衛該點 / 攻擊目標 / 使船艦坐下 / 撫摸船艦。<br><br>§9跑步+右鍵§0：<br>守衛指定目標。<br><br>§9蹲下+右鍵§0：<br>開啟船艦物品欄 / 開啟陣型GUI。<br><br>§9跑步:§0<br>切換撫摸模式。
 gui.shincolle:book.chap1.title13=ヲ級的指揮權杖
 gui.shincolle:book.chap1.text13d0=§9陣型§0:<br>船艦以相同速度以及特定相對位置進行群體移動，處於陣型中的船艦會有特定屬性加成。一個隊伍中至少需要至少5或6艘船才能使用陣型模式。<br><br>處於陣型模式中的船艦無法用個別/團體模式控制。<br><br>若同一船艦同時處於多個隊伍中，則只會套用到最後設定的隊伍的陣型。
 gui.shincolle:book.chap1.text13d1=§2單縱陣§0:<br>標準砲擊戰陣型，船艦會得到大量火力加成，但是防禦會大幅下降。<br><br>§3複縱陣§0:<br>巡邏陣型，具有些微的火力加成。<br><br>§4輪形陣§0:<br>針對航空戰的防禦陣型，船艦圍成圓圈以達到最佳的防空火力。<br><br>§6梯形陣§0:<br>船艦會以高速進行移動的衝刺陣型。<br><br>§7單橫陣§0:<br>針對反潛戰的防禦陣型。
@@ -309,8 +309,14 @@ gui.shincolle:book.chap3.text11d0=§9/shipinfo§c<br>§d權限:§0 全部玩家<
 gui.shincolle:book.chap3.text11d1=§9/shipupdateowneruid§3 [玩家名稱]<br>§d權限:§0 全部玩家 or 僅限OP<br>§d功能:§0 更新擁有船的主人ID<br><br>在某些bug下導致船艦對主人沒有反應時，可輸入此指令嘗試更新主人ID。一般玩家輸入後會更新玩家所擁有的已載入的船艦的主人ID，OP可以額外輸入玩家名稱，就會更新該玩家所擁有船艦的主人ID。<br><br>注意船艦若處在非載入的地圖區塊中，不會被此指令影響，需移動到該船艦附近輸入指令才能生效。<br><br>判定擁有船艦是以船艦紀錄的主人UUID為準，若UUID出現bug則此指令可能無效，請改用/shipchangeowner單獨對每個船艦修改主人。
 gui.shincolle:book.chap3.title12=
 gui.shincolle:book.chap3.text12d0=§9/shipattrs <船艦等級> <HP等級> <ATK等級> <DEF等級> <攻速等級> <跑速等級> <射程等級>§c<br>§d權限:§0 僅限OP<br>§d功能:§0 修改船艦數值<br><br>OP對游標指向的船艦輸入指令後，可以修改目標的等級跟六大屬性的等級。船艦等級可設為1~150，屬性等級可設0~100。
-gui.shincolle:book.chap3.text12d1=
-
+gui.shincolle:book.chap3.text12d1=§9/shipcleardrop [range]<br>§d權限:§0 僅限OP<br>§d功能:§0 移除船艦掉落物<br><br>移除船艦掉落的紅色怨念球，可指定範圍。預設範圍為128格。
+gui.shincolle:book.chap3.title13=士氣說明
+gui.shincolle:book.chap3.text13d0=艦太太們的士氣高低會影響其作戰能力。<br><br>士氣分為五個等級，處於較高的兩個等級具有屬性加成效果，而較低的兩個等級則會降低船艦各個屬性。<br><br>士氣等級會以圖示標在船艦物品欄介面的右上角，圖示由左到右為：<br>§d興奮§0，§c快樂§0，§2普通§0，§9疲累§0，§7精疲力盡§0。
+gui.shincolle:book.chap3.text13d1=以下動作會影響士氣變化：<br><br>§9閒置：§0<br>從其他狀態逐漸恢復到§2普通§0狀態。<br><br>§9撫摸：§0<br>增加士氣，可達到§d興奮§0狀態。<br><br>§9餵食：§0<br>增加士氣，可達到§c快樂§0狀態。<br><br>§9移動、攻擊、被攻擊：§0<br>降低士氣。
+gui.shincolle:book.chap3.title14=餵食說明
+gui.shincolle:book.chap3.text14d0=船艦一般不需要餵食，不過餵食可以手動補充怨念、彈藥跟提高士氣值。<br><br>對船艦§9右鍵使用§0食物或者怨念、彈藥、深海金屬、多金屬結核會餵食該船艦，並提昇其怨念、士氣、彈藥等。<br><br>在一段時間內能§9餵食的次數有限制§0，餵飽後需隔一段時間才能繼續餵食。
+gui.shincolle:book.chap3.text14d1=§9怨念、食物道具：§0<br>提高士氣、怨念值。<br><br>§9彈藥：§0<br>提高士氣，彈藥值。回復彈藥量會比船艦自動使用多一些。<br><br>§9深海金屬、多金屬結核：§0<br>恢復艦載機數量。
+ 
 # GUI: Book Text Chap 4
 gui.shincolle:book.chap4.title=深海棲艦列表
 gui.shincolle:book.chap4.title0=深海棲艦
@@ -438,6 +444,11 @@ gui.shincolle:formation.nosignal=沒有訊號
 # GUI: Ship Inventory: Top
 gui.shincolle:level=等級
 gui.shincolle:hp=耐久
+gui.shincolle:morale0=興奮
+gui.shincolle:morale1=快樂
+gui.shincolle:morale2=普通
+gui.shincolle:morale3=疲累
+gui.shincolle:morale4=精疲力盡
 
 # GUI: Ship Inventory: Attributes
 gui.shincolle:firepower1=火力

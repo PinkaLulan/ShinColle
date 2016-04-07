@@ -16,23 +16,19 @@ import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipCV;
 import com.lulan.shincolle.entity.ExtendShipProps;
-import com.lulan.shincolle.entity.IShipMount;
 import com.lulan.shincolle.entity.mounts.EntityMountHbH;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.network.S2CSpawnParticle;
-import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
-
-import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
+import com.lulan.shincolle.utility.LogHelper;
 
 public class EntityHarbourHime extends BasicEntityShipCV {
 	
 	public EntityHarbourHime(World world) {
 		super(world);
-		this.setSize(0.6F, 1.8F);
+		this.setSize(0.7F, 2.2F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.HarbourHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
@@ -46,11 +42,15 @@ public class EntityHarbourHime extends BasicEntityShipCV {
 		
 		//set attack type
 		this.StateFlag[ID.F.HaveRingEffect] = true;
+		
+		//misc
+		this.setFoodSaturationMax(20);
 	}
 	
 	@Override
 	public float getEyeHeight() {
 		return 1.7375F;
+//		return 5F;
 	}
 	
 	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc
@@ -64,16 +64,16 @@ public class EntityHarbourHime extends BasicEntityShipCV {
 		super.setAIList();
 		
 		//use range attack
-		this.tasks.addTask(11, new EntityAIShipCarrierAttack(this));		   //0100
-		this.tasks.addTask(12, new EntityAIShipRangeAttack(this));			   //0011
+		this.tasks.addTask(11, new EntityAIShipCarrierAttack(this));
+		this.tasks.addTask(12, new EntityAIShipRangeAttack(this));
 	}
 	
 	//check entity state every tick
   	@Override
   	public void onLivingUpdate() {
+  		
   		//server side
   		if(!worldObj.isRemote) {
-//  			LogHelper.info("DEBUG : hb target "+this.getEntityTarget());
   			//heal effect
         	if(this.ticksExisted % 128 == 0) {
         		//1: 增強被動回血
@@ -134,52 +134,41 @@ public class EntityHarbourHime extends BasicEntityShipCV {
 		return 1;
 	}
 	
-	//修改煙霧特效 & 檢查是否riding
-  	@Override
-  	public boolean attackEntityWithAmmo(Entity target) {
-  		//check riding
-  		if(this.isRiding()) {
-  			//stop attack if riding ship mount
-  			if(this.ridingEntity instanceof IShipMount) {
-  				return false;
-  			}
+	@Override
+	public float getAttackBaseDamage(int type, Entity target) {
+  		switch(type) {
+  		case 1:  //light cannon
+  			return CalcHelper.calcDamageBySpecialEffect(this, target, StateFinal[ID.ATK], 0);
+  		case 2:  //heavy cannon
+  			return StateFinal[ID.ATK_H] * 0.75F;
+  		case 3:  //light aircraft
+  			return StateFinal[ID.ATK_AL];
+  		case 4:  //heavy aircraft
+  			return StateFinal[ID.ATK_AH];
+		default: //melee
+			return StateFinal[ID.ATK];
   		}
-  		
-  		return super.attackEntityWithAmmo(target);
-	}
-  	
-  	//檢查是否riding
-  	@Override
-  	public boolean attackEntityWithHeavyAmmo(Entity target) {
-  		//check riding
-  		if(this.isRiding()) {
-  			//stop attack if riding ship mount
-  			if(this.ridingEntity instanceof IShipMount) {
-  				return false;
-  			}
-  		}
-  		
-  		return this.attackEntityWithSpecialAmmo(target);
   	}
-  	
-  	//special heavy attack, call by mounts
-  	/**RAILGUN
-  	 * hight speed, low damage, direct shot only
+
+	/**RAILGUN
+  	 * hight speed, 75% damage, direct shot only
   	 */
-  	public boolean attackEntityWithSpecialAmmo(Entity target) {	
+	@Override
+  	public boolean attackEntityWithHeavyAmmo(Entity target) {
   		//get attack value
   		float atk = StateFinal[ID.ATK_H] * 0.75F;
-  		float kbValue = 0.15F;
+  		float launchPos = (float)posY + 0.4F;
 		
   		//計算目標距離
   		float tarX = (float)target.posX;	//for miss chance calc
   		float tarY = (float)target.posY;
   		float tarZ = (float)target.posZ;
-  		float distX = tarX - (float)this.posX;
-  		float distY = tarY - (float)this.posY;
-  		float distZ = tarZ - (float)this.posZ;
-  		float distSqrt = MathHelper.sqrt_float(distX*distX + distY*distY + distZ*distZ);
-  		float launchPos = (float)posY + 0.4F;
+  		float[] distVec = new float[4];
+  		
+  		distVec[0] = tarX - (float)this.posX;
+  		distVec[1] = tarY - (float)this.posY;
+  		distVec[2] = tarZ - (float)this.posZ;
+  		distVec[3] = MathHelper.sqrt_float(distVec[0]*distVec[0] + distVec[1]*distVec[1] + distVec[2]*distVec[2]);
   		
   		if(this.ridingEntity != null && this.ridingEntity instanceof BasicEntityMount) {
   			launchPos = (float)posY - 1.2F;
@@ -190,25 +179,21 @@ public class EntityHarbourHime extends BasicEntityShipCV {
   		
   		//grudge--
   		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
+  		
+  		//morale--
+  		this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - 1);
   	
-  		//play cannon fire sound at attacker
-  		this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-  		//play entity attack sound
-  		if(this.getRNG().nextInt(10) > 7) {
-  			this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-  		}
+  		//play attack effect
+        applySoundAtAttacker(2, target);
+	    applyParticleAtAttacker(2, target, distVec);
           
   		//heavy ammo--
   		if(!decrAmmoNum(1, this.getAmmoConsumption())) {
   			return false;
   		}
-  		
-  		//發射者煙霧特效 (發射飛機不使用特效, 但是要發送封包來設定attackTime)
-        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
-		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
-          
+
   		//calc miss chance, miss: add random offset(0~6) to missile target 
-  		float missChance = 0.2F + 0.15F * (distSqrt / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.M.ShipLevel];
+  		float missChance = 0.2F + 0.15F * (distVec[3] / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.M.ShipLevel];
   		missChance -= EffectEquip[ID.EF_MISS];	//equip miss reduce
   		if(missChance > 0.35F) missChance = 0.35F;	//max miss chance = 30%
   		
@@ -216,14 +201,18 @@ public class EntityHarbourHime extends BasicEntityShipCV {
           	tarX = tarX - 5F + this.rand.nextFloat() * 10F;
           	tarY = tarY + this.rand.nextFloat() * 5F;
           	tarZ = tarZ - 5F + this.rand.nextFloat() * 10F;
-          	//spawn miss particle
-          	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
+
+          	applyParticleSpecialEffect(0);  //miss particle
   		}
           
   		//spawn missile
   		EntityAbyssMissile missile = new EntityAbyssMissile(this.worldObj, this, 
-          		tarX, tarY+target.height*0.35F, tarZ, launchPos, atk, kbValue, true, 0.3F);
+          		tarX, tarY+target.height*0.35F, tarZ, launchPos, atk, 0.15F, true, 0.3F);
   		this.worldObj.spawnEntityInWorld(missile);
+  		
+  		//play target effect
+        applySoundAtTarget(2, target);
+        applyParticleAtTarget(2, target, distVec);
           
   		return true;
   	}

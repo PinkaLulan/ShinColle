@@ -17,7 +17,7 @@ public class EntityHeavyCruiserRi extends BasicEntityShipSmall {
 	
 	public EntityHeavyCruiserRi(World world) {
 		super(world);
-		this.setSize(0.6F, 1.8F);	//碰撞大小 跟模型大小無關
+		this.setSize(0.75F, 1.8F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HEAVY_CRUISER);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.HeavyCruiserRI);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CRUISER);
@@ -31,6 +31,9 @@ public class EntityHeavyCruiserRi extends BasicEntityShipSmall {
 		this.StateFlag[ID.F.HaveRingEffect] = true;
 		this.StateFlag[ID.F.AtkType_AirLight] = false;
 		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
+		
+		//misc
+		this.setFoodSaturationMax(14);
 	}
 	
 	//for morph
@@ -49,11 +52,12 @@ public class EntityHeavyCruiserRi extends BasicEntityShipSmall {
 	public void setAIList() {
 		super.setAIList();
 		//use range attack (light)
-		this.tasks.addTask(11, new EntityAIShipRangeAttack(this));			   //0011
+		this.tasks.addTask(11, new EntityAIShipRangeAttack(this));
 	}
 
     @Override
     public void onLivingUpdate() {
+    	
     	//check server side
     	if(!this.worldObj.isRemote) {
     		//check every 5 sec

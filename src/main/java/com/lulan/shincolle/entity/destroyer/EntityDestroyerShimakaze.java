@@ -67,7 +67,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
 	public void setAIList() {
 		super.setAIList();
 		//use range attack (light)
-		this.tasks.addTask(11, new EntityAIShipRangeAttack(this));			   //0011
+		this.tasks.addTask(11, new EntityAIShipRangeAttack(this));
 	}
     
     //check entity state every tick
@@ -133,12 +133,15 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
   		
   		//grudge--
   		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk] * 4);
+  		
+  		//morale--
+  		this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - 1);
 
         //發射者煙霧特效 (招喚連裝砲不使用特效, 但是要發送封包來設定attackTime)
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
   		
-		//spawn airplane
+		//spawn rensouhou
         if(target instanceof EntityLivingBase) {
         	if(this.getStateEmotion(ID.S.State2) > ID.State.NORMAL_2) {
         		EntityRensouhouS rensoho2 = new EntityRensouhouS(this.worldObj, this, target);
@@ -187,6 +190,9 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
 		
 		//grudge--
 		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
+		
+  		//morale--
+  		this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - 1);
 	
 		//play cannon fire sound at attacker
         this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));

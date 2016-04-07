@@ -61,7 +61,7 @@ public class FormationHelper {
 	public static void setFormationForShip(ExtendPlayerProps props, int teamID, int formatID) {
 		BasicEntityShip ship = null;
 		float buffMOV = getFormationBuffValue(formatID, 0)[ID.Formation.MOV];
-		float maxMOV = 1000F;
+		float minMOV = 1000F;
 		float temp = 0F;
 		
 		//set buff value to ship
@@ -72,18 +72,18 @@ public class FormationHelper {
 				ship.setUpdateFlag(ID.FU.FormationBuff, true);  //set update
 				
 				temp = ship.getStateFinalBU(ID.MOV);			//get MIN moving speed in team
-				if(temp < maxMOV) maxMOV = temp;
+				if(temp < minMOV) minMOV = temp;
 			}
 		}
 		
 		//apply same moving speed to all ships in team
-		maxMOV += buffMOV;  //moving speed for formation
+		minMOV += buffMOV;  //moving speed for formation
 		
 		for(int j = 0; j < 6; j++) {
 			ship = props.getShipEntity(teamID, j);
 			
 			if(ship != null) {
-				ship.setEffectFormationFixed(ID.FormationFixed.MOV, maxMOV);		//set moving speed
+				ship.setEffectFormationFixed(ID.FormationFixed.MOV, minMOV);		//set moving speed
 				int sid = ship.getShipUID();
 				
 				//check if same ship in other team, cancel the buff in other team

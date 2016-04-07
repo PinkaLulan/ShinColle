@@ -31,7 +31,7 @@ public class EntityAirplaneTakoyaki extends BasicEntityAirplane {
     		this.targetSorter = new TargetHelper.Sorter(ship);
     		
             //basic attr
-            this.atk = ship.getStateFinal(ID.ATK_AH);
+            this.atk = ship.getAttackBaseDamage(4, target);
             this.def = ship.getStateFinal(ID.DEF) * 0.5F;
             this.atkSpeed = ship.getStateFinal(ID.SPD);
             this.movSpeed = ship.getStateFinal(ID.MOV) * 0.1F + 0.23F;
