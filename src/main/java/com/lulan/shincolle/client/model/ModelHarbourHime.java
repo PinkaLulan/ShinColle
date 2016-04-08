@@ -326,17 +326,17 @@ public class ModelHarbourHime extends ModelBase implements IModelEmotion {
     	GL11.glEnable(GL11.GL_BLEND);
     	GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
     	GL11.glScalef(0.53F, 0.53F, 0.53F);
-
+    	GL11.glTranslatef(0F, 1.35F, 0F);
+    	
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
     	this.BodyMain.render(f5);
-    	GL11.glDisable(GL11.GL_BLEND);
     	
-    	//亮度設為240
     	GL11.glDisable(GL11.GL_LIGHTING);
     	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
     	this.GlowBodyMain.render(f5);
     	GL11.glEnable(GL11.GL_LIGHTING);
     	
+    	GL11.glDisable(GL11.GL_BLEND);
     	GL11.glPopMatrix();
     }
 
@@ -348,8 +348,13 @@ public class ModelHarbourHime extends ModelBase implements IModelEmotion {
 		IShipEmotion ent = (IShipEmotion)entity;
 		
 		EmotionHelper.rollEmotion(this, ent);
-		  
-		motionHumanPos(f, f1, f2, f3, f4, ent);
+
+		if(ent.getStateFlag(ID.F.NoFuel)) {
+			motionStopPos(f, f1, f2, f3, f4, ent);
+		}
+		else {
+			motionHumanPos(f, f1, f2, f3, f4, ent);
+		}
 		
 		setGlowRotation();
     }
@@ -368,6 +373,72 @@ public class ModelHarbourHime extends ModelBase implements IModelEmotion {
 		this.GlowHead.rotateAngleZ = this.Head.rotateAngleZ;
     }
     
+    private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {
+    	GL11.glTranslatef(0F, 2.0F, 0F);
+    	setFace(4);
+    	
+    	if(((Entity)ent).ridingEntity instanceof BasicEntityMount) {
+  			GL11.glTranslatef(0F, 2.5F, 0F);
+  		}
+    	
+  	    //頭部
+	  	this.Head.rotateAngleX = -0.35F;
+	  	this.Head.rotateAngleY = 0F;
+	  	this.Head.rotateAngleZ = 0F;
+	    //胸部
+  	    this.BoobL.rotateAngleX = -0.76F;
+  	    this.BoobR.rotateAngleX = -0.76F;
+	  	//Body
+  	    this.Ahoke.rotateAngleY = 0.6F;
+	  	this.BodyMain.rotateAngleX = 1.4835F;
+	  	this.BodyMain.rotateAngleY = 0F;
+	  	this.BodyMain.rotateAngleZ = 0F;
+	  	this.Butt.rotateAngleX = 1.0472F;
+	  	this.Butt.offsetZ = -0.05F;
+	  	this.Skirt.offsetY = -0.1F;
+	  	//hair
+	  	this.Hair01.rotateAngleX = 0.35F;
+	  	this.Hair01.rotateAngleZ = 0F;
+	  	this.Hair02.rotateAngleX = 0.2F;
+	  	this.Hair02.rotateAngleZ = 0F;
+	  	this.Hair03.rotateAngleX = -0.3F;
+	  	this.Hair03.rotateAngleZ = 0F;
+	  	this.HairL01.rotateAngleX = -0.14F;
+	  	this.HairL02.rotateAngleX = 0.17F;
+	  	this.HairR01.rotateAngleX = -0.14F;
+	  	this.HairR02.rotateAngleX = 0.17F;
+	    //arm 
+	  	this.ArmLeft01.rotateAngleX = -2.967F;
+	  	this.ArmLeft01.rotateAngleY = -0.6981F;
+	    this.ArmLeft01.rotateAngleZ = 0.08F;
+	    this.ArmLeft03.rotateAngleX = 0F;
+	    this.ArmLeft03.rotateAngleY = 0.35F;
+	    this.ArmLeft03.rotateAngleZ = 0F;
+	    this.ArmLeft06.rotateAngleX = 0.0873F;
+	  	this.ArmLeft06.rotateAngleY = 0.14F;
+	    this.ArmLeft06.rotateAngleZ = 0.26F;
+	    this.ArmLeft07.rotateAngleX = -0.2618F;
+	    this.ArmRight01.rotateAngleX = -2.967F;
+	  	this.ArmRight01.rotateAngleY = 0.6981F;
+	    this.ArmRight01.rotateAngleZ = -0.08F;
+	    this.ArmRight03.rotateAngleX = 0F;
+	    this.ArmRight03.rotateAngleY = -0.35F;
+	    this.ArmRight03.rotateAngleZ = 0F;
+	    this.ArmRight06.rotateAngleZ = -0.26F;
+	    this.ArmRight07.rotateAngleX = -0.2618F;
+		//leg
+	    this.LegLeft02.offsetZ = 0F;
+    	this.LegRight02.offsetZ = 0F;
+    	this.LegLeft01.rotateAngleX = -1.7F;
+		this.LegLeft01.rotateAngleY = 0F;
+		this.LegLeft01.rotateAngleZ = 0.05F;
+		this.LegLeft02.rotateAngleX = 0.7F;
+		this.LegRight01.rotateAngleX = -1.7F;
+		this.LegRight01.rotateAngleY = 0F;
+		this.LegRight01.rotateAngleZ = -0.05F;
+		this.LegRight02.rotateAngleX = 0.7F;
+    }
+    
     private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {   
   		float angleX = MathHelper.cos(f2*0.08F);
   		float angleAdd1 = MathHelper.cos(f * 0.7F) * f1 * 0.7F;
@@ -376,8 +447,6 @@ public class ModelHarbourHime extends ModelBase implements IModelEmotion {
   		float addk2 = 0F;
   		float headX = 0F;
   		float headZ = 0F;
-  		
-    	GL11.glTranslatef(0F, 1.35F, 0F);
   		
   		//leg move parm
   		addk1 = angleAdd1 * 0.6F - 0.21F;
@@ -397,6 +466,9 @@ public class ModelHarbourHime extends ModelBase implements IModelEmotion {
 	  	this.BodyMain.rotateAngleX = -0.1047F;
 	  	this.BodyMain.rotateAngleY = 0F;
 	  	this.BodyMain.rotateAngleZ = 0F;
+	  	this.Butt.rotateAngleX = 0.3142F;
+	  	this.Butt.offsetZ = 0F;
+	  	this.Skirt.offsetY = 0F;
 	  	//hair
 	  	this.Hair01.rotateAngleX = angleX * 0.012F + 0.21F + headX;
 	  	this.Hair01.rotateAngleZ = 0F;

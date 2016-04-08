@@ -9,6 +9,7 @@ import net.minecraft.util.MathHelper;
 import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EmotionHelper;
 
@@ -31,8 +32,11 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
     public ModelRenderer Butt;
     public ModelRenderer Cloth2;
     public ModelRenderer Head;
+    public ModelRenderer Ear01;
+    public ModelRenderer Ear02;
     public ModelRenderer Hair;
     public ModelRenderer Cap;
+    public ModelRenderer Cap2;
     public ModelRenderer Face0;
     public ModelRenderer Face1;
     public ModelRenderer Face2;
@@ -176,9 +180,13 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
         this.Ahoke.addBox(0.0F, 0.0F, -12.0F, 0, 13, 12, 0.0F);
         this.setRotateAngle(Ahoke, 0.0F, 0.5235987755982988F, 0.0F);
         this.Cap = new ModelRenderer(this, 104, 101);
-        this.Cap.setRotationPoint(0.0F, -15.4F, -3.0F);
-        this.Cap.addBox(-8.0F, 0.0F, 0.0F, 16, 17, 10, 0.0F);
-        this.setRotateAngle(Cap, 0.17453292519943295F, 0.0F, 0.0F);
+        this.Cap.setRotationPoint(0.0F, 0.6F, 2.0F);
+        this.Cap.addBox(-8.0F, -17.0F, -2.0F, 16, 17, 10, 0.0F);
+        this.setRotateAngle(Cap, 0.2F, 0.0F, 0.0F);
+        this.Cap2 = new ModelRenderer(this, 106, 103);
+        this.Cap2.setRotationPoint(0F, -2F, -3F);
+        this.Cap2.addBox(-8F, -15F, 0F, 16, 15, 8, 0.0F);
+        this.setRotateAngle(Cap2, -1.4F, 0.0F, 0.0F);
         this.TailHead3 = new ModelRenderer(this, 200, 80);
         this.TailHead3.setRotationPoint(0.0F, 4.0F, 14.5F);
         this.TailHead3.addBox(-6.0F, 0.0F, 0.0F, 12, 4, 7, 0.0F);
@@ -340,6 +348,15 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
         this.BagMain2.setRotationPoint(-0.5F, 11.0F, -0.5F);
         this.BagMain2.addBox(-7.5F, 0.0F, 0.0F, 15, 9, 8, 0.0F);
         this.setRotateAngle(BagMain2, 0.6981317007977318F, 0.0F, -0.2617993877991494F);
+        this.Ear01 = new ModelRenderer(this, 136, 17);
+        this.Ear01.mirror = true;
+        this.Ear01.setRotationPoint(-3.5F, -14.5F, 5.7F);
+        this.Ear01.addBox(-1.5F, 0F, -6F, 3, 6, 6, 0.0F);
+        this.setRotateAngle(Ear01, -0.6981F, 0.2618F, -0.1396F);
+        this.Ear02 = new ModelRenderer(this, 136, 17);
+        this.Ear02.setRotationPoint(3.5F, -14.5F, 5.7F);
+        this.Ear02.addBox(-1.5F, 0F, -6F, 3, 6, 6, 0.0F);
+        this.setRotateAngle(Ear02, -0.6981F, -0.2618F, 0.1396F);
         this.BodyMain.addChild(this.ArmLeft01);
         this.ArmLeft01.addChild(this.ArmLeft02);
         this.TailHead1.addChild(this.TailHeadC1);
@@ -354,6 +371,8 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
         this.BagMain.addChild(this.BagStrap2);
         this.Hair.addChild(this.Ahoke);
         this.Head.addChild(this.Cap);
+        this.Head.addChild(this.Ear01);
+        this.Head.addChild(this.Ear02);
         this.TailHead1.addChild(this.TailHead3);
         this.TailHead1.addChild(this.TailHead2);
         this.TailHeadCL1.addChild(this.TailHeadCL2);
@@ -377,6 +396,7 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
         this.BagMain.addChild(this.BagMain2);
         this.BodyMain.addChild(this.Neck);
         this.Neck.addChild(this.Head);
+        this.Neck.addChild(this.Cap2);
         this.BodyMain.addChild(this.TailBase);
         this.TailBase.addChild(this.Tail1);
         this.Tail1.addChild(this.Tail2);
@@ -468,34 +488,40 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
     	GL11.glEnable(GL11.GL_BLEND);
     	GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
     	GL11.glScalef(0.4F, 0.4F, 0.4F); 	
-
+    	GL11.glTranslatef(0F, 2.2F, 0F);
+    	
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity); 	
     	this.BodyMain.render(f5);
-    	GL11.glDisable(GL11.GL_BLEND);
     	
-    	//亮度設為240
     	GL11.glDisable(GL11.GL_LIGHTING);
     	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
     	this.GlowBodyMain.render(f5);
     	GL11.glEnable(GL11.GL_LIGHTING);
     	
+    	GL11.glDisable(GL11.GL_BLEND);
     	GL11.glPopMatrix();
     }
-
-    
     
     //for idle/run animation
     @Override
 	public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity) {
-      super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
+    	super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
       
-      BasicEntityShip ent = (BasicEntityShip)entity;
-      
-      EmotionHelper.rollEmotion(this, ent);
-      
-      motionHumanPos(f, f1, f2, f3, f4, ent);
+    	BasicEntityShip ent = (BasicEntityShip)entity;
 
-      setGlowRotation();
+    	EmotionHelper.rollEmotion(this, ent);
+
+    	showEquip(ent);
+    	
+    	if(ent.getStateFlag(ID.F.NoFuel)) {
+    		motionStopPos(f, f1, f2, f3, f4, ent);
+    	}
+    	else {
+    		motionHumanPos(f, f1, f2, f3, f4, ent);
+    	}
+
+    	setGlowRotation();
+
     }
     
     //設定模型發光部份的rotation
@@ -544,29 +570,93 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
 		this.GlowTailJaw1.rotateAngleZ = this.TailJaw1.rotateAngleZ;
 	}
     
-  //雙腳移動計算
+    private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {
+    	GL11.glTranslatef(0F, 1.8F, 0F);
+    	setFace(4);
+    
+    	//頭部
+	  	this.Head.rotateAngleX = 0F;
+	  	this.Head.rotateAngleY = 0F;
+	    //胸部
+  	    this.BoobL.rotateAngleX = -0.73F;
+  	    this.BoobR.rotateAngleX = -0.73F;
+	  	//Body
+  	    this.Ahoke.rotateAngleY = 0.5236F;
+	  	this.Head.rotateAngleX -= 0.5236F;
+	  	this.BodyMain.rotateAngleY = 0F;
+    	this.BodyMain.rotateAngleX = 1.5708F;
+    	this.Cloth2.rotateAngleX = -0.0524F;
+  	    //arm 
+	  	this.ArmLeft01.rotateAngleX = -2.9671F;
+	    this.ArmLeft01.rotateAngleY = 0F;
+	    this.ArmLeft01.rotateAngleZ = 0.0349F;
+	    this.ArmLeft02.rotateAngleZ = 0F;
+	    this.ArmRight01.rotateAngleX = -2.9671F;
+		this.ArmRight01.rotateAngleY = 0F;
+		this.ArmRight01.rotateAngleZ = -0.0349F;
+		this.ArmRight02.rotateAngleZ = 0F;
+		//bag
+		this.BagStrap1.rotateAngleX = 0.2618F;
+		this.BagStrap1.rotateAngleY = -0.1396F;
+		this.BagStrap1.rotateAngleZ = -0.1745F;
+		this.BagStrap2.rotateAngleX = 0.3491F;
+		this.BagStrap2.rotateAngleY = 0.3491F;
+		//leg
+		this.LegLeft.rotateAngleX = -0.3491F;
+		this.LegRight.rotateAngleX = -0.3491F;
+		this.LegLeft.rotateAngleY = 0F;
+		this.LegRight.rotateAngleY = 0F;
+		//tail
+		this.TailBase.rotateAngleX = -0.4F;
+		this.TailBase.rotateAngleY = -0.8F;//MathHelper.cos(-f2 * 0.1F) * 0.1F;
+		this.TailBase.rotateAngleZ = 0F;//MathHelper.cos(-f2 * 0.1F) * 0.05F;
+		this.Tail1.rotateAngleX = -0.3F;
+		this.Tail1.rotateAngleY = -0.35F;//MathHelper.cos(-f2 * 0.1F + 0.7F) * 0.2F;
+		this.Tail1.rotateAngleZ = 0F;//-MathHelper.cos(-f2 * 0.1F + 0.7F) * 0.05F;
+		this.Tail2.rotateAngleX = -0.35F;
+		this.Tail2.rotateAngleY = -0.3F;//MathHelper.cos(-f2 * 0.1F + 1.4F) * 0.3F;
+		this.Tail2.rotateAngleZ = 0F;//-MathHelper.cos(-f2 * 0.1F + 1.4F) * 0.05F;
+		this.Tail3.rotateAngleX = -0.4F;
+		this.Tail3.rotateAngleY = -0.2F;//MathHelper.cos(-f2 * 0.1F + 2.1F) * 0.4F;
+		this.Tail3.rotateAngleZ = 0F;//-MathHelper.cos(-f2 * 0.1F + 2.1F) * 0.05F;
+		this.Tail4.rotateAngleX = -0.25F;
+		this.Tail4.rotateAngleY = 0.2F;//MathHelper.cos(-f2 * 0.1F + 2.8F) * 0.5F;
+		this.Tail4.rotateAngleZ = 0F;//MathHelper.cos(-f2 * 0.1F + 2.8F) * 0.025F;
+		this.Tail5.rotateAngleX = 0.25F;
+		this.Tail5.rotateAngleY = 0.2F;//MathHelper.cos(-f2 * 0.1F + 3.5F) * 0.55F;
+		this.Tail5.rotateAngleZ = 0F;//MathHelper.cos(-f2 * 0.1F + 3.5F) * 0.05F;
+		this.Tail6.rotateAngleX = 0.35F;
+		this.Tail6.rotateAngleY = 0.2F;//MathHelper.cos(-f2 * 0.1F + 4.2F) * 0.6F;
+		this.Tail6.rotateAngleZ = 0F;//MathHelper.cos(-f2 * 0.1F + 4.2F) * 0.05F;
+		this.TailHeadBase.rotateAngleX = 0.4F;
+		this.TailHeadBase.rotateAngleY = 0F;//MathHelper.cos(-f2 * 0.1F + 4.9F) * 0.65F;
+		this.TailHeadBase.rotateAngleZ = 0F;//MathHelper.cos(-f2 * 0.1F + 4.9F) * 0.025F;
+		this.TailHead1.rotateAngleX = 0.2618F;
+		this.TailJaw1.rotateAngleX = -0.7F;
+		this.Ear01.isHidden = true;
+		this.Ear02.isHidden = true;
+    }
+    
+	//雙腳移動計算
   	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, BasicEntityShip ent) {   
   		float angleX = MathHelper.cos(f2*0.08F);
   		float addk1 = 0;
   		float addk2 = 0;
   		
-    	GL11.glTranslatef(0F, 2.2F, 0F);
-  		
   		//leg move parm
   		addk1 = MathHelper.cos(f * 0.7F) * f1;
 	  	addk2 = MathHelper.cos(f * 0.7F + 3.1415927F) * f1;
 
-  	    //移動頭部使其看人
-	  	this.Head.rotateAngleX = f4 / 57.29578F; 	//上下角度
-	  	this.Head.rotateAngleY = f3 / 57.29578F;	//左右角度 角度轉成rad 即除以57.29578
-	    
-	    //正常站立動作
+  	    //頭部
+	  	this.Head.rotateAngleX = f4 * 0.014F;
+	  	this.Head.rotateAngleY = f3 * 0.01F;
 	    //胸部
   	    this.BoobL.rotateAngleX = -angleX * 0.06F - 0.73F;
   	    this.BoobR.rotateAngleX = -angleX * 0.06F - 0.73F;
 	  	//Body
   	    this.Ahoke.rotateAngleY = angleX * 0.25F + 0.5236F;
 	  	this.Head.rotateAngleX -= 0.5236F;
+	  	this.Cap2.rotateAngleX = -1.4F;
 	  	this.BodyMain.rotateAngleX = 0.0873F;
 	  	this.BodyMain.rotateAngleY = 0F;
 	  	this.Cloth2.rotateAngleX = -0.0524F;
@@ -632,7 +722,9 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
 				this.ArmRight01.rotateAngleY = 0.5236F;
 				this.ArmRight01.rotateAngleZ = 0F;
 				//頭部角度
+				this.Head.rotateAngleX *= 0.75F;
 				this.Head.rotateAngleX -= 0.5236F;
+				this.Cap2.rotateAngleX = -1.74F;
 				//身體角度
 				this.BodyMain.rotateAngleX = 0.5236F;
 				this.BodyMain.rotateAngleY = 3.1416F;
@@ -689,7 +781,9 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
 				this.ArmRight01.rotateAngleY = 0F;
 				this.ArmRight01.rotateAngleZ = f3 / -57F;
 				//頭部角度
+				this.Head.rotateAngleX *= 0.75F;
 				this.Head.rotateAngleX -= 1.2217F;
+				this.Cap2.rotateAngleX = -1.74F;
 				//身體角度
 				this.BodyMain.rotateAngleX = 1.2217F;
 				this.Cloth2.rotateAngleX = -0.3491F;
@@ -743,7 +837,9 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
 				this.ArmRight01.rotateAngleY = 0F;
 				this.ArmRight01.rotateAngleZ = 0.6981F;
 				//頭部角度
+				this.Head.rotateAngleX *= 0.75F;
 				this.Head.rotateAngleX -= 1.0472F;
+				this.Cap2.rotateAngleX = -1.74F;
 				//身體角度
 				this.BodyMain.rotateAngleX = 0.8727F;
 				this.Cloth2.rotateAngleX = -0.5236F;
@@ -893,6 +989,7 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
   		}//end if sneaking
   		
 	    if(ent.isSitting() || ent.isRiding()) {  //騎乘動作
+	    	this.Cap2.isHidden = true;
 	    	if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {	
 				GL11.glTranslatef(0F, 0.5F, 0F);
 		    	//Body
@@ -1078,6 +1175,22 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
 	    this.LegRight.rotateAngleX = addk2;
 	}
   	
+	//裝備模型顯示
+    private void showEquip(IShipEmotion ent) {
+		if(ent.getStateEmotion(ID.S.State) > ID.State.NORMAL) {
+			this.Ear01.isHidden = false;
+			this.Ear02.isHidden = false;
+			this.Cap.isHidden = true;
+			this.Cap2.isHidden = false;
+		}
+		else {
+			this.Ear01.isHidden = true;
+			this.Ear02.isHidden = true;
+			this.Cap.isHidden = false;
+			this.Cap2.isHidden = true;
+		}
+  	}
+  	
     //設定顯示的臉型
   	@Override
   	public void setFace(int emo) {
@@ -1121,7 +1234,6 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
   			break;
   		}
   	}
-    
     
     
 }

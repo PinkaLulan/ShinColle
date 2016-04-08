@@ -536,6 +536,7 @@ public class ModelCarrierKaga extends ModelBase implements IModelEmotion {
     	GL11.glEnable(GL11.GL_BLEND);
     	GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
     	GL11.glScalef(scale, scale, scale);
+    	GL11.glTranslatef(0F, offsetY + 1.55F, 0F);
     	//main body
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
     	this.BodyMain.render(f5);
@@ -561,7 +562,12 @@ public class ModelCarrierKaga extends ModelBase implements IModelEmotion {
 		
 		EmotionHelper.rollEmotion(this, ent);
 		  
-		motionHumanPos(f, f1, f2, f3, f4, ent);
+		if(ent.getStateFlag(ID.F.NoFuel)) {
+			motionStopPos(f, f1, f2, f3, f4, ent);
+		}
+		else {
+			motionHumanPos(f, f1, f2, f3, f4, ent);
+		}
 		
 		setGlowRotation();
     }
@@ -577,6 +583,94 @@ public class ModelCarrierKaga extends ModelBase implements IModelEmotion {
 		this.GlowHead.rotateAngleZ = this.Head.rotateAngleZ;
     }
     
+    private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {
+    	GL11.glTranslatef(0F, 1.5F, 0F);
+  		setFace(4);
+  		
+	  	if(((IShipFloating)ent).getShipDepth() > 0) {
+	  		this.EquipSL01.isHidden = false;
+	    	this.EquipSR01.isHidden = false;
+    	}
+    	else {
+    		this.EquipSL01.isHidden = true;
+        	this.EquipSR01.isHidden = true;
+    	}
+    	
+	    //胸部
+  	    this.BoobL.rotateAngleX = -0.8F;
+  	    this.BoobR.rotateAngleX = -0.8F;
+	  	//Body
+  	    this.Ahoke.rotateAngleY = 0.45F;
+	  	this.BodyMain.rotateAngleX = -0.1047F;
+	  	this.BodyMain.rotateAngleY = 0F;
+	  	this.BodyMain.rotateAngleZ = 0F;
+	  	//hair
+    	this.Hair01.rotateAngleX = 0F;
+    	this.Hair01.rotateAngleZ = 0F;
+    	this.Hair02.rotateAngleX = 0F;
+    	this.Hair02.rotateAngleZ = 0F;
+	    //arm 
+	  	this.ArmLeft01.rotateAngleY = 0F;
+	    this.ArmLeft02.rotateAngleX = 0F;
+	    this.ArmRight01.rotateAngleY = 0F;
+		this.ArmRight02.rotateAngleZ = 0F;
+		this.ArmRight02.offsetX = 0F;
+	    
+	    if(ent.getStateEmotion(ID.S.State) > ID.State.EQUIP00) {
+	    	this.ArmRight01.rotateAngleZ += 0.15F;
+	    }
+	    
+		//leg
+	    this.LegLeft01.rotateAngleX = -0.9F;
+		this.LegLeft01.rotateAngleY = 0F;
+		this.LegLeft01.rotateAngleZ = -0.14F;
+		this.LegRight01.rotateAngleX = -0.9F;
+		this.LegRight01.rotateAngleY = 0F;
+		this.LegRight01.rotateAngleZ = 0.14F;
+		//equip
+		this.EquipE01.rotateAngleX = 0.05F;
+		this.EquipE01.offsetX = 0F;
+		this.EquipE02.rotateAngleX = -0.4887F;
+		this.EquipE05.rotateAngleX = 0.4538F;
+		this.EquipD02.rotateAngleY = 1.6755F;
+		this.EquipD02.rotateAngleZ = 3.1416F;
+		
+    	//head
+    	this.Head.rotateAngleX = 0.65F;
+    	this.Head.rotateAngleY = 0F;
+    	this.Head.rotateAngleZ = 0F;
+    	//body
+    	this.Butt.rotateAngleX = -0.2F;
+		this.Skirt01.rotateAngleX = -0.26F;
+		this.Skirt02.rotateAngleX = -0.45F;
+		//arm
+		this.ArmLeft01.rotateAngleX = 0.4F;
+		this.ArmLeft01.rotateAngleZ = -0.2618F;
+		this.ArmRight01.rotateAngleX = 0.4F;
+		this.ArmRight01.rotateAngleZ = 0.2618F;
+		//leg
+		this.LegLeft02.rotateAngleX = 1.2217F;
+		this.LegLeft02.rotateAngleY = 1.2217F;
+		this.LegLeft02.rotateAngleZ = -1.0472F;
+		this.LegLeft02.offsetX = 0.18F;
+		this.LegLeft02.offsetY = -0.03F;
+		this.LegLeft02.offsetZ = 0.1635F;
+		this.LegRight02.rotateAngleX = 1.2217F;
+		this.LegRight02.rotateAngleY = -1.2217F;
+		this.LegRight02.rotateAngleZ = 1.0472F;
+		this.LegRight02.offsetX = -0.18F;
+		this.LegRight02.offsetY = -0.03F;
+		this.LegRight02.offsetZ = 0.1635F;
+		//tail
+		this.Tail01.rotateAngleX = 0.1F;
+		this.Tail02.rotateAngleX = 0.15F;
+		this.Tail03.rotateAngleX = 0.15F;
+		//equip
+		this.EquipE01.rotateAngleY = 1.7F;
+		this.EquipE01.rotateAngleZ = 0.15F;
+		this.EquipD02.rotateAngleX = 0.2F;
+		this.EquipD02.offsetY = -0.5F;
+    }
     
 	//雙腳移動計算
   	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {   
@@ -590,8 +684,6 @@ public class ModelCarrierKaga extends ModelBase implements IModelEmotion {
   		float addk2 = 0;
   		float headX = 0F;
   		float headZ = 0F;
-  		
-    	GL11.glTranslatef(0F, offsetY + 1.55F, 0F);
 
     	//leg move
   		addk1 = angleAdd1 * 0.5F - 0.2793F;  //LegLeft01

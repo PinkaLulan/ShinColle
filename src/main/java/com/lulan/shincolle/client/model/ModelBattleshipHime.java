@@ -280,7 +280,8 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion {
     	GL11.glEnable(GL11.GL_BLEND);
     	GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
     	GL11.glScalef(0.5F, 0.5F, 0.5F);
-
+    	GL11.glTranslatef(0F, 1.5F, 0F);
+    	
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
     	this.BodyMain.render(f5);
     	GL11.glDisable(GL11.GL_BLEND);
@@ -303,7 +304,12 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion {
 		
 		EmotionHelper.rollEmotion(this, ent);
 		  
-		motionHumanPos(f, f1, f2, f3, f4, ent);
+		if(ent.getStateFlag(ID.F.NoFuel)) {
+			motionStopPos(f, f1, f2, f3, f4, ent);
+		}
+		else {
+			motionHumanPos(f, f1, f2, f3, f4, ent);
+		}
 		
 		setGlowRotation();
     }
@@ -322,6 +328,90 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion {
 		this.GlowHead.rotateAngleZ = this.Head.rotateAngleZ;
     }
     
+    private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {
+    	float addk1 = 0F;
+  		float addk2 = 0F;
+  		float headX = 0F;
+  		float headZ = 0F;
+  		
+  		GL11.glTranslatef(0F, 1.7F, 0F);
+  		setFace(4);
+  		
+  		//移動頭部使其看人
+	  	this.Head.rotateAngleX = f4 / 70F; 	//上下角度
+	  	this.Head.rotateAngleY = f3 / 80F;	//左右角度 角度轉成rad 即除以57.29578
+	  	this.Head.rotateAngleZ = 0F;
+	  	headX = this.Head.rotateAngleX * -0.5F;
+	    //正常站立動作
+	    //胸部
+  	    this.BoobL.rotateAngleX = -0.7F;
+  	    this.BoobR.rotateAngleX = -0.7F;
+	  	//Body
+	  	this.BodyMain.rotateAngleZ = 0F;
+	  	//hair
+	  	this.Hair01.rotateAngleX = 0.26F + headX;
+	  	this.Hair02.rotateAngleX = -0.08F + headX;
+	  	this.Hair03.rotateAngleX = -0.14F;
+	    //arm 
+	  	this.ArmLeft01.rotateAngleY = 0F;
+	    this.ArmLeft02.rotateAngleX = 0F;
+	    this.ArmLeft02.offsetX = 0.085F;
+	    this.ArmLeft02.offsetY = -0.14F;
+		this.ArmRight02.rotateAngleX = 0F;
+		this.ArmRight02.offsetX = -0.12F;
+	    this.ArmRight02.offsetY = -0.15F;
+		//leg
+		this.LegLeft01.rotateAngleY = 0F;
+		this.LegRight01.rotateAngleY = 0F;
+		
+    	//Body
+    	this.Head.rotateAngleX += 0.14F;
+	  	this.BodyMain.rotateAngleX = 0.4F;
+	  	this.Butt.rotateAngleX = -0.4F;
+	  	this.Butt.offsetZ = 0.19F;
+	  	this.BoobL.rotateAngleX -= 0.2F;
+	  	this.BoobR.rotateAngleX -= 0.2F;
+	    //arm 
+	  	this.ArmLeft01.rotateAngleX = -1.3F;
+	    this.ArmLeft01.rotateAngleZ = -0.1F;
+	    this.ArmLeft02.rotateAngleZ = 1.15F;
+		this.ArmRight01.rotateAngleX = -1.3F;
+		this.ArmRight01.rotateAngleZ = 0.1F;
+		this.ArmRight02.rotateAngleZ = -1.4F;
+		//leg
+		addk1 = -2.1232F;
+		addk2 = -2.0708F;
+		this.LegLeft01.rotateAngleZ = -0.2F;
+		this.LegLeft02.rotateAngleX = 1.34F;
+		this.LegRight01.rotateAngleZ = 0.2F;
+		this.LegRight02.rotateAngleX = 1.13F;
+		//hair
+		this.Hair01.rotateAngleX -= 0.2F;
+		this.Hair02.rotateAngleX -= 0.2F;
+		this.Hair03.rotateAngleX -= 0.1F;
+		
+		//移動頭髮避免穿過身體
+	    headZ = this.Head.rotateAngleZ * -0.5F;
+	    this.Hair01.rotateAngleZ = headZ;
+	  	this.Hair02.rotateAngleZ = headZ;
+	  	this.HairL01.rotateAngleZ = headZ - 0.0F;
+	  	this.HairL02.rotateAngleZ = headZ + 0.087F;
+	  	this.HairR01.rotateAngleZ = headZ + 0.0F;
+	  	this.HairR02.rotateAngleZ = headZ - 0.052F;
+	  	
+	    headX = this.Head.rotateAngleX * -0.5F;
+	    this.HairL01.rotateAngleX = headX - 0.1F;
+	  	this.HairL02.rotateAngleX = headX - 0.3F;
+	  	this.HairL03.rotateAngleX = headX - 0.0F;
+	  	this.HairR01.rotateAngleX = headX - 0.1F;
+	  	this.HairR02.rotateAngleX = headX - 0.3F;
+	  	this.HairR03.rotateAngleX = headX - 0.0F;
+	  	
+	    //leg motion
+	    this.LegLeft01.rotateAngleX = addk1;
+	    this.LegRight01.rotateAngleX = addk2;
+    }
+    
   	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {   
   		float angleX = MathHelper.cos(f2*0.08F);
   		float angleAdd1 = MathHelper.cos(f * 0.7F) * f1 * 0.7F;
@@ -330,8 +420,6 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion {
   		float addk2 = 0F;
   		float headX = 0F;
   		float headZ = 0F;
-  		
-    	GL11.glTranslatef(0F, 1.5F, 0F);
   		
   		//leg move parm
   		addk1 = angleAdd1 - 0.2618F;
@@ -348,6 +436,8 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion {
 	  	//Body
   	    this.Ahoke.rotateAngleZ = angleX * 0.02F - 0.02F;
 	  	this.BodyMain.rotateAngleX = 0F;
+	  	this.Butt.rotateAngleX = 0.2618F;
+	  	this.Butt.offsetZ = 0F;
 	  	//hair
 	  	this.Hair01.rotateAngleX = angleX * 0.012F + 0.15F + headX;
 	  	this.Hair02.rotateAngleX = angleX * 0.015F - 0.05F + headX;
@@ -361,10 +451,14 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion {
 	    this.ArmLeft01.rotateAngleZ = angleX * 0.08F - 0.2F;
 	    this.ArmLeft02.rotateAngleX = 0F;
 	    this.ArmLeft02.rotateAngleZ = 0F;
+	    this.ArmLeft02.offsetX = 0F;
+	    this.ArmLeft02.offsetY = 0F;
 	    this.ArmRight01.rotateAngleX = angleAdd1 * 0.8F;
 		this.ArmRight01.rotateAngleZ = -angleX * 0.08F + 0.2F;
 		this.ArmRight02.rotateAngleX = 0F;
 		this.ArmRight02.rotateAngleZ = 0F;
+		this.ArmRight02.offsetX = 0F;
+	    this.ArmRight02.offsetY = 0F;
 		//leg
 		this.LegLeft01.rotateAngleY = 0F;
 		this.LegLeft01.rotateAngleZ = 0.05F;

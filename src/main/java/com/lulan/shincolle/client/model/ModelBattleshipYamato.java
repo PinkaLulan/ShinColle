@@ -1063,7 +1063,8 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
     	GL11.glEnable(GL11.GL_BLEND);
     	GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
     	GL11.glScalef(scale, scale, scale);
-
+    	GL11.glTranslatef(0F, offsetY + 1.55F, 0F);
+    	
     	//main body
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
     	this.BodyMain.render(f5);
@@ -1089,7 +1090,12 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
 		
 		EmotionHelper.rollEmotion(this, ent);
 		  
-		motionHumanPos(f, f1, f2, f3, f4, ent);
+		if(ent.getStateFlag(ID.F.NoFuel)) {
+    		motionStopPos(f, f1, f2, f3, f4, ent);
+    	}
+    	else {
+    		motionHumanPos(f, f1, f2, f3, f4, ent);
+    	}
 		
 		setGlowRotation();
     }
@@ -1108,6 +1114,76 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
 		this.GlowHead.rotateAngleZ = this.Head.rotateAngleZ;
     }
     
+    private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {
+    	GL11.glTranslatef(0F, 1.75F, 0F);
+    	setFace(4);
+    
+    	//頭部
+	  	this.Head.rotateAngleX = -0.2618F;
+	  	this.Head.rotateAngleY = 0F;
+	  	this.Head.rotateAngleZ = 0F;
+	    //胸部
+  	    this.BoobL.rotateAngleX = -1.0F;
+  	    this.BoobR.rotateAngleX = -1.0F;
+  	    this.Cloth02a.rotateAngleX = -1.0F;
+	  	//Body
+  	    this.Ahoke.rotateAngleY = -1.0F;
+	  	this.BodyMain.rotateAngleX = 1.2217F;
+	  	this.BodyMain.rotateAngleY = 0F;
+	  	this.BodyMain.rotateAngleZ = 1.2217F;
+	  	this.Butt.rotateAngleX = -0.05F;
+	  	//hair
+	  	this.Hair01.rotateAngleX = -0.72F;
+	  	this.Hair01.rotateAngleZ = -0.36F;
+	  	this.Hair02.rotateAngleX = -0.35F;
+	  	this.Hair02.rotateAngleZ = -0.15F;
+	  	this.Hair03.rotateAngleX = 0.26F;
+	  	this.Hair03.rotateAngleZ = 0.36F;
+	  	this.Hair04.rotateAngleX = -0.35F;
+	  	this.Hair04.rotateAngleZ = 0.1F;
+	  	this.HairL01.rotateAngleZ = 0.0873F;
+	  	this.HairL02.rotateAngleZ = -0.3142F;
+	  	this.HairL03.rotateAngleZ = 0.18F;
+	  	this.HairR01.rotateAngleZ = -0.0873F;
+	  	this.HairR02.rotateAngleZ = -1.2217F;
+	  	this.HairR03.rotateAngleZ = -0.15F;
+		this.HairL01.rotateAngleX = - 0.28F;
+	  	this.HairL02.rotateAngleX = 0.15F;
+	  	this.HairL03.rotateAngleX = 0.05F;
+	  	this.HairR01.rotateAngleX = -0.35F;
+	  	this.HairR02.rotateAngleX = 0.18F;
+	  	this.HairR03.rotateAngleX = 0.02F;
+	    //arm 
+	  	this.ArmLeft01.rotateAngleX = -0.35F;
+	  	this.ArmLeft01.rotateAngleY = 0F;
+	    this.ArmLeft01.rotateAngleZ = -3F;
+	    this.ArmLeft02.rotateAngleX = 0F;
+    	this.ArmRight01.rotateAngleX = -0.35F;
+	    this.ArmRight01.rotateAngleY = 0F;
+		this.ArmRight01.rotateAngleZ = -0.35F;
+		this.ArmRight02.rotateAngleX = 0F;
+		this.ArmRight02.rotateAngleZ = -0.8727F;
+		//leg
+		this.LegLeft01.rotateAngleX = -0.14F;
+		this.LegLeft01.rotateAngleY = 0F;
+		this.LegLeft01.rotateAngleZ = 0.09F;
+		this.LegLeft02.rotateAngleX = 0F;
+		this.LegLeft02.rotateAngleZ = 0F;
+		this.LegLeft02.offsetZ = 0F;
+		this.LegRight01.rotateAngleX = -1.2217F;
+		this.LegRight01.rotateAngleY = -0.5236F;
+		this.LegRight01.rotateAngleZ = 0F;
+		this.LegRight02.rotateAngleX = 1.0472F;
+		this.LegRight02.rotateAngleZ = 0F;
+		this.LegRight02.offsetZ = 0F;
+		this.AnchorL.rotateAngleX = -0.2F;
+		this.AnchorR.rotateAngleX = -0.2F;
+		this.AnchorR.rotateAngleZ = 0.35F;
+		//equip
+		this.EquipU01.isHidden = true;
+		this.EquipBaseBelt.isHidden = true;
+		
+    }
     
 	//雙腳移動計算
   	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {   
@@ -1120,12 +1196,10 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
   		float addk1 = 0;
   		float addk2 = 0;
   		
-    	GL11.glTranslatef(0F, offsetY + 1.55F, 0F);
-  		
     	//leg move
   		addk1 = angleAdd1 * 0.5F - 0.2793F;  //LegLeft01
 	  	addk2 = angleAdd2 * 0.5F - 0.1396F;  //LegRight01
-
+	  	
   	    //移動頭部使其看人
 	  	this.Head.rotateAngleX = f4 * 0.0174532925F - 0.1047F; 	//上下角度
 	  	this.Head.rotateAngleY = f3 * 0.008F;	//左右角度 角度轉成rad 即除以57.29578
@@ -1175,12 +1249,14 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
 		    this.ArmRight01.rotateAngleY = 0F;
 			this.ArmRight01.rotateAngleZ = 0.1571F;
 			this.ArmRight02.rotateAngleX = -1.4835F;
+			this.ArmRight02.rotateAngleZ = 0F;
 	    }
 	    else {
 	    	this.ArmRight01.rotateAngleX = angleAdd1 * 0.25F + 0.18F;
 		    this.ArmRight01.rotateAngleY = 0F;
 			this.ArmRight01.rotateAngleZ = -angleX * 0.03F + 0.26F;
 			this.ArmRight02.rotateAngleX = 0F;
+			this.ArmRight02.rotateAngleZ = 0F;
 	    }
 		//leg
 		this.LegLeft01.rotateAngleY = 0F;

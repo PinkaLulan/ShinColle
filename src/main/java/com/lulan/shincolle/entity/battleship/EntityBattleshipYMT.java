@@ -77,7 +77,7 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall {
   		//client side
   		if(worldObj.isRemote) {
   			if(this.ticksExisted % 4 == 0) {
-  				if(getStateEmotion(ID.S.State) >= ID.State.EQUIP01 && !this.isSitting()) {
+  				if(getStateEmotion(ID.S.State) >= ID.State.EQUIP01 && !isSitting() && !getStateFlag(ID.F.NoFuel)) {
   					double smokeY = posY + 1.75D;
   					
   					//計算煙霧位置

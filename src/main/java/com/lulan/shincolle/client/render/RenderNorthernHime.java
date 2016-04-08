@@ -3,8 +3,8 @@ package com.lulan.shincolle.client.render;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,33 +16,40 @@ import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 import org.lwjgl.opengl.GL11;
+
 import com.lulan.shincolle.client.model.ModelNorthernHime;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RenderNorthernHime extends RenderLiving {
+public class RenderNorthernHime extends BasicShipRenderer {
 	
-	//貼圖檔路徑
-	private static final ResourceLocation mobTextures = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityNorthernHime.png");
+	private static final ResourceLocation mobTextures = new ResourceLocation(Reference.TEXTURES_ENTITY +
+															"EntityNorthernHime.png");
 	private ModelNorthernHime model = null;
 	private ItemStack holdItem = new ItemStack(ModItems.ToyAirplane);
 	private Random rand = new Random();
 	
-	public RenderNorthernHime(ModelNorthernHime par1, float par2) {
+	public RenderNorthernHime(ModelBase par1, float par2) {
 		super(par1, par2);
-		this.model = par1;
+		this.model = (ModelNorthernHime) par1;
+		leashOffsetRideSit = 0.9D;
+		leashOffsetRide = 0.9D;
+		leashOffsetSit = 0.9D;
+		leashOffsetStand = 0.5D;
 	}
 
 	@Override
 	protected ResourceLocation getEntityTexture(Entity par1Entity) {
 		return mobTextures;
 	}
-
+	
 	@Override
 	protected void renderEquippedItems(EntityLivingBase host, float swing) {
 		//恢復正常顏色
@@ -54,7 +61,7 @@ public class RenderNorthernHime extends RenderLiving {
         float f1;
         
         //部份動作不畫出物品
-        if(((IShipEmotion)host).getIsSitting()) {
+        if(host1.getIsSitting() || host1.getStateFlag(ID.F.NoFuel)) {
         	return;
         }
         
@@ -162,6 +169,8 @@ public class RenderNorthernHime extends RenderLiving {
             GL11.glPopMatrix();
         }
 	}
+	
+
 }
 
 

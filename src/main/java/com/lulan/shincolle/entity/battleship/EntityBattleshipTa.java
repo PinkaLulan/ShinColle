@@ -96,8 +96,7 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
 			}
 		}
 		
-		super.interact(player);
-		return false;
+		return super.interact(player);
   	}
 	
 	@Override

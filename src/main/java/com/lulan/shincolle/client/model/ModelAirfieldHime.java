@@ -366,7 +366,6 @@ public class ModelAirfieldHime extends ModelBase implements IModelEmotion {
     	
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
     	this.BodyMain.render(f5);
-    	GL11.glDisable(GL11.GL_BLEND);
     	
     	//亮度設為240
     	GL11.glDisable(GL11.GL_LIGHTING);
@@ -374,6 +373,7 @@ public class ModelAirfieldHime extends ModelBase implements IModelEmotion {
     	this.GlowBodyMain.render(f5);
     	GL11.glEnable(GL11.GL_LIGHTING);
     	
+    	GL11.glDisable(GL11.GL_BLEND);
     	GL11.glPopMatrix();
     }
     

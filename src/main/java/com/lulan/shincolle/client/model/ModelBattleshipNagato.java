@@ -470,7 +470,8 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion {
     	GL11.glEnable(GL11.GL_BLEND);
     	GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
     	GL11.glScalef(scale, scale, scale);
-
+    	GL11.glTranslatef(0F, offsetY + 1.5F, 0F);
+    	
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
     	this.BodyMain.render(f5);
     	GL11.glDisable(GL11.GL_BLEND);
@@ -494,8 +495,13 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion {
 		showEquip(ent);
 		
 		EmotionHelper.rollEmotion(this, ent);
-		  
-		motionHumanPos(f, f1, f2, f3, f4, ent);
+		
+		if(scale < 1F && ent.getStateFlag(ID.F.NoFuel)) {
+			motionStopPos(f, f1, f2, f3, f4, ent);
+		}
+		else {
+			motionHumanPos(f, f1, f2, f3, f4, ent);
+		}
 		
 		setGlowRotation();
     }
@@ -514,6 +520,44 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion {
 		this.GlowHead.rotateAngleZ = this.Head.rotateAngleZ;
     }
     
+    private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {
+    	setFace(4);
+    	GL11.glTranslatef(0F, offsetY + 2.1F, 0F);
+    	
+    	//移動頭部使其看人
+	  	this.Head.rotateAngleX = 0F;
+	  	this.Head.rotateAngleY = 0F;
+	    //胸部
+  	    this.BoobL.rotateAngleX = -0.7854F;
+  	    this.BoobR.rotateAngleX = -0.7854F;
+	  	//Body
+  	    this.Ahoke.rotateAngleY = 0.5236F;
+	    //arm 
+	  	this.ArmLeft01.rotateAngleY = 0F;
+	    this.ArmRight01.rotateAngleY = 0F;
+    	//Body
+	  	this.BodyMain.rotateAngleX = 1.48F;
+	  	//hair
+	  	this.HairMidL01.rotateAngleX = 0.2F;
+	  	this.HairMidL02.rotateAngleX = -0.3F;
+	    //arm 
+	  	this.ArmLeft01.rotateAngleX = -2.97F;
+	  	this.ArmLeft01.rotateAngleZ = 0.26F;
+		this.ArmRight01.rotateAngleX = -2.8F;
+		this.ArmRight01.rotateAngleZ = -1.3F;
+		this.ArmRight02.rotateAngleZ = -0.9F;
+		//leg
+		this.LegLeft.rotateAngleX = -0.26F;
+		this.LegRight.rotateAngleX = -0.26F;
+		this.LegLeft.rotateAngleY = 0F;
+		this.LegRight.rotateAngleY = 0F;
+		this.LegLeft.rotateAngleZ = -0.14F;
+		this.LegRight.rotateAngleZ = 0.14F;
+		//equip
+		this.EquipBase.isHidden = true;
+
+    }
+    
     //雙腳移動計算
   	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {   
   		float angleX = MathHelper.cos(f2*0.08F);
@@ -521,8 +565,6 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion {
   		float angleAdd2 = MathHelper.cos(f * 0.7F + 3.1415927F) * f1;
   		float addk1 = 0;
   		float addk2 = 0;
-  		
-    	GL11.glTranslatef(0F, offsetY + 1.5F, 0F);
   		
   		//leg move parm
   		addk1 = angleAdd1 - 0.2618F;

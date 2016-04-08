@@ -1,16 +1,16 @@
 package com.lulan.shincolle.client.model;
 
-import org.lwjgl.opengl.GL11;
-
-import com.lulan.shincolle.entity.destroyer.EntityDestroyerRo;
-import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.EmotionHelper;
-
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.MathHelper;
+
+import org.lwjgl.opengl.GL11;
+
+import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.EmotionHelper;
 
 /**
  * ModelDestroyerRo - PinkaLulan 2015/3/9
@@ -254,6 +254,7 @@ public class ModelDestroyerRo extends ModelBase implements IModelEmotion {
         setRotationAngles(f, f1, f2, f3, f4, f5, entity);
 
     	GL11.glPushMatrix();
+    	GL11.glTranslatef(0F, 1F, 0F);
     	GL11.glScalef(0.45F, 0.45F, 0.45F);	//debug用
     	
     	this.Back.render(f5);
@@ -274,29 +275,34 @@ public class ModelDestroyerRo extends ModelBase implements IModelEmotion {
 		
 		float angleX = MathHelper.cos(f2*0.125F);
 		     
-		EntityDestroyerRo ent = (EntityDestroyerRo)entity;
+		BasicEntityShip ent = (BasicEntityShip) entity;
 		  
-		GL11.glTranslatef(0F, 1F, 0F);
-		
-		//org pose
-		Back.rotateAngleX = -0.2618F;
-		Back.rotateAngleY = 0F;
-		Back.rotateAngleZ = 0F;
-		NeckBack.rotateAngleX = 0.0873F;
-		Head.rotateAngleX = 0.3F;
-		
-		isKisaragi(ent);   
-		rollEmotion(ent);    
-		motionWatch(f3, f4, angleX);	//include watch head & normal head
-		  
-		if(ent.isSitting()) {
-			motionSit(ent, angleX);
+		if(ent.getStateFlag(ID.F.NoFuel)) {
+			motionStopPos(f, f1, f2, f3, f4, ent);
 		}
 		else {
-		  	motionLeg(ent, f, f1, angleX);
-		  	motionTail(angleX);
-		}   
-
+			//org pose
+			Back.rotateAngleX = -0.2618F;
+			Back.rotateAngleY = 0F;
+			Back.rotateAngleZ = 0F;
+			NeckBack.rotateAngleX = 0.0873F;
+			Head.rotateAngleX = 0.3F;
+			LegRightFront.rotateAngleY = 0F;
+			LegLeftFront.rotateAngleY = 0F;
+			
+			isKisaragi(ent);   
+			rollEmotion(ent);    
+			motionWatch(f3, f4, angleX);	//include watch head & normal head
+			  
+			if(ent.isSitting()) {
+				motionSit(ent, angleX);
+			}
+			else {
+			  	motionLeg(ent, f, f1, angleX);
+			  	motionTail(angleX);
+			}
+		}
+		
 		setGlowRotation();
     }
     
@@ -313,8 +319,39 @@ public class ModelDestroyerRo extends ModelBase implements IModelEmotion {
 		this.GlowHead.rotateAngleZ = this.Head.rotateAngleZ;
 	}
     
+    private void motionStopPos(float f, float f1, float f2, float f3, float f4, BasicEntityShip ent) {
+    	GL11.glTranslatef(0F, 0.6F, 0F);
+    	isKisaragi(ent);
+    	setFace(1);
+    	
+    	//head
+  		HeadD01.rotateAngleX = 0.7F;
+    	NeckBack.rotateAngleX = 0F;
+    	NeckBack.rotateAngleY = 0.1F;
+    	Head.rotateAngleX = 0.1F;
+    	Head.rotateAngleY = 0.1F;
+    	//body
+    	Back.rotateAngleX = 0F;
+		Back.rotateAngleY = 3.1415F;
+		Back.rotateAngleZ = 3.1415F;
+		//leg
+    	LegRightFront.rotateAngleX = 1.57F;
+    	LegRightFront.rotateAngleY = -0.52F;
+	    LegLeftFront.rotateAngleX = 1.57F;
+	    LegLeftFront.rotateAngleY = 0.52F;
+	    LegRightEnd.rotateAngleX = 1F;
+	    LegLeftEnd.rotateAngleX = 1F;
+	    //tail
+	    TailBack.rotateAngleX = 0.1F;
+	    TailBack.rotateAngleY = -0.15F;
+  	    TailEnd.rotateAngleX = 0.1F;
+  	    TailEnd.rotateAngleY = -0.15F;
+  	    tube01.rotateAngleX = -0.8F;
+  	    tube01.rotateAngleY = -0.12F;
+    }
+    
     //坐下動作
-  	private void motionSit(EntityDestroyerRo ent, float angleX) {
+  	private void motionSit(BasicEntityShip ent, float angleX) {
   		GL11.glTranslatef(0F, 0.6F, 0F);
   		
   		if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {
@@ -357,7 +394,7 @@ public class ModelDestroyerRo extends ModelBase implements IModelEmotion {
   	}
     
     //雙腳移動計算
-  	private void motionLeg(EntityDestroyerRo ent, float f, float f1, float angleX) {
+  	private void motionLeg(BasicEntityShip ent, float f, float f1, float angleX) {
 		if(ent.isSprinting() || f1 > 0.9F) {
 			LegRightFront.rotateAngleX = MathHelper.cos(f * 0.6662F) * 0.4F * f1 + 1F;
 		    LegLeftFront.rotateAngleX = MathHelper.cos(f * 0.6662F + 3.1415927F) * 0.4F * f1 + 1F;
@@ -400,7 +437,7 @@ public class ModelDestroyerRo extends ModelBase implements IModelEmotion {
   	    }	
   	}
     
-    private void isKisaragi(EntityDestroyerRo ent) {
+    private void isKisaragi(BasicEntityShip ent) {
 		if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
 			k00.isHidden = false;
 		}
@@ -410,7 +447,7 @@ public class ModelDestroyerRo extends ModelBase implements IModelEmotion {
   	}
     
   //隨機抽取顯示的表情 
-    private void rollEmotion(EntityDestroyerRo ent) {   	
+    private void rollEmotion(BasicEntityShip ent) {   	
     	switch(ent.getStateEmotion(ID.S.Emotion)) {
     	case ID.Emotion.BLINK:	//blink
     		EmotionHelper.EmotionBlink(this, ent);

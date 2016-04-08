@@ -9,6 +9,7 @@ import net.minecraft.util.MathHelper;
 import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EmotionHelper;
 
@@ -256,6 +257,7 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion {
     	GL11.glEnable(GL11.GL_BLEND);
     	GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
     	GL11.glScalef(0.5F, 0.5F, 0.5F);
+    	GL11.glTranslatef(0F, 1.5F, 0F);
 
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
     	this.BodyMain.render(f5);
@@ -280,7 +282,12 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion {
 		
 		EmotionHelper.rollEmotion(this, ent);
 		  
-		motionHumanPos(f, f1, f2, f3, f4, ent);
+    	if(ent.getStateFlag(ID.F.NoFuel)) {
+    		motionStopPos(f, f1, f2, f3, f4, ent);
+    	}
+    	else {
+    		motionHumanPos(f, f1, f2, f3, f4, ent);
+    	}
 		
 		setGlowRotation();
     }
@@ -298,15 +305,55 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion {
 		this.GlowHead.rotateAngleZ = this.Head.rotateAngleZ;
     }
     
-  //雙腳移動計算
+    private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {
+    	GL11.glTranslatef(0F, 1.95F, 0F);
+    	setFace(4);
+    
+    	//頭部
+	  	this.Head.rotateAngleX = 0F;
+	  	this.Head.rotateAngleY = 0F;
+	    //胸部
+  	    this.BoobL.rotateAngleX = -0.7854F;
+  	    this.BoobR.rotateAngleX = -0.7854F;
+  	    this.NeckTie.rotateAngleX = -0.7F;
+	  	//Body
+  	    this.Ahoke.rotateAngleZ = -0.06F;
+	    //arm 
+	  	this.ArmLeft01.rotateAngleY = 0F;
+		//cloak
+		this.EquipLeft.rotateAngleX = 0F;
+		this.EquipRight.rotateAngleX = 0F;
+  	    //hair
+	  	this.Head.rotateAngleX = 0.2F;
+  	    this.HairMidL01.rotateAngleX = 0.05F;
+  	    this.HairMidL02.rotateAngleX = -0.3F;
+	  	//Body
+	  	this.BodyMain.rotateAngleX = 1.4F;
+	    //arm 
+	  	this.ArmLeft01.rotateAngleX = -2.8F;
+	    this.ArmLeft01.rotateAngleZ = 0.8727F;
+	    this.ArmRight01.rotateAngleX = -2.8F;
+		this.ArmRight01.rotateAngleZ = -0.35F;
+		//leg
+		this.LegLeft.rotateAngleX = -0.087F;
+	  	this.LegRight.rotateAngleX = -0.087F;
+		this.LegLeft.rotateAngleZ = -0.2618F;
+		this.LegRight.rotateAngleZ = 0.4F;
+		//cloak
+		this.Cloak01.rotateAngleX = 0F;
+		this.Cloak02.rotateAngleX = 0F;
+		this.Cloak03.rotateAngleX = 0F;
+		this.Cloak04.rotateAngleX = 0F;
+		this.Cloak05.rotateAngleX = 0F;
+    }
+    
+	//雙腳移動計算
   	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, BasicEntityShip ent) {   
   		float angleX = MathHelper.cos(f2*0.08F);
   		float angleRun = MathHelper.cos(f * 0.7F) * f1 * 0.6F;
   		float angleRun2 = MathHelper.cos(f * 0.7F + 3.1415927F) * f1 * 0.6F;
   		float addk1 = 0;
   		float addk2 = 0;
-  		
-    	GL11.glTranslatef(0F, 1.5F, 0F);
   		
   		//leg move parm
   		addk1 = angleRun - 0.35F;

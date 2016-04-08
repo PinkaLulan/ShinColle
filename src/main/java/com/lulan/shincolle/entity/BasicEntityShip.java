@@ -1057,7 +1057,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 					
 					if(t > 3 && m < 6000) {  //if caress > 3 ticks
 						this.setMoraleTick(this.ticksExisted);
-						this.setStateMinor(ID.M.Morale, m + 10);
+						this.setStateMinor(ID.M.Morale, m + 15);
 					}
 
 					//TODO show love emotion
@@ -2301,6 +2301,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			//原本有AI, 則清除之
 			if(this.targetTasks.taskEntries.size() > 0) {
 //				LogHelper.info("DEBUG : No fuel, clear AI "+this);
+				setStateEmotion(ID.S.Emotion, ID.Emotion.HUNGRY, false);
 				clearAITasks();
 				clearAITargetTasks();
 				sendSyncPacketAllValue();
@@ -2314,6 +2315,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		else { //has fuel, set AI
 			if(this.targetTasks.taskEntries.size() < 1) {
 //				LogHelper.info("DEBUG : Get fuel, set AI "+this);
+				setStateEmotion(ID.S.Emotion, ID.Emotion.NORMAL, false);
 				clearAITasks();
 				clearAITargetTasks();
 				setAIList();

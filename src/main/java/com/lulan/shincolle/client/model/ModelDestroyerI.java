@@ -9,7 +9,7 @@ import net.minecraft.util.MathHelper;
 
 import org.lwjgl.opengl.GL11;
 
-import com.lulan.shincolle.entity.destroyer.EntityDestroyerI;
+import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EmotionHelper;
 
@@ -229,63 +229,74 @@ public class ModelDestroyerI extends ModelBase implements IModelEmotion {
       
   }
   
-  @Override
-public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
+	@Override
+	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
+		setRotationAngles(f, f1, f2, f3, f4, f5, entity);
 
-	GL11.glPushMatrix();
-//  Scale, Translate, Rotate
-//  GL11.glScalef(this.scale, this.scale, this.scale);
-//	GL11.glEnable(GL11.GL_BLEND);			//開啟透明度模式
-//	GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-	GL11.glScalef(0.45F, 0.4F, 0.4F);	//debug用
-	GL11.glRotatef(90F, 0F, 1F, 0F);	//此模型頭部方向錯誤 因此render時調整回來
-	
-	PBack.render(f5);
-	
-	//亮度設為240
-	GL11.glDisable(GL11.GL_LIGHTING);
-	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
-	this.GlowPBack.render(f5);
-	GL11.glEnable(GL11.GL_LIGHTING);
-	
-//	GL11.glDisable(GL11.GL_BLEND);		//關閉透明度模式
-	GL11.glPopMatrix();
-  }
+		GL11.glPushMatrix();
+		GL11.glEnable(GL11.GL_BLEND);
+    	GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GL11.glScalef(0.45F, 0.4F, 0.4F);	//debug用
+		GL11.glRotatef(90F, 0F, 1F, 0F);	//此模型頭部方向錯誤 因此render時調整回來
+		
+		PBack.render(f5);
+		
+		//亮度設為240
+		GL11.glDisable(GL11.GL_LIGHTING);
+		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
+		this.GlowPBack.render(f5);
+		GL11.glEnable(GL11.GL_LIGHTING);
+		
+		GL11.glDisable(GL11.GL_BLEND);
+		GL11.glPopMatrix();
+	}
   
-  private void setRotation(ModelRenderer model, float x, float y, float z) {
-    model.rotateAngleX = x;
-    model.rotateAngleY = y;
-    model.rotateAngleZ = z;
-  }
+	private void setRotation(ModelRenderer model, float x, float y, float z) {
+		model.rotateAngleX = x;
+		model.rotateAngleY = y;
+		model.rotateAngleZ = z;
+	}
   
-  //for idle/run animation
-  @Override
-public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity) {
-    super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
-
-    float angleZ = MathHelper.cos(f2*0.125F);
-    
-    EntityDestroyerI ent = (EntityDestroyerI)entity;
-    
-    isKisaragi(ent);   
-    rollEmotion(ent);    
-    motionWatch(f3,f4,angleZ);	//include watch head & normal head
-    
-    if(ent.isSitting()) {
-    	motionSit(ent, angleZ);
-    }
-    else {
-    	motionLeg(f,f1);
-    	motionTail(angleZ);
-    	
-    	//reset sit pose
-    	PBack.rotateAngleZ = -0.31F;
-    	GL11.glTranslatef(0F, 0.8F, 0F);
-    }   
-
-    setGlowRotation();
-  }
+	//for idle/run animation
+	@Override
+	public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity) {
+	    super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
+	
+	    float angleZ = MathHelper.cos(f2*0.125F);
+	    
+	    BasicEntityShip ent = (BasicEntityShip) entity;
+	    
+	    if(ent.getStateFlag(ID.F.NoFuel)) {
+			motionStopPos(f, f1, f2, f3, f4, ent);
+		}
+		else {
+			//body
+			PBack.rotateAngleX = 0F;
+			//leg
+		    PLegLeft.rotateAngleX = 0F;
+		    PLegLeft.rotateAngleZ = 0F;
+		    PLegRight.rotateAngleX = 0F;
+		    PLegRight.rotateAngleZ = 0F;
+		    
+			isKisaragi(ent);   
+		    rollEmotion(ent);    
+		    motionWatch(f3,f4,angleZ);	//include watch head & normal head
+		    
+		    if(ent.isSitting()) {
+		    	motionSit(ent, angleZ);
+		    }
+		    else {
+		    	motionLeg(f,f1);
+		    	motionTail(angleZ);
+		    	
+		    	//reset sit pose
+		    	PBack.rotateAngleZ = -0.31F;
+		    	GL11.glTranslatef(0F, 0.8F, 0F);
+		    }
+		}
+	    
+	    setGlowRotation();
+	}
 
   	//設定發光模型rrotation
 	private void setGlowRotation() {
@@ -299,8 +310,36 @@ public void setRotationAngles(float f, float f1, float f2, float f3, float f4, f
 		this.GlowPNeck.rotateAngleY = this.PNeck.rotateAngleY;
 		this.GlowPNeck.rotateAngleZ = this.PNeck.rotateAngleZ;
 	}
+	
+	private void motionStopPos(float f, float f1, float f2, float f3, float f4, BasicEntityShip ent) {
+		GL11.glTranslatef(0F, 1.6F, 0F);
+		
+		isKisaragi(ent);
+		setFace(2);
 
-	private void isKisaragi(EntityDestroyerI ent) {
+		//body
+		PBack.rotateAngleX = 1.4835F;
+		PBack.rotateAngleZ = 0F;
+		//head
+		PNeck.rotateAngleY = 0;
+	    PNeck.rotateAngleZ = 0.2F;
+	    PHead.rotateAngleY = 0;
+	    PHead.rotateAngleZ = 0.2F;
+	    PTail.rotateAngleY = 0;
+	    //leg
+	    PLegLeft.rotateAngleX = -1.0472F;
+	    PLegLeft.rotateAngleZ = 0F;
+	    PLegLeftEnd.rotateAngleZ = -1.4F;
+	    PLegRight.rotateAngleX = 0.087F;
+	    PLegRight.rotateAngleZ = -0.7854F;
+	    PLegRightEnd.rotateAngleZ = -1.4F;
+	    //tail
+	    PTail.rotateAngleZ = 0.2F;
+  	    PTailEnd.rotateAngleZ = 0.3F;
+  	    PJawBottom.rotateAngleZ = -0.3F;
+    }
+
+	private void isKisaragi(BasicEntityShip ent) {
 		if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
 			PKisaragi00.isHidden = false;
 			PKisaragi01.isHidden = false;
@@ -317,7 +356,7 @@ public void setRotationAngles(float f, float f1, float f2, float f3, float f4, f
   	}
 	
 	//坐下動作
-  	private void motionSit(EntityDestroyerI ent, float angleZ) {		
+  	private void motionSit(BasicEntityShip ent, float angleZ) {		
   		if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {
   			GL11.glTranslatef(0F, 0.9F, 0F);
   			PBack.rotateAngleZ = 0.6F;
@@ -382,7 +421,7 @@ public void setRotationAngles(float f, float f1, float f2, float f3, float f4, f
 	}
 
 	//隨機抽取顯示的表情 
-    private void rollEmotion(EntityDestroyerI ent) {   	
+    private void rollEmotion(BasicEntityShip ent) {   	
     	switch(ent.getStateEmotion(ID.S.Emotion)) {
     	case ID.Emotion.BLINK:	//blink
     		EmotionHelper.EmotionBlink(this, ent);
@@ -405,7 +444,7 @@ public void setRotationAngles(float f, float f1, float f2, float f3, float f4, f
     		}
     		//roll emotion (3 times) every 6 sec
     		//1 tick in entity = 3 tick in model class (20 vs 60 fps)
-    		if(ent.ticksExisted % 120 == 0) {  			
+    		if(ent.ticksExisted % 120 == 0) {
         		int emotionRand = ent.getRNG().nextInt(10);   		
         		if(emotionRand > 7) {
         			EmotionHelper.EmotionBlink(this, ent);
