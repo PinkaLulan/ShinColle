@@ -114,7 +114,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	protected boolean[] UpdateFlag;
 	
 	//for model render
-	/** EmotionTicks: 0:FaceTick 1:HeadTiltTick 2:AttackEmoCount 3:MoraleTick */
+	/** EmotionTicks: 0:FaceTick 1:HeadTiltTick 2:AttackEmoCount 3:MoraleTick 4:EmoParticle CD
+	 *   */
 	protected int[] EmotionTicks;		//表情開始時間 or 表情計時時間
 	protected float[] rotateAngle;		//模型旋轉角度, 用於手持物品render
 	protected int StartSoundHurt;		//hurt sound ticks
@@ -176,7 +177,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.shipMoveHelper = new ShipMoveHelper(this, 25F);
 		
 		//for render
-		this.EmotionTicks = new int[] {0, 0, 0, 0};
+		this.EmotionTicks = new int[] {0, 0, 0, 0, 0};
 		this.rotateAngle = new float[] {0F, 0F, 0F};		//model rotate angle (right hand)
 		
 		//for init
@@ -1049,7 +1050,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		//use item
 		if(itemstack != null) {
 			//use pointer item (caress head mode)
-			if(itemstack.getItem() == ModItems.PointerItem) {
+			if(itemstack.getItem() == ModItems.PointerItem && !this.worldObj.isRemote) {
 				//is owner
 				if(EntityHelper.checkSameOwner(player, this)) {
 					int t = this.ticksExisted - this.getMoraleTick();
@@ -1060,7 +1061,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 						this.setStateMinor(ID.M.Morale, m + 15);
 					}
 
-					//TODO show love emotion
+					//show love emotion
+					if(this.rand.nextInt(2) == 0 && this.EmotionTicks[4] <= 0) {
+						this.EmotionTicks[4] = 40;
+						setStateEmotion(ID.S.Emotion, ID.Emotion.T_T, true);
+						applyParticleEmotion(1);
+					}
 				}
 				//not owner
 				else {
@@ -1628,8 +1634,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		super.onUpdate();
 		EntityHelper.checkDepth(this);	//both side
 		
-		//both side
+		//both side, CD--
 		if(this.StartSoundHurt > 0) this.StartSoundHurt--;
+		if(this.EmotionTicks[4] > 0) this.EmotionTicks[4]--;
 		
 		//client side
 		if(this.worldObj.isRemote) {
@@ -2922,6 +2929,22 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   			break;
 		default: //miss
       		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
+			break;
+  		}
+  	}
+  	
+  	/** spawn emotion particle
+  	 * 
+  	 *  type: 0:汗, 1:
+  	 */
+  	protected void applyParticleEmotion(int type) {
+  		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+  		
+  		float h = isSitting() ? this.height * 0.4F : this.height * 0.6F;
+  		
+  		switch(type) {
+		default:
+      		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(36, this.posX, this.posY, this.posZ, h, 0, type), point);
 			break;
   		}
   	}

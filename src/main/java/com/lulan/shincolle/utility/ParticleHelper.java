@@ -11,6 +11,7 @@ import net.minecraft.world.World;
 import com.lulan.shincolle.client.particle.EntityFX91Type;
 import com.lulan.shincolle.client.particle.EntityFXChi;
 import com.lulan.shincolle.client.particle.EntityFXCube;
+import com.lulan.shincolle.client.particle.EntityFXEmotion;
 import com.lulan.shincolle.client.particle.EntityFXLaser;
 import com.lulan.shincolle.client.particle.EntityFXLaserNoTexture;
 import com.lulan.shincolle.client.particle.EntityFXLightning;
@@ -455,6 +456,11 @@ public class ParticleHelper {
 				world.spawnParticle("largesmoke", posX+lookX-0.6D+0.1D*i+newPos1[1]+ran2, posY+0.6D+ran1, posZ+lookZ-0.6D+0.1D*i+newPos1[0]+ran2, lookX*0.3D*ran3, 0.05D*ran3, lookZ*0.3D*ran3);
 				world.spawnParticle("largesmoke", posX+lookX-0.6D+0.1D*i+newPos2[1]+ran3, posY+0.6D+ran1, posZ+lookZ-0.6D+0.1D*i+newPos2[0]+ran3, lookX*0.3D*ran2, 0.05D*ran2, lookZ*0.3D*ran2);
 			}
+			break;
+		case 36:	//emotion
+			EntityFXEmotion partEmo = new EntityFXEmotion(world, 
+  		          posX, posY, posZ, (float)lookX, (float)lookY, (int)lookZ);
+			Minecraft.getMinecraft().effectRenderer.addEffect(partEmo);
 			break;
 		default:
 			break;		
