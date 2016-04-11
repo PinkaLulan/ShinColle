@@ -129,7 +129,7 @@ public class S2CSpawnParticle implements IMessage {
 				this.lookY = buf.readFloat();
 				this.lookZ = buf.readFloat();
 				
-				ParticleHelper.spawnAttackParticleAt(posX, posY, posZ, lookX, lookY, lookZ, particleType);	
+				ParticleHelper.spawnAttackParticleAt(posX, posY, posZ, lookX, lookY, lookZ, particleType);
 			}
 			break;
 		case 3: //spawn particle with position

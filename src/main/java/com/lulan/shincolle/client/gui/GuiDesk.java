@@ -1004,21 +1004,22 @@ public class GuiDesk extends GuiContainer {
 				if(s != null && s.ship instanceof BasicEntityShip) {
 					BasicEntityShip s2 = (BasicEntityShip) s.ship;
 					
-					int m = s2.getStateMinor(ID.M.Morale);
-    		        int ix = 0;
-    		        
-    		        if(m < 901) {
-    		        	ix = 44;
-    		        }
-    		        else if(m < 2101) {
-    		        	ix = 33;
-    		        }
-    		        else if(m < 3901) {
-    		        	ix = 22;
-    		        }
-    		        else if(m < 5101) {
-    		        	ix = 11;
-    		        }
+					int ix = 44;
+					
+					switch(s2.getMoraleLevel()) {
+					case ID.Morale.Excited:
+						ix = 0;
+						break;
+					case ID.Morale.Happy:
+						ix = 11;
+						break;
+					case ID.Morale.Normal:
+						ix = 22;
+						break;
+					case ID.Morale.Tired:
+						ix = 33;
+						break;
+					}
     		        
     		        drawTexturedModalRect(guiLeft+237, guiTop+texty-1, ix, 240, 11, 11);
 				}

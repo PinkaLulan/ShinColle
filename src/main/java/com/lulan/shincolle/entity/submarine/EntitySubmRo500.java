@@ -170,39 +170,42 @@ public class EntitySubmRo500 extends BasicEntityShipSmall implements IShipInvisi
   		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
   		
   		//morale--
-  		this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - 1);
+  		this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - 4);
   	
   		//play cannon fire sound at attacker
-          this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-          //play entity attack sound
-          if(this.getRNG().nextInt(10) > 7) {
-          	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-          }
+  		this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  		//play entity attack sound
+  		if(this.getRNG().nextInt(10) > 7) {
+  			this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  		}
           
-          //heavy ammo--
-          if(!decrAmmoNum(0, this.getAmmoConsumption())) {
-        	  return false;
-          }
+  		//heavy ammo--
+  		if(!decrAmmoNum(0, this.getAmmoConsumption())) {
+  			return false;
+  		}
           
-          //calc miss chance, miss: add random offset(0~6) to missile target 
-          float missChance = 0.2F + 0.15F * (distSqrt / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.M.ShipLevel];
-          missChance -= EffectEquip[ID.EF_MISS];	//equip miss reduce
-          if(missChance > 0.35F) missChance = 0.35F;	//max miss chance = 30%
+  		//calc miss chance, miss: add random offset(0~6) to missile target 
+  		float missChance = 0.2F + 0.15F * (distSqrt / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.M.ShipLevel];
+  		missChance -= EffectEquip[ID.EF_MISS];	//equip miss reduce
+  		if(missChance > 0.35F) missChance = 0.35F;	//max miss chance = 30%
          
-          if(this.rand.nextFloat() < missChance) {
-        	  tarX = tarX - 3F + this.rand.nextFloat() * 6F;
-        	  tarY = tarY + this.rand.nextFloat() * 3F;
-        	  tarZ = tarZ - 3F + this.rand.nextFloat() * 6F;
-        	  //spawn miss particle
-        	  CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
-          }
+  		if(this.rand.nextFloat() < missChance) {
+			tarX = tarX - 3F + this.rand.nextFloat() * 6F;
+			tarY = tarY + this.rand.nextFloat() * 3F;
+			tarZ = tarZ - 3F + this.rand.nextFloat() * 6F;
+			//spawn miss particle
+			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
+  		}
 
-          //spawn missile
-          EntityAbyssMissile missile = new EntityAbyssMissile(this.worldObj, this, 
+  		//spawn missile
+  		EntityAbyssMissile missile = new EntityAbyssMissile(this.worldObj, this, 
           		tarX, tarY+target.height*0.2F, tarZ, launchPos, atk, kbValue, isDirect, 0.08F);
-          this.worldObj.spawnEntityInWorld(missile);
+  		this.worldObj.spawnEntityInWorld(missile);
           
-          return true;
+        //show emotes
+      	applyEmotesReaction(3);
+      	
+      	return true;
   	}
   	
   	@Override

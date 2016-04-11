@@ -298,7 +298,7 @@ public class EntityNorthernHime extends BasicEntityShipCV {
 		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
 		
   		//morale--
-  		this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - 1);
+  		this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - 5);
 		
 		//play attack effect
         applySoundAtAttacker(2, target);
@@ -317,6 +317,7 @@ public class EntityNorthernHime extends BasicEntityShipCV {
         //play target effect
         applySoundAtTarget(2, target);
         applyParticleAtTarget(2, target, distVec);
+      	applyEmotesReaction(3);
         
         return true;
   	}

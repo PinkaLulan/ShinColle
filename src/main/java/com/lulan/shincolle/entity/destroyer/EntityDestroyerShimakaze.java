@@ -33,7 +33,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
 	
 	public EntityDestroyerShimakaze(World world) {
 		super(world);
-		this.setSize(0.6F, 1.8F);	//碰撞大小 跟模型大小無關
+		this.setSize(0.6F, 1.6F);	//碰撞大小 跟模型大小無關
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.DESTROYER);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.DestroyerShimakaze);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
@@ -54,7 +54,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
 	//for morph
 	@Override
 	public float getEyeHeight() {
-		return 1.7375F;
+		return 1.5F;
 	}
 	
 	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc
@@ -135,7 +135,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
   		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk] * 4);
   		
   		//morale--
-  		this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - 1);
+  		this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - 3);
 
         //發射者煙霧特效 (招喚連裝砲不使用特效, 但是要發送封包來設定attackTime)
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
@@ -151,6 +151,9 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
         		EntityRensouhou rensoho1 = new EntityRensouhou(this.worldObj, this, target);
                 this.worldObj.spawnEntityInWorld(rensoho1);
         	}
+        	
+        	//show emotes
+        	applyEmotesReaction(3);
             return true;
         }
 
@@ -192,7 +195,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
 		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
 		
   		//morale--
-  		this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - 1);
+  		this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - 5);
 	
 		//play cannon fire sound at attacker
         this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
@@ -242,6 +245,9 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
         this.worldObj.spawnEntityInWorld(missile4);
         this.worldObj.spawnEntityInWorld(missile5);
         
+        //show emotes
+      	applyEmotesReaction(3);
+      	
         return true;
 	}
   	

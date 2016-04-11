@@ -31,6 +31,7 @@ public class ConfigHandler {
 	public static int teamCooldown = 6000;
 	public static int kaitaiAmountSmall = 20;
 	public static int kaitaiAmountLarge = 20;
+	public static int baseCaressMorale = 15;
 	
 	//DESK
 	public static int radarUpdate = 128;	//radar update interval (ticks)
@@ -123,6 +124,7 @@ public class ConfigHandler {
 		timeKeepingVolume = config.getFloat("Timekeeping_Volume", "ship setting", 1.0F, 0F, 10F, "Timekeeping sound volume");
 		shipVolume = config.getFloat("Ship_Volume", "ship setting", 1.0F, 0F, 10F, "Other sound volume");
 		fireVolume = config.getFloat("Attack_Volume", "ship setting", 0.7F, 0F, 10F, "Attack sound volume");
+		baseCaressMorale = config.getInt("BaseMorale_Caress", "ship setting", 15, 1, 1000, "base morale value per CaressTick (4 ticks)");
 		
 		propShip = config.get("ship setting", "ship_scale", scaleShip, "Ship attributes SCALE: HP, firepower, armor, attack speed, move speed, range");
 		propShipLimitBasic = config.get("ship setting", "ship_limit_basic", limitShipBasic, "Ship basic attributes LIMIT (-1 = no limit): HP, firepower, armor%, attack speed, move speed, range(blocks)");

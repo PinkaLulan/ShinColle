@@ -221,7 +221,6 @@ public class FormationHelper {
 			
 			for(BasicEntityShip s : ships) {
 				if(s != null) {
-					
 					switch(formatID) {
 					case 1:  //line ahead
 					case 4:  //echelon
@@ -238,6 +237,9 @@ public class FormationHelper {
 						EntityHelper.applyShipGuard(s, x, y, z);
 						break;
 					}
+					
+					//show emotes
+					s.applyEmotesReaction(5);
 					
 					//sync guard
 					CommonProxy.channelE.sendTo(new S2CEntitySync(s, 3), (EntityPlayerMP) owner);

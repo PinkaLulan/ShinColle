@@ -55,10 +55,16 @@ public class KaitaiHammer extends BasicItem {
 	@Override
 	public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity) {
 		//entity is ship
-		if(entity instanceof BasicEntityShip) {
+		if(!player.worldObj.isRemote && entity instanceof BasicEntityShip) {
 			//player is owner
 			if(EntityHelper.checkSameOwner(player, entity) || EntityHelper.checkOP(player)) {
-				entity.attackEntityFrom(DamageSource.causePlayerDamage(player), ((BasicEntityShip) entity).getMaxHealth() * 1.01F);
+				//show emotes
+				((BasicEntityShip)entity).applyParticleEmotion(8);
+				
+				//emotes AOE
+				EntityHelper.applyShipEmotesAOE(player.worldObj, entity.posX, entity.posY, entity.posZ, 10D, 6);
+				
+				entity.attackEntityFrom(DamageSource.causePlayerDamage(player), ((BasicEntityShip) entity).getMaxHealth() * 1.1F);
 				
 				//item meta+1
 				int meta = stack.getItemDamage();
@@ -78,6 +84,8 @@ public class KaitaiHammer extends BasicItem {
 					stack.setItemDamage(meta);
 				}
 			}
+			
+			return true;
 		}
 		
         return false;

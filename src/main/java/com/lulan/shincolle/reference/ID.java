@@ -29,6 +29,40 @@ public class ID {
 		public static final byte Desk_Sync = 0;
 	}
 	
+	/** ship body part */
+	public static final class Body {
+		public static final byte UBelly = 20;
+		public static final byte Chest = 21;
+		public static final byte Butt = 22;
+		public static final byte Neck = 23;
+		public static final byte Face = 24;
+		public static final byte Back = 25;
+		public static final byte Belly = 26;
+		public static final byte Top = 27;
+		public static final byte Head = 28;
+		public static final byte Leg = 29;
+		public static final byte Arm = 30;
+		
+		/** by height */
+		public static final class Height {
+			public static final byte Top = 0;
+			public static final byte Head = 1;
+			public static final byte Neck = 2;
+			public static final byte Chest = 3;
+			public static final byte Belly = 4;
+			public static final byte UBelly = 5;
+			public static final byte Leg = 6;
+		}
+		
+		/** by angle */
+		public static final class Side {
+			public static final byte Back = 10;
+			public static final byte Right = 11;
+			public static final byte Front = 12;
+			public static final byte Left = 13;
+		}
+	}
+	
 	/** Shipyard build type*/
 	public static final class Build {
 		public static final byte NONE = 0;
@@ -38,7 +72,7 @@ public class ID {
 		public static final byte EQUIP_LOOP = 4;
 	}
 	
-	/**Equip Attrs Map*/
+	/** Equip Attrs Map */
 	public static final class E {
 		public static final byte LEVEL = 0;
 		public static final byte HP = 1;
@@ -61,7 +95,7 @@ public class ID {
 		public static final byte DODGE = 18;
 	}
 	
-	/**Emotion*/
+	/** Emotion */
 	public static final class Emotion {
 		public static final byte NORMAL = 0;			//no emotion
 		public static final byte BLINK = 1;				//blink eye
@@ -71,7 +105,7 @@ public class ID {
 		public static final byte HUNGRY = 5;			//no grudge
 	}
 	
-	/**Equip type*/
+	/** Equip type */
 	public static final class EquipType {
 		public static final byte CANNON_SI = 0;			//single cannon
 		public static final byte CANNON_TW_LO = 1;		//low level twin cannon
@@ -342,6 +376,18 @@ public class ID {
 		public static final byte Morale = 30;		//morale value
 		public static final byte Food = 31;			//food saturation
 		public static final byte FoodMax = 32;		//max food saturation
+		public static final byte HitHeight = 33;	//hit height by pointer item, NO SYNC
+		public static final byte HitAngle = 34;		//hit angle by pointer item, NO SYNC
+		public static final byte SensBody = 35;		//sensitive body part id
+	}
+	
+	/** morale level */
+	public static final class Morale {
+		public static final byte Excited = 0;
+		public static final byte Happy = 1;
+		public static final byte Normal = 2;
+		public static final byte Tired = 3;
+		public static final byte Exhausted = 4;
 	}
 	
 	/** packet type ID */

@@ -309,12 +309,12 @@ gui.shincolle:book.chap3.text11d0=§9/shipinfo§c<br>§d權限:§0 全部玩家<
 gui.shincolle:book.chap3.text11d1=§9/shipupdateowneruid§3 [玩家名稱]<br>§d權限:§0 全部玩家 or 僅限OP<br>§d功能:§0 更新擁有船的主人ID<br><br>在某些bug下導致船艦對主人沒有反應時，可輸入此指令嘗試更新主人ID。一般玩家輸入後會更新玩家所擁有的已載入的船艦的主人ID，OP可以額外輸入玩家名稱，就會更新該玩家所擁有船艦的主人ID。<br><br>注意船艦若處在非載入的地圖區塊中，不會被此指令影響，需移動到該船艦附近輸入指令才能生效。<br><br>判定擁有船艦是以船艦紀錄的主人UUID為準，若UUID出現bug則此指令可能無效，請改用/shipchangeowner單獨對每個船艦修改主人。
 gui.shincolle:book.chap3.title12=
 gui.shincolle:book.chap3.text12d0=§9/shipattrs <船艦等級> <HP等級> <ATK等級> <DEF等級> <攻速等級> <跑速等級> <射程等級>§c<br>§d權限:§0 僅限OP<br>§d功能:§0 修改船艦數值<br><br>OP對游標指向的船艦輸入指令後，可以修改目標的等級跟六大屬性的等級。船艦等級可設為1~150，屬性等級可設0~100。
-gui.shincolle:book.chap3.text12d1=§9/shipcleardrop [range]<br>§d權限:§0 僅限OP<br>§d功能:§0 移除船艦掉落物<br><br>移除船艦掉落的紅色怨念球，可指定範圍。預設範圍為128格。
+gui.shincolle:book.chap3.text12d1=§9/shipcleardrop [range]<br>§d權限:§0 僅限OP<br>§d功能:§0 移除船艦掉落物<br><br>移除船艦掉落的紅色怨念球，可指定範圍。預設範圍為128格。<br><br>§9/shipemotes [表情]<br>§d權限:§0 全部玩家<br>§d功能:§0 bbb<br>§d縮寫:§9/em, /emo, /emote, /emotes§0<br><br>顯示表情符號，輸入指令時按下tab鍵會列出所有表情符號名稱。
 gui.shincolle:book.chap3.title13=士氣說明
 gui.shincolle:book.chap3.text13d0=艦太太們的士氣高低會影響其作戰能力。<br><br>士氣分為五個等級，處於較高的兩個等級具有屬性加成效果，而較低的兩個等級則會降低船艦各個屬性。<br><br>士氣等級會以圖示標在船艦物品欄介面的右上角，圖示由左到右為：<br>§d興奮§0，§c快樂§0，§2普通§0，§9疲累§0，§7精疲力盡§0。
 gui.shincolle:book.chap3.text13d1=以下動作會影響士氣變化：<br><br>§9閒置：§0<br>從其他狀態逐漸恢復到§2普通§0狀態。<br><br>§9撫摸：§0<br>增加士氣，可達到§d興奮§0狀態。<br><br>§9餵食：§0<br>增加士氣，可達到§c快樂§0狀態。<br><br>§9移動、攻擊、被攻擊：§0<br>降低士氣。
 gui.shincolle:book.chap3.title14=餵食說明
-gui.shincolle:book.chap3.text14d0=船艦一般不需要餵食，不過餵食可以手動補充怨念、彈藥跟提高士氣值。<br><br>對船艦§9右鍵使用§0食物或者怨念、彈藥、深海金屬、多金屬結核會餵食該船艦，並提昇其怨念、士氣、彈藥等。<br><br>在一段時間內能§9餵食的次數有限制§0，餵飽後需隔一段時間才能繼續餵食。
+gui.shincolle:book.chap3.text14d0=船艦一般不需要餵食，不過主人可以透過餵食來手動補充怨念、彈藥跟提高士氣值。<br><br>對船艦§9右鍵使用§0食物或者怨念、彈藥、深海金屬、多金屬結核會餵食該船艦，並提昇其怨念、士氣、彈藥等。<br><br>在一段時間內能§9餵食的次數有限制§0，餵飽後需隔一段時間才能繼續餵食。
 gui.shincolle:book.chap3.text14d1=§9怨念、食物道具：§0<br>提高士氣、怨念值。<br><br>§9彈藥：§0<br>提高士氣，彈藥值。回復彈藥量會比船艦自動使用多一些。<br><br>§9深海金屬、多金屬結核：§0<br>恢復艦載機數量。
  
 # GUI: Book Text Chap 4

@@ -245,6 +245,18 @@ public class EVENT_BUS_EventHandler {
 	    		ServerProxy.setPlayerData(player.getUniqueID().toString(), nbt);
 	    	}
 	    }
+	    else if(event.entityLiving instanceof BasicEntityShip) {
+	    	//show emotes
+	    	((BasicEntityShip)event.entityLiving).applyParticleEmotion(8);
+			//emotes AOE
+			EntityHelper.applyShipEmotesAOE(event.entityLiving.worldObj, event.entityLiving.posX, event.entityLiving.posY, event.entityLiving.posZ, 16D, 6);
+	    }
+	    else if(event.entityLiving instanceof BasicEntityShipHostile) {
+	    	//show emotes
+	    	((BasicEntityShipHostile)event.entityLiving).applyParticleEmotion(8);
+			//emotes AOE
+			EntityHelper.applyShipEmotesAOEHostile(event.entityLiving.worldObj, event.entityLiving.posX, event.entityLiving.posY, event.entityLiving.posZ, 48D, 6);
+	    }
 	}
 	
 	//add extend props to entity

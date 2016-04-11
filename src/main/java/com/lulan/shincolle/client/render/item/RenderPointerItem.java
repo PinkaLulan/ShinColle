@@ -89,7 +89,7 @@ public class RenderPointerItem implements IItemRenderer {
 		if(keySet.keyBindUseItem.getIsKeyPressed()) {
 			switch(meta) {
 			case 3:  //往下, 上下撫摸
-				GL11.glTranslatef(2F, 4F, 0.0F);
+				GL11.glTranslatef(1.3F, 4F, 0.0F);
 				GL11.glScalef(2F, 2F, 2F);
 				GL11.glRotatef(MathHelper.cos(++tick * 0.125F) * -20F - 60F, 0F, 0F, 1F);
 				break;
@@ -101,7 +101,7 @@ public class RenderPointerItem implements IItemRenderer {
 				GL11.glRotatef(MathHelper.cos(++tick * 0.04F) * -15F + 20F, 1F, 0F, 0F);
 				break;
 			default:  //平摸
-				GL11.glTranslatef(11.5F, 12.5F, 2.5F);
+				GL11.glTranslatef(13.5F, 12.5F, 2.5F);
 				GL11.glScalef(9F, 9F, 9F);
 				GL11.glRotatef(MathHelper.cos(++tick * 0.0625F) * -15F - 20F, 1F, 1F, 0F);
 				break;

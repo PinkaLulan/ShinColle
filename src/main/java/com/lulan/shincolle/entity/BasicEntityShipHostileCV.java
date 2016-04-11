@@ -70,6 +70,10 @@ abstract public class BasicEntityShipHostileCV extends BasicEntityShipHostile im
     	BasicEntityAirplane plane = new EntityAirplaneZeroHostile(this.worldObj);
         plane.setAttrs(this.worldObj, this, target, summonHeight);
     	this.worldObj.spawnEntityInWorld(plane);
+    	
+        //show emotes
+		applyEmotesReaction(3);
+		
         return true;
 	}
 
@@ -92,6 +96,10 @@ abstract public class BasicEntityShipHostileCV extends BasicEntityShipHostile im
     	BasicEntityAirplane plane = new EntityAirplaneTHostile(this.worldObj);
         plane.setAttrs(this.worldObj, this, target, summonHeight);
     	this.worldObj.spawnEntityInWorld(plane);
+    	
+        //show emotes
+		applyEmotesReaction(3);
+		
         return true;
 	}
 

@@ -118,6 +118,8 @@ public class EntityDestroyerShimakazeBoss extends BasicEntityShipHostile impleme
         if(target instanceof EntityLivingBase) {
         	EntityRensouhouBoss rensoho = new EntityRensouhouBoss(this.worldObj, this, target);
             this.worldObj.spawnEntityInWorld(rensoho);
+            //show emotes
+			applyEmotesReaction(3);
             return true;
         }
 
@@ -189,6 +191,9 @@ public class EntityDestroyerShimakazeBoss extends BasicEntityShipHostile impleme
         this.worldObj.spawnEntityInWorld(missile4);
         this.worldObj.spawnEntityInWorld(missile5);
         
+        //show emotes
+		applyEmotesReaction(3);
+		
         return true;
 	}
   	

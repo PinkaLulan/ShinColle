@@ -38,6 +38,7 @@ import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.ai.path.ShipPathPoint;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipAttributes;
@@ -1085,6 +1086,9 @@ public class EntityHelper {
 				ship.setStateFlag(ID.F.CanFollow, false);	//stop follow
 				
 				if(!ship.getStateFlag(ID.F.NoFuel)) {
+					//show emotes
+					ship.applyEmotesReaction(5);
+					
 					if(ship.ridingEntity != null && ship.ridingEntity instanceof BasicEntityMount) {
 						((BasicEntityMount)ship.ridingEntity).getShipNavigate().tryMoveToXYZ(x, y, z, 1D);
 						((BasicEntityMount)ship.ridingEntity).getLookHelper().setLookPosition(x, y, z, 30F, 40F);
@@ -1120,6 +1124,9 @@ public class EntityHelper {
 				ship.setStateFlag(ID.F.CanFollow, false);	//stop follow
 				
 				if(!ship.getStateFlag(ID.F.NoFuel)) {
+					//show emotes
+					ship.applyEmotesReaction(5);
+					
 					if(ship.ridingEntity != null && ship.ridingEntity instanceof BasicEntityMount) {
 						((BasicEntityMount)ship.ridingEntity).getShipNavigate().tryMoveToEntityLiving(guarded, 1D);
 					}
@@ -1150,6 +1157,8 @@ public class EntityHelper {
 						//若該ship有騎乘座騎, 將座騎目標也設定
 						if(ships[0].ridingEntity instanceof BasicEntityMount) {
 							((BasicEntityMount)ships[0].ridingEntity).setEntityTarget(target);
+							//show emotes
+							ships[0].applyEmotesReaction(5);
 						}
 					}
 					break;
@@ -1160,6 +1169,8 @@ public class EntityHelper {
 							//設定ship攻擊目標
 							ships[i].setSitting(false);
 							ships[i].setEntityTarget(target);
+							//show emotes
+							ships[i].applyEmotesReaction(5);
 							
 							//若該ship有騎乘座騎, 將座騎目標也設定
 							if(ships[i].ridingEntity instanceof BasicEntityMount) {
@@ -1328,12 +1339,12 @@ public class EntityHelper {
 			//check entity is in team
 			if(i >= 0) {
 				switch(meta) {
-				case 0:	//single mode (僅一隻可以focus)
+				case 0:  //single mode (僅一隻可以focus)
 					/**single mode不能取消focus, 一定有一隻會是focus狀態*/
 					props.clearSelectStateCurrentTeam();
 					props.setSelectStateCurrentTeam(i, true);
 					break;
-				case 1:		//group mode (不限focus數量)
+				case 1:  //group mode (不限focus數量)
 					props.setSelectStateCurrentTeam(i, !props.getSelectStateCurrentTeam(i));
 					break;
 				}
@@ -1343,8 +1354,77 @@ public class EntityHelper {
 			props.sendSyncPacket(0);
 		}	
 	}
-
-	/** calc can dodge */
+	
+	/** set emotes to all nearby hostile ships */
+	public static void applyShipEmotesAOEHostile(World world, double x, double y, double z, double range, int emotesType) {
+		//server side only
+		if(!world.isRemote) {
+			//get ship entity
+            AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x-range, x+range, y-range, y+range, z-range, z+range);
+            List<BasicEntityShipHostile> slist = world.getEntitiesWithinAABB(BasicEntityShipHostile.class, box);
+            
+            if(slist != null) {
+                for(BasicEntityShipHostile s : slist) {
+                	if(s.isEntityAlive()) s.applyEmotesReaction(emotesType);
+                }
+            }
+		}
+	}
+	
+	/** set emotes to all nearby ships
+	 * 
+	 *  emotes type:
+	 *  0: caress head (owner)
+  	 *  1: caress head (other)
+  	 *  2: damaged
+  	 *  3: attack
+  	 *  4: idle
+  	 *  5: command
+  	 *  6: shock
+	 */
+	public static void applyShipEmotesAOE(World world, double x, double y, double z, double range, int emotesType) {
+		//server side only
+		if(!world.isRemote) {
+			//get ship entity
+            AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x-range, x+range, y-range, y+range, z-range, z+range);
+            List<BasicEntityShip> slist = world.getEntitiesWithinAABB(BasicEntityShip.class, box);
+            
+            if(slist != null) {
+                for(BasicEntityShip s : slist) {
+                	if(s.isEntityAlive()) s.applyEmotesReaction(emotesType);
+                }
+            }
+		}
+	}
+	
+	/** set emotes to all nearby ships with owner checking
+	 * 
+	 *  emotes type:
+	 *  0: caress head (owner)
+  	 *  1: caress head (other)
+  	 *  2: damaged
+  	 *  3: attack
+  	 *  4: idle
+  	 *  5: command
+  	 *  6: shock
+	 */
+	public static void applyShipEmotesAOECheckOwner(World world, double x, double y, double z, double range, int emotesType, int ownerUID) {
+		//server side only
+		if(!world.isRemote) {
+			//get ship entity
+            AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x-range, x+range, y-range, y+range, z-range, z+range);
+            List<BasicEntityShip> slist = world.getEntitiesWithinAABB(BasicEntityShip.class, box);
+            
+            if(slist != null) {
+                for(BasicEntityShip s : slist) {
+                	if(s.isEntityAlive() && s.getPlayerUID() == ownerUID) {
+                		s.applyEmotesReaction(emotesType);
+                	}
+                }
+            }
+		}
+	}
+	
 	public static boolean canDodge(IShipAttributes ent, float dist) {
 		if(ent != null) {
 			int dodge = (int) ent.getEffectEquip(ID.EF_DODGE);
@@ -1417,6 +1497,7 @@ public class EntityHelper {
 				sender.addChatMessage(new ChatComponentText("Ship UID: "+EnumChatFormatting.GREEN+ship.getShipUID()));
 				sender.addChatMessage(new ChatComponentText("Ship Owner UID: "+EnumChatFormatting.RED+ship.getPlayerUID()));
 				sender.addChatMessage(new ChatComponentText("Ship Owner UUID: "+EnumChatFormatting.YELLOW+EntityHelper.getPetPlayerUUID(ship)));
+				sender.addChatMessage(new ChatComponentText("Morale: "+EnumChatFormatting.YELLOW+ship.getStateMinor(ID.M.Morale)));
 			}
 		}
 	}

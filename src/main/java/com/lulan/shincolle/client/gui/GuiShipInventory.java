@@ -394,21 +394,22 @@ public class GuiShipInventory extends GuiContainer {
 	
 	//draw ship morale
 	private void drawIconMorale() {
-		int m = this.entity.getStateMinor(ID.M.Morale);
-        int ix = 0;
-        
-        if(m < 901) {
-        	ix = 44;
-        }
-        else if(m < 2101) {
-        	ix = 33;
-        }
-        else if(m < 3901) {
-        	ix = 22;
-        }
-        else if(m < 5101) {
-        	ix = 11;
-        }
+		int ix = 44;
+		
+		switch(this.entity.getMoraleLevel()) {
+		case ID.Morale.Excited:
+			ix = 0;
+			break;
+		case ID.Morale.Happy:
+			ix = 11;
+			break;
+		case ID.Morale.Normal:
+			ix = 22;
+			break;
+		case ID.Morale.Tired:
+			ix = 33;
+			break;
+		}
         
         drawTexturedModalRect(guiLeft+231, guiTop+18, ix, 240, 11, 11);
 	}
@@ -425,22 +426,22 @@ public class GuiShipInventory extends GuiContainer {
 		if(xMouse > 230+guiLeft && xMouse < 243+guiLeft && yMouse > 17+guiTop && yMouse < 30+guiTop) {
 			mouseoverList.clear();
 			
-			temp = this.entity.getStateMinor(ID.M.Morale);
-			
-			if(temp > 5100) {
+			switch(this.entity.getMoraleLevel()) {
+			case ID.Morale.Excited:
 				mouseoverList.add(strM0);
-			}
-			else if(temp > 3900) {
+				break;
+			case ID.Morale.Happy:
 				mouseoverList.add(strM1);
-			}
-			else if(temp > 2100) {
+				break;
+			case ID.Morale.Normal:
 				mouseoverList.add(strM2);
-			}
-			else if(temp > 900) {
+				break;
+			case ID.Morale.Tired:
 				mouseoverList.add(strM3);
-			}
-			else {
+				break;
+			default:
 				mouseoverList.add(strM4);
+				break;
 			}
 			
 			this.drawHoveringText(mouseoverList, 210, 45, this.fontRendererObj);
