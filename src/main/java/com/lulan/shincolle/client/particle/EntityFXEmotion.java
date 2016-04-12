@@ -175,9 +175,9 @@ public class EntityFXEmotion extends EntityFX {
         	this.fadeState = 1;
         	this.fadeTick = 3;
         	//short stay
-        	this.stayTick = 3;
+        	this.stayTick = 0;
         	//slow play
-        	this.playSpeed = 0.5F;
+        	this.playSpeed = 0.75F;
         	break;
         case 12:  //驚嚇
         	this.particleIconX = 0.4375F;

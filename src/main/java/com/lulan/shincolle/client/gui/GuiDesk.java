@@ -1772,6 +1772,7 @@ public class GuiDesk extends GuiContainer {
             this.shipModel = (BasicEntityShip) EntityList.createEntityByName(shipName, player.worldObj);
             
             if(this.shipModel != null) {
+            	this.shipModel.setStateFlag(ID.F.NoFuel, false);
             	this.shipType = this.shipModel.getShipType();
     			this.shipClass = this.shipModel.getShipClass();
     			

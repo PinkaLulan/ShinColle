@@ -331,6 +331,15 @@
         "category": "hostile", "replace": true, "sounds": [
         	"laser06"
         ]
+    },
+    
+    "ship-knockback": {
+        "category": "hostile", "replace": true, "sounds": [
+            "hits02",
+            "hits06",
+            "hurt04",
+            "hurt02"
+        ]
     }
     
 }

@@ -165,7 +165,8 @@ abstract public class BasicEntityShipCV extends BasicEntityShip implements IShip
   		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAir]);
   		
   		//morale--
-  		this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - 6);
+  		decrMorale(3);
+  		setCombatTick(this.ticksExisted);
         
   		//play attacker effect
         applySoundAtAttacker(3, target);
@@ -211,7 +212,8 @@ abstract public class BasicEntityShipCV extends BasicEntityShip implements IShip
   		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAir]);
   		
   		//morale--
-  		this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - 8);
+  		decrMorale(4);
+  		setCombatTick(this.ticksExisted);
         
         //heavy ammo--
         if(!decrAmmoNum(1, 2 * this.getAmmoConsumption())) {

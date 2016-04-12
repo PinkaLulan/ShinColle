@@ -270,6 +270,14 @@ public class EntityHelper {
 		return false;
 	}
 	
+	/** check ship is out of combat */
+	public static boolean checkShipOutOfCombat(BasicEntityShip ship) {
+		if(ship != null && ship.ticksExisted - ship.getCombatTick() > 128) {
+			return true;
+		}
+		return false;
+	}
+	
 	/** check ship is in colled list */
 	public static boolean checkShipColled(int classID, ExtendPlayerProps props) {
 		if(props != null && props.getColleShipList() != null && props.getColleShipList().contains(classID)) {
@@ -1360,7 +1368,7 @@ public class EntityHelper {
 		//server side only
 		if(!world.isRemote) {
 			//get ship entity
-            AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x-range, x+range, y-range, y+range, z-range, z+range);
+            AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x-range, y-range, z-range, x+range, y+range, z+range);
             List<BasicEntityShipHostile> slist = world.getEntitiesWithinAABB(BasicEntityShipHostile.class, box);
             
             if(slist != null) {
@@ -1386,7 +1394,7 @@ public class EntityHelper {
 		//server side only
 		if(!world.isRemote) {
 			//get ship entity
-            AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x-range, x+range, y-range, y+range, z-range, z+range);
+            AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x-range, y-range, z-range, x+range, y+range, z+range);
             List<BasicEntityShip> slist = world.getEntitiesWithinAABB(BasicEntityShip.class, box);
             
             if(slist != null) {
@@ -1412,7 +1420,7 @@ public class EntityHelper {
 		//server side only
 		if(!world.isRemote) {
 			//get ship entity
-            AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x-range, x+range, y-range, y+range, z-range, z+range);
+            AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x-range, y-range, z-range, x+range, y+range, z+range);
             List<BasicEntityShip> slist = world.getEntitiesWithinAABB(BasicEntityShip.class, box);
             
             if(slist != null) {
@@ -1422,6 +1430,20 @@ public class EntityHelper {
                 	}
                 }
             }
+		}
+	}
+	
+	/** apply emotes to all entity in list */
+	public static void applyEmotesAOE(List entlist, int emotes) {
+		if(entlist != null && !entlist.isEmpty()) {
+			Entity s = (Entity) entlist.get(0);
+			TargetPoint point = new TargetPoint(s.dimension, s.posX, s.posY, s.posZ, 48D);
+			
+			for(Object o : entlist) {
+				if(s instanceof Entity) {
+					CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle((Entity) o, 36, ((Entity) o).height * 0.6F, 0, emotes), point);
+				}
+			}
 		}
 	}
 	
@@ -1491,7 +1513,10 @@ public class EntityHelper {
 				BasicEntityShip ship = (BasicEntityShip) hitObj.entityHit;
 				
 				//show ship info
-				sender.addChatMessage(new ChatComponentText("Command: ShipInfo: User: "+EnumChatFormatting.LIGHT_PURPLE+sender.getDisplayName()+EnumChatFormatting.RESET+" UUID: "+EnumChatFormatting.GOLD+sender.getUniqueID()));
+				sender.addChatMessage(new ChatComponentText("Command: ShipInfo: User: "+EnumChatFormatting.LIGHT_PURPLE+
+						sender.getDisplayName()+EnumChatFormatting.RESET+
+						" UID: "+EnumChatFormatting.AQUA+EntityHelper.getPlayerUID(sender)+EnumChatFormatting.RESET+
+						" UUID: "+EnumChatFormatting.GOLD+sender.getUniqueID()));
 				sender.addChatMessage(new ChatComponentText("Ship Name: "+EnumChatFormatting.AQUA+ship.getCustomNameTag()));
 				sender.addChatMessage(new ChatComponentText("Ship EntityID: "+EnumChatFormatting.GOLD+ship.getEntityId()));
 				sender.addChatMessage(new ChatComponentText("Ship UID: "+EnumChatFormatting.GREEN+ship.getShipUID()));

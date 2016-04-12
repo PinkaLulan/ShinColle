@@ -462,6 +462,11 @@ public class ParticleHelper {
 					posX, posY, posZ, (float)lookX, (float)lookY, (int)lookZ);
 			Minecraft.getMinecraft().effectRenderer.addEffect(partEmo);
 			break;
+		case 37:	//white spray
+			EntityFXSpray particleSpray12 = new EntityFXSpray(world, 
+            		posX, posY, posZ, lookX, lookY, lookZ, 12);
+        	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray12);
+			break;
 		default:
 			break;		
 		}

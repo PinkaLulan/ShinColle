@@ -3,6 +3,12 @@ package com.lulan.shincolle.client.gui;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.util.ResourceLocation;
+
 import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.client.gui.inventory.ContainerSmallShipyard;
@@ -14,19 +20,13 @@ import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.utility.GuiHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.util.ResourceLocation;
-
 public class GuiSmallShipyard extends GuiContainer {
 
 	private static final ResourceLocation guiTexture = new ResourceLocation(Reference.TEXTURES_GUI+"GuiSmallShipyard.png");
 	private TileEntitySmallShipyard tile;
 	private int xClick, yClick, xMouse, yMouse;
 	private float tickGUI;
-	private String errorMsg;
+	private String errorMsg, conName;
 	
 	public GuiSmallShipyard(InventoryPlayer par1, TileEntitySmallShipyard par2) {
 		super(new ContainerSmallShipyard(par1, par2));
@@ -34,6 +34,10 @@ public class GuiSmallShipyard extends GuiContainer {
 		tickGUI = 0F;
 		this.xSize = 176;
 		this.ySize = 164;
+		
+		//string
+		conName = I18n.format("tile.shincolle:BlockSmallShipyard.name");
+		
 	}
 	
 	//get new mouseX,Y and redraw gui
@@ -61,14 +65,15 @@ public class GuiSmallShipyard extends GuiContainer {
 	@Override
 	protected void drawGuiContainerForegroundLayer(int i, int j) {
 		//取得gui顯示名稱
-		String name = I18n.format("container.shincolle:SmallShipyard");
 		String time = this.tile.getBuildTimeString();
 		
 		//畫出字串 parm: string, x, y, color, (是否dropShadow)
 		//畫出該方塊名稱, 位置: x=gui寬度的一半扣掉字串長度一半, y=6, 顏色為4210752
-		this.fontRendererObj.drawString(name, this.xSize / 2 - this.fontRendererObj.getStringWidth(name) / 2, 6, 4210752);
+		this.fontRendererObj.drawString(conName, this.xSize / 2 - this.fontRendererObj.getStringWidth(conName) / 2, 6, 4210752);
+		
 		//畫出倒數時間
 		this.fontRendererObj.drawString(time, 71 - this.fontRendererObj.getStringWidth(time) / 2, 51, 4210752);
+		
 		//畫出提示訊息
 		if(tile.getPowerGoal() <= 0) {
 			errorMsg = I18n.format("gui.shincolle:nomaterial");

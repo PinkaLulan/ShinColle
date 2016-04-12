@@ -4,6 +4,7 @@ import java.util.Random;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.item.EntityItem;
@@ -41,7 +42,6 @@ import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.OwnerPaper;
 import com.lulan.shincolle.item.PointerItem;
-import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.network.S2CSpawnParticle;
@@ -68,6 +68,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	protected ExtendShipProps ExtProps;			//entity額外NBT紀錄
 	protected ShipPathNavigate shipNavigator;	//水空移動用navigator
 	protected ShipMoveHelper shipMoveHelper;
+	protected EntityLivingBase aiTarget;		//target for AI
 	protected Entity guardedEntity;				//guarding target
 	protected Entity atkTarget;					//attack target
 	protected Entity rvgTarget;					//revenge target
@@ -118,7 +119,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	
 	//for model render
 	/** EmotionTicks: 0:FaceTick 1:HeadTiltTick 2:AttackEmoCount 3:MoraleTick 4:EmoParticle CD
-	 *   */
+	 *                5:LastAttackTime */
 	protected int[] EmotionTicks;		//表情開始時間 or 表情計時時間
 	protected float[] rotateAngle;		//模型旋轉角度, 用於手持物品render
 	protected int StartSoundHurt;		//hurt sound ticks
@@ -180,7 +181,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.shipMoveHelper = new ShipMoveHelper(this, 25F);
 		
 		//for render
-		this.EmotionTicks = new int[] {0, 0, 0, 0, 0};
+		this.EmotionTicks = new int[] {0, 0, 0, 0, 0, 0};
 		this.rotateAngle = new float[] {0F, 0F, 0F};		//model rotate angle (right hand)
 		
 		//for init
@@ -409,8 +410,19 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		return this.EmotionTicks[2];
 	}
 	
+	//last caress time
 	public int getMoraleTick() {
 		return this.EmotionTicks[3];
+	}
+	
+	//emotes CD
+	public int getEmotesTick() {
+		return this.EmotionTicks[4];
+	}
+	
+	//last attack time
+	public int getCombatTick() {
+		return this.EmotionTicks[5];
 	}
 	
 	/** 被pointer item點到的高度, 以百分比值表示 */
@@ -945,8 +957,19 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.EmotionTicks[2] = par1;
 	}
 	
+	//last caress time
 	public void setMoraleTick(int par1) {
 		this.EmotionTicks[3] = par1;
+	}
+	
+	//emotes CD
+	public void setEmotesTick(int par1) {
+		this.EmotionTicks[4] = par1;
+	}
+	
+	//last attack time
+	public void setCombatTick(int par1) {
+		this.EmotionTicks[5] = par1;
 	}
 	
 	/** 被pointer item點到的高度, 以百分比值表示 */
@@ -1087,12 +1110,15 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		if(itemstack != null) {
 			//use pointer item (caress head mode)
 			if(itemstack.getItem() == ModItems.PointerItem && !this.worldObj.isRemote) {
+				//set ai target
+				this.aiTarget = player;
+				
 				//is owner
 				if(EntityHelper.checkSameOwner(player, this) && !this.getStateFlag(ID.F.NoFuel)) {
 					int t = this.ticksExisted - this.getMoraleTick();
 					int m = this.getStateMinor(ID.M.Morale);
 					
-					if(t > 3 && m < 6100) {  //if caress > 3 ticks
+					if(t > 3 && m < 6600) {  //if caress > 3 ticks
 						this.setMoraleTick(this.ticksExisted);
 						this.setStateMinor(ID.M.Morale, m + ConfigHandler.baseCaressMorale);
 					}
@@ -1104,6 +1130,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				else {
 					applyEmotesReaction(1);
 				}
+				
+				//clear ai target
+				this.aiTarget = null;
 				
 				return true;
 			}
@@ -1986,7 +2015,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
 		
 		//morale--
-		this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - 2);
+		decrMorale(0);
+		setCombatTick(this.ticksExisted);
 				
 	    //entity attack effect
 	    applySoundAtAttacker(0, target);
@@ -2018,7 +2048,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
   		
   		//morale--
-  		this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - 4);
+  		decrMorale(1);
+  		setCombatTick(this.ticksExisted);
   		
         //light ammo -1
         if(!decrAmmoNum(0, this.getAmmoConsumption())) {		//not enough ammo
@@ -2140,7 +2171,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
 		
   		//morale--
-  		this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - 5);
+		decrMorale(2);
+  		setCombatTick(this.ticksExisted);
 	
 		//play attack effect
         applySoundAtAttacker(2, target);
@@ -2275,7 +2307,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			}
 			
 	  		//morale--
-	  		this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - 5);
+			decrMorale(5);
+	  		setCombatTick(this.ticksExisted);
 	  		
 	  		//set damaged body ID and show emotes
 	  		if(this.rand.nextInt(5) == 0) {
@@ -2294,6 +2327,30 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		
 		return false;
     }
+	
+	/** decr morale value, type: 0:melee, 1:light, 2:heavy, 3:light air, 4:light heavy, 5:damaged */
+	protected void decrMorale(int type) {
+		switch(type) {
+		case 0:  //melee
+			setStateMinor(ID.M.Morale, getStateMinor(ID.M.Morale) - 2);
+			break;
+		case 1:  //light
+			setStateMinor(ID.M.Morale, getStateMinor(ID.M.Morale) - 4);
+			break;
+		case 2:  //heavy
+			setStateMinor(ID.M.Morale, getStateMinor(ID.M.Morale) - 6);
+			break;
+		case 3:  //light air
+			setStateMinor(ID.M.Morale, getStateMinor(ID.M.Morale) - 6);
+			break;
+		case 4:  //light heavy
+			setStateMinor(ID.M.Morale, getStateMinor(ID.M.Morale) - 8);
+			break;
+		case 5:  //damaged
+			setStateMinor(ID.M.Morale, getStateMinor(ID.M.Morale) - 5);
+			break;
+		}
+	}
 	
 	/** decr ammo, type: 0:light, 1:heavy */
 	protected boolean decrAmmoNum(int type, int amount) {
@@ -2884,7 +2941,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     	
     	//morale-- per 10 blocks
     	int m = (int)((float)valueConsume * 0.5F);
-    	if(m < 1) m = 1;
+    	if(m < 5) m = 5;
     	if(m > 50) m = 50;
     	this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - m);
     	
@@ -2974,7 +3031,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	}
   	
   	/** morale value
-  	 *  5101 - 6000  Exciting:  dodge/mov/spd++
+  	 *  5101 - 8000  Exciting:  dodge/mov/spd++
   	 *  3901 - 5100  Happy:     cri/dhit/thit++
   	 *  2101 - 3900  Normal:    -
   	 *  901  - 2100  Tired:     dodge-- (no effect if dodge = 0)
@@ -2983,7 +3040,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	 *  action:
   	 *  
   	 *  caress head:
-  	 *    max 6000
+  	 *    max 8000
   	 *    +10 / 3 ticks (4 ticks if mouse delay 200ms)
   	 *    
   	 *  feed:
@@ -3004,19 +3061,35 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	 *  move:
   	 *    -1 per 10 blocks, min -1  
   	 *  
-  	 */
+  	 *///TODO tweak number
   	protected void updateMorale() {
   		int m = this.getStateMinor(ID.M.Morale);
   		
-  		if(m < 2000) {
-  			this.setStateMinor(ID.M.Morale, m + 10);
+  		//out of combat
+  		if(EntityHelper.checkShipOutOfCombat(this)) {
+  			if(m < 3000) {  //take 9~11 min from 0 to 3000
+  	  			this.setStateMinor(ID.M.Morale, m + 15);
+  	  		}
+  	  		else if(m > 3900) {
+  	  			this.setStateMinor(ID.M.Morale, m - 10);
+  	  		}
   		}
-  		else if(m < 3000) {
-  			this.setStateMinor(ID.M.Morale, m + 3);
+  		//in combat
+  		else {
+  	  		if(m < 900) {
+  	  			this.setStateMinor(ID.M.Morale, m - 8);
+  	  		}
+  	  		else if(m < 1800) {
+  	  			this.setStateMinor(ID.M.Morale, m - 6);
+  	  		}
+  	  		else if(m < 2700) {
+  	  			this.setStateMinor(ID.M.Morale, m - 5);
+  	  		}
+  	  		else if(m > 3900) {
+  	  			this.setStateMinor(ID.M.Morale, m - 10);
+  	  		}
   		}
-  		else if(m > 3900) {
-  			this.setStateMinor(ID.M.Morale, m - 10);
-  		}
+  		
   	}
   	
   	/** apply morale buffs
@@ -3295,8 +3368,21 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		setSensitiveBody(bodyid);
   	}
   	
+  	/** knockback AI target */
+  	public void pushAITarget() {
+  		if(this.aiTarget != null) {
+  			this.aiTarget.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * 0.5F, 
+  	               0.5D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * 0.5F);
+  		
+  			//for other player, send ship state for display
+  			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
+  			CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this.aiTarget, 0, S2CEntitySync.PID.SyncEntity_Motion), point);
+  		}
+	}
+  	
   	/** normal emotes */
   	protected void reactionNormal() {
+  		Random ran = new Random();
   		int m = getStateMinor(ID.M.Morale);
   		int body = getHitBodyID();
   		int baseMorale = (int) ((float)ConfigHandler.baseCaressMorale * 2.5F);
@@ -3314,7 +3400,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	  				applyParticleEmotion(10);  //dizzy
 	  			}
 	  			
-	  			if(getStateMinor(ID.M.Morale) < 6100) {
+	  			if(getStateMinor(ID.M.Morale) < 8100) {
 	  				this.setStateMinor(ID.M.Morale, m + baseMorale * 3 + this.rand.nextInt(baseMorale + 1));
 	  			}
 	  		}
@@ -3358,9 +3444,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 					applyParticleEmotion(10);  //dizzy
 				}
 	  			
-	  			if(getStateMinor(ID.M.Morale) < 6100) {
-	  				this.setStateMinor(ID.M.Morale, m + baseMorale + this.rand.nextInt(baseMorale + 1));
-	  			}
+	  			setStateMinor(ID.M.Morale, m + baseMorale + this.rand.nextInt(baseMorale + 1));
 	  		}
 	  		//other reaction
 	  		else {
@@ -3397,9 +3481,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 					applyParticleEmotion(18);  //sigh
 				}
 	  			
-	  			if(getStateMinor(ID.M.Morale) < 6100) {
-	  				this.setStateMinor(ID.M.Morale, m + baseMorale + this.rand.nextInt(baseMorale + 1));
-	  			}
+	  			setStateMinor(ID.M.Morale, m + baseMorale + this.rand.nextInt(baseMorale + 1));
 	  		}
 	  		//other reaction
 	  		else {
@@ -3442,9 +3524,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	  		if(body == getSensitiveBody()) {
 	  			setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
 	  			applyParticleEmotion(32);  //hmm
+	  			setStateMinor(ID.M.Morale, m + this.rand.nextInt(baseMorale + 1));
 	  			
-	  			if(getStateMinor(ID.M.Morale) < 6100) {
-	  				this.setStateMinor(ID.M.Morale, m + this.rand.nextInt(baseMorale + 1));
+	  			//push target
+	  			if(ran.nextInt(2) == 0) {
+	  				this.pushAITarget();
+				    this.playSound(Reference.MOD_ID+":ship-knockback", ConfigHandler.shipVolume, 1.0F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
 	  			}
 	  		}
 	  		//other reaction
@@ -3456,6 +3541,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				case ID.Body.Face:
 					setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
 					applyParticleEmotion(32);  //hmm
+					//push target
+		  			if(ran.nextInt(4) == 0) {
+		  				this.pushAITarget();
+					    this.playSound(Reference.MOD_ID+":ship-knockback", ConfigHandler.shipVolume, 1.0F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
+		  			}
 					break;
 				default:
 					switch(this.rand.nextInt(5)) {
@@ -3481,10 +3571,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	  		if(body == getSensitiveBody()) {
 	  			setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
 	  			applyParticleEmotion(6);  //angry
-	  			
-	  			if(getStateMinor(ID.M.Morale) < 6100) {
-	  				this.setStateMinor(ID.M.Morale, m - baseMorale * 5 - this.rand.nextInt(baseMorale * 3 + 1));
-	  			}
+	  			setStateMinor(ID.M.Morale, m - baseMorale * 5 - this.rand.nextInt(baseMorale * 3 + 1));
+	  		
+	  			//push target
+  				this.pushAITarget();
+			    this.playSound(Reference.MOD_ID+":ship-knockback", ConfigHandler.shipVolume, 1.0F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
 	  		}
 	  		//other reaction
 	  		else {
@@ -3501,6 +3592,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 					else {
 						applyParticleEmotion(32);  //hmm
 					}
+					
+					//push target
+		  			if(ran.nextInt(2) == 0) {
+		  				this.pushAITarget();
+					    this.playSound(Reference.MOD_ID+":ship-knockback", ConfigHandler.shipVolume, 1.0F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
+		  			}
 					break;
 				default:
 					switch(this.rand.nextInt(5)) {
@@ -3887,7 +3984,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	
   	/** shock emotes */
   	protected void reactionShock() {
-		switch(this.rand.nextInt(6)) {
+		switch(this.rand.nextInt(8)) {
 		case 1:
 			applyParticleEmotion(0);  //drop
 			break;

@@ -444,7 +444,7 @@ public class GuiShipInventory extends GuiContainer {
 				break;
 			}
 			
-			this.drawHoveringText(mouseoverList, 210, 45, this.fontRendererObj);
+			this.drawHoveringText(mouseoverList, 195, 45, this.fontRendererObj);
 		}
 		
 		//draw states value

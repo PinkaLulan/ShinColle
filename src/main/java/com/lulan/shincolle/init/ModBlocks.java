@@ -10,6 +10,8 @@ import com.lulan.shincolle.block.BlockPolymetal;
 import com.lulan.shincolle.block.BlockPolymetalGravel;
 import com.lulan.shincolle.block.BlockPolymetalOre;
 import com.lulan.shincolle.block.BlockSmallShipyard;
+import com.lulan.shincolle.block.BlockVolBlock;
+import com.lulan.shincolle.block.BlockVolCore;
 import com.lulan.shincolle.block.ItemBlockGrudgeHeavy;
 import com.lulan.shincolle.block.ItemBlockResourceBlock;
 import com.lulan.shincolle.reference.Reference;
@@ -27,12 +29,16 @@ public class ModBlocks {
 	public static final Block BlockPolymetalGravel = new BlockPolymetalGravel();
 	public static final Block BlockPolymetalOre = new BlockPolymetalOre();
 	public static final Block BlockSmallShipyard = new BlockSmallShipyard();
+	public static final Block BlockVolBlock = new BlockVolBlock();
+	public static final Block BlockVolCore = new BlockVolCore();
 
 	
 	public static void init() {
 		GameRegistry.registerBlock(BlockDesk, "BlockDesk");
 		GameRegistry.registerBlock(BlockPolymetalOre, "BlockPolymetalOre");
 		GameRegistry.registerBlock(BlockSmallShipyard, "BlockSmallShipyard");
+		GameRegistry.registerBlock(BlockVolBlock, "BlockVolBlock");
+		GameRegistry.registerBlock(BlockVolCore, "BlockVolCore");
 		
 		//reg with itemblock
 		GameRegistry.registerBlock(BlockAbyssium, ItemBlockResourceBlock.class, "BlockAbyssium");
@@ -42,4 +48,6 @@ public class ModBlocks {
 		GameRegistry.registerBlock(BlockGrudgeHeavy, ItemBlockGrudgeHeavy.class, "BlockGrudgeHeavy");
 		
 	}
+	
+	
 }

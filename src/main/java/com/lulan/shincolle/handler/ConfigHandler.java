@@ -32,6 +32,7 @@ public class ConfigHandler {
 	public static int kaitaiAmountSmall = 20;
 	public static int kaitaiAmountLarge = 20;
 	public static int baseCaressMorale = 15;
+	public static int volcoreGrudgeValue = 75;
 	
 	//DESK
 	public static int radarUpdate = 128;	//radar update interval (ticks)
@@ -85,16 +86,16 @@ public class ConfigHandler {
 		//玩家離開多遠時關閉GUI
 		closeGUIDist = config.getInt("Close_GUI_Distance", "general", 64, 2, 64, "Close inventory GUI if ship away from player X blocks");
 		
-		//是否開啟debug mode (spam debug/info message)
+		//是否開啟debug mode
 		debugMode = config.getBoolean("Debug_Mode", "general", false, "Enable debug message (SPAM WARNING)");
 		
 		//grudge掉落率設定
 		dropGrudge = config.getFloat("DropRate_Grudge", "general", 1F, 0F, 64F, "Grudge drop rate (ex: 0.5 = 50% drop 1 grudge, 5.5 = drop 5 grudge + 50% drop 1 grudge)");
 		
-		//是否開啟簡單模式 (spam debug/info message)
+		//是否開啟簡單模式
 		easyMode = config.getBoolean("Easy_Mode", "general", false, "Easy mode: decrease Large Construction resources requirement, increase ammo / grudge gained from items");
 		
-		//是否開啟簡單模式 (spam debug/info message)
+		//是否開啟誤傷模式
 		friendlyFire = config.getBoolean("Friendly_Fire", "general", true, "false: disable damage done by player (except owner)");
 			
 		//解體獲得材料量設定, mob drop類ship限定
@@ -116,8 +117,11 @@ public class ConfigHandler {
 		//team改動cd (ticks)
 		teamCooldown = config.getInt("Battle_Cooldown", "general", 6000, 20, 1728000, "Create/Disband Team Cooldown");
 
-		//是否開啟簡單模式 (spam debug/info message)
+		//是否開啟若本語音
 		useWakamoto = config.getBoolean("Sound_Wakamoto", "general", true, "enable Wakamoto sound for particular ship");
+		
+		//深海火山怨念轉換值
+		volcoreGrudgeValue = config.getInt("VolcanoCore_Grudge", "general", 75, 1, 1000, "fuel value per grudge item in Abyssal Volcano Core");
 		
 		//讀取 ship setting設定
 		timeKeeping = config.getBoolean("Timekeeping", "ship setting", true, "Play timekeeping sound every 1000 ticks (1 minecraft hour)");

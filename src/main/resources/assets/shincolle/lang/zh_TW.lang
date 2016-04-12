@@ -14,11 +14,9 @@ tile.shincolle:BlockPolymetal.name=多金屬磚
 tile.shincolle:BlockPolymetalGravel.name=多金屬礫石
 tile.shincolle:BlockPolymetalOre.name=多金屬礦
 tile.shincolle:BlockSmallShipyard.name=深海熱泉
-
-# Container
-container.shincolle:BlockDesk=深海提督辦公桌
-container.shincolle:SmallShipyard=深海熱泉
-container.shincolle:LargeShipyard=超深海熱漩
+tile.shincolle:BlockLargeShipyard.name=超深海熱漩
+tile.shincolle:BlockVolBlock.name=深海火山方塊
+tile.shincolle:BlockVolCore.name=深海火山核心
 
 # Item
 item.shincolle:AbyssMetal.name=深海金屬
@@ -248,9 +246,15 @@ gui.shincolle:book.chap1.title17=深海提督辦公桌
 gui.shincolle:book.chap1.text17d0=<br><br><br><br><br><br><br><br><br>採用黑曜石打造的§d§n深海提督辦公桌§r§0非常堅固耐用，除了用來處理鎮守府的各項公務外，也可以用來抵擋憤怒秘書艦的砲火。<br><br><br>※添購家具前請先詢問秘書艦以免造成資源管理上的困擾。
 gui.shincolle:book.chap1.text17d1=            使用指南<br><br>§9雷達§0：<br>顯示附近所屬船艦位置以及列表，在列表點選船艦後可進行聯繫等動作。<br><br>§9深海日誌§0：<br>各項物品介紹及紀錄已知船艦訊息。<br><br>§9陣營§0：<br>建立或加入艦隊以開啟PVP模式。<br><br>§9攻擊目標列表§0：<br>調整船艦的攻擊目標類型。
 gui.shincolle:book.chap1.title18=目標設定扳手
-gui.shincolle:book.chap1.text18d0=<br><br><br><br><br><br><br><br><br>§9左鍵:§0<br>§c新增/移除§0目標到§d不可攻擊清單§0。   §4(僅限OP使用)§0<br><br>§9右鍵:§0 顯示§d不可攻擊目標清單§0。
+gui.shincolle:book.chap1.text18d0=<br><br><br><br><br><br><br><br><br>§9左鍵:§0<br>§c新增/移除§0目標到§d不可攻擊清單§0。   §4(僅限OP使用)§0<br><br>§9右鍵:§0<br>顯示§d不可攻擊目標清單§0。
 gui.shincolle:book.chap1.text18d1=§d不可攻擊目標§0不會被範圍攻擊傷害到，也不會被AI設為目標。你可以把繩子的頭、物品框、木船、飛機跟棲艦的坐騎設為不可攻擊目標。<br><br>野生的艦娘攻擊時也會檢查此清單，不過你不能把棲艦跟艦娘設為不可攻擊目標。
-
+gui.shincolle:book.chap1.title19=深海火山方塊
+gui.shincolle:book.chap1.text19d0=<br><br><br><br><br><br><br><br><br>當岩漿被強烈的怨念團塊壓縮後，就會形成高溫高壓的§d§n深海火山方塊§r§0。<br><br>純裝飾用方塊。
+gui.shincolle:book.chap1.text19d1=
+gui.shincolle:book.chap1.title20=深海火山核心
+gui.shincolle:book.chap1.text20d0=<br><br><br><br><br><br><br><br><br>當岩漿被高溫高壓的深海火山方塊再度壓縮後，就會形成超高溫高壓的§d§n深海火山核心§r§0。<br><br>核心會不斷吸收怨念並轉化成某種能量釋放到周圍的環境中，深海棲艦可以吸收這種能量來迅速回復疲勞。
+gui.shincolle:book.chap1.text20d1=將核心§9設置在液體方塊旁邊，供應足夠怨念§0後就會開始釋放能量。若周圍沒有液體方塊則能量可能四散並點燃附近生物。<br><br>核心作用範圍為§9水平距離4格，下2上6格§0，範圍內的棲艦若§9泡在液體方塊中§0就會開始吸收能量。<br><br><br><br>這種能量據說有養顏美容的功效，在深海太太間非常受歡迎。
+ 
 # GUI: Book Text Chap 2
 gui.shincolle:book.chap2.title=建造
 gui.shincolle:book.chap2.title0=建造初級深海棲艦
@@ -310,18 +314,18 @@ gui.shincolle:book.chap3.text11d1=§9/shipupdateowneruid§3 [玩家名稱]<br>§
 gui.shincolle:book.chap3.title12=
 gui.shincolle:book.chap3.text12d0=§9/shipattrs <船艦等級> <HP等級> <ATK等級> <DEF等級> <攻速等級> <跑速等級> <射程等級>§c<br>§d權限:§0 僅限OP<br>§d功能:§0 修改船艦數值<br><br>OP對游標指向的船艦輸入指令後，可以修改目標的等級跟六大屬性的等級。船艦等級可設為1~150，屬性等級可設0~100。
 gui.shincolle:book.chap3.text12d1=§9/shipcleardrop [range]<br>§d權限:§0 僅限OP<br>§d功能:§0 移除船艦掉落物<br><br>移除船艦掉落的紅色怨念球，可指定範圍。預設範圍為128格。<br><br>§9/shipemotes [表情]<br>§d權限:§0 全部玩家<br>§d功能:§0 bbb<br>§d縮寫:§9/em, /emo, /emote, /emotes§0<br><br>顯示表情符號，輸入指令時按下tab鍵會列出所有表情符號名稱。
-gui.shincolle:book.chap3.title13=士氣說明
-gui.shincolle:book.chap3.text13d0=艦太太們的士氣高低會影響其作戰能力。<br><br>士氣分為五個等級，處於較高的兩個等級具有屬性加成效果，而較低的兩個等級則會降低船艦各個屬性。<br><br>士氣等級會以圖示標在船艦物品欄介面的右上角，圖示由左到右為：<br>§d興奮§0，§c快樂§0，§2普通§0，§9疲累§0，§7精疲力盡§0。
-gui.shincolle:book.chap3.text13d1=以下動作會影響士氣變化：<br><br>§9閒置：§0<br>從其他狀態逐漸恢復到§2普通§0狀態。<br><br>§9撫摸：§0<br>增加士氣，可達到§d興奮§0狀態。<br><br>§9餵食：§0<br>增加士氣，可達到§c快樂§0狀態。<br><br>§9移動、攻擊、被攻擊：§0<br>降低士氣。
-gui.shincolle:book.chap3.title14=餵食說明
-gui.shincolle:book.chap3.text14d0=船艦一般不需要餵食，不過主人可以透過餵食來手動補充怨念、彈藥跟提高士氣值。<br><br>對船艦§9右鍵使用§0食物或者怨念、彈藥、深海金屬、多金屬結核會餵食該船艦，並提昇其怨念、士氣、彈藥等。<br><br>在一段時間內能§9餵食的次數有限制§0，餵飽後需隔一段時間才能繼續餵食。
-gui.shincolle:book.chap3.text14d1=§9怨念、食物道具：§0<br>提高士氣、怨念值。<br><br>§9彈藥：§0<br>提高士氣，彈藥值。回復彈藥量會比船艦自動使用多一些。<br><br>§9深海金屬、多金屬結核：§0<br>恢復艦載機數量。
+gui.shincolle:book.chap3.title13=情緒
+gui.shincolle:book.chap3.text13d0=艦太太們的情緒狀態會影響其作戰能力。<br><br>情緒狀態高低分為五個等級，處於較高的兩個等級具有屬性加成效果，而較低的兩個等級則會降低船艦屬性，以圖示標在船艦物品欄介面的右上角。圖示由左到右為：<br>§d興奮§0，§c快樂§0，§2普通§0，§9疲累§0，§7精疲力盡§0。
+gui.shincolle:book.chap3.text13d1=以下動作會影響情緒變化：<br><br>§9閒置：§0<br>從其他狀態逐漸恢復到§2普通§0狀態，脫離戰鬥時回復比較快。<br><br>§9撫摸、擊殺：§0<br>情緒提升最高到§d興奮§0狀態。<br><br>§9餵食：§0<br>情緒提升最高到§c快樂§0狀態。<br><br>§9移動、攻擊、被攻擊：§0<br>降低情緒，有座騎的棲艦砲擊時不會降低。
+gui.shincolle:book.chap3.title14=餵食
+gui.shincolle:book.chap3.text14d0=船艦一般不需要餵食，不過主人可以透過餵食來手動補充怨念、彈藥跟提高情緒。<br><br>對船艦§9右鍵使用§0食物或者怨念、彈藥、深海金屬、多金屬結核會餵食該船艦，並提昇其怨念、彈藥等。<br><br>在一段時間內能§9餵食的次數有限制§0，餵飽後需隔一段時間才能繼續餵食。
+gui.shincolle:book.chap3.text14d1=§9怨念、食物道具：§0<br>提高情緒、怨念值。<br><br>§9彈藥：§0<br>提高情緒，彈藥值。回復彈藥量會比船艦自動使用多一些。<br><br>§9深海金屬、多金屬結核：§0<br>恢復艦載機數量。
  
 # GUI: Book Text Chap 4
 gui.shincolle:book.chap4.title=深海棲艦列表
 gui.shincolle:book.chap4.title0=深海棲艦
 gui.shincolle:book.chap4.text0d0=只要開啟過棲艦的物品欄GUI，該艦就會登錄到圖鑑中。<br><br>§9圖鑑說明：§0<br>§9名稱：§0<br>深海棲艦名稱。<br><br>§9艦種：§0<br>船艦種類，艦種間有攻擊相剋關係。<br><br>§9建造所：§0<br>建造該艦的地方。
-gui.shincolle:book.chap4.text0d1=§9建造加成：§0<br>建造時使用該材料時會讓建造機率提高。數字代表加成計算前，出現機率最高的總材料量。<br>§4範例：§d怨念 (4000)§0 = 總材料量需求4000，若怨念使用1000個，則總材料量需求降為3000。<br><br>§9特殊能力：§0<br>結婚後會出現的能力，可以在AI選項開關該能力。<br><br>§9其他能力：§0<br>其他自帶的能力，通常是被動的屬性加成。
+gui.shincolle:book.chap4.text0d1=§9建造加成：§0<br>建造時使用該材料時會讓建造機率提高。數字代表加成計算前，出現機率最高的總材料量。<br>§4範例：  §d怨念 (4000)§0 =<br>總材料量需求4000，若怨念使用1000個，則總材料量需求降為3000。<br><br>§9特殊能力：§0<br>結婚後會出現的能力，可以在AI選項開關該能力。<br><br>§9其他能力：§0<br>其他自帶的能力，通常是被動的屬性加成。
 gui.shincolle:book.chap4.title1=
 gui.shincolle:book.chap4.text1d0=
 gui.shincolle:book.chap4.text1d1=§9名稱：§0 イ級<br><br>§9艦種：§0 驅逐艦<br><br>§9建造所：§0 深海熱泉<br><br>§9建造加成：§0 怨念 (80)<br><br>§9特殊能力：§0 主人移動速度加成<br><br>§9其他能力：§0 無<br><br>深海的吉祥物代表，廣受深海太太們的喜愛。

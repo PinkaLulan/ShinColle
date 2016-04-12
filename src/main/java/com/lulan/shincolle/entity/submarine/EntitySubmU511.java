@@ -151,7 +151,8 @@ public class EntitySubmU511 extends BasicEntityShipSmall implements IShipInvisib
   		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
   		
   		//morale--
-  		this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - 4);
+  		decrMorale(1);
+  		setCombatTick(this.ticksExisted);
   	
   		//play cannon fire sound at attacker
   		this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));

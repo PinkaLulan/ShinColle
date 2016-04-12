@@ -115,6 +115,9 @@ public class EntityNorthernHime extends BasicEntityShipCV {
 		            			hitEntity.heal(1F + hitEntity.getMaxHealth() * 0.02F + this.getLevel() * 0.1F);
 		            			healCount--;
 			            	}
+	            			
+	            			//grudge--
+	            			this.setStateMinor(ID.M.NumGrudge, this.getStateMinor(ID.M.NumGrudge) - 25);
 		            	}
 		            }
 				}//end heal ability
@@ -298,7 +301,8 @@ public class EntityNorthernHime extends BasicEntityShipCV {
 		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
 		
   		//morale--
-  		this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - 5);
+		decrMorale(2);
+  		setCombatTick(this.ticksExisted);
 		
 		//play attack effect
         applySoundAtAttacker(2, target);

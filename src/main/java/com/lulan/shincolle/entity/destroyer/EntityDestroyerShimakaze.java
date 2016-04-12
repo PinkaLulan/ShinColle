@@ -135,7 +135,8 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
   		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk] * 4);
   		
   		//morale--
-  		this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - 3);
+  		decrMorale(1);
+  		setCombatTick(this.ticksExisted);
 
         //發射者煙霧特效 (招喚連裝砲不使用特效, 但是要發送封包來設定attackTime)
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
@@ -195,7 +196,8 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
 		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
 		
   		//morale--
-  		this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - 5);
+		decrMorale(2);
+  		setCombatTick(this.ticksExisted);
 	
 		//play cannon fire sound at attacker
         this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));

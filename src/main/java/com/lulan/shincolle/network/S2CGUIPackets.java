@@ -18,7 +18,6 @@ import net.minecraft.world.World;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
 import com.lulan.shincolle.entity.renderentity.EntityRenderVortex;
-import com.lulan.shincolle.network.C2SGUIPackets.PID;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
@@ -26,6 +25,7 @@ import com.lulan.shincolle.team.TeamData;
 import com.lulan.shincolle.tileentity.BasicTileEntity;
 import com.lulan.shincolle.tileentity.TileEntityDesk;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
+import com.lulan.shincolle.tileentity.TileEntityVolCore;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
@@ -72,6 +72,7 @@ public class S2CGUIPackets implements IMessage {
 		public static final byte SyncPlayerProp_ShipsInTeam = 11;
 		public static final byte SyncPlayerProp_ColledShip = 12;
 		public static final byte SyncPlayerProp_ColledEquip = 13;
+		public static final byte TileVolCore = 14;
 	}
 	
 	
@@ -91,6 +92,10 @@ public class S2CGUIPackets implements IMessage {
 		else if(tile instanceof TileEntityDesk) {
 			this.tile = tile;
 			this.type = PID.TileDesk;
+		}
+		else if(tile instanceof TileEntityVolCore) {
+			this.tile = tile;
+			this.type = PID.TileVolCore;
 		}
     }
 	
@@ -146,9 +151,9 @@ public class S2CGUIPackets implements IMessage {
 		this.dataList = list;
 	}
 	
-	/**sync int array data
+	/** sync int array data
 	 * 
-	 * 1. (2 parms) sync formation data: 0:teamID, 1:formatID
+	 *  1. (2 parms) sync formation data: 0:teamID, 1:formatID
 	 */
 	public S2CGUIPackets(int type, int...parms) {
         this.type = type;
@@ -229,6 +234,23 @@ public class S2CGUIPackets implements IMessage {
 					data[1] = buf.readInt();
 					data[2] = buf.readInt();
 					EntityHelper.setTileEntityByGUI(tile, ID.B.Desk_Sync, data);
+				}
+				else {
+					buf.clear();
+				}
+			}
+			break;
+		case PID.TileVolCore: //sync tile volcano core
+			{
+				this.recvX = buf.readInt();
+				this.recvY = buf.readInt();
+				this.recvZ = buf.readInt();
+	
+				TileEntityVolCore te = (TileEntityVolCore) world.getTileEntity(recvX, recvY, recvZ);
+				
+				if(te != null) {
+					te.setPowerRemained(buf.readInt());
+					te.isActive = buf.readBoolean();
 				}
 				else {
 					buf.clear();
@@ -529,6 +551,16 @@ public class S2CGUIPackets implements IMessage {
 					buf.writeInt(((TileEntityDesk)tile).guiFunc);
 					break;
 				}
+			}
+			break;
+		case PID.TileVolCore: //sync tile volcano core
+			{
+				buf.writeByte(this.type);
+				buf.writeInt(this.tile.xCoord);
+				buf.writeInt(this.tile.yCoord);
+				buf.writeInt(this.tile.zCoord);
+				buf.writeInt(((TileEntityVolCore)tile).getPowerRemained());
+				buf.writeBoolean(((TileEntityVolCore)tile).isActive);
 			}
 			break;
 		case PID.SyncPlayerProp:	//sync player props

@@ -218,7 +218,7 @@ public class EVENT_BUS_EventHandler {
 	    	if(ent instanceof BasicEntityShip) {	//本體擊殺
 	    		BasicEntityShip ship = (BasicEntityShip) ent;
 	    		ship.addKills();
-	    		ship.setStateMinor(ID.M.Morale, ship.getStateMinor(ID.M.Morale) + 1);
+	    		ship.setStateMinor(ID.M.Morale, ship.getStateMinor(ID.M.Morale) + 2);
 	    	}
 	    	else if(ent instanceof IShipAttackBase) {	//其他召喚物擊殺
 	    		if(((IShipAttackBase) ent).getHostEntity() != null &&

@@ -3,6 +3,12 @@ package com.lulan.shincolle.client.gui;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.util.ResourceLocation;
+
 import com.lulan.shincolle.client.gui.inventory.ContainerLargeShipyard;
 import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -12,12 +18,6 @@ import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 import com.lulan.shincolle.utility.GuiHelper;
 import com.lulan.shincolle.utility.LogHelper;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.util.ResourceLocation;
 
 /**SLOT POSITION
  * output(168,51) fuel bar(9,83 height=63) fuel color bar(208,64)
@@ -29,7 +29,7 @@ public class GuiLargeShipyard extends GuiContainer {
 	private static final ResourceLocation TEXTURE_BG = new ResourceLocation(Reference.TEXTURES_GUI+"GuiLargeShipyard.png");
 	private TileMultiGrudgeHeavy tile;
 	private int xClick, yClick, selectMat, buildType, invMode, xMouse, yMouse;
-	private String name, time, errorMsg, matBuild0, matBuild1, matBuild2, matBuild3, matStock0, matStock1, matStock2, matStock3;
+	private String conName, time, errorMsg, matBuild0, matBuild1, matBuild2, matBuild3, matStock0, matStock1, matStock2, matStock3;
 	private float tickGUI;
 	
 	public GuiLargeShipyard(InventoryPlayer par1, TileMultiGrudgeHeavy par2) {
@@ -38,6 +38,9 @@ public class GuiLargeShipyard extends GuiContainer {
 		this.tickGUI = 0F;
 		this.xSize = 208;
 		this.ySize = 223;
+		
+		//string
+		conName = I18n.format("tile.shincolle:BlockLargeShipyard.name");
 	}
 	
 	//get new mouseX,Y and redraw gui
@@ -53,7 +56,6 @@ public class GuiLargeShipyard extends GuiContainer {
 	@Override
 	protected void drawGuiContainerForegroundLayer(int i, int j) {
 		//取得gui顯示名稱
-		name = I18n.format("container.shincolle:LargeShipyard");
 		time = this.tile.getBuildTimeString();
 		matBuild0 = String.valueOf(this.tile.getMatBuild(0));
 		matBuild1 = String.valueOf(this.tile.getMatBuild(1));
@@ -66,7 +68,7 @@ public class GuiLargeShipyard extends GuiContainer {
 		
 		//畫出字串 parm: string, x, y, color, (是否dropShadow)
 		//畫出該方塊名稱, 位置: x=gui寬度的一半扣掉字串長度一半, y=6, 顏色為4210752
-		this.fontRendererObj.drawString(name, this.xSize / 2 - this.fontRendererObj.getStringWidth(name) / 2, 6, 4210752);
+		this.fontRendererObj.drawString(conName, this.xSize / 2 - this.fontRendererObj.getStringWidth(conName) / 2, 6, 4210752);
 		//畫出倒數時間
 		this.fontRendererObj.drawString(time, 176 - this.fontRendererObj.getStringWidth(time) / 2, 77, 4210752);
 		//畫出提示訊息

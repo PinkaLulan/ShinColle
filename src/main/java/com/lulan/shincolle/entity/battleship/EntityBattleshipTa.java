@@ -127,7 +127,8 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
   		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk] * 4);
   		
   		//morale--
-  		this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - 3);
+  		decrMorale(1);
+  		setCombatTick(this.ticksExisted);
 
         //發射者煙霧特效 (招喚連裝砲不使用特效, 但是要發送封包來設定attackTime)
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);

@@ -18,7 +18,7 @@ public class ModRecipes {
 		ItemStack abyssiumBlock = new ItemStack(ModBlocks.BlockAbyssium);
 		ItemStack abyssiumStack = new ItemStack(ModItems.AbyssMetal,1,0);
 		ItemStack abyssiumStack9 = new ItemStack(ModItems.AbyssMetal,9,0);
-		ItemStack ammo1 = new ItemStack(ModItems.Ammo,1,0); 
+		ItemStack ammo1 = new ItemStack(ModItems.Ammo,1,0);
 		ItemStack ammo8 = new ItemStack(ModItems.Ammo,8,0); 
 		ItemStack ammo9 = new ItemStack(ModItems.Ammo,9,0); 
 		ItemStack ammo16 = new ItemStack(ModItems.Ammo,16,0);
@@ -63,6 +63,8 @@ public class ModRecipes {
 		ItemStack smallshipyardStack = new ItemStack(ModBlocks.BlockSmallShipyard);
 		ItemStack toyplane = new ItemStack(ModItems.ToyAirplane);
 		ItemStack wrench = new ItemStack(ModItems.TargetWrench);
+		ItemStack volblock = new ItemStack(ModBlocks.BlockVolBlock);
+		ItemStack volcore = new ItemStack(ModBlocks.BlockVolCore);
 		
 		//SHAPELESS RECIPE
 		//abyssium material:
@@ -129,6 +131,11 @@ public class ModRecipes {
 		GameRegistry.addRecipe(new ShapedOreRecipe(repairGoddess,"ghg","hdh","ghg",'d',Blocks.diamond_block,'g',grudeBlock,'h',grudeHeavyBlock));
 		//wrench
 		GameRegistry.addRecipe(new ShapedOreRecipe(wrench,"a a","aaa"," a ",'a',abyssiumStack));
+		//volcano block
+		GameRegistry.addRecipe(new ShapedOreRecipe(volblock,"gog","olo","gog",'g',grudeHeavyBlock,'l',Items.lava_bucket,'o',Blocks.obsidian));
+		GameRegistry.addRecipe(new ShapedOreRecipe(volblock,"gog","olo","gog",'g',Blocks.obsidian,'l',Items.lava_bucket,'o',grudeHeavyBlock));
+		GameRegistry.addRecipe(new ShapedOreRecipe(volcore,"gog","olo","gog",'g',volblock,'l',Items.lava_bucket,'o',Blocks.obsidian));
+		GameRegistry.addRecipe(new ShapedOreRecipe(volcore,"gog","olo","gog",'g',Blocks.obsidian,'l',Items.lava_bucket,'o',volblock));
 		
 	}
 

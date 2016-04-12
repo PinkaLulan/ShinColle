@@ -156,6 +156,17 @@ public class EntityFXSpray extends EntityFX {
             this.particleMaxAge = 40;
             this.noClip = false;
         	break;
+        case 12:   //transparent white
+        	this.speedLimit = 0.3D;
+        	this.particleRed = 1F;
+            this.particleGreen = 1F;
+            this.particleBlue = 1F;
+            this.particleAlpha = 0.5F;
+            this.particleScale *= 0.75F;
+            this.pScale = this.particleScale;
+            this.particleMaxAge = 50;
+            this.noClip = false;
+        	break;
         default:  //default = type 0 = 1A red
         	this.speedLimit = 0.3D;
         	this.particleRed = 1F;

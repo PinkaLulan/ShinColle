@@ -271,7 +271,8 @@ public class ID {
 		public static final byte ADMIRALDESK = 3;
 		public static final byte ADMIRALDESK_ITEM = 4;
 		public static final byte FORMATION = 5;
-		public static final byte DEBUGGER = 6;
+		public static final byte DEBUGGER = 6;  //NYI
+		public static final byte VOLCORE = 7;
 	}
 	
 	/** ICON ID for BOOK */
@@ -331,6 +332,8 @@ public class ID {
 		public static final byte WriteBook = 52;
 		public static final byte Compass = 53;
 		public static final byte Wrench = 54;
+		public static final byte VolCore = 55;
+		public static final byte VolBlock = 56;
 	}
 	
 	/**ship state2*/
