@@ -246,16 +246,20 @@ public class EVENT_BUS_EventHandler {
 	    	}
 	    }
 	    else if(event.entityLiving instanceof BasicEntityShip) {
-	    	//show emotes
-	    	((BasicEntityShip)event.entityLiving).applyParticleEmotion(8);
-			//emotes AOE
-			EntityHelper.applyShipEmotesAOE(event.entityLiving.worldObj, event.entityLiving.posX, event.entityLiving.posY, event.entityLiving.posZ, 16D, 6);
+	    	if(!event.entityLiving.worldObj.isRemote) {
+	    		//show emotes
+		    	((BasicEntityShip)event.entityLiving).applyParticleEmotion(8);
+				//emotes AOE
+				EntityHelper.applyShipEmotesAOE(event.entityLiving.worldObj, event.entityLiving.posX, event.entityLiving.posY, event.entityLiving.posZ, 16D, 6);
+	    	}
 	    }
 	    else if(event.entityLiving instanceof BasicEntityShipHostile) {
-	    	//show emotes
-	    	((BasicEntityShipHostile)event.entityLiving).applyParticleEmotion(8);
-			//emotes AOE
-			EntityHelper.applyShipEmotesAOEHostile(event.entityLiving.worldObj, event.entityLiving.posX, event.entityLiving.posY, event.entityLiving.posZ, 48D, 6);
+	    	if(!event.entityLiving.worldObj.isRemote) {
+	    		//show emotes
+		    	((BasicEntityShipHostile)event.entityLiving).applyParticleEmotion(8);
+				//emotes AOE
+				EntityHelper.applyShipEmotesAOEHostile(event.entityLiving.worldObj, event.entityLiving.posX, event.entityLiving.posY, event.entityLiving.posZ, 48D, 6);
+	    	}
 	    }
 	}
 	

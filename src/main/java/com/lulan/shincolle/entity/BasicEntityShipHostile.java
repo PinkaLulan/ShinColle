@@ -565,6 +565,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		super.onUpdate();
 		
 		//both side
+		this.updateArmSwingProgress();
 		//check depth
 		EntityHelper.checkDepth(this);
 		
@@ -982,7 +983,28 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		}
   	}
   	
+  	@Override
+	public float getSwingTime(float partialTick) {
+		return this.getSwingProgress(partialTick);
+	}
   	
+  	@Override
+    protected void updateArmSwingProgress() {
+        int swingMaxTick = 6;
+        if(this.isSwingInProgress){
+            ++this.swingProgressInt;
+            
+            if(this.swingProgressInt >= swingMaxTick) {
+                this.swingProgressInt = 0;
+                this.isSwingInProgress = false;
+            }
+        }
+        else {
+            this.swingProgressInt = 0;
+        }
 
+        this.swingProgress = (float)this.swingProgressInt / (float)swingMaxTick;
+    }
+  	
 
 }

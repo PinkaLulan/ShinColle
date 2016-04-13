@@ -9,6 +9,8 @@ import com.lulan.shincolle.entity.battleship.EntityBattleshipRe;
 import com.lulan.shincolle.entity.battleship.EntityBattleshipTa;
 import com.lulan.shincolle.entity.battleship.EntityBattleshipYMT;
 import com.lulan.shincolle.entity.battleship.EntityBattleshipYMTBoss;
+import com.lulan.shincolle.entity.carrier.EntityCarrierAkagi;
+import com.lulan.shincolle.entity.carrier.EntityCarrierAkagiBoss;
 import com.lulan.shincolle.entity.carrier.EntityCarrierKaga;
 import com.lulan.shincolle.entity.carrier.EntityCarrierKagaBoss;
 import com.lulan.shincolle.entity.carrier.EntityCarrierWo;
@@ -88,6 +90,8 @@ public class ModEntity {
 		createEntity(EntityBattleshipYMTBoss.class, "EntityBattleshipYMTBoss", modEntityID++);
 		createEntity(EntityBattleshipRe.class, "EntityBattleshipRe", modEntityID++);
 		createEntity(EntityBattleshipTa.class, "EntityBattleshipTa", modEntityID++);
+		createEntity(EntityCarrierAkagi.class, "EntityCarrierAkagi", modEntityID++);
+		createEntity(EntityCarrierAkagiBoss.class, "EntityCarrierAkagiBoss", modEntityID++);
 		createEntity(EntityCarrierKaga.class, "EntityCarrierKaga", modEntityID++);
 		createEntity(EntityCarrierKagaBoss.class, "EntityCarrierKagaBoss", modEntityID++);
 		createEntity(EntityCarrierWD.class, "EntityCarrierWD", modEntityID++);

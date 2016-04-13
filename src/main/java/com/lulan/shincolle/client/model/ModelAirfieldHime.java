@@ -14,6 +14,7 @@ import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
 
 /**
@@ -476,6 +477,7 @@ public class ModelAirfieldHime extends ModelBase implements IModelEmotion {
 	    this.ArmLeft01.rotateAngleZ = -0.1F;
 	    this.ArmLeft02.rotateAngleZ = 1.15F;
 		this.ArmRight01.rotateAngleX = -1.3F;
+		this.ArmRight01.rotateAngleY = 0F;
 		this.ArmRight01.rotateAngleZ = 0.1F;
 		this.ArmRight02.rotateAngleZ = -1.4F;
 		//leg
@@ -566,55 +568,9 @@ public class ModelAirfieldHime extends ModelBase implements IModelEmotion {
 	    if(ent.getIsSprinting() || f1 > 0.9F) {	//奔跑動作
 	    	//沒有特殊跑步動作
   		}
-	    else {
-	    	startEmo2 = ent.getHeadTiltTick();
-	    	
-	    	//頭部傾斜動作, 只在奔跑以外時roll
-	    	if(startEmo2 > 0) {
-	    		--startEmo2;
-	    		ent.setHeadTiltTick(startEmo2);
-	    	}
-	    	
-		    if(startEmo2 <= 0) {
-		    	startEmo2 = 360;
-		    	ent.setHeadTiltTick(startEmo2);	//cd = 6sec  	
-		    	
-		    	if(rand.nextInt(3) == 0) {
-		    		ent.setStateFlag(ID.F.HeadTilt, true);
-		    	}
-		    	else {
-		    		ent.setStateFlag(ID.F.HeadTilt, false);
-		    	}
-		    }
-	    }//end if sprint
 	    
-	    //roll頭部傾斜表情
-	    if(ent.getStateFlag(ID.F.HeadTilt)) {
-	    	if(ent.getStateEmotion(ID.S.Emotion2) == 1) {	//之前已經傾斜, 則繼續傾斜
-	    		this.Head.rotateAngleZ = -0.24F;
-	    	}
-	    	else {
-		    	this.Head.rotateAngleZ = (360 - startEmo2) * -0.03F;
-		    	
-		    	if(this.Head.rotateAngleZ < -0.24F) {
-		    		ent.setStateEmotion(ID.S.Emotion2, 1, false);
-		    		this.Head.rotateAngleZ = -0.24F;
-		    	}
-	    	}	
-	    }
-	    else {
-	    	if(ent.getStateEmotion(ID.S.Emotion2) == 0) {	//維持之前角度
-	    		this.Head.rotateAngleZ = 0F;
-	    	}
-	    	else {
-		    	this.Head.rotateAngleZ = -0.24F + (360 - startEmo2) * 0.03F;
-		    	
-		    	if(this.Head.rotateAngleZ > 0F) {
-		    		this.Head.rotateAngleZ = 0F;
-		    		ent.setStateEmotion(ID.S.Emotion2, 0, false);
-		    	}
-	    	}
-	    }
+	    //head tilt angle
+	    this.Head.rotateAngleZ = EmotionHelper.getHeadTiltAngle(ent, f2);
 	    
 	    //移動頭髮避免穿過身體
 	    headZ = this.Head.rotateAngleZ * -0.5F;
@@ -903,6 +859,21 @@ public class ModelAirfieldHime extends ModelBase implements IModelEmotion {
 	  	this.HairL02.rotateAngleX = angleX * 0.02F + headX + 0.26F;
 	  	this.HairR01.rotateAngleX = angleX * 0.02F + headX - 0.26F;
 	  	this.HairR02.rotateAngleX = angleX * 0.02F + headX + 0.26F;
+	  	
+	  	//swing arm
+	  	float f6 = ent.getSwingTime(f2 % 1F);
+	  	if(f6 != 0F) {
+	  		float f7 = MathHelper.sin(f6 * f6 * (float)Math.PI);
+	        float f8 = MathHelper.sin(MathHelper.sqrt_float(f6) * (float)Math.PI);
+	        this.ArmRight01.rotateAngleX = -0.3F;
+			this.ArmRight01.rotateAngleY = 0F;
+			this.ArmRight01.rotateAngleZ = -0.1F;
+	        this.ArmRight01.rotateAngleX += -f8 * 80.0F * Values.N.RAD_MUL;
+	        this.ArmRight01.rotateAngleY += -f7 * 20.0F * Values.N.RAD_MUL;
+	        this.ArmRight01.rotateAngleZ += -f8 * 20.0F * Values.N.RAD_MUL;
+	        this.ArmRight02.rotateAngleX = 0F;
+	        this.ArmRight02.rotateAngleZ = 0F;
+	  	}
 	  	
 	    //leg motion
 	    this.LegLeft01.rotateAngleX = addk1;
