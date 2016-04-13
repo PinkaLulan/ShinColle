@@ -2,6 +2,8 @@ package com.lulan.shincolle.utility;
 
 import java.util.Random;
 
+import net.minecraft.util.MathHelper;
+
 import com.lulan.shincolle.client.model.IModelEmotion;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.reference.ID;
@@ -60,6 +62,70 @@ public class EmotionHelper {
         	}
     		break;
     	}	
+    }
+    
+    /** 歪頭動作 */
+    public static float getHeadTiltAngle(IShipEmotion ent, float f2) {
+    	int cd = ent.getTickExisted() - ent.getHeadTiltTick();
+    	float maxAngle = -0.27F;
+    	float partTick = f2 - (int)f2 + cd;
+    	
+    	//check head tilt CD
+    	if(cd > 70 + rand.nextInt(5)) {
+    		//update head tilt time
+    		ent.setHeadTiltTick(ent.getTickExisted());
+    		partTick = f2 - (int)f2;
+    		
+    		//roll head tilt state
+			if(rand.nextInt(10) > 4) {
+				ent.setStateFlag(ID.F.HeadTilt, true);
+	    	}
+	    	else {
+	    		ent.setStateFlag(ID.F.HeadTilt, false);
+	    	}
+		}
+    	
+    	//歪頭flag
+	    if(ent.getStateFlag(ID.F.HeadTilt)) {
+	    	//之前已經完成歪頭, 則保持歪頭
+	    	if(ent.getStateEmotion(ID.S.Emotion2) > 0) {
+	    		return maxAngle;
+	    	}
+	    	//尚未歪頭, 計算角度
+	    	else {
+	    		float f = MathHelper.sin(partTick * 0.1F * 1.5708F) * maxAngle;
+//	    		float f = partTick * 0.1F * maxAngle;
+
+	    		//已達最大角度
+	    		if(f - 0.03F < maxAngle || partTick > 10F) {
+	    			//標記為歪頭狀態
+	    			ent.setStateEmotion(ID.S.Emotion2, 1, false);
+	    			f = maxAngle;
+	    		}
+	    		
+	    		return f;
+	    	}
+	    }
+	    else {
+	    	//尚未歪頭, 保持原狀
+	    	if(ent.getStateEmotion(ID.S.Emotion2) <= 0) {
+	    		return 0F;
+	    	}
+	    	//已經歪頭, 計算角度
+	    	else {
+	    		float f = (1F - MathHelper.sin(partTick * 0.2F * 1.5708F)) * maxAngle;
+//	    		float f = (1F - partTick * 0.2F) * maxAngle;
+
+	    		//已達0度
+		    	if(f + 0.03F > 0F || partTick > 8F) {
+		    		//標記為無歪頭狀態
+	    			ent.setStateEmotion(ID.S.Emotion2, 0, false);
+	    			f = 0F;
+		    	}
+		    	
+		    	return f;
+	    	}
+	    }
     }
     
     /** 眨眼動作, this emotion is CLIENT ONLY, no sync packet required */

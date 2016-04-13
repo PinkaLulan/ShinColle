@@ -310,7 +310,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		//idle AI
 //		this.tasks.addTask(21, new EntityAIOpenDoor(this, true));	//0000 //TODO ship door AI
 		this.tasks.addTask(23, new EntityAIShipFloating(this));		//0111
-		this.tasks.addTask(24, new EntityAIShipWatchClosest(this, EntityPlayer.class, 6F, 0.08F)); //0010
+		this.tasks.addTask(24, new EntityAIShipWatchClosest(this, EntityPlayer.class, 6F, 0.06F)); //0010
 		this.tasks.addTask(25, new EntityAIShipWander(this, 0.8D));	//0111
 		this.tasks.addTask(25, new EntityAILookIdle(this));			//0011
 	}
@@ -448,6 +448,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	@Override
 	public int getAttackTime() {
 		return this.attackTime;
+	}
+	
+	@Override
+	public float getSwingTime(float partialTick) {
+		return this.getSwingProgress(partialTick);
 	}
 	
 	@Override
@@ -1733,7 +1738,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		super.onUpdate();
 		EntityHelper.checkDepth(this);	//both side
 		
-		//both side, CD--
+		/** BOTH SIDE */
+		updateArmSwingProgress();
 		if(this.StartSoundHurt > 0) this.StartSoundHurt--;
 		if(this.EmotionTicks[4] > 0) this.EmotionTicks[4]--;
 		
@@ -1825,6 +1831,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				else {
 					this.setStateMinor(ID.M.PlayerEID, -1);
 				}
+				
 			}//end every 32 ticks
 		}//end client side
 		
@@ -1844,9 +1851,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	public void onLivingUpdate() {
         super.onLivingUpdate();
         
-        //debug
+        //debug TODO
 //      	LogHelper.info("DEBUG : ship onUpdate: flag: side: "+this.worldObj.isRemote+" "+EffectEquip[ID.EF_CRI]);
-      	
+
         //server side check
         if((!worldObj.isRemote)) {
         	//update target
@@ -1924,7 +1931,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         		                }
         	                }
         	            }
-               		
+//this.swingItem();//TODO               		
                 		//check every 128 ticks
                     	if(ticksExisted % 128 == 0) {
                     		//delayed init, waiting for player entity loaded
@@ -1932,7 +1939,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                     			setUpdateFlag(ID.FU.FormationBuff, true);  //set update formation buff
                     			this.initWaitAI = true;
                     		}
-                    		
+
                     		//check owner online
                     		if(this.getPlayerUID() > 0) {
                     			//get owner
@@ -1994,6 +2001,25 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	}//end timekeeping
         	
         }//end if(server side)
+    }
+	
+	@Override
+    protected void updateArmSwingProgress() {
+        int swingMaxTick = 6;
+        
+        if(this.isSwingInProgress){
+            ++this.swingProgressInt;
+            
+            if(this.swingProgressInt >= swingMaxTick) {
+                this.swingProgressInt = 0;
+                this.isSwingInProgress = false;
+            }
+        }
+        else {
+            this.swingProgressInt = 0;
+        }
+
+        this.swingProgress = (float)this.swingProgressInt / (float)swingMaxTick;
     }
 
 	//timekeeping method
@@ -3061,7 +3087,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	 *  move:
   	 *    -1 per 10 blocks, min -1  
   	 *  
-  	 *///TODO tweak number
+  	 */
   	protected void updateMorale() {
   		int m = this.getStateMinor(ID.M.Morale);
   		
@@ -3350,20 +3376,15 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   			bodyid = ID.Body.UBelly;
   		}
   		else if(ran > 65) {  //15%
-  			//second roll
-  			if(this.rand.nextInt(3) == 0) {
-  				bodyid = ID.Body.Butt;
-  			}
-  			else {
-  				bodyid = ID.Body.Chest;
-  			}
+  			bodyid = ID.Body.Chest;
   		}
   		else {  //55%
   			bodyid = 23 + this.rand.nextInt(8);  //roll 23~30
-  			
-  			//if HEAD/BACK reroll to ubelly
-  			if(bodyid == ID.Body.Head || bodyid == ID.Body.Back) bodyid = ID.Body.UBelly;
   		}
+  		
+  		//if HEAD/BACK reroll to ubelly
+		if(bodyid == ID.Body.Head || bodyid == ID.Body.Back) bodyid = ID.Body.UBelly;
+		if(bodyid == ID.Body.Arm || bodyid == ID.Body.Butt) bodyid = ID.Body.Chest;
   		
   		setSensitiveBody(bodyid);
   	}
@@ -3371,6 +3392,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	/** knockback AI target */
   	public void pushAITarget() {
   		if(this.aiTarget != null) {
+  			//swing arm
+  			this.swingItem();
+  			
+  			//push target
   			this.aiTarget.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * 0.5F, 
   	               0.5D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * 0.5F);
   		
@@ -3482,6 +3507,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				}
 	  			
 	  			setStateMinor(ID.M.Morale, m + baseMorale + this.rand.nextInt(baseMorale + 1));
+	  			
+	  			//push target
+	  			if(ran.nextInt(6) == 0) {
+	  				this.pushAITarget();
+				    this.playSound(Reference.MOD_ID+":ship-knockback", ConfigHandler.shipVolume, 1.0F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
+	  			}
 	  		}
 	  		//other reaction
 	  		else {
@@ -3496,6 +3527,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 					else {
 						applyParticleEmotion(27);  //-w-
 					}
+					
+					//push target
+		  			if(ran.nextInt(8) == 0) {
+		  				this.pushAITarget();
+					    this.playSound(Reference.MOD_ID+":ship-knockback", ConfigHandler.shipVolume, 1.0F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
+		  			}
 					break;
 				default:
 					switch(this.rand.nextInt(7)) {
@@ -3530,6 +3567,19 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	  			if(ran.nextInt(2) == 0) {
 	  				this.pushAITarget();
 				    this.playSound(Reference.MOD_ID+":ship-knockback", ConfigHandler.shipVolume, 1.0F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
+	  			}
+	  			else if(this.aiTarget != null && ran.nextInt(8) == 0) {
+	  				switch(ran.nextInt(3)) {
+			    	case 0:
+			    		attackEntityWithAmmo(this.aiTarget);
+			    		break;
+			    	case 1:
+			    		attackEntityWithHeavyAmmo(this.aiTarget);
+			    		break;
+			    	default:
+			    		attackEntityAsMob(this.aiTarget);
+			    		break;
+			    	}
 	  			}
 	  		}
 	  		//other reaction
@@ -3571,11 +3621,25 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	  		if(body == getSensitiveBody()) {
 	  			setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
 	  			applyParticleEmotion(6);  //angry
-	  			setStateMinor(ID.M.Morale, m - baseMorale * 5 - this.rand.nextInt(baseMorale * 3 + 1));
-	  		
+	  			setStateMinor(ID.M.Morale, m - baseMorale * 10 - this.rand.nextInt(baseMorale * 5 + 1));
+	  			
 	  			//push target
   				this.pushAITarget();
 			    this.playSound(Reference.MOD_ID+":ship-knockback", ConfigHandler.shipVolume, 1.0F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
+			    
+			    if(this.aiTarget != null && ran.nextInt(3) == 0) {
+			    	switch(ran.nextInt(3)) {
+			    	case 0:
+			    		attackEntityWithAmmo(this.aiTarget);
+			    		break;
+			    	case 1:
+			    		attackEntityWithHeavyAmmo(this.aiTarget);
+			    		break;
+			    	default:
+			    		attackEntityAsMob(this.aiTarget);
+			    		break;
+			    	}
+	  			}
 	  		}
 	  		//other reaction
 	  		else {
@@ -3597,6 +3661,19 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		  			if(ran.nextInt(2) == 0) {
 		  				this.pushAITarget();
 					    this.playSound(Reference.MOD_ID+":ship-knockback", ConfigHandler.shipVolume, 1.0F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
+		  			}
+		  			else if(this.aiTarget != null && ran.nextInt(5) == 0) {
+		  				switch(ran.nextInt(3)) {
+				    	case 0:
+				    		attackEntityWithAmmo(this.aiTarget);
+				    		break;
+				    	case 1:
+				    		attackEntityWithHeavyAmmo(this.aiTarget);
+				    		break;
+				    	default:
+				    		attackEntityAsMob(this.aiTarget);
+				    		break;
+				    	}
 		  			}
 					break;
 				default:
@@ -3637,6 +3714,25 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			else {
 				applyParticleEmotion(22);  //x
 			}
+  			
+  			//push target
+  			if(rand.nextInt(2) == 0) {
+  				this.pushAITarget();
+			    this.playSound(Reference.MOD_ID+":ship-knockback", ConfigHandler.shipVolume, 1.0F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
+  			}
+  			else if(this.aiTarget != null && rand.nextInt(4) == 0) {
+  				switch(rand.nextInt(3)) {
+		    	case 0:
+		    		attackEntityWithAmmo(this.aiTarget);
+		    		break;
+		    	case 1:
+		    		attackEntityWithHeavyAmmo(this.aiTarget);
+		    		break;
+		    	default:
+		    		attackEntityAsMob(this.aiTarget);
+		    		break;
+		    	}
+  			}
   		}
   		//other reaction
   		else {
@@ -3652,6 +3748,25 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				else {
 					applyParticleEmotion(5);  //...
 				}
+				
+				//push target
+	  			if(rand.nextInt(4) == 0) {
+	  				this.pushAITarget();
+				    this.playSound(Reference.MOD_ID+":ship-knockback", ConfigHandler.shipVolume, 1.0F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
+	  			}
+	  			else if(this.aiTarget != null && rand.nextInt(8) == 0) {
+	  				switch(rand.nextInt(3)) {
+			    	case 0:
+			    		attackEntityWithAmmo(this.aiTarget);
+			    		break;
+			    	case 1:
+			    		attackEntityWithHeavyAmmo(this.aiTarget);
+			    		break;
+			    	default:
+			    		attackEntityAsMob(this.aiTarget);
+			    		break;
+			    	}
+	  			}
 				break;
 			default:
 				switch(this.rand.nextInt(7)) {

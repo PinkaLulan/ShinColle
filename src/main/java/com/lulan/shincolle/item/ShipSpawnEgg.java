@@ -121,7 +121,9 @@ public class ShipSpawnEgg extends Item {
   		list.add(new ItemStack(item, 1, ID.Ship.SubmarineRo500+2));
   		list.add(new ItemStack(item, 1, ID.Ship.SubmarineRo500+2002));		//mob entity
   		list.add(new ItemStack(item, 1, ID.Ship.CarrierKaga+2));
-  		list.add(new ItemStack(item, 1, ID.Ship.CarrierKaga+2002));		//mob entity
+  		list.add(new ItemStack(item, 1, ID.Ship.CarrierKaga+2002));			//mob entity
+  		list.add(new ItemStack(item, 1, ID.Ship.CarrierAkagi+2));
+  		list.add(new ItemStack(item, 1, ID.Ship.CarrierAkagi+2002));		//mob entity
   	}
   	
   	/** VANILLA SPAWN METHOD edited by Jabelar

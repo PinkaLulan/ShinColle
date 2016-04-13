@@ -320,6 +320,9 @@ gui.shincolle:book.chap3.text13d1=§9Idle:§0<br>Recover morale to §2NORMAL§0 
 gui.shincolle:book.chap3.title14=Feeding
 gui.shincolle:book.chap3.text14d0=Generally the ship don't need to feed, but you can feed ship to increase morale and grudge value manually.<br><br>§9Right click§0 on ship with food or some items to feed the ship.<br><br>You can only feed a certain times in a period of time.
 gui.shincolle:book.chap3.text14d1=§9Grudge, Food:§0<br>Increase grudge, morale value.<br><br>§9Ammo:§0<br>Increase morale and ammo value a little more than automatically consumed by ship.<br><br>§9Abyssium, Polymetal:§0<br>Increase number of aircraft for CV.
+gui.shincolle:book.chap3.title15=Caress
+gui.shincolle:book.chap3.text15d0=The owner can caress ship to reward or simply harass her. A correct caress can §9improve the shop's morale§0 effectively.<br><br>To caress ship, held §dWo-Class Command Scepter§0 and press §9CTRL§0 to change to caress mode, and §9Right Click§0 on the ship.
+gui.shincolle:book.chap3.text15d1=Caress target is determined by the cross and the relative face angle between owner and ship.<br><br>The target are: top, head, face, neck, chest, belly, under belly, leg, arm, back.<br><br>Different individuals have different sensitive part, be careful the reaction when caressing.
 
 # GUI: Book Text Chap 4
 gui.shincolle:book.chap4.title=Ship List
@@ -394,7 +397,7 @@ gui.shincolle:book.chap5.text6d0=
 gui.shincolle:book.chap5.text6d1=§9Name:§0 Kaga<br><br>§9Class:§0 Kaga Class CV<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 none<br><br>The aircraft carrier with a lots aircraft to make you feel fretful. 
 gui.shincolle:book.chap5.title7=
 gui.shincolle:book.chap5.text7d0=
-gui.shincolle:book.chap5.text7d1=§9Name:§0 Akagi<br><br>§9Class:§0 Akagi Class CV<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 none<br><br>
+gui.shincolle:book.chap5.text7d1=§9Name:§0 Akagi<br><br>§9Class:§0 Akagi Class CV<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 none<br><br>It's said that all Shinkeiseikan will be eaten if Akagi appear.
 
 # GUI: Book Text Chap 6
 gui.shincolle:book.chap6.title=Equipments List

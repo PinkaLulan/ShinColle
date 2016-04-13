@@ -470,55 +470,9 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion {
 	    if(ent.getIsSprinting() || f1 > 0.9F) {	//奔跑動作
 	    	//沒有特殊跑步動作
   		}
-	    else {
-	    	startEmo2 = ent.getHeadTiltTick();
-	    	
-	    	//頭部傾斜動作, 只在奔跑以外時roll
-	    	if(startEmo2 > 0) {
-	    		--startEmo2;
-	    		ent.setHeadTiltTick(startEmo2);
-	    	}
-	    	
-		    if(startEmo2 <= 0) {
-		    	startEmo2 = 360;
-		    	ent.setHeadTiltTick(startEmo2);	//cd = 6sec  	
-		    	
-		    	if(rand.nextInt(3) == 0) {
-		    		ent.setStateFlag(ID.F.HeadTilt, true);
-		    	}
-		    	else {
-		    		ent.setStateFlag(ID.F.HeadTilt, false);
-		    	}
-		    }
-	    }//end if sprint
-	    
-	    //roll頭部傾斜表情
-	    if(ent.getStateFlag(ID.F.HeadTilt)) {
-	    	if(ent.getStateEmotion(ID.S.Emotion2) == 1) {	//之前已經傾斜, 則繼續傾斜
-	    		this.Head.rotateAngleZ = -0.24F;
-	    	}
-	    	else {
-		    	this.Head.rotateAngleZ = (360 - startEmo2) * -0.03F;
-		    	
-		    	if(this.Head.rotateAngleZ < -0.24F) {
-		    		ent.setStateEmotion(ID.S.Emotion2, 1, false);
-		    		this.Head.rotateAngleZ = -0.24F;
-		    	}
-	    	}	
-	    }
-	    else {
-	    	if(ent.getStateEmotion(ID.S.Emotion2) == 0) {	//維持之前角度
-	    		this.Head.rotateAngleZ = 0F;
-	    	}
-	    	else {
-		    	this.Head.rotateAngleZ = -0.24F + (360 - startEmo2) * 0.03F;
-		    	
-		    	if(this.Head.rotateAngleZ > 0F) {
-		    		this.Head.rotateAngleZ = 0F;
-		    		ent.setStateEmotion(ID.S.Emotion2, 0, false);
-		    	}
-	    	}
-	    }
+
+	    //head tilt angle
+	    this.Head.rotateAngleZ = EmotionHelper.getHeadTiltAngle(ent, f2);
 	    
 	    //移動頭髮避免穿過身體
 	    headZ = this.Head.rotateAngleZ * -0.5F;
