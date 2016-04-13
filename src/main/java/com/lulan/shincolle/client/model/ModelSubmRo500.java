@@ -292,17 +292,17 @@ public class ModelSubmRo500 extends ModelBase implements IModelEmotion {
     	GL11.glEnable(GL11.GL_BLEND);
     	GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
     	GL11.glScalef(0.36F, 0.36F, 0.36F);
-
+    	GL11.glTranslatef(0F, 2.7F, 0F);
+    	
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
     	this.BodyMain.render(f5);
-    	GL11.glDisable(GL11.GL_BLEND);
     	
-    	//亮度設為240
     	GL11.glDisable(GL11.GL_LIGHTING);
     	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
     	this.GlowBodyMain.render(f5);
     	GL11.glEnable(GL11.GL_LIGHTING);
     	
+    	GL11.glDisable(GL11.GL_BLEND);
     	GL11.glPopMatrix();
     }
     
@@ -316,8 +316,13 @@ public class ModelSubmRo500 extends ModelBase implements IModelEmotion {
 		showEquip(ent);
 		
 		EmotionHelper.rollEmotion(this, ent);
-		  
-		motionHumanPos(f, f1, f2, f3, f4, ent);
+
+		if(ent.getStateFlag(ID.F.NoFuel)) {
+			motionStopPos(f, f1, f2, f3, f4, ent);
+		}
+		else {
+			motionHumanPos(f, f1, f2, f3, f4, ent);
+		}
 		
 		setGlowRotation();
     }
@@ -335,6 +340,41 @@ public class ModelSubmRo500 extends ModelBase implements IModelEmotion {
 		this.GlowHead.rotateAngleZ = this.Head.rotateAngleZ;
     }
     
+    private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {
+    	GL11.glTranslatef(0F, 2.1F, 0F);
+    	setFace(4);
+    	
+  	    //頭部
+	  	this.Head.rotateAngleX = -0.35F;
+	  	this.Head.rotateAngleY = 0F;
+	  	//body
+  	    this.Ahoke.rotateAngleY = 0.5236F;
+  	    this.BodyMain.rotateAngleX = -1.6F;
+	  	//hair
+	  	this.Hair01.rotateAngleX = 0.3F;
+	    //arm 
+	  	this.ArmLeft01.rotateAngleX = 3.1F;
+    	this.ArmLeft01.rotateAngleZ = 0.7F;
+		this.ArmRight01.rotateAngleX = 3.1F;
+    	this.ArmRight01.rotateAngleZ = -0.7F;
+    	this.ArmLeft02.rotateAngleX = 0F;
+    	this.ArmRight02.rotateAngleX = 0F;
+		//leg
+    	this.LegLeft01.rotateAngleX = -0.2F;
+		this.LegLeft01.rotateAngleY = 0F;
+		this.LegLeft01.rotateAngleZ = -0.1F;
+		this.LegRight01.rotateAngleX = -0.2F;
+		this.LegRight01.rotateAngleY = 0F;
+		this.LegRight01.rotateAngleZ = 0.1F;
+		this.LegLeft02.rotateAngleX = 0F;
+    	this.LegRight02.rotateAngleX = 0F;
+    	//equip
+    	this.EquipBase1.offsetZ = 0F;
+    	this.EquipBase2.offsetY = 0F;
+    	this.EquipBase2.rotateAngleX = 0.3142F;
+		
+    }
+    
     //pose
   	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {   
   		float angleX = MathHelper.cos(f2*0.08F);
@@ -342,8 +382,6 @@ public class ModelSubmRo500 extends ModelBase implements IModelEmotion {
   		float angleAdd2 = MathHelper.cos(f * 0.7F + 3.1415927F) * f1;
   		float addk1 = 0;
   		float addk2 = 0;
-  		
-    	GL11.glTranslatef(0F, 2.7F, 0F);
   		
   		//leg move parm
   		addk1 = angleAdd1 - 0.122F;

@@ -101,7 +101,6 @@ public class EntityFXTexts extends EntityFX {
      */
     @Override
 	public void onUpdate() {
-    	//this is both side particle
 		this.prevPosX = this.posX;
         this.prevPosY = this.posY;
         this.prevPosZ = this.posZ;

@@ -88,7 +88,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
   			}
 			
   			if(this.ticksExisted % 4 == 0) {
-  				if(getStateEmotion(ID.S.State) >= ID.State.EQUIP01 && !this.isSitting()) {
+  				if(getStateEmotion(ID.S.State) >= ID.State.EQUIP01 && !isSitting() && !getStateFlag(ID.F.NoFuel)) {
   					double smokeY = posY + 1.6D;
   					
   					//計算煙霧位置
@@ -149,7 +149,8 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
 		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
 		
   		//morale--
-  		this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - 1);
+		decrMorale(2);
+  		setCombatTick(this.ticksExisted);
 		
 		//heavy ammo--
         if(!decrAmmoNum(1, this.getAmmoConsumption())) {
@@ -291,6 +292,9 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
     		
         	this.setStateEmotion(ID.S.Phase, atkPhase, true);
         }
+        
+        //show emotes
+      	applyEmotesReaction(3);
         
         return isTargetHurt;
 	}

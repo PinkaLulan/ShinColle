@@ -15,6 +15,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -39,6 +40,7 @@ import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
+import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
@@ -73,7 +75,7 @@ public class FML_COMMON_EventHandler {
 			
 			if(extProps != null && !event.player.worldObj.isRemote) {
 				boolean syncTeamList = false;
-				
+
 				//every 32 ticks
 				if(event.player.ticksExisted > 0 && event.player.ticksExisted % 32 == 0) {
 					/** check player UID

@@ -2,10 +2,6 @@ package com.lulan.shincolle.utility;
 
 import java.util.Random;
 
-import com.lulan.shincolle.proxy.ClientProxy;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
@@ -18,6 +14,11 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.BlockFluidBase;
 import net.minecraftforge.fluids.IFluidBlock;
+
+import com.lulan.shincolle.proxy.ClientProxy;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockHelper {
 	
@@ -134,6 +135,21 @@ public class BlockHelper {
 	    if(block instanceof BlockLiquid || block instanceof IFluidBlock || block instanceof BlockFluidBase) {
 	        return true;
 	    }		
+		return false;
+	}
+	
+	/** check nearby block is liquid */
+	public static boolean checkBlockNearbyHasLiquid(World world, int x, int y, int z, int range) {
+		for(int ix = -range; ix <= range; ix++) {
+			for(int iy = -range; iy <= range; iy++) {
+				for(int iz = -range; iz <= range; iz++) {
+					if(checkBlockIsLiquid(world.getBlock(x+ix, y+iy, z+iz))) {
+						return true;
+					}
+				}
+			}
+		}
+		
 		return false;
 	}
 	

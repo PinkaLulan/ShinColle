@@ -148,7 +148,8 @@ public class EntitySubmU511Mob extends BasicEntityShipHostile implements IShipIn
   		EntityAbyssMissile missile = new EntityAbyssMissile(this.worldObj, this, 
           		tarX, tarY+target.height*0.2F, tarZ, launchPos, atk, kbValue, isDirect, 0.08F);
   		this.worldObj.spawnEntityInWorld(missile);
-          
+  		//show emotes
+		applyEmotesReaction(3);
   		return true;
 	}
   	
@@ -202,6 +203,9 @@ public class EntitySubmU511Mob extends BasicEntityShipHostile implements IShipIn
         		tarX, tarY+target.height*0.2F, tarZ, launchPos, atkHeavy, kbValue, isDirect, -1F);    
         this.worldObj.spawnEntityInWorld(missile1);
         
+        //show emotes
+		applyEmotesReaction(3);
+		
         return true;
 	}
   	

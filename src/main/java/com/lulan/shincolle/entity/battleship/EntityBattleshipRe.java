@@ -5,6 +5,9 @@ import java.util.List;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
@@ -158,6 +161,33 @@ public class EntityBattleshipRe extends BasicEntityShipCV {
         }
     }
     
+    @Override
+  	public boolean interact(EntityPlayer player) {	
+		ItemStack itemstack = player.inventory.getCurrentItem();  //get item in hand
+		
+		//use cake to change state
+		if(itemstack != null) {
+			if(itemstack.getItem() == Items.cake) {
+				this.setShipOutfit(player.isSneaking());
+				return true;
+			}
+		}
+		
+		return super.interact(player);
+  	}
+    
+    @Override
+	public void setShipOutfit(boolean isSneaking) {
+		switch(getStateEmotion(ID.S.State)) {
+		case ID.State.NORMAL:
+			setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+			break;
+		default:
+			setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+			break;
+		}
+	}
+    
     //change light cannon particle
     @Override
     protected void applyParticleAtAttacker(int type, Entity target, float[] vec) {
@@ -232,9 +262,6 @@ public class EntityBattleshipRe extends BasicEntityShipCV {
   			return (double)this.height * 0.4F;
   		}
 	}
-
-	@Override
-	public void setShipOutfit(boolean isSneaking) {}
 	
 	
 }

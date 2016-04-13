@@ -25,6 +25,7 @@ import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.BlockHelper;
+import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
@@ -164,9 +165,16 @@ public class PointerItem extends BasicItem {
 					//若為ship or mounts
 					if(hitObj.entityHit instanceof BasicEntityShip || hitObj.entityHit instanceof BasicEntityMount) {
 						BasicEntityShip ship = null;
+						
 						//get ship entity
 						if(hitObj.entityHit instanceof BasicEntityShip) {
 							ship = (BasicEntityShip)hitObj.entityHit;
+							
+							int hitHeight = CalcHelper.getEntityHitHeightByClientPlayer(ship);
+							int hitAngle = CalcHelper.getEntityHitSideByClientPlayer(ship);
+							
+							//send hit height packet
+							CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.HitHeight, ship.getEntityId(), hitHeight, hitAngle));
 						}
 						else {
 							ship = (BasicEntityShip) ((BasicEntityMount)hitObj.entityHit).getHostEntity();
@@ -348,7 +356,7 @@ public class PointerItem extends BasicItem {
 			
 			//get entity
 			if(hitObj != null && hitObj.typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
-				LogHelper.info("DEBUG : pointer right click: ENTITY "+hitObj.entityHit.getClass().getSimpleName());
+//				LogHelper.info("DEBUG : pointer right click: ENTITY "+hitObj.entityHit.getClass().getSimpleName());
 				
 				//right + sprint: entity: guard entity(move only)
 				if(keySet.keyBindSprint.getIsKeyPressed()) {
@@ -364,6 +372,11 @@ public class PointerItem extends BasicItem {
 					//get ship entity
 					if(hitObj.entityHit instanceof BasicEntityShip) {
 						ship = (BasicEntityShip)hitObj.entityHit;
+						int hitHeight = CalcHelper.getEntityHitHeightByClientPlayer(ship);
+						int hitAngle = CalcHelper.getEntityHitSideByClientPlayer(ship);
+						
+						//send hit height packet
+						CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.HitHeight, ship.getEntityId(), hitHeight, hitAngle));
 					}
 					else {
 						ship = (BasicEntityShip) ((BasicEntityMount)hitObj.entityHit).getHostEntity();

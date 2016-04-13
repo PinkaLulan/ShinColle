@@ -73,7 +73,8 @@ public class EntityCarrierWo extends BasicEntityShipCV {
     		if(this.ticksExisted % 5 ==  0) {
     			//若顯示裝備時, 則生成眼睛煙霧特效 (client only)
     			if(getStateEmotion(ID.S.State) >= ID.State.EQUIP00 &&
-    			   getStateEmotion(ID.S.Emotion) != ID.Emotion.BORED) {
+    			   getStateEmotion(ID.S.Emotion) != ID.Emotion.BORED &&
+    			   !getStateFlag(ID.F.NoFuel)) {
     				//set origin position
     				float[] eyePosL;
     				float[] eyePosR;

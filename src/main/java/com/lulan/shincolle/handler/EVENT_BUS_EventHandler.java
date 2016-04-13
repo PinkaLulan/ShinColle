@@ -218,7 +218,7 @@ public class EVENT_BUS_EventHandler {
 	    	if(ent instanceof BasicEntityShip) {	//本體擊殺
 	    		BasicEntityShip ship = (BasicEntityShip) ent;
 	    		ship.addKills();
-	    		ship.setStateMinor(ID.M.Morale, ship.getStateMinor(ID.M.Morale) + 1);
+	    		ship.setStateMinor(ID.M.Morale, ship.getStateMinor(ID.M.Morale) + 2);
 	    	}
 	    	else if(ent instanceof IShipAttackBase) {	//其他召喚物擊殺
 	    		if(((IShipAttackBase) ent).getHostEntity() != null &&
@@ -244,6 +244,18 @@ public class EVENT_BUS_EventHandler {
 	    		//save nbt to ServerProxy variable
 	    		ServerProxy.setPlayerData(player.getUniqueID().toString(), nbt);
 	    	}
+	    }
+	    else if(event.entityLiving instanceof BasicEntityShip) {
+	    	//show emotes
+	    	((BasicEntityShip)event.entityLiving).applyParticleEmotion(8);
+			//emotes AOE
+			EntityHelper.applyShipEmotesAOE(event.entityLiving.worldObj, event.entityLiving.posX, event.entityLiving.posY, event.entityLiving.posZ, 16D, 6);
+	    }
+	    else if(event.entityLiving instanceof BasicEntityShipHostile) {
+	    	//show emotes
+	    	((BasicEntityShipHostile)event.entityLiving).applyParticleEmotion(8);
+			//emotes AOE
+			EntityHelper.applyShipEmotesAOEHostile(event.entityLiving.worldObj, event.entityLiving.posX, event.entityLiving.posY, event.entityLiving.posZ, 48D, 6);
 	    }
 	}
 	

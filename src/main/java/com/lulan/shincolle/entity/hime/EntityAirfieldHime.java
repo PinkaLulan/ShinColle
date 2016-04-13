@@ -101,6 +101,9 @@ public class EntityAirfieldHime extends BasicEntityShipCV {
 		            			hitEntity.heal(1F + hitEntity.getMaxHealth() * 0.04F + this.getLevel() * 0.1F);
 		            			healCount--;
 			            	}
+	            			
+	            			//grudge--
+	            			this.setStateMinor(ID.M.NumGrudge, this.getStateMinor(ID.M.NumGrudge) - 50);
 		            	}
 		            }
 				}//end heal ability

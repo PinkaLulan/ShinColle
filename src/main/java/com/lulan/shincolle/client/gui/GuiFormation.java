@@ -430,21 +430,22 @@ public class GuiFormation extends GuiContainer {
 			
 			for(int i = 0; i < 6; i++) {
     			if(shipList[i] != null) {
-    				int m = this.shipList[i].getStateMinor(ID.M.Morale);
-    		        int ix = 0;
-    		        
-    		        if(m < 901) {
-    		        	ix = 44;
-    		        }
-    		        else if(m < 2101) {
-    		        	ix = 33;
-    		        }
-    		        else if(m < 3901) {
-    		        	ix = 22;
-    		        }
-    		        else if(m < 5101) {
-    		        	ix = 11;
-    		        }
+    				int ix = 44;
+    				
+    				switch(shipList[i].getMoraleLevel()) {
+    				case ID.Morale.Excited:
+    					ix = 0;
+    					break;
+    				case ID.Morale.Happy:
+    					ix = 11;
+    					break;
+    				case ID.Morale.Normal:
+    					ix = 22;
+    					break;
+    				case ID.Morale.Tired:
+    					ix = 33;
+    					break;
+    				}
     		        
     		        drawTexturedModalRect(guiLeft+145, guiTop+texty-1, ix, 240, 11, 11);
     			}

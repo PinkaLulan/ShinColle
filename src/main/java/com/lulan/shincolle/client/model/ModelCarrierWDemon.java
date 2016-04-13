@@ -420,7 +420,8 @@ public class ModelCarrierWDemon extends ModelBase implements IModelEmotion {
     	GL11.glEnable(GL11.GL_BLEND);
     	GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
     	GL11.glScalef(0.47F, 0.47F, 0.47F);
-
+    	GL11.glTranslatef(0F, 1.75F, 0F);
+    	
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
     	this.BodyMain.render(f5);
     	GL11.glDisable(GL11.GL_BLEND);
@@ -450,7 +451,12 @@ public class ModelCarrierWDemon extends ModelBase implements IModelEmotion {
 		
 		EmotionHelper.rollEmotion(this, ent);
 		  
-		motionHumanPos(f, f1, f2, f3, f4, ent);
+		if(ent.getStateFlag(ID.F.NoFuel)) {
+			motionStopPos(f, f1, f2, f3, f4, ent);
+		}
+		else {
+			motionHumanPos(f, f1, f2, f3, f4, ent);
+		}
 		
 		setGlowRotation();
     }
@@ -482,6 +488,106 @@ public class ModelCarrierWDemon extends ModelBase implements IModelEmotion {
 		this.GlowHead.rotateAngleZ = this.Head.rotateAngleZ;
     }
     
+    private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {
+    	GL11.glTranslatef(0F, 1.4F, 0F);
+  		setFace(4);
+  		
+  	    //頭部
+	  	this.Head.rotateAngleX = 0F; 	//上下角度
+	  	this.Head.rotateAngleY = 0F;	//左右角度
+	  	this.Head.rotateAngleZ = 0F;
+	    //正常站立動作
+	    //胸部
+  	    this.BoobL.rotateAngleX = -0.7F;
+  	    this.BoobR.rotateAngleX = -0.7F;
+	  	//Body
+  	    this.Ahoke.rotateAngleY = 0.7F;
+	  	this.BodyMain.rotateAngleX = -0.1047F;
+	  	//hair
+	  	this.Hair01.rotateAngleX = 0.21F;
+	  	this.Hair01.rotateAngleZ = 0F;
+	  	this.Hair02.rotateAngleX = -0.09F;
+	  	this.Hair02.rotateAngleZ = 0F;
+	  	this.Hair03.rotateAngleX = -0.14F;
+	  	this.Hair03.rotateAngleZ = 0F;
+	  	//鬢毛調整
+	    this.Hair01.rotateAngleZ = 0F;
+	  	this.Hair02.rotateAngleZ = 0F;
+	  	this.HairL01.rotateAngleZ = 0.087F;
+	  	this.HairL02.rotateAngleZ = 0.087F;
+	  	this.HairR01.rotateAngleZ = 0.087F;
+	  	this.HairR02.rotateAngleZ = -0.052F;
+		this.HairL01.rotateAngleX = -0.65F;
+	  	this.HairL02.rotateAngleX = 0.17F;
+	  	this.HairR01.rotateAngleX = -0.65F;
+	  	this.HairR02.rotateAngleX = 0.17F;
+	    //arm 
+	  	this.ArmLeft01.rotateAngleY = 0F;
+	    this.ArmLeft05.rotateAngleZ = 0.2618F;
+	  	this.ArmRight01.rotateAngleY = 0F;
+	    this.ArmRight03.rotateAngleX = 0F;
+	    this.ArmRight03.rotateAngleZ = 0F;
+		//leg
+	    this.LegLeft01.rotateAngleX = -1.0472F;
+		this.LegLeft01.rotateAngleY = 0F;
+		this.ShoesL04.rotateAngleX = -0.1F;
+		this.LegRight01.rotateAngleX = -1.0472F;
+		this.LegRight01.rotateAngleY = 0F;
+		//equip
+		this.EquipBase.rotateAngleX = 0F;
+		this.EquipL01.offsetX = 0F;
+		this.EquipL01.offsetY = 0F;
+		this.EquipL01.offsetZ = 0F;
+		this.EquipL01.rotateAngleX = 0.2618F;
+    	this.EquipL01.rotateAngleY = 0.1745F;
+    	this.EquipL01.rotateAngleZ = 0F;
+    	this.EquipL05.rotateAngleZ = 0F;
+		this.EquipR01.offsetX = 0F;
+		this.EquipR01.offsetY = 0F;
+		this.EquipR01.offsetZ = 0F;
+    	this.EquipR01.rotateAngleX = 0.2618F;
+    	this.EquipR01.rotateAngleY = -0.1745F;
+    	this.EquipR01.rotateAngleZ = 0f;
+  		
+    	//head
+    	this.Head.rotateAngleX = 0.55F;
+    	this.Head.rotateAngleY = 0F;
+    	this.Head.rotateAngleZ = 0F;
+    	//hair 動到headX, 需重新調整hairX
+    	this.Hair01.rotateAngleX = -0.1F;
+    	this.Hair02.rotateAngleX = -0.2F;
+    	//body
+    	this.Neck.rotateAngleX = 0.3F;
+    	this.Butt.rotateAngleX = -0.14F;
+		this.Skirt01.rotateAngleX = -0.1745F;
+		this.Skirt02.rotateAngleX = -0.2618F;
+		//arm
+		this.ArmLeft01.rotateAngleX = 0.4F;
+		this.ArmLeft01.rotateAngleZ = -0.2618F;
+		this.ArmLeft03.rotateAngleX = 0F;
+		this.ArmLeft03.rotateAngleZ = 0F;
+		this.ArmRight01.rotateAngleX = 0.4F;
+		this.ArmRight01.rotateAngleZ = 0.2618F;
+		//leg 
+		this.LegLeft01.rotateAngleZ = -0.14F;
+		this.LegLeft02.rotateAngleX = 1.2217F;
+		this.LegLeft02.rotateAngleY = 1.2217F;
+		this.LegLeft02.rotateAngleZ = -1.0472F;
+		this.LegLeft02.offsetX = 0.175F;
+		this.LegLeft02.offsetY = -0.02F;
+		this.LegLeft02.offsetZ = 0.1635F;
+		this.LegRight01.rotateAngleZ = 0.14F;
+		this.LegRight02.rotateAngleX = 1.2217F;
+		this.LegRight02.rotateAngleY = -1.2217F;
+		this.LegRight02.rotateAngleZ = 1.0472F;
+		this.LegRight02.offsetX = -0.175F;
+		this.LegRight02.offsetY = -0.05F;
+		this.LegRight02.offsetZ = 0.1635F;
+    	//equip
+    	this.EquipL01.offsetY = 0.6F;
+    	this.EquipR01.offsetY = 0.6F;
+    }
+    
     private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {   
   		float angleX = MathHelper.cos(f2*0.08F);
   		float angleAdd1 = MathHelper.cos(f * 0.7F) * f1 * 0.7F;
@@ -490,8 +596,6 @@ public class ModelCarrierWDemon extends ModelBase implements IModelEmotion {
   		float addk2 = 0F;
   		float headX = 0F;
   		float headZ = 0F;
-  		
-    	GL11.glTranslatef(0F, 1.75F, 0F);
   		
   		//leg move parm
   		addk1 = angleAdd1 * 0.6F - 0.35F;

@@ -14,11 +14,9 @@ tile.shincolle:BlockPolymetal.name=Polymetallic Block
 tile.shincolle:BlockPolymetalGravel.name=Polymetallic Gravel
 tile.shincolle:BlockPolymetalOre.name=Polymetallic Ore
 tile.shincolle:BlockSmallShipyard.name=Abyssal Hydrothermal Vent
-
-# Container
-container.shincolle:BlockDesk=Abyssal Adrmiral's Desk
-container.shincolle:SmallShipyard=Abyssal Hydrothermal Vent
-container.shincolle:LargeShipyard=Hadal Hydrothermal Vortex
+tile.shincolle:BlockLargeShipyard.name=Hadal Hydrothermal Vortex
+tile.shincolle:BlockVolBlock.name=Abyssal Volcano Block
+tile.shincolle:BlockVolCore.name=Abyssal Volcano Core
 
 # Item
 item.shincolle:AbyssMetal.name=Abyssium Ingot
@@ -250,6 +248,12 @@ gui.shincolle:book.chap1.text17d1=§9Radar§0:<br>Show a list of nearby owned sh
 gui.shincolle:book.chap1.title18=Target Wrench
 gui.shincolle:book.chap1.text18d0=<br><br><br><br><br><br><br><br><br>§9Left Click:§0<br>§cADD/REMOVE§0 entity to §dUnattackable Target List§0. §4(OP ONLY!!)§0<br><br>§9Right Click:§0 Show §dUnattackable Target List§0.
 gui.shincolle:book.chap1.text18d1=§dUnattackable Target§0 will not be damaged by AoE attack, and can't be targeted. You can add entity like leash knot, item frame, airplane, mounts or boat.<br><br>This list apply to hostile mob ship too.<br><br>Ship and hostile ship can't be unattackable entity.
+gui.shincolle:book.chap1.title19=Abyssal Volcano Block
+gui.shincolle:book.chap1.text19d0=<br><br><br><br><br><br><br><br><br>When the lava is compressed by heavy grudge, it will become §d§nAbyssal Volcano Block§r§0.<br><br>Decorative block.
+gui.shincolle:book.chap1.text19d1=
+gui.shincolle:book.chap1.title20=Abyssal Volcano Core
+gui.shincolle:book.chap1.text20d0=<br><br><br><br><br><br><br><br><br>When the lava is compressed by Abyssal Volcano Block, it will become §d§nAbyssal Volcano Core§r§0.<br><br>The core will consume grudge and spread the energy into the environment.
+gui.shincolle:book.chap1.text20d1=To active the core, place it §9nearby any liquid block and put some grudge§0.<br><br>§dEffect Area: width 9 / height 9 (down 2 / up 6) blocks§0.<br><br>If a ship is in liquid block within the effect area, she will restore HP and morale value.<br><br>The energy is said to maintain skin and beauty, it's very popular among the Shinkeiseikan.
 
 # GUI: Book Text Chap 2
 gui.shincolle:book.chap2.title=Construction
@@ -309,12 +313,12 @@ gui.shincolle:book.chap3.text11d0=§9/shipinfo§c<br>§dAuthority:§0 All Player
 gui.shincolle:book.chap3.text11d1=§9/shipupdateowneruid§3 [Player Name]<br>§dAuthority:§0 All Player<br>§dPurpose:§0 update ship's owner UID<br><br>If the ship does no response, try this command to fix the bug. OP can specify a player to update the UID.<br><br>This command only affect the ship in the loaded chunk and the player must be online.<br>If the command is not work, try /shipchangeowner to change ship's owner 1 by 1.
 gui.shincolle:book.chap3.title12=
 gui.shincolle:book.chap3.text12d0=§9/shipattrs <Ship LV> <HP LV> <ATK LV> <DEF LV> <A.SPD LV> <M.SPD LV> <Range LV><br>§dAuthority:§0 OP only<br>§dPurpose:§0 change ship attributes<br><br>Change mouseover ship's level and six main attributes level. Valid value: Ship LV = 1~150, Attrs LV = 0~100.
-gui.shincolle:book.chap3.text12d1=§9/shipcleardrop [range]<br>§dAuthority:§0 OP only<br>§dPurpose:§0 remove drop item (grudge entity)<br><br>Remove drop item entity within range, default range = 128 blocks.
+gui.shincolle:book.chap3.text12d1=§9/shipcleardrop [range]<br>§dAuthority:§0 OP only<br>§dPurpose:§0 remove drop item (grudge entity)<br><br>Remove drop item entity within range, default range = 128 blocks.<br><br>§9/shipemotes [emo]<br>§dAuthority:§0 All Player<br>§dPurpose:§0 Show emotes<br>§dAlias:§9/em, /emo, /emote, /emotes§0<br><br>Use "tab" key to show emotes list when typing.
 gui.shincolle:book.chap3.title13=Morale
 gui.shincolle:book.chap3.text13d0=The morale level will affect ship's attributes.<br><br>There are 5 level of morale: §dExcited§0, §cHappy§0, §2Normal§0, §9Tired§0, §7Exhausted§0.<br><br>The morale level is marked in the upper right corner of ship's inventory GUI.
-gui.shincolle:book.chap3.text13d1=§9Idle:§0<br>Recover to §2NORMAL§0 state.<br><br>§9Caress:§0<br>Increase morale to §dEXCITED§0.<br><br>§9Feeding:§0<br>Increase to §cHAPPY§0 state.<br><br>§9Moving, Attack, Damaged:§0<br>Decrease morale.
+gui.shincolle:book.chap3.text13d1=§9Idle:§0<br>Recover morale to §2NORMAL§0 state, out of combat faster than in combat.<br><br>§9Caress, Kill:§0<br>Increase morale to §dEXCITED§0 state.<br><br>§9Feeding:§0<br>Increase to §cHAPPY§0 state.<br><br>§9Moving, Attack, Damaged:§0<br>Decrease morale.
 gui.shincolle:book.chap3.title14=Feeding
-gui.shincolle:book.chap3.text14d0=Generally the ship don't need to feed, but you can feed ship to increase morale and grudge value.<br><br>§9Right click§0 on ship with food or some items to feed the ship.<br><br>You can only feed a certain times in a short time.
+gui.shincolle:book.chap3.text14d0=Generally the ship don't need to feed, but you can feed ship to increase morale and grudge value manually.<br><br>§9Right click§0 on ship with food or some items to feed the ship.<br><br>You can only feed a certain times in a period of time.
 gui.shincolle:book.chap3.text14d1=§9Grudge, Food:§0<br>Increase grudge, morale value.<br><br>§9Ammo:§0<br>Increase morale and ammo value a little more than automatically consumed by ship.<br><br>§9Abyssium, Polymetal:§0<br>Increase number of aircraft for CV.
 
 # GUI: Book Text Chap 4

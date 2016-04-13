@@ -92,7 +92,7 @@ public class EntityNorthernHime extends BasicEntityShipCV {
         		}
         		
         		//2: 結婚後, 周圍某一目標回血, 包括玩家, 回血目標依等級提昇
-				if(getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.M.NumGrudge) > 0) {
+				if(getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) && !getStateFlag(ID.F.NoFuel)) {
 					//判定bounding box內是否有可以回血的目標
 					int healCount = this.getLevel() / 25 + 1;
 		            EntityLivingBase hitEntity = null;
@@ -115,6 +115,9 @@ public class EntityNorthernHime extends BasicEntityShipCV {
 		            			hitEntity.heal(1F + hitEntity.getMaxHealth() * 0.02F + this.getLevel() * 0.1F);
 		            			healCount--;
 			            	}
+	            			
+	            			//grudge--
+	            			this.setStateMinor(ID.M.NumGrudge, this.getStateMinor(ID.M.NumGrudge) - 25);
 		            	}
 		            }
 				}//end heal ability
@@ -174,7 +177,7 @@ public class EntityNorthernHime extends BasicEntityShipCV {
   		else {
   			//drip water effect
   			if(this.ticksExisted % 10 == 0) {
-  				if(getStateEmotion(ID.S.State2) == ID.State.EQUIP01_2) {
+  				if(getStateEmotion(ID.S.State2) == ID.State.EQUIP01_2 && !getStateFlag(ID.F.NoFuel)) {
   					if(this.isSitting() || this.isRiding()) {
   						ParticleHelper.spawnAttackParticleAt(this.posX, this.posY+0.9D, this.posZ, 0D, 0D, 0D, (byte)28);
   					}
@@ -298,7 +301,8 @@ public class EntityNorthernHime extends BasicEntityShipCV {
 		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
 		
   		//morale--
-  		this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - 1);
+		decrMorale(2);
+  		setCombatTick(this.ticksExisted);
 		
 		//play attack effect
         applySoundAtAttacker(2, target);
@@ -317,6 +321,7 @@ public class EntityNorthernHime extends BasicEntityShipCV {
         //play target effect
         applySoundAtTarget(2, target);
         applyParticleAtTarget(2, target, distVec);
+      	applyEmotesReaction(3);
         
         return true;
   	}

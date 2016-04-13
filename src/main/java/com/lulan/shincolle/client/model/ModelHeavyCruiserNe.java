@@ -341,18 +341,17 @@ public class ModelHeavyCruiserNe extends ModelBase implements IModelEmotion {
     	GL11.glEnable(GL11.GL_BLEND);
     	GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
     	GL11.glScalef(0.4F, 0.4F, 0.4F);
-
-    	//main body
+    	GL11.glTranslatef(0F, 2.63F, 0F);
+    	
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
     	this.BodyMain.render(f5);
-    	GL11.glDisable(GL11.GL_BLEND);
     	
-    	//light part:eye, cannon, ...etc
     	GL11.glDisable(GL11.GL_LIGHTING);
     	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
     	this.GlowBodyMain.render(f5);
     	GL11.glEnable(GL11.GL_LIGHTING);
     	
+    	GL11.glDisable(GL11.GL_BLEND);
     	GL11.glPopMatrix();
     }
     
@@ -364,8 +363,13 @@ public class ModelHeavyCruiserNe extends ModelBase implements IModelEmotion {
 		IShipEmotion ent = (IShipEmotion)entity;
 		
 		EmotionHelper.rollEmotion(this, ent);
-		  
-		motionHumanPos(f, f1, f2, f3, f4, ent);
+
+		if(ent.getStateFlag(ID.F.NoFuel)) {
+			motionStopPos(f, f1, f2, f3, f4, ent);
+		}
+		else {
+			motionHumanPos(f, f1, f2, f3, f4, ent);
+		}
 		
 		setGlowRotation();
     }
@@ -381,6 +385,85 @@ public class ModelHeavyCruiserNe extends ModelBase implements IModelEmotion {
 		this.GlowHead.rotateAngleZ = this.Head.rotateAngleZ;
     }
     
+    private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {
+    	GL11.glTranslatef(0F, 0.7F, 0F);
+    	setFace(4);
+
+  	    //頭部
+	  	this.Head.rotateAngleX = 0.7853F;
+	  	this.Head.rotateAngleY = 0F;
+	  	//Body
+  	    this.Ahoke.rotateAngleY = 0.45F;
+	  	this.BodyMain.rotateAngleX = 0F;
+	  	this.BodyMain.rotateAngleY = 0F;
+	  	this.BodyMain.rotateAngleZ = -1.4835F;
+	  	this.Head.offsetY = 0F;
+	  	this.GlowHead.offsetY = 0F;
+	  	//hair
+	  	this.Hair02.rotateAngleX = 0.21F;
+	  	this.Hair02.rotateAngleZ = 0F;
+	  	this.Hair03.rotateAngleX = -0.2618F;
+	  	this.Hair03.rotateAngleZ = 0F;
+	  	//arm
+	  	this.ArmLeft01.rotateAngleX = 0.1745F;
+	  	this.ArmLeft01.rotateAngleZ = 0.4537F;
+	  	this.ArmLeft01.offsetZ = 0F;
+	  	this.ArmLeft02.rotateAngleZ = 0F;
+	  	this.ArmRight01.rotateAngleX = -0.1745F;
+	  	this.ArmRight01.rotateAngleZ = -0.05F;
+	  	this.ArmRight01.offsetZ = 0F;
+	  	this.ArmRight02.rotateAngleZ = 0F;
+		//leg
+	  	this.LegLeft01.rotateAngleX = -0.1745F;
+		this.LegLeft01.rotateAngleY = 0F;
+		this.LegLeft01.rotateAngleZ = 0.4537F;
+		this.LegLeft02.rotateAngleX = 0F;
+		this.LegLeft02.rotateAngleZ = 0F;
+		this.LegRight01.rotateAngleX = 0.1745F;
+		this.LegRight01.rotateAngleY = 0F;
+		this.LegRight01.rotateAngleZ = -0.05F;
+		this.LegRight02.rotateAngleX = 0F;
+		this.LegRight02.rotateAngleZ = 0F;
+	  	//tail
+		this.TailBase.rotateAngleX = 0.8F;
+	  	this.TailL01.rotateAngleX = 0.2618F;
+		this.TailL01.rotateAngleY = -0.2F;
+		this.TailL01.rotateAngleZ = this.TailL01.rotateAngleY * 0.25F;
+		this.TailL02.rotateAngleX = 0.2618F;
+		this.TailL02.rotateAngleY = -0.3F;
+		this.TailL02.rotateAngleZ = this.TailL02.rotateAngleY * 0.25F;
+		this.TailL03.rotateAngleX = 0.2618F;
+		this.TailL03.rotateAngleY = -0.2F;
+		this.TailL03.rotateAngleZ = this.TailL03.rotateAngleY * 0.25F;
+		this.TailL04.rotateAngleX = 0.35F;
+		this.TailL04.rotateAngleY = 0.2F;
+		this.TailL04.rotateAngleZ = this.TailL04.rotateAngleY * 0.25F;
+		this.TailL05.rotateAngleX = 0.4F;
+		this.TailL05.rotateAngleY = 0.2F;
+		this.TailL05.rotateAngleZ = this.TailL05.rotateAngleY * 0.25F;
+		this.TailL06.rotateAngleX = 0.45F;
+		this.TailL06.rotateAngleY = 0.1F;
+		this.TailL06.rotateAngleZ = this.TailL06.rotateAngleY * 0.25F;
+		this.TailR01.rotateAngleX = 0.6F;
+		this.TailR01.rotateAngleY = 0.2617F;
+		this.TailR01.rotateAngleZ = this.TailR01.rotateAngleY * 0.25F;
+		this.TailR02.rotateAngleX = 0.6F;
+		this.TailR02.rotateAngleY = -0.2F;
+		this.TailR02.rotateAngleZ = this.TailR02.rotateAngleY * 0.25F;
+		this.TailR03.rotateAngleX = 0.5F;
+		this.TailR03.rotateAngleY = -0.1F;
+		this.TailR03.rotateAngleZ = this.TailR03.rotateAngleY * 0.25F;
+		this.TailR04.rotateAngleX = 0.3F;
+		this.TailR04.rotateAngleY = -0.1F;
+		this.TailR04.rotateAngleZ = this.TailR04.rotateAngleY * 0.25F;
+		this.TailR05.rotateAngleX = 0.1F;
+		this.TailR05.rotateAngleY = 0.1F;
+		this.TailR05.rotateAngleZ = this.TailR05.rotateAngleY * 0.25F;
+		this.TailR06.rotateAngleX = -0.1F;
+		this.TailR06.rotateAngleY = 0.1F;
+		this.TailR06.rotateAngleZ = this.TailR06.rotateAngleY * 0.25F;
+    }
+    
 	//雙腳移動計算
   	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {   
   		float angleX = MathHelper.cos(f2*0.08F + f * 0.25F);
@@ -390,8 +473,6 @@ public class ModelHeavyCruiserNe extends ModelBase implements IModelEmotion {
   		float angleAdd2 = MathHelper.cos(f * 0.7F + 3.1415927F) * f1;
   		float addk1 = 0;
   		float addk2 = 0;
-  		
-    	GL11.glTranslatef(0F, 2.63F, 0F);
   		
     	//leg move
   		addk1 = angleAdd1 * 0.5F - 0.14F;  //LegLeft01

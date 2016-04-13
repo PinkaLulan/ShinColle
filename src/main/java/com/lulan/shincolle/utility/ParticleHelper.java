@@ -11,6 +11,7 @@ import net.minecraft.world.World;
 import com.lulan.shincolle.client.particle.EntityFX91Type;
 import com.lulan.shincolle.client.particle.EntityFXChi;
 import com.lulan.shincolle.client.particle.EntityFXCube;
+import com.lulan.shincolle.client.particle.EntityFXEmotion;
 import com.lulan.shincolle.client.particle.EntityFXLaser;
 import com.lulan.shincolle.client.particle.EntityFXLaserNoTexture;
 import com.lulan.shincolle.client.particle.EntityFXLightning;
@@ -456,6 +457,16 @@ public class ParticleHelper {
 				world.spawnParticle("largesmoke", posX+lookX-0.6D+0.1D*i+newPos2[1]+ran3, posY+0.6D+ran1, posZ+lookZ-0.6D+0.1D*i+newPos2[0]+ran3, lookX*0.3D*ran2, 0.05D*ran2, lookZ*0.3D*ran2);
 			}
 			break;
+		case 36:	//emotion
+			EntityFXEmotion partEmo = new EntityFXEmotion(world, null,
+					posX, posY, posZ, (float)lookX, (float)lookY, (int)lookZ);
+			Minecraft.getMinecraft().effectRenderer.addEffect(partEmo);
+			break;
+		case 37:	//white spray
+			EntityFXSpray particleSpray12 = new EntityFXSpray(world, 
+            		posX, posY, posZ, lookX, lookY, lookZ, 12);
+        	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray12);
+			break;
 		default:
 			break;		
 		}
@@ -571,6 +582,16 @@ public class ParticleHelper {
         	Minecraft.getMinecraft().effectRenderer.addEffect(light5);
         	EntityFXStickyLightning light6 = new EntityFXStickyLightning(world, ent, (float)par1, (int)par2, (int)par3);
         	Minecraft.getMinecraft().effectRenderer.addEffect(light6);
+			break;
+		case 36:	//emotion
+			if(ent == null) {
+				return;
+			}
+			else {
+				EntityFXEmotion partEmo = new EntityFXEmotion(world, ent,
+						ent.posX, ent.posY, ent.posZ, (float)par1, (float)par2, (int)par3);
+				Minecraft.getMinecraft().effectRenderer.addEffect(partEmo);
+			}
 			break;
 		default:
 			break;

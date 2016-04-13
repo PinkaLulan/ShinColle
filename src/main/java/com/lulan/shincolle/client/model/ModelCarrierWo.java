@@ -9,6 +9,7 @@ import net.minecraft.util.MathHelper;
 import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EmotionHelper;
 
@@ -442,34 +443,39 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
     	GL11.glEnable(GL11.GL_BLEND);
     	GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
     	GL11.glScalef(0.5F, 0.5F, 0.5F); 	
-
+    	GL11.glTranslatef(0F, 1.5F, 0F);
+    	
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity); 	
     	this.BodyMain.render(f5);
-    	GL11.glDisable(GL11.GL_BLEND);
     	
-    	//亮度設為240
     	GL11.glDisable(GL11.GL_LIGHTING);
     	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
     	this.GlowBodyMain.render(f5); 	
     	GL11.glEnable(GL11.GL_LIGHTING);
     	
+    	GL11.glDisable(GL11.GL_BLEND);
     	GL11.glPopMatrix();
     }
     
     //for idle/run animation
     @Override
 	public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity) {
-      super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
-      
-      BasicEntityShip ent = (BasicEntityShip)entity;
-      
-      showEquip(ent);
-      
-      EmotionHelper.rollEmotion(this, ent);
-      
-      motionHumanPos(f, f1, f2, f3, f4, ent);
+    	super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
+    	
+    	BasicEntityShip ent = (BasicEntityShip)entity;
 
-      setGlowRotation();
+    	showEquip(ent);
+
+    	EmotionHelper.rollEmotion(this, ent);
+
+    	if(ent.getStateFlag(ID.F.NoFuel)) {
+    		motionStopPos(f, f1, f2, f3, f4, ent);
+		}
+		else {
+			motionHumanPos(f, f1, f2, f3, f4, ent);
+		}
+
+    	setGlowRotation();
     }
     
     //設定模型發光部份的rotation
@@ -484,14 +490,102 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 		this.GlowHead.rotateAngleY = this.Head.rotateAngleY;
 		this.GlowHead.rotateAngleZ = this.Head.rotateAngleZ;
 	}
+    
+    private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {
+    	GL11.glTranslatef(0F, 1.35F, 0F);
+  		setFace(4);
+  		
+  		//頭部
+	  	this.Head.rotateAngleY = 0F;	//左右角度 角度轉成rad 即除以57.29578
+	    this.Head.rotateAngleX = 0F; 	//上下角度
+	    //胸部
+  	    this.BoobL.rotateAngleX = -0.63F;
+  	    this.BoobR.rotateAngleX = -0.63F;
+  	    //呆毛
+  	    this.Ahoke.rotateAngleY = 0.5236F;
+  	    //手臂晃動 
+	    this.ArmRight02.rotateAngleY = 0F;
+		//身體角度
+		this.Butt.offsetY = 0F;
+    	//身體角度
+		this.BodyMain.rotateAngleX = 0.2094F;
+		this.BodyMain.rotateAngleY = 0F;
+		this.BodyMain.rotateAngleZ = 0F;
+		this.Butt.rotateAngleX = -0.4189F;
+		this.Butt.offsetZ = -0.12F;
+    	//手臂
+	  	this.ArmLeft01.rotateAngleX = -1.0472F;
+	    this.ArmLeft01.rotateAngleY = 0F;
+	    this.ArmLeft01.rotateAngleZ = 0.4189F;
+	    this.ArmLeft02.rotateAngleX = -0.1396F;
+	    this.ArmLeft02.rotateAngleY = 0F;
+	    this.ArmLeft02.rotateAngleZ = 1.2915F;
+	    this.ArmRight01.rotateAngleX = -0.8727F;
+		this.ArmRight01.rotateAngleY = 0F;
+		this.ArmRight01.rotateAngleZ = -0.0873F;
+		this.ArmRight02.rotateAngleZ = -1.1345F;
+		//腿擺動
+		this.LegLeft01.rotateAngleX = -2.2689F;
+		this.LegLeft01.rotateAngleY = -0.2094F;
+		this.LegLeft01.rotateAngleZ = -0.2094F;
+		this.LegLeft02.rotateAngleX = 1.7454F;
+		this.LegLeft02.offsetZ = 0.3F;
+		this.LegRight01.rotateAngleX = -2.2689F;
+		this.LegRight01.rotateAngleY = 0F;
+		this.LegRight01.rotateAngleZ = 0.0873F;
+		this.LegRight02.rotateAngleX = 1.5708F;
+		this.LegRight02.offsetZ = 0.3F;
+		//披風擺動
+		this.Cloak01.rotateAngleX = 0.2618F;
+		this.Cloak02.rotateAngleX = -1.3963F;
+		this.Cloak03.rotateAngleX = -0.9425F;
+		//杖位置
+		this.Staff.rotateAngleX = 1.309F;
+		this.Staff.rotateAngleY = -0.5934F;
+		this.Staff.rotateAngleZ = -0.2094F;
+		this.Staff.offsetX = -0.3F;
+		this.Staff.offsetY = -1.5F;
+		this.Staff.offsetZ = -1.7F;
+		//觸手晃動 (equip only)
+		if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
+			this.EquipLC01.rotateAngleX = this.Head.rotateAngleX;
+			this.EquipRC01.rotateAngleX = this.Head.rotateAngleX;
+			
+			this.EquipT01L.rotateAngleX = - 0.2618F;
+			this.EquipT01L.rotateAngleZ = -0.2618F;
+			this.EquipT02L.rotateAngleX = -0.3491F;
+			this.EquipT02L.rotateAngleZ = 0.2618F;
+			this.EquipT03L.rotateAngleX = 1.0472F;
+			this.EquipT03L.rotateAngleZ = 1.0472F;
+			
+			this.EquipT01R.rotateAngleX = -0.2618F;
+			this.EquipT01R.rotateAngleZ = 0.2618F;
+			this.EquipT02R.rotateAngleX = -0.3491F;
+			this.EquipT02R.rotateAngleZ = -0.2618F;
+			this.EquipT03R.rotateAngleX = 1.0472F;
+			this.EquipT03R.rotateAngleZ = -1.0472F;
+
+			this.EquipTB01L.rotateAngleX = 0.1745F;
+			this.EquipTB01L.rotateAngleZ = -0.3491F;
+			this.EquipTB02L.rotateAngleX = -0.6981F;
+			this.EquipTB02L.rotateAngleZ = 0.3491F;
+			this.EquipTB03L.rotateAngleX = 0.1745F;
+			this.EquipTB03L.rotateAngleZ = 0.2618F;
+			
+			this.EquipTB01R.rotateAngleX = 0.1745F;
+			this.EquipTB01R.rotateAngleZ = 0.3491F;
+			this.EquipTB02R.rotateAngleX = -0.6981F;
+			this.EquipTB02R.rotateAngleZ = -0.3491F;
+			this.EquipTB03R.rotateAngleX = 0.1745F;
+			this.EquipTB03R.rotateAngleZ = -0.2618F;
+		}
+    }
 
 	//雙腳移動計算
   	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, BasicEntityShip ent) {   
   		float angleZ = MathHelper.cos(f2*0.08F);
   		float addk1 = 0;
   		float addk2 = 0;
-  		
-    	GL11.glTranslatef(0F, 1.5F, 0F);
   		
   		//leg move parm
   		addk1 = MathHelper.cos(f * 0.4F) * 0.5F * f1;
@@ -584,8 +678,6 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 
 	    if(ent.isSprinting() || f1 > 0.9F) {	//奔跑動作
 			float angleZFast = MathHelper.cos(f2*0.3F);
-	    	//高度
-//		    GL11.glTranslatef(0F, -0.2F, 0F);
 	  	    //手臂晃動 
 		  	this.ArmLeft01.rotateAngleX = -0.6981F;
 	  	    this.ArmRight01.rotateAngleX = -0.6981F;

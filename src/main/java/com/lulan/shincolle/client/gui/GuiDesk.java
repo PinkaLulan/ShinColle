@@ -687,8 +687,14 @@ public class GuiDesk extends GuiContainer {
             			if(this.shipMount != null) this.shipMount.attackTime = 50;
             			break;
             		case 6:  //emotion
-            			this.shipModel.setStateEmotion(ID.S.Emotion, this.shipModel.getRNG().nextInt(6), false);
-            			if(this.shipMount != null) this.shipMount.setStateEmotion(ID.S.Emotion, this.shipMount.getRNG().nextInt(6), false);
+            			if(this.shipModel.getRNG().nextInt(5) == 0) {
+            				this.shipModel.setStateFlag(ID.F.NoFuel, true);
+            			}
+            			else {
+            				this.shipModel.setStateFlag(ID.F.NoFuel, false);
+            				this.shipModel.setStateEmotion(ID.S.Emotion, this.shipModel.getRNG().nextInt(6), false);
+                			if(this.shipMount != null) this.shipMount.setStateEmotion(ID.S.Emotion, this.shipMount.getRNG().nextInt(6), false);
+            			}
             			break;
             		}
         		}
@@ -998,21 +1004,22 @@ public class GuiDesk extends GuiContainer {
 				if(s != null && s.ship instanceof BasicEntityShip) {
 					BasicEntityShip s2 = (BasicEntityShip) s.ship;
 					
-					int m = s2.getStateMinor(ID.M.Morale);
-    		        int ix = 0;
-    		        
-    		        if(m < 901) {
-    		        	ix = 44;
-    		        }
-    		        else if(m < 2101) {
-    		        	ix = 33;
-    		        }
-    		        else if(m < 3901) {
-    		        	ix = 22;
-    		        }
-    		        else if(m < 5101) {
-    		        	ix = 11;
-    		        }
+					int ix = 44;
+					
+					switch(s2.getMoraleLevel()) {
+					case ID.Morale.Excited:
+						ix = 0;
+						break;
+					case ID.Morale.Happy:
+						ix = 11;
+						break;
+					case ID.Morale.Normal:
+						ix = 22;
+						break;
+					case ID.Morale.Tired:
+						ix = 33;
+						break;
+					}
     		        
     		        drawTexturedModalRect(guiLeft+237, guiTop+texty-1, ix, 240, 11, 11);
 				}
@@ -1765,6 +1772,7 @@ public class GuiDesk extends GuiContainer {
             this.shipModel = (BasicEntityShip) EntityList.createEntityByName(shipName, player.worldObj);
             
             if(this.shipModel != null) {
+            	this.shipModel.setStateFlag(ID.F.NoFuel, false);
             	this.shipType = this.shipModel.getShipType();
     			this.shipClass = this.shipModel.getShipClass();
     			

@@ -21,6 +21,7 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.BasicTileEntity;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.FormationHelper;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.PacketHelper;
 
 import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
@@ -59,6 +60,7 @@ public class C2SGUIPackets implements IMessage {
 		public static final byte OpenItemGUI = -21;
 		public static final byte SwapShip = -22;
 		public static final byte SetOPTarClass = -23;
+		public static final byte HitHeight = -24;
 		
 		//tile entity
 		public static final byte TileEntitySync = -11;
@@ -128,6 +130,7 @@ public class C2SGUIPackets implements IMessage {
 	 * type 14:(1 parm) remove banned team: 0:team id<br>
 	 * type 15:(1 parm) change formation: 0:formation id<br>
 	 * type 16:(3 parm) sawp ship position: 0:team id 1:posA 2:posB
+	 * type 17:(3 parm) hit height by pointer: 0:target id, 1:height, 2:angle
 	 */
 	public C2SGUIPackets(EntityPlayer player, int type, int...parms) {
         this.player = player;
@@ -666,6 +669,22 @@ public class C2SGUIPackets implements IMessage {
 				}//end get player
 			}
 			break;
+		case PID.HitHeight:
+			{
+				this.entityID = buf.readInt();  //player eid, NO USE
+				this.worldID = buf.readInt();   //world id
+				this.entityID = buf.readInt();  //entitty id
+				this.value1 = buf.readInt();    //hit height
+				this.value2 = buf.readInt();    //hit angle
+				
+				Entity getEnt = EntityHelper.getEntityByID(this.entityID, this.worldID, false);
+				
+				if(getEnt instanceof BasicEntityShip) {
+					((BasicEntityShip) getEnt).setHitHeight(this.value1);
+					((BasicEntityShip) getEnt).setHitAngle(this.value2);
+				}
+			}
+			break;
 		}//end packet type switch
 	}
 
@@ -712,6 +731,7 @@ public class C2SGUIPackets implements IMessage {
 		case PID.SetFormation:
 		case PID.OpenItemGUI:
 		case PID.SwapShip:
+		case PID.HitHeight:
 			{
 				buf.writeByte(this.type);
 				buf.writeInt(this.player.getEntityId());
