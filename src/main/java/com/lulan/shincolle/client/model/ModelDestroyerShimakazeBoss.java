@@ -407,55 +407,9 @@ public class ModelDestroyerShimakazeBoss extends ModelBase implements IModelEmot
 	    	this.EarR02.rotateAngleY = 0F;
 	    	this.EarR02.rotateAngleZ = 0.5F;
   		}
-	    else {
-	    	startEmo2 = ent.getHeadTiltTick();
-	    	
-	    	//頭部傾斜動作, 只在奔跑以外時roll
-	    	if(startEmo2 > 0) {
-	    		--startEmo2;
-	    		ent.setHeadTiltTick(startEmo2);
-	    	}
-	    	
-		    if(startEmo2 <= 0) {
-		    	startEmo2 = 360;
-		    	ent.setHeadTiltTick(startEmo2);	//cd = 6sec  	
-		    	
-		    	if(rand.nextInt(3) == 0) {
-		    		ent.setStateFlag(ID.F.HeadTilt, true);
-		    	}
-		    	else {
-		    		ent.setStateFlag(ID.F.HeadTilt, false);
-		    	}
-		    }
-	    }//end if sprint
-	    
-	  //roll頭部傾斜表情
-	    if(ent.getStateFlag(ID.F.HeadTilt)) {
-	    	if(ent.getStateEmotion(ID.S.Emotion2) == 1) {	//之前已經傾斜, 則繼續傾斜
-	    		this.Head.rotateAngleZ = -0.24F;
-	    	}
-	    	else {
-		    	this.Head.rotateAngleZ = (360 - startEmo2) * -0.03F;
-		    	
-		    	if(this.Head.rotateAngleZ < -0.24F) {
-		    		ent.setStateEmotion(ID.S.Emotion2, 1, false);
-		    		this.Head.rotateAngleZ = -0.24F;
-		    	}
-	    	}	
-	    }
-	    else {
-	    	if(ent.getStateEmotion(ID.S.Emotion2) == 0) {	//維持之前角度
-	    		this.Head.rotateAngleZ = 0F;
-	    	}
-	    	else {
-		    	this.Head.rotateAngleZ = -0.24F + (360 - startEmo2) * 0.03F;
-		    	
-		    	if(this.Head.rotateAngleZ > 0F) {
-		    		this.Head.rotateAngleZ = 0F;
-		    		ent.setStateEmotion(ID.S.Emotion2, 0, false);
-		    	}
-	    	}
-	    }
+
+	    //head tilt angle
+	    this.Head.rotateAngleZ = EmotionHelper.getHeadTiltAngle(ent, f2);
   		
 	    if(ent.isRiding()) {  //騎乘動作
 	    	if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {	

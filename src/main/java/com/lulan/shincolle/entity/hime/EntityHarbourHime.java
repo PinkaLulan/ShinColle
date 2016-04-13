@@ -304,7 +304,7 @@ public class EntityHarbourHime extends BasicEntityShipCV {
 			}
 		}
 	}
-
+	
 
 }
 

@@ -369,6 +369,8 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	public void onUpdate() {
 		super.onUpdate();
 		
+		this.updateArmSwingProgress();
+		
 		//apply movement by key pressed
 		if(this.host != null && !host.getStateFlag(ID.F.NoFuel) &&
 		   this.seat2 != null && this.seat2.riddenByEntity != null && this.keyPressed > 0) {
@@ -1294,7 +1296,30 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	public void setAttackAniTick(int par1) {
 		this.StartEmotion3 = par1;
 	}
+	
+	@Override
+	public float getSwingTime(float partialTick) {
+		return this.getSwingProgress(partialTick);
+	}
+	
+	@Override
+    protected void updateArmSwingProgress() {
+        int swingMaxTick = 6;
+        
+        if(this.isSwingInProgress){
+            ++this.swingProgressInt;
+            
+            if(this.swingProgressInt >= swingMaxTick) {
+                this.swingProgressInt = 0;
+                this.isSwingInProgress = false;
+            }
+        }
+        else {
+            this.swingProgressInt = 0;
+        }
 
+        this.swingProgress = (float)this.swingProgressInt / (float)swingMaxTick;
+    }
     
 	
 }

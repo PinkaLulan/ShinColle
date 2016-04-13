@@ -791,6 +791,11 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack {
 	public void setAttackAniTick(int par1) {
 		this.StartEmotion3 = par1;
 	}
+
+	@Override
+	public float getSwingTime(float partialTick) {
+		return 0;
+	}
 	
 
 }

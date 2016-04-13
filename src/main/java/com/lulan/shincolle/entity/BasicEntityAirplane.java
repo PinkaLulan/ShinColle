@@ -764,6 +764,11 @@ abstract public class BasicEntityAirplane extends EntityLiving implements IShipC
 	public boolean canBePushed() {
         return false;
     }
+	
+	@Override
+	public float getSwingTime(float partialTick) {
+		return 0;
+	}
 
 	
 }

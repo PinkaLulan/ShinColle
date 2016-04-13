@@ -320,6 +320,9 @@ gui.shincolle:book.chap3.text13d1=以下動作會影響情緒變化：<br><br>§
 gui.shincolle:book.chap3.title14=餵食
 gui.shincolle:book.chap3.text14d0=船艦一般不需要餵食，不過主人可以透過餵食來手動補充怨念、彈藥跟提高情緒。<br><br>對船艦§9右鍵使用§0食物或者怨念、彈藥、深海金屬、多金屬結核會餵食該船艦，並提昇其怨念、彈藥等。<br><br>在一段時間內能§9餵食的次數有限制§0，餵飽後需隔一段時間才能繼續餵食。
 gui.shincolle:book.chap3.text14d1=§9怨念、食物道具：§0<br>提高情緒、怨念值。<br><br>§9彈藥：§0<br>提高情緒，彈藥值。回復彈藥量會比船艦自動使用多一些。<br><br>§9深海金屬、多金屬結核：§0<br>恢復艦載機數量。
+gui.shincolle:book.chap3.title15=撫摸
+gui.shincolle:book.chap3.text15d0=主人可以藉由撫摸來獎勵或者單純騷擾深海棲艦，正確專業的撫摸可以有效§9提高棲艦的情緒狀態§0，相反的如果撫摸錯誤的話可能會吃上幾發魚雷。<br><br>§9撫摸方式§0：<br>手持§dヲ級指揮權杖§0並按下§9CTRL§0就會轉為撫摸模式，對棲艦按住§9右鍵§0就會撫摸該棲艦。
+gui.shincolle:book.chap3.text15d1=依照十字游標所指到的棲艦§9高度位置§0跟§9前後左右角度§0，會撫摸到的部位分為：頭頂、頭、臉、脖子、歐派、肚子、下腹部、腳、手、屁股、背後。<br><br>不同棲艦個體會有不同的敏感部位，請撫摸時小心注意其反應。
  
 # GUI: Book Text Chap 4
 gui.shincolle:book.chap4.title=深海棲艦列表
@@ -394,7 +397,7 @@ gui.shincolle:book.chap5.text6d0=
 gui.shincolle:book.chap5.text6d1=§9名稱：§0 加賀<br><br>§9艦種：§0 加賀級 航空母艦<br><br>§9特殊能力：§0 無<br><br>§9其他能力：§0 無<br><br>不知道為什麼偶爾會冒出貓耳貓尾的空母，搭載的飛機數量多到讓人感到煩躁。
 gui.shincolle:book.chap5.title7=
 gui.shincolle:book.chap5.text7d0=
-gui.shincolle:book.chap5.text7d1=§9名稱：§0 赤城<br><br>§9艦種：§0 赤城級 航空母艦<br><br>§9特殊能力：§0 無<br><br>§9其他能力：§0 無<br><br>
+gui.shincolle:book.chap5.text7d1=§9名稱：§0 赤城<br><br>§9艦種：§0 赤城級 航空母艦<br><br>§9特殊能力：§0 無<br><br>§9其他能力：§0 無<br><br>不知道為什麼偶爾會冒出貓耳貓尾，出現時據說會把附近的深海棲艦全部吃掉的恐怖空母。
 
 # GUI: Book Text Chap 6
 gui.shincolle:book.chap6.title=裝備列表

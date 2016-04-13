@@ -43,8 +43,9 @@ public interface IShipEmotion extends IShipFlags {
 	/**Get tick time for emotion count */
 	public int getTickExisted();
 	
-	/**Get attack time, sit, run state */
+	/**Get attack, sit, run state */
 	public int getAttackTime();
+	public float getSwingTime(float partialTick);
 	public boolean getIsRiding();
 	public boolean getIsSprinting();
 	public boolean getIsSitting();

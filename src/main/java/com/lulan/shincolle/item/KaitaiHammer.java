@@ -58,12 +58,6 @@ public class KaitaiHammer extends BasicItem {
 		if(!player.worldObj.isRemote && entity instanceof BasicEntityShip) {
 			//player is owner
 			if(EntityHelper.checkSameOwner(player, entity) || EntityHelper.checkOP(player)) {
-				//show emotes
-				((BasicEntityShip)entity).applyParticleEmotion(8);
-				
-				//emotes AOE
-				EntityHelper.applyShipEmotesAOE(player.worldObj, entity.posX, entity.posY, entity.posZ, 10D, 6);
-				
 				entity.attackEntityFrom(DamageSource.causePlayerDamage(player), ((BasicEntityShip) entity).getMaxHealth() * 1.1F);
 				
 				//item meta+1
