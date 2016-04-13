@@ -105,6 +105,9 @@ public class EntityHarbourHime extends BasicEntityShipCV {
 		            			hitEntity.heal(4F + hitEntity.getMaxHealth() * 0.06F + this.getLevel() * 0.2F);
 		            			healCount--;
 			            	}
+	            			
+	            			//grudge--
+	            			this.setStateMinor(ID.M.NumGrudge, this.getStateMinor(ID.M.NumGrudge) - 50);
 		            	}
 		            }
 				}//end heal ability
@@ -181,7 +184,8 @@ public class EntityHarbourHime extends BasicEntityShipCV {
   		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
   		
   		//morale--
-  		this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - 1);
+  		decrMorale(2);
+  		setCombatTick(this.ticksExisted);
   	
   		//play attack effect
         applySoundAtAttacker(2, target);
@@ -213,6 +217,7 @@ public class EntityHarbourHime extends BasicEntityShipCV {
   		//play target effect
         applySoundAtTarget(2, target);
         applyParticleAtTarget(2, target, distVec);
+      	applyEmotesReaction(3);
           
   		return true;
   	}

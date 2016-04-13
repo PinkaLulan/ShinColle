@@ -147,7 +147,8 @@ public class EntityBattleshipHime extends BasicEntityShip {
 		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
 		
   		//morale--
-  		this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - 1);
+		decrMorale(2);
+  		setCombatTick(this.ticksExisted);
 	
 		//play attack effect
         applySoundAtAttacker(2, target);
@@ -179,6 +180,7 @@ public class EntityBattleshipHime extends BasicEntityShip {
         //play target effect
         applySoundAtTarget(2, target);
         applyParticleAtTarget(2, target, distVec);
+      	applyEmotesReaction(3);
         
         return true;
   	}

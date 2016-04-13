@@ -55,7 +55,7 @@ public class GuiBook {
 	public static int PageTLX = 13;    //left page X pos for text
 	public static int PageTRX = 162;   //right page X pos for text
 	public static int PageTY = 58;     //page Y pos for text
-	public static final int[] PageLimit = new int[] {1,18,4,14,14,6,30};  //max page number
+	public static final int[] PageLimit = new int[] {1,20,4,14,14,6,30};  //max page number
 	
 	public GuiBook() {}
 	
@@ -217,6 +217,7 @@ public class GuiBook {
 //			tm.bindTexture(guiBookPic02); TODO
 			break;
 		}
+		
 		//draw picture
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);	//reset RGBA
 		GL11.glEnable(GL11.GL_BLEND);

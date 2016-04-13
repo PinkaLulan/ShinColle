@@ -185,7 +185,9 @@ public class EntityBattleshipYMTBoss extends BasicEntityShipHostile implements I
         	//display hit particle on target
 	        TargetPoint point1 = new TargetPoint(this.dimension, target.posX, target.posY, target.posZ, 64D);
 			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 9, false), point1);
-        }
+			//show emotes
+			applyEmotesReaction(3);
+	    }
 
 	    return isTargetHurt;
 	}
@@ -241,6 +243,9 @@ public class EntityBattleshipYMTBoss extends BasicEntityShipHostile implements I
         	
         	this.setStateEmotion(ID.S.Phase, 1, true);
         }
+        
+        //show emotes
+		applyEmotesReaction(3);
         
         return false;
 	}

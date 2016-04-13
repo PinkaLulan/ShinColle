@@ -3,16 +3,20 @@ package com.lulan.shincolle.utility;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MathHelper;
 
 import com.lulan.shincolle.entity.IShipAttributes;
+import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.reference.Values.N;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 
 /**CALC HELPER
@@ -268,8 +272,122 @@ public class CalcHelper {
 	    
 	    return degree;
 	}
+	
+	/** get entity hit height by player's sight ray (client player sight)
+	 * 
+	 */
+	@SideOnly(Side.CLIENT)
+	public static int getEntityHitHeightByClientPlayer(Entity target) {
+		int result = 0;
+		
+		if(target != null) {
+			float eyeH = 1.62F;  //normal player eye height
+			
+			//calc player eye height
+			EntityPlayer player = ClientProxy.getClientPlayer();
+			
+			if(player.getEyeHeight() != 0.12F) {  //is morph player
+				eyeH = (float) (player.boundingBox.maxY - player.boundingBox.minY + player.getEyeHeight());
+			}
+			
+			//calc sight ray (host to target) length
+			float dx = (float) (player.posX - target.posX);
+			float dz = (float) (player.posZ - target.posZ);
+			float rayLen = MathHelper.sqrt_float(dx * dx + dz * dz + eyeH * eyeH);
+			rayLen = rayLen * MathHelper.sin(player.rotationPitch * Values.N.RAD_MUL);
+			
+			//calc hit height
+			float hitHeight = (float) (player.boundingBox.minY + eyeH - target.boundingBox.minY - rayLen);
+			
+			//hit height convert to percentage
+			if(hitHeight > 0F && hitHeight <= target.height * 1.5F) {
+				result = (int) (hitHeight / target.height * 100F);
+			}
+			else {
+				result = 0;  //not hit, error
+			}
+		}
+		
+		return result;
+	}
+	
+	/** get entity hit height by entity's sight ray */
+	public static int getEntityHitHeight(Entity host, Entity target) {
+		int result = 0;
+		
+		if(host != null && target != null) {
+			//get random eye height
+			float eyeH = host.height * (host.worldObj.rand.nextFloat() * 0.5F + 0.5F);
+			
+			//calc sight ray (host to target) length
+			float dx = (float) (host.posX - target.posX);
+			float dz = (float) (host.posZ - target.posZ);
+			float rayLen = MathHelper.sqrt_float(dx * dx + dz * dz + eyeH * eyeH);
+			rayLen = rayLen * MathHelper.sin(host.rotationPitch * Values.N.RAD_MUL);
+			
+			//calc hit height
+			float hitHeight = (float) (host.boundingBox.minY + eyeH - target.boundingBox.minY - rayLen);
+			
+			//hit height convert to percentage
+			if(hitHeight > 0F && hitHeight <= target.height * 1.5F) {
+				result = (int) (hitHeight / target.height * 100F);
+			}
+			else {
+				result = 0;  //not hit, error
+			}
+		}
+		
+		return result;
+	}
     
-    
+	/** calc entity hit side
+	 * 
+	 *  front: 180
+	 *  back:  0
+	 *  right: 270
+	 *  left:  90
+	 */
+	@SideOnly(Side.CLIENT)
+	public static int getEntityHitSideByClientPlayer(Entity target) {
+		int result = 0;
+		
+		if(target != null) {
+			float angHost = ClientProxy.getClientPlayer().rotationYawHead;
+			float angTarget = 0F;
+			
+			if(target instanceof EntityLivingBase) {
+				angTarget = ((EntityLivingBase) target).renderYawOffset;
+			}
+			else {
+				angTarget = target.rotationYaw;
+			}
+			
+			result = (int) ((angHost % 360 - angTarget % 360) % 360);
+			
+			if(result < 0) result += 360;
+		}
+
+		return result;
+	}
+	
+	/** calc entity hit side
+	 * 
+	 *  front: 180
+	 *  back:  0
+	 *  right: 270
+	 *  left:  90
+	 */
+	public static int getEntityHitSide(Entity host, Entity target) {
+		int result = 0;
+		
+		if(host != null && target != null) {
+			result = (int) ((host.rotationYaw % 360 - target.rotationYaw % 360) % 360);
+			
+			if(result < 0) result += 360;
+		}
+
+		return result;
+	}
     
     
 }

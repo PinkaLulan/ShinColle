@@ -10,16 +10,19 @@ import com.lulan.shincolle.client.gui.GuiFormation;
 import com.lulan.shincolle.client.gui.GuiLargeShipyard;
 import com.lulan.shincolle.client.gui.GuiShipInventory;
 import com.lulan.shincolle.client.gui.GuiSmallShipyard;
+import com.lulan.shincolle.client.gui.GuiVolCore;
 import com.lulan.shincolle.client.gui.inventory.ContainerDesk;
 import com.lulan.shincolle.client.gui.inventory.ContainerFormation;
 import com.lulan.shincolle.client.gui.inventory.ContainerLargeShipyard;
 import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
 import com.lulan.shincolle.client.gui.inventory.ContainerSmallShipyard;
+import com.lulan.shincolle.client.gui.inventory.ContainerVolCore;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.TileEntityDesk;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
+import com.lulan.shincolle.tileentity.TileEntityVolCore;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 import com.lulan.shincolle.utility.EntityHelper;
 
@@ -36,6 +39,7 @@ public class GuiHandler implements IGuiHandler {
 		switch(guiId) {		//判定gui種類
 		case ID.G.SMALLSHIPYARD:	//GUI small shipyard
 			tile = world.getTileEntity(x, y, z);  //確定抓到entity才開ui 以免噴出NPE
+			
 			if(tile != null && tile instanceof TileEntitySmallShipyard) {  //server取得container
 				//sync tile when gui opened
 				((TileEntitySmallShipyard)tile).sendSyncPacket();
@@ -59,6 +63,7 @@ public class GuiHandler implements IGuiHandler {
             break;
 		case ID.G.LARGESHIPYARD:	//GUI large shipyard
 			tile = world.getTileEntity(x, y, z);  //確定抓到entity才開ui 以免噴出NPE
+			
 			if(tile != null && tile instanceof TileMultiGrudgeHeavy) {  //server取得container
 				//sync tile when gui opened
 				((TileMultiGrudgeHeavy)tile).sendSyncPacket();
@@ -96,6 +101,16 @@ public class GuiHandler implements IGuiHandler {
 			props.sendSyncPacket(4);
 			
 			return new ContainerFormation(player.inventory, player);
+		case ID.G.VOLCORE:	//GUI volcano core
+			tile = world.getTileEntity(x, y, z);  //確定抓到entity才開ui 以免噴出NPE
+			
+			if(tile != null && tile instanceof TileEntityVolCore) {  //server取得container
+				//sync tile when gui opened
+				((TileEntityVolCore)tile).sendSyncPacket();
+				
+				return new ContainerVolCore(player.inventory, (TileEntityVolCore) tile);
+			}
+			break;
 		}
 		return null;
 	}
@@ -108,18 +123,21 @@ public class GuiHandler implements IGuiHandler {
 		switch(guiId) {		//判定gui種類
 		case ID.G.SMALLSHIPYARD:	//GUI small shipyard
 			tile = world.getTileEntity(x, y, z);  //確定抓到entity才開ui 以免噴出NPE
+			
 			if (tile != null && tile instanceof TileEntitySmallShipyard) {  //client取得gui
 				return new GuiSmallShipyard(player.inventory, (TileEntitySmallShipyard) tile);
 			}
 			return null;
 		case ID.G.SHIPINVENTORY:	//GUI ship inventory
 			entity = world.getEntityByID(x);	//entity id存在x座標參數上
+			
             if(entity != null && entity instanceof BasicEntityShip) {
 				return new GuiShipInventory(player.inventory,(BasicEntityShip)entity);
 			}
 			return null;
 		case ID.G.LARGESHIPYARD:	//GUI large shipyard
 			tile = world.getTileEntity(x, y, z);  //確定抓到entity才開ui 以免噴出NPE
+			
 			if(tile != null && tile instanceof TileMultiGrudgeHeavy) {  //server取得container
 				return new GuiLargeShipyard(player.inventory, (TileMultiGrudgeHeavy) tile);
 			}
@@ -137,6 +155,13 @@ public class GuiHandler implements IGuiHandler {
 			}
 		case ID.G.FORMATION:		//GUI formation
 			return new GuiFormation(player.inventory);
+		case ID.G.VOLCORE:	//GUI volcano core
+			tile = world.getTileEntity(x, y, z);  //確定抓到entity才開ui 以免噴出NPE
+			
+			if (tile != null && tile instanceof TileEntityVolCore) {  //client取得gui
+				return new GuiVolCore(player.inventory, (TileEntityVolCore) tile);
+			}
+			return null;
 		}
 	
 		return null;

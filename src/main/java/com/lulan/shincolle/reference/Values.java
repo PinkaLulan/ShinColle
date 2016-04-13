@@ -469,6 +469,8 @@ public class Values {
 		put(ID.Icon.WoolB,      new ItemStack(Blocks.wool));
 		put(ID.Icon.SmallSY,    new ItemStack(ModBlocks.BlockSmallShipyard));
 		put(ID.Icon.Wrench,     new ItemStack(ModItems.TargetWrench));
+		put(ID.Icon.VolCore,    new ItemStack(ModBlocks.BlockVolCore));
+		put(ID.Icon.VolBlock,    new ItemStack(ModBlocks.BlockVolBlock));
 		put(ID.Icon.EqCannon0,  new ItemStack(ModItems.EquipCannon, 1, 0));
 		put(ID.Icon.EqCannon1,  new ItemStack(ModItems.EquipCannon, 1, 2));
 		put(ID.Icon.EqCannon2,  new ItemStack(ModItems.EquipCannon, 1, 9));
@@ -524,7 +526,7 @@ public class Values {
 		put(1001, Arrays.asList(new int[] {0, 0, 0, 0},
 								new int[] {0, 1, 0, 0},
 								new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
-								new int[] {2, 0, 3, 17, ID.Icon.Grudge},
+								new int[] {2, 0, 3, 17,  ID.Icon.Grudge},
 								new int[] {2, 0, 23, 17, ID.Icon.IronIG},
 								new int[] {2, 0, 81, 17, ID.Icon.AbyssIG}));
 		//page 2: polymetal
@@ -532,7 +534,7 @@ public class Values {
 								new int[] {0, 1, 0, 0},
 								new int[] {1, 0, 0, -6, 0, 0, 56, 100, 56},
 								new int[] {1, 1, 0, 73, 0, 0, 112, 100, 59},
-								new int[] {2, 0, 5, 52, ID.Icon.PolymOre},
+								new int[] {2, 0, 5, 52,  ID.Icon.PolymOre},
 								new int[] {2, 0, 30, 52, ID.Icon.PolymIG},
 								new int[] {2, 0, 55, 52, ID.Icon.PolymB},
 								new int[] {2, 0, 80, 52, ID.Icon.PolymBG}));
@@ -540,9 +542,9 @@ public class Values {
 		put(1003, Arrays.asList(new int[] {0, 0, 0, 0},
 								new int[] {0, 1, 0, 0},
 								new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
-								new int[] {2, 0, 3,  -3,  ID.Icon.IronIG},
-								new int[] {2, 0, 23, -3,  ID.Icon.IronIG},
-								new int[] {2, 0, 43, -3,  ID.Icon.IronIG},
+								new int[] {2, 0, 3,  -3, ID.Icon.IronIG},
+								new int[] {2, 0, 23, -3, ID.Icon.IronIG},
+								new int[] {2, 0, 43, -3, ID.Icon.IronIG},
 								new int[] {2, 0, 3,  17, ID.Icon.IronIG},
 								new int[] {2, 0, 23, 17, ID.Icon.Grudge},
 								new int[] {2, 0, 43, 17, ID.Icon.IronIG},
@@ -551,9 +553,9 @@ public class Values {
 								new int[] {2, 0, 43, 37, ID.Icon.IronIG},
 								new int[] {2, 0, 81, 17, ID.Icon.AmmoL},
 								new int[] {2, 1, 3, 110, ID.Icon.AmmoL},
-								new int[] {2, 1, 28, 110, ID.Icon.AmmoLC},
-								new int[] {2, 1, 53, 110, ID.Icon.AmmoH},
-								new int[] {2, 1, 78, 110, ID.Icon.AmmoHC}));
+								new int[] {2, 1, 28, 110,ID.Icon.AmmoLC},
+								new int[] {2, 1, 53, 110,ID.Icon.AmmoH},
+								new int[] {2, 1, 78, 110,ID.Icon.AmmoHC}));
 		//page 4: repair bucket
 		put(1004, Arrays.asList(new int[] {0, 0, 0, 0},
 								new int[] {0, 1, 0, 0},
@@ -565,9 +567,9 @@ public class Values {
 		put(1005, Arrays.asList(new int[] {0, 0, 0, 0},
 								new int[] {0, 1, 0, 0},
 								new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
-								new int[] {2, 0, 3,  -3,  ID.Icon.AbyssIG},
-								new int[] {2, 0, 23, -3,  ID.Icon.NStar},
-								new int[] {2, 0, 43, -3,  ID.Icon.AbyssIG},
+								new int[] {2, 0, 3,  -3, ID.Icon.AbyssIG},
+								new int[] {2, 0, 23, -3, ID.Icon.NStar},
+								new int[] {2, 0, 43, -3, ID.Icon.AbyssIG},
 								new int[] {2, 0, 3,  17, ID.Icon.AbyssIG},
 								new int[] {2, 0, 43, 17, ID.Icon.AbyssIG},
 								new int[] {2, 0, 3,  37, ID.Icon.AbyssIG},
@@ -704,6 +706,34 @@ public class Values {
 								new int[] {2, 0, 43, 17, ID.Icon.AbyssIG},
 								new int[] {2, 0, 23, 37, ID.Icon.AbyssIG},
 								new int[] {2, 0, 81, 17, ID.Icon.Wrench}));
+		//page 19: volcano block
+		put(1019, Arrays.asList(new int[] {0, 0, 0, 0},
+								new int[] {0, 1, 0, 0},
+								new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
+								new int[] {2, 0, 3,  -3, ID.Icon.ObsidianB},
+								new int[] {2, 0, 23, -3, ID.Icon.GrudgeBH},
+								new int[] {2, 0, 43, -3, ID.Icon.ObsidianB},
+								new int[] {2, 0, 3,  17, ID.Icon.GrudgeBH},
+								new int[] {2, 0, 23, 17, ID.Icon.LaBucket},
+								new int[] {2, 0, 43, 17, ID.Icon.GrudgeBH},
+								new int[] {2, 0, 3,  37, ID.Icon.ObsidianB},
+								new int[] {2, 0, 23, 37, ID.Icon.GrudgeBH},
+								new int[] {2, 0, 43, 37, ID.Icon.ObsidianB},
+								new int[] {2, 0, 81, 17, ID.Icon.VolBlock}));
+		//page 20: volcano core
+		put(1020, Arrays.asList(new int[] {0, 0, 0, 0},
+								new int[] {0, 1, 0, 0},
+								new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
+								new int[] {2, 0, 3,  -3, ID.Icon.ObsidianB},
+								new int[] {2, 0, 23, -3, ID.Icon.VolCore},
+								new int[] {2, 0, 43, -3, ID.Icon.ObsidianB},
+								new int[] {2, 0, 3,  17, ID.Icon.VolCore},
+								new int[] {2, 0, 23, 17, ID.Icon.LaBucket},
+								new int[] {2, 0, 43, 17, ID.Icon.VolCore},
+								new int[] {2, 0, 3,  37, ID.Icon.ObsidianB},
+								new int[] {2, 0, 23, 37, ID.Icon.VolCore},
+								new int[] {2, 0, 43, 37, ID.Icon.ObsidianB},
+								new int[] {2, 0, 81, 17, ID.Icon.VolCore}));
 		//chap 2: construction
 		//page 0: vent
 		put(2000, Arrays.asList(new int[] {0, 0, 0, 0},

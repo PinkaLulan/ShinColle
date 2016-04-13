@@ -146,7 +146,8 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall {
 		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
 		
   		//morale--
-  		this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - 1);
+		decrMorale(2);
+  		setCombatTick(this.ticksExisted);
 		
 		//heavy ammo--
         if(!decrAmmoNum(1, this.getAmmoConsumption())) {
@@ -182,6 +183,9 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall {
         	
         	this.setStateEmotion(ID.S.Phase, 1, true);
         }
+        
+        //show emotes
+      	applyEmotesReaction(3);
         
         return false;
 	}

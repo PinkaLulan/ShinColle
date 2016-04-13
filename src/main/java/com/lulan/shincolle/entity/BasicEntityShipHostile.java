@@ -45,7 +45,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
     //model display
     /**EntityState: 0:HP State 1:Emotion 2:Emotion2*/
 	protected byte[] StateEmotion;		//表情1
-	protected int StartEmotion, StartEmotion2, StartEmotion3;		//表情2 開始時間
+	protected int StartEmotion, StartEmotion2, StartEmotion3, StartEmotion4;  //表情tick
 	protected boolean headTilt;
 	protected float[] rotateAngle;		//模型旋轉角度, 用於手持物品render
 	protected int StartSoundHurt;		//hurt sound ticks
@@ -167,6 +167,9 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
   			
   	        if(reduceAtk < 1) reduceAtk = 1;
   	        
+  	        //show emotes
+			applyEmotesReaction(2);
+  	        
   	        return super.attackEntityFrom(attacker, reduceAtk);
   		}
     	
@@ -236,12 +239,14 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	@Override
 	public boolean getStateFlag(int flag) {		//hostile mob: for attack and headTile check
 		switch(flag) {
-		default:
-			return true;
 		case ID.F.HeadTilt:
 			return this.headTilt;
 		case ID.F.OnSightChase:
 			return false;
+		case ID.F.NoFuel:
+			return false;
+		default:
+			return true;
 		}
 	}
 
@@ -361,7 +366,9 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
         	//display hit particle on target
 	        TargetPoint point1 = new TargetPoint(this.dimension, target.posX, target.posY, target.posZ, 64D);
 			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 9, false), point1);
-        }
+  	        //show emotes
+			applyEmotesReaction(3);
+	    }
 
 	    return isTargetHurt;
 	}
@@ -563,6 +570,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		
 		//time --
 		if(this.StartSoundHurt > 0) this.StartSoundHurt--;
+		if(this.StartEmotion4 > 0) this.StartEmotion4--;
 		
 		//client side
 		if(this.worldObj.isRemote && this.isInWater()) {
@@ -587,7 +595,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		//server side
         if((!worldObj.isRemote)) {      	
         	//check every 10 ticks
-        	if(ticksExisted % 10 == 0) {
+        	if(ticksExisted % 16 == 0) {
         		//set air value
         		if(this.getAir() < 300) {
                 	setAir(300);
@@ -600,31 +608,16 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
             	if(this.getAttackTarget() != null) {
             		this.setEntityTarget(this.getAttackTarget());
             	}
-            	
-//      			LogHelper.info("DEBUG: update hostile ship: "+this.getEntityTarget());
-//      			LogHelper.info("DEBUG: taget:   "+this.getEntityTarget()+"      "+this.getAttackTarget());
-        	}//end every 10 ticks	
-        }
+
+            	//check every 256 ticks
+            	if(this.ticksExisted % 256 == 0) {
+            		applyEmotesReaction(4);
+            	}//end every 256 ticks
+        	}//end every 16 ticks	
+        }//end server side
         //client side
         else {
-        	if(this.ticksExisted % 100 == 0) {
-	        	//check hp state
-	    		float hpState = this.getHealth() / this.getMaxHealth();
-	    		if(hpState > 0.75F) {		//normal
-	    			this.setStateEmotion(ID.S.HPState, ID.HPState.NORMAL, false);
-	    		}
-	    		else if(hpState > 0.5F){	//minor damage
-	    			this.setStateEmotion(ID.S.HPState, ID.HPState.MINOR, false);
-	    		}
-				else if(hpState > 0.25F){	//moderate damage
-					this.setStateEmotion(ID.S.HPState, ID.HPState.MODERATE, false);   			
-				}
-				else {						//heavy damage
-					this.setStateEmotion(ID.S.HPState, ID.HPState.HEAVY, false);
-				}
-        	}	
-    		
-        	if(this.ticksExisted % 20 == 0) {
+        	if(this.ticksExisted % 16 == 0) {
     			//generate HP state effect
     			switch(getStateEmotion(ID.S.HPState)) {
     			case ID.HPState.MINOR:
@@ -642,8 +635,25 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
     			default:
     				break;
     			}
-    		}
-        }
+    			
+    			if(this.ticksExisted % 128 == 0) {
+    	        	//check hp state
+    	    		float hpState = this.getHealth() / this.getMaxHealth();
+    	    		if(hpState > 0.75F) {		//normal
+    	    			this.setStateEmotion(ID.S.HPState, ID.HPState.NORMAL, false);
+    	    		}
+    	    		else if(hpState > 0.5F){	//minor damage
+    	    			this.setStateEmotion(ID.S.HPState, ID.HPState.MINOR, false);
+    	    		}
+    				else if(hpState > 0.25F){	//moderate damage
+    					this.setStateEmotion(ID.S.HPState, ID.HPState.MODERATE, false);   			
+    				}
+    				else {						//heavy damage
+    					this.setStateEmotion(ID.S.HPState, ID.HPState.HEAVY, false);
+    				}
+            	}//end every 128 ticks
+    		}//end every 16 ticks
+        }//end client side
 	}
 	
 	@Override
@@ -811,6 +821,168 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	public void setAttackAniTick(int par1) {
 		this.StartEmotion3 = par1;
 	}
+	
+	/** spawn emotion particle */
+  	public void applyParticleEmotion(int type) {
+  		float h = this.height * 0.6F;
+  		
+  		//server side emotes
+  		if(!this.worldObj.isRemote) {
+  			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+  	  		
+  	  		switch(type) {
+  			default:
+  	      		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 36, h, 0, type), point);
+  				break;
+  	  		}
+  		}
+  		//client side emotes
+  		else {
+  			ParticleHelper.spawnAttackParticleAtEntity(this, h, 0, type, (byte)36);
+//  			ParticleHelper.spawnAttackParticleAt(posX, posY, posZ, h, 0, type, (byte)36);
+  		}
+  	}
+  	
+  	/** emotes method
+  	 * 
+  	 *  type:
+  	 *  2: damaged
+  	 *  3: attack
+  	 *  4: idle
+  	 *  6: shock
+  	 */
+  	public void applyEmotesReaction(int type) {
+  		switch(type) {
+  		case 2:  //damaged
+  			if(this.StartEmotion4 <= 0) {
+  				this.StartEmotion4 = 40;
+				reactionDamaged();
+			}
+  			break;
+  		case 3:  //attack
+  			if(this.rand.nextInt(7) == 0 && this.StartEmotion4 <= 0) {
+  				this.StartEmotion4 = 60;
+				reactionAttack();
+			}
+  			break;
+  		case 6:  //shock
+			reactionShock();
+  			break;
+  		default: //idle
+  			if(this.rand.nextInt(3) == 0 && this.StartEmotion4 <= 0) {
+  				this.StartEmotion4 = 20;
+				reactionIdle();
+			}
+  			break;
+  		}
+  	}
+  	
+  	/** shock emotes */
+  	protected void reactionShock() {
+		switch(this.rand.nextInt(6)) {
+		case 1:
+			applyParticleEmotion(0);  //drop
+			break;
+		case 2:
+			applyParticleEmotion(8);  //cry
+			break;
+		case 3:
+			applyParticleEmotion(4);  //!
+			break;
+		default:
+			applyParticleEmotion(12);  //omg
+			break;
+		}
+  	}
+  	
+  	/** idle emotes */
+  	protected void reactionIdle() {
+		switch(this.rand.nextInt(15)) {
+		case 3:
+			applyParticleEmotion(7);  //note
+			break;
+		case 6:
+			applyParticleEmotion(3);  //?
+			break;
+		case 7:
+			applyParticleEmotion(16);  //haha
+			break;
+		case 9:
+			applyParticleEmotion(29);  //blink
+			break;
+		case 10:
+			applyParticleEmotion(18);  //sigh
+			break;
+		default:
+			applyParticleEmotion(11);  //find
+			break;
+		}
+  	}
+  	
+  	/** idle emotes */
+  	protected void reactionAttack() {
+		switch(this.rand.nextInt(15)) {
+		case 1:
+			applyParticleEmotion(33);  //:p
+			break;
+		case 2:
+			applyParticleEmotion(17);  //gg
+			break;
+		case 3:
+			applyParticleEmotion(7);  //note
+			break;
+		case 4:
+			applyParticleEmotion(9);  //hungry
+			break;
+		case 5:
+			applyParticleEmotion(1);  //love
+			break;
+		case 7:
+			applyParticleEmotion(16);  //haha
+			break;
+		case 8:
+			applyParticleEmotion(14);  //+_+
+			break;
+		case 10:
+			applyParticleEmotion(18);  //sigh
+			break;
+		default:
+			applyParticleEmotion(4);  //!
+			break;
+		}
+  	}
+  	
+  	/** damaged emotes */
+  	protected void reactionDamaged() {
+  		switch(this.rand.nextInt(15)) {
+		case 1:
+			applyParticleEmotion(4);  //!
+			break;
+		case 2:
+			applyParticleEmotion(5);  //...
+			break;
+		case 3:
+			applyParticleEmotion(2);  //panic
+			break;
+		case 4:
+			applyParticleEmotion(3);  //?
+			break;
+		case 5:
+			applyParticleEmotion(8);  //cry
+			break;
+		case 7:
+			applyParticleEmotion(10);  //dizzy
+			break;
+		case 8:
+			applyParticleEmotion(0);  //sweat
+			break;
+		default:
+			applyParticleEmotion(6);  //angry
+			break;
+		}
+  	}
+  	
+  	
 
 
 }

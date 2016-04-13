@@ -102,11 +102,11 @@ public class EntityFXStickyLightning extends EntityFX {
             this.particleBlue = 1F;
             this.particleAlpha = 1F;
             this.particleMaxAge = life;
-            this.numStem = 8;
+            this.numStem = 12;
             this.scaleX = 0.75F;
             this.scaleY = 0.75F;
             this.scaleZ = 0.75F;
-            this.stemWidth = 0.005F;
+            this.stemWidth = 0.008F;
             
             //random position
             this.posX = this.host.posX + rand.nextFloat() * 0.25F - 0.125F;

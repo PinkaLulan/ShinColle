@@ -458,9 +458,14 @@ public class ParticleHelper {
 			}
 			break;
 		case 36:	//emotion
-			EntityFXEmotion partEmo = new EntityFXEmotion(world, 
-  		          posX, posY, posZ, (float)lookX, (float)lookY, (int)lookZ);
+			EntityFXEmotion partEmo = new EntityFXEmotion(world, null,
+					posX, posY, posZ, (float)lookX, (float)lookY, (int)lookZ);
 			Minecraft.getMinecraft().effectRenderer.addEffect(partEmo);
+			break;
+		case 37:	//white spray
+			EntityFXSpray particleSpray12 = new EntityFXSpray(world, 
+            		posX, posY, posZ, lookX, lookY, lookZ, 12);
+        	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray12);
 			break;
 		default:
 			break;		
@@ -577,6 +582,16 @@ public class ParticleHelper {
         	Minecraft.getMinecraft().effectRenderer.addEffect(light5);
         	EntityFXStickyLightning light6 = new EntityFXStickyLightning(world, ent, (float)par1, (int)par2, (int)par3);
         	Minecraft.getMinecraft().effectRenderer.addEffect(light6);
+			break;
+		case 36:	//emotion
+			if(ent == null) {
+				return;
+			}
+			else {
+				EntityFXEmotion partEmo = new EntityFXEmotion(world, ent,
+						ent.posX, ent.posY, ent.posZ, (float)par1, (float)par2, (int)par3);
+				Minecraft.getMinecraft().effectRenderer.addEffect(partEmo);
+			}
 			break;
 		default:
 			break;

@@ -273,12 +273,12 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	        }
 			
 			//caress head mode: morale +3
-			if(itemstack.getItem() == ModItems.PointerItem && itemstack.getItemDamage() > 2) {
+			if(itemstack.getItem() == ModItems.PointerItem && !this.worldObj.isRemote && itemstack.getItemDamage() > 2) {
 				//add little morale to host
 				int t = this.host.ticksExisted - this.host.getMoraleTick();
 				int m = this.host.getStateMinor(ID.M.Morale);
 				
-				if(t > 3 && m < 6000) {  //if caress > 3 ticks
+				if(t > 3 && m < 6100) {  //if caress > 3 ticks
 					this.host.setMoraleTick(this.ticksExisted);
 					this.host.setStateMinor(ID.M.Morale, m + 3);
 				}
@@ -355,7 +355,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
         }
 		
 		//shift+right click時打開host GUI
-		if(player.isSneaking() && EntityHelper.checkSameOwner(player, this.host)) {  
+		if(player.isSneaking() && !this.worldObj.isRemote && EntityHelper.checkSameOwner(player, this.host)) {  
 			int eid = this.host.getEntityId();
 			//player.openGui vs FMLNetworkHandler ?
     		FMLNetworkHandler.openGui(player, ShinColle.instance, ID.G.SHIPINVENTORY, this.worldObj, this.host.getEntityId(), 0, 0);
@@ -679,6 +679,9 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   			}
   	    }
 
+  	    //show emotes
+  	    if(host != null) host.applyEmotesReaction(3);
+
   	    return isTargetHurt;
   	}
     
@@ -787,6 +790,9 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	        TargetPoint point1 = new TargetPoint(this.dimension, target.posX, target.posY, target.posZ, 64D);
 			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 9, false), point1);
         }
+	    
+	    //show emotes
+  	    if(host != null) host.applyEmotesReaction(3);
 
 	    return isTargetHurt;
 	}
@@ -857,6 +863,9 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
         		tarX, tarY+target.height*0.2F, tarZ, launchPos, atkHeavy, kbValue, isDirect, -1F);
         this.worldObj.spawnEntityInWorld(missile);
   		
+        //show emotes
+  	    if(host != null) host.applyEmotesReaction(3);
+  	    
         return true;
 	}
 	

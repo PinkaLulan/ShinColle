@@ -1,7 +1,10 @@
 package com.lulan.shincolle.entity;
 
+import java.util.Random;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.item.EntityItem;
@@ -65,6 +68,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	protected ExtendShipProps ExtProps;			//entity額外NBT紀錄
 	protected ShipPathNavigate shipNavigator;	//水空移動用navigator
 	protected ShipMoveHelper shipMoveHelper;
+	protected EntityLivingBase aiTarget;		//target for AI
 	protected Entity guardedEntity;				//guarding target
 	protected Entity atkTarget;					//attack target
 	protected Entity rvgTarget;					//revenge target
@@ -86,7 +90,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	 *  10:followMin 11:followMax 12:FleeHP 13:TargetAIType 14:guardX 15:guardY 16:guardZ 17:guardDim
 	 *  18:guardID 19:shipType 20:shipClass 21:playerUID 22:shipUID 23:playerEID 24:guardType 
 	 *  25:damageType 26:formationType 27:formationPos 28:grudgeConsumption 29:ammoConsumption
-	 *  30:morale 31:Saturation 32:MaxSaturation*/
+	 *  30:morale 31:Saturation 32:MaxSaturation 33:hitHeight 34:HitAngle*/
 	protected int[] StateMinor;
 	/** equip effect: 0:critical 1:doubleHit 2:tripleHit 3:baseMiss 4:atk_AntiAir 5:atk_AntiSS 6:dodge*/
 	protected float[] EffectEquip;
@@ -115,7 +119,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	
 	//for model render
 	/** EmotionTicks: 0:FaceTick 1:HeadTiltTick 2:AttackEmoCount 3:MoraleTick 4:EmoParticle CD
-	 *   */
+	 *                5:LastAttackTime */
 	protected int[] EmotionTicks;		//表情開始時間 or 表情計時時間
 	protected float[] rotateAngle;		//模型旋轉角度, 用於手持物品render
 	protected int StartSoundHurt;		//hurt sound ticks
@@ -146,7 +150,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				                     -1, -1, 0,  -1, 0,
 				                     0,  -1, -1, -1, 0,
 				                     0,  0,  0,  0,  0,
-				                     60, 0, 10
+				                     60, 0, 10, 0, 0, -1
 				                    };
 		this.EffectEquip = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F};
 		this.EffectEquipBU = this.EffectEquip.clone();
@@ -177,13 +181,16 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.shipMoveHelper = new ShipMoveHelper(this, 25F);
 		
 		//for render
-		this.EmotionTicks = new int[] {0, 0, 0, 0, 0};
+		this.EmotionTicks = new int[] {0, 0, 0, 0, 0, 0};
 		this.rotateAngle = new float[] {0F, 0F, 0F};		//model rotate angle (right hand)
 		
 		//for init
 		this.initAI = false;			//normal init
 		this.initWaitAI = false;		//slow init after player entity loaded
 		this.isUpdated = false;
+		
+		//choice random sensitive body part
+		randomSensitiveBody();
 	}
 	
 	@Override
@@ -403,8 +410,34 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		return this.EmotionTicks[2];
 	}
 	
+	//last caress time
 	public int getMoraleTick() {
 		return this.EmotionTicks[3];
+	}
+	
+	//emotes CD
+	public int getEmotesTick() {
+		return this.EmotionTicks[4];
+	}
+	
+	//last attack time
+	public int getCombatTick() {
+		return this.EmotionTicks[5];
+	}
+	
+	/** 被pointer item點到的高度, 以百分比值表示 */
+	public int getHitHeight() {
+		return this.StateMinor[ID.M.HitHeight];
+	}
+	
+	/** 被pointer item點到的角度, 0~-360
+	 *  front: -180
+	 *  back: 0/-360
+	 *  right:-90
+	 *  left:-270
+	 */
+	public int getHitAngle() {
+		return this.StateMinor[ID.M.HitAngle];
 	}
 	
 	@Override
@@ -924,8 +957,34 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.EmotionTicks[2] = par1;
 	}
 	
+	//last caress time
 	public void setMoraleTick(int par1) {
 		this.EmotionTicks[3] = par1;
+	}
+	
+	//emotes CD
+	public void setEmotesTick(int par1) {
+		this.EmotionTicks[4] = par1;
+	}
+	
+	//last attack time
+	public void setCombatTick(int par1) {
+		this.EmotionTicks[5] = par1;
+	}
+	
+	/** 被pointer item點到的高度, 以百分比值表示 */
+	public void setHitHeight(int par1) {
+		this.StateMinor[ID.M.HitHeight] = par1;
+	}
+	
+	/** 被pointer item點到的角度, 0~-360
+	 *  front: -180
+	 *  back: 0/-360
+	 *  right:-90
+	 *  left:-270
+	 */
+	public void setHitAngle(int par1) {
+		this.StateMinor[ID.M.HitAngle] = par1;
 	}
 	
 	public void setShipUID(int par1) {
@@ -1051,27 +1110,29 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		if(itemstack != null) {
 			//use pointer item (caress head mode)
 			if(itemstack.getItem() == ModItems.PointerItem && !this.worldObj.isRemote) {
+				//set ai target
+				this.aiTarget = player;
+				
 				//is owner
-				if(EntityHelper.checkSameOwner(player, this)) {
+				if(EntityHelper.checkSameOwner(player, this) && !this.getStateFlag(ID.F.NoFuel)) {
 					int t = this.ticksExisted - this.getMoraleTick();
 					int m = this.getStateMinor(ID.M.Morale);
 					
-					if(t > 3 && m < 6000) {  //if caress > 3 ticks
+					if(t > 3 && m < 6600) {  //if caress > 3 ticks
 						this.setMoraleTick(this.ticksExisted);
-						this.setStateMinor(ID.M.Morale, m + 15);
+						this.setStateMinor(ID.M.Morale, m + ConfigHandler.baseCaressMorale);
 					}
 
-					//show love emotion
-					if(this.rand.nextInt(2) == 0 && this.EmotionTicks[4] <= 0) {
-						this.EmotionTicks[4] = 40;
-						setStateEmotion(ID.S.Emotion, ID.Emotion.T_T, true);
-						applyParticleEmotion(1);
-					}
+					//show emotes
+					applyEmotesReaction(0);
 				}
-				//not owner
+				//not owner or no fuel
 				else {
-					//TODO show ?? emotion if not owner
+					applyEmotesReaction(1);
 				}
+				
+				//clear ai target
+				this.aiTarget = null;
 				
 				return true;
 			}
@@ -1221,6 +1282,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	                if(itemstack.getItemDamage() >= itemstack.getMaxDamage()) {  //物品耐久度用完時要設定為null清空該slot
 	                	player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
 	                }
+	                
+	                //show emotes
+					applyParticleEmotion(8);
+					
+					//emotes AOE
+					EntityHelper.applyShipEmotesAOE(this.worldObj, this.posX, this.posY, this.posZ, 10D, 6);
 	                 
 	                this.setDead();
 	                
@@ -1352,7 +1419,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	        }//end lead
 			
 			//feed
-			if(interactFeed(player, itemstack)) {
+			if(!this.worldObj.isRemote && interactFeed(player, itemstack)) {
 				return true;
 			}
 			
@@ -1364,25 +1431,26 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
             return true;
         }
 	
-		//shift+right click時打開GUI
-		if(player.isSneaking() && EntityHelper.checkSameOwner(this, player)) {
-			FMLNetworkHandler.openGui(player, ShinColle.instance, ID.G.SHIPINVENTORY, this.worldObj, this.getEntityId(), 0, 0);
-    		return true;
-		}
-		
-		//click ship without shift = sit
-		if(!this.worldObj.isRemote && !player.isSneaking() && EntityHelper.checkSameOwner(this, player)) {			
-			//current item = pointer
-			if(itemstack != null && itemstack.getItem() == ModItems.PointerItem) {
-				//call sitting method by PointerItem class, not here
+		//right click
+		if(!this.worldObj.isRemote && EntityHelper.checkSameOwner(this, player)) {
+			//sneak: open GUI
+			if(player.isSneaking()) {
+				FMLNetworkHandler.openGui(player, ShinColle.instance, ID.G.SHIPINVENTORY, this.worldObj, this.getEntityId(), 0, 0);
+	    		return true;
 			}
 			else {
-				this.setEntitySit();
+				//current item = pointer
+				if(itemstack != null && itemstack.getItem() == ModItems.PointerItem) {
+					//call sitting method by PointerItem class, not here
+				}
+				else {
+					this.setEntitySit();
+				}
+				
+				return true;
 			}
-			
-            return true;
-        }
-
+		}
+		
 		return false;
 	}
 	
@@ -1404,12 +1472,29 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		int addammoh = 0;
 		
 		//max 4800 or max saturation, reject food
-		if(mvalue > 4800 || getFoodSaturation() >= getFoodSaturationMax()) {
-			//TODO reject emotion
+		if((i instanceof ItemFood || i == ModItems.AbyssMetal || i == ModItems.Grudge || i == ModItems.Ammo) &&
+		   (mvalue > 4800 || getFoodSaturation() >= getFoodSaturationMax())) {
+			if(this.EmotionTicks[4] <= 0) {
+				this.EmotionTicks[4] = 40;
+				switch(this.rand.nextInt(4)) {
+				case 1:
+					applyParticleEmotion(2);  //panic
+					break;
+				case 2:
+					applyParticleEmotion(32);  //hmm
+					break;
+				case 3:
+					applyParticleEmotion(0);  //drop
+					break;
+				default:
+					applyParticleEmotion(11);  //??
+					break;
+				}
+			}
 			
 			return false;
 		}
-		
+
 		if(i instanceof ItemFood) {
 			type = 1;
 			ItemFood f = (ItemFood) i;
@@ -1476,7 +1561,21 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			StateMinor[ID.M.NumAmmoLight] += addammo;
 			StateMinor[ID.M.NumAmmoHeavy] += addammoh;
 
-			//show emotion TODO
+			//show eat emotion
+			if(this.EmotionTicks[4] <= 0) {
+				this.EmotionTicks[4] = 40;
+				switch(this.rand.nextInt(3)) {
+				case 1:
+					applyParticleEmotion(9);  //hungry
+					break;
+				case 2:
+					applyParticleEmotion(30);  //pif
+					break;
+				default:
+					applyParticleEmotion(1);  //heart
+					break;
+				}
+			}
 			
 			return true;
 		}
@@ -1858,12 +1957,15 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                     		updateConsumeItem();
                     		
                     		//update morale value
-                    		updateMorale();
+                    		if(!getStateFlag(ID.F.NoFuel)) updateMorale();
                     		
                     		//check every 256 ticks
                         	if(this.ticksExisted % 256 == 0) {
                         		//update buff (slow update)
                         		calcEquipAndUpdateState();
+                        		
+                        		//show idle emotes
+                        		if(!getStateFlag(ID.F.NoFuel)) applyEmotesReaction(4);
                         		
                         		//HP auto regen
                         		if(this.getHealth() < this.getMaxHealth()) {
@@ -1913,7 +2015,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
 		
 		//morale--
-		this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - 1);
+		decrMorale(0);
+		setCombatTick(this.ticksExisted);
 				
 	    //entity attack effect
 	    applySoundAtAttacker(0, target);
@@ -1926,6 +2029,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	    if(isTargetHurt) {
 	    	applySoundAtTarget(0, target);
 	        applyParticleAtTarget(0, target, new float[4]);
+			applyEmotesReaction(3);
 	    }
 
 	    return isTargetHurt;
@@ -1944,7 +2048,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
   		
   		//morale--
-  		this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - 1);
+  		decrMorale(1);
+  		setCombatTick(this.ticksExisted);
   		
         //light ammo -1
         if(!decrAmmoNum(0, this.getAmmoConsumption())) {		//not enough ammo
@@ -2021,6 +2126,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	    if(isTargetHurt) {
 	    	applySoundAtTarget(1, target);
 	        applyParticleAtTarget(1, target, distVec);
+	        applyEmotesReaction(3);
         }
 
 	    return isTargetHurt;
@@ -2065,7 +2171,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
 		
   		//morale--
-  		this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - 1);
+		decrMorale(2);
+  		setCombatTick(this.ticksExisted);
 	
 		//play attack effect
         applySoundAtAttacker(2, target);
@@ -2097,6 +2204,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         //play target effect
         applySoundAtTarget(2, target);
         applyParticleAtTarget(2, target, distVec);
+        applyEmotesReaction(3);
         
         return true;
 	}
@@ -2108,7 +2216,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     	if(this.getStateEmotion(ID.S.Emotion) != ID.Emotion.O_O) {
     		this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
     	}
-
+    	
+    	//change sensitive body
+  		if(this.rand.nextInt(20) == 0) randomSensitiveBody();
+  		
     	//若攻擊方為owner, 則直接回傳傷害, 不計def跟friendly fire
 		if(attacker.getEntity() instanceof EntityPlayer &&
 		   EntityHelper.checkSameOwner(attacker.getEntity(), this)) {
@@ -2123,7 +2234,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			this.mountEntity(null);
         	this.setPositionAndUpdate(this.posX, 4D, this.posZ);
         	this.motionX = 0D;
-        	this.motionY = 0D;
+        	this.motionY = 1D;
         	this.motionZ = 0D;
         	return false;
         }
@@ -2196,7 +2307,18 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			}
 			
 	  		//morale--
-	  		this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - 2);
+			decrMorale(5);
+	  		setCombatTick(this.ticksExisted);
+	  		
+	  		//set damaged body ID and show emotes
+	  		if(this.rand.nextInt(5) == 0) {
+				//set hit position
+				this.setStateMinor(ID.M.HitHeight, CalcHelper.getEntityHitHeight(this, attacker.getSourceOfDamage()));
+				this.setStateMinor(ID.M.HitAngle, CalcHelper.getEntityHitSide(this, attacker.getSourceOfDamage()));
+				
+				//apply emotes
+				applyEmotesReaction(2);
+	  		}
    
             //執行父class的被攻擊判定, 包括重置love時間, 計算火毒抗性, 計算鐵砧/掉落傷害, 
             //hurtResistantTime(0.5sec無敵時間)計算, 
@@ -2206,10 +2328,35 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		return false;
     }
 	
+	/** decr morale value, type: 0:melee, 1:light, 2:heavy, 3:light air, 4:light heavy, 5:damaged */
+	protected void decrMorale(int type) {
+		switch(type) {
+		case 0:  //melee
+			setStateMinor(ID.M.Morale, getStateMinor(ID.M.Morale) - 2);
+			break;
+		case 1:  //light
+			setStateMinor(ID.M.Morale, getStateMinor(ID.M.Morale) - 4);
+			break;
+		case 2:  //heavy
+			setStateMinor(ID.M.Morale, getStateMinor(ID.M.Morale) - 6);
+			break;
+		case 3:  //light air
+			setStateMinor(ID.M.Morale, getStateMinor(ID.M.Morale) - 6);
+			break;
+		case 4:  //light heavy
+			setStateMinor(ID.M.Morale, getStateMinor(ID.M.Morale) - 8);
+			break;
+		case 5:  //damaged
+			setStateMinor(ID.M.Morale, getStateMinor(ID.M.Morale) - 5);
+			break;
+		}
+	}
+	
 	/** decr ammo, type: 0:light, 1:heavy */
 	protected boolean decrAmmoNum(int type, int amount) {
 		int ammoType = ID.M.NumAmmoLight;
 		boolean useItem = !hasAmmoLight();
+		boolean showEmo = false;
 		
 		switch(type) {
 		case 1:   //use heavy ammo
@@ -2217,7 +2364,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			useItem = !hasAmmoHeavy();
 			break;
 		}
-		
+
 		//check ammo first time
 		if(StateMinor[ammoType] <= amount || useItem) {
 			int addAmmo = 0;
@@ -2226,18 +2373,22 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			if(ammoType == ID.M.NumAmmoLight) {
 				if(decrSupplies(0)) {  //use ammo item
 					addAmmo = 30;
+					showEmo = true;
 				}
 				else if(decrSupplies(2)) {  //use ammo container item
 					addAmmo = 270;
+					showEmo = true;
 				}
 			}
 			//use heavy ammo item
 			else {
 				if(decrSupplies(1)) {  //use ammo item
 					addAmmo = 15;
+					showEmo = true;
 				}
 				else if(decrSupplies(3)) {  //use ammo container item
 					addAmmo = 135;
+					showEmo = true;
 				}
 			}
 			
@@ -2249,8 +2400,48 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			StateMinor[ammoType] += addAmmo;
 		}
 		
+		//show emotes
+		if(showEmo) {
+			if(this.EmotionTicks[4] <= 0) {
+				this.EmotionTicks[4] = 40;
+				switch(this.rand.nextInt(4)) {
+				case 1:
+					applyParticleEmotion(29);  //blink
+					break;
+				case 2:
+					applyParticleEmotion(30);  //pif
+					break;
+				default:
+					applyParticleEmotion(9);  //hungry
+					break;
+				}
+			}
+		}
+		
 		//check ammo second time
 		if(StateMinor[ammoType] < amount) {
+			//show emotes
+			if(this.EmotionTicks[4] <= 0) {
+				this.EmotionTicks[4] = 20;
+				switch(this.rand.nextInt(7)) {
+				case 1:
+					applyParticleEmotion(0);  //drop
+					break;
+				case 2:
+					applyParticleEmotion(2);  //panic
+					break;
+				case 3:
+					applyParticleEmotion(5);  //...
+					break;
+				case 4:
+					applyParticleEmotion(20);  //orz
+					break;
+				default:
+					applyParticleEmotion(32);  //hmm
+					break;
+				}
+			}
+			
 			return false;
 		}
 		else {
@@ -2270,7 +2461,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		if(!getStateFlag(ID.F.NoFuel)) {  //has fuel
 			StateMinor[ID.M.NumGrudge] -= par1;
 		}
-		
+
 		//eat one grudge if fuel <= 0
 		if(StateMinor[ID.M.NumGrudge] <= 0) {
 			//try to find grudge
@@ -2309,6 +2500,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			if(this.targetTasks.taskEntries.size() > 0) {
 //				LogHelper.info("DEBUG : No fuel, clear AI "+this);
 				setStateEmotion(ID.S.Emotion, ID.Emotion.HUNGRY, false);
+				setStateMinor(ID.M.Morale, 0);
 				clearAITasks();
 				clearAITargetTasks();
 				sendSyncPacketAllValue();
@@ -2316,6 +2508,34 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				//設定mount的AI
 				if(this.ridingEntity instanceof BasicEntityMount) {
 					((BasicEntityMount) this.ridingEntity).clearAITasks();
+				}
+				
+				//show no fuel emotes
+				if(this.EmotionTicks[4] <= 0) {
+					this.EmotionTicks[4] = 20;
+					switch(this.rand.nextInt(7)) {
+					case 1:
+						applyParticleEmotion(0);  //drop
+						break;
+					case 2:
+						applyParticleEmotion(32);  //hmm
+						break;
+					case 3:
+						applyParticleEmotion(2);  //panic
+						break;
+					case 4:
+						applyParticleEmotion(12);  //omg
+						break;
+					case 5:
+						applyParticleEmotion(5);  //...
+						break;
+					case 6:
+						applyParticleEmotion(20);  //orz
+						break;
+					default:
+						applyParticleEmotion(10);  //dizzy
+						break;
+					}
 				}
 			}	
 		}
@@ -2333,6 +2553,25 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				if(this.ridingEntity instanceof BasicEntityMount) {
 					((BasicEntityMount) this.ridingEntity).clearAITasks();
 					((BasicEntityMount) this.ridingEntity).setAIList();
+				}
+				
+				//show recovery emotes
+				if(this.EmotionTicks[4] <= 0) {
+					this.EmotionTicks[4] = 40;
+					switch(this.rand.nextInt(5)) {
+					case 1:
+						applyParticleEmotion(31);  //shy
+						break;
+					case 2:
+						applyParticleEmotion(32);  //hmm
+						break;
+					case 3:
+						applyParticleEmotion(7);  //note
+						break;
+					default:
+						applyParticleEmotion(1);  //love
+						break;
+					}
 				}
 			}
 		}
@@ -2701,8 +2940,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     	int valueConsume = (int) MathHelper.sqrt_double(distX*distX + distY*distY + distZ*distZ);
     	
     	//morale-- per 10 blocks
-    	int m = (int)((float)valueConsume * 0.1F);
-    	if(m < 1) m = 1;
+    	int m = (int)((float)valueConsume * 0.5F);
+    	if(m < 5) m = 5;
     	if(m > 50) m = 50;
     	this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - m);
     	
@@ -2792,7 +3031,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	}
   	
   	/** morale value
-  	 *  5101 - 6000  Exciting:  dodge/mov/spd++
+  	 *  5101 - 8000  Exciting:  dodge/mov/spd++
   	 *  3901 - 5100  Happy:     cri/dhit/thit++
   	 *  2101 - 3900  Normal:    -
   	 *  901  - 2100  Tired:     dodge-- (no effect if dodge = 0)
@@ -2801,7 +3040,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	 *  action:
   	 *  
   	 *  caress head:
-  	 *    max 6000
+  	 *    max 8000
   	 *    +10 / 3 ticks (4 ticks if mouse delay 200ms)
   	 *    
   	 *  feed:
@@ -2822,19 +3061,35 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	 *  move:
   	 *    -1 per 10 blocks, min -1  
   	 *  
-  	 */
+  	 *///TODO tweak number
   	protected void updateMorale() {
   		int m = this.getStateMinor(ID.M.Morale);
   		
-  		if(m < 2000) {
-  			this.setStateMinor(ID.M.Morale, m + 10);
+  		//out of combat
+  		if(EntityHelper.checkShipOutOfCombat(this)) {
+  			if(m < 3000) {  //take 9~11 min from 0 to 3000
+  	  			this.setStateMinor(ID.M.Morale, m + 15);
+  	  		}
+  	  		else if(m > 3900) {
+  	  			this.setStateMinor(ID.M.Morale, m - 10);
+  	  		}
   		}
-  		else if(m < 3000) {
-  			this.setStateMinor(ID.M.Morale, m + 3);
+  		//in combat
+  		else {
+  	  		if(m < 900) {
+  	  			this.setStateMinor(ID.M.Morale, m - 8);
+  	  		}
+  	  		else if(m < 1800) {
+  	  			this.setStateMinor(ID.M.Morale, m - 6);
+  	  		}
+  	  		else if(m < 2700) {
+  	  			this.setStateMinor(ID.M.Morale, m - 5);
+  	  		}
+  	  		else if(m > 3900) {
+  	  			this.setStateMinor(ID.M.Morale, m - 10);
+  	  		}
   		}
-  		else if(m > 3900) {
-  			this.setStateMinor(ID.M.Morale, m - 10);
-  		}
+  		
   	}
   	
   	/** apply morale buffs
@@ -2908,7 +3163,899 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 //    }
   	
   	/** change ship outfit by right click cake on ship */
-  	abstract public void setShipOutfit(boolean isSneaking); 
+  	abstract public void setShipOutfit(boolean isSneaking);
+  	
+  	/** morale level
+  	 *  0:excited, 1:happy, 2:normal, 3:tired, 4:exhausted
+  	 */
+  	public int getMoraleLevel() {
+  		int m = this.getStateMinor(ID.M.Morale);
+  		
+  		if(m > 5100) {  //excited
+			return ID.Morale.Excited;
+		}
+		else if(m > 3900) {
+			return ID.Morale.Happy;
+		}
+		else if(m > 2100) {
+			return ID.Morale.Normal;
+		}
+		else if(m > 900) {
+			return ID.Morale.Tired;
+		}
+		else {
+			return ID.Morale.Exhausted;
+		}
+  	}
+  	
+  	/** hit body part by hit height level
+  	 *  height:        part:
+  	 *  150~100        top
+  	 *  100~80         head
+  	 *  80~70          neck
+  	 *  70~45          back
+  	 *  45~35          belly
+  	 *  35~30          ubelly
+  	 *  0~30           leg
+  	 */
+  	protected int getHitHeightID() {
+  		int h = getHitHeight();
+  		if(this.isSitting()) {
+  			if(h > 60) {
+  	  			return ID.Body.Height.Top;
+  	  		}
+  	  		else if(h > 32) {
+  	  			return ID.Body.Height.Head;
+  	  		}
+  	  		else if(h > 30) {
+  	  			return ID.Body.Height.Neck;
+  	  		}
+  	  		else if(h > 15) {
+  	  			return ID.Body.Height.Chest;
+  	  		}
+  	  		else if(h > 12) {
+  	  			return ID.Body.Height.Belly;
+  	  		}
+  	  		else if(h > 10) {
+  	  			return ID.Body.Height.UBelly;
+  	  		}
+  	  		else {
+  	  			return ID.Body.Height.Leg;
+  	  		}
+  		}
+  		else {
+  			if(h > 100) {
+  	  			return ID.Body.Height.Top;
+  	  		}
+  	  		else if(h > 80) {
+  	  			return ID.Body.Height.Head;
+  	  		}
+  	  		else if(h > 70) {
+  	  			return ID.Body.Height.Neck;
+  	  		}
+  	  		else if(h > 45) {
+  	  			return ID.Body.Height.Chest;
+  	  		}
+  	  		else if(h > 35) {
+  	  			return ID.Body.Height.Belly;
+  	  		}
+  	  		else if(h > 30) {
+  	  			return ID.Body.Height.UBelly;
+  	  		}
+  	  		else {
+  	  			return ID.Body.Height.Leg;
+  	  		}
+  		}
+  	}
+  	
+  	/** hit body part by hit height level (angle always positive)
+  	 *  angle:         part:
+  	 *  
+  	 *  0 ~ -70        back
+  	 *  290 ~ 360
+  	 *  250 ~ 290      right
+  	 *  110 ~ 250      front
+  	 *  70 ~ 110       left
+  	 */
+  	protected int getHitAngleID() {
+  		int a = getHitAngle();
+
+		if(a >= 250 && a < 290) {  //right
+  			return ID.Body.Side.Right;
+		}
+		else if(a >= 110 && a < 250) {  //front
+			return ID.Body.Side.Front;
+		}
+		else if(a >= 70 && a < 110) {  //left
+			return ID.Body.Side.Left;
+		}
+		else {  //back
+			return ID.Body.Side.Back;
+		}
+  	}
+  	
+  	/** hit body part by hit height level
+  	 * 
+  	 *  (default)      back   right    front    left
+  	 *  height \ angle  0     -90      -180     -270
+  	 *  150~100        top     top      top      top
+  	 *  100~80         head    head     face     head
+  	 *  80~70          neck    neck     neck     neck
+  	 *  70~45          back    arm      chest    arm
+  	 *  45~35          butt    arm      belly    arm
+  	 *  35~30          butt    butt     ubelly   butt
+  	 *  0~30           leg     leg      leg      leg
+  	 * 
+  	 */
+  	protected int getHitBodyID() {
+  		switch(getHitHeightID()) {
+  		case ID.Body.Height.Top:
+  			return ID.Body.Top;
+  		case ID.Body.Height.Head:
+  			if(getHitAngleID() == ID.Body.Side.Front) {
+  				return ID.Body.Face;
+  			}
+  			else {
+  				return ID.Body.Head;
+  			}
+  		case ID.Body.Height.Neck:
+  			return ID.Body.Neck;
+  		case ID.Body.Height.Chest:
+  			switch(getHitAngleID()) {
+  			case ID.Body.Side.Front:
+  				return ID.Body.Chest;
+  			case ID.Body.Side.Back:
+  				return ID.Body.Back;
+  			default:
+  				return ID.Body.Arm;
+  			}
+  		case ID.Body.Height.Belly:
+  			switch(getHitAngleID()) {
+  			case ID.Body.Side.Front:
+  				return ID.Body.Belly;
+  			case ID.Body.Side.Back:
+  				return ID.Body.Butt;
+  			default:
+  				return ID.Body.Arm;
+  			}
+  		case ID.Body.Height.UBelly:
+  			if(getHitAngleID() == ID.Body.Side.Front) {
+  				return ID.Body.UBelly;
+  			}
+  			else {
+  				return ID.Body.Butt;
+  			}
+		default:  //leg
+			return ID.Body.Leg;
+  		}
+  	}
+  	
+  	public void setSensitiveBody(int par1) {
+  		setStateMinor(ID.M.SensBody, par1);
+  	}
+  	
+  	public int getSensitiveBody() {
+  		return getStateMinor(ID.M.SensBody);
+  	}
+  	
+  	/** set random sensitive body id, ref: ID.Body
+  	 *  body id: 20~30
+  	 */
+  	public void randomSensitiveBody() {
+  		int ran = this.rand.nextInt(100);
+  		int bodyid = 20;
+  		
+  		//first roll
+  		if(ran > 80) {  //20%
+  			bodyid = ID.Body.UBelly;
+  		}
+  		else if(ran > 65) {  //15%
+  			//second roll
+  			if(this.rand.nextInt(3) == 0) {
+  				bodyid = ID.Body.Butt;
+  			}
+  			else {
+  				bodyid = ID.Body.Chest;
+  			}
+  		}
+  		else {  //55%
+  			bodyid = 23 + this.rand.nextInt(8);  //roll 23~30
+  			
+  			//if HEAD/BACK reroll to ubelly
+  			if(bodyid == ID.Body.Head || bodyid == ID.Body.Back) bodyid = ID.Body.UBelly;
+  		}
+  		
+  		setSensitiveBody(bodyid);
+  	}
+  	
+  	/** knockback AI target */
+  	public void pushAITarget() {
+  		if(this.aiTarget != null) {
+  			this.aiTarget.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * 0.5F, 
+  	               0.5D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * 0.5F);
+  		
+  			//for other player, send ship state for display
+  			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
+  			CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this.aiTarget, 0, S2CEntitySync.PID.SyncEntity_Motion), point);
+  		}
+	}
+  	
+  	/** normal emotes */
+  	protected void reactionNormal() {
+  		Random ran = new Random();
+  		int m = getStateMinor(ID.M.Morale);
+  		int body = getHitBodyID();
+  		int baseMorale = (int) ((float)ConfigHandler.baseCaressMorale * 2.5F);
+  		LogHelper.info("DEBUG : hit ship: Morale: "+m+" BodyID: "+body+" sensitiveBodyID: "+this.getSensitiveBody()); 		
+  		
+  		//show emotes by morale level
+		switch(getMoraleLevel()) {
+		case 0:   //excited
+			//check sensitive body
+	  		if(body == getSensitiveBody()) {
+	  			if(this.rand.nextInt(2) == 0) {
+	  				applyParticleEmotion(31);  //shy
+	  			}
+	  			else {
+	  				applyParticleEmotion(10);  //dizzy
+	  			}
+	  			
+	  			if(getStateMinor(ID.M.Morale) < 8100) {
+	  				this.setStateMinor(ID.M.Morale, m + baseMorale * 3 + this.rand.nextInt(baseMorale + 1));
+	  			}
+	  		}
+	  		//other reaction
+	  		else {
+				switch(body) {
+				case ID.Body.UBelly:
+				case ID.Body.Butt:
+				case ID.Body.Chest:
+				case ID.Body.Face:
+					if(this.getStateFlag(ID.F.IsMarried)) {
+						applyParticleEmotion(15);  //kiss
+					}
+					else {
+						applyParticleEmotion(1);  //heart
+					}
+					break;
+				default:
+					if(this.rand.nextInt(2) == 0) {
+						applyParticleEmotion(1);  //heart
+					}
+					else {
+						applyParticleEmotion(7);  //note
+					}
+					break;
+				}
+	  		}
+			break;
+		case 1:   //happy
+			//check sensitive body
+	  		if(body == getSensitiveBody()) {
+	  			if(this.getStateFlag(ID.F.IsMarried)) {
+	  				if(this.rand.nextInt(2) == 0) {
+		  				applyParticleEmotion(31);  //shy
+		  			}
+		  			else {
+		  				applyParticleEmotion(10);  //dizzy
+		  			}
+				}
+				else {
+					applyParticleEmotion(10);  //dizzy
+				}
+	  			
+	  			setStateMinor(ID.M.Morale, m + baseMorale + this.rand.nextInt(baseMorale + 1));
+	  		}
+	  		//other reaction
+	  		else {
+	  			switch(body) {
+				case ID.Body.UBelly:
+				case ID.Body.Butt:
+				case ID.Body.Chest:
+				case ID.Body.Face:
+					if(this.getStateFlag(ID.F.IsMarried)) {
+						applyParticleEmotion(1);  //heart
+					}
+					else {
+						applyParticleEmotion(16);  //haha
+					}
+					break;
+				default:
+					if(this.rand.nextInt(2) == 0) {
+						applyParticleEmotion(1);  //heart
+					}
+					else {
+						applyParticleEmotion(7);  //note
+					}
+					break;
+				}
+	  		}
+			break;
+		case 2:   //normal
+			//check sensitive body
+	  		if(body == getSensitiveBody()) {
+	  			if(this.getStateFlag(ID.F.IsMarried)) {
+	  				applyParticleEmotion(19);  //lick
+				}
+				else {
+					applyParticleEmotion(18);  //sigh
+				}
+	  			
+	  			setStateMinor(ID.M.Morale, m + baseMorale + this.rand.nextInt(baseMorale + 1));
+	  		}
+	  		//other reaction
+	  		else {
+	  			switch(body) {
+				case ID.Body.UBelly:
+				case ID.Body.Butt:
+				case ID.Body.Chest:
+				case ID.Body.Face:
+					if(this.getStateFlag(ID.F.IsMarried)) {
+						applyParticleEmotion(1);  //heart
+					}
+					else {
+						applyParticleEmotion(27);  //-w-
+					}
+					break;
+				default:
+					switch(this.rand.nextInt(7)) {
+					case 1:
+						applyParticleEmotion(30);  //pif
+						break;
+					case 3:
+						applyParticleEmotion(7);  //note
+						break;
+					case 4:
+						applyParticleEmotion(26);  //ya
+						break;
+					case 6:
+						applyParticleEmotion(11);  //find
+						break;
+					default:
+						applyParticleEmotion(29);  //blink
+						break;
+					}
+					break;
+				}
+	  		}
+			break;
+		case 3:   //tired
+			//check sensitive body
+	  		if(body == getSensitiveBody()) {
+	  			setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
+	  			applyParticleEmotion(32);  //hmm
+	  			setStateMinor(ID.M.Morale, m + this.rand.nextInt(baseMorale + 1));
+	  			
+	  			//push target
+	  			if(ran.nextInt(2) == 0) {
+	  				this.pushAITarget();
+				    this.playSound(Reference.MOD_ID+":ship-knockback", ConfigHandler.shipVolume, 1.0F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
+	  			}
+	  		}
+	  		//other reaction
+	  		else {
+	  			switch(body) {
+				case ID.Body.UBelly:
+				case ID.Body.Butt:
+				case ID.Body.Chest:
+				case ID.Body.Face:
+					setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
+					applyParticleEmotion(32);  //hmm
+					//push target
+		  			if(ran.nextInt(4) == 0) {
+		  				this.pushAITarget();
+					    this.playSound(Reference.MOD_ID+":ship-knockback", ConfigHandler.shipVolume, 1.0F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
+		  			}
+					break;
+				default:
+					switch(this.rand.nextInt(5)) {
+					case 1:
+						applyParticleEmotion(30);  //pif
+						break;
+					case 2:
+						applyParticleEmotion(2);  //panic
+						break;
+					case 4:
+						applyParticleEmotion(3);  //?
+						break;
+					default:
+						applyParticleEmotion(0);  //sweat
+						break;
+					}
+					break;
+				}
+	  		}
+			break;
+		default:  //exhausted
+			//check sensitive body
+	  		if(body == getSensitiveBody()) {
+	  			setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
+	  			applyParticleEmotion(6);  //angry
+	  			setStateMinor(ID.M.Morale, m - baseMorale * 5 - this.rand.nextInt(baseMorale * 3 + 1));
+	  		
+	  			//push target
+  				this.pushAITarget();
+			    this.playSound(Reference.MOD_ID+":ship-knockback", ConfigHandler.shipVolume, 1.0F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
+	  		}
+	  		//other reaction
+	  		else {
+	  			switch(body) {
+				case ID.Body.UBelly:
+				case ID.Body.Butt:
+				case ID.Body.Chest:
+				case ID.Body.Face:
+					setStateEmotion(ID.S.Emotion, ID.Emotion.T_T, true);
+					
+					if(this.rand.nextInt(3) == 0) {
+						applyParticleEmotion(6);  //angry
+					}
+					else {
+						applyParticleEmotion(32);  //hmm
+					}
+					
+					//push target
+		  			if(ran.nextInt(2) == 0) {
+		  				this.pushAITarget();
+					    this.playSound(Reference.MOD_ID+":ship-knockback", ConfigHandler.shipVolume, 1.0F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
+		  			}
+					break;
+				default:
+					switch(this.rand.nextInt(5)) {
+					case 1:
+						applyParticleEmotion(8);  //cry
+						break;
+					case 2:
+						applyParticleEmotion(2);  //panic
+						break;
+					case 3:
+						applyParticleEmotion(20);  //orz
+						break;
+					case 4:
+						applyParticleEmotion(5);  //...
+						break;
+					default:
+						applyParticleEmotion(34);  //lll
+						break;
+					}
+					break;
+				}
+	  		}
+			break;
+		}//end morale level switch
+  	}
+  	
+  	/** stranger (not owner) emotes */
+  	protected void reactionStranger() {
+  		int body = getHitBodyID();
+  		LogHelper.info("DEBUG : hit ship: BodyID: "+body+" sensitiveBodyID: "+this.getSensitiveBody()); 		
+
+		//check sensitive body
+  		if(body == getSensitiveBody()) {
+  			if(this.rand.nextInt(2) == 0) {
+				applyParticleEmotion(6);  //angry
+			}
+			else {
+				applyParticleEmotion(22);  //x
+			}
+  		}
+  		//other reaction
+  		else {
+  			switch(body) {
+			case ID.Body.UBelly:
+			case ID.Body.Butt:
+			case ID.Body.Chest:
+			case ID.Body.Face:
+				setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
+				if(this.rand.nextInt(2) == 0) {
+					applyParticleEmotion(6);  //angry
+				}
+				else {
+					applyParticleEmotion(5);  //...
+				}
+				break;
+			default:
+				switch(this.rand.nextInt(7)) {
+				case 1:
+					applyParticleEmotion(9);  //hungry
+					break;
+				case 2:
+					applyParticleEmotion(2);  //panic
+					break;
+				case 3:
+					applyParticleEmotion(20);  //orz
+					break;
+				case 4:
+					applyParticleEmotion(8);  //cry
+					break;
+				case 5:
+					applyParticleEmotion(0);  //sweat
+					break;
+				default:
+					applyParticleEmotion(34);  //lll
+					break;
+				}
+				break;
+			}
+  		}
+  	}
+  	
+  	/** damaged emotes */
+  	protected void reactionAttack() {
+  		//show emotes by morale level
+		switch(getMoraleLevel()) {
+		case 0:   //excited
+			switch(this.rand.nextInt(8)) {
+			case 1:
+				applyParticleEmotion(33);  //:p
+				break;
+			case 2:
+				applyParticleEmotion(17);  //gg
+				break;
+			case 3:
+				applyParticleEmotion(19);  //lick
+				break;
+			case 4:
+				applyParticleEmotion(16);  //ha
+				break;
+			default:
+				applyParticleEmotion(7);  //note
+				break;
+			}
+			break;
+		case 1:   //happy
+		case 2:   //normal
+		case 3:   //tired
+		default:  //exhausted
+			switch(this.rand.nextInt(8)) {
+			case 1:
+				applyParticleEmotion(14);  //+_+
+				break;
+			case 2:
+				applyParticleEmotion(30);  //pif
+				break;
+			case 3:
+				applyParticleEmotion(7);  //note
+				break;
+			case 4:
+				applyParticleEmotion(4);  //!
+				break;
+			case 5:
+				applyParticleEmotion(7);  //note
+				break;
+			default:
+				applyParticleEmotion(6);  //angry
+				break;
+			}
+			break;
+		}//end morale level switch
+  	}
+  	
+  	/** damaged emotes */
+  	protected void reactionDamaged() {
+  		int body = getHitBodyID();
+  		
+  		//show emotes by morale level
+		switch(getMoraleLevel()) {
+		case 0:   //excited
+		case 1:   //happy
+		case 2:   //normal
+			//check sensitive body
+	  		if(body == getSensitiveBody()) {
+	  			applyParticleEmotion(6);  //angry
+	  		}
+	  		//other reaction
+	  		else {
+				switch(body) {
+				case ID.Body.UBelly:
+				case ID.Body.Butt:
+				case ID.Body.Chest:
+				case ID.Body.Face:
+					applyParticleEmotion(6);  //angry
+					break;
+				default:
+					switch(this.rand.nextInt(7)) {
+					case 1:
+						applyParticleEmotion(30);  //pif
+						break;
+					case 2:
+						applyParticleEmotion(5);  //...
+						break;
+					case 3:
+						applyParticleEmotion(2);  //panic
+						break;
+					case 4:
+						applyParticleEmotion(3);  //?
+						break;
+					default:
+						applyParticleEmotion(8);  //cry
+						break;
+					}
+					break;
+				}
+	  		}
+			break;
+		case 3:   //tired
+		default:  //exhausted
+			//check sensitive body
+	  		if(body == getSensitiveBody()) {
+	  			applyParticleEmotion(10);  //dizzy
+	  		}
+	  		//other reaction
+	  		else {
+	  			switch(body) {
+				case ID.Body.UBelly:
+				case ID.Body.Butt:
+				case ID.Body.Chest:
+				case ID.Body.Face:
+					applyParticleEmotion(10);  //dizzy
+					break;
+				default:
+					switch(this.rand.nextInt(7)) {
+					case 1:
+						applyParticleEmotion(30);  //pif
+						break;
+					case 2:
+						applyParticleEmotion(5);  //...
+						break;
+					case 3:
+						applyParticleEmotion(2);  //panic
+						break;
+					case 4:
+						applyParticleEmotion(3);  //?
+						break;
+					case 5:
+						applyParticleEmotion(0);  //sweat
+						break;
+					default:
+						applyParticleEmotion(8);  //cry
+						break;
+					}
+				}
+	  		}
+			break;
+		}//end morale level switch
+  	}
+  	
+  	/** idle emotes */
+  	protected void reactionIdle() {
+  		//show emotes by morale level
+		switch(getMoraleLevel()) {
+		case 0:   //excited
+		case 1:   //happy
+			if(this.getStateFlag(ID.F.IsMarried) && this.rand.nextInt(2) == 0) {
+				switch(this.rand.nextInt(3)) {
+				case 1:
+					applyParticleEmotion(31);  //shy
+					break;
+				default:
+					applyParticleEmotion(15);  //kiss
+					break;
+				}
+				
+				return;
+			}
+			
+			switch(this.rand.nextInt(10)) {
+			case 1:
+				applyParticleEmotion(33);  //:p
+				break;
+			case 2:
+				applyParticleEmotion(17);  //gg
+				break;
+			case 3:
+				applyParticleEmotion(19);  //lick
+				break;
+			case 4:
+				applyParticleEmotion(9);  //hungry
+				break;
+			case 5:
+				applyParticleEmotion(1);  //love
+				break;
+			case 6:
+				applyParticleEmotion(15);  //kiss
+				break;
+			case 7:
+				applyParticleEmotion(16);  //haha
+				break;
+			case 8:
+				applyParticleEmotion(14);  //+_+
+				break;
+			default:
+				applyParticleEmotion(7);  //note
+				break;
+			}
+			break;
+		case 2:   //normal
+			if(this.getStateFlag(ID.F.IsMarried) && this.rand.nextInt(2) == 0) {
+				switch(this.rand.nextInt(3)) {
+				case 1:
+					applyParticleEmotion(1);  //love
+					break;
+				default:
+					applyParticleEmotion(15);  //kiss
+					break;
+				}
+				
+				return;
+			}
+			
+			switch(this.rand.nextInt(8)) {
+			case 1:
+				applyParticleEmotion(11);  //find
+				break;
+			case 2:
+				applyParticleEmotion(3);  //?
+				break;
+			case 3:
+				applyParticleEmotion(13);  //nod
+				break;
+			case 4:
+				applyParticleEmotion(9);  //hungry
+				break;
+			case 5:
+				applyParticleEmotion(18);  //sigh
+				break;
+			case 7:
+				applyParticleEmotion(16);  //haha
+				break;
+			default:
+				applyParticleEmotion(29);  //blink
+				break;
+			}
+			break;
+		case 3:   //tired
+		default:  //exhausted
+			switch(this.rand.nextInt(8)) {
+			case 1:
+				applyParticleEmotion(0);  //drop
+				break;
+			case 2:
+				applyParticleEmotion(2);  //panic
+				break;
+			case 3:
+				applyParticleEmotion(3);  //?
+				break;
+			case 4:
+				applyParticleEmotion(8);  //cry
+				break;
+			case 5:
+				applyParticleEmotion(10);  //dizzy
+				break;
+			case 6:
+				applyParticleEmotion(20);  //orz
+				break;
+			default:
+				applyParticleEmotion(32);  //hmm
+				break;
+			}
+			break;
+		}//end morale level switch
+  	}
+  	
+  	/** command emotes */
+  	protected void reactionCommand() {
+  		//show emotes by morale level
+		switch(getMoraleLevel()) {
+		case 0:   //excited
+		case 1:   //happy
+		case 2:   //normal
+			switch(this.rand.nextInt(7)) {
+			case 1:
+				applyParticleEmotion(21);  //o
+				break;
+			case 2:
+				applyParticleEmotion(4);  //!
+				break;
+			case 3:
+				applyParticleEmotion(14);  //+_+
+				break;
+			case 4:
+				applyParticleEmotion(11);  //find
+				break;
+			default:
+				applyParticleEmotion(13);  //nod
+				break;
+			}
+			break;
+		case 3:   //tired
+		default:  //exhausted
+			switch(this.rand.nextInt(8)) {
+			case 1:
+				applyParticleEmotion(0);  //drop
+			case 2:
+				applyParticleEmotion(33);  //:p
+				break;
+			case 3:
+				applyParticleEmotion(3);  //?
+				break;
+			case 5:
+				applyParticleEmotion(10);  //dizzy
+				break;
+			case 6:
+				applyParticleEmotion(13);  //nod
+				break;
+			default:
+				applyParticleEmotion(32);  //hmm
+				break;
+			}
+			break;
+		}//end morale level switch
+  	}
+  	
+  	/** shock emotes */
+  	protected void reactionShock() {
+		switch(this.rand.nextInt(8)) {
+		case 1:
+			applyParticleEmotion(0);  //drop
+			break;
+		case 2:
+			applyParticleEmotion(8);  //cry
+			break;
+		case 3:
+			applyParticleEmotion(4);  //!
+			break;
+		default:
+			applyParticleEmotion(12);  //omg
+			break;
+		}
+  	}
+  	
+  	/** emotes method
+  	 * 
+  	 *  type:
+  	 *  0: caress head (owner)
+  	 *  1: caress head (other)
+  	 *  2: damaged
+  	 *  3: attack
+  	 *  4: idle
+  	 *  5: command
+  	 *  6: shock
+  	 */
+  	public void applyEmotesReaction(int type) {
+  		Random ran = new Random();
+  		
+  		switch(type) {
+  		case 1:  //caress head (no fuel / not owner)
+  			if(ran.nextInt(9) == 0 && this.EmotionTicks[4] <= 0) {
+				this.EmotionTicks[4] = 60;
+				reactionStranger();
+			}
+  			break;
+  		case 2:  //damaged
+  			if(this.EmotionTicks[4] <= 10) {
+				this.EmotionTicks[4] = 40;
+				reactionDamaged();
+			}
+  			break;
+  		case 3:  //attack
+  			if(ran.nextInt(6) == 0 && this.EmotionTicks[4] <= 0) {
+				this.EmotionTicks[4] = 60;
+				reactionAttack();
+			}
+  			break;
+  		case 4:
+  			if(ran.nextInt(3) == 0 && this.EmotionTicks[4] <= 0) {
+				this.EmotionTicks[4] = 20;
+				reactionIdle();
+			}
+  			break;
+  		case 5:
+  			if(ran.nextInt(3) == 0 && this.EmotionTicks[4] <= 0) {
+				this.EmotionTicks[4] = 25;
+				reactionCommand();
+			}
+  			break;
+  		case 6:
+			reactionShock();
+  			break;
+  		default: //caress head (owner)
+  			if(ran.nextInt(7) == 0 && this.EmotionTicks[4] <= 0) {
+				this.EmotionTicks[4] = 50;
+				reactionNormal();
+			}
+  			break;
+  		}
+  	}
   	
   	/** special particle at entity
   	 * 
@@ -2933,19 +4080,24 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		}
   	}
   	
-  	/** spawn emotion particle
-  	 * 
-  	 *  type: 0:汗, 1:
-  	 */
-  	protected void applyParticleEmotion(int type) {
-  		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+  	/** spawn emotion particle */
+  	public void applyParticleEmotion(int type) {
+  		float h = isSitting() ? this.height * 0.4F : this.height * 0.45F;
   		
-  		float h = isSitting() ? this.height * 0.4F : this.height * 0.6F;
-  		
-  		switch(type) {
-		default:
-      		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(36, this.posX, this.posY, this.posZ, h, 0, type), point);
-			break;
+  		//server side emotes
+  		if(!this.worldObj.isRemote) {
+  			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+  	  		
+  	  		switch(type) {
+  			default:
+  	      		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 36, h, 0, type), point);
+  				break;
+  	  		}
+  		}
+  		//client side emotes
+  		else {
+  			ParticleHelper.spawnAttackParticleAtEntity(this, h, 0, type, (byte)36);
+//  			ParticleHelper.spawnAttackParticleAt(posX, posY, posZ, h, 0, type, (byte)36);
   		}
   	}
   	
