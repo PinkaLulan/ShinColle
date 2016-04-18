@@ -21,9 +21,12 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 
 	public static final String SHIP_EXTPROP_NAME = "ShipExtProps";
 	public static final String tagName = "ShipInv";	//ship inventory nbt tag
-    public ItemStack[] slots = new ItemStack[ContainerShipInventory.SLOTS_PLAYERINV];
+	public static final int SlotPages = 3;
+	public static final int SlotMax = 6 + 18 * 3;   //6 equip + 18 inv * 3 page
+    public ItemStack[] slots = new ItemStack[SlotMax];
     public BasicEntityShip entity;
     private World world;
+    private int inventoryPage = 0;
 
   
 	//init extend entity prop
@@ -109,7 +112,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		NBTTagList list = new NBTTagList();
 		nbt.setTag(tagName, list);
 		
-		for(int i=0; i<slots.length; i++) {
+		for(int i = 0; i < slots.length; i++) {
 			if(slots[i] != null) {
 				NBTTagCompound item = new NBTTagCompound();
 				item.setByte("Slot", (byte)i);
@@ -193,11 +196,11 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		//load inventory
 		NBTTagList list = nbt.getTagList(tagName, 10);	//tagList內為tagCompound, 代號=10
 
-		for(int i=0; i<list.tagCount(); i++) {
+		for(int i = 0; i < list.tagCount(); i++) {
 			NBTTagCompound item = list.getCompoundTagAt(i);
 			byte sid = item.getByte("Slot");
 
-			if(sid>=0 && sid<slots.length) {
+			if(sid >= 0 && sid < slots.length) {
 				slots[sid] = ItemStack.loadItemStackFromNBT(item);
 			}
 		}
@@ -211,12 +214,22 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 
 	@Override
 	public int getSizeInventory() {
-		return slots.length;
+		return ContainerShipInventory.SLOTS_PLAYERINV;
 	}
 
+	/** input: slot id in gui (0~23)
+	 *  output: slot item in slots[] (0~60)
+	 */
 	@Override
 	public ItemStack getStackInSlot(int i) {
-		return slots[i];
+		//is equip slot
+		if(i < ContainerShipInventory.SLOTS_SHIPINV) {
+			return slots[i];
+		}
+		//is inventory slot
+		else {
+			return slots[i + this.inventoryPage * 18];
+		}
 	}
 
 	@Override
@@ -247,7 +260,14 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 
 	@Override
 	public void setInventorySlotContents(int i, ItemStack itemstack) {
-		slots[i] = itemstack;
+		//equip slot
+		if(i < ContainerShipInventory.SLOTS_SHIPINV) {
+			slots[i] = itemstack;
+		}
+		//inv slot
+		else {
+			slots[i + this.inventoryPage * 18] = itemstack;
+		}
 		
 		//若手上物品超過該格子限制數量, 則只能放進限制數量
 		if (itemstack != null && itemstack.stackSize > getInventoryStackLimit()) {
@@ -292,6 +312,19 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 	@Override
 	public boolean isItemValidForSlot(int p_94041_1_, ItemStack p_94041_2_) {
 		return true;
+	}
+	
+	public int getInventoryPage() {
+		return this.inventoryPage;
+	}
+	
+	public void setInventoryPage(int par1) {
+		if(par1 >= 0 && par1 < 3) {
+			this.inventoryPage = par1;
+		}
+		else {
+			this.inventoryPage = 0;
+		}
 	}
 
 

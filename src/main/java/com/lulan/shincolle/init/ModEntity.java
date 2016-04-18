@@ -50,6 +50,7 @@ import com.lulan.shincolle.entity.submarine.EntitySubmRo500;
 import com.lulan.shincolle.entity.submarine.EntitySubmRo500Mob;
 import com.lulan.shincolle.entity.submarine.EntitySubmU511;
 import com.lulan.shincolle.entity.submarine.EntitySubmU511Mob;
+import com.lulan.shincolle.entity.transport.EntityTransportWa;
 import com.lulan.shincolle.item.BasicEntityItem;
 import com.lulan.shincolle.utility.LogHelper;
 
@@ -113,6 +114,7 @@ public class ModEntity {
 		createEntity(EntitySubmRo500Mob.class, "EntitySubmRo500Mob", modEntityID++);
 		createEntity(EntitySubmU511.class, "EntitySubmU511", modEntityID++);
 		createEntity(EntitySubmU511Mob.class, "EntitySubmU511Mob", modEntityID++);
+		createEntity(EntityTransportWa.class, "EntityTransportWa", modEntityID++);
 		
 		//register mount entity
 		createEntity(EntityMountAfH.class, "EntityMountAfH", modEntityID++);

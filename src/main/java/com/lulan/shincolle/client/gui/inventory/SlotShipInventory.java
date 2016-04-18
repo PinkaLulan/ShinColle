@@ -14,7 +14,7 @@ import com.lulan.shincolle.item.BasicEquip;
  */
 public class SlotShipInventory extends Slot {
 
-	private int slotIndex;
+	private int slotIndex;  //slot index
 	private IInventory extProps;
 
 	public SlotShipInventory(IInventory extProps, int slotIndex, int x, int y) {
@@ -22,7 +22,7 @@ public class SlotShipInventory extends Slot {
 		this.extProps = extProps;
 		this.slotIndex = slotIndex;
 	}
-	
+
 	//設定每個slot可以放進的物品: 0:
 	@Override
 	public boolean isItemValid(ItemStack itemstack) {	

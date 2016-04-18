@@ -100,6 +100,7 @@ item.shincolle:EquipAirplane16.name=Abyssal Hellcat Fighter Kai
 item.shincolle:EquipAirplane17.name=Abyssal Hell Diver Kai
 item.shincolle:EquipArmor.name=Abyssal Armor
 item.shincolle:EquipArmor1.name=Heavy Abyssal Armor
+item.shincolle:EquipDrum.name=Drum Canister
 
 # Spawn Egg
 item.shincolle:smallegg.name=Shinkeiseikan Spawn Egg (Primary Class)
@@ -113,6 +114,7 @@ item.shincolle:shipegg12.name=Heavy Cruiser Ne-Class
 item.shincolle:shipegg14.name=Standard Carrier Wo-Class
 item.shincolle:shipegg16.name=Battleship Ta-Class
 item.shincolle:shipegg17.name=Battleship Re-Class
+item.shincolle:shipegg18.name=Transport Wa-Class
 item.shincolle:shipegg23.name=Airfield Princess
 item.shincolle:shipegg28.name=Battleship Princess
 item.shincolle:shipegg30.name=Harbour Princess
@@ -177,6 +179,7 @@ entity.shincolle.EntitySubmRo500.name=Submarine Ro-500
 entity.shincolle.EntitySubmRo500Mob.name=Submarine Ro-500
 entity.shincolle.EntitySubmU511.name=Submarine U-511
 entity.shincolle.EntitySubmU511Mob.name=Submarine U-511
+entity.shincolle.EntityTransportWa.name=Transport Wa-Class
 
 # formatting codes:
 # new line: <br>, <BR>, <br/> or <BR/> can set next line manually. (String can wrap to next line automatically to fit gui width.)
@@ -371,6 +374,9 @@ gui.shincolle:book.chap4.text13d1=§9Name:§0 Northern Princess<br><br>§9Class:
 gui.shincolle:book.chap4.title14=
 gui.shincolle:book.chap4.text14d0=
 gui.shincolle:book.chap4.text14d1=§9Name:§0 Aircraft Carrier Water Demon<br><br>§9Class:§0 Water Demon Class CV<br><br>§9Factory:§0 Hadal Vortex<br><br>§9Factor:§0 Polymetal (5000)<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 none<br><br>Light attack: Laser Funnel: deal 100%% firepower damage.
+gui.shincolle:book.chap4.title15=
+gui.shincolle:book.chap4.text15d0=
+gui.shincolle:book.chap4.text15d1=§9Name:§0 Wa-Class<br><br>§9Class:§0 Transport<br><br>§9Factory:§0 Abyssal Vent<br><br>§9Factor:§0 Abyssium (120)<br><br>§9AuraEffect:§0 Pick up items<br><br>§9OtherEffect:§0 Increase inventory size<br><br>Abyssal maid with high payload, she can also pick up items for master.<br><br>Built-in 3 pages inventory.<br>Transport can only melee attack.
 
 # GUI: Book Text Chap 5
 gui.shincolle:book.chap5.title=Enemy List

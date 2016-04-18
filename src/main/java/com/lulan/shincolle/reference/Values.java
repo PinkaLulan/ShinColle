@@ -71,7 +71,7 @@ public class Values {
 		put(ID.Ship.BattleshipTA,       new float[] {84F,  19F, 23F, 1.0F, 0.42F, 10F, 0.65F, 0.55F, 0.24F, 0.7F,  0.84F, 0.5F});
 		put(ID.Ship.BattleshipRE,       new float[] {120F, 25F, 25F, 0.9F, 0.36F, 12F, 0.8F,  0.6F,  0.25F, 0.63F, 0.72F, 0.5F});
 		//transport
-//		put(ID.Ship.TransportWA,        new float[] {70F,  2F,  10F, 0.8F, 0.3F,  5F,  0.6F,  0.25F, 0.16F, 0.5F,  0.6F,  0.3F});
+		put(ID.Ship.TransportWA,        new float[] {90F,  3F,  10F, 0.8F, 0.35F, 5F,  0.7F,  0.25F, 0.16F, 0.5F,  0.6F,  0.3F});
 		//submarine
 //		put(ID.Ship.SubmarineKA,        new float[] {40F,  23F, 9F,  0.6F, 0.3F,  5F,  0.35F, 0.63F, 0.14F, 0.7F,  0.6F,  0.3F});
 //		put(ID.Ship.SubmarineYO,        new float[] {36F,  26F, 10F, 0.6F, 0.3F,  5F,  0.33F, 0.7F,  0.16F, 0.7F,  0.6F,  0.3F});
@@ -209,7 +209,8 @@ public class Values {
 		add((int)ID.Ship.HarbourHime);
 		add((int)ID.Ship.NorthernHime);
 		add((int)ID.Ship.CarrierWD);
-
+		
+		add((int)ID.Ship.TransportWA);
 	}});
 	
 	/**ENEMY LIST for guidebook
@@ -363,6 +364,9 @@ public class Values {
 		put((int)ID.EquipType.CATAPULT_LO + (int)ID.EquipSubID.CATAPULT_H * 100,        new float[]{3F, 0,   0F,  0F,  0F,  0F,  0F, 0.8F, -0.18F, 4F,   0F,    0F,    0F,    0F,    0F,  0F,  ID.EquipType.CATAPULT_LO,  500F,  0F});
 		put((int)ID.EquipType.CATAPULT_HI + (int)ID.EquipSubID.CATAPULT_C * 100,        new float[]{3F, 0,   0F,  0F,  0F,  0F,  0F, 1.2F, -0.26F, 6F,   0F,    0F,    0F,    0F,    0F,  0F,  ID.EquipType.CATAPULT_HI,  800F,  0F});
 		put((int)ID.EquipType.CATAPULT_HI + (int)ID.EquipSubID.CATAPULT_E * 100,        new float[]{3F, 0,   0F,  0F,  0F,  0F,  0F, 2.0F, -0.34F, 8F,   0F,    0F,    0F,    0F,    0F,  0F,  ID.EquipType.CATAPULT_HI,  1000F, 0F});
+		//drum
+		put((int)ID.EquipType.DRUM_LO + (int)ID.EquipSubID.DRUM_N * 100,        		new float[]{2F, 0,   0F,  0F,  0F,  0F,  0F, 0F,   -0.25F, 0F,   0F,    0F,    0F,    0F,    0F,  0F,  ID.EquipType.DRUM_LO,  	  500F,  0F});
+		
 	}});
 	
 	
@@ -484,6 +488,7 @@ public class Values {
 		put(ID.Icon.EqAirB,     new ItemStack(ModItems.EquipAirplane, 1, 9));
 		put(ID.Icon.EqAirR,     new ItemStack(ModItems.EquipAirplane, 1, 13));
 		put(ID.Icon.EqArmor,    new ItemStack(ModItems.EquipArmor));
+		put(ID.Icon.EqDrum,     new ItemStack(ModItems.EquipDrum));
 	}});
 	
 	

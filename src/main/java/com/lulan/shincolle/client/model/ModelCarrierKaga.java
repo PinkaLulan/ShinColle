@@ -714,6 +714,8 @@ public class ModelCarrierKaga extends ModelBase implements IModelEmotion {
 	  	this.Butt.rotateAngleX = 0.3142F;
 	  	this.Skirt01.rotateAngleX = -0.14F;
 	  	this.Skirt02.rotateAngleX = -0.0873F;
+	  	this.ClothHR02.offsetY = 0F;
+    	this.ClothHR03.offsetY = 0F;
 	  	//hair
     	this.Hair01.rotateAngleX = 0F;
     	this.Hair01.rotateAngleZ = 0F;
@@ -768,6 +770,7 @@ public class ModelCarrierKaga extends ModelBase implements IModelEmotion {
 		this.EquipE01.offsetX = 0F;
 		this.EquipE02.rotateAngleX = -0.4887F;
 		this.EquipE05.rotateAngleX = 0.4538F;
+		this.EquipD01.rotateAngleX =0F;
 		this.EquipD02.rotateAngleX = -0.05F;
 		this.EquipD02.rotateAngleY = 1.6755F;
 		this.EquipD02.rotateAngleZ = 3.1416F;
@@ -795,6 +798,9 @@ public class ModelCarrierKaga extends ModelBase implements IModelEmotion {
 		    this.ArmLeft01.rotateAngleZ = 0.2618F;
 		    this.ArmRight01.rotateAngleX = -0.7F;
 		    this.ArmRight01.rotateAngleZ = -0.2618F;
+		    //equip
+		    this.EquipD02.rotateAngleX = 0.15F;
+		    this.EquipE01.rotateAngleY = 1.3F;
 		    //tail
 		    this.Tail01.rotateAngleX += 1.3F;
   		}//end if sneaking
@@ -899,6 +905,7 @@ public class ModelCarrierKaga extends ModelBase implements IModelEmotion {
 	    	//set start time
 	    	if(ent.getAttackTime() >= 49) ent.setAttackAniTick(0);
 	    	int tick = ent.getAttackAniTick();
+	    	float parTick = f2 - (int)f2 + tick;
 	    	
 	    	//head
 		    this.Head.rotateAngleX = 0F;
@@ -906,6 +913,8 @@ public class ModelCarrierKaga extends ModelBase implements IModelEmotion {
 	    	//body
 	    	this.BodyMain.rotateAngleX = -0.05F;
 	    	this.BodyMain.rotateAngleY = 1.4F;
+	    	this.ClothHR02.offsetY = -0.17F;
+	    	this.ClothHR03.offsetY = -0.2F;
 	    	//arm
 	    	this.ArmLeft01.rotateAngleX = -1.5708F;
 	    	this.ArmLeft01.rotateAngleY = -1.35F;
@@ -913,7 +922,7 @@ public class ModelCarrierKaga extends ModelBase implements IModelEmotion {
 	    	this.ArmRight01.rotateAngleX = 0F;
 	    	this.ArmRight01.rotateAngleY = 2.1817F;
 			this.ArmRight01.rotateAngleZ = 1.5708F;
-			this.ArmRight02.rotateAngleZ = -2.44F + 0.15F * tick;  //-2.44~-1.57
+			this.ArmRight02.rotateAngleZ = -2.44F + 0.15F * parTick;  //-2.44~-1.57
 			if(this.ArmRight02.rotateAngleZ > -1.57F) this.ArmRight02.rotateAngleZ = -1.57F;
 			this.ArmRight02.offsetX = 0.31F;
 			//leg
@@ -923,16 +932,25 @@ public class ModelCarrierKaga extends ModelBase implements IModelEmotion {
 			this.LegRight01.rotateAngleZ = 0.14F;
 			//equip
 			this.EquipE01.isHidden = false;
+			this.EquipD01.rotateAngleX = -1.3F;
 			this.EquipD02.rotateAngleX = -1.5708F;
 			this.EquipD02.rotateAngleY = -1.15F;
 			this.EquipD02.rotateAngleZ = 1.7453F;
 			this.EquipE01.rotateAngleX = 0.2618F;
 			this.EquipE01.rotateAngleZ = -0.23F;
 			this.EquipE01.offsetX = -0.15F;
-		    this.EquipE02.rotateAngleX = -0.7F + 0.1F * tick;  //-0.7~-0.49
+		    this.EquipE02.rotateAngleX = -0.7F + 0.1F * parTick;  //-0.7~-0.49
 		    if(this.EquipE02.rotateAngleX > -0.49F) this.EquipE02.rotateAngleX = -0.49F;
-		    this.EquipE05.rotateAngleX = 0.7F - 0.1F * tick;  //0.7~0.45
+		    this.EquipE05.rotateAngleX = 0.7F - 0.1F * parTick;  //0.7~0.45
 		    if(this.EquipE05.rotateAngleX < 0.45F) this.EquipE05.rotateAngleX = 0.45F;
+		    if(tick > 5 && tick < 12) {
+		    	this.EquipE01.rotateAngleX -= 0.36F * MathHelper.sin(parTick * 0.2244F);
+		    	this.EquipE01.rotateAngleZ -= 5F * MathHelper.sin(parTick * 0.2244F);
+		    }
+		    if(tick >= 12) {
+		    	this.EquipE01.rotateAngleX = -0.1F;
+		    	this.EquipE01.rotateAngleZ = -3.3F;
+		    }
 		    
 		    //save tick
 		    ent.setAttackAniTick(++tick);

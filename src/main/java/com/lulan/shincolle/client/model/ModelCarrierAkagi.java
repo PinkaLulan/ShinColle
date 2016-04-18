@@ -8,6 +8,7 @@ import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EmotionHelper;
+import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
@@ -355,7 +356,7 @@ public class ModelCarrierAkagi extends ModelBase implements IModelEmotion {
         this.EquipC02.addBox(-2.5F, 0.0F, -3.0F, 3, 9, 6, 0.0F);
         this.setRotateAngle(EquipC02, 0.17453292519943295F, 0.0F, 0.3490658503988659F);
         this.Hair01 = new ModelRenderer(this, 189, 0);
-        this.Hair01.setRotationPoint(0.0F, 7.5F, 1.0F);
+        this.Hair01.setRotationPoint(0.0F, 9.5F, 1.0F);
         this.Hair01.addBox(-7.5F, 0.0F, 0.0F, 15, 14, 9, 0.0F);
         this.setRotateAngle(Hair01, 0.20943951023931953F, 0.0F, 0.0F);
         this.Cloth07 = new ModelRenderer(this, 24, 80);
@@ -606,8 +607,8 @@ public class ModelCarrierAkagi extends ModelBase implements IModelEmotion {
     
     private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {
     	GL11.glTranslatef(0F, 1.5F, 0F);
-  		setFace(4);
-  		
+		setFace(4);
+	  	
 	  	if(((IShipFloating)ent).getShipDepth() > 0) {
 	  		this.EquipSL01.isHidden = false;
 	    	this.EquipSR01.isHidden = false;
@@ -617,80 +618,95 @@ public class ModelCarrierAkagi extends ModelBase implements IModelEmotion {
         	this.EquipSR01.isHidden = true;
     	}
     	
-	    //胸部
-  	    this.BoobL.rotateAngleX = -0.8F;
-  	    this.BoobR.rotateAngleX = -0.8F;
 	  	//Body
-  	    this.Ahoke.rotateAngleY = 0.45F;
-	  	this.BodyMain.rotateAngleX = -0.1047F;
-	  	this.BodyMain.rotateAngleY = 0F;
-	  	this.BodyMain.rotateAngleZ = 0F;
-	  	//hair
-    	this.Hair01.rotateAngleX = 0F;
-    	this.Hair01.rotateAngleZ = 0F;
-    	this.Hair02.rotateAngleX = 0F;
-    	this.Hair02.rotateAngleZ = 0F;
+	  	this.Skirt01.rotateAngleX = -0.2F;
+	  	this.Skirt02.rotateAngleX = -0.3F;
 	    //arm 
-	  	this.ArmLeft01.rotateAngleY = 0F;
-	    this.ArmLeft02.rotateAngleX = 0F;
-	    this.ArmRight01.rotateAngleY = 0F;
-		this.ArmRight02.rotateAngleZ = 0F;
 		this.ArmRight02.offsetX = 0F;
 	    
 	    if(ent.getStateEmotion(ID.S.State) > ID.State.EQUIP00) {
 	    	this.ArmRight01.rotateAngleZ += 0.15F;
 	    }
 	    
+	    if(ent.getStateEmotion(ID.S.State) > ID.State.EQUIP02) {
+	    	this.ArmLeft01.rotateAngleZ -= 0.15F;
+	    	
+	    	//tail
+	    	this.Tail01.rotateAngleX = -1.85F;
+	    	this.Tail02.rotateAngleX = -0.6F;
+	    	this.Tail03.rotateAngleX = -0.6F;
+	    }
+	    
 		//leg
-	    this.LegLeft01.rotateAngleX = -0.9F;
-		this.LegLeft01.rotateAngleY = 0F;
-		this.LegLeft01.rotateAngleZ = -0.14F;
-		this.LegRight01.rotateAngleX = -0.9F;
-		this.LegRight01.rotateAngleY = 0F;
-		this.LegRight01.rotateAngleZ = 0.14F;
+		this.LegLeft02.rotateAngleY = 0F;
+		this.LegLeft02.offsetX = 0F;
+		this.LegLeft02.offsetY = 0F;
+		this.LegRight02.rotateAngleY = 0F;
+		this.LegRight02.offsetX = 0F;
+		this.LegRight02.offsetY = 0F;
+		
 		//equip
 		this.EquipE01.rotateAngleX = 0.05F;
+		this.EquipE01.rotateAngleY = -0.2F;
+		this.EquipE01.rotateAngleZ = 0F;
 		this.EquipE01.offsetX = 0F;
 		this.EquipE02.rotateAngleX = -0.4887F;
 		this.EquipE05.rotateAngleX = 0.4538F;
+		this.EquipD02.rotateAngleX = 0.25F;
 		this.EquipD02.rotateAngleY = 1.6755F;
 		this.EquipD02.rotateAngleZ = 3.1416F;
+		this.EquipD02.offsetY = 0F;
+		this.EquipS01.rotateAngleX = -0.95F;
 		
-    	//head
-    	this.Head.rotateAngleX = 0.65F;
-    	this.Head.rotateAngleY = 0F;
-    	this.Head.rotateAngleZ = 0F;
-    	//body
-    	this.Butt.rotateAngleX = -0.2F;
-		this.Skirt01.rotateAngleX = -0.26F;
-		this.Skirt02.rotateAngleX = -0.45F;
-		//arm
-		this.ArmLeft01.rotateAngleX = 0.4F;
-		this.ArmLeft01.rotateAngleZ = -0.2618F;
-		this.ArmRight01.rotateAngleX = 0.4F;
-		this.ArmRight01.rotateAngleZ = 0.2618F;
+		//頭部
+	  	this.Head.rotateAngleX = -0.2618F;
+	  	this.Head.rotateAngleY = 0F;
+	  	this.Head.rotateAngleZ = 0F;
+	    //胸部
+  	    this.BoobL.rotateAngleX = -1.0F;
+  	    this.BoobR.rotateAngleX = -1.0F;
+	  	//Body
+  	    this.Ahoke.rotateAngleY = -1.0F;
+	  	this.BodyMain.rotateAngleX = 1.2217F;
+	  	this.BodyMain.rotateAngleY = 0F;
+	  	this.BodyMain.rotateAngleZ = 1.2217F;
+	  	this.Butt.rotateAngleX = -0.05F;
+	  	//hair
+	  	this.Hair01.rotateAngleX = 0.2F;
+	  	this.Hair01.rotateAngleZ = -0.36F;
+	  	this.Hair02.rotateAngleX = 0.2F;
+	  	this.Hair02.rotateAngleZ = -0.15F;
+	  	this.HairL01.rotateAngleZ = 0.0873F;
+	  	this.HairL02.rotateAngleZ = -0.3142F;
+	  	this.HairR01.rotateAngleZ = -0.0873F;
+	  	this.HairR02.rotateAngleZ = -1.2217F;
+		this.HairL01.rotateAngleX = - 0.28F;
+	  	this.HairL02.rotateAngleX = 0.15F;
+	  	this.HairR01.rotateAngleX = -0.35F;
+	  	this.HairR02.rotateAngleX = 0.18F;
+	    //arm 
+	  	this.ArmLeft01.rotateAngleX = -0.35F;
+	  	this.ArmLeft01.rotateAngleY = 0F;
+	    this.ArmLeft01.rotateAngleZ = -3F;
+	    this.ArmLeft02.rotateAngleX = 0F;
+    	this.ArmRight01.rotateAngleX = -0.35F;
+	    this.ArmRight01.rotateAngleY = 0F;
+		this.ArmRight01.rotateAngleZ = -0.35F;
+		this.ArmRight02.rotateAngleX = 0F;
+		this.ArmRight02.rotateAngleZ = -0.8727F;
 		//leg
-		this.LegLeft02.rotateAngleX = 1.2217F;
-		this.LegLeft02.rotateAngleY = 1.2217F;
-		this.LegLeft02.rotateAngleZ = -1.0472F;
-		this.LegLeft02.offsetX = 0.18F;
-		this.LegLeft02.offsetY = -0.03F;
-		this.LegLeft02.offsetZ = 0.1635F;
-		this.LegRight02.rotateAngleX = 1.2217F;
-		this.LegRight02.rotateAngleY = -1.2217F;
-		this.LegRight02.rotateAngleZ = 1.0472F;
-		this.LegRight02.offsetX = -0.18F;
-		this.LegRight02.offsetY = -0.03F;
-		this.LegRight02.offsetZ = 0.1635F;
-		//tail
-		this.Tail01.rotateAngleX = 0.1F;
-		this.Tail02.rotateAngleX = 0.15F;
-		this.Tail03.rotateAngleX = 0.15F;
-		//equip
-		this.EquipE01.rotateAngleY = 1.7F;
-		this.EquipE01.rotateAngleZ = 0.15F;
-		this.EquipD02.rotateAngleX = 0.2F;
-		this.EquipD02.offsetY = -0.5F;
+		this.LegLeft01.rotateAngleX = -0.14F;
+		this.LegLeft01.rotateAngleY = 0F;
+		this.LegLeft01.rotateAngleZ = 0.09F;
+		this.LegLeft02.rotateAngleX = 0F;
+		this.LegLeft02.rotateAngleZ = 0F;
+		this.LegLeft02.offsetZ = 0F;
+		this.LegRight01.rotateAngleX = -1.2217F;
+		this.LegRight01.rotateAngleY = -0.5236F;
+		this.LegRight01.rotateAngleZ = 0F;
+		this.LegRight02.rotateAngleX = 1.0472F;
+		this.LegRight02.rotateAngleZ = 0F;
+		this.LegRight02.offsetZ = 0F;
     }
     
 	//雙腳移動計算
@@ -735,11 +751,22 @@ public class ModelCarrierAkagi extends ModelBase implements IModelEmotion {
 	  	this.Butt.rotateAngleX = 0.3142F;
 	  	this.Skirt01.rotateAngleX = -0.14F;
 	  	this.Skirt02.rotateAngleX = -0.0873F;
+	  	//cloth
+	  	this.ClothHL02_1.offsetY = 0F;
+    	this.ClothHL03_1.offsetY = 0F;
 	  	//hair
-    	this.Hair01.rotateAngleX = 0F;
+    	this.Hair01.rotateAngleX = angleX * 0.03F + 0.23F;
     	this.Hair01.rotateAngleZ = 0F;
-    	this.Hair02.rotateAngleX = 0F;
+    	this.Hair02.rotateAngleX = -angleX * 0.03F - 0.1F;
     	this.Hair02.rotateAngleZ = 0F;
+    	this.HairL01.rotateAngleX = -0.16F;
+	  	this.HairL02.rotateAngleX = 0.1745F;
+	  	this.HairR01.rotateAngleX = -0.14F;
+	  	this.HairR02.rotateAngleX = 0.174F;
+	  	this.HairL01.rotateAngleZ = -0.0873F;
+	  	this.HairL02.rotateAngleZ = 0.087F;
+	  	this.HairR01.rotateAngleZ = 0.0873F;
+	  	this.HairR02.rotateAngleZ = -0.053F;
 	    //arm 
 	  	this.ArmLeft01.rotateAngleX = angleAdd2 * 0.25F + 0.21F;
 	  	this.ArmLeft01.rotateAngleY = 0F;
@@ -789,14 +816,17 @@ public class ModelCarrierAkagi extends ModelBase implements IModelEmotion {
 		this.EquipE01.offsetX = 0F;
 		this.EquipE02.rotateAngleX = -0.4887F;
 		this.EquipE05.rotateAngleX = 0.4538F;
+		this.EquipD01.rotateAngleX = 0F;
 		this.EquipD02.rotateAngleX = -0.05F;
 		this.EquipD02.rotateAngleY = 1.6755F;
 		this.EquipD02.rotateAngleZ = 3.1416F;
 		this.EquipD02.offsetY = 0F;
+		this.EquipS01.rotateAngleX = -0.28F;
 
 	    if(ent.getIsSprinting() || f1 > 0.1F) {	//奔跑動作
 	    	//hair
-	    	this.Hair01.rotateAngleX = angleAdd1 * 0.1F + f1 * 0.75F;
+	    	this.Hair01.rotateAngleX = angleAdd1 * 0.1F + f1 * 0.4F;
+	    	this.Hair02.rotateAngleX += 0.5F;
 		    //arm 
 		    this.ArmLeft01.rotateAngleZ += f1 * -0.2F;
 		    this.ArmRight01.rotateAngleZ += f1 * 0.2F;
@@ -816,6 +846,9 @@ public class ModelCarrierAkagi extends ModelBase implements IModelEmotion {
 		    this.ArmLeft01.rotateAngleZ = 0.2618F;
 		    this.ArmRight01.rotateAngleX = -0.7F;
 		    this.ArmRight01.rotateAngleZ = -0.2618F;
+		    //equip
+		    this.EquipD02.rotateAngleX = 0.15F;
+		    this.EquipE01.rotateAngleY = 1.3F;
 		    //tail
 		    this.Tail01.rotateAngleX += 1.3F;
   		}//end if sneaking
@@ -856,16 +889,16 @@ public class ModelCarrierAkagi extends ModelBase implements IModelEmotion {
 				this.LegLeft02.rotateAngleX = 1.2217F;
 				this.LegLeft02.rotateAngleY = 1.2217F;
 				this.LegLeft02.rotateAngleZ = -1.0472F;
-				this.LegLeft02.offsetX = 0.18F;
+				this.LegLeft02.offsetX = 0.17F;
 				this.LegLeft02.offsetY = -0.03F;
-				this.LegLeft02.offsetZ = 0.1635F;
+				this.LegLeft02.offsetZ = 0.2F;
 				this.LegRight01.rotateAngleZ = 0.14F;
 				this.LegRight02.rotateAngleX = 1.2217F;
 				this.LegRight02.rotateAngleY = -1.2217F;
 				this.LegRight02.rotateAngleZ = 1.0472F;
-				this.LegRight02.offsetX = -0.18F;
+				this.LegRight02.offsetX = -0.17F;
 				this.LegRight02.offsetY = -0.03F;
-				this.LegRight02.offsetZ = 0.1635F;
+				this.LegRight02.offsetZ = 0.2F;
 				//tail
 				this.Tail01.rotateAngleX += 1.7F;
 				this.Tail02.rotateAngleX += 0.15F;
@@ -916,10 +949,11 @@ public class ModelCarrierAkagi extends ModelBase implements IModelEmotion {
   		}//end if sitting
 	    
 	    //攻擊動作    
-	    if(ent.getAttackTime() > 30) {
+	    if(ent.getAttackTime() > 20) {
 	    	//set start time
 	    	if(ent.getAttackTime() >= 49) ent.setAttackAniTick(0);
 	    	int tick = ent.getAttackAniTick();
+	    	float parTick = f2 - (int)f2 + tick;
 	    	
 	    	//head
 		    this.Head.rotateAngleX = 0F;
@@ -927,6 +961,9 @@ public class ModelCarrierAkagi extends ModelBase implements IModelEmotion {
 	    	//body
 	    	this.BodyMain.rotateAngleX = -0.05F;
 	    	this.BodyMain.rotateAngleY = 1.4F;
+	    	//cloth
+	    	this.ClothHL02_1.offsetY = -0.17F;
+	    	this.ClothHL03_1.offsetY = -0.2F;
 	    	//arm
 	    	this.ArmLeft01.rotateAngleX = -1.5708F;
 	    	this.ArmLeft01.rotateAngleY = -1.35F;
@@ -934,7 +971,7 @@ public class ModelCarrierAkagi extends ModelBase implements IModelEmotion {
 	    	this.ArmRight01.rotateAngleX = 0F;
 	    	this.ArmRight01.rotateAngleY = 2.1817F;
 			this.ArmRight01.rotateAngleZ = 1.5708F;
-			this.ArmRight02.rotateAngleZ = -2.44F + 0.15F * tick;  //-2.44~-1.57
+			this.ArmRight02.rotateAngleZ = -2.44F + 0.15F * parTick;  //-2.44~-1.57
 			if(this.ArmRight02.rotateAngleZ > -1.57F) this.ArmRight02.rotateAngleZ = -1.57F;
 			this.ArmRight02.offsetX = 0.31F;
 			//leg
@@ -944,16 +981,25 @@ public class ModelCarrierAkagi extends ModelBase implements IModelEmotion {
 			this.LegRight01.rotateAngleZ = 0.14F;
 			//equip
 			this.EquipE01.isHidden = false;
-			this.EquipD02.rotateAngleX = -1.5708F;
-			this.EquipD02.rotateAngleY = -1.15F;
+			this.EquipD01.rotateAngleX = 1.3F;
+			this.EquipD02.rotateAngleX = -1.15F;
+			this.EquipD02.rotateAngleY = -2.0F;
 			this.EquipD02.rotateAngleZ = 1.7453F;
 			this.EquipE01.rotateAngleX = 0.2618F;
 			this.EquipE01.rotateAngleZ = -0.23F;
 			this.EquipE01.offsetX = -0.15F;
-		    this.EquipE02.rotateAngleX = -0.7F + 0.1F * tick;  //-0.7~-0.49
+		    this.EquipE02.rotateAngleX = -0.7F + 0.1F * parTick;  //-0.7~-0.49
 		    if(this.EquipE02.rotateAngleX > -0.49F) this.EquipE02.rotateAngleX = -0.49F;
-		    this.EquipE05.rotateAngleX = 0.7F - 0.1F * tick;  //0.7~0.45
+		    this.EquipE05.rotateAngleX = 0.7F - 0.1F * parTick;  //0.7~0.45
 		    if(this.EquipE05.rotateAngleX < 0.45F) this.EquipE05.rotateAngleX = 0.45F;
+		    if(tick > 5 && tick < 12) {
+		    	this.EquipE01.rotateAngleX -= 0.36F * MathHelper.sin(parTick * 0.2244F);
+		    	this.EquipE01.rotateAngleZ -= 5F * MathHelper.sin(parTick * 0.2244F);
+		    }
+		    if(tick >= 12) {
+		    	this.EquipE01.rotateAngleX = -0.1F;
+		    	this.EquipE01.rotateAngleZ = -3.3F;
+		    }
 		    
 		    //save tick
 		    ent.setAttackAniTick(++tick);
@@ -963,9 +1009,17 @@ public class ModelCarrierAkagi extends ModelBase implements IModelEmotion {
 	    headX = this.Head.rotateAngleX * -0.5F;
 	    headZ = this.Head.rotateAngleZ * -0.5F;
 	    this.Hair01.rotateAngleX += headX;
-	  	this.Hair02.rotateAngleX += headX * 0.5F;
+	  	this.Hair02.rotateAngleX += headX * 0.1F;
 	    this.Hair01.rotateAngleZ += headZ;
-	  	this.Hair02.rotateAngleZ += headZ * 0.5F;
+	  	this.Hair02.rotateAngleZ += headZ * 0.7F;
+	  	this.HairL01.rotateAngleZ += headZ;
+	  	this.HairL02.rotateAngleZ += headZ * 0.8F;
+	  	this.HairR01.rotateAngleZ += headZ;
+	  	this.HairR02.rotateAngleZ += headZ * 0.8F;
+		this.HairL01.rotateAngleX += angleX * 0.04F + headX;
+	  	this.HairL02.rotateAngleX += angleX1 * 0.05F + headX * 0.8F;
+	  	this.HairR01.rotateAngleX += angleX * 0.04F + headX;
+	  	this.HairR02.rotateAngleX += angleX1 * 0.05F + headX * 0.8F;
 	    
 	    //leg motion
 	    this.LegLeft01.rotateAngleX = addk1;

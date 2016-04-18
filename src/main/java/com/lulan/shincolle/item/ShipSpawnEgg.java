@@ -105,6 +105,7 @@ public class ShipSpawnEgg extends Item {
   		list.add(new ItemStack(item, 1, ID.Ship.CarrierWO+2));
   		list.add(new ItemStack(item, 1, ID.Ship.BattleshipTA+2));
   		list.add(new ItemStack(item, 1, ID.Ship.BattleshipRE+2));
+  		list.add(new ItemStack(item, 1, ID.Ship.TransportWA+2));
   		list.add(new ItemStack(item, 1, ID.Ship.AirfieldHime+2));
   		list.add(new ItemStack(item, 1, ID.Ship.BattleshipHime+2));
   		list.add(new ItemStack(item, 1, ID.Ship.HarbourHime+2));

@@ -39,6 +39,7 @@ public class EquipCalc {
 		 */
 		//small build
 		EquipSmall.add(new int[] {ID.EquipType.ARMOR_LO,     80,   1});
+		EquipSmall.add(new int[] {ID.EquipType.DRUM_LO,      80,   1});
 		EquipSmall.add(new int[] {ID.EquipType.GUN_LO,       100,  2});
 		EquipSmall.add(new int[] {ID.EquipType.CANNON_SI,    128,  2});
 		EquipSmall.add(new int[] {ID.EquipType.TORPEDO_LO,   160,  2});
@@ -67,7 +68,7 @@ public class EquipCalc {
 	}
 	
 	
-	//get equip state
+	//get equip stats
 	public static float[] getEquipStat(BasicEntityShip entity, ItemStack item) {
 		if(entity != null && item != null && item.getItem() instanceof BasicEquip) {
 			float[] itemStat = Values.EquipMap.get(((BasicEquip)item.getItem()).getEquipID(item.getItemDamage()));
@@ -80,6 +81,21 @@ public class EquipCalc {
 	//			LogHelper.info("DEBUG : equip stat "+equipID+" "+getStat[0]+" "+getStat[1]+" "+getStat[2]+" "+getStat[3]+" "+getStat[4]+" "+getStat[5]+" "+getStat[6]+" "+getStat[7]+" "+getStat[8]);
 				return itemStat;
 			}	
+		}
+		return null;
+	}
+	
+	//get special equip stats
+	public static float[] getEquipStatMisc(BasicEntityShip entity, ItemStack item) {
+		if(entity != null && item != null && item.getItem() instanceof BasicEquip) {
+			float[] itemStat = new float[] {0};
+					
+			//drum
+			if(item.getItem() == ModItems.EquipDrum) {
+				itemStat[0] = 1;
+			}
+			
+			return itemStat;
 		}
 		return null;
 	}
@@ -307,6 +323,10 @@ public class EquipCalc {
 		case ID.EquipType.CATAPULT_LO:
 		case ID.EquipType.CATAPULT_HI:
 			item = new ItemStack(ModItems.EquipCatapult);
+			break;
+		//drum
+		case ID.EquipType.DRUM_LO:
+			item = new ItemStack(ModItems.EquipDrum);
 			break;
 		default:
 			item = null;

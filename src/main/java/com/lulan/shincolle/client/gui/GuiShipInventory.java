@@ -4,12 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiLabel;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
@@ -61,7 +65,7 @@ public class GuiShipInventory extends GuiContainer {
 	               strAttrDodge, strAttrFPos, strAttrFormat, strAttrWedding, strAttrWedTrue, strAttrWedFalse,
 	               strTimeKeep, strM0, strM1, strM2, strM3, strM4;
 	private int hpCurrent, hpMax, color, showPage, showPageAI, pageIndicator, pageIndicatorAI, showAttack,
-				fMinPos, fMaxPos, fleeHPPos, barPos, mousePressBar, shipType, shipClass;
+				fMinPos, fMaxPos, fleeHPPos, barPos, mousePressBar, shipType, shipClass, showPageInv;
 	private boolean switchMelee, switchLight, switchHeavy, switchAirLight, switchAirHeavy,
 				switchTarAI, mousePress, switchAura, switchOnSight, switchPVP, switchAA, switchASM, switchTimeKeep;
 	private int[][] iconXY;  //icon array:  [ship type, ship name][file,x,y]
@@ -73,10 +77,11 @@ public class GuiShipInventory extends GuiContainer {
 		this.mouseoverList = new ArrayList();			
 		this.entity = entity1;
 		this.player = invPlayer;
-		this.xSize = 250;
+		this.xSize = 256;
 		this.ySize = 214;
 		this.showPage = 1;			//show page 1
-		this.showPageAI = 1;		//show Ai control page 1
+		this.showPageAI = 1;		//show AI control page 1
+		this.showPageInv = 1;		//show inventory page 1
 		this.showAttack = 1;		//show attack 1
 		this.mousePress = false;	//no key clicked
 		this.mousePressBar = -1;	//no bar pressed
@@ -161,7 +166,7 @@ public class GuiShipInventory extends GuiContainer {
 		//畫出字串 parm: string, x, y, color, (是否dropShadow)
 		//draw entity name (title) 
 		this.fontRendererObj.drawString(titlename, 8, 6, 0);
-		
+
 		drawAttributes();	
 		
 		handleHoveringText();
@@ -176,6 +181,33 @@ public class GuiShipInventory extends GuiContainer {
         Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE_BG);
         drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
         
+        //draw banned inventory icon
+        switch(this.entity.getInventoryPageSize()) {
+        case 2:
+        	break;
+        case 1:
+        	drawTexturedModalRect(guiLeft+62, guiTop+90, 80, 214, 6, 34);
+        	break;
+    	default:
+    		drawTexturedModalRect(guiLeft+62, guiTop+54, 80, 214, 6, 34);
+    		drawTexturedModalRect(guiLeft+62, guiTop+90, 80, 214, 6, 34);
+    		break;
+        }
+        
+        //draw inventory page indicator
+        switch(this.showPageInv) {
+        case 1:	//page 1
+        	this.pageIndicator = 18;
+        	break;
+        case 2:	//page 2
+        	this.pageIndicator = 54;
+        	break;
+        case 3:	//page 3
+        	this.pageIndicator = 90;
+        	break;
+        }
+        drawTexturedModalRect(guiLeft+62, guiTop+this.pageIndicator, 74, 214, 6, 34);
+        
         //draw page indicator
         switch(this.showPage) {
         case 1:	//page 1
@@ -188,11 +220,12 @@ public class GuiShipInventory extends GuiContainer {
         	this.pageIndicator = 90;
         	break;
         }
-        drawTexturedModalRect(guiLeft+127, guiTop+this.pageIndicator, 250, 0, 6, 34);
+        drawTexturedModalRect(guiLeft+135, guiTop+this.pageIndicator, 74, 214, 6, 34);
         
         //draw AI page indicator
         switch(this.showPageAI) {
         case 1:	{	//page 1
+        	this.pageIndicator = 239;
         	this.pageIndicatorAI = 131;
         	
         	//get button value
@@ -259,6 +292,7 @@ public class GuiShipInventory extends GuiContainer {
             break;
         	}	
         case 2: {	//page 2
+        	this.pageIndicator = 239;
         	this.pageIndicatorAI = 157;
         	
         	//get button value
@@ -296,6 +330,7 @@ public class GuiShipInventory extends GuiContainer {
         	break;
         	}
         case 3:	{	//page 3
+        	this.pageIndicator = 239;
     		this.pageIndicatorAI = 183;
     		
     		//get button value
@@ -346,22 +381,41 @@ public class GuiShipInventory extends GuiContainer {
   
     		break;
     		}
+        case 4:	{	//page 4
+        	this.pageIndicator = 246;
+    		this.pageIndicatorAI = 131;
+    		break;
+        	}
+        case 5:	{	//page 5
+        	this.pageIndicator = 246;
+    		this.pageIndicatorAI = 157;
+    		break;
+        	}
+        case 6:	{	//page 6
+        	this.pageIndicator = 246;
+    		this.pageIndicatorAI = 183;
+    		break;
+        	}
         }//end AI page switch
+        
         //draw AI page indicator
-        drawTexturedModalRect(guiLeft+239, guiTop+this.pageIndicatorAI, 250, 0, 6, 24);
+        drawTexturedModalRect(guiLeft + this.pageIndicator, guiTop + this.pageIndicatorAI, 74, 214, 6, 24);
         
         //draw level, ship type/name icon
         Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE_ICON);
         
         if(entity.getStateMinor(ID.M.ShipLevel) > 99) {
-        	drawTexturedModalRect(guiLeft+157, guiTop+18, 0, 0, 40, 42);
+        	//draw level background
+        	drawTexturedModalRect(guiLeft+165, guiTop+18, 0, 0, 40, 42);
         	
         	try{
-        		drawTexturedModalRect(guiLeft+159, guiTop+22, this.iconXY[0][0], this.iconXY[0][1], 28, 28);
+        		//draw ship type icon
+        		drawTexturedModalRect(guiLeft+167, guiTop+22, this.iconXY[0][0], this.iconXY[0][1], 28, 28);
 
         		//use name icon file 0
         		if(iconXY[1][0] == 0) {
-        			drawTexturedModalRect(guiLeft+166, guiTop+63, this.iconXY[1][1], this.iconXY[1][2], 11, 59);
+        			//draw ship name icon
+        			drawTexturedModalRect(guiLeft+176, guiTop+63, this.iconXY[1][1], this.iconXY[1][2], 11, 59);
         		}
         	}
         	catch(Exception e) {
@@ -369,14 +423,17 @@ public class GuiShipInventory extends GuiContainer {
         	}
         }
         else {
-        	drawTexturedModalRect(guiLeft+157, guiTop+18, 0, 43, 30, 30);
+        	//draw level background
+        	drawTexturedModalRect(guiLeft+165, guiTop+18, 0, 43, 30, 30);
         	
         	try {
-        		drawTexturedModalRect(guiLeft+157, guiTop+18, this.iconXY[0][0], this.iconXY[0][1], 28, 28);
+        		//draw ship type icon
+        		drawTexturedModalRect(guiLeft+165, guiTop+18, this.iconXY[0][0], this.iconXY[0][1], 28, 28);
         		
         		//use name icon file 0
         		if(iconXY[1][0] == 0) {
-        			drawTexturedModalRect(guiLeft+166, guiTop+63, this.iconXY[1][1], this.iconXY[1][2], 11, 59);
+        			//draw ship name icon
+        			drawTexturedModalRect(guiLeft+176, guiTop+63, this.iconXY[1][1], this.iconXY[1][2], 11, 59);
         		}
         	}
         	catch(Exception e) {
@@ -388,7 +445,7 @@ public class GuiShipInventory extends GuiContainer {
         drawIconMorale();
         
         //draw entity model                                            guiLeft + 200 - xMouse  guiTop + 50 - yMouse
-        drawEntityModel(guiLeft+210, guiTop+100, entity.getModelPos(), guiLeft+215-xMouse, guiTop+60-yMouse, this.entity);
+        drawEntityModel(guiLeft+218, guiTop+100, entity.getModelPos(), guiLeft+215-xMouse, guiTop+60-yMouse, this.entity);
         
 	}
 	
@@ -411,7 +468,7 @@ public class GuiShipInventory extends GuiContainer {
 			break;
 		}
         
-        drawTexturedModalRect(guiLeft+231, guiTop+18, ix, 240, 11, 11);
+        drawTexturedModalRect(guiLeft+239, guiTop+18, ix, 240, 11, 11);
 	}
 	
 	//draw tooltip
@@ -423,7 +480,7 @@ public class GuiShipInventory extends GuiContainer {
 		mouseoverList.clear();
 		
 		//draw morale string
-		if(xMouse > 230+guiLeft && xMouse < 243+guiLeft && yMouse > 17+guiTop && yMouse < 30+guiTop) {
+		if(xMouse > 238+guiLeft && xMouse < 251+guiLeft && yMouse > 17+guiTop && yMouse < 30+guiTop) {
 			mouseoverList.clear();
 			
 			switch(this.entity.getMoraleLevel()) {
@@ -444,11 +501,11 @@ public class GuiShipInventory extends GuiContainer {
 				break;
 			}
 			
-			this.drawHoveringText(mouseoverList, 195, 45, this.fontRendererObj);
+			this.drawHoveringText(mouseoverList, 200, 45, this.fontRendererObj);
 		}
 		
 		//draw states value
-		if(xMouse > 65+guiLeft && xMouse < 120+guiLeft) {
+		if(xMouse > 73+guiLeft && xMouse < 134+guiLeft) {
 			//show text at ATTACK
 			if(showPage == 2 && yMouse > 18+guiTop && yMouse < 40+guiTop) {
 //					LogHelper.info("DEBUg : get tag "+this.entity.getEffectEquip(ID.EF_CRI));
@@ -684,6 +741,7 @@ public class GuiShipInventory extends GuiContainer {
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float f) {
 		super.drawScreen(mouseX, mouseY, f);
+		
 		xMouse = mouseX;
 		yMouse = mouseY;
 	}
@@ -740,8 +798,8 @@ public class GuiShipInventory extends GuiContainer {
 		color = 0;
 
 		//draw lv/hp name
-		this.fontRendererObj.drawStringWithShadow(lvMark, 223-this.fontRendererObj.getStringWidth(lvMark), 6, 65535);
-		this.fontRendererObj.drawStringWithShadow(hpMark, 137-this.fontRendererObj.getStringWidth(hpMark), 6, 65535);
+		this.fontRendererObj.drawStringWithShadow(lvMark, 231-this.fontRendererObj.getStringWidth(lvMark), 6, 65535);
+		this.fontRendererObj.drawStringWithShadow(hpMark, 145-this.fontRendererObj.getStringWidth(hpMark), 6, 65535);
 		
 		//draw level: 150->gold other->white
 		if(entity.getStateMinor(ID.M.ShipLevel) < 150) {
@@ -750,11 +808,11 @@ public class GuiShipInventory extends GuiContainer {
 		else {
 			color = 16766720;  //gold	
 		}
-		this.fontRendererObj.drawStringWithShadow(shiplevel, xSize-7-this.fontRendererObj.getStringWidth(shiplevel), 6, color);
+		this.fontRendererObj.drawStringWithShadow(shiplevel, xSize-6-this.fontRendererObj.getStringWidth(shiplevel), 6, color);
 
 		//draw hp/maxhp, if currHP < maxHP, use darker color
 		color = GuiHelper.pickColor(entity.getBonusPoint(ID.HP));
-		this.fontRendererObj.drawStringWithShadow("/"+String.valueOf(hpMax), 140 + this.fontRendererObj.getStringWidth(String.valueOf(hpCurrent)), 6, color);
+		this.fontRendererObj.drawStringWithShadow("/"+String.valueOf(hpMax), 148 + this.fontRendererObj.getStringWidth(String.valueOf(hpCurrent)), 6, color);
 		if(hpCurrent < hpMax) {
 			switch(entity.getBonusPoint(ID.HP)) {
 			case 0:
@@ -771,7 +829,7 @@ public class GuiShipInventory extends GuiContainer {
 				break;
 			}
 		}
-		this.fontRendererObj.drawStringWithShadow(String.valueOf(hpCurrent), 139, 6, color);	
+		this.fontRendererObj.drawStringWithShadow(String.valueOf(hpCurrent), 147, 6, color);	
 				
 		//draw string in different page
 		switch(this.showPage) {
@@ -789,44 +847,44 @@ public class GuiShipInventory extends GuiContainer {
 			
 			//draw firepower
 			if(this.showAttack == 1) {	//show cannon attack
-				this.fontRendererObj.drawString(strAttrAtk1, 67, 20, 0);
+				this.fontRendererObj.drawString(strAttrAtk1, 75, 20, 0);
 				color = GuiHelper.pickColor(entity.getBonusPoint(ID.ATK));
-				this.fontRendererObj.drawStringWithShadow(strATK, 125-this.fontRendererObj.getStringWidth(strATK), 30, color);
+				this.fontRendererObj.drawStringWithShadow(strATK, 133-this.fontRendererObj.getStringWidth(strATK), 30, color);
 			}
 			else {						//show aircraft attack
-				this.fontRendererObj.drawString(strAttrAtk2, 67, 20, 0);
+				this.fontRendererObj.drawString(strAttrAtk2, 75, 20, 0);
 				color = GuiHelper.pickColor(entity.getBonusPoint(ID.ATK));
-				this.fontRendererObj.drawStringWithShadow(strAATK, 125-this.fontRendererObj.getStringWidth(strAATK), 30, color);
+				this.fontRendererObj.drawStringWithShadow(strAATK, 133-this.fontRendererObj.getStringWidth(strAATK), 30, color);
 			}
-			this.fontRendererObj.drawString(strAttrDEF, 67, 41, 0);
-			this.fontRendererObj.drawString(strAttrSPD, 67, 62, 0);
-			this.fontRendererObj.drawString(strAttrMOV, 67, 83, 0);
-			this.fontRendererObj.drawString(strAttrHIT, 67, 104, 0);
+			this.fontRendererObj.drawString(strAttrDEF, 75, 41, 0);
+			this.fontRendererObj.drawString(strAttrSPD, 75, 62, 0);
+			this.fontRendererObj.drawString(strAttrMOV, 75, 83, 0);
+			this.fontRendererObj.drawString(strAttrHIT, 75, 104, 0);
 			
 			//draw armor
 			color = GuiHelper.pickColor(entity.getBonusPoint(ID.DEF));
-			this.fontRendererObj.drawStringWithShadow(strDEF, 125-this.fontRendererObj.getStringWidth(strDEF), 51, color);
+			this.fontRendererObj.drawStringWithShadow(strDEF, 133-this.fontRendererObj.getStringWidth(strDEF), 51, color);
 			
 			//draw attack speed
 			color = GuiHelper.pickColor(entity.getBonusPoint(ID.SPD));
-			this.fontRendererObj.drawStringWithShadow(strSPD, 125-this.fontRendererObj.getStringWidth(strSPD), 72, color);
+			this.fontRendererObj.drawStringWithShadow(strSPD, 133-this.fontRendererObj.getStringWidth(strSPD), 72, color);
 			
 			//draw movement speed
 			color = GuiHelper.pickColor(entity.getBonusPoint(ID.MOV));
-			this.fontRendererObj.drawStringWithShadow(strMOV, 125-this.fontRendererObj.getStringWidth(strMOV), 93, color);
+			this.fontRendererObj.drawStringWithShadow(strMOV, 133-this.fontRendererObj.getStringWidth(strMOV), 93, color);
 					
 			//draw range
 			color = GuiHelper.pickColor(entity.getBonusPoint(ID.HIT));
-			this.fontRendererObj.drawStringWithShadow(strHIT, 125-this.fontRendererObj.getStringWidth(strHIT), 114, color);
+			this.fontRendererObj.drawStringWithShadow(strHIT, 133-this.fontRendererObj.getStringWidth(strHIT), 114, color);
 			break;
 			}
 		case 1:	{	//page 1: exp, kills, L&H ammo, fuel
 			//draw string
-			this.fontRendererObj.drawString(strMiKills, 67, 20, 0);
-			this.fontRendererObj.drawString(strMiExp, 67, 41, 0);
-			this.fontRendererObj.drawString(strMiAmmoL, 67, 62, 0);
-			this.fontRendererObj.drawString(strMiAmmoH, 67, 83, 0);
-			this.fontRendererObj.drawString(strMiGrudge, 67, 104, 0);
+			this.fontRendererObj.drawString(strMiKills, 75, 20, 0);
+			this.fontRendererObj.drawString(strMiExp, 75, 41, 0);
+			this.fontRendererObj.drawString(strMiAmmoL, 75, 62, 0);
+			this.fontRendererObj.drawString(strMiAmmoH, 75, 83, 0);
+			this.fontRendererObj.drawString(strMiGrudge, 75, 104, 0);
 			//draw value
 			entity.setExpNext();  //update exp value
 			Exp = String.valueOf(this.entity.getStateMinor(ID.M.ExpCurrent))+"/"+String.valueOf(this.entity.getStateMinor(ID.M.ExpNext));
@@ -835,18 +893,18 @@ public class GuiShipInventory extends GuiContainer {
 			AmmoHeavy = String.valueOf(this.entity.getStateMinor(ID.M.NumAmmoHeavy));
 			Grudge = String.valueOf(this.entity.getStateMinor(ID.M.NumGrudge));
 				
-			this.fontRendererObj.drawStringWithShadow(Kills, 125-this.fontRendererObj.getStringWidth(Kills), 30, Values.Color.WHITE);
-			this.fontRendererObj.drawStringWithShadow(Exp, 125-this.fontRendererObj.getStringWidth(Exp), 51, Values.Color.WHITE);
-			this.fontRendererObj.drawStringWithShadow(AmmoLight, 125-this.fontRendererObj.getStringWidth(AmmoLight), 72, Values.Color.WHITE);
-			this.fontRendererObj.drawStringWithShadow(AmmoHeavy, 125-this.fontRendererObj.getStringWidth(AmmoHeavy), 93, Values.Color.WHITE);
-			this.fontRendererObj.drawStringWithShadow(Grudge, 125-this.fontRendererObj.getStringWidth(Grudge), 114, Values.Color.WHITE);
+			this.fontRendererObj.drawStringWithShadow(Kills, 133-this.fontRendererObj.getStringWidth(Kills), 30, Values.Color.WHITE);
+			this.fontRendererObj.drawStringWithShadow(Exp, 133-this.fontRendererObj.getStringWidth(Exp), 51, Values.Color.WHITE);
+			this.fontRendererObj.drawStringWithShadow(AmmoLight, 133-this.fontRendererObj.getStringWidth(AmmoLight), 72, Values.Color.WHITE);
+			this.fontRendererObj.drawStringWithShadow(AmmoHeavy, 133-this.fontRendererObj.getStringWidth(AmmoHeavy), 93, Values.Color.WHITE);
+			this.fontRendererObj.drawStringWithShadow(Grudge, 133-this.fontRendererObj.getStringWidth(Grudge), 114, Values.Color.WHITE);
 						
 			break;
 			}
 		case 3: {	//page 3: light/heavy airplane, marriage
 			//draw string
-			this.fontRendererObj.drawString(strAttrWedding, 67, 20, 0);
-			this.fontRendererObj.drawString(strAttrFormat, 67, 41, 0);
+			this.fontRendererObj.drawString(strAttrWedding, 75, 20, 0);
+			this.fontRendererObj.drawString(strAttrFormat, 75, 41, 0);
 			
 			//draw value
 			//draw marriage
@@ -860,19 +918,19 @@ public class GuiShipInventory extends GuiContainer {
 			//draw formation
 			int ftype = this.entity.getStateMinor(ID.M.FormatType);
 			this.Formation = I18n.format("gui.shincolle:formation.format"+ftype);
-			this.fontRendererObj.drawStringWithShadow(Formation, 125-this.fontRendererObj.getStringWidth(Formation), 51, Values.Color.WHITE);
+			this.fontRendererObj.drawStringWithShadow(Formation, 133-this.fontRendererObj.getStringWidth(Formation), 51, Values.Color.WHITE);
 			
 			//大型艦, 顯示艦載機數量
 			if(this.entity instanceof BasicEntityShipCV) {
-				this.fontRendererObj.drawString(strMiAirL, 67, 83, 0);
-				this.fontRendererObj.drawString(strMiAirH, 67, 104, 0);
+				this.fontRendererObj.drawString(strMiAirL, 75, 83, 0);
+				this.fontRendererObj.drawString(strMiAirH, 75, 104, 0);
 				AirLight = String.valueOf(((BasicEntityShipCV)this.entity).getNumAircraftLight());
 				AirHeavy = String.valueOf(((BasicEntityShipCV)this.entity).getNumAircraftHeavy());
-				this.fontRendererObj.drawStringWithShadow(AirLight, 125-this.fontRendererObj.getStringWidth(AirLight), 93, Values.Color.YELLOW);
-				this.fontRendererObj.drawStringWithShadow(AirHeavy, 125-this.fontRendererObj.getStringWidth(AirHeavy), 114, Values.Color.YELLOW);	
+				this.fontRendererObj.drawStringWithShadow(AirLight, 133-this.fontRendererObj.getStringWidth(AirLight), 93, Values.Color.YELLOW);
+				this.fontRendererObj.drawStringWithShadow(AirHeavy, 133-this.fontRendererObj.getStringWidth(AirHeavy), 114, Values.Color.YELLOW);	
 			}
 			
-			this.fontRendererObj.drawStringWithShadow(marriage, 125-this.fontRendererObj.getStringWidth(marriage), 30, Values.Color.YELLOW);
+			this.fontRendererObj.drawStringWithShadow(marriage, 133-this.fontRendererObj.getStringWidth(marriage), 30, Values.Color.YELLOW);
 			
 			break;
 			}//end case 3
@@ -1094,6 +1152,31 @@ public class GuiShipInventory extends GuiContainer {
         case 11:	//AI page 3
         	this.showPageAI = 3;
         	break;
+        case 12:	//AI page 4
+        	this.showPageAI = 4;
+        	break;
+        case 13:	//AI page 5
+        	this.showPageAI = 5;
+        	break;
+        case 14:	//AI page 6
+        	this.showPageAI = 6;
+        	break;
+        case 15:	//inventory page 1
+        	this.showPageInv = 1;
+        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_InvPage, 0));
+        	break;
+        case 16:	//inventory page 2
+        	if(this.entity.getInventoryPageSize() > 0) {
+        		this.showPageInv = 2;
+        		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_InvPage, 1));
+        	}
+        	break;
+        case 17:	//inventory page 3
+        	if(this.entity.getInventoryPageSize() > 1) {
+        		this.showPageInv = 3;
+        		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_InvPage, 2));
+        	}
+        	break;
     	}//end all page switch
         
         if(this.showPage == 2) {	//page 2: damage display switch
@@ -1125,6 +1208,131 @@ public class GuiShipInventory extends GuiContainer {
             this.mc.thePlayer.closeScreen();
         }
 	}
+	
+//	/** drawSlotInventory, 修改此方法來顯示目前page的slot */
+//	@Override
+//	private void func_146977_a(Slot slot) {
+//
+//		slot.isSlotInInventory(p_75217_1_, p_75217_2_)
+//    }
+	
+//	@Override
+//	public void drawScreen(int par1, int par2, float par3) {
+//        this.drawDefaultBackground();
+//        int k = this.guiLeft;
+//        int l = this.guiTop;
+//        this.drawGuiContainerBackgroundLayer(par3, par1, par2);
+//        GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+//        RenderHelper.disableStandardItemLighting();
+//        GL11.glDisable(GL11.GL_LIGHTING);
+//        GL11.glDisable(GL11.GL_DEPTH_TEST);
+//        
+//        int k;
+//
+//        for (k = 0; k < this.buttonList.size(); ++k)
+//        {
+//            ((GuiButton)this.buttonList.get(k)).drawButton(this.mc, p_73863_1_, p_73863_2_);
+//        }
+//
+//        for (k = 0; k < this.labelList.size(); ++k)
+//        {
+//            ((GuiLabel)this.labelList.get(k)).func_146159_a(this.mc, p_73863_1_, p_73863_2_);
+//        }
+//        
+//        RenderHelper.enableGUIStandardItemLighting();
+//        GL11.glPushMatrix();
+//        GL11.glTranslatef((float)k, (float)l, 0.0F);
+//        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+//        GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+//        this.theSlot = null;
+//        short short1 = 240;
+//        short short2 = 240;
+//        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)short1 / 1.0F, (float)short2 / 1.0F);
+//        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+//        int k1;
+//
+//        for (int i1 = 0; i1 < this.inventorySlots.inventorySlots.size(); ++i1)
+//        {
+//            Slot slot = (Slot)this.inventorySlots.inventorySlots.get(i1);
+//            this.func_146977_a(slot);
+//
+//            if (this.isMouseOverSlot(slot, par1, par2) && slot.func_111238_b())
+//            {
+//                this.theSlot = slot;
+//                GL11.glDisable(GL11.GL_LIGHTING);
+//                GL11.glDisable(GL11.GL_DEPTH_TEST);
+//                int j1 = slot.xDisplayPosition;
+//                k1 = slot.yDisplayPosition;
+//                GL11.glColorMask(true, true, true, false);
+//                this.drawGradientRect(j1, k1, j1 + 16, k1 + 16, -2130706433, -2130706433);
+//                GL11.glColorMask(true, true, true, true);
+//                GL11.glEnable(GL11.GL_LIGHTING);
+//                GL11.glEnable(GL11.GL_DEPTH_TEST);
+//            }
+//        }
+//
+//        //Forge: Force lighting to be disabled as there are some issue where lighting would
+//        //incorrectly be applied based on items that are in the inventory.
+//        GL11.glDisable(GL11.GL_LIGHTING);
+//        this.drawGuiContainerForegroundLayer(par1, par2);
+//        GL11.glEnable(GL11.GL_LIGHTING);
+//        InventoryPlayer inventoryplayer = this.mc.thePlayer.inventory;
+//        ItemStack itemstack = this.draggedStack == null ? inventoryplayer.getItemStack() : this.draggedStack;
+//
+//        if (itemstack != null)
+//        {
+//            byte b0 = 8;
+//            k1 = this.draggedStack == null ? 8 : 16;
+//            String s = null;
+//
+//            if (this.draggedStack != null && this.isRightMouseClick)
+//            {
+//                itemstack = itemstack.copy();
+//                itemstack.stackSize = MathHelper.ceiling_float_int((float)itemstack.stackSize / 2.0F);
+//            }
+//            else if (this.field_147007_t && this.field_147008_s.size() > 1)
+//            {
+//                itemstack = itemstack.copy();
+//                itemstack.stackSize = this.field_146996_I;
+//
+//                if (itemstack.stackSize == 0)
+//                {
+//                    s = "" + EnumChatFormatting.YELLOW + "0";
+//                }
+//            }
+//
+//            this.drawItemStack(itemstack, par1 - k - b0, par2 - l - k1, s);
+//        }
+//
+//        if (this.returningStack != null)
+//        {
+//            float f1 = (float)(Minecraft.getSystemTime() - this.returningStackTime) / 100.0F;
+//
+//            if (f1 >= 1.0F)
+//            {
+//                f1 = 1.0F;
+//                this.returningStack = null;
+//            }
+//
+//            k1 = this.returningStackDestSlot.xDisplayPosition - this.field_147011_y;
+//            int j2 = this.returningStackDestSlot.yDisplayPosition - this.field_147010_z;
+//            int l1 = this.field_147011_y + (int)((float)k1 * f1);
+//            int i2 = this.field_147010_z + (int)((float)j2 * f1);
+//            this.drawItemStack(this.returningStack, l1, i2, (String)null);
+//        }
+//
+//        GL11.glPopMatrix();
+//
+//        if (inventoryplayer.getItemStack() == null && this.theSlot != null && this.theSlot.getHasStack())
+//        {
+//            ItemStack itemstack1 = this.theSlot.getStack();
+//            this.renderToolTip(itemstack1, par1, par2);
+//        }
+//
+//        GL11.glEnable(GL11.GL_LIGHTING);
+//        GL11.glEnable(GL11.GL_DEPTH_TEST);
+//        RenderHelper.enableStandardItemLighting();
+//    }
 	
 	
 

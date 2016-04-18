@@ -76,10 +76,15 @@ public class EntityCarrierAkagi extends BasicEntityShipCV {
   	public void onLivingUpdate() {
   		super.onLivingUpdate();
   		
-//  		//client side
-//  		if(worldObj.isRemote) {
-//
-//  		}
+  		//client side
+  		if(worldObj.isRemote) {
+  			if(this.ticksExisted % 128 == 0) {
+  				//show hungry emotes
+  				if(this.rand.nextInt(4) == 0 && !this.getStateFlag(ID.F.NoFuel)) {
+  					this.applyParticleEmotion(9);
+  				}
+  			}
+  		}
   	}
   	
   	@Override

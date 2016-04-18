@@ -56,6 +56,7 @@ public class ShipCalc {
 		EquipSmall.add(new int[] {ID.Ship.DestroyerRO,     90,   0});
 		EquipSmall.add(new int[] {ID.Ship.DestroyerHA,     100,  0});
 		EquipSmall.add(new int[] {ID.Ship.DestroyerNI,     110,  0});
+		EquipSmall.add(new int[] {ID.Ship.TransportWA,     120,  1});
 		EquipSmall.add(new int[] {ID.Ship.HeavyCruiserRI,  200,  2});
 		EquipSmall.add(new int[] {ID.Ship.HeavyCruiserNE,  256,  2});
 		
@@ -250,6 +251,8 @@ public class ShipCalc {
   			return "shincolle.EntityCarrierAkagi";
   		case ID.Ship.CarrierAkagi+2000:
   			return "shincolle.EntityCarrierAkagiBoss";
+  		case ID.Ship.TransportWA:
+  			return "shincolle.EntityTransportWa";
   		default:
   			return "shincolle.EntityDestroyerI";
   		}	

@@ -320,18 +320,20 @@ public class EntityHelper {
 	
 	/** check target is attackable, SERVER SIDE */
 	public static boolean checkAttackable(Entity target) {
-		//check unattackable list
-		List<String> unatklist = ServerProxy.getUnattackableTargetClassList();
-		String tarClass = target.getClass().getSimpleName();
-		
-		if(unatklist != null) {
-			for(String s : unatklist) {
-				if(s.equals(tarClass)) {  //target class is in list
-					return false;
+		if(target != null) {
+			//check unattackable list
+			List<String> unatklist = ServerProxy.getUnattackableTargetClassList();
+			String tarClass = target.getClass().getSimpleName();
+			
+			if(unatklist != null) {
+				for(String s : unatklist) {
+					if(s.equals(tarClass)) {  //target class is in list
+						return false;
+					}
 				}
 			}
 		}
-		
+
 		return true;
 	}
 	
@@ -778,6 +780,9 @@ public class EntityHelper {
 				break;
 			case ID.B.ShipInv_TIMEKEEPAI:
 				entity.setEntityFlagI(ID.F.TimeKeeper, value);
+				break;
+			case ID.B.ShipInv_InvPage:
+				entity.getExtProps().setInventoryPage(value);
 				break;
 			}
 		}

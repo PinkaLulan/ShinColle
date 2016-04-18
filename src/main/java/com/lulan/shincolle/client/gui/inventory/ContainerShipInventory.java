@@ -21,39 +21,39 @@ import net.minecraft.item.ItemStack;
 public class ContainerShipInventory extends Container {
 	
 	private BasicEntityShip entity;
-	public static final byte SLOTS_PLAYERINV = 24;
-	public static final byte SLOTS_SHIPINV = 6;
-	public static final byte SLOTS_INVENTORY = 18;
+	public static final byte SLOTS_PLAYERINV = 24;  //player inventory start id
+	public static final byte SLOTS_SHIPINV = 6;		//ship inventory start id
 	private int GuiKills, GuiExpCurrent, GuiNumAmmo, GuiNumAmmoHeavy, GuiNumGrudge, 
-	            GuiNumAirLight, GuiNumAirHeavy, GuiIsMarried, GuiMorale,
+	            GuiNumAirLight, GuiNumAirHeavy, GuiIsMarried, GuiMorale, GuiInvSize,
 	            ButtonMelee, ButtonAmmoLight, ButtonAmmoHeavy, ButtonAirLight, ButtoAirHeavy,
-	            FollowMin, FollowMax, FleeHP, TarAI, AuraEffect, OnSightAI, PVPAI, AAAI, ASMAI, TIMEKEEPAI;
+	            FollowMin, FollowMax, FleeHP, TarAI, AuraEffect, OnSightAI, PVPAI, AAAI, ASMAI,
+	            TIMEKEEPAI;
 	
 	public ContainerShipInventory(InventoryPlayer invPlayer, BasicEntityShip entity1) {
-		int i,j;	//loop index
+		int i, j;
 		this.entity = entity1;
 		
 		//ship equip = 0~5
-		for(i=0; i<6; i++) {
-			this.addSlotToContainer(new SlotShipInventory(entity1.getExtProps(), i, 136, 18+i*18));
+		for(i = 0; i < 6; i++) {
+			this.addSlotToContainer(new SlotShipInventory(entity1.getExtProps(), i, 144, 18+i*18));
 		}
 		
-		//ship inventory = 6~23
-		for(i=0; i<6; i++) {
-			for(j=0; j<3; j++) {
-				this.addSlotToContainer(new SlotShipInventory(entity1.getExtProps(), j+i*3+6, 8+j*18, 18+i*18));
+		//ship inventory = 6~24
+		for(i = 0; i < 6; i++) {
+			for(j = 0; j < 3; j++) {
+				this.addSlotToContainer(new SlotShipInventory(entity1.getExtProps(), j+i*3+6, 8+j* 18, 18+i*18));
 			}
 		}
 		
 		//player inventory
-		for(i=0; i<3; i++) {
-			for(j=0; j<9; j++) {
+		for(i = 0; i < 3; i++) {
+			for(j = 0; j < 9; j++) {
 				this.addSlotToContainer(new Slot(invPlayer, j+i*9+9, 8+j*18, 132+i*18));
 			}
 		}
 		
 		//player action bar (hot bar)
-		for(i=0; i<9; i++) {
+		for(i = 0; i < 9; i++) {
 			this.addSlotToContainer(new Slot(invPlayer, i, 8+i*18, 190));
 		}
 	}
@@ -82,6 +82,7 @@ public class ContainerShipInventory extends Container {
         ItemStack itemstack = null;
         Slot slot = (Slot)this.inventorySlots.get(slotid);
         boolean isEquip = false;
+        int slotsEnd = SLOTS_PLAYERINV + 36;
 
         if(slot != null && slot.getHasStack()) { 			//若slot有東西
             ItemStack itemstack1 = slot.getStack();			//itemstack1取得該slot物品
@@ -90,7 +91,7 @@ public class ContainerShipInventory extends Container {
             if(itemstack1.getItem() instanceof BasicEquip) isEquip = true;	//判定是否為equip
 
             if(slotid < SLOTS_SHIPINV) {  		//click equip slot
-            	if(!this.mergeItemStack(itemstack1, SLOTS_SHIPINV, 60, true)) { //take out equip
+            	if(!this.mergeItemStack(itemstack1, SLOTS_SHIPINV, slotsEnd, true)) { //take out equip
                 	return null;
                 }	
                 slot.onSlotChange(itemstack1, itemstack); //若物品成功搬動過, 則呼叫slot change事件
@@ -99,13 +100,13 @@ public class ContainerShipInventory extends Container {
             	if(slotid < SLOTS_PLAYERINV) {	//if ship inventory (0~23)
             		if(isEquip) {	//把equip塞進slot 0~4, 塞不下則放player inventory (24~58)
             			if(!this.mergeItemStack(itemstack1, 0, SLOTS_SHIPINV, false)) {
-                			if(!this.mergeItemStack(itemstack1, SLOTS_PLAYERINV, 60, true)) {
+                			if(!this.mergeItemStack(itemstack1, SLOTS_PLAYERINV, slotsEnd, true)) {
                 				return null;
                 			}			
                         }
             		}  
             		else {			//non-equip, put into player inventory (23~58)
-            			if(!this.mergeItemStack(itemstack1, SLOTS_PLAYERINV, 60, true)) {
+            			if(!this.mergeItemStack(itemstack1, SLOTS_PLAYERINV, slotsEnd, true)) {
             				return null;
             			}
             		}
@@ -170,6 +171,7 @@ public class ContainerShipInventory extends Container {
 		crafting.sendProgressBarUpdate(this, 21, this.entity.getStateFlagI(ID.F.AntiSS));
 		crafting.sendProgressBarUpdate(this, 22, this.entity.getStateFlagI(ID.F.TimeKeeper));
 		crafting.sendProgressBarUpdate(this, 23, this.entity.getStateMinor(ID.M.Morale));
+		crafting.sendProgressBarUpdate(this, 24, this.entity.getStateMinor(ID.M.InvSize));
 	}
 	
 	//偵測數值是否改變, 有改變時發送更新(此為server端偵測)
@@ -299,6 +301,11 @@ public class ContainerShipInventory extends Container {
                 icrafting.sendProgressBarUpdate(this, 23, getValue);
                 this.GuiMorale = getValue;
             }
+            getValue = this.entity.getStateMinor(ID.M.InvSize);
+            if(this.GuiInvSize != getValue) {
+                icrafting.sendProgressBarUpdate(this, 24, getValue);
+                this.GuiInvSize = getValue;
+            }
         }
     }
 	
@@ -372,6 +379,9 @@ public class ContainerShipInventory extends Container {
 			break;
 		case 23:
 			this.entity.setStateMinor(ID.M.Morale, updatedValue);
+			break;
+		case 24:
+			this.entity.setStateMinor(ID.M.InvSize, updatedValue);
 			break;
 		}
     }

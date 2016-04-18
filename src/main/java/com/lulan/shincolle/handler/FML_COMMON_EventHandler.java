@@ -15,7 +15,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.MathHelper;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -27,6 +26,7 @@ import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
 import com.lulan.shincolle.entity.battleship.EntityBattleshipNGTBoss;
 import com.lulan.shincolle.entity.battleship.EntityBattleshipYMTBoss;
+import com.lulan.shincolle.entity.carrier.EntityCarrierAkagiBoss;
 import com.lulan.shincolle.entity.carrier.EntityCarrierKagaBoss;
 import com.lulan.shincolle.entity.destroyer.EntityDestroyerShimakazeBoss;
 import com.lulan.shincolle.entity.mounts.EntityMountSeat;
@@ -40,7 +40,6 @@ import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
-import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
@@ -64,9 +63,7 @@ public class FML_COMMON_EventHandler {
 	private boolean isViewChanged = false;
 	private boolean isViewPlayer = false;
 	
-/*********TODO rewrite boss spawn methods**********/
-/*********TODO rewrite boss spawn methods**********/
-/*********TODO rewrite boss spawn methods**********/
+
 	//player update tick, tick TWICE every tick (preTick + postTick) and BOTH SIDE (client + server)
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
 	public void onPlayerTick(PlayerTickEvent event) {
@@ -225,6 +222,7 @@ public class FML_COMMON_EventHandler {
 		}//end player tick phase: START
 	}//end onPlayerTick
 	
+	/*********TODO rewrite boss spawn methods**********/
 	/** spawn boss ticking */
 	private void spawnBoss(EntityPlayer player, ExtendPlayerProps extProps) {
 		int blockX = (int) player.posX;
@@ -255,9 +253,9 @@ public class FML_COMMON_EventHandler {
 			int rolli = rng.nextInt(4);
 			LogHelper.info("DEBUG : spawn boss: roll spawn "+rolli);
 			if(rolli == 0) {
-				//尋找10次地點, 找到一個可生成地點即生成後跳出loop
+				//尋找20次地點, 找到一個可生成地點即生成後跳出loop
 				int i;
-				for(i = 0; i < 10; i++) {
+				for(i = 0; i < 20; i++) {
 					int offX = rng.nextInt(32) + 32;
 					int offZ = rng.nextInt(32) + 32;
 					
@@ -309,23 +307,27 @@ public class FML_COMMON_EventHandler {
 						//若範圍內不到2隻boss, 則可以再生成新boss
 			            if(bossNum < 2) {
 			            	/**艦隊組成:
-			            	 * boss x2 + destroyer x4
-			            	 * boss id: 0:Nagato 1:Shimakaze
-			            	 * mob id: 0:U511 1:Ro500
+			            	 * boss x2 + small ship x4
 			            	 */
 			            	//roll生成mob
-			            	int[] spawnList = new int[] {0,0,0,0,0,0};
-			            	spawnList[0] = rng.nextInt(4);	//boss 1
-			            	spawnList[1] = rng.nextInt(4);	//boss 2
-			            	spawnList[2] = rng.nextInt(2);	//mob 1
-			            	spawnList[3] = rng.nextInt(2);	//mob 2
-			            	spawnList[4] = rng.nextInt(2);	//mob 3
-			            	spawnList[5] = rng.nextInt(2);	//mob 4
+			            	int maxShipNum = ConfigHandler.spawnBossNum + ConfigHandler.spawnMobNum;
+			            	int[] spawnList = new int[maxShipNum];
+			            	
+			            	//roll boss ship
+			            	for(i = 0; i < ConfigHandler.spawnBossNum; i++) {
+			            		spawnList[i] = rng.nextInt(5);	//boss
+			            	}
+			            	
+			            	//roll small ship
+			            	for(i = ConfigHandler.spawnBossNum; i < maxShipNum; i++) {
+			            		spawnList[i] = rng.nextInt(2);	//small ship
+			            	}
 			            	
 			            	//new生成mob
-			            	BasicEntityShipHostile[] spawnMobs = new BasicEntityShipHostile[6];
+			            	BasicEntityShipHostile[] spawnMobs = new BasicEntityShipHostile[maxShipNum];
+			            	
 			            	//new bosses
-			            	for(i = 0; i < 2; i++) {
+			            	for(i = 0; i < ConfigHandler.spawnBossNum; i++) {
 			            		switch(spawnList[i]) {
 			            		case 1:
 			            			spawnMobs[i] = new EntityDestroyerShimakazeBoss(w);
@@ -336,6 +338,9 @@ public class FML_COMMON_EventHandler {
 			            		case 3:
 			            			spawnMobs[i] = new EntityCarrierKagaBoss(w);
 			            			break;
+			            		case 4:
+			            			spawnMobs[i] = new EntityCarrierAkagiBoss(w);
+			            			break;
 			            		default:
 			            			spawnMobs[i] = new EntityBattleshipNGTBoss(w);
 			            			break;
@@ -343,7 +348,7 @@ public class FML_COMMON_EventHandler {
 			            	}	
 			            	
 			            	//new mobs
-			            	for(i = 2; i < 6; i++) {
+			            	for(i = ConfigHandler.spawnBossNum; i < maxShipNum; i++) {
 			            		switch(spawnList[i]) {
 			            		case 1:
 			            			spawnMobs[i] = new EntitySubmRo500Mob(w);
@@ -355,8 +360,8 @@ public class FML_COMMON_EventHandler {
 			            	}
 			            	
 			            	//set mob position and spawn to the world
-			            	for(i = 0; i < 6; i++) {
-			            		spawnMobs[i].setPosition(spawnX, spawnY, spawnZ);
+			            	for(i = 0; i < spawnMobs.length; i++) {
+			            		spawnMobs[i].setPosition(spawnX + rng.nextInt(2), spawnY, spawnZ + rng.nextInt(2));
 			            		w.spawnEntityInWorld(spawnMobs[i]);
 			            	}
 			            	

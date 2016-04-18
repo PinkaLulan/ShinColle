@@ -41,6 +41,7 @@ import com.lulan.shincolle.client.model.ModelRensouhouS;
 import com.lulan.shincolle.client.model.ModelSubmRo500;
 import com.lulan.shincolle.client.model.ModelSubmU511;
 import com.lulan.shincolle.client.model.ModelTakoyaki;
+import com.lulan.shincolle.client.model.ModelTransportWa;
 import com.lulan.shincolle.client.render.RenderAirfieldHime;
 import com.lulan.shincolle.client.render.RenderAirplane;
 import com.lulan.shincolle.client.render.RenderAirplaneT;
@@ -80,6 +81,7 @@ import com.lulan.shincolle.client.render.RenderRensouhou;
 import com.lulan.shincolle.client.render.RenderRensouhouS;
 import com.lulan.shincolle.client.render.RenderSubmRo500;
 import com.lulan.shincolle.client.render.RenderSubmU511;
+import com.lulan.shincolle.client.render.RenderTransportWa;
 import com.lulan.shincolle.client.render.block.RenderLargeShipyard;
 import com.lulan.shincolle.client.render.block.RenderSmallShipyard;
 import com.lulan.shincolle.client.render.block.RenderSmallShipyardItem;
@@ -134,6 +136,7 @@ import com.lulan.shincolle.entity.submarine.EntitySubmRo500;
 import com.lulan.shincolle.entity.submarine.EntitySubmRo500Mob;
 import com.lulan.shincolle.entity.submarine.EntitySubmU511;
 import com.lulan.shincolle.entity.submarine.EntitySubmU511Mob;
+import com.lulan.shincolle.entity.transport.EntityTransportWa;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.BasicEntityItem;
@@ -210,6 +213,7 @@ public class ClientProxy extends CommonProxy {
 		RenderingRegistry.registerEntityRenderingHandler(EntitySubmRo500Mob.class, new RenderSubmRo500(new ModelSubmRo500(), 0.5F));
 		RenderingRegistry.registerEntityRenderingHandler(EntitySubmU511.class, new RenderSubmU511(new ModelSubmU511(), 0.5F));
 		RenderingRegistry.registerEntityRenderingHandler(EntitySubmU511Mob.class, new RenderSubmU511(new ModelSubmU511(), 0.5F));
+		RenderingRegistry.registerEntityRenderingHandler(EntityTransportWa.class, new RenderTransportWa(new ModelTransportWa(), 0.7F));
 		
 		//mount render
 		RenderingRegistry.registerEntityRenderingHandler(EntityMountAfH.class, new RenderMountAfH(new ModelMountAfH(), 1.5F));

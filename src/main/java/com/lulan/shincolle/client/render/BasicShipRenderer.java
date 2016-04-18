@@ -51,9 +51,11 @@ abstract public class BasicShipRenderer extends RenderLiving {
         	else {
         		if(host1.getIsSitting()) {
         			d1 -= (1.6D - (double)host.height) * 0.5D + leashOffsetSit;
+//        			d1 -= (1.6D - (double)host.height) * 0.5D + 0.8D;
         		}
         		else {
         			d1 -= (1.6D - (double)host.height) * 0.5D + leashOffsetStand;
+//        			d1 -= (1.6D - (double)host.height) * 0.5D + 0.3D;
         		}
         	}
             
@@ -76,6 +78,7 @@ abstract public class BasicShipRenderer extends RenderLiving {
             double d11 = this.interp(entity.prevPosZ, entity.posZ, (double)f1) - d6 * 0.7D + d5 * 0.5D * d8;
             double d12 = this.interp((double)host.prevRenderYawOffset, (double)host.renderYawOffset, (double)f1) * 0.01745329238474369D + (Math.PI / 2D);
 
+//            leashWidthMod = 0.2D;
             d5 = Math.cos(d12) * (double)host.width * leashWidthMod;
             d6 = Math.sin(d12) * (double)host.width * leashWidthMod;
             

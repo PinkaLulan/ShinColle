@@ -90,7 +90,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	 *  10:followMin 11:followMax 12:FleeHP 13:TargetAIType 14:guardX 15:guardY 16:guardZ 17:guardDim
 	 *  18:guardID 19:shipType 20:shipClass 21:playerUID 22:shipUID 23:playerEID 24:guardType 
 	 *  25:damageType 26:formationType 27:formationPos 28:grudgeConsumption 29:ammoConsumption
-	 *  30:morale 31:Saturation 32:MaxSaturation 33:hitHeight 34:HitAngle*/
+	 *  30:morale 31:Saturation 32:MaxSaturation 33:hitHeight 34:HitAngle 35:SensBody 36:InvSize */
 	protected int[] StateMinor;
 	/** equip effect: 0:critical 1:doubleHit 2:tripleHit 3:baseMiss 4:atk_AntiAir 5:atk_AntiSS 6:dodge*/
 	protected float[] EffectEquip;
@@ -150,7 +150,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				                     -1, -1, 0,  -1, 0,
 				                     0,  -1, -1, -1, 0,
 				                     0,  0,  0,  0,  0,
-				                     60, 0, 10, 0, 0, -1
+				                     60, 0, 10, 0, 0,
+				                     -1, 0
 				                    };
 		this.EffectEquip = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F};
 		this.EffectEquipBU = this.EffectEquip.clone();
@@ -310,7 +311,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		//idle AI
 //		this.tasks.addTask(21, new EntityAIOpenDoor(this, true));	//0000 //TODO ship door AI
 		this.tasks.addTask(23, new EntityAIShipFloating(this));		//0111
-		this.tasks.addTask(24, new EntityAIShipWatchClosest(this, EntityPlayer.class, 6F, 0.06F)); //0010
+		this.tasks.addTask(24, new EntityAIShipWatchClosest(this, EntityPlayer.class, 4F, 0.06F)); //0010
 		this.tasks.addTask(25, new EntityAIShipWander(this, 0.8D));	//0111
 		this.tasks.addTask(25, new EntityAILookIdle(this));			//0011
 	}
@@ -672,8 +673,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		EffectEquip[ID.EF_ASM] = 0F;
 		EffectEquip[ID.EF_DODGE] = 0F;
 		
+		StateMinor[ID.M.InvSize] = 0;
+		
 		//calc equip attrs
 		for(int i=0; i<ContainerShipInventory.SLOTS_SHIPINV; i++) {
+			//get normal stats
 			equipStat = EquipCalc.getEquipStat(this, this.ExtProps.slots[i]);
 			
 			if(equipStat != null) {
@@ -694,6 +698,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				EffectEquip[ID.EF_AA] += equipStat[ID.E.AA];
 				EffectEquip[ID.EF_ASM] += equipStat[ID.E.ASM];
 				EffectEquip[ID.EF_DODGE] += equipStat[ID.E.DODGE];
+			}
+			
+			//get special stats
+			equipStat = EquipCalc.getEquipStatMisc(this, this.ExtProps.slots[i]);
+			
+			if(equipStat != null) {
+				StateMinor[ID.M.InvSize] += equipStat[0];
 			}
 		}
 		
@@ -2671,8 +2682,24 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		ItemStack slotitem = null;
 
 		//search ship inventory (except equip slots)
-		for(int i = ContainerShipInventory.SLOTS_SHIPINV; i < ContainerShipInventory.SLOTS_PLAYERINV; i++) {
+		for(int i = ContainerShipInventory.SLOTS_SHIPINV; i < ExtendShipProps.SlotMax; i++) {
+			//check inv size
+			switch(getInventoryPageSize()) {
+			case 0:
+				if(i >= ContainerShipInventory.SLOTS_SHIPINV + 18) {
+					return -1;
+				}
+				break;
+			case 1:
+				if(i >= ContainerShipInventory.SLOTS_SHIPINV + 36) {
+					return -1;
+				}
+				break;
+			}
+			
+			//get item
 			slotitem = this.ExtProps.slots[i];
+			
 			if(slotitem != null && 
 			    slotitem.getItem().equals(parItem.getItem()) && 
 			    slotitem.getItemDamage() == parItem.getItemDamage()) {
@@ -4202,17 +4229,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		//server side emotes
   		if(!this.worldObj.isRemote) {
   			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-  	  		
-  	  		switch(type) {
-  			default:
-  	      		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 36, h, 0, type), point);
-  				break;
-  	  		}
+  	      	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 36, h, 0, type), point);
   		}
   		//client side emotes
   		else {
   			ParticleHelper.spawnAttackParticleAtEntity(this, h, 0, type, (byte)36);
-//  			ParticleHelper.spawnAttackParticleAt(posX, posY, posZ, h, 0, type, (byte)36);
   		}
   	}
   	
@@ -4341,6 +4362,14 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		default: //melee
 			return StateFinal[ID.ATK] * 0.125F;
   		}
+  	}
+  	
+  	public int getInventoryPageSize() {
+  		return this.StateMinor[ID.M.InvSize];
+  	}
+  	
+  	public void setInventoryPageSize(int par1) {
+  		this.StateMinor[ID.M.InvSize] = par1;
   	}
   	
   	

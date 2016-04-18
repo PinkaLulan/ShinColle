@@ -100,6 +100,7 @@ item.shincolle:EquipAirplane16.name=深海地獄貓艦戰改
 item.shincolle:EquipAirplane17.name=深海地獄艦爆改
 item.shincolle:EquipArmor.name=深海裝甲
 item.shincolle:EquipArmor1.name=重型深海裝甲
+item.shincolle:EquipDrum.name=運輸罐
 
 # Spawn Egg
 item.shincolle:smallegg.name=深海棲艦蛋(初級)
@@ -113,6 +114,7 @@ item.shincolle:shipegg12.name=重巡ネ級
 item.shincolle:shipegg14.name=空母ヲ級
 item.shincolle:shipegg16.name=戰艦タ級
 item.shincolle:shipegg17.name=航空戰艦レ級
+item.shincolle:shipegg18.name=輸送ワ級
 item.shincolle:shipegg23.name=飛行場姬
 item.shincolle:shipegg28.name=戰艦棲姬
 item.shincolle:shipegg30.name=港灣棲姬
@@ -177,6 +179,7 @@ entity.shincolle.EntitySubmRo500.name=潛水艇 呂500
 entity.shincolle.EntitySubmRo500Mob.name=潛水艇 呂500
 entity.shincolle.EntitySubmU511.name=潛水艇 U-511
 entity.shincolle.EntitySubmU511Mob.name=潛水艇 U-511
+entity.shincolle.EntityTransportWa.name=輸送ワ級
 
 # formatting codes:
 # new line: <br>, <BR>, <br/> or <BR/> can set next line manually. (String can wrap to next line automatically to fit gui width.)
@@ -371,6 +374,9 @@ gui.shincolle:book.chap4.text13d1=§9名稱：§0 北方棲姬<br><br>§9艦種�
 gui.shincolle:book.chap4.title14=
 gui.shincolle:book.chap4.text14d0=
 gui.shincolle:book.chap4.text14d1=§9名稱：§0 空母水鬼<br><br>§9艦種：§0 姬級 航空母艦<br><br>§9建造所：§0 超深海熱漩<br><br>§9建造加成：§0 多金屬 (5000)<br><br>§9特殊能力：§0 無<br><br>§9其他能力：§0 無<br><br>懶散的深海太太，實力強大不過毅力不足，具有符合水鬼級的胸部裝甲。加裝了最新的深海黑科技浮游砲，可造成100%%砲擊傷害。<br>總之深海的科技力世界一ィィィ ＜(゜∀。)
+gui.shincolle:book.chap4.title15=
+gui.shincolle:book.chap4.text15d0=
+gui.shincolle:book.chap4.text15d1=§9名稱：§0 ワ級<br><br>§9艦種：§0 運輸艦<br><br>§9建造所：§0 深海熱泉<br><br>§9建造加成：§0 深海金屬 (120)<br><br>§9特殊能力：§0 拾取道具<br><br>§9其他能力：§0 額外物品欄<br><br>載重量非常大的巨乳女僕，負責幫深海提督打掃垃圾。<br><br>已內建最大頁數的物品欄，不需要額外裝備運輸罐。<br>運輸艦只有近戰攻擊能力，不會使用砲擊。
 
 # GUI: Book Text Chap 5
 gui.shincolle:book.chap5.title=敵艦列表

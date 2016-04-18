@@ -20,6 +20,7 @@ public class ID {
 		public static final byte ShipInv_AAAI = 12;
 		public static final byte ShipInv_ASMAI = 13;
 		public static final byte ShipInv_TIMEKEEPAI = 14;
+		public static final byte ShipInv_InvPage = 15;
 		
 		public static final byte Shipyard_Type = 0;
 		public static final byte Shipyard_InvMode = 1;
@@ -131,6 +132,7 @@ public class ID {
 		public static final byte GUN_HI = 21;			//high level machine gun
 		public static final byte CATAPULT_LO = 22;		//low level catapult
 		public static final byte CATAPULT_HI = 23;		//high level catapult
+		public static final byte DRUM_LO = 24;			//low level drum
 	}
 	
 	/** Equip Sub ID = item meta value
@@ -139,7 +141,7 @@ public class ID {
 	 * 
 	 */
 	public static final class EquipSubID {
-		//cannon 0
+		//cannon
 		public static final byte CANNON_SINGLE_5 = 0;
 		public static final byte CANNON_SINGLE_6 = 1;
 		public static final byte CANNON_TWIN_5 = 2;
@@ -152,13 +154,13 @@ public class ID {
 		public static final byte CANNON_TRI_8 = 9;
 		public static final byte CANNON_TRI_16 = 10;
 		public static final byte CANNON_FG_15 = 11;
-		//torpedo 20
+		//torpedo
 		public static final byte TORPEDO_21MK1 = 0;
 		public static final byte TORPEDO_21MK2 = 1;
 		public static final byte TORPEDO_22MK1 = 2;
 		public static final byte TORPEDO_CUTTLEFISH = 3;
 		public static final byte TORPEDO_HIGHSPEED = 4;
-		//aircraft 30
+		//aircraft
 		public static final byte AIRCRAFT_TMK1 = 0;
 		public static final byte AIRCRAFT_TMK2 = 1;
 		public static final byte AIRCRAFT_TMK3 = 2;
@@ -177,7 +179,7 @@ public class ID {
 		public static final byte AIRCRAFT_TAVENGERK = 15;
 		public static final byte AIRCRAFT_FHELLCATK = 16;
 		public static final byte AIRCRAFT_BHELLK = 17;
-		//radar 50
+		//radar
 		public static final byte RADAR_AIRMK1 = 0;
 		public static final byte RADAR_AIRMK2 = 1;
 		public static final byte RADAR_SURMK1 = 2;
@@ -187,14 +189,14 @@ public class ID {
 		public static final byte RADAR_SURABYSS = 6;
 		public static final byte RADAR_SONARMK2 = 7;
 		public static final byte RADAR_FCSCIC = 8;
-		//turbine 60
+		//turbine
 		public static final byte TURBINE = 0;
 		public static final byte TURBINE_IMP = 1;
 		public static final byte TURBINE_ENH = 2;
-		//armor 70
+		//armor
 		public static final byte ARMOR = 0;
 		public static final byte ARMOR_ENH = 1;
-		//machine gun 80
+		//machine gun
 		public static final byte GUN_HA_3 = 0;
 		public static final byte GUN_HA_5 = 1;
 		public static final byte GUN_SINGLE_12 = 2;
@@ -202,11 +204,13 @@ public class ID {
 		public static final byte GUN_TWIN_40 = 4;
 		public static final byte GUN_QUAD_40 = 5;
 		public static final byte GUN_TWIN_4_CIC = 6;
-		//catapult 100
+		//catapult
 		public static final byte CATAPULT_F = 0;
 		public static final byte CATAPULT_H = 1;
 		public static final byte CATAPULT_C = 2;
 		public static final byte CATAPULT_E = 3;
+		//drum
+		public static final byte DRUM_N = 0;
 	}
 	
 	/** Entity Flag */
@@ -334,6 +338,7 @@ public class ID {
 		public static final byte Wrench = 54;
 		public static final byte VolCore = 55;
 		public static final byte VolBlock = 56;
+		public static final byte EqDrum = 57;
 	}
 	
 	/**ship state2*/
@@ -382,6 +387,7 @@ public class ID {
 		public static final byte HitHeight = 33;	//hit height by pointer item, NO SYNC
 		public static final byte HitAngle = 34;		//hit angle by pointer item, NO SYNC
 		public static final byte SensBody = 35;		//sensitive body part id
+		public static final byte InvSize = 36;		//inventory page size
 	}
 	
 	/** morale level */
