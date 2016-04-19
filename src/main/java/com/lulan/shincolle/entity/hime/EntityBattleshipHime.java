@@ -83,7 +83,7 @@ public class EntityBattleshipHime extends BasicEntityShip {
 	
 	//change light cannon particle
 	@Override
-	protected void applyParticleAtAttacker(int type, Entity target, float[] vec) {
+	public void applyParticleAtAttacker(int type, Entity target, float[] vec) {
   		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
         
   		switch(type) {

@@ -376,7 +376,7 @@ public class EntityNorthernHime extends BasicEntityShipCV {
 	}
 	
 	@Override
-	protected void applyParticleAtAttacker(int type, Entity target, float[] vec) {
+	public void applyParticleAtAttacker(int type, Entity target, float[] vec) {
   		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
         
   		switch(type) {
@@ -399,7 +399,7 @@ public class EntityNorthernHime extends BasicEntityShipCV {
   	}
   	
 	@Override
-  	protected void applyParticleAtTarget(int type, Entity target, float[] vec) {
+	public void applyParticleAtTarget(int type, Entity target, float[] vec) {
   		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
   		
   		switch(type) {
@@ -419,7 +419,7 @@ public class EntityNorthernHime extends BasicEntityShipCV {
   	}
 	
 	@Override
-	protected void applySoundAtAttacker(int type, Entity target) {
+	public void applySoundAtAttacker(int type, Entity target) {
   		switch(type) {
   		case 1:  //light cannon
   			//fire sound

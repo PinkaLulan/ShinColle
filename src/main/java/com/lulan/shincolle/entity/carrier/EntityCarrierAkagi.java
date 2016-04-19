@@ -154,7 +154,7 @@ public class EntityCarrierAkagi extends BasicEntityShipCV {
 	
 	/** change aircraft launch sound to bow sound */
 	@Override
-	protected void applySoundAtAttacker(int type, Entity target) {
+	public void applySoundAtAttacker(int type, Entity target) {
   		switch(type) {
   		case 1:  //light cannon
   			//fire sound

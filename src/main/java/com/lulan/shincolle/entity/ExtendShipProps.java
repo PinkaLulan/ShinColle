@@ -1,11 +1,17 @@
 package com.lulan.shincolle.entity;
 
+import java.util.concurrent.Callable;
+
+import net.minecraft.crash.CrashReport;
+import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.ReportedException;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IExtendedEntityProperties;
 
@@ -326,6 +332,176 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 			this.inventoryPage = 0;
 		}
 	}
+	
+	/** check slot id with inventory page */
+	public boolean isSlotAvailable(int slotid) {
+		//has 0~1 page
+		if(this.entity.getInventoryPageSize() < 2) {
+			if(slotid >= 42) {
+				return false;
+			}
+			//has 0 page
+			else if(this.entity.getInventoryPageSize() < 1) {
+				if(slotid >= 24) {
+  					return false;
+  				}
+  			}
+		}//end page check
+		
+		return true;
+	}
+	
+	/** get first empty slots */
+  	public int getFirstSlotForItem() {
+  		for(int i = 6; i < this.slots.length; i++) {
+  			//stop loop if no available slot
+  			if(!isSlotAvailable(i)) return -1;
+  			
+  			//get empty slot
+  			if(this.slots[i] == null) return i;
+  		}
+  		
+  		return -1;
+  	}
+  	
+  	//get first item with same metadata and has space for stack
+    private int getFirstSlotStackable(ItemStack itemstack) {
+        for(int i = 6; i < this.slots.length; ++i) {
+        	//stop loop if no available slot
+  			if(!isSlotAvailable(i)) return -1;
+        	
+  			//check same item, same meta, same nbt tag and has stack space
+            if(this.slots[i] != null && this.slots[i].getItem() == itemstack.getItem() &&
+               this.slots[i].isStackable() && this.slots[i].stackSize < this.slots[i].getMaxStackSize() &&
+               this.slots[i].stackSize < this.getInventoryStackLimit() &&
+               (!this.slots[i].getHasSubtypes() || this.slots[i].getItemDamage() == itemstack.getItemDamage()) &&
+               ItemStack.areItemStackTagsEqual(this.slots[i], itemstack)) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+  	
+  	/** vanilla method
+     * This function stores as many items of an ItemStack as possible in a matching slot and returns the quantity of
+     * leftover items.
+     */
+    private int storePartialItemStack(ItemStack itemstack) {
+        Item item = itemstack.getItem();
+        int i = itemstack.stackSize;
+        int j;
+
+        //non stackable item
+        if(itemstack.getMaxStackSize() == 1) {
+        	//check empty slot
+            j = getFirstSlotForItem();
+
+            //no space
+            if(j < 0) {
+                return i;
+            }
+            else {
+                this.slots[j] = ItemStack.copyItemStack(itemstack);
+                return 0;
+            }
+        }
+        //stackable item
+        else {
+        	//check exists stack
+            j = getFirstSlotStackable(itemstack);
+
+            //no same stack, check empty slot
+            if(j < 0) {
+                j = getFirstSlotForItem();
+            }
+
+            //no empty slot, return
+            if(j < 0) {
+                return i;
+            }
+            //get empty slot
+            else {
+            	//add item to slot
+                if(this.slots[j] == null) {
+                    this.slots[j] = new ItemStack(item, 0, itemstack.getItemDamage());
+
+                    if(itemstack.hasTagCompound()) {
+                        this.slots[j].setTagCompound((NBTTagCompound)itemstack.getTagCompound().copy());
+                    }
+                }
+
+                //calc leftover stack size
+                int k = i;
+
+                //check the item max stack size
+                if(i > this.slots[j].getMaxStackSize() - this.slots[j].stackSize) {
+                    k = this.slots[j].getMaxStackSize() - this.slots[j].stackSize;
+                }
+
+                //check the slot max stack size
+                if(k > this.getInventoryStackLimit() - this.slots[j].stackSize) {
+                    k = this.getInventoryStackLimit() - this.slots[j].stackSize;
+                }
+
+                //no space for item
+                if(k == 0) {
+                    return i;
+                }
+                //get space for item
+                else {
+                    i -= k;
+                    this.slots[j].stackSize += k;
+                    this.slots[j].animationsToGo = 5;
+                    return i;
+                }
+            }
+        }
+    }
+  	
+  	/** add itemstack to ship inventory */
+  	public boolean addItemStackToInventory(final ItemStack itemstack) {
+        if(itemstack != null && itemstack.stackSize != 0 && itemstack.getItem() != null) {
+            try {
+                int i;
+
+                //item with meta != 0
+                if(itemstack.isItemDamaged()) {
+                    i = this.getFirstSlotForItem();
+
+                    //add item to slot
+                    if(i >= 0) {
+                        this.slots[i] = ItemStack.copyItemStack(itemstack);
+                        this.slots[i].animationsToGo = 5;
+                        itemstack.stackSize = 0;
+                        return true;
+                    }
+                    //add fail
+                    else {
+                        return false;
+                    }
+                }
+                //item without meta value
+                else {
+                	//add item to slot with stackable check
+                    do {
+                        i = itemstack.stackSize;
+                        itemstack.stackSize = this.storePartialItemStack(itemstack);
+                    }
+                    while(itemstack.stackSize > 0 && itemstack.stackSize < i);
+                    
+                    return itemstack.stackSize < i;
+                }
+            }
+            catch(Exception e) {
+            	LogHelper.log("EXCEPTION : add item to ship's inventory fail: "+e+" "+itemstack);
+            	return false;
+            }
+        }
+        else {
+            return false;
+        }
+    }
 
 
 }

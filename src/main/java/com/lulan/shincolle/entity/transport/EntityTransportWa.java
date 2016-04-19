@@ -1,19 +1,15 @@
 package com.lulan.shincolle.entity.transport;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
 import net.minecraft.world.World;
 
-import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
+import com.lulan.shincolle.ai.EntityAIShipPickItem;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.entity.ExtendShipProps;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.EntityHelper;
 
 public class EntityTransportWa extends BasicEntityShipSmall {
 
@@ -53,6 +49,9 @@ public class EntityTransportWa extends BasicEntityShipSmall {
 	@Override
 	public void setAIList() {
 		super.setAIList();
+		
+		//pick up item AI
+		this.tasks.addTask(5, new EntityAIShipPickItem(this, 8F));	//0111
 	}
 
     //check entity state every tick

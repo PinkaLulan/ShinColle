@@ -818,7 +818,7 @@ public class ModelTransportWa extends ModelBase implements IModelEmotion {
   		}//end if sitting
 	    
 	    //攻擊動作    
-	    if(ent.getAttackTime() > 20) {
+	    if(ent.getAttackTime() > 40) {
 	    	GL11.glTranslatef(0F, 0.4F, 0F);
 	    	//Body
 	    	this.Head.rotateAngleX -= 1.0472F;

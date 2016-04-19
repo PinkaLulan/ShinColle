@@ -1,7 +1,10 @@
 package com.lulan.shincolle.entity;
 
 import java.util.Random;
+import java.util.concurrent.Callable;
 
+import net.minecraft.crash.CrashReport;
+import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLivingBase;
@@ -18,6 +21,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.ReportedException;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.ShinColle;
@@ -4242,7 +4246,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	 *  type: 0:melee, 1:light cannon, 2:heavy cannon, 3:light air, 4:heavy air
   	 *  vec: 0:distX, 1:distY, 2:distZ, 3:dist sqrt
   	 */
-  	protected void applyParticleAtAttacker(int type, Entity target, float[] vec) {
+  	public void applyParticleAtAttacker(int type, Entity target, float[] vec) {
   		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
         
   		switch(type) {
@@ -4269,7 +4273,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	 *  type: 0:melee, 1:light cannon, 2:heavy cannon, 3:light air, 4:heavy air
   	 *  vec: 0:distX, 1:distY, 2:distZ, 3:dist sqrt
   	 */
-  	protected void applyParticleAtTarget(int type, Entity target, float[] vec) {
+  	public void applyParticleAtTarget(int type, Entity target, float[] vec) {
   		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
   		
   		switch(type) {
@@ -4292,7 +4296,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	 * 
   	 *  type: 0:melee, 1:light cannon, 2:heavy cannon, 3:light air, 4:heavy air
   	 */
-  	protected void applySoundAtAttacker(int type, Entity target) {
+  	public void applySoundAtAttacker(int type, Entity target) {
   		switch(type) {
   		case 1:  //light cannon
   			//fire sound
@@ -4330,7 +4334,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	 * 
   	 *  type: 0:melee, 1:light cannon, 2:heavy cannon, 3:light air, 4:heavy air
   	 */
-  	protected void applySoundAtTarget(int type, Entity target) {
+  	public void applySoundAtTarget(int type, Entity target) {
   		switch(type) {
   		case 1:  //light cannon
   			break;
@@ -4371,7 +4375,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	public void setInventoryPageSize(int par1) {
   		this.StateMinor[ID.M.InvSize] = par1;
   	}
-  	
   	
   	
 }

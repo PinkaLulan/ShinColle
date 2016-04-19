@@ -71,7 +71,7 @@ public class Values {
 		put(ID.Ship.BattleshipTA,       new float[] {84F,  19F, 23F, 1.0F, 0.42F, 10F, 0.65F, 0.55F, 0.24F, 0.7F,  0.84F, 0.5F});
 		put(ID.Ship.BattleshipRE,       new float[] {120F, 25F, 25F, 0.9F, 0.36F, 12F, 0.8F,  0.6F,  0.25F, 0.63F, 0.72F, 0.5F});
 		//transport
-		put(ID.Ship.TransportWA,        new float[] {90F,  3F,  10F, 0.8F, 0.35F, 5F,  0.7F,  0.25F, 0.16F, 0.5F,  0.6F,  0.3F});
+		put(ID.Ship.TransportWA,        new float[] {90F,  3F,  10F, 0.8F, 0.35F, 8F,  0.7F,  0.25F, 0.16F, 0.5F,  0.6F,  0.3F});
 		//submarine
 //		put(ID.Ship.SubmarineKA,        new float[] {40F,  23F, 9F,  0.6F, 0.3F,  5F,  0.35F, 0.63F, 0.14F, 0.7F,  0.6F,  0.3F});
 //		put(ID.Ship.SubmarineYO,        new float[] {36F,  26F, 10F, 0.6F, 0.3F,  5F,  0.33F, 0.7F,  0.16F, 0.7F,  0.6F,  0.3F});

@@ -81,7 +81,7 @@ public class GuiShipInventory extends GuiContainer {
 		this.ySize = 214;
 		this.showPage = 1;			//show page 1
 		this.showPageAI = 1;		//show AI control page 1
-		this.showPageInv = 1;		//show inventory page 1
+		this.showPageInv = 0;  //get inventory number
 		this.showAttack = 1;		//show attack 1
 		this.mousePress = false;	//no key clicked
 		this.mousePressBar = -1;	//no bar pressed
@@ -1208,132 +1208,6 @@ public class GuiShipInventory extends GuiContainer {
             this.mc.thePlayer.closeScreen();
         }
 	}
-	
-//	/** drawSlotInventory, 修改此方法來顯示目前page的slot */
-//	@Override
-//	private void func_146977_a(Slot slot) {
-//
-//		slot.isSlotInInventory(p_75217_1_, p_75217_2_)
-//    }
-	
-//	@Override
-//	public void drawScreen(int par1, int par2, float par3) {
-//        this.drawDefaultBackground();
-//        int k = this.guiLeft;
-//        int l = this.guiTop;
-//        this.drawGuiContainerBackgroundLayer(par3, par1, par2);
-//        GL11.glDisable(GL12.GL_RESCALE_NORMAL);
-//        RenderHelper.disableStandardItemLighting();
-//        GL11.glDisable(GL11.GL_LIGHTING);
-//        GL11.glDisable(GL11.GL_DEPTH_TEST);
-//        
-//        int k;
-//
-//        for (k = 0; k < this.buttonList.size(); ++k)
-//        {
-//            ((GuiButton)this.buttonList.get(k)).drawButton(this.mc, p_73863_1_, p_73863_2_);
-//        }
-//
-//        for (k = 0; k < this.labelList.size(); ++k)
-//        {
-//            ((GuiLabel)this.labelList.get(k)).func_146159_a(this.mc, p_73863_1_, p_73863_2_);
-//        }
-//        
-//        RenderHelper.enableGUIStandardItemLighting();
-//        GL11.glPushMatrix();
-//        GL11.glTranslatef((float)k, (float)l, 0.0F);
-//        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-//        GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-//        this.theSlot = null;
-//        short short1 = 240;
-//        short short2 = 240;
-//        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)short1 / 1.0F, (float)short2 / 1.0F);
-//        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-//        int k1;
-//
-//        for (int i1 = 0; i1 < this.inventorySlots.inventorySlots.size(); ++i1)
-//        {
-//            Slot slot = (Slot)this.inventorySlots.inventorySlots.get(i1);
-//            this.func_146977_a(slot);
-//
-//            if (this.isMouseOverSlot(slot, par1, par2) && slot.func_111238_b())
-//            {
-//                this.theSlot = slot;
-//                GL11.glDisable(GL11.GL_LIGHTING);
-//                GL11.glDisable(GL11.GL_DEPTH_TEST);
-//                int j1 = slot.xDisplayPosition;
-//                k1 = slot.yDisplayPosition;
-//                GL11.glColorMask(true, true, true, false);
-//                this.drawGradientRect(j1, k1, j1 + 16, k1 + 16, -2130706433, -2130706433);
-//                GL11.glColorMask(true, true, true, true);
-//                GL11.glEnable(GL11.GL_LIGHTING);
-//                GL11.glEnable(GL11.GL_DEPTH_TEST);
-//            }
-//        }
-//
-//        //Forge: Force lighting to be disabled as there are some issue where lighting would
-//        //incorrectly be applied based on items that are in the inventory.
-//        GL11.glDisable(GL11.GL_LIGHTING);
-//        this.drawGuiContainerForegroundLayer(par1, par2);
-//        GL11.glEnable(GL11.GL_LIGHTING);
-//        InventoryPlayer inventoryplayer = this.mc.thePlayer.inventory;
-//        ItemStack itemstack = this.draggedStack == null ? inventoryplayer.getItemStack() : this.draggedStack;
-//
-//        if (itemstack != null)
-//        {
-//            byte b0 = 8;
-//            k1 = this.draggedStack == null ? 8 : 16;
-//            String s = null;
-//
-//            if (this.draggedStack != null && this.isRightMouseClick)
-//            {
-//                itemstack = itemstack.copy();
-//                itemstack.stackSize = MathHelper.ceiling_float_int((float)itemstack.stackSize / 2.0F);
-//            }
-//            else if (this.field_147007_t && this.field_147008_s.size() > 1)
-//            {
-//                itemstack = itemstack.copy();
-//                itemstack.stackSize = this.field_146996_I;
-//
-//                if (itemstack.stackSize == 0)
-//                {
-//                    s = "" + EnumChatFormatting.YELLOW + "0";
-//                }
-//            }
-//
-//            this.drawItemStack(itemstack, par1 - k - b0, par2 - l - k1, s);
-//        }
-//
-//        if (this.returningStack != null)
-//        {
-//            float f1 = (float)(Minecraft.getSystemTime() - this.returningStackTime) / 100.0F;
-//
-//            if (f1 >= 1.0F)
-//            {
-//                f1 = 1.0F;
-//                this.returningStack = null;
-//            }
-//
-//            k1 = this.returningStackDestSlot.xDisplayPosition - this.field_147011_y;
-//            int j2 = this.returningStackDestSlot.yDisplayPosition - this.field_147010_z;
-//            int l1 = this.field_147011_y + (int)((float)k1 * f1);
-//            int i2 = this.field_147010_z + (int)((float)j2 * f1);
-//            this.drawItemStack(this.returningStack, l1, i2, (String)null);
-//        }
-//
-//        GL11.glPopMatrix();
-//
-//        if (inventoryplayer.getItemStack() == null && this.theSlot != null && this.theSlot.getHasStack())
-//        {
-//            ItemStack itemstack1 = this.theSlot.getStack();
-//            this.renderToolTip(itemstack1, par1, par2);
-//        }
-//
-//        GL11.glEnable(GL11.GL_LIGHTING);
-//        GL11.glEnable(GL11.GL_DEPTH_TEST);
-//        RenderHelper.enableStandardItemLighting();
-//    }
-	
-	
+
 
 }

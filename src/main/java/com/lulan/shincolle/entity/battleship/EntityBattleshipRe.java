@@ -190,7 +190,7 @@ public class EntityBattleshipRe extends BasicEntityShipCV {
     
     //change light cannon particle
     @Override
-    protected void applyParticleAtAttacker(int type, Entity target, float[] vec) {
+    public void applyParticleAtAttacker(int type, Entity target, float[] vec) {
   		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
         
   		switch(type) {
@@ -214,7 +214,7 @@ public class EntityBattleshipRe extends BasicEntityShipCV {
 
     //change light cannon sound
     @Override
-    protected void applySoundAtAttacker(int type, Entity target) {
+    public void applySoundAtAttacker(int type, Entity target) {
   		switch(type) {
   		case 1:  //light cannon
   			//fire sound

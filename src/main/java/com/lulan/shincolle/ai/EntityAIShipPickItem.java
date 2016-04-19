@@ -1,18 +1,22 @@
 package com.lulan.shincolle.ai;
 
+import java.util.List;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.item.ItemStack;
 
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipEmotion;
-import com.lulan.shincolle.entity.IShipGuardian;
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
 
-/**SHIP FLOATING ON WATER AI
- * 若在水中, 且水上一格為空氣, 則會嘗試上浮並站在水面上
- * (entity本體依然在水中)
+/** SHIP PICK ITEM AI
+ * 
+ *  for BasicEntityShip / BasicEntityMount only
  */
 public class EntityAIShipPickItem extends EntityAIBase {
 	
@@ -20,13 +24,18 @@ public class EntityAIShipPickItem extends EntityAIBase {
     private BasicEntityShip hostShip;
     private BasicEntityMount hostMount;
     private EntityLivingBase hostLiving;
-    private int pickDelay;
-    private int pickRange;
+    private Entity entItem;
+    private int pickDelay, pickDelayMax;
+    private float pickRange, pickRangeBase;
     
 
-    public EntityAIShipPickItem(IShipEmotion entity, int basePickRange) {
+    public EntityAIShipPickItem(IShipEmotion entity, float pickRangeBase) {
+    	this.setMutexBits(7);
+    	
     	this.host = entity;
     	this.hostLiving = (EntityLivingBase) entity;
+    	this.pickRangeBase = pickRangeBase;
+    	this.pickDelay = 0;
     	
     	if(entity instanceof BasicEntityShip) {
     		this.hostShip = (BasicEntityShip) entity;
@@ -36,81 +45,130 @@ public class EntityAIShipPickItem extends EntityAIBase {
     		this.hostShip = (BasicEntityShip) this.hostMount.getHostEntity();
     	}
     	
-        this.setMutexBits(7);
+    	//init values
+    	updateShipParms();
     }
 
     @Override
 	public boolean shouldExecute() {
     	//ship類
-    	if(hostShip != null) {
-    		//騎乘中, 守衛中, 坐下: 禁止AI
-    		if(hostShip.isRiding() || isInGuardPosition(hostShip) || this.hostShip.isSitting()) {
+    	if(this.hostShip != null) {
+    		//騎乘中, 坐下, 沒開啟特殊能力: 禁止AI
+    		if(this.hostShip.isRiding() || this.hostShip.isSitting() ||
+    		   !this.hostShip.getStateFlag(ID.F.UseRingEffect)) {
     			return false;
     		}
     		
-    		//其他情況
-    		return true;
+    		//check inventory space
+    		if(this.hostShip.getExtProps().getFirstSlotForItem() > 0) return true;
     	}
-    	//mount類: 檢查mount水深 & host坐下
-    	else if(hostMount != null && this.hostShip != null) {
-			//守衛中, 坐下: 禁止AI
-			if(isInGuardPosition(hostMount) || this.hostShip.isSitting()) {
+    	//mount類
+    	else if(this.hostMount != null && this.hostShip != null) {
+			//ship坐下, 沒開啟特殊能力: 禁止AI
+			if(this.hostShip.isSitting() || !this.hostShip.getStateFlag(ID.F.UseRingEffect)) {
     			return false;
     		}
 			
-			return true;
+			//check inventory space
+    		if(this.hostShip.getExtProps().getFirstSlotForItem() > 0) return true;
 		}
-    	//其他類
-    	else {
-    		return true;
-    	}
+
+    	return false;
     }
 
     @Override
 	public void updateTask() {
-    	//上浮到指定高度 (本體仍在水中)
-    	if(this.host.getShipDepth() > 4D) {
-    		this.hostLiving.motionY += 0.025D;
-    		return;
-    	}
-    	
-    	if(this.host.getShipDepth() > 1D) {
-    		this.hostLiving.motionY += 0.015D;
-    		return;
-    	}
-    	
-    	if(this.host.getShipDepth() > 0.7D) {
-    		this.hostLiving.motionY += 0.007D;
-    		return;
-    	}
-    	
-    	if(this.host.getShipDepth() > 0.47D) {
-    		this.hostLiving.motionY += 0.0012D;
-    		return;
-    	}
-    	   	
+    	if(hostShip != null) {
+    		//cd--
+    		this.pickDelay--;
+    		
+    		//check every 32 ticks
+    		if(this.hostShip.ticksExisted % 32 == 0) {
+    			//update parms
+    			updateShipParms();
+    			
+    			//check item on ground
+    			this.entItem = getNearbyEntityItem();
+    			
+    			if(this.entItem != null && this.entItem.isEntityAlive()) {
+    				//go to entity
+    				if(this.hostMount != null) {
+    					this.hostMount.getShipNavigate().tryMoveToEntityLiving(this.entItem, 1D);
+    				}
+    				else if(this.hostShip != null) {
+    					this.hostShip.getShipNavigate().tryMoveToEntityLiving(this.entItem, 1D);
+    				}
+    			}
+    		}//end every 32 ticks
+    		
+    		//pick up nearby item
+    		if(this.pickDelay <= 0 && this.entItem != null) {
+    			this.pickDelay = this.pickDelayMax;
+    			
+    			//get item if close to 9D (3 blocks)
+    			if((this.hostMount != null && this.hostMount.getDistanceSqToEntity(this.entItem) < 9D) ||
+    			   (this.hostShip != null && this.hostShip.getDistanceSqToEntity(this.entItem) < 9D)) {
+    				//add item to inventory
+    				EntityItem entitem = (EntityItem) this.entItem;
+    				ItemStack itemstack = entitem.getEntityItem();
+    				int i = itemstack.stackSize;
+    				
+    				if(entitem.delayBeforeCanPickup <= 0 &&
+    				   this.hostShip.getExtProps().addItemStackToInventory(itemstack)) {
+    					//play sound
+        				this.hostShip.worldObj.playSoundAtEntity(this.hostShip, "random.pop", ConfigHandler.shipVolume,
+        						((this.hostShip.getRNG().nextFloat() - this.hostShip.getRNG().nextFloat()) * 0.7F + 1.0F) * 2.0F);
+        	           
+    					//send item pickup sync packet
+    					this.hostShip.onItemPickup(entitem, i);
+    					
+    					//send attack time packet
+    					this.hostShip.applyParticleAtAttacker(0, null, null);
+
+    					//clear entity item if no leftover item
+    	                if(itemstack.stackSize <= 0) {
+    	                	entitem.setDead();
+    	                	this.entItem = null;
+    	                }
+    				}
+    				
+    				//clear path
+    				this.hostShip.getShipNavigate().clearPathEntity();
+    				if(this.hostMount != null) this.hostMount.getShipNavigate().clearPathEntity();
+    			}
+    		}//end pick up item
+    	}//end ship not null
     }
     
-    //check is in guard position
-    public boolean isInGuardPosition(IShipGuardian entity) {
-    	//若guard中, 則檢查是否達到guard距離
-		if(!entity.getStateFlag(ID.F.CanFollow)) {
-			float fMin = entity.getStateMinor(ID.M.FollowMin) + ((Entity)entity).width * 0.5F;
-			fMin = fMin * fMin;
-			
-			//若守衛entity, 檢查entity距離
-			if(entity.getGuardedEntity() != null) {
-				double distSq = ((Entity)entity).getDistanceSqToEntity(entity.getGuardedEntity());
-				if(distSq < fMin) return true;
-			}
-			//若守衛某地點, 則檢查與該點距離
-			else if(entity.getStateMinor(ID.M.GuardY) > 0) {
-				double distSq = ((Entity)entity).getDistanceSq(entity.getStateMinor(ID.M.GuardX), entity.getStateMinor(ID.M.GuardY), entity.getStateMinor(ID.M.GuardZ));
-				if(distSq < fMin && ((Entity)entity).posY >= entity.getStateMinor(ID.M.GuardY)) return true;
-			}
-		}
-		
-		return false;
+    //get random item entity on ground
+    private Entity getNearbyEntityItem() {
+    	//get entity item
+    	Entity getitem = null;
+        List getlist = null;
+        
+        getlist = this.hostShip.worldObj.getEntitiesWithinAABB(EntityItem.class,
+        		this.hostShip.boundingBox.expand(this.pickRange, this.pickRange * 0.5F, this.pickRange));
+        
+        //get random item
+        if(getlist != null && !getlist.isEmpty()) {
+        	if(getlist.size() > 1) {
+        		getitem = (Entity) getlist.get(this.hostShip.getRNG().nextInt(getlist.size()));
+        	}
+        	else {
+        		getitem = (Entity) getlist.get(0);
+        	}
+        }
+        
+        return getitem;
+    }
+    
+    //update parms
+    private void updateShipParms() {
+    	float speed = this.hostShip.getAttackSpeed();
+    	if(speed < 1F) speed = 1F;
+    	
+    	this.pickDelayMax = (int) (20F / speed + 10F);
+    	this.pickRange = this.pickRangeBase + this.hostShip.getAttackRange() * 0.5F;
     }
     
     

@@ -125,7 +125,7 @@ public class ConfigHandler {
 		//深海火山怨念轉換值
 		volcoreGrudgeValue = config.getInt("VolcanoCore_Grudge", "general", 75, 1, 1000, "fuel value per grudge item in Abyssal Volcano Core");
 		
-		//深海火山怨念轉換值
+		//野生艦隊生成數量
 		spawnBossNum = config.getInt("Spawn_Boss_Number", "general", 2, 1, 10, "large hostile ship (boss) number per spawn");
 		spawnMobNum = config.getInt("Spawn_Mob_Number", "general", 4, 1, 10, "small hostile ship number per spawn");
 				
