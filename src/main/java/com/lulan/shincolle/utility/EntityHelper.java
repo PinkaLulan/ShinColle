@@ -1453,7 +1453,7 @@ public class EntityHelper {
 	}
 	
 	public static boolean canDodge(IShipAttributes ent, float dist) {
-		if(ent != null) {
+		if(ent != null && !((Entity)ent).worldObj.isRemote) {
 			int dodge = (int) ent.getEffectEquip(ID.EF_DODGE);
 			Entity ent2 = (Entity) ent;
 			

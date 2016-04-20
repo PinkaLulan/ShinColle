@@ -1,15 +1,20 @@
 package com.lulan.shincolle.entity.transport;
 
+import java.util.List;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.ai.EntityAIShipPickItem;
+import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.entity.ExtendShipProps;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Values;
+import com.lulan.shincolle.utility.EntityHelper;
 
 public class EntityTransportWa extends BasicEntityShipSmall {
 
@@ -63,13 +68,146 @@ public class EntityTransportWa extends BasicEntityShipSmall {
   		if(worldObj.isRemote) {
   			if(this.ticksExisted % 128 == 0) {
   				//show hungry emotes
-  				if(this.rand.nextInt(4) == 0 && !this.getStateFlag(ID.F.NoFuel)) {
+  				if(this.rand.nextInt(4) == 0) {
   					this.applyParticleEmotion(2);
   				}
-  			}
-  		}
+  			}//end 128 ticks
+  		}//end client side
+  		//server side
+  		else {
+  			//check every 128 ticks
+  			if(this.ticksExisted % 128 == 0) {
+  				//consume supplies to a fixed level
+  				if(this.getStateMinor(ID.M.NumGrudge) <= 5400) {
+  					consumeSupplyItems(0);
+  				}
+  				
+				if(this.getStateMinor(ID.M.NumAmmoLight) <= 540) {
+					consumeSupplyItems(1);
+				}
+				
+				if(this.getStateMinor(ID.M.NumAmmoHeavy) <= 270) {
+					consumeSupplyItems(2);
+				}
+  				
+				//check every 256 ticks
+  				if(this.ticksExisted % 256 == 0 && !this.getStateFlag(ID.F.NoFuel)) {
+					//supply ammo/grudge to nearby ships
+	  				int supCount = this.getLevel() / 50 + 1;
+	  				double range = 2D + this.getAttackRange() * 0.5D;
+	  				boolean canSupply = false;
+		            List<BasicEntityShip> slist = null;
+		            
+		            //get nearby ships
+		            slist = this.worldObj.getEntitiesWithinAABB(BasicEntityShip.class, this.boundingBox.expand(range, range, range));
+
+		            for(BasicEntityShip s : slist) {
+		            	//名額沒了, break
+		            	if(supCount <= 0) {
+		            		break;
+		            	}
+		            	
+		            	//check same owner
+		            	if(EntityHelper.checkSameOwner(this, s)) {
+		            		//supply grudge
+		            		if(this.getStateMinor(ID.M.NumGrudge) > 5400 && s.getStateMinor(ID.M.NumGrudge) < 2700) {
+		            			canSupply = true;
+		            			this.setStateMinor(ID.M.NumGrudge, this.getStateMinor(ID.M.NumGrudge) - 5400);
+		            			s.setStateMinor(ID.M.NumGrudge, s.getStateMinor(ID.M.NumGrudge) + 5400);
+		            		}
+		            		
+		            		//supply light ammo
+		            		if(this.getStateMinor(ID.M.NumAmmoLight) >= 540 && s.getStateMinor(ID.M.NumAmmoLight) < 270) {
+		            			canSupply = true;
+		            			this.setStateMinor(ID.M.NumAmmoLight, this.getStateMinor(ID.M.NumAmmoLight) - 540);
+		            			s.setStateMinor(ID.M.NumAmmoLight, s.getStateMinor(ID.M.NumAmmoLight) + 540);
+		            		}
+		            		
+		            		//supply heavy ammo
+		            		if(this.getStateMinor(ID.M.NumAmmoHeavy) >= 270 && s.getStateMinor(ID.M.NumAmmoHeavy) < 135) {
+		            			canSupply = true;
+		            			this.setStateMinor(ID.M.NumAmmoHeavy, this.getStateMinor(ID.M.NumAmmoHeavy) - 270);
+		            			s.setStateMinor(ID.M.NumAmmoHeavy, s.getStateMinor(ID.M.NumAmmoHeavy) + 270);
+		            		}
+		            		
+		            		//count--
+		            		if(canSupply) {
+		            			supCount--;
+		            		}
+		            	}//end same owner
+		            }//end for all ships
+  				}//end 256 ticks
+  			}//end 128 ticks
+  		}//end server side
   	}
-  	
+
+	/** type: 0:grudge, 1:light ammo, 2:heavy ammo */
+	private void consumeSupplyItems(int type) {
+		switch(type) {
+		case 0:
+			//try to find grudge
+			if(decrSupplies(4)) {		//find grudge
+				if(ConfigHandler.easyMode) {
+					StateMinor[ID.M.NumGrudge] += Values.N.BaseGrudge * 10;
+				}
+				else {
+					StateMinor[ID.M.NumGrudge] += Values.N.BaseGrudge;
+				}
+			}
+			else {
+				if(decrSupplies(5)) {	//find grudge block
+					if(ConfigHandler.easyMode) {
+						StateMinor[ID.M.NumGrudge] += Values.N.BaseGrudge * 90;
+					}
+					else {
+						StateMinor[ID.M.NumGrudge] += Values.N.BaseGrudge * 9;
+					}
+				}
+			}
+			break;
+		case 1:
+			if(decrSupplies(0)) {
+				if(ConfigHandler.easyMode) {
+					StateMinor[ID.M.NumAmmoLight] += Values.N.BaseLightAmmo * 10;
+				}
+				else {
+					StateMinor[ID.M.NumAmmoLight] += Values.N.BaseLightAmmo;
+				}
+			}
+			else {
+				if(decrSupplies(2)) {
+					if(ConfigHandler.easyMode) {
+						StateMinor[ID.M.NumAmmoLight] += Values.N.BaseLightAmmo * 90;
+					}
+					else {
+						StateMinor[ID.M.NumAmmoLight] += Values.N.BaseLightAmmo * 9;
+					}
+				}
+			}
+			break;
+		case 2:
+			if(decrSupplies(1)) {
+				if(ConfigHandler.easyMode) {
+					StateMinor[ID.M.NumAmmoHeavy] += Values.N.BaseHeavyAmmo * 10;
+				}
+				else {
+					StateMinor[ID.M.NumAmmoHeavy] += Values.N.BaseHeavyAmmo;
+				}
+			}
+			else {
+				if(decrSupplies(3)) {
+					if(ConfigHandler.easyMode) {
+						StateMinor[ID.M.NumAmmoHeavy] += Values.N.BaseHeavyAmmo * 90;
+					}
+					else {
+						StateMinor[ID.M.NumAmmoHeavy] += Values.N.BaseHeavyAmmo * 9;
+					}
+				}
+			}
+			break;
+		}
+	}
+	
 	//increase inventory size
   	@Override
   	public void calcShipAttributes() {

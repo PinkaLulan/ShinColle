@@ -101,20 +101,15 @@ public class EntityCarrierKaga extends BasicEntityShipCV {
 	@Override
 	public double getMountedYOffset() {
 		if(this.isSitting()) {
-			if(getStateEmotion(ID.S.State) > ID.State.NORMAL) {
-				return (double)this.height * 0.4F;
-			}
-			else {
-				if(getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {
-					return (double)this.height * -0.1F;
-	  			}
-	  			else {
-	  				return (double)this.height * 0.3F;
-	  			}
-			}
+			if(getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {
+				return (double)this.height * 0.16F;
+  			}
+  			else {
+  				return (double)this.height * 0.25F;
+  			}
   		}
   		else {
-  			return (double)this.height * 0.8F;
+  			return (double)this.height * 0.56F;
   		}
 	}
 

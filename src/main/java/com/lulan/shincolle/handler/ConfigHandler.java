@@ -42,7 +42,7 @@ public class ConfigHandler {
 	//SHIP SETTING
 	public static Property propShip, propShipLimitBasic, propShipLimitEffect,
 						   propBossSmall, propBossLarge, propMobSubm, propGrudgeShip, propGrudgeAction,
-						   propAmmoShip;
+						   propAmmoShip, propAtkSpd, propAtkDly;
 	//                                                    HP, ATK, DEF, SPD, MOV, HIT
 	public static double[] limitShipBasic = new double[] {-1D, -1D, 75D, 4D, 0.6D, 64D};
 	//                                                    CRI, DHIT, THIT, MISS, AA, ASM, DODGE
@@ -59,6 +59,9 @@ public class ConfigHandler {
 	public static int[] consumeGrudgeShip = new int[] {5, 7, 8, 9,  8,  11, 12,15,14, 4, 3};
 	//grudge consumption:                                LAtk, HAtk, LAir, HAir, moving
 	public static int[] consumeGrudgeAction = new int[] {4,    8,    6,    12,   3};
+	//attack speed                                    melee, Latk, Hatk, CV,  Air
+	public static int[] baseAttackSpeed = new int[] { 80,    80,   120,  100, 100};
+	public static int[] fixedAttackDelay = new int[] {0,     20,   50,   35,  35};
 	
 	public static int dmgSvS = 100;		//ship vs ship damage modifier, 20 = dmg * 20%
 	public static int dmgSummon = 100;	//summons damage modifier, 20 = dmg * 20%
@@ -145,6 +148,8 @@ public class ConfigHandler {
 		propAmmoShip = config.get("ship setting", "Ammo_Ship", consumeAmmoShip, "Ammo consumption for ship type: DD CL CA CAV CLT CVL CV BB BBV SS AP (MAX = 45)");
 		propGrudgeShip = config.get("ship setting", "Grudge_Ship", consumeGrudgeShip, "Grudge consumption for ship type: DD CL CA CAV CLT CVL CV BB BBV SS AP (MAX = 120)");
 		propGrudgeAction = config.get("ship setting", "Grudge_Action", consumeGrudgeAction, "Grudge consumption for ship action: Light attack, Heavy attack, Light aircraft, Heavy aircraft, Moving per block");
+		propAtkSpd = config.get("ship setting", "Attack_Base_Speed", baseAttackSpeed, "Base attack speed for: Melee, Light attack, Heavy attack, Carrier attack, Airplane attack, ex: base speed 160, fixed delay 30 means (160 / ship attack speed +30) ticks per attack");
+		propAtkDly = config.get("ship setting", "Attack_Fixed_Delay", fixedAttackDelay, "Fixed attack delay for: Melee, Light attack, Heavy attack, Carrier attack, Airplane attack, ex: base speed 160, fixed delay 30 means (160 / ship attack speed +30) ticks per attack");
 		
 		//ship vs ship damage modifier
 		dmgSvS = config.getInt("SVS_DmgTaken", "ship setting", 100, 0, 10000, "Ship vs Ship damage modifier, 20 = damage * 20% ");
@@ -167,6 +172,8 @@ public class ConfigHandler {
 		consumeAmmoShip = getIntArrayFromConfig(consumeAmmoShip, propAmmoShip);
 		consumeGrudgeShip = getIntArrayFromConfig(consumeGrudgeShip, propGrudgeShip);
 		consumeGrudgeAction = getIntArrayFromConfig(consumeGrudgeAction, propGrudgeAction);
+		baseAttackSpeed = getIntArrayFromConfig(baseAttackSpeed, propAtkSpd);
+		fixedAttackDelay = getIntArrayFromConfig(fixedAttackDelay, propAtkDly);
 		
 		//若設定檔有更新過, 則儲存
 		if(config.hasChanged()) {

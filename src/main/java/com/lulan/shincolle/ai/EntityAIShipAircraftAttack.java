@@ -6,6 +6,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAIBase;
 
 import com.lulan.shincolle.entity.BasicEntityAirplane;
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.utility.BlockHelper;
 
 /**AIRCRAFT ATTACK AI
@@ -57,7 +58,7 @@ public class EntityAIShipAircraftAttack extends EntityAIBase {
     //init AI parameter, call once every target
     @Override
     public void startExecuting() {
-    	this.maxDelay = (int)(100F / (this.host.getAttackSpeed())) + 15;
+    	this.maxDelay = (int)(ConfigHandler.baseAttackSpeed[4] / (this.host.getAttackSpeed())) + ConfigHandler.fixedAttackDelay[4];
         this.attackRange = 7.5F;
         this.rangeSq = this.attackRange * this.attackRange;
         distSq = distX = distY = distZ = motX = motY = motZ = 0D;

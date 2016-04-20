@@ -33,7 +33,7 @@ public class EntityCarrierAkagiBoss extends BasicEntityShipHostileCV implements 
         this.headTilt = false;
         
         //misc
-        this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, ID.Ship.CarrierKaga+2);
+        this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, ID.Ship.CarrierAkagi+2);
  
 	    //設定基本屬性
 	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(ConfigHandler.scaleBossLarge[ID.HP] * 0.9F);

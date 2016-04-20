@@ -1830,7 +1830,8 @@ public class GuiDesk extends GuiContainer {
         	}
 
         	//tick time
-        	if(this.tickGUI % 3 == 0) {
+        	int modelTicking = this.tickGUI % 3;
+        	if(modelTicking == 0) {
         		this.shipModel.ticksExisted++;
             	if(this.shipModel.attackTime > 0) this.shipModel.attackTime--;
             	
@@ -1873,15 +1874,16 @@ public class GuiDesk extends GuiContainer {
 			RenderManager.instance.playerViewY = 180.0F;
 			
 			//draw mount
+			float partialTick = modelTicking * 0.33F;
 			if(this.shipMount != null) {
 				//ship必須先畫才畫mounts
 				GL11.glTranslatef(0F, (float)(this.shipMount.getMountedYOffset()), 0F);
-				RenderManager.instance.renderEntityWithPosYaw(this.shipModel, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F);
+				RenderManager.instance.renderEntityWithPosYaw(this.shipModel, 0.0D, 0.0D, 0.0D, 0.0F, partialTick);
 				GL11.glTranslatef(0F, -(float)(this.shipMount.getMountedYOffset()), 0F);
-				RenderManager.instance.renderEntityWithPosYaw(this.shipMount, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F);
+				RenderManager.instance.renderEntityWithPosYaw(this.shipMount, 0.0D, 0.0D, 0.0D, 0.0F, partialTick);
 			}
 			else {
-				RenderManager.instance.renderEntityWithPosYaw(this.shipModel, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F);
+				RenderManager.instance.renderEntityWithPosYaw(this.shipModel, 0.0D, 0.0D, 0.0D, 0.0F, partialTick);
 			}
 			
 			GL11.glPopMatrix();
