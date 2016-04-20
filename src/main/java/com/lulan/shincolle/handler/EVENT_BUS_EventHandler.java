@@ -289,7 +289,7 @@ public class EVENT_BUS_EventHandler {
 		if(event.entityLiving instanceof EntitySquid) {
 			if(event.world.rand.nextInt((int)ConfigHandler.scaleMobSubm[6]) == 0) {
 				//check 64x64 range
-				AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(event.x-32D, event.y-32D, event.z-32D, event.x+32D, event.y+32D, event.z+32D);
+				AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(event.x-16D, event.y-32D, event.z-16D, event.x+16D, event.y+32D, event.z+16D);
 				List ListMob = event.world.getEntitiesWithinAABB(BasicEntityShipHostile.class, aabb);
 
 				//list低於1個表示沒有找到其他boss

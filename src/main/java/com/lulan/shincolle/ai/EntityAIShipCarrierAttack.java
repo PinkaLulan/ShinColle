@@ -8,6 +8,7 @@ import net.minecraft.entity.ai.EntityAIBase;
 
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.IShipAircraftAttack;
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.LogHelper;
 
@@ -120,7 +121,7 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
     		
     		//get update attributes
         	if(this.host2.ticksExisted % 64 == 0) {	
-        		this.launchDelayMax = (int)(120F / (this.host.getAttackSpeed()));
+        		this.launchDelayMax = (int)(ConfigHandler.baseAttackSpeed[3] / (this.host.getAttackSpeed())) + ConfigHandler.fixedAttackDelay[3];
                 this.range = this.host.getAttackRange();
                 this.rangeSq = this.range * this.range;
         	}

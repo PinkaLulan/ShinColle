@@ -257,6 +257,19 @@ public class EntityNorthernHime extends BasicEntityShipCV {
 			}
 		}
 		
+		//pick up northern for riding
+		if(!this.worldObj.isRemote) {
+			if(EntityHelper.checkSameOwner(this, player) &&
+			   this.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {
+				this.setEntitySit();
+				this.mountEntity(player);
+				this.getShipNavigate().clearPathEntity();
+				this.cancelGoRiding();
+				
+				return true;
+			}
+		}
+		
 		return super.interact(player);
   	}
 	

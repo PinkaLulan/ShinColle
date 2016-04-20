@@ -698,12 +698,11 @@ public class ModelCarrierKaga extends ModelBase implements IModelEmotion {
         	this.EquipSR01.isHidden = true;
     	}
     	
-  	    //移動頭部使其看人
+  	    //head
 	  	this.Head.rotateAngleX = f4 * 0.0174532925F + 0.1047F;
 	  	this.Head.rotateAngleY = f3 * 0.008F;
 	    
-	    //正常站立動作
-	    //胸部
+	    //boob
   	    this.BoobL.rotateAngleX = angleX * 0.06F - 0.8F;
   	    this.BoobR.rotateAngleX = angleX * 0.06F - 0.8F;
 	  	//Body
@@ -775,6 +774,20 @@ public class ModelCarrierKaga extends ModelBase implements IModelEmotion {
 		this.EquipD02.rotateAngleY = 1.6755F;
 		this.EquipD02.rotateAngleZ = 3.1416F;
 		this.EquipD02.offsetY = 0F;
+		
+		//ear
+		float modf2 = f2 % 128F;
+		if(modf2 < 6F) {
+			//total 3 ticks, loop twice in 6 ticks
+			if(modf2 >= 3F) modf2 -= 3F;
+			float anglef2 = MathHelper.sin(modf2 * 1.0472F) * 0.25F;
+			this.Ear01.rotateAngleZ = -anglef2 - 0.14F;
+			this.Ear02.rotateAngleZ = anglef2 + 0.14F;
+		}
+		else {
+			this.Ear01.rotateAngleZ = -0.14F;
+			this.Ear02.rotateAngleZ = 0.14F;
+		}
 
 	    if(ent.getIsSprinting() || f1 > 0.1F) {	//奔跑動作
 	    	//hair

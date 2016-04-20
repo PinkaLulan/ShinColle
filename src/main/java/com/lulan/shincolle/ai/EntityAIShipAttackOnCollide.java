@@ -5,6 +5,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAIBase;
 
 import com.lulan.shincolle.entity.IShipAttackBase;
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.utility.LogHelper;
 
 /**ATTACK ON COLLIDE SHIP VERSION
@@ -78,22 +79,20 @@ public class EntityAIShipAttackOnCollide extends EntityAIBase {
         double distTarget = this.host2.getDistanceSq(target.posX, target.boundingBox.minY, target.posZ);
         double distAttack = this.host2.width * this.host2.width * 10F + target.width * 3F;
         
-        if(host2.ticksExisted % 16 == 0) {
+        if(host2.ticksExisted % 32 == 0) {
         	//update attrs
             if(this.host != null) {
-            	this.delayMax = (int)(80F / this.host.getAttackSpeed());
+            	this.delayMax = (int)(ConfigHandler.baseAttackSpeed[0] / this.host.getAttackSpeed()) + ConfigHandler.fixedAttackDelay[0];
             	this.delayMax = (int)(this.delayMax + this.host2.getRNG().nextInt(this.delayMax) * 0.5F);
             }
             
-            //move to target every 32 ticks
-            if(host2.ticksExisted % 32 == 0) {
-            	if(distTarget > distAttack) {
-            		this.host.getShipNavigate().tryMoveToEntityLiving(this.target, this.moveSpeed);
-            	}
-            	else {
-            		this.host.getShipNavigate().clearPathEntity();
-            	}
-            }
+            //move to target
+        	if(distTarget > distAttack) {
+        		this.host.getShipNavigate().tryMoveToEntityLiving(this.target, this.moveSpeed);
+        	}
+        	else {
+        		this.host.getShipNavigate().clearPathEntity();
+        	}
         }
 
         //attack target

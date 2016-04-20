@@ -294,6 +294,7 @@ public class CalcHelper {
 			float dx = (float) (player.posX - target.posX);
 			float dz = (float) (player.posZ - target.posZ);
 			float rayLen = MathHelper.sqrt_float(dx * dx + dz * dz + eyeH * eyeH);
+			rayLen -= target.width;
 			rayLen = rayLen * MathHelper.sin(player.rotationPitch * Values.N.RAD_MUL);
 			
 			//calc hit height
@@ -323,6 +324,7 @@ public class CalcHelper {
 			float dx = (float) (host.posX - target.posX);
 			float dz = (float) (host.posZ - target.posZ);
 			float rayLen = MathHelper.sqrt_float(dx * dx + dz * dz + eyeH * eyeH);
+			rayLen -= target.width;
 			rayLen = rayLen * MathHelper.sin(host.rotationPitch * Values.N.RAD_MUL);
 			
 			//calc hit height

@@ -707,6 +707,20 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
 		this.TailHeadBase.rotateAngleZ = 0F;//MathHelper.cos(-f2 * 0.1F + 4.9F) * 0.1F;
 		this.TailHead1.rotateAngleX = 0.1745F;
 		this.TailJaw1.rotateAngleX = angleX * 0.1F - 0.15F;
+		
+		//ear
+		float modf2 = f2 % 128F;
+		if(modf2 < 6F) {
+			//total 3 ticks, loop twice in 6 ticks
+			if(modf2 >= 3F) modf2 -= 3F;
+			float anglef2 = MathHelper.sin(modf2 * 1.0472F) * 0.25F;
+			this.Ear01.rotateAngleZ = -anglef2 - 0.14F;
+			this.Ear02.rotateAngleZ = anglef2 + 0.14F;
+		}
+		else {
+			this.Ear01.rotateAngleZ = -0.14F;
+			this.Ear02.rotateAngleZ = 0.14F;
+		}
 
 	    if(ent.isSprinting() || f1 > 0.9F) {	//奔跑動作
 	    	setFace(3);
@@ -883,27 +897,6 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
 				this.TailJaw1.rotateAngleX = angleX * 0.15F - 0.3F;
 			}		
   		}
-	    else {
-	    	startEmo2 = ent.getHeadTiltTick();
-	    	
-	    	//頭部傾斜動作, 只在奔跑以外時roll
-	    	if(startEmo2 > 0) {
-	    		--startEmo2;
-	    		ent.setHeadTiltTick(startEmo2);
-	    	}
-	    	
-		    if(startEmo2 <= 0) {
-		    	startEmo2 = 360;
-		    	ent.setHeadTiltTick(startEmo2);	//cd = 6sec  	
-		    	
-		    	if(ent.getRNG().nextInt(3) == 0) {
-		    		ent.setStateFlag(ID.F.HeadTilt, true);
-		    	}
-		    	else {
-		    		ent.setStateFlag(ID.F.HeadTilt, false);
-		    	}
-		    }
-	    }//end if sprint
 	    
 	    //head tilt angle
 	    this.Head.rotateAngleZ = EmotionHelper.getHeadTiltAngle(ent, f2);

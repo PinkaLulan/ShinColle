@@ -13,6 +13,7 @@ import org.lwjgl.opengl.GL11;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EmotionHelper;
+import com.lulan.shincolle.utility.LogHelper;
 
 /**
  * ModelHeavyCruiserNe - PinkaLulan
@@ -480,12 +481,10 @@ public class ModelHeavyCruiserNe extends ModelBase implements IModelEmotion {
 	  	this.ArmRight01.rotateAngleX = addk1;
     	this.ArmLeft01.rotateAngleX = addk2;
 
-  	    //移動頭部使其看人
+  	    //head
 	  	this.Head.rotateAngleX = f4 * 0.0175F; 	//上下角度
 	  	this.Head.rotateAngleY = f3 * 0.0175F;	//左右角度 角度轉成rad 即除以57.29578
-	    
-	    //正常站立動作
-	  	//Body
+	  	//body
   	    this.Ahoke.rotateAngleY = angleX * 0.25F + 0.45F;
 	  	this.BodyMain.rotateAngleX = 0F;
 	  	this.BodyMain.rotateAngleY = 0F;
@@ -551,6 +550,20 @@ public class ModelHeavyCruiserNe extends ModelBase implements IModelEmotion {
 		this.TailR06.rotateAngleX = 0.45F;
 		this.TailR06.rotateAngleY = MathHelper.cos(-f2 * 0.1F + 4.2F) * 0.45F;
 		this.TailR06.rotateAngleZ = this.TailR06.rotateAngleY * 0.25F;
+		
+		//ear
+		float modf2 = f2 % 128F;
+		if(modf2 < 6F) {
+			//total 10 ticks, loop twice in 20 ticks
+			if(modf2 >= 3F) modf2 -= 3F;
+			float anglef2 = MathHelper.sin(modf2 * 1.0472F) * 0.25F;
+			this.Ear01.rotateAngleZ = anglef2 + 0.1745F;
+			this.Ear02.rotateAngleZ = -anglef2 - 0.1745F;
+		}
+		else {
+			this.Ear01.rotateAngleZ = 0.1745F;
+			this.Ear02.rotateAngleZ = -0.1745F;
+		}
 
 	    if(ent.getIsSprinting() || f1 > 0.8F) {	//奔跑動作
 	    	//leg

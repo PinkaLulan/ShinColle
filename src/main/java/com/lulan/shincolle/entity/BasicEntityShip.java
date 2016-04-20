@@ -1946,7 +1946,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         		                }
         	                }
         	            }
-//this.swingItem();//TODO               		
+              		
                 		//check every 128 ticks
                     	if(ticksExisted % 128 == 0) {
                     		//delayed init, waiting for player entity loaded
@@ -2413,22 +2413,22 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			//use light ammo item
 			if(ammoType == ID.M.NumAmmoLight) {
 				if(decrSupplies(0)) {  //use ammo item
-					addAmmo = 30;
+					addAmmo = Values.N.BaseLightAmmo;
 					showEmo = true;
 				}
 				else if(decrSupplies(2)) {  //use ammo container item
-					addAmmo = 270;
+					addAmmo = Values.N.BaseLightAmmo * 9;
 					showEmo = true;
 				}
 			}
 			//use heavy ammo item
 			else {
 				if(decrSupplies(1)) {  //use ammo item
-					addAmmo = 15;
+					addAmmo = Values.N.BaseHeavyAmmo;
 					showEmo = true;
 				}
 				else if(decrSupplies(3)) {  //use ammo container item
-					addAmmo = 135;
+					addAmmo = Values.N.BaseHeavyAmmo * 9;
 					showEmo = true;
 				}
 			}
@@ -2508,19 +2508,19 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			//try to find grudge
 			if(decrSupplies(4)) {		//find grudge
 				if(ConfigHandler.easyMode) {
-					StateMinor[ID.M.NumGrudge] += 3000;
+					StateMinor[ID.M.NumGrudge] += Values.N.BaseGrudge * 10;
 				}
 				else {
-					StateMinor[ID.M.NumGrudge] += 300;
+					StateMinor[ID.M.NumGrudge] += Values.N.BaseGrudge;
 				}
 			}
 			else {
 				if(decrSupplies(5)) {	//find grudge block
 					if(ConfigHandler.easyMode) {
-						StateMinor[ID.M.NumGrudge] += 27000;
+						StateMinor[ID.M.NumGrudge] += Values.N.BaseGrudge * 90;
 					}
 					else {
-						StateMinor[ID.M.NumGrudge] += 2700;
+						StateMinor[ID.M.NumGrudge] += Values.N.BaseGrudge * 9;
 					}
 				}
 			}
@@ -3284,19 +3284,19 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   			if(h > 100) {
   	  			return ID.Body.Height.Top;
   	  		}
-  	  		else if(h > 80) {
+  	  		else if(h > 76) {
   	  			return ID.Body.Height.Head;
   	  		}
   	  		else if(h > 70) {
   	  			return ID.Body.Height.Neck;
   	  		}
-  	  		else if(h > 45) {
+  	  		else if(h > 51) {
   	  			return ID.Body.Height.Chest;
   	  		}
-  	  		else if(h > 35) {
+  	  		else if(h > 42) {
   	  			return ID.Body.Height.Belly;
   	  		}
-  	  		else if(h > 30) {
+  	  		else if(h > 37) {
   	  			return ID.Body.Height.UBelly;
   	  		}
   	  		else {
