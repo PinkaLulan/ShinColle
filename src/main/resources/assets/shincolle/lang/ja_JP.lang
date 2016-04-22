@@ -9,7 +9,7 @@ itemGroup.shincolle=ShinColle
 
 # Block
 tile.shincolle:BlockAbyssium.name=深海金属ブロック
-tile.shincolle:BlockDesk.name=深海ノ提督ノ机
+tile.shincolle:BlockDesk.name=深海提督ノ机
 tile.shincolle:BlockGrudge.name=怨念ノ塊
 tile.shincolle:BlockGrudgeHeavy.name=重苦シイ怨念ノ塊
 tile.shincolle:BlockPolymetal.name=多金属ブロック
@@ -28,7 +28,7 @@ item.shincolle:Ammo1.name=怨念弾薬箱
 item.shincolle:Ammo2.name=怨念重弾薬
 item.shincolle:Ammo3.name=怨念重弾薬箱
 item.shincolle:BucketRepair.name=高速修復材
-item.shincolle:DeskItemBook.name=深海ノ日誌
+item.shincolle:DeskItemBook.name=深海提督ノ航海日誌(説明書)
 item.shincolle:DeskItemRadar.name=深海ノ携帯型レーダー
 item.shincolle:InstantConMat.name=高速建造材
 item.shincolle:KaitaiHammer.name=解体ハンマー
@@ -258,7 +258,7 @@ gui.shincolle:book.chap1.text19d0=<br><br><br><br><br><br><br><br><br>溶岩ヲ�
 gui.shincolle:book.chap1.text19d1=
 gui.shincolle:book.chap1.title20=深海火山コア
 gui.shincolle:book.chap1.text20d0=<br><br><br><br><br><br><br><br><br>溶岩ヲ火山ブロックデ圧縮スルト、§d§n深海火山コア§r§0ニナリマス。<br><br>コアハ怨念ヲ消費シ、周囲ニエネルギーヲ広ゲマス。
-gui.shincolle:book.chap1.text20d1=コアヲ活性化スルニハ、設置シ§9近クニ液体ブロックモ設置シテコアニ怨念ヲ投入シマス§0。<br><br>§d効果範囲: 幅9ブロック / 高サ9ブロック (下方向2ブロック / 上方向6ブロック)§0。<br><br>モシ棲艦ガ液体ブロックノ中ニイテナオカツ効果範囲ニ入ッテイル場合、彼女達ノHPト士気ガ回復シマス。<br><br>コノエネルギーハオ肌ノ調子ヲ整エ美容ニイイト言ワレテオリ、棲艦ノ中デ非常ニ人気トナッテイマス。
+gui.shincolle:book.chap1.text20d1=コアヲ活性化スルニハ、設置シ§9液体ブロックヲ隣接サセテ設置シ、コアニ怨念ヲ投入シマス§0。<br><br>§d効果範囲: 幅9ブロック / 高サ9ブロック (下方向2ブロック / 上方向6ブロック)§0。<br><br>モシ棲艦ガ液体ブロックノ中ニイテナオカツ効果範囲ニ入ッテイル場合、彼女達ノHPト士気ガ回復シマス。<br><br>コノエネルギーハオ肌ノ調子ヲ整エ美容ニイイト言ワレテオリ、棲艦ノ中デ非常ニ人気トナッテイマス。
 
 # GUI: Book Text Chap 2
 gui.shincolle:book.chap2.title=建造ニツイテ
