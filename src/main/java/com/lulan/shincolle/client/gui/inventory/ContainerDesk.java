@@ -8,7 +8,6 @@ import net.minecraft.item.ItemStack;
 
 import com.lulan.shincolle.entity.ExtendPlayerProps;
 import com.lulan.shincolle.tileentity.TileEntityDesk;
-import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -41,11 +40,6 @@ public class ContainerDesk extends Container {
 	//玩家是否可以觸發右鍵點方塊事件
 	@Override
 	public boolean canInteractWith(EntityPlayer player) {
-		//open GUI with TileEntity
-		if(type == 0) {
-			return tile.isUseableByPlayer(player);
-		}
-		//open GUI with item
 		return true;
 	}
 	

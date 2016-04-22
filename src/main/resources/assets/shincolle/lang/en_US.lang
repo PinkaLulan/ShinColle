@@ -7,7 +7,9 @@ itemGroup.shincolle=ShinColle
 
 # Block
 tile.shincolle:BlockAbyssium.name=Abyssium Block
+tile.shincolle:BlockCrane.name=Abyssal Crane
 tile.shincolle:BlockDesk.name=Abyssal Adrmiral's Desk
+tile.shincolle:BlockFrame.name=Abyssal Frame
 tile.shincolle:BlockGrudge.name=Grudge Lump
 tile.shincolle:BlockGrudgeHeavy.name=Heavy Grudge Lump
 tile.shincolle:BlockPolymetal.name=Polymetallic Block
@@ -100,7 +102,10 @@ item.shincolle:EquipAirplane16.name=Abyssal Hellcat Fighter Kai
 item.shincolle:EquipAirplane17.name=Abyssal Hell Diver Kai
 item.shincolle:EquipArmor.name=Abyssal Armor
 item.shincolle:EquipArmor1.name=Heavy Abyssal Armor
-item.shincolle:EquipDrum.name=Drum Canister
+item.shincolle:EquipDrum.name=Abyssal Drum Canister
+item.shincolle:EquipCompass.name=Abyssal Compass
+item.shincolle:EquipFlare.name=Abyssal Flare
+item.shincolle:EquipSearchlight.name=Abyssal Searchlight
 
 # Spawn Egg
 item.shincolle:smallegg.name=Shinkeiseikan Spawn Egg (Primary Class)
@@ -249,7 +254,7 @@ gui.shincolle:book.chap1.title17=Abyssal Adrmiral's Desk
 gui.shincolle:book.chap1.text17d0=<br><br><br><br><br><br><br><br><br>This stable and durable §d§nAbyssal Adrmiral's Desk§r§0 is made of obsidian. In addition to deal with the official business, it can also block the gunfire from angry secretary ship.<br>**Please ask the secretary ship before purchasing the furniture.
 gui.shincolle:book.chap1.text17d1=§9Radar§0:<br>Show a list of nearby owned ships, click ship on the list to carry out other action.<br><br>§9Abyssal Logbook§0:<br>Items, blocks and ships introduction.<br><br>§9Faction§0:<br>Create or add team with PVP mode.<br><br>§9Target List§0:<br>Browse attack target list.
 gui.shincolle:book.chap1.title18=Target Wrench
-gui.shincolle:book.chap1.text18d0=<br><br><br><br><br><br><br><br><br>§9Left Click:§0<br>§cADD/REMOVE§0 entity to §dUnattackable Target List§0. §4(OP ONLY!!)§0<br><br>§9Right Click:§0 Show §dUnattackable Target List§0.
+gui.shincolle:book.chap1.text18d0=<br><br><br><br><br><br><br><br><br>§9Left Click:§0<br>§cADD/REMOVE§0 entity to §dUnattackable Target List§0. §4(OP ONLY!!)§0<br><br>§9Right Click:§0 Show §dUnattackable Target List§0.<br><br>§9Sneak + Right Click:§0 Abyssal Crand and Chest pairing.
 gui.shincolle:book.chap1.text18d1=§dUnattackable Target§0 will not be damaged by AoE attack, and can't be targeted. You can add entity like leash knot, item frame, airplane, mounts or boat.<br><br>This list apply to hostile mob ship too.<br><br>Ship and hostile ship can't be unattackable entity.
 gui.shincolle:book.chap1.title19=Abyssal Volcano Block
 gui.shincolle:book.chap1.text19d0=<br><br><br><br><br><br><br><br><br>When the lava is compressed by heavy grudge, it will become §d§nAbyssal Volcano Block§r§0.<br><br>Decorative block.
@@ -376,7 +381,7 @@ gui.shincolle:book.chap4.text14d0=
 gui.shincolle:book.chap4.text14d1=§9Name:§0 Aircraft Carrier Water Demon<br><br>§9Class:§0 Water Demon Class CV<br><br>§9Factory:§0 Hadal Vortex<br><br>§9Factor:§0 Polymetal (5000)<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 none<br><br>Light attack: Laser Funnel: deal 100%% firepower damage.
 gui.shincolle:book.chap4.title15=
 gui.shincolle:book.chap4.text15d0=
-gui.shincolle:book.chap4.text15d1=§9Name:§0 Wa-Class<br><br>§9Class:§0 Transport<br><br>§9Factory:§0 Abyssal Vent<br><br>§9Factor:§0 Abyssium (120)<br><br>§9AuraEffect:§0 Pick up items<br><br>§9OtherEffect:§0 Increase inventory size<br><br>Abyssal maid with high payload, she can also pick up items for master.<br><br>Built-in 3 pages inventory.<br>Transport can only melee attack.
+gui.shincolle:book.chap4.text15d1=§9Name:§0 Wa-Class<br><br>§9Class:§0 Transport<br><br>§9Factory:§0 Abyssal Vent<br><br>§9Factor:§0 Abyssium (120)<br><br>§9AuraEffect:§0 Pick up items<br><br>§9OtherEffect:§0 Max inventory size, supply ships<br><br>Abyssal maid with high payload, she can also pick up items for master.<br><br>Built-in 3 pages inventory.<br>Transport can only melee attack, and consume items to supply nearby ships.
 
 # GUI: Book Text Chap 5
 gui.shincolle:book.chap5.title=Enemy List
@@ -440,6 +445,10 @@ gui.shincolle:team.neutral=Neutral
 gui.shincolle:team.hostile=Hostile
 gui.shincolle:team.belong=Belong
 gui.shincolle:team.teamid=Fleet ID
+
+# GUI: Crane
+gui.shincolle:crane.tochest=Unloading
+gui.shincolle:crane.toship=Loading
 
 # GUI: Formation
 gui.shincolle:formation.formation=Formation
@@ -528,11 +537,19 @@ gui.shincolle:antiair=Anti-Air
 gui.shincolle:antiss=Anti-SS
 gui.shincolle:dodge=Dodge
 gui.shincolle:oponly=OP ONLY
-gui.shincolle:wrench1=Left Click: ADD/REMOVE unattackable target
+gui.shincolle:wrench1=Left Click: ADD/REMOVE unattackable target (OP only)
 gui.shincolle:wrench2=Right Click: Show unattackable target list
+gui.shincolle:wrench3=Sneaking Right Click: Pair crane and chest
+gui.shincolle:compass=Ship get ChunkLoader to work away from owner
+gui.shincolle:drum=+1 Ship's Inventory Page
+gui.shincolle:flare=Light the target when attacking
+gui.shincolle:searchlight=Light the ship if in the dark
 
 # Chat message
 chat.shincolle:bossspawn1=A Fleet Walks on the Water!
 chat.shincolle:bossspawn2=Detecte An Invasion Fleet!
 chat.shincolle:pointer.settargetclass=Set target type to attack list: %s
 chat.shincolle:pointer.changeformation=Change formation to
+chat.shincolle:wrench.paired=Abyssal Crane pairing success!
+chat.shincolle:wrench.toofar=Abyssal Crane pairing fail, distance > 8 blocks.
+chat.shincolle:wrench.wrongtile=Abyssal Crane pairing fail, wrong target.

@@ -88,6 +88,7 @@ import com.lulan.shincolle.client.render.block.RenderSmallShipyardItem;
 import com.lulan.shincolle.client.render.item.RenderBasicEntityItem;
 import com.lulan.shincolle.client.render.item.RenderPointerItem;
 import com.lulan.shincolle.client.render.special.RenderAbyssMissile;
+import com.lulan.shincolle.client.render.special.RenderFlare;
 import com.lulan.shincolle.client.render.special.RenderProjectileBeam;
 import com.lulan.shincolle.client.render.special.RenderVortex;
 import com.lulan.shincolle.entity.battleship.EntityBattleshipNGT;
@@ -130,6 +131,7 @@ import com.lulan.shincolle.entity.other.EntityProjectileBeam;
 import com.lulan.shincolle.entity.other.EntityRensouhou;
 import com.lulan.shincolle.entity.other.EntityRensouhouBoss;
 import com.lulan.shincolle.entity.other.EntityRensouhouS;
+import com.lulan.shincolle.entity.renderentity.EntityRenderFlare;
 import com.lulan.shincolle.entity.renderentity.EntityRenderLargeShipyard;
 import com.lulan.shincolle.entity.renderentity.EntityRenderVortex;
 import com.lulan.shincolle.entity.submarine.EntitySubmRo500;
@@ -238,6 +240,7 @@ public class ClientProxy extends CommonProxy {
 		//render entity render
 		RenderingRegistry.registerEntityRenderingHandler(EntityRenderLargeShipyard.class, new RenderLargeShipyard());
 		RenderingRegistry.registerEntityRenderingHandler(EntityRenderVortex.class, new RenderVortex());
+		RenderingRegistry.registerEntityRenderingHandler(EntityRenderFlare.class, new RenderFlare());
 		
 		//block tile entity render
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityDesk.class, new RenderBlockDesk());

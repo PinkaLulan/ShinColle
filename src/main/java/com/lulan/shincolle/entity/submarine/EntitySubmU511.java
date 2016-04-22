@@ -187,7 +187,10 @@ public class EntitySubmU511 extends BasicEntityShipSmall implements IShipInvisib
           
         //show emotes
   		applyEmotesReaction(3);
-        	
+
+  		if(ConfigHandler.canFlare) {
+			flareTarget(target);
+		}
   		return true;
   	}
   	

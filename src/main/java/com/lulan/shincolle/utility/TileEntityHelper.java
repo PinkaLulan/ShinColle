@@ -8,7 +8,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidContainerItem;
 
 import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.tileentity.BasicTileEntity;
+import com.lulan.shincolle.tileentity.BasicTileInventory;
 import com.lulan.shincolle.tileentity.ITileFurnace;
 import com.lulan.shincolle.tileentity.ITileLiquidFurnace;
 
@@ -17,7 +17,7 @@ public class TileEntityHelper {
 	public TileEntityHelper() {}
 	
 	/** consume fuel item for ITileFurnace, return true = add fuel success */
-	public static boolean decrItemFuel(BasicTileEntity tile) {
+	public static boolean decrItemFuel(BasicTileInventory tile) {
 		ITileFurnace tile2 = (ITileFurnace) tile;
 		ItemStack stack = null;
 		boolean sendUpdate = false;

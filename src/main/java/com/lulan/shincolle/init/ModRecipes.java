@@ -52,6 +52,7 @@ public class ModRecipes {
 		ItemStack pointer = new ItemStack(ModItems.PointerItem);
 		ItemStack polymetalStack = new ItemStack(ModItems.AbyssMetal,1,1);
 		ItemStack polymetalStack4 = new ItemStack(ModItems.AbyssMetal,4,1);
+		ItemStack polymetalStack5 = new ItemStack(ModItems.AbyssMetal,5,1);
 		ItemStack polymetalStack9 = new ItemStack(ModItems.AbyssMetal,9,1);
 		ItemStack polymetalBlock = new ItemStack(ModBlocks.BlockPolymetal);
 		ItemStack polymetalGravel = new ItemStack(ModBlocks.BlockPolymetalGravel);
@@ -65,12 +66,14 @@ public class ModRecipes {
 		ItemStack wrench = new ItemStack(ModItems.TargetWrench);
 		ItemStack volblock = new ItemStack(ModBlocks.BlockVolBlock);
 		ItemStack volcore = new ItemStack(ModBlocks.BlockVolCore);
+		ItemStack frame16 = new ItemStack(ModBlocks.BlockFrame, 16);
+		ItemStack crane = new ItemStack(ModBlocks.BlockCrane);
 		
 		//SHAPELESS RECIPE
 		//abyssium material:
 		GameRegistry.addRecipe(new ShapelessOreRecipe(abyssiumStack, "ingotIron", grudeStack));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(bucketRepairStack, Items.lava_bucket, grudeStack));		
-		//1 block to N items
+		//1 item to N items
 		GameRegistry.addRecipe(new ShapelessOreRecipe(ammo9, ammoContainer));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(ammoHeavy9, ammoHeavyContainer));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(abyssiumStack9, abyssiumBlock));
@@ -80,6 +83,7 @@ public class ModRecipes {
 		GameRegistry.addRecipe(new ShapelessOreRecipe(polymetalStack4, polymetalGravel));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(polymetalStack9, polymetalBlock));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(polymetalGravel, polymetalStack, polymetalStack, polymetalStack, polymetalStack));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(polymetalStack5, toyplane));
 		//misc
 		GameRegistry.addRecipe(new ShapelessOreRecipe(instantMat8, kaitaiHammerAll, shipEggS));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(instantMat32, kaitaiHammerAll, shipEggL));
@@ -111,7 +115,7 @@ public class ModRecipes {
 		GameRegistry.addRecipe(new ShapedOreRecipe(abyssiumBlock,"aaa","aaa","aaa",'a',abyssiumStack));
 		GameRegistry.addRecipe(new ShapedOreRecipe(grudeBlock,"aaa","aaa","aaa",'a',grudeStack));
 		GameRegistry.addRecipe(new ShapedOreRecipe(grudeHeavyBlock,"aaa","aaa","aaa",'a',grudeBlock));
-		GameRegistry.addRecipe(new ShapedOreRecipe(polymetalBlock,"aaa","aaa","aaa",'a',"dustManganese"));
+		GameRegistry.addRecipe(new ShapedOreRecipe(polymetalBlock,"aaa","aaa","aaa",'a',polymetalStack));
 		//desk item
 		GameRegistry.addRecipe(new ShapedOreRecipe(desk,"abc","ooo","o o",'a',deskRadar,'b',deskBook,'c',Blocks.wool,'o',Blocks.obsidian));
 		GameRegistry.addRecipe(new ShapedOreRecipe(deskBook,"ggg","gbg","ggg",'g',grudeStack,'b',Items.writable_book));
@@ -123,9 +127,9 @@ public class ModRecipes {
 		//kaitai hammer
 		GameRegistry.addRecipe(new ShapedOreRecipe(kaitaiHammerNew,"aaa","aaa"," s ",'s',Items.stick,'a',abyssiumStack));
 		//pointer staff
-		GameRegistry.addRecipe(new ShapedOreRecipe(pointer,"  g"," p ","p  ",'g',grudeBlock,'p',"dustManganese"));
+		GameRegistry.addRecipe(new ShapedOreRecipe(pointer,"  g"," p ","p  ",'g',grudeBlock,'p',polymetalStack));
 		//toy plane
-		GameRegistry.addRecipe(new ShapedOreRecipe(toyplane," a ","aaa"," a ",'a',"dustManganese"));
+		GameRegistry.addRecipe(new ShapedOreRecipe(toyplane," a ","aaa"," a ",'a',polymetalStack));
 		//goddess
 		GameRegistry.addRecipe(new ShapedOreRecipe(repairGoddess,"hgh","gdg","hgh",'d',Blocks.diamond_block,'g',grudeBlock,'h',grudeHeavyBlock));
 		GameRegistry.addRecipe(new ShapedOreRecipe(repairGoddess,"ghg","hdh","ghg",'d',Blocks.diamond_block,'g',grudeBlock,'h',grudeHeavyBlock));
@@ -136,6 +140,10 @@ public class ModRecipes {
 		GameRegistry.addRecipe(new ShapedOreRecipe(volblock,"gog","olo","gog",'g',Blocks.obsidian,'l',Items.lava_bucket,'o',grudeHeavyBlock));
 		GameRegistry.addRecipe(new ShapedOreRecipe(volcore,"gog","olo","gog",'g',volblock,'l',Items.lava_bucket,'o',Blocks.obsidian));
 		GameRegistry.addRecipe(new ShapedOreRecipe(volcore,"gog","olo","gog",'g',Blocks.obsidian,'l',Items.lava_bucket,'o',volblock));
+		//frame
+		GameRegistry.addRecipe(new ShapedOreRecipe(frame16,"oao","oao","oao",'o',Blocks.obsidian,'a',abyssiumStack));
+		//crane
+		GameRegistry.addRecipe(new ShapedOreRecipe(crane,"aaa","aga","apa",'a',abyssiumStack,'p',Blocks.piston,'g',grudeBlock));
 		
 	}
 

@@ -7,7 +7,9 @@ itemGroup.shincolle=ShinColle
 
 # Block
 tile.shincolle:BlockAbyssium.name=深海金屬磚
+tile.shincolle:BlockCrane.name=深海起重機
 tile.shincolle:BlockDesk.name=深海提督的辦公桌
+tile.shincolle:BlockFrame.name=深海支架
 tile.shincolle:BlockGrudge.name=怨念團塊
 tile.shincolle:BlockGrudgeHeavy.name=沉重的怨念團塊
 tile.shincolle:BlockPolymetal.name=多金屬磚
@@ -100,7 +102,10 @@ item.shincolle:EquipAirplane16.name=深海地獄貓艦戰改
 item.shincolle:EquipAirplane17.name=深海地獄艦爆改
 item.shincolle:EquipArmor.name=深海裝甲
 item.shincolle:EquipArmor1.name=重型深海裝甲
-item.shincolle:EquipDrum.name=運輸罐
+item.shincolle:EquipDrum.name=深海運輸罐
+item.shincolle:EquipCompass.name=深海羅盤
+item.shincolle:EquipFlare.name=深海照明彈
+item.shincolle:EquipSearchlight.name=深海探照燈
 
 # Spawn Egg
 item.shincolle:smallegg.name=深海棲艦蛋(初級)
@@ -249,7 +254,7 @@ gui.shincolle:book.chap1.title17=深海提督辦公桌
 gui.shincolle:book.chap1.text17d0=<br><br><br><br><br><br><br><br><br>採用黑曜石打造的§d§n深海提督辦公桌§r§0非常堅固耐用，除了用來處理鎮守府的各項公務外，也可以用來抵擋憤怒秘書艦的砲火。<br><br><br>※添購家具前請先詢問秘書艦以免造成資源管理上的困擾。
 gui.shincolle:book.chap1.text17d1=            使用指南<br><br>§9雷達§0：<br>顯示附近所屬船艦位置以及列表，在列表點選船艦後可進行聯繫等動作。<br><br>§9深海日誌§0：<br>各項物品介紹及紀錄已知船艦訊息。<br><br>§9陣營§0：<br>建立或加入艦隊以開啟PVP模式。<br><br>§9攻擊目標列表§0：<br>調整船艦的攻擊目標類型。
 gui.shincolle:book.chap1.title18=目標設定扳手
-gui.shincolle:book.chap1.text18d0=<br><br><br><br><br><br><br><br><br>§9左鍵:§0<br>§c新增/移除§0目標到§d不可攻擊清單§0。   §4(僅限OP使用)§0<br><br>§9右鍵:§0<br>顯示§d不可攻擊目標清單§0。
+gui.shincolle:book.chap1.text18d0=<br><br><br><br><br><br><br><br><br>§9左鍵:§0<br>§c新增/移除§0目標到§d不可攻擊清單§0。   §4(僅限OP使用)§0<br><br>§9右鍵:§0<br>顯示§d不可攻擊目標清單§0。<br><br>§9蹲下右鍵:§0<br>配對箱子跟深海起重機。
 gui.shincolle:book.chap1.text18d1=§d不可攻擊目標§0不會被範圍攻擊傷害到，也不會被AI設為目標。你可以把繩子的頭、物品框、木船、飛機跟棲艦的坐騎設為不可攻擊目標。<br><br>野生的艦娘攻擊時也會檢查此清單，不過你不能把棲艦跟艦娘設為不可攻擊目標。
 gui.shincolle:book.chap1.title19=深海火山方塊
 gui.shincolle:book.chap1.text19d0=<br><br><br><br><br><br><br><br><br>當岩漿被強烈的怨念團塊壓縮後，就會形成高溫高壓的§d§n深海火山方塊§r§0。<br><br>純裝飾用方塊。
@@ -376,7 +381,7 @@ gui.shincolle:book.chap4.text14d0=
 gui.shincolle:book.chap4.text14d1=§9名稱：§0 空母水鬼<br><br>§9艦種：§0 姬級 航空母艦<br><br>§9建造所：§0 超深海熱漩<br><br>§9建造加成：§0 多金屬 (5000)<br><br>§9特殊能力：§0 無<br><br>§9其他能力：§0 無<br><br>懶散的深海太太，實力強大不過毅力不足，具有符合水鬼級的胸部裝甲。加裝了最新的深海黑科技浮游砲，可造成100%%砲擊傷害。<br>總之深海的科技力世界一ィィィ ＜(゜∀。)
 gui.shincolle:book.chap4.title15=
 gui.shincolle:book.chap4.text15d0=
-gui.shincolle:book.chap4.text15d1=§9名稱：§0 ワ級<br><br>§9艦種：§0 運輸艦<br><br>§9建造所：§0 深海熱泉<br><br>§9建造加成：§0 深海金屬 (120)<br><br>§9特殊能力：§0 拾取道具<br><br>§9其他能力：§0 額外物品欄<br><br>載重量非常大的巨乳女僕，負責幫深海提督打掃垃圾。<br><br>已內建最大頁數的物品欄，不需要額外裝備運輸罐。<br>運輸艦只有近戰攻擊能力，不會使用砲擊。
+gui.shincolle:book.chap4.text15d1=§9名稱：§0 ワ級<br><br>§9艦種：§0 運輸艦<br><br>§9建造所：§0 深海熱泉<br><br>§9建造加成：§0 深海金屬 (120)<br><br>§9特殊能力：§0 拾取道具<br><br>§9其他能力：§0 額外物品欄, 補給附近船艦<br><br>載重量非常大的巨乳女僕，負責幫深海提督打掃垃圾。<br><br>已內建最大頁數的物品欄，不需要額外裝備運輸罐。<br>運輸艦只有近戰攻擊能力，並且會消耗物資來補給附近船艦。
 
 # GUI: Book Text Chap 5
 gui.shincolle:book.chap5.title=敵艦列表
@@ -440,6 +445,10 @@ gui.shincolle:team.neutral=中立
 gui.shincolle:team.hostile=敵對
 gui.shincolle:team.belong=所屬
 gui.shincolle:team.teamid=艦隊編號
+
+# GUI: Crane
+gui.shincolle:crane.tochest=卸貨
+gui.shincolle:crane.toship=裝貨
 
 # GUI: Formation
 gui.shincolle:formation.formation=陣型
@@ -528,11 +537,19 @@ gui.shincolle:antiair=制空
 gui.shincolle:antiss=反潛
 gui.shincolle:dodge=閃避
 gui.shincolle:oponly=僅限OP使用
-gui.shincolle:wrench1=左鍵: 新增/移除不可攻擊目標
+gui.shincolle:wrench1=左鍵: 新增/移除不可攻擊目標 (OP限定)
 gui.shincolle:wrench2=右鍵: 顯示不可攻擊目標清單
+gui.shincolle:wrench3=蹲下右鍵: 配對起重機跟箱子
+gui.shincolle:compass=獲得Chunk Loader功能，使其遠離玩家依然能正常運作
+gui.shincolle:drum=船艦物品欄擴充一頁
+gui.shincolle:flare=攻擊時照亮目標周圍一段時間
+gui.shincolle:searchlight=定時照亮自身周圍
 
 # Chat message
 chat.shincolle:bossspawn1=有艦娘出現在水面上!
 chat.shincolle:bossspawn2=偵測到艦娘入侵!
 chat.shincolle:settargetclass=設定攻擊目標類型: %s
 chat.shincolle:pointer.changeformation=陣型變換為
+chat.shincolle:wrench.paired=深海起重機配對成功！
+chat.shincolle:wrench.toofar=深海起重機配對失敗，距離超過8格！
+chat.shincolle:wrench.wrongtile=深海起重機配對失敗，不支援目標方塊。

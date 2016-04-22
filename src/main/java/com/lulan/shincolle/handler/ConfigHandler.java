@@ -68,6 +68,8 @@ public class ConfigHandler {
 	public static int expMod = 20;		//ship exp per level, ex: 20 => lv 15 exp req = 15*20+20
 	
 	public static boolean timeKeeping = true;
+	public static boolean canFlare = true;
+	public static boolean canSearchlight = true;
 	public static float timeKeepingVolume = 1.0F;
 	public static float shipVolume = 1.0F;
 	public static float fireVolume = 0.7F;
@@ -133,6 +135,8 @@ public class ConfigHandler {
 		spawnMobNum = config.getInt("Spawn_Mob_Number", "general", 4, 1, 10, "small hostile ship number per spawn");
 				
 		//讀取 ship setting設定
+		canFlare = config.getBoolean("Can_Flare", "ship setting", true, "Can ship use flare");
+		canSearchlight = config.getBoolean("Can_Searchlight", "ship setting", true, "Can ship use Searchlight");
 		timeKeeping = config.getBoolean("Timekeeping", "ship setting", true, "Play timekeeping sound every 1000 ticks (1 minecraft hour)");
 		timeKeepingVolume = config.getFloat("Timekeeping_Volume", "ship setting", 1.0F, 0F, 10F, "Timekeeping sound volume");
 		shipVolume = config.getFloat("Ship_Volume", "ship setting", 1.0F, 0F, 10F, "Other sound volume");

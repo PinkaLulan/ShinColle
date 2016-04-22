@@ -22,7 +22,6 @@ import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.team.TeamData;
-import com.lulan.shincolle.tileentity.BasicTileEntity;
 import com.lulan.shincolle.tileentity.TileEntityDesk;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.tileentity.TileEntityVolCore;
@@ -80,7 +79,7 @@ public class S2CGUIPackets implements IMessage {
 	
 	//GUI sync: 
 	//sync tile entity
-	public S2CGUIPackets(BasicTileEntity tile) {
+	public S2CGUIPackets(TileEntity tile) {
 		if(tile instanceof TileEntitySmallShipyard) {
 			this.tile1 = (TileEntitySmallShipyard) tile;
 			this.type = PID.TileSmallSY;

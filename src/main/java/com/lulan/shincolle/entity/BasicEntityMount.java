@@ -682,8 +682,14 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   	    }
 
   	    //show emotes
-  	    if(host != null) host.applyEmotesReaction(3);
-
+  	    if(host != null) {
+  	    	host.applyEmotesReaction(3);
+  	    	
+  	    	if(ConfigHandler.canFlare) {
+  				host.flareTarget(target);
+  			}
+  	    }
+  	  
   	    return isTargetHurt;
   	}
     
@@ -794,7 +800,13 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
         }
 	    
 	    //show emotes
-  	    if(host != null) host.applyEmotesReaction(3);
+  	    if(host != null) {
+  	    	host.applyEmotesReaction(3);
+  	    	
+  	    	if(ConfigHandler.canFlare) {
+  				host.flareTarget(target);
+  			}
+  	    }
 
 	    return isTargetHurt;
 	}
@@ -865,8 +877,14 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
         		tarX, tarY+target.height*0.2F, tarZ, launchPos, atkHeavy, kbValue, isDirect, -1F);
         this.worldObj.spawnEntityInWorld(missile);
   		
-        //show emotes
-  	    if(host != null) host.applyEmotesReaction(3);
+	    //show emotes
+  	    if(host != null) {
+  	    	host.applyEmotesReaction(3);
+  	    	
+  	    	if(ConfigHandler.canFlare) {
+  				host.flareTarget(target);
+  			}
+  	    }
   	    
         return true;
 	}

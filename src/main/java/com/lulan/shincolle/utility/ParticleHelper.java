@@ -688,6 +688,18 @@ public class ParticleHelper {
 			EntityFXLaserNoTexture laser5 = new EntityFXLaserNoTexture(world, host2, target, 0D, 0D, 0D, 0.1F, 2);
 			Minecraft.getMinecraft().effectRenderer.addEffect(laser5);
 			break;
+		case 4:		//補給標示線
+			//host check
+			if(host instanceof EntityLivingBase) {
+				host2 = (EntityLivingBase) host;
+			}
+			else {
+				return;
+			}
+			
+			EntityFXLaserNoTexture laser6 = new EntityFXLaserNoTexture(world, host2, target, 0D, 0D, 0D, 0.1F, 4);
+			Minecraft.getMinecraft().effectRenderer.addEffect(laser6);
+			break;
 		default:
 			break;
 		}

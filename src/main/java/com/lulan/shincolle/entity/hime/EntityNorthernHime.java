@@ -98,7 +98,8 @@ public class EntityNorthernHime extends BasicEntityShipCV {
 		            EntityLivingBase hitEntity = null;
 		            List hitList = null;
 		            hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, this.boundingBox.expand(8D, 8D, 8D));
-		           
+		            TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+		            
 		            for(int i = 0; i < hitList.size(); i++) {
 		            	//補血名額沒了, break
 		            	if(healCount <= 0) break;
@@ -110,10 +111,12 @@ public class EntityNorthernHime extends BasicEntityShipCV {
 	            			if(hitEntity instanceof EntityPlayer) {
 	            				hitEntity.heal(1F + this.getLevel() * 0.02F);
 		            			healCount--;
+		            			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, hitEntity, 1D, 0D, 0D, 4, false), point);
 		            		}
 		            		else if(hitEntity instanceof BasicEntityShip && EntityHelper.checkIsAlly(this, hitEntity)) {
 		            			hitEntity.heal(1F + hitEntity.getMaxHealth() * 0.02F + this.getLevel() * 0.1F);
 		            			healCount--;
+		            			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, hitEntity, 1D, 0D, 0D, 4, false), point);
 			            	}
 	            			
 	            			//grudge--
@@ -336,6 +339,9 @@ public class EntityNorthernHime extends BasicEntityShipCV {
         applyParticleAtTarget(2, target, distVec);
       	applyEmotesReaction(3);
         
+      	if(ConfigHandler.canFlare) {
+			flareTarget(target);
+		}
         return true;
   	}
   	

@@ -31,7 +31,7 @@ import com.lulan.shincolle.utility.TileEntityHelper;
  * 	MaxMaterial / MaxFuelCost = 64*4 / 460800
  *  MinMaterial / MinFuelCost = 16*4 / 57600 = BaseCost(57600) CostPerMaterial(2100)
  */
-public class TileEntitySmallShipyard extends BasicTileEntity implements ITileLiquidFurnace, IFluidHandler {
+public class TileEntitySmallShipyard extends BasicTileInventory implements ITileLiquidFurnace, IFluidHandler {
 	//fluid tank
 	private static final int TANKCAPA = FluidContainerRegistry.BUCKET_VOLUME;
 	private static final Fluid F_LAVA = FluidRegistry.LAVA;
@@ -70,7 +70,7 @@ public class TileEntitySmallShipyard extends BasicTileEntity implements ITileLiq
 	//GUI顯示的名稱, 有custom name則用, 不然就用預設名稱
 	@Override
 	public String getInventoryName() {
-		return this.hasCustomInventoryName() ? this.customName : "container."+Reference.MOD_ID+":SmallShipyard";
+		return this.hasCustomInventoryName() ? this.customName : "tile."+Reference.MOD_ID+":BlockSmallShipyard";
 	}
 
 	//是否可以右鍵點開方塊

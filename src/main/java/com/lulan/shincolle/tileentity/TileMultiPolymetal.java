@@ -18,7 +18,9 @@ public class TileMultiPolymetal extends BasicTileMulti implements IFluidHandler{
 	public static final int SLOTS_OUT = 0;
 	
 	
-	public TileMultiPolymetal() {}
+	public TileMultiPolymetal() {
+		super();
+	}
 	
 	@Override
   	public int getSizeInventory() {

@@ -17,9 +17,13 @@ import com.lulan.shincolle.entity.BasicEntityShipCV;
 import com.lulan.shincolle.entity.ExtendShipProps;
 import com.lulan.shincolle.entity.mounts.EntityMountAfH;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.network.S2CSpawnParticle;
+import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
+
+import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
 public class EntityAirfieldHime extends BasicEntityShipCV {
 	
@@ -84,7 +88,8 @@ public class EntityAirfieldHime extends BasicEntityShipCV {
 		            EntityLivingBase hitEntity = null;
 		            List hitList = null;
 		            hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, this.boundingBox.expand(12D, 12D, 12D));
-		           
+		            TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+
 		            for(int i = 0; i < hitList.size(); i++) {
 		            	//補血名額沒了, break
 		            	if(healCount <= 0) break;
@@ -96,10 +101,12 @@ public class EntityAirfieldHime extends BasicEntityShipCV {
 	            			if(hitEntity instanceof EntityPlayer) {
 	            				hitEntity.heal(1F + this.getLevel() * 0.04F);
 		            			healCount--;
+		            			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, hitEntity, 1D, 0D, 0D, 4, false), point);
 		            		}
 		            		else if(hitEntity instanceof BasicEntityShip && EntityHelper.checkIsAlly(this, hitEntity)) {
 		            			hitEntity.heal(1F + hitEntity.getMaxHealth() * 0.04F + this.getLevel() * 0.1F);
 		            			healCount--;
+		            			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, hitEntity, 1D, 0D, 0D, 4, false), point);
 			            	}
 	            			
 	            			//grudge--

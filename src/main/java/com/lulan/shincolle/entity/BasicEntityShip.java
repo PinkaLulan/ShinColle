@@ -1,10 +1,7 @@
 package com.lulan.shincolle.entity;
 
 import java.util.Random;
-import java.util.concurrent.Callable;
 
-import net.minecraft.crash.CrashReport;
-import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLivingBase;
@@ -21,7 +18,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
-import net.minecraft.util.ReportedException;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.ShinColle;
@@ -54,6 +50,7 @@ import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.reference.Values;
+import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.FormationHelper;
@@ -94,7 +91,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	 *  10:followMin 11:followMax 12:FleeHP 13:TargetAIType 14:guardX 15:guardY 16:guardZ 17:guardDim
 	 *  18:guardID 19:shipType 20:shipClass 21:playerUID 22:shipUID 23:playerEID 24:guardType 
 	 *  25:damageType 26:formationType 27:formationPos 28:grudgeConsumption 29:ammoConsumption
-	 *  30:morale 31:Saturation 32:MaxSaturation 33:hitHeight 34:HitAngle 35:SensBody 36:InvSize */
+	 *  30:morale 31:Saturation 32:MaxSaturation 33:hitHeight 34:HitAngle 35:SensBody 36:InvSize
+	 *  37:ChunkLoaderLV 38:FlareLV 39:SearchlightLV */
 	protected int[] StateMinor;
 	/** equip effect: 0:critical 1:doubleHit 2:tripleHit 3:baseMiss 4:atk_AntiAir 5:atk_AntiSS 6:dodge*/
 	protected float[] EffectEquip;
@@ -110,7 +108,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	/** EntityFlag: 0:canFloatUp 1:isMarried 2:noFuel 3:canMelee 4:canAmmoLight 5:canAmmoHeavy 
 	 *  6:canAirLight 7:canAirHeavy 8:headTilt(client only) 9:canRingEffect 10:canDrop 11:canFollow
 	 *  12:onSightChase 13:AtkType_Light 14:AtkType_Heavy 15:AtkType_AirLight 16:AtkType_AirHeavy 
-	 *  17:HaveRingEffect 18:PVPFirst 19:AntiAir 20:AntiSS 21:PassiveAI 22:TimeKeeper */
+	 *  17:HaveRingEffect 18:PVPFirst 19:AntiAir 20:AntiSS 21:PassiveAI 22:TimeKeeper 
+	 *  23:hasChunkLoader */
 	protected boolean[] StateFlag;
 	/** BonusPoint: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT */
 	protected byte[] BonusPoint;
@@ -155,7 +154,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				                     0,  -1, -1, -1, 0,
 				                     0,  0,  0,  0,  0,
 				                     60, 0, 10, 0, 0,
-				                     -1, 0
+				                     -1, 0, 0, 0, 0
 				                    };
 		this.EffectEquip = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F};
 		this.EffectEquipBU = this.EffectEquip.clone();
@@ -196,6 +195,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		
 		//choice random sensitive body part
 		randomSensitiveBody();
+		
 	}
 	
 	@Override
@@ -678,6 +678,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		EffectEquip[ID.EF_DODGE] = 0F;
 		
 		StateMinor[ID.M.InvSize] = 0;
+		StateMinor[ID.M.LevelChunkLoader] = 0;
+		StateMinor[ID.M.LevelFlare] = 0;
+		StateMinor[ID.M.LevelSearchlight] = 0;
 		
 		//calc equip attrs
 		for(int i=0; i<ContainerShipInventory.SLOTS_SHIPINV; i++) {
@@ -709,6 +712,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			
 			if(equipStat != null) {
 				StateMinor[ID.M.InvSize] += equipStat[0];
+				StateMinor[ID.M.LevelChunkLoader] += equipStat[1];
+				StateMinor[ID.M.LevelFlare] += equipStat[2];
+				StateMinor[ID.M.LevelSearchlight] += equipStat[3];
 			}
 		}
 		
@@ -1848,6 +1854,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				}
 				
 			}//end every 32 ticks
+			
+//			//check every 128 ticks
+//			if(this.ticksExisted % 128 == 0) {
+//				
+//			}//end every 128 ticks
 		}//end client side
 		
 		
@@ -1868,7 +1879,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         
         //debug TODO
 //      	LogHelper.info("DEBUG : ship onUpdate: flag: side: "+this.worldObj.isRemote+" "+EffectEquip[ID.EF_CRI]);
-
+        if(this.ticksExisted % 32 == 0) {
+        	float light = this.worldObj.getLightBrightness(MathHelper.floor_double(this.posX), (int)this.posY, MathHelper.floor_double(this.posZ));
+  			float light2 = this.worldObj.getBlockLightValue(MathHelper.floor_double(this.posX), (int)this.posY, MathHelper.floor_double(this.posZ));
+  					
+        	LogHelper.info("AAAAAAAAAAAA "+this.worldObj.isRemote+"  "+light+"  "+light2);
+        }
+        
         //server side check
         if((!worldObj.isRemote)) {
         	//update target
@@ -1903,6 +1920,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	
         		//check every 16 ticks
             	if(ticksExisted % 16 == 0) {
+            		if(ConfigHandler.canSearchlight) {
+            			//update flare
+                		updateSearchlight();
+            		}
+            		
             		//cancel mounts
             		if(this.canSummonMounts()) {
             			if(getStateEmotion(ID.S.State) < ID.State.EQUIP00) {
@@ -2071,6 +2093,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	    	applySoundAtTarget(0, target);
 	        applyParticleAtTarget(0, target, new float[4]);
 			applyEmotesReaction(3);
+			
+			if(ConfigHandler.canFlare) {
+				flareTarget(target);
+			}
 	    }
 
 	    return isTargetHurt;
@@ -2168,6 +2194,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	    	applySoundAtTarget(1, target);
 	        applyParticleAtTarget(1, target, distVec);
 	        applyEmotesReaction(3);
+	        
+	        if(ConfigHandler.canFlare) {
+				flareTarget(target);
+			}
         }
 
 	    return isTargetHurt;
@@ -2246,6 +2276,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         applySoundAtTarget(2, target);
         applyParticleAtTarget(2, target, distVec);
         applyEmotesReaction(3);
+        
+        if(ConfigHandler.canFlare) {
+			flareTarget(target);
+		}
         
         return true;
 	}
@@ -2895,6 +2929,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	  			}
   			}
   		}
+  		
+  		//min cap
+  		for(int i = 0; i < 7; i++) {
+			if(par1[i] < 0F) {
+  				par1[i] = 0F;
+  			}
+  		}
 		
 		return par1;
   	}
@@ -3205,6 +3246,30 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   			StateFinal[ID.MOV] -= 0.1F;
   			StateFinal[ID.HIT] -= 2F;
   			EffectEquip[ID.EF_DODGE] -= 15F;
+  		}
+  	}
+  	
+  	/** update flare effect */
+  	protected void updateSearchlight() {
+  		if(this.getStateMinor(ID.M.LevelSearchlight) > 0) {
+  			int px = MathHelper.floor_double(this.posX);
+			int py = (int) this.posY + 1;
+			int pz = MathHelper.floor_double(this.posZ);
+			float light = this.worldObj.getBlockLightValue(px, py, pz);
+  			
+//  			//method 1: create light entity
+//			EntityRenderFlare flare = new EntityRenderFlare(this.worldObj);
+//			flare.setPosition(this.posX, this.posY + 0.2D, this.posZ);
+//			this.worldObj.spawnEntityInWorld(flare);
+  			
+  			//method 2: create light block
+  			if(light < 12F) {
+				BlockHelper.placeLightBlock(this.worldObj, px, py, pz);
+  			}
+  			//search light block, renew lifespan
+  			else {
+  				BlockHelper.updateNearbyLightBlock(this.worldObj, px, py, pz);
+  			}
   		}
   	}
   	
@@ -4368,12 +4433,50 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		}
   	}
   	
+  	//get # inv pages ship have
   	public int getInventoryPageSize() {
   		return this.StateMinor[ID.M.InvSize];
   	}
   	
+  	//set # inv pages ship have
   	public void setInventoryPageSize(int par1) {
   		this.StateMinor[ID.M.InvSize] = par1;
+  	}
+  	
+  	/** set flare on target */
+  	public void flareTarget(Entity target) {
+  		if(this.getStateMinor(ID.M.LevelFlare) > 0 && target != null) {
+  			int px = MathHelper.floor_double(target.posX);
+			int py = (int) target.posY + 1;
+			int pz = MathHelper.floor_double(target.posZ);
+			float light = this.worldObj.getBlockLightValue(px, py, pz);
+  			
+  			//method 2: create light block
+  			if(light < 12F) {
+				BlockHelper.placeLightBlock(this.worldObj, px, py, pz);
+  			}
+  			//search light block, renew lifespan
+  			else {
+  				BlockHelper.updateNearbyLightBlock(this.worldObj, px, py, pz);
+  			}
+  		}
+  	}
+  	
+  	public void clearChunkLoaderTicket() {
+  		
+  	}
+  	
+  	public void applyChunkLoader() {
+//  		//if equip chunk loader
+//  		if(meetsTicketRequirements()) {
+//	  		Ticket t = ForgeChunkManager.requestTicket(ShinColle.instance, worldObj, Type.ENTITY);
+//	  		Chunk c = this.worldObj.getChunkFromBlockCoords(p_72938_1_, p_72938_2_)
+//	  		t.
+//	  		if (t != null) {
+//	            setTicketData(t);
+//	            ForgeChunkManager.forceChunk(t, c);
+//	        }
+//  		}
   	}
   	
   	

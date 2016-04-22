@@ -8,6 +8,7 @@ public class EntityRenderLargeShipyard extends BasicRenderEntity {
 	public EntityRenderLargeShipyard(World world) {
 		super(world);
 		this.setSize(0.1F, 0.9F);
+		this.noClip = true;
 	}
 	
 	public EntityRenderLargeShipyard(World world, int x, int y, int z) {
@@ -16,6 +17,7 @@ public class EntityRenderLargeShipyard extends BasicRenderEntity {
 		this.posY = y - 1D;
 		this.posZ = z + 0.1D;
 		this.setPosition(posX, posY, posZ);
+		this.noClip = true;
 	}
 
 	@Override

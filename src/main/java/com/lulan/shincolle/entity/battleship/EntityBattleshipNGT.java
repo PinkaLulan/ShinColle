@@ -295,7 +295,10 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
         
         //show emotes
       	applyEmotesReaction(3);
-        
+      	
+      	if(ConfigHandler.canFlare) {
+			flareTarget(target);
+		}
         return isTargetHurt;
 	}
 

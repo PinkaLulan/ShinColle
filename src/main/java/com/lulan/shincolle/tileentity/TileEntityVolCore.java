@@ -36,7 +36,7 @@ import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
  * 	MaxMaterial / MaxFuelCost = 64*4 / 460800
  *  MinMaterial / MinFuelCost = 16*4 / 57600 = BaseCost(57600) CostPerMaterial(2100)
  */
-public class TileEntityVolCore extends BasicTileEntity {
+public class TileEntityVolCore extends BasicTileInventory {
 
 	private Random rand = new Random();
 	public boolean isActive;		//是否啟動中

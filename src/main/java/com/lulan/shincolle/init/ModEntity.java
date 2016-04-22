@@ -44,6 +44,7 @@ import com.lulan.shincolle.entity.other.EntityProjectileBeam;
 import com.lulan.shincolle.entity.other.EntityRensouhou;
 import com.lulan.shincolle.entity.other.EntityRensouhouBoss;
 import com.lulan.shincolle.entity.other.EntityRensouhouS;
+import com.lulan.shincolle.entity.renderentity.EntityRenderFlare;
 import com.lulan.shincolle.entity.renderentity.EntityRenderLargeShipyard;
 import com.lulan.shincolle.entity.renderentity.EntityRenderVortex;
 import com.lulan.shincolle.entity.submarine.EntitySubmRo500;
@@ -137,6 +138,7 @@ public class ModEntity {
 		//register render entity
 		createProjectileEntity(EntityRenderLargeShipyard.class, "EntityRenderLargeShipyard", modEntityID++);
 		createProjectileEntity(EntityRenderVortex.class, "EntityRenderVortex", modEntityID++);
+		createProjectileEntity(EntityRenderFlare.class, "EntityRenderFlare", modEntityID++);
 
 		//register item, misc entity
 		createItemEntity(BasicEntityItem.class, "BasicEntityItem", modEntityID++);

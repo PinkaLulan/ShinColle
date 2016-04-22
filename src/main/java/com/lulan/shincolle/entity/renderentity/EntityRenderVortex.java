@@ -19,6 +19,7 @@ public class EntityRenderVortex extends BasicRenderEntity {
 		this.posZ = z + 0.5D;
 		this.setPosition(posX, posY, posZ);
 		this.isActive = false;
+		
 	}
 	
 	public void setIsActive(boolean par1) {

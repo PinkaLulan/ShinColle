@@ -182,6 +182,9 @@ public class EntityBattleshipHime extends BasicEntityShip {
         applyParticleAtTarget(2, target, distVec);
       	applyEmotesReaction(3);
         
+      	if(ConfigHandler.canFlare) {
+			flareTarget(target);
+		}
         return true;
   	}
 	

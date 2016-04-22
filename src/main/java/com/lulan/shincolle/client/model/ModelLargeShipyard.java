@@ -2,7 +2,10 @@ package com.lulan.shincolle.client.model;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.Entity;
+
+import org.lwjgl.opengl.GL11;
 
 
 /**
@@ -157,16 +160,17 @@ public class ModelLargeShipyard extends ModelBase {
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
 //    	GL11.glPushMatrix();		
 //		GL11.glEnable(GL11.GL_BLEND);
-//		GL11.glDisable(GL11.GL_LIGHTING);
+		GL11.glDisable(GL11.GL_LIGHTING);
 //		GL11.glDepthMask(false);
 //    	GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 //		GL11.glDisable(GL11.GL_CULL_FACE);
-		
+    	
+    	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
     	this.BodyMain.render(f5);
     	
 //    	GL11.glDisable(GL11.GL_CULL_FACE);
 //        GL11.glDepthMask(true);
-//        GL11.glEnable(GL11.GL_LIGHTING);
+        GL11.glEnable(GL11.GL_LIGHTING);
 //        GL11.glDisable(GL11.GL_BLEND);
 //        GL11.glPopMatrix();
     }

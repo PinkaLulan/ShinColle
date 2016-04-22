@@ -133,6 +133,9 @@ public class ID {
 		public static final byte CATAPULT_LO = 22;		//low level catapult
 		public static final byte CATAPULT_HI = 23;		//high level catapult
 		public static final byte DRUM_LO = 24;			//low level drum
+		public static final byte COMPASS_LO = 25;		//low level compass
+		public static final byte FLARE_LO = 26;			//low level flare
+		public static final byte SEARCHLIGHT_LO = 27;	//low level searchlight
 	}
 	
 	/** Equip Sub ID = item meta value
@@ -211,6 +214,12 @@ public class ID {
 		public static final byte CATAPULT_E = 3;
 		//drum
 		public static final byte DRUM_N = 0;
+		//compass
+		public static final byte COMPASS = 0;
+		//flare
+		public static final byte FLARE = 0;
+		//searchlight
+		public static final byte SEARCHLIGHT = 0;
 	}
 	
 	/** Entity Flag */
@@ -388,6 +397,9 @@ public class ID {
 		public static final byte HitAngle = 34;		//hit angle by pointer item, NO SYNC
 		public static final byte SensBody = 35;		//sensitive body part id
 		public static final byte InvSize = 36;		//inventory page size
+		public static final byte LevelChunkLoader = 37;	//level of chunk loader
+		public static final byte LevelFlare = 38;		//level of flare
+		public static final byte LevelSearchlight = 39;	//level of searchlight
 	}
 	
 	/** morale level */

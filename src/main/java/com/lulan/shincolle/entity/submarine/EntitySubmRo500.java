@@ -206,6 +206,9 @@ public class EntitySubmRo500 extends BasicEntityShipSmall implements IShipInvisi
         //show emotes
       	applyEmotesReaction(3);
       	
+      	if(ConfigHandler.canFlare) {
+			flareTarget(target);
+		}
       	return true;
   	}
   	

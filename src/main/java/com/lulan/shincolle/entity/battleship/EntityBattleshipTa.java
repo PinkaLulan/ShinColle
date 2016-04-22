@@ -148,6 +148,10 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
         	//show emotes
           	applyEmotesReaction(3);
           	
+          	if(ConfigHandler.canFlare) {
+				flareTarget(target);
+			}
+          	
             return true;
         }
 

@@ -193,6 +193,9 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateMinor(ID.M.FormatPos, buf.readInt());
 					entity.setStateMinor(ID.M.Morale, buf.readInt());
 					entity.setStateMinor(ID.M.InvSize, buf.readInt());
+					entity.setStateMinor(ID.M.LevelChunkLoader, buf.readInt());
+					entity.setStateMinor(ID.M.LevelFlare, buf.readInt());
+					entity.setStateMinor(ID.M.LevelSearchlight, buf.readInt());
 					
 					entity.setStateFinal(ID.HP, buf.readFloat());
 					entity.setStateFinal(ID.ATK, buf.readFloat());
@@ -326,6 +329,9 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateMinor(ID.M.FormatPos, buf.readInt());
 					entity.setStateMinor(ID.M.Morale, buf.readInt());
 					entity.setStateMinor(ID.M.InvSize, buf.readInt());
+					entity.setStateMinor(ID.M.LevelChunkLoader, buf.readInt());
+					entity.setStateMinor(ID.M.LevelFlare, buf.readInt());
+					entity.setStateMinor(ID.M.LevelSearchlight, buf.readInt());
 				}
 				break;
 			case PID.SyncShip_Unbuff:	//sync unbuff attr
@@ -538,6 +544,9 @@ public class S2CEntitySync implements IMessage {
 				buf.writeInt(this.entity.getStateMinor(ID.M.FormatPos));
 				buf.writeInt(this.entity.getStateMinor(ID.M.Morale));
 				buf.writeInt(this.entity.getStateMinor(ID.M.InvSize));
+				buf.writeInt(this.entity.getStateMinor(ID.M.LevelChunkLoader));
+				buf.writeInt(this.entity.getStateMinor(ID.M.LevelFlare));
+				buf.writeInt(this.entity.getStateMinor(ID.M.LevelSearchlight));
 				
 				buf.writeFloat(this.entity.getStateFinal(ID.HP));
 				buf.writeFloat(this.entity.getStateFinal(ID.ATK));
@@ -665,6 +674,9 @@ public class S2CEntitySync implements IMessage {
 				buf.writeInt(this.entity.getStateMinor(ID.M.FormatPos));
 				buf.writeInt(this.entity.getStateMinor(ID.M.Morale));
 				buf.writeInt(this.entity.getStateMinor(ID.M.InvSize));
+				buf.writeInt(this.entity.getStateMinor(ID.M.LevelChunkLoader));
+				buf.writeInt(this.entity.getStateMinor(ID.M.LevelFlare));
+				buf.writeInt(this.entity.getStateMinor(ID.M.LevelSearchlight));
 			}
 			break;
 		case PID.SyncShip_Unbuff:	//sync unbuff data

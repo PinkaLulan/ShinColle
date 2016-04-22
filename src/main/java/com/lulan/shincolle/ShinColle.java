@@ -1,6 +1,9 @@
 package com.lulan.shincolle;
 
 
+import net.minecraftforge.common.ForgeChunkManager;
+
+import com.lulan.shincolle.handler.ChunkLoaderHandler;
 import com.lulan.shincolle.handler.CommandHandler;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.handler.GuiHandler;
@@ -88,6 +91,9 @@ public class ShinColle {
 		//world gen跟entity spawn放在postInit, 以便能讀取到其他mod的biome
 		ModWorldGen.init();
 		
+		//register chunk loader callback
+		ForgeChunkManager.setForcedChunkLoadingCallback(instance, new ChunkLoaderHandler());
+		
 //		//list all entity
 //		Iterator iter = EntityList.classToStringMapping.entrySet().iterator();
 //		while(iter.hasNext()) {
@@ -110,7 +116,8 @@ public class ShinColle {
 	@Mod.EventHandler
 	public void onServerStarting(FMLServerStartingEvent event) {
 		LogHelper.info("DEBUG : server starting event: is MP server? "+event.getSide().isServer());	//debug
-		//rehister command
+		
+		//register command
 		CommandHandler.init(event);
 		
 	}

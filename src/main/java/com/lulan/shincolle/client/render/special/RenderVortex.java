@@ -13,6 +13,7 @@ import org.lwjgl.opengl.GL11;
 import com.lulan.shincolle.client.model.ModelVortex;
 import com.lulan.shincolle.entity.renderentity.EntityRenderVortex;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -45,7 +46,7 @@ public class RenderVortex extends Render {
 		float f1 = MathHelper.sqrt_double(distX*distX + distZ*distZ);
         float pitch = (float)(Math.atan2(distY, f1));
         float yaw = (float)(Math.atan2(distX, distZ));
-        float angle = -entity.ticksExisted % 360F;
+        float angle = (-entity.ticksExisted - f4) % 360F;
         
         //依照x,z軸正負向修正角度(轉180)
         if(distZ > 0) {

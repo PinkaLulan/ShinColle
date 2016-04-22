@@ -155,6 +155,10 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
         	
         	//show emotes
         	applyEmotesReaction(3);
+        	
+        	if(ConfigHandler.canFlare) {
+				flareTarget(target);
+			}
             return true;
         }
 
@@ -249,7 +253,9 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
         
         //show emotes
       	applyEmotesReaction(3);
-      	
+      	if(ConfigHandler.canFlare) {
+			flareTarget(target);
+		}
         return true;
 	}
   	

@@ -1,7 +1,10 @@
 package com.lulan.shincolle.entity.renderentity;
 
+import java.util.List;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -11,6 +14,7 @@ abstract public class BasicRenderEntity extends Entity {
 	public BasicRenderEntity(World world) {
 		super(world);
 		this.ignoreFrustumCheck = true;	//即使不在視線內一樣render
+		this.noClip = true;
 	}
 	
 	@Override
@@ -48,16 +52,15 @@ abstract public class BasicRenderEntity extends Entity {
 	abstract protected void writeEntityToNBT(NBTTagCompound nbt);
 	
 	@Override
-	public void onUpdate() {
-//		if(this.ticksExisted > 200) {
-//			this.setDead();
-//		}
-		
-//		if(!this.worldObj.isRemote && this.ticksExisted % 21 == 0) {
-//			LogHelper.info("DEBUG : set inv "+(this.ticksExisted % 2 == 0));
-//			this.setInvisible(this.ticksExisted % 2 == 0);
-//		}
-	}
+	public void onUpdate() {}
+	
+	/** override this method to make entity NOCLIP */
+	@Override
+    @SideOnly(Side.CLIENT)
+    public void setPositionAndRotation2(double x, double y, double z, float yaw, float pitch, int par1) {
+        this.setPosition(x, y, z);
+        this.setRotation(yaw, pitch);
+    }
 	
 
 }

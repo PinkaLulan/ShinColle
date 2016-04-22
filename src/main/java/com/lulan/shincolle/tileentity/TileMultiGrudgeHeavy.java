@@ -57,6 +57,8 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileLiquidF
 
 	
 	public TileMultiGrudgeHeavy() {
+		super();
+		
 		//0:output 2~10:inventory
 		this.slots = new ItemStack[SLOTS_NUM];
 		this.isActive = false;
@@ -84,7 +86,7 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileLiquidF
 	//GUI顯示的名稱, 有custom name則用, 不然就用預設名稱
 	@Override
 	public String getInventoryName() {
-		return this.hasCustomInventoryName() ? this.customName : "container."+Reference.MOD_ID+":LargeShipyard";
+		return this.hasCustomInventoryName() ? this.customName : "tile."+Reference.MOD_ID+":BlockLargeShipyard";
 	}
 	
 	//是否可以右鍵點開方塊

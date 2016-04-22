@@ -81,6 +81,22 @@ public class EntityFXLaserNoTexture extends EntityFX {
         	this.alphaOut = 0.1F;
         	this.alphaIn = 0.2F;
         	break;
+        case 4:		//補給標示線
+        	lookDeg = CalcHelper.getLookDegree(tarX-posX, tarY-posY, tarZ-posZ, false);
+        	this.shotYaw = lookDeg[0];
+        	this.shotPitch = lookDeg[1];
+        	this.tarX = target.posX;
+    		this.tarY = target.posY + target.height * 0.5D;
+    		this.tarZ = target.posZ;
+        	this.particleMaxAge = 12;
+        	this.particleRed = 1F;
+        	this.particleGreen = 0.75F;
+        	this.particleBlue = 1F;
+        	this.scaleOut = this.particleScale * 0.5F;
+        	this.scaleIn = this.particleScale * 0.125F;
+        	this.alphaOut = 0.1F;
+        	this.alphaIn = 0.2F;
+        	break;
         default:	//紅光束砲
         	lookDeg = CalcHelper.getLookDegree(tarX-posX, tarY-posY, tarZ-posZ, false);
         	posOffset = ParticleHelper.rotateXYZByYawPitch((float)par1, 0F, 0.78F, lookDeg[0], lookDeg[1], 1F);
@@ -357,6 +373,27 @@ public class EntityFXLaserNoTexture extends EntityFX {
         			this.alphaOut = this.alphaIn * 0.5F;
         		}
     			break;
+    		case 4:		//補給標示線
+    			this.tarX = target.posX;
+        		this.tarY = target.posY + target.height * 0.5D;
+        		this.tarZ = target.posZ;
+        		this.posX = host.posX;
+            	this.posY = host.posY;
+            	this.posZ = host.posZ;
+            	
+    			lookDeg = CalcHelper.getLookDegree(tarX-posX, tarY-posY, tarZ-posZ, false);
+            	this.shotYaw = lookDeg[0];
+            	this.shotPitch = lookDeg[1];
+            	
+        		if(this.particleAge > 4) {
+        			this.alphaIn = 1.0F + (4 - particleAge) * 0.2F;
+        			this.alphaOut = this.alphaIn * 0.5F;
+        		}
+        		else {
+        			this.alphaIn = 0.2F + particleAge * 0.2F;
+        			this.alphaOut = this.alphaIn * 0.5F;
+        		}
+    			break;
     		default:	//red laser
     			//force host look vector
     			this.host.renderYawOffset = shotYaw * Values.N.RAD_DIV;
@@ -369,7 +406,7 @@ public class EntityFXLaserNoTexture extends EntityFX {
             	this.posY = host.posY + par2 + posOffset[1];
             	this.posZ = host.posZ + posOffset[2];
         		this.tarX = target.posX;
-        		this.tarY = target.posY;
+        		this.tarY = target.posY + target.height * 0.75D;
         		this.tarZ = target.posZ;
         		if(this.particleAge > 4) {
         			this.alphaIn = 1.0F + (4 - particleAge) * 0.2F;

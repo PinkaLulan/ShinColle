@@ -12,9 +12,13 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.entity.ExtendShipProps;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.network.S2CSpawnParticle;
+import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EntityHelper;
+
+import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
 public class EntityTransportWa extends BasicEntityShipSmall {
 
@@ -97,7 +101,8 @@ public class EntityTransportWa extends BasicEntityShipSmall {
 	  				double range = 2D + this.getAttackRange() * 0.5D;
 	  				boolean canSupply = false;
 		            List<BasicEntityShip> slist = null;
-		            
+		            TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+
 		            //get nearby ships
 		            slist = this.worldObj.getEntitiesWithinAABB(BasicEntityShip.class, this.boundingBox.expand(range, range, range));
 
@@ -132,6 +137,7 @@ public class EntityTransportWa extends BasicEntityShipSmall {
 		            		
 		            		//count--
 		            		if(canSupply) {
+		            			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, s, 0.75D, 0D, 0D, 4, false), point);
 		            			supCount--;
 		            		}
 		            	}//end same owner

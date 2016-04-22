@@ -96,6 +96,15 @@ public class EntityMountBaH extends BasicEntityMount {
   	        	TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
   	    		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 1, false), point);
   			}
+  	        
+  		    //show emotes
+  	  	    if(host != null) {
+  	  	    	host.applyEmotesReaction(3);
+  	  	    	
+  	  	    	if(ConfigHandler.canFlare) {
+  	  				host.flareTarget(target);
+  	  			}
+  	  	    }
   	    }
 
   	    return isTargetHurt;

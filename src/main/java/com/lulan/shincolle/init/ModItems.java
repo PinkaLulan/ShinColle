@@ -9,9 +9,12 @@ import com.lulan.shincolle.item.EquipAirplane;
 import com.lulan.shincolle.item.EquipArmor;
 import com.lulan.shincolle.item.EquipCannon;
 import com.lulan.shincolle.item.EquipCatapult;
+import com.lulan.shincolle.item.EquipCompass;
 import com.lulan.shincolle.item.EquipDrum;
+import com.lulan.shincolle.item.EquipFlare;
 import com.lulan.shincolle.item.EquipMachinegun;
 import com.lulan.shincolle.item.EquipRadar;
+import com.lulan.shincolle.item.EquipSearchlight;
 import com.lulan.shincolle.item.EquipTorpedo;
 import com.lulan.shincolle.item.EquipTurbine;
 import com.lulan.shincolle.item.Grudge;
@@ -44,9 +47,12 @@ public class ModItems {
 	public static final BasicItem EquipArmor = new EquipArmor();
 	public static final BasicItem EquipCannon = new EquipCannon();
 	public static final BasicItem EquipCatapult = new EquipCatapult();
+	public static final BasicItem EquipCompass = new EquipCompass();
 	public static final BasicItem EquipDrum = new EquipDrum();
+	public static final BasicItem EquipFlare = new EquipFlare();
 	public static final BasicItem EquipMachinegun = new EquipMachinegun();
 	public static final BasicItem EquipRadar = new EquipRadar();
+	public static final BasicItem EquipSearchlight = new EquipSearchlight();
 	public static final BasicItem EquipTorpedo = new EquipTorpedo();
 	public static final BasicItem EquipTurbine = new EquipTurbine();
 	//misc
@@ -77,9 +83,12 @@ public class ModItems {
 		GameRegistry.registerItem(EquipArmor, "EquipArmor");
 		GameRegistry.registerItem(EquipCannon, "EquipCannon");
 		GameRegistry.registerItem(EquipCatapult, "EquipCatapult");
+		GameRegistry.registerItem(EquipCompass, "EquipCompass");
 		GameRegistry.registerItem(EquipDrum, "EquipDrum");
+		GameRegistry.registerItem(EquipFlare, "EquipFlare");
 		GameRegistry.registerItem(EquipMachinegun, "EquipMachinegun");
 		GameRegistry.registerItem(EquipRadar, "EquipRadar");
+		GameRegistry.registerItem(EquipSearchlight, "EquipSearchlight");
 		GameRegistry.registerItem(EquipTorpedo, "EquipTorpedo");
 		GameRegistry.registerItem(EquipTurbine, "EquipTurbine");
 		//misc

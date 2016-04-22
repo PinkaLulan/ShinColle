@@ -1875,6 +1875,7 @@ public class GuiDesk extends GuiContainer {
 			
 			//draw mount
 			float partialTick = modelTicking * 0.33F;
+			this.shipModel.rotationYawHead = 0F;
 			if(this.shipMount != null) {
 				//ship必須先畫才畫mounts
 				GL11.glTranslatef(0F, (float)(this.shipMount.getMountedYOffset()), 0F);

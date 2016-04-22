@@ -10,7 +10,7 @@ import com.lulan.shincolle.block.BasicBlockMulti;
  * tut by Lomeli
  * web: https://lomeli12.net/tutorials/tutorial-how-to-make-a-simple-multiblock-structure/
  */
-abstract public class BasicTileMulti extends BasicTileEntity {
+abstract public class BasicTileMulti extends BasicTileInventory {
 
 	protected TileEntity mastertile = null;
 	protected boolean hasMaster, isMaster;					//master or servant flag
@@ -19,22 +19,7 @@ abstract public class BasicTileMulti extends BasicTileEntity {
 	
 	
 	public BasicTileMulti() {
-		this.customName = "";
-    }
-	
-	@Override
-	public String getCustomName() {
-        return this.customName;
-    }
-
-    @Override
-	public void setCustomName(String customName) {
-        this.customName = customName;
-    }
-    
-    @Override
-	public boolean hasCustomName() {
-        return this.customName != null && this.customName.length() > 0;
+		super();
     }
 
     @Override

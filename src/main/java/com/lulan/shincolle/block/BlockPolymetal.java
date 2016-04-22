@@ -12,7 +12,7 @@ public class BlockPolymetal extends BasicBlockMulti {
 		this.setBlockName("BlockPolymetal");
 		this.setHarvestLevel("pickaxe", 0);
 	    this.setHardness(3F);
-	    this.setStepSound(soundTypeMetal);		
+	    this.setStepSound(soundTypeMetal);
 	}
 
 	@Override

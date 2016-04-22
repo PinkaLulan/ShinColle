@@ -4,6 +4,7 @@ import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.Entity;
 
 /**
@@ -34,6 +35,7 @@ public class ModelVortex extends ModelBase {
 //    	GL11.glRotatef(angle, x, y, z);
 //    	GL11.glDisable(GL11.GL_CULL_FACE);
 //    	GL11.glDisable(GL11.GL_DEPTH_TEST);
+    	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
     	this.Vortex.render(f5);
 //    	GL11.glEnable(GL11.GL_DEPTH_TEST);
 //    	GL11.glEnable(GL11.GL_CULL_FACE);

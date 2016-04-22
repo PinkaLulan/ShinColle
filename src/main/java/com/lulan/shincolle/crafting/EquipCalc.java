@@ -39,8 +39,11 @@ public class EquipCalc {
 		 */
 		//small build
 		EquipSmall.add(new int[] {ID.EquipType.ARMOR_LO,     80,   1});
-		EquipSmall.add(new int[] {ID.EquipType.DRUM_LO,      80,   1});
+		EquipSmall.add(new int[] {ID.EquipType.FLARE_LO,     80,   2});
+		EquipSmall.add(new int[] {ID.EquipType.SEARCHLIGHT_LO,80,  0});
+		EquipSmall.add(new int[] {ID.EquipType.COMPASS_LO,   90,   0});
 		EquipSmall.add(new int[] {ID.EquipType.GUN_LO,       100,  2});
+		EquipSmall.add(new int[] {ID.EquipType.DRUM_LO,      120,  1});
 		EquipSmall.add(new int[] {ID.EquipType.CANNON_SI,    128,  2});
 		EquipSmall.add(new int[] {ID.EquipType.TORPEDO_LO,   160,  2});
 		EquipSmall.add(new int[] {ID.EquipType.RADAR_LO,     200,  0});
@@ -85,14 +88,25 @@ public class EquipCalc {
 		return null;
 	}
 	
-	//get special equip stats
+	/** get special equip stats
+	 *  return 0:inv page, 1:chunk loader, 2:flare, 3:searchlight
+	 */
 	public static float[] getEquipStatMisc(BasicEntityShip entity, ItemStack item) {
 		if(entity != null && item != null && item.getItem() instanceof BasicEquip) {
-			float[] itemStat = new float[] {0};
+			float[] itemStat = new float[] {0, 0, 0, 0};
 					
-			//drum
+			//inventory page item
 			if(item.getItem() == ModItems.EquipDrum) {
 				itemStat[0] = 1;
+			}
+			else if(item.getItem() == ModItems.EquipCompass) {
+				itemStat[1] = 1;
+			}
+			else if(item.getItem() == ModItems.EquipFlare) {
+				itemStat[2] = 1;
+			}
+			else if(item.getItem() == ModItems.EquipSearchlight) {
+				itemStat[3] = 1;
 			}
 			
 			return itemStat;
@@ -327,6 +341,18 @@ public class EquipCalc {
 		//drum
 		case ID.EquipType.DRUM_LO:
 			item = new ItemStack(ModItems.EquipDrum);
+			break;
+		//drum
+		case ID.EquipType.COMPASS_LO:
+			item = new ItemStack(ModItems.EquipCompass);
+			break;
+			//drum
+		case ID.EquipType.FLARE_LO:
+			item = new ItemStack(ModItems.EquipFlare);
+			break;
+			//drum
+		case ID.EquipType.SEARCHLIGHT_LO:
+			item = new ItemStack(ModItems.EquipSearchlight);
 			break;
 		default:
 			item = null;

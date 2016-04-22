@@ -8,6 +8,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
@@ -15,7 +16,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.fluids.BlockFluidBase;
 import net.minecraftforge.fluids.IFluidBlock;
 
+import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.proxy.ClientProxy;
+import com.lulan.shincolle.tileentity.TileEntityLightBlock;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -267,7 +270,7 @@ public class BlockHelper {
 		return newPos;
 	}
 
-	/**ray trace for block, include liquid block
+	/** ray trace for block, include liquid block
 	 * 
 	 */
 	@SideOnly(Side.CLIENT)
@@ -280,6 +283,53 @@ public class BlockHelper {
 	    
 	    //func_147447_a(所有視線追蹤皆用此方法) 參數: entity位置, entity視線最遠位置, 是否抓液體方塊, ??, 距離內沒抓到任何東西回傳MISS(而不是回傳null)
 	    return player.worldObj.func_147447_a(vec3, vec32, true, false, false);
+	}
+	
+	/** place light block */
+	public static void placeLightBlock(World world, int x, int y, int z) {
+		//swarch space to place light block
+		for(int i = -1; i <= 1; i++) {
+			for(int j = 1; j <= 2; j++) {
+				for(int k = -1; k <= 1; k++) {
+					Block b = world.getBlock(x+i, y+j, z+k);
+					
+					if(b == Blocks.water) {
+						world.setBlock(x+i, y+j, z+k, ModBlocks.BlockLightFluid);
+						return;
+					}
+					else if(b == Blocks.air) {
+						world.setBlock(x+i, y+j, z+k, ModBlocks.BlockLightAir);
+						return;
+					}
+					else if(b == ModBlocks.BlockLightFluid) {
+						TileEntity te = world.getTileEntity(x+i, y+j, z+k);
+						
+						//renew lifespan
+						if(te instanceof TileEntityLightBlock) {
+							((TileEntityLightBlock) te).tick = 1;
+							return;
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	/** reset nearby light block lifespan */
+	public static void updateNearbyLightBlock(World world, int x, int y, int z) {
+		for(int i = -1; i <= 1; i++) {
+			for(int j = 1; j <= 2; j++) {
+				for(int k = -1; k <= 1; k++) {
+					TileEntity te = world.getTileEntity(x+i, y+j, z+k);
+					
+					//renew lifespan
+					if(te instanceof TileEntityLightBlock) {
+						((TileEntityLightBlock) te).tick = 1;
+						return;
+					}
+				}
+			}
+		}
 	}
 	
 	
