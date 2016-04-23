@@ -17,6 +17,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -386,6 +387,18 @@ public class EVENT_BUS_EventHandler {
 			}
 			
 		}//end server side
+	}
+	
+	/** on entity entering chunk
+	 *  apply chunk loader
+	 */
+	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+	public void onEnteringChunk(EntityEvent.EnteringChunk event) {
+		//get ship
+		if(event.entity instanceof BasicEntityShip) {
+			((BasicEntityShip)event.entity).updateChunkLoader();
+//			LogHelper.info("DEBUG : update ship chunk loader: "+event.entity);
+		}
 	}
 
 	

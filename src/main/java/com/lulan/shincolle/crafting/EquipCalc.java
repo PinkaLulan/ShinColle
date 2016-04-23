@@ -102,7 +102,7 @@ public class EquipCalc {
 			else if(item.getItem() == ModItems.EquipCompass) {
 				itemStat[1] = 1;
 			}
-			else if(item.getItem() == ModItems.EquipFlare) {
+			else if(item.getItem() == ModItems.EquipFlare && entity.getEquipType() != 3) {
 				itemStat[2] = 1;
 			}
 			else if(item.getItem() == ModItems.EquipSearchlight) {

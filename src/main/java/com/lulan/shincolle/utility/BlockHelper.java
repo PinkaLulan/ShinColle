@@ -1,6 +1,8 @@
 package com.lulan.shincolle.utility;
 
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
@@ -12,6 +14,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.BlockFluidBase;
 import net.minecraftforge.fluids.IFluidBlock;
@@ -330,6 +333,31 @@ public class BlockHelper {
 				}
 			}
 		}
+	}
+	
+	/** get chunks within range
+	 *  
+	 *  input: posX, posZ
+	 *  mode: 1:1 chunk, 2:3x3 chunks
+	 */
+	public static Set<ChunkCoordIntPair> getChunksWithinRange(World world, int x, int z, int mode) {
+		Set<ChunkCoordIntPair> chunks = new HashSet<ChunkCoordIntPair>();
+		
+		//get chunks by mode
+		switch(mode) {
+		case 1:  //1 chunk
+			chunks.add(new ChunkCoordIntPair(x, z));
+			break;
+		case 2:  //3x3 chunks
+			for(int i = -1; i <= 1; i++) {
+				for(int j = -1; j <= 1; j++) {
+					chunks.add(new ChunkCoordIntPair(x+i, z+j));
+				}
+			}
+			break;
+		}
+		
+		return chunks;
 	}
 	
 	

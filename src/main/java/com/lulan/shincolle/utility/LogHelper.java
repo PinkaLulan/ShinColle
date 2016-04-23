@@ -27,7 +27,7 @@ public class LogHelper {
 	public static void warn(Object object) { log(Level.WARN,object); }
 	
 	//log: 紀錄非debug模式也能顯示的訊息
-	public static void log(Object object) { 
+	public static void log(Object object) {
 		log(Level.INFO,object); 
 	}
 	

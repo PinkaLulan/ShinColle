@@ -1162,7 +1162,8 @@ public class EntityHelper {
 			if(props != null) {
 				switch(meta) {
 				case 0:	//single mode
-					if(ships[0] != null && ships[0].worldObj.provider.dimensionId == worldID) {
+					if(ships[0] != null && ships[0].worldObj.provider.dimensionId == worldID &&
+					   player.getDistanceToEntity(ships[0]) < 64F) {
 						//設定ship攻擊目標
 						ships[0].setSitting(false);
 						ships[0].setEntityTarget(target);
@@ -1178,7 +1179,8 @@ public class EntityHelper {
 				case 1:		//group mode
 				case 2:		//formation mode
 					for(int i = 0; i < ships.length; i++) {
-						if(ships[i] != null && ships[i].worldObj.provider.dimensionId == worldID) {
+						if(ships[i] != null && ships[i].worldObj.provider.dimensionId == worldID &&
+						   player.getDistanceToEntity(ships[i]) < 64F) {
 							//設定ship攻擊目標
 							ships[i].setSitting(false);
 							ships[i].setEntityTarget(target);
@@ -1212,7 +1214,8 @@ public class EntityHelper {
 			
 			switch(meta) {
 			case 0:	//single mode
-				if(ships[0] != null && ships[0].worldObj.provider.dimensionId == worldID && formatID <= 0) {
+				if(ships[0] != null && ships[0].worldObj.provider.dimensionId == worldID && formatID <= 0 &&
+				   player.getDistanceToEntity(ships[0]) < 64F) {
 					//設定ship移動地點
 					applyShipGuardEntity(ships[0], guarded);
 					//sync guard
@@ -1221,7 +1224,8 @@ public class EntityHelper {
 				break;
 			case 1:		//group mode
 				for(int i = 0;i < ships.length; i++) {
-					if(ships[i] != null && ships[i].worldObj.provider.dimensionId == worldID && formatID <= 0) {
+					if(ships[i] != null && ships[i].worldObj.provider.dimensionId == worldID && formatID <= 0 &&
+					   player.getDistanceToEntity(ships[i]) < 64F) {
 						//設定ship移動地點
 						applyShipGuardEntity(ships[i], guarded);
 						//sync guard
@@ -1232,7 +1236,8 @@ public class EntityHelper {
 			case 2:		//formation mode
 				if(props.getNumberOfShip(props.getPointerTeamID()) > 4) {
 					for(int i = 0;i < ships.length; i++) {
-						if(ships[i] != null && ships[i].worldObj.provider.dimensionId == worldID) {
+						if(ships[i] != null && ships[i].worldObj.provider.dimensionId == worldID &&
+						   player.getDistanceToEntity(ships[i]) < 64F) {
 							//設定ship移動地點
 							applyShipGuardEntity(ships[i], guarded);
 							//sync guard
@@ -1261,7 +1266,8 @@ public class EntityHelper {
 			
 			switch(parms[0]) {
 			case 0:	//single mode
-				if(ships[0] != null && ships[0].worldObj.provider.dimensionId == worldID && formatID <= 0) {
+				if(ships[0] != null && ships[0].worldObj.provider.dimensionId == worldID && formatID <= 0 &&
+				   player.getDistanceToEntity(ships[0]) < 64F) {
 					//設定ship移動地點
 					applyShipGuard(ships[0], parms[2], parms[3], parms[4]);
 					//sync guard
@@ -1270,7 +1276,8 @@ public class EntityHelper {
 				break;
 			case 1:		//group mode
 				for(int i = 0;i < ships.length; i++) {
-					if(ships[i] != null && ships[i].worldObj.provider.dimensionId == worldID && formatID <= 0) {
+					if(ships[i] != null && ships[i].worldObj.provider.dimensionId == worldID && formatID <= 0 &&
+					   player.getDistanceToEntity(ships[i]) < 64F) {
 						//設定ship移動地點
 						applyShipGuard(ships[i], parms[2], parms[3], parms[4]);
 						//sync guard
@@ -1282,10 +1289,12 @@ public class EntityHelper {
 				if(props.getNumberOfShip(props.getPointerTeamID()) > 4 || formatID == 0) {
 					boolean canMove = true;
 					
-					//check formation id is same
 					for(BasicEntityShip s : ships) {
 						if(s != null) {
-							if(s.getStateMinor(ID.M.FormatType) != formatID) {
+							//check formation id is same, distance < 64, same dimension
+							if(s.getStateMinor(ID.M.FormatType) != formatID ||
+							   player.getDistanceToEntity(s) > 64F ||
+							   player.dimension != s.dimension) {
 								canMove = false;
 								break;
 							}

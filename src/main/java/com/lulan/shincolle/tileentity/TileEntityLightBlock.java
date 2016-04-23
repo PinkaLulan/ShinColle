@@ -15,6 +15,13 @@ public class TileEntityLightBlock extends BasicTileEntity {
 	public int tick;
 	
 	
+	public TileEntityLightBlock() {
+		super();
+		this.type = 0;
+		this.life = 0;
+		this.tick = 0;
+	}
+	
 	public TileEntityLightBlock(int type, int life) {
 		super();
 		this.type = type;

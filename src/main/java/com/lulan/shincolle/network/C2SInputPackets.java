@@ -37,6 +37,7 @@ public class C2SInputPackets implements IMessage {
 		public static final byte SyncHandheld = 2;
 		public static final byte CmdChOwner = 3;
 		public static final byte CmdShipAttr = 4;
+		public static final byte RequestSync_Model = 5;
 	}
 	
 	
@@ -70,6 +71,7 @@ public class C2SInputPackets implements IMessage {
 		case PID.SyncHandheld:	//sync current item
 		case PID.CmdChOwner:    //command: change owner
 		case PID.CmdShipAttr:   //command: set ship attrs
+		case PID.RequestSync_Model:  //request model display sync
 			{
 				try {
 					this.value = buf.readInt();  //int array length
@@ -100,6 +102,7 @@ public class C2SInputPackets implements IMessage {
 		case PID.SyncHandheld:	//sync current item
 		case PID.CmdChOwner:    //command: change owner
 		case PID.CmdShipAttr:   //command: set ship attrs
+		case PID.RequestSync_Model:  //request model display sync
 			{
 				buf.writeByte((byte)this.type);
 				
@@ -209,6 +212,16 @@ public class C2SInputPackets implements IMessage {
 							((BasicEntityShip) ent).setBonusPoint(4, (byte)message.value3[7]);
 							((BasicEntityShip) ent).setBonusPoint(5, (byte)message.value3[8]);
 							((BasicEntityShip) ent).setShipLevel(message.value3[2], true);
+						}
+					}
+					break;
+				case PID.RequestSync_Model:  //request model display sync
+					{
+						Entity ent = EntityHelper.getEntityByID(message.value3[0], message.value3[1], false);
+						
+						if(ent instanceof BasicEntityShip) {
+							((BasicEntityShip) ent).sendEmotionSyncPacket();
+							((BasicEntityShip) ent).sendFlagSyncPacket();
 						}
 					}
 					break;

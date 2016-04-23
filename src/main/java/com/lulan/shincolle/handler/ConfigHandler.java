@@ -35,6 +35,7 @@ public class ConfigHandler {
 	public static int volcoreGrudgeValue = 75;
 	public static int spawnBossNum = 2;
 	public static int spawnMobNum = 4;
+	public static int chunkloaderMode = 2;
 	
 	//DESK
 	public static int radarUpdate = 128;	//radar update interval (ticks)
@@ -93,6 +94,9 @@ public class ConfigHandler {
 		//玩家離開多遠時關閉GUI
 		closeGUIDist = config.getInt("Close_GUI_Distance", "general", 64, 2, 64, "Close inventory GUI if ship away from player X blocks");
 		
+		//chuknk loader使用模式
+		chunkloaderMode = config.getInt("ChunkLoader_Mode", "general", 2, 0, 2, "Chunk loader mode of ship: 0: disable, 1: only 1 chunk each ship, 2: 3x3 chunks each ship");
+				
 		//是否開啟debug mode
 		debugMode = config.getBoolean("Debug_Mode", "general", false, "Enable debug message (SPAM WARNING)");
 		

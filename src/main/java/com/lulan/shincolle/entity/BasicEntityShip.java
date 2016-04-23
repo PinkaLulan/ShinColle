@@ -1,6 +1,8 @@
 package com.lulan.shincolle.entity;
 
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
@@ -18,7 +20,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeChunkManager;
+import net.minecraftforge.common.ForgeChunkManager.Ticket;
 
 import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.ai.EntityAIShipAttackOnCollide;
@@ -42,6 +47,7 @@ import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.OwnerPaper;
 import com.lulan.shincolle.item.PointerItem;
+import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.network.S2CSpawnParticle;
@@ -135,6 +141,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	private boolean isUpdated;			//updated ship id/owner id tag
 	private int updateTime = 16;		//update check interval
 	
+	//chunk loader
+	private Ticket chunkTicket;
+	private Set<ChunkCoordIntPair> chunks;
+	
 	
 	public BasicEntityShip(World world) {
 		super(world);
@@ -192,6 +202,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.initAI = false;			//normal init
 		this.initWaitAI = false;		//slow init after player entity loaded
 		this.isUpdated = false;
+		
+		//chunk loader
+		this.chunkTicket = null;
+		this.chunks = null;
 		
 		//choice random sensitive body part
 		randomSensitiveBody();
@@ -360,6 +374,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		return shipMoveHelper;
 	}
 	
+	/** 1:cannon only, 2:both, 3:aircraft only */
 	abstract public int getEquipType();
 	
 	/** 0:small, 1:large, 2:mob small, 3:mob large*/
@@ -765,6 +780,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.EffectEquip = this.checkEffectEquipLimit(EffectEquip);
 		this.EffectEquipBU = this.checkEffectEquipLimit(EffectEquipBU);
 		
+		//check chunk loader
+		updateChunkLoader();
+		
 		//set attribute by final value
 		/**
 		 * DO NOT SET ATTACK DAMAGE to non-EntityMob!!!!!
@@ -1090,7 +1108,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	
 	/** sync data for emotion display */
 	public void sendEmotionSyncPacket() {
-		this.sendSyncPacket(1, true, true);
+		this.sendSyncPacket(S2CEntitySync.PID.SyncShip_Emo, true, true);
+	}
+	
+	/** sync data for flag */
+	public void sendFlagSyncPacket() {
+		this.sendSyncPacket(S2CEntitySync.PID.SyncShip_Flag, true, true);
 	}
 	
 	/** send sync packet:
@@ -1787,6 +1810,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				}
 			}
 			
+			//request model display sync after construction
+			if(this.ticksExisted == 40) {
+				CommonProxy.channelG.sendToServer(new C2SInputPackets(C2SInputPackets.PID.RequestSync_Model, this.getEntityId(), this.worldObj.provider.dimensionId));
+			}
+			
+			//check every 16 ticks
 			if(this.ticksExisted % 16 == 0) {
 				//generate HP state effect, use parm:lookX to send width size
 				switch(getStateEmotion(ID.S.HPState)) {
@@ -1807,6 +1836,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				}
 			}//end every 16 ticks
 			
+			//check every 32 ticks
 			if(this.ticksExisted % 32 == 0) {
 				//show guard position
 				if(!this.getStateFlag(ID.F.CanFollow)) {
@@ -1878,13 +1908,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         super.onLivingUpdate();
         
         //debug TODO
+//        if(this.ticksExisted % 32 == 0) {
 //      	LogHelper.info("DEBUG : ship onUpdate: flag: side: "+this.worldObj.isRemote+" "+EffectEquip[ID.EF_CRI]);
-        if(this.ticksExisted % 32 == 0) {
-        	float light = this.worldObj.getLightBrightness(MathHelper.floor_double(this.posX), (int)this.posY, MathHelper.floor_double(this.posZ));
-  			float light2 = this.worldObj.getBlockLightValue(MathHelper.floor_double(this.posX), (int)this.posY, MathHelper.floor_double(this.posZ));
-  					
-        	LogHelper.info("AAAAAAAAAAAA "+this.worldObj.isRemote+"  "+light+"  "+light2);
-        }
+//        	float light = this.worldObj.getLightBrightness(MathHelper.floor_double(this.posX), (int)this.posY, MathHelper.floor_double(this.posZ));
+//  			float light2 = this.worldObj.getBlockLightValue(MathHelper.floor_double(this.posX), (int)this.posY, MathHelper.floor_double(this.posZ));
+//        	LogHelper.info("AAAAAAAAAAAA "+this.worldObj.isRemote+"  "+light+"  "+light2);
+//        	LogHelper.info("AAAAAAAAAAAA "+this.worldObj.isRemote+"  "+this.dimension+"  "+(int)posX+"  "+(int)posY+"  "+(int)posZ+"  "+this);
+//        }
         
         //server side check
         if((!worldObj.isRemote)) {
@@ -1908,11 +1938,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         		if(!this.initAI && ticksExisted > 10) {
         			setStateFlag(ID.F.CanDrop, true);
             		clearAITasks();
-            		clearAITargetTasks();	//reset AI for get owner after loading NBT data
+            		clearAITargetTasks();		//reset AI for get owner after loading NBT data
             		setAIList();
             		setAITargetList();
-            		decrGrudgeNum(0);		//check grudge
-            		sendSyncPacketAllValue();		//sync packet to client
+            		decrGrudgeNum(0);			//check grudge
+            		sendSyncPacketAllValue();	//sync packet to client
+            		updateChunkLoader();
             		
             		this.initAI = true;
         		}
@@ -1920,8 +1951,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	
         		//check every 16 ticks
             	if(ticksExisted % 16 == 0) {
+            		//update searchlight
             		if(ConfigHandler.canSearchlight) {
-            			//update flare
                 		updateSearchlight();
             		}
             		
@@ -3273,17 +3304,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		}
   	}
   	
-//  	/** setDead() must to check entity health <= 0
-//  	 *  FIX: probably fix ship dupe bug that killing ship when server lag
-//  	 */
-//  	@Override
-//  	public void setDead() {
-//  		if(!this.worldObj.isRemote && this.getHealth() > 0) {
-//  	        return;
-//  	    }
-//  	    super.setDead();
-//    }
-  	
   	/** change ship outfit by right click cake on ship */
   	abstract public void setShipOutfit(boolean isSneaking);
   	
@@ -4462,21 +4482,118 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		}
   	}
   	
-  	public void clearChunkLoaderTicket() {
+  	/** release ticket when dead */
+  	@Override
+  	public void setDead() {
+  		//clear chunk loader
+  		this.clearChunkLoader();
   		
+  		super.setDead();
+    }
+
+  	
+  	/** release chunk loader ticket */ //TODO
+  	public void clearChunkLoader() {
+  		//unforce chunk
+  		if(this.chunks != null) {
+  	  		for(ChunkCoordIntPair p : this.chunks) {
+				ForgeChunkManager.unforceChunk(this.chunkTicket, p);
+			}
+  		}
+
+  		//release ticket
+  		if(this.chunkTicket != null) {
+  	  		ForgeChunkManager.releaseTicket(this.chunkTicket);
+  		}
+  		
+  		this.chunks = null;
+  		this.chunkTicket = null;
   	}
   	
-  	public void applyChunkLoader() {
-//  		//if equip chunk loader
-//  		if(meetsTicketRequirements()) {
-//	  		Ticket t = ForgeChunkManager.requestTicket(ShinColle.instance, worldObj, Type.ENTITY);
-//	  		Chunk c = this.worldObj.getChunkFromBlockCoords(p_72938_1_, p_72938_2_)
-//	  		t.
-//	  		if (t != null) {
-//	            setTicketData(t);
-//	            ForgeChunkManager.forceChunk(t, c);
-//	        }
-//  		}
+  	/** chunk loader ticking */
+  	public void updateChunkLoader() {
+  		//set ticket
+  		setChunkLoader();
+  		
+  		//apply ticket
+  		applyChunkLoader();
+  	}
+  	
+  	/** request chunk loader ticket
+  	 * 
+  	 *  player must be ONLINE
+  	 */
+  	private void setChunkLoader() {
+  		//if equip chunk loader
+  		if(this.getStateMinor(ID.M.LevelChunkLoader) > 0) {
+  			EntityPlayer player = null;
+  			int uid = this.getPlayerUID();
+  			
+  			//check owner exists
+  			if(uid > 0) {
+  				player = EntityHelper.getEntityPlayerByUID(uid);
+  				
+  				//player is online and no ticket
+  				if(player != null && this.chunkTicket == null) {
+					//get ticket
+			  		this.chunkTicket = ForgeChunkManager.requestPlayerTicket(ShinColle.instance, player.getDisplayName(), worldObj, ForgeChunkManager.Type.ENTITY);
+  				
+			  		if(this.chunkTicket != null) {
+			  			this.chunkTicket.bindEntity(this);
+			  		}
+			  		else {
+			  			LogHelper.log("INFO : Ship get chunk loader ticket fail.");
+			  			clearChunkLoader();
+			  		}
+  				}
+  			}//end check player
+  		}//end can chunk loader
+  		else {
+  			clearChunkLoader();
+  		}
+  	}
+  	
+  	/** force chunk load */
+  	private void applyChunkLoader() {
+  		if(this.chunkTicket != null) {
+  			Set<ChunkCoordIntPair> unloadChunks = new HashSet<ChunkCoordIntPair>();
+  			Set<ChunkCoordIntPair> loadChunks = null;
+  			Set<ChunkCoordIntPair> tempChunks = new HashSet<ChunkCoordIntPair>();
+  			
+  			//get chunk x,z
+  			int cx = MathHelper.floor_double(this.posX) >> 4;
+			int cz = MathHelper.floor_double(this.posZ) >> 4;
+			
+  			//get new chunk
+			loadChunks = BlockHelper.getChunksWithinRange(worldObj, cx, cz, ConfigHandler.chunkloaderMode);
+  			
+			//get unload chunk
+			if(this.chunks != null) {
+				unloadChunks.addAll(this.chunks);	//copy old chunks
+			}
+			unloadChunks.removeAll(loadChunks);		//remove all load chunks
+			
+			//get load chunk
+			tempChunks.addAll(loadChunks);			//copy new chunks
+			if(this.chunks != null) {
+				loadChunks.removeAll(this.chunks);	//remove all old chunks
+			}
+			
+			//set old chunk
+			this.chunks = tempChunks;
+			
+  			//unforce unload chunk
+			for(ChunkCoordIntPair p : unloadChunks) {
+				ForgeChunkManager.unforceChunk(this.chunkTicket, p);
+			}
+			
+			//force load chunk
+			for(ChunkCoordIntPair p : loadChunks) {
+				ForgeChunkManager.forceChunk(this.chunkTicket, p);
+			}
+			
+			LogHelper.info("DEBUG : ship chunk loader: "+this.chunks+" "+this);
+        }
   	}
   	
   	
