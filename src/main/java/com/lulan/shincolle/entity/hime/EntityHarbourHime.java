@@ -185,7 +185,7 @@ public class EntityHarbourHime extends BasicEntityShipCV {
   		}
   		
   		//experience++
-  		addShipExp(16);
+  		addShipExp(ConfigHandler.expGain[2]);
   		
   		//grudge--
   		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);

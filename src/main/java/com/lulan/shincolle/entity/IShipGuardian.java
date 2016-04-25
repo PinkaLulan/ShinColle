@@ -16,4 +16,11 @@ public interface IShipGuardian extends IShipAttackBase {
 	/** set position be guarded */
 	public void setGuardedPos(int x, int y, int z, int dim, int type);
 	
+	/** get last waypoint */
+	public int[] getLastWaypoint();
+	
+	/** set last waypoint */
+	public void setLastWaypoint(int[] pos);
+	
+	
 }

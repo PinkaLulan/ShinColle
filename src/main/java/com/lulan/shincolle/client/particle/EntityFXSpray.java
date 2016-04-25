@@ -24,12 +24,20 @@ public class EntityFXSpray extends EntityFX {
     
     public EntityFXSpray(World world, double posX, double posY, double posZ, double motionX, double motionY, double motionZ, int type) {
         super(world, posX, posY, posZ, 0.0D, 0.0D, 0.0D);
-        this.motionX *= 0.1D;
-        this.motionZ *= 0.1D;
-        this.motionY *= 0.1D;
-        this.motionX += motionX;
-        this.motionZ += motionZ;
-        this.motionY += motionY;
+        
+        if(type < 13) {
+        	this.motionX *= 0.1D;
+            this.motionY *= 0.1D;
+            this.motionZ *= 0.1D;
+            this.motionX += motionX;
+            this.motionY += motionY;
+            this.motionZ += motionZ;
+        }
+        else {
+        	this.motionX = motionX;
+            this.motionY = motionY;
+            this.motionZ = motionZ;
+        }
         
         this.ptype = type;
         
@@ -167,6 +175,17 @@ public class EntityFXSpray extends EntityFX {
             this.particleMaxAge = 50;
             this.noClip = false;
         	break;
+        case 13:   //next waypoint
+        	this.speedLimit = 2D;
+        	this.particleRed = 1F;
+            this.particleGreen = 0F;
+            this.particleBlue = 0F;
+            this.particleAlpha = 0.75F;
+            this.particleScale *= 3F;
+            this.pScale = this.particleScale;
+            this.particleMaxAge = 100;
+            this.noClip = true;
+        	break;
         default:  //default = type 0 = 1A red
         	this.speedLimit = 0.3D;
         	this.particleRed = 1F;
@@ -236,17 +255,26 @@ public class EntityFXSpray extends EntityFX {
                 return;
             }
             
-        	this.setParticleTextureIndex(7 - this.particleAge * 8 / this.particleMaxAge); 
-            this.motionX *= 0.96D;
-            this.motionY *= 0.96D;
-            this.motionZ *= 0.96D;
-
-            if(this.onGround) {
-                this.motionX *= 0.7D;
-                this.motionZ *= 0.7D;
+            if(this.ptype == 13) {
+            	this.setParticleTextureIndex(7 - this.particleAge * 5 / this.particleMaxAge);
+            	
+            	this.posX += this.motionX;
+            	this.posY += this.motionY;
+            	this.posZ += this.motionZ;
             }
-            
-            this.moveEntity(this.motionX, this.motionY, this.motionZ);
+            else {
+            	this.setParticleTextureIndex(7 - this.particleAge * 8 / this.particleMaxAge);
+                this.motionX *= 0.96D;
+                this.motionY *= 0.96D;
+                this.motionZ *= 0.96D;
+                
+                if(this.onGround) {
+                    this.motionX *= 0.7D;
+                    this.motionZ *= 0.7D;
+                }
+                
+                this.moveEntity(this.motionX, this.motionY, this.motionZ);
+            }
     	}  
     }
 }

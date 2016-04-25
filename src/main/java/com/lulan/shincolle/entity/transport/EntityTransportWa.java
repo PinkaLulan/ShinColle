@@ -137,6 +137,10 @@ public class EntityTransportWa extends BasicEntityShipSmall {
 		            		
 		            		//count--
 		            		if(canSupply) {
+		            			//add exp
+		            			addShipExp(ConfigHandler.expGain[6]);
+		            			
+		            			//sync
 		            			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, s, 0.75D, 0D, 0D, 4, false), point);
 		            			supCount--;
 		            		}

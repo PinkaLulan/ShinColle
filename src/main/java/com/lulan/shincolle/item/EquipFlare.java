@@ -60,8 +60,8 @@ public class EquipFlare extends BasicEquip {
 	
 	@Override
     public void addInformation(ItemStack itemstack, EntityPlayer player, List list, boolean par4) {  		
-    	super.addInformation(itemstack, player, list, par4);
 		list.add(EnumChatFormatting.GRAY + I18n.format("gui.shincolle:flare"));
+		super.addInformation(itemstack, player, list, par4);
 	}
 	
 

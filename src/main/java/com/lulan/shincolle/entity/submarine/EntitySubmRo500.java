@@ -164,7 +164,7 @@ public class EntitySubmRo500 extends BasicEntityShipSmall implements IShipInvisi
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
   		
   		//experience++
-  		addShipExp(2);
+  		addShipExp(ConfigHandler.expGain[1]);
   		
   		//grudge--
   		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);

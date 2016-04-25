@@ -22,9 +22,11 @@ import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.team.TeamData;
+import com.lulan.shincolle.tileentity.TileEntityCrane;
 import com.lulan.shincolle.tileentity.TileEntityDesk;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.tileentity.TileEntityVolCore;
+import com.lulan.shincolle.tileentity.TileEntityWaypoint;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
@@ -72,6 +74,8 @@ public class S2CGUIPackets implements IMessage {
 		public static final byte SyncPlayerProp_ColledShip = 12;
 		public static final byte SyncPlayerProp_ColledEquip = 13;
 		public static final byte TileVolCore = 14;
+		public static final byte TileWaypoint = 15;
+		public static final byte TileCrane = 16;
 	}
 	
 	
@@ -95,6 +99,14 @@ public class S2CGUIPackets implements IMessage {
 		else if(tile instanceof TileEntityVolCore) {
 			this.tile = tile;
 			this.type = PID.TileVolCore;
+		}
+		else if(tile instanceof TileEntityWaypoint) {
+			this.tile = tile;
+			this.type = PID.TileWaypoint;
+		}
+		else if(tile instanceof TileEntityCrane) {
+			this.tile = tile;
+			this.type = PID.TileCrane;
 		}
     }
 	
@@ -245,14 +257,65 @@ public class S2CGUIPackets implements IMessage {
 				this.recvY = buf.readInt();
 				this.recvZ = buf.readInt();
 	
-				TileEntityVolCore te = (TileEntityVolCore) world.getTileEntity(recvX, recvY, recvZ);
+				TileEntity te = world.getTileEntity(recvX, recvY, recvZ);
 				
-				if(te != null) {
-					te.setPowerRemained(buf.readInt());
-					te.isActive = buf.readBoolean();
+				if(te instanceof TileEntityVolCore) {
+					((TileEntityVolCore) te).setPowerRemained(buf.readInt());
+					((TileEntityVolCore) te).isActive = buf.readBoolean();
 				}
 				else {
 					buf.clear();
+				}
+			}
+			break;
+		case PID.TileWaypoint: //sync tile waypoint
+			{
+				this.recvX = buf.readInt();
+				this.recvY = buf.readInt();
+				this.recvZ = buf.readInt();
+				
+				this.value3 = new int[6];
+				this.value3[0] = buf.readInt();
+				this.value3[1] = buf.readInt();
+				this.value3[2] = buf.readInt();
+				this.value3[3] = buf.readInt();
+				this.value3[4] = buf.readInt();
+				this.value3[5] = buf.readInt();
+	
+				TileEntity te = world.getTileEntity(recvX, recvY, recvZ);
+				
+				if(te instanceof TileEntityWaypoint) {
+					((TileEntityWaypoint) te).setSyncData(this.value3);
+				}
+			}
+			break;
+		case PID.TileCrane: //sync tile crane
+			{
+				this.recvX = buf.readInt();
+				this.recvY = buf.readInt();
+				this.recvZ = buf.readInt();
+				
+				this.value3 = new int[10];
+				this.value3[0] = buf.readInt();  //lx
+				this.value3[1] = buf.readInt();  //ly
+				this.value3[2] = buf.readInt();  //lz
+				this.value3[3] = buf.readInt();  //nx
+				this.value3[4] = buf.readInt();  //ny
+				this.value3[5] = buf.readInt();  //nz
+				this.value3[6] = buf.readInt();  //cx
+				this.value3[7] = buf.readInt();  //cy
+				this.value3[8] = buf.readInt();  //cz
+				this.value3[9] = buf.readInt();  //ship eid
+				
+				boolean isActive = buf.readBoolean();
+	
+				TileEntity te = world.getTileEntity(recvX, recvY, recvZ);
+				Entity ent = EntityHelper.getEntityByID(value3[9], 0, true);
+				
+				if(te instanceof TileEntityCrane) {
+					((TileEntityCrane) te).setSyncData(value3);
+					((TileEntityCrane) te).isActive = isActive;
+					((TileEntityCrane) te).ship = (BasicEntityShip) ent;
 				}
 			}
 			break;
@@ -560,6 +623,51 @@ public class S2CGUIPackets implements IMessage {
 				buf.writeInt(this.tile.zCoord);
 				buf.writeInt(((TileEntityVolCore)tile).getPowerRemained());
 				buf.writeBoolean(((TileEntityVolCore)tile).isActive);
+			}
+			break;
+		case PID.TileCrane: //sync tile crane
+			{
+				TileEntityCrane te = (TileEntityCrane) tile;
+				
+				buf.writeByte(this.type);
+				buf.writeInt(this.tile.xCoord);
+				buf.writeInt(this.tile.yCoord);
+				buf.writeInt(this.tile.zCoord);
+				
+				buf.writeInt(te.lx);
+				buf.writeInt(te.ly);
+				buf.writeInt(te.lz);
+				buf.writeInt(te.nx);
+				buf.writeInt(te.ny);
+				buf.writeInt(te.nz);
+				buf.writeInt(te.cx);
+				buf.writeInt(te.cy);
+				buf.writeInt(te.cz);
+				
+				if(te.ship != null) {
+					buf.writeInt(te.ship.getEntityId());
+				}
+				else {
+					buf.writeInt(-1);
+				}
+				
+				buf.writeBoolean(te.isActive);
+			}
+			break;
+		case PID.TileWaypoint: //sync tile waypoint
+			{
+				TileEntityWaypoint te = (TileEntityWaypoint) tile;
+				
+				buf.writeByte(this.type);
+				buf.writeInt(this.tile.xCoord);
+				buf.writeInt(this.tile.yCoord);
+				buf.writeInt(this.tile.zCoord);
+				buf.writeInt(te.lx);
+				buf.writeInt(te.ly);
+				buf.writeInt(te.lz);
+				buf.writeInt(te.nx);
+				buf.writeInt(te.ny);
+				buf.writeInt(te.nz);
 			}
 			break;
 		case PID.SyncPlayerProp:	//sync player props

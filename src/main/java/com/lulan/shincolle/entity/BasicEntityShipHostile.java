@@ -70,7 +70,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		stepHeight = 4F;
 		canDrop = true;
 		shipNavigator = new ShipPathNavigate(this, worldObj);
-		shipMoveHelper = new ShipMoveHelper(this, 15F);
+		shipMoveHelper = new ShipMoveHelper(this, 25F);
 		rotateAngle = new float[] {0F, 0F, 0F};
 		
 		//model display
@@ -101,8 +101,8 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		//moving
 		this.tasks.addTask(21, new EntityAIOpenDoor(this, true));			   //0000
 		this.tasks.addTask(22, new EntityAIShipFloating(this));				   //0111
-		this.tasks.addTask(23, new EntityAIShipWatchClosest(this, EntityPlayer.class, 6F, 0.1F)); //0010
-		this.tasks.addTask(24, new EntityAIShipWander(this, 0.8D));			   //0111
+		this.tasks.addTask(23, new EntityAIShipWatchClosest(this, EntityPlayer.class, 8F, 0.1F)); //0010
+		this.tasks.addTask(24, new EntityAIShipWander(this, 12, 1, 0.8D));	   //0111
 		this.tasks.addTask(25, new EntityAILookIdle(this));					   //0011
 
 	}

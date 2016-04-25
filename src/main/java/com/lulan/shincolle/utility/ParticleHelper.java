@@ -184,8 +184,6 @@ public class ParticleHelper {
 	 */
 	@SideOnly(Side.CLIENT)
 	public static void spawnAttackParticleAt(double posX, double posY, double posZ, double lookX, double lookY, double lookZ, byte type) {
-		//注意此world不能設為static變數, 否則client端重登後world依然是舊world而非重登後的新world
-//		World world = Minecraft.getMinecraft().theWorld;
 		World world = ClientProxy.getClientWorld();
 		
 		//get target position
@@ -466,6 +464,11 @@ public class ParticleHelper {
 			EntityFXSpray particleSpray12 = new EntityFXSpray(world, 
             		posX, posY, posZ, lookX, lookY, lookZ, 12);
         	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray12);
+			break;
+		case 38:	//next waypoint spray
+			EntityFXSpray particleSpray13 = new EntityFXSpray(world, 
+            		posX, posY, posZ, lookX, lookY, lookZ, 13);
+        	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray13);
 			break;
 		default:
 			break;		

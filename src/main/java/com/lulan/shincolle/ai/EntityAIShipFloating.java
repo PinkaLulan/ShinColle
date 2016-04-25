@@ -40,25 +40,31 @@ public class EntityAIShipFloating extends EntityAIBase {
 	public boolean shouldExecute() {
     	//ship類: 檢查host坐下
     	if(hostShip != null) {
-    		//騎乘中, 守衛中, 移動中: 禁止上浮
-    		if(hostShip.isRiding() || isInGuardPosition(hostShip) ||
-    		   !hostShip.getShipNavigate().noPath()) {
+    		//騎乘, 守衛, 移動, 坐下, 裝載中: 禁止上浮
+    		if(hostShip.isRiding() || hostShip.isSitting() || hostShip.getStateMinor(ID.M.CraneState) > 0 ||
+    		   !hostShip.getShipNavigate().noPath() || isInGuardPosition(hostShip)) {
     			return false;
     		}
     		
     		//其他情況
-    		return !this.hostShip.isSitting() && this.hostShip.getStateFlag(ID.F.CanFloatUp);
+    		return this.hostShip.getStateFlag(ID.F.CanFloatUp);
     	}
     	//mount類: 檢查mount水深 & host坐下
     	else if(hostMount != null && hostMount.getHostEntity() != null) {
 			this.hostShip = (BasicEntityShip) hostMount.getHostEntity();
 			
-			//騎乘中, 守衛中, 移動中: 禁止上浮
-			if(isInGuardPosition(hostMount)  || !hostShip.getShipNavigate().noPath()) {
+			//騎乘, 守衛, 移動, 坐下, 裝載中: 禁止上浮
+    		if(hostShip.isSitting() || hostShip.getStateMinor(ID.M.CraneState) > 0 ||
+    		   !hostShip.getShipNavigate().noPath() || isInGuardPosition(hostShip)) {
     			return false;
     		}
 			
-			return !this.hostShip.isSitting() && hostMount.getShipDepth() > 0.47D;
+			//騎乘中, 守衛中, 移動中: 禁止上浮
+			if(!hostShip.getShipNavigate().noPath() || isInGuardPosition(hostMount)) {
+    			return false;
+    		}
+			
+			return hostMount.getShipDepth() > 0.47D;
 		}
     	//其他類
     	else {

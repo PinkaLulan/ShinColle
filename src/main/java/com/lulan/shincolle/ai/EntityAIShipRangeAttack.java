@@ -8,7 +8,6 @@ import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.IShipCannonAttack;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.LogHelper;
 
 /**ENTITY RANGE ATTACK AI
  * 從骨弓的射箭AI修改而來
@@ -53,8 +52,10 @@ public class EntityAIShipRangeAttack extends EntityAIBase {
 	public boolean shouldExecute() {
     	//for entity ship
     	if(host2 != null) {
-    		//坐下中不攻擊
-    		if(this.host.getIsSitting()) return false;
+    		//坐下, 裝載中不攻擊
+    		if(host.getIsSitting() || host.getStateMinor(ID.M.CraneState) > 0) {
+    			return false;
+    		}
     		
     		//若騎乘ship類座騎, 則攻擊交給mount判定
     		if(this.host.getIsRiding()) {

@@ -51,6 +51,7 @@ public class S2CEntitySync implements IMessage {
 		public static final byte SyncShip_Formation = 11;
 		public static final byte SyncShip_Unbuff = 12;
 		public static final byte SyncEntity_Motion = 13;
+		public static final byte SyncShip_Timer = 14;
 	}
 
 	
@@ -117,11 +118,10 @@ public class S2CEntitySync implements IMessage {
 		case PID.SyncShip_Formation:
 		case PID.SyncShip_Minor:
 		case PID.SyncShip_Unbuff:
+		case PID.SyncShip_Timer:
 		case PID.SyncEntity_Emo:
 		case PID.SyncMount_ByPlayer:
 		case PID.SyncMount_ByMount:
-//			LogHelper.info("DEBUG : sync entity: eid "+this.entityID+" type "+this.type);
-//			this.entity2 = (EntityLiving) EntityHelper.getEntityByID(entityID, 0, true);
 			Entity ent = EntityHelper.getEntityByID(entityID, 0, true);
 			
 			//確認有抓到要sync的entity
@@ -165,6 +165,7 @@ public class S2CEntitySync implements IMessage {
 			break;
 		}
 
+		//can entity to sync
 		if(getSyncTarget) {
 			switch(type) {
 			case PID.SyncShip_All:	//sync all attr
@@ -196,6 +197,8 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateMinor(ID.M.LevelChunkLoader, buf.readInt());
 					entity.setStateMinor(ID.M.LevelFlare, buf.readInt());
 					entity.setStateMinor(ID.M.LevelSearchlight, buf.readInt());
+					
+					entity.setStateTimer(ID.T.CraneTime, buf.readInt());
 					
 					entity.setStateFinal(ID.HP, buf.readFloat());
 					entity.setStateFinal(ID.ATK, buf.readFloat());
@@ -353,6 +356,11 @@ public class S2CEntitySync implements IMessage {
 					entity.setEffectEquipBU(ID.EF_AA, buf.readFloat());
 					entity.setEffectEquipBU(ID.EF_ASM, buf.readFloat());
 					entity.setEffectEquipBU(ID.EF_DODGE, buf.readFloat());
+				}
+				break;
+			case PID.SyncShip_Timer: //ship timer only
+				{
+					entity.setStateTimer(ID.T.CraneTime, buf.readInt());
 				}
 				break;
 			case PID.SyncEntity_Emo: //IShipEmotion sync emtion
@@ -548,6 +556,8 @@ public class S2CEntitySync implements IMessage {
 				buf.writeInt(this.entity.getStateMinor(ID.M.LevelFlare));
 				buf.writeInt(this.entity.getStateMinor(ID.M.LevelSearchlight));
 				
+				buf.writeInt(this.entity.getStateTimer(ID.T.CraneTime));
+				
 				buf.writeFloat(this.entity.getStateFinal(ID.HP));
 				buf.writeFloat(this.entity.getStateFinal(ID.ATK));
 				buf.writeFloat(this.entity.getStateFinal(ID.DEF));
@@ -713,6 +723,13 @@ public class S2CEntitySync implements IMessage {
 				buf.writeByte(this.entity2e.getStateEmotion(ID.S.Emotion2));
 				buf.writeByte(this.entity2e.getStateEmotion(ID.S.HPState));
 				buf.writeByte(this.entity2e.getStateEmotion(ID.S.Phase));
+			}
+			break;
+		case PID.SyncShip_Timer:	//sync timer only
+			{
+				buf.writeByte(PID.SyncShip_Timer);	//type 3
+				buf.writeInt(this.entity.getEntityId());
+				buf.writeInt(this.entity.getStateTimer(ID.T.CraneTime));
 			}
 			break;
 		case PID.SyncMount_ByPlayer:	//IShipEmotion player mount packet

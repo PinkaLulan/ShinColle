@@ -9,6 +9,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
@@ -24,6 +25,7 @@ import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.tileentity.ITileWaypoint;
 import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
@@ -460,25 +462,31 @@ public class PointerItem extends BasicItem {
 						int y = hitObj2.blockY;
 						int z = hitObj2.blockZ;
 						
-						switch(hitObj2.sideHit) {
-						default:
-							y--;
-							break;
-						case 1:
-							y++;
-							break;
-						case 2:
-							z--;
-							break;
-						case 3:
-							z++;
-							break;
-						case 4:
-							x--;
-							break;
-						case 5:
-							x++;
-							break;
+						//check target is waypoint
+						TileEntity tile = world.getTileEntity(x, y, z);
+						
+						//if not waypoint, tweak target position
+						if(!(tile instanceof ITileWaypoint)) {
+							switch(hitObj2.sideHit) {
+							default:
+								y--;
+								break;
+							case 1:
+								y++;
+								break;
+							case 2:
+								z--;
+								break;
+							case 3:
+								z++;
+								break;
+							case 4:
+								x--;
+								break;
+							case 5:
+								x++;
+								break;
+							}
 						}
 						
 						LogHelper.info("DEBUG : pointer right click: BLOCK: side: "+hitObj2.sideHit+" xyz: "+x+" "+y+" "+z);

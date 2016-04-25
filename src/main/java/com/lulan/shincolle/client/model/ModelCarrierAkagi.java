@@ -316,7 +316,7 @@ public class ModelCarrierAkagi extends ModelBase implements IModelEmotion {
         this.ClothBody01.addBox(-1.0F, 0.0F, 0.0F, 2, 8, 5, 0.0F);
         this.setRotateAngle(ClothBody01, 0.2617993877991494F, 0.0F, -0.2617993877991494F);
         this.Hair02 = new ModelRenderer(this, 192, 25);
-        this.Hair02.setRotationPoint(0.0F, 12.5F, 6.2F);
+        this.Hair02.setRotationPoint(0.0F, 11F, 6.2F);
         this.Hair02.addBox(-7.0F, 0.0F, -4.5F, 14, 13, 7, 0.0F);
         this.setRotateAngle(Hair02, -0.10471975511965977F, 0.0F, 0.0F);
         this.Skirt02 = new ModelRenderer(this, 0, 44);

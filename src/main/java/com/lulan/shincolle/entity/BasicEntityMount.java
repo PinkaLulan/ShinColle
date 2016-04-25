@@ -78,7 +78,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		stepHeight = 3F;
 		keyPressed = 0;
 		shipNavigator = new ShipPathNavigate(this, worldObj);
-		shipMoveHelper = new ShipMoveHelper(this, 15F);
+		shipMoveHelper = new ShipMoveHelper(this, 20F);
 		ridePos = new float[] {0F,0F,0F};
 		
 	}
@@ -145,7 +145,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 			//moving
 			this.tasks.addTask(21, new EntityAIOpenDoor(this, true));	//0000
 			this.tasks.addTask(22, new EntityAIShipFloating(this));		//0111
-			this.tasks.addTask(25, new EntityAIShipWander(this, 0.8D));	//0111
+			this.tasks.addTask(25, new EntityAIShipWander(this, 12, 7, 0.8D));	//0111
 		}
 	}
 	
@@ -420,44 +420,43 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 					this.setDead();
 				}
 				
-				//LogHelper.info("DEBUG : get rider "+riddenByEntity+" "+this.riddenByEntity2);		
-				if(this.ticksExisted % 100 == 0) {
-					//get new status every 5 second
-					this.atkRange = host.getStateFinal(ID.HIT);
-					
-					//speed reduce to zero if host sitting
-					if(this.host.isSitting()) {
-						this.movSpeed = 0F;
-					}
-					else {
-						this.movSpeed = host.getStateFinal(ID.MOV);
-					}
-
-					//update attribute
-					setupAttrs();
-					
-					//防止溺死
-					if(this.isInWater()) {
-						this.setAir(300);
-					}
-				}//end every 100 ticks
-				
 				//get target every 8 ticks
 				if(this.ticksExisted % 8 == 0) {
 					this.setEntityTarget(this.host.getEntityTarget());
 					
-					//clear dead or same team target 
-	      			if(this.getEntityTarget() != null) {
-	      				if(!this.getEntityTarget().isEntityAlive() || EntityHelper.checkSameOwner(this, getEntityTarget())) {
-	      					this.setEntityTarget(null);
-	      				}
-	      			}
-				}//end every 10 ticks
-				
-				//sync every 60 ticks
-				if(this.ticksExisted % 64 == 0) {
-					this.sendSyncPacket();
-				}//end every 60 ticks
+					//check every 16 ticks
+					if(this.ticksExisted % 16 == 0) {
+						//waypoint move
+	            		if(EntityHelper.updateWaypointMove(this)) {
+	            			shipNavigator.tryMoveToXYZ(getGuardedPos(0), getGuardedPos(1), getGuardedPos(2), 1D);
+	            			host.sendSyncPacket(3, false, false);
+	            		}
+	            		
+	            		//check every 128 ticks
+    					if(this.ticksExisted % 128 == 0) {
+    						this.sendSyncPacket();
+    						
+    						//get new status every 5 second
+    						this.atkRange = host.getStateFinal(ID.HIT);
+    						
+    						//speed reduce to zero if host sitting
+    						if(this.host.isSitting()) {
+    							this.movSpeed = 0F;
+    						}
+    						else {
+    							this.movSpeed = host.getStateFinal(ID.MOV);
+    						}
+
+    						//update attribute
+    						setupAttrs();
+    						
+    						//防止溺死
+    						if(this.isInWater()) {
+    							this.setAir(300);
+    						}
+    					}//end every 128 ticks
+					}//end every 16 ticks
+				}//end every 8 ticks
 			}
 		}
 	}
@@ -715,7 +714,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
         distZ = distZ / distSqrt;
         
         //experience++
-  		host.addShipExp(2);
+  		host.addShipExp(ConfigHandler.expGain[1]);
   		
   		//grudge--
   		host.decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
@@ -847,7 +846,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
         }
         
         //experience++
-      	host.addShipExp(16);
+      	host.addShipExp(ConfigHandler.expGain[2]);
       		
       	//grudge--
       	host.decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
@@ -1338,6 +1337,21 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 
         this.swingProgress = (float)this.swingProgressInt / (float)swingMaxTick;
     }
+	
+	//get last waypoint, for waypoint loop checking
+  	@Override
+  	public int[] getLastWaypoint() {
+  		return new int[] {getStateMinor(ID.M.LastX), getStateMinor(ID.M.LastY), getStateMinor(ID.M.LastZ)};
+  	}
+  	
+  	@Override
+  	public void setLastWaypoint(int[] pos) {
+  		if(pos != null) {
+  			setStateMinor(ID.M.LastX, pos[0]);
+  			setStateMinor(ID.M.LastY, pos[1]);
+  			setStateMinor(ID.M.LastZ, pos[2]);
+  		}
+  	}
     
 	
 }

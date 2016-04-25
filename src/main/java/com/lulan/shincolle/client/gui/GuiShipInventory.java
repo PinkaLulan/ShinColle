@@ -1027,15 +1027,20 @@ public class GuiShipInventory extends GuiContainer {
         yClick = posY - this.guiTop;
         
     	//get cliuck button
+        int barvalue = 0;
+        
     	switch(mousePressBar) {
     	case 0:	//bar0: follow min
-    		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_FollowMin, (int)(barPos / 42F * 30F + 1F)));
+    		barvalue = (int)(barPos / 42F * 30F + 1F);
+    		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_FollowMin, barvalue));
     		break;
     	case 1:	//bar1: follow max
-    		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_FollowMax, (int)(barPos / 42F * 30F + 2F)));
+    		barvalue = (int)(barPos / 42F * 30F + 2F);
+    		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_FollowMax, barvalue));
     		break;
     	case 2:	//bar2: flee hp
-    		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_FleeHP, (int)(barPos / 42F * 100F)));
+    		barvalue = (int)(barPos / 42F * 100F);
+    		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_FleeHP, barvalue));
     		break;
     	}
     	

@@ -103,6 +103,12 @@ public class FML_COMMON_EventHandler {
 			        	extProps.sendSyncPacket(0);
 					}
 					
+					//team list fast update
+					if(event.player.ticksExisted == 64) {
+						updateTeamList(event.player, extProps);
+						syncTeamList = true;
+					}
+					
 //					//TODO DEBUG
 //					ItemStack hitem = event.player.inventory.getCurrentItem();
 //					if(hitem != null && hitem.getItem() instanceof BasicEquip) {
@@ -129,33 +135,7 @@ public class FML_COMMON_EventHandler {
 						
 						//every 256 ticks
 						if(event.player.ticksExisted % 256 == 0) {
-							/** update ships in pointer team list */
-							//check entity is alive
-							BasicEntityShip getent = null;
-							for(int i = 0; i < 6; i++) {
-								//get ship by UID
-								getent = EntityHelper.getShipBySID(extProps.getSIDCurrentTeam(i));
-
-								//get ship
-								if(getent != null) {
-									if(EntityHelper.checkSameOwner(getent, event.player)) {
-										//update ship entity
-										extProps.addShipEntityToCurrentTeam(i, getent);
-									}
-									else {
-										//owner changed, remove ship
-										extProps.addShipEntityToCurrentTeam(i, null);
-									}
-								}
-								//ship lost
-								else {
-									//clear slot if no ship UID (ship UID invalid)
-									if(extProps.getSIDCurrentTeam(i) <= 0) {
-										extProps.addShipEntityToCurrentTeam(i, null);
-									}
-								}	
-							}
-							
+							updateTeamList(event.player, extProps);
 							syncTeamList = true;
 						}//end every 256 ticks
 					}//end every 128 ticks
@@ -222,7 +202,39 @@ public class FML_COMMON_EventHandler {
 		}//end player tick phase: START
 	}//end onPlayerTick
 	
-	/*********TODO rewrite boss spawn methods**********/
+	/** update team list of pointer item */
+	private void updateTeamList(EntityPlayer player, ExtendPlayerProps extProps) {
+		/** update ships in pointer team list */
+		//check entity is alive
+		BasicEntityShip getent = null;
+		for(int i = 0; i < 6; i++) {
+			//get ship by UID
+			getent = EntityHelper.getShipBySID(extProps.getSIDCurrentTeam(i));
+
+			//get ship
+			if(getent != null) {
+				if(EntityHelper.checkSameOwner(getent, player)) {
+					//update ship entity
+					extProps.addShipEntityToCurrentTeam(i, getent);
+				}
+				else {
+					//owner changed, remove ship
+					extProps.addShipEntityToCurrentTeam(i, null);
+				}
+			}
+			//ship lost
+			else {
+				//clear slot if no ship UID (ship UID invalid)
+				if(extProps.getSIDCurrentTeam(i) <= 0) {
+					extProps.addShipEntityToCurrentTeam(i, null);
+				}
+			}	
+		}
+	}
+	
+	/** TODO rewrite boss spawn methods
+	 * add different probs each boss?
+	 */
 	/** spawn boss ticking */
 	private void spawnBoss(EntityPlayer player, ExtendPlayerProps extProps) {
 		int blockX = (int) player.posX;

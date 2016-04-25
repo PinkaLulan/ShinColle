@@ -68,6 +68,7 @@ public class ModRecipes {
 		ItemStack volcore = new ItemStack(ModBlocks.BlockVolCore);
 		ItemStack frame16 = new ItemStack(ModBlocks.BlockFrame, 16);
 		ItemStack crane = new ItemStack(ModBlocks.BlockCrane);
+		ItemStack waypoint = new ItemStack(ModBlocks.BlockWaypoint, 16);
 		
 		//SHAPELESS RECIPE
 		//abyssium material:
@@ -141,9 +142,11 @@ public class ModRecipes {
 		GameRegistry.addRecipe(new ShapedOreRecipe(volcore,"gog","olo","gog",'g',volblock,'l',Items.lava_bucket,'o',Blocks.obsidian));
 		GameRegistry.addRecipe(new ShapedOreRecipe(volcore,"gog","olo","gog",'g',Blocks.obsidian,'l',Items.lava_bucket,'o',volblock));
 		//frame
-		GameRegistry.addRecipe(new ShapedOreRecipe(frame16,"oao","oao","oao",'o',Blocks.obsidian,'a',abyssiumStack));
+		GameRegistry.addRecipe(new ShapedOreRecipe(frame16,"a a"," o ","a a",'o',Blocks.obsidian,'a',abyssiumStack));
 		//crane
 		GameRegistry.addRecipe(new ShapedOreRecipe(crane,"aaa","aga","apa",'a',abyssiumStack,'p',Blocks.piston,'g',grudeBlock));
+		//waypoint
+		GameRegistry.addRecipe(new ShapedOreRecipe(waypoint,"g  ","s  ","   ",'g',grudeStack,'s',Items.stick));
 		
 	}
 

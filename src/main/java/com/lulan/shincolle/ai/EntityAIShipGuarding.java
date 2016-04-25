@@ -42,8 +42,8 @@ import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
  *   3. attack target if delay = 0
  *   
  *   guard type:
- *   0: none
- *   1: guard a block
+ *   0: guard a block and force moving
+ *   1: guard a block and attack while moving
  *   2: guard an entity
  */
 public class EntityAIShipGuarding extends EntityAIBase {
@@ -115,8 +115,9 @@ public class EntityAIShipGuarding extends EntityAIBase {
     //判定是否開始執行AI
     @Override
 	public boolean shouldExecute() {
-    	//非坐下, 非騎乘, 非被綁, 非可跟隨, 且有fuel才執行
-    	if(host != null && !host.getIsRiding() && !host.getIsSitting() && !host.getStateFlag(ID.F.NoFuel) && !host.getStateFlag(ID.F.CanFollow)) {
+    	//非坐下, 非騎乘, 非被綁, 非可跟隨, 非裝載中
+    	if(host != null && !host.getIsRiding() && !host.getIsSitting() &&
+    	   !host.getStateFlag(ID.F.CanFollow) && host.getStateMinor(ID.M.CraneState) < 1) {
     		//get guard target
     		return checkGuardTarget();
     	}
@@ -127,8 +128,9 @@ public class EntityAIShipGuarding extends EntityAIBase {
     @Override
 	public boolean continueExecuting() {
     	if(host != null) {
-    		//非坐下, 非騎乘, 非被綁, 非可跟隨, 且有fuel才執行
-    		if(!host.getIsRiding() && !host.getIsSitting() && !host.getStateFlag(ID.F.NoFuel) && !host.getStateFlag(ID.F.CanFollow)) {
+    		//非坐下, 非騎乘, 非被綁, 非可跟隨, 非裝載中
+    		if(!host.getIsRiding() && !host.getIsSitting() && !host.getStateFlag(ID.F.CanFollow) &&
+    		   host.getStateMinor(ID.M.CraneState) < 1) {
     			//還沒走進min follow range, 繼續走
 	        	if(this.distSq > this.minDistSq) {
 	        		return true;	//need update guard position
@@ -215,9 +217,12 @@ public class EntityAIShipGuarding extends EntityAIBase {
     	
     	//update guarding
     	if(host != null) {
-//    		LogHelper.info("DEBUG : exec guarding");
         	this.findCooldown--;
-        	this.checkTP_T++;
+        	
+        	//不移動時, checkTP_T++
+        	if(host2.motionX * host2.motionX < 0.0003D && host2.motionZ * host2.motionZ < 0.0003D) {
+        		this.checkTP_T++;
+        	}
         	
         	//update position every 32 ticks
         	if(host2.ticksExisted % 32 == 0) {

@@ -43,6 +43,7 @@ import com.lulan.shincolle.entity.ExtendPlayerProps;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipAttributes;
 import com.lulan.shincolle.entity.IShipFloating;
+import com.lulan.shincolle.entity.IShipGuardian;
 import com.lulan.shincolle.entity.IShipInvisible;
 import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.handler.ConfigHandler;
@@ -55,8 +56,10 @@ import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.team.TeamData;
+import com.lulan.shincolle.tileentity.TileEntityCrane;
 import com.lulan.shincolle.tileentity.TileEntityDesk;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
+import com.lulan.shincolle.tileentity.TileEntityWaypoint;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
@@ -753,9 +756,19 @@ public class EntityHelper {
 				break;
 			case ID.B.ShipInv_FollowMin:
 				entity.setStateMinor(ID.M.FollowMin, value);
+				
+				//if min > max, max = min+1
+				if(entity.getStateMinor(ID.M.FollowMin) >= entity.getStateMinor(ID.M.FollowMax)) {
+					entity.setStateMinor(ID.M.FollowMax, value+1);
+				}
 				break;
 			case ID.B.ShipInv_FollowMax:
 				entity.setStateMinor(ID.M.FollowMax, value);
+				
+				//if max < min, min = max-1
+				if(entity.getStateMinor(ID.M.FollowMax) <= entity.getStateMinor(ID.M.FollowMin)) {
+					entity.setStateMinor(ID.M.FollowMin, value-1);
+				}
 				break;
 			case ID.B.ShipInv_FleeHP:
 				entity.setStateMinor(ID.M.FleeHP, value);
@@ -1069,6 +1082,35 @@ public class EntityHelper {
         
         return lookBlock;
     }
+	
+	/** get mouseover target
+	 * 
+	 *  client/server both side
+	 *  calc the look vector by eye height and pitch, less accuracy
+	 *  
+	 *  par1: check liquid block
+	 *  par2: ignore collide check
+	 *  par3: always return the last target hit
+	 */
+	public static MovingObjectPosition getMouseoverTarget(World world, EntityPlayer player, double dist, boolean par1, boolean par2, boolean par3) {
+		float f = 1.0F;
+        float f1 = player.prevRotationPitch + (player.rotationPitch - player.prevRotationPitch) * f;
+        float f2 = player.prevRotationYaw + (player.rotationYaw - player.prevRotationYaw) * f;
+        double d0 = player.prevPosX + (player.posX - player.prevPosX) * (double)f;
+        double d1 = player.prevPosY + (player.posY - player.prevPosY) * (double)f + (double)(world.isRemote ? player.getEyeHeight() - player.getDefaultEyeHeight() : player.getEyeHeight()); // isRemote check to revert changes to ray trace position due to adding the eye height clientside and player yOffset differences
+        double d2 = player.prevPosZ + (player.posZ - player.prevPosZ) * (double)f;
+        float f3 = MathHelper.cos(-f2 * 0.017453292F - (float)Math.PI);
+        float f4 = MathHelper.sin(-f2 * 0.017453292F - (float)Math.PI);
+        float f5 = -MathHelper.cos(-f1 * 0.017453292F);
+        float f6 = MathHelper.sin(-f1 * 0.017453292F);
+        float f7 = f4 * f5;
+        float f8 = f3 * f5;
+        
+        Vec3 vec3 = Vec3.createVectorHelper(d0, d1, d2);
+        Vec3 vec31 = vec3.addVector((double)f7 * dist, (double)f6 * dist, (double)f8 * dist);
+        
+        return world.func_147447_a(vec3, vec31, par1, par2, par3);
+	}
 	
 	/** set ship guard, and check guard position is not same
 	 * 
@@ -1460,6 +1502,104 @@ public class EntityHelper {
 			}
 		}
 	}
+	
+	/** apply waypoint moving
+  	 * 
+  	 *  1. if guard position = waypoint block, get next waypoint
+  	 *  2. if next waypoint = ship's last waypoint, get block's last waypoint (backwards mode)
+  	 *  3. if no next/last waypoint, stop
+  	 */
+	public static boolean updateWaypointMove(IShipGuardian entity) {
+		boolean updatePos = false;
+		
+  		//in guard block mode
+  		if(!entity.getStateFlag(ID.F.CanFollow) && entity.getGuardedPos(1) > 0 && !entity.getIsSitting() && !entity.getIsLeashed() && !entity.getIsRiding()) {
+  			//check distance < 3 blocks
+  			float dx = (float) (entity.getGuardedPos(0) - ((Entity)entity).posX);
+  			float dy = (float) (entity.getGuardedPos(1) - ((Entity)entity).posX);
+			float dz = (float) (entity.getGuardedPos(2) - ((Entity)entity).posZ);
+			dx = dx * dx;
+			dy = dy * dy;
+			dz = dz * dz;
+  			double distsq = dx + dy + dz;
+  			
+  			//crane = close to 5 block
+  			if(distsq < 25D) {
+  				//get target block
+  	  			TileEntity tile = ((Entity)entity).worldObj.getTileEntity(entity.getGuardedPos(0), entity.getGuardedPos(1), entity.getGuardedPos(2));
+  	  			
+  	  			//is waypoint block
+  	  			if(tile instanceof TileEntityCrane) {
+  	  				//check xz dist < ~2 block
+  	  				if(dx > 3.5F || dz > 3.5F) {
+  	  					return false;
+  	  				}
+  	  				
+  	  				//ship wait for craning (xz < 2 blocks, y < 5 blocks)
+  	  				entity.setStateMinor(ID.M.CraneState, 1);
+  	  			}
+  			}
+  			else {
+  				//cancel craning
+  				entity.setStateMinor(ID.M.CraneState, 0);
+  			}
+  			
+  			//waypoint = close to 3 block
+  			if(distsq < 9D) {
+  				//get target block
+  	  			TileEntity tile = ((Entity)entity).worldObj.getTileEntity(entity.getGuardedPos(0), entity.getGuardedPos(1), entity.getGuardedPos(2));
+  	  			
+  	  			//is waypoint block
+  	  			if(tile instanceof TileEntityWaypoint) {
+  	  				try {
+	  	  				int[] next = ((TileEntityWaypoint)tile).getNextWaypoint();
+	  	  				int[] last = ((TileEntityWaypoint)tile).getLastWaypoint();
+	  	  				int[] shiplast = entity.getLastWaypoint();
+	  	  				
+	  	  				//check next == last
+	  	  				if(next[1] > 0 && next[0] == shiplast[0] && next[1] == shiplast[1] && next[2] == shiplast[2]) {
+	  	  					//if no last waypoint, go to next waypoint
+	  	  					if(last[1] <= 0) {
+	  	  						//go to next waypoint
+	  	  						if(next[1] > 0) {
+	  	  							entity.setGuardedPos(next[0], next[1], next[2], ((Entity)entity).dimension, 1);
+	  	  							updatePos = true;
+	  	  						}
+	  	  					}
+	  	  					else {
+	  	  						//go to last waypoint (backwards mode)
+	  	  						entity.setGuardedPos(last[0], last[1], last[2], ((Entity)entity).dimension, 1);
+	  	  						updatePos = true;
+	  	  					}
+	  	  				}
+	  	  				else {
+	  	  					//go to next waypoint
+	  	  					if(next[1] > 0) {
+	  	  						entity.setGuardedPos(next[0], next[1], next[2], ((Entity)entity).dimension, 1);
+	  	  						updatePos = true;
+	  	  					}
+	  	  				}
+	  	  				
+	  	  				//set last waypoint
+	  	  				entity.setLastWaypoint(new int[] {tile.xCoord, tile.yCoord, tile.zCoord});
+	  	  				
+	  	  				//set follow dist
+	  	  				if(updatePos) {
+	  	  					entity.setStateMinor(ID.M.FollowMin, 2);
+	  	  					entity.setStateMinor(ID.M.FollowMax, 3);
+	  	  				}
+	  	  				
+	  	  				return updatePos;
+  	  				}
+  	  				catch(Exception e) {
+  	  					//...
+  	  				}
+  	  			}
+  			}//end dist < 3 blocks
+  		}//end in guard mode
+  		
+  		return updatePos;
+  	}
 	
 	public static boolean canDodge(IShipAttributes ent, float dist) {
 		if(ent != null && !((Entity)ent).worldObj.isRemote) {

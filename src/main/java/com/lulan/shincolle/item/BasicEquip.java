@@ -14,8 +14,10 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EntityHelper;
 
-abstract public class BasicEquip extends BasicItem implements IShipResourceItem {	
+abstract public class BasicEquip extends BasicItem implements IShipResourceItem {
+	
 	byte types;
+
 	
 	public BasicEquip() {
 		super();
@@ -89,6 +91,35 @@ abstract public class BasicEquip extends BasicItem implements IShipResourceItem 
         		if(itemStat[ID.E.LEVEL] == 3F) {
         			list.add(EnumChatFormatting.DARK_AQUA + I18n.format("gui.shincolle:carrieronly"));
         		}
+        		
+        		list.add(" ");
+        		
+        		//show construction info
+        		if(itemStat[ID.E.DEVELOP_NUM] > 400F) {
+        			list.add(EnumChatFormatting.DARK_RED + I18n.format("tile.shincolle:BlockLargeShipyard.name"));
+        		}
+        		else {
+        			list.add(EnumChatFormatting.DARK_RED + I18n.format("tile.shincolle:BlockSmallShipyard.name"));
+        		}
+        		
+        		String matname = null;
+        		switch((int)itemStat[ID.E.DEVELOP_MAT]) {
+        		case 1:
+        			matname = I18n.format("item.shincolle:AbyssMetal.name");
+        			break;
+        		case 2:
+        			matname = I18n.format("item.shincolle:Ammo.name");
+        			break;
+        		case 3:
+        			matname = I18n.format("item.shincolle:AbyssMetal1.name");
+        			break;
+        		default:
+        			matname = I18n.format("item.shincolle:Grudge.name");
+        			break;
+        		}
+        		
+        		list.add(EnumChatFormatting.DARK_PURPLE + I18n.format("gui.shincolle:equip.matstype") + EnumChatFormatting.GRAY + " (" + matname + ") " + String.format("%.0f",itemStat[ID.E.DEVELOP_NUM]));
+        		list.add(EnumChatFormatting.DARK_PURPLE + I18n.format("gui.shincolle:equip.matsrarelevel") + EnumChatFormatting.GRAY + " " + String.format("%.0f",itemStat[ID.E.RARE_MEAN]));
         	}
     	}
     }

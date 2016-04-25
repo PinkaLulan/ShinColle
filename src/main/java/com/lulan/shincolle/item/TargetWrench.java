@@ -19,6 +19,9 @@ import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.tileentity.BasicTileEntity;
+import com.lulan.shincolle.tileentity.ITileWaypoint;
 import com.lulan.shincolle.tileentity.TileEntityCrane;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
@@ -33,8 +36,10 @@ import cpw.mods.fml.relauncher.SideOnly;
  */
 public class TargetWrench extends BasicItem {
 	
-	private int[] tileChest, tileCrane;  //tile position
-			
+	private int[] tileChest;  //tile position
+	private int[][] tilePoint;
+	private int pointID;
+	
 	
 	public TargetWrench() {
 		super();
@@ -43,8 +48,8 @@ public class TargetWrench extends BasicItem {
 		this.setFull3D();
 		
 		this.tileChest = new int[] {-1, -1, -1};
-		this.tileCrane = new int[] {-1, -1, -1};
-		
+		this.tilePoint = new int[][] {{-1, -1, -1}, {-1, -1, -1}};
+		this.pointID = 0;
 	}
 	
 	//item glow effect
@@ -128,19 +133,43 @@ public class TargetWrench extends BasicItem {
 			if(player != null && player.isSneaking()) {
 				TileEntity tile = world.getTileEntity(x, y, z);
 				
-				if(tile instanceof TileEntityCrane) {
-					this.tileCrane = new int[] {x, y, z};
+				if(tile instanceof IInventory) {
+					this.tileChest = new int[] {x, y, z};
+					
 					return pairCrane(world);
 				}
-				else if(tile instanceof IInventory) {
-					this.tileChest = new int[] {x, y, z};
-					return pairCrane(world);
+				else if(tile instanceof ITileWaypoint) {
+					this.tilePoint[this.pointID] = new int[] {x, y, z};
+					this.pointID = changePoint(this.pointID);
+					
+					if(!pairCrane(world)) {
+						return setWaypoint(world);
+					}
+					
+					return true;
 				}
 				else {
 					//fail msg
 	            	ServerProxy.getServer().getConfigurationManager().sendChatMsg(
 	            			new ChatComponentText(EnumChatFormatting.YELLOW+
 	            			StatCollector.translateToLocal("chat.shincolle:wrench.wrongtile")));
+				}
+			}
+		}
+		//client side
+		else {
+			if(!player.isSneaking()) {
+				//show waypoint msg
+				TileEntity te = world.getTileEntity(x, y, z);
+				
+				if(te instanceof ITileWaypoint) {
+					int[] last = ((ITileWaypoint)te).getLastWaypoint();
+					int[] next = ((ITileWaypoint)te).getNextWaypoint();
+					
+					player.addChatMessage(new ChatComponentText(EnumChatFormatting.AQUA+StatCollector.translateToLocal("chat.shincolle:wrench.wplast")+" "+
+							EnumChatFormatting.YELLOW+last[0]+" "+last[1]+" "+last[2]+"  "+
+							EnumChatFormatting.AQUA+StatCollector.translateToLocal("chat.shincolle:wrench.wpnext")+" "+
+							EnumChatFormatting.GOLD+next[0]+" "+next[1]+" "+next[2]));
 				}
 			}
 		}
@@ -155,23 +184,120 @@ public class TargetWrench extends BasicItem {
     	list.add(EnumChatFormatting.YELLOW + I18n.format("gui.shincolle:wrench3"));
 	}
 	
+	// 0 <-> 1
+	private int changePoint(int par1) {
+		return par1 == 0 ? 1 : 0;
+	}
+	
+	private void resetPos() {
+		this.tileChest = new int[] {-1, -1, -1};
+		this.tilePoint = new int[][] {{-1, -1, -1}, {-1, -1, -1}};
+		this.pointID = 0;
+	}
+	
+	//waypoint setting
+	private boolean setWaypoint(World world) {
+		try {
+			//if y position > 0
+			if(this.tilePoint != null && this.tilePoint[0][1] > 0 && this.tilePoint[1][1] > 0) {
+				//calc distance
+				int dx = this.tilePoint[0][0] - this.tilePoint[1][0];
+				int dy = this.tilePoint[0][1] - this.tilePoint[1][1];
+				int dz = this.tilePoint[0][2] - this.tilePoint[1][2];
+				dx = dx * dx;
+				dy = dy * dy;
+				dz = dz * dz;
+				
+				//is same point
+				if(dx == 0 && dy == 0 && dz == 0) {
+					//clear data
+					resetPos();
+					
+					return false;
+				}
+				
+				//dist < 32 blocks
+				if(dx + dy + dz < 1024) {
+					//get waypoint tile
+					TileEntity tile1 = world.getTileEntity(tilePoint[pointID][0], tilePoint[pointID][1], tilePoint[pointID][2]);
+					this.pointID = changePoint(this.pointID);
+					TileEntity tile2 = world.getTileEntity(tilePoint[pointID][0], tilePoint[pointID][1], tilePoint[pointID][2]);
+					
+					if(tile1 instanceof ITileWaypoint && tile2 instanceof ITileWaypoint) {
+						ITileWaypoint wpFrom = (ITileWaypoint) tile1;
+						ITileWaypoint wpTo = (ITileWaypoint) tile2;
+						
+						//get tile position
+						int[] posT = new int[] {tilePoint[pointID][0], tilePoint[pointID][1], tilePoint[pointID][2]};
+						this.pointID = changePoint(this.pointID);
+						int[] posF = new int[] {tilePoint[pointID][0], tilePoint[pointID][1], tilePoint[pointID][2]};
+						int [] nextWpTo = wpTo.getNextWaypoint();
+						
+						//set waypoint
+						wpFrom.setNextWaypoint(posT);
+						
+						if(nextWpTo[0] != posF[0] || nextWpTo[1] != posF[1] || nextWpTo[2] != posF[2]) {
+							wpTo.setLastWaypoint(posF);
+						}
+						
+						//sync
+						((BasicTileEntity) wpFrom).sendSyncPacket();
+						((BasicTileEntity) wpTo).sendSyncPacket();
+						
+						//clear data
+						resetPos();
+						
+						ServerProxy.getServer().getConfigurationManager().sendChatMsg(
+		            			new ChatComponentText(EnumChatFormatting.AQUA+
+		            			StatCollector.translateToLocal("chat.shincolle:wrench.setwp")+"  "+
+		            			EnumChatFormatting.GREEN+posF[0]+" "+posF[1]+" "+posF[2]+
+		            			EnumChatFormatting.AQUA+" --> "+
+		            			EnumChatFormatting.GOLD+posT[0]+" "+posT[1]+" "+posT[2]));
+						
+						return true;
+					}
+				}
+				//send too far away msg
+				else {
+	            	ServerProxy.getServer().getConfigurationManager().sendChatMsg(
+	            			new ChatComponentText(EnumChatFormatting.YELLOW+
+	            			StatCollector.translateToLocal("chat.shincolle:wrench.wptoofar")));
+				}
+				
+				//clear data
+				resetPos();
+			}
+		}
+		catch(Exception e) {
+			LogHelper.info("EXCEPTION : set waypoint fail: "+e);
+			return false;
+		}
+		
+		return false;
+	}
+	
+	//crane pairing
 	private boolean pairCrane(World world) {
-		if(this.tileChest != null && this.tileCrane != null) {
+		try {
+			//no chest
+			if(tileChest[1] <= 0) return false;
+			
 			TileEntity tile1 = world.getTileEntity(tileChest[0], tileChest[1], tileChest[2]);
-			TileEntity tile2 = world.getTileEntity(tileCrane[0], tileCrane[1], tileCrane[2]);
+			this.pointID = changePoint(this.pointID);
+			TileEntity tile2 = world.getTileEntity(tilePoint[pointID][0], tilePoint[pointID][1], tilePoint[pointID][2]);
 			
 			//check is chest and crane
 			if(tile1 instanceof IInventory && tile2 instanceof TileEntityCrane) {
-				//check distance < 8D
-				int dx = tileChest[0] - tileCrane[0];
-				int dy = tileChest[1] - tileCrane[1];
-				int dz = tileChest[2] - tileCrane[2];
+				//check distance < ~6D
+				int dx = tileChest[0] - tile2.xCoord;
+				int dy = tileChest[1] - tile2.yCoord;
+				int dz = tileChest[2] - tile2.zCoord;
 				dx = dx * dx;
 				dy = dy * dy;
 				dz = dz * dz;
 				int dist = dx + dy + dz;
 				
-				if(dist <= 64) {
+				if(dist <= 40) {
 					((TileEntityCrane)tile2).setPairedChest(tileChest[0], tileChest[1], tileChest[2]);
 					
 					//success msg
@@ -180,11 +306,10 @@ public class TargetWrench extends BasicItem {
 	            			StatCollector.translateToLocal("chat.shincolle:wrench.paired")+" "+
 	            			EnumChatFormatting.GREEN+tileChest[0]+" "+tileChest[1]+" "+tileChest[2]+
 	            			EnumChatFormatting.AQUA+" & "+
-	            			EnumChatFormatting.GOLD+tileCrane[0]+" "+tileCrane[1]+" "+tileCrane[2]));
+	            			EnumChatFormatting.GOLD+tile2.xCoord+" "+tile2.yCoord+" "+tile2.zCoord));
 	            	
 	            	//reset
-	            	this.tileChest = new int[] {-1, -1, -1};
-					this.tileCrane = new int[] {-1, -1, -1};
+	            	resetPos();
 					
 	            	return true;
 				}
@@ -195,6 +320,10 @@ public class TargetWrench extends BasicItem {
 	            			StatCollector.translateToLocal("chat.shincolle:wrench.toofar")));
 				}
 			}
+		}
+		catch(Exception e) {
+			//...
+			return false;
 		}
 		
 		return false;

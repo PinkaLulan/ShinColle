@@ -140,7 +140,7 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall {
         distVec[2] = distVec[2] / distVec[3];
 		
 		//experience++
-		addShipExp(16);
+		addShipExp(ConfigHandler.expGain[2]);
 		
 		//grudge--
 		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);

@@ -6,17 +6,21 @@ import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.util.Vec3;
 
 import com.lulan.shincolle.entity.IShipAttackBase;
+import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.LogHelper;
 
 public class EntityAIShipWander extends EntityAIBase {
+	
 	private IShipAttackBase host;
     private EntityCreature host2;
     private double xPosition;
     private double yPosition;
     private double zPosition;
     private double speed;
+    private int ranXZ, ranY;
 
-    public EntityAIShipWander(EntityCreature host, double speed) {
+    
+    public EntityAIShipWander(EntityCreature host, int rangeXZ, int rangeY, double speed) {
     	//host must be ship type
     	if(host instanceof IShipAttackBase) {
     		this.host = (IShipAttackBase) host;
@@ -28,20 +32,22 @@ public class EntityAIShipWander extends EntityAIBase {
     		this.host2 = null;
     	}
         
+    	this.ranXZ = rangeXZ;
+    	this.ranY = rangeY;
         this.speed = speed;
         this.setMutexBits(7);
     }
 
     /** should begin checking */
     public boolean shouldExecute() {
-    	//平均每 120 tick 會發動一次
-        if(this.host.getIsRiding() || this.host.getIsSitting() ||
-           this.host2.getRNG().nextInt(180) != 0) {
+    	//平均每 180 tick 會發動一次
+        if(host.getIsRiding() || host.getIsSitting() || host.getStateMinor(ID.M.CraneState) > 0 ||
+           host2.getRNG().nextInt(180) != 0) {
             return false;
         }
         else {
         	//get random position
-            Vec3 vec3 = RandomPositionGenerator.findRandomTarget(this.host2, 10, 7);
+            Vec3 vec3 = RandomPositionGenerator.findRandomTarget(this.host2, ranXZ, ranY);
 
             if(vec3 == null) {
                 return false;

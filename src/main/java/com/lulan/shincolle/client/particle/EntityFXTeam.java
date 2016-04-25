@@ -113,6 +113,7 @@ public class EntityFXTeam extends EntityFX {
         this.particleAlphaC = 0.5F;
         this.noClip = true;
         this.particleType = type;
+        this.setPosition(x, y, z);
         
         switch(type) {
         default:	//green, normal mode
@@ -121,21 +122,34 @@ public class EntityFXTeam extends EntityFX {
         	this.particleGreen = 1F;
         	this.particleBlue = 0F;
         	this.particleMaxAge = 30;
-        	this.setPosition(x, y, z);
         	break;
         case 5:		//red, attack target
         	this.particleRed = 1F;
         	this.particleGreen = 0F;
         	this.particleBlue = 0F;
         	this.particleMaxAge = 30;
-        	this.setPosition(x, y, z);
         	break;
         case 6:		//white, guard target
         	this.particleRed = 1F;
         	this.particleGreen = 1F;
         	this.particleBlue = 1F;
         	this.particleMaxAge = 30;
-        	this.setPosition(x, y, z);
+        	break;
+        case 8:		//waypoint
+        	this.particleRed = 1F;
+        	this.particleGreen = 0F;
+        	this.particleBlue = 0F;
+        	this.particleMaxAge = 31;
+        	this.particleAlphaA = 0.8F;
+            this.particleAlphaC = 0.9F;
+        	break;
+        case 9:		//waypoint
+        	this.particleRed = 1F;
+        	this.particleGreen = 0F;
+        	this.particleBlue = 0F;
+        	this.particleMaxAge = 31;
+        	this.particleAlphaA = 0F;
+            this.particleAlphaC = 0.9F;
         	break;
         }
     }
@@ -214,6 +228,7 @@ public class EntityFXTeam extends EntityFX {
      */
     @Override
 	public void onUpdate() {
+    	//check host position
     	if(host != null) {
     		switch(this.particleType) {
     		case 7:
@@ -238,6 +253,7 @@ public class EntityFXTeam extends EntityFX {
     		}
     	}
     	
+    	//special effect
     	switch(this.particleType) {
     	case 4:
     	case 5:
@@ -248,6 +264,14 @@ public class EntityFXTeam extends EntityFX {
         		this.particleAlphaC = this.particleAlphaA * 0.5F;
         	}
     		break;
+    	case 9:  //waypoint
+    		this.prevPosX = this.posX;
+            this.prevPosY = this.posY;
+            this.prevPosZ = this.posZ;
+			this.setPosition(this.posX, this.posY + this.particleAge * 0.002D, this.posZ);
+			
+			this.particleAlphaC = 0.9F - this.particleAge * 0.027F;
+			break;
     	}
     	
         if(this.particleAge++ > this.particleMaxAge) {

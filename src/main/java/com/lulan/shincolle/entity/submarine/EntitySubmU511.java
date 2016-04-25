@@ -145,7 +145,7 @@ public class EntitySubmU511 extends BasicEntityShipSmall implements IShipInvisib
   		}
   		
   		//experience++
-  		addShipExp(2);
+  		addShipExp(ConfigHandler.expGain[1]);
   		
   		//grudge--
   		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);

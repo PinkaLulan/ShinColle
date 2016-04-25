@@ -42,6 +42,7 @@ import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
 import com.lulan.shincolle.crafting.EquipCalc;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.entity.other.EntityRensouhou;
+import com.lulan.shincolle.entity.transport.EntityTransportWa;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
@@ -79,7 +80,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	protected Entity guardedEntity;				//guarding target
 	protected Entity atkTarget;					//attack target
 	protected Entity rvgTarget;					//revenge target
-	protected int revengeTime;					//revenge target time
 	
 	//for AI calc
 	protected double ShipDepth;			//水深, 用於水中高度判定
@@ -93,13 +93,17 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	/** final states before buffs: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT 6:ATK_Heavy 7:ATK_AirLight 8:ATK_AirHeavy*/
 	protected float[] StateFinalBU;
 	/** minor states: 0:ShipLevel 1:Kills 2:ExpCurrent 3:ExpNext 4:NumAmmoLight 
-	 *  5:NumAmmoHeavy 6:NumGrudge 7:NumAirLight 8:NumAirHeavy 9:immunity time 
+	 *  5:NumAmmoHeavy 6:NumGrudge 7:NumAirLight 8:NumAirHeavy 9:
 	 *  10:followMin 11:followMax 12:FleeHP 13:TargetAIType 14:guardX 15:guardY 16:guardZ 17:guardDim
 	 *  18:guardID 19:shipType 20:shipClass 21:playerUID 22:shipUID 23:playerEID 24:guardType 
 	 *  25:damageType 26:formationType 27:formationPos 28:grudgeConsumption 29:ammoConsumption
 	 *  30:morale 31:Saturation 32:MaxSaturation 33:hitHeight 34:HitAngle 35:SensBody 36:InvSize
-	 *  37:ChunkLoaderLV 38:FlareLV 39:SearchlightLV */
+	 *  37:ChunkLoaderLV 38:FlareLV 39:SearchlightLV 40:LastX 41:LastY 42:LastZ 43:CraneState
+	 */
 	protected int[] StateMinor;
+	/** timer array: 0:RevengeTime 1:CraneTime
+	 */
+	protected int[] StateTimer;
 	/** equip effect: 0:critical 1:doubleHit 2:tripleHit 3:baseMiss 4:atk_AntiAir 5:atk_AntiSS 6:dodge*/
 	protected float[] EffectEquip;
 	/** equip effect: 0:critical 1:doubleHit 2:tripleHit 3:baseMiss 4:atk_AntiAir 5:atk_AntiSS 6:dodge*/
@@ -115,7 +119,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	 *  6:canAirLight 7:canAirHeavy 8:headTilt(client only) 9:canRingEffect 10:canDrop 11:canFollow
 	 *  12:onSightChase 13:AtkType_Light 14:AtkType_Heavy 15:AtkType_AirLight 16:AtkType_AirHeavy 
 	 *  17:HaveRingEffect 18:PVPFirst 19:AntiAir 20:AntiSS 21:PassiveAI 22:TimeKeeper 
-	 *  23:hasChunkLoader */
+	 */
 	protected boolean[] StateFlag;
 	/** BonusPoint: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT */
 	protected byte[] BonusPoint;
@@ -163,9 +167,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				                     -1, -1, 0,  -1, 0,
 				                     0,  -1, -1, -1, 0,
 				                     0,  0,  0,  0,  0,
-				                     60, 0, 10, 0, 0,
-				                     -1, 0, 0, 0, 0
+				                     60, 0,  10, 0,  0,
+				                     -1, 0,  0,  0,  0,
+				                     -1, -1, -1, 0
 				                    };
+		this.StateTimer = new int[] {0,  0,  0};
 		this.EffectEquip = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F};
 		this.EffectEquipBU = this.EffectEquip.clone();
 		this.EffectFormation = new float[] {0F, 0F, 0F, 0F, 0F,
@@ -192,7 +198,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.ownerName = "";
 		this.stepHeight = 1F;
 		this.shipNavigator = new ShipPathNavigate(this, worldObj);
-		this.shipMoveHelper = new ShipMoveHelper(this, 25F);
+		this.shipMoveHelper = new ShipMoveHelper(this, 35F);
 		
 		//for render
 		this.EmotionTicks = new int[] {0, 0, 0, 0, 0, 0};
@@ -219,7 +225,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	
 	@Override
 	public boolean isEntityInvulnerable() {
-        return StateMinor[ID.M.ImmuneTime] > 0;
+        return StateTimer[ID.T.ImmuneTime] > 0;
     }
 	
 	@Override
@@ -330,7 +336,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 //		this.tasks.addTask(21, new EntityAIOpenDoor(this, true));	//0000 //TODO ship door AI
 		this.tasks.addTask(23, new EntityAIShipFloating(this));		//0111
 		this.tasks.addTask(24, new EntityAIShipWatchClosest(this, EntityPlayer.class, 4F, 0.06F)); //0010
-		this.tasks.addTask(25, new EntityAIShipWander(this, 0.8D));	//0111
+		this.tasks.addTask(25, new EntityAIShipWander(this, 10, 5, 0.8D));	//0111
 		this.tasks.addTask(25, new EntityAILookIdle(this));			//0011
 	}
 	
@@ -512,7 +518,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 
 	@Override
 	public int getEntityRevengeTime() {
-		return this.revengeTime;
+		return this.StateTimer[ID.T.RevengeTime];
 	}
 	
 	@Override
@@ -620,6 +626,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	
 	public float getEffectFormationFixed(int id) {
 		return EffectFormationFixed[id];
+	}
+	
+	public int getStateTimer(int id) {
+		return StateTimer[id];
 	}
 	
 	@Override
@@ -976,6 +986,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		TypeModify[ID.HIT] = getStat[ID.ShipAttr.ModHIT];
 	}
 
+	public void setStateTimer(int id, int value) {
+		StateTimer[id] = value;
+	}
+	
 	@Override
 	public void setStateEmotion(int id, int value, boolean sync) {
 		StateEmotion[id] = (byte)value;
@@ -1053,7 +1067,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	
   	@Override
 	public void setEntityRevengeTime() {
-		this.revengeTime = this.ticksExisted;
+  		this.StateTimer[ID.T.RevengeTime] = this.ticksExisted;
 	}
   	
   	public void setGrudgeConsumption(int par1) {
@@ -1790,7 +1804,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		//client side
 		if(this.worldObj.isRemote) {
 			//有移動時, 產生水花特效
-			if(this.getShipDepth() > 0D) {
+			if(this.getShipDepth() > 0D && !isRiding()) {
 				//(注意此entity因為設為非高速更新, client端不會更新motionX等數值, 需自行計算)
 				double motX = this.posX - this.prevPosX;
 				double motZ = this.posZ - this.prevPosZ;
@@ -1922,12 +1936,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	TargetHelper.updateTarget(this);
         	
         	//update/init id
-        	this.updateShipID();
+        	updateShipID();
         	
-        	//decr immune time
-        	if(this.StateMinor[ID.M.ImmuneTime] > 0) {
-        		this.StateMinor[ID.M.ImmuneTime]--;
-        	}
+        	//timer ticking
+        	updateStateTimer();
         	
         	//check every 8 ticks
         	if(ticksExisted % 8 == 0) {
@@ -1954,6 +1966,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
             		//update searchlight
             		if(ConfigHandler.canSearchlight) {
                 		updateSearchlight();
+            		}
+            		
+            		//waypoint move
+            		if(EntityHelper.updateWaypointMove(this)) {
+            			shipNavigator.tryMoveToXYZ(getGuardedPos(0), getGuardedPos(1), getGuardedPos(2), 1D);
+            			sendSyncPacket(3, false, false);
             		}
             		
             		//cancel mounts
@@ -2103,7 +2121,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		float atk = getAttackBaseDamage(0, target);
 		
 		//experience++
-		addShipExp(1);
+		addShipExp(ConfigHandler.expGain[0]);
 		
 		//grudge--
 		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
@@ -2140,7 +2158,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		float atk = getAttackBaseDamage(1, target);
         
         //experience++
-  		addShipExp(2);
+  		addShipExp(ConfigHandler.expGain[1]);
   		
   		//grudge--
   		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
@@ -2267,7 +2285,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         }
 		
 		//experience++
-		addShipExp(16);
+		addShipExp(ConfigHandler.expGain[2]);
 		
 		//grudge--
 		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
@@ -2404,7 +2422,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			if(reduceAtk >= (this.getHealth() - 1F)) {
 				if(this.decrSupplies(8)) {
 					this.setHealth(this.getMaxHealth());
-					this.StateMinor[ID.M.ImmuneTime] = 60;
+					this.StateTimer[ID.T.ImmuneTime] = 60;
 					
 					//TODO add repair goddess particle
 					
@@ -2558,9 +2576,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	
 	//eat grudge and change movement speed
 	protected void decrGrudgeNum(int par1) {
-		//check max cost < 120
-		if(par1 > 215) {
-			par1 = 215;
+		//limit max cost per checking
+		if(par1 > 500) {
+			par1 = 500;
 		}
 		
 		//check fuel flag
@@ -2831,6 +2849,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		}
 	}
 
+	/**
+	 *  type: 0:none, 1:block, 2:entity
+	 */
 	@Override
 	public void setGuardedPos(int x, int y, int z, int dim, int type) {
 		this.setStateMinor(ID.M.GuardX, x);
@@ -3068,7 +3089,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		//calc total consumption
     	int valueConsume = (int) MathHelper.sqrt_double(distX*distX + distY*distY + distZ*distZ);
     	
-    	//morale-- per 10 blocks
+    	//morale-- per 2 blocks
     	int m = (int)((float)valueConsume * 0.5F);
     	if(m < 5) m = 5;
     	if(m > 50) m = 50;
@@ -3077,10 +3098,17 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     	//moving grudge cost per block
     	valueConsume *= ConfigHandler.consumeGrudgeAction[ID.ShipConsume.Move];
     	
-    	//max moving cost = 200
-    	if(valueConsume > 200) valueConsume = 200;
+    	//double moving cost if transport
+    	if(this instanceof EntityTransportWa && this.ticksExisted > 200) {
+    		//gain exp when moving
+    		int moveExp = (int) (valueConsume * 0.2F);
+    		addShipExp(moveExp);
+    		
+    		//double moving cost
+    		valueConsume *= 1.5F;
+    	}
     	
-    	//add base grudge cost
+    	//add idle grudge cost
     	valueConsume += this.getGrudgeConsumption();
     	
     	//eat grudge
@@ -3302,6 +3330,19 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   				BlockHelper.updateNearbyLightBlock(this.worldObj, px, py, pz);
   			}
   		}
+  	}
+  	
+  	/** update timer */
+  	protected void updateStateTimer() {
+  		//is immune state
+  		if(this.StateTimer[ID.T.ImmuneTime] > 0) {
+    		this.StateTimer[ID.T.ImmuneTime]--;
+    	}
+  		
+  		//is craning
+  		if(this.getStateMinor(ID.M.CraneState) > 1) {
+    		this.StateTimer[ID.T.CraneTime]++;
+    	}
   	}
   	
   	/** change ship outfit by right click cake on ship */
@@ -4594,6 +4635,21 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			
 			LogHelper.info("DEBUG : ship chunk loader: "+this.chunks+" "+this);
         }
+  	}
+  	
+  	//get last waypoint, for waypoint loop checking
+  	@Override
+  	public int[] getLastWaypoint() {
+  		return new int[] {StateMinor[ID.M.LastX], StateMinor[ID.M.LastY], StateMinor[ID.M.LastZ]};
+  	}
+  	
+  	@Override
+  	public void setLastWaypoint(int[] pos) {
+  		if(pos != null) {
+  			StateMinor[ID.M.LastX] = pos[0];
+  			StateMinor[ID.M.LastY] = pos[1];
+  			StateMinor[ID.M.LastZ] = pos[2];
+  		}
   	}
   	
   	

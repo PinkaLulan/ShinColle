@@ -1,5 +1,6 @@
 package com.lulan.shincolle.ai;
 
+import java.util.Collections;
 import java.util.List;
 
 import net.minecraft.entity.Entity;
@@ -13,6 +14,7 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.TargetHelper;
 
 /** SHIP PICK ITEM AI
  * 
@@ -20,6 +22,7 @@ import com.lulan.shincolle.reference.ID;
  */
 public class EntityAIShipPickItem extends EntityAIBase {
 	
+	protected TargetHelper.Sorter targetSorter;
 	private IShipEmotion host;
     private BasicEntityShip hostShip;
     private BasicEntityMount hostMount;
@@ -39,10 +42,12 @@ public class EntityAIShipPickItem extends EntityAIBase {
     	
     	if(entity instanceof BasicEntityShip) {
     		this.hostShip = (BasicEntityShip) entity;
+    		this.targetSorter = new TargetHelper.Sorter(hostShip);
     	}
     	else if(entity instanceof BasicEntityMount) {
     		this.hostMount = (BasicEntityMount) entity;
     		this.hostShip = (BasicEntityShip) this.hostMount.getHostEntity();
+    		this.targetSorter = new TargetHelper.Sorter(hostMount);
     	}
     	
     	//init values
@@ -54,8 +59,8 @@ public class EntityAIShipPickItem extends EntityAIBase {
     	//ship類
     	if(this.hostShip != null) {
     		//騎乘中, 坐下, 沒開啟特殊能力: 禁止AI
-    		if(this.hostShip.isRiding() || this.hostShip.isSitting() ||
-    		   !this.hostShip.getStateFlag(ID.F.UseRingEffect)) {
+    		if(hostShip.isRiding() || hostShip.isSitting() || !hostShip.getStateFlag(ID.F.UseRingEffect) ||
+    		   hostShip.getStateMinor(ID.M.CraneState) > 0 || hostShip.getStateFlag(ID.F.NoFuel)) {
     			return false;
     		}
     		
@@ -65,7 +70,8 @@ public class EntityAIShipPickItem extends EntityAIBase {
     	//mount類
     	else if(this.hostMount != null && this.hostShip != null) {
 			//ship坐下, 沒開啟特殊能力: 禁止AI
-			if(this.hostShip.isSitting() || !this.hostShip.getStateFlag(ID.F.UseRingEffect)) {
+			if(hostShip.isSitting() || !hostShip.getStateFlag(ID.F.UseRingEffect) ||
+			   hostShip.getStateMinor(ID.M.CraneState) > 0 || hostShip.getStateFlag(ID.F.NoFuel)) {
     			return false;
     		}
 			
@@ -124,6 +130,9 @@ public class EntityAIShipPickItem extends EntityAIBase {
     					
     					//send attack time packet
     					this.hostShip.applyParticleAtAttacker(0, null, null);
+    					
+    					//add exp
+    					this.hostShip.addShipExp(ConfigHandler.expGain[6]);
 
     					//clear entity item if no leftover item
     	                if(itemstack.stackSize <= 0) {
@@ -151,12 +160,9 @@ public class EntityAIShipPickItem extends EntityAIBase {
         
         //get random item
         if(getlist != null && !getlist.isEmpty()) {
-        	if(getlist.size() > 1) {
-        		getitem = (Entity) getlist.get(this.hostShip.getRNG().nextInt(getlist.size()));
-        	}
-        	else {
-        		getitem = (Entity) getlist.get(0);
-        	}
+        	//sort by dist
+        	Collections.sort(getlist, this.targetSorter);
+        	getitem = (Entity) getlist.get(0);
         }
         
         return getitem;

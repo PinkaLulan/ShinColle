@@ -19,6 +19,7 @@ tile.shincolle:BlockSmallShipyard.name=深海熱泉
 tile.shincolle:BlockLargeShipyard.name=超深海熱漩
 tile.shincolle:BlockVolBlock.name=深海火山方塊
 tile.shincolle:BlockVolCore.name=深海火山核心
+tile.shincolle:BlockWaypoint.name=深海路標
 
 # Item
 item.shincolle:AbyssMetal.name=深海金屬
@@ -254,7 +255,7 @@ gui.shincolle:book.chap1.title17=深海提督辦公桌
 gui.shincolle:book.chap1.text17d0=<br><br><br><br><br><br><br><br><br>採用黑曜石打造的§d§n深海提督辦公桌§r§0非常堅固耐用，除了用來處理鎮守府的各項公務外，也可以用來抵擋憤怒秘書艦的砲火。<br><br><br>※添購家具前請先詢問秘書艦以免造成資源管理上的困擾。
 gui.shincolle:book.chap1.text17d1=            使用指南<br><br>§9雷達§0：<br>顯示附近所屬船艦位置以及列表，在列表點選船艦後可進行聯繫等動作。<br><br>§9深海日誌§0：<br>各項物品介紹及紀錄已知船艦訊息。<br><br>§9陣營§0：<br>建立或加入艦隊以開啟PVP模式。<br><br>§9攻擊目標列表§0：<br>調整船艦的攻擊目標類型。
 gui.shincolle:book.chap1.title18=目標設定扳手
-gui.shincolle:book.chap1.text18d0=<br><br><br><br><br><br><br><br><br>§9左鍵:§0<br>§c新增/移除§0目標到§d不可攻擊清單§0。   §4(僅限OP使用)§0<br><br>§9右鍵:§0<br>顯示§d不可攻擊目標清單§0。<br><br>§9蹲下右鍵:§0<br>配對箱子跟深海起重機。
+gui.shincolle:book.chap1.text18d0=<br><br><br><br><br><br><br><br><br>§9左鍵:§0<br>§c新增/移除§0目標到§d不可攻擊清單§0。   §4(僅限OP使用)§0<br><br>§9右鍵:§0<br>顯示§d不可攻擊目標清單§0 / 顯示深海路徑點資訊。<br><br>§9蹲下右鍵:§0<br>配對箱子跟深海起重機 / 設定深海路徑點。
 gui.shincolle:book.chap1.text18d1=§d不可攻擊目標§0不會被範圍攻擊傷害到，也不會被AI設為目標。你可以把繩子的頭、物品框、木船、飛機跟棲艦的坐騎設為不可攻擊目標。<br><br>野生的艦娘攻擊時也會檢查此清單，不過你不能把棲艦跟艦娘設為不可攻擊目標。
 gui.shincolle:book.chap1.title19=深海火山方塊
 gui.shincolle:book.chap1.text19d0=<br><br><br><br><br><br><br><br><br>當岩漿被強烈的怨念團塊壓縮後，就會形成高溫高壓的§d§n深海火山方塊§r§0。<br><br>純裝飾用方塊。
@@ -262,6 +263,15 @@ gui.shincolle:book.chap1.text19d1=
 gui.shincolle:book.chap1.title20=深海火山核心
 gui.shincolle:book.chap1.text20d0=<br><br><br><br><br><br><br><br><br>當岩漿被高溫高壓的深海火山方塊再度壓縮後，就會形成超高溫高壓的§d§n深海火山核心§r§0。<br><br>核心會不斷吸收怨念並轉化成某種能量釋放到周圍的環境中，深海棲艦可以吸收這種能量來迅速回復疲勞。
 gui.shincolle:book.chap1.text20d1=將核心§9設置在液體方塊旁邊，供應足夠怨念§0後就會開始釋放能量。若周圍沒有液體方塊則能量可能四散並點燃附近生物。<br><br>核心作用範圍為§9水平距離4格，下2上6格§0，範圍內的棲艦若§9泡在液體方塊中§0就會開始吸收能量。<br><br><br><br>這種能量據說有養顏美容的功效，在深海太太間非常受歡迎。
+gui.shincolle:book.chap1.title21=深海支架
+gui.shincolle:book.chap1.text21d0=<br><br><br><br><br><br><br><br><br>被深海的高壓扭曲的支架，裝飾用方塊。<br><br>深海支架可以當梯子使用。
+gui.shincolle:book.chap1.text21d1=
+gui.shincolle:book.chap1.title22=深海路標
+gui.shincolle:book.chap1.text22d0=<br><br><br><br><br><br><br><br><br>路徑點標記方塊，經由§d目標設定扳手§0連結各個路標後，可使船艦依照路徑點指示來移動。<br><br>當指示船艦移動到某路標時，船艦靠近路標後就會自動移動到下一路標。
+gui.shincolle:book.chap1.text22d1=以§d目標設定扳手§0右鍵點擊會顯示該路標前後路徑點，蹲下右鍵則是設定連結。<br><br>每個路標只會儲存一個下一路徑點，且路標最遠可設定距離為32格。<br><br>若要使船艦逆向路標移動，需要將最後一個路標往回連結到上一路標，船艦到達最後路標後就會開始逆向移動。
+gui.shincolle:book.chap1.title23=深海起重機
+gui.shincolle:book.chap1.text23d0=<br><br><br><br><br><br><br><br><br>深海棲艦用來大量裝卸載貨物的機械
+gui.shincolle:book.chap1.text23d1=
  
 # GUI: Book Text Chap 2
 gui.shincolle:book.chap2.title=建造
@@ -280,6 +290,9 @@ gui.shincolle:book.chap2.text3d1=<br><br><br><br>§9建造方法：§0<br>§c底
 gui.shincolle:book.chap2.title4=
 gui.shincolle:book.chap2.text4d0=§9使用介面：§0<br>1. 正下方九格物品欄可以投入/取出資源。<br><br>2. 點選四種資源圖示，調整四種資源建造使用量。<br><br>3. 點選§4棲艦生怪蛋§0開始大型建造。<br><br>4. §9雙擊§0圖示則進入§4連續建造模式§0。
 gui.shincolle:book.chap2.text4d1=上下§4紅色箭頭§0可以選擇要§9取出§0或是§9投入§0資源。<br><br>每種建造材料最少需要§9100§0個，最多為§91000§0個，並且會消耗大量岩漿作為能源。<br><br>同樣地資源消耗量會影響棲艦種類跟等級，投入越多資源建造，就有越高機率製造出較高級的§c深海棲艦§0。
+gui.shincolle:book.chap2.title5=裝備開發
+gui.shincolle:book.chap2.text5d0=開發裝備跟建造船艦同樣在§9深海熱泉§0跟§9超深海熱漩§0中進行，投入足夠材料後點擊裝備圖示就能進行開發。
+gui.shincolle:book.chap2.text5d1=開發出來的裝備說明中，會顯示該裝備能力值以及建造條件：<br><br>開發加成材料：<br>表示最高機率的總材料量以及有影響的材料類型，可參考棲艦列表章節第一頁的範例說明。<br><br>裝備稀有度：<br>數值越高代表在該類型裝備中越稀有。
 
 # GUI: Book Text Chap 3
 gui.shincolle:book.chap3.title=棲艦養成指南
@@ -411,7 +424,7 @@ gui.shincolle:book.chap5.text7d0=
 gui.shincolle:book.chap5.text7d1=§9名稱：§0 赤城<br><br>§9艦種：§0 赤城級 航空母艦<br><br>§9特殊能力：§0 無<br><br>§9其他能力：§0 無<br><br>不知道為什麼偶爾會冒出貓耳貓尾，出現時據說會把附近的深海棲艦全部吃掉的恐怖空母。
 
 # GUI: Book Text Chap 6
-gui.shincolle:book.chap6.title=裝備列表
+gui.shincolle:book.chap6.title=
 gui.shincolle:book.chap6.title0=
 gui.shincolle:book.chap6.text0d0=
 gui.shincolle:book.chap6.text0d1=
@@ -539,11 +552,13 @@ gui.shincolle:dodge=閃避
 gui.shincolle:oponly=僅限OP使用
 gui.shincolle:wrench1=左鍵: 新增/移除不可攻擊目標 (OP限定)
 gui.shincolle:wrench2=右鍵: 顯示不可攻擊目標清單
-gui.shincolle:wrench3=蹲下右鍵: 配對起重機跟箱子
+gui.shincolle:wrench3=蹲下右鍵: 配對起重機跟箱子 / 設定深海路徑
 gui.shincolle:compass=獲得Chunk Loader功能，使其遠離玩家依然能正常運作
 gui.shincolle:drum=船艦物品欄擴充一頁
 gui.shincolle:flare=攻擊時照亮目標周圍一段時間
 gui.shincolle:searchlight=定時照亮自身周圍
+gui.shincolle:equip.matstype=開發加成材料：
+gui.shincolle:equip.matsrarelevel=裝備稀有度：
 
 # Chat message
 chat.shincolle:bossspawn1=有艦娘出現在水面上!
@@ -552,4 +567,8 @@ chat.shincolle:settargetclass=設定攻擊目標類型: %s
 chat.shincolle:pointer.changeformation=陣型變換為
 chat.shincolle:wrench.paired=深海起重機配對成功！
 chat.shincolle:wrench.toofar=深海起重機配對失敗，距離超過8格！
-chat.shincolle:wrench.wrongtile=深海起重機配對失敗，不支援目標方塊。
+chat.shincolle:wrench.wrongtile=不支援目標方塊。
+chat.shincolle:wrench.setwp=設定深海路徑點成功！
+chat.shincolle:wrench.wptoofar=深海路徑設定失敗，距離超過32格！
+chat.shincolle:wrench.wplast=上一路徑點
+chat.shincolle:wrench.wpnext=下一路徑點

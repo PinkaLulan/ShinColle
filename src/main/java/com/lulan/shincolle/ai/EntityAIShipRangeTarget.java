@@ -70,15 +70,15 @@ public class EntityAIShipRangeTarget extends EntityAIBase {
     @Override
     public boolean shouldExecute() {
     	//update range
-    	if(this.host != null) {
-//    		LogHelper.info("DEBUG : target AI: should exec: "+host);
-    		
-    		//check if not sitting and every 8 ticks
-        	if(this.host.getIsSitting() || this.host.getTickExisted() % 8 != 0) {
+    	if(host != null) {
+    		//check every 8 ticks
+        	if(host.getIsSitting() || host.getStateMinor(ID.M.CraneState) > 0 ||
+        	   host.getTickExisted() % 8 != 0) {
         		return false;
         	}
     		
-    		this.range = (int)this.host.getAttackRange();
+    		this.range = (int)host.getAttackRange();
+    		
     		//最小追蹤16格範圍
             if(this.range < 16) {
             	this.range = 16;
@@ -156,7 +156,6 @@ public class EntityAIShipRangeTarget extends EntityAIBase {
     @Override
     public boolean continueExecuting() {
         Entity target = this.host.getEntityTarget();
-//        LogHelper.info("DEBUG : target AI: cont exec: "+this.host2.getCustomNameTag()+" "+this.targetMode+" "+target);
         
         //target死亡或消失時停止偵測該target, 並重新開始偵測target
         if(target == null || !target.isEntityAlive()) {
@@ -169,6 +168,7 @@ public class EntityAIShipRangeTarget extends EntityAIBase {
             if(this.host2.getDistanceSqToEntity(target) > d0) {
                 return false;
             }
+            
             //若target是玩家, 則不打OP
             return !(target instanceof EntityPlayerMP) || !((EntityPlayerMP)target).theItemInWorldManager.isCreative();
         }

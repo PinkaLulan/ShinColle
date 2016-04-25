@@ -5,6 +5,7 @@ import com.lulan.shincolle.tileentity.TileEntityDesk;
 import com.lulan.shincolle.tileentity.TileEntityLightBlock;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.tileentity.TileEntityVolCore;
+import com.lulan.shincolle.tileentity.TileEntityWaypoint;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 import com.lulan.shincolle.tileentity.TileMultiPolymetal;
 
@@ -20,6 +21,7 @@ public class ModTileEntity {
 		GameRegistry.registerTileEntity(TileEntityLightBlock.class, "TileEntityLightBlock");
 		GameRegistry.registerTileEntity(TileEntitySmallShipyard.class, "TileEntitySmallShipyard");
 		GameRegistry.registerTileEntity(TileEntityVolCore.class, "TileEntityVolCore");
+		GameRegistry.registerTileEntity(TileEntityWaypoint.class, "TileEntityWaypoint");
 		
 		//tile entity multi block
 		GameRegistry.registerTileEntity(TileMultiGrudgeHeavy.class, "TileMultiLargeShipyard");

@@ -94,6 +94,8 @@ public class ID {
 		public static final byte RARE_TYPE = 16;
 		public static final byte RARE_MEAN = 17;
 		public static final byte DODGE = 18;
+		public static final byte DEVELOP_NUM = 19;
+		public static final byte DEVELOP_MAT = 20;
 	}
 	
 	/** Emotion */
@@ -348,6 +350,13 @@ public class ID {
 		public static final byte VolCore = 55;
 		public static final byte VolBlock = 56;
 		public static final byte EqDrum = 57;
+		public static final byte EqCompass = 58;
+		public static final byte EqFlare = 59;
+		public static final byte EqSearchlight = 60;
+		public static final byte Frame = 61;
+		public static final byte Waypoint = 62;
+		public static final byte Crane = 63;
+		public static final byte Piston = 64;
 	}
 	
 	/**ship state2*/
@@ -369,7 +378,7 @@ public class ID {
 		public static final byte NumGrudge = 6;
 		public static final byte NumAirLight = 7;
 		public static final byte NumAirHeavy = 8;
-		public static final byte ImmuneTime = 9;	//entity immune time
+		public static final byte NO_USE = 9;		//TODO no use
 		public static final byte FollowMin = 10;	//follow range min/max
 		public static final byte FollowMax = 11;	
 		public static final byte FleeHP = 12;		//flee hp%
@@ -400,6 +409,10 @@ public class ID {
 		public static final byte LevelChunkLoader = 37;	//level of chunk loader
 		public static final byte LevelFlare = 38;		//level of flare
 		public static final byte LevelSearchlight = 39;	//level of searchlight
+		public static final byte LastX = 40;		//last waypoint x
+		public static final byte LastY = 41;		//last waypoint y
+		public static final byte LastZ = 42;		//last waypoint z
+		public static final byte CraneState = 43;	//crane state: 0:none 1:wait 2:craning
 	}
 	
 	/** morale level */
@@ -597,6 +610,13 @@ public class ID {
 		public static final byte EQUIP07_2 = 8;
 		public static final byte EQUIP08_2 = 9;
 		public static final byte EQUIP09_2 = 10;
+	}
+	
+	/** Timer Array */
+	public static final class T {
+		public static final byte RevengeTime = 0;		//revenge target time
+		public static final byte CraneTime = 1;			//craning time
+		public static final byte ImmuneTime = 2;		//immune time
 	}
 
 	/** StateEquip, StateFinal, BonusPoint, TypeModify */

@@ -159,7 +159,7 @@ abstract public class BasicEntityShipCV extends BasicEntityShip implements IShip
         }
         
         //experience++
-  		addShipExp(8);
+        addShipExp(ConfigHandler.expGain[3]);
   		
   		//grudge--
   		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAir]);
@@ -206,7 +206,7 @@ abstract public class BasicEntityShipCV extends BasicEntityShip implements IShip
 		this.setNumAircraftHeavy(this.getNumAircraftHeavy()-1);
 		
         //experience++
-  		addShipExp(32);
+  		addShipExp(ConfigHandler.expGain[4]);
   		
   		//grudge--
   		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAir]);

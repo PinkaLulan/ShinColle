@@ -141,7 +141,7 @@ public class EntityBattleshipHime extends BasicEntityShip {
 		distVec[3] = MathHelper.sqrt_float(distVec[0]*distVec[0] + distVec[1]*distVec[1] + distVec[2]*distVec[2]);
         
 		//experience++
-		addShipExp(16);
+		addShipExp(ConfigHandler.expGain[2]);
 		
 		//grudge--
 		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);

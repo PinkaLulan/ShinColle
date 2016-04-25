@@ -20,8 +20,10 @@ import com.lulan.shincolle.block.BlockPolymetalOre;
 import com.lulan.shincolle.block.BlockSmallShipyard;
 import com.lulan.shincolle.block.BlockVolBlock;
 import com.lulan.shincolle.block.BlockVolCore;
+import com.lulan.shincolle.block.BlockWaypoint;
 import com.lulan.shincolle.block.ItemBlockGrudgeHeavy;
 import com.lulan.shincolle.block.ItemBlockResourceBlock;
+import com.lulan.shincolle.block.ItemBlockWaypoint;
 import com.lulan.shincolle.reference.Reference;
 
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -43,6 +45,7 @@ public class ModBlocks {
 	public static final Block BlockSmallShipyard = new BlockSmallShipyard();
 	public static final Block BlockVolBlock = new BlockVolBlock();
 	public static final Block BlockVolCore = new BlockVolCore();
+	public static final Block BlockWaypoint = new BlockWaypoint();
 
 	//fluid
 	public static Fluid LightFluid;
@@ -68,12 +71,16 @@ public class ModBlocks {
 		GameRegistry.registerBlock(BlockLightFluid, "BlockLightFluid");
 //		LightFluid.setUnlocalizedName(BlockLightFluid.getUnlocalizedName());
 		
-		//reg with itemblock
+		//special itemblock
+		//resource
 		GameRegistry.registerBlock(BlockAbyssium, ItemBlockResourceBlock.class, "BlockAbyssium");
 		GameRegistry.registerBlock(BlockGrudge, ItemBlockResourceBlock.class, "BlockGrudge");
 		GameRegistry.registerBlock(BlockPolymetal, ItemBlockResourceBlock.class, "BlockPolymetal");
 		GameRegistry.registerBlock(BlockPolymetalGravel, ItemBlockResourceBlock.class, "BlockPolymetalGravel");
+		//grudge heavy
 		GameRegistry.registerBlock(BlockGrudgeHeavy, ItemBlockGrudgeHeavy.class, "BlockGrudgeHeavy");
+		//waypoint
+		GameRegistry.registerBlock(BlockWaypoint, ItemBlockWaypoint.class, "BlockWaypoint");
 		
 	}
 	

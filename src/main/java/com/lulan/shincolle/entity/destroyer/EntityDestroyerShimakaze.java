@@ -129,7 +129,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
         }
         
         //experience++
-  		addShipExp(8);
+  		addShipExp(ConfigHandler.expGain[1] * 2);
   		
   		//grudge--
   		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk] * 4);
@@ -194,7 +194,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
         }
 		
 		//experience++
-		addShipExp(16);
+		addShipExp(ConfigHandler.expGain[2]);
 		
 		//grudge--
 		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);

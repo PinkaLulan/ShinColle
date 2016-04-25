@@ -19,6 +19,7 @@ tile.shincolle:BlockSmallShipyard.name=Abyssal Hydrothermal Vent
 tile.shincolle:BlockLargeShipyard.name=Hadal Hydrothermal Vortex
 tile.shincolle:BlockVolBlock.name=Abyssal Volcano Block
 tile.shincolle:BlockVolCore.name=Abyssal Volcano Core
+tile.shincolle:BlockWaypoint.name=Abyssal Waypoint
 
 # Item
 item.shincolle:AbyssMetal.name=Abyssium Ingot
@@ -254,7 +255,7 @@ gui.shincolle:book.chap1.title17=Abyssal Adrmiral's Desk
 gui.shincolle:book.chap1.text17d0=<br><br><br><br><br><br><br><br><br>This stable and durable §d§nAbyssal Adrmiral's Desk§r§0 is made of obsidian. In addition to deal with the official business, it can also block the gunfire from angry secretary ship.<br>**Please ask the secretary ship before purchasing the furniture.
 gui.shincolle:book.chap1.text17d1=§9Radar§0:<br>Show a list of nearby owned ships, click ship on the list to carry out other action.<br><br>§9Abyssal Logbook§0:<br>Items, blocks and ships introduction.<br><br>§9Faction§0:<br>Create or add team with PVP mode.<br><br>§9Target List§0:<br>Browse attack target list.
 gui.shincolle:book.chap1.title18=Target Wrench
-gui.shincolle:book.chap1.text18d0=<br><br><br><br><br><br><br><br><br>§9Left Click:§0<br>§cADD/REMOVE§0 entity to §dUnattackable Target List§0. §4(OP ONLY!!)§0<br><br>§9Right Click:§0 Show §dUnattackable Target List§0.<br><br>§9Sneak + Right Click:§0 Abyssal Crand and Chest pairing.
+gui.shincolle:book.chap1.text18d0=<br><br><br><br><br><br><br><br><br>§9Left Click:§0<br>§cADD/REMOVE§0 entity to §dUnattackable Target List§0. §4(OP ONLY!!)§0<br><br>§9Right Click:§0 Show §dUnattackable Target List§0 / Show Abyssal Waypoint info.<br><br>§9Sneak + Right Click:§0 pairing Abyssal Crand and Chest / Setting Abyssal Waypoint
 gui.shincolle:book.chap1.text18d1=§dUnattackable Target§0 will not be damaged by AoE attack, and can't be targeted. You can add entity like leash knot, item frame, airplane, mounts or boat.<br><br>This list apply to hostile mob ship too.<br><br>Ship and hostile ship can't be unattackable entity.
 gui.shincolle:book.chap1.title19=Abyssal Volcano Block
 gui.shincolle:book.chap1.text19d0=<br><br><br><br><br><br><br><br><br>When the lava is compressed by heavy grudge, it will become §d§nAbyssal Volcano Block§r§0.<br><br>Decorative block.
@@ -262,6 +263,15 @@ gui.shincolle:book.chap1.text19d1=
 gui.shincolle:book.chap1.title20=Abyssal Volcano Core
 gui.shincolle:book.chap1.text20d0=<br><br><br><br><br><br><br><br><br>When the lava is compressed by Abyssal Volcano Block, it will become §d§nAbyssal Volcano Core§r§0.<br><br>The core will consume grudge and spread the energy into the environment.
 gui.shincolle:book.chap1.text20d1=To active the core, place it §9nearby any liquid block and put some grudge§0.<br><br>§dEffect Area: width 9 / height 9 (down 2 / up 6) blocks§0.<br><br>If a ship is in liquid block within the effect area, she will restore HP and morale value.<br><br>The energy is said to maintain skin and beauty, it's very popular among the Shinkeiseikan.
+gui.shincolle:book.chap1.title21=Abyssal Frame
+gui.shincolle:book.chap1.text21d0=<br><br><br><br><br><br><br><br><br>Twisted abyssal frame, decorative block.<br><br>It's a ladder block.
+gui.shincolle:book.chap1.text21d1=
+gui.shincolle:book.chap1.title22=Abyssal Waypoint
+gui.shincolle:book.chap1.text22d0=<br><br><br><br><br><br><br><br><br>Waypoint block, player can link waypoints by §dTarget Wrench§0.<br><br>If a ship move to a waypoint, the ship will continue move to next waypoint.
+gui.shincolle:book.chap1.text22d1=§9Right Click§0 with §dTarget Wrench§0 to show the waypoint info, §9Sneak + Right Click§0 to link two waypoints.<br><br>A waypoint can save 1 NEXT and 1 LAST waypoint, and the max distance is 32 blocks.<br><br>If a waypoint link back to its last waypoint (next = last), when a ship move to the waypoint, the ship will begin to move backwards.
+gui.shincolle:book.chap1.title23=Abyssal Crane
+gui.shincolle:book.chap1.text23d0=<br><br><br><br><br><br><br><br><br>
+gui.shincolle:book.chap1.text23d1=
 
 # GUI: Book Text Chap 2
 gui.shincolle:book.chap2.title=Construction
@@ -280,6 +290,9 @@ gui.shincolle:book.chap2.text3d1=<br><br><br><br>§9Hadal Hydrothermal Vortex§0
 gui.shincolle:book.chap2.title4=
 gui.shincolle:book.chap2.text4d0=§9To construct advanced §cShinkeiseikan§0:<br><br>1. Put resources into the 9 slots.<br><br>2. Click 4 resources icon and adjust the value by arrows.<br><br>3. Click §4"Ship Spawn Egg"§0 icon to start construction.<br><br>4. §9Double Click§0 to enter §4Continuously Build Mode§0.
 gui.shincolle:book.chap2.text4d1=Click the §4Red Arrow§0 to change resources mode: §9Release§0 or §9Suck In§0.<br><br>The large construction requires §9100~1000§0 each resources and lots of lava to process.<br><br>And the more materials consumed, the better §cShinkeiseikan§0 you get.
+gui.shincolle:book.chap2.title5=Equipment Develop
+gui.shincolle:book.chap2.text5d0=The equip development is same with ship construction, put some materials in the §9Abyssal Hydrothermal Vent§0 or §9Hadal Hydrothermal Vortex§0 and click the Equip button to develop equips. 
+gui.shincolle:book.chap2.text5d1=The equip info is decribed in the item tooltip:<br><br>Factor Mats:<br>The number represents the total amount of materials and the effective material.<br><br>Rare Level:<br>Higher the value means the more rare in that equip type.
 
 # GUI: Book Text Chap 3
 gui.shincolle:book.chap3.title=Ship Maintenance Guide
@@ -411,7 +424,7 @@ gui.shincolle:book.chap5.text7d0=
 gui.shincolle:book.chap5.text7d1=§9Name:§0 Akagi<br><br>§9Class:§0 Akagi Class CV<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 none<br><br>It's said that all Shinkeiseikan will be eaten if Akagi appear.
 
 # GUI: Book Text Chap 6
-gui.shincolle:book.chap6.title=Equipments List
+gui.shincolle:book.chap6.title=
 gui.shincolle:book.chap6.title0=
 gui.shincolle:book.chap6.text0d0=
 gui.shincolle:book.chap6.text0d1=
@@ -539,17 +552,23 @@ gui.shincolle:dodge=Dodge
 gui.shincolle:oponly=OP ONLY
 gui.shincolle:wrench1=Left Click: ADD/REMOVE unattackable target (OP only)
 gui.shincolle:wrench2=Right Click: Show unattackable target list
-gui.shincolle:wrench3=Sneaking Right Click: Pair crane and chest
+gui.shincolle:wrench3=Sneaking Right Click: Pair crane and chest / Set Abyssal Waypoint
 gui.shincolle:compass=Ship get ChunkLoader to work away from owner
 gui.shincolle:drum=+1 Ship's Inventory Page
 gui.shincolle:flare=Light the target when attacking
 gui.shincolle:searchlight=Light the ship if in the dark
+gui.shincolle:equip.matstype=Factor Mats:
+gui.shincolle:equip.matsrarelevel=Rare Level:
 
 # Chat message
 chat.shincolle:bossspawn1=A Fleet Walks on the Water!
 chat.shincolle:bossspawn2=Detecte An Invasion Fleet!
 chat.shincolle:pointer.settargetclass=Set target type to attack list: %s
 chat.shincolle:pointer.changeformation=Change formation to
-chat.shincolle:wrench.paired=Abyssal Crane pairing success!
-chat.shincolle:wrench.toofar=Abyssal Crane pairing fail, distance > 8 blocks.
-chat.shincolle:wrench.wrongtile=Abyssal Crane pairing fail, wrong target.
+chat.shincolle:wrench.paired=Pairing Abyssal Crane Success!
+chat.shincolle:wrench.toofar=Pairing Abyssal Crane fail, distance > 8 blocks.
+chat.shincolle:wrench.wrongtile=Unsupported TileEntity.
+chat.shincolle:wrench.setwp=Setting Abyssal Waypoint Success!
+chat.shincolle:wrench.wptoofar=Setting Abyssal Waypoint fail, distance > 32 blocks.
+chat.shincolle:wrench.wplast=Last waypoint: 
+chat.shincolle:wrench.wpnext=Next waypoint: 

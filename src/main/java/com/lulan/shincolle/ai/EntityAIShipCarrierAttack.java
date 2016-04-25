@@ -10,7 +10,6 @@ import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.IShipAircraftAttack;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.LogHelper;
 
 /**CARRIER RANGE ATTACK AI
  * entity必須實作IUseAircraft
@@ -51,8 +50,10 @@ public class EntityAIShipCarrierAttack extends EntityAIBase {
     //check ai start condition
     @Override
 	public boolean shouldExecute() {
-//    	LogHelper.info("DEBUG : carrier attack "+target);
-    	if(this.host.getIsSitting()) return false;
+    	//坐下, 裝載中不攻擊
+    	if(host.getIsSitting() || host.getStateMinor(ID.M.CraneState) > 0) {
+    		return false;
+    	}
     	
     	//若騎乘ship類座騎, 則攻擊交給mount判定
 		if(this.host.getIsRiding()) {

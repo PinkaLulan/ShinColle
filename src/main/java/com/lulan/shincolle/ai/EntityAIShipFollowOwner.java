@@ -63,7 +63,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
     @Override
 	public boolean shouldExecute() {
     	if(!host.getIsSitting() && !host.getIsRiding() && !host.getIsLeashed() && 
-    	   !host.getStateFlag(ID.F.NoFuel) && host.getStateFlag(ID.F.CanFollow)) {
+    	   host.getStateFlag(ID.F.CanFollow) && host.getStateMinor(ID.M.CraneState) < 1) {
     		EntityLivingBase OwnerEntity = EntityHelper.getEntityPlayerByUID(this.host.getPlayerUID());
 
     		//get owner distance
@@ -87,10 +87,10 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
     //目標還沒接近min dist或者距離超過TP_DIST時繼續AI
     @Override
 	public boolean continueExecuting() {
-    	//非坐下, 騎乘, 被綁住時可以繼續執行AI
-    	if(host != null && owner != null) { 
+    	if(host != null && owner != null) {
+    		//非坐下, 騎乘, 綁住, 可跟隨, 非裝載中 = 可執行AI
     		if(!host.getIsSitting() && !host.getIsRiding() && !host.getIsLeashed() && 
-    		   !host.getStateFlag(ID.F.NoFuel) && host.getStateFlag(ID.F.CanFollow)) {
+    		   host.getStateFlag(ID.F.CanFollow) && host.getStateMinor(ID.M.CraneState) < 1) {
 	        	//還沒走進min follow range, 繼續走
 	        	if(this.distSq > this.minDistSq) {		
 	        		return true;

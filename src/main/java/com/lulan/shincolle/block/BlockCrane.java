@@ -23,7 +23,7 @@ public class BlockCrane extends BasicBlockContainer {
 		this.setBlockName("BlockCrane");
 	    this.setHarvestLevel("pickaxe", 0);
 	    this.setHardness(1F);
-	    this.setResistance(15F);
+	    this.setResistance(10F);
 	    this.setStepSound(soundTypeMetal);
 	}
 	

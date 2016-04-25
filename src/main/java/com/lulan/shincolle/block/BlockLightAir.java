@@ -12,6 +12,7 @@ public class BlockLightAir extends BlockAir implements ITileEntityProvider {
 
 	
 	public BlockLightAir() {
+		super();
 		this.setBlockName("BlockLightAir");
 		this.setTickRandomly(false);
 		this.setLightLevel(1F);
@@ -34,7 +35,6 @@ public class BlockLightAir extends BlockAir implements ITileEntityProvider {
 	public TileEntity createNewTileEntity(World world, int meta) {
 		return new TileEntityLightBlock(0, 120);
 	}
-
-
+	
 	
 }

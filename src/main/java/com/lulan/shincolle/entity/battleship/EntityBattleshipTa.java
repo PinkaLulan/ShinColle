@@ -121,7 +121,7 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
         }
         
         //experience++
-  		addShipExp(8);
+  		addShipExp(ConfigHandler.expGain[1] * 2);
   		
   		//grudge--
   		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk] * 4);
