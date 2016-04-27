@@ -22,6 +22,7 @@ public class ShipMoveHelper {
     private double speed;
     private boolean update;
     private float rotateLimit;  //每tick最多可以轉身的角度, 角度小則轉彎半徑大
+    private int stuckTick;
 
 
     public ShipMoveHelper(EntityLiving entity, float rotlimit) {
@@ -31,6 +32,8 @@ public class ShipMoveHelper {
         this.posY = entity.posY;
         this.posZ = entity.posZ;
         this.rotateLimit = rotlimit;
+        this.stuckTick = 0;
+        
     }
 
     public boolean isUpdating() {
@@ -68,11 +71,10 @@ public class ShipMoveHelper {
             double y1 = this.posY - this.entity.posY;
             double moveSq = x1 * x1 + y1 * y1 + z1 * z1;
             
-            //若移動值夠大, 則計算身體面向方向, 以及y軸移動動作
+            //若距離夠大, 則計算身體面向方向, 以及y軸移動動作
             if(moveSq >= 0.001D) {
                 float f = (float)(Math.atan2(z1, x1) * 180.0D / Math.PI) - 90.0F;
                 float moveSpeed = (float)(this.speed * this.entity.getEntityAttribute(SharedMonsterAttributes.movementSpeed).getAttributeValue());
-//                LogHelper.info("DEBUG : moveHelper: update f "+(x1 * x1 + z1 * z1));
                 
                 //設定每tick最多可以轉動的角度
                 this.entity.rotationYaw = this.limitAngle(this.entity.rotationYaw, f, this.rotateLimit);
@@ -108,8 +110,7 @@ public class ShipMoveHelper {
                         }
 //                	}
                 }
-                else if(y1 > 0.0D && x1 * x1 + z1 * z1 < 3.0D) {	//用於陸上跳躍
-//                	LogHelper.info("DEBUG : moveHelper: get up on land ");
+                else if(y1 > 0.2D && x1 * x1 + z1 * z1 < 3.0D) {	//用於陸上跳躍
                     this.entity.getJumpHelper().setJumping();
                 }
 //                LogHelper.info("DEBUG : moveHelper: speed "+moveSpeed);

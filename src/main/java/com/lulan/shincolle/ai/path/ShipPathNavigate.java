@@ -25,7 +25,7 @@ import net.minecraft.world.World;
  * 注意此path navigator使用時, 必須把ship floating關閉以免阻礙y軸移動
  */
 public class ShipPathNavigate {
-    private EntityLiving theEntity;
+    private EntityLiving host;
     /** The entity using ship path navigate */
     private IShipNavigator theEntity2;
     private World worldObj;
@@ -35,7 +35,7 @@ public class ShipPathNavigate {
     /** The number of blocks (extra) +/- in each axis that get pulled out as cache for the pathfinder's search space */
     private IAttributeInstance pathSearchRange;
     /** Time, in number of ticks, following the current path */
-    private int totalTicks;
+    private int pathTicks;
     /** The time when the last position check was done (to detect successful movement) */
     private int ticksAtLastPos;
     /** Coordinates of the entity's position last time a check was done (part of monitoring getting 'stuck') */
@@ -45,7 +45,7 @@ public class ShipPathNavigate {
     
 
     public ShipPathNavigate(EntityLiving entity, World world) {
-        this.theEntity = entity;
+        this.host = entity;
         this.theEntity2 = (IShipNavigator) entity;
         this.worldObj = world;
         this.pathSearchRange = entity.getEntityAttribute(SharedMonsterAttributes.followRange);
@@ -86,7 +86,7 @@ public class ShipPathNavigate {
      * Returns the path to the given coordinates
      */
     public ShipPathEntity getPathToXYZ(double x, double y, double z) {
-        return !this.canNavigate() ? null : this.getShipPathToXYZ(this.theEntity, MathHelper.floor_double(x), (int)y, MathHelper.floor_double(z), this.getPathSearchRange(), this.canFly);
+        return !this.canNavigate() ? null : this.getShipPathToXYZ(this.host, MathHelper.floor_double(x), (int)y, MathHelper.floor_double(z), this.getPathSearchRange(), this.canFly);
     }
     
     public ShipPathEntity getShipPathToXYZ(Entity entity, int x, int y, int z, float range, boolean canFly) {
@@ -114,7 +114,7 @@ public class ShipPathNavigate {
      */
     public ShipPathEntity getPathToEntityLiving(Entity entity) {
 //        return !this.canNavigate() ? null : this.worldObj.getPathEntityToEntity(this.theEntity, entity, this.getPathSearchRange(), this.canPassOpenWoodenDoors, this.canPassClosedWoodenDoors, this.avoidsWater, this.canSwim);
-        return !this.canNavigate() ? null : this.getPathEntityToEntity(this.theEntity, entity, this.getPathSearchRange(), this.canFly);
+        return !this.canNavigate() ? null : this.getPathEntityToEntity(this.host, entity, this.getPathSearchRange(), this.canFly);
     }
     
     public ShipPathEntity getPathEntityToEntity(Entity entity, Entity targetEntity, float range, boolean canFly) {
@@ -167,7 +167,7 @@ public class ShipPathNavigate {
             else {	//成功設定path
                 this.speed = speed;
                 Vec3 vec3 = this.getEntityPosition();
-                this.ticksAtLastPos = this.totalTicks;
+                this.ticksAtLastPos = this.pathTicks;
                 this.lastPosCheck.xCoord = vec3.xCoord;
                 this.lastPosCheck.yCoord = vec3.yCoord;
                 this.lastPosCheck.zCoord = vec3.zCoord;
@@ -185,31 +185,24 @@ public class ShipPathNavigate {
 
     /** navigation tick */
     public void onUpdateNavigation() {
-    	//wait 100 ticks, prevent login delay
-    	if(theEntity.ticksExisted > 20) {
-    		++this.totalTicks;
+    	//wait 64 ticks for entity init
+    	if(host.ticksExisted > 64) {
+    		++this.pathTicks;
+    		
             //若有path
             if(!this.noPath()) {
-                //若pathFollow沒把path清除, 表示還可以繼續移動
-            	//取得下一個目標點
-                Vec3 vec3 = this.currentPath.getPosition(this.theEntity);
-//                    LogHelper.info("DEBUG : path navi: path vec "+this.currentPath.getCurrentPathIndex()+" / "+this.currentPath.getCurrentPathLength()+" "+vec3.xCoord+" "+vec3.yCoord+" "+vec3.zCoord);
-//                    LogHelper.info("DEBUG : path navi: path pp  "+currentPath.getPathPointFromIndex(currentPath.getCurrentPathIndex()).xCoord+" "+currentPath.getPathPointFromIndex(currentPath.getCurrentPathIndex()).yCoord+" "+currentPath.getPathPointFromIndex(currentPath.getCurrentPathIndex()).zCoord+" ");
-//                    LogHelper.info("DEBUG : path navi: path pos "+this.theEntity.posX+" "+this.theEntity.posY+" "+this.theEntity.posZ+" ");
-                //若還有下一個點要移動, 則設定移動量使move helper可以實際移動entity
-                if(vec3 != null) {
-                    this.theEntity2.getShipMoveHelper().setMoveTo(vec3.xCoord, vec3.yCoord, vec3.zCoord, this.speed);
-                }
-                
-                //若可以執行移動, 則跑pathFollow方法更新下一個目標點
+            	//若可以執行移動, 則跑pathFollow方法更新下一個目標點
                 if(this.canNavigate()) {
-//                	LogHelper.info("DEBUG : path navi: path follow");
                     this.pathFollow();
                 }
                 
-//                if(this.currentPath.isFinished()) {
-//                	this.clearPathEntity();
-//                }
+                //若pathFollow沒把path清除, 表示還可以繼續移動
+            	//取得下一個目標點
+                Vec3 vec3 = this.currentPath.getPosition(this.host);
+                
+                if(vec3 != null) {
+                    this.theEntity2.getShipMoveHelper().setMoveTo(vec3.xCoord, vec3.yCoord, vec3.zCoord, this.speed);
+                }
             }
     	}
     }
@@ -234,63 +227,67 @@ public class ShipPathNavigate {
 //        }
 
 //        float widthSq = this.theEntity.width * this.theEntity.width * 0.25F;
-        float widthSq = this.theEntity.width * this.theEntity.width;
+        float widthSq = this.host.width * this.host.width;
         int k;
 
         //掃描目前的點到y高度不同or最後的點, 若距離不到entity大小, 則判定entity已經到達該點
         for(k = this.currentPath.getCurrentPathIndex(); k < pptemp; ++k) {
-            if(entityPos.squareDistanceTo(this.currentPath.getVectorFromIndex(this.theEntity, k)) < widthSq) {
+            if(entityPos.squareDistanceTo(this.currentPath.getVectorFromIndex(this.host, k)) < widthSq) {
 //            	LogHelper.info("DEBUG : path navi: get path+1 "+k+" "+entityPos.squareDistanceTo(this.currentPath.getVectorFromIndex(this.theEntity, k)));
             	this.currentPath.setCurrentPathIndex(++k);	//已到達目標點, 設定目標點為下一點
             }
         }
 
-        k = MathHelper.ceiling_float_int(this.theEntity.width);
-        int heighInt = (int)this.theEntity.height;
+        k = MathHelper.ceiling_float_int(this.host.width);
+        int heighInt = (int)this.host.height;
         int widthInt = k;
 
         //從y高度不合的點往回掃描, 找是否有點能從目前點直線走過去, 有的話將該點設為目標點使entity往該點直線前進
         for(int j1 = pptemp - 1; j1 >= this.currentPath.getCurrentPathIndex(); --j1) {
-            if(this.isDirectPathBetweenPoints(entityPos, this.currentPath.getVectorFromIndex(this.theEntity, j1), k, heighInt, widthInt)) {
+            if(this.isDirectPathBetweenPoints(entityPos, this.currentPath.getVectorFromIndex(this.host, j1), k, heighInt, widthInt)) {
                 this.currentPath.setCurrentPathIndex(j1);
                 break;
             }
         }
 
         //每N ticks檢查一次移動距離
-        if(this.totalTicks - this.ticksAtLastPos > 25) {
+        if(this.pathTicks - this.ticksAtLastPos > 20) {
         	//若距離上一次成功移動的點不到1.5格, 則表示某種原因造成幾乎沒移動, 清除該path
-            if(entityPos.squareDistanceTo(this.lastPosCheck) < 2.25D) {
-            	//可能本身在柵欄方塊中(起點就在柵欄方塊), 判定要移動到柵欄隔壁空地方塊, 但是要穿過柵欄, AI無法判斷人在柵欄哪一側
-            	//暫定解法: 隨機往路徑方向的左右移動一格, 嘗試脫離柵欄
+            if(entityPos.squareDistanceTo(this.lastPosCheck) < 3D) {
+            	//嘗試跳躍 + 左右隨機移動來脫離柵欄方塊
             	if(!currentPath.isFinished()) {
-            		float dx = (float) (theEntity.posX - currentPath.getVectorFromIndex(this.theEntity, currentPath.getCurrentPathIndex()).xCoord);
-                	float dz = (float) (theEntity.posZ - currentPath.getVectorFromIndex(this.theEntity, currentPath.getCurrentPathIndex()).zCoord);
+            		float dx = (float) (currentPath.getVectorFromIndex(this.host, currentPath.getCurrentPathIndex()).xCoord - host.posX);
+                	float dz = (float) (currentPath.getVectorFromIndex(this.host, currentPath.getCurrentPathIndex()).zCoord - host.posZ);
 //                	LogHelper.info("DEBUG : path navi: get stand block: "+dx+" "+dz);
-                	double targetX = theEntity.posX;
-                	double targetZ = theEntity.posZ;
+                	double targetX = host.posX;
+                	double targetZ = host.posZ;
                 	
                 	//get random position
-                	if(dx > 0.2 || dx < -0.2) {	//若目標點離x方向一定距離, 則在z方向隨機選+-1
-                		targetZ = theEntity.getRNG().nextInt(2) == 0 ? targetZ - 1.5D : targetZ + 1.5D;
+                	if(dx > 0.2F || dx < -0.2F) {	//若目標點離x方向一定距離, 則在z方向隨機選+-1
+                		targetZ = host.getRNG().nextInt(2) == 0 ? targetZ - 2D : targetZ + 2D;
                 	}
                 	
-                	if(dz > 0.2 || dz < -0.2) {
-                		targetX = theEntity.getRNG().nextInt(2) == 0 ? targetX - 1.5D : targetX + 1.5D;
+                	if(dz > 0.2F || dz < -0.2F) {
+                		targetX = host.getRNG().nextInt(2) == 0 ? targetX - 2D : targetX + 2D;
                 	}
                 	
                 	//set move
-                	this.theEntity2.getShipMoveHelper().setMoveTo(targetX, theEntity.posY, targetZ, this.speed);
+                	this.theEntity2.getShipMoveHelper().setMoveTo(targetX, host.posY, targetZ, this.speed);
+                	
+                	//try random jump
+                	if(host.getRNG().nextInt(2) == 0) {
+                		host.getJumpHelper().setJumping();
+                		float speed = (float) host.getEntityAttribute(SharedMonsterAttributes.movementSpeed).getAttributeValue() * 0.5F;
+                		if(dx > 0.5F) host.motionX += speed;
+                		if(dx < 0.5F) host.motionX -= speed;
+                		if(dz > 0.5F) host.motionZ += speed;
+                		if(dz < 0.5F) host.motionZ -= speed;
+                	}
             	}
-            	
-            	//超過5秒無法移動, clear path
-                if(this.totalTicks - this.ticksAtLastPos > 100) {
-                	this.clearPathEntity();
-                }
             }
 
             //更新成功移動的紀錄
-            this.ticksAtLastPos = this.totalTicks;
+            this.ticksAtLastPos = this.pathTicks;
             this.lastPosCheck.xCoord = entityPos.xCoord;
             this.lastPosCheck.yCoord = entityPos.yCoord;
             this.lastPosCheck.zCoord = entityPos.zCoord;
@@ -316,7 +313,7 @@ public class ShipPathNavigate {
      */
     private Vec3 getEntityPosition() {
 //        return Vec3.createVectorHelper(this.theEntity.posX, this.getPathableYPos(), this.theEntity.posZ);
-        return Vec3.createVectorHelper(this.theEntity.posX, this.theEntity.posY, this.theEntity.posZ);
+        return Vec3.createVectorHelper(this.host.posX, this.host.posY, this.host.posZ);
     }
 
     /**CHANGE:
@@ -333,11 +330,11 @@ public class ShipPathNavigate {
 //    	LogHelper.info("DEBUG : path navi: path y "+(int)(this.theEntity.boundingBox.minY + 0.5D));
     		//可以飛, 直接以目前y為起點
 //            return (int)(this.theEntity.boundingBox.minY + 0.5D);
-    		return this.theEntity.posY;
+    		return this.host.posY;
         }
         else {
-        	 int i = (int)this.theEntity.boundingBox.minY;
-             Block block = this.worldObj.getBlock(MathHelper.floor_double(this.theEntity.posX), i, MathHelper.floor_double(this.theEntity.posZ));
+        	 int i = (int)this.host.boundingBox.minY;
+             Block block = this.worldObj.getBlock(MathHelper.floor_double(this.host.posX), i, MathHelper.floor_double(this.host.posZ));
              int j = 0;
              //往下找出第一個非air的方塊
              do {
@@ -351,33 +348,33 @@ public class ShipPathNavigate {
                  }
 
                  ++i;
-                 block = this.worldObj.getBlock(MathHelper.floor_double(this.theEntity.posX), i, MathHelper.floor_double(this.theEntity.posZ));
+                 block = this.worldObj.getBlock(MathHelper.floor_double(this.host.posX), i, MathHelper.floor_double(this.host.posZ));
                  ++j;
              }
              while (j <= 16);	//最多往下找16格就停止
              //找超過16格都沒底, 則直接回傳目前y
-             return (int)this.theEntity.boundingBox.minY;
+             return (int)this.host.boundingBox.minY;
         }
     }
 
     /**非騎乘中, 且該entity可以飛 or 站在地面 or 在可穿透方塊中
      */
     private boolean canNavigate() {
-        return !theEntity.isRiding() && (this.canFly || this.theEntity.onGround || EntityHelper.checkEntityIsFree(theEntity));
+        return !host.isRiding() && (this.canFly || this.host.onGround || EntityHelper.checkEntityIsFree(host));
     }
 
     /**
      * Returns true if the entity is in water or lava or other liquid
      */
     private boolean isInLiquid() {
-        return EntityHelper.checkEntityIsInLiquid(theEntity);
+        return EntityHelper.checkEntityIsInLiquid(host);
     }
 
     /**NO USE
      * Trims path data from the end to the first sun covered block
      */
     private void removeSunnyPath() {
-        if(!this.worldObj.canBlockSeeTheSky(MathHelper.floor_double(this.theEntity.posX), (int)(this.theEntity.boundingBox.minY + 0.5D), MathHelper.floor_double(this.theEntity.posZ))) {
+        if(!this.worldObj.canBlockSeeTheSky(MathHelper.floor_double(this.host.posX), (int)(this.host.boundingBox.minY + 0.5D), MathHelper.floor_double(this.host.posZ))) {
             for(int i = 0; i < this.currentPath.getCurrentPathLength(); ++i) {
                 ShipPathPoint pathpoint = this.currentPath.getPathPointFromIndex(i);
 

@@ -157,6 +157,7 @@ public class ShipPathFinder {
         if(j == 1 || j == 3) {
             pathCase = 1;
         }
+        
         //探查左右前後四個點的狀況: 下->左右前後->上
         ShipPathPoint pathpoint2 = this.getSafePoint(entity, currentpp.xCoord, currentpp.yCoord - 1, currentpp.zCoord, entitySize, pathCase);
         ShipPathPoint pathpoint3 = this.getSafePoint(entity, currentpp.xCoord, currentpp.yCoord, currentpp.zCoord + 1, entitySize, pathCase);
@@ -164,6 +165,7 @@ public class ShipPathFinder {
         ShipPathPoint pathpoint5 = this.getSafePoint(entity, currentpp.xCoord + 1, currentpp.yCoord, currentpp.zCoord, entitySize, pathCase);
         ShipPathPoint pathpoint6 = this.getSafePoint(entity, currentpp.xCoord, currentpp.yCoord, currentpp.zCoord - 1, entitySize, pathCase);
         ShipPathPoint pathpoint7 = null;
+        
         //上面為液體方塊才允許往上找路徑, 若上面為空氣, 則只有可以飛的才往上找路徑
         if(j == 3 || (j == 1 && this.canEntityFly)) {
         	pathpoint7 = this.getSafePoint(entity, currentpp.xCoord, currentpp.yCoord + 1, currentpp.zCoord, entitySize, pathCase);
@@ -171,12 +173,10 @@ public class ShipPathFinder {
         
         //若該點為安全點, 且不是起始點, 且在尋路最大範圍內
         if(pathpoint2 != null && !pathpoint2.isFirst && pathpoint2.distanceTo(targetpp) < range) {
-//        	LogHelper.info("DEBUG : path navi: down path find: "+pathpoint2.yCoord);
-        	this.pathOptions[i++] = pathpoint2;	//加入到可選選項中
+        	this.pathOptions[i++] = pathpoint2;
         }
         if(pathpoint3 != null && !pathpoint3.isFirst && pathpoint3.distanceTo(targetpp) < range) {
-//        	LogHelper.info("DEBUG : path navi: horz path A find: "+pathpoint3.yCoord);
-        	this.pathOptions[i++] = pathpoint3;	//加入到可選選項中
+        	this.pathOptions[i++] = pathpoint3;
         }
         if(pathpoint4 != null && !pathpoint4.isFirst && pathpoint4.distanceTo(targetpp) < range) {
             this.pathOptions[i++] = pathpoint4;
@@ -202,20 +202,22 @@ public class ShipPathFinder {
     	ShipPathPoint pathpoint1 = null;
         int pathCase = this.getVerticalOffset(entity, x, y, z, entitySize);	//取得該點路況
         
-        if(pathCase == 2 || pathCase == 3) {//若該點路況為: open trapdoor or 液體, 則接受為safe point
-            return this.openPoint(x, y, z);	//加入該點到path
+        if(pathCase == 2 || pathCase == 3) {  //若該點路況為: open trapdoor or 液體, 則接受為safe point
+            return this.openPoint(x, y, z);   //加入該點到path
         }
-        else {				//其他路況
+        else {  //其他路況
         	//若路況為clear, 則把該點加入到path
             if(pathCase == 1) {
                 pathpoint1 = this.openPoint(x, y, z);
             }
+            
             //若路況非clear而是實體方塊, 且允許往上找路徑, 則往上找
             if(pathpoint1 == null && pathOption > 0 && pathCase != -3 && pathCase != -4 && 
                this.getVerticalOffset(entity, x, y + pathOption, z, entitySize) == 1) {
                 pathpoint1 = this.openPoint(x, y + pathOption, z);	//把往上一點加入到path
                 y += pathOption;
             }
+            
             //若有找到可加入path的點, 則往下找該點底下方塊是否可安全站立(只往下找X格, X依照entity自己的getMaxSafePointTries決定)
             if(pathpoint1 != null) {
             	//若可以飛, 則直接回傳pathpoint
@@ -300,29 +302,29 @@ public class ShipPathFinder {
         boolean pathInLiquid = true;	//是否是站在液體中的path (即高度y全為液體方塊)
         
         //判定該point加上entity的長寬高後, 是否會碰撞到其他方塊
-        for(int l = x; l < x + entitySize.xCoord; ++l) {
-            for(int i1 = y; i1 < y + entitySize.yCoord; ++i1) {
-                for(int j1 = z; j1 < z + entitySize.zCoord; ++j1) {
-                	Block block = entity.worldObj.getBlock(l, i1, j1);
+        for(int x1 = x; x1 < x + entitySize.xCoord; ++x1) {
+            for(int y1 = y; y1 < y + entitySize.yCoord; ++y1) {
+                for(int z1 = z; z1 < z + entitySize.zCoord; ++z1) {
+                	Block block = entity.worldObj.getBlock(x1, y1, z1);
 
                     //若碰撞到非空氣, 水, 岩漿方塊
                     if(block.getMaterial() != Material.air) {
                     	//檢查高度y是否全為液體
-                        if(pathInLiquid && i1 == y && !BlockHelper.checkBlockIsLiquid(block)) {
+                        if(pathInLiquid && y1 == y && !BlockHelper.checkBlockIsLiquid(block)) {
                         	pathInLiquid = false;
                         }
                         
-//                    	//碰到的是陷阱門
-//                        if(block == Blocks.trapdoor) {
-//                        	pathToDoor = true;	//此為特定情況才能通過
-//                        }
+                        //can pass door
+                        if(block == Blocks.wooden_door || block == Blocks.fence_gate) {
+                        	return 1;
+                        }
 
                         int k1 = block.getRenderType();
                         
                         //若碰到不能穿過的方塊: 關閉的門, 陷阱門, 柵欄門
-                        if(!block.getBlocksMovement(entity.worldObj, l, i1, j1)) {
+                        if(!block.getBlocksMovement(entity.worldObj, x1, y1, z1)) {
                         	//若在柵欄, 牆壁, 柵欄門方塊中, 回傳-3
-                            if(k1 == 11 || block == Blocks.fence_gate || k1 == 32) {
+                            if(k1 == 11 || k1 == 32) {
                                 return -3;
                             }
                             //若是關閉的陷阱門, 回傳-4
@@ -337,7 +339,7 @@ public class ShipPathFinder {
                     }
                     else {	//若為air方塊
                     	//檢查高度y是否為液體
-                        if(pathInLiquid && i1 == y) {
+                        if(pathInLiquid && y1 == y) {
                         	pathInLiquid = false;
                         }
                     }

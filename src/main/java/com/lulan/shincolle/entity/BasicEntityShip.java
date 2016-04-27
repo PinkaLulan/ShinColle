@@ -31,6 +31,7 @@ import com.lulan.shincolle.ai.EntityAIShipFlee;
 import com.lulan.shincolle.ai.EntityAIShipFloating;
 import com.lulan.shincolle.ai.EntityAIShipFollowOwner;
 import com.lulan.shincolle.ai.EntityAIShipGuarding;
+import com.lulan.shincolle.ai.EntityAIShipOpenDoor;
 import com.lulan.shincolle.ai.EntityAIShipRangeTarget;
 import com.lulan.shincolle.ai.EntityAIShipRevengeTarget;
 import com.lulan.shincolle.ai.EntityAIShipSit;
@@ -322,10 +323,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.getNavigator().setCanSwim(true);
 		
 		//high priority
-		this.tasks.addTask(1, new EntityAIShipSit(this));	   		//0111
-		this.tasks.addTask(2, new EntityAIShipFlee(this));			//0111
-		this.tasks.addTask(3, new EntityAIShipGuarding(this));		//0111
-		this.tasks.addTask(4, new EntityAIShipFollowOwner(this));	//0111
+		this.tasks.addTask(1, new EntityAIShipSit(this));				//0111
+		this.tasks.addTask(2, new EntityAIShipFlee(this));				//0111
+		this.tasks.addTask(3, new EntityAIShipGuarding(this));			//0111
+		this.tasks.addTask(4, new EntityAIShipFollowOwner(this));		//0111
 		
 		//use melee attack
 		if(this.getStateFlag(ID.F.UseMelee)) {
@@ -333,11 +334,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		}
 		
 		//idle AI
-//		this.tasks.addTask(21, new EntityAIOpenDoor(this, true));	//0000 //TODO ship door AI
-		this.tasks.addTask(23, new EntityAIShipFloating(this));		//0111
-		this.tasks.addTask(24, new EntityAIShipWatchClosest(this, EntityPlayer.class, 4F, 0.06F)); //0010
-		this.tasks.addTask(25, new EntityAIShipWander(this, 10, 5, 0.8D));	//0111
-		this.tasks.addTask(25, new EntityAILookIdle(this));			//0011
+		this.tasks.addTask(21, new EntityAIShipOpenDoor(this, true));	//0000
+		this.tasks.addTask(23, new EntityAIShipFloating(this));			//0111
+		this.tasks.addTask(24, new EntityAIShipWatchClosest(this, EntityPlayer.class, 4F, 0.06F));//0010
+		this.tasks.addTask(25, new EntityAIShipWander(this, 10, 5, 0.8D));//0111
+		this.tasks.addTask(25, new EntityAILookIdle(this));				//0011
 	}
 	
 	//setup target AI
@@ -801,7 +802,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(StateFinal[ID.MOV]);
 		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(StateFinal[ID.HIT]+32); //此為找目標, 路徑的範圍
 		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(resisKB);
-//		this.jumpMovementFactor = (1F + StateFinal[ID.MOV]) * 0.05F;
 		
 		//for server side, sync data to client
 		if(!worldObj.isRemote) {
@@ -1715,7 +1715,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
             else {								//跳躍中
                 f4 = this.jumpMovementFactor;
             }
+            
+            if(this.isJumping) {
+            	this.motionY += this.getMoveSpeed() * 0.1D;
+            }
+            
             this.moveFlying(movX, movZ, f4);
+            
             f2 = 0.91F;
             
             if(this.onGround) {
@@ -2010,7 +2016,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
             		}
             		
                 	/** debug info */
-//            		LogHelper.info("DEBUG: target:   "+this.getClass().getSimpleName()+" "+this.getEntityTarget()+"      "+this.getEntityRevengeTarget()+"      "+this.getAttackTarget());
+//            		LogHelper.info("AAAAAAAA "+this.worldObj.getBlockMetadata(MathHelper.floor_double(posX), (int)posY, MathHelper.floor_double(posZ)));
 //                	LogHelper.info("DEBUG : ship update: "+ServerProxy.getTeamData(900).getTeamBannedList());
 //                	LogHelper.info("DEBUG : ship update: eid: "+ServerProxy.getNextShipID()+" "+ServerProxy.getNextPlayerID()+" "+ConfigHandler.nextPlayerID+" "+ConfigHandler.nextShipID);
 //            		if(this.worldObj.provider.dimensionId == 0) {	//main world
@@ -2040,7 +2046,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                 		if(ticksExisted % 64 == 0) {
                 			//sync model display
                 			sendSyncPacketEmotion();
-                			
+
                 			//check every 128 ticks
                         	if(ticksExisted % 128 == 0) {
                         		//delayed init, waiting for player entity loaded
