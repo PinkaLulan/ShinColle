@@ -441,6 +441,37 @@ public class ServerProxy extends CommonProxy {
 		}
 	}
 	
+	//remove dupe team with same owner name
+	private static void cleanTeamData(TeamData tdata) {
+		if(tdata != null) {
+			try {
+				String owner1 = tdata.getTeamLeaderName();
+				String owner2 = null;
+				
+				Iterator iter = mapTeamID.entrySet().iterator();
+				
+				while(iter.hasNext()) {
+					Map.Entry entry = (Map.Entry) iter.next();
+					int pid = (Integer) entry.getKey();		//get player uid
+					TeamData getdata = (TeamData) entry.getValue();		//get player uid
+					
+					//check owner name
+					owner2 = getdata.getTeamLeaderName();
+					
+					if(owner1.equals(owner2)) {
+						//remove same owner team
+						mapTeamID.remove(pid);
+						serverData.markDirty();
+					}
+				}
+			}
+			catch(Exception e) {
+				//...
+				return;
+			}
+		}
+	}
+	
 	public static int getNextPlayerID() {
 		return nextPlayerID;
 	}
@@ -743,6 +774,9 @@ public class ServerProxy extends CommonProxy {
 					tdata.setTeamLeaderName(player.getDisplayName());
 					LogHelper.info("DEBUG : server proxy: create team: "+pUID+" "+tname);
 					
+					//remove the same owner team (for some bug, ex: UID changed)
+					cleanTeamData(tdata);
+					
 					//save team data
 					setTeamData(tdata);
 					
@@ -750,23 +784,6 @@ public class ServerProxy extends CommonProxy {
 					extProps.setPlayerTeamID(pUID);
 					extProps.setPlayerTeamCooldown(ConfigHandler.teamCooldown);
 					updatePlayerID(player);
-					
-//					//DEBUG generate random team
-//					TeamData tdata2 = new TeamData(player.getRNG().nextInt(999),"sa"+player.getRNG().nextInt(999),"sa"+player.getRNG().nextInt(999));
-//					TeamData tdata3 = new TeamData(player.getRNG().nextInt(999),"sad4"+player.getRNG().nextInt(999),"sad4"+player.getRNG().nextInt(999));
-//					TeamData tdata4 = new TeamData(player.getRNG().nextInt(999),"sa7"+player.getRNG().nextInt(999),"sa7"+player.getRNG().nextInt(999));
-//					TeamData tdata5 = new TeamData(player.getRNG().nextInt(999),"ff"+player.getRNG().nextInt(999),"ff"+player.getRNG().nextInt(999));
-//					TeamData tdata6 = new TeamData(player.getRNG().nextInt(999),"sht"+player.getRNG().nextInt(999),"sht"+player.getRNG().nextInt(999));
-//					TeamData tdata7 = new TeamData(player.getRNG().nextInt(999),"dss"+player.getRNG().nextInt(999),"dss"+player.getRNG().nextInt(999));
-//					TeamData tdata8 = new TeamData(player.getRNG().nextInt(999),"ss"+player.getRNG().nextInt(999),"ss"+player.getRNG().nextInt(999));
-//					
-//					setTeamData(tdata2);
-//					setTeamData(tdata3);
-//					setTeamData(tdata4);
-//					setTeamData(tdata5);
-//					setTeamData(tdata6);
-//					setTeamData(tdata7);
-//					setTeamData(tdata8);
 				}
 			}
 		}

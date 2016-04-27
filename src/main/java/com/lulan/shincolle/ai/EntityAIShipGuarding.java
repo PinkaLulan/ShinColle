@@ -244,7 +244,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
         	
         	//設定頭部轉向
             this.host2.getLookHelper().setLookPosition(pos[0], pos[1], pos[2], 30F, this.host2.getVerticalFaceSpeed());
-//            LogHelper.info("AAAAAAAAAAAAAAAAAAAAA "+this.host2.dimension+" "+this.host.getStateMinor(ID.M.GuardDim));
+            
             //check teleport conditions: same DIM and (dist > TP_DIST or time > TP_TIME)
         	if(this.host2.dimension == this.host.getGuardedPos(3)) {
         		//check dist
@@ -336,7 +336,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
 	private void updateAttackParms() {
     	if(this.ship != null) {
     		//attack range = 70% normal range
-    		this.range = (int)(this.ship.getAttackRange() * 0.7F);
+    		this.range = (int) this.ship.getAttackRange();
     		
     		//檢查範圍, 使range2 > range1 > 1
             if(this.range < 1) {
@@ -345,10 +345,10 @@ public class EntityAIShipGuarding extends EntityAIBase {
     		
     		this.rangeSq = this.range * this.range;
 
-    		//attack delay = 125% normal delay
-    		this.maxDelayTime[0] = (int)(100F / (this.ship.getAttackSpeed()));
-    		this.maxDelayTime[1] = (int)(200F / (this.ship.getAttackSpeed()));
-    		this.maxDelayTime[2] = (int)(100F / (this.ship.getAttackSpeed()));
+    		//attack delay
+    		this.maxDelayTime[0] = (int)(ConfigHandler.baseAttackSpeed[1] / (this.ship.getAttackSpeed())) + ConfigHandler.fixedAttackDelay[1];
+    		this.maxDelayTime[1] = (int)(ConfigHandler.baseAttackSpeed[2] / (this.ship.getAttackSpeed())) + ConfigHandler.fixedAttackDelay[2];
+    		this.maxDelayTime[2] = (int)(ConfigHandler.baseAttackSpeed[3] / (this.ship.getAttackSpeed())) + ConfigHandler.fixedAttackDelay[3];
     		
     		//aim time (no change)
     		this.aimTime = (int) (20F * (150 - this.host.getLevel()) / 150F) + 10;

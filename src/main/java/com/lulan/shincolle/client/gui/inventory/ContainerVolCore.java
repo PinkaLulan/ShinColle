@@ -14,12 +14,7 @@ import com.lulan.shincolle.tileentity.TileEntityVolCore;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-/**SLOT POSITION
- * S1:grudge(33,29) S2:abyssium(53,29) S3:ammo(73,29) S4:poly(93,29)
- * fuel(8,53) fuel bar(10,48 height=30) fuel color bar(176,46)
- * ship button(123,17) equip button(143,17)
- * output(134,44) player inv(8,87) action bar(8,145)
- */
+
 public class ContainerVolCore extends Container {
 	
 	//for shift item
@@ -97,7 +92,7 @@ public class ContainerVolCore extends Container {
             }
 
             //如果物品都放完了, 則設成null清空該物品
-            if (orgStack.stackSize <= 0) {
+            if(orgStack.stackSize <= 0) {
                 slot.putStack(null);
             }
             else { //還沒放完, 先跑一次slot update

@@ -171,7 +171,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				                     -1, 0,  0,  0,  0,
 				                     -1, -1, -1, 0
 				                    };
-		this.StateTimer = new int[] {0,  0,  0};
+		this.StateTimer = new int[] {0,  0,  0,  0};
 		this.EffectEquip = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F};
 		this.EffectEquipBU = this.EffectEquip.clone();
 		this.EffectFormation = new float[] {0F, 0F, 0F, 0F, 0F,
@@ -198,7 +198,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.ownerName = "";
 		this.stepHeight = 1F;
 		this.shipNavigator = new ShipPathNavigate(this, worldObj);
-		this.shipMoveHelper = new ShipMoveHelper(this, 35F);
+		this.shipMoveHelper = new ShipMoveHelper(this, 60F);
 		
 		//for render
 		this.EmotionTicks = new int[] {0, 0, 0, 0, 0, 0};
@@ -889,6 +889,17 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		case ID.M.Morale:
 			if(par1 < 0) par1 = 0;
 			break;
+		case ID.M.CraneState:
+			//if changed to 1 or 2, check delay
+			if(par1 > 0) {
+				if(getStateTimer(ID.T.CrandDelay) > 0) {
+					return;
+				}
+				else {
+					setStateTimer(ID.T.CrandDelay, 40);
+				}
+			}
+			break;
 		}
 		
 		StateMinor[id] = par1;
@@ -995,7 +1006,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		StateEmotion[id] = (byte)value;
 		
 		if(sync) {
-			this.sendEmotionSyncPacket();
+			this.sendSyncPacketEmotion();
 		}
 	}
 	
@@ -1092,17 +1103,17 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	
 	/** send sync packet: sync all data */
 	public void sendSyncPacketAllValue() {
-		this.sendSyncPacket(0, false, false);
+		sendSyncPacket(0, false);
 	}
 	
 	/** send sync packet: sync unbuff data */
 	public void sendSyncPacketUnbuffValue() {
-		this.sendSyncPacket(S2CEntitySync.PID.SyncShip_Unbuff, false, false);
+		sendSyncPacket(S2CEntitySync.PID.SyncShip_Unbuff, false);
 	}
 	
 	/** send sync packet: sync formation data */
 	public void sendSyncPacketFormationValue() {
-		this.sendSyncPacket(S2CEntitySync.PID.SyncShip_Formation, false, false);
+		sendSyncPacket(S2CEntitySync.PID.SyncShip_Formation, false);
 	}
 	
 	/**  sync data for GUI display */
@@ -1120,14 +1131,19 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		}
 	}
 	
+	/** sync data for timer display */
+	public void sendSyncPacketTimer() {
+		sendSyncPacket(S2CEntitySync.PID.SyncShip_Timer, true);
+	}
+	
 	/** sync data for emotion display */
-	public void sendEmotionSyncPacket() {
-		this.sendSyncPacket(S2CEntitySync.PID.SyncShip_Emo, true, true);
+	public void sendSyncPacketEmotion() {
+		sendSyncPacket(S2CEntitySync.PID.SyncShip_Emo, true);
 	}
 	
 	/** sync data for flag */
-	public void sendFlagSyncPacket() {
-		this.sendSyncPacket(S2CEntitySync.PID.SyncShip_Flag, true, true);
+	public void sendSyncPacketFlag() {
+		sendSyncPacket(S2CEntitySync.PID.SyncShip_Flag, true);
 	}
 	
 	/** send sync packet:
@@ -1135,7 +1151,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	 *  send all: send packet to all around player
 	 *  sync emo: sync emotion to all around player
 	 */
-	public void sendSyncPacket(int type, boolean sendAll, boolean syncEmo) {
+	public void sendSyncPacket(int type, boolean sendAll) {
 		if(!worldObj.isRemote) {
 			//send to all player
 			if(sendAll) {
@@ -1151,15 +1167,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				}
 				
 				//owner在附近才需要sync
-				if(player != null && this.getDistanceToEntity(player) <= 64F) {
+				if(player != null && this.getDistanceToEntity(player) <= 48F) {
 					CommonProxy.channelE.sendTo(new S2CEntitySync(this, type), player);
 				}
-			}
-			
-			if(syncEmo) {
-				//send ship state for client display
-				TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
-				CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this, 1), point);
 			}
 		}
 	}
@@ -1459,7 +1469,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 								changeOwner = true;
 								
 								//send sync packet
-								this.sendSyncPacket(3, true, false);
+								this.sendSyncPacket(S2CEntitySync.PID.SyncShip_ID, true);
 							}//end player has data
 						}//end target != null
 					}//end item has 2 signs
@@ -1678,10 +1688,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
             d0 = this.posY;
             this.moveFlying(movX, movZ, this.getStateFinal(ID.MOV)*0.4F); //水中的速度計算(含漂移效果)
             this.moveEntity(this.motionX, this.motionY, this.motionZ);
+            
             //水中阻力
             this.motionX *= 0.8D;
             this.motionY *= 0.8D;
             this.motionZ *= 0.8D;
+            
             //水中撞到東西會上升
             if (this.isCollidedHorizontally && this.isOffsetPositionInLiquid(this.motionX, this.motionY + 0.6D - this.posY + d0, this.motionZ)) {
                 this.motionY = 0.3D;
@@ -1740,10 +1752,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
             }
 
             this.moveEntity(this.motionX, this.motionY, this.motionZ);
+            
             //往樓梯推擠, 則會往上爬
             if(this.isCollidedHorizontally && this.isOnLadder()) {
                 this.motionY = 0.4D;
             }
+            
             //自然掉落
             if(this.worldObj.isRemote && (!this.worldObj.blockExists((int)this.posX, 0, (int)this.posZ) || !this.worldObj.getChunkFromBlockCoords((int)this.posX, (int)this.posZ).isChunkLoaded)) {
                 if (this.posY > 0.0D) {
@@ -1756,12 +1770,14 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
             else {
                 this.motionY -= 0.08D;
             }
+            
             //空氣中的三方向阻力
             this.motionY *= 0.98D;			
             this.motionX *= f2;
             this.motionZ *= f2;
 //            LogHelper.info("DEBUG : f2 "+f2+" ");
         }
+        
         //計算四肢擺動值
         this.prevLimbSwingAmount = this.limbSwingAmount;
         d0 = this.posX - this.prevPosX;
@@ -1797,9 +1813,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		EntityHelper.checkDepth(this);	//both side
 		
 		/** BOTH SIDE */
+		//update arm
 		updateArmSwingProgress();
-		if(this.StartSoundHurt > 0) this.StartSoundHurt--;
-		if(this.EmotionTicks[4] > 0) this.EmotionTicks[4]--;
+		
+		//update client timer
+		updateBothSideTimer();
 		
 		//client side
 		if(this.worldObj.isRemote) {
@@ -1830,81 +1848,81 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			}
 			
 			//check every 16 ticks
-			if(this.ticksExisted % 16 == 0) {
-				//generate HP state effect, use parm:lookX to send width size
-				switch(getStateEmotion(ID.S.HPState)) {
-				case ID.HPState.MINOR:
-					ParticleHelper.spawnAttackParticleAt(this.posX, this.posY + 0.7D, this.posZ, 
-							this.width, 0.05D, 0D, (byte)4);
-					break;
-				case ID.HPState.MODERATE:
-					ParticleHelper.spawnAttackParticleAt(this.posX, this.posY + 0.7D, this.posZ, 
-							this.width, 0.05D, 0D, (byte)5);
-					break;
-				case ID.HPState.HEAVY:
-					ParticleHelper.spawnAttackParticleAt(this.posX, this.posY + 0.7D, this.posZ, 
-							this.width, 0.05D, 0D, (byte)7);
-					break;
-				default:
-					break;
-				}
-			}//end every 16 ticks
+			if(this.ticksExisted % 2 == 0) {
+				//update faster rotate body
+				updateClientBodyRotate();
 			
-			//check every 32 ticks
-			if(this.ticksExisted % 32 == 0) {
-				//show guard position
-				if(!this.getStateFlag(ID.F.CanFollow)) {
-					//set guard entity
-					if(this.getStateMinor(ID.M.GuardID) > 0) {
-						Entity getEnt = EntityHelper.getEntityByID(this.getStateMinor(ID.M.GuardID), 0, true);
-						this.setGuardedEntity(getEnt);
+				//check every 16 ticks
+				if(this.ticksExisted % 16 == 0) {
+					//generate HP state effect, use parm:lookX to send width size
+					switch(getStateEmotion(ID.S.HPState)) {
+					case ID.HPState.MINOR:
+						ParticleHelper.spawnAttackParticleAt(this.posX, this.posY + 0.7D, this.posZ, 
+								this.width, 0.05D, 0D, (byte)4);
+						break;
+					case ID.HPState.MODERATE:
+						ParticleHelper.spawnAttackParticleAt(this.posX, this.posY + 0.7D, this.posZ, 
+								this.width, 0.05D, 0D, (byte)5);
+						break;
+					case ID.HPState.HEAVY:
+						ParticleHelper.spawnAttackParticleAt(this.posX, this.posY + 0.7D, this.posZ, 
+								this.width, 0.05D, 0D, (byte)7);
+						break;
+					default:
+						break;
 					}
-					else {
-						//reset guard entity
-						this.setGuardedEntity(null);
-					}
-				}//end show pointer target effect
-				
-				//display circle particle, 只有owner才會接收到該ship同步的EID, 非owner讀取到的EID <= 0
-				//get owner entity
-				EntityPlayer player = null;
-				if(this.getStateMinor(ID.M.PlayerEID) > 0) {
-					player = EntityHelper.getEntityPlayerByID(getStateMinor(ID.M.PlayerEID), 0, true);
-				}
-				
-				//show circle particle on ship and guard target
-				if(player != null && player.dimension == this.getGuardedPos(3)) {
-					ItemStack item = player.inventory.getCurrentItem();
 					
-					if(ConfigHandler.alwaysShowTeamParticle || (item != null && item.getItem() instanceof PointerItem && item.getItemDamage() < 3)) {
-						//show friendly particle
-						ParticleHelper.spawnAttackParticleAtEntity(this, 0.3D, 7D, 0D, (byte)2);
+					//check every 32 ticks
+					if(this.ticksExisted % 32 == 0) {
+						//show guard position
+						if(!this.getStateFlag(ID.F.CanFollow)) {
+							//set guard entity
+							if(this.getStateMinor(ID.M.GuardID) > 0) {
+								Entity getEnt = EntityHelper.getEntityByID(this.getStateMinor(ID.M.GuardID), 0, true);
+								this.setGuardedEntity(getEnt);
+							}
+							else {
+								//reset guard entity
+								this.setGuardedEntity(null);
+							}
+						}//end show pointer target effect
 						
-						//show guard particle
-						//標記在entity上
-						if(this.getGuardedEntity() != null) {
-							ParticleHelper.spawnAttackParticleAtEntity(this.getGuardedEntity(), 0.3D, 6D, 0D, (byte)2);
-							ParticleHelper.spawnAttackParticleAtEntity(this, this.getGuardedEntity(), 0D, 0D, 0D, (byte)3, false);
+						//display circle particle, 只有owner才會接收到該ship同步的EID, 非owner讀取到的EID <= 0
+						//get owner entity
+						EntityPlayer player = null;
+						if(this.getStateMinor(ID.M.PlayerEID) > 0) {
+							player = EntityHelper.getEntityPlayerByID(getStateMinor(ID.M.PlayerEID), 0, true);
 						}
-						//標記在block上
-						else if(this.getGuardedPos(1) >= 0) {
-							ParticleHelper.spawnAttackParticleAt(this.getGuardedPos(0)+0.5D, this.getGuardedPos(1), this.getGuardedPos(2)+0.5D, 0.3D, 6D, 0D, (byte)25);
-							ParticleHelper.spawnAttackParticleAtEntity(this, this.getGuardedPos(0)+0.5D, this.getGuardedPos(1)+0.2D, this.getGuardedPos(2)+0.5D, (byte)8);
+						
+						//show circle particle on ship and guard target
+						if(player != null && player.dimension == this.getGuardedPos(3)) {
+							ItemStack item = player.inventory.getCurrentItem();
+							
+							if(ConfigHandler.alwaysShowTeamParticle || (item != null && item.getItem() instanceof PointerItem && item.getItemDamage() < 3)) {
+								//show friendly particle
+								ParticleHelper.spawnAttackParticleAtEntity(this, 0.3D, 7D, 0D, (byte)2);
+								
+								//show guard particle
+								//標記在entity上
+								if(this.getGuardedEntity() != null) {
+									ParticleHelper.spawnAttackParticleAtEntity(this.getGuardedEntity(), 0.3D, 6D, 0D, (byte)2);
+									ParticleHelper.spawnAttackParticleAtEntity(this, this.getGuardedEntity(), 0D, 0D, 0D, (byte)3, false);
+								}
+								//標記在block上
+								else if(this.getGuardedPos(1) >= 0) {
+									ParticleHelper.spawnAttackParticleAt(this.getGuardedPos(0)+0.5D, this.getGuardedPos(1), this.getGuardedPos(2)+0.5D, 0.3D, 6D, 0D, (byte)25);
+									ParticleHelper.spawnAttackParticleAtEntity(this, this.getGuardedPos(0)+0.5D, this.getGuardedPos(1)+0.2D, this.getGuardedPos(2)+0.5D, (byte)8);
+								}
+							}
 						}
-					}
-				}
-				else {
-					this.setStateMinor(ID.M.PlayerEID, -1);
-				}
-				
-			}//end every 32 ticks
-			
-//			//check every 128 ticks
-//			if(this.ticksExisted % 128 == 0) {
-//				
-//			}//end every 128 ticks
+						else {
+							this.setStateMinor(ID.M.PlayerEID, -1);
+						}
+						
+					}//end every 32 ticks
+				}//end every 16 ticks
+			}//end every 2 ticks
 		}//end client side
-		
 		
 //		//TODO debug
 //		if(this.ticksExisted % 32 == 0) {
@@ -1939,7 +1957,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	updateShipID();
         	
         	//timer ticking
-        	updateStateTimer();
+        	updateServerTimer();
         	
         	//check every 8 ticks
         	if(ticksExisted % 8 == 0) {
@@ -1960,18 +1978,18 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
             		this.initAI = true;
         		}
 //        		LogHelper.info("DEBUG : check spawn: "+this.worldObj.getChunkProvider().getPossibleCreatures(EnumCreatureType.waterCreature, (int)posX, (int)posY, (int)posZ));
-        	
+        		
         		//check every 16 ticks
             	if(ticksExisted % 16 == 0) {
-            		//update searchlight
-            		if(ConfigHandler.canSearchlight) {
-                		updateSearchlight();
-            		}
-            		
             		//waypoint move
             		if(EntityHelper.updateWaypointMove(this)) {
             			shipNavigator.tryMoveToXYZ(getGuardedPos(0), getGuardedPos(1), getGuardedPos(2), 1D);
-            			sendSyncPacket(3, false, false);
+            			sendSyncPacket(S2CEntitySync.PID.SyncShip_Guard, true);
+            		}
+            		
+            		//update searchlight
+            		if(ConfigHandler.canSearchlight) {
+                		updateSearchlight();
             		}
             		
             		//cancel mounts
@@ -2017,61 +2035,67 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         		                }
         	                }
         	            }
-              		
-                		//check every 128 ticks
-                    	if(ticksExisted % 128 == 0) {
-                    		//delayed init, waiting for player entity loaded
-                    		if(!this.initWaitAI && ticksExisted >= 128) {
-                    			setUpdateFlag(ID.FU.FormationBuff, true);  //set update formation buff
-                    			this.initWaitAI = true;
-                    		}
+                		
+                		//check every 64 ticks
+                		if(ticksExisted % 64 == 0) {
+                			//sync model display
+                			sendSyncPacketEmotion();
+                			
+                			//check every 128 ticks
+                        	if(ticksExisted % 128 == 0) {
+                        		//delayed init, waiting for player entity loaded
+                        		if(!this.initWaitAI && ticksExisted >= 128) {
+                        			setUpdateFlag(ID.FU.FormationBuff, true);  //set update formation buff
+                        			this.initWaitAI = true;
+                        		}
 
-                    		//check owner online
-                    		if(this.getPlayerUID() > 0) {
-                    			//get owner
-                    			EntityPlayer player = EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
+                        		//check owner online
+                        		if(this.getPlayerUID() > 0) {
+                        			//get owner
+                        			EntityPlayer player = EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
 
-                    			//owner exists (online and same world)
-                    			if(player != null) {
-                					//update owner entity id (could be changed when owner change dimension or dead)
-                        			this.setStateMinor(ID.M.PlayerEID, player.getEntityId());
-                        			//sync guard
-                        			this.sendSyncPacket(3, false, false);
-                        		}
-                    		}
-                    		
-                    		//update hp state
-                    		updateEmotionState();
-                    		
-                    		//update mount
-                    		updateMountSummon();
-                    		
-                    		//update consume item
-                    		updateConsumeItem();
-                    		
-                    		//update morale value
-                    		if(!getStateFlag(ID.F.NoFuel)) updateMorale();
-                    		
-                    		//check every 256 ticks
-                        	if(this.ticksExisted % 256 == 0) {
-                        		//update buff (slow update)
-                        		calcEquipAndUpdateState();
-                        		
-                        		//show idle emotes
-                        		if(!getStateFlag(ID.F.NoFuel)) applyEmotesReaction(4);
-                        		
-                        		//HP auto regen
-                        		if(this.getHealth() < this.getMaxHealth()) {
-                        			this.setHealth(this.getHealth() + this.getMaxHealth() * 0.015625F + 1);
+                        			//owner exists (online and same world)
+                        			if(player != null) {
+                    					//update owner entity id (could be changed when owner change dimension or dead)
+                            			this.setStateMinor(ID.M.PlayerEID, player.getEntityId());
+                            			//sync guard position
+                            			this.sendSyncPacket(S2CEntitySync.PID.SyncShip_Guard, false);
+                            		}
                         		}
                         		
-                        		//food saturation--
-                        		int f = this.getFoodSaturation();
-                        		if(f > 0) {
-                        			this.setFoodSaturation(--f);
-                        		}
-                        	}//end every 256 ticks
-                    	}//end every 128 ticks
+                        		//update hp state
+                        		updateEmotionState();
+                        		
+                        		//update mount
+                        		updateMountSummon();
+                        		
+                        		//update consume item
+                        		updateConsumeItem();
+                        		
+                        		//update morale value
+                        		if(!getStateFlag(ID.F.NoFuel)) updateMorale();
+                        		
+                        		//check every 256 ticks
+                            	if(this.ticksExisted % 256 == 0) {
+                            		//update buff (slow update)
+                            		calcEquipAndUpdateState();
+                            		
+                            		//show idle emotes
+                            		if(!getStateFlag(ID.F.NoFuel)) applyEmotesReaction(4);
+                            		
+                            		//HP auto regen
+                            		if(this.getHealth() < this.getMaxHealth()) {
+                            			this.setHealth(this.getHealth() + this.getMaxHealth() * 0.015625F + 1);
+                            		}
+                            		
+                            		//food saturation--
+                            		int f = this.getFoodSaturation();
+                            		if(f > 0) {
+                            			this.setFoodSaturation(--f);
+                            		}
+                            	}//end every 256 ticks
+                        	}//end every 128 ticks
+                		}//end every 64 ticks
                 	}//end every 32 ticks
             	}//end every 16 ticks
         	}//end every 8 ticks
@@ -3039,7 +3063,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		}
 		
 		//sync emotion
-		this.sendEmotionSyncPacket();
+		this.sendSyncPacketEmotion();
   	}
   	
 	//update hp state
@@ -3332,8 +3356,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		}
   	}
   	
-  	/** update timer */
-  	protected void updateStateTimer() {
+  	/** update server timer */
+  	protected void updateServerTimer() {
   		//is immune state
   		if(this.StateTimer[ID.T.ImmuneTime] > 0) {
     		this.StateTimer[ID.T.ImmuneTime]--;
@@ -3343,6 +3367,26 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		if(this.getStateMinor(ID.M.CraneState) > 1) {
     		this.StateTimer[ID.T.CraneTime]++;
     	}
+  		
+  		//crane change state delay
+  		if(this.StateTimer[ID.T.CrandDelay] > 0) {
+    		this.StateTimer[ID.T.CrandDelay]--;
+    	}
+  	}
+  	
+  	/** update client timer */
+  	protected void updateBothSideTimer() {
+  		//hurt sound delay
+  		if(this.StartSoundHurt > 0) this.StartSoundHurt--;
+  		
+  		//emotes delay
+		if(this.EmotionTicks[4] > 0) this.EmotionTicks[4]--;
+  	}
+  	
+  	/** update rotate */
+  	protected void updateClientBodyRotate() {
+		float[] degree = CalcHelper.getLookDegree(posX - prevPosX, posY - prevPosY, posZ - prevPosZ, true);
+		this.rotationYaw = degree[0];
   	}
   	
   	/** change ship outfit by right click cake on ship */

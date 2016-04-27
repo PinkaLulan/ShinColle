@@ -192,10 +192,10 @@ public class C2SGUIPackets implements IMessage {
 				
 				if(world != null) {
 					this.tile = (BasicTileEntity) world.getTileEntity(value3[0], value3[1], value3[2]);
+					
+					//set value
+					EntityHelper.setTileEntityByGUI(tile, button, value1, value2);
 				}
-				
-				//set value
-				EntityHelper.setTileEntityByGUI(tile, button, value1, value2);
 			}
 			break;
 		case PID.AddTeam: //add team, 1 parm

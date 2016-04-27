@@ -180,7 +180,18 @@ public class EntityFXSpray extends EntityFX {
         	this.particleRed = 1F;
             this.particleGreen = 0F;
             this.particleBlue = 0F;
-            this.particleAlpha = 0.75F;
+            this.particleAlpha = 0.5F;
+            this.particleScale *= 3F;
+            this.pScale = this.particleScale;
+            this.particleMaxAge = 100;
+            this.noClip = true;
+        	break;
+        case 14:   //paired chest
+        	this.speedLimit = 2D;
+        	this.particleRed = 0.5F;
+            this.particleGreen = 0F;
+            this.particleBlue = 0.5F;
+            this.particleAlpha = 0.5F;
             this.particleScale *= 3F;
             this.pScale = this.particleScale;
             this.particleMaxAge = 100;
@@ -255,8 +266,8 @@ public class EntityFXSpray extends EntityFX {
                 return;
             }
             
-            if(this.ptype == 13) {
-            	this.setParticleTextureIndex(7 - this.particleAge * 5 / this.particleMaxAge);
+            if(this.ptype >= 13) {
+            	this.setParticleTextureIndex(7 - this.particleAge * 4 / this.particleMaxAge);
             	
             	this.posX += this.motionX;
             	this.posY += this.motionY;

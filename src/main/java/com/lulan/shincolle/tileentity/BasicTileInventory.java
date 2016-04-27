@@ -42,18 +42,20 @@ abstract public class BasicTileInventory extends BasicTileEntity implements ISid
   	@Override
   	public ItemStack decrStackSize(int i, int j) {
   		ItemStack itemStack = getStackInSlot(i);
-          if (itemStack != null) {
-              if (itemStack.stackSize <= j) {			  //若數量<=j個
-                  setInventorySlotContents(i, null);	  //則該slot清空
-              }
-              else {									  //若數量 >j個
-                  itemStack = itemStack.splitStack(j);  //該itemstack數量-j
-                  if (itemStack.stackSize == 0) {
-                      setInventorySlotContents(i, null);//全部拿光, slot清空
-                  }
-              }
-          }
-          return itemStack;
+  		if(itemStack != null) {
+  			if(itemStack.stackSize <= j) {			  //若數量<=j個
+  				setInventorySlotContents(i, null);	  //則該slot清空
+  			}
+  			else {									  //若數量 >j個
+  				itemStack = itemStack.splitStack(j);  //該itemstack數量-j
+  				
+  				if(itemStack.stackSize == 0) {
+  					setInventorySlotContents(i, null);//全部拿光, slot清空
+  				}
+  			}
+  		}
+  		
+  		return itemStack;
   	}
   	
     //關閉gui時是否取出slot中的物品, 以便讓物品掉落出來, 用於合成台等方塊 (此方塊沒有用到)

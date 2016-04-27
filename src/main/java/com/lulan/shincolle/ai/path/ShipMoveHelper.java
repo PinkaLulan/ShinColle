@@ -76,8 +76,8 @@ public class ShipMoveHelper {
                 
                 //設定每tick最多可以轉動的角度
                 this.entity.rotationYaw = this.limitAngle(this.entity.rotationYaw, f, this.rotateLimit);
-//                this.entity.setAIMoveSpeed(moveSpeed);
-
+//                this.entity.rotationYaw = this.limitAngle(this.entity.rotationYaw, f, 60F);
+                
                 //y軸移動: 由於官方setAIMoveSpeed只提供水平移動, 因此y軸移動必須自行設定
                 //爬升時速度較慢, 落下時速度快
                 //fly entity

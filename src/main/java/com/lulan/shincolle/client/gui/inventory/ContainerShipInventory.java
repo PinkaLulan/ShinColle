@@ -27,7 +27,7 @@ public class ContainerShipInventory extends Container {
 	            GuiNumAirLight, GuiNumAirHeavy, GuiIsMarried, GuiMorale, GuiInvSize,
 	            ButtonMelee, ButtonAmmoLight, ButtonAmmoHeavy, ButtonAirLight, ButtoAirHeavy,
 	            FollowMin, FollowMax, FleeHP, TarAI, AuraEffect, OnSightAI, PVPAI, AAAI, ASMAI,
-	            TIMEKEEPAI;
+	            TIMEKEEPAI, ShowPage;
 	
 	public ContainerShipInventory(InventoryPlayer invPlayer, BasicEntityShip entity1) {
 		int i, j;
@@ -182,10 +182,15 @@ public class ContainerShipInventory extends Container {
 		float getValueF;
 		
 		if(this.GuiKills != this.entity.getStateMinor(ID.M.Kills) ||
-		   this.GuiNumGrudge != this.entity.getStateMinor(ID.M.NumGrudge)) {
+		   this.GuiNumGrudge != this.entity.getStateMinor(ID.M.NumGrudge) ||
+		   this.ShowPage != this.entity.getExtProps().getInventoryPage()) {
+			//send sync packet
 			this.entity.sendGUISyncPacket();
+			
+			//update value
 			this.GuiKills = this.entity.getStateMinor(ID.M.Kills);
 			this.GuiNumGrudge = this.entity.getStateMinor(ID.M.NumGrudge);
+			this.ShowPage = this.entity.getExtProps().getInventoryPage();
 		}
 		
         for(Object crafter : this.crafters) {

@@ -71,7 +71,7 @@ public class ShipPathNavigate {
      * Gets the maximum distance that the path finding will search in.
      */
     public float getPathSearchRange() {
-        return (float)this.pathSearchRange.getAttributeValue();
+        return (float)this.pathSearchRange.getAttributeValue() + 32F;
     }
     
     /**

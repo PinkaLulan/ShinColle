@@ -429,7 +429,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 						//waypoint move
 	            		if(EntityHelper.updateWaypointMove(this)) {
 	            			shipNavigator.tryMoveToXYZ(getGuardedPos(0), getGuardedPos(1), getGuardedPos(2), 1D);
-	            			host.sendSyncPacket(3, false, false);
+	            			host.sendSyncPacket(S2CEntitySync.PID.SyncShip_Guard, true);
 	            		}
 	            		
 	            		//check every 128 ticks

@@ -5,12 +5,14 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
+import com.lulan.shincolle.client.gui.GuiCrane;
 import com.lulan.shincolle.client.gui.GuiDesk;
 import com.lulan.shincolle.client.gui.GuiFormation;
 import com.lulan.shincolle.client.gui.GuiLargeShipyard;
 import com.lulan.shincolle.client.gui.GuiShipInventory;
 import com.lulan.shincolle.client.gui.GuiSmallShipyard;
 import com.lulan.shincolle.client.gui.GuiVolCore;
+import com.lulan.shincolle.client.gui.inventory.ContainerCrane;
 import com.lulan.shincolle.client.gui.inventory.ContainerDesk;
 import com.lulan.shincolle.client.gui.inventory.ContainerFormation;
 import com.lulan.shincolle.client.gui.inventory.ContainerLargeShipyard;
@@ -20,6 +22,7 @@ import com.lulan.shincolle.client.gui.inventory.ContainerVolCore;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.tileentity.TileEntityCrane;
 import com.lulan.shincolle.tileentity.TileEntityDesk;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.tileentity.TileEntityVolCore;
@@ -111,6 +114,16 @@ public class GuiHandler implements IGuiHandler {
 				return new ContainerVolCore(player.inventory, (TileEntityVolCore) tile);
 			}
 			break;
+		case ID.G.CRANE:	//GUI crane
+			tile = world.getTileEntity(x, y, z);  //確定抓到entity才開ui 以免噴出NPE
+			
+			if(tile != null && tile instanceof TileEntityCrane) {  //server取得container
+				//sync tile when gui opened
+				((TileEntityCrane)tile).sendSyncPacket();
+				
+				return new ContainerCrane(player.inventory, (TileEntityCrane) tile);
+			}
+			break;
 		}
 		return null;
 	}
@@ -153,13 +166,20 @@ public class GuiHandler implements IGuiHandler {
 			else {
 				return new GuiDesk(player.inventory, null, x);
 			}
-		case ID.G.FORMATION:		//GUI formation
+		case ID.G.FORMATION:	//GUI formation
 			return new GuiFormation(player.inventory);
-		case ID.G.VOLCORE:	//GUI volcano core
+		case ID.G.VOLCORE:		//GUI volcano core
 			tile = world.getTileEntity(x, y, z);  //確定抓到entity才開ui 以免噴出NPE
 			
 			if (tile != null && tile instanceof TileEntityVolCore) {  //client取得gui
 				return new GuiVolCore(player.inventory, (TileEntityVolCore) tile);
+			}
+			return null;
+		case ID.G.CRANE:		//GUI crane
+			tile = world.getTileEntity(x, y, z);  //確定抓到entity才開ui 以免噴出NPE
+			
+			if (tile != null && tile instanceof TileEntityCrane) {  //client取得gui
+				return new GuiCrane(player.inventory, (TileEntityCrane) tile);
 			}
 			return null;
 		}

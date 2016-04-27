@@ -133,12 +133,7 @@ public class TargetWrench extends BasicItem {
 			if(player != null && player.isSneaking()) {
 				TileEntity tile = world.getTileEntity(x, y, z);
 				
-				if(tile instanceof IInventory) {
-					this.tileChest = new int[] {x, y, z};
-					
-					return pairCrane(world);
-				}
-				else if(tile instanceof ITileWaypoint) {
+				if(tile instanceof TileEntityCrane) {
 					this.tilePoint[this.pointID] = new int[] {x, y, z};
 					this.pointID = changePoint(this.pointID);
 					
@@ -147,6 +142,17 @@ public class TargetWrench extends BasicItem {
 					}
 					
 					return true;
+				}
+				else if(tile instanceof IInventory) {
+					this.tileChest = new int[] {x, y, z};
+					
+					return pairCrane(world);
+				}
+				else if(tile instanceof ITileWaypoint) {
+					this.tilePoint[this.pointID] = new int[] {x, y, z};
+					this.pointID = changePoint(this.pointID);
+					
+					return setWaypoint(world);
 				}
 				else {
 					//fail msg
@@ -217,7 +223,7 @@ public class TargetWrench extends BasicItem {
 				}
 				
 				//dist < 32 blocks
-				if(dx + dy + dz < 1024) {
+				if(dx + dy + dz < 2304) {
 					//get waypoint tile
 					TileEntity tile1 = world.getTileEntity(tilePoint[pointID][0], tilePoint[pointID][1], tilePoint[pointID][2]);
 					this.pointID = changePoint(this.pointID);
@@ -288,7 +294,7 @@ public class TargetWrench extends BasicItem {
 			
 			//check is chest and crane
 			if(tile1 instanceof IInventory && tile2 instanceof TileEntityCrane) {
-				//check distance < ~6D
+				//calc distance
 				int dx = tileChest[0] - tile2.xCoord;
 				int dy = tileChest[1] - tile2.yCoord;
 				int dz = tileChest[2] - tile2.zCoord;
@@ -297,6 +303,13 @@ public class TargetWrench extends BasicItem {
 				dz = dz * dz;
 				int dist = dx + dy + dz;
 				
+				//same tile, reset
+				if(dx == 0 && dy == 0 && dz == 0) {
+	            	resetPos();
+	            	return false;
+				}
+				
+				//check dist < ~6 blocks
 				if(dist <= 40) {
 					((TileEntityCrane)tile2).setPairedChest(tileChest[0], tileChest[1], tileChest[2]);
 					
@@ -307,6 +320,9 @@ public class TargetWrench extends BasicItem {
 	            			EnumChatFormatting.GREEN+tileChest[0]+" "+tileChest[1]+" "+tileChest[2]+
 	            			EnumChatFormatting.AQUA+" & "+
 	            			EnumChatFormatting.GOLD+tile2.xCoord+" "+tile2.yCoord+" "+tile2.zCoord));
+	            	
+	            	//sync
+	            	((TileEntityCrane)tile2).sendSyncPacket();
 	            	
 	            	//reset
 	            	resetPos();

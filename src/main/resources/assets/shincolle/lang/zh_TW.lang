@@ -270,8 +270,8 @@ gui.shincolle:book.chap1.title22=深海路標
 gui.shincolle:book.chap1.text22d0=<br><br><br><br><br><br><br><br><br>路徑點標記方塊，經由§d目標設定扳手§0連結各個路標後，可使船艦依照路徑點指示來移動。<br><br>當指示船艦移動到某路標時，船艦靠近路標後就會自動移動到下一路標。
 gui.shincolle:book.chap1.text22d1=以§d目標設定扳手§0右鍵點擊會顯示該路標前後路徑點，蹲下右鍵則是設定連結。<br><br>每個路標只會儲存一個下一路徑點，且路標最遠可設定距離為32格。<br><br>若要使船艦逆向路標移動，需要將最後一個路標往回連結到上一路標，船艦到達最後路標後就會開始逆向移動。
 gui.shincolle:book.chap1.title23=深海起重機
-gui.shincolle:book.chap1.text23d0=<br><br><br><br><br><br><br><br><br>深海棲艦用來大量裝卸載貨物的機械
-gui.shincolle:book.chap1.text23d1=
+gui.shincolle:book.chap1.text23d0=<br><br><br><br><br><br><br><br><br>§c深海棲艦§0用來大量裝卸載貨物的機械。<br><br>跟路徑方塊一樣由§d目標設定扳手§0來連結其他路徑方塊或是其他起重機，最重要的是§9要跟箱子設定連結§0。<br><br>當棲艦走到起重機這個點時，就會依照設定的物品內容對設定的箱子裝卸貨物。裝卸完畢就會繼續往下個路徑點移動。
+gui.shincolle:book.chap1.text23d1=介面說明：<br><br>§9左上§0為起重機§9開關§0按鈕。<br><br>§9中上最大的按鈕§0為§9等待模式§0。<br><br>§9中間M/D/N三個按鈕§0可以設定物品額外的比對條件。<br><br>§9中間兩排物品欄§0可設定裝卸各九種物品，§C全部不設定則視為裝卸所有物品§0。裝貨或者卸貨功能可以分開開關。<br><br>要注意裝卸或者等待裝卸中的船艦不會移動也不會攻擊。
  
 # GUI: Book Text Chap 2
 gui.shincolle:book.chap2.title=建造
@@ -333,7 +333,7 @@ gui.shincolle:book.chap3.title11=指令說明
 gui.shincolle:book.chap3.text11d0=§9/shipinfo§c<br>§d權限:§0 全部玩家<br>§d功能:§0 顯示船艦資訊<br><br>§9/shipchangeowner§c <玩家名稱><br>§d權限:§0 僅限OP<br>§d功能:§0 更改船的主人<br><br>OP、主人還有船三者都必須上線並處在相同維度(世界)下，OP輸入以上指令並加上玩家名稱後，OP游標所指到的船的主人就會修改為指令所指定的玩家。
 gui.shincolle:book.chap3.text11d1=§9/shipupdateowneruid§3 [玩家名稱]<br>§d權限:§0 全部玩家 or 僅限OP<br>§d功能:§0 更新擁有船的主人ID<br><br>在某些bug下導致船艦對主人沒有反應時，可輸入此指令嘗試更新主人ID。一般玩家輸入後會更新玩家所擁有的已載入的船艦的主人ID，OP可以額外輸入玩家名稱，就會更新該玩家所擁有船艦的主人ID。<br><br>注意船艦若處在非載入的地圖區塊中，不會被此指令影響，需移動到該船艦附近輸入指令才能生效。<br><br>判定擁有船艦是以船艦紀錄的主人UUID為準，若UUID出現bug則此指令可能無效，請改用/shipchangeowner單獨對每個船艦修改主人。
 gui.shincolle:book.chap3.title12=
-gui.shincolle:book.chap3.text12d0=§9/shipattrs <船艦等級> <HP等級> <ATK等級> <DEF等級> <攻速等級> <跑速等級> <射程等級>§c<br>§d權限:§0 僅限OP<br>§d功能:§0 修改船艦數值<br><br>OP對游標指向的船艦輸入指令後，可以修改目標的等級跟六大屬性的等級。船艦等級可設為1~150，屬性等級可設0~100。
+gui.shincolle:book.chap3.text12d0=§9/shipattrs <船艦等級> [<HP等級> <ATK等級> <DEF等級> <攻速等級> <跑速等級> <射程等級>]§c<br>§d權限:§0 僅限OP<br>§d功能:§0 修改船艦數值<br><br>OP對游標指向的船艦輸入指令後，可以修改目標的等級跟六大屬性的等級。船艦等級可設為1~150，屬性等級可設0~100。
 gui.shincolle:book.chap3.text12d1=§9/shipcleardrop [range]<br>§d權限:§0 僅限OP<br>§d功能:§0 移除船艦掉落物<br><br>移除船艦掉落的紅色怨念球，可指定範圍。預設範圍為128格。<br><br>§9/shipemotes [表情]<br>§d權限:§0 全部玩家<br>§d功能:§0 bbb<br>§d縮寫:§9/em, /emo, /emote, /emotes§0<br><br>顯示表情符號，輸入指令時按下tab鍵會列出所有表情符號名稱。
 gui.shincolle:book.chap3.title13=情緒
 gui.shincolle:book.chap3.text13d0=艦太太們的情緒狀態會影響其作戰能力。<br><br>情緒狀態高低分為五個等級，處於較高的兩個等級具有屬性加成效果，而較低的兩個等級則會降低船艦屬性，以圖示標在船艦物品欄介面的右上角。圖示由左到右為：<br>§d興奮§0，§c快樂§0，§2普通§0，§9疲累§0，§7精疲力盡§0。
@@ -462,6 +462,15 @@ gui.shincolle:team.teamid=艦隊編號
 # GUI: Crane
 gui.shincolle:crane.tochest=卸貨
 gui.shincolle:crane.toship=裝貨
+gui.shincolle:crane.usemeta=檢查物品的metadata值
+gui.shincolle:crane.useoredict=使用Forge Ore Dictinoary檢查物品
+gui.shincolle:crane.usenbt=檢查物品的NBT tag是否相同
+gui.shincolle:crane.nowait=不等待
+gui.shincolle:crane.waitforever=永遠等待
+gui.shincolle:crane.waitmin=等待 %s 分
+gui.shincolle:crane.nowait1=若沒有貨物可以裝卸，則馬上結束等待
+gui.shincolle:crane.waitforever1=裝貨直到滿載為止
+gui.shincolle:crane.waitforever2=卸貨等到指定物品全部卸載為止
 
 # GUI: Formation
 gui.shincolle:formation.formation=陣型
@@ -566,9 +575,9 @@ chat.shincolle:bossspawn2=偵測到艦娘入侵!
 chat.shincolle:settargetclass=設定攻擊目標類型: %s
 chat.shincolle:pointer.changeformation=陣型變換為
 chat.shincolle:wrench.paired=深海起重機配對成功！
-chat.shincolle:wrench.toofar=深海起重機配對失敗，距離超過8格！
+chat.shincolle:wrench.toofar=深海起重機配對失敗，距離超過6格！
 chat.shincolle:wrench.wrongtile=不支援目標方塊。
 chat.shincolle:wrench.setwp=設定深海路徑點成功！
-chat.shincolle:wrench.wptoofar=深海路徑設定失敗，距離超過32格！
+chat.shincolle:wrench.wptoofar=深海路徑設定失敗，距離超過48格！
 chat.shincolle:wrench.wplast=上一路徑點
 chat.shincolle:wrench.wpnext=下一路徑點

@@ -295,7 +295,7 @@ public class S2CGUIPackets implements IMessage {
 				this.recvY = buf.readInt();
 				this.recvZ = buf.readInt();
 				
-				this.value3 = new int[10];
+				this.value3 = new int[11];
 				this.value3[0] = buf.readInt();  //lx
 				this.value3[1] = buf.readInt();  //ly
 				this.value3[2] = buf.readInt();  //lz
@@ -306,16 +306,25 @@ public class S2CGUIPackets implements IMessage {
 				this.value3[7] = buf.readInt();  //cy
 				this.value3[8] = buf.readInt();  //cz
 				this.value3[9] = buf.readInt();  //ship eid
+				this.value3[10] = buf.readInt(); //crane mode
 				
 				boolean isActive = buf.readBoolean();
+				boolean checkMeta = buf.readBoolean();
+				boolean checkDict = buf.readBoolean();
+				boolean checkNbt = buf.readBoolean();
 	
 				TileEntity te = world.getTileEntity(recvX, recvY, recvZ);
 				Entity ent = EntityHelper.getEntityByID(value3[9], 0, true);
 				
 				if(te instanceof TileEntityCrane) {
-					((TileEntityCrane) te).setSyncData(value3);
-					((TileEntityCrane) te).isActive = isActive;
-					((TileEntityCrane) te).ship = (BasicEntityShip) ent;
+					TileEntityCrane t = (TileEntityCrane) te;
+					t.setSyncData(value3);
+					t.isActive = isActive;
+					t.checkMetadata = checkMeta;
+					t.checkOredict = checkDict;
+					t.checkNbt = checkNbt;
+					t.ship = (BasicEntityShip) ent;
+					t.craneMode = value3[10];
 				}
 			}
 			break;
@@ -363,6 +372,7 @@ public class S2CGUIPackets implements IMessage {
 					
 					ship.setStateMinor(ID.M.Kills, buf.readInt());
 					ship.setStateMinor(ID.M.NumGrudge, buf.readInt());
+					ship.getExtProps().setInventoryPage(buf.readInt());
 				}
 			}
 			break;
@@ -651,7 +661,12 @@ public class S2CGUIPackets implements IMessage {
 					buf.writeInt(-1);
 				}
 				
+				buf.writeInt(te.craneMode);
+				
 				buf.writeBoolean(te.isActive);
+				buf.writeBoolean(te.checkMetadata);
+				buf.writeBoolean(te.checkOredict);
+				buf.writeBoolean(te.checkNbt);
 			}
 			break;
 		case PID.TileWaypoint: //sync tile waypoint
@@ -712,6 +727,7 @@ public class S2CGUIPackets implements IMessage {
 				buf.writeInt(ship.getEntityId());
 				buf.writeInt(ship.getStateMinor(ID.M.Kills));
 				buf.writeInt(ship.getStateMinor(ID.M.NumGrudge));
+				buf.writeInt(ship.getExtProps().getInventoryPage());
 			}
 			break;
 		case PID.FlagInitSID:	//sync ship inventory GUI: kills and grudge

@@ -28,6 +28,14 @@ public class ID {
 		public static final byte Shipyard_INCDEC = 3;
 		
 		public static final byte Desk_Sync = 0;
+		
+		public static final byte Crane_Power = 0;
+		public static final byte Crane_Mode = 1;
+		public static final byte Crane_Meta = 2;
+		public static final byte Crane_Dict = 3;
+		public static final byte Crane_Load = 4;
+		public static final byte Crane_Unload = 5;
+		public static final byte Crane_Nbt = 6;
 	}
 	
 	/** ship body part */
@@ -286,7 +294,7 @@ public class ID {
 		public static final byte ADMIRALDESK = 3;
 		public static final byte ADMIRALDESK_ITEM = 4;
 		public static final byte FORMATION = 5;
-		public static final byte DEBUGGER = 6;  //NYI
+		public static final byte CRANE = 6;
 		public static final byte VOLCORE = 7;
 	}
 	
@@ -617,6 +625,7 @@ public class ID {
 		public static final byte RevengeTime = 0;		//revenge target time
 		public static final byte CraneTime = 1;			//craning time
 		public static final byte ImmuneTime = 2;		//immune time
+		public static final byte CrandDelay = 3;		//crane state 0 to 1,2 delay
 	}
 
 	/** StateEquip, StateFinal, BonusPoint, TypeModify */

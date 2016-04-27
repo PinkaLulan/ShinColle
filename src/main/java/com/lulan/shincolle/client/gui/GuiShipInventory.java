@@ -34,14 +34,8 @@ import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.GuiHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
-/**ICON_SHIPTYPE(157,18) 
- * NameIcon: LargeShip(0,0)(40x42) SmallShip(0,43)(30x30) 
- *           驅逐(41,0)(28x28) 輕巡(41,29) 重巡(41,58) 雷巡(41,87) 補給(12,74)
- *           戰艦(70,0) 航母(70,29) 輕母(70,58) 姬(70,87) 潛水(99,0) 浮游(99,29)
- *           
- * Color note:gold:16766720 gray:4210752 dark-gray:3158064 white:16777215 green:65280
- *            yellow:16776960 orange:16753920 red:16711680 cyan:65535
- *            magenta:16711935 pink:16751103
+/** ship inventory gui
+ * 
  */
 public class GuiShipInventory extends GuiContainer {
 
@@ -81,7 +75,7 @@ public class GuiShipInventory extends GuiContainer {
 		this.ySize = 214;
 		this.showPage = 1;			//show page 1
 		this.showPageAI = 1;		//show AI control page 1
-		this.showPageInv = 0;  //get inventory number
+		this.showPageInv = 0;		//get inventory number
 		this.showAttack = 1;		//show attack 1
 		this.mousePress = false;	//no key clicked
 		this.mousePressBar = -1;	//no bar pressed
@@ -195,15 +189,16 @@ public class GuiShipInventory extends GuiContainer {
         }
         
         //draw inventory page indicator
+        this.showPageInv = this.entity.getExtProps().getInventoryPage();
         switch(this.showPageInv) {
-        case 1:	//page 1
-        	this.pageIndicator = 18;
-        	break;
-        case 2:	//page 2
+        case 1:  //page 1
         	this.pageIndicator = 54;
         	break;
-        case 3:	//page 3
+        case 2:  //page 2
         	this.pageIndicator = 90;
+        	break;
+        default: //page 0
+        	this.pageIndicator = 18;
         	break;
         }
         drawTexturedModalRect(guiLeft+62, guiTop+this.pageIndicator, 74, 214, 6, 34);
@@ -1166,19 +1161,19 @@ public class GuiShipInventory extends GuiContainer {
         case 14:	//AI page 6
         	this.showPageAI = 6;
         	break;
-        case 15:	//inventory page 1
-        	this.showPageInv = 1;
+        case 15:	//inventory page 0
+        	this.showPageInv = 0;
         	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_InvPage, 0));
         	break;
-        case 16:	//inventory page 2
+        case 16:	//inventory page 1
         	if(this.entity.getInventoryPageSize() > 0) {
-        		this.showPageInv = 2;
+        		this.showPageInv = 1;
         		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_InvPage, 1));
         	}
         	break;
-        case 17:	//inventory page 3
+        case 17:	//inventory page 2
         	if(this.entity.getInventoryPageSize() > 1) {
-        		this.showPageInv = 3;
+        		this.showPageInv = 2;
         		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_InvPage, 2));
         	}
         	break;

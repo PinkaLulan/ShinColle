@@ -8,8 +8,11 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 
+import com.lulan.shincolle.ShinColle;
+import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.TileEntityCrane;
 
+import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -63,11 +66,11 @@ public class BlockCrane extends BasicBlockContainer {
     		return true;
     	}
 		else if(!player.isSneaking()) {  //server端: 按住shift不能點開方塊gui
-//			TileEntity entity = world.getTileEntity(x, y, z);
-//    		
-//    		if (entity != null) {	//開啟方塊GUI 參數:玩家,mod instance,gui ID,world,座標xyz
-//    			FMLNetworkHandler.openGui(player, ShinColle.instance, ID.G.ADMIRALDESK, world, x, y, z);
-//    		}
+			TileEntity entity = world.getTileEntity(x, y, z);
+    		
+    		if (entity != null) {	//開啟方塊GUI 參數:玩家,mod instance,gui ID,world,座標xyz
+    			FMLNetworkHandler.openGui(player, ShinColle.instance, ID.G.CRANE, world, x, y, z);
+    		}
     		return true;
     	}
     	else {

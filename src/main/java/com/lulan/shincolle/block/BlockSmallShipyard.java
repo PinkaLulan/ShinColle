@@ -185,13 +185,6 @@ public class BlockSmallShipyard extends BasicBlockContainer {
 				world.setBlockMetadataWithNotify(x, y, z, meta-4, 2);
 			}
 		}
-		
-//		//unknow function
-//		if (entity != null) {
-//			entity.validate();
-//			world.setTileEntity(x, y, z, entity);
-//		}
-		
 	}
 
 	

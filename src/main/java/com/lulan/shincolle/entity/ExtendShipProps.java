@@ -52,6 +52,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		NBTTagCompound nbtExt_add2 = new NBTTagCompound();
 		NBTTagCompound nbtExt_add3 = new NBTTagCompound();
 		NBTTagCompound nbtExt_add4 = new NBTTagCompound();
+		NBTTagCompound nbtExt_add5 = new NBTTagCompound();
 
 		//save values to NBT
 		nbtExt.setTag("Minor", nbtExt_add0);
@@ -78,6 +79,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		nbtExt_add0.setInteger("FPos", this.entity.getStateMinor(ID.M.FormatPos));
 		nbtExt_add0.setInteger("Morale", this.entity.getStateMinor(ID.M.Morale));
 		nbtExt_add0.setInteger("Food", this.entity.getStateMinor(ID.M.Food));
+		nbtExt_add0.setInteger("Crane", this.entity.getStateMinor(ID.M.CraneState));
 		nbtExt_add0.setString("tagName", this.entity.getCustomNameTag());
 		//save EntityState
 		nbtExt.setTag("Emotion", nbtExt_add2);	
@@ -113,7 +115,10 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		nbtExt_add4.setBoolean("ASM", this.entity.getStateFlag(ID.F.AntiSS));
 		nbtExt_add4.setBoolean("PassiveAI", this.entity.getStateFlag(ID.F.PassiveAI));
 		nbtExt_add4.setBoolean("TimeKeeper", this.entity.getStateFlag(ID.F.TimeKeeper));
-
+		//save values to NBT
+		nbtExt.setTag("Timer", nbtExt_add5);
+		nbtExt_add5.setInteger("Crane", this.entity.getStateTimer(ID.T.CraneTime));
+				
 		//save inventory
 		NBTTagList list = new NBTTagList();
 		nbt.setTag(tagName, list);
@@ -163,6 +168,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		entity.setStateMinor(ID.M.FormatPos, nbt_load.getInteger("FPos"));
 		entity.setStateMinor(ID.M.Morale, nbt_load.getInteger("Morale"));
 		entity.setStateMinor(ID.M.Food, nbt_load.getInteger("Food"));
+		entity.setStateMinor(ID.M.CraneState, nbt_load.getInteger("Crane"));
 		entity.setNameTag(nbt_load.getString("tagName"));
 		//load emotion state
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Emotion");
@@ -198,6 +204,8 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		entity.setStateFlag(ID.F.AntiSS, nbt_load.getBoolean("ASM"));
 		entity.setStateFlag(ID.F.PassiveAI, nbt_load.getBoolean("PassiveAI"));
 		entity.setStateFlag(ID.F.TimeKeeper, nbt_load.getBoolean("TimeKeeper"));
+		nbt_load = (NBTTagCompound) nbt_tag.getTag("Timer");
+		entity.setStateTimer(ID.T.CraneTime, nbt_load.getInteger("Crane"));
 
 		//load inventory
 		NBTTagList list = nbt.getTagList(tagName, 10);	//tagList內為tagCompound, 代號=10
@@ -222,19 +230,35 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 	public int getSizeInventory() {
 		return ContainerShipInventory.SLOTS_PLAYERINV;
 	}
+	
+	//inventory size including all enabled pages
+	public int getSizeInventoryPaged() {
+		if(entity != null) {
+			return ContainerShipInventory.SLOTS_PLAYERINV + entity.getStateMinor(ID.M.InvSize) * 18;
+		}
+		
+		return ContainerShipInventory.SLOTS_PLAYERINV;
+	}
 
 	/** input: slot id in gui (0~23)
 	 *  output: slot item in slots[] (0~60)
 	 */
 	@Override
 	public ItemStack getStackInSlot(int i) {
-		//is equip slot
-		if(i < ContainerShipInventory.SLOTS_SHIPINV) {
-			return slots[i];
+		//access within page
+		if(i < getSizeInventory()) {
+			//get equip slot
+			if(i < ContainerShipInventory.SLOTS_SHIPINV) {
+				return slots[i];
+			}
+			//get inventory slot
+			else {
+				return slots[i + this.inventoryPage * 18];
+			}
 		}
-		//is inventory slot
+		//access across pages
 		else {
-			return slots[i + this.inventoryPage * 18];
+			return slots[i];
 		}
 	}
 
@@ -266,17 +290,24 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 
 	@Override
 	public void setInventorySlotContents(int i, ItemStack itemstack) {
-		//equip slot
-		if(i < ContainerShipInventory.SLOTS_SHIPINV) {
-			slots[i] = itemstack;
+		//access within page
+		if(i < getSizeInventory()) {
+			//equip slot
+			if(i < ContainerShipInventory.SLOTS_SHIPINV) {
+				slots[i] = itemstack;
+			}
+			//inv slot
+			else {
+				slots[i + this.inventoryPage * 18] = itemstack;
+			}
 		}
-		//inv slot
+		//access across pages
 		else {
-			slots[i + this.inventoryPage * 18] = itemstack;
+			slots[i] = itemstack;
 		}
 		
 		//若手上物品超過該格子限制數量, 則只能放進限制數量
-		if (itemstack != null && itemstack.stackSize > getInventoryStackLimit()) {
+		if(itemstack != null && itemstack.stackSize > getInventoryStackLimit()) {
 			itemstack.stackSize = getInventoryStackLimit();
 		}
 		
@@ -331,6 +362,8 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		else {
 			this.inventoryPage = 0;
 		}
+		
+		this.entity.sendGUISyncPacket();
 	}
 	
 	/** check slot id with inventory page */
@@ -384,8 +417,8 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
     }
   	
   	/** vanilla method
-     * This function stores as many items of an ItemStack as possible in a matching slot and returns the quantity of
-     * leftover items.
+     *  This function stores as many items of an ItemStack as possible in a matching slot and returns the quantity of
+     *  leftover items.
      */
     private int storePartialItemStack(ItemStack itemstack) {
         Item item = itemstack.getItem();

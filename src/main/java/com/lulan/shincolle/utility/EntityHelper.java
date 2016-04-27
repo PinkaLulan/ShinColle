@@ -56,6 +56,7 @@ import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.team.TeamData;
+import com.lulan.shincolle.tileentity.ITileWaypoint;
 import com.lulan.shincolle.tileentity.TileEntityCrane;
 import com.lulan.shincolle.tileentity.TileEntityDesk;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
@@ -808,7 +809,6 @@ public class EntityHelper {
 	public static void setTileEntityByGUI(TileEntity tile, int button, int value, int value2) {
 		if(tile instanceof TileEntitySmallShipyard) {
 			TileEntitySmallShipyard smalltile = (TileEntitySmallShipyard) tile;
-//				LogHelper.info("DEBUG : set tile entity value "+button+" "+value);
 			smalltile.setBuildType(value);
 			
 			//set build record
@@ -827,8 +827,6 @@ public class EntityHelper {
 			return;
 		}
 		else if(tile instanceof TileMultiGrudgeHeavy) {
-//				LogHelper.info("DEBUG : set tile entity value "+button+" "+value+" "+value2);
-			
 			switch(button) {
 			case ID.B.Shipyard_Type:		//build type
 				((TileMultiGrudgeHeavy)tile).setBuildType(value);
@@ -842,7 +840,37 @@ public class EntityHelper {
 			case ID.B.Shipyard_INCDEC:		//material inc,dec
 				setLargeShipyardBuildMats((TileMultiGrudgeHeavy)tile, button, value, value2);
 				break;
-			}	
+			}
+		}
+		else if(tile instanceof TileEntityCrane) {
+			switch(button) {
+			case ID.B.Crane_Load:
+				((TileEntityCrane)tile).enabLoad = value == 0 ? false : true;
+				break;
+			case ID.B.Crane_Unload:
+				((TileEntityCrane)tile).enabUnload = value == 0 ? false : true;
+				break;
+			case ID.B.Crane_Power:
+				((TileEntityCrane)tile).isActive = value == 0 ? false : true;
+				
+				//power off, clear ship
+				if(!((TileEntityCrane)tile).isActive) {
+					((TileEntityCrane)tile).ship = null;
+				}
+				break;
+			case ID.B.Crane_Meta:
+				((TileEntityCrane)tile).checkMetadata = value == 0 ? false : true;
+				break;
+			case ID.B.Crane_Dict:
+				((TileEntityCrane)tile).checkOredict = value == 0 ? false : true;
+				break;
+			case ID.B.Crane_Mode:
+				((TileEntityCrane)tile).craneMode = value;
+				break;
+			case ID.B.Crane_Nbt:
+				((TileEntityCrane)tile).checkNbt = value == 0 ? false : true;
+				break;
+			}
 		}
 		else {
 			LogHelper.info("DEBUG : set tile entity by GUI fail: tile: "+tile);
@@ -1516,7 +1544,7 @@ public class EntityHelper {
   		if(!entity.getStateFlag(ID.F.CanFollow) && entity.getGuardedPos(1) > 0 && !entity.getIsSitting() && !entity.getIsLeashed() && !entity.getIsRiding()) {
   			//check distance < 3 blocks
   			float dx = (float) (entity.getGuardedPos(0) - ((Entity)entity).posX);
-  			float dy = (float) (entity.getGuardedPos(1) - ((Entity)entity).posX);
+  			float dy = (float) (entity.getGuardedPos(1) - ((Entity)entity).posY);
 			float dz = (float) (entity.getGuardedPos(2) - ((Entity)entity).posZ);
 			dx = dx * dx;
 			dy = dy * dy;
@@ -1531,12 +1559,12 @@ public class EntityHelper {
   	  			//is waypoint block
   	  			if(tile instanceof TileEntityCrane) {
   	  				//check xz dist < ~2 block
-  	  				if(dx > 3.5F || dz > 3.5F) {
+  	  				if(dx > 1F || dz > 1F) {
   	  					return false;
   	  				}
   	  				
   	  				//ship wait for craning (xz < 2 blocks, y < 5 blocks)
-  	  				entity.setStateMinor(ID.M.CraneState, 1);
+  	  				if(entity.getStateMinor(ID.M.CraneState) == 0) entity.setStateMinor(ID.M.CraneState, 1);
   	  			}
   			}
   			else {
@@ -1548,40 +1576,11 @@ public class EntityHelper {
   			if(distsq < 9D) {
   				//get target block
   	  			TileEntity tile = ((Entity)entity).worldObj.getTileEntity(entity.getGuardedPos(0), entity.getGuardedPos(1), entity.getGuardedPos(2));
-  	  			
+  	  		
   	  			//is waypoint block
   	  			if(tile instanceof TileEntityWaypoint) {
   	  				try {
-	  	  				int[] next = ((TileEntityWaypoint)tile).getNextWaypoint();
-	  	  				int[] last = ((TileEntityWaypoint)tile).getLastWaypoint();
-	  	  				int[] shiplast = entity.getLastWaypoint();
-	  	  				
-	  	  				//check next == last
-	  	  				if(next[1] > 0 && next[0] == shiplast[0] && next[1] == shiplast[1] && next[2] == shiplast[2]) {
-	  	  					//if no last waypoint, go to next waypoint
-	  	  					if(last[1] <= 0) {
-	  	  						//go to next waypoint
-	  	  						if(next[1] > 0) {
-	  	  							entity.setGuardedPos(next[0], next[1], next[2], ((Entity)entity).dimension, 1);
-	  	  							updatePos = true;
-	  	  						}
-	  	  					}
-	  	  					else {
-	  	  						//go to last waypoint (backwards mode)
-	  	  						entity.setGuardedPos(last[0], last[1], last[2], ((Entity)entity).dimension, 1);
-	  	  						updatePos = true;
-	  	  					}
-	  	  				}
-	  	  				else {
-	  	  					//go to next waypoint
-	  	  					if(next[1] > 0) {
-	  	  						entity.setGuardedPos(next[0], next[1], next[2], ((Entity)entity).dimension, 1);
-	  	  						updatePos = true;
-	  	  					}
-	  	  				}
-	  	  				
-	  	  				//set last waypoint
-	  	  				entity.setLastWaypoint(new int[] {tile.xCoord, tile.yCoord, tile.zCoord});
+  	  					updatePos = applyNextWaypoint((TileEntityWaypoint) tile, entity);
 	  	  				
 	  	  				//set follow dist
 	  	  				if(updatePos) {
@@ -1600,6 +1599,43 @@ public class EntityHelper {
   		
   		return updatePos;
   	}
+	
+	/** set next waypoint by checking last and next waypoint, return true if changed */
+	public static boolean applyNextWaypoint(ITileWaypoint tile, IShipGuardian entity) {
+		boolean changed = false;
+		int[] next = tile.getNextWaypoint();
+		int[] last = tile.getLastWaypoint();
+		int[] shiplast = entity.getLastWaypoint();
+		
+		//check next == last
+		if(next[1] > 0 && next[0] == shiplast[0] && next[1] == shiplast[1] && next[2] == shiplast[2]) {
+			//if no last waypoint, go to next waypoint
+			if(last[1] <= 0) {
+				//go to next waypoint
+				if(next[1] > 0) {
+					entity.setGuardedPos(next[0], next[1], next[2], ((Entity)entity).dimension, 1);
+					changed = true;
+				}
+			}
+			else {
+				//go to last waypoint (backwards mode)
+				entity.setGuardedPos(last[0], last[1], last[2], ((Entity)entity).dimension, 1);
+				changed = true;
+			}
+		}
+		else {
+			//go to next waypoint
+			if(next[1] > 0) {
+				entity.setGuardedPos(next[0], next[1], next[2], ((Entity)entity).dimension, 1);
+				changed = true;
+			}
+		}
+		
+		//set last waypoint
+		entity.setLastWaypoint(new int[] {((TileEntity)tile).xCoord, ((TileEntity)tile).yCoord, ((TileEntity)tile).zCoord});
+		
+		return changed;
+	}
 	
 	public static boolean canDodge(IShipAttributes ent, float dist) {
 		if(ent != null && !((Entity)ent).worldObj.isRemote) {
@@ -1698,22 +1734,35 @@ public class EntityHelper {
 		
 		if(sender != null) {
 			//get sender's mouse over target
-			MovingObjectPosition hitObj = getPlayerMouseOverEntity(32D, 1F);
+			MovingObjectPosition hitObj = getPlayerMouseOverEntity(16D, 1F);
 			
 			if(hitObj != null && hitObj.entityHit instanceof BasicEntityShip) {
 				BasicEntityShip ship = (BasicEntityShip) hitObj.entityHit;
 				
-				//show msg
-				sender.addChatMessage(new ChatComponentText("Command: ShipAttrs: Set ship value: LV: "+
-										EnumChatFormatting.LIGHT_PURPLE+cmdData[1]+EnumChatFormatting.RESET+" BonusValue: "+
-										EnumChatFormatting.RED+cmdData[2]+" "+cmdData[3]+" "+cmdData[4]+" "+
-										cmdData[5]+" "+cmdData[6]+" "+cmdData[7]));
-				sender.addChatMessage(new ChatComponentText("Target Ship: "+EnumChatFormatting.AQUA+ship));
+				if(cmdData.length == 8) {
+					//show msg
+					sender.addChatMessage(new ChatComponentText("Command: ShipAttrs: Set ship value: LV: "+
+											EnumChatFormatting.LIGHT_PURPLE+cmdData[1]+EnumChatFormatting.RESET+" BonusValue: "+
+											EnumChatFormatting.RED+cmdData[2]+" "+cmdData[3]+" "+cmdData[4]+" "+
+											cmdData[5]+" "+cmdData[6]+" "+cmdData[7]));
+					sender.addChatMessage(new ChatComponentText("Target Ship: "+EnumChatFormatting.AQUA+ship));
+					
+					//send packet to server: entity id, world id, level, bonus 1~6
+					CommonProxy.channelG.sendToServer(new C2SInputPackets(C2SInputPackets.PID.CmdShipAttr,
+							ship.getEntityId(), ship.worldObj.provider.dimensionId, cmdData[1], cmdData[2],
+							cmdData[3], cmdData[4], cmdData[5], cmdData[6], cmdData[7]));
+				}
+				else if(cmdData.length == 2) {
+					//show msg
+					sender.addChatMessage(new ChatComponentText("Command: ShipAttrs: Set ship value: LV: "+
+											EnumChatFormatting.LIGHT_PURPLE+cmdData[1]));
+					sender.addChatMessage(new ChatComponentText("Target Ship: "+EnumChatFormatting.AQUA+ship));
+					
+					//send packet to server: entity id, world id, level, bonus 1~6
+					CommonProxy.channelG.sendToServer(new C2SInputPackets(C2SInputPackets.PID.CmdShipAttr,
+							ship.getEntityId(), ship.worldObj.provider.dimensionId, cmdData[1]));
+				}
 				
-				//send packet to server: entity id, world id, level, bonus 1~6
-				CommonProxy.channelG.sendToServer(new C2SInputPackets(C2SInputPackets.PID.CmdShipAttr,
-						ship.getEntityId(), ship.worldObj.provider.dimensionId, cmdData[1], cmdData[2],
-						cmdData[3], cmdData[4], cmdData[5], cmdData[6], cmdData[7]));
 			}
 		}
 	}

@@ -90,6 +90,7 @@ public class ModRecipes {
 		GameRegistry.addRecipe(new ShapelessOreRecipe(instantMat32, kaitaiHammerAll, shipEggL));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(modernKit, kaitaiHammerAll, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(ownerPaper, grudeStack, Items.paper));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(waypoint, grudeStack, Items.stick));
 		
 		//SHAPED RECIPE
 		//ammo material: copper/tin=8 iron/bronze=16 abyssium/gold/silver=32 diamond=64
@@ -145,8 +146,6 @@ public class ModRecipes {
 		GameRegistry.addRecipe(new ShapedOreRecipe(frame16,"a a"," o ","a a",'o',Blocks.obsidian,'a',abyssiumStack));
 		//crane
 		GameRegistry.addRecipe(new ShapedOreRecipe(crane,"aaa","aga","apa",'a',abyssiumStack,'p',Blocks.piston,'g',grudeBlock));
-		//waypoint
-		GameRegistry.addRecipe(new ShapedOreRecipe(waypoint,"g  ","s  ","   ",'g',grudeStack,'s',Items.stick));
 		
 	}
 

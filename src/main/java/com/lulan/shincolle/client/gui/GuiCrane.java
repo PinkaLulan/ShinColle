@@ -1,0 +1,260 @@
+package com.lulan.shincolle.client.gui;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.util.ResourceLocation;
+
+import org.lwjgl.opengl.GL11;
+
+import com.lulan.shincolle.client.gui.inventory.ContainerCrane;
+import com.lulan.shincolle.network.C2SGUIPackets;
+import com.lulan.shincolle.proxy.CommonProxy;
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.reference.Values;
+import com.lulan.shincolle.tileentity.TileEntityCrane;
+import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.GuiHelper;
+import com.lulan.shincolle.utility.LogHelper;
+
+public class GuiCrane extends GuiContainer {
+
+	private static final ResourceLocation guiTexture = new ResourceLocation(Reference.TEXTURES_GUI+"GuiCrane.png");
+	private TileEntityCrane tile;
+	private int xClick, yClick, xMouse, yMouse;
+	private int btnMode;
+	private boolean btnPower, btnMeta, btnDict, btnNbt, btnLoad, btnUnload;
+	private float tickGUI;
+	private String strLoad, strUnload, strMeta, strDict, strNbt, strNowait, strWaitfev, strNowait1,
+				   strWaitfev1, strWaitfev2;
+	
+	
+	public GuiCrane(InventoryPlayer par1, TileEntityCrane par2) {
+		super(new ContainerCrane(par1, par2));
+		tile = par2;
+		xSize = 176;
+		ySize = 193;
+		
+		//string
+		strLoad = I18n.format("gui.shincolle:crane.toship");
+		strUnload = I18n.format("gui.shincolle:crane.tochest");
+		strMeta = I18n.format("gui.shincolle:crane.usemeta");
+		strDict = I18n.format("gui.shincolle:crane.useoredict");
+		strNbt = I18n.format("gui.shincolle:crane.usenbt");
+		strNowait = I18n.format("gui.shincolle:crane.nowait");
+		strWaitfev = I18n.format("gui.shincolle:crane.waitforever");
+		strNowait1 = I18n.format("gui.shincolle:crane.nowait1");
+		strWaitfev1 = I18n.format("gui.shincolle:crane.waitforever1");
+		strWaitfev2 = I18n.format("gui.shincolle:crane.waitforever2");
+		
+		//init value
+		updateButton();
+		
+	}
+	
+	//get new mouseX,Y and redraw gui
+	@Override
+	public void drawScreen(int mouseX, int mouseY, float f) {
+		super.drawScreen(mouseX, mouseY, f);
+		xMouse = mouseX;
+		yMouse = mouseY;
+		
+	}
+	
+	//draw tooltip
+	private void handleHoveringText() {
+		int mx = xMouse - guiLeft;
+		int my = yMouse - guiTop;
+		int len = 0;
+		List list = new ArrayList();
+		
+		//(22,21,35,34) meta (36,21,49,34) dict
+		if(my > 21 && my < 34) {
+			if(mx > 22 && mx < 35) {
+				list.add(strMeta);
+			}
+			else if(mx > 36 && mx < 49) {
+				list.add(strDict);
+			}
+			else if(mx > 50 && mx < 63) {
+				list.add(strNbt);
+			}
+			
+			this.drawHoveringText(list, mx, my+10, this.fontRendererObj);
+		}
+		//draw wait mode
+		else if(mx > 22 && mx < 91 && my > 5 && my < 20) {
+			list.clear();
+			
+			switch(btnMode) {
+			case 0:
+				list.add(strNowait1);
+				break;
+			case 1:
+				list.add(strWaitfev1);
+				list.add(strWaitfev2);
+				break;
+			}
+			
+			this.drawHoveringText(list, -50, 37, this.fontRendererObj);
+		}
+	}
+	
+	//GUI前景: 文字 
+	@Override
+	protected void drawGuiContainerForegroundLayer(int i, int j) {
+		//draw mode string
+		String str = null;
+		String strnum = null;
+		int len = 0;
+		
+		switch(btnMode) {
+		case 0:
+			str = strNowait;
+			break;
+		case 1:
+			str = strWaitfev;
+			break;
+		default:
+			strnum = String.valueOf(tile.getWaitTimeInMin(btnMode));
+			str = I18n.format("gui.shincolle:crane.waitmin", strnum);
+			break;
+		}
+		
+		len = (int) (fontRendererObj.getStringWidth(str) * 0.5F);
+		fontRendererObj.drawStringWithShadow(str, 57 - len, 9, Values.Color.YELLOW);
+		
+		//draw slot string
+		fontRendererObj.drawString(strLoad, 21, 46, Values.Color.RED);
+		fontRendererObj.drawString(strUnload, 21, 77, Values.Color.GRAY);
+		
+		//draw ship info
+		if(tile.ship != null) {
+			//draw ship wait time
+			str = String.valueOf(CalcHelper.getTimeFormated((int) (tile.ship.getStateTimer(ID.T.CraneTime) * 0.05F)));
+			len = (int) (fontRendererObj.getStringWidth(str) * 0.5F);
+			fontRendererObj.drawString(str, 133 - len, 10, Values.Color.GRAY);
+			
+			//draw ship name
+			if(tile.ship.getCustomNameTag() != null && tile.ship.getCustomNameTag().length() > 0) {
+				str = tile.ship.getCustomNameTag();
+			}
+			else {
+				str = I18n.format("entity.shincolle."+tile.ship.getClass().getSimpleName()+".name");
+			}
+			len = fontRendererObj.getStringWidth(str);
+			fontRendererObj.drawStringWithShadow(str, 170 - len, 24, Values.Color.WHITE);
+			
+		}
+		
+		//畫出tooltip
+		handleHoveringText();
+	}
+
+	//GUI背景: 背景圖片
+	@Override
+	protected void drawGuiContainerBackgroundLayer(float par1,int par2, int par3) {
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);	//RGBA
+        Minecraft.getMinecraft().getTextureManager().bindTexture(guiTexture); //GUI圖檔
+        drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);	//GUI大小設定
+       
+        updateButton();
+        
+        //draw button
+        if(this.btnPower) {
+        	drawTexturedModalRect(guiLeft+7, guiTop+6, 176, 0, 13, 13);
+        }
+        if(this.btnMeta) {
+        	drawTexturedModalRect(guiLeft+23, guiTop+22, 176, 13, 11, 11);
+        }
+        if(this.btnDict) {
+        	drawTexturedModalRect(guiLeft+37, guiTop+22, 176, 24, 11, 11);
+        }
+        if(this.btnNbt) {
+        	drawTexturedModalRect(guiLeft+51, guiTop+22, 176, 46, 11, 11);
+        }
+        if(!this.btnLoad) {
+        	drawTexturedModalRect(guiLeft+7, guiTop+44, 176, 35, 11, 11);
+        	drawTexturedModalRect(guiLeft+8, guiTop+57, 0, 193, 160, 16);
+        }
+        if(!this.btnUnload) {
+        	drawTexturedModalRect(guiLeft+7, guiTop+75, 176, 35, 11, 11);
+        	drawTexturedModalRect(guiLeft+8, guiTop+88, 0, 193, 160, 16);
+        }
+
+	}
+	
+	//handle mouse click, @parm posX, posY, mouseKey (0:left 1:right 2:middle 3:...etc)
+	@Override
+	protected void mouseClicked(int posX, int posY, int key) {
+        super.mouseClicked(posX, posY, key);
+            
+        //get click position
+        xClick = posX - guiLeft;
+        yClick = posY - guiTop;
+        
+        updateButton();
+        
+        switch(GuiHelper.getButton(5, 0, xClick, yClick)) {
+        case 0:  //power
+        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, ID.B.Crane_Power, !btnPower ? 1 : 0, 0));
+        	break;
+        case 1:  //mode
+        	if(key == 0) {
+        		if(btnMode == 1) {
+        			btnMode = 6;
+        		}
+        		else {
+        			btnMode++;
+        		}
+        		if(btnMode > 25) btnMode = 25;
+        	}
+        	else {
+        		if(btnMode == 6) {
+        			btnMode = 1;
+        		}
+        		else {
+        			btnMode--;
+        		}
+        		if(btnMode < 0) btnMode = 0;
+        	}
+        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, ID.B.Crane_Mode, btnMode, 0));
+        	break;
+        case 2:  //meta
+        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, ID.B.Crane_Meta, !btnMeta ? 1 : 0, 0));
+        	break;
+        case 3:  //dict
+        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, ID.B.Crane_Dict, !btnDict ? 1 : 0, 0));
+        	break;
+        case 4:  //loading
+        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, ID.B.Crane_Load, !btnLoad ? 1 : 0, 0));
+        	break;
+        case 5:  //unloading
+        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, ID.B.Crane_Unload, !btnUnload ? 1 : 0, 0));
+        	break;
+        case 6:  //unloading
+        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, ID.B.Crane_Nbt, !btnNbt ? 1 : 0, 0));
+        	break;
+        }
+	}
+	
+	private void updateButton() {
+		btnMode = tile.craneMode;
+		btnPower = tile.isActive;
+		btnMeta = tile.checkMetadata;
+		btnDict = tile.checkOredict;
+		btnNbt = tile.checkNbt;
+		btnLoad = tile.enabLoad;
+		btnUnload = tile.enabUnload;
+	}
+
+	
+}
+
+

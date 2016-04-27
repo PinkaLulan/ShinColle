@@ -8,8 +8,10 @@ import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -31,8 +33,20 @@ public class BlockFrame extends BasicBlock {
 	    this.setResistance(40F);
 	    this.setStepSound(soundTypeMetal);
 	    this.setLightOpacity(0);
+	    this.setTickRandomly(false);
 	    
 	}
+	
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void randomDisplayTick(World w, int x, int y, int z, Random rand) {
+		
+	}
+
+	@Override
+	public boolean getTickRandomly() {
+        return false;
+    }
 	
 	@Override
 	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
@@ -58,14 +72,67 @@ public class BlockFrame extends BasicBlock {
 	@Override
 	@SideOnly(Side.CLIENT)
     public IIcon getIcon(int side, int meta) {
+		//top and bottom
 		switch(side) {
 		case 0:
 		case 1:
 			return icons[4];
+		}
+		
+		//side
+		switch(meta) {
+		case 0:
+			switch(side) {
+			case 2:
+				return icons[0];
+			case 3:
+				return icons[1];
+			case 4:
+				return icons[2];
+			default:
+				return icons[3];
+			}
+		case 1:
+			switch(side) {
+			case 2:
+				return icons[1];
+			case 3:
+				return icons[2];
+			case 4:
+				return icons[3];
+			default:
+				return icons[0];
+			}
+		case 2:
+			switch(side) {
+			case 2:
+				return icons[2];
+			case 3:
+				return icons[3];
+			case 4:
+				return icons[0];
+			default:
+				return icons[1];
+			}
 		default:
-			return icons[rand.nextInt(4)];
+			switch(side) {
+			case 2:
+				return icons[3];
+			case 3:
+				return icons[0];
+			case 4:
+				return icons[1];
+			default:
+				return icons[2];
+			}
 		}
     }
+	
+	/** random texture when placed */
+	@Override
+	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack itemstack) {		
+		world.setBlockMetadataWithNotify(x, y, z, rand.nextInt(4), 2);
+   }
 	
 	@Override
 	public boolean isLadder(IBlockAccess world, int x, int y, int z, EntityLivingBase entity) {
@@ -80,15 +147,15 @@ public class BlockFrame extends BasicBlock {
 			GameSettings keySet = ClientProxy.getGameSetting();
 			
 			if(keySet.keyBindForward.getIsKeyPressed()) {
-				entity.addVelocity(0D, 0.05D, 0D);
+				entity.addVelocity(0D, 0.4D, 0D);
 			}
 		}
 		
 		if(entity.motionY < -0.1D) {
 			entity.motionY = -0.1D;
 		}
-		else if(entity.motionY > 0.3D) {
-			entity.motionY = 0.2D;
+		else if(entity.motionY > 0.4D) {
+			entity.motionY = 0.4D;
 		}
 		
 		if(entity.isSneaking()) {

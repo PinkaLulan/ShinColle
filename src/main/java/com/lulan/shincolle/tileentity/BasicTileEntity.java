@@ -35,7 +35,7 @@ abstract public class BasicTileEntity extends TileEntity {
 	//sync data for GUI display
 	public void sendSyncPacket() {
 		if(!this.worldObj.isRemote) {
-			TargetPoint point = new TargetPoint(this.worldObj.provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, 48D);
+			TargetPoint point = new TargetPoint(this.worldObj.provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, 64D);
 			CommonProxy.channelG.sendToAllAround(new S2CGUIPackets(this), point);
 		}
 	}

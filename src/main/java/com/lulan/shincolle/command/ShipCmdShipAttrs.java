@@ -56,7 +56,7 @@ public class ShipCmdShipAttrs extends BasicShipCommand {
 	/** command guide text */
 	@Override
 	public String getCommandUsage(ICommandSender sender) {
-		return "/shipattrs <ship level> <level: HP> <level: ATK> <level: DEF> <level: ATK Speed> <level: Move Speed> <level: Hit Range>";
+		return "/shipattrs <ship level> [<level: HP> <level: ATK> <level: DEF> <level: ATK Speed> <level: Move Speed> <level: Hit Range>]";
 	}
 
 	/** command authority */
@@ -97,35 +97,51 @@ public class ShipCmdShipAttrs extends BasicShipCommand {
 				isOP = EntityHelper.checkOP(op);
 				
 				//need owner parm
-				if(cmd.length != 7) {
+				if(cmd.length != 7 && cmd.length != 1) {
 					sender.addChatMessage(new ChatComponentText(getCommandUsage(sender)));
-					sender.addChatMessage(new ChatComponentText("Command: ShipAttrs: invalid parameter! (required 7 parms)"));
+					sender.addChatMessage(new ChatComponentText("Command: ShipAttrs: invalid parameter! (required 1 or 7 parms)"));
 					return;
 				}
 				//has owner parm and sender is OP
 				else if(isOP) {
-					//get data
-					int[] data = new int[7];
-					for(int i = 0; i < 7; i++) {
-						data[i] = parseInt(sender, cmd[i]);
+					if(cmd.length == 1) {
+						//get data
+						int level = parseInt(sender, cmd[0]);
+						
+						//check data
+						if(level <= 0 || level > 150) {
+							sender.addChatMessage(new ChatComponentText(getCommandUsage(sender)));
+							sender.addChatMessage(new ChatComponentText("Command: ShipAttrs: invalid ship level! (1~150)"));
+							return;
+						}
+						
+						//send data to client
+						CommonProxy.channelG.sendTo(new S2CInputPackets(S2CInputPackets.PID.CmdShipAttr, senderEID, level), (EntityPlayerMP) op);
 					}
-					
-					//check data
-					if(data[0] <= 0 || data[0] > 150) {
-						sender.addChatMessage(new ChatComponentText(getCommandUsage(sender)));
-						sender.addChatMessage(new ChatComponentText("Command: ShipAttrs: invalid ship level! (1~150)"));
-						return;
+					else {
+						//get data
+						int[] data = new int[7];
+						for(int i = 0; i < 7; i++) {
+							data[i] = parseInt(sender, cmd[i]);
+						}
+						
+						//check data
+						if(data[0] <= 0 || data[0] > 150) {
+							sender.addChatMessage(new ChatComponentText(getCommandUsage(sender)));
+							sender.addChatMessage(new ChatComponentText("Command: ShipAttrs: invalid ship level! (1~150)"));
+							return;
+						}
+						
+						if(data[1] < 0 || data[2] < 0 || data[3] < 0 || data[4] < 0 || data[5] < 0 || data[6] < 0 ||
+						   data[1] > 100 || data[2] > 100 || data[3] > 100 || data[4] > 100 || data[5] > 100 || data[6] > 100) {
+							sender.addChatMessage(new ChatComponentText(getCommandUsage(sender)));
+							sender.addChatMessage(new ChatComponentText("Command: ShipAttrs: invalid bonus level! (0~100)"));
+							return;
+						}
+						
+						//send data to client
+						CommonProxy.channelG.sendTo(new S2CInputPackets(S2CInputPackets.PID.CmdShipAttr, senderEID, data[0], data[1], data[2], data[3], data[4], data[5], data[6]), (EntityPlayerMP) op);
 					}
-					
-					if(data[1] < 0 || data[2] < 0 || data[3] < 0 || data[4] < 0 || data[5] < 0 || data[6] < 0 ||
-					   data[1] > 100 || data[2] > 100 || data[3] > 100 || data[4] > 100 || data[5] > 100 || data[6] > 100) {
-						sender.addChatMessage(new ChatComponentText(getCommandUsage(sender)));
-						sender.addChatMessage(new ChatComponentText("Command: ShipAttrs: invalid bonus level! (0~100)"));
-						return;
-					}
-					
-					//send data to client
-					CommonProxy.channelG.sendTo(new S2CInputPackets(S2CInputPackets.PID.CmdShipAttr, senderEID, data[0], data[1], data[2], data[3], data[4], data[5], data[6]), (EntityPlayerMP) op);
 				}//is OP
 				else {
 					sender.addChatMessage(new ChatComponentText("Command: ShipAttrs: sender is not OP!"));

@@ -470,6 +470,11 @@ public class ParticleHelper {
             		posX, posY, posZ, lookX, lookY, lookZ, 13);
         	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray13);
 			break;
+		case 39:	//paired chest spray
+			EntityFXSpray particleSpray14 = new EntityFXSpray(world, 
+            		posX, posY, posZ, lookX, lookY, lookZ, 14);
+        	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray14);
+			break;
 		default:
 			break;		
 		}

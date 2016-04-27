@@ -205,13 +205,18 @@ public class C2SInputPackets implements IMessage {
 						Entity ent = EntityHelper.getEntityByID(message.value3[0], message.value3[1], false);
 						
 						if(ent instanceof BasicEntityShip) {
-							((BasicEntityShip) ent).setBonusPoint(0, (byte)message.value3[3]);
-							((BasicEntityShip) ent).setBonusPoint(1, (byte)message.value3[4]);
-							((BasicEntityShip) ent).setBonusPoint(2, (byte)message.value3[5]);
-							((BasicEntityShip) ent).setBonusPoint(3, (byte)message.value3[6]);
-							((BasicEntityShip) ent).setBonusPoint(4, (byte)message.value3[7]);
-							((BasicEntityShip) ent).setBonusPoint(5, (byte)message.value3[8]);
-							((BasicEntityShip) ent).setShipLevel(message.value3[2], true);
+							if(message.value3.length == 9) {
+								((BasicEntityShip) ent).setBonusPoint(0, (byte)message.value3[3]);
+								((BasicEntityShip) ent).setBonusPoint(1, (byte)message.value3[4]);
+								((BasicEntityShip) ent).setBonusPoint(2, (byte)message.value3[5]);
+								((BasicEntityShip) ent).setBonusPoint(3, (byte)message.value3[6]);
+								((BasicEntityShip) ent).setBonusPoint(4, (byte)message.value3[7]);
+								((BasicEntityShip) ent).setBonusPoint(5, (byte)message.value3[8]);
+								((BasicEntityShip) ent).setShipLevel(message.value3[2], true);
+							}
+							else if(message.value3.length == 3) {
+								((BasicEntityShip) ent).setShipLevel(message.value3[2], true);
+							}
 						}
 					}
 					break;
@@ -220,8 +225,7 @@ public class C2SInputPackets implements IMessage {
 						Entity ent = EntityHelper.getEntityByID(message.value3[0], message.value3[1], false);
 						
 						if(ent instanceof BasicEntityShip) {
-							((BasicEntityShip) ent).sendEmotionSyncPacket();
-							((BasicEntityShip) ent).sendFlagSyncPacket();
+							((BasicEntityShip) ent).sendSyncPacketEmotion();
 						}
 					}
 					break;
