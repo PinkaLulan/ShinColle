@@ -42,7 +42,7 @@ public class ConfigHandler {
 	
 	//SHIP SETTING
 	public static Property propShip, propShipLimitBasic, propShipLimitEffect,
-						   propBossSmall, propBossLarge, propMobSubm, propGrudgeShip, propGrudgeAction,
+						   propBossSmall, propBossLarge, propMobSmall, propGrudgeShip, propGrudgeAction,
 						   propAmmoShip, propAtkSpd, propAtkDly, propExp;
 	//                                                    HP, ATK, DEF, SPD, MOV, HIT
 	public static double[] limitShipBasic = new double[] {-1D, -1D, 75D, 4D, 0.6D, 64D};
@@ -53,7 +53,7 @@ public class ConfigHandler {
 	public static double[] scaleBossSmall = new double[] {2000D, 120D, 80D, 1D, 0.6D, 20D};
 	public static double[] scaleBossLarge = new double[] {5000D, 200D, 92D, 2D, 0.36D, 24D};
 	//	  												HP, ATK, DEF, SPD, MOV, HIT, spawnPerSquid
-	public static double[] scaleMobSubm = new double[] {200D, 36D, 20D, 0.8D, 0.3D, 12D, 200D};
+	public static double[] scaleMobSmall = new double[] {200D, 36D, 20D, 0.8D, 0.3D, 12D, 200D};
 	//ammo consumption:                              DD CL CA CAV CLT CVL CV BB BBV SS AP 
 	public static int[] consumeAmmoShip = new int[] {1, 2, 2, 2,  2,  3,  3, 4, 4,  1, 1};
 	//grudge consumption:                              DD CL CA CAV CLT CVL CV BB BBV SS AP 
@@ -154,7 +154,7 @@ public class ConfigHandler {
 		propShipLimitEffect = config.get("ship setting", "ship_limit_effect", limitShipEffect, "Ship effect attributes LIMIT (-1 = no limit, 12 = limit 12%): critical%, double hit%, triple hit%, miss reduction%, anti-air, anti-ss, dodge%");
 		propBossSmall = config.get("ship setting", "SmallBoss_scale", scaleBossSmall, "Small Boss: Values: HP, firepower, armor, attack speed, move speed, range");
 		propBossLarge = config.get("ship setting", "LargeBoss_scale", scaleBossLarge, "Large Boss: Values: HP, firepower, armor, attack speed, move speed, range");
-		propMobSubm = config.get("ship setting", "Mob_Submarine_scale", scaleMobSubm, "Submarine: Values: HP, firepower, armor, attack speed, move speed, range, spawnPerSquid");
+		propMobSmall = config.get("ship setting", "SmallMob_scale", scaleMobSmall, "Small Mob like DD and SS: Values: HP, firepower, armor, attack speed, move speed, range, spawn per squid");
 		propAmmoShip = config.get("ship setting", "Ammo_Ship", consumeAmmoShip, "Ammo consumption for ship type: DD CL CA CAV CLT CVL CV BB BBV SS AP (MAX = 45)");
 		propGrudgeShip = config.get("ship setting", "Grudge_Ship", consumeGrudgeShip, "Grudge consumption for ship type: DD CL CA CAV CLT CVL CV BB BBV SS AP (MAX = 120)");
 		propGrudgeAction = config.get("ship setting", "Grudge_Action", consumeGrudgeAction, "Grudge consumption for ship action: Light attack, Heavy attack, Light aircraft, Heavy aircraft, Moving per block");
@@ -178,7 +178,7 @@ public class ConfigHandler {
 		scaleShip = getDoubleArrayFromConfig(scaleShip, propShip);
 		scaleBossSmall = getDoubleArrayFromConfig(scaleBossSmall, propBossSmall);
 		scaleBossLarge = getDoubleArrayFromConfig(scaleBossLarge, propBossLarge);
-		scaleMobSubm = getDoubleArrayFromConfig(scaleMobSubm, propMobSubm);
+		scaleMobSmall = getDoubleArrayFromConfig(scaleMobSmall, propMobSmall);
 		polyGravelBaseBlock = getBooleanArrayFromConfig(polyGravelBaseBlock, propPolyGravel);
 		consumeAmmoShip = getIntArrayFromConfig(consumeAmmoShip, propAmmoShip);
 		consumeGrudgeShip = getIntArrayFromConfig(consumeGrudgeShip, propGrudgeShip);

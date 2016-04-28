@@ -10,6 +10,7 @@ import net.minecraft.world.World;
 
 import com.lulan.shincolle.client.particle.EntityFX91Type;
 import com.lulan.shincolle.client.particle.EntityFXChi;
+import com.lulan.shincolle.client.particle.EntityFXCraning;
 import com.lulan.shincolle.client.particle.EntityFXCube;
 import com.lulan.shincolle.client.particle.EntityFXEmotion;
 import com.lulan.shincolle.client.particle.EntityFXLaser;
@@ -474,6 +475,11 @@ public class ParticleHelper {
 			EntityFXSpray particleSpray14 = new EntityFXSpray(world, 
             		posX, posY, posZ, lookX, lookY, lookZ, 14);
         	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray14);
+			break;
+		case 40:	//craning
+			EntityFXCraning particleCrane = new EntityFXCraning(world, 
+            		posX, posY, posZ, lookX, lookY, lookZ, 0);
+        	Minecraft.getMinecraft().effectRenderer.addEffect(particleCrane);
 			break;
 		default:
 			break;		

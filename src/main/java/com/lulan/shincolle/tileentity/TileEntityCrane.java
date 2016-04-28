@@ -27,7 +27,7 @@ import com.lulan.shincolle.utility.ParticleHelper;
 public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint {
 
 	//pos: lastXYZ, nextXYZ, chestXYZ
-	public int lx, ly, lz, nx, ny, nz, cx, cy, cz, tick, playerUID;
+	public int lx, ly, lz, nx, ny, nz, cx, cy, cz, tick, playerUID, partDelay;
 	
 	//crane
 	public boolean isActive, isPaired, checkMetadata, checkOredict, checkNbt, enabLoad, enabUnload;
@@ -61,6 +61,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 		craneMode = 0;
 		playerUID = 0;
 		tick = 0;
+		partDelay = 0;
 		cx = -1;
 		cy = -1;
 		cz = -1;
@@ -313,8 +314,8 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 							}
 						}
 						catch(Exception e) {
-							e.printStackTrace();
 							LogHelper.info("EXCEPTION : ship loading/unloading fail: "+e);
+							e.printStackTrace();
 							return;
 						}
 					}
@@ -337,6 +338,17 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 		//client side
 		else {
 			tick++;
+			if(partDelay > 0) partDelay--;
+			
+			//craning particle
+			if(this.isActive && this.ship != null && partDelay <= 0) {
+				partDelay = 128;
+				
+				double len = this.yCoord - this.ship.posY - 1D;
+				if(len < 1D) len = 1D;
+				
+				ParticleHelper.spawnAttackParticleAt(xCoord+0.5D, yCoord-1D, zCoord+0.5D, len, 0D, 0.25D, (byte) 40);
+			}
 				
 			//check every 16 ticks
 			if(this.tick % 16 == 0) {
@@ -372,12 +384,6 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 						ParticleHelper.spawnAttackParticleAt(xCoord+0.5D, yCoord+0.5D, zCoord+0.5D, dx, dy, dz, (byte) 39);
 					}
 				}//end holding item
-				
-				//check every 64 ticks
-				if(this.tick % 64 == 0) {
-					//craning particle TODO
-					
-				}//end every 64 ticks
 			}//end every 16 ticks
 		}//end client side
 	}
@@ -807,7 +813,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 	
 	//check ship under crane waiting for craning
 	private void checkCraningShip() {
-		AxisAlignedBB box = AxisAlignedBB.getBoundingBox(xCoord - 1.5D, yCoord - 5D, zCoord - 1.5D, xCoord + 2.5D, yCoord + 5D, zCoord + 2.5D);
+		AxisAlignedBB box = AxisAlignedBB.getBoundingBox(xCoord - 1.5D, yCoord - 6D, zCoord - 1.5D, xCoord + 2.5D, yCoord + 5D, zCoord + 2.5D);
         List<BasicEntityShip> slist = this.worldObj.getEntitiesWithinAABB(BasicEntityShip.class, box);
 		
         if(slist != null && !slist.isEmpty()) {
@@ -820,6 +826,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
         			this.ship = s;
         			this.ship.getExtProps().setInventoryPage(0);  //set show page to 0
         			this.ship.getShipNavigate().tryMoveToXYZ(xCoord+0.5D, yCoord-2D, zCoord+0.5D, 0.5D);
+        			this.sendSyncPacket();
         			return;
         		}
         	}
@@ -835,12 +842,14 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
          			this.ship.setStateMinor(ID.M.CraneState, 2);
          			this.ship.getExtProps().setInventoryPage(0);  //set show page to 0
          			this.ship.getShipNavigate().tryMoveToXYZ(xCoord+0.5D, yCoord-2D, zCoord+0.5D, 0.5D);
+         			this.sendSyncPacket();
          			return;
          		}
         	}
         }
         else {
         	this.ship = null;
+        	this.sendSyncPacket();
         }
 	}
 

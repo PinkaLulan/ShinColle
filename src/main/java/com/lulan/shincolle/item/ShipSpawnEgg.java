@@ -111,6 +111,14 @@ public class ShipSpawnEgg extends Item {
   		list.add(new ItemStack(item, 1, ID.Ship.HarbourHime+2));
   		list.add(new ItemStack(item, 1, ID.Ship.NorthernHime+2));
   		list.add(new ItemStack(item, 1, ID.Ship.CarrierWD+2));
+//  		list.add(new ItemStack(item, 1, ID.Ship.DestroyerAkatsuki+2));
+//  		list.add(new ItemStack(item, 1, ID.Ship.DestroyerAkatsuki+2002));	//mob entity
+//  		list.add(new ItemStack(item, 1, ID.Ship.DestroyerHibiki+2));
+//  		list.add(new ItemStack(item, 1, ID.Ship.DestroyerHibiki+2002));		//mob entity
+  		list.add(new ItemStack(item, 1, ID.Ship.DestroyerIkazuchi+2));
+  		list.add(new ItemStack(item, 1, ID.Ship.DestroyerIkazuchi+2002));	//mob entity
+//  		list.add(new ItemStack(item, 1, ID.Ship.DestroyerInazuma+2));
+//  		list.add(new ItemStack(item, 1, ID.Ship.DestroyerInazuma+2002));	//mob entity
   		list.add(new ItemStack(item, 1, ID.Ship.DestroyerShimakaze+2));
   		list.add(new ItemStack(item, 1, ID.Ship.DestroyerShimakaze+2002));	//mob entity
   		list.add(new ItemStack(item, 1, ID.Ship.BattleshipNagato+2));
@@ -125,6 +133,7 @@ public class ShipSpawnEgg extends Item {
   		list.add(new ItemStack(item, 1, ID.Ship.CarrierKaga+2002));			//mob entity
   		list.add(new ItemStack(item, 1, ID.Ship.CarrierAkagi+2));
   		list.add(new ItemStack(item, 1, ID.Ship.CarrierAkagi+2002));		//mob entity
+  		
   	}
   	
   	/** VANILLA SPAWN METHOD edited by Jabelar

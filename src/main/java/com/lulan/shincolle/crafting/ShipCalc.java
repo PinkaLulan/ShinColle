@@ -253,6 +253,22 @@ public class ShipCalc {
   			return "shincolle.EntityCarrierAkagiBoss";
   		case ID.Ship.TransportWA:
   			return "shincolle.EntityTransportWa";
+  		case ID.Ship.DestroyerAkatsuki:
+  			return "shincolle.EntityDestroyerAkatsuki";
+  		case ID.Ship.DestroyerAkatsuki+2000:
+  			return "shincolle.EntityDestroyerAkatsukiMob";
+  		case ID.Ship.DestroyerHibiki:
+  			return "shincolle.EntityDestroyerHibiki";
+  		case ID.Ship.DestroyerHibiki+2000:
+  			return "shincolle.EntityDestroyerHibikiMob";
+  		case ID.Ship.DestroyerIkazuchi:
+  			return "shincolle.EntityDestroyerIkazuchi";
+  		case ID.Ship.DestroyerIkazuchi+2000:
+  			return "shincolle.EntityDestroyerIkazuchiMob";
+  		case ID.Ship.DestroyerInazuma:
+  			return "shincolle.EntityDestroyerInazuma";
+  		case ID.Ship.DestroyerInazuma+2000:
+  			return "shincolle.EntityDestroyerInazumaMob";
   		default:
   			return "shincolle.EntityDestroyerI";
   		}	

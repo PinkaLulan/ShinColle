@@ -1543,16 +1543,16 @@ public class EntityHelper {
   		//in guard block mode
   		if(!entity.getStateFlag(ID.F.CanFollow) && entity.getGuardedPos(1) > 0 && !entity.getIsSitting() && !entity.getIsLeashed() && !entity.getIsRiding()) {
   			//check distance < 3 blocks
-  			float dx = (float) (entity.getGuardedPos(0) - ((Entity)entity).posX);
+  			float dx = (float) (entity.getGuardedPos(0) + 0.5D - ((Entity)entity).posX);
   			float dy = (float) (entity.getGuardedPos(1) - ((Entity)entity).posY);
-			float dz = (float) (entity.getGuardedPos(2) - ((Entity)entity).posZ);
+			float dz = (float) (entity.getGuardedPos(2) + 0.5D - ((Entity)entity).posZ);
 			dx = dx * dx;
 			dy = dy * dy;
 			dz = dz * dz;
   			double distsq = dx + dy + dz;
   			
-  			//crane = close to 5 block
-  			if(distsq < 25D) {
+  			//crane = close to ~5.4 block
+  			if(distsq < 30D) {
   				//get target block
   	  			TileEntity tile = ((Entity)entity).worldObj.getTileEntity(entity.getGuardedPos(0), entity.getGuardedPos(1), entity.getGuardedPos(2));
   	  			

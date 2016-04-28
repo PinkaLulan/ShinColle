@@ -21,6 +21,7 @@ import net.minecraft.util.MathHelper;
  * Created using Tabula 4.1.1 
  */
 public class ModelCarrierAkagi extends ModelBase implements IModelEmotion {
+	
     public ModelRenderer BodyMain;
     public ModelRenderer BoobR;
     public ModelRenderer BoobL;

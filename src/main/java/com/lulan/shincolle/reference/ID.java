@@ -525,6 +525,11 @@ public class ID {
 		
 		public static final short HeavyCruiserHime = 49;
 		public static final short SupplyDepotHime = 50;
+		
+		public static final short DestroyerAkatsuki = 51;
+		public static final short DestroyerHibiki = 52;
+		public static final short DestroyerIkazuchi = 53;
+		public static final short DestroyerInazuma = 54;
 	}
 	
 	/** ship attrs id, for Values.ShipAttrMap */
