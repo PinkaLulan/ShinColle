@@ -18,14 +18,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-/**LASER NO TEXTURE PARTICLE
- * 給定host, target -> 生成雷射特效
- * 此為柱狀3D雷射(即六面長方體)
- * 
- * type:
- *   0: 雙紅雷射: par1為X軸位置(分左右光炮), par2為發射高度
- *   1: 大和波動砲: 主砲光束
- *   2: 守衛目標線: 指示船艦到守衛目標的連結線標示
+/** CRANING PARTICLE
  *   
  */
 @SideOnly(Side.CLIENT)

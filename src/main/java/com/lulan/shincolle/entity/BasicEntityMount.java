@@ -17,6 +17,7 @@ import com.lulan.shincolle.ai.EntityAIShipAttackOnCollide;
 import com.lulan.shincolle.ai.EntityAIShipFloating;
 import com.lulan.shincolle.ai.EntityAIShipFollowOwner;
 import com.lulan.shincolle.ai.EntityAIShipGuarding;
+import com.lulan.shincolle.ai.EntityAIShipOpenDoor;
 import com.lulan.shincolle.ai.EntityAIShipWander;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
@@ -133,8 +134,8 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 			this.getNavigator().setCanSwim(true);
 
 			//high priority
-			this.tasks.addTask(1, new EntityAIShipGuarding(this));		//0111
-			this.tasks.addTask(2, new EntityAIShipFollowOwner(this));	//0111
+			this.tasks.addTask(1, new EntityAIShipGuarding(this));				//0111
+			this.tasks.addTask(2, new EntityAIShipFollowOwner(this));			//0111
 			
 			//use melee attack
 			if(this.getStateFlag(ID.F.UseMelee)) {
@@ -143,8 +144,8 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 			
 			//idle AI
 			//moving
-			this.tasks.addTask(21, new EntityAIOpenDoor(this, true));	//0000
-			this.tasks.addTask(22, new EntityAIShipFloating(this));		//0111
+			this.tasks.addTask(21, new EntityAIShipOpenDoor(this, true));		//0000
+			this.tasks.addTask(22, new EntityAIShipFloating(this));				//0111
 			this.tasks.addTask(25, new EntityAIShipWander(this, 12, 7, 0.8D));	//0111
 		}
 	}

@@ -19,10 +19,10 @@ public class RenderDestroyerIkazuchi extends BasicShipRenderer {
 	public RenderDestroyerIkazuchi(ModelBase par1, float par2) {
 		super(par1, par2);
 		leashWidthMod = 0.1D;
-		leashOffsetRideSit = 0.9D;
-		leashOffsetRide = 0.9D;
-		leashOffsetSit = 0.9D;
-		leashOffsetStand = 0.4D;
+		leashOffsetRideSit = 0.8D;
+		leashOffsetRide = 0.8D;
+		leashOffsetSit = 0.8D;
+		leashOffsetStand = 0.3D;
 	}
 
 	@Override

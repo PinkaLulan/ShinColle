@@ -66,7 +66,7 @@ public class RenderVortex extends Render {
         
         
 		GL11.glPushMatrix();
-			GL11.glTranslatef((float)offsetX, (float)offsetY+1.5F, (float)offsetZ);
+			GL11.glTranslatef((float)offsetX, (float)offsetY+2.5F, (float)offsetZ);
 //			GL11.glRotatef(pitch * 57.2957F, 1F, 0F, 0F);
 			GL11.glRotatef(yaw * 57.2957F, 0F, 1F, 0F);
 			GL11.glRotatef(angle, 0F, 0F, 1F);

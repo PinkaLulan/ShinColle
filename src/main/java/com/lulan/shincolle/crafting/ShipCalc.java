@@ -274,5 +274,45 @@ public class ShipCalc {
   		}	
   	}
   	
+  	/** input: 0:small mob, 1:large mob, 2:small boss, 3:large boss
+  	 */
+  	public static String getRandomMobToSpawnName(int type)
+  	{
+  		switch(type)
+  		{
+  		case 2:  //small boss
+  			switch(rand.nextInt(2))
+        	{
+        	case 1:
+        		return getEntityToSpawnName(ID.Ship.DestroyerShimakaze+2000);
+        	default:
+        		return getEntityToSpawnName(ID.Ship.DestroyerShimakaze+2000);
+        	}
+  		case 3:  //large boss
+  			switch(rand.nextInt(4))
+        	{
+        	case 1:
+        		return getEntityToSpawnName(ID.Ship.CarrierKaga+2000);
+        	case 2:
+        		return getEntityToSpawnName(ID.Ship.CarrierAkagi+2000);
+        	case 3:
+        		return getEntityToSpawnName(ID.Ship.BattleshipYamato+2000);
+        	default:
+        		return getEntityToSpawnName(ID.Ship.BattleshipNagato+2000);
+        	}
+  		case 1:  //large mob
+  		default: //small mob
+  			switch(rand.nextInt(3))
+        	{
+        	case 1:
+        		return getEntityToSpawnName(ID.Ship.SubmarineRo500+2000);
+        	case 2:
+        		return getEntityToSpawnName(ID.Ship.DestroyerIkazuchi+2000);
+        	default:
+        		return getEntityToSpawnName(ID.Ship.SubmarineU511+2000);
+        	}
+  		}
+  	}
+  	
 	
 }

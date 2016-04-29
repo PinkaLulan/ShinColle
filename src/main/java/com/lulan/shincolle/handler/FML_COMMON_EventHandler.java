@@ -6,6 +6,8 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.settings.GameSettings;
+import net.minecraft.entity.EntityList;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.boss.IBossDisplayData;
 import net.minecraft.entity.player.EntityPlayer;
@@ -20,6 +22,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.BiomeDictionary;
 
+import com.lulan.shincolle.crafting.ShipCalc;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
@@ -317,72 +320,46 @@ public class FML_COMMON_EventHandler {
 						LogHelper.info("DEBUG : spawn boss: check existed boss: "+bossNum+" all mob: "+listBoss.size());
 						
 						//若範圍內不到2隻boss, 則可以再生成新boss
-			            if(bossNum < 2) {
-			            	/**艦隊組成:
-			            	 * boss x2 + small ship x4
-			            	 */
+			            if (bossNum < 2)
+			            {
 			            	//roll生成mob
 			            	int maxShipNum = ConfigHandler.spawnBossNum + ConfigHandler.spawnMobNum;
-			            	int[] spawnList = new int[maxShipNum];
+			            	String[] spawnName = new String[maxShipNum];
 			            	
 			            	//roll boss ship
-			            	for(i = 0; i < ConfigHandler.spawnBossNum; i++) {
-			            		spawnList[i] = rng.nextInt(5);	//boss
+			            	for (i = 0; i < ConfigHandler.spawnBossNum; i++)
+			            	{
+			            		spawnName[i] = ShipCalc.getRandomMobToSpawnName(rng.nextInt(2) + 2);
 			            	}
 			            	
 			            	//roll small ship
-			            	for(i = ConfigHandler.spawnBossNum; i < maxShipNum; i++) {
-			            		spawnList[i] = rng.nextInt(2);	//small ship
-			            	}
-			            	
-			            	//new生成mob
-			            	BasicEntityShipHostile[] spawnMobs = new BasicEntityShipHostile[maxShipNum];
-			            	
-			            	//new bosses
-			            	for(i = 0; i < ConfigHandler.spawnBossNum; i++) {
-			            		switch(spawnList[i]) {
-			            		case 1:
-			            			spawnMobs[i] = new EntityDestroyerShimakazeBoss(w);
-			            			break;
-			            		case 2:
-			            			spawnMobs[i] = new EntityBattleshipYMTBoss(w);
-			            			break;
-			            		case 3:
-			            			spawnMobs[i] = new EntityCarrierKagaBoss(w);
-			            			break;
-			            		case 4:
-			            			spawnMobs[i] = new EntityCarrierAkagiBoss(w);
-			            			break;
-			            		default:
-			            			spawnMobs[i] = new EntityBattleshipNGTBoss(w);
-			            			break;
-			            		}
-			            	}	
-			            	
-			            	//new mobs
-			            	for(i = ConfigHandler.spawnBossNum; i < maxShipNum; i++) {
-			            		switch(spawnList[i]) {
-			            		case 1:
-			            			spawnMobs[i] = new EntitySubmRo500Mob(w);
-			            			break;
-			            		default:
-			            			spawnMobs[i] = new EntitySubmU511Mob(w);
-			            			break;
-			            		}
+			            	for (i = ConfigHandler.spawnBossNum; i < maxShipNum; i++)
+			            	{
+			            		spawnName[i] = ShipCalc.getRandomMobToSpawnName(rng.nextInt(2));
 			            	}
 			            	
 			            	//set mob position and spawn to the world
-			            	for(i = 0; i < spawnMobs.length; i++) {
-			            		spawnMobs[i].setPosition(spawnX + rng.nextInt(2), spawnY, spawnZ + rng.nextInt(2));
-			            		w.spawnEntityInWorld(spawnMobs[i]);
+			            	for (String name : spawnName)
+			            	{
+			            		//get mob entity
+				            	EntityLiving entityToSpawn = (EntityLiving) EntityList.createEntityByName(name, w);
+				            	
+				            	//spawn mob
+				            	if (entityToSpawn != null)
+				            	{
+				            		entityToSpawn.setPosition(spawnX + rng.nextInt(3), spawnY, spawnZ + rng.nextInt(3));
+				            		w.spawnEntityInWorld(entityToSpawn);
+				            	}
 			            	}
 			            	
 			            	//發出spawn msg
 			            	String spawnText = null;
-			            	if(rng.nextInt(2) == 0) {
+			            	if (rng.nextInt(2) == 0)
+			            	{
 			            		spawnText = StatCollector.translateToLocal("chat.shincolle:bossspawn1");
 			            	}
-			            	else {
+			            	else
+			            	{
 			            		spawnText = StatCollector.translateToLocal("chat.shincolle:bossspawn2");
 			            	}
 			            	
@@ -392,9 +369,9 @@ public class FML_COMMON_EventHandler {
 			            	
 			            	LogHelper.info("DEBUG : spawn fleet "+spawnX+" "+spawnY+" "+spawnZ);
 							break;
-			            }	
-					}
-				}
+			            }//end if nearby boss < 2	
+					}//end get water block
+				}//end roll 20 times
 			}//end roll spawn boss
 		}//end boss cooldown <= 0
 	}

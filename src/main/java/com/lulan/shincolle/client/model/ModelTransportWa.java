@@ -248,10 +248,6 @@ public class ModelTransportWa extends ModelBase implements IModelEmotion {
         this.EquipTubeL01.setRotationPoint(18.0F, 3.0F, 28.0F);
         this.EquipTubeL01.addBox(-4.0F, 0.0F, -4.0F, 8, 16, 8, 0.0F);
         this.setRotateAngle(EquipTubeL01, -0.3490658503988659F, -0.13962634015954636F, -0.13962634015954636F);
-        this.Cloth2a = new ModelRenderer(this, 26, 89);
-        this.Cloth2a.setRotationPoint(0.3F, -0.8F, -0.5F);
-        this.Cloth2a.addBox(0.0F, 0.0F, 0.0F, 5, 6, 6, 0.0F);
-        this.setRotateAngle(Cloth2a, 0.0F, -0.08726646259971647F, 0.0F);
         this.EquipBase = new ModelRenderer(this, 0, 0);
         this.EquipBase.setRotationPoint(0.0F, -4.5F, 7.5F);
         this.EquipBase.addBox(0.0F, 0.0F, 0.0F, 0, 0, 0, 0.0F);
@@ -308,11 +304,6 @@ public class ModelTransportWa extends ModelBase implements IModelEmotion {
         this.EquipBack01r.mirror = true;
         this.EquipBack01r.setRotationPoint(-22.0F, -10.0F, 16.0F);
         this.EquipBack01r.addBox(0.0F, 0.0F, 0.0F, 6, 10, 10, 0.0F);
-        this.BoobL = new ModelRenderer(this, 33, 101);
-        this.BoobL.mirror = true;
-        this.BoobL.setRotationPoint(3.7F, -8.5F, -3.5F);
-        this.BoobL.addBox(-3.5F, 0.0F, 0.0F, 7, 5, 5, 0.0F);
-        this.setRotateAngle(BoobL, -0.6981317007977318F, 0.17453292519943295F, 0.08726646259971647F);
         this.EquipHead05 = new ModelRenderer(this, 0, 63);
         this.EquipHead05.setRotationPoint(0.0F, 7.3F, -12.0F);
         this.EquipHead05.addBox(-7.0F, 0.0F, 0.0F, 14, 5, 6, 0.0F);
@@ -370,14 +361,23 @@ public class ModelTransportWa extends ModelBase implements IModelEmotion {
         this.EquipTubeR02.addBox(-4.5F, 0.0F, -8.5F, 9, 16, 9, 0.0F);
         this.setRotateAngle(EquipTubeR02, -0.9560913642424937F, 0.0F, 0.0F);
         this.BoobR = new ModelRenderer(this, 33, 101);
-        this.BoobR.setRotationPoint(-3.7F, -8.5F, -3.5F);
-        this.BoobR.addBox(-3.5F, 0.0F, 0.0F, 7, 5, 5, 0.0F);
-        this.setRotateAngle(BoobR, -0.6981317007977318F, -0.17453292519943295F, -0.08726646259971647F);
+        this.BoobR.setRotationPoint(-4.1F, -8.5F, -3.7F);
+        this.BoobR.addBox(-3F, 0F, 0F, 6, 5, 5, 0F);
+        this.setRotateAngle(BoobR, -0.6981317007977318F, -0.0785F, -0.0785F);
+        this.BoobL = new ModelRenderer(this, 33, 101);
+        this.BoobL.mirror = true;
+        this.BoobL.setRotationPoint(4.1F, -8.5F, -3.7F);
+        this.BoobL.addBox(-3F, 0F, 0F, 6, 5, 5, 0F);
+        this.setRotateAngle(BoobL, -0.6981317007977318F, 0.0785F, 0.0785F);
+        this.Cloth2a = new ModelRenderer(this, 26, 89);
+        this.Cloth2a.setRotationPoint(-1.2F, -0.5F, -0.7F);
+        this.Cloth2a.addBox(0F, 0F, 0F, 5, 6, 6, 0.0F);
+        this.setRotateAngle(Cloth2a, 0F, -0.0785F, -0.0785F);
         this.Cloth2b = new ModelRenderer(this, 26, 89);
         this.Cloth2b.mirror = true;
-        this.Cloth2b.setRotationPoint(-0.3F, -0.8F, -0.5F);
-        this.Cloth2b.addBox(-5.0F, 0.0F, 0.0F, 5, 6, 6, 0.0F);
-        this.setRotateAngle(Cloth2b, 0.0F, 0.08726646259971647F, 0.0F);
+        this.Cloth2b.setRotationPoint(1.2F, -0.5F, -0.7F);
+        this.Cloth2b.addBox(-5F, 0F, 0F, 5, 6, 6, 0F);
+        this.setRotateAngle(Cloth2b, 0F, 0.0785F, 0.0785F);
         this.Cloth00c = new ModelRenderer(this, 88, 101);
         this.Cloth00c.mirror = true;
         this.Cloth00c.setRotationPoint(1.3F, 1.0F, 4.5F);
@@ -655,6 +655,7 @@ public class ModelTransportWa extends ModelBase implements IModelEmotion {
 	  	this.ArmLeft01.rotateAngleX = angleAdd2 * 0.25F + 0.21F;
 	    this.ArmLeft01.rotateAngleZ = angleX * 0.03F - 0.21F;
 	    this.ArmRight01.rotateAngleX = angleAdd1 * 0.25F + 0.05F;
+	    this.ArmRight01.rotateAngleY = 0F;
 		this.ArmRight01.rotateAngleZ = -angleX * 0.03F + 0.21F;
 		//leg
 		this.LegLeft01.rotateAngleY = 0F;
@@ -844,7 +845,7 @@ public class ModelTransportWa extends ModelBase implements IModelEmotion {
 	  		float f7 = MathHelper.sin(f6 * f6 * (float)Math.PI);
 	        float f8 = MathHelper.sin(MathHelper.sqrt_float(f6) * (float)Math.PI);
 	        this.ArmRight01.rotateAngleX += -f8 * 80.0F * Values.N.RAD_MUL;
-	        this.ArmRight01.rotateAngleY += -f7 * 20.0F * Values.N.RAD_MUL + 1.0F;
+	        this.ArmRight01.rotateAngleY += -f7 * 20.0F * Values.N.RAD_MUL + 0.2F;
 	        this.ArmRight01.rotateAngleZ += -f8 * 20.0F * Values.N.RAD_MUL;
 	  	}
 

@@ -28,6 +28,7 @@ import net.minecraftforge.event.world.WorldEvent;
 
 import org.lwjgl.opengl.GL11;
 
+import com.lulan.shincolle.crafting.ShipCalc;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
@@ -287,32 +288,35 @@ public class EVENT_BUS_EventHandler {
 	 */
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
 	public void onSquidSpawn(LivingSpawnEvent.CheckSpawn event) {
-		if(event.entityLiving instanceof EntitySquid) {
-			if(event.world.rand.nextInt((int)ConfigHandler.scaleMobSmall[6]) == 0) {
+		if (event.entityLiving instanceof EntitySquid)
+		{
+			if (event.world.rand.nextInt((int) ConfigHandler.scaleMobSmall[6]) == 0)
+			{
 				//check 64x64 range
 				AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(event.x-16D, event.y-32D, event.z-16D, event.x+16D, event.y+32D, event.z+16D);
 				List ListMob = event.world.getEntitiesWithinAABB(BasicEntityShipHostile.class, aabb);
 
 				//list低於1個表示沒有找到其他boss
-	            if(ListMob.size() < 1) {
+	            if (ListMob.size() < 1)
+	            {
 	            	LogHelper.info("DEBUG : spawn ship mob at "+event.x+" "+event.y+" "+event.z+" rate "+ConfigHandler.scaleMobSmall[6]);
-	            	EntityLiving entityToSpawn;
-	            	//50%:U511 50%:Ro500
-	            	if(event.world.rand.nextInt(2) == 0) {
-	            		entityToSpawn = (EntityLiving) EntityList.createEntityByName("shincolle.EntitySubmU511Mob", event.world);
-					}
-	            	else {
-	            		entityToSpawn = (EntityLiving) EntityList.createEntityByName("shincolle.EntitySubmRo500Mob", event.world);
-	            	}
 	            	
-					entityToSpawn.posX = event.x;
-					entityToSpawn.posY = event.y;
-					entityToSpawn.posZ = event.z;
-					entityToSpawn.setPosition(event.x, event.y, event.z);
-					event.world.spawnEntityInWorld(entityToSpawn);
-	            }	
-			}
-		}
+	            	//get random mob
+	            	String shipname = ShipCalc.getRandomMobToSpawnName(0);
+	            	EntityLiving entityToSpawn = (EntityLiving) EntityList.createEntityByName(shipname, event.world);
+	            	
+	            	//spawn mob
+	            	if (entityToSpawn != null)
+	            	{
+	            		entityToSpawn.posX = event.x;
+						entityToSpawn.posY = event.y;
+						entityToSpawn.posZ = event.z;
+						entityToSpawn.setPosition(event.x, event.y, event.z);
+						event.world.spawnEntityInWorld(entityToSpawn);
+	            	}
+	            }//end nearby mob ship check
+			}//end squid random
+		}//end spawn squid
 	}
 	
 	/**world load event

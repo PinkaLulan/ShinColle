@@ -35,6 +35,8 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
     public ModelRenderer Ear01;
     public ModelRenderer Ear02;
     public ModelRenderer Hair;
+    public ModelRenderer Hair01;
+    public ModelRenderer HairU01;
     public ModelRenderer Cap;
     public ModelRenderer Cap2;
     public ModelRenderer Face0;
@@ -175,10 +177,10 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
         this.BagStrap2.setRotationPoint(-5.0F, 1.0F, 2.0F);
         this.BagStrap2.addBox(-3.0F, 0.0F, -15.0F, 3, 10, 15, 0.0F);
         this.setRotateAngle(BagStrap2, 0.3490658503988659F, 0.3490658503988659F, 0.13962634015954636F);
-        this.Ahoke = new ModelRenderer(this, 28, 89);
-        this.Ahoke.setRotationPoint(0.0F, -14.0F, -4.0F);
-        this.Ahoke.addBox(0.0F, 0.0F, -12.0F, 0, 13, 12, 0.0F);
-        this.setRotateAngle(Ahoke, 0.0F, 0.5235987755982988F, 0.0F);
+        this.Ahoke = new ModelRenderer(this, 28, 90);
+        this.Ahoke.setRotationPoint(0F, -7F, -4F);
+        this.Ahoke.addBox(0F, -6F, -11F, 0, 11, 11, 0F);
+        this.setRotateAngle(Ahoke, -0.1742F, 0.5235987755982988F, 0.0F);
         this.Cap = new ModelRenderer(this, 104, 101);
         this.Cap.setRotationPoint(0.0F, 0.6F, 2.0F);
         this.Cap.addBox(-8.0F, -17.0F, -2.0F, 16, 17, 10, 0.0F);
@@ -281,8 +283,15 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
         this.TailHeadBase = new ModelRenderer(this, 157, 96);
         this.TailHeadBase.setRotationPoint(0.0F, 0.0F, 9.0F);
         this.Hair = new ModelRenderer(this, 24, 61);
-        this.Hair.setRotationPoint(0.0F, -7.0F, 0.0F);
+        this.Hair.setRotationPoint(0.0F, -7.3F, 0.0F);
         this.Hair.addBox(-7.5F, -8.0F, -8.0F, 15, 16, 8, 0.0F);
+        this.Hair01 = new ModelRenderer(this, 186, 0);
+        this.Hair01.setRotationPoint(0.0F, -9.5F, 9.5F);
+        this.Hair01.addBox(-7F, 0F, -12F, 14, 9, 9, 0F);
+        this.setRotateAngle(Hair01, 0.1257F, 0.0F, 0.0F);
+        this.HairU01 = new ModelRenderer(this, 189, 19);
+        this.HairU01.setRotationPoint(0F, -0.2F, -7.2F);
+        this.HairU01.addBox(-8F, -14.7F, 0F, 16, 15, 6, 0F);
         this.TailJaw1 = new ModelRenderer(this, 194, 106);
         this.TailJaw1.setRotationPoint(0.0F, 3.0F, 5.0F);
         this.TailJaw1.addBox(-6.5F, 0.0F, 0.0F, 13, 5, 16, 0.0F);
@@ -388,6 +397,8 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
         this.TailHeadC1.addChild(this.TailHeadC3);
         this.BagMain.addChild(this.BagStrap1);  
         this.Head.addChild(this.Hair);
+        this.Head.addChild(this.Hair01);
+        this.Head.addChild(this.HairU01);
         this.TailHeadBase.addChild(this.TailHeadCR1);
         this.TailHeadC1.addChild(this.TailHeadC4);
         this.ArmRight02.addChild(this.PalmRight);
@@ -633,6 +644,7 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
 		this.TailHeadBase.rotateAngleZ = 0F;//MathHelper.cos(-f2 * 0.1F + 4.9F) * 0.025F;
 		this.TailHead1.rotateAngleX = 0.2618F;
 		this.TailJaw1.rotateAngleX = -0.7F;
+		this.Hair01.isHidden = true;
 		this.Ear01.isHidden = true;
 		this.Ear02.isHidden = true;
     }
@@ -1146,12 +1158,16 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
 	//裝備模型顯示
     private void showEquip(IShipEmotion ent) {
 		if(ent.getStateEmotion(ID.S.State) > ID.State.NORMAL) {
+			this.Hair01.isHidden = false;
+			this.HairU01.isHidden = false;
 			this.Ear01.isHidden = false;
 			this.Ear02.isHidden = false;
 			this.Cap.isHidden = true;
 			this.Cap2.isHidden = false;
 		}
 		else {
+			this.Hair01.isHidden = true;
+			this.HairU01.isHidden = true;
 			this.Ear01.isHidden = true;
 			this.Ear02.isHidden = true;
 			this.Cap.isHidden = false;

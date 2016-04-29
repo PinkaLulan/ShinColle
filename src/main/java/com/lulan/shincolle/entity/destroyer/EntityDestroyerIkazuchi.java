@@ -14,13 +14,14 @@ import com.lulan.shincolle.entity.ExtendShipProps;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.ParticleHelper;
 
 
 public class EntityDestroyerIkazuchi extends BasicEntityShipSmall {
 
 	public EntityDestroyerIkazuchi(World world) {
 		super(world);
-		this.setSize(0.6F, 1.6F);
+		this.setSize(0.6F, 1.5F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.DESTROYER);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.DestroyerIkazuchi);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
@@ -43,7 +44,7 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall {
 	//for morph
 	@Override
 	public float getEyeHeight() {
-		return 1.5F;
+		return 1.4F;
 	}
 	
 	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc
@@ -64,16 +65,30 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall {
   	public void onLivingUpdate() {
   		super.onLivingUpdate();
   		
+  		//server side
   		if(!worldObj.isRemote) {
-  			//add aura to master every 100 ticks
-  			if(this.ticksExisted % 100 == 0) {
+  			//add aura to master every 128 ticks
+  			if(this.ticksExisted % 128 == 0) {
   				EntityPlayerMP player = (EntityPlayerMP) EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
   				if(getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.M.NumGrudge) > 0 && player != null && getDistanceSqToEntity(player) < 256D) {
   					//potion effect: id, time, level
   	  	  			player.addPotionEffect(new PotionEffect(Potion.damageBoost.id, 300, getStateMinor(ID.M.ShipLevel) / 50));
   				}
   			}
-  		}    
+  		}
+  		//client side
+  		else {
+  			if(this.ticksExisted % 4 == 0) {
+  				if(getStateEmotion(ID.S.State) >= ID.State.EQUIP01 && !isSitting() && !getStateFlag(ID.F.NoFuel)) {
+  					double smokeY = posY + 1.4D;
+  					
+  					//計算煙霧位置
+  	  				float[] partPos = ParticleHelper.rotateXZByAxis(-0.42F, 0F, (this.renderYawOffset % 360) / 57.2957F, 1F);
+  	  				//生成裝備冒煙特效
+  	  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], smokeY, posZ+partPos[0], 0D, 0D, 0D, (byte)20);
+  				}	
+  			}
+  		}
   	}
   	
   	@Override
@@ -100,10 +115,10 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall {
   	@Override
 	public double getMountedYOffset() {
   		if(this.isSitting()) {
-  			return (double)this.height * 0.2F;
+  			return (double)this.height * 0.15F;
   		}
   		else {
-  			return (double)this.height * 0.8F;
+  			return (double)this.height * 0.47F;
   		}
 	}
 

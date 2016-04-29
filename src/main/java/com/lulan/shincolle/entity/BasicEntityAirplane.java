@@ -13,6 +13,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.ai.EntityAIShipAircraftAttack;
+import com.lulan.shincolle.ai.EntityAIShipOpenDoor;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
@@ -91,7 +92,13 @@ abstract public class BasicEntityAirplane extends EntityLiving implements IShipC
   		this.getNavigator().setAvoidsWater(false);
   		this.getNavigator().setCanSwim(true);
   		
+  		//attack AI
   		this.tasks.addTask(1, new EntityAIShipAircraftAttack(this));
+  		
+  		//misc AI
+  		this.tasks.addTask(11, new EntityAIShipOpenDoor(this, true));
+  		
+  		
   		this.setEntityTarget(atkTarget);
   	}
   	

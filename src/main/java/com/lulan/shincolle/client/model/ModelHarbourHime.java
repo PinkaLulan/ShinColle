@@ -865,7 +865,7 @@ public class ModelHarbourHime extends ModelBase implements IModelEmotion {
 	  	this.HairR02.rotateAngleX = angleX * 0.02F + headX + 0.17F;
 	  	
 	  	//swing arm
-	  	float f6 = ent.getSwingTime(f2 % 1F);
+	  	float f6 = ent.getSwingTime(f2 - (int)f2);
 	  	if(f6 != 0F) {
 	  		float f7 = MathHelper.sin(f6 * f6 * (float)Math.PI);
 	        float f8 = MathHelper.sin(MathHelper.sqrt_float(f6) * (float)Math.PI);

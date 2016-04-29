@@ -1,7 +1,10 @@
 package com.lulan.shincolle.entity.destroyer;
 
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
@@ -10,6 +13,8 @@ import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.ParticleHelper;
 
 public class EntityDestroyerIkazuchiMob extends BasicEntityShipHostile {
 
@@ -17,27 +22,27 @@ public class EntityDestroyerIkazuchiMob extends BasicEntityShipHostile {
 	public EntityDestroyerIkazuchiMob(World world) {
 		super(world);
 		this.setSize(0.6F, 1.5F);
-		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityDestroyerikazuchiMob.name"));
+		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityDestroyerIkazuchiMob.name"));
 		this.ignoreFrustumCheck = true;	//即使不在視線內一樣render
 		
         //basic attr
-        this.atk = (float) ConfigHandler.scaleBossSmall[ID.ATK];
-        this.atkSpeed = (float) ConfigHandler.scaleBossSmall[ID.SPD] * 1.5F;
-        this.atkRange = (float) ConfigHandler.scaleBossSmall[ID.HIT] * 0.9F;
-        this.defValue = (float) ConfigHandler.scaleBossSmall[ID.DEF] * 0.9F;
-        this.movSpeed = (float) ConfigHandler.scaleBossSmall[ID.MOV] * 1.2F;
+        this.atk = (float) ConfigHandler.scaleMobSmall[ID.ATK];
+        this.atkSpeed = (float) ConfigHandler.scaleMobSmall[ID.SPD] * 1.5F;
+        this.atkRange = (float) ConfigHandler.scaleMobSmall[ID.HIT] * 0.9F;
+        this.defValue = (float) ConfigHandler.scaleMobSmall[ID.DEF] * 0.9F;
+        this.movSpeed = (float) ConfigHandler.scaleMobSmall[ID.MOV] * 1.2F;
 
         //AI flag
         this.StartEmotion = 0;
         this.StartEmotion2 = 0;
         this.headTilt = false;
-        this.setStateEmotion(ID.S.State, ID.State.EQUIP02, false);
+        this.setStateEmotion(ID.S.State, rand.nextInt(4), false);
         
         //misc
         this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, ID.Ship.DestroyerIkazuchi+2);
  
 	    //設定基本屬性
-	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(ConfigHandler.scaleBossSmall[ID.HP] * 0.8F);
+	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(ConfigHandler.scaleMobSmall[ID.HP] * 0.8F);
 		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(this.movSpeed);
 		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(atkRange + 32); //此為找目標, 路徑的範圍
 		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(1D);
@@ -56,6 +61,12 @@ public class EntityDestroyerIkazuchiMob extends BasicEntityShipHostile {
 	@Override
 	public float getEyeHeight() {
 		return 1.4F;
+	}
+	
+	//chance drop
+	@Override
+	public ItemStack getDropEgg() {
+		return this.rand.nextInt(5) == 0 ? this.dropItem : null;
 	}
 	
 	//setup AI
@@ -82,6 +93,24 @@ public class EntityDestroyerIkazuchiMob extends BasicEntityShipHostile {
 			return 0F;
 		}
 	}
+  	
+  //check entity state every tick
+  	@Override
+  	public void onLivingUpdate() {
+  		super.onLivingUpdate();
+  		
+  		//client side
+  		if(worldObj.isRemote) {
+  			if(this.getStateEmotion(ID.S.State) > ID.State.EQUIP01 && this.ticksExisted % 4 == 0) {
+				double smokeY = posY + 1.4D;
+				
+				//計算煙霧位置
+  				float[] partPos = ParticleHelper.rotateXZByAxis(-0.42F, 0F, (this.renderYawOffset % 360) / 57.2957F, 1F);
+  				//生成裝備冒煙特效
+  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], smokeY, posZ+partPos[0], 0D, 0D, 0D, (byte)20);
+  			}
+  		}
+  	}
   	
 
 }

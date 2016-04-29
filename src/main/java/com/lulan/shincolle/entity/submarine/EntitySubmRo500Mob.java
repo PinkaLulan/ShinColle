@@ -101,9 +101,8 @@ public class EntitySubmRo500Mob extends BasicEntityShipHostile implements IShipI
   		super.onLivingUpdate();
   		
   		if(!worldObj.isRemote) {
-//  			LogHelper.info("DEBUG: taget:   "+this.getEntityTarget()+"      "+this.getAttackTarget());
   			//add aura to master every N ticks
-  			if(this.ticksExisted % 200 == 0) {
+  			if(this.ticksExisted % 256 == 0) {
   				if(this.rand.nextInt(2) == 0) {
   					this.addPotionEffect(new PotionEffect(Potion.invisibility.id, 120));
   				}

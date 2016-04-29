@@ -1,5 +1,8 @@
 package com.lulan.shincolle.ai;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoor;
 import net.minecraft.block.BlockFenceGate;
@@ -15,6 +18,9 @@ import com.lulan.shincolle.utility.LogHelper;
 
 /** ship open door AI
  * 
+ *  get door: 只尋找posY +1 格位置的門 (僅適用於身高 < 2的生物)
+ *  
+ *  get gate: 依據身體大小計算全部會碰到的gate
  *
  */
 public class EntityAIShipOpenDoor extends EntityAIBase {
@@ -25,7 +31,7 @@ public class EntityAIShipOpenDoor extends EntityAIBase {
 	private int doorY;
 	private int doorZ;
 	private BlockDoor door;
-	private BlockFenceGate gate;
+	private List<int[]> gates;
 	private boolean hasPassed;  //true時表示已經通過門，可準備結束AI
 	private float vecX;
 	private float vecZ;
@@ -59,25 +65,25 @@ public class EntityAIShipOpenDoor extends EntityAIBase {
                 {
                     ShipPathPoint pp = path.getPathPointFromIndex(i);
                     this.doorX = pp.xCoord;
-                    this.doorY = pp.yCoord + 1;  //抓高一格的門, 才能確定身高2格以內可以通過
+                    this.doorY = pp.yCoord;  //抓高一格的門, 才能確定身高2格以內可以通過
                     this.doorZ = pp.zCoord;
 
                     //若路徑點已經在1.5格內
                     if (this.host.getDistanceSq((double)this.doorX, this.host.posY, (double)this.doorZ) <= 2.25D)
                     {
                     	//get door
-                        this.door = this.getDoor(this.doorX, this.doorY, this.doorZ);
+                        this.door = this.getDoor(this.doorX, this.doorY+1, this.doorZ);
 
                         if (this.door != null)
                         {
+                        	this.doorY += 1;
                             return true;
                         }
                         //get gate
                         else
                         {
-                        	this.gate = this.getGate(this.doorX, this.doorY - 1, this.doorZ);
-                        	
-                        	if (this.gate != null)
+                        	//get gates
+                        	if (this.getGate(this.doorX + 0.5F, this.doorY, this.doorZ + 0.5F))
                         	{
                         		return true;
                         	}
@@ -98,10 +104,8 @@ public class EntityAIShipOpenDoor extends EntityAIBase {
                 }
                 else
                 {
-                	//get gate
-                	this.gate = this.getGate(this.doorX, this.doorY - 1, this.doorZ);
-                	
-                	return this.gate != null;
+                	//get gates
+                	return this.getGate((float) this.host.posX, (float) this.host.posY, (float) this.host.posZ);
                 }
             }//end has path
             //no path
@@ -123,22 +127,17 @@ public class EntityAIShipOpenDoor extends EntityAIBase {
     {
         this.delay = 20;
         this.hasPassed = false;
-        this.vecX = (float)((double)((float)this.doorX + 0.5F) - this.host.posX);
-        this.vecZ = (float)((double)((float)this.doorZ + 0.5F) - this.host.posZ);
         
         //更改door meta值為開門
         if (this.door != null)
         {
+        	this.vecX = (float)((double)((float)this.doorX + 0.5F) - this.host.posX);
+            this.vecZ = (float)((double)((float)this.doorZ + 0.5F) - this.host.posZ);
         	this.door.func_150014_a(this.host.worldObj, this.doorX, this.doorY, this.doorZ, true);
         }
-        else if (this.gate != null)
+        else if (this.gates != null && !this.gates.isEmpty())
         {
-        	this.doorY -= 1;
-        	int meta = this.host.worldObj.getBlockMetadata(this.doorX, this.doorY, this.doorZ);
-        	
-        	if(!this.gate.isFenceGateOpen(meta)) {
-        		activateGate();
-        	}
+        	activateGate(true);
         }
     }
 
@@ -153,9 +152,9 @@ public class EntityAIShipOpenDoor extends EntityAIBase {
         		//更改door meta值為關門
                 this.door.func_150014_a(this.host.worldObj, this.doorX, this.doorY, this.doorZ, false);
         	}
-        	else if (this.gate != null)
+        	else if (this.gates != null && !this.gates.isEmpty())
         	{
-        		activateGate();
+        		activateGate(false);
         	}
         }
     }
@@ -165,16 +164,27 @@ public class EntityAIShipOpenDoor extends EntityAIBase {
     {
         --this.delay;
         
-        //計算host位置vector
-        float vx = (float)((this.doorX + 0.5D) - this.host.posX);
-        float vz = (float)((this.doorZ + 0.5D) - this.host.posZ);
-        float v = this.vecX * vx + this.vecZ * vz;
-
-        //若host已經通過門, 則vec相乘後會小於0, 表示可以關門
-        if (v < 0F)
+        //for door
+        if (this.door != null)
         {
-            this.hasPassed = true;
+        	//計算host位置vector
+            float vx = (float)((this.doorX + 0.5D) - this.host.posX);
+            float vz = (float)((this.doorZ + 0.5D) - this.host.posZ);
+            float v = this.vecX * vx + this.vecZ * vz;
+
+            //若host已經通過門, 則vec相乘後會小於0, 表示可以關門
+            if (v < 0F)
+            {
+                this.hasPassed = true;
+            }
         }
+        //for gate
+        else
+        {
+        	//不管位置, 時間到就設定為通過
+        	if (this.delay <= 0) this.hasPassed = true;
+        }
+        
     }
     
     private BlockDoor getDoor(int x, int y, int z)
@@ -183,37 +193,79 @@ public class EntityAIShipOpenDoor extends EntityAIBase {
         return block != Blocks.wooden_door ? null : (BlockDoor) block;
     }
     
-    private BlockFenceGate getGate(int x, int y, int z)
+    //return true = get gate in list
+    private boolean getGate(float x, float y, float z)
     {
-        Block block = this.host.worldObj.getBlock(x, y, z);
-        return block != Blocks.fence_gate ? null : (BlockFenceGate) block;
+    	boolean getGate = false;
+    	float range = host.width < 1F ? 1F : host.width;
+    	this.gates = new ArrayList();
+    	
+    	//get gate within entity hitbox at x,y,z
+    	for (float ix = x - range; ix <= x + range; ix += 1F)
+    	{
+    		for (float iz = z - range; iz <= z + range; iz += 1F)
+    		{
+    			for (float iy = y; iy <= y + host.height; iy += 1F)
+    			{
+    				int gx = MathHelper.floor_float(ix);
+    				int gy = (int)iy;
+    				int gz = MathHelper.floor_float(iz);
+    				Block block = this.host.worldObj.getBlock(gx, gy, gz);
+    				
+    				if (block instanceof BlockFenceGate)
+    				{
+    					this.gates.add(new int[] {gx, gy, gz});
+    					getGate = true;
+    				}
+            	}
+        	}
+    	}
+    	
+        return getGate;
     }
     
-    private void activateGate() {
-    	int meta = this.host.worldObj.getBlockMetadata(this.doorX, this.doorY, this.doorZ);
+    //activate all gate in list to open or close
+    private void activateGate(boolean openGate)
+    {
+    	//loop all gates
+    	for (int[] gpos : gates)
+    	{
+    		Block b = this.host.worldObj.getBlock(gpos[0], gpos[1], gpos[2]);
+    		
+    		if (b instanceof BlockFenceGate)
+    		{
+    			int meta = this.host.worldObj.getBlockMetadata(gpos[0], gpos[1], gpos[2]);
+    			
+    			//open gate
+    			if (BlockFenceGate.isFenceGateOpen(meta))
+    			{
+    				if (!openGate)  //want to close gate
+    				{
+    					host.worldObj.setBlockMetadataWithNotify(gpos[0], gpos[1], gpos[2], meta & -5, 2);
+    		            host.worldObj.playAuxSFXAtEntity(null, 1003, gpos[0], gpos[1], gpos[2], 0);  //play sound
+    				}
+    			}//end open gate
+    			//close gate
+    			else
+    			{
+    				if (openGate)  //want to open gate
+    				{
+    					int j1 = (MathHelper.floor_double((double)(host.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3) % 4;
+    	                int k1 = BlockFenceGate.getDirection(meta);
 
-    	//is open -> close
-        if (this.gate.isFenceGateOpen(meta))
-        {
-        	this.host.worldObj.setBlockMetadataWithNotify(this.doorX, this.doorY, this.doorZ, meta & -5, 2);
-        }
-        //is close -> open
-        else
-        {
-            int j1 = (MathHelper.floor_double((double)(this.host.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3) % 4;
-            int k1 = this.gate.getDirection(meta);
+    	                if (k1 == (j1 + 2) % 4)
+    	                {
+    	                	meta = j1;
+    	                }
 
-            if (k1 == (j1 + 2) % 4)
-            {
-            	meta = j1;
-            }
-
-            this.host.worldObj.setBlockMetadataWithNotify(this.doorX, this.doorY, this.doorZ, meta | 4, 2);
-        }
-
-        //play sound
-        this.host.worldObj.playAuxSFXAtEntity(null, 1003, this.doorX, this.doorY, this.doorZ, 0);
+    	                host.worldObj.setBlockMetadataWithNotify(gpos[0], gpos[1], gpos[2], meta | 4, 2);
+    	                host.worldObj.playAuxSFXAtEntity(null, 1003, gpos[0], gpos[1], gpos[2], 0);  //play sound
+    				}
+    			}//end close gate
+    		}//end get gate
+    	}//end for all gates
+    	
     }
-    
+
     
 }

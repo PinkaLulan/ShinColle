@@ -48,7 +48,7 @@ public class RenderLargeShipyard extends Render {
 		
 		Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE);
 		GL11.glPushMatrix();
-			GL11.glTranslatef((float)offsetX+0.375F, (float)offsetY+0.8F, (float)offsetZ+0.375F);
+			GL11.glTranslatef((float)offsetX, (float)offsetY+1.8F, (float)offsetZ);
 			GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
 			GL11.glScalef(1F, 1.2F, 1F);
 			this.model.render(entity, 0F, 0F, 0F, 0F, 0F, 0.0625F);

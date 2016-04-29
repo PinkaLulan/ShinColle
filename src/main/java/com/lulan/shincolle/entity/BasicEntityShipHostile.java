@@ -2,7 +2,6 @@ package com.lulan.shincolle.entity;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAILookIdle;
-import net.minecraft.entity.ai.EntityAIOpenDoor;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -11,12 +10,14 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.ai.EntityAIShipFloating;
+import com.lulan.shincolle.ai.EntityAIShipOpenDoor;
 import com.lulan.shincolle.ai.EntityAIShipRangeTarget;
 import com.lulan.shincolle.ai.EntityAIShipRevengeTarget;
 import com.lulan.shincolle.ai.EntityAIShipWander;
 import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
+import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.network.S2CEntitySync;
@@ -24,6 +25,7 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
@@ -98,12 +100,11 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		this.getNavigator().setCanSwim(true);
 		
 		//idle AI
-		//moving
-		this.tasks.addTask(21, new EntityAIOpenDoor(this, true));			   //0000
-		this.tasks.addTask(22, new EntityAIShipFloating(this));				   //0111
+		this.tasks.addTask(21, new EntityAIShipOpenDoor(this, true));			//0000
+		this.tasks.addTask(22, new EntityAIShipFloating(this));					//0111
 		this.tasks.addTask(23, new EntityAIShipWatchClosest(this, EntityPlayer.class, 8F, 0.1F)); //0010
-		this.tasks.addTask(24, new EntityAIShipWander(this, 12, 1, 0.8D));	   //0111
-		this.tasks.addTask(25, new EntityAILookIdle(this));					   //0011
+		this.tasks.addTask(24, new EntityAIShipWander(this, 12, 1, 0.8D));		//0111
+		this.tasks.addTask(25, new EntityAILookIdle(this));						//0011
 
 	}
 	
@@ -375,7 +376,63 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 
 	@Override
 	public boolean attackEntityWithHeavyAmmo(Entity target) {
-		return false;
+		//get attack value
+		float atk = getAttackBaseDamage(2, target);
+		float kbValue = 0.15F;
+		
+		//飛彈是否採用直射
+		boolean isDirect = false;
+		float launchPos = (float) posY + height * 0.75F;
+		
+		//計算目標距離
+		float[] distVec = new float[4];
+		float tarX = (float) target.posX;
+		float tarY = (float) target.posY;
+		float tarZ = (float) target.posZ;
+		
+		distVec[0] = tarX - (float) this.posX;
+        distVec[1] = tarY - (float) this.posY;
+        distVec[2] = tarZ - (float) this.posZ;
+		distVec[3] = MathHelper.sqrt_float(distVec[0]*distVec[0] + distVec[1]*distVec[1] + distVec[2]*distVec[2]);
+        
+        //超過一定距離/水中 , 則採用拋物線,  在水中時發射高度較低
+        if(distVec[3] < 5F) {
+        	isDirect = true;
+        }
+        
+        if(getShipDepth() > 0D) {
+        	isDirect = true;
+        	launchPos = (float) posY;
+        }
+		
+		//play attack effect
+        applySoundAtAttacker(2, target);
+	    applyParticleAtAttacker(2, target, distVec);
+        
+	    //calc miss
+        if(this.rand.nextFloat() < 0.2F) {
+        	tarX = tarX - 5F + this.rand.nextFloat() * 10F;
+        	tarY = tarY + this.rand.nextFloat() * 5F;
+        	tarZ = tarZ - 5F + this.rand.nextFloat() * 10F;
+        	
+        	applyParticleSpecialEffect(0);  //miss particle
+        }
+        
+        //spawn missile
+        EntityAbyssMissile missile = new EntityAbyssMissile(this.worldObj, this, 
+        		tarX, tarY+target.height*0.2F, tarZ, launchPos, atk, kbValue, isDirect, -1F);
+        this.worldObj.spawnEntityInWorld(missile);
+        
+        //play target effect
+        applySoundAtTarget(2, target);
+        applyParticleAtTarget(2, target, distVec);
+        applyEmotesReaction(3);
+        
+        if(ConfigHandler.canFlare) {
+			flareTarget(target);
+		}
+        
+        return true;
 	}
 	
 	@Override
@@ -1005,6 +1062,171 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 
         this.swingProgress = (float)this.swingProgressInt / (float)swingMaxTick;
     }
+  	
+  	/** attack base damage
+  	 * 
+  	 *  type: 0:melee, 1:light cannon, 2:heavy cannon, 3:light air, 4:heavy air
+  	 */
+  	public float getAttackBaseDamage(int type, Entity target) {
+  		switch(type) {
+  		case 1:  //light cannon
+  			return CalcHelper.calcDamageBySpecialEffect(this, target, this.atk, 0);
+  		case 2:  //heavy cannon
+  			return this.atk * 3F;
+  		case 3:  //light aircraft
+  			return this.atk;
+  		case 4:  //heavy aircraft
+  			return this.atk * 3F;
+		default: //melee
+			return this.atk * 0.125F;
+  		}
+  	}
+  	
+  	public void applySoundAtAttacker(int type, Entity target) {
+  		switch(type) {
+  		case 1:  //light cannon
+  			//fire sound
+  			playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  	        
+  			//entity sound
+  			if(this.rand.nextInt(10) > 7) {
+  	        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  	        }
+  			break;
+  		case 2:  //heavy cannon
+  			//fire sound
+  	        this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+
+  	        //entity sound
+  	        if(this.getRNG().nextInt(10) > 7) {
+  	        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  	        }
+  			break;
+  		case 3:  //light aircraft
+  	        playSound(Reference.MOD_ID+":ship-aircraft", ConfigHandler.fireVolume * 0.5F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  			break;
+  		case 4:  //heavy aircraft
+  	        playSound(Reference.MOD_ID+":ship-aircraft", ConfigHandler.fireVolume * 0.5F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  			break;
+		default: //melee
+			if(this.getRNG().nextInt(2) == 0) {
+	        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+	        }
+			break;
+  		}
+  	}
+  	
+  	/** attack particle at attacker
+  	 * 
+  	 *  type: 0:melee, 1:light cannon, 2:heavy cannon, 3:light air, 4:heavy air
+  	 *  vec: 0:distX, 1:distY, 2:distZ, 3:dist sqrt
+  	 */
+  	public void applyParticleAtAttacker(int type, Entity target, float[] vec) {
+  		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+        
+  		switch(type) {
+  		case 1:  //light cannon
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 6, this.posX, this.posY, this.posZ, vec[0], vec[1], vec[2], true), point);
+  			break;
+  		case 2:  //heavy cannon
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
+  			break;
+  		case 3:  //light aircraft
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
+  			break;
+  		case 4:  //heavy aircraft
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
+  			break;
+		default: //melee
+			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
+			break;
+  		}
+  	}
+  	
+  	/** special particle at entity
+  	 * 
+  	 *  type: 0:miss, 1:critical, 2:double hit, 3:triple hit
+  	 */
+  	protected void applyParticleSpecialEffect(int type) {
+  		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+  		
+  		switch(type) {
+  		case 1:  //critical
+      		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 11, false), point);
+  			break;
+  		case 2:  //double hit
+      		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 12, false), point);
+  			break;
+  		case 3:  //triple hit
+      		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 13, false), point);
+  			break;
+		default: //miss
+      		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
+			break;
+  		}
+  	}
+  	
+  	/** attack particle at target
+  	 * 
+  	 *  type: 0:melee, 1:light cannon, 2:heavy cannon, 3:light air, 4:heavy air
+  	 */
+  	public void applySoundAtTarget(int type, Entity target) {
+  		switch(type) {
+  		case 1:  //light cannon
+  			break;
+  		case 2:  //heavy cannon
+  			break;
+  		case 3:  //light aircraft
+  			break;
+  		case 4:  //heavy aircraft
+  			break;
+		default: //melee
+			break;
+  		}
+  	}
+  	
+  	/** attack particle at target
+  	 * 
+  	 *  type: 0:melee, 1:light cannon, 2:heavy cannon, 3:light air, 4:heavy air
+  	 *  vec: 0:distX, 1:distY, 2:distZ, 3:dist sqrt
+  	 */
+  	public void applyParticleAtTarget(int type, Entity target, float[] vec) {
+  		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+  		
+  		switch(type) {
+  		case 1:  //light cannon
+			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 9, false), point);
+  			break;
+  		case 2:  //heavy cannon
+  			break;
+  		case 3:  //light aircraft
+  			break;
+  		case 4:  //heavy aircraft
+  			break;
+		default: //melee
+    		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 1, false), point);
+			break;
+  		}
+  	}
+  	
+  	/** set flare on target */
+  	public void flareTarget(Entity target) {
+  		if(this.getStateMinor(ID.M.LevelFlare) > 0 && target != null) {
+  			int px = MathHelper.floor_double(target.posX);
+			int py = (int) target.posY + 1;
+			int pz = MathHelper.floor_double(target.posZ);
+			float light = this.worldObj.getBlockLightValue(px, py, pz);
+  			
+  			//method 2: create light block
+  			if(light < 12F) {
+				BlockHelper.placeLightBlock(this.worldObj, px, py, pz);
+  			}
+  			//search light block, renew lifespan
+  			else {
+  				BlockHelper.updateNearbyLightBlock(this.worldObj, px, py, pz);
+  			}
+  		}
+  	}
   	
 
 }

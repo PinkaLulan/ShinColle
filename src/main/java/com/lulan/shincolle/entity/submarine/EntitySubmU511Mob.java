@@ -91,7 +91,7 @@ public class EntitySubmU511Mob extends BasicEntityShipHostile implements IShipIn
           
   		if(!worldObj.isRemote) {
   			//add aura to master every N ticks
-  			if(this.ticksExisted % 200 == 0) {
+  			if(this.ticksExisted % 256 == 0) {
   				if(this.rand.nextInt(2) == 0) {
   					this.addPotionEffect(new PotionEffect(Potion.invisibility.id, 120));
   				}

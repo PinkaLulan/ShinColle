@@ -1426,62 +1426,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 
 			//use owner paper, owner only
 			if(itemstack.getItem() == ModItems.OwnerPaper && EntityHelper.checkSameOwner(this, player)) {
-				NBTTagCompound nbt = itemstack.getTagCompound();
-				boolean changeOwner = false;
-				
-				/**change owner method:
-				 * 1. check owner paper has 2 signs
-				 * 2. check owner is A or B
-				 * 3. get player entity
-				 * 4. change ship's player UID
-				 * 5. change ship's owner UUID
-				 */
-				if(nbt != null) {
-					int ida = nbt.getInteger(OwnerPaper.SignIDA);
-					int idb = nbt.getInteger(OwnerPaper.SignIDB);
-					int idtarget = -1;	//target player uid
-					
-					//1. check 2 signs
-					if(ida > 0 && idb > 0) {
-						//2. check owner is A or B
-						if(ida == this.getPlayerUID()) {	//A is owner
-							idtarget = idb;
-						}
-						else {	//B is owner
-							idtarget = ida;
-						}
-						
-						//3. check player online
-						EntityPlayer target = EntityHelper.getEntityPlayerByUID(idtarget);
-						
-						if(target != null) {
-							ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
-							
-							if(extProps != null) {
-								//4. change ship's player UID
-								this.setPlayerUID(idtarget);
-								
-								//5. change ship's owner UUID
-								this.func_152115_b(target.getUniqueID().toString());
-								
-								LogHelper.info("DEBUG : change owner: from: pid "+this.getPlayerUID()+" uuid "+this.getOwner().getUniqueID());
-								LogHelper.info("DEBUG : change owner: to: pid "+idtarget+" uuid "+target.getUniqueID().toString());
-								changeOwner = true;
-								
-								//send sync packet
-								this.sendSyncPacket(S2CEntitySync.PID.SyncShip_ID, true);
-							}//end player has data
-						}//end target != null
-					}//end item has 2 signs
-				}//end item has nbt
-				
-				if(changeOwner) {
-					//play marriage sound
-	    	        this.playSound(Reference.MOD_ID+":ship-death", ConfigHandler.shipVolume, 1.0F);
-	    	        
-					player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
-					return true;
-				}
+				if(interactOwnerPaper(player, itemstack)) return true;
 			}//end owner paper
 			
 			//use lead
@@ -1522,6 +1467,67 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				
 				return true;
 			}
+		}
+		
+		return false;
+	}
+	
+	/** change owner method:
+	 *  1. check owner paper has 2 signs
+	 *  2. check owner is A or B
+	 *  3. get player entity
+	 *  4. change ship's player UID
+	 *  5. change ship's owner UUID
+	 */
+	protected boolean interactOwnerPaper(EntityPlayer player, ItemStack itemstack) {
+		NBTTagCompound nbt = itemstack.getTagCompound();
+		boolean changeOwner = false;
+		
+		if(nbt != null) {
+			int ida = nbt.getInteger(OwnerPaper.SignIDA);
+			int idb = nbt.getInteger(OwnerPaper.SignIDB);
+			int idtarget = -1;	//target player uid
+			
+			//1. check 2 signs
+			if(ida > 0 && idb > 0) {
+				//2. check owner is A or B
+				if(ida == this.getPlayerUID()) {	//A is owner
+					idtarget = idb;
+				}
+				else {	//B is owner
+					idtarget = ida;
+				}
+				
+				//3. check player online
+				EntityPlayer target = EntityHelper.getEntityPlayerByUID(idtarget);
+				
+				if(target != null) {
+					ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+					
+					if(extProps != null) {
+						//4. change ship's player UID
+						this.setPlayerUID(idtarget);
+						
+						//5. change ship's owner UUID
+						this.func_152115_b(target.getUniqueID().toString());
+						
+						LogHelper.info("DEBUG : change owner: from: pid "+this.getPlayerUID()+" uuid "+this.getOwner().getUniqueID());
+						LogHelper.info("DEBUG : change owner: to: pid "+idtarget+" uuid "+target.getUniqueID().toString());
+						changeOwner = true;
+						
+						//send sync packet
+						this.sendSyncPacket(S2CEntitySync.PID.SyncShip_ID, true);
+					}//end player has data
+				}//end target != null
+			}//end item has 2 signs
+		}//end item has nbt
+		
+		if(changeOwner) {
+			//play marriage sound
+	        this.playSound(Reference.MOD_ID+":ship-death", ConfigHandler.shipVolume, 1.0F);
+	        
+			player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
+			return true;
 		}
 		
 		return false;
@@ -3053,15 +3059,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     			}			
     		}
 			else {
-				if(this.isSitting() && this.getRNG().nextInt(2) == 0) {	//50% for bored
+				if(this.getRNG().nextInt(2) == 0) {	//50% for bored
 	    			if(this.getStateEmotion(ID.S.Emotion) != ID.Emotion.BORED) {
-//	    				LogHelper.info("DEBUG : set emotion BORED");
 	    				this.setStateEmotion(ID.S.Emotion, ID.Emotion.BORED, false);
 	    			}
 	    		}
 	    		else {	//back to normal face
 	    			if(this.getStateEmotion(ID.S.Emotion) != ID.Emotion.NORMAL) {
-//	    				LogHelper.info("DEBUG : set emotion NORMAL");
 	    				this.setStateEmotion(ID.S.Emotion, ID.Emotion.NORMAL, false);
 	    			}
 	    		}
