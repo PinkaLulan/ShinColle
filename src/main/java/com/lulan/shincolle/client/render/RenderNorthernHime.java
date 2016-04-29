@@ -5,13 +5,11 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.client.MinecraftForgeClient;
 
@@ -22,7 +20,6 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.Reference;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -30,24 +27,15 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderNorthernHime extends BasicShipRenderer {
 	
-	private static final ResourceLocation mobTextures = new ResourceLocation(Reference.TEXTURES_ENTITY +
-															"EntityNorthernHime.png");
 	private ModelNorthernHime model = null;
 	private ItemStack holdItem = new ItemStack(ModItems.ToyAirplane);
 	private Random rand = new Random();
 	
-	public RenderNorthernHime(ModelBase par1, float par2) {
-		super(par1, par2);
+	
+	public RenderNorthernHime(ModelBase par1, float par2, int shipClass) {
+		super(par1, par2, shipClass);
 		this.model = (ModelNorthernHime) par1;
-		leashOffsetRideSit = 0.9D;
-		leashOffsetRide = 0.9D;
-		leashOffsetSit = 0.9D;
-		leashOffsetStand = 0.5D;
-	}
-
-	@Override
-	protected ResourceLocation getEntityTexture(Entity par1Entity) {
-		return mobTextures;
+		
 	}
 	
 	@Override

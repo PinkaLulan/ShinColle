@@ -12,14 +12,14 @@ import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.ParticleHelper;
 
-public class EntityDestroyerIkazuchiMob extends BasicEntityShipHostile {
+public class EntityDestroyerInazumaMob extends BasicEntityShipHostile {
 
 	
-	public EntityDestroyerIkazuchiMob(World world) {
+	public EntityDestroyerInazumaMob(World world) {
 		super(world);
 		this.setSize(0.6F, 1.5F);
-		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityDestroyerIkazuchiMob.name"));
-		this.setStateMinor(ID.M.ShipClass, ID.Ship.DestroyerIkazuchi);
+		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityDestroyerInazumaMob.name"));
+		this.setStateMinor(ID.M.ShipClass, ID.Ship.DestroyerInazuma);
 		this.ignoreFrustumCheck = true;	//即使不在視線內一樣render
 		
         //basic attr
@@ -33,10 +33,10 @@ public class EntityDestroyerIkazuchiMob extends BasicEntityShipHostile {
         this.StartEmotion = 0;
         this.StartEmotion2 = 0;
         this.headTilt = false;
-        this.setStateEmotion(ID.S.State, rand.nextInt(4), false);
+        this.setStateEmotion(ID.S.State, rand.nextInt(2), false);
         
         //misc
-        this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, ID.Ship.DestroyerIkazuchi+2);
+        this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, ID.Ship.DestroyerInazuma+2);
  
 	    //設定基本屬性
 	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(ConfigHandler.scaleMobSmall[ID.HP] * 0.8F);
@@ -98,7 +98,7 @@ public class EntityDestroyerIkazuchiMob extends BasicEntityShipHostile {
   		
   		//client side
   		if(worldObj.isRemote) {
-  			if(this.getStateEmotion(ID.S.State) > ID.State.EQUIP01 && this.ticksExisted % 4 == 0) {
+  			if(this.getStateEmotion(ID.S.State) > ID.State.NORMAL && this.ticksExisted % 4 == 0) {
 				double smokeY = posY + 1.4D;
 				
 				//計算煙霧位置
@@ -111,4 +111,5 @@ public class EntityDestroyerIkazuchiMob extends BasicEntityShipHostile {
   	
 
 }
+
 

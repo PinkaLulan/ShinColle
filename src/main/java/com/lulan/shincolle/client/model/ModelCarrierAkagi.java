@@ -514,7 +514,7 @@ public class ModelCarrierAkagi extends ModelBase implements IModelEmotion {
         this.EquipABody04.addChild(this.EquipAArr03a);
         this.BodyMain.addChild(this.Cloth05);
         
-      //glow cube
+        //glow cube
         this.GlowBodyMain = new ModelRenderer(this, 0, 0);
         this.GlowBodyMain.setRotationPoint(0.0F, -15.0F, 0.0F);
         this.setRotateAngle(GlowBodyMain, -0.10471975511965977F, 0.0F, 0.0F);

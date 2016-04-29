@@ -396,7 +396,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		return (byte)getStateMinor(ID.M.ShipType);
 	}
 	
-	//ShipID = ship CLASS ID
 	public short getShipClass() {
 		return (short) getStateMinor(ID.M.ShipClass);
 	}

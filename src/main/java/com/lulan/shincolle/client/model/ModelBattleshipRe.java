@@ -985,6 +985,42 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
 				this.ArmRight01.rotateAngleY = 0F;
 				this.ArmRight01.rotateAngleZ = -0.2F;
 				this.ArmRight02.rotateAngleZ = -1F;
+				
+				//arm special
+		    	float parTick = f2 - (int)f2 + (ent.getTickExisted() % 256);
+		    	
+		    	if(parTick < 30F) {
+		    		float az = MathHelper.sin(parTick * 0.033F * 1.5708F) * 1.6F;
+			    	float az1 = az * 1.6F;
+			    	
+			    	setFace(3);
+		    		//arm 
+				    this.ArmLeft01.rotateAngleZ = 0.2F + az;
+				    this.ArmLeft02.rotateAngleZ = 1F - az1;
+				    if(this.ArmLeft02.rotateAngleZ < 0F) this.ArmLeft02.rotateAngleZ = 0F;
+					this.ArmRight01.rotateAngleZ = -0.2F - az;
+					this.ArmRight02.rotateAngleZ = -1F + az1;
+					if(this.ArmRight02.rotateAngleZ > 0F) this.ArmRight02.rotateAngleZ = 0F;
+		    	}
+		    	else if(parTick < 45F) {
+		    		setFace(3);
+		    		//arm 
+				    this.ArmLeft01.rotateAngleZ = 1.8F;
+				    this.ArmLeft02.rotateAngleZ = 0F;
+					this.ArmRight01.rotateAngleZ = -1.8F;
+					this.ArmRight02.rotateAngleZ = 0F;
+		    	}
+		    	else if(parTick < 53F) {
+		    		float az = MathHelper.cos((parTick - 45F) * 0.125F * 1.5708F);
+			    	float az1 = az * 1.6F;
+			    	
+			    	//arm 
+				    this.ArmLeft01.rotateAngleZ = 0.2F + az1;
+				    this.ArmLeft02.rotateAngleZ = 1F - az;
+					this.ArmRight01.rotateAngleZ = -0.2F - az1;
+					this.ArmRight02.rotateAngleZ = -1F + az;
+		    	}
+		    	
 				//bag
 				this.BagStrap1.rotateAngleX = 0.6F;
 				this.BagStrap1.rotateAngleY = 0F;

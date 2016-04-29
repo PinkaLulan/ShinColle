@@ -3,7 +3,6 @@ package com.lulan.shincolle.entity.destroyer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
 import net.minecraft.entity.boss.IBossDisplayData;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
@@ -31,6 +30,7 @@ public class EntityDestroyerShimakazeBoss extends BasicEntityShipHostile impleme
 		super(world);
 		this.setSize(1.4F, 6F);
 		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityDestroyerShimakazeBoss.name"));
+		this.setStateMinor(ID.M.ShipClass, ID.Ship.DestroyerShimakaze);
 		ignoreFrustumCheck = true;	//即使不在視線內一樣render
 		
         //basic attr

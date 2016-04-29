@@ -18,7 +18,8 @@ public class EntityCarrierKagaBoss extends BasicEntityShipHostileCV implements I
 		super(world);
 		this.setSize(1.7F, 6.5F);
 		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityCarrierKaga.name"));
-        
+		this.setStateMinor(ID.M.ShipClass, ID.Ship.CarrierKaga);
+		
         //basic attr
 		this.atk = (float) ConfigHandler.scaleBossLarge[ID.ATK] * 0.9F;
         this.atkSpeed = (float) ConfigHandler.scaleBossLarge[ID.SPD] * 0.5F;

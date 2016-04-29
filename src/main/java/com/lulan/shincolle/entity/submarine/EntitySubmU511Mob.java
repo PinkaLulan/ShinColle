@@ -6,6 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
@@ -29,8 +30,9 @@ public class EntitySubmU511Mob extends BasicEntityShipHostile implements IShipIn
 	public EntitySubmU511Mob(World world) {
 		super(world);
 		this.setSize(0.7F, 1.4F);
-//		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntitySubmU511Mob.name"));
-        
+		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntitySubmU511Mob.name"));
+		this.setStateMinor(ID.M.ShipClass, ID.Ship.SubmarineU511);
+		
         //basic attr
 		this.atk = (float) ConfigHandler.scaleMobSmall[ID.ATK] * 1.2F;
         this.atkSpeed = (float) ConfigHandler.scaleMobSmall[ID.SPD] * 0.8F;

@@ -31,7 +31,8 @@ public class EntityBattleshipYMTBoss extends BasicEntityShipHostile implements I
 		super(world);
 		this.setSize(1.8F, 7.5F);
 		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityBattleshipYMTBoss.name"));
-        
+		this.setStateMinor(ID.M.ShipClass, ID.Ship.BattleshipYamato);
+		
         //basic attr
 		this.atk = (float) ConfigHandler.scaleBossLarge[ID.ATK] * 1.2F;
         this.atkSpeed = (float) ConfigHandler.scaleBossLarge[ID.SPD] * 1.2F;

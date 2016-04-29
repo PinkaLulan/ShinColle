@@ -29,7 +29,8 @@ public class EntitySubmRo500Mob extends BasicEntityShipHostile implements IShipI
 	public EntitySubmRo500Mob(World world) {
 		super(world);
 		this.setSize(0.6F, 1.4F);
-      
+		this.setStateMinor(ID.M.ShipClass, ID.Ship.SubmarineRo500);
+		
         //basic attr
         this.atk = (float) ConfigHandler.scaleMobSmall[ID.ATK] * 1.2F;
         this.atkSpeed = (float) ConfigHandler.scaleMobSmall[ID.SPD] * 0.8F;

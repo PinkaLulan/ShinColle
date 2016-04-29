@@ -51,6 +51,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	protected boolean headTilt;
 	protected float[] rotateAngle;		//模型旋轉角度, 用於手持物品render
 	protected int StartSoundHurt;		//hurt sound ticks
+	protected short shipClass;
 	
 	//misc
 	protected ItemStack dropItem;
@@ -773,7 +774,15 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	}
 
 	@Override
-	public void setStateMinor(int state, int par1) {}
+	public void setStateMinor(int id, int value)
+	{
+		switch(id)
+		{
+		case ID.M.ShipClass:
+			this.shipClass = (short) value;
+			break;
+		}
+	}
 
 	@Override
 	public float getEffectEquip(int id) {	//cri rate
@@ -1227,6 +1236,10 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
   			}
   		}
   	}
+  	
+  	public short getShipClass() {
+		return (short) getStateMinor(ID.M.ShipClass);
+	}
   	
 
 }

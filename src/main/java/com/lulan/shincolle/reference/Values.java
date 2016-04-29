@@ -126,6 +126,83 @@ public class Values {
 		
 	}});
 	
+	/** SHIP LEASH HEIGHT
+	 * 
+	 *  map <ship id(short), data(float[])>
+	 *  
+	 *  data: 0:Width, 1:Ride, 2:RideSit, 3:Sit, 4:Stand
+	 */
+	public static final Map<Short, float[]> ShipLeashHeight = Collections.unmodifiableMap(new HashMap<Short, float[]>() {{
+		//destroyer
+		put(ID.Ship.DestroyerI,         new float[] {0.8F, 0.8F, 0.8F, 0.8F, 0.8F});
+		put(ID.Ship.DestroyerRO,		new float[] {1.2F, 0.8F, 0.8F, 0.8F, 0.7F});
+		put(ID.Ship.DestroyerHA,		new float[] {1.5F, 0.8F, 0.8F, 0.8F, 0.8F});
+		put(ID.Ship.DestroyerNI,		new float[] {0.5F, 0.9F, 0.9F, 0.9F, 0.9F});
+		//cruiser
+//		put(ID.Ship.LightCruiserHO,		new float[] {});
+//		put(ID.Ship.LightCruiserHE,		new float[] {});
+//		put(ID.Ship.LightCruiserTO,		new float[] {});
+//		put(ID.Ship.LightCruiserTSU,	new float[] {});
+//		put(ID.Ship.TorpedoCruiserCHI,	new float[] {});
+		put(ID.Ship.HeavyCruiserRI,		new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.25F});
+		put(ID.Ship.HeavyCruiserNE,		new float[] {0.5F, 1.1F, 1.1F, 1.1F, 0.85F});
+		//carrier
+//		put(ID.Ship.LightCarrierNU,		new float[] {});
+		put(ID.Ship.CarrierWO,			new float[] {0.1F, 0.2F, 0.2F, 0.2F, 0.15F});
+		//battleship
+		put(ID.Ship.BattleshipRU,		new float[] {0.1F, 0.85F, 0.85F, 0.85F, 0.15F});
+		put(ID.Ship.BattleshipTA,		new float[] {0.1F, 0.85F, 0.85F, 0.85F, 0.15F});
+		put(ID.Ship.BattleshipRE,		new float[] {0.1F, 0.45F, 0.45F, 0.65F, 0.45F});
+		//transport
+		put(ID.Ship.TransportWA,		new float[] {0.2F, 0.8F, 0.8F, 0.8F, 0.3F});
+		//submarine
+//		put(ID.Ship.SubmarineKA,		new float[] {});
+//		put(ID.Ship.SubmarineYO,		new float[] {});
+//		put(ID.Ship.SubmarineSO,		new float[] {});
+		//hime
+//		put(ID.Ship.CarrierHime,		new float[] {});
+		put(ID.Ship.AirfieldHime,		new float[] {0.1F, 1.2F, 1.5F, 0.7F, 0.2F});
+//		put(ID.Ship.ArmoredCarrierHime,	new float[] {});
+//		put(ID.Ship.AnchorageHime,		new float[] {});
+//		put(ID.Ship.LightCruiserDemon,	new float[] {});
+//		put(ID.Ship.AirdefenseHime,		new float[] {});
+		put(ID.Ship.BattleshipHime,		new float[] {0.1F, 0.3F, 0.8F, 0.7F, 0.1F});
+//		put(ID.Ship.DestroyerHime,		new float[] {});
+		put(ID.Ship.HarbourHime,		new float[] {0F, 1.5F, 2.1F, 1.1F, 0.15F});
+//		put(ID.Ship.IsolatedDemon,		new float[] {});
+//		put(ID.Ship.MidwayHime,			new float[] {});
+		put(ID.Ship.NorthernHime,		new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.5F});
+//		put(ID.Ship.SouthernHime,		new float[] {});
+//		put(ID.Ship.SeaplaneHime,		new float[] {});
+		put(ID.Ship.CarrierWD,			new float[] {0.1F, 0.95F, 0.85F, 0.9F, 0.15F});
+//		put(ID.Ship.BattleshipWD,		new float[] {});
+//		put(ID.Ship.AnchorageWD,		new float[] {});
+//		put(ID.Ship.HarbourWD,			new float[] {});
+//		put(ID.Ship.DestroyerWD,		new float[] {});
+//		put(ID.Ship.LightCruiserHime,	new float[] {});
+//		put(ID.Ship.HeavyCruiserHime,	new float[] {});
+//		put(ID.Ship.SubmarineHime,		new float[] {});
+//		put(ID.Ship.SupplyDepotHime,	new float[] {});
+		
+		//hostile ship
+		//DD
+		put(ID.Ship.DestroyerAkatsuki,	new float[] {0.1F, 0.8F, 0.8F, 0.8F, 0.3F});
+		put(ID.Ship.DestroyerHibiki,	new float[] {0.1F, 0.8F, 0.8F, 0.8F, 0.3F});
+		put(ID.Ship.DestroyerIkazuchi,	new float[] {0.1F, 0.8F, 0.8F, 0.8F, 0.3F});
+		put(ID.Ship.DestroyerInazuma,	new float[] {0.1F, 0.8F, 0.8F, 0.8F, 0.3F});
+		put(ID.Ship.DestroyerShimakaze,	new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.4F});
+		//BB
+		put(ID.Ship.BattleshipNagato,	new float[] {0.1F, 0.95F, 0.95F, 0.95F, 0.1F});
+		put(ID.Ship.BattleshipYamato,	new float[] {0.1F, 0.85F, 0.85F, 0.9F, 0.15F});
+		//SS
+		put(ID.Ship.SubmarineU511,		new float[] {0.1F, 1F, 1F, 1F, 0.35F});
+		put(ID.Ship.SubmarineRo500,		new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.35F});
+		//CV
+		put(ID.Ship.CarrierKaga,		new float[] {0.1F, 0.85F, 0.85F, 0.9F, 0.2F});
+		put(ID.Ship.CarrierAkagi,		new float[] {0.1F, 0.85F, 0.85F, 0.9F, 0.2F});
+		
+	}});
+	
 	
 	/** SHIP NAME ICON MAP
 	 * 
@@ -199,7 +276,7 @@ public class Values {
 		put(ID.Ship.DestroyerAkatsuki,	new int[] {0, 77, 120});
 		put(ID.Ship.DestroyerHibiki,	new int[] {0, 88, 120});
 		put(ID.Ship.DestroyerIkazuchi,	new int[] {0, 99, 120});
-		put(ID.Ship.DestroyerInazuma,	new int[] {0, 101,120});
+		put(ID.Ship.DestroyerInazuma,	new int[] {0, 110,120});
 	}});
 	
 	/**SHIP LIST for guidebook

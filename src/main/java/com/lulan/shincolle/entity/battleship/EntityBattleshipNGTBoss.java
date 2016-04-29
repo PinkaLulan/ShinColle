@@ -34,7 +34,8 @@ public class EntityBattleshipNGTBoss extends BasicEntityShipHostile implements I
 		super(world);
 		this.setSize(1.7F, 7F);
 		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityBattleshipNGTBoss.name"));
-        
+		this.setStateMinor(ID.M.ShipClass, ID.Ship.BattleshipNagato);
+		
         //basic attr
 		this.atk = (float) ConfigHandler.scaleBossLarge[ID.ATK];
         this.atkSpeed = (float) ConfigHandler.scaleBossLarge[ID.SPD];
