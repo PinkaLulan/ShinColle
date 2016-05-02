@@ -513,46 +513,69 @@ public class ServerProxy extends CommonProxy {
 	}
 	
 	/** update player id */
-	public static void updatePlayerID(EntityPlayer player) {
+	public static void updatePlayerID(EntityPlayer player)
+	{
 		LogHelper.info("DEBUG : update player: "+player.getDisplayName()+" "+player.getUniqueID()+" "+player.getEntityId());
 		
 		ExtendPlayerProps extProps = (ExtendPlayerProps) player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 		
-		if(extProps != null) {
+		if (extProps != null)
+		{
 			int pid = extProps.getPlayerUID();
 			int[] pdata = new int[1];
 			
 			pdata[0] = player.getEntityId();
 			
 			//update player data
-			if(pid > 0) {
+			if (pid > 0)
+			{
 				LogHelper.info("DEBUG : update player: update player id "+pid+" eid: "+pdata[0]);
 				setPlayerWorldData(pid, pdata);
 				
 				/** server init wrong (lost all data or file deleted)
 				 *  try to generate a large next ID
 				 */
-				if(getNextPlayerID() <= 0 || getNextPlayerID() <= pid) {
+				if (getNextPlayerID() <= 0 || getNextPlayerID() <= pid)
+				{
 					LogHelper.info("DEBUG : update player: find next player UID fail, shift id 100000");
 					int newNextID = pid + 100000;  //shift 100000 to prevent overlap
 					setNextPlayerID(newNextID);
 				}
 			}
-			//player id < 0, create new one
-			else {
-				pid = getNextPlayerID();
-				//set init pid value
-				if(pid <= 0) {
-					pid = 100;	//player UID init value = 100
-				}
-				
-				LogHelper.info("DEBUG : update player: create pid: "+pid+" eid: "+pdata[0]);
-				extProps.setPlayerUID(pid);	//set player id
-				setPlayerWorldData(pid, pdata);	//cache in server proxy
-				setNextPlayerID(++pid);	//next id ++
+			//player id < 0
+			else
+			{
+				//try to get data from server cache
+				NBTTagCompound nbt = ServerProxy.getPlayerData(player.getUniqueID().toString());
+		        
+		        if (nbt != null)
+		        {
+		        	//get data from server cache
+		        	extProps.loadNBTData(nbt);
+		        	pid = extProps.getPlayerUID();
+		        	setPlayerWorldData(pid, pdata);
+		        	LogHelper.info("DEBUG : update player: update player id "+pid+" eid: "+pdata[0]);
+		        }
+		        else
+		        {
+		        	//create new one
+					pid = getNextPlayerID();
+					
+					//set init pid value
+					if (pid <= 0)
+					{
+						pid = 100;	//player UID init value = 100
+					}
+					
+					LogHelper.info("DEBUG : update player: create pid: "+pid+" eid: "+pdata[0]);
+					extProps.setPlayerUID(pid);	//set player id
+					setPlayerWorldData(pid, pdata);	//cache in server proxy
+					setNextPlayerID(++pid);	//next id ++
+		        }
 			}
 		}
-		else {
+		else
+		{
 			LogHelper.info("DEBUG : update player: fail: player extProps = null");
 		}
 	}

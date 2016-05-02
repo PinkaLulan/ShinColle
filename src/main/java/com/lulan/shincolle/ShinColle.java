@@ -53,8 +53,10 @@ public class ShinColle {
 		ModBlocks.init();
 
 		ModEntity.init();
+		
 		//keybinding register
 	//	proxy.registerKeyBindings();
+		
 		//render register
 		proxy.registerRender();
 		//Packet channel register (simple network)

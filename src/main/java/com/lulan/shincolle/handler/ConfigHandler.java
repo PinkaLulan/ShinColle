@@ -41,9 +41,9 @@ public class ConfigHandler {
 	public static int radarUpdate = 128;	//radar update interval (ticks)
 	
 	//SHIP SETTING
-	public static Property propShip, propShipLimitBasic, propShipLimitEffect,
-						   propBossSmall, propBossLarge, propMobSmall, propGrudgeShip, propGrudgeAction,
-						   propAmmoShip, propAtkSpd, propAtkDly, propExp;
+	public static Property propShip, propShipLimitBasic, propShipLimitEffect, propMobSpawn,
+						   propBossSmall, propBossLarge, propMobSmall, propMobLarge, propGrudgeShip,
+						   propGrudgeAction, propAmmoShip, propAtkSpd, propAtkDly, propExp;
 	//                                                    HP, ATK, DEF, SPD, MOV, HIT
 	public static double[] limitShipBasic = new double[] {-1D, -1D, 75D, 4D, 0.6D, 64D};
 	//                                                    CRI, DHIT, THIT, MISS, AA, ASM, DODGE
@@ -52,8 +52,9 @@ public class ConfigHandler {
 	//													  HP, ATK, DEF, SPD, MOV, HIT
 	public static double[] scaleBossSmall = new double[] {2000D, 120D, 80D, 1D, 0.6D, 20D};
 	public static double[] scaleBossLarge = new double[] {5000D, 200D, 92D, 2D, 0.36D, 24D};
-	//	  												HP, ATK, DEF, SPD, MOV, HIT, spawnPerSquid
-	public static double[] scaleMobSmall = new double[] {200D, 36D, 20D, 0.8D, 0.3D, 12D, 200D};
+	//	  												HP, ATK, DEF, SPD, MOV, HIT
+	public static double[] scaleMobSmall = new double[] {200D, 36D, 20D, 0.8D, 0.3D, 12D};
+	public static double[] scaleMobLarge = new double[] {600D, 70D, 40D, 0.9D, 0.3D, 16D};
 	//ammo consumption:                              DD CL CA CAV CLT CVL CV BB BBV SS AP 
 	public static int[] consumeAmmoShip = new int[] {1, 2, 2, 2,  2,  3,  3, 4, 4,  1, 1};
 	//grudge consumption:                              DD CL CA CAV CLT CVL CV BB BBV SS AP 
@@ -65,6 +66,8 @@ public class ConfigHandler {
 	public static int[] fixedAttackDelay = new int[] {0,     20,   50,   35,  35};
 	//exp gain                               melee, LAtk, HAtk, LAir, HAir, move/b, pick
 	public static int[] expGain = new int[] {2,     4,    12,   8,    24,   1,      2};
+	//mob spawn                               Max, Prob, GroupNum, MinPS, MaxPS
+	public static int[] mobSpawn = new int[] {50,  10,  1,        1,     1};
 	
 	public static int dmgSvS = 100;		//ship vs ship damage modifier, 20 = dmg * 20%
 	public static int dmgSummon = 100;	//summons damage modifier, 20 = dmg * 20%
@@ -73,6 +76,7 @@ public class ConfigHandler {
 	public static boolean timeKeeping = true;
 	public static boolean canFlare = true;
 	public static boolean canSearchlight = true;
+	public static boolean checkRing = true;
 	public static float timeKeepingVolume = 1.0F;
 	public static float shipVolume = 1.0F;
 	public static float fireVolume = 0.7F;
@@ -141,8 +145,9 @@ public class ConfigHandler {
 		spawnMobNum = config.getInt("Spawn_Mob_Number", "general", 4, 1, 10, "small hostile ship number per spawn");
 				
 		//讀取 ship setting設定
-		canFlare = config.getBoolean("Can_Flare", "ship setting", true, "Can ship use flare");
+		canFlare = config.getBoolean("Can_Flare", "ship setting", true, "Can ship use Flare");
 		canSearchlight = config.getBoolean("Can_Searchlight", "ship setting", true, "Can ship use Searchlight");
+		checkRing = config.getBoolean("Check_Ring", "ship setting", true, "Check wedding ring when spawning NON-BOSS ship mob");
 		timeKeeping = config.getBoolean("Timekeeping", "ship setting", true, "Play timekeeping sound every 1000 ticks (1 minecraft hour)");
 		timeKeepingVolume = config.getFloat("Timekeeping_Volume", "ship setting", 1.0F, 0F, 10F, "Timekeeping sound volume");
 		shipVolume = config.getFloat("Ship_Volume", "ship setting", 1.0F, 0F, 10F, "Other sound volume");
@@ -152,15 +157,17 @@ public class ConfigHandler {
 		propShip = config.get("ship setting", "ship_scale", scaleShip, "Ship attributes SCALE: HP, firepower, armor, attack speed, move speed, range");
 		propShipLimitBasic = config.get("ship setting", "ship_limit_basic", limitShipBasic, "Ship basic attributes LIMIT (-1 = no limit): HP, firepower, armor%, attack speed, move speed, range(blocks)");
 		propShipLimitEffect = config.get("ship setting", "ship_limit_effect", limitShipEffect, "Ship effect attributes LIMIT (-1 = no limit, 12 = limit 12%): critical%, double hit%, triple hit%, miss reduction%, anti-air, anti-ss, dodge%");
-		propBossSmall = config.get("ship setting", "SmallBoss_scale", scaleBossSmall, "Small Boss: Values: HP, firepower, armor, attack speed, move speed, range");
-		propBossLarge = config.get("ship setting", "LargeBoss_scale", scaleBossLarge, "Large Boss: Values: HP, firepower, armor, attack speed, move speed, range");
-		propMobSmall = config.get("ship setting", "SmallMob_scale", scaleMobSmall, "Small Mob like DD and SS: Values: HP, firepower, armor, attack speed, move speed, range, spawn per squid");
+		propBossSmall = config.get("ship setting", "SmallBoss_scale", scaleBossSmall, "Small Boss, values: HP, firepower, armor, attack speed, move speed, range");
+		propBossLarge = config.get("ship setting", "LargeBoss_scale", scaleBossLarge, "Large Boss, values: HP, firepower, armor, attack speed, move speed, range");
+		propMobSmall = config.get("ship setting", "SmallMob_scale", scaleMobSmall, "Small mob ship like DD and SS, values: HP, firepower, armor, attack speed, move speed, range");
+		propMobLarge = config.get("ship setting", "LargeMob_scale", scaleMobLarge, "Large mob ship like CL and CA, values: HP, firepower, armor, attack speed, move speed, range");
 		propAmmoShip = config.get("ship setting", "Ammo_Ship", consumeAmmoShip, "Ammo consumption for ship type: DD CL CA CAV CLT CVL CV BB BBV SS AP (MAX = 45)");
 		propGrudgeShip = config.get("ship setting", "Grudge_Ship", consumeGrudgeShip, "Grudge consumption for ship type: DD CL CA CAV CLT CVL CV BB BBV SS AP (MAX = 120)");
 		propGrudgeAction = config.get("ship setting", "Grudge_Action", consumeGrudgeAction, "Grudge consumption for ship action: Light attack, Heavy attack, Light aircraft, Heavy aircraft, Moving per block");
 		propAtkSpd = config.get("ship setting", "Attack_Base_Speed", baseAttackSpeed, "Base attack speed for: Melee, Light attack, Heavy attack, Carrier attack, Airplane attack, ex: base speed 160, fixed delay 30 means (160 / ship attack speed +30) ticks per attack");
 		propAtkDly = config.get("ship setting", "Attack_Fixed_Delay", fixedAttackDelay, "Fixed attack delay for: Melee, Light attack, Heavy attack, Carrier attack, Airplane attack, ex: base speed 160, fixed delay 30 means (160 / ship attack speed +30) ticks per attack");
 		propExp = config.get("ship setting", "Exp_Gain", expGain, "Exp gain for: Melee, Light Attack, Heavy Attack, Light Aircraft, Heavy Aircraft, Move per Block(AP only), Other Action(AP only)");
+		propMobSpawn = config.get("ship setting", "Mob_Spawn", mobSpawn, "Mob ship spawn: Max number in the world, Spawn prob (roll once per player every 128 ticks), #groups each spawn, #min each group, #max each group");
 		
 		//ship vs ship damage modifier
 		dmgSvS = config.getInt("SVS_DmgTaken", "ship setting", 100, 0, 10000, "Ship vs Ship damage modifier, 20 = damage * 20% ");
@@ -179,6 +186,7 @@ public class ConfigHandler {
 		scaleBossSmall = getDoubleArrayFromConfig(scaleBossSmall, propBossSmall);
 		scaleBossLarge = getDoubleArrayFromConfig(scaleBossLarge, propBossLarge);
 		scaleMobSmall = getDoubleArrayFromConfig(scaleMobSmall, propMobSmall);
+		scaleMobLarge = getDoubleArrayFromConfig(scaleMobLarge, propMobLarge);
 		polyGravelBaseBlock = getBooleanArrayFromConfig(polyGravelBaseBlock, propPolyGravel);
 		consumeAmmoShip = getIntArrayFromConfig(consumeAmmoShip, propAmmoShip);
 		consumeGrudgeShip = getIntArrayFromConfig(consumeGrudgeShip, propGrudgeShip);
@@ -186,6 +194,7 @@ public class ConfigHandler {
 		baseAttackSpeed = getIntArrayFromConfig(baseAttackSpeed, propAtkSpd);
 		fixedAttackDelay = getIntArrayFromConfig(fixedAttackDelay, propAtkDly);
 		expGain = getIntArrayFromConfig(expGain, propExp);
+		mobSpawn = getIntArrayFromConfig(mobSpawn, propMobSpawn);
 		
 		//若設定檔有更新過, 則儲存
 		if(config.hasChanged()) {

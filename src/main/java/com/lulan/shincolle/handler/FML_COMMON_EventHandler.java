@@ -18,6 +18,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
+import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.BiomeDictionary;
@@ -27,14 +28,7 @@ import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
-import com.lulan.shincolle.entity.battleship.EntityBattleshipNGTBoss;
-import com.lulan.shincolle.entity.battleship.EntityBattleshipYMTBoss;
-import com.lulan.shincolle.entity.carrier.EntityCarrierAkagiBoss;
-import com.lulan.shincolle.entity.carrier.EntityCarrierKagaBoss;
-import com.lulan.shincolle.entity.destroyer.EntityDestroyerShimakazeBoss;
 import com.lulan.shincolle.entity.mounts.EntityMountSeat;
-import com.lulan.shincolle.entity.submarine.EntitySubmRo500Mob;
-import com.lulan.shincolle.entity.submarine.EntitySubmU511Mob;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.PointerItem;
 import com.lulan.shincolle.network.C2SGUIPackets;
@@ -43,6 +37,7 @@ import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
+import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
@@ -73,6 +68,7 @@ public class FML_COMMON_EventHandler {
 		if(event.phase == Phase.START) {
 			ExtendPlayerProps extProps = (ExtendPlayerProps) event.player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
 			
+			/** SERVER SIDE */
 			if(extProps != null && !event.player.worldObj.isRemote) {
 				boolean syncTeamList = false;
 
@@ -126,6 +122,9 @@ public class FML_COMMON_EventHandler {
 					
 					//every 128 ticks
 					if(event.player.ticksExisted % 128 == 0) {
+						//spawn mob ship
+						spawnMobShip(event.player, extProps);
+						
 						/** check player entity id and update player data to ServerProxy cache */
 						//get server cache
 						int peid = EntityHelper.getPlayerEID(extProps.getPlayerUID());
@@ -138,19 +137,22 @@ public class FML_COMMON_EventHandler {
 						
 						//every 256 ticks
 						if(event.player.ticksExisted % 256 == 0) {
+							//update team list
 							updateTeamList(event.player, extProps);
 							syncTeamList = true;
+							
 						}//end every 256 ticks
 					}//end every 128 ticks
 				}//end every 32 ticks
 				
 				//spawn boss ticking
-				spawnBoss(event.player, extProps);
+				spawnBossShip(event.player, extProps);
 				
 				//init ship UID
 				if(!extProps.getInitSID() && event.player.ticksExisted % 16 == 0) {
 					//update ship temaList
 					extProps.updateShipEntityBySID();
+					
 					//sync flag
 					CommonProxy.channelG.sendTo(new S2CGUIPackets(S2CGUIPackets.PID.FlagInitSID, 0, true), (EntityPlayerMP) event.player);
 					LogHelper.info("DEBUG : player tick: update team entity");
@@ -163,6 +165,7 @@ public class FML_COMMON_EventHandler {
 				}
 			}//end server side, extProps != null
 			
+			/** CLIENT SIDE */
 			//count down key cooldown
 			if(event.player.worldObj.isRemote) {
 				if(this.keyCooldown > 0) {
@@ -170,6 +173,7 @@ public class FML_COMMON_EventHandler {
 				}
 			}
 			
+			/** BOTH SIDE */
 			//check ring item (check for first found ring only) every 32 ticks
 			if(event.player.ticksExisted % 32 == 0) {
 				boolean hasRing = false;
@@ -235,11 +239,148 @@ public class FML_COMMON_EventHandler {
 		}
 	}
 	
-	/** TODO rewrite boss spawn methods
-	 * add different probs each boss?
+	/** spawn mob ticking
+	 * 
+	 *  ConfigHandler.mobSpawn[]
+	 *  0: Max number in the world
+	 *  1: Spawn prob every 256 ticks
+	 *  2: #groups each spawn
+	 *  3: #min each group
+	 *  4: #max each group
 	 */
+	private void spawnMobShip(EntityPlayer player, ExtendPlayerProps props)
+	{
+		//null check
+		if (player == null || props == null || player.worldObj.difficultySetting == EnumDifficulty.PEACEFUL)
+		{
+			return;
+		}
+		
+		boolean canSpawn = false;
+		int blockX = (int) player.posX;
+		int blockZ = (int) player.posZ;
+		int spawnX, spawnY, spawnZ = 0;
+		BiomeGenBase biome = player.worldObj.getBiomeGenForCoords(blockX, blockZ);
+		World w = player.worldObj;
+		Random rng = player.getRNG();
+		
+		//check ring
+		if (ConfigHandler.checkRing)
+		{
+			if (props.hasRing()) canSpawn = true;
+		}
+		else
+		{
+			canSpawn = true;
+		}
+		
+		//check biome
+		if (canSpawn)
+		{
+			if (BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.WATER) || 
+				BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.BEACH))
+			{
+			}
+			else
+			{
+				canSpawn = false;
+			}
+		}
+
+		//apply spawn
+		if (canSpawn)
+		{
+			int entNum = EntityHelper.getEntityNumber(0, w);
+			
+			//check ship number in the world
+			if (entNum <= ConfigHandler.mobSpawn[0])
+			{
+				//roll spawn
+				if (rng.nextInt(100) <= ConfigHandler.mobSpawn[1])
+				{
+					//get spawn position
+					int groups = ConfigHandler.mobSpawn[2];
+					int loop = 30 + groups * 10;
+					
+					while (groups > 0 && loop > 0)
+					{
+						int offX = rng.nextInt(32) + 24;
+						int offZ = rng.nextInt(32) + 24;
+						
+						switch (rng.nextInt(4))
+						{
+						case 1:
+							spawnX = blockX - offX;
+							spawnZ = blockZ - offZ;
+							break;
+						case 2:
+							spawnX = blockX + offX;
+							spawnZ = blockZ - offZ;
+							break;
+						case 3:
+							spawnX = blockX - offX;
+							spawnZ = blockZ + offZ;
+							break;
+						default:
+							spawnX = blockX + offX;
+							spawnZ = blockZ + offZ;
+							break;
+						}
+
+						Block blockY = w.getBlock(spawnX, 62, spawnZ);
+						LogHelper.info("DEBUG : spawn mob ship: group: "+groups+" get block: "+blockY.getLocalizedName()+" "+spawnX+" 62 "+spawnZ);
+						
+						//spawn on water
+						if (blockY.getMaterial() == Material.water)
+						{
+							groups--;
+							
+							//get top water block
+							spawnY = BlockHelper.getToppestWaterHeight(w, spawnX, 62, spawnZ);
+							
+							//get spawn number
+							int shipNum = Math.max(1, ConfigHandler.mobSpawn[3]);
+							int ranMax = ConfigHandler.mobSpawn[4] - ConfigHandler.mobSpawn[3];
+							
+							if (ranMax > 0)
+							{
+								shipNum = ConfigHandler.mobSpawn[3] + rng.nextInt(ranMax + 1);
+							}
+							
+							//spawn mob
+							for (int i = 0; i < shipNum; i++)
+							{
+								//get random mob
+				            	String shipname = ShipCalc.getRandomMobToSpawnName(0);
+				            	EntityLiving entityToSpawn = (EntityLiving) EntityList.createEntityByName(shipname, w);
+				            	
+				            	//spawn mob
+				            	if (entityToSpawn != null)
+				            	{
+									entityToSpawn.setPosition(spawnX + rng.nextDouble(), spawnY + 0.5D, spawnZ + rng.nextDouble());
+									w.spawnEntityInWorld(entityToSpawn);
+				            	}
+				            	LogHelper.info("DEBUG : spawn mob ship: #total: "+(entNum++)+" group: "+groups+" #ship: "+i+" "+spawnY+" "+shipname);
+							}
+						}//end get water block
+						
+						loop--;
+					}//end spawn while
+				}//end roll spawn
+			}//end check mob number
+		}//end can spawn
+			
+	}
+	
 	/** spawn boss ticking */
-	private void spawnBoss(EntityPlayer player, ExtendPlayerProps extProps) {
+	private void spawnBossShip(EntityPlayer player, ExtendPlayerProps extProps)
+	{
+		//null check
+		if (player == null || extProps == null || player.worldObj.difficultySetting == EnumDifficulty.PEACEFUL)
+		{
+			return;
+		}
+				
 		int blockX = (int) player.posX;
 		int blockZ = (int) player.posZ;
 		int spawnX, spawnY, spawnZ = 0;
@@ -249,15 +390,16 @@ public class FML_COMMON_EventHandler {
 		
 		//ally cooldown--
 		int allycd = extProps.getPlayerTeamCooldown();
-		if(allycd > 0) {
+		
+		if (allycd > 0)
+		{
 			extProps.setPlayerTeamCooldown(--allycd);
 		}
 		
 		//boss cooldown--
-		if((BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.WATER) || 
-			BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.BEACH) ||
-			BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.RIVER) ||
-			BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.OCEAN)) && extProps.hasRing()) {
+		if ((BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.WATER) || 
+			 BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.BEACH)) && extProps.hasRing())
+		{
 			extProps.setBossCooldown(extProps.getBossCooldown() - 1);
 		}
 		
@@ -275,10 +417,6 @@ public class FML_COMMON_EventHandler {
 					int offZ = rng.nextInt(32) + 32;
 					
 					switch(rng.nextInt(4)) {
-					case 0:
-						spawnX = blockX + offX;
-						spawnZ = blockZ + offZ;
-						break;
 					case 1:
 						spawnX = blockX - offX;
 						spawnZ = blockZ - offZ;
@@ -296,16 +434,17 @@ public class FML_COMMON_EventHandler {
 						spawnZ = blockZ + offZ;
 						break;		
 					}
-
-					spawnY = 64 - rng.nextInt(4);
 					
-					Block blockY = w.getBlock(spawnX, spawnY, spawnZ);
+					Block blockY = w.getBlock(spawnX, 63, spawnZ);
 					
-					LogHelper.info("DEBUG : spawn boss: get block "+blockY.getLocalizedName()+" "+spawnX+" "+spawnY+" "+spawnZ);
+					LogHelper.info("DEBUG : spawn boss: check block: "+blockY.getLocalizedName()+" "+spawnX+" 63 "+spawnZ);
 					//生成在水面
 					if(blockY.getMaterial() == Material.water) {
+						//get top water block
+						spawnY = BlockHelper.getToppestWaterHeight(w, spawnX, 63, spawnZ);
+						
 						//check 64x64 range
-						AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(spawnX-64D, spawnY-64D, spawnZ-64D, spawnX+64D, spawnY+64D, spawnZ+64D);
+						AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(spawnX-48D, spawnY-48D, spawnZ-48D, spawnX+48D, spawnY+48D, spawnZ+48D);
 						List<BasicEntityShipHostile> listBoss = w.getEntitiesWithinAABB(BasicEntityShipHostile.class, aabb);
 						int bossNum = 0;
 						
@@ -347,7 +486,7 @@ public class FML_COMMON_EventHandler {
 				            	//spawn mob
 				            	if (entityToSpawn != null)
 				            	{
-				            		entityToSpawn.setPosition(spawnX + rng.nextInt(3), spawnY, spawnZ + rng.nextInt(3));
+				            		entityToSpawn.setPosition(spawnX + rng.nextInt(3), spawnY + 0.5D, spawnZ + rng.nextInt(3));
 				            		w.spawnEntityInWorld(entityToSpawn);
 				            	}
 			            	}
@@ -378,13 +517,15 @@ public class FML_COMMON_EventHandler {
 	
 	//restore player extProps data, this is SERVER side
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
-	public void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
+	public void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event)
+	{
 		LogHelper.info("DEBUG : get player respawn event "+event.player.getDisplayName()+" "+event.player.getUniqueID());
     	
-        //restore player data from ServerProxy variable
+        //restore player data from ServerProxy cache
         NBTTagCompound nbt = ServerProxy.getPlayerData(event.player.getUniqueID().toString());
         
-        if(nbt != null) {
+        if (nbt != null)
+        {
         	ExtendPlayerProps extProps = (ExtendPlayerProps) event.player.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
         	extProps.loadNBTData(nbt);
         	LogHelper.info("DEBUG : player respawn: restore player data: eid: "+event.player.getEntityId()+" pid: "+extProps.getPlayerUID());

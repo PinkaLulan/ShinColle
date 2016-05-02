@@ -41,7 +41,7 @@ public class BlockHelper {
 		return getSafeBlockWithinRange(world, x, y, z, 3, 4, 3);
 	}
 	
-	/** get safe block within NxN block 
+	/** get safe block within NxN block
 	 * 
 	 *  rangeXZ: 0: 1x1,  1: 3x3,  2: 5x5,  3: 7x7 ...
 	 *  
@@ -358,6 +358,33 @@ public class BlockHelper {
 		}
 		
 		return chunks;
+	}
+	
+	/** get toppest water height */
+	public static int getToppestWaterHeight(World world, int x, int y, int z)
+	{
+		int cy = y + 1;
+		Block b = world.getBlock(x, y, z);
+		
+		if (b != null && b.getMaterial() == Material.water)
+		{
+			while (cy < 255)
+			{
+				b = world.getBlock(x, cy, z);
+				
+				if(b != null && b.getMaterial() == Material.water)
+				{
+					cy++;
+					continue;
+				}
+				else
+				{
+					break;
+				}
+			}
+		}
+		
+		return cy--;
 	}
 	
 	

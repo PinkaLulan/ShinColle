@@ -876,26 +876,34 @@ public class GuiFormation extends GuiContainer {
 		return value * 0.25F;
 	}
 	
-	private void setShipList(int tid) {
-		try {
+	private void setShipList(int tid)
+	{
+		try
+		{
 			//has formation, set ship pos by formatPos
-			if(this.extProps.getFormatID(tid) > 0) {
+			if (this.extProps.getFormatID(tid) > 0)
+			{
 				this.shipList = new BasicEntityShip[6];
 				BasicEntityShip[] temp = this.extProps.getShipEntityAll(this.teamClicked);
-				
-				if(temp != null) {
-					for(BasicEntityShip s : temp) {
-						this.shipList[s.getStateMinor(ID.M.FormatPos)] = s;
+
+				if (temp != null)
+				{
+					for (BasicEntityShip s : temp)
+					{
+						if (s != null) this.shipList[s.getStateMinor(ID.M.FormatPos)] = s;
 					}
 				}
 			}
 			//no formation
-			else {
+			else
+			{
 				this.shipList = this.extProps.getShipEntityAll(this.teamClicked);
 			}
 		}
-		catch(Exception e) {
+		catch (Exception e)
+		{
 			LogHelper.info("EXCEPTION : formation GUI get ship fail: "+e);
+			e.printStackTrace();
 		}
 	}
 	

@@ -12,6 +12,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityOwnable;
 import net.minecraft.entity.boss.EntityWither;
+import net.minecraft.entity.boss.IBossDisplayData;
 import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.passive.EntityBat;
 import net.minecraft.entity.passive.EntityTameable;
@@ -1767,5 +1768,43 @@ public class EntityHelper {
 		}
 	}
 	
+	/** count entity number in the world
+	 *  type: 0:boss ship, 1:mob ship, 2:all hostile ship
+	 */
+	public static int getEntityNumber(int type, World world)
+	{
+		int count = 0;
+		
+		if (world != null)
+		{
+			for (Object obj: world.loadedEntityList)
+			{
+				switch(type)
+				{
+				case 1:   //boss ship
+					if (obj instanceof IBossDisplayData)
+					{
+						count++;
+					}
+					break;
+				case 2:   //all hostile ship
+					if (obj instanceof BasicEntityShipHostile)
+					{
+						count++;
+					}
+					break;
+				default:  //small or large mob ship
+					if (obj instanceof BasicEntityShipHostile && !(obj instanceof IBossDisplayData))
+					{
+						count++;
+					}
+					break;
+				}
+			}
+		}//end world not null
+		
+		return count;
+	}
+
 	
 }

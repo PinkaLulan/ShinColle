@@ -187,8 +187,8 @@ public class ModelDestroyerInazuma extends ModelBase implements IModelEmotion {
         this.Butt.addBox(-7.0F, 0.0F, 0.0F, 14, 7, 8, 0.0F);
         this.setRotateAngle(Butt, 0.20943951023931953F, 0.0F, 0.0F);
         this.Ahoke = new ModelRenderer(this, 0, 37);
-        this.Ahoke.setRotationPoint(-1.0F, -8.0F, -6.2F);
-        this.Ahoke.addBox(0.0F, -10.0F, -10.5F, 0, 11, 11, 0.0F);
+        this.Ahoke.setRotationPoint(-1.0F, -6F, -6F);
+        this.Ahoke.addBox(0.0F, -11F, -7F, 0, 11, 11, 0.0F);
         this.setRotateAngle(Ahoke, 1.0471975511965976F, 1.0471975511965976F, 0.0F);
         this.EquipBase = new ModelRenderer(this, 0, 0);
         this.EquipBase.setRotationPoint(0.0F, -1.0F, 0.0F);
@@ -519,7 +519,6 @@ public class ModelDestroyerInazuma extends ModelBase implements IModelEmotion {
 	//雙腳移動計算
   	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {   
   		float angleX = MathHelper.cos(f2*0.08F + f * 0.25F);
-  		float angleX1 = MathHelper.cos(f2*0.1F + 0.3F + f * 0.5F);
   		float angleAdd1 = MathHelper.cos(f * 0.7F) * f1;
   		float angleAdd2 = MathHelper.cos(f * 0.7F + 3.1415927F) * f1;
   		float addk1 = 0;
@@ -558,11 +557,13 @@ public class ModelDestroyerInazuma extends ModelBase implements IModelEmotion {
 	  	this.ArmLeft01.rotateAngleX = -0.2793F;
 	  	this.ArmLeft01.rotateAngleY = 0F;
 	    this.ArmLeft01.rotateAngleZ = 0.2793F;
+	    this.ArmLeft02.rotateAngleX = 0F;
 	    this.ArmLeft02.rotateAngleZ = 0F;
 	    this.ArmLeft02.offsetX = 0F;
 	    this.ArmRight01.rotateAngleX = -0.2793F;
 	    this.ArmRight01.rotateAngleY = 0F;
 		this.ArmRight01.rotateAngleZ = -0.2793F;
+		this.ArmRight02.rotateAngleX = 0F;
 		this.ArmRight02.rotateAngleZ = 0F;
 		this.ArmRight02.offsetX = 0F;
 		//leg
@@ -592,18 +593,21 @@ public class ModelDestroyerInazuma extends ModelBase implements IModelEmotion {
 	    	this.ArmRight01.rotateAngleZ -= 0.1F;
 	    }
 
-	    if(ent.getIsSprinting() || f1 > 0.9F) {  //奔跑動作
+	    if(ent.getIsSprinting() || f1 > 0.95F) {  //奔跑動作
+	    	float armz = MathHelper.cos(f2 * 0.8F) * 0.6F;
+	    	float armx = MathHelper.sin(f2 * 0.8F) * -0.5F;
 	    	setFace(3);
+	    	
 	 	    //body
 	 	    this.Head.rotateAngleX -= 0.25F;
 	 	    this.BodyMain.rotateAngleX = 0.1F;
 	 	    this.Skirt01.rotateAngleX = -0.1F;
 	 	  	this.Skirt02.rotateAngleX = -0.1885F;
-	 	    //arm
-	 	    this.ArmLeft01.rotateAngleX += 0.1F;
-	 	    this.ArmLeft01.rotateAngleZ -= 0.3F;
-	 	    this.ArmRight01.rotateAngleX = -2.2F + angleAdd1 * 0.2F;
-	 	    this.ArmRight01.rotateAngleZ = -0.4712F;
+    		//arm
+	 	    this.ArmLeft01.rotateAngleX = armx;
+	 	    this.ArmLeft01.rotateAngleZ = -1.9F + armz;
+	 	    this.ArmRight01.rotateAngleX = -armx;
+	 	    this.ArmRight01.rotateAngleZ = 1.9F + armz;
 	 	    //leg
 	 	    addk1 -= 0.2F;
 	 	  	addk2 -= 0.2F;
@@ -613,95 +617,30 @@ public class ModelDestroyerInazuma extends ModelBase implements IModelEmotion {
 	    this.Head.rotateAngleZ = EmotionHelper.getHeadTiltAngle(ent, f2);
 	    
 	    if(ent.getIsSneaking()) {		//潛行, 蹲下動作
-	    	GL11.glTranslatef(0F, -0.25F, 0F);
 	    	//Body
 	    	this.Head.rotateAngleX -= 1.0472F;
 		  	this.BodyMain.rotateAngleX = 1.0472F;
-		  	this.Butt.rotateAngleX = -0.8378F;
+		  	this.Butt.rotateAngleX = -0.4F;
+		  	this.Butt.offsetY = -0.19F;
+		  	this.Skirt01.rotateAngleX = -0.12F;
+		  	this.Skirt02.rotateAngleX = -0.4F;
+		  	this.Skirt02.offsetY = -0.1F;
 		    //arm 
-		    this.ArmLeft01.rotateAngleX = -0.7F;
+		    this.ArmLeft01.rotateAngleX = -0.6F;
 		    this.ArmLeft01.rotateAngleZ = 0.2618F;
-		    this.ArmRight01.rotateAngleX = -0.7F;
+		    this.ArmRight01.rotateAngleX = -0.6F;
 		    this.ArmRight01.rotateAngleZ = -0.2618F;
+		    //leg
+		    addk1 -= 0.55F;
+		    addk2 -= 0.55F;
   		}//end if sneaking
-  		
+	    
 	    if(ent.getIsSitting() || ent.getIsRiding()) {  //騎乘動作
 	    	if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {
-		    	GL11.glTranslatef(0F, 1.3F, 0F);
+	    		GL11.glTranslatef(0F, 1.3F, 0F);
 		    	//head
-		    	this.Head.rotateAngleX -= 0.1F;
-		    	//body
-		    	this.BodyMain.rotateAngleX = -0.25F;
-		    	this.Butt.rotateAngleX = -0.2F;
-		    	this.Butt.offsetY = -0.1F;
-				this.Skirt01.rotateAngleX = -0.07F;
-				this.Skirt01.offsetY = -0.1F;
-				this.Skirt02.rotateAngleX = -0.16F;
-				this.Skirt02.offsetY = -0.15F;
-				//arm 
-				this.ArmLeft01.rotateAngleX = 2.5F;
-			    this.ArmLeft01.rotateAngleZ = 0.1F;
-			    this.ArmLeft02.rotateAngleZ = 1F;
-			    this.ArmRight01.rotateAngleX = 2.5F;
-				this.ArmRight01.rotateAngleZ = -0.1F;
-				this.ArmRight02.rotateAngleZ = -1F;
-				//leg
-				addk1 = -0.9F;
-				addk2 = -0.9F;
-				this.LegLeft01.rotateAngleZ = -0.14F;
-				this.LegLeft02.rotateAngleX = 1.2217F;
-				this.LegLeft02.rotateAngleY = 1.2217F;
-				this.LegLeft02.rotateAngleZ = -1.0472F;
-				this.LegLeft02.offsetX = 0.32F;
-				this.LegLeft02.offsetY = 0.05F;
-				this.LegLeft02.offsetZ = 0.35F;
-				this.LegRight01.rotateAngleZ = 0.14F;
-				this.LegRight02.rotateAngleX = 1.2217F;
-				this.LegRight02.rotateAngleY = -1.2217F;
-				this.LegRight02.rotateAngleZ = 1.0472F;
-				this.LegRight02.offsetX = -0.32F;
-				this.LegRight02.offsetY = 0.05F;
-				this.LegRight02.offsetZ = 0.35F;
-				
-				//arm special
-		    	float parTick = f2 - (int)f2 + (ent.getTickExisted() % 256);
-		    	
-		    	if(parTick < 30F) {
-		    		float az = MathHelper.sin(parTick * 0.033F * 1.5708F) * 1.8F;
-			    	float az1 = az * 1.6F;
-			    	
-			    	setFace(3);
-		    		//arm 
-				    this.ArmLeft01.rotateAngleZ = 0.1F + az;
-				    this.ArmLeft02.rotateAngleZ = 1F - az1;
-				    if(this.ArmLeft02.rotateAngleZ < 0F) this.ArmLeft02.rotateAngleZ = 0F;
-					this.ArmRight01.rotateAngleZ = -0.1F - az;
-					this.ArmRight02.rotateAngleZ = -1F + az1;
-					if(this.ArmRight02.rotateAngleZ > 0F) this.ArmRight02.rotateAngleZ = 0F;
-		    	}
-		    	else if(parTick < 45F) {
-		    		setFace(3);
-		    		//arm 
-				    this.ArmLeft01.rotateAngleZ = 1.9F;
-				    this.ArmLeft02.rotateAngleZ = 0F;
-					this.ArmRight01.rotateAngleZ = -1.9F;
-					this.ArmRight02.rotateAngleZ = 0F;
-		    	}
-		    	else if(parTick < 53F) {
-		    		float az = MathHelper.cos((parTick - 45F) * 0.125F * 1.5708F);
-			    	float az1 = az * 1.8F;
-			    	
-			    	//arm 
-				    this.ArmLeft01.rotateAngleZ = 0.1F + az1;
-				    this.ArmLeft02.rotateAngleZ = 1F - az;
-					this.ArmRight01.rotateAngleZ = -0.1F - az1;
-					this.ArmRight02.rotateAngleZ = -1F + az;
-		    	}
-	    	}
-	    	else {
-		    	GL11.glTranslatef(0F, 1.3F, 0F);
-		    	//head
-		    	this.Head.rotateAngleX += 0.3F;
+		    	this.Head.rotateAngleY -= 0.4F;
+		    	this.Head.rotateAngleZ += 0.2F;
 		    	//body
 		    	this.BodyMain.rotateAngleX = -0.25F;
 		    	this.Butt.rotateAngleX = -0.2F;
@@ -711,10 +650,11 @@ public class ModelDestroyerInazuma extends ModelBase implements IModelEmotion {
 				this.Skirt02.rotateAngleX = -0.16F;
 				this.Skirt02.offsetY = -0.15F;
 				//arm
-				this.ArmLeft01.rotateAngleX = 0.3F;
+				this.ArmLeft01.rotateAngleX = 0.35F;
 				this.ArmLeft01.rotateAngleZ = -0.2618F;
-				this.ArmRight01.rotateAngleX = 0.3F;
-				this.ArmRight01.rotateAngleZ = 0.2618F;
+				this.ArmRight01.rotateAngleX = -0.4F;
+				this.ArmRight01.rotateAngleZ = -0.2356F;
+				this.ArmRight02.rotateAngleZ = -0.2356F;
 				//leg
 				addk1 = -0.9F;
 				addk2 = -0.9F;
@@ -733,34 +673,57 @@ public class ModelDestroyerInazuma extends ModelBase implements IModelEmotion {
 				this.LegRight02.offsetY = 0.05F;
 				this.LegRight02.offsetZ = 0.35F;
 	    	}
+	    	else {
+	    		GL11.glTranslatef(0F, 1F, 0F);
+		    	//Body
+			  	this.Head.rotateAngleX -= 0.1F;
+			  	this.BodyMain.rotateAngleX = 0F;
+		    	this.Butt.rotateAngleX = -0.2F;
+		    	this.Butt.offsetY = -0.1F;
+				this.Skirt01.rotateAngleX = -0.07F;
+				this.Skirt01.offsetY = -0.05F;
+				this.Skirt02.rotateAngleX = -0.16F;
+				this.Skirt02.offsetY = -0.08F;
+				//arm 
+			  	this.ArmLeft01.rotateAngleX = -0.4F;
+			  	this.ArmLeft01.rotateAngleZ = 0.2618F;
+		    	this.ArmRight01.rotateAngleX = -0.4F;
+				this.ArmRight01.rotateAngleZ = -0.2618F;
+			  	//leg
+			  	addk1 = -0.65F;
+			  	addk2 = -0.65F;
+			  	this.LegLeft01.rotateAngleY = 0.1F;
+				this.LegLeft01.rotateAngleZ = 0F;
+				this.LegLeft02.offsetZ = 0.375F;
+				this.LegLeft02.rotateAngleX = 2.45F;
+				this.LegLeft02.rotateAngleZ = 0.0175F;
+				this.LegRight01.rotateAngleY = -0.1F;
+				this.LegRight01.rotateAngleZ = 0F;
+				this.LegRight02.offsetZ = 0.375F;
+				this.LegRight02.rotateAngleX = 2.45F;
+				this.LegRight02.rotateAngleZ = -0.0175F;
+	    	}
   		}//end if sitting
 	    
 	    //攻擊動作    
-	    if(ent.getAttackTime() > 20) {
+	    if(ent.getAttackTime() > 30) {
 	    	setFace(3);
-	 	    //body
-	 	    this.Head.rotateAngleX -= 0.1F;
-	 	  	
-	    	if(ent.getTickExisted() % 128 < 64) {
-	    		//arm
-	    		this.ArmLeft01.rotateAngleX = 0.2356F;
-		 	    this.ArmLeft01.rotateAngleZ = -0.7854F;
-		 	    this.ArmLeft02.rotateAngleZ = 1.5708F;
-		 	    this.ArmLeft02.offsetX = -0.15F;
-		 	    this.ArmRight01.rotateAngleX = -1.6F + angleAdd1 * 0.2F;
-		 	    this.ArmRight01.rotateAngleZ = -0.4F;
-	    	}
-	    	else {
-	    		//arm
-		 	    this.ArmLeft01.rotateAngleX = 0.2356F;
-		 	    this.ArmLeft01.rotateAngleZ = -0.7854F;
-		 	    this.ArmLeft02.rotateAngleZ = 1.5708F;
-		 	    this.ArmLeft02.offsetX = -0.15F;
-		 	    this.ArmRight01.rotateAngleX = 0.2356F;
-		 	    this.ArmRight01.rotateAngleZ = 0.7854F;
-		 	    this.ArmRight02.rotateAngleZ = -1.5708F;
-		 	    this.ArmRight02.offsetX = 0.15F;
-	    	}
+		    //Body
+		  	this.BodyMain.rotateAngleX = 0.5F;
+		  	this.Butt.rotateAngleX = -0.3F;
+		  	this.Butt.offsetY = -0.15F;
+		    //arm 
+		    this.ArmLeft01.rotateAngleX = -0.8F;
+		    this.ArmLeft01.rotateAngleY = 0.4712F;
+		    this.ArmLeft01.rotateAngleZ = -0.3142F;
+		    this.ArmLeft02.rotateAngleX = -0.9425F;
+		    this.ArmRight01.rotateAngleX = -0.8F;
+		    this.ArmRight01.rotateAngleY = -0.4712F;
+		    this.ArmRight01.rotateAngleZ = 0.3142F;
+		    this.ArmRight02.rotateAngleX = -0.9425F;
+		    //leg
+		    addk1 -= 0.15F;
+		    addk2 -= 0.15F;
 	    }
 	    
 	    //swing arm
@@ -779,7 +742,7 @@ public class ModelDestroyerInazuma extends ModelBase implements IModelEmotion {
 	  	this.HairL01.rotateAngleZ += headZ;
 	  	this.HairL02.rotateAngleZ += headZ;
 	  	this.HairR01.rotateAngleZ += headZ;
-	  	this.HairR02.rotateAngleZ += headZ;
+	  	this.HairR02.rotateAngleZ += headZ * 2F;
 		this.HairL01.rotateAngleX += headX;
 	  	this.HairL02.rotateAngleX += headX;
 	  	this.HairR01.rotateAngleX += headX;

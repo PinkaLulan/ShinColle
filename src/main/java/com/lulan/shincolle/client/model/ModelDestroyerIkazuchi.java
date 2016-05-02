@@ -302,8 +302,8 @@ public class ModelDestroyerIkazuchi extends ModelBase implements IModelEmotion {
         this.Head.addBox(-7.0F, -14.5F, -6.5F, 14, 14, 13, 0.0F);
         this.setRotateAngle(Head, 0.10471975511965977F, 0.0F, 0.0F);
         this.Ahoke = new ModelRenderer(this, 0, 37);
-        this.Ahoke.setRotationPoint(-1.0F, -8.0F, -6.2F);
-        this.Ahoke.addBox(0.0F, -10.0F, -10.5F, 0, 11, 11, 0.0F);
+        this.Ahoke.setRotationPoint(-1.0F, -6F, -6F);
+        this.Ahoke.addBox(0.0F, -11F, -7F, 0, 11, 11, 0.0F);
         this.setRotateAngle(Ahoke, 1.0471975511965976F, 1.0471975511965976F, 0.0F);
         this.EquipTL02e_1 = new ModelRenderer(this, 0, 0);
         this.EquipTL02e_1.setRotationPoint(-1.3F, 0.0F, 2.5F);
@@ -534,7 +534,7 @@ public class ModelDestroyerIkazuchi extends ModelBase implements IModelEmotion {
 	  	this.Head.rotateAngleX = f4 * 0.0174532925F + 0.1047F;
 	  	this.Head.rotateAngleY = f3 * 0.013F;
 	  	//body
-  	    this.Ahoke.rotateAngleY = angleX * 0.2F + 0.9F;
+  	    this.Ahoke.rotateAngleY = angleX * 0.2F + 0.5F;
 	  	this.BodyMain.rotateAngleX = -0.1047F;
 	  	this.BodyMain.rotateAngleY = 0F;
 	  	this.BodyMain.rotateAngleZ = 0F;
@@ -606,16 +606,22 @@ public class ModelDestroyerIkazuchi extends ModelBase implements IModelEmotion {
 	    this.Head.rotateAngleZ = EmotionHelper.getHeadTiltAngle(ent, f2);
 	    
 	    if(ent.getIsSneaking()) {		//潛行, 蹲下動作
-	    	GL11.glTranslatef(0F, -0.25F, 0F);
 	    	//Body
 	    	this.Head.rotateAngleX -= 1.0472F;
 		  	this.BodyMain.rotateAngleX = 1.0472F;
-		  	this.Butt.rotateAngleX = -0.8378F;
+		  	this.Butt.rotateAngleX = -0.4F;
+		  	this.Butt.offsetY = -0.19F;
+		  	this.Skirt01.rotateAngleX = -0.12F;
+		  	this.Skirt02.rotateAngleX = -0.4F;
+		  	this.Skirt02.offsetY = -0.1F;
 		    //arm 
-		    this.ArmLeft01.rotateAngleX = -0.7F;
+		    this.ArmLeft01.rotateAngleX = -0.6F;
 		    this.ArmLeft01.rotateAngleZ = 0.2618F;
-		    this.ArmRight01.rotateAngleX = -0.7F;
+		    this.ArmRight01.rotateAngleX = -0.6F;
 		    this.ArmRight01.rotateAngleZ = -0.2618F;
+		    //leg
+		    addk1 -= 0.55F;
+		    addk2 -= 0.55F;
   		}//end if sneaking
   		
 	    if(ent.getIsSitting() || ent.getIsRiding()) {  //騎乘動作
@@ -696,7 +702,7 @@ public class ModelDestroyerIkazuchi extends ModelBase implements IModelEmotion {
 	    	else {
 		    	GL11.glTranslatef(0F, 1.3F, 0F);
 		    	//head
-		    	this.Head.rotateAngleX += 0.3F;
+		    	this.Head.rotateAngleX -= 0.1F;
 		    	//body
 		    	this.BodyMain.rotateAngleX = -0.25F;
 		    	this.Butt.rotateAngleX = -0.2F;

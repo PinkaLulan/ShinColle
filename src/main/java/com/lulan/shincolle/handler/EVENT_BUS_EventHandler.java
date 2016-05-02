@@ -1,20 +1,14 @@
 package com.lulan.shincolle.handler;
 
-import java.util.List;
-
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityList;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntitySlime;
-import net.minecraft.entity.passive.EntitySquid;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.entity.EntityEvent;
@@ -22,13 +16,11 @@ import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
-import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.world.WorldEvent;
 
 import org.lwjgl.opengl.GL11;
 
-import com.lulan.shincolle.crafting.ShipCalc;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.ExtendPlayerProps;
@@ -283,41 +275,66 @@ public class EVENT_BUS_EventHandler {
 		}
 	}
 	
-	/**Add ship mob spawn in squid event
-	 * FIX: add spawn limit (1 spawn within 32 blocks)
+	/** Fired when the EntityPlayer is cloned (after respawn), typically caused by the network sending
+	 *  a RESPAWN_PLAYER event. Either caused by death, or by traveling from the End to
+	 *  the overworld.
+	 *  
+	 *  if cloned, save/load the player data
 	 */
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
-	public void onSquidSpawn(LivingSpawnEvent.CheckSpawn event) {
-		if (event.entityLiving instanceof EntitySquid)
-		{
-			if (event.world.rand.nextInt((int) ConfigHandler.scaleMobSmall[6]) == 0)
-			{
-				//check 64x64 range
-				AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(event.x-16D, event.y-32D, event.z-16D, event.x+16D, event.y+32D, event.z+16D);
-				List ListMob = event.world.getEntitiesWithinAABB(BasicEntityShipHostile.class, aabb);
-
-				//list低於1個表示沒有找到其他boss
-	            if (ListMob.size() < 1)
-	            {
-	            	LogHelper.info("DEBUG : spawn ship mob at "+event.x+" "+event.y+" "+event.z+" rate "+ConfigHandler.scaleMobSmall[6]);
-	            	
-	            	//get random mob
-	            	String shipname = ShipCalc.getRandomMobToSpawnName(0);
-	            	EntityLiving entityToSpawn = (EntityLiving) EntityList.createEntityByName(shipname, event.world);
-	            	
-	            	//spawn mob
-	            	if (entityToSpawn != null)
-	            	{
-	            		entityToSpawn.posX = event.x;
-						entityToSpawn.posY = event.y;
-						entityToSpawn.posZ = event.z;
-						entityToSpawn.setPosition(event.x, event.y, event.z);
-						event.world.spawnEntityInWorld(entityToSpawn);
-	            	}
-	            }//end nearby mob ship check
-			}//end squid random
-		}//end spawn squid
+	public void onEntityClone(PlayerEvent.Clone event)
+	{
+		if (event.original != null) LogHelper.info("DEBUG : get player clone event: "+event.original.getDisplayName()+" "+event.original.getUniqueID());
+    	
+        //restore player data from ServerProxy cache
+        NBTTagCompound nbt = ServerProxy.getPlayerData(event.original.getUniqueID().toString());
+        
+        if (nbt != null && event.entityPlayer != null)
+        {
+        	ExtendPlayerProps extProps = (ExtendPlayerProps) event.entityPlayer.getExtendedProperties(ExtendPlayerProps.PLAYER_EXTPROP_NAME);
+        	extProps.loadNBTData(nbt);
+        	LogHelper.info("DEBUG : player clone: restore player data: eid: "+event.entityPlayer.getEntityId()+" pid: "+extProps.getPlayerUID());
+        	
+        	//sync extProps state to client
+        	extProps.sendSyncPacket(0);
+        }
 	}
+	
+//	/**Add ship mob spawn in squid event
+//	 * FIX: add spawn limit (1 spawn within 32 blocks)
+//	 */
+//	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+//	public void onSquidSpawn(LivingSpawnEvent.CheckSpawn event) {
+//		if (event.entityLiving instanceof EntitySquid)
+//		{
+//			if (event.world.rand.nextInt((int) ConfigHandler.scaleMobSmall[6]) == 0)
+//			{
+//				//check 64x64 range
+//				AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(event.x-16D, event.y-32D, event.z-16D, event.x+16D, event.y+32D, event.z+16D);
+//				List ListMob = event.world.getEntitiesWithinAABB(BasicEntityShipHostile.class, aabb);
+//
+//				//list低於1個表示沒有找到其他boss
+//	            if (ListMob.size() < 1)
+//	            {
+//	            	LogHelper.info("DEBUG : spawn ship mob at "+event.x+" "+event.y+" "+event.z+" rate "+ConfigHandler.scaleMobSmall[6]);
+//	            	
+//	            	//get random mob
+//	            	String shipname = ShipCalc.getRandomMobToSpawnName(0);
+//	            	EntityLiving entityToSpawn = (EntityLiving) EntityList.createEntityByName(shipname, event.world);
+//	            	
+//	            	//spawn mob
+//	            	if (entityToSpawn != null)
+//	            	{
+//	            		entityToSpawn.posX = event.x;
+//						entityToSpawn.posY = event.y;
+//						entityToSpawn.posZ = event.z;
+//						entityToSpawn.setPosition(event.x, event.y, event.z);
+//						event.world.spawnEntityInWorld(entityToSpawn);
+//	            	}
+//	            }//end nearby mob ship check
+//			}//end squid random
+//		}//end spawn squid
+//	}
 	
 	/**world load event
 	 * init MapStorage here

@@ -83,10 +83,10 @@ public class ModEntity {
 	
 	private static int modEntityID = 2000;
 
-	public static void init() {
-		//register test entity
-//		createEntityGlobalID(EntityTest.class, "EntityTest", 0x20FF45, 0x0040FF);
-		
+	
+	public static void init()
+	{
+		/** entity */
 		//register ship entity
 		createEntity(EntityAirfieldHime.class, "EntityAirfieldHime", modEntityID++);
 		createEntity(EntityBattleshipHime.class, "EntityBattleshipHime", modEntityID++);
@@ -157,18 +157,23 @@ public class ModEntity {
 		
 	}
 	
-	//NOT WORKING
-//	//mob自然生成方法, 必須放在postInit才呼叫, 以取得全部mod註冊的全部biome
-//	public static void initNaturalSpawn() {
-//		//register entity natrual spawn
+//	/** mob自然生成方法, 必須放在postInit才呼叫, 以取得全部mod註冊的全部biome
+//	 *  prob: witch = 5, enderman = 10, zombie = 100
+//	 */
+//	public static void initNaturalSpawn()
+//	{
 //		//spawn in ALL ocean biome
 //		BiomeGenBase[] allBiomes = Iterators.toArray(Iterators.filter(Iterators.forArray(BiomeGenBase.getBiomeGenArray()), Predicates.notNull()), BiomeGenBase.class);
+//		EnumCreatureType spawnType = new EnumCreatureType(BasicEntityShipHostile.class, 5, Material.water, true, false);
+//		LogHelper.info("AAAAAAAAAAAAA "+allBiomes.length);
 //		
-//		for(int i = 0; i < allBiomes.length; ++i) {
-//			if(BiomeDictionary.isBiomeOfType(allBiomes[i], BiomeDictionary.Type.FOREST) ||
-//			   BiomeDictionary.isBiomeOfType(allBiomes[i], BiomeDictionary.Type.PLAINS) ||
-//			   BiomeDictionary.isBiomeOfType(allBiomes[i], BiomeDictionary.Type.RIVER)) {
-//				EntityRegistry.addSpawn(EntitySubmU511Mob.class, 50, 1, 2, EnumCreatureType.waterCreature, allBiomes[i]);
+//		
+//		for (int i = 0; i < allBiomes.length; ++i)
+//		{
+//			if(BiomeDictionary.isBiomeOfType(allBiomes[i], BiomeDictionary.Type.WATER) ||
+//			   BiomeDictionary.isBiomeOfType(allBiomes[i], BiomeDictionary.Type.BEACH))
+//			{
+//				EntityRegistry.addSpawn(EntitySubmU511Mob.class, 10, 1, 1, spawnType, allBiomes[i]);
 //			}
 //		}
 //	}

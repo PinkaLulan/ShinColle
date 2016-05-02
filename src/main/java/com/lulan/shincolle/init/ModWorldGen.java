@@ -50,16 +50,17 @@ public class ModWorldGen {
 		
 		//rare chest
 		for(int i = 0; i < rareChest.length; ++i) {
-			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(spawneggRE, 1, 1, 6));
-			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(spawneggWO, 1, 1, 6));
-			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(ring, 1, 1, 6));
+			//                                                                 item, min, max, prob
+			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(spawneggRE, 1, 1, 8));
+			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(spawneggWO, 1, 1, 8));
+			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(ring, 1, 1, 8));
 			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(cannon, 1, 1, 15));
 			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(torpedo, 1, 1, 15));
 			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(airT, 1, 1, 10));
 			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(airF, 1, 1, 10));
 			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(airB, 1, 1, 10));
 			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(polymetal, 1, 3, 30));
-			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(modernKit, 1, 2, 15));
+			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(modernKit, 2, 3, 15));
 			ChestGenHooks.addItem(rareChest[i], new WeightedRandomChestContent(instantCon, 20, 40, 30));
 		}
 	
@@ -67,7 +68,7 @@ public class ModWorldGen {
 		for(int i = 0; i < commChest.length; ++i) {
 			ChestGenHooks.addItem(commChest[i], new WeightedRandomChestContent(abyssium, 1, 3, 40));
 			ChestGenHooks.addItem(commChest[i], new WeightedRandomChestContent(polymetal, 1, 3, 50));
-			ChestGenHooks.addItem(commChest[i], new WeightedRandomChestContent(ring, 1, 1, 2));
+			ChestGenHooks.addItem(commChest[i], new WeightedRandomChestContent(ring, 1, 1, 4));
 			ChestGenHooks.addItem(commChest[i], new WeightedRandomChestContent(cannon, 1, 1, 5));
 			ChestGenHooks.addItem(commChest[i], new WeightedRandomChestContent(torpedo, 1, 1, 5));
 			ChestGenHooks.addItem(commChest[i], new WeightedRandomChestContent(airT, 1, 1, 5));
