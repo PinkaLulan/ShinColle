@@ -6,6 +6,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
@@ -19,6 +20,9 @@ import com.lulan.shincolle.utility.ParticleHelper;
 
 public class EntityDestroyerInazuma extends BasicEntityShipSmall {
 
+	public boolean isGattai = false;
+	
+	
 	public EntityDestroyerInazuma(World world) {
 		super(world);
 		this.setSize(0.6F, 1.5F);
@@ -39,6 +43,10 @@ public class EntityDestroyerInazuma extends BasicEntityShipSmall {
 		this.StateFlag[ID.F.HaveRingEffect] = true;
 		this.StateFlag[ID.F.AtkType_AirLight] = false;
 		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
+		
+		//gattai
+		this.isGattai = false;
+				
 	}
 	
 	//for morph
@@ -66,20 +74,29 @@ public class EntityDestroyerInazuma extends BasicEntityShipSmall {
   		super.onLivingUpdate();
   		
   		//server side
-  		if(!worldObj.isRemote) {
-  			//add aura to master every 128 ticks
-  			if(this.ticksExisted % 128 == 0) {
+  		if (!worldObj.isRemote) {
+  			if (this.ticksExisted % 128 == 0)
+  			{
+  				//add aura to master every 128 ticks
   				EntityPlayerMP player = (EntityPlayerMP) EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
-  				if(getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.M.NumGrudge) > 0 && player != null && getDistanceSqToEntity(player) < 256D) {
+  				
+  				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.M.NumGrudge) > 0 && player != null && getDistanceSqToEntity(player) < 256D)
+  				{
   					//potion effect: id, time, level
   	  	  			player.addPotionEffect(new PotionEffect(Potion.moveSpeed.id, 300, getStateMinor(ID.M.ShipLevel) / 45 + 1));
   				}
+  				
+  				//try gattai
+  				EntityDestroyerIkazuchi.tryGattai(this);
   			}
   		}
   		//client side
-  		else {
-  			if(this.ticksExisted % 4 == 0) {
-  				if(getStateEmotion(ID.S.State) > ID.State.NORMAL && !isSitting() && !getStateFlag(ID.F.NoFuel)) {
+  		else
+  		{
+  			if (this.ticksExisted % 4 == 0)
+  			{
+  				if(getStateEmotion(ID.S.State) > ID.State.NORMAL && !isSitting() && !getStateFlag(ID.F.NoFuel) && this.riddenByEntity == null)
+  				{
   					double smokeY = posY + 1.4D;
   					
   					//計算煙霧位置
@@ -89,6 +106,15 @@ public class EntityDestroyerInazuma extends BasicEntityShipSmall {
   				}	
   			}
   		}
+  		
+  		//sync rotate when gattai
+		if (this.riddenByEntity instanceof EntityDestroyerIkazuchi)
+		{
+			((EntityDestroyerIkazuchi) this.riddenByEntity).renderYawOffset = this.renderYawOffset;
+			((EntityDestroyerIkazuchi) this.riddenByEntity).prevRenderYawOffset = this.prevRenderYawOffset;
+			this.riddenByEntity.rotationYaw = this.rotationYaw;
+			this.riddenByEntity.prevRotationYaw = this.prevRotationYaw;
+		}
   	}
   	
   	@Override
@@ -114,10 +140,37 @@ public class EntityDestroyerInazuma extends BasicEntityShipSmall {
   	
   	@Override
 	public double getMountedYOffset() {
-  		if(this.isSitting()) {
+  		if (this.riddenByEntity instanceof EntityDestroyerIkazuchi)
+  		{
+  			if(this.isSitting())
+  	  		{
+  				if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
+	  	  		{
+	  	  			return (double)this.height * -0.07F;
+	  	  		}
+	  	  		else
+	  	  		{
+	  	  			return (double)this.height * 0.05F;
+	  	  		}
+  	  		}
+  	  		else
+  	  		{
+	  	  		if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
+	  	  		{
+	  	  			return (double)this.height * 0.25F;
+	  	  		}
+	  	  		else
+	  	  		{
+	  	  			return (double)this.height * 0.32F;
+	  	  		}
+  	  		}
+  		}
+  		else if(this.isSitting())
+  		{
   			return (double)this.height * 0.15F;
   		}
-  		else {
+  		else
+  		{
   			return (double)this.height * 0.47F;
   		}
 	}
@@ -132,6 +185,23 @@ public class EntityDestroyerInazuma extends BasicEntityShipSmall {
 			setStateEmotion(ID.S.State, ID.State.NORMAL, true);
 			break;
 		}
+	}
+	
+	@Override
+    public boolean attackEntityFrom(DamageSource attacker, float atk) {
+		boolean dd = super.attackEntityFrom(attacker, atk);
+		
+		if (dd)
+		{
+			//cancel gattai
+			if (this.ridingEntity instanceof EntityDestroyerInazuma)
+			{
+				this.isGattai = false;
+				this.mountEntity(null);
+			}
+		}
+		
+		return dd;
 	}
   	
 

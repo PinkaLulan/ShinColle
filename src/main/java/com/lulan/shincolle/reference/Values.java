@@ -277,6 +277,10 @@ public class Values {
 		put(ID.Ship.DestroyerHibiki,	new int[] {0, 88, 120});
 		put(ID.Ship.DestroyerIkazuchi,	new int[] {0, 99, 120});
 		put(ID.Ship.DestroyerInazuma,	new int[] {0, 110,120});
+		
+		put(ID.Ship.Raiden,				new int[] {0, 0,  180});
+		put(ID.Ship.LightCruiserTenryuu,new int[] {0, 11, 180});
+		
 	}});
 	
 	/**SHIP LIST for guidebook

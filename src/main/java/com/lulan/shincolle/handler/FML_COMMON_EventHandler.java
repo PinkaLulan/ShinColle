@@ -556,14 +556,18 @@ public class FML_COMMON_EventHandler {
 			int getKey = -1;
 			int orgCurrentItem = player.inventory.currentItem;
 			
-			if(keySet.keyBindSprint.getIsKeyPressed()) {
+			if (keySet.keyBindSprint.getIsKeyPressed())
+			{
 				//check hotbar key 0~8
-				for(int i = 0; i < keySet.keyBindsHotbar.length; i++) {
-					if(keySet.keyBindsHotbar[i].getIsKeyPressed()) {
+				for (int i = 0; i < keySet.keyBindsHotbar.length; i++)
+				{
+					if (keySet.keyBindsHotbar[i].getIsKeyPressed())
+					{
 						getKey = i;
 						
 						//儲存快捷位置到權杖, 使權杖能將快捷列回復到權杖上 (CLIENT ONLY)
-						if(!pointer.hasTagCompound()) {
+						if (!pointer.hasTagCompound())
+						{
 							pointer.setTagCompound(new NBTTagCompound());
 						}
 						pointer.getTagCompound().setBoolean("chgHB", true);
@@ -575,39 +579,41 @@ public class FML_COMMON_EventHandler {
 				
 				LogHelper.info("DEBUG : key input: pointer set team: "+getKey+" currItem: "+orgCurrentItem);
 				//send key input packet
-				if(getKey >= 0) {
+				if (getKey >= 0)
+				{
 					//change team id
 					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetShipTeamID, getKey, orgCurrentItem));
 				}
-				//change pointer mode to caress head mode (meta+3)
-				else {
-					//switch caress head mode
-					switch(meta) {
-					case 1:
-						meta = 4;
-						break;
-					case 2:
-						meta = 5;
-						break;
-					case 3:
-						meta = 0;
-						break;
-					case 4:
-						meta = 1;
-						break;
-					case 5:
-						meta = 2;
-						break;
-					default:
-						meta = 3;
-						break;
-					}
-					
-					player.inventory.getCurrentItem().setItemDamage(meta);
-					
-					//send sync packet to server
-					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SyncPlayerItem, meta));
+			}
+			//change pointer mode to caress head mode (meta + 3)
+			else if (keySet.keyBindPlayerList.getIsKeyPressed())
+			{
+				//switch caress head mode
+				switch(meta) {
+				case 1:
+					meta = 4;
+					break;
+				case 2:
+					meta = 5;
+					break;
+				case 3:
+					meta = 0;
+					break;
+				case 4:
+					meta = 1;
+					break;
+				case 5:
+					meta = 2;
+					break;
+				default:
+					meta = 3;
+					break;
 				}
+				
+				player.inventory.getCurrentItem().setItemDamage(meta);
+				
+				//send sync packet to server
+				CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SyncPlayerItem, meta));
 			}
 		}
 

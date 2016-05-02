@@ -4,16 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiLabel;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
@@ -25,6 +21,8 @@ import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipCV;
 import com.lulan.shincolle.entity.IShipInvisible;
+import com.lulan.shincolle.entity.destroyer.EntityDestroyerIkazuchi;
+import com.lulan.shincolle.entity.destroyer.EntityDestroyerInazuma;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -32,7 +30,6 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.GuiHelper;
-import com.lulan.shincolle.utility.LogHelper;
 
 /** ship inventory gui
  * 
@@ -65,7 +62,8 @@ public class GuiShipInventory extends GuiContainer {
 	private int[][] iconXY;  //icon array:  [ship type, ship name][file,x,y]
 	
 
-	public GuiShipInventory(InventoryPlayer invPlayer, BasicEntityShip entity1) {
+	public GuiShipInventory(InventoryPlayer invPlayer, BasicEntityShip entity1)
+	{
 		super(new ContainerShipInventory(invPlayer, entity1));
 		
 		this.mouseoverList = new ArrayList();			
@@ -80,9 +78,18 @@ public class GuiShipInventory extends GuiContainer {
 		this.mousePress = false;	//no key clicked
 		this.mousePressBar = -1;	//no bar pressed
 		
-		if(this.entity != null) {
+		if (this.entity != null)
+		{
 			this.shipType = this.entity.getShipType();
 			this.shipClass = this.entity.getShipClass();
+			
+			//special name icon
+			if (this.entity.ridingEntity instanceof EntityDestroyerInazuma ||
+				this.entity.riddenByEntity instanceof EntityDestroyerIkazuchi)
+			{
+				this.shipType = ID.ShipType.HEAVY_CRUISER;
+				this.shipClass = ID.Ship.Raiden;
+			}
 			
 			this.iconXY = new int[2][3];
 			this.iconXY[0] = Values.ShipTypeIconMap.get((byte)this.shipType);
@@ -762,15 +769,61 @@ public class GuiShipInventory extends GuiContainer {
 		
 		//set head look angle
 		GL11.glRotatef(-((float) Math.atan(pitch / 40.0F)) * 20.0F, 1.0F, 0.0F, 0.0F);
+		
 		entity.renderYawOffset = (float) Math.atan(yaw / 40.0F) * 20.0F;
 		entity.rotationYaw = (float) Math.atan(yaw / 40.0F) * 40.0F;
 		entity.rotationPitch = -((float) Math.atan(pitch / 40.0F)) * 20.0F;
 		entity.rotationYawHead = entity.rotationYaw;
 		entity.prevRotationYawHead = entity.rotationYaw;
-//		LogHelper.info("DEBUG : ship inv: model "+entity.rotationYaw+" "+entity.rotationYawHead);
+		
+		//get mount or rider
+		BasicEntityShip shipMount = null;
+		BasicEntityShip shipRider = null;
+		
+		if (entity.ridingEntity instanceof EntityDestroyerInazuma)
+		{
+			shipMount = (BasicEntityShip) entity.ridingEntity;
+			shipMount.renderYawOffset = entity.renderYawOffset;
+			shipMount.rotationYaw = entity.rotationYaw;
+			shipMount.rotationPitch = entity.rotationPitch;
+			shipMount.rotationYawHead = entity.rotationYawHead;
+			shipMount.prevRotationYawHead = entity.prevRotationYawHead;
+		}
+		else if (entity.riddenByEntity instanceof EntityDestroyerIkazuchi)
+		{
+			shipRider = (BasicEntityShip) entity.riddenByEntity;
+			shipRider.renderYawOffset = entity.renderYawOffset;
+			shipRider.rotationYaw = entity.rotationYaw;
+			shipRider.rotationPitch = entity.rotationPitch;
+			shipRider.rotationYawHead = entity.rotationYawHead;
+			shipRider.prevRotationYawHead = entity.prevRotationYawHead;
+		}
+		
 		GL11.glTranslatef(0.0F, entity.yOffset, 0.0F);
 		RenderManager.instance.playerViewY = 180.0F;
-		RenderManager.instance.renderEntityWithPosYaw(entity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F);
+		
+		//draw mount or rider
+		if (shipRider != null)
+		{
+			//ship必須先畫才畫mounts
+			GL11.glTranslatef(0F, (float)(entity.getMountedYOffset()), 0F);
+			RenderManager.instance.renderEntityWithPosYaw(shipRider, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F);
+			GL11.glTranslatef(0F, -(float)(entity.getMountedYOffset()), 0F);
+			RenderManager.instance.renderEntityWithPosYaw(entity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F);
+		}
+		else if (shipMount != null)
+		{
+			//ship必須先畫才畫mounts
+			GL11.glTranslatef(0F, (float)(shipMount.getMountedYOffset()), 0F);
+			RenderManager.instance.renderEntityWithPosYaw(entity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F);
+			GL11.glTranslatef(0F, -(float)(shipMount.getMountedYOffset()), 0F);
+			RenderManager.instance.renderEntityWithPosYaw(shipMount, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F);
+		}
+		else
+		{
+			RenderManager.instance.renderEntityWithPosYaw(entity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F);
+		}
+		
 //		entity.renderYawOffset = f2;
 //		entity.rotationYaw = f3;
 //		entity.rotationPitch = f4;

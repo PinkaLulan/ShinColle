@@ -2,18 +2,20 @@ package com.lulan.shincolle.client.model;
 
 import java.util.Random;
 
-import org.lwjgl.opengl.GL11;
-
-import com.lulan.shincolle.entity.IShipEmotion;
-import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.utility.EmotionHelper;
-
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MathHelper;
+
+import org.lwjgl.opengl.GL11;
+
+import com.lulan.shincolle.entity.IShipEmotion;
+import com.lulan.shincolle.entity.destroyer.EntityDestroyerIkazuchi;
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Values;
+import com.lulan.shincolle.utility.EmotionHelper;
 
 /**
  * ModelDestroyerInazuma - PinkaLulan
@@ -734,6 +736,44 @@ public class ModelDestroyerInazuma extends ModelBase implements IModelEmotion {
 	        this.ArmRight01.rotateAngleX += -f8 * 80.0F * Values.N.RAD_MUL;
 	        this.ArmRight01.rotateAngleY += -f7 * 20.0F * Values.N.RAD_MUL + 0.2F;
 	        this.ArmRight01.rotateAngleZ += -f8 * 20.0F * Values.N.RAD_MUL;
+	  	}
+	  	
+	  	if (((EntityLivingBase)ent).riddenByEntity instanceof EntityDestroyerIkazuchi)
+	  	{
+	  		if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
+	  		{
+	  			//body
+		  		this.Head.rotateAngleY *= 0.5F;
+		  		this.Head.rotateAngleZ = 0F;
+		  		//arm 
+			    this.ArmLeft01.rotateAngleX = 0.1F;
+			    this.ArmLeft01.rotateAngleY = 0F;
+			    this.ArmLeft01.rotateAngleZ = -0.4F;
+			    this.ArmLeft02.rotateAngleZ = 0.8F;
+			    this.ArmRight01.rotateAngleX = 0.1F;
+			    this.ArmRight01.rotateAngleY = 0F;
+			    this.ArmRight01.rotateAngleZ = 0.4F;
+			    this.ArmRight02.rotateAngleZ = -0.8F;
+			    //equip
+			    this.EquipBase.isHidden = true;
+	  		}
+	  		else
+	  		{
+	  			//body
+		  		this.Head.rotateAngleY *= 0.5F;
+		  		this.Head.rotateAngleZ = 0F;
+		  		//arm 
+			    this.ArmLeft01.rotateAngleX = -0.8F;
+			    this.ArmLeft01.rotateAngleY = -1.5F;
+			    this.ArmLeft01.rotateAngleZ = 0F;
+			    this.ArmLeft02.rotateAngleZ = 1.45F;
+			    this.ArmRight01.rotateAngleX = -0.8F;
+			    this.ArmRight01.rotateAngleY = 1.5F;
+			    this.ArmRight01.rotateAngleZ = 0F;
+			    this.ArmRight02.rotateAngleZ = -1.45F;
+			    //equip
+			    this.EquipBase.isHidden = true;
+	  		}
 	  	}
 	  	
 	  	//鬢毛調整

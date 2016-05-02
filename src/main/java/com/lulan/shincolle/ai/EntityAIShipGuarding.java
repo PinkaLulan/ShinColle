@@ -224,8 +224,8 @@ public class EntityAIShipGuarding extends EntityAIBase {
         		this.checkTP_T++;
         	}
         	
-        	//update position every 32 ticks
-        	if(host2.ticksExisted % 32 == 0) {
+        	//update position every 8 ticks
+        	if(host2.ticksExisted % 8 == 0) {
         		//get guard target
         		if(!checkGuardTarget()) return;
         	}//end update
@@ -238,7 +238,7 @@ public class EntityAIShipGuarding extends EntityAIBase {
         	
         	//每cd到找一次路徑
         	if(this.findCooldown <= 0) {
-    			this.findCooldown = 32;
+    			this.findCooldown = 20;
     			this.isMoving = this.ShipNavigator.tryMoveToXYZ(pos[0], pos[1], pos[2], 1D);
         	}
         	

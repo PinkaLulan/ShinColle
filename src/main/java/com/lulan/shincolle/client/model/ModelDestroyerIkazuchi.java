@@ -2,19 +2,21 @@ package com.lulan.shincolle.client.model;
 
 import java.util.Random;
 
-import org.lwjgl.opengl.GL11;
-
-import com.lulan.shincolle.entity.IShipEmotion;
-import com.lulan.shincolle.entity.IShipFloating;
-import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.utility.EmotionHelper;
-
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MathHelper;
+
+import org.lwjgl.opengl.GL11;
+
+import com.lulan.shincolle.entity.IShipEmotion;
+import com.lulan.shincolle.entity.destroyer.EntityDestroyerInazuma;
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Values;
+import com.lulan.shincolle.utility.EmotionHelper;
+import com.lulan.shincolle.utility.LogHelper;
 
 /**
  * ModelDestroyerIkazuchi - PinkaLulan
@@ -486,8 +488,10 @@ public class ModelDestroyerIkazuchi extends ModelBase implements IModelEmotion {
     	this.ArmRight01.rotateAngleX = -3F;
     	this.ArmRight01.rotateAngleY = 0F;
     	this.ArmRight01.rotateAngleZ = -0.3F;
+    	this.ArmLeft02.rotateAngleX = 0F;
     	this.ArmLeft02.rotateAngleZ = 0F;
 	    this.ArmLeft02.offsetX = 0F;
+	    this.ArmRight02.rotateAngleX = 0F;
 		this.ArmRight02.rotateAngleZ = 0F;
 		this.ArmRight02.offsetX = 0F;
     	//leg
@@ -553,6 +557,7 @@ public class ModelDestroyerIkazuchi extends ModelBase implements IModelEmotion {
 	    this.ArmRight01.rotateAngleX = angleAdd1 * 0.25F - 0.07F;
 	    this.ArmRight01.rotateAngleY = 0F;
 		this.ArmRight01.rotateAngleZ = -angleX * 0.03F + 0.35F;
+		this.ArmRight02.rotateAngleX = 0F;
 		this.ArmRight02.rotateAngleZ = 0F;
 		this.ArmRight02.offsetX = 0F;
 		//leg
@@ -625,7 +630,79 @@ public class ModelDestroyerIkazuchi extends ModelBase implements IModelEmotion {
   		}//end if sneaking
   		
 	    if(ent.getIsSitting() || ent.getIsRiding()) {  //騎乘動作
-	    	if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {
+	    	if (((Entity)ent).ridingEntity instanceof EntityDestroyerInazuma)
+	    	{
+	    		if (((IShipEmotion)((Entity)ent).ridingEntity).getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
+	    		{
+	    			GL11.glTranslatef(0F, 0F, 0.5F);
+		    		//Body
+				  	this.BodyMain.rotateAngleX = -0.1F;
+			    	this.Butt.rotateAngleX = -0.2F;
+			    	this.Butt.offsetY = -0.1F;
+					this.Skirt01.rotateAngleX = -0.07F;
+					this.Skirt01.offsetY = -0.05F;
+					this.Skirt02.rotateAngleX = -0.16F;
+					this.Skirt02.offsetY = -0.08F;
+					//arm 
+				  	this.ArmLeft01.rotateAngleX = -0.5F;
+				  	this.ArmLeft01.rotateAngleY = -0.2F;
+				  	this.ArmLeft01.rotateAngleZ = 0F;
+				  	this.ArmLeft02.rotateAngleX = -1.45F;
+				  	this.ArmRight01.rotateAngleX = -0.5F;
+				  	this.ArmRight01.rotateAngleY = 0.2F;
+				  	this.ArmRight01.rotateAngleZ = 0F;
+				  	this.ArmRight02.rotateAngleX = -1.45F;
+				  	//leg
+				  	addk1 = -0.65F;
+				  	addk2 = -0.65F;
+				  	this.LegLeft01.rotateAngleY = 0.0F;
+					this.LegLeft01.rotateAngleZ = -0.25F;
+					this.LegLeft02.offsetZ = 0.0F;
+					this.LegLeft02.rotateAngleX = 0.8F;
+					this.LegLeft02.rotateAngleZ = 0.0175F;
+					this.LegRight01.rotateAngleY = -0.0F;
+					this.LegRight01.rotateAngleZ = 0.25F;
+					this.LegRight02.offsetZ = 0.0F;
+					this.LegRight02.rotateAngleX = 0.8F;
+					this.LegRight02.rotateAngleZ = -0.0175F;
+					//equip
+					this.EquipHead01.isHidden = true;
+	    		}
+	    		else
+	    		{
+	    			GL11.glTranslatef(0F, 0F, 0.5F);
+		    		//Body
+				  	this.Butt.rotateAngleX = -0.2F;
+			    	this.Butt.offsetY = -0.1F;
+					this.Skirt01.rotateAngleX = -0.07F;
+					this.Skirt01.offsetY = -0.1F;
+					this.Skirt02.rotateAngleX = -0.16F;
+					this.Skirt02.offsetY = -0.15F;
+					//arm 
+				  	this.ArmLeft01.rotateAngleX = -0.3F;
+				  	this.ArmLeft01.rotateAngleY = -0.2F;
+				  	this.ArmLeft01.rotateAngleZ = 0F;
+				  	this.ArmLeft02.rotateAngleX = -1.2F;
+				  	this.ArmRight01.rotateAngleX = -1.8F;
+			    	this.ArmRight01.rotateAngleY = 0.2F;
+					this.ArmRight01.rotateAngleZ = 0F;
+				  	//leg
+				  	addk1 = -0.95F;
+				  	addk2 = -0.95F;
+				  	this.LegLeft01.rotateAngleY = -0.5F;
+					this.LegLeft01.rotateAngleZ = -0.1F;
+					this.LegLeft02.offsetZ = 0.0F;
+					this.LegLeft02.rotateAngleX = 0.8F;
+					this.LegLeft02.rotateAngleZ = 0.0175F;
+					this.LegRight01.rotateAngleY = 0.5F;
+					this.LegRight01.rotateAngleZ = 0.1F;
+					this.LegRight02.offsetZ = 0.0F;
+					this.LegRight02.rotateAngleX = 0.8F;
+					this.LegRight02.rotateAngleZ = -0.0175F;
+	    		}
+	    	}
+	    	else if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
+	    	{
 		    	GL11.glTranslatef(0F, 1.3F, 0F);
 		    	//head
 		    	this.Head.rotateAngleX -= 0.1F;
@@ -667,7 +744,8 @@ public class ModelDestroyerIkazuchi extends ModelBase implements IModelEmotion {
 				//arm special
 		    	float parTick = f2 - (int)f2 + (ent.getTickExisted() % 256);
 		    	
-		    	if(parTick < 30F) {
+		    	if (parTick < 30F)
+		    	{
 		    		float az = MathHelper.sin(parTick * 0.033F * 1.5708F) * 1.8F;
 			    	float az1 = az * 1.6F;
 			    	
@@ -680,7 +758,8 @@ public class ModelDestroyerIkazuchi extends ModelBase implements IModelEmotion {
 					this.ArmRight02.rotateAngleZ = -1F + az1;
 					if(this.ArmRight02.rotateAngleZ > 0F) this.ArmRight02.rotateAngleZ = 0F;
 		    	}
-		    	else if(parTick < 45F) {
+		    	else if (parTick < 45F)
+		    	{
 		    		setFace(3);
 		    		//arm 
 				    this.ArmLeft01.rotateAngleZ = 1.9F;
@@ -688,7 +767,8 @@ public class ModelDestroyerIkazuchi extends ModelBase implements IModelEmotion {
 					this.ArmRight01.rotateAngleZ = -1.9F;
 					this.ArmRight02.rotateAngleZ = 0F;
 		    	}
-		    	else if(parTick < 53F) {
+		    	else if (parTick < 53F)
+		    	{
 		    		float az = MathHelper.cos((parTick - 45F) * 0.125F * 1.5708F);
 			    	float az1 = az * 1.8F;
 			    	
@@ -699,7 +779,8 @@ public class ModelDestroyerIkazuchi extends ModelBase implements IModelEmotion {
 					this.ArmRight02.rotateAngleZ = -1F + az;
 		    	}
 	    	}
-	    	else {
+	    	else
+	    	{
 		    	GL11.glTranslatef(0F, 1.3F, 0F);
 		    	//head
 		    	this.Head.rotateAngleX -= 0.1F;
@@ -739,7 +820,7 @@ public class ModelDestroyerIkazuchi extends ModelBase implements IModelEmotion {
   		}//end if sitting
 	    
 	    //攻擊動作    
-	    if(ent.getAttackTime() > 20) {
+	    if(ent.getAttackTime() > 20 && !(((Entity)ent).ridingEntity instanceof EntityDestroyerInazuma)) {
 	    	setFace(3);
 	 	    //body
 	 	    this.Head.rotateAngleX -= 0.1F;

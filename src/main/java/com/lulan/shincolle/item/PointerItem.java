@@ -84,10 +84,6 @@ public class PointerItem extends BasicItem {
         return true;
     }
 	
-	/**left click (swing item)
-	 * 左鍵棲艦 = 是主人就加入隊伍, 已經在隊伍則設為focus
-	 * 蹲下左鍵 = 切換物品模式 or 移除已經在隊伍中的ship
-	 */
 	/**left click:<br>
 	 * left:<br>
 	 *   air:				-<br>
@@ -341,10 +337,6 @@ public class PointerItem extends BasicItem {
 	 *   player(friend):	-<br>
 	 *   player(hostile):	-<br>
 	 *   other:				-<br>
-	 *<br>
-	 *
-	 * if meta > 2<br>
-	 *   caress head mode
 	 */
 	@Override
     public ItemStack onItemRightClick(ItemStack item, World world, EntityPlayer player) {

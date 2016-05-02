@@ -530,6 +530,9 @@ public class ID {
 		public static final short DestroyerHibiki = 52;
 		public static final short DestroyerIkazuchi = 53;
 		public static final short DestroyerInazuma = 54;
+		public static final short Raiden = 55;
+		
+		public static final short LightCruiserTenryuu = 56;
 	}
 	
 	/** ship attrs id, for Values.ShipAttrMap */

@@ -545,6 +545,8 @@ public class ServerProxy extends CommonProxy {
 			//player id < 0
 			else
 			{
+				boolean createNew = true;
+				
 				//try to get data from server cache
 				NBTTagCompound nbt = ServerProxy.getPlayerData(player.getUniqueID().toString());
 		        
@@ -553,12 +555,18 @@ public class ServerProxy extends CommonProxy {
 		        	//get data from server cache
 		        	extProps.loadNBTData(nbt);
 		        	pid = extProps.getPlayerUID();
-		        	setPlayerWorldData(pid, pdata);
-		        	LogHelper.info("DEBUG : update player: update player id "+pid+" eid: "+pdata[0]);
+		        	
+		        	if (pid > 0)
+		        	{
+		        		setPlayerWorldData(pid, pdata);
+			        	LogHelper.info("DEBUG : update player: update player id "+pid+" eid: "+pdata[0]);
+			        	createNew = false;
+		        	}
 		        }
-		        else
+		        
+		        //no pid, create new one
+		        if (createNew)
 		        {
-		        	//create new one
 					pid = getNextPlayerID();
 					
 					//set init pid value
