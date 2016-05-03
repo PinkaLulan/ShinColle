@@ -1,0 +1,68 @@
+******************* CUSTOM SOUND README ********************
+
+1. put sound file (.ogg only) into the mod jar: assets\shincolle\sounds\
+
+
+2. open the config file (shincolle.cfg) in your minecraft folder:
+   edit "I:Custom_Sound_Rate" with 10 number each ship (one number one line):
+   
+   ship id   <-- is same with meta value of ship spawn egg
+   idle      <-- idle sound rate, 0 = 0%, 100 = 100% play custom sound, otherwise general sound
+   attack    <-- attack sound
+   hurt      <-- hurt sound
+   dead      <-- dead sound
+   marry     <-- married idle sound
+   knockback <-- knockback player when caressing
+   item get  <-- pick item sound
+   feed      <-- feed sound
+   timekeep  <-- time keeping sound
+  
+   example:
+   apply custom sound to id 56 (Inazuma) and 2 (I-Class)
+   
+   I:Custom_Sound_Rate <
+        56
+        35
+        50
+        50
+        100
+        0
+        0
+        50
+        0
+        0
+        2
+        50
+        50
+        50
+        100
+        100
+        100
+        0
+        0
+        0 
+     >
+
+
+3. open the "sounds.json" file, add sound file name:
+
+   example:
+   id 56 (Inazuma) custom hurt sound with file hurt5601.ogg hurt5602.ogg hurt5603.ogg
+   and time keeping sound at 7 p.m with file time5619.ogg
+   
+   "ship-hurt-56": {
+        "category": "hostile", "replace": true, "sounds": [
+            "hurt5601",
+            "hurt5602",
+            "hurt5603"
+        ]
+    },
+    
+    "ship-time19-56": {
+        "category": "hostile", "replace": true, "sounds": [
+        	"time5619"
+        ]
+    }
+
+
+4. done

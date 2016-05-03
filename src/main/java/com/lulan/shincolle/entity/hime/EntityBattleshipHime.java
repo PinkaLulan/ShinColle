@@ -33,7 +33,6 @@ public class EntityBattleshipHime extends BasicEntityShip {
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BB]);
 		this.ModelPos = new float[] {-6F, 15F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
-		this.initTypeModify();
 		
 		//set attack type
 		this.StateFlag[ID.F.AtkType_AirLight] = false;
@@ -41,6 +40,8 @@ public class EntityBattleshipHime extends BasicEntityShip {
 		
 		//misc
 		this.setFoodSaturationMax(30);
+		
+		this.postInit();
 	}
 	
 	@Override

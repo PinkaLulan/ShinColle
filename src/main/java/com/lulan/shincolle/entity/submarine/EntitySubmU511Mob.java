@@ -130,10 +130,10 @@ public class EntitySubmU511Mob extends BasicEntityShipHostile implements IShipIn
   		}
   	
   		//play cannon fire sound at attacker
-  		this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  		this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.volumeFire, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
   		//play entity attack sound
   		if(this.getRNG().nextInt(10) > 7) {
-          	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+          	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.volumeShip, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
   		}
           
   		//calc miss chance, miss: add random offset(0~6) to missile target 
@@ -180,10 +180,10 @@ public class EntitySubmU511Mob extends BasicEntityShipHostile implements IShipIn
         }
 	
 		//play cannon fire sound at attacker
-        this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.volumeFire, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         //play entity attack sound
         if(this.getRNG().nextInt(10) > 7) {
-        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.volumeShip, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         }
         
         //calc miss chance, miss: add random offset(0~6) to missile target 

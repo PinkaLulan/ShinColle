@@ -77,9 +77,9 @@ public class Values {
 		//transport
 		put(ID.Ship.TransportWA,        new float[] {90F,  3F,  10F, 1.0F, 0.3F,  8F,  0.7F,  0.25F, 0.16F, 0.35F, 0.6F,  0.3F});
 		//submarine
-//		put(ID.Ship.SubmarineKA,        new float[] {40F,  23F, 9F,  0.8F, 0.3F,  5F,  0.35F, 0.63F, 0.14F, 0.7F,  0.6F,  0.3F});
-//		put(ID.Ship.SubmarineYO,        new float[] {36F,  26F, 10F, 0.8F, 0.3F,  5F,  0.33F, 0.7F,  0.16F, 0.7F,  0.6F,  0.3F});
-//		put(ID.Ship.SubmarineSO,        new float[] {34F,  35F, 12F, 0.8F, 0.28F, 5.5F,0.3F,  0.78F, 0.18F, 0.7F,  0.6F,  0.3F});
+		put(ID.Ship.SubmarineKA,        new float[] {40F,  28F, 9F,  0.8F, 0.3F,  5F,  0.35F, 0.67F, 0.14F, 0.7F,  0.6F,  0.3F});
+		put(ID.Ship.SubmarineYO,        new float[] {36F,  30F, 10F, 0.8F, 0.3F,  5F,  0.33F, 0.7F,  0.16F, 0.7F,  0.6F,  0.3F});
+		put(ID.Ship.SubmarineSO,        new float[] {34F,  38F, 12F, 0.8F, 0.28F, 5.5F,0.3F,  0.8F,  0.18F, 0.7F,  0.6F,  0.3F});
 		//demon                                      HP    ATK  DEF  SPD   MOV    HIT  HP     ATK    DEF    SPD    MOV    HIT
 //		put(ID.Ship.IsolatedDemon,      new float[] {225F, 13F, 34F, 0.9F, 0.22F, 24F, 1.3F,  0.4F,  0.29F, 0.6F,  0.44F, 0.8F});
 //		put(ID.Ship.LightCruiserDemon,  new float[] {130F, 30F, 25F, 1.0F, 0.45F, 13F, 0.8F,  0.65F, 0.25F, 0.6F,  0.9F,  0.55F});

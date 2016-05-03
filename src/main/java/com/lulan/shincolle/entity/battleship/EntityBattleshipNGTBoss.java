@@ -129,10 +129,10 @@ public class EntityBattleshipNGTBoss extends BasicEntityShipHostile implements I
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 19, this.posX, this.posY+3.5D, this.posZ, distX, 2.8D, distZ, true), point);
 
 		//play cannon fire sound at attacker
-        playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.volumeFire, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         //play entity attack sound
         if(this.rand.nextInt(10) > 7) {
-        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.volumeShip, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         }
 
         //calc miss chance, if not miss, calc cri/multi hit   
@@ -222,22 +222,22 @@ public class EntityBattleshipNGTBoss extends BasicEntityShipHostile implements I
         switch(atkPhase) {
         case 0:
         case 2:
-        	this.playSound(Reference.MOD_ID+":ship-ap_phase1", ConfigHandler.fireVolume, 1F);
+        	this.playSound(Reference.MOD_ID+":ship-ap_phase1", ConfigHandler.volumeFire, 1F);
         	break;
         case 1:
-        	this.playSound(Reference.MOD_ID+":ship-ap_phase2", ConfigHandler.fireVolume, 1F);
+        	this.playSound(Reference.MOD_ID+":ship-ap_phase2", ConfigHandler.volumeFire, 1F);
         	break;
         case 3:
-        	this.playSound(Reference.MOD_ID+":ship-ap_attack", ConfigHandler.fireVolume, 1F);
+        	this.playSound(Reference.MOD_ID+":ship-ap_attack", ConfigHandler.volumeFire, 1F);
         	break;
     	default:
-    		this.playSound(Reference.MOD_ID+":ship-ap_phase1", ConfigHandler.fireVolume, 1F);
+    		this.playSound(Reference.MOD_ID+":ship-ap_phase1", ConfigHandler.volumeFire, 1F);
     		break;
         }
         
         //play entity attack sound
         if(this.getRNG().nextInt(10) > 7) {
-        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.volumeShip, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         }
         
         //phase++

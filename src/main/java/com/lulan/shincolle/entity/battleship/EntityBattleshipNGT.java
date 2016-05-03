@@ -50,8 +50,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
 		//misc
 		this.setFoodSaturationMax(20);
 		
-		//set attrs modify
-		this.initTypeModify();
+		this.postInit();
 	}
 	
 	//for morph
@@ -163,22 +162,22 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
         switch(atkPhase) {
         case 0:
         case 2:
-        	this.playSound(Reference.MOD_ID+":ship-ap_phase1", ConfigHandler.fireVolume, 1F);
+        	this.playSound(Reference.MOD_ID+":ship-ap_phase1", ConfigHandler.volumeFire, 1F);
         	break;
         case 1:
-        	this.playSound(Reference.MOD_ID+":ship-ap_phase2", ConfigHandler.fireVolume, 1F);
+        	this.playSound(Reference.MOD_ID+":ship-ap_phase2", ConfigHandler.volumeFire, 1F);
         	break;
         case 3:
-        	this.playSound(Reference.MOD_ID+":ship-ap_attack", ConfigHandler.fireVolume, 1F);
+        	this.playSound(Reference.MOD_ID+":ship-ap_attack", ConfigHandler.volumeFire, 1F);
         	break;
     	default:
-    		this.playSound(Reference.MOD_ID+":ship-ap_phase1", ConfigHandler.fireVolume, 1F);
+    		this.playSound(Reference.MOD_ID+":ship-ap_phase1", ConfigHandler.volumeFire, 1F);
     		break;
         }
         
         //play entity attack sound
         if(this.getRNG().nextInt(10) > 7) {
-        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        	this.playSound(getSoundString(ID.Sound.Hit), ConfigHandler.volumeShip, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         }
         
         //phase++

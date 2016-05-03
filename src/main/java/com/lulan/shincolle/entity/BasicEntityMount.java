@@ -114,7 +114,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	//音效大小
     @Override
 	protected float getSoundVolume() {
-		return ConfigHandler.shipVolume * 0.4F;
+		return ConfigHandler.volumeShip * 0.4F;
 	}
 	
     //音效音高
@@ -669,7 +669,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 
   	    //play entity attack sound
   	    if(this.getRNG().nextInt(10) > 8) {
-  	    	this.playSound(Reference.MOD_ID+":ship-waka_attack", ConfigHandler.shipVolume * 0.5F, 1F);
+  	    	this.playSound(Reference.MOD_ID+":ship-waka_attack", ConfigHandler.volumeShip * 0.5F, 1F);
   	    }
   	    
   	    //if attack success
@@ -699,10 +699,10 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		float atkLight = CalcHelper.calcDamageBySpecialEffect(this, target, this.host.getStateFinal(ID.ATK), 0);
 
 		//play cannon fire sound at attacker
-        playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.volumeFire, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         //play entity attack sound
         if(this.rand.nextInt(10) > 8) {
-        	this.playSound(Reference.MOD_ID+":ship-waka_attack", ConfigHandler.shipVolume * 0.5F, 1F);
+        	this.playSound(Reference.MOD_ID+":ship-waka_attack", ConfigHandler.volumeShip * 0.5F, 1F);
         }
         
         //此方法比getLook還正確 (client sync問題)
@@ -818,10 +818,10 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		float kbValue = 0.08F;
 		
 		//play cannon fire sound at attacker
-        this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.volumeFire, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         //play entity attack sound
         if(this.rand.nextInt(10) > 8) {
-        	this.playSound(Reference.MOD_ID+":ship-waka_attack", ConfigHandler.shipVolume * 0.5F, 1F);
+        	this.playSound(Reference.MOD_ID+":ship-waka_attack", ConfigHandler.volumeShip * 0.5F, 1F);
         }
         
         //飛彈是否採用直射

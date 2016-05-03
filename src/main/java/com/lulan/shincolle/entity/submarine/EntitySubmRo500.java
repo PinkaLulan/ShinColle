@@ -40,12 +40,12 @@ public class EntitySubmRo500 extends BasicEntityShipSmall implements IShipInvisi
 		this.ModelPos = new float[] {0F, 10F, 0F, 45F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		
-		this.initTypeModify();
-		
 		//set attack type
 		this.StateFlag[ID.F.HaveRingEffect] = true;
 		this.StateFlag[ID.F.AtkType_AirLight] = false;
 		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
+		
+		this.postInit();
 	}
 	
 	//for morph
@@ -174,10 +174,10 @@ public class EntitySubmRo500 extends BasicEntityShipSmall implements IShipInvisi
   		setCombatTick(this.ticksExisted);
   	
   		//play cannon fire sound at attacker
-  		this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  		this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.volumeFire, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
   		//play entity attack sound
   		if(this.getRNG().nextInt(10) > 7) {
-  			this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  			this.playSound(getSoundString(ID.Sound.Hit), ConfigHandler.volumeShip, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
   		}
           
   		//heavy ammo--

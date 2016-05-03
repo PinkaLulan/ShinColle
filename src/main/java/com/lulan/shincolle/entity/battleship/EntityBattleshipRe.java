@@ -42,9 +42,9 @@ public class EntityBattleshipRe extends BasicEntityShipCV {
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BBV]);
 		this.ModelPos = new float[] {-6F, 10F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
-		this.initTypeModify();
-		
 		this.launchHeight = this.height * 0.8F;
+		
+		this.postInit();
 	}
 	
 	@Override
@@ -118,7 +118,7 @@ public class EntityBattleshipRe extends BasicEntityShipCV {
             	  		CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this.targetPush, 0, S2CEntitySync.PID.SyncEntity_Motion), point);
 					    
 					    //play entity attack sound
-					    this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+					    this.playSound(getSoundString(ID.Sound.Hit), ConfigHandler.volumeShip, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
 					    
 					    this.cancelPush();
             		}
@@ -222,16 +222,16 @@ public class EntityBattleshipRe extends BasicEntityShipCV {
 	        
   			//entity sound
   			if(this.rand.nextInt(10) > 7) {
-  	        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  	        	this.playSound(getSoundString(ID.Sound.Hit), ConfigHandler.volumeShip, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
   	        }
   			break;
   		case 2:  //heavy cannon
   			//fire sound
-  	        this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  	        this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.volumeFire, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
 
   	        //entity sound
   	        if(this.getRNG().nextInt(10) > 7) {
-  	        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  	        	this.playSound(getSoundString(ID.Sound.Hit), ConfigHandler.volumeShip, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
   	        }
   			break;
   		case 3:  //light aircraft
@@ -242,7 +242,7 @@ public class EntityBattleshipRe extends BasicEntityShipCV {
   			break;
 		default: //melee
 			if(this.getRNG().nextInt(10) > 6) {
-	        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+	        	this.playSound(getSoundString(ID.Sound.Hit), ConfigHandler.volumeShip, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
 	        }
 			break;
   		}

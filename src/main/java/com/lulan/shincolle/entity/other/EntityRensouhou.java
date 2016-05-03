@@ -373,7 +373,7 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack {
 		float atkLight = CalcHelper.calcDamageBySpecialEffect(this, target, this.atk, 0);
 
 		//play cannon fire sound at attacker
-        playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.volumeFire, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         
         //此方法比getLook還正確 (client sync問題)
         float distX = (float) (target.posX - this.posX);

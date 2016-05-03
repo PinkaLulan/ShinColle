@@ -15,7 +15,6 @@ public class ConfigHandler {
 	
 	public static Configuration config;		//宣告config檔實體
 	
-	//設定檔變數
 	//GENERAL
 	public static boolean debugMode = false;
 	public static boolean easyMode = false;
@@ -43,7 +42,8 @@ public class ConfigHandler {
 	//SHIP SETTING
 	public static Property propShip, propShipLimitBasic, propShipLimitEffect, propMobSpawn,
 						   propBossSmall, propBossLarge, propMobSmall, propMobLarge, propGrudgeShip,
-						   propGrudgeAction, propAmmoShip, propAtkSpd, propAtkDly, propExp;
+						   propGrudgeAction, propAmmoShip, propAtkSpd, propAtkDly, propExp,
+						   propCustomSoundShip, propCustomSoundRate;
 	//                                                    HP, ATK, DEF, SPD, MOV, HIT
 	public static double[] limitShipBasic = new double[] {-1D, -1D, 75D, 4D, 0.6D, 64D};
 	//                                                    CRI, DHIT, THIT, MISS, AA, ASM, DODGE
@@ -77,9 +77,12 @@ public class ConfigHandler {
 	public static boolean canFlare = true;
 	public static boolean canSearchlight = true;
 	public static boolean checkRing = true;
-	public static float timeKeepingVolume = 1.0F;
-	public static float shipVolume = 1.0F;
-	public static float fireVolume = 0.7F;
+	public static float volumeTimekeep = 1.0F;
+	public static float volumeShip = 1.0F;
+	public static float volumeFire = 0.7F;
+	
+	//custom sound                                   id, idle, hit, hurt, dead, love, kb, item, feed, time
+	public static int[] customSoundRate = new int[] {56, 35,   50,  50,   100,  0,    0,  50,   0,    0};
 	
 	//WORLD GEN
 	public static int polyOreBaseRate = 7;
@@ -149,9 +152,9 @@ public class ConfigHandler {
 		canSearchlight = config.getBoolean("Can_Searchlight", "ship setting", true, "Can ship use Searchlight");
 		checkRing = config.getBoolean("Check_Ring", "ship setting", true, "Check wedding ring when spawning NON-BOSS ship mob");
 		timeKeeping = config.getBoolean("Timekeeping", "ship setting", true, "Play timekeeping sound every 1000 ticks (1 minecraft hour)");
-		timeKeepingVolume = config.getFloat("Timekeeping_Volume", "ship setting", 1.0F, 0F, 10F, "Timekeeping sound volume");
-		shipVolume = config.getFloat("Ship_Volume", "ship setting", 1.0F, 0F, 10F, "Other sound volume");
-		fireVolume = config.getFloat("Attack_Volume", "ship setting", 0.7F, 0F, 10F, "Attack sound volume");
+		volumeTimekeep = config.getFloat("Timekeeping_Volume", "ship setting", 1.0F, 0F, 10F, "Timekeeping sound volume");
+		volumeShip = config.getFloat("Ship_Volume", "ship setting", 1.0F, 0F, 10F, "Other sound volume");
+		volumeFire = config.getFloat("Attack_Volume", "ship setting", 0.7F, 0F, 10F, "Attack sound volume");
 		baseCaressMorale = config.getInt("BaseMorale_Caress", "ship setting", 15, 1, 1000, "base morale value per CaressTick (4 ticks)");
 		
 		propShip = config.get("ship setting", "ship_scale", scaleShip, "Ship attributes SCALE: HP, firepower, armor, attack speed, move speed, range");
@@ -168,6 +171,7 @@ public class ConfigHandler {
 		propAtkDly = config.get("ship setting", "Attack_Fixed_Delay", fixedAttackDelay, "Fixed attack delay for: Melee, Light attack, Heavy attack, Carrier attack, Airplane attack, ex: base speed 160, fixed delay 30 means (160 / ship attack speed +30) ticks per attack");
 		propExp = config.get("ship setting", "Exp_Gain", expGain, "Exp gain for: Melee, Light Attack, Heavy Attack, Light Aircraft, Heavy Aircraft, Move per Block(AP only), Other Action(AP only)");
 		propMobSpawn = config.get("ship setting", "Mob_Spawn", mobSpawn, "Mob ship spawn: Max number in the world, Spawn prob (roll once per player every 128 ticks), #groups each spawn, #min each group, #max each group");
+		propCustomSoundRate = config.get("ship setting", "Custom_Sound_Rate", customSoundRate, "Probability of custom sound, 0 = no custom sound, 100 = always custom sound. Format: ship id A, idle, attack, hurt, dead, marry, knockback, item get, feed, timekeep, ship id B, idle, ...(loop), the ship id is same with meta value of ship spawn egg.");
 		
 		//ship vs ship damage modifier
 		dmgSvS = config.getInt("SVS_DmgTaken", "ship setting", 100, 0, 10000, "Ship vs Ship damage modifier, 20 = damage * 20% ");
@@ -195,11 +199,32 @@ public class ConfigHandler {
 		fixedAttackDelay = getIntArrayFromConfig(fixedAttackDelay, propAtkDly);
 		expGain = getIntArrayFromConfig(expGain, propExp);
 		mobSpawn = getIntArrayFromConfig(mobSpawn, propMobSpawn);
+		customSoundRate = getIntArraySpecialLength(customSoundRate, propCustomSoundRate, 0);
 		
 		//若設定檔有更新過, 則儲存
 		if(config.hasChanged()) {
 			config.save();
 		}
+	}
+	
+	//check get value
+	public static int[] getIntArraySpecialLength(int[] defaultValue, Property target, int type)
+	{
+		int[] geti = target.getIntList();
+		
+		switch (type)
+		{
+		case 0:
+			if(geti != null && geti.length % 10 == 0) {
+				return geti;
+			}
+			else {
+				target.set(defaultValue);
+				return defaultValue;
+			}
+		}
+		
+		return geti;
 	}
 	
 	//check get value

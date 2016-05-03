@@ -1,22 +1,21 @@
 package com.lulan.shincolle.ai.path;
 
-import com.lulan.shincolle.entity.IShipNavigator;
-import com.lulan.shincolle.utility.BlockHelper;
-import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.CalcHelper;
-import com.lulan.shincolle.utility.LogHelper;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.ChunkCache;
 import net.minecraft.world.World;
+
+import com.lulan.shincolle.entity.IShipAttackBase;
+import com.lulan.shincolle.entity.IShipNavigator;
+import com.lulan.shincolle.utility.BlockHelper;
+import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.EntityHelper;
 
 /**SHIP PATH NAVIGATE
  * ship or airplane限定path ai, 該entity必須實作IShipNavigator
@@ -32,8 +31,6 @@ public class ShipPathNavigate {
     /** The PathEntity being followed. */
     private ShipPathEntity currentPath;
     private double speed;
-    /** The number of blocks (extra) +/- in each axis that get pulled out as cache for the pathfinder's search space */
-    private IAttributeInstance pathSearchRange;
     /** Time, in number of ticks, following the current path */
     private int pathTicks;
     /** The time when the last position check was done (to detect successful movement) */
@@ -48,7 +45,6 @@ public class ShipPathNavigate {
         this.host = entity;
         this.theEntity2 = (IShipNavigator) entity;
         this.worldObj = world;
-        this.pathSearchRange = entity.getEntityAttribute(SharedMonsterAttributes.followRange);
         this.canFly = false;
     }
 
@@ -70,8 +66,16 @@ public class ShipPathNavigate {
     /**
      * Gets the maximum distance that the path finding will search in.
      */
-    public float getPathSearchRange() {
-        return (float)this.pathSearchRange.getAttributeValue() + 32F;
+    public float getPathSearchRange()
+    {
+    	if (host instanceof IShipAttackBase)
+    	{
+    		return ((IShipAttackBase) host).getAttackRange() + 24F;
+    	}
+    	else
+    	{
+    		return 32F;
+    	}
     }
     
     /**

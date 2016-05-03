@@ -38,7 +38,6 @@ public class EntityHeavyCruiserNe extends BasicEntityShipSmall {
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CA]);
 		this.ModelPos = new float[] {0F, 10F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
-		this.initTypeModify();
 		
 		//set attack type
 		this.StateFlag[ID.F.AtkType_AirLight] = false;
@@ -46,6 +45,8 @@ public class EntityHeavyCruiserNe extends BasicEntityShipSmall {
 		
 		//misc
 		this.setFoodSaturationMax(14);
+		
+		this.postInit();
 	}
 	
 	//for morph
@@ -124,7 +125,7 @@ public class EntityHeavyCruiserNe extends BasicEntityShipSmall {
             	  		CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this.targetPush, 0, S2CEntitySync.PID.SyncEntity_Motion), point);
 					    
 					    //play entity attack sound
-					    this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+					    this.playSound(getSoundString(ID.Sound.Hit), ConfigHandler.volumeShip, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
 					    
 					    this.cancelPush();
             		}

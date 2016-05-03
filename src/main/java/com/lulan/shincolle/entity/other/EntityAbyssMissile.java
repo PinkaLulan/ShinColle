@@ -371,7 +371,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
 	//撞擊判定時呼叫此方法
     protected void onImpact(Entity target) {
     	//play sound
-    	playSound(Reference.MOD_ID+":ship-explode", ConfigHandler.fireVolume * 1.5F, 0.7F / (this.rand.nextFloat() * 0.4F + 0.8F));
+    	playSound(Reference.MOD_ID+":ship-explode", ConfigHandler.volumeFire * 1.5F, 0.7F / (this.rand.nextFloat() * 0.4F + 0.8F));
     	
     	//server side
     	if(!this.worldObj.isRemote) {

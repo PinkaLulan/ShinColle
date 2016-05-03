@@ -337,7 +337,7 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
 		float atkLight = CalcHelper.calcDamageBySpecialEffect(this, target, this.atk, 0);
 
 		//play cannon fire sound at attacker
-        playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.volumeFire, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         
         //此方法比getLook還正確 (client sync問題)
         float distX = (float) (target.posX - this.posX);
@@ -432,7 +432,7 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
 		float kbValue = 0.08F;
 
 		//play cannon fire sound at attacker
-        this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.volumeFire, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         
         //飛彈是否採用直射
   		boolean isDirect = false;

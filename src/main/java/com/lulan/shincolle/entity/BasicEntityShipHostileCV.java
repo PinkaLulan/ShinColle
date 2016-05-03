@@ -54,7 +54,7 @@ abstract public class BasicEntityShipHostileCV extends BasicEntityShipHostile im
 	@Override
 	public boolean attackEntityWithAircraft(Entity target) {
 		//play cannon fire sound at attacker
-        playSound("random.bow", ConfigHandler.fireVolume + 0.2F, 1.0F / (this.rand.nextFloat() * 0.4F + 1.2F) + 0.5F);
+        playSound("random.bow", ConfigHandler.volumeFire + 0.2F, 1.0F / (this.rand.nextFloat() * 0.4F + 1.2F) + 0.5F);
 			
         //發射者煙霧特效 (發射飛機不使用特效, 但是要發送封包來設定attackTime)
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
@@ -80,7 +80,7 @@ abstract public class BasicEntityShipHostileCV extends BasicEntityShipHostile im
 	@Override
 	public boolean attackEntityWithHeavyAircraft(Entity target) {
 		//play cannon fire sound at attacker
-		playSound("random.bow", ConfigHandler.fireVolume + 0.2F, 1.0F / (this.rand.nextFloat() * 0.4F + 1.2F) + 0.5F);
+		playSound("random.bow", ConfigHandler.volumeFire + 0.2F, 1.0F / (this.rand.nextFloat() * 0.4F + 1.2F) + 0.5F);
 		
         //發射者煙霧特效 (發射飛機不使用特效, 但是要發送封包來設定attackTime)
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);

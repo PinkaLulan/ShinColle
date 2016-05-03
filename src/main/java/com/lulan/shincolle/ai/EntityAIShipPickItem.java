@@ -14,7 +14,6 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 
 /** SHIP PICK ITEM AI
@@ -125,9 +124,17 @@ public class EntityAIShipPickItem extends EntityAIBase {
     				if(entitem.delayBeforeCanPickup <= 0 &&
     				   this.hostShip.getExtProps().addItemStackToInventory(itemstack)) {
     					//play sound
-        				this.hostShip.worldObj.playSoundAtEntity(this.hostShip, "random.pop", ConfigHandler.shipVolume,
+        				this.hostShip.worldObj.playSoundAtEntity(this.hostShip, "random.pop", ConfigHandler.volumeShip,
         						((this.hostShip.getRNG().nextFloat() - this.hostShip.getRNG().nextFloat()) * 0.7F + 1.0F) * 2.0F);
         	           
+        				//play entity sound
+        				//play sound
+        				if (this.hostShip.soundCD <= 0 && this.hostShip.getRNG().nextInt(2) == 0)
+        		    	{
+        					this.hostShip.soundCD = 20 + this.hostShip.getRNG().nextInt(10);
+        					this.hostShip.worldObj.playSoundAtEntity(this.hostShip, this.hostShip.getSoundString(ID.Sound.Item), ConfigHandler.volumeShip, 1F);
+            			}
+        				
     					//send item pickup sync packet
     					this.hostShip.onItemPickup(entitem, i);
     					

@@ -28,15 +28,15 @@ public class EntityDestroyerI extends BasicEntityShipSmall {
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.DD]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.DD]);
 		this.ModelPos = new float[] {0F, 0F, 0F, 25F};
-		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
-		
-		this.initTypeModify();
+		this.ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		
 		//set attack type
 		this.StateFlag[ID.F.HaveRingEffect] = true;
 		this.StateFlag[ID.F.AtkType_AirLight] = false;
 		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
 		this.StateFlag[ID.F.CanPickItem] = true;
+		
+		this.postInit();
 	}
 	
 	//for morph

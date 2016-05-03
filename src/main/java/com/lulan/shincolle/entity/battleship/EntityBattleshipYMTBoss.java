@@ -130,10 +130,10 @@ public class EntityBattleshipYMTBoss extends BasicEntityShipHostile implements I
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 5, 3.4D, 3.2D, 3D), point);
 
 		//play cannon fire sound at attacker
-        playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.volumeFire, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         //play entity attack sound
         if(this.rand.nextInt(10) > 7) {
-        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.volumeShip, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         }
 
         //calc miss chance, if not miss, calc cri/multi hit   
@@ -214,7 +214,7 @@ public class EntityBattleshipYMTBoss extends BasicEntityShipHostile implements I
 
         //play entity attack sound
         if(this.getRNG().nextInt(10) > 7) {
-        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.volumeShip, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         }
         
         //check phase
@@ -222,7 +222,7 @@ public class EntityBattleshipYMTBoss extends BasicEntityShipHostile implements I
         
         if(getStateEmotion(ID.S.Phase) > 0) {  //spawn beam particle & entity
         	//shot sound
-        	this.playSound(Reference.MOD_ID+":ship-yamato-shot", ConfigHandler.fireVolume, 1F);
+        	this.playSound(Reference.MOD_ID+":ship-yamato-shot", ConfigHandler.volumeFire, 1F);
         	
         	//spawn beam entity
             EntityProjectileBeam beam = new EntityProjectileBeam(this.worldObj, this, 0, 
@@ -237,7 +237,7 @@ public class EntityBattleshipYMTBoss extends BasicEntityShipHostile implements I
         }
         else {
         	//charge sound
-        	this.playSound(Reference.MOD_ID+":ship-yamato-ready", ConfigHandler.fireVolume, 1F);
+        	this.playSound(Reference.MOD_ID+":ship-yamato-ready", ConfigHandler.volumeFire, 1F);
         	
 			//cannon charging particle
         	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 7, 2D, 0, 0), point);

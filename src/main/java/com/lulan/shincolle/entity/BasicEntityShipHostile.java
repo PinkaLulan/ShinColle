@@ -220,7 +220,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
     //音效大小
     @Override
     protected float getSoundVolume() {
-        return ConfigHandler.shipVolume;
+        return ConfigHandler.volumeShip;
     }
 
 	@Override
@@ -312,10 +312,10 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 6, this.posX, this.posY+3.5D, this.posZ, distX, 2.8D, distZ, true), point);
 
 		//play cannon fire sound at attacker
-        playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.volumeFire, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         //play entity attack sound
         if(this.rand.nextInt(10) > 7) {
-        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.volumeShip, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         }
 
         //calc miss chance, if not miss, calc cri/multi hit   
@@ -1095,31 +1095,31 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
   		switch(type) {
   		case 1:  //light cannon
   			//fire sound
-  			playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  			playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.volumeFire, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
   	        
   			//entity sound
   			if(this.rand.nextInt(10) > 7) {
-  	        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  	        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.volumeShip, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
   	        }
   			break;
   		case 2:  //heavy cannon
   			//fire sound
-  	        this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  	        this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.volumeFire, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
 
   	        //entity sound
   	        if(this.getRNG().nextInt(10) > 7) {
-  	        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  	        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.volumeShip, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
   	        }
   			break;
   		case 3:  //light aircraft
-  	        playSound(Reference.MOD_ID+":ship-aircraft", ConfigHandler.fireVolume * 0.5F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  	        playSound(Reference.MOD_ID+":ship-aircraft", ConfigHandler.volumeFire * 0.5F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
   			break;
   		case 4:  //heavy aircraft
-  	        playSound(Reference.MOD_ID+":ship-aircraft", ConfigHandler.fireVolume * 0.5F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  	        playSound(Reference.MOD_ID+":ship-aircraft", ConfigHandler.volumeFire * 0.5F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
   			break;
 		default: //melee
 			if(this.getRNG().nextInt(2) == 0) {
-	        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+	        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.volumeShip, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
 	        }
 			break;
   		}

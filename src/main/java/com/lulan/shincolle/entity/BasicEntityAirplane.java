@@ -433,7 +433,7 @@ abstract public class BasicEntityAirplane extends EntityLiving implements IShipC
 		}
 		
 		//play cannon fire sound at attacker
-        playSound(Reference.MOD_ID+":ship-machinegun", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        playSound(Reference.MOD_ID+":ship-machinegun", ConfigHandler.volumeFire, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         //attack particle
         TargetPoint point0 = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 8, false), point0);
@@ -530,7 +530,7 @@ abstract public class BasicEntityAirplane extends EntityLiving implements IShipC
 		}
 
 		//play cannon fire sound at attacker
-        this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.volumeFire, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         
 		//calc miss chance, if not miss, calc cri/multi hit
         float missChance = 0.25F - 0.001F * this.host.getStateMinor(ID.M.ShipLevel);

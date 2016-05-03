@@ -86,7 +86,7 @@ public class EntityMountBaH extends BasicEntityMount {
 
   	    //play entity attack sound
   	    if(this.getRNG().nextInt(10) > 8) {
-  	    	this.playSound(Reference.MOD_ID+":ship-waka_attack", ConfigHandler.shipVolume * 0.5F, 1F);
+  	    	this.playSound(Reference.MOD_ID+":ship-waka_attack", ConfigHandler.volumeShip * 0.5F, 1F);
   	    }
   	    
   	    //if attack success

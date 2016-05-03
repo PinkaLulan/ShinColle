@@ -37,8 +37,6 @@ public class EntityAirfieldHime extends BasicEntityShipCV {
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BBV]);
 		this.ModelPos = new float[] {-6F, 15F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
-		this.initTypeModify();
-		
 		launchHeight = this.height * 0.7F;
 		
 		//set attack type
@@ -46,6 +44,8 @@ public class EntityAirfieldHime extends BasicEntityShipCV {
 		
 		//misc
 		this.setFoodSaturationMax(16);
+		
+		this.postInit();
 	}
 	
 	@Override

@@ -18,17 +18,24 @@
             "idle15",
             "idle16",
             "idle17",
-            "idle18"
+            "idle18",
+            "idle19",
+            "idle20",
+            "idle21",
+            "idle22"
         ]
     },
     
     "ship-hurt": {
         "category": "hostile", "replace": true, "sounds": [
             "hurt01",
-            "hurt01",
             "hurt02",
             "hurt03",
-            "hurt03"
+            "hurt04",
+            "hurt05",
+            "hurt06",
+            "hurt07",
+            "hurt08"
         ]
     },
     
@@ -36,7 +43,8 @@
         "category": "hostile", "replace": true, "sounds": [
             "death01",
             "death02", 
-            "death03"
+            "death03",
+            "death04"
         ]
     },
     
@@ -106,7 +114,8 @@
         	"love02",
         	"love03",
         	"love04",
-        	"love05"
+        	"love05",
+          "love06"
         ]
     },
     
@@ -339,6 +348,85 @@
             "hits06",
             "hurt04",
             "hurt02"
+        ]
+    },
+    
+    "ship-itemget": {
+        "category": "hostile", "replace": true, "sounds": [
+            "item01",
+            "item02",
+            "item03",
+            "item04",
+            "item05"
+        ]
+    },
+    
+    "ship-levelup": {
+        "category": "hostile", "replace": true, "sounds": [
+            "level01"
+        ]
+    },
+    
+    "ship-feed": {
+        "category": "hostile", "replace": true, "sounds": [
+            "feed01",
+            "feed02",
+            "feed03",
+            "feed04",
+            "feed05",
+            "feed06",
+            "feed07"
+        ]
+    },
+    
+    "ship-say-56": {
+        "category": "hostile", "replace": true, "sounds": [
+            "idle5601",
+            "idle5602",
+            "idle5603",
+            "idle5604",
+            "idle5605",
+            "idle5606",
+            "idle5607",
+            "idle5608",
+            "idle5609",
+            "idle5610",
+            "idle5611"
+        ]
+    },
+    
+    "ship-hurt-56": {
+        "category": "hostile", "replace": true, "sounds": [
+            "hurt5601",
+            "hurt5602",
+            "hurt5603",
+            "hurt5604",
+            "hurt5605",
+            "hurt5606"
+        ]
+    },
+    
+    "ship-death-56": {
+        "category": "hostile", "replace": true, "sounds": [
+            "death5601",
+            "death5602"
+        ]
+    },
+    
+    "ship-hitsmall-56": {
+        "category": "hostile", "replace": true, "sounds": [
+            "hit5601",
+            "hit5602",
+            "hit5603",
+            "hit5604",
+            "hit5605"
+        ]
+    },
+    
+    "ship-itemget-56": {
+        "category": "hostile", "replace": true, "sounds": [
+            "item5601",
+            "hit5602"
         ]
     }
     

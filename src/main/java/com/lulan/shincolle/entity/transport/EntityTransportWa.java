@@ -33,8 +33,6 @@ public class EntityTransportWa extends BasicEntityShipSmall {
 		this.ModelPos = new float[] {-3F, 10F, 0F, 45F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		
-		this.initTypeModify();
-		
 		//set attack type
 		this.StateFlag[ID.F.HaveRingEffect] = true;
 		this.StateFlag[ID.F.AtkType_Light] = false;
@@ -42,6 +40,8 @@ public class EntityTransportWa extends BasicEntityShipSmall {
 		this.StateFlag[ID.F.AtkType_AirLight] = false;
 		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
 		this.StateFlag[ID.F.CanPickItem] = true;
+		
+		this.postInit();
 	}
 	
 	//for morph

@@ -32,13 +32,13 @@ public class EntityDestroyerNi extends BasicEntityShipSmall {
 		//higher step
 		stepHeight = 2F;
 		
-		this.initTypeModify();
-		
 		//set attack type
 		this.StateFlag[ID.F.HaveRingEffect] = true;
 		this.StateFlag[ID.F.AtkType_AirLight] = false;
 		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
 		this.StateFlag[ID.F.CanPickItem] = true;
+		
+		this.postInit();
 	}
 	
 	//for morph

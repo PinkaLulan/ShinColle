@@ -35,11 +35,12 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BB]);
 		this.ModelPos = new float[] {-6F, 10F, 0F, 40F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
-		this.initTypeModify();
 		
 		//set attack type
 		this.StateFlag[ID.F.AtkType_AirLight] = false;
 		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
+		
+		this.postInit();
 	}
 	
 	@Override
@@ -112,7 +113,7 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
   		
         //play entity attack sound
         if(this.rand.nextInt(10) > 5) {
-        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        	this.playSound(getSoundString(ID.Sound.Hit), ConfigHandler.volumeShip, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         }
         
         //light ammo--

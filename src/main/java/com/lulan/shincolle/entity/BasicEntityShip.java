@@ -137,10 +137,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	 *                5:LastAttackTime */
 	protected int[] EmotionTicks;		//表情開始時間 or 表情計時時間
 	protected float[] rotateAngle;		//模型旋轉角度, 用於手持物品render
-	protected int StartSoundHurt;		//hurt sound ticks
+	public int soundCD;		//sound ticks
 	
 	//for GUI display, no use
 	protected String ownerName;
+	
+	//custom sound
+	protected int[] customSound = null;
 	
 	//for initial
 	private boolean initAI, initWaitAI;	//init flag
@@ -156,7 +159,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		super(world);
 		this.ignoreFrustumCheck = true;  //即使不在視線內一樣render
 		this.maxHurtResistantTime = 2;   //受傷無敵時間降為2 ticks
-		this.StartSoundHurt = 0;
+		this.soundCD = 0;
 		
 		//init value
 		this.isImmuneToFire = true;	//set ship immune to lava
@@ -199,8 +202,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.ShipPrevZ = posZ;
 		this.ownerName = "";
 		this.stepHeight = 1F;
-		this.shipNavigator = new ShipPathNavigate(this, worldObj);
-		this.shipMoveHelper = new ShipMoveHelper(this, 60F);
 		
 		//for render
 		this.EmotionTicks = new int[] {0, 0, 0, 0, 0, 0};
@@ -248,42 +249,178 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         return false;
     }
 	
-	//平常音效
-	@Override
-	protected String getLivingSound() {
-		if(this.getStateFlag(ID.F.IsMarried)) {
-			if(rand.nextInt(5) == 0) {
-				return Reference.MOD_ID+":ship-love";
-			}
-			else {
-				return Reference.MOD_ID+":ship-say";
+	/** init method after init ship value */
+	protected void postInit()
+	{
+		this.shipNavigator = new ShipPathNavigate(this, worldObj);
+		this.shipMoveHelper = new ShipMoveHelper(this, 60F);
+		this.initCustomSound();
+		this.initTypeModify();
+	}
+	
+	/** get custom sound value
+	 */
+	protected void initCustomSound()
+	{
+		if (ConfigHandler.customSoundRate != null)
+		{
+			for (int i = 0; i < ConfigHandler.customSoundRate.length; i += 10)
+			{
+				if (ConfigHandler.customSoundRate[i] == this.getShipClass() + 2)
+				{
+					this.customSound = new int[10];
+					this.customSound[0] = ConfigHandler.customSoundRate[i];
+					this.customSound[1] = ConfigHandler.customSoundRate[i+1];
+					this.customSound[2] = ConfigHandler.customSoundRate[i+2];
+					this.customSound[3] = ConfigHandler.customSoundRate[i+3];
+					this.customSound[4] = ConfigHandler.customSoundRate[i+4];
+					this.customSound[5] = ConfigHandler.customSoundRate[i+5];
+					this.customSound[6] = ConfigHandler.customSoundRate[i+6];
+					this.customSound[7] = ConfigHandler.customSoundRate[i+7];
+					this.customSound[8] = ConfigHandler.customSoundRate[i+8];
+					this.customSound[9] = ConfigHandler.customSoundRate[i+9];
+					break;
+				}
 			}
 		}
-		else {
-			return Reference.MOD_ID+":ship-say";
+	}
+	
+	//平常音效
+	@Override
+	protected String getLivingSound()
+	{
+		try
+		{
+			//use custom sound
+			if (this.customSound != null &&
+				this.rand.nextInt(100) < this.customSound[ID.Sound.Idle])
+			{
+				String shipid = "-" + String.valueOf(this.getShipClass() + 2);
+				
+				//married sound
+				if (this.getStateFlag(ID.F.IsMarried))
+				{
+					if (rand.nextInt(5) == 0)
+					{
+						return Reference.MOD_ID+":ship-love"+shipid;
+					}
+					else
+					{
+						return Reference.MOD_ID+":ship-say"+shipid;
+					}
+				}
+				//normal sound
+				else {
+					return Reference.MOD_ID+":ship-say"+shipid;
+				}
+			}
+			//use general sound
+			else
+			{
+				//married sound
+				if (this.getStateFlag(ID.F.IsMarried))
+				{
+					if (rand.nextInt(5) == 0)
+					{
+						return Reference.MOD_ID+":ship-love";
+					}
+					else
+					{
+						return Reference.MOD_ID+":ship-say";
+					}
+				}
+				//normal sound
+				else {
+					return Reference.MOD_ID+":ship-say";
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return null;
 		}
     }
 	
+	//special sound
+	public String getSoundString(int type)
+	{
+		try
+		{
+			String shipid = "-" + String.valueOf(this.getShipClass() + 2);
+			String str = null;
+					
+			switch (type)
+			{
+			case ID.Sound.Dead:
+				str = ":ship-death";
+				break;
+			case ID.Sound.Feed:
+				str = ":ship-feed";
+				break;
+			case ID.Sound.Hit:
+				str = ":ship-hitsmall";
+				break;
+			case ID.Sound.Hurt:
+				str = ":ship-hurt";
+				break;
+			case ID.Sound.Idle:
+				str = ":ship-say";
+				break;
+			case ID.Sound.Item:
+				str = ":ship-itemget";
+				break;
+			case ID.Sound.Knock:
+				str = ":ship-knockback";
+				break;
+			case ID.Sound.Love:
+				str = ":ship-love";
+				break;
+			}
+			
+			//use custom sound
+			if (this.customSound != null &&
+				this.rand.nextInt(100) < this.customSound[type])
+			{
+				
+	    		return Reference.MOD_ID + str + shipid;
+			}
+			//use general sound
+			else
+			{
+	    		return Reference.MOD_ID + str;
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 	//受傷音效
     @Override
-	protected String getHurtSound() {
-    	if(this.StartSoundHurt <= 0) {
-    		this.StartSoundHurt = 20 + this.getRNG().nextInt(40);
-    		return Reference.MOD_ID+":ship-hurt";
+	protected String getHurtSound()
+    {
+    	if (this.soundCD <= 0)
+    	{
+    		this.soundCD = 20 + this.getRNG().nextInt(30);
+    		return getSoundString(ID.Sound.Hurt);
     	}
+    	
     	return null;
     }
 
     //死亡音效
     @Override
 	protected String getDeathSound() {
-    	return Reference.MOD_ID+":ship-death";
+    	return getSoundString(ID.Sound.Dead);
     }
 
     //音效大小
     @Override
 	protected float getSoundVolume() {
-        return ConfigHandler.shipVolume;
+        return ConfigHandler.volumeShip;
     }
     
     //get model rotate angle, par1 = 0:X, 1:Y, 2:Z
@@ -822,8 +959,18 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		if(StateMinor[ID.M.ShipLevel] != CapLevel && StateMinor[ID.M.ShipLevel] < 150) {	//level is not cap level
 			StateMinor[ID.M.ExpCurrent] += exp;
 			if(StateMinor[ID.M.ExpCurrent] >= StateMinor[ID.M.ExpNext]) {
+				
 				//level up sound
-				this.worldObj.playSoundAtEntity(this, "random.levelup", 0.75F, 1.0F);
+				if (this.rand.nextInt(2) == 0)
+				{
+					this.worldObj.playSoundAtEntity(this, "random.levelup", 0.75F, 1.0F);
+				}
+				else
+				{
+					this.worldObj.playSoundAtEntity(this, Reference.MOD_ID+":ship-levelup", 0.75F, 1.0F);
+				}
+				
+				
 				StateMinor[ID.M.ExpCurrent] -= StateMinor[ID.M.ExpNext];	//level up
 				StateMinor[ID.M.ExpNext] = (StateMinor[ID.M.ShipLevel] + 2) * ConfigHandler.expMod;
 				setShipLevel(++StateMinor[ID.M.ShipLevel], true);
@@ -1347,8 +1494,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	            			}
 	                    }//end drop inventory item
 	                    
-	                    playSound(Reference.MOD_ID+":ship-kaitai", ConfigHandler.shipVolume, 1.0F);
-	                    playSound(Reference.MOD_ID+":ship-death", ConfigHandler.shipVolume, 1.0F);
+	                    playSound(Reference.MOD_ID+":ship-kaitai", ConfigHandler.volumeShip, 1.0F);
+	                    playSound(getSoundString(ID.Sound.Dead), ConfigHandler.volumeShip, 1.0F);
 	                }
 	                
 	                //物品用完時要設定為null清空該slot
@@ -1390,7 +1537,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 3, false), point);
                 
     			//play marriage sound
-    	        this.playSound(Reference.MOD_ID+":ship-love", ConfigHandler.shipVolume, 1.0F);
+    	        this.playSound(getSoundString(ID.Sound.Love), ConfigHandler.volumeShip, 1.0F);
     	        
     	        //add 3 random bonus point
     	        for(int i = 0; i < 3; ++i) {
@@ -1418,7 +1565,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	                }
 					
 					//play marriage sound
-	    	        this.playSound(Reference.MOD_ID+":ship-love", ConfigHandler.shipVolume, 1.0F);
+	    	        this.playSound(getSoundString(ID.Sound.Love), ConfigHandler.volumeShip, 1.0F);
 					
 					return true;
 				}	
@@ -1534,7 +1681,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		
 		if(changeOwner) {
 			//play marriage sound
-	        this.playSound(Reference.MOD_ID+":ship-death", ConfigHandler.shipVolume, 1.0F);
+	        this.playSound(getSoundString(ID.Sound.Dead), ConfigHandler.volumeShip, 1.0F);
 	        
 			player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
 			return true;
@@ -1647,6 +1794,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		
 		//can feed
 		if(type > 0) {
+			//play sound
+			if (this.soundCD <= 0)
+	    	{
+	    		this.soundCD = 20 + this.getRNG().nextInt(20);
+	    		this.playSound(this.getSoundString(ID.Sound.Feed), ConfigHandler.volumeShip, 1F);
+	    	}
+			
 			//item--
 			if(!player.capabilities.isCreativeMode) {
 	            if(--itemstack.stackSize <= 0) {  //物品用完時要設定為null清空該slot
@@ -2173,8 +2327,23 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 
 	//timekeeping method
 	protected void playTimeSound(int i) {
-		//play entity attack sound
-        this.playSound(Reference.MOD_ID+":ship-time"+i, ConfigHandler.timeKeepingVolume, 1.0F);
+		try
+		{
+			//custom sound
+			String str = Reference.MOD_ID+":ship-time" + i;
+			
+			if (this.customSound != null &&
+				this.rand.nextInt(100) < this.customSound[ID.Sound.Time])
+			{
+				str = str + "-" + String.valueOf(this.getShipClass() + 2);
+			}
+
+	        this.playSound(str, ConfigHandler.volumeTimekeep, 1.0F);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 	
 	//melee attack method, no ammo cost, no attack speed, damage = 12.5% atk
@@ -3414,7 +3583,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	/** update client timer */
   	protected void updateBothSideTimer() {
   		//hurt sound delay
-  		if(this.StartSoundHurt > 0) this.StartSoundHurt--;
+  		if(this.soundCD > 0) this.soundCD--;
   		
   		//emotes delay
 		if(this.EmotionTicks[4] > 0) this.EmotionTicks[4]--;
@@ -3749,7 +3918,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	  			//push target
 	  			if(ran.nextInt(6) == 0) {
 	  				this.pushAITarget();
-				    this.playSound(Reference.MOD_ID+":ship-knockback", ConfigHandler.shipVolume, 1.0F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
+				    this.playSound(getSoundString(ID.Sound.Knock), ConfigHandler.volumeShip, 1.0F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
 	  			}
 	  		}
 	  		//other reaction
@@ -3769,7 +3938,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 					//push target
 		  			if(ran.nextInt(8) == 0) {
 		  				this.pushAITarget();
-					    this.playSound(Reference.MOD_ID+":ship-knockback", ConfigHandler.shipVolume, 1.0F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
+					    this.playSound(getSoundString(ID.Sound.Knock), ConfigHandler.volumeShip, 1.0F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
 		  			}
 					break;
 				default:
@@ -3804,7 +3973,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	  			//push target
 	  			if(ran.nextInt(2) == 0) {
 	  				this.pushAITarget();
-				    this.playSound(Reference.MOD_ID+":ship-knockback", ConfigHandler.shipVolume, 1.0F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
+				    this.playSound(getSoundString(ID.Sound.Knock), ConfigHandler.volumeShip, 1.0F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
 	  			}
 	  			else if(this.aiTarget != null && ran.nextInt(8) == 0) {
 	  				switch(ran.nextInt(3)) {
@@ -3832,7 +4001,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 					//push target
 		  			if(ran.nextInt(4) == 0) {
 		  				this.pushAITarget();
-					    this.playSound(Reference.MOD_ID+":ship-knockback", ConfigHandler.shipVolume, 1.0F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
+					    this.playSound(getSoundString(ID.Sound.Knock), ConfigHandler.volumeShip, 1.0F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
 		  			}
 					break;
 				default:
@@ -3863,7 +4032,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	  			
 	  			//push target
   				this.pushAITarget();
-			    this.playSound(Reference.MOD_ID+":ship-knockback", ConfigHandler.shipVolume, 1.0F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
+			    this.playSound(getSoundString(ID.Sound.Knock), ConfigHandler.volumeShip, 1.0F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
 			    
 			    if(this.aiTarget != null && ran.nextInt(3) == 0) {
 			    	switch(ran.nextInt(3)) {
@@ -3898,7 +4067,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 					//push target
 		  			if(ran.nextInt(2) == 0) {
 		  				this.pushAITarget();
-					    this.playSound(Reference.MOD_ID+":ship-knockback", ConfigHandler.shipVolume, 1.0F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
+					    this.playSound(getSoundString(ID.Sound.Knock), ConfigHandler.volumeShip, 1.0F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
 		  			}
 		  			else if(this.aiTarget != null && ran.nextInt(5) == 0) {
 		  				switch(ran.nextInt(3)) {
@@ -3956,7 +4125,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   			//push target
   			if(rand.nextInt(2) == 0) {
   				this.pushAITarget();
-			    this.playSound(Reference.MOD_ID+":ship-knockback", ConfigHandler.shipVolume, 1.0F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
+			    this.playSound(getSoundString(ID.Sound.Knock), ConfigHandler.volumeShip, 1.0F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
   			}
   			else if(this.aiTarget != null && rand.nextInt(4) == 0) {
   				switch(rand.nextInt(3)) {
@@ -3990,7 +4159,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				//push target
 	  			if(rand.nextInt(4) == 0) {
 	  				this.pushAITarget();
-				    this.playSound(Reference.MOD_ID+":ship-knockback", ConfigHandler.shipVolume, 1.0F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
+				    this.playSound(getSoundString(ID.Sound.Knock), ConfigHandler.volumeShip, 1.0F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
 	  			}
 	  			else if(this.aiTarget != null && rand.nextInt(8) == 0) {
 	  				switch(rand.nextInt(3)) {
@@ -4507,31 +4676,31 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		switch(type) {
   		case 1:  //light cannon
   			//fire sound
-  			playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  			playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.volumeFire, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
   	        
   			//entity sound
   			if(this.rand.nextInt(10) > 7) {
-  	        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  	        	this.playSound(getSoundString(ID.Sound.Hit), ConfigHandler.volumeShip, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
   	        }
   			break;
   		case 2:  //heavy cannon
   			//fire sound
-  	        this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.fireVolume, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  	        this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.volumeFire, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
 
   	        //entity sound
   	        if(this.getRNG().nextInt(10) > 7) {
-  	        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  	        	this.playSound(getSoundString(ID.Sound.Hit), ConfigHandler.volumeShip, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
   	        }
   			break;
   		case 3:  //light aircraft
-  	        playSound(Reference.MOD_ID+":ship-aircraft", ConfigHandler.fireVolume * 0.5F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  	        playSound(Reference.MOD_ID+":ship-aircraft", ConfigHandler.volumeFire * 0.5F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
   			break;
   		case 4:  //heavy aircraft
-  	        playSound(Reference.MOD_ID+":ship-aircraft", ConfigHandler.fireVolume * 0.5F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  	        playSound(Reference.MOD_ID+":ship-aircraft", ConfigHandler.volumeFire * 0.5F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
   			break;
 		default: //melee
 			if(this.getRNG().nextInt(2) == 0) {
-	        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+	        	this.playSound(getSoundString(ID.Sound.Hit), ConfigHandler.volumeShip, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
 	        }
 			break;
   		}

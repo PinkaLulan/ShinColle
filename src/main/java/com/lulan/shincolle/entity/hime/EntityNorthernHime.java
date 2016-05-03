@@ -46,8 +46,6 @@ public class EntityNorthernHime extends BasicEntityShipCV {
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BBV]);
 		this.ModelPos = new float[] {-6F, 8F, 0F, 50F};
 		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
-		this.initTypeModify();
-		
 		goRidingTicks = 0;
 		goRideEntity = null;
 		goRiding = false;
@@ -56,6 +54,7 @@ public class EntityNorthernHime extends BasicEntityShipCV {
 		//set attack type
 		this.StateFlag[ID.F.HaveRingEffect] = true;
 		
+		this.postInit();
 	}
 	
 	@Override
@@ -442,31 +441,31 @@ public class EntityNorthernHime extends BasicEntityShipCV {
   		switch(type) {
   		case 1:  //light cannon
   			//fire sound
-  	      	playSound("random.bow", ConfigHandler.fireVolume * 1.3F, 0.4F / (rand.nextFloat() * 0.4F + 0.8F));
+  	      	playSound("random.bow", ConfigHandler.volumeFire * 1.3F, 0.4F / (rand.nextFloat() * 0.4F + 0.8F));
   	        
   			//entity sound
   			if(this.rand.nextInt(10) > 7) {
-  	        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  	        	this.playSound(getSoundString(ID.Sound.Hit), ConfigHandler.volumeShip, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
   	        }
   			break;
   		case 2:  //heavy cannon
   			//fire sound
-  			playSound("random.bow", ConfigHandler.fireVolume * 1.3F, 0.4F / (rand.nextFloat() * 0.4F + 0.8F));
+  			playSound("random.bow", ConfigHandler.volumeFire * 1.3F, 0.4F / (rand.nextFloat() * 0.4F + 0.8F));
   	        
   	        //entity sound
   	        if(this.getRNG().nextInt(10) > 7) {
-  	        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  	        	this.playSound(getSoundString(ID.Sound.Hit), ConfigHandler.volumeShip, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
   	        }
   			break;
   		case 3:  //light aircraft
-  	        playSound(Reference.MOD_ID+":ship-aircraft", ConfigHandler.fireVolume * 0.5F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  	        playSound(Reference.MOD_ID+":ship-aircraft", ConfigHandler.volumeFire * 0.5F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
   			break;
   		case 4:  //heavy aircraft
-  	        playSound(Reference.MOD_ID+":ship-aircraft", ConfigHandler.fireVolume * 0.5F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  	        playSound(Reference.MOD_ID+":ship-aircraft", ConfigHandler.volumeFire * 0.5F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
   			break;
 		default: //melee
 			if(this.getRNG().nextInt(10) > 6) {
-	        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.shipVolume, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+	        	this.playSound(getSoundString(ID.Sound.Hit), ConfigHandler.volumeShip, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
 	        }
 			break;
   		}

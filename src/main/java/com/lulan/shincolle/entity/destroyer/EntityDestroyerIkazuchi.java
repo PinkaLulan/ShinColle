@@ -38,11 +38,6 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall {
 		this.ModelPos = new float[] {0F, 13F, 0F, 50F};
 		this.ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		
-		//higher step
-		this.stepHeight = 2F;
-		
-		this.initTypeModify();
-		
 		//set attack type
 		this.StateFlag[ID.F.HaveRingEffect] = true;
 		this.StateFlag[ID.F.AtkType_AirLight] = false;
@@ -52,6 +47,7 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall {
 		//gattai
 		this.isGattai = false;
 		
+		this.postInit();
 	}
 	
 	//for morph
