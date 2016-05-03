@@ -552,6 +552,7 @@ public class ModelDestroyerIkazuchi extends ModelBase implements IModelEmotion {
 	  	this.ArmLeft01.rotateAngleX = angleAdd2 * 0.25F + 0.21F;
 	  	this.ArmLeft01.rotateAngleY = 0F;
 	    this.ArmLeft01.rotateAngleZ = angleX * 0.03F - 0.35F;
+	    this.ArmLeft02.rotateAngleX = 0F;
 	    this.ArmLeft02.rotateAngleZ = 0F;
 	    this.ArmLeft02.offsetX = 0F;
 	    this.ArmRight01.rotateAngleX = angleAdd1 * 0.25F - 0.07F;

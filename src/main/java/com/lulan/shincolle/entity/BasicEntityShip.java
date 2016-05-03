@@ -47,6 +47,7 @@ import com.lulan.shincolle.entity.transport.EntityTransportWa;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.item.IShipFoodItem;
 import com.lulan.shincolle.item.OwnerPaper;
 import com.lulan.shincolle.item.PointerItem;
 import com.lulan.shincolle.network.C2SInputPackets;
@@ -119,7 +120,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	/** EntityFlag: 0:canFloatUp 1:isMarried 2:noFuel 3:canMelee 4:canAmmoLight 5:canAmmoHeavy 
 	 *  6:canAirLight 7:canAirHeavy 8:headTilt(client only) 9:canRingEffect 10:canDrop 11:canFollow
 	 *  12:onSightChase 13:AtkType_Light 14:AtkType_Heavy 15:AtkType_AirLight 16:AtkType_AirHeavy 
-	 *  17:HaveRingEffect 18:PVPFirst 19:AntiAir 20:AntiSS 21:PassiveAI 22:TimeKeeper 
+	 *  17:HaveRingEffect 18:PVPFirst 19:AntiAir 20:AntiSS 21:PassiveAI 22:TimeKeeper 23:PickItem 
 	 */
 	protected boolean[] StateFlag;
 	/** BonusPoint: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT */
@@ -184,7 +185,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				                        true, true, true, false, true,
 								        true, false, true, true, true,
 								        true, true, false, true, false,
-								        false, false, true
+								        false, false, true, true, false
 								       };
 		this.UpdateFlag = new boolean[] {false};
 		this.BonusPoint = new byte[] {0, 0, 0, 0, 0, 0};
@@ -327,6 +328,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.tasks.addTask(2, new EntityAIShipFlee(this));				//0111
 		this.tasks.addTask(3, new EntityAIShipGuarding(this));			//0111
 		this.tasks.addTask(4, new EntityAIShipFollowOwner(this));		//0111
+		this.tasks.addTask(5, new EntityAIShipOpenDoor(this, true));	//0000
 		
 		//use melee attack
 		if(this.getStateFlag(ID.F.UseMelee)) {
@@ -334,7 +336,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		}
 		
 		//idle AI
-		this.tasks.addTask(21, new EntityAIShipOpenDoor(this, true));	//0000
 		this.tasks.addTask(23, new EntityAIShipFloating(this));			//0111
 		this.tasks.addTask(24, new EntityAIShipWatchClosest(this, EntityPlayer.class, 4F, 0.06F));//0010
 		this.tasks.addTask(25, new EntityAIShipWander(this, 10, 5, 0.8D));//0111
@@ -578,7 +579,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	
 	@Override
 	public boolean getStateFlag(int flag) {	//get flag (boolean)
-		return StateFlag[flag];		
+		return StateFlag[flag];
 	}
 	
 	public byte getStateFlagI(int flag) {	//get flag (byte)
@@ -1462,6 +1463,16 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				}
 				else {
 					this.setEntitySit();
+					
+					if (this.ridingEntity instanceof BasicEntityShip)
+					{
+						((BasicEntityShip) this.ridingEntity).setEntitySit();
+					}
+					
+					if (this.riddenByEntity instanceof BasicEntityShip)
+					{
+						((BasicEntityShip) this.riddenByEntity).setEntitySit();
+					}
 				}
 				
 				return true;
@@ -1539,7 +1550,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	 *  3. sometimes reject food
 	 *  4. feed max morale = 4800
 	 */
-	protected boolean interactFeed(EntityPlayer player, ItemStack itemstack) {
+	protected boolean interactFeed(EntityPlayer player, ItemStack itemstack)
+	{
 		Item i = itemstack.getItem();
 		int meta = itemstack.getItemDamage();
 		int type = 0;
@@ -1550,11 +1562,14 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		int addammoh = 0;
 		
 		//max 4800 or max saturation, reject food
-		if((i instanceof ItemFood || i == ModItems.AbyssMetal || i == ModItems.Grudge || i == ModItems.Ammo) &&
-		   (mvalue > 4800 || getFoodSaturation() >= getFoodSaturationMax())) {
-			if(this.EmotionTicks[4] <= 0) {
+		if ((i instanceof ItemFood || i instanceof IShipFoodItem) &&
+			(mvalue > 4800 || getFoodSaturation() >= getFoodSaturationMax()))
+		{
+			if (this.EmotionTicks[4] <= 0)
+			{
 				this.EmotionTicks[4] = 40;
-				switch(this.rand.nextInt(4)) {
+				switch (this.rand.nextInt(4))
+				{
 				case 1:
 					applyParticleEmotion(2);  //panic
 					break;
@@ -1573,7 +1588,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			return false;
 		}
 
-		if(i instanceof ItemFood) {
+		if (i instanceof ItemFood)
+		{
 			type = 1;
 			ItemFood f = (ItemFood) i;
 			float fv = f.func_150905_g(itemstack);  //food value
@@ -1582,40 +1598,52 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			mfood = (int)((fv + this.rand.nextInt((int)fv + 5)) * sv * 20F);
 			addgrudge = mfood;
 		}//end itemfood
-		else if(i == ModItems.AbyssMetal) {
+		else if (i instanceof IShipFoodItem)
+		{
 			type = 2;
-			mfood = 30 + this.rand.nextInt(30);
+			int foodv = (int) ((IShipFoodItem) i).getFoodValue(meta);
+			mfood = foodv + this.rand.nextInt(foodv + 1);
 			
-			//add airplane if CV
-			if(this instanceof BasicEntityShipCV && this.rand.nextInt(10) > 2) {
-				((BasicEntityShipCV)this).setNumAircraftLight(((BasicEntityShipCV)this).getNumAircraftLight()+1);
-				((BasicEntityShipCV)this).setNumAircraftHeavy(((BasicEntityShipCV)this).getNumAircraftHeavy()+1);
+			switch (((IShipFoodItem) i).getSpecialEffect(meta))
+			{
+			case 1:  //grudge
+				addgrudge = 300 + this.rand.nextInt(500);
+				break;
+			case 2:  //abyssium
+				heal(getMaxHealth() * 0.05F + 1F);
+				break;
+			case 3:  //ammo
+				switch(meta) {
+				case 0:
+					addammo = 30 + this.rand.nextInt(10);
+					break;
+				case 1:
+					addammo = 270 + this.rand.nextInt(90);
+					break;
+				case 2:
+					addammoh = 15 + this.rand.nextInt(5);
+					break;
+				case 3:
+					addammoh = 135 + this.rand.nextInt(45);
+					break;
+				}
+				break;
+			case 4:  //polymetal
+				//add airplane if CV
+				if(this instanceof BasicEntityShipCV && this.rand.nextInt(10) > 4) {
+					((BasicEntityShipCV)this).setNumAircraftLight(((BasicEntityShipCV)this).getNumAircraftLight()+1);
+					((BasicEntityShipCV)this).setNumAircraftHeavy(((BasicEntityShipCV)this).getNumAircraftHeavy()+1);
+				}
+				break;
+			case 5:  //toy plane
+				//add airplane if CV
+				if(this instanceof BasicEntityShipCV) {
+					((BasicEntityShipCV)this).setNumAircraftLight(((BasicEntityShipCV)this).getNumAircraftLight()+rand.nextInt(3)+1);
+					((BasicEntityShipCV)this).setNumAircraftHeavy(((BasicEntityShipCV)this).getNumAircraftHeavy()+rand.nextInt(3)+1);
+				}
+				break;
 			}
-		}
-		else if(i == ModItems.Grudge) {
-			type = 3;
-			mfood = 10 + this.rand.nextInt(10);
-			addgrudge = 300 + this.rand.nextInt(500);
-		}
-		else if(i == ModItems.Ammo) {
-			type = 4;
-			mfood = 5 + this.rand.nextInt(5);
-			
-			switch(meta) {
-			case 0:
-				addammo = 30 + this.rand.nextInt(10);
-				break;
-			case 1:
-				addammo = 270 + this.rand.nextInt(90);
-				break;
-			case 2:
-				addammoh = 15 + this.rand.nextInt(5);
-				break;
-			case 3:
-				addammoh = 135 + this.rand.nextInt(45);
-				break;
-			}
-		}//end mod item
+		}//end ship food item
 		
 		//can feed
 		if(type > 0) {

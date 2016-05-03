@@ -41,6 +41,7 @@ public class EntityTransportWa extends BasicEntityShipSmall {
 		this.StateFlag[ID.F.AtkType_Heavy] = false;
 		this.StateFlag[ID.F.AtkType_AirLight] = false;
 		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
+		this.StateFlag[ID.F.CanPickItem] = true;
 	}
 	
 	//for morph

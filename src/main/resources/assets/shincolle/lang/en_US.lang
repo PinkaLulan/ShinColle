@@ -254,7 +254,7 @@ gui.shincolle:book.chap1.text11d0=<br><br><br><br><br><br><br><br><br>§d§nWo-C
 gui.shincolle:book.chap1.text11d1=There are 3 command modes, store up to 9 teams and each team 6 ships maximum.<br><br>§2Single Mode§0:<br>Only 1 §3Focus Target§0, command will ONLY apply to the §3Focus Target§0.<br><br>§4Group Mode§0:<br>0~6 §3Focus Target§0, command will ONLY apply to the §3Focus Target§0.<br><br>§6Formation Mode§0:<br>Ship move in specific formation and gain additional effect, command will apply to ALL ships.
 gui.shincolle:book.chap1.title12=Wo-Class Command Scepter
 gui.shincolle:book.chap1.text12d0=The color circle will appear when holding command scepter:<br><br>§2GREEN§0:<br>Ship in §2Single Mode§0.<br>§3CYAN§0:<br>Ship is §3Focus Target§0.<br>§4RED§0:<br>Ship in §4Group Mode§0.<br>§6YELLOW§0:<br>Ship in §6Formation Mode§0.<br>§7WHITE§0:<br>Guard target.<br><br>§9Left Click§0:<br>Add ship to the team / Add target to attackable list / Set focus target.
-gui.shincolle:book.chap1.text12d1=§9Sprint+Left Click§0:<br>Change formation.<br>§9Sneak+Left Click§0:<br>Remove team / Change command mode.<br>§9Sneak+Sprint+Left Click§0:<br>Clear team.<br>§9Right Click§0:<br>Move and guard / Attack / Sit / Caress.<br>§9Sprint+Right Click§0:<br>Guard target.<br>§9Sneak+Right Click§0:<br>Open ship's inventory / Formation GUI.<br>§9Sprint:§0<br>Change to caress mode.
+gui.shincolle:book.chap1.text12d1=§9Sprint+Left Click§0:<br>Change formation.<br>§9Sneak+Left Click§0:<br>Remove team / Change command mode.<br>§9Sneak+Sprint+Left Click§0:<br>Clear team.<br>§9Right Click§0:<br>Move and guard / Attack / Sit / Caress.<br>§9Sprint+Right Click§0:<br>Guard target.<br>§9Sneak+Right Click§0:<br>Open ship's inventory / Formation GUI.<br>§9List Players:§0<br>Change to caress mode.
 gui.shincolle:book.chap1.title13=Wo-Class Command Scepter
 gui.shincolle:book.chap1.text13d0=§9Formation§0:<br>Ships will move in formation at same speed and gain formation buffs, you need 5 or 6 ships in a team to use formation mode.<br><br>If a ship is in formation mode, move/guard command in single/group mode will be disabled.<br><br>And if a ship exists in different teams, the formation buff will apply to only one team.
 gui.shincolle:book.chap1.text13d1=§2Line Ahead§0:<br>Artillery combat formation, increase firepower but lost defence.<br><br>§3Double Line§0:<br>A cruising formation with slight firepower buff.<br><br>§4Diamond§0:<br>Defence formation for aerial combat.<br><br>§6Echelon§0:<br>Charge formation with high moving speed buff.<br><br>§7Line Abreast§0:<br>Defence formation for anti-submarine combat.
@@ -337,7 +337,7 @@ gui.shincolle:book.chap3.title7=AI Option
 gui.shincolle:book.chap3.text7d0=Owner can adjust some AI in ship's inventory GUI.<br><br>§91. Can Melee§0: Use melee attack, cost no ammo.<br><br>§92. Use L.Ammo§0: Attack by §cGrudgeful Ammo§0.<br><br>§93. Use H.Ammo§0: Attack by §cHeavy Grudgeful Ammo§0.<br><br>§94. Use L.Air§0: Attack by light aircraft and §cGrudgeful Ammo§0.<br><br>§95. Use H.Air§0: Attack by heavy aircraft and §cHeavy Grudgeful Ammo§0.
 gui.shincolle:book.chap3.text7d1=§96. Aura Effect§0: Enable special power and wedding ring power.<br><br>§97. Follow (Min)§0: Ship stop following within the min distance.<br><br>§98. Follow (Max)§0: Ship start to follow owner at the max distance.<br><br>§99. Flee HP%%§0: Force the ship to follow owner if HP < Flee HP%%.<br><br>§910. Passive?§0: Only attack back when attacked.
 gui.shincolle:book.chap3.title8=
-gui.shincolle:book.chap3.text8d0=§911. Onsight?§0: Only attack target on sight.<br><br>§912. PVP Mode§0: Attack §cPVP§0 target first.<br><br>§913. Anti-Air§0: Attack §cAircraft§0 first.<br><br>§914. Anti-SS§0: Attack §cSubmarine§0 first.<br><br>§9Priority§0: §dAnti-Air§0 > §3Anti-SS§0 > §cPVP§0 > Other
+gui.shincolle:book.chap3.text8d0=§911. Onsight?§0: Only attack target on sight.<br><br>§912. PVP Mode§0: Attack §cPVP§0 target first.<br><br>§913. Anti-Air§0: Attack §cAircraft§0 first.<br><br>§914. Anti-SS§0: Attack §cSubmarine§0 first.<br>§9Priority§0: §dAnti-Air§0 > §3Anti-SS§0 > §cPVP§0 > Other<br><br>§915. PickItem§0: Some ship will pick item when out of combat.
 gui.shincolle:book.chap3.text8d1=
 gui.shincolle:book.chap3.title9=PVP Mode
 gui.shincolle:book.chap3.text9d0=§91.§0 Enable PVP Mode by §cCreating a Fleet§0 in §3Abyssal Adrmiral's Desk§0.<br><br>§92.§0 Default PVP state is §7Neutral§0 to other fleets.<br><br>§93.§0 You can §cAlly/Declare War§0 against other fleets in §3Abyssal Adrmiral's Desk§0.<br><br>§94.§0 Ship will attack other hostile fleets by enabling §cPVP Mode§0 in AI option.<br><br>§95.§0 If §cFriendlyFire§0 = §3false§0, AoE attack will not damage to allies.
@@ -358,7 +358,7 @@ gui.shincolle:book.chap3.title14=Feeding
 gui.shincolle:book.chap3.text14d0=Generally the ship don't need to feed, but you can feed ship to increase morale and grudge value manually.<br><br>§9Right click§0 on ship with food or some items to feed the ship.<br><br>You can only feed a certain times in a period of time.
 gui.shincolle:book.chap3.text14d1=§9Grudge, Food:§0<br>Increase grudge, morale value.<br><br>§9Ammo:§0<br>Increase morale and ammo value a little more than automatically consumed by ship.<br><br>§9Abyssium, Polymetal:§0<br>Increase number of aircraft for CV.
 gui.shincolle:book.chap3.title15=Caress
-gui.shincolle:book.chap3.text15d0=The owner can caress ship to reward or simply harass her. A correct caress can §9improve the shop's morale§0 effectively.<br><br>To caress ship, held §dWo-Class Command Scepter§0 and press §9CTRL§0 to change to caress mode, and §9Right Click§0 on the ship.
+gui.shincolle:book.chap3.text15d0=The owner can caress ship to reward or simply harass her. A correct caress can §9improve the shop's morale§0 effectively.<br><br>To caress ship, held §dWo-Class Command Scepter§0 and press §9List Players (default: TAB)§0 to change to caress mode, and §9Right Click§0 on the ship.
 gui.shincolle:book.chap3.text15d1=Caress target is determined by the cross and the relative face angle between owner and ship.<br><br>The target are: top, head, face, neck, chest, belly, under belly, leg, arm, back.<br><br>Different individuals have different sensitive part, be careful the reaction when caressing.
 
 # GUI: Book Text Chap 4
@@ -368,16 +368,16 @@ gui.shincolle:book.chap4.text0d0=The ship will be registered to list when owner 
 gui.shincolle:book.chap4.text0d1=The number represents the total amount of materials. §4EX: §dGrudge (4000):§0 The default highest probability is 4000 materials. If you set up 1000 Grudge, you just need 4000 - 1000 = 3000 materials to get the highest probability.<br><br>§9AuraEffect:§0 Special ability for married ship that owner can enable/disable in AI options.<br><br>§9OtherEffect:§0 Other ability like critical passive ability.
 gui.shincolle:book.chap4.title1=
 gui.shincolle:book.chap4.text1d0=
-gui.shincolle:book.chap4.text1d1=§9Name:§0 I-Class<br><br>§9Class:§0 DD<br><br>§9Factory:§0 Abyssal Vent<br><br>§9Factor:§0 Grudge (80)<br><br>§9AuraEffect:§0 Moving speed aura<br><br>§9OtherEffect:§0 none<br><br>The most popular abyssal mascot!
+gui.shincolle:book.chap4.text1d1=§9Name:§0 I-Class<br><br>§9Class:§0 DD<br><br>§9Factory:§0 Abyssal Vent<br><br>§9Factor:§0 Grudge (80)<br><br>§9AuraEffect:§0 Moving speed aura<br><br>§9OtherEffect:§0 Pick up items<br><br>The most popular abyssal mascot!
 gui.shincolle:book.chap4.title2=
 gui.shincolle:book.chap4.text2d0=
-gui.shincolle:book.chap4.text2d1=§9Name:§0 Ro-Class<br><br>§9Class:§0 DD<br><br>§9Factory:§0 Abyssal Vent<br><br>§9Factor:§0 Grudge (90)<br><br>§9AuraEffect:§0 Digging speed aura<br><br>§9OtherEffect:§0 none<br><br>One of the most popular abyssal mascot!
+gui.shincolle:book.chap4.text2d1=§9Name:§0 Ro-Class<br><br>§9Class:§0 DD<br><br>§9Factory:§0 Abyssal Vent<br><br>§9Factor:§0 Grudge (90)<br><br>§9AuraEffect:§0 Digging speed aura<br><br>§9OtherEffect:§0 Pick up items<br><br>One of the most popular abyssal mascot!
 gui.shincolle:book.chap4.title3=
 gui.shincolle:book.chap4.text3d0=
-gui.shincolle:book.chap4.text3d1=§9Name:§0 Ha-Class<br><br>§9Class:§0 DD<br><br>§9Factory:§0 Abyssal Vent<br><br>§9Factor:§0 Grudge (100)<br><br>§9AuraEffect:§0 Jump power aura<br><br>§9OtherEffect:§0 none<br><br>Always keeping smiling abyssal mascot!
+gui.shincolle:book.chap4.text3d1=§9Name:§0 Ha-Class<br><br>§9Class:§0 DD<br><br>§9Factory:§0 Abyssal Vent<br><br>§9Factor:§0 Grudge (100)<br><br>§9AuraEffect:§0 Jump power aura<br><br>§9OtherEffect:§0 Pick up items<br><br>Always keeping smiling abyssal mascot!
 gui.shincolle:book.chap4.title4=
 gui.shincolle:book.chap4.text4d0=
-gui.shincolle:book.chap4.text4d1=§9Name:§0 Ni-Class<br><br>§9Class:§0 DD<br><br>§9Factory:§0 Abyssal Vent<br><br>§9Factor:§0 Grudge (110)<br><br>§9AuraEffect:§0 Attack power aura<br><br>§9OtherEffect:§0 none<br><br>The weird and full of mystery abyssal mascot...
+gui.shincolle:book.chap4.text4d1=§9Name:§0 Ni-Class<br><br>§9Class:§0 DD<br><br>§9Factory:§0 Abyssal Vent<br><br>§9Factor:§0 Grudge (110)<br><br>§9AuraEffect:§0 Attack power aura<br><br>§9OtherEffect:§0 Pick up items<br><br>The weird and full of mystery abyssal mascot...
 gui.shincolle:book.chap4.title5=
 gui.shincolle:book.chap4.text5d0=
 gui.shincolle:book.chap4.text5d1=§9Name:§0 Ri-Class<br><br>§9Class:§0 CA<br><br>§9Factory:§0 Abyssal Vent<br><br>§9Factor:§0 Ammo (200)<br><br>§9AuraEffect:§0 Increase move/jump in night<br><br>§9OtherEffect:§0 none<br><br>
@@ -410,7 +410,7 @@ gui.shincolle:book.chap4.text14d0=
 gui.shincolle:book.chap4.text14d1=§9Name:§0 Aircraft Carrier Water Demon<br><br>§9Class:§0 Water Demon Class CV<br><br>§9Factory:§0 Hadal Vortex<br><br>§9Factor:§0 Polymetal (5000)<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 none<br><br>Light attack: Laser Funnel: deal 100%% firepower damage.
 gui.shincolle:book.chap4.title15=
 gui.shincolle:book.chap4.text15d0=
-gui.shincolle:book.chap4.text15d1=§9Name:§0 Wa-Class<br><br>§9Class:§0 Transport<br><br>§9Factory:§0 Abyssal Vent<br><br>§9Factor:§0 Abyssium (120)<br><br>§9AuraEffect:§0 Pick up items<br><br>§9OtherEffect:§0 Max inventory size, supply ships<br><br>Abyssal maid with high payload, she can also pick up items for master.<br><br>Built-in 3 pages inventory.<br>Transport can only melee attack, and consume items to supply nearby ships.
+gui.shincolle:book.chap4.text15d1=§9Name:§0 Wa-Class<br><br>§9Class:§0 Transport<br><br>§9Factory:§0 Abyssal Vent<br><br>§9Factor:§0 Abyssium (120)<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 Max inventory size, supply ships, pick up items<br><br>Abyssal maid with high payload, she can also pick up items for master.<br><br>Built-in 3 pages inventory.<br>Transport can only melee attack, and consume items to supply nearby ships.
 
 # GUI: Book Text Chap 5
 gui.shincolle:book.chap5.title=Enemy List
@@ -419,7 +419,7 @@ gui.shincolle:book.chap5.text0d0=Kanmusu is an aggressive evil ship, they are th
 gui.shincolle:book.chap5.text0d1=Defeat the fleet may obtain the spawn egg of Kanmusu. Register the Kanmusu by opening the ship inventory GUI.
 gui.shincolle:book.chap5.title1=
 gui.shincolle:book.chap5.text1d0=
-gui.shincolle:book.chap5.text1d1=§9Name:§0 Shimakaze<br><br>§9Class:§0 Shimakaze Class DD<br><br>§9AuraEffect:§0 Moving speed aura<br><br>§9OtherEffect:§0 none<br><br>Heavy attack: Quintuple Oxygen Torpedo Mount: deal 30%% torpedo damage each torpedo.<br>Sneaking+Right Click with cake to change summon type.
+gui.shincolle:book.chap5.text1d1=§9Name:§0 Shimakaze<br><br>§9Class:§0 Shimakaze Class DD<br><br>§9AuraEffect:§0 Moving speed aura<br><br>§9OtherEffect:§0 Pick up items<br><br>Heavy attack: Quintuple Oxygen Torpedo Mount: deal 30%% torpedo damage each torpedo.<br>Sneaking+Right Click with cake to change summon type.
 gui.shincolle:book.chap5.title2=
 gui.shincolle:book.chap5.text2d0=
 gui.shincolle:book.chap5.text2d1=§9Name:§0 Nagato<br><br>§9Class:§0 Nagato Class BB<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 none<br><br>Heavy attack: Type 91 AP Fist: 4 round per attack, deal 400%% torpedo damage to main target and 200%% AoE attack.
@@ -440,16 +440,16 @@ gui.shincolle:book.chap5.text7d0=
 gui.shincolle:book.chap5.text7d1=§9Name:§0 Akagi<br><br>§9Class:§0 Akagi Class CV<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 none<br><br>It's said that all Shinkeiseikan will be eaten if Akagi appear.
 gui.shincolle:book.chap5.title8=
 gui.shincolle:book.chap5.text8d0=
-gui.shincolle:book.chap5.text8d1=§9Name:§0 Akatsuki<br><br>§9Class:§0 Akatsuki Class DD<br><br>§9AuraEffect:§0 Jump power aura<br><br>§9OtherEffect:§0 none<br><br>
+gui.shincolle:book.chap5.text8d1=§9Name:§0 Akatsuki<br><br>§9Class:§0 Akatsuki Class DD<br><br>§9AuraEffect:§0 Jump power aura<br><br>§9OtherEffect:§0 Pick up items<br><br>She is often seen in expedition with heavy drum canister.
 gui.shincolle:book.chap5.title9=
 gui.shincolle:book.chap5.text9d0=
-gui.shincolle:book.chap5.text9d1=§9Name:§0 Hibiki<br><br>§9Class:§0 Akatsuki Class DD<br><br>§9AuraEffect:§0 Digging speed aura<br><br>§9OtherEffect:§0 Dodge+30%%<br><br>
+gui.shincolle:book.chap5.text9d1=§9Name:§0 Hibiki<br><br>§9Class:§0 Akatsuki Class DD<br><br>§9AuraEffect:§0 Digging speed aura<br><br>§9OtherEffect:§0 Pick up items, Dodge+30%%<br><br>хорошо~
 gui.shincolle:book.chap5.title10=
 gui.shincolle:book.chap5.text10d0=
-gui.shincolle:book.chap5.text10d1=§9Name:§0 Ikazuchi<br><br>§9Class:§0 Akatsuki Class DD<br><br>§9AuraEffect:§0 Attack power aura<br><br>§9OtherEffect:§0 none<br><br>
+gui.shincolle:book.chap5.text10d1=§9Name:§0 Ikazuchi<br><br>§9Class:§0 Akatsuki Class DD<br><br>§9AuraEffect:§0 Attack power aura<br><br>§9OtherEffect:§0 Pick up items<br><br>The expedition leader with a very dangerous weapon in hand.
 gui.shincolle:book.chap5.title11=
 gui.shincolle:book.chap5.text11d0=
-gui.shincolle:book.chap5.text11d1=§9Name:§0 Inazuma<br><br>§9Class:§0 Akatsuki Class DD<br><br>§9AuraEffect:§0 Moving speed aura<br><br>§9OtherEffect:§0 none<br><br>
+gui.shincolle:book.chap5.text11d1=§9Name:§0 Inazuma<br><br>§9Class:§0 Akatsuki Class DD<br><br>§9AuraEffect:§0 Moving speed aura<br><br>§9OtherEffect:§0 Pick up items<br><br>Inazuma is the NANODEATH angel that can purify nearby shinkeiseikan, be careful!  
 
 # GUI: Book Text Chap 6
 gui.shincolle:book.chap6.title=
@@ -560,6 +560,7 @@ gui.shincolle:ai.pvp=PVP Mode
 gui.shincolle:ai.aa=Anti-Air
 gui.shincolle:ai.asm=Anti-SS
 gui.shincolle:ai.timekeeper=TimeKeeper
+gui.shincolle:ai.pickitem=Pick Item
 
 # GUI: Shipyard
 gui.shincolle:nomaterial=Not Enough Materials

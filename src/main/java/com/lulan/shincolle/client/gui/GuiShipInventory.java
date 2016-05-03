@@ -54,11 +54,12 @@ public class GuiShipInventory extends GuiContainer {
 	               strMiExp, strMiAirL, strMiAirH, strMiAmmoL, strMiAmmoH, strMiGrudge, strAttrCri,
 	               strAttrDHIT, strAttrTHIT, strAttrAA, strAttrASM, strAttrMiss, strAttrMissA, strAttrMissR,
 	               strAttrDodge, strAttrFPos, strAttrFormat, strAttrWedding, strAttrWedTrue, strAttrWedFalse,
-	               strTimeKeep, strM0, strM1, strM2, strM3, strM4;
+	               strTimeKeep, strM0, strM1, strM2, strM3, strM4, strPick;
 	private int hpCurrent, hpMax, color, showPage, showPageAI, pageIndicator, pageIndicatorAI, showAttack,
 				fMinPos, fMaxPos, fleeHPPos, barPos, mousePressBar, shipType, shipClass, showPageInv;
 	private boolean switchMelee, switchLight, switchHeavy, switchAirLight, switchAirHeavy,
-				switchTarAI, mousePress, switchAura, switchOnSight, switchPVP, switchAA, switchASM, switchTimeKeep;
+					switchTarAI, mousePress, switchAura, switchOnSight, switchPVP, switchAA, switchASM,
+					switchTimeKeep, switchPick;
 	private int[][] iconXY;  //icon array:  [ship type, ship name][file,x,y]
 	
 
@@ -155,6 +156,7 @@ public class GuiShipInventory extends GuiContainer {
 		strAA = I18n.format("gui.shincolle:ai.aa");
 		strASM = I18n.format("gui.shincolle:ai.asm");
 		strTimeKeep = I18n.format("gui.shincolle:ai.timekeeper");
+		strPick = I18n.format("gui.shincolle:ai.pickitem");
 		
 	}
 	
@@ -386,6 +388,22 @@ public class GuiShipInventory extends GuiContainer {
         case 4:	{	//page 4
         	this.pageIndicator = 246;
     		this.pageIndicatorAI = 131;
+    		
+            //draw button
+            if (this.entity.getStateFlag(ID.F.CanPickItem))
+            {
+            	this.switchPick = this.entity.getStateFlag(ID.F.PickItem);
+            	if (this.switchPick)
+                {
+                	drawTexturedModalRect(guiLeft+174, guiTop+132, 0, 214, 11, 11);
+                }
+                else
+                {
+                	drawTexturedModalRect(guiLeft+174, guiTop+132, 11, 214, 11, 11);
+                }
+            }
+            
+            
     		break;
         	}
         case 5:	{	//page 5
@@ -1047,6 +1065,12 @@ public class GuiShipInventory extends GuiContainer {
 			this.fontRendererObj.drawString(strTimeKeep, 187, 194, 0);
 			}
 			break;
+		case 4:		//AI page 4
+			{
+			if(this.entity.getStateFlag(ID.F.CanPickItem)) this.fontRendererObj.drawString(strPick, 187, 134, 0);
+			
+			}
+			break;
 		}//end AI page switch
 	}
 	
@@ -1137,13 +1161,20 @@ public class GuiShipInventory extends GuiContainer {
         	this.showPage = 3;
         	break;
         case 3:	//AI operation 0 
-        	if(this.showPageAI == 1) {	//page 1: can melee button
+        	if (this.showPageAI == 1)
+        	{	//page 1: can melee button
         		this.switchMelee = this.entity.getStateFlag(ID.F.UseMelee);
         		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_Melee, getInverseInt(this.switchMelee)));
         	}
-        	else if(this.showPageAI == 3) {	//page 3: change target AI
+        	else if (this.showPageAI == 3)
+        	{	//page 3: change target AI
         		this.switchTarAI = this.entity.getStateFlag(ID.F.PassiveAI);
         		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_TarAI, getInverseInt(this.switchTarAI)));
+        	}
+        	else if (this.showPageAI == 4)
+        	{	//page 4: pick item AI
+        		this.switchPick = this.entity.getStateFlag(ID.F.PickItem);
+        		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_PickitemAI, getInverseInt(this.switchPick)));
         	}
         	break;
         case 4:	//AI operation 1 
@@ -1215,18 +1246,15 @@ public class GuiShipInventory extends GuiContainer {
         	this.showPageAI = 6;
         	break;
         case 15:	//inventory page 0
-        	this.showPageInv = 0;
         	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_InvPage, 0));
         	break;
         case 16:	//inventory page 1
         	if(this.entity.getInventoryPageSize() > 0) {
-        		this.showPageInv = 1;
         		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_InvPage, 1));
         	}
         	break;
         case 17:	//inventory page 2
         	if(this.entity.getInventoryPageSize() > 1) {
-        		this.showPageInv = 2;
         		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, ID.B.ShipInv_InvPage, 2));
         	}
         	break;

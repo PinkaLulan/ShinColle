@@ -799,6 +799,9 @@ public class EntityHelper {
 			case ID.B.ShipInv_InvPage:
 				entity.getExtProps().setInventoryPage(value);
 				break;
+			case ID.B.ShipInv_PickitemAI:
+				entity.setEntityFlagI(ID.F.PickItem, value);
+				break;
 			}
 		}
 		else {

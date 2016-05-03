@@ -11,6 +11,7 @@ import org.lwjgl.opengl.GL11;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
 
 /**
@@ -913,6 +914,22 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 			this.Staff.offsetY = -1.2F;
 			this.Staff.offsetZ = -1.0F;
 	    }
+	    
+	    //swing arm
+	  	float f6 = ent.getSwingTime(f2 - (int)f2);
+	  	if(f6 != 0F) {
+	  		float f7 = MathHelper.sin(f6 * f6 * (float)Math.PI);
+	        float f8 = MathHelper.sin(MathHelper.sqrt_float(f6) * (float)Math.PI);
+	        this.ArmRight01.rotateAngleX = -0.2F;
+	        this.ArmRight01.rotateAngleY = 0F;
+	        this.ArmRight01.rotateAngleZ = -0.1F;
+	        this.ArmRight01.rotateAngleX += -f8 * 80.0F * Values.N.RAD_MUL;
+	        this.ArmRight01.rotateAngleY += -f7 * 20.0F * Values.N.RAD_MUL + 0.2F;
+	        this.ArmRight01.rotateAngleZ += -f8 * 20.0F * Values.N.RAD_MUL;
+	        this.ArmRight02.rotateAngleX = 0F;
+	        this.ArmRight02.rotateAngleY = 0F;
+	        this.ArmRight02.rotateAngleZ = 0F;
+	  	}
 	}
     
     private void showEquip(BasicEntityShip ent) {

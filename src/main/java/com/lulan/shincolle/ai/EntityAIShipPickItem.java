@@ -14,6 +14,7 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 
 /** SHIP PICK ITEM AI
@@ -59,8 +60,9 @@ public class EntityAIShipPickItem extends EntityAIBase {
     	//ship類
     	if(this.hostShip != null) {
     		//騎乘中, 坐下, 沒開啟特殊能力: 禁止AI
-    		if(hostShip.isRiding() || hostShip.isSitting() || !hostShip.getStateFlag(ID.F.UseRingEffect) ||
-    		   hostShip.getStateMinor(ID.M.CraneState) > 0 || hostShip.getStateFlag(ID.F.NoFuel)) {
+    		if(hostShip.isRiding() || hostShip.isSitting() || !hostShip.getStateFlag(ID.F.PickItem) ||
+    		   hostShip.getStateMinor(ID.M.CraneState) > 0 || hostShip.getStateFlag(ID.F.NoFuel))
+    		{
     			return false;
     		}
     		
@@ -70,8 +72,9 @@ public class EntityAIShipPickItem extends EntityAIBase {
     	//mount類
     	else if(this.hostMount != null && this.hostShip != null) {
 			//ship坐下, 沒開啟特殊能力: 禁止AI
-			if(hostShip.isSitting() || !hostShip.getStateFlag(ID.F.UseRingEffect) ||
-			   hostShip.getStateMinor(ID.M.CraneState) > 0 || hostShip.getStateFlag(ID.F.NoFuel)) {
+			if(hostShip.isSitting() || !hostShip.getStateFlag(ID.F.PickItem) ||
+			   hostShip.getStateMinor(ID.M.CraneState) > 0 || hostShip.getStateFlag(ID.F.NoFuel))
+			{
     			return false;
     		}
 			
@@ -173,7 +176,7 @@ public class EntityAIShipPickItem extends EntityAIBase {
     	float speed = this.hostShip.getAttackSpeed();
     	if(speed < 1F) speed = 1F;
     	
-    	this.pickDelayMax = (int) (20F / speed + 10F);
+    	this.pickDelayMax = (int) (10F / speed + 10F);
     	this.pickRange = this.pickRangeBase + this.hostShip.getAttackRange() * 0.5F;
     }
     

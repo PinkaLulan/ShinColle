@@ -1,9 +1,5 @@
 package com.lulan.shincolle.entity;
 
-import java.util.concurrent.Callable;
-
-import net.minecraft.crash.CrashReport;
-import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -11,7 +7,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.ReportedException;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IExtendedEntityProperties;
 
@@ -115,6 +110,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		nbtExt_add4.setBoolean("ASM", this.entity.getStateFlag(ID.F.AntiSS));
 		nbtExt_add4.setBoolean("PassiveAI", this.entity.getStateFlag(ID.F.PassiveAI));
 		nbtExt_add4.setBoolean("TimeKeeper", this.entity.getStateFlag(ID.F.TimeKeeper));
+		nbtExt_add4.setBoolean("PickItem", this.entity.getStateFlag(ID.F.PickItem));
 		//save values to NBT
 		nbtExt.setTag("Timer", nbtExt_add5);
 		nbtExt_add5.setInteger("Crane", this.entity.getStateTimer(ID.T.CraneTime));
@@ -204,6 +200,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		entity.setStateFlag(ID.F.AntiSS, nbt_load.getBoolean("ASM"));
 		entity.setStateFlag(ID.F.PassiveAI, nbt_load.getBoolean("PassiveAI"));
 		entity.setStateFlag(ID.F.TimeKeeper, nbt_load.getBoolean("TimeKeeper"));
+		entity.setStateFlag(ID.F.PickItem, nbt_load.getBoolean("PickItem"));
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Timer");
 		entity.setStateTimer(ID.T.CraneTime, nbt_load.getInteger("Crane"));
 

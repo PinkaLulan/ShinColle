@@ -254,7 +254,7 @@ gui.shincolle:book.chap1.text11d0=<br><br><br><br><br><br><br><br><br>§d§nヲ�
 gui.shincolle:book.chap1.text11d1=§2個別模式§0：可以設定一艘為§3專注目標§0，權杖指令只對§3專注目標§0有效。<br><br>§4團體模式§0：可以設定0~6個§3專注目標§0，權杖指令只對§3專注目標§0有效。<br><br>§6陣型模式§0：船艦會以陣型移動並獲得能力加成，權杖指令對全隊有效。<br><br>拿著權杖時會出現彩色圈圈代表：<br>§2綠色§0：船艦在§2個別模式§0中。<br>§3青色§0：船艦為§3專注目標§0。<br>§4紅色§0：船艦在§4團體模式§0中。<br>§6黃色§0：船艦在§6陣型模式§0中。<br>§7白色§0：守衛目標。
 gui.shincolle:book.chap1.title12=ヲ級的指揮權杖
 gui.shincolle:book.chap1.text12d0=§9左鍵§0：<br>將該船艦加入隊伍 / 將非船艦目標加入到可攻擊目標清單 / 設為專注目標。<br><br>§9跑步+左鍵§0:<br>改變陣型。<br><br>§9蹲下+左鍵§0：<br>改變權杖控制模式或將目標船艦移除隊伍。<br><br>§9跑步+蹲下+左鍵§0：<br>清除整個隊伍。
-gui.shincolle:book.chap1.text12d1=§9右鍵§0：<br>移動並守衛該點 / 攻擊目標 / 使船艦坐下 / 撫摸船艦。<br><br>§9跑步+右鍵§0：<br>守衛指定目標。<br><br>§9蹲下+右鍵§0：<br>開啟船艦物品欄 / 開啟陣型GUI。<br><br>§9跑步:§0<br>切換撫摸模式。
+gui.shincolle:book.chap1.text12d1=§9右鍵§0：<br>移動並守衛該點 / 攻擊目標 / 使船艦坐下 / 撫摸船艦。<br><br>§9跑步+右鍵§0：<br>守衛指定目標。<br><br>§9蹲下+右鍵§0：<br>開啟船艦物品欄 / 開啟陣型GUI。<br><br>§9玩家列表:§0<br>切換撫摸模式。
 gui.shincolle:book.chap1.title13=ヲ級的指揮權杖
 gui.shincolle:book.chap1.text13d0=§9陣型§0:<br>船艦以相同速度以及特定相對位置進行群體移動，處於陣型中的船艦會有特定屬性加成。一個隊伍中至少需要至少5或6艘船才能使用陣型模式。<br><br>處於陣型模式中的船艦無法用個別/團體模式控制。<br><br>若同一船艦同時處於多個隊伍中，則只會套用到最後設定的隊伍的陣型。
 gui.shincolle:book.chap1.text13d1=§2單縱陣§0:<br>標準砲擊戰陣型，船艦會得到大量火力加成，但是防禦會大幅下降。<br><br>§3複縱陣§0:<br>巡邏陣型，具有些微的火力加成。<br><br>§4輪形陣§0:<br>針對航空戰的防禦陣型，船艦圍成圓圈以達到最佳的防空火力。<br><br>§6梯形陣§0:<br>船艦會以高速進行移動的衝刺陣型。<br><br>§7單橫陣§0:<br>針對反潛戰的防禦陣型。
@@ -337,7 +337,7 @@ gui.shincolle:book.chap3.title7=AI設定說明
 gui.shincolle:book.chap3.text7d0=開啟棲艦物品欄介面，右下即為AI設定選項，點選可開關各種設定。<br><br><br>§91.使用衝撞攻擊§0：不消耗彈藥的近距離攻擊。<br><br>§92.使用輕型彈藥§0：消耗§c怨念彈§0的攻擊。<br><br>§93.使用重型彈藥§0：消耗§c重型怨念彈§0的攻擊。<br><br>§94.輕型艦載機§0：消耗§c怨念彈§0的艦載機攻擊。<br><br>§95.重型艦載機§0：消耗§c重型怨念彈§0的艦載機攻擊。
 gui.shincolle:book.chap3.text7d1=§96.開啟特殊能力§0：開關該艦種帶有的§c特殊能力§0以及§d結婚能力§0。<br><br>§97.跟隨最短距離§0：跟隨模式下，低於此距離時停止跟隨。<br><br>§98.跟隨最長距離§0：跟隨模式下，超過此距離時開始跟隨。<br><br>§99.逃跑血量(%%)§0：低於此血量時強制轉為跟隨模式。<br><br>§910.被動攻擊？§0：只有被攻擊時才會還手攻擊。
 gui.shincolle:book.chap3.title8=
-gui.shincolle:book.chap3.text8d0=§911.視線內才追擊？§0：只有沒被方塊阻擋的目標才會攻擊。<br><br>§912.PVP模式§0：若在PVP模式下，自動攻擊時會尋找§cPVP類§0目標。<br><br>§913.防空模式§0：自動攻擊時優先攻擊§c飛行目標§0。<br><br>§914.反潛模式§0：自動攻擊時優先攻擊§c潛水艇§0。
+gui.shincolle:book.chap3.text8d0=§911.視線內才追擊？§0：只有沒被方塊阻擋的目標才會攻擊。<br><br>§912.PVP模式§0：若在PVP模式下，自動攻擊時會尋找§cPVP類§0目標。<br><br>§913.防空模式§0：自動攻擊時優先攻擊§c飛行目標§0。<br><br>§914.反潛模式§0：自動攻擊時優先攻擊§c潛水艇§0。<br><br>§915.拾取物品§0：部份船艦在攻擊外時會拾取地上物品。
 gui.shincolle:book.chap3.text8d1=§9優先度§0： §d防空§0 > §3反潛§0 > §cPVP§0 > 其他目標
 gui.shincolle:book.chap3.title9=PVP模式
 gui.shincolle:book.chap3.text9d0=§91.§0在§c深海提督的辦公桌§0中§3建立艦隊§0後即進入PVP模式。<br><br>§92.§0PVP初始狀態為中立。<br><br>§93.§0在深海提督的辦公桌中可以對其他艦隊§c宣戰§0，§3同盟§0或恢復§7中立§0。<br><br>§94.§0若船艦AI勾選了§cPVP模式§0，則船艦會自動攻擊其他敵對隊伍。<br><br>§95.§0若設定檔§cFriendlyFire§0設為§3false§0，則範圍攻擊不會傷害到同盟隊伍。
@@ -358,7 +358,7 @@ gui.shincolle:book.chap3.title14=餵食
 gui.shincolle:book.chap3.text14d0=船艦一般不需要餵食，不過主人可以透過餵食來手動補充怨念、彈藥跟提高情緒。<br><br>對船艦§9右鍵使用§0食物或者怨念、彈藥、深海金屬、多金屬結核會餵食該船艦，並提昇其怨念、彈藥等。<br><br>在一段時間內能§9餵食的次數有限制§0，餵飽後需隔一段時間才能繼續餵食。
 gui.shincolle:book.chap3.text14d1=§9怨念、食物道具：§0<br>提高情緒、怨念值。<br><br>§9彈藥：§0<br>提高情緒，彈藥值。回復彈藥量會比船艦自動使用多一些。<br><br>§9深海金屬、多金屬結核：§0<br>恢復艦載機數量。
 gui.shincolle:book.chap3.title15=撫摸
-gui.shincolle:book.chap3.text15d0=主人可以藉由撫摸來獎勵或者單純騷擾深海棲艦，正確專業的撫摸可以有效§9提高棲艦的情緒狀態§0，相反的如果撫摸錯誤的話可能會吃上幾發魚雷。<br><br>§9撫摸方式§0：<br>手持§dヲ級指揮權杖§0並按下§9CTRL§0就會轉為撫摸模式，對棲艦按住§9右鍵§0就會撫摸該棲艦。
+gui.shincolle:book.chap3.text15d0=主人可以藉由撫摸來獎勵或者單純騷擾深海棲艦，正確專業的撫摸可以有效§9提高棲艦的情緒狀態§0，相反的如果撫摸錯誤的話可能會吃上幾發魚雷。<br><br>§9撫摸方式§0：<br>手持§dヲ級指揮權杖§0並按下§9玩家列表(預設TAB)§0就會轉為撫摸模式，對棲艦按住§9右鍵§0就會撫摸該棲艦。
 gui.shincolle:book.chap3.text15d1=依照十字游標所指到的棲艦§9高度位置§0跟§9前後左右角度§0，會撫摸到的部位分為：頭頂、頭、臉、脖子、歐派、肚子、下腹部、腳、手、屁股、背後。<br><br>不同棲艦個體會有不同的敏感部位，請撫摸時小心注意其反應。
  
 # GUI: Book Text Chap 4
@@ -368,16 +368,16 @@ gui.shincolle:book.chap4.text0d0=只要開啟過棲艦的物品欄GUI，該艦�
 gui.shincolle:book.chap4.text0d1=§9建造加成：§0<br>建造時使用該材料時會讓建造機率提高。數字代表加成計算前，出現機率最高的總材料量。<br>§4範例：  §d怨念 (4000)§0 =<br>總材料量需求4000，若怨念使用1000個，則總材料量需求降為3000。<br><br>§9特殊能力：§0<br>結婚後會出現的能力，可以在AI選項開關該能力。<br><br>§9其他能力：§0<br>其他自帶的能力，通常是被動的屬性加成。
 gui.shincolle:book.chap4.title1=
 gui.shincolle:book.chap4.text1d0=
-gui.shincolle:book.chap4.text1d1=§9名稱：§0 イ級<br><br>§9艦種：§0 驅逐艦<br><br>§9建造所：§0 深海熱泉<br><br>§9建造加成：§0 怨念 (80)<br><br>§9特殊能力：§0 主人移動速度加成<br><br>§9其他能力：§0 無<br><br>深海的吉祥物代表，廣受深海太太們的喜愛。
+gui.shincolle:book.chap4.text1d1=§9名稱：§0 イ級<br><br>§9艦種：§0 驅逐艦<br><br>§9建造所：§0 深海熱泉<br><br>§9建造加成：§0 怨念 (80)<br><br>§9特殊能力：§0 主人移動速度加成<br><br>§9其他能力：§0 拾取道具<br><br>深海的吉祥物代表，廣受深海太太們的喜愛。
 gui.shincolle:book.chap4.title2=
 gui.shincolle:book.chap4.text2d0=
-gui.shincolle:book.chap4.text2d1=§9名稱：§0 ロ級<br><br>§9艦種：§0 驅逐艦<br><br>§9建造所：§0 深海熱泉<br><br>§9建造加成：§0 怨念 (90)<br><br>§9特殊能力：§0 主人挖掘速度加成<br><br>§9其他能力：§0 無<br><br>充滿活力的深海吉祥物，廣受深海太太們的喜愛。
+gui.shincolle:book.chap4.text2d1=§9名稱：§0 ロ級<br><br>§9艦種：§0 驅逐艦<br><br>§9建造所：§0 深海熱泉<br><br>§9建造加成：§0 怨念 (90)<br><br>§9特殊能力：§0 主人挖掘速度加成<br><br>§9其他能力：§0 拾取道具<br><br>充滿活力的深海吉祥物，廣受深海太太們的喜愛。
 gui.shincolle:book.chap4.title3=
 gui.shincolle:book.chap4.text3d0=
-gui.shincolle:book.chap4.text3d1=§9名稱：§0 ハ級<br><br>§9艦種：§0 驅逐艦<br><br>§9建造所：§0 深海熱泉<br><br>§9建造加成：§0 怨念 (100)<br><br>§9特殊能力：§0 主人跳躍力加成<br><br>§9其他能力：§0 無<br><br>常保笑容的深海吉祥物。
+gui.shincolle:book.chap4.text3d1=§9名稱：§0 ハ級<br><br>§9艦種：§0 驅逐艦<br><br>§9建造所：§0 深海熱泉<br><br>§9建造加成：§0 怨念 (100)<br><br>§9特殊能力：§0 主人跳躍力加成<br><br>§9其他能力：§0 拾取道具<br><br>常保笑容的深海吉祥物。
 gui.shincolle:book.chap4.title4=
 gui.shincolle:book.chap4.text4d0=
-gui.shincolle:book.chap4.text4d1=§9名稱：§0 ニ級<br><br>§9艦種：§0 驅逐艦<br><br>§9建造所：§0 深海熱泉<br><br>§9建造加成：§0 怨念 (110)<br><br>§9特殊能力：§0 主人攻擊力加成<br><br>§9其他能力：§0 無<br><br>持續倒立移動，充滿謎團的深海吉祥物。
+gui.shincolle:book.chap4.text4d1=§9名稱：§0 ニ級<br><br>§9艦種：§0 驅逐艦<br><br>§9建造所：§0 深海熱泉<br><br>§9建造加成：§0 怨念 (110)<br><br>§9特殊能力：§0 主人攻擊力加成<br><br>§9其他能力：§0 拾取道具<br><br>持續倒立移動，充滿謎團的深海吉祥物。
 gui.shincolle:book.chap4.title5=
 gui.shincolle:book.chap4.text5d0=
 gui.shincolle:book.chap4.text5d1=§9名稱：§0 リ級<br><br>§9艦種：§0 重巡洋艦<br><br>§9建造所：§0 深海熱泉<br><br>§9建造加成：§0 怨念彈 (200)<br><br>§9特殊能力：§0 夜晚時跳躍/移動力加成<br><br>§9其他能力：§0 無<br><br>深海的夜戰笨蛋，是ヲ級大人的貼身護衛。據說身上衣服是海帶做的。
@@ -410,7 +410,7 @@ gui.shincolle:book.chap4.text14d0=
 gui.shincolle:book.chap4.text14d1=§9名稱：§0 空母水鬼<br><br>§9艦種：§0 姬級 航空母艦<br><br>§9建造所：§0 超深海熱漩<br><br>§9建造加成：§0 多金屬 (5000)<br><br>§9特殊能力：§0 無<br><br>§9其他能力：§0 無<br><br>懶散的深海太太，實力強大不過毅力不足，具有符合水鬼級的胸部裝甲。加裝了最新的深海黑科技浮游砲，可造成100%%砲擊傷害。<br>總之深海的科技力世界一ィィィ ＜(゜∀。)
 gui.shincolle:book.chap4.title15=
 gui.shincolle:book.chap4.text15d0=
-gui.shincolle:book.chap4.text15d1=§9名稱：§0 ワ級<br><br>§9艦種：§0 運輸艦<br><br>§9建造所：§0 深海熱泉<br><br>§9建造加成：§0 深海金屬 (120)<br><br>§9特殊能力：§0 拾取道具<br><br>§9其他能力：§0 額外物品欄, 補給附近船艦<br><br>載重量非常大的巨乳女僕，負責幫深海提督打掃垃圾。<br><br>已內建最大頁數的物品欄，不需要額外裝備運輸罐。<br>運輸艦只有近戰攻擊能力，並且會消耗物資來補給附近船艦。
+gui.shincolle:book.chap4.text15d1=§9名稱：§0 ワ級<br><br>§9艦種：§0 運輸艦<br><br>§9建造所：§0 深海熱泉<br><br>§9建造加成：§0 深海金屬 (120)<br><br>§9特殊能力：§0 無<br><br>§9其他能力：§0 拾取道具, 額外物品欄, 補給附近船艦<br><br>載重量非常大的巨乳女僕，負責幫深海提督打掃垃圾。<br><br>已內建最大頁數的物品欄，不需要額外裝備運輸罐。<br>運輸艦只有近戰攻擊能力，並且會消耗物資來補給附近船艦。
 
 # GUI: Book Text Chap 5
 gui.shincolle:book.chap5.title=敵艦列表
@@ -419,7 +419,7 @@ gui.shincolle:book.chap5.text0d0=艦娘，是一種毫無理由就侵略過來�
 gui.shincolle:book.chap5.text0d1=打敗艦娘後有機率得到其生怪蛋，同樣開啟該艦的物品欄GUI後就可以登錄到圖鑑中。
 gui.shincolle:book.chap5.title1=
 gui.shincolle:book.chap5.text1d0=
-gui.shincolle:book.chap5.text1d1=§9名稱：§0 島風<br><br>§9艦種：§0 島風級 驅逐艦<br><br>§9特殊能力：§0 主人移動速度加成<br><br>§9其他能力：§0 無<br><br>移動速度非常快的艦娘，還會召喚大量連裝砲醬攻擊，讓人感到非常煩躁的對手。<br>蹲下+使用蛋糕可以切換召喚連裝砲類型。<br><br>重型攻擊：五連裝氧氣魚雷，每發各造成30%%雷裝傷害。
+gui.shincolle:book.chap5.text1d1=§9名稱：§0 島風<br><br>§9艦種：§0 島風級 驅逐艦<br><br>§9特殊能力：§0 主人移動速度加成<br><br>§9其他能力：§0 拾取道具<br><br>移動速度非常快的艦娘，還會召喚大量連裝砲醬攻擊，讓人感到非常煩躁的對手。<br>蹲下+使用蛋糕可以切換召喚連裝砲類型。<br><br>重型攻擊：五連裝氧氣魚雷，每發各造成30%%雷裝傷害。
 gui.shincolle:book.chap5.title2=
 gui.shincolle:book.chap5.text2d0=
 gui.shincolle:book.chap5.text2d1=§9名稱：§0 長門<br><br>§9艦種：§0 長門級 戰艦<br><br>§9特殊能力：§0 無<br><br>§9其他能力：§0 無<br><br>是目前對艦武術：九一式徹甲拳的最強傳人，可以輕鬆地把一整群深海棲艦打回海底，建議使用大量召喚物分散傷害來進行攻略。<br><br>重型攻擊：九一式徹甲拳，需要四輪攻擊時間，對主目標造成400%%雷裝傷害以及200%%雷裝傷害的範圍傷害。
@@ -440,16 +440,16 @@ gui.shincolle:book.chap5.text7d0=
 gui.shincolle:book.chap5.text7d1=§9名稱：§0 赤城<br><br>§9艦種：§0 赤城級 航空母艦<br><br>§9特殊能力：§0 無<br><br>§9其他能力：§0 無<br><br>不知道為什麼偶爾會冒出貓耳貓尾，出現時據說會把附近的深海棲艦全部吃掉的恐怖空母。
 gui.shincolle:book.chap5.title8=
 gui.shincolle:book.chap5.text8d0=
-gui.shincolle:book.chap5.text8d1=§9名稱：§0 曉<br><br>§9艦種：§0 曉級 驅逐艦<br><br>§9特殊能力：§0 主人跳躍力加成<br><br>§9其他能力：§0 無<br><br>經常可以看到這位LADY在野外拖著運輸桶，似乎是搶奪資源的好對象。
+gui.shincolle:book.chap5.text8d1=§9名稱：§0 曉<br><br>§9艦種：§0 曉級 驅逐艦<br><br>§9特殊能力：§0 主人跳躍力加成<br><br>§9其他能力：§0 拾取道具<br><br>經常可以看到這位LADY在野外拖著運輸桶，似乎是搶奪資源的好對象。
 gui.shincolle:book.chap5.title9=
 gui.shincolle:book.chap5.text9d0=
-gui.shincolle:book.chap5.text9d1=§9名稱：§0 響<br><br>§9艦種：§0 曉級 驅逐艦<br><br>§9特殊能力：§0 主人挖掘速度加成<br><br>§9其他能力：§0 迴避+30%%<br><br>хорошо~
+gui.shincolle:book.chap5.text9d1=§9名稱：§0 響<br><br>§9艦種：§0 曉級 驅逐艦<br><br>§9特殊能力：§0 主人挖掘速度加成<br><br>§9其他能力：§0 拾取道具, 迴避+30%%<br><br>хорошо~
 gui.shincolle:book.chap5.title10=
 gui.shincolle:book.chap5.text10d0=
-gui.shincolle:book.chap5.text10d1=§9名稱：§0 雷<br><br>§9艦種：§0 曉級 驅逐艦<br><br>§9特殊能力：§0 主人攻擊力加成<br><br>§9其他能力：§0 無<br><br>每天都閃亮亮發著光的遠征大隊長，要小心她手上拿著的非常危險的兇器。
+gui.shincolle:book.chap5.text10d1=§9名稱：§0 雷<br><br>§9艦種：§0 曉級 驅逐艦<br><br>§9特殊能力：§0 主人攻擊力加成<br><br>§9其他能力：§0 拾取道具<br><br>每天都閃亮亮發著光的遠征大隊長，要小心她手上拿著的非常危險的兇器。
 gui.shincolle:book.chap5.title11=
 gui.shincolle:book.chap5.text11d0=
-gui.shincolle:book.chap5.text11d1=§9名稱：§0 電<br><br>§9艦種：§0 曉級 驅逐艦<br><br>§9特殊能力：§0 主人移動速度加成<br><br>§9其他能力：§0 無<br><br>因為電是天使，所以深海棲艦一靠近就被なのDEATH淨化也是理所當然的事情。
+gui.shincolle:book.chap5.text11d1=§9名稱：§0 電<br><br>§9艦種：§0 曉級 驅逐艦<br><br>§9特殊能力：§0 主人移動速度加成<br><br>§9其他能力：§0 拾取道具<br><br>因為電是天使，所以深海棲艦一靠近就被なのDEATH淨化也是理所當然的事情。
 
 # GUI: Book Text Chap 6
 gui.shincolle:book.chap6.title=
@@ -560,6 +560,7 @@ gui.shincolle:ai.pvp=PVP模式
 gui.shincolle:ai.aa=防空模式
 gui.shincolle:ai.asm=反潛模式
 gui.shincolle:ai.timekeeper=報時語音
+gui.shincolle:ai.pickitem=拾取物品
 
 # GUI: Shipyard
 gui.shincolle:nomaterial=資材不足

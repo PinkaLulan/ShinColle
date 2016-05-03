@@ -1056,6 +1056,19 @@ public class ModelCarrierWDemon extends ModelBase implements IModelEmotion {
 	    	}
 	    }
 	    
+	    //swing arm
+	  	float f6 = ent.getSwingTime(f2 - (int)f2);
+	  	if(f6 != 0F) {
+	  		float f7 = MathHelper.sin(f6 * f6 * (float)Math.PI);
+	        float f8 = MathHelper.sin(MathHelper.sqrt_float(f6) * (float)Math.PI);
+	        this.ArmRight01.rotateAngleX = -0.4F;
+	        this.ArmRight01.rotateAngleY = 0F;
+	        this.ArmRight01.rotateAngleZ = -0.2F;
+	        this.ArmRight01.rotateAngleX += -f8 * 80.0F * Values.N.RAD_MUL;
+	        this.ArmRight01.rotateAngleY += -f7 * 20.0F * Values.N.RAD_MUL + 0.2F;
+	        this.ArmRight01.rotateAngleZ += -f8 * 20.0F * Values.N.RAD_MUL;
+	  	}
+	    
 	    //鬢毛調整
 	    headZ = this.Head.rotateAngleZ * -0.5F;
 	    this.Hair01.rotateAngleZ = headZ;

@@ -15,7 +15,7 @@ import net.minecraft.util.IIcon;
  *     3: heavy ammo container
  *
  */
-public class Ammo extends BasicItem implements IShipResourceItem {
+public class Ammo extends BasicItem implements IShipResourceItem, IShipFoodItem {
 	byte types = 4;
 	IIcon[] icons = new IIcon[4];
 	
@@ -61,6 +61,21 @@ public class Ammo extends BasicItem implements IShipResourceItem {
 		default:
 			return new int[] {0, 0, 0, 0};
 		}
+	}
+	
+	@Override
+	public float getFoodValue(int meta) {
+		return 5F;
+	}
+
+	@Override
+	public float getSaturationValue(int meta) {
+		return 0.3F;
+	}
+
+	@Override
+	public int getSpecialEffect(int meta) {
+		return 3;
 	}
 	
 	

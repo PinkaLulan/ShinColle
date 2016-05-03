@@ -11,6 +11,7 @@ import org.lwjgl.opengl.GL11;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
 
 /**
@@ -333,6 +334,7 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion {
 	  	this.ArmLeft01.rotateAngleX = -2.8F;
 	    this.ArmLeft01.rotateAngleZ = 0.8727F;
 	    this.ArmRight01.rotateAngleX = -2.8F;
+	    this.ArmRight01.rotateAngleY = 0F;
 		this.ArmRight01.rotateAngleZ = -0.35F;
 		//leg
 		this.LegLeft.rotateAngleX = -0.087F;
@@ -508,6 +510,19 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion {
 	    	this.ArmRight01.rotateAngleZ = 0.17F;
 	    	this.EquipLeft.rotateAngleX = 0.2618F;
 	    }
+	    
+	    //swing arm
+	  	float f6 = ent.getSwingTime(f2 - (int)f2);
+	  	if(f6 != 0F) {
+	  		float f7 = MathHelper.sin(f6 * f6 * (float)Math.PI);
+	        float f8 = MathHelper.sin(MathHelper.sqrt_float(f6) * (float)Math.PI);
+	        this.ArmRight01.rotateAngleX = 0.35F;
+	        this.ArmRight01.rotateAngleY = 0F;
+	        this.ArmRight01.rotateAngleZ = -0.26F;
+	        this.ArmRight01.rotateAngleX += -f8 * 120.0F * Values.N.RAD_MUL;
+	        this.ArmRight01.rotateAngleY += -f7 * 20.0F * Values.N.RAD_MUL + 0.5F;
+	        this.ArmRight01.rotateAngleZ += -f8 * 20.0F * Values.N.RAD_MUL;
+	  	}
 	    
 	    //leg motion
 	    this.LegLeft.rotateAngleX = addk1;

@@ -243,6 +243,8 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateFlag(ID.F.AntiSS, buf.readBoolean());
 					entity.setStateFlag(ID.F.PassiveAI, buf.readBoolean());
 					entity.setStateFlag(ID.F.TimeKeeper, buf.readBoolean());
+					entity.setStateFlag(ID.F.PickItem, buf.readBoolean());
+					entity.setStateFlag(ID.F.CanPickItem, buf.readBoolean());
 					
 					entity.setEffectEquip(ID.EF_CRI, buf.readFloat());
 					entity.setEffectEquip(ID.EF_DHIT, buf.readFloat());
@@ -298,6 +300,8 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateFlag(ID.F.AntiSS, buf.readBoolean());
 					entity.setStateFlag(ID.F.PassiveAI, buf.readBoolean());
 					entity.setStateFlag(ID.F.TimeKeeper, buf.readBoolean());
+					entity.setStateFlag(ID.F.PickItem, buf.readBoolean());
+					entity.setStateFlag(ID.F.CanPickItem, buf.readBoolean());
 				}
 				break;
 			case PID.SyncShip_Formation: //ship formation data only
@@ -620,6 +624,8 @@ public class S2CEntitySync implements IMessage {
 				buf.writeBoolean(this.entity.getStateFlag(ID.F.AntiSS));
 				buf.writeBoolean(this.entity.getStateFlag(ID.F.PassiveAI));
 				buf.writeBoolean(this.entity.getStateFlag(ID.F.TimeKeeper));
+				buf.writeBoolean(this.entity.getStateFlag(ID.F.PickItem));
+				buf.writeBoolean(this.entity.getStateFlag(ID.F.CanPickItem));
 				
 				buf.writeFloat(this.entity.getEffectEquip(ID.EF_CRI));
 				buf.writeFloat(this.entity.getEffectEquip(ID.EF_DHIT));
@@ -679,6 +685,8 @@ public class S2CEntitySync implements IMessage {
 				buf.writeBoolean(this.entity.getStateFlag(ID.F.AntiSS));
 				buf.writeBoolean(this.entity.getStateFlag(ID.F.PassiveAI));
 				buf.writeBoolean(this.entity.getStateFlag(ID.F.TimeKeeper));
+				buf.writeBoolean(this.entity.getStateFlag(ID.F.PickItem));
+				buf.writeBoolean(this.entity.getStateFlag(ID.F.CanPickItem));
 			}
 			break;
 		case PID.SyncShip_Minor:	//sync minor only

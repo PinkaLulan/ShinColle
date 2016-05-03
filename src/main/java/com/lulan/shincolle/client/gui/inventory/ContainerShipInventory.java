@@ -1,17 +1,18 @@
 package com.lulan.shincolle.client.gui.inventory;
 
-import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.item.BasicEquip;
-import com.lulan.shincolle.reference.ID;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ICrafting;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+
+import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.item.BasicEquip;
+import com.lulan.shincolle.reference.ID;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 /**CUSTOM SHIP INVENTORY
  * slot: S0(136,18) S1(136,36) S2(136,54) S3(136,72) S4(136,90) S5(6,108) S6~S23(8,18) 6x3
@@ -27,7 +28,7 @@ public class ContainerShipInventory extends Container {
 	            GuiNumAirLight, GuiNumAirHeavy, GuiIsMarried, GuiMorale, GuiInvSize,
 	            ButtonMelee, ButtonAmmoLight, ButtonAmmoHeavy, ButtonAirLight, ButtoAirHeavy,
 	            FollowMin, FollowMax, FleeHP, TarAI, AuraEffect, OnSightAI, PVPAI, AAAI, ASMAI,
-	            TIMEKEEPAI, ShowPage;
+	            TIMEKEEPAI, ShowPage, PICKAI;
 	
 	public ContainerShipInventory(InventoryPlayer invPlayer, BasicEntityShip entity1) {
 		int i, j;
@@ -172,6 +173,7 @@ public class ContainerShipInventory extends Container {
 		crafting.sendProgressBarUpdate(this, 22, this.entity.getStateFlagI(ID.F.TimeKeeper));
 		crafting.sendProgressBarUpdate(this, 23, this.entity.getStateMinor(ID.M.Morale));
 		crafting.sendProgressBarUpdate(this, 24, this.entity.getStateMinor(ID.M.InvSize));
+		crafting.sendProgressBarUpdate(this, 25, this.entity.getStateFlagI(ID.F.PickItem));
 	}
 	
 	//偵測數值是否改變, 有改變時發送更新(此為server端偵測)
@@ -311,6 +313,11 @@ public class ContainerShipInventory extends Container {
                 icrafting.sendProgressBarUpdate(this, 24, getValue);
                 this.GuiInvSize = getValue;
             }
+            getValue = this.entity.getStateFlagI(ID.F.PickItem);
+            if(this.PICKAI != getValue) {
+                icrafting.sendProgressBarUpdate(this, 25, getValue);
+                this.PICKAI = getValue;
+            }
         }
     }
 	
@@ -387,6 +394,9 @@ public class ContainerShipInventory extends Container {
 			break;
 		case 24:
 			this.entity.setStateMinor(ID.M.InvSize, updatedValue);
+			break;
+		case 25:
+			this.entity.setEntityFlagI(ID.F.PickItem, updatedValue);
 			break;
 		}
     }

@@ -12,7 +12,7 @@ import net.minecraft.util.IIcon;
  * 0: abyssium ingot
  * 1: polymetallic nodules
  */
-public class AbyssMetal extends BasicItem implements IShipResourceItem {	
+public class AbyssMetal extends BasicItem implements IShipResourceItem, IShipFoodItem {	
 	
 	byte types = 2;
 	IIcon[] icons = new IIcon[2];
@@ -51,6 +51,26 @@ public class AbyssMetal extends BasicItem implements IShipResourceItem {
 		else {
 			return new int[] {0, 0, 0, 1};
 		}
+	}
+
+	@Override
+	public float getFoodValue(int meta) {
+		return 30F;
+	}
+
+	@Override
+	public float getSaturationValue(int meta) {
+		return 0.8F;
+	}
+
+	@Override
+	public int getSpecialEffect(int meta) {
+		if (meta == 0)
+		{
+			return 2;
+		}
+		
+		return 4;
 	}
 
 	

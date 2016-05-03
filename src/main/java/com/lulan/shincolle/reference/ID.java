@@ -21,6 +21,7 @@ public class ID {
 		public static final byte ShipInv_ASMAI = 13;
 		public static final byte ShipInv_TIMEKEEPAI = 14;
 		public static final byte ShipInv_InvPage = 15;
+		public static final byte ShipInv_PickitemAI = 16;
 		
 		public static final byte Shipyard_Type = 0;
 		public static final byte Shipyard_InvMode = 1;
@@ -257,6 +258,8 @@ public class ID {
 		public static final byte AntiSS = 20;
 		public static final byte PassiveAI = 21;
 		public static final byte TimeKeeper = 22;
+		public static final byte PickItem = 23;
+		public static final byte CanPickItem = 24;
 	}
 	
 	/** Update Flag */
