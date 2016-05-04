@@ -12,6 +12,7 @@ import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipEmotion;
+import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
@@ -423,6 +424,11 @@ public class ModelHeavyCruiserRi extends ModelBase implements IModelEmotion {
   		float angleZ = MathHelper.cos(f2*0.08F);
   		float addk1 = 0;
   		float addk2 = 0;
+  		
+  		//水上漂浮
+  		if(((IShipFloating)ent).getShipDepth() > 0) {
+    		GL11.glTranslatef(0F, angleZ * 0.1F - 0.025F, 0F);
+    	}
   		
   		//leg move parm
   		addk1 = MathHelper.cos(f * 0.6662F) * 1.4F * f1 + 0.15F;

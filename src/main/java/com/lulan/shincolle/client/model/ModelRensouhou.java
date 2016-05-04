@@ -10,6 +10,7 @@ import net.minecraft.util.MathHelper;
 import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.entity.IShipEmotion;
+import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.utility.EmotionHelper;
 
 /**

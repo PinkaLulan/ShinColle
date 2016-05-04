@@ -53,6 +53,7 @@ import com.lulan.shincolle.entity.renderentity.EntityRenderLargeShipyard;
 import com.lulan.shincolle.entity.renderentity.EntityRenderVortex;
 import com.lulan.shincolle.entity.submarine.EntitySubmRo500;
 import com.lulan.shincolle.entity.submarine.EntitySubmRo500Mob;
+import com.lulan.shincolle.entity.submarine.EntitySubmSo;
 import com.lulan.shincolle.entity.submarine.EntitySubmU511;
 import com.lulan.shincolle.entity.submarine.EntitySubmU511Mob;
 import com.lulan.shincolle.entity.transport.EntityTransportWa;
@@ -123,6 +124,9 @@ public class ModEntity {
 		createEntity(EntityRensouhou.class, "EntityRensouhou", modEntityID++);
 		createEntity(EntityRensouhouBoss.class, "EntityRensouhouBoss", modEntityID++);
 		createEntity(EntityRensouhouS.class, "EntityRensouhouS", modEntityID++);
+//		createEntity(EntitySubmKa.class, "EntitySubmKa", modEntityID++);
+//		createEntity(EntitySubmYo.class, "EntitySubmYo", modEntityID++);
+		createEntity(EntitySubmSo.class, "EntitySubmSo", modEntityID++);
 		createEntity(EntitySubmRo500.class, "EntitySubmRo500", modEntityID++);
 		createEntity(EntitySubmRo500Mob.class, "EntitySubmRo500Mob", modEntityID++);
 		createEntity(EntitySubmU511.class, "EntitySubmU511", modEntityID++);

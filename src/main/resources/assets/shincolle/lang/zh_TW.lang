@@ -121,6 +121,9 @@ item.shincolle:shipegg14.name=空母ヲ級
 item.shincolle:shipegg16.name=戰艦タ級
 item.shincolle:shipegg17.name=航空戰艦レ級
 item.shincolle:shipegg18.name=輸送ワ級
+item.shincolle:shipegg19.name=潛水カ級
+item.shincolle:shipegg20.name=潛水ヨ級
+item.shincolle:shipegg21.name=潛水ソ級
 item.shincolle:shipegg23.name=飛行場姬
 item.shincolle:shipegg28.name=戰艦棲姬
 item.shincolle:shipegg30.name=港灣棲姬
@@ -197,6 +200,9 @@ entity.shincolle.EntityNorthernHime.name=北方棲姬
 entity.shincolle.EntityRensouhou.name=連裝砲
 entity.shincolle.EntityRensouhouBoss.name=連裝砲
 entity.shincolle.EntityRensouhouS.name=深海連裝砲
+entity.shincolle.EntitySubmKa.name=潛水カ級
+entity.shincolle.EntitySubmYo.name=潛水ヨ級
+entity.shincolle.EntitySubmSo.name=潛水ソ級
 entity.shincolle.EntitySubmRo500.name=潛水艇 呂500
 entity.shincolle.EntitySubmRo500Mob.name=潛水艇 呂500
 entity.shincolle.EntitySubmU511.name=潛水艇 U-511
@@ -411,6 +417,16 @@ gui.shincolle:book.chap4.text14d1=§9名稱：§0 空母水鬼<br><br>§9艦種�
 gui.shincolle:book.chap4.title15=
 gui.shincolle:book.chap4.text15d0=
 gui.shincolle:book.chap4.text15d1=§9名稱：§0 ワ級<br><br>§9艦種：§0 運輸艦<br><br>§9建造所：§0 深海熱泉<br><br>§9建造加成：§0 深海金屬 (120)<br><br>§9特殊能力：§0 無<br><br>§9其他能力：§0 拾取道具, 額外物品欄, 補給附近船艦<br><br>載重量非常大的巨乳女僕，負責幫深海提督打掃垃圾。<br><br>已內建最大頁數的物品欄，不需要額外裝備運輸罐。<br>運輸艦只有近戰攻擊能力，並且會消耗物資來補給附近船艦。
+gui.shincolle:book.chap4.title16=
+gui.shincolle:book.chap4.text16d0=
+gui.shincolle:book.chap4.text16d1=§9名稱：§0 カ級<br><br>§9艦種：§0 潛水艦<br><br>§9建造所：§0 深海熱泉<br><br>§9建造加成：§0 怨念彈 (140)<br><br>§9特殊能力：§0 無<br><br>§9其他能力：§0 潛艇基礎迴避20%%<br><br>
+gui.shincolle:book.chap4.title17=
+gui.shincolle:book.chap4.text17d0=
+gui.shincolle:book.chap4.text17d1=§9名稱：§0 ヨ級<br><br>§9艦種：§0 潛水艦<br><br>§9建造所：§0 深海熱泉<br><br>§9建造加成：§0 怨念彈 (160)<br><br>§9特殊能力：§0 無<br><br>§9其他能力：§0 潛艇基礎迴避20%%<br><br>
+gui.shincolle:book.chap4.title18=
+gui.shincolle:book.chap4.text18d0=
+gui.shincolle:book.chap4.text18d1=§9名稱：§0 ソ級<br><br>§9艦種：§0 潛水艦<br><br>§9建造所：§0 深海熱泉<br><br>§9建造加成：§0 怨念彈 (180)<br><br>§9特殊能力：§0 無<br><br>§9其他能力：§0 潛艇基礎迴避25%%<br><br>
+
 
 # GUI: Book Text Chap 5
 gui.shincolle:book.chap5.title=敵艦列表

@@ -329,8 +329,9 @@ public class ModelMountAfH extends ModelBase {
   		float addk1 = 0F;
   		float addk2 = 0F;
   		
+  		//水上漂浮
   		if(((IShipFloating)ent).getShipDepth() > 0) {
-    		GL11.glTranslatef(0F, 0.5F, 0F);
+    		GL11.glTranslatef(0F, 0.5F + angleX * 0.025F, 0F);
     	}
     	else {
     		GL11.glTranslatef(0F, 0.8F, 0F);

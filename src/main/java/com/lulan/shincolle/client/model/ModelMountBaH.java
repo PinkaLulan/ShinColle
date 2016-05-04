@@ -11,6 +11,7 @@ import net.minecraft.util.MathHelper;
 import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.entity.IShipEmotion;
+import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.reference.ID;
 
 /**
@@ -451,6 +452,11 @@ public class ModelMountBaH extends ModelBase {
   		float angleAdd2 = MathHelper.cos(f * 0.7F + 3.1415927F) * f1 * 0.7F;
   		float addk1 = 0F;
   		float addk2 = 0F;
+  		
+  		//水上漂浮
+  		if(((IShipFloating)ent).getShipDepth() > 0) {
+    		GL11.glTranslatef(0F, angleX * 0.025F - 0.025F, 0F);
+    	}
   		
     	GL11.glTranslatef(0F, 0.5F, 0F);
   		

@@ -8,6 +8,7 @@ import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.entity.IShipGuardian;
+import com.lulan.shincolle.entity.IShipInvisible;
 import com.lulan.shincolle.reference.ID;
 
 /**SHIP FLOATING ON WATER AI
@@ -74,25 +75,53 @@ public class EntityAIShipFloating extends EntityAIBase {
 
     @Override
 	public void updateTask() {
-    	//上浮到指定高度 (本體仍在水中)
-    	if(this.host.getShipDepth() > 4D) {
-    		this.hostLiving.motionY += 0.025D;
-    		return;
+    	//submarine
+    	if (host instanceof IShipInvisible)
+    	{
+    		if (this.host.getShipDepth() > 4D)
+        	{
+        		this.hostLiving.motionY += 0.025D;
+        		return;
+        	}
+        	
+        	if (this.host.getShipDepth() > 2D)
+        	{
+        		this.hostLiving.motionY += 0.015D;
+        		return;
+        	}
+        	
+        	if (this.host.getShipDepth() > 1.2D)
+        	{
+        		this.hostLiving.motionY += 0.007D;
+        		return;
+        	}
     	}
-    	
-    	if(this.host.getShipDepth() > 1D) {
-    		this.hostLiving.motionY += 0.015D;
-    		return;
-    	}
-    	
-    	if(this.host.getShipDepth() > 0.7D) {
-    		this.hostLiving.motionY += 0.007D;
-    		return;
-    	}
-    	
-    	if(this.host.getShipDepth() > 0.47D) {
-    		this.hostLiving.motionY += 0.0012D;
-    		return;
+    	//other ship
+    	else
+    	{
+        	if (this.host.getShipDepth() > 4D)
+        	{
+        		this.hostLiving.motionY += 0.025D;
+        		return;
+        	}
+        	
+        	if (this.host.getShipDepth() > 1D)
+        	{
+        		this.hostLiving.motionY += 0.015D;
+        		return;
+        	}
+        	
+        	if (this.host.getShipDepth() > 0.7D)
+        	{
+        		this.hostLiving.motionY += 0.007D;
+        		return;
+        	}
+        	
+        	if (this.host.getShipDepth() > 0.47D)
+        	{
+        		this.hostLiving.motionY += 0.0012D;
+        		return;
+        	}
     	}
     	   	
     }

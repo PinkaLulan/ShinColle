@@ -43,6 +43,8 @@ public class BasicShipRenderer extends RenderLiving
 	private static final ResourceLocation Hime_Battleship = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityBattleshipHime.png");
 	private static final ResourceLocation Hime_Harbour = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityHarbourHime.png");
 	private static final ResourceLocation Hime_Northern = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityNorthernHime.png");
+	//SS
+	private static final ResourceLocation SS_So = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntitySubmSo.png");
 	//WD
 	private static final ResourceLocation WD_Carrier = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityCarrierWDemon.png");
 	
@@ -121,6 +123,9 @@ public class BasicShipRenderer extends RenderLiving
 			return Hime_Harbour;
 		case ID.Ship.NorthernHime:
 			return Hime_Northern;
+		//SS
+		case ID.Ship.SubmarineSO:
+			return SS_So;
 		//WD
 		case ID.Ship.CarrierWD:
 			return WD_Carrier;

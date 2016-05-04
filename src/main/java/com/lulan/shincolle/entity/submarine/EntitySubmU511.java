@@ -73,7 +73,6 @@ public class EntitySubmU511 extends BasicEntityShipSmall implements IShipInvisib
   		super.onLivingUpdate();
           
   		if(!worldObj.isRemote) {
-  			//add aura to master every 100 ticks
   			if(this.ticksExisted % 128 == 0) {
   				if(getStateFlag(ID.F.UseRingEffect)) {
   					//apply ability to player

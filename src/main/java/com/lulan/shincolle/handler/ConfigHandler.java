@@ -82,7 +82,7 @@ public class ConfigHandler {
 	public static float volumeFire = 0.7F;
 	
 	//custom sound                                   id, idle, hit, hurt, dead, love, kb, item, feed, time
-	public static int[] customSoundRate = new int[] {56, 35,   50,  50,   100,  0,    0,  50,   0,    0};
+	public static int[] customSoundRate = new int[] {56, 50,   50,  50,   100,  0,    0,  50,   0,    0};
 	
 	//WORLD GEN
 	public static int polyOreBaseRate = 7;

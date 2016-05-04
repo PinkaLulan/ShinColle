@@ -16,10 +16,12 @@ import com.lulan.shincolle.block.ItemBlockWaypoint;
 import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.ExtendShipProps;
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.PointerItem;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
@@ -249,8 +251,6 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 			
 			//can work
 			if(isActive && isPaired) {
-//				if(ship != null) LogHelper.info("SSSSSSSSSS "+ship.getStateMinor(ID.M.CraneState)+" "+ship.getStateTimer(ID.T.CraneTime));
-				
 				//check every 16 ticks
 				if(tick > 64 && tick % 16 == 0) {
 					//check chest and ship
@@ -308,6 +308,9 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 			  	  					ship.setStateMinor(ID.M.FollowMin, 2);
 			  	  					ship.setStateMinor(ID.M.FollowMax, 3);
 			  	  				}
+			  	  				
+			  	  				//player sound
+			  	  				this.ship.playSound(Reference.MOD_ID+":ship-bell", ConfigHandler.volumeShip * 1.5F, this.ship.getRNG().nextFloat() * 0.3F + 1F);
 			  	  				
 			  	  				//clear ship
 			  	  				ship = null;

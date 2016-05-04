@@ -291,6 +291,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	{
 		try
 		{
+			if (this.rand.nextInt(10) > 4) return null;
+			
 			//use custom sound
 			if (this.customSound != null &&
 				this.rand.nextInt(100) < this.customSound[ID.Sound.Idle])

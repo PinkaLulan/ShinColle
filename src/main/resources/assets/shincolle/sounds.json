@@ -1,6 +1,6 @@
 { 
     "ship-say": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
             "idle01",
             "idle02",
             "idle03",
@@ -27,7 +27,7 @@
     },
     
     "ship-hurt": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
             "hurt01",
             "hurt02",
             "hurt03",
@@ -40,7 +40,7 @@
     },
     
     "ship-death": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
             "death01",
             "death02", 
             "death03",
@@ -49,7 +49,7 @@
     },
     
     "ship-firesmall": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "ambient", "replace": true, "sounds": [
             "fire01",
             "fire02",
             "fire03",
@@ -58,13 +58,13 @@
     },
     
     "ship-explode": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "ambient", "replace": true, "sounds": [
             "fire05"   
         ]
     },
     
     "ship-fireheavy": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "ambient", "replace": true, "sounds": [
             "fireheavy01",
             "fireheavy02",
             "fireheavy03"       
@@ -72,7 +72,7 @@
     },
     
     "ship-hitsmall": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
             "hits01",
             "hits02",
             "hits03",
@@ -85,7 +85,7 @@
     },
     
     "ship-aircraft": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "ambient", "replace": true, "sounds": [
             "aircraft01",
             "aircraft02",
             "aircraft03"  
@@ -93,7 +93,7 @@
     },
     
     "ship-machinegun": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "ambient", "replace": true, "sounds": [
             "gun01",
             "gun02",
             "gun03"   
@@ -101,7 +101,7 @@
     },
     
     "ship-laser": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "ambient", "replace": true, "sounds": [
         	"laser01",
        		"laser02",
           "laser03"
@@ -109,7 +109,7 @@
     },
     
     "ship-love": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
         	"love01",
         	"love02",
         	"love03",
@@ -120,169 +120,169 @@
     },
     
     "ship-time0": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
         	"time00"
         ]
     },
         
     "ship-time1": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
         	"time01"
         ]
     },
         
     "ship-time2": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
         	"time02"
         ]
     },
         
     "ship-time3": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
         	"time03"
         ]
     },
         
     "ship-time4": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
         	"time04"
         ]
     },
         
     "ship-time5": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
         	"time05"
         ]
     },
         
     "ship-time6": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
         	"time06"
         ]
     },
         
     "ship-time7": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
         	"time07"
         ]
     },
         
     "ship-time8": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
         	"time08"
         ]
     },
         
     "ship-time9": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
         	"time09"
         ]
     },
         
     "ship-time10": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
         	"time10"
         ]
     },
         
     "ship-time11": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
         	"time11"
         ]
     },
         
     "ship-time12": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
         	"time12"
         ]
     },
         
     "ship-time13": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
         	"time13"
         ]
     },
         
     "ship-time14": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
         	"time14"
         ]
     },
         
     "ship-time15": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
         	"time15"
         ]
     },
         
     "ship-time16": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
         	"time16"
         ]
     },
         
     "ship-time17": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
         	"time17"
         ]
     },
         
     "ship-time18": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
         	"time18"
         ]
     },
         
     "ship-time19": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
         	"time19"
         ]
     },
         
     "ship-time20": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
         	"time20"
         ]
     },
         
     "ship-time21": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
         	"time21"
         ]
     },
         
     "ship-time22": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
         	"time22"
         ]
     },
         
     "ship-time23": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
         	"time23"
         ]
     },
     
     "ship-kaitai": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "ambient", "replace": true, "sounds": [
         	"kaitai"
         ]
     },
     
     "ship-ap_phase1": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "ambient", "replace": true, "sounds": [
         	"ap_p1"
         ]
     },
     
     "ship-ap_phase2": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "ambient", "replace": true, "sounds": [
         	"ap_p2"
         ]
     },
     
     "ship-ap_attack": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "ambient", "replace": true, "sounds": [
         	"ap_attack"
         ]
     },
@@ -325,25 +325,25 @@
     },
     
     "ship-garuru": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
         	"garuru"
         ]
     },
     
     "ship-yamato-ready": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "ambient", "replace": true, "sounds": [
         	"laser05"
         ]
     },
     
     "ship-yamato-shot": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "ambient", "replace": true, "sounds": [
         	"laser06"
         ]
     },
     
     "ship-knockback": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
             "hits02",
             "hits06",
             "hurt04",
@@ -352,7 +352,7 @@
     },
     
     "ship-itemget": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
             "item01",
             "item02",
             "item03",
@@ -362,13 +362,13 @@
     },
     
     "ship-levelup": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
             "level01"
         ]
     },
     
     "ship-feed": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
             "feed01",
             "feed02",
             "feed03",
@@ -379,8 +379,16 @@
         ]
     },
     
+    "ship-bell": {
+        "category": "block", "replace": true, "sounds": [
+            "bell01",
+            "bell02",
+            "bell03"
+        ]
+    },
+    
     "ship-say-56": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
             "idle5601",
             "idle5602",
             "idle5603",
@@ -396,7 +404,7 @@
     },
     
     "ship-hurt-56": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
             "hurt5601",
             "hurt5602",
             "hurt5603",
@@ -407,14 +415,14 @@
     },
     
     "ship-death-56": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
             "death5601",
             "death5602"
         ]
     },
     
     "ship-hitsmall-56": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
             "hit5601",
             "hit5602",
             "hit5603",
@@ -424,10 +432,11 @@
     },
     
     "ship-itemget-56": {
-        "category": "hostile", "replace": true, "sounds": [
+        "category": "neutral", "replace": true, "sounds": [
             "item5601",
             "hit5602"
         ]
     }
+
     
 }

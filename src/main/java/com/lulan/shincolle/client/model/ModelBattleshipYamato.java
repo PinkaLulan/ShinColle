@@ -11,6 +11,7 @@ import net.minecraft.util.MathHelper;
 import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.entity.IShipEmotion;
+import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
@@ -1196,6 +1197,11 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
   		float angleAdd2 = MathHelper.cos(f * 0.7F + 3.1415927F) * f1;
   		float addk1 = 0;
   		float addk2 = 0;
+  		
+  		//水上漂浮
+  		if(((IShipFloating)ent).getShipDepth() > 0) {
+    		GL11.glTranslatef(0F, angleX * 0.1F - 0.025F, 0F);
+    	}
   		
     	//leg move
   		addk1 = angleAdd1 * 0.5F - 0.2793F;  //LegLeft01

@@ -685,6 +685,11 @@ public class ModelCarrierKaga extends ModelBase implements IModelEmotion {
   		float addk2 = 0;
   		float headX = 0F;
   		float headZ = 0F;
+  		
+  		//水上漂浮
+  		if(((IShipFloating)ent).getShipDepth() > 0) {
+    		GL11.glTranslatef(0F, angleX * 0.1F - 0.025F, 0F);
+    	}
 
     	//leg move
   		addk1 = angleAdd1 * 0.5F - 0.2793F;  //LegLeft01

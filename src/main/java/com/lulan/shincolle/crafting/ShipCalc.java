@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.MathHelper;
+
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.LogHelper;
-
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.MathHelper;
 
 /**SHIP SPAWN CALC <br>
  * Material Bonus Rate (for small construction)
@@ -57,6 +57,9 @@ public class ShipCalc {
 		EquipSmall.add(new int[] {ID.Ship.DestroyerHA,     100,  0});
 		EquipSmall.add(new int[] {ID.Ship.DestroyerNI,     110,  0});
 		EquipSmall.add(new int[] {ID.Ship.TransportWA,     120,  1});
+		EquipSmall.add(new int[] {ID.Ship.SubmarineKA,     140,  2});
+		EquipSmall.add(new int[] {ID.Ship.SubmarineYO,     160,  2});
+		EquipSmall.add(new int[] {ID.Ship.SubmarineSO,     180,  2});
 		EquipSmall.add(new int[] {ID.Ship.HeavyCruiserRI,  200,  2});
 		EquipSmall.add(new int[] {ID.Ship.HeavyCruiserNE,  256,  2});
 		
@@ -213,6 +216,14 @@ public class ShipCalc {
   			return "shincolle.EntityBattleshipTa";
   		case ID.Ship.BattleshipRE:
   			return "shincolle.EntityBattleshipRe";
+  		case ID.Ship.TransportWA:
+  			return "shincolle.EntityTransportWa";
+  		case ID.Ship.SubmarineKA:
+  			return "shincolle.EntitySubmKa";
+  		case ID.Ship.SubmarineYO:
+  			return "shincolle.EntitySubmYo";
+  		case ID.Ship.SubmarineSO:
+  			return "shincolle.EntitySubmSo";
   		case ID.Ship.AirfieldHime:
   			return "shincolle.EntityAirfieldHime";
   		case ID.Ship.BattleshipHime:
@@ -251,8 +262,6 @@ public class ShipCalc {
   			return "shincolle.EntityCarrierAkagi";
   		case ID.Ship.CarrierAkagi+2000:
   			return "shincolle.EntityCarrierAkagiBoss";
-  		case ID.Ship.TransportWA:
-  			return "shincolle.EntityTransportWa";
   		case ID.Ship.DestroyerAkatsuki:
   			return "shincolle.EntityDestroyerAkatsuki";
   		case ID.Ship.DestroyerAkatsuki+2000:

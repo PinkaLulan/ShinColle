@@ -360,8 +360,7 @@ public class ModelMountHbH extends ModelBase {
   		float angleX = MathHelper.cos(f2*0.08F);
   		
   		if(((IShipFloating)ent).getShipDepth() > 0) {
-//  			LogHelper.info("DEBUG : mount depth "+((IShipFloating)ent).getShipDepth());
-    		GL11.glTranslatef(0F, -0.2F, 0F);
+    		GL11.glTranslatef(0F, angleX * 0.025F - 0.2F, 0F);
     	}
   		
   		if(ent.getIsSitting()) {

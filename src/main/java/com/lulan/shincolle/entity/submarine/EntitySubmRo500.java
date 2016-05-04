@@ -84,11 +84,7 @@ public class EntitySubmRo500 extends BasicEntityShipSmall implements IShipInvisi
   		super.onLivingUpdate();
   		
   		if(!worldObj.isRemote) {
-  			//DEBUG
-//  			LogHelper.info("DEBUG : ro500 target: "+this.getCustomNameTag()+" "+this.getEntityRevengeTarget()+" "+this.getEntityTarget());
-  			
-  			//add aura to master every 100 ticks
-  			if(this.ticksExisted % 100 == 0) {
+  			if(this.ticksExisted % 128 == 0) {
   				if(getStateFlag(ID.F.UseRingEffect)) {
   					//apply ability to player
   					EntityPlayerMP player = (EntityPlayerMP) EntityHelper.getEntityPlayerByUID(this.getPlayerUID());

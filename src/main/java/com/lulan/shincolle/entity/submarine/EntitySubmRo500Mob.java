@@ -105,7 +105,7 @@ public class EntitySubmRo500Mob extends BasicEntityShipHostile implements IShipI
   			//add aura to master every N ticks
   			if(this.ticksExisted % 256 == 0) {
   				if(this.rand.nextInt(2) == 0) {
-  					this.addPotionEffect(new PotionEffect(Potion.invisibility.id, 120));
+  					this.addPotionEffect(new PotionEffect(Potion.invisibility.id, 140));
   				}
   			}
   		}    

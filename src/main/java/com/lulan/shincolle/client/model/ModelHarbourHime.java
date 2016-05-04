@@ -450,6 +450,11 @@ public class ModelHarbourHime extends ModelBase implements IModelEmotion {
   		float headX = 0F;
   		float headZ = 0F;
   		
+  		//水上漂浮
+  		if(((IShipFloating)ent).getShipDepth() > 0) {
+    		GL11.glTranslatef(0F, angleX * 0.1F - 0.025F, 0F);
+    	}
+  		
   		//leg move parm
   		addk1 = angleAdd1 * 0.6F - 0.21F;
 	  	addk2 = angleAdd2 * 0.6F - 0.21F;
