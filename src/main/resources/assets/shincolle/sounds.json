@@ -7,22 +7,22 @@
             "idle04",
             "idle05",
             "idle06",
-            "idle07",
-            "idle08",
-            "idle09",
-            "idle10",
-            "idle11",
+            "idle18",
+            "idle19",
+            "idle20",
+            "idle21",
             "idle12",
             "idle13",
             "idle14",
             "idle15",
             "idle16",
             "idle17",
-            "idle18",
-            "idle19",
-            "idle20",
-            "idle21",
-            "idle22"
+            "idle22",
+            "idle07",
+            "idle08",
+            "idle09",
+            "idle10",
+            "idle11"
         ]
     },
     
@@ -393,13 +393,13 @@
             "idle5602",
             "idle5603",
             "idle5604",
-            "idle5605",
             "idle5606",
             "idle5607",
             "idle5608",
             "idle5609",
             "idle5610",
-            "idle5611"
+            "idle5611",
+            "hurt5605"
         ]
     },
     
@@ -410,7 +410,8 @@
             "hurt5603",
             "hurt5604",
             "hurt5605",
-            "hurt5606"
+            "hurt5606",
+            "idle5605"
         ]
     },
     

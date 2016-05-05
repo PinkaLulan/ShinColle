@@ -425,7 +425,7 @@ gui.shincolle:book.chap4.text17d0=
 gui.shincolle:book.chap4.text17d1=§9Name:§0 Yo-Class<br><br>§9Class:§0 Submarine<br><br>§9Factory:§0 Abyssal Vent<br><br>§9Factor:§0 Ammo (160)<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 SS base dodge 20%%<br><br>
 gui.shincolle:book.chap4.title18=
 gui.shincolle:book.chap4.text18d0=
-gui.shincolle:book.chap4.text18d1=§9Name:§0 So-Class<br><br>§9Class:§0 Submarine<br><br>§9Factory:§0 Abyssal Vent<br><br>§9Factor:§0 Ammo (180)<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 SS base dodge 25%%<br><br>
+gui.shincolle:book.chap4.text18d1=§9Name:§0 So-Class<br><br>§9Class:§0 Submarine<br><br>§9Factory:§0 Abyssal Vent<br><br>§9Factor:§0 Ammo (180)<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 SS base dodge 25%%<br><br>Like swimming naked and hit enemy with large and bulky torpedo.
 
 # GUI: Book Text Chap 5
 gui.shincolle:book.chap5.title=Enemy List

@@ -817,33 +817,46 @@ public class GuiDesk extends GuiContainer {
 	}
 	
 	@Override
-	protected void mouseClickMove(int mx, int my, int button, long time) {
+	protected void mouseClickMove(int mx, int my, int button, long time)
+	{
 		super.mouseClickMove(mx, my, button, time);
 		
 		int dx = mx - this.lastXMouse;
 		int dy = my - this.lastYMouse;
-		
-		//func: target list
-		if(this.guiFunc == 4 || this.guiFunc == 2) {
-			if(dx > 0) {
-				this.mRotateY += 6F;
-			}
-			if(dx < 0) {
-				this.mRotateY -= 6F;
-			}
-			
-			if(dy > 0) {
-				this.mRotateX += 4F;
-				if(this.mRotateX > 90F) this.mRotateX = 90F;
-			}
-			if(dy < 0) {
-				this.mRotateX -= 4F;
-				if(this.mRotateX < -90F) this.mRotateX = -90F;
-			}
-		}
-		
 		this.lastXMouse = mx;
 		this.lastYMouse = my;
+		
+		if (dx > 20 || dx < -20 || dy > 20 || dy < -20) return;
+		
+		int gx = (int) (mx * this.GuiScaleInv - this.guiLeft);
+        int gy = (int) (my * this.GuiScaleInv - this.guiTop);
+        
+		//func: target list
+		if (this.guiFunc == 4 || this.guiFunc == 2)
+		{
+			if (gx > 8 && gx < 117 && gy > 47 && gy < 154)
+			{
+				if (dx > 0)
+				{
+					this.mRotateY += dx * 3F;
+				}
+				if (dx < 0)
+				{
+					this.mRotateY += dx * 3F;
+				}
+				
+				if (dy > 0)
+				{
+					this.mRotateX += dy * 2F;
+					if(this.mRotateX > 90F) this.mRotateX = 90F;
+				}
+				if (dy < 0)
+				{
+					this.mRotateX += dy * 2F;
+					if(this.mRotateX < -90F) this.mRotateX = -90F;
+				}
+			}
+		}
 	}
 	
 	private void setDeskFunction(int button) {
@@ -1826,27 +1839,45 @@ public class GuiDesk extends GuiContainer {
         		}
         	}
         	catch(Exception e) {
-//        		LogHelper.info("Exception : get name icon fail "+e);
+        		e.printStackTrace();
         	}
 
         	//tick time
         	int modelTicking = this.tickGUI % 3;
-        	if(modelTicking == 0) {
+        	if (modelTicking == 0)
+        	{
         		this.shipModel.ticksExisted++;
-            	if(this.shipModel.attackTime > 0) this.shipModel.attackTime--;
+            	if (this.shipModel.attackTime > 0) this.shipModel.attackTime--;
             	
             	//set moving motion
-            	if(this.shipModel.isSprinting()) {
+            	if (this.shipModel.isSprinting())
+            	{
             		this.shipModel.moveEntityWithHeading(1F, 0F);
             	}
+            	else
+            	{
+            		this.shipModel.prevSwingProgress = 0F;
+            		this.shipModel.swingProgress = 0F;
+            		this.shipModel.prevLimbSwingAmount = 0F;
+            		this.shipModel.limbSwingAmount = 0F;
+            	}
             	
-            	if(this.shipMount != null) {
+            	if (this.shipMount != null)
+            	{
             		this.shipMount.ticksExisted++;
-                	if(this.shipMount.attackTime > 0) this.shipMount.attackTime--;
+                	if (this.shipMount.attackTime > 0) this.shipMount.attackTime--;
                 	
                 	//set mount moving motion
-                	if(this.shipMount.isSprinting()) {
+                	if (this.shipMount.isSprinting())
+                	{
                 		this.shipMount.moveEntityWithHeading(1F, 0F);
+                	}
+                	else
+                	{
+                		this.shipMount.prevSwingProgress = 0F;
+                		this.shipMount.swingProgress = 0F;
+                		this.shipMount.prevLimbSwingAmount = 0F;
+                		this.shipMount.limbSwingAmount = 0F;
                 	}
             	}
         	}
@@ -1866,11 +1897,14 @@ public class GuiDesk extends GuiContainer {
 			RenderHelper.enableStandardItemLighting();
 			GL11.glRotatef(-135.0F, 0.0F, 1.0F, 0.0F);
 			
+			//提高旋轉中心
+			GL11.glTranslatef(0F, 0.7F, 0F);
+			
 			//set head look angle
-//			GL11.glRotatef(-((float) Math.atan(-120F / 40.0F)) * 20.0F, 1.0F, 0.0F, 0.0F);
 			GL11.glRotatef(this.mRotateY, 0.0F, 1.0F, 0.0F);
 			GL11.glRotatef(this.mRotateX, 1.0F, 0.0F, 0.0F);
-			GL11.glTranslatef(0.0F, this.shipModel.yOffset, 0.0F);
+			
+			GL11.glTranslatef(0.0F, this.shipModel.yOffset - 0.7F, 0.0F);
 			RenderManager.instance.playerViewY = 180.0F;
 			
 			//draw mount
@@ -1879,12 +1913,12 @@ public class GuiDesk extends GuiContainer {
 			if(this.shipMount != null) {
 				//ship必須先畫才畫mounts
 				GL11.glTranslatef(0F, (float)(this.shipMount.getMountedYOffset()), 0F);
-				RenderManager.instance.renderEntityWithPosYaw(this.shipModel, 0.0D, 0.0D, 0.0D, 0.0F, partialTick);
+				RenderManager.instance.renderEntityWithPosYaw(this.shipModel, 0D, 0D, 0D, 0F, partialTick);
 				GL11.glTranslatef(0F, -(float)(this.shipMount.getMountedYOffset()), 0F);
-				RenderManager.instance.renderEntityWithPosYaw(this.shipMount, 0.0D, 0.0D, 0.0D, 0.0F, partialTick);
+				RenderManager.instance.renderEntityWithPosYaw(this.shipMount, 0D, 0D, 0D, 0F, partialTick);
 			}
 			else {
-				RenderManager.instance.renderEntityWithPosYaw(this.shipModel, 0.0D, 0.0D, 0.0D, 0.0F, partialTick);
+				RenderManager.instance.renderEntityWithPosYaw(this.shipModel, 0D, 0D, 0D, 0F, partialTick);
 			}
 			
 			GL11.glPopMatrix();
