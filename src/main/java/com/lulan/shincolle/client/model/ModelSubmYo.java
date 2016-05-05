@@ -19,7 +19,7 @@ import com.lulan.shincolle.utility.LogHelper;
 
 /**
  * ModelSubmYo - PinkaLulan
- * Created using Tabula 4.1.1
+ * Created using Tabula 4.1.1  2016/5/5
  */
 public class ModelSubmYo extends ModelBase implements IModelEmotionAdv {
 	
@@ -325,9 +325,8 @@ public class ModelSubmYo extends ModelBase implements IModelEmotionAdv {
         this.HairMain = new ModelRenderer(this, 46, 104);
         this.HairMain.setRotationPoint(0.0F, -14.8F, -3.0F);
         this.HairMain.addBox(-7.5F, 0.0F, 0.0F, 15, 11, 10, 0.0F);
-        this.Butt = new ModelRenderer(this, 52, 66);
+        this.Butt = new ModelRenderer(this, 0, 0);
         this.Butt.setRotationPoint(0.0F, 2.5F, 2.8F);
-        this.Butt.addBox(-7.5F, 0.0F, -7.0F, 15, 7, 8, 0.0F);
         this.setRotateAngle(Butt, 0.20943951023931953F, 0.0F, 0.0F);
         this.EquipHead00c = new ModelRenderer(this, 17, 5);
         this.EquipHead00c.setRotationPoint(10.0F, -2.0F, -2.0F);

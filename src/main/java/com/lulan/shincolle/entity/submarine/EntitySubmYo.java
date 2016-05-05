@@ -258,6 +258,97 @@ public class EntitySubmYo extends BasicEntityShipSmall implements IShipInvisible
 			}
 		}
 	}
+	
+	//潛艇的輕攻擊一樣使用飛彈
+  	@Override
+  	//range attack method, cost heavy ammo, attack delay = 100 / attack speed, damage = 500% atk
+  	public boolean attackEntityWithAmmo(Entity target)
+  	{	
+  		//get attack value
+  		float atk = StateFinal[ID.ATK];
+  		
+  		//飛彈是否採用直射
+  		boolean isDirect = false;
+  		
+  		//計算目標距離
+  		float tarX = (float)target.posX;	//for miss chance calc
+  		float tarY = (float)target.posY;
+  		float tarZ = (float)target.posZ;
+  		float distX = tarX - (float)this.posX;
+  		float distY = tarY - (float)this.posY;
+  		float distZ = tarZ - (float)this.posZ;
+  		float distSqrt = MathHelper.sqrt_float(distX*distX + distY*distY + distZ*distZ);
+  		float launchPos = (float)posY + height * 0.7F;
+          
+  		//超過一定距離/水中 , 則採用拋物線,  在水中時發射高度較低
+  		if ((distX*distX+distY*distY+distZ*distZ) < 36F)
+  		{
+  			isDirect = true;
+  		}
+  		if (getShipDepth() > 0D)
+  		{
+  			isDirect = true;
+  			launchPos = (float)posY;
+  		}
+  		
+  		//發射者煙霧特效 (發射飛機不使用特效, 但是要發送封包來設定attackTime)
+        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
+  		
+  		//experience++
+  		addShipExp(ConfigHandler.expGain[1]);
+  		
+  		//grudge--
+  		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
+  		
+  		//morale--
+  		decrMorale(1);
+  		setCombatTick(this.ticksExisted);
+  	
+  		//play cannon fire sound at attacker
+  		this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.volumeFire, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  		
+  		//play entity attack sound
+  		if (this.getRNG().nextInt(10) > 7)
+  		{
+  			this.playSound(getSoundString(ID.Sound.Hit), ConfigHandler.volumeShip, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  		}
+          
+  		//heavy ammo--
+  		if (!decrAmmoNum(0, this.getAmmoConsumption()))
+  		{
+  			return false;
+  		}
+          
+  		//calc miss chance, miss: add random offset(0~6) to missile target 
+  		float missChance = 0.2F + 0.15F * (distSqrt / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.M.ShipLevel];
+  		missChance -= EffectEquip[ID.EF_MISS];	//equip miss reduce
+  		if (missChance > 0.35F) missChance = 0.35F;	//max miss chance = 30%
+         
+  		if (this.rand.nextFloat() < missChance)
+  		{
+			tarX = tarX - 3F + this.rand.nextFloat() * 6F;
+			tarY = tarY + this.rand.nextFloat() * 3F;
+			tarZ = tarZ - 3F + this.rand.nextFloat() * 6F;
+			
+			//spawn miss particle
+			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
+  		}
+
+  		//spawn missile
+  		EntityAbyssMissile missile = new EntityAbyssMissile(this.worldObj, this, 
+          		tarX, tarY+target.height*0.2F, tarZ, launchPos, atk, 0.1F, isDirect, 0.08F);
+  		this.worldObj.spawnEntityInWorld(missile);
+          
+        //show emotes
+      	applyEmotesReaction(3);
+      	
+      	if(ConfigHandler.canFlare) {
+			flareTarget(target);
+		}
+      	
+      	return true;
+  	}
   	
 
 }
