@@ -466,10 +466,10 @@ public class ModelSubmSo extends ModelBase implements IModelEmotionAdv {
 	    //arm 
 	  	this.ArmLeft01.rotateAngleX = 0.2094F;
 	  	this.ArmLeft01.rotateAngleY = 0F;
-	    this.ArmLeft01.rotateAngleZ = -0.3142F;
+	    this.ArmLeft01.rotateAngleZ = -angleX * 0.05F - 0.3142F;
 	    this.ArmRight01.rotateAngleX = 0F;
 	  	this.ArmRight01.rotateAngleY = 0F;
-	    this.ArmRight01.rotateAngleZ = 0.2094F;
+	    this.ArmRight01.rotateAngleZ = angleX * 0.05F + 0.2094F;
 		//leg
 	    addk1 = angleAdd1 * 0.6F - 0.157F;
 	  	addk2 = angleAdd2 * 0.6F - 0.035F;

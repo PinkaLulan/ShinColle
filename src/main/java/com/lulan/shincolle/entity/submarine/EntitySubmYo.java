@@ -21,21 +21,24 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
+import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
-public class EntitySubmSo extends BasicEntityShipSmall implements IShipInvisible {
+public class EntitySubmYo extends BasicEntityShipSmall implements IShipInvisible {
 	
-	private static float ilevel = 25F;
+	private static float ilevel = 20F;
 	
 
-	public EntitySubmSo(World world)
+	public EntitySubmYo(World world)
 	{
 		super(world);
 		this.setSize(0.6F, 1.8F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.SUBMARINE);
-		this.setStateMinor(ID.M.ShipClass, ID.Ship.SubmarineSO);
+		this.setStateMinor(ID.M.ShipClass, ID.Ship.SubmarineYO);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.SUBMARINE);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.SS]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.SS]);
@@ -108,7 +111,45 @@ public class EntitySubmSo extends BasicEntityShipSmall implements IShipInvisible
   	  				}
   	  			}//end 256 ticks
   			}//end 128 ticks
-  		}    
+  		}//end server
+  		//client side
+  		else
+  		{
+  			if(this.ticksExisted % 4 ==  0)
+  			{
+    			//若顯示裝備時, 則生成眼睛煙霧特效 (client only)
+    			if (getStateEmotion(ID.S.State) > ID.State.NORMAL && !getStateFlag(ID.F.NoFuel) &&
+    				(isSitting() && getStateEmotion(ID.S.Emotion) != ID.Emotion.BORED || !isSitting()))
+    			{
+    				//set origin position
+    				float[] eyePosL;
+    				float[] eyePosR;
+    				float radYaw = this.rotationYawHead * Values.N.RAD_MUL;
+    				float radPitch = this.rotationPitch * Values.N.RAD_MUL;
+    				
+    				//坐下位置計算
+    				if(this.isSitting()) {
+    					eyePosL = new float[] {0.35F, 1.35F, -0.4F};
+        				eyePosR = new float[] {-0.35F, 1.35F, -0.4F};
+    				}
+    				else {
+    					eyePosL = new float[] {0.35F, 1.5F, -0.4F};
+        				eyePosR = new float[] {-0.35F, 1.5F, -0.4F};
+    				}
+
+    				//依照新位置, 繼續旋轉Y軸
+    				eyePosL = ParticleHelper.rotateXYZByYawPitch(eyePosL[0], eyePosL[1], eyePosL[2], radYaw, radPitch, 1F);
+    				eyePosR = ParticleHelper.rotateXYZByYawPitch(eyePosR[0], eyePosR[1], eyePosR[2], radYaw, radPitch, 1F);		
+    				
+    				//旋轉完三軸, 生成特效
+    				ParticleHelper.spawnAttackParticleAt(this.posX+eyePosL[0], this.posY+eyePosL[1], this.posZ+eyePosL[2], 
+                    		0D, 0.05D, 0.5D, (byte)16);
+    				
+    				ParticleHelper.spawnAttackParticleAt(this.posX+eyePosR[0], this.posY+eyePosR[1], this.posZ+eyePosR[2], 
+                    		0D, 0.05D, 0.5D, (byte)16);
+    			}
+    		}//end every 8 ticks
+  		}//end client side
   	}
   	
   	@Override
@@ -139,20 +180,41 @@ public class EntitySubmSo extends BasicEntityShipSmall implements IShipInvisible
   	@Override
 	public double getMountedYOffset()
   	{
-  		if (this.isSitting())
+  		if (getStateEmotion(ID.S.State) > ID.State.NORMAL)
   		{
-			if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
-			{
-				return 0.65F;
-  			}
-  			else
-  			{
-  				return 0F;
-  			}
+  			if (this.isSitting())
+  	  		{
+  				if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
+  				{
+  					return 0.75F;
+  	  			}
+  	  			else
+  	  			{
+  	  				return 0.1F;
+  	  			}
+  	  		}
+  	  		else
+  	  		{
+  	  			return (double)this.height * 0.25F;
+  	  		}
   		}
   		else
   		{
-  			return (double)this.height * 0.5F;
+  			if (this.isSitting())
+  	  		{
+  				if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
+  				{
+  					return 0.65F;
+  	  			}
+  	  			else
+  	  			{
+  	  				return 0F;
+  	  			}
+  	  		}
+  	  		else
+  	  		{
+  	  			return 0.9F;
+  	  		}
   		}
 	}
 
@@ -178,12 +240,6 @@ public class EntitySubmSo extends BasicEntityShipSmall implements IShipInvisible
 			case ID.State.NORMAL_2:
 				setStateEmotion(ID.S.State2, ID.State.EQUIP00_2, true);
 				break;
-			case ID.State.EQUIP00_2:
-				setStateEmotion(ID.S.State2, ID.State.EQUIP01_2, true);
-				break;
-			case ID.State.EQUIP01_2:
-				setStateEmotion(ID.S.State2, ID.State.EQUIP02_2, true);
-				break;
 			default:
 				setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
 				break;
@@ -196,9 +252,6 @@ public class EntitySubmSo extends BasicEntityShipSmall implements IShipInvisible
 			case ID.State.NORMAL:
 				setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
 				break;
-			case ID.State.EQUIP00:
-				setStateEmotion(ID.S.State, ID.State.EQUIP01, true);
-				break;
 			default:
 				setStateEmotion(ID.S.State, ID.State.NORMAL, true);
 				break;
@@ -208,6 +261,7 @@ public class EntitySubmSo extends BasicEntityShipSmall implements IShipInvisible
   	
 
 }
+
 
 
 

@@ -60,9 +60,11 @@ public class EntityFXSpray extends EntityFX {
             this.particleBlue = 1F;
             this.particleAlpha = 1F;
             this.particleScale *= 1.5F;
-            this.pScale = this.particleScale;
+            this.pScale = (float) (this.particleScale * motionZ);
             this.particleMaxAge = 40;
             this.noClip = false;
+            this.motionX = 0D;
+            this.motionZ = 0D;
         	break;
         case 3:   //green
         	this.speedLimit = 0.3D;

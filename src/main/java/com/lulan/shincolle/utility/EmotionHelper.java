@@ -221,7 +221,7 @@ public class EmotionHelper {
     /** 眨眼動作, this emotion is CLIENT ONLY, no sync packet required */
     public static void EmotionBlinkAdv(IModelEmotionAdv model, IShipEmotion ent)
     {
-  		if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.NORMAL || ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
+  		if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.NORMAL)
   		{	//要在沒表情狀態才做表情		
   			ent.setFaceTick(ent.getTickExisted());						//表情開始時間
   			ent.setStateEmotion(ID.S.Emotion, ID.Emotion.BLINK, false);	//標記表情為blink

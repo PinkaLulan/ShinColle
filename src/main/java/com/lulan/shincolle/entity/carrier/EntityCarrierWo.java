@@ -70,10 +70,10 @@ public class EntityCarrierWo extends BasicEntityShipCV {
     	
     	//check client side
     	if(this.worldObj.isRemote) {
-    		if(this.ticksExisted % 5 ==  0) {
+    		if(this.ticksExisted % 4 ==  0) {
     			//若顯示裝備時, 則生成眼睛煙霧特效 (client only)
     			if(getStateEmotion(ID.S.State) >= ID.State.EQUIP00 &&
-    			   getStateEmotion(ID.S.Emotion) != ID.Emotion.BORED &&
+    			   (isSitting() && getStateEmotion(ID.S.Emotion) != ID.Emotion.BORED || !isSitting()) &&
     			   !getStateFlag(ID.F.NoFuel)) {
     				//set origin position
     				float[] eyePosL;
@@ -107,12 +107,12 @@ public class EntityCarrierWo extends BasicEntityShipCV {
     				
     				//旋轉完三軸, 生成特效
     				ParticleHelper.spawnAttackParticleAt(this.posX+eyePosL[0], this.posY+1.5D+eyePosL[1], this.posZ+eyePosL[2], 
-                    		0D, 0.05D, 0D, (byte)16);
+                    		0D, 0.05D, 1D, (byte)16);
     				
     				ParticleHelper.spawnAttackParticleAt(this.posX+eyePosR[0], this.posY+1.5D+eyePosR[1], this.posZ+eyePosR[2], 
-                    		0D, 0.05D, 0D, (byte)16);
-    			}			
-    		}	
+                    		0D, 0.05D, 1D, (byte)16);
+    			}
+    		}
     	}//end client
     	
     	super.onLivingUpdate();

@@ -83,7 +83,7 @@ public class EntityNorthernHime extends BasicEntityShipCV {
   		
   		//server side
   		if(!worldObj.isRemote) {
-  			//every 80 ticks
+  			//every 64 ticks
         	if(this.ticksExisted % 64 == 0) {
         		//1: 增強被動回血
         		if(getStateMinor(ID.M.NumGrudge) > 0 && this.getHealth() < this.getMaxHealth()) {
@@ -123,17 +123,16 @@ public class EntityNorthernHime extends BasicEntityShipCV {
 		            	}
 		            }
 				}//end heal ability
-        	}//end 80 ticks
-        	
-        	//every 256 ticks
-        	if(this.ticksExisted % 25 == 0) {
-        		int roll = this.rand.nextInt(5);
-//        		LogHelper.info("DEBUG : hoppo go riding "+roll);
-        		//每一段時間檢查是否要騎乘其他entity
-        		if(roll == 0) {
-        			this.checkRiding();
-        		}
-        	}
+				
+				//every 256 ticks
+	        	if(this.ticksExisted % 256 == 0) {
+	        		int roll = this.rand.nextInt(3);
+	        		//每一段時間檢查是否要騎乘其他entity
+	        		if(roll == 0) {
+	        			this.checkRiding();
+	        		}
+	        	}
+        	}//end 64 ticks
         	
         	//若要找騎乘目標
         	if(this.goRiding) {
@@ -178,7 +177,7 @@ public class EntityNorthernHime extends BasicEntityShipCV {
   		//client side
   		else {
   			//drip water effect
-  			if(this.ticksExisted % 10 == 0) {
+  			if(this.ticksExisted % 8 == 0) {
   				if(getStateEmotion(ID.S.State2) == ID.State.EQUIP01_2 && !getStateFlag(ID.F.NoFuel)) {
   					if(this.isSitting() || this.isRiding()) {
   						ParticleHelper.spawnAttackParticleAt(this.posX, this.posY+0.9D, this.posZ, 0D, 0D, 0D, (byte)28);

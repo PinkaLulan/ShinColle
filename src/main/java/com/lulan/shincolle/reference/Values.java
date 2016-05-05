@@ -156,9 +156,9 @@ public class Values {
 		//transport
 		put(ID.Ship.TransportWA,		new float[] {0.2F, 0.8F, 0.8F, 0.8F, 0.3F});
 		//submarine
-		put(ID.Ship.SubmarineKA,		new float[] {0.2F, 0.7F, 0.7F, 0.7F, 0.2F});
-		put(ID.Ship.SubmarineYO,		new float[] {0.2F, 0.7F, 0.7F, 0.7F, 0.2F});
-		put(ID.Ship.SubmarineSO,		new float[] {0.2F, 0.7F, 0.7F, 0.7F, 0.2F});
+		put(ID.Ship.SubmarineKA,		new float[] {0.2F, 0.7F, 0.8F, 0.8F, 0.2F});
+		put(ID.Ship.SubmarineYO,		new float[] {0.2F, 0.7F, 0.8F, 0.8F, 0.2F});
+		put(ID.Ship.SubmarineSO,		new float[] {0.2F, 0.7F, 0.8F, 0.8F, 0.2F});
 		//hime
 //		put(ID.Ship.CarrierHime,		new float[] {});
 		put(ID.Ship.AirfieldHime,		new float[] {0.1F, 1.2F, 1.5F, 0.7F, 0.2F});
