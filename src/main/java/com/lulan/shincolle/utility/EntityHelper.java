@@ -1541,11 +1541,13 @@ public class EntityHelper {
   	 *  2. if next waypoint = ship's last waypoint, get block's last waypoint (backwards mode)
   	 *  3. if no next/last waypoint, stop
   	 */
-	public static boolean updateWaypointMove(IShipGuardian entity) {
+	public static boolean updateWaypointMove(IShipGuardian entity)
+	{
 		boolean updatePos = false;
-		
+
   		//in guard block mode
-  		if(!entity.getStateFlag(ID.F.CanFollow) && entity.getGuardedPos(1) > 0 && !entity.getIsSitting() && !entity.getIsLeashed() && !entity.getIsRiding()) {
+  		if (!entity.getStateFlag(ID.F.CanFollow) && entity.getGuardedPos(1) > 0 && !entity.getIsSitting() && !entity.getIsLeashed() && !entity.getIsRiding())
+  		{
   			//check distance < 3 blocks
   			float dx = (float) (entity.getGuardedPos(0) + 0.5D - ((Entity)entity).posX);
   			float dy = (float) (entity.getGuardedPos(1) - ((Entity)entity).posY);
@@ -1555,47 +1557,52 @@ public class EntityHelper {
 			dz = dz * dz;
   			double distsq = dx + dy + dz;
   			
-  			//crane = close to ~5.4 block
-  			if(distsq < 30D) {
-  				//get target block
-  	  			TileEntity tile = ((Entity)entity).worldObj.getTileEntity(entity.getGuardedPos(0), entity.getGuardedPos(1), entity.getGuardedPos(2));
-  	  			
-  	  			//is waypoint block
-  	  			if(tile instanceof TileEntityCrane) {
-  	  				//check xz dist < ~2 block
-  	  				if(dx > 1F || dz > 1F) {
-  	  					return false;
-  	  				}
-  	  				
-  	  				//ship wait for craning (xz < 2 blocks, y < 5 blocks)
-  	  				if(entity.getStateMinor(ID.M.CraneState) == 0) entity.setStateMinor(ID.M.CraneState, 1);
-  	  			}
+  			//get target block
+	  		TileEntity tile = ((Entity)entity).worldObj.getTileEntity(entity.getGuardedPos(0), entity.getGuardedPos(1), entity.getGuardedPos(2));
+	  		
+  			//is waypoint block
+  			if (tile instanceof TileEntityCrane)
+  			{
+  				//ship wait for craning (xz < 2 blocks, y < 5 blocks)
+  				if (distsq < 25D)
+				{
+  					if(entity.getStateMinor(ID.M.CraneState) == 0) entity.setStateMinor(ID.M.CraneState, 1);
+				}
+  				else
+  				{
+  					//go to below crane
+  	  				entity.getShipNavigate().tryMoveToXYZ(entity.getGuardedPos(0) + 0.5D, entity.getGuardedPos(1) - 2D, entity.getGuardedPos(2) + 0.5D, 1D);
+  				}
   			}
-  			else {
+  			else
+  			{
   				//cancel craning
   				entity.setStateMinor(ID.M.CraneState, 0);
   			}
   			
   			//waypoint = close to 3 block
-  			if(distsq < 9D) {
-  				//get target block
-  	  			TileEntity tile = ((Entity)entity).worldObj.getTileEntity(entity.getGuardedPos(0), entity.getGuardedPos(1), entity.getGuardedPos(2));
-  	  		
+  			if (distsq < 9D)
+  			{
   	  			//is waypoint block
-  	  			if(tile instanceof TileEntityWaypoint) {
-  	  				try {
+  	  			if (tile instanceof TileEntityWaypoint)
+  	  			{
+  	  				try
+  	  				{
   	  					updatePos = applyNextWaypoint((TileEntityWaypoint) tile, entity);
 	  	  				
 	  	  				//set follow dist
-	  	  				if(updatePos) {
+	  	  				if (updatePos)
+	  	  				{
 	  	  					entity.setStateMinor(ID.M.FollowMin, 2);
 	  	  					entity.setStateMinor(ID.M.FollowMax, 3);
+	  	  					entity.getShipNavigate().tryMoveToXYZ(entity.getGuardedPos(0) + 0.5D, entity.getGuardedPos(1), entity.getGuardedPos(2) + 0.5D, 1D);
 	  	  				}
 	  	  				
 	  	  				return updatePos;
   	  				}
-  	  				catch(Exception e) {
-  	  					//...
+  	  				catch (Exception e)
+  	  				{
+  	  					e.printStackTrace();
   	  				}
   	  			}
   			}//end dist < 3 blocks

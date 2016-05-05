@@ -2178,7 +2178,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
             	if(ticksExisted % 16 == 0) {
             		//waypoint move
             		if(EntityHelper.updateWaypointMove(this)) {
-            			shipNavigator.tryMoveToXYZ(getGuardedPos(0) + 0.5D, getGuardedPos(1), getGuardedPos(2) + 0.5D, 1D);
             			sendSyncPacket(S2CEntitySync.PID.SyncShip_Guard, true);
             		}
             		
@@ -4805,11 +4804,14 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	
   	/** chunk loader ticking */
   	public void updateChunkLoader() {
-  		//set ticket
-  		setChunkLoader();
-  		
-  		//apply ticket
-  		applyChunkLoader();
+  		if (!this.worldObj.isRemote)
+  		{
+  			//set ticket
+  	  		setChunkLoader();
+  	  		
+  	  		//apply ticket
+  	  		applyChunkLoader();
+  		}
   	}
   	
   	/** request chunk loader ticket

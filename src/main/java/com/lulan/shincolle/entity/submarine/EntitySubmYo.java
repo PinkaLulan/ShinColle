@@ -124,7 +124,7 @@ public class EntitySubmYo extends BasicEntityShipSmall implements IShipInvisible
     				//set origin position
     				float[] eyePosL;
     				float[] eyePosR;
-    				float radYaw = this.rotationYawHead * Values.N.RAD_MUL;
+    				float radYaw = this.renderYawOffset * Values.N.RAD_MUL;
     				float radPitch = this.rotationPitch * Values.N.RAD_MUL;
     				
     				//坐下位置計算

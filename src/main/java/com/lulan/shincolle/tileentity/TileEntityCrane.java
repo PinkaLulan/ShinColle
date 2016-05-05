@@ -816,16 +816,19 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 	
 	//check ship under crane waiting for craning
 	private void checkCraningShip() {
-		AxisAlignedBB box = AxisAlignedBB.getBoundingBox(xCoord - 1.5D, yCoord - 6D, zCoord - 1.5D, xCoord + 2.5D, yCoord + 5D, zCoord + 2.5D);
+		AxisAlignedBB box = AxisAlignedBB.getBoundingBox(xCoord - 7D, yCoord - 6D, zCoord - 7D, xCoord + 7D, yCoord + 6D, zCoord + 7D);
         List<BasicEntityShip> slist = this.worldObj.getEntitiesWithinAABB(BasicEntityShip.class, box);
-		
-        if(slist != null && !slist.isEmpty()) {
+
+        if (slist != null && !slist.isEmpty())
+        {
         	//get craning ship
-        	for(BasicEntityShip s : slist) {
-        		if(s.getStateMinor(ID.M.CraneState) == 2 &&
+        	for (BasicEntityShip s : slist)
+        	{
+        		if (s.getStateMinor(ID.M.CraneState) == 2 &&
         		   s.getGuardedPos(0) == xCoord &&
         		   s.getGuardedPos(1) == yCoord &&
-        		   s.getGuardedPos(2) == zCoord) {
+        		   s.getGuardedPos(2) == zCoord)
+        		{
         			this.ship = s;
         			this.ship.getExtProps().setInventoryPage(0);  //set show page to 0
         			this.ship.getShipNavigate().tryMoveToXYZ(xCoord+0.5D, yCoord-2D, zCoord+0.5D, 0.5D);
@@ -835,11 +838,13 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
         	}
         	
         	//no craning ship, get waiting ship
-        	for(BasicEntityShip s : slist) {
+        	for (BasicEntityShip s : slist)
+        	{
         		if(s.getStateMinor(ID.M.CraneState) == 1 &&
          		   s.getGuardedPos(0) == xCoord &&
          		   s.getGuardedPos(1) == yCoord &&
-         		   s.getGuardedPos(2) == zCoord) {
+         		   s.getGuardedPos(2) == zCoord)
+        		{
         			//set ship is craning
          			this.ship = s;
          			this.ship.setStateMinor(ID.M.CraneState, 2);
@@ -850,7 +855,8 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
          		}
         	}
         }
-        else {
+        else
+        {
         	this.ship = null;
         	this.sendSyncPacket();
         }

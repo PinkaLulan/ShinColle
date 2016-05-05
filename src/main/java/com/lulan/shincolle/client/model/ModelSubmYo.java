@@ -892,7 +892,7 @@ public class ModelSubmYo extends ModelBase implements IModelEmotionAdv {
 	  	//sprinting
 	    if (ent.getIsSprinting() || f1 > 0.92F)
 	    {	//奔跑動作
-	    	GL11.glTranslatef(0F, 0.5F, 0F);
+	    	GL11.glTranslatef(0F, 0.2F, 0F);
 	    	
 	    	if (ent.getStateEmotion(ID.S.State) > ID.State.NORMAL)
 	  		{
@@ -901,7 +901,7 @@ public class ModelSubmYo extends ModelBase implements IModelEmotionAdv {
 	    	
 		    //body
 		    this.Head.rotateAngleX -= 1.1F;
-	    	this.BodyMain.rotateAngleX = 1.2566F;
+	    	this.BodyMain.rotateAngleX = 1.1F;
 	    	//arm
 	    	this.ArmLeft01.rotateAngleX = -2.5133F;
 		    this.ArmLeft01.rotateAngleZ = -0.22F;

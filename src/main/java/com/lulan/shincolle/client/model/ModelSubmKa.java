@@ -210,7 +210,6 @@ public class ModelSubmKa extends ModelBase implements IModelEmotionAdv {
         this.setRotateAngle(HairL02, 0.3141592653589793F, 0.17453292519943295F, 0.17453292519943295F);
         this.Butt = new ModelRenderer(this, 52, 66);
         this.Butt.setRotationPoint(0.0F, 2.5F, 2.8F);
-        this.Butt.addBox(-7.5F, 0.0F, -7.0F, 15, 7, 8, 0.0F);
         this.setRotateAngle(Butt, 0.20943951023931953F, 0.0F, 0.0F);
         this.LegRight01 = new ModelRenderer(this, 0, 87);
         this.LegRight01.setRotationPoint(-4.4F, 6.5F, -4.0F);

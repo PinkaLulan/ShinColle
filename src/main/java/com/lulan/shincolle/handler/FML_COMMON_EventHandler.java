@@ -304,8 +304,8 @@ public class FML_COMMON_EventHandler {
 					
 					while (groups > 0 && loop > 0)
 					{
-						int offX = rng.nextInt(32) + 24;
-						int offZ = rng.nextInt(32) + 24;
+						int offX = rng.nextInt(30) + 20;
+						int offZ = rng.nextInt(30) + 20;
 						
 						switch (rng.nextInt(4))
 						{
