@@ -342,11 +342,13 @@ public class EVENT_BUS_EventHandler {
 	 * 若為perMapStorage, 則是不同world各有一份
 	 */
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
-	public void onWorldLoad(WorldEvent.Load event) {
-		LogHelper.info("DEBUG : on world load: "+event.world.provider.dimensionId);
-		
-		if(event.world != null && !ServerProxy.initServerFile) {
-			ServerProxy.initServerProxy(event.world);
+	public void onWorldLoad(WorldEvent.Load event)
+	{
+		if (event.world != null)
+		{
+			if (!ServerProxy.initServerFile) {
+				ServerProxy.initServerProxy(event.world);
+			}
 		}
 	}
 	

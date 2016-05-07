@@ -161,6 +161,8 @@ public class BlockFrame extends BasicBlock {
 		if(entity.isSneaking()) {
 			entity.motionY = 0.08D;
 		}
+		
+		entity.fallDistance = 0F;
 	}
 	
 //	//can leash TODO issue: knot will setDead after 100 ticks

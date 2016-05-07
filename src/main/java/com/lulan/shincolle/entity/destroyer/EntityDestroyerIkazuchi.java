@@ -198,6 +198,23 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall {
 	//檢查是否可以合體
 	public static void tryGattai(BasicEntityShip ship)
 	{
+		//stop gattai if no fuel
+		if (ship != null && ship.getStateFlag(ID.F.NoFuel))
+		{
+			//stop gattai
+			if (ship.riddenByEntity instanceof EntityDestroyerIkazuchi)
+			{
+				ship.riddenByEntity.mountEntity(null);
+			}
+			else if (ship.ridingEntity instanceof EntityDestroyerInazuma)
+			{
+				//stop gattai
+				ship.mountEntity(null);
+			}
+			
+			return;
+		}
+		
 		//not sitting, hp > 50%, 
 		if (ship != null && !ship.getStateFlag(ID.F.NoFuel) && !ship.isSitting() && ship.getHealth() > ship.getMaxHealth() * 0.5F)
 		{

@@ -64,7 +64,8 @@ public class EntityHarbourHime extends BasicEntityShipCV {
 	}
 	
 	@Override
-	public void setAIList() {
+	public void setAIList()
+	{
 		super.setAIList();
 		
 		//use range attack
@@ -74,19 +75,24 @@ public class EntityHarbourHime extends BasicEntityShipCV {
 	
 	//check entity state every tick
   	@Override
-  	public void onLivingUpdate() {
+  	public void onLivingUpdate()
+  	{
   		
   		//server side
-  		if(!worldObj.isRemote) {
+  		if (!worldObj.isRemote)
+  		{
   			//heal effect
-        	if(this.ticksExisted % 128 == 0) {
+        	if (this.ticksExisted % 128 == 0)
+        	{
         		//1: 增強被動回血
-        		if(getStateMinor(ID.M.NumGrudge) > 0 && this.getHealth() < this.getMaxHealth()) {
+        		if (getStateMinor(ID.M.NumGrudge) > 0 && this.getHealth() < this.getMaxHealth())
+        		{
         			this.setHealth(this.getHealth() + this.getMaxHealth() * 0.03125F);
         		}
         		
         		//2: 結婚後, 周圍某一目標回血, 包括玩家, 回血目標依等級提昇
-				if(getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.M.NumGrudge) > 0) {
+				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.M.NumGrudge) > 0)
+				{
 					//判定bounding box內是否有可以回血的目標
 					int healCount = this.getLevel() / 50 + 1;
 		            EntityLivingBase hitEntity = null;
@@ -94,27 +100,35 @@ public class EntityHarbourHime extends BasicEntityShipCV {
 		            hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, this.boundingBox.expand(12D, 12D, 12D));
 		            TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
 
-		            for(int i = 0; i < hitList.size(); i++) {
+		            for (int i = 0; i < hitList.size(); i++)
+		            {
+		            	boolean canHeal = false;
+		            	
 		            	//補血名額沒了, break
-		            	if(healCount <= 0) break;
+		            	if (healCount <= 0) break;
 		            	
 		            	hitEntity = (EntityLivingBase) hitList.get(i);
 		            	
 		            	//抓可以補血的目標, 不包含自己
-		            	if(hitEntity != this && hitEntity.getHealth() / hitEntity.getMaxHealth() < 0.94F) {
-	            			if(hitEntity instanceof EntityPlayer) {
+		            	if (hitEntity != this && hitEntity.getHealth() / hitEntity.getMaxHealth() < 0.94F)
+		            	{
+	            			if (hitEntity instanceof EntityPlayer && EntityHelper.checkIsAlly(this, hitEntity))
+	            			{
 	            				hitEntity.heal(4F + this.getLevel() * 0.06F);
-		            			healCount--;
-		            			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, hitEntity, 1D, 0D, 0D, 4, false), point);
+	            				canHeal = true;
 		            		}
-		            		else if(hitEntity instanceof BasicEntityShip && EntityHelper.checkIsAlly(this, hitEntity)) {
+		            		else if (hitEntity instanceof BasicEntityShip && EntityHelper.checkIsAlly(this, hitEntity))
+		            		{
 		            			hitEntity.heal(4F + hitEntity.getMaxHealth() * 0.06F + this.getLevel() * 0.2F);
-		            			healCount--;
-		            			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, hitEntity, 1D, 0D, 0D, 4, false), point);
-			            	}
+		            			canHeal = true;
+		            		}
 	            			
-	            			//grudge--
-	            			this.setStateMinor(ID.M.NumGrudge, this.getStateMinor(ID.M.NumGrudge) - 50);
+	            			if (canHeal)
+	            			{
+	            				CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, hitEntity, 1D, 0D, 0D, 4, false), point);
+	            				healCount--;
+		            			decrGrudgeNum(50);
+	            			}
 		            	}
 		            }
 				}//end heal ability

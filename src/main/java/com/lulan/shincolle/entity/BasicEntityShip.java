@@ -3313,12 +3313,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		double distX = posX - ShipPrevX;
 		double distY = posY - ShipPrevY;
 		double distZ = posZ - ShipPrevZ;
-		ShipPrevX = posX;
-		ShipPrevY = posY;
-		ShipPrevZ = posZ;
 		
 		//calc total consumption
     	int valueConsume = (int) MathHelper.sqrt_double(distX*distX + distY*distY + distZ*distZ);
+    	if (ShipPrevY <= 0D) valueConsume = 0;  //do not decrGrudge if ShipPrev not inited
     	
     	//morale-- per 2 blocks
     	int m = (int)((float)valueConsume * 0.5F);
@@ -3344,6 +3342,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     	
     	//eat grudge
     	decrGrudgeNum(valueConsume);
+    	
+    	//update pos
+    	ShipPrevX = posX;
+		ShipPrevY = posY;
+		ShipPrevZ = posZ;
   	}
   	
   	//update formation buffs, SERVER SIDE ONLY
