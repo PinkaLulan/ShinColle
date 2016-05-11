@@ -21,13 +21,16 @@ abstract public class BasicTileInventory extends BasicTileEntity implements ISid
   	}
     
   	@Override
-  	public int getSizeInventory() {
-  		return slots.length;
+  	public int getSizeInventory()
+  	{
+  		if (slots != null) return slots.length;
+  		return 0;
   	}
   	
   	@Override
-  	public ItemStack getStackInSlot(int i) {
-  		if(slots != null) return slots[i];
+  	public ItemStack getStackInSlot(int i)
+  	{
+  		if (slots != null) return slots[i];
   		return null;
   	}
   	
@@ -71,12 +74,20 @@ abstract public class BasicTileInventory extends BasicTileEntity implements ISid
   	
     //將slot設成目標itemstack(也可以設成null) 用於decrStackSize等方法
   	@Override
-  	public void setInventorySlotContents(int i, ItemStack itemstack) {
-  		slots[i] = itemstack;
-  		//若手上物品超過該格子限制數量, 則只能放進限制數量
-  		if (itemstack != null && itemstack.stackSize > getInventoryStackLimit()) {
-  			itemstack.stackSize = getInventoryStackLimit();
-  		}	
+  	public void setInventorySlotContents(int i, ItemStack itemstack)
+  	{
+  		if (slots != null && slots.length > i)
+		{
+			slots[i] = itemstack;
+			
+			//若手上物品超過該格子限制數量, 則只能放進限制數量
+	  		if (itemstack != null && itemstack.stackSize > getInventoryStackLimit())
+	  		{
+	  			itemstack.stackSize = getInventoryStackLimit();
+	  		}
+	  		
+	  		this.markDirty();
+		}
   	}
   	
     //每格可放的最大數量上限

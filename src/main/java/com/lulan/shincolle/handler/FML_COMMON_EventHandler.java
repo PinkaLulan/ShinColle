@@ -327,7 +327,7 @@ public class FML_COMMON_EventHandler {
 							break;
 						}
 
-						Block blockY = w.getBlock(spawnX, 62, spawnZ);
+						Block blockY = w.getBlock(spawnX, w.provider.getAverageGroundLevel() - 2, spawnZ);
 						LogHelper.info("DEBUG : spawn mob ship: group: "+groups+" get block: "+blockY.getLocalizedName()+" "+spawnX+" 62 "+spawnZ);
 						
 						//spawn on water
@@ -435,7 +435,7 @@ public class FML_COMMON_EventHandler {
 						break;		
 					}
 					
-					Block blockY = w.getBlock(spawnX, 63, spawnZ);
+					Block blockY = w.getBlock(spawnX, w.provider.getAverageGroundLevel() - 2, spawnZ);
 					
 					LogHelper.info("DEBUG : spawn boss: check block: "+blockY.getLocalizedName()+" "+spawnX+" 63 "+spawnZ);
 					//生成在水面

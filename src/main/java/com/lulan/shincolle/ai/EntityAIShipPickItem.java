@@ -85,44 +85,57 @@ public class EntityAIShipPickItem extends EntityAIBase {
     }
 
     @Override
-	public void updateTask() {
-    	if(hostShip != null) {
+	public void updateTask()
+    {
+    	if (hostShip != null)
+    	{
     		//cd--
     		this.pickDelay--;
     		
-    		//check every 32 ticks
-    		if(this.hostShip.ticksExisted % 32 == 0) {
-    			//update parms
-    			updateShipParms();
-    			
+    		//check every 8 ticks
+    		if(this.hostShip.ticksExisted % 8 == 0)
+    		{
     			//check item on ground
     			this.entItem = getNearbyEntityItem();
     			
-    			if(this.entItem != null && this.entItem.isEntityAlive()) {
-    				//go to entity
-    				if(this.hostMount != null) {
-    					this.hostMount.getShipNavigate().tryMoveToEntityLiving(this.entItem, 1D);
-    				}
-    				else if(this.hostShip != null) {
-    					this.hostShip.getShipNavigate().tryMoveToEntityLiving(this.entItem, 1D);
-    				}
-    			}
-    		}//end every 32 ticks
-    		
+    			//check every 16 ticks
+        		if (this.hostShip.ticksExisted % 16 == 0)
+        		{
+        			//update parms
+        			updateShipParms();
+        			
+        			if (this.entItem != null && this.entItem.isEntityAlive())
+        			{
+        				//go to entity
+        				if (this.hostMount != null)
+        				{
+        					this.hostMount.getShipNavigate().tryMoveToEntityLiving(this.entItem, 1D);
+        				}
+        				else if (this.hostShip != null)
+        				{
+        					this.hostShip.getShipNavigate().tryMoveToEntityLiving(this.entItem, 1D);
+        				}
+        			}
+        		}//end every 16 ticks
+    		}//end every 8 ticks
+			
     		//pick up nearby item
-    		if(this.pickDelay <= 0 && this.entItem != null) {
+    		if (this.pickDelay <= 0 && this.entItem != null)
+    		{
     			this.pickDelay = this.pickDelayMax;
     			
     			//get item if close to 9D (3 blocks)
-    			if((this.hostMount != null && this.hostMount.getDistanceSqToEntity(this.entItem) < 9D) ||
-    			   (this.hostShip != null && this.hostShip.getDistanceSqToEntity(this.entItem) < 9D)) {
+    			if ((this.hostMount != null && this.hostMount.getDistanceSqToEntity(this.entItem) < 9D) ||
+    				(this.hostShip != null && this.hostShip.getDistanceSqToEntity(this.entItem) < 9D))
+    			{
     				//add item to inventory
     				EntityItem entitem = (EntityItem) this.entItem;
     				ItemStack itemstack = entitem.getEntityItem();
     				int i = itemstack.stackSize;
     				
-    				if(entitem.delayBeforeCanPickup <= 0 &&
-    				   this.hostShip.getExtProps().addItemStackToInventory(itemstack)) {
+    				if (entitem.delayBeforeCanPickup <= 0 &&
+    					this.hostShip.getExtProps().addItemStackToInventory(itemstack))
+    				{
     					//play sound
         				this.hostShip.worldObj.playSoundAtEntity(this.hostShip, "random.pop", ConfigHandler.volumeShip,
         						((this.hostShip.getRNG().nextFloat() - this.hostShip.getRNG().nextFloat()) * 0.7F + 1.0F) * 2.0F);
@@ -131,7 +144,7 @@ public class EntityAIShipPickItem extends EntityAIBase {
         				//play sound
         				if (this.hostShip.soundCD <= 0 && this.hostShip.getRNG().nextInt(2) == 0)
         		    	{
-        					this.hostShip.soundCD = 20 + this.hostShip.getRNG().nextInt(10);
+        					this.hostShip.soundCD = 40 + this.hostShip.getRNG().nextInt(10);
         					this.hostShip.worldObj.playSoundAtEntity(this.hostShip, this.hostShip.getSoundString(ID.Sound.Item), ConfigHandler.volumeShip, 1F);
             			}
         				
@@ -160,7 +173,8 @@ public class EntityAIShipPickItem extends EntityAIBase {
     }
     
     //get random item entity on ground
-    private Entity getNearbyEntityItem() {
+    private Entity getNearbyEntityItem()
+    {
     	//get entity item
     	Entity getitem = null;
         List getlist = null;
@@ -169,7 +183,8 @@ public class EntityAIShipPickItem extends EntityAIBase {
         		this.hostShip.boundingBox.expand(this.pickRange, this.pickRange * 0.5F, this.pickRange));
         
         //get random item
-        if(getlist != null && !getlist.isEmpty()) {
+        if (getlist != null && !getlist.isEmpty())
+        {
         	//sort by dist
         	Collections.sort(getlist, this.targetSorter);
         	getitem = (Entity) getlist.get(0);
@@ -179,11 +194,12 @@ public class EntityAIShipPickItem extends EntityAIBase {
     }
     
     //update parms
-    private void updateShipParms() {
+    private void updateShipParms()
+    {
     	float speed = this.hostShip.getAttackSpeed();
     	if(speed < 1F) speed = 1F;
     	
-    	this.pickDelayMax = (int) (10F / speed + 10F);
+    	this.pickDelayMax = (int) (10F / speed);
     	this.pickRange = this.pickRangeBase + this.hostShip.getAttackRange() * 0.5F;
     }
     

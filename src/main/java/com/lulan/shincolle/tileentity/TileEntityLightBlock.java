@@ -53,15 +53,17 @@ public class TileEntityLightBlock extends BasicTileEntity {
 		
 		if(!this.worldObj.isRemote) {
 			if(this.tick > this.life) {
-				//replace block
-				switch(type) {
-				case 1:   //water
-					this.worldObj.setBlock(this.xCoord, this.yCoord, this.zCoord, Blocks.water);
-					break;
-				default:  //default air
-					this.worldObj.setBlock(this.xCoord, this.yCoord, this.zCoord, Blocks.air);
-					break;
-				}
+				this.worldObj.setBlock(this.xCoord, this.yCoord, this.zCoord, Blocks.air);
+				
+//				//replace block
+//				switch(type) {
+//				case 1:   //water
+//					this.worldObj.setBlock(this.xCoord, this.yCoord, this.zCoord, Blocks.water);
+//					break;
+//				default:  //default air
+//					this.worldObj.setBlock(this.xCoord, this.yCoord, this.zCoord, Blocks.air);
+//					break;
+//				}
 			}
 		}
 	}

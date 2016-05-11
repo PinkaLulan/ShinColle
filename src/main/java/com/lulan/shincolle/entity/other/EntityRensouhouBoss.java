@@ -211,35 +211,43 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
 			boolean setdead = false;
 			
 			//owner消失(通常是server restart)
-			if(this.host == null) {
+			if (this.host == null || !((Entity)host).isEntityAlive())
+			{
 				setdead = true;
 			}
-			else {
+			else
+			{
 				//超過60秒自動消失
-				if(this.ticksExisted > 1200) {
+				if(this.ticksExisted > 1200)
+				{
 					setdead = true;
 				}
 
 				//target is dead
-				if(this.getEntityTarget() == null || this.getEntityTarget().isDead) {
+				if (this.getEntityTarget() == null || this.getEntityTarget().isDead)
+				{
 					//change target
-					if(this.host != null && this.host.getEntityTarget() != null &&
-					   this.host.getEntityTarget().isEntityAlive()) {
+					if (this.host != null && this.host.getEntityTarget() != null &&
+						this.host.getEntityTarget().isEntityAlive())
+					{
 						this.atkTarget = this.host.getEntityTarget();
 					}
-					else {
+					else
+					{
 						setdead = true;
 					}	
 				}
 				
 				//防止溺死
-				if(this.isInWater() && this.ticksExisted % 100 == 0) {
+				if (this.isInWater() && this.ticksExisted % 100 == 0)
+				{
 					this.setAir(300);
 				}
 			}
 			
 			//is done
-			if(setdead) {
+			if (setdead)
+			{
 				this.setDead();
 			}
 		}

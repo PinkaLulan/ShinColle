@@ -87,6 +87,17 @@ public class EntityNorthernHime extends BasicEntityShipCV {
   			//every 64 ticks
         	if (this.ticksExisted % 64 == 0)
         	{
+        		//increase morale when riding
+        		if (this.isRiding())
+        		{
+        			int m = this.getStateMinor(ID.M.Morale);
+        			
+        			if (m < 7000)
+        			{
+        				this.setStateMinor(ID.M.Morale, m + 200);
+        			}
+        		}
+        		
         		//1: 增強被動回血
         		if (getStateMinor(ID.M.NumGrudge) > 0 && this.getHealth() < this.getMaxHealth())
         		{
@@ -261,21 +272,26 @@ public class EntityNorthernHime extends BasicEntityShipCV {
 	}
 
 	@Override
-  	public boolean interact(EntityPlayer player) {	
+  	public boolean interact(EntityPlayer player)
+	{	
 		ItemStack itemstack = player.inventory.getCurrentItem();  //get item in hand
 		
 		//use cake to change state
-		if(itemstack != null) {
-			if(itemstack.getItem() == Items.cake) {
+		if (itemstack != null)
+		{
+			if (itemstack.getItem() == Items.cake)
+			{
 				this.setShipOutfit(player.isSneaking());
 				return true;
 			}
 		}
 		
 		//pick up northern for riding
-		if(!this.worldObj.isRemote) {
-			if(EntityHelper.checkSameOwner(this, player) &&
-			   this.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {
+		if (!this.worldObj.isRemote)
+		{
+			if (this.isSitting() && EntityHelper.checkSameOwner(this, player) &&
+				this.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
+			{
 				this.setEntitySit();
 				this.mountEntity(player);
 				this.getShipNavigate().clearPathEntity();

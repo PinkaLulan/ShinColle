@@ -2,6 +2,7 @@ package com.lulan.shincolle.block;
 
 import java.util.Random;
 
+import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.settings.GameSettings;
@@ -24,9 +25,9 @@ public class BlockFrame extends BasicBlock {
 	
 	IIcon[] icons = new IIcon[5];
 	Random rand = new Random();
-	
+
 	public BlockFrame() {
-		super(Material.glass);
+		super(Material.iron);
 		this.setBlockName("BlockFrame");
 		this.setHarvestLevel("pickaxe", 0);
 	    this.setHardness(1F);
@@ -55,6 +56,12 @@ public class BlockFrame extends BasicBlock {
 	
 	@Override
 	public boolean isOpaqueCube() {
+		return false;
+	}
+	
+	@Override
+	public boolean isNormalCube()
+	{
 		return false;
 	}
 	
@@ -141,24 +148,30 @@ public class BlockFrame extends BasicBlock {
 	
 	//ladder moving
 	@Override
-	public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity entity) {
+	public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity entity)
+	{
 		//if client player
-		if(entity instanceof EntityPlayer && world.isRemote) {
+		if (entity instanceof EntityPlayer && world.isRemote)
+		{
 			GameSettings keySet = ClientProxy.getGameSetting();
 			
-			if(keySet.keyBindForward.getIsKeyPressed()) {
+			if (keySet.keyBindForward.getIsKeyPressed())
+			{
 				entity.addVelocity(0D, 0.4D, 0D);
 			}
 		}
 		
-		if(entity.motionY < -0.1D) {
+		if (entity.motionY < -0.1D)
+		{
 			entity.motionY = -0.1D;
 		}
-		else if(entity.motionY > 0.4D) {
+		else if (entity.motionY > 0.4D)
+		{
 			entity.motionY = 0.4D;
 		}
 		
-		if(entity.isSneaking()) {
+		if (entity.isSneaking())
+		{
 			entity.motionY = 0.08D;
 		}
 		

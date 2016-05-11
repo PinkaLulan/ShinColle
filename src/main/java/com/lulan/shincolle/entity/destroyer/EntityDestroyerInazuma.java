@@ -16,6 +16,7 @@ import com.lulan.shincolle.entity.ExtendShipProps;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 
@@ -72,24 +73,46 @@ public class EntityDestroyerInazuma extends BasicEntityShipSmall {
     
     //check entity state every tick
   	@Override
-  	public void onLivingUpdate() {
+  	public void onLivingUpdate()
+  	{
   		super.onLivingUpdate();
   		
   		//server side
-  		if (!worldObj.isRemote) {
-  			if (this.ticksExisted % 128 == 0)
+  		if (!worldObj.isRemote)
+  		{
+  			if (this.ticksExisted % 32 == 0)
   			{
-  				//add aura to master every 128 ticks
-  				EntityPlayerMP player = (EntityPlayerMP) EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
-  				
-  				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.M.NumGrudge) > 0 && player != null && getDistanceSqToEntity(player) < 256D)
+  				//update gattai
+  				if (this.riddenByEntity instanceof EntityDestroyerIkazuchi)
   				{
-  					//potion effect: id, time, level
-  	  	  			player.addPotionEffect(new PotionEffect(Potion.moveSpeed.id, 300, getStateMinor(ID.M.ShipLevel) / 45 + 1));
+  					this.isGattai = true;
   				}
   				
-  				//try gattai
-  				EntityDestroyerIkazuchi.tryGattai(this);
+  				//add morale when gattai
+  				if (this.isGattai)
+  				{
+  					int m = this.getStateMinor(ID.M.Morale);
+  					
+  					if (m < 7000)
+  					{
+  		  	  			this.setStateMinor(ID.M.Morale, m + 100);
+  		  	  		}
+  				}
+  				
+  				if (this.ticksExisted % 128 == 0)
+  	  			{
+  	  				//add aura to master every 128 ticks
+  	  				EntityPlayerMP player = (EntityPlayerMP) EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
+  	  				
+  	  				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.M.NumGrudge) > 0 && player != null && getDistanceSqToEntity(player) < 256D)
+  	  				{
+  	  					//potion effect: id, time, level
+  	  	  	  			player.addPotionEffect(new PotionEffect(Potion.moveSpeed.id, 300, getStateMinor(ID.M.ShipLevel) / 45 + 1));
+  	  				}
+  	  				
+  	  				//try gattai
+  	  				EntityDestroyerIkazuchi.tryGattai(this);
+  	  			}
   			}
   		}
   		//client side
