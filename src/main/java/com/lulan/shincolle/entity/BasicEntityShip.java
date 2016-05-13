@@ -154,13 +154,16 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	private Ticket chunkTicket;
 	private Set<ChunkCoordIntPair> chunks;
 	
+	//for debug
+	public static boolean stopAI = false;  //stop onUpdate, onLivingUpdate
+	
 	
 	public BasicEntityShip(World world) {
 		super(world);
 		this.ignoreFrustumCheck = true;  //即使不在視線內一樣render
 		this.maxHurtResistantTime = 2;   //受傷無敵時間降為2 ticks
 		this.soundCD = 0;
-		
+
 		//init value
 		this.isImmuneToFire = true;	//set ship immune to lava
 		this.StateEquip = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F};
@@ -220,6 +223,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		randomSensitiveBody();
 		
 	}
+	
+	@Override
+	protected boolean canDespawn()
+    {
+        return false;
+    }
 	
 	@Override
 	public boolean isAIEnabled() {
@@ -1991,8 +2000,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	//update ship move helper
 	@Override
 	protected void updateAITasks() {
+		if (stopAI)
+		{
+			return;
+		}
+
 		super.updateAITasks();
-		
         EntityHelper.updateShipNavigator(this);
     }
 	
@@ -2004,6 +2017,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	 */
 	@Override
 	public void onUpdate() {
+		if (stopAI)
+		{
+			return;
+		}
+		
 		super.onUpdate();
 		EntityHelper.checkDepth(this);	//both side
 		
@@ -2131,7 +2149,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	 *  onLivingUpdate = server update only
 	 */
 	@Override
-	public void onLivingUpdate() {
+	public void onLivingUpdate()
+	{
+		if (stopAI)
+		{
+			return;
+		}
+		
         super.onLivingUpdate();
         
         //debug TODO
@@ -2855,81 +2879,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		if(getStateFlag(ID.F.NoFuel)) { //no fuel, clear AI
 			//原本有AI, 則清除之
 			if(this.targetTasks.taskEntries.size() > 0) {
-//				LogHelper.info("DEBUG : No fuel, clear AI "+this);
-				setStateEmotion(ID.S.Emotion, ID.Emotion.HUNGRY, false);
-				setStateMinor(ID.M.Morale, 0);
-				clearAITasks();
-				clearAITargetTasks();
-				sendSyncPacketAllValue();
-				
-				//設定mount的AI
-				if(this.ridingEntity instanceof BasicEntityMount) {
-					((BasicEntityMount) this.ridingEntity).clearAITasks();
-				}
-				
-				//show no fuel emotes
-				if(this.EmotionTicks[4] <= 0) {
-					this.EmotionTicks[4] = 20;
-					switch(this.rand.nextInt(7)) {
-					case 1:
-						applyParticleEmotion(0);  //drop
-						break;
-					case 2:
-						applyParticleEmotion(32);  //hmm
-						break;
-					case 3:
-						applyParticleEmotion(2);  //panic
-						break;
-					case 4:
-						applyParticleEmotion(12);  //omg
-						break;
-					case 5:
-						applyParticleEmotion(5);  //...
-						break;
-					case 6:
-						applyParticleEmotion(20);  //orz
-						break;
-					default:
-						applyParticleEmotion(10);  //dizzy
-						break;
-					}
-				}
+				updateFuelState(true);
 			}	
 		}
 		else { //has fuel, set AI
 			if(this.targetTasks.taskEntries.size() < 1) {
-//				LogHelper.info("DEBUG : Get fuel, set AI "+this);
-				setStateEmotion(ID.S.Emotion, ID.Emotion.NORMAL, false);
-				clearAITasks();
-				clearAITargetTasks();
-				setAIList();
-				setAITargetList();
-				sendSyncPacketAllValue();
-				
-				//設定mount的AI
-				if(this.ridingEntity instanceof BasicEntityMount) {
-					((BasicEntityMount) this.ridingEntity).clearAITasks();
-					((BasicEntityMount) this.ridingEntity).setAIList();
-				}
-				
-				//show recovery emotes
-				if(this.EmotionTicks[4] <= 0) {
-					this.EmotionTicks[4] = 40;
-					switch(this.rand.nextInt(5)) {
-					case 1:
-						applyParticleEmotion(31);  //shy
-						break;
-					case 2:
-						applyParticleEmotion(32);  //hmm
-						break;
-					case 3:
-						applyParticleEmotion(7);  //note
-						break;
-					default:
-						applyParticleEmotion(1);  //love
-						break;
-					}
-				}
+				updateFuelState(false);
 			}
 		}
 	}
@@ -2995,6 +2950,92 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.ExtProps.slots[i] = getItem;	
 		
 		return true;	
+	}
+
+	//update AI task when no fuel
+	protected void updateFuelState(boolean nofuel)
+	{
+		if (nofuel)
+		{
+			setStateEmotion(ID.S.Emotion, ID.Emotion.HUNGRY, false);
+			setStateMinor(ID.M.Morale, 0);
+			clearAITasks();
+			clearAITargetTasks();
+			sendSyncPacketAllValue();
+			
+			//設定mount的AI
+			if (this.ridingEntity instanceof BasicEntityMount)
+			{
+				((BasicEntityMount) this.ridingEntity).clearAITasks();
+			}
+			
+			//show no fuel emotes
+			if (this.EmotionTicks[4] <= 0)
+			{
+				this.EmotionTicks[4] = 20;
+				switch (this.rand.nextInt(7))
+				{
+				case 1:
+					applyParticleEmotion(0);  //drop
+					break;
+				case 2:
+					applyParticleEmotion(32);  //hmm
+					break;
+				case 3:
+					applyParticleEmotion(2);  //panic
+					break;
+				case 4:
+					applyParticleEmotion(12);  //omg
+					break;
+				case 5:
+					applyParticleEmotion(5);  //...
+					break;
+				case 6:
+					applyParticleEmotion(20);  //orz
+					break;
+				default:
+					applyParticleEmotion(10);  //dizzy
+					break;
+				}
+			}
+		}
+		else
+		{
+			setStateEmotion(ID.S.Emotion, ID.Emotion.NORMAL, false);
+			clearAITasks();
+			clearAITargetTasks();
+			setAIList();
+			setAITargetList();
+			sendSyncPacketAllValue();
+			
+			//設定mount的AI
+			if (this.ridingEntity instanceof BasicEntityMount)
+			{
+				((BasicEntityMount) this.ridingEntity).clearAITasks();
+				((BasicEntityMount) this.ridingEntity).setAIList();
+			}
+			
+			//show recovery emotes
+			if (this.EmotionTicks[4] <= 0)
+			{
+				this.EmotionTicks[4] = 40;
+				switch (this.rand.nextInt(5))
+				{
+				case 1:
+					applyParticleEmotion(31);  //shy
+					break;
+				case 2:
+					applyParticleEmotion(32);  //hmm
+					break;
+				case 3:
+					applyParticleEmotion(7);  //note
+					break;
+				default:
+					applyParticleEmotion(1);  //love
+					break;
+				}
+			}
+		}
 	}
 
 	//find item in ship inventory

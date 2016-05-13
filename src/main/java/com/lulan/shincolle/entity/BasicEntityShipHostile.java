@@ -63,6 +63,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	protected Entity atkTarget;
 	protected Entity rvgTarget;					//revenge target
 	protected int revengeTime;					//revenge target time
+	public static boolean stopAI = false;		//stop onUpdate, onLivingUpdate
 		
 	
 	public BasicEntityShipHostile(World world) {
@@ -620,6 +621,11 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	
 	@Override
 	public void onUpdate() {
+		if (stopAI)
+		{
+			return;
+		}
+		
 		super.onUpdate();
 		
 		//both side
@@ -649,6 +655,11 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	//check entity state every tick
 	@Override
 	public void onLivingUpdate() {
+		if (stopAI)
+		{
+			return;
+		}
+		
 		super.onLivingUpdate();
 		
 		//server side
@@ -728,8 +739,12 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	//update ship move helper
 	@Override
 	protected void updateAITasks() {
-		super.updateAITasks();
+		if (stopAI)
+		{
+			return;
+		}
 		
+		super.updateAITasks();
         EntityHelper.updateShipNavigator(this);
     }
 	

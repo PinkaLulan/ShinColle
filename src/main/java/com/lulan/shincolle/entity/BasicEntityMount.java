@@ -4,7 +4,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAIOpenDoor;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -71,6 +70,8 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	//AI
 	protected double ShipDepth;			//水深, 用於水中高度判定
 	public int keyPressed;				//key(bit): 0:W 1:S 2:A 3:D 4:Jump
+	public static boolean stopAI = false;  //stop onUpdate, onLivingUpdate
+	
 	
     public BasicEntityMount(World world) {	//client side
 		super(world);
@@ -367,7 +368,23 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   	}
 	
 	@Override
+	public void onLivingUpdate()
+	{
+		if (stopAI)
+		{
+			return;
+		}
+		
+		super.onLivingUpdate();
+	}
+	
+	@Override
 	public void onUpdate() {
+		if (stopAI)
+		{
+			return;
+		}
+		
 		super.onUpdate();
 		
 		this.updateArmSwingProgress();
@@ -1153,7 +1170,13 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	
 	//update ship move helper
 	@Override
-	protected void updateAITasks() {
+	protected void updateAITasks()
+	{
+		if (stopAI)
+		{
+			return;
+		}
+		
 		super.updateAITasks();
         EntityHelper.updateShipNavigator(this);
     }

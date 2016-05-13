@@ -41,7 +41,7 @@ public class EntityBattleshipRe extends BasicEntityShipCV {
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BBV]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BBV]);
 		this.ModelPos = new float[] {-6F, 10F, 0F, 40F};
-		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
+		this.ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		this.launchHeight = this.height * 0.8F;
 		
 		this.postInit();

@@ -39,7 +39,7 @@ public class ItemBlockWaypoint extends BasicItemBlock {
                 int x = hitobj.blockX;
                 int y = hitobj.blockY;
                 int z = hitobj.blockZ;
-                LogHelper.info("AAAAAAAAAAAA "+world.getBlock(x, y, z).getUnlocalizedName());
+                
                 if(!player.canPlayerEdit(x, y, z, hitobj.sideHit, item)) {
                     return item;
                 }

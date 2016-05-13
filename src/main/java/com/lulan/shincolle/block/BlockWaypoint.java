@@ -19,12 +19,15 @@ public class BlockWaypoint extends BasicBlockContainer {
 
 	
 	public BlockWaypoint() {
-		super(Material.glass);  //不指定型態 預設即為rock
+		this(Material.glass);
 		this.setBlockName("BlockWaypoint");
+	}
+	
+	public BlockWaypoint(Material mat) {
+		super(mat);
 		this.setStepSound(soundTypeGlass);
 		this.setHardness(0F);
 		this.setLightOpacity(0);
-	    
 	}
 	
 	@Override

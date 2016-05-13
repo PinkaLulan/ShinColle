@@ -57,7 +57,7 @@ abstract public class BasicBlockMulti extends BasicBlockContainer {
 	    }
 	    else {
 	    	return this.blockIcon;
-	    }    
+	    }
 	}
 	
 	@Override

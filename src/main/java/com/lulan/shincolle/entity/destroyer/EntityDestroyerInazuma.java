@@ -143,6 +143,23 @@ public class EntityDestroyerInazuma extends BasicEntityShipSmall {
   	}
   	
   	@Override
+  	protected void updateFuelState(boolean nofuel)
+	{
+  		if (this.isGattai && nofuel)
+  		{
+  			this.isGattai = false;
+
+  			if (this.riddenByEntity instanceof EntityDestroyerIkazuchi)
+  			{
+  				((EntityDestroyerIkazuchi) this.riddenByEntity).isGattai = false;
+  				this.riddenByEntity.mountEntity(null);
+  			}
+  		}
+  		
+  		super.updateFuelState(nofuel);
+	}
+  	
+  	@Override
   	public boolean interact(EntityPlayer player) {	
 		ItemStack itemstack = player.inventory.getCurrentItem();  //get item in hand
 		
