@@ -73,7 +73,6 @@ public class ModelDestroyerAkatsuki extends ModelBase implements IModelEmotionAd
     public ModelRenderer Hat03b;
     public ModelRenderer Hat03c;
     public ModelRenderer Hat03d;
-    public ModelRenderer Hat02b;
     public ModelRenderer ArmLeft02;
     public ModelRenderer ArmLeft03;
     public ModelRenderer EquipTL03;
@@ -263,7 +262,7 @@ public class ModelDestroyerAkatsuki extends ModelBase implements IModelEmotionAd
         this.EquipMain01.addBox(-5.5F, -1.0F, 0.0F, 11, 9, 12, 0.0F);
         this.Hat02a = new ModelRenderer(this, 55, 0);
         this.Hat02a.setRotationPoint(0.0F, 2.0F, -6.0F);
-        this.Hat02a.addBox(-5.0F, 0.0F, -5.0F, 10, 0, 5, 0.0F);
+        this.Hat02a.addBox(-4.5F, 0.0F, -6.0F, 9, 0, 6, 0.0F);
         this.setRotateAngle(Hat02a, 0.08726646259971647F, 0.0F, 0.0F);
         this.Hat03c = new ModelRenderer(this, 23, 43);
         this.Hat03c.setRotationPoint(-0.5F, 2.0F, 0.0F);
@@ -370,10 +369,6 @@ public class ModelDestroyerAkatsuki extends ModelBase implements IModelEmotionAd
         this.EquipMain04.setRotationPoint(0.0F, -16.5F, 9.0F);
         this.EquipMain04.addBox(-3.0F, 0.0F, -3.0F, 6, 16, 6, 0.0F);
         this.setRotateAngle(EquipMain04, -0.08726646259971647F, 0.0F, 0.0F);
-        this.Hat02b = new ModelRenderer(this, 55, 0);
-        this.Hat02b.setRotationPoint(0.0F, 0.0F, -5.0F);
-        this.Hat02b.addBox(-5.0F, 0.0F, -5.0F, 10, 0, 5, 0.0F);
-        this.setRotateAngle(Hat02b, -0.13962634015954636F, 0.0F, 0.0F);
         this.EquipTR02d = new ModelRenderer(this, 0, 0);
         this.EquipTR02d.setRotationPoint(-1.3F, -2.3F, 3.0F);
         this.EquipTR02d.addBox(-1.0F, -1.0F, 0.0F, 2, 2, 2, 0.0F);
@@ -539,7 +534,6 @@ public class ModelDestroyerAkatsuki extends ModelBase implements IModelEmotionAd
         this.EquipTR02.addChild(this.EquipTR02f);
         this.EquipC05a.addChild(this.EquipC05b);
         this.EquipMain01.addChild(this.EquipMain04);
-        this.Hat02a.addChild(this.Hat02b);
         this.EquipTR02.addChild(this.EquipTR02d);
         this.LegRight02.addChild(this.LegRight03);
         this.EquipC12.addChild(this.EquipC15a);

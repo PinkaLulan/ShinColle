@@ -319,8 +319,8 @@ public class ShipCalc {
         		return getEntityToSpawnName(ID.Ship.DestroyerInazuma+2000);
         	case 4:
         		return getEntityToSpawnName(ID.Ship.DestroyerAkatsuki+2000);
-//        	case 5:
-//        		return getEntityToSpawnName(ID.Ship.DestroyerHibiki+2000);
+        	case 5:
+        		return getEntityToSpawnName(ID.Ship.DestroyerHibiki+2000);
         	default:
         		return getEntityToSpawnName(ID.Ship.SubmarineU511+2000);
         	}

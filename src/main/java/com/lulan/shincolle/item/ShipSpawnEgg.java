@@ -116,8 +116,8 @@ public class ShipSpawnEgg extends Item {
   		list.add(new ItemStack(item, 1, ID.Ship.CarrierWD+2));
   		list.add(new ItemStack(item, 1, ID.Ship.DestroyerAkatsuki+2));
   		list.add(new ItemStack(item, 1, ID.Ship.DestroyerAkatsuki+2002));	//mob entity
-//  		list.add(new ItemStack(item, 1, ID.Ship.DestroyerHibiki+2));
-//  		list.add(new ItemStack(item, 1, ID.Ship.DestroyerHibiki+2002));		//mob entity
+  		list.add(new ItemStack(item, 1, ID.Ship.DestroyerHibiki+2));
+  		list.add(new ItemStack(item, 1, ID.Ship.DestroyerHibiki+2002));		//mob entity
   		list.add(new ItemStack(item, 1, ID.Ship.DestroyerIkazuchi+2));
   		list.add(new ItemStack(item, 1, ID.Ship.DestroyerIkazuchi+2002));	//mob entity
   		list.add(new ItemStack(item, 1, ID.Ship.DestroyerInazuma+2));

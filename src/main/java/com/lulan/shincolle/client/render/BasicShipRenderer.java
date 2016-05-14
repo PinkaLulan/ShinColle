@@ -59,6 +59,7 @@ public class BasicShipRenderer extends RenderLiving
 	private static final ResourceLocation CV_Kaga = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityCarrierKaga.png");
 	//DD
 	private static final ResourceLocation DD_Akatsuki = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityDestroyerAkatsuki.png");
+	private static final ResourceLocation DD_Hibiki = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityDestroyerHibiki.png");
 	private static final ResourceLocation DD_Ikazuchi = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityDestroyerIkazuchi.png");
 	private static final ResourceLocation DD_Inazuma = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityDestroyerInazuma.png");
 	private static final ResourceLocation DD_Shimakaze = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityDestroyerShimakaze.png");
@@ -151,8 +152,8 @@ public class BasicShipRenderer extends RenderLiving
 		//DD
 		case ID.Ship.DestroyerAkatsuki:
 			return DD_Akatsuki;
-//		case ID.Ship.DestroyerHibiki:
-//			return DD_Hibiki;
+		case ID.Ship.DestroyerHibiki:
+			return DD_Hibiki;
 		case ID.Ship.DestroyerIkazuchi:
 			return DD_Ikazuchi;
 		case ID.Ship.DestroyerInazuma:
