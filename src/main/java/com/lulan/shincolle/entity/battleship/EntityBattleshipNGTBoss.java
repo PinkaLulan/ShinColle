@@ -33,8 +33,9 @@ public class EntityBattleshipNGTBoss extends BasicEntityShipHostile implements I
 	public EntityBattleshipNGTBoss(World world) {
 		super(world);
 		this.setSize(1.7F, 7F);
-		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityBattleshipNGTBoss.name"));
+		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityBattleshipNGT.name"));
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.BattleshipNagato);
+		this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, getStateMinor(ID.M.ShipClass)+2);
 		
         //basic attr
 		this.atk = (float) ConfigHandler.scaleBossLarge[ID.ATK];
@@ -47,9 +48,6 @@ public class EntityBattleshipNGTBoss extends BasicEntityShipHostile implements I
         this.StartEmotion = 0;
         this.StartEmotion2 = 0;
         this.headTilt = false;
-        
-        //misc
-        this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, ID.Ship.BattleshipNagato+2);
  
 	    //設定基本屬性
 	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(ConfigHandler.scaleBossLarge[ID.HP]);

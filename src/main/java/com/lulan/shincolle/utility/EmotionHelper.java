@@ -27,8 +27,18 @@ public class EmotionHelper {
 	public EmotionHelper() {}
 	
 	/** roll emotion */
-    public static void rollEmotion(IModelEmotion model, IShipEmotion ent) { 
-    	switch(ent.getStateEmotion(ID.S.Emotion)) {
+    public static void rollEmotion(IModelEmotion model, IShipEmotion ent)
+    { 
+    	switch (ent.getStateEmotion(ID.S.Emotion))
+    	{
+    	//for admiral desk function
+    	case 6:
+    	case 7:
+    	case 8:
+    	case 9:
+    	case 10:
+    		model.setFace(ent.getStateEmotion(ID.S.Emotion) - 6);
+			break;
     	case ID.Emotion.BLINK:	//blink
     		EmotionBlink(model, ent);
     		break;
@@ -44,18 +54,23 @@ public class EmotionHelper {
     	case ID.Emotion.BORED:
     	default:				//roll blink
     		//reset face to 0 or blink if emotion time > 0
-    		if(ent.getFaceTick() <= 0) {
+    		if (ent.getFaceTick() <= 0)
+    		{
     			model.setFace(0);
     		}
-    		else {
+    		else
+    		{
     			EmotionBlink(model, ent);
     		}
+    		
     		//roll emotion (3 times) every 6 sec
     		//1 tick in entity = 3 tick in model class (20 vs 60 fps)
-    		if(ent.getTickExisted() % 120 == 0) {
+    		if (ent.getTickExisted() % 120 == 0)
+    		{
         		int emotionRand = rand.nextInt(10);
         		
-        		if(emotionRand > 7) {
+        		if (emotionRand > 7)
+        		{
         			EmotionBlink(model, ent);
         		} 		
         	}
@@ -68,6 +83,14 @@ public class EmotionHelper {
     { 
     	switch (ent.getStateEmotion(ID.S.Emotion))
     	{
+    	//for admiral desk function
+    	case 6:
+    	case 7:
+    	case 8:
+    	case 9:
+    	case 10:
+    		model.setFace(ent.getStateEmotion(ID.S.Emotion) - 1);
+			break;
     	case ID.Emotion.BLINK:	//blink
     		EmotionBlinkAdv(model, ent);
     		break;
@@ -75,7 +98,14 @@ public class EmotionHelper {
     		model.setFaceCry(ent);
     		break;
     	case ID.Emotion.O_O:    //stare
-    		EmotionStaringAdv(model, ent);
+    		if (ent.getTickExisted() % 2048 > 1024)
+    		{
+    			model.setFaceDamaged(ent);
+    		}
+    		else
+    		{
+    			EmotionStaringAdv(model, ent);
+    		}
 			break;
     	case ID.Emotion.HUNGRY: //hungry
     		model.setFaceHungry(ent);

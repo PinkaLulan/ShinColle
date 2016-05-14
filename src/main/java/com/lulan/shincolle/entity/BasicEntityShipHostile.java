@@ -784,14 +784,21 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	}
 
 	@Override
-	public int getStateMinor(int id) {
-		return 0;
+	public int getStateMinor(int id)
+	{
+		switch (id)
+		{
+		case ID.M.ShipClass:
+			return this.shipClass;
+		default:
+			return 0;
+		}
 	}
 
 	@Override
 	public void setStateMinor(int id, int value)
 	{
-		switch(id)
+		switch (id)
 		{
 		case ID.M.ShipClass:
 			this.shipClass = (short) value;

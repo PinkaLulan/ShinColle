@@ -18,16 +18,17 @@ public class EntityDestroyerInazumaMob extends BasicEntityShipHostile {
 	public EntityDestroyerInazumaMob(World world) {
 		super(world);
 		this.setSize(0.6F, 1.5F);
-		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityDestroyerInazumaMob.name"));
+		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityDestroyerInazuma.name"));
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.DestroyerInazuma);
+		this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, getStateMinor(ID.M.ShipClass)+2);
 		this.ignoreFrustumCheck = true;	//即使不在視線內一樣render
 		
         //basic attr
-        this.atk = (float) ConfigHandler.scaleMobSmall[ID.ATK];
-        this.atkSpeed = (float) ConfigHandler.scaleMobSmall[ID.SPD] * 1.5F;
-        this.atkRange = (float) ConfigHandler.scaleMobSmall[ID.HIT] * 0.9F;
-        this.defValue = (float) ConfigHandler.scaleMobSmall[ID.DEF] * 0.9F;
-        this.movSpeed = (float) ConfigHandler.scaleMobSmall[ID.MOV] * 1.2F;
+        this.atk = (float) ConfigHandler.scaleMobSmall[ID.ATK] * 0.5F;
+        this.atkSpeed = (float) ConfigHandler.scaleMobSmall[ID.SPD] * 1F;
+        this.atkRange = (float) ConfigHandler.scaleMobSmall[ID.HIT] * 0.7F;
+        this.defValue = (float) ConfigHandler.scaleMobSmall[ID.DEF] * 0.5F;
+        this.movSpeed = (float) ConfigHandler.scaleMobSmall[ID.MOV] * 1F;
 
         //AI flag
         this.StartEmotion = 0;
@@ -35,11 +36,8 @@ public class EntityDestroyerInazumaMob extends BasicEntityShipHostile {
         this.headTilt = false;
         this.setStateEmotion(ID.S.State, rand.nextInt(2), false);
         
-        //misc
-        this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, ID.Ship.DestroyerInazuma+2);
- 
 	    //設定基本屬性
-	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(ConfigHandler.scaleMobSmall[ID.HP] * 0.8F);
+	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(ConfigHandler.scaleMobSmall[ID.HP] * 0.5F);
 		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(this.movSpeed);
 		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(atkRange + 32); //此為找目標, 路徑的範圍
 		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(1D);

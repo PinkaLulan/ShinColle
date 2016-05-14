@@ -178,8 +178,7 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall {
 			}
 		}
 		
-		super.interact(player);
-		return false;
+		return super.interact(player);
   	}
   	
   	@Override

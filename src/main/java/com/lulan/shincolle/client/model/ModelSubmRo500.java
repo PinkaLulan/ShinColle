@@ -437,7 +437,7 @@ public class ModelSubmRo500 extends ModelBase implements IModelEmotion {
 				this.ArmLeft01.rotateAngleX = 2.6F;
 		    	this.ArmLeft01.rotateAngleZ = 0.7F;
 				this.ArmRight01.rotateAngleX = 2.6F;
-		    	this.ArmRight01.rotateAngleZ = -0.7F;	
+		    	this.ArmRight01.rotateAngleZ = -0.7F;
 			}
 			else {	
 			  	//arm 

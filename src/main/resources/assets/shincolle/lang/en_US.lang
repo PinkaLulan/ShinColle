@@ -162,15 +162,11 @@ entity.shincolle.EntityAirplaneZero.name=Type 0 Fighter Model 21
 entity.shincolle.EntityAirplaneZeroMob.name=Type 0 Fighter Model 21
 entity.shincolle.EntityBattleshipHime.name=Battleship Princess
 entity.shincolle.EntityBattleshipNGT.name=Battleship Nagato
-entity.shincolle.EntityBattleshipNGTBoss.name=Battleship Nagato
 entity.shincolle.EntityBattleshipRe.name=Battleship Re-Class
 entity.shincolle.EntityBattleshipTa.name=Battleship Ta-Class
 entity.shincolle.EntityBattleshipYMT.name=Battleship Yamato
-entity.shincolle.EntityBattleshipYMTBoss.name=Battleship Yamato
 entity.shincolle.EntityCarrierAkagi.name=Standard Carrier Akagi
-entity.shincolle.EntityCarrierAkagiBoss.name=Standard Carrier Akagi
 entity.shincolle.EntityCarrierKaga.name=Standard Carrier Kaga
-entity.shincolle.EntityCarrierKagaBoss.name=Standard Carrier Kaga
 entity.shincolle.EntityCarrierWD.name=Aircraft Carrier Water Demon
 entity.shincolle.EntityCarrierWo.name=Standard Carrier Wo-Class
 entity.shincolle.EntityDestroyerHa.name=Destroyer Ha-Class
@@ -178,15 +174,10 @@ entity.shincolle.EntityDestroyerI.name=Destroyer I-Class
 entity.shincolle.EntityDestroyerNi.name=Destroyer Ni-Class
 entity.shincolle.EntityDestroyerRo.name=Destroyer Ro-Class
 entity.shincolle.EntityDestroyerShimakaze.name=Destroyer Shimakaze
-entity.shincolle.EntityDestroyerShimakazeBoss.name=Destroyer Shimakaze
 entity.shincolle.EntityDestroyerAkatsuki.name=Destroyer Akatsuki
-entity.shincolle.EntityDestroyerAkatsukiMob.name=Destroyer Akatsuki
 entity.shincolle.EntityDestroyerHibiki.name=Destroyer Hibiki
-entity.shincolle.EntityDestroyerHibikiMob.name=Destroyer Hibiki
 entity.shincolle.EntityDestroyerIkazuchi.name=Destroyer Ikazuchi
-entity.shincolle.EntityDestroyerIkazuchiMob.name=Destroyer Ikazuchi
 entity.shincolle.EntityDestroyerInazuma.name=Destroyer Inazuma
-entity.shincolle.EntityDestroyerInazumaMob.name=Destroyer Inazuma
 entity.shincolle.EntityFloatingFort.name=Floating Fortress
 entity.shincolle.EntityHarbourHime.name=Harbour Princess
 entity.shincolle.EntityHeavyCruiserNe.name=Heavy Cruiser Ne-Class
@@ -204,9 +195,7 @@ entity.shincolle.EntitySubmKa.name=Submarine Ka-Class
 entity.shincolle.EntitySubmYo.name=Submarine Yo-Class
 entity.shincolle.EntitySubmSo.name=Submarine So-Class
 entity.shincolle.EntitySubmRo500.name=Submarine Ro-500
-entity.shincolle.EntitySubmRo500Mob.name=Submarine Ro-500
 entity.shincolle.EntitySubmU511.name=Submarine U-511
-entity.shincolle.EntitySubmU511Mob.name=Submarine U-511
 entity.shincolle.EntityTransportWa.name=Transport Wa-Class
 
 # formatting codes:
@@ -351,12 +340,12 @@ gui.shincolle:book.chap3.text9d1=§96. §cAlly§0 is §3UNILATERAL§0, other sid
 gui.shincolle:book.chap3.title10=Ship Class
 gui.shincolle:book.chap3.text10d0=There are restraint relations between ships, check: §9https://goo.gl/jmR3Wd§0<br><br>§9Destroyer (DD):§c HIGH speed / LOW HP§0, against SS and Aircraft.<br>§9Cruiser:§0 Including heavy cruiser (CA), light cruiser (CL) and torpedo cruiser (CLT), average attributes.<br>§9Aircraft Carrier (CV): §cLONGEST attack range§0, against all ships except SS.
 gui.shincolle:book.chap3.text10d1=§9Aviation Battleship (BBV):§0 Including BBV and Installation, attributes range between CV and BB. §dInstallation§0 has §cLOW firepower / HIGH HP§0.<br>§9Battleship (BB):§c LOW speed / HIGH HP and firepower§0, against all ship but SS and Aircraft.<br>§9Submarine (SS):§c LOW speed and HP / HIGH firepower§0, against all ship but Aircraft.<br>§9Aircraft:§0 Aircraft attack by CV and BBV, against all ship but SS.
-gui.shincolle:book.chap3.title11=Commands
-gui.shincolle:book.chap3.text11d0=§9/shipinfo§c<br>§dAuthority:§0 All Player<br>§dPurpose:§0 show ship info<br><br>§9/shipchangeowner§c <Player Name><br>§dAuthority:§0 OP only<br>§dPurpose:§0 change ship's owner<br><br>OP, Ship and Player A must be online and in the same dimension (world).<br><br>The OP's mouseover ship's owner will be changed to the Player A.
-gui.shincolle:book.chap3.text11d1=§9/shipupdateowneruid§3 [Player Name]<br>§dAuthority:§0 All Player<br>§dPurpose:§0 update ship's owner UID<br><br>If the ship does no response, try this command to fix the bug. OP can specify a player to update the UID.<br><br>This command only affect the ship in the loaded chunk and the player must be online.<br>If the command is not work, try /shipchangeowner to change ship's owner 1 by 1.
+gui.shincolle:book.chap3.title11=
+gui.shincolle:book.chap3.text11d0=
+gui.shincolle:book.chap3.text11d1=
 gui.shincolle:book.chap3.title12=
-gui.shincolle:book.chap3.text12d0=§9/shipattrs <Ship LV> [<HP LV> <ATK LV> <DEF LV> <A.SPD LV> <M.SPD LV> <Range LV>]<br>§dAuthority:§0 OP only<br>§dPurpose:§0 change ship attributes<br><br>Change mouseover ship's level and six main attributes level. Valid value: Ship LV = 1~150, Attrs LV = 0~100.
-gui.shincolle:book.chap3.text12d1=§9/shipcleardrop [range]<br>§dAuthority:§0 OP only<br>§dPurpose:§0 remove drop item (grudge entity)<br><br>Remove drop item entity within range, default range = 128 blocks.<br><br>§9/shipemotes [emo]<br>§dAuthority:§0 All Player<br>§dPurpose:§0 Show emotes<br>§dAlias:§9/em, /emo, /emote, /emotes§0<br><br>Use "tab" key to show emotes list when typing.
+gui.shincolle:book.chap3.text12d0=
+gui.shincolle:book.chap3.text12d1=
 gui.shincolle:book.chap3.title13=Morale
 gui.shincolle:book.chap3.text13d0=The morale level will affect ship's attributes.<br><br>There are 5 level of morale: §dExcited§0, §cHappy§0, §2Normal§0, §9Tired§0, §7Exhausted§0.<br><br>The morale level is marked in the upper right corner of ship's inventory GUI.
 gui.shincolle:book.chap3.text13d1=§9Idle:§0<br>Recover morale to §2NORMAL§0 state, out of combat faster than in combat.<br><br>§9Caress, Kill:§0<br>Increase morale to §dEXCITED§0 state.<br><br>§9Feeding:§0<br>Increase to §cHAPPY§0 state.<br><br>§9Moving, Attack, Damaged:§0<br>Decrease morale.
@@ -455,10 +444,10 @@ gui.shincolle:book.chap5.text7d0=
 gui.shincolle:book.chap5.text7d1=§9Name:§0 Akagi<br><br>§9Class:§0 Akagi Class CV<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 none<br><br>It's said that all Shinkeiseikan will be eaten if Akagi appear.
 gui.shincolle:book.chap5.title8=
 gui.shincolle:book.chap5.text8d0=
-gui.shincolle:book.chap5.text8d1=§9Name:§0 Akatsuki<br><br>§9Class:§0 Akatsuki Class DD<br><br>§9AuraEffect:§0 Jump power aura<br><br>§9OtherEffect:§0 Pick up items<br><br>She is often seen in expedition with heavy drum canister.
+gui.shincolle:book.chap5.text8d1=§9Name:§0 Akatsuki<br><br>§9Class:§0 Akatsuki Class DD<br><br>§9AuraEffect:§0 Digging speed aura, Searchlight<br><br>§9OtherEffect:§0 Pick up items<br><br>She is often seen in expedition with heavy drum canister.
 gui.shincolle:book.chap5.title9=
 gui.shincolle:book.chap5.text9d0=
-gui.shincolle:book.chap5.text9d1=§9Name:§0 Hibiki<br><br>§9Class:§0 Akatsuki Class DD<br><br>§9AuraEffect:§0 Digging speed aura<br><br>§9OtherEffect:§0 Pick up items, Dodge+30%%<br><br>хорошо~
+gui.shincolle:book.chap5.text9d1=§9Name:§0 Hibiki<br><br>§9Class:§0 Akatsuki Class DD<br><br>§9AuraEffect:§0 Jump power aura<br><br>§9OtherEffect:§0 Pick up items, Dodge+30%%<br><br>хорошо~
 gui.shincolle:book.chap5.title10=
 gui.shincolle:book.chap5.text10d0=
 gui.shincolle:book.chap5.text10d1=§9Name:§0 Ikazuchi<br><br>§9Class:§0 Akatsuki Class DD<br><br>§9AuraEffect:§0 Attack power aura<br><br>§9OtherEffect:§0 Pick up items<br><br>The expedition leader with a very dangerous weapon in hand.
@@ -467,10 +456,19 @@ gui.shincolle:book.chap5.text11d0=
 gui.shincolle:book.chap5.text11d1=§9Name:§0 Inazuma<br><br>§9Class:§0 Akatsuki Class DD<br><br>§9AuraEffect:§0 Moving speed aura<br><br>§9OtherEffect:§0 Pick up items<br><br>Inazuma is the NANODEATH angel that can purify nearby shinkeiseikan, be careful!  
 
 # GUI: Book Text Chap 6
-gui.shincolle:book.chap6.title=
+gui.shincolle:book.chap6.title=Commands
 gui.shincolle:book.chap6.title0=
-gui.shincolle:book.chap6.text0d0=
-gui.shincolle:book.chap6.text0d1=
+gui.shincolle:book.chap6.text0d0=§9/shipinfo§c<br>§dAuthority:§0 All Player<br>§dPurpose:§0 show ship info
+gui.shincolle:book.chap6.text0d1=§9/shipchangeowner§c <Player Name><br>§dAuthority:§0 OP only<br>§dPurpose:§0 change ship's owner<br><br>OP, Ship and Player A must be online and in the same dimension (world).<br><br>The OP's mouseover ship's owner will be changed to the Player A.
+gui.shincolle:book.chap6.title1=
+gui.shincolle:book.chap6.text1d0=§9/shipupdateowneruid§3 [Player Name]<br>§dAuthority:§0 All Player<br>§dPurpose:§0 update ship's owner UID<br><br>If the ship does no response, try this command to fix the bug. OP can specify a player to update the UID.<br><br>This command only affect the ship in the loaded chunk and the player must be online.<br>If the command is not work, try /shipchangeowner to change ship's owner 1 by 1.
+gui.shincolle:book.chap6.text1d1=§9/shipattrs <Ship LV> [<HP LV> <ATK LV> <DEF LV> <A.SPD LV> <M.SPD LV> <Range LV>]<br>§dAuthority:§0 OP only<br>§dPurpose:§0 change ship attributes<br><br>Change mouseover ship's level and six main attributes level. Valid value: Ship LV = 1~150, Attrs LV = 0~100.
+gui.shincolle:book.chap6.title2=
+gui.shincolle:book.chap6.text2d0=§9/shipcleardrop [range]<br>§dAuthority:§0 OP only<br>§dPurpose:§0 remove drop item (grudge entity)<br><br>Remove drop item entity within range, default range = 128 blocks.
+gui.shincolle:book.chap6.text2d1=§9/shipemotes [emo]<br>§dAuthority:§0 All Player<br>§dPurpose:§0 Show emotes<br>§dAlias:§9/em, /emo, /emote, /emotes§0<br><br>Use "tab" key to show emotes list when typing.
+gui.shincolle:book.chap6.title3=
+gui.shincolle:book.chap6.text3d0=§9/shipstopai<br>§dAuthority:§0 OP only<br>§dPurpose:§0 stop ship AI<br><br>Stop all ship, hostile ship, ship mounts AI and update methods for emergency like entity dupe bug. 
+gui.shincolle:book.chap6.text3d1=§9/shipkill <Ship ID> [range]<br>§dAuthority:§0 OP only<br>§dPurpose:§0 remove ship<br><br>Remove specific class ship within range (default range = 128 blocks) for emergency like entity dupe bug.<br><br>The ship ID is same with the metavalue of ship spawn egg.
 
 # GUI: General
 gui.shincolle:general.ok=OK

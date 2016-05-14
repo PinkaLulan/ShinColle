@@ -2,6 +2,7 @@ package com.lulan.shincolle.entity.destroyer;
 
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
@@ -10,16 +11,18 @@ import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
-public class EntityDestroyerIkazuchiMob extends BasicEntityShipHostile {
+public class EntityDestroyerAkatsukiMob extends BasicEntityShipHostile {
 
 	
-	public EntityDestroyerIkazuchiMob(World world) {
+	public EntityDestroyerAkatsukiMob(World world)
+	{
 		super(world);
 		this.setSize(0.6F, 1.5F);
-		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityDestroyerIkazuchi.name"));
-		this.setStateMinor(ID.M.ShipClass, ID.Ship.DestroyerIkazuchi);
+		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityDestroyerAkatsuki.name"));
+		this.setStateMinor(ID.M.ShipClass, ID.Ship.DestroyerAkatsuki);
 		this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, getStateMinor(ID.M.ShipClass)+2);
 		this.ignoreFrustumCheck = true;	//即使不在視線內一樣render
 		
@@ -49,24 +52,28 @@ public class EntityDestroyerIkazuchiMob extends BasicEntityShipHostile {
 	}
 	
 	@Override
-	protected boolean canDespawn() {
+	protected boolean canDespawn()
+	{
         return this.ticksExisted > 600;
     }
 	
 	@Override
-	public float getEyeHeight() {
+	public float getEyeHeight()
+	{
 		return 1.4F;
 	}
 	
 	//chance drop
 	@Override
-	public ItemStack getDropEgg() {
+	public ItemStack getDropEgg()
+	{
 		return this.rand.nextInt(5) == 0 ? this.dropItem : null;
 	}
 	
 	//setup AI
 	@Override
-	protected void setAIList() {
+	protected void setAIList()
+	{
 		super.setAIList();
 
 		//use range attack
@@ -74,13 +81,16 @@ public class EntityDestroyerIkazuchiMob extends BasicEntityShipHostile {
 	}
 	
   	@Override
-	public int getDamageType() {
+	public int getDamageType()
+  	{
 		return ID.ShipDmgType.DESTROYER;
 	}
   	
   	@Override
-	public float getEffectEquip(int id) {
-		switch(id) {
+	public float getEffectEquip(int id)
+  	{
+		switch (id)
+		{
 		case ID.EF_AA:  //DD vs AA,ASM effect
 		case ID.EF_ASM:
 			return this.atk * 0.5F;
@@ -91,22 +101,57 @@ public class EntityDestroyerIkazuchiMob extends BasicEntityShipHostile {
   	
   //check entity state every tick
   	@Override
-  	public void onLivingUpdate() {
+  	public void onLivingUpdate()
+  	{
   		super.onLivingUpdate();
   		
   		//client side
-  		if(worldObj.isRemote) {
-  			if(this.getStateEmotion(ID.S.State) > ID.State.EQUIP01 && this.ticksExisted % 4 == 0) {
-				double smokeY = posY + 1.4D;
-				
-				//計算煙霧位置
-  				float[] partPos = ParticleHelper.rotateXZByAxis(-0.42F, 0F, (this.renderYawOffset % 360) / 57.2957F, 1F);
-  				//生成裝備冒煙特效
-  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], smokeY, posZ+partPos[0], 0D, 0D, 0D, (byte)20);
-  			}
+  		if (worldObj.isRemote)
+  		{
+  			if (this.ticksExisted % 4 == 0)
+  			{
+  				if (this.getStateEmotion(ID.S.State) > ID.State.EQUIP01)
+  				{
+  					double smokeY = posY + 1.4D;
+  					
+  					//計算煙霧位置
+  	  				float[] partPos = ParticleHelper.rotateXZByAxis(-0.42F, 0F, (this.renderYawOffset % 360) / 57.2957F, 1F);
+  	  				//生成裝備冒煙特效
+  	  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], smokeY, posZ+partPos[0], 0D, 0D, 0D, (byte)20);
+  	  			}
+  	  			
+  				if (this.ticksExisted % 16 == 0)
+  	  			{
+  					//update searchlight
+  	  	    		if(ConfigHandler.canSearchlight)
+  	  	    		{
+  	  	        		updateSearchlight();
+  	  	    		}
+  	  			}//end every 16 ticks
+  			}//end every 4 ticks
   		}
+  	}
+  	
+  	/** update flare effect */
+  	protected void updateSearchlight()
+  	{
+		int px = MathHelper.floor_double(this.posX);
+		int py = (int) this.posY + 1;
+		int pz = MathHelper.floor_double(this.posZ);
+		float light = this.worldObj.getBlockLightValue(px, py, pz);
+
+		if (light < 12F)
+		{
+			BlockHelper.placeLightBlock(this.worldObj, px, py, pz);
+		}
+		//search light block, renew lifespan
+		else
+		{
+			BlockHelper.updateNearbyLightBlock(this.worldObj, px, py, pz);
+		}
   	}
   	
 
 }
+
 

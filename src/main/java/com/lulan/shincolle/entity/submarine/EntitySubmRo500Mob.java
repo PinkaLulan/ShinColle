@@ -6,6 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
@@ -30,13 +31,15 @@ public class EntitySubmRo500Mob extends BasicEntityShipHostile implements IShipI
 		super(world);
 		this.setSize(0.6F, 1.4F);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.SubmarineRo500);
+		this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, getStateMinor(ID.M.ShipClass)+2);
+		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntitySubmRo500.name"));
 		
         //basic attr
-        this.atk = (float) ConfigHandler.scaleMobSmall[ID.ATK] * 1.2F;
-        this.atkSpeed = (float) ConfigHandler.scaleMobSmall[ID.SPD] * 0.8F;
-        this.atkRange = (float) ConfigHandler.scaleMobSmall[ID.HIT] * 0.8F;
-        this.defValue = (float) ConfigHandler.scaleMobSmall[ID.DEF] * 0.5F;
-        this.movSpeed = (float) ConfigHandler.scaleMobSmall[ID.MOV] * 0.75F;
+        this.atk = (float) ConfigHandler.scaleMobSmall[ID.ATK] * 0.6F;
+        this.atkSpeed = (float) ConfigHandler.scaleMobSmall[ID.SPD] * 0.4F;
+        this.atkRange = (float) ConfigHandler.scaleMobSmall[ID.HIT] * 0.4F;
+        this.defValue = (float) ConfigHandler.scaleMobSmall[ID.DEF] * 0.25F;
+        this.movSpeed = (float) ConfigHandler.scaleMobSmall[ID.MOV] * 0.4F;
         this.stepHeight = 1F;
 
         //AI flag
@@ -45,11 +48,8 @@ public class EntitySubmRo500Mob extends BasicEntityShipHostile implements IShipI
         this.headTilt = false;
         this.StateEmotion = new byte[] {ID.State.EQUIP02, 0, 0, 0, 0, 0};
         
-        //misc
-        this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, ID.Ship.SubmarineRo500+2);
- 
 	    //設定基本屬性
-	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(ConfigHandler.scaleMobSmall[ID.HP] * 0.5F);
+	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(ConfigHandler.scaleMobSmall[ID.HP] * 0.35F);
 		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(this.movSpeed);
 		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(atkRange + 48); //此為找目標, 路徑的範圍
 		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(0.3D);
@@ -84,7 +84,7 @@ public class EntitySubmRo500Mob extends BasicEntityShipHostile implements IShipI
 	//chance drop
 	@Override
 	public ItemStack getDropEgg() {
-		return this.rand.nextInt(5) == 0 ? this.dropItem : null;
+		return this.rand.nextInt(4) == 0 ? this.dropItem : null;
 	}
 	
 	//setup AI

@@ -171,8 +171,7 @@ public class EntityDestroyerInazuma extends BasicEntityShipSmall {
 			}
 		}
 		
-		super.interact(player);
-		return false;
+		return super.interact(player);
   	}
   	
   	@Override

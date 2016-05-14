@@ -19,6 +19,7 @@ public class EntityCarrierKagaBoss extends BasicEntityShipHostileCV implements I
 		this.setSize(1.7F, 6.5F);
 		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityCarrierKaga.name"));
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.CarrierKaga);
+		this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, getStateMinor(ID.M.ShipClass)+2);
 		
         //basic attr
 		this.atk = (float) ConfigHandler.scaleBossLarge[ID.ATK] * 0.9F;
@@ -32,9 +33,6 @@ public class EntityCarrierKagaBoss extends BasicEntityShipHostileCV implements I
         this.StartEmotion = 0;
         this.StartEmotion2 = 0;
         this.headTilt = false;
-        
-        //misc
-        this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, ID.Ship.CarrierKaga+2);
  
 	    //設定基本屬性
 	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(ConfigHandler.scaleBossLarge[ID.HP] * 0.9F);

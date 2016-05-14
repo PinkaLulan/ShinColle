@@ -307,8 +307,9 @@ public class ShipCalc {
         	default:
         		return getEntityToSpawnName(ID.Ship.BattleshipNagato+2000);
         	}
-  		default: //small or large mob
-  			switch(rand.nextInt(4))
+  		case 1:  //large mob
+  		default: //small mob
+  			switch(rand.nextInt(6))
         	{
         	case 1:
         		return getEntityToSpawnName(ID.Ship.SubmarineRo500+2000);
@@ -316,6 +317,10 @@ public class ShipCalc {
         		return getEntityToSpawnName(ID.Ship.DestroyerIkazuchi+2000);
         	case 3:
         		return getEntityToSpawnName(ID.Ship.DestroyerInazuma+2000);
+        	case 4:
+        		return getEntityToSpawnName(ID.Ship.DestroyerAkatsuki+2000);
+//        	case 5:
+//        		return getEntityToSpawnName(ID.Ship.DestroyerHibiki+2000);
         	default:
         		return getEntityToSpawnName(ID.Ship.SubmarineU511+2000);
         	}

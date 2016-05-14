@@ -29,28 +29,26 @@ public class EntityDestroyerShimakazeBoss extends BasicEntityShipHostile impleme
 	public EntityDestroyerShimakazeBoss(World world) {
 		super(world);
 		this.setSize(1.4F, 6F);
-		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityDestroyerShimakazeBoss.name"));
+		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityDestroyerShimakaze.name"));
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.DestroyerShimakaze);
+		this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, getStateMinor(ID.M.ShipClass)+2);
 		ignoreFrustumCheck = true;	//即使不在視線內一樣render
 		
         //basic attr
-        this.atk = (float) ConfigHandler.scaleBossSmall[ID.ATK];
-        this.atkSpeed = (float) ConfigHandler.scaleBossSmall[ID.SPD] * 1.5F;
-        this.atkRange = (float) ConfigHandler.scaleBossSmall[ID.HIT];
-        this.defValue = (float) ConfigHandler.scaleBossSmall[ID.DEF];
-        this.movSpeed = (float) ConfigHandler.scaleBossSmall[ID.MOV];
+        this.atk = (float) ConfigHandler.scaleBossSmall[ID.ATK] * 0.75F;
+        this.atkSpeed = (float) ConfigHandler.scaleBossSmall[ID.SPD] * 1.2F;
+        this.atkRange = (float) ConfigHandler.scaleBossSmall[ID.HIT] * 0.75F;
+        this.defValue = (float) ConfigHandler.scaleBossSmall[ID.DEF] * 0.75F;
+        this.movSpeed = (float) ConfigHandler.scaleBossSmall[ID.MOV] * 0.75F;
         this.numRensouhou = 10;
 
         //AI flag
         this.StartEmotion = 0;
         this.StartEmotion2 = 0;
         this.headTilt = false;
-        
-        //misc
-        this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, ID.Ship.DestroyerShimakaze+2);
  
 	    //設定基本屬性
-	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(ConfigHandler.scaleBossSmall[ID.HP]);
+	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(ConfigHandler.scaleBossSmall[ID.HP] * 0.75F);
 		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(this.movSpeed);
 		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(atkRange + 32); //此為找目標, 路徑的範圍
 		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(1D);

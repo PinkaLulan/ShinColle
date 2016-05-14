@@ -30,8 +30,9 @@ public class EntityBattleshipYMTBoss extends BasicEntityShipHostile implements I
 	public EntityBattleshipYMTBoss(World world) {
 		super(world);
 		this.setSize(1.8F, 7.5F);
-		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityBattleshipYMTBoss.name"));
+		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityBattleshipYMT.name"));
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.BattleshipYamato);
+		this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, getStateMinor(ID.M.ShipClass)+2);
 		
         //basic attr
 		this.atk = (float) ConfigHandler.scaleBossLarge[ID.ATK] * 1.2F;
@@ -45,9 +46,6 @@ public class EntityBattleshipYMTBoss extends BasicEntityShipHostile implements I
         this.StartEmotion2 = 0;
         this.headTilt = false;
         
-        //misc
-        this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, ID.Ship.BattleshipYamato+2);
- 
 	    //設定基本屬性
 	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(ConfigHandler.scaleBossLarge[ID.HP] * 1.2F);
 		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(this.movSpeed);

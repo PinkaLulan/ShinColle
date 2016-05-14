@@ -67,7 +67,7 @@ public class EntityDestroyerRo extends BasicEntityShipSmall {
   		super.onLivingUpdate();
   		
   		if(!worldObj.isRemote) {
-  			//add aura to master every 100 ticks
+  			//add aura to master every 128 ticks
   			if(this.ticksExisted % 128 == 0) {
   				EntityPlayerMP player = (EntityPlayerMP) EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
   				if(getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.M.NumGrudge) > 0 && player != null && getDistanceSqToEntity(player) < 256D) {
