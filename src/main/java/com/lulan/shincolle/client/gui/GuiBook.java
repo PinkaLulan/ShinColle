@@ -55,7 +55,7 @@ public class GuiBook {
 	public static int PageTLX = 13;    //left page X pos for text
 	public static int PageTRX = 162;   //right page X pos for text
 	public static int PageTY = 58;     //page Y pos for text
-	public static final int[] PageLimit = new int[] {1,23,5,15,18,11,3};  //max page number
+	public static final int[] PageLimit = new int[] {1,23,5,15,19,11,3};  //max page number
 	
 	public GuiBook() {}
 	

@@ -416,6 +416,8 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion {
     
   	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {   
   		float angleX = MathHelper.cos(f2*0.08F);
+  		float angleX1 = MathHelper.cos(f2*0.08F + 0.3F + f * 0.5F);
+  		float angleX2 = MathHelper.cos(f2*0.08F + 0.6F + f * 0.5F);
   		float angleAdd1 = MathHelper.cos(f * 0.7F) * f1 * 0.7F;
   		float angleAdd2 = MathHelper.cos(f * 0.7F + 3.1415927F) * f1 * 0.7F;
   		float addk1 = 0F;
@@ -446,13 +448,13 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion {
 	  	this.Butt.rotateAngleX = 0.2618F;
 	  	this.Butt.offsetZ = 0F;
 	  	//hair
-	  	this.Hair01.rotateAngleX = angleX * 0.012F + 0.15F + headX;
-	  	this.Hair02.rotateAngleX = angleX * 0.015F - 0.05F + headX;
-	  	this.Hair03.rotateAngleX = angleX * 0.018F - 0.08F;
+	  	this.Hair01.rotateAngleX = angleX * 0.03F + 0.15F + headX;
+	  	this.Hair02.rotateAngleX = -angleX1 * 0.04F - 0.05F + headX;
+	  	this.Hair03.rotateAngleX = -angleX2 * 0.07F - 0.08F;
 	  	this.HairL01.rotateAngleX = angleX * 0.02F + headX - 0.14F;
-	  	this.HairL02.rotateAngleX = angleX * 0.02F + headX + 0.052F;
+	  	this.HairL02.rotateAngleX = -angleX1 * 0.04F + headX + 0.052F;
 	  	this.HairR01.rotateAngleX = angleX * 0.02F + headX - 0.14F;
-	  	this.HairR02.rotateAngleX = angleX * 0.02F + headX + 0.087F;
+	  	this.HairR02.rotateAngleX = -angleX1 * 0.04F + headX + 0.087F;
 	    //arm 
 	  	this.ArmLeft01.rotateAngleX = angleAdd2 * 0.8F;
 	    this.ArmLeft01.rotateAngleZ = angleX * 0.08F - 0.2F;

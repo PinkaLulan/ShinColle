@@ -353,6 +353,7 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion {
 	//雙腳移動計算
   	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, BasicEntityShip ent) {   
   		float angleX = MathHelper.cos(f2*0.08F);
+  		float angleX1 = MathHelper.cos(f2*0.08F + 0.3F + f * 0.5F);
   		float angleRun = MathHelper.cos(f * 0.7F) * f1 * 0.6F;
   		float angleRun2 = MathHelper.cos(f * 0.7F + 3.1415927F) * f1 * 0.6F;
   		float addk1 = 0;
@@ -377,8 +378,12 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion {
   	    this.BoobR.rotateAngleX = -angleX * 0.06F - 0.7854F;
   	    this.NeckTie.rotateAngleX = -angleX * 0.1F - 0.7F;
   	    //hair
-  	    this.HairMidL01.rotateAngleX = angleX * 0.1F + 0.2618F;
-  	    this.HairMidL02.rotateAngleX = angleX * 0.1F - 0.087F;
+  	    this.HairMidL01.rotateAngleX = angleX * 0.06F + 0.2618F;
+  	    this.HairMidL02.rotateAngleX = -angleX1 * 0.08F - 0.087F;
+  	    this.HairL01.rotateAngleX = angleX * 0.06F - 0.13F;
+	    this.HairL02.rotateAngleX = -angleX1 * 0.08F + 0.21F;
+	    this.HairR01.rotateAngleX = angleX * 0.06F - 0.13F;
+	    this.HairR02.rotateAngleX = -angleX1 * 0.08F + 0.21F;
 	  	//Body
   	    this.Ahoke.rotateAngleZ = angleX * 0.1F - 0.06F;
 	  	this.BodyMain.rotateAngleX = 0F;
