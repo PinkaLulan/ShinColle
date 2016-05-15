@@ -591,6 +591,8 @@ public class ModelCarrierWDemon extends ModelBase implements IModelEmotion {
     
     private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {   
   		float angleX = MathHelper.cos(f2*0.08F);
+  		float angleX1 = MathHelper.cos(f2*0.08F + 0.3F + f * 0.5F);
+  		float angleX2 = MathHelper.cos(f2*0.08F + 0.6F + f * 0.5F);
   		float angleAdd1 = MathHelper.cos(f * 0.7F) * f1 * 0.7F;
   		float angleAdd2 = MathHelper.cos(f * 0.7F + 3.1415927F) * f1 * 0.7F;
   		float addk1 = 0F;
@@ -624,11 +626,11 @@ public class ModelCarrierWDemon extends ModelBase implements IModelEmotion {
 	  	this.Skirt01.rotateAngleX = -0.14F;
 	  	this.Skirt02.rotateAngleX = -0.087F;
 	  	//hair
-	  	this.Hair01.rotateAngleX = angleX * 0.012F + 0.21F + headX;
+	  	this.Hair01.rotateAngleX = angleX * 0.03F + 0.21F + headX;
 	  	this.Hair01.rotateAngleZ = 0F;
-	  	this.Hair02.rotateAngleX = angleX * 0.015F - 0.09F + headX;
+	  	this.Hair02.rotateAngleX = -angleX1 * 0.04F - 0.09F + headX;
 	  	this.Hair02.rotateAngleZ = 0F;
-	  	this.Hair03.rotateAngleX = angleX * 0.018F - 0.14F;
+	  	this.Hair03.rotateAngleX = -angleX2 * 0.07F - 0.14F;
 	  	this.Hair03.rotateAngleZ = 0F;
 	    //arm 
 	  	this.ArmLeft01.rotateAngleX = 0.2618F;

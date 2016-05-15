@@ -18,6 +18,7 @@ import com.lulan.shincolle.client.model.ModelBattleshipRe;
 import com.lulan.shincolle.client.model.ModelBattleshipTa;
 import com.lulan.shincolle.client.model.ModelBattleshipYamato;
 import com.lulan.shincolle.client.model.ModelCarrierAkagi;
+import com.lulan.shincolle.client.model.ModelCarrierHime;
 import com.lulan.shincolle.client.model.ModelCarrierKaga;
 import com.lulan.shincolle.client.model.ModelCarrierWDemon;
 import com.lulan.shincolle.client.model.ModelCarrierWo;
@@ -37,6 +38,7 @@ import com.lulan.shincolle.client.model.ModelHeavyCruiserNe;
 import com.lulan.shincolle.client.model.ModelHeavyCruiserRi;
 import com.lulan.shincolle.client.model.ModelMountAfH;
 import com.lulan.shincolle.client.model.ModelMountBaH;
+import com.lulan.shincolle.client.model.ModelMountCaH;
 import com.lulan.shincolle.client.model.ModelMountCaWD;
 import com.lulan.shincolle.client.model.ModelMountHbH;
 import com.lulan.shincolle.client.model.ModelNorthernHime;
@@ -94,11 +96,13 @@ import com.lulan.shincolle.entity.destroyer.EntityDestroyerShimakaze;
 import com.lulan.shincolle.entity.destroyer.EntityDestroyerShimakazeBoss;
 import com.lulan.shincolle.entity.hime.EntityAirfieldHime;
 import com.lulan.shincolle.entity.hime.EntityBattleshipHime;
+import com.lulan.shincolle.entity.hime.EntityCarrierHime;
 import com.lulan.shincolle.entity.hime.EntityCarrierWD;
 import com.lulan.shincolle.entity.hime.EntityHarbourHime;
 import com.lulan.shincolle.entity.hime.EntityNorthernHime;
 import com.lulan.shincolle.entity.mounts.EntityMountAfH;
 import com.lulan.shincolle.entity.mounts.EntityMountBaH;
+import com.lulan.shincolle.entity.mounts.EntityMountCaH;
 import com.lulan.shincolle.entity.mounts.EntityMountCaWD;
 import com.lulan.shincolle.entity.mounts.EntityMountHbH;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
@@ -182,6 +186,7 @@ public class ClientProxy extends CommonProxy {
 		RenderingRegistry.registerEntityRenderingHandler(EntityCarrierAkagiBoss.class, new BossShipRenderer(new ModelCarrierAkagi(1), 1.2F, ID.Ship.CarrierAkagi));
 		RenderingRegistry.registerEntityRenderingHandler(EntityCarrierKaga.class, new BasicShipRenderer(new ModelCarrierKaga(0), 0.7F, ID.Ship.CarrierKaga));
 		RenderingRegistry.registerEntityRenderingHandler(EntityCarrierKagaBoss.class, new BossShipRenderer(new ModelCarrierKaga(1), 1.2F, ID.Ship.CarrierKaga));
+		RenderingRegistry.registerEntityRenderingHandler(EntityCarrierHime.class, new BasicShipRenderer(new ModelCarrierHime(), 1F, ID.Ship.CarrierHime));
 		RenderingRegistry.registerEntityRenderingHandler(EntityCarrierWD.class, new BasicShipRenderer(new ModelCarrierWDemon(), 1F, ID.Ship.CarrierWD));
 		RenderingRegistry.registerEntityRenderingHandler(EntityCarrierWo.class, new BasicShipRenderer(new ModelCarrierWo(), 1F, ID.Ship.CarrierWO));
 		RenderingRegistry.registerEntityRenderingHandler(EntityDestroyerI.class, new BasicShipRenderer(new ModelDestroyerI(), 1F, ID.Ship.DestroyerI));
@@ -219,6 +224,7 @@ public class ClientProxy extends CommonProxy {
 		RenderingRegistry.registerEntityRenderingHandler(EntityMountBaH.class, new MountsShipRenderer(new ModelMountBaH(), 1.5F, 1));
 		RenderingRegistry.registerEntityRenderingHandler(EntityMountCaWD.class, new MountsShipRenderer(new ModelMountCaWD(), 1.5F, 2));
 		RenderingRegistry.registerEntityRenderingHandler(EntityMountHbH.class, new MountsShipRenderer(new ModelMountHbH(), 1.5F, 3));
+		RenderingRegistry.registerEntityRenderingHandler(EntityMountCaH.class, new MountsShipRenderer(new ModelMountCaH(), 1.5F, 4));
 		
 		//test entity render
 //		RenderingRegistry.registerEntityRenderingHandler(EntityTest.class, new RenderTest(new ModelTest(), 1F));

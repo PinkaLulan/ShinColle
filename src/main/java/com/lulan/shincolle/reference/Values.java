@@ -89,7 +89,7 @@ public class Values {
 //		put(ID.Ship.AnchorageHime,      new float[] {150F, 19F, 32F, 0.9F, 0.3F,  23F, 0.95F, 0.5F,  0.28F, 0.6F,  0.6F,  0.8F});
 //		put(ID.Ship.ArmoredCarrierHime, new float[] {200F, 34F, 35F, 1.0F, 0.42F, 20F, 0.9F,  0.73F, 0.3F,  0.63F, 0.84F, 0.7F});
 		put(ID.Ship.BattleshipHime,     new float[] {220F, 42F, 40F, 1.0F, 0.4F,  16F, 1.0F,  0.8F,  0.32F, 0.73F, 0.8F,  0.6F});
-//		put(ID.Ship.CarrierHime,        new float[] {180F, 40F, 32F, 1.0F, 0.45F, 22F, 0.85F, 0.77F, 0.3F,  0.65F, 0.9F,  0.7F});
+		put(ID.Ship.CarrierHime,        new float[] {180F, 40F, 32F, 1.0F, 0.45F, 22F, 0.85F, 0.77F, 0.3F,  0.65F, 0.85F, 0.7F});
 //		put(ID.Ship.DestroyerHime,      new float[] {90F,  22F, 20F, 1.0F, 0.5F,  12F, 0.55F, 0.5F,  0.22F, 0.6F,  1F,    0.5F});
 		put(ID.Ship.HarbourHime,        new float[] {260F, 14F, 36F, 0.8F, 0.2F,  24F, 1.35F, 0.4F,  0.3F,  0.6F,  0.4F,  0.8F});
 //		put(ID.Ship.MidwayHime,         new float[] {350F, 22F, 45F, 0.8F, 0.25F, 30F, 1.5F,  0.5F,  0.34F, 0.6F,  0.4F,  0.8F});
@@ -160,7 +160,7 @@ public class Values {
 		put(ID.Ship.SubmarineYO,		new float[] {0.2F, 0.7F, 0.8F, 0.8F, 0.2F});
 		put(ID.Ship.SubmarineSO,		new float[] {0.2F, 0.7F, 0.8F, 0.8F, 0.2F});
 		//hime
-//		put(ID.Ship.CarrierHime,		new float[] {});
+		put(ID.Ship.CarrierHime,		new float[] {0.1F, 0.95F, 0.85F, 0.9F, 0.15F});
 		put(ID.Ship.AirfieldHime,		new float[] {0.1F, 1.2F, 1.5F, 0.7F, 0.2F});
 //		put(ID.Ship.ArmoredCarrierHime,	new float[] {});
 //		put(ID.Ship.AnchorageHime,		new float[] {});
@@ -311,6 +311,8 @@ public class Values {
 		add((int)ID.Ship.SubmarineKA);
 		add((int)ID.Ship.SubmarineYO);
 		add((int)ID.Ship.SubmarineSO);
+		
+		add((int)ID.Ship.CarrierHime);
 	}});
 	
 	/**ENEMY LIST for guidebook

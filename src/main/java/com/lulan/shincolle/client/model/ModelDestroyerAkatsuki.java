@@ -946,44 +946,6 @@ public class ModelDestroyerAkatsuki extends ModelBase implements IModelEmotionAd
 	        this.ArmRight01.rotateAngleZ += -f8 * 20.0F * Values.N.RAD_MUL;
 	  	}
 	  	
-	  	if (((EntityLivingBase)ent).riddenByEntity instanceof EntityDestroyerIkazuchi)
-	  	{
-	  		if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
-	  		{
-	  			//body
-		  		this.Head.rotateAngleY *= 0.5F;
-		  		this.Head.rotateAngleZ = 0F;
-		  		//arm 
-			    this.ArmLeft01.rotateAngleX = 0.1F;
-			    this.ArmLeft01.rotateAngleY = 0F;
-			    this.ArmLeft01.rotateAngleZ = -0.4F;
-			    this.ArmLeft02.rotateAngleZ = 0.8F;
-			    this.ArmRight01.rotateAngleX = 0.1F;
-			    this.ArmRight01.rotateAngleY = 0F;
-			    this.ArmRight01.rotateAngleZ = 0.4F;
-			    this.ArmRight02.rotateAngleZ = -0.8F;
-			    //equip
-			    this.EquipBase.isHidden = true;
-	  		}
-	  		else
-	  		{
-	  			//body
-		  		this.Head.rotateAngleY *= 0.5F;
-		  		this.Head.rotateAngleZ = 0F;
-		  		//arm 
-			    this.ArmLeft01.rotateAngleX = -0.8F;
-			    this.ArmLeft01.rotateAngleY = -1.5F;
-			    this.ArmLeft01.rotateAngleZ = 0F;
-			    this.ArmLeft02.rotateAngleZ = 1.45F;
-			    this.ArmRight01.rotateAngleX = -0.8F;
-			    this.ArmRight01.rotateAngleY = 1.5F;
-			    this.ArmRight01.rotateAngleZ = 0F;
-			    this.ArmRight02.rotateAngleZ = -1.45F;
-			    //equip
-			    this.EquipBase.isHidden = true;
-	  		}
-	  	}
-	  	
 	  	//鬢毛調整
 	    headX = this.Head.rotateAngleX * -0.5F;
 	    headZ = this.Head.rotateAngleZ * -0.5F;

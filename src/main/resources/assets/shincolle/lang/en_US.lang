@@ -124,6 +124,7 @@ item.shincolle:shipegg18.name=Transport Wa-Class
 item.shincolle:shipegg19.name=Submarine Ka-Class
 item.shincolle:shipegg20.name=Submarine Yo-Class
 item.shincolle:shipegg21.name=Submarine So-Class
+item.shincolle:shipegg22.name=Aircraft Carrier Princess
 item.shincolle:shipegg23.name=Airfield Princess
 item.shincolle:shipegg28.name=Battleship Princess
 item.shincolle:shipegg30.name=Harbour Princess
@@ -167,6 +168,7 @@ entity.shincolle.EntityBattleshipTa.name=Battleship Ta-Class
 entity.shincolle.EntityBattleshipYMT.name=Battleship Yamato
 entity.shincolle.EntityCarrierAkagi.name=Standard Carrier Akagi
 entity.shincolle.EntityCarrierKaga.name=Standard Carrier Kaga
+entity.shincolle.EntityCarrierHime.name=Aircraft Carrier Princess
 entity.shincolle.EntityCarrierWD.name=Aircraft Carrier Water Demon
 entity.shincolle.EntityCarrierWo.name=Standard Carrier Wo-Class
 entity.shincolle.EntityDestroyerHa.name=Destroyer Ha-Class
@@ -415,6 +417,9 @@ gui.shincolle:book.chap4.text17d1=§9Name:§0 Yo-Class<br><br>§9Class:§0 Subma
 gui.shincolle:book.chap4.title18=
 gui.shincolle:book.chap4.text18d0=
 gui.shincolle:book.chap4.text18d1=§9Name:§0 So-Class<br><br>§9Class:§0 Submarine<br><br>§9Factory:§0 Abyssal Vent<br><br>§9Factor:§0 Ammo (180)<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 SS base dodge 25%%<br><br>Like swimming naked and hit enemy with large and bulky torpedo.
+gui.shincolle:book.chap4.title19=
+gui.shincolle:book.chap4.text19d0=
+gui.shincolle:book.chap4.text19d1=§9Name:§0 Aircraft Carrier Princess<br><br>§9Class:§0 Princess Class CV<br><br>§9Factory:§0 Hadal Vortex<br><br>§9Factor:§0 Polymetal (3000)<br><br>§9AuraEffect§0 none<br><br>§9OtherEffect:§0 enhanced melee<br><br>Melee: Deal 100%% firepower AoE damage.
 
 # GUI: Book Text Chap 5
 gui.shincolle:book.chap5.title=Enemy List

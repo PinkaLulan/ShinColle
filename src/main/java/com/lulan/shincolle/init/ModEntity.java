@@ -32,11 +32,13 @@ import com.lulan.shincolle.entity.destroyer.EntityDestroyerShimakaze;
 import com.lulan.shincolle.entity.destroyer.EntityDestroyerShimakazeBoss;
 import com.lulan.shincolle.entity.hime.EntityAirfieldHime;
 import com.lulan.shincolle.entity.hime.EntityBattleshipHime;
+import com.lulan.shincolle.entity.hime.EntityCarrierHime;
 import com.lulan.shincolle.entity.hime.EntityCarrierWD;
 import com.lulan.shincolle.entity.hime.EntityHarbourHime;
 import com.lulan.shincolle.entity.hime.EntityNorthernHime;
 import com.lulan.shincolle.entity.mounts.EntityMountAfH;
 import com.lulan.shincolle.entity.mounts.EntityMountBaH;
+import com.lulan.shincolle.entity.mounts.EntityMountCaH;
 import com.lulan.shincolle.entity.mounts.EntityMountCaWD;
 import com.lulan.shincolle.entity.mounts.EntityMountHbH;
 import com.lulan.shincolle.entity.mounts.EntityMountSeat;
@@ -107,6 +109,7 @@ public class ModEntity {
 		createEntity(EntityCarrierAkagiBoss.class, "EntityCarrierAkagiBoss", modEntityID++);
 		createEntity(EntityCarrierKaga.class, "EntityCarrierKaga", modEntityID++);
 		createEntity(EntityCarrierKagaBoss.class, "EntityCarrierKagaBoss", modEntityID++);
+		createEntity(EntityCarrierHime.class, "EntityCarrierHime", modEntityID++);
 		createEntity(EntityCarrierWD.class, "EntityCarrierWD", modEntityID++);
 		createEntity(EntityCarrierWo.class, "EntityCarrierWo", modEntityID++);
 		createEntity(EntityDestroyerI.class, "EntityDestroyerI", modEntityID++);
@@ -142,6 +145,7 @@ public class ModEntity {
 		//register mount entity
 		createEntity(EntityMountAfH.class, "EntityMountAfH", modEntityID++);
 		createEntity(EntityMountBaH.class, "EntityMountBaH", modEntityID++);
+		createEntity(EntityMountCaH.class, "EntityMountCaH", modEntityID++);
 		createEntity(EntityMountCaWD.class, "EntityMountCaWD", modEntityID++);
 		createEntity(EntityMountHbH.class, "EntityMountHbH", modEntityID++);
 		createEntity(EntityMountSeat.class, "EntityMountSeat2", modEntityID++);

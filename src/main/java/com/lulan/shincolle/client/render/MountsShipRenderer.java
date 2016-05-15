@@ -12,6 +12,7 @@ public class MountsShipRenderer extends BasicShipRenderer
 	//textures
 	private static final ResourceLocation AfH = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityMountAfH.png");
 	private static final ResourceLocation BaH = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityMountBaH.png");
+	private static final ResourceLocation CaH = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityMountCaH.png");
 	private static final ResourceLocation CaWD = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityMountCaWD.png");
 	private static final ResourceLocation HbH = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityMountHbH.png");
 	
@@ -36,6 +37,8 @@ public class MountsShipRenderer extends BasicShipRenderer
 			return CaWD;
 		case 3:
 			return HbH;
+		case 4:
+			return CaH;
 		}
 		
 		return null;
@@ -55,6 +58,8 @@ public class MountsShipRenderer extends BasicShipRenderer
 			return new float[] {0.3F, 0.4F, 0.4F, 0.4F, 0.4F};
 		case 3:
 			return new float[] {0F, 0.5F, 0.5F, 0.5F, 0.5F};
+		case 4:
+			return new float[] {0.3F, 0.4F, 0.4F, 0.4F, 0.4F};
 		}
 		
 		return new float[] {0.1F, 0F, 0F, 0F, 0F};
