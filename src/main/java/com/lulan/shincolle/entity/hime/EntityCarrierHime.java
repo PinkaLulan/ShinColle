@@ -1,8 +1,10 @@
 package com.lulan.shincolle.entity.hime;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.ai.EntityAIShipCarrierAttack;
@@ -10,6 +12,7 @@ import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShipCV;
 import com.lulan.shincolle.entity.ExtendShipProps;
 import com.lulan.shincolle.entity.mounts.EntityMountCaH;
+import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
 
@@ -166,6 +169,39 @@ public class EntityCarrierHime extends BasicEntityShipCV
 				break;
 			}
 		}
+	}
+	
+	//AoE melee attack
+	@Override
+	public boolean attackEntityAsMob(Entity target)
+	{
+		//get attack value
+		float atk = StateFinal[ID.ATK_AL];
+		
+		//experience++
+		addShipExp(ConfigHandler.expGain[0]);
+		
+		//morale--
+		decrMorale(0);
+		setCombatTick(this.ticksExisted);
+				
+	    //entity attack effect
+	    applySoundAtAttacker(0, target);
+	    applyParticleAtAttacker(0, target, new float[4]);
+	    
+	    //spawn missile
+        EntityAbyssMissile missile = new EntityAbyssMissile(this.worldObj, this, 
+        		(float)target.posX, (float)target.posY + target.height * 0.2F, (float)target.posZ,
+        		1F, atk, 0F, true, -1F);
+        this.worldObj.spawnEntityInWorld(missile);
+	    
+	    applyEmotesReaction(3);
+	    
+	    if(ConfigHandler.canFlare) {
+			flareTarget(target);
+		}
+
+	    return true;
 	}
 
 

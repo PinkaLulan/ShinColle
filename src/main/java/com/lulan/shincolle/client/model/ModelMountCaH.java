@@ -98,7 +98,7 @@ public class ModelMountCaH extends ModelBase
         this.Cannon01a_7.setRotationPoint(-12.5F, 7.5F, 5.0F);
         this.Cannon01a_7.addBox(-2.0F, -2.0F, -3.0F, 4, 4, 6, 0.0F);
         this.setRotateAngle(Cannon01a_7, -0.17453292519943295F, 0.5235987755982988F, 0.0F);
-        this.Cannon01c = new ModelRenderer(this, 16, 8);
+        this.Cannon01c = new ModelRenderer(this, 4, 8);
         this.Cannon01c.setRotationPoint(0.0F, 0.0F, -4.0F);
         this.Cannon01c.addBox(-0.5F, -0.5F, -7.0F, 1, 1, 7, 0.0F);
         this.WingL02 = new ModelRenderer(this, 0, 41);
@@ -123,7 +123,7 @@ public class ModelMountCaH extends ModelBase
         this.Cannon01b_1 = new ModelRenderer(this, 0, 0);
         this.Cannon01b_1.setRotationPoint(0.0F, 0.0F, -1.8F);
         this.Cannon01b_1.addBox(-1.0F, -1.0F, -4.0F, 2, 2, 3, 0.0F);
-        this.Cannon01c_2 = new ModelRenderer(this, 18, 12);
+        this.Cannon01c_2 = new ModelRenderer(this, 8, 12);
         this.Cannon01c_2.setRotationPoint(0.0F, 0.0F, -4.0F);
         this.Cannon01c_2.addBox(-0.5F, -0.5F, -7.0F, 1, 1, 7, 0.0F);
         this.Tube02a = new ModelRenderer(this, 0, 0);
@@ -149,7 +149,7 @@ public class ModelMountCaH extends ModelBase
         this.Cannon01a_1.setRotationPoint(12.0F, 11.0F, 5.0F);
         this.Cannon01a_1.addBox(-2.0F, -2.0F, -3.0F, 4, 4, 6, 0.0F);
         this.setRotateAngle(Cannon01a_1, 0.13962634015954636F, -0.41887902047863906F, 0.0F);
-        this.Cannon01c_5 = new ModelRenderer(this, 18, 12);
+        this.Cannon01c_5 = new ModelRenderer(this, 12, 12);
         this.Cannon01c_5.setRotationPoint(0.0F, 0.0F, -4.0F);
         this.Cannon01c_5.addBox(-0.5F, -0.5F, -7.0F, 1, 1, 7, 0.0F);
         this.Head01 = new ModelRenderer(this, 0, 0);
@@ -159,7 +159,7 @@ public class ModelMountCaH extends ModelBase
         this.Cannon01a_5.setRotationPoint(-12.0F, 11.0F, 5.0F);
         this.Cannon01a_5.addBox(-2.0F, -2.0F, -3.0F, 4, 4, 6, 0.0F);
         this.setRotateAngle(Cannon01a_5, 0.20943951023931953F, 0.3141592653589793F, 0.0F);
-        this.Cannon01c_7 = new ModelRenderer(this, 18, 12);
+        this.Cannon01c_7 = new ModelRenderer(this, 16, 12);
         this.Cannon01c_7.setRotationPoint(0.0F, 0.0F, -4.0F);
         this.Cannon01c_7.addBox(-0.5F, -0.5F, -7.0F, 1, 1, 7, 0.0F);
         this.Tube01b_2 = new ModelRenderer(this, 0, 0);
@@ -192,7 +192,7 @@ public class ModelMountCaH extends ModelBase
         this.Tube01b.setRotationPoint(0.0F, -7.0F, 1.0F);
         this.Tube01b.addBox(0.0F, -7.0F, -1.0F, 1, 7, 1, 0.0F);
         this.setRotateAngle(Tube01b, 1.3962634015954636F, 0.0F, 0.0F);
-        this.Cannon01c_1 = new ModelRenderer(this, 18, 12);
+        this.Cannon01c_1 = new ModelRenderer(this, 20, 12);
         this.Cannon01c_1.setRotationPoint(0.0F, 0.0F, -4.0F);
         this.Cannon01c_1.addBox(-0.5F, -0.5F, -7.0F, 1, 1, 7, 0.0F);
         this.HeadTooth01 = new ModelRenderer(this, 24, 24);
@@ -219,7 +219,7 @@ public class ModelMountCaH extends ModelBase
         this.Tube02b.setRotationPoint(0.0F, -7.0F, 0.0F);
         this.Tube02b.addBox(-1.0F, -7.0F, -1.0F, 1, 7, 1, 0.0F);
         this.setRotateAngle(Tube02b, 1.3962634015954636F, 0.0F, 0.0F);
-        this.Cannon01c_3 = new ModelRenderer(this, 18, 12);
+        this.Cannon01c_3 = new ModelRenderer(this, 24, 12);
         this.Cannon01c_3.setRotationPoint(0.0F, 0.0F, -4.0F);
         this.Cannon01c_3.addBox(-0.5F, -0.5F, -7.0F, 1, 1, 7, 0.0F);
         this.Cannon01b_7 = new ModelRenderer(this, 0, 0);
@@ -258,7 +258,7 @@ public class ModelMountCaH extends ModelBase
         this.Jaw01.setRotationPoint(0.0F, 7.0F, 6.0F);
         this.Jaw01.addBox(-7.0F, 0.0F, -15.0F, 14, 6, 13, 0.0F);
         this.setRotateAngle(Jaw01, 0.3141592653589793F, 0.0F, 0.0F);
-        this.Cannon01c_6 = new ModelRenderer(this, 18, 12);
+        this.Cannon01c_6 = new ModelRenderer(this, 28, 12);
         this.Cannon01c_6.setRotationPoint(0.0F, 0.0F, -4.0F);
         this.Cannon01c_6.addBox(-0.5F, -0.5F, -7.0F, 1, 1, 7, 0.0F);
         this.JawTooth01 = new ModelRenderer(this, 24, 24);
@@ -272,17 +272,14 @@ public class ModelMountCaH extends ModelBase
         this.Tube01a.setRotationPoint(2.0F, 1.0F, 9.0F);
         this.Tube01a.addBox(0.0F, -7.0F, 0.0F, 1, 7, 1, 0.0F);
         this.setRotateAngle(Tube01a, -0.7853981633974483F, 0.8726646259971648F, 0.2617993877991494F);
-        this.Cannon01c_4 = new ModelRenderer(this, 18, 12);
+        this.Cannon01c_4 = new ModelRenderer(this, 32, 12);
         this.Cannon01c_4.setRotationPoint(0.0F, 0.0F, -4.0F);
         this.Cannon01c_4.addBox(-0.5F, -0.5F, -7.0F, 1, 1, 7, 0.0F);
-        this.CannonR01.addChild(this.CannonR02);
         this.BodyMain.addChild(this.Back02);
         this.BodyMain.addChild(this.Cannon01a_7);
         this.Cannon01b.addChild(this.Cannon01c);
-        this.BodyMain.addChild(this.WingL02);
         this.Cannon01a_3.addChild(this.Cannon01b_3);
         this.BodyMain.addChild(this.Seat01);
-        this.HeadTooth01.addChild(this.HeadTooth02);
         this.BodyMain.addChild(this.Cannon01a);
         this.Cannon01a_1.addChild(this.Cannon01b_1);
         this.Cannon01b_2.addChild(this.Cannon01c_2);
@@ -305,7 +302,6 @@ public class ModelMountCaH extends ModelBase
         this.Head01.addChild(this.Head02);
         this.Tube01a.addChild(this.Tube01b);
         this.Cannon01b_1.addChild(this.Cannon01c_1);
-        this.Head01.addChild(this.HeadTooth01);
         this.Cannon01a_5.addChild(this.Cannon01b_5);
         this.BodyMain.addChild(this.Cannon01a_3);
         this.BodyMain.addChild(this.Back01);
@@ -315,15 +311,11 @@ public class ModelMountCaH extends ModelBase
         this.Cannon01b_3.addChild(this.Cannon01c_3);
         this.Cannon01a_7.addChild(this.Cannon01b_7);
         this.BodyMain.addChild(this.Cannon01a_2);
-        this.BodyMain.addChild(this.WingR02);
         this.Cannon01a.addChild(this.Cannon01b);
         this.BodyMain.addChild(this.Tube01a_2);
         this.Tube01a_1.addChild(this.Tube01b_1);
-        this.JawTooth01.addChild(this.JawTooth02);
-        this.CannonL01.addChild(this.CannonL02);
         this.Neck.addChild(this.Jaw01);
         this.Cannon01b_6.addChild(this.Cannon01c_6);
-        this.Jaw01.addChild(this.JawTooth01);
         this.BodyMain.addChild(this.Back03);
         this.BodyMain.addChild(this.Tube01a);
         this.Cannon01b_4.addChild(this.Cannon01c_4);
@@ -431,7 +423,7 @@ public class ModelMountCaH extends ModelBase
     		GL11.glTranslatef(0F, angleX * 0.025F - 0.025F, 0F);
     	}
   		
-    	GL11.glTranslatef(0F, -0.25F, 0F);
+    	GL11.glTranslatef(0F, -0.25F, -0.1F);
 
 	    //正常站立動作
 	  	//嘴巴

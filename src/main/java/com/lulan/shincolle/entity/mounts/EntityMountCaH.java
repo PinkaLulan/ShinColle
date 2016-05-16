@@ -1,11 +1,20 @@
 package com.lulan.shincolle.entity.mounts;
 
+import net.minecraft.entity.Entity;
+import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.ai.EntityAIShipCarrierAttack;
 import com.lulan.shincolle.entity.BasicEntityMountLarge;
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.other.EntityAbyssMissile;
+import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.network.S2CSpawnParticle;
+import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Reference;
+
+import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
 public class EntityMountCaH extends BasicEntityMountLarge
 {
@@ -77,6 +86,40 @@ public class EntityMountCaH extends BasicEntityMountLarge
 		//use range attack
 		this.tasks.addTask(10, new EntityAIShipCarrierAttack(this));
 	}
+	
+	//change melee damage to 100%
+  	@Override
+  	public boolean attackEntityAsMob(Entity target) {
+  	//get attack value
+  		float atk = host.getStateFinal(ID.ATK_AL);
+  				
+  		//experience++
+  		host.addShipExp(ConfigHandler.expGain[0]);
+  		
+  		//attack time
+  		host.setCombatTick(this.ticksExisted);
+
+  	    //play entity attack sound
+  	    if(this.getRNG().nextInt(10) > 8) {
+  	    	this.playSound(Reference.MOD_ID+":ship-waka_attack", ConfigHandler.volumeShip * 0.5F, 1F);
+  	    }
+  	    
+  	    //spawn missile
+        EntityAbyssMissile missile = new EntityAbyssMissile(this.worldObj, this.host, 
+        		(float)target.posX, (float)target.posY+target.height*0.2F, (float)target.posZ, 1F, atk, 0F, true, -1F);
+        this.worldObj.spawnEntityInWorld(missile);
+
+  	    //show emotes
+  	    if(host != null) {
+  	    	host.applyEmotesReaction(3);
+  	    	
+  	    	if(ConfigHandler.canFlare) {
+  				host.flareTarget(target);
+  			}
+  	    }
+  	  
+  	    return true;
+  	}
 	
 
 }

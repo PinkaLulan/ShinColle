@@ -17,6 +17,7 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.CalcHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -79,9 +80,28 @@ public class EntityCarrierWD extends BasicEntityShipCV {
   	}
 	
 	@Override
-	public int getKaitaiType() {
+	public int getKaitaiType()
+	{
 		return 1;
 	}
+	
+	@Override
+	public float getAttackBaseDamage(int type, Entity target)
+	{
+  		switch (type)
+  		{
+  		case 1:  //light cannon
+  			return CalcHelper.calcDamageBySpecialEffect(this, target, StateFinal[ID.ATK_AL], 0);
+  		case 2:  //heavy cannon
+  			return StateFinal[ID.ATK_H];
+  		case 3:  //light aircraft
+  			return StateFinal[ID.ATK_AL];
+  		case 4:  //heavy aircraft
+  			return StateFinal[ID.ATK_AH];
+		default: //melee
+			return StateFinal[ID.ATK] * 0.125F;
+  		}
+  	}
 	
 	//change light cannon particle
     @Override

@@ -2380,9 +2380,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		//experience++
 		addShipExp(ConfigHandler.expGain[0]);
 		
-		//grudge--
-		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
-		
 		//morale--
 		decrMorale(0);
 		setCombatTick(this.ticksExisted);
@@ -2710,7 +2707,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     }
 	
 	/** decr morale value, type: 0:melee, 1:light, 2:heavy, 3:light air, 4:light heavy, 5:damaged */
-	protected void decrMorale(int type) {
+	public void decrMorale(int type) {
 		switch(type) {
 		case 0:  //melee
 			setStateMinor(ID.M.Morale, getStateMinor(ID.M.Morale) - 2);

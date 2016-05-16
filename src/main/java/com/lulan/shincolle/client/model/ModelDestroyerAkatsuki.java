@@ -743,15 +743,15 @@ public class ModelDestroyerAkatsuki extends ModelBase implements IModelEmotionAd
 	  	this.HairR02.rotateAngleX = 0.0873F;
 	  	this.HairR02.rotateAngleZ = -0.0873F;
 	    //arm
-	  	this.ArmLeft01.rotateAngleX = 0.1745F;
+	  	this.ArmLeft01.rotateAngleX = angleAdd2 * 0.25F + 0.1745F;
 	  	this.ArmLeft01.rotateAngleY = 0F;
-	    this.ArmLeft01.rotateAngleZ = -0.42F;
+	    this.ArmLeft01.rotateAngleZ = angleX * 0.03F - 0.42F;
 	    this.ArmLeft02.rotateAngleX = 0F;
 	    this.ArmLeft02.rotateAngleZ = 0F;
 	    this.ArmLeft02.offsetX = 0F;
-	    this.ArmRight01.rotateAngleX = -0.0523F;
+	    this.ArmRight01.rotateAngleX = angleAdd1 * 0.25F - 0.0523F;
 	    this.ArmRight01.rotateAngleY = 0F;
-		this.ArmRight01.rotateAngleZ = 0.42F;
+		this.ArmRight01.rotateAngleZ = -angleX * 0.03F + 0.42F;
 		this.ArmRight02.rotateAngleX = 0F;
 		this.ArmRight02.rotateAngleZ = 0F;
 		this.ArmRight02.offsetX = 0F;
@@ -1098,19 +1098,19 @@ public class ModelDestroyerAkatsuki extends ModelBase implements IModelEmotionAd
   	}
 
 	@Override
-	public void setFaceNormal()
+	public void setFaceNormal(IShipEmotion ent)
 	{
 		setFace(0);
 	}
 
 	@Override
-	public void setFaceBlink0()
+	public void setFaceBlink0(IShipEmotion ent)
 	{
 		setFace(0);		
 	}
 
 	@Override
-	public void setFaceBlink1()
+	public void setFaceBlink1(IShipEmotion ent)
 	{
 		setFace(1);
 	}

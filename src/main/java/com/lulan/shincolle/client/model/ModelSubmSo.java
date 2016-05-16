@@ -778,17 +778,17 @@ public class ModelSubmSo extends ModelBase implements IModelEmotionAdv {
   	}
 
 	@Override
-	public void setFaceNormal() {
+	public void setFaceNormal(IShipEmotion ent) {
 		setFace(0);
 	}
 
 	@Override
-	public void setFaceBlink0() {
+	public void setFaceBlink0(IShipEmotion ent) {
 		setFace(0);		
 	}
 
 	@Override
-	public void setFaceBlink1() {
+	public void setFaceBlink1(IShipEmotion ent) {
 		setFace(1);
 	}
 

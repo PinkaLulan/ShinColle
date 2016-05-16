@@ -4,9 +4,9 @@ import com.lulan.shincolle.entity.IShipEmotion;
 
 public interface IModelEmotionAdv extends IModelEmotion {
 
-	public void setFaceNormal();
-	public void setFaceBlink0();
-	public void setFaceBlink1();
+	public void setFaceNormal(IShipEmotion ent);
+	public void setFaceBlink0(IShipEmotion ent);
+	public void setFaceBlink1(IShipEmotion ent);
 	public void setFaceCry(IShipEmotion ent);
 	public void setFaceAttack(IShipEmotion ent);
 	public void setFaceDamaged(IShipEmotion ent);

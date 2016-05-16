@@ -116,7 +116,7 @@ public class EmotionHelper {
     		//reset face to 0 or blink if emotion time > 0
     		if (ent.getFaceTick() <= 0)
     		{
-    			if (ent.getStateEmotion(ID.S.Emotion) != ID.Emotion.BORED) model.setFaceNormal();
+    			if (ent.getStateEmotion(ID.S.Emotion) != ID.Emotion.BORED) model.setFaceNormal(ent);
     		}
     		else
     		{
@@ -255,14 +255,14 @@ public class EmotionHelper {
   		{	//要在沒表情狀態才做表情		
   			ent.setFaceTick(ent.getTickExisted());						//表情開始時間
   			ent.setStateEmotion(ID.S.Emotion, ID.Emotion.BLINK, false);	//標記表情為blink
-  			model.setFaceBlink1();
+  			model.setFaceBlink1(null);
   		}
   		
   		int EmoTime = ent.getTickExisted() - ent.getFaceTick();
     	 		
     	if (EmoTime > 25)
     	{	//reset face
-    		model.setFaceBlink0();
+    		model.setFaceBlink0(null);
     		if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BLINK)
     		{
     			ent.setStateEmotion(ID.S.Emotion, ID.Emotion.NORMAL, false);
@@ -271,15 +271,15 @@ public class EmotionHelper {
     	}
     	else if (EmoTime > 20)
     	{  //20~25 -.-
-    		model.setFaceBlink1();
+    		model.setFaceBlink1(null);
     	}
     	else if (EmoTime > 10)
     	{  //10~20 O_O
-    		model.setFaceBlink0();
+    		model.setFaceBlink0(null);
     	}
     	else if (EmoTime > -1)
     	{  //0~10 -_-
-    		model.setFaceBlink1();
+    		model.setFaceBlink1(null);
     	}		
   	}
   	
@@ -317,7 +317,7 @@ public class EmotionHelper {
     	
     	if (EmoTime > 41)
     	{	//reset face
-    		model.setFaceNormal();
+    		model.setFaceNormal(ent);
 			ent.setStateEmotion(ID.S.Emotion, ID.Emotion.NORMAL, false);
 			ent.setFaceTick(-1);
     	}

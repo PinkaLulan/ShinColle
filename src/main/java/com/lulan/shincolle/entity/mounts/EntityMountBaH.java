@@ -80,6 +80,12 @@ public class EntityMountBaH extends BasicEntityMount {
   		//get attack value
   		float atk = host.getStateFinal(ID.ATK) * 3F;
   				
+  		//experience++
+  		host.addShipExp(ConfigHandler.expGain[0]);
+  		
+  		//attack time
+  		host.setCombatTick(this.ticksExisted);
+  		
   	    //將atk跟attacker傳給目標的attackEntityFrom方法, 在目標class中計算傷害
   	    //並且回傳是否成功傷害到目標
   	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this), atk);

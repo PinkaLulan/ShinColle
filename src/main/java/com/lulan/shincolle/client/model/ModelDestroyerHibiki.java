@@ -792,15 +792,15 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
 	  	this.HairR02.rotateAngleX = 0.21F;
 	  	this.HairR02.rotateAngleZ = -0.0873F;
 	    //arm
-	  	this.ArmLeft01.rotateAngleX = 0.1745F;
+	  	this.ArmLeft01.rotateAngleX = angleAdd2 * 0.25F + 0.1745F;
 	  	this.ArmLeft01.rotateAngleY = 0F;
-	    this.ArmLeft01.rotateAngleZ = -0.3F;
+	    this.ArmLeft01.rotateAngleZ = angleX * 0.03F - 0.3F;
 	    this.ArmLeft02.rotateAngleX = 0F;
 	    this.ArmLeft02.rotateAngleZ = 0F;
 	    this.ArmLeft02.offsetX = 0F;
-	    this.ArmRight01.rotateAngleX = 0.1745F;
+	    this.ArmRight01.rotateAngleX = angleAdd1 * 0.25F - 0.0523F;
 	    this.ArmRight01.rotateAngleY = 0F;
-		this.ArmRight01.rotateAngleZ = 0.3F;
+		this.ArmRight01.rotateAngleZ = -angleX * 0.03F + 0.3F;
 		this.ArmRight02.rotateAngleX = 0F;
 		this.ArmRight02.rotateAngleZ = 0F;
 		this.ArmRight02.offsetX = 0F;
@@ -1095,19 +1095,26 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
   	}
 
 	@Override
-	public void setFaceNormal()
+	public void setFaceNormal(IShipEmotion ent)
 	{
-		setFace(5);
+		if (ent.getTickExisted() % 2048 > 1024)
+		{
+			setFace(6);
+		}
+		else
+		{
+			setFace(7);
+		}
 	}
 
 	@Override
-	public void setFaceBlink0()
+	public void setFaceBlink0(IShipEmotion ent)
 	{
-		setFace(2);		
+		setFace(2);
 	}
 
 	@Override
-	public void setFaceBlink1()
+	public void setFaceBlink1(IShipEmotion ent)
 	{
 		setFace(1);
 	}

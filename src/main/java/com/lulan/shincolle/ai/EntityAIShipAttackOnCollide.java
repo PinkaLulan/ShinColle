@@ -77,7 +77,7 @@ public class EntityAIShipAttackOnCollide extends EntityAIBase {
         
         //calc dist
         double distTarget = this.host2.getDistanceSq(target.posX, target.boundingBox.minY, target.posZ);
-        double distAttack = this.host2.width * this.host2.width * 10F + target.width * 3F;
+        double distAttack = this.host2.width * this.host2.width * 16F;
         
         if(host2.ticksExisted % 32 == 0) {
         	//update attrs

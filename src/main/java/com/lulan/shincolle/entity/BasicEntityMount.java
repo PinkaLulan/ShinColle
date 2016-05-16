@@ -219,7 +219,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 				}
 				
 				//min damage設為1
-		        if(reduceAtk < 1) reduceAtk = 1;
+		        if(reduceAtk < 0) reduceAtk = 0;
 		        
 		        //取消host的坐下動作
 		        if(host != null) {
@@ -680,6 +680,12 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   		//get attack value
   		float atk = host.getStateFinal(ID.ATK);
   				
+  		//experience++
+  		host.addShipExp(ConfigHandler.expGain[0]);
+  		
+  		//attack time
+  		host.setCombatTick(this.ticksExisted);
+  		
   	    //將atk跟attacker傳給目標的attackEntityFrom方法, 在目標class中計算傷害
   	    //並且回傳是否成功傷害到目標
   	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this), atk);
@@ -736,6 +742,9 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   		
   		//grudge--
   		host.decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
+  		
+  		//attack time
+  		host.setCombatTick(this.ticksExisted);
   		
   		//light ammo -1
         if(!host.decrAmmoNum(0, host.getAmmoConsumption())) {			//not enough ammo
@@ -868,6 +877,9 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
       		
       	//grudge--
       	host.decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
+      	
+  		//attack time
+  		host.setCombatTick(this.ticksExisted);
       	
       	//heavy ammo--
         if(!host.decrAmmoNum(1, host.getAmmoConsumption())) {
