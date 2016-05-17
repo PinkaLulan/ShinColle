@@ -268,7 +268,7 @@ gui.shincolle:book.chap1.title17=深海提督辦公桌
 gui.shincolle:book.chap1.text17d0=<br><br><br><br><br><br><br><br><br>採用黑曜石打造的§d§n深海提督辦公桌§r§0非常堅固耐用，除了用來處理鎮守府的各項公務外，也可以用來抵擋憤怒秘書艦的砲火。<br><br><br>※添購家具前請先詢問秘書艦以免造成資源管理上的困擾。
 gui.shincolle:book.chap1.text17d1=            使用指南<br><br>§9雷達§0：<br>顯示附近所屬船艦位置以及列表，在列表點選船艦後可進行聯繫等動作。<br><br>§9深海日誌§0：<br>各項物品介紹及紀錄已知船艦訊息。<br><br>§9陣營§0：<br>建立或加入艦隊以開啟PVP模式。<br><br>§9攻擊目標列表§0：<br>調整船艦的攻擊目標類型。
 gui.shincolle:book.chap1.title18=目標設定扳手
-gui.shincolle:book.chap1.text18d0=<br><br><br><br><br><br><br><br><br>§9左鍵:§0<br>§c新增/移除§0目標到§d不可攻擊清單§0。   §4(僅限OP使用)§0<br><br>§9右鍵:§0<br>顯示§d不可攻擊目標清單§0 / 顯示深海路徑點資訊。<br><br>§9蹲下右鍵:§0<br>配對箱子跟深海起重機 / 設定深海路徑點。
+gui.shincolle:book.chap1.text18d0=<br><br><br><br><br><br><br><br><br>§9左鍵:§0<br>§c新增/移除§0目標到§d不可攻擊清單§0。§4(僅限OP)§0<br><br>§9蹲下左鍵:§0<br>顯示§d不可攻擊目標清單§0<br><br>§9右鍵:§0<br>設定深海路徑點停留時間。<br><br>§9蹲下右鍵:§0<br>配對箱子跟深海起重機 / 配對深海路徑點。
 gui.shincolle:book.chap1.text18d1=§d不可攻擊目標§0不會被範圍攻擊傷害到，也不會被AI設為目標。你可以把繩子的頭、物品框、木船、飛機跟棲艦的坐騎設為不可攻擊目標。<br><br>野生的艦娘攻擊時也會檢查此清單，不過你不能把棲艦跟艦娘設為不可攻擊目標。
 gui.shincolle:book.chap1.title19=深海火山方塊
 gui.shincolle:book.chap1.text19d0=<br><br><br><br><br><br><br><br><br>當岩漿被強烈的怨念團塊壓縮後，就會形成高溫高壓的§d§n深海火山方塊§r§0。<br><br>純裝飾用方塊。
@@ -580,6 +580,7 @@ gui.shincolle:ai.aa=防空模式
 gui.shincolle:ai.asm=反潛模式
 gui.shincolle:ai.timekeeper=報時語音
 gui.shincolle:ai.pickitem=拾取物品
+gui.shincolle:ai.wpstay=路徑點停留時間
 
 # GUI: Shipyard
 gui.shincolle:nomaterial=資材不足

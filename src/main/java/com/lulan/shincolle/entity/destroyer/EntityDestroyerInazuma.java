@@ -87,6 +87,10 @@ public class EntityDestroyerInazuma extends BasicEntityShipSmall {
   				{
   					this.isGattai = true;
   				}
+  				else
+  				{
+  					this.isGattai = false;
+  				}
   				
   				//add morale when gattai
   				if (this.isGattai)
@@ -104,7 +108,9 @@ public class EntityDestroyerInazuma extends BasicEntityShipSmall {
   	  				//add aura to master every 128 ticks
   	  				EntityPlayerMP player = (EntityPlayerMP) EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
   	  				
-  	  				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.M.NumGrudge) > 0 && player != null && getDistanceSqToEntity(player) < 256D)
+  	  				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) &&
+  	  					getStateMinor(ID.M.NumGrudge) > 0 && getStateMinor(ID.M.CraneState) == 0 &&
+  	  					player != null && getDistanceSqToEntity(player) < 256D)
   	  				{
   	  					//potion effect: id, time, level
   	  	  	  			player.addPotionEffect(new PotionEffect(Potion.moveSpeed.id, 300, getStateMinor(ID.M.ShipLevel) / 45 + 1));

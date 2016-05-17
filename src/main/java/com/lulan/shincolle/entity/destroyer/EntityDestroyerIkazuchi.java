@@ -89,6 +89,10 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall {
   				{
   					this.isGattai = true;
   				}
+  				else
+  				{
+  					this.isGattai = false;
+  				}
   				
   				//add morale when gattai
   				if (this.isGattai)
@@ -107,8 +111,8 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall {
   	  				EntityPlayerMP player = (EntityPlayerMP) EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
   	  				
   	  				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) &&
-  	  					getStateMinor(ID.M.NumGrudge) > 0 && player != null &&
-  	  					getDistanceSqToEntity(player) < 256D)
+  	  					getStateMinor(ID.M.NumGrudge) > 0 && getStateMinor(ID.M.CraneState) == 0 &&
+  	  					player != null && getDistanceSqToEntity(player) < 256D)
   	  				{
   	  					//potion effect: id, time, level
   	  	  	  			player.addPotionEffect(new PotionEffect(Potion.damageBoost.id, 300, getStateMinor(ID.M.ShipLevel) / 50));
@@ -251,8 +255,9 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall {
 			return;
 		}
 		
-		//not sitting, hp > 50%, 
-		if (ship != null && !ship.getStateFlag(ID.F.NoFuel) && !ship.isSitting() && ship.getHealth() > ship.getMaxHealth() * 0.5F)
+		//not sitting, hp > 50%, not craning
+		if (ship != null && !ship.getStateFlag(ID.F.NoFuel) && !ship.isSitting() &&
+			ship.getHealth() > ship.getMaxHealth() * 0.5F && ship.getStateMinor(ID.M.CraneState) == 0)
 		{
 			//check ship is rai or den
 			boolean isRai = (ship.getShipClass() == ID.Ship.DestroyerIkazuchi);

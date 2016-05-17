@@ -28,7 +28,7 @@ public class ContainerShipInventory extends Container {
 	            GuiNumAirLight, GuiNumAirHeavy, GuiIsMarried, GuiMorale, GuiInvSize,
 	            ButtonMelee, ButtonAmmoLight, ButtonAmmoHeavy, ButtonAirLight, ButtoAirHeavy,
 	            FollowMin, FollowMax, FleeHP, TarAI, AuraEffect, OnSightAI, PVPAI, AAAI, ASMAI,
-	            TIMEKEEPAI, ShowPage, PICKAI;
+	            TIMEKEEPAI, ShowPage, PICKAI, WpStay;
 	
 	public ContainerShipInventory(InventoryPlayer invPlayer, BasicEntityShip entity1) {
 		int i, j;
@@ -174,6 +174,7 @@ public class ContainerShipInventory extends Container {
 		crafting.sendProgressBarUpdate(this, 23, this.entity.getStateMinor(ID.M.Morale));
 		crafting.sendProgressBarUpdate(this, 24, this.entity.getStateMinor(ID.M.InvSize));
 		crafting.sendProgressBarUpdate(this, 25, this.entity.getStateFlagI(ID.F.PickItem));
+		crafting.sendProgressBarUpdate(this, 26, this.entity.getStateMinor(ID.M.WpStay));
 	}
 	
 	//偵測數值是否改變, 有改變時發送更新(此為server端偵測)
@@ -318,6 +319,11 @@ public class ContainerShipInventory extends Container {
                 icrafting.sendProgressBarUpdate(this, 25, getValue);
                 this.PICKAI = getValue;
             }
+            getValue = this.entity.getStateMinor(ID.M.WpStay);
+            if(this.WpStay != getValue) {
+                icrafting.sendProgressBarUpdate(this, 26, getValue);
+                this.WpStay = getValue;
+            }
         }
     }
 	
@@ -397,6 +403,9 @@ public class ContainerShipInventory extends Container {
 			break;
 		case 25:
 			this.entity.setEntityFlagI(ID.F.PickItem, updatedValue);
+			break;
+		case 26:
+			this.entity.setStateMinor(ID.M.WpStay, updatedValue);
 			break;
 		}
     }

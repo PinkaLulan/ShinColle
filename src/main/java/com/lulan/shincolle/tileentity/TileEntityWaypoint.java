@@ -6,6 +6,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
 
 import com.lulan.shincolle.block.ItemBlockWaypoint;
+import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.PointerItem;
 import com.lulan.shincolle.network.S2CGUIPackets;
@@ -15,13 +16,15 @@ import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
-public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint {
+public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
+{
 
 	//waypoint
-	public int lx, ly, lz, nx, ny, nz, tick;
+	public int lx, ly, lz, nx, ny, nz, tick, wpstay;
 	
 	
-	public TileEntityWaypoint() {
+	public TileEntityWaypoint()
+	{
 		super();
 		this.lx = -1;
 		this.ly = -1;
@@ -30,7 +33,7 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
 		this.ny = -1;
 		this.nz = -1;
 		this.tick = 0;
-		
+		this.wpstay = 0;
 	}
 	
 	@Override
@@ -82,7 +85,8 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
 	
 	//讀取nbt資料
 	@Override
-    public void readFromNBT(NBTTagCompound compound) {
+    public void readFromNBT(NBTTagCompound compound)
+	{
         super.readFromNBT(compound);	//從nbt讀取方塊的xyz座標
         
         lx = compound.getInteger("LastX");
@@ -91,11 +95,13 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
         nx = compound.getInteger("NextX");
         ny = compound.getInteger("NextY");
         nz = compound.getInteger("NextZ");
+        wpstay = compound.getInteger("wpstay");
     }
 	
 	//將資料寫進nbt
 	@Override
-	public void writeToNBT(NBTTagCompound compound) {
+	public void writeToNBT(NBTTagCompound compound)
+	{
 		super.writeToNBT(compound);
 		
 		compound.setInteger("LastX", lx);
@@ -104,18 +110,23 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
 		compound.setInteger("NextX", nx);
 		compound.setInteger("NextY", ny);
 		compound.setInteger("NextZ", nz);
+		compound.setInteger("wpstay", wpstay);
 	}
 	
 	@Override
-	public void sendSyncPacket() {
-		if(!this.worldObj.isRemote) {
+	public void sendSyncPacket()
+	{
+		if (!this.worldObj.isRemote)
+		{
 			TargetPoint point = new TargetPoint(this.worldObj.provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, 64D);
 			CommonProxy.channelG.sendToAllAround(new S2CGUIPackets(this), point);
 		}
 	}
 	
-	public void setSyncData(int[] data) {
-		if(data != null) {
+	public void setSyncData(int[] data)
+	{
+		if (data != null)
+		{
 			this.lx = data[0];
 			this.ly = data[1];
 			this.lz = data[2];
@@ -126,8 +137,10 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
 	}
 
 	@Override
-	public void setNextWaypoint(int[] next) {
-		if(next != null) {
+	public void setNextWaypoint(int[] next)
+	{
+		if (next != null)
+		{
 			this.nx = next[0];
 			this.ny = next[1];
 			this.nz = next[2];
@@ -140,7 +153,8 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
 	}
 
 	@Override
-	public void setLastWaypoint(int[] next) {
+	public void setLastWaypoint(int[] next)
+	{
 		if(next != null) {
 			this.lx = next[0];
 			this.ly = next[1];
@@ -149,8 +163,27 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
 	}
 
 	@Override
-	public int[] getLastWaypoint() {
+	public int[] getLastWaypoint()
+	{
 		return new int[] {lx, ly, lz};
+	}
+
+	@Override
+	public void setWpStayTime(int wpstay)
+	{
+		this.wpstay = wpstay;
+	}
+
+	@Override
+	public int getWpStayTime()
+	{
+		return BasicEntityShip.wpStayTime2Ticks(wpstay);
+	}
+	
+	public void nextWpStayTime()
+	{
+		this.wpstay++;
+		if (this.wpstay > 16) this.wpstay = 0;
 	}
 	
 

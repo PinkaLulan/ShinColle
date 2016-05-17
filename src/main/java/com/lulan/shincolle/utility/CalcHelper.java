@@ -41,6 +41,23 @@ public class CalcHelper {
 	
 	public CalcHelper() {}
 	
+	/** 將tick轉為秒 or 分字串 */
+	//convert wp stay time to string
+  	public static String tick2SecOrMin(int ticks)
+  	{
+  		int t = (int) (ticks * 0.05F);
+  		
+  		if (t >= 60)
+  		{
+  			t *= 0.016666667F;
+  			return String.valueOf(t) + "m";
+  		}
+  		else
+  		{
+  			return String.valueOf(t) + "s";
+  		}
+  	}
+	
 	/** 將second轉成格式 00:00:00 */
 	public static String getTimeFormated(int sec) {
 		int timeSec = 0;

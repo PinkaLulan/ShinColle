@@ -70,29 +70,50 @@ public class TargetWrench extends BasicItem {
 	 *  4. add/remove entity to list (server)
 	 */
 	@Override
-	public boolean onEntitySwing(EntityLivingBase entityLiving, ItemStack item) {
+	public boolean onEntitySwing(EntityLivingBase entityLiving, ItemStack item)
+	{
 		int meta = item.getItemDamage();
 		
 		EntityPlayer player = null;
-		if(entityLiving instanceof EntityPlayer) {
+		if (entityLiving instanceof EntityPlayer)
+		{
 			player = (EntityPlayer) entityLiving;
 			
 			//玩家左鍵使用此武器時 (client side only)
-			if(entityLiving.worldObj.isRemote) {
+			if (entityLiving.worldObj.isRemote)
+			{
 				MovingObjectPosition hitObj = EntityHelper.getPlayerMouseOverEntity(64D, 1F);
 				
 				//hit entity
-				if(hitObj != null && hitObj.entityHit != null) {
+				if (hitObj != null && hitObj.entityHit != null)
+				{
 					//target != ship
-					if(!(hitObj.entityHit instanceof BasicEntityShip || hitObj.entityHit instanceof BasicEntityShipHostile)) {
+					if (!(hitObj.entityHit instanceof BasicEntityShip ||
+						  hitObj.entityHit instanceof BasicEntityShipHostile))
+					{
 						String tarName = hitObj.entityHit.getClass().getSimpleName();
 						LogHelper.info("DEBUG : target wrench get class: "+tarName);
+						
 						//send packet to server
 						CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetOPTarClass, tarName));
 						return false;
 					}//end not ship
 				}//end hit != null
 			}//end client side
+			else
+			{
+				if(player.isSneaking()) {
+					List<String> tarlist = ServerProxy.getUnattackableTargetClassList();
+					
+					player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED+"Show unattackable entity list:"));
+					
+					for(String s : tarlist) {
+						player.addChatMessage(new ChatComponentText(EnumChatFormatting.AQUA+s));
+					}
+					
+					return true;
+				}
+			}
 		}//end player not null
 		
         return false;	//both side
@@ -102,23 +123,23 @@ public class TargetWrench extends BasicItem {
 	 */
 	@Override
     public ItemStack onItemRightClick(ItemStack item, World world, EntityPlayer player) {
-		int meta = item.getItemDamage();
-		
-		//null check
-		if(player == null) return item;
-		
-		//server side
-		if(!world.isRemote) {
-			if(!player.isSneaking()) {
-				List<String> tarlist = ServerProxy.getUnattackableTargetClassList();
-				
-				player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED+"Show unattackable entity list:"));
-				
-				for(String s : tarlist) {
-					player.addChatMessage(new ChatComponentText(EnumChatFormatting.AQUA+s));
-				}
-			}
-		}
+//		int meta = item.getItemDamage();
+//		
+//		//null check
+//		if(player == null) return item;
+//		
+//		//server side
+//		if(!world.isRemote) {
+//			if(player.isSneaking()) {
+//				List<String> tarlist = ServerProxy.getUnattackableTargetClassList();
+//				
+//				player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED+"Show unattackable entity list:"));
+//				
+//				for(String s : tarlist) {
+//					player.addChatMessage(new ChatComponentText(EnumChatFormatting.AQUA+s));
+//				}
+//			}
+//		}
 		
 		return item;
     }
@@ -162,23 +183,23 @@ public class TargetWrench extends BasicItem {
 				}
 			}
 		}
-		//client side
-		else {
-			if(!player.isSneaking()) {
-				//show waypoint msg
-				TileEntity te = world.getTileEntity(x, y, z);
-				
-				if(te instanceof ITileWaypoint) {
-					int[] last = ((ITileWaypoint)te).getLastWaypoint();
-					int[] next = ((ITileWaypoint)te).getNextWaypoint();
-					
-					player.addChatMessage(new ChatComponentText(EnumChatFormatting.AQUA+StatCollector.translateToLocal("chat.shincolle:wrench.wplast")+" "+
-							EnumChatFormatting.YELLOW+last[0]+" "+last[1]+" "+last[2]+"  "+
-							EnumChatFormatting.AQUA+StatCollector.translateToLocal("chat.shincolle:wrench.wpnext")+" "+
-							EnumChatFormatting.GOLD+next[0]+" "+next[1]+" "+next[2]));
-				}
-			}
-		}
+//		//client side
+//		else {
+//			if(!player.isSneaking()) {
+//				//show waypoint msg
+//				TileEntity te = world.getTileEntity(x, y, z);
+//				
+//				if(te instanceof ITileWaypoint) {
+//					int[] last = ((ITileWaypoint)te).getLastWaypoint();
+//					int[] next = ((ITileWaypoint)te).getNextWaypoint();
+//					
+//					player.addChatMessage(new ChatComponentText(EnumChatFormatting.AQUA+StatCollector.translateToLocal("chat.shincolle:wrench.wplast")+" "+
+//							EnumChatFormatting.YELLOW+last[0]+" "+last[1]+" "+last[2]+"  "+
+//							EnumChatFormatting.AQUA+StatCollector.translateToLocal("chat.shincolle:wrench.wpnext")+" "+
+//							EnumChatFormatting.GOLD+next[0]+" "+next[1]+" "+next[2]));
+//				}
+//			}
+//		}
 		
 		return false;
     }

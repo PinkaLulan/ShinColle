@@ -75,6 +75,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		nbtExt_add0.setInteger("Morale", this.entity.getStateMinor(ID.M.Morale));
 		nbtExt_add0.setInteger("Food", this.entity.getStateMinor(ID.M.Food));
 		nbtExt_add0.setInteger("Crane", this.entity.getStateMinor(ID.M.CraneState));
+		nbtExt_add0.setInteger("WpStay", this.entity.getStateMinor(ID.M.WpStay));
 		nbtExt_add0.setString("tagName", this.entity.getCustomNameTag());
 		//save EntityState
 		nbtExt.setTag("Emotion", nbtExt_add2);	
@@ -165,6 +166,7 @@ public class ExtendShipProps implements IExtendedEntityProperties, IInventory {
 		entity.setStateMinor(ID.M.Morale, nbt_load.getInteger("Morale"));
 		entity.setStateMinor(ID.M.Food, nbt_load.getInteger("Food"));
 		entity.setStateMinor(ID.M.CraneState, nbt_load.getInteger("Crane"));
+		entity.setStateMinor(ID.M.WpStay, nbt_load.getInteger("WpStay"));
 		entity.setNameTag(nbt_load.getString("tagName"));
 		//load emotion state
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Emotion");

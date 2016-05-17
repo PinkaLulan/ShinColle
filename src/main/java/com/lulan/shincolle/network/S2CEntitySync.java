@@ -201,6 +201,7 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateMinor(ID.M.LevelChunkLoader, buf.readInt());
 					entity.setStateMinor(ID.M.LevelFlare, buf.readInt());
 					entity.setStateMinor(ID.M.LevelSearchlight, buf.readInt());
+					entity.setStateMinor(ID.M.WpStay, buf.readInt());
 					
 					entity.setStateTimer(ID.T.CraneTime, buf.readInt());
 					
@@ -345,6 +346,7 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateMinor(ID.M.LevelChunkLoader, buf.readInt());
 					entity.setStateMinor(ID.M.LevelFlare, buf.readInt());
 					entity.setStateMinor(ID.M.LevelSearchlight, buf.readInt());
+					entity.setStateMinor(ID.M.WpStay, buf.readInt());
 				}
 				break;
 			case PID.SyncShip_Guard:  //sync guard for particle display
@@ -582,6 +584,7 @@ public class S2CEntitySync implements IMessage {
 				buf.writeInt(this.entity.getStateMinor(ID.M.LevelChunkLoader));
 				buf.writeInt(this.entity.getStateMinor(ID.M.LevelFlare));
 				buf.writeInt(this.entity.getStateMinor(ID.M.LevelSearchlight));
+				buf.writeInt(this.entity.getStateMinor(ID.M.WpStay));
 				
 				buf.writeInt(this.entity.getStateTimer(ID.T.CraneTime));
 				
@@ -720,6 +723,7 @@ public class S2CEntitySync implements IMessage {
 				buf.writeInt(this.entity.getStateMinor(ID.M.LevelChunkLoader));
 				buf.writeInt(this.entity.getStateMinor(ID.M.LevelFlare));
 				buf.writeInt(this.entity.getStateMinor(ID.M.LevelSearchlight));
+				buf.writeInt(this.entity.getStateMinor(ID.M.WpStay));
 			}
 			break;
 		case PID.SyncShip_Guard:	//sync guard for particle display

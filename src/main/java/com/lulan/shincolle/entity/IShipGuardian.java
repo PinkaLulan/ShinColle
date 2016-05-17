@@ -22,5 +22,11 @@ public interface IShipGuardian extends IShipAttackBase {
 	/** set last waypoint */
 	public void setLastWaypoint(int[] pos);
 	
+	/** get waypoint stay time */
+	public int getWpStayTime();
+	public int getWpStayTimeMax();
+	
+	/** set waypoint stay time */
+	public void setWpStayTime(int time);
 	
 }

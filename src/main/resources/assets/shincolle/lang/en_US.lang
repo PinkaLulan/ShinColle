@@ -268,8 +268,8 @@ gui.shincolle:book.chap1.title17=Abyssal Adrmiral's Desk
 gui.shincolle:book.chap1.text17d0=<br><br><br><br><br><br><br><br><br>This stable and durable §d§nAbyssal Adrmiral's Desk§r§0 is made of obsidian. In addition to deal with the official business, it can also block the gunfire from angry secretary ship.<br>**Please ask the secretary ship before purchasing the furniture.
 gui.shincolle:book.chap1.text17d1=§9Radar§0:<br>Show a list of nearby owned ships, click ship on the list to carry out other action.<br><br>§9Abyssal Logbook§0:<br>Items, blocks and ships introduction.<br><br>§9Faction§0:<br>Create or add team with PVP mode.<br><br>§9Target List§0:<br>Browse attack target list.
 gui.shincolle:book.chap1.title18=Target Wrench
-gui.shincolle:book.chap1.text18d0=<br><br><br><br><br><br><br><br><br>§9Left Click:§0<br>§cADD/REMOVE§0 entity to §dUnattackable Target List§0. §4(OP ONLY!!)§0<br><br>§9Right Click:§0 Show §dUnattackable Target List§0 / Show Abyssal Waypoint info.
-gui.shincolle:book.chap1.text18d1=§9Sneak + Right Click:§0 pairing Abyssal Crand and Chest / Setting Abyssal Waypoint<br><br>§dUnattackable Target§0 will not be damaged by AoE attack, and can't be targeted. You can add entity like leash knot, item frame, airplane, mounts or boat.<br><br>This list apply to hostile mob ship too.<br>Ship and hostile ship can't be unattackable entity.
+gui.shincolle:book.chap1.text18d0=<br><br><br><br><br><br><br><br><br>§9Left Click:§0<br>§cADD/REMOVE§0 entity to §dUnattackable Target List§0. §4(OP ONLY!!)§0<br><br>§9Sneak + Left Click:§0<br>show §dUnattackable Target List§0.<br><br>§9Right Click:§0 Change Abyssal Waypoint stay time.
+gui.shincolle:book.chap1.text18d1=§9Sneak + Right Click:§0 pairing Abyssal Waypoint / Abyssal Crane and Chest.<br><br>§dUnattackable Target§0 will not be damaged by AoE attack, and can't be targeted. You can add entity like leash knot, item frame, airplane, mounts or boat.<br><br>This list apply to hostile mob ship too.<br>Ship and hostile ship can't be unattackable entity.
 gui.shincolle:book.chap1.title19=Abyssal Volcano Block
 gui.shincolle:book.chap1.text19d0=<br><br><br><br><br><br><br><br><br>When the lava is compressed by heavy grudge, it will become §d§nAbyssal Volcano Block§r§0.<br><br>Decorative block.
 gui.shincolle:book.chap1.text19d1=
@@ -579,6 +579,7 @@ gui.shincolle:ai.aa=Anti-Air
 gui.shincolle:ai.asm=Anti-SS
 gui.shincolle:ai.timekeeper=TimeKeeper
 gui.shincolle:ai.pickitem=Pick Item
+gui.shincolle:ai.wpstay=WP Stay Time
 
 # GUI: Shipyard
 gui.shincolle:nomaterial=Not Enough Materials

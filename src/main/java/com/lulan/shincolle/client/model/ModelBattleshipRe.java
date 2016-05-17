@@ -975,153 +975,223 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion {
 			this.TailJaw1.rotateAngleX = -0.2F;
   		}//end if sneaking
   		
-	    if(ent.isSitting() || ent.isRiding()) {  //騎乘動作
+	    //騎乘動作
+	    if (ent.isSitting() || ent.isRiding())
+	    {
 	    	this.Cap2.isHidden = true;
-	    	if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {	
-				GL11.glTranslatef(0F, 0.5F, 0F);
-		    	//Body
-				this.Head.rotateAngleX += 0.3F;
-		    	this.BodyMain.rotateAngleX = -0.3F;
-		    	this.Cloth2.rotateAngleX = -0.3F;
-		  	    //arm 
-				this.ArmLeft01.rotateAngleX = 2.3F;
-			    this.ArmLeft01.rotateAngleY = 0F;
-			    this.ArmLeft01.rotateAngleZ = 0.2F;
-			    this.ArmLeft02.rotateAngleZ = 1F;
-			    this.ArmRight01.rotateAngleX = 2.3F;
-				this.ArmRight01.rotateAngleY = 0F;
-				this.ArmRight01.rotateAngleZ = -0.2F;
-				this.ArmRight02.rotateAngleZ = -1F;
-				
-				//arm special
-		    	float parTick = f2 - (int)f2 + (ent.getTickExisted() % 256);
-		    	
-		    	if(parTick < 30F) {
-		    		float az = MathHelper.sin(parTick * 0.033F * 1.5708F) * 1.6F;
-			    	float az1 = az * 1.6F;
+	    	
+	    	if (ent.ticksExisted % 1024 > 512)
+	    	{
+	    		if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
+		    	{
+					GL11.glTranslatef(0F, 0.5F, 0F);
+			    	//Body
+					this.Head.rotateAngleX += 0.3F;
+			    	this.BodyMain.rotateAngleX = -0.3F;
+			    	this.Cloth2.rotateAngleX = -0.3F;
+			  	    //arm 
+					this.ArmLeft01.rotateAngleX = 2.3F;
+				    this.ArmLeft01.rotateAngleY = 0F;
+				    this.ArmLeft01.rotateAngleZ = 0.2F;
+				    this.ArmLeft02.rotateAngleZ = 1F;
+				    this.ArmRight01.rotateAngleX = 2.3F;
+					this.ArmRight01.rotateAngleY = 0F;
+					this.ArmRight01.rotateAngleZ = -0.2F;
+					this.ArmRight02.rotateAngleZ = -1F;
+					
+					//arm special
+			    	float parTick = f2 - (int)f2 + (ent.getTickExisted() % 256);
 			    	
-			    	setFace(3);
-		    		//arm 
-				    this.ArmLeft01.rotateAngleZ = 0.2F + az;
-				    this.ArmLeft02.rotateAngleZ = 1F - az1;
-				    if(this.ArmLeft02.rotateAngleZ < 0F) this.ArmLeft02.rotateAngleZ = 0F;
-					this.ArmRight01.rotateAngleZ = -0.2F - az;
-					this.ArmRight02.rotateAngleZ = -1F + az1;
-					if(this.ArmRight02.rotateAngleZ > 0F) this.ArmRight02.rotateAngleZ = 0F;
-		    	}
-		    	else if(parTick < 45F) {
-		    		setFace(3);
-		    		//arm 
-				    this.ArmLeft01.rotateAngleZ = 1.8F;
-				    this.ArmLeft02.rotateAngleZ = 0F;
-					this.ArmRight01.rotateAngleZ = -1.8F;
-					this.ArmRight02.rotateAngleZ = 0F;
-		    	}
-		    	else if(parTick < 53F) {
-		    		float az = MathHelper.cos((parTick - 45F) * 0.125F * 1.5708F);
-			    	float az1 = az * 1.6F;
+			    	if (parTick < 30F)
+			    	{
+			    		float az = MathHelper.sin(parTick * 0.033F * 1.5708F) * 1.6F;
+				    	float az1 = az * 1.6F;
+				    	
+				    	setFace(3);
+			    		//arm 
+					    this.ArmLeft01.rotateAngleZ = 0.2F + az;
+					    this.ArmLeft02.rotateAngleZ = 1F - az1;
+					    if(this.ArmLeft02.rotateAngleZ < 0F) this.ArmLeft02.rotateAngleZ = 0F;
+						this.ArmRight01.rotateAngleZ = -0.2F - az;
+						this.ArmRight02.rotateAngleZ = -1F + az1;
+						if(this.ArmRight02.rotateAngleZ > 0F) this.ArmRight02.rotateAngleZ = 0F;
+			    	}
+			    	else if (parTick < 45F)
+			    	{
+			    		setFace(3);
+			    		//arm 
+					    this.ArmLeft01.rotateAngleZ = 1.8F;
+					    this.ArmLeft02.rotateAngleZ = 0F;
+						this.ArmRight01.rotateAngleZ = -1.8F;
+						this.ArmRight02.rotateAngleZ = 0F;
+			    	}
+			    	else if (parTick < 53F)
+			    	{
+			    		float az = MathHelper.cos((parTick - 45F) * 0.125F * 1.5708F);
+				    	float az1 = az * 1.6F;
+				    	
+				    	//arm 
+					    this.ArmLeft01.rotateAngleZ = 0.2F + az1;
+					    this.ArmLeft02.rotateAngleZ = 1F - az;
+						this.ArmRight01.rotateAngleZ = -0.2F - az1;
+						this.ArmRight02.rotateAngleZ = -1F + az;
+			    	}
 			    	
-			    	//arm 
-				    this.ArmLeft01.rotateAngleZ = 0.2F + az1;
-				    this.ArmLeft02.rotateAngleZ = 1F - az;
-					this.ArmRight01.rotateAngleZ = -0.2F - az1;
-					this.ArmRight02.rotateAngleZ = -1F + az;
+					//bag
+					this.BagStrap1.rotateAngleX = 0.6F;
+					this.BagStrap1.rotateAngleY = 0F;
+					this.BagStrap1.rotateAngleZ = 0F;
+					this.BagStrap2.rotateAngleX = 1.0472F;
+					this.BagStrap2.rotateAngleY = 1.3963F;
+					//leg
+					addk1 = angleX*0.1F -0.9F;
+					addk2 = -angleX*0.1F -0.9F;
+					this.LegLeft.rotateAngleY = -0.2F;
+					this.LegRight.rotateAngleY = 0.2F;
+					//tail
+					this.TailBase.rotateAngleX = -1.0F;
+					this.TailBase.rotateAngleY = 0.2618F;
+					this.TailBase.rotateAngleZ = 0F;
+					this.Tail1.rotateAngleX = 0.6981F;
+					this.Tail1.rotateAngleY = 0.0872F;
+					this.Tail1.rotateAngleZ = 0F;
+					this.Tail2.rotateAngleX = 0.5236F;
+					this.Tail2.rotateAngleY = 0.0872F;
+					this.Tail2.rotateAngleZ = 0.1745F;
+					this.Tail3.rotateAngleX = 0F;
+					this.Tail3.rotateAngleY = 0.6981F;
+					this.Tail3.rotateAngleZ = 0F;
+					this.Tail4.rotateAngleX = 0F;
+					this.Tail4.rotateAngleY = 0.6981F;
+					this.Tail4.rotateAngleZ = 0F;
+					this.Tail5.rotateAngleX = 0F;
+					this.Tail5.rotateAngleY = 0.5236F;
+					this.Tail5.rotateAngleZ = 0F;
+					this.Tail6.rotateAngleX = 0F;
+					this.Tail6.rotateAngleY = 0.5236F;
+					this.Tail6.rotateAngleZ = 0F;
+					this.TailHeadBase.rotateAngleX = 0.2618F;
+					this.TailHeadBase.rotateAngleY = 0.5236F;
+					this.TailHeadBase.rotateAngleZ = 0F;
+					this.TailHead1.rotateAngleX = 0.2618F;
+					this.TailJaw1.rotateAngleX = angleX * 0.1F - 0.2618F;
 		    	}
-		    	
-				//bag
-				this.BagStrap1.rotateAngleX = 0.6F;
-				this.BagStrap1.rotateAngleY = 0F;
-				this.BagStrap1.rotateAngleZ = 0F;
-				this.BagStrap2.rotateAngleX = 1.0472F;
-				this.BagStrap2.rotateAngleY = 1.3963F;
-				//leg
-				addk1 = angleX*0.1F -0.9F;
-				addk2 = -angleX*0.1F -0.9F;
-				this.LegLeft.rotateAngleY = -0.2F;
-				this.LegRight.rotateAngleY = 0.2F;
-				//tail
-				this.TailBase.rotateAngleX = -1.0F;
-				this.TailBase.rotateAngleY = 0.2618F;
-				this.TailBase.rotateAngleZ = 0F;
-				this.Tail1.rotateAngleX = 0.6981F;
-				this.Tail1.rotateAngleY = 0.0872F;
-				this.Tail1.rotateAngleZ = 0F;
-				this.Tail2.rotateAngleX = 0.5236F;
-				this.Tail2.rotateAngleY = 0.0872F;
-				this.Tail2.rotateAngleZ = 0.1745F;
-				this.Tail3.rotateAngleX = 0F;
-				this.Tail3.rotateAngleY = 0.6981F;
-				this.Tail3.rotateAngleZ = 0F;
-				this.Tail4.rotateAngleX = 0F;
-				this.Tail4.rotateAngleY = 0.6981F;
-				this.Tail4.rotateAngleZ = 0F;
-				this.Tail5.rotateAngleX = 0F;
-				this.Tail5.rotateAngleY = 0.5236F;
-				this.Tail5.rotateAngleZ = 0F;
-				this.Tail6.rotateAngleX = 0F;
-				this.Tail6.rotateAngleY = 0.5236F;
-				this.Tail6.rotateAngleZ = 0F;
-				this.TailHeadBase.rotateAngleX = 0.2618F;
-				this.TailHeadBase.rotateAngleY = 0.5236F;
-				this.TailHeadBase.rotateAngleZ = 0F;
-				this.TailHead1.rotateAngleX = 0.2618F;
-				this.TailJaw1.rotateAngleX = angleX * 0.1F - 0.2618F;
+		    	else
+		    	{
+		    		GL11.glTranslatef(0F, 1.7F, 0F);
+			    	//Body
+		    		this.Head.rotateAngleX *= 0.8F;
+			    	this.Head.rotateAngleX -= 1.8F;
+			    	this.Head.rotateAngleY *= 0.5F;
+			    	this.BodyMain.rotateAngleX = 1.5708F;
+			    	this.Cloth2.rotateAngleX = -0.0524F;
+			  	    //arm 
+				  	this.ArmLeft01.rotateAngleX = -2.9671F;
+				    this.ArmLeft01.rotateAngleY = 0F;
+				    this.ArmLeft01.rotateAngleZ = 0.0349F;
+				    this.ArmLeft02.rotateAngleZ = 1.3962F;
+				    this.ArmRight01.rotateAngleX = -2.9671F;
+					this.ArmRight01.rotateAngleY = 0F;
+					this.ArmRight01.rotateAngleZ = -0.0349F;
+					this.ArmRight02.rotateAngleZ = -1.3962F;
+					//bag
+					this.BagStrap1.rotateAngleX = 0.2618F;
+					this.BagStrap1.rotateAngleY = -0.1396F;
+					this.BagStrap1.rotateAngleZ = -0.1745F;
+					this.BagStrap2.rotateAngleX = 0.3491F;
+					this.BagStrap2.rotateAngleY = 0.3491F;
+					//leg
+					addk1 = -0.3491F;
+					addk2 = -0.3491F;
+					this.LegLeft.rotateAngleY = 0F;
+					this.LegRight.rotateAngleY = 0F;
+					//tail
+					this.TailBase.rotateAngleX = -0.7F;
+					this.TailBase.rotateAngleY = MathHelper.cos(-f2 * 0.1F) * 0.1F;
+					this.TailBase.rotateAngleZ = MathHelper.cos(-f2 * 0.1F) * 0.05F;
+					this.Tail1.rotateAngleX = 0.35F;
+					this.Tail1.rotateAngleY = MathHelper.cos(-f2 * 0.1F + 0.7F) * 0.2F;
+					this.Tail1.rotateAngleZ = -MathHelper.cos(-f2 * 0.1F + 0.7F) * 0.05F;
+					this.Tail2.rotateAngleX = 0.35F;
+					this.Tail2.rotateAngleY = MathHelper.cos(-f2 * 0.1F + 1.4F) * 0.3F;
+					this.Tail2.rotateAngleZ = -MathHelper.cos(-f2 * 0.1F + 1.4F) * 0.05F;
+					this.Tail3.rotateAngleX = 0.35F;
+					this.Tail3.rotateAngleY = MathHelper.cos(-f2 * 0.1F + 2.1F) * 0.4F;
+					this.Tail3.rotateAngleZ = -MathHelper.cos(-f2 * 0.1F + 2.1F) * 0.05F;
+					this.Tail4.rotateAngleX = -0.2618F;
+					this.Tail4.rotateAngleY = MathHelper.cos(-f2 * 0.1F + 2.8F) * 0.5F;
+					this.Tail4.rotateAngleZ = MathHelper.cos(-f2 * 0.1F + 2.8F) * 0.025F;
+					this.Tail5.rotateAngleX = -0.35F;
+					this.Tail5.rotateAngleY = MathHelper.cos(-f2 * 0.1F + 3.5F) * 0.55F;
+					this.Tail5.rotateAngleZ = MathHelper.cos(-f2 * 0.1F + 3.5F) * 0.05F;
+					this.Tail6.rotateAngleX = -0.35F;
+					this.Tail6.rotateAngleY = MathHelper.cos(-f2 * 0.1F + 4.2F) * 0.6F;
+					this.Tail6.rotateAngleZ = MathHelper.cos(-f2 * 0.1F + 4.2F) * 0.05F;
+					this.TailHeadBase.rotateAngleX = -0.15F;
+					this.TailHeadBase.rotateAngleY = MathHelper.cos(-f2 * 0.1F + 4.9F) * 0.65F;
+					this.TailHeadBase.rotateAngleZ = MathHelper.cos(-f2 * 0.1F + 4.9F) * 0.025F;
+					this.TailHead1.rotateAngleX = 0.2618F;
+					this.TailJaw1.rotateAngleX = angleX * 0.1F - 0.15F;
+		    	}
 	    	}
-	    	else {
-	    		GL11.glTranslatef(0F, 1.7F, 0F);
-		    	//Body
-	    		this.Head.rotateAngleX *= 0.8F;
-		    	this.Head.rotateAngleX -= 1.8F;
-		    	this.Head.rotateAngleY *= 0.5F;
-		    	this.BodyMain.rotateAngleX = 1.5708F;
-		    	this.Cloth2.rotateAngleX = -0.0524F;
-		  	    //arm 
-			  	this.ArmLeft01.rotateAngleX = -2.9671F;
-			    this.ArmLeft01.rotateAngleY = 0F;
-			    this.ArmLeft01.rotateAngleZ = 0.0349F;
-			    this.ArmLeft02.rotateAngleZ = 1.3962F;
-			    this.ArmRight01.rotateAngleX = -2.9671F;
-				this.ArmRight01.rotateAngleY = 0F;
-				this.ArmRight01.rotateAngleZ = -0.0349F;
-				this.ArmRight02.rotateAngleZ = -1.3962F;
+	    	else
+	    	{
+	    		setFace(1);
+		    	//高度
+			    GL11.glTranslatef(0F, 0.6F, 0F);
+		  	    //手臂晃動 
+			  	this.ArmLeft01.rotateAngleX = -1.7F;
+			    this.ArmLeft01.rotateAngleY = -0.1F;
+			    this.ArmLeft01.rotateAngleZ = 0F;
+			    this.ArmRight01.rotateAngleX = -1.8F;
+				this.ArmRight01.rotateAngleY = 0.1F;
+				this.ArmRight01.rotateAngleZ = 0F;
+				//頭部角度
+				this.Head.rotateAngleX = -1.5F;
+				this.Head.rotateAngleY = 0F;
+				this.Head.rotateAngleZ = 0.7F;
+				this.Cap2.rotateAngleX = -1.74F;
+				//身體角度
+				this.BodyMain.rotateAngleX = 1.8F;
+				this.Cloth2.rotateAngleX = -0.3491F;
+				//腿擺動
+				addk1 = -1.8F;
+				addk2 =-1.8F;
+				this.LegLeft.rotateAngleY = -0.23F;
+				this.LegRight.rotateAngleY = 0.23F;
 				//bag
 				this.BagStrap1.rotateAngleX = 0.2618F;
-				this.BagStrap1.rotateAngleY = -0.1396F;
-				this.BagStrap1.rotateAngleZ = -0.1745F;
+				this.BagStrap1.rotateAngleY = 0F;
+				this.BagStrap1.rotateAngleZ = 0F;
 				this.BagStrap2.rotateAngleX = 0.3491F;
 				this.BagStrap2.rotateAngleY = 0.3491F;
-				//leg
-				addk1 = -0.3491F;
-				addk2 = -0.3491F;
-				this.LegLeft.rotateAngleY = 0F;
-				this.LegRight.rotateAngleY = 0F;
 				//tail
-				this.TailBase.rotateAngleX = -0.7F;
-				this.TailBase.rotateAngleY = MathHelper.cos(-f2 * 0.1F) * 0.1F;
-				this.TailBase.rotateAngleZ = MathHelper.cos(-f2 * 0.1F) * 0.05F;
-				this.Tail1.rotateAngleX = 0.35F;
-				this.Tail1.rotateAngleY = MathHelper.cos(-f2 * 0.1F + 0.7F) * 0.2F;
-				this.Tail1.rotateAngleZ = -MathHelper.cos(-f2 * 0.1F + 0.7F) * 0.05F;
-				this.Tail2.rotateAngleX = 0.35F;
-				this.Tail2.rotateAngleY = MathHelper.cos(-f2 * 0.1F + 1.4F) * 0.3F;
-				this.Tail2.rotateAngleZ = -MathHelper.cos(-f2 * 0.1F + 1.4F) * 0.05F;
-				this.Tail3.rotateAngleX = 0.35F;
-				this.Tail3.rotateAngleY = MathHelper.cos(-f2 * 0.1F + 2.1F) * 0.4F;
-				this.Tail3.rotateAngleZ = -MathHelper.cos(-f2 * 0.1F + 2.1F) * 0.05F;
-				this.Tail4.rotateAngleX = -0.2618F;
-				this.Tail4.rotateAngleY = MathHelper.cos(-f2 * 0.1F + 2.8F) * 0.5F;
-				this.Tail4.rotateAngleZ = MathHelper.cos(-f2 * 0.1F + 2.8F) * 0.025F;
-				this.Tail5.rotateAngleX = -0.35F;
-				this.Tail5.rotateAngleY = MathHelper.cos(-f2 * 0.1F + 3.5F) * 0.55F;
-				this.Tail5.rotateAngleZ = MathHelper.cos(-f2 * 0.1F + 3.5F) * 0.05F;
-				this.Tail6.rotateAngleX = -0.35F;
-				this.Tail6.rotateAngleY = MathHelper.cos(-f2 * 0.1F + 4.2F) * 0.6F;
-				this.Tail6.rotateAngleZ = MathHelper.cos(-f2 * 0.1F + 4.2F) * 0.05F;
-				this.TailHeadBase.rotateAngleX = -0.15F;
-				this.TailHeadBase.rotateAngleY = MathHelper.cos(-f2 * 0.1F + 4.9F) * 0.65F;
-				this.TailHeadBase.rotateAngleZ = MathHelper.cos(-f2 * 0.1F + 4.9F) * 0.025F;
-				this.TailHead1.rotateAngleX = 0.2618F;
-				this.TailJaw1.rotateAngleX = angleX * 0.1F - 0.15F;
+				this.TailBase.rotateAngleX = 1.6F;
+				this.TailBase.rotateAngleY = 0F;
+				this.TailBase.rotateAngleZ = 3.1415F;
+				this.Tail1.rotateAngleX = 0.8F;
+				this.Tail1.rotateAngleY = 0F;
+				this.Tail1.rotateAngleZ = 0F;
+				this.Tail2.rotateAngleX = 0.8F;
+				this.Tail2.rotateAngleY = 0F;
+				this.Tail2.rotateAngleZ = 0F;
+				this.Tail3.rotateAngleX = 0.9F;
+				this.Tail3.rotateAngleY = 0F;
+				this.Tail3.rotateAngleZ = 0F;
+				this.Tail4.rotateAngleX = 0.9F;
+				this.Tail4.rotateAngleY = 0F;
+				this.Tail4.rotateAngleZ = 0F;
+				this.Tail5.rotateAngleX = 0.4F;
+				this.Tail5.rotateAngleY = 0F;
+				this.Tail5.rotateAngleZ = 0F;
+				this.Tail6.rotateAngleX = -0.4F;
+				this.Tail6.rotateAngleY = 0F;
+				this.Tail6.rotateAngleZ = 0F;
+				this.TailHeadBase.rotateAngleX = -0.3F;
+				this.TailHeadBase.rotateAngleY = 0F;
+				this.TailHeadBase.rotateAngleZ = 0.8F;
+				this.TailHead1.rotateAngleX = 0.1745F;
+				this.TailJaw1.rotateAngleX = -0.5F;
 	    	}
   		}//end if sitting
 	    

@@ -14,5 +14,11 @@ public interface ITileWaypoint {
 	/** get next waypoint */
 	public int[] getNextWaypoint();
 	
+	/** set waypoint stay time */
+	public void setWpStayTime(int time);
+	
+	/** get waypoint stay time */
+	public int getWpStayTime();
+	
 	
 }

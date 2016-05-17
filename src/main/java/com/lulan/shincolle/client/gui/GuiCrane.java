@@ -29,7 +29,7 @@ public class GuiCrane extends GuiContainer {
 	private TileEntityCrane tile;
 	private int xClick, yClick, xMouse, yMouse;
 	private int btnMode;
-	private boolean btnPower, btnMeta, btnDict, btnNbt, btnLoad, btnUnload;
+	private boolean btnPower, btnMeta, btnDict, btnNbt, btnLoad, btnUnload, slotMode;
 	private float tickGUI;
 	private String strLoad, strUnload, strMeta, strDict, strNbt, strNowait, strWaitfev, strNowait1,
 				   strWaitfev1, strWaitfev2;
@@ -159,35 +159,62 @@ public class GuiCrane extends GuiContainer {
 
 	//GUI背景: 背景圖片
 	@Override
-	protected void drawGuiContainerBackgroundLayer(float par1,int par2, int par3) {
+	protected void drawGuiContainerBackgroundLayer(float par1,int par2, int par3)
+	{
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);	//RGBA
+		GL11.glEnable(GL11.GL_BLEND);
         Minecraft.getMinecraft().getTextureManager().bindTexture(guiTexture); //GUI圖檔
         drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);	//GUI大小設定
        
         updateButton();
         
         //draw button
-        if(this.btnPower) {
+        if (this.btnPower)
+        {
         	drawTexturedModalRect(guiLeft+7, guiTop+6, 176, 0, 13, 13);
         }
-        if(this.btnMeta) {
+        if (this.btnMeta)
+        {
         	drawTexturedModalRect(guiLeft+23, guiTop+22, 176, 13, 11, 11);
         }
-        if(this.btnDict) {
+        if (this.btnDict)
+        {
         	drawTexturedModalRect(guiLeft+37, guiTop+22, 176, 24, 11, 11);
         }
-        if(this.btnNbt) {
+        if (this.btnNbt)
+        {
         	drawTexturedModalRect(guiLeft+51, guiTop+22, 176, 46, 11, 11);
         }
-        if(!this.btnLoad) {
+        if (!this.btnLoad)
+        {
         	drawTexturedModalRect(guiLeft+7, guiTop+44, 176, 35, 11, 11);
         	drawTexturedModalRect(guiLeft+8, guiTop+57, 0, 193, 160, 16);
         }
-        if(!this.btnUnload) {
+        if (!this.btnUnload)
+        {
         	drawTexturedModalRect(guiLeft+7, guiTop+75, 176, 35, 11, 11);
         	drawTexturedModalRect(guiLeft+8, guiTop+88, 0, 193, 160, 16);
         }
+        
+        //check loading slot mode
+        for (int i = 0; i < 18; i++)
+        {
+        	slotMode = this.tile.getItemMode(i);
+        	
+        	if (slotMode)
+        	{
+        		if (i >= 9)
+        		{
+        			drawTexturedModalRect(guiLeft+7+(i-9)*18, guiTop+87, 0, 209, 18, 18);
+        		}
+        		else
+        		{
+        			drawTexturedModalRect(guiLeft+7+i*18, guiTop+56, 0, 209, 18, 18);
+        		}
+        	}
+        }
 
+        GL11.glDisable(GL11.GL_BLEND);
 	}
 	
 	//handle mouse click, @parm posX, posY, mouseKey (0:left 1:right 2:middle 3:...etc)

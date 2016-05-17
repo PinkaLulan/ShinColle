@@ -6,11 +6,12 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 
-import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.item.TargetWrench;
 import com.lulan.shincolle.tileentity.TileEntityWaypoint;
-import com.lulan.shincolle.utility.LogHelper;
+import com.lulan.shincolle.utility.CalcHelper;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -62,6 +63,35 @@ public class BlockWaypoint extends BasicBlockContainer {
 	public void registerBlockIcons(IIconRegister iconRegister) {
 		blockIcon = iconRegister.registerIcon(String.format("%s", getUnwrappedUnlocalizedName(this.getUnlocalizedName())));
 	}
+	
+	@Override
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int meta, float hitx, float hity, float hitz)
+    {
+		//server side
+		if (!world.isRemote && player != null && !player.isSneaking())
+		{
+			ItemStack item = player.inventory.getCurrentItem();
+			
+			//change stay time if holding target wrench
+			if (item != null && item.getItem() instanceof TargetWrench)
+			{
+				TileEntity tile = world.getTileEntity(x, y, z);
+				
+				if (tile instanceof TileEntityWaypoint)
+				{
+					((TileEntityWaypoint) tile).nextWpStayTime();
+					
+					player.addChatMessage(new ChatComponentText("Change waypoint stay time to: "+
+							CalcHelper.tick2SecOrMin(((TileEntityWaypoint) tile).getWpStayTime())));
+					
+				}
+				
+				return true;
+			}
+		}
+				
+        return false;
+    }
 		
 		
 }

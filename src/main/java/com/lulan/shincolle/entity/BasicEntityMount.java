@@ -1388,6 +1388,23 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   			setStateMinor(ID.M.LastZ, pos[2]);
   		}
   	}
+  	
+	@Override
+	public int getWpStayTime() {
+		if (host != null) return host.getStateTimer(ID.T.WpStayTime);
+		return 0;
+	}
+
+	@Override
+	public int getWpStayTimeMax() {
+		if (host != null) return host.wpStayTime2Ticks(getStateMinor(ID.M.WpStay));
+		return 0;
+	}
+
+	@Override
+	public void setWpStayTime(int time) {
+		if (host != null) host.setStateTimer(ID.T.WpStayTime, time);
+	}
     
 	
 }

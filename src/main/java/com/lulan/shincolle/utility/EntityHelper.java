@@ -802,6 +802,9 @@ public class EntityHelper {
 			case ID.B.ShipInv_PickitemAI:
 				entity.setEntityFlagI(ID.F.PickItem, value);
 				break;
+			case ID.B.ShipInv_WpStay:
+				entity.setStateMinor(ID.M.WpStay, value);
+				break;
 			}
 		}
 		else {
@@ -1566,7 +1569,16 @@ public class EntityHelper {
   				//ship wait for craning (xz < 2 blocks, y < 5 blocks)
   				if (distsq < 25D)
 				{
-  					if(entity.getStateMinor(ID.M.CraneState) == 0) entity.setStateMinor(ID.M.CraneState, 1);
+  					if (entity.getStateMinor(ID.M.CraneState) == 0) {
+  						entity.setStateMinor(ID.M.CraneState, 1);
+  						
+  						//強制騎乘者設為可裝卸狀態
+  						if (((Entity)entity).riddenByEntity instanceof IShipGuardian)
+  						{
+  							((IShipGuardian)((Entity)entity).riddenByEntity).setStateMinor(ID.M.CraneState, 1);
+  							((Entity)entity).riddenByEntity.mountEntity(null);
+  						}
+  					}
 				}
   				else
   				{
@@ -1578,6 +1590,11 @@ public class EntityHelper {
   			{
   				//cancel craning
   				entity.setStateMinor(ID.M.CraneState, 0);
+  				
+				if (((Entity)entity).riddenByEntity instanceof IShipGuardian)
+				{
+					((IShipGuardian)((Entity)entity).riddenByEntity).setStateMinor(ID.M.CraneState, 0);
+				}
   			}
   			
   			//waypoint = close to 3 block
@@ -1588,13 +1605,12 @@ public class EntityHelper {
   	  			{
   	  				try
   	  				{
-  	  					updatePos = applyNextWaypoint((TileEntityWaypoint) tile, entity);
+  	  					updatePos = applyNextWaypoint((TileEntityWaypoint) tile, entity, true, 16);
 	  	  				
 	  	  				//set follow dist
 	  	  				if (updatePos)
 	  	  				{
 	  	  					entity.setStateMinor(ID.M.FollowMin, 2);
-	  	  					entity.setStateMinor(ID.M.FollowMax, 3);
 	  	  					entity.getShipNavigate().tryMoveToXYZ(entity.getGuardedPos(0) + 0.5D, entity.getGuardedPos(1), entity.getGuardedPos(2) + 0.5D, 1D);
 	  	  				}
 	  	  				
@@ -1612,38 +1628,90 @@ public class EntityHelper {
   	}
 	
 	/** set next waypoint by checking last and next waypoint, return true if changed */
-	public static boolean applyNextWaypoint(ITileWaypoint tile, IShipGuardian entity) {
+	public static boolean applyNextWaypoint(ITileWaypoint tile, IShipGuardian entity, boolean checkWpStay, int checkDelay)
+	{
 		boolean changed = false;
+		boolean timeout = !checkWpStay;
 		int[] next = tile.getNextWaypoint();
 		int[] last = tile.getLastWaypoint();
 		int[] shiplast = entity.getLastWaypoint();
 		
-		//check next == last
-		if(next[1] > 0 && next[0] == shiplast[0] && next[1] == shiplast[1] && next[2] == shiplast[2]) {
-			//if no last waypoint, go to next waypoint
-			if(last[1] <= 0) {
-				//go to next waypoint
-				if(next[1] > 0) {
-					entity.setGuardedPos(next[0], next[1], next[2], ((Entity)entity).dimension, 1);
-					changed = true;
-				}
+		//check waypoint stay time
+		int wpstay = entity.getWpStayTime();
+		
+		//stay until timeout
+		if (checkWpStay)
+		{
+			//check wp tile stay time and ship wp stay time, get the longer one
+			int staytimemax = Math.max(entity.getWpStayTimeMax(), tile.getWpStayTime());
+			
+			if(wpstay < staytimemax)
+			{
+				entity.setWpStayTime(wpstay + checkDelay);
 			}
-			else {
-				//go to last waypoint (backwards mode)
-				entity.setGuardedPos(last[0], last[1], last[2], ((Entity)entity).dimension, 1);
-				changed = true;
-			}
-		}
-		else {
-			//go to next waypoint
-			if(next[1] > 0) {
-				entity.setGuardedPos(next[0], next[1], next[2], ((Entity)entity).dimension, 1);
-				changed = true;
+			else
+			{
+				timeout = true;
 			}
 		}
 		
-		//set last waypoint
-		entity.setLastWaypoint(new int[] {((TileEntity)tile).xCoord, ((TileEntity)tile).yCoord, ((TileEntity)tile).zCoord});
+		//timeout, go to next wp
+		if (timeout)
+		{
+			entity.setWpStayTime(0);
+			
+			//check next == last
+			if (next[1] > 0 && next[0] == shiplast[0] && next[1] == shiplast[1] && next[2] == shiplast[2])
+			{
+				//if no last waypoint, go to next waypoint
+				if (last[1] <= 0)
+				{
+					//go to next waypoint
+					if (next[1] > 0)
+					{
+						entity.setGuardedPos(next[0], next[1], next[2], ((Entity)entity).dimension, 1);
+						changed = true;
+						
+						if (((Entity)entity).riddenByEntity instanceof IShipGuardian)
+						{
+							((IShipGuardian)((Entity)entity).riddenByEntity).setGuardedPos(next[0], next[1], next[2], ((Entity)entity).dimension, 1);
+						}
+					}
+				}
+				else
+				{
+					//go to last waypoint (backwards mode)
+					entity.setGuardedPos(last[0], last[1], last[2], ((Entity)entity).dimension, 1);
+					changed = true;
+					
+					if (((Entity)entity).riddenByEntity instanceof IShipGuardian)
+					{
+						((IShipGuardian)((Entity)entity).riddenByEntity).setGuardedPos(last[0], last[1], last[2], ((Entity)entity).dimension, 1);
+					}
+				}
+			}
+			else {
+				//go to next waypoint
+				if (next[1] > 0)
+				{
+					entity.setGuardedPos(next[0], next[1], next[2], ((Entity)entity).dimension, 1);
+					changed = true;
+					
+					if (((Entity)entity).riddenByEntity instanceof IShipGuardian)
+					{
+						((IShipGuardian)((Entity)entity).riddenByEntity).setGuardedPos(next[0], next[1], next[2], ((Entity)entity).dimension, 1);
+					}
+				}
+			}
+			
+			//set last waypoint
+			entity.setLastWaypoint(new int[] {((TileEntity)tile).xCoord, ((TileEntity)tile).yCoord, ((TileEntity)tile).zCoord});
+			
+			if (((Entity)entity).riddenByEntity instanceof IShipGuardian)
+			{
+				((IShipGuardian)((Entity)entity).riddenByEntity).setLastWaypoint(new int[] {((TileEntity)tile).xCoord, ((TileEntity)tile).yCoord, ((TileEntity)tile).zCoord});
+			}
+		}
 		
 		return changed;
 	}

@@ -22,6 +22,7 @@ public class ID {
 		public static final byte ShipInv_TIMEKEEPAI = 14;
 		public static final byte ShipInv_InvPage = 15;
 		public static final byte ShipInv_PickitemAI = 16;
+		public static final byte ShipInv_WpStay = 17;
 		
 		public static final byte Shipyard_Type = 0;
 		public static final byte Shipyard_InvMode = 1;
@@ -424,6 +425,7 @@ public class ID {
 		public static final byte LastY = 41;		//last waypoint y
 		public static final byte LastZ = 42;		//last waypoint z
 		public static final byte CraneState = 43;	//crane state: 0:none 1:wait 2:craning
+		public static final byte WpStay = 44;		//waypoint stay setting
 	}
 	
 	/** morale level */
@@ -652,6 +654,7 @@ public class ID {
 		public static final byte CraneTime = 1;			//craning time
 		public static final byte ImmuneTime = 2;		//immune time
 		public static final byte CrandDelay = 3;		//crane state 0 to 1,2 delay
+		public static final byte WpStayTime = 4;		//waypoint stay timer
 	}
 
 	/** StateEquip, StateFinal, BonusPoint, TypeModify */

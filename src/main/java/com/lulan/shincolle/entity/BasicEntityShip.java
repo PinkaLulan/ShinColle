@@ -101,6 +101,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	 *  25:damageType 26:formationType 27:formationPos 28:grudgeConsumption 29:ammoConsumption
 	 *  30:morale 31:Saturation 32:MaxSaturation 33:hitHeight 34:HitAngle 35:SensBody 36:InvSize
 	 *  37:ChunkLoaderLV 38:FlareLV 39:SearchlightLV 40:LastX 41:LastY 42:LastZ 43:CraneState
+	 *  44:WpStayTime
 	 */
 	protected int[] StateMinor;
 	/** timer array: 0:RevengeTime 1:CraneTime
@@ -177,9 +178,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				                     0,  0,  0,  0,  0,
 				                     60, 0,  10, 0,  0,
 				                     -1, 0,  0,  0,  0,
-				                     -1, -1, -1, 0
+				                     -1, -1, -1, 0,  0
 				                    };
-		this.StateTimer = new int[] {0,  0,  0,  0};
+		this.StateTimer = new int[] {0,  0,  0,  0,  0};
 		this.EffectEquip = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F};
 		this.EffectEquipBU = this.EffectEquip.clone();
 		this.EffectFormation = new float[] {0F, 0F, 0F, 0F, 0F,
@@ -2168,7 +2169,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 //        }
         
         //server side check
-        if((!worldObj.isRemote)) {
+        if ((!worldObj.isRemote))
+        {
         	//update target
         	TargetHelper.updateTarget(this);
         	
@@ -2179,12 +2181,14 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	updateServerTimer();
         	
         	//check every 8 ticks
-        	if(ticksExisted % 8 == 0) {
+        	if (ticksExisted % 8 == 0)
+        	{
         		//update formation buff (fast update)
-        		if(this.getUpdateFlag(ID.FU.FormationBuff)) calcEquipAndUpdateState();
+        		if (this.getUpdateFlag(ID.FU.FormationBuff)) calcEquipAndUpdateState();
         		
         		//reset AI and sync once
-        		if(!this.initAI && ticksExisted > 10) {
+        		if (!this.initAI && ticksExisted > 10)
+        		{
         			setStateFlag(ID.F.CanDrop, true);
             		clearAITasks();
             		clearAITargetTasks();		//reset AI for get owner after loading NBT data
@@ -2199,25 +2203,35 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 //        		LogHelper.info("DEBUG : check spawn: "+this.worldObj.getChunkProvider().getPossibleCreatures(EnumCreatureType.waterCreature, (int)posX, (int)posY, (int)posZ));
         		
         		//check every 16 ticks
-            	if(ticksExisted % 16 == 0) {
+            	if (ticksExisted % 16 == 0)
+            	{
             		//waypoint move
-            		if(EntityHelper.updateWaypointMove(this)) {
-            			sendSyncPacket(S2CEntitySync.PID.SyncShip_Guard, true);
+            		if (!(this.ridingEntity instanceof BasicEntityMount))
+            		{
+            			if (EntityHelper.updateWaypointMove(this))
+            			{
+            				sendSyncPacket(S2CEntitySync.PID.SyncShip_Guard, true);
+            			}
             		}
             		
             		//update searchlight
-            		if(ConfigHandler.canSearchlight) {
+            		if (ConfigHandler.canSearchlight)
+            		{
                 		updateSearchlight();
             		}
             		
             		//cancel mounts
-            		if(this.canSummonMounts()) {
-            			if(getStateEmotion(ID.S.State) < ID.State.EQUIP00) {
+            		if (this.canSummonMounts())
+            		{
+            			if (getStateEmotion(ID.S.State) < ID.State.EQUIP00)
+            			{
           	  	  			//cancel riding
-          	  	  			if(this.isRiding() && this.ridingEntity instanceof BasicEntityMount) {
+          	  	  			if (this.isRiding() && this.ridingEntity instanceof BasicEntityMount)
+          	  	  			{
           	  	  				BasicEntityMount mount = (BasicEntityMount) this.ridingEntity;
           	  	  				
-          	  	  				if(mount.seat2 != null ) {
+          	  	  				if (mount.seat2 != null )
+          	  	  				{
           	  	  					mount.seat2.setRiderNull();	
           	  	  				}
           	  	  				
@@ -2239,14 +2253,18 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 //            		}
             		
             		//check every 32 ticks
-                	if(this.ticksExisted % 32 == 0) {
+                	if (this.ticksExisted % 32 == 0)
+                	{
                 		//use bucket automatically
-                		if((getMaxHealth() - getHealth()) > (getMaxHealth() * 0.1F + 5F)) {
-        	                if(decrSupplies(7)) {
+                		if ((getMaxHealth() - getHealth()) > (getMaxHealth() * 0.1F + 5F))
+                		{
+        	                if (decrSupplies(7))
+        	                {
         		                this.heal(this.getMaxHealth() * 0.08F + 15F);	//1 bucket = 5% hp for large ship
         	                
         		                //airplane++
-        		                if(this instanceof BasicEntityShipCV)  {
+        		                if (this instanceof BasicEntityShipCV)
+        		                {
         		                	BasicEntityShipCV ship = (BasicEntityShipCV) this;
         		                	ship.setNumAircraftLight(ship.getNumAircraftLight() + 1);
         		                	ship.setNumAircraftHeavy(ship.getNumAircraftHeavy() + 1);
@@ -2255,25 +2273,30 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	            }
                 		
                 		//check every 64 ticks
-                		if(ticksExisted % 64 == 0) {
+                		if (ticksExisted % 64 == 0)
+                		{
                 			//sync model display
                 			sendSyncPacketEmotion();
 
                 			//check every 128 ticks
-                        	if(ticksExisted % 128 == 0) {
+                        	if (ticksExisted % 128 == 0)
+                        	{
                         		//delayed init, waiting for player entity loaded
-                        		if(!this.initWaitAI && ticksExisted >= 128) {
+                        		if (!this.initWaitAI && ticksExisted >= 128)
+                        		{
                         			setUpdateFlag(ID.FU.FormationBuff, true);  //set update formation buff
                         			this.initWaitAI = true;
                         		}
 
                         		//check owner online
-                        		if(this.getPlayerUID() > 0) {
+                        		if (this.getPlayerUID() > 0)
+                        		{
                         			//get owner
                         			EntityPlayer player = EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
 
                         			//owner exists (online and same world)
-                        			if(player != null) {
+                        			if (player != null)
+                        			{
                     					//update owner entity id (could be changed when owner change dimension or dead)
                             			this.setStateMinor(ID.M.PlayerEID, player.getEntityId());
                             			//sync guard position
@@ -2291,24 +2314,27 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                         		updateConsumeItem();
                         		
                         		//update morale value
-                        		if(!getStateFlag(ID.F.NoFuel)) updateMorale();
+                        		if (!getStateFlag(ID.F.NoFuel)) updateMorale();
                         		
                         		//check every 256 ticks
-                            	if(this.ticksExisted % 256 == 0) {
+                            	if (this.ticksExisted % 256 == 0)
+                            	{
                             		//update buff (slow update)
                             		calcEquipAndUpdateState();
                             		
                             		//show idle emotes
-                            		if(!getStateFlag(ID.F.NoFuel)) applyEmotesReaction(4);
+                            		if (!getStateFlag(ID.F.NoFuel)) applyEmotesReaction(4);
                             		
                             		//HP auto regen
-                            		if(this.getHealth() < this.getMaxHealth()) {
+                            		if (this.getHealth() < this.getMaxHealth())
+                            		{
                             			this.setHealth(this.getHealth() + this.getMaxHealth() * 0.015625F + 1);
                             		}
                             		
                             		//food saturation--
                             		int f = this.getFoodSaturation();
-                            		if(f > 0) {
+                            		if (f > 0)
+                            		{
                             			this.setFoodSaturation(--f);
                             		}
                             	}//end every 256 ticks
@@ -2319,11 +2345,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	}//end every 8 ticks
         	
         	//play timekeeping sound
-        	if(ConfigHandler.timeKeeping && this.getStateFlag(ID.F.TimeKeeper)) {
+        	if (ConfigHandler.timeKeeping && this.getStateFlag(ID.F.TimeKeeper))
+        	{
         		long time = this.worldObj.provider.getWorldTime();
             	int checkTime = (int)(time % 1000L);
             	
-            	if(checkTime == 0) {
+            	if (checkTime == 0)
+            	{
             		playTimeSound((int)(time / 1000L) % 24);
             	}
         	}//end timekeeping
@@ -2332,18 +2360,22 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     }
 	
 	@Override
-    protected void updateArmSwingProgress() {
+    protected void updateArmSwingProgress()
+	{
         int swingMaxTick = 6;
         
-        if(this.isSwingInProgress){
+        if (this.isSwingInProgress)
+        {
             ++this.swingProgressInt;
             
-            if(this.swingProgressInt >= swingMaxTick) {
+            if (this.swingProgressInt >= swingMaxTick)
+            {
                 this.swingProgressInt = 0;
                 this.isSwingInProgress = false;
             }
         }
-        else {
+        else
+        {
             this.swingProgressInt = 0;
         }
 
@@ -2351,7 +2383,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     }
 
 	//timekeeping method
-	protected void playTimeSound(int i) {
+	protected void playTimeSound(int i)
+	{
 		try
 		{
 			//custom sound
@@ -4946,6 +4979,50 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   			StateMinor[ID.M.LastZ] = pos[2];
   		}
   	}
+  	
+  	//convert wp stay time to ticks
+  	public static int wpStayTime2Ticks(int wpstay)
+  	{
+  		switch (wpstay)
+  		{
+  		case 1:
+  		case 2:
+  		case 3:
+  		case 4:
+  		case 5:
+  			return wpstay * 100;
+  		case 6:
+  		case 7:
+  		case 8:
+  		case 9:
+  		case 10:
+  			return (wpstay - 5) * 1200;
+  		case 11:
+  		case 12:
+  		case 13:
+  		case 14:
+  		case 15:
+  		case 16:
+  			return (wpstay - 10) * 12000;
+		default:
+			return 0;
+  		}
+  	}
+
+	@Override
+	public int getWpStayTime() {
+		return getStateTimer(ID.T.WpStayTime);
+	}
+
+	@Override
+	public int getWpStayTimeMax() {
+		return wpStayTime2Ticks(getStateMinor(ID.M.WpStay));
+	}
+
+	@Override
+	public void setWpStayTime(int time) {
+		setStateTimer(ID.T.WpStayTime, time);
+	}
   	
   	
 }
