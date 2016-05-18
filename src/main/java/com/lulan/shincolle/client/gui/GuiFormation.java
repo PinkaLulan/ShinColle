@@ -146,7 +146,8 @@ public class GuiFormation extends GuiContainer {
 	
 	//get new mouseX,Y and redraw gui
 	@Override
-	public void drawScreen(int mouseX, int mouseY, float f) {
+	public void drawScreen(int mouseX, int mouseY, float f)
+	{
 		super.drawScreen(mouseX, mouseY, f);
 
 		//update GUI var
@@ -155,12 +156,15 @@ public class GuiFormation extends GuiContainer {
 		
 		this.tickGUI++;
 		
-		if(this.tickTooltip > 0) this.tickTooltip--;
-		if(this.tickWaitSync > 0) {
+		if (this.tickTooltip > 0) this.tickTooltip--;
+
+		if (this.tickWaitSync > 0)
+		{
 			this.tickWaitSync--;
 			
 			//update ship list
-			if(this.tickWaitSync == 1) {
+			if (this.tickWaitSync == 1)
+			{
 				setShipList(this.teamClicked);
 				setShipName();
 			}
@@ -496,6 +500,8 @@ public class GuiFormation extends GuiContainer {
     		this.formatClicked = this.extProps.getFormatID(this.teamClicked);
     		setFormationSpotPos(formatClicked);
     		setShipName();
+    		//delay update again
+			this.tickWaitSync = 60;
         	break;
         case 15: //ship list
         case 16:

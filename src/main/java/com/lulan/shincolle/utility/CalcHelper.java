@@ -407,6 +407,17 @@ public class CalcHelper {
 
 		return result;
 	}
+	
+	/** combine int arrays */
+	public static int[] concIntArray(int[] a, int[] b)
+	{
+		int[] i = new int[a.length + b.length];
+		
+		System.arraycopy(a, 0, i, 0, a.length);
+		System.arraycopy(b, 0, i, a.length, b.length);
+		
+		return i;
+	}
     
     
 }

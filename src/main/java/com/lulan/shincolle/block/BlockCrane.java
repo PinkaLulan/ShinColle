@@ -6,11 +6,13 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.TileEntityCrane;
+import com.lulan.shincolle.utility.LogHelper;
 
 import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
 import cpw.mods.fml.relauncher.Side;
@@ -81,6 +83,38 @@ public class BlockCrane extends BasicBlockContainer {
 	@Override
 	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack itemstack) {
 	}
+
+	@Override
+	public boolean isNormalCube(IBlockAccess world, int x, int y, int z)
+    {
+        return false;
+    }
+	
+	@Override
+	public boolean canProvidePower()
+    {
+        return true;
+    }
+	
+	@Override
+	public int isProvidingStrongPower(IBlockAccess block, int x, int y, int z, int face)
+    {
+        return isProvidingWeakPower(block, x, y, z, face);
+    }
+	
+	@Override
+	public int isProvidingWeakPower(IBlockAccess block, int x, int y, int z, int face)
+    {
+		TileEntity tile = block.getTileEntity(x, y, z);
+        
+        if (tile instanceof TileEntityCrane)
+        {
+        	TileEntityCrane crane = (TileEntityCrane) tile;
+        	if (crane.redMode > 0 && crane.redTick > 0) return 15;
+        }
+        
+        return 0;
+    }
 	
 	
 }

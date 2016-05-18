@@ -253,7 +253,7 @@ abstract public class BasicEntityAirplane extends EntityLiving implements IShipC
 			}
 			
 			//host check
-			if(this.getPlayerUID() == 0 || this.getPlayerUID() == -1 || this.deadTick > 10) {
+			if(this.getPlayerUID() == 0 || this.getPlayerUID() == -1 || this.deadTick > 100) {
 				//no host, or host has no owner
 				this.setDead();
 			}

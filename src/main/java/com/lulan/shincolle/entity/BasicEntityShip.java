@@ -41,6 +41,7 @@ import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
 import com.lulan.shincolle.crafting.EquipCalc;
+import com.lulan.shincolle.crafting.ShipCalc;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.entity.other.EntityRensouhou;
 import com.lulan.shincolle.entity.transport.EntityTransportWa;
@@ -289,7 +290,30 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 					this.customSound[7] = ConfigHandler.customSoundRate[i+7];
 					this.customSound[8] = ConfigHandler.customSoundRate[i+8];
 					this.customSound[9] = ConfigHandler.customSoundRate[i+9];
-					break;
+					return;
+				}
+			}
+		}
+		
+		//custom 1 not found, get custom sound 2
+		if (ConfigHandler.customSoundRate2 != null)
+		{
+			for (int i = 0; i < ConfigHandler.customSoundRate2.length; i += 10)
+			{
+				if (ConfigHandler.customSoundRate2[i] == this.getShipClass() + 2)
+				{
+					this.customSound = new int[10];
+					this.customSound[0] = ConfigHandler.customSoundRate2[i];
+					this.customSound[1] = ConfigHandler.customSoundRate2[i+1];
+					this.customSound[2] = ConfigHandler.customSoundRate2[i+2];
+					this.customSound[3] = ConfigHandler.customSoundRate2[i+3];
+					this.customSound[4] = ConfigHandler.customSoundRate2[i+4];
+					this.customSound[5] = ConfigHandler.customSoundRate2[i+5];
+					this.customSound[6] = ConfigHandler.customSoundRate2[i+6];
+					this.customSound[7] = ConfigHandler.customSoundRate2[i+7];
+					this.customSound[8] = ConfigHandler.customSoundRate2[i+8];
+					this.customSound[9] = ConfigHandler.customSoundRate2[i+9];
+					return;
 				}
 			}
 		}
@@ -1423,51 +1447,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	 	                itemstack.setItemDamage(itemstack.getItemDamage() + 1);
 	                    
 	                    //set item amount
-	                    ItemStack item0 = null;
-	                    ItemStack item1 = null;
-	                    ItemStack item2 = null;
-	                    ItemStack item3 = null;
+	                    ItemStack[] items = ShipCalc.getKaitaiItems(this.getShipClass());
 	                                
-	                    //calc materials amount
-	                    switch(this.getKaitaiType()) {
-	                    case 1:	  //large ship -> more materials
-	                    	if(ConfigHandler.easyMode) {	//easy mode
-	                    		item0 = new ItemStack(ModBlocks.BlockGrudge, 1);
-	                        	item1 = new ItemStack(ModBlocks.BlockAbyssium, 1);
-	                        	item2 = new ItemStack(ModItems.Ammo, 1, 1);
-	                        	item3 = new ItemStack(ModBlocks.BlockPolymetal, 1);
-	                    	}
-	                    	else {						
-	                    		item0 = new ItemStack(ModBlocks.BlockGrudge, 10 + rand.nextInt(3));
-	                        	item1 = new ItemStack(ModBlocks.BlockAbyssium, 10 + rand.nextInt(3));
-	                        	item2 = new ItemStack(ModItems.Ammo, 10 + rand.nextInt(3), 1);
-	                        	item3 = new ItemStack(ModBlocks.BlockPolymetal, 10 + rand.nextInt(3));
-	                    	}
-	                    	break;
-	                    case 2:	  //mob small ship
-	                    	item0 = new ItemStack(ModItems.Grudge, ConfigHandler.kaitaiAmountSmall + rand.nextInt((int)(ConfigHandler.kaitaiAmountSmall * 0.25F) + 1));
-	                    	item1 = new ItemStack(ModItems.AbyssMetal, ConfigHandler.kaitaiAmountSmall + rand.nextInt((int)(ConfigHandler.kaitaiAmountSmall * 0.25F) + 1), 0);
-	                    	item2 = new ItemStack(ModItems.Ammo, ConfigHandler.kaitaiAmountSmall + rand.nextInt((int)(ConfigHandler.kaitaiAmountSmall * 0.25F) + 1), 0);
-	                    	item3 = new ItemStack(ModItems.AbyssMetal, ConfigHandler.kaitaiAmountSmall + rand.nextInt((int)(ConfigHandler.kaitaiAmountSmall * 0.25F) + 1), 1);
-	                    	break;
-	                    case 3:	  //mob large ship
-	                    	item0 = new ItemStack(ModBlocks.BlockGrudge, ConfigHandler.kaitaiAmountLarge + rand.nextInt((int)(ConfigHandler.kaitaiAmountLarge * 0.25F) + 1));
-                        	item1 = new ItemStack(ModBlocks.BlockAbyssium, ConfigHandler.kaitaiAmountLarge + rand.nextInt((int)(ConfigHandler.kaitaiAmountLarge * 0.25F) + 1));
-                        	item2 = new ItemStack(ModItems.Ammo, ConfigHandler.kaitaiAmountLarge + rand.nextInt((int)(ConfigHandler.kaitaiAmountLarge * 0.25F) + 1), 1);
-                        	item3 = new ItemStack(ModBlocks.BlockPolymetal, ConfigHandler.kaitaiAmountLarge + rand.nextInt((int)(ConfigHandler.kaitaiAmountLarge * 0.25F) + 1));
-	                    	break;
-                    	default:  //small ship
-                    		item0 = new ItemStack(ModItems.Grudge, 12 + rand.nextInt(8));
-	                    	item1 = new ItemStack(ModItems.AbyssMetal, 12 + rand.nextInt(8), 0);
-	                    	item2 = new ItemStack(ModItems.Ammo, 12 + rand.nextInt(8), 0);
-	                    	item3 = new ItemStack(ModItems.AbyssMetal, 12 + rand.nextInt(8), 1);
-                    		break;
-	                    }
-	                    
-	                    EntityItem entityItem0 = new EntityItem(worldObj, posX+0.5D, posY+0.8D, posZ+0.5D, item0);
-	                    EntityItem entityItem1 = new EntityItem(worldObj, posX+0.5D, posY+0.8D, posZ-0.5D, item1);
-	                    EntityItem entityItem2 = new EntityItem(worldObj, posX-0.5D, posY+0.8D, posZ+0.5D, item2);
-	                    EntityItem entityItem3 = new EntityItem(worldObj, posX-0.5D, posY+0.8D, posZ-0.5D, item3);
+	                    EntityItem entityItem0 = new EntityItem(worldObj, posX+0.5D, posY+0.8D, posZ+0.5D, items[0]);
+	                    EntityItem entityItem1 = new EntityItem(worldObj, posX+0.5D, posY+0.8D, posZ-0.5D, items[1]);
+	                    EntityItem entityItem2 = new EntityItem(worldObj, posX-0.5D, posY+0.8D, posZ+0.5D, items[2]);
+	                    EntityItem entityItem3 = new EntityItem(worldObj, posX-0.5D, posY+0.8D, posZ-0.5D, items[3]);
 
 	                    worldObj.spawnEntityInWorld(entityItem0);
 	                    worldObj.spawnEntityInWorld(entityItem1);
@@ -5023,6 +5008,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	public void setWpStayTime(int time) {
 		setStateTimer(ID.T.WpStayTime, time);
 	}
-  	
+	
   	
 }

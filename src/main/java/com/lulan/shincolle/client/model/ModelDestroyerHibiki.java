@@ -1018,6 +1018,17 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
   			this.HatBase.isHidden = true;
   			this.Hair02f1.isHidden = true;
   			this.HatBase2.isHidden = false;
+  			this.HatBase2.rotateAngleX = -0.2618F;
+  			this.HatBase2.offsetY = 0F;
+  			this.HatBase2.offsetZ = 0F;
+  			break;
+  		case ID.State.EQUIP02_2:
+  			this.HatBase.isHidden = true;
+  			this.Hair02f1.isHidden = true;
+  			this.HatBase2.isHidden = false;
+  			this.HatBase2.rotateAngleX = -0.7F;
+  			this.HatBase2.offsetY = -0.06F;
+  			this.HatBase2.offsetZ = 0.06F;
   			break;
   		default:  //normal
   			this.HatBase.isHidden = true;

@@ -11,6 +11,7 @@ import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.IShipResourceItem;
+import com.lulan.shincolle.item.ShipSpawnEgg;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 import com.lulan.shincolle.utility.LogHelper;
@@ -142,50 +143,109 @@ public class LargeRecipes {
 	}
 
 	//新增資材到matsStock中
-	public static boolean addMaterialStock(TileMultiGrudgeHeavy tile, ItemStack item) {
+	public static boolean addMaterialStock(TileMultiGrudgeHeavy tile, ItemStack item)
+	{
 		boolean canAdd = false;
 		
-		if(item != null && item.getItem() instanceof IShipResourceItem) {
-			int meta = item.getItemDamage();
-			
-			try {
-				int[] addMats = ((IShipResourceItem)item.getItem()).getResourceValue(meta);
-			
-				//check easy mode
-				if(ConfigHandler.easyMode) {
-					//x10, max = 1000
-					for(int i = 0; i < 4; i++) {
-						addMats[i] = addMats[i] * 10;
-						if(addMats[i] > 1000) addMats[i] = 1000;
-					}
-				}
-				
+		if (item != null)
+		{
+			try
+			{
 				//check MAX amount
 				int matStockCurrent = 0;
 				canAdd = true;
 				
-				for(int j = 0; j < 4; ++j) {
+				for (int j = 0; j < 4; ++j)
+				{
 					matStockCurrent = tile.getMatStock(j);
-					if(matStockCurrent > MAX_STOCK) {
+					if (matStockCurrent > MAX_STOCK)
+					{
 						canAdd = false;
 						break;
 					}
 				}
 				
-				//add material
-				if(canAdd) {
-					for(int k = 0; k < 4; k++) {
-						tile.addMatStock(k, addMats[k]);
+				//add items
+				if (canAdd)
+				{
+					//is resource item
+					if (item.getItem() instanceof IShipResourceItem)
+					{
+						int meta = item.getItemDamage();
+
+						int[] addMats = ((IShipResourceItem)item.getItem()).getResourceValue(meta);
+					
+						//check easy mode
+						if (ConfigHandler.easyMode)
+						{
+							//x10, max = 1000
+							for (int i = 0; i < 4; i++)
+							{
+								addMats[i] = addMats[i] * 10;
+							}
+						}
+						
+						//add material
+						for (int k = 0; k < 4; k++)
+						{
+							tile.addMatStock(k, addMats[k]);
+						}
+						
+						return true;
 					}
-//					LogHelper.info("DEBUG: large recipe: recycle: "+addMats[0]+" "+addMats[1]+" "+addMats[2]+" "+addMats[3]+" "+item.getItem());
+					//is ship spawn egg
+					else if (item.getItem() instanceof ShipSpawnEgg && item.getItemDamage() > 1)
+					{
+						//get ship recycle items
+						ItemStack[] items = ShipCalc.getKaitaiItems(item.getItemDamage() - 2);
+						
+						for (ItemStack i : items)
+						{
+							if (i != null)
+							{
+								int size = i.stackSize;
+								int meta = i.getItemDamage();
+								int[] addMats = ((IShipResourceItem)i.getItem()).getResourceValue(meta);
+								
+								addMats[0] *= size;
+								addMats[1] *= size;
+								addMats[2] *= size;
+								addMats[3] *= size;
+								
+								//check easy mode
+								if (ConfigHandler.easyMode)
+								{
+									//x10, max = 1000
+									for (int j = 0; j < 4; j++)
+									{
+										addMats[j] = addMats[j] * 10;
+									}
+								}
+								
+								//add material
+								for (int k = 0; k < 4; k++)
+								{
+									tile.addMatStock(k, addMats[k]);
+								}
+							}
+							else
+							{
+								return false;
+							}
+						}
+						
+						return true;
+					}
 				}
 			}
-			catch(Exception e) {
-				LogHelper.info("DEBUG : large recipe: add material fail: "+e);
+			catch (Exception e)
+			{
+				e.printStackTrace();
+				return false;
 			}
 		}
 		
-		return canAdd;
+		return false;
 	}
 
 	//將材料數量寫進itemstack回傳

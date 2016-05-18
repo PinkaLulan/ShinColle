@@ -171,6 +171,9 @@ public class EntityDestroyerHibiki extends BasicEntityShipSmall
 			case ID.State.EQUIP00_2:
 				setStateEmotion(ID.S.State2, ID.State.EQUIP01_2, true);
 				break;
+			case ID.State.EQUIP01_2:
+				setStateEmotion(ID.S.State2, ID.State.EQUIP02_2, true);
+				break;
 			default:
 				setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
 				break;

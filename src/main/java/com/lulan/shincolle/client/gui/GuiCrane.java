@@ -28,11 +28,11 @@ public class GuiCrane extends GuiContainer {
 	private static final ResourceLocation guiTexture = new ResourceLocation(Reference.TEXTURES_GUI+"GuiCrane.png");
 	private TileEntityCrane tile;
 	private int xClick, yClick, xMouse, yMouse;
-	private int btnMode;
+	private int btnMode, btnRedMode;
 	private boolean btnPower, btnMeta, btnDict, btnNbt, btnLoad, btnUnload, slotMode;
 	private float tickGUI;
 	private String strLoad, strUnload, strMeta, strDict, strNbt, strNowait, strWaitfev, strNowait1,
-				   strWaitfev1, strWaitfev2;
+				   strWaitfev1, strWaitfev2, strRed0, strRed1, strRed2;
 	
 	
 	public GuiCrane(InventoryPlayer par1, TileEntityCrane par2) {
@@ -52,6 +52,9 @@ public class GuiCrane extends GuiContainer {
 		strNowait1 = I18n.format("gui.shincolle:crane.nowait1");
 		strWaitfev1 = I18n.format("gui.shincolle:crane.waitforever1");
 		strWaitfev2 = I18n.format("gui.shincolle:crane.waitforever2");
+		strRed0 = I18n.format("gui.shincolle:crane.red0");
+		strRed1 = I18n.format("gui.shincolle:crane.red1");
+		strRed2 = I18n.format("gui.shincolle:crane.red2");
 		
 		//init value
 		updateButton();
@@ -84,6 +87,20 @@ public class GuiCrane extends GuiContainer {
 			}
 			else if(mx > 50 && mx < 63) {
 				list.add(strNbt);
+			}
+			else if(mx > 64 && mx < 77) {
+				switch (btnRedMode)
+				{
+				case 1:
+					list.add(strRed1);
+					break;
+				case 2:
+					list.add(strRed2);
+					break;
+				default:
+					list.add(strRed0);
+					break;
+				}
 			}
 			
 			this.drawHoveringText(list, mx, my+10, this.fontRendererObj);
@@ -173,27 +190,42 @@ public class GuiCrane extends GuiContainer {
         {
         	drawTexturedModalRect(guiLeft+7, guiTop+6, 176, 0, 13, 13);
         }
+        
         if (this.btnMeta)
         {
         	drawTexturedModalRect(guiLeft+23, guiTop+22, 176, 13, 11, 11);
         }
+        
         if (this.btnDict)
         {
         	drawTexturedModalRect(guiLeft+37, guiTop+22, 176, 24, 11, 11);
         }
+        
         if (this.btnNbt)
         {
         	drawTexturedModalRect(guiLeft+51, guiTop+22, 176, 46, 11, 11);
         }
+        
         if (!this.btnLoad)
         {
         	drawTexturedModalRect(guiLeft+7, guiTop+44, 176, 35, 11, 11);
         	drawTexturedModalRect(guiLeft+8, guiTop+57, 0, 193, 160, 16);
         }
+        
         if (!this.btnUnload)
         {
         	drawTexturedModalRect(guiLeft+7, guiTop+75, 176, 35, 11, 11);
         	drawTexturedModalRect(guiLeft+8, guiTop+88, 0, 193, 160, 16);
+        }
+        
+        switch (this.btnRedMode)
+        {
+        case 1:
+        	drawTexturedModalRect(guiLeft+65, guiTop+22, 176, 57, 11, 11);
+        	break;
+        case 2:
+        	drawTexturedModalRect(guiLeft+65, guiTop+22, 176, 68, 11, 11);
+        	break;
         }
         
         //check loading slot mode
@@ -219,7 +251,8 @@ public class GuiCrane extends GuiContainer {
 	
 	//handle mouse click, @parm posX, posY, mouseKey (0:left 1:right 2:middle 3:...etc)
 	@Override
-	protected void mouseClicked(int posX, int posY, int key) {
+	protected void mouseClicked(int posX, int posY, int key)
+	{
         super.mouseClicked(posX, posY, key);
             
         //get click position
@@ -228,28 +261,37 @@ public class GuiCrane extends GuiContainer {
         
         updateButton();
         
-        switch(GuiHelper.getButton(5, 0, xClick, yClick)) {
+        switch (GuiHelper.getButton(5, 0, xClick, yClick))
+        {
         case 0:  //power
         	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, ID.B.Crane_Power, !btnPower ? 1 : 0, 0));
         	break;
         case 1:  //mode
-        	if(key == 0) {
-        		if(btnMode == 1) {
+        	if (key == 0)
+        	{
+        		if(btnMode == 1)
+        		{
         			btnMode = 6;
         		}
-        		else {
+        		else
+        		{
         			btnMode++;
         		}
-        		if(btnMode > 25) btnMode = 25;
+        		
+        		if (btnMode > 25) btnMode = 25;
         	}
-        	else {
-        		if(btnMode == 6) {
+        	else
+        	{
+        		if (btnMode == 6)
+        		{
         			btnMode = 1;
         		}
-        		else {
+        		else
+        		{
         			btnMode--;
         		}
-        		if(btnMode < 0) btnMode = 0;
+        		
+        		if (btnMode < 0) btnMode = 0;
         	}
         	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, ID.B.Crane_Mode, btnMode, 0));
         	break;
@@ -268,6 +310,9 @@ public class GuiCrane extends GuiContainer {
         case 6:  //unloading
         	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, ID.B.Crane_Nbt, !btnNbt ? 1 : 0, 0));
         	break;
+        case 7:  //redstone signal mode
+        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, ID.B.Crane_Red, btnRedMode + 1, 0));
+        	break;
         }
 	}
 	
@@ -279,6 +324,7 @@ public class GuiCrane extends GuiContainer {
 		btnNbt = tile.checkNbt;
 		btnLoad = tile.enabLoad;
 		btnUnload = tile.enabUnload;
+		btnRedMode = tile.redMode;
 	}
 
 	

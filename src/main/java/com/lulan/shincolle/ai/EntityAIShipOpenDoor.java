@@ -23,7 +23,8 @@ import com.lulan.shincolle.utility.LogHelper;
  *  get gate: 依據身體大小計算全部會碰到的gate
  *
  */
-public class EntityAIShipOpenDoor extends EntityAIBase {
+public class EntityAIShipOpenDoor extends EntityAIBase
+{
 	
 	private Entity host;
 	private IShipNavigator host2;
@@ -39,7 +40,8 @@ public class EntityAIShipOpenDoor extends EntityAIBase {
 	private int delay;				//通過門的delay, 時間到後關門
 
     
-    public EntityAIShipOpenDoor(IShipNavigator host, boolean closeDoor) {
+    public EntityAIShipOpenDoor(IShipNavigator host, boolean closeDoor)
+    {
         this.host = (Entity) host;
         this.host2 = host;
         this.closeDoor = closeDoor;
@@ -47,9 +49,10 @@ public class EntityAIShipOpenDoor extends EntityAIBase {
     }
     
     @Override
-    public boolean shouldExecute() {
+    public boolean shouldExecute()
+    {
     	//水平方向撞到東西才啟動AI
-        if(!this.host.isCollidedHorizontally)
+        if (!this.host.isCollidedHorizontally)
         {
             return false;
         }
@@ -125,7 +128,7 @@ public class EntityAIShipOpenDoor extends EntityAIBase {
     @Override
     public void startExecuting()
     {
-        this.delay = 20;
+        this.delay = 40;
         this.hasPassed = false;
         
         //更改door meta值為開門

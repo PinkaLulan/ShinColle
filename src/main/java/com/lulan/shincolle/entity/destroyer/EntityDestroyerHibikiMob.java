@@ -36,7 +36,7 @@ public class EntityDestroyerHibikiMob extends BasicEntityShipHostile {
         this.StartEmotion2 = 0;
         this.headTilt = false;
         this.setStateEmotion(ID.S.State, rand.nextInt(2), false);
-        this.setStateEmotion(ID.S.State2, rand.nextInt(3), false);
+        this.setStateEmotion(ID.S.State2, rand.nextInt(4), false);
  
 	    //設定基本屬性
 	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(ConfigHandler.scaleMobSmall[ID.HP] * 0.5F);

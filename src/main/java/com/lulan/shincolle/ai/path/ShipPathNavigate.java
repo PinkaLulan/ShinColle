@@ -11,11 +11,13 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.ChunkCache;
 import net.minecraft.world.World;
 
+import com.lulan.shincolle.entity.BasicEntityAirplane;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipNavigator;
 import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
 
 /**SHIP PATH NAVIGATE
  * ship or airplane限定path ai, 該entity必須實作IShipNavigator
@@ -68,7 +70,11 @@ public class ShipPathNavigate {
      */
     public float getPathSearchRange()
     {
-    	if (host instanceof IShipAttackBase)
+    	if (host instanceof BasicEntityAirplane)
+    	{
+    		return 64F;
+    	}
+    	else if (host instanceof IShipAttackBase)
     	{
     		return ((IShipAttackBase) host).getAttackRange() + 24F;
     	}
@@ -171,7 +177,6 @@ public class ShipPathNavigate {
             else {	//成功設定path
                 this.speed = speed;
                 Vec3 vec3 = this.getEntityPosition();
-                this.ticksAtLastPos = this.pathTicks;
                 this.lastPosCheck.xCoord = vec3.xCoord;
                 this.lastPosCheck.yCoord = vec3.yCoord;
                 this.lastPosCheck.zCoord = vec3.zCoord;
@@ -214,7 +219,8 @@ public class ShipPathNavigate {
     /** 判定entity是否卡住(超過100 tick仍在原地) or entity是否可以抄捷徑以省略一些路徑點 
      *  以y高度判定是否有些點可以省略 (不判定水平距離)
      */
-    private void pathFollow() {
+    private void pathFollow()
+    {
         Vec3 entityPos = this.getEntityPosition();
         int pptemp = this.currentPath.getCurrentPathLength();
 
@@ -235,8 +241,10 @@ public class ShipPathNavigate {
         int k;
 
         //掃描目前的點到y高度不同or最後的點, 若距離不到entity大小, 則判定entity已經到達該點
-        for(k = this.currentPath.getCurrentPathIndex(); k < pptemp; ++k) {
-            if(entityPos.squareDistanceTo(this.currentPath.getVectorFromIndex(this.host, k)) < widthSq) {
+        for (k = this.currentPath.getCurrentPathIndex(); k < pptemp; ++k)
+        {
+            if (entityPos.squareDistanceTo(this.currentPath.getVectorFromIndex(this.host, k)) < widthSq)
+            {
 //            	LogHelper.info("DEBUG : path navi: get path+1 "+k+" "+entityPos.squareDistanceTo(this.currentPath.getVectorFromIndex(this.theEntity, k)));
             	this.currentPath.setCurrentPathIndex(++k);	//已到達目標點, 設定目標點為下一點
             }
@@ -247,39 +255,47 @@ public class ShipPathNavigate {
         int widthInt = k;
 
         //從y高度不合的點往回掃描, 找是否有點能從目前點直線走過去, 有的話將該點設為目標點使entity往該點直線前進
-        for(int j1 = pptemp - 1; j1 >= this.currentPath.getCurrentPathIndex(); --j1) {
-            if(this.isDirectPathBetweenPoints(entityPos, this.currentPath.getVectorFromIndex(this.host, j1), k, heighInt, widthInt)) {
+        for (int j1 = pptemp - 1; j1 >= this.currentPath.getCurrentPathIndex(); --j1)
+        {
+            if (this.isDirectPathBetweenPoints(entityPos, this.currentPath.getVectorFromIndex(this.host, j1), k, heighInt, widthInt))
+            {
                 this.currentPath.setCurrentPathIndex(j1);
                 break;
             }
         }
-
+        
         //每N ticks檢查一次移動距離
-        if(this.pathTicks - this.ticksAtLastPos > 20) {
+        if (this.pathTicks - this.ticksAtLastPos > 16)
+        {
         	//若距離上一次成功移動的點不到1.5格, 則表示某種原因造成幾乎沒移動, 清除該path
-            if(entityPos.squareDistanceTo(this.lastPosCheck) < 3D) {
+            if (entityPos.squareDistanceTo(this.lastPosCheck) < 3D)
+            {
             	//嘗試跳躍 + 左右隨機移動來脫離柵欄方塊
-            	if(!currentPath.isFinished()) {
+            	if (!currentPath.isFinished())
+            	{
             		float dx = (float) (currentPath.getVectorFromIndex(this.host, currentPath.getCurrentPathIndex()).xCoord - host.posX);
                 	float dz = (float) (currentPath.getVectorFromIndex(this.host, currentPath.getCurrentPathIndex()).zCoord - host.posZ);
-//                	LogHelper.info("DEBUG : path navi: get stand block: "+dx+" "+dz);
                 	double targetX = host.posX;
                 	double targetZ = host.posZ;
                 	
                 	//get random position
-                	if(dx > 0.2F || dx < -0.2F) {	//若目標點離x方向一定距離, 則在z方向隨機選+-1
+                	if (dx > 0.2F || dx < -0.2F)  //若目標點離x方向一定距離, 則在z方向隨機選+-1
+                	{
                 		targetZ = host.getRNG().nextInt(2) == 0 ? targetZ - 2D : targetZ + 2D;
+                		targetX = dx < 0F ? targetX + 2D : targetX - 2D;
                 	}
-                	
-                	if(dz > 0.2F || dz < -0.2F) {
+                	else if (dz > 0.2F || dz < -0.2F)  //若目標點離z方向一定距離, 則在x方向隨機選+-1
+                	{
                 		targetX = host.getRNG().nextInt(2) == 0 ? targetX - 2D : targetX + 2D;
+                		targetZ = dz < 0F ? targetZ + 2D : targetZ - 2D;
                 	}
                 	
                 	//set move
                 	this.theEntity2.getShipMoveHelper().setMoveTo(targetX, host.posY, targetZ, this.speed);
                 	
                 	//try random jump
-                	if(host.getRNG().nextInt(2) == 0) {
+                	if (host.getRNG().nextInt(2) == 0)
+                	{
                 		host.getJumpHelper().setJumping();
                 		float speed = (float) host.getEntityAttribute(SharedMonsterAttributes.movementSpeed).getAttributeValue() * 0.5F;
                 		if(dx > 0.5F) host.motionX += speed;

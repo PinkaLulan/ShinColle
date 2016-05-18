@@ -877,6 +877,10 @@ public class EntityHelper {
 			case ID.B.Crane_Nbt:
 				((TileEntityCrane)tile).checkNbt = value == 0 ? false : true;
 				break;
+			case ID.B.Crane_Red:
+				if (value > 2) value = 0;
+				((TileEntityCrane)tile).redMode = value;
+				break;
 			}
 		}
 		else {

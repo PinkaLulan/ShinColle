@@ -517,6 +517,9 @@ gui.shincolle:crane.waitmin=Wait %s min
 gui.shincolle:crane.nowait1=Stop waiting immediately if no item can load/unload
 gui.shincolle:crane.waitforever1=LOADING until ship's inventory FULL and
 gui.shincolle:crane.waitforever2=UNLOADING until no specified item can unload
+gui.shincolle:crane.red0=No redstone signal
+gui.shincolle:crane.red1=Emit continuous redstone signal
+gui.shincolle:crane.red2=Emit a pulse signal
 
 # GUI: Formation
 gui.shincolle:formation.formation=Formation

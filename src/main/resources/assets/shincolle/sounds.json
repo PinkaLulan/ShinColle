@@ -437,6 +437,39 @@
             "item5601",
             "hit5602"
         ]
+    },
+    
+    "ship-say-54": {
+        "category": "neutral", "replace": true, "sounds": [
+            "idle5401",
+            "idle5402",
+            "idle5403"
+        ]
+    },
+    
+    "ship-hurt-54": {
+        "category": "neutral", "replace": true, "sounds": [
+            "hurt5401",
+            "hurt5402"
+        ]
+    },
+    
+    "ship-love-54": {
+        "category": "neutral", "replace": true, "sounds": [
+            "idle5401",
+            "idle5402",
+            "idle5403"
+        ]
+    },
+    
+    "ship-itemget-54": {
+        "category": "neutral", "replace": true, "sounds": [
+            "item5401",
+            "item5402",
+            "idle5401",
+            "idle5402",
+            "idle5403"
+        ]
     }
 
     

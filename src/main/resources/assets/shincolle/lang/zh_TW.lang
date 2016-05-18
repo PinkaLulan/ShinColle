@@ -518,6 +518,9 @@ gui.shincolle:crane.waitmin=等待 %s 分
 gui.shincolle:crane.nowait1=若沒有貨物可以裝卸，則馬上結束等待
 gui.shincolle:crane.waitforever1=裝貨直到滿載為止
 gui.shincolle:crane.waitforever2=卸貨等到指定物品全部卸載為止
+gui.shincolle:crane.red0=不發出紅石訊號
+gui.shincolle:crane.red1=持續發出紅石訊號
+gui.shincolle:crane.red2=發出一次脈衝訊號
 
 # GUI: Formation
 gui.shincolle:formation.formation=陣型

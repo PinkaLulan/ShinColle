@@ -10,6 +10,9 @@ import java.util.Random;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 
+import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.init.ModBlocks;
+import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.LogHelper;
@@ -328,6 +331,111 @@ public class ShipCalc {
         		return getEntityToSpawnName(ID.Ship.SubmarineU511+2000);
         	}
   		}
+  	}
+  	
+  	/** get ship recycle items */
+  	public static ItemStack[] getKaitaiItems(int shipID)
+  	{
+  		ItemStack[] amount = new ItemStack[4];
+
+  		switch(shipID)
+  		{
+  		case ID.Ship.DestroyerI:
+  		case ID.Ship.DestroyerRO:
+  		case ID.Ship.DestroyerHA:
+  		case ID.Ship.DestroyerNI:
+  		case ID.Ship.LightCruiserHO:
+  		case ID.Ship.LightCruiserHE:
+  		case ID.Ship.LightCruiserTO:
+  		case ID.Ship.LightCruiserTSU:
+  		case ID.Ship.TorpedoCruiserCHI:
+  		case ID.Ship.HeavyCruiserRI:
+  		case ID.Ship.HeavyCruiserNE:
+  		case ID.Ship.LightCarrierNU:
+  		case ID.Ship.TransportWA:
+  		case ID.Ship.SubmarineKA:
+  		case ID.Ship.SubmarineYO:
+  		case ID.Ship.SubmarineSO:
+  			amount[0] = new ItemStack(ModItems.Grudge, 12 + rand.nextInt(8));
+  			amount[1] = new ItemStack(ModItems.AbyssMetal, 12 + rand.nextInt(8), 0);
+  			amount[2] = new ItemStack(ModItems.Ammo, 12 + rand.nextInt(8), 0);
+  			amount[3] = new ItemStack(ModItems.AbyssMetal, 12 + rand.nextInt(8), 1);
+        	break;
+  		case ID.Ship.CarrierWO:
+  		case ID.Ship.BattleshipRU:
+  		case ID.Ship.BattleshipTA:
+  		case ID.Ship.BattleshipRE:
+  		case ID.Ship.CarrierHime:
+  		case ID.Ship.AirfieldHime:
+  		case ID.Ship.ArmoredCarrierHime:
+  		case ID.Ship.AnchorageHime:
+  		case ID.Ship.HarbourWD:
+  		case ID.Ship.AnchorageWD:
+  		case ID.Ship.BattleshipHime:
+  		case ID.Ship.DestroyerHime:
+  		case ID.Ship.HarbourHime:
+  		case ID.Ship.IsolatedDemon:
+  		case ID.Ship.MidwayHime:
+  		case ID.Ship.NorthernHime:
+  		case ID.Ship.SouthernHime:
+  		case ID.Ship.CarrierWD:
+  		case ID.Ship.LightCruiserDemon:
+  		case ID.Ship.BattleshipWD:
+  		case ID.Ship.SeaplaneHime:
+  		case ID.Ship.AirdefenseHime:
+  		case ID.Ship.PTImp:
+  		case ID.Ship.LightCruiserHime:
+  		case ID.Ship.SubmarineHime:
+  		case ID.Ship.DestroyerWD:
+  		case ID.Ship.HeavyCruiserHime:
+  		case ID.Ship.SupplyDepotHime:
+  			//easy mode
+  			if(ConfigHandler.easyMode)
+  			{
+  				amount[0] = new ItemStack(ModBlocks.BlockGrudge, 1);
+  				amount[1] = new ItemStack(ModBlocks.BlockAbyssium, 1);
+  				amount[2] = new ItemStack(ModItems.Ammo, 1, 1);
+  				amount[3] = new ItemStack(ModBlocks.BlockPolymetal, 1);
+        	}
+        	else
+        	{						
+        		amount[0] = new ItemStack(ModBlocks.BlockGrudge, 10 + rand.nextInt(3));
+        		amount[1] = new ItemStack(ModBlocks.BlockAbyssium, 10 + rand.nextInt(3));
+        		amount[2] = new ItemStack(ModItems.Ammo, 10 + rand.nextInt(3), 1);
+        		amount[3] = new ItemStack(ModBlocks.BlockPolymetal, 10 + rand.nextInt(3));
+        	}
+  			break;
+  		case ID.Ship.SubmarineU511:
+  		case ID.Ship.SubmarineRo500:
+  		case ID.Ship.DestroyerAkatsuki:
+  		case ID.Ship.DestroyerHibiki:
+  		case ID.Ship.DestroyerIkazuchi:
+  		case ID.Ship.DestroyerInazuma:
+  		case ID.Ship.Raiden:
+  			amount[0] = new ItemStack(ModItems.Grudge, ConfigHandler.kaitaiAmountSmall + rand.nextInt((int)(ConfigHandler.kaitaiAmountSmall * 0.25F) + 1));
+  			amount[1] = new ItemStack(ModItems.AbyssMetal, ConfigHandler.kaitaiAmountSmall + rand.nextInt((int)(ConfigHandler.kaitaiAmountSmall * 0.25F) + 1), 0);
+  			amount[2] = new ItemStack(ModItems.Ammo, ConfigHandler.kaitaiAmountSmall + rand.nextInt((int)(ConfigHandler.kaitaiAmountSmall * 0.25F) + 1), 0);
+  			amount[3] = new ItemStack(ModItems.AbyssMetal, ConfigHandler.kaitaiAmountSmall + rand.nextInt((int)(ConfigHandler.kaitaiAmountSmall * 0.25F) + 1), 1);
+  			break;
+  		case ID.Ship.LightCruiserTenryuu:
+  		case ID.Ship.DestroyerShimakaze:
+  			amount[0] = new ItemStack(ModBlocks.BlockGrudge, ConfigHandler.kaitaiAmountLarge + rand.nextInt((int)(ConfigHandler.kaitaiAmountLarge * 0.25F) + 1));
+  			amount[1] = new ItemStack(ModBlocks.BlockAbyssium, ConfigHandler.kaitaiAmountLarge + rand.nextInt((int)(ConfigHandler.kaitaiAmountLarge * 0.25F) + 1));
+  			amount[2] = new ItemStack(ModItems.Ammo, ConfigHandler.kaitaiAmountLarge + rand.nextInt((int)(ConfigHandler.kaitaiAmountLarge * 0.25F) + 1), 1);
+  			amount[3] = new ItemStack(ModBlocks.BlockPolymetal, ConfigHandler.kaitaiAmountLarge + rand.nextInt((int)(ConfigHandler.kaitaiAmountLarge * 0.25F) + 1));
+  			break;
+  		case ID.Ship.BattleshipNagato:
+  		case ID.Ship.BattleshipYamato:
+  		case ID.Ship.CarrierKaga:
+  		case ID.Ship.CarrierAkagi:
+  			amount[0] = new ItemStack(ModBlocks.BlockGrudge, ConfigHandler.kaitaiAmountLarge + rand.nextInt(ConfigHandler.kaitaiAmountLarge + 1));
+  			amount[1] = new ItemStack(ModBlocks.BlockAbyssium, ConfigHandler.kaitaiAmountLarge + rand.nextInt(ConfigHandler.kaitaiAmountLarge + 1));
+  			amount[2] = new ItemStack(ModItems.Ammo, ConfigHandler.kaitaiAmountLarge + rand.nextInt(ConfigHandler.kaitaiAmountLarge + 1), 1);
+        	amount[3] = new ItemStack(ModBlocks.BlockPolymetal, ConfigHandler.kaitaiAmountLarge + rand.nextInt(ConfigHandler.kaitaiAmountLarge + 1));
+  			break;
+  		}
+  		
+  		return amount;
   	}
   	
 	

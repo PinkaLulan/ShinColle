@@ -27,7 +27,7 @@ public class ContainerCrane extends Container {
 	private static final int SLOT_ALL = 54;
 		
 	private TileEntityCrane tile;
-	private int craneMode, craneTime, shipEID, itemMode;
+	private int craneMode, craneTime, shipEID, itemMode, redMode;
 	private boolean isActive, checkMeta, checkDict, checkNbt, enabLoad, enabUnload; 
 	
 	
@@ -81,6 +81,7 @@ public class ContainerCrane extends Container {
 		crafting.sendProgressBarUpdate(this, 5, this.tile.enabUnload ? 1 : 0);
 		crafting.sendProgressBarUpdate(this, 6, this.tile.checkNbt ? 1 : 0);
 		crafting.sendProgressBarUpdate(this, 7, this.tile.itemMode);
+		crafting.sendProgressBarUpdate(this, 8, this.tile.redMode);
 	}
 	
 	//將container數值跟tile entity內的數值比對, 如果不同則發送更新給client使gui呈現新數值
@@ -138,6 +139,10 @@ public class ContainerCrane extends Container {
                 this.itemMode = this.tile.itemMode;
                 icrafting.sendProgressBarUpdate(this, 7, itemMode);
             }
+            if(this.redMode != this.tile.redMode) {
+                this.redMode = this.tile.redMode;
+                icrafting.sendProgressBarUpdate(this, 8, redMode);
+            }
         } 
     }
 
@@ -173,6 +178,9 @@ public class ContainerCrane extends Container {
 				break;
 			case 7:
 				tile.itemMode = updatedValue;
+				break;
+			case 8:
+				tile.redMode = updatedValue;
 				break;
 			}
 		}
