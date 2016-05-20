@@ -38,6 +38,9 @@ public class ConfigHandler {
 	public static int spawnMobNum = 4;
 	public static int chunkloaderMode = 2;
 	
+	//INTER-MOD
+	public static boolean enableForestry = true;
+	
 	//DESK
 	public static int radarUpdate = 128;	//radar update interval (ticks)
 	
@@ -152,6 +155,11 @@ public class ConfigHandler {
 		//野生艦隊生成數量
 		spawnBossNum = config.getInt("Spawn_Boss_Number", "general", 2, 1, 10, "large hostile ship (boss) number per spawn");
 		spawnMobNum = config.getInt("Spawn_Mob_Number", "general", 4, 1, 10, "small hostile ship number per spawn");
+			
+		
+		//是否開啟林業支援
+		enableForestry = config.getBoolean("Enable_Forestry", "inter-mod", true, "Enable Forestry module if Forestry exists: add bees and comb.");
+				
 				
 		//讀取 ship setting設定
 		canFlare = config.getBoolean("Can_Flare", "ship setting", true, "Can ship use Flare");

@@ -16,6 +16,8 @@ public class ModRecipes {
 	public static void init() {
 		//配方材料or成品
 		ItemStack abyssiumBlock = new ItemStack(ModBlocks.BlockAbyssium);
+		ItemStack abyssiumNugget = new ItemStack(ModItems.AbyssNugget, 1, 0);
+		ItemStack abyssiumNugget9 = new ItemStack(ModItems.AbyssNugget, 9, 0);
 		ItemStack abyssiumStack = new ItemStack(ModItems.AbyssMetal,1,0);
 		ItemStack abyssiumStack9 = new ItemStack(ModItems.AbyssMetal,9,0);
 		ItemStack ammo1 = new ItemStack(ModItems.Ammo,1,0);
@@ -50,10 +52,12 @@ public class ModRecipes {
 		ItemStack modernKit = new ItemStack(ModItems.ModernKit);
 		ItemStack ownerPaper = new ItemStack(ModItems.OwnerPaper);
 		ItemStack pointer = new ItemStack(ModItems.PointerItem);
-		ItemStack polymetalStack = new ItemStack(ModItems.AbyssMetal,1,1);
-		ItemStack polymetalStack4 = new ItemStack(ModItems.AbyssMetal,4,1);
-		ItemStack polymetalStack5 = new ItemStack(ModItems.AbyssMetal,5,1);
-		ItemStack polymetalStack9 = new ItemStack(ModItems.AbyssMetal,9,1);
+		ItemStack polymetalNugget = new ItemStack(ModItems.AbyssNugget, 1, 1);
+		ItemStack polymetalNugget9 = new ItemStack(ModItems.AbyssNugget, 9, 1);
+		ItemStack polymetalStack = new ItemStack(ModItems.AbyssMetal, 1, 1);
+		ItemStack polymetalStack4 = new ItemStack(ModItems.AbyssMetal, 4, 1);
+		ItemStack polymetalStack5 = new ItemStack(ModItems.AbyssMetal, 5, 1);
+		ItemStack polymetalStack9 = new ItemStack(ModItems.AbyssMetal, 9, 1);
 		ItemStack polymetalBlock = new ItemStack(ModBlocks.BlockPolymetal);
 		ItemStack polymetalGravel = new ItemStack(ModBlocks.BlockPolymetalGravel);
 		ItemStack ring = new ItemStack(ModItems.MarriageRing);
@@ -77,6 +81,7 @@ public class ModRecipes {
 		//1 item to N items
 		GameRegistry.addRecipe(new ShapelessOreRecipe(ammo9, ammoContainer));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(ammoHeavy9, ammoHeavyContainer));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(abyssiumNugget9, abyssiumStack));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(abyssiumStack9, abyssiumBlock));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(abyssiumBlock, ironBlock, grudeBlock));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(grudeStack9, grudeBlock));
@@ -85,6 +90,7 @@ public class ModRecipes {
 		GameRegistry.addRecipe(new ShapelessOreRecipe(polymetalStack9, polymetalBlock));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(polymetalGravel, polymetalStack, polymetalStack, polymetalStack, polymetalStack));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(polymetalStack5, toyplane));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(polymetalNugget9, polymetalStack));
 		//misc
 		GameRegistry.addRecipe(new ShapelessOreRecipe(instantMat8, kaitaiHammerAll, shipEggS));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(instantMat32, kaitaiHammerAll, shipEggL));
@@ -121,9 +127,11 @@ public class ModRecipes {
 		GameRegistry.addRecipe(new ShapedOreRecipe(ammoContainer,"aaa","aaa","aaa",'a',ammo1));
 		GameRegistry.addRecipe(new ShapedOreRecipe(ammoHeavyContainer,"aaa","aaa","aaa",'a',ammoHeavy1));
 		GameRegistry.addRecipe(new ShapedOreRecipe(abyssiumBlock,"aaa","aaa","aaa",'a',abyssiumStack));
+		GameRegistry.addRecipe(new ShapedOreRecipe(abyssiumStack,"aaa","aaa","aaa",'a',abyssiumNugget));
 		GameRegistry.addRecipe(new ShapedOreRecipe(grudeBlock,"aaa","aaa","aaa",'a',grudeStack));
 		GameRegistry.addRecipe(new ShapedOreRecipe(grudeHeavyBlock,"aaa","aaa","aaa",'a',grudeBlock));
 		GameRegistry.addRecipe(new ShapedOreRecipe(polymetalBlock,"aaa","aaa","aaa",'a',polymetalStack));
+		GameRegistry.addRecipe(new ShapedOreRecipe(polymetalStack,"aaa","aaa","aaa",'a',polymetalNugget));
 		//desk item
 		GameRegistry.addRecipe(new ShapedOreRecipe(desk,"abc","ooo","o o",'a',deskRadar,'b',deskBook,'c',Blocks.wool,'o',Blocks.obsidian));
 		GameRegistry.addRecipe(new ShapedOreRecipe(deskBook,"ggg","gbg","ggg",'g',grudeStack,'b',Items.writable_book));

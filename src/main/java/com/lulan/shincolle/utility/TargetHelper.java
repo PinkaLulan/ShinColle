@@ -18,6 +18,7 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipInvisible;
+import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
@@ -76,14 +77,44 @@ public class TargetHelper {
     	}
 
 		@Override
-		public boolean isEntityApplicable(Entity target2) {
+		public boolean isEntityApplicable(Entity target2)
+		{
 			//not self
-			if(this.host == null || host.equals(target2)) {
+			if (this.host == null || host.equals(target2))
+			{
 				return false;
 			}
 			
 			//check unattackable list
-    		if(checkUnattackTarget(target2)) return false;
+    		if (checkUnattackTarget(target2)) return false;
+    		
+    		//check invisible
+    		if (target2.isInvisible())
+    		{
+    			//for ship
+    			if (host instanceof BasicEntityShip)
+    			{
+    				//if ship have no flare or searchlight, return false
+    				if (((BasicEntityShip) host).getStateMinor(ID.M.LevelFlare) < 1 &&
+    					((BasicEntityShip) host).getStateMinor(ID.M.LevelSearchlight) < 1)
+					{
+						return false;
+					}
+    			}
+    			//for airplane
+    			else if (host instanceof IShipOwner &&
+    					 ((IShipOwner)host).getHostEntity() instanceof BasicEntityShip)
+    			{
+    				BasicEntityShip host2 = (BasicEntityShip) ((IShipOwner)host).getHostEntity();
+    			
+    				//if ship have no flare or searchlight, return false
+    				if (host2.getStateMinor(ID.M.LevelFlare) < 1 &&
+    					host2.getStateMinor(ID.M.LevelSearchlight) < 1)
+					{
+						return false;
+					}
+    			}
+    		}
 			
 			//ship host should check onSight
 			if(host instanceof BasicEntityShip) {
@@ -100,7 +131,7 @@ public class TargetHelper {
     			}
     		}
 			
-			if(target2.isEntityAlive() && !target2.isInvisible()) {
+			if(target2.isEntityAlive()) {
 				//anti air target, no pvp checking
 				if(target2 instanceof BasicEntityAirplane || target2 instanceof EntityAbyssMissile) {
 					if(isAA && EntityHelper.checkIsBanned(host, target2)) {
@@ -161,8 +192,36 @@ public class TargetHelper {
 			
 			//check unattackable list
     		if(checkUnattackTarget(target2)) return false;
-			
-    		if(target2.isEntityAlive() && !target2.isInvisible()) {
+    		
+    		//check invisible
+    		if (target2.isInvisible())
+    		{
+    			//for ship
+    			if (host instanceof BasicEntityShip)
+    			{
+    				//if ship have no flare or searchlight, return false
+    				if (((BasicEntityShip) host).getStateMinor(ID.M.LevelFlare) < 1 &&
+    					((BasicEntityShip) host).getStateMinor(ID.M.LevelSearchlight) < 1)
+					{
+						return false;
+					}
+    			}
+    			//for airplane
+    			else if (host instanceof IShipOwner &&
+    					 ((IShipOwner)host).getHostEntity() instanceof BasicEntityShip)
+    			{
+    				BasicEntityShip host2 = (BasicEntityShip) ((IShipOwner)host).getHostEntity();
+    			
+    				//if ship have no flare or searchlight, return false
+    				if (host2.getStateMinor(ID.M.LevelFlare) < 1 &&
+    					host2.getStateMinor(ID.M.LevelSearchlight) < 1)
+					{
+						return false;
+					}
+    			}
+    		}
+    		
+    		if(target2.isEntityAlive()) {
     			//check ship target
     			if(target2 instanceof BasicEntityShip || target2 instanceof BasicEntityAirplane ||
     			   target2 instanceof BasicEntityMount || target2 instanceof EntityAbyssMissile) {
@@ -370,8 +429,11 @@ public class TargetHelper {
 		}
 		
 		//clear invisible target every 64 ticks
-		if(host.getTickExisted() % 64 == 0) {
-			if(host.getEntityTarget() != null && host.getEntityTarget().isInvisible()) {
+		if (host.getTickExisted() % 64 == 0)
+		{
+			if (host.getEntityTarget() != null && host.getEntityTarget().isInvisible() &&
+				host.getStateMinor(ID.M.LevelFlare) < 1 && host.getStateMinor(ID.M.LevelSearchlight) < 1)
+			{
 				host.setEntityTarget(null);
 			}
 		}

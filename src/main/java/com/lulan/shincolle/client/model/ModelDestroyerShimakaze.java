@@ -1,5 +1,7 @@
 package com.lulan.shincolle.client.model;
 
+import java.util.Random;
+
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -8,7 +10,7 @@ import net.minecraft.util.MathHelper;
 
 import org.lwjgl.opengl.GL11;
 
-import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
@@ -64,11 +66,27 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion 
     public ModelRenderer GlowNeckCloth;
     public ModelRenderer GlowHead;
     
+    private Random rand = new Random();
     private int startEmo2 = 0;
+    private float scale;
+    private float offsetY;
 
-    public ModelDestroyerShimakaze() {
+    public ModelDestroyerShimakaze(int scaleType)
+    {
         this.textureWidth = 128;
         this.textureHeight = 128;
+        
+        switch (scaleType)
+        {
+        case 1:  //type 1: boss scale
+        	scale = 1.5F;
+        	offsetY = -2.7F;
+        	break;
+        default:
+        	scale = 0.4F;
+        	offsetY = 0F;
+        	break;
+        }
         
         this.Head = new ModelRenderer(this, 24, 101);
         this.Head.setRotationPoint(0.0F, -1.5F, 0.0F);
@@ -268,21 +286,23 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion 
         this.GlowHead.addChild(this.Face4);
     }
     
-    public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z) {
+    public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z)
+    {
         modelRenderer.rotateAngleX = x;
         modelRenderer.rotateAngleY = y;
         modelRenderer.rotateAngleZ = z;
     }
 
     @Override
-    public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) { 
+    public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
+    { 
     	
     	GL11.glPushMatrix();
         
     	GL11.glEnable(GL11.GL_BLEND);
     	GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-    	GL11.glScalef(0.4F, 0.4F, 0.4F);
-    	GL11.glTranslatef(0F, 2.2F, 0F);
+    	GL11.glScalef(scale, scale, scale);
+    	GL11.glTranslatef(0F, offsetY + 2.2F, 0F);
     	
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
     	this.BodyMain.render(f5);
@@ -299,10 +319,11 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion 
     
     //for idle/run animation
     @Override
-	public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity) {
+	public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity)
+    {
 		super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
 		  
-		BasicEntityShip ent = (BasicEntityShip)entity;
+		IShipEmotion ent = (IShipEmotion)entity;
 		  
 		showEquip(ent);
 		
@@ -319,7 +340,8 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion 
     }
     
     //設定模型發光部份的rotation
-    private void setGlowRotation() {
+    private void setGlowRotation()
+    {
     	//頭部
 		this.GlowBodyMain.rotateAngleX = this.BodyMain.rotateAngleX;
 		this.GlowBodyMain.rotateAngleY = this.BodyMain.rotateAngleY;
@@ -332,7 +354,8 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion 
 		this.GlowHead.rotateAngleZ = this.Head.rotateAngleZ;
     }
     
-    private void motionStopPos(float f, float f1, float f2, float f3, float f4, BasicEntityShip ent) {
+    private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
+    {
     	GL11.glTranslatef(0F, 2.0F, 0F);
     	setFace(4);
     	
@@ -374,47 +397,60 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion 
     }
     
     //雙腳移動計算
-  	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, BasicEntityShip ent) {   
+  	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
+  	{   
   		float angleX = MathHelper.cos(f2*0.08F);
+  		float angleX1 = MathHelper.cos(f2*0.08F + 0.3F + f * 0.5F);
   		float angleRun = MathHelper.cos(f * 1.5F) * f1;
   		float addk1 = 0;
   		float addk2 = 0;
   		
   		//水上漂浮
-  		if(((IShipFloating)ent).getShipDepth() > 0) {
+  		if(((IShipFloating)ent).getShipDepth() > 0)
+  		{
     		GL11.glTranslatef(0F, angleX * 0.1F - 0.025F, 0F);
     	}
   		
   		//leg move parm
-  		addk1 = MathHelper.cos(f * 0.7F) * f1 - 0.2618F;
-	  	addk2 = MathHelper.cos(f * 0.7F + 3.1415927F) * f1 - 0.2618F;
+  		addk1 = MathHelper.cos(f * 0.7F) * f1 - 0.21F;
+	  	addk2 = MathHelper.cos(f * 0.7F + 3.1415927F) * f1 - 0.11F;
 
   	    //移動頭部使其看人
-	  	this.Head.rotateAngleX = f4 / 57.29578F; 	//上下角度
-	  	this.Head.rotateAngleY = f3 / 57.29578F;	//左右角度 角度轉成rad 即除以57.29578
-	    
-	    //正常站立動作
+	  	this.Head.rotateAngleX = f4 * 0.01745F + 0.1F;
+	  	this.Head.rotateAngleY = f3 * 0.01745F;
   	    //ear
   	    this.EarL01.rotateAngleX = angleX * 0.1F - 0.8727F;
   	    this.EarL01.rotateAngleY = 1.0472F;
 	    this.EarR01.rotateAngleX = angleX * 0.1F + 0.5236F;
 	    this.EarR01.rotateAngleY = 1.0472F;
-  	    this.EarL02.rotateAngleX = angleX * 0.2F + 0.7F;
+  	    this.EarL02.rotateAngleX = -angleX1 * 0.2F + 0.7F;
   	    this.EarL02.rotateAngleZ = 0F;
-  	    this.EarR02.rotateAngleX = angleX * 0.2F + 0.7F;
+  	    this.EarR02.rotateAngleX = -angleX1 * 0.2F + 0.7F;
   	    this.EarR02.rotateAngleY = -0.5236F;
   	    this.EarR02.rotateAngleZ = 0F;
   	    //hair
-  	    this.HairMidL01.rotateAngleX = angleX * 0.1F + 0.14F;
-  	    this.HairMidL02.rotateAngleX = this.HairMidL01.rotateAngleX;
+  	    this.HairMidL01.rotateAngleX = angleX * 0.07F + 0.14F;
+  	    this.HairMidL02.rotateAngleX = -angleX1 * 0.2F + 0.14F;
   	    this.HairMidR01.rotateAngleX = this.HairMidL01.rotateAngleX;
-  	    this.HairMidR02.rotateAngleX = this.HairMidL01.rotateAngleX;
+  	    this.HairMidR02.rotateAngleX = this.HairMidL02.rotateAngleX;
+  	    this.HairMidL01.rotateAngleZ = -0.2618F;
+	    this.HairMidL02.rotateAngleZ = -0.14F;
+	    this.HairMidR01.rotateAngleZ = 0.2618F;
+	    this.HairMidR02.rotateAngleZ = 0.14F;
+  	    this.HairL01.rotateAngleX = angleX * 0.06F - 0.2618F;
+	    this.HairL02.rotateAngleX = -angleX1 * 0.1F + 0.2618F;
+	    this.HairR01.rotateAngleX = angleX * 0.06F - 0.2618F;
+	    this.HairR02.rotateAngleX = -angleX1 * 0.1F + 0.2618F;
+	    this.HairL01.rotateAngleZ = -0.2618F;
+	    this.HairL02.rotateAngleZ = 0.1745F;
+	    this.HairR01.rotateAngleZ = 0.2618F;
+	    this.HairR02.rotateAngleZ = -0.1745F;
 	  	//Body
   	    this.Ahoke.rotateAngleY = angleX * 0.25F + 0.5236F;
-	  	this.BodyMain.rotateAngleX = 0F;
+	  	this.BodyMain.rotateAngleX = -0.1F;
 	  	this.BodyMain.rotateAngleY = 0F;
 	    //arm 
-	  	this.ArmLeft.rotateAngleX = 0F;
+	  	this.ArmLeft.rotateAngleX = 0.15F;
 	    this.ArmLeft.rotateAngleZ = angleX * 0.1F - 0.5236F;
 	    this.ArmRight.rotateAngleX = 0F;
 	    this.ArmRight.rotateAngleY = 0F;
@@ -427,15 +463,15 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion 
 		//equip
 		this.EquipBase.rotateAngleZ = 0.52F;
 
-	    if(ent.isSprinting() || f1 > 0.9F) {	//奔跑動作
+	    if(ent.getIsSprinting() || f1 > 0.6F) {	//奔跑動作
 	    	setFace(3);
 	    	//body
 	    	this.Head.rotateAngleX -= 0.2618F;
 	    	this.BodyMain.rotateAngleX = 0.2618F;
-	    	this.HairMidL01.rotateAngleX = 0.7F;
-	    	this.HairMidR01.rotateAngleX = 0.7F;
-	    	this.HairMidL02.rotateAngleX = 0.5F;
-	    	this.HairMidR02.rotateAngleX = 0.5F;
+	    	this.HairMidL01.rotateAngleX += 0.5F;
+	    	this.HairMidR01.rotateAngleX += 0.5F;
+	    	this.HairMidL02.rotateAngleX += 0.5F;
+	    	this.HairMidR02.rotateAngleX += 0.5F;
 	    	//arm
 	    	this.ArmLeft.rotateAngleX = 0.7F;
 	    	this.ArmLeft.rotateAngleZ = -1.0472F;
@@ -463,15 +499,11 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion 
 	    //head tilt angle
 	    this.Head.rotateAngleZ = EmotionHelper.getHeadTiltAngle(ent, f2);
 	    
-	    if(ent.isSneaking()) {		//潛行, 蹲下動作
+	    if(ent.getIsSneaking()) {		//潛行, 蹲下動作
 //	    	GL11.glTranslatef(0F, 1.0F, 0F);
 	    	//body
 	    	this.Head.rotateAngleX -= 0.7854F;
 	    	this.BodyMain.rotateAngleX = 0.7854F;
-	    	this.HairMidL01.rotateAngleX = 0.35F;
-	    	this.HairMidR01.rotateAngleX = 0.35F;
-	    	this.HairMidL02.rotateAngleX = 0.35F;
-	    	this.HairMidR02.rotateAngleX = 0.35F;
 	    	//arm
 	    	this.ArmLeft.rotateAngleZ = -0.5F;
 	    	this.ArmRight.rotateAngleZ = 0.5F;
@@ -481,7 +513,7 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion 
 	    	
   		}//end if sneaking
   		
-	    if(ent.isSitting() || ent.isRiding()) {  //騎乘動作
+	    if(ent.getIsSitting() || ent.getIsRiding()) {  //騎乘動作
 	    	if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {	
 	    		GL11.glTranslatef(0F, 2.0F, 0F);
 		    	//body
@@ -489,10 +521,6 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion 
 		    	this.Head.rotateAngleY = 0F;
 		    	this.Head.rotateAngleZ = 0F;
 		    	this.BodyMain.rotateAngleX = 1.4835F;
-		    	this.HairMidL01.rotateAngleX = 0.7F;
-		    	this.HairMidR01.rotateAngleX = 0.7F;
-		    	this.HairMidL02.rotateAngleX = 0.7F;
-		    	this.HairMidR02.rotateAngleX = 0.7F;
 		    	//arm
 		    	this.ArmLeft.rotateAngleX = -3.0543F;
 		    	this.ArmLeft.rotateAngleZ = -0.7F;
@@ -509,8 +537,11 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion 
 		    	//body
 		    	this.Head.rotateAngleX -= 0.7F;
 		    	this.BodyMain.rotateAngleX = 0.5236F;
-		    	this.HairMidL01.rotateAngleX += 0.2F;
-		    	this.HairMidR01.rotateAngleX += 0.2F;
+		    	//hair
+		    	this.HairL01.rotateAngleX -= 0.2F;
+		    	this.HairL02.rotateAngleX -= 0.2F;
+		    	this.HairR01.rotateAngleX -= 0.2F;
+		    	this.HairR02.rotateAngleX -= 0.2F;
 		    	//arm
 		    	this.ArmLeft.rotateAngleX = -0.5236F;
 		    	this.ArmLeft.rotateAngleZ = 0.3146F;
@@ -525,7 +556,7 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion 
   		}//end if sitting
 	    
 	    //攻擊動作    
-	    if(ent.attackTime > 0) {
+	    if(ent.getAttackTime() > 0) {
 	    	GL11.glTranslatef(0F, 0.5F, 0F);
 	    	//body
 	    	this.Head.rotateAngleX = -0.8727F;
@@ -557,14 +588,33 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion 
 	        this.ArmRight.rotateAngleY += -f7 * 20.0F * Values.N.RAD_MUL + 0.2F;
 	        this.ArmRight.rotateAngleZ += -f8 * 20.0F * Values.N.RAD_MUL;
 	  	}
+	  	
+	  	//鬢毛調整
+	    float headX = this.Head.rotateAngleX * -0.5F;
+	    float headZ = this.Head.rotateAngleZ * -0.5F;
+	    this.HairMidL01.rotateAngleX += headX;
+	    this.HairMidL01.rotateAngleZ += headZ;
+	    this.HairMidL02.rotateAngleX += headX * 0.5F;
+	    this.HairMidL02.rotateAngleZ += headZ * 0.5F;
+	    this.HairMidR01.rotateAngleX += headX;
+	    this.HairMidR01.rotateAngleZ += headZ;
+	    this.HairMidR02.rotateAngleX += headX * 0.5F;
+	    this.HairMidR02.rotateAngleZ += headZ * 0.5F;
+	  	this.HairL01.rotateAngleZ += headZ;
+	  	this.HairL02.rotateAngleZ += headZ;
+	  	this.HairR01.rotateAngleZ += headZ;
+	  	this.HairR02.rotateAngleZ += headZ;
+		this.HairL01.rotateAngleX += headX;
+	  	this.HairL02.rotateAngleX += headX;
+	  	this.HairR01.rotateAngleX += headX;
+	  	this.HairR02.rotateAngleX += headX;
 	    
 	    //leg motion
 	    this.LegLeft.rotateAngleX = addk1;
 	    this.LegRight.rotateAngleX = addk2;
-	    
   	}
   	
-  	private void showEquip(BasicEntityShip ent) {
+  	private void showEquip(IShipEmotion ent) {
 		if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
 			this.EquipBase.isHidden = false;
 			this.HairAnchor.isHidden = false;

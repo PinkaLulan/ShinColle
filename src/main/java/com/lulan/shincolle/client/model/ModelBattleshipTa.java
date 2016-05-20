@@ -384,6 +384,12 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion {
 	    this.HairL02.rotateAngleX = -angleX1 * 0.08F + 0.21F;
 	    this.HairR01.rotateAngleX = angleX * 0.06F - 0.13F;
 	    this.HairR02.rotateAngleX = -angleX1 * 0.08F + 0.21F;
+	    this.HairMidL01.rotateAngleZ = 0F;
+  	    this.HairMidL02.rotateAngleZ = 0F;
+  	    this.HairL01.rotateAngleZ = -0.05F;
+	    this.HairL02.rotateAngleZ = 0.05F;
+	    this.HairR01.rotateAngleZ = 0.087F;
+	    this.HairR02.rotateAngleZ = -0.05F;
 	  	//Body
   	    this.Ahoke.rotateAngleZ = angleX * 0.1F - 0.06F;
 	  	this.BodyMain.rotateAngleX = 0F;
@@ -405,12 +411,14 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion {
 		this.Cloak04.rotateAngleX = angleX * 0.05F + 0.15F;
 		this.Cloak05.rotateAngleX = 0.2F;
 
-	    if(ent.isSprinting() || f1 > 0.9F) {	//奔跑動作
+		//奔跑動作
+	    if(ent.isSprinting() || f1 > 0.9F)
+	    {
 	    	//leg move parm
 		  	addk2 -= 0.35F;
 	  	    //hair
-	  	    this.HairMidL01.rotateAngleX = angleRun * 0.2F + 0.4F;
-	  	    this.HairMidL02.rotateAngleX = angleRun2 * 0.2F + 0.4F;
+	  	    this.HairMidL01.rotateAngleX += angleRun * 0.1F + 0.2F;
+	  	    this.HairMidL02.rotateAngleX += angleRun2 * 0.1F + 0.2F;
 		  	//Body
 		  	this.BodyMain.rotateAngleX = 0.087F;
 		  	this.BodyMain.rotateAngleY = 0F;
@@ -436,9 +444,6 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion {
 	    	//leg move parm
 	    	addk1 -= 0.52F;
 		  	addk2 -= 1F;
-	  	    //hair
-	  	    this.HairMidL01.rotateAngleX = angleX * 0.1F + 0.3F;
-	  	    this.HairMidL02.rotateAngleX = angleX * 0.1F - 0.087F;
 		  	//Body
 		  	this.BodyMain.rotateAngleX = 0.7F;
 		    //arm 
@@ -462,8 +467,6 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion {
 		  	    //hair
 			  	this.Head.rotateAngleX -= 1.4F;
 			  	this.Head.rotateAngleY *= 0.5F;
-		  	    this.HairMidL01.rotateAngleX = angleX * 0.05F + 1.1F;
-		  	    this.HairMidL02.rotateAngleX = angleX * 0.05F + 0.45F;
 			  	//Body
 			  	this.BodyMain.rotateAngleX = 1.4F;
 			    //arm 
@@ -488,8 +491,8 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion {
 			  	addk2 = -1.3F;
 		  	    //hair
 			  	this.Head.rotateAngleX += 0.35F;
-		  	    this.HairMidL01.rotateAngleX = angleX * 0.05F + 0.8F;
-		  	    this.HairMidL02.rotateAngleX = angleX * 0.05F + 0.2F;
+		  	    this.HairMidL01.rotateAngleX += 0.2F;
+		  	    this.HairMidL02.rotateAngleX += 0.2F;
 			  	//Body
 			  	this.BodyMain.rotateAngleX = -0.7F;
 			    //arm 
@@ -534,11 +537,26 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion {
 	        this.ArmRight01.rotateAngleY += -f7 * 20.0F * Values.N.RAD_MUL + 0.5F;
 	        this.ArmRight01.rotateAngleZ += -f8 * 20.0F * Values.N.RAD_MUL;
 	  	}
+	  	
+	  	//鬢毛調整
+	    float headX = this.Head.rotateAngleX * -0.5F;
+	    float headZ = this.Head.rotateAngleZ * -0.5F;
+	    this.HairMidL01.rotateAngleX += headX;
+	    this.HairMidL01.rotateAngleZ += headZ;
+	    this.HairMidL02.rotateAngleX += headX * 0.5F;
+	    this.HairMidL02.rotateAngleZ += headZ * 0.5F;
+	  	this.HairL01.rotateAngleZ += headZ;
+	  	this.HairL02.rotateAngleZ += headZ;
+	  	this.HairR01.rotateAngleZ += headZ;
+	  	this.HairR02.rotateAngleZ += headZ;
+		this.HairL01.rotateAngleX += headX;
+	  	this.HairL02.rotateAngleX += headX;
+	  	this.HairR01.rotateAngleX += headX;
+	  	this.HairR02.rotateAngleX += headX;
 	    
 	    //leg motion
 	    this.LegLeft.rotateAngleX = addk1;
 	    this.LegRight.rotateAngleX = addk2;
-	    
   	}
   	
   	private void showEquip(BasicEntityShip ent) {

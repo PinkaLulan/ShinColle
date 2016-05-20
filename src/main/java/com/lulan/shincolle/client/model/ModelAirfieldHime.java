@@ -865,10 +865,10 @@ public class ModelAirfieldHime extends ModelBase implements IModelEmotion {
 	    
 	    //鬢毛調整
 	    headX = this.Head.rotateAngleX * -0.5F;
-	    this.HairL01.rotateAngleX = angleX * 0.02F + headX - 0.26F;
-	  	this.HairL02.rotateAngleX = angleX * 0.02F + headX + 0.26F;
-	  	this.HairR01.rotateAngleX = angleX * 0.02F + headX - 0.26F;
-	  	this.HairR02.rotateAngleX = angleX * 0.02F + headX + 0.26F;
+	    this.HairL01.rotateAngleX = angleX * 0.03F + headX - 0.26F;
+	  	this.HairL02.rotateAngleX = -angleX1 * 0.04F + headX + 0.26F;
+	  	this.HairR01.rotateAngleX = angleX * 0.03F + headX - 0.26F;
+	  	this.HairR02.rotateAngleX = -angleX1 * 0.04F + headX + 0.26F;
 	  	
 	  	//swing arm
 	  	float f6 = ent.getSwingTime(f2 % 1F);

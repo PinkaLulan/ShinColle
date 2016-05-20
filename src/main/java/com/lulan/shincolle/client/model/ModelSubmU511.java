@@ -376,23 +376,32 @@ public class ModelSubmU511 extends ModelBase implements IModelEmotion {
     	}
   		
   		//leg move parm
-  		addk1 = angleAdd1 - 0.2618F;
-	  	addk2 = angleAdd2 - 0.2618F;
+  		addk1 = angleAdd1 - 0.2118F;
+	  	addk2 = angleAdd2 - 0.1118F;
 
   	    //移動頭部使其看人
-	  	this.Head.rotateAngleX = f4 / 57.29578F; 	//上下角度
-	  	this.Head.rotateAngleY = f3 / 57.29578F;	//左右角度 角度轉成rad 即除以57.29578
+	  	this.Head.rotateAngleX = f4 * 0.0174532925F + 0.1F;
+	  	this.Head.rotateAngleY = f3 * 0.0174532925F;
 	    
 	    //正常站立動作
 	  	//Body
   	    this.Ahoke.rotateAngleY = angleX * 0.25F + 0.5236F;
-	  	this.BodyMain.rotateAngleX = 0F;
+	  	this.BodyMain.rotateAngleX = -0.1F;
 	  	//hair
 	  	this.Hair01.rotateAngleX = angleX * 0.06F + 0.3F;
+	    this.Hair01.rotateAngleZ = 0F;
+		this.HairL01.rotateAngleX = -0.17F;
+	  	this.HairL02.rotateAngleX = 0.17F;
+	  	this.HairR01.rotateAngleX = -0.17F;
+	  	this.HairR02.rotateAngleX = 0.17F;
+	  	this.HairL01.rotateAngleZ = -0.14F;
+	  	this.HairL02.rotateAngleZ = 0.08F;
+	  	this.HairR01.rotateAngleZ = 0.14F;
+	  	this.HairR02.rotateAngleZ = -0.05F;
 	  	this.Ear1.rotateAngleZ = angleX * 0.1F - 0.2618F;
 	  	this.Ear2.rotateAngleZ = angleX * 0.1F + 0.2618F;
 	    //arm 
-	  	this.ArmLeft01.rotateAngleX = angleAdd2 * 0.5F;
+	  	this.ArmLeft01.rotateAngleX = angleAdd2 * 0.5F + 0.15F;
 	    this.ArmRight01.rotateAngleX = angleAdd1 * 0.5F;
     	this.ArmLeft01.rotateAngleZ = -angleX * 0.06F - 0.12F;
     	this.ArmRight01.rotateAngleZ = angleX * 0.06F + 0.12F;
@@ -438,6 +447,11 @@ public class ModelSubmU511 extends ModelBase implements IModelEmotion {
 		    	//body
 		    	this.Head.rotateAngleX += 0.2618F;
 		    	this.BodyMain.rotateAngleX = 0.35F;
+		    	//hair
+		    	this.HairL01.rotateAngleX -= 0.2F;
+		    	this.HairR01.rotateAngleX -= 0.2F;
+		    	this.HairL02.rotateAngleX -= 0.2F;
+		    	this.HairR02.rotateAngleX -= 0.2F;
 		    	//arm
 		    	this.ArmLeft01.rotateAngleX = -angleX * 0.2F - 0.7F;
 		    	this.ArmRight01.rotateAngleX = -0.96F;
@@ -458,6 +472,11 @@ public class ModelSubmU511 extends ModelBase implements IModelEmotion {
 		    	//body
 		    	this.Head.rotateAngleX -= 0.7F;
 		    	this.BodyMain.rotateAngleX = 0.5236F;
+		    	//hair
+		    	this.HairL01.rotateAngleX -= 0.3F;
+		    	this.HairR01.rotateAngleX -= 0.3F;
+		    	this.HairL02.rotateAngleX -= 0.3F;
+		    	this.HairR02.rotateAngleX -= 0.3F;
 		    	//arm
 		    	this.ArmLeft01.rotateAngleX = -0.5236F;
 		    	this.ArmLeft01.rotateAngleZ = 0.3146F;
@@ -492,6 +511,20 @@ public class ModelSubmU511 extends ModelBase implements IModelEmotion {
 	        this.ArmRight01.rotateAngleY += -f7 * 20.0F * Values.N.RAD_MUL + 0.2F;
 	        this.ArmRight01.rotateAngleZ += -f8 * 20.0F * Values.N.RAD_MUL;
 	  	}
+	  	
+	  	//鬢毛調整
+	    float headX = this.Head.rotateAngleX * -0.5F;
+	    float headZ = this.Head.rotateAngleZ * -0.5F;
+	    this.Hair01.rotateAngleX += headX;
+	    this.Hair01.rotateAngleZ += headZ;
+	  	this.HairL01.rotateAngleZ += headZ;
+	  	this.HairL02.rotateAngleZ += headZ;
+	  	this.HairR01.rotateAngleZ += headZ;
+	  	this.HairR02.rotateAngleZ += headZ;
+		this.HairL01.rotateAngleX += headX;
+	  	this.HairL02.rotateAngleX += headX;
+	  	this.HairR01.rotateAngleX += headX;
+	  	this.HairR02.rotateAngleX += headX;
 	    
 	    //leg motion
 	    this.LegLeft01.rotateAngleX = addk1;

@@ -760,9 +760,9 @@ public class ModelCarrierAkagi extends ModelBase implements IModelEmotion {
 	  	this.ClothHL02_1.offsetY = 0F;
     	this.ClothHL03_1.offsetY = 0F;
 	  	//hair
-    	this.Hair01.rotateAngleX = angleX * 0.03F + 0.23F;
+    	this.Hair01.rotateAngleX = angleX * 0.04F + 0.23F;
     	this.Hair01.rotateAngleZ = 0F;
-    	this.Hair02.rotateAngleX = -angleX * 0.03F - 0.1F;
+    	this.Hair02.rotateAngleX = -angleX1 * 0.07F - 0.1F;
     	this.Hair02.rotateAngleZ = 0F;
     	this.HairL01.rotateAngleX = -0.16F;
 	  	this.HairL02.rotateAngleX = 0.1745F;
@@ -1049,9 +1049,9 @@ public class ModelCarrierAkagi extends ModelBase implements IModelEmotion {
 	  	this.HairR01.rotateAngleZ += headZ;
 	  	this.HairR02.rotateAngleZ += headZ * 0.8F;
 		this.HairL01.rotateAngleX += angleX * 0.04F + headX;
-	  	this.HairL02.rotateAngleX += angleX1 * 0.05F + headX * 0.8F;
+	  	this.HairL02.rotateAngleX += angleX1 * 0.07F + headX * 0.8F;
 	  	this.HairR01.rotateAngleX += angleX * 0.04F + headX;
-	  	this.HairR02.rotateAngleX += angleX1 * 0.05F + headX * 0.8F;
+	  	this.HairR02.rotateAngleX += angleX1 * 0.07F + headX * 0.8F;
 	    
 	    //leg motion
 	    this.LegLeft01.rotateAngleX = addk1;

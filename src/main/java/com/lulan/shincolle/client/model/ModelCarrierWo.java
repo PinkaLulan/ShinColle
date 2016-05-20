@@ -627,6 +627,15 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 		this.Butt.rotateAngleX = 0.5236F;
 		this.Butt.offsetY = 0F;
 		this.Butt.offsetZ = 0F;
+		//hair
+		this.HairL01.rotateAngleX = -0.3F;
+	  	this.HairL02.rotateAngleX = 0.35F;
+	  	this.HairR01.rotateAngleX = -0.3F;
+	  	this.HairR02.rotateAngleX = 0.35F;
+	    this.HairL01.rotateAngleZ = -0.314F;
+	  	this.HairL02.rotateAngleZ = 0.2618F;
+	  	this.HairR01.rotateAngleZ = 0.314F;
+	  	this.HairR02.rotateAngleZ = -0.2618F;
 		//腿擺動
 		addk1 += -0.349F;
 		addk2 += -0.349F;
@@ -902,6 +911,18 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 	  			}
 	    	}
   		}
+	    
+	    //鬢毛調整
+	    float headX = this.Head.rotateAngleX * -0.5F;
+	    float headZ = this.Head.rotateAngleZ * -0.5F;
+	  	this.HairL01.rotateAngleZ += headZ;
+	  	this.HairL02.rotateAngleZ += headZ;
+	  	this.HairR01.rotateAngleZ += headZ;
+	  	this.HairR02.rotateAngleZ += headZ;
+		this.HairL01.rotateAngleX += headX;
+	  	this.HairL02.rotateAngleX += headX;
+	  	this.HairR01.rotateAngleX += headX;
+	  	this.HairR02.rotateAngleX += headX;
 	    
 	    //leg motion
 	    this.LegLeft01.rotateAngleX = addk1;

@@ -24,6 +24,8 @@ tile.shincolle:BlockWaypoint.name=深海路標
 # Item
 item.shincolle:AbyssMetal.name=深海金屬
 item.shincolle:AbyssMetal1.name=多金屬結核
+item.shincolle:AbyssNugget.name=深海金屬粒
+item.shincolle:AbyssNugget1.name=多金屬粒
 item.shincolle:Ammo.name=怨念彈
 item.shincolle:Ammo1.name=怨念彈集裝箱
 item.shincolle:Ammo2.name=重型怨念彈
@@ -633,3 +635,13 @@ chat.shincolle:wrench.setwp=設定深海路徑點成功！
 chat.shincolle:wrench.wptoofar=深海路徑設定失敗，距離超過48格！
 chat.shincolle:wrench.wplast=上一路徑點
 chat.shincolle:wrench.wpnext=下一路徑點
+
+# intermod: Forestry
+item.shincolle:ShinComb.name=深海蜂巢
+inter.shincolle:flower=怨念團塊
+inter.shincolle:bee1.name=深海棲鬼
+inter.shincolle:bee1.desc=「海底怎麼會有蜜蜂！？這到底是什麼鬼！」by 去趟超市就被叮滿頭包的深海提督 
+inter.shincolle:bee2.name=深海棲姬
+inter.shincolle:bee2.desc=「這種蜜蜂叮人的動作就跟棲姬們一樣的優雅！」by ドM提督
+inter.shincolle:bee3.name=深海水鬼
+inter.shincolle:bee3.desc=「啊啊北方醬不可以亂撿東西吃！」by 港灣棲姬

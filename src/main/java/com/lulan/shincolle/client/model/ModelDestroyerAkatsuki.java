@@ -690,6 +690,8 @@ public class ModelDestroyerAkatsuki extends ModelBase implements IModelEmotionAd
 	//雙腳移動計算
   	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {   
   		float angleX = MathHelper.cos(f2*0.08F + f * 0.25F);
+  		float angleX1 = MathHelper.cos(f2*0.08F + 0.3F + f * 0.5F);
+  		float angleX2 = MathHelper.cos(f2*0.08F + 0.6F + f * 0.5F);
   		float angleAdd1 = MathHelper.cos(f * 0.7F) * f1;
   		float angleAdd2 = MathHelper.cos(f * 0.7F + 3.1415927F) * f1;
   		float addk1 = 0;
@@ -721,26 +723,31 @@ public class ModelDestroyerAkatsuki extends ModelBase implements IModelEmotionAd
 	  	this.Skirt02.rotateAngleX = -0.052F;
 	  	this.Skirt02.offsetY = 0F;
 	  	//hair
-	  	this.Hair01.rotateAngleX = angleX * 0.03F + 0.23F;
+	  	this.Hair01.rotateAngleX = angleX * 0.04F + 0.23F;
     	this.Hair01.rotateAngleZ = 0F;
     	this.Hair01.offsetY = 0F;
-    	this.Hair02a1.rotateAngleX = angleX * 0.03F + 0.21F;
+    	this.Hair02a1.rotateAngleX = -angleX1 * 0.1F + 0.21F;
     	this.Hair02a1.rotateAngleZ = 0F;
-    	this.Hair02b1.rotateAngleX = angleX * 0.03F + 0.21F;
+    	this.Hair02b1.rotateAngleX = -angleX1 * 0.1F + 0.21F;
     	this.Hair02b1.rotateAngleZ = 0.1745F;
-    	this.Hair02c1.rotateAngleX = angleX * 0.03F + 0.14F;
+    	this.Hair02c1.rotateAngleX = -angleX1 * 0.1F + 0.14F;
     	this.Hair02c1.rotateAngleZ = -0.1745F;
     	this.Hair02d1.rotateAngleX = 0.2618F;
-    	this.Hair02d1.rotateAngleZ = angleX * 0.03F + 0.35F;
+    	this.Hair02d1.rotateAngleZ = -angleX1 * 0.1F + 0.35F;
     	this.Hair02e1.rotateAngleX = 0.2618F;
-    	this.Hair02e1.rotateAngleZ = -angleX * 0.03F - 0.44F;
-    	this.HairL01.rotateAngleX = -0.0524F;
+    	this.Hair02e1.rotateAngleZ = angleX1 * 0.1F - 0.44F;
+    	this.Hair02a2.rotateAngleX = -angleX2 * 0.13F + 0.14F;
+    	this.Hair02b2.rotateAngleX = -angleX2 * 0.13F + 0.14F;
+    	this.Hair02c2.rotateAngleX = -angleX2 * 0.13F + 0.14F;
+    	this.Hair02d2.rotateAngleZ = -angleX2 * 0.13F - 0.17F;
+    	this.Hair02e2.rotateAngleZ = angleX2 * 0.13F + 0.26F;
+    	this.HairL01.rotateAngleX = angleX * 0.04F + -0.0524F;
     	this.HairL01.rotateAngleZ = 0.1396F;
-	  	this.HairL02.rotateAngleX = 0.0873F;
+	  	this.HairL02.rotateAngleX = -angleX1 * 0.1F + 0.0873F;
 	  	this.HairL02.rotateAngleZ = 0.0873F;
-	  	this.HairR01.rotateAngleX = -0.0524F;
+	  	this.HairR01.rotateAngleX = angleX * 0.04F + -0.0524F;
 	  	this.HairR01.rotateAngleZ = -0.1396F;
-	  	this.HairR02.rotateAngleX = 0.0873F;
+	  	this.HairR02.rotateAngleX = -angleX1 * 0.1F + 0.0873F;
 	  	this.HairR02.rotateAngleZ = -0.0873F;
 	    //arm
 	  	this.ArmLeft01.rotateAngleX = angleAdd2 * 0.25F + 0.1745F;
@@ -884,9 +891,6 @@ public class ModelDestroyerAkatsuki extends ModelBase implements IModelEmotionAd
 	    	}
 	    	else {
 		    	GL11.glTranslatef(0F, 1.3F, 0F);
-		    	//head
-		    	this.Head.rotateAngleY -= 0.4F;
-		    	this.Head.rotateAngleZ += 0.2F;
 		    	//body
 		    	this.BodyMain.rotateAngleX = -0.25F;
 		    	this.Butt.rotateAngleX = -0.2F;
@@ -898,9 +902,8 @@ public class ModelDestroyerAkatsuki extends ModelBase implements IModelEmotionAd
 				//arm
 				this.ArmLeft01.rotateAngleX = 0.35F;
 				this.ArmLeft01.rotateAngleZ = -0.2618F;
-				this.ArmRight01.rotateAngleX = -0.4F;
-				this.ArmRight01.rotateAngleZ = -0.2356F;
-				this.ArmRight02.rotateAngleZ = -0.2356F;
+				this.ArmRight01.rotateAngleX = 0.35F;
+				this.ArmRight01.rotateAngleZ = 0.2618F;
 				//leg
 				addk1 = -0.9F;
 				addk2 = -0.9F;

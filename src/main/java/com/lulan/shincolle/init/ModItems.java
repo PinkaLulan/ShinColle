@@ -1,6 +1,7 @@
 package com.lulan.shincolle.init;
 
 import com.lulan.shincolle.item.AbyssMetal;
+import com.lulan.shincolle.item.AbyssNugget;
 import com.lulan.shincolle.item.Ammo;
 import com.lulan.shincolle.item.BasicItem;
 import com.lulan.shincolle.item.DeskItemBook;
@@ -40,6 +41,7 @@ public class ModItems {
 	public static final ShipSpawnEgg ShipSpawnEgg = new ShipSpawnEgg();
 	//materials
 	public static final BasicItem AbyssMetal = new AbyssMetal();
+	public static final BasicItem AbyssNugget = new AbyssNugget();
 	public static final BasicItem Ammo = new Ammo();
 	public static final BasicItem Grudge = new Grudge();
 	//equip	
@@ -76,6 +78,7 @@ public class ModItems {
 		GameRegistry.registerItem(ShipSpawnEgg, "ShipSpawnEgg");
 		//materials
 		GameRegistry.registerItem(AbyssMetal, "AbyssMetal");
+		GameRegistry.registerItem(AbyssNugget, "AbyssNugget");
 		GameRegistry.registerItem(Ammo, "Ammo");
 		GameRegistry.registerItem(Grudge, "Grudge");
 		//equip		
@@ -105,6 +108,7 @@ public class ModItems {
 		GameRegistry.registerItem(TargetWrench, "TargetWrench");
 		//toy
 		GameRegistry.registerItem(ToyAirplane, "ToyAirplane");
+		
 	}
 	
 }

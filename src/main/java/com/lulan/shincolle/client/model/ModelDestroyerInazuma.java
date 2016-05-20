@@ -783,16 +783,17 @@ public class ModelDestroyerInazuma extends ModelBase implements IModelEmotion {
 	  	}
 	  	
 	  	//鬢毛調整
+	  	float angleX1 = MathHelper.cos(f2*0.08F + 0.3F + f * 0.5F);
 	    headX = this.Head.rotateAngleX * -0.5F;
 	    headZ = this.Head.rotateAngleZ * -0.5F;
 	  	this.HairL01.rotateAngleZ += headZ;
 	  	this.HairL02.rotateAngleZ += headZ;
 	  	this.HairR01.rotateAngleZ += headZ;
 	  	this.HairR02.rotateAngleZ += headZ * 2F;
-		this.HairL01.rotateAngleX += headX;
-	  	this.HairL02.rotateAngleX += headX;
-	  	this.HairR01.rotateAngleX += headX;
-	  	this.HairR02.rotateAngleX += headX;
+		this.HairL01.rotateAngleX += angleX * 0.04F + headX;
+	  	this.HairL02.rotateAngleX += -angleX1 * 0.07F + headX;
+	  	this.HairR01.rotateAngleX += angleX * 0.04F + headX;
+	  	this.HairR02.rotateAngleX += -angleX1 * 0.07F + headX;
 	    
 	    //leg motion
 	    this.LegLeft01.rotateAngleX = addk1;

@@ -186,7 +186,6 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	
 	//clear target AI
 	protected void clearAITargetTasks() {
-		this.setAttackTarget(null);
 		this.setEntityTarget(null);
 		targetTasks.taskEntries.clear();
 	}

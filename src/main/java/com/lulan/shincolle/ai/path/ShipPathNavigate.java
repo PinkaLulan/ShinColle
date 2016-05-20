@@ -188,28 +188,38 @@ public class ShipPathNavigate {
     /**
      * gets the actively used PathEntity
      */
-    public ShipPathEntity getPath() {
+    public ShipPathEntity getPath()
+    {
         return this.currentPath;
     }
 
     /** navigation tick */
-    public void onUpdateNavigation() {
+    public void onUpdateNavigation()
+    {
     	//wait 64 ticks for entity init
-    	if(host.ticksExisted > 64) {
+    	if (host.ticksExisted > 64)
+    	{
     		++this.pathTicks;
     		
             //若有path
-            if(!this.noPath()) {
+            if (!this.noPath())
+            {
             	//若可以執行移動, 則跑pathFollow方法更新下一個目標點
-                if(this.canNavigate()) {
+                if (this.canNavigate())
+                {
                     this.pathFollow();
                 }
                 
-                //若pathFollow沒把path清除, 表示還可以繼續移動
-            	//取得下一個目標點
+                if (this.noPath())
+                {
+                	return;
+                }
+                
+                //若pathFollow沒把path清除, 表示還可以繼續移動, 取得下一個目標點
                 Vec3 vec3 = this.currentPath.getPosition(this.host);
                 
-                if(vec3 != null) {
+                if (vec3 != null)
+                {
                     this.theEntity2.getShipMoveHelper().setMoveTo(vec3.xCoord, vec3.yCoord, vec3.zCoord, this.speed);
                 }
             }
@@ -304,13 +314,26 @@ public class ShipPathNavigate {
                 		if(dz < 0.5F) host.motionZ -= speed;
                 	}
             	}
+            	
+            	//超過50 ticks都還是卡住, 清空path
+            	if (this.pathTicks - this.ticksAtLastPos > 50)
+                {
+                    this.ticksAtLastPos = this.pathTicks;
+                    this.lastPosCheck.xCoord = entityPos.xCoord;
+                    this.lastPosCheck.yCoord = entityPos.yCoord;
+                    this.lastPosCheck.zCoord = entityPos.zCoord;
+            		this.clearPathEntity();
+            		return;
+                }
             }
-
-            //更新成功移動的紀錄
-            this.ticksAtLastPos = this.pathTicks;
-            this.lastPosCheck.xCoord = entityPos.xCoord;
-            this.lastPosCheck.yCoord = entityPos.yCoord;
-            this.lastPosCheck.zCoord = entityPos.zCoord;
+            else
+            {
+            	//更新成功移動的紀錄
+                this.ticksAtLastPos = this.pathTicks;
+                this.lastPosCheck.xCoord = entityPos.xCoord;
+                this.lastPosCheck.yCoord = entityPos.yCoord;
+                this.lastPosCheck.zCoord = entityPos.zCoord;
+            }
         }
     }
 

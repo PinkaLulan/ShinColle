@@ -31,7 +31,6 @@ import com.lulan.shincolle.client.model.ModelDestroyerInazuma;
 import com.lulan.shincolle.client.model.ModelDestroyerNi;
 import com.lulan.shincolle.client.model.ModelDestroyerRo;
 import com.lulan.shincolle.client.model.ModelDestroyerShimakaze;
-import com.lulan.shincolle.client.model.ModelDestroyerShimakazeBoss;
 import com.lulan.shincolle.client.model.ModelFloatingFort;
 import com.lulan.shincolle.client.model.ModelHarbourHime;
 import com.lulan.shincolle.client.model.ModelHeavyCruiserNe;
@@ -201,8 +200,8 @@ public class ClientProxy extends CommonProxy {
 		RenderingRegistry.registerEntityRenderingHandler(EntityDestroyerIkazuchiMob.class, new BasicShipRenderer(new ModelDestroyerIkazuchi(), 0.5F, ID.Ship.DestroyerIkazuchi));
 		RenderingRegistry.registerEntityRenderingHandler(EntityDestroyerInazuma.class, new BasicShipRenderer(new ModelDestroyerInazuma(), 0.5F, ID.Ship.DestroyerInazuma));
 		RenderingRegistry.registerEntityRenderingHandler(EntityDestroyerInazumaMob.class, new BasicShipRenderer(new ModelDestroyerInazuma(), 0.5F, ID.Ship.DestroyerInazuma));
-		RenderingRegistry.registerEntityRenderingHandler(EntityDestroyerShimakaze.class, new BasicShipRenderer(new ModelDestroyerShimakaze(), 0.5F, ID.Ship.DestroyerShimakaze));
-		RenderingRegistry.registerEntityRenderingHandler(EntityDestroyerShimakazeBoss.class, new BossShipRenderer(new ModelDestroyerShimakazeBoss(), 1F, ID.Ship.DestroyerShimakaze));
+		RenderingRegistry.registerEntityRenderingHandler(EntityDestroyerShimakaze.class, new BasicShipRenderer(new ModelDestroyerShimakaze(0), 0.5F, ID.Ship.DestroyerShimakaze));
+		RenderingRegistry.registerEntityRenderingHandler(EntityDestroyerShimakazeBoss.class, new BossShipRenderer(new ModelDestroyerShimakaze(1), 1F, ID.Ship.DestroyerShimakaze));
 		RenderingRegistry.registerEntityRenderingHandler(EntityHarbourHime.class, new BasicShipRenderer(new ModelHarbourHime(), 0.8F, ID.Ship.HarbourHime));
 		RenderingRegistry.registerEntityRenderingHandler(EntityHeavyCruiserRi.class, new BasicShipRenderer(new ModelHeavyCruiserRi(), 0.7F, ID.Ship.HeavyCruiserRI));
 		RenderingRegistry.registerEntityRenderingHandler(EntityHeavyCruiserNe.class, new BasicShipRenderer(new ModelHeavyCruiserNe(), 0.7F, ID.Ship.HeavyCruiserNE));

@@ -560,25 +560,28 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion {
     }
     
     //雙腳移動計算
-  	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {   
+  	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
+  	{   
   		float angleX = MathHelper.cos(f2*0.08F);
+  		float angleX1 = MathHelper.cos(f2*0.08F + 0.3F + f * 0.5F);
   		float angleAdd1 = MathHelper.cos(f * 0.7F) * f1;
   		float angleAdd2 = MathHelper.cos(f * 0.7F + 3.1415927F) * f1;
   		float addk1 = 0;
   		float addk2 = 0;
   		
   		//水上漂浮
-  		if(((IShipFloating)ent).getShipDepth() > 0) {
+  		if (((IShipFloating)ent).getShipDepth() > 0)
+  		{
     		GL11.glTranslatef(0F, angleX * 0.1F - 0.025F, 0F);
     	}
   		
   		//leg move parm
-  		addk1 = angleAdd1 - 0.2618F;
-	  	addk2 = angleAdd2 - 0.2618F;
+  		addk1 = angleAdd1 - 0.2118F;
+	  	addk2 = angleAdd2 - 0.1118F;
 
   	    //移動頭部使其看人
-	  	this.Head.rotateAngleX = f4 / 57.29578F; 	//上下角度
-	  	this.Head.rotateAngleY = f3 / 57.29578F;	//左右角度 角度轉成rad 即除以57.29578
+	  	this.Head.rotateAngleX = f4 * 0.0174532925F + 0.1F;
+	  	this.Head.rotateAngleY = f3 * 0.0174532925F;
 	    
 	    //正常站立動作
 	    //胸部
@@ -586,12 +589,14 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion {
   	    this.BoobR.rotateAngleX = angleX * 0.06F - 0.7854F;
 	  	//Body
   	    this.Ahoke.rotateAngleY = angleX * 0.25F + 0.5236F;
-	  	this.BodyMain.rotateAngleX = 0F;
+	  	this.BodyMain.rotateAngleX = -0.1F;
 	  	//hair
-	  	this.HairMidL01.rotateAngleX = angleX * 0.06F + 0.35F;
-	  	this.HairMidL02.rotateAngleX = angleX * 0.06F - 0.17F;
+	  	this.HairMidL01.rotateAngleX = angleX * 0.06F + 0.2F;
+	  	this.HairMidL02.rotateAngleX = -angleX1 * 0.09F - 0.17F;
+	  	this.HairMidL01.rotateAngleZ = 0F;
+	  	this.HairMidL02.rotateAngleZ = 0F;
 	    //arm 
-	  	this.ArmLeft01.rotateAngleX = angleAdd2 * 0.6F;
+	  	this.ArmLeft01.rotateAngleX = angleAdd2 * 0.6F + 0.15F;
 	  	this.ArmLeft01.rotateAngleY = 0F;
 	    this.ArmLeft01.rotateAngleZ = angleX * 0.1F - 0.26F;
 	    this.ArmRight01.rotateAngleX = angleAdd1 * 0.6F;
@@ -635,6 +640,9 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion {
 	    	//Body
 	    	this.Head.rotateAngleX -= 0.35F;
 		  	this.BodyMain.rotateAngleX = 0.5236F;
+		  	//hair
+		  	this.HairMidL01.rotateAngleX += 0.3F;
+		  	this.HairMidL02.rotateAngleX += 0.3F;
 		    //arm 
 		  	this.ArmLeft01.rotateAngleX = angleAdd2 - 0.6F;
 		    this.ArmRight01.rotateAngleX = angleAdd1 - 0.6F;
@@ -771,8 +779,8 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion {
 	    	    this.Head.rotateAngleX -= 1.22F;
 	    	  	this.BodyMain.rotateAngleX = 1.75F;
 	    	  	//hair
-	    	  	this.HairMidL01.rotateAngleX += 1.5F;
-	    	  	this.HairMidL02.rotateAngleX += 0.8F;
+	    	  	this.HairMidL01.rotateAngleX += 0.3F;
+	    	  	this.HairMidL02.rotateAngleX += 0.6F;
 	    	    //arm 
 	    	  	this.ArmLeft01.rotateAngleX = -1.75F;
 	    	  	this.ArmLeft01.rotateAngleY = 0F;
@@ -834,6 +842,15 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion {
 	        this.ArmRight02.rotateAngleY = 0F;
 	        this.ArmRight02.rotateAngleZ = 0F;
 	  	}
+	  	
+	  	//鬢毛調整
+	    float headX = this.Head.rotateAngleX * -0.5F;
+	    float headZ = this.Head.rotateAngleZ * -0.5F;
+	    this.HairMidL01.rotateAngleX += headX;
+	    this.HairMidL01.rotateAngleZ += headZ;
+	    this.HairMidL02.rotateAngleX += headX * 0.5F;
+	    this.HairMidL02.rotateAngleZ += headZ * 0.5F;
+
 	    
 	    //leg motion
 	    this.LegLeft.rotateAngleX = addk1;

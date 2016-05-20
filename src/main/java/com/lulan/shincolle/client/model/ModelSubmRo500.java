@@ -394,8 +394,8 @@ public class ModelSubmRo500 extends ModelBase implements IModelEmotion {
 	  	addk2 = angleAdd2 - 0.122F;
 
   	    //移動頭部使其看人
-	  	this.Head.rotateAngleX = f4 / 57.29578F; 	//上下角度
-	  	this.Head.rotateAngleY = f3 / 57.29578F;	//左右角度 角度轉成rad 即除以57.29578
+	  	this.Head.rotateAngleX = f4 * 0.0174532925F;
+	  	this.Head.rotateAngleY = f3 * 0.0174532925F;
 	    
 	    //正常站立動作
 	  	//body
@@ -403,6 +403,15 @@ public class ModelSubmRo500 extends ModelBase implements IModelEmotion {
 	  	this.BodyMain.rotateAngleX = -0.1F;
 	  	//hair
 	  	this.Hair01.rotateAngleX = angleX * 0.06F + 0.3F;
+	    this.Hair01.rotateAngleZ = 0F;
+		this.HairL01.rotateAngleX = -0.17F;
+	  	this.HairL02.rotateAngleX = 0.17F;
+	  	this.HairR01.rotateAngleX = -0.17F;
+	  	this.HairR02.rotateAngleX = 0.17F;
+	  	this.HairL01.rotateAngleZ = -0.14F;
+	  	this.HairL02.rotateAngleZ = 0.08F;
+	  	this.HairR01.rotateAngleZ = 0.14F;
+	  	this.HairR02.rotateAngleZ = -0.05F;
 	    //arm 
 	  	this.ArmLeft01.rotateAngleX = 0.157F;
 	    this.ArmRight01.rotateAngleX = 0.157F;

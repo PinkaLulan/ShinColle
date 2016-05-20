@@ -684,17 +684,29 @@ public class GuiDesk extends GuiContainer {
             			break;
             		case 5:  //attack
             			this.shipModel.attackTime = 50;
-            			if(this.shipMount != null) this.shipMount.attackTime = 50;
+            			if (this.shipMount != null) this.shipMount.attackTime = 50;
             			break;
             		case 6:  //emotion
-            			if(this.shipModel.getRNG().nextInt(11) == 0) {
+            			switch (this.shipModel.getRNG().nextInt(11))
+            			{
+            			case 0:
+            			case 1:
+            				this.shipModel.setSneaking(false);
             				this.shipModel.setStateFlag(ID.F.NoFuel, true);
-            			}
-            			else {
+            				break;
+            			case 2:
+            			case 3:
+            				this.shipModel.setSneaking(true);
             				this.shipModel.setStateFlag(ID.F.NoFuel, false);
+            				break;
+        				default:
+        					this.shipModel.setSneaking(false);
+        					this.shipModel.setStateFlag(ID.F.NoFuel, false);
             				this.shipModel.setStateEmotion(ID.S.Emotion, this.shipModel.getRNG().nextInt(11), false);
-                			if(this.shipMount != null) this.shipMount.setStateEmotion(ID.S.Emotion, this.shipMount.getRNG().nextInt(11), false);
+                			if (this.shipMount != null) this.shipMount.setStateEmotion(ID.S.Emotion, this.shipMount.getRNG().nextInt(11), false);
+        					break;
             			}
+            			
             			break;
             		}
         		}

@@ -24,6 +24,8 @@ tile.shincolle:BlockWaypoint.name=Abyssal Waypoint
 # Item
 item.shincolle:AbyssMetal.name=Abyssium Ingot
 item.shincolle:AbyssMetal1.name=Polymetallic Nodules
+item.shincolle:AbyssNugget.name=Abyssium Nugget
+item.shincolle:AbyssNugget1.name=Polymetallic Nugget
 item.shincolle:Ammo.name=Grudgeful Ammo
 item.shincolle:Ammo1.name=Grudgeful Ammo Container
 item.shincolle:Ammo2.name=Heavy Grudgeful Ammo
@@ -632,3 +634,13 @@ chat.shincolle:wrench.setwp=Setting Abyssal Waypoint Success!
 chat.shincolle:wrench.wptoofar=Setting Abyssal Waypoint fail, distance > 48 blocks.
 chat.shincolle:wrench.wplast=Last waypoint: 
 chat.shincolle:wrench.wpnext=Next waypoint: 
+
+# intermod: Forestry
+item.shincolle:ShinComb.name=Shin Comb
+inter.shincolle:flower=Grudge
+inter.shincolle:bee1.name=Abyssaldemon
+inter.shincolle:bee1.desc="How do bees even live in the sea!?"|Abyssal Admiral
+inter.shincolle:bee2.name=Abyssalprincess
+inter.shincolle:bee2.desc="The sting movement of this bee is as elegant as Shinkeiseiki."|Masochist Admiral
+inter.shincolle:bee3.name=Abyssalwaterdemon
+inter.shincolle:bee3.desc="Ahhh...dont pick up something from the ground to eat, Hoppo-chan!"|Harbour Princess

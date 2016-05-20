@@ -15,12 +15,14 @@ import com.lulan.shincolle.init.ModOres;
 import com.lulan.shincolle.init.ModRecipes;
 import com.lulan.shincolle.init.ModTileEntity;
 import com.lulan.shincolle.init.ModWorldGen;
+import com.lulan.shincolle.intermod.forestry.ShinBees;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.IProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.LogHelper;
 
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;		//mod基本資訊
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;	//mod init
@@ -31,7 +33,8 @@ import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 
 @Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.MOD_VERSION, dependencies="required-after:Forge@[10.13.4.1614,)")
-public class ShinColle {
+public class ShinColle
+{
 	
 	//mod instance
 	@Mod.Instance( Reference.MOD_ID )
@@ -44,7 +47,8 @@ public class ShinColle {
 	
 	/** pre initial: load config, block/item/entity/render init, event handler init */
 	@Mod.EventHandler
-	public void preInit(FMLPreInitializationEvent event) {		
+	public void preInit(FMLPreInitializationEvent event)
+	{		
 		//config inti
 		ConfigHandler.init(event.getSuggestedConfigurationFile());	//load config file
 
@@ -69,7 +73,8 @@ public class ShinColle {
 	 *          request mod interact AND oreDictionary registr
 	 */
 	@Mod.EventHandler
-	public void Init(FMLInitializationEvent event) {
+	public void Init(FMLInitializationEvent event)
+	{
 		//GUI register
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
 		
@@ -89,26 +94,41 @@ public class ShinColle {
 	
 	/** post initial: mod interact */
 	@Mod.EventHandler
-	public void postInit(FMLPostInitializationEvent event) {
+	public void postInit(FMLPostInitializationEvent event)
+	{
 		//world gen跟entity spawn放在postInit, 以便能讀取到其他mod的biome
 		ModWorldGen.init();
 		
 		//register chunk loader callback
 		ForgeChunkManager.setForcedChunkLoadingCallback(instance, new ChunkLoaderHandler());
 		
-//		//list all entity
-//		Iterator iter = EntityList.classToStringMapping.entrySet().iterator();
-//		while(iter.hasNext()) {
-//			Map.Entry entry = (Map.Entry)iter.next();
-//		    Object key = entry.getKey();
-//		    Object val = entry.getValue();
-//		    LogHelper.info("DEBUG : list entity class: "+key+" , "+val);
-//		}	
+		//add forestry bees
+		if (Loader.isModLoaded(Reference.MOD_ID_Forestry) && ConfigHandler.enableForestry)
+		{
+			ShinBees.init();
+			
+//			Iterator iter = EntityList.classToStringMapping.entrySet().iterator();
+//			Iterator iter = AlleleManager.alleleRegistry.getSpeciesRoot("rootBees").getGenomeTemplates().entrySet().iterator();
+//			while (iter.hasNext())
+//			{
+//				Map.Entry entry = (Map.Entry)iter.next();
+//			    Object key = entry.getKey();
+//			    Object val = entry.getValue();
+//			    LogHelper.info("AAAAAA:  "+key+" , "+val);
+//			    
+//			    IAllele[] data = (IAllele[]) val;
+//			    
+//			    for (IAllele d : data)
+//			    {
+//			    	LogHelper.info("            BBBB:  "+d);
+//			    }
+//			}
+		}
+		
 //		LogHelper.info("DEBUG : biome spawn: "+this.worldObj.getBiomeGenForCoords((int)this.posX, (int)this.posZ).getSpawnableList(EnumCreatureType.waterCreature).get(1));
 //		for(String oreName : OreDictionary.getOreNames()) {	//list all oreDictionary  (DEBUG)
 //			LogHelper.info(oreName);
 //		}
-		
 		LogHelper.info("DEBUG : postInit complete.");	//debug
 	}
 	
