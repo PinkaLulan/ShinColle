@@ -119,6 +119,12 @@ public class ID {
 		public static final byte HUNGRY = 5;			//no grudge
 	}
 	
+	/** Emotion3 */
+	public static final class Emotion3 {
+		public static final byte NORMAL = 0;			//no emotion
+		public static final byte CARESS = 1;			//caressed
+	}
+	
 	/** Equip type */
 	public static final class EquipType {
 		public static final byte CANNON_SI = 0;			//single cannon
@@ -466,6 +472,7 @@ public class ID {
 		public static final byte HPState = 3;			//hp state
 		public static final byte State2 = 4;			//equip state 2
 		public static final byte Phase = 5;				//entity phase
+		public static final byte Emotion3 = 6;			//emotion 3
 	}
 	
 	/** ship class id */
@@ -656,6 +663,7 @@ public class ID {
 		public static final byte ImmuneTime = 2;		//immune time
 		public static final byte CrandDelay = 3;		//crane state 0 to 1,2 delay
 		public static final byte WpStayTime = 4;		//waypoint stay timer
+		public static final byte Emotion3Time = 5;		//emotion 3 tick
 	}
 
 	/** StateEquip, StateFinal, BonusPoint, TypeModify */

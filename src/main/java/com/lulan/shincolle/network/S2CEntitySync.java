@@ -221,6 +221,7 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateEmotion(ID.S.Emotion2, buf.readByte(), false);
 					entity.setStateEmotion(ID.S.HPState, buf.readByte(), false);
 					entity.setStateEmotion(ID.S.Phase, buf.readByte(), false);
+					entity.setStateEmotion(ID.S.Emotion3, buf.readByte(), false);
 
 					entity.setBonusPoint(ID.HP, buf.readByte());
 					entity.setBonusPoint(ID.ATK, buf.readByte());
@@ -280,6 +281,7 @@ public class S2CEntitySync implements IMessage {
 					entity.setStateEmotion(ID.S.Emotion2, buf.readByte(), false);
 					entity.setStateEmotion(ID.S.HPState, buf.readByte(), false);
 					entity.setStateEmotion(ID.S.Phase, buf.readByte(), false);
+					entity.setStateEmotion(ID.S.Emotion3, buf.readByte(), false);
 					
 					entity.setStateFlag(ID.F.NoFuel, buf.readBoolean());
 				}
@@ -604,6 +606,7 @@ public class S2CEntitySync implements IMessage {
 				buf.writeByte(this.entity.getStateEmotion(ID.S.Emotion2));
 				buf.writeByte(this.entity.getStateEmotion(ID.S.HPState));
 				buf.writeByte(this.entity.getStateEmotion(ID.S.Phase));
+				buf.writeByte(this.entity.getStateEmotion(ID.S.Emotion3));
 
 				buf.writeByte(this.entity.getBonusPoint(ID.HP));
 				buf.writeByte(this.entity.getBonusPoint(ID.ATK));
@@ -665,6 +668,7 @@ public class S2CEntitySync implements IMessage {
 				buf.writeByte(this.entity.getStateEmotion(ID.S.Emotion2));
 				buf.writeByte(this.entity.getStateEmotion(ID.S.HPState));
 				buf.writeByte(this.entity.getStateEmotion(ID.S.Phase));
+				buf.writeByte(this.entity.getStateEmotion(ID.S.Emotion3));
 				
 				buf.writeBoolean(this.entity.getStateFlag(ID.F.NoFuel));
 			}

@@ -859,6 +859,18 @@ public class ModelSubmSo extends ModelBase implements IModelEmotionAdv {
 	@Override
 	public void setFaceBored(IShipEmotion ent) {
 	}
+	
+	@Override
+	public void setFaceShy(IShipEmotion ent)
+	{
+		
+	}
+	
+	@Override
+	public void setFaceHappy(IShipEmotion ent)
+	{
+		
+	}
   	
   	
 }

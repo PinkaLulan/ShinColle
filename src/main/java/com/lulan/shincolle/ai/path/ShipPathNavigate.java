@@ -275,7 +275,7 @@ public class ShipPathNavigate {
         }
         
         //每N ticks檢查一次移動距離
-        if (this.pathTicks - this.ticksAtLastPos > 16)
+        if (this.pathTicks - this.ticksAtLastPos > 32)
         {
         	//若距離上一次成功移動的點不到1.5格, 則表示某種原因造成幾乎沒移動, 清除該path
             if (entityPos.squareDistanceTo(this.lastPosCheck) < 3D)
@@ -304,7 +304,7 @@ public class ShipPathNavigate {
                 	this.theEntity2.getShipMoveHelper().setMoveTo(targetX, host.posY, targetZ, this.speed);
                 	
                 	//try random jump
-                	if (host.getRNG().nextInt(2) == 0)
+                	if (host.getRNG().nextInt(3) == 0)
                 	{
                 		host.getJumpHelper().setJumping();
                 		float speed = (float) host.getEntityAttribute(SharedMonsterAttributes.movementSpeed).getAttributeValue() * 0.5F;

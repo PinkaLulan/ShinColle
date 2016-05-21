@@ -109,6 +109,10 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion {
     public ModelRenderer SantaHat03;
     public ModelRenderer SantaHat04;
     public ModelRenderer SantaHat05;
+    public ModelRenderer HairS01a;
+    public ModelRenderer HairS01b;
+    public ModelRenderer HairS02a;
+    public ModelRenderer HairS02b;
     public ModelRenderer GlowBodyMain;
     public ModelRenderer GlowNeck;
     public ModelRenderer GlowHead;
@@ -192,6 +196,22 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion {
         this.Hair01.setRotationPoint(0.0F, 9.0F, 2.0F);
         this.Hair01.addBox(-7.5F, 0.0F, 0.0F, 15, 12, 8, 0.0F);
         this.setRotateAngle(Hair01, 0.3490658503988659F, 0.0F, 0.0F);
+        this.HairS01a = new ModelRenderer(this, 38, 19);
+        this.HairS01a.setRotationPoint(7.5F, -1F, 3.5F);
+        this.HairS01a.addBox(0F, 0F, -2F, 0, 7, 4, 0F);
+        this.setRotateAngle(HairS01a, 0.087F, 0F, -0.2618F);
+        this.HairS01b = new ModelRenderer(this, 46, 26);
+        this.HairS01b.setRotationPoint(0F, 7F, 0F);
+        this.HairS01b.addBox(0F, 0F, -2F, 0, 7, 4, 0F);
+        this.setRotateAngle(HairS01b, 0F, 0F, -0.2618F);
+        this.HairS02a = new ModelRenderer(this, 38, 19);
+        this.HairS02a.setRotationPoint(-7.5F, 3F, 2.5F);
+        this.HairS02a.addBox(0F, 0F, -2F, 0, 7, 4, 0F);
+        this.setRotateAngle(HairS02a, 0.087F, 0F, 0.35F);
+        this.HairS02b = new ModelRenderer(this, 38, 25);
+        this.HairS02b.setRotationPoint(0F, 7F, 0F);
+        this.HairS02b.addBox(0F, 0F, -2F, 0, 7, 4, 0F);
+        this.setRotateAngle(HairS02b, 0F, 0F, 0.35F);
         this.EquipUmbre03a = new ModelRenderer(this, 0, 0);
         this.EquipUmbre03a.setRotationPoint(0.0F, 0.0F, -14.4F);
         this.EquipUmbre03a.addBox(0.0F, -7.0F, 0.0F, 13, 17, 3, 0.0F);
@@ -379,9 +399,9 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion {
         this.BodyMain.addBox(-6.5F, -11.0F, -4.0F, 13, 7, 7, 0.0F);
         this.setRotateAngle(BodyMain, -0.08726646259971647F, 0.0F, 0.0F);
         this.Ahoke = new ModelRenderer(this, 104, 29);
-        this.Ahoke.setRotationPoint(-1.0F, -8.0F, -4.0F);
-        this.Ahoke.addBox(0.0F, -9.0F, -8.0F, 0, 12, 12, 0.0F);
-        this.setRotateAngle(Ahoke, 0.2617993877991494F, 0.5235987755982988F, 0.0F);
+        this.Ahoke.setRotationPoint(0F, -5.0F, -5.0F);
+        this.Ahoke.addBox(0.0F, -12.0F, -6.0F, 0, 12, 12, 0.0F);
+        this.setRotateAngle(Ahoke, 0.35F, 2.1F, 0.0F);
         this.HeadHR2 = new ModelRenderer(this, 30, 90);
         this.HeadHR2.setRotationPoint(-3.0F, 0.0F, 0.0F);
         this.HeadHR2.addBox(-1.0F, -2.0F, -2.0F, 1, 4, 4, 0.0F);
@@ -489,6 +509,10 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion {
         this.Butt.addChild(this.LegRight01);
         this.EquipRT02.addChild(this.HeadBase);
         this.Hair01.addChild(this.Hair02);
+        this.Hair01.addChild(this.HairS01a);
+        this.Hair01.addChild(this.HairS02a);
+        this.HairS01a.addChild(this.HairS01b);
+        this.HairS02a.addChild(this.HairS02b);
         this.BodyMain.addChild(this.Butt);
         this.HeadBase.addChild(this.TailHeadCR1);
         this.BodyMain.addChild(this.EquipBase);
@@ -690,7 +714,6 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion {
 	  	this.Head.rotateAngleX = 0.5F; 	//上下角度
 	  	this.Head.rotateAngleY = 0F;	//左右角度 角度轉成rad 即除以57.29578
 	  	//body
-  	    this.Ahoke.rotateAngleX = 0.2618F;
 	  	this.BodyMain.rotateAngleX = -0.087F;
 	  	//hair
 	  	this.Hair01.rotateAngleX = 0.2F;
@@ -747,7 +770,7 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion {
 	  	headX = this.Head.rotateAngleX * -0.5F;
 	    //正常站立動作
 	  	//body
-  	    this.Ahoke.rotateAngleX = angleX * 0.25F + 0.2618F;
+  	    this.Ahoke.rotateAngleX = angleX * 0.25F + 0.35F;
 	  	this.BodyMain.rotateAngleX = -0.087F;
 	  	//hair
 	  	this.Hair01.rotateAngleX = angleX * 0.02F + 0.35F + headX;

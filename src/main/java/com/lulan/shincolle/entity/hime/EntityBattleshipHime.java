@@ -219,17 +219,22 @@ public class EntityBattleshipHime extends BasicEntityShip {
 	}
   	
   	@Override
-	public double getMountedYOffset() {
-  		if(this.isSitting()) {
-  			if(getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {
+	public double getMountedYOffset()
+  	{
+  		if (this.isSitting())
+  		{
+  			if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
+  			{
   				return (double)this.height * 0.0F;
   			}
-  			else {
-  				return (double)this.height * 0.6F;
+  			else
+  			{
+  				return (double)this.height * 0.28F;
   			}
   		}
-  		else {
-  			return (double)this.height * 0.8F;
+  		else
+  		{
+  			return (double)this.height * 0.55F;
   		}
 	}
 

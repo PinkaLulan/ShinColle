@@ -449,8 +449,7 @@
     
     "ship-hurt-54": {
         "category": "neutral", "replace": true, "sounds": [
-            "hurt5401",
-            "hurt5402"
+            "hurt5401"
         ]
     },
     

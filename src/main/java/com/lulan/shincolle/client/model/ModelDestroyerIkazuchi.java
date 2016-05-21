@@ -568,6 +568,7 @@ public class ModelDestroyerIkazuchi extends ModelBase implements IModelEmotion {
 		this.ArmRight02.rotateAngleZ = 0F;
 		this.ArmRight02.offsetX = 0F;
 		//leg
+		this.LegLeft01.rotateAngleY = 0F;
 		this.LegLeft01.rotateAngleZ = 0.1047F;
 		this.LegLeft02.rotateAngleX = 0F;
 		this.LegLeft02.rotateAngleY = 0F;
@@ -575,6 +576,7 @@ public class ModelDestroyerIkazuchi extends ModelBase implements IModelEmotion {
 		this.LegLeft02.offsetX = 0F;
 		this.LegLeft02.offsetY = 0F;
 		this.LegLeft02.offsetZ = 0F;
+		this.LegRight01.rotateAngleY = 0F;
 		this.LegRight01.rotateAngleZ = -0.1047F;
 		this.LegRight02.rotateAngleX = 0F;
 		this.LegRight02.rotateAngleY = 0F;
@@ -641,7 +643,7 @@ public class ModelDestroyerIkazuchi extends ModelBase implements IModelEmotion {
 	    	{
 	    		if (((IShipEmotion)((Entity)ent).ridingEntity).getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 	    		{
-	    			GL11.glTranslatef(0F, 0F, 0.5F);
+	    			GL11.glTranslatef(0F, 0.6F, 0F);
 		    		//Body
 				  	this.BodyMain.rotateAngleX = -0.1F;
 			    	this.Butt.rotateAngleX = -0.2F;
@@ -677,7 +679,7 @@ public class ModelDestroyerIkazuchi extends ModelBase implements IModelEmotion {
 	    		}
 	    		else
 	    		{
-	    			GL11.glTranslatef(0F, 0F, 0.5F);
+	    			GL11.glTranslatef(0F, 0.6F, 0F);
 		    		//Body
 				  	this.Butt.rotateAngleX = -0.2F;
 			    	this.Butt.offsetY = -0.1F;

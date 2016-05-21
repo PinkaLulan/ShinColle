@@ -481,6 +481,11 @@ public class ParticleHelper {
             		posX, posY, posZ, lookX, lookY, lookZ, 0);
         	Minecraft.getMinecraft().effectRenderer.addEffect(particleCrane);
 			break;
+		case 41:	//cyan spray 2
+			EntityFXSpray particleSpray15 = new EntityFXSpray(world, 
+            		posX, posY, posZ, lookX, lookY, lookZ, 15);
+        	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray15);
+			break;
 		default:
 			break;		
 		}

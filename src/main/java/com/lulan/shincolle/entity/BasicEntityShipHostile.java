@@ -79,7 +79,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		
 		//model display
 		StartSoundHurt = 0;
-		StateEmotion = new byte[] {ID.State.EQUIP00, 0, 0, 0, 0, 0};
+		StateEmotion = new byte[] {ID.State.EQUIP00, 0, 0, 0, 0, 0, 0};
 	}
 	
 	@Override

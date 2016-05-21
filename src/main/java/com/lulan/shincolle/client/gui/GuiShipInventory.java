@@ -32,6 +32,7 @@ import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.GuiHelper;
 import com.lulan.shincolle.utility.LogHelper;
+import com.lulan.shincolle.utility.ParticleHelper;
 
 /** ship inventory gui
  * 
@@ -825,6 +826,8 @@ public class GuiShipInventory extends GuiContainer {
 			shipMount.rotationPitch = entity.rotationPitch;
 			shipMount.rotationYawHead = entity.rotationYawHead;
 			shipMount.prevRotationYawHead = entity.prevRotationYawHead;
+			
+			if (shipMount.isSitting()) shipMount.setSitting(false);
 		}
 		else if (entity.riddenByEntity instanceof EntityDestroyerIkazuchi)
 		{
@@ -834,6 +837,8 @@ public class GuiShipInventory extends GuiContainer {
 			shipRider.rotationPitch = entity.rotationPitch;
 			shipRider.rotationYawHead = entity.rotationYawHead;
 			shipRider.prevRotationYawHead = entity.prevRotationYawHead;
+			
+			if (entity.isSitting()) entity.setSitting(false);
 		}
 		
 		GL11.glTranslatef(0.0F, entity.yOffset, 0.0F);
@@ -843,17 +848,19 @@ public class GuiShipInventory extends GuiContainer {
 		if (shipRider != null)
 		{
 			//ship必須先畫才畫mounts
-			GL11.glTranslatef(0F, (float)(entity.getMountedYOffset()), 0F);
-			RenderManager.instance.renderEntityWithPosYaw(shipRider, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F);
-			GL11.glTranslatef(0F, -(float)(entity.getMountedYOffset()), 0F);
-			RenderManager.instance.renderEntityWithPosYaw(entity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F);
+			float[] partPos = ParticleHelper.rotateXZByAxis(-0.2F, 0F, (entity.renderYawOffset % 360) / 57.2957F, 1F);
+			GL11.glTranslatef(partPos[1], (float)(entity.getMountedYOffset()), partPos[0]);
+			RenderManager.instance.renderEntityWithPosYaw(shipRider, 0D, 0D, 0D, 0.0F, 1.0F);
+			GL11.glTranslatef(-partPos[1], -(float)(entity.getMountedYOffset()), -partPos[0]);
+			RenderManager.instance.renderEntityWithPosYaw(entity, 0D, 0D, 0D, 0.0F, 1.0F);
 		}
 		else if (shipMount != null)
 		{
 			//ship必須先畫才畫mounts
-			GL11.glTranslatef(0F, (float)(shipMount.getMountedYOffset()), 0F);
+			float[] partPos = ParticleHelper.rotateXZByAxis(-0.2F, 0F, (entity.renderYawOffset % 360) / 57.2957F, 1F);
+			GL11.glTranslatef(partPos[1], (float)(shipMount.getMountedYOffset()), partPos[0]);
 			RenderManager.instance.renderEntityWithPosYaw(entity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F);
-			GL11.glTranslatef(0F, -(float)(shipMount.getMountedYOffset()), 0F);
+			GL11.glTranslatef(-partPos[1], -(float)(shipMount.getMountedYOffset()), -partPos[0]);
 			RenderManager.instance.renderEntityWithPosYaw(shipMount, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F);
 		}
 		else

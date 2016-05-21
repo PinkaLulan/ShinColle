@@ -863,23 +863,31 @@ public class ModelHarbourHime extends ModelBase implements IModelEmotion {
 	    	this.ArmRight01.rotateAngleZ = 0F;
 	    	this.ArmRight06.rotateAngleZ = 0.96F;
 	    }
-	    
-	    //鬢毛調整
-	    headX = this.Head.rotateAngleX * -0.5F;
-		this.HairL01.rotateAngleX = angleX * 0.02F + headX - 0.14F;
-	  	this.HairL02.rotateAngleX = -angleX1 * 0.04F + headX + 0.17F;
-	  	this.HairR01.rotateAngleX = angleX * 0.02F + headX - 0.14F;
-	  	this.HairR02.rotateAngleX = -angleX1 * 0.04F + headX + 0.17F;
 	  	
 	  	//swing arm
 	  	float f6 = ent.getSwingTime(f2 - (int)f2);
-	  	if(f6 != 0F) {
+	  	if (f6 != 0F)
+	  	{
 	  		float f7 = MathHelper.sin(f6 * f6 * (float)Math.PI);
 	        float f8 = MathHelper.sin(MathHelper.sqrt_float(f6) * (float)Math.PI);
 	        this.ArmRight01.rotateAngleX += -f8 * 80.0F * Values.N.RAD_MUL;
 	        this.ArmRight01.rotateAngleY += -f7 * 20.0F * Values.N.RAD_MUL + 1.0F;
 	        this.ArmRight01.rotateAngleZ += -f8 * 20.0F * Values.N.RAD_MUL;
 	  	}
+	  	
+	  	//caress
+	  	if (ent.getStateEmotion(ID.S.Emotion3) == ID.Emotion3.CARESS)
+	  	{
+	  		//body
+	  		this.Head.rotateAngleX += 0.2F;
+	  	}
+	  	
+	  	//鬢毛調整
+	    headX = this.Head.rotateAngleX * -0.5F;
+		this.HairL01.rotateAngleX = angleX * 0.02F + headX - 0.14F;
+	  	this.HairL02.rotateAngleX = -angleX1 * 0.04F + headX + 0.17F;
+	  	this.HairR01.rotateAngleX = angleX * 0.02F + headX - 0.14F;
+	  	this.HairR02.rotateAngleX = -angleX1 * 0.04F + headX + 0.17F;
 	  	
 	    //leg motion
 	    this.LegLeft01.rotateAngleX = addk1;

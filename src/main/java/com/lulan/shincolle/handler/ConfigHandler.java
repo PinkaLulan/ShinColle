@@ -89,7 +89,7 @@ public class ConfigHandler {
 	//custom sound                                    id, idle, hit, hurt, dead, love, kb, item, feed, time
 	public static int[] customSoundRate = new int[] {};
 	public static int[] customSoundRate2 = new int[] {56, 50,   50,  50,   100,  0,    0,  50,   0,    0,
-													  54, 50,   0,   50,   0,    50,   0,  75,   0,    0};
+													  54, 25,   0,   25,   0,    50,   0,  50,   0,    0};
 	
 
 	//WORLD GEN

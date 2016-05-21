@@ -1743,48 +1743,59 @@ public class GuiDesk extends GuiContainer {
 	
 	//close gui if tile dead or too far away
 	@Override
-	public void updateScreen() {
+	public void updateScreen()
+	{
 		super.updateScreen();
 		
-		if(this.type == 0 && this.tile == null) {
+		if (this.type == 0 && this.tile == null)
+		{
             this.mc.thePlayer.closeScreen();
         }
 	}
 	
-	private void setShipModel(int chap, int page) {
+	private void setShipModel(int chap, int page)
+	{
 		int classID = -1;
 		String shipName = null;
 		
 		//clear mount
-		if(this.shipModel != null) {
+		if (this.shipModel != null)
+		{
 			this.shipModel.mountEntity(null);
 	  		this.shipMount = null;
 		}
-		else {
+		else
+		{
 			this.shipMount = null;
 		}
 		
 		//get ship
-		try {
-			if(chap == 4) {
+		try
+		{
+			if (chap == 4)
+			{
 				classID = Values.ShipBookList.get(page - 1);
 			}
-			else if(chap == 5) {
+			else if (chap == 5)
+			{
 				classID = Values.EnemyBookList.get(page - 1);
 			}
 		}
-		catch(Exception e) {
-			LogHelper.info("DEBUG : page number > list length: "+e);
+		catch(Exception e)
+		{
+			e.printStackTrace();
 		}
 		
 		//get no ship
-		if(classID < 0) {
+		if (classID < 0)
+		{
 			this.shipModel = null;
 			return;
 		}
 		
 		//get ship but not in colled list
-		if(!EntityHelper.checkShipColled(classID, this.extProps)) {
+		if (!EntityHelper.checkShipColled(classID, this.extProps))
+		{
 			this.shipModel = null;
 			return;
 		}
@@ -1793,7 +1804,8 @@ public class GuiDesk extends GuiContainer {
 		shipName = ShipCalc.getEntityToSpawnName(classID);
 		
 		//set ship model
-        if(EntityList.stringToClassMapping.containsKey(shipName)) {
+        if (EntityList.stringToClassMapping.containsKey(shipName))
+        {
             this.shipModel = (BasicEntityShip) EntityList.createEntityByName(shipName, player.worldObj);
             
             if(this.shipModel != null) {
@@ -1828,29 +1840,37 @@ public class GuiDesk extends GuiContainer {
 		}
 	}
 	
-	private void drawShipModel() {
-		if(this.shipModel != null) {
+	private void drawShipModel()
+	{
+		if (this.shipModel != null)
+		{
 			//draw background
 			Minecraft.getMinecraft().getTextureManager().bindTexture(guiBook2);
-			if(this.book_chapNum == 4) {  //shinkei
+			
+			if (this.book_chapNum == 4)
+			{  //shinkei
 				drawTexturedModalRect(guiLeft+20, guiTop+48, 0, 0, 87, 125);
 			}
-			else {  //kanmusu
+			else
+			{  //kanmusu
 				drawTexturedModalRect(guiLeft+20, guiTop+48, 0, 125, 87, 125);
 			}
 	    	
 	    	Minecraft.getMinecraft().getTextureManager().bindTexture(guiNameIcon);
 	    	
 	    	//draw name icon
-        	try{
+        	try
+        	{
         		drawTexturedModalRect(guiLeft+23, guiTop+53, this.iconXY[0][0], this.iconXY[0][1], 28, 28);
 
         		//use name icon file 0
-        		if(iconXY[1][0] == 0) {
+        		if (iconXY[1][0] == 0)
+        		{
         			drawTexturedModalRect(guiLeft+30, guiTop+94, this.iconXY[1][1], this.iconXY[1][2], 11, 59);
         		}
         	}
-        	catch(Exception e) {
+        	catch(Exception e)
+        	{
         		e.printStackTrace();
         	}
 
@@ -1877,6 +1897,7 @@ public class GuiDesk extends GuiContainer {
             	if (this.shipMount != null)
             	{
             		this.shipMount.ticksExisted++;
+            		
                 	if (this.shipMount.attackTime > 0) this.shipMount.attackTime--;
                 	
                 	//set mount moving motion
@@ -1922,14 +1943,17 @@ public class GuiDesk extends GuiContainer {
 			//draw mount
 			float partialTick = modelTicking * 0.33F;
 			this.shipModel.rotationYawHead = 0F;
-			if(this.shipMount != null) {
+			
+			if (this.shipMount != null)
+			{
 				//ship必須先畫才畫mounts
 				GL11.glTranslatef(0F, (float)(this.shipMount.getMountedYOffset()), 0F);
 				RenderManager.instance.renderEntityWithPosYaw(this.shipModel, 0D, 0D, 0D, 0F, partialTick);
 				GL11.glTranslatef(0F, -(float)(this.shipMount.getMountedYOffset()), 0F);
 				RenderManager.instance.renderEntityWithPosYaw(this.shipMount, 0D, 0D, 0D, 0F, partialTick);
 			}
-			else {
+			else
+			{
 				RenderManager.instance.renderEntityWithPosYaw(this.shipModel, 0D, 0D, 0D, 0F, partialTick);
 			}
 			
@@ -1941,7 +1965,8 @@ public class GuiDesk extends GuiContainer {
 			OpenGlHelper.setActiveTexture(OpenGlHelper.defaultTexUnit);
 		}
 		//no ship
-		else {
+		else
+		{
 			Minecraft.getMinecraft().getTextureManager().bindTexture(guiBook2);
 	    	drawTexturedModalRect(guiLeft+20, guiTop+48, 87, 0, 87, 125);
 		}

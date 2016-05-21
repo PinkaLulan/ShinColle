@@ -2,6 +2,7 @@ package com.lulan.shincolle.entity.destroyer;
 
 import java.util.List;
 
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
@@ -18,16 +19,20 @@ import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.entity.ExtendShipProps;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 
-public class EntityDestroyerIkazuchi extends BasicEntityShipSmall {
+public class EntityDestroyerIkazuchi extends BasicEntityShipSmall
+{
 
 	public boolean isGattai = false;
 	
 	
-	public EntityDestroyerIkazuchi(World world) {
+	public EntityDestroyerIkazuchi(World world)
+	{
 		super(world);
 		this.setSize(0.6F, 1.5F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.DESTROYER);
@@ -119,7 +124,7 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall {
   	  				}
   	  				
   	  				//try gattai
-  	  				tryGattai(this);
+  	  				tryGattai();
   	  			}
   			}
   		}
@@ -131,44 +136,45 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall {
   				if (getStateEmotion(ID.S.State) >= ID.State.EQUIP01 && !isSitting() && !getStateFlag(ID.F.NoFuel))
   				{
   					double smokeY = posY + 1.4D;
-  					float addz = 0F;
   					
-  					if (this.ridingEntity != null) addz = -0.2F;
+  					if (this.ridingEntity != null)
+					{
+  						smokeY -= 0.2F;
+					}
   					
   					//計算煙霧位置
-  	  				float[] partPos = ParticleHelper.rotateXZByAxis(-0.42F + addz, 0F, (this.renderYawOffset % 360) / 57.2957F, 1F);
+  	  				float[] partPos = ParticleHelper.rotateXZByAxis(-0.42F, 0F, (this.renderYawOffset % 360) / 57.2957F, 1F);
   	  				//生成裝備冒煙特效
   	  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], smokeY, posZ+partPos[0], 0D, 0D, 0D, (byte)20);
   				}	
   			}
   		}
   		
-  		//sync rotate when gattai
-		if (this.ridingEntity instanceof EntityDestroyerInazuma)
+		//sync rotate when gattai
+  		if (this.ridingEntity instanceof EntityDestroyerInazuma)
 		{
-			this.renderYawOffset = ((EntityDestroyerInazuma) this.ridingEntity).renderYawOffset;
-			this.prevRenderYawOffset = ((EntityDestroyerInazuma) this.ridingEntity).prevRenderYawOffset;
+  			if (this.ridingEntity.ridingEntity instanceof EntityDestroyerHibiki)
+  			{
+  				if (this.ridingEntity.ridingEntity.ridingEntity instanceof EntityDestroyerAkatsuki)
+  	  			{
+  					((EntityLivingBase) this.ridingEntity.ridingEntity).renderYawOffset = ((EntityLivingBase) this.ridingEntity.ridingEntity.ridingEntity).renderYawOffset;
+  	  				((EntityLivingBase) this.ridingEntity.ridingEntity).prevRenderYawOffset = ((EntityLivingBase) this.ridingEntity.ridingEntity.ridingEntity).prevRenderYawOffset;
+  	  				this.ridingEntity.ridingEntity.rotationYaw = this.ridingEntity.ridingEntity.ridingEntity.rotationYaw;
+  	  				this.ridingEntity.ridingEntity.prevRotationYaw = this.ridingEntity.ridingEntity.ridingEntity.prevRotationYaw;
+  	  			}
+  				
+  				((EntityLivingBase) this.ridingEntity).renderYawOffset = ((EntityLivingBase) this.ridingEntity.ridingEntity).renderYawOffset;
+  				((EntityLivingBase) this.ridingEntity).prevRenderYawOffset = ((EntityLivingBase) this.ridingEntity.ridingEntity).prevRenderYawOffset;
+  				this.ridingEntity.rotationYaw = this.ridingEntity.ridingEntity.rotationYaw;
+  				this.ridingEntity.prevRotationYaw = this.ridingEntity.ridingEntity.prevRotationYaw;
+  			}
+  			
+  			this.renderYawOffset = ((EntityLivingBase) this.ridingEntity).renderYawOffset;
+			this.prevRenderYawOffset = ((EntityLivingBase) this.ridingEntity).prevRenderYawOffset;
 			this.rotationYaw = this.ridingEntity.rotationYaw;
 			this.prevRotationYaw = this.ridingEntity.prevRotationYaw;
 		}
   	}
-  	
-  	@Override
-  	protected void updateFuelState(boolean nofuel)
-	{
-  		if (this.isGattai && nofuel)
-  		{
-  			this.isGattai = false;
-  			this.mountEntity(null);
-  			
-  			if (this.ridingEntity instanceof EntityDestroyerInazuma)
-  			{
-  				((EntityDestroyerInazuma) this.ridingEntity).isGattai = false;
-  			}
-  		}
-  		
-  		super.updateFuelState(nofuel);
-	}
   	
   	@Override
   	public boolean interact(EntityPlayer player) {	
@@ -186,12 +192,14 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall {
   	}
   	
   	@Override
-	public int getKaitaiType() {
+	public int getKaitaiType()
+  	{
 		return 2;
 	}
   	
   	@Override
-	public double getMountedYOffset() {
+	public double getMountedYOffset()
+  	{
   		if(this.isSitting()) {
   			return (double)this.height * 0.15F;
   		}
@@ -199,10 +207,26 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall {
   			return (double)this.height * 0.47F;
   		}
 	}
+  	
+  	@Override
+  	public boolean canBePushed()
+    {
+  		if (this.riddenByEntity instanceof BasicEntityShip ||
+  			this.ridingEntity instanceof BasicEntityShip)
+    	{
+  			return false;
+    	}
+  		else
+  		{
+  			return !this.isDead;
+  		}
+    }
 
 	@Override
-	public void setShipOutfit(boolean isSneaking) {
-		switch(getStateEmotion(ID.S.State)) {
+	public void setShipOutfit(boolean isSneaking)
+	{
+		switch (getStateEmotion(ID.S.State))
+		{
 		case ID.State.NORMAL:
 			setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
 			break;
@@ -218,8 +242,26 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall {
 		}
 	}
 	
+  	@Override
+  	protected void updateFuelState(boolean nofuel)
+	{
+  		if (this.isGattai && nofuel)
+  		{
+  			this.isGattai = false;
+
+  			if (this.ridingEntity instanceof EntityDestroyerInazuma)
+  			{
+  				((EntityDestroyerInazuma) this.ridingEntity).isGattai2 = false;
+  				this.mountEntity(null);
+  			}
+  		}
+  		
+  		super.updateFuelState(nofuel);
+	}
+	
 	@Override
-    public boolean attackEntityFrom(DamageSource attacker, float atk) {
+    public boolean attackEntityFrom(DamageSource attacker, float atk)
+	{
 		boolean dd = super.attackEntityFrom(attacker, atk);
 		
 		if (dd)
@@ -236,76 +278,55 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall {
 	}
 	
 	//檢查是否可以合體
-	public static void tryGattai(BasicEntityShip ship)
+	public void tryGattai()
 	{
 		//stop gattai if no fuel
-		if (ship != null && ship.getStateFlag(ID.F.NoFuel))
+		if (getStateFlag(ID.F.NoFuel))
 		{
 			//stop gattai
-			if (ship.riddenByEntity instanceof EntityDestroyerIkazuchi)
-			{
-				ship.riddenByEntity.mountEntity(null);
-			}
-			else if (ship.ridingEntity instanceof EntityDestroyerInazuma)
+			if (ridingEntity instanceof EntityDestroyerInazuma)
 			{
 				//stop gattai
-				ship.mountEntity(null);
+				this.isGattai = false;
+				mountEntity(null);
 			}
 			
 			return;
 		}
 		
+		//already gattai, return
+  		if (this.isGattai || isSitting() || this.isRiding()) return;
+		
 		//not sitting, hp > 50%, not craning
-		if (ship != null && !ship.getStateFlag(ID.F.NoFuel) && !ship.isSitting() &&
-			ship.getHealth() > ship.getMaxHealth() * 0.5F && ship.getStateMinor(ID.M.CraneState) == 0)
+		if (!getStateFlag(ID.F.NoFuel) && !isSitting() && getHealth() > getMaxHealth() * 0.5F &&
+			getStateMinor(ID.M.CraneState) == 0)
 		{
-			//check ship is rai or den
-			boolean isRai = (ship.getShipClass() == ID.Ship.DestroyerIkazuchi);
-			boolean isDen = (ship.getShipClass() == ID.Ship.DestroyerInazuma);
-			
-			if(!isRai && !isDen) return;
-			
 			//get nearby ship
-            List<BasicEntityShip> slist = null;
-            slist = ship.worldObj.getEntitiesWithinAABB(BasicEntityShip.class, ship.boundingBox.expand(1.5D, 1D, 1.5D));
+            List<EntityDestroyerInazuma> slist = null;
+            slist = this.worldObj.getEntitiesWithinAABB(EntityDestroyerInazuma.class, this.boundingBox.expand(4D, 4D, 4D));
 
             if (slist != null && !slist.isEmpty())
             {
-            	for (BasicEntityShip s : slist)
+            	for (EntityDestroyerInazuma s : slist)
             	{
-            		if (s != null && ((isRai && s.getShipClass() == ID.Ship.DestroyerInazuma) || (isDen && s.getShipClass() == ID.Ship.DestroyerIkazuchi)) &&
-            			EntityHelper.checkSameOwner(ship, s) && s.isEntityAlive() && !s.isRiding() &&
-            			s.riddenByEntity == null)
+            		if (s != null && EntityHelper.checkSameOwner(this, s) && s.isEntityAlive() &&
+                  		s.riddenByEntity == null && s.getStateMinor(ID.M.CraneState) == 0)
             		{
-            			if (isRai)
-            			{
-            				applyGattai(ship, s);
-            				return;
-            			}
-            			else if (isDen)
-            			{
-            				applyGattai(s, ship);
-            				return;
-            			}
+        				applyGattai(s);
+        				return;
             		}
             	}
             }//end get ship
 		}//end can gattai
 	}
 	
-	//雷電合體方法
-	private static void applyGattai(BasicEntityShip rai, BasicEntityShip den)
-	{
-		//not null, not riding, same owner, not sitting
-		if (rai != null && den != null &&
-			rai instanceof EntityDestroyerIkazuchi &&
-			den instanceof EntityDestroyerInazuma)
-		{
-			((EntityDestroyerIkazuchi)rai).isGattai = true;
-			((EntityDestroyerInazuma)den).isGattai = true;
-			rai.mountEntity(den);
-		}
-	}
+	//合體
+  	private void applyGattai(EntityDestroyerInazuma ship)
+  	{
+  		this.isGattai = true;
+  		ship.isGattai2 = true;
+  		this.mountEntity(ship);
+  	}
   	
 
 }

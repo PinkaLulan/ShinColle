@@ -1259,6 +1259,18 @@ public class ModelCarrierHime extends ModelBase implements IModelEmotionAdv
 		}
 	}
 	
+	@Override
+	public void setFaceShy(IShipEmotion ent)
+	{
+		
+	}
+	
+	@Override
+	public void setFaceHappy(IShipEmotion ent)
+	{
+		
+	}
+	
 	
 }
 

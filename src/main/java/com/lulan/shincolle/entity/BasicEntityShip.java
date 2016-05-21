@@ -1,6 +1,7 @@
 package com.lulan.shincolle.entity;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
@@ -8,7 +9,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
@@ -31,6 +31,7 @@ import com.lulan.shincolle.ai.EntityAIShipFlee;
 import com.lulan.shincolle.ai.EntityAIShipFloating;
 import com.lulan.shincolle.ai.EntityAIShipFollowOwner;
 import com.lulan.shincolle.ai.EntityAIShipGuarding;
+import com.lulan.shincolle.ai.EntityAIShipLookIdle;
 import com.lulan.shincolle.ai.EntityAIShipOpenDoor;
 import com.lulan.shincolle.ai.EntityAIShipRangeTarget;
 import com.lulan.shincolle.ai.EntityAIShipRevengeTarget;
@@ -105,7 +106,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	 *  44:WpStayTime
 	 */
 	protected int[] StateMinor;
-	/** timer array: 0:RevengeTime 1:CraneTime
+	/** timer array: 0:RevengeTime 1:CraneTime 2:ImmuneTime 3:CraneDelay 4:WpStayTime 5:Emotion3Time
 	 */
 	protected int[] StateTimer;
 	/** equip effect: 0:critical 1:doubleHit 2:tripleHit 3:baseMiss 4:atk_AntiAir 5:atk_AntiSS 6:dodge*/
@@ -117,7 +118,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	protected float[] EffectFormation;
 	/** formation fixed effect: 0:MOV */
 	protected float[] EffectFormationFixed;
-	/** EntityState: 0:State 1:Emotion 2:Emotion2 3:HP State 4:State2 5:AttackPhase*/
+	/** EntityState: 0:State 1:Emotion 2:Emotion2 3:HP State 4:State2 5:AttackPhase 6:Emotion3*/
 	protected byte[] StateEmotion;
 	/** EntityFlag: 0:canFloatUp 1:isMarried 2:noFuel 3:canMelee 4:canAmmoLight 5:canAmmoHeavy 
 	 *  6:canAirLight 7:canAirHeavy 8:headTilt(client only) 9:canRingEffect 10:canDrop 11:canFollow
@@ -181,15 +182,15 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				                     -1, 0,  0,  0,  0,
 				                     -1, -1, -1, 0,  0
 				                    };
-		this.StateTimer = new int[] {0,  0,  0,  0,  0};
+		this.StateTimer = new int[] {0,  0,  0,  0,  0,  0};
 		this.EffectEquip = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F};
 		this.EffectEquipBU = this.EffectEquip.clone();
 		this.EffectFormation = new float[] {0F, 0F, 0F, 0F, 0F,
 									        0F, 0F, 0F, 0F, 0F,
 									        0F, 0F, 0F};
 		this.EffectFormationFixed = new float[] {0F};
-		this.StateEmotion = new byte[] {0, 0, 0, 0, 0, 0};
-		this.StateFlag = new boolean[] {false, false, true, false, true,
+		this.StateEmotion = new byte[] {0, 0, 0, 0, 0, 0, 0};
+		this.StateFlag = new boolean[] {false, false, false, false, true,
 				                        true, true, true, false, true,
 								        true, false, true, true, true,
 								        true, true, false, true, false,
@@ -512,7 +513,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.tasks.addTask(23, new EntityAIShipFloating(this));			//0111
 		this.tasks.addTask(24, new EntityAIShipWatchClosest(this, EntityPlayer.class, 4F, 0.06F));//0010
 		this.tasks.addTask(25, new EntityAIShipWander(this, 10, 5, 0.8D));//0111
-		this.tasks.addTask(25, new EntityAILookIdle(this));				//0011
+		this.tasks.addTask(25, new EntityAIShipLookIdle(this));			//0011
 	}
 	
 	//setup target AI
@@ -559,7 +560,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	abstract public int getEquipType();
 	
 	/** 0:small, 1:large, 2:mob small, 3:mob large*/
-	abstract public int getKaitaiType();
+//	@Deprecated
+	public int getKaitaiType()
+	{
+		return 0;
+	}
 	
 	@Override
 	public int getLevel() {
@@ -1180,15 +1185,18 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		TypeModify[ID.HIT] = getStat[ID.ShipAttr.ModHIT];
 	}
 
-	public void setStateTimer(int id, int value) {
+	public void setStateTimer(int id, int value)
+	{
 		StateTimer[id] = value;
 	}
 	
 	@Override
-	public void setStateEmotion(int id, int value, boolean sync) {
+	public void setStateEmotion(int id, int value, boolean sync)
+	{
 		StateEmotion[id] = (byte)value;
 		
-		if(sync) {
+		if (sync)
+		{
 			this.sendSyncPacketEmotion();
 		}
 	}
@@ -1315,17 +1323,20 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	}
 	
 	/** sync data for timer display */
-	public void sendSyncPacketTimer() {
+	public void sendSyncPacketTimer()
+	{
 		sendSyncPacket(S2CEntitySync.PID.SyncShip_Timer, true);
 	}
 	
 	/** sync data for emotion display */
-	public void sendSyncPacketEmotion() {
+	public void sendSyncPacketEmotion()
+	{
 		sendSyncPacket(S2CEntitySync.PID.SyncShip_Emo, true);
 	}
 	
 	/** sync data for flag */
-	public void sendSyncPacketFlag() {
+	public void sendSyncPacketFlag()
+	{
 		sendSyncPacket(S2CEntitySync.PID.SyncShip_Flag, true);
 	}
 	
@@ -1359,22 +1370,27 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	
 	//right click on ship
 	@Override
-	public boolean interact(EntityPlayer player) {	
+	public boolean interact(EntityPlayer player)
+	{	
 		ItemStack itemstack = player.inventory.getCurrentItem();  //get item in hand
 		
 		//use item
-		if(itemstack != null) {
+		if (itemstack != null)
+		{
 			//use pointer item (caress head mode)
-			if(itemstack.getItem() == ModItems.PointerItem && !this.worldObj.isRemote) {
+			if (itemstack.getItem() == ModItems.PointerItem && !this.worldObj.isRemote)
+			{
 				//set ai target
 				this.aiTarget = player;
 				
 				//is owner
-				if(EntityHelper.checkSameOwner(player, this) && !this.getStateFlag(ID.F.NoFuel)) {
+				if (EntityHelper.checkSameOwner(player, this) && !this.getStateFlag(ID.F.NoFuel))
+				{
 					int t = this.ticksExisted - this.getMoraleTick();
 					int m = this.getStateMinor(ID.M.Morale);
 					
-					if(t > 3 && m < 6600) {  //if caress > 3 ticks
+					if (t > 3 && m < 6600)
+					{  //if caress > 3 ticks
 						this.setMoraleTick(this.ticksExisted);
 						this.setStateMinor(ID.M.Morale, m + ConfigHandler.baseCaressMorale);
 					}
@@ -1383,7 +1399,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 					applyEmotesReaction(0);
 				}
 				//not owner or no fuel
-				else {
+				else
+				{
 					applyEmotesReaction(1);
 				}
 				
@@ -1608,14 +1625,20 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				else {
 					this.setEntitySit();
 					
-					if (this.ridingEntity instanceof BasicEntityShip)
+					//loop all rider to set sitting
+					Entity ridden = this.ridingEntity;
+					while (ridden instanceof BasicEntityShip)
 					{
-						((BasicEntityShip) this.ridingEntity).setEntitySit();
+						((BasicEntityShip) ridden).setEntitySit();
+						ridden = ridden.ridingEntity;
 					}
 					
-					if (this.riddenByEntity instanceof BasicEntityShip)
+					//loop all ridden entity to set sitting
+					ridden = this.riddenByEntity;
+					while (ridden instanceof BasicEntityShip)
 					{
-						((BasicEntityShip) this.riddenByEntity).setEntitySit();
+						((BasicEntityShip) ridden).setEntitySit();
+						ridden = ridden.riddenByEntity;
 					}
 				}
 				
@@ -2847,34 +2870,45 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	}
 	
 	//eat grudge and change movement speed
-	protected void decrGrudgeNum(int par1) {
+	protected void decrGrudgeNum(int par1)
+	{
 		//limit max cost per checking
-		if(par1 > 500) {
+		if (par1 > 500)
+		{
 			par1 = 500;
 		}
 		
 		//check fuel flag
-		if(!getStateFlag(ID.F.NoFuel)) {  //has fuel
+		if (!getStateFlag(ID.F.NoFuel))
+		{  //has fuel
 			StateMinor[ID.M.NumGrudge] -= par1;
 		}
 
 		//eat one grudge if fuel <= 0
-		if(StateMinor[ID.M.NumGrudge] <= 0) {
+		if (StateMinor[ID.M.NumGrudge] <= 0)
+		{
 			//try to find grudge
-			if(decrSupplies(4)) {		//find grudge
-				if(ConfigHandler.easyMode) {
+			if (decrSupplies(4))
+			{		//find grudge
+				if (ConfigHandler.easyMode)
+				{
 					StateMinor[ID.M.NumGrudge] += Values.N.BaseGrudge * 10;
 				}
-				else {
+				else
+				{
 					StateMinor[ID.M.NumGrudge] += Values.N.BaseGrudge;
 				}
 			}
-			else {
-				if(decrSupplies(5)) {	//find grudge block
-					if(ConfigHandler.easyMode) {
+			else
+			{
+				if (decrSupplies(5))  //find grudge block
+				{
+					if (ConfigHandler.easyMode)
+					{
 						StateMinor[ID.M.NumGrudge] += Values.N.BaseGrudge * 90;
 					}
-					else {
+					else
+					{
 						StateMinor[ID.M.NumGrudge] += Values.N.BaseGrudge * 9;
 					}
 				}
@@ -2883,22 +2917,28 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		}
 		
 		//check fuel again and set fuel flag
-		if(StateMinor[ID.M.NumGrudge] <= 0) {
+		if (StateMinor[ID.M.NumGrudge] <= 0)
+		{
 			setStateFlag(ID.F.NoFuel, true);
 		}
-		else {
+		else
+		{
 			setStateFlag(ID.F.NoFuel, false);
 		}
 		
 		//check fuel flag and set AI
-		if(getStateFlag(ID.F.NoFuel)) { //no fuel, clear AI
+		if (getStateFlag(ID.F.NoFuel))  //no fuel, clear AI
+		{
 			//原本有AI, 則清除之
-			if(this.targetTasks.taskEntries.size() > 0) {
+			if (this.targetTasks.taskEntries.size() > 0)
+			{
 				updateFuelState(true);
 			}	
 		}
-		else { //has fuel, set AI
-			if(this.targetTasks.taskEntries.size() < 1) {
+		else							//has fuel, set AI
+		{
+			if (this.targetTasks.taskEntries.size() < 1)
+			{
 				updateFuelState(false);
 			}
 		}
@@ -3210,12 +3250,14 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	}
 	
 	//不跟aircraft, mount, rider碰撞
+	@Override
   	protected void collideWithEntity(Entity target) {
   		if(target instanceof BasicEntityAirplane ||
   		   target.equals(this.riddenByEntity) ||
   		   target.equals(this.ridingEntity)) {
   			return;
   		}
+  		
   		target.applyEntityCollision(this);
     }
   	
@@ -3641,12 +3683,24 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	}
   	
   	/** update client timer */
-  	protected void updateBothSideTimer() {
+  	protected void updateBothSideTimer()
+  	{
   		//hurt sound delay
-  		if(this.soundCD > 0) this.soundCD--;
+  		if (this.soundCD > 0) this.soundCD--;
   		
   		//emotes delay
-		if(this.EmotionTicks[4] > 0) this.EmotionTicks[4]--;
+		if (this.EmotionTicks[4] > 0) this.EmotionTicks[4]--;
+		
+		//emotion 3 delay
+		if (this.StateTimer[ID.T.Emotion3Time] > 0)
+		{
+			this.StateTimer[ID.T.Emotion3Time]--;
+			
+			if (this.StateTimer[ID.T.Emotion3Time] == 0)
+			{
+				this.setStateEmotion(ID.S.Emotion3, 0, true);
+			}
+		}
   	}
   	
   	/** update rotate */
@@ -3872,33 +3926,55 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		}
 	}
   	
+  	//caress state for model display
+  	protected void isCaressed()
+  	{
+  		//default: only top or head = caressed
+  		if (getHitHeightID() <= 1)
+  		{
+  			setStateEmotion(ID.S.Emotion3, ID.Emotion3.CARESS, true);
+  			setStateTimer(ID.T.Emotion3Time, 80);
+  		}
+  	}
+  	
   	/** normal emotes */
-  	protected void reactionNormal() {
+  	protected void reactionNormal()
+  	{
   		Random ran = new Random();
   		int m = getStateMinor(ID.M.Morale);
   		int body = getHitBodyID();
   		int baseMorale = (int) ((float)ConfigHandler.baseCaressMorale * 2.5F);
   		LogHelper.info("DEBUG : hit ship: Morale: "+m+" BodyID: "+body+" sensitiveBodyID: "+this.getSensitiveBody()); 		
   		
+  		//change emotion3 to caressed
+  		isCaressed();
+  		
   		//show emotes by morale level
-		switch(getMoraleLevel()) {
+		switch (getMoraleLevel())
+		{
 		case 0:   //excited
 			//check sensitive body
-	  		if(body == getSensitiveBody()) {
-	  			if(this.rand.nextInt(2) == 0) {
+	  		if (body == getSensitiveBody())
+	  		{
+	  			if (this.rand.nextInt(2) == 0)
+	  			{
 	  				applyParticleEmotion(31);  //shy
 	  			}
-	  			else {
+	  			else
+	  			{
 	  				applyParticleEmotion(10);  //dizzy
 	  			}
 	  			
-	  			if(getStateMinor(ID.M.Morale) < 8100) {
+	  			if (getStateMinor(ID.M.Morale) < 8100)
+	  			{
 	  				this.setStateMinor(ID.M.Morale, m + baseMorale * 3 + this.rand.nextInt(baseMorale + 1));
 	  			}
 	  		}
 	  		//other reaction
-	  		else {
-				switch(body) {
+	  		else
+	  		{
+				switch (body)
+				{
 				case ID.Body.UBelly:
 				case ID.Body.Butt:
 				case ID.Body.Chest:
@@ -5008,6 +5084,28 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	public void setWpStayTime(int time) {
 		setStateTimer(ID.T.WpStayTime, time);
 	}
+	
+	@Override
+	protected void collideWithNearbyEntities()
+    {
+        List list = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.expand(0.20000000298023224D, 0.0D, 0.20000000298023224D));
+
+        if (list != null && !list.isEmpty())
+        {
+            for (int i = 0; i < list.size(); ++i)
+            {
+                Entity entity = (Entity)list.get(i);
+
+                if (entity.canBePushed() &&
+                	!(entity instanceof BasicEntityAirplane ||
+                	entity.equals(this.riddenByEntity) ||
+                	entity.equals(this.ridingEntity)))
+                {
+                    this.collideWithEntity(entity);
+                }
+            }
+        }
+    }
 	
   	
 }

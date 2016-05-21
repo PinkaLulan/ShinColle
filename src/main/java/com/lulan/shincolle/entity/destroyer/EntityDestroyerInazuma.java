@@ -1,5 +1,8 @@
 package com.lulan.shincolle.entity.destroyer;
 
+import java.util.List;
+
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
@@ -11,18 +14,20 @@ import net.minecraft.world.World;
 
 import com.lulan.shincolle.ai.EntityAIShipPickItem;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
+import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.entity.ExtendShipProps;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 
 public class EntityDestroyerInazuma extends BasicEntityShipSmall {
 
 	public boolean isGattai = false;
+	public boolean isGattai2 = false;
 	
 	
 	public EntityDestroyerInazuma(World world) {
@@ -43,7 +48,7 @@ public class EntityDestroyerInazuma extends BasicEntityShipSmall {
 		this.StateFlag[ID.F.CanPickItem] = true;
 		
 		//gattai
-		this.isGattai = false;
+		this.isGattai2 = false;
 				
 		this.postInit();
 	}
@@ -82,18 +87,22 @@ public class EntityDestroyerInazuma extends BasicEntityShipSmall {
   		{
   			if (this.ticksExisted % 32 == 0)
   			{
+  				this.isGattai = false;
+  				this.isGattai2 = false;
+  				
   				//update gattai
   				if (this.riddenByEntity instanceof EntityDestroyerIkazuchi)
   				{
-  					this.isGattai = true;
+  					this.isGattai2 = true;
   				}
-  				else
+  				
+  				if (this.ridingEntity instanceof EntityDestroyerHibiki)
   				{
-  					this.isGattai = false;
+  					this.isGattai = true;
   				}
   				
   				//add morale when gattai
-  				if (this.isGattai)
+  				if (this.isGattai || this.isGattai2)
   				{
   					int m = this.getStateMinor(ID.M.Morale);
   					
@@ -117,7 +126,7 @@ public class EntityDestroyerInazuma extends BasicEntityShipSmall {
   	  				}
   	  				
   	  				//try gattai
-  	  				EntityDestroyerIkazuchi.tryGattai(this);
+  	  				tryGattai();
   	  			}
   			}
   		}
@@ -139,10 +148,26 @@ public class EntityDestroyerInazuma extends BasicEntityShipSmall {
   		}
   		
   		//sync rotate when gattai
-		if (this.riddenByEntity instanceof EntityDestroyerIkazuchi)
+  		if (this.ridingEntity instanceof EntityDestroyerHibiki)
 		{
-			((EntityDestroyerIkazuchi) this.riddenByEntity).renderYawOffset = this.renderYawOffset;
-			((EntityDestroyerIkazuchi) this.riddenByEntity).prevRenderYawOffset = this.prevRenderYawOffset;
+  			if (this.ridingEntity.ridingEntity instanceof EntityDestroyerAkatsuki)
+  			{
+  				((EntityLivingBase) this.ridingEntity).renderYawOffset = ((EntityLivingBase) this.ridingEntity.ridingEntity).renderYawOffset;
+  				((EntityLivingBase) this.ridingEntity).prevRenderYawOffset = ((EntityLivingBase) this.ridingEntity.ridingEntity).prevRenderYawOffset;
+  				this.ridingEntity.rotationYaw = this.ridingEntity.ridingEntity.rotationYaw;
+  				this.ridingEntity.prevRotationYaw = this.ridingEntity.ridingEntity.prevRotationYaw;
+  			}
+  			
+  			this.renderYawOffset = ((EntityLivingBase) this.ridingEntity).renderYawOffset;
+			this.prevRenderYawOffset = ((EntityLivingBase) this.ridingEntity).prevRenderYawOffset;
+			this.rotationYaw = this.ridingEntity.rotationYaw;
+			this.prevRotationYaw = this.ridingEntity.prevRotationYaw;
+		}
+  		
+  		if (this.riddenByEntity instanceof EntityDestroyerIkazuchi)
+		{
+			((EntityLivingBase) this.riddenByEntity).renderYawOffset = this.renderYawOffset;
+			((EntityLivingBase) this.riddenByEntity).prevRenderYawOffset = this.prevRenderYawOffset;
 			this.riddenByEntity.rotationYaw = this.rotationYaw;
 			this.riddenByEntity.prevRotationYaw = this.prevRotationYaw;
 		}
@@ -155,10 +180,10 @@ public class EntityDestroyerInazuma extends BasicEntityShipSmall {
   		{
   			this.isGattai = false;
 
-  			if (this.riddenByEntity instanceof EntityDestroyerIkazuchi)
+  			if (this.ridingEntity instanceof EntityDestroyerHibiki)
   			{
-  				((EntityDestroyerIkazuchi) this.riddenByEntity).isGattai = false;
-  				this.riddenByEntity.mountEntity(null);
+  				((EntityDestroyerHibiki) this.ridingEntity).isGattai2 = false;
+  				this.mountEntity(null);
   			}
   		}
   		
@@ -166,12 +191,15 @@ public class EntityDestroyerInazuma extends BasicEntityShipSmall {
 	}
   	
   	@Override
-  	public boolean interact(EntityPlayer player) {	
+  	public boolean interact(EntityPlayer player)
+  	{	
 		ItemStack itemstack = player.inventory.getCurrentItem();  //get item in hand
 		
 		//use cake to change state
-		if(itemstack != null) {
-			if(itemstack.getItem() == Items.cake) {
+		if (itemstack != null)
+		{
+			if (itemstack.getItem() == Items.cake)
+			{
 				this.setShipOutfit(player.isSneaking());
 				return true;
 			}
@@ -181,50 +209,117 @@ public class EntityDestroyerInazuma extends BasicEntityShipSmall {
   	}
   	
   	@Override
-	public int getKaitaiType() {
+	public int getKaitaiType()
+  	{
 		return 2;
 	}
   	
   	@Override
-	public double getMountedYOffset() {
-  		if (this.riddenByEntity instanceof EntityDestroyerIkazuchi)
+	public double getMountedYOffset()
+  	{
+  		if (this.isSitting())
   		{
-  			if(this.isSitting())
-  	  		{
-  				if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
-	  	  		{
-	  	  			return (double)this.height * -0.07F;
-	  	  		}
-	  	  		else
-	  	  		{
-	  	  			return (double)this.height * 0.05F;
-	  	  		}
-  	  		}
-  	  		else
-  	  		{
-	  	  		if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
-	  	  		{
-	  	  			return (double)this.height * 0.25F;
-	  	  		}
-	  	  		else
-	  	  		{
-	  	  			return (double)this.height * 0.32F;
-	  	  		}
-  	  		}
-  		}
-  		else if(this.isSitting())
-  		{
-  			return (double)this.height * 0.15F;
+			if (this.riddenByEntity instanceof EntityDestroyerIkazuchi)
+	    	{
+				if (this.ridingEntity instanceof EntityDestroyerHibiki)
+  				{
+					if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
+  					{
+						return (double)this.height * 0.28F;
+  					}
+  					else
+  					{
+  						return (double)this.height * 0.35F;
+  					}
+  				}
+  				else
+  				{
+  					if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
+  					{
+  						return (double)this.height * 0.15F;
+  					}
+  					else
+  					{
+  						return (double)this.height * 0.22F;
+  					}
+  				}
+	    	}
+			else
+			{
+				return (double)this.height * 0.15F;
+			}
   		}
   		else
   		{
-  			return (double)this.height * 0.47F;
+  			if (this.riddenByEntity instanceof EntityDestroyerIkazuchi)
+	    	{
+  				if (this.ridingEntity instanceof EntityDestroyerHibiki)
+  				{
+  					if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
+  					{
+						return (double)this.height * 0.28F;
+  					}
+  					else
+  					{
+  						return (double)this.height * 0.35F;
+  					}
+  				}
+  				else
+  				{
+  					if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
+  					{
+						return (double)this.height * 0.4F;
+  					}
+  					else
+  					{
+  						return (double)this.height * 0.5F;
+  					}
+  				}
+	    	}
+			else
+			{
+				return (double)this.height * 0.47F;
+			}
   		}
+  				
 	}
+  	
+  	@Override
+  	public void updateRiderPosition()
+    {
+        if (this.riddenByEntity != null)
+        {
+        	if (this.riddenByEntity instanceof EntityDestroyerIkazuchi)
+        	{
+	  			float[] partPos = ParticleHelper.rotateXZByAxis(-0.2F, 0F, (this.renderYawOffset % 360) * Values.N.RAD_MUL, 1F);
+        		this.riddenByEntity.setPosition(this.posX + partPos[1], this.posY + this.getMountedYOffset() + this.riddenByEntity.getYOffset(), this.posZ + partPos[0]);
+        	}
+        	else
+        	{
+        		this.riddenByEntity.setPosition(this.posX, this.posY + this.getMountedYOffset() + this.riddenByEntity.getYOffset(), this.posZ);
+        	}
+        }
+    }
+  	
+  	@Override
+  	public boolean canBePushed()
+    {
+  		if (this.riddenByEntity instanceof BasicEntityShip ||
+  			this.ridingEntity instanceof BasicEntityShip)
+    	{
+  			return false;
+    	}
+  		else
+  		{
+  			return !this.isDead;
+  		}
+    }
 
 	@Override
-	public void setShipOutfit(boolean isSneaking) {
-		switch(getStateEmotion(ID.S.State)) {
+	public void setShipOutfit(boolean isSneaking)
+	{
+		switch (getStateEmotion(ID.S.State))
+		{
 		case ID.State.NORMAL:
 			setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
 			break;
@@ -235,21 +330,74 @@ public class EntityDestroyerInazuma extends BasicEntityShipSmall {
 	}
 	
 	@Override
-    public boolean attackEntityFrom(DamageSource attacker, float atk) {
+    public boolean attackEntityFrom(DamageSource attacker, float atk)
+	{
 		boolean dd = super.attackEntityFrom(attacker, atk);
 		
 		if (dd)
 		{
 			//cancel gattai
-			if (this.ridingEntity instanceof EntityDestroyerInazuma)
+			if (this.ridingEntity instanceof EntityDestroyerHibiki)
 			{
 				this.isGattai = false;
+				((EntityDestroyerHibiki) this.ridingEntity).isGattai2 = false;
 				this.mountEntity(null);
 			}
 		}
 		
 		return dd;
 	}
+	
+	//檢查是否可以合體
+  	public void tryGattai()
+  	{
+  		//stop gattai if no fuel
+  		if (getStateFlag(ID.F.NoFuel))
+  		{
+  			//stop gattai
+  			if (ridingEntity instanceof EntityDestroyerHibiki)
+  			{
+  				mountEntity(null);
+  				isGattai = false;
+  			}
+  			
+  			return;
+  		}
+  		
+  		//already gattai, return
+  		if (this.isGattai || isSitting() || this.isRiding()) return;
+  		
+  		//not sitting, hp > 50%, not craning, formation = line ahead
+  		if (!getStateFlag(ID.F.NoFuel) && !isSitting() && getHealth() > getMaxHealth() * 0.5F &&
+  			getStateMinor(ID.M.CraneState) == 0 && getStateMinor(ID.M.FormatType) == 1)
+  		{
+  			//get nearby ship
+  			List<EntityDestroyerHibiki> slist = null;
+  			slist = this.worldObj.getEntitiesWithinAABB(EntityDestroyerHibiki.class, this.boundingBox.expand(4D, 4D, 4D));
+
+  			if (slist != null && !slist.isEmpty())
+  			{
+              	for (EntityDestroyerHibiki s : slist)
+              	{
+              		if (s != null && EntityHelper.checkSameOwner(this, s) && s.isEntityAlive() &&
+              			s.riddenByEntity == null && s.getStateMinor(ID.M.CraneState) == 0 &&
+              			s.getStateMinor(ID.M.FormatType) == 1)
+              		{
+              			applyGattai(s);
+              			return;
+              		}
+              	}
+              }//end get ship
+  		}//end can gattai
+  	}
+  	
+  	//合體
+  	private void applyGattai(EntityDestroyerHibiki ship)
+  	{
+  		this.isGattai = true;
+  		ship.isGattai2 = true;
+  		this.mountEntity(ship);
+  	}
   	
 
 }

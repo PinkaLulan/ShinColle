@@ -25,7 +25,7 @@ public class EntityFXSpray extends EntityFX {
     public EntityFXSpray(World world, double posX, double posY, double posZ, double motionX, double motionY, double motionZ, int type) {
         super(world, posX, posY, posZ, 0.0D, 0.0D, 0.0D);
         
-        if(type < 13) {
+        if(type < 13 || type == 15) {
         	this.motionX *= 0.1D;
             this.motionY *= 0.1D;
             this.motionZ *= 0.1D;
@@ -199,6 +199,17 @@ public class EntityFXSpray extends EntityFX {
             this.particleMaxAge = 100;
             this.noClip = true;
         	break;
+        case 15:   //transparent cyan
+        	this.speedLimit = 0.3D;
+        	this.particleRed = 0.7F;
+            this.particleGreen = 1F;
+            this.particleBlue = 1F;
+            this.particleAlpha = 0.75F;
+            this.particleScale *= 1.5F;
+            this.pScale = this.particleScale;
+            this.particleMaxAge = 40;
+            this.noClip = false;
+        	break;
         default:  //default = type 0 = 1A red
         	this.speedLimit = 0.3D;
         	this.particleRed = 1F;
@@ -268,7 +279,7 @@ public class EntityFXSpray extends EntityFX {
                 return;
             }
             
-            if(this.ptype >= 13) {
+            if(this.ptype >= 13 && this.ptype != 15) {
             	this.setParticleTextureIndex(7 - this.particleAge * 4 / this.particleMaxAge);
             	
             	this.posX += this.motionX;

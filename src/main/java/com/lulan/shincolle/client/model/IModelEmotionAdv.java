@@ -14,5 +14,8 @@ public interface IModelEmotionAdv extends IModelEmotion {
 	public void setFaceAngry(IShipEmotion ent);
 	public void setFaceScorn(IShipEmotion ent);
 	public void setFaceBored(IShipEmotion ent);
+	public void setFaceShy(IShipEmotion ent);
+	public void setFaceHappy(IShipEmotion ent);
+	
 	
 }

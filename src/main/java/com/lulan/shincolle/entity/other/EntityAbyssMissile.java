@@ -333,7 +333,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
         		
         		switch(this.type) {
         		case 1:
-        			smokeType = 16;
+        			smokeType = 41;
         			break;
         		case 3:
         		case 4:
