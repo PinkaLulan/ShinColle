@@ -280,11 +280,16 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
 					CommonProxy.channelP.sendTo(new S2CSpawnParticle(25, pos[0], pos[1], pos[2], 0.3, 6, 0), (EntityPlayerMP) player);
 				}
 			}
+			
+			if (host.getStateFlag(ID.F.PickItem)) this.maxDistSq = 64D;
 		}
 		//no formation
 		else {
 			float fMin = host.getStateMinor(ID.M.FollowMin) + host2.width * 0.75F;
 	    	float fMax = host.getStateMinor(ID.M.FollowMax) + host2.width * 0.75F;
+	    	
+	    	if (host.getStateFlag(ID.F.PickItem)) fMax += 5D;
+	    	
 	    	this.minDistSq = fMin * fMin;
 	        this.maxDistSq = fMax * fMax;
 	        
@@ -292,7 +297,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase {
 			pos[1] = owner.posY;
 			pos[2] = owner.posZ;
 		}
-
+		
     	//計算直線距離
     	this.distX = pos[0] - this.host2.posX;
 		this.distY = pos[1] - this.host2.posY;

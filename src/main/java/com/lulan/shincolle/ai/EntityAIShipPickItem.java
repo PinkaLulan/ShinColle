@@ -14,6 +14,7 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 
 /** SHIP PICK ITEM AI
@@ -92,32 +93,28 @@ public class EntityAIShipPickItem extends EntityAIBase {
     		//cd--
     		this.pickDelay--;
     		
-    		//check every 8 ticks
-    		if(this.hostShip.ticksExisted % 8 == 0)
+			//check every 16 ticks
+    		if (this.hostShip.ticksExisted % 16 == 0)
     		{
+    			//update parms
+    			updateShipParms();
+    			
     			//check item on ground
     			this.entItem = getNearbyEntityItem();
     			
-    			//check every 16 ticks
-        		if (this.hostShip.ticksExisted % 16 == 0)
-        		{
-        			//update parms
-        			updateShipParms();
-        			
-        			if (this.entItem != null && this.entItem.isEntityAlive())
-        			{
-        				//go to entity
-        				if (this.hostMount != null)
-        				{
-        					this.hostMount.getShipNavigate().tryMoveToEntityLiving(this.entItem, 1D);
-        				}
-        				else if (this.hostShip != null)
-        				{
-        					this.hostShip.getShipNavigate().tryMoveToEntityLiving(this.entItem, 1D);
-        				}
-        			}
-        		}//end every 16 ticks
-    		}//end every 8 ticks
+    			if (this.entItem != null && this.entItem.isEntityAlive())
+    			{
+    				//go to entity
+    				if (this.hostMount != null)
+    				{
+    					this.hostMount.getShipNavigate().tryMoveToEntityLiving(this.entItem, 1D);
+    				}
+    				else if (this.hostShip != null)
+    				{
+    					this.hostShip.getShipNavigate().tryMoveToEntityLiving(this.entItem, 1D);
+    				}
+    			}
+    		}//end every 16 ticks
 			
     		//pick up nearby item
     		if (this.pickDelay <= 0 && this.entItem != null)
@@ -180,7 +177,7 @@ public class EntityAIShipPickItem extends EntityAIBase {
         List getlist = null;
         
         getlist = this.hostShip.worldObj.getEntitiesWithinAABB(EntityItem.class,
-        		this.hostShip.boundingBox.expand(this.pickRange, this.pickRange * 0.5F, this.pickRange));
+        		this.hostShip.boundingBox.expand(this.pickRange, this.pickRange * 0.5F + 1F, this.pickRange));
         
         //get random item
         if (getlist != null && !getlist.isEmpty())
@@ -200,7 +197,10 @@ public class EntityAIShipPickItem extends EntityAIBase {
     	if(speed < 1F) speed = 1F;
     	
     	this.pickDelayMax = (int) (10F / speed);
+    	
+    	float tempran = this.pickRangeBase + this.hostShip.getStateMinor(ID.M.FollowMax);
     	this.pickRange = this.pickRangeBase + this.hostShip.getAttackRange() * 0.5F;
+    	this.pickRange = Math.min(tempran, this.pickRange);
     }
     
     

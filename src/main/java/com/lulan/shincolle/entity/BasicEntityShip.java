@@ -1813,7 +1813,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				}
 				break;
 			case 6:  //combat ration
-				addsatur = 15;
+				addsatur = 7;
 				addgrudge = mfood;
 				mfood = 0;
 				
@@ -1841,15 +1841,18 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	    	}
 			
 			//item--
-			if (!player.capabilities.isCreativeMode)
+			if (player != null)
 			{
-	            if (--itemstack.stackSize <= 0)
-	            {
-	            	//update slot
-	            	itemstack = itemstack.getItem().getContainerItem(itemstack);
-	            	player.inventory.setInventorySlotContents(player.inventory.currentItem, itemstack);
-	            }
-	        }
+				if (!player.capabilities.isCreativeMode)
+				{
+		            if (--itemstack.stackSize <= 0)
+		            {
+		            	//update slot
+		            	itemstack = itemstack.getItem().getContainerItem(itemstack);
+		            	player.inventory.setInventorySlotContents(player.inventory.currentItem, itemstack);
+		            }
+		        }
+			}
 			
 			//morale++
 			this.setStateMinor(ID.M.Morale, mvalue + mfood);
@@ -2336,6 +2339,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                             		}
                         		}
                         		
+                        		//use combat ration automatically
+                        		if (getStateMinor(ID.M.Morale) < 2100 && getFoodSaturation() < getFoodSaturationMax())
+                        		{
+                        			useCombatRation();
+                        		}
+                        		
                         		//update hp state
                         		updateEmotionState();
                         		
@@ -2390,6 +2399,32 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	
         }//end if(server side)
     }
+	
+	//use combat ration
+	protected void useCombatRation()
+	{
+		//search item in ship inventory
+		int i = findItemInSlot(new ItemStack(ModItems.CombatRation), true);
+		
+		if (i >= 0)
+		{
+			//decr item stacksize
+			ItemStack getItem = this.ExtProps.slots[i];
+			
+			interactFeed(null, getItem);
+			
+			getItem.stackSize--;
+			
+			if (getItem.stackSize <= 0)
+			{
+				getItem = null;
+			}
+			
+			//save back itemstack
+			//no need to sync because no GUI opened
+			this.ExtProps.slots[i] = getItem;
+		}
+	}
 	
 	@Override
     protected void updateArmSwingProgress()
@@ -2969,12 +3004,15 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	}
 	
 	//decrese ammo/grudge/repair item, return true or false(not enough item)
-	protected boolean decrSupplies(int type) {
+	protected boolean decrSupplies(int type)
+	{
 		int itemNum = 1;
+		boolean noMeta = false;
 		ItemStack itemType = null;
 		
 		//find ammo
-		switch(type) {
+		switch (type)
+		{
 		case 0:	//use 1 light ammo
 			itemType = new ItemStack(ModItems.Ammo,1,0);
 			break;
@@ -3001,32 +3039,37 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			break;
 		case 8:	//use 1 repair goddess
 			itemType = new ItemStack(ModItems.RepairGoddess,1);
-			break;	
+			break;
 		}
 		
 		//search item in ship inventory
-		int i = findItemInSlot(itemType);
-		if(i == -1) {		//item not found
+		int i = findItemInSlot(itemType, noMeta);
+		
+		if (i == -1)
+		{		//item not found
 			return false;
 		}
 		
 		//decr item stacksize
 		ItemStack getItem = this.ExtProps.slots[i];
 
-		if(getItem.stackSize >= itemNum) {
+		if (getItem.stackSize >= itemNum)
+		{
 			getItem.stackSize -= itemNum;
 		}
-		else {	//not enough item, return false
+		else
+		{	//not enough item, return false
 			return false;
 		}
 				
-		if(getItem.stackSize == 0) {
+		if (getItem.stackSize == 0)
+		{
 			getItem = null;
 		}
 		
 		//save back itemstack
 		//no need to sync because no GUI opened
-		this.ExtProps.slots[i] = getItem;	
+		this.ExtProps.slots[i] = getItem;
 		
 		return true;	
 	}
@@ -3118,20 +3161,25 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	}
 
 	//find item in ship inventory
-	protected int findItemInSlot(ItemStack parItem) {
+	protected int findItemInSlot(ItemStack parItem, boolean noMeta)
+	{
 		ItemStack slotitem = null;
 
 		//search ship inventory (except equip slots)
-		for(int i = ContainerShipInventory.SLOTS_SHIPINV; i < ExtendShipProps.SlotMax; i++) {
+		for (int i = ContainerShipInventory.SLOTS_SHIPINV; i < ExtendShipProps.SlotMax; i++)
+		{
 			//check inv size
-			switch(getInventoryPageSize()) {
+			switch (getInventoryPageSize())
+			{
 			case 0:
-				if(i >= ContainerShipInventory.SLOTS_SHIPINV + 18) {
+				if (i >= ContainerShipInventory.SLOTS_SHIPINV + 18)
+				{
 					return -1;
 				}
 				break;
 			case 1:
-				if(i >= ContainerShipInventory.SLOTS_SHIPINV + 36) {
+				if (i >= ContainerShipInventory.SLOTS_SHIPINV + 36)
+				{
 					return -1;
 				}
 				break;
@@ -3140,10 +3188,20 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			//get item
 			slotitem = this.ExtProps.slots[i];
 			
-			if(slotitem != null && 
-			    slotitem.getItem().equals(parItem.getItem()) && 
-			    slotitem.getItemDamage() == parItem.getItemDamage()) {
-				return i;	//found item
+			if (slotitem != null && slotitem.getItem().equals(parItem.getItem()))
+			{
+				if (noMeta)
+				{
+					return i;	//found item
+				}
+				else
+				{
+					if (slotitem.getItemDamage() == parItem.getItemDamage())
+					{
+						return i;
+					}
+				}
+				
 			}		
 		}	
 		

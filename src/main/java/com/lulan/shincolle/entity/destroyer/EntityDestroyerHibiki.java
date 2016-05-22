@@ -359,7 +359,7 @@ public class EntityDestroyerHibiki extends BasicEntityShipSmall
               			return;
               		}
               	}
-              }//end get ship
+  			}//end get ship
   		}//end can gattai
   	}
   	

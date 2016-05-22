@@ -488,24 +488,28 @@ public class EntityAIShipGuarding extends EntityAIBase {
 			if(this.ship != null && this.ship.getStateMinor(ID.M.FormatType) > 0){
 				//guard entity
 				if(this.ship.getStateMinor(ID.M.GuardType) == 2) {
-					this.minDistSq = 5;
-	                this.maxDistSq = 9;
+					this.minDistSq = 5D;
+	                this.maxDistSq = 9D;
 				}
 				//guard block
 				else {
-					this.minDistSq = 4;
-	                this.maxDistSq = 7;
+					this.minDistSq = 4D;
+	                this.maxDistSq = 7D;
 				}
 				
+				if (host.getStateFlag(ID.F.PickItem)) this.maxDistSq = 64D;
 			}
 			//not formation mode
 			else {
 				float fMin = host.getStateMinor(ID.M.FollowMin) + host2.width * 0.75F;
             	float fMax = host.getStateMinor(ID.M.FollowMax) + host2.width * 0.75F;
+            	
+            	if (host.getStateFlag(ID.F.PickItem)) fMax += 5D;
+            	
             	this.minDistSq = fMin * fMin;
                 this.maxDistSq = fMax * fMax;
 			}
-            
+			
             //計算直線距離
         	this.distX = pos[0] - this.host2.posX;
     		this.distY = pos[1] - this.host2.posY;

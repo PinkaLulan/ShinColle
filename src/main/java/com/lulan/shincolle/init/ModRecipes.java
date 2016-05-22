@@ -74,6 +74,15 @@ public class ModRecipes {
 		ItemStack crane = new ItemStack(ModBlocks.BlockCrane);
 		ItemStack waypoint = new ItemStack(ModBlocks.BlockWaypoint, 16);
 		
+		//combat ration TODO random furnace recipe
+		ItemStack ration0 = new ItemStack(ModItems.CombatRation, 1, 0);
+		ItemStack ration1 = new ItemStack(ModItems.CombatRation, 1, 1);
+		ItemStack ration2 = new ItemStack(ModItems.CombatRation, 1, 2);
+		ItemStack ration3 = new ItemStack(ModItems.CombatRation, 1, 3);
+		ItemStack ration4 = new ItemStack(ModItems.CombatRation, 1, 4);
+		ItemStack ration5 = new ItemStack(ModItems.CombatRation, 1, 5);
+		
+		
 		//SHAPELESS RECIPE
 		//abyssium material:
 		GameRegistry.addRecipe(new ShapelessOreRecipe(abyssiumStack, "ingotIron", grudeStack));
@@ -97,6 +106,16 @@ public class ModRecipes {
 		GameRegistry.addRecipe(new ShapelessOreRecipe(modernKit, kaitaiHammerAll, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(ownerPaper, grudeStack, Items.paper));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(waypoint, grudeStack, Items.stick));
+		//combat ration
+		GameRegistry.addRecipe(new ShapelessOreRecipe(ration0, Items.bread, Items.golden_carrot, grudeStack, "cropRice"));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(ration1, ration0, ModBlocks.BlockGrudge, ModBlocks.BlockPolymetalGravel));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(ration2, Items.cooked_chicken, Items.golden_carrot, grudeStack, "cropRice"));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(ration2, Items.cooked_beef, Items.golden_carrot, grudeStack, "cropRice"));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(ration2, Items.cooked_fished, Items.golden_carrot, grudeStack, "cropRice"));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(ration2, Items.cooked_porkchop, Items.golden_carrot, grudeStack, "cropRice"));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(ration3, ration2, ModBlocks.BlockGrudge, ModBlocks.BlockPolymetalGravel));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(ration4, Items.snowball, Items.snowball, Items.snowball, Items.snowball, Items.milk_bucket, ModItems.Grudge));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(ration5, ration4, ModBlocks.BlockGrudge));
 		
 		//SHAPED RECIPE
 		//ammo material: copper/tin/bronze=8 iron/lead=16 abyssium/steel/gold/silver=32 diamond/uranium=64
@@ -160,6 +179,14 @@ public class ModRecipes {
 		GameRegistry.addRecipe(new ShapedOreRecipe(frame16,"a a"," o ","a a",'o',Blocks.obsidian,'a',abyssiumStack));
 		//crane
 		GameRegistry.addRecipe(new ShapedOreRecipe(crane,"aaa","aga","apa",'a',abyssiumStack,'p',Blocks.piston,'g',grudeBlock));
+		
+		
+		//combat ration TODO random furnace recipe
+		GameRegistry.addRecipe(new ShapedOreRecipe(ration0,"www","bgc","www",'b',Items.bread,'c',Items.golden_carrot,'g',grudeStack,'w',Items.wheat));
+		GameRegistry.addRecipe(new ShapedOreRecipe(ration2,"www","bgc","www",'b',Items.cooked_beef,'c',Items.golden_carrot,'g',grudeStack,'w',Items.wheat));
+		GameRegistry.addRecipe(new ShapedOreRecipe(ration2,"www","bgc","www",'b',Items.cooked_porkchop,'c',Items.golden_carrot,'g',grudeStack,'w',Items.wheat));
+		GameRegistry.addRecipe(new ShapedOreRecipe(ration2,"www","bgc","www",'b',Items.cooked_fished,'c',Items.golden_carrot,'g',grudeStack,'w',Items.wheat));
+		GameRegistry.addRecipe(new ShapedOreRecipe(ration2,"www","bgc","www",'b',Items.cooked_chicken,'c',Items.golden_carrot,'g',grudeStack,'w',Items.wheat));
 		
 	}
 
