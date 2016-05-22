@@ -31,6 +31,12 @@ item.shincolle:Ammo1.name=怨念彈集裝箱
 item.shincolle:Ammo2.name=重型怨念彈
 item.shincolle:Ammo3.name=重型怨念彈集裝箱
 item.shincolle:BucketRepair.name=修復桶
+item.shincolle:CombatRation.name=戰鬥糧食 (飯糰組合)
+item.shincolle:CombatRation1.name=戰鬥糧食 (飯糰組合，怨念口味)
+item.shincolle:CombatRation2.name=戰鬥糧食 (特大號飯糰)
+item.shincolle:CombatRation3.name=戰鬥糧食 (特大號飯糰，怨念口味)
+item.shincolle:CombatRation4.name=戰鬥糧食 (冰淇淋)
+item.shincolle:CombatRation5.name=戰鬥糧食 (冰淇淋，怨念口味)
 item.shincolle:DeskItemBook.name=深海日誌
 item.shincolle:DeskItemRadar.name=攜帶型深海雷達
 item.shincolle:InstantConMat.name=高速建造材料
@@ -622,6 +628,13 @@ gui.shincolle:flare=攻擊時照亮目標周圍一段時間
 gui.shincolle:searchlight=定時照亮自身周圍
 gui.shincolle:equip.matstype=開發加成材料：
 gui.shincolle:equip.matsrarelevel=裝備稀有度：
+gui.shincolle:combatration= 心情
+gui.shincolle:combatration0=方便攜帶的糧食配給，食用時小心不要掉到海裡了！
+gui.shincolle:combatration1=經過怨念調味的戰鬥糧食，適合深海棲艦獵奇般的重口味！
+gui.shincolle:combatration2=方便攜帶的糧食配給，發動時請小心附近的空母！
+gui.shincolle:combatration3=經過怨念調味的飯糰，看起來紅到發亮還散發出某種詭異的氣息。
+gui.shincolle:combatration4=香醇綿密，冰涼滑順的冰淇淋，是消暑最佳聖品！
+gui.shincolle:combatration5=香醇綿密，冰涼滑順的冰淇淋，怨念含量低不用怕發胖！
 
 # Chat message
 chat.shincolle:bossspawn1=有艦娘出現在水面上!

@@ -49,6 +49,7 @@ import com.lulan.shincolle.entity.transport.EntityTransportWa;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.item.IShipCombatRation;
 import com.lulan.shincolle.item.IShipFoodItem;
 import com.lulan.shincolle.item.OwnerPaper;
 import com.lulan.shincolle.item.PointerItem;
@@ -1283,9 +1284,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	}
   	
   	public void setFoodSaturation(int par1) {
-  		if(par1 >= 0 && par1 <= getFoodSaturationMax()) {
-  			setStateMinor(ID.M.Food, par1);
-  		}
+  		setStateMinor(ID.M.Food, par1);
 	}
 	
 	public void setFoodSaturationMax(int par1) {
@@ -1727,10 +1726,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		int addgrudge = 0;
 		int addammo = 0;
 		int addammoh = 0;
+		int addsatur = 0;
 		
 		//max 4800 or max saturation, reject food
 		if ((i instanceof ItemFood || i instanceof IShipFoodItem) &&
-			(mvalue > 4800 || getFoodSaturation() >= getFoodSaturationMax()))
+			getFoodSaturation() >= getFoodSaturationMax())
 		{
 			if (this.EmotionTicks[4] <= 0)
 			{
@@ -1780,7 +1780,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				heal(getMaxHealth() * 0.05F + 1F);
 				break;
 			case 3:  //ammo
-				switch(meta) {
+				switch (meta)
+				{
 				case 0:
 					addammo = 30 + this.rand.nextInt(10);
 					break;
@@ -1797,23 +1798,41 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				break;
 			case 4:  //polymetal
 				//add airplane if CV
-				if(this instanceof BasicEntityShipCV && this.rand.nextInt(10) > 4) {
+				if (this instanceof BasicEntityShipCV && this.rand.nextInt(10) > 4)
+				{
 					((BasicEntityShipCV)this).setNumAircraftLight(((BasicEntityShipCV)this).getNumAircraftLight()+1);
 					((BasicEntityShipCV)this).setNumAircraftHeavy(((BasicEntityShipCV)this).getNumAircraftHeavy()+1);
 				}
 				break;
 			case 5:  //toy plane
 				//add airplane if CV
-				if(this instanceof BasicEntityShipCV) {
+				if (this instanceof BasicEntityShipCV)
+				{
 					((BasicEntityShipCV)this).setNumAircraftLight(((BasicEntityShipCV)this).getNumAircraftLight()+rand.nextInt(3)+1);
 					((BasicEntityShipCV)this).setNumAircraftHeavy(((BasicEntityShipCV)this).getNumAircraftHeavy()+rand.nextInt(3)+1);
 				}
+				break;
+			case 6:  //combat ration
+				addsatur = 15;
+				addgrudge = mfood;
+				mfood = 0;
+				
+				//add morale to happy (3900 ~ 5100)
+				mfood = ((IShipCombatRation) i).getMoraleValue(meta);
+				
+				if (mvalue + mfood > 5000)
+				{
+					mfood = 0;
+					mvalue = 5000;
+				}
+				
 				break;
 			}
 		}//end ship food item
 		
 		//can feed
-		if(type > 0) {
+		if (type > 0)
+		{
 			//play sound
 			if (this.soundCD <= 0)
 	    	{
@@ -1822,8 +1841,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	    	}
 			
 			//item--
-			if(!player.capabilities.isCreativeMode) {
-	            if(--itemstack.stackSize <= 0) {  //物品用完時要設定為null清空該slot
+			if (!player.capabilities.isCreativeMode)
+			{
+	            if (--itemstack.stackSize <= 0)
+	            {
 	            	//update slot
 	            	itemstack = itemstack.getItem().getContainerItem(itemstack);
 	            	player.inventory.setInventorySlotContents(player.inventory.currentItem, itemstack);
@@ -1834,7 +1855,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			this.setStateMinor(ID.M.Morale, mvalue + mfood);
 			
 			//saturation++
-			this.setFoodSaturation(this.getFoodSaturation() + 1);
+			this.setFoodSaturation(this.getFoodSaturation() + 1 + addsatur);
 			
 			//misc++
 			StateMinor[ID.M.NumGrudge] += addgrudge;
@@ -1842,14 +1863,17 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			StateMinor[ID.M.NumAmmoHeavy] += addammoh;
 
 			//show eat emotion
-			if(this.EmotionTicks[4] <= 0) {
+			if (this.EmotionTicks[4] <= 0)
+			{
 				this.EmotionTicks[4] = 40;
-				switch(this.rand.nextInt(3)) {
+				
+				switch (this.rand.nextInt(3))
+				{
 				case 1:
 					applyParticleEmotion(9);  //hungry
 					break;
 				case 2:
-					applyParticleEmotion(30);  //pif
+					applyParticleEmotion(30); //pif
 					break;
 				default:
 					applyParticleEmotion(1);  //heart

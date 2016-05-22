@@ -31,6 +31,12 @@ item.shincolle:Ammo1.name=Grudgeful Ammo Container
 item.shincolle:Ammo2.name=Heavy Grudgeful Ammo
 item.shincolle:Ammo3.name=Heavy Grudgeful Ammo Container
 item.shincolle:BucketRepair.name=Repair Bucket
+item.shincolle:CombatRation.name=Combat Ration (Rice Balls)
+item.shincolle:CombatRation1.name=Combat Ration (Rice Balls, Grudge Flavour)
+item.shincolle:CombatRation2.name=Combat Ration (Rice Ball XL)
+item.shincolle:CombatRation3.name=Combat Ration (Rice Ball XL, Grudge Flavour)
+item.shincolle:CombatRation4.name=Combat Ration (Ice Cream)
+item.shincolle:CombatRation5.name=Combat Ration (Ice Cream, Grudge Flavour)
 item.shincolle:DeskItemBook.name=Abyssal Logbook
 item.shincolle:DeskItemRadar.name=Abyssal Portable Radar
 item.shincolle:InstantConMat.name=Instant Construction Material
@@ -621,6 +627,13 @@ gui.shincolle:flare=Light the target when attacking
 gui.shincolle:searchlight=Light the ship if in the dark
 gui.shincolle:equip.matstype=Factor Mats:
 gui.shincolle:equip.matsrarelevel=Rare Level:
+gui.shincolle:combatration= Morale 
+gui.shincolle:combatration0=Easy to carry, be careful<br>don't fall into the sea.
+gui.shincolle:combatration1=Grudge flavored rice balls, suitable for<br>Shinkeiseikan's heavy flavors.
+gui.shincolle:combatration2=Easy to carry, be careful the nearby aircraft carrier<br>when activated!
+gui.shincolle:combatration3=Grudge flavored rice ball, it looks red and shiny<br>and exudes a strange atmosphere.
+gui.shincolle:combatration4=It's mellow, dense, refreshing and smooth,<br>the best ice cream to beat the heat!
+gui.shincolle:combatration5=It's mellow, dense, refreshing and smooth,<br>don't afraid to get fat by having this<br>low-grudge ice cream!
 
 # Chat message
 chat.shincolle:bossspawn1=A Fleet Walks on the Water!

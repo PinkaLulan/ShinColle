@@ -11,34 +11,42 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 //基本item class 定義各種item基本方法
-abstract public class BasicItem extends Item {
+abstract public class BasicItem extends Item
+{
 	
-	public BasicItem() {
+	public BasicItem()
+	{
 		super();	//先跑一次原本的item初始化 下面才繼續設定詳細item數值 如堆疊數等
 		this.setCreativeTab(CreativeTabSC.SC_TAB);	//加入到creative tab中
 	}
 	
 	//name設定用方法: 去掉.之前的字串 以便另外串上mod名稱形成的字串
-	protected String getUnwrappedUnlocalizedName(String unlocalizedName) {
+	protected String getUnwrappedUnlocalizedName(String unlocalizedName)
+	{
 		return unlocalizedName.substring(unlocalizedName.indexOf(".")+1);
 	}
 	
 	//將name冠上mod名稱 用於之後給各語系檔案放上正確名稱
 	//格式為item.MOD名稱:物品名稱.name
 	@Override
-	public String getUnlocalizedName() {
+	public String getUnlocalizedName()
+	{
 		return String.format("item.%s%s", Reference.MOD_ID+":", getUnwrappedUnlocalizedName(super.getUnlocalizedName()));
 	}
 	
 	//同getUnlocalizedName() 此為加上itemstack版本
 	//格式為item.MOD名稱:物品名稱.name
 	@Override
-	public String getUnlocalizedName(ItemStack itemstack) {
+	public String getUnlocalizedName(ItemStack itemstack)
+	{
 		int meta = itemstack.getItemDamage();
-		if(meta>0) {
+		
+		if (meta > 0)
+		{
 			return String.format("item.%s%s", Reference.MOD_ID+":", getUnwrappedUnlocalizedName(super.getUnlocalizedName())+meta);
 		}
-		else {
+		else
+		{
 			return String.format("item.%s%s", Reference.MOD_ID+":", getUnwrappedUnlocalizedName(super.getUnlocalizedName()));
 		}		
 	}
@@ -48,7 +56,8 @@ abstract public class BasicItem extends Item {
 	//注意icon只在client端才需要執行
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void registerIcons(IIconRegister iconRegister) {
+	public void registerIcons(IIconRegister iconRegister)
+	{
 		itemIcon = iconRegister.registerIcon(this.getUnlocalizedName().substring(this.getUnlocalizedName().indexOf(".")+1));
 	}
 
