@@ -1601,13 +1601,12 @@ public class EntityHelper {
 				}
   			}
   			
-  			//waypoint = close to 3 block
-  			if (distsq < 9D)
+  			//is waypoint block
+  			if (tile instanceof TileEntityWaypoint)
   			{
-  	  			//is waypoint block
-  	  			if (tile instanceof TileEntityWaypoint)
+  	  			if (distsq < 9D)
   	  			{
-  	  				try
+	  	  			try
   	  				{
   	  					updatePos = applyNextWaypoint((TileEntityWaypoint) tile, entity, true, 16);
 	  	  				
@@ -1625,7 +1624,15 @@ public class EntityHelper {
   	  					e.printStackTrace();
   	  				}
   	  			}
-  			}//end dist < 3 blocks
+  	  			else
+  	  			{
+  	  				if (entity.getTickExisted() % 128 == 0)
+  	  				{
+  	  					entity.getShipNavigate().tryMoveToXYZ(entity.getGuardedPos(0) + 0.5D, entity.getGuardedPos(1), entity.getGuardedPos(2) + 0.5D, 1D);
+  	  				}
+  	  			}
+  				
+  			}
   		}//end in guard mode
   		
   		return updatePos;

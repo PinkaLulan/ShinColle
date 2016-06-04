@@ -1054,10 +1054,13 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
 		    this.ArmLeft01.rotateAngleX = -1.55F;
 	    	this.ArmLeft01.rotateAngleY = 0.3F;
 	    	this.ArmLeft01.rotateAngleZ = 0F;
+	    	this.ArmLeft02.rotateAngleX = 0F;
 	    	this.ArmLeft02.rotateAngleZ = 0.7F;
 	    	this.ArmRight01.rotateAngleX = -1.7F;
 	    	this.ArmRight01.rotateAngleY = -0.1F;
 	    	this.ArmRight01.rotateAngleZ = 1.5F;
+	    	this.ArmRight02.rotateAngleX = 0F;
+	    	this.ArmRight02.rotateAngleZ = 0F;
 	    }
 	    
 	    //swing arm

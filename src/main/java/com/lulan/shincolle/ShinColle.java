@@ -2,6 +2,7 @@ package com.lulan.shincolle;
 
 
 import net.minecraftforge.common.ForgeChunkManager;
+import net.minecraftforge.oredict.OreDictionary;
 
 import com.lulan.shincolle.handler.ChunkLoaderHandler;
 import com.lulan.shincolle.handler.CommandHandler;
@@ -129,7 +130,7 @@ public class ShinColle
 //		for(String oreName : OreDictionary.getOreNames()) {	//list all oreDictionary  (DEBUG)
 //			LogHelper.info(oreName);
 //		}
-//		LogHelper.info("DEBUG : postInit complete.");	//debug
+		LogHelper.info("DEBUG : postInit complete.");	//debug
 	}
 	
 	/** server starting event

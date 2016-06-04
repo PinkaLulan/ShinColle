@@ -825,10 +825,12 @@ public class ModelDestroyerInazuma extends ModelBase implements IModelEmotion {
 		    this.ArmLeft01.rotateAngleY = 0.4712F;
 		    this.ArmLeft01.rotateAngleZ = -0.3142F;
 		    this.ArmLeft02.rotateAngleX = -0.9425F;
+		    this.ArmLeft02.rotateAngleZ = 0F;
 		    this.ArmRight01.rotateAngleX = -0.8F;
 		    this.ArmRight01.rotateAngleY = -0.4712F;
 		    this.ArmRight01.rotateAngleZ = 0.3142F;
 		    this.ArmRight02.rotateAngleX = -0.9425F;
+		    this.ArmRight02.rotateAngleZ = 0F;
 		    //leg
 		    addk1 -= 0.15F;
 		    addk2 -= 0.15F;
