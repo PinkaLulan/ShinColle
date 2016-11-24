@@ -1,0 +1,475 @@
+{ 
+    "ship-say": {
+        "category": "neutral", "replace": true, "sounds": [
+            "shincolle:idle01",
+            "shincolle:idle02",
+            "shincolle:idle03",
+            "shincolle:idle04",
+            "shincolle:idle05",
+            "shincolle:idle06",
+            "shincolle:idle18",
+            "shincolle:idle19",
+            "shincolle:idle20",
+            "shincolle:idle21",
+            "shincolle:idle12",
+            "shincolle:idle13",
+            "shincolle:idle14",
+            "shincolle:idle15",
+            "shincolle:idle16",
+            "shincolle:idle17",
+            "shincolle:idle22",
+            "shincolle:idle07",
+            "shincolle:idle08",
+            "shincolle:idle09",
+            "shincolle:idle10",
+            "shincolle:idle11"
+        ]
+    },
+    
+    "ship-hurt": {
+        "category": "neutral", "replace": true, "sounds": [
+            "shincolle:hurt01",
+            "shincolle:hurt02",
+            "shincolle:hurt03",
+            "shincolle:hurt04",
+            "shincolle:hurt05",
+            "shincolle:hurt06",
+            "shincolle:hurt07",
+            "shincolle:hurt08"
+        ]
+    },
+    
+    "ship-death": {
+        "category": "neutral", "replace": true, "sounds": [
+            "shincolle:death01",
+            "shincolle:death02", 
+            "shincolle:death03",
+            "shincolle:death04"
+        ]
+    },
+    
+    "ship-firesmall": {
+        "category": "ambient", "replace": true, "sounds": [
+            "shincolle:fire01",
+            "shincolle:fire02",
+            "shincolle:fire03",
+            "shincolle:fire04"      
+        ]
+    },
+    
+    "ship-explode": {
+        "category": "ambient", "replace": true, "sounds": [
+            "shincolle:fire05"   
+        ]
+    },
+    
+    "ship-fireheavy": {
+        "category": "ambient", "replace": true, "sounds": [
+            "shincolle:fireheavy01",
+            "shincolle:fireheavy02",
+            "shincolle:fireheavy03"       
+        ]
+    },
+    
+    "ship-hitsmall": {
+        "category": "neutral", "replace": true, "sounds": [
+            "shincolle:hits01",
+            "shincolle:hits02",
+            "shincolle:hits03",
+            "shincolle:hits04",  
+            "shincolle:hits05",
+            "shincolle:hits06",
+            "shincolle:hits07",
+            "shincolle:hits08"
+        ]
+    },
+    
+    "ship-aircraft": {
+        "category": "ambient", "replace": true, "sounds": [
+            "shincolle:aircraft01",
+            "shincolle:aircraft02",
+            "shincolle:aircraft03"  
+        ]
+    },
+    
+    "ship-machinegun": {
+        "category": "ambient", "replace": true, "sounds": [
+            "shincolle:gun01",
+            "shincolle:gun02",
+            "shincolle:gun03"   
+        ]
+    },
+    
+    "ship-laser": {
+        "category": "ambient", "replace": true, "sounds": [
+        	"shincolle:laser01",
+       		"shincolle:laser02",
+          "shincolle:laser03"
+        ]
+    },
+    
+    "ship-love": {
+        "category": "neutral", "replace": true, "sounds": [
+        	"shincolle:love01",
+        	"shincolle:love02",
+        	"shincolle:love03",
+        	"shincolle:love04",
+        	"shincolle:love05",
+          "shincolle:love06"
+        ]
+    },
+    
+    "ship-time0": {
+        "category": "neutral", "replace": true, "sounds": [
+        	"shincolle:time00"
+        ]
+    },
+        
+    "ship-time1": {
+        "category": "neutral", "replace": true, "sounds": [
+        	"shincolle:time01"
+        ]
+    },
+        
+    "ship-time2": {
+        "category": "neutral", "replace": true, "sounds": [
+        	"shincolle:time02"
+        ]
+    },
+        
+    "ship-time3": {
+        "category": "neutral", "replace": true, "sounds": [
+        	"shincolle:time03"
+        ]
+    },
+        
+    "ship-time4": {
+        "category": "neutral", "replace": true, "sounds": [
+        	"shincolle:time04"
+        ]
+    },
+        
+    "ship-time5": {
+        "category": "neutral", "replace": true, "sounds": [
+        	"shincolle:time05"
+        ]
+    },
+        
+    "ship-time6": {
+        "category": "neutral", "replace": true, "sounds": [
+        	"shincolle:time06"
+        ]
+    },
+        
+    "ship-time7": {
+        "category": "neutral", "replace": true, "sounds": [
+        	"shincolle:time07"
+        ]
+    },
+        
+    "ship-time8": {
+        "category": "neutral", "replace": true, "sounds": [
+        	"shincolle:time08"
+        ]
+    },
+        
+    "ship-time9": {
+        "category": "neutral", "replace": true, "sounds": [
+        	"shincolle:time09"
+        ]
+    },
+        
+    "ship-time10": {
+        "category": "neutral", "replace": true, "sounds": [
+        	"shincolle:time10"
+        ]
+    },
+        
+    "ship-time11": {
+        "category": "neutral", "replace": true, "sounds": [
+        	"shincolle:time11"
+        ]
+    },
+        
+    "ship-time12": {
+        "category": "neutral", "replace": true, "sounds": [
+        	"shincolle:time12"
+        ]
+    },
+        
+    "ship-time13": {
+        "category": "neutral", "replace": true, "sounds": [
+        	"shincolle:time13"
+        ]
+    },
+        
+    "ship-time14": {
+        "category": "neutral", "replace": true, "sounds": [
+        	"shincolle:time14"
+        ]
+    },
+        
+    "ship-time15": {
+        "category": "neutral", "replace": true, "sounds": [
+        	"shincolle:time15"
+        ]
+    },
+        
+    "ship-time16": {
+        "category": "neutral", "replace": true, "sounds": [
+        	"shincolle:time16"
+        ]
+    },
+        
+    "ship-time17": {
+        "category": "neutral", "replace": true, "sounds": [
+        	"shincolle:time17"
+        ]
+    },
+        
+    "ship-time18": {
+        "category": "neutral", "replace": true, "sounds": [
+        	"shincolle:time18"
+        ]
+    },
+        
+    "ship-time19": {
+        "category": "neutral", "replace": true, "sounds": [
+        	"shincolle:time19"
+        ]
+    },
+        
+    "ship-time20": {
+        "category": "neutral", "replace": true, "sounds": [
+        	"shincolle:time20"
+        ]
+    },
+        
+    "ship-time21": {
+        "category": "neutral", "replace": true, "sounds": [
+        	"shincolle:time21"
+        ]
+    },
+        
+    "ship-time22": {
+        "category": "neutral", "replace": true, "sounds": [
+        	"shincolle:time22"
+        ]
+    },
+        
+    "ship-time23": {
+        "category": "neutral", "replace": true, "sounds": [
+        	"shincolle:time23"
+        ]
+    },
+    
+    "ship-kaitai": {
+        "category": "ambient", "replace": true, "sounds": [
+        	"shincolle:kaitai"
+        ]
+    },
+    
+    "ship-ap_phase1": {
+        "category": "ambient", "replace": true, "sounds": [
+        	"shincolle:ap_p1"
+        ]
+    },
+    
+    "ship-ap_phase2": {
+        "category": "ambient", "replace": true, "sounds": [
+        	"shincolle:ap_p2"
+        ]
+    },
+    
+    "ship-ap_attack": {
+        "category": "ambient", "replace": true, "sounds": [
+        	"shincolle:ap_attack"
+        ]
+    },
+    
+    "ship-waka_attack": {
+        "category": "hostile", "replace": true, "sounds": [
+        	"shincolle:waka_atk01",
+        	"shincolle:waka_atk02",
+        	"shincolle:waka_atk03",
+        	"shincolle:waka_atk04",
+        	"shincolle:waka_atk05",
+        	"shincolle:waka_atk06",
+        	"shincolle:waka_atk07"
+        ]
+    },
+    
+    "ship-waka_hurt": {
+        "category": "hostile", "replace": true, "sounds": [
+        	"shincolle:waka_hurt01",
+        	"shincolle:waka_hurt02",
+        	"shincolle:waka_hurt03"
+        ]
+    },
+    
+    "ship-waka_idle": {
+        "category": "hostile", "replace": true, "sounds": [
+        	"shincolle:waka_idle01",
+        	"shincolle:waka_idle02",
+        	"shincolle:waka_idle04",
+        	"shincolle:waka_idle05",
+        	"shincolle:waka_idle06"
+        ]
+    },
+    
+    "ship-waka_death": {
+        "category": "hostile", "replace": true, "sounds": [
+        	"shincolle:waka_death02",
+        	"shincolle:waka_death03"
+        ]
+    },
+    
+    "ship-garuru": {
+        "category": "neutral", "replace": true, "sounds": [
+        	"shincolle:garuru"
+        ]
+    },
+    
+    "ship-yamato-ready": {
+        "category": "ambient", "replace": true, "sounds": [
+        	"shincolle:laser05"
+        ]
+    },
+    
+    "ship-yamato-shot": {
+        "category": "ambient", "replace": true, "sounds": [
+        	"shincolle:laser06"
+        ]
+    },
+    
+    "ship-knockback": {
+        "category": "neutral", "replace": true, "sounds": [
+            "shincolle:hits02",
+            "shincolle:hits06",
+            "shincolle:hurt04",
+            "shincolle:hurt02"
+        ]
+    },
+    
+    "ship-itemget": {
+        "category": "neutral", "replace": true, "sounds": [
+            "shincolle:item01",
+            "shincolle:item02",
+            "shincolle:item03",
+            "shincolle:item04",
+            "shincolle:item05"
+        ]
+    },
+    
+    "ship-levelup": {
+        "category": "neutral", "replace": true, "sounds": [
+            "shincolle:level01"
+        ]
+    },
+    
+    "ship-feed": {
+        "category": "neutral", "replace": true, "sounds": [
+            "shincolle:feed01",
+            "shincolle:feed02",
+            "shincolle:feed03",
+            "shincolle:feed04",
+            "shincolle:feed05",
+            "shincolle:feed06",
+            "shincolle:feed07"
+        ]
+    },
+    
+    "ship-bell": {
+        "category": "block", "replace": true, "sounds": [
+            "shincolle:bell01",
+            "shincolle:bell02",
+            "shincolle:bell03"
+        ]
+    },
+    
+    "ship-say-56": {
+        "category": "neutral", "replace": true, "sounds": [
+            "shincolle:idle5601",
+            "shincolle:idle5602",
+            "shincolle:idle5603",
+            "shincolle:idle5604",
+            "shincolle:idle5606",
+            "shincolle:idle5607",
+            "shincolle:idle5608",
+            "shincolle:idle5609",
+            "shincolle:idle5610",
+            "shincolle:idle5611",
+            "shincolle:hurt5605"
+        ]
+    },
+    
+    "ship-hurt-56": {
+        "category": "neutral", "replace": true, "sounds": [
+            "shincolle:hurt5601",
+            "shincolle:hurt5602",
+            "shincolle:hurt5603",
+            "shincolle:hurt5604",
+            "shincolle:hurt5605",
+            "shincolle:hurt5606",
+            "shincolle:idle5605"
+        ]
+    },
+    
+    "ship-death-56": {
+        "category": "neutral", "replace": true, "sounds": [
+            "shincolle:death5601",
+            "shincolle:death5602"
+        ]
+    },
+    
+    "ship-hitsmall-56": {
+        "category": "neutral", "replace": true, "sounds": [
+            "shincolle:hit5601",
+            "shincolle:hit5602",
+            "shincolle:hit5603",
+            "shincolle:hit5604",
+            "shincolle:hit5605"
+        ]
+    },
+    
+    "ship-itemget-56": {
+        "category": "neutral", "replace": true, "sounds": [
+            "shincolle:item5601",
+            "shincolle:hit5602"
+        ]
+    },
+    
+    "ship-say-54": {
+        "category": "neutral", "replace": true, "sounds": [
+            "shincolle:idle5401",
+            "shincolle:idle5402",
+            "shincolle:idle5403"
+        ]
+    },
+    
+    "ship-hurt-54": {
+        "category": "neutral", "replace": true, "sounds": [
+            "shincolle:hurt5401"
+        ]
+    },
+    
+    "ship-love-54": {
+        "category": "neutral", "replace": true, "sounds": [
+            "shincolle:idle5401",
+            "shincolle:idle5402",
+            "shincolle:idle5403"
+        ]
+    },
+    
+    "ship-itemget-54": {
+        "category": "neutral", "replace": true, "sounds": [
+            "shincolle:item5401",
+            "shincolle:item5402",
+            "shincolle:idle5401",
+            "shincolle:idle5402",
+            "shincolle:idle5403"
+        ]
+    }
+
+    
+}

@@ -1,0 +1,42 @@
+{
+  "forge_marker": 1,
+  
+  "defaults": {
+    "model": "shincolle:BlockFrameVert"
+  },
+  
+  "variants": {
+    "normal": [{}],
+    "inventory": [{}],
+    "facing=north": [
+      {"model": "shincolle:BlockFrameHori"},
+      {"model": "shincolle:BlockFrameHori", "y": 90},
+      {"model": "shincolle:BlockFrameHori", "y": 180},
+      {"model": "shincolle:BlockFrameHori", "y": 270}
+    ],
+    "facing=south": [
+      {"model": "shincolle:BlockFrameHori"},
+      {"model": "shincolle:BlockFrameHori", "y": 90},
+      {"model": "shincolle:BlockFrameHori", "y": 180},
+      {"model": "shincolle:BlockFrameHori", "y": 270}
+    ],
+    "facing=west": [
+      {"model": "shincolle:BlockFrameHori"},
+      {"model": "shincolle:BlockFrameHori", "y": 90},
+      {"model": "shincolle:BlockFrameHori", "y": 180},
+      {"model": "shincolle:BlockFrameHori", "y": 270}
+    ],
+    "facing=east": [
+      {"model": "shincolle:BlockFrameHori"},
+      {"model": "shincolle:BlockFrameHori", "y": 90},
+      {"model": "shincolle:BlockFrameHori", "y": 180},
+      {"model": "shincolle:BlockFrameHori", "y": 270}
+    ],
+    "facing=up": [
+      {}, {"y": 90}, {"y": 180}, {"y": 270}
+    ],
+    "facing=down": [
+      {"x": 180}, {"x": 180, "y": 90}, {"x": 180, "y": 180}, {"x": 180, "y": 270}
+    ]
+  }
+}

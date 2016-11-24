@@ -1,0 +1,31 @@
+package com.lulan.shincolle.init;
+
+import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.reference.Reference;
+
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.oredict.OreDictionary;
+
+@GameRegistry.ObjectHolder(Reference.MOD_ID)	//登錄object holder使mod的物件容易流通 其他人可以直接讀取該物件
+public class ModOres
+{
+
+	//ore
+	public static ItemStack PolymetalDust = new ItemStack(ModItems.AbyssMetal, 1, 1);
+	public static ItemStack PolymetalOre = new ItemStack(ModBlocks.BlockPolymetalOre, 1, 0);
+
+
+	//登錄item到遊戲中 (在pre init階段登錄)
+	public static void oreDictRegister()
+	{
+		if (ConfigHandler.polyAsMn)
+		{
+			//polymetal = manganese ore
+			OreDictionary.registerOre("dustManganese", PolymetalDust);
+			OreDictionary.registerOre("oreManganese", ModBlocks.BlockPolymetalOre);
+		}
+	}
+	
+	
+}

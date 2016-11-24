@@ -1,0 +1,17 @@
+[
+{
+  "modid": "shincolle",
+  "name": "Shinkeiseikan Collection",
+  "description": "Collect cute SeiKan mobs!  forum: http://forum.gamer.com.tw/C.php?bsn=18673&snA=124090&tnum=1  github: https://github.com/PinkaLulan/ShinColle  Sound Source: Amitaro's Sound Material Workshop http://www14.big.or.jp/~amiami/happy/index.html",
+  "version": "",
+  "mcversion": "",
+  "logoFile": "",
+  "url": "https://www.youtube.com/user/lulan222/",
+  "updateUrl": "",
+  "authorList": ["PinkaLulan"],
+  "credits": "Thanks to Pahimar, diesieben07, Jabelar, coolAlias, Neale and all the tutorials on the web _(:3",
+  "parent": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
