@@ -10,6 +10,7 @@ You can edit ship/item description as you like.
 I finished en_US by google translate, please correct the weird translation if you found.
 
 
+
 Dev Video:
 https://www.youtube.com/playlist?list=PLzA0TpkwD25D0Q8bwcejxokKJDVzSnk2A
 
