@@ -901,7 +901,6 @@ public class ServerProxy extends CommonProxy
 				setTeamData(tdata);
 				
 				//update player data
-				capa.setPlayerTeamID(pUID);
 				capa.setPlayerTeamCooldown(ConfigHandler.teamCooldown);
 				updatePlayerID(player);
 			}
@@ -928,7 +927,6 @@ public class ServerProxy extends CommonProxy
 					removeTeamData(pUID);
 					
 					//update player data
-					capa.setPlayerTeamID(0);
 					capa.setPlayerTeamCooldown(ConfigHandler.teamCooldown);
 					updatePlayerID(player);
 				}

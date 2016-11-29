@@ -1492,7 +1492,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	/** send sync packet: sync all data */
 	public void sendSyncPacketAllValue()
 	{
-		sendSyncPacket(0, false);
+		sendSyncPacket(S2CEntitySync.PID.SyncShip_All, false);
 	}
 	
 	/** send sync packet: sync unbuff data */
@@ -1549,7 +1549,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	 *  send all: send packet to all around player
 	 *  sync emo: sync emotion to all around player
 	 */
-	public void sendSyncPacket(int type, boolean sendAll)
+	public void sendSyncPacket(byte type, boolean sendAll)
 	{
 		if (!worldObj.isRemote)
 		{

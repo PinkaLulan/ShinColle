@@ -1,116 +1,88 @@
 package com.lulan.shincolle.block;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
+import com.lulan.shincolle.tileentity.TileEntityCrane;
+import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
+
+import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
-import com.lulan.shincolle.ShinColle;
-import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.tileentity.TileEntityCrane;
-import com.lulan.shincolle.utility.LogHelper;
+public class BlockCrane extends BasicBlockContainer
+{
 
-import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-public class BlockCrane extends BasicBlockContainer {
-
-	IIcon[] icons = new IIcon[3];
+	public static final String NAME = "BlockCrane";
+	public static final String TILENAME = "TileEntityCrane";
 	
 	
-	public BlockCrane() {
-		super(); //不指定型態 預設即為rock
-		this.setBlockName("BlockCrane");
+	public BlockCrane()
+	{
+	    super(Material.IRON);
+		this.setUnlocalizedName(NAME);
+		this.setRegistryName(NAME);
+		this.setHardness(1F);
+		this.setResistance(10F);
 	    this.setHarvestLevel("pickaxe", 0);
-	    this.setHardness(1F);
-	    this.setResistance(10F);
-	    this.setStepSound(soundTypeMetal);
+	    
+        GameRegistry.register(this);
+        GameRegistry.register(new ItemBlock(this), this.getRegistryName());
+        GameRegistry.registerTileEntity(TileEntitySmallShipyard.class, TILENAME);
 	}
 	
 	@Override
-	@SideOnly(Side.CLIENT)
-	public void registerBlockIcons(IIconRegister iconRegister) {
-		icons[0] = iconRegister.registerIcon(String.format("shincolle:BlockCraneBtm"));
-		icons[1] = iconRegister.registerIcon(String.format("shincolle:BlockCraneSide"));
-		icons[2] = iconRegister.registerIcon(String.format("shincolle:BlockCraneTop"));
-	}
-	
-	//side: 0:bottom, 1:top, 2:N, 3:S, 4:W, 5:E
-	@Override
-	@SideOnly(Side.CLIENT)
-    public IIcon getIcon(int side, int meta) {
-		switch(side) {
-		case 0:
-			return icons[0];
-		case 1:
-			return icons[2];
-		default:
-			return icons[1];
-		}
-    }
-	
-	@Override
-	public TileEntity createNewTileEntity(World world, int meta) {
+	public TileEntity createNewTileEntity(World world, int meta)
+	{
 		return new TileEntityCrane();
 	}
 	
-	/**右鍵點到方塊時呼叫此方法
-	 * 參數: world,方塊x,y,z,玩家,玩家面向,玩家點到的x,y,z
-	 */	
-	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ) {
-		if (world.isRemote) {	//client端只需要收到true
-    		return true;
-    	}
-		else if(!player.isSneaking()) {  //server端: 按住shift不能點開方塊gui
-			TileEntity entity = world.getTileEntity(x, y, z);
-    		
-    		if (entity != null) {	//開啟方塊GUI 參數:玩家,mod instance,gui ID,world,座標xyz
-    			FMLNetworkHandler.openGui(player, ShinColle.instance, ID.G.CRANE, world, x, y, z);
-    		}
-    		return true;
-    	}
-    	else {
-    		return false;
-    	}
-    }
+	//can drop items in inventory
+	public boolean canDropInventory(IBlockState state)
+	{
+		return false;
+	}
 	
-	@Override
-	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack itemstack) {
+	//can send block change when on block break
+	public boolean canAlertBlockChange()
+	{
+		return true;
 	}
 
+	//false = 紅石類方塊
 	@Override
-	public boolean isNormalCube(IBlockAccess world, int x, int y, int z)
+	public boolean isNormalCube(IBlockState state)
     {
         return false;
     }
 	
+	//true = 可跟紅石線連接
 	@Override
-	public boolean canProvidePower()
+	public boolean canProvidePower(IBlockState state)
     {
         return true;
     }
 	
+	//get redstone power value for active
 	@Override
-	public int isProvidingStrongPower(IBlockAccess block, int x, int y, int z, int face)
+	public int getStrongPower(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing side)
     {
-        return isProvidingWeakPower(block, x, y, z, face);
+        return this.getWeakPower(state, world, pos, side);
     }
 	
+	//get redstone power value for inactive
 	@Override
-	public int isProvidingWeakPower(IBlockAccess block, int x, int y, int z, int face)
+	public int getWeakPower(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing side)
     {
-		TileEntity tile = block.getTileEntity(x, y, z);
+		TileEntity tile = world.getTileEntity(pos);
         
         if (tile instanceof TileEntityCrane)
         {
         	TileEntityCrane crane = (TileEntityCrane) tile;
-        	if (crane.redMode > 0 && crane.redTick > 0) return 15;
+        	if (crane.getRedMode() > 0 && crane.getRedTick() > 0) return 15;
         }
         
         return 0;

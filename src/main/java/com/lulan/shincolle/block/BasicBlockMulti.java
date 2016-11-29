@@ -53,6 +53,18 @@ abstract public class BasicBlockMulti extends BasicBlockContainer
 	{
 		super(material, color);
 	}
+	
+	//can drop items in inventory
+	public boolean canDropInventory(IBlockState state)
+	{
+		return true;
+	}
+	
+	//can send block change when on block break
+	public boolean canAlertBlockChange()
+	{
+		return true;
+	}
 
 	/** hide block if meta > 0 (hide mode) */
 	@Override

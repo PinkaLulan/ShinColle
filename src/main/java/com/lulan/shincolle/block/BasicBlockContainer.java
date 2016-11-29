@@ -2,6 +2,9 @@ package com.lulan.shincolle.block;
 
 import javax.annotation.Nullable;
 
+import com.lulan.shincolle.ShinColle;
+import com.lulan.shincolle.tileentity.BasicTileLockable;
+
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
@@ -15,9 +18,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
-import com.lulan.shincolle.ShinColle;
-import com.lulan.shincolle.tileentity.BasicTileLockable;
 
 /** block with tile and NO facing
  *  
@@ -46,16 +46,34 @@ abstract public class BasicBlockContainer extends BasicBlock implements ITileEnt
 	@Override
 	abstract public TileEntity createNewTileEntity(World world, int i);
 
+	//can drop items in inventory
+	public boolean canDropInventory(IBlockState state)
+	{
+		return true;
+	}
+	
+	//can send block change when on block break
+	public boolean canAlertBlockChange()
+	{
+		return false;
+	}
+	
 	//打掉方塊後, 掉落其內容物
 	@Override
 	public void breakBlock(World world, BlockPos pos, IBlockState state)
 	{
         TileEntity tile = world.getTileEntity(pos);
 
-        if (tile instanceof IInventory)
+        //drop item
+        if (canDropInventory(state) && tile instanceof IInventory)
         {
             InventoryHelper.dropInventoryItems(world, pos, (IInventory) tile);
-            world.updateComparatorOutputLevel(pos, this);  //alert block changed
+        }
+        
+        //alert block change
+        if (canAlertBlockChange())
+        {
+        	world.updateComparatorOutputLevel(pos, this);  //alert block changed
         }
 
         super.breakBlock(world, pos, state);

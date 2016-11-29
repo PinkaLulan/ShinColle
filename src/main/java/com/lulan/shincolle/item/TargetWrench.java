@@ -103,7 +103,7 @@ public class TargetWrench extends BasicItem
 						LogHelper.info("DEBUG : target wrench get class: "+tarName);
 						
 						//send packet to server
-						CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetOPTarClass, tarName));
+						CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetUnatkClass, tarName));
 						return false;
 					}//end not ship
 				}//end hit != null

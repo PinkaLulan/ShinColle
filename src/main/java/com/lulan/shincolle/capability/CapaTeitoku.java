@@ -2,7 +2,6 @@ package com.lulan.shincolle.capability;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -279,6 +278,17 @@ public class CapaTeitoku implements ICapaTeitoku
 	public boolean hasRing()
 	{
 		return hasRing;
+	}
+	
+	//check has team from server team cache, SERVER ONLY
+	public boolean hasTeam()
+	{
+		if (player != null && !player.worldObj.isRemote)
+		{
+			if (ServerProxy.getTeamData(this.playerUID) != null) return true;
+		}
+		
+		return false;
 	}
 	
 	public int getRingEffect(int id)
@@ -1277,13 +1287,6 @@ public class CapaTeitoku implements ICapaTeitoku
 			
 			this.initSID = true;
 		}
-	}
-	
-	//check is leader = has team
-	public boolean isTeamLeader()
-	{
-		//TODO check team leader from server team cache
-		return false;
 	}
 	
 	/** check team is ally, CLIENT SIDE ONLY for GUI display */

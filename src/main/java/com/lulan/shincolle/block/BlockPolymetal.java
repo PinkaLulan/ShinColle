@@ -54,6 +54,12 @@ public class BlockPolymetal extends BasicBlockMulti
 		ModelLoader.setCustomStateMapper(this, new StateMap.Builder().ignore(MBS).build());
 	}
 	
+	//can drop items in inventory
+	public boolean canDropInventory(IBlockState state)
+	{
+		return false;
+	}
+	
 	//cancel water block side rendering
 	@Override
     public boolean doesSideBlockRendering(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing face)

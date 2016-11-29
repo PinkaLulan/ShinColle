@@ -32,9 +32,9 @@ abstract public class BasicTileInventory extends BasicTileLockable implements IS
     {
         super.readFromNBT(compound);
         
-        if (compound.hasKey(ID.Str.CapaInventory))
+        if (compound.hasKey(CapaInventory.InvName))
         {
-        	itemHandler.deserializeNBT((NBTTagCompound) compound.getTag(ID.Str.CapaInventory));
+        	itemHandler.deserializeNBT((NBTTagCompound) compound.getTag(CapaInventory.InvName));
         }
     }
 
@@ -44,7 +44,7 @@ abstract public class BasicTileInventory extends BasicTileLockable implements IS
     {
         super.writeToNBT(compound);
         
-        compound.setTag(ID.Str.CapaInventory, itemHandler.serializeNBT());
+        compound.setTag(CapaInventory.InvName, itemHandler.serializeNBT());
         
         return compound;
     }

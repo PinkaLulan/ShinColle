@@ -122,21 +122,6 @@ public class BlockSmallShipyard extends BasicBlockFacingContainer
         return false;
     }
 	
-	//打掉方塊後, 掉落其內容物
-	@Override
-	public void breakBlock(World world, BlockPos pos, IBlockState state)
-	{
-        TileEntity tile = world.getTileEntity(pos);
-
-        if (tile instanceof IInventory)
-        {
-            InventoryHelper.dropInventoryItems(world, pos, (IInventory) tile);
-            world.updateComparatorOutputLevel(pos, this);  //alert block changed
-        }
-
-        super.breakBlock(world, pos, state);
-	}
-	
 	//spawn particle: largesmoke, posX, posY, posZ, motionX, motionY, motionZ
 	@Override
 	@SideOnly(Side.CLIENT)

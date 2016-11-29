@@ -16,7 +16,6 @@ public class ModTileEntity {
 	
 	public static void init() {
 		//tile entity
-		GameRegistry.registerTileEntity(TileEntityCrane.class, "TileEntityCrane");
 		GameRegistry.registerTileEntity(TileEntityDesk.class, "TileEntityBlockDesk");
 		GameRegistry.registerTileEntity(TileEntityLightBlock.class, "TileEntityLightBlock");
 		

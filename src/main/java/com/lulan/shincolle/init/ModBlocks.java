@@ -3,12 +3,8 @@ package com.lulan.shincolle.init;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.block.Block;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
 import com.lulan.shincolle.block.BlockAbyssium;
+import com.lulan.shincolle.block.BlockCrane;
 import com.lulan.shincolle.block.BlockFrame;
 import com.lulan.shincolle.block.BlockGrudge;
 import com.lulan.shincolle.block.BlockGrudgeHeavy;
@@ -20,6 +16,11 @@ import com.lulan.shincolle.block.BlockVolBlock;
 import com.lulan.shincolle.block.ICustomModels;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.LogHelper;
+
+import net.minecraft.block.Block;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 @GameRegistry.ObjectHolder(Reference.MOD_ID)	//登錄object holder使mod的物件容易流通 其他人可以直接讀取該物件
 public class ModBlocks
@@ -55,7 +56,7 @@ public class ModBlocks
 		ListBlocks = new ArrayList();
 		
 		BlockAbyssium = initBlocks(BlockAbyssium.class);
-//		BlockCrane = initBlocks(BlockCrane.class);
+		BlockCrane = initBlocks(BlockCrane.class);
 //		BlockDesk = initBlocks(BlockDesk.class);
 		BlockFrame = initBlocks(BlockFrame.class);
 		BlockGrudge = initBlocks(BlockGrudge.class);

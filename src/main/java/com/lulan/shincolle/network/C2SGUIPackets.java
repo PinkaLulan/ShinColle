@@ -134,12 +134,6 @@ public class C2SGUIPackets implements IMessage
 		this.entity = player;
 	}
 	
-	//TODO delete
-	public C2SGUIPackets(BasicEntityShip entity, int button, int value) {}
-	public C2SGUIPackets(TileEntity tile, int button, int value1, int value2) {} //PID.TileBtn
-	public C2SGUIPackets(TileEntity tile, int value1, int[] value3) {} //PID.TileEntitySync
-	public C2SGUIPackets(EntityPlayer player, int type, int...parms) {}
-	
 	//接收packet方法
 	@Override
 	public void fromBytes(ByteBuf buf)
