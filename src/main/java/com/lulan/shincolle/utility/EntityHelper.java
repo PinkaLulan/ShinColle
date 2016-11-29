@@ -48,7 +48,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathPoint;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -1108,112 +1107,7 @@ public class EntityHelper
 		return false;
 	}
 	
-//	/** command process: ship change owner
-//	 * 
-//	 *    1. (done) check command sender is OP (server)
-//	 *    2. (done) check owner exists (server)
-//	 *    3. (done) send sender eid to client (s to c)
-//	 *    4. check sender mouse over target is ship (client)
-//	 *    5. send ship eid to server (c to s)
-//	 *    6. change ship's owner UUID and PlayerUID (server)
-//	 */
-//	@SideOnly(Side.CLIENT)
-//	public static void processShipChangeOwner(int senderEID, int ownerEID) {
-//		//get sender entity
-//		EntityPlayer sender = getEntityPlayerByID(senderEID, 0, true);
-//		
-//		if(sender != null) {
-//			//get sender's mouse over target
-//			RayTraceResult hitObj = getPlayerMouseOverEntity(32D, 1F);
-//			
-//			if(hitObj != null && hitObj.entityHit instanceof BasicEntityShip) {
-//				//send change owner packet to server
-//				sender.addChatMessage(new ChatComponentText("Command: ShipChangeOwner: ship: "+EnumChatFormatting.AQUA+hitObj.entityHit));
-//				CommonProxy.channelG.sendToServer(new C2SInputPackets(C2SInputPackets.PID.CmdChOwner, ownerEID, hitObj.entityHit.getEntityId(), hitObj.entityHit.worldObj.provider.dimensionId));
-//			}//end get target ship
-//			else {
-//				sender.addChatMessage(new ChatComponentText("Command: ShipChangeOwner: entity is not ship!"));
-//			}
-//		}
-//	}
-//	
-//	/** command process: show ship info */
-//	@SideOnly(Side.CLIENT)
-//	public static void processShowShipInfo(int senderEID) {
-//		//get sender entity
-//		EntityPlayer sender = getEntityPlayerByID(senderEID, 0, true);
-//		
-//		if(sender != null) {
-//			//get sender's mouse over target
-//			RayTraceResult hitObj = getPlayerMouseOverEntity(32D, 1F);
-//			
-//			if(hitObj != null && hitObj.entityHit instanceof BasicEntityShip) {
-//				BasicEntityShip ship = (BasicEntityShip) hitObj.entityHit;
-//				
-//				//show ship info
-//				sender.addChatMessage(new ChatComponentText("Command: ShipInfo: User: "+EnumChatFormatting.LIGHT_PURPLE+
-//						sender.getDisplayName()+EnumChatFormatting.RESET+
-//						" UID: "+EnumChatFormatting.AQUA+EntityHelper.getPlayerUID(sender)+EnumChatFormatting.RESET+
-//						" UUID: "+EnumChatFormatting.GOLD+sender.getUniqueID()));
-//				sender.addChatMessage(new ChatComponentText("Ship Name: "+EnumChatFormatting.AQUA+ship.getCustomNameTag()));
-//				sender.addChatMessage(new ChatComponentText("Ship EntityID: "+EnumChatFormatting.GOLD+ship.getEntityId()));
-//				sender.addChatMessage(new ChatComponentText("Ship UID: "+EnumChatFormatting.GREEN+ship.getShipUID()));
-//				sender.addChatMessage(new ChatComponentText("Ship Owner UID: "+EnumChatFormatting.RED+ship.getPlayerUID()));
-//				sender.addChatMessage(new ChatComponentText("Ship Owner UUID: "+EnumChatFormatting.YELLOW+EntityHelper.getPetPlayerUUID(ship)));
-//				sender.addChatMessage(new ChatComponentText("Morale: "+EnumChatFormatting.YELLOW+ship.getStateMinor(ID.M.Morale)));
-//			}
-//		}
-//	}
-//	
-//	/** command process: set ship attrs
-//	 * 
-//	 *  cmdData: 0:sender eid, 1:ship level, 2~7:bonus value
-//	 * 
-//	 *    1. (done) check command sender is OP (server)
-//	 *    2. (done) send sender eid to client (s to c)
-//	 *    3. check sender mouse over target is ship (client)
-//	 *    4. send ship eid to server (c to s)
-//	 *    5. change ship's attributes (server)
-//	 */
-//	@SideOnly(Side.CLIENT)
-//	public static void processSetShipAttrs(int[] cmdData) {
-//		//get sender entity
-//		EntityPlayer sender = getEntityPlayerByID(cmdData[0], 0, true);
-//		
-//		if(sender != null) {
-//			//get sender's mouse over target
-//			RayTraceResult hitObj = getPlayerMouseOverEntity(16D, 1F);
-//			
-//			if(hitObj != null && hitObj.entityHit instanceof BasicEntityShip) {
-//				BasicEntityShip ship = (BasicEntityShip) hitObj.entityHit;
-//				
-//				if(cmdData.length == 8) {
-//					//show msg
-//					sender.addChatMessage(new ChatComponentText("Command: ShipAttrs: Set ship value: LV: "+
-//											EnumChatFormatting.LIGHT_PURPLE+cmdData[1]+EnumChatFormatting.RESET+" BonusValue: "+
-//											EnumChatFormatting.RED+cmdData[2]+" "+cmdData[3]+" "+cmdData[4]+" "+
-//											cmdData[5]+" "+cmdData[6]+" "+cmdData[7]));
-//					sender.addChatMessage(new ChatComponentText("Target Ship: "+EnumChatFormatting.AQUA+ship));
-//					
-//					//send packet to server: entity id, world id, level, bonus 1~6
-//					CommonProxy.channelG.sendToServer(new C2SInputPackets(C2SInputPackets.PID.CmdShipAttr,
-//							ship.getEntityId(), ship.worldObj.provider.dimensionId, cmdData[1], cmdData[2],
-//							cmdData[3], cmdData[4], cmdData[5], cmdData[6], cmdData[7]));
-//				}
-//				else if(cmdData.length == 2) {
-//					//show msg
-//					sender.addChatMessage(new ChatComponentText("Command: ShipAttrs: Set ship value: LV: "+
-//											EnumChatFormatting.LIGHT_PURPLE+cmdData[1]));
-//					sender.addChatMessage(new ChatComponentText("Target Ship: "+EnumChatFormatting.AQUA+ship));
-//					
-//					//send packet to server: entity id, world id, level, bonus 1~6
-//					CommonProxy.channelG.sendToServer(new C2SInputPackets(C2SInputPackets.PID.CmdShipAttr,
-//							ship.getEntityId(), ship.worldObj.provider.dimensionId, cmdData[1]));
-//				}
-//				
-//			}
-//		}
-//	}
+
 	
 	/** count entity number in the world
 	 *  type: 0:boss ship, 1:mob ship, 2:all hostile ship
@@ -1256,23 +1150,18 @@ public class EntityHelper
 	//clear seat2
   	public static void clearMountSeat(EntityLiving host)
   	{
-  		//若座位2有人, 要先把座位2的乘客踢掉
+  		//清空座騎, 若騎乘ship mount, 則順便清空ship mount
   		if (host.getRidingEntity() != null)
   		{
   			if (host.getRidingEntity() instanceof BasicEntityMount)
   			{
-	  			BasicEntityMount mount = (BasicEntityMount) host.getRidingEntity();
-	  			
-	  			if (mount.seat2 != null)
-	  			{
-	  				mount.seat2.setRiderNull();
-	  			}
+	  			((BasicEntityMount) host.getRidingEntity()).clearRider();
   			}
   			
   			host.dismountRidingEntity();
   		}
   		
-  		//清空騎乘的人
+  		//清空乘客
   		for (Entity p : host.getPassengers())
   		{
   			p.dismountRidingEntity();

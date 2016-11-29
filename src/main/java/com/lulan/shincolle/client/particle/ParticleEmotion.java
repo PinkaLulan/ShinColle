@@ -448,6 +448,13 @@ public class ParticleEmotion extends Particle
         
         calcParticlePosition();
     }
+    
+    //設定此particle是否會被透明物件 ex: ice, water等擋住
+    @Override
+    public boolean isTransparent()
+    {
+    	return false;
+    }
 
     @Override
     public void renderParticle(VertexBuffer render, Entity entity, float ptick, float rotX, float rotZ, float rotYZ, float rotXY, float rotXZ)

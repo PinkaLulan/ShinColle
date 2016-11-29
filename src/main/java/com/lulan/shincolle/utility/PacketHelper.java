@@ -9,7 +9,6 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.reference.ID;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 
 public class PacketHelper
@@ -133,6 +132,19 @@ public class PacketHelper
 		return str;
 	}
 	
+	/** get float array data */
+	public static double[] readDoubleArray(ByteBuf buf, int length)
+	{
+		double[] array = new double[length];
+		
+		for (int i = 0; i < length; i++)
+		{
+			array[i] = buf.readDouble();
+		}
+		
+		return array;
+	}
+	
 	/** get int array data */
 	public static int[] readIntArray(ByteBuf buf, int length)
 	{
@@ -141,6 +153,32 @@ public class PacketHelper
 		for (int i = 0; i < length; i++)
 		{
 			array[i] = buf.readInt();
+		}
+		
+		return array;
+	}
+	
+	/** get float array data */
+	public static float[] readFloatArray(ByteBuf buf, int length)
+	{
+		float[] array = new float[length];
+		
+		for (int i = 0; i < length; i++)
+		{
+			array[i] = buf.readFloat();
+		}
+		
+		return array;
+	}
+	
+	/** get float array data */
+	public static boolean[] readBooleanArray(ByteBuf buf, int length)
+	{
+		boolean[] array = new boolean[length];
+		
+		for (int i = 0; i < length; i++)
+		{
+			array[i] = buf.readBoolean();
 		}
 		
 		return array;
@@ -166,14 +204,10 @@ public class PacketHelper
 		
 		if (map != null)
 		{
-			Iterator iter = map.entrySet().iterator();
-			
-			while (iter.hasNext())
+			map.forEach((k, v) ->
 			{
-				Map.Entry ent = (Map.Entry) iter.next();
-				String str = (String) ent.getValue();
-				list.add(str);
-			}
+				list.add((String) v);
+			});
 		}
 	
 		return list;
@@ -258,22 +292,6 @@ public class PacketHelper
 		{
 			LogHelper.info("DEBUG : set entity by GUI fail, entity null");
 		}
-	}
-	
-	/**process tile entity GUI click */
-	public static void setTileEntityByGUI(TileEntity tile, int value1, int[] value3)
-	{
-//		if (tile instanceof TileEntityDesk) TODO
-//		{
-//			if(value1 == ID.B.Desk_Sync) {
-//				((TileEntityDesk)tile).setSyncData(value3);
-//			}
-//		}
-//		else
-//		{
-//			LogHelper.info("DEBUG : set tile entity by GUI fail: tile: "+tile);
-//		}
-		
 	}
 	
 	

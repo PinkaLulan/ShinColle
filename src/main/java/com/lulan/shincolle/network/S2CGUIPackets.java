@@ -1,23 +1,10 @@
 package com.lulan.shincolle.network;
 
-import io.netty.buffer.ByteBuf;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.entity.BasicEntityShip;
@@ -25,11 +12,27 @@ import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.team.TeamData;
+import com.lulan.shincolle.tileentity.TileEntityCrane;
+import com.lulan.shincolle.tileentity.TileEntityDesk;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
+import com.lulan.shincolle.tileentity.TileEntityVolCore;
+import com.lulan.shincolle.tileentity.TileEntityWaypoint;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.PacketHelper;
+
+import io.netty.buffer.ByteBuf;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 
 /**SERVER TO CLIENT : GUI SYNC PACKET
@@ -45,11 +48,16 @@ public class S2CGUIPackets implements IMessage
 	private BasicEntityShip ship;
 	private CapaTeitoku capa;
 	private World world;
-	private int type, entityID, recvX, recvY, recvZ, value, value2;
-	private int[] value3;
-	private boolean flag;
 	private List dataList;
 	private Map dataMap;
+	private byte packetType;
+	private int entityID, valueInt;
+	private boolean valueBoolean;
+	private int[] valueInt1;
+	private byte[] valueByte1;
+	private boolean[] valueBoolean1;
+	private int[][] valueInt2, valueInt2a;
+	private boolean[][] valueBoolean2;
 	
 	//packet id
 	public static final class PID
@@ -84,11 +92,11 @@ public class S2CGUIPackets implements IMessage
 		
 		if (tile instanceof TileEntitySmallShipyard)
 		{
-			this.type = PID.TileSmallSY;
+			this.packetType = PID.TileSmallSY;
 		}
 		else if (tile instanceof TileMultiGrudgeHeavy)
 		{
-			this.type = PID.TileLargeSY;
+			this.packetType = PID.TileLargeSY;
 		}
 //		else if (tile instanceof TileEntityDesk) TODO
 //		{
@@ -113,22 +121,21 @@ public class S2CGUIPackets implements IMessage
     }
 	
 	//sync player extend props
-	public S2CGUIPackets(CapaTeitoku capa, int type)
+	public S2CGUIPackets(CapaTeitoku capa, byte type)
 	{
 		if (capa != null)
 		{
-			this.type = type;
+			this.packetType = type;
 	        this.capa = capa;
 
 	        switch (type)
 	        {
 	        case PID.SyncPlayerProp_TargetClass:
-	        	this.dataList = PacketHelper.getStringListFromStringMap(
-	        					ServerProxy.getPlayerTargetClass(
-	        					this.capa.getPlayerUID()));
+	        	this.dataList = PacketHelper.getStringListFromStringMap(ServerProxy.getPlayerTargetClass(
+	        																this.capa.getPlayerUID()));
 	        	break;
 	        case PID.SyncPlayerProp_Formation:
-	        	this.value3 = this.capa.getFormatID();
+	        	this.valueInt1 = this.capa.getFormatID();
 	        	break;
 	        }
 		}
@@ -139,12 +146,12 @@ public class S2CGUIPackets implements IMessage
 	{
 		if (capa != null)
 		{
-			this.type = type;
+			this.packetType = type;
 	        this.capa = capa;
 	        
 	        if (parms != null && parms.length > 0)
 	        {
-	        	this.value3 = parms.clone();
+	        	this.valueInt1 = parms;
 	        }
 		}
     }
@@ -152,27 +159,22 @@ public class S2CGUIPackets implements IMessage
 	//sync ship
 	public S2CGUIPackets(BasicEntityShip ship)
 	{
-        this.type = PID.SyncShipInv;
+        this.packetType = PID.SyncShipInv;
         this.ship = ship;
     }
 	
 	//sync int + boolean data
-	public S2CGUIPackets(int type, int value, boolean flag)
+	public S2CGUIPackets(byte type, int value, boolean flag)
 	{
-        this.type = type;
-        
-        switch (type)
-        {
-        case PID.FlagInitSID:
-        	this.flag = flag;
-        	break;
-        }
+        this.packetType = type;
+        this.valueInt = value;
+        this.valueBoolean = flag;
     }
 	
 	//sync list data
-	public S2CGUIPackets(int type, List list)
+	public S2CGUIPackets(byte type, List list)
 	{
-		this.type = type;
+		this.packetType = type;
 		this.dataList = list;
 	}
 	
@@ -180,13 +182,13 @@ public class S2CGUIPackets implements IMessage
 	 * 
 	 *  1. (2 parms) sync formation data: 0:teamID, 1:formatID
 	 */
-	public S2CGUIPackets(int type, int...parms)
+	public S2CGUIPackets(byte type, int...parms)
 	{
-        this.type = type;
+        this.packetType = type;
         
         if (parms != null && parms.length > 0)
         {
-        	this.value3 = parms.clone();
+        	this.valueInt1 = parms;
         }
     }
 	
@@ -194,784 +196,454 @@ public class S2CGUIPackets implements IMessage
 	@Override
 	public void fromBytes(ByteBuf buf)
 	{
-		world = ClientProxy.getClientWorld();
-		
 		//get type and entityID
-		this.type = buf.readByte();
+		this.packetType = buf.readByte();
 	
-		switch (type)
+		switch (this.packetType)
 		{
-		case PID.TileSmallSY: //sync small shipyard gui
-			{
-				//read value
-				int[] readi = PacketHelper.readIntArray(buf, 6);
-
-				//get tile
-				TileEntity te = world.getTileEntity(new BlockPos(readi[0], readi[1], readi[2]));
-				
-				//set tile
-				if (te instanceof TileEntitySmallShipyard)
-				{
-					TileEntitySmallShipyard te2 = (TileEntitySmallShipyard) te;
-					te2.setPowerConsumed(readi[3]);
-					te2.setPowerRemained(readi[4]);
-					te2.setPowerGoal(readi[5]);
-				}
-			}
-			break;
-		case PID.TileLargeSY: //sync large shipyard gui
-			{
-				//read value
-				int[] readi = PacketHelper.readIntArray(buf, 10);
-				
-				//get tile
-				TileEntity te = world.getTileEntity(new BlockPos(readi[0], readi[1], readi[2]));
-				
-				//set tile
-				if (te instanceof TileMultiGrudgeHeavy)
-				{
-					TileMultiGrudgeHeavy te2 = (TileMultiGrudgeHeavy) te;
-					te2.setPowerConsumed(readi[3]);
-					te2.setPowerRemained(readi[4]);
-					te2.setPowerGoal(readi[5]);
-					te2.setMatStock(0, readi[6]);
-					te2.setMatStock(1, readi[7]);
-					te2.setMatStock(2, readi[8]);
-					te2.setMatStock(3, readi[9]);
-				}
-			}
-			break;
-//		case PID.TileDesk:
-//			{
-//				this.recvX = buf.readInt();
-//				this.recvY = buf.readInt();
-//				this.recvZ = buf.readInt();
-//				
-//				this.tile = world.getTileEntity(recvX, recvY, recvZ);
-//				
-//				if(this.tile1 != null) {
-//					int[] data = new int[3];
-//					data[0] = buf.readInt();
-//					data[1] = buf.readInt();
-//					data[2] = buf.readInt();
-//					EntityHelper.setTileEntityByGUI(tile, ID.B.Desk_Sync, data);
-//				}
-//				else {
-//					buf.clear();
-//				}
-//			}
-//			break;
-//		case PID.TileVolCore: //sync tile volcano core
-//			{
-//				this.recvX = buf.readInt();
-//				this.recvY = buf.readInt();
-//				this.recvZ = buf.readInt();
-//	
-//				TileEntity te = world.getTileEntity(recvX, recvY, recvZ);
-//				
-//				if(te instanceof TileEntityVolCore) {
-//					((TileEntityVolCore) te).setPowerRemained(buf.readInt());
-//					((TileEntityVolCore) te).isActive = buf.readBoolean();
-//				}
-//				else {
-//					buf.clear();
-//				}
-//			}
-//			break;
-//		case PID.TileWaypoint: //sync tile waypoint
-//			{
-//				this.recvX = buf.readInt();
-//				this.recvY = buf.readInt();
-//				this.recvZ = buf.readInt();
-//				
-//				this.value3 = new int[6];
-//				this.value3[0] = buf.readInt();
-//				this.value3[1] = buf.readInt();
-//				this.value3[2] = buf.readInt();
-//				this.value3[3] = buf.readInt();
-//				this.value3[4] = buf.readInt();
-//				this.value3[5] = buf.readInt();
-//	
-//				TileEntity te = world.getTileEntity(recvX, recvY, recvZ);
-//				
-//				if(te instanceof TileEntityWaypoint) {
-//					((TileEntityWaypoint) te).setSyncData(this.value3);
-//				}
-//			}
-//			break;
-//		case PID.TileCrane: //sync tile crane
-//			{
-//				this.recvX = buf.readInt();
-//				this.recvY = buf.readInt();
-//				this.recvZ = buf.readInt();
-//				
-//				this.value3 = new int[11];
-//				this.value3[0] = buf.readInt();  //lx
-//				this.value3[1] = buf.readInt();  //ly
-//				this.value3[2] = buf.readInt();  //lz
-//				this.value3[3] = buf.readInt();  //nx
-//				this.value3[4] = buf.readInt();  //ny
-//				this.value3[5] = buf.readInt();  //nz
-//				this.value3[6] = buf.readInt();  //cx
-//				this.value3[7] = buf.readInt();  //cy
-//				this.value3[8] = buf.readInt();  //cz
-//				this.value3[9] = buf.readInt();  //ship eid
-//				this.value3[10] = buf.readInt(); //crane mode
-//				
-//				boolean isActive = buf.readBoolean();
-//				boolean checkMeta = buf.readBoolean();
-//				boolean checkDict = buf.readBoolean();
-//				boolean checkNbt = buf.readBoolean();
-//	
-//				TileEntity te = world.getTileEntity(recvX, recvY, recvZ);
-//				Entity ent = EntityHelper.getEntityByID(value3[9], 0, true);
-//				
-//				if(te instanceof TileEntityCrane) {
-//					TileEntityCrane t = (TileEntityCrane) te;
-//					t.setSyncData(value3);
-//					t.isActive = isActive;
-//					t.checkMetadata = checkMeta;
-//					t.checkOredict = checkDict;
-//					t.checkNbt = checkNbt;
-//					t.ship = (BasicEntityShip) ent;
-//					t.craneMode = value3[10];
-//				}
-//			}
-//			break;
-		case PID.SyncPlayerProp: //sync player props
-			{			
-				int[] propValues = new int[4];
-				int[] shipValues = new int[12];	//0:ship 0 eid  1: ship 0 uid  2: ship 1 eid...
-				int[] formatID = new int[9];
-				int teamID = 0;
-				boolean[] shipSelected = new boolean[6];
-				
-				//ring
-				propValues[0] = buf.readByte();	//ring active
-				propValues[1] = buf.readInt();	//marriage num
-				
-				//player uid
-				propValues[2] = buf.readInt();	//player uid
-				
-				//current team id
-				teamID = buf.readInt();
-				
-				//formation id array
-				for (int i = 0; i < 9 ; ++i)
-				{
-					formatID[i] = buf.readByte();
-				}
-				
-				//ship team array
-				for (int j = 0; j < 6; ++j)
-				{
-					shipValues[j * 2] = buf.readInt();		//ship i entity ID
-					shipValues[j * 2 + 1] = buf.readInt();	//ship 0 ship UID
-					shipSelected[j] = buf.readBoolean();	//ship 0 select state
-				}
-				
-				//set value
-				CapaTeitoku.setCapaDataMisc(propValues);
-				CapaTeitoku.setCapaDataTeamList(teamID, formatID, shipValues, shipSelected);
-			}
-			break;
+		case PID.TileSmallSY:	//sync small shipyard gui
+			this.valueInt1 = PacketHelper.readIntArray(buf, 6);
+		break;
+		case PID.TileLargeSY:	//sync large shipyard gui
+			this.valueInt1 = PacketHelper.readIntArray(buf, 10);
+		break;
+		case PID.TileDesk:		//sync tile desk
+			this.valueInt1 = PacketHelper.readIntArray(buf, 7);
+		break;
+		case PID.TileVolCore:	//sync tile volcano core
+			this.valueInt1 = PacketHelper.readIntArray(buf, 4);
+			this.valueBoolean = buf.readBoolean();
+		break;
+		case PID.TileWaypoint:	//sync tile waypoint
+			this.valueInt1 = PacketHelper.readIntArray(buf, 9);
+		break;
+		case PID.TileCrane:		//sync tile crane
+			this.valueInt1 = PacketHelper.readIntArray(buf, 14);
+			this.valueBoolean1 = PacketHelper.readBooleanArray(buf, 4);
+		break;
 		case PID.SyncShipInv:	//sync ship GUI
+			this.valueInt1 = PacketHelper.readIntArray(buf, 4);
+		break;
+		case PID.SyncPlayerProp: //sync player props
+			this.valueInt1 = new int[4+9+12];
+			this.valueBoolean1 = new boolean[6];
+			
+			//int 0~3: misc data
+			this.valueInt1[0] = buf.readByte();	//0: ring active
+			this.valueInt1[1] = buf.readInt();	//1: marriage num
+			this.valueInt1[2] = buf.readInt();	//2: player uid
+			this.valueInt1[3] = buf.readInt();	//3: current team id
+			
+			//int 4~12: formation id
+			for (int i = 0; i < 9 ; ++i)
 			{
-				//read value
-				int[] data = PacketHelper.readIntArray(buf, 4);
-				
-				//set value
-				Entity getEnt = EntityHelper.getEntityByID(data[0], 0, true);
-				
-				if (getEnt instanceof BasicEntityShip)
-				{
-					BasicEntityShip ship = (BasicEntityShip) getEnt;
-					
-					ship.setStateMinor(ID.M.Kills, data[1]);
-					ship.setStateMinor(ID.M.NumGrudge, data[2]);
-					ship.getCapaShipInventory().setInventoryPage(data[3]);
-				}
+				this.valueInt1[i + 4] = buf.readByte();
 			}
-			break;
+			
+			//int 13~24: ship team eid+uid, boolean 0~6: select state
+			for (int j = 0; j < 6; ++j)
+			{
+				this.valueInt1[j * 2 + 13] = buf.readInt();	//ship i entity ID
+				this.valueInt1[j * 2 + 14] = buf.readInt();	//ship i ship UID
+				this.valueBoolean1[j] = buf.readBoolean();	//ship i select state
+			}
+		break;
 		case PID.FlagInitSID:	//ship UID init flag
-			{
-				this.flag = buf.readBoolean();
-				
-				this.player = ClientProxy.getClientPlayer();
-				this.capa = CapaTeitoku.getTeitokuCapability(this.player);
-				
-				if (this.capa != null)
-				{
-					this.capa.setInitSID(this.flag);
-				}
-			}
-			break;
+			this.valueBoolean = buf.readBoolean();
+		break;
 		case PID.SyncShipList:				  //sync loaded ship list
 		case PID.SyncPlayerProp_ColledShip:   //sync colled ship list
 		case PID.SyncPlayerProp_ColledEquip:  //sync colled equip list
+			this.valueInt = buf.readInt();
+			this.dataList = new ArrayList();
+			
+			if (this.valueInt > 0)
 			{
-				int listLen = buf.readInt();
-
-				if (listLen > 0)
+				//get list data
+				for (int i = 0; i < this.valueInt; ++i)
 				{
-					this.player = ClientProxy.getClientPlayer();
-					this.capa = CapaTeitoku.getTeitokuCapability(player);
-					ArrayList<Integer> data = new ArrayList();
-					
-					//get list data
-					for (int i = 0; i < listLen; ++i)
-					{
-						data.add(buf.readInt());
-					}
-					
-					if (capa != null)
-					{
-						switch (type)
-						{
-						case PID.SyncShipList:				  //sync loaded ship list
-							capa.setShipEIDList(data);
-							break;
-						case PID.SyncPlayerProp_ColledShip:   //sync colled ship list
-							capa.setColleShipList(data);
-							break;
-						case PID.SyncPlayerProp_ColledEquip:  //sync colled equip list
-							capa.setColleEquipList(data);
-							break;
-						}
-					}
+					this.dataList.add(buf.readInt());
 				}
 			}
-			break;
+		break;
 		case PID.SyncPlayerProp_TargetClass:	//sync ship list
-			{
-				this.player = ClientProxy.getClientPlayer();
-				this.capa = CapaTeitoku.getTeitokuCapability(player);
-				HashMap<Integer, String> data = new HashMap();
-				int listLen = buf.readInt();
-	
-				if (listLen > 0)
-				{
-					//get list data
-					for (int i = 0; i < listLen; ++i)
-					{
-						String str = ByteBufUtils.readUTF8String(buf);
-						data.put(str.hashCode(), str);
-					}
-					
-					if (capa != null)
-					{
-						capa.setTargetClass(data);
-					}
-				}
-				else
-				{
-					if (capa != null)
-					{
-						capa.clearAllTargetClass();
-						LogHelper.info("DEBUG : S2C gui sync: clear target class list ");
-					}
-				}
-			}
-			break;
-		case PID.SyncPlayerProp_TeamData:
-			{
-				this.player = ClientProxy.getClientPlayer();
-				this.capa = CapaTeitoku.getTeitokuCapability(player);
+		{
+			this.valueInt = buf.readInt();
+			String str;
+			this.dataMap = new HashMap();
 
-				this.value = buf.readInt();
-				this.capa.setPlayerTeamID(this.value);
-				
-				//get team data
-				this.value = buf.readInt();  //get team data size
-				
-				HashMap<Integer, TeamData> tmap = new HashMap();
-				
-				for (int i = 0; i < this.value; ++i)
+			if (this.valueInt > 0)
+			{
+				//get list data
+				for (int i = 0; i < this.valueInt; ++i)
 				{
-					TeamData tdata = new TeamData();
-					
-					tdata.setTeamID(buf.readInt());
-					
-					//get team banned list
-					this.dataList = PacketHelper.readListInt(buf);
-					tdata.setTeamBannedList(this.dataList);
-					
-					//get team ally list
-					this.dataList = PacketHelper.readListInt(buf);
-					tdata.setTeamAllyList(this.dataList);
-					
-					//get team name
-					String tname = PacketHelper.readString(buf);
-					tdata.setTeamName(tname);
-					
-					//get leader name
-					String lname = PacketHelper.readString(buf);
-					tdata.setTeamLeaderName(lname);
-					
-					tmap.put(tdata.getTeamID(), tdata);
+					str = ByteBufUtils.readUTF8String(buf);
+					this.dataMap.put(str.hashCode(), str);
 				}
-//				LogHelper.info("DEBUG : S2C GUI Packet: get team data: "+tmap.size());
-				capa.setPlayerTeamDataMap(tmap);
 			}
-			break;
+		}
+		break;
+		case PID.SyncPlayerProp_TeamData:
+		{
+			this.valueInt = buf.readInt();	//team size
+			this.dataMap = new HashMap();
+			
+			for (int i = 0; i < this.valueInt; ++i)
+			{
+				TeamData tdata = new TeamData();
+				List list;
+				String name;
+				
+				tdata.setTeamID(buf.readInt());
+				
+				//get team banned list
+				list = PacketHelper.readListInt(buf);
+				tdata.setTeamBannedList(list);
+				
+				//get team ally list
+				list = PacketHelper.readListInt(buf);
+				tdata.setTeamAllyList(list);
+				
+				//get team name
+				name = PacketHelper.readString(buf);
+				tdata.setTeamName(name);
+				
+				//get leader name
+				name = PacketHelper.readString(buf);
+				tdata.setTeamLeaderName(name);
+				
+				this.dataMap.put(tdata.getTeamID(), tdata);
+			}
+		}
+		break;
 		case PID.SyncPlayerProp_Formation:
-			{
-				this.value = buf.readInt();		//array length
-				
-				if (this.value > 0)
-				{			//get array data
-					this.value3 = new int[value];
-					
-					for (int i = 0; i < this.value; i++)
-					{
-						this.value3[i] = buf.readInt();
-					}
-				}
-				
-				this.player = ClientProxy.getClientPlayer();
-				this.capa = CapaTeitoku.getTeitokuCapability(player);
-				
-				if (capa != null)
-				{
-					capa.setFormatID(this.value3);
-				}
-			}
-			break;
+			this.valueByte1 = PacketHelper.readByteArray(buf, 9);
+		break;
 		case PID.SyncPlayerProp_ShipsAll:
+			this.valueInt1 = new int[1+9+1];
+			
+			//int 0: current team id
+			this.valueInt1[0] = buf.readInt();
+			
+			//int 1~9: formation id
+			for (int i = 0; i < 9; i++)
 			{
-				this.value = buf.readInt();  	//current team id
-				
-				this.value3 = new int[9];
-				for (int i = 0; i < 9; i++)
-				{
-					this.value3[i] = buf.readByte();
-				}
-				
-				this.value2 = buf.readByte();  	//has team data flag
-				
-				if (this.value2 > 0)
-				{  	//get team data
-					BasicEntityShip[][] ships = new BasicEntityShip[9][6];
-					int[][] sids = new int[9][6];
-					boolean[][] sels = new boolean[9][6];
-					int temp;
-					
-					for (int k = 0; k < 9; k++)
-					{
-						for (int i = 0; i < 6; i++)
-						{
-							temp = buf.readInt();
-							ships[k][i] = (BasicEntityShip) EntityHelper.getEntityByID(temp, 0, true);
-							sids[k][i] = buf.readInt();
-							sels[k][i] = buf.readBoolean();
-						}
-					}
-					
-					this.player = ClientProxy.getClientPlayer();
-					this.capa = CapaTeitoku.getTeitokuCapability(player);
-					
-					if (capa != null)
-					{
-						capa.setPointerTeamID(value);
-						capa.setFormatID(value3);
-						capa.setTeamList(ships);
-						capa.setSelectState(sels);
-						capa.setSIDList(sids);
-					}
-				}
+				this.valueInt1[i + 1] = buf.readByte();
 			}
-			break;
-		case PID.SyncPlayerProp_ShipsInTeam:
+			
+			//has team data flag
+			this.valueInt1[10] = buf.readByte();
+			
+			//get team data
+			if (this.valueInt1[10] > 0)
 			{
-				this.value = buf.readInt();  	//team id
-				this.value2 = buf.readByte();	//format id
+				this.valueInt2 = new int[9][6];
+				this.valueInt2a = new int[9][6];
+				this.valueBoolean2 = new boolean[9][6];
 				
-				int flag = buf.readByte();  	//has team data flag
-				
-				if (flag > 0)
-				{  			//get team data
-					BasicEntityShip[] ships = new BasicEntityShip[6];
-					int[] sids = new int[6];
-					boolean[] sels = new boolean[6];
-					int temp;
-					
+				for (int k = 0; k < 9; k++)
+				{
 					for (int i = 0; i < 6; i++)
 					{
-						temp = buf.readInt();
-						ships[i] = (BasicEntityShip) EntityHelper.getEntityByID(temp, 0, true);
-						sids[i] = buf.readInt();
-						sels[i] = buf.readBoolean();
-					}
-					
-					this.player = ClientProxy.getClientPlayer();
-					this.capa = CapaTeitoku.getTeitokuCapability(player);
-					
-					if (capa != null)
-					{
-						capa.setFormatID(value, value2);
-						capa.setTeamList(value, ships);
-						capa.setSelectState(value, sels);
-						capa.setSIDList(value, sids);
+						this.valueInt2[k][i] = buf.readInt();
+						this.valueInt2a[k][i] = buf.readInt();
+						this.valueBoolean2[k][i] = buf.readBoolean();
 					}
 				}
 			}
-			break;
-		}
+		break;
+		case PID.SyncPlayerProp_ShipsInTeam:
+			this.valueInt1 = new int[3+12];
+			this.valueBoolean1 = new boolean[6];
+			
+			this.valueInt1[0] = buf.readInt();	//int 0: team id
+			this.valueInt1[1] = buf.readByte();	//int 1: format id
+			this.valueInt1[2] = buf.readByte();	//int 2: has team data flag
+			
+			//get team data
+			if (this.valueInt1[2] > 0)
+			{
+				//int 3~14: ship eid+uid, boolean 0~6: select state
+				for (int i = 0; i < 6; i++)
+				{
+					this.valueInt1[i * 2 + 3] = buf.readInt();
+					this.valueInt1[i * 2 + 4] = buf.readInt();
+					this.valueBoolean1[i] = buf.readBoolean();
+				}
+			}
+		break;
+		}//end switch
 	}
 
 	//發出packet: SERVER端
 	@Override
 	public void toBytes(ByteBuf buf)
 	{
-		switch (this.type)
+		//send packet type
+		buf.writeByte(this.packetType);
+		
+		switch (this.packetType)
 		{
-			case PID.TileSmallSY: //sync small shipyard gui
-			{
-				TileEntitySmallShipyard tile2 = (TileEntitySmallShipyard) tile;
-				
-				buf.writeByte(this.type);
-				buf.writeInt(tile2.getPos().getX());
-				buf.writeInt(tile2.getPos().getY());
-				buf.writeInt(tile2.getPos().getZ());
-				buf.writeInt(tile2.getPowerConsumed());
-				buf.writeInt(tile2.getPowerRemained());
-				buf.writeInt(tile2.getPowerGoal());
-			}
-			break;
+		case PID.TileSmallSY: //sync small shipyard gui
+		{
+			TileEntitySmallShipyard tile2 = (TileEntitySmallShipyard) this.tile;
+			
+			buf.writeInt(tile2.getPos().getX());
+			buf.writeInt(tile2.getPos().getY());
+			buf.writeInt(tile2.getPos().getZ());
+			buf.writeInt(tile2.getPowerConsumed());
+			buf.writeInt(tile2.getPowerRemained());
+			buf.writeInt(tile2.getPowerGoal());
+		}
+		break;
 		case PID.TileLargeSY: //sync large shipyard gui
+		{
+			TileMultiGrudgeHeavy tile2 = (TileMultiGrudgeHeavy) this.tile;
+			
+			buf.writeInt(tile2.getPos().getX());
+			buf.writeInt(tile2.getPos().getY());
+			buf.writeInt(tile2.getPos().getZ());
+			buf.writeInt(tile2.getPowerConsumed());
+			buf.writeInt(tile2.getPowerRemained());
+			buf.writeInt(tile2.getPowerGoal());
+			buf.writeInt(tile2.getMatStock(0));
+			buf.writeInt(tile2.getMatStock(1));
+			buf.writeInt(tile2.getMatStock(2));
+			buf.writeInt(tile2.getMatStock(3));
+		}
+		break;
+		case PID.TileDesk:  //sync admiral desk
+		{
+			TileEntityDesk tile2 = (TileEntityDesk) this.tile;
+			
+			buf.writeInt(tile2.getPos().getX());
+			buf.writeInt(tile2.getPos().getY());
+			buf.writeInt(tile2.getPos().getZ());
+			buf.writeInt(tile2.guiFunc);
+			buf.writeInt(tile2.book_chap);
+			buf.writeInt(tile2.book_page);
+			buf.writeInt(tile2.radar_zoomLv);
+		}
+		break;
+		case PID.TileVolCore: //sync tile volcano core
+		{
+			TileEntityVolCore tile2 = (TileEntityVolCore) this.tile;
+			
+			buf.writeInt(tile2.getPos().getX());
+			buf.writeInt(tile2.getPos().getY());
+			buf.writeInt(tile2.getPos().getZ());
+			buf.writeInt(tile2.getPowerRemained());
+			buf.writeBoolean(tile2.isActive);
+		}
+		break;
+		case PID.TileCrane: //sync tile crane
+		{
+			TileEntityCrane tile2 = (TileEntityCrane) this.tile;
+			
+			buf.writeInt(tile2.getPos().getX());
+			buf.writeInt(tile2.getPos().getY());
+			buf.writeInt(tile2.getPos().getZ());
+			buf.writeInt(tile2.lx);
+			buf.writeInt(tile2.ly);
+			buf.writeInt(tile2.lz);
+			buf.writeInt(tile2.nx);
+			buf.writeInt(tile2.ny);
+			buf.writeInt(tile2.nz);
+			buf.writeInt(tile2.cx);
+			buf.writeInt(tile2.cy);
+			buf.writeInt(tile2.cz);
+			
+			if (tile2.ship != null)
 			{
-				TileMultiGrudgeHeavy tile2 = (TileMultiGrudgeHeavy) tile;
-				
-				buf.writeByte(this.type);
-				buf.writeInt(tile2.getPos().getX());
-				buf.writeInt(tile2.getPos().getY());
-				buf.writeInt(tile2.getPos().getZ());
-				buf.writeInt(tile2.getPowerConsumed());
-				buf.writeInt(tile2.getPowerRemained());
-				buf.writeInt(tile2.getPowerGoal());
-				buf.writeInt(tile2.getMatStock(0));
-				buf.writeInt(tile2.getMatStock(1));
-				buf.writeInt(tile2.getMatStock(2));
-				buf.writeInt(tile2.getMatStock(3));
+				buf.writeInt(tile2.ship.getEntityId());
 			}
-			break;
-//		case PID.TileDesk:  //sync admiral desk
-//			{
-//				buf.writeByte(this.type);
-//				buf.writeInt(tile.xCoord);
-//				buf.writeInt(tile.yCoord);
-//				buf.writeInt(tile.zCoord);
-//				
-//				switch(this.type) {
-//				case PID.TileDesk:
-//					buf.writeInt(((TileEntityDesk)tile).guiFunc);
-//					buf.writeInt(((TileEntityDesk)tile).guiFunc);
-//					buf.writeInt(((TileEntityDesk)tile).guiFunc);
-//					break;
-//				}
-//			}
-//			break;
-//		case PID.TileVolCore: //sync tile volcano core
-//			{
-//				buf.writeByte(this.type);
-//				buf.writeInt(this.tile.xCoord);
-//				buf.writeInt(this.tile.yCoord);
-//				buf.writeInt(this.tile.zCoord);
-//				buf.writeInt(((TileEntityVolCore)tile).getPowerRemained());
-//				buf.writeBoolean(((TileEntityVolCore)tile).isActive);
-//			}
-//			break;
-//		case PID.TileCrane: //sync tile crane
-//			{
-//				TileEntityCrane te = (TileEntityCrane) tile;
-//				
-//				buf.writeByte(this.type);
-//				buf.writeInt(this.tile.xCoord);
-//				buf.writeInt(this.tile.yCoord);
-//				buf.writeInt(this.tile.zCoord);
-//				
-//				buf.writeInt(te.lx);
-//				buf.writeInt(te.ly);
-//				buf.writeInt(te.lz);
-//				buf.writeInt(te.nx);
-//				buf.writeInt(te.ny);
-//				buf.writeInt(te.nz);
-//				buf.writeInt(te.cx);
-//				buf.writeInt(te.cy);
-//				buf.writeInt(te.cz);
-//				
-//				if(te.ship != null) {
-//					buf.writeInt(te.ship.getEntityId());
-//				}
-//				else {
-//					buf.writeInt(-1);
-//				}
-//				
-//				buf.writeInt(te.craneMode);
-//				
-//				buf.writeBoolean(te.isActive);
-//				buf.writeBoolean(te.checkMetadata);
-//				buf.writeBoolean(te.checkOredict);
-//				buf.writeBoolean(te.checkNbt);
-//			}
-//			break;
-//		case PID.TileWaypoint: //sync tile waypoint
-//			{
-//				TileEntityWaypoint te = (TileEntityWaypoint) tile;
-//				
-//				buf.writeByte(this.type);
-//				buf.writeInt(this.tile.xCoord);
-//				buf.writeInt(this.tile.yCoord);
-//				buf.writeInt(this.tile.zCoord);
-//				buf.writeInt(te.lx);
-//				buf.writeInt(te.ly);
-//				buf.writeInt(te.lz);
-//				buf.writeInt(te.nx);
-//				buf.writeInt(te.ny);
-//				buf.writeInt(te.nz);
-//			}
-//			break;
+			else
+			{
+				buf.writeInt(-1);
+			}
+			
+			buf.writeInt(tile2.craneMode);
+			
+			buf.writeBoolean(tile2.isActive);
+			buf.writeBoolean(tile2.checkMetadata);
+			buf.writeBoolean(tile2.checkOredict);
+			buf.writeBoolean(tile2.checkNbt);
+		}
+		break;
+		case PID.TileWaypoint: //sync tile waypoint
+		{
+			TileEntityWaypoint tile2 = (TileEntityWaypoint) this.tile;
+			
+			buf.writeInt(tile2.getPos().getX());
+			buf.writeInt(tile2.getPos().getY());
+			buf.writeInt(tile2.getPos().getZ());
+			buf.writeInt(tile2.lx);
+			buf.writeInt(tile2.ly);
+			buf.writeInt(tile2.lz);
+			buf.writeInt(tile2.nx);
+			buf.writeInt(tile2.ny);
+			buf.writeInt(tile2.nz);
+		}
+		break;
 		case PID.SyncPlayerProp:	//sync player props
+		{
+			//misc data
+			buf.writeByte(capa.isRingActiveI());
+			buf.writeInt(capa.getMarriageNum());
+			buf.writeInt(capa.getPlayerUID());
+			buf.writeInt(capa.getPointerTeamID());
+			
+			//ship formation id
+			int[] fid = capa.getFormatID();
+			for (int j = 0; j < 9; j++)
 			{
-				buf.writeByte(this.type);
-				
-				//ring
-				buf.writeByte(capa.isRingActiveI());
-				buf.writeInt(capa.getMarriageNum());
-				
-				//player uid
-				buf.writeInt(capa.getPlayerUID());
-				
-				//ship team id
-				buf.writeInt(capa.getPointerTeamID());
-				
-				//ship formation id
-				int[] fid = capa.getFormatID();
-				for (int j = 0; j < 9; j++)
-				{
-					buf.writeByte((byte) fid[j]);
-				}
-				
-				//ship team list
-				for (int i = 0; i < 6; i++)
-				{
-					//get entity id
-					if (capa.getShipEntityCurrentTeam(i) != null)
-					{
-						buf.writeInt(capa.getShipEntityCurrentTeam(i).getEntityId());
-					}
-					else
-					{
-						buf.writeInt(-1);
-					}
-					//get ship UID
-					buf.writeInt(capa.getSIDCurrentTeam(i));
-					//get select state
-					buf.writeBoolean(capa.getSelectStateCurrentTeam(i));
-				}
+				buf.writeByte((byte) fid[j]);
 			}
-			break;
+			
+			//ship team list
+			for (int i = 0; i < 6; i++)
+			{
+				//get entity id
+				if (capa.getShipEntityCurrentTeam(i) != null)
+				{
+					buf.writeInt(capa.getShipEntityCurrentTeam(i).getEntityId());
+				}
+				else
+				{
+					buf.writeInt(-1);
+				}
+				
+				//get ship UID
+				buf.writeInt(capa.getSIDCurrentTeam(i));
+				
+				//get select state
+				buf.writeBoolean(capa.getSelectStateCurrentTeam(i));
+			}
+		}
+		break;
 		case PID.SyncShipInv:	//sync ship inventory GUI: kills and grudge
-			{
-				buf.writeByte(this.type);
-				buf.writeInt(ship.getEntityId());
-				buf.writeInt(ship.getStateMinor(ID.M.Kills));
-				buf.writeInt(ship.getStateMinor(ID.M.NumGrudge));
-				buf.writeInt(ship.getCapaShipInventory().getInventoryPage());
-			}
-			break;
+			buf.writeInt(ship.getEntityId());
+			buf.writeInt(ship.getStateMinor(ID.M.Kills));
+			buf.writeInt(ship.getStateMinor(ID.M.NumGrudge));
+			buf.writeInt(ship.getCapaShipInventory().getInventoryPage());
+		break;
 		case PID.FlagInitSID:	//ship UID init flag
-			{
-				buf.writeByte(this.type);
-				buf.writeBoolean(flag);
-			}
-			break;
+			buf.writeBoolean(this.valueBoolean);
+		break;
 		case PID.SyncShipList:				  //send ship list to client
 		case PID.SyncPlayerProp_TargetClass:  //sync target class
 		case PID.SyncPlayerProp_ColledShip:   //sync colled ship list
 		case PID.SyncPlayerProp_ColledEquip:  //sync colled equip list
+		{
+			//send list
+			if (this.dataList != null)
 			{
-				buf.writeByte(this.type);
+				//send list length
+				buf.writeInt(this.dataList.size());
 				
-				//send list
-				if (dataList != null)
-				{
-					//send list length
-					buf.writeInt(dataList.size());
-					
-					//send list data
-					Iterator iter = dataList.iterator();
-					
-					switch (this.type)
-					{
-					case PID.SyncShipList:
-					case PID.SyncPlayerProp_ColledShip:
-					case PID.SyncPlayerProp_ColledEquip:
-						//send ship id array
-						while (iter.hasNext())
-						{
-							//int list
-							buf.writeInt((Integer) iter.next());
-						}
-						break;
-					case PID.SyncPlayerProp_TargetClass:
-						LogHelper.info("DEBUG : S2C gui packet: send list size "+dataList.size());
-						while (iter.hasNext())
-						{
-							//string list
-							ByteBufUtils.writeUTF8String(buf, (String) iter.next());
-						}
-						break;
-					}
-				}
-				else
-				{
-					buf.writeInt(-1);
-				}
-			}
-			break;
-		case PID.SyncPlayerProp_TeamData:  //sync all team data to client
-			{
-				buf.writeByte(this.type);
-				buf.writeInt(this.capa.getPlayerTeamID());
+				//send list data
+				Iterator iter = this.dataList.iterator();
 				
-				//get team data
-				this.dataMap = ServerProxy.getAllTeamWorldData();
-//				LogHelper.info("DEBUG : S2C GUI Packet: send team data: "+this.dataMap.size());
-				//has data
-				if (this.dataMap != null)
+				switch (this.packetType)
 				{
-					int tsize = this.dataMap.size();
-					buf.writeInt(tsize);
-					
-					Iterator iter = this.dataMap.entrySet().iterator();
-					
+				case PID.SyncShipList:
+				case PID.SyncPlayerProp_ColledShip:
+				case PID.SyncPlayerProp_ColledEquip:
 					while (iter.hasNext())
 					{
-						Map.Entry ent = (Entry) iter.next();
-						int tid = (Integer) ent.getKey();
-						TeamData tdata = (TeamData) ent.getValue();
-						
-						buf.writeInt(tid);
+						buf.writeInt((int) iter.next());
+					}
+				break;
+				case PID.SyncPlayerProp_TargetClass:
+					while (iter.hasNext())
+					{
+						ByteBufUtils.writeUTF8String(buf, (String) iter.next());
+					}
+				break;
+				}
+			}
+			else
+			{
+				buf.writeInt(-1);
+			}
+		}
+		break;
+		case PID.SyncPlayerProp_TeamData:  //sync all team data to client
+		{
+			//get team data
+			this.dataMap = ServerProxy.getAllTeamWorldData();
+			
+			//has data
+			if (this.dataMap != null)
+			{
+				//send map size
+				buf.writeInt(this.dataMap.size());
+				
+				//send map data
+				this.dataMap.forEach((k, v) ->
+				{
+					int tid = (Integer) k;
+					TeamData tdata = (TeamData) v;
+					
+					//send team id
+					buf.writeInt(tid);
 
-						//send team banned list
-						PacketHelper.sendListInt(buf, tdata.getTeamBannedList());
-						
-						//send team ally list
-						PacketHelper.sendListInt(buf, tdata.getTeamAllyList());
-						
-						//send team name
-						PacketHelper.sendString(buf, tdata.getTeamName());
-						
-						//send leader name
-						PacketHelper.sendString(buf, tdata.getTeamLeaderName());
-					}
-				}
-				//no data
-				else
-				{
-					buf.writeInt(-1);
-				}
+					//send team banned list
+					PacketHelper.sendListInt(buf, tdata.getTeamBannedList());
+					
+					//send team ally list
+					PacketHelper.sendListInt(buf, tdata.getTeamAllyList());
+					
+					//send team name
+					PacketHelper.sendString(buf, tdata.getTeamName());
+					
+					//send leader name
+					PacketHelper.sendString(buf, tdata.getTeamLeaderName());
+				});
 			}
-			break;
+			//no data
+			else
+			{
+				buf.writeInt(-1);
+			}
+		}
+		break;
 		case PID.SyncPlayerProp_Formation:    //sync formation id
+			//send formation id (int turn to byte)
+			for (int i : this.valueInt1)
 			{
-				buf.writeByte(this.type);
-				
-				//send int array
-				if (this.value3 != null)
-				{
-					//send list length
-					buf.writeInt(this.value3.length);
-					
-					for (int geti : this.value3)
-					{
-						buf.writeInt(geti);
-					}
-				}
-				//if array null
-				else
-				{
-					buf.writeInt(0);
-				}
+				buf.writeByte((byte) i);
 			}
-			break;
+		break;
 		case PID.SyncPlayerProp_ShipsAll:		//sync all ships in team list 0~8
+		{
+			//ship team id
+			buf.writeInt(capa.getPointerTeamID());
+			
+			//ship formation id
+			int[] fid = capa.getFormatID();
+			for (int j = 0; j < 9; j++)
 			{
-				buf.writeByte(this.type);
-				
-				//ship team id
-				buf.writeInt(capa.getPointerTeamID());
-				
-				//ship formation id
-				int[] fid = capa.getFormatID();
-				for (int j = 0; j < 9; j++)
-				{
-					buf.writeByte((byte) fid[j]);
-				}
-				
-				BasicEntityShip[][] ships = capa.getShipEntityAllTeams();
-				int[][] sids = capa.getSID();
-				boolean[][] sels = capa.getSelectStateAllTeams();
-				
-				if (ships != null && sids != null && sels != null)
-				{
-					buf.writeByte(1);  //get data flag
-					
-					//ship team list
-					for (int k = 0; k < 9; k++)
-					{
-						for (int i = 0; i < 6; i++)
-						{
-							//get entity id
-							if (ships[k][i] != null)
-							{
-								buf.writeInt(ships[k][i].getEntityId());
-							}
-							else
-							{
-								buf.writeInt(-1);
-							}
-							
-							//get ship UID
-							buf.writeInt(sids[k][i]);
-							
-							//get select state
-							buf.writeBoolean(sels[k][i]);
-						}//end for all ships in team
-					}//end for all teams
-				}
-				else
-				{
-					buf.writeByte(-1); //no data flag
-				}
+				buf.writeByte((byte) fid[j]);
 			}
-			break;
-		case PID.SyncPlayerProp_ShipsInTeam:  //sync ships in a team
+			
+			BasicEntityShip[][] ships = capa.getShipEntityAllTeams();
+			int[][] sids = capa.getSID();
+			boolean[][] sels = capa.getSelectStateAllTeams();
+			
+			if (ships != null && sids != null && sels != null)
 			{
-				buf.writeByte(this.type);
+				buf.writeByte(1);  //get data flag
 				
-				//ship team id
-				buf.writeInt(this.value3[0]);
-				
-				//ship formation id
-				buf.writeByte(this.capa.getFormatID(this.value3[0]));
-				
-				BasicEntityShip[] ships = capa.getShipEntityAll(this.value3[0]);
-				int[] sids = capa.getSID(this.value3[0]);
-				boolean[] sels = capa.getSelectState(this.value3[0]);
-				
-				if (ships != null && sids != null && sels != null)
+				//ship team list
+				for (int k = 0; k < 9; k++)
 				{
-					buf.writeByte(1);  //get data flag
-					
-					//ship team list
 					for (int i = 0; i < 6; i++)
 					{
 						//get entity id
-						if (ships[i] != null)
+						if (ships[k][i] != null)
 						{
-							buf.writeInt(ships[i].getEntityId());
+							buf.writeInt(ships[k][i].getEntityId());
 						}
 						else
 						{
@@ -979,19 +651,375 @@ public class S2CGUIPackets implements IMessage
 						}
 						
 						//get ship UID
-						buf.writeInt(sids[i]);
+						buf.writeInt(sids[k][i]);
 						
 						//get select state
-						buf.writeBoolean(sels[i]);
+						buf.writeBoolean(sels[k][i]);
 					}//end for all ships in team
-				}
-				else
+				}//end for all teams
+			}
+			else
+			{
+				buf.writeByte(-1); //no data flag
+			}
+		}
+		break;
+		case PID.SyncPlayerProp_ShipsInTeam:  //sync ships in a team
+		{
+			//ship team id
+			buf.writeInt(this.valueInt1[0]);
+			
+			//ship formation id
+			buf.writeByte(this.capa.getFormatID(this.valueInt1[0]));
+			
+			BasicEntityShip[] ships = capa.getShipEntityAll(this.valueInt1[0]);
+			int[] sids = capa.getSID(this.valueInt1[0]);
+			boolean[] sels = capa.getSelectState(this.valueInt1[0]);
+			
+			if (ships != null && sids != null && sels != null)
+			{
+				buf.writeByte(1);  //get data flag
+				
+				//ship team list
+				for (int i = 0; i < 6; i++)
 				{
-					buf.writeByte(-1); //no data flag
+					//get entity id
+					if (ships[i] != null)
+					{
+						buf.writeInt(ships[i].getEntityId());
+					}
+					else
+					{
+						buf.writeInt(-1);
+					}
+					
+					//get ship UID
+					buf.writeInt(sids[i]);
+					
+					//get select state
+					buf.writeBoolean(sels[i]);
+				}//end for all ships in team
+			}
+			else
+			{
+				buf.writeByte(-1); //no data flag
+			}
+		}
+		break;
+		}//end send packet type switch
+	}
+	
+	//packet handle method
+	private static void handle(S2CGUIPackets msg, MessageContext ctx)
+	{
+		World world = ClientProxy.getClientWorld();
+		
+		switch (msg.packetType)
+		{
+		case PID.TileSmallSY: //sync small shipyard gui
+		{
+			//get tile
+			TileEntity tile = world.getTileEntity(new BlockPos(
+					msg.valueInt1[0], msg.valueInt1[1], msg.valueInt1[2]));
+			
+			//set tile
+			if (tile instanceof TileEntitySmallShipyard)
+			{
+				TileEntitySmallShipyard tile2 = (TileEntitySmallShipyard) tile;
+				tile2.setPowerConsumed(msg.valueInt1[3]);
+				tile2.setPowerRemained(msg.valueInt1[4]);
+				tile2.setPowerGoal(msg.valueInt1[5]);
+			}
+		}
+		break;
+		case PID.TileLargeSY: //sync large shipyard gui
+		{
+			//get tile
+			TileEntity tile = world.getTileEntity(new BlockPos(
+					msg.valueInt1[0], msg.valueInt1[1], msg.valueInt1[2]));
+			
+			//set tile
+			if (tile instanceof TileMultiGrudgeHeavy)
+			{
+				TileMultiGrudgeHeavy tile2 = (TileMultiGrudgeHeavy) tile;
+				tile2.setPowerConsumed(msg.valueInt1[3]);
+				tile2.setPowerRemained(msg.valueInt1[4]);
+				tile2.setPowerGoal(msg.valueInt1[5]);
+				tile2.setMatStock(0, msg.valueInt1[6]);
+				tile2.setMatStock(1, msg.valueInt1[7]);
+				tile2.setMatStock(2, msg.valueInt1[8]);
+				tile2.setMatStock(3, msg.valueInt1[9]);
+			}
+		}
+		break;
+		case PID.TileDesk:
+		{
+			//get tile
+			TileEntity tile = world.getTileEntity(new BlockPos(
+					msg.valueInt1[0], msg.valueInt1[1], msg.valueInt1[2]));
+			
+			if (tile instanceof TileEntityDesk)
+			{
+				int[] data = new int[4];
+				for (int i = 0; i < 4; i++)
+				{
+					data[i] = msg.valueInt1[i + 3];
+				}
+				((TileEntityDesk) tile).setSyncData(data);
+			}
+		}
+		break;
+		case PID.TileVolCore: //sync tile volcano core
+		{
+			//get tile
+			TileEntity tile = world.getTileEntity(new BlockPos(
+					msg.valueInt1[0], msg.valueInt1[1], msg.valueInt1[2]));
+			
+			if (tile instanceof TileEntityVolCore)
+			{
+				((TileEntityVolCore) tile).setPowerRemained(msg.valueInt1[3]);
+				((TileEntityVolCore) tile).isActive = msg.valueBoolean;
+			}
+		}
+		break;
+		case PID.TileWaypoint: //sync tile waypoint
+		{
+			//get tile
+			TileEntity tile = world.getTileEntity(new BlockPos(
+					msg.valueInt1[0], msg.valueInt1[1], msg.valueInt1[2]));
+			
+			if (tile instanceof TileEntityWaypoint)
+			{
+				int[] data = new int[6];
+				for (int i = 0; i < 6; i++)
+				{
+					data[i] = msg.valueInt1[i + 3];
+				}
+				((TileEntityWaypoint) tile).setSyncData(data);
+			}
+		}
+		break;
+		case PID.TileCrane: //sync tile crane
+		{
+			//get tile
+			TileEntity tile = world.getTileEntity(new BlockPos(
+					msg.valueInt1[0], msg.valueInt1[1], msg.valueInt1[2]));
+			
+			//get entity
+			Entity entity = EntityHelper.getEntityByID(msg.valueInt1[12], 0, true);
+			
+			if (tile instanceof TileEntityCrane && entity instanceof BasicEntityShip)
+			{
+				TileEntityCrane tile2 = (TileEntityCrane) tile;
+				int[] data = new int[9];
+				for (int i = 0; i < 9; i++)
+				{
+					data[i] = msg.valueInt1[i + 3];
+				}
+				
+				tile2.setSyncData(data);
+				tile2.isActive = msg.valueBoolean1[0];
+				tile2.checkMetadata = msg.valueBoolean1[1];
+				tile2.checkOredict = msg.valueBoolean1[2];
+				tile2.checkNbt = msg.valueBoolean1[3];
+				tile2.ship = (BasicEntityShip) entity;
+				tile2.craneMode = msg.valueInt1[13];
+			}
+		}
+		break;
+		case PID.SyncPlayerProp: //sync player props
+		{
+			int[] misc = new int[3];
+			for (int i = 0; i < 3; i++)
+			{
+				misc[i] = msg.valueInt1[i];
+			}
+			
+			int[] formatID = new int[9];
+			for (int i = 0; i < 9; i++)
+			{
+				formatID[i] = msg.valueInt1[i + 3];
+			}
+
+			int[] shipList = new int[12];
+			for (int i = 0; i < 6; i++)
+			{
+				shipList[i * 2] = msg.valueInt1[i * 2 + 13];
+				shipList[i * 2 + 1] = msg.valueInt1[i * 2 + 14];
+			}
+			
+			//set value
+			CapaTeitoku.setCapaDataMisc(misc);
+			CapaTeitoku.setCapaDataTeamList(msg.valueInt1[3], formatID, shipList, msg.valueBoolean1);
+		}
+		break;
+		case PID.SyncShipInv:	//sync ship GUI
+		{
+			//set value
+			Entity entity = EntityHelper.getEntityByID(msg.valueInt1[0], 0, true);
+			
+			if (entity instanceof BasicEntityShip)
+			{
+				BasicEntityShip ship = (BasicEntityShip) entity;
+				
+				ship.setStateMinor(ID.M.Kills, msg.valueInt1[1]);
+				ship.setStateMinor(ID.M.NumGrudge, msg.valueInt1[2]);
+				ship.getCapaShipInventory().setInventoryPage(msg.valueInt1[3]);
+			}
+		}
+		break;
+		case PID.FlagInitSID:	//ship UID init flag
+		{
+			CapaTeitoku capa = CapaTeitoku.getTeitokuCapabilityClientOnly();
+			
+			if (capa != null)
+			{
+				capa.setInitSID(msg.valueBoolean);
+			}
+		}
+		break;
+		case PID.SyncShipList:				  //sync loaded ship list
+		case PID.SyncPlayerProp_ColledShip:   //sync colled ship list
+		case PID.SyncPlayerProp_ColledEquip:  //sync colled equip list
+		{
+			if (msg.valueInt > 0)
+			{
+				CapaTeitoku capa = CapaTeitoku.getTeitokuCapabilityClientOnly();
+
+				if (capa != null)
+				{
+					switch (msg.packetType)
+					{
+					case PID.SyncShipList:				  //sync loaded ship list
+						capa.setShipEIDList((ArrayList<Integer>) msg.dataList);
+						break;
+					case PID.SyncPlayerProp_ColledShip:   //sync colled ship list
+						capa.setColleShipList((ArrayList<Integer>) msg.dataList);
+						break;
+					case PID.SyncPlayerProp_ColledEquip:  //sync colled equip list
+						capa.setColleEquipList((ArrayList<Integer>) msg.dataList);
+						break;
+					}
 				}
 			}
-			break;
-		}//end send packet type switch
+		}
+		break;
+		case PID.SyncPlayerProp_TargetClass:	//sync ship list
+		{
+			CapaTeitoku capa = CapaTeitoku.getTeitokuCapabilityClientOnly();
+
+			if (msg.valueInt > 0)
+			{
+				if (capa != null)
+				{
+					capa.setTargetClass((HashMap<Integer, String>) msg.dataMap);
+				}
+			}
+			else
+			{
+				if (capa != null)
+				{
+					capa.clearAllTargetClass();
+					LogHelper.info("DEBUG : S2C gui sync: clear target class list ");
+				}
+			}
+		}
+		break;
+		case PID.SyncPlayerProp_TeamData:
+		{
+			CapaTeitoku capa = CapaTeitoku.getTeitokuCapabilityClientOnly();
+
+			if (capa != null)
+			{
+				capa.setPlayerTeamDataMap((HashMap<Integer, TeamData>) msg.dataMap);
+			}
+		}
+		break;
+		case PID.SyncPlayerProp_Formation:
+		{
+			CapaTeitoku capa = CapaTeitoku.getTeitokuCapabilityClientOnly();
+			
+			if (capa != null)
+			{
+				int[] formatID = new int[9];
+				for (int i = 0; i < 9; i++)
+				{
+					formatID[i] = msg.valueByte1[i];
+				}
+				
+				capa.setFormatID(formatID);
+			}
+		}
+		break;
+		case PID.SyncPlayerProp_ShipsAll:
+		{
+			//has team
+			if (msg.valueInt1[10] > 0)
+			{
+				int[] formatID = new int[9];
+				for (int i = 0; i < 9; i++)
+				{
+					formatID[i] = msg.valueInt1[i + 1];
+				}
+				
+				//get ships array
+				BasicEntityShip[][] ships = new BasicEntityShip[9][6];
+				for (int j = 0; j < 9; j++)
+				{
+					for (int k = 0; k < 6; k++)
+					{
+						if (msg.valueInt2[j][k] > 0)
+						{
+							Entity ent = EntityHelper.getEntityByID(msg.valueInt2[j][k], 0, true);
+							if (ent instanceof BasicEntityShip) ships[j][k] = (BasicEntityShip) ent;
+						}
+					}
+					
+				}
+				
+				CapaTeitoku capa = CapaTeitoku.getTeitokuCapabilityClientOnly();
+				
+				if (capa != null)
+				{
+					capa.setPointerTeamID(msg.valueInt1[0]);
+					capa.setFormatID(formatID);
+					capa.setTeamList(ships);
+					capa.setSelectState(msg.valueBoolean2);
+					capa.setSIDList(msg.valueInt2a);
+				}
+			}
+		}
+		break;
+		case PID.SyncPlayerProp_ShipsInTeam:
+		{
+			if (msg.valueInt1[2] > 0)
+			{
+				BasicEntityShip[] ships = new BasicEntityShip[6];
+				int[] uids = new int[6];
+				
+				for (int i = 0; i < 6; i++)
+				{
+					//get ship entity
+					Entity ent = EntityHelper.getEntityByID(msg.valueInt1[i * 2 + 3], 0, true);
+					if (ent instanceof BasicEntityShip) ships[i] = (BasicEntityShip) ent;
+					
+					//get ship uid
+					uids[i] = msg.valueInt1[i * 2 + 4];
+				}
+				
+				CapaTeitoku capa = CapaTeitoku.getTeitokuCapabilityClientOnly();
+				
+				if (capa != null)
+				{
+					capa.setFormatID(msg.valueInt1[0], msg.valueInt1[1]);
+					capa.setTeamList(msg.valueInt1[0], ships);
+					capa.setSelectState(msg.valueInt1[0], msg.valueBoolean1);
+					capa.setSIDList(msg.valueInt1[0], uids);
+				}
+			}
+		}
+		break;
+		}//end switch
 	}
 	
 	//packet handler (inner class)
@@ -1001,8 +1029,12 @@ public class S2CGUIPackets implements IMessage
 		@Override
 		public IMessage onMessage(S2CGUIPackets message, MessageContext ctx)
 		{
-//          System.out.println(String.format("Received %s from %s", message.text, ctx.getServerHandler().playerEntity.getDisplayName()));
-//			LogHelper.info("DEBUG : recv GUI Click packet : type "+recvType+" button ");
+			/**
+			 * 1.8之後minecraft主程式分為minecraft server/clinet跟networking兩個thread執行
+			 * 因此handler這邊必須使用addScheduledTask將封包處理方法加入到並行控制佇列中處理
+			 * 以避免多執行緒下各種並行處理問題
+			 */
+			FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> S2CGUIPackets.handle(message, ctx));
 			return null;
 		}
     }

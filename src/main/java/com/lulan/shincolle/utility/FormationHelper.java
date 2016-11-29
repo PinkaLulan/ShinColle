@@ -1,10 +1,5 @@
 package com.lulan.shincolle.utility;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
@@ -13,6 +8,11 @@ import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
+
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 
 /** FORMATION HELPER
  * 
@@ -29,14 +29,19 @@ public class FormationHelper
 	
 	public FormationHelper() {}
 	
-	/** set current team formation id */
-	public static void setFormationID(EntityPlayer player, int formatID)
+	/**
+	 * set current team formation id
+	 * 
+	 * parms: 0:player eid, 1:world id, 2:formation id
+	 */
+	public static void setFormationID(int[] parms)
 	{
+		EntityPlayer player = EntityHelper.getEntityPlayerByID(parms[0], parms[1], false);
 		CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(player);
 		
 		if (capa != null)
 		{
-			setFormationID(player, capa.getPointerTeamID(), formatID);
+			setFormationID(player, capa.getPointerTeamID(), parms[2]);
 		}
 	}
 	
@@ -1051,29 +1056,33 @@ public class FormationHelper
 		}
 	}
 	
-	/** set ship move with team list
+	/**
+	 * set ship move with team list
 	 * 
-	 *  parms: type: no use for now
+	 * parms: 0:player eid, 1:world id, 2:meta 3:guard type 4:guard target id
+	 * 
+	 * note: guard type: no use for now
 	 */
-	public static void applyTeamGuard(EntityPlayer player, Entity guarded, int meta, int type)
+	public static void applyTeamGuard(int[] parms)
 	{
+		EntityPlayer player = EntityHelper.getEntityPlayerByID(parms[0], parms[1], false);
+		Entity entity = EntityHelper.getEntityByID(parms[4], parms[1], false);
 		CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(player);
-		int worldID = player.worldObj.provider.getDimension();
 		
 		if (capa != null)
 		{
 			//get current team formation id
 			int formatID = capa.getFormatIDCurrentTeam();
-			BasicEntityShip[] ships = capa.getShipEntityByMode(meta);
+			BasicEntityShip[] ships = capa.getShipEntityByMode(parms[2]);
 			
-			switch (meta)
+			switch (parms[2])
 			{
 			case 0:	//single mode
-				if (ships[0] != null && ships[0].worldObj.provider.getDimension() == worldID && formatID <= 0 &&
+				if (ships[0] != null && ships[0].worldObj.provider.getDimension() == parms[1] && formatID <= 0 &&
 				   player.getDistanceToEntity(ships[0]) < 64F)
 				{
 					//設定ship移動地點
-					applyShipGuardEntity(ships[0], guarded);
+					applyShipGuardEntity(ships[0], entity);
 					//sync guard
 					CommonProxy.channelE.sendTo(new S2CEntitySync(ships[0], S2CEntitySync.PID.SyncShip_Minor), (EntityPlayerMP) player);
 				}
@@ -1081,11 +1090,11 @@ public class FormationHelper
 			case 1:		//group mode
 				for (int i = 0;i < ships.length; i++)
 				{
-					if (ships[i] != null && ships[i].worldObj.provider.getDimension() == worldID && formatID <= 0 &&
+					if (ships[i] != null && ships[i].worldObj.provider.getDimension() == parms[1] && formatID <= 0 &&
 					   player.getDistanceToEntity(ships[i]) < 64F)
 					{
 						//設定ship移動地點
-						applyShipGuardEntity(ships[i], guarded);
+						applyShipGuardEntity(ships[i], entity);
 						//sync guard
 						CommonProxy.channelE.sendTo(new S2CEntitySync(ships[i], S2CEntitySync.PID.SyncShip_Minor), (EntityPlayerMP) player);
 					}
@@ -1096,11 +1105,11 @@ public class FormationHelper
 				{
 					for (int i = 0;i < ships.length; i++)
 					{
-						if (ships[i] != null && ships[i].worldObj.provider.getDimension() == worldID &&
+						if (ships[i] != null && ships[i].worldObj.provider.getDimension() == parms[1] &&
 						   player.getDistanceToEntity(ships[i]) < 64F)
 						{
 							//設定ship移動地點
-							applyShipGuardEntity(ships[i], guarded);
+							applyShipGuardEntity(ships[i], entity);
 							//sync guard
 							CommonProxy.channelE.sendTo(new S2CEntitySync(ships[i], S2CEntitySync.PID.SyncShip_Minor), (EntityPlayerMP) player);
 						}
@@ -1112,29 +1121,30 @@ public class FormationHelper
 	}
 
 	/** set ship move with team list 
-	 *  parms: 0:meta 1:guard type 2:posX 3:posY 4:posZ
+	 * 
+	 *  parms: 0:player eid, 1:world id, 2:meta 3:guard type 4:posX 5:posY 6:posZ
 	 *  
-	 *  1:guard type: no use for now
+	 *  note: guard type: no use for now
 	 */
-	public static void applyTeamMove(EntityPlayer player, int[] parms)
+	public static void applyTeamMove(int[] parms)
 	{
+		EntityPlayer player = EntityHelper.getEntityPlayerByID(parms[0], parms[1], false);
 		CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(player);
-		int worldID = player.worldObj.provider.getDimension();
 		
 		if(capa != null)
 		{
 			//get current team formation id
 			int formatID = capa.getFormatIDCurrentTeam();
-			BasicEntityShip[] ships = capa.getShipEntityByMode(parms[0]);
+			BasicEntityShip[] ships = capa.getShipEntityByMode(parms[2]);
 			
-			switch (parms[0])
+			switch (parms[2])
 			{
 			case 0:	//single mode
-				if (ships[0] != null && ships[0].worldObj.provider.getDimension() == worldID && formatID <= 0 &&
+				if (ships[0] != null && ships[0].worldObj.provider.getDimension() == parms[1] && formatID <= 0 &&
 				   player.getDistanceToEntity(ships[0]) < 64F)
 				{
 					//設定ship移動地點
-					applyShipGuard(ships[0], parms[2], parms[3], parms[4]);
+					applyShipGuard(ships[0], parms[4], parms[5], parms[6]);
 					//sync guard
 					CommonProxy.channelE.sendTo(new S2CEntitySync(ships[0], S2CEntitySync.PID.SyncShip_Minor), (EntityPlayerMP) player);
 				}
@@ -1142,11 +1152,11 @@ public class FormationHelper
 			case 1:		//group mode
 				for (int i = 0;i < ships.length; i++)
 				{
-					if (ships[i] != null && ships[i].worldObj.provider.getDimension() == worldID && formatID <= 0 &&
+					if (ships[i] != null && ships[i].worldObj.provider.getDimension() == parms[1] && formatID <= 0 &&
 					   player.getDistanceToEntity(ships[i]) < 64F)
 					{
 						//設定ship移動地點
-						applyShipGuard(ships[i], parms[2], parms[3], parms[4]);
+						applyShipGuard(ships[i], parms[4], parms[5], parms[6]);
 						//sync guard
 						CommonProxy.channelE.sendTo(new S2CEntitySync(ships[i], S2CEntitySync.PID.SyncShip_Minor), (EntityPlayerMP) player);
 					}
@@ -1175,7 +1185,7 @@ public class FormationHelper
 					if (canMove)
 					{
 						//set formation position
-						FormationHelper.applyFormationMoving(ships, formatID, parms[2], parms[3], parms[4]);
+						FormationHelper.applyFormationMoving(ships, formatID, parms[4], parms[5], parms[6]);
 					}
 				}
 				break;
@@ -1183,33 +1193,36 @@ public class FormationHelper
 		}
 	}
 	
-	/** set ship sitting with team list, only called at server side
-	 *  1. 若目標不在隊伍, 則單獨設定目標坐下
-	 *  2. 若目標在隊伍, 則依照 pointer類型設定目標坐下
+	/**
+	 * set ship sitting with team list, only called at server side
+	 * 1. 若目標不在隊伍, 則單獨設定目標坐下
+	 * 2. 若目標在隊伍, 則依照 pointer類型設定目標坐下
+	 *  
+	 * parms: 0:player eid, 1:world id, 2:meta, 3:ship uid
 	 */
-	public static void applyTeamSit(EntityPlayer player, int meta, int shipUID)
+	public static void applyTeamSit(int[] parms)
 	{
+		EntityPlayer player = EntityHelper.getEntityPlayerByID(parms[0], parms[1], false);
 		CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(player);
-		int worldID = player.worldObj.provider.getDimension();
 
 		if(capa != null)
 		{
-			BasicEntityShip[] ships = capa.getShipEntityByMode(meta);
+			BasicEntityShip[] ships = capa.getShipEntityByMode(parms[2]);
 			
 			//不在隊伍名單裡面
-			if (capa.checkIsInCurrentTeam(shipUID) < 0 && meta < 3)
+			if (capa.checkIsInCurrentTeam(parms[3]) < 0 && parms[2] < 3)
 			{
-				BasicEntityShip target = EntityHelper.getShipBySID(shipUID);
+				BasicEntityShip target = EntityHelper.getShipBySID(parms[3]);
 				
 				target.setEntitySit();
 			}
 			//有在隊伍中, 則依照pointer類型抓目標
 			else
 			{
-				switch (meta)
+				switch (parms[2])
 				{
 				case 0:	//single mode
-					if (ships[0] != null && ships[0].worldObj.provider.getDimension() == worldID)
+					if (ships[0] != null && ships[0].worldObj.provider.getDimension() == parms[1])
 					{
 						//設定ship sit
 						ships[0].setEntitySit();
@@ -1219,7 +1232,7 @@ public class FormationHelper
 				case 2:		//formation mode
 					for (int i = 0; i < ships.length; i++)
 					{
-						if (ships[i] != null && ships[i].worldObj.provider.getDimension() == worldID)
+						if (ships[i] != null && ships[i].worldObj.provider.getDimension() == parms[1])
 						{
 							//設定ship sit
 							ships[i].setEntitySit();
@@ -1231,20 +1244,24 @@ public class FormationHelper
 		}
 	}
 	
-	/** set ship select (focus) with team list, only called at server side
+	/**
+	 * set ship select (focus) with team list, only called at server side
+	 * 
+	 * parms: 0:player eid, 1:world id, 2:meta, 3:ship uid
 	 */
-	public static void applyTeamSelect(EntityPlayer player, int meta, int shipUID)
+	public static void applyTeamSelect(int[] parms)
 	{
+		EntityPlayer player = EntityHelper.getEntityPlayerByID(parms[0], parms[1], false);
 		CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(player);
 		
 		if (capa != null)
 		{
-			int i = capa.checkIsInCurrentTeam(shipUID);
+			int i = capa.checkIsInCurrentTeam(parms[3]);
 			
 			//check entity is in team
 			if (i >= 0)
 			{
-				switch (meta)
+				switch (parms[2])
 				{
 				case 0:  //single mode (僅一隻可以focus)
 					/**single mode不能取消focus, 一定有一隻會是focus狀態*/

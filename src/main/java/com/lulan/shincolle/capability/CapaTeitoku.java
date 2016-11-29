@@ -69,7 +69,6 @@ public class CapaTeitoku implements ICapaTeitoku
 	
 	//player id
 	private int playerUID;
-	private int playerTeamID;
 	
 	//player team: for client side GUI only, do not use these at server side
 	private HashMap<Integer, TeamData> mapTeamData;
@@ -105,7 +104,6 @@ public class CapaTeitoku implements ICapaTeitoku
 		this.isOpeningGUI = false;
 		
 		//team
-		this.playerTeamID = 0;
 		this.teamCooldown = 20;
 		this.mapTeamData = new HashMap();
 		this.listTeamData = new ArrayList();
@@ -126,7 +124,6 @@ public class CapaTeitoku implements ICapaTeitoku
 		nbtExt.setInteger("BossCD", bossCooldown);
 		nbtExt.setInteger("PlayerUID", playerUID);
 		nbtExt.setInteger("TeamCD", teamCooldown);
-		nbtExt.setInteger("PlayerTeamID", playerTeamID);
 		
 		//save player name
 		try
@@ -221,7 +218,6 @@ public class CapaTeitoku implements ICapaTeitoku
 			bossCooldown = nbtExt.getInteger("BossCD");
 			playerUID = nbtExt.getInteger("PlayerUID");
 			teamCooldown = nbtExt.getInteger("TeamCD");
-			playerTeamID = nbtExt.getInteger("PlayerTeamID");
 //			playerName = nbtExt.getString("PlayerName");  //player name is SAVE ONLY
 			
 			//load colle list
@@ -527,16 +523,11 @@ public class CapaTeitoku implements ICapaTeitoku
 		return this.playerUID;
 	}
 	
-	public int getPlayerTeamID()
-	{
-		return this.playerTeamID;
-	}
-	
 	public String getPlayerTeamName()
 	{
-		if (this.playerTeamID > 0)
+		if (this.playerUID > 0)
 		{
-			TeamData tdata = this.mapTeamData.get(this.playerTeamID);
+			TeamData tdata = this.mapTeamData.get(this.playerUID);
 			
 			if (tdata != null) return tdata.getTeamName();
 		}
@@ -545,9 +536,9 @@ public class CapaTeitoku implements ICapaTeitoku
 	
 	public List<Integer> getPlayerTeamBannedList()
 	{
-		if (this.playerTeamID > 0)
+		if (this.playerUID > 0)
 		{
-			TeamData tdata = this.mapTeamData.get(this.playerTeamID);
+			TeamData tdata = this.mapTeamData.get(this.playerUID);
 			
 			if (tdata != null) return tdata.getTeamBannedList();
 		}
@@ -556,9 +547,9 @@ public class CapaTeitoku implements ICapaTeitoku
 	
 	public List<Integer> getPlayerTeamAllyList()
 	{
-		if (this.playerTeamID > 0)
+		if (this.playerUID > 0)
 		{
-			TeamData tdata = this.mapTeamData.get(this.playerTeamID);
+			TeamData tdata = this.mapTeamData.get(this.playerUID);
 			
 			if (tdata != null) return tdata.getTeamAllyList();
 		}
@@ -630,6 +621,7 @@ public class CapaTeitoku implements ICapaTeitoku
 		{
 			this.formatID = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0};
 		}
+		
 		return this.formatID;
 	}
 	
@@ -827,31 +819,20 @@ public class CapaTeitoku implements ICapaTeitoku
 		this.playerUID = par1;
 	}
 	
-	public void setPlayerTeamID(int par1)
-	{
-		this.playerTeamID = par1;
-	}
-	
 	public void setPlayerTeamDataMap(HashMap<Integer, TeamData> par1)
 	{
 		//set team data
-		if (this.mapTeamData != null)
+		if (par1 != null)
 		{
 			this.mapTeamData = par1;
 			
-			//create team list
+			//copy team data to list form
 			this.listTeamData = new ArrayList();
 			
-			if (this.mapTeamData.size() > 0)
+			this.mapTeamData.forEach((k, v) ->
 			{
-				Iterator<Map.Entry<Integer, TeamData>> iter = this.mapTeamData.entrySet().iterator();
-				while (iter.hasNext())
-				{
-					Map.Entry<Integer, TeamData> entry = iter.next();
-				    TeamData data = entry.getValue();
-				    this.listTeamData.add(data);
-				}
-			}
+				this.listTeamData.add(v);
+			});
 		}
 		//clear team data
 		else
@@ -1301,11 +1282,7 @@ public class CapaTeitoku implements ICapaTeitoku
 	//check is leader = has team
 	public boolean isTeamLeader()
 	{
-		if (this.getPlayerTeamID() > 0)
-		{
-			return true;
-		}
-		
+		//TODO check team leader from server team cache
 		return false;
 	}
 	
@@ -1318,7 +1295,7 @@ public class CapaTeitoku implements ICapaTeitoku
 		//for client side
 		if (this.player.worldObj.isRemote)
 		{
-			if (this.getPlayerTeamID() > 0 && this.getPlayerTeamAllyList() != null)
+			if (this.getPlayerTeamAllyList() != null)
 			{
 				//check team ally id
 				if (this.getPlayerTeamAllyList().contains(par1)) return true;
@@ -1337,7 +1314,7 @@ public class CapaTeitoku implements ICapaTeitoku
 		//for client side
 		if (this.player.worldObj.isRemote)
 		{
-			if (this.getPlayerTeamID() > 0 && this.getPlayerTeamBannedList() != null)
+			if (this.getPlayerTeamBannedList() != null)
 			{
 				//check team ally id
 				if (this.getPlayerTeamBannedList().contains(par1)) return true;
@@ -1441,6 +1418,12 @@ public class CapaTeitoku implements ICapaTeitoku
 	{
 		EntityPlayer player = EntityHelper.getEntityPlayerByUID(pid);
 		return getTeitokuCapability(player);
+	}
+	
+	/** get client player's teitoku capability */
+	public static CapaTeitoku getTeitokuCapabilityClientOnly()
+	{
+		return getTeitokuCapability(ClientProxy.getClientPlayer());
 	}
 	
 	/** get teitoku capability */

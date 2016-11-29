@@ -14,6 +14,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -78,23 +79,21 @@ public class C2SInputPackets implements IMessage
 		case PID.CmdChOwner:    	//command: change owner
 		case PID.CmdShipAttr:   	//command: set ship attrs
 		case PID.RequestSync_Model:	//request model display sync
+			try
 			{
-				try
+				this.value = buf.readInt();  //int array length
+				
+				//get int array data
+				if (this.value > 0)
 				{
-					this.value = buf.readInt();  //int array length
-					
-					//get int array data
-					if (this.value > 0)
-					{
-						this.value3 = PacketHelper.readIntArray(buf, this.value);
-					}
-				}
-				catch (Exception e)
-				{
-					LogHelper.info("DEBUG : C2S input packet: change owner fail: "+e);
+					this.value3 = PacketHelper.readIntArray(buf, this.value);
 				}
 			}
-			break;
+			catch (Exception e)
+			{
+				LogHelper.info("EXCEPTION : C2S input packet: "+e);
+			}
+		break;
 		}
 	}
 
@@ -110,151 +109,157 @@ public class C2SInputPackets implements IMessage
 		case PID.CmdChOwner:    //command: change owner
 		case PID.CmdShipAttr:   //command: set ship attrs
 		case PID.RequestSync_Model:  //request model display sync
+			buf.writeByte((byte)this.type);
+			
+			//send int array
+			if (this.value3 != null)
 			{
-				buf.writeByte((byte)this.type);
+				//send array length
+				buf.writeInt(this.value3.length);
 				
-				//send int array
-				if (this.value3 != null)
+				for (int geti : this.value3)
 				{
-					//send array length
-					buf.writeInt(this.value3.length);
-					
-					for (int geti : this.value3)
-					{
-						buf.writeInt(geti);
-					}
-				}
-				//if array null
-				else
-				{
-					buf.writeInt(0);
+					buf.writeInt(geti);
 				}
 			}
-			break;
+			//if array null
+			else
+			{
+				buf.writeInt(0);
+			}
+		break;
 		}
+	}
+	
+	//packet handle method
+	private static void handle(C2SInputPackets msg, MessageContext ctx)
+	{
+		EntityPlayerMP player = ctx.getServerHandler().playerEntity;
+		Entity entity;
+		
+		try
+		{
+			switch (msg.type)
+			{
+			case PID.MountMove:	//mounts key input packet
+				//set player's mount movement
+				if (player.isRiding() && player.getRidingEntity() instanceof BasicEntityMount)
+				{
+					BasicEntityMount mount = (BasicEntityMount) player.getRidingEntity();
+					BasicEntityShip ship = (BasicEntityShip) mount.getHostEntity();
+					
+					//check ship owner is player
+					if (ship != null && TeamHelper.checkSameOwner(player, ship.getHostEntity()))
+					{
+						//set mount movement
+						mount.keyPressed = msg.value3[0];
+					}
+				}
+			break;
+			case PID.MountGUI:	//mounts open GUI
+				//set player's mount movement
+				if (player.isRiding() && player.getRidingEntity() instanceof BasicEntityMount)
+				{
+					BasicEntityMount mount = (BasicEntityMount) player.getRidingEntity();
+					BasicEntityShip ship = (BasicEntityShip) mount.getHostEntity();
+					
+					//check ship owner is player
+					if (ship != null && TeamHelper.checkSameOwner(player, ship.getHostEntity()))
+					{
+						//open ship GUI
+						if (mount.getHostEntity() != null)
+						{
+							FMLNetworkHandler.openGui(player, ShinColle.instance, ID.Gui.SHIPINVENTORY, player.worldObj, mount.getHostEntity().getEntityId(), 0, 0);
+						}
+					}
+				}
+			break;
+			case PID.SyncHandheld:	//sync current item
+				player.inventory.currentItem = msg.value3[0];
+			break;
+			case PID.CmdChOwner:    //command: change owner
+				/** ship change owner
+				 *    1. (done) check command sender is OP (server)
+				 *    2. (done) check owner exists (server)
+				 *    3. (done) send sender eid to client (s to c)
+				 *    4. (done) check sender mouse over target is ship (client)
+				 *    5. (done) send ship eid to server (c to s)
+				 *    6. change ship's owner UUID and PlayerUID (server)
+				 */
+				//value3: 0:owner eid, 1:ship eid, 2:world id
+				player = (EntityPlayerMP) EntityHelper.getEntityPlayerByID(msg.value3[0], msg.value3[2], false);
+				entity = EntityHelper.getEntityByID(msg.value3[1], msg.value3[2], false);
+				
+				if (player != null && entity instanceof BasicEntityShip)
+				{
+					//set owner
+					EntityHelper.setPetPlayerUUID(player.getUniqueID(), (BasicEntityShip) entity);
+					EntityHelper.setPetPlayerUID(player, (BasicEntityShip) entity);
+					LogHelper.info("DEBUG : C2S input packet: command: change owner "+player+" "+entity);
+					((BasicEntityShip) entity).sendSyncPacketAllValue();
+				}
+			break;
+			case PID.CmdShipAttr:   //command: set ship attrs
+				/**
+				 *	  1.(done) check command sender is OP (server)
+				 *    2.(done) send sender eid to client (s to c)
+				 *    3.(done) check sender mouse over target is ship (client)
+				 *    4.(done) send ship eid to server (c to s)
+				 *    5. change ship's attributes (server)
+				 */
+				entity = EntityHelper.getEntityByID(msg.value3[0], msg.value3[1], false);
+				
+				if (entity instanceof BasicEntityShip)
+				{
+					BasicEntityShip ship = (BasicEntityShip) entity;
+					
+					if (msg.value3.length == 9)
+					{
+						ship.setBonusPoint(0, (byte)msg.value3[3]);
+						ship.setBonusPoint(1, (byte)msg.value3[4]);
+						ship.setBonusPoint(2, (byte)msg.value3[5]);
+						ship.setBonusPoint(3, (byte)msg.value3[6]);
+						ship.setBonusPoint(4, (byte)msg.value3[7]);
+						ship.setBonusPoint(5, (byte)msg.value3[8]);
+						ship.setShipLevel(msg.value3[2], true);
+					}
+					else if (msg.value3.length == 3)
+					{
+						ship.setShipLevel(msg.value3[2], true);
+					}
+				}
+			break;
+			case PID.RequestSync_Model:  //request model display sync
+				entity = EntityHelper.getEntityByID(msg.value3[0], msg.value3[1], false);
+				
+				if (entity instanceof BasicEntityShip)
+				{
+					((BasicEntityShip) entity).sendSyncPacketEmotion();
+				}
+			break;
+			}//end switch
+		}
+		catch (Exception e)
+		{
+			LogHelper.info("EXCEPTION : C2S input packet: handler: "+e);
+		}
+		
 	}
 	
 	//packet handler (inner class)
 	public static class Handler implements IMessageHandler<C2SInputPackets, IMessage>
 	{
-		//收到封包時顯示debug訊息, server side
+		//收到封包時顯示debug訊息
 		@Override
 		public IMessage onMessage(C2SInputPackets message, MessageContext ctx)
-		{		
-			EntityPlayerMP player = ctx.getServerHandler().playerEntity;
-			
-			try
-			{
-				switch (message.type)
-				{
-				case PID.MountMove:	//mounts key input packet
-					//set player's mount movement
-					if (player.isRiding() && player.getRidingEntity() instanceof BasicEntityMount)
-					{
-						BasicEntityMount mount = (BasicEntityMount) player.getRidingEntity();
-						BasicEntityShip ship = (BasicEntityShip) mount.getHostEntity();
-						
-						//check ship owner is player
-						if (ship != null && TeamHelper.checkSameOwner(player, ship.getHostEntity()))
-						{
-							//set mount movement
-							mount.keyPressed = message.value3[0];
-						}
-					}
-					break;
-				case PID.MountGUI:	//mounts open GUI
-					//set player's mount movement
-					if (player.isRiding() && player.getRidingEntity() instanceof BasicEntityMount)
-					{
-						BasicEntityMount mount = (BasicEntityMount) player.getRidingEntity();
-						BasicEntityShip ship = (BasicEntityShip) mount.getHostEntity();
-						
-						//check ship owner is player
-						if (ship != null && TeamHelper.checkSameOwner(player, ship.getHostEntity()))
-						{
-							//open ship GUI
-							if (mount.getHostEntity() != null)
-							{
-								FMLNetworkHandler.openGui(player, ShinColle.instance, ID.Gui.SHIPINVENTORY, player.worldObj, mount.getHostEntity().getEntityId(), 0, 0);
-							}
-						}
-					}
-					break;
-				case PID.SyncHandheld:	//sync current item
-					player.inventory.currentItem = message.value3[0];
-					break;
-				case PID.CmdChOwner:    //command: change owner
-					{
-						/** ship change owner
-						 *    1. (done) check command sender is OP (server)
-						 *    2. (done) check owner exists (server)
-						 *    3. (done) send sender eid to client (s to c)
-						 *    4. (done) check sender mouse over target is ship (client)
-						 *    5. (done) send ship eid to server (c to s)
-						 *    6. change ship's owner UUID and PlayerUID (server)
-						 */
-						//value3: 0:owner eid, 1:ship eid, 2:world id
-						EntityPlayer owner = EntityHelper.getEntityPlayerByID(message.value3[0], message.value3[2], false);
-						Entity ent = EntityHelper.getEntityByID(message.value3[1], message.value3[2], false);
-						
-						if (owner != null && ent instanceof BasicEntityShip)
-						{
-							//set owner
-							EntityHelper.setPetPlayerUUID(owner.getUniqueID(), (BasicEntityShip) ent);
-							EntityHelper.setPetPlayerUID(owner, (BasicEntityShip) ent);
-							LogHelper.info("DEBUG : C2S input packet: command: change owner "+owner+" "+ent);
-							((BasicEntityShip) ent).sendSyncPacketAllValue();
-						}
-					}
-					break;
-				case PID.CmdShipAttr:   //command: set ship attrs
-					{
-						/**
-						 *	  1.(done) check command sender is OP (server)
-						 *    2.(done) send sender eid to client (s to c)
-						 *    3.(done) check sender mouse over target is ship (client)
-						 *    4.(done) send ship eid to server (c to s)
-						 *    5. change ship's attributes (server)
-						 */
-						Entity ent = EntityHelper.getEntityByID(message.value3[0], message.value3[1], false);
-						
-						if (ent instanceof BasicEntityShip)
-						{
-							if (message.value3.length == 9)
-							{
-								((BasicEntityShip) ent).setBonusPoint(0, (byte)message.value3[3]);
-								((BasicEntityShip) ent).setBonusPoint(1, (byte)message.value3[4]);
-								((BasicEntityShip) ent).setBonusPoint(2, (byte)message.value3[5]);
-								((BasicEntityShip) ent).setBonusPoint(3, (byte)message.value3[6]);
-								((BasicEntityShip) ent).setBonusPoint(4, (byte)message.value3[7]);
-								((BasicEntityShip) ent).setBonusPoint(5, (byte)message.value3[8]);
-								((BasicEntityShip) ent).setShipLevel(message.value3[2], true);
-							}
-							else if (message.value3.length == 3)
-							{
-								((BasicEntityShip) ent).setShipLevel(message.value3[2], true);
-							}
-						}
-					}
-					break;
-				case PID.RequestSync_Model:  //request model display sync
-					{
-						Entity ent = EntityHelper.getEntityByID(message.value3[0], message.value3[1], false);
-						
-						if (ent instanceof BasicEntityShip)
-						{
-							((BasicEntityShip) ent).sendSyncPacketEmotion();
-						}
-					}
-					break;
-				}//end switch
-			}
-			catch (Exception e)
-			{
-				LogHelper.info("DEBUG : C2S input packet: handler: "+e);
-			}
-			
-			return null; 
+		{
+			/**
+			 * 1.8之後minecraft主程式分為minecraft server/clinet跟networking兩個thread執行
+			 * 因此handler這邊必須使用addScheduledTask將封包處理方法加入到並行控制佇列中處理
+			 * 以避免多執行緒下各種並行處理問題
+			 */
+			FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> C2SInputPackets.handle(message, ctx));
+			return null;
 		}
     }
 	
