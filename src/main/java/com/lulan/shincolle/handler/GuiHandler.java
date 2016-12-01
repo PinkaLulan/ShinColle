@@ -1,19 +1,24 @@
 package com.lulan.shincolle.handler;
 
+import com.lulan.shincolle.client.gui.GuiLargeShipyard;
+import com.lulan.shincolle.client.gui.GuiSmallShipyard;
+import com.lulan.shincolle.client.gui.inventory.ContainerCrane;
+import com.lulan.shincolle.client.gui.inventory.ContainerLargeShipyard;
+import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
+import com.lulan.shincolle.client.gui.inventory.ContainerSmallShipyard;
+import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.tileentity.TileEntityCrane;
+import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
+import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
+import com.lulan.shincolle.utility.EntityHelper;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
-
-import com.lulan.shincolle.client.gui.GuiLargeShipyard;
-import com.lulan.shincolle.client.gui.GuiSmallShipyard;
-import com.lulan.shincolle.client.gui.inventory.ContainerLargeShipyard;
-import com.lulan.shincolle.client.gui.inventory.ContainerSmallShipyard;
-import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
-import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 
 
 public class GuiHandler implements IGuiHandler
@@ -38,21 +43,22 @@ public class GuiHandler implements IGuiHandler
 				
 				return new ContainerSmallShipyard(player.inventory, (TileEntitySmallShipyard) tile);
 			}
-			break;
-//		case ID.G.SHIPINVENTORY:	//GUI ship inventory
-//			entity = world.getEntityByID(x);	//entity id存在x座標參數上
-//			
-//            if(entity != null && entity instanceof BasicEntityShip){
-//            	//get ship class id and register to player data for ship list recording
-//            	int cid = ((BasicEntityShip)entity).getShipClass();
-//            	EntityHelper.addPlayerColledShip(cid, player);
-//            	
-//            	//sync ship when gui opened
-//            	((BasicEntityShip)entity).sendSyncPacketAllValue();
-//				
-//            	return new ContainerShipInventory(player.inventory,(BasicEntityShip)entity);
-//			}
-//            break;
+		break;
+		case ID.Gui.SHIPINVENTORY:	//GUI ship inventory
+			entity = world.getEntityByID(x);	//entity id存在x座標參數上
+			
+            if (entity instanceof BasicEntityShip)
+            {
+            	//get ship class id and register to player data for ship list recording
+            	int cid = ((BasicEntityShip) entity).getShipClass();
+            	EntityHelper.addPlayerColledShip(cid, player);
+            	
+            	//sync ship when gui opened
+            	((BasicEntityShip) entity).sendSyncPacketAllValue();
+				
+            	return new ContainerShipInventory(player.inventory,(BasicEntityShip) entity);
+			}
+        break;
 		case ID.Gui.LARGESHIPYARD:	//GUI large shipyard
 			tile = world.getTileEntity(new BlockPos(x, y, z));
 			
@@ -63,7 +69,7 @@ public class GuiHandler implements IGuiHandler
 				
 				return new ContainerLargeShipyard(player.inventory, (TileMultiGrudgeHeavy) tile);
 			}
-			break;
+		break;
 //		case ID.G.ADMIRALDESK:		//GUI admiral desk
 //			tile = world.getTileEntity(x, y, z);  //確定抓到entity才開ui 以免噴出NPE
 //			
@@ -88,10 +94,10 @@ public class GuiHandler implements IGuiHandler
 //			else {
 //				return new ContainerDesk(player.inventory, null, player, x);
 //			}
-//		case ID.G.FORMATION:  		//GUI formation
+//		case ID.Gui.FORMATION:  		//GUI formation
 //			//send sync packet
-//			props = EntityHelper.getExtendPlayerProps(player);
-//			props.sendSyncPacket(4);
+//			CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(player);
+//			capa.sendSyncPacket(4);
 //			
 //			return new ContainerFormation(player.inventory, player);
 //		case ID.G.VOLCORE:	//GUI volcano core
@@ -104,16 +110,17 @@ public class GuiHandler implements IGuiHandler
 //				return new ContainerVolCore(player.inventory, (TileEntityVolCore) tile);
 //			}
 //			break;
-//		case ID.G.CRANE:	//GUI crane
-//			tile = world.getTileEntity(x, y, z);  //確定抓到entity才開ui 以免噴出NPE
-//			
-//			if(tile != null && tile instanceof TileEntityCrane) {  //server取得container
-//				//sync tile when gui opened
-//				((TileEntityCrane)tile).sendSyncPacket();
-//				
-//				return new ContainerCrane(player.inventory, (TileEntityCrane) tile);
-//			}
-//			break;
+		case ID.Gui.CRANE:	//GUI crane
+			tile = world.getTileEntity(new BlockPos(x, y, z));  //確定抓到entity才開ui 以免噴出NPE
+			
+			if (tile instanceof TileEntityCrane)
+			{
+				//sync tile when gui opened
+				((TileEntityCrane) tile).sendSyncPacket();
+				
+				return new ContainerCrane(player.inventory, (TileEntityCrane) tile);
+			}
+		break;
 		}
 		return null;
 	}

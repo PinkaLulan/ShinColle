@@ -38,7 +38,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 {
 
 	//pos: lastXYZ, nextXYZ, chestXYZ
-	private int tick, playerUID, partDelay, itemMode, redMode, redTick;
+	private int tick, playerUID, partDelay, itemMode, redMode, redTick, craneTime;
 	private BlockPos lastPos, nextPos, chestPos;
 	
 	//crane
@@ -94,7 +94,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 	}
 	
 	@Override
-	public int getGuiIntID()
+	public byte getGuiIntID()
 	{
 		return ID.Gui.CRANE;
 	}
@@ -273,7 +273,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 	{
 		return this.nextPos;
 	}
-
+	
 	@Override
 	public void setLastWaypoint(BlockPos pos)
 	{
@@ -287,6 +287,19 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 	public BlockPos getLastWaypoint()
 	{
 		return this.lastPos;
+	}
+	
+	public void setChestWaypoint(BlockPos pos)
+	{
+		if (pos != null)
+		{
+			this.chestPos = pos;
+		}
+	}
+
+	public BlockPos getChestWaypoint()
+	{
+		return this.chestPos;
 	}
 	
 	@Override
@@ -321,7 +334,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 					//set redstone tick
 					if (this.redMode == 1 && this.ship != null)
 					{
-						this.redTick = 17;
+						this.redTick = 18;
 						this.worldObj.notifyNeighborsOfStateChange(this.pos, ModBlocks.BlockCrane);
 					}
 					
@@ -378,7 +391,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 								//emit redstone signal
 								if (this.redMode == 2)
 								{
-									this.redTick = 1;
+									this.redTick = 2;
 									this.worldObj.notifyNeighborsOfStateChange(this.pos, ModBlocks.BlockCrane);
 								}
 								
@@ -1236,6 +1249,101 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 	public int getRedTick()
 	{
 		return this.redTick;
+	}
+	
+	public void setShip(BasicEntityShip ship)
+	{
+		this.ship = ship;
+	}
+	
+	public BasicEntityShip getShip()
+	{
+		return this.ship;
+	}
+	
+	/** FIELD相關方法
+	 *  使其他mod或class也能存取該tile的內部值
+	 *  ex: gui container可用get/setField來更新數值
+	 *  
+	 *  field id:
+	 *  0:ship eid, 1:craneTime, 2:isActive, 3:checkMeta, 4:checkDict
+	 *  5:craneMode, 6:enabLoad, 7:enabUnload, 8:checkNbt, 9:itemMode
+	 *  10:redMode
+	 */
+	@Override
+	public int getField(int id)
+	{
+		switch (id)
+		{
+		case 0:
+			return this.ship == null ? 0 : this.ship.getEntityId();
+		case 1:
+			return this.ship == null ? 0 : this.ship.getStateTimer(ID.T.CraneTime);
+		case 2:
+			return this.isActive ? 1 : 0;
+		case 3:
+			return this.checkMetadata ? 1 : 0;
+		case 4:
+			return this.checkOredict ? 1 : 0;
+		case 5:
+			return this.craneMode;
+		case 6:
+			return this.enabLoad ? 1 : 0;
+		case 7:
+			return this.enabUnload ? 1 : 0;
+		case 8:
+			return this.checkNbt ? 1 : 0;
+		case 9:
+			return this.itemMode;
+		case 10:
+			return this.redMode;
+		default:
+			return 0;
+		}
+	}
+
+	@Override
+	public void setField(int id, int value)
+	{
+		switch (id)
+		{
+		case 0:
+		case 1:
+			break;
+		case 2:
+			this.isActive = value == 0 ? false : true;
+			break;
+		case 3:
+			this.checkMetadata = value == 0 ? false : true;
+			break;
+		case 4:
+			this.checkOredict = value == 0 ? false : true;
+			break;
+		case 5:
+			this.craneMode = value;
+			break;
+		case 6:
+			this.enabLoad = value == 0 ? false : true;
+			break;
+		case 7:
+			this.enabUnload = value == 0 ? false : true;
+			break;
+		case 8:
+			this.checkNbt = value == 0 ? false : true;
+			break;
+		case 9:
+			this.itemMode = value;
+			break;
+		case 10:
+			this.redMode = value;
+			break;
+		}
+	}
+
+	@Override
+	public int getFieldCount()
+	{
+		return 11;
 	}
 	
 	

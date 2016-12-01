@@ -1,29 +1,28 @@
 package com.lulan.shincolle.client.gui;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.util.ResourceLocation;
-
-import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.client.gui.inventory.ContainerCrane;
 import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
+import com.lulan.shincolle.reference.Enums;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.tileentity.TileEntityCrane;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.GuiHelper;
-import com.lulan.shincolle.utility.LogHelper;
 
-public class GuiCrane extends GuiContainer {
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.util.ResourceLocation;
+
+public class GuiCrane extends GuiContainer
+{
 
 	private static final ResourceLocation guiTexture = new ResourceLocation(Reference.TEXTURES_GUI+"GuiCrane.png");
 	private TileEntityCrane tile;
@@ -31,11 +30,12 @@ public class GuiCrane extends GuiContainer {
 	private int btnMode, btnRedMode;
 	private boolean btnPower, btnMeta, btnDict, btnNbt, btnLoad, btnUnload, slotMode;
 	private float tickGUI;
-	private String strLoad, strUnload, strMeta, strDict, strNbt, strNowait, strWaitfev, strNowait1,
-				   strWaitfev1, strWaitfev2, strRed0, strRed1, strRed2;
+	private static String strLoad, strUnload, strMeta, strDict, strNbt, strNowait, strWaitfev, strNowait1,
+						strWaitfev1, strWaitfev2, strRed0, strRed1, strRed2;
 	
 	
-	public GuiCrane(InventoryPlayer par1, TileEntityCrane par2) {
+	public GuiCrane(InventoryPlayer par1, TileEntityCrane par2)
+	{
 		super(new ContainerCrane(par1, par2));
 		tile = par2;
 		xSize = 176;
@@ -63,7 +63,8 @@ public class GuiCrane extends GuiContainer {
 	
 	//get new mouseX,Y and redraw gui
 	@Override
-	public void drawScreen(int mouseX, int mouseY, float f) {
+	public void drawScreen(int mouseX, int mouseY, float f)
+	{
 		super.drawScreen(mouseX, mouseY, f);
 		xMouse = mouseX;
 		yMouse = mouseY;
@@ -71,24 +72,30 @@ public class GuiCrane extends GuiContainer {
 	}
 	
 	//draw tooltip
-	private void handleHoveringText() {
+	private void handleHoveringText()
+	{
 		int mx = xMouse - guiLeft;
 		int my = yMouse - guiTop;
 		int len = 0;
 		List list = new ArrayList();
 		
 		//(22,21,35,34) meta (36,21,49,34) dict
-		if(my > 21 && my < 34) {
-			if(mx > 22 && mx < 35) {
+		if (my > 21 && my < 34)
+		{
+			if (mx > 22 && mx < 35)
+			{
 				list.add(strMeta);
 			}
-			else if(mx > 36 && mx < 49) {
+			else if (mx > 36 && mx < 49)
+			{
 				list.add(strDict);
 			}
-			else if(mx > 50 && mx < 63) {
+			else if (mx > 50 && mx < 63)
+			{
 				list.add(strNbt);
 			}
-			else if(mx > 64 && mx < 77) {
+			else if (mx > 64 && mx < 77)
+			{
 				switch (btnRedMode)
 				{
 				case 1:
@@ -106,10 +113,12 @@ public class GuiCrane extends GuiContainer {
 			this.drawHoveringText(list, mx, my+10, this.fontRendererObj);
 		}
 		//draw wait mode
-		else if(mx > 22 && mx < 91 && my > 5 && my < 20) {
+		else if (mx > 22 && mx < 91 && my > 5 && my < 20)
+		{
 			list.clear();
 			
-			switch(btnMode) {
+			switch (btnMode)
+			{
 			case 0:
 				list.add(strNowait1);
 				break;
@@ -125,13 +134,15 @@ public class GuiCrane extends GuiContainer {
 	
 	//GUI前景: 文字 
 	@Override
-	protected void drawGuiContainerForegroundLayer(int i, int j) {
+	protected void drawGuiContainerForegroundLayer(int i, int j)
+	{
 		//draw mode string
 		String str = null;
 		String strnum = null;
 		int len = 0;
 		
-		switch(btnMode) {
+		switch (btnMode)
+		{
 		case 0:
 			str = strNowait;
 			break;
@@ -145,29 +156,31 @@ public class GuiCrane extends GuiContainer {
 		}
 		
 		len = (int) (fontRendererObj.getStringWidth(str) * 0.5F);
-		fontRendererObj.drawStringWithShadow(str, 57 - len, 9, Values.Color.YELLOW);
+		fontRendererObj.drawStringWithShadow(str, 57 - len, 9, Enums.EnumColors.YELLOW.getValue());
 		
 		//draw slot string
-		fontRendererObj.drawString(strLoad, 21, 46, Values.Color.RED);
-		fontRendererObj.drawString(strUnload, 21, 77, Values.Color.GRAY);
+		fontRendererObj.drawString(strLoad, 21, 46, Enums.EnumColors.RED_LIGHT.getValue());
+		fontRendererObj.drawString(strUnload, 21, 77, Enums.EnumColors.GRAY_LIGHT.getValue());
 		
 		//draw ship info
-		if(tile.ship != null) {
+		if (tile.getShip() != null)
+		{
 			//draw ship wait time
-			str = String.valueOf(CalcHelper.getTimeFormated((int) (tile.ship.getStateTimer(ID.T.CraneTime) * 0.05F)));
+			str = String.valueOf(CalcHelper.getTimeFormated((int) (tile.getShip().getStateTimer(ID.T.CraneTime) * 0.05F)));
 			len = (int) (fontRendererObj.getStringWidth(str) * 0.5F);
-			fontRendererObj.drawString(str, 133 - len, 10, Values.Color.GRAY);
+			fontRendererObj.drawString(str, 133 - len, 10, Enums.EnumColors.GRAY_LIGHT.getValue());
 			
 			//draw ship name
-			if(tile.ship.getCustomNameTag() != null && tile.ship.getCustomNameTag().length() > 0) {
-				str = tile.ship.getCustomNameTag();
+			if (tile.getShip().getCustomNameTag() != null && tile.getShip().getCustomNameTag().length() > 0)
+			{
+				str = tile.getShip().getCustomNameTag();
 			}
-			else {
-				str = I18n.format("entity.shincolle."+tile.ship.getClass().getSimpleName()+".name");
+			else
+			{
+				str = I18n.format("entity.shincolle."+tile.getShip().getClass().getSimpleName()+".name");
 			}
 			len = fontRendererObj.getStringWidth(str);
-			fontRendererObj.drawStringWithShadow(str, 170 - len, 24, Values.Color.WHITE);
-			
+			fontRendererObj.drawStringWithShadow(str, 170 - len, 24, Enums.EnumColors.WHITE.getValue());
 		}
 		
 		//畫出tooltip
@@ -178,10 +191,11 @@ public class GuiCrane extends GuiContainer {
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float par1,int par2, int par3)
 	{
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);	//RGBA
-		GL11.glEnable(GL11.GL_BLEND);
-        Minecraft.getMinecraft().getTextureManager().bindTexture(guiTexture); //GUI圖檔
-        drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);	//GUI大小設定
+		//reset color
+		GlStateManager.color(1F, 1F, 1F, 1F);
+		GlStateManager.enableBlend();
+        Minecraft.getMinecraft().getTextureManager().bindTexture(guiTexture);
+        drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
        
         updateButton();
         
@@ -246,12 +260,12 @@ public class GuiCrane extends GuiContainer {
         	}
         }
 
-        GL11.glDisable(GL11.GL_BLEND);
+        GlStateManager.disableBlend();
 	}
 	
 	//handle mouse click, @parm posX, posY, mouseKey (0:left 1:right 2:middle 3:...etc)
 	@Override
-	protected void mouseClicked(int posX, int posY, int key)
+	protected void mouseClicked(int posX, int posY, int key) throws IOException
 	{
         super.mouseClicked(posX, posY, key);
             
@@ -316,15 +330,16 @@ public class GuiCrane extends GuiContainer {
         }
 	}
 	
-	private void updateButton() {
-		btnMode = tile.craneMode;
-		btnPower = tile.isActive;
-		btnMeta = tile.checkMetadata;
-		btnDict = tile.checkOredict;
-		btnNbt = tile.checkNbt;
-		btnLoad = tile.enabLoad;
-		btnUnload = tile.enabUnload;
-		btnRedMode = tile.redMode;
+	private void updateButton()
+	{
+		btnPower = tile.getField(2) > 0 ? true : false;
+		btnMeta = tile.getField(3) > 0 ? true : false;
+		btnDict = tile.getField(4) > 0 ? true : false;
+		btnMode = tile.getField(5);
+		btnLoad = tile.getField(6) > 0 ? true : false;
+		btnUnload = tile.getField(7) > 0 ? true : false;
+		btnNbt = tile.getField(8) > 0 ? true : false;
+		btnRedMode = tile.getField(10);
 	}
 
 	

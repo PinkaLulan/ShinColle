@@ -592,30 +592,3 @@ public class C2SGUIPackets implements IMessage
 	
 
 }
-
-
-//TODO move to entity sync
-//case PID.TileEntitySync:  //sync tile entity
-//{
-//	this.worldID = buf.readInt();
-//	int[] tilepos = PacketHelper.readIntArray(buf, 3);
-//	this.value1 = buf.readInt();
-//	
-//	//get tile
-//	this.world = ServerProxy.getServerWorld(worldID);
-//	
-//	if (world != null)
-//	{
-//		this.tile = this.world.getTileEntity(new BlockPos(tilepos[0], tilepos[1], tilepos[2]));
-//	}
-//	
-//	//set tile
-//	switch (this.value1)
-//	{
-//	case ID.B.Desk_Sync:  //admiral desk sync
-//		this.value3 = PacketHelper.readIntArray(buf, 4);
-//		PacketHelper.setTileEntityByGUI(this.tile, this.value1, this.value3);
-//		break;
-//	}
-//}
-

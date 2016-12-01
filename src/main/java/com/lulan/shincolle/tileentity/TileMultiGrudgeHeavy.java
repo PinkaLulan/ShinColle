@@ -88,7 +88,7 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileLiquidF
 	}
 	
 	@Override
-	public int getGuiIntID()
+	public byte getGuiIntID()
 	{
 		return ID.Gui.LARGESHIPYARD;
 	}

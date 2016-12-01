@@ -86,38 +86,10 @@ public class S2CGUIPackets implements IMessage
 	
 	//GUI sync: 
 	//sync tile entity
-	public S2CGUIPackets(TileEntity tile)
+	public S2CGUIPackets(TileEntity tile, byte type)
 	{
 		this.tile = tile;
-		
-		if (tile instanceof TileEntitySmallShipyard)
-		{
-			this.packetType = PID.TileSmallSY;
-		}
-		else if (tile instanceof TileMultiGrudgeHeavy)
-		{
-			this.packetType = PID.TileLargeSY;
-		}
-//		else if (tile instanceof TileEntityDesk) TODO
-//		{
-//			this.tile = tile;
-//			this.type = PID.TileDesk;
-//		}
-//		else if (tile instanceof TileEntityVolCore)
-//		{
-//			this.tile = tile;
-//			this.type = PID.TileVolCore;
-//		}
-//		else if (tile instanceof TileEntityWaypoint)
-//		{
-//			this.tile = tile;
-//			this.type = PID.TileWaypoint;
-//		}
-//		else if (tile instanceof TileEntityCrane)
-//		{
-//			this.tile = tile;
-//			this.type = PID.TileCrane;
-//		}
+		this.packetType = type;
     }
 	
 	//sync player extend props
@@ -219,7 +191,7 @@ public class S2CGUIPackets implements IMessage
 		break;
 		case PID.TileCrane:		//sync tile crane
 			this.valueInt1 = PacketHelper.readIntArray(buf, 14);
-			this.valueBoolean1 = PacketHelper.readBooleanArray(buf, 4);
+			this.valueByte1 = PacketHelper.readByteArray(buf, 4);
 		break;
 		case PID.SyncShipInv:	//sync ship GUI
 			this.valueInt1 = PacketHelper.readIntArray(buf, 4);
@@ -443,31 +415,31 @@ public class S2CGUIPackets implements IMessage
 			buf.writeInt(tile2.getPos().getX());
 			buf.writeInt(tile2.getPos().getY());
 			buf.writeInt(tile2.getPos().getZ());
-			buf.writeInt(tile2.lx);
-			buf.writeInt(tile2.ly);
-			buf.writeInt(tile2.lz);
-			buf.writeInt(tile2.nx);
-			buf.writeInt(tile2.ny);
-			buf.writeInt(tile2.nz);
-			buf.writeInt(tile2.cx);
-			buf.writeInt(tile2.cy);
-			buf.writeInt(tile2.cz);
+			buf.writeInt(tile2.getLastWaypoint().getX());
+			buf.writeInt(tile2.getLastWaypoint().getY());
+			buf.writeInt(tile2.getLastWaypoint().getZ());
+			buf.writeInt(tile2.getNextWaypoint().getX());
+			buf.writeInt(tile2.getNextWaypoint().getY());
+			buf.writeInt(tile2.getNextWaypoint().getZ());
+			buf.writeInt(tile2.getChestWaypoint().getX());
+			buf.writeInt(tile2.getChestWaypoint().getY());
+			buf.writeInt(tile2.getChestWaypoint().getZ());
 			
-			if (tile2.ship != null)
+			if (tile2.getShip() != null)
 			{
-				buf.writeInt(tile2.ship.getEntityId());
+				buf.writeInt(tile2.getShip().getEntityId());
 			}
 			else
 			{
 				buf.writeInt(-1);
 			}
 			
-			buf.writeInt(tile2.craneMode);
+			buf.writeInt(tile2.getField(5));
 			
-			buf.writeBoolean(tile2.isActive);
-			buf.writeBoolean(tile2.checkMetadata);
-			buf.writeBoolean(tile2.checkOredict);
-			buf.writeBoolean(tile2.checkNbt);
+			buf.writeByte(tile2.getField(2));
+			buf.writeByte(tile2.getField(3));
+			buf.writeByte(tile2.getField(4));
+			buf.writeByte(tile2.getField(8));
 		}
 		break;
 		case PID.TileWaypoint: //sync tile waypoint
@@ -818,12 +790,12 @@ public class S2CGUIPackets implements IMessage
 				}
 				
 				tile2.setSyncData(data);
-				tile2.isActive = msg.valueBoolean1[0];
-				tile2.checkMetadata = msg.valueBoolean1[1];
-				tile2.checkOredict = msg.valueBoolean1[2];
-				tile2.checkNbt = msg.valueBoolean1[3];
-				tile2.ship = (BasicEntityShip) entity;
-				tile2.craneMode = msg.valueInt1[13];
+				tile2.setShip((BasicEntityShip) entity);
+				tile2.setField(2, msg.valueByte1[0]);
+				tile2.setField(3, msg.valueByte1[1]);
+				tile2.setField(4, msg.valueByte1[2]);
+				tile2.setField(8, msg.valueByte1[3]);
+				tile2.setField(5, msg.valueInt1[13]);
 			}
 		}
 		break;

@@ -44,7 +44,7 @@ abstract public class BasicTileLockable extends TileEntityLockable
 		if (!this.worldObj.isRemote)
 		{
 			TargetPoint point = new TargetPoint(worldObj.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64D);
-			CommonProxy.channelG.sendToAllAround(new S2CGUIPackets(this), point);
+			CommonProxy.channelG.sendToAllAround(new S2CGUIPackets(this, this.getGuiIntID()), point);
 		}
 	}
 	
@@ -71,7 +71,7 @@ abstract public class BasicTileLockable extends TileEntityLockable
 	}
 	
 	/** gui id from Enums.GuiID */
-	public int getGuiIntID()
+	public byte getGuiIntID()
 	{
 		return -1;
 	}

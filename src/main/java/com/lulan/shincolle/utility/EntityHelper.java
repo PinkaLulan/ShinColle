@@ -275,14 +275,7 @@ public class EntityHelper
 		
 		if (world != null && entityID > 0)
 		{
-			for (Entity ent : world.loadedEntityList)
-			{
-				if (ent != null && ent.getEntityId() == entityID)
-				{
-					return ent;
-				}
-			}
-//			LogHelper.info("DEBUG : entity not found: eid: "+entityID+" world: "+worldID+" client: "+world.isRemote);
+			return world.getEntityByID(entityID);
 		}
 			
 		return null;

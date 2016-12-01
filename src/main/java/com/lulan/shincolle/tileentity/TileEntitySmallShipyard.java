@@ -77,7 +77,7 @@ public class TileEntitySmallShipyard extends BasicTileInventory implements ITile
 	}
 	
 	@Override
-	public int getGuiIntID()
+	public byte getGuiIntID()
 	{
 		return ID.Gui.SMALLSHIPYARD;
 	}

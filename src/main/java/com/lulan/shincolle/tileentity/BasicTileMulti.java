@@ -32,7 +32,7 @@ abstract public class BasicTileMulti extends BasicTileInventory
     }
 	
 	@Override
-	public int getGuiIntID()
+	public byte getGuiIntID()
 	{
 		TileEntity tile = this.getMaster();
 		

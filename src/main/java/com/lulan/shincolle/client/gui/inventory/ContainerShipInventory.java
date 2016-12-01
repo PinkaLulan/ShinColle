@@ -20,9 +20,10 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class ContainerShipInventory extends Container
 {
 	
-	private BasicEntityShip entity;
 	public static final byte SLOTS_PLAYERINV = 24;  //player inventory start id
 	public static final byte SLOTS_SHIPINV = 6;		//ship inventory start id
+	
+	private BasicEntityShip entity;
 	private int lenTemp;
 	private int[] valueTemp;
 	
@@ -181,8 +182,6 @@ public class ContainerShipInventory extends Container
 	public void detectAndSendChanges()
 	{
 		super.detectAndSendChanges();
-		int getValue;
-		float getValueF;
 		
 		//對所有開啟gui的人發送更新, 若數值有改變則發送更新封包
 		for (int i = 0; i < this.listeners.size(); ++i)
@@ -206,10 +205,10 @@ public class ContainerShipInventory extends Container
                 	case 26:
                 	case 27:	//發送自訂封包更新
                 		this.entity.sendGUISyncPacket();
-                		break;
+                	break;
             		default:	//使用vanilla方法更新
                     	listener.sendProgressBarUpdate(this, j, temp);
-            			break;
+            		break;
                 	}
             	}
             }//end for all value temp
