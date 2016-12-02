@@ -1,10 +1,11 @@
 package com.lulan.shincolle.init;
 
-import net.minecraftforge.fml.common.registry.EntityRegistry;
-
 import com.lulan.shincolle.ShinColle;
+import com.lulan.shincolle.entity.destroyer.EntityDestroyerI;
 import com.lulan.shincolle.item.BasicEntityItem;
 import com.lulan.shincolle.utility.LogHelper;
+
+import net.minecraftforge.fml.common.registry.EntityRegistry;
 
 /**
 // register natural spawns for entities (1.7.10)
@@ -49,7 +50,7 @@ public class ModEntity
 //		createEntity(EntityCarrierHime.class, "EntityCarrierHime", modEntityID++);
 //		createEntity(EntityCarrierWD.class, "EntityCarrierWD", modEntityID++);
 //		createEntity(EntityCarrierWo.class, "EntityCarrierWo", modEntityID++);
-//		createEntity(EntityDestroyerI.class, "EntityDestroyerI", modEntityID++);
+		createEntity(EntityDestroyerI.class, "EntityDestroyerI", modEntityID++);
 //		createEntity(EntityDestroyerRo.class, "EntityDestroyerRo", modEntityID++);
 //		createEntity(EntityDestroyerHa.class, "EntityDestroyerHa", modEntityID++);
 //		createEntity(EntityDestroyerNi.class, "EntityDestroyerNi", modEntityID++);
@@ -99,8 +100,6 @@ public class ModEntity
 //		createProjectileEntity(EntityProjectileBeam.class, "EntityProjectileBeam", modEntityID++);
 		
 		//register render entity
-//		createProjectileEntity(EntityRenderLargeShipyard.class, "EntityRenderLargeShipyard", modEntityID++);
-//		createProjectileEntity(EntityRenderVortex.class, "EntityRenderVortex", modEntityID++);
 //		createProjectileEntity(EntityRenderFlare.class, "EntityRenderFlare", modEntityID++);
 
 		//register item, misc entity

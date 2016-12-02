@@ -8,14 +8,18 @@ import net.minecraft.entity.Entity;
  * BlockDesk - PinkaLulan
  * Created using Tabula 4.1.1  2015/11/29
  */
-public class ModelBlockDesk extends ModelBase {
+public class ModelBlockDesk extends ModelBase
+{
+	
     public ModelRenderer shape1;
     public ModelRenderer shape2;
     public ModelRenderer shape3;
     public ModelRenderer shape4;
     public ModelRenderer shape6;
 
-    public ModelBlockDesk() {
+    
+    public ModelBlockDesk()
+    {
         this.textureWidth = 64;
         this.textureHeight = 64;
         this.shape3 = new ModelRenderer(this, 0, 0);
@@ -36,7 +40,8 @@ public class ModelBlockDesk extends ModelBase {
     }
 
     @Override
-    public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) { 
+    public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
+    { 
         this.shape3.render(f5);
         this.shape6.render(f5);
         this.shape1.render(f5);
@@ -44,7 +49,8 @@ public class ModelBlockDesk extends ModelBase {
         this.shape4.render(f5);
     }
     
-    public void render(float f5) {
+    public void render(float f5)
+    {
     	this.shape3.render(f5);
         this.shape6.render(f5);
         this.shape1.render(f5);
@@ -55,9 +61,12 @@ public class ModelBlockDesk extends ModelBase {
     /**
      * This is a helper function from Tabula to set the rotation of model parts
      */
-    public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z) {
+    public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z)
+    {
         modelRenderer.rotateAngleX = x;
         modelRenderer.rotateAngleY = y;
         modelRenderer.rotateAngleZ = z;
     }
+    
+    
 }

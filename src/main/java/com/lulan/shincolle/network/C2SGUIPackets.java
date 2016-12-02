@@ -112,7 +112,6 @@ public class C2SGUIPackets implements IMessage
 	/**
 	 * tile GUI click:
 	 * type 1  (X parms): tile entity gui click: 0:button, 1:value1, 2:value2, ...
-	 * type 50 (? parms): tile entity sync
 	 */
 	public C2SGUIPackets(TileEntity tile, byte type, int...parms)
 	{
@@ -273,9 +272,9 @@ public class C2SGUIPackets implements IMessage
 			
 			if (world != null)
 			{
-				TileEntityHelper.setTileEntityByGUI(world.getTileEntity(new BlockPos(msg.valueInt[1],
-														msg.valueInt[2], msg.valueInt[3])),
-														msg.valueByte[0], msg.valueByte[1], msg.valueByte[2]);
+				PacketHelper.setTileEntityByGUI(world.getTileEntity(new BlockPos(
+									msg.valueInt[1], msg.valueInt[2], msg.valueInt[3])),
+									msg.valueByte[0], msg.valueByte[1], msg.valueByte[2]);
 			}
 		break;
 		case PID.AddTeam: //add team, 1 parm

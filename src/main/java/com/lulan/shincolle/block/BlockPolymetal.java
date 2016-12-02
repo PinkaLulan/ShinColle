@@ -55,6 +55,7 @@ public class BlockPolymetal extends BasicBlockMulti
 	}
 	
 	//can drop items in inventory
+	@Override
 	public boolean canDropInventory(IBlockState state)
 	{
 		return false;

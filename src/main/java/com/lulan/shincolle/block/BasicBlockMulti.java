@@ -55,12 +55,14 @@ abstract public class BasicBlockMulti extends BasicBlockContainer
 	}
 	
 	//can drop items in inventory
+	@Override
 	public boolean canDropInventory(IBlockState state)
 	{
 		return true;
 	}
 	
 	//can send block change when on block break
+	@Override
 	public boolean canAlertBlockChange()
 	{
 		return true;

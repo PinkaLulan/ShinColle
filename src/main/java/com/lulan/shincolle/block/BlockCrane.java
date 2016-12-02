@@ -1,7 +1,6 @@
 package com.lulan.shincolle.block;
 
 import com.lulan.shincolle.tileentity.TileEntityCrane;
-import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -31,7 +30,7 @@ public class BlockCrane extends BasicBlockContainer
 	    
         GameRegistry.register(this);
         GameRegistry.register(new ItemBlock(this), this.getRegistryName());
-        GameRegistry.registerTileEntity(TileEntitySmallShipyard.class, TILENAME);
+        GameRegistry.registerTileEntity(TileEntityCrane.class, TILENAME);
 	}
 	
 	@Override
@@ -41,12 +40,14 @@ public class BlockCrane extends BasicBlockContainer
 	}
 	
 	//can drop items in inventory
+	@Override
 	public boolean canDropInventory(IBlockState state)
 	{
 		return false;
 	}
 	
 	//can send block change when on block break
+	@Override
 	public boolean canAlertBlockChange()
 	{
 		return true;

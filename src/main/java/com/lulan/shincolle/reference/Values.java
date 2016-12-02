@@ -7,6 +7,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.lulan.shincolle.init.ModBlocks;
+import com.lulan.shincolle.init.ModItems;
+
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
+
 /** HARD CODED VALUES
  *
  */
@@ -522,59 +529,60 @@ public class Values
 	}});
 	
 	
-//	/** ITEMSTACK MAP FOR ICON TODO
-//	 *  
-//	 */
-//	public static final Map<Byte, ItemStack> ItemIconMap = Collections.unmodifiableMap(new HashMap<Byte, ItemStack>() {{
-//		put(ID.Icon.IronIG,     new ItemStack(Items.iron_ingot));
-//		put(ID.Icon.Grudge,     new ItemStack(ModItems.Grudge));
-//		put(ID.Icon.GrudgeB,    new ItemStack(ModBlocks.BlockGrudge));
-//		put(ID.Icon.GrudgeBH,   new ItemStack(ModBlocks.BlockGrudgeHeavy));
-//		put(ID.Icon.AbyssIG,    new ItemStack(ModItems.AbyssMetal, 1, 0));
-//		put(ID.Icon.AbyssB,     new ItemStack(ModBlocks.BlockAbyssium));
-//		put(ID.Icon.PolymIG,    new ItemStack(ModItems.AbyssMetal, 1, 1));
-//		put(ID.Icon.PolymOre,   new ItemStack(ModBlocks.BlockPolymetalOre));
-//		put(ID.Icon.PolymB,     new ItemStack(ModBlocks.BlockPolymetal));
-//		put(ID.Icon.PolymBG,    new ItemStack(ModBlocks.BlockPolymetalGravel));
-//		put(ID.Icon.Gunpowder,  new ItemStack(Items.gunpowder));
-//		put(ID.Icon.Blazepowder,new ItemStack(Items.blaze_powder));
-//		put(ID.Icon.AmmoL,      new ItemStack(ModItems.Ammo, 1, 0));
-//		put(ID.Icon.AmmoLC,     new ItemStack(ModItems.Ammo, 1, 1));
-//		put(ID.Icon.AmmoH,      new ItemStack(ModItems.Ammo, 1, 2));
-//		put(ID.Icon.AmmoHC,     new ItemStack(ModItems.Ammo, 1, 3));
-//		put(ID.Icon.RpBucket,   new ItemStack(ModItems.BucketRepair));
-//		put(ID.Icon.LaBucket,   new ItemStack(Items.lava_bucket));
-//		put(ID.Icon.NStar,      new ItemStack(Items.nether_star));
-//		put(ID.Icon.Ring,       new ItemStack(ModItems.MarriageRing));
-//		put(ID.Icon.Paper,      new ItemStack(Items.paper));
-//		put(ID.Icon.OwnPaper,   new ItemStack(ModItems.OwnerPaper));
-//		put(ID.Icon.Stick,      new ItemStack(Items.stick));
-//		put(ID.Icon.KHammer,    new ItemStack(ModItems.KaitaiHammer));
-//		put(ID.Icon.ModTool,    new ItemStack(ModItems.ModernKit));
-//		put(ID.Icon.SpawnEgg0,  new ItemStack(ModItems.ShipSpawnEgg, 1, 0));
-//		put(ID.Icon.SpawnEgg1,  new ItemStack(ModItems.ShipSpawnEgg, 1, 1));
-//		put(ID.Icon.SpawnEgg2,  new ItemStack(ModItems.ShipSpawnEgg, 1, 2));
-//		put(ID.Icon.InstantMat, new ItemStack(ModItems.InstantConMat));
-//		put(ID.Icon.DiamondB,   new ItemStack(Blocks.diamond_block));
-//		put(ID.Icon.RpGod,      new ItemStack(ModItems.RepairGoddess));
-//		put(ID.Icon.Pointer,    new ItemStack(ModItems.PointerItem));
-//		put(ID.Icon.ModelZF,    new ItemStack(ModItems.ToyAirplane));
-//		put(ID.Icon.Desk,       new ItemStack(ModBlocks.BlockDesk));
-//		put(ID.Icon.DeskBook,   new ItemStack(ModItems.DeskItemBook));
-//		put(ID.Icon.DeskRadar,  new ItemStack(ModItems.DeskItemRadar));
-//		put(ID.Icon.WriteBook,  new ItemStack(Items.writable_book));
-//		put(ID.Icon.Compass,    new ItemStack(Items.compass));
-//		put(ID.Icon.ObsidianB,  new ItemStack(Blocks.obsidian));
-//		put(ID.Icon.WoolB,      new ItemStack(Blocks.wool));
-//		put(ID.Icon.SmallSY,    new ItemStack(ModBlocks.BlockSmallShipyard));
-//		put(ID.Icon.Wrench,     new ItemStack(ModItems.TargetWrench));
-//		put(ID.Icon.VolCore,    new ItemStack(ModBlocks.BlockVolCore));
-//		put(ID.Icon.VolBlock,   new ItemStack(ModBlocks.BlockVolBlock));
-//		put(ID.Icon.Frame,      new ItemStack(ModBlocks.BlockFrame));
-//		put(ID.Icon.Waypoint,   new ItemStack(ModBlocks.BlockWaypoint));
-//		put(ID.Icon.Crane,      new ItemStack(ModBlocks.BlockCrane));
-//		put(ID.Icon.Piston,     new ItemStack(Blocks.piston));
-//	}});
+	/** ITEMSTACK MAP FOR ICON
+	 *  
+	 */
+	public static final Map<Byte, ItemStack> ItemIconMap = Collections.unmodifiableMap(new HashMap<Byte, ItemStack>()
+	{{
+		put(ID.Icon.IronIG,     new ItemStack(Items.IRON_INGOT));
+		put(ID.Icon.Grudge,     new ItemStack(ModItems.Grudge));
+		put(ID.Icon.GrudgeB,    new ItemStack(ModBlocks.BlockGrudge));
+		put(ID.Icon.GrudgeBH,   new ItemStack(ModBlocks.BlockGrudgeHeavy));
+		put(ID.Icon.AbyssIG,    new ItemStack(ModItems.AbyssMetal, 1, 0));
+		put(ID.Icon.AbyssB,     new ItemStack(ModBlocks.BlockAbyssium));
+		put(ID.Icon.PolymIG,    new ItemStack(ModItems.AbyssMetal, 1, 1));
+		put(ID.Icon.PolymOre,   new ItemStack(ModBlocks.BlockPolymetalOre));
+		put(ID.Icon.PolymB,     new ItemStack(ModBlocks.BlockPolymetal));
+		put(ID.Icon.PolymBG,    new ItemStack(ModBlocks.BlockPolymetalGravel));
+		put(ID.Icon.Gunpowder,  new ItemStack(Items.GUNPOWDER));
+		put(ID.Icon.Blazepowder,new ItemStack(Items.BLAZE_POWDER));
+		put(ID.Icon.AmmoL,      new ItemStack(ModItems.Ammo, 1, 0));
+		put(ID.Icon.AmmoLC,     new ItemStack(ModItems.Ammo, 1, 1));
+		put(ID.Icon.AmmoH,      new ItemStack(ModItems.Ammo, 1, 2));
+		put(ID.Icon.AmmoHC,     new ItemStack(ModItems.Ammo, 1, 3));
+		put(ID.Icon.RpBucket,   new ItemStack(ModItems.BucketRepair));
+		put(ID.Icon.LaBucket,   new ItemStack(Items.LAVA_BUCKET));
+		put(ID.Icon.NStar,      new ItemStack(Items.NETHER_STAR));
+		put(ID.Icon.Ring,       new ItemStack(ModItems.MarriageRing));
+		put(ID.Icon.Paper,      new ItemStack(Items.PAPER));
+		put(ID.Icon.OwnPaper,   new ItemStack(ModItems.OwnerPaper));
+		put(ID.Icon.Stick,      new ItemStack(Items.STICK));
+		put(ID.Icon.KHammer,    new ItemStack(ModItems.KaitaiHammer));
+		put(ID.Icon.ModTool,    new ItemStack(ModItems.ModernKit));
+		put(ID.Icon.SpawnEgg0,  new ItemStack(ModItems.ShipSpawnEgg, 1, 0));
+		put(ID.Icon.SpawnEgg1,  new ItemStack(ModItems.ShipSpawnEgg, 1, 1));
+		put(ID.Icon.SpawnEgg2,  new ItemStack(ModItems.ShipSpawnEgg, 1, 2));
+		put(ID.Icon.InstantMat, new ItemStack(ModItems.InstantConMat));
+		put(ID.Icon.DiamondB,   new ItemStack(Blocks.DIAMOND_BLOCK));
+		put(ID.Icon.RpGod,      new ItemStack(ModItems.RepairGoddess));
+		put(ID.Icon.Pointer,    new ItemStack(ModItems.PointerItem));
+		put(ID.Icon.ModelZF,    new ItemStack(ModItems.ToyAirplane));
+		put(ID.Icon.Desk,       new ItemStack(ModBlocks.BlockDesk));
+		put(ID.Icon.DeskBook,   new ItemStack(ModItems.DeskItemBook));
+		put(ID.Icon.DeskRadar,  new ItemStack(ModItems.DeskItemRadar));
+		put(ID.Icon.WriteBook,  new ItemStack(Items.WRITABLE_BOOK));
+		put(ID.Icon.Compass,    new ItemStack(Items.COMPASS));
+		put(ID.Icon.ObsidianB,  new ItemStack(Blocks.OBSIDIAN));
+		put(ID.Icon.WoolB,      new ItemStack(Blocks.WOOL));
+		put(ID.Icon.SmallSY,    new ItemStack(ModBlocks.BlockSmallShipyard));
+		put(ID.Icon.Wrench,     new ItemStack(ModItems.TargetWrench));
+		put(ID.Icon.VolCore,    new ItemStack(ModBlocks.BlockVolCore));
+		put(ID.Icon.VolBlock,   new ItemStack(ModBlocks.BlockVolBlock));
+		put(ID.Icon.Frame,      new ItemStack(ModBlocks.BlockFrame));
+		put(ID.Icon.Waypoint,   new ItemStack(ModBlocks.BlockWaypoint));
+		put(ID.Icon.Crane,      new ItemStack(ModBlocks.BlockCrane));
+		put(ID.Icon.Piston,     new ItemStack(Blocks.PISTON));
+	}});
 	
 	
 	/** BOOK CONTENT MAP

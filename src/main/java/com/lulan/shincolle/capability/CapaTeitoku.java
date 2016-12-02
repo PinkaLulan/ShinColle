@@ -25,7 +25,6 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
-import net.minecraft.world.World;
 
 /**
  * teitoku data capability
@@ -40,10 +39,12 @@ public class CapaTeitoku implements ICapaTeitoku
 	public String playerName;
 	
 	//temp var
+	public boolean needInit = true;		//inited flag
 	private boolean isOpeningGUI;		//in using GUI
 	
 	//player data
 	private boolean hasRing;
+	private boolean hasTeam;
 	private boolean isRingActive;
 	private boolean isRingFlying;
 	private int[] ringEffect;			//0:haste 1:speed 2:jump 3:damage
@@ -77,12 +78,14 @@ public class CapaTeitoku implements ICapaTeitoku
 	private HashMap<Integer, String> targetClassMap;	//temp for client side, used in GUI
 
 
+	//init capability on player login
 	@Override
-	public void init(EntityPlayer entity, World world)
+	public void init(EntityPlayer entity)
 	{
 		this.player = entity;
 		this.playerName = entity.getDisplayNameString();
 		this.hasRing = false;
+		this.hasTeam = false;
 		this.isRingActive = false;
 		this.isRingFlying = false;
 		this.ringEffect = new int[] {0, 0, 0, 0};
@@ -107,6 +110,7 @@ public class CapaTeitoku implements ICapaTeitoku
 		this.mapTeamData = new HashMap();
 		this.listTeamData = new ArrayList();
 		
+		this.needInit = false;
 	}
 	
 	@Override
@@ -146,7 +150,6 @@ public class CapaTeitoku implements ICapaTeitoku
 		
 		for (int i = 0; i < 9; i++)
 		{
-			LogHelper.info("DEBUG : save player ExtNBT: "+this.getSID(i)[0]);
 			nbtExt.setIntArray("TeamList"+i, this.getSID(i));
 			nbtExt.setByteArray("SelectState"+i, this.getSelectStateByte(i));
 		}
@@ -183,6 +186,13 @@ public class CapaTeitoku implements ICapaTeitoku
 	@Override
 	public void loadNBTData(NBTTagCompound nbt)
 	{
+		//check init flag
+		if (this.needInit || this.player == null)
+		{
+			LogHelper.infoDebugMode("DEBUG: load player capability nbt fail: capa not inited. "+this.player+" "+this.needInit);
+			return;
+		}
+		
 		NBTTagCompound nbtExt = (NBTTagCompound) nbt.getTag(CAPA_KEY);
 		
 		/** FIX: check empty player data for iChun:SyncMod
@@ -265,11 +275,6 @@ public class CapaTeitoku implements ICapaTeitoku
 		return isRingActive;
 	}
 	
-	public int isRingActiveI()
-	{
-		return isRingActive ? 1 : 0;
-	}
-	
 	public boolean isRingFlying()
 	{
 		return isRingFlying;
@@ -280,15 +285,17 @@ public class CapaTeitoku implements ICapaTeitoku
 		return hasRing;
 	}
 	
-	//check has team from server team cache, SERVER ONLY
+	//check has team from server team cache
 	public boolean hasTeam()
 	{
+		//server side
 		if (player != null && !player.worldObj.isRemote)
 		{
 			if (ServerProxy.getTeamData(this.playerUID) != null) return true;
 		}
 		
-		return false;
+		//client side
+		return this.hasTeam;
 	}
 	
 	public int getRingEffect(int id)
@@ -614,7 +621,7 @@ public class CapaTeitoku implements ICapaTeitoku
 		return this.listColleEquip;
 	}
 	
-	public HashMap<Integer, String> getTargetClassList()
+	public HashMap<Integer, String> getTargetClassMap()
 	{
 		return this.targetClassMap;
 	}
@@ -731,18 +738,6 @@ public class CapaTeitoku implements ICapaTeitoku
 		isRingActive = par1;
 	}
 	
-	public void setRingActiveI(int par1)
-	{
-		if (par1 == 0)
-		{
-			isRingActive = false;
-		}
-		else
-		{
-			isRingActive = true;
-		}
-	}
-	
 	public void setRingFlying(boolean par1)
 	{
 		isRingFlying = par1;
@@ -814,7 +809,8 @@ public class CapaTeitoku implements ICapaTeitoku
 		}
 		catch (Exception e)
 		{
-			LogHelper.info("EXCEPTION : set current team select state fail: "+e);
+			LogHelper.info("EXCEPTION : set current team select state fail. "+this.player+" "+this.needInit);
+			e.printStackTrace();
 		}
 	}
 	
@@ -1004,6 +1000,11 @@ public class CapaTeitoku implements ICapaTeitoku
 		{
 			LogHelper.info("EXCEPTION : set ship team SID list fail: "+e);
 		}
+	}
+	
+	public void setHasTeam(boolean par1)
+	{
+		this.hasTeam = par1;
 	}
 	
 	/** add ship entity to slot and update SID list */
@@ -1338,7 +1339,7 @@ public class CapaTeitoku implements ICapaTeitoku
 	 */
 	public void sendSyncPacket(int type)
 	{
-		if(player.worldObj != null && !player.worldObj.isRemote)
+		if (player.worldObj != null && !player.worldObj.isRemote)
 		{
 			switch (type)
 			{
@@ -1362,6 +1363,9 @@ public class CapaTeitoku implements ICapaTeitoku
 				break;
 			case 6:
 				CommonProxy.channelG.sendTo(new S2CGUIPackets(S2CGUIPackets.PID.SyncPlayerProp_ColledEquip, this.getColleEquipList()), (EntityPlayerMP) player);
+				break;
+			case 7:
+				CommonProxy.channelG.sendTo(new S2CGUIPackets(this, S2CGUIPackets.PID.SyncPlayerProp_Misc), (EntityPlayerMP) player);
 				break;
 			}
 		}
@@ -1438,7 +1442,7 @@ public class CapaTeitoku implements ICapaTeitoku
 		return (CapaTeitoku) capa;
 	}
 	
-	/** set player capability data by packets, CLIENT SIDE ONLY */
+	/** init and set player capability data by packets, CLIENT SIDE ONLY */
 	public static void setCapaDataMisc(int[] value)
 	{
 		EntityPlayer player = ClientProxy.getClientPlayer();
@@ -1446,16 +1450,20 @@ public class CapaTeitoku implements ICapaTeitoku
 				
 		if (capa != null)
 		{
-			capa.setRingActiveI(value[0]);
-			capa.setMarriageNum(value[1]);
-			capa.setPlayerUID(value[2]);
+			if (capa.needInit) capa.init(player);
+			
+			capa.isRingActive = value[0] > 0 ? true : false;
+			capa.hasTeam = value[1] > 0 ? true : false;
+			capa.marriageNum = value[2];
+			capa.playerUID = value[3];
+			capa.teamId = value[4];
 			
 			//disable fly if non-active
-			if (!capa.isRingActive() && !player.capabilities.isCreativeMode && capa.isRingFlying())
+			if (!capa.isRingActive && !player.capabilities.isCreativeMode && capa.isRingFlying)
 			{
 				LogHelper.info("DEBUG : cancel fly by right click");
 				player.capabilities.isFlying = false;
-				capa.setRingFlying(false);
+				capa.isRingFlying = false;
 			}
 		}
 	}

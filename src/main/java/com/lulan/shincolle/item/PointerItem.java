@@ -722,6 +722,8 @@ public class PointerItem extends BasicItem
 		
     	if (capa != null)
     	{
+    		if (capa.needInit) return;  //for mod interact: disable addInfo if no capa
+    		
     		String str1, str2;
     		String str3 = null;
     		

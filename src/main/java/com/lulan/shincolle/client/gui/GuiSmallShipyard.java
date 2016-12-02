@@ -208,7 +208,7 @@ public class GuiSmallShipyard extends GuiContainer
         	
         	//send packet
         	LogHelper.info("DEBUG : GUI click: build small ship: ship "+buttonValue);
-        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, ID.B.Shipyard_Type, buttonValue, 0));
+        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, C2SGUIPackets.PID.TileBtn, ID.B.Shipyard_Type, buttonValue, 0));
         	break;
         case 1:
         	//change button value
@@ -228,7 +228,7 @@ public class GuiSmallShipyard extends GuiContainer
         	
         	//send packet
         	LogHelper.info("DEBUG : GUI click: build small ship: equip "+buttonValue);
-        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, ID.B.Shipyard_Type, buttonValue, 0));
+        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, C2SGUIPackets.PID.TileBtn, ID.B.Shipyard_Type, buttonValue, 0));
         	break;
         }
 	}

@@ -113,9 +113,6 @@ public class ClientProxy extends CommonProxy
 //		RenderingRegistry.registerEntityRenderingHandler(EntityMountHbH.class, new MountsShipRenderer(new ModelMountHbH(), 1.5F, 3));
 //		RenderingRegistry.registerEntityRenderingHandler(EntityMountCaH.class, new MountsShipRenderer(new ModelMountCaH(), 1.5F, 4));
 //		
-//		//test entity render
-////		RenderingRegistry.registerEntityRenderingHandler(EntityTest.class, new RenderTest(new ModelTest(), 1F));
-//
 //		//projectile render
 //		RenderingRegistry.registerEntityRenderingHandler(EntityAbyssMissile.class, new RenderAbyssMissile(0.75F));
 //		RenderingRegistry.registerEntityRenderingHandler(EntityAirplane.class, new MiscMobRenderer(new ModelAirplane(), 0.5F, 0));
@@ -128,8 +125,6 @@ public class ClientProxy extends CommonProxy
 //		RenderingRegistry.registerEntityRenderingHandler(EntityProjectileBeam.class, new RenderProjectileBeam());
 //
 //		//render entity render
-//		RenderingRegistry.registerEntityRenderingHandler(EntityRenderLargeShipyard.class, new RenderLargeShipyard());
-//		RenderingRegistry.registerEntityRenderingHandler(EntityRenderVortex.class, new RenderVortex());
 //		RenderingRegistry.registerEntityRenderingHandler(EntityRenderFlare.class, new RenderFlare());
 	
 	}

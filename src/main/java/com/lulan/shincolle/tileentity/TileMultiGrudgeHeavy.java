@@ -1,20 +1,21 @@
 package com.lulan.shincolle.tileentity;
 
+import com.lulan.shincolle.block.BlockGrudgeHeavy;
+import com.lulan.shincolle.capability.CapaInventory;
+import com.lulan.shincolle.crafting.LargeRecipes;
+import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.network.S2CGUIPackets;
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.TileEntityHelper;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fluids.FluidStack;
-
-import com.lulan.shincolle.block.BlockGrudgeHeavy;
-import com.lulan.shincolle.capability.CapaInventory;
-import com.lulan.shincolle.crafting.LargeRecipes;
-import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.init.ModItems;
-import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.CalcHelper;
-import com.lulan.shincolle.utility.TileEntityHelper;
 
 /** Fuel Cost = BaseCost + CostPerMaterial * ( TotalMaterialAmount - minAmount * 4 )
  *  Total Build Time = FuelCost / buildSpeed
@@ -91,6 +92,18 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileLiquidF
 	public byte getGuiIntID()
 	{
 		return ID.Gui.LARGESHIPYARD;
+	}
+	
+	@Override
+	public byte getPacketID(int type)
+	{
+		switch (type)
+		{
+		case 0:
+			return S2CGUIPackets.PID.TileLargeSY;
+		}
+		
+		return -1;
 	}
 	
 	//依照輸出入口設定, 決定漏斗等裝置如何輸出入物品到特定slot中

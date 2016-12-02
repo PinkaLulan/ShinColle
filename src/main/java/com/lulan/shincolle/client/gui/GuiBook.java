@@ -3,27 +3,24 @@ package com.lulan.shincolle.client.gui;
 import java.util.Arrays;
 import java.util.List;
 
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.ResourceLocation;
-
-import org.lwjgl.opengl.GL11;
-
-import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.proxy.ClientProxy;
-import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Enums;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
-import com.lulan.shincolle.utility.GuiHelper;
-import com.lulan.shincolle.utility.LogHelper;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.GlStateManager.DestFactor;
+import net.minecraft.client.renderer.GlStateManager.SourceFactor;
+import net.minecraft.client.renderer.RenderItem;
+import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 
 /** draw book text
  *  
@@ -36,7 +33,8 @@ import com.lulan.shincolle.utility.LogHelper;
  *                (3,17) (23,17) (43,17)     (81,17)
  *                (3,37) (23,37) (43,37)
  */
-public class GuiBook {
+public class GuiBook
+{
 	
 	//book picture
 	private static final ResourceLocation guiBookPic01 = new ResourceLocation(Reference.TEXTURES_GUI+"book/BookPic01.png");
@@ -45,7 +43,7 @@ public class GuiBook {
 	private static TextureManager tm = ClientProxy.getMineraft().getTextureManager();
 	private static GuiContainer gui;
 	private static FontRenderer font;
-	private static RenderItem itemRender = new RenderItem();
+	private static RenderItem itemRender;
 	private static int numChap;
 	private static int numPage;
 	public static int PageWidth = 135; //page width, no scale = 106
@@ -57,10 +55,14 @@ public class GuiBook {
 	public static int PageTY = 58;     //page Y pos for text
 	public static final int[] PageLimit = new int[] {1,23,5,15,19,11,3};  //max page number
 	
-	public GuiBook() {}
+	public GuiBook()
+	{
+		this.itemRender = Minecraft.getMinecraft().getRenderItem();
+	}
 	
 	/** draw book content */
-	public static void drawBookContent(GuiContainer par1, FontRenderer par2, int chap, int page) {
+	public static void drawBookContent(GuiContainer par1, FontRenderer par2, int chap, int page)
+	{
 		/** Content Array:
 		 *  0:c.type  1:pageL/R  2:posX  3:posY  4:add content
 		 */
@@ -87,16 +89,22 @@ public class GuiBook {
 //		PageTY = 58;	  //left page start Y pos, no scale = 48
 		
 		/** set default text */
-		if(cont == null) {
+		if (cont == null)
+		{
 			cont =  Arrays.asList(new int[] {0, 0, 0, 0},
 								  new int[] {0, 1, 0, 0});
 		}
 		
-		if(cont != null) {
-			for(int[] getc : cont) {
-				if(getc != null && getc.length > 3) {  //check content existence
+		if (cont != null)
+		{
+			for (int[] getc : cont)
+			{
+				//check content existence
+				if (getc != null && getc.length > 3)
+				{
 					//get draw type
-					switch(getc[0]) {
+					switch (getc[0])
+					{
 					case 0:    //text
 						drawBookText(getc[1], getc[2], getc[3]);
 						break;
@@ -116,7 +124,8 @@ public class GuiBook {
 	 *  pageSide: 0:left  1:right
 	 *  offXY: x,y offset
 	 */
-	private static void drawBookText(int pageSide, int offX, int offY) {
+	private static void drawBookText(int pageSide, int offX, int offY)
+	{
 		//draw title
 		drawTitleText();
 		
@@ -125,10 +134,12 @@ public class GuiBook {
 	}
 	
 	/** draw title text */
-	private static void drawTitleText() {
+	private static void drawTitleText()
+	{
 		//get title string
 		String str = null;
-		switch(numChap) {
+		switch (numChap)
+		{
 		case 0:
 			str = I18n.format("gui.shincolle:book.chap"+numChap+".title");
 			break;
@@ -138,16 +149,17 @@ public class GuiBook {
 		}
 		
 		int strlen = (int) (font.getStringWidth(str) * 0.5F);
-		str = EnumChatFormatting.UNDERLINE + str;
+		str = TextFormatting.UNDERLINE + str;
 		//draw title
-		GL11.glPushMatrix();
-		GL11.glScalef(0.8F, 0.8F, 0.8F);
-		font.drawString(str, 82-strlen, 40, GuiHelper.pickColor(GuiHelper.pickColorName.RED2.ordinal()));
-		GL11.glPopMatrix();
+		GlStateManager.pushMatrix();
+		GlStateManager.scale(0.8F, 0.8F, 0.8F);
+		font.drawString(str, 82-strlen, 40, Enums.EnumColors.RED_DARK.getValue());
+		GlStateManager.popMatrix();
 	}
 	
 	/** draw page text */
-	private static void drawPageText(int pageSide, int offX, int offY) {
+	private static void drawPageText(int pageSide, int offX, int offY)
+	{
 		//set x, y offset
 		int picY = PageTY + offY - 4;        //add y offset
 		int picX = PageTLX;               //left page
@@ -164,31 +176,35 @@ public class GuiBook {
 	/** draw string with new line or other special symbol
 	 *  page: 0:left 1:right
 	 */
-	private static void drawStringWithSpecialSymbol(String str, int x, int y) {
+	private static void drawStringWithSpecialSymbol(String str, int x, int y)
+	{
 		String[] strArray = CalcHelper.stringConvNewlineToArray(str);
 		
-		GL11.glPushMatrix();
-		GL11.glScalef(0.8F, 0.8F, 0.8F);
+		GlStateManager.pushMatrix();
+		GlStateManager.scale(0.8F, 0.8F, 0.8F);
 		
 		int newY = y;
-		for(String s : strArray) {
+		for (String s : strArray)
+		{
 			//drawSplitString(string, x, y, split width, color)
 			font.drawSplitString(s, x, newY, PageWidth, 0);
 			newY += font.splitStringWidth(s, PageWidth);
 		}
 		
-		GL11.glPopMatrix();
+		GlStateManager.popMatrix();
 	}
 	
 	/** draw book picture 
 	 *  parms:
 	 *  0:c.type  1:page pos  2:posX  3:posY  4:picID  5:picU  6:picV  7:sizeX  8:sizeY
 	 */
-	private static void drawBookPic(int[] parms) {
+	private static void drawBookPic(int[] parms)
+	{
 		int pageSide, posX, posY, picID, picU, picV, sizeX, sizeY;
 		
 		//null check
-		if(parms != null && parms.length == 9) {
+		if (parms != null && parms.length == 9)
+		{
 			pageSide = parms[1];
 			posX = parms[2];
 			posY = parms[3];
@@ -198,18 +214,20 @@ public class GuiBook {
 			sizeX = parms[7];
 			sizeY = parms[8];
 		}
-		else {
+		else
+		{
 			return;
 		}
 		
 		//set x, y offset
-		int picY = Page0Y + posY;        //add y offset
-		int picX = Page0LX;               //left page
-		if(pageSide > 0) picX = Page0RX;  //right page
-		picX += posX;                     //add x offset
+		int picY = Page0Y + posY;			//add y offset
+		int picX = Page0LX;					//left page
+		if (pageSide > 0) picX = Page0RX;	//right page
+		picX += posX;						//add x offset
 		
 		//set picture texture
-		switch(picID) {
+		switch (picID)
+		{
 		case 0:
 			tm.bindTexture(guiBookPic01);
 			break;
@@ -219,48 +237,52 @@ public class GuiBook {
 		}
 		
 		//draw picture
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);	//reset RGBA
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GlStateManager.color(1F, 1F, 1F, 1F);	//reset RGBA
+		GlStateManager.enableBlend();
+		GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
 		gui.drawTexturedModalRect(picX, picY, picU, picV, sizeX, sizeY);
-		GL11.glDisable(GL11.GL_BLEND);
+		GlStateManager.disableBlend();
 	}
 	
 	/** draw book item icon */
-	private static void drawBookIcon(int pageSide, int offX, int offY, int iconID) {
+	private static void drawBookIcon(int pageSide, int offX, int offY, int iconID)
+	{
 		//set x, y offset
-		int picY = Page0Y + offY;        //add y offset
-		int picX = Page0LX;               //left page
-		if(pageSide > 0) picX = Page0RX;  //right page
-		picX += offX;                     //add x offset
+		int picY = Page0Y + offY;			//add y offset
+		int picX = Page0LX;					//left page
+		if(pageSide > 0) picX = Page0RX;	//right page
+		picX += offX;						//add x offset
 		
 		drawItemIcon(getItemStackForIcon(iconID), picX, picY, false);
 	}
 	
 	//draw item icon
-	private static void drawItemIcon(ItemStack item, int x, int y, boolean effect) {
-		if(item != null) {
-//			itemRender.renderItemIntoGUI(font, tm, item, x, y, effect);  //not suitable for custom TESR block
-			itemRender.renderItemAndEffectIntoGUI(font, tm, item, x, y);
+	private static void drawItemIcon(ItemStack item, int x, int y, boolean effect)
+	{
+		if (item != null)
+		{
+			itemRender.renderItemAndEffectIntoGUI(item, x, y);
 		}
 	}
 	
 	//get max page number
-	public static int getMaxPageNumber(int chap) {
-		if(chap < PageLimit.length) return PageLimit[chap];
+	public static int getMaxPageNumber(int chap)
+	{
+		if (chap < PageLimit.length) return PageLimit[chap];
 		return 0;
 	}
 	
 	//get index id for Values.BookList
-	public static int getIndexID(int ch, int pg) {
+	public static int getIndexID(int ch, int pg)
+	{
 		return ch * 1000 + pg;
 	}
 	
 	//get itemstack for icon
-	public static ItemStack getItemStackForIcon(int itemID) {
+	public static ItemStack getItemStackForIcon(int itemID)
+	{
 		return Values.ItemIconMap.get((byte)itemID);
 	}
-
 	
-
+	
 }

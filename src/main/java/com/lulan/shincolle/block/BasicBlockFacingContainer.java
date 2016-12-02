@@ -17,7 +17,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import com.lulan.shincolle.ShinColle;
-import com.lulan.shincolle.tileentity.BasicTileLockable;
+import com.lulan.shincolle.tileentity.BasicTileEntity;
 
 /** block with tile and facing
  * 
@@ -97,9 +97,9 @@ abstract public class BasicBlockFacingContainer extends BasicBlockFacing impleme
         	TileEntity tile = world.getTileEntity(pos);
         	
         	//open gui
-        	if (tile instanceof BasicTileLockable && ((BasicTileLockable) tile).getGuiIntID() >= 0)
+        	if (tile instanceof BasicTileEntity && ((BasicTileEntity) tile).getGuiIntID() >= 0)
         	{
-        		player.openGui(ShinColle.instance, ((BasicTileLockable) tile).getGuiIntID(), world, pos.getX(), pos.getY(), pos.getZ());
+        		player.openGui(ShinColle.instance, ((BasicTileEntity) tile).getGuiIntID(), world, pos.getX(), pos.getY(), pos.getZ());
                 return true;
         	}
         }

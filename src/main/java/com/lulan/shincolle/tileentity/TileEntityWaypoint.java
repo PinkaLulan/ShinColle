@@ -1,81 +1,154 @@
 package com.lulan.shincolle.tileentity;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.MathHelper;
-
+import com.lulan.shincolle.block.BlockWaypoint;
 import com.lulan.shincolle.block.ItemBlockWaypoint;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.PointerItem;
 import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.proxy.ClientProxy;
-import com.lulan.shincolle.proxy.CommonProxy;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
-import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ITickable;
+import net.minecraft.util.math.BlockPos;
 
-public class TileEntityWaypoint extends BasicTileLockable implements ITileWaypoint
+public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint, ITickable
 {
 
 	//waypoint
-	public int lx, ly, lz, nx, ny, nz, tick, wpstay;
+	private int tick, wpstay;
+	private BlockPos lastPos, nextPos;
 	
 	
 	public TileEntityWaypoint()
 	{
 		super();
-		this.lx = -1;
-		this.ly = -1;
-		this.lz = -1;
-		this.nx = -1;
-		this.ny = -1;
-		this.nz = -1;
 		this.tick = 0;
 		this.wpstay = 0;
+		this.lastPos = BlockPos.ORIGIN;
+		this.nextPos = BlockPos.ORIGIN;
 	}
 	
 	@Override
-	public void updateEntity() {
+	public String getRegName()
+	{
+		return BlockWaypoint.TILENAME;
+	}
+	
+	@Override
+	public byte getPacketID(int type)
+	{
+		switch (type)
+		{
+		case 0:
+			return S2CGUIPackets.PID.TileWaypoint;
+		}
+		
+		return -1;
+	}
+	
+	//讀取nbt資料
+	@Override
+    public void readFromNBT(NBTTagCompound nbt)
+	{
+        super.readFromNBT(nbt);	//從nbt讀取方塊的xyz座標
+        
+        wpstay = nbt.getInteger("wpstay");
+
+        //load pos
+        try
+        {
+            int[] pos =  nbt.getIntArray("lastPos");
+            this.lastPos = new BlockPos(pos[0], pos[1], pos[2]);
+            
+            pos =  nbt.getIntArray("nextPos");
+            this.nextPos = new BlockPos(pos[0], pos[1], pos[2]);
+        }
+        catch (Exception e)
+        {
+        	LogHelper.info("EXCEPTION: TileEntityCrane load position fail: "+e);
+        	this.lastPos = BlockPos.ORIGIN;
+        	this.nextPos = BlockPos.ORIGIN;
+        }
+    }
+	
+	//將資料寫進nbt
+	@Override
+	public NBTTagCompound writeToNBT(NBTTagCompound nbt)
+	{
+		super.writeToNBT(nbt);
+		
+		nbt.setInteger("wpstay", wpstay);
+		
+        //save pos
+        if (this.lastPos != null && this.nextPos != null)
+        {
+        	nbt.setIntArray("lastPos", new int[] {this.lastPos.getX(), this.lastPos.getY(), this.lastPos.getZ()});
+        	nbt.setIntArray("nextPos", new int[] {this.nextPos.getX(), this.nextPos.getY(), this.nextPos.getZ()});
+        }
+        else
+        {
+        	nbt.setIntArray("lastPos", new int[] {0, 0, 0});
+        	nbt.setIntArray("nextPos", new int[] {0, 0, 0});
+        }
+		
+		return nbt;
+	}
+	
+	@Override
+	public void update()
+	{
 		tick++;
 		
 		//show client particle
-		if(this.worldObj.isRemote) {
+		if (this.worldObj.isRemote)
+		{
 			//player hold waypoint or target wrench
 			EntityPlayer player = ClientProxy.getClientPlayer();
 			ItemStack item = player.inventory.getCurrentItem();
 			
-			if(item != null && (item.getItem() instanceof ItemBlockWaypoint || item.getItem() == ModItems.TargetWrench ||
-			   (item.getItem() instanceof PointerItem && item.getItemDamage() < 3))) {
-				if(this.tick % 8 == 0){
-					ParticleHelper.spawnAttackParticleAt(xCoord+0.5D, yCoord-0.25D, zCoord+0.5D, 0.2D, 9D, 0D, (byte) 25);
+			if (item != null && (item.getItem() instanceof ItemBlockWaypoint || item.getItem() == ModItems.TargetWrench ||
+			   (item.getItem() instanceof PointerItem && item.getItemDamage() < 3)))
+			{
+				if (this.tick % 8 == 0)
+				{
+					ParticleHelper.spawnAttackParticleAt(pos.getX()+0.5D, pos.getY()-0.25D, pos.getZ()+0.5D, 0.2D, 9D, 0D, (byte) 25);
 					
-					if(this.tick % 16 == 0) {
+					if (this.tick % 16 == 0)
+					{
 						//next point mark
-						if(this.ny > 0) {
-							double dx = nx - this.xCoord;
-							double dy = ny - this.yCoord;
-							double dz = nz - this.zCoord;
+						if (this.nextPos.getY() > 0)
+						{
+							double dx = this.nextPos.getX() - this.pos.getX();
+							double dy = this.nextPos.getY() - this.pos.getY();
+							double dz = this.nextPos.getZ() - this.pos.getZ();
 							dx *= 0.01D;
 							dy *= 0.01D;
 							dz *= 0.01D;
 									
-							ParticleHelper.spawnAttackParticleAt(xCoord+0.5D, yCoord+0.5D, zCoord+0.5D, dx, dy, dz, (byte) 38);
+							ParticleHelper.spawnAttackParticleAt(pos.getX()+0.5D, pos.getY()+0.5D, pos.getZ()+0.5D, dx, dy, dz, (byte) 38);
 						}
 						
-						if(this.tick % 32 == 0) {
+						if (this.tick % 32 == 0)
+						{
 							//circle mark
-							ParticleHelper.spawnAttackParticleAt(xCoord+0.5D, yCoord-0.25D, zCoord+0.5D, 0.2D, 8D, 0D, (byte) 25);
+							ParticleHelper.spawnAttackParticleAt(pos.getX()+0.5D, pos.getY()-0.25D, pos.getZ()+0.5D, 0.2D, 8D, 0D, (byte) 25);
 						}//end every 32 ticks
 					}//end every 16 ticks
 				}//end every 8 ticks
 			}//end holding item
 		}//end client side
-		else {
+		else
+		{
 			//sync waypoint
-			if(this.ly > 0 || this.ny > 0) {
-				if(this.tick >= 256) {
+			if (this.lastPos.getY() > 0 || this.nextPos.getY() > 0)
+			{
+				if (this.tick >= 128)
+				{
 					this.tick = 0;
 					this.sendSyncPacket();
 				}
@@ -83,89 +156,43 @@ public class TileEntityWaypoint extends BasicTileLockable implements ITileWaypoi
 		}
 	}
 	
-	//讀取nbt資料
-	@Override
-    public void readFromNBT(NBTTagCompound compound)
-	{
-        super.readFromNBT(compound);	//從nbt讀取方塊的xyz座標
-        
-        lx = compound.getInteger("LastX");
-        ly = compound.getInteger("LastY");
-        lz = compound.getInteger("LastZ");
-        nx = compound.getInteger("NextX");
-        ny = compound.getInteger("NextY");
-        nz = compound.getInteger("NextZ");
-        wpstay = compound.getInteger("wpstay");
-    }
-	
-	//將資料寫進nbt
-	@Override
-	public void writeToNBT(NBTTagCompound compound)
-	{
-		super.writeToNBT(compound);
-		
-		compound.setInteger("LastX", lx);
-		compound.setInteger("LastY", ly);
-		compound.setInteger("LastZ", lz);
-		compound.setInteger("NextX", nx);
-		compound.setInteger("NextY", ny);
-		compound.setInteger("NextZ", nz);
-		compound.setInteger("wpstay", wpstay);
-	}
-	
-	@Override
-	public void sendSyncPacket()
-	{
-		if (!this.worldObj.isRemote)
-		{
-			TargetPoint point = new TargetPoint(this.worldObj.provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, 64D);
-			CommonProxy.channelG.sendToAllAround(new S2CGUIPackets(this), point);
-		}
-	}
-	
 	public void setSyncData(int[] data)
 	{
-		if (data != null)
+		if (data != null && data.length == 6)
 		{
-			this.lx = data[0];
-			this.ly = data[1];
-			this.lz = data[2];
-			this.nx = data[3];
-			this.ny = data[4];
-			this.nz = data[5];
+			this.lastPos = new BlockPos(data[0], data[1], data[2]);
+			this.nextPos = new BlockPos(data[3], data[4], data[5]);
 		}
 	}
 
 	@Override
-	public void setNextWaypoint(int[] next)
+	public void setNextWaypoint(BlockPos pos)
 	{
-		if (next != null)
+		if (pos != null)
 		{
-			this.nx = next[0];
-			this.ny = next[1];
-			this.nz = next[2];
+			this.nextPos = pos;
 		}
 	}
 
 	@Override
-	public int[] getNextWaypoint() {
-		return new int[] {nx, ny, nz};
-	}
-
-	@Override
-	public void setLastWaypoint(int[] next)
+	public BlockPos getNextWaypoint()
 	{
-		if(next != null) {
-			this.lx = next[0];
-			this.ly = next[1];
-			this.lz = next[2];
+		return this.nextPos;
+	}
+	
+	@Override
+	public void setLastWaypoint(BlockPos pos)
+	{
+		if (pos != null)
+		{
+			this.lastPos = pos;
 		}
 	}
 
 	@Override
-	public int[] getLastWaypoint()
+	public BlockPos getLastWaypoint()
 	{
-		return new int[] {lx, ly, lz};
+		return this.lastPos;
 	}
 
 	@Override

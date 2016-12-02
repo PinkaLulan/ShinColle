@@ -11,6 +11,7 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.PointerItem;
+import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
@@ -97,6 +98,18 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 	public byte getGuiIntID()
 	{
 		return ID.Gui.CRANE;
+	}
+	
+	@Override
+	public byte getPacketID(int type)
+	{
+		switch (type)
+		{
+		case 0:
+			return S2CGUIPackets.PID.TileCrane;
+		}
+		
+		return -1;
 	}
 	
 	//依照輸出入口設定, 決定漏斗等裝置如何輸出入物品到特定slot中

@@ -8,7 +8,7 @@ public interface ICapaTeitoku
 {
 
 	/** init method */
-	public void init(EntityPlayer entity, World world);
+	public void init(EntityPlayer entity);
 	
 	/** save data to nbt */
 	public NBTTagCompound saveNBTData(NBTTagCompound nbt);

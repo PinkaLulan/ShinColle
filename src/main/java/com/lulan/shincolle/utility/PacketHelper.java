@@ -7,8 +7,12 @@ import java.util.Map;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.tileentity.TileEntityCrane;
+import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
+import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 
 import io.netty.buffer.ByteBuf;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 
 public class PacketHelper
@@ -292,6 +296,99 @@ public class PacketHelper
 		{
 			LogHelper.info("DEBUG : set entity by GUI fail, entity null");
 		}
+	}
+	
+	/**
+	 * process tile GUI click
+	 */
+	public static void setTileEntityByGUI(TileEntity tile, int button, int value, int value2)
+	{
+		if (tile instanceof TileEntitySmallShipyard)
+		{
+			TileEntitySmallShipyard tile2 = (TileEntitySmallShipyard) tile;
+			tile2.setBuildType(value);
+			
+			//set build record
+			if (value == ID.Build.EQUIP_LOOP || value == ID.Build.SHIP_LOOP)
+			{
+				int[] getMat = new int[] {0,0,0,0};
+				
+				for (int i = 0; i < 4; i++)
+				{
+					if (tile2.getStackInSlot(i) != null)
+					{
+						getMat[i] = tile2.getStackInSlot(i).stackSize;
+					}
+				}
+				
+				tile2.setBuildRecord(getMat);
+			}
+			
+			return;
+		}
+		else if (tile instanceof TileMultiGrudgeHeavy)
+		{
+			TileMultiGrudgeHeavy tile2 = (TileMultiGrudgeHeavy) tile;
+			
+			switch (button)
+			{
+			case ID.B.Shipyard_Type:		//build type
+				tile2.setBuildType(value);
+				break;
+			case ID.B.Shipyard_InvMode:		//select inventory mode
+				tile2.setInvMode(value);
+				break;
+			case ID.B.Shipyard_SelectMat:	//select material
+				tile2.setSelectMat(value);
+				break;
+			case ID.B.Shipyard_INCDEC:		//material inc,dec
+				TileEntityHelper.setLargeShipyardBuildMats((TileMultiGrudgeHeavy) tile, button, value, value2);
+				break;
+			}
+		}
+		else if (tile instanceof TileEntityCrane)
+		{
+			TileEntityCrane tile2 = (TileEntityCrane) tile;
+			
+			switch (button)
+			{
+			case ID.B.Crane_Load:
+				tile2.setField(6, value);
+				break;
+			case ID.B.Crane_Unload:
+				tile2.setField(7, value);
+				break;
+			case ID.B.Crane_Power:
+				tile2.setField(2, value);
+				
+				//power off, clear ship
+				if (value == 0)
+				{
+					tile2.setShip(null);
+				}
+				break;
+			case ID.B.Crane_Meta:
+				tile2.setField(3, value);
+				break;
+			case ID.B.Crane_Dict:
+				tile2.setField(4, value);
+				break;
+			case ID.B.Crane_Mode:
+				tile2.setField(5, value);
+				break;
+			case ID.B.Crane_Nbt:
+				tile2.setField(8, value);
+				break;
+			case ID.B.Crane_Red:
+				if (value > 2) value = 0;
+				tile2.setField(10, value);
+				break;
+			}
+		}
+		else
+		{
+			LogHelper.info("DEBUG : set tile entity by GUI fail: tile: "+tile);
+		}	
 	}
 	
 	

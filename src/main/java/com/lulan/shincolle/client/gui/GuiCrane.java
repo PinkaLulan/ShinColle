@@ -278,7 +278,7 @@ public class GuiCrane extends GuiContainer
         switch (GuiHelper.getButton(5, 0, xClick, yClick))
         {
         case 0:  //power
-        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, ID.B.Crane_Power, !btnPower ? 1 : 0, 0));
+        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, C2SGUIPackets.PID.TileBtn, ID.B.Crane_Power, !btnPower ? 1 : 0, 0));
         	break;
         case 1:  //mode
         	if (key == 0)
@@ -307,25 +307,25 @@ public class GuiCrane extends GuiContainer
         		
         		if (btnMode < 0) btnMode = 0;
         	}
-        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, ID.B.Crane_Mode, btnMode, 0));
+        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, C2SGUIPackets.PID.TileBtn, ID.B.Crane_Mode, btnMode, 0));
         	break;
         case 2:  //meta
-        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, ID.B.Crane_Meta, !btnMeta ? 1 : 0, 0));
+        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, C2SGUIPackets.PID.TileBtn, ID.B.Crane_Meta, !btnMeta ? 1 : 0, 0));
         	break;
         case 3:  //dict
-        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, ID.B.Crane_Dict, !btnDict ? 1 : 0, 0));
+        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, C2SGUIPackets.PID.TileBtn, ID.B.Crane_Dict, !btnDict ? 1 : 0, 0));
         	break;
         case 4:  //loading
-        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, ID.B.Crane_Load, !btnLoad ? 1 : 0, 0));
+        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, C2SGUIPackets.PID.TileBtn, ID.B.Crane_Load, !btnLoad ? 1 : 0, 0));
         	break;
         case 5:  //unloading
-        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, ID.B.Crane_Unload, !btnUnload ? 1 : 0, 0));
+        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, C2SGUIPackets.PID.TileBtn, ID.B.Crane_Unload, !btnUnload ? 1 : 0, 0));
         	break;
         case 6:  //unloading
-        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, ID.B.Crane_Nbt, !btnNbt ? 1 : 0, 0));
+        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, C2SGUIPackets.PID.TileBtn, ID.B.Crane_Nbt, !btnNbt ? 1 : 0, 0));
         	break;
         case 7:  //redstone signal mode
-        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, ID.B.Crane_Red, btnRedMode + 1, 0));
+        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, C2SGUIPackets.PID.TileBtn, ID.B.Crane_Red, btnRedMode + 1, 0));
         	break;
         }
 	}

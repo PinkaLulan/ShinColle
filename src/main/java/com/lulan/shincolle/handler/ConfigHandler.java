@@ -2,12 +2,12 @@ package com.lulan.shincolle.handler;
 
 import java.io.File;
 
+import com.lulan.shincolle.reference.Reference;
+
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-
-import com.lulan.shincolle.reference.Reference;
 
 
 public class ConfigHandler
@@ -31,7 +31,6 @@ public class ConfigHandler
 	public static int kaitaiAmountSmall = 20;
 	public static int kaitaiAmountLarge = 20;
 	public static int baseCaressMorale = 15;
-	public static int volcoreGrudgeValue = 75;
 	public static int spawnBossNum = 2;
 	public static int spawnMobNum = 4;
 	public static int chunkloaderMode = 2;
@@ -46,7 +45,7 @@ public class ConfigHandler
 						   propBossSmall, propBossLarge, propMobSmall, propMobLarge, propGrudgeShip,
 						   propGrudgeAction, propAmmoShip, propAtkSpd, propAtkDly, propExp,
 						   propCustomSoundShip, propCustomSoundRate, propCustomSoundRate2,
-						   propShipyardSmall, propShipyardLarge;
+						   propShipyardSmall, propShipyardLarge, propVolCore;
 	
 	//SHIP SETTING
 	//                                                    HP, ATK, DEF, SPD, MOV, HIT
@@ -94,6 +93,7 @@ public class ConfigHandler
 	//shipyard setting                                   max storage, build speed, fuel magn
 	public static double[] shipyardSmall = new double[] {460800D,     48D,         1D};
 	public static double[] shipyardLarge = new double[] {1382400D,    48D,         1D};
+	public static double[] volCore = new double[] {      9600D,       16D,         240D};
 
 	//WORLD GEN
 	public static int polyOreBaseRate = 7;
@@ -152,17 +152,12 @@ public class ConfigHandler
 		//是否開啟若本語音
 		useWakamoto = config.getBoolean("Sound_Wakamoto", "general", true, "enable Wakamoto sound for particular ship");
 		
-		//深海火山怨念轉換值
-		volcoreGrudgeValue = config.getInt("VolcanoCore_Grudge", "general", 75, 1, 1000, "fuel value per grudge item in Abyssal Volcano Core");
-		
 		//野生艦隊生成數量
 		spawnBossNum = config.getInt("Spawn_Boss_Number", "general", 2, 1, 10, "large hostile ship (boss) number per spawn");
 		spawnMobNum = config.getInt("Spawn_Mob_Number", "general", 4, 1, 10, "small hostile ship number per spawn");
-			
 		
 		//是否開啟林業支援
 		enableForestry = config.getBoolean("Enable_Forestry", "inter-mod", true, "Enable Forestry module if Forestry exists: add bees and comb.");
-				
 				
 		//讀取 ship setting設定
 		canFlare = config.getBoolean("Can_Flare", "ship setting", true, "Can ship use Flare");
@@ -192,6 +187,7 @@ public class ConfigHandler
 		propCustomSoundRate2 = config.get("ship setting", "Custom_Sound_Rate2", customSoundRate2, "Custom sound by mod author, the priority is customSoundRate > customSoundRate2, you can set this sound rate to 0 (except ship id!!) or add your setting in 'customSoundRate' to disable this setting.");
 		propShipyardSmall = config.get("ship setting", "Shipyard_Small", shipyardSmall, "Small shipyard: max fuel storage, build speed, fuel magnification");
 		propShipyardLarge = config.get("ship setting", "Shipyard_Large", shipyardLarge, "Large shipyard: max fuel storage, build speed, fuel magnification");
+		propVolCore = config.get("general", "Vol_Core", volCore, "Volcano Core: max fuel storage, fuel consume speed, fuel value per grudge item");
 		
 		//ship vs ship damage modifier
 		dmgSvS = config.getInt("SVS_DmgTaken", "ship setting", 100, 0, 10000, "Ship vs Ship damage modifier, 20 = damage * 20% ");
@@ -221,6 +217,7 @@ public class ConfigHandler
 		mobSpawn = getIntArrayFromConfig(mobSpawn, propMobSpawn);
 		shipyardSmall = getDoubleArrayFromConfig(shipyardSmall, propShipyardSmall);
 		shipyardLarge = getDoubleArrayFromConfig(shipyardLarge, propShipyardLarge);
+		volCore = getDoubleArrayFromConfig(volCore, propVolCore);
 		
 		setCustomSoundValue();
 		

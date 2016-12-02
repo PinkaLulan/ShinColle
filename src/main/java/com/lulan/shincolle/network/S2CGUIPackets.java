@@ -79,6 +79,7 @@ public class S2CGUIPackets implements IMessage
 		public static final byte TileVolCore = 14;
 		public static final byte TileWaypoint = 15;
 		public static final byte TileCrane = 16;
+		public static final byte SyncPlayerProp_Misc = 17;
 	}
 	
 	
@@ -183,8 +184,7 @@ public class S2CGUIPackets implements IMessage
 			this.valueInt1 = PacketHelper.readIntArray(buf, 7);
 		break;
 		case PID.TileVolCore:	//sync tile volcano core
-			this.valueInt1 = PacketHelper.readIntArray(buf, 4);
-			this.valueBoolean = buf.readBoolean();
+			this.valueInt1 = PacketHelper.readIntArray(buf, 5);
 		break;
 		case PID.TileWaypoint:	//sync tile waypoint
 			this.valueInt1 = PacketHelper.readIntArray(buf, 9);
@@ -197,28 +197,39 @@ public class S2CGUIPackets implements IMessage
 			this.valueInt1 = PacketHelper.readIntArray(buf, 4);
 		break;
 		case PID.SyncPlayerProp: //sync player props
-			this.valueInt1 = new int[4+9+12];
+			this.valueInt1 = new int[5+9+12];
 			this.valueBoolean1 = new boolean[6];
 			
-			//int 0~3: misc data
+			//int 0~4: misc data
 			this.valueInt1[0] = buf.readByte();	//0: ring active
-			this.valueInt1[1] = buf.readInt();	//1: marriage num
-			this.valueInt1[2] = buf.readInt();	//2: player uid
-			this.valueInt1[3] = buf.readInt();	//3: current team id
+			this.valueInt1[1] = buf.readByte();	//1: has team flag
+			this.valueInt1[2] = buf.readInt();	//2: marriage num
+			this.valueInt1[3] = buf.readInt();	//3: player uid
+			this.valueInt1[4] = buf.readByte();	//4: current team id
 			
-			//int 4~12: formation id
+			//int 5~13: formation id
 			for (int i = 0; i < 9 ; ++i)
 			{
-				this.valueInt1[i + 4] = buf.readByte();
+				this.valueInt1[i + 5] = buf.readByte();
 			}
 			
-			//int 13~24: ship team eid+uid, boolean 0~6: select state
+			//int 14~25: ship team eid+uid, boolean 0~6: select state
 			for (int j = 0; j < 6; ++j)
 			{
-				this.valueInt1[j * 2 + 13] = buf.readInt();	//ship i entity ID
-				this.valueInt1[j * 2 + 14] = buf.readInt();	//ship i ship UID
+				this.valueInt1[j * 2 + 14] = buf.readInt();	//ship i entity ID
+				this.valueInt1[j * 2 + 15] = buf.readInt();	//ship i ship UID
 				this.valueBoolean1[j] = buf.readBoolean();	//ship i select state
 			}
+		break;
+		case PID.SyncPlayerProp_Misc: //sync player props misc data
+			this.valueInt1 = new int[5];
+			
+			//int 0~4: misc data
+			this.valueInt1[0] = buf.readByte();	//0: ring active
+			this.valueInt1[1] = buf.readByte();	//1: has team flag
+			this.valueInt1[2] = buf.readInt();	//2: marriage num
+			this.valueInt1[3] = buf.readInt();	//3: player uid
+			this.valueInt1[4] = buf.readByte();	//4: current team id
 		break;
 		case PID.FlagInitSID:	//ship UID init flag
 			this.valueBoolean = buf.readBoolean();
@@ -391,10 +402,10 @@ public class S2CGUIPackets implements IMessage
 			buf.writeInt(tile2.getPos().getX());
 			buf.writeInt(tile2.getPos().getY());
 			buf.writeInt(tile2.getPos().getZ());
-			buf.writeInt(tile2.guiFunc);
-			buf.writeInt(tile2.book_chap);
-			buf.writeInt(tile2.book_page);
-			buf.writeInt(tile2.radar_zoomLv);
+			buf.writeInt(tile2.getField(0));
+			buf.writeInt(tile2.getField(1));
+			buf.writeInt(tile2.getField(2));
+			buf.writeInt(tile2.getField(3));
 		}
 		break;
 		case PID.TileVolCore: //sync tile volcano core
@@ -405,7 +416,7 @@ public class S2CGUIPackets implements IMessage
 			buf.writeInt(tile2.getPos().getY());
 			buf.writeInt(tile2.getPos().getZ());
 			buf.writeInt(tile2.getPowerRemained());
-			buf.writeBoolean(tile2.isActive);
+			buf.writeInt(tile2.getField(0));
 		}
 		break;
 		case PID.TileCrane: //sync tile crane
@@ -449,21 +460,22 @@ public class S2CGUIPackets implements IMessage
 			buf.writeInt(tile2.getPos().getX());
 			buf.writeInt(tile2.getPos().getY());
 			buf.writeInt(tile2.getPos().getZ());
-			buf.writeInt(tile2.lx);
-			buf.writeInt(tile2.ly);
-			buf.writeInt(tile2.lz);
-			buf.writeInt(tile2.nx);
-			buf.writeInt(tile2.ny);
-			buf.writeInt(tile2.nz);
+			buf.writeInt(tile2.getLastWaypoint().getX());
+			buf.writeInt(tile2.getLastWaypoint().getY());
+			buf.writeInt(tile2.getLastWaypoint().getZ());
+			buf.writeInt(tile2.getNextWaypoint().getX());
+			buf.writeInt(tile2.getNextWaypoint().getY());
+			buf.writeInt(tile2.getNextWaypoint().getZ());
 		}
 		break;
 		case PID.SyncPlayerProp:	//sync player props
 		{
 			//misc data
-			buf.writeByte(capa.isRingActiveI());
+			buf.writeByte(capa.isRingActive() ? 1 : 0);
+			buf.writeByte(capa.hasTeam() ? 1 : 0);
 			buf.writeInt(capa.getMarriageNum());
 			buf.writeInt(capa.getPlayerUID());
-			buf.writeInt(capa.getPointerTeamID());
+			buf.writeByte(capa.getPointerTeamID());
 			
 			//ship formation id
 			int[] fid = capa.getFormatID();
@@ -491,6 +503,16 @@ public class S2CGUIPackets implements IMessage
 				//get select state
 				buf.writeBoolean(capa.getSelectStateCurrentTeam(i));
 			}
+		}
+		break;
+		case PID.SyncPlayerProp_Misc:	//sync player props misc data
+		{
+			//misc data
+			buf.writeByte(capa.isRingActive() ? 1 : 0);
+			buf.writeByte(capa.hasTeam() ? 1 : 0);
+			buf.writeInt(capa.getMarriageNum());
+			buf.writeInt(capa.getPlayerUID());
+			buf.writeByte(capa.getPointerTeamID());
 		}
 		break;
 		case PID.SyncShipInv:	//sync ship inventory GUI: kills and grudge
@@ -750,7 +772,7 @@ public class S2CGUIPackets implements IMessage
 			if (tile instanceof TileEntityVolCore)
 			{
 				((TileEntityVolCore) tile).setPowerRemained(msg.valueInt1[3]);
-				((TileEntityVolCore) tile).isActive = msg.valueBoolean;
+				((TileEntityVolCore) tile).setField(0, msg.valueInt1[4]);
 			}
 		}
 		break;
@@ -801,8 +823,8 @@ public class S2CGUIPackets implements IMessage
 		break;
 		case PID.SyncPlayerProp: //sync player props
 		{
-			int[] misc = new int[3];
-			for (int i = 0; i < 3; i++)
+			int[] misc = new int[5];
+			for (int i = 0; i < 5; i++)
 			{
 				misc[i] = msg.valueInt1[i];
 			}
@@ -810,19 +832,25 @@ public class S2CGUIPackets implements IMessage
 			int[] formatID = new int[9];
 			for (int i = 0; i < 9; i++)
 			{
-				formatID[i] = msg.valueInt1[i + 3];
+				formatID[i] = msg.valueInt1[i + 5];
 			}
 
 			int[] shipList = new int[12];
 			for (int i = 0; i < 6; i++)
 			{
-				shipList[i * 2] = msg.valueInt1[i * 2 + 13];
-				shipList[i * 2 + 1] = msg.valueInt1[i * 2 + 14];
+				shipList[i * 2] = msg.valueInt1[i * 2 + 14];
+				shipList[i * 2 + 1] = msg.valueInt1[i * 2 + 15];
 			}
 			
 			//set value
 			CapaTeitoku.setCapaDataMisc(misc);
-			CapaTeitoku.setCapaDataTeamList(msg.valueInt1[3], formatID, shipList, msg.valueBoolean1);
+			CapaTeitoku.setCapaDataTeamList(msg.valueInt1[4], formatID, shipList, msg.valueBoolean1);
+		}
+		break;
+		case PID.SyncPlayerProp_Misc: //sync player props
+		{
+			//set value
+			CapaTeitoku.setCapaDataMisc(msg.valueInt1);
 		}
 		break;
 		case PID.SyncShipInv:	//sync ship GUI

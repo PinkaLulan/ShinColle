@@ -1,19 +1,17 @@
 package com.lulan.shincolle.utility;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityFurnace;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidContainerRegistry;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.IFluidContainerItem;
-
-import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.BasicTileInventory;
 import com.lulan.shincolle.tileentity.ITileFurnace;
 import com.lulan.shincolle.tileentity.ITileLiquidFurnace;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
+
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntityFurnace;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidContainerRegistry;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.IFluidContainerItem;
 
 public class TileEntityHelper
 {
@@ -238,7 +236,7 @@ public class TileEntityHelper
 	}
 	
 	/**增減large shipyard的matBuild[] */
-	private static void setLargeShipyardBuildMats(TileMultiGrudgeHeavy tile, int button, int matType, int value)
+	public static void setLargeShipyardBuildMats(TileMultiGrudgeHeavy tile, int button, int matType, int value)
 	{
 		//null check
 		if (tile == null) return;
@@ -292,90 +290,6 @@ public class TileEntityHelper
 			tile.addMatStock(matType, num);
 		}
 		
-	}
-	
-	/**process tile GUI click */
-	public static void setTileEntityByGUI(TileEntity tile, int button, int value, int value2)
-	{
-		if (tile instanceof TileEntitySmallShipyard)
-		{
-			TileEntitySmallShipyard smalltile = (TileEntitySmallShipyard) tile;
-			smalltile.setBuildType(value);
-			
-			//set build record
-			if (value == ID.Build.EQUIP_LOOP || value == ID.Build.SHIP_LOOP)
-			{
-				int[] getMat = new int[] {0,0,0,0};
-				
-				for (int i = 0; i < 4; i++)
-				{
-					if (smalltile.getStackInSlot(i) != null)
-					{
-						getMat[i] = smalltile.getStackInSlot(i).stackSize;
-					}
-				}
-				
-				smalltile.setBuildRecord(getMat);
-			}
-			
-			return;
-		}
-		else if (tile instanceof TileMultiGrudgeHeavy)
-		{
-			switch (button)
-			{
-			case ID.B.Shipyard_Type:		//build type
-				((TileMultiGrudgeHeavy) tile).setBuildType(value);
-				break;
-			case ID.B.Shipyard_InvMode:		//select inventory mode
-				((TileMultiGrudgeHeavy) tile).setInvMode(value);
-				break;
-			case ID.B.Shipyard_SelectMat:	//select material
-				((TileMultiGrudgeHeavy) tile).setSelectMat(value);
-				break;
-			case ID.B.Shipyard_INCDEC:		//material inc,dec
-				setLargeShipyardBuildMats((TileMultiGrudgeHeavy) tile, button, value, value2);
-				break;
-			}
-		}
-//		else if(tile instanceof TileEntityCrane) {
-//			switch(button) {
-//			case ID.B.Crane_Load:
-//				((TileEntityCrane)tile).enabLoad = value == 0 ? false : true;
-//				break;
-//			case ID.B.Crane_Unload:
-//				((TileEntityCrane)tile).enabUnload = value == 0 ? false : true;
-//				break;
-//			case ID.B.Crane_Power:
-//				((TileEntityCrane)tile).isActive = value == 0 ? false : true;
-//				
-//				//power off, clear ship
-//				if(!((TileEntityCrane)tile).isActive) {
-//					((TileEntityCrane)tile).ship = null;
-//				}
-//				break;
-//			case ID.B.Crane_Meta:
-//				((TileEntityCrane)tile).checkMetadata = value == 0 ? false : true;
-//				break;
-//			case ID.B.Crane_Dict:
-//				((TileEntityCrane)tile).checkOredict = value == 0 ? false : true;
-//				break;
-//			case ID.B.Crane_Mode:
-//				((TileEntityCrane)tile).craneMode = value;
-//				break;
-//			case ID.B.Crane_Nbt:
-//				((TileEntityCrane)tile).checkNbt = value == 0 ? false : true;
-//				break;
-//			case ID.B.Crane_Red:
-//				if (value > 2) value = 0;
-//				((TileEntityCrane)tile).redMode = value;
-//				break;
-//			}
-//		}
-		else
-		{
-			LogHelper.info("DEBUG : set tile entity by GUI fail: tile: "+tile);
-		}	
 	}
 	
 

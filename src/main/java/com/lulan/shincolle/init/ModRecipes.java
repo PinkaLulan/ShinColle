@@ -3,17 +3,19 @@ package com.lulan.shincolle.init;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
-import cpw.mods.fml.common.registry.GameRegistry;
 
-public class ModRecipes {
+public class ModRecipes
+{
 	//配方範例
 	//GameRegistry.addSmelting(取得物, 材料, 0.1f經驗);
 	//GameRegistry.addRecipe(new ShapedOreRecipe(取得物, " s ", "sss", " s ", 's', "stickWood" 材料陣列));
     //GameRegistry.addRecipe(new ShapelessOreRecipe(取得物, 材料A, 材料B, ...));		
-	public static void init() {
+	public static void init()
+	{
 		//配方材料or成品
 		ItemStack abyssiumBlock = new ItemStack(ModBlocks.BlockAbyssium);
 		ItemStack abyssiumNugget = new ItemStack(ModItems.AbyssNugget, 1, 0);
@@ -33,7 +35,7 @@ public class ModRecipes {
 		ItemStack ammoHeavy8 = new ItemStack(ModItems.Ammo,8,2);
 		ItemStack ammoHeavy9 = new ItemStack(ModItems.Ammo,9,2);
 		ItemStack ammoHeavyContainer = new ItemStack(ModItems.Ammo,1,3);
-		ItemStack blazepowderStack = new ItemStack(Items.blaze_powder);
+		ItemStack blazepowderStack = new ItemStack(Items.BLAZE_POWDER);
 		ItemStack bucketRepairStack = new ItemStack(ModItems.BucketRepair);	
 		ItemStack desk = new ItemStack(ModBlocks.BlockDesk);
 		ItemStack deskBook = new ItemStack(ModItems.DeskItemBook);
@@ -43,10 +45,10 @@ public class ModRecipes {
 		ItemStack grudeBlock = new ItemStack(ModBlocks.BlockGrudge);
 		ItemStack grudeBlock9 = new ItemStack(ModBlocks.BlockGrudge,9,0);
 		ItemStack grudeHeavyBlock = new ItemStack(ModBlocks.BlockGrudgeHeavy);
-		ItemStack gunpowderStack = new ItemStack(Items.gunpowder);
+		ItemStack gunpowderStack = new ItemStack(Items.GUNPOWDER);
 		ItemStack instantMat8 = new ItemStack(ModItems.InstantConMat, 8);
 		ItemStack instantMat32 = new ItemStack(ModItems.InstantConMat, 64);
-		ItemStack ironBlock = new ItemStack(Blocks.iron_block);
+		ItemStack ironBlock = new ItemStack(Blocks.IRON_BLOCK);
 		ItemStack kaitaiHammerNew = new ItemStack(ModItems.KaitaiHammer);
 		ItemStack kaitaiHammerAll = new ItemStack(ModItems.KaitaiHammer, 1, OreDictionary.WILDCARD_VALUE);
 		ItemStack modernKit = new ItemStack(ModItems.ModernKit);
@@ -86,7 +88,7 @@ public class ModRecipes {
 		//SHAPELESS RECIPE
 		//abyssium material:
 		GameRegistry.addRecipe(new ShapelessOreRecipe(abyssiumStack, "ingotIron", grudeStack));
-		GameRegistry.addRecipe(new ShapelessOreRecipe(bucketRepairStack, Items.lava_bucket, grudeStack));		
+		GameRegistry.addRecipe(new ShapelessOreRecipe(bucketRepairStack, Items.LAVA_BUCKET, grudeStack));		
 		//1 item to N items
 		GameRegistry.addRecipe(new ShapelessOreRecipe(ammo9, ammoContainer));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(ammoHeavy9, ammoHeavyContainer));
@@ -104,17 +106,19 @@ public class ModRecipes {
 		GameRegistry.addRecipe(new ShapelessOreRecipe(instantMat8, kaitaiHammerAll, shipEggS));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(instantMat32, kaitaiHammerAll, shipEggL));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(modernKit, kaitaiHammerAll, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg));
-		GameRegistry.addRecipe(new ShapelessOreRecipe(ownerPaper, grudeStack, Items.paper));
-		GameRegistry.addRecipe(new ShapelessOreRecipe(waypoint, grudeStack, Items.stick));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(ownerPaper, grudeStack, Items.PAPER));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(waypoint, grudeStack, Items.STICK));
 		//combat ration
-		GameRegistry.addRecipe(new ShapelessOreRecipe(ration0, Items.bread, Items.golden_carrot, grudeStack, "cropRice"));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(ration0, Items.BREAD, Items.GOLDEN_CARROT, grudeStack, "cropRice"));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(ration1, ration0, ModBlocks.BlockGrudge, ModBlocks.BlockPolymetalGravel));
-		GameRegistry.addRecipe(new ShapelessOreRecipe(ration2, Items.cooked_chicken, Items.golden_carrot, grudeStack, "cropRice"));
-		GameRegistry.addRecipe(new ShapelessOreRecipe(ration2, Items.cooked_beef, Items.golden_carrot, grudeStack, "cropRice"));
-		GameRegistry.addRecipe(new ShapelessOreRecipe(ration2, Items.cooked_fished, Items.golden_carrot, grudeStack, "cropRice"));
-		GameRegistry.addRecipe(new ShapelessOreRecipe(ration2, Items.cooked_porkchop, Items.golden_carrot, grudeStack, "cropRice"));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(ration2, Items.COOKED_BEEF, Items.GOLDEN_CARROT, grudeStack, "cropRice"));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(ration2, Items.COOKED_CHICKEN, Items.GOLDEN_CARROT, grudeStack, "cropRice"));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(ration2, Items.COOKED_FISH, Items.GOLDEN_CARROT, grudeStack, "cropRice"));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(ration2, Items.COOKED_MUTTON, Items.GOLDEN_CARROT, grudeStack, "cropRice"));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(ration2, Items.COOKED_PORKCHOP, Items.GOLDEN_CARROT, grudeStack, "cropRice"));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(ration2, Items.COOKED_RABBIT, Items.GOLDEN_CARROT, grudeStack, "cropRice"));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(ration3, ration2, ModBlocks.BlockGrudge, ModBlocks.BlockPolymetalGravel));
-		GameRegistry.addRecipe(new ShapelessOreRecipe(ration4, Items.snowball, Items.snowball, Items.snowball, Items.snowball, Items.milk_bucket, ModItems.Grudge));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(ration4, Items.SNOWBALL, Items.SNOWBALL, Items.SNOWBALL, Items.SNOWBALL, Items.MILK_BUCKET, ModItems.Grudge));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(ration5, ration4, ModBlocks.BlockGrudge));
 		
 		//SHAPED RECIPE
@@ -152,41 +156,43 @@ public class ModRecipes {
 		GameRegistry.addRecipe(new ShapedOreRecipe(polymetalBlock,"aaa","aaa","aaa",'a',polymetalStack));
 		GameRegistry.addRecipe(new ShapedOreRecipe(polymetalStack,"aaa","aaa","aaa",'a',polymetalNugget));
 		//desk item
-		GameRegistry.addRecipe(new ShapedOreRecipe(desk,"abc","ooo","o o",'a',deskRadar,'b',deskBook,'c',Blocks.wool,'o',Blocks.obsidian));
-		GameRegistry.addRecipe(new ShapedOreRecipe(deskBook,"ggg","gbg","ggg",'g',grudeStack,'b',Items.writable_book));
-		GameRegistry.addRecipe(new ShapedOreRecipe(deskRadar,"ggg","gbg","ggg",'g',grudeStack,'b',Items.compass));
+		GameRegistry.addRecipe(new ShapedOreRecipe(desk,"abc","ooo","o o",'a',deskRadar,'b',deskBook,'c',Blocks.WOOL,'o',Blocks.OBSIDIAN));
+		GameRegistry.addRecipe(new ShapedOreRecipe(deskBook,"ggg","gbg","ggg",'g',grudeStack,'b',Items.WRITABLE_BOOK));
+		GameRegistry.addRecipe(new ShapedOreRecipe(deskRadar,"ggg","gbg","ggg",'g',grudeStack,'b',Items.COMPASS));
 		//small shipyard
-		GameRegistry.addRecipe(new ShapedOreRecipe(smallshipyardStack,"glg","lol","ooo",'g',grudeStack,'l',Items.lava_bucket,'o',Blocks.obsidian));
+		GameRegistry.addRecipe(new ShapedOreRecipe(smallshipyardStack,"glg","lol","ooo",'g',grudeStack,'l',Items.LAVA_BUCKET,'o',Blocks.OBSIDIAN));
 		//marriage ring
-		GameRegistry.addRecipe(new ShapedOreRecipe(ring,"asa","a a","aaa",'s',Items.nether_star,'a',abyssiumStack));
+		GameRegistry.addRecipe(new ShapedOreRecipe(ring,"asa","a a","aaa",'s',Items.NETHER_STAR,'a',abyssiumStack));
 		//kaitai hammer
-		GameRegistry.addRecipe(new ShapedOreRecipe(kaitaiHammerNew,"aaa","aaa"," s ",'s',Items.stick,'a',abyssiumStack));
+		GameRegistry.addRecipe(new ShapedOreRecipe(kaitaiHammerNew,"aaa","aaa"," s ",'s',Items.STICK,'a',abyssiumStack));
 		//pointer staff
 		GameRegistry.addRecipe(new ShapedOreRecipe(pointer,"  g"," p ","p  ",'g',grudeBlock,'p',polymetalStack));
 		//toy plane
 		GameRegistry.addRecipe(new ShapedOreRecipe(toyplane," a ","aaa"," a ",'a',polymetalStack));
 		//goddess
-		GameRegistry.addRecipe(new ShapedOreRecipe(repairGoddess,"hgh","gdg","hgh",'d',Blocks.diamond_block,'g',grudeBlock,'h',grudeHeavyBlock));
-		GameRegistry.addRecipe(new ShapedOreRecipe(repairGoddess,"ghg","hdh","ghg",'d',Blocks.diamond_block,'g',grudeBlock,'h',grudeHeavyBlock));
+		GameRegistry.addRecipe(new ShapedOreRecipe(repairGoddess,"hgh","gdg","hgh",'d',Blocks.DIAMOND_BLOCK,'g',grudeBlock,'h',grudeHeavyBlock));
+		GameRegistry.addRecipe(new ShapedOreRecipe(repairGoddess,"ghg","hdh","ghg",'d',Blocks.DIAMOND_BLOCK,'g',grudeBlock,'h',grudeHeavyBlock));
 		//wrench
 		GameRegistry.addRecipe(new ShapedOreRecipe(wrench,"a a","aaa"," a ",'a',abyssiumStack));
 		//volcano block
-		GameRegistry.addRecipe(new ShapedOreRecipe(volblock,"gog","olo","gog",'g',grudeHeavyBlock,'l',Items.lava_bucket,'o',Blocks.obsidian));
-		GameRegistry.addRecipe(new ShapedOreRecipe(volblock,"gog","olo","gog",'g',Blocks.obsidian,'l',Items.lava_bucket,'o',grudeHeavyBlock));
-		GameRegistry.addRecipe(new ShapedOreRecipe(volcore,"gog","olo","gog",'g',volblock,'l',Items.lava_bucket,'o',Blocks.obsidian));
-		GameRegistry.addRecipe(new ShapedOreRecipe(volcore,"gog","olo","gog",'g',Blocks.obsidian,'l',Items.lava_bucket,'o',volblock));
+		GameRegistry.addRecipe(new ShapedOreRecipe(volblock,"gog","olo","gog",'g',grudeHeavyBlock,'l',Items.LAVA_BUCKET,'o',Blocks.OBSIDIAN));
+		GameRegistry.addRecipe(new ShapedOreRecipe(volblock,"gog","olo","gog",'g',Blocks.OBSIDIAN,'l',Items.LAVA_BUCKET,'o',grudeHeavyBlock));
+		GameRegistry.addRecipe(new ShapedOreRecipe(volcore,"gog","olo","gog",'g',volblock,'l',Items.LAVA_BUCKET,'o',Blocks.OBSIDIAN));
+		GameRegistry.addRecipe(new ShapedOreRecipe(volcore,"gog","olo","gog",'g',Blocks.OBSIDIAN,'l',Items.LAVA_BUCKET,'o',volblock));
 		//frame
-		GameRegistry.addRecipe(new ShapedOreRecipe(frame16,"a a"," o ","a a",'o',Blocks.obsidian,'a',abyssiumStack));
+		GameRegistry.addRecipe(new ShapedOreRecipe(frame16,"a a"," o ","a a",'o',Blocks.OBSIDIAN,'a',abyssiumStack));
 		//crane
-		GameRegistry.addRecipe(new ShapedOreRecipe(crane,"aaa","aga","apa",'a',abyssiumStack,'p',Blocks.piston,'g',grudeBlock));
+		GameRegistry.addRecipe(new ShapedOreRecipe(crane,"aaa","aga","apa",'a',abyssiumStack,'p',Blocks.PISTON,'g',grudeBlock));
 		
 		
 		//combat ration TODO random furnace recipe
-		GameRegistry.addRecipe(new ShapedOreRecipe(ration0,"www","bgc","www",'b',Items.bread,'c',Items.golden_carrot,'g',grudeStack,'w',Items.wheat));
-		GameRegistry.addRecipe(new ShapedOreRecipe(ration2,"www","bgc","www",'b',Items.cooked_beef,'c',Items.golden_carrot,'g',grudeStack,'w',Items.wheat));
-		GameRegistry.addRecipe(new ShapedOreRecipe(ration2,"www","bgc","www",'b',Items.cooked_porkchop,'c',Items.golden_carrot,'g',grudeStack,'w',Items.wheat));
-		GameRegistry.addRecipe(new ShapedOreRecipe(ration2,"www","bgc","www",'b',Items.cooked_fished,'c',Items.golden_carrot,'g',grudeStack,'w',Items.wheat));
-		GameRegistry.addRecipe(new ShapedOreRecipe(ration2,"www","bgc","www",'b',Items.cooked_chicken,'c',Items.golden_carrot,'g',grudeStack,'w',Items.wheat));
+		GameRegistry.addRecipe(new ShapedOreRecipe(ration0,"www","bgc","www",'b',Items.BREAD,'c',Items.GOLDEN_CARROT,'g',grudeStack,'w',Items.WHEAT));
+		GameRegistry.addRecipe(new ShapedOreRecipe(ration2,"www","bgc","www",'b',Items.COOKED_BEEF,'c',Items.GOLDEN_CARROT,'g',grudeStack,'w',Items.WHEAT));
+		GameRegistry.addRecipe(new ShapedOreRecipe(ration2,"www","bgc","www",'b',Items.COOKED_CHICKEN,'c',Items.GOLDEN_CARROT,'g',grudeStack,'w',Items.WHEAT));
+		GameRegistry.addRecipe(new ShapedOreRecipe(ration2,"www","bgc","www",'b',Items.COOKED_FISH,'c',Items.GOLDEN_CARROT,'g',grudeStack,'w',Items.WHEAT));
+		GameRegistry.addRecipe(new ShapedOreRecipe(ration2,"www","bgc","www",'b',Items.COOKED_MUTTON,'c',Items.GOLDEN_CARROT,'g',grudeStack,'w',Items.WHEAT));
+		GameRegistry.addRecipe(new ShapedOreRecipe(ration2,"www","bgc","www",'b',Items.COOKED_PORKCHOP,'c',Items.GOLDEN_CARROT,'g',grudeStack,'w',Items.WHEAT));
+		GameRegistry.addRecipe(new ShapedOreRecipe(ration2,"www","bgc","www",'b',Items.COOKED_RABBIT,'c',Items.GOLDEN_CARROT,'g',grudeStack,'w',Items.WHEAT));
 		
 	}
 

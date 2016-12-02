@@ -1,6 +1,6 @@
 package com.lulan.shincolle.client.render.block;
 
-import com.lulan.shincolle.client.model.ModelSmallShipyard;
+import com.lulan.shincolle.client.model.ModelBlockDesk;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.tileentity.BasicTileEntity;
 
@@ -11,19 +11,18 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RenderSmallShipyard extends TileEntitySpecialRenderer<BasicTileEntity>
+public class RenderDesk extends TileEntitySpecialRenderer<BasicTileEntity>
 {
 
 	//貼圖檔路徑
-	private static final ResourceLocation textureOn = new ResourceLocation(Reference.TEXTURES_BLOCKS+"BlockSmallShipyardOn.png");
-	private static final ResourceLocation textureOff = new ResourceLocation(Reference.TEXTURES_BLOCKS+"BlockSmallShipyardOff.png");
+	private static final ResourceLocation TEXTURE = new ResourceLocation(Reference.TEXTURES_BLOCKS+"BlockDesk.png");
 		
-	private final ModelSmallShipyard model;
+	private ModelBlockDesk model;
 
 	
-	public RenderSmallShipyard()
+	public RenderDesk()
 	{
-		this.model = new ModelSmallShipyard();
+		this.model = new ModelBlockDesk();
 	}
 	
 	@Override
@@ -32,7 +31,6 @@ public class RenderSmallShipyard extends TileEntitySpecialRenderer<BasicTileEnti
 		//get blockstate: get real meta if tile exist in world, or get meta = -1
 		int meta = tile.getRenderMetadata();
 		
-		ResourceLocation textures = (meta <= -1 || meta > 7 ? textureOn : textureOff);
 		float angle = 0;	//0=north 90=east 180=south -90=west
 		
 		switch (meta)
@@ -51,13 +49,13 @@ public class RenderSmallShipyard extends TileEntitySpecialRenderer<BasicTileEnti
 			break;		
 		}
 		
-		this.bindTexture(textures);
+		this.bindTexture(TEXTURE);
 		
 		GlStateManager.pushMatrix();
 			GlStateManager.translate((float)x+0.5F, (float)y+1.5F, (float)z+0.5F);
 			GlStateManager.rotate(180F, 0F, 0F, 1F);
 			GlStateManager.rotate(angle, 0F, 1F, 0F);
-			this.model.renderModel(0.0625F);  //避免renderModel裡面有平移旋轉  必須push pop一次以免不正常位移
+			this.model.render(0.0625F);  //避免renderModel裡面有平移旋轉  必須push pop一次以免不正常位移
 		GlStateManager.popMatrix();
 		
 	}

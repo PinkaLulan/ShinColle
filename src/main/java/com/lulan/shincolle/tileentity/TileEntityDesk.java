@@ -1,59 +1,82 @@
 package com.lulan.shincolle.tileentity;
 
-import net.minecraft.nbt.NBTTagCompound;
-
+import com.lulan.shincolle.block.BlockDesk;
 import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 
-import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
+import net.minecraft.nbt.NBTTagCompound;
 
-public class TileEntityDesk extends BasicTileLockable {
+public class TileEntityDesk extends BasicTileEntity
+{
 
-	public int guiFunc = 0;
-	
-	//radar
-	public int radar_zoomLv = 0;
-	
-	//book
-	public int book_chap = 0;
-	public int book_page = 0;
+	private int guiFunc = 0;
+	private int radar_zoomLv = 0;
+	private int book_chap = 0;
+	private int book_page = 0;
 	
 	
-	public TileEntityDesk() {
+	public TileEntityDesk()
+	{
 		super();
 	}
-
-	public boolean canUpdate() {
-        return false;
-    }
+	
+	@Override
+	public String getRegName()
+	{
+		return BlockDesk.TILENAME;
+	}
+	
+	@Override
+	public byte getGuiIntID()
+	{
+		return ID.Gui.ADMIRALDESK;
+	}
+	
+	@Override
+	public byte getPacketID(int type)
+	{
+		switch (type)
+		{
+		case 0:
+			return S2CGUIPackets.PID.TileDesk;
+		}
+		
+		return -1;
+	}
 	
 	//讀取nbt資料
 	@Override
-    public void readFromNBT(NBTTagCompound compound) {
-        super.readFromNBT(compound);	//從nbt讀取方塊的xyz座標
+    public void readFromNBT(NBTTagCompound nbt)
+	{
+        super.readFromNBT(nbt);	//從nbt讀取方塊的xyz座標
         
-        guiFunc = compound.getInteger("guiFunc");
-        radar_zoomLv = compound.getInteger("radarZoom");
-        book_chap = compound.getInteger("bookChap");
-        book_page = compound.getInteger("bookPage");
+        guiFunc = nbt.getInteger("guiFunc");
+        radar_zoomLv = nbt.getInteger("radarZoom");
+        book_chap = nbt.getInteger("bookChap");
+        book_page = nbt.getInteger("bookPage");
     }
 	
 	//將資料寫進nbt
 	@Override
-	public void writeToNBT(NBTTagCompound compound) {
-		super.writeToNBT(compound);
+	public NBTTagCompound writeToNBT(NBTTagCompound nbt)
+	{
+		super.writeToNBT(nbt);
 		
-		compound.setInteger("guiFunc", guiFunc);
-		compound.setInteger("radarZoom", radar_zoomLv);
-		compound.setInteger("bookChap", book_chap);
-		compound.setInteger("bookPage", book_page);
+		nbt.setInteger("guiFunc", guiFunc);
+		nbt.setInteger("radarZoom", radar_zoomLv);
+		nbt.setInteger("bookChap", book_chap);
+		nbt.setInteger("bookPage", book_page);
+		
+		return nbt;
 	}
 	
 	@Override
-	public void sendSyncPacketC2S() {
-		if(this.worldObj.isRemote) {
+	public void sendSyncPacketC2S()
+	{
+		if (this.worldObj.isRemote)
+		{
 			int[] data = new int[4];
 			data[0] = this.guiFunc;
 			data[1] = this.book_chap;
@@ -63,24 +86,67 @@ public class TileEntityDesk extends BasicTileLockable {
 		}
 	}
 	
-	@Override
-	public void sendSyncPacket() {
-		if(!this.worldObj.isRemote) {
-//			LogHelper.info("DEBUG : desk sync s2c "+this.guiFunc+" "+this.book_chap+" "+this.book_page);
-			TargetPoint point = new TargetPoint(this.worldObj.provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, 8D);
-			CommonProxy.channelG.sendToAllAround(new S2CGUIPackets(this), point);
-		}
-	}
-	
-	public void setSyncData(int[] data) {
-		if(data != null) {
-//			LogHelper.info("DEBUG : desk sync: "+data[1]);
+	public void setSyncData(int[] data)
+	{
+		if (data != null)
+		{
 			this.guiFunc = data[0];
 			this.book_chap = data[1];
 			this.book_page = data[2];
 			this.radar_zoomLv = data[3];
 		}
 	}
-	
 
+	/** FIELD相關方法
+	 *  使其他mod或class也能存取該tile的內部值
+	 *  ex: gui container可用get/setField來更新數值
+	 *  
+	 *  field id:
+	 *  0:gui function, 1:book chap, 2:book page, 3:radar zoom lv
+	 */
+	@Override
+	public int getField(int id)
+	{
+		switch (id)
+		{
+		case 0:
+			return this.guiFunc;
+		case 1:
+			return this.book_chap;
+		case 2:
+			return this.book_page;
+		case 3:
+			return this.radar_zoomLv;
+		default:
+			return 0;
+		}
+	}
+
+	@Override
+	public void setField(int id, int value)
+	{
+		switch (id)
+		{
+		case 0:
+			this.guiFunc = value;
+			break;
+		case 1:
+			this.book_chap = value;
+			break;
+		case 2:
+			this.book_page = value;
+			break;
+		case 3:
+			this.radar_zoomLv = value;
+			break;
+		}
+	}
+
+	@Override
+	public int getFieldCount()
+	{
+		return 4;
+	}
+	
+	
 }

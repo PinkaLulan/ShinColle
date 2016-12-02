@@ -8,7 +8,7 @@ import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
-import com.lulan.shincolle.tileentity.BasicTileLockable;
+import com.lulan.shincolle.tileentity.BasicTileEntity;
 import com.lulan.shincolle.tileentity.ITileWaypoint;
 import com.lulan.shincolle.tileentity.TileEntityCrane;
 import com.lulan.shincolle.utility.EntityHelper;
@@ -255,8 +255,8 @@ public class TargetWrench extends BasicItem
 						}
 						
 						//sync
-						((BasicTileLockable) wpFrom).sendSyncPacket();
-						((BasicTileLockable) wpTo).sendSyncPacket();
+						((BasicTileEntity) wpFrom).sendSyncPacket();
+						((BasicTileEntity) wpTo).sendSyncPacket();
 						
 						//clear data
 						resetPos();

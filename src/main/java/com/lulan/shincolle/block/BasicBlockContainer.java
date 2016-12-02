@@ -3,7 +3,7 @@ package com.lulan.shincolle.block;
 import javax.annotation.Nullable;
 
 import com.lulan.shincolle.ShinColle;
-import com.lulan.shincolle.tileentity.BasicTileLockable;
+import com.lulan.shincolle.tileentity.BasicTileEntity;
 
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.MapColor;
@@ -97,9 +97,9 @@ abstract public class BasicBlockContainer extends BasicBlock implements ITileEnt
         	TileEntity tile = world.getTileEntity(pos);
         	
         	//open gui
-        	if (tile instanceof BasicTileLockable && ((BasicTileLockable) tile).getGuiIntID() >= 0)
+        	if (tile instanceof BasicTileEntity && ((BasicTileEntity) tile).getGuiIntID() >= 0)
         	{
-        		player.openGui(ShinColle.instance, ((BasicTileLockable) tile).getGuiIntID(), world, pos.getX(), pos.getY(), pos.getZ());
+        		player.openGui(ShinColle.instance, ((BasicTileEntity) tile).getGuiIntID(), world, pos.getX(), pos.getY(), pos.getZ());
                 return true;
         	}
         }

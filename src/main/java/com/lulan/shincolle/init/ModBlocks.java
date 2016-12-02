@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.lulan.shincolle.block.BlockAbyssium;
 import com.lulan.shincolle.block.BlockCrane;
+import com.lulan.shincolle.block.BlockDesk;
 import com.lulan.shincolle.block.BlockFrame;
 import com.lulan.shincolle.block.BlockGrudge;
 import com.lulan.shincolle.block.BlockGrudgeHeavy;
@@ -13,6 +14,8 @@ import com.lulan.shincolle.block.BlockPolymetalGravel;
 import com.lulan.shincolle.block.BlockPolymetalOre;
 import com.lulan.shincolle.block.BlockSmallShipyard;
 import com.lulan.shincolle.block.BlockVolBlock;
+import com.lulan.shincolle.block.BlockVolCore;
+import com.lulan.shincolle.block.BlockWaypoint;
 import com.lulan.shincolle.block.ICustomModels;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.LogHelper;
@@ -57,7 +60,7 @@ public class ModBlocks
 		
 		BlockAbyssium = initBlocks(BlockAbyssium.class);
 		BlockCrane = initBlocks(BlockCrane.class);
-//		BlockDesk = initBlocks(BlockDesk.class);
+		BlockDesk = initBlocks(BlockDesk.class);
 		BlockFrame = initBlocks(BlockFrame.class);
 		BlockGrudge = initBlocks(BlockGrudge.class);
 		BlockGrudgeHeavy = initBlocks(BlockGrudgeHeavy.class);
@@ -68,8 +71,8 @@ public class ModBlocks
 		BlockPolymetalOre = initBlocks(BlockPolymetalOre.class);
 		BlockSmallShipyard = initBlocks(BlockSmallShipyard.class);
 		BlockVolBlock = initBlocks(BlockVolBlock.class);
-//		BlockVolCore = initBlocks(BlockVolCore.class);
-//		BlockWaypoint = initBlocks(BlockWaypoint.class);
+		BlockVolCore = initBlocks(BlockVolCore.class);
+		BlockWaypoint = initBlocks(BlockWaypoint.class);
 
 //		//fluid block
 ////		LightFluid = new Fluid("lightfluid");
@@ -78,10 +81,6 @@ public class ModBlocks
 ////		BlockLightFluid = new BasicBlockFluid(LightFluid, Material.water);
 //		GameRegistry.registerBlock(BlockLightFluid, "BlockLightFluid");
 ////		LightFluid.setUnlocalizedName(BlockLightFluid.getUnlocalizedName());
-//		
-//		//special itemblock
-//		//waypoint
-//		GameRegistry.registerBlock(BlockWaypoint, ItemBlockWaypoint.class, "BlockWaypoint");
 		
 	}
 	

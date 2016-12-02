@@ -1,71 +1,85 @@
 package com.lulan.shincolle.block;
 
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-
-import com.lulan.shincolle.ShinColle;
-import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.client.render.block.RenderDesk;
 import com.lulan.shincolle.tileentity.TileEntityDesk;
 
-import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.block.statemap.StateMap;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumBlockRenderType;
+import net.minecraft.world.World;
+import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BlockDesk extends BasicBlockContainer {
+public class BlockDesk extends BasicBlockFacingContainer
+{
+	
+	public static final String NAME = "BlockDesk";
+	public static final String TILENAME = "TileEntityDesk";
 	
 	
-	public BlockDesk() {
-		super(Material.rock); //不指定型態 預設即為rock
-		this.setBlockName("BlockDesk");
+	public BlockDesk()
+	{
+	    super();
+		this.setUnlocalizedName(NAME);
+		this.setRegistryName(NAME);
+		this.setHardness(1F);
+		this.setResistance(60F);
 	    this.setHarvestLevel("pickaxe", 0);
-	    this.setHardness(1F);
-	    this.setResistance(60F);
-	}
-
-	//非標準方形方塊  要傳-1表示用自己的render
-	@Override
-	public int getRenderType() {
-		return -1;	//-1 = non standard render
+	    
+        GameRegistry.register(this);
+        GameRegistry.register(new ItemBlock(this), this.getRegistryName());
+        GameRegistry.registerTileEntity(TileEntityDesk.class, TILENAME);
 	}
 	
-	//非標準方形方塊  設為false
 	@Override
-	public boolean isOpaqueCube() {
-		return false;
-	}
-	
-	//非標準方形方塊  設為false
-	@Override
-	public boolean renderAsNormalBlock() {
-		return false;
-	}
-
-	@Override
-	public TileEntity createNewTileEntity(World world, int meta) {
+	public TileEntity createNewTileEntity(World world, int meta)
+	{
 		return new TileEntityDesk();
 	}
 	
-	/**右鍵點到方塊時呼叫此方法
-	 * 參數: world,方塊x,y,z,玩家,玩家面向,玩家點到的x,y,z
-	 */	
+	//can drop items in inventory
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ) {
-		if (world.isRemote) {	//client端只需要收到true
-    		return true;
-    	}
-		else if(!player.isSneaking()) {  //server端: 按住shift不能點開方塊gui
-			TileEntity entity = world.getTileEntity(x, y, z);
-    		
-    		if (entity != null) {	//開啟方塊GUI 參數:玩家,mod instance,gui ID,world,座標xyz
-    			FMLNetworkHandler.openGui(player, ShinColle.instance, ID.G.ADMIRALDESK, world, x, y, z);
-    		}
-    		return true;
-    	}
-    	else {
-    		return false;
-    	}
+	public boolean canDropInventory(IBlockState state)
+	{
+		return false;
+	}
+	
+	@SideOnly(Side.CLIENT)
+    public void initModel()
+	{
+		super.initModel();
+		
+		//prevent property mapping to blockstate
+		ModelLoader.setCustomStateMapper(this, new StateMap.Builder().ignore(new IProperty[] {FACING}).build());
+				
+        //register tile entity render
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityDesk.class, new RenderDesk());
+    
+	}
+	
+	@Override
+    public EnumBlockRenderType getRenderType(IBlockState state)
+    {
+        return EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
     }
 	
+	@Override
+	public boolean isFullCube(IBlockState state)
+	{
+		return false;
+	}
+
+    @Override
+    public boolean isOpaqueCube(IBlockState state)
+    {
+        return false;
+    }
 	
 
 }

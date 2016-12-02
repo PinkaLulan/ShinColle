@@ -1,20 +1,17 @@
 package com.lulan.shincolle.tileentity;
 
+import com.lulan.shincolle.capability.CapaInventory;
+import com.lulan.shincolle.reference.Reference;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
 
-import com.lulan.shincolle.capability.CapaInventory;
-import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.Reference;
-
-abstract public class BasicTileInventory extends BasicTileLockable implements ISidedInventory
+abstract public class BasicTileInventory extends BasicTileEntity implements ISidedInventory
 {
 	
 	protected CapaInventory itemHandler;
@@ -223,11 +220,24 @@ abstract public class BasicTileInventory extends BasicTileLockable implements IS
 		return false;
 	}
 	
+
 	@Override
 	public void openInventory(EntityPlayer player) {}
 
 	@Override
 	public void closeInventory(EntityPlayer player) {}
+
+	@Override
+	public String getName()
+	{
+		return "tile." + Reference.MOD_ID + ":" + getRegName();
+	}
+
+	@Override
+	public boolean hasCustomName()
+	{
+		return false;
+	}
 	
 	/** FIELD相關方法
 	 *  使其他mod或class也能存取該tile的內部值
@@ -240,41 +250,16 @@ abstract public class BasicTileInventory extends BasicTileLockable implements IS
 	}
 
 	@Override
-	public void setField(int id, int value)
-	{
-	}
+	public void setField(int id, int value) {}
 
 	@Override
 	public int getFieldCount()
 	{
 		return 0;
 	}
-	
+
 	@Override
-	public void clear()
-	{
-	}
+	public void clear() {}
 	
-	@Override
-	public boolean hasCustomName()
-	{
-		return false;
-	}
-	
-	/** get registered name */
-	abstract public String getRegName();
-	
-	@Override
-	public String getName()
-	{
-		return "tile." + Reference.MOD_ID + ":" + getRegName();
-	}
-	
-	@Override
-	public ITextComponent getDisplayName()
-	{
-		return new TextComponentString(this.getName());
-	}
-	
-	
+
 }

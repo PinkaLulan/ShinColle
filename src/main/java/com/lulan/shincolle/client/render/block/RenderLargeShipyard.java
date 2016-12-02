@@ -3,7 +3,7 @@ package com.lulan.shincolle.client.render.block;
 import com.lulan.shincolle.client.model.ModelLargeShipyard;
 import com.lulan.shincolle.client.model.ModelVortex;
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.tileentity.BasicTileLockable;
+import com.lulan.shincolle.tileentity.BasicTileEntity;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -16,7 +16,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RenderLargeShipyard extends TileEntitySpecialRenderer<BasicTileLockable>
+public class RenderLargeShipyard extends TileEntitySpecialRenderer<BasicTileEntity>
 {
 
 	//貼圖檔路徑
@@ -36,7 +36,7 @@ public class RenderLargeShipyard extends TileEntitySpecialRenderer<BasicTileLock
 	}
 	
 	@Override
-	public void renderTileEntityAt(BasicTileLockable tile, double x, double y, double z, float partick, int deststage)
+	public void renderTileEntityAt(BasicTileEntity tile, double x, double y, double z, float partick, int deststage)
 	{
 		//get blockstate: get real meta if tile exist in world, or get meta = -1
 		int meta = tile.getRenderMetadata();

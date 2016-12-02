@@ -121,16 +121,16 @@ public class FML_COMMON_EventHandler
 						syncTeamList = true;
 					}
 					
-//					//TODO for DEBUG only
+					//TODO for DEBUG only
 //					ItemStack hitem = event.player.inventory.getCurrentItem();
-//					if(hitem != null && hitem.getItem() instanceof BasicEquip) {
-//						try {
-//							int[] rvalue = ((BasicEquip)hitem.getItem()).getRecycleValue(hitem.getItemDamage());
-//							LogHelper.info("DEBUG : player tick: AAAAAAAAAAAAA "+rvalue[0]+" "+rvalue[1]+" "+rvalue[2]+" "+rvalue[3]);
-//						}
-//						catch(Exception e) {
-//							LogHelper.info("DEBUG : player tick: BBBBBBBBBBBBB "+event.player.dimension);
-//						}
+//					try
+//					{
+//						LogHelper.info("DEBUG : player tick: AAAAAAAAAAAAA "+capa.player+" "+capa.needInit);
+//					}
+//					catch (Exception e)
+//					{
+//						LogHelper.info("DEBUG : player tick: BBBBBBBBBBBBB "+event.player.dimension);
+//						e.printStackTrace();
 //					}
 					
 					//every 128 ticks
@@ -718,11 +718,13 @@ public class FML_COMMON_EventHandler
 	{
 		/**load player extend data
 		 */
-		LogHelper.info("DEBUG : player login: "+event.player.getDisplayName()+" "+event.player.getUniqueID());
+		LogHelper.info("DEBUG : player login: "+event.player.getDisplayNameString()+" "+event.player.getUniqueID());
 		CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(event.player);
 		
 		if (capa != null)
 		{
+			if (capa.needInit) capa.init(event.player);
+			
 			if (!event.player.worldObj.isRemote)
 			{
 				/** update player id */
