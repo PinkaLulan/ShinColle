@@ -82,18 +82,7 @@ public class TileEntityDesk extends BasicTileEntity
 			data[1] = this.book_chap;
 			data[2] = this.book_page;
 			data[3] = this.radar_zoomLv;
-			CommonProxy.channelG.sendToServer(new C2SGUIPackets(this, ID.B.Desk_Sync, data));
-		}
-	}
-	
-	public void setSyncData(int[] data)
-	{
-		if (data != null)
-		{
-			this.guiFunc = data[0];
-			this.book_chap = data[1];
-			this.book_page = data[2];
-			this.radar_zoomLv = data[3];
+			CommonProxy.channelG.sendToServer(new C2SGUIPackets(this, C2SGUIPackets.PID.Desk_FuncSync, data));
 		}
 	}
 

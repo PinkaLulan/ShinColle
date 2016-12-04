@@ -115,7 +115,7 @@ public class GuiHandler implements IGuiHandler
 			capa = CapaTeitoku.getTeitokuCapability(player);
 			capa.sendSyncPacket(4);
 			
-			return new ContainerFormation(player.inventory, player);
+			return new ContainerFormation();
 		case ID.Gui.VOLCORE:	//GUI volcano core
 			tile = world.getTileEntity(new BlockPos(x, y, z));  //確定抓到entity才開ui 以免噴出NPE
 			

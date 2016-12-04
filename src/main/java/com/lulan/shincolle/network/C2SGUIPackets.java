@@ -8,12 +8,12 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.item.PointerItem;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.tileentity.TileEntityDesk;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.FormationHelper;
 import com.lulan.shincolle.utility.PacketHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 import com.lulan.shincolle.utility.TeamHelper;
-import com.lulan.shincolle.utility.TileEntityHelper;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
@@ -74,6 +74,7 @@ public class C2SGUIPackets implements IMessage
 		public static final byte Desk_Ban = 74;
 		public static final byte Desk_Unban = 75;
 		public static final byte Desk_Disband = 76;
+		public static final byte Desk_FuncSync = 77;
 	}
 	
 	
@@ -150,6 +151,10 @@ public class C2SGUIPackets implements IMessage
 			this.valueInt = PacketHelper.readIntArray(buf, 4);
 			this.valueByte = PacketHelper.readByteArray(buf, 3);
 		break;
+		case PID.Desk_FuncSync:	//tile entity gui sync
+			this.valueInt = PacketHelper.readIntArray(buf, 5);
+			this.valueByte = PacketHelper.readByteArray(buf, this.valueInt[4]);
+		break;
 		case PID.AddTeam:
 		case PID.AttackTarget:
 		case PID.ClearTeam:
@@ -193,12 +198,15 @@ public class C2SGUIPackets implements IMessage
 		switch (this.packetType)
 		{
 		case PID.ShipBtn:	//ship entity gui click
+		{
 			buf.writeInt(this.entity.getEntityId());
 			buf.writeInt(this.entity.worldObj.provider.getDimension());
 			buf.writeByte(this.valueInt[0]);
 			buf.writeByte(this.valueInt[1]);
+		}
 		break;
 		case PID.TileBtn:	//tile entity gui click
+		{
 			buf.writeInt(this.tile.getWorld().provider.getDimension());
 			buf.writeInt(this.tile.getPos().getX());
 			buf.writeInt(this.tile.getPos().getY());
@@ -206,6 +214,21 @@ public class C2SGUIPackets implements IMessage
 			buf.writeByte(this.valueInt[0]);
 			buf.writeByte(this.valueInt[1]);
 			buf.writeByte(this.valueInt[2]);
+		}
+		break;
+		case PID.Desk_FuncSync:	//tile entity gui sync
+		{
+			buf.writeInt(this.tile.getWorld().provider.getDimension());
+			buf.writeInt(this.tile.getPos().getX());
+			buf.writeInt(this.tile.getPos().getY());
+			buf.writeInt(this.tile.getPos().getZ());
+			buf.writeInt(this.valueInt.length);
+			
+			for (int val : this.valueInt)
+			{
+				buf.writeByte(val);
+			}
+		}
 		break;
 		case PID.AddTeam:
 		case PID.AttackTarget:
@@ -226,6 +249,7 @@ public class C2SGUIPackets implements IMessage
 		case PID.OpenItemGUI:
 		case PID.SwapShip:
 		case PID.HitHeight:
+		{
 			int length = this.valueInt.length + 2;
 			
 			buf.writeInt(length);
@@ -236,14 +260,17 @@ public class C2SGUIPackets implements IMessage
 			{
 				buf.writeInt(val);
 			}
+		}
 		break;
 		case PID.SetTarClass:
 		case PID.SetUnatkClass:
 		case PID.Desk_Create:
 		case PID.Desk_Rename:
+		{
 			buf.writeInt(this.entity.getEntityId());
 			buf.writeInt(this.entity.worldObj.provider.getDimension());
 			PacketHelper.sendString(buf, this.valueStr);
+		}
 		break;
 		}
 	}
@@ -276,6 +303,26 @@ public class C2SGUIPackets implements IMessage
 									msg.valueInt[1], msg.valueInt[2], msg.valueInt[3])),
 									msg.valueByte[0], msg.valueByte[1], msg.valueByte[2]);
 			}
+		break;
+		case PID.Desk_FuncSync:	//tile entity gui sync
+		{
+			world = ServerProxy.getServerWorld(msg.valueInt[0]);
+			
+			if (world != null)
+			{
+				TileEntity tile = world.getTileEntity(new BlockPos(msg.valueInt[1], msg.valueInt[2], msg.valueInt[3]));
+				
+				if (tile instanceof TileEntityDesk)
+				{
+					TileEntityDesk tile2 = (TileEntityDesk) tile;
+					
+					tile2.setField(0, msg.valueByte[0]);
+					tile2.setField(1, msg.valueByte[1]);
+					tile2.setField(2, msg.valueByte[2]);
+					tile2.setField(3, msg.valueByte[3]);
+				}
+			}
+		}
 		break;
 		case PID.AddTeam: //add team, 1 parm
 			player = EntityHelper.getEntityPlayerByID(msg.valueInt[0], msg.valueInt[1], false);
@@ -507,7 +554,7 @@ public class C2SGUIPackets implements IMessage
 		break;
 		case PID.SetFormation:	//set current team formation, 1 parms
 			FormationHelper.setFormationID(msg.valueInt);
-			break;
+		break;
 		case PID.OpenItemGUI:	//open item GUI, 1 parm
 			player = EntityHelper.getEntityPlayerByID(msg.valueInt[0], msg.valueInt[1], false);
 

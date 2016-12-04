@@ -50,7 +50,6 @@ public class BlockSmallShipyard extends BasicBlockFacingContainer
         GameRegistry.register(this);
         GameRegistry.register(new ItemBlock(this), this.getRegistryName());
         GameRegistry.registerTileEntity(TileEntitySmallShipyard.class, TILENAME);
-   
 	}
 	
 	@Override

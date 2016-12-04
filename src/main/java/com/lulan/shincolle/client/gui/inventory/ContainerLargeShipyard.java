@@ -169,7 +169,7 @@ public class ContainerLargeShipyard extends Container
             	tileListener.sendProgressBarUpdate(this, 6, this.tile.getMatBuild(3));
             }
 
-            //用sendProgressBarUpdate當作update的flag, 但是實際值用自訂的封包來傳送
+            //燃料值: 用自訂封包更新
             if(this.guiConsumedPower != this.tile.getPowerConsumed() ||
  				   this.guiRemainedPower != this.tile.getPowerRemained() ||
  				   this.guiGoalPower != this.tile.getPowerGoal() ||

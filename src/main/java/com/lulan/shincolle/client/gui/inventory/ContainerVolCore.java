@@ -1,21 +1,19 @@
 package com.lulan.shincolle.client.gui.inventory;
 
-import net.minecraft.client.Minecraft;
+import com.lulan.shincolle.tileentity.TileEntityVolCore;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.ICrafting;
+import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
-
-import com.lulan.shincolle.tileentity.TileEntityVolCore;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 
-public class ContainerVolCore extends Container {
+public class ContainerVolCore extends Container
+{
 	
 	//for shift item
 	private static final int SLOT_INVENTORY = 0;
@@ -27,7 +25,8 @@ public class ContainerVolCore extends Container {
 	public int guiRemainedPower;
 	
 	
-	public ContainerVolCore(InventoryPlayer invPlayer, TileEntityVolCore tile) {
+	public ContainerVolCore(InventoryPlayer invPlayer, TileEntityVolCore tile)
+	{
 		this.tile = tile;
 
 		//tile inventory
@@ -42,21 +41,25 @@ public class ContainerVolCore extends Container {
 		this.addSlotToContainer(new SlotVolCore(tile, 8, 98, 55));
 		
 		//player inventory
-		for(int i = 0; i < 3; i++) {
-			for(int j = 0; j < 9; j++) {
+		for (int i = 0; i < 3; i++)
+		{
+			for (int j = 0; j < 9; j++)
+			{
 				this.addSlotToContainer(new Slot(invPlayer, j+i*9+9, 8+j*18, 84+i*18));
 			}
 		}
 		
 		//player hot bar
-		for(int i = 0; i < 9; i++) {
+		for (int i = 0; i < 9; i++)
+		{
 			this.addSlotToContainer(new Slot(invPlayer, i, 8+i*18, 142));
 		}
 	}
 
 	//玩家是否可以觸發右鍵點方塊事件
 	@Override
-	public boolean canInteractWith(EntityPlayer player) {
+	public boolean canInteractWith(EntityPlayer player)
+	{
 		return tile.isUseableByPlayer(player);
 	}
 	
@@ -67,35 +70,41 @@ public class ContainerVolCore extends Container {
 	 *          6~32:player inventory 33~41:hot bar
 	 */
 	@Override
-	public ItemStack transferStackInSlot(EntityPlayer player, int slotid) {
+	public ItemStack transferStackInSlot(EntityPlayer player, int slotid)
+	{
 		ItemStack newStack = null;
         Slot slot = (Slot)this.inventorySlots.get(slotid);
 
-        if(slot != null && slot.getHasStack()) { 	//若slot有東西
+        //若slot有東西
+        if(slot != null && slot.getHasStack())
+        {
             ItemStack orgStack = slot.getStack();	//orgStack取得該slot物品
             newStack = orgStack.copy();				//newStack為orgStack複製
 
             //點擊hot bar => 移動到inventory or player inv
-            if(slotid >= SLOT_HOTBAR) {
-            	if(!this.mergeItemStack(orgStack, SLOT_INVENTORY, SLOT_HOTBAR, false))
-            		return null;
+            if (slotid >= SLOT_HOTBAR)
+            {
+            	if (!this.mergeItemStack(orgStack, SLOT_INVENTORY, SLOT_HOTBAR, false)) return null;
             }
             //點擊player inv => 移動到inventory or hot bar
-            else if(slotid >= SLOT_PLAYERINV) {
-            	if(!this.mergeItemStack(orgStack, SLOT_INVENTORY, SLOT_PLAYERINV, true))
-            		return null;
+            else if (slotid >= SLOT_PLAYERINV)
+            {
+            	if (!this.mergeItemStack(orgStack, SLOT_INVENTORY, SLOT_PLAYERINV, true)) return null;
             } 
             //點擊inventory => 移動到player inv or hot bar
-            else {
-            	if(!this.mergeItemStack(orgStack, SLOT_PLAYERINV, SLOT_ALL, false))
-            		return null;
+            else
+            {
+            	if (!this.mergeItemStack(orgStack, SLOT_PLAYERINV, SLOT_ALL, false)) return null;
             }
 
             //如果物品都放完了, 則設成null清空該物品
-            if(orgStack.stackSize <= 0) {
+            if (orgStack.stackSize <= 0)
+            {
                 slot.putStack(null);
             }
-            else { //還沒放完, 先跑一次slot update
+            //還沒放完, 先跑一次slot update
+            else
+            {
                 slot.onSlotChanged();
             }
         }
@@ -103,46 +112,32 @@ public class ContainerVolCore extends Container {
         return newStack;	//物品移動完成, 回傳剩下的物品
     }
 	
-	//發送更新gui進度條更新, 比detectAndSendChanges還要優先
-	@Override
-	public void addCraftingToCrafters (ICrafting crafting) {
-		super.addCraftingToCrafters(crafting);
-//		crafting.sendProgressBarUpdate(this, 0, this.te.getBuildType());		//建造類型
-	}
-	
 	//將container數值跟tile entity內的數值比對, 如果不同則發送更新給client使gui呈現新數值
 	@Override
-	public void detectAndSendChanges() {
+	public void detectAndSendChanges()
+	{
 		super.detectAndSendChanges();
 
-        for(Object crafter : this.crafters) {
-            ICrafting icrafting = (ICrafting) crafter;
-            
-            if(this.guiRemainedPower != this.tile.getPowerRemained()) {
-    			this.tile.sendSyncPacket();
-                this.guiRemainedPower = this.tile.getPowerRemained();
-                
-                //用sendProgressBarUpdate當作update的flag, 但是不從這邊傳實際值, 而是另外用自訂封包傳
-                icrafting.sendProgressBarUpdate(this, 1, 0);
+		//對所有開啟gui的人發送更新, 若數值有改變則發送更新封包
+		for (int i = 0; i < this.listeners.size(); ++i)
+        {
+            IContainerListener tileListener = (IContainerListener) this.listeners.get(i);
+
+            //用sendProgressBarUpdate當作update的flag, 但是實際值用自訂的封包來傳送
+            if (this.guiRemainedPower != this.tile.getPowerRemained())
+            {
+            	this.tile.sendSyncPacket();
             }
-        } 
+        }//end all listener
+		
+		//更新container內的數值
+    	this.guiRemainedPower = this.tile.getPowerRemained();
     }
 
 	//client端container接收新值
 	@Override
 	@SideOnly(Side.CLIENT)
-    public void updateProgressBar(int valueType, int updatedValue) {
-		World world = Minecraft.getMinecraft().theWorld;
-		TileEntityVolCore tile = (TileEntityVolCore) world.getTileEntity(this.tile.xCoord, this.tile.yCoord, this.tile.zCoord);
-		
-		switch(valueType) {
-		case 1:
-			if(tile != null) {
-				this.tile.setPowerRemained(tile.getPowerRemained());
-			}
-			break;
-		}
-    }
+    public void updateProgressBar(int valueType, int updatedValue) {}
 
 	
 }

@@ -122,6 +122,11 @@ public class GuiHelper
 		 //6:nbt             7:red signal
 		  {50,21,63,34},    {64,21,77,34}
 		 }
+		},
+		{//gui 6: vol core
+		 //0:power
+		 {{7,6,20,19}
+		 }
 		}
 	};
 	

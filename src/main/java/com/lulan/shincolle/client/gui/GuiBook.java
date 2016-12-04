@@ -55,14 +55,13 @@ public class GuiBook
 	public static int PageTY = 58;     //page Y pos for text
 	public static final int[] PageLimit = new int[] {1,23,5,15,19,11,3};  //max page number
 	
-	public GuiBook()
-	{
-		this.itemRender = Minecraft.getMinecraft().getRenderItem();
-	}
+	public GuiBook() {}
 	
 	/** draw book content */
 	public static void drawBookContent(GuiContainer par1, FontRenderer par2, int chap, int page)
 	{
+		itemRender = Minecraft.getMinecraft().getRenderItem();
+		
 		/** Content Array:
 		 *  0:c.type  1:pageL/R  2:posX  3:posY  4:add content
 		 */

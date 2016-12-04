@@ -9,6 +9,7 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.TileEntityCrane;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
+import com.lulan.shincolle.tileentity.TileEntityVolCore;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 
 import io.netty.buffer.ByteBuf;
@@ -334,17 +335,17 @@ public class PacketHelper
 			{
 			case ID.B.Shipyard_Type:		//build type
 				tile2.setBuildType(value);
-				break;
+			break;
 			case ID.B.Shipyard_InvMode:		//select inventory mode
 				tile2.setInvMode(value);
-				break;
+			break;
 			case ID.B.Shipyard_SelectMat:	//select material
 				tile2.setSelectMat(value);
-				break;
+			break;
 			case ID.B.Shipyard_INCDEC:		//material inc,dec
 				TileEntityHelper.setLargeShipyardBuildMats((TileMultiGrudgeHeavy) tile, button, value, value2);
-				break;
-			}
+			break;
+			}//end switch
 		}
 		else if (tile instanceof TileEntityCrane)
 		{
@@ -354,10 +355,10 @@ public class PacketHelper
 			{
 			case ID.B.Crane_Load:
 				tile2.setField(6, value);
-				break;
+			break;
 			case ID.B.Crane_Unload:
 				tile2.setField(7, value);
-				break;
+			break;
 			case ID.B.Crane_Power:
 				tile2.setField(2, value);
 				
@@ -366,24 +367,35 @@ public class PacketHelper
 				{
 					tile2.setShip(null);
 				}
-				break;
+			break;
 			case ID.B.Crane_Meta:
 				tile2.setField(3, value);
-				break;
+			break;
 			case ID.B.Crane_Dict:
 				tile2.setField(4, value);
-				break;
+			break;
 			case ID.B.Crane_Mode:
 				tile2.setField(5, value);
-				break;
+			break;
 			case ID.B.Crane_Nbt:
 				tile2.setField(8, value);
-				break;
+			break;
 			case ID.B.Crane_Red:
 				if (value > 2) value = 0;
 				tile2.setField(10, value);
-				break;
-			}
+			break;
+			}//end switch
+		}
+		else if (tile instanceof TileEntityVolCore)
+		{
+			TileEntityVolCore tile2 = (TileEntityVolCore) tile;
+			
+			switch (button)
+			{
+			case ID.B.VolCore_Power:
+				tile2.setField(0, value);
+			break;
+			}//end switch
 		}
 		else
 		{

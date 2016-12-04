@@ -40,6 +40,8 @@ public class ID {
 		public static final byte Crane_Unload = 5;
 		public static final byte Crane_Nbt = 6;
 		public static final byte Crane_Red = 7;
+		
+		public static final byte VolCore_Power = 0;
 	}
 	
 	/** ship body part */

@@ -217,12 +217,13 @@ public class GuiDesk extends GuiContainer
 		LogHelper.info("DEBUG: WinSize "+this.width+" "+this.height+" GUISize "+this.xSize+" "+this.ySize);
 
         //textField: font, x, y, width, height
-        this.textField = new GuiTextField(0, this.fontRendererObj, (int)((this.guiLeft+10)*this.GuiScale), (int)((this.guiTop+24)*this.GuiScale), 153, 12);
+        this.textField = new GuiTextField(1, this.fontRendererObj, (int)((this.guiLeft+10)*this.GuiScale), (int)((this.guiTop+24)*this.GuiScale), 153, 12);
         this.textField.setTextColor(-1);					//點選文字框時文字顏色
         this.textField.setDisabledTextColour(-1);			//無點選文字框時文字顏色
         this.textField.setEnableBackgroundDrawing(true);	//畫出文字框背景
         this.textField.setMaxStringLength(64);				//接受最大文字長度
         this.textField.setEnabled(false);
+        this.textField.setFocused(false);
         
         //add text input field
         Keyboard.enableRepeatEvents(true);
@@ -244,7 +245,7 @@ public class GuiDesk extends GuiContainer
 		if (this.tempCD > 0) tempCD--;
 		
 		//draw GUI text input
-		GlStateManager.pushAttrib();
+//		GlStateManager.pushAttrib();
 		GlStateManager.pushMatrix();
 		GlStateManager.disableLighting();
 		GlStateManager.disableBlend();
@@ -260,7 +261,7 @@ public class GuiDesk extends GuiContainer
         }
         
         GlStateManager.popMatrix();
-        GlStateManager.popAttrib();
+//        GlStateManager.popAttrib();
 	}
 	
 	//draw tooltip
@@ -1991,6 +1992,8 @@ public class GuiDesk extends GuiContainer
 	public void updateScreen()
 	{
 		super.updateScreen();
+		
+		this.textField.updateCursorCounter();
 		
 		if (this.type == 0 && this.tile == null)
 		{

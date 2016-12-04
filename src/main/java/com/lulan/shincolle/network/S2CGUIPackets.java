@@ -754,12 +754,12 @@ public class S2CGUIPackets implements IMessage
 			
 			if (tile instanceof TileEntityDesk)
 			{
-				int[] data = new int[4];
-				for (int i = 0; i < 4; i++)
-				{
-					data[i] = msg.valueInt1[i + 3];
-				}
-				((TileEntityDesk) tile).setSyncData(data);
+				TileEntityDesk tile2 = (TileEntityDesk) tile;
+				
+				tile2.setField(0, msg.valueInt1[3]);
+				tile2.setField(1, msg.valueInt1[4]);
+				tile2.setField(2, msg.valueInt1[5]);
+				tile2.setField(3, msg.valueInt1[6]);
 			}
 		}
 		break;

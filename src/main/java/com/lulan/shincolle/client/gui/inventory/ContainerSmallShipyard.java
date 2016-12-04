@@ -156,12 +156,13 @@ public class ContainerSmallShipyard extends Container
         {
             IContainerListener tileListener = (IContainerListener) this.listeners.get(i);
 
-            if (this.guiBuildType != this.tile.getBuildType())  //更新建造類型
+            //建造類型: 用內建更新方法
+            if (this.guiBuildType != this.tile.getBuildType())
             {  			
             	tileListener.sendProgressBarUpdate(this, 0, this.tile.getBuildType());
             }
             
-            //用sendProgressBarUpdate當作update的flag, 但是實際值用自訂的封包來傳送
+            //燃料值: 用自訂封包更新
             if (this.guiConsumedPower != this.tile.getPowerConsumed() ||
             	this.guiRemainedPower != this.tile.getPowerRemained() ||
             	this.guiGoalPower != this.tile.getPowerGoal())
