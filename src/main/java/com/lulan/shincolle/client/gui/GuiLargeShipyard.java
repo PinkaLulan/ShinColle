@@ -4,23 +4,22 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.util.ResourceLocation;
-
 import com.lulan.shincolle.client.gui.inventory.ContainerLargeShipyard;
 import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.Enums.EnumColors;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 import com.lulan.shincolle.utility.GuiHelper;
 import com.lulan.shincolle.utility.LogHelper;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.util.ResourceLocation;
 
 /**SLOT POSITION
  * output(168,51) fuel bar(9,83 height=63) fuel color bar(208,64)
@@ -33,7 +32,7 @@ public class GuiLargeShipyard extends GuiContainer
 	private static final ResourceLocation TEXTURE_BG = new ResourceLocation(Reference.TEXTURES_GUI+"GuiLargeShipyard.png");
 	private TileMultiGrudgeHeavy tile;
 	private int xClick, yClick, selectMat, buildType, invMode, xMouse, yMouse;
-	private String conName, time, errorMsg1, errorMsg2, matBuild0, matBuild1, matBuild2, matBuild3, matStock0, matStock1, matStock2, matStock3;
+	private String time, errorMsg1, errorMsg2, matBuild0, matBuild1, matBuild2, matBuild3, matStock0, matStock1, matStock2, matStock3;
 	private float tickGUI;
 	
 	
@@ -41,15 +40,18 @@ public class GuiLargeShipyard extends GuiContainer
 	{
 		super(new ContainerLargeShipyard(par1, par2));
 		this.tile = par2;
-		this.tickGUI = 0F;
 		this.xSize = 208;
 		this.ySize = 223;
+	}
+	
+	@Override
+	public void initGui()
+	{
+		this.tickGUI = 0F;
 		
 		//string
-//		conName = I18n.format("tile.shincolle:BlockLargeShipyard.name");
 		errorMsg1 = I18n.format("gui.shincolle:nomaterial");
 		errorMsg2 = I18n.format("gui.shincolle:nofuel");
-		
 	}
 	
 	//get new mouseX,Y and redraw gui

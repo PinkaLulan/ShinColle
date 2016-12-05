@@ -150,15 +150,28 @@ public class GuiDesk extends GuiContainer
 	{
 		super(new ContainerDesk(par1, par2, type));
 		this.type = type;
-		
+		this.tile = par2;
 		this.GuiScale = 1.25F;
 		this.GuiScaleInv = 1F / this.GuiScale;
 		this.xSize = (int) (256 * this.GuiScale);
 		this.ySize = (int) (192 * this.GuiScale);
+	}
+	
+	private void updateDeskValue()
+	{
+		this.guiFunc = this.tile.getField(0);
+  		this.book_chapNum = this.tile.getField(1);
+  		this.book_pageNum = this.tile.getField(2);
+  		this.radar_zoomLv = this.tile.getField(3);
+	}
+	
+	@Override
+	public void initGui()
+	{
+		super.initGui();
+
 		this.lastXMouse = 0;
 		this.lastYMouse = 0;
-		
-		this.tile = par2;
 		this.tickGUI = 0;				//ticks in gui (not game tick)
 		this.tempCD = CLICKCD;
 		
@@ -200,22 +213,7 @@ public class GuiDesk extends GuiContainer
 		
 		//ship model
 		setShipModel(this.book_chapNum, this.book_pageNum);
-	}
-	
-	private void updateDeskValue()
-	{
-		this.guiFunc = this.tile.getField(0);
-  		this.book_chapNum = this.tile.getField(1);
-  		this.book_pageNum = this.tile.getField(2);
-  		this.radar_zoomLv = this.tile.getField(3);
-	}
-	
-	@Override
-	public void initGui()
-	{
-		super.initGui();
-		LogHelper.info("DEBUG: WinSize "+this.width+" "+this.height+" GUISize "+this.xSize+" "+this.ySize);
-
+		
         //textField: font, x, y, width, height
         this.textField = new GuiTextField(1, this.fontRendererObj, (int)((this.guiLeft+10)*this.GuiScale), (int)((this.guiTop+24)*this.GuiScale), 153, 12);
         this.textField.setTextColor(-1);					//點選文字框時文字顏色
@@ -245,7 +243,6 @@ public class GuiDesk extends GuiContainer
 		if (this.tempCD > 0) tempCD--;
 		
 		//draw GUI text input
-//		GlStateManager.pushAttrib();
 		GlStateManager.pushMatrix();
 		GlStateManager.disableLighting();
 		GlStateManager.disableBlend();
@@ -261,7 +258,6 @@ public class GuiDesk extends GuiContainer
         }
         
         GlStateManager.popMatrix();
-//        GlStateManager.popAttrib();
 	}
 	
 	//draw tooltip

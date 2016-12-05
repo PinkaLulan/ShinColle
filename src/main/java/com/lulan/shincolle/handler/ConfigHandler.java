@@ -221,11 +221,7 @@ public class ConfigHandler
 		
 		setCustomSoundValue();
 		
-		//若設定檔有更新過, 則儲存
-		if (config.hasChanged())
-		{
-			config.save();
-		}
+		checkChange(config);
 	}
 	
 	//check custom sound
@@ -322,6 +318,15 @@ public class ConfigHandler
 		{
 			config = new Configuration(configFile);	//建立config檔實體
 			loadConfiguration();
+		}
+	}
+	
+	//若設定檔有更新過, 則儲存
+	public static void checkChange(Configuration cfg)
+	{
+		if (cfg != null && cfg.hasChanged())
+		{
+			cfg.save();
 		}
 	}
 	

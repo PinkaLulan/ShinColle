@@ -573,6 +573,19 @@ public class ID {
 		public static final short LightCruiserTenryuu = 56;
 	}
 	
+	/** ship misc entity id for renderer */
+	public static final class ShipMisc
+	{
+		public static final short AbyssalMissile = 0;
+		public static final short Airplane = 1;
+		public static final short AirplaneT = 2;
+		public static final short AirplaneTako = 3;
+		public static final short AirplaneZ = 4;
+		public static final short AirplaneF = 5;
+		public static final short Rensouhou = 6;
+		public static final short RensouhouS = 7;
+	}
+	
 	/** ship attrs id, for Values.ShipAttrMap */
 	public static final class ShipAttr
 	{

@@ -138,6 +138,6 @@ public class EntityDestroyerI extends BasicEntityShipSmall
 			break;
 		}
 	}
-
+	
 
 }

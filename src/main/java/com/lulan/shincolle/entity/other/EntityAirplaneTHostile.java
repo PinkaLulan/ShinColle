@@ -2,6 +2,7 @@ package com.lulan.shincolle.entity.other;
 
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.IShipAircraftAttack;
+import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.TargetHelper;
 
 import net.minecraft.entity.Entity;

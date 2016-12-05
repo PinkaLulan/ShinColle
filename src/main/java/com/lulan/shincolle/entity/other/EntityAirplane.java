@@ -118,5 +118,11 @@ public class EntityAirplane extends BasicEntityAirplane
           		-this.motionX*0.5D, -this.motionY*0.5D, -this.motionZ*0.5D, (byte)17);
 	}
 	
+	@Override
+	public int getTextureID()
+	{
+		return ID.ShipMisc.Airplane;
+	}
+	
 	
 }

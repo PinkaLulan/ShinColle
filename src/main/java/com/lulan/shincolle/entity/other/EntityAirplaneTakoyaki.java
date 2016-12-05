@@ -111,6 +111,12 @@ public class EntityAirplaneTakoyaki extends BasicEntityAirplane
 		ParticleHelper.spawnAttackParticleAt(this.posX, this.posY+0.1D, this.posZ, 
 	      		-this.motionX*0.5D, 0.07D, -this.motionZ*0.5D, (byte)18);
 	}
+	
+	@Override
+	public int getTextureID()
+	{
+		return ID.ShipMisc.AirplaneTako;
+	}
 
 
 }

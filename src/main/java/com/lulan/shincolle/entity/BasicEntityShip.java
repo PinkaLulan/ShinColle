@@ -26,6 +26,7 @@ import com.lulan.shincolle.capability.CapaShipInventory;
 import com.lulan.shincolle.capability.CapaShipSavedValues;
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
+import com.lulan.shincolle.client.render.IShipCustomTexture;
 import com.lulan.shincolle.crafting.EquipCalc;
 import com.lulan.shincolle.crafting.ShipCalc;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
@@ -84,7 +85,7 @@ import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
 /**SHIP DATA <br>
  * Explanation in crafting/ShipCalc.class
  */
-public abstract class BasicEntityShip extends EntityTameable implements IShipCannonAttack, IShipGuardian, IShipFloating
+public abstract class BasicEntityShip extends EntityTameable implements IShipCannonAttack, IShipGuardian, IShipFloating, IShipCustomTexture
 {
 
 	protected CapaShipInventory itemHandler;
@@ -5896,6 +5897,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 
         this.swingProgress = (float)this.swingProgressInt / (float)swingMaxTick;
     }
+  	
+	@Override
+	public int getTextureID()
+	{
+		return this.getShipClass();
+	}
   	
 	
 }

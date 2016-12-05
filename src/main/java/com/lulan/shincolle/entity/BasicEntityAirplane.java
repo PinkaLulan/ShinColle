@@ -8,6 +8,7 @@ import com.lulan.shincolle.ai.EntityAIShipAircraftAttack;
 import com.lulan.shincolle.ai.EntityAIShipOpenDoor;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
+import com.lulan.shincolle.client.render.IShipCustomTexture;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.entity.other.EntityAirplane;
 import com.lulan.shincolle.entity.other.EntityRensouhou;
@@ -31,7 +32,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
-abstract public class BasicEntityAirplane extends EntityLiving implements IShipCannonAttack, IShipFlyable
+abstract public class BasicEntityAirplane extends EntityLiving implements IShipCannonAttack, IShipFlyable, IShipCustomTexture
 {
 
 	protected IShipAircraftAttack host;  		//host

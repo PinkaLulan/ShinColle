@@ -238,7 +238,6 @@ public class ModelDestroyerI extends ModelBase implements IModelEmotion
 	{
 		setRotationAngles(f, f1, f2, f3, f4, f5, entity);
 
-    	GlStateManager.pushAttrib();
     	GlStateManager.pushMatrix();
     	
     	GlStateManager.scale(0.45F, 0.4F, 0.4F);	//debug用
@@ -255,7 +254,6 @@ public class ModelDestroyerI extends ModelBase implements IModelEmotion
     	GlStateManager.enableLighting();
     	
     	GlStateManager.popMatrix();
-    	GlStateManager.popAttrib();
 	}
   
 	private void setRotation(ModelRenderer model, float x, float y, float z)
@@ -333,7 +331,7 @@ public class ModelDestroyerI extends ModelBase implements IModelEmotion
 	
 	private void motionStopPos(float f, float f1, float f2, float f3, float f4, BasicEntityShip ent)
 	{
-		GlStateManager.translate(0F, 1.6F, 0F);
+		GlStateManager.translate(0F, 0.9F, 0F);
 		
 		isKisaragi(ent);
 		setFace(2);

@@ -1,5 +1,6 @@
 package com.lulan.shincolle.entity.other;
 
+import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import net.minecraft.world.World;
@@ -30,6 +31,12 @@ public class EntityAirplaneT extends EntityAirplaneTakoyaki
 	{
 //		ParticleHelper.spawnAttackParticleAt(this.posX-this.motionX*1.5D, this.posY+0.5D-this.motionY*1.5D, this.posZ-this.motionZ*1.5D, 
 //          		-this.motionX*0.5D, -this.motionY*0.5D, -this.motionZ*0.5D, (byte)17);
+	}
+	
+	@Override
+	public int getTextureID()
+	{
+		return ID.ShipMisc.AirplaneT;
 	}
 
 

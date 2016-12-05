@@ -19,6 +19,12 @@ public class EntityRensouhouS extends EntityRensouhou
 		return ID.ShipDmgType.BATTLESHIP;
 	}
     
+	@Override
+	public int getTextureID()
+	{
+		return ID.ShipMisc.RensouhouS;
+	}
+    
 
 }
 

@@ -40,7 +40,11 @@ public class GuiCrane extends GuiContainer
 		tile = par2;
 		xSize = 176;
 		ySize = 193;
-		
+	}
+	
+	@Override
+    public void initGui()
+    {
 		//string
 		strLoad = I18n.format("gui.shincolle:crane.toship");
 		strUnload = I18n.format("gui.shincolle:crane.tochest");
@@ -58,8 +62,7 @@ public class GuiCrane extends GuiContainer
 		
 		//init value
 		updateButton();
-		
-	}
+    }
 	
 	//get new mouseX,Y and redraw gui
 	@Override

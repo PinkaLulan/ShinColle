@@ -8,7 +8,6 @@ import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.client.gui.inventory.ContainerFormation;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.network.C2SGUIPackets;
-import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.Enums;
 import com.lulan.shincolle.reference.ID;
@@ -22,7 +21,6 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 
@@ -58,18 +56,22 @@ public class GuiFormation extends GuiContainer
 	String[] shipName;				//ship name
 	
 	
-	public GuiFormation(InventoryPlayer par1)
+	public GuiFormation(EntityPlayer par1)
 	{
 		super(new ContainerFormation());
+		this.player = par1;
 		this.xSize = 256;
 		this.ySize = 192;
-		
+	}
+	
+	@Override
+	public void initGui()
+	{
 		this.tickGUI = 0;				//ticks in gui (not game tick)
 		this.tickTooltip = 0;			//tooltip display time
 		this.tickWaitSync = 0;			//wait time for sync packet
 		
 		//player data
-		this.player = ClientProxy.getClientPlayer();
 		this.capa = CapaTeitoku.getTeitokuCapability(this.player);
 		
 		//formation spot init
@@ -147,7 +149,6 @@ public class GuiFormation extends GuiContainer
 		
 		//update string value
 		updateString();
-		
 	}
 	
 	//get new mouseX,Y and redraw gui

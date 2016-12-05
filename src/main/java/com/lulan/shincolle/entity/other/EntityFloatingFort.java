@@ -238,6 +238,12 @@ public class EntityFloatingFort extends BasicEntityAirplane
 	{
 		return true;
 	}
+	
+	@Override
+	public int getTextureID()
+	{
+		return ID.ShipMisc.AirplaneF;
+	}
 
 
 }

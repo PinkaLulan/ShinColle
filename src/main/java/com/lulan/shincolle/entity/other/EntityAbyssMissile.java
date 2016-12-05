@@ -2,6 +2,7 @@ package com.lulan.shincolle.entity.other;
 
 import java.util.List;
 
+import com.lulan.shincolle.client.render.IShipCustomTexture;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipAttributes;
 import com.lulan.shincolle.entity.IShipFlyable;
@@ -52,7 +53,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  *   
  * 
  */
-public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttributes, IShipFlyable
+public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttributes, IShipFlyable, IShipCustomTexture
 {
 	
     private IShipAttackBase host;	//main host type
@@ -560,6 +561,12 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
 		
 		if (host != null) return host.getEffectEquip(id);
 		return 0F;
+	}
+
+	@Override
+	public int getTextureID()
+	{
+		return ID.ShipMisc.AbyssalMissile;
 	}
 
 	

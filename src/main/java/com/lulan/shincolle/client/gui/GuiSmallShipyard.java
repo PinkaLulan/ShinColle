@@ -32,10 +32,15 @@ public class GuiSmallShipyard extends GuiContainer
 	public GuiSmallShipyard(InventoryPlayer par1, TileEntitySmallShipyard par2)
 	{
 		super(new ContainerSmallShipyard(par1, par2));
-		tile = par2;
-		tickGUI = 0F;
+		this.tile = par2;
 		this.xSize = 176;
 		this.ySize = 164;
+	}
+	
+	@Override
+	public void initGui()
+	{
+		this.tickGUI = 0F;
 		
 		//string
 		conName = I18n.format("tile.shincolle:BlockSmallShipyard.name");

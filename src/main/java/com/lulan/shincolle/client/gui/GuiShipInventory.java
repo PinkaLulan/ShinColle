@@ -70,12 +70,18 @@ public class GuiShipInventory extends GuiContainer
 	public GuiShipInventory(InventoryPlayer invPlayer, BasicEntityShip entity)
 	{
 		super(new ContainerShipInventory(invPlayer, entity));
-		
-		this.mouseoverList = new ArrayList();			
 		this.entity = entity;
 		this.player = invPlayer;
 		this.xSize = 256;
 		this.ySize = 214;
+	}
+	
+	@Override
+    public void initGui()
+    {
+    	super.initGui();
+    	
+    	this.mouseoverList = new ArrayList();			
 		this.showPage = 1;			//show page 1
 		this.showPageAI = 1;		//show AI control page 1
 		this.showPageInv = 0;		//get inventory number
@@ -83,6 +89,7 @@ public class GuiShipInventory extends GuiContainer
 		this.mousePress = false;	//no key clicked
 		this.mousePressBar = -1;	//no bar pressed
 		this.switchPage1 = new boolean[6];	//page 1 button value
+		this.switchPage3 = new boolean[6];	//page 3 button value
 		
 		if (this.entity != null)
 		{
@@ -119,6 +126,7 @@ public class GuiShipInventory extends GuiContainer
 		//general string
 		lvMark = I18n.format("gui.shincolle:level");
 		hpMark = I18n.format("gui.shincolle:hp");
+		strMorale = new String[5];
 		strMorale[0] = I18n.format("gui.shincolle:morale0");
 		strMorale[1] = I18n.format("gui.shincolle:morale1");
 		strMorale[2] = I18n.format("gui.shincolle:morale2");
@@ -222,8 +230,7 @@ public class GuiShipInventory extends GuiContainer
 		if (temp > this.widthHoveringText3) this.widthHoveringText3 = temp;
 		temp = this.fontRendererObj.getStringWidth(strAttrMOV);
 		if (temp > this.widthHoveringText3) this.widthHoveringText3 = temp;
-		
-	}
+    }
 	
 	//GUI前景: 文字 
 	@Override

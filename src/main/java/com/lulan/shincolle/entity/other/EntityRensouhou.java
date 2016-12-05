@@ -3,6 +3,7 @@ package com.lulan.shincolle.entity.other;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
+import com.lulan.shincolle.client.render.IShipCustomTexture;
 import com.lulan.shincolle.entity.BasicEntityAirplane;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
@@ -28,7 +29,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
-public class EntityRensouhou extends EntityLiving implements IShipCannonAttack
+public class EntityRensouhou extends EntityLiving implements IShipCannonAttack, IShipCustomTexture
 {
 	
 	protected BasicEntityShip host;  	//host target
@@ -775,6 +776,12 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack
 	public boolean isJumping()
 	{
 		return this.isJumping;
+	}
+	
+	@Override
+	public int getTextureID()
+	{
+		return ID.ShipMisc.Rensouhou;
 	}
 	
 

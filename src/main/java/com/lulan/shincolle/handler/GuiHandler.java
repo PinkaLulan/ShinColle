@@ -190,7 +190,7 @@ public class GuiHandler implements IGuiHandler
 				return new GuiDesk(player.inventory, null, x);
 			}
 		case ID.Gui.FORMATION:	//GUI formation
-			return new GuiFormation(player.inventory);
+			return new GuiFormation(player);
 		case ID.Gui.VOLCORE:		//GUI volcano core
 			tile = world.getTileEntity(new BlockPos(x, y, z));
 			

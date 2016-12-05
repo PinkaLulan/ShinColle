@@ -1,17 +1,21 @@
 package com.lulan.shincolle.proxy;
 
+import com.lulan.shincolle.client.render.RenderBasicEntity;
+import com.lulan.shincolle.client.render.RenderShipEntity;
+import com.lulan.shincolle.client.render.item.RenderBasicEntityItem;
+import com.lulan.shincolle.client.render.item.RenderTileEntityItem;
+import com.lulan.shincolle.entity.destroyer.EntityDestroyerI;
+import com.lulan.shincolle.entity.other.EntityAbyssMissile;
+import com.lulan.shincolle.init.ModBlocks;
+import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.item.BasicEntityItem;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.tileentity.TileEntityItemStackRenderer;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
-
-import com.lulan.shincolle.client.render.item.RenderBasicEntityItem;
-import com.lulan.shincolle.client.render.item.RenderTileEntityItem;
-import com.lulan.shincolle.init.ModBlocks;
-import com.lulan.shincolle.init.ModItems;
-import com.lulan.shincolle.item.BasicEntityItem;
 
 public class ClientProxy extends CommonProxy
 {
@@ -76,7 +80,7 @@ public class ClientProxy extends CommonProxy
 //		RenderingRegistry.registerEntityRenderingHandler(EntityCarrierHime.class, new BasicShipRenderer(new ModelCarrierHime(), 1F, ID.Ship.CarrierHime));
 //		RenderingRegistry.registerEntityRenderingHandler(EntityCarrierWD.class, new BasicShipRenderer(new ModelCarrierWDemon(), 1F, ID.Ship.CarrierWD));
 //		RenderingRegistry.registerEntityRenderingHandler(EntityCarrierWo.class, new BasicShipRenderer(new ModelCarrierWo(), 1F, ID.Ship.CarrierWO));
-//		RenderingRegistry.registerEntityRenderingHandler(EntityDestroyerI.class, new BasicShipRenderer(new ModelDestroyerI(), 1F, ID.Ship.DestroyerI));
+		RenderingRegistry.registerEntityRenderingHandler(EntityDestroyerI.class, RenderShipEntity.FACTORY_DEFAULT);
 //		RenderingRegistry.registerEntityRenderingHandler(EntityDestroyerRo.class, new BasicShipRenderer(new ModelDestroyerRo(), 1F, ID.Ship.DestroyerRO));
 //		RenderingRegistry.registerEntityRenderingHandler(EntityDestroyerHa.class, new BasicShipRenderer(new ModelDestroyerHa(), 1F, ID.Ship.DestroyerHA));
 //		RenderingRegistry.registerEntityRenderingHandler(EntityDestroyerNi.class, new BasicShipRenderer(new ModelDestroyerNi(), 1F, ID.Ship.DestroyerNI));
@@ -114,7 +118,7 @@ public class ClientProxy extends CommonProxy
 //		RenderingRegistry.registerEntityRenderingHandler(EntityMountCaH.class, new MountsShipRenderer(new ModelMountCaH(), 1.5F, 4));
 //		
 //		//projectile render
-//		RenderingRegistry.registerEntityRenderingHandler(EntityAbyssMissile.class, new RenderAbyssMissile(0.75F));
+		RenderingRegistry.registerEntityRenderingHandler(EntityAbyssMissile.class, RenderBasicEntity.FACTORY_DEFAULT);
 //		RenderingRegistry.registerEntityRenderingHandler(EntityAirplane.class, new MiscMobRenderer(new ModelAirplane(), 0.5F, 0));
 //		RenderingRegistry.registerEntityRenderingHandler(EntityAirplaneTakoyaki.class, new MiscMobRenderer(new ModelTakoyaki(), 0.5F, 1));
 //		RenderingRegistry.registerEntityRenderingHandler(EntityAirplaneT.class, new MiscMobRenderer(new ModelAirplaneT(0), 0.5F, 3));
