@@ -5593,7 +5593,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				ForgeChunkManager.forceChunk(this.chunkTicket, p);
 			}
 			
-			LogHelper.infoDebugMode("DEBUG : ship chunk loader: "+this.chunks+" "+this);
+			LogHelper.debug("DEBUG : ship chunk loader: "+this.chunks+" "+this);
         }
   	}
   	

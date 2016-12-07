@@ -19,7 +19,7 @@ public class ChunkLoaderHandler implements LoadingCallback
 	@Override
 	public void ticketsLoaded(List<Ticket> tickets, World world)
 	{
-		LogHelper.infoDebugMode("DEBUG : release all saved chunk loader tickets");
+		LogHelper.debug("DEBUG : release all saved chunk loader tickets");
 		//release all tickets
   		if (tickets != null)
   		{

@@ -31,20 +31,7 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class ServerProxy extends CommonProxy
 {
-	
-	/**player extended data
-	 * all player extended data cache, delete when server close
-	 * 
-	 * extendedPlayerData <player UUID: string, player NBT data: NBTTagCompound>
-	 * 
-	 * use:
-	 * 1. load from file: none
-	 * 2. save to file: none
-	 * 3. get: player respawn event
-	 * 4. set: player login/logout/death/saveNBTData event
-	 */
-	private static HashMap<String, NBTTagCompound> extendedPlayerData = null;
-	
+
 	/**player custom target class map
 	 * all player's target class list, save at server side
 	 * for continually working if player offline
@@ -156,12 +143,10 @@ public class ServerProxy extends CommonProxy
 		//clear last load
 		serverFile = null;
 		serverData = null;
-		extendedPlayerData = null;
 		mapPlayerID = null;
 		mapShipID = null;
 		
 		//init data by default value
-		extendedPlayerData = new HashMap<String, NBTTagCompound>();
 		customTagetClass = new HashMap<Integer, HashMap<Integer, String>>();
 		unattackableTargetClass = new HashMap<Integer, String>();
 		mapPlayerID = new HashMap<Integer, int[]>();
@@ -309,20 +294,6 @@ public class ServerProxy extends CommonProxy
 
 	@Override
 	public void registerRender() {}
-	
-	/** save player data for resuming data after player death */
-	//map set: UUID, nbt data
-	public static void setPlayerData(String uuid, NBTTagCompound nbt)
-	{
-		extendedPlayerData.put(uuid, nbt);
-		serverData.markDirty();
-	}
-
-	//get nbt data in map
-	public static NBTTagCompound getPlayerData(String name)
-	{
-		return extendedPlayerData.get(name);
-	}
 	
 	/** add/remove string in player target class list, return true = add target */
 	public static boolean setPlayerTargetClass(int pid, String str)
@@ -607,41 +578,18 @@ public class ServerProxy extends CommonProxy
 			//player id < 0
 			else
 			{
-				boolean createNew = true;
+				pid = getNextPlayerID();
 				
-				//try to get data from server cache
-				NBTTagCompound nbt = ServerProxy.getPlayerData(player.getUniqueID().toString());
-		        
-		        if (nbt != null)
-		        {
-		        	//get data from server cache
-		        	capa.loadNBTData(nbt);
-		        	pid = capa.getPlayerUID();
-		        	
-		        	if (pid > 0)
-		        	{
-		        		setPlayerWorldData(pid, pdata);
-			        	LogHelper.info("INFO : update player: update player id "+pid+" eid: "+pdata[0]);
-			        	createNew = false;
-		        	}
-		        }
-		        
-		        //no pid, create new one
-		        if (createNew)
-		        {
-					pid = getNextPlayerID();
-					
-					//set init pid value
-					if (pid <= 0)
-					{
-						pid = 100;	//player UID init value = 100
-					}
-					
-					LogHelper.info("INFO : update player: create pid: "+pid+" eid: "+pdata[0]);
-					capa.setPlayerUID(pid);	//set player id
-					setPlayerWorldData(pid, pdata);	//cache in server proxy
-					setNextPlayerID(++pid);	//next id ++
-		        }
+				//set init pid value
+				if (pid <= 0)
+				{
+					pid = 100;	//player UID init value = 100
+				}
+				
+				LogHelper.info("INFO : update player: create pid: "+pid+" eid: "+pdata[0]);
+				capa.setPlayerUID(pid);	//set player id
+				setPlayerWorldData(pid, pdata);	//cache in server proxy
+				setNextPlayerID(++pid);	//next id ++
 			}
 		}
 		else
@@ -730,19 +678,6 @@ public class ServerProxy extends CommonProxy
 		{
 			if (serverTicks % 64 == 0)
 			{
-//				//server init fail, try again
-//				if(!initServerFile) {
-//					LogHelper.info("INFO : server proxy tick: init fail, try init again");
-//					//backup cache, try init again and recovery cache
-//					Map extPropBK = extendedPlayerData;
-//					Map shipBK = mapShipID;
-//					
-//					initServerProxy(world0);
-//					
-//					extendedPlayerData = extPropBK;
-//					mapShipID = shipBK;
-//				}
-				
 				///////////////////////DEBUG
 //				List<String> getlist = getPlayerTargetClassList(100);
 //				if(getlist != null) {

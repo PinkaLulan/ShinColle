@@ -31,16 +31,16 @@ public class LogHelper
 	//info: 紀錄一般訊息, 不需要debug模式
 	public static void info(Object object) { createLog(Level.INFO,object); }
 	
-	//log: 紀錄一般訊息, 但是需要debug模式才紀錄
-	public static void infoDebugMode(Object object)
+	//log: 紀錄debug訊息, 需要debug模式
+	public static void debug(Object object)
 	{
-		if(ConfigHandler.debugMode) createLog(Level.INFO,object);
+		if (ConfigHandler.debugMode) createLog(Level.INFO,object);
 	}
 	
-	//debug: 紀錄debug訊息
-	public static void debug(Object object)
+	//debug: 紀錄debug訊息, 需要修改預設log等級為Level.DEBUG
+	public static void debugHighLevel(Object object)
 	{ 
-		if(ConfigHandler.debugMode) createLog(Level.DEBUG,object);
+		if (ConfigHandler.debugMode) createLog(Level.DEBUG,object);
 	}
 	
 	//trace: 同debug, 常用於追蹤程式動向

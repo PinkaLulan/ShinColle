@@ -193,7 +193,7 @@ abstract public class BasicBlockMulti extends BasicBlockContainer
 				{
 					if (tile.getGuiIntID() >= 0)
 					{
-						LogHelper.infoDebugMode("DEBUG : open multi block GUI");
+						LogHelper.debug("DEBUG : open multi block GUI");
 						
 						switch (tile.getStructType())
 						{

@@ -3,11 +3,11 @@ package com.lulan.shincolle.handler;
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.capability.CapaTeitokuProvider;
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.LogHelper;
 
+import codechicken.nei.util.LogHelper;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -26,10 +26,20 @@ public class CapabilityHandler
 	 * attach capability event
 	 */
 	@SubscribeEvent
-	public void attachCapability(AttachCapabilitiesEvent.Entity event)
+	public void attachCapability(AttachCapabilitiesEvent<Entity> event)
 	{
-		if (event.getEntity() instanceof EntityPlayer && !(event.getEntity() instanceof FakePlayer))
+//		if (!(event.getObject() instanceof FakePlayer) &&
+//			(event.getObject() instanceof EntityPlayerMP ||
+//			 event.getObject() instanceof EntityPlayerSP))
+//		{
+//			LogHelper.debug("TTTTTTTTTTTTTTT "+event.getObject());
+//			//attach capability
+//			event.addCapability(CAPA_TEITOKU_NAME, new CapaTeitokuProvider());
+//		}
+		
+		if (event.getObject() instanceof EntityPlayer)
 		{
+			LogHelper.debug("TTTTTTTTTTTTTTT "+event.getObject().getClass().getSimpleName());
 			//attach capability
 			event.addCapability(CAPA_TEITOKU_NAME, new CapaTeitokuProvider());
 		}

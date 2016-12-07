@@ -47,7 +47,6 @@ import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
@@ -76,10 +75,25 @@ public class FML_COMMON_EventHandler
 			CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(event.player);
 			
 			/** SERVER SIDE */
-			if (capa != null && !event.player.worldObj.isRemote)
+			if (!event.player.worldObj.isRemote)
 			{
+				//null check
+				if (capa == null)
+				{
+					LogHelper.debug("DEBUG: player ticking: waiting for capa init: "+event.player.ticksExisted+" "+capa);
+					return;
+				}
+				//check can ticking
+				else
+				{
+					if (capa.needInit)
+					{
+						capa.init(event.player);
+					}
+				}
+				
 				boolean syncTeamList = false;
-
+				
 				//every 32 ticks
 				if (event.player.ticksExisted > 0 && event.player.ticksExisted % 32 == 0)
 				{
@@ -88,30 +102,23 @@ public class FML_COMMON_EventHandler
 					 */
 					if (capa.getPlayerUID() < 100)
 					{
-						//player data lost? restore player data from ServerProxy variable
-				        NBTTagCompound nbt = ServerProxy.getPlayerData(event.player.getUniqueID().toString());
-				        
-				        if (nbt != null)
-				        {
-				        	capa.loadNBTData(nbt);  //get data from nbt to player's extProps
-				        	LogHelper.info("DEBUG : player tick: restore player data: eid: "+event.player.getEntityId()+" pid: "+capa.getPlayerUID()+" uuid: "+event.player.getUniqueID().toString());
-				        }
-				        
-				        //check player UID again, if no UID, set new UID for player
+						//get new UID
+			        	ServerProxy.updatePlayerID(event.player);
+			        	
+				        //check player UID again, stop ticking if fail
 				        if (capa.getPlayerUID() < 100)
 				        {
-				        	//get new UID
-				        	ServerProxy.updatePlayerID(event.player);
-							
-							//save extProps to ServerProxy
+				        	//update uid fail, return
+				        	LogHelper.debug("DEBUG : player tick: generate new player UID fail, stop player ticking.");
+				        	return;
+						}
+				        else
+				        {
+				        	//sync extProps to client
+					        capa.sendSyncPacket(0);
+				        	//save extProps to ServerProxy
 							LogHelper.info("DEBUG : player tick: generate new player UID, save player extProps in ServerProxy");
-				    		nbt = new NBTTagCompound();
-				    		capa.saveNBTData(nbt);  //get data from player's extProps
-				    		ServerProxy.setPlayerData(event.player.getUniqueID().toString(), nbt);
 				        }
-				        
-				        //sync extProps to client
-				        capa.sendSyncPacket(0);
 					}
 					
 					//team list fast update
@@ -120,18 +127,6 @@ public class FML_COMMON_EventHandler
 						updateTeamList(event.player, capa);
 						syncTeamList = true;
 					}
-					
-					//TODO for DEBUG only
-//					ItemStack hitem = event.player.inventory.getCurrentItem();
-//					try
-//					{
-//						LogHelper.info("DEBUG : player tick: AAAAAAAAAAAAA "+capa.player+" "+capa.needInit);
-//					}
-//					catch (Exception e)
-//					{
-//						LogHelper.info("DEBUG : player tick: BBBBBBBBBBBBB "+event.player.dimension);
-//						e.printStackTrace();
-//					}
 					
 					//every 128 ticks
 					if (event.player.ticksExisted % 128 == 0)
@@ -164,7 +159,7 @@ public class FML_COMMON_EventHandler
 				spawnBossShip(event.player, capa);
 				
 				//init ship UID
-				if (!capa.getInitSID() && event.player.ticksExisted % 16 == 0) 
+				if (!capa.initSID && event.player.ticksExisted % 16 == 0) 
 				{
 					//update ship temaList
 					capa.updateShipEntityBySID();
@@ -183,7 +178,8 @@ public class FML_COMMON_EventHandler
 			}//end server side, extProps != null
 			/** CLIENT SIDE */
 			else if (event.player.worldObj.isRemote)
-			{	//key cd--
+			{	
+				//key cd--
 				if (this.keyCooldown > 0)
 				{
 					this.keyCooldown--;
@@ -718,53 +714,25 @@ public class FML_COMMON_EventHandler
 	{
 		/**load player extend data
 		 */
-		LogHelper.info("DEBUG : player login: "+event.player.getDisplayNameString()+" "+event.player.getUniqueID());
+		LogHelper.info("DEBUG : player login: "+event.player.getDisplayNameString()+" "+event.player.worldObj.isRemote+" "+event.player.getUniqueID());
 		CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(event.player);
 		
-		if (capa != null)
+		if (capa != null && capa.needInit)
 		{
-			if (capa.needInit) capa.init(event.player);
-			
-			if (!event.player.worldObj.isRemote)
-			{
-				/** update player id */
-				ServerProxy.updatePlayerID(event.player);
-				
-				/** save player extend data in server proxy cache */
-				LogHelper.info("DEBUG : player login: save player extProps in ServerProxy");
-	    		NBTTagCompound nbt = new NBTTagCompound();
-	    		capa.saveNBTData(nbt);
-	    		ServerProxy.setPlayerData(event.player.getUniqueID().toString(), nbt);
-	    		
-	    		//sync packet
-	    		capa.sendSyncPacket(0);
-			}//end server side
+			capa.init(event.player);
 		}//end player extProps not null
 	}
 	
-	//player loggout, NO USE in singleplayer
-	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
-	public void onPlayerLogout(PlayerLoggedOutEvent event)
-	{
-    	LogHelper.info("DEBUG : player logout: "+event.player.getDisplayName()+" "+event.player.getUniqueID());
-    	CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(event.player);
-    	
-    	/** save player extend data in server proxy */
-    	if (capa != null)
-    	{
-    		LogHelper.info("DEBUG : player logout: save player extProps in ServerProxy");
-    		//save player nbt data
-    		NBTTagCompound nbt = new NBTTagCompound();
-    		
-    		capa.saveNBTData(nbt);
-    		ServerProxy.setPlayerData(event.player.getUniqueID().toString(), nbt);
-    	}
-	}
+//	//player loggout, NO USE in singleplayer
+//	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+//	public void onPlayerLogout(PlayerLoggedOutEvent event)
+//	{
+//	}
 	
 	/**
 	 * player change dimension, need to update player data
 	 * 
-	 * NOTE: this event do not trigger when End(1) -> Overworld(0) 
+	 * NOTE: this event do not trigger when End(1) -> Overworld(0) (is EntityCloneEvent)
 	 */
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
 	public void onPlayerChangeDim(PlayerChangedDimensionEvent event)
@@ -775,8 +743,12 @@ public class FML_COMMON_EventHandler
 		
 		if (event.player != null && !event.player.worldObj.isRemote)
 		{
-			/** update player id */
+			//update player id
 			ServerProxy.updatePlayerID(event.player);
+			
+			//send sync packet
+			CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(event.player);
+			capa.sendSyncPacket(0);
 		}//end server side
 	}
 	

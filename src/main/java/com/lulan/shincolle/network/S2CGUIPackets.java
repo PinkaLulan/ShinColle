@@ -874,7 +874,7 @@ public class S2CGUIPackets implements IMessage
 			
 			if (capa != null)
 			{
-				capa.setInitSID(msg.valueBoolean);
+				capa.initSID = msg.valueBoolean;
 			}
 		}
 		break;

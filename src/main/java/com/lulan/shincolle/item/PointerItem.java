@@ -229,13 +229,13 @@ public class PointerItem extends BasicItem
 								//in team, set focus
 								if (i >= 0)
 								{
-									LogHelper.infoDebugMode("DEBUG : pointer set focus: "+hitObj.entityHit);
+									LogHelper.debug("DEBUG : pointer set focus: "+hitObj.entityHit);
 									CommonProxy.channelG.sendToServer(new C2SGUIPackets(player , C2SGUIPackets.PID.SetSelect, meta, ship.getShipUID()));
 								}
 								//not in team, add team
 								else
 								{
-									LogHelper.infoDebugMode("DEBUG : pointer add team: "+hitObj.entityHit);
+									LogHelper.debug("DEBUG : pointer add team: "+hitObj.entityHit);
 									CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.AddTeam, ship.getEntityId()));
 								
 									//若single mode, 則每add一隻就設該隻為focus

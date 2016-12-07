@@ -39,8 +39,9 @@ public class CapaTeitoku implements ICapaTeitoku
 	public String playerName;
 	
 	//temp var
-	public boolean needInit = true;		//inited flag
-	private boolean isOpeningGUI;		//in using GUI
+	public boolean needInit = false;	//player setting flag
+	public boolean initSID = false;		//ship UID init flag: false = not init
+	public boolean isOpeningGUI;		//in using GUI
 	
 	//player data
 	private boolean hasRing;
@@ -58,7 +59,6 @@ public class CapaTeitoku implements ICapaTeitoku
 	 */
 	private BasicEntityShip[][] teamList;	//total 9 teams, 1 team = 6 ships
 	private boolean[][] selectState;		//ship selected, for command control target
-	private boolean initSID = false;		//ship UID init flag: false = not init
 	private int[][] sidList;				//ship UID
 	private int[] formatID;					//ship formation ID
 	private int saveId;						//current ship/empty slot, value = 0~5
@@ -77,13 +77,18 @@ public class CapaTeitoku implements ICapaTeitoku
 	//target selector
 	private HashMap<Integer, String> targetClassMap;	//temp for client side, used in GUI
 
-
-	//init capability on player login
-	@Override
-	public void init(EntityPlayer entity)
+	
+	/**
+	 * 注意constructor會在entity之前就先new, 外加會接著跑一次loadNBTData
+	 * 因此在constructor中就必須先new好各array類變數的空間, 以免NPE
+	 * 
+	 * playerUID跟playerName只能放在第二段init方法中執行
+	 */
+	public CapaTeitoku()
 	{
-		this.player = entity;
-		this.playerName = entity.getDisplayNameString();
+		LogHelper.debug("SSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
+		this.playerName = "";
+		this.isOpeningGUI = false;
 		this.hasRing = false;
 		this.hasTeam = false;
 		this.isRingActive = false;
@@ -91,25 +96,35 @@ public class CapaTeitoku implements ICapaTeitoku
 		this.ringEffect = new int[] {0, 0, 0, 0};
 		this.marriageNum = 0;
 		this.bossCooldown = ConfigHandler.bossCooldown;
+		this.teamCooldown = 20;
 		this.teamList = new BasicEntityShip[9][6];
 		this.selectState = new boolean[9][6];
+		this.initSID = false;
 		this.sidList = new int[9][6];
 		this.formatID = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0};
-		this.listShipEID = new ArrayList();
-		this.listColleShip = new ArrayList();
-		this.listColleEquip = new ArrayList();
-		this.targetClassMap = new HashMap();
-		this.initSID = false;
 		this.saveId = 0;
 		this.teamId = 0;
+		this.listShipEID = new ArrayList<Integer>();
+		this.listColleShip = new ArrayList<Integer>();
+		this.listColleEquip = new ArrayList<Integer>();
 		this.playerUID = -1;
-		this.isOpeningGUI = false;
+		this.mapTeamData = new HashMap<Integer, TeamData>();
+		this.listTeamData = new ArrayList<TeamData>();
+		this.targetClassMap = new HashMap<Integer, String>();
 		
-		//team
-		this.teamCooldown = 20;
-		this.mapTeamData = new HashMap();
-		this.listTeamData = new ArrayList();
+		//need init
+		this.needInit = true;
+	}
+
+	//第二段init: init capability on player login
+	public void init(EntityPlayer entity)
+	{
+		LogHelper.debugHighLevel("DEBUG: init player capability data.");
 		
+		this.player = entity;
+		this.playerName = entity.getName();
+		
+		//init done
 		this.needInit = false;
 	}
 	
@@ -142,6 +157,7 @@ public class CapaTeitoku implements ICapaTeitoku
 		 * entity id will change after entity reconstruction
 		 * a way to keep team list is saving ship UID
 		 */
+		//每次儲存sid前先更新過一次
 		if (this.initSID)
 		{	//update id AFTER sid is inited
 			LogHelper.info("DEBUG : save player ExtNBT: update ship UID from teamList");
@@ -174,25 +190,14 @@ public class CapaTeitoku implements ICapaTeitoku
 		}
 		
 		nbt.setTag(CAPA_KEY, nbtExt);
-		LogHelper.infoDebugMode("DEBUG : save player ExtNBT data on id: "+player.getEntityId());
-		
-		//backup data in ServerProxy
-		LogHelper.infoDebugMode("DEBUG : player saveNBTData: backup player extProps in ServerProxy");
-		ServerProxy.setPlayerData(player.getUniqueID().toString(), nbtExt);
-		
+		LogHelper.debug("DEBUG : save player ExtNBT data on: "+this.player);
+
 		return nbt;
 	}
 
 	@Override
 	public void loadNBTData(NBTTagCompound nbt)
 	{
-		//check init flag
-		if (this.needInit || this.player == null)
-		{
-			LogHelper.infoDebugMode("DEBUG: load player capability nbt fail: capa not inited. "+this.player+" "+this.needInit);
-			return;
-		}
-		
 		NBTTagCompound nbtExt = (NBTTagCompound) nbt.getTag(CAPA_KEY);
 		
 		/** FIX: check empty player data for iChun:SyncMod
@@ -201,7 +206,7 @@ public class CapaTeitoku implements ICapaTeitoku
 		 */
 		if (nbtExt == null)
 		{
-			//check data without data tag
+			//check player UID tag in 'nbt', not 'nbtExt'
 			if (!nbt.hasKey("PlayerUID"))
 			{
 				LogHelper.info("DEBUG : player loadNBTData: fail, data is null "+nbt+" "+nbtExt);
@@ -235,28 +240,20 @@ public class CapaTeitoku implements ICapaTeitoku
 			arrtemp = nbtExt.getIntArray("ColleEquip");
 			this.listColleEquip = CalcHelper.intArrayToList(arrtemp);
 			
-			/**load team list by ship UID
-			 * get entity by ship UID, SERVER SIDE ONLY
-			 * 
-			 * player entity can be loaded between ship entities,
-			 * the teamList have to sync after all entity loaded (not here)
-			 */
-			if (!this.player.worldObj.isRemote)
+			//load ship id and select state list
+			for (int i = 0; i < 9; ++i)
 			{
-				for (int i = 0; i < 9; ++i)
-				{
-					byte[] byteSelect = nbtExt.getByteArray("SelectState"+i);
-					int[] sid = nbtExt.getIntArray("TeamList"+i);
-							
-					if (sid != null && sid.length > 5)
-					{  //null check for new player
-						for (int j = 0; j < 6; ++j)
-						{
-							//set select state
-							this.selectState[i][j] = byteSelect[j] == 1 ? true : false;
-							//set ship UID
-							this.sidList[i][j] = sid[j];
-						}
+				byte[] byteSelect = nbtExt.getByteArray("SelectState"+i);
+				int[] sid = nbtExt.getIntArray("TeamList"+i);
+						
+				if (sid != null && sid.length > 5)
+				{  //null check for new player
+					for (int j = 0; j < 6; ++j)
+					{
+						//set select state
+						this.selectState[i][j] = byteSelect[j] == 1 ? true : false;
+						//set ship UID
+						this.sidList[i][j] = sid[j];
 					}
 				}
 			}
@@ -266,7 +263,7 @@ public class CapaTeitoku implements ICapaTeitoku
 			LogHelper.info("DEBUG : player loadNBTData: load fail: "+e);
 		}
 		
-		LogHelper.info("DEBUG : load player ExtNBT data on id: "+player.getEntityId()+" client? "+this.player.worldObj.isRemote);
+		LogHelper.info("DEBUG : load player ExtNBT data on: "+this.player);
 	}
 	
 	//getter
@@ -601,11 +598,6 @@ public class CapaTeitoku implements ICapaTeitoku
 		return (int)((float)this.teamCooldown * 0.05F);
 	}
 	
-	public boolean getInitSID()
-	{
-		return this.initSID;
-	}
-	
 	public ArrayList<Integer> getShipEIDList()
 	{
 		return this.listShipEID;
@@ -809,7 +801,7 @@ public class CapaTeitoku implements ICapaTeitoku
 		}
 		catch (Exception e)
 		{
-			LogHelper.info("EXCEPTION : set current team select state fail. "+this.player+" "+this.needInit);
+			LogHelper.info("EXCEPTION : set current team select state fail.");
 			e.printStackTrace();
 		}
 	}
@@ -851,11 +843,6 @@ public class CapaTeitoku implements ICapaTeitoku
 	public void setPlayerTeamCooldown(int par1)
 	{
 		this.teamCooldown = par1;
-	}
-	
-	public void setInitSID(boolean par1)
-	{
-		this.initSID = par1;
 	}
 	
 	public void setShipEIDList(ArrayList<Integer> list)

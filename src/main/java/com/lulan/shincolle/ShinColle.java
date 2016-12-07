@@ -1,6 +1,7 @@
 package com.lulan.shincolle;
 
 
+
 import com.lulan.shincolle.handler.ChunkLoaderHandler;
 import com.lulan.shincolle.handler.CommandHandler;
 import com.lulan.shincolle.handler.ConfigHandler;
@@ -49,7 +50,7 @@ public class ShinColle
 	{		
 		//config inti
 		ConfigHandler.init(event.getSuggestedConfigurationFile());	//load config file
-
+		
 		ModItems.init();
 
 		ModBlocks.init();

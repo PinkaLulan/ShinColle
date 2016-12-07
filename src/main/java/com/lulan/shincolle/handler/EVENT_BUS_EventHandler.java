@@ -223,26 +223,9 @@ public class EVENT_BUS_EventHandler
 	    }
 	    
 	    EntityLivingBase host = event.getEntityLiving();
-	    
-	    //save player data into server cache if player dead
-	    if (host instanceof EntityPlayer)
-	    {
-	    	EntityPlayer player = (EntityPlayer) host;
-	    	CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(player);
-	    	
-	    	LogHelper.info("INFO : player death: save player data: "+player.getDisplayName()+" "+player.getUniqueID());
-	    	
-	    	if (capa != null)
-	    	{
-	    		LogHelper.info("DEBUG : player death: save player data into server cache");
-	    		
-	    		NBTTagCompound nbt = new NBTTagCompound();
-	    		capa.saveNBTData(nbt);
-	    		ServerProxy.setPlayerData(player.getUniqueID().toString(), nbt);
-	    	}
-	    }
+
 	    //show dead emote
-	    else if (host instanceof BasicEntityShip)
+	    if (host instanceof BasicEntityShip)
 	    {
 	    	if (!host.worldObj.isRemote)
 	    	{
@@ -268,19 +251,27 @@ public class EVENT_BUS_EventHandler
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
 	public void onEntityClone(PlayerEvent.Clone event)
 	{
-		if (event.getOriginal() != null) LogHelper.info("DEBUG : get player clone event: "+event.getOriginal().getDisplayName()+" "+event.getOriginal().getUniqueID());
-    	
-        //restore player data from ServerProxy cache
-        NBTTagCompound nbt = ServerProxy.getPlayerData(event.getOriginal().getUniqueID().toString());
-        
-        if (nbt != null && event.getEntityPlayer() != null)
+        //restore data when player dead or back from End
+        if (event.getEntityPlayer() != null && event.getOriginal() != null)
         {
-        	CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(event.getEntityPlayer());
-        	capa.loadNBTData(nbt);
-        	LogHelper.info("DEBUG : player clone: restore player data: eid: "+event.getEntityPlayer().getEntityId()+" pid: "+capa.getPlayerUID());
+        	LogHelper.info("DEBUG : get player clone event: "+event.getOriginal());
+
+        	//copy data from original player to new player
+        	CapaTeitoku capa1 = CapaTeitoku.getTeitokuCapability(event.getOriginal());
+        	CapaTeitoku capa2 = CapaTeitoku.getTeitokuCapability(event.getEntityPlayer());
         	
-        	//sync extProps state to client
-        	capa.sendSyncPacket(0);
+        	if (capa1 != null && capa2 != null)
+        	{
+        		//init new player capa data
+        		capa2.init(event.getEntityPlayer());
+        		
+        		//copy data to new player
+        		NBTTagCompound nbt = capa1.saveNBTData(new NBTTagCompound());
+        		capa2.loadNBTData(nbt);
+        		capa2.sendSyncPacket(0);
+        		
+        		LogHelper.info("DEBUG : player clone: restore player data: eid: "+event.getEntityPlayer().getEntityId()+" pid: "+capa2.getPlayerUID());
+        	}
         }
 	}
 	

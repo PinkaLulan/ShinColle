@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
