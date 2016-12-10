@@ -49,7 +49,7 @@ public class ShinColle
 	public void preInit(FMLPreInitializationEvent event) throws Exception
 	{		
 		//config inti
-		ConfigHandler.init(event.getSuggestedConfigurationFile());	//load config file
+		ConfigHandler.init(event);	//load config file
 		
 		ModItems.init();
 

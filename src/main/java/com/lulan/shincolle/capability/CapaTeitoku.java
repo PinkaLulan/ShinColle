@@ -86,7 +86,6 @@ public class CapaTeitoku implements ICapaTeitoku
 	 */
 	public CapaTeitoku()
 	{
-		LogHelper.debug("SSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
 		this.playerName = "";
 		this.isOpeningGUI = false;
 		this.hasRing = false;

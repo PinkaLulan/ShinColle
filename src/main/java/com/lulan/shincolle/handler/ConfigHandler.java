@@ -2,18 +2,23 @@ package com.lulan.shincolle.handler;
 
 import java.io.File;
 
+import com.lulan.shincolle.config.ConfigLoot;
+import com.lulan.shincolle.config.ConfigSound;
 import com.lulan.shincolle.reference.Reference;
 
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 
 public class ConfigHandler
 {
 	
-	public static Configuration config;		//宣告config檔實體
+	public static Configuration config;		//main config
+	public static ConfigSound configSound;	//sound config
+	public static ConfigLoot configLoot;	//loot config
 	
 	//GENERAL
 	public static boolean debugMode = false;
@@ -102,10 +107,9 @@ public class ConfigHandler
 	public static Property propPolyGravel;
 	
 	
-	//讀取設定檔參數
+	//config for BOTH SIDE
 	private static void loadConfiguration()
 	{
-		
 		//是否顯示custom name tag
 		alwaysShowTeamParticle = config.getBoolean("Always_Show_Team", "general", false, "Always show team circle animation");
 		
@@ -219,45 +223,108 @@ public class ConfigHandler
 		shipyardLarge = getDoubleArrayFromConfig(shipyardLarge, propShipyardLarge);
 		volCore = getDoubleArrayFromConfig(volCore, propVolCore);
 		
-		setCustomSoundValue();
+//		setCustomSoundValue(); TODO
 		
 		checkChange(config);
 	}
 	
-	//check custom sound
-	private static void setCustomSoundValue()
-	{
-		//custom sound by mod user
-		int[] geti = propCustomSoundRate.getIntList();
-		
-		if (geti != null && geti.length % 10 == 0)
+	//設定檔處理 初始化動作
+	public static void init(FMLPreInitializationEvent event) throws Exception
+	{		
+		//如果設定檔實體還未建立 則建立之
+		if (config == null)
 		{
-			customSoundRate = geti;
-		}
-		else
-		{
-			geti = new int[] {};
-			propCustomSoundRate.set(geti);
-			customSoundRate = geti;
-		}
-		
-		//custom sound by mod author
-		geti = propCustomSoundRate2.getIntList();
-		
-		if (geti != null && geti.length % 10 == 0)
-		{
-			//is not default value, add default to existed value
-			/** TODO the setting for rv.26 */
-			if (geti.length != 20 || (geti.length >= 20 && geti[10] != 54))
+			//get file
+			String configRootLoc = event.getModConfigurationDirectory() + "/" + Reference.MOD_ID + "/";
+			File fileMainConfig = new File(configRootLoc + Reference.MOD_ID + ".cfg");
+			File fileSounds = new File(configRootLoc + "sounds.cfg");
+			File fileLootTable = new File(configRootLoc + "loottable.cfg");
+			
+			config = new Configuration(fileMainConfig);
+			configSound = new ConfigSound(fileSounds);
+			configLoot = new ConfigLoot(fileLootTable);
+			
+			/** BOTH SIDE CONFIG */
+			loadConfiguration();
+			configLoot.runConfig();
+			
+			/** CLIENT SIDE CONFIG */
+			if (event.getSide().isClient())
 			{
-				propCustomSoundRate2.set(customSoundRate2);
 			}
-		}
-		else
-		{
-			propCustomSoundRate2.set(customSoundRate2);
+			/** SERVER SIDE CONFIG */
+			else
+			{
+			}
+			
+			//TODO for debug
+//			configLoot.LOOTMAP.forEach((k, v) ->
+//			{
+//				LogHelper.info("GGGGGG map "+k);
+//				v.forEach((v2) ->
+//				{
+//					LogHelper.info("LLLLLLL list "+v2.itemName);
+//				});
+//			});
 		}
 	}
+	
+	//若版本更新後 設定檔需要更新 則在此區塊增加更新方法
+	@SubscribeEvent
+	public void onConfigurationChangedEvent(ConfigChangedEvent.OnConfigChangedEvent event)
+	{
+		//若設定檔的mod id跟目前mod id不同時 則進行更新
+		if (event.getModID().equalsIgnoreCase(Reference.MOD_ID))
+		{
+			loadConfiguration();
+		}
+		
+		//TODO 若設定檔版本跟目前版本不同, 則更新
+		
+	}
+	
+	//若設定檔有更新過, 則儲存
+	public static void checkChange(Configuration cfg)
+	{
+		if (cfg != null && cfg.hasChanged())
+		{
+			cfg.save();
+		}
+	}
+	
+//	//check custom sound TODO load custom sound
+//	private static void setCustomSoundValue()
+//	{
+//		//custom sound by mod user
+//		int[] geti = propCustomSoundRate.getIntList();
+//		
+//		if (geti != null && geti.length % 10 == 0)
+//		{
+//			customSoundRate = geti;
+//		}
+//		else
+//		{
+//			geti = new int[] {};
+//			propCustomSoundRate.set(geti);
+//			customSoundRate = geti;
+//		}
+//		
+//		//custom sound by mod author
+//		geti = propCustomSoundRate2.getIntList();
+//		
+//		if (geti != null && geti.length % 10 == 0)
+//		{
+//			//is not default value, add default to existed value
+//			if (geti.length != 20 || (geti.length >= 20 && geti[10] != 54))
+//			{
+//				propCustomSoundRate2.set(customSoundRate2);
+//			}
+//		}
+//		else
+//		{
+//			propCustomSoundRate2.set(customSoundRate2);
+//		}
+//	}
 	
 	//check get value
 	public static int[] getIntArrayFromConfig(int[] defaultValue, Property target)
@@ -308,40 +375,6 @@ public class ConfigHandler
 			target.set(defaultValue);
 			return defaultValue;
 		}
-	}
-	
-	//設定檔處理 初始化動作
-	public static void init(File configFile)
-	{		
-		//如果設定檔實體還未建立 則建立之
-		if (config == null)
-		{
-			config = new Configuration(configFile);	//建立config檔實體
-			loadConfiguration();
-		}
-	}
-	
-	//若設定檔有更新過, 則儲存
-	public static void checkChange(Configuration cfg)
-	{
-		if (cfg != null && cfg.hasChanged())
-		{
-			cfg.save();
-		}
-	}
-	
-	//若版本更新後 設定檔需要更新 則在此區塊增加更新方法
-	@SubscribeEvent
-	public void onConfigurationChangedEvent(ConfigChangedEvent.OnConfigChangedEvent event)
-	{
-		//若設定檔的mod id跟目前mod id不同時 則進行更新
-		if (event.getModID().equalsIgnoreCase(Reference.MOD_ID))
-		{
-			loadConfiguration();
-		}
-		
-		//TODO 若設定檔版本跟目前版本不同, 則更新
-		
 	}
 	
 	
