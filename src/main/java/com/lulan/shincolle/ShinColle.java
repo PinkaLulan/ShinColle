@@ -12,6 +12,7 @@ import com.lulan.shincolle.init.ModEvents;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.init.ModOres;
 import com.lulan.shincolle.init.ModRecipes;
+import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.init.ModWorldGen;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.IProxy;
@@ -56,6 +57,8 @@ public class ShinColle
 		ModBlocks.init();
 
 		ModEntity.init();
+		
+		ModSounds.init();
 		
 		//render & model register
 		proxy.registerRender();

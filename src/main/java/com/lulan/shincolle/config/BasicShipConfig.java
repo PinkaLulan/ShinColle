@@ -94,11 +94,7 @@ public abstract class BasicShipConfig
                 ArrayList<String> tempList = new ArrayList<String>();
                 int lineNum = 0;
                 
-                /**
-                 * 在此處理comment, 將comment去掉後
-                 * 剩餘字串拼成的ArrayList丟給parser讀取內容
-                 */
-                //read file
+                //start read
                 while (true)
                 {
                 	//read line
@@ -117,7 +113,7 @@ public abstract class BasicShipConfig
                 }//end read line
                 
                 //parse lines
-//                LogHelper.info("INFO: load custom config lines: "+tempList.size());
+                LogHelper.info("INFO: load custom config lines: "+this.file+" "+tempList.size());
                 parse(tempList);
                 
             }//end can read

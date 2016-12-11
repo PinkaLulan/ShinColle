@@ -5,6 +5,7 @@ import java.io.File;
 import com.lulan.shincolle.config.ConfigLoot;
 import com.lulan.shincolle.config.ConfigSound;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
@@ -49,7 +50,6 @@ public class ConfigHandler
 	public static Property propShip, propShipLimitBasic, propShipLimitEffect, propMobSpawn,
 						   propBossSmall, propBossLarge, propMobSmall, propMobLarge, propGrudgeShip,
 						   propGrudgeAction, propAmmoShip, propAtkSpd, propAtkDly, propExp,
-						   propCustomSoundShip, propCustomSoundRate, propCustomSoundRate2,
 						   propShipyardSmall, propShipyardLarge, propVolCore;
 	
 	//SHIP SETTING
@@ -89,11 +89,6 @@ public class ConfigHandler
 	public static float volumeTimekeep = 1.0F;
 	public static float volumeShip = 1.0F;
 	public static float volumeFire = 0.7F;
-	
-	//custom sound                                    id, idle, hit, hurt, dead, love, kb, item, feed, time
-	public static int[] customSoundRate = new int[] {};
-	public static int[] customSoundRate2 = new int[] {56, 50,   50,  50,   100,  0,    0,  50,   0,    0,
-													  54, 25,   0,   25,   0,    50,   0,  50,   0,    0};
 	
 	//shipyard setting                                   max storage, build speed, fuel magn
 	public static double[] shipyardSmall = new double[] {460800D,     48D,         1D};
@@ -187,8 +182,6 @@ public class ConfigHandler
 		propAtkDly = config.get("ship setting", "Attack_Fixed_Delay", fixedAttackDelay, "Fixed attack delay for: Melee, Light attack, Heavy attack, Carrier attack, Airplane attack, ex: base speed 160, fixed delay 30 means (160 / ship attack speed +30) ticks per attack");
 		propExp = config.get("ship setting", "Exp_Gain", expGain, "Exp gain for: Melee, Light Attack, Heavy Attack, Light Aircraft, Heavy Aircraft, Move per Block(AP only), Other Action(AP only)");
 		propMobSpawn = config.get("ship setting", "Mob_Spawn", mobSpawn, "Mob ship spawn: Max number in the world, Spawn prob (roll once per player every 128 ticks), #groups each spawn, #min each group, #max each group");
-		propCustomSoundRate = config.get("ship setting", "Custom_Sound_Rate", customSoundRate, "Probability of custom sound, 0 = no custom sound, 100 = always custom sound. Format: ship id A, idle, attack, hurt, dead, marry, knockback, item get, feed, timekeep, ship id B, idle, ...(loop), the ship id is same with meta value of ship spawn egg.");
-		propCustomSoundRate2 = config.get("ship setting", "Custom_Sound_Rate2", customSoundRate2, "Custom sound by mod author, the priority is customSoundRate > customSoundRate2, you can set this sound rate to 0 (except ship id!!) or add your setting in 'customSoundRate' to disable this setting.");
 		propShipyardSmall = config.get("ship setting", "Shipyard_Small", shipyardSmall, "Small shipyard: max fuel storage, build speed, fuel magnification");
 		propShipyardLarge = config.get("ship setting", "Shipyard_Large", shipyardLarge, "Large shipyard: max fuel storage, build speed, fuel magnification");
 		propVolCore = config.get("general", "Vol_Core", volCore, "Volcano Core: max fuel storage, fuel consume speed, fuel value per grudge item");
@@ -223,8 +216,6 @@ public class ConfigHandler
 		shipyardLarge = getDoubleArrayFromConfig(shipyardLarge, propShipyardLarge);
 		volCore = getDoubleArrayFromConfig(volCore, propVolCore);
 		
-//		setCustomSoundValue(); TODO
-		
 		checkChange(config);
 	}
 	
@@ -247,24 +238,25 @@ public class ConfigHandler
 			/** BOTH SIDE CONFIG */
 			loadConfiguration();
 			configLoot.runConfig();
+			configSound.runConfig();
 			
-			/** CLIENT SIDE CONFIG */
-			if (event.getSide().isClient())
-			{
-			}
-			/** SERVER SIDE CONFIG */
-			else
-			{
-			}
-			
-			//TODO for debug
-//			configLoot.LOOTMAP.forEach((k, v) ->
+//			/** CLIENT SIDE CONFIG */ no use for now
+//			if (event.getSide().isClient())
 //			{
-//				LogHelper.info("GGGGGG map "+k);
-//				v.forEach((v2) ->
+//			}
+//			/** SERVER SIDE CONFIG */
+//			else
+//			{
+//			}
+//			
+//			//TODO for debug
+//			configSound.SOUNDRATE.forEach((k, v) ->
+//			{
+//				LogHelper.info("KKKKKKKKKKK "+k);
+//				for (float v2 : v)
 //				{
-//					LogHelper.info("LLLLLLL list "+v2.itemName);
-//				});
+//					LogHelper.info("VVVVVVVVV "+v2);
+//				}
 //			});
 		}
 	}
@@ -291,40 +283,6 @@ public class ConfigHandler
 			cfg.save();
 		}
 	}
-	
-//	//check custom sound TODO load custom sound
-//	private static void setCustomSoundValue()
-//	{
-//		//custom sound by mod user
-//		int[] geti = propCustomSoundRate.getIntList();
-//		
-//		if (geti != null && geti.length % 10 == 0)
-//		{
-//			customSoundRate = geti;
-//		}
-//		else
-//		{
-//			geti = new int[] {};
-//			propCustomSoundRate.set(geti);
-//			customSoundRate = geti;
-//		}
-//		
-//		//custom sound by mod author
-//		geti = propCustomSoundRate2.getIntList();
-//		
-//		if (geti != null && geti.length % 10 == 0)
-//		{
-//			//is not default value, add default to existed value
-//			if (geti.length != 20 || (geti.length >= 20 && geti[10] != 54))
-//			{
-//				propCustomSoundRate2.set(customSoundRate2);
-//			}
-//		}
-//		else
-//		{
-//			propCustomSoundRate2.set(customSoundRate2);
-//		}
-//	}
 	
 	//check get value
 	public static int[] getIntArrayFromConfig(int[] defaultValue, Property target)

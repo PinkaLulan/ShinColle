@@ -114,8 +114,8 @@ public class ConfigLoot extends BasicShipConfig
 		strs.add("#"+NEW_LINE);
 		strs.add("# format: chest_ID, item_name, item_meta, weight, chance%, min stack size, max stack size"+NEW_LINE);
 		strs.add("#"+NEW_LINE);
-		strs.add("# chest_ID: 0:Spawn Bonus Chest, 1:Igloo, 2:Dungeon, 3:Village Blacksmith, 4:Mineshaft, 5:Pyramid"+NEW_LINE);
-		strs.add("#           6:Jungle Temple, 7:Nether Bridge, 8:Stronghold, 9:End City"+NEW_LINE);
+		strs.add("# chest_ID: 0:Spawn Bonus Chest, 1:Igloo, 2:Dungeon, 3:Village Blacksmith, 4:Mineshaft,"+NEW_LINE);
+		strs.add("#           5:Pyramid, 6:Jungle Temple, 7:Nether Bridge, 8:Stronghold, 9:End City"+NEW_LINE);
 		strs.add("#"+NEW_LINE);
 		strs.add("# item_meta: -1:random meta, only for shincolle item, 0~N:specific meta"+NEW_LINE);
 		strs.add("#"+NEW_LINE);

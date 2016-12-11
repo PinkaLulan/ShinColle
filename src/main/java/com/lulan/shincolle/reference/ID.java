@@ -655,21 +655,6 @@ public class ID {
 		public static final byte Move = 4;
 	}
 	
-	/** custom sound array */
-	public static final class Sound
-	{
-		public static final byte ShipID = 0;
-		public static final byte Idle = 1;
-		public static final byte Hit = 2;
-		public static final byte Hurt = 3;
-		public static final byte Dead = 4;
-		public static final byte Love = 5;
-		public static final byte Knock = 6;
-		public static final byte Item = 7;
-		public static final byte Feed = 8;
-		public static final byte Time = 9;
-	}
-	
 	/** ship state for equip model display */
 	public static final class State
 	{

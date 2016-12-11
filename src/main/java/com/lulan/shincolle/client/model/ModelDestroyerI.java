@@ -308,7 +308,7 @@ public class ModelDestroyerI extends ModelBase implements IModelEmotion
 		    	
 		    	//reset sit pose
 		    	PBack.rotateAngleZ = -0.31F;
-		    	GlStateManager.translate(0F, 0.8F, 0F);
+		    	GlStateManager.translate(0F, 0.42F, 0F);
 		    }
 		}
 	    
@@ -331,7 +331,7 @@ public class ModelDestroyerI extends ModelBase implements IModelEmotion
 	
 	private void motionStopPos(float f, float f1, float f2, float f3, float f4, BasicEntityShip ent)
 	{
-		GlStateManager.translate(0F, 0.9F, 0F);
+		GlStateManager.translate(0F, 0.75F, 0F);
 		
 		isKisaragi(ent);
 		setFace(2);

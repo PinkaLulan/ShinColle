@@ -20,7 +20,6 @@ import net.minecraft.util.text.ITextComponent;
 public class CapaShipInventory extends CapaInventory<BasicEntityShip> implements IInventory
 {
 
-	public static final String ShipInvName = "ShipInv";	//ship inventory nbt tag name
 	public static final int SlotPages = 3;
 	public static final int SlotMax = 6 + 18 * 3;   	//6 equip + 18 inv * 3 page
 	private int inventoryPage = 0;						//current inventory page id
