@@ -431,6 +431,7 @@ public class PointerItem extends BasicItem
 							//send sit packet
 							CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetSitting, meta, ship.getShipUID()));
 						}
+						
 						return new ActionResult(EnumActionResult.SUCCESS, stack);
 					}
 					//ship類非主人
@@ -487,7 +488,7 @@ public class PointerItem extends BasicItem
 			else
 			{
 				//若按住shift, 則開啟formation GUI
-				if (keySet.keyBindSneak.isPressed())
+				if (player.isSneaking())
 				{
 					//send GUI packet
 					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.OpenItemGUI, 0));

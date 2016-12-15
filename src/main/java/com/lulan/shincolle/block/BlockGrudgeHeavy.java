@@ -40,14 +40,14 @@ public class BlockGrudgeHeavy extends BasicBlockMulti
 	
 	public BlockGrudgeHeavy()
 	{
-		super(Material.SAND);
+		super(Material.WATER);
+		this.setSoundType(SoundType.SAND);
 		this.setUnlocalizedName(NAME);
 		this.setRegistryName(NAME);
 		this.setHarvestLevel("shovel", 0);
 	    this.setHardness(3F);
 	    this.setLightLevel(1F);
 	    this.setResistance(600F);
-	    this.setSoundType(SoundType.SAND);
 	    
         GameRegistry.register(this);
         GameRegistry.register(new ItemBlockGrudgeHeavy(this), this.getRegistryName());

@@ -314,7 +314,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	 * type: 0:idle, 1:hit, 2:hurt, 3:dead, 4:marry, 5:knockback, 6:item, 7:feed, 10~33:timekeep
 	 */
     @Nullable
-    protected SoundEvent getCustomSound(int type)
+    public SoundEvent getCustomSound(int type)
     {
     	//get custom sound rate
 		int key = (int) getShipClass() + 2;
@@ -2185,20 +2185,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	{
 		EntityHelper.moveEntityWithHeading(this, strafe, forward);
     }
-	
-	//update ship move helper
-	@Override
-	protected void updateAITasks()
-	{
-		if (stopAI)
-		{
-			return;
-		}
 
-		super.updateAITasks();
-        EntityHelper.updateShipNavigator(this);
-    }
-	
 	/** update entity 
 	 *  在此用onUpdate跟onLivingUpdate區分server跟client update
 	 *  for shincolle:
@@ -2215,7 +2202,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		}
 		
 		super.onUpdate();
-		
+
 		//get depth if in fluid block
 		EntityHelper.checkDepth(this);
 		
@@ -2355,21 +2342,24 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 //		}
 	}
 
-	/** update living entity 
-	 *  在此用onUpdate跟onLivingUpdate區分server跟client update
-	 *  onUpdate = client update only
-	 *  onLivingUpdate = server update only
+	/**
+	 * update living entity
+	 * 此方法在onUpdate中途呼叫
 	 */
 	@Override
 	public void onLivingUpdate()
 	{
-		if (stopAI)
+		if ((!worldObj.isRemote))
 		{
-			return;
+	    	//update movement, NOTE: 1.9.4: must done before vanilla MoveHelper updating in super.onLivingUpdate()
+	    	EntityHelper.updateShipNavigator(this);
+	        super.onLivingUpdate();
 		}
-		
-        super.onLivingUpdate();
-        
+		else
+		{
+			super.onLivingUpdate();
+		}
+
         //debug TODO
 //        if(this.ticksExisted % 32 == 0) {
 //      	LogHelper.info("DEBUG : ship onUpdate: flag: side: "+this.worldObj.isRemote+" "+EffectEquip[ID.EF_CRI]);
@@ -2383,7 +2373,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         {
         	//update target
         	TargetHelper.updateTarget(this);
-
+        	
         	//update/init id
         	updateShipID();
         	
@@ -2559,7 +2549,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         		if (checkHour >= 0) playTimeSound(checkHour);
         	}//end timekeeping
         	
-        }//end if(server side)
+        }//end server side
     }
 	
 	//use combat ration
@@ -3489,17 +3479,15 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		if (!this.isUpdated && ticksExisted % updateTime == 0)
 		{
 			LogHelper.info("DEBUG : update ship: initial SID, PID  cd: "+updateTime);
-			ServerProxy.updateShipID(this);		//update ship uid
+			ServerProxy.updateShipID(this);				//update ship uid
 			
 			if (this.getPlayerUID() <= 0)
 			{
-				ServerProxy.updateShipOwnerID(this);//update owner uid
+				ServerProxy.updateShipOwnerID(this);	//update owner uid
 			}
 			
 			//update success
-			if (getPlayerUID() > 0 && getShipUID() > 0 && 
-				ServerProxy.getShipWorldData(getShipUID()) != null &&
-				ServerProxy.getShipWorldData(getShipUID())[0] > 0)
+			if (getPlayerUID() > 0 && getShipUID() > 0)
 			{
 				this.sendSyncPacketAllValue();
 				this.isUpdated = true;

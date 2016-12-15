@@ -29,6 +29,7 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
+import com.lulan.shincolle.proxy.ServerProxy.ShipCacheData;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.ITileWaypoint;
 
@@ -286,12 +287,12 @@ public class EntityHelper
 	{
 		if (sid > 0)
 		{
-			int[] data = ServerProxy.getShipWorldData(sid);
+			ShipCacheData data = ServerProxy.getShipWorldData(sid);
 			
 			if (data != null)
 			{
-				Entity getEnt = getEntityByID(data[0], data[1], false);
-//				LogHelper.info("DEBUG : get ship by SID: "+data);
+				Entity getEnt = getEntityByID(data.entityID, data.worldID, false);
+				
 				if (getEnt instanceof BasicEntityShip)
 				{
 					return (BasicEntityShip) getEnt;
@@ -299,11 +300,10 @@ public class EntityHelper
 			}
 		}
 		else
-		{	//sid <= 0
+		{
 			return null;
 		}
 		
-//		LogHelper.info("DEBUG : ship not found: sid: "+sid);
 		return null;
 	}
 	
@@ -607,12 +607,12 @@ public class EntityHelper
     			}
         	}
 
-        	entity2.worldObj.theProfiler.startSection("ship navi");
+        	//update movement
         	pathNavi.onUpdateNavigation();
-	        entity2.worldObj.theProfiler.endSection();
-	        entity2.worldObj.theProfiler.startSection("ship move");
 	        moveHelper.onUpdateMoveHelper();
-	        entity2.worldObj.theProfiler.endSection();
+	        
+	        //apply movement
+	        entity2.moveEntityWithHeading(entity2.moveStrafing, entity2.moveForward);
 		}//end ship path
 
         //若有vanilla path, 則用特效顯示出path
@@ -1189,7 +1189,7 @@ public class EntityHelper
   	public static <T extends EntityLivingBase & IShipNavigator> void moveEntityWithHeading(T host, float strafe, float forward)
 	{
         double d0;
-
+        
         //液體中移動
         if (EntityHelper.checkEntityIsInLiquid(host))
         {

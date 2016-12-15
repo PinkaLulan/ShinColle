@@ -86,7 +86,9 @@ public class GuiDesk extends GuiContainer
 	private static final int LISTCLICK_TARGET = 2;
 	private static final int LISTCLICK_ALLY = 3;
 	private static final int LISTCLICK_BAN = 4;
-	private String errorMsg;
+	private static String StrGUI, StrPos, StrHeight, StrTeamID, StrBreak, StrAlly, StrOK, StrUnban,
+							StrBan, StrCancel, StrAllyList, StrBanList, StrRename, StrDisband, StrCreate,
+							StrNeutral, StrBelong, StrAllied, StrHostile, StrRemove;
 	
 	//player data
 	EntityPlayer player;
@@ -225,6 +227,29 @@ public class GuiDesk extends GuiContainer
         
         //add text input field
         Keyboard.enableRepeatEvents(true);
+        
+        //string
+        StrGUI = I18n.format("gui.shincolle:radar.gui");
+        StrPos = I18n.format("gui.shincolle:radar.position");
+        StrHeight = I18n.format("gui.shincolle:radar.height");
+        StrTeamID = I18n.format("gui.shincolle:team.teamid");	
+        StrBreak = I18n.format("gui.shincolle:team.break");
+        StrAlly = I18n.format("gui.shincolle:team.ally");
+		StrOK = I18n.format("gui.shincolle:general.ok");
+		StrUnban = I18n.format("gui.shincolle:team.unban");
+		StrBan = I18n.format("gui.shincolle:team.ban");
+		StrCancel = I18n.format("gui.shincolle:general.cancel");
+		StrAllyList = I18n.format("gui.shincolle:team.allylist");
+		StrBanList = I18n.format("gui.shincolle:team.banlist");
+		StrRename = I18n.format("gui.shincolle:team.rename");
+		StrDisband = I18n.format("gui.shincolle:team.disband");
+		StrCreate = I18n.format("gui.shincolle:team.create");
+		StrNeutral = I18n.format("gui.shincolle:team.neutral");
+		StrBelong = I18n.format("gui.shincolle:team.belong");
+		StrAllied = I18n.format("gui.shincolle:team.allied");
+		StrHostile = I18n.format("gui.shincolle:team.hostile");
+		StrRemove = I18n.format("gui.shincolle:target.remove");
+		
 	}
 	
 	//get new mouseX,Y and redraw gui
@@ -670,7 +695,7 @@ public class GuiDesk extends GuiContainer
         	{
             case 0:	//radar scale
             	this.radar_zoomLv++;
-            	if(this.radar_zoomLv > 2) this.radar_zoomLv = 0;
+            	if (this.radar_zoomLv > 2) this.radar_zoomLv = 0;
             break;
             case 1: //ship slot 0~4
             case 2:
@@ -1194,9 +1219,8 @@ public class GuiDesk extends GuiContainer
 		int texty = 27;
 		
 		//draw button text
-		str = I18n.format("gui.shincolle:radar.gui");
-		int strlen = (int) (this.fontRendererObj.getStringWidth(str) * 0.5F);
-		fontRendererObj.drawStringWithShadow(str, 32-strlen, 174, Enums.EnumColors.YELLOW.getValue());
+		int strlen = (int) (this.fontRendererObj.getStringWidth(StrGUI) * 0.5F);
+		fontRendererObj.drawStringWithShadow(StrGUI, 32-strlen, 174, Enums.EnumColors.YELLOW.getValue());
 		
 		//draw ship list in radar
 		for (int i = this.listNum[LISTCLICK_RADAR]; i < shipList.size() && i < this.listNum[LISTCLICK_RADAR] + 5; ++i) {
@@ -1213,10 +1237,10 @@ public class GuiDesk extends GuiContainer
 				//draw pos
 				str = "LV " + TextFormatting.YELLOW + s2.getLevel() + "   " +
 						TextFormatting.GOLD + (int)s2.getHealth() + TextFormatting.RED + " / " + (int)s2.getMaxHealth();
-				str2 = I18n.format("gui.shincolle:radar.position") + " " + TextFormatting.YELLOW +
+				str2 = StrPos + " " + TextFormatting.YELLOW +
 					  MathHelper.ceiling_double_int(s.ship.posX) + " , " + 
 					  MathHelper.ceiling_double_int(s.ship.posZ) + "  " + TextFormatting.LIGHT_PURPLE +
-					  I18n.format("gui.shincolle:radar.height") + " " + TextFormatting.YELLOW +
+					  StrHeight + " " + TextFormatting.YELLOW +
 					  (int)(s.ship.posY);
 				
 				
@@ -1275,7 +1299,7 @@ public class GuiDesk extends GuiContainer
 				GlStateManager.pushMatrix();
 				GlStateManager.scale(0.8F, 0.8F, 0.8F);
 				//draw team id
-				str = TextFormatting.GRAY + I18n.format("gui.shincolle:team.teamid") +":  "+
+				str = TextFormatting.GRAY + StrTeamID +":  "+
 					  TextFormatting.YELLOW + this.capa.getPlayerUID() +" : "+
 					  TextFormatting.LIGHT_PURPLE + tdata.getTeamLeaderName();
 				fontRendererObj.drawString(str, 11, 34, 0);  //org pos: 11,42
@@ -1326,13 +1350,13 @@ public class GuiDesk extends GuiContainer
 						if (this.capa.getPlayerUID() != getd.getTeamID() &&
 							this.capa.isTeamAlly(getd.getTeamID()))
 						{
-							strLT = I18n.format("gui.shincolle:team.break");
+							strLT = StrBreak;
 							colorLT = Enums.EnumColors.YELLOW.getValue();
 						}
 						//not ally, show ally button
 						else
 						{
-							strLT = I18n.format("gui.shincolle:team.ally");
+							strLT = StrAlly;
 							colorLT = Enums.EnumColors.CYAN.getValue();
 						}
 					}
@@ -1346,13 +1370,13 @@ public class GuiDesk extends GuiContainer
 					//has clicked ally
 					if (tlist != null && clicki >= 0 && clicki < tlist.size())
 					{
-						strLT = I18n.format("gui.shincolle:team.break");
+						strLT = StrBreak;
 						colorLT = Enums.EnumColors.YELLOW.getValue();
 					}
 				}
 			}//end btn cd
 			
-			strLB = I18n.format("gui.shincolle:general.ok");
+			strLB = StrOK;
 			colorLB = Enums.EnumColors.WHITE.getValue();
 		break;
 		case TEAMSTATE_BAN:
@@ -1381,13 +1405,13 @@ public class GuiDesk extends GuiContainer
 						if (this.capa.getPlayerUID() != getd.getTeamID() &&
 							this.capa.isTeamBanned(getd.getTeamID()))
 						{
-							strLT = I18n.format("gui.shincolle:team.unban");
+							strLT = StrUnban;
 							colorLT = Enums.EnumColors.CYAN.getValue();
 						}
 						//not banned, show battle button
 						else
 						{
-							strLT = I18n.format("gui.shincolle:team.ban");
+							strLT = StrBan;
 							colorLT = Enums.EnumColors.YELLOW.getValue();
 						}
 					}
@@ -1401,38 +1425,38 @@ public class GuiDesk extends GuiContainer
 					//has clicked ally
 					if (tlist2 != null && clicki2 >= 0 && clicki2 < tlist2.size())
 					{
-						strLT = I18n.format("gui.shincolle:team.unban");
+						strLT = StrUnban;
 						colorLT = Enums.EnumColors.CYAN.getValue();
 					}
 				}
 			}//end btn cd
 			
-			strLB = I18n.format("gui.shincolle:general.ok");
+			strLB = StrOK;
 			colorLB = Enums.EnumColors.WHITE.getValue();
 			break;
 		case TEAMSTATE_CREATE:
-			str = TextFormatting.WHITE + I18n.format("gui.shincolle:team.teamid") +"  "+
+			str = TextFormatting.WHITE + StrTeamID +"  "+
 				  TextFormatting.YELLOW + this.capa.getPlayerUID();  //use pUID for team ID
 			fontRendererObj.drawString(str, 10, 43, 0);
 			
-			strLB = I18n.format("gui.shincolle:general.ok");
+			strLB = StrOK;
 			colorLB = Enums.EnumColors.WHITE.getValue();
-			strLT = I18n.format("gui.shincolle:general.cancel");
+			strLT = StrCancel;
 			colorLT = Enums.EnumColors.GRAY_LIGHT.getValue();
 		break;
 		case TEAMSTATE_RENAME:
-			strLB = I18n.format("gui.shincolle:general.ok");
+			strLB = StrOK;
 			colorLB = Enums.EnumColors.WHITE.getValue();
-			strLT = I18n.format("gui.shincolle:general.cancel");
+			strLT = StrCancel;
 			colorLT = Enums.EnumColors.GRAY_LIGHT.getValue();
 		break;
 		default:  //0: main state
 			//in team
 			if (this.capa.hasTeam())
 			{
-				strLT = I18n.format("gui.shincolle:team.allylist");
+				strLT = StrAllyList;
 				colorLT = Enums.EnumColors.CYAN.getValue();
-				strLB = I18n.format("gui.shincolle:team.banlist");
+				strLB = StrBanList;
 				colorLB = Enums.EnumColors.YELLOW.getValue();
 				
 				if (this.tempCD > 0)
@@ -1442,7 +1466,7 @@ public class GuiDesk extends GuiContainer
 				}
 				else
 				{
-					strRT = I18n.format("gui.shincolle:team.rename");
+					strRT = StrRename;
 					colorRT = Enums.EnumColors.WHITE.getValue();
 				}
 				
@@ -1453,7 +1477,7 @@ public class GuiDesk extends GuiContainer
 				}
 				else
 				{
-					strRB = I18n.format("gui.shincolle:team.disband");
+					strRB = StrDisband;
 					colorRB = Enums.EnumColors.GRAY_DARK.getValue();
 				}
 			}
@@ -1467,7 +1491,7 @@ public class GuiDesk extends GuiContainer
 				}
 				else
 				{
-					strRB = I18n.format("gui.shincolle:team.create");
+					strRB = StrCreate;
 					colorRB = Enums.EnumColors.CYAN.getValue();
 				}
 			}
@@ -1501,18 +1525,18 @@ public class GuiDesk extends GuiContainer
 			if (tdata2 != null)
 			{
 				//get ally string
-				String allyInfo = TextFormatting.WHITE +"("+ I18n.format("gui.shincolle:team.neutral") +")";
+				String allyInfo = TextFormatting.WHITE +"("+ StrNeutral +")";
 				if (this.capa.getPlayerUID() == tdata2.getTeamID())
 				{
-					allyInfo = TextFormatting.GOLD +"("+ I18n.format("gui.shincolle:team.belong")+")";
+					allyInfo = TextFormatting.GOLD +"("+ StrBelong +")";
 				}
 				else if (this.capa.isTeamAlly(tdata2.getTeamID()))
 				{
-					allyInfo = TextFormatting.AQUA +"("+ I18n.format("gui.shincolle:team.allied")+")";
+					allyInfo = TextFormatting.AQUA +"("+ StrAllied +")";
 				}
 				else if (this.capa.isTeamBanned(tdata2.getTeamID()))
 				{
-					allyInfo = TextFormatting.RED +"("+ I18n.format("gui.shincolle:team.hostile")+")";
+					allyInfo = TextFormatting.RED +"("+ StrHostile +")";
 				}
 				
 				//draw info
@@ -1566,22 +1590,22 @@ public class GuiDesk extends GuiContainer
 					if (tdata3 != null)
 					{
 						//get ally string
-						String allyInfo = TextFormatting.WHITE +"("+ I18n.format("gui.shincolle:team.neutral") +")";
+						String allyInfo = TextFormatting.WHITE +"("+ StrNeutral +")";
 						if (this.capa.getPlayerUID() == tdata3.getTeamID())
 						{
-							allyInfo = TextFormatting.GOLD +"("+ I18n.format("gui.shincolle:team.belong")+")";
+							allyInfo = TextFormatting.GOLD +"("+ StrBelong +")";
 						}
 						else if (this.capa.isTeamAlly(tdata3.getTeamID()))
 						{
-							allyInfo = TextFormatting.AQUA +"("+ I18n.format("gui.shincolle:team.allied")+")";
+							allyInfo = TextFormatting.AQUA +"("+ StrAllied +")";
 						}
 						else if (this.capa.isTeamBanned(tdata3.getTeamID()))
 						{
-							allyInfo = TextFormatting.RED +"("+ I18n.format("gui.shincolle:team.hostile")+")";
+							allyInfo = TextFormatting.RED +"("+ StrHostile +")";
 						}
 							
 						//draw info
-						str = TextFormatting.GRAY + I18n.format("gui.shincolle:team.teamid") +":  "+
+						str = TextFormatting.GRAY + StrTeamID +":  "+
 							  TextFormatting.YELLOW + tdata3.getTeamID() +" : "+
 							  TextFormatting.LIGHT_PURPLE + tdata3.getTeamLeaderName() +"  "+
 							  allyInfo;
@@ -1679,7 +1703,7 @@ public class GuiDesk extends GuiContainer
 	private void drawTargetText()
 	{
 		//draw button text
-		String str = I18n.format("gui.shincolle:target.remove");
+		String str = StrRemove;
 		int strlen = (int) (this.fontRendererObj.getStringWidth(str) * 0.5F);
 		fontRendererObj.drawString(str, 31-strlen, 160, Enums.EnumColors.WHITE.getValue());
 		
@@ -1706,11 +1730,9 @@ public class GuiDesk extends GuiContainer
 		if (clickid >= 0 && clickid < this.shipList.size())
 		{
 			Entity ent = this.shipList.get(clickid).ship;
-			LogHelper.info("DEBUG : guiiii  "+clickid);
 			
 			if (ent instanceof BasicEntityShip)
 			{
-				LogHelper.info("DEBUG : guiiii  "+ent);
 				this.mc.thePlayer.closeScreen();
 				//send GUI packet
 				CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.OpenShipGUI, ent.getEntityId()));

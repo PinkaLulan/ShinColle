@@ -45,11 +45,8 @@ public class Enums
 	    BLOCKED,
 	    OPEN,
 	    FLUID,
-	    DOOR_CLOSE,  //including TRAPDOOR and WOODDOOR
-	    DOOR_CLOSE_IRON,
-	    FENCE,
-	    SLIME,
-	    DANGER_OTHER
+	    OPENABLE,	//gate, wood door, trap door...
+	    FENCE
 	    
 	}//end path type
 	

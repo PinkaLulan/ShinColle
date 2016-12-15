@@ -3,19 +3,19 @@ package com.lulan.shincolle.ai;
 import java.util.Collections;
 import java.util.List;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.init.SoundEvents;
-import net.minecraft.item.ItemStack;
-
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.TargetHelper;
+
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.init.SoundEvents;
+import net.minecraft.item.ItemStack;
 
 /** SHIP PICK ITEM AI
  * 
@@ -149,8 +149,7 @@ public class EntityAIShipPickItem extends EntityAIBase
         				if (this.hostShip.soundCD <= 0 && this.hostShip.getRNG().nextInt(2) == 0)
         		    	{
         					this.hostShip.soundCD = 40 + this.hostShip.getRNG().nextInt(10);
-        					//TODO sound event
-//        					this.hostShip.worldObj.playSoundAtEntity(this.hostShip, this.hostShip.getSoundString(ID.Sound.Item), ConfigHandler.volumeShip, 1F);
+        					this.hostShip.playSound(this.hostShip.getCustomSound(6), ConfigHandler.volumeShip, 1F);
             			}
         				
     					//send item pickup sync packet

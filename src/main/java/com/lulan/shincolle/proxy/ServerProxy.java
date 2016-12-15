@@ -10,7 +10,6 @@ import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CGUIPackets;
-import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.server.ShinWorldData;
 import com.lulan.shincolle.team.TeamData;
 import com.lulan.shincolle.utility.CalcHelper;
@@ -94,19 +93,53 @@ public class ServerProxy extends CommonProxy
 	private static HashMap<Integer, int[]> mapPlayerID = null;
 	
 	/**ship id to entity id cache
-	 * for pointer command, UID維持固定, entity id每次建立entity時更新
-	 * delete when server close
+	 * ship data cache and backup, used for commands or data recovery
 	 * 
-	 * mapShipID <ship UID, ship data>
-	 * ship data = 0:ship entity id(int) 1:world id(int)
+	 * mapShipID <ship UID, ShipCacheData>
 	 * 
 	 * use:
-	 * 1. load from file: none
-	 * 2. save to file: none
-	 * 3. get: pointer command method
-	 * 4. set: ship entity construction (when loading ExtendShipProp)
+	 * 1. load from file: server start
+	 * 2. save to file: server tick (auto), create new ship, ship dead event
+	 * 3. get: commands
+	 * 4. set: ship entity ticking (on ship UID updating)
 	 */
-	private static HashMap<Integer, int[]> mapShipID = null;
+	private static HashMap<Integer, ShipCacheData> mapShipID = null;
+	
+	public static class ShipCacheData
+	{
+		public int entityID;
+		public int worldID;
+		public boolean isDead;
+		public int posX;
+		public int posY;
+		public int posZ;
+		public NBTTagCompound entityNBT;
+		
+		public ShipCacheData(BasicEntityShip ship)
+		{
+			if (ship != null)
+			{
+				this.entityID = ship.getEntityId();
+				this.worldID = ship.worldObj.provider.getDimension();
+				this.isDead = ship.isDead;
+				this.posX = (int) ship.posX;
+				this.posY = (int) ship.posY;
+				this.posZ = (int) ship.posZ;
+				this.entityNBT = ship.writeToNBT(new NBTTagCompound());
+			}
+		}
+		
+		public ShipCacheData(int eid, int wid, boolean isDead, double posX, double posY, double posZ, NBTTagCompound nbt)
+		{
+			this.entityID = eid;
+			this.worldID = wid;
+			this.isDead = isDead;
+			this.posX = (int) posX;
+			this.posY = (int) posY;
+			this.posZ = (int) posZ;
+			this.entityNBT = nbt;
+		}
+	}
 	
 	/**next id
 	 * for player UID / ship UID / team ID
@@ -126,7 +159,6 @@ public class ServerProxy extends CommonProxy
 	public static MapStorage serverFile = null;
 	public static ShinWorldData serverData = null;
 	public static boolean initServerFile = false;	//when open a save or world -> reset to false
-	public static boolean savedServerFile = false;
 	
 	/**server global var */
 	public static final String CUSTOM_TARGET_CLASS = "CustomTargetClass";
@@ -140,17 +172,11 @@ public class ServerProxy extends CommonProxy
 	{
 		LogHelper.info("INFO : init server proxy");
 		
-		//clear last load
-		serverFile = null;
-		serverData = null;
-		mapPlayerID = null;
-		mapShipID = null;
-		
 		//init data by default value
 		customTagetClass = new HashMap<Integer, HashMap<Integer, String>>();
 		unattackableTargetClass = new HashMap<Integer, String>();
 		mapPlayerID = new HashMap<Integer, int[]>();
-		mapShipID = new HashMap<Integer, int[]>();
+		mapShipID = new HashMap<Integer, ShipCacheData>();
 		mapTeamID = new HashMap<Integer, TeamData>();
 		nextPlayerID = -1;
 		nextShipID = -1;
@@ -158,14 +184,14 @@ public class ServerProxy extends CommonProxy
 		serverFile = world.getMapStorage();
 		serverData = (ShinWorldData) serverFile.getOrLoadData(ShinWorldData.class, ShinWorldData.SAVEID);
 		
-		//init data by MapStorage data
+		//load data from MapStorage
 		if (serverData != null && serverData.nbtData != null)
 		{
 			LogHelper.info("INFO : init server proxy: get data from .dat file");
 			
 			//load common variable
-			setNextPlayerID(serverData.nbtData.getInteger(ShinWorldData.TAG_NEXTPLAYERID));
-			setNextShipID(serverData.nbtData.getInteger(ShinWorldData.TAG_NEXTSHIPID));
+			nextPlayerID = serverData.nbtData.getInteger(ShinWorldData.TAG_NEXTPLAYERID);
+			nextShipID = serverData.nbtData.getInteger(ShinWorldData.TAG_NEXTSHIPID);
 			
 			
 			//load unattackable list
@@ -183,7 +209,7 @@ public class ServerProxy extends CommonProxy
 				}
 			}
 			
-			setUnattackableTargetClass(unatklist);
+			unattackableTargetClass = unatklist;
 			
 			
 			//load player data:  from server save file to playerMap
@@ -211,7 +237,7 @@ public class ServerProxy extends CommonProxy
 				}
 				
 				LogHelper.info("INFO : init server proxy: get player data: UID "+uid+" target list size: "+strList.size());
-				setPlayerTargetClass(uid, strList);
+				customTagetClass.put(uid, strList);
 			}
 			
 			
@@ -240,7 +266,27 @@ public class ServerProxy extends CommonProxy
 				tData.setTeamAllyList(tList2);
 				
 				LogHelper.info("INFO : init server proxy: get team data: UID "+tUID+" NAME "+tName);
-				setTeamData(tData);
+				mapTeamID.put(tUID, tData);
+			}
+			
+			
+			//load ship data: from server save file to mapShipID
+			NBTTagList list3 = serverData.nbtData.getTagList(ShinWorldData.TAG_SHIPDATA, Constants.NBT.TAG_COMPOUND);
+			
+			for (int i = 0; i < list3.tagCount(); i++)
+			{
+				//load data
+				NBTTagCompound getlist = list3.getCompoundTagAt(i);
+				int uid = getlist.getInteger(ShinWorldData.TAG_ShipUID);
+				int eid = getlist.getInteger(ShinWorldData.TAG_ShipEID);
+				int wid = getlist.getInteger(ShinWorldData.TAG_ShipWID);
+				boolean isDead = getlist.getBoolean(ShinWorldData.TAG_ShipDead);
+				int[] pos = getlist.getIntArray(ShinWorldData.TAG_ShipPOS);
+				NBTTagCompound sTag = getlist.getCompoundTag(ShinWorldData.TAG_ShipNBT);
+				ShipCacheData sData = new ShipCacheData(eid, wid, isDead, (double)pos[0], (double)pos[1], (double)pos[2], sTag);
+			
+				//put data into server cache
+				mapShipID.put(uid, sData);
 			}
 			
 			initServerFile = true;
@@ -253,15 +299,6 @@ public class ServerProxy extends CommonProxy
 			serverFile.setData(ShinWorldData.SAVEID, serverData);
 			initServerFile = true;
 		}
-	}
-	
-	//force save server file when world unload (server close)
-	public static void saveServerDataToFile()
-	{
-		if(serverData != null) serverData.markDirty();
-		if(serverFile != null) serverFile.saveAllData();
-		
-		savedServerFile = true;
 	}
 	
 	public static MinecraftServer getServer()
@@ -416,7 +453,7 @@ public class ServerProxy extends CommonProxy
 	
 	/** ship world data for owner check...etc */
 	//get player world data
-	public static int[] getShipWorldData(int par1)
+	public static ShipCacheData getShipWorldData(int par1)
 	{
 		if (par1 != -1) return mapShipID.get(par1);
 		
@@ -424,11 +461,12 @@ public class ServerProxy extends CommonProxy
 	}
 	
 	//set player world data
-	public static void setShipWorldData(int pid, int[] pdata)
+	public static void setShipWorldData(int pid, ShipCacheData pdata)
 	{
 		if (pid > 0 && pdata != null)
 		{
 			mapShipID.put(pid, pdata);
+			serverData.markDirty();
 		}
 	}
 	
@@ -535,7 +573,7 @@ public class ServerProxy extends CommonProxy
 		return mapPlayerID;
 	}
 	
-	public static HashMap<Integer, int[]> getAllShipWorldData()
+	public static HashMap<Integer, ShipCacheData> getAllShipWorldData()
 	{
 		return mapShipID;
 	}
@@ -603,43 +641,42 @@ public class ServerProxy extends CommonProxy
 	{
 		LogHelper.info("INFO : update ship: "+ship);
 		
-		int sid = ship.getShipUID();
-		int[] sdata = new int[2];
-		
-		sdata[0] = ship.getEntityId();
-		sdata[1] = ship.worldObj.provider.getDimension();
+		int uid = ship.getShipUID();
 		
 		//update ship data
-		if (sid > 0)
+		if (uid > 0)
 		{
-			LogHelper.info("INFO : update ship: update ship id "+sid+" eid: "+sdata[0]+" world: "+sdata[1]);
-			setShipWorldData(sid, sdata);	//cache in server proxy
+			LogHelper.debug("DEBUG : update ship: update ship id "+uid+" eid: "+ship.getEntityId()+" world: "+ship.worldObj.provider.getDimension());
+			ShipCacheData sdata = new ShipCacheData(ship.getEntityId(), ship.worldObj.provider.getDimension(),
+					ship.isDead, ship.posX, ship.posY, ship.posZ, ship.writeToNBT(new NBTTagCompound()));
+
+			setShipWorldData(uid, sdata);	//cache in server proxy
 			
 			/** server init wrong (lost all data or file deleted)
 			 *  try to generate a large next ID
 			 */
-			if (getNextShipID() <= 0 || getNextShipID() <= sid)
+			if (getNextShipID() <= 0 || getNextShipID() <= uid)
 			{
 				LogHelper.info("INFO : update ship: find next ship id error");
-				int newNextID = sid + 100000;
+				int newNextID = uid + 100000;
 				setNextShipID(newNextID);
 			}
 		}
 		//ship id < 0, create one
 		else
 		{
-			sid = getNextShipID();
+			uid = getNextShipID();
 			
 			//set init value
-			if (sid <= 0) sid = 100;	//ship id init value = 100
+			if (uid <= 0) uid = 100;	//ship id init value = 100
 			
-			LogHelper.info("INFO : update ship: create sid: "+sid+" eid: "+sdata[0]+" world: "+sdata[1]);
-			ship.setShipUID(sid);
-			setShipWorldData(sid, sdata);	//cache in server proxy
-			setNextShipID(++sid);	//next id ++
-			
-			//init ship value for old ship (before rv.22)
-			ship.setStateFlag(ID.F.OnSightChase, true);  //enable onSight
+			LogHelper.debug("DEBUG : update ship: create sid: "+uid+" eid: "+ship.getEntityId()+" world: "+ship.worldObj.provider.getDimension());
+			ship.setShipUID(uid);
+			ShipCacheData sdata = new ShipCacheData(ship.getEntityId(), ship.worldObj.provider.getDimension(),
+					ship.isDead, ship.posX, ship.posY, ship.posZ, ship.writeToNBT(new NBTTagCompound()));
+	
+			setShipWorldData(uid, sdata);	//cache in server proxy
+			setNextShipID(++uid);	//next id ++
 		}
 	}
 	
@@ -658,6 +695,7 @@ public class ServerProxy extends CommonProxy
 				int pid = capa.getPlayerUID();
 				LogHelper.info("INFO : update ship: set owner id: "+pid+" on "+ship);
 				ship.setPlayerUID(pid);
+				ship.ownerName = ((EntityPlayer) owner).getName();
 			}
 		}
 		else

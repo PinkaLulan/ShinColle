@@ -2,6 +2,11 @@ package com.lulan.shincolle.ai;
 
 import java.util.ArrayList;
 
+import com.lulan.shincolle.ai.path.ShipPath;
+import com.lulan.shincolle.ai.path.ShipPathPoint;
+import com.lulan.shincolle.entity.IShipNavigator;
+import com.lulan.shincolle.utility.LogHelper;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoor;
 import net.minecraft.block.BlockFenceGate;
@@ -12,10 +17,6 @@ import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-
-import com.lulan.shincolle.ai.path.ShipPath;
-import com.lulan.shincolle.ai.path.ShipPathPoint;
-import com.lulan.shincolle.entity.IShipNavigator;
 
 /** ship open door AI
  * 
@@ -29,91 +30,67 @@ public class EntityAIShipOpenDoor extends EntityAIBase
 	
 	private Entity host;
 	private IShipNavigator host2;
-	private BlockPos doorPos = BlockPos.ORIGIN;
-	private BlockDoor door;
-	private ArrayList<BlockPos> gates;
+	private ArrayList<BlockPos> doors;
+	private BlockPos pathPoint;
 	private boolean hasPassed;  //true時表示已經通過門，可準備結束AI
 	private float vecX;
 	private float vecZ;
 	private boolean closeDoor;		//通過門後是否要隨手關門
 	private int delay;				//通過門的delay, 時間到後關門
-
+	private float dist;
+	
     
     public EntityAIShipOpenDoor(IShipNavigator host, boolean closeDoor)
     {
         this.host = (Entity) host;
         this.host2 = host;
         this.closeDoor = closeDoor;
+        this.dist = (this.host.width + 1F) * (this.host.width + 1F);
+    	this.doors = new ArrayList<BlockPos>();
+    	this.pathPoint = BlockPos.ORIGIN;
     }
     
     @Override
     public boolean shouldExecute()
     {
-    	//水平方向撞到東西才啟動AI
+        ShipPath path = this.host2.getShipNavigate().getPath();
+        
         if (!this.host.isCollidedHorizontally)
         {
-            return false;
+        	return false;
         }
-        else
+        //有尚未完成的移動路徑
+        else if (path != null && !path.isFinished())
         {
-            ShipPath path = this.host2.getShipNavigate().getPath();
-            
-            //有尚未完成的移動路徑
-            if (path != null && !path.isFinished())
+        	BlockPos pos = null;
+        	
+        	//找路徑中接下來兩點, 偵測有無碰到門
+            for (int i = 0; i < Math.min(path.getCurrentPathIndex() + 2, path.getCurrentPathLength()); ++i)
             {
-            	//找路徑中接下來兩點, 偵測有無碰到門
-                for (int i = 0; i < Math.min(path.getCurrentPathIndex() + 2, path.getCurrentPathLength()); ++i)
-                {
-                    ShipPathPoint pp = path.getPathPointFromIndex(i);
-                    this.doorPos = new BlockPos(pp.xCoord, pp.yCoord, pp.zCoord);
-
-                    //若路徑點已經在1.5格內
-                    if (this.host.getDistanceSq((double)this.doorPos.getX(), this.host.posY, (double)this.doorPos.getZ()) <= 2.25D)
-                    {
-                    	//get door
-                    	BlockPos pos2 = new BlockPos(pp.xCoord, pp.yCoord + 1, pp.zCoord);
-                        this.door = this.getDoor(pos2);
-
-                        if (this.door != null)
-                        {
-                        	this.doorPos = pos2;
-                            return true;
-                        }
-                        //get gate
-                        else
-                        {
-                        	//get gates
-                        	if (this.getGate(pp.xCoord + 0.5F, pp.yCoord, pp.zCoord + 0.5F))
-                        	{
-                        		return true;
-                        	}
-                        }
-                    }
-                }
-
-                //若路徑點沒有門, 則偵測host是否本身卡在門方塊中
-                this.doorPos = new BlockPos(MathHelper.floor_double(this.host.posX),
-                							(int) this.host.posY + 1,
-                							MathHelper.floor_double(this.host.posZ));
-                this.door = this.getDoor(this.doorPos);
+                ShipPathPoint pp = path.getPathPointFromIndex(i);
+                pos = new BlockPos(pp.xCoord, pp.yCoord, pp.zCoord);
                 
-                //get door
-                if (this.door != null)
+                //若路徑點已經在特定距離內, 則開始找門
+                if (this.host.getDistanceSqToCenter(pos) <= this.dist)
                 {
-                	return true;
+                	//get doors or gates
+                    this.checkDoors(pos, this.host, this.doors);
+                    this.pathPoint = pos;
                 }
-                else
-                {
-                	//get gates
-                	return this.getGate((float)this.host.posX, (float)this.host.posY, (float)this.host.posZ);
-                }
-            }//end has path
-            //no path
-            else
-            {
-                return false;
             }
-        }
+
+            //若路徑點沒有門, 則偵測host是否本身卡在門方塊中
+            pos = new BlockPos(this.host);
+            this.checkDoors(pos, this.host, this.doors);
+            this.pathPoint = pos;
+            
+            //若都沒有門, 則結束
+            if (this.doors.isEmpty()) return false;
+            //找到門, 繼續執行
+            return true;
+        }//end has path
+        
+        return false;
     }
 
     @Override
@@ -126,19 +103,17 @@ public class EntityAIShipOpenDoor extends EntityAIBase
     @Override
     public void startExecuting()
     {
-        this.delay = 40;
+        this.delay = 30;
         this.hasPassed = false;
         
-        //更改door meta值為開門
-        if (this.door != null)
+        //更改meta值為開門
+        this.setDoorOpen(true);
+        
+        //計算向量以便判定是否通過
+        if (this.pathPoint != BlockPos.ORIGIN)
         {
-        	this.vecX = (float) ((double)this.doorPos.getX() + 0.5D - this.host.posX);
-            this.vecZ = (float) ((double)this.doorPos.getZ() + 0.5D - this.host.posZ);
-        	this.door.toggleDoor(this.host.worldObj, this.doorPos, true);
-        }
-        else if (this.gates != null && !this.gates.isEmpty())
-        {
-        	activateGate(true);
+        	this.vecX = (float)this.pathPoint.getX() + 0.5F - (float)this.host.posX;
+            this.vecZ = (float)this.pathPoint.getZ() + 0.5F - (float)this.host.posZ;
         }
     }
 
@@ -146,18 +121,10 @@ public class EntityAIShipOpenDoor extends EntityAIBase
     public void resetTask()
     {
     	//隨手關門
-        if (this.closeDoor)
-        {
-        	if (this.door != null)
-        	{
-        		//更改door meta值為關門
-                this.door.toggleDoor(this.host.worldObj, this.doorPos, false);
-        	}
-        	else if (this.gates != null && !this.gates.isEmpty())
-        	{
-        		activateGate(false);
-        	}
-        }
+        if (this.closeDoor && this.doors.size() > 0) this.setDoorOpen(false);
+        
+        //清空list
+    	this.doors = new ArrayList<BlockPos>();
     }
 
     @Override
@@ -165,12 +132,12 @@ public class EntityAIShipOpenDoor extends EntityAIBase
     {
         --this.delay;
         
-        //for door
-        if (this.door != null)
+        //check passed
+        if (this.delay <= 0)
         {
         	//計算host位置vector
-            float vx = (float) ((double)this.doorPos.getX() + 0.5D - this.host.posX);
-            float vz = (float) ((double)this.doorPos.getZ() + 0.5D - this.host.posZ);
+        	float vx = (float)this.pathPoint.getX() + 0.5F - (float)this.host.posX;
+        	float vz = (float)this.pathPoint.getZ() + 0.5F - (float)this.host.posZ;
             float v = this.vecX * vx + this.vecZ * vz;
 
             //若host已經通過門, 則vec相乘後會小於0, 表示可以關門
@@ -179,91 +146,98 @@ public class EntityAIShipOpenDoor extends EntityAIBase
                 this.hasPassed = true;
             }
         }
-        //for gate
-        else
-        {
-        	//不管位置, 時間到就設定為通過
-        	if (this.delay <= 0) this.hasPassed = true;
-        }
-        
     }
-    
-    private BlockDoor getDoor(BlockPos pos)
+
+    //add door or gate block to list
+    private static void checkDoors(BlockPos pos, Entity host, ArrayList<BlockPos> list)
     {
-        IBlockState state = this.host.worldObj.getBlockState(pos);
-        Block block = state.getBlock();
-        return block instanceof BlockDoor && state.getMaterial() == Material.WOOD ? (BlockDoor)block : null;
-    }
-    
-    //return true = get gate in list
-    private boolean getGate(float x, float y, float z)
-    {
-    	boolean getGate = false;
-    	float range = host.width < 1F ? 1F : host.width;
-    	this.gates = new ArrayList();
+    	int range = MathHelper.floor_float(host.width + 1F);
+    	int minX = pos.getX() - range;
+    	int minY = pos.getY();
+    	int minZ = pos.getZ() - range;
+    	int maxX = pos.getX() + range;
+    	int maxY = pos.getY() + MathHelper.floor_float(host.height + 1F);
+    	int maxZ = pos.getZ() + range;
+    	BlockPos pos2;
+    	IBlockState state;
+    	Block block;
     	
     	//get gate within entity hitbox at x,y,z
-    	for (float ix = x - range; ix <= x + range; ix += 1F)
+    	for (int ix = minX; ix <= maxX; ix++)
     	{
-    		for (float iz = z - range; iz <= z + range; iz += 1F)
+    		for (int iz = minZ; iz <= maxZ; iz++)
     		{
-    			for (float iy = y; iy <= y + host.height; iy += 1F)
+    			for (int iy = minY; iy <= maxY; iy++)
     			{
-    				BlockPos pos = new BlockPos(MathHelper.floor_float(ix), (int)iy, MathHelper.floor_float(iz));
-    				IBlockState block = this.host.worldObj.getBlockState(pos);
+    				pos2 = new BlockPos(ix, iy, iz);
+    				state = host.worldObj.getBlockState(pos2);
+    				block = state.getBlock();
     				
-    				if (block.getBlock() instanceof BlockFenceGate)
+    				if (block instanceof BlockFenceGate ||
+    					(iy != minY && block instanceof BlockDoor &&
+    					 state.getMaterial() == Material.WOOD))
     				{
-    					this.gates.add(pos);
-    					getGate = true;
+    					list.add(pos2);
     				}
             	}
         	}
     	}
-    	
-        return getGate;
+    }
+    
+    //true = open, false = close door
+    private void setDoorOpen(boolean open)
+    {
+        IBlockState state = null;
+        
+        for (BlockPos pos : this.doors)
+        {
+        	state = this.host.worldObj.getBlockState(pos);
+        	
+        	if (state.getBlock() instanceof BlockDoor)
+        	{
+        		((BlockDoor) state.getBlock()).toggleDoor(this.host.worldObj, pos, open);
+        	}
+        	else if (state.getBlock() instanceof BlockFenceGate)
+        	{
+        		toggleGate(pos, this.host, state, open);
+        	}
+        }
     }
     
     //activate all gate in list to open or close
-    private void activateGate(boolean openGate)
+    private static void toggleGate(BlockPos pos, Entity host, IBlockState state, boolean openGate)
     {
-    	//loop all gates
-    	for (BlockPos pos : gates)
-    	{
-    		IBlockState state = this.host.worldObj.getBlockState(pos);
-    		
-    		if (state.getBlock() instanceof BlockFenceGate)
-    		{
-    			//open gate
-    			if (((Boolean)state.getValue(BlockFenceGate.OPEN)).booleanValue())
-    			{
-    				if (!openGate)  //want to close gate
-    				{
-    		            state = state.withProperty(BlockFenceGate.OPEN, Boolean.valueOf(false));
-    		            host.worldObj.setBlockState(pos, state, 10);
-    		            host.worldObj.playEvent(null, 1014, pos, 0);
-    				}
-    			}//end open gate
-    			//close gate
-    			else
-    			{
-    				if (openGate)  //want to open gate
-    				{
-    		            EnumFacing enumfacing = EnumFacing.fromAngle((double)this.host.rotationYaw);
+    	//null check
+		if (state.getBlock() instanceof BlockFenceGate)
+		{
+			//open gate
+			if (((Boolean)state.getValue(BlockFenceGate.OPEN)).booleanValue())
+			{
+				if (!openGate)  //want to close gate
+				{
+		            state = state.withProperty(BlockFenceGate.OPEN, Boolean.valueOf(false));
+		            host.worldObj.setBlockState(pos, state, 10);
+		            host.worldObj.playEvent(null, 1014, pos, 0);
+				}
+			}//end open gate
+			//close gate
+			else
+			{
+				if (openGate)  //want to open gate
+				{
+		            EnumFacing enumfacing = EnumFacing.fromAngle((double)host.rotationYaw);
 
-    		            if (state.getValue(BlockFenceGate.FACING) == enumfacing.getOpposite())
-    		            {
-    		                state = state.withProperty(BlockFenceGate.FACING, enumfacing);
-    		            }
+		            if (state.getValue(BlockFenceGate.FACING) == enumfacing.getOpposite())
+		            {
+		                state = state.withProperty(BlockFenceGate.FACING, enumfacing);
+		            }
 
-    		            state = state.withProperty(BlockFenceGate.OPEN, Boolean.valueOf(true));
-    		            host.worldObj.setBlockState(pos, state, 10);
-    		            host.worldObj.playEvent(null, 1008, pos, 0);
-    				}
-    			}//end close gate
-    		}//end get gate
-    	}//end for all gates
-    	
+		            state = state.withProperty(BlockFenceGate.OPEN, Boolean.valueOf(true));
+		            host.worldObj.setBlockState(pos, state, 10);
+		            host.worldObj.playEvent(null, 1008, pos, 0);
+				}
+			}//end close gate
+		}//end get gate
     }
     
     

@@ -26,12 +26,12 @@ public class BlockPolymetal extends BasicBlockMulti
 	
 	public BlockPolymetal()
 	{
-		super(Material.IRON);
+		super(Material.WATER);
+		this.setSoundType(SoundType.METAL);
 		this.setUnlocalizedName(NAME);
 		this.setRegistryName(NAME);
 		this.setHarvestLevel("pickaxe", 0);
 	    this.setHardness(3F);
-	    this.setSoundType(SoundType.METAL);
 	    
         GameRegistry.register(this);
         GameRegistry.register(new ItemBlockResourceBlock(this), this.getRegistryName());

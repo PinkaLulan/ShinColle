@@ -1,10 +1,21 @@
 package com.lulan.shincolle.ai.path;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 import javax.annotation.Nullable;
 
+import com.lulan.shincolle.reference.Enums.EnumPathType;
+import com.lulan.shincolle.utility.BlockHelper;
+
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockDoor;
+import net.minecraft.block.BlockFence;
+import net.minecraft.block.BlockFenceGate;
+import net.minecraft.block.BlockLilyPad;
+import net.minecraft.block.BlockRailBase;
+import net.minecraft.block.BlockWall;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -12,9 +23,6 @@ import net.minecraft.util.IntHashMap;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IBlockAccess;
-
-import com.lulan.shincolle.reference.Enums.EnumPathType;
-import com.lulan.shincolle.utility.BlockHelper;
 
 /**SHIP PATH FINDER
  * for ship path navigator
@@ -145,18 +153,20 @@ public class ShipPathFinder
             {
             	//取出可走點, 計算曼哈頓距離
                 float dist = ppDequeue.distanceManhattan(pp);
+//                float dist = ppDequeue.distanceToSquared(pp);
                 
                 //設定可走點的距離成本
                 pp.distanceFromOrigin = ppDequeue.distanceFromOrigin + dist;
                 pp.cost = dist + pp.costMalus;
                 float dist2 = ppDequeue.totalPathDistance + pp.cost;
-
+                
                 //若可走點距離尚未超出路徑上限距離, 且沒走過, 則可加入到path中
                 if (pp.distanceFromOrigin < range && (!pp.isAssigned() || dist2 < pp.totalPathDistance))
                 {
                 	pp.previous = ppDequeue;
                 	pp.totalPathDistance = dist2;
                 	pp.distanceToNext = pp.distanceManhattan(endpp) + pp.costMalus;
+//                	pp.distanceToNext = pp.distanceToSquared(endpp) + pp.costMalus;
 
                 	//若這個點已經存在於path中, 則計算新距離並重新排序該點在path中的位置
                     if (pp.isAssigned())
@@ -171,31 +181,6 @@ public class ShipPathFinder
                     }
                 }
             }
-            
-            //1.7.10 clean mark
-            //將所有可走方向都嘗試走看看
-//            for (int j = 0; j < i; ++j)
-//            {
-//            	ShipPathPoint ppTemp2 = this.pathOptions[j];
-//                float f1 = ppDequeue.totalPathDistance + ppDequeue.distanceToSquared(ppTemp2);
-//                
-//                //若該點還沒加入過path, 或該點已加入到path中但該點之前算出來的path長度較長, 則需要再更新一次path長度
-//                if(!ppTemp2.isAssigned() || f1 < ppTemp2.totalPathDistance) {
-//                	//將該點正式加入到path中, 設定其前後點跟path長度值
-//                    ppTemp2.previous = ppDequeue;		//前一點設為取出點
-//                    ppTemp2.totalPathDistance = f1;		//存下其path長度值
-//                    ppTemp2.distanceToNext = ppTemp2.distanceToSquared(endpp);	//下一點設為終點
-//                    //若該點本來就在path中, 則更新其path長度值
-//                    if(ppTemp2.isAssigned()) {
-//                        this.path.changeDistance(ppTemp2, ppTemp2.totalPathDistance + ppTemp2.distanceToNext);
-//                    }
-//                    else {	//不在path中, 正式加入path
-//                        ppTemp2.distanceToTarget = ppTemp2.totalPathDistance + ppTemp2.distanceToNext;
-//                        this.path.addPoint(ppTemp2);
-//                    }
-//                }
-//            }
-            
         }//end while
         
         //若完全找不到點可以加入, 則回傳null, 表示找不到path
@@ -223,9 +208,9 @@ public class ShipPathFinder
         EnumPathType type = getPathType(entity, currentpp.xCoord, currentpp.yCoord + 1, currentpp.zCoord, entitySize);
         int pathYOffset = 0;
         
-        if (type == EnumPathType.FLUID || (type == EnumPathType.OPEN && this.canEntityFly))
+        if (type == EnumPathType.FLUID || type == EnumPathType.OPEN)
         {
-        	pathYOffset = 1;
+        	pathYOffset = MathHelper.floor_float(Math.max(1F, entity.stepHeight));
         }
         
         //檢查東西南北上下 + 四個水平對角方向
@@ -292,44 +277,49 @@ public class ShipPathFinder
         return ret;
     }
 
-    /**找指定點(x,y,z)是否可安全移動過去, 包括該點下面是否可安全站立 (change: 修改水跟岩漿也算可站立方塊)
-     * Returns a point that the entity can safely move to
-     * pathOption:  0:blocked  1:clear
+    /**
+     * 找指定點(x,y,z)是否可安全移動過去, 包括該點下面是否可安全站立 (change: 修改水跟岩漿也算可站立方塊)
+     * Returns a point that the entity can safely move to.
+     * 
+     * pathYOffset: 原始值為entity的stepHeight, 用於往上尋找路徑, 0表示不可往上尋找路徑
      */
     private ShipPathPoint getSafePoint(Entity entity, int x, int y, int z, ShipPathPoint entitySize, int pathYOffset)
     {
-    	ShipPathPoint pathpoint1 = null;
+    	ShipPathPoint pp = null;
     	EnumPathType pathCase = getPathType(entity, x, y, z, entitySize);	//取得該點路況
         
-        //若該點路況為: open trapdoor or 液體, 則接受為safe point
-        if (pathCase == EnumPathType.FLUID || pathCase == EnumPathType.DOOR_CLOSE)
+        //若該點路況為: 可開關的門 or 液體, 則接受為safe point
+        if (pathCase == EnumPathType.FLUID || pathCase == EnumPathType.OPENABLE)
         {
-            return this.openPoint(x, y, z);
+            return openPoint(x, y, z);
         }
         //其他路況
         else
         {
-        	//若路況為clear, 則把該點加入到path
+        	//若路況為OPEN, 則先存到path map, 再繼續落腳點判斷
             if (pathCase == EnumPathType.OPEN)
             {
-                pathpoint1 = this.openPoint(x, y, z);
+            	pp = openPoint(x, y, z);
             }
             
             //若路況是實體方塊, 且允許往上找路徑, 則往上找
-            if (pathpoint1 == null && pathYOffset > 0 &&
-            	getPathType(entity, x, y + pathYOffset, z, entitySize) == EnumPathType.OPEN)
+            if (pp == null)
             {
-                pathpoint1 = this.openPoint(x, y + pathYOffset, z);	//把往上一點加入到path
-                y += pathYOffset;
+            	//若pathYOffset > 1, 表示stepHeight足以跨過FENCE類方塊, 若只有1則不能找FENCE類方塊
+            	if (pathYOffset > 1 || (pathYOffset > 0 && pathCase != EnumPathType.FENCE))
+            	{
+            		pp = getSafePoint(entity, x, y + 1, z, entitySize, pathYOffset - 1);
+            		pathCase = getPathType(entity, x, y + 1, z, entitySize);
+            	}
             }
             
             //若有找到可加入path的點, 則往下找該點底下方塊是否可安全站立(只往下找X格, X依照entity自己的getMaxSafePointTries決定)
-            if (pathpoint1 != null)
+            if (pp != null)
             {
             	//若可以飛, 則直接回傳pathpoint
             	if (this.canEntityFly)
             	{
-            		return pathpoint1;
+            		return pp;
             	}
             	
             	//若不能飛, 則往下找安全落地點
@@ -338,10 +328,11 @@ public class ShipPathFinder
                 while (y > 0)
                 {
                 	EnumPathType downCase = getPathType(entity, x, y - 1, z, entitySize);
+                	
                     //若底下全都為液體(本體在空中, 因此會掉到液體方塊中), 則path點高度改為在液體中
                     if (downCase == EnumPathType.FLUID)
                     {
-                    	pathpoint1 = this.openPoint(x, y - 1, z);
+                    	pp = this.openPoint(x, y - 1, z);
                         break;
                     }
                     
@@ -351,7 +342,7 @@ public class ShipPathFinder
                         break;
                     }
                     
-                    //若嘗試超過特定次數, 則判定沒有安全落地, 傳回null
+                    //若嘗試超過特定次數, 則判定沒有安全落地, 傳回null (此即entity可以自己跳懸崖的最大高度)
                     if (j1++ > 64)
                     {
                         return null;
@@ -362,12 +353,19 @@ public class ShipPathFinder
                     
                     if (y > 0)
                     {
-                        pathpoint1 = this.openPoint(x, y, z);
+                    	pp = this.openPoint(x, y, z);
                     }
                 }//end fall while
             }
             
-            return pathpoint1;
+//            //TODO debug
+//        	if (pathCase == EnumPathType.BLOCKED)
+//        	{
+//        		IBlockState block = entity.worldObj.getBlockState(new BlockPos(x, y, z));
+//        		LogHelper.debug("AAAAAA "+x+" "+y+" "+z+" "+block.getBlock().getLocalizedName()+" "+pp);
+//        	}
+            
+            return pp;
         }
     }
 
@@ -392,7 +390,7 @@ public class ShipPathFinder
     /**
      * 1.9.4:
      * changed return type to EnumPathType
-     * EnumPathType = OPEN, FLUID, BLOCKED, DOOR_CLOSE...
+     * EnumPathType = OPEN, FLUID, BLOCKED, OPENABLE...
      * 
      * 1.7.10:
      * 3:  liquid (water, lava, forge liquid)
@@ -406,6 +404,12 @@ public class ShipPathFinder
      * Checks if an entity collides with blocks at a position. Returns 1 if clear, 0 for colliding with any solid block,
      * -1 for water(if avoiding water) but otherwise clear, -2 for lava, -3 for fence, -4 for closed trapdoor, 2 if
      * otherwise clear except for open trapdoor or water(if not avoiding)
+     * 
+     * entitySize:
+     * xz為entity.width + 1F取floor
+     * y為entity.height + 1F取floor
+     * 
+     * ex: entity size (0.8F, 1.7F) => (1, 2, 1)
      */
     public EnumPathType getPathType(Entity entity, int x, int y, int z, ShipPathPoint entitySize)
     {
@@ -414,62 +418,93 @@ public class ShipPathFinder
 
     public static EnumPathType getPathType(Entity entity, int x, int y, int z, ShipPathPoint entitySize, boolean inAir)
     {
-        boolean pathToDoor = false;		//是否有打開陷阱門AI
-        boolean pathInLiquid = true;	//是否是站在液體中的path
-        boolean blocked = false;
+        //用enum set來儲存該路徑點上所有存在的路況, 用於複雜的路況判斷
+        EnumSet<EnumPathType> pathset = EnumSet.noneOf(EnumPathType.class);
+        boolean pathInLiquid = false;	//是否是站在液體中的path
+        int doorCount = 0;	//若門超過2個 (門是2格高) 所以doorCount > 4則視為BLOCKED
+        
+		//檢查原xyz位置是否為液體方塊
+        if (BlockHelper.checkBlockIsLiquid(entity.worldObj.getBlockState(new BlockPos(x, y, z))))
+        {
+        	pathInLiquid = true;
+        }
         
         //判定該point加上entity的長寬高後, 是否會碰撞到其他方塊
         for (int x1 = x; x1 < x + entitySize.xCoord; ++x1)
         {
-            for (int y1 = y; y1 < y + entitySize.yCoord; ++y1)
+            for (int y1 = y + entitySize.yCoord - 1; y1 >= y; --y1)	//NOTE: 為從上而下抓方塊, 以便正確判定FENCE類
             {
                 for (int z1 = z; z1 < z + entitySize.zCoord; ++z1)
                 {
                 	//get block
-                	IBlockState block = entity.worldObj.getBlockState(new BlockPos(x1, y1, z1));
+                	BlockPos pos = new BlockPos(x1, y1, z1);
+                	IBlockState state = entity.worldObj.getBlockState(pos);
+                	Block block = state.getBlock();
                 	Material mat = null;
+                	EnumPathType type = EnumPathType.OPEN;
                 	
-                	if (block != null) mat = block.getMaterial();
+                	if (state != null) mat = state.getMaterial();
                 	
                 	//若碰到非空氣方塊
                 	if (mat != null && mat != Material.AIR)
                 	{
-                        //若碰到不能穿過的方塊
-                        if (mat.blocksMovement())
-                        {
-                            //is open door or openable fence gate
-                            if (BlockHelper.isOpenableDoor(block))
+                		//不能從頂端越過的方塊
+                		if (block instanceof BlockFence ||
+                			block instanceof BlockWall)
+                		{
+                			//若fence/wall跟entity相同高度, 則回傳為FENCE以便判定是否要跨過
+                			if (y1 == y) return EnumPathType.FENCE;
+                			//若fence/wall超過entity一格以上, 則判定被阻擋
+                			return EnumPathType.BLOCKED;
+                		}
+                		
+                		//其他可穿越的方塊 (特別列出block.isPassable = false但卻可以通過的例外)
+                		if (block instanceof BlockRailBase)
+                		{
+                			type = EnumPathType.OPEN;
+                		}
+                		else if (block instanceof BlockDoor)
+                		{
+                			doorCount++;
+                			//除了鐵門以外皆可自行開關
+                			if (mat == Material.IRON || doorCount > 4) return EnumPathType.BLOCKED;
+                			type = EnumPathType.OPENABLE;
+                		}
+                		//可自行開關的方塊
+                		else if (block instanceof BlockFenceGate)
+                		{
+                			type = EnumPathType.OPENABLE;
+                		}
+                		else if (BlockHelper.checkBlockIsLiquid(state))
+                		{
+                			type = EnumPathType.FLUID;
+                		}
+                		//其他不能穿過的方塊
+                		else
+                		{
+                            if (block instanceof BlockLilyPad ||
+                            	!block.isPassable(entity.worldObj, pos))
                             {
-                            	pathToDoor = true;
+                                return EnumPathType.BLOCKED;
                             }
-                            else
-                            {
-                            	//其他不能通過的方塊, 皆為blocked
-                            	return EnumPathType.BLOCKED;
-                            }
-                        }
-                        
-                		//檢查原本高度y是否全為液體
-                        if (pathInLiquid && y1 == y && !BlockHelper.checkBlockIsLiquid(block))
-                        {
-                        	pathInLiquid = false;
-                        }
+                		}
                 	}
-                	//is AIR block
-                	else
-                	{
-                		//若為air方塊, 檢查高度y是否為液體
-                        if (pathInLiquid && y1 == y)
-                        {
-                        	pathInLiquid = false;
-                        }
-                	}//end is air block
+                	
+                	//add path type
+                	pathset.add(type);
                 }//end for z
             }//end for y
         }//end for x
-
-        return pathInLiquid ? EnumPathType.FLUID :
-        	   pathToDoor ? EnumPathType.DOOR_CLOSE : EnumPathType.OPEN;
+        
+        //overall type checking TODO door?
+//        if (pathset.contains(EnumPathType.OPENABLE))
+//        {
+//            return EnumPathType.OPENABLE;
+//        }
+//        else
+//        {
+        	return pathInLiquid ? EnumPathType.FLUID : EnumPathType.OPEN;
+//        }
     }
 
     /**

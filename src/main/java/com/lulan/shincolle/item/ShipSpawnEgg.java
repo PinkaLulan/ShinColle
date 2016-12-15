@@ -281,9 +281,12 @@ public class ShipSpawnEgg extends BasicItem
 				}
 				
 				//load inventory for 1.9.4+
-				capa.deserializeNBT(nbt);
+		        if (nbt.hasKey(CapaShipInventory.InvName))
+		        {
+		        	capa.deserializeNBT((NBTTagCompound) nbt.getTag(CapaShipInventory.InvName));
+		        }
 				
-				//load ship attrivutes
+				//load ship attributes
 				int[] attrs = nbt.getIntArray("Attrs");
 				
 				try

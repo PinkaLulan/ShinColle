@@ -24,7 +24,7 @@ public class DeskItemRadar extends BasicItem
 		this.setUnlocalizedName(NAME);
 		this.setRegistryName(NAME);
 		this.setMaxStackSize(1);
-        
+		
         GameRegistry.register(this);
 	}
 	

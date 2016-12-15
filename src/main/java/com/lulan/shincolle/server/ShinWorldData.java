@@ -1,10 +1,9 @@
 package com.lulan.shincolle.server;
 
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 import com.lulan.shincolle.proxy.ServerProxy;
+import com.lulan.shincolle.proxy.ServerProxy.ShipCacheData;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.team.TeamData;
 import com.lulan.shincolle.utility.LogHelper;
@@ -25,10 +24,15 @@ public class ShinWorldData extends WorldSavedData
 {
 
 	public static final String SAVEID = Reference.MOD_ID;
+	
+	//global data tag name
 	public static final String TAG_NEXTPLAYERID = "nextPlayerID";
 	public static final String TAG_NEXTSHIPID = "nextShipID";
 	public static final String TAG_PLAYERDATA = "playerData";
 	public static final String TAG_TEAMDATA = "teamData";
+	public static final String TAG_SHIPDATA = "shipData";
+	
+	//team data tag name
 	public static final String TAG_PUID = "pUID";
 	public static final String TAG_PDATA = "pData";
 	public static final String TAG_TUID = "tUID";
@@ -36,6 +40,14 @@ public class ShinWorldData extends WorldSavedData
 	public static final String TAG_TLNAME = "tLName";
 	public static final String TAG_TBAN = "tBan";
 	public static final String TAG_TALLY = "tAlly";
+	
+	//ship data tag name
+	public static final String TAG_ShipUID = "sUID";
+	public static final String TAG_ShipEID = "sEID";
+	public static final String TAG_ShipWID = "sWID";
+	public static final String TAG_ShipPOS = "sPOS";
+	public static final String TAG_ShipDead = "sDead";
+	public static final String TAG_ShipNBT = "sNBT";
 	
 	//data
 	public static NBTTagCompound nbtData;
@@ -71,82 +83,99 @@ public class ShinWorldData extends WorldSavedData
 		nbt.setInteger(TAG_NEXTPLAYERID, ServerProxy.getNextPlayerID());
 		nbt.setInteger(TAG_NEXTSHIPID, ServerProxy.getNextShipID());
 
-		//unattackable list
-	    HashMap<Integer, String> strList = ServerProxy.getUnattackableTargetClass();
+		
+		/** unattackable list */
+	    HashMap<Integer, String> map1 = ServerProxy.getUnattackableTargetClass();
 	    
-	    if (strList != null)
+	    if (map1 != null)
 	    {
 	    	NBTTagList tagList = new NBTTagList();
-			LogHelper.info("DEBUG : save world data: save unattackable target list: size: "+strList.size());
+			LogHelper.info("DEBUG : save world data: save unattackable target list: size: "+map1.size());
 			
-			strList.forEach((k, v) ->
+			map1.forEach((key, str) ->
 			{
-				NBTTagString str = new NBTTagString(v);
-				tagList.appendTag(str);
+				tagList.appendTag(new NBTTagString(str));
 			});
 			
 			nbt.setTag(ServerProxy.UNATK_TARGET_CLASS, tagList);
 	    }
 	    
 		/** save player data:  from playerMap to server save file */
-		NBTTagList list = new NBTTagList();
-		Iterator iter = ServerProxy.getAllPlayerWorldData().entrySet().iterator();
+		final NBTTagList list2 = new NBTTagList();
+		HashMap<Integer, int[]> map2 = ServerProxy.getAllPlayerWorldData();
 		
-	    //save each player data
-		while (iter.hasNext())
+		if (map2 != null)
 		{
-		    Map.Entry entry = (Map.Entry) iter.next();
-		    int uid = (Integer) entry.getKey();
-		    int[] data0 = (int[]) entry.getValue();
-		    
-		    NBTTagCompound save = new NBTTagCompound();
-		    save.setInteger(TAG_PUID, uid);
-		    save.setIntArray(TAG_PDATA, data0);
-		    LogHelper.info("DEBUG : save world data: save id "+uid+" data: "+data0[0]);
-		    
-		    //save target class list
-		    strList = ServerProxy.getPlayerTargetClass(uid);
-		    
-			if (strList != null)
+			map2.forEach((uid, data) ->
 			{
-				NBTTagList tagList = new NBTTagList();
-				LogHelper.info("DEBUG : save world data: save id "+uid+" target list size: "+strList.size());
-				
-				strList.forEach((k, v) ->
+			    NBTTagCompound tag = new NBTTagCompound();
+			    tag.setInteger(TAG_PUID, uid);
+			    tag.setIntArray(TAG_PDATA, data);
+			    LogHelper.debug("DEBUG : save world data: save uid "+uid+" data: "+data[0]);
+			    
+			    //save target class list
+			    HashMap<Integer, String> strMap = ServerProxy.getPlayerTargetClass(uid);
+			    
+			    if (strMap != null)
 				{
-					NBTTagString str = new NBTTagString(v);
-					tagList.appendTag(str);
-				});
+					NBTTagList tagList = new NBTTagList();
+					LogHelper.debug("DEBUG : save world data: save id "+uid+" target list size: "+strMap.size());
+					
+					strMap.forEach((key, str) ->
+					{
+						tagList.appendTag(new NBTTagString(str));
+					});
+					
+					tag.setTag(ServerProxy.CUSTOM_TARGET_CLASS, tagList);
+				}
 				
-				save.setTag(ServerProxy.CUSTOM_TARGET_CLASS, tagList);
-			}
-			
-		    list.appendTag(save);	//將save加入到list中, 不檢查是否有重複的tag, 而是新增一個tag
+			    list2.appendTag(tag);	//將save加入到list中, 不檢查是否有重複的tag, 而是新增一個tag
+			});
 		}
-		nbt.setTag(TAG_PLAYERDATA, list);	//將list加入到nbt中
+		nbt.setTag(TAG_PLAYERDATA, list2);	//將list加入到nbt中
 		
 		
 		/** save team data */
-		list = new NBTTagList();
-		iter = ServerProxy.getAllTeamWorldData().entrySet().iterator();
+		final NBTTagList list3 = new NBTTagList();
+		HashMap<Integer, TeamData> map3 = ServerProxy.getAllTeamWorldData();
 		
-		while (iter.hasNext())
+		if (map3 != null)
 		{
-		    Map.Entry entry = (Map.Entry) iter.next();
-		    int uid = (Integer) entry.getKey();
-		    TeamData data = (TeamData) entry.getValue();
-		    
-		    NBTTagCompound save = new NBTTagCompound();
-		    save.setInteger(TAG_TUID, uid);
-		    save.setString(TAG_TNAME, data.getTeamName());
-		    save.setString(TAG_TLNAME, data.getTeamLeaderName());
-		    
-		    NBTHelper.saveIntListToNBT(save, TAG_TBAN, data.getTeamBannedList());
-		    NBTHelper.saveIntListToNBT(save, TAG_TALLY, data.getTeamAllyList());
-		    
-		    list.appendTag(save);	//將save加入到list中, 不檢查是否有重複的tag, 而是新增一個tag
+			map3.forEach((uid, tdata) ->
+			{
+			    NBTTagCompound tag = new NBTTagCompound();
+			    tag.setInteger(TAG_TUID, uid);
+			    tag.setString(TAG_TNAME, tdata.getTeamName());
+			    tag.setString(TAG_TLNAME, tdata.getTeamLeaderName());
+			    
+			    NBTHelper.saveIntListToNBT(tag, TAG_TBAN, tdata.getTeamBannedList());
+			    NBTHelper.saveIntListToNBT(tag, TAG_TALLY, tdata.getTeamAllyList());
+			    
+			    list3.appendTag(tag);	//將save加入到list中, 不檢查是否有重複的tag, 而是新增一個tag
+			});
 		}
-		nbt.setTag(TAG_TEAMDATA, list);	//將list加入到nbt中
+		nbt.setTag(TAG_TEAMDATA, list3);	//將list加入到nbt中
+		
+		
+		/** save ship data */
+		final NBTTagList list4 = new NBTTagList();
+		HashMap<Integer, ShipCacheData> map4 = ServerProxy.getAllShipWorldData();
+		
+		if (map4 != null)
+		{
+			map4.forEach((uid, sdata) ->
+			{
+				NBTTagCompound tag = new NBTTagCompound();
+				tag.setInteger(TAG_ShipUID, uid);
+				tag.setInteger(TAG_ShipEID, sdata.entityID);
+				tag.setInteger(TAG_ShipWID, sdata.worldID);
+				tag.setBoolean(TAG_ShipDead, sdata.isDead);
+				tag.setIntArray(TAG_ShipPOS, new int[] {sdata.posX, sdata.posY, sdata.posZ});
+				
+				list4.appendTag(tag);
+			});
+		}
+		nbt.setTag(TAG_ShipNBT, list4);	//將list加入到nbt中
 		
 		return nbt;
 	}//end write nbt

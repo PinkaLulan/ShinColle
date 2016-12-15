@@ -6,6 +6,8 @@ import com.lulan.shincolle.client.render.block.RenderSmallShipyard;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.utility.CalcHelper;
 
+import net.minecraft.block.SoundType;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
@@ -40,7 +42,8 @@ public class BlockSmallShipyard extends BasicBlockFacingContainer
 	
 	public BlockSmallShipyard()
 	{
-	    super();
+		super(Material.WATER);
+		this.setSoundType(SoundType.METAL);
 		this.setUnlocalizedName(NAME);
 		this.setRegistryName(NAME);
 		this.setHardness(10F);
@@ -117,6 +120,24 @@ public class BlockSmallShipyard extends BasicBlockFacingContainer
 
     @Override
     public boolean isOpaqueCube(IBlockState state)
+    {
+        return false;
+    }
+    
+	@Override
+    public boolean isPassable(IBlockAccess worldIn, BlockPos pos)
+    {
+        return false;
+    }
+	
+	@Override
+    public boolean isBlockSolid(IBlockAccess worldIn, BlockPos pos, EnumFacing side)
+    {
+        return true;
+    }
+    
+	@Override
+    public boolean isReplaceable(IBlockAccess worldIn, BlockPos pos)
     {
         return false;
     }

@@ -1,13 +1,13 @@
 package com.lulan.shincolle.ai.path;
 
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityMoveHelper;
-import net.minecraft.util.math.MathHelper;
-
 import com.lulan.shincolle.entity.IShipNavigator;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
+
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.util.math.MathHelper;
 
 /**SHIP MOVE HELPER
  * 配合ship navigator使用, 額外增加y軸移動量, 適用於水中或飛行entity
@@ -30,7 +30,7 @@ public class ShipMoveHelper
     private double speed;
     private float rotateLimit;  //每tick最多可以轉身的角度, 角度小則轉彎半徑大
     private int stuckTick;
-    protected EntityMoveHelper.Action action = EntityMoveHelper.Action.WAIT;
+    protected Action action = Action.WAIT;
     
 
     public ShipMoveHelper(EntityLiving entity, float rotlimit)
@@ -47,7 +47,7 @@ public class ShipMoveHelper
 
     public boolean isUpdating()
     {
-    	return this.action == EntityMoveHelper.Action.MOVE_TO;
+    	return this.action == Action.MOVE_TO;
     }
 
     public double getSpeed()
@@ -64,7 +64,8 @@ public class ShipMoveHelper
         this.posY = y;
         this.posZ = z;
         this.speed = speed;
-        this.action = EntityMoveHelper.Action.MOVE_TO;
+        this.action = Action.MOVE_TO;
+        
     }
 
     /**CHANGE: 增加y軸移動計算, 不靠自然掉落或者跳躍來移動y軸
@@ -72,11 +73,14 @@ public class ShipMoveHelper
      */
     public void onUpdateMoveHelper()
     {
-        this.entity.setMoveForward(0.0F);
-
+    	//reset movement
+        this.entity.setMoveForward(0F);
+        
         //MOVE_TO狀態
-        if (this.action == EntityMoveHelper.Action.MOVE_TO)
+        if (this.action == Action.MOVE_TO)
         {
+        	this.action = Action.WAIT;
+        	
             //計算目標點跟目前點差距
             double x1 = this.posX - this.entity.posX;
             double y1 = this.posY - this.entity.posY;
@@ -88,7 +92,7 @@ public class ShipMoveHelper
             {
                 float f = (float)(MathHelper.atan2(z1, x1) * Values.N.DIV_180_PI) - 90F;
                 float moveSpeed = (float)(this.speed * this.entity.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue());
-                
+
                 //設定每tick最多可以轉動的角度
                 this.entity.rotationYaw = this.limitAngle(this.entity.rotationYaw, f, this.rotateLimit);
                 
@@ -126,13 +130,13 @@ public class ShipMoveHelper
                 {	//用於陸上跳躍
                     this.entity.getJumpHelper().setJumping();
                 }
-                
+
                 this.entity.setAIMoveSpeed(moveSpeed);
             }
             //若移動目標的距離太小(ex: xyz差距在0.1格內), 則停止entity移動
             else
             {
-            	this.entity.setMoveForward(0.0F);
+            	this.entity.setMoveForward(0F);
                 return;
             }
             
@@ -140,7 +144,7 @@ public class ShipMoveHelper
         //WAIT狀態
         else
         {
-            this.entity.setMoveForward(0.0F);
+            this.entity.setMoveForward(0F);
         }//end WAIT
         
     }

@@ -34,12 +34,16 @@ public class ContainerDesk extends Container
 	public ContainerDesk(InventoryPlayer invPlayer, TileEntityDesk te, int type)
 	{
 		this.playerInv = invPlayer;
-		this.tile = te;
 		this.player = invPlayer.player;
 		this.capa = CapaTeitoku.getTeitokuCapability(player);
 		this.type = type;
-		this.lenTemp = tile.getFieldCount();
-		this.valueTemp = new int[this.lenTemp];
+		
+		if (type == 0)
+		{
+			this.tile = te;
+			this.lenTemp = tile.getFieldCount();
+			this.valueTemp = new int[this.lenTemp];
+		}
 		
 		//server side flag
 		if (this.capa != null)
@@ -79,40 +83,43 @@ public class ContainerDesk extends Container
 	{
 		super.detectAndSendChanges();
 		
-		//對所有開啟gui的人發送更新, 若數值有改變則發送更新封包
-		for (int i = 0; i < this.listeners.size(); ++i)
-        {
-            IContainerListener listener = (IContainerListener) this.listeners.get(i);
-            
-            //檢查所有數值是否有改變
-            int temp = 0;
-            boolean update = false;
-            
-            if (this.allyCD != this.capa.getPlayerTeamCooldownInSec())
-            {
-            	listener.sendProgressBarUpdate(this, 0, this.capa.getPlayerTeamCooldownInSec());
-            }
-            
-            for (int j = 0; j < this.lenTemp; j++)
-            {
-            	temp = this.tile.getField(j);
-            	
-            	//有部份數值需要用自訂封包來發送更新
-            	if (this.valueTemp[j] != temp)
-            	{
-                    listener.sendProgressBarUpdate(this, j + 1, temp);
-            	}
-            }//end for all value temp
-        }//end for all listener
-		
-		//更新container內的數值
-		this.allyCD = this.capa.getPlayerTeamCooldownInSec();
-		
-		for (int k = 0; k < this.lenTemp; k++)
+		//更新container內的數值, onyl for BlockDesk
+		if (this.type == 0)
 		{
-			this.valueTemp[k] = this.tile.getField(k);
+			//對所有開啟gui的人發送更新, 若數值有改變則發送更新封包
+			for (int i = 0; i < this.listeners.size(); ++i)
+	        {
+	            IContainerListener listener = (IContainerListener) this.listeners.get(i);
+	            
+	            //檢查所有數值是否有改變
+	            int temp = 0;
+	            boolean update = false;
+	            
+	            if (this.allyCD != this.capa.getPlayerTeamCooldownInSec())
+	            {
+	            	listener.sendProgressBarUpdate(this, 0, this.capa.getPlayerTeamCooldownInSec());
+	            }
+	            
+	            for (int j = 0; j < this.lenTemp; j++)
+	            {
+	            	temp = this.tile.getField(j);
+	            	
+	            	//有部份數值需要用自訂封包來發送更新
+	            	if (this.valueTemp[j] != temp)
+	            	{
+	                    listener.sendProgressBarUpdate(this, j + 1, temp);
+	            	}
+	            }//end for all value temp
+	        }//end for all listener
+		
+
+			this.allyCD = this.capa.getPlayerTeamCooldownInSec();
+			
+			for (int k = 0; k < this.lenTemp; k++)
+			{
+				this.valueTemp[k] = this.tile.getField(k);
+			}
 		}
-            
     }
 	
 	//client端container接收新值

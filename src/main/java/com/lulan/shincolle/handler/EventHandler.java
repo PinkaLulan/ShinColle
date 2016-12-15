@@ -249,11 +249,18 @@ public class EventHandler
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
 	public void onEntityDeath(LivingDeathEvent event)
 	{
-		Entity ent = event.getSource().getSourceOfDamage();
-		
-		//add kills number
-	    if (ent != null)
-	    {
+		if (event.getEntity() != null && !event.getEntity().worldObj.isRemote)
+		{
+			//若ship死亡, 則更新ship cache
+	    	if (event.getEntity() instanceof BasicEntityShip)
+	    	{
+	    		BasicEntityShip ship = (BasicEntityShip) event.getEntity();
+	    		ServerProxy.updateShipID(ship);
+	    	}
+
+			//add kills number
+			Entity ent = event.getSource().getSourceOfDamage();
+			
 	    	//由本體擊殺
 	    	if (ent instanceof BasicEntityShip)
 	    	{
@@ -269,28 +276,29 @@ public class EventHandler
 	    			((BasicEntityShip)((IShipAttackBase) ent).getHostEntity()).addKills();
 	    		}
 	    	}
-	    }
-	    
-	    EntityLivingBase host = event.getEntityLiving();
+		    
+	    	//show attack emote
+		    EntityLivingBase host = event.getEntityLiving();
 
-	    //show dead emote
-	    if (host instanceof BasicEntityShip)
-	    {
-	    	if (!host.worldObj.isRemote)
-	    	{
-		    	((BasicEntityShip) host).applyParticleEmotion(8);
-				EntityHelper.applyShipEmotesAOE(host.worldObj, host.posX, host.posY, host.posZ, 16D, 6);
-	    	}
-	    }
-	    //show dead emote
-	    else if (host instanceof BasicEntityShipHostile)
-	    {
-	    	if (!host.worldObj.isRemote)
-	    	{
-		    	((BasicEntityShipHostile) host).applyParticleEmotion(8);
-				EntityHelper.applyShipEmotesAOEHostile(host.worldObj, host.posX, host.posY, host.posZ, 48D, 6);
-	    	}
-	    }
+		    //show dead emote
+		    if (host instanceof BasicEntityShip)
+		    {
+		    	if (!host.worldObj.isRemote)
+		    	{
+			    	((BasicEntityShip) host).applyParticleEmotion(8);
+					EntityHelper.applyShipEmotesAOE(host.worldObj, host.posX, host.posY, host.posZ, 16D, 6);
+		    	}
+		    }
+		    //show dead emote
+		    else if (host instanceof BasicEntityShipHostile)
+		    {
+		    	if (!host.worldObj.isRemote)
+		    	{
+			    	((BasicEntityShipHostile) host).applyParticleEmotion(8);
+					EntityHelper.applyShipEmotesAOEHostile(host.worldObj, host.posX, host.posY, host.posZ, 48D, 6);
+		    	}
+		    }
+		}
 	}
 	
 	/**
@@ -298,7 +306,7 @@ public class EventHandler
 	 *  if cloned, save/load the player data
 	 */
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
-	public void onEntityClone(PlayerEvent.Clone event)
+	public void onPlayerClone(PlayerEvent.Clone event)
 	{
         //restore data when player dead or back from End
         if (event.getEntityPlayer() != null && event.getOriginal() != null)
@@ -471,7 +479,7 @@ public class EventHandler
 		}
 	}
 	
-	//edit vanilla chest content TODO not done
+	//edit vanilla chest content
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
 	public void onChestSpawn(LootTableLoadEvent event)
 	{

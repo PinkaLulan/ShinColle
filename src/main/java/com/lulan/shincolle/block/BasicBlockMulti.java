@@ -105,6 +105,24 @@ abstract public class BasicBlockMulti extends BasicBlockContainer
         return true;
     }
     
+	@Override
+    public boolean isPassable(IBlockAccess worldIn, BlockPos pos)
+    {
+        return false;
+    }
+	
+	@Override
+    public boolean isBlockSolid(IBlockAccess worldIn, BlockPos pos, EnumFacing side)
+    {
+        return true;
+    }
+    
+	@Override
+    public boolean isReplaceable(IBlockAccess worldIn, BlockPos pos)
+    {
+        return false;
+    }
+    
 	//update multi-block structure state
 	public static void updateBlockState(int mbState, World world, BlockPos pos)
 	{

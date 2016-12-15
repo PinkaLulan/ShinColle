@@ -3,8 +3,10 @@ package com.lulan.shincolle.utility;
 import java.util.HashSet;
 import java.util.Random;
 
+import com.lulan.shincolle.proxy.ClientProxy;
+
 import net.minecraft.block.BlockDoor;
-import net.minecraft.block.BlockFence;
+import net.minecraft.block.BlockFenceGate;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -20,8 +22,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.fluids.IFluidBlock;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import com.lulan.shincolle.proxy.ClientProxy;
 
 public class BlockHelper
 {
@@ -436,7 +436,7 @@ public class BlockHelper
 		{
 			Material mat = block.getMaterial();
 			
-			if (block == Blocks.TRAPDOOR || block instanceof BlockFence)
+			if (block == Blocks.TRAPDOOR || block instanceof BlockFenceGate)
 			{
 				return true;
 			}
