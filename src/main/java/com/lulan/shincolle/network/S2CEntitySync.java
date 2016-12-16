@@ -71,8 +71,6 @@ public class S2CEntitySync implements IMessage
 	 * type 3: entity minor only
 	 * type 4: all emotion
 	 * type 5: player ride mount packet
-	 * type 6: 
-	 * type 7: mounts sync
 	 * type 11:ship formation data
 	 * type 12:ship unbuff data
 	 * type 14:ship timer only

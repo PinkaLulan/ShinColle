@@ -2,7 +2,12 @@ package com.lulan.shincolle.block;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.block.BlockLiquid;
+import com.lulan.shincolle.ShinColle;
+import com.lulan.shincolle.tileentity.BasicTileMulti;
+import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
+import com.lulan.shincolle.utility.LogHelper;
+import com.lulan.shincolle.utility.MulitBlockHelper;
+
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -19,14 +24,6 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
-import com.lulan.shincolle.ShinColle;
-import com.lulan.shincolle.tileentity.BasicTileMulti;
-import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
-import com.lulan.shincolle.utility.LogHelper;
-import com.lulan.shincolle.utility.MulitBlockHelper;
 
 /** basic block of multiblock structure
  * 
@@ -82,16 +79,18 @@ abstract public class BasicBlockMulti extends BasicBlockContainer
 		}
 	}
 	
+	//if side is liquid, return true
 	@Override
-    @SideOnly(Side.CLIENT)
-    public boolean shouldSideBeRendered(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing side)
-	{
-		if (state.getValue(MBS) > 0)
+    public boolean doesSideBlockRendering(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing face)
+    {
+		Material mat = world.getBlockState(pos.offset(face)).getMaterial();
+		
+		if (state.getValue(MBS) > 0 && (mat == Material.WATER || mat == Material.LAVA))
 		{
-			return false;
+			return true;
 		}
 		
-        return true;
+        return false;
     }
 
     @Override

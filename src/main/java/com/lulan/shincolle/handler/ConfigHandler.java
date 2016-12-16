@@ -159,8 +159,8 @@ public class ConfigHandler
 		enableForestry = config.getBoolean("Enable_Forestry", "inter-mod", true, "Enable Forestry module if Forestry exists: add bees and comb.");
 				
 		//讀取 ship setting設定
-		canFlare = config.getBoolean("Can_Flare", "ship setting", true, "Can ship use Flare");
-		canSearchlight = config.getBoolean("Can_Searchlight", "ship setting", true, "Can ship use Searchlight");
+		canFlare = config.getBoolean("Can_Flare", "ship setting", true, "Can ship spawn Flare lighting effect, CLIENT SIDE only");
+		canSearchlight = config.getBoolean("Can_Searchlight", "ship setting", true, "Can ship spawn Searchlight lighting effect, CLIENT SIDE only");
 		checkRing = config.getBoolean("Check_Ring", "ship setting", true, "Check wedding ring when spawning NON-BOSS ship mob");
 		timeKeeping = config.getBoolean("Timekeeping", "ship setting", true, "Play timekeeping sound every 1000 ticks (1 minecraft hour)");
 		volumeTimekeep = config.getFloat("Timekeeping_Volume", "ship setting", 1.0F, 0F, 10F, "Timekeeping sound volume");

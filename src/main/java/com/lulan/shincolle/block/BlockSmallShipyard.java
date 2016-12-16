@@ -6,15 +6,12 @@ import com.lulan.shincolle.client.render.block.RenderSmallShipyard;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.utility.CalcHelper;
 
-import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.statemap.StateMap;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
@@ -42,8 +39,7 @@ public class BlockSmallShipyard extends BasicBlockFacingContainer
 	
 	public BlockSmallShipyard()
 	{
-		super(Material.WATER);
-		this.setSoundType(SoundType.METAL);
+		super();
 		this.setUnlocalizedName(NAME);
 		this.setRegistryName(NAME);
 		this.setHardness(10F);
@@ -105,10 +101,17 @@ public class BlockSmallShipyard extends BasicBlockFacingContainer
     	return state.getValue(FACING).getIndex() + (state.getValue(ACTIVE) ? 8 : 0);
     }
 	
+	//if side is liquid, return true
 	@Override
-    @SideOnly(Side.CLIENT)
-    public boolean shouldSideBeRendered(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing side)
-	{
+    public boolean doesSideBlockRendering(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing face)
+    {
+		Material mat = world.getBlockState(pos.offset(face)).getMaterial();
+		
+		if (mat == Material.WATER || mat == Material.LAVA)
+		{
+			return true;
+		}
+		
         return false;
     }
 	

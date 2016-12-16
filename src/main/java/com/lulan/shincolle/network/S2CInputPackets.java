@@ -1,11 +1,15 @@
 package com.lulan.shincolle.network;
 
+import com.lulan.shincolle.proxy.ClientProxy;
+import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.CommandHelper;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.PacketHelper;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -30,15 +34,16 @@ public class S2CInputPackets implements IMessage
 		public static final byte CmdChOwner = 0;
 		public static final byte CmdShipInfo = 1;
 		public static final byte CmdShipAttr = 2;
+		public static final byte FlareEffect = 20;
 	}
 	
 	
 	public S2CInputPackets() {}  //必須要有空參數constructor, forge才能使用此class
 
-	/**type 0:(2 parms) command: change owner: 0:sender eid, 1:owner eid
-	 * type 1:(1 parms) command: show ship info: 0:sender eid
-	 * type 2:(8 parms) command: change ship attrs: 0:sender eid, 1:ship lv, 2~7:bonus value
-	 * 
+	/**type 0: (2 parms) command: change owner: 0:sender eid, 1:owner eid
+	 * type 1: (1 parms) command: show ship info: 0:sender eid
+	 * type 2: (8 parms) command: change ship attrs: 0:sender eid, 1:ship lv, 2~7:bonus value
+	 * type 20:(8 parms) flare light effect: 0:x, 1:y, 2:z
 	 */
 	public S2CInputPackets(byte type, int...parms)
 	{
@@ -58,6 +63,7 @@ public class S2CInputPackets implements IMessage
 		case PID.CmdChOwner:	//cmd: change owner packet
 		case PID.CmdShipInfo:	//cmd: show ship info
 		case PID.CmdShipAttr:	//cmd: change ship attrs
+		case PID.FlareEffect:	//flare effect server to client sync
 		{
 			try
 			{
@@ -87,6 +93,7 @@ public class S2CInputPackets implements IMessage
 		case PID.CmdChOwner:	//cmd: change owner packet
 		case PID.CmdShipInfo:	//cmd: show ship info
 		case PID.CmdShipAttr:	//cmd: change ship attrs
+		case PID.FlareEffect:	//flare effect server to client sync
 		{
 			buf.writeByte(this.packetType);
 
@@ -118,14 +125,31 @@ public class S2CInputPackets implements IMessage
 		{
 		case PID.CmdChOwner:	//cmd: change owner packet
 			CommandHelper.processShipChangeOwner(msg.valueInt[0], msg.valueInt[1]);
-			break;
+		break;
 		case PID.CmdShipInfo:	//cmd: show ship info
 			CommandHelper.processShowShipInfo(msg.valueInt[0]);
-			break;
+		break;
 		case PID.CmdShipAttr:	//cmd: change ship attrs
 			CommandHelper.processSetShipAttrs(msg.valueInt);
-			break;
+		break;
+		case PID.FlareEffect:
+		{
+  			BlockPos pos = new BlockPos(msg.valueInt[0], msg.valueInt[1], msg.valueInt[2]);
+			float light = ClientProxy.getClientWorld().getLightFor(EnumSkyBlock.BLOCK, pos);
+  			
+			//place new light block
+  			if(light < 12F)
+  			{
+				BlockHelper.placeLightBlock(ClientProxy.getClientWorld(), pos);
+  			}
+  			//search light block, renew lifespan
+  			else
+  			{
+  				BlockHelper.updateNearbyLightBlock(ClientProxy.getClientWorld(), pos);
+  			}
 		}
+		break;
+		}//end switch
 	}
 
 	//packet handler (inner class)

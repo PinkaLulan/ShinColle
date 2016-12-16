@@ -1,12 +1,12 @@
 package com.lulan.shincolle.block;
 
-import net.minecraft.block.SoundType;
+import com.lulan.shincolle.tileentity.TileMultiPolymetal;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.statemap.StateMap;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -14,8 +14,6 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import com.lulan.shincolle.tileentity.TileMultiPolymetal;
 
 public class BlockPolymetal extends BasicBlockMulti
 {	
@@ -26,8 +24,7 @@ public class BlockPolymetal extends BasicBlockMulti
 	
 	public BlockPolymetal()
 	{
-		super(Material.WATER);
-		this.setSoundType(SoundType.METAL);
+		super(Material.IRON);
 		this.setUnlocalizedName(NAME);
 		this.setRegistryName(NAME);
 		this.setHarvestLevel("pickaxe", 0);

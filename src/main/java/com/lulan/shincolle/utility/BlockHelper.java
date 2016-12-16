@@ -3,8 +3,11 @@ package com.lulan.shincolle.utility;
 import java.util.HashSet;
 import java.util.Random;
 
+import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.proxy.ClientProxy;
+import com.lulan.shincolle.tileentity.TileEntityLightBlock;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoor;
 import net.minecraft.block.BlockFenceGate;
 import net.minecraft.block.BlockLiquid;
@@ -13,6 +16,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
@@ -296,7 +300,6 @@ public class BlockHelper
 	}
 
 	/** ray trace for block, include liquid block
-	 * 
 	 */
 	@SideOnly(Side.CLIENT)
 	public static RayTraceResult getPlayerMouseOverBlock(double dist, float duringTicks)
@@ -311,65 +314,71 @@ public class BlockHelper
 	    return player.worldObj.rayTraceBlocks(vec3, vec32, true, false, false);
 	}
 	
-//	/** place light block */ TODO
-//	public static void placeLightBlock(World world, int x, int y, int z)
-//	{
-//		//swarch space to place light block
-//		for (int i = -1; i <= 1; i++)
-//		{
-//			for (int j = 1; j <= 2; j++)
-//			{
-//				for (int k = -1; k <= 1; k++)
-//				{
-//					Block b = world.getBlock(x+i, y+j, z+k);
-//					
-//					if (b == Blocks.water)
-//					{
-//						world.setBlock(x+i, y+j, z+k, ModBlocks.BlockLightFluid);
-//						return;
-//					}
-//					else if (b == Blocks.air)
-//					{
-//						world.setBlock(x+i, y+j, z+k, ModBlocks.BlockLightAir);
-//						return;
-//					}
-//					else if (b == ModBlocks.BlockLightFluid)
-//					{
-//						TileEntity te = world.getTileEntity(x+i, y+j, z+k);
-//						
-//						//renew lifespan
-//						if (te instanceof TileEntityLightBlock)
-//						{
-//							((TileEntityLightBlock) te).tick = 1;
-//							return;
-//						}
-//					}
-//				}
-//			}
-//		}
-//	}
-//	
-//	/** reset nearby light block lifespan */
-//	public static void updateNearbyLightBlock(World world, int x, int y, int z)
-//	{
-//		for (int i = -1; i <= 1; i++)
-//		{
-//			for (int j = 1; j <= 2; j++)
-//			{
-//				for (int k = -1; k <= 1; k++)
-//				{
-//					TileEntity te = world.getTileEntity(x+i, y+j, z+k);
-//					
-//					//renew lifespan
-//					if (te instanceof TileEntityLightBlock)
-//					{
-//						((TileEntityLightBlock) te).tick = 1;
-//						return;
-//					}
-//				}
-//			}
-//		}
-//	}
+	/** place light block */
+	public static void placeLightBlock(World world, BlockPos pos)
+	{
+		//find space to place light block
+		for (int i = -1; i <= 1; i++)
+		{
+			for (int j = 1; j <= 2; j++)
+			{
+				for (int k = -1; k <= 1; k++)
+				{
+					BlockPos pos2 = pos.add(i, j, k);
+					Block block = world.getBlockState(pos2).getBlock();
+					int orgType = -1;
+					
+					if (block == Blocks.AIR)
+					{
+						world.setBlockState(pos2, ModBlocks.BlockLightAir.getDefaultState(), 1);
+						orgType = 0;
+					}
+					else if (block == Blocks.WATER)
+					{
+						world.setBlockState(pos2, ModBlocks.BlockLightLiquid.getDefaultState(), 1);
+						orgType = 1;
+					}
+					else if (block == Blocks.FLOWING_WATER)
+					{
+						world.setBlockState(pos2, ModBlocks.BlockLightLiquid.getDefaultState(), 1);
+						orgType = 2;
+					}
+					
+					//init TileEntityLightBlock
+					TileEntity tile = world.getTileEntity(pos2);
+					
+					if (tile instanceof TileEntityLightBlock)
+					{
+						if (orgType >= 0) ((TileEntityLightBlock) tile).type = orgType;
+						((TileEntityLightBlock) tile).tick = 1;
+						return;
+					}
+				}//end z
+			}//end y
+		}//end x
+	}
+	
+	/** reset nearby light block lifespan */
+	public static void updateNearbyLightBlock(World world, BlockPos pos)
+	{
+		for (int i = -1; i <= 1; i++)
+		{
+			for (int j = 1; j <= 2; j++)
+			{
+				for (int k = -1; k <= 1; k++)
+				{
+					TileEntity tile = world.getTileEntity(pos.add(i, j, k));
+					
+					//renew lifespan
+					if (tile instanceof TileEntityLightBlock)
+					{
+						((TileEntityLightBlock) tile).tick = 1;
+						return;
+					}
+				}//end z
+			}//end y
+		}//end x
+	}
 	
 	/** get chunks within range
 	 *  

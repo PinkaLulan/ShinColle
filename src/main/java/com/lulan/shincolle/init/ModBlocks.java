@@ -9,6 +9,8 @@ import com.lulan.shincolle.block.BlockDesk;
 import com.lulan.shincolle.block.BlockFrame;
 import com.lulan.shincolle.block.BlockGrudge;
 import com.lulan.shincolle.block.BlockGrudgeHeavy;
+import com.lulan.shincolle.block.BlockLightAir;
+import com.lulan.shincolle.block.BlockLightLiquid;
 import com.lulan.shincolle.block.BlockPolymetal;
 import com.lulan.shincolle.block.BlockPolymetalGravel;
 import com.lulan.shincolle.block.BlockPolymetalOre;
@@ -45,10 +47,6 @@ public class ModBlocks
 	public static Block BlockVolBlock;
 	public static Block BlockVolCore;
 	public static Block BlockWaypoint;
-
-//	//fluid
-//	public static Fluid LightFluid;
-//	public static BasicBlockFluid BlockLightFluid;
 	
 	//list for blocks
 	private static List<Block> ListBlocks;
@@ -64,8 +62,8 @@ public class ModBlocks
 		BlockFrame = initBlocks(BlockFrame.class);
 		BlockGrudge = initBlocks(BlockGrudge.class);
 		BlockGrudgeHeavy = initBlocks(BlockGrudgeHeavy.class);
-//		BlockLightAir = initBlocks(BlockLightAir.class);
-//		BlockLightLiquid = initBlocks(BlockLightLiquid.class);
+		BlockLightAir = initBlocks(BlockLightAir.class);
+		BlockLightLiquid = initBlocks(BlockLightLiquid.class);
 		BlockPolymetal = initBlocks(BlockPolymetal.class);
 		BlockPolymetalGravel = initBlocks(BlockPolymetalGravel.class);
 		BlockPolymetalOre = initBlocks(BlockPolymetalOre.class);
@@ -73,14 +71,6 @@ public class ModBlocks
 		BlockVolBlock = initBlocks(BlockVolBlock.class);
 		BlockVolCore = initBlocks(BlockVolCore.class);
 		BlockWaypoint = initBlocks(BlockWaypoint.class);
-
-//		//fluid block
-////		LightFluid = new Fluid("lightfluid");
-////		FluidRegistry.registerFluid(LightFluid);
-//		BlockLightFluid = new BasicBlockFluid(FluidRegistry.WATER, Material.water);
-////		BlockLightFluid = new BasicBlockFluid(LightFluid, Material.water);
-//		GameRegistry.registerBlock(BlockLightFluid, "BlockLightFluid");
-////		LightFluid.setUnlocalizedName(BlockLightFluid.getUnlocalizedName());
 		
 	}
 	

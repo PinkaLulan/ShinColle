@@ -171,11 +171,12 @@ public class ShinWorldData extends WorldSavedData
 				tag.setInteger(TAG_ShipWID, sdata.worldID);
 				tag.setBoolean(TAG_ShipDead, sdata.isDead);
 				tag.setIntArray(TAG_ShipPOS, new int[] {sdata.posX, sdata.posY, sdata.posZ});
+				tag.setTag(TAG_ShipNBT, sdata.entityNBT);
 				
 				list4.appendTag(tag);
 			});
 		}
-		nbt.setTag(TAG_ShipNBT, list4);	//將list加入到nbt中
+		nbt.setTag(TAG_SHIPDATA, list4);	//將list加入到nbt中
 		
 		return nbt;
 	}//end write nbt

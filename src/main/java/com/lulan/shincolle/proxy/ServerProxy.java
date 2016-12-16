@@ -272,6 +272,7 @@ public class ServerProxy extends CommonProxy
 			
 			//load ship data: from server save file to mapShipID
 			NBTTagList list3 = serverData.nbtData.getTagList(ShinWorldData.TAG_SHIPDATA, Constants.NBT.TAG_COMPOUND);
+			LogHelper.info("INFO : init server proxy: get ship data count: "+list3.tagCount());
 			
 			for (int i = 0; i < list3.tagCount(); i++)
 			{
@@ -285,7 +286,7 @@ public class ServerProxy extends CommonProxy
 				NBTTagCompound sTag = getlist.getCompoundTag(ShinWorldData.TAG_ShipNBT);
 				ShipCacheData sData = new ShipCacheData(eid, wid, isDead, (double)pos[0], (double)pos[1], (double)pos[2], sTag);
 			
-				//put data into server cache
+				LogHelper.info("INFO : init server proxy: get ship data: UID "+uid+" NAME "+sData);
 				mapShipID.put(uid, sData);
 			}
 			
@@ -735,7 +736,7 @@ public class ServerProxy extends CommonProxy
 			}
 			
 			/**every update radar tick
-			 * 1. create a map: key = player uid, value = ships eid
+			 * 1. create a map: key = player uid, value = ships eid list
 			 * 2. sync map to each player
 			 */
 			if (serverTicks % updateRadarTicks == 0)
@@ -756,82 +757,67 @@ public class ServerProxy extends CommonProxy
 				if (needUpdate)
 				{
 					//all ship map: <Player UID, ship entity id list>
-					HashMap<Integer, List<Integer>> allShipMapByPUID = new HashMap<Integer, List<Integer>>();
+					HashMap<Integer, List<Integer>> shipListByPlayer = new HashMap<Integer, List<Integer>>();
 					
 					//all player entity map (for cache)
-					HashMap<Integer, EntityPlayer> allPlayerMapByPUID = new HashMap<Integer, EntityPlayer>();
+					HashMap<Integer, EntityPlayer> playerByPUID = new HashMap<Integer, EntityPlayer>();
 					
-					//init value
-					Iterator iter = mapPlayerID.entrySet().iterator();
-					while (iter.hasNext())
+					//init value: add empty list for each player
+					mapPlayerID.forEach((pid, pdata) ->
 					{
-						Map.Entry entry = (Map.Entry) iter.next();
-						int pid = (Integer) entry.getKey();		//get player uid
-						List<Integer> value = new ArrayList();	//new empty list
+						List<Integer> newlist = new ArrayList();	//empty list
 						
 						//get player entity
 						EntityPlayer pe = EntityHelper.getEntityPlayerByUID(pid);
 						
 						//add init value
-						allShipMapByPUID.put(pid, value);
+						shipListByPlayer.put(pid, newlist);
 						
 						//add player entity cache, only for ONLINE player
 						if (pe != null)
 						{
-							allPlayerMapByPUID.put(pid, pe);
+							playerByPUID.put(pid, pe);
 						}
-					}
+					});
 				
-					//build allShipMapByPlayer: get ship from mapShipID, save to allShipMapByPUID
-					iter = mapShipID.entrySet().iterator();
-					while (iter.hasNext())
+					//add ship to each player: get ship from mapShipID, save to shipListByPlayer
+					mapShipID.forEach((sid, sdata) ->
 					{
-						Map.Entry entry = (Map.Entry) iter.next();
-					    int sid = (Integer) entry.getKey();		//get ship uid
-					    int[] sdata = (int[]) entry.getValue();	//get ship data
-					    int pid = -1;
-					    
 					    //get ship entity
-					    BasicEntityShip ship = null;
-					    Entity getEnt = EntityHelper.getEntityByID(sdata[0], sdata[1], false);
-						if (getEnt instanceof BasicEntityShip)
+					    Entity ent = EntityHelper.getEntityByID(sdata.entityID, sdata.worldID, false);
+					    
+						if (ent instanceof BasicEntityShip)
 						{
-							ship = (BasicEntityShip) getEnt;
-							pid = ship.getPlayerUID();
+							BasicEntityShip ship = (BasicEntityShip) ent;
+							int pid = ship.getPlayerUID();
+							EntityPlayer player = playerByPUID.get(pid);
+							
+							//check same dimension
+							if (player != null && player.worldObj.provider.getDimension() == ship.worldObj.provider.getDimension())
+							{
+						    	//add ship's entity id to player's shipList
+						    	List shipList = shipListByPlayer.get(pid);
+						    	
+						    	if (shipList != null)
+						    	{
+						    		shipList.add(sdata.entityID);
+						    	}
+							}
 						}
-						
-						//get player entity from cache
-						EntityPlayer pe = allPlayerMapByPUID.get(pid);
-						
-					    //檢查是否在同world, 相同world的ship才加入list
-					    if (ship != null && pe != null && ship.dimension == pe.dimension)
-					    {
-					    	//add ship's entity id to player's shipList
-					    	List shipList = allShipMapByPUID.get(pid);
-					    	
-					    	if (shipList != null)
-					    	{
-					    		shipList.add(sdata[0]);
-					    		allShipMapByPUID.put(pid, shipList);
-					    	}
-					    }
-					}//end build up allShipMapByPlayer
+					});
 					
 					//sync map to each ONLINE player
-					iter = allShipMapByPUID.entrySet().iterator();
-					while (iter.hasNext())
+					shipListByPlayer.forEach((pid, value) ->
 					{
-						Map.Entry entry = (Map.Entry) iter.next();
-						int pid = (Integer) entry.getKey();		//get player uid
-						List<Integer> value = (List<Integer>) entry.getValue();	//get data
-						EntityPlayerMP player = (EntityPlayerMP) allPlayerMapByPUID.get(pid);
+						EntityPlayerMP player = (EntityPlayerMP) playerByPUID.get(pid);
 						
 						if (player != null)
 						{
 							//sync data to player
 							CommonProxy.channelG.sendTo(new S2CGUIPackets(S2CGUIPackets.PID.SyncShipList, value), (EntityPlayerMP) player);
 						}
-					}
+					});
+
 				}//end need update
 			}//end every updateTick
 		}//end server start > 60 ticks

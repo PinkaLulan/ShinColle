@@ -650,8 +650,6 @@ public class EventHandler
 						capa.setRingActive(itemRing.getTagCompound().getBoolean("isActive"));
 					}
 				}
-				
-//				LogHelper.info("DEBUG : "+event.player.worldObj.isRemote+" "+event.player.getUniqueID());
 			}//end player per 32 ticks
 		}//end player tick phase: START
 	}//end onPlayerTick

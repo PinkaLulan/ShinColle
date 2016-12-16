@@ -63,7 +63,7 @@ public class GuiShipInventory extends GuiContainer
 				wpStayPos, xClick, yClick;
 	private float xMouse, yMouse;
 	private boolean mousePress, switchPick;
-	private boolean[] switchPage1, switchPage3;
+	private boolean[] switchPage1a, switchPage1b, switchPage3;
 	private int[][] iconXY;  //icon array:  [ship type, ship name][file,x,y]
 	
 
@@ -88,7 +88,8 @@ public class GuiShipInventory extends GuiContainer
 		this.showAttack = 1;		//show attack 1
 		this.mousePress = false;	//no key clicked
 		this.mousePressBar = -1;	//no bar pressed
-		this.switchPage1 = new boolean[6];	//page 1 button value
+		this.switchPage1a = new boolean[6];	//page 1 button value
+		this.switchPage1b = new boolean[6];	//page 1 button value
 		this.switchPage3 = new boolean[6];	//page 3 button value
 		
 		if (this.entity != null)
@@ -312,25 +313,36 @@ public class GuiShipInventory extends GuiContainer
         	this.pageIndicatorAI = 131;
         	
         	//get button value
-        	this.switchPage1[0] = this.entity.getStateFlag(ID.F.UseMelee);
-        	this.switchPage1[1] = this.entity.getStateFlag(ID.F.UseAmmoLight);
-            this.switchPage1[2] = this.entity.getStateFlag(ID.F.UseAmmoHeavy);
-            this.switchPage1[3] = this.entity.getStateFlag(ID.F.UseAirLight);
-            this.switchPage1[4] = this.entity.getStateFlag(ID.F.UseAirHeavy);
-            this.switchPage1[5] = this.entity.getStateFlag(ID.F.UseRingEffect);
+        	this.switchPage1a[0] = this.entity.getStateFlag(ID.F.UseMelee);
+        	this.switchPage1a[1] = this.entity.getStateFlag(ID.F.UseAmmoLight);
+            this.switchPage1a[2] = this.entity.getStateFlag(ID.F.UseAmmoHeavy);
+            this.switchPage1a[3] = this.entity.getStateFlag(ID.F.UseAirLight);
+            this.switchPage1a[4] = this.entity.getStateFlag(ID.F.UseAirHeavy);
+            this.switchPage1a[5] = this.entity.getStateFlag(ID.F.UseRingEffect);
+            
+            //get button display flag
+        	this.switchPage1b[0] = true;
+        	this.switchPage1b[1] = this.entity.getStateFlag(ID.F.AtkType_Light);
+            this.switchPage1b[2] = this.entity.getStateFlag(ID.F.AtkType_Heavy);
+            this.switchPage1b[3] = this.entity.getStateFlag(ID.F.AtkType_AirLight);
+            this.switchPage1b[4] = this.entity.getStateFlag(ID.F.AtkType_AirHeavy);
+            this.switchPage1b[5] = this.entity.getStateFlag(ID.F.HaveRingEffect);
             
             //draw button
             int iconY = 132;
             
-            for (boolean b : this.switchPage1)
+            for (int i = 0; i < 6; i++)
             {
-            	if (b)
+            	if (switchPage1b[i])		//can draw button
             	{
-            		drawTexturedModalRect(guiLeft + 174, guiTop + iconY, 0, 214, 11, 11);
-            	}
-            	else
-            	{
-            		drawTexturedModalRect(guiLeft + 174, guiTop + iconY, 11, 214, 11, 11);
+                	if (switchPage1a[i])	//draw button
+                	{
+                		drawTexturedModalRect(guiLeft + 174, guiTop + iconY, 0, 214, 11, 11);
+                	}
+                	else
+                	{
+                		drawTexturedModalRect(guiLeft + 174, guiTop + iconY, 11, 214, 11, 11);
+                	}
             	}
             	
             	iconY += 12;
@@ -1187,8 +1199,8 @@ public class GuiShipInventory extends GuiContainer
         case 3:	//AI operation 0 
         	if (this.showPageAI == 1)
         	{	//page 1: can melee button
-        		this.switchPage1[0] = this.entity.getStateFlag(ID.F.UseMelee);
-        		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_Melee, getInverseInt(this.switchPage1[0])));
+        		this.switchPage1a[0] = this.entity.getStateFlag(ID.F.UseMelee);
+        		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_Melee, getInverseInt(this.switchPage1a[0])));
         	}
         	else if (this.showPageAI == 3)
         	{	//page 3: change target AI
@@ -1204,8 +1216,8 @@ public class GuiShipInventory extends GuiContainer
         case 4:	//AI operation 1 
         	if (this.showPageAI == 1)
         	{	//page 1: use ammo light button
-        		this.switchPage1[1] = this.entity.getStateFlag(ID.F.UseAmmoLight);
-        		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_AmmoLight, getInverseInt(this.switchPage1[1])));
+        		this.switchPage1a[1] = this.entity.getStateFlag(ID.F.UseAmmoLight);
+        		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_AmmoLight, getInverseInt(this.switchPage1a[1])));
         	}
         	else if (this.showPageAI == 3)
         	{	//page 3: change onsight AI
@@ -1216,8 +1228,8 @@ public class GuiShipInventory extends GuiContainer
         case 5:	//AI operation 2
         	if (this.showPageAI == 1)
         	{	//page 1: use ammo heavy button
-        		this.switchPage1[2] = this.entity.getStateFlag(ID.F.UseAmmoHeavy);
-        		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_AmmoHeavy, getInverseInt(this.switchPage1[2])));
+        		this.switchPage1a[2] = this.entity.getStateFlag(ID.F.UseAmmoHeavy);
+        		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_AmmoHeavy, getInverseInt(this.switchPage1a[2])));
         	}
         	else if (this.showPageAI == 3)
         	{	//page 3: change PVP first AI
@@ -1228,8 +1240,8 @@ public class GuiShipInventory extends GuiContainer
         case 6:	//AI operation 3
         	if (this.showPageAI == 1)
         	{	//page 1: use air light button
-        		this.switchPage1[3] = this.entity.getStateFlag(ID.F.UseAirLight);
-        		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_AirLight, getInverseInt(this.switchPage1[3])));
+        		this.switchPage1a[3] = this.entity.getStateFlag(ID.F.UseAirLight);
+        		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_AirLight, getInverseInt(this.switchPage1a[3])));
         	}
         	else if (this.showPageAI == 3)
         	{	//page 3: change onsight AI
@@ -1240,8 +1252,8 @@ public class GuiShipInventory extends GuiContainer
         case 7:	//AI operation 4
         	if (this.showPageAI == 1)
         	{	//page 1: use air heavy button
-        		this.switchPage1[4] = this.entity.getStateFlag(ID.F.UseAirHeavy);
-        		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_AirHeavy, getInverseInt(this.switchPage1[4])));
+        		this.switchPage1a[4] = this.entity.getStateFlag(ID.F.UseAirHeavy);
+        		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_AirHeavy, getInverseInt(this.switchPage1a[4])));
         	}
         	else if (this.showPageAI == 3)
         	{	//page 3: change onsight AI
@@ -1252,8 +1264,8 @@ public class GuiShipInventory extends GuiContainer
         case 8:	//AI operation 5
         	if (this.showPageAI == 1)
         	{	//page 1: apply aura effect
-        		this.switchPage1[5] = this.entity.getStateFlag(ID.F.UseRingEffect);
-        		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_AuraEffect, getInverseInt(this.switchPage1[5])));
+        		this.switchPage1a[5] = this.entity.getStateFlag(ID.F.UseRingEffect);
+        		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_AuraEffect, getInverseInt(this.switchPage1a[5])));
         	}
         	else if (this.showPageAI == 3)
         	{	//page 3: timekeeper AI

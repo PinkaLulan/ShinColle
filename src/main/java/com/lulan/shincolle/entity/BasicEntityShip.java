@@ -41,6 +41,7 @@ import com.lulan.shincolle.item.OwnerPaper;
 import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CGUIPackets;
+import com.lulan.shincolle.network.S2CInputPackets;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
@@ -78,6 +79,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
@@ -1306,12 +1308,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         this.setAttackTarget(null);
         this.setEntityTarget(null);
         
-//        if (this.ridingEntity instanceof BasicEntityMount) TODO mount
-//        {
-//        	((BasicEntityMount) this.ridingEntity).getShipNavigate().clearPathEntity();
-//        	((BasicEntityMount) this.ridingEntity).getNavigator().clearPathEntity();
-//        	((BasicEntityMount) this.ridingEntity).setEntityTarget(null);
-//        }
+        if (this.getRidingEntity() instanceof BasicEntityMount)
+        {
+        	BasicEntityMount mount = (BasicEntityMount) this.getRidingEntity();
+        	mount.getShipNavigate().clearPathEntity();
+        	mount.getNavigator().clearPathEntity();
+        	mount.setEntityTarget(null);
+        }
 	}
 
 	//called when load nbt data or GUI click
@@ -1589,6 +1592,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	 */
     public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, @Nullable ItemStack stack, EnumHand hand)
     {
+    	if (hand == EnumHand.OFF_HAND) return EnumActionResult.FAIL;
+    	
 		//use item
 		if (stack != null)
 		{
@@ -1895,7 +1900,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 							((BasicEntityShip) r).setEntitySit();
 						}
 					}
-
 				}
 				
 				return EnumActionResult.SUCCESS;
@@ -2200,7 +2204,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		{
 			return;
 		}
-		
+		this.stepHeight = 5F;
 		super.onUpdate();
 
 		//get depth if in fluid block
@@ -2244,95 +2248,105 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				CommonProxy.channelG.sendToServer(new C2SInputPackets(C2SInputPackets.PID.RequestSync_Model, this.getEntityId(), this.worldObj.provider.getDimension()));
 			}
 			
-			//check every 16 ticks
+			//check every 2 ticks
 			if (this.ticksExisted % 2 == 0)
 			{
-				//update faster rotate body
+				//faster body rotateYaw update (vanilla = 12~20 ticks?)
 				updateClientBodyRotate();
 			
-				//check every 16 ticks
-				if (this.ticksExisted % 16 == 0)
+				//check every 8 ticks
+				if (this.ticksExisted % 8 == 0)
 				{
-					//generate HP state effect, use parm:lookX to send width size
-					switch (getStateEmotion(ID.S.HPState))
+	        		//update searchlight, CLIENT SIDE ONLY, NO block light value sync!
+	        		if (ConfigHandler.canSearchlight)
+	        		{
+	            		updateSearchlight();
+	        		}
+	        		
+	        		//check every 16 ticks
+					if (this.ticksExisted % 16 == 0)
 					{
-					case ID.HPState.MINOR:
-						ParticleHelper.spawnAttackParticleAt(this.posX, this.posY + 0.7D, this.posZ, 
-								this.width, 0.05D, 0D, (byte)4);
-						break;
-					case ID.HPState.MODERATE:
-						ParticleHelper.spawnAttackParticleAt(this.posX, this.posY + 0.7D, this.posZ, 
-								this.width, 0.05D, 0D, (byte)5);
-						break;
-					case ID.HPState.HEAVY:
-						ParticleHelper.spawnAttackParticleAt(this.posX, this.posY + 0.7D, this.posZ, 
-								this.width, 0.05D, 0D, (byte)7);
-						break;
-					default:
-						break;
-					}
-					
-					//check every 32 ticks
-					if (this.ticksExisted % 32 == 0)
-					{
-						//show guard position
-						if (!this.getStateFlag(ID.F.CanFollow))
+						//generate HP state effect, use parm:lookX to send width size
+						switch (getStateEmotion(ID.S.HPState))
 						{
-							//set guard entity
-							if (this.getStateMinor(ID.M.GuardID) > 0)
+						case ID.HPState.MINOR:
+							ParticleHelper.spawnAttackParticleAt(this.posX, this.posY + 0.7D, this.posZ, 
+									this.width, 0.05D, 0D, (byte)4);
+							break;
+						case ID.HPState.MODERATE:
+							ParticleHelper.spawnAttackParticleAt(this.posX, this.posY + 0.7D, this.posZ, 
+									this.width, 0.05D, 0D, (byte)5);
+							break;
+						case ID.HPState.HEAVY:
+							ParticleHelper.spawnAttackParticleAt(this.posX, this.posY + 0.7D, this.posZ, 
+									this.width, 0.05D, 0D, (byte)7);
+							break;
+						default:
+							break;
+						}
+						
+						//check every 32 ticks
+						if (this.ticksExisted % 32 == 0)
+						{
+							//show guard position
+							if (!this.getStateFlag(ID.F.CanFollow))
 							{
-								Entity getEnt = EntityHelper.getEntityByID(this.getStateMinor(ID.M.GuardID), 0, true);
-								this.setGuardedEntity(getEnt);
+								//set guard entity
+								if (this.getStateMinor(ID.M.GuardID) > 0)
+								{
+									Entity getEnt = EntityHelper.getEntityByID(this.getStateMinor(ID.M.GuardID), 0, true);
+									this.setGuardedEntity(getEnt);
+								}
+								else
+								{
+									//reset guard entity
+									this.setGuardedEntity(null);
+								}
+							}//end show pointer target effect
+							
+							//display circle particle, 只有owner才會接收到該ship同步的EID, 非owner讀取到的EID <= 0
+							//get owner entity
+							EntityPlayer player = null;
+							if (this.getStateMinor(ID.M.PlayerEID) > 0)
+							{
+								player = EntityHelper.getEntityPlayerByID(getStateMinor(ID.M.PlayerEID), 0, true);
+							}
+							
+							//show circle particle on ship and guard target
+							if (player != null && player.dimension == this.getGuardedPos(3))
+							{
+//								ItemStack item = player.inventory.getCurrentItem(); TODO
+//								
+//								if (ConfigHandler.alwaysShowTeamParticle ||
+//									(item != null && item.getItem() instanceof PointerItem &&
+//									 item.getItemDamage() < 3))
+//								{
+//									//show friendly particle
+//									ParticleHelper.spawnAttackParticleAtEntity(this, 0.3D, 7D, 0D, (byte)2);
+//									
+//									//show guard particle
+//									//標記在entity上
+//									if (this.getGuardedEntity() != null)
+//									{
+//										ParticleHelper.spawnAttackParticleAtEntity(this.getGuardedEntity(), 0.3D, 6D, 0D, (byte)2);
+//										ParticleHelper.spawnAttackParticleAtEntity(this, this.getGuardedEntity(), 0D, 0D, 0D, (byte)3, false);
+//									}
+//									//標記在block上
+//									else if (this.getGuardedPos(1) >= 0)
+//									{
+//										ParticleHelper.spawnAttackParticleAt(this.getGuardedPos(0)+0.5D, this.getGuardedPos(1), this.getGuardedPos(2)+0.5D, 0.3D, 6D, 0D, (byte)25);
+//										ParticleHelper.spawnAttackParticleAtEntity(this, this.getGuardedPos(0)+0.5D, this.getGuardedPos(1)+0.2D, this.getGuardedPos(2)+0.5D, (byte)8);
+//									}
+//								}
 							}
 							else
 							{
-								//reset guard entity
-								this.setGuardedEntity(null);
+								this.setStateMinor(ID.M.PlayerEID, -1);
 							}
-						}//end show pointer target effect
-						
-						//display circle particle, 只有owner才會接收到該ship同步的EID, 非owner讀取到的EID <= 0
-						//get owner entity
-						EntityPlayer player = null;
-						if (this.getStateMinor(ID.M.PlayerEID) > 0)
-						{
-							player = EntityHelper.getEntityPlayerByID(getStateMinor(ID.M.PlayerEID), 0, true);
-						}
-						
-						//show circle particle on ship and guard target
-						if (player != null && player.dimension == this.getGuardedPos(3))
-						{
-//							ItemStack item = player.inventory.getCurrentItem(); TODO
-//							
-//							if (ConfigHandler.alwaysShowTeamParticle ||
-//								(item != null && item.getItem() instanceof PointerItem &&
-//								 item.getItemDamage() < 3))
-//							{
-//								//show friendly particle
-//								ParticleHelper.spawnAttackParticleAtEntity(this, 0.3D, 7D, 0D, (byte)2);
-//								
-//								//show guard particle
-//								//標記在entity上
-//								if (this.getGuardedEntity() != null)
-//								{
-//									ParticleHelper.spawnAttackParticleAtEntity(this.getGuardedEntity(), 0.3D, 6D, 0D, (byte)2);
-//									ParticleHelper.spawnAttackParticleAtEntity(this, this.getGuardedEntity(), 0D, 0D, 0D, (byte)3, false);
-//								}
-//								//標記在block上
-//								else if (this.getGuardedPos(1) >= 0)
-//								{
-//									ParticleHelper.spawnAttackParticleAt(this.getGuardedPos(0)+0.5D, this.getGuardedPos(1), this.getGuardedPos(2)+0.5D, 0.3D, 6D, 0D, (byte)25);
-//									ParticleHelper.spawnAttackParticleAtEntity(this, this.getGuardedPos(0)+0.5D, this.getGuardedPos(1)+0.2D, this.getGuardedPos(2)+0.5D, (byte)8);
-//								}
-//							}
-						}
-						else
-						{
-							this.setStateMinor(ID.M.PlayerEID, -1);
-						}
-						
-					}//end every 32 ticks
-				}//end every 16 ticks
+							
+						}//end every 32 ticks
+					}//end every 16 ticks
+				}//end  every 8 ticks
 			}//end every 2 ticks
 		}//end client side
 		
@@ -2405,19 +2419,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         		//check every 16 ticks
             	if (ticksExisted % 16 == 0)
             	{
-//            		//waypoint move TODO
-//            		if (!(this.ridingEntity instanceof BasicEntityMount))
-//            		{
-//            			if (EntityHelper.updateWaypointMove(this))
-//            			{
-//            				sendSyncPacket(S2CEntitySync.PID.SyncShip_Guard, true);
-//            			}
-//            		}
-            		
-            		//update searchlight
-            		if (ConfigHandler.canSearchlight)
+            		//waypoint move TODO review updateWaypointMove
+            		if (!(this.getRidingEntity() instanceof BasicEntityMount))
             		{
-                		updateSearchlight();
+            			if (EntityHelper.updateWaypointMove(this))
+            			{
+            				sendSyncPacket(S2CEntitySync.PID.SyncShip_Guard, true);
+            			}
             		}
             		
             		//cancel mounts
@@ -3970,25 +3978,19 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	{
   		if (this.getStateMinor(ID.M.LevelSearchlight) > 0)
   		{
-  			int px = MathHelper.floor_double(this.posX);
-			int py = (int) this.posY + 1;
-			int pz = MathHelper.floor_double(this.posZ);
-			float light = this.worldObj.getLightFromNeighbors(new BlockPos(px, py, pz));
-  			
-////  			//method 1: create light entity
-////			EntityRenderFlare flare = new EntityRenderFlare(this.worldObj);
-////			flare.setPosition(this.posX, this.posY + 0.2D, this.posZ);
-////			this.worldObj.spawnEntityInWorld(flare);
-//  			
-//  			//method 2: create light block TODO complete light block
-//  			if (light < 12F)
-//  			{
-//				BlockHelper.placeLightBlock(this.worldObj, px, py, pz);
-//  			}
-//  			//search light block, renew lifespan
-//  			else {
-//  				BlockHelper.updateNearbyLightBlock(this.worldObj, px, py, pz);
-//  			}
+  			BlockPos pos = new BlockPos(this);
+			float light = this.worldObj.getLightFor(EnumSkyBlock.BLOCK, pos);
+
+			//place new light block
+  			if (light < 12F)
+  			{
+				BlockHelper.placeLightBlock(this.worldObj, pos);
+  			}
+  			//search light block, renew lifespan
+  			else
+  			{
+  				BlockHelper.updateNearbyLightBlock(this.worldObj, pos);
+  			}
   		}
   	}
   	
@@ -5383,22 +5385,15 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	/** set flare on target */
   	public void flareTarget(Entity target)
   	{
-  		if (this.getStateMinor(ID.M.LevelFlare) > 0 && target != null)
+  		//server side, send flare packet
+  		if (!this.worldObj.isRemote)
   		{
-  			//TODO
-//  			int px = MathHelper.floor_double(target.posX);
-//			int py = (int) target.posY + 1;
-//			int pz = MathHelper.floor_double(target.posZ);
-//			float light = this.worldObj.getLight(new BlockPos(px, py, pz));
-//  			
-//  			//method 2: create light block
-//  			if(light < 12F) {
-//				BlockHelper.placeLightBlock(this.worldObj, px, py, pz);
-//  			}
-//  			//search light block, renew lifespan
-//  			else {
-//  				BlockHelper.updateNearbyLightBlock(this.worldObj, px, py, pz);
-//  			}
+  	  		if (this.getStateMinor(ID.M.LevelFlare) > 0 && target != null)
+  	  		{
+  	  			BlockPos pos = new BlockPos(target);
+				TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+				CommonProxy.channelG.sendToAllAround(new S2CInputPackets(S2CInputPackets.PID.FlareEffect, pos.getX(), pos.getY(), pos.getZ()), point);
+  	  		}
   		}
   	}
   	

@@ -382,7 +382,7 @@ public class ModelDestroyerI extends ModelBase implements IModelEmotion
   	{		
   		if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
   		{
-  			GlStateManager.translate(0F, 0.9F, 0F);
+  			GlStateManager.translate(0F, 0.5F, 0F);
   			
   			PBack.rotateAngleZ = 0.6F;
   	  		PNeck.rotateAngleZ = -0.25F;
@@ -397,7 +397,7 @@ public class ModelDestroyerI extends ModelBase implements IModelEmotion
   		}
   		else
   		{
-  			GlStateManager.translate(0F, 1.4F, 0F);
+  			GlStateManager.translate(0F, 0.68F, 0F);
   			
   			PBack.rotateAngleZ = -0.8F;
   	  		PNeck.rotateAngleZ = -0.3F;
