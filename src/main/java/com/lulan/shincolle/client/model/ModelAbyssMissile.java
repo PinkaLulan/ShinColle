@@ -2,6 +2,7 @@ package com.lulan.shincolle.client.model;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 
 /**
@@ -40,7 +41,8 @@ public class ModelAbyssMissile extends ModelBase {
     }
 
     @Override
-    public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) { 
+    public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
+    { 
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
         this.Body.render(f5);
     }
@@ -48,7 +50,8 @@ public class ModelAbyssMissile extends ModelBase {
     /**
      * This is a helper function from Tabula to set the rotation of model parts
      */
-    public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z) {
+    public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z)
+    {
         modelRenderer.rotateAngleX = x;
         modelRenderer.rotateAngleY = y;
         modelRenderer.rotateAngleZ = z;
@@ -56,7 +59,9 @@ public class ModelAbyssMissile extends ModelBase {
     
     //for idle/run animation
     @Override
-	public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity) {  
+	public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity)
+    {  
+    	GlStateManager.translate(0F, -0.65F, 0F);
     	this.Body.rotateAngleY = f3;	//左右角度
     	this.Body.rotateAngleX = f4; 	//上下角度
     }

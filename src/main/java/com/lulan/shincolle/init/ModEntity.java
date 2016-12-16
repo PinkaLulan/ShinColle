@@ -2,6 +2,7 @@ package com.lulan.shincolle.init;
 
 import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.entity.destroyer.EntityDestroyerI;
+import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.item.BasicEntityItem;
 import com.lulan.shincolle.utility.LogHelper;
 
@@ -89,7 +90,7 @@ public class ModEntity
 //		createEntity(EntityMountSeat.class, "EntityMountSeat2", modEntityID++);
 		
 		//register projectile entity
-//		createProjectileEntity(EntityAbyssMissile.class, "EntityAbyssMissile", modEntityID++);
+		createProjectileEntity(EntityAbyssMissile.class, "EntityAbyssMissile", modEntityID++);
 //		createProjectileEntity(EntityAirplane.class, "EntityAirplane", modEntityID++);
 //		createProjectileEntity(EntityAirplaneTakoyaki.class, "EntityAirplaneTakoyaki", modEntityID++);
 //		createProjectileEntity(EntityAirplaneT.class, "EntityAirplaneT", modEntityID++);

@@ -2,14 +2,11 @@ package com.lulan.shincolle.client.particle;
 
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import org.lwjgl.opengl.GL11;
 
 
 /**SPRAY PARTICLE
@@ -234,7 +231,6 @@ public class ParticleSpray extends Particle
     @Override
     public void renderParticle(VertexBuffer render, Entity entity, float ptick, float rotX, float rotZ, float rotYZ, float rotXY, float rotXZ)
     {
-//	float par3, float par4, float par5, float par6, float par7 TODO
         float f6 = (this.particleAge + ptick) / this.particleMaxAge * 32F;
 
         if (f6 < 0F) f6 = 0F;
@@ -248,14 +244,6 @@ public class ParticleSpray extends Particle
         
         GlStateManager.depthMask(true);
         GlStateManager.popMatrix();
-        
-//        GL11.glPushMatrix();
-//        GL11.glDisable(GL11.GL_LIGHTING);
-//        GL11.glDepthMask(false);	//防止water block蓋過particle
-//        super.renderParticle(render, entity, ptick, rotX, rotZ, rotYZ, rotXY, rotXZ);
-//        GL11.glDepthMask(true);
-//        GL11.glEnable(GL11.GL_LIGHTING);
-//        GL11.glPopMatrix();
     }
 
     /**

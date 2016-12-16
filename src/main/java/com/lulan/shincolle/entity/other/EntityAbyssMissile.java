@@ -245,7 +245,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
 		this.posX += this.motionX;
 		this.posY += this.motionY;
         this.posZ += this.motionZ;
-           	
+        
     	//計算模型要轉的角度 (RAD, not DEG)
         float f1 = MathHelper.sqrt_double(this.motionX*this.motionX + this.motionZ*this.motionZ);
         this.rotationPitch = (float)(Math.atan2(this.motionY, f1));
@@ -361,7 +361,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
         		
         		for (int j = 0; j < 3; ++j)
         		{
-                	ParticleHelper.spawnAttackParticleAt(this.posX-this.motionX*1.5D*j, this.posY+1D-this.motionY*1.5D*j, this.posZ-this.motionZ*1.5D*j, 
+                	ParticleHelper.spawnAttackParticleAt(this.posX-this.motionX*1.5D*j, this.posY+0.5D-this.motionY*1.5D*j, this.posZ-this.motionZ*1.5D*j, 
                     		-this.motionX*0.1D, -this.motionY*0.1D, -this.motionZ*0.1D, smokeType);
         		}
     		}

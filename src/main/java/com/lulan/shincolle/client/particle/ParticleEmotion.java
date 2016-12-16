@@ -463,7 +463,6 @@ public class ParticleEmotion extends Particle
     	
     	Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE);
     	
-    	Tessellator tess = Tessellator.getInstance();
     	GlStateManager.pushAttrib();  //save prev flags
     	GlStateManager.pushMatrix();  //save prev pos
 		GlStateManager.depthMask(true);
@@ -495,63 +494,14 @@ public class ParticleEmotion extends Particle
         render.pos(f11 - rotX * particleScale + rotXY * particleScale, f12 + rotZ * particleScale * frameSize, f13 - rotYZ * particleScale + rotXZ * particleScale).tex(f7, f8).color(1F, 1F, 1F, this.particleAlpha).endVertex();
         render.pos(f11 - rotX * particleScale - rotXY * particleScale, f12 - rotZ * particleScale * frameSize, f13 - rotYZ * particleScale - rotXZ * particleScale).tex(f7, f9).color(1F, 1F, 1F, this.particleAlpha).endVertex();
 
-        tess.draw();
+        //draw
+        Tessellator.getInstance().draw();
 
         GlStateManager.enableLighting();
         GlStateManager.disableBlend();
         GlStateManager.depthMask(false);
         GlStateManager.popMatrix();
         GlStateManager.popAttrib();
-
-    	//    	GL11.glPushMatrix();
-//		
-////		//get texture
-////		if(particleType < 32) {
-//			Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE);
-////		}
-////		else {
-////			
-////		}
-//		
-//		GL11.glDepthMask(true);
-//		GL11.glEnable(GL11.GL_BLEND);
-//		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-//		GL11.glDisable(GL11.GL_LIGHTING);
-////		GL11.glEnable(GL11.GL_DEPTH_TEST);	//DEPTH TEST開啟後才能使用glDepthFunc
-////		GL11.glDepthFunc(GL11.GL_ALWAYS);
-//		
-//		int age = particleAge > particleMaxAge ? particleMaxAge : particleAge;
-//
-//		float f6 = particleIconX;
-//		float f7 = f6 + 0.0625F;
-//		float f8 = particleIconY + age * 0.0625F;
-//		float f9 = f8 + 0.0625F * this.frameSize;
-//		
-////		LogHelper.info("particle age: "+this.particleAge+" "+ticks);
-//        float f11 = (float)(this.prevPosX + (this.posX - this.prevPosX) * ticks - interpPosX);
-//        float f12 = (float)(this.prevPosY + (this.posY - this.prevPosY) * ticks - interpPosY);
-//        float f13 = (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * ticks - interpPosZ);
-//
-//        tess.startDrawingQuads();
-//        tess.setBrightness(240);
-//        tess.setColorRGBA_F(1F, 1F, 1F, this.particleAlpha);
-//        //正面
-//        tess.addVertexWithUV(f11 - par3 * particleScale - par6 * particleScale, f12 - par4 * particleScale * frameSize, f13 - par5 * particleScale - par7 * particleScale, f7, f9);
-//        tess.addVertexWithUV(f11 - par3 * particleScale + par6 * particleScale, f12 + par4 * particleScale * frameSize, f13 - par5 * particleScale + par7 * particleScale, f7, f8);
-//        tess.addVertexWithUV(f11 + par3 * particleScale + par6 * particleScale, f12 + par4 * particleScale * frameSize, f13 + par5 * particleScale + par7 * particleScale, f6, f8);
-//        tess.addVertexWithUV(f11 + par3 * particleScale - par6 * particleScale, f12 - par4 * particleScale * frameSize, f13 + par5 * particleScale - par7 * particleScale, f6, f9);
-//        //反面
-//        tess.addVertexWithUV(f11 + par3 * particleScale - par6 * particleScale, f12 - par4 * particleScale * frameSize, f13 + par5 * particleScale - par7 * particleScale, f6, f9);
-//        tess.addVertexWithUV(f11 + par3 * particleScale + par6 * particleScale, f12 + par4 * particleScale * frameSize, f13 + par5 * particleScale + par7 * particleScale, f6, f8);
-//        tess.addVertexWithUV(f11 - par3 * particleScale + par6 * particleScale, f12 + par4 * particleScale * frameSize, f13 - par5 * particleScale + par7 * particleScale, f7, f8);
-//        tess.addVertexWithUV(f11 - par3 * particleScale - par6 * particleScale, f12 - par4 * particleScale * frameSize, f13 - par5 * particleScale - par7 * particleScale, f7, f9);
-//        
-//        tess.draw();
-//
-//        GL11.glEnable(GL11.GL_LIGHTING);
-//        GL11.glDisable(GL11.GL_BLEND);
-////		GL11.glDepthMask(false);
-//		GL11.glPopMatrix();
     }
     
     //layer: 0:particle 1:terrain 2:items 3:custom

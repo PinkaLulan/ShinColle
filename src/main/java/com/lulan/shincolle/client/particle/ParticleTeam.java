@@ -3,14 +3,21 @@ package com.lulan.shincolle.client.particle;
 import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.reference.Reference;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
+import net.minecraft.client.particle.Particle;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.GlStateManager.DestFactor;
+import net.minecraft.client.renderer.GlStateManager.SourceFactor;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 
 /**TEAM CIRCLE PARTICLE
@@ -24,7 +31,8 @@ import net.minecraft.world.World;
  * 5: 紅色, attack target (show 20 ticks), alpha fade out
  */
 @SideOnly(Side.CLIENT)
-public class EntityFXTeam extends EntityFX {
+public class ParticleTeam extends Particle
+{
 
 	private static final ResourceLocation TEXTURE = new ResourceLocation(Reference.TEXTURES_PARTICLE+"ParticleTeam.png");
 	private int particleType;	//0:green 1:cyan 2:red 3:yellow
@@ -34,8 +42,10 @@ public class EntityFXTeam extends EntityFX {
 	
 	
 	//mark at entity
-    public EntityFXTeam(World world, Entity host, float scale, int type) {
+    public ParticleTeam(World world, Entity host, float scale, int type)
+    {
         super(world, host.posX, host.posY, host.posZ, 0.0D, 0.0D, 0.0D);  
+        this.setSize(0F, 0F);
         this.host = host;
         this.height = host.height;
         this.motionX = 0D;
@@ -44,52 +54,53 @@ public class EntityFXTeam extends EntityFX {
         this.particleScale = scale;
         this.particleAlphaA = 1F;
         this.particleAlphaC = 0.8F;
-        this.noClip = true;
         this.particleType = type;
+        this.field_190017_n = false;	//can clip = false
         
-        switch(type) {
+        switch (type)
+        {
         default:	//green, normal mode
         	this.particleRed = 0F;
         	this.particleGreen = 1F;
         	this.particleBlue = 0F;
         	this.particleMaxAge = 31;
-        	break;
+        break;
         case 1:		//cyan, single mode
         	this.particleRed = 0F;
         	this.particleGreen = 1F;
         	this.particleBlue = 1F;
         	this.particleMaxAge = 31;
-        	break;
+        break;
         case 2:		//red, group mode
         	this.particleRed = 1F;
         	this.particleGreen = 0F;
         	this.particleBlue = 1F;
         	this.particleMaxAge = 31;
-        	break;
+        break;
         case 3:		//yellow, formation mode
         	this.particleRed = 1F;
         	this.particleGreen = 0.9F;
         	this.particleBlue = 0F;
         	this.particleMaxAge = 31;
-        	break;
+        break;
         case 4:		//green, moving target
         	this.particleRed = 0F;
         	this.particleGreen = 1F;
         	this.particleBlue = 0F;
         	this.particleMaxAge = 30;
-        	break;
+        break;
         case 5:		//red, attack target
         	this.particleRed = 1F;
         	this.particleGreen = 0F;
         	this.particleBlue = 0F;
         	this.particleMaxAge = 30;
-        	break;
+        break;
         case 6:		//white, guard target
         	this.particleRed = 1F;
         	this.particleGreen = 1F;
         	this.particleBlue = 1F;
         	this.particleMaxAge = 30;
-        	break;
+        break;
         case 7:		//translucent green, friendly target
         	this.particleRed = 0F;
         	this.particleGreen = 1F;
@@ -97,13 +108,16 @@ public class EntityFXTeam extends EntityFX {
         	this.particleMaxAge = 31;
         	this.particleAlphaA = 0F;
             this.particleAlphaC = 0.35F;
-        	break;
-        }
+        break;
+        }//end switch
     }
     
     //mark at block
-    public EntityFXTeam(World world, float scale, int type, double x, double y, double z) {
+    public ParticleTeam(World world, float scale, int type, double x, double y, double z)
+    {
         super(world, x, y, z, 0.0D, 0.0D, 0.0D);
+        this.setSize(0F, 0F);
+        this.setPosition(x, y, z);
         this.motionX = 0D;
         this.motionY = 0D;
         this.motionZ = 0D;
@@ -111,30 +125,30 @@ public class EntityFXTeam extends EntityFX {
         this.particleScale = scale;
         this.particleAlphaA = 1F;
         this.particleAlphaC = 0.5F;
-        this.noClip = true;
         this.particleType = type;
-        this.setPosition(x, y, z);
+        this.field_190017_n = false;	//can clip = false
         
-        switch(type) {
+        switch (type)
+        {
         default:	//green, normal mode
         case 4:		//green, moving target
         	this.particleRed = 0F;
         	this.particleGreen = 1F;
         	this.particleBlue = 0F;
         	this.particleMaxAge = 30;
-        	break;
+        break;
         case 5:		//red, attack target
         	this.particleRed = 1F;
         	this.particleGreen = 0F;
         	this.particleBlue = 0F;
         	this.particleMaxAge = 30;
-        	break;
+        break;
         case 6:		//white, guard target
         	this.particleRed = 1F;
         	this.particleGreen = 1F;
         	this.particleBlue = 1F;
         	this.particleMaxAge = 30;
-        	break;
+        break;
         case 8:		//waypoint
         	this.particleRed = 1F;
         	this.particleGreen = 0F;
@@ -142,7 +156,7 @@ public class EntityFXTeam extends EntityFX {
         	this.particleMaxAge = 31;
         	this.particleAlphaA = 0.8F;
             this.particleAlphaC = 0.9F;
-        	break;
+        break;
         case 9:		//waypoint
         	this.particleRed = 1F;
         	this.particleGreen = 0F;
@@ -150,20 +164,21 @@ public class EntityFXTeam extends EntityFX {
         	this.particleMaxAge = 31;
         	this.particleAlphaA = 0F;
             this.particleAlphaC = 0.9F;
-        	break;
-        }
+        break;
+        }//end switch
     }
 
     @Override
-	public void renderParticle(Tessellator tess, float ticks, float par3, float par4, float par5, float par6, float par7) {
-		GL11.glPushMatrix();
-		//使用自帶的貼圖檔
-		Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE);
-		GL11.glDepthMask(true);
-		GL11.glDisable(GL11.GL_LIGHTING);
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		
+    public void renderParticle(VertexBuffer render, Entity entity, float ptick, float cosYaw, float cosPitch, float sinYaw, float sinYawsinPitch, float cosYawsinPitch)
+    {
+    	Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE);
+    	
+    	GlStateManager.pushMatrix();
+    	GlStateManager.depthMask(true);
+    	GlStateManager.enableBlend();
+    	GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
+    	GlStateManager.disableLighting();
+    	
 		float xmin = 0F;
 		float xmax = 1F;
 		float y1min = 0F;	//箭頭圖案
@@ -173,53 +188,49 @@ public class EntityFXTeam extends EntityFX {
 		float halfScale = particleScale * 0.5F;
 		
 		//particle是以玩家視野來render, 因此座標要扣掉interpPos轉換為玩家視野座標
-//		double f11 = (float)(this.prevPosX + (this.posX - this.prevPosX) * (double)ticks - interpPosX);
-//		double f12 = (float)(this.prevPosY + (this.posY - this.prevPosY) * (double)ticks - interpPosY + this.height + 1.3D);
-//		double f12b = (float)(this.prevPosY + (this.posY - this.prevPosY) * (double)ticks - interpPosY + 0.3D);
-//		double f13 = (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * (double)ticks - interpPosZ);
- 
-		double f11 = this.posX - interpPosX;
-		double f12 = this.posY - interpPosY + this.height + 1.3D;
-		double f12b = this.posY - interpPosY + 0.3D;
-		double f13 = this.posZ - interpPosZ;
+		double f11 = (float)(this.prevPosX + (this.posX - this.prevPosX) * (double)ptick - interpPosX);
+		double f12 = (float)(this.prevPosY + (this.posY - this.prevPosY) * (double)ptick - interpPosY + this.height + 1.3D);
+		double f12b = (float)(this.prevPosY + (this.posY - this.prevPosY) * (double)ptick - interpPosY + 0.3D);
+		double f13 = (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * (double)ptick - interpPosZ);
+
+        //start
+		render.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
 		
-        //start tess
-        tess.startDrawingQuads();
-        tess.setBrightness(240);
-        tess.setColorRGBA_F(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlphaA);
         //畫出箭頭
         //X跟Z位置不加頭部轉動偏移, 只有Y軸會偏向玩家方向
-        tess.addVertexWithUV(f11 - par3 * particleScale, f12 - par4 * particleScale * 2.0F, f13 - par5 * particleScale, xmax, y1max);
-        tess.addVertexWithUV(f11 - par3 * particleScale, f12 + par4 * particleScale * 2.0F, f13 - par5 * particleScale, xmax, y1min);
-        tess.addVertexWithUV(f11 + par3 * particleScale, f12 + par4 * particleScale * 2.0F, f13 + par5 * particleScale, xmin, y1min);
-        tess.addVertexWithUV(f11 + par3 * particleScale, f12 - par4 * particleScale * 2.0F, f13 + par5 * particleScale, xmin, y1max);
+        render.pos(f11 - cosYaw * particleScale, f12 - cosPitch * particleScale * 2.0F, f13 - sinYaw * particleScale).tex(xmax, y1max).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlphaA).endVertex();
+        render.pos(f11 - cosYaw * particleScale, f12 + cosPitch * particleScale * 2.0F, f13 - sinYaw * particleScale).tex(xmax, y1min).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlphaA).endVertex();
+        render.pos(f11 + cosYaw * particleScale, f12 + cosPitch * particleScale * 2.0F, f13 + sinYaw * particleScale).tex(xmin, y1min).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlphaA).endVertex();
+        render.pos(f11 + cosYaw * particleScale, f12 - cosPitch * particleScale * 2.0F, f13 + sinYaw * particleScale).tex(xmin, y1max).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlphaA).endVertex();
 
         halfScale = particleScale * 3F;
         
-        tess.setColorRGBA_F(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlphaC);
         //畫出圈圈(朝上)
-        tess.addVertexWithUV(f11 + halfScale, f12b, f13 + halfScale, xmax, y2max);
-        tess.addVertexWithUV(f11 + halfScale, f12b, f13 - halfScale, xmax, y2min);
-        tess.addVertexWithUV(f11 - halfScale, f12b, f13 - halfScale, xmin, y2min);
-        tess.addVertexWithUV(f11 - halfScale, f12b, f13 + halfScale, xmin, y2max);
+        render.pos(f11 + halfScale, f12b, f13 + halfScale).tex(xmax, y2max).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlphaC).endVertex();
+        render.pos(f11 + halfScale, f12b, f13 - halfScale).tex(xmax, y2min).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlphaC).endVertex();
+        render.pos(f11 - halfScale, f12b, f13 - halfScale).tex(xmin, y2min).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlphaC).endVertex();
+        render.pos(f11 - halfScale, f12b, f13 + halfScale).tex(xmin, y2max).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlphaC).endVertex();
 
         //畫出圈圈(朝下)
-        tess.addVertexWithUV(f11 + halfScale, f12b, f13 - halfScale, xmax, y2max);
-        tess.addVertexWithUV(f11 + halfScale, f12b, f13 + halfScale, xmax, y2min);
-        tess.addVertexWithUV(f11 - halfScale, f12b, f13 + halfScale, xmin, y2min);
-        tess.addVertexWithUV(f11 - halfScale, f12b, f13 - halfScale, xmin, y2max);
+        render.pos(f11 + halfScale, f12b, f13 - halfScale).tex(xmax, y2max).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlphaC).endVertex();
+        render.pos(f11 + halfScale, f12b, f13 + halfScale).tex(xmax, y2min).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlphaC).endVertex();
+        render.pos(f11 - halfScale, f12b, f13 + halfScale).tex(xmin, y2min).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlphaC).endVertex();
+        render.pos(f11 - halfScale, f12b, f13 - halfScale).tex(xmin, y2max).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlphaC).endVertex();
         
-        //stop tess for restore texture
-        tess.draw();
-        GL11.glEnable(GL11.GL_LIGHTING);
-        GL11.glDisable(GL11.GL_BLEND);
-		GL11.glDepthMask(false);
-		GL11.glPopMatrix();
+        //draw
+        Tessellator.getInstance().draw();
+        
+    	GlStateManager.enableLighting();
+    	GlStateManager.disableBlend();
+    	GlStateManager.depthMask(false);
+    	GlStateManager.popMatrix();
     }
     
     //layer: 0:particle 1:terrain 2:items 3:custom?
     @Override
-    public int getFXLayer() {
+    public int getFXLayer()
+    {
         return 3;
     }
 
@@ -227,43 +238,50 @@ public class EntityFXTeam extends EntityFX {
      * Called to update the entity's position/logic.
      */
     @Override
-	public void onUpdate() {
+	public void onUpdate()
+    {
     	//check host position
-    	if(host != null) {
-    		switch(this.particleType) {
+    	if (host != null)
+    	{
+    		switch (this.particleType)
+    		{
     		case 7:
         		//set interpolation position
         		this.prevPosX = this.posX;
                 this.prevPosY = this.posY;
                 this.prevPosZ = this.posZ;
     			this.setPosition(host.posX, host.posY, host.posZ);
-        		break;
+        	break;
     		default:
     			//set interpolation position
         		this.prevPosX = this.posX;
                 this.prevPosY = this.posY;
                 this.prevPosZ = this.posZ;
     			this.setPosition(host.posX, host.posY+0.02D, host.posZ);
-    			break;
+    		break;
     		}
     	}
-    	else {
-    		if(particleType < 4) {
-    			this.setDead();
+    	else
+    	{
+    		if (particleType < 4)
+    		{
+    			this.setExpired();
     		}
     	}
     	
     	//special effect
-    	switch(this.particleType) {
+    	switch (this.particleType)
+    	{
     	case 4:
     	case 5:
     	case 6:
     		//fade out effect
-        	if(particleAge > 10) {
+        	if (particleAge > 10)
+        	{
         		this.particleAlphaA = 1F - ((particleAge - 10F) / 20F);
         		this.particleAlphaC = this.particleAlphaA * 0.5F;
         	}
-    		break;
+    	break;
     	case 9:  //waypoint
     		this.prevPosX = this.posX;
             this.prevPosY = this.posY;
@@ -271,11 +289,12 @@ public class EntityFXTeam extends EntityFX {
 			this.setPosition(this.posX, this.posY + this.particleAge * 0.002D, this.posZ);
 			
 			this.particleAlphaC = 0.9F - this.particleAge * 0.027F;
-			break;
-    	}
+		break;
+    	}//end switch
     	
-        if(this.particleAge++ > this.particleMaxAge) {
-            this.setDead();
+        if (this.particleAge++ > this.particleMaxAge)
+        {
+            this.setExpired();
         }
     }
     

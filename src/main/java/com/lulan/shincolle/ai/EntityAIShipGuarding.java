@@ -248,7 +248,7 @@ public class EntityAIShipGuarding extends EntityAIBase
         	if (host2.ticksExisted % 8 == 0)
         	{
         		//get guard target
-        		if(!checkGuardTarget()) return;
+        		if (!checkGuardTarget()) return;
         	}//end update
         	
         	//end move

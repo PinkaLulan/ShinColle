@@ -1331,12 +1331,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				clearAITasks();
 	    		setAIList();
 	    		
-//	    		//設定mount的AI TODO mount
-//				if (this.ridingEntity instanceof BasicEntityMount)
-//				{
-//					((BasicEntityMount) this.ridingEntity).clearAITasks();
-//					((BasicEntityMount) this.ridingEntity).setAIList();
-//				}
+	    		//設定mount的AI
+				if (this.getRidingEntity() instanceof BasicEntityMount)
+				{
+					((BasicEntityMount) this.getRidingEntity()).clearAITasks();
+					((BasicEntityMount) this.getRidingEntity()).setAIList();
+				}
 			}
 			else if (id == ID.F.PassiveAI)
 			{
@@ -2204,7 +2204,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		{
 			return;
 		}
-		this.stepHeight = 5F;
+		
 		super.onUpdate();
 
 		//get depth if in fluid block

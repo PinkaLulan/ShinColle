@@ -81,7 +81,7 @@ public class RenderBasicEntity extends Render<Entity>
         GlStateManager.pushMatrix();
         GlStateManager.translate((float)x, (float)y + 0.3F, (float)z);
         this.bindEntityTexture(entity);
-
+        
         if (this.renderOutlines)
         {
             GlStateManager.enableColorMaterial();
