@@ -120,9 +120,9 @@ public class BasicEntityItem extends Entity
 		this.setPosition(posX, posY, posZ);
 
 		//play portal sound
-		if (this.worldObj.isRemote && rand.nextInt(50) == 0)
+		if (this.world.isRemote && rand.nextInt(50) == 0)
         {
-            this.worldObj.playSound(posX + 0.5D, posY + 0.5D, posZ + 0.5D, SoundEvents.BLOCK_PORTAL_AMBIENT, SoundCategory.BLOCKS, 0.5F, rand.nextFloat() * 0.4F + 0.8F, false);
+            this.world.playSound(posX + 0.5D, posY + 0.5D, posZ + 0.5D, SoundEvents.BLOCK_PORTAL_AMBIENT, SoundCategory.BLOCKS, 0.5F, rand.nextFloat() * 0.4F + 0.8F, false);
         }
 		
 		if(this.getEntityItem() == null)
@@ -140,7 +140,7 @@ public class BasicEntityItem extends Entity
 			this.motionY *= 0.5D;
 			this.motionZ *= 0.5D;
 			this.noClip = this.pushOutOfBlocks(this.posX, (this.getEntityBoundingBox().minY + this.getEntityBoundingBox().maxY) / 2.0D, this.posZ);
-            this.moveEntity(this.motionX, this.motionY, this.motionZ);
+            this.move(this.motionX, this.motionY, this.motionZ);
             
 			//check item
 			ItemStack item = this.getDataManager().get(ITEM).orNull();
@@ -176,9 +176,9 @@ public class BasicEntityItem extends Entity
 	}
 	
 	@Override
-	public void moveEntity(double x, double y, double z)
+	public void move(double x, double y, double z)
 	{
-        this.worldObj.theProfiler.startSection("move");
+        this.world.theProfiler.startSection("move");
         double d0 = this.posX;
         double d1 = this.posY;
         double d2 = this.posZ;
@@ -188,7 +188,7 @@ public class BasicEntityItem extends Entity
         double d6;
 
         //move x when collision onGround
-        for (d6 = 0.05D; x != 0.0D && this.worldObj.getCollisionBoxes(this, this.getEntityBoundingBox().offset(x, -1.0D, 0.0D)).isEmpty(); d3 = x)
+        for (d6 = 0.05D; x != 0.0D && this.world.getCollisionBoxes(this, this.getEntityBoundingBox().offset(x, -1.0D, 0.0D)).isEmpty(); d3 = x)
         {
             if (x < d6 && x >= -d6)
             {
@@ -205,7 +205,7 @@ public class BasicEntityItem extends Entity
         }
 
         //move z when collision onGround
-        for (; z != 0.0D && this.worldObj.getCollisionBoxes(this, this.getEntityBoundingBox().offset(0.0D, -1.0D, z)).isEmpty(); d5 = z)
+        for (; z != 0.0D && this.world.getCollisionBoxes(this, this.getEntityBoundingBox().offset(0.0D, -1.0D, z)).isEmpty(); d5 = z)
         {
             if (z < d6 && z >= -d6)
             {
@@ -222,7 +222,7 @@ public class BasicEntityItem extends Entity
         }
 
         //move xz when collision onGround
-        for (; x != 0.0D && z != 0.0D && this.worldObj.getCollisionBoxes(this, this.getEntityBoundingBox().offset(x, -1.0D, z)).isEmpty(); d5 = z)
+        for (; x != 0.0D && z != 0.0D && this.world.getCollisionBoxes(this, this.getEntityBoundingBox().offset(x, -1.0D, z)).isEmpty(); d5 = z)
         {
             if (x < d6 && x >= -d6)
             {
@@ -254,7 +254,7 @@ public class BasicEntityItem extends Entity
         }
 
         //move x,y,z when collision without checking onGround
-        List<AxisAlignedBB> list1 = this.worldObj.getCollisionBoxes(this, this.getEntityBoundingBox().addCoord(x, y, z));
+        List<AxisAlignedBB> list1 = this.world.getCollisionBoxes(this, this.getEntityBoundingBox().addCoord(x, y, z));
         AxisAlignedBB axisalignedbb = this.getEntityBoundingBox();
         int i = 0;
 
@@ -290,7 +290,7 @@ public class BasicEntityItem extends Entity
             AxisAlignedBB axisalignedbb1 = this.getEntityBoundingBox();
             this.setEntityBoundingBox(axisalignedbb);
             y = (double)this.stepHeight;
-            List<AxisAlignedBB> list = this.worldObj.getCollisionBoxes(this, this.getEntityBoundingBox().addCoord(d3, y, d5));
+            List<AxisAlignedBB> list = this.world.getCollisionBoxes(this, this.getEntityBoundingBox().addCoord(d3, y, d5));
             AxisAlignedBB axisalignedbb2 = this.getEntityBoundingBox();
             AxisAlignedBB axisalignedbb3 = axisalignedbb2.addCoord(d3, 0.0D, d5);
             double d9 = y;
@@ -384,10 +384,10 @@ public class BasicEntityItem extends Entity
             }
         }
 
-        this.worldObj.theProfiler.endSection();
+        this.world.theProfiler.endSection();
         
         //rest motion
-        this.worldObj.theProfiler.startSection("rest");
+        this.world.theProfiler.startSection("rest");
         this.resetPositionToBB();
         this.isCollidedHorizontally = d3 != x || d5 != z;
         this.isCollidedVertically = d4 != y;
@@ -408,7 +408,7 @@ public class BasicEntityItem extends Entity
             this.motionZ = 0D;
         }
 
-        this.worldObj.theProfiler.endSection();
+        this.world.theProfiler.endSection();
 
 	}
 	
@@ -473,13 +473,13 @@ public class BasicEntityItem extends Entity
 	@Override
     public void onCollideWithPlayer(EntityPlayer player)
 	{
-        if(!this.worldObj.isRemote && !this.isDead)
+        if(!this.world.isRemote && !this.isDead)
         {
         	//check delay
         	if (this.delayBeforeCanPickup > 0) return;
         	
         	//get item
-        	EntityTracker entitytracker = ((WorldServer)this.worldObj).getEntityTracker();
+        	EntityTracker entitytracker = ((WorldServer)this.world).getEntityTracker();
             ItemStack itemstack = this.getEntityItem();
             int i = itemstack.stackSize;
             
@@ -568,7 +568,7 @@ public class BasicEntityItem extends Entity
             	//play pick sound
                 if (!this.isSilent())
                 {
-                    this.worldObj.playSound((EntityPlayer)null, player.posX, player.posY, player.posZ, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
+                    this.world.playSound((EntityPlayer)null, player.posX, player.posY, player.posZ, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
                 }
             }//end delay = 0
             

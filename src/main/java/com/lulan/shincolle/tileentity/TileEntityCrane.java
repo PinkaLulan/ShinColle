@@ -212,7 +212,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 	//set paired chest
 	public void setPairedChest(BlockPos pos)
 	{
-		TileEntity tile = this.worldObj.getTileEntity(pos);
+		TileEntity tile = this.world.getTileEntity(pos);
 		
 		if (tile instanceof IInventory)
 		{
@@ -234,7 +234,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 			//get chest if no chest tile entity
 			if (this.chest == null)
 			{
-				TileEntity tile = this.worldObj.getTileEntity(this.chestPos);
+				TileEntity tile = this.world.getTileEntity(this.chestPos);
 				
 				if (tile instanceof IInventory)
 				{
@@ -319,7 +319,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 	public void update()
 	{
 		//server side
-		if (!this.worldObj.isRemote)
+		if (!this.world.isRemote)
 		{
 			boolean update = false;
 			this.tick++;
@@ -330,7 +330,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 				this.redTick--;
 				if (this.redTick <= 0)
 				{
-					this.worldObj.notifyNeighborsOfStateChange(this.pos, ModBlocks.BlockCrane);
+					this.world.notifyNeighborsOfStateChange(this.pos, ModBlocks.BlockCrane);
 				}
 			}
 
@@ -348,7 +348,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 					if (this.redMode == 1 && this.ship != null)
 					{
 						this.redTick = 18;
-						this.worldObj.notifyNeighborsOfStateChange(this.pos, ModBlocks.BlockCrane);
+						this.world.notifyNeighborsOfStateChange(this.pos, ModBlocks.BlockCrane);
 					}
 					
 					if (this.chest != null && ship != null)
@@ -405,7 +405,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 								if (this.redMode == 2)
 								{
 									this.redTick = 2;
-									this.worldObj.notifyNeighborsOfStateChange(this.pos, ModBlocks.BlockCrane);
+									this.world.notifyNeighborsOfStateChange(this.pos, ModBlocks.BlockCrane);
 								}
 								
 								//set crane state
@@ -1114,7 +1114,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 	{
 		AxisAlignedBB box = new AxisAlignedBB(pos.getX() - 7D, pos.getY() - 6D, pos.getZ() - 7D,
 											  pos.getX() + 7D, pos.getY() + 6D, pos.getZ() + 7D);
-        List<BasicEntityShip> slist = this.worldObj.getEntitiesWithinAABB(BasicEntityShip.class, box);
+        List<BasicEntityShip> slist = this.world.getEntitiesWithinAABB(BasicEntityShip.class, box);
 
         if (slist != null && !slist.isEmpty())
         {

@@ -64,7 +64,7 @@ public class KaitaiHammer extends BasicItem
 	public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity)
 	{
 		//entity is ship
-		if (!player.worldObj.isRemote && entity instanceof BasicEntityShip)
+		if (!player.world.isRemote && entity instanceof BasicEntityShip)
 		{
 			//player is owner
 			if (TeamHelper.checkSameOwner(player, entity) || EntityHelper.checkOP(player))

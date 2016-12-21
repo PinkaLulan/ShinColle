@@ -2,33 +2,45 @@ package com.lulan.shincolle.entity.destroyer;
 
 import java.util.List;
 
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.DamageSource;
-import net.minecraft.world.World;
+import javax.annotation.Nullable;
 
 import com.lulan.shincolle.ai.EntityAIShipPickItem;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
-import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
-import com.lulan.shincolle.entity.ExtendShipProps;
+import com.lulan.shincolle.entity.IShipRiderType;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
+import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
+import com.lulan.shincolle.utility.TeamHelper;
+
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Items;
+import net.minecraft.init.MobEffects;
+import net.minecraft.item.ItemStack;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 
 
-public class EntityDestroyerIkazuchi extends BasicEntityShipSmall
+public class EntityDestroyerIkazuchi extends BasicEntityShipSmall implements IShipRiderType
 {
 
-	public boolean isGattai = false;
+	/**
+	 * 六驅合體狀態: 0:none, 1:只有響, 2:只有電, 4:只有雷
+	 * 可合計, ex: 3:有響跟雷, 6:有雷跟電, 7:有響雷電
+	 */
+	private int riderType;
+	/** 雷電合體狀態 */
+	public boolean isRaiden;
+	private int ridingState;
 	
 	
 	public EntityDestroyerIkazuchi(World world)
@@ -41,7 +53,6 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.DD]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.DD]);
 		this.ModelPos = new float[] {0F, 13F, 0F, 50F};
-		this.ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		
 		//set attack type
 		this.StateFlag[ID.F.HaveRingEffect] = true;
@@ -49,26 +60,30 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall
 		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
 		this.StateFlag[ID.F.CanPickItem] = true;
 		
-		//gattai
-		this.isGattai = false;
+		this.riderType = 0;
+		this.isRaiden = false;
+		this.ridingState = 0;
 		
 		this.postInit();
 	}
 	
 	//for morph
 	@Override
-	public float getEyeHeight() {
+	public float getEyeHeight()
+	{
 		return 1.4F;
 	}
 	
 	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc
 	@Override
-	public int getEquipType() {
+	public int getEquipType()
+	{
 		return 1;
 	}
 	
 	@Override
-	public void setAIList() {
+	public void setAIList()
+	{
 		super.setAIList();
 		
 		//use range attack (light)
@@ -85,29 +100,18 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall
   		super.onLivingUpdate();
   		
   		//server side
-  		if (!worldObj.isRemote)
+  		if (!world.isRemote)
   		{
   			if (this.ticksExisted % 32 == 0)
   			{
-  				//update gattai
-  				if (this.ridingEntity instanceof EntityDestroyerInazuma)
-  				{
-  					this.isGattai = true;
-  				}
-  				else
-  				{
-  					this.isGattai = false;
-  				}
-  				
-  				//add morale when gattai
-  				if (this.isGattai)
+  				//check raiden gattai
+				this.checkIsRaiden();
+				
+  				//add morale in raiden mode
+  				if (this.riderType == 0 && this.isRaiden)
   				{
   					int m = this.getStateMinor(ID.M.Morale);
-  					
-  					if (m < 7000)
-  					{
-  		  	  			this.setStateMinor(ID.M.Morale, m + 100);
-  		  	  		}
+  					if (m < 7000) this.setStateMinor(ID.M.Morale, m + 100);
   				}
   				
   				if (this.ticksExisted % 128 == 0)
@@ -120,13 +124,13 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall
   	  					player != null && getDistanceSqToEntity(player) < 256D)
   	  				{
   	  					//potion effect: id, time, level
-  	  	  	  			player.addPotionEffect(new PotionEffect(Potion.damageBoost.id, 300, getStateMinor(ID.M.ShipLevel) / 50));
+  	  	  	  			player.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, 300, getStateMinor(ID.M.ShipLevel) / 50));
   	  				}
   	  				
   	  				//try gattai
-  	  				tryGattai();
-  	  			}
-  			}
+  	  				tryRaidenGattai();
+  	  			}//end 128 ticks
+  			}//end 32 ticks
   		}
   		//client side
   		else
@@ -137,58 +141,72 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall
   				{
   					double smokeY = posY + 1.4D;
   					
-  					if (this.ridingEntity != null)
-					{
-  						smokeY -= 0.2F;
-					}
-  					
   					//計算煙霧位置
-  	  				float[] partPos = ParticleHelper.rotateXZByAxis(-0.42F, 0F, (this.renderYawOffset % 360) / 57.2957F, 1F);
+  	  				float[] partPos = CalcHelper.rotateXZByAxis(-0.42F, 0F, (this.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);
   	  				//生成裝備冒煙特效
   	  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], smokeY, posZ+partPos[0], 0D, 0D, 0D, (byte)20);
-  				}	
-  			}
+  				}
+  				
+  	  			if (this.ticksExisted % 16 == 0)
+  	  			{
+  	  				this.checkRiderType();
+  					this.checkIsRaiden();
+  	  				this.checkRidingState();
+  	  			}//end 16 ticks
+  			}//end 4 ticks
   		}
   		
-		//sync rotate when gattai
-  		if (this.ridingEntity instanceof EntityDestroyerInazuma)
+  		//sync rotate when gattai
+  		if (this.getRidingEntity() instanceof EntityDestroyerAkatsuki)
 		{
-  			if (this.ridingEntity.ridingEntity instanceof EntityDestroyerHibiki)
-  			{
-  				if (this.ridingEntity.ridingEntity.ridingEntity instanceof EntityDestroyerAkatsuki)
-  	  			{
-  					((EntityLivingBase) this.ridingEntity.ridingEntity).renderYawOffset = ((EntityLivingBase) this.ridingEntity.ridingEntity.ridingEntity).renderYawOffset;
-  	  				((EntityLivingBase) this.ridingEntity.ridingEntity).prevRenderYawOffset = ((EntityLivingBase) this.ridingEntity.ridingEntity.ridingEntity).prevRenderYawOffset;
-  	  				this.ridingEntity.ridingEntity.rotationYaw = this.ridingEntity.ridingEntity.ridingEntity.rotationYaw;
-  	  				this.ridingEntity.ridingEntity.prevRotationYaw = this.ridingEntity.ridingEntity.ridingEntity.prevRotationYaw;
-  	  			}
-  				
-  				((EntityLivingBase) this.ridingEntity).renderYawOffset = ((EntityLivingBase) this.ridingEntity.ridingEntity).renderYawOffset;
-  				((EntityLivingBase) this.ridingEntity).prevRenderYawOffset = ((EntityLivingBase) this.ridingEntity.ridingEntity).prevRenderYawOffset;
-  				this.ridingEntity.rotationYaw = this.ridingEntity.ridingEntity.rotationYaw;
-  				this.ridingEntity.prevRotationYaw = this.ridingEntity.ridingEntity.prevRotationYaw;
-  			}
-  			
-  			this.renderYawOffset = ((EntityLivingBase) this.ridingEntity).renderYawOffset;
-			this.prevRenderYawOffset = ((EntityLivingBase) this.ridingEntity).prevRenderYawOffset;
-			this.rotationYaw = this.ridingEntity.rotationYaw;
-			this.prevRotationYaw = this.ridingEntity.prevRotationYaw;
+  			((EntityDestroyerAkatsuki) this.getRidingEntity()).syncRotateToRider();
+		}
+  		//sync rotate when raiden gattai
+  		else if (this.getRidingEntity() instanceof EntityDestroyerInazuma)
+		{
+  			EntityDestroyerInazuma mount = (EntityDestroyerInazuma) this.getRidingEntity();
+  			this.renderYawOffset = mount.renderYawOffset;
+  			this.prevRenderYawOffset = mount.prevRenderYawOffset;
+  			this.rotationYaw = mount.rotationYaw;
+  			this.prevRotationYaw = mount.prevRotationYaw;
 		}
   	}
   	
   	@Override
-  	public boolean interact(EntityPlayer player) {	
-		ItemStack itemstack = player.inventory.getCurrentItem();  //get item in hand
-		
+  	protected void updateFuelState(boolean nofuel)
+	{
+  		if (nofuel)
+  		{
+  	  		if (this.getRidingEntity() instanceof EntityDestroyerAkatsuki)
+  	  		{
+  	  			this.dismountRidingEntity();
+  	  			((EntityDestroyerAkatsuki) this.getRidingEntity()).dismountAllRider();
+  	  		}
+  	  		
+  			//cancel raiden gattai
+  			if (this.isRaiden)
+  			{
+  				this.dismountRaiden();
+  			}
+  		}
+  		
+  		super.updateFuelState(nofuel);
+	}
+  	
+  	@Override
+  	public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, @Nullable ItemStack stack, EnumHand hand)
+  	{
 		//use cake to change state
-		if(itemstack != null) {
-			if(itemstack.getItem() == Items.cake) {
+		if (stack != null)
+		{
+			if (stack.getItem() == Items.CAKE)
+			{
 				this.setShipOutfit(player.isSneaking());
-				return true;
+				return EnumActionResult.SUCCESS;
 			}
 		}
 		
-		return super.interact(player);
+		return super.applyPlayerInteraction(player, vec, stack, hand);
   	}
   	
   	@Override
@@ -200,27 +218,14 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall
   	@Override
 	public double getMountedYOffset()
   	{
-  		if(this.isSitting()) {
-  			return (double)this.height * 0.15F;
+  		if (this.isSitting())
+  		{
+  			return this.height * 0.15F;
   		}
   		else {
-  			return (double)this.height * 0.47F;
+  			return this.height * 0.47F;
   		}
 	}
-  	
-  	@Override
-  	public boolean canBePushed()
-    {
-  		if (this.riddenByEntity instanceof BasicEntityShip ||
-  			this.ridingEntity instanceof BasicEntityShip)
-    	{
-  			return false;
-    	}
-  		else
-  		{
-  			return !this.isDead;
-  		}
-    }
 
 	@Override
 	public void setShipOutfit(boolean isSneaking)
@@ -229,48 +234,36 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall
 		{
 		case ID.State.NORMAL:
 			setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
-			break;
+		break;
 		case ID.State.EQUIP00:
 			setStateEmotion(ID.S.State, ID.State.EQUIP01, true);
-			break;
+		break;
 		case ID.State.EQUIP01:
 			setStateEmotion(ID.S.State, ID.State.EQUIP02, true);
-			break;
+		break;
 		default:
 			setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-			break;
+		break;
 		}
 	}
 	
   	@Override
-  	protected void updateFuelState(boolean nofuel)
-	{
-  		if (this.isGattai && nofuel)
-  		{
-  			this.isGattai = false;
-
-  			if (this.ridingEntity instanceof EntityDestroyerInazuma)
-  			{
-  				((EntityDestroyerInazuma) this.ridingEntity).isGattai2 = false;
-  				this.mountEntity(null);
-  			}
-  		}
-  		
-  		super.updateFuelState(nofuel);
-	}
-	
-	@Override
     public boolean attackEntityFrom(DamageSource attacker, float atk)
-	{
+  	{
 		boolean dd = super.attackEntityFrom(attacker, atk);
 		
 		if (dd)
 		{
 			//cancel gattai
-			if (this.ridingEntity instanceof EntityDestroyerInazuma)
+			if (this.getRidingEntity() instanceof EntityDestroyerAkatsuki)
 			{
-				this.isGattai = false;
-				this.mountEntity(null);
+				this.dismountRidingEntity();
+			}
+			
+			//cancel raiden gattai
+			if (this.isRaiden)
+			{
+				this.dismountRaiden();
 			}
 		}
 		
@@ -278,55 +271,110 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall
 	}
 	
 	//檢查是否可以合體
-	public void tryGattai()
+	public void tryRaidenGattai()
 	{
-		//stop gattai if no fuel
-		if (getStateFlag(ID.F.NoFuel))
-		{
-			//stop gattai
-			if (ridingEntity instanceof EntityDestroyerInazuma)
-			{
-				//stop gattai
-				this.isGattai = false;
-				mountEntity(null);
-			}
-			
-			return;
-		}
-		
-		//already gattai, return
-  		if (this.isGattai || isSitting() || this.isRiding()) return;
+		//stop gattai if sit/no fuel/already 6D gattai
+  		if (isSitting() || getStateFlag(ID.F.NoFuel) || this.riderType > 0 || this.isRaiden) return;
 		
 		//not sitting, hp > 50%, not craning
-		if (!getStateFlag(ID.F.NoFuel) && !isSitting() && getHealth() > getMaxHealth() * 0.5F &&
+		if (!getStateFlag(ID.F.NoFuel) && !isSitting() && !isRiding() && getHealth() > getMaxHealth() * 0.5F &&
 			getStateMinor(ID.M.CraneState) == 0)
 		{
 			//get nearby ship
-            List<EntityDestroyerInazuma> slist = null;
-            slist = this.worldObj.getEntitiesWithinAABB(EntityDestroyerInazuma.class, this.boundingBox.expand(4D, 4D, 4D));
+            List<EntityDestroyerInazuma> slist = this.world.getEntitiesWithinAABB(EntityDestroyerInazuma.class, this.getEntityBoundingBox().expand(4D, 4D, 4D));
 
             if (slist != null && !slist.isEmpty())
             {
             	for (EntityDestroyerInazuma s : slist)
             	{
-            		if (s != null && EntityHelper.checkSameOwner(this, s) && s.isEntityAlive() &&
-                  		s.riddenByEntity == null && s.getStateMinor(ID.M.CraneState) == 0)
+            		if (s != null && TeamHelper.checkSameOwner(this, s) && s.isEntityAlive() &&
+            			s.getRiderType() == 0 && !s.isRaiden && s.getStateMinor(ID.M.CraneState) == 0)
             		{
-        				applyGattai(s);
-        				return;
+            			this.startRiding(s);
+              			this.isRaiden = true;
+              			s.isRaiden = true;
+              			return;
             		}
             	}
             }//end get ship
 		}//end can gattai
 	}
 	
-	//合體
-  	private void applyGattai(EntityDestroyerInazuma ship)
+	/**
+	 * 合體狀態: 0:none, 1:有響, 2:有雷, 4:有電
+	 * 可合計: ex: 3:有響跟雷, 7:有響雷電
+	 */
+  	public void checkRiderType()
   	{
-  		this.isGattai = true;
-  		ship.isGattai2 = true;
-  		this.mountEntity(ship);
+  		this.riderType = 0;
+  		
+  		if (this.getRidingEntity() instanceof EntityDestroyerAkatsuki)
+  		{
+  			this.riderType = ((EntityDestroyerAkatsuki) this.getRidingEntity()).getRiderType();
+  		}
   	}
+	
+  	/**
+  	 * state: 0:無騎乘, 1:六驅合體 or 雷電合體
+  	 */
+  	public void checkRidingState()
+  	{
+  		if (this.riderType == 7 || this.isRaiden)
+  		{
+  			this.ridingState = 1;
+  		}
+  		else
+  		{
+  			this.ridingState = 0;
+  		}
+  	}
+	
+  	public void checkIsRaiden()
+  	{
+		if (this.getRidingEntity() instanceof EntityDestroyerInazuma)
+		{
+			this.isRaiden = true;
+		}
+		else
+		{
+			this.isRaiden = false;
+		}
+  	}
+  	
+  	//kick out all riders
+  	public void dismountRaiden()
+  	{
+		if (this.getRidingEntity() instanceof EntityDestroyerInazuma)
+		{
+			this.dismountRidingEntity();
+			this.isRaiden = false;
+			((EntityDestroyerIkazuchi) this.getRidingEntity()).isRaiden = false;
+		}
+  	}
+  	
+	@Override
+	public int getRiderType()
+	{
+		return this.riderType;
+	}
+
+	@Override
+	public void setRiderType(int type)
+	{
+		this.riderType = type;
+	}
+	
+  	@Override
+  	public int getRidingState()
+  	{
+  		return this.ridingState;
+  	}
+  	
+	@Override
+	public void setRidingState(int state)
+	{
+		this.ridingState = state;
+	}
   	
 
 }

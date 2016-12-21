@@ -123,14 +123,14 @@ public class TileMultiPolymetal extends BasicTileMulti
      */
 	//是否可以右鍵點開方塊
 	@Override
-	public boolean isUseableByPlayer(EntityPlayer player)
+	public boolean isUsableByPlayer(EntityPlayer player)
 	{
 		TileEntity tile = this.getMaster();
 		
 		//type 1: large shipyard
 		if (tile instanceof TileMultiGrudgeHeavy)
 		{
-			return ((TileMultiGrudgeHeavy) tile).isUseableByPlayer(player);
+			return ((TileMultiGrudgeHeavy) tile).isUsableByPlayer(player);
 		}
 		return false;
 	}

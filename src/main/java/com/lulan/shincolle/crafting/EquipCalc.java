@@ -178,7 +178,7 @@ public class EquipCalc
 			}
 			
 			//get mean distance
-			meanDist = MathHelper.abs_int(totalMats - meanNew);
+			meanDist = MathHelper.abs(totalMats - meanNew);
 			
 			//mean value to prob value
 			if (type == 0)
@@ -268,7 +268,7 @@ public class EquipCalc
 				}
 				
 				//get mean distance
-				meanDist = MathHelper.abs_int(totalMat - (int)val[ID.E.RARE_MEAN]);
+				meanDist = MathHelper.abs(totalMat - (int)val[ID.E.RARE_MEAN]);
 				
 				//get prob by mean dist
 				prob = CalcHelper.getNormDist(meanDist);

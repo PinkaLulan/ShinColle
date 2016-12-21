@@ -40,7 +40,7 @@ public class ParticleTexts extends Particle
         this.particleScale = scale;
         this.particleMaxAge = 25;
         this.particleType = type;
-        this.field_190017_n = false;	//can clip = false
+        this.canCollide = false;	//can clip = false
     }
 
     @Override
@@ -102,7 +102,7 @@ public class ParticleTexts extends Particle
             this.setExpired();
         }
 
-        this.moveEntity(this.motionX, this.motionY, this.motionZ);
+        this.move(this.motionX, this.motionY, this.motionZ);
         this.motionY *= 0.9D;
     }
     

@@ -2,35 +2,56 @@ package com.lulan.shincolle.entity.destroyer;
 
 import java.util.List;
 
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.MathHelper;
-import net.minecraft.world.World;
+import javax.annotation.Nullable;
 
 import com.lulan.shincolle.ai.EntityAIShipPickItem;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
-import com.lulan.shincolle.entity.ExtendShipProps;
+import com.lulan.shincolle.entity.IShipRiderType;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.BlockHelper;
+import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
+import com.lulan.shincolle.utility.TeamHelper;
 
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Items;
+import net.minecraft.init.MobEffects;
+import net.minecraft.item.ItemStack;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.EnumSkyBlock;
+import net.minecraft.world.World;
 
-public class EntityDestroyerAkatsuki extends BasicEntityShipSmall
+/**
+ * 六驅單縱陣合體特性:
+ * 1. 單縱陣狀態
+ * 2. 曉響雷電互相靠近
+ * 3. 響雷電全部騎乘在曉身上
+ * 4. 必須有響騎乘在曉時, 雷電才會接著騎乘 
+ */
+public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements IShipRiderType
 {
 
-	public boolean isGattai2 = false;  //ridden by Hibiki
-	
+	/**
+	 * 六驅合體狀態: 0:none, 1:只有響, 2:只有電, 4:只有雷
+	 * 可合計, ex: 3:有響跟雷, 6:有雷跟電, 7:有響雷電
+	 * 
+	 * valid: 0, 1, 3, 7
+	 * invalid: 2, 4, 5, 6
+	 */
+	private int riderType;
+	private int ridingState;
 	
 	public EntityDestroyerAkatsuki(World world)
 	{
@@ -42,7 +63,6 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.DD]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.DD]);
 		this.ModelPos = new float[] {0F, 13F, 0F, 50F};
-		this.ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		
 		//set attack type
 		this.StateFlag[ID.F.HaveRingEffect] = true;
@@ -50,7 +70,8 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall
 		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
 		this.StateFlag[ID.F.CanPickItem] = true;
 		
-		this.isGattai2 = false;
+		this.riderType = 0;
+		this.ridingState = 0;
 		
 		this.postInit();
 	}
@@ -88,30 +109,21 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall
   		super.onLivingUpdate();
   		
   		//server side
-  		if (!worldObj.isRemote)
+  		if (!world.isRemote)
   		{
   			if (this.ticksExisted % 32 == 0)
   			{
-  				//update gattai
-  				if (this.riddenByEntity instanceof EntityDestroyerHibiki)
+  				//add morale when gattai
+  				this.checkRiderType();
+  				
+  				//validate rider type
+  				if (this.riderType == 2 || this.riderType == 4 ||
+  					this.riderType == 5 || this.riderType == 6)
   				{
-  					this.isGattai2 = true;
-  				}
-  				else
-  				{
-  					this.isGattai2 = false;
+  					this.dismountAllRider();
   				}
   				
-  				//add morale when gattai
-  				if (this.isGattai2)
-  				{
-  					int m = this.getStateMinor(ID.M.Morale);
-  					
-  					if (m < 7000)
-  					{
-  		  	  			this.setStateMinor(ID.M.Morale, m + 100);
-  		  	  		}
-  				}
+  				if (this.riderType > 0) this.addMoraleToRider();
   				
   				if (this.ticksExisted % 128 == 0)
   	  			{
@@ -123,7 +135,7 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall
   	  					getDistanceSqToEntity(player) < 256D)
   	  				{
   	  					//potion effect: id, time, level
-  	  	  	  			player.addPotionEffect(new PotionEffect(Potion.digSpeed.id, 300, getStateMinor(ID.M.ShipLevel) / 30));
+  	  	  	  			player.addPotionEffect(new PotionEffect(MobEffects.HASTE, 300, getStateMinor(ID.M.ShipLevel) / 30));
   	  				}
   	  				
   	  				//try gattai
@@ -136,55 +148,53 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall
   		{
   			if (this.ticksExisted % 4 == 0)
   			{
-  				if (getStateEmotion(ID.S.State) >= ID.State.EQUIP01 && !isSitting() && !getStateFlag(ID.F.NoFuel) && this.riddenByEntity == null)
+  				if (getStateEmotion(ID.S.State) >= ID.State.EQUIP01 && !isSitting() && !getStateFlag(ID.F.NoFuel) && this.riderType < 1)
   				{
   					double smokeY = posY + 1.4D;
   					float addz = 0F;
   					
-  					if (this.ridingEntity != null) addz = -0.2F;
+  					if (this.getRidingEntity() != null) addz = -0.2F;
   					
   					//計算煙霧位置
-  	  				float[] partPos = ParticleHelper.rotateXZByAxis(-0.42F + addz, 0F, (this.renderYawOffset % 360) / 57.2957F, 1F);
+  	  				float[] partPos = CalcHelper.rotateXZByAxis(-0.42F + addz, 0F, (this.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);
   	  				//生成裝備冒煙特效
   	  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], smokeY, posZ+partPos[0], 0D, 0D, 0D, (byte)20);
-  				}	
-  			}
+  				}
+  				
+  	  			if (this.ticksExisted % 16 == 0)
+  	  			{
+  	  				this.checkRiderType();
+  	  				this.checkRidingState();
+  	  			}//end 16 ticks
+  			}//end 4 ticks
   		}
   		
   		//sync rotate when gattai
-  		if (this.riddenByEntity instanceof EntityDestroyerHibiki)
-		{
-			((EntityLivingBase) this.riddenByEntity).renderYawOffset = this.renderYawOffset;
-			((EntityLivingBase) this.riddenByEntity).prevRenderYawOffset = this.prevRenderYawOffset;
-			this.riddenByEntity.rotationYaw = this.rotationYaw;
-			this.riddenByEntity.prevRotationYaw = this.prevRotationYaw;
-			
-			if (this.riddenByEntity.riddenByEntity instanceof EntityDestroyerInazuma)
-			{
-				((EntityLivingBase) this.riddenByEntity.riddenByEntity).renderYawOffset = this.renderYawOffset;
-				((EntityLivingBase) this.riddenByEntity.riddenByEntity).prevRenderYawOffset = this.prevRenderYawOffset;
-				this.riddenByEntity.riddenByEntity.rotationYaw = this.rotationYaw;
-				this.riddenByEntity.riddenByEntity.prevRotationYaw = this.prevRotationYaw;
-			}
-		}
+  		this.syncRotateToRider();
   	}
   	
   	@Override
-  	public boolean interact(EntityPlayer player)
-  	{	
-		ItemStack itemstack = player.inventory.getCurrentItem();  //get item in hand
-		
+  	protected void updateFuelState(boolean nofuel)
+	{
+  		if (nofuel) this.dismountAllRider();
+  		
+  		super.updateFuelState(nofuel);
+	}
+  	
+  	@Override
+  	public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, @Nullable ItemStack stack, EnumHand hand)
+  	{
 		//use cake to change state
-		if (itemstack != null)
+		if (stack != null)
 		{
-			if (itemstack.getItem() == Items.cake)
+			if (stack.getItem() == Items.CAKE)
 			{
 				this.setShipOutfit(player.isSneaking());
-				return true;
+				return EnumActionResult.SUCCESS;
 			}
 		}
 		
-		return super.interact(player);
+		return super.applyPlayerInteraction(player, vec, stack, hand);
   	}
   	
   	@Override
@@ -198,57 +208,33 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall
   	{
 		if (this.isSitting())
   		{
-			if (this.riddenByEntity instanceof EntityDestroyerHibiki)
-	    	{
-				return -0.1F;
-	    	}
-			else
-			{
-				return (double)this.height * 0.15F;
-			}
+			return this.height * 0.15F;
   		}
   		else
   		{
-  			if (this.riddenByEntity instanceof EntityDestroyerHibiki)
-	    	{
-				return (double)this.height * 0.5F;
-	    	}
-			else
-			{
-				return (double)this.height * 0.47F;
-			}
+  			return this.height * 0.47F;
   		}
 	}
   	
   	@Override
-  	public void updateRiderPosition()
+    public void updatePassenger(Entity rider)
     {
-        if (this.riddenByEntity != null)
+        if (this.isPassenger(rider))
         {
-        	if (this.riddenByEntity instanceof EntityDestroyerHibiki)
+        	double yoffset = this.posY + this.getMountedYOffset() + rider.getYOffset();
+        	
+        	if (rider instanceof EntityDestroyerHibiki ||
+        		rider instanceof EntityDestroyerIkazuchi ||
+        		rider instanceof EntityDestroyerInazuma)
         	{
-	  			float[] partPos = ParticleHelper.rotateXZByAxis(-0.2F, 0F, (this.renderYawOffset % 360) * Values.N.RAD_MUL, 1F);
-        		this.riddenByEntity.setPosition(this.posX + partPos[1], this.posY + this.getMountedYOffset() + this.riddenByEntity.getYOffset(), this.posZ + partPos[0]);
+        		float[] partPos = CalcHelper.rotateXZByAxis(-0.2F, 0F, (this.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);
+        		rider.setPosition(this.posX + partPos[1], this.posY + this.getMountedYOffset() + rider.getYOffset(), this.posZ + partPos[0]);
         	}
         	else
         	{
-        		this.riddenByEntity.setPosition(this.posX, this.posY + this.getMountedYOffset() + this.riddenByEntity.getYOffset(), this.posZ);
+        		rider.setPosition(this.posX, yoffset, this.posZ);
         	}
         }
-    }
-  	
-  	@Override
-  	public boolean canBePushed()
-    {
-  		if (this.riddenByEntity instanceof BasicEntityShip ||
-  			this.ridingEntity instanceof BasicEntityShip)
-    	{
-  			return false;
-    	}
-  		else
-  		{
-  			return !this.isDead;
-  		}
     }
 
 	@Override
@@ -258,39 +244,39 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall
 		{
 		case ID.State.NORMAL:
 			setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
-			break;
+		break;
 		case ID.State.EQUIP00:
 			setStateEmotion(ID.S.State, ID.State.EQUIP01, true);
-			break;
+		break;
 		case ID.State.EQUIP01:
 			setStateEmotion(ID.S.State, ID.State.EQUIP02, true);
-			break;
+		break;
 		default:
 			setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-			break;
+		break;
 		}
 	}
 	
-  	/** update flare effect */
+  	/** Akatsuki can use flare by AI option */
+	@Override
   	protected void updateSearchlight()
   	{
   		if (getStateFlag(ID.F.IsMarried) &&
   			getStateFlag(ID.F.UseRingEffect) &&
 			getStateMinor(ID.M.NumGrudge) > 0)
   		{
-  			int px = MathHelper.floor_double(this.posX);
-			int py = (int) this.posY + 1;
-			int pz = MathHelper.floor_double(this.posZ);
-			float light = this.worldObj.getBlockLightValue(px, py, pz);
+  			BlockPos pos = new BlockPos(this);
+			float light = this.world.getLightFor(EnumSkyBlock.BLOCK, pos);
 
+			//place new light block
   			if (light < 12F)
   			{
-				BlockHelper.placeLightBlock(this.worldObj, px, py, pz);
+				BlockHelper.placeLightBlock(this.world, pos);
   			}
   			//search light block, renew lifespan
   			else
   			{
-  				BlockHelper.updateNearbyLightBlock(this.worldObj, px, py, pz);
+  				BlockHelper.updateNearbyLightBlock(this.world, pos);
   			}
   		}
   	}
@@ -298,43 +284,187 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall
   	//檢查是否可以合體
   	public void tryGattai()
   	{
-  		//already gattai, return
-  		if (getStateFlag(ID.F.NoFuel) || isSitting() || this.isGattai2) return;
+  		//stop gattai if sit/no fuel/already gattai
+  		if (isSitting() || getStateFlag(ID.F.NoFuel) || this.riderType == 7) return;
   		
   		//not sitting, hp > 50%, not craning, formation = line ahead
   		if (!getStateFlag(ID.F.NoFuel) && !isSitting() && getHealth() > getMaxHealth() * 0.5F &&
   			getStateMinor(ID.M.CraneState) == 0 && getStateMinor(ID.M.FormatType) == 1)
   		{
   			//get nearby ship
-  			List<EntityDestroyerHibiki> slist = null;
-  			slist = this.worldObj.getEntitiesWithinAABB(EntityDestroyerHibiki.class, this.boundingBox.expand(4D, 2D, 4D));
-
+  			List<BasicEntityShip> slist = this.world.getEntitiesWithinAABB(BasicEntityShip.class, this.getEntityBoundingBox().expand(4D, 4D, 4D));
+  			BasicEntityShip getHibiki = null;
+  			BasicEntityShip getInazuma = null;
+  			BasicEntityShip getIkazuchi = null;
+  			
   			if (slist != null && !slist.isEmpty())
   			{
-              	for (EntityDestroyerHibiki s : slist)
+  				//check riders
+              	for (BasicEntityShip s : slist)
               	{
-              		if (s != null && EntityHelper.checkSameOwner(this, s) && s.isEntityAlive() &&
-              			!s.isRiding() && s.getStateMinor(ID.M.CraneState) == 0 &&
+              		if (s instanceof EntityDestroyerHibiki && TeamHelper.checkSameOwner(this, s) &&
+              			s.isEntityAlive() && !s.isRiding() && s.getStateMinor(ID.M.CraneState) == 0 &&
               			s.getStateMinor(ID.M.FormatType) == 1)
               		{
-              			applyGattai(s);
-              			return;
+              			getHibiki = s;
               		}
+              		else if (s instanceof EntityDestroyerInazuma && TeamHelper.checkSameOwner(this, s) &&
+              				 s.isEntityAlive() && s.getStateMinor(ID.M.CraneState) == 0 &&
+              				 s.getStateMinor(ID.M.FormatType) == 1)
+              		{
+              			getInazuma = s;
+              		}
+              		else if (s instanceof EntityDestroyerIkazuchi && TeamHelper.checkSameOwner(this, s) &&
+             				 s.isEntityAlive() && s.getStateMinor(ID.M.CraneState) == 0 &&
+             				 s.getStateMinor(ID.M.FormatType) == 1)
+             		{
+              			getIkazuchi = s;
+             		}
               	}
-              }//end get ship
+              	
+              	//apply gattai
+              	switch (this.riderType)
+              	{
+              	case 0:
+              		if (getHibiki != null) getHibiki.startRiding(this);
+          			if (getInazuma != null) getInazuma.startRiding(this);
+          			if (getIkazuchi != null) getIkazuchi.startRiding(this);
+              	break;
+              	case 1:
+          			if (getInazuma != null) getInazuma.startRiding(this);
+          			if (getIkazuchi != null) getIkazuchi.startRiding(this);
+              	break;
+              	case 3:
+          			if (getIkazuchi != null) getIkazuchi.startRiding(this);
+              	break;
+              	}//end rider type switch
+  			}//end get ship
   		}//end can gattai
   	}
   	
-  	//合體
-  	private void applyGattai(EntityDestroyerHibiki ship)
+  	//add morale when gattai
+  	public void addMoraleToRider()
   	{
-  		this.isGattai2 = true;
-  		ship.isGattai = true;
-  		ship.mountEntity(this);
+  		List<Entity> list = this.getPassengers();
+  		
+  		for (Entity rider : list)
+  		{
+  			if (rider instanceof BasicEntityShip)
+  			{
+  				int m = ((BasicEntityShip) rider).getStateMinor(ID.M.Morale);
+  				if (m < 7000) ((BasicEntityShip) rider).setStateMinor(ID.M.Morale, m + 100);
+  				
+  				//set rider type to riders
+  				if (rider instanceof IShipRiderType)
+  				{
+  					((IShipRiderType) rider).setRiderType(this.riderType);
+  				}
+  			}
+  		}
   	}
+  	
+	@Override
+	public int getRiderType()
+	{
+		return this.riderType;
+	}
 	
+	@Override
+	public void setRiderType(int type)
+	{
+		this.riderType = type;
+	}
+  	
+	/**
+	 * 合體狀態: 0:none, 1:有響, 2:有雷, 4:有電
+	 * 可合計: ex: 3:有響跟雷, 7:有響雷電
+	 */
+  	public void checkRiderType()
+  	{
+  		List<Entity> list = this.getPassengers();
+  		this.riderType = 0;
+  		
+  		for (Entity rider : list)
+  		{
+  			if (rider instanceof EntityDestroyerHibiki)
+  			{
+  				this.riderType |= 1;
+  			}
+  			else if (rider instanceof EntityDestroyerInazuma)
+  			{
+  				this.riderType |= 2;
+  			}
+  			else if (rider instanceof EntityDestroyerIkazuchi)
+  			{
+  				this.riderType |= 4;
+  			}
+  		}
+  	}
+  	
+  	/**
+  	 * state: 0:無騎乘, 1:被響騎乘
+  	 */
+  	public void checkRidingState()
+  	{
+  		List<Entity> list = this.getPassengers();
+  		this.ridingState = 0;
+  		
+  		for (Entity rider : list)
+  		{
+  			if (rider instanceof EntityDestroyerHibiki)
+  			{
+  				this.ridingState = 1;
+  				break;
+  			}
+  		}
+  	}
+  	
+  	//kick out all riders
+  	public void dismountAllRider()
+  	{
+  		this.riderType = 0;
+  		
+  		List<Entity> riders = this.getPassengers();
+  		
+  		for (Entity rider : riders)
+  		{
+  			rider.dismountRidingEntity();
+  			
+  			if (rider instanceof IShipRiderType)
+  			{
+  				((IShipRiderType) rider).setRiderType(0);
+  			}
+  		}
+  	}
+  	
+  	//sync rotateYaw to all rider
+  	public void syncRotateToRider()
+  	{
+  		List<Entity> list = this.getPassengers();
+  		
+  		for (Entity rider : list)
+  		{
+  			if (rider instanceof IShipRiderType)
+  			{
+  				((EntityLivingBase) rider).renderYawOffset = this.renderYawOffset;
+  				((EntityLivingBase) rider).prevRenderYawOffset = this.prevRenderYawOffset;
+  				rider.rotationYaw = this.rotationYaw;
+  				rider.prevRotationYaw = this.prevRotationYaw;
+  			}
+  		}
+  	}
+
+  	@Override
+  	public int getRidingState()
+  	{
+  		return this.ridingState;
+  	}
+  	
+	@Override
+	public void setRidingState(int state)
+	{
+		this.ridingState = state;
+	}
+
 
 }
-
-
-

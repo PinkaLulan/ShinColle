@@ -18,6 +18,7 @@ import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.entity.other.EntityRensouhou;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -38,6 +39,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -55,12 +58,13 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	protected ShipPathNavigate shipNavigator;	//水空移動用navigator
 	protected ShipMoveHelper shipMoveHelper;
 	protected int revengeTime;					//revenge target time
+	protected int soundHurtDelay;
     
     //model display
     /**EntityState: 0:HP State 1:Emotion 2:Emotion2*/
-	protected byte StateEmotion;				//表情1
-	protected byte StateEmotion2;				//表情2
-	protected int StartEmotion, StartEmotion2, StartEmotion3;  //emotion開始時間
+	protected byte stateEmotion;				//表情1
+	protected byte stateEmotion2;				//表情2
+	protected int attackTime, attackTime2, startEmotion, startEmotion2;  //motion開始時間
 	protected boolean headTilt;
 	protected float[] seatPos;
 	
@@ -73,42 +77,54 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
     public BasicEntityMount(World world)
     {
 		super(world);
-		isImmuneToFire = true;
-		ignoreFrustumCheck = true;	//即使不在視線內一樣render
-		stepHeight = 3F;
-		keyPressed = 0;
-		shipNavigator = new ShipPathNavigate(this, worldObj);
-		shipMoveHelper = new ShipMoveHelper(this, 20F);
-		seatPos = new float[] {0F,0F,0F};
-		
+		this.isImmuneToFire = true;
+		this.ignoreFrustumCheck = true;	//即使不在視線內一樣render
+		this.stepHeight = 3F;
+		this.keyPressed = 0;
+		this.shipNavigator = new ShipPathNavigate(this, world);
+		this.shipMoveHelper = new ShipMoveHelper(this, 20F);
+		this.seatPos = new float[] {0F,0F,0F};
+		this.soundHurtDelay = 0;
+		this.attackTime = 0;
+		this.attackTime2 = 0;
 	}
     
-//    //平常音效 TODO sound event
-//    @Override
-//	protected String getLivingSound() {
-//		if(ConfigHandler.useWakamoto && rand.nextInt(30) == 0) {
-//			return Reference.MOD_ID+":ship-waka_idle";
-//		}
-//		return null;
-//	}
-//  	
-//  	//受傷音效
-//    @Override
-//	protected String getHurtSound() {
-//		if(ConfigHandler.useWakamoto && rand.nextInt(30) == 0) {
-//			return Reference.MOD_ID+":ship-waka_hurt";
-//		}
-//		return null;
-//	}
-//
-//	//死亡音效
-//    @Override
-//	protected String getDeathSound() {
-//		if(ConfigHandler.useWakamoto) {
-//			return Reference.MOD_ID+":ship-waka_death";
-//		}
-//		return null;
-//	}
+	//平常音效
+    @Override
+    @Nullable
+    protected SoundEvent getAmbientSound()
+    {
+    	if (ConfigHandler.useWakamoto && rand.nextInt(30) == 0)
+    	{
+			return ModSounds.SHIP_WAKA_IDLE;
+		}
+		return null;
+    }
+    
+	//受傷音效
+    @Override
+    @Nullable
+    protected SoundEvent getHurtSound()
+    {
+		if (ConfigHandler.useWakamoto && rand.nextInt(30) == 0 && this.soundHurtDelay <= 0)
+		{
+			this.soundHurtDelay = 20 + this.getRNG().nextInt(40);
+			return ModSounds.SHIP_WAKA_HURT;
+		}
+		return null;
+    }
+
+	//死亡音效
+    @Override
+    @Nullable
+    protected SoundEvent getDeathSound()
+    {
+		if (ConfigHandler.useWakamoto)
+		{
+			return ModSounds.SHIP_WAKA_DEATH;
+		}
+		return null;
+    }
 
 	//音效大小
     @Override
@@ -127,7 +143,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
     //setup AI
 	public void setAIList()
 	{
-		if (!this.worldObj.isRemote)
+		if (!this.world.isRemote)
 		{
 			this.clearAITasks();
 			this.clearAITargetTasks();
@@ -172,7 +188,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
         }
 		
 		//server side
-		if (!this.worldObj.isRemote)
+		if (!this.world.isRemote)
 		{
 			if (host == null)
 			{
@@ -227,7 +243,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 				if (entity instanceof IShipAttackBase)
 				{
 					//get attack time for damage modifier setting (day, night or ...etc)
-					int modSet = this.worldObj.provider.isDaytime() ? 0 : 1;
+					int modSet = this.world.provider.isDaytime() ? 0 : 1;
 					reduceAtk = CalcHelper.calcDamageByType(reduceAtk, ((IShipAttackBase) entity).getDamageType(), this.getDamageType(), modSet);
 				}
 				
@@ -299,7 +315,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 			
 			//caress head mode: morale +3
 			if (itemstack.getItem() == ModItems.PointerItem &&
-				!this.worldObj.isRemote && itemstack.getItemDamage() > 2)
+				!this.world.isRemote && itemstack.getItemDamage() > 2)
 			{
 				//add little morale to host
 				int t = this.host.ticksExisted - this.host.getMoraleTick();
@@ -325,14 +341,15 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
         }
 
 		//ride the mount if dist < 2.4 blocks, or set ship and mount sitting
-		if (!this.worldObj.isRemote && !player.isSneaking())
+		if (!this.world.isRemote && !player.isSneaking())
 		{
 			//ride mount
 			if (TeamHelper.checkIsBanned(this, player) && this.getDistanceSqToEntity(player) < 6D)
 			{
   	  			player.startRiding(this, true);
-  	  			this.StateEmotion = 1;
+  	  			this.stateEmotion = 1;
   	  			this.sendSyncPacket(0);
+  	  			
 				return EnumActionResult.SUCCESS;
 			}
 			//set sitting
@@ -341,23 +358,23 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 				//check owner
 				if (TeamHelper.checkSameOwner(player, this.host))
 				{
-					this.host.setSitting(!this.host.isSitting());
-		            this.isJumping = false;
-		            this.getNavigator().clearPathEntity();
-		            this.setAttackTarget(null);
-		            this.setEntityTarget(null);
-		            this.host.setAttackTarget(null);
-		            this.host.setEntityTarget(null);
+					this.host.setEntitySit(!this.host.isSitting());
+					this.isJumping = false;
+			        this.getShipNavigate().clearPathEntity();
+			        this.getNavigator().clearPathEntity();
+			        this.setAttackTarget(null);
+			        this.setEntityTarget(null);
+
 		            return EnumActionResult.SUCCESS;
 				}
 			}
         }
 		
 		//shift+right click時打開host GUI
-		if (player.isSneaking() && !this.worldObj.isRemote && TeamHelper.checkSameOwner(player, this.host))
+		if (player.isSneaking() && !this.world.isRemote && TeamHelper.checkSameOwner(player, this.host))
 		{  
 			int eid = this.host.getEntityId();
-    		FMLNetworkHandler.openGui(player, ShinColle.instance, ID.Gui.SHIPINVENTORY, this.worldObj, this.host.getEntityId(), 0, 0);
+    		FMLNetworkHandler.openGui(player, ShinColle.instance, ID.Gui.SHIPINVENTORY, this.world, this.host.getEntityId(), 0, 0);
     		return EnumActionResult.SUCCESS;
 		}
 		
@@ -365,15 +382,19 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   	}
 	
 	@Override
-	public void onLivingUpdate()
-	{
-		if (stopAI)
-		{
-			return;
-		}
-		
-		super.onLivingUpdate();
-	}
+    public void onLivingUpdate()
+    {
+    	if ((!world.isRemote))
+    	{
+        	//update movement, NOTE: 1.9.4: must done before vanilla MoveHelper updating in super.onLivingUpdate()
+        	EntityHelper.updateShipNavigator(this);
+            super.onLivingUpdate();
+    	}
+    	else
+    	{
+    		super.onLivingUpdate();
+    	}
+    }
 	
 	@Override
 	public void onUpdate()
@@ -384,6 +405,8 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		}
 		
 		super.onUpdate();
+		
+		if (soundHurtDelay > 0) soundHurtDelay--;
 
 		//apply movement by key pressed
 		if (this.host != null && !host.getStateFlag(ID.F.NoFuel) && this.keyPressed > 0 &&
@@ -401,7 +424,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		EntityHelper.checkDepth(this);
 
 		//client side
-		if (this.worldObj.isRemote)
+		if (this.world.isRemote)
 		{
 			if (ShipDepth > 0D)
 			{
@@ -595,7 +618,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	@Override
 	public byte getStateEmotion(int id)
 	{
-		return id == ID.S.Emotion ? StateEmotion : StateEmotion2;
+		return id == ID.S.Emotion ? stateEmotion : stateEmotion2;
 	}
 	
 	@Override
@@ -604,16 +627,16 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		switch (id)
 		{
 		case ID.S.Emotion:
-			StateEmotion = (byte) value;
+			stateEmotion = (byte) value;
 			break;
 		case ID.S.Emotion2:
-			StateEmotion2 = (byte) value;
+			stateEmotion2 = (byte) value;
 			break;
 		default:
 			break;
 		}
 		
-		if (sync && !worldObj.isRemote)
+		if (sync && !world.isRemote)
 		{
 			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
 			CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this, S2CEntitySync.PID.SyncEntity_Emo), point);
@@ -642,25 +665,25 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	@Override
 	public int getFaceTick()
 	{
-		return this.StartEmotion;
+		return this.startEmotion;
 	}
 
 	@Override
 	public int getHeadTiltTick()
 	{
-		return this.StartEmotion2;
+		return this.startEmotion2;
 	}
 
 	@Override
 	public void setFaceTick(int par1)
 	{
-		this.StartEmotion = par1;
+		this.startEmotion = par1;
 	}
 
 	@Override
 	public void setHeadTiltTick(int par1)
 	{
-		this.StartEmotion2 = par1;
+		this.startEmotion2 = par1;
 	}
 
 	@Override
@@ -670,10 +693,9 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	}
 
 	@Override
-	public int getAttackTime()
+	public int getAttackTick()
 	{
-//		return this.attackTime; TODO 新增不只一個timer, 以便進行不同攻擊動作的計時?
-		return 0;
+		return this.attackTime;
 	}
   	
     //clear AI
@@ -721,15 +743,14 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   	    //play entity attack sound
   	    if (this.getRNG().nextInt(10) > 8)
   	    {
-  	    	//TODO sound event
-//  	    	this.playSound(Reference.MOD_ID+":ship-waka_attack", ConfigHandler.volumeShip * 0.5F, 1F);
+  	    	this.playSound(ModSounds.SHIP_WAKA_ATTACK, this.getSoundVolume(), this.getSoundPitch());
   	    }
   	    
   	    //if attack success
   	    if (isTargetHurt)
   	    {
   	        //send packet to client for display partical effect   
-  	        if (!worldObj.isRemote)
+  	        if (!world.isRemote)
   	        {
   	        	TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
   	    		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 1, false), point);
@@ -756,20 +777,20 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
     {
 		float atkLight = CalcHelper.calcDamageBySpecialEffect(this, target, this.host.getStateFinal(ID.ATK), 0);
 
-		//TODO sound event
-//		//play cannon fire sound at attacker
-//        playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.volumeFire, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-//        //play entity attack sound
-//        if(this.rand.nextInt(10) > 8)
-//        {
-//        	this.playSound(Reference.MOD_ID+":ship-waka_attack", ConfigHandler.volumeShip * 0.5F, 1F);
-//        }
+		//play cannon fire sound at attacker
+		this.playSound(ModSounds.SHIP_FIRELIGHT, ConfigHandler.volumeFire, this.getSoundPitch() * 0.85F);
+	        
+        //play entity attack sound
+        if(this.rand.nextInt(10) > 8)
+        {
+        	this.playSound(ModSounds.SHIP_WAKA_ATTACK, this.getSoundVolume(), this.getSoundPitch());
+        }
         
         //此方法比getLook還正確 (client sync問題)
         float distX = (float) (target.posX - this.posX);
         float distY = (float) (target.posY - this.posY);
         float distZ = (float) (target.posZ - this.posZ);
-        float distSqrt = MathHelper.sqrt_float(distX*distX + distY*distY + distZ*distZ);
+        float distSqrt = MathHelper.sqrt(distX*distX + distY*distY + distZ*distZ);
         distX = distX / distSqrt;
         distY = distY / distSqrt;
         distZ = distZ / distSqrt;
@@ -896,15 +917,15 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		float atkHeavy = this.host.getStateFinal(ID.ATK_H);
 		float kbValue = 0.08F;
 		
-		//TODO sound event
-//		//play cannon fire sound at attacker
-//        this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.volumeFire, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-//        //play entity attack sound
-//        if (this.rand.nextInt(10) > 8)
-//        {
-//        	this.playSound(Reference.MOD_ID+":ship-waka_attack", ConfigHandler.volumeShip * 0.5F, 1F);
-//        }
+		//play cannon fire sound at attacker
+		this.playSound(ModSounds.SHIP_FIREHEAVY, ConfigHandler.volumeFire, this.getSoundPitch() * 0.85F);
         
+        //play entity attack sound
+        if(this.rand.nextInt(10) > 8)
+        {
+        	this.playSound(ModSounds.SHIP_WAKA_ATTACK, this.getSoundVolume(), this.getSoundPitch());
+        }
+
         //飛彈是否採用直射
   		boolean isDirect = false;
   		//計算目標距離
@@ -914,7 +935,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   		float distX = tarX - (float)this.posX;
   		float distY = tarY - (float)this.posY;
   		float distZ = tarZ - (float)this.posZ;
-        float distSqrt = MathHelper.sqrt_float(distX*distX + distY*distY + distZ*distZ);
+        float distSqrt = MathHelper.sqrt(distX*distX + distY*distY + distZ*distZ);
         float launchPos = (float)posY + height * 0.7F;
           
         //超過一定距離/水中 , 則採用拋物線,  在水中時發射高度較低
@@ -961,9 +982,9 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
         }
 
         //spawn missile
-        EntityAbyssMissile missile = new EntityAbyssMissile(this.worldObj, this.host, 
+        EntityAbyssMissile missile = new EntityAbyssMissile(this.world, this.host, 
         		tarX, tarY+target.height*0.2F, tarZ, launchPos, atkHeavy, kbValue, isDirect, -1F);
-        this.worldObj.spawnEntityInWorld(missile);
+        this.world.spawnEntity(missile);
   		
 	    //show emotes
   	    if (host != null)
@@ -1168,19 +1189,6 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	{
 		return this.shipMoveHelper;
 	}
-	
-	//update ship move helper
-	@Override
-	protected void updateAITasks()
-	{
-		if (stopAI)
-		{
-			return;
-		}
-		
-		super.updateAITasks();
-        EntityHelper.updateShipNavigator(this);
-    }
 
 	@Override
 	public boolean canFly()
@@ -1237,7 +1245,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		}
 		
 		//若是server則發送sync packet
-		if (!this.worldObj.isRemote)
+		if (!this.world.isRemote)
 		{
 			this.sendSyncPacket(1);
 		}
@@ -1248,14 +1256,14 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	{
 		getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(host.getStateFinal(ID.HP) * 0.5D);
 		getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(this.getMoveSpeed());
-		getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(this.getAttackRange() + 32); //此為找目標, 路徑的範圍
+		getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(40);
 		getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue((float)host.getLevel() * 0.005F);
 	}
 	
 	@Override
-	public void setEntitySit()
+	public void setEntitySit(boolean sit)
 	{
-		if (this.host != null) host.setEntitySit();
+		if (this.host != null) host.setEntitySit(sit);
 	}
 	
 	/** sync packet
@@ -1264,7 +1272,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	 */
 	public void sendSyncPacket(int type)
 	{
-		if (!worldObj.isRemote)
+		if (!world.isRemote)
 		{
 			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
 			
@@ -1409,15 +1417,21 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
     }
   	
   	@Override
-	public int getAttackAniTick()
+	public int getAttackTick2()
   	{
-		return this.StartEmotion3;
+		return this.attackTime2;
 	}
+  	
+  	@Override
+	public void setAttackTick(int par1)
+  	{
+  		this.attackTime = par1;
+  	}
 
 	@Override
-	public void setAttackAniTick(int par1)
+	public void setAttackTick2(int par1)
 	{
-		this.StartEmotion3 = par1;
+		this.attackTime2 = par1;
 	}
 	
 	@Override
@@ -1428,14 +1442,14 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	
 	//get last waypoint, for waypoint loop checking
   	@Override
-  	public int[] getLastWaypoint()
+  	public BlockPos getLastWaypoint()
   	{
   		if (this.host != null) return this.host.getLastWaypoint();
-  		return new int[] {0, 0, 0};
+  		return BlockPos.ORIGIN;
   	}
   	
   	@Override
-  	public void setLastWaypoint(int[] pos)
+  	public void setLastWaypoint(BlockPos pos)
   	{
   		if (this.host != null) this.host.setLastWaypoint(pos);
   	}
@@ -1459,6 +1473,16 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	{
 		if (this.host != null) host.setStateTimer(ID.T.WpStayTime, time);
 	}
+	
+	//for model display
+	@Override
+	public int getRidingState()
+	{
+		return 0;
+	}
+	
+	@Override
+	public void setRidingState(int state) {}
     
 	
 }

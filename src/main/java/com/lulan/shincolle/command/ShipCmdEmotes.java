@@ -7,6 +7,9 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import com.lulan.shincolle.network.S2CSpawnParticle;
+import com.lulan.shincolle.proxy.CommonProxy;
+
 import net.minecraft.block.Block;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -18,9 +21,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
-
-import com.lulan.shincolle.network.S2CSpawnParticle;
-import com.lulan.shincolle.proxy.CommonProxy;
 
 /** Command: /shipemotes
  * 
@@ -130,21 +130,21 @@ public class ShipCmdEmotes extends CommandBase
 
     /** command name */
 	@Override
-	public String getCommandName()
+	public String getName()
 	{
 		return "shipemotes";
 	}
 	
 	/** command alias */
 	@Override
-	public List getCommandAliases()
+	public List<String> getAliases()
 	{
 		return this.Aliases;
 	}
 
 	/** command guide text */
 	@Override
-	public String getCommandUsage(ICommandSender sender)
+	public String getUsage(ICommandSender sender)
 	{
 		String cmdhelp = "/shipemotes [";
 		
@@ -167,7 +167,7 @@ public class ShipCmdEmotes extends CommandBase
 	
 	/** parms auto input method */
 	@Override
-	public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos)
+	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos)
     {
         return getListOfStringsMatchingLastWord(args, EmoNameArray);
     }
@@ -271,9 +271,6 @@ public class ShipCmdEmotes extends CommandBase
 		
 		return 0;
 	}
-	
+
 	
 }
-
-
-

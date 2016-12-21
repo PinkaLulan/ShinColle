@@ -120,7 +120,7 @@ public class ServerProxy extends CommonProxy
 			if (ship != null)
 			{
 				this.entityID = ship.getEntityId();
-				this.worldID = ship.worldObj.provider.getDimension();
+				this.worldID = ship.world.provider.getDimension();
 				this.isDead = ship.isDead;
 				this.posX = (int) ship.posX;
 				this.posY = (int) ship.posY;
@@ -309,7 +309,7 @@ public class ServerProxy extends CommonProxy
 	
 	public static WorldServer[] getServerWorld()
 	{
-		return getServer().worldServers;
+		return getServer().worlds;
 	}
 	
 	public static WorldServer getServerWorld(int worldID)
@@ -647,8 +647,8 @@ public class ServerProxy extends CommonProxy
 		//update ship data
 		if (uid > 0)
 		{
-			LogHelper.debug("DEBUG : update ship: update ship id "+uid+" eid: "+ship.getEntityId()+" world: "+ship.worldObj.provider.getDimension());
-			ShipCacheData sdata = new ShipCacheData(ship.getEntityId(), ship.worldObj.provider.getDimension(),
+			LogHelper.debug("DEBUG : update ship: update ship id "+uid+" eid: "+ship.getEntityId()+" world: "+ship.world.provider.getDimension());
+			ShipCacheData sdata = new ShipCacheData(ship.getEntityId(), ship.world.provider.getDimension(),
 					ship.isDead, ship.posX, ship.posY, ship.posZ, ship.writeToNBT(new NBTTagCompound()));
 
 			setShipWorldData(uid, sdata);	//cache in server proxy
@@ -671,9 +671,9 @@ public class ServerProxy extends CommonProxy
 			//set init value
 			if (uid <= 0) uid = 100;	//ship id init value = 100
 			
-			LogHelper.debug("DEBUG : update ship: create sid: "+uid+" eid: "+ship.getEntityId()+" world: "+ship.worldObj.provider.getDimension());
+			LogHelper.debug("DEBUG : update ship: create sid: "+uid+" eid: "+ship.getEntityId()+" world: "+ship.world.provider.getDimension());
 			ship.setShipUID(uid);
-			ShipCacheData sdata = new ShipCacheData(ship.getEntityId(), ship.worldObj.provider.getDimension(),
+			ShipCacheData sdata = new ShipCacheData(ship.getEntityId(), ship.world.provider.getDimension(),
 					ship.isDead, ship.posX, ship.posY, ship.posZ, ship.writeToNBT(new NBTTagCompound()));
 	
 			setShipWorldData(uid, sdata);	//cache in server proxy
@@ -793,7 +793,7 @@ public class ServerProxy extends CommonProxy
 							EntityPlayer player = playerByPUID.get(pid);
 							
 							//check same dimension
-							if (player != null && player.worldObj.provider.getDimension() == ship.worldObj.provider.getDimension())
+							if (player != null && player.world.provider.getDimension() == ship.world.provider.getDimension())
 							{
 						    	//add ship's entity id to player's shipList
 						    	List shipList = shipListByPlayer.get(pid);

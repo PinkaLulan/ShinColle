@@ -69,5 +69,11 @@ public class EntityAirplaneZeroHostile extends EntityAirplaneZero
         }
 	}
 	
+	@Override
+    public boolean isNonBoss()
+    {
+        return false;
+    }
+	
 
 }

@@ -326,7 +326,7 @@ public class TileEntitySmallShipyard extends BasicTileInventory implements ITile
 //		}
 
 		//server side
-		if (!worldObj.isRemote)
+		if (!world.isRemote)
 		{
 			this.syncTime++;
 			
@@ -413,7 +413,7 @@ public class TileEntitySmallShipyard extends BasicTileInventory implements ITile
 			{
 				this.syncTime = 0;
 				//update blockstate & send packet
-				BlockSmallShipyard.updateBlockState(this.isBuilding(), this.worldObj, this.pos);
+				BlockSmallShipyard.updateBlockState(this.isBuilding(), this.world, this.pos);
 				//標記此方塊要更新, 以保證資料會存到硬碟
 				this.markDirty();
 			}

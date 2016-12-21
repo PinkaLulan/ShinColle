@@ -206,7 +206,7 @@ public class ShipSpawnEgg extends BasicItem
         int entityType = 0;
   		
         //server side
-    	if (player != null && !player.worldObj.isRemote)
+    	if (player != null && !player.world.isRemote)
     	{
     		//check player is real player
     		if (checkPlayer)
@@ -221,9 +221,9 @@ public class ShipSpawnEgg extends BasicItem
             
             if (EntityList.NAME_TO_CLASS.containsKey(entityToSpawnName))
             {
-                entityToSpawn = (EntityLiving) EntityList.createEntityByName(entityToSpawnName, player.worldObj);
-                entityToSpawn.setLocationAndAngles(pos.getX(), pos.getY(), pos.getZ(), MathHelper.wrapDegrees(player.worldObj.rand.nextFloat()* 360F), 0F);
-                player.worldObj.spawnEntityInWorld(entityToSpawn);
+                entityToSpawn = (EntityLiving) EntityList.createEntityByName(entityToSpawnName, player.world);
+                entityToSpawn.setLocationAndAngles(pos.getX(), pos.getY(), pos.getZ(), MathHelper.wrapDegrees(player.world.rand.nextFloat()* 360F), 0F);
+                player.world.spawnEntity(entityToSpawn);
                 entityToSpawn.playLivingSound();
             }
             else
@@ -437,7 +437,7 @@ public class ShipSpawnEgg extends BasicItem
                         	if (player.experienceLevel < costLevel)
                         	{
                         		//TODO use local lang string!
-                        		player.addChatMessage(new TextComponentString("LEVEL is too LOW!"));
+                        		player.sendMessage(new TextComponentString("LEVEL is too LOW!"));
                         		return new ActionResult(EnumActionResult.FAIL, stack);
                         	}
                         	else

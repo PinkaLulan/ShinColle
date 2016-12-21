@@ -61,6 +61,7 @@ public class EntityDestroyerI extends BasicEntityShipSmall
 	public void setAIList()
 	{
 		super.setAIList();
+		
 		//use range attack (light)
 		this.tasks.addTask(11, new EntityAIShipRangeAttack(this));
 		
@@ -74,7 +75,7 @@ public class EntityDestroyerI extends BasicEntityShipSmall
   	{
   		super.onLivingUpdate();
           
-  		if (!worldObj.isRemote)
+  		if (!world.isRemote)
   		{
   			//add aura to master every 128 ticks
   			if (this.ticksExisted % 128 == 0)

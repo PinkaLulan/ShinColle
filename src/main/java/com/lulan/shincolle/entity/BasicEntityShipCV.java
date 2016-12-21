@@ -69,7 +69,7 @@ abstract public class BasicEntityShipCV extends BasicEntityShip implements IShip
 	@Override
 	public void setNumAircraftLight(int par1)
 	{
-		if (this.worldObj.isRemote)
+		if (this.world.isRemote)
 		{	//client端沒有max值可以判定, 因此直接設定即可
 			StateMinor[ID.M.NumAirLight] = par1;
 		}
@@ -84,7 +84,7 @@ abstract public class BasicEntityShipCV extends BasicEntityShip implements IShip
 	@Override
 	public void setNumAircraftHeavy(int par1)
 	{
-		if (this.worldObj.isRemote)
+		if (this.world.isRemote)
 		{	//client端沒有max值可以判定, 因此直接設定即可
 			StateMinor[ID.M.NumAirHeavy] = par1;
 		}
@@ -102,7 +102,7 @@ abstract public class BasicEntityShipCV extends BasicEntityShip implements IShip
 		super.onLivingUpdate();
 		
 		//server side
-		if (!this.worldObj.isRemote)
+		if (!this.world.isRemote)
 		{
 			//每一段時間回復一隻艦載機
 			delayAircraft--;
@@ -156,11 +156,11 @@ abstract public class BasicEntityShipCV extends BasicEntityShip implements IShip
 	{
 		if (isLightAirplane)
 		{
-			return new EntityAirplane(this.worldObj);
+			return new EntityAirplane(this.world);
 		}
 		else
 		{
-			return new EntityAirplaneTakoyaki(this.worldObj);
+			return new EntityAirplaneTakoyaki(this.world);
 		}
 	}
 	
@@ -197,7 +197,7 @@ abstract public class BasicEntityShipCV extends BasicEntityShip implements IShip
     	double summonHeight = this.posY + launchHeight;
     	
     	//check the summon block
-    	if (!BlockHelper.checkBlockSafe(worldObj, (int)posX, (int)(posY+launchHeight), (int)(posZ)))
+    	if (!BlockHelper.checkBlockSafe(world, (int)posX, (int)(posY+launchHeight), (int)(posZ)))
     	{
     		summonHeight = posY + 1D;
     	}
@@ -210,7 +210,7 @@ abstract public class BasicEntityShipCV extends BasicEntityShip implements IShip
     	//spawn airplane
     	BasicEntityAirplane plane = getAttackAirplane(true);
         plane.initAttrs(this, target, summonHeight);
-    	this.worldObj.spawnEntityInWorld(plane);
+    	this.world.spawnEntity(plane);
     	
     	//play target effect
     	applySoundAtTarget(3, target);
@@ -253,7 +253,7 @@ abstract public class BasicEntityShipCV extends BasicEntityShip implements IShip
     	double summonHeight = this.posY + launchHeight;
     	
     	//check the summon block
-    	if (!BlockHelper.checkBlockSafe(worldObj, (int)posX, (int)(posY+launchHeight), (int)(posZ)))
+    	if (!BlockHelper.checkBlockSafe(world, (int)posX, (int)(posY+launchHeight), (int)(posZ)))
     	{
     		summonHeight = posY + 0.5D;
     	}
@@ -266,7 +266,7 @@ abstract public class BasicEntityShipCV extends BasicEntityShip implements IShip
     	//spawn airplane
     	BasicEntityAirplane plane = getAttackAirplane(false);
     	plane.initAttrs(this, target, summonHeight);
-    	this.worldObj.spawnEntityInWorld(plane);
+    	this.world.spawnEntity(plane);
     	
     	//play target effect
     	applySoundAtTarget(4, target);

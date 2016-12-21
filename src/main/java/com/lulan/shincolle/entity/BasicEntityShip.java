@@ -38,6 +38,7 @@ import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.item.IShipCombatRation;
 import com.lulan.shincolle.item.IShipFoodItem;
 import com.lulan.shincolle.item.OwnerPaper;
+import com.lulan.shincolle.item.PointerItem;
 import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CGUIPackets;
@@ -122,7 +123,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	 */
 	protected int[] StateMinor;
 	/** timer array: 0:RevengeTime 1:CraneTime 2:ImmuneTime 3:CraneDelay 4:WpStayTime 5:Emotion3Time
+	 *               6:sound cd 7:FaceTick 8:HeadTilt 9:MoraleTime 10:EmoteDelay 11:LastCombatTime
+	 *               12:
 	 */
+	/** EmotionTicks: 0:FaceTick 1:HeadTiltTick 2:AttackEmoCount 3:MoraleTick 4:EmoParticle CD
+	 *                5:LastAttackTime */
 	protected int[] StateTimer;
 	/** equip effect: 0:critical 1:doubleHit 2:tripleHit 3:baseMiss 4:atk_AntiAir 5:atk_AntiSS 6:dodge*/
 	protected float[] EffectEquip;
@@ -149,15 +154,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	protected float[] ModelPos;
 	/** Update Flag: 0:FormationBuff */
 	protected boolean[] UpdateFlag;
+	/** waypoints: 0:last wp */
+	protected BlockPos[] waypoints;
 	/** owner name */
 	public String ownerName;
 	
 	//for model render
-	/** EmotionTicks: 0:FaceTick 1:HeadTiltTick 2:AttackEmoCount 3:MoraleTick 4:EmoParticle CD
-	 *                5:LastAttackTime */
-	protected int[] EmotionTicks;		//表情開始時間 or 表情計時時間
 	protected float[] rotateAngle;		//模型旋轉角度, 用於手持物品render
-	public int soundCD;		//sound ticks
 	
 	//for initial
 	private boolean initAI, initWaitAI;	//init flag
@@ -177,7 +180,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		super(world);
 		this.ignoreFrustumCheck = true;  //即使不在視線內一樣render
 		this.maxHurtResistantTime = 2;   //受傷無敵時間降為2 ticks
-		this.soundCD = 0;
 		this.ownerName = "";
 
 		//init value
@@ -196,7 +198,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				                     -1, 0,  0,  0,  0,
 				                     -1, -1, -1, 0,  0
 				                    };
-		this.StateTimer = new int[] {0,  0,  0,  0,  0,  0};
+		this.StateTimer = new int[] {0, 0, 0, 0, 0,
+									 0, 0, 0, 0, 0,
+									 0, 0};
 		this.EffectEquip = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F};
 		this.EffectEquipBU = this.EffectEquip.clone();
 		this.EffectFormation = new float[] {0F, 0F, 0F, 0F, 0F,
@@ -214,6 +218,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.BonusPoint = new byte[] {0, 0, 0, 0, 0, 0};
 		this.TypeModify = new float[] {1F, 1F, 1F, 1F, 1F, 1F};
 		this.ModelPos = new float[] {0F, 0F, 0F, 50F};
+		this.waypoints = new BlockPos[] {BlockPos.ORIGIN};
 		
 		//for AI
 		this.ShipDepth = 0D;			//water block above ship (within ship position)
@@ -223,7 +228,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.stepHeight = 1F;
 		
 		//for render
-		this.EmotionTicks = new int[] {0, 0, 0, 0, 0, 0};
 		this.rotateAngle = new float[] {0F, 0F, 0F};		//model rotate angle (right hand)
 		
 		//for init
@@ -238,12 +242,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		//choice random sensitive body part
 		randomSensitiveBody();
 		
-	}
-	
-	@Override
-    protected void applyEntityAttributes()
-	{
-		super.applyEntityAttributes(); //TODO apply attrs here: hp, kb value?
 	}
 	
 	@Override
@@ -293,7 +291,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	/** init values, called in the end of constructor */
 	protected void postInit()
 	{
-		this.shipNavigator = new ShipPathNavigate(this, worldObj);
+		this.shipNavigator = new ShipPathNavigate(this, world);
 		this.shipMoveHelper = new ShipMoveHelper(this, 60F);
 		this.initTypeModify();
 	}
@@ -301,7 +299,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	//check world time is 0~23 hour, -1 for fail
 	private int getWorldHourTime()
 	{
-		long time = this.worldObj.provider.getWorldTime();
+		long time = this.world.provider.getWorldTime();
     	int checkTime = (int) (time % 1000L);
     	
     	if (checkTime == 0)
@@ -316,10 +314,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	 * type: 0:idle, 1:hit, 2:hurt, 3:dead, 4:marry, 5:knockback, 6:item, 7:feed, 10~33:timekeep
 	 */
     @Nullable
-    public SoundEvent getCustomSound(int type)
+    public static SoundEvent getCustomSound(int type, BasicEntityShip ship)
     {
     	//get custom sound rate
-		int key = (int) getShipClass() + 2;
+		int key = ship.getShipClass() + 2;
 		float[] rate = ConfigHandler.configSound.SOUNDRATE.get(key);
 		int typeKey = key * 100 + type;
 		int typeTemp = type;
@@ -335,7 +333,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		{
 			SoundEvent sound = ModSounds.CUSTOM_SOUND.get(typeKey);
 			
-			if (sound != null && this.rand.nextFloat() < rate[type])
+			if (sound != null && ship.rand.nextFloat() < rate[type])
 			{
 				return sound;
 			}
@@ -424,21 +422,21 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     @Nullable
     protected SoundEvent getAmbientSound()
     {
-		return getCustomSound(0);
+		return getCustomSound(0, this);
     }
     
     @Override
     @Nullable
     protected SoundEvent getHurtSound()
     {
-    	return getCustomSound(2);
+    	return getCustomSound(2, this);
     }
     
     @Override
     @Nullable
     protected SoundEvent getDeathSound()
     {
-        return getCustomSound(3);
+        return getCustomSound(3, this);
     }
 	
     /**
@@ -458,7 +456,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		{
 			if (rand.nextInt(5) == 0)
 			{
-				sound = getCustomSound(4);
+				sound = getCustomSound(4, this);
 			}
 			else
 			{
@@ -482,9 +480,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	@Override
     protected void playHurtSound(DamageSource source)
     {
-    	if (this.soundCD <= 0)
+    	if (this.StateTimer[ID.T.SoundTime] <= 0)
     	{
-    		this.soundCD = 20 + this.getRNG().nextInt(30);
+    		this.StateTimer[ID.T.SoundTime] = 20 + this.getRNG().nextInt(30);
     		super.playHurtSound(source);
     	}
     }
@@ -492,7 +490,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	//timekeeping method
 	protected void playTimeSound(int hour)
 	{
-		SoundEvent sound = this.getCustomSound(hour + 10);
+		SoundEvent sound = this.getCustomSound(hour + 10, this);
 
 		//play sound
 		if (sound != null)
@@ -684,37 +682,43 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	@Override
 	public int getFaceTick()
 	{
-		return this.EmotionTicks[0];
+		return this.StateTimer[ID.T.FaceTime];
 	}
 	
 	@Override
 	public int getHeadTiltTick()
 	{
-		return this.EmotionTicks[1];
+		return this.StateTimer[ID.T.HeadTilt];
 	}
 	
 	@Override
-	public int getAttackAniTick()
+	public int getAttackTick()
 	{
-		return this.EmotionTicks[2];
+		return this.StateTimer[ID.T.AttackTime];
+	}
+	
+	@Override
+	public int getAttackTick2()
+	{
+		return this.StateTimer[ID.T.AttackTime2];
 	}
 	
 	//last caress time
 	public int getMoraleTick()
 	{
-		return this.EmotionTicks[3];
+		return this.StateTimer[ID.T.MoraleTime];
 	}
 	
 	//emotes CD
 	public int getEmotesTick()
 	{
-		return this.EmotionTicks[4];
+		return this.StateTimer[ID.T.EmoteDelay];
 	}
 	
 	//last attack time
 	public int getCombatTick()
 	{
-		return this.EmotionTicks[5];
+		return this.StateTimer[ID.T.LastCombat];
 	}
 	
 	/** 被pointer item點到的高度, 以百分比值表示 */
@@ -738,13 +742,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	public int getTickExisted()
 	{
 		return this.ticksExisted;
-	}
-	
-	@Override
-	public int getAttackTime()
-	{
-//		return this.attackTime; TODO 新增不只一個timer, 以便進行不同攻擊動作的計時?
-		return 0;
 	}
 	
 	@Override
@@ -1128,11 +1125,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		 */
 		getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(StateFinal[ID.HP]);
 		getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(StateFinal[ID.MOV]);
-		getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(StateFinal[ID.HIT]+32); //此為找目標, 路徑的範圍
+		getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(40);
 		getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(resisKB);
 		
 		//for server side, sync data to client
-		if (!worldObj.isRemote)
+		if (!world.isRemote)
 		{
 			sendSyncPacketAllValue();
 			sendSyncPacketUnbuffValue();
@@ -1159,7 +1156,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				//level up sound
 				if (this.rand.nextInt(4) == 0)
 				{
-					this.worldObj.playSound(null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_PLAYER_LEVELUP, this.getSoundCategory(), 0.75F, 1F);
+					this.world.playSound(null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_PLAYER_LEVELUP, this.getSoundCategory(), 0.75F, 1F);
 				}
 				else
 				{
@@ -1299,22 +1296,40 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	}
 	
 	@Override
-	public void setEntitySit()
+	public void setEntitySit(boolean sit)
 	{
-		this.setSitting(!this.isSitting());
-        this.isJumping = false;
-        this.getShipNavigate().clearPathEntity();
-        this.getNavigator().clearPathEntity();
-        this.setAttackTarget(null);
-        this.setEntityTarget(null);
+		this.setSitting(sit);
+		
+		//若設定為坐下, 則清空路徑跟攻擊目標
+		if (sit)
+		{
+	        this.isJumping = false;
+	        this.getShipNavigate().clearPathEntity();
+	        this.getNavigator().clearPathEntity();
+	        this.setAttackTarget(null);
+	        this.setEntityTarget(null);
+		}
+	}
+	
+	public void setRiderAndMountSit()
+	{
+		//loop all mount to set sitting
+		Entity mount = this.getRidingEntity();
+		while (mount instanceof BasicEntityShip)
+		{
+			((BasicEntityShip) mount).setEntitySit(this.isSitting());
+			mount = mount.getRidingEntity();
+		}
         
-        if (this.getRidingEntity() instanceof BasicEntityMount)
-        {
-        	BasicEntityMount mount = (BasicEntityMount) this.getRidingEntity();
-        	mount.getShipNavigate().clearPathEntity();
-        	mount.getNavigator().clearPathEntity();
-        	mount.setEntityTarget(null);
-        }
+		//set all rider sitting
+		List<Entity> rider = this.getPassengers();
+		for (Entity r : rider)
+		{
+			if (r instanceof BasicEntityShip)
+			{
+				((BasicEntityShip) r).setEntitySit(this.isSitting());
+			}
+		}
 	}
 
 	//called when load nbt data or GUI click
@@ -1324,7 +1339,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.StateFlag[id] = par1;
 		
 		//若修改melee flag, 則reload AI
-		if (!this.worldObj.isRemote)
+		if (!this.world.isRemote)
 		{ 
 			if (id == ID.F.UseMelee)
 			{
@@ -1393,36 +1408,43 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	@Override
 	public void setFaceTick(int par1)
 	{
-		this.EmotionTicks[0] = par1;
+		this.StateTimer[ID.T.FaceTime] = par1;
 	}
 	
 	@Override
 	public void setHeadTiltTick(int par1)
 	{
-		this.EmotionTicks[1] = par1;
+		this.StateTimer[ID.T.HeadTilt] = par1;
 	}
 	
 	@Override
-	public void setAttackAniTick(int par1)
+	public void setAttackTick(int par1)
 	{
-		this.EmotionTicks[2] = par1;
+		this.StateTimer[ID.T.AttackTime] = par1;
+	}
+	
+	@Override
+	public void setAttackTick2(int par1)
+	{
+		this.StateTimer[ID.T.AttackTime2] = par1;
 	}
 	
 	//last caress time
 	public void setMoraleTick(int par1)
 	{
-		this.EmotionTicks[3] = par1;
+		this.StateTimer[ID.T.MoraleTime] = par1;
 	}
 	
 	//emotes CD
-	public void setEmotesTick(int par1) {
-		this.EmotionTicks[4] = par1;
+	public void setEmotesTick(int par1)
+	{
+		this.StateTimer[ID.T.EmoteDelay] = par1;
 	}
 	
 	//last attack time
 	public void setCombatTick(int par1)
 	{
-		this.EmotionTicks[5] = par1;
+		this.StateTimer[ID.T.LastCombat] = par1;
 	}
 	
 	/** 被pointer item點到的高度, 以百分比值表示 */
@@ -1515,7 +1537,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	/**  sync data for GUI display */
 	public void sendGUISyncPacket()
 	{
-		if (!this.worldObj.isRemote)
+		if (!this.world.isRemote)
 		{
 			if (this.getPlayerUID() > 0)
 			{
@@ -1556,7 +1578,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	 */
 	public void sendSyncPacket(byte type, boolean sendAll)
 	{
-		if (!worldObj.isRemote)
+		if (!world.isRemote)
 		{
 			//send to all player
 			if (sendAll)
@@ -1598,7 +1620,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		if (stack != null)
 		{
 			//use pointer item (caress head mode)
-			if (stack.getItem() == ModItems.PointerItem && !this.worldObj.isRemote)
+			if (stack.getItem() == ModItems.PointerItem && !this.world.isRemote)
 			{
 				//set ai target
 				this.aiTarget = player;
@@ -1684,7 +1706,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			{
 				
 				//client
-				if (worldObj.isRemote)
+				if (world.isRemote)
 				{
 					return EnumActionResult.SUCCESS;
 				}
@@ -1699,15 +1721,15 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	                    //set item amount
 	                    ItemStack[] items = ShipCalc.getKaitaiItems(this.getShipClass());
 	                                
-	                    EntityItem entityItem0 = new EntityItem(worldObj, posX+0.5D, posY+0.8D, posZ+0.5D, items[0]);
-	                    EntityItem entityItem1 = new EntityItem(worldObj, posX+0.5D, posY+0.8D, posZ-0.5D, items[1]);
-	                    EntityItem entityItem2 = new EntityItem(worldObj, posX-0.5D, posY+0.8D, posZ+0.5D, items[2]);
-	                    EntityItem entityItem3 = new EntityItem(worldObj, posX-0.5D, posY+0.8D, posZ-0.5D, items[3]);
+	                    EntityItem entityItem0 = new EntityItem(world, posX+0.5D, posY+0.8D, posZ+0.5D, items[0]);
+	                    EntityItem entityItem1 = new EntityItem(world, posX+0.5D, posY+0.8D, posZ-0.5D, items[1]);
+	                    EntityItem entityItem2 = new EntityItem(world, posX-0.5D, posY+0.8D, posZ+0.5D, items[2]);
+	                    EntityItem entityItem3 = new EntityItem(world, posX-0.5D, posY+0.8D, posZ-0.5D, items[3]);
 
-	                    worldObj.spawnEntityInWorld(entityItem0);
-	                    worldObj.spawnEntityInWorld(entityItem1);
-	                    worldObj.spawnEntityInWorld(entityItem2);
-	                    worldObj.spawnEntityInWorld(entityItem3);
+	                    world.spawnEntity(entityItem0);
+	                    world.spawnEntity(entityItem1);
+	                    world.spawnEntity(entityItem2);
+	                    world.spawnEntity(entityItem3);
 	                    
 	                    //drop inventory item
                     	for (int i = 0; i < this.itemHandler.getSlots(); i++)
@@ -1733,7 +1755,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
             						invitem.stackSize -= j;
             						
             						//將item做成entity, 生成到世界上
-            						EntityItem item = new EntityItem(this.worldObj, this.posX+f, this.posY+f1, this.posZ+f2, new ItemStack(invitem.getItem(), j, invitem.getItemDamage()));
+            						EntityItem item = new EntityItem(this.world, this.posX+f, this.posY+f1, this.posZ+f2, new ItemStack(invitem.getItem(), j, invitem.getItemDamage()));
             						
             						//如果有NBT tag, 也要複製到物品上
             						if (invitem.hasTagCompound())
@@ -1741,7 +1763,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
             							item.getEntityItem().setTagCompound((NBTTagCompound)invitem.getTagCompound().copy());
             						}
             						
-            						worldObj.spawnEntityInWorld(item);	//生成item entity
+            						world.spawnEntity(item);	//生成item entity
             					}
             				}
             			}
@@ -1761,7 +1783,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 					applyParticleEmotion(8);
 					
 					//emotes AOE
-					EntityHelper.applyShipEmotesAOE(this.worldObj, this.posX, this.posY, this.posZ, 10D, 6);
+					EntityHelper.applyShipEmotesAOE(this.world, this.posX, this.posY, this.posZ, 10D, 6);
 	                 
 	                this.setDead();
 	                
@@ -1794,7 +1816,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 3, false), point);
                 
     			//play marriage sound
-    			this.playSound(this.getCustomSound(4), this.getSoundVolume(), 1F);
+    			this.playSound(this.getCustomSound(4, this), this.getSoundVolume(), 1F);
     	        
     	        //add 3 random bonus point
     	        for (int i = 0; i < 3; ++i)
@@ -1828,7 +1850,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	                }
 					
 					//play marriage sound
-					this.playSound(this.getCustomSound(4), this.getSoundVolume(), 1F);
+					this.playSound(this.getCustomSound(4, this), this.getSoundVolume(), 1F);
 					
 					return EnumActionResult.SUCCESS;
 				}	
@@ -1849,7 +1871,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	        }//end lead
 			
 			//feed
-			if (!this.worldObj.isRemote && interactFeed(player, stack))
+			if (!this.world.isRemote && interactFeed(player, stack))
 			{
 				return EnumActionResult.SUCCESS;
 			}
@@ -1864,12 +1886,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         }
 	
 		//right click
-		if (!this.worldObj.isRemote && TeamHelper.checkSameOwner(this, player))
+		if (!this.world.isRemote && TeamHelper.checkSameOwner(this, player))
 		{
 			//sneak: open GUI
 			if (player.isSneaking())
 			{
-				FMLNetworkHandler.openGui(player, ShinColle.instance, ID.Gui.SHIPINVENTORY, this.worldObj, this.getEntityId(), 0, 0);
+				FMLNetworkHandler.openGui(player, ShinColle.instance, ID.Gui.SHIPINVENTORY, this.world, this.getEntityId(), 0, 0);
 	    		return EnumActionResult.SUCCESS;
 			}
 			else
@@ -1881,25 +1903,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				}
 				else
 				{
-					this.setEntitySit();
-					
-					//loop all rider to set sitting
-					Entity rider = this.getRidingEntity();
-					while (rider instanceof BasicEntityShip)
-					{
-						((BasicEntityShip) rider).setEntitySit();
-						rider = rider.getRidingEntity();
-					}
-					//TODO set all passenger sit 注意要修改六驅騎乘模式為單層騎乘, 即雷電響全部設為曉passenger
-					//loop only first layer ridden entity to set sitting
-					List<Entity> ridden = this.getPassengers();
-					for (Entity r : ridden)
-					{
-						if (r instanceof BasicEntityShip)
-						{
-							((BasicEntityShip) r).setEntitySit();
-						}
-					}
+					this.setEntitySit(!this.isSitting());
+					setRiderAndMountSit();
 				}
 				
 				return EnumActionResult.SUCCESS;
@@ -1965,7 +1970,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		if (changeOwner)
 		{
 			//play marriage sound
-			this.playSound(this.getCustomSound(4), this.getSoundVolume(), 1F);
+			this.playSound(this.getCustomSound(4, this), this.getSoundVolume(), 1F);
 	        
 			player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
 			return true;
@@ -1997,9 +2002,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		if ((i instanceof ItemFood || i instanceof IShipFoodItem) &&
 			getFoodSaturation() >= getFoodSaturationMax())
 		{
-			if (this.EmotionTicks[4] <= 0)
+			if (this.getEmotesTick() <= 0)
 			{
-				this.EmotionTicks[4] = 40;
+				this.setEmotesTick(40);
 				switch (this.rand.nextInt(4))
 				{
 				case 1:
@@ -2099,10 +2104,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		if (type > 0)
 		{
 			//play sound
-			if (this.soundCD <= 0)
+			if (this.StateTimer[ID.T.SoundTime] <= 0)
 	    	{
-	    		this.soundCD = 20 + this.getRNG().nextInt(20);
-	    		this.playSound(this.getCustomSound(7), this.getSoundVolume(), this.getSoundPitch());
+	    		this.StateTimer[ID.T.SoundTime] = 20 + this.getRNG().nextInt(20);
+	    		this.playSound(this.getCustomSound(7, this), this.getSoundVolume(), this.getSoundPitch());
 	    	}
 			
 			//item--
@@ -2131,9 +2136,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			StateMinor[ID.M.NumAmmoHeavy] += addammoh;
 
 			//show eat emotion
-			if (this.EmotionTicks[4] <= 0)
+			if (this.getEmotesTick() <= 0)
 			{
-				this.EmotionTicks[4] = 40;
+				this.setEmotesTick(40);
 				
 				switch (this.rand.nextInt(3))
 				{
@@ -2217,7 +2222,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		updateBothSideTimer();
 		
 		//client side
-		if (this.worldObj.isRemote)
+		if (this.world.isRemote)
 		{
 			//有移動時, 產生水花特效
 			if (this.getShipDepth() > 0D && !isRiding())
@@ -2245,7 +2250,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			//request model display sync after construction
 			if (this.ticksExisted == 40)
 			{
-				CommonProxy.channelG.sendToServer(new C2SInputPackets(C2SInputPackets.PID.RequestSync_Model, this.getEntityId(), this.worldObj.provider.getDimension()));
+				CommonProxy.channelG.sendToServer(new C2SInputPackets(C2SInputPackets.PID.RequestSync_Model, this.getEntityId(), this.world.provider.getDimension()));
 			}
 			
 			//check every 2 ticks
@@ -2315,29 +2320,29 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 							//show circle particle on ship and guard target
 							if (player != null && player.dimension == this.getGuardedPos(3))
 							{
-//								ItemStack item = player.inventory.getCurrentItem(); TODO
-//								
-//								if (ConfigHandler.alwaysShowTeamParticle ||
-//									(item != null && item.getItem() instanceof PointerItem &&
-//									 item.getItemDamage() < 3))
-//								{
-//									//show friendly particle
-//									ParticleHelper.spawnAttackParticleAtEntity(this, 0.3D, 7D, 0D, (byte)2);
-//									
-//									//show guard particle
-//									//標記在entity上
-//									if (this.getGuardedEntity() != null)
-//									{
-//										ParticleHelper.spawnAttackParticleAtEntity(this.getGuardedEntity(), 0.3D, 6D, 0D, (byte)2);
-//										ParticleHelper.spawnAttackParticleAtEntity(this, this.getGuardedEntity(), 0D, 0D, 0D, (byte)3, false);
-//									}
-//									//標記在block上
-//									else if (this.getGuardedPos(1) >= 0)
-//									{
-//										ParticleHelper.spawnAttackParticleAt(this.getGuardedPos(0)+0.5D, this.getGuardedPos(1), this.getGuardedPos(2)+0.5D, 0.3D, 6D, 0D, (byte)25);
-//										ParticleHelper.spawnAttackParticleAtEntity(this, this.getGuardedPos(0)+0.5D, this.getGuardedPos(1)+0.2D, this.getGuardedPos(2)+0.5D, (byte)8);
-//									}
-//								}
+								ItemStack item = player.inventory.getCurrentItem();
+								
+								if (ConfigHandler.alwaysShowTeamParticle ||
+									(item != null && item.getItem() instanceof PointerItem &&
+									 item.getItemDamage() < 3))
+								{
+									//show friendly particle
+									ParticleHelper.spawnAttackParticleAtEntity(this, 0.3D, 7D, 0D, (byte)2);
+									
+									//show guard particle
+									//標記在entity上
+									if (this.getGuardedEntity() != null)
+									{
+										ParticleHelper.spawnAttackParticleAtEntity(this.getGuardedEntity(), 0.3D, 6D, 0D, (byte)2);
+										ParticleHelper.spawnAttackParticleAtEntity(this, this.getGuardedEntity(), 0D, 0D, 0D, (byte)3, false);
+									}
+									//標記在block上
+									else if (this.getGuardedPos(1) >= 0)
+									{
+										ParticleHelper.spawnAttackParticleAt(this.getGuardedPos(0)+0.5D, this.getGuardedPos(1), this.getGuardedPos(2)+0.5D, 0.3D, 6D, 0D, (byte)25);
+										ParticleHelper.spawnAttackParticleAtEntity(this, this.getGuardedPos(0)+0.5D, this.getGuardedPos(1)+0.2D, this.getGuardedPos(2)+0.5D, (byte)8);
+									}
+								}
 							}
 							else
 							{
@@ -2363,28 +2368,24 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	@Override
 	public void onLivingUpdate()
 	{
-		if ((!worldObj.isRemote))
-		{
-	    	//update movement, NOTE: 1.9.4: must done before vanilla MoveHelper updating in super.onLivingUpdate()
-	    	EntityHelper.updateShipNavigator(this);
-	        super.onLivingUpdate();
-		}
-		else
-		{
-			super.onLivingUpdate();
-		}
-
-        //debug TODO
-//        if(this.ticksExisted % 32 == 0) {
-//      	LogHelper.info("DEBUG : ship onUpdate: flag: side: "+this.worldObj.isRemote+" "+EffectEquip[ID.EF_CRI]);
-//        	float light = this.worldObj.getLightBrightness(MathHelper.floor_double(this.posX), (int)this.posY, MathHelper.floor_double(this.posZ));
-//  			float light2 = this.worldObj.getBlockLightValue(MathHelper.floor_double(this.posX), (int)this.posY, MathHelper.floor_double(this.posZ));
-//        	LogHelper.info("AAAAAAAAAAAA "+this.worldObj.isRemote+"  "+ModSounds.SHIP_HURT);
+//        //debug TODO
+//        if (this.ticksExisted % 32 == 0)
+//        {
+//        	LogHelper.debug("AAAAAAAAAAAA "+this.world.isRemote+"  "+this.getPassengers().size()+" "+
+//        					this.getRidingEntity());
+//        	if (this.getRidingEntity() != null)
+//        	{
+//        		LogHelper.debug("BBBBBBBBBBBB "+this.world.isRemote+"  "+this.getRidingEntity().getPassengers().get(0));
+//        	}
 //        }
         
         //server side check
-        if ((!worldObj.isRemote))
+        if ((!world.isRemote))
         {
+	    	//update movement, NOTE: 1.9.4: must done before vanilla MoveHelper updating in super.onLivingUpdate()
+	    	EntityHelper.updateShipNavigator(this);
+	        super.onLivingUpdate();
+	        
         	//update target
         	TargetHelper.updateTarget(this);
         	
@@ -2558,6 +2559,14 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	}//end timekeeping
         	
         }//end server side
+        //client side
+        else
+        {
+        	super.onLivingUpdate();
+        	
+        	//update client side timer
+        	updateClientTimer();
+        }
     }
 	
 	//use combat ration
@@ -2648,7 +2657,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         distVec[0] = (float) (target.posX - this.posX);
         distVec[1] = (float) (target.posY - this.posY);
         distVec[2] = (float) (target.posZ - this.posZ);
-        distVec[3] = MathHelper.sqrt_float(distVec[0]*distVec[0] + distVec[1]*distVec[1] + distVec[2]*distVec[2]);
+        distVec[3] = MathHelper.sqrt(distVec[0]*distVec[0] + distVec[1]*distVec[1] + distVec[2]*distVec[2]);
         
         distVec[0] = distVec[0] / distVec[3];
         distVec[1] = distVec[1] / distVec[3];
@@ -2756,7 +2765,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		distVec[0] = tarX - (float) this.posX;
         distVec[1] = tarY - (float) this.posY;
         distVec[2] = tarZ - (float) this.posZ;
-		distVec[3] = MathHelper.sqrt_float(distVec[0]*distVec[0] + distVec[1]*distVec[1] + distVec[2]*distVec[2]);
+		distVec[3] = MathHelper.sqrt(distVec[0]*distVec[0] + distVec[1]*distVec[1] + distVec[2]*distVec[2]);
         
         //超過一定距離/水中 , 則採用拋物線,  在水中時發射高度較低
         if (distVec[3] < 5F)
@@ -2802,9 +2811,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         }
         
         //spawn missile
-        EntityAbyssMissile missile = new EntityAbyssMissile(this.worldObj, this, 
+        EntityAbyssMissile missile = new EntityAbyssMissile(this.world, this, 
         		tarX, tarY+target.height*0.2F, tarZ, launchPos, atk, kbValue, isDirect, -1F);
-        this.worldObj.spawnEntityInWorld(missile);
+        this.world.spawnEntity(missile);
         
         //play target effect
         applySoundAtTarget(2, target);
@@ -2901,7 +2910,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			if (entity instanceof IShipAttackBase)
 			{
 				//get attack time for damage modifier setting (day, night or ...etc)
-				int modSet = this.worldObj.provider.isDaytime() ? 0 : 1;
+				int modSet = this.world.provider.isDaytime() ? 0 : 1;
 				reduceAtk = CalcHelper.calcDamageByType(reduceAtk, ((IShipAttackBase) entity).getDamageType(), this.getDamageType(), modSet);
 			}
 			
@@ -3040,9 +3049,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		//show emotes
 		if (showEmo)
 		{
-			if (this.EmotionTicks[4] <= 0)
+			if (this.getEmotesTick() <= 0)
 			{
-				this.EmotionTicks[4] = 40;
+				this.setEmotesTick(40);
 				
 				switch (this.rand.nextInt(4))
 				{
@@ -3063,9 +3072,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		if (StateMinor[ammoType] < amount)
 		{
 			//show emotes
-			if (this.EmotionTicks[4] <= 0)
+			if (this.getEmotesTick() <= 0)
 			{
-				this.EmotionTicks[4] = 20;
+				this.setEmotesTick(20);
 				
 				switch (this.rand.nextInt(7))
 				{
@@ -3260,9 +3269,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			}
 			
 			//show no fuel emotes
-			if (this.EmotionTicks[4] <= 0)
+			if (this.getEmotesTick() <= 0)
 			{
-				this.EmotionTicks[4] = 20;
+				this.setEmotesTick(20);
 				switch (this.rand.nextInt(7))
 				{
 				case 1:
@@ -3306,9 +3315,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			}
 			
 			//show recovery emotes
-			if (this.EmotionTicks[4] <= 0)
+			if (this.getEmotesTick() <= 0)
 			{
-				this.EmotionTicks[4] = 40;
+				this.setEmotesTick(40);
 				switch (this.rand.nextInt(5))
 				{
 				case 1:
@@ -3687,7 +3696,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	  			{
   	  				//summon mount entity
   	  	  			BasicEntityMount mount = this.summonMountEntity();
-  	  	  			this.worldObj.spawnEntityInWorld(mount);
+  	  	  			this.world.spawnEntity(mount);
   	  	  			
   	  	  			//clear rider
   	  	  			for (Entity p : this.getPassengers())
@@ -3724,7 +3733,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		double distZ = posZ - ShipPrevZ;
 		
 		//calc total consumption
-    	int valueConsume = (int) MathHelper.sqrt_double(distX*distX + distY*distY + distZ*distZ);
+    	int valueConsume = (int) MathHelper.sqrt(distX*distX + distY*distY + distZ*distZ);
     	if (ShipPrevY <= 0D) valueConsume = 0;  //do not decrGrudge if ShipPrev not inited
     	
     	//morale-- per 2 blocks
@@ -3760,7 +3769,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	protected void updateFormationBuffs()
   	{
   		//check update flag
-  		if (!worldObj.isRemote)
+  		if (!world.isRemote)
   		{
   			CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(this.getPlayerUID());
   			
@@ -3979,53 +3988,47 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		if (this.getStateMinor(ID.M.LevelSearchlight) > 0)
   		{
   			BlockPos pos = new BlockPos(this);
-			float light = this.worldObj.getLightFor(EnumSkyBlock.BLOCK, pos);
+			float light = this.world.getLightFor(EnumSkyBlock.BLOCK, pos);
 
 			//place new light block
   			if (light < 12F)
   			{
-				BlockHelper.placeLightBlock(this.worldObj, pos);
+				BlockHelper.placeLightBlock(this.world, pos);
   			}
   			//search light block, renew lifespan
   			else
   			{
-  				BlockHelper.updateNearbyLightBlock(this.worldObj, pos);
+  				BlockHelper.updateNearbyLightBlock(this.world, pos);
   			}
   		}
+  	}
+  	
+  	/** update client timer */
+  	protected void updateClientTimer()
+  	{
+  		//attack motion timer
+  		if (this.StateTimer[ID.T.AttackTime] > 0) this.StateTimer[ID.T.AttackTime]--;
   	}
   	
   	/** update server timer */
   	protected void updateServerTimer()
   	{
-  		//is immune state
-  		if (this.StateTimer[ID.T.ImmuneTime] > 0)
-  		{
-    		this.StateTimer[ID.T.ImmuneTime]--;
-    	}
-  		
-  		//is craning
-  		if (this.getStateMinor(ID.M.CraneState) > 1)
-  		{
-    		this.StateTimer[ID.T.CraneTime]++;
-    	}
+  		//immune timer
+  		if (this.StateTimer[ID.T.ImmuneTime] > 0) this.StateTimer[ID.T.ImmuneTime]--;
   		
   		//crane change state delay
-  		if (this.StateTimer[ID.T.CrandDelay] > 0)
-  		{
-    		this.StateTimer[ID.T.CrandDelay]--;
-    	}
-  	}
-  	
-  	/** update client timer */
-  	protected void updateBothSideTimer()
-  	{
+  		if (this.StateTimer[ID.T.CrandDelay] > 0) this.StateTimer[ID.T.CrandDelay]--;
+  		
+  		//craning timer
+  		if (this.getStateMinor(ID.M.CraneState) > 1) this.StateTimer[ID.T.CraneTime]++;
+  		
   		//hurt sound delay
-  		if (this.soundCD > 0) this.soundCD--;
+  		if (this.StateTimer[ID.T.SoundTime] > 0) this.StateTimer[ID.T.SoundTime]--;
 	
   		//emotes delay
-		if (this.EmotionTicks[4] > 0) this.EmotionTicks[4]--;
-		
-		//emotion 3 delay
+		if (this.StateTimer[ID.T.EmoteDelay] > 0) this.StateTimer[ID.T.EmoteDelay]--;
+  		
+		//caress reaction time
 		if (this.StateTimer[ID.T.Emotion3Time] > 0)
 		{
 			this.StateTimer[ID.T.Emotion3Time]--;
@@ -4035,6 +4038,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				this.setStateEmotion(ID.S.Emotion3, 0, true);
 			}
 		}
+  	}
+  	
+  	/** update both side timer */
+  	protected void updateBothSideTimer()
+  	{
   	}
   	
   	/** update rotate */
@@ -4452,7 +4460,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	  			if (ran.nextInt(6) == 0)
 	  			{
 	  				this.pushAITarget();
-	  				this.playSound(this.getCustomSound(5), this.getSoundVolume(), 1F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
+	  				this.playSound(this.getCustomSound(5, this), this.getSoundVolume(), 1F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
 	  			}
 	  		}
 	  		//other reaction
@@ -4477,7 +4485,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		  			if (ran.nextInt(8) == 0)
 		  			{
 		  				this.pushAITarget();
-		  				this.playSound(this.getCustomSound(5), this.getSoundVolume(), 1F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
+		  				this.playSound(this.getCustomSound(5, this), this.getSoundVolume(), 1F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
 		  			}
 					break;
 				default:
@@ -4515,7 +4523,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	  			if (ran.nextInt(2) == 0)
 	  			{
 	  				this.pushAITarget();
-	  				this.playSound(this.getCustomSound(5), this.getSoundVolume(), 1F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
+	  				this.playSound(this.getCustomSound(5, this), this.getSoundVolume(), 1F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
 	  			}
 	  			else if (this.aiTarget != null && ran.nextInt(8) == 0)
 	  			{
@@ -4548,7 +4556,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		  			if (ran.nextInt(4) == 0)
 		  			{
 		  				this.pushAITarget();
-		  				this.playSound(this.getCustomSound(5), this.getSoundVolume(), 1F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
+		  				this.playSound(this.getCustomSound(5, this), this.getSoundVolume(), 1F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
 		  			}
 					break;
 				default:
@@ -4581,7 +4589,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	  			
 	  			//push target
   				this.pushAITarget();
-  				this.playSound(this.getCustomSound(5), this.getSoundVolume(), 1F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
+  				this.playSound(this.getCustomSound(5, this), this.getSoundVolume(), 1F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
 			    
 			    if (this.aiTarget != null && ran.nextInt(3) == 0)
 			    {
@@ -4623,7 +4631,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		  			if (ran.nextInt(2) == 0)
 		  			{
 		  				this.pushAITarget();
-		  				this.playSound(this.getCustomSound(5), this.getSoundVolume(), 1F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
+		  				this.playSound(this.getCustomSound(5, this), this.getSoundVolume(), 1F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
 		  			}
 		  			else if (this.aiTarget != null && ran.nextInt(5) == 0)
 		  			{
@@ -4689,7 +4697,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   			if (rand.nextInt(2) == 0)
   			{
   				this.pushAITarget();
-  				this.playSound(this.getCustomSound(5), this.getSoundVolume(), 1F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
+  				this.playSound(this.getCustomSound(5, this), this.getSoundVolume(), 1F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
   			}
   			else if (this.aiTarget != null && rand.nextInt(4) == 0)
   			{
@@ -4731,7 +4739,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	  			if (rand.nextInt(4) == 0)
 	  			{
 	  				this.pushAITarget();
-	  				this.playSound(this.getCustomSound(5), this.getSoundVolume(), 1F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
+	  				this.playSound(this.getCustomSound(5, this), this.getSoundVolume(), 1F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
 	  			}
 	  			else if (this.aiTarget != null && rand.nextInt(8) == 0)
 	  			{
@@ -5144,37 +5152,37 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		switch (type)
   		{
   		case 1:  //caress head (no fuel / not owner)
-  			if (ran.nextInt(9) == 0 && this.EmotionTicks[4] <= 0)
+  			if (ran.nextInt(9) == 0 && this.getEmotesTick() <= 0)
   			{
-				this.EmotionTicks[4] = 60;
+				this.setEmotesTick(60);
 				reactionStranger();
 			}
   			break;
   		case 2:  //damaged
-  			if (this.EmotionTicks[4] <= 10)
+  			if (this.getEmotesTick() <= 10)
   			{
-				this.EmotionTicks[4] = 40;
+				this.setEmotesTick(40);
 				reactionDamaged();
 			}
   			break;
   		case 3:  //attack
-  			if (ran.nextInt(6) == 0 && this.EmotionTicks[4] <= 0)
+  			if (ran.nextInt(6) == 0 && this.getEmotesTick() <= 0)
   			{
-				this.EmotionTicks[4] = 60;
+				this.setEmotesTick(60);
 				reactionAttack();
 			}
   			break;
   		case 4:
-  			if (ran.nextInt(3) == 0 && this.EmotionTicks[4] <= 0)
+  			if (ran.nextInt(3) == 0 && this.getEmotesTick() <= 0)
   			{
-				this.EmotionTicks[4] = 20;
+				this.setEmotesTick(20);
 				reactionIdle();
 			}
   			break;
   		case 5:
-  			if (ran.nextInt(3) == 0 && this.EmotionTicks[4] <= 0)
+  			if (ran.nextInt(3) == 0 && this.getEmotesTick() <= 0)
   			{
-				this.EmotionTicks[4] = 25;
+				this.setEmotesTick(25);
 				reactionCommand();
 			}
   			break;
@@ -5182,9 +5190,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			reactionShock();
   			break;
   		default: //caress head (owner)
-  			if (ran.nextInt(7) == 0 && this.EmotionTicks[4] <= 0)
+  			if (ran.nextInt(7) == 0 && this.getEmotesTick() <= 0)
   			{
-				this.EmotionTicks[4] = 50;
+				this.setEmotesTick(50);
 				reactionNormal();
 			}
   			break;
@@ -5222,7 +5230,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		float h = isSitting() ? this.height * 0.4F : this.height * 0.45F;
   		
   		//server side emotes
-  		if (!this.worldObj.isRemote)
+  		if (!this.world.isRemote)
   		{
   			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
   	      	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 36, h, 0, type), point);
@@ -5303,7 +5311,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   			//entity sound
   			if (this.rand.nextInt(10) > 7)
   			{
-  				this.playSound(this.getCustomSound(1), this.getSoundVolume(), this.getSoundPitch());
+  				this.playSound(this.getCustomSound(1, this), this.getSoundVolume(), this.getSoundPitch());
   	        }
   		break;
   		case 2:  //heavy cannon
@@ -5312,7 +5320,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	        //entity sound
   	        if (this.getRNG().nextInt(10) > 7)
   	        {
-  	        	this.playSound(this.getCustomSound(1), this.getSoundVolume(), this.getSoundPitch());
+  	        	this.playSound(this.getCustomSound(1, this), this.getSoundVolume(), this.getSoundPitch());
   	        }
   		break;
   		case 3:  //light aircraft
@@ -5322,7 +5330,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		default: //melee
 			if (this.getRNG().nextInt(2) == 0)
 			{
-				this.playSound(this.getCustomSound(1), this.getSoundVolume(), this.getSoundPitch());
+				this.playSound(this.getCustomSound(1, this), this.getSoundVolume(), this.getSoundPitch());
 	        }
 		break;
   		}//end switch
@@ -5386,7 +5394,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	public void flareTarget(Entity target)
   	{
   		//server side, send flare packet
-  		if (!this.worldObj.isRemote)
+  		if (!this.world.isRemote)
   		{
   	  		if (this.getStateMinor(ID.M.LevelFlare) > 0 && target != null)
   	  		{
@@ -5408,7 +5416,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     }
 
   	
-  	/** release chunk loader ticket */ //TODO
+  	/** release chunk loader ticket */ //TODO need review
   	public void clearChunkLoader()
   	{
   		//unforce chunk
@@ -5433,7 +5441,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	/** chunk loader ticking */
   	public void updateChunkLoader()
   	{
-  		if (!this.worldObj.isRemote)
+  		if (!this.world.isRemote)
   		{
   			//set ticket
   	  		setChunkLoader();
@@ -5464,7 +5472,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   				if (player != null && this.chunkTicket == null)
   				{
 					//get ticket
-			  		this.chunkTicket = ForgeChunkManager.requestPlayerTicket(ShinColle.instance, player.getDisplayNameString(), worldObj, ForgeChunkManager.Type.ENTITY);
+			  		this.chunkTicket = ForgeChunkManager.requestPlayerTicket(ShinColle.instance, player.getDisplayNameString(), world, ForgeChunkManager.Type.ENTITY);
   				
 			  		if (this.chunkTicket != null)
 			  		{
@@ -5494,11 +5502,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   			HashSet<ChunkPos> tempChunks = new HashSet<ChunkPos>();
   			
   			//get chunk x,z
-  			int cx = MathHelper.floor_double(this.posX) >> 4;
-			int cz = MathHelper.floor_double(this.posZ) >> 4;
+  			int cx = MathHelper.floor(this.posX) >> 4;
+			int cz = MathHelper.floor(this.posZ) >> 4;
 			
   			//get new chunk
-			loadChunks = BlockHelper.getChunksWithinRange(worldObj, cx, cz, ConfigHandler.chunkloaderMode);
+			loadChunks = BlockHelper.getChunksWithinRange(world, cx, cz, ConfigHandler.chunkloaderMode);
   			
 			//get unload chunk
 			if (this.chunks != null)
@@ -5535,20 +5543,15 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	
   	//get last waypoint, for waypoint loop checking
   	@Override
-  	public int[] getLastWaypoint()
+  	public BlockPos getLastWaypoint()
   	{
-  		return new int[] {StateMinor[ID.M.LastX], StateMinor[ID.M.LastY], StateMinor[ID.M.LastZ]};
+  		return this.waypoints[0];
   	}
   	
   	@Override
-  	public void setLastWaypoint(int[] pos)
+  	public void setLastWaypoint(BlockPos pos)
   	{
-  		if (pos != null)
-  		{
-  			StateMinor[ID.M.LastX] = pos[0];
-  			StateMinor[ID.M.LastY] = pos[1];
-  			StateMinor[ID.M.LastZ] = pos[2];
-  		}
+  		this.waypoints[0] = pos;
   	}
   	
   	//convert wp stay time to ticks
@@ -5601,7 +5604,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	@Override
 	protected void collideWithNearbyEntities()
     {
-        List<Entity> list = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.getEntityBoundingBox().expand(0.2D, 0D, 0.2D));
+        List<Entity> list = this.world.getEntitiesWithinAABBExcludingEntity(this, this.getEntityBoundingBox().expand(0.2D, 0D, 0.2D));
 
         if (list != null)
         {
@@ -5839,6 +5842,16 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	{
 		return this.getShipClass();
 	}
+	
+	//for model display
+	@Override
+	public int getRidingState()
+	{
+		return 0;
+	}
+	
+	@Override
+	public void setRidingState(int state) {}
   	
 	
 }

@@ -66,13 +66,13 @@ public class TileEntityLightBlock extends BasicTileEntity implements ITickable
 			switch (type)
 			{
 			case 1:   //water source
-				this.worldObj.setBlockState(this.pos, Blocks.WATER.getDefaultState(), 1);
+				this.world.setBlockState(this.pos, Blocks.WATER.getDefaultState(), 1);
 			break;
 			case 2:   //water flowing
-				this.worldObj.setBlockState(this.pos, Blocks.FLOWING_WATER.getDefaultState(), 1);
+				this.world.setBlockState(this.pos, Blocks.FLOWING_WATER.getDefaultState(), 1);
 			break;
 			default:  //default air
-				this.worldObj.setBlockState(this.pos, Blocks.AIR.getDefaultState(), 1);
+				this.world.setBlockState(this.pos, Blocks.AIR.getDefaultState(), 1);
 			break;
 			}
 			

@@ -1,17 +1,19 @@
 package com.lulan.shincolle.client.model;
 
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.GlStateManager.DestFactor;
+import net.minecraft.client.renderer.GlStateManager.SourceFactor;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.MathHelper;
 
 /**
  * ModelFloatingFort - PinkaLulan
  * Created using Tabula 4.1.1
  */
-public class ModelFloatingFort extends ModelBase {
+public class ModelFloatingFort extends ModelBase
+{
     public ModelRenderer BodyMain;
     public ModelRenderer Body1;
     public ModelRenderer Body2;
@@ -23,7 +25,8 @@ public class ModelFloatingFort extends ModelBase {
     public ModelRenderer Jaw2;
     public ModelRenderer Jaw3;
 
-    public ModelFloatingFort() {
+    public ModelFloatingFort()
+    {
         this.textureWidth = 128;
         this.textureHeight = 64;
         
@@ -74,34 +77,41 @@ public class ModelFloatingFort extends ModelBase {
         this.BodyMain.addChild(this.EarL);
     }
     
-    public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z) {
+    public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z)
+    {
         modelRenderer.rotateAngleX = x;
         modelRenderer.rotateAngleY = y;
         modelRenderer.rotateAngleZ = z;
     }
 
     @Override
-    public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) { 
-    	GL11.glPushMatrix();
-        setRotationAngles(f, f1, f2, f3, f4, f5, entity);
-    	GL11.glEnable(GL11.GL_BLEND);
-    	GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-    	GL11.glScalef(0.3F, 0.3F, 0.3F);
-    	GL11.glTranslatef(0F, 4.2F, 0F);
-
-        this.BodyMain.render(f5);
-    	GL11.glDisable(GL11.GL_BLEND);
+    public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
+    {
+    	GlStateManager.pushMatrix();
     	
-    	GL11.glPopMatrix();
+    	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
+    	
+    	GlStateManager.enableBlend();
+    	GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
+    	GlStateManager.scale(0.3F, 0.3F, 0.3F);
+    	GlStateManager.translate(0F, 4.2F, 0F);
+    	
+    	//main body
+    	this.BodyMain.render(f5);
+    	
+    	GlStateManager.disableBlend();
+    	GlStateManager.popMatrix();
     }
 
     //for idle/run animation
     @Override
-	public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity) {  
+	public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity)
+    {  
     	this.BodyMain.rotateAngleY = f3 * 0.0174533F;	//左右角度
     	this.BodyMain.rotateAngleX = f4 * 0.0174533F; 	//上下角度
     	this.JawMain.rotateAngleZ = 0F;
     	this.JawMain.rotateAngleX = MathHelper.cos(f2) * 0.25F + 0.375F;
     }
+    
+    
 }
-

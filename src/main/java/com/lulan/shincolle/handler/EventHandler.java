@@ -116,8 +116,8 @@ public class EventHandler
     			
     			if (bossEgg != null)
     			{
-    				BasicEntityItem entityItem1 = new BasicEntityItem(entity.worldObj, entity.posX, entity.posY+0.5D, entity.posZ, bossEgg);
-		    		entity.worldObj.spawnEntityInWorld(entityItem1);
+    				BasicEntityItem entityItem1 = new BasicEntityItem(entity.world, entity.posX, entity.posY+0.5D, entity.posZ, bossEgg);
+		    		entity.world.spawnEntity(entityItem1);
     			}
     		}	
     	}
@@ -133,7 +133,7 @@ public class EventHandler
 	    		
 	    		//save ship attributes to ship spawn egg
 	    		ItemStack egg = new ItemStack(ModItems.ShipSpawnEgg, 1, entity.getShipClass()+2);
-		    	BasicEntityItem entityItem2 = new BasicEntityItem(entity.worldObj, entity.posX, entity.posY+0.5D, entity.posZ, egg);
+		    	BasicEntityItem entityItem2 = new BasicEntityItem(entity.world, entity.posX, entity.posY+0.5D, entity.posZ, egg);
 		    	NBTTagCompound nbt = new NBTTagCompound();
 		    	CapaShipInventory shipInv = entity.getCapaShipInventory();
 		    	String ownerUUID = EntityHelper.getPetPlayerUUID(entity);
@@ -163,7 +163,7 @@ public class EventHandler
 		    	nbt.setString("customname", entity.getCustomNameTag());				//custom name
 		    	
 		    	entityItem2.getEntityItem().setTagCompound(nbt);	  				//save nbt to entity item
-		    	entity.worldObj.spawnEntityInWorld(entityItem2);				//spawn entity item
+		    	entity.world.spawnEntity(entityItem2);								//spawn entity item
 	    	}
 	    }
     	//mob: drop grudge
@@ -176,23 +176,23 @@ public class EventHandler
     		if (numGrudge > 0)
     		{
     			ItemStack drop = new ItemStack(ModItems.Grudge, numGrudge);
-		        event.getDrops().add(new EntityItem(host.worldObj, host.posX, host.posY, host.posZ, drop));
+		        event.getDrops().add(new EntityItem(host.world, host.posX, host.posY, host.posZ, drop));
     		}
     		//值不到1, 機率掉落1個
     		else
     		{
-    			if (host.worldObj.rand.nextFloat() <= ConfigHandler.dropGrudge)
+    			if (host.world.rand.nextFloat() <= ConfigHandler.dropGrudge)
     			{
     				ItemStack drop = new ItemStack(ModItems.Grudge, 1);
-			        event.getDrops().add(new EntityItem(host.worldObj, host.posX, host.posY, host.posZ, drop));
+			        event.getDrops().add(new EntityItem(host.world, host.posX, host.posY, host.posZ, drop));
     			}
     		}
     		
     		//剩餘不到1的值, 改為機率掉落 (ex: 0.6 = 60%掉一顆)
-    		if (host.worldObj.rand.nextFloat() < (ConfigHandler.dropGrudge - (float)numGrudge))
+    		if (host.world.rand.nextFloat() < (ConfigHandler.dropGrudge - (float)numGrudge))
     		{
 				ItemStack drop = new ItemStack(ModItems.Grudge, 1);
-		        event.getDrops().add(new EntityItem(host.worldObj, host.posX, host.posY, host.posZ, drop));
+		        event.getDrops().add(new EntityItem(host.world, host.posX, host.posY, host.posZ, drop));
 			}
     	}
 		
@@ -249,7 +249,7 @@ public class EventHandler
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
 	public void onEntityDeath(LivingDeathEvent event)
 	{
-		if (event.getEntity() != null && !event.getEntity().worldObj.isRemote)
+		if (event.getEntity() != null && !event.getEntity().world.isRemote)
 		{
 			//若ship死亡, 則更新ship cache
 	    	if (event.getEntity() instanceof BasicEntityShip)
@@ -283,19 +283,19 @@ public class EventHandler
 		    //show dead emote
 		    if (host instanceof BasicEntityShip)
 		    {
-		    	if (!host.worldObj.isRemote)
+		    	if (!host.world.isRemote)
 		    	{
 			    	((BasicEntityShip) host).applyParticleEmotion(8);
-					EntityHelper.applyShipEmotesAOE(host.worldObj, host.posX, host.posY, host.posZ, 16D, 6);
+					EntityHelper.applyShipEmotesAOE(host.world, host.posX, host.posY, host.posZ, 16D, 6);
 		    	}
 		    }
 		    //show dead emote
 		    else if (host instanceof BasicEntityShipHostile)
 		    {
-		    	if (!host.worldObj.isRemote)
+		    	if (!host.world.isRemote)
 		    	{
 			    	((BasicEntityShipHostile) host).applyParticleEmotion(8);
-					EntityHelper.applyShipEmotesAOEHostile(host.worldObj, host.posX, host.posY, host.posZ, 48D, 6);
+					EntityHelper.applyShipEmotesAOEHostile(host.world, host.posX, host.posY, host.posZ, 48D, 6);
 		    	}
 		    }
 		}
@@ -424,7 +424,7 @@ public class EventHandler
 		Entity attackerSource = event.getSource().getSourceOfDamage();	//attacker or summoner
 		
 		//server side only
-		if(target != null && attackerSource != null && !target.worldObj.isRemote)
+		if(target != null && attackerSource != null && !target.world.isRemote)
 		{
 			double dist = target.getDistanceSqToEntity(attackerSource);
 			
@@ -498,7 +498,7 @@ public class EventHandler
 			CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(event.player);
 			
 			/** SERVER SIDE */
-			if (!event.player.worldObj.isRemote)
+			if (!event.player.world.isRemote)
 			{
 				//null check
 				if (capa == null)
@@ -587,6 +587,10 @@ public class EventHandler
 				//spawn boss ticking
 				spawnBossShip(event.player, capa);
 				
+				//ally cooldown--
+				int allycd = capa.getPlayerTeamCooldown();
+				if (allycd > 0) capa.setPlayerTeamCooldown(--allycd);
+				
 				//init ship UID
 				if (!capa.initSID && event.player.ticksExisted % 16 == 0) 
 				{
@@ -606,13 +610,9 @@ public class EventHandler
 				}
 			}//end server side, extProps != null
 			/** CLIENT SIDE */
-			else if (event.player.worldObj.isRemote)
+			else if (event.player.world.isRemote)
 			{	
-				//key cd--
-				if (this.keyCooldown > 0)
-				{
-					this.keyCooldown--;
-				}
+				if (this.keyCooldown > 0) this.keyCooldown--;	//key cd--
 			}
 			
 			/** BOTH SIDE */
@@ -704,7 +704,7 @@ public class EventHandler
 	private static void spawnMobShip(EntityPlayer player, CapaTeitoku capa)
 	{
 		//null check
-		if (player == null || capa == null || player.worldObj.getDifficulty() == EnumDifficulty.PEACEFUL)
+		if (player == null || capa == null || player.world.getDifficulty() == EnumDifficulty.PEACEFUL)
 		{
 			return;
 		}
@@ -713,8 +713,8 @@ public class EventHandler
 		int blockX = (int) player.posX;
 		int blockZ = (int) player.posZ;
 		int spawnX, spawnY, spawnZ = 0;
-		Biome biome = player.worldObj.getBiomeGenForCoords(new BlockPos(blockX, 0, blockZ));
-		World w = player.worldObj;
+		Biome biome = player.world.getBiomeForCoordsBody(new BlockPos(blockX, 0, blockZ));
+		World w = player.world;
 		Random rng = player.getRNG();
 		
 		//check ring
@@ -811,7 +811,7 @@ public class EventHandler
 				            	if (entityToSpawn != null)
 				            	{
 									entityToSpawn.setPosition(spawnX + rng.nextDouble(), spawnY + 0.5D, spawnZ + rng.nextDouble());
-									w.spawnEntityInWorld(entityToSpawn);
+									w.spawnEntity(entityToSpawn);
 				            	}
 				            	LogHelper.info("DEBUG : spawn mob ship: #total: "+(entNum++)+" group: "+groups+" #ship: "+i+" "+spawnY+" "+shipname);
 							}
@@ -829,7 +829,7 @@ public class EventHandler
 	private static void spawnBossShip(EntityPlayer player, CapaTeitoku capa)
 	{
 		//null check
-		if (player == null || capa == null || player.worldObj.getDifficulty() == EnumDifficulty.PEACEFUL)
+		if (player == null || capa == null || player.world.getDifficulty() == EnumDifficulty.PEACEFUL)
 		{
 			return;
 		}
@@ -837,17 +837,7 @@ public class EventHandler
 		int blockX = (int) player.posX;
 		int blockZ = (int) player.posZ;
 		int spawnX, spawnY, spawnZ = 0;
-		Biome biome = player.worldObj.getBiomeGenForCoords(new BlockPos(blockX, 0, blockZ));
-		World w = player.worldObj;
-		Random rng = player.getRNG();
-		
-		//ally cooldown--
-		int allycd = capa.getPlayerTeamCooldown();
-		
-		if (allycd > 0)
-		{
-			capa.setPlayerTeamCooldown(--allycd);
-		}
+		Biome biome = player.world.getBiomeForCoordsBody(new BlockPos(blockX, 0, blockZ));
 		
 		//boss cooldown--
 		if ((BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.WATER) || 
@@ -859,6 +849,9 @@ public class EventHandler
 		//cooldown = 0, roll spawn
 		if (capa.getBossCooldown() <= 0)
 		{
+			World w = player.world;
+			Random rng = player.getRNG();
+			
 			capa.setBossCooldown(ConfigHandler.bossCooldown);
 			
 			int rolli = rng.nextInt(4);
@@ -946,7 +939,7 @@ public class EventHandler
 				            	if (entityToSpawn != null)
 				            	{
 				            		entityToSpawn.setPosition(spawnX + rng.nextInt(3), spawnY + 0.5D, spawnZ + rng.nextInt(3));
-				            		w.spawnEntityInWorld(entityToSpawn);
+				            		w.spawnEntity(entityToSpawn);
 				            	}
 			            	}
 			            	
@@ -961,7 +954,7 @@ public class EventHandler
 			            		spawnText = new TextComponentTranslation("chat.shincolle:bossspawn2");
 			            	}
 			            	
-			            	ServerProxy.getServer().addChatMessage(new TextComponentString(""+TextFormatting.YELLOW+spawnText+
+			            	ServerProxy.getServer().sendMessage(new TextComponentString(""+TextFormatting.YELLOW+spawnText+
 			            			TextFormatting.AQUA+" "+spawnX+" "+spawnY+" "+spawnZ));
 			            	
 			            	LogHelper.info("DEBUG : spawn fleet "+spawnX+" "+spawnY+" "+spawnZ);
@@ -1141,7 +1134,7 @@ public class EventHandler
 	{
 		/**load player extend data
 		 */
-		LogHelper.info("DEBUG : player login: "+event.player.getDisplayNameString()+" "+event.player.worldObj.isRemote+" "+event.player.getUniqueID());
+		LogHelper.info("DEBUG : player login: "+event.player.getDisplayNameString()+" "+event.player.world.isRemote+" "+event.player.getUniqueID());
 		CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(event.player);
 		
 		if (capa != null && capa.needInit)
@@ -1168,7 +1161,7 @@ public class EventHandler
 		 */
 		LogHelper.info("DEBUG : player change dim: "+event.player.getName()+" "+event.player.getUniqueID());
 		
-		if (event.player != null && !event.player.worldObj.isRemote)
+		if (event.player != null && !event.player.world.isRemote)
 		{
 			//update player id
 			ServerProxy.updatePlayerID(event.player);

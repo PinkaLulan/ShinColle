@@ -14,7 +14,9 @@ import com.lulan.shincolle.client.render.IShipCustomTexture;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.network.S2CEntitySync;
+import com.lulan.shincolle.network.S2CInputPackets;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
@@ -31,6 +33,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -50,11 +54,11 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
     
     //model display
     /**EntityState: 0:HP State 1:Emotion 2:Emotion2*/
-	protected byte[] StateEmotion;		//表情1
-	protected int StartEmotion, StartEmotion2, StartEmotion3, StartEmotion4;  //表情tick
+	protected byte[] stateEmotion;														//表情type
+	protected int startEmotion, startEmotion2, attackTime, attackTime2, emoteDelay;		//表情timer
 	protected boolean headTilt;
 	protected float[] rotateAngle;		//模型旋轉角度, 用於手持物品render
-	protected int StartSoundHurt;		//hurt sound ticks
+	protected int soundHurtDelay;		//hurt sound ticks
 	protected short shipClass;
 	
 	//misc
@@ -78,13 +82,13 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		maxHurtResistantTime = 2;
 		stepHeight = 4F;
 		canDrop = true;
-		shipNavigator = new ShipPathNavigate(this, worldObj);
+		shipNavigator = new ShipPathNavigate(this, world);
 		shipMoveHelper = new ShipMoveHelper(this, 25F);
 		rotateAngle = new float[] {0F, 0F, 0F};
 		
 		//model display
-		StartSoundHurt = 0;
-		StateEmotion = new byte[] {ID.State.EQUIP00, 0, 0, 0, 0, 0, 0};
+		soundHurtDelay = 0;
+		stateEmotion = new byte[] {ID.State.EQUIP00, 0, 0, 0, 0, 0, 0};
 	}
 	
 	@Override
@@ -178,7 +182,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
   			if (entity instanceof IShipAttackBase)
   			{
   				//get attack time for damage modifier setting (day, night or ...etc)
-  				int modSet = this.worldObj.provider.isDaytime() ? 0 : 1;
+  				int modSet = this.world.provider.isDaytime() ? 0 : 1;
   				reduceAtk = CalcHelper.calcDamageByType(reduceAtk, ((IShipAttackBase) entity).getDamageType(), this.getDamageType(), modSet);
   			}
   			
@@ -212,31 +216,38 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		return this.dropItem;
 	}
 	
-	//TODO sound event
-//	//平常音效
-//	@Override
-//	protected String getLivingSound()
-//	{
-//		return Reference.MOD_ID+":ship-say";
-//    }
-//	
-//	//受傷音效
-//	@Override
-//    protected String getHurtSound()
-//	{
-//		if(this.StartSoundHurt <= 0) {
-//    		this.StartSoundHurt = 20 + this.getRNG().nextInt(40);
-//    		return Reference.MOD_ID+":ship-hurt";
-//    	}
-//    	return null;
-//    }
-//
-//    //死亡音效
-//    @Override
-//    protected String getDeathSound()
-//    {
-//    	return Reference.MOD_ID+":ship-death";
-//    }
+	//平常音效
+    @Override
+    @Nullable
+    protected SoundEvent getAmbientSound()
+    {
+    	if (rand.nextInt(2) == 0)
+    	{
+			return ModSounds.SHIP_IDLE;
+		}
+		return null;
+    }
+    
+	//受傷音效
+    @Override
+    @Nullable
+    protected SoundEvent getHurtSound()
+    {
+		if (rand.nextInt(2) == 0 && this.soundHurtDelay <= 0)
+		{
+			this.soundHurtDelay = 20 + this.getRNG().nextInt(40);
+			return ModSounds.SHIP_HURT;
+		}
+		return null;
+    }
+
+	//死亡音效
+    @Override
+    @Nullable
+    protected SoundEvent getDeathSound()
+    {
+		return ModSounds.SHIP_DEATH;
+    }
 
     //音效大小
     @Override
@@ -248,15 +259,15 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	@Override
 	public byte getStateEmotion(int id)
 	{
-		return StateEmotion[id];
+		return stateEmotion[id];
 	}
 
 	@Override
 	public void setStateEmotion(int id, int value, boolean sync)
 	{
-		StateEmotion[id] = (byte) value;
+		stateEmotion[id] = (byte) value;
 		
-		if (sync && !worldObj.isRemote)
+		if (sync && !world.isRemote)
 		{
 			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
 			CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this, S2CEntitySync.PID.SyncEntity_Emo), point);
@@ -288,25 +299,25 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	@Override
 	public int getFaceTick()
 	{
-		return this.StartEmotion;
+		return this.startEmotion;
 	}
 
 	@Override
 	public int getHeadTiltTick()
 	{
-		return this.StartEmotion2;
+		return this.startEmotion2;
 	}
 
 	@Override
 	public void setFaceTick(int par1)
 	{
-		this.StartEmotion = par1;
+		this.startEmotion = par1;
 	}
 
 	@Override
 	public void setHeadTiltTick(int par1)
 	{
-		this.StartEmotion2 = par1;
+		this.startEmotion2 = par1;
 	}
 
 	@Override
@@ -322,13 +333,6 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	}
 
 	@Override
-	public int getAttackTime()
-	{
-		//TODO NYI multiple attack timer
-		return 0;
-	}
-
-	@Override
 	public boolean attackEntityWithAmmo(Entity target)
 	{
 		//get attack value
@@ -339,7 +343,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
         float distX = (float) (target.posX - this.posX);
         float distY = (float) (target.posY - this.posY);
         float distZ = (float) (target.posZ - this.posZ);
-        float distSqrt = MathHelper.sqrt_float(distX*distX + distY*distY + distZ*distZ);
+        float distSqrt = MathHelper.sqrt(distX*distX + distY*distY + distZ*distZ);
         distX = distX / distSqrt;
         distY = distY / distSqrt;
         distZ = distZ / distSqrt;
@@ -348,14 +352,14 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 6, this.posX, this.posY+3.5D, this.posZ, distX, 2.8D, distZ, true), point);
 
-//		//TODO sound event
-//		//play cannon fire sound at attacker
-//        playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.volumeFire, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-//        //play entity attack sound
-//        if (this.rand.nextInt(10) > 7)
-//        {
-//        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.volumeShip, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-//        }
+		//play cannon fire sound at attacker
+		this.playSound(ModSounds.SHIP_FIRELIGHT, ConfigHandler.volumeFire, this.getSoundPitch() * 0.85F);
+        
+        //play entity attack sound
+        if(this.rand.nextInt(10) > 7)
+        {
+        	this.playSound(ModSounds.SHIP_HIT, this.getSoundVolume(), this.getSoundPitch());
+        }
 
         //calc miss chance, if not miss, calc cri/multi hit   
         if (this.rand.nextFloat() < 0.2F)
@@ -444,7 +448,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		distVec[0] = tarX - (float) this.posX;
         distVec[1] = tarY - (float) this.posY;
         distVec[2] = tarZ - (float) this.posZ;
-		distVec[3] = MathHelper.sqrt_float(distVec[0]*distVec[0] + distVec[1]*distVec[1] + distVec[2]*distVec[2]);
+		distVec[3] = MathHelper.sqrt(distVec[0]*distVec[0] + distVec[1]*distVec[1] + distVec[2]*distVec[2]);
         
         //超過一定距離/水中 , 則採用拋物線,  在水中時發射高度較低
         if (distVec[3] < 5F)
@@ -473,9 +477,9 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
         }
         
         //spawn missile
-        EntityAbyssMissile missile = new EntityAbyssMissile(this.worldObj, this, 
+        EntityAbyssMissile missile = new EntityAbyssMissile(this.world, this, 
         		tarX, tarY+target.height*0.2F, tarZ, launchPos, atk, kbValue, isDirect, -1F);
-        this.worldObj.spawnEntityInWorld(missile);
+        this.world.spawnEntity(missile);
         
         //play target effect
         applySoundAtTarget(2, target);
@@ -603,11 +607,12 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		EntityHelper.checkDepth(this);
 		
 		//time --
-		if (this.StartSoundHurt > 0) this.StartSoundHurt--;
-		if (this.StartEmotion4 > 0) this.StartEmotion4--;
+		if (this.soundHurtDelay > 0) this.soundHurtDelay--;
+		if (this.emoteDelay > 0) this.emoteDelay--;
+		if (this.attackTime > 0) this.attackTime--;
 		
 		//client side
-		if (this.worldObj.isRemote && EntityHelper.checkEntityIsInLiquid(this))
+		if (this.world.isRemote && EntityHelper.checkEntityIsInLiquid(this))
 		{
 			//有移動時, 產生水花特效
 			//(注意此entity因為設為非高速更新, client端不會更新motionX等數值, 需自行計算)
@@ -627,16 +632,13 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	@Override
 	public void onLivingUpdate()
 	{
-		if (stopAI)
-		{
-			return;
-		}
-		
-		super.onLivingUpdate();
-		
 		//server side
-        if ((!worldObj.isRemote))
-        {      	
+        if ((!world.isRemote))
+        {
+        	//update movement, NOTE: 1.9.4: must done before vanilla MoveHelper updating in super.onLivingUpdate()
+        	EntityHelper.updateShipNavigator(this);
+            super.onLivingUpdate();
+            
         	//check every 10 ticks
         	if (ticksExisted % 16 == 0)
         	{
@@ -664,6 +666,8 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
         //client side
         else
         {
+        	super.onLivingUpdate();
+        	
         	if (this.ticksExisted % 16 == 0)
         	{
     			//generate HP state effect
@@ -722,19 +726,6 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	{
 		return this.shipMoveHelper;
 	}
-	
-	//update ship move helper
-	@Override
-	protected void updateAITasks()
-	{
-		if (stopAI)
-		{
-			return;
-		}
-		
-		super.updateAITasks();
-        EntityHelper.updateShipNavigator(this);
-    }
 	
 	@Override
 	public boolean canFly()
@@ -820,7 +811,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	}
 
 	@Override
-	public void setEntitySit() {}
+	public void setEntitySit(boolean sit) {}
 
 	//get model rotate angle, par1 = 0:X, 1:Y, 2:Z
     @Override
@@ -901,7 +892,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
   	public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, @Nullable ItemStack stack, EnumHand hand)
     {
 		//use kaitai hammer to kill hostile ship (creative mode only)
-		if (!this.worldObj.isRemote && player.capabilities.isCreativeMode)
+		if (!this.world.isRemote && player.capabilities.isCreativeMode)
 		{
 			if (player.inventory.getCurrentItem() != null && 
 				player.inventory.getCurrentItem().getItem() == ModItems.KaitaiHammer)
@@ -914,16 +905,28 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
         return EnumActionResult.PASS;
     }
   	
+	@Override
+	public int getAttackTick()
+	{
+		return this.attackTime;
+	}
+  	
   	@Override
-	public int getAttackAniTick()
+	public int getAttackTick2()
   	{
-		return this.StartEmotion3;
+		return this.attackTime2;
+	}
+  	
+	@Override
+	public void setAttackTick(int par1)
+	{
+		this.attackTime = par1;
 	}
 
 	@Override
-	public void setAttackAniTick(int par1)
+	public void setAttackTick2(int par1)
 	{
-		this.StartEmotion3 = par1;
+		this.attackTime2 = par1;
 	}
 	
 	/** spawn emotion particle */
@@ -932,7 +935,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
   		float h = this.height * 0.6F;
   		
   		//server side emotes
-  		if (!this.worldObj.isRemote)
+  		if (!this.world.isRemote)
   		{
   			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
   	  		
@@ -963,16 +966,16 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
   		switch (type)
   		{
   		case 2:  //damaged
-  			if (this.StartEmotion4 <= 0)
+  			if (this.emoteDelay <= 0)
   			{
-  				this.StartEmotion4 = 40;
+  				this.emoteDelay = 40;
 				reactionDamaged();
 			}
   			break;
   		case 3:  //attack
-  			if (this.rand.nextInt(7) == 0 && this.StartEmotion4 <= 0)
+  			if (this.rand.nextInt(7) == 0 && this.emoteDelay <= 0)
   			{
-  				this.StartEmotion4 = 60;
+  				this.emoteDelay = 60;
 				reactionAttack();
 			}
   			break;
@@ -980,9 +983,9 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 			reactionShock();
   			break;
   		default: //idle
-  			if (this.rand.nextInt(3) == 0 && this.StartEmotion4 <= 0)
+  			if (this.rand.nextInt(3) == 0 && this.emoteDelay <= 0)
   			{
-  				this.StartEmotion4 = 20;
+  				this.emoteDelay = 20;
 				reactionIdle();
 			}
   			break;
@@ -1154,39 +1157,37 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
   	
   	public void applySoundAtAttacker(int type, Entity target)
   	{
-  		//TODO sound event
-//  		switch (type)
-//  		{
-//  		case 1:  //light cannon
-//  			//fire sound
-//  			playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.volumeFire, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-//  	        
-//  			//entity sound
-//  			if(this.rand.nextInt(10) > 7) {
-//  	        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.volumeShip, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-//  	        }
-//  			break;
-//  		case 2:  //heavy cannon
-//  			//fire sound
-//  	        this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.volumeFire, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-//
-//  	        //entity sound
-//  	        if(this.getRNG().nextInt(10) > 7) {
-//  	        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.volumeShip, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-//  	        }
-//  			break;
-//  		case 3:  //light aircraft
-//  	        playSound(Reference.MOD_ID+":ship-aircraft", ConfigHandler.volumeFire * 0.5F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-//  			break;
-//  		case 4:  //heavy aircraft
-//  	        playSound(Reference.MOD_ID+":ship-aircraft", ConfigHandler.volumeFire * 0.5F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-//  			break;
-//		default: //melee
-//			if(this.getRNG().nextInt(2) == 0) {
-//	        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.volumeShip, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-//	        }
-//			break;
-//  		}
+  		switch (type)
+  		{
+  		case 1:  //light cannon
+  			this.playSound(ModSounds.SHIP_FIRELIGHT, ConfigHandler.volumeFire, this.getSoundPitch() * 0.85F);
+  	        
+  	        //play entity attack sound
+  	        if(this.rand.nextInt(10) > 7)
+  	        {
+  	        	this.playSound(ModSounds.SHIP_HIT, this.getSoundVolume(), this.getSoundPitch());
+  	        }
+  		break;
+  		case 2:  //heavy cannon
+  			this.playSound(ModSounds.SHIP_FIREHEAVY, ConfigHandler.volumeFire, this.getSoundPitch() * 0.85F);
+  	        
+  	        //play entity attack sound
+  	        if(this.rand.nextInt(10) > 7)
+  	        {
+  	        	this.playSound(ModSounds.SHIP_HIT, this.getSoundVolume(), this.getSoundPitch());
+  	        }
+  		break;
+  		case 3:  //light aircraft
+  		case 4:  //heavy aircraft
+  			this.playSound(ModSounds.SHIP_AIRCRAFT, ConfigHandler.volumeFire * 0.5F, this.getSoundPitch() * 0.85F);
+  		break;
+		default: //melee
+			if (this.getRNG().nextInt(2) == 0)
+			{
+				this.playSound(ModSounds.SHIP_HIT, this.getSoundVolume(), this.getSoundPitch());
+	        }
+			break;
+  		}
   	}
   	
   	/** attack particle at attacker
@@ -1293,31 +1294,37 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
   	/** set flare on target */
   	public void flareTarget(Entity target)
   	{
-  		//TODO complete flare block
-//  		if (this.getStateMinor(ID.M.LevelFlare) > 0 && target != null)
-//  		{
-//  			int px = MathHelper.floor_double(target.posX);
-//			int py = (int) target.posY + 1;
-//			int pz = MathHelper.floor_double(target.posZ);
-//			float light = this.worldObj.getBlockLightValue(px, py, pz);
-//  			
-//  			//method 2: create light block
-//  			if (light < 12F)
-//  			{
-//				BlockHelper.placeLightBlock(this.worldObj, px, py, pz);
-//  			}
-//  			//search light block, renew lifespan
-//  			else
-//  			{
-//  				BlockHelper.updateNearbyLightBlock(this.worldObj, px, py, pz);
-//  			}
-//  		}
+  		//server side, send flare packet
+  		if (!this.world.isRemote)
+  		{
+  	  		if (this.getStateMinor(ID.M.LevelFlare) > 0 && target != null)
+  	  		{
+  	  			BlockPos pos = new BlockPos(target);
+				TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+				CommonProxy.channelG.sendToAllAround(new S2CInputPackets(S2CInputPackets.PID.FlareEffect, pos.getX(), pos.getY(), pos.getZ()), point);
+  	  		}
+  		}
   	}
   	
   	public short getShipClass()
   	{
 		return (short) getStateMinor(ID.M.ShipClass);
 	}
+  	
+	public int getTextureID()
+	{
+		return this.getShipClass();
+	}
+	
+	//for model display
+	@Override
+	public int getRidingState()
+	{
+		return 0;
+	}
+	
+	@Override
+	public void setRidingState(int state) {}
   	
   	
 }

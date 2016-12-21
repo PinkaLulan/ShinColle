@@ -45,12 +45,12 @@ public class RenderLargeShipyard extends TileEntitySpecialRenderer<BasicTileEnti
 		ResourceLocation textures = meta > 1 ? VORTEX_ON : VORTEX_OFF;
 		Minecraft.getMinecraft().renderEngine.bindTexture(textures);
 		
-		EntityPlayer player  = Minecraft.getMinecraft().thePlayer;
+		EntityPlayer player  = Minecraft.getMinecraft().player;
 		BlockPos pos = tile.getPos();
 		double distX = pos.getX() + 0.5D - player.posX;
 		double distY = pos.getY() - 0.75D - player.posY;
 		double distZ = pos.getZ() + 0.5D - player.posZ;
-		float f1 = MathHelper.sqrt_double(distX * distX + distZ * distZ);
+		float f1 = MathHelper.sqrt(distX * distX + distZ * distZ);
         float pitch = (float) (Math.atan2(f1, distY));
         float yaw = (float) (Math.atan2(distX, distZ));
         float angle = (-player.ticksExisted - partick) % 360F;

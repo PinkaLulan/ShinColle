@@ -42,7 +42,7 @@ public class ParticleChi extends Particle
         this.motionY = 0D;
         this.particleScale = scale;
         this.particleType = type;
-        this.field_190017_n = false;	//can clip = false
+        this.canCollide = false;	//can clip = false
         
         switch (type)
         {

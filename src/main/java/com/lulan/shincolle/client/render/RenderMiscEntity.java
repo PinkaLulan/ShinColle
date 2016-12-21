@@ -14,7 +14,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 
-public class RenderBasicEntity extends Render<Entity>
+public class RenderMiscEntity extends Render<Entity>
 {
 
 	//texture
@@ -31,12 +31,12 @@ public class RenderBasicEntity extends Render<Entity>
 	private static ModelBase modelAbyssMissile = new ModelAbyssMissile();
 	
 	
-    public RenderBasicEntity(RenderManager rm)
+    public RenderMiscEntity(RenderManager rm)
     {
         this(rm, 1F);
     }
 
-    public RenderBasicEntity(RenderManager rm, float scale)
+    public RenderMiscEntity(RenderManager rm, float scale)
     {
         super(rm);
         this.entityScale = scale;
@@ -109,7 +109,7 @@ public class RenderBasicEntity extends Render<Entity>
         @Override
         public Render<? super Entity> createRenderFor(RenderManager rm)
         {
-            return new RenderBasicEntity(rm);
+            return new RenderMiscEntity(rm);
         }
     }
     
@@ -119,7 +119,7 @@ public class RenderBasicEntity extends Render<Entity>
         @Override
         public Render<? super Entity> createRenderFor(RenderManager rm)
         {
-            return new RenderBasicEntity(rm, 2.5F);
+            return new RenderMiscEntity(rm, 2.5F);
         }
     }
     

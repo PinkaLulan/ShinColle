@@ -179,7 +179,7 @@ public class BlockWaypoint extends BasicBlockContainer
 				{
 					((TileEntityWaypoint) tile).nextWpStayTime();
 					
-					player.addChatMessage(new TextComponentString("Change waypoint stay time to: "+
+					player.sendMessage(new TextComponentString("Change waypoint stay time to: "+
 							CalcHelper.tick2SecOrMin(((TileEntityWaypoint) tile).getWpStayTime())));
 				}
 				

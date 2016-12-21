@@ -58,7 +58,7 @@ public class ContainerSmallShipyard extends Container
 	@Override
 	public boolean canInteractWith(EntityPlayer player)
 	{
-		return tile.isUseableByPlayer(player);
+		return tile.isUsableByPlayer(player);
 	}
 	
 	/** ON SHIFT CLICKING

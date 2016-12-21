@@ -47,7 +47,7 @@ public class ParticleLaser extends Particle
         this.tarX = tarX;
         this.tarY = tarY;
         this.tarZ = tarZ;
-        this.field_190017_n = false;	//can clip = false
+        this.canCollide = false;	//can clip = false
         
         switch (type)
         {

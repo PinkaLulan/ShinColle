@@ -169,7 +169,7 @@ public class C2SInputPackets implements IMessage
 						//open ship GUI
 						if (mount.getHostEntity() != null)
 						{
-							FMLNetworkHandler.openGui(player, ShinColle.instance, ID.Gui.SHIPINVENTORY, player.worldObj, mount.getHostEntity().getEntityId(), 0, 0);
+							FMLNetworkHandler.openGui(player, ShinColle.instance, ID.Gui.SHIPINVENTORY, player.world, mount.getHostEntity().getEntityId(), 0, 0);
 						}
 					}
 				}

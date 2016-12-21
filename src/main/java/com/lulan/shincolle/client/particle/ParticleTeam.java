@@ -55,7 +55,7 @@ public class ParticleTeam extends Particle
         this.particleAlphaA = 1F;
         this.particleAlphaC = 0.8F;
         this.particleType = type;
-        this.field_190017_n = false;	//can clip = false
+        this.canCollide = false;	//can clip = false
         
         switch (type)
         {
@@ -126,7 +126,7 @@ public class ParticleTeam extends Particle
         this.particleAlphaA = 1F;
         this.particleAlphaC = 0.5F;
         this.particleType = type;
-        this.field_190017_n = false;	//can clip = false
+        this.canCollide = false;	//can clip = false
         
         switch (type)
         {

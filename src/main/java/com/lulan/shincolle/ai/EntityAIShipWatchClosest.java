@@ -36,7 +36,7 @@ public class EntityAIShipWatchClosest extends EntityAIWatchClosest
     @Override
     public boolean shouldExecute()
     {
-    	EntityPlayer target = this.host.worldObj.getClosestPlayerToEntity(this.host, this.range);
+    	EntityPlayer target = this.host.world.getClosestPlayerToEntity(this.host, this.range);
     
     	if (host2 != null)
     	{

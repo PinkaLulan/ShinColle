@@ -81,7 +81,7 @@ public class EntityAirplane extends BasicEntityAirplane
 		super.onUpdate();
 		
 		//client side particle
-		if (this.worldObj.isRemote)
+		if (this.world.isRemote)
 		{	
 			applyFlyParticle();
 		}

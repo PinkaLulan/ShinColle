@@ -2,22 +2,23 @@ package com.lulan.shincolle.client.model;
 
 import java.util.Random;
 
+import com.lulan.shincolle.entity.IShipEmotion;
+import com.lulan.shincolle.utility.EmotionHelper;
+
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.GlStateManager.DestFactor;
+import net.minecraft.client.renderer.GlStateManager.SourceFactor;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.MathHelper;
-
-import org.lwjgl.opengl.GL11;
-
-import com.lulan.shincolle.entity.IShipEmotion;
-import com.lulan.shincolle.entity.IShipFloating;
-import com.lulan.shincolle.utility.EmotionHelper;
+import net.minecraft.util.math.MathHelper;
 
 /**
  * ModelRensouhou - PinkaLulan 2015/3/27
  * Created using Tabula 4.1.1
  */
-public class ModelRensouhou extends ModelBase implements IModelEmotion {
+public class ModelRensouhou extends ModelBase implements IModelEmotion
+{
     public ModelRenderer BodyMain;
     public ModelRenderer SwimRing;
     public ModelRenderer Head;
@@ -40,14 +41,13 @@ public class ModelRensouhou extends ModelBase implements IModelEmotion {
     
     private int startEmo2 = 0;
     private Random rand = new Random();
-    private float scale = 1F;
-    private float offY = 1F;
+    private float scale;
+    private float offsetY;
 
-    public ModelRensouhou(float scale, float offY) {
+    public ModelRensouhou()
+    {
         this.textureWidth = 128;
         this.textureHeight = 64;
-        this.scale = scale;
-        this.offY = offY;
         
         this.CannonL02 = new ModelRenderer(this, 0, 1);
         this.CannonL02.setRotationPoint(0.0F, 0.0F, 0.0F);
@@ -133,29 +133,44 @@ public class ModelRensouhou extends ModelBase implements IModelEmotion {
         this.BodyMain.addChild(this.Head);
     }
     
-    public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z) {
+    public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z)
+    {
         modelRenderer.rotateAngleX = x;
         modelRenderer.rotateAngleY = y;
         modelRenderer.rotateAngleZ = z;
     }
 
     @Override
-    public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) { 
-    	GL11.glPushMatrix();
-    	GL11.glEnable(GL11.GL_BLEND);
-    	GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-    	GL11.glScalef(scale, scale, scale);
-
+    public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
+    {
+    	if (entity.isNonBoss())
+    	{
+    		scale = 0.3F;
+    		offsetY = 3F;
+    	}
+    	else
+    	{
+    		scale = 1F;
+        	offsetY = 0F;
+    	}
+    	
+    	GlStateManager.pushMatrix();
+    	GlStateManager.enableBlend();
+    	GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
+    	GlStateManager.scale(scale, scale, scale);
+    	
+    	//main body
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
     	this.BodyMain.render(f5);
     	
-    	GL11.glDisable(GL11.GL_BLEND);  	
-    	GL11.glPopMatrix();
+    	GlStateManager.disableBlend();
+    	GlStateManager.popMatrix();
     }
     
     //for idle/run animation
     @Override
-	public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity) {
+	public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity)
+    {
 		super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
 		  
 		IShipEmotion ent = (IShipEmotion)entity;
@@ -166,13 +181,14 @@ public class ModelRensouhou extends ModelBase implements IModelEmotion {
     }
     
   //雙腳移動計算
-  	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {   
+  	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
+  	{   
   		float angleX = MathHelper.cos(f2 * 0.08F);
   		float angleRun = MathHelper.cos(f) * f1;
   		float addk1 = 0;
   		float addk2 = 0;
   		
-    	GL11.glTranslatef(0F, offY, 0F);
+  		GlStateManager.translate(0F, offsetY, 0F);
   		
   		//leg move parm
   		addk1 = MathHelper.cos(f * 0.7F) * f1 + 0.7F;
@@ -191,7 +207,8 @@ public class ModelRensouhou extends ModelBase implements IModelEmotion {
 		//propeller
 		this.Propeller.rotateAngleZ = (f2 / 4) % 360;
 
-	    if(f1 > 0.9F) {	//奔跑動作
+	    if (f1 > 0.9F)
+	    {	//奔跑動作
 	    	setFace(2);
 	    	//body
 	    	this.BodyMain.rotateAngleX = 0.2618F;
@@ -206,7 +223,8 @@ public class ModelRensouhou extends ModelBase implements IModelEmotion {
   		}
 	    
 	    //攻擊動作    
-	    if(ent.getAttackTime() > 0) {
+	    if (ent.getAttackTick() > 0)
+	    {
 	    	setFace(2);
 	    }
 	    
@@ -217,30 +235,31 @@ public class ModelRensouhou extends ModelBase implements IModelEmotion {
   	
     //設定顯示的臉型
     @Override
-  	public void setFace(int emo) {
-  		switch(emo) {
+  	public void setFace(int emo)
+    {
+  		switch (emo)
+  		{
   		case 0:
   			this.Face0.isHidden = false;
   			this.Face1.isHidden = true;
   			this.Face2.isHidden = true;
-  			break;
+  		break;
   		case 1:
   		case 4:
   			this.Face0.isHidden = true;
   			this.Face1.isHidden = false;
   			this.Face2.isHidden = true;
-  			break;
+  		break;
   		case 2:
   		case 3:
   			this.Face0.isHidden = true;
   			this.Face1.isHidden = true;
   			this.Face2.isHidden = false;
-  			break;
+  		break;
   		default:
-  			break;
+  		break;
   		}
   	}
 
     
 }
-

@@ -13,6 +13,7 @@ import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.entity.other.EntityAirplane;
 import com.lulan.shincolle.entity.other.EntityRensouhou;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
@@ -70,7 +71,7 @@ abstract public class BasicEntityAirplane extends EntityLiving implements IShipC
         this.backHome = false;
         this.canFindTarget = true;
         this.isImmuneToFire = true;
-        this.shipNavigator = new ShipPathNavigate(this, worldObj);
+        this.shipNavigator = new ShipPathNavigate(this, world);
         this.shipMoveHelper = new ShipMoveHelper(this, 30F);
 		this.stepHeight = 7F;
 		this.deadTick = 0;
@@ -138,7 +139,7 @@ abstract public class BasicEntityAirplane extends EntityLiving implements IShipC
 	}
 
 	@Override
-	public int getAttackTime()
+	public int getAttackTick()
 	{
 		return 0;
 	}
@@ -214,7 +215,7 @@ abstract public class BasicEntityAirplane extends EntityLiving implements IShipC
 	public void moveEntityWithHeading(float strafe, float forward)
     { 	
         this.moveRelative(strafe, forward, this.movSpeed * 0.4F); //水中的速度計算(含漂移效果)
-        this.moveEntity(this.motionX, this.motionY, this.motionZ);
+        this.move(this.motionX, this.motionY, this.motionZ);
 
         this.motionX *= 0.91D;
         this.motionY *= 0.91D;
@@ -229,7 +230,7 @@ abstract public class BasicEntityAirplane extends EntityLiving implements IShipC
         this.prevLimbSwingAmount = this.limbSwingAmount;
         double d1 = this.posX - this.prevPosX;
         double d0 = this.posZ - this.prevPosZ;
-        float f4 = MathHelper.sqrt_double(d1 * d1 + d0 * d0) * 4F;
+        float f4 = MathHelper.sqrt(d1 * d1 + d0 * d0) * 4F;
 
         if (f4 > 1F)
         {
@@ -276,7 +277,7 @@ abstract public class BasicEntityAirplane extends EntityLiving implements IShipC
 	public void onUpdate()
 	{
 		//server side
-		if (!this.worldObj.isRemote)
+		if (!this.world.isRemote)
 		{
 			//dead tick++ if no movement
 			if (Math.abs(this.posX + this.posY + this.posZ - this.prevPosX - this.prevPosY - this.prevPosZ) < 0.01D)
@@ -326,7 +327,7 @@ abstract public class BasicEntityAirplane extends EntityLiving implements IShipC
 					{
 						double distX = this.getEntityTarget().posX - this.posX;
 						double distZ = this.getEntityTarget().posZ - this.posZ;
-						double distSqrt = MathHelper.sqrt_double(distX*distX + distZ*distZ);
+						double distSqrt = MathHelper.sqrt(distX*distX + distZ*distZ);
 						
 						this.motionX = distX / distSqrt * 0.375D;
 						this.motionZ = distZ / distSqrt * 0.375D;
@@ -366,13 +367,13 @@ abstract public class BasicEntityAirplane extends EntityLiving implements IShipC
 						//if host Anti-Air, find airplane every 32 ticks
 						if (this.host.getStateFlag(ID.F.AntiAir))
 						{
-							list = this.worldObj.getEntitiesWithinAABB(BasicEntityAirplane.class, this.getEntityBoundingBox().expand(24D, 24D, 24D), this.targetSelector);
+							list = this.world.getEntitiesWithinAABB(BasicEntityAirplane.class, this.getEntityBoundingBox().expand(24D, 24D, 24D), this.targetSelector);
 						}
 						
 						//find new target if "target dead" or "no air target"
 						if (list == null || list.isEmpty())
 						{
-							list = this.worldObj.getEntitiesWithinAABB(Entity.class, this.getEntityBoundingBox().expand(16D, 16D, 16D), this.targetSelector);
+							list = this.world.getEntitiesWithinAABB(Entity.class, this.getEntityBoundingBox().expand(16D, 16D, 16D), this.targetSelector);
 						}
 				        
 				        //get target in list
@@ -432,6 +433,21 @@ abstract public class BasicEntityAirplane extends EntityLiving implements IShipC
 	}
 	
 	@Override
+    public void onLivingUpdate()
+    {
+    	if ((!world.isRemote))
+    	{
+        	//update movement, NOTE: 1.9.4: must done before vanilla MoveHelper updating in super.onLivingUpdate()
+        	EntityHelper.updateShipNavigator(this);
+            super.onLivingUpdate();
+    	}
+    	else
+    	{
+    		super.onLivingUpdate();
+    	}
+    }
+	
+	@Override
 	public boolean attackEntityFrom(DamageSource source, float atk)
 	{
 		//disable special damage
@@ -477,7 +493,7 @@ abstract public class BasicEntityAirplane extends EntityLiving implements IShipC
 		if (entity instanceof IShipAttackBase)
 		{
 			//get attack time for damage modifier setting (day, night or ...etc)
-			int modSet = this.worldObj.provider.isDaytime() ? 0 : 1;
+			int modSet = this.world.provider.isDaytime() ? 0 : 1;
 			reduceAtk = CalcHelper.calcDamageByType(reduceAtk, ((IShipAttackBase) entity).getDamageType(), this.getDamageType(), modSet);
 		}
 		
@@ -503,9 +519,9 @@ abstract public class BasicEntityAirplane extends EntityLiving implements IShipC
 			return false;
 		}
 		
-//		//TODO sound event
-//		//play cannon fire sound at attacker
-//        playSound(Reference.MOD_ID+":ship-machinegun", ConfigHandler.volumeFire, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+		//play cannon fire sound at attacker
+		this.playSound(ModSounds.SHIP_MACHINEGUN, ConfigHandler.volumeFire, this.getSoundPitch() * 0.85F);
+	        
         //attack particle
         TargetPoint point0 = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 8, false), point0);
@@ -617,10 +633,9 @@ abstract public class BasicEntityAirplane extends EntityLiving implements IShipC
 			return false;
 		}
 
-//		//TODO sound event
-//		//play cannon fire sound at attacker
-//        this.playSound(Reference.MOD_ID+":ship-fireheavy", ConfigHandler.volumeFire, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-        
+		//play cannon fire sound at attacker
+		this.playSound(ModSounds.SHIP_FIREHEAVY, ConfigHandler.volumeFire, this.getSoundPitch() * 0.85F);
+	    
 		//calc miss chance, if not miss, calc cri/multi hit
         float missChance = 0.25F - 0.001F * this.host.getStateMinor(ID.M.ShipLevel);
         missChance -= this.host.getEffectEquip(ID.EF_MISS);	//equip miss reduce
@@ -636,9 +651,9 @@ abstract public class BasicEntityAirplane extends EntityLiving implements IShipC
         }
 
         //spawn missile
-    	EntityAbyssMissile missile = new EntityAbyssMissile(this.worldObj, this, 
+    	EntityAbyssMissile missile = new EntityAbyssMissile(this.world, this, 
         		(float)target.posX, (float)(target.posY+target.height*0.2F), (float)target.posZ, (float)(this.posY-0.8F), atkHeavy, kbValue, true, -1F);
-        this.worldObj.spawnEntityInWorld(missile);
+        this.world.spawnEntity(missile);
         
         //消耗彈藥計算
   		if (numAmmoHeavy > 0)
@@ -672,15 +687,6 @@ abstract public class BasicEntityAirplane extends EntityLiving implements IShipC
 	{
 		return this.shipMoveHelper;
 	}
-	
-	//update ship move helper
-	@Override
-	protected void updateAITasks()
-	{
-		super.updateAITasks();
-		
-        EntityHelper.updateShipNavigator(this);
-    }
 	
 	@Override
 	public boolean canFly()
@@ -814,7 +820,7 @@ abstract public class BasicEntityAirplane extends EntityLiving implements IShipC
 	}
 	
 	@Override
-	public void setEntitySit() {}
+	public void setEntitySit(boolean sit) {}
 	
     @Override
     public float getModelRotate(int par1)
@@ -879,13 +885,16 @@ abstract public class BasicEntityAirplane extends EntityLiving implements IShipC
 	}
   	
   	@Override
-	public int getAttackAniTick()
+	public int getAttackTick2()
   	{
 		return 0;
 	}
+  	
+	@Override
+	public void setAttackTick(int par1) {}
 
 	@Override
-	public void setAttackAniTick(int par1) {}
+	public void setAttackTick2(int par1) {}
 
 	@Override
 	public boolean canBePushed()
@@ -898,6 +907,16 @@ abstract public class BasicEntityAirplane extends EntityLiving implements IShipC
 	{
 		return 0;
 	}
+	
+	//for model display
+	@Override
+	public int getRidingState()
+	{
+		return 0;
+	}
+	
+	@Override
+	public void setRidingState(int state) {}
 	
 	
 }

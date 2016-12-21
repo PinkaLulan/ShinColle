@@ -180,7 +180,7 @@ public class CapaShipInventory extends CapaInventory<BasicEntityShip> implements
 		}
 		
 		//change equip slot
-		if (!this.hostObj.worldObj.isRemote && id < 6)
+		if (!this.hostObj.world.isRemote && id < 6)
 		{
 			this.hostObj.calcEquipAndUpdateState();  //update equip and attribute value
 		}
@@ -196,7 +196,7 @@ public class CapaShipInventory extends CapaInventory<BasicEntityShip> implements
 	public void markDirty() {}
 
 	@Override
-	public boolean isUseableByPlayer(EntityPlayer player)
+	public boolean isUsableByPlayer(EntityPlayer player)
 	{
 		return true;
 	}
@@ -453,5 +453,6 @@ public class CapaShipInventory extends CapaInventory<BasicEntityShip> implements
 	{
 		return 0;
 	}
+
 	
 }

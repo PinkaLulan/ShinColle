@@ -105,7 +105,7 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
 		tick++;
 		
 		//show client particle
-		if (this.worldObj.isRemote)
+		if (this.world.isRemote)
 		{
 			//player hold waypoint or target wrench
 			EntityPlayer player = ClientProxy.getClientPlayer();

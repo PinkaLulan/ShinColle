@@ -141,7 +141,7 @@ public class PointerItem extends BasicItem
 			EntityPlayer player = (EntityPlayer) entity;
 			
 			//玩家左鍵使用此武器時 (client side only)
-			if (entity.worldObj.isRemote)
+			if (entity.world.isRemote)
 			{
 				GameSettings keySet = ClientProxy.getGameSetting();
 				CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(player);
@@ -261,7 +261,7 @@ public class PointerItem extends BasicItem
 						{
 							String tarName = hitObj.entityHit.getClass().getSimpleName();
 							LogHelper.info("DEBUG : pointer get target class: "+tarName);
-							player.addChatMessage(new TextComponentTranslation("chat.shincolle:pointer.settargetclass", "  "+tarName));
+							player.sendMessage(new TextComponentTranslation("chat.shincolle:pointer.settargetclass", "  "+tarName));
 							//send sync packet to server
 							CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetTarClass, tarName));
 							return true;
@@ -607,10 +607,10 @@ public class PointerItem extends BasicItem
 					if (capa != null)
 					{
 						//calc formatID
-						int fid = capa.getFormatID()[capa.getPointerTeamID()] + this.formatAddID;
+						int fid = capa.getFormatID()[capa.getCurrentTeamID()] + this.formatAddID;
 						fid %= 6;
 						
-						((EntityPlayer)player).addChatMessage(new TextComponentString(
+						((EntityPlayer)player).sendMessage(new TextComponentString(
 								I18n.format("chat.shincolle:pointer.changeformation") + " " +
 								I18n.format("gui.shincolle:formation.format" + fid)));
 						
@@ -729,7 +729,7 @@ public class PointerItem extends BasicItem
     		String str3 = null;
     		
     		//draw control mode and formation text
-    		int fid = capa.getFormatID()[capa.getPointerTeamID()];
+    		int fid = capa.getFormatID()[capa.getCurrentTeamID()];
     		
     		if (fid >= 0)
     		{
@@ -757,7 +757,7 @@ public class PointerItem extends BasicItem
 			
 			//draw current team id
     		list.add(TextFormatting.YELLOW+""+TextFormatting.UNDERLINE + 
-    				String.format("%s %d", I18n.format("gui.shincolle:pointer4"), capa.getPointerTeamID()+1));
+    				String.format("%s %d", I18n.format("gui.shincolle:pointer4"), capa.getCurrentTeamID()+1));
     	
     		//draw current team ship name
     		BasicEntityShip ship = null;

@@ -77,15 +77,15 @@ public class ShipPathFinder
         this.pointMap.clearMap();
         int i;
 
-    	i = MathHelper.floor_double(entity.getEntityBoundingBox().minY + 0.5D);
+    	i = MathHelper.floor(entity.getEntityBoundingBox().minY + 0.5D);
 
         //將起點終點加入point map
     	//設定起點終點: 將entity位置(double)轉為整數位置(int)
-        ShipPathPoint startpp = this.openPoint(MathHelper.floor_double(entity.getEntityBoundingBox().minX), i, MathHelper.floor_double(entity.getEntityBoundingBox().minZ));
-        ShipPathPoint endpp = this.openPoint(MathHelper.floor_double(x - entity.width * 0.5F), MathHelper.floor_double(y), MathHelper.floor_double(z - entity.width * 0.5F));
+        ShipPathPoint startpp = this.openPoint(MathHelper.floor(entity.getEntityBoundingBox().minX), i, MathHelper.floor(entity.getEntityBoundingBox().minZ));
+        ShipPathPoint endpp = this.openPoint(MathHelper.floor(x - entity.width * 0.5F), MathHelper.floor(y), MathHelper.floor(z - entity.width * 0.5F));
         
         //目標的長寬高+1建立為一個path point, 用於判定路徑寬高是否會卡住該entity
-        ShipPathPoint entitySize = new ShipPathPoint(MathHelper.floor_float(entity.width + 1F), MathHelper.floor_float(entity.height + 1F), MathHelper.floor_float(entity.width + 1F));
+        ShipPathPoint entitySize = new ShipPathPoint(MathHelper.floor(entity.width + 1F), MathHelper.floor(entity.height + 1F), MathHelper.floor(entity.width + 1F));
         
         //計算出起點終點之間所有點
         ShipPath pathentity = this.findPath(entity, startpp, endpp, entitySize, range);
@@ -210,7 +210,7 @@ public class ShipPathFinder
         
         if (type == EnumPathType.FLUID || type == EnumPathType.OPEN)
         {
-        	pathYOffset = MathHelper.floor_float(Math.max(1F, entity.stepHeight));
+        	pathYOffset = MathHelper.floor(Math.max(1F, entity.stepHeight));
         }
         
         //檢查東西南北上下 + 四個水平對角方向
@@ -424,7 +424,7 @@ public class ShipPathFinder
         int doorCount = 0;	//若門超過2個 (門是2格高) 所以doorCount > 4則視為BLOCKED
         
 		//檢查原xyz位置是否為液體方塊
-        if (BlockHelper.checkBlockIsLiquid(entity.worldObj.getBlockState(new BlockPos(x, y, z))))
+        if (BlockHelper.checkBlockIsLiquid(entity.world.getBlockState(new BlockPos(x, y, z))))
         {
         	pathInLiquid = true;
         }
@@ -438,7 +438,7 @@ public class ShipPathFinder
                 {
                 	//get block
                 	BlockPos pos = new BlockPos(x1, y1, z1);
-                	IBlockState state = entity.worldObj.getBlockState(pos);
+                	IBlockState state = entity.world.getBlockState(pos);
                 	Block block = state.getBlock();
                 	Material mat = null;
                 	EnumPathType type = EnumPathType.OPEN;
@@ -483,7 +483,7 @@ public class ShipPathFinder
                 		else
                 		{
                             if (block instanceof BlockLilyPad ||
-                            	!block.isPassable(entity.worldObj, pos))
+                            	!block.isPassable(entity.world, pos))
                             {
                                 return EnumPathType.BLOCKED;
                             }

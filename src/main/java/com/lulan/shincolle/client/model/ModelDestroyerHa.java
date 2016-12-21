@@ -1,23 +1,23 @@
 package com.lulan.shincolle.client.model;
 
-import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.MathHelper;
-
-import org.lwjgl.opengl.GL11;
-
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EmotionHelper;
 
+import net.minecraft.client.model.ModelBase;
+import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.math.MathHelper;
+
 /**
  * ModelDestroyerHa - PinkaLulan 2015/3/10
  * Created using Tabula 4.1.1
  */
-public class ModelDestroyerHa extends ModelBase implements IModelEmotion {
+public class ModelDestroyerHa extends ModelBase implements IModelEmotion
+{
 	public ModelRenderer Back;
     public ModelRenderer NeckBack;
     public ModelRenderer Body;
@@ -46,9 +46,11 @@ public class ModelDestroyerHa extends ModelBase implements IModelEmotion {
     public ModelRenderer GlowNeckBack;
     public ModelRenderer GlowHead;
 
-    public ModelDestroyerHa() {
+    public ModelDestroyerHa()
+    {
         this.textureWidth = 128;
         this.textureHeight = 128;
+        
         this.TailBack = new ModelRenderer(this, 30, 79);
         this.TailBack.setRotationPoint(0.0F, -7.0F, 9.0F);
         this.TailBack.addBox(-10.0F, -4.0F, 0.0F, 20, 17, 22, 0.0F);
@@ -180,29 +182,29 @@ public class ModelDestroyerHa extends ModelBase implements IModelEmotion {
     /**
      * This is a helper function from Tabula to set the rotation of model parts
      */
-    public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z) {
+    public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z)
+    {
         modelRenderer.rotateAngleX = x;
         modelRenderer.rotateAngleY = y;
         modelRenderer.rotateAngleZ = z;
     }
     
     @Override
-    public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) { 
-    	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
-
-    	GL11.glPushMatrix();
-    	GL11.glTranslatef(0F, 1F, 0F);
-    	GL11.glScalef(0.45F, 0.45F, 0.45F);	//debug用
+    public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
+    { 
+    	GlStateManager.pushMatrix();
+    	GlStateManager.translate(0F, 1F, 0F);
+    	GlStateManager.scale(0.45F, 0.45F, 0.45F);
     	
+    	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
     	this.Back.render(f5);
     	
-    	//亮度設為240
-    	GL11.glDisable(GL11.GL_LIGHTING);
+    	GlStateManager.disableLighting();
     	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
     	this.GlowBack.render(f5);
-    	GL11.glEnable(GL11.GL_LIGHTING);
-
-    	GL11.glPopMatrix();
+    	GlStateManager.enableLighting();
+    	
+    	GlStateManager.popMatrix();
     }
     
   //model animation
@@ -215,14 +217,17 @@ public class ModelDestroyerHa extends ModelBase implements IModelEmotion {
 		BasicEntityShip ent = (BasicEntityShip) entity;
 		
   		//水上漂浮
-  		if(((IShipFloating)ent).getShipDepth() > 0) {
-    		GL11.glTranslatef(0F, angleX * 0.1F - 0.025F, 0F);
+  		if (((IShipFloating)ent).getShipDepth() > 0)
+  		{
+  			GlStateManager.translate(0F, angleX * 0.1F - 0.025F, 0F);
     	}
 		
-		if(ent.getStateFlag(ID.F.NoFuel)) {
+		if (ent.getStateFlag(ID.F.NoFuel))
+		{
 			motionStopPos(f, f1, f2, f3, f4, ent);
 		}
-		else {
+		else
+		{
 			//org pose
 			Back.rotateAngleX = -0.1F;
 			Back.rotateAngleZ = 0F;
@@ -238,10 +243,12 @@ public class ModelDestroyerHa extends ModelBase implements IModelEmotion {
 			rollEmotion(ent);    
 			motionWatch(f3, f4, angleX);	//include watch head & normal head
 			  
-			if(ent.isSitting()) {
+			if (ent.isSitting())
+			{
 				motionSit(ent, f2);
 			}
-			else {
+			else
+			{
 			  	motionTail(angleX);
 			  	motionLeg(ent, f, f1);
 			}
@@ -251,7 +258,8 @@ public class ModelDestroyerHa extends ModelBase implements IModelEmotion {
     }
     
     //設定模型發光部份的rotation
-    private void setGlowRotation() {
+    private void setGlowRotation()
+    {
 		this.GlowBack.rotateAngleX = this.Back.rotateAngleX;
 		this.GlowBack.rotateAngleY = this.Back.rotateAngleY;
 		this.GlowBack.rotateAngleZ = this.Back.rotateAngleZ;
@@ -263,8 +271,9 @@ public class ModelDestroyerHa extends ModelBase implements IModelEmotion {
 		this.GlowHead.rotateAngleZ = this.Head.rotateAngleZ;
 	}
     
-    private void motionStopPos(float f, float f1, float f2, float f3, float f4, BasicEntityShip ent) {
-    	GL11.glTranslatef(0F, 0.8F, 0F);
+    private void motionStopPos(float f, float f1, float f2, float f3, float f4, BasicEntityShip ent)
+    {
+    	GlStateManager.translate(0F, 0.8F, 0F);
     	isKisaragi(ent);
 		setFace(2);
 		
@@ -292,12 +301,14 @@ public class ModelDestroyerHa extends ModelBase implements IModelEmotion {
     }
     
     //坐下動作
-  	private void motionSit(BasicEntityShip ent, float f2) {
+  	private void motionSit(BasicEntityShip ent, float f2)
+  	{
   		float angle1 = MathHelper.cos(f2 * 1F);
   		
-  		if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {
+  		if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
+  		{
 			setFace(1);
-	  		GL11.glTranslatef(0F, 0.6F, 0F);
+			GlStateManager.translate(0F, 0.6F, 0F);
 	  		Back.rotateAngleX = -0.8F;
 	  		NeckBack.rotateAngleX = -0.2618F;
 			Head.rotateAngleX = -0.2618F;
@@ -309,8 +320,9 @@ public class ModelDestroyerHa extends ModelBase implements IModelEmotion {
 		    TailBack.rotateAngleX = 0.35F;
 		    TailEnd1.rotateAngleX = 0.35F;
   		}
-  		else {
-  			GL11.glTranslatef(0F, 0.7F, 0F);
+  		else
+  		{
+  			GlStateManager.translate(0F, 0.7F, 0F);
 	  		Back.rotateAngleX = 0F;
 	  		Back.rotateAngleZ = -1.5708F;
 	  		NeckBack.rotateAngleX = 0.1745F;
@@ -327,13 +339,15 @@ public class ModelDestroyerHa extends ModelBase implements IModelEmotion {
   	}
     
     //常時擺動尾巴
-  	private void motionTail(float angleX) {
+  	private void motionTail(float angleX)
+  	{
   		TailBack.rotateAngleX = angleX * 0.05F + 0.1745F;
 	    TailEnd1.rotateAngleX = angleX * 0.1F + 0.2618F;
   	}
     
     //雙腳移動計算
-  	private void motionLeg(BasicEntityShip ent, float f, float f1) {
+  	private void motionLeg(BasicEntityShip ent, float f, float f1)
+  	{
   		float angle1 = MathHelper.cos(f * 0.6662F) * 0.5F * f1;
   		float angle2 = MathHelper.sin(f * 0.6662F) * 0.5F * f1;
   		
@@ -344,9 +358,11 @@ public class ModelDestroyerHa extends ModelBase implements IModelEmotion {
 	}
     
     //頭部看人轉動計算
-  	private void motionWatch(float f3, float f4, float angleX) {
+  	private void motionWatch(float f3, float f4, float angleX)
+  	{
   		//移動頭部 使其看人, 不看人時持續擺動頭部
-  	    if(f4 != 0) {
+  	    if (f4 != 0)
+  	    {
   	    	NeckBack.rotateAngleX = f4 / 200F; 	//上下角度
   		    NeckBack.rotateAngleY = f3 / 200F;	//左右角度 角度轉成rad 即除以57.29578
   		    Head.rotateAngleX = f4 / 200F;
@@ -357,79 +373,90 @@ public class ModelDestroyerHa extends ModelBase implements IModelEmotion {
   		    TailEnd1.rotateAngleX = 0.2F;
 		    TailEnd1.rotateAngleY = f3 / -200F;
   	    }
-  	    else {
+  	    else
+  	    {
   	    	HeadD01.rotateAngleX = angleX * 0.05F - 0.05F;
   	    }	
   	}
     
-    private void isKisaragi(BasicEntityShip ent) {
-		if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
+    private void isKisaragi(BasicEntityShip ent)
+    {
+		if (ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00)
+		{
 			k00.isHidden = false;
 		}
-		else {
+		else
+		{
 			k00.isHidden = true;
 		}
   	}
     
     //隨機抽取顯示的表情 
-    private void rollEmotion(BasicEntityShip ent) {   	
-    	switch(ent.getStateEmotion(ID.S.Emotion)) {
+    private void rollEmotion(BasicEntityShip ent)
+    {   	
+    	switch (ent.getStateEmotion(ID.S.Emotion))
+    	{
     	case ID.Emotion.BLINK:	//blink
     		EmotionHelper.EmotionBlink(this, ent);
-    		break;
+    	break;
     	case ID.Emotion.T_T:	//cry
     	case ID.Emotion.O_O:
     	case ID.Emotion.HUNGRY:
-    		if(ent.getFaceTick() <= 0) setFace(2);
-    		break;
+    		if (ent.getFaceTick() <= 0) setFace(2);
+    	break;
     	case ID.Emotion.BORED:	//cry
-    		if(ent.getFaceTick() <= 0) setFace(1);
-    		break;
+    		if (ent.getFaceTick() <= 0) setFace(1);
+    	break;
     	default:						//normal face
     		//reset face to 0 or blink if emotion time > 0
-    		if(ent.getFaceTick() <= 0) {
+    		if (ent.getFaceTick() <= 0)
+    		{
     			setFace(0);
     		}
-    		else {
+    		else
+    		{
     			EmotionHelper.EmotionBlink(this, ent);
     		}
+    		
     		//roll emotion (3 times) every 6 sec
     		//1 tick in entity = 3 tick in model class (20 vs 60 fps)
-    		if(ent.ticksExisted % 120 == 0) {  			
+    		if (ent.ticksExisted % 120 == 0)
+    		{  			
         		int emotionRand = ent.getRNG().nextInt(10);   		
-        		if(emotionRand > 7) {
+        		if (emotionRand > 7)
+        		{
         			EmotionHelper.EmotionBlink(this, ent);
         		} 		
         	}
-    		break;
-    	}	
+    	break;
+    	}//end switch
     }
 	
 	//設定顯示的臉型
     @Override
-  	public void setFace(int emo) {
-		switch(emo) {
+  	public void setFace(int emo)
+    {
+		switch (emo)
+		{
 		case 0:
 			Face00.isHidden = false;
 			Face01.isHidden = true;
 			Face02.isHidden = true;
-			break;
+		break;
 		case 1:
 			Face00.isHidden = true;
 			Face01.isHidden = false;
 			Face02.isHidden = true;
-			break;
+		break;
 		case 2:
 			Face00.isHidden = true;
 			Face01.isHidden = true;
 			Face02.isHidden = false;
-			break;
+		break;
 		default:
-			break;
+		break;
 		}
 	}
     
     
-    
 }
-

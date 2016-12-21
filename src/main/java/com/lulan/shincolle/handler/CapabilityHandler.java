@@ -4,9 +4,8 @@ import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.capability.CapaTeitokuProvider;
 import com.lulan.shincolle.reference.Reference;
 
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -30,9 +29,11 @@ public class CapabilityHandler
 	public void attachCapability(AttachCapabilitiesEvent<Entity> event)
 	{
 //		if (event.getObject() instanceof EntityPlayer)
-		if (!(event.getObject() instanceof FakePlayer) &&
-			(event.getObject() instanceof EntityPlayerMP ||
-			 event.getObject() instanceof EntityPlayerSP))
+//		if (!(event.getObject() instanceof FakePlayer) &&
+//			(event.getObject() instanceof EntityPlayerMP ||
+//			 event.getObject() instanceof EntityPlayerSP))
+		if (event.getObject() instanceof EntityPlayer &&
+			!(event.getObject() instanceof FakePlayer))
 		{
 			//attach capability
 			event.addCapability(CAPA_TEITOKU_NAME, new CapaTeitokuProvider());

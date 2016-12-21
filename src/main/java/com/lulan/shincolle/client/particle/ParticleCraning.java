@@ -41,7 +41,7 @@ public class ParticleCraning extends Particle
         this.particleType = type;
         this.vt1 = new double[8][3];
         this.vt2 = new double[8][3];
-        this.field_190017_n = false;	//can clip = false
+        this.canCollide = false;	//can clip = false
         
         float[] lookDeg;
         float[] posOffset;

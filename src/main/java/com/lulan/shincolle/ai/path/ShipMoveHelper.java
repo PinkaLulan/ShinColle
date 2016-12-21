@@ -117,12 +117,12 @@ public class ShipMoveHelper
                 {
             		if (y1 > 0D)  //UP
             		{
-                    	this.entity.motionY += moveSpeed * 0.1D;
+                    	this.entity.motionY += moveSpeed * 0.2D;
                     	moveSpeed *= 0.5F;
                     }
                     else if (y1 < -0.2D)  //DOWN
                     {
-                    	this.entity.motionY -= moveSpeed * 0.2D;
+                    	this.entity.motionY -= moveSpeed * 0.25D;
                     	moveSpeed *= 0.82F;
                     }
                 }

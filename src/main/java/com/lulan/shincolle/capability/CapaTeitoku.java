@@ -285,7 +285,7 @@ public class CapaTeitoku implements ICapaTeitoku
 	public boolean hasTeam()
 	{
 		//server side
-		if (player != null && !player.worldObj.isRemote)
+		if (player != null && !player.world.isRemote)
 		{
 			if (ServerProxy.getTeamData(this.playerUID) != null) return true;
 		}
@@ -378,56 +378,45 @@ public class CapaTeitoku implements ICapaTeitoku
 	}
 	
 	/** get ships for pointer by pointer's mode: 0:single, 1:group, 2:formation */
-	public BasicEntityShip[] getShipEntityByMode(int mode)
+	public ArrayList<BasicEntityShip> getShipEntityByMode(int mode)
 	{	//meta為pointer的item damage
-		BasicEntityShip[] ships = new BasicEntityShip[6];
+		ArrayList<BasicEntityShip> ships = new ArrayList<BasicEntityShip>();
 		boolean shouldSync = false;
-		
-		//check same owner here again, some ship may have changed owner
-		for (int k = 0; k < 6; k++)
-		{
-			if (this.teamList[teamId][k] != null &&
-				!TeamHelper.checkSameOwner(this.teamList[teamId][k], player))
-			{
-				addShipEntityToCurrentTeam(k, null);  //clear ship
-				shouldSync = true;
-			}
-		}
-		
-		if (shouldSync)
-		{
-			sendSyncPacket(0);
-		}
 		
 		switch (mode)
 		{
 		case 1:		//group mode
 			//return所有已選擇的ship
-			int j = 0;
 			for (int i = 0; i < 6; i++)
 			{
-				if (this.getSelectStateCurrentTeam(i))
+				if (this.getSelectStateCurrentTeam(i) && this.teamList[teamId][i] != null)
 				{
-					ships[j] = this.teamList[teamId][i];
-					j++;
+					ships.add(this.teamList[teamId][i]);
 				}
 			}
-			break;
+		break;
 		case 2:		//formation mode
 			//return整個team
-			return this.teamList[teamId];
+			for (int i = 0; i < 6; i++)
+			{
+				if (this.teamList[teamId][i] != null)
+				{
+					ships.add(this.teamList[teamId][i]);
+				}
+			}
+		break;
 		default:	//single mode
 			//return第一個找到的已選擇的ship
 			for (int i = 0; i < 6; i++)
 			{
-				if (this.getSelectStateCurrentTeam(i))
+				if (this.getSelectStateCurrentTeam(i) && this.teamList[teamId][i] != null)
 				{
-					ships[0] = this.teamList[teamId][i];
-					return ships;
+					ships.add(this.teamList[teamId][i]);
+					break;
 				}
 			}
-			break;
-		}
+		break;
+		}//end switch
 		
 		return ships;
 	}
@@ -526,7 +515,7 @@ public class CapaTeitoku implements ICapaTeitoku
 		return sidList[teamId][id];
 	}
 	
-	public int getPointerTeamID()
+	public int getCurrentTeamID()
 	{
 		return this.teamId;
 	}
@@ -1283,7 +1272,7 @@ public class CapaTeitoku implements ICapaTeitoku
 		if (par1 == 0) return true;
 		
 		//for client side
-		if (this.player.worldObj.isRemote)
+		if (this.player.world.isRemote)
 		{
 			if (this.getPlayerTeamAllyList() != null)
 			{
@@ -1302,7 +1291,7 @@ public class CapaTeitoku implements ICapaTeitoku
 		if (par1 == 0) return false;
 		
 		//for client side
-		if (this.player.worldObj.isRemote)
+		if (this.player.world.isRemote)
 		{
 			if (this.getPlayerTeamBannedList() != null)
 			{
@@ -1325,7 +1314,7 @@ public class CapaTeitoku implements ICapaTeitoku
 	 */
 	public void sendSyncPacket(int type)
 	{
-		if (player.worldObj != null && !player.worldObj.isRemote)
+		if (player.world != null && !player.world.isRemote)
 		{
 			switch (type)
 			{
@@ -1366,7 +1355,7 @@ public class CapaTeitoku implements ICapaTeitoku
 	/** sync ships in a team to client */
 	public void syncShips(int teamID)
 	{
-		if (player.worldObj != null && !player.worldObj.isRemote)
+		if (player.world != null && !player.world.isRemote)
 		{
 			CommonProxy.channelG.sendTo(new S2CGUIPackets(this, S2CGUIPackets.PID.SyncPlayerProp_ShipsInTeam, teamID), (EntityPlayerMP) player);
 		}
@@ -1395,8 +1384,18 @@ public class CapaTeitoku implements ICapaTeitoku
 		if(this.teamList[tid][posA] != null) this.teamList[tid][posA].setUpdateFlag(ID.FU.FormationBuff, true);
 		if(this.teamList[tid][posB] != null) this.teamList[tid][posB].setUpdateFlag(ID.FU.FormationBuff, true);
 	
-		//update formation guard position
-		FormationHelper.applyFormationMoving(this.teamList[tid], getFormatID(tid));
+		ArrayList<BasicEntityShip> ships = new ArrayList<BasicEntityShip>();
+		
+		for (int i = 0; i < this.teamList[tid].length; i++)
+		{
+			if (this.teamList[tid][i] != null) ships.add(this.teamList[tid][i]);
+		}
+		
+		if (ships.size() > 4)
+		{
+			//update formation guard position
+			FormationHelper.applyFormationMoving(ships, getFormatID(tid), (int)ships.get(0).posX, (int)ships.get(0).posY, (int)ships.get(0).posZ);
+		}
 	}
 	
 	/** get player extend props by player eid */

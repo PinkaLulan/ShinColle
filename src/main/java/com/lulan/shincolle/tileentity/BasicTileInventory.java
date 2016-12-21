@@ -78,12 +78,12 @@ abstract public class BasicTileInventory extends BasicTileEntity implements ISid
      */
 	//是否可以右鍵點開方塊
 	@Override
-	public boolean isUseableByPlayer(EntityPlayer player)
+	public boolean isUsableByPlayer(EntityPlayer player)
 	{
 		//由於會有多個tile entity副本, 要先確認座標相同的副本才能使用
 		//確認player要在該tile entity 8格內
 		//確認該tile entity沒有被標為invalid
-		if (worldObj.getTileEntity(pos) == this && !isInvalid() &&
+		if (world.getTileEntity(pos) == this && !isInvalid() &&
 			player.getDistanceSq(pos.getX()+0.5D, pos.getY()+0.5D, pos.getZ()+0.5D) <= 64)
 		{
 			return true;

@@ -32,6 +32,8 @@ import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.proxy.ServerProxy.ShipCacheData;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.ITileWaypoint;
+import com.lulan.shincolle.tileentity.TileEntityCrane;
+import com.lulan.shincolle.tileentity.TileEntityWaypoint;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -49,6 +51,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathPoint;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -73,14 +76,14 @@ public class EntityHelper
 	/**check entity is in (stand on, y+0D) liquid (not air or solid block) */
 	public static boolean checkEntityIsInLiquid(Entity entity)
 	{
-		IBlockState block = entity.worldObj.getBlockState(new BlockPos(MathHelper.floor_double(entity.posX), (int)(entity.getEntityBoundingBox().minY), MathHelper.floor_double(entity.posZ)));
+		IBlockState block = entity.world.getBlockState(new BlockPos(MathHelper.floor(entity.posX), (int)(entity.getEntityBoundingBox().minY), MathHelper.floor(entity.posZ)));
 		return BlockHelper.checkBlockIsLiquid(block);
 	}
 	
 	/**check entity is free to move (stand in, y+0.5D) the block */
 	public static boolean checkEntityIsFree(Entity entity)
 	{
-		IBlockState block = entity.worldObj.getBlockState(new BlockPos(MathHelper.floor_double(entity.posX), (int)(entity.getEntityBoundingBox().minY + 0.5D), MathHelper.floor_double(entity.posZ)));
+		IBlockState block = entity.world.getBlockState(new BlockPos(MathHelper.floor(entity.posX), (int)(entity.getEntityBoundingBox().minY + 0.5D), MathHelper.floor(entity.posZ)));
 		return BlockHelper.checkBlockSafe(block);
 	}
 	
@@ -116,10 +119,10 @@ public class EntityHelper
 	public static void checkDepth(IShipFloating host)
 	{
 		Entity host2 = (Entity) host;
-		World w = host2.worldObj;
-		int px = MathHelper.floor_double(host2.posX);
-		int py = MathHelper.floor_double(host2.getEntityBoundingBox().minY);
-		int pz = MathHelper.floor_double(host2.posZ);
+		World w = host2.world;
+		int px = MathHelper.floor(host2.posX);
+		int py = MathHelper.floor(host2.getEntityBoundingBox().minY);
+		int pz = MathHelper.floor(host2.posZ);
 		BlockPos pos = new BlockPos(px, py, pz);
 		IBlockState state = w.getBlockState(pos);
 		double depth = 0;
@@ -201,9 +204,9 @@ public class EntityHelper
 	/** check player is OP */
 	public static boolean checkOP(EntityPlayer player)
 	{
-		if (player != null && !player.worldObj.isRemote)
+		if (player != null && !player.world.isRemote)
 		{
-			return player.worldObj.getMinecraftServer().getPlayerList().canSendCommands(player.getGameProfile());
+			return player.world.getMinecraftServer().getPlayerList().canSendCommands(player.getGameProfile());
 		}
 		
 		return false;
@@ -309,7 +312,7 @@ public class EntityHelper
 	
 	/** get (online) player by entity ID */
 	public static EntityPlayer getEntityPlayerByID(int entityID, int worldID, boolean isClient)
-	{//TODO if null, get EntityPlayer from server cache
+	{
 		World world;
 		
 		if (isClient)
@@ -331,13 +334,13 @@ public class EntityHelper
 				}
 			}
 		}
-//		LogHelper.info("DEBUG : player not found: eid: "+entityID+" world: "+worldID+" client: "+world.isRemote);
+		
 		return null;
 	}
 	
 	/** get (online) player by player name, SERVER SIDE ONLY */
 	public static EntityPlayer getEntityPlayerByName(String name)
-	{//TODO if null, get EntityPlayer from server cache
+	{
 		if (name != null)
 		{
 			//get all worlds
@@ -370,7 +373,7 @@ public class EntityHelper
 	
 	/** get cached player entity by player UID, no world id check, SERVER SIDE ONLY */
 	public static EntityPlayer getEntityPlayerByUID(int uid)
-	{//TODO if null, get EntityPlayer from server cache
+	{
 		if (uid > 0)
 		{
 			//get all worlds
@@ -666,7 +669,7 @@ public class EntityHelper
 	{
 		RayTraceResult lookBlock = null;
 		
-        if (viewer != null && viewer.worldObj != null)
+        if (viewer != null && viewer.world != null)
         {
             lookBlock = viewer.rayTrace(dist, parTick);
             Vec3d vec3 = viewer.getPositionEyes(parTick);
@@ -689,7 +692,7 @@ public class EntityHelper
             Entity pointedEntity = null;
             
             //從玩家到目標方塊之間, 做出擴展1格的方形collision box, 抓出其中碰到的entity
-            List<Entity> list = viewer.worldObj.getEntitiesWithinAABBExcludingEntity(viewer, viewer.getEntityBoundingBox().addCoord(vec3x, vec3y, vec3z).expand(1D, 1D, 1D));
+            List<Entity> list = viewer.world.getEntitiesWithinAABBExcludingEntity(viewer, viewer.getEntityBoundingBox().addCoord(vec3x, vec3y, vec3z).expand(1D, 1D, 1D));
             double d2 = d1;
 
             //檢查抓到的entity, 是否在玩家~目標方塊的視線上
@@ -786,7 +789,6 @@ public class EntityHelper
         return world.rayTraceBlocks(vec3, vec31, onLiquid, ignoreNoAABB, alwaysLastHit);
 	}
 	
-	//TODO combine with applyShipEmotesAOE
 	/** set emotes to all nearby hostile ships */
 	public static void applyShipEmotesAOEHostile(World world, double x, double y, double z, double range, int emotesType)
 	{
@@ -897,88 +899,101 @@ public class EntityHelper
 	{
 		boolean updatePos = false;
 
-//  		//in guard block mode TODO
-//  		if (!entity.getStateFlag(ID.F.CanFollow) && entity.getGuardedPos(1) > 0 && !entity.getIsSitting() && !entity.getIsLeashed() && !entity.getIsRiding())
-//  		{
-//  			//check distance < 3 blocks
-//  			float dx = (float) (entity.getGuardedPos(0) + 0.5D - ((Entity)entity).posX);
-//  			float dy = (float) (entity.getGuardedPos(1) - ((Entity)entity).posY);
-//			float dz = (float) (entity.getGuardedPos(2) + 0.5D - ((Entity)entity).posZ);
-//			dx = dx * dx;
-//			dy = dy * dy;
-//			dz = dz * dz;
-//  			double distsq = dx + dy + dz;
-//  			
-//  			//get target block
-//	  		TileEntity tile = ((Entity)entity).worldObj.getTileEntity(entity.getGuardedPos(0), entity.getGuardedPos(1), entity.getGuardedPos(2));
-//	  		
-//  			//is waypoint block
-//  			if (tile instanceof TileEntityCrane)
-//  			{
-//  				//ship wait for craning (xz < 2 blocks, y < 5 blocks)
-//  				if (distsq < 25D)
-//				{
-//  					if (entity.getStateMinor(ID.M.CraneState) == 0) {
-//  						entity.setStateMinor(ID.M.CraneState, 1);
-//  						
-//  						//強制騎乘者設為可裝卸狀態
-//  						if (((Entity)entity).riddenByEntity instanceof IShipGuardian)
-//  						{
-//  							((IShipGuardian)((Entity)entity).riddenByEntity).setStateMinor(ID.M.CraneState, 1);
-//  							((Entity)entity).riddenByEntity.mountEntity(null);
-//  						}
-//  					}
-//				}
-//  				else
-//  				{
-//  					//go to below crane
-//  	  				entity.getShipNavigate().tryMoveToXYZ(entity.getGuardedPos(0) + 0.5D, entity.getGuardedPos(1) - 2D, entity.getGuardedPos(2) + 0.5D, 1D);
-//  				}
-//  			}
-//  			else
-//  			{
-//  				//cancel craning
-//  				entity.setStateMinor(ID.M.CraneState, 0);
-//  				
-//				if (((Entity)entity).riddenByEntity instanceof IShipGuardian)
-//				{
-//					((IShipGuardian)((Entity)entity).riddenByEntity).setStateMinor(ID.M.CraneState, 0);
-//				}
-//  			}
-//  			
-//  			//is waypoint block
-//  			if (tile instanceof TileEntityWaypoint)
-//  			{
-//  	  			if (distsq < 9D)
-//  	  			{
-//	  	  			try
-//  	  				{
-//  	  					updatePos = applyNextWaypoint((TileEntityWaypoint) tile, entity, true, 16);
-//	  	  				
-//	  	  				//set follow dist
-//	  	  				if (updatePos)
-//	  	  				{
-//	  	  					entity.setStateMinor(ID.M.FollowMin, 2);
-//	  	  					entity.getShipNavigate().tryMoveToXYZ(entity.getGuardedPos(0) + 0.5D, entity.getGuardedPos(1), entity.getGuardedPos(2) + 0.5D, 1D);
-//	  	  				}
-//	  	  				
-//	  	  				return updatePos;
-//  	  				}
-//  	  				catch (Exception e)
-//  	  				{
-//  	  					e.printStackTrace();
-//  	  				}
-//  	  			}
-//  	  			else
-//  	  			{
-//  	  				if (entity.getTickExisted() % 128 == 0)
-//  	  				{
-//  	  					entity.getShipNavigate().tryMoveToXYZ(entity.getGuardedPos(0) + 0.5D, entity.getGuardedPos(1), entity.getGuardedPos(2) + 0.5D, 1D);
-//  	  				}
-//  	  			}
-//  				
-//  			}
-//  		}//end in guard mode
+  		//in guard block mode
+  		if (!entity.getStateFlag(ID.F.CanFollow) && entity.getGuardedPos(1) > 0 && !entity.getIsSitting() && !entity.getIsLeashed() && !entity.getIsRiding())
+  		{
+  			//check distance < 3 blocks
+  			float dx = (float) (entity.getGuardedPos(0) + 0.5D - ((Entity)entity).posX);
+  			float dy = (float) (entity.getGuardedPos(1) - ((Entity)entity).posY);
+			float dz = (float) (entity.getGuardedPos(2) + 0.5D - ((Entity)entity).posZ);
+			dx = dx * dx;
+			dy = dy * dy;
+			dz = dz * dz;
+  			double distsq = dx + dy + dz;
+  			
+  			//get target block
+  			BlockPos pos = new BlockPos(entity.getGuardedPos(0), entity.getGuardedPos(1), entity.getGuardedPos(2));
+	  		TileEntity tile = ((Entity) entity).world.getTileEntity(pos);
+	  		
+  			//is waypoint block
+  			if (tile instanceof TileEntityCrane)
+  			{
+  				//ship wait for craning (xz < 2 blocks, y < 5 blocks)
+  				if (distsq < 25D)
+				{
+  					if (entity.getStateMinor(ID.M.CraneState) == 0)
+  					{
+  						entity.setStateMinor(ID.M.CraneState, 1);
+  						
+  						//若座騎為BasicEntityMount, 騎乘者為BasicEntityShip, 則解除騎乘並開始裝卸
+  						if (!((Entity)entity).getPassengers().isEmpty())
+  						{
+  							Entity rider = ((Entity)entity).getPassengers().get(0);
+  							
+  							if (entity instanceof BasicEntityMount && rider instanceof BasicEntityShip)
+  							{
+  								((BasicEntityShip) rider).setStateMinor(ID.M.CraneState, 1);
+  								rider.dismountRidingEntity();
+  							}
+  						}
+  					}
+				}
+  				else
+  				{
+  					//go to the crane below
+  	  				entity.getShipNavigate().tryMoveToXYZ(entity.getGuardedPos(0) + 0.5D, entity.getGuardedPos(1) - 2D, entity.getGuardedPos(2) + 0.5D, 1D);
+  				}
+  			}
+  			else
+  			{
+  				//cancel craning
+  				entity.setStateMinor(ID.M.CraneState, 0);
+  				
+  				//cancel rider craning
+				if (!((Entity)entity).getPassengers().isEmpty())
+				{
+					Entity rider = ((Entity)entity).getPassengers().get(0);
+					
+					if (rider instanceof BasicEntityShip)
+					{
+						((BasicEntityShip) rider).setStateMinor(ID.M.CraneState, 0);
+					}
+				}
+  			}
+  			
+  			//is waypoint block
+  			if (tile instanceof TileEntityWaypoint)
+  			{
+  	  			if (distsq < 9D)
+  	  			{
+	  	  			try
+  	  				{
+  	  					updatePos = applyNextWaypoint((TileEntityWaypoint) tile, entity, true, 16);
+	  	  				
+	  	  				//set follow dist
+	  	  				if (updatePos)
+	  	  				{
+	  	  					entity.setStateMinor(ID.M.FollowMin, 2);
+	  	  					entity.getShipNavigate().tryMoveToXYZ(entity.getGuardedPos(0) + 0.5D, entity.getGuardedPos(1), entity.getGuardedPos(2) + 0.5D, 1D);
+	  	  				}
+	  	  				
+	  	  				return updatePos;
+  	  				}
+  	  				catch (Exception e)
+  	  				{
+  	  					e.printStackTrace();
+  	  				}
+  	  			}
+  	  			else
+  	  			{
+  	  				if (entity.getTickExisted() % 128 == 0)
+  	  				{
+  	  					entity.getShipNavigate().tryMoveToXYZ(entity.getGuardedPos(0) + 0.5D, entity.getGuardedPos(1), entity.getGuardedPos(2) + 0.5D, 1D);
+  	  				}
+  	  			}
+  				
+  			}
+  		}//end in guard mode
   		
   		return updatePos;
   	}
@@ -987,95 +1002,99 @@ public class EntityHelper
 	public static boolean applyNextWaypoint(ITileWaypoint tile, IShipGuardian entity, boolean checkWpStay, int checkDelay)
 	{
 		boolean changed = false;
-		//TODO
-//		boolean timeout = !checkWpStay;
-//		int[] next = tile.getNextWaypoint();
-//		int[] last = tile.getLastWaypoint();
-//		int[] shiplast = entity.getLastWaypoint();
-//		
-//		//check waypoint stay time
-//		int wpstay = entity.getWpStayTime();
-//		
-//		//stay until timeout
-//		if (checkWpStay)
-//		{
-//			//check wp tile stay time and ship wp stay time, get the longer one
-//			int staytimemax = Math.max(entity.getWpStayTimeMax(), tile.getWpStayTime());
-//			
-//			if(wpstay < staytimemax)
-//			{
-//				entity.setWpStayTime(wpstay + checkDelay);
-//			}
-//			else
-//			{
-//				timeout = true;
-//			}
-//		}
-//		
-//		//timeout, go to next wp
-//		if (timeout)
-//		{
-//			entity.setWpStayTime(0);
-//			
-//			//check next == last
-//			if (next[1] > 0 && next[0] == shiplast[0] && next[1] == shiplast[1] && next[2] == shiplast[2])
-//			{
-//				//if no last waypoint, go to next waypoint
-//				if (last[1] <= 0)
-//				{
-//					//go to next waypoint
-//					if (next[1] > 0)
-//					{
-//						entity.setGuardedPos(next[0], next[1], next[2], ((Entity)entity).dimension, 1);
-//						changed = true;
-//						
-//						if (((Entity)entity).riddenByEntity instanceof IShipGuardian)
-//						{
-//							((IShipGuardian)((Entity)entity).riddenByEntity).setGuardedPos(next[0], next[1], next[2], ((Entity)entity).dimension, 1);
-//						}
-//					}
-//				}
-//				else
-//				{
-//					//go to last waypoint (backwards mode)
-//					entity.setGuardedPos(last[0], last[1], last[2], ((Entity)entity).dimension, 1);
-//					changed = true;
-//					
-//					if (((Entity)entity).riddenByEntity instanceof IShipGuardian)
-//					{
-//						((IShipGuardian)((Entity)entity).riddenByEntity).setGuardedPos(last[0], last[1], last[2], ((Entity)entity).dimension, 1);
-//					}
-//				}
-//			}
-//			else {
-//				//go to next waypoint
-//				if (next[1] > 0)
-//				{
-//					entity.setGuardedPos(next[0], next[1], next[2], ((Entity)entity).dimension, 1);
-//					changed = true;
-//					
-//					if (((Entity)entity).riddenByEntity instanceof IShipGuardian)
-//					{
-//						((IShipGuardian)((Entity)entity).riddenByEntity).setGuardedPos(next[0], next[1], next[2], ((Entity)entity).dimension, 1);
-//					}
-//				}
-//			}
-//			
-//			//set last waypoint
-//			entity.setLastWaypoint(new int[] {((TileEntity)tile).xCoord, ((TileEntity)tile).yCoord, ((TileEntity)tile).zCoord});
-//			
-//			if (((Entity)entity).riddenByEntity instanceof IShipGuardian)
-//			{
-//				((IShipGuardian)((Entity)entity).riddenByEntity).setLastWaypoint(new int[] {((TileEntity)tile).xCoord, ((TileEntity)tile).yCoord, ((TileEntity)tile).zCoord});
-//			}
-//		}
+		
+		boolean timeout = !checkWpStay;
+		BlockPos next = tile.getNextWaypoint();
+		BlockPos last = tile.getLastWaypoint();
+		BlockPos shiplast = entity.getLastWaypoint();
+		
+		//check waypoint stay time
+		int wpstay = entity.getWpStayTime();
+		
+		//stay until timeout
+		if (checkWpStay)
+		{
+			//check wp tile stay time and ship wp stay time, get the longer one
+			int staytimemax = Math.max(entity.getWpStayTimeMax(), tile.getWpStayTime());
+			
+			if(wpstay < staytimemax)
+			{
+				entity.setWpStayTime(wpstay + checkDelay);
+			}
+			else
+			{
+				timeout = true;
+			}
+		}
+		
+		//timeout, go to next wp
+		if (timeout)
+		{
+			entity.setWpStayTime(0);
+			
+			//if next == last, inverse moving
+			if (next.getY() > 0 && next.getX() == shiplast.getX() && next.getY() == shiplast.getY() && next.getZ() == shiplast.getZ())
+			{
+				//if no last waypoint, go to next waypoint
+				if (last.getY() <= 0)
+				{
+					//go to next waypoint
+					if (next.getY() > 0)
+					{
+						setGuardedPos((Entity) entity, next.getX(), next.getY(), next.getZ());
+						changed = true;
+					}
+				}
+				//get last waypoint, go to last waypoint
+				else
+				{
+					//go to last waypoint (backwards mode)
+					setGuardedPos((Entity) entity, last.getX(), last.getY(), last.getZ());
+					changed = true;
+				}
+			}
+			//go to next waypoint
+			else if (next.getY() > 0)
+			{
+				setGuardedPos((Entity) entity, next.getX(), next.getY(), next.getZ());
+				changed = true;
+			}
+			
+			//set last waypoint
+			entity.setLastWaypoint(((TileEntity)tile).getPos());
+			
+			if (!((Entity)entity).getPassengers().isEmpty())
+			{
+				Entity rider = ((Entity)entity).getPassengers().get(0);
+				
+				if (rider instanceof BasicEntityShip)
+				{
+					((BasicEntityShip) rider).setLastWaypoint(((TileEntity)tile).getPos());
+				}
+			}
+		}
 		
 		return changed;
 	}
 	
+	private static void setGuardedPos(Entity host, int x, int y, int z)
+	{
+		((IShipGuardian) host).setGuardedPos(x, y, z, host.dimension, 1);
+		
+		if (!host.getPassengers().isEmpty())
+		{
+			Entity rider = host.getPassengers().get(0);
+			
+			if (rider instanceof BasicEntityShip)
+			{
+				((BasicEntityShip) rider).setGuardedPos(x, y, z, host.dimension, 1);
+			}
+		}
+	}
+	
 	public static boolean canDodge(IShipAttributes ent, float dist)
 	{
-		if (ent != null && !((Entity)ent).worldObj.isRemote)
+		if (ent != null && !((Entity)ent).world.isRemote)
 		{
 			int dodge = (int) ent.getEffectEquip(ID.EF_DODGE);
 			Entity ent2 = (Entity) ent;
@@ -1099,8 +1118,6 @@ public class EntityHelper
 		
 		return false;
 	}
-	
-
 	
 	/** count entity number in the world
 	 *  type: 0:boss ship, 1:mob ship, 2:all hostile ship
@@ -1195,7 +1212,7 @@ public class EntityHelper
         {
             d0 = host.posY;
             host.moveRelative(strafe, forward, host.getMoveSpeed() * 0.4F); //水中的速度計算(含漂移效果)
-            host.moveEntity(host.motionX, host.motionY, host.motionZ);
+            host.move(host.motionX, host.motionY, host.motionZ);
             
             //水中阻力
             host.motionX *= 0.8D;
@@ -1218,7 +1235,7 @@ public class EntityHelper
             //取得地面磨擦係數
             if (host.onGround)
             {
-                f6 = host.worldObj.getBlockState(blockpos$pooledmutableblockpos).getBlock().slipperiness * 0.91F;
+                f6 = host.world.getBlockState(blockpos$pooledmutableblockpos).getBlock().slipperiness * 0.91F;
             }
 
             //計算地面磨擦力效果
@@ -1248,15 +1265,15 @@ public class EntityHelper
 
             if (host.onGround)
             {
-                f6 = host.worldObj.getBlockState(blockpos$pooledmutableblockpos.setPos(host.posX, host.getEntityBoundingBox().minY - 1D, host.posZ)).getBlock().slipperiness * 0.91F;
+                f6 = host.world.getBlockState(blockpos$pooledmutableblockpos.setPos(host.posX, host.getEntityBoundingBox().minY - 1D, host.posZ)).getBlock().slipperiness * 0.91F;
             }
 
             //判定是否在樓梯移動狀態
             if (host.isOnLadder())
             {
                 float f9 = 0.15F;
-                host.motionX = MathHelper.clamp_double(host.motionX, (double)(-f9), (double)f9);
-                host.motionZ = MathHelper.clamp_double(host.motionZ, (double)(-f9), (double)f9);
+                host.motionX = MathHelper.clamp(host.motionX, (double)(-f9), (double)f9);
+                host.motionZ = MathHelper.clamp(host.motionZ, (double)(-f9), (double)f9);
                 host.fallDistance = 0F;
 
                 if (host.motionY < -0.15D)
@@ -1266,7 +1283,7 @@ public class EntityHelper
             }
 
             //實際移動entity
-            host.moveEntity(host.motionX, host.motionY, host.motionZ);
+            host.move(host.motionX, host.motionY, host.motionZ);
 
             //若移動方向為衝撞樓梯, 則給予上升值
             if (host.isCollidedHorizontally && host.isOnLadder())
@@ -1284,9 +1301,9 @@ public class EntityHelper
             {
                 blockpos$pooledmutableblockpos.setPos(host.posX, 0.0D, host.posZ);
 
-                if (!host.worldObj.isRemote || host.worldObj.isBlockLoaded(blockpos$pooledmutableblockpos) && host.worldObj.getChunkFromBlockCoords(blockpos$pooledmutableblockpos).isLoaded())
+                if (!host.world.isRemote || host.world.isBlockLoaded(blockpos$pooledmutableblockpos) && host.world.getChunkFromBlockCoords(blockpos$pooledmutableblockpos).isLoaded())
                 {
-                    if (!host.func_189652_ae())
+                    if (!host.hasNoGravity())
                     {
                     	host.motionY -= 0.08D;
                     }
@@ -1312,7 +1329,7 @@ public class EntityHelper
         host.prevLimbSwingAmount = host.limbSwingAmount;
         double d5 = host.posX - host.prevPosX;
         double d7 = host.posZ - host.prevPosZ;
-        float f10 = MathHelper.sqrt_double(d5 * d5 + d7 * d7) * 4F;
+        float f10 = MathHelper.sqrt(d5 * d5 + d7 * d7) * 4F;
 
         if (f10 > 1F)
         {
@@ -1322,6 +1339,43 @@ public class EntityHelper
         host.limbSwingAmount += (f10 - host.limbSwingAmount) * 0.4F;
         host.limbSwing += host.limbSwingAmount;
     }
+  	
+  	/**
+  	 * check passenger is specific class
+  	 * parms: mount, target class, id
+  	 * id: -1:none, 0~N: check only at Nth passenger
+  	 */
+  	public static boolean checkPassengerClass(Entity mount, Class cls)
+  	{
+  		return checkPassengerClass(mount, cls, -1);
+  	}
+  	
+  	public static boolean checkPassengerClass(Entity mount, Class cls, int id)
+  	{
+  		if (mount != null && cls != null)
+  		{
+  			List<Entity> list = mount.getPassengers();
+  			
+  			if (list.size() > 0 && list.size() > id)
+  			{
+  				//no id checking
+  				if (id < 0)
+  				{
+  	  				for (int i = 0; i < list.size(); i++)
+  	  				{
+  	  					if (cls.isAssignableFrom(list.get(i).getClass())) return true;
+  	  				}
+  				}
+  				//apply id checking
+  				else
+  				{
+  					if (cls.isAssignableFrom(list.get(id).getClass())) return true;
+  				}
+  			}//end list not empty
+  		}//end null check
+  		
+  		return false;
+  	}
   	
   	
 }

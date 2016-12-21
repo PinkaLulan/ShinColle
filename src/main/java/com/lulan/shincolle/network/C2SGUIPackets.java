@@ -200,7 +200,7 @@ public class C2SGUIPackets implements IMessage
 		case PID.ShipBtn:	//ship entity gui click
 		{
 			buf.writeInt(this.entity.getEntityId());
-			buf.writeInt(this.entity.worldObj.provider.getDimension());
+			buf.writeInt(this.entity.world.provider.getDimension());
 			buf.writeByte(this.valueInt[0]);
 			buf.writeByte(this.valueInt[1]);
 		}
@@ -254,7 +254,7 @@ public class C2SGUIPackets implements IMessage
 			
 			buf.writeInt(length);
 			buf.writeInt(this.entity.getEntityId());
-			buf.writeInt(this.entity.worldObj.provider.getDimension());
+			buf.writeInt(this.entity.world.provider.getDimension());
 			
 			for (int val : this.valueInt)
 			{
@@ -268,7 +268,7 @@ public class C2SGUIPackets implements IMessage
 		case PID.Desk_Rename:
 		{
 			buf.writeInt(this.entity.getEntityId());
-			buf.writeInt(this.entity.worldObj.provider.getDimension());
+			buf.writeInt(this.entity.world.provider.getDimension());
 			PacketHelper.sendString(buf, this.valueStr);
 		}
 		break;
@@ -356,7 +356,7 @@ public class C2SGUIPackets implements IMessage
 			player = EntityHelper.getEntityPlayerByID(msg.valueInt[0], msg.valueInt[1], false);
 			entity = EntityHelper.getEntityByID(msg.valueInt[3], msg.valueInt[1], false);
 			
-			if (entity != null)
+			if (entity != null && player != null)
 			{
 				//非禁止攻擊目標 or 不同主人 or 敵對/中立陣營才能攻擊
 				if (!TargetHelper.checkUnattackTargetList(entity) &&
@@ -385,7 +385,7 @@ public class C2SGUIPackets implements IMessage
 			
 			if (player != null && entity instanceof BasicEntityShip)
 			{
-				FMLNetworkHandler.openGui(player, ShinColle.instance, ID.Gui.SHIPINVENTORY, player.worldObj, msg.valueInt[2], 0, 0);
+				FMLNetworkHandler.openGui(player, ShinColle.instance, ID.Gui.SHIPINVENTORY, player.world, msg.valueInt[2], 0, 0);
 			}
 		break;
 		case PID.SyncPlayerItem:	//sync pointer item, 1 parm
@@ -402,7 +402,7 @@ public class C2SGUIPackets implements IMessage
 					player.inventory.getCurrentItem().setItemDamage(msg.valueInt[2]);
 					
 					//mode changed != 3, reset focus target
-					if (MathHelper.abs_int(msg.valueInt[2] - oldmeta) % 3 != 0)
+					if (MathHelper.abs(msg.valueInt[2] - oldmeta) % 3 != 0)
 					{
 						capa = CapaTeitoku.getTeitokuCapability(player);
 						
@@ -471,11 +471,11 @@ public class C2SGUIPackets implements IMessage
 				{
 					if (ServerProxy.setPlayerTargetClass(uid, msg.valueStr))
 					{
-						player.addChatMessage(new TextComponentString(TextFormatting.AQUA+"ADD: "+TextFormatting.YELLOW+msg.valueStr));
+						player.sendMessage(new TextComponentString(TextFormatting.AQUA+"ADD: "+TextFormatting.YELLOW+msg.valueStr));
 					}
 					else
 					{
-						player.addChatMessage(new TextComponentString(TextFormatting.RED+"REMOVE: "+TextFormatting.YELLOW+msg.valueStr));
+						player.sendMessage(new TextComponentString(TextFormatting.RED+"REMOVE: "+TextFormatting.YELLOW+msg.valueStr));
 					}
 					
 					//send sync packet to client
@@ -563,7 +563,7 @@ public class C2SGUIPackets implements IMessage
 				switch (msg.valueInt[2])
 				{
 				case 0:  //formation
-					FMLNetworkHandler.openGui(player, ShinColle.instance, ID.Gui.FORMATION, player.worldObj, 0, 0, 0);
+					FMLNetworkHandler.openGui(player, ShinColle.instance, ID.Gui.FORMATION, player.world, 0, 0, 0);
 				break;
 				}
 			}
@@ -594,16 +594,16 @@ public class C2SGUIPackets implements IMessage
 				//add target to list	
 				if (ServerProxy.addUnattackableTargetClass(msg.valueStr))
 				{	//TODO use local lang string, not hardcoded string
-					player.addChatMessage(new TextComponentString("Target Wrench: ADD entity: "+msg.valueStr));
+					player.sendMessage(new TextComponentString("Target Wrench: ADD entity: "+msg.valueStr));
 				}
 				else
 				{
-					player.addChatMessage(new TextComponentString("Target Wrench: REMOVE entity: "+msg.valueStr));
+					player.sendMessage(new TextComponentString("Target Wrench: REMOVE entity: "+msg.valueStr));
 				}
 			}
 			else
 			{
-				player.addChatMessage(new TextComponentString("Target Wrench: This item is OP ONLY!"));
+				player.sendMessage(new TextComponentString("Target Wrench: This item is OP ONLY!"));
 			}
 		break;
 		case PID.HitHeight:

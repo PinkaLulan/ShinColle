@@ -45,49 +45,33 @@ public class ItemBlockWaypoint extends BasicItemBlock
                 {
                     return new ActionResult(EnumActionResult.PASS, stack);
                 }
-
-                //tweak block position
-                switch (hitobj.sideHit.getIndex())
-                {
-				case 0:
-					y--;
-					break;
-				case 1:
-					y++;
-					break;
-				case 2:
-					z--;
-					break;
-				case 3:
-					z++;
-					break;
-				case 4:
-					x--;
-					break;
-				case 5:
-					x++;
-					break;
-				}
                 
-                //check metadata
-                pos = new BlockPos(x, y, z);
-                int i = this.getMetadata(stack.getMetadata());
-                IBlockState state = this.block.onBlockPlaced(world, pos, hitobj.sideHit, 0F, 0F, 0F, i, player);
-
-                //place block
-                if (placeBlockAt(stack, player, world, pos, hitobj.sideHit, 0F, 0F, 0F, state))
+                if (!block.isReplaceable(world, pos))
                 {
-                    SoundType soundtype = world.getBlockState(pos).getBlock().getSoundType(world.getBlockState(pos), world, pos, player);
-                    world.playSound(player, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
-
-                    //if creative mode, item not consumed
-                    if (!player.capabilities.isCreativeMode)
-                    {
-                        --stack.stackSize;
-                    }
+                    pos = pos.offset(hitobj.sideHit);
                 }
+                
+                if (stack.stackSize != 0)
+                {
+                    //check metadata
+                    int i = this.getMetadata(stack.getMetadata());
+                    IBlockState state = this.block.getStateForPlacement(world, pos, hitobj.sideHit, 0F, 0F, 0F, i, player, stack);
 
-                return new ActionResult(EnumActionResult.SUCCESS, stack);
+                    //place block
+                    if (placeBlockAt(stack, player, world, pos, hitobj.sideHit, 0F, 0F, 0F, state))
+                    {
+                        SoundType soundtype = world.getBlockState(pos).getBlock().getSoundType(world.getBlockState(pos), world, pos, player);
+                        world.playSound(player, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
+
+                        //if creative mode, item not consumed
+                        if (!player.capabilities.isCreativeMode)
+                        {
+                            --stack.stackSize;
+                        }
+                    }
+
+                    return new ActionResult(EnumActionResult.SUCCESS, stack);
+                }
             }//end get block
         }//end get target
     	

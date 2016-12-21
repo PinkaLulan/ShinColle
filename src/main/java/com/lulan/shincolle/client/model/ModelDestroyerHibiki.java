@@ -2,23 +2,23 @@ package com.lulan.shincolle.client.model;
 
 import java.util.Random;
 
-import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.MathHelper;
-
 import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.IShipFloating;
-import com.lulan.shincolle.entity.destroyer.EntityDestroyerAkatsuki;
-import com.lulan.shincolle.entity.destroyer.EntityDestroyerIkazuchi;
-import com.lulan.shincolle.entity.destroyer.EntityDestroyerInazuma;
+import com.lulan.shincolle.entity.IShipRiderType;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
+
+import net.minecraft.client.model.ModelBase;
+import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.GlStateManager.DestFactor;
+import net.minecraft.client.renderer.GlStateManager.SourceFactor;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.math.MathHelper;
 
 /**
  * ModelDestroyerHibiki - PinkaLulan
@@ -628,38 +628,42 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
         this.HatBase2.addChild(this.Hat202b);
     }
 
-    public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z) {
+    public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z)
+    {
         modelRenderer.rotateAngleX = x;
         modelRenderer.rotateAngleY = y;
         modelRenderer.rotateAngleZ = z;
     }
     
     @Override
-    public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) { 
-    	GL11.glPushMatrix();       
-    	GL11.glEnable(GL11.GL_BLEND);
-    	GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-    	GL11.glScalef(0.4F, 0.4F, 0.4F);
-    	GL11.glTranslatef(0F, 2.25F, 0F);
+    public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
+    { 
+    	GlStateManager.pushMatrix();
+    	GlStateManager.enableBlend();
+    	GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
+    	GlStateManager.scale(0.4F, 0.4F, 0.4F);
+    	GlStateManager.translate(0F, 2.25F, 0F);
     	
+    	//main body
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
     	this.BodyMain.render(f5);
     	
     	//light part
-    	GL11.glDisable(GL11.GL_LIGHTING);
-    	GL11.glEnable(GL11.GL_CULL_FACE);  //disable drawing back face
+    	GlStateManager.disableLighting();
+    	GlStateManager.enableCull();
     	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
     	this.GlowBodyMain.render(f5);
-    	GL11.glEnable(GL11.GL_LIGHTING);
-    	GL11.glDisable(GL11.GL_CULL_FACE);
+    	GlStateManager.disableCull();
+    	GlStateManager.enableLighting();
     	
-    	GL11.glDisable(GL11.GL_BLEND);
-    	GL11.glPopMatrix();
+    	GlStateManager.disableBlend();
+    	GlStateManager.popMatrix();
     }
     
 	//model animation
     @Override
-    public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity) {
+    public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity)
+    {
 		super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
 
 		IShipEmotion ent = (IShipEmotion)entity;
@@ -668,10 +672,12 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
 		
 		EmotionHelper.rollEmotionAdv(this, ent);
 		  
-		if(ent.getStateFlag(ID.F.NoFuel)) {
+		if (ent.getStateFlag(ID.F.NoFuel))
+		{
 			motionStopPos(f, f1, f2, f3, f4, ent);
 		}
-		else {
+		else
+		{
 			motionHumanPos(f, f1, f2, f3, f4, ent);
 		}
 		
@@ -679,7 +685,8 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
     }
     
 	//設定模型發光部份的rotation
-    private void setGlowRotation() {
+    private void setGlowRotation()
+    {
 		this.GlowBodyMain.rotateAngleX = this.BodyMain.rotateAngleX;
 		this.GlowBodyMain.rotateAngleY = this.BodyMain.rotateAngleY;
 		this.GlowBodyMain.rotateAngleZ = this.BodyMain.rotateAngleZ;
@@ -688,8 +695,9 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
 		this.GlowHead.rotateAngleZ = this.Head.rotateAngleZ;
     }
     
-    private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {
-    	GL11.glTranslatef(0F, 1.8F, 0F);
+    private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
+    {
+    	GlStateManager.translate(0F, 1.8F, 0F);
     	setFace(4);
     	
 		//body
@@ -739,7 +747,8 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
     }
     
 	//雙腳移動計算
-  	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {   
+  	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
+  	{   
   		float angleX = MathHelper.cos(f2*0.08F + f * 0.25F);
   		float angleX1 = MathHelper.cos(f2*0.08F + 0.3F + f * 0.5F);
   		float angleX2 = MathHelper.cos(f2*0.08F + 0.6F + f * 0.5F);
@@ -751,8 +760,9 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
   		float headZ = 0F;
   		
   		//水上漂浮
-  		if(((IShipFloating)ent).getShipDepth() > 0) {
-    		GL11.glTranslatef(0F, angleX * 0.1F - 0.025F, 0F);
+  		if (((IShipFloating)ent).getShipDepth() > 0)
+  		{
+  			GlStateManager.translate(0F, angleX * 0.1F - 0.025F, 0F);
     	}
 
     	//leg move
@@ -834,15 +844,17 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
 	  	this.EquipHead01.rotateAngleZ = angleX * 0.2F -  1.5708F;
 	  	this.EquipC02.rotateAngleY = 0.5F + this.Head.rotateAngleY * 0.5F;
 	  	this.EquipC04a.rotateAngleX = -0.2F + this.Head.rotateAngleX;
-	  	if(this.EquipC04a.rotateAngleX > 0F) this.EquipC04a.rotateAngleX = 0F;
+	  	if (this.EquipC04a.rotateAngleX > 0F) this.EquipC04a.rotateAngleX = 0F;
 	  	this.EquipC05a.rotateAngleX = this.EquipC04a.rotateAngleX;
 	    
-	    if(ent.getStateEmotion(ID.S.State) < ID.State.EQUIP00) {
+	    if (ent.getStateEmotion(ID.S.State) < ID.State.EQUIP00)
+	    {
 	    	this.ArmLeft01.rotateAngleZ += 0.1F;
 	    	this.ArmRight01.rotateAngleZ -= 0.1F;
 	    }
 
-	    if(ent.getIsSprinting() || f1 > 0.95F) {  //奔跑動作
+	    if (ent.getIsSprinting() || f1 > 0.95F)
+	    {	//奔跑動作
 	 	    //body
 	 	    this.Head.rotateAngleX -= 0.25F;
 	 	    this.BodyMain.rotateAngleX = 0.1F;
@@ -861,7 +873,8 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
 	    //head tilt angle
 	    this.Head.rotateAngleZ = EmotionHelper.getHeadTiltAngle(ent, f2);
 	    
-	    if(ent.getIsSneaking()) {		//潛行, 蹲下動作
+	    if (ent.getIsSneaking())
+	    {	//潛行, 蹲下動作
 	    	//Body
 	    	this.Head.rotateAngleX -= 1.0472F;
 		  	this.BodyMain.rotateAngleX = 1.0472F;
@@ -880,57 +893,53 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
 		    addk2 -= 0.55F;
   		}//end if sneaking
 	    
-	    if (((EntityLivingBase)ent).riddenByEntity instanceof EntityDestroyerInazuma ||
-	    	((EntityLivingBase)ent).ridingEntity instanceof EntityDestroyerAkatsuki)
+	    if (((IShipRiderType) ent).getRiderType() > 0)
 	  	{
-	    	if (((EntityLivingBase)ent).ridingEntity instanceof EntityDestroyerAkatsuki)
+    		GL11.glTranslatef(0F, 0.6F, 0F);
+    		//Body
+		  	this.Butt.rotateAngleX = -0.2F;
+	    	this.Butt.offsetY = -0.1F;
+			this.Skirt01.rotateAngleX = -0.07F;
+			this.Skirt01.offsetY = -0.1F;
+			this.Skirt02.rotateAngleX = -0.16F;
+			this.Skirt02.offsetY = -0.15F;
+			//arm 
+		  	this.ArmLeft01.rotateAngleX = -0.3F;
+		  	this.ArmLeft01.rotateAngleY = -0.2F;
+		  	this.ArmLeft01.rotateAngleZ = 0F;
+		  	this.ArmLeft02.rotateAngleX = -1.2F;
+		  	this.ArmRight01.rotateAngleX = -0.3F;
+		  	this.ArmRight01.rotateAngleY = 0.2F;
+		  	this.ArmRight01.rotateAngleZ = 0F;
+		  	this.ArmRight02.rotateAngleX = -1.2F;
+			//leg
+		  	addk1 = -0.95F;
+		  	addk2 = -0.95F;
+		  	this.LegLeft01.rotateAngleY = -0.5F;
+			this.LegLeft01.rotateAngleZ = -0.1F;
+			this.LegLeft02.offsetZ = 0.0F;
+			this.LegLeft02.rotateAngleX = 0.8F;
+			this.LegLeft02.rotateAngleZ = 0.0175F;
+			this.LegRight01.rotateAngleY = 0.5F;
+			this.LegRight01.rotateAngleZ = 0.1F;
+			this.LegRight02.offsetZ = 0.0F;
+			this.LegRight02.rotateAngleX = 0.8F;
+			this.LegRight02.rotateAngleZ = -0.0175F;
+			
+			if (ent.getIsSitting())
 	    	{
-	    		GL11.glTranslatef(0F, 0.6F, 0F);
-	    		//Body
-			  	this.Butt.rotateAngleX = -0.2F;
-		    	this.Butt.offsetY = -0.1F;
-				this.Skirt01.rotateAngleX = -0.07F;
-				this.Skirt01.offsetY = -0.1F;
-				this.Skirt02.rotateAngleX = -0.16F;
-				this.Skirt02.offsetY = -0.15F;
-				//arm 
-			  	this.ArmLeft01.rotateAngleX = -0.3F;
-			  	this.ArmLeft01.rotateAngleY = -0.2F;
-			  	this.ArmLeft01.rotateAngleZ = 0F;
-			  	this.ArmLeft02.rotateAngleX = -1.2F;
-			  	this.ArmRight01.rotateAngleX = -0.3F;
-			  	this.ArmRight01.rotateAngleY = 0.2F;
-			  	this.ArmRight01.rotateAngleZ = 0F;
-			  	this.ArmRight02.rotateAngleX = -1.2F;
-				//leg
-			  	addk1 = -0.95F;
-			  	addk2 = -0.95F;
-			  	this.LegLeft01.rotateAngleY = -0.5F;
-				this.LegLeft01.rotateAngleZ = -0.1F;
-				this.LegLeft02.offsetZ = 0.0F;
-				this.LegLeft02.rotateAngleX = 0.8F;
-				this.LegLeft02.rotateAngleZ = 0.0175F;
-				this.LegRight01.rotateAngleY = 0.5F;
-				this.LegRight01.rotateAngleZ = 0.1F;
-				this.LegRight02.offsetZ = 0.0F;
-				this.LegRight02.rotateAngleX = 0.8F;
-				this.LegRight02.rotateAngleZ = -0.0175F;
-				
-				if (ent.getIsSitting())
-		    	{
-		    		//arm
-				  	this.ArmLeft01.rotateAngleX = -0.6F;
-				  	this.ArmLeft01.rotateAngleY = 0F;
-				  	this.ArmLeft01.rotateAngleZ = 0.2F;
-				  	this.ArmLeft02.rotateAngleX = 0F;
-				  	this.ArmRight01.rotateAngleX = -0.6F;
-				  	this.ArmRight01.rotateAngleY = 0F;
-				  	this.ArmRight01.rotateAngleZ = -0.2F;
-				  	this.ArmRight02.rotateAngleX = 0F;
-		    	}
+	    		//arm
+			  	this.ArmLeft01.rotateAngleX = -0.6F;
+			  	this.ArmLeft01.rotateAngleY = 0F;
+			  	this.ArmLeft01.rotateAngleZ = 0.2F;
+			  	this.ArmLeft02.rotateAngleX = 0F;
+			  	this.ArmRight01.rotateAngleX = -0.6F;
+			  	this.ArmRight01.rotateAngleY = 0F;
+			  	this.ArmRight01.rotateAngleZ = -0.2F;
+			  	this.ArmRight02.rotateAngleX = 0F;
 	    	}
 	    	
-	    	if (((EntityLivingBase)ent).riddenByEntity instanceof EntityDestroyerInazuma)
+	    	if (((IShipRiderType) ent).getRiderType() > 1)
 	    	{
 	    		//body
 		  		this.Head.rotateAngleY *= 0.5F;
@@ -949,32 +958,32 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
 			    //equip
 			    this.EquipBase.isHidden = true;
 			    
-			    if (ent.getIsSitting() && ((EntityLivingBase)ent).ridingEntity == null)
-		    	{
-			    	GL11.glTranslatef(0F, 1F, 0F);
-			    	//Body
-				  	this.Head.rotateAngleX -= 0.1F;
-				  	this.BodyMain.rotateAngleX = 0F;
-			    	this.Butt.rotateAngleX = -0.2F;
-			    	this.Butt.offsetY = -0.1F;
-					this.Skirt01.rotateAngleX = -0.07F;
-					this.Skirt01.offsetY = -0.05F;
-					this.Skirt02.rotateAngleX = -0.16F;
-					this.Skirt02.offsetY = -0.08F;
-				  	//leg
-				  	addk1 = -0.65F;
-				  	addk2 = -0.65F;
-				  	this.LegLeft01.rotateAngleY = 0.2F;
-					this.LegLeft01.rotateAngleZ = 0F;
-					this.LegLeft02.offsetZ = 0.375F;
-					this.LegLeft02.rotateAngleX = 2.45F;
-					this.LegLeft02.rotateAngleZ = 0.0175F;
-					this.LegRight01.rotateAngleY = -0.2F;
-					this.LegRight01.rotateAngleZ = 0F;
-					this.LegRight02.offsetZ = 0.375F;
-					this.LegRight02.rotateAngleX = 2.45F;
-					this.LegRight02.rotateAngleZ = -0.0175F;
-		    	}
+//			    if (ent.getIsSitting())	//TODO need review
+//		    	{
+//			    	GL11.glTranslatef(0F, 1F, 0F);
+//			    	//Body
+//				  	this.Head.rotateAngleX -= 0.1F;
+//				  	this.BodyMain.rotateAngleX = 0F;
+//			    	this.Butt.rotateAngleX = -0.2F;
+//			    	this.Butt.offsetY = -0.1F;
+//					this.Skirt01.rotateAngleX = -0.07F;
+//					this.Skirt01.offsetY = -0.05F;
+//					this.Skirt02.rotateAngleX = -0.16F;
+//					this.Skirt02.offsetY = -0.08F;
+//				  	//leg
+//				  	addk1 = -0.65F;
+//				  	addk2 = -0.65F;
+//				  	this.LegLeft01.rotateAngleY = 0.2F;
+//					this.LegLeft01.rotateAngleZ = 0F;
+//					this.LegLeft02.offsetZ = 0.375F;
+//					this.LegLeft02.rotateAngleX = 2.45F;
+//					this.LegLeft02.rotateAngleZ = 0.0175F;
+//					this.LegRight01.rotateAngleY = -0.2F;
+//					this.LegRight01.rotateAngleZ = 0F;
+//					this.LegRight02.offsetZ = 0.375F;
+//					this.LegRight02.rotateAngleX = 2.45F;
+//					this.LegRight02.rotateAngleZ = -0.0175F;
+//		    	}
 	    	}
 	  	}
 	    else
@@ -984,7 +993,7 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
 		    {
 		    	if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 		    	{
-		    		GL11.glTranslatef(0F, 1.8F, 0F);
+		    		GlStateManager.translate(0F, 1.8F, 0F);
 		    		setFaceBlink1(ent);
 		    		//body
 	    	    	this.Head.rotateAngleX = -0.9F;
@@ -1014,8 +1023,9 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
 					this.ArmRight02.rotateAngleZ = -1.0F;
 					this.ArmRight02.offsetX = 0F;
 		    	}
-		    	else {
-		    		GL11.glTranslatef(0F, 1F, 0F);
+		    	else
+		    	{
+		    		GlStateManager.translate(0F, 1F, 0F);
 			    	//Body
 				  	this.Head.rotateAngleX -= 0.1F;
 				  	this.BodyMain.rotateAngleX = 0F;
@@ -1048,7 +1058,8 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
 	    }
 	    
 	    //攻擊動作    
-	    if(ent.getAttackTime() > 30) {
+	    if (ent.getAttackTick() > 30)
+	    {
 	    	setFaceAttack(ent);
 	    	//arm
 		    this.ArmLeft01.rotateAngleX = -1.55F;
@@ -1065,12 +1076,13 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
 	    
 	    //swing arm
 	  	float f6 = ent.getSwingTime(f2 - (int)f2);
-	  	if(f6 != 0F) {
+	  	if (f6 != 0F)
+	  	{
 	  		float f7 = MathHelper.sin(f6 * f6 * (float)Math.PI);
-	        float f8 = MathHelper.sin(MathHelper.sqrt_float(f6) * (float)Math.PI);
-	        this.ArmRight01.rotateAngleX += -f8 * 80.0F * Values.N.RAD_MUL;
-	        this.ArmRight01.rotateAngleY += -f7 * 20.0F * Values.N.RAD_MUL + 0.2F;
-	        this.ArmRight01.rotateAngleZ += -f8 * 20.0F * Values.N.RAD_MUL;
+	        float f8 = MathHelper.sin(MathHelper.sqrt(f6) * (float)Math.PI);
+	        this.ArmRight01.rotateAngleX += -f8 * 80.0F * Values.N.DIV_PI_180;
+	        this.ArmRight01.rotateAngleY += -f7 * 20.0F * Values.N.DIV_PI_180 + 0.2F;
+	        this.ArmRight01.rotateAngleZ += -f8 * 20.0F * Values.N.DIV_PI_180;
 	  	}
 	  	
 	  	//caress
@@ -1121,24 +1133,27 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
 	    this.LegRight01.rotateAngleX = addk2;
   	}
   	
-  	private void showEquip(IShipEmotion ent) {
-  		switch(ent.getStateEmotion(ID.S.State)) {
+  	private void showEquip(IShipEmotion ent)
+  	{
+  		switch (ent.getStateEmotion(ID.S.State))
+  		{
   		case ID.State.EQUIP00:
   			this.EquipBase.isHidden = false;
   			this.EquipTL03.isHidden = false;
-  			break;
+  		break;
   		default:  //normal
   			this.EquipBase.isHidden = true;
   			this.EquipTL03.isHidden = true;
-  			break;
+  		break;
   		}
   		
-  		switch(ent.getStateEmotion(ID.S.State2)) {
+  		switch (ent.getStateEmotion(ID.S.State2))
+  		{
   		case ID.State.EQUIP00_2:
   			this.HatBase.isHidden = false;
   			this.Hair02f1.isHidden = false;
   			this.HatBase2.isHidden = true;
-  			break;
+  		break;
   		case ID.State.EQUIP01_2:
   			this.HatBase.isHidden = true;
   			this.Hair02f1.isHidden = true;
@@ -1146,7 +1161,7 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
   			this.HatBase2.rotateAngleX = -0.2618F;
   			this.HatBase2.offsetY = 0F;
   			this.HatBase2.offsetZ = 0F;
-  			break;
+  		break;
   		case ID.State.EQUIP02_2:
   			this.HatBase.isHidden = true;
   			this.Hair02f1.isHidden = true;
@@ -1154,47 +1169,49 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
   			this.HatBase2.rotateAngleX = -0.7F;
   			this.HatBase2.offsetY = -0.06F;
   			this.HatBase2.offsetZ = 0.06F;
-  			break;
+  		break;
   		default:  //normal
   			this.HatBase.isHidden = true;
   			this.Hair02f1.isHidden = false;
   			this.HatBase2.isHidden = true;
-  			break;
+  		break;
   		}
   	}
   	
     //設定顯示的臉型
   	@Override
-  	public void setFace(int emo) {
-  		switch(emo) {
+  	public void setFace(int emo)
+  	{
+  		switch (emo)
+  		{
   		case 1:
   			this.Face1.isHidden = false;
   			this.Face1.rotateAngleY = 0F;
   			this.Face2.isHidden = true;
   			this.Face3.isHidden = true;
   			this.Face4.isHidden = true;
-  			break;
+  		break;
   		case 2:
   			this.Face1.isHidden = true;
   			this.Face2.isHidden = false;
   			this.Face2.rotateAngleY = 0F;
   			this.Face3.isHidden = true;
   			this.Face4.isHidden = true;
-  			break;
+  		break;
   		case 3:
   			this.Face1.isHidden = true;
   			this.Face2.isHidden = true;
   			this.Face3.isHidden = false;
   			this.Face3.rotateAngleY = 0F;
   			this.Face4.isHidden = true;
-  			break;
+  		break;
   		case 4:
   			this.Face1.isHidden = true;
   			this.Face2.isHidden = true;
   			this.Face3.isHidden = true;
   			this.Face4.isHidden = false;
   			this.Face4.rotateAngleY = 0F;
-  			break;
+  		break;
   		case 0:
   		case 5:
   		case 6:
@@ -1203,30 +1220,30 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
   			this.Face2.isHidden = true;
   			this.Face3.isHidden = true;
   			this.Face4.isHidden = true;
-  			break;
+  		break;
   		case 7:
   			this.Face1.isHidden = true;
   			this.Face2.isHidden = false;
   			this.Face2.rotateAngleY = 3.14159F;
   			this.Face3.isHidden = true;
   			this.Face4.isHidden = true;
-  			break;
+  		break;
   		case 8:
   			this.Face1.isHidden = true;
   			this.Face2.isHidden = true;
   			this.Face3.isHidden = false;
   			this.Face3.rotateAngleY = 3.14159F;
   			this.Face4.isHidden = true;
-  			break;
+  		break;
   		case 9:
   			this.Face1.isHidden = true;
   			this.Face2.isHidden = true;
   			this.Face3.isHidden = true;
   			this.Face4.isHidden = false;
   			this.Face4.rotateAngleY = 3.14159F;
-  			break;
+  		break;
   		default:
-  			break;
+  		break;
   		}
   	}
 
@@ -1367,4 +1384,3 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
 	
 	
 }
-

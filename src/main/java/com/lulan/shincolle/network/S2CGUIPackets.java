@@ -475,7 +475,7 @@ public class S2CGUIPackets implements IMessage
 			buf.writeByte(capa.hasTeam() ? 1 : 0);
 			buf.writeInt(capa.getMarriageNum());
 			buf.writeInt(capa.getPlayerUID());
-			buf.writeByte(capa.getPointerTeamID());
+			buf.writeByte(capa.getCurrentTeamID());
 			
 			//ship formation id
 			int[] fid = capa.getFormatID();
@@ -512,7 +512,7 @@ public class S2CGUIPackets implements IMessage
 			buf.writeByte(capa.hasTeam() ? 1 : 0);
 			buf.writeInt(capa.getMarriageNum());
 			buf.writeInt(capa.getPlayerUID());
-			buf.writeByte(capa.getPointerTeamID());
+			buf.writeByte(capa.getCurrentTeamID());
 		}
 		break;
 		case PID.SyncShipInv:	//sync ship inventory GUI: kills and grudge
@@ -612,7 +612,7 @@ public class S2CGUIPackets implements IMessage
 		case PID.SyncPlayerProp_ShipsAll:		//sync all ships in team list 0~8
 		{
 			//ship team id
-			buf.writeInt(capa.getPointerTeamID());
+			buf.writeInt(capa.getCurrentTeamID());
 			
 			//ship formation id
 			int[] fid = capa.getFormatID();

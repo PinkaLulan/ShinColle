@@ -60,7 +60,7 @@ public class ContainerVolCore extends Container
 	@Override
 	public boolean canInteractWith(EntityPlayer player)
 	{
-		return tile.isUseableByPlayer(player);
+		return tile.isUsableByPlayer(player);
 	}
 	
 	/**使container支援shift點物品的動作, 此為ContainerFurnace中直接複製過來修改

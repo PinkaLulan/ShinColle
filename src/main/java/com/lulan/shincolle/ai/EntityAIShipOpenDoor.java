@@ -151,12 +151,12 @@ public class EntityAIShipOpenDoor extends EntityAIBase
     //add door or gate block to list
     private static void checkDoors(BlockPos pos, Entity host, ArrayList<BlockPos> list)
     {
-    	int range = MathHelper.floor_float(host.width + 1F);
+    	int range = MathHelper.floor(host.width + 1F);
     	int minX = pos.getX() - range;
     	int minY = pos.getY();
     	int minZ = pos.getZ() - range;
     	int maxX = pos.getX() + range;
-    	int maxY = pos.getY() + MathHelper.floor_float(host.height + 1F);
+    	int maxY = pos.getY() + MathHelper.floor(host.height + 1F);
     	int maxZ = pos.getZ() + range;
     	BlockPos pos2;
     	IBlockState state;
@@ -170,7 +170,7 @@ public class EntityAIShipOpenDoor extends EntityAIBase
     			for (int iy = minY; iy <= maxY; iy++)
     			{
     				pos2 = new BlockPos(ix, iy, iz);
-    				state = host.worldObj.getBlockState(pos2);
+    				state = host.world.getBlockState(pos2);
     				block = state.getBlock();
     				
     				if (block instanceof BlockFenceGate ||
@@ -191,11 +191,11 @@ public class EntityAIShipOpenDoor extends EntityAIBase
         
         for (BlockPos pos : this.doors)
         {
-        	state = this.host.worldObj.getBlockState(pos);
+        	state = this.host.world.getBlockState(pos);
         	
         	if (state.getBlock() instanceof BlockDoor)
         	{
-        		((BlockDoor) state.getBlock()).toggleDoor(this.host.worldObj, pos, open);
+        		((BlockDoor) state.getBlock()).toggleDoor(this.host.world, pos, open);
         	}
         	else if (state.getBlock() instanceof BlockFenceGate)
         	{
@@ -216,8 +216,8 @@ public class EntityAIShipOpenDoor extends EntityAIBase
 				if (!openGate)  //want to close gate
 				{
 		            state = state.withProperty(BlockFenceGate.OPEN, Boolean.valueOf(false));
-		            host.worldObj.setBlockState(pos, state, 10);
-		            host.worldObj.playEvent(null, 1014, pos, 0);
+		            host.world.setBlockState(pos, state, 10);
+		            host.world.playEvent(null, 1014, pos, 0);
 				}
 			}//end open gate
 			//close gate
@@ -233,8 +233,8 @@ public class EntityAIShipOpenDoor extends EntityAIBase
 		            }
 
 		            state = state.withProperty(BlockFenceGate.OPEN, Boolean.valueOf(true));
-		            host.worldObj.setBlockState(pos, state, 10);
-		            host.worldObj.playEvent(null, 1008, pos, 0);
+		            host.world.setBlockState(pos, state, 10);
+		            host.world.playEvent(null, 1008, pos, 0);
 				}
 			}//end close gate
 		}//end get gate

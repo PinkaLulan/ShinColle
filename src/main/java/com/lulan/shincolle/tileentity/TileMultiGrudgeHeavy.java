@@ -72,7 +72,7 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileLiquidF
 	@Override
 	public int getRenderMetadata()
 	{
-		if (this.worldObj == null || this.pos == BlockPos.ORIGIN)
+		if (this.world == null || this.pos == BlockPos.ORIGIN)
 		{
 			return -1;
 		}
@@ -223,7 +223,7 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileLiquidF
 		boolean sendUpdate = false;  //標紀要block update, 有要更新metadata時設為true
 		
 		//server side
-		if (!worldObj.isRemote)
+		if (!world.isRemote)
 		{
 			//update goalPower
 			if (this.buildType != 0)
@@ -373,7 +373,7 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileLiquidF
 			{
 				this.syncTime = 0;
 				//update blockstate & send packet
-				BlockGrudgeHeavy.updateBlockState(this.isBuilding() ? 2 : 1, this.worldObj, this.pos);
+				BlockGrudgeHeavy.updateBlockState(this.isBuilding() ? 2 : 1, this.world, this.pos);
 				//標記此方塊要更新, 以保證資料會存到硬碟
 				this.markDirty();
 			}

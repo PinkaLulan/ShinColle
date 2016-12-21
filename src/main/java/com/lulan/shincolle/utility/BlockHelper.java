@@ -101,7 +101,7 @@ public class BlockHelper
 						//check block is safe to stand at
 						int decY = 0;  //max Y dist below target
 						
-						while (decY <= MathHelper.abs_int(y2))
+						while (decY <= MathHelper.abs(y2))
 						{
 							if (checkBlockCanStandAt(world.getBlockState(new BlockPos(x3, y3 - decY - 1, z3))))
 							{
@@ -285,7 +285,7 @@ public class BlockHelper
 			}//end mode switch
 			
 			//check block safe
-			if (checkBlockSafe(host.worldObj.getBlockState(new BlockPos((int)newPos[0], (int)newPos[1], (int)newPos[2]))))
+			if (checkBlockSafe(host.world.getBlockState(new BlockPos((int)newPos[0], (int)newPos[1], (int)newPos[2]))))
 			{
 				return newPos;
 			}	
@@ -311,7 +311,7 @@ public class BlockHelper
 	    Vec3d vec32 = vec3.addVector(vec31.xCoord * dist, vec31.yCoord * dist, vec31.zCoord * dist);
 	    
 	    //參數: entity位置, entity視線最遠位置, 停止在液體方塊上, 忽略沒有AABB的方塊, 回傳距離內最遠的不可碰撞方塊
-	    return player.worldObj.rayTraceBlocks(vec3, vec32, true, false, false);
+	    return player.world.rayTraceBlocks(vec3, vec32, true, false, false);
 	}
 	
 	/** place light block */

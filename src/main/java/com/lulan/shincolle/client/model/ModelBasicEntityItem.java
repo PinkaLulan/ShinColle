@@ -50,7 +50,7 @@ public class ModelBasicEntityItem extends ModelBase
     	GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
     	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
     	
-    	float f6 = MathHelper.cos(f * 0.025F) * 0.5F;
+    	float f6 = MathHelper.cos(f * 0.12F) * 0.5F;
     	float f7 = (f6 < 0F) ? 0.9F + f6 : 0.9F - f6;
     	float f8 = (f6 < 0F) ? 0.25F - f6 * 0.5F : 0.25F + f6 * 1.25F;
     	

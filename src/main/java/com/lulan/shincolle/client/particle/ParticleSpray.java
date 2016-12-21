@@ -287,7 +287,7 @@ public class ParticleSpray extends Particle
                 this.motionZ *= 0.7D;
             }
             
-            this.moveEntity(this.motionX, this.motionY, this.motionZ);
+            this.move(this.motionX, this.motionY, this.motionZ);
         }
 
     }

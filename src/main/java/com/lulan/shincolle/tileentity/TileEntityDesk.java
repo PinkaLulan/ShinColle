@@ -75,7 +75,7 @@ public class TileEntityDesk extends BasicTileEntity
 	@Override
 	public void sendSyncPacketC2S()
 	{
-		if (this.worldObj.isRemote)
+		if (this.world.isRemote)
 		{
 			int[] data = new int[4];
 			data[0] = this.guiFunc;

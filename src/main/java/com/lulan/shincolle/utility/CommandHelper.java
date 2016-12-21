@@ -44,12 +44,12 @@ public class CommandHelper
 			if (hitObj != null && hitObj.entityHit instanceof BasicEntityShip)
 			{
 				//send change owner packet to server
-				sender.addChatMessage(new TextComponentString("Command: ShipChangeOwner: ship: "+TextFormatting.AQUA+hitObj.entityHit));
-				CommonProxy.channelG.sendToServer(new C2SInputPackets(C2SInputPackets.PID.CmdChOwner, ownerEID, hitObj.entityHit.getEntityId(), hitObj.entityHit.worldObj.provider.getDimension()));
+				sender.sendMessage(new TextComponentString("Command: ShipChangeOwner: ship: "+TextFormatting.AQUA+hitObj.entityHit));
+				CommonProxy.channelG.sendToServer(new C2SInputPackets(C2SInputPackets.PID.CmdChOwner, ownerEID, hitObj.entityHit.getEntityId(), hitObj.entityHit.world.provider.getDimension()));
 			}//end get target ship
 			else
 			{
-				sender.addChatMessage(new TextComponentString("Command: ShipChangeOwner: entity is not ship!"));
+				sender.sendMessage(new TextComponentString("Command: ShipChangeOwner: entity is not ship!"));
 			}
 		}
 	}
@@ -72,16 +72,16 @@ public class CommandHelper
 				BasicEntityShip ship = (BasicEntityShip) hitObj.entityHit;
 				
 				//show ship info
-				sender.addChatMessage(new TextComponentString("Command: ShipInfo: User: "+TextFormatting.LIGHT_PURPLE+
+				sender.sendMessage(new TextComponentString("Command: ShipInfo: User: "+TextFormatting.LIGHT_PURPLE+
 						sender.getDisplayName()+TextFormatting.RESET+
 						" UID: "+TextFormatting.AQUA+EntityHelper.getPlayerUID(sender)+TextFormatting.RESET+
 						" UUID: "+TextFormatting.GOLD+sender.getUniqueID()));
-				sender.addChatMessage(new TextComponentString("Ship Name: "+TextFormatting.AQUA+ship.getCustomNameTag()));
-				sender.addChatMessage(new TextComponentString("Ship EntityID: "+TextFormatting.GOLD+ship.getEntityId()));
-				sender.addChatMessage(new TextComponentString("Ship UID: "+TextFormatting.GREEN+ship.getShipUID()));
-				sender.addChatMessage(new TextComponentString("Ship Owner UID: "+TextFormatting.RED+ship.getPlayerUID()));
-				sender.addChatMessage(new TextComponentString("Ship Owner UUID: "+TextFormatting.YELLOW+EntityHelper.getPetPlayerUUID(ship)));
-				sender.addChatMessage(new TextComponentString("Morale: "+TextFormatting.YELLOW+ship.getStateMinor(ID.M.Morale)));
+				sender.sendMessage(new TextComponentString("Ship Name: "+TextFormatting.AQUA+ship.getCustomNameTag()));
+				sender.sendMessage(new TextComponentString("Ship EntityID: "+TextFormatting.GOLD+ship.getEntityId()));
+				sender.sendMessage(new TextComponentString("Ship UID: "+TextFormatting.GREEN+ship.getShipUID()));
+				sender.sendMessage(new TextComponentString("Ship Owner UID: "+TextFormatting.RED+ship.getPlayerUID()));
+				sender.sendMessage(new TextComponentString("Ship Owner UUID: "+TextFormatting.YELLOW+EntityHelper.getPetPlayerUUID(ship)));
+				sender.sendMessage(new TextComponentString("Morale: "+TextFormatting.YELLOW+ship.getStateMinor(ID.M.Morale)));
 			}
 		}
 	}
@@ -115,27 +115,27 @@ public class CommandHelper
 				if (cmdData.length == 8)
 				{
 					//show msg
-					sender.addChatMessage(new TextComponentString("Command: ShipAttrs: Set ship value: LV: "+
+					sender.sendMessage(new TextComponentString("Command: ShipAttrs: Set ship value: LV: "+
 											TextFormatting.LIGHT_PURPLE+cmdData[1]+TextFormatting.RESET+" BonusValue: "+
 											TextFormatting.RED+cmdData[2]+" "+cmdData[3]+" "+cmdData[4]+" "+
 											cmdData[5]+" "+cmdData[6]+" "+cmdData[7]));
-					sender.addChatMessage(new TextComponentString("Target Ship: "+TextFormatting.AQUA+ship));
+					sender.sendMessage(new TextComponentString("Target Ship: "+TextFormatting.AQUA+ship));
 					
 					//send packet to server: entity id, world id, level, bonus 1~6
 					CommonProxy.channelG.sendToServer(new C2SInputPackets(C2SInputPackets.PID.CmdShipAttr,
-							ship.getEntityId(), ship.worldObj.provider.getDimension(), cmdData[1], cmdData[2],
+							ship.getEntityId(), ship.world.provider.getDimension(), cmdData[1], cmdData[2],
 							cmdData[3], cmdData[4], cmdData[5], cmdData[6], cmdData[7]));
 				}
 				else if (cmdData.length == 2)
 				{
 					//show msg
-					sender.addChatMessage(new TextComponentString("Command: ShipAttrs: Set ship value: LV: "+
+					sender.sendMessage(new TextComponentString("Command: ShipAttrs: Set ship value: LV: "+
 											TextFormatting.LIGHT_PURPLE+cmdData[1]));
-					sender.addChatMessage(new TextComponentString("Target Ship: "+TextFormatting.AQUA+ship));
+					sender.sendMessage(new TextComponentString("Target Ship: "+TextFormatting.AQUA+ship));
 					
 					//send packet to server: entity id, world id, level, bonus 1~6
 					CommonProxy.channelG.sendToServer(new C2SInputPackets(C2SInputPackets.PID.CmdShipAttr,
-							ship.getEntityId(), ship.worldObj.provider.getDimension(), cmdData[1]));
+							ship.getEntityId(), ship.world.provider.getDimension(), cmdData[1]));
 				}
 				
 			}

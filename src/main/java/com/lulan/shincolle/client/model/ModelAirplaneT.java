@@ -2,16 +2,18 @@ package com.lulan.shincolle.client.model;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.GlStateManager.DestFactor;
+import net.minecraft.client.renderer.GlStateManager.SourceFactor;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.Entity;
-
-import org.lwjgl.opengl.GL11;
 
 /**
  * ModelAirplane97T - PinkaLulan
  * Created using Tabula 4.1.1
  */
-public class ModelAirplaneT extends ModelBase {
+public class ModelAirplaneT extends ModelBase
+{
 	
     public ModelRenderer BodyMain;
     public ModelRenderer Tail01;
@@ -30,21 +32,11 @@ public class ModelAirplaneT extends ModelBase {
     private float offsetY;
     
     
-    public ModelAirplaneT(int scaleType) {
+    public ModelAirplaneT()
+    {
         this.textureWidth = 64;
         this.textureHeight = 32;
-        
-        switch(scaleType) {  //type 1: boss scale
-        case 1:
-        	scale = 0.8F;
-        	offsetY = -2.1F;
-        	break;
-        default:
-        	scale = 0.4F;
-        	offsetY = 0F;
-        	break;
-        }
-        
+
         this.Wing02 = new ModelRenderer(this, 0, 0);
         this.Wing02.setRotationPoint(-2.0F, -0.4F, -2.5F);
         this.Wing02.addBox(-13.0F, 0.0F, 0.0F, 13, 1, 5, 0.0F);
@@ -102,36 +94,55 @@ public class ModelAirplaneT extends ModelBase {
     }
 
     @Override
-    public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) { 
-        if(entity.ticksExisted > 6) {
-        	GL11.glPushMatrix();
-        	GL11.glEnable(GL11.GL_BLEND);
-        	GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        	GL11.glScalef(scale, scale, scale);
+    public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
+    {
+    	if (entity.isNonBoss())
+    	{
+    		scale = 0.4F;
+        	offsetY = 0F;
+    	}
+    	else
+    	{
+    		scale = 0.8F;
+        	offsetY = -2.1F;
+    	}
     	
-        	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
-            this.BodyMain.render(f5);
-        	GL11.glDisable(GL11.GL_BLEND);
+        if (entity.ticksExisted > 6)
+        {
+        	GlStateManager.pushMatrix();
+        	GlStateManager.enableBlend();
+        	GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
+        	GlStateManager.scale(scale, scale, scale);
         	
-        	//亮度設為240
-        	GL11.glDisable(GL11.GL_LIGHTING);
+        	//main body
+        	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
+        	this.BodyMain.render(f5);
+        	
+        	GlStateManager.disableBlend();
+        	
+        	//light part
+        	GlStateManager.disableLighting();
+        	GlStateManager.enableCull();
         	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
         	this.GlowBodyMain.render(f5);
-        	GL11.glEnable(GL11.GL_LIGHTING);
+        	GlStateManager.disableCull();
+        	GlStateManager.enableLighting();
         	
-        	GL11.glPopMatrix();
+        	GlStateManager.popMatrix();
         }
     }
 
-    public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z) {
+    public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z)
+    {
         modelRenderer.rotateAngleX = x;
         modelRenderer.rotateAngleY = y;
         modelRenderer.rotateAngleZ = z;
     }
     
     @Override
-	public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity) {  
-    	GL11.glTranslatef(0F, offsetY + 3.3F, 0F);
+	public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity)
+    {  
+    	GlStateManager.translate(0F, offsetY + 3.3F, 0F);
     	
     	this.BodyMain.rotateAngleY = f3 / 57F;	//左右角度
     	this.BodyMain.rotateAngleX = f4 / 57F; 	//上下角度
@@ -141,4 +152,3 @@ public class ModelAirplaneT extends ModelBase {
     
     
 }
-

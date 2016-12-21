@@ -150,7 +150,7 @@ public class BlockGrudgeHeavy extends BasicBlockMulti
 			item.getEntityItem().setTagCompound(nbt);	//將nbt存到entity item中
 			
 			//spawn entity item
-			world.spawnEntityInWorld(item);				//生成item entity
+			world.spawnEntity(item);				//生成item entity
 		}
 		
 		super.breakBlock(world, pos, state);

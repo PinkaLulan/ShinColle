@@ -1,8 +1,28 @@
 package com.lulan.shincolle.init;
 
 import com.lulan.shincolle.ShinColle;
+import com.lulan.shincolle.entity.destroyer.EntityDestroyerAkatsuki;
+import com.lulan.shincolle.entity.destroyer.EntityDestroyerAkatsukiMob;
+import com.lulan.shincolle.entity.destroyer.EntityDestroyerHa;
+import com.lulan.shincolle.entity.destroyer.EntityDestroyerHibiki;
+import com.lulan.shincolle.entity.destroyer.EntityDestroyerHibikiMob;
 import com.lulan.shincolle.entity.destroyer.EntityDestroyerI;
+import com.lulan.shincolle.entity.destroyer.EntityDestroyerIkazuchi;
+import com.lulan.shincolle.entity.destroyer.EntityDestroyerIkazuchiMob;
+import com.lulan.shincolle.entity.destroyer.EntityDestroyerInazuma;
+import com.lulan.shincolle.entity.destroyer.EntityDestroyerInazumaMob;
+import com.lulan.shincolle.entity.destroyer.EntityDestroyerNi;
+import com.lulan.shincolle.entity.destroyer.EntityDestroyerRo;
+import com.lulan.shincolle.entity.destroyer.EntityDestroyerShimakaze;
+import com.lulan.shincolle.entity.destroyer.EntityDestroyerShimakazeBoss;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
+import com.lulan.shincolle.entity.other.EntityAirplane;
+import com.lulan.shincolle.entity.other.EntityAirplaneT;
+import com.lulan.shincolle.entity.other.EntityAirplaneTHostile;
+import com.lulan.shincolle.entity.other.EntityAirplaneTakoyaki;
+import com.lulan.shincolle.entity.other.EntityAirplaneZero;
+import com.lulan.shincolle.entity.other.EntityAirplaneZeroHostile;
+import com.lulan.shincolle.entity.other.EntityFloatingFort;
 import com.lulan.shincolle.item.BasicEntityItem;
 import com.lulan.shincolle.utility.LogHelper;
 
@@ -52,19 +72,19 @@ public class ModEntity
 //		createEntity(EntityCarrierWD.class, "EntityCarrierWD", modEntityID++);
 //		createEntity(EntityCarrierWo.class, "EntityCarrierWo", modEntityID++);
 		createEntity(EntityDestroyerI.class, "EntityDestroyerI", modEntityID++);
-//		createEntity(EntityDestroyerRo.class, "EntityDestroyerRo", modEntityID++);
-//		createEntity(EntityDestroyerHa.class, "EntityDestroyerHa", modEntityID++);
-//		createEntity(EntityDestroyerNi.class, "EntityDestroyerNi", modEntityID++);
-//		createEntity(EntityDestroyerAkatsuki.class, "EntityDestroyerAkatsuki", modEntityID++);
-//		createEntity(EntityDestroyerAkatsukiMob.class, "EntityDestroyerAkatsukiMob", modEntityID++);
-//		createEntity(EntityDestroyerHibiki.class, "EntityDestroyerHibiki", modEntityID++);
-//		createEntity(EntityDestroyerHibikiMob.class, "EntityDestroyerHibikiMob", modEntityID++);
-//		createEntity(EntityDestroyerIkazuchi.class, "EntityDestroyerIkazuchi", modEntityID++);
-//		createEntity(EntityDestroyerIkazuchiMob.class, "EntityDestroyerIkazuchiMob", modEntityID++);
-//		createEntity(EntityDestroyerInazuma.class, "EntityDestroyerInazuma", modEntityID++);
-//		createEntity(EntityDestroyerInazumaMob.class, "EntityDestroyerInazumaMob", modEntityID++);
-//		createEntity(EntityDestroyerShimakaze.class, "EntityDestroyerShimakaze", modEntityID++);
-//		createEntity(EntityDestroyerShimakazeBoss.class, "EntityDestroyerShimakazeBoss", modEntityID++);
+		createEntity(EntityDestroyerRo.class, "EntityDestroyerRo", modEntityID++);
+		createEntity(EntityDestroyerHa.class, "EntityDestroyerHa", modEntityID++);
+		createEntity(EntityDestroyerNi.class, "EntityDestroyerNi", modEntityID++);
+		createEntity(EntityDestroyerAkatsuki.class, "EntityDestroyerAkatsuki", modEntityID++);
+		createEntity(EntityDestroyerAkatsukiMob.class, "EntityDestroyerAkatsukiMob", modEntityID++);
+		createEntity(EntityDestroyerHibiki.class, "EntityDestroyerHibiki", modEntityID++);
+		createEntity(EntityDestroyerHibikiMob.class, "EntityDestroyerHibikiMob", modEntityID++);
+		createEntity(EntityDestroyerIkazuchi.class, "EntityDestroyerIkazuchi", modEntityID++);
+		createEntity(EntityDestroyerIkazuchiMob.class, "EntityDestroyerIkazuchiMob", modEntityID++);
+		createEntity(EntityDestroyerInazuma.class, "EntityDestroyerInazuma", modEntityID++);
+		createEntity(EntityDestroyerInazumaMob.class, "EntityDestroyerInazumaMob", modEntityID++);
+		createEntity(EntityDestroyerShimakaze.class, "EntityDestroyerShimakaze", modEntityID++);
+		createEntity(EntityDestroyerShimakazeBoss.class, "EntityDestroyerShimakazeBoss", modEntityID++);
 //		createEntity(EntityHarbourHime.class, "EntityHarbourHime", modEntityID++);
 //		createEntity(EntityHeavyCruiserRi.class, "EntityHeavyCruiserRi", modEntityID++);
 //		createEntity(EntityHeavyCruiserNe.class, "EntityHeavyCruiserNe", modEntityID++);
@@ -89,20 +109,17 @@ public class ModEntity
 //		createEntity(EntityMountHbH.class, "EntityMountHbH", modEntityID++);
 //		createEntity(EntityMountSeat.class, "EntityMountSeat2", modEntityID++);
 		
-		//register projectile entity
+		//register summons entity
 		createProjectileEntity(EntityAbyssMissile.class, "EntityAbyssMissile", modEntityID++);
-//		createProjectileEntity(EntityAirplane.class, "EntityAirplane", modEntityID++);
-//		createProjectileEntity(EntityAirplaneTakoyaki.class, "EntityAirplaneTakoyaki", modEntityID++);
-//		createProjectileEntity(EntityAirplaneT.class, "EntityAirplaneT", modEntityID++);
-//		createProjectileEntity(EntityAirplaneZero.class, "EntityAirplaneZero", modEntityID++);
-//		createProjectileEntity(EntityAirplaneTHostile.class, "EntityAirplaneTMob", modEntityID++);
-//		createProjectileEntity(EntityAirplaneZeroHostile.class, "EntityAirplaneZeroMob", modEntityID++);
-//		createProjectileEntity(EntityFloatingFort.class, "EntityFloatingFort", modEntityID++);
+		createProjectileEntity(EntityAirplane.class, "EntityAirplane", modEntityID++);
+		createProjectileEntity(EntityAirplaneTakoyaki.class, "EntityAirplaneTakoyaki", modEntityID++);
+		createProjectileEntity(EntityAirplaneT.class, "EntityAirplaneT", modEntityID++);
+		createProjectileEntity(EntityAirplaneZero.class, "EntityAirplaneZero", modEntityID++);
+		createProjectileEntity(EntityAirplaneTHostile.class, "EntityAirplaneTMob", modEntityID++);
+		createProjectileEntity(EntityAirplaneZeroHostile.class, "EntityAirplaneZeroMob", modEntityID++);
+		createProjectileEntity(EntityFloatingFort.class, "EntityFloatingFort", modEntityID++);
 //		createProjectileEntity(EntityProjectileBeam.class, "EntityProjectileBeam", modEntityID++);
 		
-		//register render entity
-//		createProjectileEntity(EntityRenderFlare.class, "EntityRenderFlare", modEntityID++);
-
 		//register item, misc entity
 		createItemEntity(BasicEntityItem.class, "BasicEntityItem", modEntityID++);
 		

@@ -141,15 +141,15 @@ public class EntityAIShipPickItem extends EntityAIBase
     					this.hostShip.getCapaShipInventory().addItemStackToInventory(itemstack))
     				{
     					//play pick item sound
-    					this.hostShip.worldObj.playSound(null, hostShip.posX, hostShip.posY, hostShip.posZ,
+    					this.hostShip.world.playSound(null, hostShip.posX, hostShip.posY, hostShip.posZ,
     							SoundEvents.ENTITY_ITEM_PICKUP, hostShip.getSoundCategory(), ConfigHandler.volumeShip,
     							((this.hostShip.getRNG().nextFloat() - this.hostShip.getRNG().nextFloat()) * 0.7F + 1.0F) * 2.0F);
         	           
         				//play entity sound
-        				if (this.hostShip.soundCD <= 0 && this.hostShip.getRNG().nextInt(2) == 0)
+        				if (this.hostShip.getStateTimer(ID.T.SoundTime) <= 0 && this.hostShip.getRNG().nextInt(2) == 0)
         		    	{
-        					this.hostShip.soundCD = 40 + this.hostShip.getRNG().nextInt(10);
-        					this.hostShip.playSound(this.hostShip.getCustomSound(6), ConfigHandler.volumeShip, 1F);
+        					this.hostShip.setStateTimer(ID.T.SoundTime, 40 + this.hostShip.getRNG().nextInt(10));
+        					this.hostShip.playSound(this.hostShip.getCustomSound(6, this.hostShip), ConfigHandler.volumeShip, 1F);
             			}
         				
     					//send item pickup sync packet
@@ -184,7 +184,7 @@ public class EntityAIShipPickItem extends EntityAIBase
     	EntityItem getitem = null;
         List<EntityItem> getlist = null;
         
-        getlist = this.hostShip.worldObj.getEntitiesWithinAABB(EntityItem.class, 
+        getlist = this.hostShip.world.getEntitiesWithinAABB(EntityItem.class, 
         			this.hostShip.getEntityBoundingBox().expand(this.pickRange, this.pickRange * 0.5F + 1F, this.pickRange));
         
         //get random item

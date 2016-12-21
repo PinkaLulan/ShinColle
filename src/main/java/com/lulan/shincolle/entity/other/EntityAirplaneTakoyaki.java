@@ -76,7 +76,7 @@ public class EntityAirplaneTakoyaki extends BasicEntityAirplane
 	{
 		super.onUpdate();
 		
-		if (this.worldObj.isRemote)
+		if (this.world.isRemote)
 		{
 			if (this.ticksExisted % 2 == 0)
 			{

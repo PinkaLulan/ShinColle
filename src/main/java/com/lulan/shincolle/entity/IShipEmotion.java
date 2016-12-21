@@ -22,15 +22,16 @@ public interface IShipEmotion extends IShipFlags
 	
 	/**GET/SET emotion start time
 	 * emotion start time for individual entity
-	 * 
-	 * note: attack ani tick is render tick (60FPS), NOT game tick (20FPS)
+	 * note: these ticks are render tick (ex: 60~N FPS), NOT game tick (fixed 20 FPS)
 	 */
 	public int getFaceTick();
 	public int getHeadTiltTick();
-	public int getAttackAniTick();
+	public int getAttackTick();		//game tick (20 FPS) = AttackTime (1.7.10-)
+	public int getAttackTick2();	//another attack timer for some animation
 	public void setFaceTick(int par1);
 	public void setHeadTiltTick(int par1);
-	public void setAttackAniTick(int par1);
+	public void setAttackTick(int par1);
+	public void setAttackTick2(int par1);
 	
 	/**GET/SET model rotation XYZ (for client model postRender)
 	 * 在model class中設定值, 使render class能抓到該值並且做進一步post render
@@ -44,8 +45,7 @@ public interface IShipEmotion extends IShipFlags
 	/**Get tick time for emotion count */
 	public int getTickExisted();
 	
-	/**Get attack, sit, run state */
-	public int getAttackTime();
+	/**Get sit, run, ride state */
 	public float getSwingTime(float partialTick);
 	public boolean getIsRiding();
 	public boolean getIsSprinting();
@@ -53,8 +53,12 @@ public interface IShipEmotion extends IShipFlags
 	public boolean getIsSneaking();
 	public boolean getIsLeashed();
 	
-	/**Set states, sitting */
-	void setEntitySit();
+	/** set entity sit */
+	void setEntitySit(boolean sit);
+	
+	/** riding state for model display */
+	public int getRidingState();
+	public void setRidingState(int state);
 	
 	
 }

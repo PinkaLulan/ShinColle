@@ -89,7 +89,7 @@ abstract public class BasicTileMulti extends BasicTileInventory
     		//check master again
     		if (hasMaster)
     		{
-    			TileEntity tile = this.worldObj.getTileEntity(this.masterPos);
+    			TileEntity tile = this.world.getTileEntity(this.masterPos);
     			
     			if (tile instanceof BasicTileMulti)
     			{

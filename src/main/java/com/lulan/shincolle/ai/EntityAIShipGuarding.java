@@ -3,14 +3,6 @@ package com.lulan.shincolle.ai;
 import java.util.Collections;
 import java.util.List;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.math.Vec3d;
-
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
@@ -25,6 +17,14 @@ import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.FormationHelper;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.TargetHelper;
+
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.math.Vec3d;
 /**SHIP GUARDING AI
  * CanFollow = false時可以執行
  * 持續固守某一點followMax格之內, 距離該點followMax格以上就會嘗試回去該點直到靠近followMin格內
@@ -339,7 +339,7 @@ public class EntityAIShipGuarding extends EntityAIBase
 	//find target
 	private void findTarget()
 	{
-		List<EntityLivingBase> list1 = this.host2.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, this.host2.getEntityBoundingBox().expand(this.range, this.range * 0.6D, this.range), this.targetSelector);
+		List<EntityLivingBase> list1 = this.host2.world.getEntitiesWithinAABB(EntityLivingBase.class, this.host2.getEntityBoundingBox().expand(this.range * 0.9D, this.range * 0.6D, this.range * 0.9D), this.targetSelector);
         
         //sort target list
         Collections.sort(list1, this.targetSorter);
@@ -347,7 +347,7 @@ public class EntityAIShipGuarding extends EntityAIBase
         //get nearest target
 		if (list1.size() > 2)
 		{
-			this.target = (EntityLivingBase)list1.get(this.host2.worldObj.rand.nextInt(3));
+			this.target = (EntityLivingBase)list1.get(this.host2.world.rand.nextInt(3));
     	}
 		else if (!list1.isEmpty())
 		{
@@ -415,7 +415,7 @@ public class EntityAIShipGuarding extends EntityAIBase
 		{
 			//target is alive and same dimension
 			if (!this.guarded.isEntityAlive() ||
-				this.guarded.worldObj.provider.getDimension() != this.host2.worldObj.provider.getDimension())
+				this.guarded.world.provider.getDimension() != this.host2.world.provider.getDimension())
 			{
         		host.setGuardedPos(-1, -1, -1, 0, 0);		//reset guard position
         		host.setGuardedEntity(null);

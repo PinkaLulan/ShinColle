@@ -66,6 +66,7 @@ public class ParticleEmotion extends Particle
         this.addHeight = height;
         this.entType = entType;  //0:any entity, 1:entity, 2:block
         this.particleAge = -1;  //prevent showing the emo's initial moving from posY = 0
+        this.canCollide = false;
         
         //set icon position
         switch(this.particleType)

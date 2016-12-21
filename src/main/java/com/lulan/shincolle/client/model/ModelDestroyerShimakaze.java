@@ -2,25 +2,27 @@ package com.lulan.shincolle.client.model;
 
 import java.util.Random;
 
-import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.MathHelper;
-
-import org.lwjgl.opengl.GL11;
-
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
 
+import net.minecraft.client.model.ModelBase;
+import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.GlStateManager.DestFactor;
+import net.minecraft.client.renderer.GlStateManager.SourceFactor;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.math.MathHelper;
+
 /**
  * ModelDestroyerShimakaze - PinkaLulan 2015/3/27
  * Created using Tabula 4.1.1
  */
-public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion {
+public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion
+{
     public ModelRenderer BodyMain;
     public ModelRenderer NeckCloth;
     public ModelRenderer ArmLeft;
@@ -71,22 +73,10 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion 
     private float scale;
     private float offsetY;
 
-    public ModelDestroyerShimakaze(int scaleType)
+    public ModelDestroyerShimakaze()
     {
         this.textureWidth = 128;
         this.textureHeight = 128;
-        
-        switch (scaleType)
-        {
-        case 1:  //type 1: boss scale
-        	scale = 1.5F;
-        	offsetY = -2.7F;
-        	break;
-        default:
-        	scale = 0.4F;
-        	offsetY = 0F;
-        	break;
-        }
         
         this.Head = new ModelRenderer(this, 24, 101);
         this.Head.setRotationPoint(0.0F, -1.5F, 0.0F);
@@ -295,26 +285,39 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion 
 
     @Override
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
-    { 
+    {
+    	if (entity.isNonBoss())
+    	{
+    		scale = 0.4F;
+        	offsetY = 0F;
+    	}
+    	else
+    	{
+    		scale = 1.5F;
+        	offsetY = -2.7F;
+    	}
     	
-    	GL11.glPushMatrix();
-        
-    	GL11.glEnable(GL11.GL_BLEND);
-    	GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-    	GL11.glScalef(scale, scale, scale);
-    	GL11.glTranslatef(0F, offsetY + 2.2F, 0F);
+    	GlStateManager.pushMatrix();
+    	GlStateManager.enableBlend();
+    	GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
+    	GlStateManager.scale(scale, scale, scale);
+    	GlStateManager.translate(0F, offsetY + 2.2F, 0F);
     	
+    	//main body
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
     	this.BodyMain.render(f5);
-    	GL11.glDisable(GL11.GL_BLEND);
     	
-    	//亮度設為240
-    	GL11.glDisable(GL11.GL_LIGHTING);
+    	GlStateManager.disableBlend();
+    	
+    	//light part
+    	GlStateManager.disableLighting();
+    	GlStateManager.enableCull();
     	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
     	this.GlowBodyMain.render(f5);
-    	GL11.glEnable(GL11.GL_LIGHTING);
+    	GlStateManager.disableCull();
+    	GlStateManager.enableLighting();
     	
-    	GL11.glPopMatrix();
+    	GlStateManager.popMatrix();
     }
     
     //for idle/run animation
@@ -329,10 +332,12 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion 
 		
 		EmotionHelper.rollEmotion(this, ent);
 		
-		if(ent.getStateFlag(ID.F.NoFuel)) {
+		if (ent.getStateFlag(ID.F.NoFuel))
+		{
 			motionStopPos(f, f1, f2, f3, f4, ent);
 		}
-		else {
+		else
+		{
 			motionHumanPos(f, f1, f2, f3, f4, ent);
 		}
 		
@@ -356,7 +361,7 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion 
     
     private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
     {
-    	GL11.glTranslatef(0F, 2.0F, 0F);
+    	GlStateManager.scale(0F, 2.0F, 0F);
     	setFace(4);
     	
   	    //ear
@@ -406,9 +411,9 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion 
   		float addk2 = 0;
   		
   		//水上漂浮
-  		if(((IShipFloating)ent).getShipDepth() > 0)
+  		if (((IShipFloating)ent).getShipDepth() > 0)
   		{
-    		GL11.glTranslatef(0F, angleX * 0.1F - 0.025F, 0F);
+  			GlStateManager.scale(0F, angleX * 0.1F - 0.025F, 0F);
     	}
   		
   		//leg move parm
@@ -463,7 +468,8 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion 
 		//equip
 		this.EquipBase.rotateAngleZ = 0.52F;
 
-	    if(ent.getIsSprinting() || f1 > 0.6F) {	//奔跑動作
+	    if (ent.getIsSprinting() || f1 > 0.6F)
+	    {	//奔跑動作
 	    	setFace(3);
 	    	//body
 	    	this.Head.rotateAngleX -= 0.2618F;
@@ -499,8 +505,8 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion 
 	    //head tilt angle
 	    this.Head.rotateAngleZ = EmotionHelper.getHeadTiltAngle(ent, f2);
 	    
-	    if(ent.getIsSneaking()) {		//潛行, 蹲下動作
-//	    	GL11.glTranslatef(0F, 1.0F, 0F);
+	    if (ent.getIsSneaking())
+	    {	//潛行, 蹲下動作
 	    	//body
 	    	this.Head.rotateAngleX -= 0.7854F;
 	    	this.BodyMain.rotateAngleX = 0.7854F;
@@ -510,12 +516,13 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion 
 	    	//leg
 	    	addk1 -= 0.8F;
 	    	addk2 -= 0.8F;
-	    	
   		}//end if sneaking
   		
-	    if(ent.getIsSitting() || ent.getIsRiding()) {  //騎乘動作
-	    	if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {	
-	    		GL11.glTranslatef(0F, 2.0F, 0F);
+	    if (ent.getIsSitting() || ent.getIsRiding())
+	    {  //騎乘動作
+	    	if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
+	    	{	
+	    		GlStateManager.scale(0F, 2.0F, 0F);
 		    	//body
 		    	this.Head.rotateAngleX = -1.48F;
 		    	this.Head.rotateAngleY = 0F;
@@ -532,8 +539,9 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion 
 		    	this.LegLeft.rotateAngleZ = 0.1745F;
 		    	this.LegRight.rotateAngleZ = -0.35F;
 	    	}
-	    	else {
-		    	GL11.glTranslatef(0F, 1.5F, 0F);
+	    	else
+	    	{
+	    		GlStateManager.scale(0F, 1.5F, 0F);
 		    	//body
 		    	this.Head.rotateAngleX -= 0.7F;
 		    	this.BodyMain.rotateAngleX = 0.5236F;
@@ -556,8 +564,9 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion 
   		}//end if sitting
 	    
 	    //攻擊動作    
-	    if(ent.getAttackTime() > 0) {
-	    	GL11.glTranslatef(0F, 0.5F, 0F);
+	    if (ent.getAttackTick() > 0)
+	    {
+	    	GlStateManager.scale(0F, 0.5F, 0F);
 	    	//body
 	    	this.Head.rotateAngleX = -0.8727F;
 	    	this.Head.rotateAngleY = 1.0472F;
@@ -578,15 +587,16 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion 
 	    
 	    //swing arm
 	  	float f6 = ent.getSwingTime(f2 - (int)f2);
-	  	if(f6 != 0F) {
+	  	if (f6 != 0F)
+	  	{
 	  		float f7 = MathHelper.sin(f6 * f6 * (float)Math.PI);
-	        float f8 = MathHelper.sin(MathHelper.sqrt_float(f6) * (float)Math.PI);
+	        float f8 = MathHelper.sin(MathHelper.sqrt(f6) * (float)Math.PI);
 	        this.ArmRight.rotateAngleX = -0.4F;
 	        this.ArmRight.rotateAngleY = 0F;
 	        this.ArmRight.rotateAngleZ = -0.2F;
-	        this.ArmRight.rotateAngleX += -f8 * 80.0F * Values.N.RAD_MUL;
-	        this.ArmRight.rotateAngleY += -f7 * 20.0F * Values.N.RAD_MUL + 0.2F;
-	        this.ArmRight.rotateAngleZ += -f8 * 20.0F * Values.N.RAD_MUL;
+	        this.ArmRight.rotateAngleX += -f8 * 80.0F * Values.N.DIV_PI_180;
+	        this.ArmRight.rotateAngleY += -f7 * 20.0F * Values.N.DIV_PI_180 + 0.2F;
+	        this.ArmRight.rotateAngleZ += -f8 * 20.0F * Values.N.DIV_PI_180;
 	  	}
 	  	
 	  	//鬢毛調整
@@ -614,12 +624,15 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion 
 	    this.LegRight.rotateAngleX = addk2;
   	}
   	
-  	private void showEquip(IShipEmotion ent) {
-		if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
+  	private void showEquip(IShipEmotion ent)
+  	{
+		if (ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00)
+		{
 			this.EquipBase.isHidden = false;
 			this.HairAnchor.isHidden = false;
 		}
-		else {
+		else
+		{
 			this.EquipBase.isHidden = true;
 			this.HairAnchor.isHidden = true;
 		}
@@ -627,36 +640,38 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion 
 
     //設定顯示的臉型
   	@Override
-  	public void setFace(int emo) {
-  		switch(emo) {
+  	public void setFace(int emo)
+  	{
+  		switch (emo)
+  		{
   		case 0:
   			this.Face0.isHidden = false;
   			this.Face1.isHidden = true;
   			this.Face2.isHidden = true;
   			this.Face3.isHidden = true;
   			this.Face4.isHidden = true;
-  			break;
+  		break;
   		case 1:
   			this.Face0.isHidden = true;
   			this.Face1.isHidden = false;
   			this.Face2.isHidden = true;
   			this.Face3.isHidden = true;
   			this.Face4.isHidden = true;
-  			break;
+  		break;
   		case 2:
   			this.Face0.isHidden = true;
   			this.Face1.isHidden = true;
   			this.Face2.isHidden = false;
   			this.Face3.isHidden = true;
   			this.Face4.isHidden = true;
-  			break;
+  		break;
   		case 3:
   			this.Face0.isHidden = true;
   			this.Face1.isHidden = true;
   			this.Face2.isHidden = true;
   			this.Face3.isHidden = false;
   			this.Face4.isHidden = true;
-  			break;
+  		break;
   		case 4:
   			this.Face0.isHidden = true;
   			this.Face1.isHidden = true;
@@ -665,10 +680,9 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion 
   			this.Face4.isHidden = false;
   			break;
   		default:
-  			break;
+  		break;
   		}
   	}
 
     
 }
-

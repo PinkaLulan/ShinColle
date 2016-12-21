@@ -2,7 +2,6 @@ package com.lulan.shincolle.ai.path;
 
 import javax.annotation.Nullable;
 
-import com.lulan.shincolle.entity.BasicEntityAirplane;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipNavigator;
 import com.lulan.shincolle.utility.BlockHelper;
@@ -63,8 +62,8 @@ public class ShipPathNavigate
         this.hostShip = (IShipNavigator) entity;
         this.world = world;
         this.maxDistanceToWaypoint = this.host.width > 0.75F ? this.host.width * 0.5F : 0.75F - this.host.width * 0.5F;
-        this.hostCeilWeight = MathHelper.ceiling_float_int(this.host.width);
-        this.hostCeilHight = MathHelper.ceiling_float_int(this.host.height);
+        this.hostCeilWeight = MathHelper.ceil(this.host.width);
+        this.hostCeilHight = MathHelper.ceil(this.host.height);
         
     }
 
@@ -81,15 +80,9 @@ public class ShipPathNavigate
      */
     public float getPathSearchRange()
     {
-    	if (host instanceof BasicEntityAirplane)
+    	if (host instanceof IShipAttackBase)
     	{
     		return 64F;
-    	}
-    	else if (host instanceof IShipAttackBase)
-    	{
-    		float f = ((IShipAttackBase) host).getAttackRange() + 24F;
-    		
-    		return f < 40F ? 40F : f;
     	}
     	else
     	{
@@ -102,7 +95,7 @@ public class ShipPathNavigate
      */
     public boolean tryMoveToXYZ(double x, double y, double z, double speed)
     {
-        ShipPath path = this.getPathToXYZ(MathHelper.floor_double(x), ((int)y), MathHelper.floor_double(z));
+        ShipPath path = this.getPathToXYZ(MathHelper.floor(x), ((int)y), MathHelper.floor(z));
         return this.setPath(path, speed);
     }
 
@@ -111,7 +104,7 @@ public class ShipPathNavigate
      */
     public ShipPath getPathToXYZ(double x, double y, double z)
     {
-        return !this.canNavigate() ? null : this.getShipPathToXYZ(this.host, MathHelper.floor_double(x), (int)y, MathHelper.floor_double(z), this.getPathSearchRange(), this.hostShip.canFly());
+        return !this.canNavigate() ? null : this.getShipPathToXYZ(this.host, MathHelper.floor(x), (int)y, MathHelper.floor(z), this.getPathSearchRange(), this.hostShip.canFly());
     }
     
     public ShipPath getShipPathToXYZ(Entity entity, int x, int y, int z, float range, boolean canFly)
@@ -427,7 +420,7 @@ public class ShipPathNavigate
         else
         {
         	 int i = (int) this.host.posY;
-             IBlockState block = this.world.getBlockState(new BlockPos(MathHelper.floor_double(this.host.posX), i, MathHelper.floor_double(this.host.posZ)));
+             IBlockState block = this.world.getBlockState(new BlockPos(MathHelper.floor(this.host.posX), i, MathHelper.floor(this.host.posZ)));
              int j = 0;
              
              //往下找出第一個非air的方塊, 若是液體方塊則回傳稍微高一點的y
@@ -446,7 +439,7 @@ public class ShipPathNavigate
                  }
 
                  ++i;
-                 block = this.world.getBlockState(new BlockPos(MathHelper.floor_double(this.host.posX), i, MathHelper.floor_double(this.host.posZ)));
+                 block = this.world.getBlockState(new BlockPos(MathHelper.floor(this.host.posX), i, MathHelper.floor(this.host.posZ)));
                  ++j;
              }
              while (j <= 24);	//最多往下找24格就停止

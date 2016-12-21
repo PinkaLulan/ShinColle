@@ -54,7 +54,7 @@ public class ParticleCube extends Particle
         this.par3 = par3;
         this.vt = new double[8][3];
         this.vt2 = new double[8][3];
-        this.field_190017_n = false;	//can clip = false
+        this.canCollide = false;	//can clip = false
         
         float[] lookDeg;
         float[] posOffset;

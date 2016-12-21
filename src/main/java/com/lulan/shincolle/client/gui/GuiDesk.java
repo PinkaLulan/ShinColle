@@ -1130,15 +1130,15 @@ public class GuiDesk extends GuiContainer
 					
 					//select icon
 					int sIcon = 0;
-					if (MathHelper.abs_int((int)px) > 48 || MathHelper.abs_int((int)pz) > 48)
+					if (MathHelper.abs((int)px) > 48 || MathHelper.abs((int)pz) > 48)
 					{
 						sIcon = (int)(this.tickGUI * 0.125F + 6) % 8 * 3;
 					}
-					else if (MathHelper.abs_int((int)px) > 32 || MathHelper.abs_int((int)pz) > 32)
+					else if (MathHelper.abs((int)px) > 32 || MathHelper.abs((int)pz) > 32)
 					{
 						sIcon = (int)(this.tickGUI * 0.125F + 4) % 8 * 3;
 					}
-					else if (MathHelper.abs_int((int)px) > 16 || MathHelper.abs_int((int)pz) > 16)
+					else if (MathHelper.abs((int)px) > 16 || MathHelper.abs((int)pz) > 16)
 					{
 						sIcon = (int)(this.tickGUI * 0.125F + 2) % 8 * 3;
 					}
@@ -1238,8 +1238,8 @@ public class GuiDesk extends GuiContainer
 				str = "LV " + TextFormatting.YELLOW + s2.getLevel() + "   " +
 						TextFormatting.GOLD + (int)s2.getHealth() + TextFormatting.RED + " / " + (int)s2.getMaxHealth();
 				str2 = StrPos + " " + TextFormatting.YELLOW +
-					  MathHelper.ceiling_double_int(s.ship.posX) + " , " + 
-					  MathHelper.ceiling_double_int(s.ship.posZ) + "  " + TextFormatting.LIGHT_PURPLE +
+					  MathHelper.ceil(s.ship.posX) + " , " + 
+					  MathHelper.ceil(s.ship.posZ) + "  " + TextFormatting.LIGHT_PURPLE +
 					  StrHeight + " " + TextFormatting.YELLOW +
 					  (int)(s.ship.posY);
 				
@@ -1649,7 +1649,7 @@ public class GuiDesk extends GuiContainer
 					{
 						if (tarStr.equals(k.getSimpleName()))
 						{
-							this.targetEntity = EntityList.createEntityByName(v, this.player.worldObj);
+							this.targetEntity = EntityList.createEntityByName(v, this.player.world);
 							return;
 						}
 					});
@@ -1733,7 +1733,7 @@ public class GuiDesk extends GuiContainer
 			
 			if (ent instanceof BasicEntityShip)
 			{
-				this.mc.thePlayer.closeScreen();
+				this.mc.player.closeScreen();
 				//send GUI packet
 				CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.OpenShipGUI, ent.getEntityId()));
 			}
@@ -2015,7 +2015,7 @@ public class GuiDesk extends GuiContainer
 		
 		if (this.type == 0 && this.tile == null)
 		{
-            this.mc.thePlayer.closeScreen();
+            this.mc.player.closeScreen();
         }
 	}
 	
@@ -2072,7 +2072,7 @@ public class GuiDesk extends GuiContainer
 		//set ship model
         if (EntityList.NAME_TO_CLASS.containsKey(shipName))
         {
-            this.shipModel = (BasicEntityShip) EntityList.createEntityByName(shipName, player.worldObj);
+            this.shipModel = (BasicEntityShip) EntityList.createEntityByName(shipName, player.world);
             
             if (this.shipModel != null)
             {

@@ -57,7 +57,7 @@ public class ShinColleWorldGen implements IWorldGenerator
 		int x,y,z = 0;
 		int spawnN = spawnNum;
 		
-		Biome biome = world.getBiomeGenForCoords(new BlockPos(blockX, 0, blockZ));
+		Biome biome = world.getBiomeForCoordsBody(new BlockPos(blockX, 0, blockZ));
 		
 		if (BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.OCEAN))
 		{
@@ -85,7 +85,7 @@ public class ShinColleWorldGen implements IWorldGenerator
 	//海洋相關生態系: polymetallic gravel生成方法
 	private void generateSea(World world, Random rand, int x, int z)
 	{
-		Biome biome = world.getBiomeGenForCoords(new BlockPos(x, 0, z));
+		Biome biome = world.getBiomeForCoordsBody(new BlockPos(x, 0, z));
 		
 		if(BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.OCEAN))
 		{

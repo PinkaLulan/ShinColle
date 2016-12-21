@@ -90,7 +90,7 @@ public class TargetWrench extends BasicItem
 			EntityPlayer player = (EntityPlayer) entity;
 			
 			//玩家左鍵使用此武器時 (client side only)
-			if (player.worldObj.isRemote)
+			if (player.world.isRemote)
 			{
 				RayTraceResult hitObj = EntityHelper.getPlayerMouseOverEntity(64D, 1F);
 				
@@ -116,11 +116,11 @@ public class TargetWrench extends BasicItem
 				{
 					HashMap<Integer, String> tarlist = ServerProxy.getUnattackableTargetClass();
 					
-					player.addChatMessage(new TextComponentString(TextFormatting.RED+"Show unattackable entity list:"));
+					player.sendMessage(new TextComponentString(TextFormatting.RED+"Show unattackable entity list:"));
 					
 					tarlist.forEach((k, v) ->
 					{
-						player.addChatMessage(new TextComponentString(TextFormatting.AQUA+v));
+						player.sendMessage(new TextComponentString(TextFormatting.AQUA+v));
 					});
 					
 					return true;
@@ -173,7 +173,7 @@ public class TargetWrench extends BasicItem
 					//fail msg
 					TextComponentTranslation text = new TextComponentTranslation("chat.shincolle:wrench.wrongtile");
 					text.getStyle().setColor(TextFormatting.YELLOW);
-					ServerProxy.getServer().addChatMessage(text);
+					ServerProxy.getServer().sendMessage(text);
 				}
 			}
 		}
@@ -261,7 +261,7 @@ public class TargetWrench extends BasicItem
 						//clear data
 						resetPos();
 						
-						ServerProxy.getServer().addChatMessage(
+						ServerProxy.getServer().sendMessage(
 								new TextComponentTranslation("chat.shincolle:wrench.setwp")
 								.appendText(" " + TextFormatting.GREEN + posF.getX() + " " + posF.getY() + " " + posF.getZ() + 
 											TextFormatting.AQUA + " --> " + TextFormatting.GOLD +
@@ -275,7 +275,7 @@ public class TargetWrench extends BasicItem
 				{
 					TextComponentTranslation str = new TextComponentTranslation("chat.shincolle:wrench.wptoofar");
 					str.getStyle().setColor(TextFormatting.YELLOW);
-					ServerProxy.getServer().addChatMessage(str);
+					ServerProxy.getServer().sendMessage(str);
 				}
 				
 				//clear data
@@ -330,7 +330,7 @@ public class TargetWrench extends BasicItem
 					//success msg
 					TextComponentTranslation text = new TextComponentTranslation("chat.shincolle:wrench.setwp");
 					text.getStyle().setColor(TextFormatting.AQUA);
-					ServerProxy.getServer().addChatMessage(
+					ServerProxy.getServer().sendMessage(
 							text.appendText(" " + TextFormatting.GREEN +
 							tileChest.getX() + " " + tileChest.getY() + " " + tileChest.getZ() +
 			            	TextFormatting.AQUA + " & " + TextFormatting.GOLD +
@@ -349,7 +349,7 @@ public class TargetWrench extends BasicItem
 					//too far away msg
 					TextComponentTranslation text = new TextComponentTranslation("chat.shincolle:wrench.toofar");
 	            	text.getStyle().setColor(TextFormatting.YELLOW);
-	            	ServerProxy.getServer().addChatMessage(text);
+	            	ServerProxy.getServer().sendMessage(text);
 				}
 			}
 		}

@@ -315,7 +315,7 @@ public class CalcHelper
 	public static float[] getLookDegree(double motX, double motY, double motZ, boolean getDegree)
 	{
 		//計算模型要轉的角度 (RAD, not DEG)
-	    double f1 = MathHelper.sqrt_double(motX*motX + motZ*motZ);
+	    double f1 = MathHelper.sqrt(motX*motX + motZ*motZ);
 	    float[] degree = new float[2];
 	    
 	    degree[1] = -(float)(Math.atan2(motY, f1));
@@ -353,7 +353,7 @@ public class CalcHelper
 			//calc sight ray (host to target) length
 			float dx = (float) (player.posX - target.posX);
 			float dz = (float) (player.posZ - target.posZ);
-			float rayLen = MathHelper.sqrt_float(dx * dx + dz * dz + eyeH * eyeH);
+			float rayLen = MathHelper.sqrt(dx * dx + dz * dz + eyeH * eyeH);
 			rayLen -= target.width;
 			rayLen = rayLen * MathHelper.sin(player.rotationPitch * Values.N.DIV_PI_180);
 			
@@ -382,12 +382,12 @@ public class CalcHelper
 		if (host != null && target != null)
 		{
 			//get random eye height
-			float eyeH = host.height * (host.worldObj.rand.nextFloat() * 0.5F + 0.5F);
+			float eyeH = host.height * (host.world.rand.nextFloat() * 0.5F + 0.5F);
 			
 			//calc sight ray (host to target) length
 			float dx = (float) (host.posX - target.posX);
 			float dz = (float) (host.posZ - target.posZ);
-			float rayLen = MathHelper.sqrt_float(dx * dx + dz * dz + eyeH * eyeH);
+			float rayLen = MathHelper.sqrt(dx * dx + dz * dz + eyeH * eyeH);
 			rayLen -= target.width;
 			rayLen = rayLen * MathHelper.sin(host.rotationPitch * Values.N.DIV_PI_180);
 			

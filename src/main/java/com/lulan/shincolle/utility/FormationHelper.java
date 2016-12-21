@@ -1,5 +1,7 @@
 package com.lulan.shincolle.utility;
 
+import java.util.ArrayList;
+
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
@@ -10,7 +12,6 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 
@@ -41,7 +42,7 @@ public class FormationHelper
 		
 		if (capa != null)
 		{
-			setFormationID(player, capa.getPointerTeamID(), parms[2]);
+			setFormationID(player, capa.getCurrentTeamID(), parms[2]);
 		}
 	}
 	
@@ -60,8 +61,19 @@ public class FormationHelper
 				capa.setFormatID(teamID, formatID);
 				
 				//update formation guard position
-				BasicEntityShip[] ships = capa.getShipEntityByMode(2);
-				FormationHelper.applyFormationMoving(ships, formatID);
+				ArrayList<BasicEntityShip> ships = capa.getShipEntityByMode(2);
+				
+				if (ships.size() > 0)
+				{
+					//apply command to flag ship only
+					BasicEntityShip s = ships.get(0);
+					
+					//ship is NOT guarding entity and NOT follow owner
+					if (s.getStateMinor(ID.M.GuardType) != 2 && !s.getStateFlag(ID.F.CanFollow))
+					{
+						applyFormationMoving(ships, formatID, (int)s.posX, (int)s.posY, (int)s.posZ);
+					}
+				}
 			}
 			else
 			{
@@ -167,25 +179,6 @@ public class FormationHelper
 		return Values.zeros13;
 	}
 	
-	/** apply ship guarding position by flagship position, check is guard BLOCK or ENTITY */
-	public static void applyFormationMoving(BasicEntityShip[] ships, int formatID)
-	{
-		if (ships != null)
-		{
-			//get flag ship
-			for (BasicEntityShip s : ships)
-			{
-				//ship is NOT guarding entity and NOT follow owner
-				if (s != null && s.getStateMinor(ID.M.GuardType) != 2 &&
-					!s.getStateFlag(ID.F.CanFollow))
-				{
-					applyFormationMoving(ships, formatID, (int)s.posX, (int)s.posY, (int)s.posZ);
-					break;
-				}
-			}
-		}
-	}
-	
 	/** calc formation guard position
 	 * 
 	 *  前置條件:
@@ -219,7 +212,7 @@ public class FormationHelper
  	 *           5
 	 *         6
 	 */
-	public static void applyFormationMoving(BasicEntityShip[] ships, int formatID, int x, int y, int z)
+	public static void applyFormationMoving(ArrayList<BasicEntityShip> ships, int formatID, int x, int y, int z)
 	{
 		//get flag ship
 		BasicEntityShip flagShip = null;
@@ -306,7 +299,7 @@ public class FormationHelper
 	public static int[] setFormationPosAndApplyGuardPos1(BasicEntityShip ship, int formatType, boolean alongX, boolean faceP, int x, int y, int z)
 	{
 		//get safe pos
-		int[] pos = BlockHelper.getSafeBlockWithin5x5(ship.worldObj, x, y, z);
+		int[] pos = BlockHelper.getSafeBlockWithin5x5(ship.world, x, y, z);
 		
 		if (pos != null)
 		{
@@ -364,7 +357,7 @@ public class FormationHelper
 		}
 		
 		//get safe pos
-		pos = BlockHelper.getSafeBlockWithin5x5(ship.worldObj, pos[0], pos[1], pos[2]);
+		pos = BlockHelper.getSafeBlockWithin5x5(ship.world, pos[0], pos[1], pos[2]);
 		
 		if (pos != null)
 		{
@@ -840,7 +833,7 @@ public class FormationHelper
 		if (tempPos != null)
 		{
 			//check block is safe
-			tempPos = BlockHelper.getSafeBlockWithin5x5(target.worldObj, tempPos[0], tempPos[1], tempPos[2]);
+			tempPos = BlockHelper.getSafeBlockWithin5x5(target.world, tempPos[0], tempPos[1], tempPos[2]);
 			
 			if (tempPos != null)
 			{
@@ -913,7 +906,7 @@ public class FormationHelper
 			ship.setEntityTarget(null);
 			
 			//same guard position, cancel guard mode
-			if (gx == x && gy == y && gz == z && gd == ship.worldObj.provider.getDimension())
+			if (gx == x && gy == y && gz == z && gd == ship.world.provider.getDimension())
 			{
 				ship.setGuardedPos(-1, -1, -1, 0, 0);		//reset guard position
 				ship.setGuardedEntity(null);
@@ -924,7 +917,7 @@ public class FormationHelper
 			{
 				ship.setSitting(false);						//stop sitting
 				ship.setGuardedEntity(null);				//clear guard target
-				ship.setGuardedPos(x, y, z, ship.worldObj.provider.getDimension(), 1);
+				ship.setGuardedPos(x, y, z, ship.world.provider.getDimension(), 1);
 				ship.setStateFlag(ID.F.CanFollow, false);	//stop follow
 				
 				if (!ship.getStateFlag(ID.F.NoFuel))
@@ -955,40 +948,37 @@ public class FormationHelper
 	 */
 	public static void applyShipGuardEntity(BasicEntityShip ship, Entity guarded)
 	{
-		if (ship != null)
+		Entity getEnt = ship.getGuardedEntity();
+		
+		//same guard position, cancel guard
+		if (getEnt != null && getEnt.getEntityId() == guarded.getEntityId())
 		{
-			Entity getEnt = ship.getGuardedEntity();
+			ship.setGuardedPos(-1, -1, -1, 0, 0);		//reset guard position
+			ship.setGuardedEntity(null);
+			ship.setStateFlag(ID.F.CanFollow, true);	//set follow
+		}
+		//apply guard
+		else
+		{
+			ship.setSitting(false);						//stop sitting
+			ship.setGuardedPos(-1, -1, -1, guarded.world.provider.getDimension(), 2);
+			ship.setGuardedEntity(guarded);
+			ship.setStateFlag(ID.F.CanFollow, false);	//stop follow
 			
-			//same guard position, cancel guard
-			if (getEnt != null && getEnt.getEntityId() == guarded.getEntityId())
+			if (!ship.getStateFlag(ID.F.NoFuel))
 			{
-				ship.setGuardedPos(-1, -1, -1, 0, 0);		//reset guard position
-				ship.setGuardedEntity(null);
-				ship.setStateFlag(ID.F.CanFollow, true);	//set follow
-			}
-			//apply guard
-			else
-			{
-				ship.setSitting(false);						//stop sitting
-				ship.setGuardedPos(-1, -1, -1, guarded.worldObj.provider.getDimension(), 2);
-				ship.setGuardedEntity(guarded);
-				ship.setStateFlag(ID.F.CanFollow, false);	//stop follow
+				//show emotes
+				ship.applyEmotesReaction(5);
 				
-				if (!ship.getStateFlag(ID.F.NoFuel))
+				Entity ent = ship.getRidingEntity();
+				
+				if(ent instanceof BasicEntityMount)
 				{
-					//show emotes
-					ship.applyEmotesReaction(5);
-					
-					Entity ent = ship.getRidingEntity();
-					
-					if(ent instanceof BasicEntityMount)
-					{
-						((BasicEntityMount) ent).getShipNavigate().tryMoveToEntityLiving(guarded, 1D);
-					}
-					else
-					{
-						ship.getShipNavigate().tryMoveToEntityLiving(guarded, 1D);
-					}
+					((BasicEntityMount) ent).getShipNavigate().tryMoveToEntityLiving(guarded, 1D);
+				}
+				else
+				{
+					ship.getShipNavigate().tryMoveToEntityLiving(guarded, 1D);
 				}
 			}
 		}
@@ -997,61 +987,26 @@ public class FormationHelper
 	/** set ship attack target with team list */
 	public static void applyTeamAttack(EntityPlayer player, int meta, Entity target)
 	{
-		if (target instanceof EntityLivingBase)
-		{
-			CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(player);
-			int worldID = player.worldObj.provider.getDimension();
+		//NOTE: player跟target的null check已經在呼叫此方法前處理過
+		CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(player);
 
-			if (capa != null)
+		if (capa != null)
+		{
+			int worldID = player.world.provider.getDimension();
+			ArrayList<BasicEntityShip> ships = capa.getShipEntityByMode(meta);
+			
+			if (ships.isEmpty()) return;
+			
+			for (BasicEntityShip ship : ships)
 			{
-				BasicEntityShip[] ships = capa.getShipEntityByMode(meta);
-				BasicEntityMount mounts = null;
-				
-				switch (meta)
+				if (ship.world.provider.getDimension() == worldID &&
+					player.getDistanceToEntity(ship) < 64F)
 				{
-				case 0:	//single mode
-					if (ships[0] != null && ships[0].worldObj.provider.getDimension() == worldID &&
-					   player.getDistanceToEntity(ships[0]) < 64F)
-					{
-						//設定ship攻擊目標
-						ships[0].setSitting(false);
-						ships[0].setEntityTarget(target);
-						
-						//若該ship有騎乘座騎, 將座騎目標也設定
-						Entity ent = ships[0].getRidingEntity();
-						
-						if (ent instanceof BasicEntityMount)
-						{
-							((BasicEntityMount) ent).setEntityTarget(target);
-							//show emotes
-							ships[0].applyEmotesReaction(5);
-						}
-					}
-					break;
-				case 1:		//group mode
-				case 2:		//formation mode
-					for (int i = 0; i < ships.length; i++)
-					{
-						if (ships[i] != null && ships[i].worldObj.provider.getDimension() == worldID &&
-						   player.getDistanceToEntity(ships[i]) < 64F)
-						{
-							//設定ship攻擊目標
-							ships[i].setSitting(false);
-							ships[i].setEntityTarget(target);
-							//show emotes
-							ships[i].applyEmotesReaction(5);
-							
-							//若該ship有騎乘座騎, 將座騎目標也設定
-							Entity ent = ships[i].getRidingEntity();
-									
-							if(ent instanceof BasicEntityMount)
-							{
-								((BasicEntityMount) ent).setEntityTarget(target);
-							}
-						}
-					}
-					break;
-				}//end switch
+					//設定ship攻擊目標
+					ship.setSitting(false);
+					ship.setEntityTarget(target);
+					ship.applyEmotesReaction(5);
+				}
 			}
 		}
 	}
@@ -1066,57 +1021,32 @@ public class FormationHelper
 	public static void applyTeamGuard(int[] parms)
 	{
 		EntityPlayer player = EntityHelper.getEntityPlayerByID(parms[0], parms[1], false);
-		Entity entity = EntityHelper.getEntityByID(parms[4], parms[1], false);
+		Entity target = EntityHelper.getEntityByID(parms[4], parms[1], false);
 		CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(player);
 		
 		if (capa != null)
 		{
 			//get current team formation id
 			int formatID = capa.getFormatIDCurrentTeam();
-			BasicEntityShip[] ships = capa.getShipEntityByMode(parms[2]);
+			ArrayList<BasicEntityShip> ships = capa.getShipEntityByMode(parms[2]);
 			
-			switch (parms[2])
+			if (ships.isEmpty()) return;
+			
+			//若為formation mode且有設定陣型, 則只有在5 or 6船時可以下命令
+			if ((parms[2] < 2 && formatID <= 0) || (parms[2] == 2 && (formatID <= 0 || ships.size() > 4)))
 			{
-			case 0:	//single mode
-				if (ships[0] != null && ships[0].worldObj.provider.getDimension() == parms[1] && formatID <= 0 &&
-				   player.getDistanceToEntity(ships[0]) < 64F)
+				for (BasicEntityShip ship : ships)
 				{
-					//設定ship移動地點
-					applyShipGuardEntity(ships[0], entity);
-					//sync guard
-					CommonProxy.channelE.sendTo(new S2CEntitySync(ships[0], S2CEntitySync.PID.SyncShip_Minor), (EntityPlayerMP) player);
-				}
-				break;
-			case 1:		//group mode
-				for (int i = 0;i < ships.length; i++)
-				{
-					if (ships[i] != null && ships[i].worldObj.provider.getDimension() == parms[1] && formatID <= 0 &&
-					   player.getDistanceToEntity(ships[i]) < 64F)
+					if (ship.world.provider.getDimension() == parms[1] &&
+						player.getDistanceToEntity(ship) < 64F)
 					{
 						//設定ship移動地點
-						applyShipGuardEntity(ships[i], entity);
-						//sync guard
-						CommonProxy.channelE.sendTo(new S2CEntitySync(ships[i], S2CEntitySync.PID.SyncShip_Minor), (EntityPlayerMP) player);
+						applyShipGuardEntity(ship, target);
+						//sync
+						CommonProxy.channelE.sendTo(new S2CEntitySync(ship, S2CEntitySync.PID.SyncShip_Minor), (EntityPlayerMP) player);
 					}
 				}
-				break;
-			case 2:		//formation mode
-				if (capa.getNumberOfShip(capa.getPointerTeamID()) > 4)
-				{
-					for (int i = 0;i < ships.length; i++)
-					{
-						if (ships[i] != null && ships[i].worldObj.provider.getDimension() == parms[1] &&
-						   player.getDistanceToEntity(ships[i]) < 64F)
-						{
-							//設定ship移動地點
-							applyShipGuardEntity(ships[i], entity);
-							//sync guard
-							CommonProxy.channelE.sendTo(new S2CEntitySync(ships[i], S2CEntitySync.PID.SyncShip_Minor), (EntityPlayerMP) player);
-						}
-					}
-				}
-				break;
-			}//end switch
+			}
 		}		
 	}
 
@@ -1135,61 +1065,44 @@ public class FormationHelper
 		{
 			//get current team formation id
 			int formatID = capa.getFormatIDCurrentTeam();
-			BasicEntityShip[] ships = capa.getShipEntityByMode(parms[2]);
+			ArrayList<BasicEntityShip> ships = capa.getShipEntityByMode(parms[2]);
 			
-			switch (parms[2])
+			if (ships.isEmpty()) return;
+			
+			//若為formation mode且有設定陣型, 則只有在5 or 6船時可以下命令
+			if (parms[2] < 2 && formatID <= 0)
 			{
-			case 0:	//single mode
-				if (ships[0] != null && ships[0].worldObj.provider.getDimension() == parms[1] && formatID <= 0 &&
-				   player.getDistanceToEntity(ships[0]) < 64F)
+				for (BasicEntityShip ship : ships)
 				{
-					//設定ship移動地點
-					applyShipGuard(ships[0], parms[4], parms[5], parms[6]);
-					//sync guard
-					CommonProxy.channelE.sendTo(new S2CEntitySync(ships[0], S2CEntitySync.PID.SyncShip_Minor), (EntityPlayerMP) player);
-				}
-				break;
-			case 1:		//group mode
-				for (int i = 0;i < ships.length; i++)
-				{
-					if (ships[i] != null && ships[i].worldObj.provider.getDimension() == parms[1] && formatID <= 0 &&
-					   player.getDistanceToEntity(ships[i]) < 64F)
+					if (ship.world.provider.getDimension() == parms[1] &&
+						player.getDistanceToEntity(ship) < 64F)
 					{
 						//設定ship移動地點
-						applyShipGuard(ships[i], parms[4], parms[5], parms[6]);
+						applyShipGuard(ship, parms[4], parms[5], parms[6]);
 						//sync guard
-						CommonProxy.channelE.sendTo(new S2CEntitySync(ships[i], S2CEntitySync.PID.SyncShip_Minor), (EntityPlayerMP) player);
+						CommonProxy.channelE.sendTo(new S2CEntitySync(ship, S2CEntitySync.PID.SyncShip_Minor), (EntityPlayerMP) player);
 					}
 				}
-				break;
-			case 2:		//formation mode
-				if (capa.getNumberOfShip(capa.getPointerTeamID()) > 4 || formatID == 0)
+			}//end single/group move
+			else if (parms[2] == 2)
+			{
+				if (ships.size() > 4 || formatID == 0)
 				{
-					boolean canMove = true;
-					
 					for (BasicEntityShip s : ships)
 					{
-						if (s != null)
+						//check formation id is same, distance < 64, same dimension
+						if (s.getStateMinor(ID.M.FormatType) != formatID ||
+							player.getDistanceToEntity(s) > 64F ||
+							player.dimension != s.dimension)
 						{
-							//check formation id is same, distance < 64, same dimension
-							if (s.getStateMinor(ID.M.FormatType) != formatID ||
-							   player.getDistanceToEntity(s) > 64F ||
-							   player.dimension != s.dimension)
-							{
-								canMove = false;
-								break;
-							}
+							return;	//can't move
 						}
 					}
 					
-					if (canMove)
-					{
-						//set formation position
-						FormationHelper.applyFormationMoving(ships, formatID, parms[4], parms[5], parms[6]);
-					}
+					//set formation position
+					applyFormationMoving(ships, formatID, parms[4], parms[5], parms[6]);
 				}
-				break;
-			}//end switch
+			}//end formation move
 		}
 	}
 	
@@ -1207,39 +1120,31 @@ public class FormationHelper
 
 		if(capa != null)
 		{
-			BasicEntityShip[] ships = capa.getShipEntityByMode(parms[2]);
-			
 			//不在隊伍名單裡面
-			if (capa.checkIsInCurrentTeam(parms[3]) < 0 && parms[2] < 3)
+			if (capa.checkIsInCurrentTeam(parms[3]) < 0)
 			{
 				BasicEntityShip target = EntityHelper.getShipBySID(parms[3]);
 				
-				target.setEntitySit();
+				target.setEntitySit(!target.isSitting());
+				target.setRiderAndMountSit();
 			}
 			//有在隊伍中, 則依照pointer類型抓目標
 			else
 			{
-				switch (parms[2])
+				ArrayList<BasicEntityShip> ships = capa.getShipEntityByMode(parms[2]);
+				
+				if (ships.isEmpty()) return;
+				
+				boolean sit = !ships.get(0).isSitting();
+				
+				for (BasicEntityShip s : ships)
 				{
-				case 0:	//single mode
-					if (ships[0] != null && ships[0].worldObj.provider.getDimension() == parms[1])
+					if (s.world.provider.getDimension() == parms[1])
 					{
-						//設定ship sit
-						ships[0].setEntitySit();
+						s.setEntitySit(sit);
+						s.setRiderAndMountSit();
 					}
-					break;
-				case 1:		//group mode
-				case 2:		//formation mode
-					for (int i = 0; i < ships.length; i++)
-					{
-						if (ships[i] != null && ships[i].worldObj.provider.getDimension() == parms[1])
-						{
-							//設定ship sit
-							ships[i].setEntitySit();
-						}
-					}
-					break;
-				}//end switch
+				}
 			}//end not in team
 		}
 	}

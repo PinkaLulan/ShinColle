@@ -35,7 +35,7 @@ public class EntityAirplaneZero extends EntityAirplane
 	@Override
 	public int getTextureID()
 	{
-		return ID.ShipMisc.AirplaneZ;
+		return ID.ShipMisc.AirplaneZero;
 	}
 
 

@@ -1,6 +1,7 @@
 package com.lulan.shincolle.entity;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.BlockPos;
 
 public interface IShipGuardian extends IShipAttackBase
 {
@@ -18,10 +19,10 @@ public interface IShipGuardian extends IShipAttackBase
 	public void setGuardedPos(int x, int y, int z, int dim, int type);
 	
 	/** get last waypoint */
-	public int[] getLastWaypoint();
+	public BlockPos getLastWaypoint();
 	
 	/** set last waypoint */
-	public void setLastWaypoint(int[] pos);
+	public void setLastWaypoint(BlockPos pos);
 	
 	/** get waypoint stay time */
 	public int getWpStayTime();

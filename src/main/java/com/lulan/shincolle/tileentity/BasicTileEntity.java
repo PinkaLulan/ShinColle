@@ -28,7 +28,7 @@ abstract public class BasicTileEntity extends TileEntity
 	 */
 	public int getRenderMetadata()
 	{
-		if (this.worldObj == null || this.pos == BlockPos.ORIGIN)
+		if (this.world == null || this.pos == BlockPos.ORIGIN)
 		{
 			return -1;
 		}
@@ -41,9 +41,9 @@ abstract public class BasicTileEntity extends TileEntity
 	//sync data for GUI display
 	public void sendSyncPacket()
 	{
-		if (!this.worldObj.isRemote && this.getPacketID(0) >= 0)
+		if (!this.world.isRemote && this.getPacketID(0) >= 0)
 		{
-			TargetPoint point = new TargetPoint(worldObj.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64D);
+			TargetPoint point = new TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64D);
 			CommonProxy.channelG.sendToAllAround(new S2CGUIPackets(this, this.getPacketID(0)), point);
 		}
 	}

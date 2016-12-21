@@ -3,12 +3,6 @@ package com.lulan.shincolle.ai;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityFlying;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.player.EntityPlayer;
-
 import com.google.common.base.Predicate;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
@@ -19,6 +13,12 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.TargetHelper;
+
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityFlying;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.player.EntityPlayer;
 
 
 /**GET TARGET WITHIN SPECIFIC RANGE
@@ -65,13 +65,8 @@ public class EntityAIShipRangeTarget extends EntityAIBase
         	this.targetSelector = new TargetHelper.Selector(host2);
         }
 
-        //範圍指定
-        this.range = (int) this.host.getAttackRange();
-        //最小追蹤16格範圍
-        if (this.range < 16)
-        {
-        	this.range = 16;
-        }
+        //範圍設定
+        updateRange();
     }
 
     @Override
@@ -87,13 +82,7 @@ public class EntityAIShipRangeTarget extends EntityAIBase
         		return false;
         	}
     		
-    		this.range = (int)host.getAttackRange();
-    		
-    		//最小追蹤16格範圍
-            if (this.range < 16)
-            {
-            	this.range = 16;
-            }
+        	updateRange();
             
             //find target
             ArrayList list1 = null;
@@ -105,9 +94,9 @@ public class EntityAIShipRangeTarget extends EntityAIBase
             	if (this.hostShip.getStateFlag(ID.F.AntiAir))
             	{
             		//find air target
-            		list1 = EntityHelper.getEntitiesWithinAABB(this.host2.worldObj, IShipFlyable.class,
+            		list1 = EntityHelper.getEntitiesWithinAABB(this.host2.world, IShipFlyable.class,
             				this.host2.getEntityBoundingBox().expand(this.range, this.range * 0.75D, this.range), this.targetSelector);
-            		list2 = (ArrayList) this.host2.worldObj.getEntitiesWithinAABB(EntityFlying.class,
+            		list2 = (ArrayList) this.host2.world.getEntitiesWithinAABB(EntityFlying.class,
                     		this.host2.getEntityBoundingBox().expand(this.range, this.range * 0.75D, this.range), this.targetSelector);
             		
             		//union list
@@ -119,7 +108,7 @@ public class EntityAIShipRangeTarget extends EntityAIBase
             	{
             		if (this.hostShip.getStateFlag(ID.F.AntiSS))
             		{
-        				list1 = EntityHelper.getEntitiesWithinAABB(this.host2.worldObj, IShipInvisible.class, 
+        				list1 = EntityHelper.getEntitiesWithinAABB(this.host2.world, IShipInvisible.class, 
                         		this.host2.getEntityBoundingBox().expand(this.range, this.range * 0.75D, this.range), this.targetSelector);
                 	}
             		
@@ -128,7 +117,7 @@ public class EntityAIShipRangeTarget extends EntityAIBase
             		{
                     	if (this.hostShip.getStateFlag(ID.F.PVPFirst))
                     	{
-                    		list1 = (ArrayList) this.host2.worldObj.getEntitiesWithinAABB(BasicEntityShip.class, 
+                    		list1 = (ArrayList) this.host2.world.getEntitiesWithinAABB(BasicEntityShip.class, 
                             		this.host2.getEntityBoundingBox().expand(this.range, this.range * 0.75D, this.range), this.targetSelector);
                     	}
             		}
@@ -138,7 +127,7 @@ public class EntityAIShipRangeTarget extends EntityAIBase
             //find normal target
             if (list1 == null || list1.isEmpty())
             {
-	        	list1 = EntityHelper.getEntitiesWithinAABB(this.host2.worldObj, this.targetClass, 
+	        	list1 = EntityHelper.getEntitiesWithinAABB(this.host2.world, this.targetClass, 
 	            		this.host2.getEntityBoundingBox().expand(this.range, this.range * 0.75D, this.range), this.targetSelector);
             }
             
@@ -154,7 +143,7 @@ public class EntityAIShipRangeTarget extends EntityAIBase
             	//get random 0~2 target if >2 targets
             	if (list1.size() > 2)
             	{
-            		this.targetEntity = (Entity) list1.get(this.host2.worldObj.rand.nextInt(3));
+            		this.targetEntity = (Entity) list1.get(this.host2.world.rand.nextInt(3));
             	}
             	
                 return true;
@@ -202,6 +191,17 @@ public class EntityAIShipRangeTarget extends EntityAIBase
             
             return true;
         }
+    }
+    
+    private void updateRange()
+    {
+    	 this.range = (int) this.host.getAttackRange();
+         
+    	 //min range
+    	 if (this.range < 2)
+    	 {
+    		 this.range = Math.max(2, host.getStateMinor(ID.M.FollowMax) + 2);
+    	 }
     }
     
     

@@ -818,8 +818,8 @@ public class GuiShipInventory extends GuiContainer
 	{
 		//draw hp, level
 		shiplevel = String.valueOf(entity.getStateMinor(ID.M.ShipLevel));
-		hpCurrent = MathHelper.ceiling_float_int(entity.getHealth());
-		hpMax = MathHelper.ceiling_float_int(entity.getMaxHealth());
+		hpCurrent = MathHelper.ceil(entity.getHealth());
+		hpMax = MathHelper.ceil(entity.getMaxHealth());
 		color = 0;
 
 		//draw lv/hp name
@@ -1340,9 +1340,9 @@ public class GuiShipInventory extends GuiContainer
 		super.updateScreen();
 		
 		if (this.entity == null || !this.entity.isEntityAlive() ||
-			this.entity.getDistanceToEntity(this.mc.thePlayer) > ConfigHandler.closeGUIDist)
+			this.entity.getDistanceToEntity(this.mc.player) > ConfigHandler.closeGUIDist)
 		{
-            this.mc.thePlayer.closeScreen();
+            this.mc.player.closeScreen();
         }
 	}
 

@@ -11,6 +11,7 @@ import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipCannonAttack;
 import com.lulan.shincolle.entity.IShipSummonAttack;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -53,9 +54,8 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack, 
     
     //model display
     /**EntityState: 0:HP State 1:Emotion 2:Emotion2*/
-	protected byte StateEmotion;		//表情1
-	protected byte StateEmotion2;		//表情2
-	protected int StartEmotion, StartEmotion2, StartEmotion3;		//表情2 開始時間
+	protected byte stateEmotion, stateEmotion2;								//表情type
+	protected int startEmotion, startEmotion2, attackTime, attackTime2;		//表情timer
 	protected boolean headTilt;
 
 	
@@ -71,7 +71,7 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack, 
     {
         this.host = host;
         this.atkTarget = target;
-        this.shipNavigator = new ShipPathNavigate(this, host.worldObj);
+        this.shipNavigator = new ShipPathNavigate(this, host.world);
         this.shipMoveHelper = new ShipMoveHelper(this, 45F);
         
         //basic attr
@@ -84,10 +84,10 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack, 
         //AI flag
         this.numAmmoLight = 6;
         this.numAmmoHeavy = 0;
-        this.StateEmotion = 0;
-        this.StateEmotion2 = 0;
-        this.StartEmotion = 0;
-        this.StartEmotion2 = 0;
+        this.stateEmotion = 0;
+        this.stateEmotion2 = 0;
+        this.startEmotion = 0;
+        this.startEmotion2 = 0;
         this.headTilt = false;
            
         //設定發射位置
@@ -96,7 +96,7 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack, 
         this.posZ = host.posZ + rand.nextDouble() * 3D - 1.5D;
 
     	//check the place is safe to summon
-    	if (!BlockHelper.checkBlockSafe(this.worldObj, (int)posX, (int)posY, (int)posZ))
+    	if (!BlockHelper.checkBlockSafe(this.world, (int)posX, (int)posY, (int)posZ))
     	{
     		this.posX = host.posX;
             this.posY = host.posY;
@@ -200,7 +200,7 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack, 
   			if (entity instanceof IShipAttackBase)
   			{
   				//get attack time for damage modifier setting (day, night or ...etc)
-  				int modSet = this.worldObj.provider.isDaytime() ? 0 : 1;
+  				int modSet = this.world.provider.isDaytime() ? 0 : 1;
   				reduceAtk = CalcHelper.calcDamageByType(reduceAtk, ((IShipAttackBase) entity).getDamageType(), this.getDamageType(), modSet);
   			}
   			
@@ -217,8 +217,11 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack, 
 	{
 		super.onUpdate();
 		
+		//both side
+		if (this.attackTime > 0) this.attackTime--;
+		
 		//client side
-		if (this.worldObj.isRemote)
+		if (this.world.isRemote)
 		{
 			//有移動時, 產生水花特效
 			//(注意此entity因為設為非高速更新, client端不會更新motionX等數值, 需自行計算)
@@ -297,7 +300,7 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack, 
 	@Override
 	public byte getStateEmotion(int id)
 	{
-		return id == 1 ? StateEmotion : StateEmotion2;
+		return id == 1 ? stateEmotion : stateEmotion2;
 	}
 	
 	@Override
@@ -306,16 +309,16 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack, 
 		switch (id)
 		{
 		case 1:
-			StateEmotion = (byte) value;
+			stateEmotion = (byte) value;
 			break;
 		case 2:
-			StateEmotion2 = (byte) value;
+			stateEmotion2 = (byte) value;
 			break;
 		default:
 			break;
 		}
 		
-		if (sync && !worldObj.isRemote)
+		if (sync && !world.isRemote)
 		{
 			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
 			CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this, S2CEntitySync.PID.SyncEntity_Emo), point);
@@ -344,25 +347,25 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack, 
 	@Override
 	public int getFaceTick()
 	{
-		return this.StartEmotion;
+		return this.startEmotion;
 	}
 
 	@Override
 	public int getHeadTiltTick()
 	{
-		return this.StartEmotion2;
+		return this.startEmotion2;
 	}
 
 	@Override
 	public void setFaceTick(int par1)
 	{
-		this.StartEmotion = par1;
+		this.startEmotion = par1;
 	}
 
 	@Override
 	public void setHeadTiltTick(int par1)
 	{
-		this.StartEmotion2 = par1;
+		this.startEmotion2 = par1;
 	}
 
 	@Override
@@ -372,10 +375,15 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack, 
 	}
 
 	@Override
-	public int getAttackTime()
+	public int getAttackTick()
 	{
-		//TODO mutiple attack timer
-		return 0;
+		return this.attackTime;
+	}
+	
+  	@Override
+	public int getAttackTick2()
+  	{
+		return this.attackTime2;
 	}
 
     //clear AI
@@ -406,17 +414,23 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack, 
 	//light attack
 	public boolean attackEntityWithAmmo(Entity target)
     {
+    	//null check
+    	if (this.host == null)
+    	{
+    		this.setDead();
+    		return false;
+    	}
+    	
 		float atkLight = CalcHelper.calcDamageBySpecialEffect(this, target, this.atk, 0);
 
-//		//TODO sound event
-//		//play cannon fire sound at attacker
-//        playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.volumeFire, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+		//play cannon fire sound at attacker
+		this.playSound(ModSounds.SHIP_FIRELIGHT, ConfigHandler.volumeFire, this.getSoundPitch() * 0.85F);
         
         //此方法比getLook還正確 (client sync問題)
         float distX = (float) (target.posX - this.posX);
         float distY = (float) (target.posY - this.posY);
         float distZ = (float) (target.posZ - this.posZ);
-        float distSqrt = MathHelper.sqrt_float(distX*distX + distY*distY + distZ*distZ);
+        float distSqrt = MathHelper.sqrt(distX*distX + distY*distY + distZ*distZ);
         distX = distX / distSqrt;
         distY = distY / distSqrt;
         distZ = distZ / distSqrt;
@@ -509,6 +523,11 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack, 
   				this.setDead();
   			}
   		}
+  		
+    	if (ConfigHandler.canFlare)
+    	{
+			host.flareTarget(target);
+		}
 
 	    return isTargetHurt;
 	}
@@ -622,13 +641,19 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack, 
 		return this.shipMoveHelper;
 	}
 	
-	//update ship move helper
 	@Override
-	protected void updateAITasks()
-	{
-		super.updateAITasks();
-		
-        EntityHelper.updateShipNavigator(this);
+    public void onLivingUpdate()
+    {
+    	if ((!world.isRemote))
+    	{
+        	//update movement, NOTE: 1.9.4: must done before vanilla MoveHelper updating in super.onLivingUpdate()
+        	EntityHelper.updateShipNavigator(this);
+            super.onLivingUpdate();
+    	}
+    	else
+    	{
+    		super.onLivingUpdate();
+    	}
     }
 	
 	@Override
@@ -691,7 +716,7 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack, 
 	}
 
 	@Override
-	public void setEntitySit() {}
+	public void setEntitySit(boolean sit) {}
 
 	@Override
 	public float getModelRotate(int par1)
@@ -754,16 +779,16 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack, 
 		this.revengeTime = this.ticksExisted;
 	}
   	
-  	@Override
-	public int getAttackAniTick()
-  	{
-		return this.StartEmotion3;
+	@Override
+	public void setAttackTick(int par1) 
+	{
+		this.attackTime = par1;
 	}
 
 	@Override
-	public void setAttackAniTick(int par1)
+	public void setAttackTick2(int par1)
 	{
-		this.StartEmotion3 = par1;
+		this.attackTime2 = par1;
 	}
 
 	@Override
@@ -784,5 +809,15 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack, 
 		return ID.ShipMisc.Rensouhou;
 	}
 	
+	//for model display
+	@Override
+	public int getRidingState()
+	{
+		return 0;
+	}
+	
+	@Override
+	public void setRidingState(int state) {}
+
 
 }

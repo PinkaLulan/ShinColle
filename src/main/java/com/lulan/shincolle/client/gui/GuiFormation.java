@@ -102,7 +102,7 @@ public class GuiFormation extends GuiContainer
 		
 		if (this.capa != null)
 		{
-			this.teamClicked = this.capa.getPointerTeamID();
+			this.teamClicked = this.capa.getCurrentTeamID();
 			this.formatClicked = this.capa.getFormatIDCurrentTeam();
 			setShipList(this.teamClicked);
 			setFormationSpotPos(this.formatClicked);
@@ -540,7 +540,7 @@ public class GuiFormation extends GuiContainer
 	{
 		if (this.shipList != null && this.shipList[listClicked] != null)
 		{
-			this.mc.thePlayer.closeScreen();
+			this.mc.player.closeScreen();
 			CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.OpenShipGUI, shipList[listClicked].getEntityId()));
 		}
 	}

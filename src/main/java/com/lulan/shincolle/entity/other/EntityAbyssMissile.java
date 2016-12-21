@@ -7,6 +7,8 @@ import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipAttributes;
 import com.lulan.shincolle.entity.IShipFlyable;
 import com.lulan.shincolle.entity.IShipOwner;
+import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -176,7 +178,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
         }
         
         //直射彈道, no gravity
-    	float dist = MathHelper.sqrt_float(distX*distX + distY*distY + distZ*distZ);
+    	float dist = MathHelper.sqrt(distX*distX + distY*distY + distZ*distZ);
   	    this.accX = distX / dist * this.acce;
 	    this.accY = distY / dist * this.acce;
 	    this.accZ = distZ / dist * this.acce;
@@ -187,7 +189,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
 	    //拋物線軌道計算, y軸初速加上 (一半飛行時間 * 額外y軸加速度)
 	    if (!this.isDirect)
 	    {
-	    	this.midFlyTime = (int) (0.5F * MathHelper.sqrt_float(2F * dist / this.acce));
+	    	this.midFlyTime = (int) (0.5F * MathHelper.sqrt(2F * dist / this.acce));
 	    	this.accParaY = this.acce;
 	    	this.motionY = this.motionY + (double)this.midFlyTime * this.accParaY;
 	    }
@@ -247,7 +249,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
         this.posZ += this.motionZ;
         
     	//計算模型要轉的角度 (RAD, not DEG)
-        float f1 = MathHelper.sqrt_double(this.motionX*this.motionX + this.motionZ*this.motionZ);
+        float f1 = MathHelper.sqrt(this.motionX*this.motionX + this.motionZ*this.motionZ);
         this.rotationPitch = (float)(Math.atan2(this.motionY, f1));
         this.rotationYaw = (float)(Math.atan2(this.motionX, this.motionZ));    
         
@@ -265,7 +267,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
         super.onUpdate();
         
         /**********server side***********/
-    	if (!this.worldObj.isRemote)
+    	if (!this.world.isRemote)
     	{
     		//沒有host資料, 消除此飛彈
     		if (this.host == null)
@@ -292,16 +294,16 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
     		{
     			if (this.ticksExisted % 8 == 0)
     			{
-    				EntityAbyssMissile subm = new EntityAbyssMissile(this.worldObj, this.host, 
+    				EntityAbyssMissile subm = new EntityAbyssMissile(this.world, this.host, 
     						(float)this.motionX, (float)this.motionY, (float)this.motionZ, 
     						(float)this.posX, (float)this.posY - 0.75F, (float)this.posZ,
     		        		atk, kbValue);
-    		        this.worldObj.spawnEntityInWorld(subm);
+    		        this.world.spawnEntity(subm);
     			}
     		}
     		
     		//爆炸判定1: missile本身位置是固體方塊
-    		IBlockState state = this.worldObj.getBlockState(new BlockPos(this));
+    		IBlockState state = this.world.getBlockState(new BlockPos(this));
     		if(state.getMaterial().isSolid())
     		{
     			this.onImpact(null);
@@ -310,7 +312,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
     		//爆炸判定2: missile每tick的飛行路徑中碰到東西, 包含block or entity
     		Vec3d vec3 = new Vec3d(this.posX, this.posY, this.posZ);
             Vec3d vec31 = new Vec3d(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
-            RayTraceResult raytrace = this.worldObj.rayTraceBlocks(vec3, vec31);          
+            RayTraceResult raytrace = this.world.rayTraceBlocks(vec3, vec31);          
             
             vec3 = new Vec3d(this.posX, this.posY, this.posZ);
             vec31 = new Vec3d(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
@@ -322,7 +324,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
             }
             
             //爆炸判定3: missile擴展1格大小內是否有entity可觸發爆炸
-            List<Entity> hitList = this.worldObj.getEntitiesWithinAABB(Entity.class, this.getEntityBoundingBox().expand(1D, 1D, 1D));
+            List<Entity> hitList = this.world.getEntitiesWithinAABB(Entity.class, this.getEntityBoundingBox().expand(1D, 1D, 1D));
             
             //搜尋list, 找出第一個可以判定的目標, 即傳給onImpact
             for (Entity ent : hitList)
@@ -390,12 +392,11 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
 	//撞擊判定時呼叫此方法
     protected void onImpact(Entity target)
     {
-//    	//TODO sound event
-//    	//play sound
-//    	playSound(Reference.MOD_ID+":ship-explode", ConfigHandler.volumeFire * 1.5F, 0.7F / (this.rand.nextFloat() * 0.4F + 0.8F));
+    	//play sound
+    	this.playSound(ModSounds.SHIP_EXPLODE, ConfigHandler.volumeFire * 1.5F, 0.7F / (this.rand.nextFloat() * 0.4F + 0.8F));
     	
     	//server side
-    	if (!this.worldObj.isRemote)
+    	if (!this.world.isRemote)
     	{
     		//set dead
         	this.setDead();
@@ -403,7 +404,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
     		float missileAtk = atk;
 
             //計算範圍爆炸傷害: 判定bounding box內是否有可以吃傷害的entity
-            List<Entity> hitList = this.worldObj.getEntitiesWithinAABB(Entity.class,
+            List<Entity> hitList = this.world.getEntitiesWithinAABB(Entity.class,
             						this.getEntityBoundingBox().expand(3.5D, 3.5D, 3.5D));
             
             //對list中所有可攻擊entity做出傷害判定

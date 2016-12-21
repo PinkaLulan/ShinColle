@@ -204,7 +204,7 @@ public class TileEntityVolCore extends BasicTileInventory implements ITickable
 		this.syncTime++;
 		
 		//server side
-		if (!worldObj.isRemote)
+		if (!world.isRemote)
 		{
 			boolean checkActive = this.isWorking();
 			
@@ -245,7 +245,7 @@ public class TileEntityVolCore extends BasicTileInventory implements ITickable
 							double dz = pos.getZ() + 0.5D;
 							int emotes;
 							
-	                		switch (this.worldObj.rand.nextInt(5))
+	                		switch (this.world.rand.nextInt(5))
 	                		{
 	                		case 0:
 	                			emotes = 2;  //panic
@@ -262,7 +262,7 @@ public class TileEntityVolCore extends BasicTileInventory implements ITickable
 	                		}
 	                		
 	                		AxisAlignedBB box = new AxisAlignedBB(dx - 6D, dy - 6D, dz - 6D, dx + 6D, dy + 6D, dz + 6D);
-	                        List<BasicEntityShip> slist = this.worldObj.getEntitiesWithinAABB(BasicEntityShip.class, box);
+	                        List<BasicEntityShip> slist = this.world.getEntitiesWithinAABB(BasicEntityShip.class, box);
 	                		
 	                		EntityHelper.applyEmotesAOE(slist, emotes);
 						}
@@ -303,7 +303,7 @@ public class TileEntityVolCore extends BasicTileInventory implements ITickable
 	private void volcoreFunction()
 	{
 		//check nearby water block, start to function (every 32 ticks)
-		if (BlockHelper.checkBlockNearbyIsLiquid(this.worldObj, this.pos.getX(), this.pos.getY(), this.pos.getZ(), 1))
+		if (BlockHelper.checkBlockNearbyIsLiquid(this.world, this.pos.getX(), this.pos.getY(), this.pos.getZ(), 1))
 		{
 			//get ship entity
 			double dx = pos.getX() + 0.5D;
@@ -311,7 +311,7 @@ public class TileEntityVolCore extends BasicTileInventory implements ITickable
 			double dz = pos.getZ() + 0.5D;
 			
             AxisAlignedBB box = new AxisAlignedBB(dx - 6D, dy - 6D, dz - 6D, dx + 6D, dy + 6D, dz + 6D);
-            List<BasicEntityShip> slist = this.worldObj.getEntitiesWithinAABB(BasicEntityShip.class, box);
+            List<BasicEntityShip> slist = this.world.getEntitiesWithinAABB(BasicEntityShip.class, box);
             
             if (slist != null)
             {
@@ -345,7 +345,7 @@ public class TileEntityVolCore extends BasicTileInventory implements ITickable
 			double dz = pos.getZ() + 0.5D;
 			
             AxisAlignedBB box = new AxisAlignedBB(dx - 6D, dy - 6D, dz - 6D, dx + 6D, dy + 6D, dz + 6D);
-            List<EntityLivingBase> slist = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, box);
+            List<EntityLivingBase> slist = this.world.getEntitiesWithinAABB(EntityLivingBase.class, box);
             
             if (slist != null)
             {
@@ -367,7 +367,7 @@ public class TileEntityVolCore extends BasicTileInventory implements ITickable
                 		
                 		//show hot emotes
                 		int emotes;
-                		switch (this.worldObj.rand.nextInt(5))
+                		switch (this.world.rand.nextInt(5))
                 		{
                 		case 0:
                 			emotes = 12;  //omg

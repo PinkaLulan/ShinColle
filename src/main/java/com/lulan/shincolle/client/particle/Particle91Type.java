@@ -45,7 +45,7 @@ public class Particle91Type extends Particle
         this.motionY = 0D;
         this.particleScale = scale;
         this.particleMaxAge = 136;
-        this.field_190017_n = false;	//can clip = false
+        this.canCollide = false;	//can clip = false
     }
 
     /**
@@ -148,7 +148,7 @@ public class Particle91Type extends Particle
             this.setExpired();
         }
 
-        this.moveEntity(this.motionX, this.motionY, this.motionZ);
+        this.move(this.motionX, this.motionY, this.motionZ);
         this.motionY *= 0.9D;
     }
     

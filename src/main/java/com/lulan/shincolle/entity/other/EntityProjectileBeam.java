@@ -156,7 +156,7 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAtt
         super.onUpdate();
         
         /*************** SERVER SIDE *****************/
-        if (!this.worldObj.isRemote)
+        if (!this.world.isRemote)
         {
         	//check life
         	if (this.ticksExisted > this.lifeLength || this.host == null)
@@ -173,7 +173,7 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAtt
     		}
         	
     		//判定bounding box內是否有可以觸發爆炸的entity
-            List<Entity> hitList = this.worldObj.getEntitiesWithinAABB(Entity.class,
+            List<Entity> hitList = this.world.getEntitiesWithinAABB(Entity.class,
             											this.getEntityBoundingBox().expand(1.5D, 1.5D, 1.5D));
             
             //搜尋list, 找出第一個可以判定的目標, 即傳給onImpact
@@ -211,7 +211,7 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAtt
 //    	playSound(Reference.MOD_ID+":ship-explode", ConfigHandler.volumeFire * 1.5F, 0.7F / (this.rand.nextFloat() * 0.4F + 0.8F));
     	
     	//server side
-    	if (!this.worldObj.isRemote)
+    	if (!this.world.isRemote)
     	{
     		float beamAtk = atk;
 
@@ -226,7 +226,7 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAtt
             	impactBox = this.getEntityBoundingBox().expand(1.5D, 1.5D, 1.5D);
             }
             
-            List<Entity> hitList = this.worldObj.getEntitiesWithinAABB(Entity.class, impactBox);
+            List<Entity> hitList = this.world.getEntitiesWithinAABB(Entity.class, impactBox);
             TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
             
             //對list中所有可攻擊entity做出傷害判定

@@ -425,7 +425,7 @@ public class ParticleHelper
 	@SideOnly(Side.CLIENT)
 	public static void spawnAttackParticleAtEntity(Entity ent, double par1, double par2, double par3, byte type)
 	{
-		World world = Minecraft.getMinecraft().theWorld;
+		World world = Minecraft.getMinecraft().world;
 		EntityLivingBase host = null;
 		
 		//get target position
@@ -556,7 +556,7 @@ public class ParticleHelper
 	@SideOnly(Side.CLIENT)
 	public static void spawnAttackParticleAtEntity(Entity host, Entity target, double par1, double par2, double par3, byte type, boolean setAtkTime)
 	{
-		World world = Minecraft.getMinecraft().theWorld;
+		World world = Minecraft.getMinecraft().world;
 		EntityLivingBase host2 = null;
 		
 		//null check

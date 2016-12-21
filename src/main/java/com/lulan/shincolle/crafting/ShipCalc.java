@@ -145,7 +145,7 @@ public class ShipCalc
 			}
 			
 			//get mean distance
-			meanDist = MathHelper.abs_int(totalMats - meanNew);
+			meanDist = MathHelper.abs(totalMats - meanNew);
 			
 			//mean value to prob value
 			if (item.getItemDamage() == 0)

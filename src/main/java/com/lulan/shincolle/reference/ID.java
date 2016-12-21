@@ -417,7 +417,7 @@ public class ID {
 		public static final byte NumGrudge = 6;
 		public static final byte NumAirLight = 7;
 		public static final byte NumAirHeavy = 8;
-		public static final byte NO_USE = 9;		//TODO no use
+		public static final byte NO_USE0 = 9;		//TODO
 		public static final byte FollowMin = 10;	//follow range min/max
 		public static final byte FollowMax = 11;	
 		public static final byte FleeHP = 12;		//flee hp%
@@ -448,9 +448,9 @@ public class ID {
 		public static final byte LevelChunkLoader = 37;	//level of chunk loader
 		public static final byte LevelFlare = 38;		//level of flare
 		public static final byte LevelSearchlight = 39;	//level of searchlight
-		public static final byte LastX = 40;		//last waypoint x
-		public static final byte LastY = 41;		//last waypoint y
-		public static final byte LastZ = 42;		//last waypoint z
+		public static final byte NO_USE1 = 40;		//TODO
+		public static final byte NO_USE2 = 41;		//TODO
+		public static final byte NO_USE3 = 42;		//TODO
 		public static final byte CraneState = 43;	//crane state: 0:none 1:wait 2:craning
 		public static final byte WpStay = 44;		//waypoint stay setting
 	}
@@ -491,12 +491,12 @@ public class ID {
 	public static final class S
 	{
 		public static final byte State = 0;				//equip state
-		public static final byte Emotion = 1;			//emotion
-		public static final byte Emotion2 = 2;			//emotion 2
+		public static final byte Emotion = 1;			//emotion, for face emotion
+		public static final byte Emotion2 = 2;			//emotion 2, for head tilt
 		public static final byte HPState = 3;			//hp state
 		public static final byte State2 = 4;			//equip state 2
 		public static final byte Phase = 5;				//entity phase
-		public static final byte Emotion3 = 6;			//emotion 3
+		public static final byte Emotion3 = 6;			//emotion 3, for caress reaction
 	}
 	
 	/** ship class id */
@@ -580,8 +580,8 @@ public class ID {
 		public static final short Airplane = 1;
 		public static final short AirplaneT = 2;
 		public static final short AirplaneTako = 3;
-		public static final short AirplaneZ = 4;
-		public static final short AirplaneF = 5;
+		public static final short AirplaneZero = 4;
+		public static final short FloatingFort = 5;
 		public static final short Rensouhou = 6;
 		public static final short RensouhouS = 7;
 	}
@@ -687,12 +687,20 @@ public class ID {
 	/** Timer Array */
 	public static final class T
 	{
-		public static final byte RevengeTime = 0;		//revenge target time
-		public static final byte CraneTime = 1;			//craning time
-		public static final byte ImmuneTime = 2;		//immune time
-		public static final byte CrandDelay = 3;		//crane state 0 to 1,2 delay
-		public static final byte WpStayTime = 4;		//waypoint stay timer
-		public static final byte Emotion3Time = 5;		//emotion 3 tick
+		public static final byte RevengeTime = 0;		//SERVER: revenge target time
+		public static final byte CraneTime = 1;			//BOTH: craning time
+		public static final byte ImmuneTime = 2;		//SERVER: immune time
+		public static final byte CrandDelay = 3;		//SERVER: crane state changing delay
+		public static final byte WpStayTime = 4;		//SERVER: waypoint stay timer
+		public static final byte Emotion3Time = 5;		//SERVER: emotion 3 tick
+		public static final byte SoundTime = 6;			//SERVER: sound event cooldown
+		public static final byte FaceTime = 7;			//CLIENT: face emotion time
+		public static final byte HeadTilt = 8;			//CLIENT: head tilt time
+		public static final byte MoraleTime = 9;		//SERVER: morale delay time
+		public static final byte EmoteDelay = 10;		//SERVER: emote reaction delay
+		public static final byte LastCombat = 11;		//SERVER: last combat time
+		public static final byte AttackTime = 12;		//CLIENT: attack time for model display
+		public static final byte AttackTime2 = 13;		//CLIENT: attack time 2 for model display
 	}
 
 	/** StateEquip, StateFinal, BonusPoint, TypeModify */
