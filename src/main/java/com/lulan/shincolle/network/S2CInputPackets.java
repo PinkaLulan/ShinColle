@@ -26,7 +26,9 @@ public class S2CInputPackets implements IMessage
 	private World world;
 	private EntityPlayer player;
 	private byte packetType;
-	private int[] valueInt;
+	private int[] valueInt, valueInt2;
+	private boolean[] valueBoolean;
+	private String[] valueStr;
 	
 	//packet id
 	public static final class PID
@@ -34,6 +36,7 @@ public class S2CInputPackets implements IMessage
 		public static final byte CmdChOwner = 0;
 		public static final byte CmdShipInfo = 1;
 		public static final byte CmdShipAttr = 2;
+		public static final byte CmdShipList = 3;
 		public static final byte FlareEffect = 20;
 	}
 	
@@ -43,6 +46,7 @@ public class S2CInputPackets implements IMessage
 	/**type 0: (2 parms) command: change owner: 0:sender eid, 1:owner eid
 	 * type 1: (1 parms) command: show ship info: 0:sender eid
 	 * type 2: (8 parms) command: change ship attrs: 0:sender eid, 1:ship lv, 2~7:bonus value
+	 * type 3: (2 parms) command: show/get/del ship list: 0:cmd type, 1:number
 	 * type 20:(8 parms) flare light effect: 0:x, 1:y, 2:z
 	 */
 	public S2CInputPackets(byte type, int...parms)
@@ -55,7 +59,7 @@ public class S2CInputPackets implements IMessage
 	@Override
 	public void fromBytes(ByteBuf buf)
 	{	
-		//get type and entityID
+		//get packet type
 		this.packetType = buf.readByte();
 	
 		switch (this.packetType)
@@ -81,6 +85,34 @@ public class S2CInputPackets implements IMessage
 			}
 		}
 		break;
+		case PID.CmdShipList:	//cmd: show/get/del ship list
+		{
+			//total size, page num, list size
+			this.valueInt = PacketHelper.readIntArray(buf, 3);
+			
+			if (this.valueInt[2] > 0)
+			{
+				this.valueInt2 = new int[this.valueInt[2] * 7];
+				this.valueBoolean = new boolean[this.valueInt[2] * 2];
+				this.valueStr = new String[this.valueInt[2]];
+				
+				for (int i = 0; i < this.valueInt[2]; i++)
+				{
+					//get int data
+					for (int j = 0; j < 7; j++) this.valueInt2[i * 7 + j] = buf.readInt();
+					//get boolean data
+					for (int k = 0; k < 2; k++) this.valueBoolean[i * 2 + k] = buf.readBoolean();
+					//get string data
+					this.valueStr[i] = PacketHelper.readString(buf);
+				}
+			}
+			else
+			{
+				this.valueInt2 = null;
+				this.valueStr = null;
+			}
+		}
+		break;
 		}//end switch
 	}
 
@@ -88,6 +120,9 @@ public class S2CInputPackets implements IMessage
 	@Override
 	public void toBytes(ByteBuf buf)
 	{
+		//send packet type
+		buf.writeByte(this.packetType);
+		
 		switch(this.packetType)
 		{
 		case PID.CmdChOwner:	//cmd: change owner packet
@@ -95,8 +130,6 @@ public class S2CInputPackets implements IMessage
 		case PID.CmdShipAttr:	//cmd: change ship attrs
 		case PID.FlareEffect:	//flare effect server to client sync
 		{
-			buf.writeByte(this.packetType);
-
 			//send int array
 			if (this.valueInt != null)
 			{
@@ -112,6 +145,20 @@ public class S2CInputPackets implements IMessage
 			else
 			{
 				buf.writeInt(0);
+			}
+		}
+		break;
+		case PID.CmdShipList:	//cmd: show/get/del ship list
+		{
+			if (this.valueInt != null)
+			{
+				switch (this.valueInt[0])
+				{
+				case 0:		//cmd: /ship list X
+					//send ship list
+					CommandHelper.processSendShipList(buf, this.valueInt[1]);
+				break;
+				}
 			}
 		}
 		break;
@@ -131,6 +178,9 @@ public class S2CInputPackets implements IMessage
 		break;
 		case PID.CmdShipAttr:	//cmd: change ship attrs
 			CommandHelper.processSetShipAttrs(msg.valueInt);
+		break;
+		case PID.CmdShipList:	//cmd: show/get/del ship list
+			CommandHelper.processGetShipList(msg.valueInt, msg.valueInt2, msg.valueBoolean, msg.valueStr);
 		break;
 		case PID.FlareEffect:
 		{

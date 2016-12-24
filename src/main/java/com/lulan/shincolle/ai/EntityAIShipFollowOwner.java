@@ -246,7 +246,8 @@ public class EntityAIShipFollowOwner extends EntityAIBase
 				ownerPosOld[2] = owner.posZ;
 					
 				//draw moving particle
-				if ((ConfigHandler.alwaysShowTeamParticle || EntityHelper.checkInUsePointer(player)) && player != null)
+				if (player != null && (ConfigHandler.alwaysShowTeamParticle || EntityHelper.getPointerInUse(player) != null) &&
+					player.dimension == host2.dimension)
 				{
 					CommonProxy.channelP.sendTo(new S2CSpawnParticle(25, pos[0], pos[1], pos[2], 0.3, 4, 0), (EntityPlayerMP) player);
 				}
@@ -255,7 +256,8 @@ public class EntityAIShipFollowOwner extends EntityAIBase
 			if (this.host2.ticksExisted % 16 == 0)
 			{
 				//draw moving particle
-				if ((ConfigHandler.alwaysShowTeamParticle || EntityHelper.checkInUsePointer(player)) && player != null)
+				if (player != null && (ConfigHandler.alwaysShowTeamParticle || EntityHelper.getPointerInUse(player) != null) &&
+					player.dimension == host2.dimension)
 				{
 					CommonProxy.channelP.sendTo(new S2CSpawnParticle(25, pos[0], pos[1], pos[2], 0.3, 6, 0), (EntityPlayerMP) player);
 				}

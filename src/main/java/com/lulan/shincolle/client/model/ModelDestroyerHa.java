@@ -273,7 +273,7 @@ public class ModelDestroyerHa extends ModelBase implements IModelEmotion
     
     private void motionStopPos(float f, float f1, float f2, float f3, float f4, BasicEntityShip ent)
     {
-    	GlStateManager.translate(0F, 0.8F, 0F);
+    	GlStateManager.translate(0F, 0.5F, 0F);
     	isKisaragi(ent);
 		setFace(2);
 		
@@ -308,7 +308,7 @@ public class ModelDestroyerHa extends ModelBase implements IModelEmotion
   		if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
   		{
 			setFace(1);
-			GlStateManager.translate(0F, 0.6F, 0F);
+			GlStateManager.translate(0F, 0.4F, 0F);
 	  		Back.rotateAngleX = -0.8F;
 	  		NeckBack.rotateAngleX = -0.2618F;
 			Head.rotateAngleX = -0.2618F;
@@ -322,7 +322,7 @@ public class ModelDestroyerHa extends ModelBase implements IModelEmotion
   		}
   		else
   		{
-  			GlStateManager.translate(0F, 0.7F, 0F);
+  			GlStateManager.translate(0F, 0.5F, 0F);
 	  		Back.rotateAngleX = 0F;
 	  		Back.rotateAngleZ = -1.5708F;
 	  		NeckBack.rotateAngleX = 0.1745F;

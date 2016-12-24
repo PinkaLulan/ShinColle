@@ -5,6 +5,7 @@ import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.util.math.MathHelper;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.utility.LogHelper;
 
 public class EntityAIShipLookIdle extends EntityAIBase
 {
@@ -41,16 +42,17 @@ public class EntityAIShipLookIdle extends EntityAIBase
 
     public void startExecuting()
     {
-        float d0 = (float)Math.PI * 2F * this.host.getRNG().nextFloat();
-        this.lookX = MathHelper.cos(d0);
-        this.lookZ = MathHelper.sin(d0);
+    	//NOTE: 2PI會導致扭到反方向, 故改為1PI
+    	double d0 = (Math.PI * 1D) * this.host.getRNG().nextDouble();
+        this.lookX = Math.cos(d0);
+        this.lookZ = Math.sin(d0);
         this.idleTime = 20 + this.host.getRNG().nextInt(20);
     }
 
     public void updateTask()
     {
         --this.idleTime;
-        this.host.getLookHelper().setLookPosition(this.host.posX + this.lookX, this.host.posY + (double)this.host.getEyeHeight(), this.host.posZ + this.lookZ, 10.0F, (float)this.host.getVerticalFaceSpeed());
+        this.host.getLookHelper().setLookPosition(this.host.posX + this.lookX, this.host.posY + (double)this.host.getEyeHeight(), this.host.posZ + this.lookZ, (float)this.host.getHorizontalFaceSpeed(), (float)this.host.getVerticalFaceSpeed());
     }
     
     

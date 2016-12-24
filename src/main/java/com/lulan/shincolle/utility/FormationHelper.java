@@ -1123,7 +1123,7 @@ public class FormationHelper
 			//不在隊伍名單裡面
 			if (capa.checkIsInCurrentTeam(parms[3]) < 0)
 			{
-				BasicEntityShip target = EntityHelper.getShipBySID(parms[3]);
+				BasicEntityShip target = EntityHelper.getShipByUID(parms[3]);
 				
 				target.setEntitySit(!target.isSitting());
 				target.setRiderAndMountSit();

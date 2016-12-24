@@ -43,7 +43,7 @@ public class ParticleEmotion extends Particle
 	 */
     public ParticleEmotion(World world, Entity host, double posX, double posY, double posZ, float height, int entType, int type)
     {
-        super(world, posX, posY, posZ, 0.0D, 0.0D, 0.0D);
+        super(world, posX, posY, posZ);
         this.host = host;
         this.setSize(0F, 0F);
         this.setPosition(posX, posY, posZ);

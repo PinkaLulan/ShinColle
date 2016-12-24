@@ -38,7 +38,7 @@ public class Particle91Type extends Particle
 	
     public Particle91Type(World world, double posX, double posY, double posZ, float scale)
     {
-        super(world, posX, posY, posZ, 0.0D, 0.0D, 0.0D);
+        super(world, posX, posY, posZ);
         this.setSize(0F, 0F);
         this.motionX = 0D;
         this.motionZ = 0D;

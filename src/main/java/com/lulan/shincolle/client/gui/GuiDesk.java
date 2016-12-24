@@ -802,8 +802,8 @@ public class GuiDesk extends GuiContainer
             			if (this.shipMount != null) this.shipMount.setSprinting(!this.shipMount.isSprinting());
             		break;
             		case 5:  //attack
-//            			this.shipModel.attackTime = 50; TODO
-//            			if (this.shipMount != null) this.shipMount.attackTime = 50;
+            			this.shipModel.setAttackTick(50);
+            			if (this.shipMount != null) this.shipMount.setAttackTick(50);
             		break;
             		case 6:  //emotion
             			switch (this.shipModel.getRNG().nextInt(11))
@@ -2038,13 +2038,16 @@ public class GuiDesk extends GuiContainer
 		//get ship
 		try
 		{
-			if (chap == 4)
+			if (page > 0)
 			{
-				classID = Values.ShipBookList.get(page - 1);
-			}
-			else if (chap == 5)
-			{
-				classID = Values.EnemyBookList.get(page - 1);
+				if (chap == 4)
+				{
+					classID = Values.ShipBookList.get(page - 1);
+				}
+				else if (chap == 5)
+				{
+					classID = Values.EnemyBookList.get(page - 1);
+				}
 			}
 		}
 		catch (Exception e)
@@ -2151,7 +2154,7 @@ public class GuiDesk extends GuiContainer
         	if (modelTicking == 0)
         	{
         		this.shipModel.ticksExisted++;
-//            	if (this.shipModel.attackTime > 0) this.shipModel.attackTime--; TODO
+            	if (this.shipModel.getAttackTick() > 0) this.shipModel.setAttackTick(this.shipModel.getAttackTick()-1);
             	
             	//set moving motion
             	if (this.shipModel.isSprinting())

@@ -155,6 +155,21 @@ public class EntityDestroyerInazumaMob extends BasicEntityShipHostile implements
   		}
   	}
   	
+  	@Override
+    public void updatePassenger(Entity passenger)
+    {
+        if (this.isPassenger(passenger))
+        {
+            passenger.setPosition(this.posX, this.posY + this.getMountedYOffset() + passenger.getYOffset(), this.posZ);
+        }
+    }
+  	
+  	@Override
+	public double getMountedYOffset()
+  	{
+  		return this.height * 0.47F;
+	}
+  	
   	/**
   	 * state: 0:無騎乘, 2:雷電合體狀態
   	 */

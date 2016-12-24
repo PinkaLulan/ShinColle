@@ -11,6 +11,7 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.TileEntityDesk;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.FormationHelper;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.PacketHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 import com.lulan.shincolle.utility.TeamHelper;
@@ -18,6 +19,7 @@ import com.lulan.shincolle.utility.TeamHelper;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -393,13 +395,14 @@ public class C2SGUIPackets implements IMessage
 			
 			if (player != null)
 			{
+				ItemStack pointer = EntityHelper.getPointerInUse(player);
+				
 				//if sync pointer, check pointer meta
-				if (player.inventory.getCurrentItem() != null &&
-					player.inventory.getCurrentItem().getItem() instanceof PointerItem)
+				if (pointer != null)
 				{
 					//sync item damage value
-					int oldmeta = player.inventory.getCurrentItem().getItemDamage();
-					player.inventory.getCurrentItem().setItemDamage(msg.valueInt[2]);
+					int oldmeta = pointer.getItemDamage();
+					pointer.setItemDamage(msg.valueInt[2]);
 					
 					//mode changed != 3, reset focus target
 					if (MathHelper.abs(msg.valueInt[2] - oldmeta) % 3 != 0)
@@ -505,6 +508,7 @@ public class C2SGUIPackets implements IMessage
 					}
 					
 					//sync team data
+					capa.sendSyncPacket(7);
 					capa.sendSyncPacket(3);
 				}
 			}
@@ -547,7 +551,13 @@ public class C2SGUIPackets implements IMessage
 					
 					for (EntityPlayer p : plist)
 					{
-						capa.sendSyncPacket(3);
+						capa = CapaTeitoku.getTeitokuCapability(p);
+						
+						if (capa != null)
+						{
+							capa.sendSyncPacket(7);
+							capa.sendSyncPacket(3);
+						}
 					}
 				}//player UID != null
 			}//extProps != null

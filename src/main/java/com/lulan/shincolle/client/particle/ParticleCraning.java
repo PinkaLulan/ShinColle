@@ -30,7 +30,7 @@ public class ParticleCraning extends Particle
 	
     public ParticleCraning(World world, double x, double y, double z, double lengthMax, double par1, double scale, int type)
     {
-        super(world, x, y, z, 0D, 0D, 0D);
+        super(world, x, y, z);
         this.setSize(0F, 0F);
         this.motionX = 0D;
         this.motionZ = 0D;

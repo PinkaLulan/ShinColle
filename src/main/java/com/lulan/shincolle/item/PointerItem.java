@@ -198,7 +198,7 @@ public class PointerItem extends BasicItem
 							int i = capa.checkIsInCurrentTeam(ship.getShipUID());
 							
 							//蹲下左鍵: remove team if in team
-							if (player.isSneaking())
+							if (keySet.keyBindSneak.isKeyDown())
 							{
 								//if in team
 								if (i >= 0)
@@ -271,10 +271,10 @@ public class PointerItem extends BasicItem
 				
 				//click on air
 				//蹲下左鍵 vs block or 非自己的寵物, 則切換pointer模式
-				if (keySet.keyBindSneak.isPressed())
+				if (keySet.keyBindSneak.isKeyDown())
 				{
 					//sneak+sprint: clear team
-					if (keySet.keyBindSprint.isPressed())
+					if (keySet.keyBindSprint.isKeyDown())
 					{
 						LogHelper.info("DEBUG : pointer clear all focus");
 						//send sync packet to server
@@ -309,7 +309,7 @@ public class PointerItem extends BasicItem
 				}
 				
 				//press SPRINT (CTRL) ONLY
-				if (keySet.keyBindSprint.isPressed())
+				if (keySet.keyBindSprint.isKeyDown())
 				{
 					//in formation mode: change formation
 					if (meta == 2)
@@ -386,7 +386,7 @@ public class PointerItem extends BasicItem
 //				LogHelper.info("DEBUG : pointer right click: ENTITY "+hitObj.entityHit.getClass().getSimpleName());
 				
 				//right + sprint: entity: guard entity(move only)
-				if (keySet.keyBindSprint.isPressed())
+				if (keySet.keyBindSprint.isKeyDown())
 				{
 					//set guard entity (move only: type = 0)
 					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.GuardEntity, meta, 0, hitObj.entityHit.getEntityId()));
@@ -488,7 +488,7 @@ public class PointerItem extends BasicItem
 			else
 			{
 				//若按住shift, 則開啟formation GUI
-				if (player.isSneaking())
+				if (keySet.keyBindSneak.isKeyDown())
 				{
 					//send GUI packet
 					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.OpenItemGUI, 0));
@@ -541,7 +541,7 @@ public class PointerItem extends BasicItem
 						int guardType = 1;
 						
 						//right + sprint: entity: guard (move only)
-						if (keySet.keyBindSprint.isPressed())
+						if (keySet.keyBindSprint.isKeyDown())
 						{
 							//set guard entity (move only: type = 0)
 							guardType = 0;
@@ -644,9 +644,12 @@ public class PointerItem extends BasicItem
 		}//end client side
 		
 		//show team mark
-		if ((inUse || ConfigHandler.alwaysShowTeamParticle) && item.getItemDamage() < 3)
+		if (player instanceof EntityPlayer &&
+			EntityHelper.getPointerInUse((EntityPlayer) player) != null &&
+			item.getMetadata() < 3 ||
+			ConfigHandler.alwaysShowTeamParticle)
 		{
-			if (world.isRemote && player instanceof EntityPlayer)
+			if (world.isRemote)
 			{
 				if (player.ticksExisted % 32 == 0)
 				{
@@ -719,7 +722,7 @@ public class PointerItem extends BasicItem
     @Override
     public void addInformation(ItemStack itemstack, EntityPlayer player, List list, boolean par4)
     {  	
-    	CapaTeitoku capa = CapaTeitoku.getTeitokuCapability((EntityPlayer)player);
+    	CapaTeitoku capa = CapaTeitoku.getTeitokuCapabilityClientOnly();
 		
     	if (capa != null)
     	{
@@ -758,7 +761,7 @@ public class PointerItem extends BasicItem
 			//draw current team id
     		list.add(TextFormatting.YELLOW+""+TextFormatting.UNDERLINE + 
     				String.format("%s %d", I18n.format("gui.shincolle:pointer4"), capa.getCurrentTeamID()+1));
-    	
+    		
     		//draw current team ship name
     		BasicEntityShip ship = null;
     		String name = null;

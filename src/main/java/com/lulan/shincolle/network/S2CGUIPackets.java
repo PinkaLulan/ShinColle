@@ -197,39 +197,41 @@ public class S2CGUIPackets implements IMessage
 			this.valueInt1 = PacketHelper.readIntArray(buf, 4);
 		break;
 		case PID.SyncPlayerProp: //sync player props
-			this.valueInt1 = new int[5+9+12];
+			this.valueInt1 = new int[6+9+12];
 			this.valueBoolean1 = new boolean[6];
 			
-			//int 0~4: misc data
+			//int 0~5: misc data
 			this.valueInt1[0] = buf.readByte();	//0: ring active
 			this.valueInt1[1] = buf.readByte();	//1: has team flag
-			this.valueInt1[2] = buf.readInt();	//2: marriage num
-			this.valueInt1[3] = buf.readInt();	//3: player uid
-			this.valueInt1[4] = buf.readByte();	//4: current team id
+			this.valueInt1[2] = buf.readByte();	//2: current team id
+			this.valueInt1[3] = buf.readInt();	//3: marriage num
+			this.valueInt1[4] = buf.readInt();	//4: player uid
+			this.valueInt1[5] = buf.readInt();	//5: team cooldown
 			
-			//int 5~13: formation id
+			//int 6~14: formation id
 			for (int i = 0; i < 9 ; ++i)
 			{
-				this.valueInt1[i + 5] = buf.readByte();
+				this.valueInt1[i + 6] = buf.readByte();
 			}
 			
-			//int 14~25: ship team eid+uid, boolean 0~6: select state
+			//int 15~26: ship team eid+uid, boolean 0~6: select state
 			for (int j = 0; j < 6; ++j)
 			{
-				this.valueInt1[j * 2 + 14] = buf.readInt();	//ship i entity ID
-				this.valueInt1[j * 2 + 15] = buf.readInt();	//ship i ship UID
+				this.valueInt1[j * 2 + 15] = buf.readInt();	//ship i entity ID
+				this.valueInt1[j * 2 + 16] = buf.readInt();	//ship i ship UID
 				this.valueBoolean1[j] = buf.readBoolean();	//ship i select state
 			}
 		break;
 		case PID.SyncPlayerProp_Misc: //sync player props misc data
-			this.valueInt1 = new int[5];
+			this.valueInt1 = new int[6];
 			
 			//int 0~4: misc data
 			this.valueInt1[0] = buf.readByte();	//0: ring active
 			this.valueInt1[1] = buf.readByte();	//1: has team flag
-			this.valueInt1[2] = buf.readInt();	//2: marriage num
-			this.valueInt1[3] = buf.readInt();	//3: player uid
-			this.valueInt1[4] = buf.readByte();	//4: current team id
+			this.valueInt1[2] = buf.readByte();	//2: current team id
+			this.valueInt1[3] = buf.readInt();	//3: marriage num
+			this.valueInt1[4] = buf.readInt();	//4: player uid
+			this.valueInt1[5] = buf.readInt();	//5: team cooldown
 		break;
 		case PID.FlagInitSID:	//ship UID init flag
 			this.valueBoolean = buf.readBoolean();
@@ -473,9 +475,10 @@ public class S2CGUIPackets implements IMessage
 			//misc data
 			buf.writeByte(capa.isRingActive() ? 1 : 0);
 			buf.writeByte(capa.hasTeam() ? 1 : 0);
+			buf.writeByte(capa.getCurrentTeamID());
 			buf.writeInt(capa.getMarriageNum());
 			buf.writeInt(capa.getPlayerUID());
-			buf.writeByte(capa.getCurrentTeamID());
+			buf.writeInt(capa.getPlayerTeamCooldown());
 			
 			//ship formation id
 			int[] fid = capa.getFormatID();
@@ -510,9 +513,10 @@ public class S2CGUIPackets implements IMessage
 			//misc data
 			buf.writeByte(capa.isRingActive() ? 1 : 0);
 			buf.writeByte(capa.hasTeam() ? 1 : 0);
+			buf.writeByte(capa.getCurrentTeamID());
 			buf.writeInt(capa.getMarriageNum());
 			buf.writeInt(capa.getPlayerUID());
-			buf.writeByte(capa.getCurrentTeamID());
+			buf.writeInt(capa.getPlayerTeamCooldown());
 		}
 		break;
 		case PID.SyncShipInv:	//sync ship inventory GUI: kills and grudge
@@ -823,8 +827,8 @@ public class S2CGUIPackets implements IMessage
 		break;
 		case PID.SyncPlayerProp: //sync player props
 		{
-			int[] misc = new int[5];
-			for (int i = 0; i < 5; i++)
+			int[] misc = new int[6];
+			for (int i = 0; i < 6; i++)
 			{
 				misc[i] = msg.valueInt1[i];
 			}
@@ -832,19 +836,19 @@ public class S2CGUIPackets implements IMessage
 			int[] formatID = new int[9];
 			for (int i = 0; i < 9; i++)
 			{
-				formatID[i] = msg.valueInt1[i + 5];
+				formatID[i] = msg.valueInt1[i + 6];
 			}
 
 			int[] shipList = new int[12];
 			for (int i = 0; i < 6; i++)
 			{
-				shipList[i * 2] = msg.valueInt1[i * 2 + 14];
-				shipList[i * 2 + 1] = msg.valueInt1[i * 2 + 15];
+				shipList[i * 2] = msg.valueInt1[i * 2 + 15];
+				shipList[i * 2 + 1] = msg.valueInt1[i * 2 + 16];
 			}
 			
 			//set value
 			CapaTeitoku.setCapaDataMisc(misc);
-			CapaTeitoku.setCapaDataTeamList(msg.valueInt1[4], formatID, shipList, msg.valueBoolean1);
+			CapaTeitoku.setCapaDataTeamList(msg.valueInt1[2], formatID, shipList, msg.valueBoolean1);
 		}
 		break;
 		case PID.SyncPlayerProp_Misc: //sync player props

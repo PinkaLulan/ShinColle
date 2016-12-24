@@ -7,6 +7,7 @@ import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
+import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
@@ -361,7 +362,7 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion
     
     private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
     {
-    	GlStateManager.scale(0F, 2.0F, 0F);
+    	GlStateManager.translate(0F, 0.575F, 0F);
     	setFace(4);
     	
   	    //ear
@@ -370,6 +371,7 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion
 	    this.EarR01.rotateAngleX = 1F;
 	    this.EarR01.rotateAngleY = 1.0472F;
   	    this.EarL02.rotateAngleX = -0.8F;
+  	    this.EarL02.rotateAngleY = 0F;
   	    this.EarL02.rotateAngleZ = 0F;
   	    this.EarR02.rotateAngleX = -0.2F;
   	    this.EarR02.rotateAngleY = -0.2F;
@@ -413,7 +415,7 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion
   		//水上漂浮
   		if (((IShipFloating)ent).getShipDepth() > 0)
   		{
-  			GlStateManager.scale(0F, angleX * 0.1F - 0.025F, 0F);
+  			GlStateManager.translate(0F, angleX * 0.1F - 0.025F, 0F);
     	}
   		
   		//leg move parm
@@ -424,13 +426,14 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion
 	  	this.Head.rotateAngleX = f4 * 0.01745F + 0.1F;
 	  	this.Head.rotateAngleY = f3 * 0.01745F;
   	    //ear
-  	    this.EarL01.rotateAngleX = angleX * 0.1F - 0.8727F;
-  	    this.EarL01.rotateAngleY = 1.0472F;
-	    this.EarR01.rotateAngleX = angleX * 0.1F + 0.5236F;
-	    this.EarR01.rotateAngleY = 1.0472F;
-  	    this.EarL02.rotateAngleX = -angleX1 * 0.2F + 0.7F;
+  	    this.EarL01.rotateAngleX = angleX * 0.1F + 0.4F;
+  	    this.EarL01.rotateAngleY = -0.8F;
+	    this.EarR01.rotateAngleX = angleX * 0.1F + 0.7F;
+	    this.EarR01.rotateAngleY = 0.9F;
+  	    this.EarL02.rotateAngleX = angleX1 * 0.2F + 0.6F;
+  	    this.EarL02.rotateAngleY = 0F;
   	    this.EarL02.rotateAngleZ = 0F;
-  	    this.EarR02.rotateAngleX = -angleX1 * 0.2F + 0.7F;
+  	    this.EarR02.rotateAngleX = angleX1 * 0.2F + 1.1F;
   	    this.EarR02.rotateAngleY = -0.5236F;
   	    this.EarR02.rotateAngleZ = 0F;
   	    //hair
@@ -494,6 +497,7 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion
 	    	this.EarL01.rotateAngleX = -angleRun * 0.08F - 0.8727F;
 	    	this.EarL01.rotateAngleY = 0.5F;
 	    	this.EarL02.rotateAngleX = -angleRun * 0.1F - 0.5F;
+	    	this.EarL02.rotateAngleY = 0F;
 	    	this.EarL02.rotateAngleZ = -0.5F;
 	    	this.EarR01.rotateAngleX = angleRun * 0.08F - 0.8727F;
 	    	this.EarR01.rotateAngleY = -0.5F;
@@ -519,10 +523,11 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion
   		}//end if sneaking
   		
 	    if (ent.getIsSitting() || ent.getIsRiding())
-	    {  //騎乘動作
+	    {	
+	    	//騎乘動作
 	    	if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 	    	{	
-	    		GlStateManager.scale(0F, 2.0F, 0F);
+	    		GlStateManager.translate(0F, 0.575F, 0F);
 		    	//body
 		    	this.Head.rotateAngleX = -1.48F;
 		    	this.Head.rotateAngleY = 0F;
@@ -538,10 +543,21 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion
 		    	addk2 = -0.2618F;
 		    	this.LegLeft.rotateAngleZ = 0.1745F;
 		    	this.LegRight.rotateAngleZ = -0.35F;
+		  	    //ear
+		  	    this.EarL01.rotateAngleX = angleX * 0.075F + 0.3F;
+		  	    this.EarL01.rotateAngleY = -0.8F;
+			    this.EarR01.rotateAngleX = angleX * 0.075F + 0.9F;
+			    this.EarR01.rotateAngleY = 0.6F;
+		  	    this.EarL02.rotateAngleX = angleX1 * 0.1F + 0.6F;
+		  	    this.EarL02.rotateAngleY = 0.1F;
+		  	    this.EarL02.rotateAngleZ = 0F;
+		  	    this.EarR02.rotateAngleX = angleX1 * 0.1F + 1F;
+		  	    this.EarR02.rotateAngleY = -0.1F;
+		  	    this.EarR02.rotateAngleZ = 0F;
 	    	}
 	    	else
 	    	{
-	    		GlStateManager.scale(0F, 1.5F, 0F);
+	    		GlStateManager.translate(0F, 0.45F, 0F);
 		    	//body
 		    	this.Head.rotateAngleX -= 0.7F;
 		    	this.BodyMain.rotateAngleX = 0.5236F;
@@ -560,13 +576,24 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion
 		    	addk2 = -2.2689F;
 		    	this.LegLeft.rotateAngleY = -0.3491F;
 		    	this.LegRight.rotateAngleY = 0.3491F;
+		  	    //ear
+		  	    this.EarL01.rotateAngleX = angleX * 0.075F + 0.8F;
+		  	    this.EarL01.rotateAngleY = -0.5F;
+			    this.EarR01.rotateAngleX = angleX * 0.075F + 1F;
+			    this.EarR01.rotateAngleY = 0.5F;
+		  	    this.EarL02.rotateAngleX = angleX1 * 0.1F + 0.9F;
+		  	    this.EarL02.rotateAngleY = 0.1F;
+		  	    this.EarL02.rotateAngleZ = 0F;
+		  	    this.EarR02.rotateAngleX = angleX1 * 0.1F + 1.0F;
+		  	    this.EarR02.rotateAngleY = -0.1F;
+		  	    this.EarR02.rotateAngleZ = 0F;
 	    	}
   		}//end if sitting
 	    
 	    //攻擊動作    
 	    if (ent.getAttackTick() > 0)
 	    {
-	    	GlStateManager.scale(0F, 0.5F, 0F);
+	    	GlStateManager.translate(0F, 0.15F, 0F);
 	    	//body
 	    	this.Head.rotateAngleX = -0.8727F;
 	    	this.Head.rotateAngleY = 1.0472F;

@@ -15,6 +15,7 @@ import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.reference.Values;
+import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.GlStateManager;
@@ -190,6 +191,8 @@ public class RenderShipEntity extends RenderLiving<EntityLiving>
      */
     private void setModel(int id)
     {
+    	this.shipClass = id;
+    	
 		switch (id)
 		{
 //		//AP
@@ -350,7 +353,7 @@ public class RenderShipEntity extends RenderLiving<EntityLiving>
 	//get leash height
 	protected float[] getLeashHeight()
 	{
-		float[] f = Values.ShipLeashHeight.get((short) shipClass);
+		float[] f = Values.ShipLeashHeight.get((short) this.shipClass);
 		
 		if (f == null)
 		{
@@ -366,7 +369,7 @@ public class RenderShipEntity extends RenderLiving<EntityLiving>
     {
         Entity entity = host.getLeashedToEntity();
         float[] leashHeight = getLeashHeight();
-
+        
         if (entity != null)
         {
         	IShipEmotion host1 = (IShipEmotion) host;

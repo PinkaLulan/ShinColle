@@ -646,7 +646,7 @@ public class ModelDestroyerAkatsuki extends ModelBase implements IModelEmotionAd
     
     private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
     {
-    	GlStateManager.translate(0F, 1.8F, 0F);
+    	GlStateManager.translate(0F, 0.52F, 0F);
     	setFace(4);
     	
 		//body
@@ -868,7 +868,7 @@ public class ModelDestroyerAkatsuki extends ModelBase implements IModelEmotionAd
 		    
 	    	if (ent.getIsSitting())
 			{
-	    		GlStateManager.translate(0F, 1.8F, 0F);
+	    		GlStateManager.translate(0F, 0.875F, 0F);
 	    		setFaceBored(ent);
 	    		//body
     	    	this.Head.rotateAngleX = -1.1F;
@@ -927,7 +927,7 @@ public class ModelDestroyerAkatsuki extends ModelBase implements IModelEmotionAd
     	    {
     	    	if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
     	    	{
-    	    		GlStateManager.translate(0F, 1.8F, 0F);
+    	    		GlStateManager.translate(0F, 0.52F, 0F);
     	    		setFaceBored(ent);
     	    		//body
         	    	this.Head.rotateAngleX = -1.1F;
@@ -980,7 +980,7 @@ public class ModelDestroyerAkatsuki extends ModelBase implements IModelEmotionAd
     	    	}
     	    	else
     	    	{
-    	    		GlStateManager.translate(0F, 1.3F, 0F);
+    	    		GlStateManager.translate(0F, 0.375F, 0F);
     		    	//body
     		    	this.BodyMain.rotateAngleX = -0.25F;
     		    	this.Butt.rotateAngleX = -0.2F;

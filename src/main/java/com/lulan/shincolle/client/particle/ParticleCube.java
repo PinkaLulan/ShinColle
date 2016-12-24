@@ -41,7 +41,7 @@ public class ParticleCube extends Particle
 	
     public ParticleCube(World world, EntityLivingBase host, double par1, double par2, double par3, float scale, int type)
     {
-        super(world, host.posX, host.posY, host.posZ, 0.0D, 0.0D, 0.0D);
+        super(world, host.posX, host.posY, host.posZ);
         this.setSize(0F, 0F);
         this.host = host;
         this.motionX = 0D;

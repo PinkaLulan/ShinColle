@@ -44,7 +44,7 @@ public class ParticleLaserNoTexture extends Particle
 	
     public ParticleLaserNoTexture(World world, EntityLivingBase host, Entity target, double par1, double par2, double par3, float scale, int type)
     {
-        super(world, host.posX, host.posY, host.posZ, 0.0D, 0.0D, 0.0D);
+        super(world, host.posX, host.posY, host.posZ);
         this.setSize(0F, 0F);
         this.host = host;
         this.target = target;
@@ -125,7 +125,7 @@ public class ParticleLaserNoTexture extends Particle
     
     public ParticleLaserNoTexture(World world, EntityLivingBase host, double tarX, double tarY, double tarZ, float scale, int type)
     {
-        super(world, host.posX, host.posY, host.posZ, 0.0D, 0.0D, 0.0D);
+        super(world, host.posX, host.posY, host.posZ);
         this.setSize(0F, 0F);
         this.host = host;
         this.target = host;

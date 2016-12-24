@@ -24,7 +24,7 @@ import com.lulan.shincolle.entity.IShipInvisible;
 import com.lulan.shincolle.entity.IShipNavigator;
 import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.item.PointerItem;
+import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -49,6 +49,7 @@ import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.passive.EntityWaterMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
+import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.tileentity.TileEntity;
@@ -212,21 +213,6 @@ public class EntityHelper
 		return false;
 	}
 	
-	/** check player is holding a pointer */
-	public static boolean checkInUsePointer(EntityPlayer player)
-	{
-		if (player != null)
-		{
-			if (player.inventory.getCurrentItem() != null &&
-				player.inventory.getCurrentItem().getItem() instanceof PointerItem)
-			{
-				return true;
-			}
-		}
-		
-		return false;
-	}
-	
 	/** get player name */
 	public static String getOwnerName(BasicEntityShip ship)
 	{
@@ -286,7 +272,7 @@ public class EntityHelper
 	}
 	
 	/** get ship entity by ship UID, server side only */
-	public static BasicEntityShip getShipBySID(int sid)
+	public static BasicEntityShip getShipByUID(int sid)
 	{
 		if (sid > 0)
 		{
@@ -581,32 +567,10 @@ public class EntityHelper
         	}
         	else
         	{
-//            	LogHelper.info("DEBUG : AI tick: path navi update");
-//            	LogHelper.info("DEBUG : AI tick: path length A "+this.getShipNavigate().getPath().getCurrentPathIndex()+" / "+this.getShipNavigate().getPath().getCurrentPathLength());
-//            	LogHelper.info("DEBUG : AI tick: path length A "+this.getShipNavigate().getPath().getCurrentPathIndex());
-    			
-        		//用particle顯示path point TODO 封包一次傳送整個路徑, 而不是一格傳一個包
+        		//用particle顯示path point
     			if (ConfigHandler.debugMode && entity2.ticksExisted % 20 == 0)
     			{
-    				ShipPath pathtemp = pathNavi.getPath();
-    				ShipPathPoint pointtemp;
-//    				LogHelper.info("DEBUG : AI tick: path length A "+pathtemp.getCurrentPathIndex()+" / "+pathtemp.getCurrentPathLength()+" xyz: "+pathtemp.getPathPointFromIndex(0).xCoord+" "+pathtemp.getPathPointFromIndex(0).yCoord+" "+pathtemp.getPathPointFromIndex(0).zCoord+" ");
-    				
-    				for (int i = 0; i < pathtemp.getCurrentPathLength(); i++)
-    				{
-    					pointtemp = pathtemp.getPathPointFromIndex(i);
-    					//發射者煙霧特效
-    			        TargetPoint point = new TargetPoint(entity2.dimension, entity2.posX, entity2.posY, entity2.posZ, 48D);
-    					//路徑點畫紅色, 目標點畫綠色
-    					if (i == pathtemp.getCurrentPathIndex())
-    					{
-    						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(entity2, 32, pointtemp.xCoord +0.5D, pointtemp.yCoord + 0.5D, pointtemp.zCoord +0.5D, 0F, 0F, 0F, false), point);
-    					}
-    					else
-    					{
-    						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(entity2, 33, pointtemp.xCoord +0.5D, pointtemp.yCoord + 0.5D, pointtemp.zCoord +0.5D, 0F, 0F, 0F, false), point);
-    					}
-    				}
+    				sendPathParticlePacket(entity.getShipNavigate().getPath(), new TargetPoint(entity2.dimension, entity2.posX, entity2.posY, entity2.posZ, 48D));
     			}
         	}
 
@@ -621,31 +585,72 @@ public class EntityHelper
         //若有vanilla path, 則用特效顯示出path
         if (!entity2.getNavigator().noPath())
         {
-//        	LogHelper.info("DEBUG : AI tick: path length B "+this.getNavigator().getPath().getCurrentPathIndex()+" / "+this.getNavigator().getPath().getCurrentPathLength());
-			//用particle顯示path point TODO 一個封包傳送整個path
+			//用particle顯示path point
         	if (ConfigHandler.debugMode && entity2.ticksExisted % 20 == 0)
         	{
-				Path pathtemp2 = entity2.getNavigator().getPath();
-				PathPoint pointtemp2;
-//				LogHelper.info("DEBUG : AI tick: path length B "+pathtemp2.getCurrentPathLength()+" "+pathtemp2.getPathPointFromIndex(0).xCoord+" "+pathtemp2.getPathPointFromIndex(0).yCoord+" "+pathtemp2.getPathPointFromIndex(0).zCoord+" ");
-//				LogHelper.info("DEBUG : AI tick: path length B "+pathtemp2.getCurrentPathIndex());
-				for (int i = 0; i < pathtemp2.getCurrentPathLength(); i++)
-				{
-					pointtemp2 = pathtemp2.getPathPointFromIndex(i);
-					//發射者煙霧特效
-			        TargetPoint point = new TargetPoint(entity2.dimension, entity2.posX, entity2.posY, entity2.posZ, 48D);
-					//路徑點畫紅色, 目標點畫綠色
-					if (i == pathtemp2.getCurrentPathIndex())
-					{
-						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(entity2, 16, pointtemp2.xCoord +0.5D, pointtemp2.yCoord + 0.5D, pointtemp2.zCoord +0.5D, 0F, 0F, 0F, false), point);
-					}
-					else
-					{
-						CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(entity2, 17, pointtemp2.xCoord +0.5D, pointtemp2.yCoord + 0.5D, pointtemp2.zCoord +0.5D, 0F, 0F, 0F, false), point);
-					}
-				}
+        		sendPathParticlePacket(entity2.getNavigator().getPath(), new TargetPoint(entity2.dimension, entity2.posX, entity2.posY, entity2.posZ, 64D));
 			}
         }//end vanilla path
+	}
+	
+	//send  path indicator particle for vanilla path or ship path
+	private static <T> void sendPathParticlePacket(T path, TargetPoint target)
+	{
+		int parType;
+		int len = 0;
+		int[] points = null;
+		
+		if (path instanceof ShipPath)
+		{
+			ShipPath p = (ShipPath) path;
+			ShipPathPoint temp;
+			
+			parType = 0;
+			len = p.getCurrentPathLength();
+			points = new int[len * 3 + 1];
+			
+			//add current path index (target point)
+			points[0] = p.getCurrentPathIndex();
+			
+			//add path points
+			for (int i = 0; i < len; i++)
+			{
+				temp = p.getPathPointFromIndex(i);
+				points[i * 3 + 1] = temp.xCoord;
+				points[i * 3 + 2] = temp.yCoord;
+				points[i * 3 + 3] = temp.zCoord;
+			}
+		}
+		else if (path instanceof Path)
+		{
+			Path p = (Path) path;
+			PathPoint temp;
+			
+			parType = 1;
+			len = p.getCurrentPathLength();
+			points = new int[len * 3 + 1];
+			
+			//add current path index (target point)
+			points[0] = p.getCurrentPathIndex();
+			
+			//add path points
+			for (int i = 0; i < len; i++)
+			{
+				temp = p.getPathPointFromIndex(i);
+				points[i * 3 + 1] = temp.xCoord;
+				points[i * 3 + 2] = temp.yCoord;
+				points[i * 3 + 3] = temp.zCoord;
+			}
+		}
+		else
+		{
+			return;
+		}
+		
+		if (points != null)
+		{
+			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(parType, points), target);
+		}
 	}
 	
 	@SideOnly(Side.CLIENT)
@@ -1375,6 +1380,40 @@ public class EntityHelper
   		}//end null check
   		
   		return false;
+  	}
+  	
+  	/**
+  	 * get selected or offhand PointerItem
+  	 */
+  	public static ItemStack getPointerInUse(EntityPlayer player)
+  	{
+  		ItemStack pointer = null;
+  		
+  		if (player != null)
+  		{
+  			ItemStack itemMain = player.inventory.getCurrentItem();
+  			ItemStack[] itemOff = player.inventory.offHandInventory;
+
+  			//check main hand
+  			if (itemMain != null && itemMain.getItem() == ModItems.PointerItem)
+  			{
+  				pointer = itemMain;
+  			}
+  			//check off hand
+  			else
+  			{
+  	  			for (ItemStack i : itemOff)
+  	  			{
+  	  	  			if (i != null && i.getItem() == ModItems.PointerItem)
+  	  	  			{
+  	  	  				pointer = i;
+  	  	  				break;
+  	  	  			}
+  	  			}
+  			}
+  		}
+  		
+  		return pointer;
   	}
   	
   	

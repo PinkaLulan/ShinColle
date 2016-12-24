@@ -23,7 +23,7 @@ public class ParticleSpray extends Particle
     
     public ParticleSpray(World world, double posX, double posY, double posZ, double motionX, double motionY, double motionZ, int type)
     {
-        super(world, posX, posY, posZ, 0.0D, 0.0D, 0.0D);
+        super(world, posX, posY, posZ);
         
         if (type < 13 || type == 15)
         {

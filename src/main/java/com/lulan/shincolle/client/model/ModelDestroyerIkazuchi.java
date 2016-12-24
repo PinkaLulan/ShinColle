@@ -479,7 +479,7 @@ public class ModelDestroyerIkazuchi extends ModelBase implements IModelEmotion
     
     private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
     {
-    	GlStateManager.translate(0F, 1.85F, 0F);
+    	GlStateManager.translate(0F, 0.52F, 0F);
     	setFace(4);
     	
 		//body
@@ -665,7 +665,6 @@ public class ModelDestroyerIkazuchi extends ModelBase implements IModelEmotion
 	    	{
 	    		if (((IShipEmotion) (mount)).getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 	    		{
-	    			GlStateManager.translate(0F, 0.6F, 0F);
 		    		//Body
 				  	this.BodyMain.rotateAngleX = -0.1F;
 			    	this.Butt.rotateAngleX = -0.2F;
@@ -701,7 +700,6 @@ public class ModelDestroyerIkazuchi extends ModelBase implements IModelEmotion
 	    		}
 	    		else
 	    		{
-	    			GlStateManager.translate(0F, 0.6F, 0F);
 		    		//Body
 				  	this.Butt.rotateAngleX = -0.2F;
 			    	this.Butt.offsetY = -0.1F;
@@ -734,7 +732,7 @@ public class ModelDestroyerIkazuchi extends ModelBase implements IModelEmotion
 	    	}
 	    	else if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 	    	{
-	    		GlStateManager.translate(0F, 1.3F, 0F);
+	    		GlStateManager.translate(0F, 0.375F, 0F);
 		    	//head
 		    	this.Head.rotateAngleX -= 0.1F;
 		    	//body
@@ -812,7 +810,7 @@ public class ModelDestroyerIkazuchi extends ModelBase implements IModelEmotion
 	    	}
 	    	else
 	    	{
-	    		GlStateManager.translate(0F, 1.3F, 0F);
+	    		GlStateManager.translate(0F, 0.375F, 0F);
 		    	//head
 		    	this.Head.rotateAngleX -= 0.1F;
 		    	//body

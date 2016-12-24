@@ -189,12 +189,11 @@ public class ModelDestroyerNi extends ModelBase implements IModelEmotion
     @Override
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
     { 
-    	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
-
     	GlStateManager.pushMatrix();
     	GlStateManager.translate(0F, 1.1F, 0F);
     	GlStateManager.scale(0.35F, 0.35F, 0.35F);
     	
+    	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
     	this.Back.render(f5);
     	
     	GlStateManager.disableLighting();
@@ -275,7 +274,7 @@ public class ModelDestroyerNi extends ModelBase implements IModelEmotion
     
     private void motionStopPos(float f, float f1, float f2, float f3, float f4, BasicEntityShip ent)
     {
-    	GlStateManager.translate(0F, 0.9F, 0F);
+    	GlStateManager.translate(0F, 0.75F, 0F);
     	setFace(2);
     	isKisaragi(ent);
     	
@@ -318,7 +317,7 @@ public class ModelDestroyerNi extends ModelBase implements IModelEmotion
   	{
   		if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
   		{
-  			GlStateManager.translate(0F, angleX * 0.2F - 0.2F, angleX * 0.2F);
+  			GlStateManager.translate(0F, angleX * 0.2F - 0.05F, angleX * 0.2F);
 	  		ArmLeft.rotateAngleZ = -angleX * 0.6F - 1.0472F;
 	  		ArmLeft01.rotateAngleZ = angleX * 0.5F + 1.2F;
 			ArmRight.rotateAngleZ = angleX * 0.6F + 1.0472F;
@@ -328,7 +327,7 @@ public class ModelDestroyerNi extends ModelBase implements IModelEmotion
   		}
   		else
   		{
-  			GlStateManager.translate(0F, 0.9F, 0F);
+  			GlStateManager.translate(0F, 0.75F, 0F);
 	  		Back.rotateAngleX = -0.5236F;
 			ArmLeft.rotateAngleX = -0.6981F;
 			ArmLeft.rotateAngleY = -0.2618F;

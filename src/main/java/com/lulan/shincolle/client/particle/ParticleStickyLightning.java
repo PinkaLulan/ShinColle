@@ -41,7 +41,7 @@ public class ParticleStickyLightning extends Particle
 	
     public ParticleStickyLightning(World world, Entity entity, float scale, int life, int type)
     {
-        super(world, entity.posX, entity.posY, entity.posZ, 0.0D, 0.0D, 0.0D);
+        super(world, entity.posX, entity.posY, entity.posZ);
         this.setSize(0F, 0F);
         this.host = entity;
         this.motionX = 0D;

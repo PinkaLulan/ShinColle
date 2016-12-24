@@ -182,8 +182,8 @@ public class EntityDestroyerHibiki extends BasicEntityShipSmall implements IShip
 	{
   		if (nofuel && this.getRidingEntity() instanceof EntityDestroyerAkatsuki)
   		{
-  			this.dismountRidingEntity();
   			((EntityDestroyerAkatsuki) this.getRidingEntity()).dismountAllRider();
+  			this.dismountRidingEntity();
   		}
   		
   		super.updateFuelState(nofuel);

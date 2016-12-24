@@ -34,7 +34,7 @@ public class ParticleChi extends Particle
 	
     public ParticleChi(World world, Entity host, float scale, int type)
     {
-        super(world, host.posX, host.posY+host.height*0.55D, host.posZ, 0.0D, 0.0D, 0.0D);
+        super(world, host.posX, host.posY+host.height*0.55D, host.posZ);
         this.setSize(0F, 0F);
         this.host = host;
         this.motionX = 0D;

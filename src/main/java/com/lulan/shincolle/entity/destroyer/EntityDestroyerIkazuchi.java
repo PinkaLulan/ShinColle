@@ -346,9 +346,9 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall implements ISh
   	{
 		if (this.getRidingEntity() instanceof EntityDestroyerInazuma)
 		{
-			this.dismountRidingEntity();
 			this.isRaiden = false;
-			((EntityDestroyerIkazuchi) this.getRidingEntity()).isRaiden = false;
+			((EntityDestroyerInazuma) this.getRidingEntity()).isRaiden = false;
+			this.dismountRidingEntity();
 		}
   	}
   	

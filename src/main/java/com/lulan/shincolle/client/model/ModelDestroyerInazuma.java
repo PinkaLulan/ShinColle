@@ -483,7 +483,7 @@ public class ModelDestroyerInazuma extends ModelBase implements IModelEmotion
     
     private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
     {
-    	GlStateManager.translate(0F, 1.85F, 0F);
+    	GlStateManager.translate(0F, 0.52F, 0F);
     	setFace(4);
     	
 		//body
@@ -669,6 +669,7 @@ public class ModelDestroyerInazuma extends ModelBase implements IModelEmotion
 	    	{
 	    		if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 		  		{
+	    			GlStateManager.translate(0F, 0.275F, 0F);
 		  			//body
 			  		this.Head.rotateAngleY *= 0.5F;
 			  		this.Head.rotateAngleZ = 0F;
@@ -686,6 +687,7 @@ public class ModelDestroyerInazuma extends ModelBase implements IModelEmotion
 		  		}
 		  		else
 		  		{
+		  			GlStateManager.translate(0F, 0.275F, 0F);
 		  			//body
 			  		this.Head.rotateAngleY *= 0.5F;
 			  		this.Head.rotateAngleZ = 0F;
@@ -704,7 +706,6 @@ public class ModelDestroyerInazuma extends ModelBase implements IModelEmotion
 				
 				if (ent.getIsSitting() && ent.getRidingState() != 3)
 		    	{
-					GlStateManager.translate(0F, 1F, 0F);
 					//Body
 				  	this.Head.rotateAngleX -= 0.1F;
 				  	this.BodyMain.rotateAngleX = 0F;
@@ -762,7 +763,7 @@ public class ModelDestroyerInazuma extends ModelBase implements IModelEmotion
 	    	{	//騎乘動作
 		    	if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 		    	{
-		    		GlStateManager.translate(0F, 1.3F, 0F);
+		    		GlStateManager.translate(0F, 0.375F, 0F);
 			    	//head
 			    	this.Head.rotateAngleY -= 0.4F;
 			    	this.Head.rotateAngleZ += 0.2F;
@@ -800,7 +801,7 @@ public class ModelDestroyerInazuma extends ModelBase implements IModelEmotion
 		    	}
 		    	else
 		    	{
-		    		GlStateManager.translate(0F, 1F, 0F);
+		    		GlStateManager.translate(0F, 0.275F, 0F);
 			    	//Body
 				  	this.Head.rotateAngleX -= 0.1F;
 				  	this.BodyMain.rotateAngleX = 0F;

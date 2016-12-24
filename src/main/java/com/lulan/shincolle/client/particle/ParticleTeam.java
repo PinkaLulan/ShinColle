@@ -44,8 +44,12 @@ public class ParticleTeam extends Particle
 	//mark at entity
     public ParticleTeam(World world, Entity host, float scale, int type)
     {
-        super(world, host.posX, host.posY, host.posZ, 0.0D, 0.0D, 0.0D);  
+        super(world, 0D, 0D, 0D);  
         this.setSize(0F, 0F);
+        this.setPosition(host.posX, host.posY, host.posZ);
+        this.prevPosX = host.posX;
+        this.prevPosY = host.posY;
+        this.prevPosZ = host.posZ;
         this.host = host;
         this.height = host.height;
         this.motionX = 0D;
@@ -63,25 +67,25 @@ public class ParticleTeam extends Particle
         	this.particleRed = 0F;
         	this.particleGreen = 1F;
         	this.particleBlue = 0F;
-        	this.particleMaxAge = 31;
+        	this.particleMaxAge = 30;
         break;
         case 1:		//cyan, single mode
         	this.particleRed = 0F;
         	this.particleGreen = 1F;
         	this.particleBlue = 1F;
-        	this.particleMaxAge = 31;
+        	this.particleMaxAge = 30;
         break;
         case 2:		//red, group mode
         	this.particleRed = 1F;
         	this.particleGreen = 0F;
         	this.particleBlue = 1F;
-        	this.particleMaxAge = 31;
+        	this.particleMaxAge = 30;
         break;
         case 3:		//yellow, formation mode
         	this.particleRed = 1F;
         	this.particleGreen = 0.9F;
         	this.particleBlue = 0F;
-        	this.particleMaxAge = 31;
+        	this.particleMaxAge = 30;
         break;
         case 4:		//green, moving target
         	this.particleRed = 0F;
@@ -105,9 +109,13 @@ public class ParticleTeam extends Particle
         	this.particleRed = 0F;
         	this.particleGreen = 1F;
         	this.particleBlue = 0F;
-        	this.particleMaxAge = 31;
+        	this.particleMaxAge = 30;
         	this.particleAlphaA = 0F;
             this.particleAlphaC = 0.35F;
+            this.setPosition(host.posX, host.posY-0.04D, host.posZ);
+            this.prevPosX = host.posX;
+            this.prevPosY = host.posY-0.04D;
+            this.prevPosZ = host.posZ;
         break;
         }//end switch
     }
@@ -115,9 +123,12 @@ public class ParticleTeam extends Particle
     //mark at block
     public ParticleTeam(World world, float scale, int type, double x, double y, double z)
     {
-        super(world, x, y, z, 0.0D, 0.0D, 0.0D);
+        super(world, 0D, 0D, 0D);
         this.setSize(0F, 0F);
         this.setPosition(x, y, z);
+        this.prevPosX = x;
+        this.prevPosY = y;
+        this.prevPosZ = z;
         this.motionX = 0D;
         this.motionY = 0D;
         this.motionZ = 0D;
@@ -250,14 +261,14 @@ public class ParticleTeam extends Particle
         		this.prevPosX = this.posX;
                 this.prevPosY = this.posY;
                 this.prevPosZ = this.posZ;
-    			this.setPosition(host.posX, host.posY, host.posZ);
+    			this.setPosition(host.posX, host.posY-0.04D, host.posZ);
         	break;
     		default:
     			//set interpolation position
         		this.prevPosX = this.posX;
                 this.prevPosY = this.posY;
                 this.prevPosZ = this.posZ;
-    			this.setPosition(host.posX, host.posY+0.02D, host.posZ);
+    			this.setPosition(host.posX, host.posY, host.posZ);
     		break;
     		}
     	}

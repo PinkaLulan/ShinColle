@@ -194,8 +194,8 @@ public class EntityDestroyerInazuma extends BasicEntityShipSmall implements IShi
   		{
   	  		if (this.getRidingEntity() instanceof EntityDestroyerAkatsuki)
   	  		{
-  	  			this.dismountRidingEntity();
   	  			((EntityDestroyerAkatsuki) this.getRidingEntity()).dismountAllRider();
+  	  			this.dismountRidingEntity();
   	  		}
   	  		
   			//cancel raiden gattai
@@ -229,6 +229,28 @@ public class EntityDestroyerInazuma extends BasicEntityShipSmall implements IShi
   	{
 		return 2;
 	}
+  	
+  	@Override
+    public void updatePassenger(Entity rider)
+    {
+        if (this.isPassenger(rider))
+        {
+        	double yoffset = this.posY + this.getMountedYOffset() + rider.getYOffset();
+        	
+        	if (rider instanceof EntityDestroyerIkazuchi)
+        	{
+        		float[] partPos = CalcHelper.rotateXZByAxis(-0.2F, 0F, (this.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);
+        		
+        		yoffset = this.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED ? yoffset - 0.6D : yoffset - 0.45D;
+        		
+        		rider.setPosition(this.posX + partPos[1], yoffset, this.posZ + partPos[0]);
+        	}
+        	else
+        	{
+        		rider.setPosition(this.posX, yoffset, this.posZ);
+        	}
+        }
+    }
   	
   	@Override
 	public double getMountedYOffset()
@@ -373,9 +395,9 @@ public class EntityDestroyerInazuma extends BasicEntityShipSmall implements IShi
   		{
   			if (rider instanceof EntityDestroyerIkazuchi)
   			{
-  				rider.dismountRidingEntity();
   				this.isRaiden = false;
   				((EntityDestroyerIkazuchi) rider).isRaiden = false;
+  				rider.dismountRidingEntity();
   			}
   		}
   	}

@@ -1252,7 +1252,7 @@ public class CapaTeitoku implements ICapaTeitoku
 				{
 					if (this.sidList[i][j] > 0)
 					{
-						this.teamList[i][j] = EntityHelper.getShipBySID(sidList[i][j]);
+						this.teamList[i][j] = EntityHelper.getShipByUID(sidList[i][j]);
 					}
 					else
 					{
@@ -1427,7 +1427,11 @@ public class CapaTeitoku implements ICapaTeitoku
 		return (CapaTeitoku) capa;
 	}
 	
-	/** init and set player capability data by packets, CLIENT SIDE ONLY */
+	/** init and set player capability data by packets, CLIENT SIDE ONLY
+	 * 
+	 *  value: 0:ring active, 1:has team flag, 2:current team id, 3:marriage num
+	 *         4:player uid, 5:team cooldown
+	 */
 	public static void setCapaDataMisc(int[] value)
 	{
 		EntityPlayer player = ClientProxy.getClientPlayer();
@@ -1439,9 +1443,10 @@ public class CapaTeitoku implements ICapaTeitoku
 			
 			capa.isRingActive = value[0] > 0 ? true : false;
 			capa.hasTeam = value[1] > 0 ? true : false;
-			capa.marriageNum = value[2];
-			capa.playerUID = value[3];
-			capa.teamId = value[4];
+			capa.teamId = value[2];
+			capa.marriageNum = value[3];
+			capa.playerUID = value[4];
+			capa.teamCooldown = value[5];
 			
 			//disable fly if non-active
 			if (!capa.isRingActive && !player.capabilities.isCreativeMode && capa.isRingFlying)

@@ -6,14 +6,15 @@ import com.lulan.shincolle.client.particle.Particle91Type;
 import com.lulan.shincolle.client.particle.ParticleChi;
 import com.lulan.shincolle.client.particle.ParticleCraning;
 import com.lulan.shincolle.client.particle.ParticleCube;
+import com.lulan.shincolle.client.particle.ParticleEmotion;
 import com.lulan.shincolle.client.particle.ParticleLaser;
 import com.lulan.shincolle.client.particle.ParticleLaserNoTexture;
 import com.lulan.shincolle.client.particle.ParticleLightning;
+import com.lulan.shincolle.client.particle.ParticleSpray;
 import com.lulan.shincolle.client.particle.ParticleStickyLightning;
 import com.lulan.shincolle.client.particle.ParticleTeam;
 import com.lulan.shincolle.client.particle.ParticleTexts;
-import com.lulan.shincolle.client.particle.ParticleEmotion;
-import com.lulan.shincolle.client.particle.ParticleSpray;
+import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.reference.Values;
 
@@ -42,7 +43,10 @@ public class ParticleHelper
 	{
 		if (target != null)
 		{
-//			if (isShip) ((EntityLivingBase) target).attackTime = 50; TODO attackTime deprecate
+			if (isShip && target instanceof IShipEmotion)
+			{
+				((IShipEmotion) target).setAttackTick(50);
+			}
 			
 			//spawn particle
 			spawnAttackParticleAt(posX, posY, posZ, lookX, lookY, lookZ, type);
@@ -56,9 +60,9 @@ public class ParticleHelper
 	@SideOnly(Side.CLIENT)
 	public static void spawnAttackParticle(Entity target, byte type, boolean setAtkTime)
 	{
-		if (setAtkTime && target != null)
+		if (setAtkTime && target instanceof IShipEmotion)
 		{
-//			((EntityLivingBase) target).attackTime = 50; TODO attackTime deprecate
+			((IShipEmotion) target).setAttackTick(50);
 		}
 		
 		//0 = no particle
@@ -567,9 +571,9 @@ public class ParticleHelper
 		//set attack time, EntityLivingBase only
 		else
 		{
-			if (setAtkTime)
+			if (setAtkTime && target instanceof IShipEmotion)
 			{
-//				((EntityLivingBase) host).attackTime = 50; TODO attackTime deprecate
+				((IShipEmotion) target).setAttackTick(50);
 			}
 		}
 		

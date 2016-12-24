@@ -10,7 +10,6 @@ import javax.annotation.Nullable;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 
-import net.minecraft.block.Block;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -18,6 +17,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.tileentity.CommandBlockBaseLogic;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
@@ -158,7 +158,7 @@ public class ShipCmdEmotes extends CommandBase
 		return cmdhelp;
 	}
 
-	/** command authority */
+	/** check command permission level */
 	@Override
 	public boolean checkPermission(MinecraftServer server, ICommandSender sender)
     {
@@ -171,13 +171,6 @@ public class ShipCmdEmotes extends CommandBase
     {
         return getListOfStringsMatchingLastWord(args, EmoNameArray);
     }
-
-	/** set command string[int] is player name */
-	@Override
-	public boolean isUsernameIndex(String[] cmd, int index)
-	{
-		return false;
-	}
 	
 	/** command process, SERVER SIDE ONLY */
 	@Override
@@ -185,80 +178,76 @@ public class ShipCmdEmotes extends CommandBase
 	{
 		World world = sender.getEntityWorld();
 		
-		if (!world.isRemote)
-		{
-			//get emotes id
-			int emo = 0;
-			
-			//check emotes name
-			if (cmd != null && cmd.length > 0)
-			{
-				emo = nameToEmoID(cmd[0]);
-			}
-			//random emotes
-			else
-			{
-				emo = world.rand.nextInt(30);
-			}
-			
-			//get position
-			float px = 0F;
-			float py = 0F;
-			float pz = 0F;
-			float height = 1F;
-			int entityType = 0;  //0:none, 1:EntityLivingBase, 2:block
-			
-			//tweak emote height
-			//sender is entity
-			if (sender instanceof EntityLivingBase)
-			{
-				EntityLivingBase host = (EntityLivingBase) sender;
-				
-				height = host.height * 0.25F;
-				entityType = 1;
-				
-				px = (float) host.posX;
-				py = (float) host.posY;
-				pz = (float) host.posZ;
-				
-				if (sender instanceof EntityPlayer)
-				{
-					height = host.height * 0.65F;
-				}
-			}
-			//sender is block (command block)
-			else if (sender instanceof Block)
-			{
-				height = 0.5F;
-				entityType = 2;
-				
-				px = (float) sender.getPosition().getX() + 0.5F;
-				py = (float) sender.getPosition().getY();
-				pz = (float) sender.getPosition().getZ() + 0.5F;
-			}
-			//other sender
-			else
-			{
-				height = 0.5F;
-				entityType = 0;
-				
-				px = (float) sender.getPositionVector().xCoord;
-				py = (float) sender.getPositionVector().yCoord;
-				pz = (float) sender.getPositionVector().zCoord;
-			}
-
-			if (sender instanceof Entity)
-			{
-				TargetPoint point = new TargetPoint(world.provider.getDimension(), px, py, pz, 64D);
-		      	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle((Entity) sender, 36, height, entityType, emo), point);
-			}
-			else
-			{
-				TargetPoint point = new TargetPoint(world.provider.getDimension(), px, py, pz, 64D);
-		      	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(36, px, py, pz, height, entityType, emo), point);
-			}
-		}//end server side
+		//get emotes id
+		int emo = 0;
 		
+		//check emotes name
+		if (cmd != null && cmd.length > 0)
+		{
+			emo = nameToEmoID(cmd[0]);
+		}
+		//random emotes
+		else
+		{
+			emo = world.rand.nextInt(30);
+		}
+		
+		//get position
+		float px = 0F;
+		float py = 0F;
+		float pz = 0F;
+		float height = 1F;
+		int entityType = 0;  //0:none, 1:EntityLivingBase, 2:block
+		
+		//tweak emote height
+		//sender is entity
+		if (sender instanceof EntityLivingBase)
+		{
+			EntityLivingBase host = (EntityLivingBase) sender;
+			
+			height = host.height * 0.25F;
+			entityType = 1;
+			
+			px = (float) host.posX;
+			py = (float) host.posY;
+			pz = (float) host.posZ;
+			
+			if (sender instanceof EntityPlayer)
+			{
+				height = host.height * 0.65F;
+			}
+		}
+		//sender is block (command block)
+		else if (sender instanceof CommandBlockBaseLogic)
+		{
+			height = 0.5F;
+			entityType = 2;
+			
+			px = (float) sender.getPosition().getX() + 0.5F;
+			py = (float) sender.getPosition().getY();
+			pz = (float) sender.getPosition().getZ() + 0.5F;
+		}
+		//other sender
+		else
+		{
+			height = 0.5F;
+			entityType = 0;
+			
+			px = (float) sender.getPositionVector().xCoord;
+			py = (float) sender.getPositionVector().yCoord;
+			pz = (float) sender.getPositionVector().zCoord;
+		}
+
+		if (sender instanceof Entity)
+		{
+			TargetPoint point = new TargetPoint(world.provider.getDimension(), px, py, pz, 64D);
+	      	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle((Entity) sender, 36, height, entityType, emo), point);
+		}
+		else
+		{
+			TargetPoint point = new TargetPoint(world.provider.getDimension(), px, py, pz, 64D);
+	      	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(36, px, py, pz, height, entityType, emo), point);
+		}
 	}
 	
 	/** string to emotes ID */

@@ -261,7 +261,7 @@ public class EntityAIShipGuarding extends EntityAIBase
         	//每cd到找一次路徑
         	if (this.findCooldown <= 0)
         	{
-    			this.findCooldown = 20;
+    			this.findCooldown = 32;
     			this.isMoving = this.ShipNavigator.tryMoveToXYZ(pos[0], pos[1], pos[2], 1D);
         	}
         	
@@ -445,8 +445,8 @@ public class EntityAIShipGuarding extends EntityAIBase
 						guardPosOld[2] = guarded.posZ;
 						
 						//draw moving particle
-						if ((ConfigHandler.alwaysShowTeamParticle || EntityHelper.checkInUsePointer(owner)) &&
-							owner != null && owner.dimension == host.getGuardedPos(3))
+						if (owner != null && (ConfigHandler.alwaysShowTeamParticle || EntityHelper.getPointerInUse(owner) != null) &&
+							owner.dimension == host2.dimension)
 						{
 							CommonProxy.channelP.sendTo(new S2CSpawnParticle(25, pos[0], pos[1], pos[2], 0.3, 4, 0), (EntityPlayerMP) owner);
 						}
@@ -456,8 +456,8 @@ public class EntityAIShipGuarding extends EntityAIBase
 					if (this.host2.ticksExisted % 16 == 0)
 					{
 						//draw moving particle
-						if ((ConfigHandler.alwaysShowTeamParticle || EntityHelper.checkInUsePointer(owner)) &&
-							owner != null && owner.dimension == host.getGuardedPos(3))
+						if (owner != null && (ConfigHandler.alwaysShowTeamParticle || EntityHelper.getPointerInUse(owner) != null) &&
+							owner.dimension == host2.dimension)
 						{
 							CommonProxy.channelP.sendTo(new S2CSpawnParticle(25, pos[0], pos[1], pos[2], 0.3, 6, 0), (EntityPlayerMP) owner);
 						}

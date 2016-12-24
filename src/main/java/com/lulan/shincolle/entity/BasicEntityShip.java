@@ -38,7 +38,6 @@ import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.item.IShipCombatRation;
 import com.lulan.shincolle.item.IShipFoodItem;
 import com.lulan.shincolle.item.OwnerPaper;
-import com.lulan.shincolle.item.PointerItem;
 import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CGUIPackets;
@@ -46,6 +45,7 @@ import com.lulan.shincolle.network.S2CInputPackets;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
+import com.lulan.shincolle.proxy.ServerProxy.ShipCacheData;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.BlockHelper;
@@ -124,10 +124,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	protected int[] StateMinor;
 	/** timer array: 0:RevengeTime 1:CraneTime 2:ImmuneTime 3:CraneDelay 4:WpStayTime 5:Emotion3Time
 	 *               6:sound cd 7:FaceTick 8:HeadTilt 9:MoraleTime 10:EmoteDelay 11:LastCombatTime
-	 *               12:
+	 *               12:AttackTime 13:AttackTime2
 	 */
-	/** EmotionTicks: 0:FaceTick 1:HeadTiltTick 2:AttackEmoCount 3:MoraleTick 4:EmoParticle CD
-	 *                5:LastAttackTime */
 	protected int[] StateTimer;
 	/** equip effect: 0:critical 1:doubleHit 2:tripleHit 3:baseMiss 4:atk_AntiAir 5:atk_AntiSS 6:dodge*/
 	protected float[] EffectEquip;
@@ -200,7 +198,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				                    };
 		this.StateTimer = new int[] {0, 0, 0, 0, 0,
 									 0, 0, 0, 0, 0,
-									 0, 0};
+									 0, 0, 0, 0};
 		this.EffectEquip = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F};
 		this.EffectEquipBU = this.EffectEquip.clone();
 		this.EffectFormation = new float[] {0F, 0F, 0F, 0F, 0F,
@@ -445,8 +443,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	@Override
     public void playLivingSound()
     {
-		//40% play sound
-		if (this.rand.nextInt(10) > 4) return;
+		//30% play sound
+		if (this.rand.nextInt(10) > 3) return;
 		
 		//get sound event
 		SoundEvent sound = null;
@@ -1545,7 +1543,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				
 				//owner在附近才需要sync
 				if (player != null && player.dimension == this.dimension &&
-					this.getDistanceToEntity(player) < 32F)
+					this.getDistanceToEntity(player) < 64F)
 				{
 					CommonProxy.channelG.sendTo(new S2CGUIPackets(this), player);
 				}
@@ -1583,7 +1581,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			//send to all player
 			if (sendAll)
 			{
-				TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
+				TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
 				CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this, type), point);
 			}
 			else
@@ -1597,7 +1595,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				}
 				
 				//owner在附近才需要sync
-				if (player != null && this.getDistanceToEntity(player) <= 48F)
+				if (player != null && this.getDistanceToEntity(player) <= 64F)
 				{
 					CommonProxy.channelE.sendTo(new S2CEntitySync(this, type), player);
 				}
@@ -1897,14 +1895,14 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			else
 			{
 				//current item = pointer
-				if(stack != null && stack.getItem() == ModItems.PointerItem)
+				if (EntityHelper.getPointerInUse(player) != null)
 				{
 					//call sitting method by PointerItem class, not here
 				}
 				else
 				{
 					this.setEntitySit(!this.isSitting());
-					setRiderAndMountSit();
+					this.setRiderAndMountSit();
 				}
 				
 				return EnumActionResult.SUCCESS;
@@ -2320,11 +2318,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 							//show circle particle on ship and guard target
 							if (player != null && player.dimension == this.getGuardedPos(3))
 							{
-								ItemStack item = player.inventory.getCurrentItem();
+								ItemStack item = EntityHelper.getPointerInUse((EntityPlayer) player);
 								
-								if (ConfigHandler.alwaysShowTeamParticle ||
-									(item != null && item.getItem() instanceof PointerItem &&
-									 item.getItemDamage() < 3))
+								if (item != null && item.getItemDamage() < 3 || ConfigHandler.alwaysShowTeamParticle)
 								{
 									//show friendly particle
 									ParticleHelper.spawnAttackParticleAtEntity(this, 0.3D, 7D, 0D, (byte)2);
@@ -2390,7 +2386,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	TargetHelper.updateTarget(this);
         	
         	//update/init id
-        	updateShipID();
+        	updateShipCacheData(false);
         	
         	//timer ticking
         	updateServerTimer();
@@ -3490,18 +3486,21 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 //	}
 	
 	//update ship id
-	protected void updateShipID()
+	public void updateShipCacheData(boolean forceUpdate)
 	{
 		//register or update ship id and owner id
-		if (!this.isUpdated && ticksExisted % updateTime == 0)
+		if (!this.isUpdated && ticksExisted % updateTime == 0 || forceUpdate)
 		{
-			LogHelper.info("DEBUG : update ship: initial SID, PID  cd: "+updateTime);
-			ServerProxy.updateShipID(this);				//update ship uid
+			LogHelper.info("DEBUG : update ship: initial SID, PID  cd: "+updateTime+" force: "+forceUpdate);
 			
+			//update owner uid
 			if (this.getPlayerUID() <= 0)
 			{
-				ServerProxy.updateShipOwnerID(this);	//update owner uid
+				ServerProxy.updateShipOwnerID(this);
 			}
+			
+			//update ship uid
+			ServerProxy.updateShipID(this);
 			
 			//update success
 			if (getPlayerUID() > 0 && getShipUID() > 0)
@@ -3511,7 +3510,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			}
 			
 			//prolong update time
-			if (updateTime >= 4096)
+			if (updateTime > 4096)
 			{
 				updateTime = 4096;
 			}
@@ -3522,23 +3521,24 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		}//end update id
 	}
 	
-	//不跟aircraft, mount, rider碰撞
-	@Override
-  	protected void collideWithEntity(Entity target)
+	//update ship id
+	public void updateShipCacheDataWithoutNewID()
 	{
-  		if (target instanceof BasicEntityAirplane || target.equals(this.getRidingEntity()))
-  		{
-  			return;
-  		}
-  		
-  		for (Entity p : this.getPassengers())
-  		{
-  			if (target.equals(p)) return;
-  		}
-  		
-  		target.applyEntityCollision(this);
-    }
-  	
+		//update ship cache
+		if (!this.world.isRemote)
+		{
+			int uid = this.getShipUID();
+			
+			if (uid > 0)
+			{
+				ShipCacheData sdata = new ShipCacheData(this.getEntityId(), this.world.provider.getDimension(),
+						this.getShipClass(), this.isDead, this.posX, this.posY, this.posZ,
+						this.writeToNBT(new NBTTagCompound()));
+				ServerProxy.setShipWorldData(uid, sdata);
+			}
+		}
+	}
+	
   	//check state final limit
   	protected float[] checkStateFinalLimit(float[] par1)
   	{
@@ -5413,6 +5413,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		this.clearChunkLoader();
   		
   		super.setDead();
+  		
+  		//update ship cache
+  		this.updateShipCacheDataWithoutNewID();
     }
 
   	
@@ -5601,36 +5604,21 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		setStateTimer(ID.T.WpStayTime, time);
 	}
 	
+	//不跟aircraft, mount碰撞
 	@Override
-	protected void collideWithNearbyEntities()
-    {
-        List<Entity> list = this.world.getEntitiesWithinAABBExcludingEntity(this, this.getEntityBoundingBox().expand(0.2D, 0D, 0.2D));
-
-        if (list != null)
-        {
-            for (Entity ent : list)
-            {
-                if (ent.canBePushed())
-                {
-                	//no colli with airplane or mount
-                	if (!(ent instanceof BasicEntityAirplane || ent.equals(this.getRidingEntity())))
-                	{
-                		this.collideWithEntity(ent);
-                	}
-                	//no colli with all passenger
-                	else
-                	{
-                		for (Entity p : this.getPassengers())
-                		{
-                			if (!p.equals(ent))
-                			{
-                				this.collideWithEntity(ent);
-                			}
-                		}
-                	}
-                }
-            }
-        }
+  	protected void collideWithEntity(Entity target)
+	{
+  		if (target instanceof BasicEntityAirplane)
+  		{
+  			return;
+  		}
+  		
+//  		for (Entity p : this.getPassengers())
+//  		{
+//  			if (target.equals(p)) return;
+//  		}
+  		
+  		target.applyEntityCollision(this);
     }
 	
 	@Override

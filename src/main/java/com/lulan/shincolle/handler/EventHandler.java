@@ -13,7 +13,6 @@ import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.BasicEntityItem;
-import com.lulan.shincolle.item.PointerItem;
 import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.network.S2CGUIPackets;
@@ -255,7 +254,7 @@ public class EventHandler
 	    	if (event.getEntity() instanceof BasicEntityShip)
 	    	{
 	    		BasicEntityShip ship = (BasicEntityShip) event.getEntity();
-	    		ServerProxy.updateShipID(ship);
+	    		ship.updateShipCacheDataWithoutNewID();
 	    	}
 
 			//add kills number
@@ -406,6 +405,39 @@ public class EventHandler
 //	public void onPlayerAttack(AttackEntityEvent event) {
 //		if(event.entityPlayer != null && !event.entityPlayer.worldObj.isRemote) {
 //			LogHelper.info("DEBUG : get attack event: "+event.entityPlayer);
+//		}
+//	}
+//	
+//	/** log all ship on constructing */
+//	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+//	public void onEntityConstructing(EntityConstructing event)
+//	{
+//		if (event.getEntity() instanceof BasicEntityShip)
+//		{
+//			BasicEntityShip ship = (BasicEntityShip) event.getEntity();
+//			LogHelper.debug("DEBUG: on entity constructing: tick: "+FMLCommonHandler.instance().getSide()+" "+ServerProxy.serverTicks+" ship: "+
+//							ship);
+//			ships.add(ship);
+//		}
+//	}
+//	
+//	/**
+//	 * remove ship if join world success
+//	 * if ship fail to join world, respawn ship later
+//	 * 
+//	 * FIX FOR: rider be removed when mount is in different chunk on chunk load
+//	 */
+//	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+//	public void onEntityJoinWorld(EntityJoinWorldEvent event) throws Exception
+//	{
+//		if (event.getEntity() instanceof BasicEntityShip)
+//		{
+//			BasicEntityShip ship = (BasicEntityShip) event.getEntity();
+//			LogHelper.debug("DEBUG: on entity join world: tick: "+FMLCommonHandler.instance().getSide()+" "+ServerProxy.serverTicks+" ship: "+
+//							ship.getShipUID()+" "+ship);
+//			
+//			//NOTE: to avoid ConcurrentModificationException, use removeIf rather than forEach remove
+//			ships.removeIf(s -> ship.equals(s));
 //		}
 //	}
 	
@@ -613,6 +645,16 @@ public class EventHandler
 			else if (event.player.world.isRemote)
 			{	
 				if (this.keyCooldown > 0) this.keyCooldown--;	//key cd--
+				
+//				//DEBUG TODO
+//				this.keySet = ClientProxy.getGameSetting();
+//				LogHelper.debug("AAAA "+
+//				(this.keySet.keyBindSprint.isKeyDown() ? 1 : 0)+" "+
+//				(this.keySet.keyBindSprint.isKeyDown() ? 1 : 0)+" "+
+//				(event.player.isSprinting() ? 1 : 0)+" "+
+//				(this.keySet.keyBindSneak.isKeyDown() ? 1 : 0)+" "+
+//				(this.keySet.keyBindSneak.isKeyDown() ? 1 : 0)+" "+
+//				(event.player.isSneaking() ? 1 : 0));
 			}
 			
 			/** BOTH SIDE */
@@ -664,7 +706,7 @@ public class EventHandler
 		for (int i = 0; i < 6; i++)
 		{
 			//get ship by UID
-			getent = EntityHelper.getShipBySID(capa.getSIDCurrentTeam(i));
+			getent = EntityHelper.getShipByUID(capa.getSIDCurrentTeam(i));
 
 			//get ship
 			if (getent != null)
@@ -967,7 +1009,7 @@ public class EventHandler
 	}
 	
 	/**get input, 按下+放開都會發出一次, 且每個按鍵分開發出, CLIENT side only event
-	 * getIsKeyPressed = 該按鍵是否按著, isPressed = 這次event是否為該按鍵
+	 * getIsKeyPressed = 該按鍵是否按著, isKeyDown = 這次event是否為該按鍵
 	 * 
 	 */
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
@@ -977,77 +1019,82 @@ public class EventHandler
 		this.keySet = ClientProxy.getGameSetting();
 		
 		//pointer item control
-		if (event instanceof KeyInputEvent && player.inventory.getCurrentItem() != null &&
-			player.inventory.getCurrentItem().getItem() instanceof PointerItem)
+		if (event instanceof KeyInputEvent)
 		{
 			//get pointer item
-			ItemStack pointer = player.inventory.getCurrentItem();
-			int meta = pointer.getItemDamage();
+			ItemStack pointer = EntityHelper.getPointerInUse(player);
 			
-			//ctrl + xx
-			int getKey = -1;
-			int orgCurrentItem = player.inventory.currentItem;
-			
-			//若按住ctrl (sprint key)
-			if (keySet.keyBindSprint.isPressed())
+			if (pointer != null)
 			{
-				//若按住數字按鍵 1~9, 則切換隊伍, 但是避免數字按鍵將hotbar位置改變 (固定current item)
-				for (int i = 0; i < keySet.keyBindsHotbar.length; i++)
+				int meta = pointer.getMetadata();
+				
+				//ctrl + xx
+				int getKey = -1;
+				int orgCurrentItem = player.inventory.currentItem;
+				
+				//若按住ctrl (sprint key)
+				if (keySet.keyBindSprint.isKeyDown())
 				{
-					if (keySet.keyBindsHotbar[i].isPressed())
+					//若按住數字按鍵 1~9, 則切換隊伍, 但是避免數字按鍵將hotbar位置改變 (固定current item)
+					for (int i = 0; i < keySet.keyBindsHotbar.length; i++)
 					{
-						getKey = i;
-						
-						//儲存快捷位置到權杖, 使權杖能將快捷列回復到權杖上 (CLIENT ONLY)
-						if (!pointer.hasTagCompound())
+						if (keySet.keyBindsHotbar[i].isKeyDown())
 						{
-							pointer.setTagCompound(new NBTTagCompound());
+							getKey = i;
+							
+							//儲存快捷位置到權杖, 使權杖能將快捷列回復到權杖上 (CLIENT ONLY)
+							if (!pointer.hasTagCompound())
+							{
+								pointer.setTagCompound(new NBTTagCompound());
+							}
+							
+							//set hotbar changed flag
+							pointer.getTagCompound().setBoolean("chgHB", true);
+							pointer.getTagCompound().setInteger("orgHB", orgCurrentItem);
+							
+							break;
 						}
-						pointer.getTagCompound().setBoolean("chgHB", true);
-						pointer.getTagCompound().setInteger("orgHB", orgCurrentItem);
-						
-						break;
+					}
+					
+					LogHelper.debug("DEBUG : key input: pointer set team: "+getKey+" currItem: "+orgCurrentItem);
+					//send key input packet
+					if (getKey >= 0)
+					{
+						//change team id
+						CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetShipTeamID, getKey, orgCurrentItem));
 					}
 				}
-				
-				LogHelper.info("DEBUG : key input: pointer set team: "+getKey+" currItem: "+orgCurrentItem);
-				//send key input packet
-				if (getKey >= 0)
+				//change pointer mode to caress head mode (meta + 3)
+				else if (keySet.keyBindPlayerList.isKeyDown())
 				{
-					//change team id
-					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetShipTeamID, getKey, orgCurrentItem));
+					//switch caress head mode
+					switch (meta)
+					{
+					case 1:
+						meta = 4;
+						break;
+					case 2:
+						meta = 5;
+						break;
+					case 3:
+						meta = 0;
+						break;
+					case 4:
+						meta = 1;
+						break;
+					case 5:
+						meta = 2;
+						break;
+					default:
+						meta = 3;
+						break;
+					}
+					
+					player.inventory.getCurrentItem().setItemDamage(meta);
+					
+					//send sync packet to server
+					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SyncPlayerItem, meta));
 				}
-			}
-			//change pointer mode to caress head mode (meta + 3)
-			else if (keySet.keyBindPlayerList.isPressed())
-			{
-				//switch caress head mode
-				switch (meta)
-				{
-				case 1:
-					meta = 4;
-					break;
-				case 2:
-					meta = 5;
-					break;
-				case 3:
-					meta = 0;
-					break;
-				case 4:
-					meta = 1;
-					break;
-				case 5:
-					meta = 2;
-					break;
-				default:
-					meta = 3;
-					break;
-				}
-				
-				player.inventory.getCurrentItem().setItemDamage(meta);
-				
-				//send sync packet to server
-				CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SyncPlayerItem, meta));
 			}
 		}
 
@@ -1058,7 +1105,7 @@ public class EventHandler
 			BasicEntityMount mount = (BasicEntityMount) player.getRidingEntity();
 			
 			//change renderer viewer, accept KEYBOARD or MOUSE input
-			if (keySet.keyBindPickBlock.isPressed() && this.keyCooldown <= 0)
+			if (keySet.keyBindPickBlock.isKeyDown() && this.keyCooldown <= 0)
 			{
 				LogHelper.info("DEBUG : key event: player view "+this.isViewPlayer);
 				this.keyCooldown = 5;
@@ -1069,35 +1116,35 @@ public class EventHandler
 			if (event instanceof KeyInputEvent)
 			{
 				//forward
-				if (keySet.keyBindForward.isPressed())
+				if (keySet.keyBindForward.isKeyDown())
 				{
 					LogHelper.info("DEBUG : key event: press W");
 					newKeys = newKeys | 1;
 				}
 				
 				//back
-				if (keySet.keyBindBack.isPressed())
+				if (keySet.keyBindBack.isKeyDown())
 				{
 					LogHelper.info("DEBUG : key event: press S");
 					newKeys = newKeys | 2;
 				}
 				
 				//left
-				if (keySet.keyBindLeft.isPressed())
+				if (keySet.keyBindLeft.isKeyDown())
 				{
 					LogHelper.info("DEBUG : key event: press A");
 					newKeys = newKeys | 4;
 				}
 				
 				//right
-				if (keySet.keyBindRight.isPressed())
+				if (keySet.keyBindRight.isKeyDown())
 				{
 					LogHelper.info("DEBUG : key event: press D");
 					newKeys = newKeys | 8;
 				}
 				
 				//jump
-				if (keySet.keyBindJump.isPressed())
+				if (keySet.keyBindJump.isKeyDown())
 				{
 					LogHelper.info("DEBUG : key event: jump");
 					newKeys = newKeys | 16;
@@ -1113,7 +1160,7 @@ public class EventHandler
 					mount.keyPressed = newKeys;
 	
 					//open ship GUI
-					if (keySet.keyBindInventory.isPressed())
+					if (keySet.keyBindInventory.isKeyDown())
 					{
 						CommonProxy.channelG.sendToServer(new C2SInputPackets(1, this.openGUI));
 					}

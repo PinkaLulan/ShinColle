@@ -1,8 +1,9 @@
 package com.lulan.shincolle.handler;
 
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-
 import com.lulan.shincolle.command.ShipCmdEmotes;
+import com.lulan.shincolle.command.ShipCmdGetShip;
+
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 
 /** command register class
  * 
@@ -17,6 +18,7 @@ public class CommandHandler
 	{
 //		event.registerServerCommand(new ShipCmdChangeShipOwner());
 		event.registerServerCommand(new ShipCmdEmotes());
+		event.registerServerCommand(new ShipCmdGetShip());
 //		event.registerServerCommand(new ShipCmdKill());
 //		event.registerServerCommand(new ShipCmdShipAttrs());
 //		event.registerServerCommand(new ShipCmdShipInfo());

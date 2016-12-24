@@ -45,6 +45,7 @@ public class ShinWorldData extends WorldSavedData
 	public static final String TAG_ShipUID = "sUID";
 	public static final String TAG_ShipEID = "sEID";
 	public static final String TAG_ShipWID = "sWID";
+	public static final String TAG_ShipCID = "sCID";
 	public static final String TAG_ShipPOS = "sPOS";
 	public static final String TAG_ShipDead = "sDead";
 	public static final String TAG_ShipNBT = "sNBT";
@@ -169,6 +170,7 @@ public class ShinWorldData extends WorldSavedData
 				tag.setInteger(TAG_ShipUID, uid);
 				tag.setInteger(TAG_ShipEID, sdata.entityID);
 				tag.setInteger(TAG_ShipWID, sdata.worldID);
+				tag.setInteger(TAG_ShipCID, sdata.classID);
 				tag.setBoolean(TAG_ShipDead, sdata.isDead);
 				tag.setIntArray(TAG_ShipPOS, new int[] {sdata.posX, sdata.posY, sdata.posZ});
 				tag.setTag(TAG_ShipNBT, sdata.entityNBT);

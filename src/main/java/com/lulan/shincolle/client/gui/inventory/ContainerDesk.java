@@ -2,6 +2,7 @@ package com.lulan.shincolle.client.gui.inventory;
 
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.tileentity.TileEntityDesk;
+import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;

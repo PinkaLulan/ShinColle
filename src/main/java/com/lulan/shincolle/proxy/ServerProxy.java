@@ -109,6 +109,7 @@ public class ServerProxy extends CommonProxy
 	{
 		public int entityID;
 		public int worldID;
+		public int classID;
 		public boolean isDead;
 		public int posX;
 		public int posY;
@@ -121,6 +122,7 @@ public class ServerProxy extends CommonProxy
 			{
 				this.entityID = ship.getEntityId();
 				this.worldID = ship.world.provider.getDimension();
+				this.classID = ship.getShipClass();
 				this.isDead = ship.isDead;
 				this.posX = (int) ship.posX;
 				this.posY = (int) ship.posY;
@@ -129,10 +131,11 @@ public class ServerProxy extends CommonProxy
 			}
 		}
 		
-		public ShipCacheData(int eid, int wid, boolean isDead, double posX, double posY, double posZ, NBTTagCompound nbt)
+		public ShipCacheData(int eid, int wid, int cid, boolean isDead, double posX, double posY, double posZ, NBTTagCompound nbt)
 		{
 			this.entityID = eid;
 			this.worldID = wid;
+			this.classID = cid;
 			this.isDead = isDead;
 			this.posX = (int) posX;
 			this.posY = (int) posY;
@@ -281,10 +284,11 @@ public class ServerProxy extends CommonProxy
 				int uid = getlist.getInteger(ShinWorldData.TAG_ShipUID);
 				int eid = getlist.getInteger(ShinWorldData.TAG_ShipEID);
 				int wid = getlist.getInteger(ShinWorldData.TAG_ShipWID);
+				int cid = getlist.getInteger(ShinWorldData.TAG_ShipCID);
 				boolean isDead = getlist.getBoolean(ShinWorldData.TAG_ShipDead);
 				int[] pos = getlist.getIntArray(ShinWorldData.TAG_ShipPOS);
 				NBTTagCompound sTag = getlist.getCompoundTag(ShinWorldData.TAG_ShipNBT);
-				ShipCacheData sData = new ShipCacheData(eid, wid, isDead, (double)pos[0], (double)pos[1], (double)pos[2], sTag);
+				ShipCacheData sData = new ShipCacheData(eid, wid, cid, isDead, (double)pos[0], (double)pos[1], (double)pos[2], sTag);
 			
 				LogHelper.info("INFO : init server proxy: get ship data: UID "+uid+" NAME "+sData);
 				mapShipID.put(uid, sData);
@@ -649,7 +653,8 @@ public class ServerProxy extends CommonProxy
 		{
 			LogHelper.debug("DEBUG : update ship: update ship id "+uid+" eid: "+ship.getEntityId()+" world: "+ship.world.provider.getDimension());
 			ShipCacheData sdata = new ShipCacheData(ship.getEntityId(), ship.world.provider.getDimension(),
-					ship.isDead, ship.posX, ship.posY, ship.posZ, ship.writeToNBT(new NBTTagCompound()));
+					ship.getShipClass(), ship.isDead, ship.posX, ship.posY, ship.posZ,
+					ship.writeToNBT(new NBTTagCompound()));
 
 			setShipWorldData(uid, sdata);	//cache in server proxy
 			
@@ -674,7 +679,8 @@ public class ServerProxy extends CommonProxy
 			LogHelper.debug("DEBUG : update ship: create sid: "+uid+" eid: "+ship.getEntityId()+" world: "+ship.world.provider.getDimension());
 			ship.setShipUID(uid);
 			ShipCacheData sdata = new ShipCacheData(ship.getEntityId(), ship.world.provider.getDimension(),
-					ship.isDead, ship.posX, ship.posY, ship.posZ, ship.writeToNBT(new NBTTagCompound()));
+					ship.getShipClass(), ship.isDead, ship.posX, ship.posY, ship.posZ,
+					ship.writeToNBT(new NBTTagCompound()));
 	
 			setShipWorldData(uid, sdata);	//cache in server proxy
 			setNextShipID(++uid);	//next id ++

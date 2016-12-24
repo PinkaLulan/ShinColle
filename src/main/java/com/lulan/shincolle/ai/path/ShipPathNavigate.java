@@ -6,6 +6,7 @@ import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipNavigator;
 import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -294,7 +295,7 @@ public class ShipPathNavigate
     		boolean isStuck = false;
     		double dist = pos.squareDistanceTo(this.lastPosCheck);
     		
-        	if(dist < 2.25D)
+        	if(dist < 1D)
         	{
         		isStuck = true;
         		
@@ -307,15 +308,17 @@ public class ShipPathNavigate
                 	double targetZ = 0D;
                 	
                 	//get random position
-                	if (dx > 0.1F || dx < -0.1F)  //若目標點離x方向一定距離, 則在z方向隨機選+-1
-                	{
-                		targetZ = host.getRNG().nextInt(2) == 0 ? -1D : 1D;
-                	}
-                	
-                	if (dz > 0.1F || dz < -0.1F)  //若目標點離z方向一定距離, 則在x方向隨機選+-1
-                	{
-                		targetX = host.getRNG().nextInt(2) == 0 ? -1D : 1D;
-                	}
+//                	if (dx > 0.1F || dx < -0.1F)  //若目標點離x方向一定距離, 則在z方向隨機選+-1
+//                	{
+//                		targetZ = host.getRNG().nextInt(2) == 0 ? -1D : 1D;
+//                	}
+//                	
+//                	if (dz > 0.1F || dz < -0.1F)  //若目標點離z方向一定距離, 則在x方向隨機選+-1
+//                	{
+//                		targetX = host.getRNG().nextInt(2) == 0 ? -1D : 1D;
+//                	}
+                	targetX = dx > 0.1F ? 1D : dx < -0.1F ? -1D : 0D;
+                	targetZ = dz > 0.1F ? 1D : dz < -0.1F ? -1D : 0D;
                 	
                 	//set move
                 	this.host.motionX = this.speed * 0.5D * targetX;

@@ -122,8 +122,13 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
   				{
   					this.dismountAllRider();
   				}
-  				
-  				if (this.riderType > 0) this.addMoraleToRider();
+
+  				if (this.riderType > 0)
+				{
+  					this.addMoraleToRider();
+  	  				int m = this.getStateMinor(ID.M.Morale);
+  	  				if (m < 7000) this.setStateMinor(ID.M.Morale, m + 100);
+				}
   				
   				if (this.ticksExisted % 128 == 0)
   	  			{
