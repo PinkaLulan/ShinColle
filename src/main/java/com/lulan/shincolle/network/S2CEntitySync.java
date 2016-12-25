@@ -47,7 +47,7 @@ public class S2CEntitySync implements IMessage
 		public static final byte SyncShip_Flag = 2;
 		public static final byte SyncShip_Minor = 3;
 		public static final byte SyncEntity_Emo = 4;
-		public static final byte SyncMount_AllRider = 5;
+		public static final byte SyncShip_Riders = 5;
 		public static final byte NO_USE_0 = 6;
 		public static final byte NO_USE_1 = 7;
 		public static final byte SyncProjectile = 8;
@@ -70,7 +70,7 @@ public class S2CEntitySync implements IMessage
 	 * type 2: entity flag only
 	 * type 3: entity minor only
 	 * type 4: all emotion
-	 * type 5: player ride mount packet
+	 * type 5: riders sync packet
 	 * type 11:ship formation data
 	 * type 12:ship unbuff data
 	 * type 14:ship timer only
@@ -141,7 +141,7 @@ public class S2CEntitySync implements IMessage
 		case PID.SyncEntity_Emo: //IShipEmotion sync emtion
 			this.valueByte1 = PacketHelper.readByteArray(buf, 6);
 		break;
-		case PID.SyncMount_AllRider: //player mount sync (only send when player right click on mount)
+		case PID.SyncShip_Riders: //player mount sync (only send when player right click on mount)
 			this.valueInt = buf.readInt();
 			if (this.valueInt > 0) this.valueInt1 = PacketHelper.readIntArray(buf, this.valueInt);
 		break;
@@ -405,10 +405,9 @@ public class S2CEntitySync implements IMessage
 			buf.writeInt(entity.getStateTimer(ID.T.CraneTime));
 		}
 		break;
-		case PID.SyncMount_AllRider:		//sync rider list
+		case PID.SyncShip_Riders:		//sync rider list
 		{
-			BasicEntityMount mount = (BasicEntityMount) this.entity;
-			List<Entity> list = mount.getPassengers();
+			List<Entity> list = this.entity.getPassengers();
 			int length = list.size();
 			
 			//send length
@@ -504,9 +503,7 @@ public class S2CEntitySync implements IMessage
 				getTarget = true;
 			}
 		break;
-		case PID.SyncMount_AllRider:
-			if (entity instanceof BasicEntityMount) getTarget = true;
-		break;
+		case PID.SyncShip_Riders:
 		case PID.SyncProjectile:	//missile sync
 		case PID.SyncEntity_PosRot: //entity position, rotation, motion sync
 		case PID.SyncEntity_Rot:
@@ -766,7 +763,7 @@ public class S2CEntitySync implements IMessage
 				entity2.setStateEmotion(ID.S.Phase, msg.valueByte1[5], false);
 			}
 			break;
-			case PID.SyncMount_AllRider: //player mount sync (only send when player right click on mount)
+			case PID.SyncShip_Riders: //player mount sync (only send when player right click on mount)
 			{
 				//get rider to sync
 				if (msg.valueInt > 0)
@@ -779,7 +776,10 @@ public class S2CEntitySync implements IMessage
 					}
 
 					//set mount pose if riders > 1
-					if (msg.valueInt > 1) ((BasicEntityMount) entity).setStateEmotion(ID.S.Emotion, 1, false);
+					if (entity instanceof BasicEntityMount)
+					{
+						if (msg.valueInt > 1) ((BasicEntityMount) entity).setStateEmotion(ID.S.Emotion, 1, false);
+					}
 				}
 			}
 			break;

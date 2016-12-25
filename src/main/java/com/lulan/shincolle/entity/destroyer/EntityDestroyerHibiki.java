@@ -13,9 +13,11 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
@@ -183,7 +185,6 @@ public class EntityDestroyerHibiki extends BasicEntityShipSmall implements IShip
   		if (nofuel && this.getRidingEntity() instanceof EntityDestroyerAkatsuki)
   		{
   			((EntityDestroyerAkatsuki) this.getRidingEntity()).dismountAllRider();
-  			this.dismountRidingEntity();
   		}
   		
   		super.updateFuelState(nofuel);
@@ -278,7 +279,7 @@ public class EntityDestroyerHibiki extends BasicEntityShipSmall implements IShip
 			//cancel gattai
 			if (this.getRidingEntity() instanceof EntityDestroyerAkatsuki)
 			{
-				this.dismountRidingEntity();
+				((EntityDestroyerAkatsuki) this.getRidingEntity()).dismountAllRider();
 			}
 		}
 		

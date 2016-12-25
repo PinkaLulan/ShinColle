@@ -8,6 +8,7 @@ import com.lulan.shincolle.ai.EntityAIShipPickItem;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
+import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.IShipRiderType;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
@@ -26,6 +27,7 @@ import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
@@ -145,6 +147,12 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
   	  				
   	  				//try gattai
   	  				tryGattai();
+  	  				
+  	  				//sync gattai
+  	  				if (this.ridingState > 0)
+  	  				{
+  	  					this.sendSyncPacketRiders();
+  	  				}
   	  			}
   			}//end every 32 ticks
   		}
@@ -169,13 +177,12 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
   	  			if (this.ticksExisted % 16 == 0)
   	  			{
   	  				this.checkRiderType();
-  	  				this.checkRidingState();
   	  			}//end 16 ticks
   			}//end 4 ticks
   		}
   		
   		//sync rotate when gattai
-  		this.syncRotateToRider();
+	  	this.syncRotateToRider();
   	}
   	
   	@Override
@@ -184,6 +191,20 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
   		if (nofuel) this.dismountAllRider();
   		
   		super.updateFuelState(nofuel);
+	}
+  	
+  	@Override
+    public boolean attackEntityFrom(DamageSource attacker, float atk)
+  	{
+		boolean dd = super.attackEntityFrom(attacker, atk);
+		
+		if (dd)
+		{
+			//remove all passenger
+			this.dismountAllRider();
+		}
+		
+		return dd;
 	}
   	
   	@Override
@@ -228,12 +249,37 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
         {
         	double yoffset = this.posY + this.getMountedYOffset() + rider.getYOffset();
         	
-        	if (rider instanceof EntityDestroyerHibiki ||
-        		rider instanceof EntityDestroyerIkazuchi ||
-        		rider instanceof EntityDestroyerInazuma)
+        	if (rider instanceof EntityDestroyerHibiki)
         	{
         		float[] partPos = CalcHelper.rotateXZByAxis(-0.2F, 0F, (this.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);
-        		rider.setPosition(this.posX + partPos[1], this.posY + this.getMountedYOffset() + rider.getYOffset(), this.posZ + partPos[0]);
+        		rider.setPosition(this.posX + partPos[1], yoffset - 0.45D, this.posZ + partPos[0]);
+        	}
+        	else if (rider instanceof EntityDestroyerInazuma)
+        	{
+        		//sync emotion
+        		((EntityDestroyerInazuma) rider).setStateEmotion(ID.S.Emotion, this.getStateEmotion(ID.S.Emotion), false);
+        		
+        		if (this.isSitting()) yoffset -= 0.3F;
+        		
+        		float[] partPos = CalcHelper.rotateXZByAxis(-0.48F, 0F, (this.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);
+        		rider.setPosition(this.posX + partPos[1], yoffset + 0.1D, this.posZ + partPos[0]);
+        	}
+        	else if (rider instanceof EntityDestroyerIkazuchi)
+        	{
+        		List<Entity> riders = this.getPassengers();
+        		
+        		for (Entity r : riders)
+        		{
+        			if (r instanceof EntityDestroyerInazuma)
+        			{
+        				//check Inazuma emotion state
+        				yoffset = ((EntityDestroyerInazuma) r).getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED ? yoffset + 0.42D : yoffset + 0.6D;
+        				
+        				float[] partPos = CalcHelper.rotateXZByAxis(-0.68F, 0F, (this.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);
+                		rider.setPosition(this.posX + partPos[1], yoffset, this.posZ + partPos[0]);
+                		break;
+        			}
+        		}
         	}
         	else
         	{
@@ -308,20 +354,20 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
               	for (BasicEntityShip s : slist)
               	{
               		if (s instanceof EntityDestroyerHibiki && TeamHelper.checkSameOwner(this, s) &&
-              			s.isEntityAlive() && !s.isRiding() && s.getStateMinor(ID.M.CraneState) == 0 &&
-              			s.getStateMinor(ID.M.FormatType) == 1)
+              			s.isEntityAlive() && !s.isRiding() && !s.getStateFlag(ID.F.NoFuel) && !s.isSitting() &&
+              			s.getStateMinor(ID.M.CraneState) == 0 && s.getStateMinor(ID.M.FormatType) == 1)
               		{
               			getHibiki = s;
               		}
               		else if (s instanceof EntityDestroyerInazuma && TeamHelper.checkSameOwner(this, s) &&
-              				 s.isEntityAlive() && s.getStateMinor(ID.M.CraneState) == 0 &&
-              				 s.getStateMinor(ID.M.FormatType) == 1)
+              				 s.isEntityAlive() && !s.getStateFlag(ID.F.NoFuel) && !s.isSitting() &&
+              				 s.getStateMinor(ID.M.CraneState) == 0 && s.getStateMinor(ID.M.FormatType) == 1)
               		{
               			getInazuma = s;
               		}
               		else if (s instanceof EntityDestroyerIkazuchi && TeamHelper.checkSameOwner(this, s) &&
-             				 s.isEntityAlive() && s.getStateMinor(ID.M.CraneState) == 0 &&
-             				 s.getStateMinor(ID.M.FormatType) == 1)
+             				 s.isEntityAlive() && !s.getStateFlag(ID.F.NoFuel) && !s.isSitting() &&
+             				 s.getStateMinor(ID.M.CraneState) == 0 && s.getStateMinor(ID.M.FormatType) == 1)
              		{
               			getIkazuchi = s;
              		}
@@ -331,16 +377,25 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
               	switch (this.riderType)
               	{
               	case 0:
-              		if (getHibiki != null) getHibiki.startRiding(this);
-          			if (getInazuma != null) getInazuma.startRiding(this);
-          			if (getIkazuchi != null) getIkazuchi.startRiding(this);
+              		if (getHibiki != null)
+          			{
+              			getHibiki.startRiding(this, true);
+              			if (getInazuma != null)
+              			{
+              				getInazuma.startRiding(this, true);
+              				if (getIkazuchi != null) getIkazuchi.startRiding(this, true);
+              			}
+          			}
               	break;
               	case 1:
-          			if (getInazuma != null) getInazuma.startRiding(this);
-          			if (getIkazuchi != null) getIkazuchi.startRiding(this);
+          			if (getInazuma != null)
+          			{
+          				getInazuma.startRiding(this, true);
+          				if (getIkazuchi != null) getIkazuchi.startRiding(this, true);
+          			}
               	break;
               	case 3:
-          			if (getIkazuchi != null) getIkazuchi.startRiding(this);
+          			if (getIkazuchi != null) getIkazuchi.startRiding(this, true);
               	break;
               	}//end rider type switch
   			}//end get ship
@@ -386,6 +441,7 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
 	 */
   	public void checkRiderType()
   	{
+  		boolean getHibiki = false;
   		List<Entity> list = this.getPassengers();
   		this.riderType = 0;
   		
@@ -394,6 +450,7 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
   			if (rider instanceof EntityDestroyerHibiki)
   			{
   				this.riderType |= 1;
+  				getHibiki = true;
   			}
   			else if (rider instanceof EntityDestroyerInazuma)
   			{
@@ -404,23 +461,14 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
   				this.riderType |= 4;
   			}
   		}
-  	}
-  	
-  	/**
-  	 * state: 0:無騎乘, 1:被響騎乘
-  	 */
-  	public void checkRidingState()
-  	{
-  		List<Entity> list = this.getPassengers();
-  		this.ridingState = 0;
   		
-  		for (Entity rider : list)
+  		if (getHibiki)
+		{
+  			this.ridingState = 1;
+		}
+  		else
   		{
-  			if (rider instanceof EntityDestroyerHibiki)
-  			{
-  				this.ridingState = 1;
-  				break;
-  			}
+  			this.ridingState = 0;
   		}
   	}
   	
@@ -428,17 +476,23 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
   	public void dismountAllRider()
   	{
   		this.riderType = 0;
+  		this.ridingState = 0;
   		
   		List<Entity> riders = this.getPassengers();
   		
   		for (Entity rider : riders)
   		{
-  			rider.dismountRidingEntity();
-  			
   			if (rider instanceof IShipRiderType)
   			{
   				((IShipRiderType) rider).setRiderType(0);
   			}
+  			
+  			if (rider instanceof IShipEmotion)
+  			{
+  				((IShipEmotion) rider).setRidingState(0);
+  			}
+  			
+  			rider.dismountRidingEntity();
   		}
   	}
   	

@@ -35,11 +35,11 @@ public class BlockFrame extends BasicBlockFacing
 	
 	public BlockFrame()
 	{
-		super(Material.IRON);
+		super(Material.GLASS);
 		this.setUnlocalizedName(NAME);
 		this.setRegistryName(NAME);
 		this.setHarvestLevel("pickaxe", 0);
-	    this.setHardness(1F);
+	    this.setHardness(0.1F);
 	    this.setResistance(40F);
 	    this.setLightOpacity(0);
 	    this.setTickRandomly(false);
@@ -74,6 +74,13 @@ public class BlockFrame extends BasicBlockFacing
     public BlockRenderLayer getBlockLayer()
     {
         return BlockRenderLayer.CUTOUT;
+    }
+	
+	//用於檢查生物是否可以碰撞此方塊以及視線是否會被阻擋
+	@Override
+    public boolean isFullCube(IBlockState state)
+    {
+        return false;
     }
 	
 	@Override

@@ -1279,7 +1279,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 			switch (type)
 			{
 			case 0:
-				CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this, S2CEntitySync.PID.SyncMount_AllRider), point);
+				CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this, S2CEntitySync.PID.SyncShip_Riders), point);
 				break;
 			}
 		}

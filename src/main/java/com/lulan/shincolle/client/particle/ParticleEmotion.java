@@ -464,7 +464,6 @@ public class ParticleEmotion extends Particle
     	
     	Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE);
     	
-    	GlStateManager.pushAttrib();  //save prev flags
     	GlStateManager.pushMatrix();  //save prev pos
 		GlStateManager.depthMask(true);
 		GlStateManager.enableBlend();
@@ -502,7 +501,6 @@ public class ParticleEmotion extends Particle
         GlStateManager.disableBlend();
         GlStateManager.depthMask(false);
         GlStateManager.popMatrix();
-        GlStateManager.popAttrib();
     }
     
     //layer: 0:particle 1:terrain 2:items 3:custom

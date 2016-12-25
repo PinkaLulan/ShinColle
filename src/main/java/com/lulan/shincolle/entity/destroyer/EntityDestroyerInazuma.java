@@ -13,6 +13,7 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
@@ -241,7 +242,7 @@ public class EntityDestroyerInazuma extends BasicEntityShipSmall implements IShi
         	{
         		float[] partPos = CalcHelper.rotateXZByAxis(-0.2F, 0F, (this.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);
         		
-        		yoffset = this.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED ? yoffset - 0.6D : yoffset - 0.45D;
+        		yoffset = this.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED ? yoffset - 0.63D : yoffset - 0.45D;
         		
         		rider.setPosition(this.posX + partPos[1], yoffset, this.posZ + partPos[0]);
         	}
@@ -289,7 +290,7 @@ public class EntityDestroyerInazuma extends BasicEntityShipSmall implements IShi
 			//cancel gattai
 			if (this.getRidingEntity() instanceof EntityDestroyerAkatsuki)
 			{
-				this.dismountRidingEntity();
+				((EntityDestroyerAkatsuki) this.getRidingEntity()).dismountAllRider();
 			}
 			
 			//cancel raiden gattai
@@ -321,7 +322,8 @@ public class EntityDestroyerInazuma extends BasicEntityShipSmall implements IShi
               	for (EntityDestroyerIkazuchi s : slist)
               	{
               		if (s != null && TeamHelper.checkSameOwner(this, s) && s.isEntityAlive() &&
-              			s.getRiderType() == 0 && !s.isRaiden && s.getStateMinor(ID.M.CraneState) == 0)
+              			s.getRiderType() == 0 && !s.getStateFlag(ID.F.NoFuel) && !s.isRaiden &&
+              			s.getStateMinor(ID.M.CraneState) == 0)
               		{
               			s.startRiding(this);
               			this.isRaiden = true;

@@ -637,7 +637,11 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
     
     @Override
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
-    { 
+    {
+    	//FIX: head rotation bug while riding
+    	if (f3 <= -180F) { f3 += 360F; }
+    	else if (f3 >= 180F) { f3 -= 360F; }
+    	
     	GlStateManager.pushMatrix();
     	GlStateManager.enableBlend();
     	GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
@@ -760,9 +764,9 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
   		float headZ = 0F;
   		
   		//水上漂浮
-  		if (((IShipFloating)ent).getShipDepth() > 0)
+  		if (!ent.getIsRiding() && ((IShipFloating)ent).getShipDepth() > 0)
   		{
-  			GlStateManager.translate(0F, angleX * 0.1F - 0.025F, 0F);
+  			GlStateManager.translate(0F, angleX * 0.1F - 0.03F, 0F);
     	}
 
     	//leg move
@@ -895,7 +899,6 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
 	    
 	    if (((IShipRiderType) ent).getRiderType() > 0)
 	  	{
-    		GL11.glTranslatef(0F, 0.6F, 0F);
     		//Body
 		  	this.Butt.rotateAngleX = -0.2F;
 	    	this.Butt.offsetY = -0.1F;
@@ -928,6 +931,7 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
 			
 			if (ent.getIsSitting())
 	    	{
+				GL11.glTranslatef(0F, 0.21F, 0F);
 	    		//arm
 			  	this.ArmLeft01.rotateAngleX = -0.6F;
 			  	this.ArmLeft01.rotateAngleY = 0F;
@@ -960,7 +964,6 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
 			    
 			    if (ent.getIsSitting())
 		    	{
-			    	GL11.glTranslatef(0F, 1F, 0F);
 			    	//Body
 				  	this.Head.rotateAngleX -= 0.1F;
 				  	this.BodyMain.rotateAngleX = 0F;

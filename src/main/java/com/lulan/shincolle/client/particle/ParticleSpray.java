@@ -3,6 +3,8 @@ package com.lulan.shincolle.client.particle;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.GlStateManager.DestFactor;
+import net.minecraft.client.renderer.GlStateManager.SourceFactor;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -239,7 +241,7 @@ public class ParticleSpray extends Particle
         
         GlStateManager.pushMatrix();
         GlStateManager.depthMask(false);
-        
+    	
         super.renderParticle(render, entity, ptick, rotX, rotZ, rotYZ, rotXY, rotXZ);
         
         GlStateManager.depthMask(true);

@@ -116,7 +116,7 @@ public class BlockWaypoint extends BasicBlockContainer
         return false;
     }
 	
-	//用於檢查生物是否可以碰撞此方塊
+	//用於檢查生物是否可以碰撞此方塊以及視線是否會被阻擋
 	@Override
     public boolean isFullCube(IBlockState state)
     {

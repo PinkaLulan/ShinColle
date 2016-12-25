@@ -107,6 +107,38 @@ public class CapaShipInventory extends CapaInventory<BasicEntityShip> implements
 		
 		return ContainerShipInventory.SLOTS_PLAYERINV;
 	}
+	
+	@Override
+	public ItemStack getStackInSlot(int i)
+	{
+		validateSlotIndex(i);
+		
+		//access within page
+		if (i < getSizeInventory())
+		{
+			//get equip slot
+			if (i < ContainerShipInventory.SLOTS_SHIPINV)
+			{
+				return this.stacks[i];
+			}
+			//get inventory slot
+			else
+			{
+				return stacks[i + this.inventoryPage * 18];
+			}
+		}
+		//access across pages
+		else
+		{
+			return stacks[i];
+		}
+	}
+	
+	public ItemStack getStackInSlotWithoutPaging(int i)
+	{
+		validateSlotIndex(i);
+		return stacks[i];
+	}
 
 	/** note:
 	 *  這裡id是已經有page轉換過, 最大值為this.stacks.length

@@ -19,6 +19,7 @@ import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.creativetab.CreativeTabs;
@@ -31,6 +32,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -508,10 +510,11 @@ public class PointerItem extends BasicItem
 						int z = hitObj2.getBlockPos().getZ();
 						
 						//check target is waypoint
+						IBlockState state = world.getBlockState(hitObj2.getBlockPos());
 						TileEntity tile = world.getTileEntity(hitObj2.getBlockPos());
 						
 						//if not waypoint, tweak target position
-						if (!(tile instanceof ITileWaypoint))
+						if (!BlockHelper.checkBlockIsLiquid(state) && !(tile instanceof ITileWaypoint))
 						{
 							switch (hitObj2.sideHit.getIndex())
 							{
@@ -579,6 +582,13 @@ public class PointerItem extends BasicItem
 	public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity)
 	{
 		return true;	//prevent this item to attack entity
+    }
+	
+	//left click on block
+	@Override
+    public boolean onBlockStartBreak(ItemStack itemstack, BlockPos pos, EntityPlayer player)
+    {
+        return false;	//prevent this item to break block
     }
 	
 	/**偵測目前玩家指著的東西

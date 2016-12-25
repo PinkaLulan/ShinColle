@@ -42,8 +42,7 @@ public class EntityAIShipLookIdle extends EntityAIBase
 
     public void startExecuting()
     {
-    	//NOTE: 2PI會導致扭到反方向, 故改為1PI
-    	double d0 = (Math.PI * 1D) * this.host.getRNG().nextDouble();
+    	double d0 = (Math.PI * 2D) * this.host.getRNG().nextDouble();
         this.lookX = Math.cos(d0);
         this.lookZ = Math.sin(d0);
         this.idleTime = 20 + this.host.getRNG().nextInt(20);

@@ -41,7 +41,7 @@ public class EntityAIShipRangeAttack extends EntityAIBase
         {
             this.host = host;
             this.host2 = (EntityLiving) host;
-            this.setMutexBits(1);
+            this.setMutexBits(9);
             
             //init value
             this.delayLight = 20;
@@ -190,11 +190,13 @@ public class EntityAIShipRangeAttack extends EntityAIBase
             }
 	
 	        //設定攻擊時, 頭部觀看的角度
-	        this.host2.getLookHelper().setLookPositionWithEntity(this.target, 30.0F, 30.0F);
-	        
-	        if (host2.getRidingEntity() instanceof BasicEntityMount)
+	        if (this.host2.getRidingEntity() instanceof BasicEntityMount)
 	        {
-	        	((BasicEntityMount)host2.getRidingEntity()).getLookHelper().setLookPositionWithEntity(this.target, 30.0F, 30.0F);
+	        	((BasicEntityMount) host2.getRidingEntity()).getLookHelper().setLookPositionWithEntity(this.target, 30F, 30F);
+	        }
+	        else if (this.host2.getRidingEntity() == null)
+	        {
+	        	this.host2.getLookHelper().setLookPositionWithEntity(this.target, 30F, 30F);
 	        }
 
 	        //若attack delay倒數完了且瞄準時間夠久, 則開始攻擊

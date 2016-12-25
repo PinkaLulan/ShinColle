@@ -1,14 +1,14 @@
 package com.lulan.shincolle.ai;
 
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.ai.EntityAIWatchClosest;
-import net.minecraft.entity.player.EntityPlayer;
-
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.IShipNavigator;
 import com.lulan.shincolle.reference.ID;
+
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.ai.EntityAIWatchClosest;
+import net.minecraft.entity.player.EntityPlayer;
 
 public class EntityAIShipWatchClosest extends EntityAIWatchClosest
 {

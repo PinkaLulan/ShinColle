@@ -15,6 +15,7 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -89,7 +90,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
   	public void onLivingUpdate()
   	{
   		super.onLivingUpdate();
-          
+  		
   		if (!world.isRemote)
   		{
   			//add aura to master every 128 ticks

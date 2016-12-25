@@ -72,6 +72,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagDouble;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
@@ -84,6 +86,7 @@ import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
 
@@ -546,11 +549,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		//use melee attack
 		if (this.getStateFlag(ID.F.UseMelee))
 		{
-			this.tasks.addTask(10, new EntityAIShipAttackOnCollide(this, 1D));//0100
+			this.tasks.addTask(10, new EntityAIShipAttackOnCollide(this, 1D));//1100
 		}
 		
 		//idle AI
-		this.tasks.addTask(23, new EntityAIShipFloating(this));			//0111
+		this.tasks.addTask(23, new EntityAIShipFloating(this));			//1000
 		this.tasks.addTask(24, new EntityAIShipWatchClosest(this, EntityPlayer.class, 4F, 0.06F));//0010
 		this.tasks.addTask(25, new EntityAIShipWander(this, 10, 5, 0.8D));//0111
 		this.tasks.addTask(25, new EntityAIShipLookIdle(this));			//0011
@@ -598,6 +601,24 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         if (nbt.hasKey(CapaShipInventory.InvName))
         {
         	itemHandler.deserializeNBT((NBTTagCompound) nbt.getTag(CapaShipInventory.InvName));
+        }
+        
+        //change rider position on chunk loading to fix "Wrong Location!" bug
+        if (this.world == null || (!this.world.isRemote && this.ticksExisted <= 0))
+        {
+        	if (nbt.hasKey("Passengers", Constants.NBT.TAG_LIST))
+            {
+        		NBTTagList list = nbt.getTagList("Passengers", Constants.NBT.TAG_COMPOUND);
+        		
+                for (int i = 0; i < list.tagCount(); ++i)
+                {
+                	NBTTagCompound rider = list.getCompoundTagAt(i);
+                	NBTTagList pos = rider.getTagList("Pos", 6);
+                	pos.set(0, new NBTTagDouble(this.posX));
+                	pos.set(1, new NBTTagDouble(this.posY));
+                	pos.set(2, new NBTTagDouble(this.posZ));
+                }
+            }
         }
 	}
 	
@@ -1311,16 +1332,31 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	
 	public void setRiderAndMountSit()
 	{
-		//loop all mount to set sitting
-		Entity mount = this.getRidingEntity();
-		while (mount instanceof BasicEntityShip)
+		//set mount sitting
+		if (this.getRidingEntity() instanceof BasicEntityShip)
 		{
-			((BasicEntityShip) mount).setEntitySit(this.isSitting());
-			mount = mount.getRidingEntity();
+			BasicEntityShip mountShip = (BasicEntityShip) this.getRidingEntity();
+			
+			mountShip.setEntitySit(this.isSitting());
+			
+			//special mount: set all rider sit
+			if (mountShip.getRidingState() > 0)
+			{
+				List<Entity> rider = mountShip.getPassengers();
+				
+				for (Entity r : rider)
+				{
+					if (r instanceof BasicEntityShip)
+					{
+						((BasicEntityShip) r).setEntitySit(this.isSitting());
+					}
+				}
+			}
 		}
         
 		//set all rider sitting
 		List<Entity> rider = this.getPassengers();
+		
 		for (Entity r : rider)
 		{
 			if (r instanceof BasicEntityShip)
@@ -1530,6 +1566,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	public void sendSyncPacketFormationValue()
 	{
 		sendSyncPacket(S2CEntitySync.PID.SyncShip_Formation, false);
+	}
+	
+	/** send sync packet: sync riders */
+	public void sendSyncPacketRiders()
+	{
+		sendSyncPacket(S2CEntitySync.PID.SyncShip_Riders, true);
 	}
 	
 	/**  sync data for GUI display */
@@ -2207,9 +2249,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		{
 			return;
 		}
-		
+  		
 		super.onUpdate();
-
+		
 		//get depth if in fluid block
 		EntityHelper.checkDepth(this);
 		
@@ -2350,7 +2392,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				}//end  every 8 ticks
 			}//end every 2 ticks
 		}//end client side
-		
+  		
 //		//TODO debug
 //		if(this.ticksExisted % 32 == 0) {
 //			LogHelper.info("AAAAAAAAAAAA "+this.worldObj.isRemote+" "+this.getStateMinor(ID.M.PlayerUID)+" "+this.getStateMinor(ID.M.PlayerEID)+" "+EntityHelper.getEntityPlayerByID(getStateMinor(ID.M.PlayerEID), 0, true));
@@ -2553,7 +2595,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         		int checkHour = getWorldHourTime();
         		if (checkHour >= 0) playTimeSound(checkHour);
         	}//end timekeeping
-        	
         }//end server side
         //client side
         else
@@ -2563,6 +2604,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	//update client side timer
         	updateClientTimer();
         }
+    }
+	
+	@Override
+	public boolean canPassengerSteer()
+    {
+//		return super.canPassengerSteer();
+		return false;
     }
 	
 	//use combat ration
@@ -5840,6 +5888,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	
 	@Override
 	public void setRidingState(int state) {}
+	
+	@Override
+    public boolean shouldDismountInWater(Entity rider)
+    {
+        return false;
+    }
   	
 	
 }

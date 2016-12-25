@@ -179,7 +179,6 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall implements ISh
   		{
   	  		if (this.getRidingEntity() instanceof EntityDestroyerAkatsuki)
   	  		{
-  	  			this.dismountRidingEntity();
   	  			((EntityDestroyerAkatsuki) this.getRidingEntity()).dismountAllRider();
   	  		}
   	  		
@@ -257,7 +256,7 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall implements ISh
 			//cancel gattai
 			if (this.getRidingEntity() instanceof EntityDestroyerAkatsuki)
 			{
-				this.dismountRidingEntity();
+				((EntityDestroyerAkatsuki) this.getRidingEntity()).dismountAllRider();
 			}
 			
 			//cancel raiden gattai
@@ -288,7 +287,8 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall implements ISh
             	for (EntityDestroyerInazuma s : slist)
             	{
             		if (s != null && TeamHelper.checkSameOwner(this, s) && s.isEntityAlive() &&
-            			s.getRiderType() == 0 && !s.isRaiden && s.getStateMinor(ID.M.CraneState) == 0)
+            			s.getRiderType() == 0 && !s.isRaiden && !s.getStateFlag(ID.F.NoFuel) &&
+            			s.getStateMinor(ID.M.CraneState) == 0)
             		{
             			this.startRiding(s);
               			this.isRaiden = true;

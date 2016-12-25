@@ -115,12 +115,17 @@ public class ShipMoveHelper
                 //non-fly entity in water
                 else if (EntityHelper.checkEntityIsInLiquid(entity))
                 {
-            		if (y1 > 0D)  //UP
+                	if (y1 > 1D)  //UP
             		{
                     	this.entity.motionY += moveSpeed * 0.2D;
                     	moveSpeed *= 0.5F;
                     }
-                    else if (y1 < -0.2D)  //DOWN
+                	else if (y1 > 0.35D)  //UP
+            		{
+                    	this.entity.motionY += moveSpeed * 0.1D;
+                    	moveSpeed *= 0.5F;
+                    }
+                    else if (y1 < -1D)  //DOWN
                     {
                     	this.entity.motionY -= moveSpeed * 0.25D;
                     	moveSpeed *= 0.82F;

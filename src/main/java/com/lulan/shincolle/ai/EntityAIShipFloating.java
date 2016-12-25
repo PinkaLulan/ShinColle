@@ -10,6 +10,7 @@ import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.entity.IShipGuardian;
 import com.lulan.shincolle.entity.IShipInvisible;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.LogHelper;
 
 /**SHIP FLOATING ON WATER AI
  * 若在水中, 且水上一格為空氣, 則會嘗試上浮並站在水面上
@@ -38,7 +39,7 @@ public class EntityAIShipFloating extends EntityAIBase
     		this.hostMount = (BasicEntityMount) entity;
     	}
     	
-        this.setMutexBits(7);
+        this.setMutexBits(8);
     }
 
     @Override
@@ -75,12 +76,12 @@ public class EntityAIShipFloating extends EntityAIBase
     			return false;
     		}
 			
-			return hostMount.getShipDepth() > 0.47D;
+			return hostMount.getShipDepth() > 0.27D;
 		}
     	//其他類
     	else
     	{
-    		return host.getShipDepth() > 0.47D;
+    		return host.getShipDepth() > 0.27D;
     	}
     }
 
@@ -130,6 +131,12 @@ public class EntityAIShipFloating extends EntityAIBase
         	}
         	
         	if (this.host.getShipDepth() > 0.47D)
+        	{
+        		this.hostLiving.motionY += 0.003D;
+        		return;
+        	}
+        	
+        	if (this.host.getShipDepth() > 0.27D)
         	{
         		this.hostLiving.motionY += 0.0012D;
         		return;

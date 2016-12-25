@@ -586,7 +586,11 @@ public class ModelDestroyerAkatsuki extends ModelBase implements IModelEmotionAd
     
     @Override
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
-    { 
+    {
+    	//FIX: head rotation bug while riding
+    	if (f3 <= -180F) { f3 += 360F; }
+    	else if (f3 >= 180F) { f3 -= 360F; }
+    	
     	GlStateManager.pushMatrix();
     	GlStateManager.enableBlend();
     	GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
@@ -709,9 +713,9 @@ public class ModelDestroyerAkatsuki extends ModelBase implements IModelEmotionAd
   		float headZ = 0F;
   		
   		//水上漂浮
-  		if (((IShipFloating) ent).getShipDepth() > 0)
+  		if (((Entity) ent).getPassengers().size() == 0 && ((IShipFloating) ent).getShipDepth() > 0)
   		{
-  			GlStateManager.translate(0F, angleX * 0.1F - 0.025F, 0F);
+  			GlStateManager.translate(0F, angleX * 0.1F - 0.03F, 0F);
     	}
 
     	//leg move
@@ -868,7 +872,7 @@ public class ModelDestroyerAkatsuki extends ModelBase implements IModelEmotionAd
 		    
 	    	if (ent.getIsSitting())
 			{
-	    		GlStateManager.translate(0F, 0.875F, 0F);
+	    		GlStateManager.translate(0F, 0.525F, 0F);
 	    		setFaceBored(ent);
 	    		//body
     	    	this.Head.rotateAngleX = -1.1F;
