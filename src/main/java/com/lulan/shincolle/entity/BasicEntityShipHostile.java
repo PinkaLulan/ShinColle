@@ -339,62 +339,49 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		float atk = CalcHelper.calcDamageBySpecialEffect(this, target, this.atk, 0);
 		
 		//update entity look at vector (for particle spawn)
-        //此方法比getLook還正確 (client sync問題)
-        float distX = (float) (target.posX - this.posX);
-        float distY = (float) (target.posY - this.posY);
-        float distZ = (float) (target.posZ - this.posZ);
-        float distSqrt = MathHelper.sqrt(distX*distX + distY*distY + distZ*distZ);
-        distX = distX / distSqrt;
-        distY = distY / distSqrt;
-        distZ = distZ / distSqrt;
+		float[] distVec = new float[4];  //x, y, z, dist
+		distVec[0] = (float) (target.posX - this.posX);
+		distVec[1] = (float) (target.posY - this.posY);
+		distVec[2] = (float) (target.posZ - this.posZ);
+		distVec[3] = MathHelper.sqrt(distVec[0]*distVec[0] + distVec[1]*distVec[1] + distVec[2]*distVec[2]);
+        distVec[0] = distVec[0] / distVec[3];
+        distVec[1] = distVec[1] / distVec[3];
+        distVec[2] = distVec[2] / distVec[3];
       
-        //發射者煙霧特效
-        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 6, this.posX, this.posY+3.5D, this.posZ, distX, 2.8D, distZ, true), point);
-
-		//play cannon fire sound at attacker
-		this.playSound(ModSounds.SHIP_FIRELIGHT, ConfigHandler.volumeFire, this.getSoundPitch() * 0.85F);
-        
-        //play entity attack sound
-        if(this.rand.nextInt(10) > 7)
-        {
-        	this.playSound(ModSounds.SHIP_HIT, this.getSoundVolume(), this.getSoundPitch());
-        }
-
+        //play cannon fire sound at attacker
+        applySoundAtAttacker(1, target);
+	    applyParticleAtAttacker(1, target, distVec);
+	    
         //calc miss chance, if not miss, calc cri/multi hit   
-        if (this.rand.nextFloat() < 0.2F)
+        if (this.rand.nextFloat() < this.getEffectEquip(ID.EF_MISS))
         {
         	atk = 0;	//still attack, but no damage
-        	//spawn miss particle
-    		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
+        	applyParticleSpecialEffect(0);
         }
         else
         {
         	//roll cri -> roll double hit -> roll triple hit (triple hit more rare)
         	//calc critical
-        	if (this.rand.nextFloat() < 0.15F)
+        	if (this.rand.nextFloat() < this.getEffectEquip(ID.EF_CRI))
         	{
         		atk *= 1.5F;
-        		//spawn critical particle
-        		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 11, false), point);
+        		applyParticleSpecialEffect(1);
         	}
         	else
         	{
         		//calc double hit
-            	if (this.rand.nextFloat() < 0.15F)
+            	if (this.rand.nextFloat() < this.getEffectEquip(ID.EF_DHIT))
             	{
             		atk *= 2F;
-            		//spawn double hit particle
-            		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 12, false), point);
+            		applyParticleSpecialEffect(2);
             	}
             	else
             	{
             		//calc double hit
-                	if (this.rand.nextFloat() < 0.15F)
+                	if (this.rand.nextFloat() < this.getEffectEquip(ID.EF_THIT))
                 	{
                 		atk *= 3F;
-                		//spawn triple hit particle
-                		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 13, false), point);
+                		applyParticleSpecialEffect(2);
                 	}
             	}
         	}
@@ -405,9 +392,9 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
   		{
   			atk *= 0.25F;
   			
-    		if (atk > 159F)
+    		if (atk > 59F)
     		{
-    			atk = 159F;	//same with TNT
+    			atk = 59F;
     		}
   		}
   		
@@ -417,12 +404,10 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 
 	    //if attack success
 	    if (isTargetHurt)
-	    { 
-        	//display hit particle on target
-	        TargetPoint point1 = new TargetPoint(this.dimension, target.posX, target.posY, target.posZ, 64D);
-			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 9, false), point1);
-  	        //show emotes
-			applyEmotesReaction(3);
+	    {
+	    	applySoundAtTarget(1, target);
+	        applyParticleAtTarget(1, target, distVec);
+	        applyEmotesReaction(3);
 	    }
 
 	    return isTargetHurt;
@@ -485,11 +470,6 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
         applySoundAtTarget(2, target);
         applyParticleAtTarget(2, target, distVec);
         applyEmotesReaction(3);
-        
-        if (ConfigHandler.canFlare)
-        {
-			flareTarget(target);
-		}
         
         return true;
 	}
@@ -797,7 +777,11 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	{	//cri rate
 		switch(id)
 		{
+		case ID.EF_MISS:	//miss rate, not miss reduction rate!
+			return 0.2F;
 		case ID.EF_CRI:
+		case ID.EF_DHIT:
+		case ID.EF_THIT:
 			return 0.15F;
 		default:
 			return 0F;

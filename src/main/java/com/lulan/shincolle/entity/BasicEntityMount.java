@@ -66,10 +66,11 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	protected byte stateEmotion2;				//表情2
 	protected int attackTime, attackTime2, startEmotion, startEmotion2;  //motion開始時間
 	protected boolean headTilt;
-	protected float[] seatPos;
+	protected float[] seatPos;					//ship rider position
+	protected float[] seatPos2;					//player rider position
 	
 	//AI
-	protected double ShipDepth;					//水深, 用於水中高度判定
+	protected double shipDepth;					//水深, 用於水中高度判定
 	public int keyPressed;						//key(bit): 0:W 1:S 2:A 3:D 4:Jump
 	public static boolean stopAI = false;		//stop onUpdate, onLivingUpdate
 	
@@ -80,14 +81,23 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		this.isImmuneToFire = true;
 		this.ignoreFrustumCheck = true;	//即使不在視線內一樣render
 		this.stepHeight = 3F;
-		this.keyPressed = 0;
 		this.shipNavigator = new ShipPathNavigate(this, world);
 		this.shipMoveHelper = new ShipMoveHelper(this, 20F);
-		this.seatPos = new float[] {0F,0F,0F};
+		
+		//AI flag
+		this.keyPressed = 0;
 		this.soundHurtDelay = 0;
 		this.attackTime = 0;
 		this.attackTime2 = 0;
+        this.stateEmotion = 0;
+        this.stateEmotion2 = 0;
+        this.startEmotion = 0;
+        this.startEmotion2 = 0;
+        this.headTilt = false;
 	}
+    
+    /** init attributes */
+    abstract public void initAttrs(BasicEntityShip host);
     
 	//平常音效
     @Override
@@ -426,7 +436,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		//client side
 		if (this.world.isRemote)
 		{
-			if (ShipDepth > 0D)
+			if (shipDepth > 0D)
 			{
 				//水中移動時, 產生水花特效
 				//(注意此entity因為設為非高速更新, client端不會更新motionX等數值, 需自行計算)
@@ -646,20 +656,20 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	@Override
 	public void setShipDepth(double par1)
 	{
-		this.ShipDepth = par1;
+		this.shipDepth = par1;
 	}
 
 	@Override
 	public boolean getStateFlag(int flag)
 	{	
-		if (host != null) return this.host.getStateFlag(flag);
+		if (this.host != null) return this.host.getStateFlag(flag);
 		return false;
 	}
 
 	@Override
 	public void setStateFlag(int id, boolean flag)
 	{
-		if (host != null) this.host.setStateFlag(id, flag);
+		if (this.host != null) this.host.setStateFlag(id, flag);
 	}
 
 	@Override
@@ -701,13 +711,13 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
     //clear AI
   	protected void clearAITasks()
   	{
-  	   tasks.taskEntries.clear();
+  		this.tasks.taskEntries.clear();
   	}
   	
   	//clear target AI
   	protected void clearAITargetTasks()
   	{
-  	   targetTasks.taskEntries.clear();
+  		this.targetTasks.taskEntries.clear();
   	}
     
   	@Override
@@ -723,51 +733,195 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   		if (this.host != null) this.host.setEntityTarget(target);
 	}
   	
+  	/** attack particle at attacker
+  	 * 
+  	 *  type: 0:melee, 1:light cannon, 2:heavy cannon, 3:light air, 4:heavy air
+  	 *  vec: 0:distX, 1:distY, 2:distZ, 3:dist sqrt
+  	 */
+  	public void applyParticleAtAttacker(int type, Entity target, float[] vec)
+  	{
+  		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+        
+  		switch (type)
+  		{
+  		case 1:  //light cannon
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 19, this.posX, this.posY+1.5D, this.posZ, vec[0], 1.2F, vec[2], true), point);
+  			//發送攻擊flag給host, 設定其attack time
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this.host, 0, true), point);
+  		break;
+  		case 2:  //heavy cannon
+  		case 3:  //light aircraft
+  		case 4:  //heavy aircraft
+		default: //melee
+			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
+			//發送攻擊flag給host, 設定其attack time
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this.host, 0, true), point);
+		break;
+  		}
+  	}
+  	
+  	/** attack particle at target
+  	 * 
+  	 *  type: 0:melee, 1:light cannon, 2:heavy cannon, 3:light air, 4:heavy air
+  	 *  vec: 0:distX, 1:distY, 2:distZ, 3:dist sqrt
+  	 */
+  	public void applyParticleAtTarget(int type, Entity target, float[] vec)
+  	{
+  		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+  		
+  		switch (type)
+  		{
+  		case 1:  //light cannon
+			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 9, false), point);
+  		break;
+  		case 2:  //heavy cannon
+  		break;
+  		case 3:  //light aircraft
+  		break;
+  		case 4:  //heavy aircraft
+  		break;
+		default: //melee
+    		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 1, false), point);
+		break;
+  		}
+  	}
+  	
+  	/** attack particle at attacker
+  	 * 
+  	 *  type: 0:melee, 1:light cannon, 2:heavy cannon, 3:light air, 4:heavy air
+  	 */
+  	public void applySoundAtAttacker(int type, Entity target)
+  	{
+  		switch (type)
+  		{
+  		case 1:  //light cannon
+  			this.playSound(ModSounds.SHIP_FIRELIGHT, ConfigHandler.volumeFire, this.getSoundPitch() * 0.85F);
+  	        
+  			//entity sound
+  			if (this.rand.nextInt(10) > 8)
+  			{
+  				this.playSound(ModSounds.SHIP_WAKA_ATTACK, this.getSoundVolume(), this.getSoundPitch());
+  	        }
+  		break;
+  		case 2:  //heavy cannon
+  			this.playSound(ModSounds.SHIP_FIREHEAVY, ConfigHandler.volumeFire, this.getSoundPitch() * 0.85F);
+  	        
+  	        //entity sound
+  	        if (this.getRNG().nextInt(10) > 8)
+  	        {
+  	        	this.playSound(ModSounds.SHIP_WAKA_ATTACK, this.getSoundVolume(), this.getSoundPitch());
+  	        }
+  		break;
+  		case 3:  //light aircraft
+  		case 4:  //heavy aircraft
+  			this.playSound(ModSounds.SHIP_AIRCRAFT, ConfigHandler.volumeFire * 0.5F, this.getSoundPitch() * 0.85F);
+  	  	break;
+		default: //melee
+			if (this.getRNG().nextInt(2) == 0)
+			{
+				this.playSound(ModSounds.SHIP_WAKA_ATTACK, this.getSoundVolume(), this.getSoundPitch());
+	        }
+		break;
+  		}//end switch
+  	}
+  	
+  	/** special particle at entity
+  	 * 
+  	 *  type: 0:miss, 1:critical, 2:double hit, 3:triple hit
+  	 */
+  	protected void applyParticleSpecialEffect(int type)
+  	{
+  		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+  		
+  		switch (type)
+  		{
+  		case 1:  //critical
+      		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 11, false), point);
+  			break;
+  		case 2:  //double hit
+      		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 12, false), point);
+  			break;
+  		case 3:  //triple hit
+      		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 13, false), point);
+  			break;
+		default: //miss
+      		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
+			break;
+  		}
+  	}
+  	
+  	/** attack particle at target
+  	 * 
+  	 *  type: 0:melee, 1:light cannon, 2:heavy cannon, 3:light air, 4:heavy air
+  	 */
+  	public void applySoundAtTarget(int type, Entity target)
+  	{
+  		switch (type)
+  		{
+  		case 1:  //light cannon
+  		break;
+  		case 2:  //heavy cannon
+  		break;
+  		case 3:  //light aircraft
+  		break;
+  		case 4:  //heavy aircraft
+  		break;
+		default: //melee
+		break;
+  		}
+  	}
+  	
+  	/** attack base damage
+  	 *  type: 0:melee, 1:light cannon, 2:heavy cannon, 3:light air, 4:heavy air
+  	 */
+  	public float getAttackBaseDamage(int type, Entity target)
+  	{
+  		switch (type)
+  		{
+  		case 1:  //light cannon
+  			return CalcHelper.calcDamageBySpecialEffect(this, target, this.host.getStateFinal(ID.ATK), 0);
+  		case 2:  //heavy cannon
+  			return this.host.getStateFinal(ID.ATK_H);
+  		case 3:  //light aircraft
+  			return this.host.getStateFinal(ID.ATK_AL);
+  		case 4:  //heavy aircraft
+  			return this.host.getStateFinal(ID.ATK_AH);
+		default: //melee
+			return this.host.getStateFinal(ID.ATK);	//mounts can deal 100% melee attack
+  		}
+  	}
+  	
   	//change melee damage to 100%
   	@Override
   	public boolean attackEntityAsMob(Entity target)
   	{
   		//get attack value
-  		float atk = host.getStateFinal(ID.ATK);
+  		float atk = getAttackBaseDamage(0, target);
   				
   		//experience++
-  		host.addShipExp(ConfigHandler.expGain[0]);
+  		this.host.addShipExp(ConfigHandler.expGain[0]);
   		
   		//attack time
-  		host.setCombatTick(this.ticksExisted);
+  		this.host.setCombatTick(this.ticksExisted);
+  		
+  		//entity attack effect
+	    applySoundAtAttacker(0, target);
+	    applyParticleAtAttacker(0, target, new float[4]);
   		
   	    //將atk跟attacker傳給目標的attackEntityFrom方法, 在目標class中計算傷害
   	    //並且回傳是否成功傷害到目標
   	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this), atk);
 
-  	    //play entity attack sound
-  	    if (this.getRNG().nextInt(10) > 8)
-  	    {
-  	    	this.playSound(ModSounds.SHIP_WAKA_ATTACK, this.getSoundVolume(), this.getSoundPitch());
-  	    }
-  	    
   	    //if attack success
   	    if (isTargetHurt)
   	    {
-  	        //send packet to client for display partical effect   
-  	        if (!world.isRemote)
-  	        {
-  	        	TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-  	    		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 1, false), point);
-  			}
+  	    	applySoundAtTarget(0, target);
+	        applyParticleAtTarget(0, target, new float[4]);
+			this.host.applyEmotesReaction(3);
+			
+			if (ConfigHandler.canFlare) this.host.flareTarget(target);
   	    }
 
-  	    //show emotes
-  	    if (host != null)
-  	    {
-  	    	host.applyEmotesReaction(3);
-  	    	
-  	    	if (ConfigHandler.canFlare)
-  	    	{
-  				host.flareTarget(target);
-  			}
-  	    }
-  	  
   	    return isTargetHurt;
   	}
     
@@ -775,51 +929,38 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
     @Override
 	public boolean attackEntityWithAmmo(Entity target)
     {
-		float atkLight = CalcHelper.calcDamageBySpecialEffect(this, target, this.host.getStateFinal(ID.ATK), 0);
-
-		//play cannon fire sound at attacker
-		this.playSound(ModSounds.SHIP_FIRELIGHT, ConfigHandler.volumeFire, this.getSoundPitch() * 0.85F);
-	        
-        //play entity attack sound
-        if(this.rand.nextInt(10) > 8)
-        {
-        	this.playSound(ModSounds.SHIP_WAKA_ATTACK, this.getSoundVolume(), this.getSoundPitch());
-        }
-        
-        //此方法比getLook還正確 (client sync問題)
-        float distX = (float) (target.posX - this.posX);
-        float distY = (float) (target.posY - this.posY);
-        float distZ = (float) (target.posZ - this.posZ);
-        float distSqrt = MathHelper.sqrt(distX*distX + distY*distY + distZ*distZ);
-        distX = distX / distSqrt;
-        distY = distY / distSqrt;
-        distZ = distZ / distSqrt;
+    	//ammo--
+        if (!this.host.decrAmmoNum(0, this.host.getAmmoConsumption())) return false;
         
         //experience++
-  		host.addShipExp(ConfigHandler.expGain[1]);
+        this.host.addShipExp(ConfigHandler.expGain[1]);
   		
   		//grudge--
-  		host.decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
-  		
-  		//attack time
-  		host.setCombatTick(this.ticksExisted);
-  		
-  		//light ammo -1
-        if (!host.decrAmmoNum(0, host.getAmmoConsumption()))
-        {
-        	return false;
-        }
+        this.host.decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
 		
-		//發射者煙霧特效
-        TargetPoint point0 = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-        CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 19, this.posX, this.posY+1.5D, this.posZ, distX, 1.2F, distZ, true), point0);
-
-        //發送攻擊flag給host, 設定其attack time
-		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this.host, 0, true), point0);
-		
+  		//combat time
+        this.host.setCombatTick(this.ticksExisted);
+  		
+  		//get attack value
+		float atkLight = getAttackBaseDamage(1, target);
+        
+        //calc dist to target
+        float[] distVec = new float[4];  //x, y, z, dist
+        distVec[0] = (float) (target.posX - this.posX);
+        distVec[1] = (float) (target.posY - this.posY);
+        distVec[2] = (float) (target.posZ - this.posZ);
+        distVec[3] = MathHelper.sqrt(distVec[0]*distVec[0] + distVec[1]*distVec[1] + distVec[2]*distVec[2]);
+        distVec[0] = distVec[0] / distVec[3];
+        distVec[1] = distVec[1] / distVec[3];
+        distVec[2] = distVec[2] / distVec[3];
+        
+        //play cannon fire sound at attacker
+        applySoundAtAttacker(1, target);
+	    applyParticleAtAttacker(1, target, distVec);
+	    
 		//calc miss chance, if not miss, calc cri/multi hit
 		TargetPoint point = new TargetPoint(this.dimension, this.host.posX, this.host.posY, this.host.posZ, 64D);
-        float missChance = 0.2F + 0.15F * (distSqrt / host.getStateFinal(ID.HIT)) - 0.001F * host.getLevel();
+        float missChance = 0.2F + 0.15F * (distVec[3] / host.getStateFinal(ID.HIT)) - 0.001F * host.getLevel();
         missChance -= this.host.getEffectEquip(ID.EF_MISS);		//equip miss reduce
         if (missChance > 0.35F) missChance = 0.35F;	//max miss chance
   		
@@ -827,9 +968,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
         if (this.rand.nextFloat() < missChance)
         {
         	atkLight = 0;	//still attack, but no damage
-        	//spawn miss particle
-        	
-        	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this.host, 10, false), point);
+        	this.host.applyParticleSpecialEffect(0);
         }
         else
         {
@@ -838,8 +977,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
         	if (this.rand.nextFloat() < this.host.getEffectEquip(ID.EF_CRI))
         	{
         		atkLight *= 1.5F;
-        		//spawn critical particle
-            	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this.host, 11, false), point);
+        		this.host.applyParticleSpecialEffect(1);
         	}
         	else
         	{
@@ -847,8 +985,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
             	if (this.rand.nextFloat() < this.host.getEffectEquip(ID.EF_DHIT))
             	{
             		atkLight *= 2F;
-            		//spawn double hit particle
-            		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this.host, 12, false), point);
+            		this.host.applyParticleSpecialEffect(2);
             	}
             	else
             	{
@@ -856,8 +993,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
                 	if (this.rand.nextFloat() < this.host.getEffectEquip(ID.EF_THIT))
                 	{
                 		atkLight *= 3F;
-                		//spawn triple hit particle
-                		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this.host, 13, false), point);
+                		this.host.applyParticleSpecialEffect(3);
                 	}
             	}
         	}
@@ -879,94 +1015,74 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
     		}
   		}
 
-	    //將atk跟attacker傳給目標的attackEntityFrom方法, 在目標class中計算傷害
-	    //並且回傳是否成功傷害到目標
-	    boolean isTargetHurt = false;
-	    
-	    if (this.host != null)
-	    {
-	    	isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this.host).setProjectile(), atkLight);
-	    }
+	    //確認攻擊是否成功
+	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this).setProjectile(), atkLight);
 	    		
 	    //if attack success
 	    if (isTargetHurt)
 	    {
-	        //display hit particle on target
-	        TargetPoint point1 = new TargetPoint(this.dimension, target.posX, target.posY, target.posZ, 64D);
-			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 9, false), point1);
+	    	applySoundAtTarget(1, target);
+	        applyParticleAtTarget(1, target, distVec);
+	        this.host.applyEmotesReaction(3);
+	        
+	        if (ConfigHandler.canFlare) this.host.flareTarget(target);
         }
 	    
-	    //show emotes
-  	    if (host != null)
-  	    {
-  	    	host.applyEmotesReaction(3);
-  	    	
-  	    	if (ConfigHandler.canFlare)
-  	    	{
-  				host.flareTarget(target);
-  			}
-  	    }
-
 	    return isTargetHurt;
 	}
 
 	@Override
 	public boolean attackEntityWithHeavyAmmo(Entity target)
 	{
-		//get attack value
-		float atkHeavy = this.host.getStateFinal(ID.ATK_H);
-		float kbValue = 0.08F;
+		//ammo--
+        if (!this.host.decrAmmoNum(1, this.host.getAmmoConsumption())) return false;
 		
-		//play cannon fire sound at attacker
-		this.playSound(ModSounds.SHIP_FIREHEAVY, ConfigHandler.volumeFire, this.getSoundPitch() * 0.85F);
-        
-        //play entity attack sound
-        if(this.rand.nextInt(10) > 8)
-        {
-        	this.playSound(ModSounds.SHIP_WAKA_ATTACK, this.getSoundVolume(), this.getSoundPitch());
-        }
+        //experience++
+      	this.host.addShipExp(ConfigHandler.expGain[2]);
+      		
+      	//grudge--
+      	this.host.decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
+      	
+  		//attack time
+      	this.host.setCombatTick(this.ticksExisted);
+		
+		//get attack value
+		float atkHeavy = getAttackBaseDamage(2, target);
+		float kbValue = 0.15F;
 
-        //飛彈是否採用直射
-  		boolean isDirect = false;
-  		//計算目標距離
-  		float tarX = (float)target.posX;	//for miss chance calc
-  		float tarY = (float)target.posY;
-  		float tarZ = (float)target.posZ;
-  		float distX = tarX - (float)this.posX;
-  		float distY = tarY - (float)this.posY;
-  		float distZ = tarZ - (float)this.posZ;
-        float distSqrt = MathHelper.sqrt(distX*distX + distY*distY + distZ*distZ);
-        float launchPos = (float)posY + height * 0.7F;
-          
+		//飛彈是否採用直射
+		boolean isDirect = false;
+		float launchPos = (float) posY + height * 0.75F;
+				
+		//計算目標距離
+		float[] distVec = new float[4];
+		float tarX = (float) target.posX;
+		float tarY = (float) target.posY;
+		float tarZ = (float) target.posZ;
+		
+		distVec[0] = tarX - (float) this.posX;
+        distVec[1] = tarY - (float) this.posY;
+        distVec[2] = tarZ - (float) this.posZ;
+		distVec[3] = MathHelper.sqrt(distVec[0]*distVec[0] + distVec[1]*distVec[1] + distVec[2]*distVec[2]);
+        
         //超過一定距離/水中 , 則採用拋物線,  在水中時發射高度較低
-        if ((distX*distX+distY*distY+distZ*distZ) < 36F)
+        if (distVec[3] < 7F)
         {
         	isDirect = true;
         }
-        
-        if (this.isInWater())
+		
+        if (getShipDepth() > 0D)
         {
-          	isDirect = true;
-          	launchPos = (float)posY;
+        	isDirect = true;
+        	launchPos = (float) posY;
         }
         
-        //experience++
-      	host.addShipExp(ConfigHandler.expGain[2]);
-      		
-      	//grudge--
-      	host.decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
-      	
-  		//attack time
-  		host.setCombatTick(this.ticksExisted);
-      	
-      	//heavy ammo--
-        if (!host.decrAmmoNum(1, host.getAmmoConsumption()))
-        {
-        	return false;
-        }
+        //play sound and particle
+        applySoundAtAttacker(2, target);
+	    applyParticleAtAttacker(2, target, distVec);
         
         //calc miss chance, miss: add random offset(0~6) to missile target 
-        float missChance = 0.2F + 0.15F * (distSqrt / host.getEffectEquip(ID.EF_DHIT)) - 0.001F * host.getLevel();
+        float missChance = 0.2F + 0.15F * (distVec[3] / host.getStateFinal(ID.HIT)) - 0.001F * host.getLevel();
         missChance -= this.host.getEffectEquip(ID.EF_MISS);	//equip miss reduce
         if (missChance > 0.35F) missChance = 0.35F;	//max miss chance = 30%
 		
@@ -976,9 +1092,8 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
         	tarX = tarX - 5F + this.rand.nextFloat() * 10F;
         	tarY = tarY + this.rand.nextFloat() * 5F;
       	  	tarZ = tarZ - 5F + this.rand.nextFloat() * 10F;
-        	//spawn miss particle
-        	TargetPoint point = new TargetPoint(this.dimension, this.host.posX, this.host.posY, this.host.posZ, 64D);
-        	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this.host, 10, false), point);
+      	  	
+      	  	applyParticleSpecialEffect(0);  //miss particle
         }
 
         //spawn missile
@@ -986,17 +1101,13 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
         		tarX, tarY+target.height*0.2F, tarZ, launchPos, atkHeavy, kbValue, isDirect, -1F);
         this.world.spawnEntity(missile);
   		
-	    //show emotes
-  	    if (host != null)
-  	    {
-  	    	host.applyEmotesReaction(3);
-  	    	
-  	    	if (ConfigHandler.canFlare)
-  	    	{
-  				host.flareTarget(target);
-  			}
-  	    }
-  	    
+        //play target effect
+        applySoundAtTarget(2, target);
+        applyParticleAtTarget(2, target, distVec);
+        this.host.applyEmotesReaction(3);
+        
+        if (ConfigHandler.canFlare) this.host.flareTarget(target);
+        
         return true;
 	}
 	
@@ -1012,30 +1123,30 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	@Override
 	public int getLevel()
 	{
-		if (host != null) return this.host.getLevel();
+		if (this.host != null) return this.host.getLevel();
 		return 150;
 	}
 
 	@Override
 	public float getAttackSpeed()
 	{
-		if (host != null) return this.host.getStateFinal(ID.SPD);
+		if (this.host != null) return this.host.getStateFinal(ID.SPD);
 		return 0F;
 	}
 
 	@Override
 	public float getAttackRange()
 	{
-		if (host != null) return this.host.getStateFinal(ID.HIT);
+		if (this.host != null) return this.host.getStateFinal(ID.HIT);
 		return 0F;
 	}
 	
 	@Override
 	public float getMoveSpeed()
 	{
-		if (host != null)
+		if (this.host != null)
 		{
-			if (!this.getIsSitting() && !host.isSitting())
+			if (!this.getIsSitting() && !this.host.isSitting())
 			{
 				return this.host.getStateFinal(ID.MOV);
 			}
@@ -1048,7 +1159,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	public boolean getIsLeashed()
 	{
 		//綁住host或者自己都算綁住
-		if (host != null)
+		if (this.host != null)
 		{
 			return this.host.getIsLeashed() || this.getLeashed();
 		}
@@ -1058,41 +1169,41 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	@Override
 	public int getStateMinor(int id)
 	{
-		if (host != null) return this.host.getStateMinor(id);
+		if (this.host != null) return this.host.getStateMinor(id);
 		return 0;
 	}
 
 	@Override
 	public void setStateMinor(int state, int par1)
 	{
-		if (host != null) this.host.setStateMinor(state, par1);
+		if (this.host != null) this.host.setStateMinor(state, par1);
 	}
 	
 	@Override
 	public int getAmmoLight()
 	{
-		if (host != null) return this.host.getAmmoLight();
+		if (this.host != null) return this.host.getAmmoLight();
 		return 0;
 	}
 
 	@Override
 	public int getAmmoHeavy()
 	{
-		if (host != null) return this.host.getAmmoHeavy();
+		if (this.host != null) return this.host.getAmmoHeavy();
 		return 0;
 	}
 	
 	@Override
 	public boolean useAmmoLight()
 	{
-		if (host != null) return this.host.useAmmoLight();
+		if (this.host != null) return this.host.useAmmoLight();
 		return false;
 	}
 
 	@Override
 	public boolean useAmmoHeavy()
 	{
-		if (host != null) return this.host.useAmmoHeavy();
+		if (this.host != null) return this.host.useAmmoHeavy();
 		return false;
 	}
 
@@ -1117,27 +1228,28 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	@Override
 	public float getAttackDamage()			//no use
 	{
+		if (this.host != null) return this.host.getAttackDamage();
 		return 0F;
 	}
 	
 	@Override
 	public boolean getAttackType(int par1)
 	{
-		if (host != null) return host.getAttackType(par1);
+		if (this.host != null) return this.host.getAttackType(par1);
 		return true;
 	}
 	
 	@Override
 	public float getEffectEquip(int id)
 	{
-		if (host != null) return host.getEffectEquip(id);
+		if (this.host != null) return this.host.getEffectEquip(id);
 		return 0F;
 	}
 	
 	@Override
 	public float getDefValue()
 	{
-		if (host != null) return host.getStateFinal(ID.DEF) * 0.5F;
+		if (this.host != null) return this.host.getStateFinal(ID.DEF) * 0.5F;
 		return 0F;
 	}
 
@@ -1156,7 +1268,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	@Override
 	public boolean getIsSitting()
 	{
-		if (host != null) return this.host.getIsSitting();
+		if (this.host != null) return this.host.getIsSitting();
 		return false;
 	}
 
@@ -1169,7 +1281,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	@Override
 	public double getShipDepth()
 	{
-		return ShipDepth;
+		return this.shipDepth;
 	}
 	
 	@Override
@@ -1206,12 +1318,11 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
     @Override
     public Entity getControllingPassenger()
     {
-        if (this.getPassengers().size() > 1)
-        {
-        	Entity ent = this.getPassengers().get(1);
-        	if (ent instanceof EntityPlayer) return ent;
-        }
-        
+    	for (Entity rider : this.getPassengers())
+    	{
+    		if (rider instanceof EntityPlayer) return rider;
+    	}
+
         return null;
     }
 	
@@ -1238,9 +1349,8 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		//clear rider except host rider (ship)
 		List<Entity> riders = this.getPassengers();
 		
-		for (int i = 1; i < riders.size(); i++)
+		for (Entity rider : riders)
 		{
-			Entity rider = riders.get(i);
 			if (rider != null) rider.dismountRidingEntity();
 		}
 		
@@ -1254,10 +1364,10 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	//update attribute
 	public void setupAttrs()
 	{
-		getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(host.getStateFinal(ID.HP) * 0.5D);
+		getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(this.host.getStateFinal(ID.HP) * 0.5D);
 		getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(this.getMoveSpeed());
-		getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(40);
-		getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue((float)host.getLevel() * 0.005F);
+		getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64);
+		getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue((float) host.getLevel() * 0.005F);
 	}
 	
 	@Override
@@ -1280,7 +1390,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 			{
 			case 0:
 				CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this, S2CEntitySync.PID.SyncShip_Riders), point);
-				break;
+			break;
 			}
 		}
 	}
@@ -1340,21 +1450,21 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	@Override
 	public Entity getEntityRevengeTarget()
 	{
-		if (host != null) return this.host.getEntityRevengeTarget();
+		if (this.host != null) return this.host.getEntityRevengeTarget();
 		return null;
 	}
 
 	@Override
 	public int getEntityRevengeTime()
 	{
-		if (host != null) return this.host.getEntityRevengeTime();
+		if (this.host != null) return this.host.getEntityRevengeTime();
 		return 0;
 	}
 
 	@Override
 	public void setEntityRevengeTarget(Entity target)
 	{
-		if (host != null) this.host.setEntityRevengeTarget(target);
+		if (this.host != null) this.host.setEntityRevengeTarget(target);
 	}
   	
   	@Override
@@ -1363,16 +1473,10 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		this.revengeTime = this.ticksExisted;
 	}
   	
-	//get seat position: z, x, height
-	public float[] getSeatPos()
-	{
-		return this.seatPos;
-	}
-  	
   	@Override
     public double getMountedYOffset()
     {
-		return this.getSeatPos()[2];
+  		return this.height;
     }
   	
   	//對第一個rider設定座位位置以及旋轉角度使其跟座騎一致, 對第二個以後rider只設定位置
@@ -1381,18 +1485,19 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   	{
   		if (passenger != null && this.host != null && this.isPassenger(passenger))
   		{
-  			//main rider
+  			//host ship rider
   	        if (this.host.equals(passenger))
   	        {
   	        	//set position
-  	            passenger.setPosition(this.posX, this.posY + this.height * 0.75D + passenger.getYOffset(), this.posZ);
+  	        	float[] ridePos = CalcHelper.rotateXZByAxis(this.seatPos[0], this.seatPos[1], renderYawOffset * Values.N.DIV_PI_180, 1F);	
+  	            passenger.setPosition(this.posX + ridePos[1], this.posY + this.seatPos[2] + passenger.getYOffset(), this.posZ + ridePos[0]);
   	        }
-  	        //other rider
+  	        //player rider
   	        else
   	        {
   	        	//set position
-  				float[] ridePos = CalcHelper.rotateXZByAxis(getSeatPos()[0], getSeatPos()[1], renderYawOffset * Values.N.DIV_PI_180, 1F);	
-  	        	passenger.setPosition(this.posX + ridePos[1], this.posY + this.getSeatPos()[2] + passenger.getYOffset(), this.posZ + ridePos[0]);
+  				float[] ridePos = CalcHelper.rotateXZByAxis(this.seatPos2[0], this.seatPos2[1], renderYawOffset * Values.N.DIV_PI_180, 1F);	
+  	        	passenger.setPosition(this.posX + ridePos[1], this.posY + this.seatPos2[2] + passenger.getYOffset(), this.posZ + ridePos[0]);
   	        }
   	        
 			//若有controlling rider且按下移動按鍵時, 則改為controlling rider朝向
@@ -1484,6 +1589,18 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	@Override
 	public void setRidingState(int state) {}
     
+	@Override
+	public int getDamageType()
+	{
+		if (this.host != null) return this.host.getDamageType();
+		return 0;
+	}
+	
+	@Override
+	public boolean isJumping()
+	{
+		return this.isJumping;
+	}
+	
 	
 }
-

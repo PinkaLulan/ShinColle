@@ -50,10 +50,9 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAtt
 		this.setSize(1F, 1F);
 	}
 	
-	public EntityProjectileBeam(World world, IShipAttackBase host, int type, float ax, float ay, float az, float atk, float kb)
+	//init attrs
+	public void initAttrs(IShipAttackBase host, int type, float ax, float ay, float az, float atk, float kb)
 	{
-		this(world);
-		
 		//host
 		this.host = host;
 		this.host2 = (Entity) host;
@@ -68,12 +67,12 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAtt
 			this.setPosition(host2.posX + ax, host2.posY + host2.height * 0.5D, host2.posZ + az);
 			this.lifeLength = 31;
 			this.acc = 4F;
-			break;
+		break;
 		default:  //normal beam
 			this.setPosition(host2.posX + ax, host2.posY + host2.height * 0.5D, host2.posZ + az);
 			this.lifeLength = 31;
 			this.acc = 4F;
-			break;
+		break;
 		}
 		
 		//beam data
@@ -82,13 +81,12 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAtt
 		this.accZ = az * acc;
 		this.atk = atk;
 		this.kbValue = kb;
-		
 	}
 
 	@Override
 	public float getEffectEquip(int id)
 	{
-		if(host != null) return host.getEffectEquip(id);
+		if (host != null) return host.getEffectEquip(id);
 		return 0;
 	}
 

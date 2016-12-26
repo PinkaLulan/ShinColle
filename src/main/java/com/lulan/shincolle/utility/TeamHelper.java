@@ -2,14 +2,14 @@ package com.lulan.shincolle.utility;
 
 import java.util.List;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.IEntityOwnable;
-import net.minecraft.entity.player.EntityPlayer;
-
 import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.team.TeamData;
+
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.IEntityOwnable;
+import net.minecraft.entity.player.EntityPlayer;
 
 /**
  * helper for owner/team/ally/friendly/hostile checking
@@ -29,17 +29,6 @@ public class TeamHelper
 		}
 		
 		return null;
-	}
-	
-	/**check entity ID is not same, used in AE damage checking */
-    public static boolean checkNotSameEntityID(Entity enta, Entity entb)
-    {
-		if (enta != null && entb != null)
-		{
-			return !(enta.getEntityId() - entb.getEntityId() == 0);
-		}
-    	
-		return true;
 	}
 
 	/**check host's owner is EntityPlayer, for mod interact */

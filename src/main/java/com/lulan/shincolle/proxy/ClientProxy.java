@@ -1,10 +1,17 @@
 package com.lulan.shincolle.proxy;
 
 import com.lulan.shincolle.client.render.RenderMiscEntity;
+import com.lulan.shincolle.client.render.RenderMountsEntity;
 import com.lulan.shincolle.client.render.RenderShipEntity;
 import com.lulan.shincolle.client.render.RenderSummonEntity;
 import com.lulan.shincolle.client.render.item.RenderBasicEntityItem;
 import com.lulan.shincolle.client.render.item.RenderTileEntityItem;
+import com.lulan.shincolle.entity.battleship.EntityBattleshipNGT;
+import com.lulan.shincolle.entity.battleship.EntityBattleshipNGTBoss;
+import com.lulan.shincolle.entity.battleship.EntityBattleshipRe;
+import com.lulan.shincolle.entity.battleship.EntityBattleshipTa;
+import com.lulan.shincolle.entity.battleship.EntityBattleshipYMT;
+import com.lulan.shincolle.entity.battleship.EntityBattleshipYMTBoss;
 import com.lulan.shincolle.entity.destroyer.EntityDestroyerAkatsuki;
 import com.lulan.shincolle.entity.destroyer.EntityDestroyerAkatsukiMob;
 import com.lulan.shincolle.entity.destroyer.EntityDestroyerHa;
@@ -19,6 +26,12 @@ import com.lulan.shincolle.entity.destroyer.EntityDestroyerNi;
 import com.lulan.shincolle.entity.destroyer.EntityDestroyerRo;
 import com.lulan.shincolle.entity.destroyer.EntityDestroyerShimakaze;
 import com.lulan.shincolle.entity.destroyer.EntityDestroyerShimakazeBoss;
+import com.lulan.shincolle.entity.hime.EntityBattleshipHime;
+import com.lulan.shincolle.entity.mounts.EntityMountAfH;
+import com.lulan.shincolle.entity.mounts.EntityMountBaH;
+import com.lulan.shincolle.entity.mounts.EntityMountCaH;
+import com.lulan.shincolle.entity.mounts.EntityMountCaWD;
+import com.lulan.shincolle.entity.mounts.EntityMountHbH;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.entity.other.EntityAirplane;
 import com.lulan.shincolle.entity.other.EntityAirplaneT;
@@ -27,6 +40,7 @@ import com.lulan.shincolle.entity.other.EntityAirplaneTakoyaki;
 import com.lulan.shincolle.entity.other.EntityAirplaneZero;
 import com.lulan.shincolle.entity.other.EntityAirplaneZeroHostile;
 import com.lulan.shincolle.entity.other.EntityFloatingFort;
+import com.lulan.shincolle.entity.other.EntityProjectileBeam;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.BasicEntityItem;
@@ -87,13 +101,13 @@ public class ClientProxy extends CommonProxy
 
 		//entity render (model class, shadow size)
 //		RenderingRegistry.registerEntityRenderingHandler(EntityAirfieldHime.class, new BasicShipRenderer(new ModelAirfieldHime(), 0.7F, ID.Ship.AirfieldHime));
-//		RenderingRegistry.registerEntityRenderingHandler(EntityBattleshipHime.class, new BasicShipRenderer(new ModelBattleshipHime(), 0.7F, ID.Ship.BattleshipHime));
-//		RenderingRegistry.registerEntityRenderingHandler(EntityBattleshipNGT.class, new BasicShipRenderer(new ModelBattleshipNagato(0), 0.7F, ID.Ship.BattleshipNagato));
-//		RenderingRegistry.registerEntityRenderingHandler(EntityBattleshipNGTBoss.class, new BossShipRenderer(new ModelBattleshipNagato(1), 1.2F, ID.Ship.BattleshipNagato));
-//		RenderingRegistry.registerEntityRenderingHandler(EntityBattleshipYMT.class, new BasicShipRenderer(new ModelBattleshipYamato(0), 0.7F, ID.Ship.BattleshipYamato));
-//		RenderingRegistry.registerEntityRenderingHandler(EntityBattleshipYMTBoss.class, new BossShipRenderer(new ModelBattleshipYamato(1), 1.2F, ID.Ship.BattleshipYamato));
-//		RenderingRegistry.registerEntityRenderingHandler(EntityBattleshipTa.class, new BasicShipRenderer(new ModelBattleshipTa(), 0.7F, ID.Ship.BattleshipTA));
-//		RenderingRegistry.registerEntityRenderingHandler(EntityBattleshipRe.class, new BasicShipRenderer(new ModelBattleshipRe(), 0.7F, ID.Ship.BattleshipRE));
+		RenderingRegistry.registerEntityRenderingHandler(EntityBattleshipHime.class, RenderShipEntity.FACTORY_DEFAULT);
+		RenderingRegistry.registerEntityRenderingHandler(EntityBattleshipNGT.class, RenderShipEntity.FACTORY_DEFAULT);
+		RenderingRegistry.registerEntityRenderingHandler(EntityBattleshipNGTBoss.class, RenderShipEntity.FACTORY_DEFAULT);
+		RenderingRegistry.registerEntityRenderingHandler(EntityBattleshipYMT.class, RenderShipEntity.FACTORY_DEFAULT);
+		RenderingRegistry.registerEntityRenderingHandler(EntityBattleshipYMTBoss.class, RenderShipEntity.FACTORY_DEFAULT);
+		RenderingRegistry.registerEntityRenderingHandler(EntityBattleshipTa.class, RenderShipEntity.FACTORY_DEFAULT);
+		RenderingRegistry.registerEntityRenderingHandler(EntityBattleshipRe.class, RenderShipEntity.FACTORY_DEFAULT);
 //		RenderingRegistry.registerEntityRenderingHandler(EntityCarrierAkagi.class, new BasicShipRenderer(new ModelCarrierAkagi(0), 0.7F, ID.Ship.CarrierAkagi));
 //		RenderingRegistry.registerEntityRenderingHandler(EntityCarrierAkagiBoss.class, new BossShipRenderer(new ModelCarrierAkagi(1), 1.2F, ID.Ship.CarrierAkagi));
 //		RenderingRegistry.registerEntityRenderingHandler(EntityCarrierKaga.class, new BasicShipRenderer(new ModelCarrierKaga(0), 0.7F, ID.Ship.CarrierKaga));
@@ -130,16 +144,19 @@ public class ClientProxy extends CommonProxy
 //		RenderingRegistry.registerEntityRenderingHandler(EntitySubmU511.class, new BasicShipRenderer(new ModelSubmU511(), 0.5F, ID.Ship.SubmarineU511));
 //		RenderingRegistry.registerEntityRenderingHandler(EntitySubmU511Mob.class, new BasicShipRenderer(new ModelSubmU511(), 0.5F, ID.Ship.SubmarineU511));
 //		RenderingRegistry.registerEntityRenderingHandler(EntityTransportWa.class, new BasicShipRenderer(new ModelTransportWa(), 0.7F, ID.Ship.TransportWA));
-//		
-//		//mount render
-//		RenderingRegistry.registerEntityRenderingHandler(EntityMountAfH.class, new MountsShipRenderer(new ModelMountAfH(), 1.5F, 0));
-//		RenderingRegistry.registerEntityRenderingHandler(EntityMountBaH.class, new MountsShipRenderer(new ModelMountBaH(), 1.5F, 1));
-//		RenderingRegistry.registerEntityRenderingHandler(EntityMountCaWD.class, new MountsShipRenderer(new ModelMountCaWD(), 1.5F, 2));
-//		RenderingRegistry.registerEntityRenderingHandler(EntityMountHbH.class, new MountsShipRenderer(new ModelMountHbH(), 1.5F, 3));
-//		RenderingRegistry.registerEntityRenderingHandler(EntityMountCaH.class, new MountsShipRenderer(new ModelMountCaH(), 1.5F, 4));
+		
+		//mount render
+		RenderingRegistry.registerEntityRenderingHandler(EntityMountAfH.class, RenderMountsEntity.FACTORY_DEFAULT);
+		RenderingRegistry.registerEntityRenderingHandler(EntityMountBaH.class, RenderMountsEntity.FACTORY_DEFAULT);
+		RenderingRegistry.registerEntityRenderingHandler(EntityMountCaWD.class, RenderMountsEntity.FACTORY_DEFAULT);
+		RenderingRegistry.registerEntityRenderingHandler(EntityMountHbH.class, RenderMountsEntity.FACTORY_DEFAULT);
+		RenderingRegistry.registerEntityRenderingHandler(EntityMountCaH.class, RenderMountsEntity.FACTORY_DEFAULT);
+		
+		//misc render
+		RenderingRegistry.registerEntityRenderingHandler(EntityAbyssMissile.class, RenderMiscEntity.FACTORY_DEFAULT);
+		RenderingRegistry.registerEntityRenderingHandler(EntityProjectileBeam.class, RenderMiscEntity.FACTORY_DEFAULT);
 		
 		//summons render
-		RenderingRegistry.registerEntityRenderingHandler(EntityAbyssMissile.class, RenderMiscEntity.FACTORY_DEFAULT);
 		RenderingRegistry.registerEntityRenderingHandler(EntityAirplane.class, RenderSummonEntity.FACTORY_DEFAULT);
 		RenderingRegistry.registerEntityRenderingHandler(EntityAirplaneTakoyaki.class, RenderSummonEntity.FACTORY_DEFAULT);
 		RenderingRegistry.registerEntityRenderingHandler(EntityAirplaneT.class, RenderSummonEntity.FACTORY_DEFAULT);
@@ -147,7 +164,6 @@ public class ClientProxy extends CommonProxy
 		RenderingRegistry.registerEntityRenderingHandler(EntityAirplaneTHostile.class, RenderSummonEntity.FACTORY_DEFAULT);
 		RenderingRegistry.registerEntityRenderingHandler(EntityAirplaneZeroHostile.class, RenderSummonEntity.FACTORY_DEFAULT);
 		RenderingRegistry.registerEntityRenderingHandler(EntityFloatingFort.class, RenderSummonEntity.FACTORY_DEFAULT);
-//		RenderingRegistry.registerEntityRenderingHandler(EntityProjectileBeam.class, new RenderProjectileBeam());
 	
 	}
 	

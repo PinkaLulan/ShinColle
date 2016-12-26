@@ -17,70 +17,87 @@ import net.minecraftforge.fml.client.registry.IRenderFactory;
 public class RenderMiscEntity extends Render<Entity>
 {
 
-	//texture
+	//texture & model
 	private static final ResourceLocation TEX_AM = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityAbyssMissile.png");
+	private static final ModelBase MD_AM = new ModelAbyssMissile();
 	
 	//factory
 	public static final FactoryDefault FACTORY_DEFAULT = new FactoryDefault();
-	public static final FactoryBoss FACTORY_BOSS = new FactoryBoss();
 	
 	//parm
-	private float entityScale;	//模型大小
-	
-	//model
-	private static ModelBase modelAbyssMissile = new ModelAbyssMissile();
+	protected int mobID = 0;
+	protected boolean initModel = true;
+	protected ModelBase mainModel;
 	
 	
     public RenderMiscEntity(RenderManager rm)
     {
-        this(rm, 1F);
-    }
-
-    public RenderMiscEntity(RenderManager rm, float scale)
-    {
         super(rm);
-        this.entityScale = scale;
     }
 
     @Override
     @Nonnull
     protected ResourceLocation getEntityTexture(@Nonnull Entity entity)
     {
-    	if (entity instanceof IShipCustomTexture)
-    	{
-    		switch (((IShipCustomTexture) entity).getTextureID())
-    		{
-    		case ID.ShipMisc.AbyssalMissile:
-    			return TEX_AM;
-    		}//end switch
-    	}
-    	
-    	//default texture
-    	return TEX_AM;
+		switch (this.mobID)
+		{
+		case ID.ShipMisc.AbyssalMissile:
+			return TEX_AM;
+		default:	//default texture
+			return TEX_AM;
+		}//end switch
     }
     
-    @Nonnull
-    private ModelBase getModel(@Nonnull Entity entity)
+    protected void setModel()
     {
-    	if (entity instanceof IShipCustomTexture)
-    	{
-    		switch (((IShipCustomTexture) entity).getTextureID())
-    		{
-    		case ID.ShipMisc.AbyssalMissile:
-    			return modelAbyssMissile;
-    		}//end switch
-    	}
-    	
-    	//default texture
-    	return modelAbyssMissile;
+		switch (this.mobID)
+		{
+		case ID.ShipMisc.Invisible:
+			this.mainModel = null;
+		break;
+		case ID.ShipMisc.AbyssalMissile:
+			this.mainModel = MD_AM;
+		break;
+		default:	//default texture
+			this.mainModel = MD_AM;
+		break;
+		}//end switch
     }
+    
+    /** set shadow size */
+    protected void setShadowSize()
+    {
+		switch (this.mobID)
+		{
+		default:	//default texture
+			this.shadowSize = 0F;
+		break;
+		}
+	}
     
     @Override
     public void doRender(Entity entity, double x, double y, double z, float yaw, float parTick)
     {
+    	//model init
+    	if (this.initModel)
+    	{
+    		this.mobID = ((IShipCustomTexture) entity).getTextureID();
+    		this.initModel = false;
+    		setModel();
+    	}
+    	
+    	//for invisible model
+    	if (this.mainModel == null) return;
+    	
+    	//set shadow size
+    	setShadowSize();
+    	
+    	//bind texture
+    	this.bindEntityTexture(entity);
+    	
+    	//start render
         GlStateManager.pushMatrix();
         GlStateManager.translate((float)x, (float)y + 0.3F, (float)z);
-        this.bindEntityTexture(entity);
         
         if (this.renderOutlines)
         {
@@ -89,8 +106,7 @@ public class RenderMiscEntity extends Render<Entity>
         }
 
         GlStateManager.enableRescaleNormal();
-        GlStateManager.scale(this.entityScale, this.entityScale, this.entityScale);
-        this.getModel(entity).render(entity, parTick, 0F, 0F, entity.rotationYaw, entity.rotationPitch, 0.0625F);
+        this.mainModel.render(entity, parTick, 0F, 0F, entity.rotationYaw, entity.rotationPitch, 0.0625F);
         GlStateManager.disableRescaleNormal();
         
         if (this.renderOutlines)
@@ -103,23 +119,13 @@ public class RenderMiscEntity extends Render<Entity>
         super.doRender(entity, x, y, z, yaw, parTick);
     }
 
-    //default factory: scale = 1F
+    //default factory
     public static class FactoryDefault implements IRenderFactory<Entity>
     {
         @Override
         public Render<? super Entity> createRenderFor(RenderManager rm)
         {
             return new RenderMiscEntity(rm);
-        }
-    }
-    
-    //boss factory: scale = 2.5F
-    public static class FactoryBoss implements IRenderFactory<Entity>
-    {
-        @Override
-        public Render<? super Entity> createRenderFor(RenderManager rm)
-        {
-            return new RenderMiscEntity(rm, 2.5F);
         }
     }
     

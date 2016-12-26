@@ -33,9 +33,7 @@ public interface IShipEmotion extends IShipFlags
 	public void setAttackTick(int par1);
 	public void setAttackTick2(int par1);
 	
-	/**GET/SET model rotation XYZ (for client model postRender)
-	 * 在model class中設定值, 使render class能抓到該值並且做進一步post render
-	 * 目前用於手持物品render
+	/**用於手持物品render
 	 * par1: 0:X 1:Y 2:Z
 	 * par2: angle (rad)
 	 */

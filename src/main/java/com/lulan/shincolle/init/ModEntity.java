@@ -1,6 +1,12 @@
 package com.lulan.shincolle.init;
 
 import com.lulan.shincolle.ShinColle;
+import com.lulan.shincolle.entity.battleship.EntityBattleshipNGT;
+import com.lulan.shincolle.entity.battleship.EntityBattleshipNGTBoss;
+import com.lulan.shincolle.entity.battleship.EntityBattleshipRe;
+import com.lulan.shincolle.entity.battleship.EntityBattleshipTa;
+import com.lulan.shincolle.entity.battleship.EntityBattleshipYMT;
+import com.lulan.shincolle.entity.battleship.EntityBattleshipYMTBoss;
 import com.lulan.shincolle.entity.destroyer.EntityDestroyerAkatsuki;
 import com.lulan.shincolle.entity.destroyer.EntityDestroyerAkatsukiMob;
 import com.lulan.shincolle.entity.destroyer.EntityDestroyerHa;
@@ -15,6 +21,12 @@ import com.lulan.shincolle.entity.destroyer.EntityDestroyerNi;
 import com.lulan.shincolle.entity.destroyer.EntityDestroyerRo;
 import com.lulan.shincolle.entity.destroyer.EntityDestroyerShimakaze;
 import com.lulan.shincolle.entity.destroyer.EntityDestroyerShimakazeBoss;
+import com.lulan.shincolle.entity.hime.EntityBattleshipHime;
+import com.lulan.shincolle.entity.mounts.EntityMountAfH;
+import com.lulan.shincolle.entity.mounts.EntityMountBaH;
+import com.lulan.shincolle.entity.mounts.EntityMountCaH;
+import com.lulan.shincolle.entity.mounts.EntityMountCaWD;
+import com.lulan.shincolle.entity.mounts.EntityMountHbH;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.entity.other.EntityAirplane;
 import com.lulan.shincolle.entity.other.EntityAirplaneT;
@@ -23,6 +35,10 @@ import com.lulan.shincolle.entity.other.EntityAirplaneTakoyaki;
 import com.lulan.shincolle.entity.other.EntityAirplaneZero;
 import com.lulan.shincolle.entity.other.EntityAirplaneZeroHostile;
 import com.lulan.shincolle.entity.other.EntityFloatingFort;
+import com.lulan.shincolle.entity.other.EntityProjectileBeam;
+import com.lulan.shincolle.entity.other.EntityRensouhou;
+import com.lulan.shincolle.entity.other.EntityRensouhouBoss;
+import com.lulan.shincolle.entity.other.EntityRensouhouS;
 import com.lulan.shincolle.item.BasicEntityItem;
 import com.lulan.shincolle.utility.LogHelper;
 
@@ -57,13 +73,13 @@ public class ModEntity
 		/** entity */
 		//register ship entity
 //		createEntity(EntityAirfieldHime.class, "EntityAirfieldHime", modEntityID++);
-//		createEntity(EntityBattleshipHime.class, "EntityBattleshipHime", modEntityID++);
-//		createEntity(EntityBattleshipNGT.class, "EntityBattleshipNGT", modEntityID++);
-//		createEntity(EntityBattleshipNGTBoss.class, "EntityBattleshipNGTBoss", modEntityID++);
-//		createEntity(EntityBattleshipYMT.class, "EntityBattleshipYMT", modEntityID++);
-//		createEntity(EntityBattleshipYMTBoss.class, "EntityBattleshipYMTBoss", modEntityID++);
-//		createEntity(EntityBattleshipRe.class, "EntityBattleshipRe", modEntityID++);
-//		createEntity(EntityBattleshipTa.class, "EntityBattleshipTa", modEntityID++);
+		createEntity(EntityBattleshipHime.class, "EntityBattleshipHime", modEntityID++);
+		createEntity(EntityBattleshipNGT.class, "EntityBattleshipNGT", modEntityID++);
+		createEntity(EntityBattleshipNGTBoss.class, "EntityBattleshipNGTBoss", modEntityID++);
+		createEntity(EntityBattleshipYMT.class, "EntityBattleshipYMT", modEntityID++);
+		createEntity(EntityBattleshipYMTBoss.class, "EntityBattleshipYMTBoss", modEntityID++);
+		createEntity(EntityBattleshipRe.class, "EntityBattleshipRe", modEntityID++);
+		createEntity(EntityBattleshipTa.class, "EntityBattleshipTa", modEntityID++);
 //		createEntity(EntityCarrierAkagi.class, "EntityCarrierAkagi", modEntityID++);
 //		createEntity(EntityCarrierAkagiBoss.class, "EntityCarrierAkagiBoss", modEntityID++);
 //		createEntity(EntityCarrierKaga.class, "EntityCarrierKaga", modEntityID++);
@@ -89,9 +105,9 @@ public class ModEntity
 //		createEntity(EntityHeavyCruiserRi.class, "EntityHeavyCruiserRi", modEntityID++);
 //		createEntity(EntityHeavyCruiserNe.class, "EntityHeavyCruiserNe", modEntityID++);
 //		createEntity(EntityNorthernHime.class, "EntityNorthernHime", modEntityID++);
-//		createEntity(EntityRensouhou.class, "EntityRensouhou", modEntityID++);
-//		createEntity(EntityRensouhouBoss.class, "EntityRensouhouBoss", modEntityID++);
-//		createEntity(EntityRensouhouS.class, "EntityRensouhouS", modEntityID++);
+		createEntity(EntityRensouhou.class, "EntityRensouhou", modEntityID++);
+		createEntity(EntityRensouhouBoss.class, "EntityRensouhouBoss", modEntityID++);
+		createEntity(EntityRensouhouS.class, "EntityRensouhouS", modEntityID++);
 //		createEntity(EntitySubmKa.class, "EntitySubmKa", modEntityID++);
 //		createEntity(EntitySubmYo.class, "EntitySubmYo", modEntityID++);
 //		createEntity(EntitySubmSo.class, "EntitySubmSo", modEntityID++);
@@ -102,15 +118,17 @@ public class ModEntity
 //		createEntity(EntityTransportWa.class, "EntityTransportWa", modEntityID++);
 		
 		//register mount entity
-//		createEntity(EntityMountAfH.class, "EntityMountAfH", modEntityID++);
-//		createEntity(EntityMountBaH.class, "EntityMountBaH", modEntityID++);
-//		createEntity(EntityMountCaH.class, "EntityMountCaH", modEntityID++);
-//		createEntity(EntityMountCaWD.class, "EntityMountCaWD", modEntityID++);
-//		createEntity(EntityMountHbH.class, "EntityMountHbH", modEntityID++);
-//		createEntity(EntityMountSeat.class, "EntityMountSeat2", modEntityID++);
+		createEntity(EntityMountAfH.class, "EntityMountAfH", modEntityID++);
+		createEntity(EntityMountBaH.class, "EntityMountBaH", modEntityID++);
+		createEntity(EntityMountCaH.class, "EntityMountCaH", modEntityID++);
+		createEntity(EntityMountCaWD.class, "EntityMountCaWD", modEntityID++);
+		createEntity(EntityMountHbH.class, "EntityMountHbH", modEntityID++);
+		
+		//register misc entity
+		createProjectileEntity(EntityAbyssMissile.class, "EntityAbyssMissile", modEntityID++);
+		createProjectileEntity(EntityProjectileBeam.class, "EntityProjectileBeam", modEntityID++);
 		
 		//register summons entity
-		createProjectileEntity(EntityAbyssMissile.class, "EntityAbyssMissile", modEntityID++);
 		createProjectileEntity(EntityAirplane.class, "EntityAirplane", modEntityID++);
 		createProjectileEntity(EntityAirplaneTakoyaki.class, "EntityAirplaneTakoyaki", modEntityID++);
 		createProjectileEntity(EntityAirplaneT.class, "EntityAirplaneT", modEntityID++);
@@ -118,9 +136,8 @@ public class ModEntity
 		createProjectileEntity(EntityAirplaneTHostile.class, "EntityAirplaneTMob", modEntityID++);
 		createProjectileEntity(EntityAirplaneZeroHostile.class, "EntityAirplaneZeroMob", modEntityID++);
 		createProjectileEntity(EntityFloatingFort.class, "EntityFloatingFort", modEntityID++);
-//		createProjectileEntity(EntityProjectileBeam.class, "EntityProjectileBeam", modEntityID++);
 		
-		//register item, misc entity
+		//register item entity
 		createItemEntity(BasicEntityItem.class, "BasicEntityItem", modEntityID++);
 		
 	}

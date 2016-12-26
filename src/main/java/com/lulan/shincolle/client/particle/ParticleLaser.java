@@ -86,12 +86,12 @@ public class ParticleLaser extends Particle
 		float maxV = minV + 0.08333333F;
 		
 		//particle是以玩家視野來render, 因此座標要扣掉interpPos轉換為玩家視野座標
-        double f11 = (float)(this.posX - interpPosX);
-        double f12 = (float)(this.posY - interpPosY);
-        double f13 = (float)(this.posZ - interpPosZ);
-        double f21 = (float)(this.tarX - interpPosX);
-        double f22 = (float)(this.tarY - interpPosY);
-        double f23 = (float)(this.tarZ - interpPosZ);
+		double f11 = this.prevPosX + (this.posX - this.prevPosX) * (double)ptick - interpPosX;
+        double f12 = this.prevPosY + (this.posY - this.prevPosY) * (double)ptick - interpPosY;
+        double f13 = this.prevPosZ + (this.posZ - this.prevPosZ) * (double)ptick - interpPosZ;
+        double f21 = this.tarX - interpPosX;
+        double f22 = this.tarY - interpPosY;
+        double f23 = this.tarZ - interpPosZ;
       
         //start tess
         render.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);

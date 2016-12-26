@@ -2,23 +2,25 @@ package com.lulan.shincolle.client.model;
 
 import java.util.Random;
 
-import org.lwjgl.opengl.GL11;
-
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.reference.ID;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.GlStateManager.DestFactor;
+import net.minecraft.client.renderer.GlStateManager.SourceFactor;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.MathHelper;
 
 /**
  * ModelMountAfH - PinkaLulan 2015/5/19
  * Created using Tabula 4.1.1
  */
-public class ModelMountAfH extends ModelBase {
+public class ModelMountAfH extends ModelBase
+{
     public ModelRenderer BodyMain;
     public ModelRenderer ChestCannon01a;
     public ModelRenderer ChestCannon02a;
@@ -68,7 +70,8 @@ public class ModelMountAfH extends ModelBase {
     private Random rand = new Random();
     private int startEmo2 = 0;
     
-    public ModelMountAfH() {
+    public ModelMountAfH()
+    {
         this.textureWidth = 128;
         this.textureHeight = 128;
         
@@ -284,45 +287,51 @@ public class ModelMountAfH extends ModelBase {
         this.EquipCannonPlate_1.addChild(this.EquipCannon02_1);
     }
     
-    public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z) {
+    public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z)
+    {
         modelRenderer.rotateAngleX = x;
         modelRenderer.rotateAngleY = y;
         modelRenderer.rotateAngleZ = z;
     }
 
     @Override
-    public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) { 
-    	GL11.glPushMatrix();       
-    	GL11.glEnable(GL11.GL_BLEND);
-    	GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-    	GL11.glScalef(0.7F, 0.7F, 0.7F);
-
+    public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
+    {
+    	GlStateManager.pushMatrix();
+    	GlStateManager.enableBlend();
+    	GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
+    	GlStateManager.scale(0.7F, 0.7F, 0.7F);
+    	
+    	//main body
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
     	this.BodyMain.render(f5);
-    	GL11.glDisable(GL11.GL_BLEND);
+    	GlStateManager.disableBlend();
     	
-    	//亮度設為240
-    	GL11.glDisable(GL11.GL_LIGHTING);
+    	//light part
+    	GlStateManager.disableLighting();
+    	GlStateManager.enableCull();
     	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
     	this.GlowBodyMain.render(f5);
-    	GL11.glEnable(GL11.GL_LIGHTING);
+    	GlStateManager.disableCull();
+    	GlStateManager.enableLighting();
     	
-    	GL11.glPopMatrix();
+    	GlStateManager.popMatrix();
     }
     
     //for idle/run animation
     @Override
-    public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity) {
+    public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity)
+    {
 		super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
 		
 		IShipEmotion ent = (IShipEmotion)entity;
 		  
 		motionHumanPos(f, f1, f2, f3, f4, ent);
-
     }
     
     //雙腳移動計算
-  	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {   
+  	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
+  	{   
   		float angleX = MathHelper.cos(f2*0.08F);
   		float angleAdd1 = MathHelper.cos(f * 0.7F) * f1 * 0.7F;
   		float angleAdd2 = MathHelper.cos(f * 0.7F + 3.1415927F) * f1 * 0.7F;
@@ -330,11 +339,13 @@ public class ModelMountAfH extends ModelBase {
   		float addk2 = 0F;
   		
   		//水上漂浮
-  		if(((IShipFloating)ent).getShipDepth() > 0) {
-    		GL11.glTranslatef(0F, 0.5F + angleX * 0.025F, 0F);
+  		if (((IShipFloating) ent).getShipDepth() > 0)
+  		{
+  			GlStateManager.translate(0F, 0.5F + angleX * 0.025F, 0F);
     	}
-    	else {
-    		GL11.glTranslatef(0F, 0.8F, 0F);
+    	else
+    	{
+    		GlStateManager.translate(0F, 0.8F, 0F);
     	}
 
 	    //正常站立動作
@@ -347,12 +358,11 @@ public class ModelMountAfH extends ModelBase {
 	    this.EquipCannon01_1.rotateAngleX = -angleX * 0.12F - 0.18F;
 	    this.EquipCannon02_1.rotateAngleX = angleX * 0.08F + 0.18F;
 	    
-	    if(ent.getStateEmotion(ID.S.Emotion) > 0) {
+	    if (ent.getStateEmotion(ID.S.Emotion) > 0)
+	    {
 //	    	this.ArmRight01.rotateAngleX = -1.57F;
 	    }
   	}
 
 
-    
 }
-

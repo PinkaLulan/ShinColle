@@ -51,7 +51,7 @@ public class ParticleChi extends Particle
         	this.particleGreen = 1F;
         	this.particleBlue = 1F;
         	this.particleAlpha = 1F;
-        	this.particleMaxAge = 50;
+        	this.particleMaxAge = 40;
         	this.radChi = 1F;
         break;
         case 2:		//nagato boss
@@ -59,7 +59,7 @@ public class ParticleChi extends Particle
         	this.particleGreen = 1F;
         	this.particleBlue = 1F;
         	this.particleAlpha = 1F;
-        	this.particleMaxAge = 50;
+        	this.particleMaxAge = 40;
         	this.radChi = 4F;
         break;
         }
@@ -76,9 +76,9 @@ public class ParticleChi extends Particle
     	GlStateManager.disableTexture2D();	//NO texture
 		
 		//particle是以玩家視野來render, 因此座標要扣掉interpPos轉換為玩家視野座標
-        double f11 = (float)(this.posX - interpPosX);
-        double f12 = (float)(this.posY - interpPosY);
-        double f13 = (float)(this.posZ - interpPosZ);
+    	float f11 = (float)(this.prevPosX + (this.posX - this.prevPosX) * (double)ptick - interpPosX);
+    	float f12 = (float)(this.prevPosY + (this.posY - this.prevPosY) * (double)ptick - interpPosY);
+    	float f13 = (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * (double)ptick - interpPosZ);
       
         //start
         render.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
@@ -159,7 +159,7 @@ public class ParticleChi extends Particle
         this.prevPosY = this.posY;
         this.prevPosZ = this.posZ;
         
-        float[] newPos = CalcHelper.rotateXZByAxis(radChi, 0F, 6.28F / this.particleMaxAge * this.particleAge, 1F);
+        float[] newPos = CalcHelper.rotateXZByAxis(radChi, 0F, 6.283185F / this.particleMaxAge * this.particleAge, 1F);
 
         if (this.host != null)
         {

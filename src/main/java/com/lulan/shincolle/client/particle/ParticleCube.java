@@ -110,9 +110,9 @@ public class ParticleCube extends Particle
 		float[] t8 = CalcHelper.rotateXYZByYawPitch(1F, -1F, 1F, shotYaw, shotPitch, this.scaleIn);
 		
 		//particle是以client視野來render, 因此座標要扣掉interpPos轉換為玩家視野座標
-		double hx = this.posX - interpPosX;
-        double hy = this.posY - interpPosY;
-        double hz = this.posZ - interpPosZ;
+		double hx = this.prevPosX + (this.posX - this.prevPosX) * (double)ptick - interpPosX;
+        double hy = this.prevPosY + (this.posY - this.prevPosY) * (double)ptick - interpPosY;
+        double hz = this.prevPosZ + (this.posZ - this.prevPosZ) * (double)ptick - interpPosZ;
         
         //out
         vt[0][0] = hx+v1[0];	vt[0][1] = hy+v1[1];	vt[0][2] = hz+v1[2];

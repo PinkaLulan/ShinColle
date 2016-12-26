@@ -576,6 +576,7 @@ public class ID {
 	/** ship misc entity id for renderer */
 	public static final class ShipMisc
 	{
+		public static final short Invisible = -1;
 		public static final short AbyssalMissile = 0;
 		public static final short Airplane = 1;
 		public static final short AirplaneT = 2;
@@ -584,6 +585,11 @@ public class ID {
 		public static final short FloatingFort = 5;
 		public static final short Rensouhou = 6;
 		public static final short RensouhouS = 7;
+		public static final short AirfieldMount = 8;
+		public static final short BattleshipMount = 9;
+		public static final short CarrierWDMount = 10;
+		public static final short HarbourMount = 11;
+		public static final short CarrierMount = 12;
 	}
 	
 	/** ship attrs id, for Values.ShipAttrMap */

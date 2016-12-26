@@ -2,38 +2,43 @@ package com.lulan.shincolle.entity.battleship;
 
 import java.util.List;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.boss.IBossDisplayData;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.StatCollector;
-import net.minecraft.world.World;
-
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.CalcHelper;
-import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
+import com.lulan.shincolle.utility.TargetHelper;
+import com.lulan.shincolle.utility.TeamHelper;
 
-import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.BossInfo;
+import net.minecraft.world.BossInfoServer;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
-public class EntityBattleshipNGTBoss extends BasicEntityShipHostile implements IBossDisplayData {
+public class EntityBattleshipNGTBoss extends BasicEntityShipHostile
+{
+	
+	private final BossInfoServer bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.YELLOW, BossInfo.Overlay.PROGRESS);
+	
 
-	public EntityBattleshipNGTBoss(World world) {
+	public EntityBattleshipNGTBoss(World world)
+	{
 		super(world);
 		this.setSize(1.7F, 7F);
-		this.setCustomNameTag(StatCollector.translateToLocal("entity.shincolle.EntityBattleshipNGT.name"));
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.BattleshipNagato);
 		this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, getStateMinor(ID.M.ShipClass)+2);
 		
@@ -45,16 +50,16 @@ public class EntityBattleshipNGTBoss extends BasicEntityShipHostile implements I
         this.movSpeed = (float) ConfigHandler.scaleBossLarge[ID.MOV];
 
         //AI flag
-        this.StartEmotion = 0;
-        this.StartEmotion2 = 0;
+        this.startEmotion = 0;
+        this.startEmotion2 = 0;
         this.headTilt = false;
  
 	    //設定基本屬性
-	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(ConfigHandler.scaleBossLarge[ID.HP]);
-		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(this.movSpeed);
-		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(atkRange + 32); //此為找目標, 路徑的範圍
-		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(1D);
-		if(this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
+	    getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(ConfigHandler.scaleBossLarge[ID.HP]);
+		getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(this.movSpeed);
+		getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64); //此為找目標, 路徑的範圍
+		getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(1D);
+		if (this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
 				
 		//設定AI
 		this.setAIList();
@@ -65,18 +70,26 @@ public class EntityBattleshipNGTBoss extends BasicEntityShipHostile implements I
 	}
 	
 	@Override
-	protected boolean canDespawn() {
-        return this.ticksExisted > 12000;
+	protected boolean canDespawn()
+	{
+		if (ConfigHandler.despawnBoss > -1)
+		{
+			return this.ticksExisted > ConfigHandler.despawnBoss;
+		}
+        
+		return false;
     }
 	
 	@Override
-	public float getEyeHeight() {
+	public float getEyeHeight()
+	{
 		return this.height * 0.5F;
 	}
 	
 	//setup AI
 	@Override
-	protected void setAIList() {
+	protected void setAIList()
+	{
 		super.setAIList();
 
 		//use range attack
@@ -85,120 +98,42 @@ public class EntityBattleshipNGTBoss extends BasicEntityShipHostile implements I
 	
 	//num rensouhou++
 	@Override
-  	public void onLivingUpdate() {
+  	public void onLivingUpdate()
+	{
   		super.onLivingUpdate();
 
   		//client side
-  		if(worldObj.isRemote) {
-  			if(this.ticksExisted % 10 == 0) {
-  				if(getStateEmotion(ID.S.Phase) == 1 || getStateEmotion(ID.S.Phase) == 3) {
-   	  				//生成氣彈特效
-  	  				ParticleHelper.spawnAttackParticleAtEntity(this, 0.3D, 2D, 0D, (byte)1);
-  				}
-			
-  				if(getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
+  		if (this.world.isRemote)
+  		{
+  			if (this.ticksExisted % 4 == 0)
+  			{
+  				//生成裝備冒煙特效
+  				if (getStateEmotion(ID.S.State) >= ID.State.EQUIP00)
+  				{
   					//計算煙霧位置
-  	  				float[] partPos = ParticleHelper.rotateXZByAxis(-1.8F, 0F, (this.renderYawOffset % 360) / 57.2957F, 1F);	
-  	  				//生成裝備冒煙特效
+  	  				float[] partPos = CalcHelper.rotateXZByAxis(-1.8F, 0F, (this.renderYawOffset % 360) / 57.2957F, 1F);	
   	  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], posY+5.5D, posZ+partPos[0], 0D, 0D, 0D, (byte)24);
-  				}	
-  			}
-  		}
+  				}
+  				
+  				if (this.ticksExisted % 8 == 0)
+  	  			{
+  					//生成氣彈特效
+  	  				if (getStateEmotion(ID.S.Phase) == 1 || getStateEmotion(ID.S.Phase) == 3)
+  	  				{
+  	  	  				ParticleHelper.spawnAttackParticleAtEntity(this, 0.3D, 2D, 0D, (byte)1);
+  	  				}
+  	  			}//end 8 ticks
+  			}//end 4 ticks
+  		}//end client side
   	}
-	
-	//修改煙霧位置
-  	@Override
-  	public boolean attackEntityWithAmmo(Entity target) {
-  		//get attack value
-		float atk = CalcHelper.calcDamageBySpecialEffect(this, target, this.atk, 0);
-		
-		//update entity look at vector (for particle spawn)
-        //此方法比getLook還正確 (client sync問題)
-        float distX = (float) (target.posX - this.posX);
-        float distY = (float) (target.posY - this.posY);
-        float distZ = (float) (target.posZ - this.posZ);
-        float distSqrt = MathHelper.sqrt_float(distX*distX + distY*distY + distZ*distZ);
-        distX = distX / distSqrt;
-        distY = distY / distSqrt;
-        distZ = distZ / distSqrt;
-      
-        //發射者煙霧特效
-        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 19, this.posX, this.posY+3.5D, this.posZ, distX, 2.8D, distZ, true), point);
-
-		//play cannon fire sound at attacker
-        playSound(Reference.MOD_ID+":ship-firesmall", ConfigHandler.volumeFire, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-        //play entity attack sound
-        if(this.rand.nextInt(10) > 7) {
-        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.volumeShip, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-        }
-
-        //calc miss chance, if not miss, calc cri/multi hit   
-        if(this.rand.nextFloat() < 0.2F) {
-        	atk = 0;	//still attack, but no damage
-        	//spawn miss particle
-    		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
-        }
-        else {
-        	//roll cri -> roll double hit -> roll triple hit (triple hit more rare)
-        	//calc critical
-        	if(this.rand.nextFloat() < 0.15F) {
-        		atk *= 1.5F;
-        		//spawn critical particle
-        		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 11, false), point);
-        	}
-        	else {
-        		//calc double hit
-            	if(this.rand.nextFloat() < 0.15F) {
-            		atk *= 2F;
-            		//spawn double hit particle
-            		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 12, false), point);
-            	}
-            	else {
-            		//calc double hit
-                	if(this.rand.nextFloat() < 0.15F) {
-                		atk *= 3F;
-                		//spawn triple hit particle
-                		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 13, false), point);
-                	}
-            	}
-        	}
-        }
-        
-        //vs player = 25% dmg
-  		if(target instanceof EntityPlayer) {
-  			atk *= 0.25F;
-  			
-    		if(atk > 159F) {
-    			atk = 159F;	//same with TNT
-    		}
-  		}
-  		
-	    //將atk跟attacker傳給目標的attackEntityFrom方法, 在目標class中計算傷害
-	    //並且回傳是否成功傷害到目標
-	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this).setProjectile(), atk);
-
-	    //if attack success
-	    if(isTargetHurt) {
-        	//display hit particle on target
-	        TargetPoint point1 = new TargetPoint(this.dimension, target.posX, target.posY, target.posZ, 64D);
-			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 9, false), point1);
-			//show emotes
-			applyEmotesReaction(3);
-	    }
-
-	    return isTargetHurt;
-	}
   	
   	//TYPE 91 AP FIST
   	@Override
-  	public boolean attackEntityWithHeavyAmmo(Entity target) {	
+  	public boolean attackEntityWithHeavyAmmo(Entity target)
+  	{	
   		//get attack value
 		float atk1 = CalcHelper.calcDamageBySpecialEffect(this, target, this.atk * 3F, 2);
 		float atk2 = this.atk * 3F; //AE dmg without modifier
-		
-		//set knockback value (testing)
-		float kbValue = 0.15F;
 		
 		boolean isTargetHurt = false;
 
@@ -209,7 +144,7 @@ public class EntityBattleshipNGTBoss extends BasicEntityShipHostile implements I
 		float distX = tarX - (float)this.posX;
 		float distY = tarY - (float)this.posY;
 		float distZ = tarZ - (float)this.posZ;
-        float distSqrt = MathHelper.sqrt_float(distX*distX + distY*distY + distZ*distZ);
+        float distSqrt = MathHelper.sqrt(distX*distX + distY*distY + distZ*distZ);
         float dX = distX / distSqrt;
         float dY = distY / distSqrt;
         float dZ = distZ / distSqrt;
@@ -217,43 +152,44 @@ public class EntityBattleshipNGTBoss extends BasicEntityShipHostile implements I
 		//play cannon fire sound at attacker
 		int atkPhase = getStateEmotion(ID.S.Phase);
 		
-        switch(atkPhase) {
-        case 0:
-        case 2:
-        	this.playSound(Reference.MOD_ID+":ship-ap_phase1", ConfigHandler.volumeFire, 1F);
-        	break;
+        switch (atkPhase)
+        {
         case 1:
-        	this.playSound(Reference.MOD_ID+":ship-ap_phase2", ConfigHandler.volumeFire, 1F);
-        	break;
+        	this.playSound(ModSounds.SHIP_AP_P2, ConfigHandler.volumeFire, 1F);
+        break;
         case 3:
-        	this.playSound(Reference.MOD_ID+":ship-ap_attack", ConfigHandler.volumeFire, 1F);
-        	break;
+        	this.playSound(ModSounds.SHIP_AP_ATTACK, ConfigHandler.volumeFire, 1F);
+        break;
     	default:
-    		this.playSound(Reference.MOD_ID+":ship-ap_phase1", ConfigHandler.volumeFire, 1F);
-    		break;
+    		this.playSound(ModSounds.SHIP_AP_P1, ConfigHandler.volumeFire, 1F);
+    	break;
         }
-        
+		
         //play entity attack sound
-        if(this.getRNG().nextInt(10) > 7) {
-        	this.playSound(Reference.MOD_ID+":ship-hitsmall", ConfigHandler.volumeShip, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        if (this.getRNG().nextInt(10) > 7)
+        {
+        	this.playSound(ModSounds.SHIP_HIT, this.getSoundVolume(), this.getSoundPitch());
         }
         
         //phase++
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
         atkPhase++;
       
-        if(atkPhase > 3) {	//攻擊準備完成, 計算攻擊傷害
+        if (atkPhase > 3)
+        {	//攻擊準備完成, 計算攻擊傷害
         	//display hit particle on target
 	        CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 21, posX, posY, posZ, target.posX, target.posY, target.posZ, true), point);
         	
         	//calc miss chance, miss: atk1 = 0, atk2 = 50%
-            if(this.rand.nextFloat() < 0.2F) {	//MISS
-            	atk1 = 0F;
-            	atk2 *= 0.5F;
+            if (this.rand.nextFloat() < this.getEffectEquip(ID.EF_MISS))
+            {	//MISS
+            	atk1 *= 0.2F;
+            	atk2 *= 0.1F;
             	//spawn miss particle
             	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
             }
-            else if(this.rand.nextFloat() < 0.15F) {	//CRI
+            else if (this.rand.nextFloat() < 0.15F)
+            {	//CRI
         		atk1 *= 1.5F;
         		atk2 *= 1.5F;
         		//spawn critical particle
@@ -261,13 +197,15 @@ public class EntityBattleshipNGTBoss extends BasicEntityShipHostile implements I
             }
             
             //vs player = 25% dmg
-      		if(target instanceof EntityPlayer) {
+      		if (target instanceof EntityPlayer)
+      		{
       			atk1 *= 0.25F;
       			atk2 *= 0.25F;
       			
-        		if(atk2 > 40F) {
-        			atk1 = 160F;	//charge creeper
-        			atk2 = 40F;		//TNT
+        		if (atk1 > 150F)
+        		{
+        			atk1 = 150F;	//charge creeper
+        			atk2 = 50F;		//TNT
         		}
       		}
       		
@@ -284,37 +222,45 @@ public class EntityBattleshipNGTBoss extends BasicEntityShipHostile implements I
       		
       		//對範圍造成atk2傷害
             EntityLivingBase hitEntity = null;
-            AxisAlignedBB impactBox = this.boundingBox.expand(4.5D, 4.5D, 4.5D); 
-            List hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, impactBox);
+            AxisAlignedBB impactBox = this.getEntityBoundingBox().expand(5D, 4D, 5D); 
+            List hitList = this.world.getEntitiesWithinAABB(EntityLivingBase.class, impactBox);
             float atkTemp = atk2;
             
             //搜尋list, 找出第一個可以判定的目標, 即傳給onImpact
-            if(hitList != null && !hitList.isEmpty()) {
-                for(int i=0; i<hitList.size(); ++i) {
+            if (hitList != null && !hitList.isEmpty())
+            {
+                for (int i = 0; i < hitList.size(); ++i)
+                {
                 	atkTemp = atk2;
-                	hitEntity = (EntityLivingBase)hitList.get(i);
+                	hitEntity = (EntityLivingBase) hitList.get(i);
                 	
                 	//目標不能是自己 or 主人
-                	if(hitEntity != this && hitEntity.canBeCollidedWith() && EntityHelper.checkNotSameEntityID(this, hitEntity)) {
+                	if (hitEntity != this && !TargetHelper.checkUnattackTargetList(hitEntity) && hitEntity.canBeCollidedWith())
+                	{
                 		//calc miss and cri
-                		if(this.rand.nextFloat() < 0.2F) {	//MISS
+                		if (this.rand.nextFloat() < this.getEffectEquip(ID.EF_MISS))
+                		{	//MISS
                         	atkTemp *= 0.5F;
                         }
-                        else if(this.rand.nextFloat() < 0.15F) {	//CRI
+                        else if (this.rand.nextFloat() < this.getEffectEquip(ID.EF_CRI))
+                        {	//CRI
                     		atkTemp *= 1.5F;
                         }
                 		
                 		//若攻擊到同陣營entity (ex: owner), 則傷害設為0 (但是依然觸發擊飛特效)
-                		if(EntityHelper.checkSameOwner(this, hitEntity)) {
+                		if (TeamHelper.checkSameOwner(this, hitEntity))
+                		{
                 			atkTemp = 0F;
                     	}
                 		
-                		//若攻擊到玩家, 最大傷害固定為TNT傷害 (non-owner)
-                    	if(hitEntity instanceof EntityPlayer) {
+                		//若攻擊到玩家, 限制最大傷害
+                    	if (hitEntity instanceof EntityPlayer)
+                    	{
                     		atkTemp *= 0.25F;
                     		
-                    		if(atkTemp > 59F) {
-                    			atkTemp = 59F;	//same with TNT
+                    		if (atkTemp > 50F)
+                    		{
+                    			atkTemp = 50F;
                     		}
                     	}
 
@@ -342,11 +288,55 @@ public class EntityBattleshipNGTBoss extends BasicEntityShipHostile implements I
         
         return isTargetHurt;
 	}
+  	
+	@Override
+	public void applyParticleAtAttacker(int type, Entity target, float[] vec)
+	{
+  		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+        
+  		switch (type)
+  		{
+  		case 1:  //light cannon
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 19, this.posX, this.posY+3.5D, this.posZ, vec[0], 2.8F, vec[2], true), point);
+  		break;
+		default: //melee
+			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
+		break;
+  		}
+  	}
 
 	@Override
-	public int getDamageType() {
+	public int getDamageType()
+	{
 		return ID.ShipDmgType.BATTLESHIP;
 	}
+	
+  	/** for boss hp bar display */
+  	@Override
+    public boolean isNonBoss()
+    {
+        return false;
+    }
+  	
+  	@Override
+    public void addTrackingPlayer(EntityPlayerMP player)
+    {
+        super.addTrackingPlayer(player);
+        this.bossInfo.addPlayer(player);
+    }
+
+  	@Override
+    public void removeTrackingPlayer(EntityPlayerMP player)
+    {
+        super.removeTrackingPlayer(player);
+        this.bossInfo.removePlayer(player);
+    }
+  	
+  	@Override
+    protected void updateAITasks()
+    {
+    	this.bossInfo.setPercent(this.getHealth() / this.getMaxHealth());
+    }
 	
 
 }

@@ -2,6 +2,11 @@ package com.lulan.shincolle.client.render;
 
 import javax.annotation.Nonnull;
 
+import com.lulan.shincolle.client.model.ModelBattleshipHime;
+import com.lulan.shincolle.client.model.ModelBattleshipNagato;
+import com.lulan.shincolle.client.model.ModelBattleshipRe;
+import com.lulan.shincolle.client.model.ModelBattleshipTa;
+import com.lulan.shincolle.client.model.ModelBattleshipYamato;
 import com.lulan.shincolle.client.model.ModelDestroyerAkatsuki;
 import com.lulan.shincolle.client.model.ModelDestroyerHa;
 import com.lulan.shincolle.client.model.ModelDestroyerHibiki;
@@ -15,7 +20,6 @@ import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.GlStateManager;
@@ -39,7 +43,9 @@ public class RenderShipEntity extends RenderLiving<EntityLiving>
 	private static final ResourceLocation TEX_AP_Wa = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityTransportWa.png");
 	//BB
 	private static final ResourceLocation TEX_BB_Re = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityBattleshipRe.png");
+	private static final ModelBase MD_BB_Re = new ModelBattleshipRe();
 	private static final ResourceLocation TEX_BB_Ta = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityBattleshipTa.png");
+	private static final ModelBase MD_BB_Ta = new ModelBattleshipTa();
 	//CA
 	private static final ResourceLocation TEX_CA_Ri = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityHeavyCruiserRi.png");
 	private static final ResourceLocation TEX_CA_Ne = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityHeavyCruiserNe.png");
@@ -47,16 +53,17 @@ public class RenderShipEntity extends RenderLiving<EntityLiving>
 	private static final ResourceLocation TEX_CV_Wo = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityCarrierWo.png");
 	//DD
 	private static final ResourceLocation TEX_DD_I = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityDestroyerI.png");
-	private static ModelBase MD_DD_I = new ModelDestroyerI();
+	private static final ModelBase MD_DD_I = new ModelDestroyerI();
 	private static final ResourceLocation TEX_DD_Ro = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityDestroyerRo.png");
-	private static ModelBase MD_DD_Ro = new ModelDestroyerRo();
+	private static final ModelBase MD_DD_Ro = new ModelDestroyerRo();
 	private static final ResourceLocation TEX_DD_Ha = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityDestroyerHa.png");
-	private static ModelBase MD_DD_Ha = new ModelDestroyerHa();
+	private static final ModelBase MD_DD_Ha = new ModelDestroyerHa();
 	private static final ResourceLocation TEX_DD_Ni = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityDestroyerNi.png");
-	private static ModelBase MD_DD_Ni = new ModelDestroyerNi();
+	private static final ModelBase MD_DD_Ni = new ModelDestroyerNi();
 	//Hime
 	private static final ResourceLocation TEX_Hime_Airfield = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityAirfieldHime.png");
 	private static final ResourceLocation TEX_Hime_Battleship = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityBattleshipHime.png");
+	private static final ModelBase MD_Hime_Battleship = new ModelBattleshipHime();
 	private static final ResourceLocation TEX_Hime_Carrier = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityCarrierHime.png");
 	private static final ResourceLocation TEX_Hime_Harbour = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityHarbourHime.png");
 	private static final ResourceLocation TEX_Hime_Northern = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityNorthernHime.png");
@@ -69,21 +76,23 @@ public class RenderShipEntity extends RenderLiving<EntityLiving>
 	//Hostile Sip
 	//BB
 	private static final ResourceLocation TEX_BB_Nagato = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityBattleshipNagato.png");
+	private static final ModelBase MD_BB_Nagato = new ModelBattleshipNagato();
 	private static final ResourceLocation TEX_BB_Yamato = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityBattleshipYamato.png");
+	private static final ModelBase MD_BB_Yamato = new ModelBattleshipYamato();
 	//CV
 	private static final ResourceLocation TEX_CV_Akagi = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityCarrierAkagi.png");
 	private static final ResourceLocation TEX_CV_Kaga = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityCarrierKaga.png");
 	//DD
 	private static final ResourceLocation TEX_DD_Akatsuki = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityDestroyerAkatsuki.png");
-	private static ModelBase MD_DD_Akatsuki = new ModelDestroyerAkatsuki();
+	private static final ModelBase MD_DD_Akatsuki = new ModelDestroyerAkatsuki();
 	private static final ResourceLocation TEX_DD_Hibiki = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityDestroyerHibiki.png");
-	private static ModelBase MD_DD_Hibiki = new ModelDestroyerHibiki();
+	private static final ModelBase MD_DD_Hibiki = new ModelDestroyerHibiki();
 	private static final ResourceLocation TEX_DD_Ikazuchi = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityDestroyerIkazuchi.png");
-	private static ModelBase MD_DD_Ikazuchi = new ModelDestroyerIkazuchi();
+	private static final ModelBase MD_DD_Ikazuchi = new ModelDestroyerIkazuchi();
 	private static final ResourceLocation TEX_DD_Inazuma = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityDestroyerInazuma.png");
-	private static ModelBase MD_DD_Inazuma = new ModelDestroyerInazuma();
+	private static final ModelBase MD_DD_Inazuma = new ModelDestroyerInazuma();
 	private static final ResourceLocation TEX_DD_Shimakaze = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityDestroyerShimakaze.png");
-	private static ModelBase MD_DD_Shimakaze = new ModelDestroyerShimakaze();
+	private static final ModelBase MD_DD_Shimakaze = new ModelDestroyerShimakaze();
 	//SS
 	private static final ResourceLocation TEX_SS_Ro500 = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntitySubmRo500.png");
 	private static final ResourceLocation TEX_SS_U511 = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntitySubmU511.png");
@@ -92,8 +101,8 @@ public class RenderShipEntity extends RenderLiving<EntityLiving>
 	public static final FactoryDefault FACTORY_DEFAULT = new FactoryDefault();
 	
 	//parm
-	private int shipClass = 0;
-	private boolean hasNoModel = true;
+	protected int shipClass = 0;
+	protected boolean initModel = true;
 	
 	
     public RenderShipEntity(RenderManager rm)
@@ -105,7 +114,7 @@ public class RenderShipEntity extends RenderLiving<EntityLiving>
     @Nonnull
     protected ResourceLocation getEntityTexture(@Nonnull EntityLiving entity)
     {
-		switch (((IShipCustomTexture) entity).getTextureID())
+		switch (this.shipClass)
 		{
 		//AP
 		case ID.Ship.TransportWA:
@@ -189,149 +198,151 @@ public class RenderShipEntity extends RenderLiving<EntityLiving>
     /**
      * set mainModel, shadowSize, scale
      */
-    private void setModel(int id)
+    protected void setModel()
     {
-    	this.shipClass = id;
-    	
-		switch (id)
+		switch (this.shipClass)
 		{
 //		//AP
 //		case ID.Ship.TransportWA:
 //			this.mainModel = MD_AP_Wa;
-//			this.shadowSize = 1F;
 //		break;
-//		//BB
-//		case ID.Ship.BattleshipTA:
-//			this.mainModel = MD_BB_Ta;
-//			this.shadowSize = 1F;
-//		break;
-//		case ID.Ship.BattleshipRE:
-//			this.mainModel = MD_BB_Re;
-//			this.shadowSize = 1F;
-//		break;
+		//BB
+		case ID.Ship.BattleshipTA:
+			this.mainModel = MD_BB_Ta;
+		break;
+		case ID.Ship.BattleshipRE:
+			this.mainModel = MD_BB_Re;
+		break;
 //		//CL
 //		case ID.Ship.HeavyCruiserRI:
 //			this.mainModel = MD_CA_Ri;
-//			this.shadowSize = 1F;
 //		break;
 //		case ID.Ship.HeavyCruiserNE:
 //			this.mainModel = MD_CA_Ne;
-//			this.shadowSize = 1F;
 //		break;
 //		//CV
 //		case ID.Ship.CarrierWO:
 //			this.mainModel = MD_CV_Wo;
-//			this.shadowSize = 1F;
 //		break;
 		//DD
 		case ID.Ship.DestroyerI:
 			this.mainModel = MD_DD_I;
-			this.shadowSize = 1F;
 		break;
 		case ID.Ship.DestroyerRO:
 			this.mainModel = MD_DD_Ro;
-			this.shadowSize = 1F;
 		break;
 		case ID.Ship.DestroyerHA:
 			this.mainModel = MD_DD_Ha;
-			this.shadowSize = 1F;
 		break;
 		case ID.Ship.DestroyerNI:
 			this.mainModel = MD_DD_Ni;
-			this.shadowSize = 1F;
 		break;
 //		//Hime
 //		case ID.Ship.AirfieldHime:
 //			this.mainModel = MD_Hime_Airfield;
-//			this.shadowSize = 1F;
 //		break;
-//		case ID.Ship.BattleshipHime:
-//			this.mainModel = MD_Hime_Battleship;
-//			this.shadowSize = 1F;
-//		break;
+		case ID.Ship.BattleshipHime:
+			this.mainModel = MD_Hime_Battleship;
+		break;
 //		case ID.Ship.CarrierHime:
 //			this.mainModel = MD_Hime_Carrier;
-//			this.shadowSize = 1F;
 //		break;
 //		case ID.Ship.HarbourHime:
 //			this.mainModel = MD_Hime_Harbour;
-//			this.shadowSize = 1F;
 //		break;
 //		case ID.Ship.NorthernHime:
 //			this.mainModel = MD_Hime_Northern;
-//			this.shadowSize = 1F;
 //		break;
 //		//SS
 //		case ID.Ship.SubmarineKA:
 //			this.mainModel = MD_SS_Ka;
-//			this.shadowSize = 1F;
 //		break;
 //		case ID.Ship.SubmarineSO:
 //			this.mainModel = MD_SS_So;
-//			this.shadowSize = 1F;
 //		break;
 //		case ID.Ship.SubmarineYO:
 //			this.mainModel = MD_SS_Yo;
-//			this.shadowSize = 1F;
 //		break;
 //		//WD
 //		case ID.Ship.CarrierWD:
 //			this.mainModel = MD_WD_Carrier;
-//			this.shadowSize = 1F;
 //		break;
-//			
 //		//Hostile Ship
-//		//BB
-//		case ID.Ship.BattleshipNagato:
-//			this.mainModel = MD_BB_Nagato;
-//			this.shadowSize = 1F;
-//		break;
-//		case ID.Ship.BattleshipYamato:
-//			this.mainModel = MD_BB_Yamato;
-//			this.shadowSize = 1F;
-//		break;
+		//BB
+		case ID.Ship.BattleshipNagato:
+			this.mainModel = MD_BB_Nagato;
+		break;
+		case ID.Ship.BattleshipYamato:
+			this.mainModel = MD_BB_Yamato;
+		break;
 //		//CV
 //		case ID.Ship.CarrierAkagi:
 //			this.mainModel = MD_CV_Akagi;
-//			this.shadowSize = 1F;
 //		break;
 //		case ID.Ship.CarrierKaga:
 //			this.mainModel = MD_CV_Kaga;
-//			this.shadowSize = 1F;
 //		break;
 		//DD
 		case ID.Ship.DestroyerAkatsuki:
 			this.mainModel = MD_DD_Akatsuki;
-			this.shadowSize = 1F;
 		break;
 		case ID.Ship.DestroyerHibiki:
 			this.mainModel = MD_DD_Hibiki;
-			this.shadowSize = 1F;
 		break;
 		case ID.Ship.DestroyerIkazuchi:
 			this.mainModel = MD_DD_Ikazuchi;
-			this.shadowSize = 1F;
 		break;
 		case ID.Ship.DestroyerInazuma:
 			this.mainModel = MD_DD_Inazuma;
-			this.shadowSize = 1F;
 		break;
 		case ID.Ship.DestroyerShimakaze:
 			this.mainModel = MD_DD_Shimakaze;
-			this.shadowSize = 1F;
 		break;
 //		//SS
 //		case ID.Ship.SubmarineRo500:
 //			this.mainModel = MD_SS_Ro500;
-//			this.shadowSize = 1F;
 //		break;
 //		case ID.Ship.SubmarineU511:
 //			this.mainModel = MD_SS_U511;
-//			this.shadowSize = 1F;
 //		break;
 		default:	//default model
 			this.mainModel = MD_DD_I;
+		break;
+		}//end switch
+    }
+    
+    /** set shadow size */
+    protected void setShadowSize()
+    {
+		switch (this.shipClass)
+		{
+		case ID.Ship.NorthernHime:
+		case ID.Ship.SubmarineKA:
+		case ID.Ship.SubmarineSO:
+		case ID.Ship.SubmarineYO:
+		case ID.Ship.DestroyerAkatsuki:
+		case ID.Ship.DestroyerHibiki:
+		case ID.Ship.DestroyerIkazuchi:
+		case ID.Ship.DestroyerInazuma:
+		case ID.Ship.DestroyerShimakaze:
+		case ID.Ship.SubmarineRo500:
+		case ID.Ship.SubmarineU511:
+			this.shadowSize = 0.5F;
+		break;
+		case ID.Ship.HarbourHime:
+			this.shadowSize = 0.8F;
+		break;
+		case ID.Ship.DestroyerI:
+		case ID.Ship.DestroyerRO:
+		case ID.Ship.DestroyerHA:
+		case ID.Ship.DestroyerNI:
+			this.shadowSize = 0.9F;
+		break;
+		case ID.Ship.CarrierWO:
 			this.shadowSize = 1F;
+		break;
+		default:	//default size
+			this.shadowSize = 0.7F;
 		break;
 		}//end switch
     }
@@ -341,11 +352,21 @@ public class RenderShipEntity extends RenderLiving<EntityLiving>
     public void doRender(EntityLiving entity, double x, double y, double z, float yaw, float parTick)
     {
     	//model init
-    	if (this.hasNoModel)
+    	if (this.initModel)
     	{
-    		setModel(((IShipCustomTexture) entity).getTextureID());
-    		this.hasNoModel = false;
+    		this.shipClass = ((IShipCustomTexture) entity).getTextureID();
+    		this.initModel = false;
+    		setModel();
     	}
+    	
+    	//for invisible model
+    	if (this.mainModel == null) return;
+    	
+    	//set shadow size
+    	setShadowSize();
+    	
+    	//tweak shadow size
+    	if (!entity.isNonBoss()) this.shadowSize += 0.8F;
     	
     	super.doRender(entity, x, y, z, yaw, parTick);
     }
@@ -487,7 +508,7 @@ public class RenderShipEntity extends RenderLiving<EntityLiving>
     }
 	
 	//interpolation
-	private double interp(double start, double end, double pct)
+	protected double interp(double start, double end, double pct)
 	{
         return start + (end - start) * pct;
     }

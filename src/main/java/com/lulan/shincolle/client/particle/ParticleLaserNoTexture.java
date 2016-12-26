@@ -187,9 +187,9 @@ public class ParticleLaserNoTexture extends Particle
 		float[] v8 = CalcHelper.rotateXYZByYawPitch(-1F, -1F, 0F, shotYaw, shotPitch, this.scaleIn);
 		
 		//particle是以client端視野來render, 因此座標要扣掉interpPos轉換為玩家視野座標
-        double hx = this.posX - interpPosX;
-        double hy = this.posY - interpPosY;
-        double hz = this.posZ - interpPosZ;
+		double hx = this.prevPosX + (this.posX - this.prevPosX) * (double)ptick - interpPosX;
+        double hy = this.prevPosY + (this.posY - this.prevPosY) * (double)ptick - interpPosY;
+        double hz = this.prevPosZ + (this.posZ - this.prevPosZ) * (double)ptick - interpPosZ;
         double tx = this.tarX - interpPosX;
         double ty = this.tarY - interpPosY;
         double tz = this.tarZ - interpPosZ;

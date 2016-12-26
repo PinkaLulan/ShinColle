@@ -302,14 +302,14 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
     			}
     		}
     		
-    		//爆炸判定1: missile本身位置是固體方塊
+    		//爆炸判定1: 本體位置碰撞: missile本身位置是固體方塊
     		IBlockState state = this.world.getBlockState(new BlockPos(this));
     		if(state.getMaterial().isSolid())
     		{
     			this.onImpact(null);
     		}
     		
-    		//爆炸判定2: missile每tick的飛行路徑中碰到東西, 包含block or entity
+    		//爆炸判定2: 移動量投射法: missile每tick的飛行移動量中可碰到的東西, 用於移動量大於擴展AABB的missile
     		Vec3d vec3 = new Vec3d(this.posX, this.posY, this.posZ);
             Vec3d vec31 = new Vec3d(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
             RayTraceResult raytrace = this.world.rayTraceBlocks(vec3, vec31);          
@@ -323,7 +323,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
                 this.onImpact(null);
             }
             
-            //爆炸判定3: missile擴展1格大小內是否有entity可觸發爆炸
+            //爆炸判定3: 擴展AABB碰撞: missile擴展1格大小內是否有entity可觸發爆炸
             List<Entity> hitList = this.world.getEntitiesWithinAABB(Entity.class, this.getEntityBoundingBox().expand(1D, 1D, 1D));
             
             //搜尋list, 找出第一個可以判定的目標, 即傳給onImpact

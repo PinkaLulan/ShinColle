@@ -85,9 +85,9 @@ public class ParticleCraning extends Particle
 		float[] v8 = new float[] {-sizeChain, -sizeChain * 1.5F, -sizeChain};
 		
 		//particle是以client端視野來render, 因此座標要扣掉interpPos轉換為玩家視野座標
-        double hx = this.posX - interpPosX;
-        double hy = this.posY - interpPosY - len + this.particleScale * 5D;
-        double hz = this.posZ - interpPosZ + this.particleScale * 0.5D;
+        double hx = this.prevPosX + (this.posX - this.prevPosX) * (double)ptick - interpPosX;
+        double hy = this.prevPosY + (this.posY - this.prevPosY) * (double)ptick - interpPosY - len + this.particleScale * 5D;
+        double hz = this.prevPosZ + (this.posZ - this.prevPosZ) * (double)ptick - interpPosZ + this.particleScale * 0.5D;
         double z1 = this.particleScale * 0.8D;
         double z2 = this.particleScale * 0.25D;
         double y1 = this.particleScale * 1D;

@@ -2,25 +2,27 @@ package com.lulan.shincolle.client.model;
 
 import java.util.Random;
 
-import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.MathHelper;
-
-import org.lwjgl.opengl.GL11;
-
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
 
+import net.minecraft.client.model.ModelBase;
+import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.GlStateManager.DestFactor;
+import net.minecraft.client.renderer.GlStateManager.SourceFactor;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.math.MathHelper;
+
 /**
  * ModelBattleshipYamato - PinkaLulan
  * Created using Tabula 4.1.1
  */
-public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
+public class ModelBattleshipYamato extends ModelBase implements IModelEmotion
+{
     public ModelRenderer BodyMain;
     public ModelRenderer Neck;
     public ModelRenderer BoobR;
@@ -206,20 +208,10 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
     private float offsetY;
     
     
-    public ModelBattleshipYamato(int scaleType) {
+    public ModelBattleshipYamato()
+    {
         this.textureWidth = 256;
         this.textureHeight = 128;
-        
-        switch(scaleType) {  //type 1: boss scale
-        case 1:
-        	scale = 1.8F;
-        	offsetY = -2.1F;
-        	break;
-        default:
-        	scale = 0.5F;
-        	offsetY = 0F;
-        	break;
-        }
         
         this.EquipLC2Base01 = new ModelRenderer(this, 211, 23);
         this.EquipLC2Base01.setRotationPoint(2.5F, -4.0F, -10.5F);
@@ -1053,37 +1045,57 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
         
     }
 
-    public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z) {
+    public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z)
+    {
         modelRenderer.rotateAngleX = x;
         modelRenderer.rotateAngleY = y;
         modelRenderer.rotateAngleZ = z;
     }
     
     @Override
-    public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) { 
-    	GL11.glPushMatrix();       
-    	GL11.glEnable(GL11.GL_BLEND);
-    	GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-    	GL11.glScalef(scale, scale, scale);
-    	GL11.glTranslatef(0F, offsetY + 1.55F, 0F);
+    public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
+    {
+    	//FIX: head rotation bug while riding
+    	if (f3 <= -180F) { f3 += 360F; }
+    	else if (f3 >= 180F) { f3 -= 360F; }
+    	
+    	if (entity.isNonBoss())
+    	{
+    		scale = 0.5F;
+        	offsetY = 0F;
+    	}
+    	else
+    	{
+    		scale = 1.8F;
+        	offsetY = -2.1F;
+    	}
+    	
+    	GlStateManager.pushMatrix();
+    	GlStateManager.enableBlend();
+    	GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
+    	GlStateManager.scale(scale, scale, scale);
+    	GlStateManager.translate(0F, offsetY + 1.55F, 0F);
     	
     	//main body
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
     	this.BodyMain.render(f5);
-    	GL11.glDisable(GL11.GL_BLEND);
+    	GlStateManager.disableBlend();
     	
-    	//light part:eye, cannon, ...etc
-    	GL11.glDisable(GL11.GL_LIGHTING);
+    	//light part
+    	GlStateManager.disableLighting();
+    	GlStateManager.enableCull();
     	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
     	this.GlowBodyMain.render(f5);
-    	GL11.glEnable(GL11.GL_LIGHTING);
+    	GlStateManager.disableCull();
+    	GlStateManager.enableLighting();
     	
-    	GL11.glPopMatrix();
+    	GlStateManager.popMatrix();
     }
     
 	//model animation
     @Override
-    public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity) {
+    public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity)
+    {
 		super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
 
 		IShipEmotion ent = (IShipEmotion)entity;
@@ -1092,10 +1104,12 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
 		
 		EmotionHelper.rollEmotion(this, ent);
 		  
-		if(ent.getStateFlag(ID.F.NoFuel)) {
+		if (ent.getStateFlag(ID.F.NoFuel))
+		{
     		motionStopPos(f, f1, f2, f3, f4, ent);
     	}
-    	else {
+    	else
+    	{
     		motionHumanPos(f, f1, f2, f3, f4, ent);
     	}
 		
@@ -1103,7 +1117,8 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
     }
     
 	//設定模型發光部份的rotation
-    private void setGlowRotation() {
+    private void setGlowRotation()
+    {
     	//頭部
 		this.GlowBodyMain.rotateAngleX = this.BodyMain.rotateAngleX;
 		this.GlowBodyMain.rotateAngleY = this.BodyMain.rotateAngleY;
@@ -1116,8 +1131,9 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
 		this.GlowHead.rotateAngleZ = this.Head.rotateAngleZ;
     }
     
-    private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {
-    	GL11.glTranslatef(0F, 1.75F, 0F);
+    private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
+    {
+    	GlStateManager.translate(0F, 1.75F, 0F);
     	setFace(4);
     
     	//頭部
@@ -1188,7 +1204,8 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
     }
     
 	//雙腳移動計算
-  	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {   
+  	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
+  	{   
   		float angleX = MathHelper.cos(f2*0.08F + f * 0.25F);
   		float angleX1 = MathHelper.cos(f2*0.08F + 0.3F + f * 0.5F);
   		float angleX2 = MathHelper.cos(f2*0.08F + 0.6F + f * 0.5F);
@@ -1199,8 +1216,9 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
   		float addk2 = 0;
   		
   		//水上漂浮
-  		if(((IShipFloating)ent).getShipDepth() > 0) {
-    		GL11.glTranslatef(0F, angleX * 0.1F - 0.025F, 0F);
+  		if (((Entity) ent).getPassengers().size() == 0 && ((IShipFloating) ent).getShipDepth() > 0)
+  		{
+  			GlStateManager.translate(0F, angleX * 0.1F - 0.03F, 0F);
     	}
   		
     	//leg move
@@ -1251,14 +1269,16 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
 	    //equipU
 	    this.EquipU01.rotateAngleY = 2.4F;
 	    
-	    if(ent.getStateEmotion(ID.S.State2) > ID.State.EQUIP00_2) {
+	    if (ent.getStateEmotion(ID.S.State2) > ID.State.EQUIP00_2)
+	    {
 	    	this.ArmRight01.rotateAngleX = -f1 * 0.4F + 0.1745F;
 		    this.ArmRight01.rotateAngleY = 0F;
 			this.ArmRight01.rotateAngleZ = 0.1571F;
 			this.ArmRight02.rotateAngleX = -1.4835F;
 			this.ArmRight02.rotateAngleZ = 0F;
 	    }
-	    else {
+	    else
+	    {
 	    	this.ArmRight01.rotateAngleX = angleAdd1 * 0.25F + 0.18F;
 		    this.ArmRight01.rotateAngleY = 0F;
 			this.ArmRight01.rotateAngleZ = -angleX * 0.03F + 0.26F;
@@ -1280,11 +1300,13 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
 		this.AnchorR.rotateAngleX = f1 * 0.5F - 0.2F;
 		this.AnchorR.rotateAngleZ = 0.35F;
 		//cannon
-		if(ent.getStateEmotion(ID.S.State) > ID.State.EQUIP00) {
+		if (ent.getStateEmotion(ID.S.State) > ID.State.EQUIP00)
+		{
 			this.EquipRotateBase.rotateAngleX = 0F;
 			this.EquipLCBase02_1.rotateAngleY = 3.1415F;
 			
-			if(this.Head.rotateAngleX <= 0F) {
+			if (this.Head.rotateAngleX <= 0F)
+			{
 				this.EquipLC01a.rotateAngleX = this.Head.rotateAngleX * 0.7F;
 				this.EquipLC02a.rotateAngleX = this.Head.rotateAngleX;
 				this.EquipLC03a.rotateAngleX = this.Head.rotateAngleX * 0.8F;
@@ -1320,7 +1342,8 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
 		}
 
 
-	    if(ent.getIsSprinting() || f1 > 0.1F) {	//奔跑動作
+	    if (ent.getIsSprinting() || f1 > 0.1F)
+	    {	//奔跑動作
 	    	//hair
 	    	this.Hair01.rotateAngleX += f1 * 0.25F;
 		    //arm 
@@ -1330,8 +1353,9 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
 	    //head tilt angle
 	    this.Head.rotateAngleZ = EmotionHelper.getHeadTiltAngle(ent, f2);
 	    
-	    if(ent.getIsSneaking()) {		//潛行, 蹲下動作
-	    	GL11.glTranslatef(0F, 0.1F, 0F);
+	    if (ent.getIsSneaking())
+	    {	//潛行, 蹲下動作
+	    	GlStateManager.translate(0F, 0.1F, 0F);
 	    	//Body
 	    	this.Head.rotateAngleX -= 1.0472F;
 		  	this.BodyMain.rotateAngleX = 1.0472F;
@@ -1339,10 +1363,12 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
 		    //arm 
 		    this.ArmLeft01.rotateAngleX = -0.7F;
 		    this.ArmLeft01.rotateAngleZ = 0.2618F;
-			if(ent.getStateEmotion(ID.S.State2) > ID.State.EQUIP00_2) {
+			if (ent.getStateEmotion(ID.S.State2) > ID.State.EQUIP00_2)
+			{
 				this.ArmRight01.rotateAngleX -= 1.0472F;
 		    }
-		    else {
+		    else
+		    {
 		    	this.ArmRight01.rotateAngleX = -0.7F;
 			    this.ArmRight01.rotateAngleY = 0F;
 				this.ArmRight01.rotateAngleZ = -0.2618F;
@@ -1358,14 +1384,17 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
 			this.Hair04.rotateAngleX = -0.3491F;
 			this.Hair04.rotateAngleZ = 0.2618F;
 			//cannon
-			if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
+			if (ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00)
+			{
 				this.EquipRotateBase.rotateAngleX -= 1.0472F;
 			}
   		}//end if sneaking
   		
-	    if(ent.getIsSitting() || ent.getIsRiding()) {  //騎乘動作
-	    	if(ent.getStateEmotion(ID.S.State) > ID.State.EQUIP00) {
-		    	GL11.glTranslatef(0F, offsetY + 1.2F, 0F);
+	    if (ent.getIsSitting() || ent.getIsRiding())
+	    {	//騎乘動作
+	    	if (ent.getStateEmotion(ID.S.State) > ID.State.EQUIP00)
+	    	{
+	    		GlStateManager.translate(0F, offsetY + 1.2F, 0F);
 		    	//Body
 			  	this.Head.rotateAngleX += 0.1047F;
 		    	this.BodyMain.rotateAngleX = -0.1396F;
@@ -1373,13 +1402,15 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
 				//arm 
 			  	this.ArmLeft01.rotateAngleX = -0.2094F;
 			  	this.ArmLeft01.rotateAngleZ = 0.2618F;
-			  	if(ent.getStateEmotion(ID.S.State2) > ID.State.EQUIP00_2) {
+			  	if (ent.getStateEmotion(ID.S.State2) > ID.State.EQUIP00_2)
+			  	{
 			    	this.ArmRight01.rotateAngleX = 0.1745F;
 				    this.ArmRight01.rotateAngleY = 0F;
 					this.ArmRight01.rotateAngleZ = 0.1571F;
 					this.ArmRight02.rotateAngleX = -1.4835F;
 			    }
-			    else {
+			    else
+			    {
 			    	this.ArmRight01.rotateAngleX = -0.2094F;
 				    this.ArmRight01.rotateAngleY = 0F;
 					this.ArmRight01.rotateAngleZ = -0.2618F;
@@ -1400,8 +1431,9 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
 				this.LegRight02.rotateAngleZ = -0.0175F;
 				this.EquipLCBase02_1.rotateAngleY = 0F;
 			}
-	    	else if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {
-		    	GL11.glTranslatef(0F, offsetY + 1.42F, 0F);
+	    	else if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
+	    	{
+	    		GlStateManager.translate(0F, offsetY + 1.42F, 0F);
 		    	//Body
 			  	this.Head.rotateAngleX -= 0.21F;
 			  	this.Head.rotateAngleY -= 0.4363F;
@@ -1422,13 +1454,15 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
 			  	this.ArmLeft01.rotateAngleY = -0.5236F;
 			  	this.ArmLeft01.rotateAngleZ = -0.2618F;
 			  	this.ArmLeft02.rotateAngleX = -0.5236F;
-			  	if(ent.getStateEmotion(ID.S.State2) > ID.State.EQUIP00_2) {
+			  	if (ent.getStateEmotion(ID.S.State2) > ID.State.EQUIP00_2)
+			  	{
 			    	this.ArmRight01.rotateAngleX = 0F;
 				    this.ArmRight01.rotateAngleY = 0F;
 					this.ArmRight01.rotateAngleZ = -0.0524F;
 					this.ArmRight02.rotateAngleX = -1.0472F;
 			    }
-			    else {
+			    else
+			    {
 			    	this.ArmRight01.rotateAngleX = 0.0873F;
 				    this.ArmRight01.rotateAngleY = 0F;
 					this.ArmRight01.rotateAngleZ = 0.0873F;
@@ -1448,8 +1482,9 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
 			    this.EquipU01.rotateAngleZ = -1.85F;
 			    this.AnchorR.rotateAngleZ = 0.7F;
 	    	}
-	    	else {
-		    	GL11.glTranslatef(0F, offsetY + 1.55F, 0F);
+	    	else
+	    	{
+	    		GlStateManager.translate(0F, offsetY + 1.55F, 0F);
 		    	//Body
 			  	this.Head.rotateAngleX += 0.1047F;
 		    	this.BodyMain.rotateAngleX = -0.1396F;
@@ -1466,13 +1501,15 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
 				//arm 
 			  	this.ArmLeft01.rotateAngleX = -0.2094F;
 			  	this.ArmLeft01.rotateAngleZ = 0.2618F;
-			  	if(ent.getStateEmotion(ID.S.State2) > ID.State.EQUIP00_2) {
+			  	if (ent.getStateEmotion(ID.S.State2) > ID.State.EQUIP00_2)
+			  	{
 			    	this.ArmRight01.rotateAngleX = 0.1745F;
 				    this.ArmRight01.rotateAngleY = 0F;
 					this.ArmRight01.rotateAngleZ = 0.1571F;
 					this.ArmRight02.rotateAngleX = -1.4835F;
 			    }
-			    else {
+			    else
+			    {
 			    	this.ArmRight01.rotateAngleX = -0.2094F;
 				    this.ArmRight01.rotateAngleY = 0F;
 					this.ArmRight01.rotateAngleZ = -0.2618F;
@@ -1495,7 +1532,8 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
   		}//end if sitting
 	    
 	    //攻擊動作    
-	    if(ent.getAttackTime() > 0) {
+	    if (ent.getAttackTick() > 0)
+	    {
 	    	this.ArmLeft01.rotateAngleX = -1.5708F;
 		    this.ArmLeft01.rotateAngleY = -0.2F + this.Head.rotateAngleY;
 		  	this.ArmLeft01.rotateAngleZ = 0F;
@@ -1503,15 +1541,16 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
 	    
 	    //swing arm
 	  	float f6 = ent.getSwingTime(f2 - (int)f2);
-	  	if(f6 != 0F) {
+	  	if (f6 != 0F)
+	  	{
 	  		float f7 = MathHelper.sin(f6 * f6 * (float)Math.PI);
-	        float f8 = MathHelper.sin(MathHelper.sqrt_float(f6) * (float)Math.PI);
+	        float f8 = MathHelper.sin(MathHelper.sqrt(f6) * (float)Math.PI);
 	        this.ArmRight01.rotateAngleX = -0.2F;
 	        this.ArmRight01.rotateAngleY = 0F;
 	        this.ArmRight01.rotateAngleZ = -0.1F;
-	        this.ArmRight01.rotateAngleX += -f8 * 80.0F * Values.N.RAD_MUL;
-	        this.ArmRight01.rotateAngleY += -f7 * 20.0F * Values.N.RAD_MUL + 0.2F;
-	        this.ArmRight01.rotateAngleZ += -f8 * 20.0F * Values.N.RAD_MUL;
+	        this.ArmRight01.rotateAngleX += -f8 * 80.0F * Values.N.DIV_PI_180;
+	        this.ArmRight01.rotateAngleY += -f7 * 20.0F * Values.N.DIV_PI_180 + 0.2F;
+	        this.ArmRight01.rotateAngleZ += -f8 * 20.0F * Values.N.DIV_PI_180;
 	        this.ArmRight02.rotateAngleX = 0F;
 	        this.ArmRight02.rotateAngleY = 0F;
 	        this.ArmRight02.rotateAngleZ = 0F;
@@ -1546,94 +1585,98 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion {
 	    this.LegRight01.rotateAngleX = addk2;
   	}
   	
-  	private void showEquip(IShipEmotion ent) {
-  		switch(ent.getStateEmotion(ID.S.State)) {
+  	private void showEquip(IShipEmotion ent)
+  	{
+  		switch (ent.getStateEmotion(ID.S.State))
+  		{
   		case ID.State.EQUIP00:
   			this.EquipBaseBelt.isHidden = true;
   			this.EquipHeadBase.isHidden = false;
-  			break;
+  		break;
   		case ID.State.EQUIP01:
   			this.EquipBaseBelt.isHidden = false;
   			this.EquipHeadBase.isHidden = true;
-  			break;
+  		break;
   		case ID.State.EQUIP02:
   			this.EquipBaseBelt.isHidden = false;
   			this.EquipHeadBase.isHidden = false;
-  			break;
+  		break;
   		default:  //normal
   			this.EquipBaseBelt.isHidden = true;
   			this.EquipHeadBase.isHidden = true;
-  			break;
+  		break;
   		}
   		
-  		switch(ent.getStateEmotion(ID.S.State2)) {
+  		switch (ent.getStateEmotion(ID.S.State2))
+  		{
   		case ID.State.EQUIP00_2:
   			this.EquipU01.isHidden = true;
   			this.EquipLegR01.isHidden = false;
   			this.EquipLegL01.isHidden = false;
-  			break;
+  		break;
   		case ID.State.EQUIP01_2:
   			this.EquipU01.isHidden = false;
   			this.EquipLegR01.isHidden = true;
   			this.EquipLegL01.isHidden = true;
-  			break;
+  		break;
   		case ID.State.EQUIP02_2:
   			this.EquipU01.isHidden = false;
   			this.EquipLegR01.isHidden = false;
   			this.EquipLegL01.isHidden = false;
-  			break;
+  		break;
   		default:  //normal
   			this.EquipU01.isHidden = true;
   			this.EquipLegR01.isHidden = true;
   			this.EquipLegL01.isHidden = true;
-  			break;
+  		break;
   		}
   	}
   	
     //設定顯示的臉型
   	@Override
-  	public void setFace(int emo) {
-  		switch(emo) {
+  	public void setFace(int emo)
+  	{
+  		switch (emo)
+  		{
   		case 0:
   			this.Face0.isHidden = false;
   			this.Face1.isHidden = true;
   			this.Face2.isHidden = true;
   			this.Face3.isHidden = true;
   			this.Face4.isHidden = true;
-  			break;
+  		break;
   		case 1:
   			this.Face0.isHidden = true;
   			this.Face1.isHidden = false;
   			this.Face2.isHidden = true;
   			this.Face3.isHidden = true;
   			this.Face4.isHidden = true;
-  			break;
+  		break;
   		case 2:
   			this.Face0.isHidden = true;
   			this.Face1.isHidden = true;
   			this.Face2.isHidden = false;
   			this.Face3.isHidden = true;
   			this.Face4.isHidden = true;
-  			break;
+  		break;
   		case 3:
   			this.Face0.isHidden = true;
   			this.Face1.isHidden = true;
   			this.Face2.isHidden = true;
   			this.Face3.isHidden = false;
   			this.Face4.isHidden = true;
-  			break;
+  		break;
   		case 4:
   			this.Face0.isHidden = true;
   			this.Face1.isHidden = true;
   			this.Face2.isHidden = true;
   			this.Face3.isHidden = true;
   			this.Face4.isHidden = false;
-  			break;
+  		break;
   		default:
-  			break;
+  		break;
   		}
   	}
    
     
 }
-

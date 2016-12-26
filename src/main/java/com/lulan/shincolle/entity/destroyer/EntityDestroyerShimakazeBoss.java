@@ -64,7 +64,12 @@ public class EntityDestroyerShimakazeBoss extends BasicEntityShipHostile
 	@Override
 	protected boolean canDespawn()
 	{
-        return this.ticksExisted > 6000;
+		if (ConfigHandler.despawnBoss > -1)
+		{
+			return this.ticksExisted > ConfigHandler.despawnBoss;
+		}
+        
+		return false;
     }
 	
 	@Override

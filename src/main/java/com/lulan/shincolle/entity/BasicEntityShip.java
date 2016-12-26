@@ -1659,6 +1659,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		//use item
 		if (stack != null)
 		{
+			//use cake
+			if (stack.getItem() == Items.CAKE && !this.world.isRemote)
+			{
+				this.setShipOutfit(player.isSneaking());
+				return EnumActionResult.SUCCESS;
+			}
+			
 			//use pointer item (caress head mode)
 			if (stack.getItem() == ModItems.PointerItem && !this.world.isRemote)
 			{
@@ -1693,7 +1700,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			}
 			
 			//use name tag, owner only
-			if (stack.getItem() == Items.NAME_TAG && TeamHelper.checkSameOwner(player, this))
+			if (stack.getItem() == Items.NAME_TAG && TeamHelper.checkSameOwner(player, this)  && !this.world.isRemote)
 			{
 	            //若該name tag有取名過, 則將名字貼到entity上
 				if (stack.hasDisplayName())
@@ -1704,7 +1711,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			}
 			
 			//use repair bucket
-			if (stack.getItem() == ModItems.BucketRepair)
+			if (stack.getItem() == ModItems.BucketRepair && !this.world.isRemote)
 			{
 				//hp不到max hp時可以使用bucket
 				if (this.getHealth() < this.getMaxHealth())
@@ -1741,7 +1748,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			}
 			
 			//use kaitai hammer, OWNER and OP only
-			if (stack.getItem() == ModItems.KaitaiHammer && player.isSneaking() &&
+			if (stack.getItem() == ModItems.KaitaiHammer && player.isSneaking() && !this.world.isRemote &&
 				(TeamHelper.checkSameOwner(this, player) || EntityHelper.checkOP(player)))
 			{
 				
@@ -1832,7 +1839,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			}//end kaitai hammer
 			
 			//use marriage ring
-			if (stack.getItem() == ModItems.MarriageRing && !this.getStateFlag(ID.F.IsMarried) && 
+			if (stack.getItem() == ModItems.MarriageRing && !this.getStateFlag(ID.F.IsMarried) && !this.world.isRemote && 
 			   player.isSneaking() && TeamHelper.checkSameOwner(this, player))
 			{
 				//stack-1 in non-creative mode
@@ -1875,7 +1882,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			}//end wedding ring
 			
 			//use modernization kit
-			if (stack.getItem() == ModItems.ModernKit)
+			if (stack.getItem() == ModItems.ModernKit && !this.world.isRemote)
 			{
 				if (addRandomBonusPoint())
 				{	//add 1 random bonus
@@ -1897,13 +1904,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			}//end modern kit
 
 			//use owner paper, owner only
-			if (stack.getItem() == ModItems.OwnerPaper && TeamHelper.checkSameOwner(this, player))
+			if (stack.getItem() == ModItems.OwnerPaper && TeamHelper.checkSameOwner(this, player) && !this.world.isRemote)
 			{
 				if(interactOwnerPaper(player, stack)) return EnumActionResult.SUCCESS;
 			}//end owner paper
 			
 			//use lead
-			if (stack.getItem() == Items.LEAD && !this.getLeashed() && TeamHelper.checkSameOwner(this, player))
+			if (stack.getItem() == Items.LEAD && !this.getLeashed() && TeamHelper.checkSameOwner(this, player) && !this.world.isRemote)
 			{
 				this.getShipNavigate().clearPathEntity();
 				this.setLeashedToEntity(player, true);
@@ -1919,7 +1926,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		}//end item != null
 		
 		//如果已經被綑綁, 再點一下可以解除綑綁
-		if (this.getLeashed() && this.getLeashedToEntity() == player)
+		if (this.getLeashed() && this.getLeashedToEntity() == player && !this.world.isRemote)
 		{
             this.clearLeashed(true, !player.capabilities.isCreativeMode);
             return EnumActionResult.SUCCESS;
@@ -2680,8 +2687,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	@Override
 	public boolean attackEntityWithAmmo(Entity target)
 	{
-		//get attack value
-		float atk = getAttackBaseDamage(1, target);
+		//light ammo -1
+        if (!decrAmmoNum(0, this.getAmmoConsumption())) return false;
         
         //experience++
   		addShipExp(ConfigHandler.expGain[1]);
@@ -2693,16 +2700,15 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		decrMorale(1);
   		setCombatTick(this.ticksExisted);
   		
-        //light ammo -1
-        if (!decrAmmoNum(0, this.getAmmoConsumption())) return false;
-        
+  		//get attack value
+  		float atk = getAttackBaseDamage(1, target);
+  		
         //calc dist to target
         float[] distVec = new float[4];  //x, y, z, dist
         distVec[0] = (float) (target.posX - this.posX);
         distVec[1] = (float) (target.posY - this.posY);
         distVec[2] = (float) (target.posZ - this.posZ);
         distVec[3] = MathHelper.sqrt(distVec[0]*distVec[0] + distVec[1]*distVec[1] + distVec[2]*distVec[2]);
-        
         distVec[0] = distVec[0] / distVec[3];
         distVec[1] = distVec[1] / distVec[3];
         distVec[2] = distVec[2] / distVec[3];
@@ -2768,8 +2774,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
       		}
   		}
       		
-	    //將atk跟attacker傳給目標的attackEntityFrom方法, 在目標class中計算傷害
-	    //並且回傳是否成功傷害到目標
+  		//確認攻擊是否成功
 	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this).setProjectile(), atk);
 
 	    //if attack success
@@ -2792,6 +2797,19 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	@Override
 	public boolean attackEntityWithHeavyAmmo(Entity target)
 	{
+		//ammo--
+        if (!decrAmmoNum(1, this.getAmmoConsumption())) return false;
+        
+		//experience++
+		addShipExp(ConfigHandler.expGain[2]);
+		
+		//grudge--
+		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
+		
+  		//morale--
+		decrMorale(2);
+  		setCombatTick(this.ticksExisted);
+	
 		//get attack value
 		float atk = getAttackBaseDamage(2, target);
 		float kbValue = 0.15F;
@@ -2817,29 +2835,16 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	isDirect = true;
         }
         
-        if(getShipDepth() > 0D)
+        if (getShipDepth() > 0D)
         {
         	isDirect = true;
         	launchPos = (float) posY;
         }
-		
-		//experience++
-		addShipExp(ConfigHandler.expGain[2]);
-		
-		//grudge--
-		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
-		
-  		//morale--
-		decrMorale(2);
-  		setCombatTick(this.ticksExisted);
-	
-		//play attack effect
+        
+        //play sound and particle
         applySoundAtAttacker(2, target);
 	    applyParticleAtAttacker(2, target, distVec);
-        
-        //heavy ammo--
-        if(!decrAmmoNum(1, this.getAmmoConsumption())) return false;
-        
+		
         //calc miss chance, miss: add random offset(0~6) to missile target 
         float missChance = 0.2F + 0.15F * (distVec[3] / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.M.ShipLevel];
         missChance -= EffectEquip[ID.EF_MISS];	//equip miss reduce
@@ -2864,10 +2869,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         applyParticleAtTarget(2, target, distVec);
         applyEmotesReaction(3);
         
-        if (ConfigHandler.canFlare)
-        {
-			flareTarget(target);
-		}
+        if (ConfigHandler.canFlare) flareTarget(target);
         
         return true;
 	}
@@ -3101,13 +3103,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				{
 				case 1:
 					applyParticleEmotion(29);  //blink
-					break;
+				break;
 				case 2:
 					applyParticleEmotion(30);  //pif
-					break;
+				break;
 				default:
 					applyParticleEmotion(9);  //hungry
-					break;
+				break;
 				}
 			}
 		}
@@ -3124,19 +3126,19 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				{
 				case 1:
 					applyParticleEmotion(0);  //drop
-					break;
+				break;
 				case 2:
 					applyParticleEmotion(2);  //panic
-					break;
+				break;
 				case 3:
 					applyParticleEmotion(5);  //...
-					break;
+				break;
 				case 4:
 					applyParticleEmotion(20);  //orz
-					break;
+				break;
 				default:
 					applyParticleEmotion(32);  //hmm
-					break;
+				break;
 				}
 			}
 			
@@ -5303,19 +5305,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		{
   		case 1:  //light cannon
   			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 6, this.posX, this.posY, this.posZ, vec[0], vec[1], vec[2], true), point);
-  			break;
+  		break;
   		case 2:  //heavy cannon
-  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
-  			break;
   		case 3:  //light aircraft
-  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
-  			break;
   		case 4:  //heavy aircraft
-  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
-  			break;
 		default: //melee
 			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
-			break;
+		break;
   		}
   	}
   	

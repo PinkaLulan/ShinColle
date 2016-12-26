@@ -77,11 +77,16 @@ public class Particle91Type extends Particle
 
         	if (partAge > -1 && partAge < totalTime)
         	{
+        		//particle是以玩家視野來render, 因此座標要扣掉interpPos轉換為玩家視野座標
+            	float f11 = (float)(this.prevPosX + (this.posX - this.prevPosX) * (double)ptick - interpPosX);
+            	float f12 = (float)(this.prevPosY + (this.posY - this.prevPosY) * (double)ptick - interpPosY);
+            	float f13 = (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * (double)ptick - interpPosZ);
+
         		minu = 1F / 6F * i;
         		maxu = 1F / 6F * (i + 1);
-        		x = (float)(this.posX - interpPosX - (i - 2.5F) * this.particleScale * 2F * cosYaw);
-                y = (float)(this.posY - interpPosY);
-                z = (float)(this.posZ - interpPosZ - (i - 2.5F) * this.particleScale * 2F * cosPitch);
+        		x = f11 - (i - 2.5F) * this.particleScale * 2F * cosYaw;
+                y = f12;
+                z = f13 - (i - 2.5F) * this.particleScale * 2F * cosPitch;
         	
                 if (partAge < fadeTime)
                 {	//0~10: color fade in

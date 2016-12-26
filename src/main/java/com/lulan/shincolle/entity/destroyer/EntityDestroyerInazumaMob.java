@@ -62,7 +62,12 @@ public class EntityDestroyerInazumaMob extends BasicEntityShipHostile implements
 	@Override
 	protected boolean canDespawn()
 	{
-        return this.ticksExisted > 600;
+		if (ConfigHandler.despawnMinion > -1)
+		{
+			return this.ticksExisted > ConfigHandler.despawnMinion;
+		}
+        
+		return false;
     }
 	
 	@Override

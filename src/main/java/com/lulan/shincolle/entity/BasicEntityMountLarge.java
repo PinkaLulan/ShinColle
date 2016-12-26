@@ -54,13 +54,13 @@ abstract public class BasicEntityMountLarge extends BasicEntityMount implements 
 	@Override
 	public boolean attackEntityWithAircraft(Entity target)
 	{
-		return ((IShipAircraftAttack)host).attackEntityWithAircraft(target);
+		return ((IShipAircraftAttack) host).attackEntityWithAircraft(target);
 	}
 	//飛機攻擊, 由host執行
 	@Override
 	public boolean attackEntityWithHeavyAircraft(Entity target)
 	{
-		return ((IShipAircraftAttack)host).attackEntityWithHeavyAircraft(target);
+		return ((IShipAircraftAttack) host).attackEntityWithHeavyAircraft(target);
 	}
 	
 	

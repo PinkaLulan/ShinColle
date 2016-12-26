@@ -1,16 +1,17 @@
 package com.lulan.shincolle.client.model;
 
-import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.MathHelper;
-
-import org.lwjgl.opengl.GL11;
-
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.reference.ID;
+
+import net.minecraft.client.model.ModelBase;
+import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.GlStateManager.DestFactor;
+import net.minecraft.client.renderer.GlStateManager.SourceFactor;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.math.MathHelper;
 
 /**
  * ModelMountCaH - PinkaLulan
@@ -371,18 +372,20 @@ public class ModelMountCaH extends ModelBase
 
     @Override
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
-    { 
-    	GL11.glPushMatrix();       
-    	GL11.glEnable(GL11.GL_BLEND);
-    	GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-    	GL11.glScalef(1.1F, 1.1F, 1.1F);
+    {
+    	GlStateManager.pushMatrix();
+    	GlStateManager.enableBlend();
+    	GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
+    	GlStateManager.scale(1.1F, 1.1F, 1.1F);
     	
+    	//main body
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
     	this.BodyMain.render(f5);
-    	GL11.glDisable(GL11.GL_BLEND);
+    	GlStateManager.disableBlend();
     	
-    	//亮度設為240
-    	GL11.glDisable(GL11.GL_LIGHTING);
+    	//light part
+    	GlStateManager.disableLighting();
+    	GlStateManager.enableCull();
     	
     	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
     	this.GlowBodyMain.render(f5);
@@ -391,9 +394,9 @@ public class ModelMountCaH extends ModelBase
     	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, light, light);
     	this.GlowBodyMain2.render(f5);
     	
-    	GL11.glEnable(GL11.GL_LIGHTING);
-    	
-    	GL11.glPopMatrix();
+    	GlStateManager.disableCull();
+    	GlStateManager.enableLighting();
+    	GlStateManager.popMatrix();
     }
     
   //for idle/run animation
@@ -405,7 +408,6 @@ public class ModelMountCaH extends ModelBase
 		IShipEmotion ent = (IShipEmotion)entity;
 		  
 		motionHumanPos(f, f1, f2, f3, f4, ent);
-
     }
     
     //雙腳移動計算
@@ -418,12 +420,12 @@ public class ModelMountCaH extends ModelBase
   		float addk2 = 0F;
   		
   		//水上漂浮
-  		if(((IShipFloating)ent).getShipDepth() > 0)
+  		if(((IShipFloating) ent).getShipDepth() > 0)
   		{
-    		GL11.glTranslatef(0F, angleX * 0.025F - 0.025F, 0F);
+  			GlStateManager.translate(0F, angleX * 0.025F - 0.025F, 0F);
     	}
   		
-    	GL11.glTranslatef(0F, -0.25F, -0.1F);
+  		GlStateManager.translate(0F, -0.25F, -0.1F);
 
 	    //正常站立動作
 	  	//嘴巴
@@ -433,7 +435,7 @@ public class ModelMountCaH extends ModelBase
 	  	this.CannonR02.rotateAngleX = -angleX * 0.05F;
 	    
     	//seat2 有載人動作
-	    if(ent.getStateEmotion(ID.S.Emotion) > 0)
+	    if (ent.getStateEmotion(ID.S.Emotion) > 0)
 	    {
 	    	this.Jaw01.rotateAngleX = 1.0F;
 	    }
@@ -444,4 +446,3 @@ public class ModelMountCaH extends ModelBase
   	
   	
 }
-

@@ -5,7 +5,6 @@ import java.io.File;
 import com.lulan.shincolle.config.ConfigLoot;
 import com.lulan.shincolle.config.ConfigSound;
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
@@ -34,6 +33,8 @@ public class ConfigHandler
 	public static int closeGUIDist = 64;
 	public static int bossCooldown = 4800;
 	public static int teamCooldown = 6000;
+	public static int despawnBoss = 12000;
+	public static int despawnMinion = 600;
 	public static int kaitaiAmountSmall = 20;
 	public static int kaitaiAmountLarge = 20;
 	public static int baseCaressMorale = 15;
@@ -120,6 +121,12 @@ public class ConfigHandler
 		//是否開啟debug mode
 		debugMode = config.getBoolean("Debug_Mode", "general", false, "Enable debug message (SPAM WARNING)");
 		
+		//boss刪除時間 (ticks)
+		despawnBoss = config.getInt("Despawn_Boss", "general", 12000, -1, 1728000, "Boss ship despawn time on chunk unloading, -1 = do NOT despawn");
+		
+		//雜魚刪除時間 (ticks)
+		despawnMinion = config.getInt("Despawn_Minion", "general", 600, -1, 1728000, "Nonboss ship despawn time on chunk unloading, -1 = do NOT despawn");
+				
 		//grudge掉落率設定
 		dropGrudge = config.getFloat("DropRate_Grudge", "general", 1F, 0F, 64F, "Grudge drop rate (ex: 0.5 = 50% drop 1 grudge, 5.5 = drop 5 grudge + 50% drop 1 grudge)");
 		

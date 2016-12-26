@@ -38,7 +38,7 @@ public class RenderSummonEntity extends RenderLiving<EntityLiving>
 	private static ModelBase MD_Rensouhou = new ModelRensouhou();
 	private static final ResourceLocation TEX_RensouhouS = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityRensouhouS.png");
 	private static ModelBase MD_RensouhouS = new ModelRensouhouS();
-	
+
 	//factory
 	public static final FactoryDefault FACTORY_DEFAULT = new FactoryDefault();
 	
