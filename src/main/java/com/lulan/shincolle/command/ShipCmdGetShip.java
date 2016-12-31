@@ -11,23 +11,19 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.network.S2CInputPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
-import com.lulan.shincolle.proxy.ServerProxy.ShipCacheData;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.server.CacheDataShip;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.FormationHelper;
-import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
@@ -84,6 +80,7 @@ public class ShipCmdGetShip extends CommandBase
 	
 	public ShipCmdGetShip () {}
 	
+	/** command name */
 	@Override
 	public String getName()
 	{
@@ -97,6 +94,7 @@ public class ShipCmdGetShip extends CommandBase
 		return this.Aliases;
 	}
 
+	/** command guide text */
 	@Override
 	public String getUsage(ICommandSender sender)
 	{
@@ -118,6 +116,7 @@ public class ShipCmdGetShip extends CommandBase
 		return Collections.<String>emptyList();
     }
 
+	/** command process, SERVER SIDE ONLY */
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
 	{
@@ -165,7 +164,7 @@ public class ShipCmdGetShip extends CommandBase
 				int uid = parseInt(args[1]);
 				if (uid <= 0) return;
 				
-				ShipCacheData data = ServerProxy.getShipWorldData(uid);
+				CacheDataShip data = ServerProxy.getShipWorldData(uid);
 				
 				if (data != null)
 				{
@@ -297,7 +296,7 @@ public class ShipCmdGetShip extends CommandBase
 				int uid = parseInt(args[1]);
 				if (uid <= 0) return;
 				
-				ShipCacheData data = ServerProxy.getShipWorldData(uid);
+				CacheDataShip data = ServerProxy.getShipWorldData(uid);
 				
 				//data exist
 				if (data != null)

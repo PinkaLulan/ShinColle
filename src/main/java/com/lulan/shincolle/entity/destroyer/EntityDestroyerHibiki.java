@@ -9,6 +9,7 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -40,7 +41,7 @@ public class EntityDestroyerHibiki extends BasicEntityShipSmall implements IShip
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.DD]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.DD]);
-		this.ModelPos = new float[] {0F, 13F, 0F, 50F};
+		this.ModelPos = new float[] {0F, 25F, 0F, 50F};
 		
 		//set attack type
 		this.StateFlag[ID.F.HaveRingEffect] = true;
@@ -89,19 +90,25 @@ public class EntityDestroyerHibiki extends BasicEntityShipSmall implements IShip
   		//server side
   		if (!world.isRemote)
   		{
-			if (this.ticksExisted % 128 == 0)
+  			if (this.ticksExisted % 32 == 0)
   			{
-  				//add aura to master every 128 ticks
-  				EntityPlayerMP player = (EntityPlayerMP) EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
+  				this.checkRiderType();
+  				this.checkRidingState();
   				
-  				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) &&
-  					getStateMinor(ID.M.NumGrudge) > 0 && player != null &&
-  					getDistanceSqToEntity(player) < 256D)
-  				{
-  					//potion effect: id, time, level
-  					player.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 300, getStateMinor(ID.M.ShipLevel) / 45 + 1));
-  				}
-  			}
+  				if (this.ticksExisted % 128 == 0)
+  	  			{
+  	  				//add aura to master every 128 ticks
+  	  				EntityPlayerMP player = (EntityPlayerMP) EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
+  	  				
+  	  				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) &&
+  	  					getStateMinor(ID.M.NumGrudge) > 0 && player != null &&
+  	  					getDistanceSqToEntity(player) < 256D)
+  	  				{
+  	  					//potion effect: id, time, level
+  	  					player.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 300, getStateMinor(ID.M.ShipLevel) / 45 + 1));
+  	  				}
+  	  			}//end 128 ticks
+  			}//end 32 ticks
   		}
   		//client side
   		else

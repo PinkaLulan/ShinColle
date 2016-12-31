@@ -58,5 +58,8 @@ public interface IShipEmotion extends IShipFlags
 	public int getRidingState();
 	public void setRidingState(int state);
 	
+	/** get model scale level for model rendering: 0:normal, 1~N:scale level */
+	public int getScaleLevel();
+	
 	
 }

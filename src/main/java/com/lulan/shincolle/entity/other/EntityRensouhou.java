@@ -564,6 +564,12 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack, 
 	}
 	
 	@Override
+	public float getJumpSpeed()
+	{
+		return 1F;
+	}
+	
+	@Override
 	public int getAmmoLight()
 	{
 		return this.numAmmoLight;
@@ -818,6 +824,12 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack, 
 	
 	@Override
 	public void setRidingState(int state) {}
+
+	@Override
+	public int getScaleLevel()
+	{
+		return 0;
+	}
 
 
 }

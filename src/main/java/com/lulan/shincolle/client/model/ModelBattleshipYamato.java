@@ -1059,22 +1059,27 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion
     	if (f3 <= -180F) { f3 += 360F; }
     	else if (f3 >= 180F) { f3 -= 360F; }
     	
-    	if (entity.isNonBoss())
+    	switch (((IShipEmotion)entity).getScaleLevel())
     	{
-    		scale = 0.5F;
-        	offsetY = 0F;
-    	}
-    	else
-    	{
+    	case 3:
     		scale = 1.8F;
         	offsetY = -2.1F;
+		break;
+    	case 2:
+		break;
+    	case 1:
+		break;
+    	default:
+    		scale = 0.5F;
+        	offsetY = 1.5F;
+		break;
     	}
     	
     	GlStateManager.pushMatrix();
     	GlStateManager.enableBlend();
     	GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
     	GlStateManager.scale(scale, scale, scale);
-    	GlStateManager.translate(0F, offsetY + 1.55F, 0F);
+    	GlStateManager.translate(0F, offsetY, 0F);
     	
     	//main body
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
@@ -1133,7 +1138,7 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion
     
     private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
     {
-    	GlStateManager.translate(0F, 1.75F, 0F);
+    	GlStateManager.translate(0F, 0.58F, 0F);
     	setFace(4);
     
     	//頭部
@@ -1218,7 +1223,7 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion
   		//水上漂浮
   		if (((Entity) ent).getPassengers().size() == 0 && ((IShipFloating) ent).getShipDepth() > 0)
   		{
-  			GlStateManager.translate(0F, angleX * 0.1F - 0.03F, 0F);
+  			GlStateManager.translate(0F, angleX * 0.05F + 0.025F, 0F);
     	}
   		
     	//leg move
@@ -1355,7 +1360,7 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion
 	    
 	    if (ent.getIsSneaking())
 	    {	//潛行, 蹲下動作
-	    	GlStateManager.translate(0F, 0.1F, 0F);
+	    	GlStateManager.translate(0F, 0.07F, 0F);
 	    	//Body
 	    	this.Head.rotateAngleX -= 1.0472F;
 		  	this.BodyMain.rotateAngleX = 1.0472F;
@@ -1394,7 +1399,7 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion
 	    {	//騎乘動作
 	    	if (ent.getStateEmotion(ID.S.State) > ID.State.EQUIP00)
 	    	{
-	    		GlStateManager.translate(0F, offsetY + 1.2F, 0F);
+	    		GlStateManager.translate(0F, 0.4F, 0F);
 		    	//Body
 			  	this.Head.rotateAngleX += 0.1047F;
 		    	this.BodyMain.rotateAngleX = -0.1396F;
@@ -1433,7 +1438,7 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion
 			}
 	    	else if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 	    	{
-	    		GlStateManager.translate(0F, offsetY + 1.42F, 0F);
+	    		GlStateManager.translate(0F, 0.5F, 0F);
 		    	//Body
 			  	this.Head.rotateAngleX -= 0.21F;
 			  	this.Head.rotateAngleY -= 0.4363F;
@@ -1484,7 +1489,7 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion
 	    	}
 	    	else
 	    	{
-	    		GlStateManager.translate(0F, offsetY + 1.55F, 0F);
+	    		GlStateManager.translate(0F, 0.54F, 0F);
 		    	//Body
 			  	this.Head.rotateAngleX += 0.1047F;
 		    	this.BodyMain.rotateAngleX = -0.1396F;

@@ -45,9 +45,9 @@ import com.lulan.shincolle.network.S2CInputPackets;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
-import com.lulan.shincolle.proxy.ServerProxy.ShipCacheData;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
+import com.lulan.shincolle.server.CacheDataShip;
 import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
@@ -854,6 +854,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	}
 	
 	@Override
+	public float getJumpSpeed()
+	{
+		return 1F;
+	}
+	
+	@Override
     public float getAIMoveSpeed()
     {
         return getMoveSpeed();
@@ -1656,310 +1662,335 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     {
     	if (hand == EnumHand.OFF_HAND) return EnumActionResult.FAIL;
     	
-		//use item
-		if (stack != null)
-		{
-			//use cake
-			if (stack.getItem() == Items.CAKE && !this.world.isRemote)
+    	//server side
+    	if (!this.world.isRemote)
+    	{
+			//use item
+			if (stack != null)
 			{
-				this.setShipOutfit(player.isSneaking());
-				return EnumActionResult.SUCCESS;
-			}
-			
-			//use pointer item (caress head mode)
-			if (stack.getItem() == ModItems.PointerItem && !this.world.isRemote)
-			{
-				//set ai target
-				this.aiTarget = player;
-				
-				//is owner
-				if (TeamHelper.checkSameOwner(player, this) && !this.getStateFlag(ID.F.NoFuel))
+				//use name tag, owner only
+				if (stack.getItem() == Items.NAME_TAG && TeamHelper.checkSameOwner(player, this))
 				{
-					int t = this.ticksExisted - this.getMoraleTick();
-					int m = this.getStateMinor(ID.M.Morale);
-					
-					if (t > 3 && m < 6600)
-					{  //if caress > 3 ticks
-						this.setMoraleTick(this.ticksExisted);
-						this.setStateMinor(ID.M.Morale, m + ConfigHandler.baseCaressMorale);
-					}
-
-					//show emotes
-					applyEmotesReaction(0);
-				}
-				//not owner or no fuel
-				else
-				{
-					applyEmotesReaction(1);
-				}
-				
-				//clear ai target
-				this.aiTarget = null;
-				
-				return EnumActionResult.SUCCESS;
-			}
-			
-			//use name tag, owner only
-			if (stack.getItem() == Items.NAME_TAG && TeamHelper.checkSameOwner(player, this)  && !this.world.isRemote)
-			{
-	            //若該name tag有取名過, 則將名字貼到entity上
-				if (stack.hasDisplayName())
-				{
-					this.setNameTag(stack.getDisplayName());
-					return EnumActionResult.FAIL;  //TODO 回傳FAIL可避免tag被消耗掉?
-	            } 
-			}
-			
-			//use repair bucket
-			if (stack.getItem() == ModItems.BucketRepair && !this.world.isRemote)
-			{
-				//hp不到max hp時可以使用bucket
-				if (this.getHealth() < this.getMaxHealth())
-				{
-					if (!player.capabilities.isCreativeMode)
-					{  //item-1 in non-creative mode
-						--stack.stackSize;
-	                }
-	
-	                if (this instanceof BasicEntityShipSmall)
-	                {
-	                	this.heal(this.getMaxHealth() * 0.1F + 5F);	//1 bucket = 10% hp for small ship
-	                }
-	                else
-	                {
-	                	this.heal(this.getMaxHealth() * 0.05F + 10F);	//1 bucket = 5% hp for large ship
-	                }
-	                
-	                //airplane++
-	                if (this instanceof BasicEntityShipCV)
-	                {
-	                	BasicEntityShipCV ship = (BasicEntityShipCV) this;
-	                	ship.setNumAircraftLight(ship.getNumAircraftLight() + 1);
-	                	ship.setNumAircraftHeavy(ship.getNumAircraftHeavy() + 1);
-	                }
-	                
-	                if (stack.stackSize <= 0)
-	                {  
-	                	player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
-	                }
-	                
-	                return EnumActionResult.SUCCESS;
-	            }			
-			}
-			
-			//use kaitai hammer, OWNER and OP only
-			if (stack.getItem() == ModItems.KaitaiHammer && player.isSneaking() && !this.world.isRemote &&
-				(TeamHelper.checkSameOwner(this, player) || EntityHelper.checkOP(player)))
-			{
-				
-				//client
-				if (world.isRemote)
-				{
-					return EnumActionResult.SUCCESS;
-				}
-				//server
-				else
-				{
-					//創造模式不消耗物品
-	                if (!player.capabilities.isCreativeMode)
-	                {	//damage +1 in non-creative mode
-	 	                stack.setItemDamage(stack.getItemDamage() + 1);
-	                    
-	                    //set item amount
-	                    ItemStack[] items = ShipCalc.getKaitaiItems(this.getShipClass());
-	                                
-	                    EntityItem entityItem0 = new EntityItem(world, posX+0.5D, posY+0.8D, posZ+0.5D, items[0]);
-	                    EntityItem entityItem1 = new EntityItem(world, posX+0.5D, posY+0.8D, posZ-0.5D, items[1]);
-	                    EntityItem entityItem2 = new EntityItem(world, posX-0.5D, posY+0.8D, posZ+0.5D, items[2]);
-	                    EntityItem entityItem3 = new EntityItem(world, posX-0.5D, posY+0.8D, posZ-0.5D, items[3]);
-
-	                    world.spawnEntity(entityItem0);
-	                    world.spawnEntity(entityItem1);
-	                    world.spawnEntity(entityItem2);
-	                    world.spawnEntity(entityItem3);
-	                    
-	                    //drop inventory item
-                    	for (int i = 0; i < this.itemHandler.getSlots(); i++)
-                    	{
-            				ItemStack invitem = this.itemHandler.getStackInSlot(i);
-
-            				if (invitem != null)
-            				{
-            					//設定要隨機噴出的range
-            					float f = rand.nextFloat() * 0.8F + 0.1F;
-            					float f1 = rand.nextFloat() * 0.8F + 0.1F;
-            					float f2 = rand.nextFloat() * 0.8F + 0.1F;
-
-            					while (invitem.stackSize > 0)
-            					{
-            						int j = rand.nextInt(21) + 10;
-            						//如果物品超過一個隨機數量, 會分更多疊噴出
-            						if (j > invitem.stackSize)
-            						{  
-            							j = invitem.stackSize;
-            						}
-
-            						invitem.stackSize -= j;
-            						
-            						//將item做成entity, 生成到世界上
-            						EntityItem item = new EntityItem(this.world, this.posX+f, this.posY+f1, this.posZ+f2, new ItemStack(invitem.getItem(), j, invitem.getItemDamage()));
-            						
-            						//如果有NBT tag, 也要複製到物品上
-            						if (invitem.hasTagCompound())
-            						{
-            							item.getEntityItem().setTagCompound((NBTTagCompound)invitem.getTagCompound().copy());
-            						}
-            						
-            						world.spawnEntity(item);	//生成item entity
-            					}
-            				}
-            			}
-	                    
-                    	//kaitai sound
-                    	this.playSound(ModSounds.SHIP_KAITAI, this.getSoundVolume(), this.getSoundPitch());
-                    	this.playSound(this.getDeathSound(), this.getSoundVolume(), this.getSoundPitch());
-	                }
-	                
-	                //物品用完時要設定為null清空該slot
-	                if (stack.getItemDamage() >= stack.getMaxDamage())
-	                {  //物品耐久度用完時要設定為null清空該slot
-	                	player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
-	                }
-	                
-	                //show emotes
-					applyParticleEmotion(8);
-					
-					//emotes AOE
-					EntityHelper.applyShipEmotesAOE(this.world, this.posX, this.posY, this.posZ, 10D, 6);
-	                 
-	                this.setDead();
-	                
-	                return EnumActionResult.SUCCESS;
-				}//end server side
-			}//end kaitai hammer
-			
-			//use marriage ring
-			if (stack.getItem() == ModItems.MarriageRing && !this.getStateFlag(ID.F.IsMarried) && !this.world.isRemote && 
-			   player.isSneaking() && TeamHelper.checkSameOwner(this, player))
-			{
-				//stack-1 in non-creative mode
-				if (!player.capabilities.isCreativeMode)
-				{
-                    --stack.stackSize;
-                }
-
-				//set marriage flag
-                this.setStateFlag(ID.F.IsMarried, true);
-                
-                //player marriage num +1
-    			CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(player);
-    			if (capa != null)
-    			{
-    				capa.setMarriageNum(capa.getMarriageNum() + 1);
-    			}
-                
-                //play hearts effect
-                TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
-    			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 3, false), point);
-                
-    			//play marriage sound
-    			this.playSound(this.getCustomSound(4, this), this.getSoundVolume(), 1F);
-    	        
-    	        //add 3 random bonus point
-    	        for (int i = 0; i < 3; ++i)
-    	        {
-    	        	addRandomBonusPoint();
-    	        }
-    	        
-    	        this.calcEquipAndUpdateState();
-    	        
-                if (stack.stackSize <= 0)
-                {  //物品用完時要設定為null清空該slot
-                	player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
-                }
-                
-                return EnumActionResult.SUCCESS;
-			}//end wedding ring
-			
-			//use modernization kit
-			if (stack.getItem() == ModItems.ModernKit && !this.world.isRemote)
-			{
-				if (addRandomBonusPoint())
-				{	//add 1 random bonus
-					if (!player.capabilities.isCreativeMode)
+		            //若該name tag有取名過, 則將名字貼到entity上
+					if (stack.hasDisplayName())
 					{
-	                    --stack.stackSize;
-	                    
-	                    if (stack.stackSize <= 0)
-	                    {  //物品用完時要設定為null清空該slot
-	                    	player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
-	                    }
-	                }
-					
-					//play marriage sound
-					this.playSound(this.getCustomSound(4, this), this.getSoundVolume(), 1F);
-					
-					return EnumActionResult.SUCCESS;
-				}	
-			}//end modern kit
-
-			//use owner paper, owner only
-			if (stack.getItem() == ModItems.OwnerPaper && TeamHelper.checkSameOwner(this, player) && !this.world.isRemote)
-			{
-				if(interactOwnerPaper(player, stack)) return EnumActionResult.SUCCESS;
-			}//end owner paper
-			
-			//use lead
-			if (stack.getItem() == Items.LEAD && !this.getLeashed() && TeamHelper.checkSameOwner(this, player) && !this.world.isRemote)
-			{
-				this.getShipNavigate().clearPathEntity();
-				this.setLeashedToEntity(player, true);
-				return EnumActionResult.SUCCESS;
-	        }//end lead
-			
-			//feed
-			if (!this.world.isRemote && interactFeed(player, stack))
-			{
-				return EnumActionResult.SUCCESS;
-			}
-			
-		}//end item != null
-		
-		//如果已經被綑綁, 再點一下可以解除綑綁
-		if (this.getLeashed() && this.getLeashedToEntity() == player && !this.world.isRemote)
-		{
-            this.clearLeashed(true, !player.capabilities.isCreativeMode);
-            return EnumActionResult.SUCCESS;
-        }
-	
-		//right click
-		if (!this.world.isRemote && TeamHelper.checkSameOwner(this, player))
-		{
-			//sneak: open GUI
-			if (player.isSneaking())
-			{
-				FMLNetworkHandler.openGui(player, ShinColle.instance, ID.Gui.SHIPINVENTORY, this.world, this.getEntityId(), 0, 0);
-	    		return EnumActionResult.SUCCESS;
-			}
-			else
-			{
-				//current item = pointer
-				if (EntityHelper.getPointerInUse(player) != null)
+						this.setNameTag(stack.getDisplayName());
+						return EnumActionResult.FAIL;  //TODO 回傳FAIL可避免tag被消耗掉?
+		            } 
+				}
+				//use repair bucket
+				else if (stack.getItem() == ModItems.BucketRepair)
 				{
-					//call sitting method by PointerItem class, not here
+					if (interactBucket(player, stack)) return EnumActionResult.SUCCESS;
+				}
+				//use owner paper, owner only
+				else if (stack.getItem() == ModItems.OwnerPaper && TeamHelper.checkSameOwner(this, player))
+				{
+					if (interactOwnerPaper(player, stack)) return EnumActionResult.SUCCESS;
+				}
+				//use modernization kit
+				else if (stack.getItem() == ModItems.ModernKit)
+				{
+					if (interactModernKit(player, stack)) return EnumActionResult.SUCCESS;
+				}
+				//use cake
+				else if (stack.getItem() == Items.CAKE)
+				{
+					setShipOutfit(player.isSneaking());
+					return EnumActionResult.SUCCESS;
+				}
+				//use pointer item (caress head mode)
+				else if (stack.getItem() == ModItems.PointerItem)
+				{
+					interactPointer(player, stack);
+					return EnumActionResult.SUCCESS;
+				}
+				//use kaitai hammer, OWNER and OP only
+				else if (stack.getItem() == ModItems.KaitaiHammer && player.isSneaking() &&
+						 (TeamHelper.checkSameOwner(this, player) || EntityHelper.checkOP(player)))
+				{
+					interactKaitaiHammer(player, stack);
+					return EnumActionResult.SUCCESS;
+				}
+				//use wedding ring
+				else if (stack.getItem() == ModItems.MarriageRing && !this.getStateFlag(ID.F.IsMarried) && 
+						 player.isSneaking() && TeamHelper.checkSameOwner(this, player))
+				{
+					interactWeddingRing(player, stack);
+					return EnumActionResult.SUCCESS;
+				}
+				//use lead: clear path
+				else if (stack.getItem() == Items.LEAD)
+				{
+					this.getShipNavigate().clearPathEntity();
+					return EnumActionResult.SUCCESS;
+		        }
+				//feed
+				else if (interactFeed(player, stack))
+				{
+					return EnumActionResult.SUCCESS;
+				}
+			}//end item != null
+		
+			//owner right click
+			if (TeamHelper.checkSameOwner(this, player))
+			{
+				//sneak: open GUI
+				if (player.isSneaking())
+				{
+					FMLNetworkHandler.openGui(player, ShinColle.instance, ID.Gui.SHIPINVENTORY, this.world, this.getEntityId(), 0, 0);
+		    		return EnumActionResult.SUCCESS;
 				}
 				else
 				{
-					this.setEntitySit(!this.isSitting());
-					this.setRiderAndMountSit();
+					//current item = pointer
+					if (EntityHelper.getPointerInUse(player) != null)
+					{
+						//call sitting method by PointerItem class, not here
+					}
+					else
+					{
+						this.setEntitySit(!this.isSitting());
+						this.setRiderAndMountSit();
+					}
+					
+					return EnumActionResult.SUCCESS;
 				}
-				
-				return EnumActionResult.SUCCESS;
 			}
-		}
+    	}//end server side
 		
 		return EnumActionResult.PASS;
     }
+    
+    @Override
+    public boolean canBeLeashedTo(EntityPlayer player)
+    {
+    	if (! player.world.isRemote)
+    	{
+    		return TeamHelper.checkSameOwner(this, player);
+    	}
+        return true;	//client端只回傳true
+    }
+    
+    /** modern kit interact method */
+	protected boolean interactModernKit(EntityPlayer player, ItemStack stack)
+	{
+		//add 1 random bonus
+		if (addRandomBonusPoint())
+		{
+			if (!player.capabilities.isCreativeMode)
+			{
+                --stack.stackSize;
+                
+                if (stack.stackSize <= 0)
+                {	//物品用完時要設定為null清空該slot
+                	player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
+                }
+            }
+			
+			//play marriage sound
+			this.playSound(this.getCustomSound(4, this), this.getSoundVolume(), 1F);
+			
+			return true;
+		}
+		
+		return false;
+	}
+    
+    /** pointer interact method */
+	protected boolean interactPointer(EntityPlayer player, ItemStack stack)
+	{
+		//set ai target
+		this.aiTarget = player;
+		
+		//is owner
+		if (TeamHelper.checkSameOwner(player, this) && !this.getStateFlag(ID.F.NoFuel))
+		{
+			int t = this.ticksExisted - this.getMoraleTick();
+			int m = this.getStateMinor(ID.M.Morale);
+			
+			if (t > 3 && m < 6600)
+			{  //if caress > 3 ticks
+				this.setMoraleTick(this.ticksExisted);
+				this.setStateMinor(ID.M.Morale, m + ConfigHandler.baseCaressMorale);
+			}
+
+			//show emotes
+			applyEmotesReaction(0);
+		}
+		//not owner or no fuel
+		else
+		{
+			applyEmotesReaction(1);
+		}
+		
+		//clear ai target
+		this.aiTarget = null;
+		
+		return true;
+	}
+    
+    /** bucket interact method */
+	protected boolean interactBucket(EntityPlayer player, ItemStack stack)
+	{
+		//hp不到max hp時可以使用bucket
+		if (this.getHealth() < this.getMaxHealth())
+		{
+			if (!player.capabilities.isCreativeMode)
+			{  //item-1 in non-creative mode
+				--stack.stackSize;
+            }
+
+            if (this instanceof BasicEntityShipSmall)
+            {
+            	this.heal(this.getMaxHealth() * 0.1F + 5F);	//1 bucket = 10% hp for small ship
+            }
+            else
+            {
+            	this.heal(this.getMaxHealth() * 0.05F + 10F);	//1 bucket = 5% hp for large ship
+            }
+            
+            //airplane++
+            if (this instanceof BasicEntityShipCV)
+            {
+            	BasicEntityShipCV ship = (BasicEntityShipCV) this;
+            	ship.setNumAircraftLight(ship.getNumAircraftLight() + 1);
+            	ship.setNumAircraftHeavy(ship.getNumAircraftHeavy() + 1);
+            }
+            
+            if (stack.stackSize <= 0)
+            {  
+            	player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
+            }
+            
+            return true;
+        }
+		
+		return false;
+	}
+    
+    /** wedding ring interact method */
+	protected boolean interactWeddingRing(EntityPlayer player, ItemStack stack)
+	{
+		//stack-1 in non-creative mode
+		if (!player.capabilities.isCreativeMode)
+		{
+            --stack.stackSize;
+        }
+
+		//set marriage flag
+        this.setStateFlag(ID.F.IsMarried, true);
+        
+        //player marriage num +1
+		CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(player);
+		if (capa != null)
+		{
+			capa.setMarriageNum(capa.getMarriageNum() + 1);
+		}
+        
+        //play hearts effect
+        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
+		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 3, false), point);
+        
+		//play marriage sound
+		this.playSound(this.getCustomSound(4, this), this.getSoundVolume(), 1F);
+        
+        //add 3 random bonus point
+        for (int i = 0; i < 3; ++i)
+        {
+        	addRandomBonusPoint();
+        }
+        
+        this.calcEquipAndUpdateState();
+        
+        if (stack.stackSize <= 0)
+        {  //物品用完時要設定為null清空該slot
+        	player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
+        }
+        
+        return true;
+	}
+	
+    /** kattai hammer interact method */
+	protected boolean interactKaitaiHammer(EntityPlayer player, ItemStack stack)
+	{
+		//創造模式不消耗物品
+        if (!player.capabilities.isCreativeMode)
+        {
+        	//damage +1 in non-creative mode
+        	stack.setItemDamage(stack.getItemDamage() + 1);
+            
+            //set item amount
+            ItemStack[] items = ShipCalc.getKaitaiItems(this.getShipClass());
+                        
+            EntityItem entityItem0 = new EntityItem(world, posX+0.5D, posY+0.8D, posZ+0.5D, items[0]);
+            EntityItem entityItem1 = new EntityItem(world, posX+0.5D, posY+0.8D, posZ-0.5D, items[1]);
+            EntityItem entityItem2 = new EntityItem(world, posX-0.5D, posY+0.8D, posZ+0.5D, items[2]);
+            EntityItem entityItem3 = new EntityItem(world, posX-0.5D, posY+0.8D, posZ-0.5D, items[3]);
+
+            world.spawnEntity(entityItem0);
+            world.spawnEntity(entityItem1);
+            world.spawnEntity(entityItem2);
+            world.spawnEntity(entityItem3);
+            
+            //drop inventory item
+        	for (int i = 0; i < this.itemHandler.getSlots(); i++)
+        	{
+				ItemStack invitem = this.itemHandler.getStackInSlot(i);
+
+				if (invitem != null)
+				{
+					//設定要隨機噴出的range
+					float f = rand.nextFloat() * 0.8F + 0.1F;
+					float f1 = rand.nextFloat() * 0.8F + 0.1F;
+					float f2 = rand.nextFloat() * 0.8F + 0.1F;
+
+					while (invitem.stackSize > 0)
+					{
+						int j = rand.nextInt(21) + 10;
+						//如果物品超過一個隨機數量, 會分更多疊噴出
+						if (j > invitem.stackSize)
+						{  
+							j = invitem.stackSize;
+						}
+
+						invitem.stackSize -= j;
+						
+						//將item做成entity, 生成到世界上
+						EntityItem item = new EntityItem(this.world, this.posX+f, this.posY+f1, this.posZ+f2, new ItemStack(invitem.getItem(), j, invitem.getItemDamage()));
+						
+						//如果有NBT tag, 也要複製到物品上
+						if (invitem.hasTagCompound())
+						{
+							item.getEntityItem().setTagCompound((NBTTagCompound)invitem.getTagCompound().copy());
+						}
+						
+						world.spawnEntity(item);	//生成item entity
+					}
+				}
+			}
+            
+        	//kaitai sound
+        	this.playSound(ModSounds.SHIP_KAITAI, this.getSoundVolume(), this.getSoundPitch());
+        	this.playSound(this.getDeathSound(), this.getSoundVolume(), this.getSoundPitch());
+        }
+        
+        //物品用完時要設定為null清空該slot
+        if (stack.getItemDamage() >= stack.getMaxDamage())
+        {  //物品耐久度用完時要設定為null清空該slot
+        	player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
+        }
+        
+        //show emotes
+		applyParticleEmotion(8);
+		
+		//emotes AOE
+		EntityHelper.applyShipEmotesAOE(this.world, this.posX, this.posY, this.posZ, 10D, 6);
+         
+        this.setDead();
+        
+        return true;
+	}
 	
 	/** change owner method:
 	 *  1. check owner paper has 2 signs
@@ -2399,11 +2430,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				}//end  every 8 ticks
 			}//end every 2 ticks
 		}//end client side
-  		
-//		//TODO debug
-//		if(this.ticksExisted % 32 == 0) {
-//			LogHelper.info("AAAAAAAAAAAA "+this.worldObj.isRemote+" "+this.getStateMinor(ID.M.PlayerUID)+" "+this.getStateMinor(ID.M.PlayerEID)+" "+EntityHelper.getEntityPlayerByID(getStateMinor(ID.M.PlayerEID), 0, true));
-//		}
 	}
 
 	/**
@@ -2413,17 +2439,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	@Override
 	public void onLivingUpdate()
 	{
-//        //debug TODO
-//        if (this.ticksExisted % 32 == 0)
-//        {
-//        	LogHelper.debug("AAAAAAAAAAAA "+this.world.isRemote+"  "+this.getPassengers().size()+" "+
-//        					this.getRidingEntity());
-//        	if (this.getRidingEntity() != null)
-//        	{
-//        		LogHelper.debug("BBBBBBBBBBBB "+this.world.isRemote+"  "+this.getRidingEntity().getPassengers().get(0));
-//        	}
-//        }
-        
         //server side check
         if ((!world.isRemote))
         {
@@ -2443,6 +2458,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	//check every 8 ticks
         	if (ticksExisted % 8 == 0)
         	{
+        		//init riding rotation
+        		if (this.ticksExisted == 16)
+        		{
+        			sendSyncPacket(S2CEntitySync.PID.SyncEntity_Rot, true);
+        		}
+        		
         		//update formation buff (fast update)
         		if (this.getUpdateFlag(ID.FU.FormationBuff)) calcEquipAndUpdateState();
         		
@@ -2460,7 +2481,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
             		
             		this.initAI = true;
         		}
-//        		LogHelper.info("DEBUG : check spawn: "+this.worldObj.getChunkProvider().getPossibleCreatures(EnumCreatureType.waterCreature, (int)posX, (int)posY, (int)posZ));
         		
         		//check every 16 ticks
             	if (ticksExisted % 16 == 0)
@@ -2486,17 +2506,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
           	  	  			}
           	  	  		}
             		}
-            		
-                	/** debug info */
-//            		LogHelper.info("AAAAAAAA "+this.worldObj.getBlockMetadata(MathHelper.floor_double(posX), (int)posY, MathHelper.floor_double(posZ)));
-//                	LogHelper.info("DEBUG : ship update: "+ServerProxy.getTeamData(900).getTeamBannedList());
-//                	LogHelper.info("DEBUG : ship update: eid: "+ServerProxy.getNextShipID()+" "+ServerProxy.getNextPlayerID()+" "+ConfigHandler.nextPlayerID+" "+ConfigHandler.nextShipID);
-//            		if(this.worldObj.provider.dimensionId == 0) {	//main world
-//            			LogHelper.info("DEBUG : ship pos dim "+ClientProxy.getClientWorld().provider.dimensionId+" "+this.dimension+" "+this.posX+" "+this.posY+" "+this.posZ);
-//            		}
-//            		else {	//other world
-//            			LogHelper.info("DEBUG : ship pos dim "+ClientProxy.getClientWorld().provider.dimensionId+" "+this.dimension+" "+this.posX+" "+this.posY+" "+this.posZ);
-//            		}
             		
             		//check every 32 ticks
                 	if (this.ticksExisted % 32 == 0)
@@ -2539,7 +2548,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                         		{
                         			//get owner
                         			EntityPlayer player = EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
-
+                        			
                         			//owner exists (online and same world)
                         			if (player != null)
                         			{
@@ -2610,7 +2619,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	
         	//update client side timer
         	updateClientTimer();
-        }
+        }//end client side
+        
+        /** both side */
     }
 	
 	@Override
@@ -3581,7 +3592,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			
 			if (uid > 0)
 			{
-				ShipCacheData sdata = new ShipCacheData(this.getEntityId(), this.world.provider.getDimension(),
+				CacheDataShip sdata = new CacheDataShip(this.getEntityId(), this.world.provider.getDimension(),
 						this.getShipClass(), this.isDead, this.posX, this.posY, this.posZ,
 						this.writeToNBT(new NBTTagCompound()));
 				ServerProxy.setShipWorldData(uid, sdata);
@@ -3746,6 +3757,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	  			{
   	  				//summon mount entity
   	  	  			BasicEntityMount mount = this.summonMountEntity();
+  	  	  			mount.initAttrs(this);
   	  	  			this.world.spawnEntity(mount);
   	  	  			
   	  	  			//clear rider
@@ -4098,8 +4110,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	/** update rotate */
   	protected void updateClientBodyRotate()
   	{
-		float[] degree = CalcHelper.getLookDegree(posX - prevPosX, posY - prevPosY, posZ - prevPosZ, true);
-		this.rotationYaw = degree[0];
+  		if (MathHelper.abs((float) (posX - prevPosX)) > 0.01F || MathHelper.abs((float) (posZ - prevPosZ)) > 0.01F)
+  		{
+  			float[] degree = CalcHelper.getLookDegree(posX - prevPosX, posY - prevPosY, posZ - prevPosZ, true);
+  			this.rotationYaw = degree[0];
+  		}
   	}
   	
   	/** change ship outfit by right click cake on ship */
@@ -5890,6 +5905,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     {
         return false;
     }
+	
+	@Override
+	public int getScaleLevel()
+	{
+		return 0;
+	}
   	
 	
 }

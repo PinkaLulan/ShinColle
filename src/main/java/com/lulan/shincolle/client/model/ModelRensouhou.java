@@ -143,6 +143,10 @@ public class ModelRensouhou extends ModelBase implements IModelEmotion
     @Override
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
     {
+    	//FIX: head rotation bug while riding
+    	if (f3 <= -180F) { f3 += 360F; }
+    	else if (f3 >= 180F) { f3 -= 360F; }
+    	
     	if (entity.isNonBoss())
     	{
     		scale = 0.3F;

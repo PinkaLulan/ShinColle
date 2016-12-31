@@ -1,13 +1,13 @@
 package com.lulan.shincolle.ai;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.ai.EntityAIBase;
-
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.IShipCannonAttack;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
+
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.ai.EntityAIBase;
 
 /**ENTITY RANGE ATTACK AI
  * 從骨弓的射箭AI修改而來
@@ -190,14 +190,7 @@ public class EntityAIShipRangeAttack extends EntityAIBase
             }
 	
 	        //設定攻擊時, 頭部觀看的角度
-	        if (this.host2.getRidingEntity() instanceof BasicEntityMount)
-	        {
-	        	((BasicEntityMount) host2.getRidingEntity()).getLookHelper().setLookPositionWithEntity(this.target, 30F, 30F);
-	        }
-	        else if (this.host2.getRidingEntity() == null)
-	        {
-	        	this.host2.getLookHelper().setLookPositionWithEntity(this.target, 30F, 30F);
-	        }
+	        this.host2.getLookHelper().setLookPositionWithEntity(this.target, 30F, 30F);
 
 	        //若attack delay倒數完了且瞄準時間夠久, 則開始攻擊
 	        if (onSight && distSq <= this.rangeSq && this.onSightTime >= this.aimTime)

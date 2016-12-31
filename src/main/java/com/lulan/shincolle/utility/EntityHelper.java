@@ -29,8 +29,9 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
-import com.lulan.shincolle.proxy.ServerProxy.ShipCacheData;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.server.CacheDataPlayer;
+import com.lulan.shincolle.server.CacheDataShip;
 import com.lulan.shincolle.tileentity.ITileWaypoint;
 import com.lulan.shincolle.tileentity.TileEntityCrane;
 import com.lulan.shincolle.tileentity.TileEntityWaypoint;
@@ -276,7 +277,7 @@ public class EntityHelper
 	{
 		if (sid > 0)
 		{
-			ShipCacheData data = ServerProxy.getShipWorldData(sid);
+			CacheDataShip data = ServerProxy.getShipWorldData(sid);
 			
 			if (data != null)
 			{
@@ -367,14 +368,16 @@ public class EntityHelper
 			
 			//get player data
 			int peid = getPlayerEID(uid);
-
+			
 			//get player entity
 			try
 			{
+				//check all world
 				for (World w : worlds)
-				{  //check all world
+				{
+					//check player entity list
 					for (EntityPlayer p : w.playerEntities)
-					{  //check player entity list
+					{
 						if (p != null && p.getEntityId() == peid)
 						{
 							return p;
@@ -397,12 +400,12 @@ public class EntityHelper
 		if (uid > 0)
 		{
 			//從server proxy抓出player uid cache
-			int[] pdata = ServerProxy.getPlayerWorldData(uid);
+			CacheDataPlayer pdata = ServerProxy.getPlayerWorldData(uid);
 			
 			//get data
 			if (pdata != null)
 			{
-				return pdata[0];
+				return pdata.entityID;
 			}
 		}
 		
@@ -586,7 +589,7 @@ public class EntityHelper
         if (!entity2.getNavigator().noPath())
         {
 			//用particle顯示path point
-        	if (ConfigHandler.debugMode && entity2.ticksExisted % 20 == 0)
+        	if (ConfigHandler.debugMode && entity2.ticksExisted % 16 == 0)
         	{
         		sendPathParticlePacket(entity2.getNavigator().getPath(), new TargetPoint(entity2.dimension, entity2.posX, entity2.posY, entity2.posZ, 64D));
 			}
@@ -1247,10 +1250,12 @@ public class EntityHelper
             float f7 = 0.16277136F / (f6 * f6 * f6);
             float f8;
 
+            //move speed on ground
             if (host.onGround)
             {
                 f8 = host.getMoveSpeed() * f7;
             }
+            //move speed in air
             else
             {
                 f8 = host.jumpMovementFactor;
@@ -1259,7 +1264,7 @@ public class EntityHelper
             //計算跳躍Y速度值
             if (host.isJumping())
             {
-            	host.motionY += host.getMoveSpeed() * 0.1D;
+        		host.motionY += host.getMoveSpeed() * host.getJumpSpeed() * 0.1D;
             }
 
             //計算實際XZ速度值

@@ -2,6 +2,8 @@ package com.lulan.shincolle.client.model;
 
 import java.util.Random;
 
+import org.lwjgl.opengl.GL11;
+
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.reference.ID;
@@ -465,26 +467,32 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion
     	if (f3 <= -180F) { f3 += 360F; }
     	else if (f3 >= 180F) { f3 -= 360F; }
     	
-    	if (entity.isNonBoss())
+    	switch (((IShipEmotion)entity).getScaleLevel())
     	{
-    		scale = 0.5F;
-        	offsetY = 0F;
-    	}
-    	else
-    	{
+    	case 3:
     		scale = 1.7F;
         	offsetY = -2.1F;
+		break;
+    	case 2:
+		break;
+    	case 1:
+		break;
+    	default:
+    		scale = 0.5F;
+        	offsetY = 1.51F;
+		break;
     	}
     	
     	GlStateManager.pushMatrix();
     	GlStateManager.enableBlend();
     	GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
     	GlStateManager.scale(scale, scale, scale);
-    	GlStateManager.translate(0F, offsetY + 1.5F, 0F);
+    	GlStateManager.translate(0F, offsetY, 0F);
     	
     	//main body
-    	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
+    	this.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
     	this.BodyMain.render(f5);
+    	
     	GlStateManager.disableBlend();
     	
     	//light part
@@ -503,14 +511,14 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion
     public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity)
     {
 		super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
-
+		
 		IShipEmotion ent = (IShipEmotion)entity;
 
 		showEquip(ent);
 		
 		EmotionHelper.rollEmotion(this, ent);
 		
-		if (scale < 1F && ent.getStateFlag(ID.F.NoFuel))
+		if (ent.getStateFlag(ID.F.NoFuel))
 		{
 			motionStopPos(f, f1, f2, f3, f4, ent);
 		}
@@ -540,7 +548,7 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion
     private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
     {
     	setFace(4);
-    	GlStateManager.translate(0F, offsetY + 2.1F, 0F);
+    	GlStateManager.translate(0F, 0.72F, 0F);
     	
     	//移動頭部使其看人
 	  	this.Head.rotateAngleX = 0F;
@@ -589,7 +597,7 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion
   		//水上漂浮
   		if (((Entity) ent).getPassengers().size() == 0 && ((IShipFloating) ent).getShipDepth() > 0)
   		{
-  			GlStateManager.translate(0F, angleX * 0.1F - 0.03F, 0F);
+  			GlStateManager.translate(0F, angleX * 0.05F + 0.025F, 0F);
     	}
   		
   		//leg move parm
@@ -723,7 +731,7 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion
 	    {  //騎乘動作
 	    	if (ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP01)
 	    	{
-	    		GlStateManager.translate(0F, offsetY + 1.3F, 0F);
+	    		GlStateManager.translate(0F, 0.42F, 0F);
 		    	//Body
 			  	this.BodyMain.rotateAngleX = -0.09F;
 			    //arm 
@@ -755,7 +763,7 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion
 			}
 	    	else if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 	    	{
-	    		GlStateManager.translate(0F, offsetY + 2.1F, 0F);
+	    		GlStateManager.translate(0F, 0.71F, 0F);
 	    		setFace(4);
 		    	//Body
 			  	this.BodyMain.rotateAngleX = 1.48F;
@@ -778,7 +786,7 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion
 	    	}
 	    	else
 	    	{
-	    		GlStateManager.translate(0F, offsetY + 1.7F, 0F);
+	    		GlStateManager.translate(0F, 0.52F, 0F);
 		    	//Body
 			  	this.BodyMain.rotateAngleX = -0.09F;
 			    //arm 
@@ -803,7 +811,7 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion
 	    	{
 	    	case 0:		//heavy atk phase 0
 	    	case 2:		//heavy atk phase 2
-	    		GlStateManager.translate(0F, offsetY * 0.1F + 0.9F, 0F);
+	    		GlStateManager.translate(0F, 0.3F, 0F);
 	    	    //Body
 	    	    this.Head.rotateAngleX -= 1.22F;
 	    	  	this.BodyMain.rotateAngleX = 1.75F;

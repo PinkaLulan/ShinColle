@@ -3,15 +3,18 @@ package com.lulan.shincolle.command;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.world.World;
-
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.utility.EntityHelper;
+
+import net.minecraft.command.CommandBase;
+import net.minecraft.command.CommandException;
+import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.world.World;
 
 /** Command: /shipstopai
  * 
@@ -26,76 +29,75 @@ import com.lulan.shincolle.utility.EntityHelper;
  *    1. check sender is OP (server)
  *    3. set stop flag
  */
-public class ShipCmdStopAI extends BasicShipCommand {
+public class ShipCmdStopAI extends CommandBase
+{
 
 	//command name list
-	private static final List Aliases = new ArrayList() {{
+	private static final ArrayList<String> Aliases = new ArrayList()
+	{{
 		add("shipstopai");
+		add("shipstop");
 	}};
 
 	
-    public ShipCmdStopAI() {   
-    }
+    public ShipCmdStopAI() {}
 
-    /** command name */
+	/** command name */
 	@Override
-	public String getCommandName() {
-		return "shipstopai";
+	public String getName()
+	{
+		return Aliases.get(0);
 	}
 	
 	/** command alias */
 	@Override
-	public List getCommandAliases() {
+	public List<String> getAliases()
+	{
 		return this.Aliases;
 	}
 
 	/** command guide text */
 	@Override
-	public String getCommandUsage(ICommandSender sender) {
+	public String getUsage(ICommandSender sender)
+	{
 		return "/shipstopai";
 	}
 
 	/** command authority */
 	@Override
-	public boolean canCommandSenderUseCommand(ICommandSender sender) {
-		if(sender instanceof EntityPlayer){
+	public boolean checkPermission(MinecraftServer server, ICommandSender sender)
+    {
+		if (sender instanceof EntityPlayer)
+		{
             return true;
 	    }
 		
 		return false;
 	}
-	
-	/** parms auto input method */
-	@Override
-	public List addTabCompletionOptions(ICommandSender sender, String[] cmd) {
-		return null;
-	}
 
-	/** set command string[int] is player name */
-	@Override
-	public boolean isUsernameIndex(String[] cmd, int index) {
-		return false;
-	}
-	
 	/** command process, SERVER SIDE ONLY */
 	@Override
-	public void processCommand(ICommandSender sender, String[] cmd) {
+	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
+	{
 		World world = sender.getEntityWorld();
 		EntityPlayer op = null;
 		int senderEID = -1;
 		boolean isOP = false;
 		
-		if(!world.isRemote) {
+		if (!world.isRemote)
+		{
 			//check sender is player
-			if(sender instanceof EntityPlayer) {
+			if (sender instanceof EntityPlayer)
+			{
 				op = (EntityPlayer) sender;
 				isOP = EntityHelper.checkOP(op);
 				
-				if(isOP) {
+				if (isOP)
+				{
 					BasicEntityShip.stopAI = !BasicEntityShip.stopAI;
 					BasicEntityShipHostile.stopAI = !BasicEntityShipHostile.stopAI;
 					BasicEntityMount.stopAI = !BasicEntityMount.stopAI;
-					sender.addChatMessage(new ChatComponentText("Command: ShipStopAI: "+BasicEntityShip.stopAI));
+					sender.sendMessage(new TextComponentString("Command: ShipStopAI: "+BasicEntityShip.stopAI));
 				}
 			}//is player
 		}//end server side
@@ -103,6 +105,3 @@ public class ShipCmdStopAI extends BasicShipCommand {
   
     
 }
-
-
-

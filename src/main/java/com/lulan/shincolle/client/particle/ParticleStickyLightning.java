@@ -66,9 +66,9 @@ public class ParticleStickyLightning extends Particle
             this.stemWidth = 0.01F * host.width;
             
             //random position
-            this.posX = this.host.posX + rand.nextFloat() * 2F - 1F;
+            this.posX = this.host.posX + rand.nextFloat() * this.particleScale * 2F - this.particleScale;
         	this.posY = this.host.posY + host.height * 0.6D;
-            this.posZ = this.host.posZ + rand.nextFloat() * 2F - 1F;
+            this.posZ = this.host.posZ + rand.nextFloat() * this.particleScale * 2F - this.particleScale;
         break;
         case 2:  //yamato cannon charging state IN, EntityLivingBase ONLY
         	this.particleRed = 1F;

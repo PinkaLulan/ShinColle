@@ -11,6 +11,7 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
@@ -52,7 +53,7 @@ public class EntityDestroyerInazuma extends BasicEntityShipSmall implements IShi
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.DD]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.DD]);
-		this.ModelPos = new float[] {0F, 13F, 0F, 50F};
+		this.ModelPos = new float[] {0F, 25F, 0F, 50F};
 		
 		//set attack type
 		this.StateFlag[ID.F.HaveRingEffect] = true;
@@ -105,7 +106,9 @@ public class EntityDestroyerInazuma extends BasicEntityShipSmall implements IShi
   			if (this.ticksExisted % 32 == 0)
   			{
   				//check raiden gattai
+  				this.checkRiderType();
 				this.checkIsRaiden();
+  				this.checkRidingState();
 					
   				//add morale in raiden mode
   				if (this.riderType == 0 && this.isRaiden)

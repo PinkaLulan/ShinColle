@@ -3,82 +3,80 @@ package com.lulan.shincolle.entity.destroyer;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.IShipRiderType;
-import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
-import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.BossInfo;
+import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.World;
 
 public class EntityDestroyerHibikiMob extends BasicEntityShipHostile implements IShipRiderType
 {
 
 	private int ridingState;
+	private float smokeX, smokeY;
 	
 	
 	public EntityDestroyerHibikiMob(World world)
 	{
 		super(world);
-		this.setSize(0.6F, 1.5F);
+		
+		//init values
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.DestroyerHibiki);
 		this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, getStateMinor(ID.M.ShipClass)+2);
-		this.ignoreFrustumCheck = true;	//即使不在視線內一樣render
-		
-        //basic attr
-        this.atk = (float) ConfigHandler.scaleMobSmall[ID.ATK] * 0.5F;
-        this.atkSpeed = (float) ConfigHandler.scaleMobSmall[ID.SPD] * 1F;
-        this.atkRange = (float) ConfigHandler.scaleMobSmall[ID.HIT] * 0.7F;
-        this.defValue = (float) ConfigHandler.scaleMobSmall[ID.DEF] * 0.5F;
-        this.movSpeed = (float) ConfigHandler.scaleMobSmall[ID.MOV] * 1F;
-
-        //AI flag
         this.ridingState = 0;
-        this.startEmotion = 0;
-        this.startEmotion2 = 0;
-        this.headTilt = false;
+        this.smokeX = 0F;
+        this.smokeY = 0F;
+        
+		//model display
         this.setStateEmotion(ID.S.State, rand.nextInt(2), false);
         this.setStateEmotion(ID.S.State2, rand.nextInt(4), false);
- 
-	    //設定基本屬性
-	    getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(ConfigHandler.scaleMobSmall[ID.HP] * 0.5F);
-		getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(this.movSpeed);
-		getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(40); //此為找目標, 路徑的範圍
-		getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(0.5D);
-		if(this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
-				
-		//設定AI
-		this.setAIList();
-		this.setAITargetList();
 	}
 	
 	@Override
-	protected boolean canDespawn()
+	protected void setSizeWithScaleLevel()
 	{
-		if (ConfigHandler.despawnMinion > -1)
+		switch (this.getScaleLevel())
 		{
-			return this.ticksExisted > ConfigHandler.despawnMinion;
+		case 3:
+			this.setSize(1.4F, 6F);
+			this.smokeX = -0.42F;
+			this.smokeY = 1.4F;
+		break;
+		case 2:
+			this.setSize(1.2F, 4F);
+			this.smokeX = -0.42F;
+			this.smokeY = 1.4F;
+		break;
+		case 1:
+			this.setSize(0.85F, 2.5F);
+			this.smokeX = -0.42F;
+			this.smokeY = 1.4F;
+		break;
+		default:
+			this.setSize(0.6F, 1.5F);
+			this.smokeX = -0.42F;
+			this.smokeY = 1.4F;
+		break;
 		}
-        
-		return false;
-    }
-	
-	@Override
-	public float getEyeHeight()
-	{
-		return 1.4F;
 	}
 	
-	//chance drop
 	@Override
-	public ItemStack getDropEgg()
-	{
-		return this.rand.nextInt(5) == 0 ? this.dropItem : null;
+	protected float[] getAttrsMod()
+	{                     //HP    ATK   DEF   SPD   MOV   HIT
+		return new float[] {0.5F, 0.5F, 0.5F, 1F,   1F,   0.7F};
 	}
 	
+	@Override
+	protected void setBossInfo()
+	{
+		this.bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.WHITE, BossInfo.Overlay.PROGRESS);
+	}
+
 	//setup AI
 	@Override
 	protected void setAIList()
@@ -121,12 +119,9 @@ public class EntityDestroyerHibikiMob extends BasicEntityShipHostile implements 
   			{
   				if (this.getStateEmotion(ID.S.State) > ID.State.NORMAL)
   				{
-  					double smokeY = posY + 1.4D;
-  					
-  					//計算煙霧位置
-  	  				float[] partPos = CalcHelper.rotateXZByAxis(-0.42F, 0F, (this.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);
-  	  				//生成裝備冒煙特效
-  	  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], smokeY, posZ+partPos[0], 0D, 0D, 0D, (byte)20);
+  					//計算煙霧位置, 生成裝備冒煙特效
+  	  				float[] partPos = CalcHelper.rotateXZByAxis(this.smokeX, 0F, (this.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);
+  	  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], posY+this.smokeY, posZ+partPos[0], 1D+this.scaleLevel*0.3D, 0D, 0D, (byte)43);
   	  			}
   			}//end every 4 ticks
   		}

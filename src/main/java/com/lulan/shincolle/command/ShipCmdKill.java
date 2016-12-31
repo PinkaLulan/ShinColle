@@ -3,15 +3,18 @@ package com.lulan.shincolle.command;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.world.World;
-
 import com.lulan.shincolle.crafting.ShipCalc;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.utility.EntityHelper;
+
+import net.minecraft.command.CommandBase;
+import net.minecraft.command.CommandException;
+import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.world.World;
 
 /** Command: /shipkill [class id] [range]
  * 
@@ -28,11 +31,11 @@ import com.lulan.shincolle.utility.EntityHelper;
  *    1. check sender is OP (server)
  *    3. kill ship
  */
-public class ShipCmdKill extends BasicShipCommand
+public class ShipCmdKill extends CommandBase
 {
 
 	//command name list
-	private static final List Aliases = new ArrayList()
+	private static final ArrayList<String> Aliases = new ArrayList()
 	{{
 		add("shipkill");
 	}};
@@ -42,29 +45,29 @@ public class ShipCmdKill extends BasicShipCommand
 
     /** command name */
 	@Override
-	public String getCommandName()
+	public String getName()
 	{
-		return "shipkill";
+		return Aliases.get(0);
 	}
 	
 	/** command alias */
 	@Override
-	public List getCommandAliases()
+	public List<String> getAliases()
 	{
 		return this.Aliases;
 	}
 
 	/** command guide text */
 	@Override
-	public String getCommandUsage(ICommandSender sender)
+	public String getUsage(ICommandSender sender)
 	{
 		return "/shipkill <class id> [range]";
 	}
 
 	/** command authority */
 	@Override
-	public boolean canCommandSenderUseCommand(ICommandSender sender)
-	{
+	public boolean checkPermission(MinecraftServer server, ICommandSender sender)
+    {
 		if (sender instanceof EntityPlayer)
 		{
             return true;
@@ -73,23 +76,9 @@ public class ShipCmdKill extends BasicShipCommand
 		return false;
 	}
 	
-	/** parms auto input method */
-	@Override
-	public List addTabCompletionOptions(ICommandSender sender, String[] cmd)
-	{
-		return null;
-	}
-
-	/** set command string[int] is player name */
-	@Override
-	public boolean isUsernameIndex(String[] cmd, int index)
-	{
-		return false;
-	}
-	
 	/** command process, SERVER SIDE ONLY */
 	@Override
-	public void processCommand(ICommandSender sender, String[] cmd)
+	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
 	{
 		World world = sender.getEntityWorld();
 		EntityPlayer op = null;
@@ -110,38 +99,38 @@ public class ShipCmdKill extends BasicShipCommand
 					int range = 64;
 					
 					//get parms
-					if (cmd.length == 1)
+					if (args.length == 1)
 					{
-						id = parseInt(sender, cmd[0]);
+						id = parseInt(args[0]);
 					}
-					else if (cmd.length == 2)
+					else if (args.length == 2)
 					{
-						id = parseInt(sender, cmd[0]);
-						range = parseInt(sender, cmd[1]);
+						id = parseInt(args[0]);
+						range = parseInt(args[1]);
 					}
 					
 					//check range valid
 					if (range <= 0)
 					{
-						sender.addChatMessage(new ChatComponentText("Command: ShipKill: wrong kill range!"));
+						sender.sendMessage(new TextComponentString("Command: ShipKill: wrong kill range!"));
 						return;
 					}
 					
 					//check id valid
 					if (id >= 2)
 					{
-						sender.addChatMessage(new ChatComponentText("Command: ShipKill: kill class: "+id+" "+ShipCalc.getEntityToSpawnName(id - 2)));
+						sender.sendMessage(new TextComponentString("Command: ShipKill: kill class: "+id+" "+ShipCalc.getEntityToSpawnName(id - 2)));
 					}
 					else
 					{
-						sender.addChatMessage(new ChatComponentText("Command: ShipKill: wrong class id!"));
+						sender.sendMessage(new TextComponentString("Command: ShipKill: wrong class id!"));
 						return;
 					}
 					
 					//kill ship
 					//set item entity dead
-					AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(op.posX - range, op.posY - 256D, op.posZ - range, op.posX + range, op.posY + 256D, op.posZ + range);
-					List<BasicEntityShip> hitent = op.worldObj.getEntitiesWithinAABB(BasicEntityShip.class, aabb);
+					AxisAlignedBB aabb = new AxisAlignedBB(op.posX - range, 0D, op.posZ - range, op.posX + range, 256D, op.posZ + range);
+					List<BasicEntityShip> hitent = op.world.getEntitiesWithinAABB(BasicEntityShip.class, aabb);
 					
 					id -= 2;
 					
@@ -150,7 +139,7 @@ public class ShipCmdKill extends BasicShipCommand
 		            	if (i.getShipClass() == id)
 		            	{
 		            		i.setDead();
-		            		sender.addChatMessage(new ChatComponentText("remove "+i));
+		            		sender.sendMessage(new TextComponentString("remove "+i));
 		            	}
 		            }
 				}
@@ -160,7 +149,3 @@ public class ShipCmdKill extends BasicShipCommand
   
     
 }
-
-
-
-

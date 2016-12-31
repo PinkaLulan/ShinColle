@@ -207,10 +207,11 @@ public class ParticleSpray extends Particle
         	this.particleRed = 1F;
             this.particleGreen = 0F;
             this.particleBlue = 0F;
-            this.particleAlpha = 1F;
+            this.particleAlpha = 0.7F;
             this.particleScale *= 1.5F;
-            this.pScale = this.particleScale;
-            this.particleMaxAge = 10;
+            this.pScale = 15F;
+            this.particleMaxAge = 30;
+            this.motionY = 0D;
         	break;
         }
         

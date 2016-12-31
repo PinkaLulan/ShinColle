@@ -6,6 +6,7 @@ import java.util.Random;
 import javax.annotation.Nullable;
 
 import com.lulan.shincolle.proxy.ClientProxy;
+import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -106,13 +107,20 @@ public class BlockFrame extends BasicBlockFacing
 	public void onEntityCollidedWithBlock(World world, BlockPos pos, IBlockState state, Entity entity)
 	{
 		//if client player
-		if (entity instanceof EntityPlayer && world.isRemote)
+		if (world.isRemote)
 		{
-			GameSettings keySet = ClientProxy.getGameSetting();
-			
-			if (keySet.keyBindForward.isKeyDown())
+			if (entity.equals(ClientProxy.getClientPlayer()) || entity.equals(ClientProxy.getClientPlayer().getRidingEntity()))
 			{
-				entity.addVelocity(0D, 0.4D, 0D);
+				GameSettings keySet = ClientProxy.getGameSetting();
+				
+				if (keySet.keyBindForward.isKeyDown() ||
+					keySet.keyBindBack.isKeyDown() ||
+					keySet.keyBindLeft.isKeyDown() ||
+					keySet.keyBindRight.isKeyDown())
+				{
+					ClientProxy.getClientPlayer().addVelocity(0D, 0.4D, 0D);
+					if (ClientProxy.getClientPlayer().getRidingEntity() != null) ClientProxy.getClientPlayer().getRidingEntity().addVelocity(0D, 0.4D, 0D);
+				}
 			}
 		}
 		
@@ -121,19 +129,21 @@ public class BlockFrame extends BasicBlockFacing
 		{
 			entity.motionY = -0.1D;
 		}
+		
 		//最高上升速度
 		else if (entity.motionY > 0.4D)
 		{
 			entity.motionY = 0.4D;
 		}
+		
 		//蹲下時速度
 		if (entity.isSneaking())
 		{
 			entity.motionY = 0.08D;
 		}
+		
 		//重設墜落距離
 		entity.fallDistance = 0F;
-		
 	}
 	
 	/** random facing on placed */

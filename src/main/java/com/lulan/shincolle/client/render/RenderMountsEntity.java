@@ -11,9 +11,11 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 
 import net.minecraft.client.model.ModelBase;
+import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.client.registry.IRenderFactory;
 
 public class RenderMountsEntity extends RenderShipEntity
 {
@@ -31,8 +33,8 @@ public class RenderMountsEntity extends RenderShipEntity
 	private static final ModelBase MD_HarbourMount = new ModelMountHbH();
 	
 	//factory
-	public static final FactoryDefault FACTORY_DEFAULT = new FactoryDefault();
-	
+	public static final FactoryDefault FACTORY_MOUNT = new FactoryDefault();
+		
 	
     public RenderMountsEntity(RenderManager rm)
     {
@@ -115,6 +117,15 @@ public class RenderMountsEntity extends RenderShipEntity
 			return new float[] {0.8F, 0.8F, 0.8F, 0.8F, 0.8F};
 		}
 	}
+	
+    public static class FactoryDefault implements IRenderFactory<EntityLiving>
+    {
+        @Override
+        public Render<? super EntityLiving> createRenderFor(RenderManager rm)
+        {
+            return new RenderMountsEntity(rm);
+        }
+    }
 		
 
 }

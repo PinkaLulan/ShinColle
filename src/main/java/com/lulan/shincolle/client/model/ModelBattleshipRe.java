@@ -508,7 +508,6 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion
     	GlStateManager.enableBlend();
     	GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
     	GlStateManager.scale(0.4F, 0.4F, 0.4F);
-    	GlStateManager.translate(0F, 2.2F, 0F);
     	
     	//main body
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
@@ -600,7 +599,7 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion
     
     private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
     {
-    	GlStateManager.translate(0F, 1.8F, 0F);
+    	GlStateManager.translate(0F, 1.13F, 0F);
     	setFace(4);
     
     	//頭部
@@ -669,15 +668,17 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion
     
 	//雙腳移動計算
   	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, BasicEntityShip ent)
-  	{   
+  	{
   		float angleX = MathHelper.cos(f2*0.08F);
   		float addk1 = 0;
   		float addk2 = 0;
   		
+  		GlStateManager.translate(0F, 0.63F, 0F);
+  		
   		//水上漂浮
   		if (((Entity) ent).getPassengers().size() == 0 && ((IShipFloating) ent).getShipDepth() > 0)
   		{
-  			GlStateManager.translate(0F, angleX * 0.1F - 0.03F, 0F);
+  			GlStateManager.translate(0F, angleX * 0.05F + 0.025F, 0F);
     	}
   		
   		//leg move parm
@@ -768,7 +769,7 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion
 			if (ent.ticksExisted % 900 > 600)
 			{	//run type 1
 				//高度
-				GlStateManager.translate(0F, 0.5F, 0F);
+				GlStateManager.translate(0F, 0.05F, 0F);
 		  	    //手臂晃動
 			  	this.ArmLeft01.rotateAngleX = MathHelper.cos(f * 0.8F) * 0.1F -2.0944F;
 			    this.ArmLeft01.rotateAngleY = -0.5236F;
@@ -828,7 +829,7 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion
 			else if (ent.ticksExisted % 900 > 300)
 			{	//run type 2
 				//高度
-				GlStateManager.translate(0F, 0.3F, 0F);
+				GlStateManager.translate(0F, 0.05F, 0F);
 		  	    //手臂晃動 
 			  	this.ArmLeft01.rotateAngleX = -1.0472F;
 			    this.ArmLeft01.rotateAngleY = 0.2618F;
@@ -885,7 +886,7 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion
 			else
 			{	//run type 3
 				//高度
-				GlStateManager.translate(0F, 0.5F, 0F);
+				GlStateManager.translate(0F, 0.1F, 0F);
 		  	    //手臂晃動 
 			  	this.ArmLeft01.rotateAngleX = MathHelper.cos(f * 0.8F) * 0.1F + 0.6981F;
 			    this.ArmLeft01.rotateAngleY = 0F;
@@ -947,7 +948,7 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion
 	    if (ent.isSneaking())
 	    {	//潛行, 蹲下動作
   			//高度
-	    	GlStateManager.translate(0F, 0.2F, 0F);
+	    	GlStateManager.translate(0F, 0.1F, 0F);
 	  	    //手臂晃動 
 		  	this.ArmLeft01.rotateAngleX = 0.5236F;
 		    this.ArmLeft01.rotateAngleY = 0F;
@@ -1009,7 +1010,7 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion
 	    	{
 	    		if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 		    	{
-	    			GlStateManager.translate(0F, 0.5F, 0F);
+	    			GlStateManager.translate(0F, 0.13F, 0F);
 			    	//Body
 					this.Head.rotateAngleX += 0.3F;
 			    	this.BodyMain.rotateAngleX = -0.3F;
@@ -1103,7 +1104,7 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion
 		    	}
 		    	else
 		    	{
-		    		GlStateManager.translate(0F, 1.7F, 0F);
+		    		GlStateManager.translate(0F, 0.51F, 0F);
 			    	//Body
 		    		this.Head.rotateAngleX *= 0.8F;
 			    	this.Head.rotateAngleX -= 1.8F;
@@ -1163,7 +1164,7 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion
 	    	{
 	    		setFace(1);
 		    	//高度
-	    		GlStateManager.translate(0F, 0.6F, 0F);
+	    		GlStateManager.translate(0F, 0.17F, 0F);
 		  	    //手臂晃動 
 			  	this.ArmLeft01.rotateAngleX = -1.7F;
 			    this.ArmLeft01.rotateAngleY = -0.1F;
@@ -1224,7 +1225,7 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion
 	    if (ent.getAttackTick() > 0)
 	    {
 	    	//高度
-	    	GlStateManager.translate(0F, 0.6F, 0F);
+	    	GlStateManager.translate(0F, 0.13F, 0F);
 	  	    //手臂晃動 
 		  	this.ArmLeft01.rotateAngleX = 0.5236F;
 		    this.ArmLeft01.rotateAngleY = 0F;

@@ -14,8 +14,6 @@ import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BossInfo;
@@ -26,61 +24,64 @@ import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 public class EntityBattleshipYMTBoss extends BasicEntityShipHostile
 {
 	
-	private final BossInfoServer bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.YELLOW, BossInfo.Overlay.PROGRESS);
+	private float smokeX, smokeY;
 	
 
 	public EntityBattleshipYMTBoss(World world)
 	{
 		super(world);
-		this.setSize(1.8F, 7.5F);
+		
+		//init values
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.BattleshipYamato);
 		this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, getStateMinor(ID.M.ShipClass)+2);
-		
-        //basic attr
-		this.atk = (float) ConfigHandler.scaleBossLarge[ID.ATK] * 1.2F;
-        this.atkSpeed = (float) ConfigHandler.scaleBossLarge[ID.SPD] * 1.2F;
-        this.atkRange = (float) ConfigHandler.scaleBossLarge[ID.HIT] * 1.1F;
-        this.defValue = (float) ConfigHandler.scaleBossLarge[ID.DEF];
-        this.movSpeed = (float) ConfigHandler.scaleBossLarge[ID.MOV] * 0.8F;
-
-        //AI flag
-        this.startEmotion = 0;
-        this.startEmotion2 = 0;
-        this.headTilt = false;
+        this.smokeX = 0F;
+        this.smokeY = 0F;
         
-	    //設定基本屬性
-	    getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(ConfigHandler.scaleBossLarge[ID.HP] * 1.2F);
-		getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(this.movSpeed);
-		getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64); //此為找目標, 路徑的範圍
-		getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(1D);
-		if(this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
-				
-		//設定AI
-		this.setAIList();
-		this.setAITargetList();
-		
 		//model display
 		this.setStateEmotion(ID.S.State2, ID.State.EQUIP02_2, false);
 		this.setStateEmotion(ID.S.State, ID.State.EQUIP02, false);
 	}
 	
 	@Override
-	protected boolean canDespawn()
+	protected void setSizeWithScaleLevel()
 	{
-		if (ConfigHandler.despawnBoss > -1)
+		switch (this.getScaleLevel())
 		{
-			return this.ticksExisted > ConfigHandler.despawnBoss;
+		case 3:
+			this.setSize(1.8F, 7.7F);
+			this.smokeX = -2.3F;
+			this.smokeY = 5.5F;
+		break;
+		case 2:
+			this.setSize(1.4F, 5.5F);
+			this.smokeX = -0.42F;
+			this.smokeY = 1.4F;
+		break;
+		case 1:
+			this.setSize(0.95F, 3.3F);
+			this.smokeX = -0.42F;
+			this.smokeY = 1.4F;
+		break;
+		default:
+			this.setSize(0.8F, 2.1F);
+			this.smokeX = -0.55F;
+			this.smokeY = 1.75F;
+		break;
 		}
-        
-		return false;
-    }
-	
-	@Override
-	public float getEyeHeight()
-	{
-		return this.height * 0.5F;
 	}
 	
+	@Override
+	protected float[] getAttrsMod()
+	{                     //HP    ATK   DEF   SPD   MOV   HIT
+		return new float[] {1.2F, 1.2F, 1F,   1.2F, 0.8F, 1.2F};
+	}
+	
+	@Override
+	protected void setBossInfo()
+	{
+		this.bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.RED, BossInfo.Overlay.PROGRESS);
+	}
+
 	//setup AI
 	@Override
 	protected void setAIList()
@@ -102,16 +103,16 @@ public class EntityBattleshipYMTBoss extends BasicEntityShipHostile
   		{
   			if (this.ticksExisted % 4 == 0)
   			{
-				//生成裝備冒煙特效
-  				float[] partPos = CalcHelper.rotateXZByAxis(-2.3F, 0F, (this.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);
-  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], posY + 5.5D, posZ+partPos[0], 0D, 0D, 0D, (byte)20);
+				//計算煙霧位置, 生成裝備冒煙特效
+  				float[] partPos = CalcHelper.rotateXZByAxis(this.smokeX, 0F, (this.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);
+  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], posY+this.smokeY, posZ+partPos[0], 1D+this.scaleLevel*0.3D, 0D, 0D, (byte)43);
   			
   				if (this.ticksExisted % 16 == 0)
   				{
   					//spawn beam charge lightning
   	  				if (getStateEmotion(ID.S.Phase) > 0)
   	  				{
-  	    	        	ParticleHelper.spawnAttackParticleAtEntity(this, 0D, 16, 1D, (byte)4);
+  	    	        	ParticleHelper.spawnAttackParticleAtEntity(this, 1D, 16, 1D, (byte)4);
   	  				}
   	  			}//end 16 ticks
   			}//end 4 ticks
@@ -203,33 +204,6 @@ public class EntityBattleshipYMTBoss extends BasicEntityShipHostile
 	{
 		return ID.ShipDmgType.BATTLESHIP;
 	}
-	
-  	/** for boss hp bar display */
-  	@Override
-    public boolean isNonBoss()
-    {
-        return false;
-    }
-  	
-  	@Override
-    public void addTrackingPlayer(EntityPlayerMP player)
-    {
-        super.addTrackingPlayer(player);
-        this.bossInfo.addPlayer(player);
-    }
-
-  	@Override
-    public void removeTrackingPlayer(EntityPlayerMP player)
-    {
-        super.removeTrackingPlayer(player);
-        this.bossInfo.removePlayer(player);
-    }
-  	
-  	@Override
-    protected void updateAITasks()
-    {
-    	this.bossInfo.setPercent(this.getHealth() / this.getMaxHealth());
-    }
 	
 
 }

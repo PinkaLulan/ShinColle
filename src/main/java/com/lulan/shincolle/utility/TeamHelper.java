@@ -150,7 +150,7 @@ public class TeamHelper
 		return false;
 	}
 	
-	/** check target entity is host's ally, SERVER SIDE ONLY */
+	/** check target entity is host's enemy, SERVER SIDE ONLY */
 	public static boolean checkIsBanned(Entity host, Entity target)
 	{
 		if (host != null && target != null)
@@ -164,7 +164,7 @@ public class TeamHelper
 		return false;
 	}
 	
-	/** check target entity is banned team, SERVER SIDE ONLY */
+	/** check target entity is in banned team, SERVER SIDE ONLY */
 	public static boolean checkIsBanned(int hostPID, int tarPID)
 	{
 		//mob vs mob

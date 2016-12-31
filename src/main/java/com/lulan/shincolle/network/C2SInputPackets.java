@@ -29,7 +29,8 @@ public class C2SInputPackets implements IMessage
 	
 	private World world;
 	private EntityPlayer player;
-	private int type, worldID, entityID, value;
+	private byte packetID;
+	private int worldID, entityID, value;
 	private int[] value3;
 	
 	//packet id
@@ -46,21 +47,17 @@ public class C2SInputPackets implements IMessage
 	
 	public C2SInputPackets() {}	//必須要有空參數constructor, forge才能使用此class
 	
-	/**type 0:(1 parms) mount move key input: 0:key
+	/**type 0:(0 parms) mount move key input: 0:key
 	 * type 1:(1 parms) mount GUI key input: 0:key
 	 * type 2:(1 parms) sync current item: 0:item slot
 	 * type 3:(2 parms) command: change owner: 0:owner eid, 1:ship eid
 	 * type 4:(9 parms) command: set ship attrs: 0:ship id, 1:world id, 2:ship level, 3~8:bonus value
 	 * 
 	 */
-	public C2SInputPackets(int type, int...parms)
+	public C2SInputPackets(byte id, int...parms)
 	{
-        this.type = type;
-        
-        if (parms != null && parms.length > 0)
-        {
-        	this.value3 = parms.clone();
-        }
+        this.packetID = id;
+        this.value3 = parms;
     }
 	
 	//接收packet方法, server side
@@ -68,10 +65,10 @@ public class C2SInputPackets implements IMessage
 	public void fromBytes(ByteBuf buf)
 	{	
 		//get type and entityID
-		this.type = buf.readByte();
+		this.packetID = buf.readByte();
 	
 		//get data
-		switch (type)
+		switch (this.packetID)
 		{
 		case PID.MountMove:			//mount move key input
 		case PID.MountGUI:			//mount GUI input
@@ -91,7 +88,8 @@ public class C2SInputPackets implements IMessage
 			}
 			catch (Exception e)
 			{
-				LogHelper.info("EXCEPTION : C2S input packet: "+e);
+				LogHelper.info("EXCEPTION: C2S input packet:");
+				e.printStackTrace();
 			}
 		break;
 		}
@@ -101,7 +99,10 @@ public class C2SInputPackets implements IMessage
 	@Override
 	public void toBytes(ByteBuf buf)
 	{
-		switch (this.type)
+		//send packet id
+		buf.writeByte(this.packetID);
+		
+		switch (this.packetID)
 		{
 		case PID.MountMove:		//mount move key input
 		case PID.MountGUI:		//mount GUI input
@@ -109,8 +110,6 @@ public class C2SInputPackets implements IMessage
 		case PID.CmdChOwner:    //command: change owner
 		case PID.CmdShipAttr:   //command: set ship attrs
 		case PID.RequestSync_Model:  //request model display sync
-			buf.writeByte((byte)this.type);
-			
 			//send int array
 			if (this.value3 != null)
 			{
@@ -139,7 +138,7 @@ public class C2SInputPackets implements IMessage
 		
 		try
 		{
-			switch (msg.type)
+			switch (msg.packetID)
 			{
 			case PID.MountMove:	//mounts key input packet
 				//set player's mount movement
@@ -149,10 +148,11 @@ public class C2SInputPackets implements IMessage
 					BasicEntityShip ship = (BasicEntityShip) mount.getHostEntity();
 					
 					//check ship owner is player
-					if (ship != null && TeamHelper.checkSameOwner(player, ship.getHostEntity()))
+					if (ship != null && TeamHelper.checkSameOwner(player, ship))
 					{
 						//set mount movement
 						mount.keyPressed = msg.value3[0];
+						mount.keyTick = 10;
 					}
 				}
 			break;
@@ -164,13 +164,10 @@ public class C2SInputPackets implements IMessage
 					BasicEntityShip ship = (BasicEntityShip) mount.getHostEntity();
 					
 					//check ship owner is player
-					if (ship != null && TeamHelper.checkSameOwner(player, ship.getHostEntity()))
+					if (ship != null && TeamHelper.checkSameOwner(player, ship))
 					{
 						//open ship GUI
-						if (mount.getHostEntity() != null)
-						{
-							FMLNetworkHandler.openGui(player, ShinColle.instance, ID.Gui.SHIPINVENTORY, player.world, mount.getHostEntity().getEntityId(), 0, 0);
-						}
+						FMLNetworkHandler.openGui(player, ShinColle.instance, ID.Gui.SHIPINVENTORY, player.world, mount.getHostEntity().getEntityId(), 0, 0);
 					}
 				}
 			break;
@@ -195,7 +192,9 @@ public class C2SInputPackets implements IMessage
 					//set owner
 					EntityHelper.setPetPlayerUUID(player.getUniqueID(), (BasicEntityShip) entity);
 					EntityHelper.setPetPlayerUID(player, (BasicEntityShip) entity);
-					LogHelper.info("DEBUG : C2S input packet: command: change owner "+player+" "+entity);
+					((BasicEntityShip) entity).ownerName = player.getName();
+					//sync
+					LogHelper.debug("DEBUG : C2S input packet: command: change owner "+player+" "+entity);
 					((BasicEntityShip) entity).sendSyncPacketAllValue();
 				}
 			break;
@@ -241,7 +240,7 @@ public class C2SInputPackets implements IMessage
 		}
 		catch (Exception e)
 		{
-			LogHelper.info("EXCEPTION : C2S input packet: handler: "+e);
+			LogHelper.debug("EXCEPTION : C2S input packet: handler: "+e);
 		}
 		
 	}

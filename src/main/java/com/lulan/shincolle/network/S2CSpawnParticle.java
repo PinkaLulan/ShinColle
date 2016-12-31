@@ -338,7 +338,7 @@ public class S2CSpawnParticle implements IMessage
 					}
 					else
 					{
-						parType = 17;
+						parType = 29;
 					}
 					
 					ParticleHelper.spawnAttackParticleAt(msg.valueInt1[i * 3 + 1] + 0.5D,

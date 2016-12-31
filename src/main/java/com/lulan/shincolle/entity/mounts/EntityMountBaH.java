@@ -1,13 +1,18 @@
 package com.lulan.shincolle.entity.mounts;
 
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
+import com.lulan.shincolle.ai.path.ShipMoveHelper;
+import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.network.S2CSpawnParticle;
+import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
 public class EntityMountBaH extends BasicEntityMount
 {
@@ -16,15 +21,17 @@ public class EntityMountBaH extends BasicEntityMount
     {
 		super(world);
 		this.setSize(1.9F, 3.1F);
-		this.seatPos = new float[] {1.2F, -1.3F, 1.1F};
-		this.seatPos2 = new float[] {1.2F, -1.3F, 1.1F};
+		this.seatPos = new float[] {1.05F, 2.6F, 0F};
+		this.seatPos2 = new float[] {1.2F, 0.7F, -1.3F};
+        this.shipNavigator = new ShipPathNavigate(this, world);
+		this.shipMoveHelper = new ShipMoveHelper(this, 30F);
 	}
     
     @Override
     public void initAttrs(BasicEntityShip host)
     {
         this.host = host;
-        
+		
         //設定位置
         this.posX = host.posX;
         this.posY = host.posY;
@@ -32,7 +39,7 @@ public class EntityMountBaH extends BasicEntityMount
         this.setPosition(this.posX, this.posY, this.posZ);
  
         //設定基本屬性
-        setupAttrs();
+        this.setupAttrs();
         
 		if (this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
 				
@@ -73,6 +80,29 @@ public class EntityMountBaH extends BasicEntityMount
 			return super.attackEntityWithHeavyAmmo(target);
 		}
 	}
+	
+	@Override
+  	public void applyParticleAtAttacker(int type, Entity target, float[] vec)
+  	{
+  		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+        
+  		switch (type)
+  		{
+  		case 1:  //light cannon
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, 1.2D, 1.8D, 0.5D), point);
+  			//發送攻擊flag給host, 設定其attack time
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this.host, 0, true), point);
+  		break;
+  		case 2:  //heavy cannon
+  		case 3:  //light aircraft
+  		case 4:  //heavy aircraft
+		default: //melee
+			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
+			//發送攻擊flag給host, 設定其attack time
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this.host, 0, true), point);
+		break;
+  		}
+  	}
 	
 	@Override
 	public void setAIList()

@@ -297,6 +297,10 @@ public class ModelMountAfH extends ModelBase
     @Override
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
     {
+    	//FIX: head rotation bug while riding
+    	if (f3 <= -180F) { f3 += 360F; }
+    	else if (f3 >= 180F) { f3 -= 360F; }
+    	
     	GlStateManager.pushMatrix();
     	GlStateManager.enableBlend();
     	GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
@@ -341,7 +345,7 @@ public class ModelMountAfH extends ModelBase
   		//水上漂浮
   		if (((IShipFloating) ent).getShipDepth() > 0)
   		{
-  			GlStateManager.translate(0F, 0.5F + angleX * 0.025F, 0F);
+  			GlStateManager.translate(0F, angleX * 0.025F + 0.025F, 0F);
     	}
     	else
     	{

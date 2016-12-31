@@ -320,7 +320,20 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
             if (raytrace != null)
             {
                 vec31 = new Vec3d(raytrace.hitVec.xCoord, raytrace.hitVec.yCoord, raytrace.hitVec.zCoord);
-                this.onImpact(null);
+                
+                if (raytrace.typeOfHit == RayTraceResult.Type.ENTITY)
+                {
+                	if (raytrace.entityHit.canBeCollidedWith() && isNotHost(raytrace.entityHit) && !TeamHelper.checkSameOwner(host2, raytrace.entityHit))
+                	{
+                		this.onImpact(raytrace.entityHit);
+                		return;
+                	}
+                }
+                else if (raytrace.typeOfHit == RayTraceResult.Type.BLOCK)
+                {
+                	this.onImpact(null);
+                	return;
+                }
             }
             
             //爆炸判定3: 擴展AABB碰撞: missile擴展1格大小內是否有entity可觸發爆炸
@@ -380,12 +393,22 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
     {
     	//not self
     	if (entity.equals(this)) return false;
-    	//not launcher
-		if (host2 != null && host2.getEntityId() == entity.getEntityId())
+    	
+		if (host2 != null)
 		{
-			return false;
+			//not launcher
+			if (host2.getEntityId() == entity.getEntityId()) return false;
+			
+			//not mounts
+			if (entity.equals(host2.getRidingEntity())) return false;
+			
+			//not riders
+			for (Entity rider : entity.getPassengers())
+			{
+				if (entity.equals(rider)) return false;
+			}
 		}
-
+		
 		return true;
 	}
 

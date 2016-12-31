@@ -167,7 +167,9 @@ public class ParticleLaserNoTexture extends Particle
 
     @Override
     public void renderParticle(VertexBuffer render, Entity entity, float ptick, float cosYaw, float cosPitch, float sinYaw, float sinYawsinPitch, float cosYawsinPitch)
-    {	
+    {
+    	if (this.particleAge <= 1) return;
+    	
     	GlStateManager.pushMatrix();
     	GlStateManager.depthMask(true);
     	GlStateManager.enableBlend();
@@ -302,6 +304,10 @@ public class ParticleLaserNoTexture extends Particle
     @Override
 	public void onUpdate()
     {
+    	this.prevPosX = this.posX;
+    	this.prevPosY = this.posY;
+    	this.prevPosZ = this.posZ;
+    	
     	//null check
     	if (host == null || target == null)
     	{

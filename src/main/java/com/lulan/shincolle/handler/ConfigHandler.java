@@ -23,7 +23,6 @@ public class ConfigHandler
 	//GENERAL
 	public static boolean debugMode = false;
 	public static boolean easyMode = false;
-	public static boolean staticMode = false;
 	public static boolean showTag = true;
 	public static boolean friendlyFire = true;
 	public static boolean useWakamoto = true;
@@ -60,11 +59,11 @@ public class ConfigHandler
 	public static double[] limitShipEffect = new double[] {-1D, -1D, -1D, -1D, -1D, -1D, 75D};
 	public static double[] scaleShip = new double[] {1D, 1D, 1D, 1D, 1D, 1D};
 	//													  HP, ATK, DEF, SPD, MOV, HIT
-	public static double[] scaleBossSmall = new double[] {2000D, 120D, 80D, 1D, 0.6D, 20D};
-	public static double[] scaleBossLarge = new double[] {5000D, 200D, 92D, 2D, 0.36D, 24D};
+	public static double[] scaleBossSmall = new double[] {1600D, 120D, 75D, 1.2D, 0.4D, 18D};
+	public static double[] scaleBossLarge = new double[] {3200D, 200D, 90D, 2D, 0.36D, 22D};
 	//	  												HP, ATK, DEF, SPD, MOV, HIT
-	public static double[] scaleMobSmall = new double[] {200D, 36D, 20D, 0.8D, 0.3D, 12D};
-	public static double[] scaleMobLarge = new double[] {600D, 70D, 40D, 0.9D, 0.3D, 16D};
+	public static double[] scaleMobSmall = new double[] {200D, 36D, 20D, 0.7D, 0.5D, 12D};
+	public static double[] scaleMobLarge = new double[] {600D, 70D, 40D, 0.9D, 0.5D, 15D};
 	//ammo consumption:                              DD CL CA CAV CLT CVL CV BB BBV SS AP 
 	public static int[] consumeAmmoShip = new int[] {1, 2, 2, 2,  2,  3,  3, 4, 4,  1, 1};
 	//grudge consumption:                              DD CL CA CAV CLT CVL CV BB BBV SS AP 
@@ -107,19 +106,19 @@ public class ConfigHandler
 	private static void loadConfiguration()
 	{
 		//是否顯示custom name tag
-		alwaysShowTeamParticle = config.getBoolean("Always_Show_Team", "general", false, "Always show team circle animation");
+		alwaysShowTeamParticle = config.getBoolean("AlwaysShow_TeamCircle", "general", false, "Always show team circle indicator particle");
 		
 		//boss生成cd設定 (ticks)
-		bossCooldown = config.getInt("Boss_Cooldown", "general", 4800, 20, 1728000, "Boss spawn cooldown");
+		bossCooldown = config.getInt("Cooldown_Boss", "general", 4800, 20, 1728000, "Boss spawn cooldown");
 		
 		//玩家離開多遠時關閉GUI
 		closeGUIDist = config.getInt("Close_GUI_Distance", "general", 64, 2, 64, "Close inventory GUI if ship away from player X blocks");
 		
 		//chuknk loader使用模式
-		chunkloaderMode = config.getInt("ChunkLoader_Mode", "general", 2, 0, 2, "Chunk loader mode of ship: 0: disable, 1: only 1 chunk each ship, 2: 3x3 chunks each ship");
+		chunkloaderMode = config.getInt("Mode_ChunkLoader", "general", 2, 0, 2, "Chunk loader mode: 0: disable, 1: only 1 chunk each ship, 2: 3x3 chunks each ship");
 				
 		//是否開啟debug mode
-		debugMode = config.getBoolean("Debug_Mode", "general", false, "Enable debug message (SPAM WARNING)");
+		debugMode = config.getBoolean("Mode_Debug", "general", false, "Enable debug message (SPAM WARNING)");
 		
 		//boss刪除時間 (ticks)
 		despawnBoss = config.getInt("Despawn_Boss", "general", 12000, -1, 1728000, "Boss ship despawn time on chunk unloading, -1 = do NOT despawn");
@@ -131,7 +130,7 @@ public class ConfigHandler
 		dropGrudge = config.getFloat("DropRate_Grudge", "general", 1F, 0F, 64F, "Grudge drop rate (ex: 0.5 = 50% drop 1 grudge, 5.5 = drop 5 grudge + 50% drop 1 grudge)");
 		
 		//是否開啟簡單模式
-		easyMode = config.getBoolean("Easy_Mode", "general", false, "Easy mode: decrease Large Construction resources requirement, increase ammo / grudge gained from items");
+		easyMode = config.getBoolean("Mode_Easy", "general", false, "Easy mode: decrease Large Construction resources requirement, increase ammo / grudge gained from items");
 		
 		//是否開啟誤傷模式
 		friendlyFire = config.getBoolean("Friendly_Fire", "general", true, "false: disable damage done by player (except owner)");
@@ -146,56 +145,53 @@ public class ConfigHandler
 		//desk雷達更新間隔
 		radarUpdate = config.getInt("Radar_Update", "desk", 128, 20, 6000, "Radar update interval (ticks) in Admiral's Desk GUI");
 		
-		//是否把large shipyard設為static entity (只畫一次, 但是此功能跟NEI相衝)
-		staticMode = config.getBoolean("Static_Mode", "general", false, "Render LargeShipyard as static or normal entity (for NotEnoughItem: 1283: Stack overflow bug)");
-		
 		//是否顯示custom name tag
-		showTag = config.getBoolean("Show_Name_Tag", "general", true, "Show custom name tag?");
+		showTag = config.getBoolean("AlwaysShow_NameTag", "general", true, "Always show custom name tag");
 		
 		//team改動cd (ticks)
-		teamCooldown = config.getInt("Battle_Cooldown", "general", 6000, 20, 1728000, "Create/Disband Team Cooldown");
+		teamCooldown = config.getInt("Cooldown_Team", "general", 6000, 20, 1728000, "Create/Disband Team Cooldown");
 
 		//是否開啟若本語音
-		useWakamoto = config.getBoolean("Sound_Wakamoto", "general", true, "enable Wakamoto sound for particular ship");
+		useWakamoto = config.getBoolean("Sound_Wakamoto", "general", true, "enable Wakamoto sound for mounts");
 		
 		//野生艦隊生成數量
 		spawnBossNum = config.getInt("Spawn_Boss_Number", "general", 2, 1, 10, "large hostile ship (boss) number per spawn");
 		spawnMobNum = config.getInt("Spawn_Mob_Number", "general", 4, 1, 10, "small hostile ship number per spawn");
 		
 		//是否開啟林業支援
-		enableForestry = config.getBoolean("Enable_Forestry", "inter-mod", true, "Enable Forestry module if Forestry exists: add bees and comb.");
+		enableForestry = config.getBoolean("Mod_Forestry", "inter-mod", true, "Enable Forestry module if Forestry exists: add bees and comb.");
 				
 		//讀取 ship setting設定
 		canFlare = config.getBoolean("Can_Flare", "ship setting", true, "Can ship spawn Flare lighting effect, CLIENT SIDE only");
 		canSearchlight = config.getBoolean("Can_Searchlight", "ship setting", true, "Can ship spawn Searchlight lighting effect, CLIENT SIDE only");
-		checkRing = config.getBoolean("Check_Ring", "ship setting", true, "Check wedding ring when spawning NON-BOSS ship mob");
-		timeKeeping = config.getBoolean("Timekeeping", "ship setting", true, "Play timekeeping sound every 1000 ticks (1 minecraft hour)");
-		volumeTimekeep = config.getFloat("Timekeeping_Volume", "ship setting", 1.0F, 0F, 10F, "Timekeeping sound volume");
-		volumeShip = config.getFloat("Ship_Volume", "ship setting", 1.0F, 0F, 10F, "Other sound volume");
-		volumeFire = config.getFloat("Attack_Volume", "ship setting", 0.7F, 0F, 10F, "Attack sound volume");
-		baseCaressMorale = config.getInt("BaseMorale_Caress", "ship setting", 15, 1, 1000, "base morale value per CaressTick (4 ticks)");
+		checkRing = config.getBoolean("Check_Ring", "ship setting", true, "Should check wedding ring when spawning NON-BOSS ship mob");
+		timeKeeping = config.getBoolean("Can_Timekeeping", "ship setting", true, "Play timekeeping sound every 1000 ticks (1 minecraft hour)");
+		volumeTimekeep = config.getFloat("Volume_Timekeeping", "ship setting", 1.0F, 0F, 10F, "Timekeeping sound volume");
+		volumeShip = config.getFloat("Volume_Ship", "ship setting", 1.0F, 0F, 10F, "Other sound volume");
+		volumeFire = config.getFloat("Volume_Attack", "ship setting", 0.7F, 0F, 10F, "Attack sound volume");
+		baseCaressMorale = config.getInt("Caress_BaseMorale", "ship setting", 15, 1, 1000, "base morale value per CaressTick (4 ticks)");
 		
-		propShip = config.get("ship setting", "ship_scale", scaleShip, "Ship attributes SCALE: HP, firepower, armor, attack speed, move speed, range");
-		propShipLimitBasic = config.get("ship setting", "ship_limit_basic", limitShipBasic, "Ship basic attributes LIMIT (-1 = no limit): HP, firepower, armor%, attack speed, move speed, range(blocks)");
-		propShipLimitEffect = config.get("ship setting", "ship_limit_effect", limitShipEffect, "Ship effect attributes LIMIT (-1 = no limit, 12 = limit 12%): critical%, double hit%, triple hit%, miss reduction%, anti-air, anti-ss, dodge%");
-		propBossSmall = config.get("ship setting", "SmallBoss_scale", scaleBossSmall, "Small Boss, values: HP, firepower, armor, attack speed, move speed, range");
-		propBossLarge = config.get("ship setting", "LargeBoss_scale", scaleBossLarge, "Large Boss, values: HP, firepower, armor, attack speed, move speed, range");
-		propMobSmall = config.get("ship setting", "SmallMob_scale", scaleMobSmall, "Small mob ship like DD and SS, values: HP, firepower, armor, attack speed, move speed, range");
-		propMobLarge = config.get("ship setting", "LargeMob_scale", scaleMobLarge, "Large mob ship like CL and CA, values: HP, firepower, armor, attack speed, move speed, range");
-		propAmmoShip = config.get("ship setting", "Ammo_Ship", consumeAmmoShip, "Ammo consumption for ship type: DD CL CA CAV CLT CVL CV BB BBV SS AP (MAX = 45)");
-		propGrudgeShip = config.get("ship setting", "Grudge_Ship", consumeGrudgeShip, "Grudge consumption for ship type: DD CL CA CAV CLT CVL CV BB BBV SS AP (MAX = 120)");
-		propGrudgeAction = config.get("ship setting", "Grudge_Action", consumeGrudgeAction, "Grudge consumption for ship action: Light attack, Heavy attack, Light aircraft, Heavy aircraft, Moving per block");
+		propShip = config.get("ship setting", "Attrs_Scale", scaleShip, "Ship attributes SCALE: HP, firepower, armor, attack speed, move speed, range");
+		propShipLimitBasic = config.get("ship setting", "Attrs_Limit_Basic", limitShipBasic, "Ship basic attributes LIMIT (-1 = no limit): HP, firepower, armor%, attack speed, move speed, range(blocks)");
+		propShipLimitEffect = config.get("ship setting", "Attrs_Limit_Effect", limitShipEffect, "Ship effect attributes LIMIT (-1 = no limit, 12 = limit 12%): critical%, double hit%, triple hit%, miss reduction%, anti-air, anti-ss, dodge%");
+		propBossSmall = config.get("ship setting", "Attrs_Hostile_SmallBoss", scaleBossSmall, "Small boss attribute values: HP, firepower, armor, attack speed, move speed, range");
+		propBossLarge = config.get("ship setting", "Attrs_Hostile_LargeBoss", scaleBossLarge, "Large boss attribute values: HP, firepower, armor, attack speed, move speed, range");
+		propMobSmall = config.get("ship setting", "Attrs_Hostile_SmallMob", scaleMobSmall, "Small mob ship like DD and SS attribute values: HP, firepower, armor, attack speed, move speed, range");
+		propMobLarge = config.get("ship setting", "Attrs_Hostile_LargeMob", scaleMobLarge, "Large mob ship like CL and CA attribute values: HP, firepower, armor, attack speed, move speed, range");
+		propAmmoShip = config.get("ship setting", "Consume_Ammo", consumeAmmoShip, "Ammo consumption for ship type: DD CL CA CAV CLT CVL CV BB BBV SS AP (MAX = 45)");
+		propGrudgeShip = config.get("ship setting", "Consume_Grudge_Idle", consumeGrudgeShip, "Grudge consumption for ship type: DD CL CA CAV CLT CVL CV BB BBV SS AP (MAX = 120)");
+		propGrudgeAction = config.get("ship setting", "Consume_Grudge_Action", consumeGrudgeAction, "Grudge consumption for ship action: Light attack, Heavy attack, Light aircraft, Heavy aircraft, Moving per block");
 		propAtkSpd = config.get("ship setting", "Attack_Base_Speed", baseAttackSpeed, "Base attack speed for: Melee, Light attack, Heavy attack, Carrier attack, Airplane attack, ex: base speed 160, fixed delay 30 means (160 / ship attack speed +30) ticks per attack");
 		propAtkDly = config.get("ship setting", "Attack_Fixed_Delay", fixedAttackDelay, "Fixed attack delay for: Melee, Light attack, Heavy attack, Carrier attack, Airplane attack, ex: base speed 160, fixed delay 30 means (160 / ship attack speed +30) ticks per attack");
 		propExp = config.get("ship setting", "Exp_Gain", expGain, "Exp gain for: Melee, Light Attack, Heavy Attack, Light Aircraft, Heavy Aircraft, Move per Block(AP only), Other Action(AP only)");
-		propMobSpawn = config.get("ship setting", "Mob_Spawn", mobSpawn, "Mob ship spawn: Max number in the world, Spawn prob (roll once per player every 128 ticks), #groups each spawn, #min each group, #max each group");
-		propShipyardSmall = config.get("ship setting", "Shipyard_Small", shipyardSmall, "Small shipyard: max fuel storage, build speed, fuel magnification");
-		propShipyardLarge = config.get("ship setting", "Shipyard_Large", shipyardLarge, "Large shipyard: max fuel storage, build speed, fuel magnification");
-		propVolCore = config.get("general", "Vol_Core", volCore, "Volcano Core: max fuel storage, fuel consume speed, fuel value per grudge item");
+		propMobSpawn = config.get("ship setting", "Limit_MobSpawnNumber", mobSpawn, "Mob ship spawn MAX number in the world, Spawn prob (roll once per player every 128 ticks), #groups each spawn, #min each group, #max each group");
+		propShipyardSmall = config.get("ship setting", "Tile_SmallShipyard", shipyardSmall, "Small shipyard: max fuel storage, build speed, fuel magnification");
+		propShipyardLarge = config.get("ship setting", "Tile_LargeShipyard", shipyardLarge, "Large shipyard: max fuel storage, build speed, fuel magnification");
+		propVolCore = config.get("general", "Tile_VolCore", volCore, "Volcano Core: max fuel storage, fuel consume speed, fuel value per grudge item");
 		
 		//ship vs ship damage modifier
-		dmgSvS = config.getInt("SVS_DmgTaken", "ship setting", 100, 0, 10000, "Ship vs Ship damage modifier, 20 = damage * 20% ");
-		dmgSummon = config.getInt("Summon_DmgTaken", "ship setting", 100, 0, 10000, "summons (mounts, aircraft ...etc) damage modifier, 20 = damage * 20% ");
+		dmgSvS = config.getInt("DmgTaken_SvS", "ship setting", 100, 0, 10000, "Ship vs Ship damage modifier, 20 = damage * 20% ");
+		dmgSummon = config.getInt("DmgTaken_Summon", "ship setting", 100, 0, 10000, "summons (mounts, aircraft ...etc) damage modifier, 20 = damage * 20% ");
 		expMod = config.getInt("EXP_Modifier", "ship setting", 20, 1, 10000, "ship experience modifier, 20 = level 150: 150*20+20 = 3020");
 		
 		//WORLD GEN

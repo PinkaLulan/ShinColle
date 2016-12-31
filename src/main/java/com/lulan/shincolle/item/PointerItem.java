@@ -20,6 +20,8 @@ import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.block.model.ModelBakery;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.creativetab.CreativeTabs;
@@ -37,6 +39,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -68,11 +71,31 @@ public class PointerItem extends BasicItem
 		return String.format("item.%s", getUnwrappedUnlocalizedName(super.getUnlocalizedName()));
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
-	public int getTypes()
+    public void initModel()
 	{
-		return 3;
-	}
+		//在inventory(背包介面)中要顯示的model, 依照meta value對應不同model
+		//meta值有多個, 則依照meta值設定使用的texture
+		ModelResourceLocation[] models = new ModelResourceLocation[4];
+		
+		//宣告並設定textures位置: 有4種貼圖
+		for (int i = 0; i < 4; i++)
+		{
+			models[i] = new ModelResourceLocation(getRegistryName() + String.valueOf(i), "inventory");
+		}
+
+		//登錄全部textures
+	    ModelBakery.registerItemVariants(this, models);
+		
+	    //依照各meta值設定各自texture: 有6種meta值
+	    ModelLoader.setCustomModelResourceLocation(this, 0, models[0]);
+	    ModelLoader.setCustomModelResourceLocation(this, 1, models[1]);
+	    ModelLoader.setCustomModelResourceLocation(this, 2, models[2]);
+	    ModelLoader.setCustomModelResourceLocation(this, 3, models[3]);
+	    ModelLoader.setCustomModelResourceLocation(this, 4, models[3]);
+	    ModelLoader.setCustomModelResourceLocation(this, 5, models[3]);
+    }
 
 	/** add only 1 type of item to creative tab */
 	@Override
@@ -134,7 +157,7 @@ public class PointerItem extends BasicItem
 	@Override
 	public boolean onEntitySwing(EntityLivingBase entity, ItemStack item)
 	{
-//		LogHelper.info("DEBUG : pointer swing (left click) "+entityLiving);
+//		LogHelper.debug("DEBUG: pointer swing (left click) "+entityLiving);
 		int meta = item.getItemDamage();
 		
 		if (entity instanceof EntityPlayer)
@@ -151,20 +174,20 @@ public class PointerItem extends BasicItem
 				//hit entity
 				if (hitObj != null)
 				{
-					LogHelper.info("DEBUG : pointer left click: ENTITY "+hitObj.entityHit);
+					LogHelper.debug("DEBUG: pointer left click: ENTITY "+hitObj.entityHit);
 					
 //					//DEBUG
 //					if(hitObj.entityHit != null) {
 //						Class<? extends Entity> tarClass = hitObj.entityHit.getClass();
 //						String tarName = (String) EntityList.classToStringMapping.get(tarClass);
 //						tarClass = (Class<? extends Entity>) EntityList.stringToClassMapping.get(tarName);
-//						LogHelper.info("DEBUG : ppppppp: "+tarClass.getSimpleName().equals("EntityItemFrame")+"   "+tarClass.getSimpleName());
+//						LogHelper.debug("DEBUG: ppppppp: "+tarClass.getSimpleName().equals("EntityItemFrame")+"   "+tarClass.getSimpleName());
 //						Iterator iter = EntityList.classToStringMapping.entrySet().iterator();
 //						while(iter.hasNext()) {
 //							Map.Entry getc = (Entry) iter.next();
 //							Object key = getc.getKey();
 //							Object val = getc.getValue();
-//							LogHelper.info("DEBUG : pointer left click:  "+key);
+//							LogHelper.debug("DEBUG: pointer left click:  "+key);
 //						}
 //					}
 					
@@ -204,7 +227,7 @@ public class PointerItem extends BasicItem
 								//if in team
 								if (i >= 0)
 								{
-									LogHelper.info("DEBUG : pointer remove team: "+ship);
+									LogHelper.debug("DEBUG: pointer remove team: "+ship);
 									//if single mode, set other ship focus
 									if (meta == 0)
 									{
@@ -230,13 +253,13 @@ public class PointerItem extends BasicItem
 								//in team, set focus
 								if (i >= 0)
 								{
-									LogHelper.debug("DEBUG : pointer set focus: "+hitObj.entityHit);
+									LogHelper.debug("DEBUG: pointer set focus: "+hitObj.entityHit);
 									CommonProxy.channelG.sendToServer(new C2SGUIPackets(player , C2SGUIPackets.PID.SetSelect, meta, ship.getShipUID()));
 								}
 								//not in team, add team
 								else
 								{
-									LogHelper.debug("DEBUG : pointer add team: "+hitObj.entityHit);
+									LogHelper.debug("DEBUG: pointer add team: "+hitObj.entityHit);
 									CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.AddTeam, ship.getEntityId()));
 								
 									//若single mode, 則每add一隻就設該隻為focus
@@ -261,7 +284,7 @@ public class PointerItem extends BasicItem
 						if (hitObj.entityHit != null)
 						{
 							String tarName = hitObj.entityHit.getClass().getSimpleName();
-							LogHelper.info("DEBUG : pointer get target class: "+tarName);
+							LogHelper.debug("DEBUG: pointer get target class: "+tarName);
 							player.sendMessage(new TextComponentTranslation("chat.shincolle:pointer.settargetclass", "  "+tarName));
 							//send sync packet to server
 							CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetTarClass, tarName));
@@ -277,7 +300,7 @@ public class PointerItem extends BasicItem
 					//sneak+sprint: clear team
 					if (keySet.keyBindSprint.isKeyDown())
 					{
-						LogHelper.info("DEBUG : pointer clear all focus");
+						LogHelper.debug("DEBUG: pointer clear all focus");
 						//send sync packet to server
 						CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.ClearTeam, 0));
 						return true;
@@ -384,7 +407,7 @@ public class PointerItem extends BasicItem
 			//get entity
 			if (hitObj != null && hitObj.typeOfHit == RayTraceResult.Type.ENTITY)
 			{
-//				LogHelper.info("DEBUG : pointer right click: ENTITY "+hitObj.entityHit.getClass().getSimpleName());
+//				LogHelper.debug("DEBUG: pointer right click: ENTITY "+hitObj.entityHit.getClass().getSimpleName());
 				
 				//right + sprint: entity: guard entity(move only)
 				if (keySet.keyBindSprint.isKeyDown())
@@ -538,7 +561,7 @@ public class PointerItem extends BasicItem
 							}
 						}
 						
-						LogHelper.info("DEBUG : pointer right click: BLOCK: side: "+hitObj2.sideHit+" xyz: "+x+" "+y+" "+z);
+						LogHelper.debug("DEBUG: pointer right click: BLOCK: side: "+hitObj2.sideHit+" xyz: "+x+" "+y+" "+z);
 						
 						int guardType = 1;
 						
@@ -558,7 +581,7 @@ public class PointerItem extends BasicItem
 //					//抓到entity (非預期狀況, 正常應該不會再抓到entity)
 //					else if (hitObj2.typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY)
 //					{
-//						LogHelper.info("DEBUG : pointer right click: ENTITY (method 2) "+hitObj2.entityHit.getClass().getSimpleName());
+//						LogHelper.debug("DEBUG: pointer right click: ENTITY (method 2) "+hitObj2.entityHit.getClass().getSimpleName());
 //						//move to entity
 //						//移動到該ship旁邊
 //						CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetMove, meta, 1, (int)hitObj2.entityHit.posX, (int)hitObj2.entityHit.posY, (int)hitObj2.entityHit.posZ));
@@ -567,7 +590,7 @@ public class PointerItem extends BasicItem
 //					}
 					else
 					{
-						LogHelper.info("DEBUG : pointer right click: MISS");
+						LogHelper.debug("DEBUG: pointer right click: MISS");
 					}
 				}//end hitObj2 = block
 			}//end hitObj2 != null
@@ -633,14 +656,11 @@ public class PointerItem extends BasicItem
 				if (item.hasTagCompound() && item.getTagCompound().getBoolean("chgHB"))
 				{
 					int orgCurrentItem = item.getTagCompound().getInteger("orgHB");
-					LogHelper.info("DEBUG : change hotbar "+((EntityPlayer)player).inventory.currentItem+" to "+orgCurrentItem);
+					LogHelper.debug("DEBUG: change hotbar "+((EntityPlayer)player).inventory.currentItem+" to "+orgCurrentItem);
 					
-					if (((EntityPlayer)player).inventory.currentItem != orgCurrentItem)
-					{
-						((EntityPlayer)player).inventory.currentItem = orgCurrentItem;
-						CommonProxy.channelG.sendToServer(new C2SInputPackets(C2SInputPackets.PID.SyncHandheld, orgCurrentItem));
-						item.getTagCompound().setBoolean("chgHB", false);
-					}
+					((EntityPlayer)player).inventory.currentItem = orgCurrentItem;
+					CommonProxy.channelG.sendToServer(new C2SInputPackets(C2SInputPackets.PID.SyncHandheld, orgCurrentItem));
+					item.getTagCompound().setBoolean("chgHB", false);
 				}
 			}
 		}//end client side
@@ -670,7 +690,7 @@ public class PointerItem extends BasicItem
 							
 //								//debug
 //								if(player.ticksExisted % 40 == 0) {
-//									LogHelper.info("DEBUG : pointer: show team "+i+" "+extProps.getTeamSelected(i)+" "+teamship);
+//									LogHelper.debug("DEBUG: pointer: show team "+i+" "+extProps.getTeamSelected(i)+" "+teamship);
 //								}
 							
 							if (teamship != null)

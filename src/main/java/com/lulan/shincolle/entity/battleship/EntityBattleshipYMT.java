@@ -92,7 +92,7 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall
   					//spawn beam charge lightning
   	  				if (getStateEmotion(ID.S.Phase) > 0)
   	  				{
-  	    	        	ParticleHelper.spawnAttackParticleAtEntity(this, 0D, 16, 1D, (byte)4);
+  	    	        	ParticleHelper.spawnAttackParticleAtEntity(this, 0.1D, 16, 1D, (byte)4);
   	  				}
   	  			}//end 16 ticks
   			}//end 4 ticks
@@ -143,8 +143,11 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall
         	return false;
         }
 
-        //play attack effect
-        applySoundAtAttacker(2, target);
+        //play entity sound
+        if (this.getRNG().nextInt(10) > 7)
+        {
+        	this.playSound(this.getCustomSound(1, this), this.getSoundVolume(), this.getSoundPitch());
+        }
         
         //check phase
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);

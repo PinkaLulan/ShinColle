@@ -29,6 +29,7 @@ import com.lulan.shincolle.worldgen.ChestLootTable;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.GlStateManager.FogMode;
 import net.minecraft.client.settings.GameSettings;
@@ -44,6 +45,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
@@ -64,9 +66,7 @@ import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
-import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
@@ -310,7 +310,7 @@ public class EventHandler
         //restore data when player dead or back from End
         if (event.getEntityPlayer() != null && event.getOriginal() != null)
         {
-        	LogHelper.info("DEBUG : get player clone event: "+event.getOriginal());
+        	LogHelper.debug("DEBUG: get player clone event: "+event.getOriginal());
 
         	//copy data from original player to new player
         	CapaTeitoku capa1 = CapaTeitoku.getTeitokuCapability(event.getOriginal());
@@ -326,7 +326,8 @@ public class EventHandler
         		capa2.loadNBTData(nbt);
         		capa2.sendSyncPacket(0);
         		
-        		LogHelper.info("DEBUG : player clone: restore player data: eid: "+event.getEntityPlayer().getEntityId()+" pid: "+capa2.getPlayerUID());
+        		LogHelper.debug("DEBUG: player clone: restore player data: eid: "+event.getEntityPlayer().getEntityId()+" pid: "+capa2.getPlayerUID());
+        		ServerProxy.updatePlayerID(event.getEntityPlayer());
         	}
         }
 	}
@@ -347,7 +348,7 @@ public class EventHandler
 //				//list低於1個表示沒有找到其他boss
 //	            if (ListMob.size() < 1)
 //	            {
-//	            	LogHelper.info("DEBUG : spawn ship mob at "+event.x+" "+event.y+" "+event.z+" rate "+ConfigHandler.scaleMobSmall[6]);
+//	            	LogHelper.debug("DEBUG: spawn ship mob at "+event.x+" "+event.y+" "+event.z+" rate "+ConfigHandler.scaleMobSmall[6]);
 //	            	
 //	            	//get random mob
 //	            	String shipname = ShipCalc.getRandomMobToSpawnName(0);
@@ -375,28 +376,24 @@ public class EventHandler
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
 	public void onWorldLoad(WorldEvent.Load event)
 	{
-		if (!ServerProxy.initServerFile && event.getWorld() != null)
+		if (ServerProxy.initServerFile && event.getWorld() != null)
 		{
 			ServerProxy.initServerProxy(event.getWorld());
 		}
 	}
 	
-//	/**world unload event
-//	 * save ship team list here, for SINGLEPLAYER ONLY
-//	 * for multiplayer: PlayerLoggedOutEvent
-//	 * 
-//	 * logout event只會在多人遊戲下發出, 單機遊戲必須使用此world unload event
-//	 */
-//	@SubscribeEvent
-//	public void onWorldUnload(WorldEvent.Unload event) {
-//		LogHelper.info("DEBUG : on world unload: "+event.world.provider.dimensionId+" phase "+event.getPhase());
-//		
-//		//save world file, mainly for single player
-//		if(!ServerProxy.savedServerFile) {  //if file not saved
-//			ServerProxy.saveServerProxy();
-//			LogHelper.info("DEBUG : on world unload: save world data to disk");
-//		}
-//	}
+	/**world unload event
+	 * 若已經發出過FMLServerStoppingEvent, 表示伺服器要關閉, 全部world都要unload
+	 * 此時就將server world data標記要儲存回disk
+	 */
+	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+	public void onWorldUnload(WorldEvent.Unload event)
+	{
+		if (ServerProxy.saveServerFile)
+		{
+			ServerProxy.saveServerProxy();
+		}
+	}
 	
 //	/** on player left click attack event, BOTH SIDE EVENT
 //	 *  set ship's revenge target when player attack
@@ -404,7 +401,7 @@ public class EventHandler
 //	@SubscribeEvent
 //	public void onPlayerAttack(AttackEntityEvent event) {
 //		if(event.entityPlayer != null && !event.entityPlayer.worldObj.isRemote) {
-//			LogHelper.info("DEBUG : get attack event: "+event.entityPlayer);
+//			LogHelper.debug("DEBUG: get attack event: "+event.entityPlayer);
 //		}
 //	}
 //	
@@ -456,45 +453,60 @@ public class EventHandler
 		Entity attackerSource = event.getSource().getSourceOfDamage();	//attacker or summoner
 		
 		//server side only
-		if(target != null && attackerSource != null && !target.world.isRemote)
+		if(target != null && !target.world.isRemote)
 		{
-			double dist = target.getDistanceSqToEntity(attackerSource);
-			
-			//check attacker
-			//attacker is player
-			if (attackerSource instanceof EntityPlayer)
-			{
-				TargetHelper.setRevengeTargetAroundPlayer((EntityPlayer) attackerSource, 32D, target);
-			}
-			
-			//check attack source
-			//player been attacked
+			//prevnt fall damage to player while riding
 			if (target instanceof EntityPlayer)
 			{
-				if (dist < 1024D)
+				if (target.getRidingEntity() instanceof BasicEntityMount &&
+					(event.getSource() == DamageSource.fall ||
+					 event.getSource() == DamageSource.inWall))
 				{
-					TargetHelper.setRevengeTargetAroundPlayer((EntityPlayer) target, 32D, attackerSource);
-				}
-				else
-				{
-					TargetHelper.setRevengeTargetAroundPlayer((EntityPlayer) target, 32D, attacker);
-				}
-			}
-			//hostile ship been attacked, call for help
-			else if (target instanceof BasicEntityShipHostile)
-			{
-				if (attackerSource instanceof BasicEntityShipHostile) return;
-				
-				if (dist < 1024D)
-				{
-					TargetHelper.setRevengeTargetAroundHostileShip((BasicEntityShipHostile) target, 64D, attackerSource);
-				}
-				else
-				{
-					TargetHelper.setRevengeTargetAroundHostileShip((BasicEntityShipHostile) target, 64D, attacker);
+					event.setCanceled(true);
+					return;
 				}
 			}
 			
+			//other damage
+			if (attackerSource != null)
+			{
+				double dist = target.getDistanceSqToEntity(attackerSource);
+				
+				//check attacker
+				//attacker is player
+				if (attackerSource instanceof EntityPlayer)
+				{
+					TargetHelper.setRevengeTargetAroundPlayer((EntityPlayer) attackerSource, 32D, target);
+				}
+				
+				//check attack source
+				//player been attacked
+				if (target instanceof EntityPlayer)
+				{
+					if (dist < 1024D)
+					{
+						TargetHelper.setRevengeTargetAroundPlayer((EntityPlayer) target, 32D, attackerSource);
+					}
+					else
+					{
+						TargetHelper.setRevengeTargetAroundPlayer((EntityPlayer) target, 32D, attacker);
+					}
+				}
+				//hostile ship been attacked, call for help
+				else if (target instanceof BasicEntityShipHostile)
+				{
+					if (attackerSource instanceof BasicEntityShipHostile) return;
+					
+					if (dist < 1024D)
+					{
+						TargetHelper.setRevengeTargetAroundHostileShip((BasicEntityShipHostile) target, 64D, attackerSource);
+					}
+					else
+					{
+						TargetHelper.setRevengeTargetAroundHostileShip((BasicEntityShipHostile) target, 64D, attacker);
+					}
+				}
+			}
 		}//end server side
 	}
 	
@@ -559,18 +571,18 @@ public class EventHandler
 //					});
 					
 					/**
-					 * generate player UID
+					 * update player UID or generate UID for new player
 					 */
 					if (capa.getPlayerUID() < 100)
 					{
-						//get new UID
+						//gerenate new UID
 			        	ServerProxy.updatePlayerID(event.player);
 			        	
 				        //check player UID again, stop ticking if fail
 				        if (capa.getPlayerUID() < 100)
 				        {
 				        	//update uid fail, return
-				        	LogHelper.debug("DEBUG : player tick: generate new player UID fail, stop player ticking.");
+				        	LogHelper.debug("DEBUG: player tick: generate new player UID fail, stop player ticking.");
 				        	return;
 						}
 				        else
@@ -578,13 +590,14 @@ public class EventHandler
 				        	//sync extProps to client
 					        capa.sendSyncPacket(0);
 				        	//save extProps to ServerProxy
-							LogHelper.info("DEBUG : player tick: generate new player UID, save player extProps in ServerProxy");
+							LogHelper.debug("DEBUG: player tick: generate new player UID, save player extProps in ServerProxy");
 				        }
 					}
 					
 					//team list fast update
 					if (event.player.ticksExisted == 64)
 					{
+						ServerProxy.updatePlayerID(event.player);
 						updateTeamList(event.player, capa);
 						syncTeamList = true;
 					}
@@ -594,17 +607,6 @@ public class EventHandler
 					{
 						//spawn mob ship
 						spawnMobShip(event.player, capa);
-						
-						/** check player entity id and update player data to ServerProxy cache */
-						//get server cache
-						int peid = EntityHelper.getPlayerEID(capa.getPlayerUID());
-						
-						//if entity id is different, update new eid
-						if (peid != event.player.getEntityId())
-						{
-							LogHelper.info("DEBUG : player tick: player entity id changed, update new eid: "+peid+" to "+event.player.getEntityId());
-							ServerProxy.updatePlayerID(event.player);
-						}
 						
 						//every 256 ticks
 						if (event.player.ticksExisted % 256 == 0)
@@ -631,7 +633,7 @@ public class EventHandler
 					
 					//sync flag
 					CommonProxy.channelG.sendTo(new S2CGUIPackets(S2CGUIPackets.PID.FlagInitSID, 0, true), (EntityPlayerMP) event.player);
-					LogHelper.info("DEBUG : player tick: update team entity");
+					LogHelper.debug("DEBUG: player tick: update team entity");
 					syncTeamList = true;
 				}//end init ship UID
 				
@@ -821,7 +823,7 @@ public class EventHandler
 						}
 
 						IBlockState blockY = w.getBlockState(new BlockPos(spawnX, w.provider.getAverageGroundLevel() - 2, spawnZ));
-						LogHelper.info("DEBUG : spawn mob ship: group: "+groups+
+						LogHelper.debug("DEBUG: spawn mob ship: group: "+groups+
 								" get block: "+blockY.getBlock().getLocalizedName()+" "+spawnX+
 								" "+(w.provider.getAverageGroundLevel()-2)+" "+spawnZ);
 						
@@ -855,7 +857,7 @@ public class EventHandler
 									entityToSpawn.setPosition(spawnX + rng.nextDouble(), spawnY + 0.5D, spawnZ + rng.nextDouble());
 									w.spawnEntity(entityToSpawn);
 				            	}
-				            	LogHelper.info("DEBUG : spawn mob ship: #total: "+(entNum++)+" group: "+groups+" #ship: "+i+" "+spawnY+" "+shipname);
+				            	LogHelper.debug("DEBUG: spawn mob ship: #total: "+(entNum++)+" group: "+groups+" #ship: "+i+" "+spawnY+" "+shipname);
 							}
 						}//end get water block
 						
@@ -897,7 +899,7 @@ public class EventHandler
 			capa.setBossCooldown(ConfigHandler.bossCooldown);
 			
 			int rolli = rng.nextInt(4);
-			LogHelper.info("DEBUG : spawn boss: roll spawn "+rolli);
+			LogHelper.debug("DEBUG: spawn boss: roll spawn "+rolli);
 			if (rolli == 0)
 			{
 				//尋找20次地點, 找到一個可生成地點即生成後跳出loop
@@ -929,7 +931,7 @@ public class EventHandler
 					
 					IBlockState blockY = w.getBlockState(new BlockPos(spawnX, w.provider.getAverageGroundLevel() - 2, spawnZ));
 					
-					LogHelper.info("DEBUG : spawn boss: check block: "+blockY.getBlock().getLocalizedName()+
+					LogHelper.debug("DEBUG: spawn boss: check block: "+blockY.getBlock().getLocalizedName()+
 							" "+spawnX+" "+(w.provider.getAverageGroundLevel() - 2)+" "+spawnZ);
 					//生成在水面
 					if (blockY.getMaterial() == Material.WATER)
@@ -950,7 +952,7 @@ public class EventHandler
 								bossNum++;
 							}
 						}
-						LogHelper.info("DEBUG : spawn boss: check existed boss: "+bossNum+" all mob: "+listBoss.size());
+						LogHelper.debug("DEBUG: spawn boss: check existed boss: "+bossNum+" all mob: "+listBoss.size());
 						
 						//若範圍內不到2隻boss, 則可以再生成新boss
 			            if (bossNum < 2)
@@ -999,7 +1001,7 @@ public class EventHandler
 			            	ServerProxy.getServer().sendMessage(new TextComponentString(""+TextFormatting.YELLOW+spawnText+
 			            			TextFormatting.AQUA+" "+spawnX+" "+spawnY+" "+spawnZ));
 			            	
-			            	LogHelper.info("DEBUG : spawn fleet "+spawnX+" "+spawnY+" "+spawnZ);
+			            	LogHelper.debug("DEBUG: spawn fleet "+spawnX+" "+spawnY+" "+spawnZ);
 							break;
 			            }//end if nearby boss < 2	
 					}//end get water block
@@ -1008,193 +1010,136 @@ public class EventHandler
 		}//end boss cooldown <= 0
 	}
 	
-	/**get input, 按下+放開都會發出一次, 且每個按鍵分開發出, CLIENT side only event
-	 * getIsKeyPressed = 該按鍵是否按著, isKeyDown = 這次event是否為該按鍵
+	/**
+	 * input event, key按下+放開都會發出一次, 且每個按鍵分開發出, CLIENT SIDE ONLY
+	 * isKeyDown = 該按鍵是否按著, isKeyPressed = 這次event是否為該按鍵
 	 * 
+	 * NOTE: 持續偵測類必須使用isKeyDown, 只需要偵測一次的使用isKeyPressed
+	 * NOTE2: 該按鍵若設為滑鼠按鍵, 則只有isKeyDown會有反應!
 	 */
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
 	public void onKeyInput(InputEvent event)
 	{
 		EntityPlayer player = ClientProxy.getClientPlayer();
 		this.keySet = ClientProxy.getGameSetting();
-		
+
 		//pointer item control
-		if (event instanceof KeyInputEvent)
+		ItemStack pointer = EntityHelper.getPointerInUse(player);
+		
+		if (pointer != null)
 		{
-			//get pointer item
-			ItemStack pointer = EntityHelper.getPointerInUse(player);
+			int meta = pointer.getMetadata();
+			int getKey = -1;
+			int orgCurrentItem = player.inventory.currentItem;
 			
-			if (pointer != null)
+			//若按住ctrl (sprint key)
+			if (keySet.keyBindSprint.isKeyDown())	//注意持續偵測類按鍵必須使用isKeyDown
 			{
-				int meta = pointer.getMetadata();
-				
-				//ctrl + xx
-				int getKey = -1;
-				int orgCurrentItem = player.inventory.currentItem;
-				
-				//若按住ctrl (sprint key)
-				if (keySet.keyBindSprint.isKeyDown())
+				//若按住hotbar 1~9, 則切換隊伍, 但是避免數字按鍵將hotbar位置改變 (固定current item)
+				for (int i = 0; i < keySet.keyBindsHotbar.length; i++)
 				{
-					//若按住數字按鍵 1~9, 則切換隊伍, 但是避免數字按鍵將hotbar位置改變 (固定current item)
-					for (int i = 0; i < keySet.keyBindsHotbar.length; i++)
+					if (keySet.keyBindsHotbar[i].isPressed())
 					{
-						if (keySet.keyBindsHotbar[i].isKeyDown())
-						{
-							getKey = i;
-							
-							//儲存快捷位置到權杖, 使權杖能將快捷列回復到權杖上 (CLIENT ONLY)
-							if (!pointer.hasTagCompound())
-							{
-								pointer.setTagCompound(new NBTTagCompound());
-							}
-							
-							//set hotbar changed flag
-							pointer.getTagCompound().setBoolean("chgHB", true);
-							pointer.getTagCompound().setInteger("orgHB", orgCurrentItem);
-							
-							break;
-						}
-					}
-					
-					LogHelper.debug("DEBUG : key input: pointer set team: "+getKey+" currItem: "+orgCurrentItem);
-					//send key input packet
-					if (getKey >= 0)
-					{
-						//change team id
-						CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetShipTeamID, getKey, orgCurrentItem));
+						getKey = i;
+						
+						//儲存快捷位置到權杖, 使權杖能將快捷列回復到權杖上 (CLIENT SIDE)
+						if (!pointer.hasTagCompound()) pointer.setTagCompound(new NBTTagCompound());
+						pointer.getTagCompound().setBoolean("chgHB", true);
+						pointer.getTagCompound().setInteger("orgHB", orgCurrentItem);
+						
+						break;
 					}
 				}
-				//change pointer mode to caress head mode (meta + 3)
-				else if (keySet.keyBindPlayerList.isKeyDown())
+				
+				LogHelper.debug("DEBUG: key input: pointer set team: "+getKey+" currItem: "+orgCurrentItem);
+				//send key input packet
+				if (getKey >= 0)
 				{
-					//switch caress head mode
-					switch (meta)
-					{
-					case 1:
-						meta = 4;
-						break;
-					case 2:
-						meta = 5;
-						break;
-					case 3:
-						meta = 0;
-						break;
-					case 4:
-						meta = 1;
-						break;
-					case 5:
-						meta = 2;
-						break;
-					default:
-						meta = 3;
-						break;
-					}
-					
-					player.inventory.getCurrentItem().setItemDamage(meta);
-					
-					//send sync packet to server
-					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SyncPlayerItem, meta));
+					//change team id
+					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetShipTeamID, getKey, orgCurrentItem));
 				}
+			}
+			//change pointer mode to caress head mode (meta + 3)
+			//current item must be PointerItem (NO OFFHAND!)
+			else if (player.inventory.getCurrentItem() != null &&
+					 player.inventory.getCurrentItem().getItem() == ModItems.PointerItem &&
+					 keySet.keyBindPlayerList.isPressed())
+			{
+				//switch caress head mode
+				switch (meta)
+				{
+				case 1:
+				case 2:
+					meta += 3;
+					break;
+				case 3:
+				case 4:
+				case 5:
+					meta -= 3;
+					break;
+				default:
+					meta = 3;
+					break;
+				}
+				
+				player.inventory.getCurrentItem().setItemDamage(meta);
+				
+				//send sync packet to server
+				CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SyncPlayerItem, meta));
 			}
 		}
-
+		
 		//riding control
-		if (player.getRidingEntity() instanceof BasicEntityMount)
+		if (this.keyCooldown <= 0 && player.getRidingEntity() instanceof BasicEntityMount)
 		{
-			int newKeys = 0;
-			BasicEntityMount mount = (BasicEntityMount) player.getRidingEntity();
-			
-			//change renderer viewer, accept KEYBOARD or MOUSE input
-			if (keySet.keyBindPickBlock.isKeyDown() && this.keyCooldown <= 0)
+			//open ship GUI while riding, NO SUPPORT FOR MOUSE!
+			if (keySet.keyBindInventory.isPressed())
 			{
-				LogHelper.info("DEBUG : key event: player view "+this.isViewPlayer);
-				this.keyCooldown = 5;
-				this.isViewPlayer = !this.isViewPlayer;
+				LogHelper.debug("DEBUG: key event: open ship GUI");
+				CommonProxy.channelG.sendToServer(new C2SInputPackets(C2SInputPackets.PID.MountGUI));
+				return;
 			}
 			
-			//move and open GUI is KEYBOARD ONLY
-			if (event instanceof KeyInputEvent)
+			//change renderer viewer, support for mouse keys
+			if (keySet.keyBindPickBlock.isPressed() || keySet.keyBindPickBlock.isKeyDown())
 			{
-				//forward
-				if (keySet.keyBindForward.isKeyDown())
-				{
-					LogHelper.info("DEBUG : key event: press W");
-					newKeys = newKeys | 1;
-				}
+				LogHelper.debug("DEBUG: key event: player view "+this.isViewPlayer);
+				this.keyCooldown = 8;
+				this.isViewPlayer = !this.isViewPlayer;
+				return;
+			}
+			
+			//持續偵測所有移動按鍵是否按住
+			BasicEntityMount mount = (BasicEntityMount) player.getRidingEntity();
+			int newKeys = 0;
+			
+			//forward
+			if (keySet.keyBindForward.isKeyDown()) newKeys = newKeys | 1;
+			//back
+			if (keySet.keyBindBack.isKeyDown()) newKeys = newKeys | 2;
+			//left
+			if (keySet.keyBindLeft.isKeyDown()) newKeys = newKeys | 4;
+			//right
+			if (keySet.keyBindRight.isKeyDown()) newKeys = newKeys | 8;
+			//jump
+			if (keySet.keyBindJump.isKeyDown() && (mount.onGround || EntityHelper.checkEntityIsInLiquid(mount))) newKeys = newKeys | 16;
+			
+			if (newKeys > 0)
+			{
+				//set key for packet
+				this.rideKeys = newKeys;
+				this.keyCooldown = 2;
 				
-				//back
-				if (keySet.keyBindBack.isKeyDown())
-				{
-					LogHelper.info("DEBUG : key event: press S");
-					newKeys = newKeys | 2;
-				}
+				//server跟client必須同時設定移動狀態, 移動顯示才會順暢, 只靠server設定移動會不連續
+				mount.keyPressed = newKeys;		//set client moving key
+				mount.keyTick = 10;				//continue moving for 10 ticks
 				
-				//left
-				if (keySet.keyBindLeft.isKeyDown())
-				{
-					LogHelper.info("DEBUG : key event: press A");
-					newKeys = newKeys | 4;
-				}
-				
-				//right
-				if (keySet.keyBindRight.isKeyDown())
-				{
-					LogHelper.info("DEBUG : key event: press D");
-					newKeys = newKeys | 8;
-				}
-				
-				//jump
-				if (keySet.keyBindJump.isKeyDown())
-				{
-					LogHelper.info("DEBUG : key event: jump");
-					newKeys = newKeys | 16;
-				}
-				
-				//server跟client同時設定, 移動顯示才會順暢, 只靠server設定移動會不連續
-				if (mount != null)
-				{
-					//set key for packet
-					this.rideKeys = newKeys;
-					
-					//set client key
-					mount.keyPressed = newKeys;
-	
-					//open ship GUI
-					if (keySet.keyBindInventory.isKeyDown())
-					{
-						CommonProxy.channelG.sendToServer(new C2SInputPackets(1, this.openGUI));
-					}
-					//set move key
-					else
-					{
-						CommonProxy.channelG.sendToServer(new C2SInputPackets(0, this.rideKeys));
-					}
-				}
-			}//is key event
+				//send mounts move key packet
+				LogHelper.debug("DEBUG: key event: mounts move key: "+Integer.toBinaryString(newKeys));
+				CommonProxy.channelG.sendToServer(new C2SInputPackets(C2SInputPackets.PID.MountMove, this.rideKeys));
+			}
 		}//end is riding
-	}//end key event
-
-	/**player login, called after extProps loaded, SERVER ONLY event
-	 */
-	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
-	public void onPlayerLogin(PlayerLoggedInEvent event)
-	{
-		/**load player extend data
-		 */
-		LogHelper.info("DEBUG : player login: "+event.player.getDisplayNameString()+" "+event.player.world.isRemote+" "+event.player.getUniqueID());
-		CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(event.player);
-		
-		if (capa != null && capa.needInit)
-		{
-			capa.init(event.player);
-		}//end player extProps not null
 	}
-	
-//	//player loggout, NO USE in singleplayer
-//	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
-//	public void onPlayerLogout(PlayerLoggedOutEvent event)
-//	{
-//	}
 	
 	/**
 	 * player change dimension, need to update player data
@@ -1206,7 +1151,7 @@ public class EventHandler
 	{
 		/**load player extend data
 		 */
-		LogHelper.info("DEBUG : player change dim: "+event.player.getName()+" "+event.player.getUniqueID());
+		LogHelper.debug("DEBUG: player change dim: "+event.player.getName()+" "+event.player.getUniqueID());
 		
 		if (event.player != null && !event.player.world.isRemote)
 		{
@@ -1257,10 +1202,9 @@ public class EventHandler
 							camera.rotationYaw = player.rotationYaw;
 							camera.prevRotationPitch = player.prevRotationPitch;
 							camera.prevRotationYaw = player.prevRotationYaw;
-							
 						}
 					}
-				}//end riding SEAT
+				}//end riding ship's mounts
 			}//end phase START
 			else if (event.phase == TickEvent.Phase.END)
 			{
@@ -1270,7 +1214,6 @@ public class EventHandler
 					ClientProxy.getMineraft().setRenderViewEntity(ClientProxy.getClientPlayer());
 					this.isViewChanged = false;
 				}
-				
 			}//end phase END
 		}
 	}

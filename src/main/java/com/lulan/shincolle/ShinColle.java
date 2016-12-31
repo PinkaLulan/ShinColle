@@ -28,6 +28,7 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 
@@ -69,7 +70,7 @@ public class ShinColle
 		//capability register
 		proxy.registerCapability();
 		
-		LogHelper.info("Pre-Init completed.");
+		LogHelper.info("INFO: Pre-Init completed.");
 	}
 	
 	/** initial: recipe/gui/worldgen init, event handler regist, create data handler, 
@@ -87,7 +88,7 @@ public class ShinColle
 		
 		ModRecipes.init();
 		
-		LogHelper.info("Init completed.");
+		LogHelper.info("INFO: Init completed.");
 		
 		//Waila tooltip provider TODO
         //FMLInterModComms.sendMessage("Waila", "register", "com.lulan.shincolle.waila.WailaDataProvider.callbackRegister");
@@ -135,33 +136,46 @@ public class ShinColle
 //			LogHelper.info(oreName);
 //		}
 		
-		LogHelper.info("Post-Init completed.");
+		LogHelper.info("INFO: Post-Init completed.");
 	}
 	
-	/** server starting event
-	 *  
-	 */
-	@Mod.EventHandler
-	public void onServerStarting(FMLServerStartingEvent event)
-	{
-		LogHelper.info("Server starting event: is MP server? "+event.getSide().isServer());
-		
-		//register command
-		CommandHandler.init(event);
-		
-	}
-	
-	/** server about to start event
+	/** server about to start
 	 *  當開啟一個存檔或者MP伺服器開啟時會丟出此事件
 	 *  在此事件中將MapStorage的讀取紀錄設為false
 	 *  使每次開不同存檔都會重讀該存檔的MapStorage
 	 */
 	@Mod.EventHandler
-	public void onServerStarted(FMLServerAboutToStartEvent event)
+	public void onServerAboutToStart(FMLServerAboutToStartEvent event)
 	{
-		LogHelper.info("DEBUG : server about to start: is MP server? "+event.getSide().isServer());
-	    ServerProxy.initServerFile = false;
+		LogHelper.info("INFO: server about to start: is MP server? "+event.getSide().isServer());
+		//set init flag
+	    ServerProxy.initServerFile = true;
+	    ServerProxy.saveServerFile = false;
 	    CommonProxy.isMultiplayer = event.getSide().isServer();
+	}
+	
+	/** server starting
+	 *  command必須在此註冊 (每個地圖檔會依照權限設定, 註冊不同command)
+	 */
+	@Mod.EventHandler
+	public void onServerStarting(FMLServerStartingEvent event)
+	{
+		LogHelper.info("INFO: Server starting event: is MP server? "+event.getSide().isServer());
+		//register command
+		CommandHandler.init(event);
+	}
+	
+	/** server stopping
+	 *  before world unload
+	 *  標記server即將關閉, server world data需要標記存回disk
+	 */
+	@Mod.EventHandler
+	public void onServerStopping(FMLServerStoppingEvent event)
+	{
+		LogHelper.info("INFO: Server stopping event");
+		//set init flag
+	    ServerProxy.initServerFile = false;
+	    ServerProxy.saveServerFile = true;
 	}
 	
 

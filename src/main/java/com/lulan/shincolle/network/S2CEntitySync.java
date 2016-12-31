@@ -141,9 +141,9 @@ public class S2CEntitySync implements IMessage
 		case PID.SyncEntity_Emo: //IShipEmotion sync emtion
 			this.valueByte1 = PacketHelper.readByteArray(buf, 6);
 		break;
-		case PID.SyncShip_Riders: //player mount sync (only send when player right click on mount)
+		case PID.SyncShip_Riders: //player mount sync
 			this.valueInt = buf.readInt();
-			if (this.valueInt > 0) this.valueInt1 = PacketHelper.readIntArray(buf, this.valueInt);
+			if (this.valueInt > 0) this.valueInt1 = PacketHelper.readIntArray(buf, this.valueInt + 1);
 		break;
 		case PID.SyncProjectile:	//missile type sync
 			this.valueInt = buf.readInt();
@@ -152,8 +152,8 @@ public class S2CEntitySync implements IMessage
 			this.valueDouble1 = PacketHelper.readDoubleArray(buf, 3);
 			this.valueFloat1 = PacketHelper.readFloatArray(buf, 2);
 		break;
-		case PID.SyncEntity_Rot:	//entity rotation sync TODO need sync?
-			this.valueFloat1 = PacketHelper.readFloatArray(buf, 2);
+		case PID.SyncEntity_Rot:	//entity rotation sync
+			this.valueFloat1 = PacketHelper.readFloatArray(buf, 3);
 		break;
 		case PID.SyncEntity_Motion:	//entity motion sync
 			this.valueFloat1 = PacketHelper.readFloatArray(buf, 3);
@@ -410,7 +410,7 @@ public class S2CEntitySync implements IMessage
 			List<Entity> list = this.entity.getPassengers();
 			int length = list.size();
 			
-			//send length
+			//send list length
 			buf.writeInt(length);
 			
 			//send list
@@ -420,6 +420,17 @@ public class S2CEntitySync implements IMessage
 				{
 					buf.writeInt(ent.getEntityId());
 				}
+			}
+			
+			//if mounts is BasicEntityMount, send host id
+			if (this.entity instanceof BasicEntityMount)
+			{
+				buf.writeInt(((BasicEntityMount) this.entity).getHostEntity().getEntityId());
+			}
+			else
+			{
+				//send list length
+				buf.writeInt(0);
 			}
 		}
 		break;
@@ -442,10 +453,12 @@ public class S2CEntitySync implements IMessage
 			if (this.entity instanceof EntityLivingBase)
 			{
 				buf.writeFloat(((EntityLivingBase) this.entity).rotationYawHead);
+				buf.writeFloat(this.entity.rotationYaw);
 				buf.writeFloat(this.entity.rotationPitch);
 			}
 			else
 			{
+				buf.writeFloat(this.entity.rotationYaw);
 				buf.writeFloat(this.entity.rotationYaw);
 				buf.writeFloat(this.entity.rotationPitch);
 			}
@@ -763,22 +776,37 @@ public class S2CEntitySync implements IMessage
 				entity2.setStateEmotion(ID.S.Phase, msg.valueByte1[5], false);
 			}
 			break;
-			case PID.SyncShip_Riders: //player mount sync (only send when player right click on mount)
+			case PID.SyncShip_Riders: //player mount sync
 			{
 				//get rider to sync
 				if (msg.valueInt > 0)
 				{
-					//set mount
+					//set mounts' riders
 					for (int i = 0; i < msg.valueInt; i++)
 					{
 						Entity ent = EntityHelper.getEntityByID(msg.valueInt1[i], 0, true);
 						if (ent != null) ent.startRiding(entity, true);
 					}
-
-					//set mount pose if riders > 1
+					
+					//if mounts is BasicEntityMount, set host and pose
 					if (entity instanceof BasicEntityMount)
 					{
-						if (msg.valueInt > 1) ((BasicEntityMount) entity).setStateEmotion(ID.S.Emotion, 1, false);
+						//set mounts' host entity
+						if (msg.valueInt1[msg.valueInt] > 0)
+						{
+							Entity ent = EntityHelper.getEntityByID(msg.valueInt1[msg.valueInt], 0, true);
+						
+							if (ent instanceof BasicEntityShip)
+							{
+								((BasicEntityMount) entity).host = (BasicEntityShip) ent;
+							}
+						}
+						
+						//set mount pose if riders > 1
+						if (msg.valueInt > 1)
+						{
+							((BasicEntityMount) entity).setStateEmotion(ID.S.Emotion, 1, false);
+						}
 					}
 				}
 			}
@@ -801,23 +829,36 @@ public class S2CEntitySync implements IMessage
 						msg.valueDouble1[2], msg.valueFloat1[0], msg.valueFloat1[1]);
 			}
 			break;
-			case PID.SyncEntity_Rot:	//entity rotation sync TODO need sync?
+			case PID.SyncEntity_Rot:	//entity rotation sync
 			{
 				if (entity instanceof EntityLivingBase)
 				{
 					((EntityLivingBase) entity).rotationYawHead = msg.valueFloat1[0];
-					entity.rotationPitch = msg.valueFloat1[1];
+					entity.rotationYaw = msg.valueFloat1[1];
+					entity.rotationPitch = msg.valueFloat1[2];
 				}
 				else
 				{
 					entity.rotationYaw = msg.valueFloat1[0];
-					entity.rotationPitch = msg.valueFloat1[1];
+					entity.rotationPitch = msg.valueFloat1[2];
 				}
 				
+				//sync mounts rotate
 				if (entity.getRidingEntity() instanceof BasicEntityMount)
 				{
 					((BasicEntityMount) entity.getRidingEntity()).rotationYawHead = msg.valueFloat1[0];
 					((BasicEntityMount) entity.getRidingEntity()).rotationYaw = msg.valueFloat1[1];
+					((BasicEntityMount) entity.getRidingEntity()).rotationPitch = msg.valueFloat1[2];
+				}
+				
+				//sync rider rotate
+				if (entity.getPassengers().size() > 0)
+				{
+					for (Entity rider : entity.getPassengers())
+					{
+						rider.rotationYaw = msg.valueFloat1[0];
+						rider.rotationPitch = msg.valueFloat1[2];
+					}
 				}
 			}
 			break;

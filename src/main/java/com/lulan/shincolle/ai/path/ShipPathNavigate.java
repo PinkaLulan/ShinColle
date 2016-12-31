@@ -5,8 +5,8 @@ import javax.annotation.Nullable;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipNavigator;
 import com.lulan.shincolle.utility.BlockHelper;
+import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -16,7 +16,6 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.ChunkCache;
 import net.minecraft.world.World;
@@ -62,10 +61,10 @@ public class ShipPathNavigate
         this.host = entity;
         this.hostShip = (IShipNavigator) entity;
         this.world = world;
-        this.maxDistanceToWaypoint = this.host.width > 0.75F ? this.host.width * 0.5F : 0.75F - this.host.width * 0.5F;
+        
+        this.maxDistanceToWaypoint = (float) MathHelper.absMax(this.host.width * 0.75D, 0.75D);
         this.hostCeilWeight = MathHelper.ceil(this.host.width);
         this.hostCeilHight = MathHelper.ceil(this.host.height);
-        
     }
 
     /**
@@ -262,13 +261,13 @@ public class ShipPathNavigate
         }
 
         Vec3d nowPos = this.currentPath.getCurrentPos();
-
+        
         //若host成功到達目標路徑點, 則目標繼續設為下一個路徑點
-        if (MathHelper.abs((float)(this.host.posX - (nowPos.xCoord + 0.5D))) < this.maxDistanceToWaypoint && MathHelper.abs((float)(this.host.posZ - (nowPos.zCoord + 0.5D))) < this.maxDistanceToWaypoint)
+        if (MathHelper.abs((float)(this.host.posX - nowPos.xCoord - 0.5D)) < this.maxDistanceToWaypoint && MathHelper.abs((float)(this.host.posZ - nowPos.zCoord - 0.5D)) < this.maxDistanceToWaypoint)
         {
             this.currentPath.setCurrentPathIndex(this.currentPath.getCurrentPathIndex() + 1);
         }
-
+        
         //若有y高度不同的點, 從該點往回到host目前點, 找其中是否有能直接前進的點
         for (int j1 = i - 1; j1 >= this.currentPath.getCurrentPathIndex(); --j1)
         {
@@ -278,7 +277,7 @@ public class ShipPathNavigate
                 break;
             }
         }
-
+        
         this.checkForStuck(hostPos);
     }
     
@@ -467,20 +466,111 @@ public class ShipPathNavigate
         return EntityHelper.checkEntityIsInLiquid(host);
     }
 
-    /**entity抄捷徑的方法, 若直線可視無阻礙, 則會直線往該點移動
-     * 
-     * 1.9.4
-     * 直接視線判定目標是否有無被阻擋
-     * 
-     ********** 以下為1.7.10* ***********
-     * NEW: 加入y軸判定, 使其可以抄y軸捷徑
-     * Returns true when an entity of specified size could safely walk in a straight line between the two points. Args:
-     * pos1, pos2, entityXSize, entityYSize, entityZSize
+    /**
+     * entity抄捷徑的方法, 若直線可視無阻礙, 則會直線往該點移動
      */
-    private boolean isDirectPathBetweenPoints(Vec3d pos1, Vec3d pos2, int xSize, int ySize, int zSize)
+    private boolean isDirectPathBetweenPoints(Vec3d pos1, Vec3d pos2, int sizeX, int sizeY, int sizeZ)
     {
-    	RayTraceResult raytraceresult = this.world.rayTraceBlocks(pos1, new Vec3d(pos2.xCoord, pos2.yCoord + this.host.height * 0.5D, pos2.zCoord), false, true, false);
-        return raytraceresult == null || raytraceresult.typeOfHit == RayTraceResult.Type.MISS;
+//    	//method 1: use raytrace
+//    	RayTraceResult trace = this.world.rayTraceBlocks(pos1, new Vec3d(pos2.xCoord, pos2.yCoord + this.host.height * 0.5D, pos2.zCoord), false, true, false);
+
+    	//method 2: check all block on path
+        int x1 = MathHelper.floor(pos1.xCoord);
+        int y1 = (int) pos1.yCoord;
+        int z1 = MathHelper.floor(pos1.zCoord);
+        double xOffset = pos2.xCoord - pos1.xCoord;
+        double yOffset = pos2.xCoord - pos1.xCoord;
+        double zOffset = pos2.zCoord - pos1.zCoord;
+        double offsetSq = xOffset * xOffset + zOffset * zOffset + yOffset * yOffset;
+
+        if (offsetSq < 1.0E-8D)				//若距離極小, 則判定不須跳點
+        {
+            return false;
+        }
+        else								//搜尋可跳的點
+        {
+            double offsetVec = 1D / Math.sqrt(offsetSq);
+            xOffset = xOffset * offsetVec;	//計算xyz分量
+            yOffset = yOffset * offsetVec;
+            zOffset = zOffset * offsetVec;
+            sizeX = sizeX + 2;				//xyz size擴張以便抓方塊 (y方向只往上找1格, xz為左右各一格)
+            sizeY = sizeY + 1;
+            sizeZ = sizeZ + 2;
+
+            if (!this.isSafeToStandAt(x1, y1, z1, sizeX, sizeY, sizeZ, pos1, xOffset, zOffset))
+            {
+                return false;
+            }
+            else
+            {
+                sizeX = sizeX - 2;							//調整回原本xyz size
+                sizeY = sizeY - 1;
+                sizeZ = sizeZ - 2;
+                
+                double unitX = 1D / Math.abs(xOffset);		//計算xyz方向單位長度
+                double unitY = 1D / Math.abs(yOffset);
+                double unitZ = 1D / Math.abs(zOffset);
+                
+                double proX = (double)x1 - pos1.xCoord;		//取xyz方向小數部位作為xyz方向起始的進度值
+                double proY = (double)y1 - pos1.yCoord;
+                double proZ = (double)z1 - pos1.zCoord;
+
+                if (xOffset >= 0D) ++proX;					//若xyz為正方向, 則起始值+1變回正數
+                if (yOffset >= 0D) ++proY;
+                if (zOffset >= 0D) ++proZ;
+
+                proX = proX / xOffset;						//normalize xyz方向進度值
+                proY = proY / yOffset;
+                proZ = proZ / zOffset;
+                
+                int dirX = xOffset < 0D ? -1 : 1;			//xyz方向指示
+                int dirY = yOffset < 0D ? -1 : 1;
+                int dirZ = zOffset < 0D ? -1 : 1;
+                
+                int x2 = MathHelper.floor(pos2.xCoord);		//取得pos2整數座標
+                int y2 = MathHelper.floor(pos2.yCoord);
+                int z2 = MathHelper.floor(pos2.zCoord);
+                
+                int xIntOffset = x2 - x1;					//計算pos1到pos2的整數距離
+                int yIntOffset = y2 - y1;
+                int zIntOffset = z2 - z1;
+
+                /** 對整個路徑做安全點判定:
+                 *  持續對xyz方向的進度值最小者(progress xyz)增加單位長度(unit xyz)並做安全點判定
+                 *  直到該方向進度完成, 即整數距離 <= 0
+                 */
+                while (xIntOffset * dirX > 0 || yIntOffset * dirY > 0 || zIntOffset * dirZ > 0)
+                {
+                	//檢查三者進度最小者, 對其增加單位長度
+                	switch (CalcHelper.min(proX, proY, proZ))
+                	{
+                	case 1:	//x進度最小
+                		proX += unitX;
+                        x1 += dirX;
+                        xIntOffset = x2 - x1;
+                	break;
+                	case 2:	//y進度最小
+                		proY += unitY;
+                        y1 += dirY;
+                        yIntOffset = y2 - y1;
+                    break;
+                	case 3:	//z進度最小
+                		proZ += unitZ;
+                        z1 += dirZ;
+                        zIntOffset = z2 - z1;
+                    break;
+                	}//end switch
+
+                    if (!this.isSafeToStandAt(x1, y1, z1, sizeX, sizeY, sizeZ, pos1, xOffset, zOffset))
+                    {
+                        return false;
+                    }
+                }
+
+                //路徑上完全安全無阻礙
+                return true;
+            }
+        }
     }
 
     /**

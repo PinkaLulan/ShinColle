@@ -99,7 +99,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
   					//生成氣彈特效
   	  				if (getStateEmotion(ID.S.Phase) == 1 || getStateEmotion(ID.S.Phase) == 3)
   	  				{
-  	  	  				ParticleHelper.spawnAttackParticleAtEntity(this, 0.1D, 1D, 0D, (byte)1);
+  	  	  				ParticleHelper.spawnAttackParticleAtEntity(this, 0.12D, 1D, 0D, (byte)1);
   	  				}
   	  			}//end 8 ticks
   			}//end 4 ticks

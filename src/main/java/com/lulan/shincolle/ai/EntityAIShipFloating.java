@@ -76,12 +76,12 @@ public class EntityAIShipFloating extends EntityAIBase
     			return false;
     		}
 			
-			return hostMount.getShipDepth() > 0.27D;
+			return hostMount.getShipDepth() > 0.35D;
 		}
     	//其他類
     	else
     	{
-    		return host.getShipDepth() > 0.27D;
+    		return host.getShipDepth() > 0.35D;
     	}
     }
 
@@ -136,7 +136,7 @@ public class EntityAIShipFloating extends EntityAIBase
         		return;
         	}
         	
-        	if (this.host.getShipDepth() > 0.27D)
+        	if (this.host.getShipDepth() > 0.25D)
         	{
         		this.hostLiving.motionY += 0.0012D;
         		return;

@@ -183,7 +183,6 @@ public class EntityBattleshipHime extends BasicEntityShipSmall
   	public BasicEntityMount summonMountEntity()
   	{
   		EntityMountBaH mount = new EntityMountBaH(world);
-  		mount.initAttrs(this);
 		return mount;
 	}
   	

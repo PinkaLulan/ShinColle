@@ -56,7 +56,7 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.DD]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.DD]);
-		this.ModelPos = new float[] {0F, 13F, 0F, 50F};
+		this.ModelPos = new float[] {0F, 25F, 0F, 50F};
 		
 		//set attack type
 		this.StateFlag[ID.F.HaveRingEffect] = true;
@@ -321,7 +321,7 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
   			getStateMinor(ID.M.CraneState) == 0 && getStateMinor(ID.M.FormatType) == 1)
   		{
   			//get nearby ship
-  			List<BasicEntityShip> slist = this.world.getEntitiesWithinAABB(BasicEntityShip.class, this.getEntityBoundingBox().expand(4D, 4D, 4D));
+  			List<BasicEntityShip> slist = this.world.getEntitiesWithinAABB(BasicEntityShip.class, this.getEntityBoundingBox().expand(6D, 5D, 6D));
   			BasicEntityShip getHibiki = null;
   			BasicEntityShip getInazuma = null;
   			BasicEntityShip getIkazuchi = null;

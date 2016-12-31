@@ -2,9 +2,12 @@ package com.lulan.shincolle.entity.other;
 
 import java.util.List;
 
+import com.lulan.shincolle.client.render.IShipCustomTexture;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipAttributes;
 import com.lulan.shincolle.entity.IShipOwner;
+import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -27,7 +30,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
  *  damage everything on the way
  *  setDead after X ticks
  */
-public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAttributes
+public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAttributes, IShipCustomTexture
 {
 
 	//host data
@@ -175,12 +178,12 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAtt
             											this.getEntityBoundingBox().expand(1.5D, 1.5D, 1.5D));
             
             //搜尋list, 找出第一個可以判定的目標, 即傳給onImpact
-            for(Entity ent : hitList)
+            for (Entity ent : hitList)
             { 
             	/**不會對自己主人觸發爆炸
         		 * isEntityEqual() is NOT working
         		 * use entity id to check entity  */
-            	if(ent.canBeCollidedWith() && isNotHost(ent) && !TeamHelper.checkSameOwner(host2, ent))
+            	if (ent.canBeCollidedWith() && isNotHost(ent) && !TeamHelper.checkSameOwner(host2, ent))
             	{
             		this.onImpact();
             		return;
@@ -204,9 +207,8 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAtt
 	//撞擊判定時呼叫此方法
     protected void onImpact()
     {
-//    	//TODO sound event
-//    	//play sound
-//    	playSound(Reference.MOD_ID+":ship-explode", ConfigHandler.volumeFire * 1.5F, 0.7F / (this.rand.nextFloat() * 0.4F + 0.8F));
+    	//play sound
+    	this.playSound(ModSounds.SHIP_EXPLODE, ConfigHandler.volumeFire * 1.5F, 0.7F / (this.rand.nextFloat() * 0.4F + 0.8F));
     	
     	//server side
     	if (!this.world.isRemote)
@@ -296,6 +298,12 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAtt
 		if (host2 != null && host2.getEntityId() == entity.getEntityId()) return false;
 
 		return true;
+	}
+
+	@Override
+	public int getTextureID()
+	{
+		return ID.ShipMisc.Invisible;
 	}
 
     

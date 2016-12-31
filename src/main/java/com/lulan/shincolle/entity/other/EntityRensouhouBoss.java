@@ -62,22 +62,8 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack,
 		super(world);
 		this.setSize(0.9F, 1.7F);
 		this.isImmuneToFire = true;
-	}
-    
-    public void initAttrs(IShipAttackBase host, Entity target)
-    {
-        this.host = host;
-        this.host2 = (EntityLivingBase) host;
-        this.atkTarget = target;
-        this.shipNavigator = new ShipPathNavigate(this, world);
+		this.shipNavigator = new ShipPathNavigate(this, world);
         this.shipMoveHelper = new ShipMoveHelper(this, 40F);
-        
-        //basic attr
-        this.atk = 30F;
-        this.atkSpeed = 0.8F;
-        this.atkRange = host.getAttackRange();
-        this.defValue = host.getDefValue() * 0.5F;
-        this.movSpeed = 0.6F;
         
         //AI flag
         this.numAmmoLight = 6;
@@ -87,14 +73,29 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack,
         this.startEmotion = 0;
         this.startEmotion2 = 0;
         this.headTilt = false;
+	}
+    
+    public void initAttrs(IShipAttackBase host, Entity target)
+    {
+        this.host = host;
+        this.host2 = (EntityLivingBase) host;
+        this.atkTarget = target;
+        
+        //basic attr
+        this.atk = 30F;
+        this.atkSpeed = 0.8F;
+        this.atkRange = this.host.getAttackRange();
+        this.defValue = this.host.getDefValue() * 0.5F;
+        this.movSpeed = 0.6F;
            
         //設定發射位置
-        this.posX = host2.posX + rand.nextDouble() * 6D - 3D;
-        this.posY = host2.posY + 0.5D;
-        this.posZ = host2.posZ + rand.nextDouble() * 6D - 3D;
+        this.posX = this.host2.posX + rand.nextDouble() * 6D - 3D;
+        this.posY = this.host2.posY + 0.5D;
+        this.posZ = this.host2.posZ + rand.nextDouble() * 6D - 3D;
         
         //check the place is safe to summon
-    	if(!BlockHelper.checkBlockSafe(this.world, (int)posX, (int)posY, (int)posZ)) {
+    	if (!BlockHelper.checkBlockSafe(this.world, (int)posX, (int)posY, (int)posZ))
+    	{
     		this.posX = host2.posX;
             this.posY = host2.posY;
             this.posZ = host2.posZ;
@@ -103,9 +104,9 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack,
         this.setPosition(this.posX, this.posY, this.posZ);
  
 	    //設定基本屬性
-	    getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(ConfigHandler.scaleBossSmall[ID.HP] * 0.125D);
+	    getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(this.host2.getMaxHealth() * 0.125D);
 		getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(this.movSpeed);
-		getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(this.atkRange + 32); //此為找目標, 路徑的範圍
+		getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(48); //此為找目標, 路徑的範圍
 		getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(0.2D);
 		if (this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
 				
@@ -561,6 +562,12 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack,
 	}
 	
 	@Override
+	public float getJumpSpeed()
+	{
+		return 1.5F;
+	}
+	
+	@Override
 	public int getAmmoLight()
 	{
 		return this.numAmmoLight;
@@ -838,12 +845,6 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack,
 		return ID.ShipMisc.Rensouhou;
 	}
 	
-	@Override
-    public boolean isNonBoss()
-    {
-        return false;
-    }
-	
 	//for model display
 	@Override
 	public int getRidingState()
@@ -854,6 +855,12 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack,
 	@Override
 	public void setRidingState(int state) {}
 
-
+	@Override
+	public int getScaleLevel()
+	{
+		if (this.host != null) return this.host.getScaleLevel();
+		return 0;
+	}
+	
+	
 }
-

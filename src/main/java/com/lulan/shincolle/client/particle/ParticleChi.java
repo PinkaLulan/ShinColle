@@ -68,6 +68,8 @@ public class ParticleChi extends Particle
     @Override
     public void renderParticle(VertexBuffer render, Entity entity, float ptick, float cosYaw, float cosPitch, float sinYaw, float sinYawsinPitch, float cosYawsinPitch)
     {
+    	if (this.particleAge <= 1) return;
+    	
     	GlStateManager.pushMatrix();
     	GlStateManager.depthMask(true);
     	GlStateManager.enableBlend();
@@ -81,55 +83,61 @@ public class ParticleChi extends Particle
     	float f13 = (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * (double)ptick - interpPosZ);
       
         //start
-        render.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
+        render.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
         
         //注意4個點形成的面只有正面會貼上貼圖, 若玩家在該面背面會看不到正面貼圖, 因此要畫兩面共8個點
         //要使玩家看到正面, 4個座標add順序必須為: 右下 -> 右上 -> 左上 -> 左下
         //chi的形狀為八面體, 總共4個菱形6個頂點
         //若該面起點為y較低的點, 面會呈現內凹, 若起點選較高的點, 該面會外凸 (若四頂點不再同一平面上時)
         //face1
-        render.pos(f11, f12-particleScale, f13).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
-        render.pos(f11+particleScale, f12, f13).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
-        render.pos(f11, f12+particleScale, f13).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
         render.pos(f11, f12, f13+particleScale).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
+        render.pos(f11, f12+particleScale, f13).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
+        render.pos(f11+particleScale, f12, f13).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
+        render.pos(f11, f12-particleScale, f13).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
         //face2
-        render.pos(f11, f12-particleScale, f13).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
-        render.pos(f11, f12, f13-particleScale).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
-        render.pos(f11, f12+particleScale, f13).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
         render.pos(f11+particleScale, f12, f13).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
-        //face3
-        render.pos(f11, f12-particleScale, f13).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
-        render.pos(f11-particleScale, f12, f13).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
         render.pos(f11, f12+particleScale, f13).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
         render.pos(f11, f12, f13-particleScale).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
-        //face4
         render.pos(f11, f12-particleScale, f13).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
-        render.pos(f11, f12, f13+particleScale).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
+        //face3
+        render.pos(f11, f12, f13-particleScale).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
         render.pos(f11, f12+particleScale, f13).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
         render.pos(f11-particleScale, f12, f13).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
+        render.pos(f11, f12-particleScale, f13).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
+        //face4
+        render.pos(f11-particleScale, f12, f13).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
+        render.pos(f11, f12+particleScale, f13).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
+        render.pos(f11, f12, f13+particleScale).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
+        render.pos(f11, f12-particleScale, f13).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
+        
+        //draw
+        Tessellator.getInstance().draw();
         
         //半透明外殼
+        float parAlpha2 = this.particleAlpha * 0.5F;
+        render.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+        
         //face1
-        render.pos(f11, f12-particleScale*1.3, f13).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
-        render.pos(f11+particleScale*1.3, f12, f13).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
-        render.pos(f11, f12+particleScale*1.3, f13).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
-        render.pos(f11, f12, f13+particleScale*1.3).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
+        render.pos(f11, f12, f13+particleScale*1.3).color(this.particleRed, this.particleGreen, this.particleBlue, parAlpha2).endVertex();
+        render.pos(f11, f12+particleScale*1.3, f13).color(this.particleRed, this.particleGreen, this.particleBlue, parAlpha2).endVertex();
+        render.pos(f11+particleScale*1.3, f12, f13).color(this.particleRed, this.particleGreen, this.particleBlue, parAlpha2).endVertex();
+        render.pos(f11, f12-particleScale*1.3, f13).color(this.particleRed, this.particleGreen, this.particleBlue, parAlpha2).endVertex();
         //face2
-        render.pos(f11, f12-particleScale*1.3, f13).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
-        render.pos(f11, f12, f13-particleScale*1.3).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
-        render.pos(f11, f12+particleScale*1.3, f13).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
-        render.pos(f11+particleScale*1.3, f12, f13).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
+        render.pos(f11+particleScale*1.3, f12, f13).color(this.particleRed, this.particleGreen, this.particleBlue, parAlpha2).endVertex();
+        render.pos(f11, f12+particleScale*1.3, f13).color(this.particleRed, this.particleGreen, this.particleBlue, parAlpha2).endVertex();
+        render.pos(f11, f12, f13-particleScale*1.3).color(this.particleRed, this.particleGreen, this.particleBlue, parAlpha2).endVertex();
+        render.pos(f11, f12-particleScale*1.3, f13).color(this.particleRed, this.particleGreen, this.particleBlue, parAlpha2).endVertex();
         //face3
-        render.pos(f11, f12-particleScale*1.3, f13).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
-        render.pos(f11-particleScale*1.3, f12, f13).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
-        render.pos(f11, f12+particleScale*1.3, f13).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
-        render.pos(f11, f12, f13-particleScale*1.3).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
+        render.pos(f11, f12, f13-particleScale*1.3).color(this.particleRed, this.particleGreen, this.particleBlue, parAlpha2).endVertex();
+        render.pos(f11, f12+particleScale*1.3, f13).color(this.particleRed, this.particleGreen, this.particleBlue, parAlpha2).endVertex();
+        render.pos(f11-particleScale*1.3, f12, f13).color(this.particleRed, this.particleGreen, this.particleBlue, parAlpha2).endVertex();
+        render.pos(f11, f12-particleScale*1.3, f13).color(this.particleRed, this.particleGreen, this.particleBlue, parAlpha2).endVertex();
         //face4
-        render.pos(f11, f12-particleScale*1.3, f13).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
-        render.pos(f11, f12, f13+particleScale*1.3).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
-        render.pos(f11, f12+particleScale*1.3, f13).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
-        render.pos(f11-particleScale*1.3, f12, f13).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
+        render.pos(f11-particleScale*1.3, f12, f13).color(this.particleRed, this.particleGreen, this.particleBlue, parAlpha2).endVertex();
+        render.pos(f11, f12+particleScale*1.3, f13).color(this.particleRed, this.particleGreen, this.particleBlue, parAlpha2).endVertex();
+        render.pos(f11, f12, f13+particleScale*1.3).color(this.particleRed, this.particleGreen, this.particleBlue, parAlpha2).endVertex();
+        render.pos(f11, f12-particleScale*1.3, f13).color(this.particleRed, this.particleGreen, this.particleBlue, parAlpha2).endVertex();
         
         //draw
         Tessellator.getInstance().draw();

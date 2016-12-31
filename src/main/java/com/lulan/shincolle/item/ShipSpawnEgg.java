@@ -2,12 +2,12 @@ package com.lulan.shincolle.item;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 
 import com.lulan.shincolle.capability.CapaShipInventory;
 import com.lulan.shincolle.crafting.ShipCalc;
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.EntityHelper;
@@ -19,7 +19,6 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -50,9 +49,6 @@ public class ShipSpawnEgg extends BasicItem
 	
 	private static final String NAME = "ShipSpawnEgg";
 	private static List<Integer> shipList = new ArrayList<Integer>();
-	private Random rand = new Random();
-    private EntityLiving entityToSpawn = null;
-    private String entityToSpawnName = null;
 
     
     public ShipSpawnEgg()
@@ -201,10 +197,8 @@ public class ShipSpawnEgg extends BasicItem
      * the last three parameters.
      * Parameters: world, metadata, x, y, z
      */
-  	private Entity spawnEntity(EntityPlayer player, ItemStack item, BlockPos pos, boolean checkPlayer)
+  	private Entity getSpawnEntity(EntityPlayer player, ItemStack item, BlockPos pos, boolean checkPlayer)
   	{   	
-        int entityType = 0;
-  		
         //server side
     	if (player != null && !player.world.isRemote)
     	{
@@ -215,24 +209,24 @@ public class ShipSpawnEgg extends BasicItem
         		if (uid <= 0) return null;
     		}
     		
-			entityType = ShipCalc.rollShipType(item);
-  			entityToSpawnName = ShipCalc.getEntityToSpawnName(entityType);
-            LogHelper.info("DEBUG : spawn entity: "+entityToSpawnName);
+    		//get ship type
+    		String entityName = ShipCalc.getEntityToSpawnName(ShipCalc.rollShipType(item));
+            LogHelper.info("DEBUG : spawn entity: "+entityName);
             
-            if (EntityList.NAME_TO_CLASS.containsKey(entityToSpawnName))
+            if (EntityList.NAME_TO_CLASS.containsKey(entityName))
             {
-                entityToSpawn = (EntityLiving) EntityList.createEntityByName(entityToSpawnName, player.world);
-                entityToSpawn.setLocationAndAngles(pos.getX(), pos.getY(), pos.getZ(), MathHelper.wrapDegrees(player.world.rand.nextFloat()* 360F), 0F);
-                player.world.spawnEntity(entityToSpawn);
-                entityToSpawn.playLivingSound();
+            	Entity ent = EntityList.createEntityByName(entityName, player.world);
+            	ent.setLocationAndAngles(pos.getX(), pos.getY(), pos.getZ(), MathHelper.wrapDegrees(player.world.rand.nextFloat()* 360F), 0F);
+            	
+            	return ent;
             }
             else
             {
-                LogHelper.info("ShipSpawnEgg: entity not found: "+entityToSpawnName);
+                LogHelper.info("ShipSpawnEgg: entity not found: "+entityName);
             }
         }
         
-        return entityToSpawn;
+        return null;
     }
   	
   	/**CALC ENTITY RANDOM BONUS ATTRIBUTE
@@ -276,7 +270,7 @@ public class ShipSpawnEgg extends BasicItem
 				}
 				catch (Exception e)
 				{
-					LogHelper.info("EXCEPTION : init ship inventory fail: "+e);
+					LogHelper.info("EXCEPTION : init ship inventory fail: ");
 					e.printStackTrace();
 				}
 				
@@ -455,27 +449,37 @@ public class ShipSpawnEgg extends BasicItem
                     if (stack.getItemDamage() > 2000)
                     {
                     	LogHelper.info("DEBUG : use boss egg");
-                    	spawnEntity(player, stack, hitPos.up(), false);
+                    	BasicEntityShipHostile ship = (BasicEntityShipHostile) getSpawnEntity(player, stack, hitPos.up(), false);
+                        
+                    	if (ship != null)
+                    	{
+                    		ship.initAttrs((byte) player.getRNG().nextInt(4));
+                        	player.world.spawnEntity(ship);
+                        	ship.playLivingSound();
+                    	}
                     }
                     //normal egg
                     else
                     {
                     	LogHelper.info("DEBUG : use normal egg");
-                    	BasicEntityShip entity = (BasicEntityShip) spawnEntity(player, stack, hitPos.up(), true);
-
-                        if (entity != null)
+                    	BasicEntityShip ship = (BasicEntityShip) getSpawnEntity(player, stack, hitPos.up(), true);
+                        
+                        if (ship != null)
                         {
+                        	player.world.spawnEntity(ship);
+                            ship.playLivingSound();
+                            
                         	//for egg with nameTag
                             if (stack.hasDisplayName())
                             {
-                                entity.setNameTag(stack.getDisplayName());    
+                            	ship.setNameTag(stack.getDisplayName());    
                             }
                             
                         	//calc bonus point, set custom name and owner name
-                        	initEntityAttribute(stack, player, entity);
+                        	this.initEntityAttribute(stack, player, ship);
                         	
                         	//send sync packet
-                        	entity.sendSyncPacketAllValue();
+                        	ship.sendSyncPacketAllValue();
                         }
                     }//end spawn entity
                 }//end get position

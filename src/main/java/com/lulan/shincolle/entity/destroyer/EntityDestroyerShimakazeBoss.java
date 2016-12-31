@@ -12,8 +12,6 @@ import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BossInfo;
@@ -24,58 +22,52 @@ import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 public class EntityDestroyerShimakazeBoss extends BasicEntityShipHostile
 {
 
-	private final BossInfoServer bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.YELLOW, BossInfo.Overlay.PROGRESS);
 	public int numRensouhou;
 	
 	
 	public EntityDestroyerShimakazeBoss(World world)
 	{
 		super(world);
-		this.setSize(1.4F, 6F);
+		
+		//init values
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.DestroyerShimakaze);
 		this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, getStateMinor(ID.M.ShipClass)+2);
-		this.ignoreFrustumCheck = true;	//即使不在視線內一樣render
+		this.numRensouhou = 10;
 		
-        //basic attr
-        this.atk = (float) ConfigHandler.scaleBossSmall[ID.ATK] * 0.75F;
-        this.atkSpeed = (float) ConfigHandler.scaleBossSmall[ID.SPD] * 1.2F;
-        this.atkRange = (float) ConfigHandler.scaleBossSmall[ID.HIT] * 0.75F;
-        this.defValue = (float) ConfigHandler.scaleBossSmall[ID.DEF] * 0.75F;
-        this.movSpeed = (float) ConfigHandler.scaleBossSmall[ID.MOV] * 0.75F;
-        this.numRensouhou = 10;
-        
-        //AI flag
-        this.startEmotion = 0;
-        this.startEmotion2 = 0;
-        this.headTilt = false;
- 
-	    //設定基本屬性
-	    getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(ConfigHandler.scaleBossSmall[ID.HP] * 0.75F);
-		getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(this.movSpeed);
-		getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64); //此為找目標, 路徑的範圍
-		getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(1D);
-		if (this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
-				
-		//設定AI
-		this.setAIList();
-		this.setAITargetList();
+		//model display
+        this.setStateEmotion(ID.S.State, rand.nextInt(4), false);
 	}
 	
 	@Override
-	protected boolean canDespawn()
+	protected void setSizeWithScaleLevel()
 	{
-		if (ConfigHandler.despawnBoss > -1)
+		switch (this.getScaleLevel())
 		{
-			return this.ticksExisted > ConfigHandler.despawnBoss;
+		case 3:
+			this.setSize(1.4F, 6.75F);
+		break;
+		case 2:
+			this.setSize(1.2F, 4.5F);
+		break;
+		case 1:
+			this.setSize(0.85F, 2.8F);
+		break;
+		default:
+			this.setSize(0.6F, 1.65F);
+		break;
 		}
-        
-		return false;
-    }
+	}
 	
 	@Override
-	public float getEyeHeight()
+	protected float[] getAttrsMod()
+	{                     //HP     ATK    DEF    SPD    MOV    HIT
+		return new float[] {0.75F, 0.75F, 0.75F, 1.2F, 0.75F, 0.75F};
+	}
+	
+	@Override
+	protected void setBossInfo()
 	{
-		return this.height * 0.5F;
+		this.bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.YELLOW, BossInfo.Overlay.PROGRESS);
 	}
 	
 	//setup AI
@@ -238,33 +230,6 @@ public class EntityDestroyerShimakazeBoss extends BasicEntityShipHostile
 			return 0F;
 		}
 	}
-  	
-  	/** for boss hp bar display */
-  	@Override
-    public boolean isNonBoss()
-    {
-        return false;
-    }
-  	
-  	@Override
-    public void addTrackingPlayer(EntityPlayerMP player)
-    {
-        super.addTrackingPlayer(player);
-        this.bossInfo.addPlayer(player);
-    }
-
-  	@Override
-    public void removeTrackingPlayer(EntityPlayerMP player)
-    {
-        super.removeTrackingPlayer(player);
-        this.bossInfo.removePlayer(player);
-    }
-  	
-  	@Override
-    protected void updateAITasks()
-    {
-    	this.bossInfo.setPercent(this.getHealth() / this.getMaxHealth());
-    }
   	
 
 }

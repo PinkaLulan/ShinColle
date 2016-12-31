@@ -174,6 +174,12 @@ abstract public class BasicEntityAirplane extends EntityLiving implements IShipC
 		return this.movSpeed;
 	}
     
+	@Override
+	public float getJumpSpeed()
+	{
+		return 1F;
+	}
+    
     @Override
    	public int getAmmoLight()
     {
@@ -917,6 +923,12 @@ abstract public class BasicEntityAirplane extends EntityLiving implements IShipC
 	
 	@Override
 	public void setRidingState(int state) {}
+	
+	@Override
+	public int getScaleLevel()
+	{
+		return 0;
+	}
 	
 	
 }

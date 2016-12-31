@@ -26,10 +26,13 @@ import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
@@ -37,12 +40,14 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.BossInfo;
+import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
 public abstract class BasicEntityShipHostile extends EntityMob implements IShipCannonAttack, IShipFloating, IShipCustomTexture
 {
-
+	
 	//attributes
 	protected float atk;				//damage
 	protected float atkSpeed;			//attack speed
@@ -60,9 +65,11 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	protected float[] rotateAngle;		//模型旋轉角度, 用於手持物品render
 	protected int soundHurtDelay;		//hurt sound ticks
 	protected short shipClass;
+	public byte scaleLevel;				//mob level: 0:small mob, 1:large mob, 2:small boss, 3:large boss
 	
 	//misc
 	protected ItemStack dropItem;
+	protected BossInfoServer bossInfo;
 	
 	//AI
 	public boolean canDrop;				//drop item flag
@@ -77,23 +84,26 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	public BasicEntityShipHostile(World world)
 	{
 		super(world);
-		isImmuneToFire = true;	//set ship immune to lava
-		ignoreFrustumCheck = true;	//即使不在視線內一樣render
-		maxHurtResistantTime = 2;
-		stepHeight = 4F;
-		canDrop = true;
-		shipNavigator = new ShipPathNavigate(this, world);
-		shipMoveHelper = new ShipMoveHelper(this, 25F);
-		rotateAngle = new float[] {0F, 0F, 0F};
-		
+		this.isImmuneToFire = true;	//set ship immune to lava
+		this.ignoreFrustumCheck = true;	//即使不在視線內一樣render
+		this.maxHurtResistantTime = 2;
+		this.stepHeight = 4F;
+		this.canDrop = true;
+		this.rotateAngle = new float[] {0F, 0F, 0F};
+		this.scaleLevel = 0;
+        this.startEmotion = 0;
+        this.startEmotion2 = 0;
+        this.headTilt = false;
+        
 		//model display
-		soundHurtDelay = 0;
-		stateEmotion = new byte[] {ID.State.EQUIP00, 0, 0, 0, 0, 0, 0};
+        this.soundHurtDelay = 0;
+        this.stateEmotion = new byte[] {ID.State.EQUIP00, 0, 0, 0, 0, 0, 0};
 	}
 	
+	//display fire effect
 	@Override
 	public boolean isBurning()
-	{	//display fire effect
+	{
 		return this.getStateEmotion(ID.S.HPState) == ID.HPState.HEAVY;
 	}
 	
@@ -102,6 +112,29 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	{
 		return this.isJumping;
 	}
+	
+	@Override
+	protected boolean canDespawn()
+	{
+		if (this.scaleLevel > 1)
+		{
+			if (ConfigHandler.despawnBoss > -1)
+			{
+				return this.ticksExisted > ConfigHandler.despawnBoss;
+			}
+	        
+			return false;
+		}
+		else
+		{
+			if (ConfigHandler.despawnMinion > -1)
+			{
+				return this.ticksExisted > ConfigHandler.despawnMinion;
+			}
+	        
+			return false;
+		}
+    }
 	
 	//setup AI
 	protected void setAIList()
@@ -115,7 +148,6 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		this.tasks.addTask(23, new EntityAIShipWatchClosest(this, EntityPlayer.class, 8F, 0.1F)); //0010
 		this.tasks.addTask(24, new EntityAIShipWander(this, 12, 1, 0.8D));		//0111
 		this.tasks.addTask(25, new EntityAILookIdle(this));						//0011
-
 	}
 	
 	//setup target AI: par1: 0:passive 1:active
@@ -126,75 +158,21 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	}
 	
 	@Override
-    public boolean attackEntityFrom(DamageSource attacker, float atk)
+	public void readFromNBT(NBTTagCompound nbt)
 	{
-		//disable 
-		if (attacker.getDamageType() == "inWall")
-		{
-			return false;
-		}
+		super.readFromNBT(nbt);
 		
-		if (attacker.getDamageType() == "outOfWorld")
-		{
-			this.setDead();
-			return true;
-		}
-				
-		//set hurt face
-    	if (this.getStateEmotion(ID.S.Emotion) != ID.Emotion.O_O)
-    	{
-    		this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
-    	}
-        
-        //無敵的entity傷害無效
-  		if (this.isEntityInvulnerable(attacker))
-  		{	
-        	return false;
-        }
-  		
-  		if (attacker.getSourceOfDamage() != null)
-  		{
-  			Entity entity = attacker.getSourceOfDamage();
-  			
-  			//不會對自己造成傷害
-  			if (entity.equals(this))
-  			{  
-  				return false;
-  			}
-  			
-  			//若掉到世界外, 則直接使該entity消失
-  	        if (attacker.getDamageType().equals("outOfWorld"))
-  	        {
-  	        	this.setDead();
-  	        	return false;
-  	        }
-  	        
-  	        //設置revenge target
-			this.setEntityRevengeTarget(entity);
-			this.setEntityRevengeTime();
-
-  	        //def calc
-  			float reduceAtk = atk;
-  			
-  			reduceAtk = atk * (1F - this.getDefValue() * 0.01F);
-  			
-  			//ship vs ship, damage type傷害調整
-  			if (entity instanceof IShipAttackBase)
-  			{
-  				//get attack time for damage modifier setting (day, night or ...etc)
-  				int modSet = this.world.provider.isDaytime() ? 0 : 1;
-  				reduceAtk = CalcHelper.calcDamageByType(reduceAtk, ((IShipAttackBase) entity).getDamageType(), this.getDamageType(), modSet);
-  			}
-  			
-  	        if (reduceAtk < 1) reduceAtk = 1;
-  	        
-  	        //show emotes
-			applyEmotesReaction(2);
-  	        
-  	        return super.attackEntityFrom(attacker, reduceAtk);
-  		}
-    	
-    	return false;
+        this.scaleLevel = nbt.getByte("scaleLV");
+	}
+	
+	@Override
+	public NBTTagCompound writeToNBT(NBTTagCompound nbt)
+	{
+		super.writeToNBT(nbt);
+		
+		nbt.setByte("scaleLV", this.scaleLevel);
+		
+		return nbt;
 	}
 	
 	//clear AI
@@ -213,7 +191,94 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	//掉落egg設定
 	public ItemStack getDropEgg()
 	{
-		return this.dropItem;
+		switch (this.getScaleLevel())
+		{
+		case 0:		//20%
+			return this.rand.nextInt(5) == 0 ? this.dropItem : null;
+		case 1:		//33%
+			return this.rand.nextInt(3) == 0 ? this.dropItem : null;
+		case 2:		//90%
+			return this.rand.nextInt(10) > 0 ? this.dropItem : null;
+		default:	//100%
+			return this.dropItem;
+		}
+	}
+	
+	//set attributes
+	protected void setAttrsWithScaleLevel()
+	{
+		float[] mods = this.getAttrsMod();
+		double[] attrs;
+		int range = 48;
+		double kb = 0.2D;
+		
+		switch (this.getScaleLevel())
+		{
+		case 1:
+			attrs = ConfigHandler.scaleMobLarge;
+			kb = 0.5D;
+		break;
+		case 2:
+			attrs = ConfigHandler.scaleBossSmall;
+			range = 64;
+			kb = 0.85D;
+		break;
+		case 3:
+			attrs = ConfigHandler.scaleBossLarge;
+			range = 64;
+			kb = 1D;
+		break;
+		default:
+			attrs = ConfigHandler.scaleMobSmall;
+		break;
+		}
+		
+		//set attrs
+        this.atk = (float) attrs[ID.ATK] * mods[1];
+        this.defValue = (float) attrs[ID.DEF] * mods[2];
+        this.atkSpeed = (float) attrs[ID.SPD] * mods[3];
+        this.movSpeed = (float) attrs[ID.MOV] * mods[4];
+        this.atkRange = (float) attrs[ID.HIT] * mods[5];
+        
+	    getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(attrs[ID.HP] * mods[0]);
+		getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(this.movSpeed);
+		getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(range);
+		getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(kb);
+		
+		//renew health
+		if (this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
+	}
+	
+	/** set size with scale level */
+	abstract protected void setSizeWithScaleLevel();
+	
+	/** get attrs mod (6 floats) */
+	abstract protected float[] getAttrsMod();
+	
+	/** set boss info */
+	abstract protected void setBossInfo();
+	
+	/** init AI/attrs/...etc. after entity construction */
+	public void initAttrs(byte scaleLevel)
+	{
+		this.scaleLevel = scaleLevel;
+		
+		//set size
+		this.setSizeWithScaleLevel();
+		
+		//set moving AI
+		this.shipNavigator = new ShipPathNavigate(this, world);
+		this.shipMoveHelper = new ShipMoveHelper(this, 60F);
+		
+		//set other AI
+		this.setAIList();
+		this.setAITargetList();
+		
+		//set boss info
+		if (this.scaleLevel > 1)
+		{
+			this.setBossInfo();
+		}
 	}
 	
 	//平常音效
@@ -330,6 +395,78 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	public float getAttackDamage()
 	{
 		return this.atk;
+	}
+	
+	@Override
+    public boolean attackEntityFrom(DamageSource attacker, float atk)
+	{
+		//disable 
+		if (attacker.getDamageType() == "inWall")
+		{
+			return false;
+		}
+		
+		if (attacker.getDamageType() == "outOfWorld")
+		{
+			this.setDead();
+			return true;
+		}
+				
+		//set hurt face
+    	if (this.getStateEmotion(ID.S.Emotion) != ID.Emotion.O_O)
+    	{
+    		this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
+    	}
+        
+        //無敵的entity傷害無效
+  		if (this.isEntityInvulnerable(attacker))
+  		{	
+        	return false;
+        }
+  		
+  		if (attacker.getSourceOfDamage() != null)
+  		{
+  			Entity entity = attacker.getSourceOfDamage();
+  			
+  			//不會對自己造成傷害
+  			if (entity.equals(this))
+  			{  
+  				return false;
+  			}
+  			
+  			//若掉到世界外, 則直接使該entity消失
+  	        if (attacker.getDamageType().equals("outOfWorld"))
+  	        {
+  	        	this.setDead();
+  	        	return false;
+  	        }
+  	        
+  	        //設置revenge target
+			this.setEntityRevengeTarget(entity);
+			this.setEntityRevengeTime();
+
+  	        //def calc
+  			float reduceAtk = atk;
+  			
+  			reduceAtk = atk * (1F - this.getDefValue() * 0.01F);
+  			
+  			//ship vs ship, damage type傷害調整
+  			if (entity instanceof IShipAttackBase)
+  			{
+  				//get attack time for damage modifier setting (day, night or ...etc)
+  				int modSet = this.world.provider.isDaytime() ? 0 : 1;
+  				reduceAtk = CalcHelper.calcDamageByType(reduceAtk, ((IShipAttackBase) entity).getDamageType(), this.getDamageType(), modSet);
+  			}
+  			
+  	        if (reduceAtk < 1) reduceAtk = 1;
+  	        
+  	        //show emotes
+			applyEmotesReaction(2);
+  	        
+  	        return super.attackEntityFrom(attacker, reduceAtk);
+  		}
+    	
+    	return false;
 	}
 
 	@Override
@@ -490,6 +627,12 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	public float getMoveSpeed()
 	{
 		return this.movSpeed;
+	}
+	
+	@Override
+	public float getJumpSpeed()
+	{
+		return this.isNonBoss() ? 1F : 2F;
 	}
 	
 	@Override
@@ -1310,5 +1453,40 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	@Override
 	public void setRidingState(int state) {}
   	
+	@Override
+	public int getScaleLevel()
+	{
+		return this.scaleLevel;
+	}
+	
+  	/** for boss hp bar display */
+  	@Override
+    public boolean isNonBoss()
+    {
+        return this.scaleLevel < 2;
+    }
+  	
+  	@Override
+    public void addTrackingPlayer(EntityPlayerMP player)
+    {
+        super.addTrackingPlayer(player);
+        
+        if (this.bossInfo != null) this.bossInfo.addPlayer(player);
+    }
+
+  	@Override
+    public void removeTrackingPlayer(EntityPlayerMP player)
+    {
+        super.removeTrackingPlayer(player);
+        
+        if (this.bossInfo != null) this.bossInfo.removePlayer(player);
+    }
+  	
+  	@Override
+    protected void updateAITasks()
+    {
+  		if (this.bossInfo != null) this.bossInfo.setPercent(this.getHealth() / this.getMaxHealth());
+    }
+	
   	
 }

@@ -217,7 +217,7 @@ public class ModelDestroyerNi extends ModelBase implements IModelEmotion
   		//水上漂浮
   		if (((IShipFloating)ent).getShipDepth() > 0)
   		{
-  			GlStateManager.translate(0F, angleX * 0.1F - 0.03F, 0F);
+  			GlStateManager.translate(0F, angleX * 0.05F + 0.025F, 0F);
     	}
 		
 		if (ent.getStateFlag(ID.F.NoFuel))

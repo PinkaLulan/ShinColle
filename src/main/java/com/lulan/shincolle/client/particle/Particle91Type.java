@@ -86,7 +86,10 @@ public class Particle91Type extends Particle
         		maxu = 1F / 6F * (i + 1);
         		x = f11 - (i - 2.5F) * this.particleScale * 2F * cosYaw;
                 y = f12;
-                z = f13 - (i - 2.5F) * this.particleScale * 2F * cosPitch;
+                z = f13 - (i - 2.5F) * this.particleScale * 2F * sinYaw;
+//                x = (float)(this.posX - interpPosX - (i - 2.5F) * this.particleScale * 2F * cosYaw);
+//                y = (float)(this.posY - interpPosY);
+//                z = (float)(this.posZ - interpPosZ - (i - 2.5F) * this.particleScale * 2F * sinYaw);
         	
                 if (partAge < fadeTime)
                 {	//0~10: color fade in
@@ -124,10 +127,10 @@ public class Particle91Type extends Particle
         float offsetY = offy * scale;
         float offsetZ = offz * scale;
         
-        render.pos(x - offsetX, y - offsetY, z - offsetZ).tex(maxu, maxv).color(1F, 1F, 1F, this.particleAlpha).endVertex();
-        render.pos(x - offsetX, y + offsetY, z - offsetZ).tex(maxu, minv).color(1F, 1F, 1F, this.particleAlpha).endVertex();
-        render.pos(x + offsetX, y + offsetY, z + offsetZ).tex(minu, minv).color(1F, 1F, 1F, this.particleAlpha).endVertex();
-        render.pos(x + offsetX, y - offsetY, z + offsetZ).tex(minu, maxv).color(1F, 1F, 1F, this.particleAlpha).endVertex();	
+        render.pos(x - offsetX, y - offsetY, z - offsetZ).tex(maxu, maxv).color(1F, 1F, 1F, alpha).endVertex();
+        render.pos(x - offsetX, y + offsetY, z - offsetZ).tex(maxu, minv).color(1F, 1F, 1F, alpha).endVertex();
+        render.pos(x + offsetX, y + offsetY, z + offsetZ).tex(minu, minv).color(1F, 1F, 1F, alpha).endVertex();
+        render.pos(x + offsetX, y - offsetY, z + offsetZ).tex(minu, maxv).color(1F, 1F, 1F, alpha).endVertex();	
 	}
 
 	//layer: 0:particle 1:terrain 2:items 3:custom?
@@ -144,17 +147,17 @@ public class Particle91Type extends Particle
 	public void onUpdate()
     {
     	//this is both side particle
-		this.prevPosX = this.posX;
-        this.prevPosY = this.posY;
-        this.prevPosZ = this.posZ;
+//		this.prevPosX = this.posX;
+//        this.prevPosY = this.posY;
+//        this.prevPosZ = this.posZ;
 
         if (this.particleAge++ > this.particleMaxAge)
         {
             this.setExpired();
         }
 
-        this.move(this.motionX, this.motionY, this.motionZ);
-        this.motionY *= 0.9D;
+//        this.move(this.motionX, this.motionY, this.motionZ);
+//        this.motionY *= 0.9D;
     }
     
     

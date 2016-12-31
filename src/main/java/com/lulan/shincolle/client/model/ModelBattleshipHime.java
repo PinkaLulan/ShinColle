@@ -291,7 +291,6 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion
     	GlStateManager.enableBlend();
     	GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
     	GlStateManager.scale(0.5F, 0.5F, 0.5F);
-    	GlStateManager.translate(0F, 1.5F, 0F);
     	
     	//main body
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
@@ -353,7 +352,7 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion
   		float headX = 0F;
   		float headZ = 0F;
   		
-  		GlStateManager.translate(0F, 1.7F, 0F);
+  		GlStateManager.translate(0F, 1.05F, 0F);
   		setFace(4);
   		
   		//移動頭部使其看人
@@ -373,11 +372,13 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion
 	    //arm 
 	  	this.ArmLeft01.rotateAngleY = 0F;
 	    this.ArmLeft02.rotateAngleX = 0F;
-	    this.ArmLeft02.offsetX = 0.085F;
-	    this.ArmLeft02.offsetY = -0.14F;
+	    this.ArmLeft02.offsetX = 0F;
+	    this.ArmLeft02.offsetY = 0F;
+	    this.ArmLeft02.offsetZ = 0F;
 		this.ArmRight02.rotateAngleX = 0F;
-		this.ArmRight02.offsetX = -0.12F;
-	    this.ArmRight02.offsetY = -0.15F;
+		this.ArmRight02.offsetX = 0F;
+		this.ArmRight02.offsetY = 0F;
+	    this.ArmRight02.offsetZ = 0F;
 		//leg
 		this.LegLeft01.rotateAngleY = 0F;
 		this.LegRight01.rotateAngleY = 0F;
@@ -442,10 +443,12 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion
   		float headX = 0F;
   		float headZ = 0F;
   		
+  		GlStateManager.translate(0F, 0.5F, 0F);
+  		
   		//水上漂浮
   		if (((Entity) ent).getPassengers().size() == 0 && ((IShipFloating) ent).getShipDepth() > 0)
   		{
-  			GlStateManager.translate(0F, angleX * 0.1F - 0.03F, 0F);
+  			GlStateManager.translate(0F, angleX * 0.05F + 0.025F, 0F);
     	}
   		
   		//leg move parm
@@ -453,8 +456,8 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion
 	  	addk2 = angleAdd2 - 0.174F;
 
   	    //移動頭部使其看人
-	  	this.Head.rotateAngleX = f4 / 70F + 0.05F; 	//上下角度
-	  	this.Head.rotateAngleY = f3 / 80F;	//左右角度 角度轉成rad 即除以57.29578
+	  	this.Head.rotateAngleX = f4 * 0.013F + 0.05F; 	//上下角度
+	  	this.Head.rotateAngleY = f3 * 0.007F;
 	    //正常站立動作
 	    //胸部
   	    this.BoobL.rotateAngleX = angleX * 0.06F - 0.7F;
@@ -519,6 +522,7 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion
 	    //潛行, 蹲下動作
 	    if (ent.getIsSneaking())
 	    {
+	    	GlStateManager.translate(0F, 0.08F, 0F);
 	    	//Body
 	    	this.Head.rotateAngleX -= 0.6283F;
 		  	this.BodyMain.rotateAngleX = 0.8727F;
@@ -541,7 +545,7 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion
 	    {
 	    	if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 	    	{
-	    		GlStateManager.translate(0F, 2F, 0F);
+	    		GlStateManager.translate(0F, 0.65F, 0F);
 		    	//Body
 		    	this.Head.rotateAngleX = -1.2217F;
 		    	this.Head.rotateAngleY = this.Head.rotateAngleY / 2F;
@@ -572,7 +576,7 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion
 	    	}
 	    	else
 	    	{
-	    		GlStateManager.translate(0F, 1.2F, 0F);
+	    		GlStateManager.translate(0F, 0.33F, 0F);
 		    	//Body
 		    	this.Head.rotateAngleX += 0.14F;
 			  	this.BodyMain.rotateAngleX = -0.4363F;
@@ -608,7 +612,7 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion
 	    		{
 		    		if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 		    		{
-		    			GlStateManager.translate(0F, 1.8F, 0F);
+		    			GlStateManager.translate(0F, 0.68F, -0.05F);
 				    	//Body
 				    	this.Head.rotateAngleX = -1.2217F;
 				    	this.Head.rotateAngleY = this.Head.rotateAngleY / 2F;
@@ -639,7 +643,7 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion
 			    	}
 			    	else
 			    	{
-			    		GlStateManager.translate(0F, 1.3F, 0F);
+			    		GlStateManager.translate(0F, 0.51F, -0.05F);
 			    		//Body
 				    	this.Head.rotateAngleX += 0.14F;
 					  	this.BodyMain.rotateAngleX = -0.4363F;
@@ -668,7 +672,7 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion
 		    	}//end if sitting
 		    	else
 		    	{
-		    		GlStateManager.translate(0F, 0.32F, 0F);
+		    		GlStateManager.translate(0F, 0.17F, 0F);
 			    	//Body
 			    	this.Head.rotateAngleX += 0.1745F;
 				  	this.BodyMain.rotateAngleX = -0.35F;
@@ -754,7 +758,7 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion
 	    }//end ridding
     
 	    //攻擊動作    
-	    if (ent.getAttackTick() > 0)
+	    if (ent.getAttackTick() > 20)
 	    {
 	    	//arm
 		  	this.ArmLeft01.rotateAngleX = -1.6F;

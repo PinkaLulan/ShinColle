@@ -26,16 +26,21 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagDouble;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
@@ -44,6 +49,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
 
@@ -72,6 +78,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	//AI
 	protected double shipDepth;					//水深, 用於水中高度判定
 	public int keyPressed;						//key(bit): 0:W 1:S 2:A 3:D 4:Jump
+	public int keyTick;						//player controll key tick
 	public static boolean stopAI = false;		//stop onUpdate, onLivingUpdate
 	
 	
@@ -81,11 +88,10 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		this.isImmuneToFire = true;
 		this.ignoreFrustumCheck = true;	//即使不在視線內一樣render
 		this.stepHeight = 3F;
-		this.shipNavigator = new ShipPathNavigate(this, world);
-		this.shipMoveHelper = new ShipMoveHelper(this, 20F);
 		
 		//AI flag
 		this.keyPressed = 0;
+		this.keyTick = 0;
 		this.soundHurtDelay = 0;
 		this.attackTime = 0;
 		this.attackTime2 = 0;
@@ -205,12 +211,6 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 				this.setDead();
 				return false;
 			}
-			
-			//set host hurt face
-	    	if (this.host.getStateEmotion(ID.S.Emotion) != ID.Emotion.O_O)
-	    	{
-	    		this.host.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
-	    	}
 	        
 	        if (attacker.getEntity() != null)
 	        {
@@ -288,85 +288,75 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	
 	@Override
 	public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, @Nullable ItemStack stack, EnumHand hand)
-    {	
-		ItemStack itemstack = player.inventory.getCurrentItem();  //get item in hand
+    {
+		if (hand == EnumHand.OFF_HAND) return EnumActionResult.FAIL;
 		
-		//use cake to change state
-		if (itemstack != null && host != null)
+		//server side
+		if (!this.world.isRemote)
 		{
-			//use cake
-			if (itemstack.getItem() == Items.CAKE)
+			//use item
+			if (stack != null && host != null)
 			{
-				switch (host.getStateEmotion(ID.S.State))
+				//use cake
+				if (stack.getItem() == Items.CAKE)
 				{
-				case ID.State.NORMAL:	//普通轉騎乘
-					host.setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+					switch (host.getStateEmotion(ID.S.State))
+					{
+					case ID.State.NORMAL:	//普通轉騎乘
+						host.setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
 					break;
-				case ID.State.EQUIP00:	//騎乘轉普通
-					host.setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-					this.clearRider();
+					case ID.State.EQUIP00:	//騎乘轉普通
+						host.setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+						this.clearRider();
 					break;
-				default:
-					host.setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+					default:
+						host.setStateEmotion(ID.S.State, ID.State.NORMAL, true);
 					break;
+					}
+					
+					this.host.setPositionAndUpdate(posX, posY + 1.5D, posZ);
+					
+					return EnumActionResult.SUCCESS;
 				}
-				
-				this.host.setPositionAndUpdate(posX, posY + 1.5D, posZ);
-				
-				return EnumActionResult.SUCCESS;
-			}
-			
-			//use lead
-			if (itemstack.getItem() == Items.LEAD && this.canBeLeashedTo(player))
-			{	
-				this.setLeashedToEntity(player, true);
-				return EnumActionResult.SUCCESS;
-	        }
-			
-			//caress head mode: morale +3
-			if (itemstack.getItem() == ModItems.PointerItem &&
-				!this.world.isRemote && itemstack.getItemDamage() > 2)
-			{
-				//add little morale to host
-				int t = this.host.ticksExisted - this.host.getMoraleTick();
-				int m = this.host.getStateMinor(ID.M.Morale);
-				
-				if (t > 3 && m < 6100)
-				{	//if caress > 3 ticks
-					this.host.setMoraleTick(this.ticksExisted);
-					this.host.setStateMinor(ID.M.Morale, m + 3);
+				//caress head mode: morale +3
+				else if (stack.getItem() == ModItems.PointerItem && stack.getItemDamage() > 2)
+				{
+					//add little morale to host
+					int t = this.host.ticksExisted - this.host.getMoraleTick();
+					int m = this.host.getStateMinor(ID.M.Morale);
+					
+					if (t > 3 && m < 6100)
+					{	//if caress > 3 ticks
+						this.host.setMoraleTick(this.ticksExisted);
+						this.host.setStateMinor(ID.M.Morale, m + 3);
+					}
+					
+					//TODO show mounts emotion
+					
+					return EnumActionResult.SUCCESS;
 				}
-				
-				//TODO show mounts emotion
-				
-				return EnumActionResult.SUCCESS;
-			}
-		}//end use item
-		
-		//如果已經被綑綁, 再點一下可以解除綑綁
-		if (this.getLeashed() && this.getLeashedToEntity().equals(player))
-		{
-            this.clearLeashed(true, !player.capabilities.isCreativeMode);
-            return EnumActionResult.SUCCESS;
-        }
+				//use lead: clear path
+				else if (stack.getItem() == Items.LEAD)
+				{
+					this.getShipNavigate().clearPathEntity();
+					return EnumActionResult.SUCCESS;
+		        }
+			}//end use item
 
-		//ride the mount if dist < 2.4 blocks, or set ship and mount sitting
-		if (!this.world.isRemote && !player.isSneaking())
-		{
-			//ride mount
-			if (TeamHelper.checkIsBanned(this, player) && this.getDistanceSqToEntity(player) < 6D)
+			//ride the mount if dist < 4 blocks, or set ship and mount sitting
+			if (!player.isSneaking())
 			{
-  	  			player.startRiding(this, true);
-  	  			this.stateEmotion = 1;
-  	  			this.sendSyncPacket(0);
-  	  			
-				return EnumActionResult.SUCCESS;
-			}
-			//set sitting
-			else
-			{
-				//check owner
-				if (TeamHelper.checkSameOwner(player, this.host))
+				//ride mount, only for friendly player
+				if (!TeamHelper.checkIsBanned(this, player) && this.getDistanceSqToEntity(player) < 16D)
+				{
+	  	  			player.startRiding(this, true);
+	  	  			this.stateEmotion = 1;
+	  	  			this.sendSyncPacket(0);
+	  	  			
+					return EnumActionResult.SUCCESS;
+				}
+				//set sitting
+				else if (TeamHelper.checkSameOwner(player, this.host))
 				{
 					this.host.setEntitySit(!this.host.isSitting());
 					this.isJumping = false;
@@ -377,33 +367,118 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 
 		            return EnumActionResult.SUCCESS;
 				}
+	        }
+			//shift+right click時打開host GUI
+			else if (TeamHelper.checkSameOwner(player, this.host))
+			{  
+				int eid = this.host.getEntityId();
+	    		FMLNetworkHandler.openGui(player, ShinColle.instance, ID.Gui.SHIPINVENTORY, this.world, this.host.getEntityId(), 0, 0);
+	    		return EnumActionResult.SUCCESS;
 			}
-        }
-		
-		//shift+right click時打開host GUI
-		if (player.isSneaking() && !this.world.isRemote && TeamHelper.checkSameOwner(player, this.host))
-		{  
-			int eid = this.host.getEntityId();
-    		FMLNetworkHandler.openGui(player, ShinColle.instance, ID.Gui.SHIPINVENTORY, this.world, this.host.getEntityId(), 0, 0);
-    		return EnumActionResult.SUCCESS;
 		}
 		
 		return EnumActionResult.PASS;
   	}
 	
+    @Override
+    public boolean canBeLeashedTo(EntityPlayer player)
+    {
+    	if (! player.world.isRemote)
+    	{
+    		return TeamHelper.checkSameOwner(this, player);
+    	}
+        return true;	//client端只回傳true
+    }
+	
 	@Override
     public void onLivingUpdate()
     {
+		 /** server side */
     	if ((!world.isRemote))
     	{
+          	//sync rotation
+        	List<Entity> riders = this.getPassengers();
+        	
+        	for (Entity rider : riders)
+        	{
+        		if (this.keyTick <= 0 && rider instanceof BasicEntityShip)
+        		{
+        			if (this.getShipNavigate().noPath() && this.getEntityTarget() == null)
+        			{
+        				this.rotationYawHead = ((EntityLivingBase) rider).rotationYawHead;
+//    					this.renderYawOffset = ((EntityLivingBase) rider).renderYawOffset;
+    					this.prevRotationYaw = rider.prevRotationYaw;
+    					this.rotationYaw = rider.rotationYaw;
+        			}
+        			else
+        			{
+        				((EntityLivingBase) rider).rotationYawHead = this.rotationYawHead;
+//            	      	((EntityLivingBase) rider).renderYawOffset = this.renderYawOffset;
+            	      	rider.prevRotationYaw = this.prevRotationYaw;
+            	      	rider.rotationYaw = this.rotationYaw;
+        			}
+        		}
+        		else if (rider instanceof EntityPlayer)
+        		{
+        			//sync rotation for controller only
+        	      	if (this.keyPressed != 0 && rider.equals(this.getControllingPassenger()))
+        	      	{
+    					this.rotationYawHead = ((EntityLivingBase) rider).rotationYawHead;
+//    					this.renderYawOffset = ((EntityLivingBase) rider).renderYawOffset;
+    					this.prevRotationYaw = rider.prevRotationYaw;
+    					this.rotationYaw = rider.rotationYaw;
+        	      	}
+        		}
+        	}//end for sync rotation
+        	
         	//update movement, NOTE: 1.9.4: must done before vanilla MoveHelper updating in super.onLivingUpdate()
         	EntityHelper.updateShipNavigator(this);
             super.onLivingUpdate();
-    	}
+            
+            //clear path if player controlling
+            if (this.keyPressed != 0)
+	      	{
+				this.getShipNavigate().clearPathEntity();
+	      	}
+    	}//end server side
+    	/** client side */
     	else
     	{
     		super.onLivingUpdate();
-    	}
+    		
+    		if (this.ticksExisted % 2 == 0)
+    		{
+    			//moving rotate
+    			if (this.keyTick <= 0)
+    			{
+    				if (MathHelper.abs((float) (posX - prevPosX)) > 0.01F || MathHelper.abs((float) (posZ - prevPosZ)) > 0.01F)
+        	  		{
+        	  			float[] degree = CalcHelper.getLookDegree(posX - prevPosX, posY - prevPosY, posZ - prevPosZ, true);
+            			this.rotationYaw = degree[0];
+        			}
+        			//look rotate
+        			else if (this.getLookHelper().getIsLooking())
+        			{
+            			float[] degree = CalcHelper.getLookDegree(posX - this.getLookHelper().getLookPosX(), posY - this.getLookHelper().getLookPosY(), posZ - this.getLookHelper().getLookPosZ(), true);
+            			this.rotationYaw = degree[0];
+        			}
+    			}
+    			
+    			//every 32 ticks
+        		if (this.ticksExisted % 32 == 0)
+        		{
+        			//check rider pos
+        			if (this.getPassengers().size() > 1)
+        			{
+        				setStateEmotion(ID.S.Emotion, 1, false);
+        			}
+        			else
+        			{
+        				setStateEmotion(ID.S.Emotion, 0, false);
+        			}
+        		}//end 32 ticks
+    		}//end 2 ticks
+    	}//end client side
     }
 	
 	@Override
@@ -416,18 +491,26 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		
 		super.onUpdate();
 		
-		if (soundHurtDelay > 0) soundHurtDelay--;
-
+		//timer--
+		if (this.soundHurtDelay > 0) this.soundHurtDelay--;
+		
 		//apply movement by key pressed
-		if (this.host != null && !host.getStateFlag(ID.F.NoFuel) && this.keyPressed > 0 &&
-			this.getControllingPassenger() instanceof EntityPlayer)
+		if (this.keyTick > 0)
 		{
-			EntityPlayer rider2 = (EntityPlayer) this.getControllingPassenger();
-			float yaw = rider2.rotationYawHead % 360F * Values.N.DIV_PI_180;
-			float pitch = rider2.rotationPitch % 360F * Values.N.DIV_PI_180;
+			this.keyTick--;
 			
-			this.applyMovement(pitch, yaw);
-			this.rotationYaw = rider2.rotationYaw;
+			if (this.host != null && !this.host.getStateFlag(ID.F.NoFuel))
+			{
+				EntityPlayer rider2 = (EntityPlayer) this.getControllingPassenger();
+				
+				if (rider2 != null)
+				{
+					float yaw = rider2.rotationYawHead % 360F * Values.N.DIV_PI_180;
+					float pitch = rider2.rotationPitch % 360F * Values.N.DIV_PI_180;
+					this.applyMovement(pitch, yaw);
+					this.rotationYaw = rider2.rotationYaw;
+				}
+			}
 		}
 			
 		//check depth
@@ -457,7 +540,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 							-motX*0.5D, 0D, -motZ*0.5D, (byte)15);
 				}
 			}
-		}
+		}//end client side
 		//server side
 		else
 		{
@@ -495,7 +578,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
     						this.sendSyncPacket(0);
 
     						//update attribute
-    						setupAttrs();
+    						this.setupAttrs();
     						
     						//防止溺死
     						if (this.isInWater())
@@ -505,8 +588,32 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
     					}//end every 128 ticks
 					}//end every 16 ticks
 				}//end every 8 ticks
-			}
-		}
+			}//end get host
+		}//end server side
+	}
+	
+	@Override
+	public void readFromNBT(NBTTagCompound nbt)
+	{
+		super.readFromNBT(nbt);
+		
+        //change rider position on chunk loading to fix "Wrong Location!" bug
+        if (this.world == null || (!this.world.isRemote && this.ticksExisted <= 0))
+        {
+        	if (nbt.hasKey("Passengers", Constants.NBT.TAG_LIST))
+            {
+        		NBTTagList list = nbt.getTagList("Passengers", Constants.NBT.TAG_COMPOUND);
+        		
+                for (int i = 0; i < list.tagCount(); ++i)
+                {
+                	NBTTagCompound rider = list.getCompoundTagAt(i);
+                	NBTTagList pos = rider.getTagList("Pos", 6);
+                	pos.set(0, new NBTTagDouble(this.posX));
+                	pos.set(1, new NBTTagDouble(this.posY));
+                	pos.set(2, new NBTTagDouble(this.posZ));
+                }
+            }
+        }
 	}
 	
 	//set movement by key pressed, pitch/yaw is RAD not DEGREE
@@ -517,72 +624,83 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		float[] movez = CalcHelper.rotateXZByAxis(movSpeed, 0F, yaw, 1F);	//前後
 		float[] movex = CalcHelper.rotateXZByAxis(0F, movSpeed, yaw, 1F);	//左右
 		
+		//apply client side jump
+		if ((keyPressed & 16) > 0)	//jump (bit 5)
+		{
+			this.jumpHelper.setJumping();
+//			this.motionY += movSpeed * 0.5F;
+//			if (motionY > 1F) motionY = 1F;
+		}
+		
+		//apply moving
 		if (this.onGround || EntityHelper.checkEntityIsInLiquid(this))
 		{
 			//horizontal move, 至少要4 tick才能加到最高速
 			//W (bit 1)
 			if ((keyPressed & 1) > 0)
 			{
-				motionX += movez[1] / 4F;
+				motionX += movez[1] * 0.25F;
 				if (MathHelper.abs((float) motionX) > MathHelper.abs(movez[1])) motionX = movez[1];
-				motionZ += movez[0] / 4F;
+				motionZ += movez[0] * 0.25F;
 				if (MathHelper.abs((float) motionZ) > MathHelper.abs(movez[0])) motionZ = movez[0];
+			
+				//vertical move
+				if (pitch > 1F)
+				{
+					motionY += -0.1F;
+					if (motionY < -movSpeed * 0.5F) motionY = -movSpeed * 0.5F;
+				}
+				else if (pitch < -1F)
+				{
+					motionY += 0.1F;
+					if (motionY > movSpeed * 0.5F) motionY = movSpeed * 0.5F;
+				}
 			}
 			
 			//S (bit 2)
 			if ((keyPressed & 2) > 0)
 			{
-				motionX -= movez[1] / 4F;
+				motionX -= movez[1] * 0.25F;
 				if (MathHelper.abs((float) motionX) > MathHelper.abs(movez[1])) motionX = -movez[1];
-				motionZ -= movez[0] / 4F;
+				motionZ -= movez[0] * 0.25F;
 				if (MathHelper.abs((float) motionZ) > MathHelper.abs(movez[0])) motionZ = -movez[0];
+			
+				//vertical move
+				if (pitch > 1F)
+				{
+					motionY += 0.1F;
+					if (motionY > movSpeed * 0.5F) motionY = movSpeed * 0.5F;
+				}
+				else if (pitch < -1F)
+				{
+					motionY += -0.1F;
+					if (motionY < -movSpeed * 0.5F) motionY = -movSpeed * 0.5F;
+				}
 			}
 			
 			//A (bit 3)
 			if ((keyPressed & 4) > 0)
 			{
-				motionX += movex[1] / 4F;
+				motionX += movex[1] * 0.25F;
 				if (MathHelper.abs((float) motionX) > MathHelper.abs(movex[1])) motionX = movex[1];
-				motionZ += movex[0] / 4F;
+				motionZ += movex[0] * 0.25F;
 				if (MathHelper.abs((float) motionZ) > MathHelper.abs(movex[0])) motionZ = movex[0];
 			}
 			
 			//D (bit 4)
 			if ((keyPressed & 8) > 0)
 			{
-				motionX -= movex[1] / 4F;
+				motionX -= movex[1] * 0.25F;
 				if (MathHelper.abs((float) motionX) > MathHelper.abs(movex[1])) motionX = -movex[1];
-				motionZ -= movex[0] / 4F;
+				motionZ -= movex[0] * 0.25F;
 				if (MathHelper.abs((float) motionZ) > MathHelper.abs(movex[0])) motionZ = -movex[0];
 			}
 			
-			//vertical move
-			if (pitch > 0.5F)
-			{	//move down
-				motionY += -0.1F;
-				if(motionY < -movSpeed / 2F) motionY = -movSpeed / 2F;			
-			}
-			
-			if (pitch < -1F)
-			{	//move up
-				motionY += 0.1F;
-				if(motionY > movSpeed / 2F) motionY = movSpeed / 2F;
-			}
-			
-			//若水平撞到東西, 則嘗試跳跳
+			//若水平撞到東西, 則嘗試往上擠
 			if (this.isCollidedHorizontally)
 			{
 				this.motionY += 0.4D;
 			}
-			
-			//jump (bit 5)
-			if ((keyPressed & 16) > 0)
-			{
-				this.motionY += movSpeed * 2F;
-				if (motionY > 1F) motionY = 1F;
-				//reset jump flag
-				keyPressed -= 16;
-			}	
 		}
 		else
 		{
@@ -590,36 +708,36 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 			//W (bit 1)
 			if ((keyPressed & 1) > 0)
 			{
-				motionX += movez[1] / 4F;
+				motionX += movez[1] * 0.25F;
 				if (MathHelper.abs((float) motionX) > MathHelper.abs(movez[1])) motionX = movez[1];
-				motionZ += movez[0] / 4F;
+				motionZ += movez[0] * 0.25F;
 				if (MathHelper.abs((float) motionZ) > MathHelper.abs(movez[0])) motionZ = movez[0];
 			}
 			
 			//S (bit 2)
 			if ((keyPressed & 2) > 0)
 			{
-				motionX -= movez[1] / 16F;
+				motionX -= movez[1] * 0.25F;
 				if (MathHelper.abs((float) motionX) > MathHelper.abs(movez[1])) motionX = -movez[1];
-				motionZ -= movez[0] / 16F;
+				motionZ -= movez[0] * 0.25F;
 				if (MathHelper.abs((float) motionZ) > MathHelper.abs(movez[0])) motionZ = -movez[0];
 			}
 			
 			//A (bit 3)
 			if ((keyPressed & 4) > 0)
 			{
-				motionX += movex[1] / 32F;
+				motionX += movex[1] * 0.03125F;
 				if (MathHelper.abs((float) motionX) > MathHelper.abs(movex[1])) motionX = movex[1];
-				motionZ += movex[0] / 32F;
+				motionZ += movex[0] * 0.03125F;
 				if (MathHelper.abs((float) motionZ) > MathHelper.abs(movex[0])) motionZ = movex[0];
 			}
 			
 			//D (bit 4)
-			if((keyPressed & 8) > 0)
+			if ((keyPressed & 8) > 0)
 			{
-				motionX -= movex[1] / 32F;
+				motionX -= movex[1] * 0.03125F;
 				if (MathHelper.abs((float) motionX) > MathHelper.abs(movex[1])) motionX = -movex[1];
-				motionZ -= movex[0] / 32F;
+				motionZ -= movex[0] * 0.03125F;
 				if (MathHelper.abs((float) motionZ) > MathHelper.abs(movex[0])) motionZ = -movex[0];
 			}
 		}
@@ -943,7 +1061,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   		
   		//get attack value
 		float atkLight = getAttackBaseDamage(1, target);
-        
+		
         //calc dist to target
         float[] distVec = new float[4];  //x, y, z, dist
         distVec[0] = (float) (target.posX - this.posX);
@@ -1156,6 +1274,12 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	}
 	
 	@Override
+	public float getJumpSpeed()
+	{
+		return 2F;
+	}
+	
+	@Override
 	public boolean getIsLeashed()
 	{
 		//綁住host或者自己都算綁住
@@ -1314,6 +1438,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		return true;
 	}
 	
+	//get first player rider
     @Nullable
     @Override
     public Entity getControllingPassenger()
@@ -1384,12 +1509,15 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	{
 		if (!world.isRemote)
 		{
-			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
+			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
 			
 			switch (type)
 			{
 			case 0:
 				CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this, S2CEntitySync.PID.SyncShip_Riders), point);
+			break;
+			case 1:
+				CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this, S2CEntitySync.PID.SyncEntity_Rot), point);
 			break;
 			}
 		}
@@ -1483,42 +1611,26 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   	@Override
   	public void updatePassenger(Entity passenger)
   	{
-  		if (passenger != null && this.host != null && this.isPassenger(passenger))
+  		if (passenger != null && this.isPassenger(passenger))
   		{
-  			//host ship rider
-  	        if (this.host.equals(passenger))
-  	        {
-  	        	//set position
-  	        	float[] ridePos = CalcHelper.rotateXZByAxis(this.seatPos[0], this.seatPos[1], renderYawOffset * Values.N.DIV_PI_180, 1F);	
-  	            passenger.setPosition(this.posX + ridePos[1], this.posY + this.seatPos[2] + passenger.getYOffset(), this.posZ + ridePos[0]);
-  	        }
-  	        //player rider
-  	        else
-  	        {
-  	        	//set position
-  				float[] ridePos = CalcHelper.rotateXZByAxis(this.seatPos2[0], this.seatPos2[1], renderYawOffset * Values.N.DIV_PI_180, 1F);	
-  	        	passenger.setPosition(this.posX + ridePos[1], this.posY + this.seatPos2[2] + passenger.getYOffset(), this.posZ + ridePos[0]);
-  	        }
-  	        
-			//若有controlling rider且按下移動按鍵時, 則改為controlling rider朝向
-  	        EntityPlayer player = (EntityPlayer) this.getControllingPassenger();
-			if (this.keyPressed != 0 && player != null)
-			{
-				this.rotationYawHead = player.rotationYawHead;
-				this.prevRotationYaw = player.prevRotationYaw;
-				this.rotationYaw = player.rotationYaw;
-				this.renderYawOffset = player.renderYawOffset;
-
-				//清除AI自動走路, 以免妨礙玩家控制移動
-				this.getShipNavigate().clearPathEntity();
-			}
-			
-			//set host rider angle
-			this.host.rotationYawHead = this.rotationYawHead;
-			this.host.prevRotationYaw = this.prevRotationYaw;
-			this.host.rotationYaw = this.rotationYaw;
-			this.host.renderYawOffset = this.renderYawOffset;
-  		}
+  			//set position for host seat
+  			if (passenger instanceof BasicEntityShip)
+  			{
+  	        	float[] ridePos = CalcHelper.rotateXZByAxis(this.seatPos[0], this.seatPos[2], renderYawOffset * Values.N.DIV_PI_180, 1F);	
+  	        	passenger.setPosition(this.posX + ridePos[1], this.posY + this.seatPos[1] + passenger.getYOffset(), this.posZ + ridePos[0]);
+  			}
+  			//set position for player seat
+  			else if (passenger instanceof EntityPlayer)
+  			{
+  				float[] ridePos = CalcHelper.rotateXZByAxis(this.seatPos2[0], this.seatPos2[2], renderYawOffset * Values.N.DIV_PI_180, 1F);	
+  	        	passenger.setPosition(this.posX + ridePos[1], this.posY + this.seatPos2[1] + passenger.getYOffset(), this.posZ + ridePos[0]);
+  			}
+  			//set position for other entity
+  			else
+  			{
+  				passenger.setPosition(this.posX, this.posY + this.getMountedYOffset() + passenger.getYOffset(), this.posZ);
+  			}
+  		}//end rider != null
     }
   	
   	@Override
@@ -1600,6 +1712,12 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	public boolean isJumping()
 	{
 		return this.isJumping;
+	}
+	
+	@Override
+	public int getScaleLevel()
+	{
+		return 0;
 	}
 	
 	

@@ -10,6 +10,7 @@ import com.lulan.shincolle.client.particle.ParticleEmotion;
 import com.lulan.shincolle.client.particle.ParticleLaser;
 import com.lulan.shincolle.client.particle.ParticleLaserNoTexture;
 import com.lulan.shincolle.client.particle.ParticleLightning;
+import com.lulan.shincolle.client.particle.ParticleSmoke;
 import com.lulan.shincolle.client.particle.ParticleSpray;
 import com.lulan.shincolle.client.particle.ParticleStickyLightning;
 import com.lulan.shincolle.client.particle.ParticleTeam;
@@ -118,7 +119,7 @@ public class ParticleHelper
 		{
 		case 1:		//largeexplode
 			world.spawnParticle(EnumParticleTypes.EXPLOSION_LARGE, posX, posY+2, posZ, 0.0D, 0.0D, 0.0D, new int[0]);
-			break;
+		break;
 		case 2:		//hugeexplosion
 			world.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, posX, posY+1, posZ, 0.0D, 0.0D, 0.0D, new int[0]);
 			for (int i = 0; i < 20; ++i)
@@ -127,7 +128,7 @@ public class ParticleHelper
 				ran2 = rand.nextFloat() * 6F - 3F;
 				world.spawnParticle(EnumParticleTypes.LAVA, posX+ran1, posY+1, posZ+ran2, 0D, 0D, 0D, new int[0]);
 			}
-			break;
+		break;
 		case 3:		//hearts effect
 			for (int i = 0; i < 7; ++i)
 			{
@@ -136,7 +137,7 @@ public class ParticleHelper
 	            double d2 = rand.nextGaussian() * 0.02D;
 	            world.spawnParticle(EnumParticleTypes.HEART, posX + rand.nextFloat() * 2D - 1D, posY + 0.5D + rand.nextFloat() * 2D, posZ + rand.nextFloat() * 2.0F - 1D, d0, d1, d2, new int[0]);
 	        }
-			break;
+		break;
 		case 4: 	//smoke: for minor damage
 			for (int i = 0; i < 3; i++)
 			{
@@ -145,7 +146,7 @@ public class ParticleHelper
 				ran3 = rand.nextFloat() * lookX - lookX / 2D;
 				world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, posX+ran1, posY+ran2, posZ+ran3, 0D, lookY, 0D, new int[0]);
 			}
-			break;
+		break;
 		case 5:		//flame+smoke: for moderate damage
 			for (int i = 0; i < 3; i++)
 			{
@@ -155,7 +156,7 @@ public class ParticleHelper
 				world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, posX+ran1, posY+ran2, posZ+ran3, 0D, lookY, 0D, new int[0]);
 				world.spawnParticle(EnumParticleTypes.FLAME, posX+ran3, posY+ran2, posZ+ran1, 0D, lookY, 0D, new int[0]);
 			}
-			break;
+		break;
 		case 6: 	//largesmoke
 			for (int i = 0; i < 20; i++)
 			{
@@ -165,7 +166,7 @@ public class ParticleHelper
 				world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, posX+lookX-0.5D+0.05D*i, posY+0.6D+ran1, posZ+lookZ-0.5D+0.05D*i, lookX*0.3D*ran2, 0.05D*ran2, lookZ*0.3D*ran2, new int[0]);
 				world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, posX+lookX-0.5D+0.05D*i, posY+1.0D+ran1, posZ+lookZ-0.5D+0.05D*i, lookX*0.3D*ran3, 0.05D*ran3, lookZ*0.3D*ran3, new int[0]);
 			}
-			break;
+		break;
 		case 7: 	//flame+large smoke: for heavy damage
 			for (int i = 0; i < 4; i++)
 			{
@@ -175,12 +176,12 @@ public class ParticleHelper
 				world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, posX+ran1, posY+ran2, posZ+ran3, 0D, 0D, 0D, new int[0]);
 				world.spawnParticle(EnumParticleTypes.FLAME, posX+ran3, posY+ran2, posZ+ran1, 0D, 0.05D, 0D, new int[0]);
 			}
-			break;
+		break;
 		case 8:	 	//flame
 			world.spawnParticle(EnumParticleTypes.FLAME, posX, posY-0.1, posZ, 0.0D, 0.0D, 0.0D, new int[0]);
 			world.spawnParticle(EnumParticleTypes.FLAME, posX, posY, posZ, 0.0D, 0.0D, 0.0D, new int[0]);
 			world.spawnParticle(EnumParticleTypes.FLAME, posX, posY+0.1, posZ, 0.0D, 0.0D, 0.0D, new int[0]);
-			break;
+		break;
 		case 9: 	//lava + largeexplode
 			world.spawnParticle(EnumParticleTypes.EXPLOSION_LARGE, posX, posY+1.5, posZ, 0.0D, 0.0D, 0.0D, new int[0]);
 			for (int i = 0; i < 12; i++)
@@ -189,52 +190,52 @@ public class ParticleHelper
 				ran2 = rand.nextFloat() * 3F - 1.5F;
 				world.spawnParticle(EnumParticleTypes.LAVA, posX+ran1, posY+1, posZ+ran2, 0D, 0D, 0D, new int[0]);
 			}			
-			break;
+		break;
 		case 10:	//miss
 			ParticleTexts particleMiss = new ParticleTexts(world, 
   		          posX, posY + lookY, posZ, 1F, 0);
 			Minecraft.getMinecraft().effectRenderer.addEffect(particleMiss);
-			break;
+		break;
 		case 11:	//cri
 			ParticleTexts particleCri = new ParticleTexts(world, 
   		          posX, posY + lookY, posZ, 1F, 1);	    
 			Minecraft.getMinecraft().effectRenderer.addEffect(particleCri);
-			break;
+		break;
 		case 12:	//double hit
 			ParticleTexts particleDHit = new ParticleTexts(world, 
 	  		          posX, posY + lookY, posZ, 1F, 2);	    
 			Minecraft.getMinecraft().effectRenderer.addEffect(particleDHit);
-			break;
+		break;
 		case 13:	//triple hit
 			ParticleTexts particleTHit = new ParticleTexts(world, 
 	  		          posX, posY + lookY, posZ, 1F, 3);	    
 			Minecraft.getMinecraft().effectRenderer.addEffect(particleTHit);
-			break;
+		break;
 		case 14:	//laser
 			ParticleLaser particleLaser = new ParticleLaser(world, 
 			          posX, posY, posZ, lookX, lookY, lookZ, 1F, 0);
 			Minecraft.getMinecraft().effectRenderer.addEffect(particleLaser);
-			break;
+		break;
 		case 15:	//white spray
 			ParticleSpray particleSpray = new ParticleSpray(world, 
             		posX, posY, posZ, lookX, lookY, lookZ, 1);
         	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray);
-			break;
+		break;
 		case 16:	//cyan spray
 			ParticleSpray particleSpray2 = new ParticleSpray(world, 
             		posX, posY, posZ, lookX, lookY, lookZ, 2);
         	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray2);
-			break;
+		break;
 		case 17:	//green spray
 			ParticleSpray particleSpray3 = new ParticleSpray(world, 
             		posX, posY, posZ, lookX, lookY, lookZ, 3);
         	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray3);
-			break;
+		break;
 		case 18:	//red spray
 			ParticleSpray particleSpray4 = new ParticleSpray(world, 
             		posX, posY, posZ, lookX, lookY, lookZ, 4);
         	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray4);
-			break;
+		break;
 		case 19: 	//double largesmoke for 14~20 inch cannon
 			//計算煙霧位置
 			degYaw = CalcHelper.getLookDegree(lookX, 0D, lookZ, false)[0];
@@ -251,13 +252,13 @@ public class ParticleHelper
 				world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, posX+lookX-0.5D+0.05D*i+newPos1[1], posY+0.9D+ran1, posZ+lookZ-0.5D+0.05D*i+newPos1[0], lookX*0.3D*ran3, 0.05D*ran3, lookZ*0.3D*ran3, new int[0]);
 				world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, posX+lookX-0.5D+0.05D*i+newPos2[1], posY+0.9D+ran1, posZ+lookZ-0.5D+0.05D*i+newPos2[0], lookX*0.3D*ran2, 0.05D*ran2, lookZ*0.3D*ran2, new int[0]);
 			}
-			break;
+		break;
 		case 20: 	//smoke: for nagato equip
 			for (int i = 0; i < 3; i++)
 			{
 				world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, posX, posY+i*0.1D, posZ, lookX, lookY, lookZ, new int[0]);
 			}
-			break;
+		break;
 		case 21:	//Type 91 AP Fist: phase 4 hit particle
 			//draw speed blur
 			ParticleLaser particleLaser2 = new ParticleLaser(world, 
@@ -276,15 +277,15 @@ public class ParticleHelper
 				newPos1 = CalcHelper.rotateXZByAxis(1, 0, 6.28F / 20F * i, 1);
 				//motionY傳入4, 表示為特殊設定
 				ParticleSpray particleSpray5 = new ParticleSpray(world, 
-						lookX, lookY+0.3D, lookZ, newPos1[0]*0.4D, 4D, newPos1[1]*0.4D, 0);
+						lookX, lookY+0.3D, lookZ, newPos1[0]*0.4D, 0D, newPos1[1]*0.4D, 0);
 	        	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray5);
 			}
 			
 			//draw hit text
-			Particle91Type particleSpray6 = new Particle91Type(world, 
-					lookX, lookY+4D, lookZ, 0.6F);
-        	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray6);
-			break;
+			Particle91Type particle91Type = new Particle91Type(world, 
+					lookX, lookY+3D, lookZ, 0.6F);
+        	Minecraft.getMinecraft().effectRenderer.addEffect(particle91Type);
+		break;
 		case 22:	//Type 91 AP Fist: phase 1,3 particle
 			for (int i = 0; i < 20; ++i)
 			{
@@ -294,7 +295,7 @@ public class ParticleHelper
 						posX+newPos1[0]*1.8D, posY+1.2D+lookY, posZ+newPos1[1]*1.8D, -newPos1[0]*0.06D, 0D, -newPos1[1]*0.06D, 5);
 	        	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray7);
 			}
-			break;
+		break;
 		case 23:	//Type 91 AP Fist: phase 2 particle
 			for (int i = 0; i < 20; ++i)
 			{
@@ -304,37 +305,37 @@ public class ParticleHelper
 						posX, posY+0.3D+lookY, posZ, newPos1[0]*0.15D, 0D, newPos1[1]*0.15D, 6);
 	        	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray8);
 			}
-			break;
+		break;
 		case 24: 	//smoke: for nagato BOSS equip
 			for (int i = 0; i < 3; i++)
 			{
 				world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, posX, posY+i*0.3D, posZ, lookX, lookY, lookZ, new int[0]);
 			}
-			break;
+		break;
 		case 25:	//arrow particle: for move or attack target mark
 			ParticleTeam particleTeam = new ParticleTeam(world, (float)lookX, (int)lookY, posX, posY, posZ);
 			Minecraft.getMinecraft().effectRenderer.addEffect(particleTeam);
-			break;
+		break;
 		case 26:	//white spray
 			ParticleSpray particleSpray7 = new ParticleSpray(world, 
             		posX, posY, posZ, lookX, lookY, lookZ, 7);
         	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray7);
-			break;
+		break;
 		case 27:	//yellow spray
 			ParticleSpray particleSpray8 = new ParticleSpray(world, 
             		posX, posY, posZ, lookX, lookY, lookZ, 8);
         	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray8);
-			break;
+		break;
 		case 28:	//drip water
 			ran1 = rand.nextFloat() * 0.7D - 0.35D;
 			ran2 = rand.nextFloat() * 0.7D - 0.35D;
 			world.spawnParticle(EnumParticleTypes.DRIP_WATER, posX+ran1, posY, posZ+ran2, lookX, lookY, lookZ, new int[0]);
-			break;
+		break;
 		case 29:	//orange spray
 			ParticleSpray particleSpray9 = new ParticleSpray(world, 
             		posX, posY, posZ, lookX, lookY, lookZ, 9);
         	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray9);
-			break;
+		break;
 		case 30:	//snow hit
 			for (int i = 0; i < 12; i++)
 			{
@@ -343,7 +344,7 @@ public class ParticleHelper
 				ran3 = rand.nextFloat() * 2F - 1F;
 				world.spawnParticle(EnumParticleTypes.SNOWBALL, posX+ran1, posY+0.8D+ran2, posZ+ran3, lookX*0.2D, 0.5D, lookZ*0.2D, new int[0]);
 			}
-			break;
+		break;
 		case 31: 	//throw snow smoke
 			for (int i = 0; i < 20; i++)
 			{
@@ -353,22 +354,22 @@ public class ParticleHelper
 				world.spawnParticle(EnumParticleTypes.SNOW_SHOVEL, posX+lookX-0.5D+0.05D*i, posY+0.7D+ran1, posZ+lookZ-0.5D+0.05D*i, lookX*0.3D*ran2, 0.05D*ran2, lookZ*0.3D*ran2, new int[0]);
 				world.spawnParticle(EnumParticleTypes.SNOW_SHOVEL, posX+lookX-0.5D+0.05D*i, posY+0.9D+ran1, posZ+lookZ-0.5D+0.05D*i, lookX*0.3D*ran3, 0.05D*ran3, lookZ*0.3D*ran3, new int[0]);
 			}
-			break;
+		break;
 		case 32:	//transparent cyan spray
 			ParticleSpray particleSpray10 = new ParticleSpray(world, 
             		posX, posY, posZ, lookX, lookY, lookZ, 10);
         	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray10);
-			break;
+		break;
 		case 33:	//transparent red spray
 			ParticleSpray particleSpray11 = new ParticleSpray(world, 
             		posX, posY, posZ, lookX, lookY, lookZ, 11);
         	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray11);
-			break;
+		break;
 		case 34:	//dodge
 			ParticleTexts particleTDodge = new ParticleTexts(world, 
 	  		          posX, posY + lookY, posZ, 1F, 4);	    
 			Minecraft.getMinecraft().effectRenderer.addEffect(particleTDodge);
-			break;
+		break;
 		case 35: 	//triple largesmoke for boss ship
 			//計算煙霧位置
 			degYaw = CalcHelper.getLookDegree(lookX, 0D, lookZ, false)[0];
@@ -387,39 +388,64 @@ public class ParticleHelper
 				world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, posX+lookX-0.6D+0.1D*i+newPos1[1]+ran2, posY+0.6D+ran1, posZ+lookZ-0.6D+0.1D*i+newPos1[0]+ran2, lookX*0.3D*ran3, 0.05D*ran3, lookZ*0.3D*ran3, new int[0]);
 				world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, posX+lookX-0.6D+0.1D*i+newPos2[1]+ran3, posY+0.6D+ran1, posZ+lookZ-0.6D+0.1D*i+newPos2[0]+ran3, lookX*0.3D*ran2, 0.05D*ran2, lookZ*0.3D*ran2, new int[0]);
 			}
-			break;
+		break;
 		case 36:	//emotion
 			ParticleEmotion partEmo = new ParticleEmotion(world, null,
 					posX, posY, posZ, (float)lookX, (int)lookY, (int)lookZ);
 			Minecraft.getMinecraft().effectRenderer.addEffect(partEmo);
-			break;
+		break;
 		case 37:	//white spray
 			ParticleSpray particleSpray12 = new ParticleSpray(world, 
             		posX, posY, posZ, lookX, lookY, lookZ, 12);
         	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray12);
-			break;
+		break;
 		case 38:	//next waypoint spray
 			ParticleSpray particleSpray13 = new ParticleSpray(world, 
             		posX, posY, posZ, lookX, lookY, lookZ, 13);
         	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray13);
-			break;
+		break;
 		case 39:	//paired chest spray
 			ParticleSpray particleSpray14 = new ParticleSpray(world, 
             		posX, posY, posZ, lookX, lookY, lookZ, 14);
         	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray14);
-			break;
+		break;
 		case 40:	//craning
 			ParticleCraning particleCrane = new ParticleCraning(world, 
             		posX, posY, posZ, lookX, lookY, lookZ, 0);
         	Minecraft.getMinecraft().effectRenderer.addEffect(particleCrane);
-			break;
+		break;
 		case 41:	//cyan spray 2
 			ParticleSpray particleSpray15 = new ParticleSpray(world, 
             		posX, posY, posZ, lookX, lookY, lookZ, 15);
         	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray15);
-			break;
+		break;
+		case 42: 	//double largesmoke for mounts with 14~20 inch cannon: lookX: entity.renderYawOffset, lookY: cannon spacing
+			//計算煙霧位置
+			newPos1 = CalcHelper.rotateXZByAxis(0F, (float)lookY, (float)(lookX * Values.N.DIV_PI_180), 1F);
+			newPos2 = CalcHelper.rotateXZByAxis(0F, (float)-lookY, (float)(lookX * Values.N.DIV_PI_180), 1F);
+			
+			for (int i = 0; i < 12; i++)
+			{
+				ran1 = rand.nextFloat() - 0.5F;
+				ran2 = rand.nextFloat();
+				ran3 = rand.nextFloat();
+				world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, posX+lookX-0.5D+0.05D*i+newPos1[1], posY+0.6D+ran1, posZ+lookZ-0.5D+0.05D*i+newPos1[0], lookX*0.3D*ran2, 0.05D*ran2, lookZ*0.3D*ran2, new int[0]);
+				world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, posX+lookX-0.5D+0.05D*i+newPos2[1], posY+0.6D+ran1, posZ+lookZ-0.5D+0.05D*i+newPos2[0], lookX*0.3D*ran3, 0.05D*ran3, lookZ*0.3D*ran3, new int[0]);
+				world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, posX+lookX-0.5D+0.05D*i+newPos1[1], posY+0.9D+ran1, posZ+lookZ-0.5D+0.05D*i+newPos1[0], lookX*0.3D*ran3, 0.05D*ran3, lookZ*0.3D*ran3, new int[0]);
+				world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, posX+lookX-0.5D+0.05D*i+newPos2[1], posY+0.9D+ran1, posZ+lookZ-0.5D+0.05D*i+newPos2[0], lookX*0.3D*ran2, 0.05D*ran2, lookZ*0.3D*ran2, new int[0]);
+			}
+		break;
+		case 43:	//custom size smoke: parms: lookY: motionY, lookX: scale
+		{
+			for (int i = 0; i < 3; i++)
+			{
+				ParticleSmoke smoke1 = new ParticleSmoke(world, posX, posY+i*0.1D, posZ, 0D, lookY, 0D, (float)lookX);
+				Minecraft.getMinecraft().effectRenderer.addEffect(smoke1);
+			}
+		}
+		break;
 		default:
-			break;
+		break;
 		}
 	}
 	
@@ -448,15 +474,15 @@ public class ParticleHelper
 		case 1:		//氣彈特效 par1:scale par2:type
 			ParticleChi fxChi1 = new ParticleChi(world, ent, (float)par1, (int)par2);
         	Minecraft.getMinecraft().effectRenderer.addEffect(fxChi1);
-			break;
+		break;
 		case 2:		//隊伍圈選特效 par1:scale par2:type
 			ParticleTeam fxTeam = new ParticleTeam(world, ent, (float)par1, (int)par2);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fxTeam);
-			break;
+		break;
 		case 3:
 			ParticleLightning fxLightning = new ParticleLightning(world, ent, (float)par1, (int)par2);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fxLightning);
-			break;
+		break;
 		case 4:		//sticky lightning
 			ParticleStickyLightning light1 = new ParticleStickyLightning(world, ent, (float)par1, (int)par2, (int)par3);
         	Minecraft.getMinecraft().effectRenderer.addEffect(light1);
@@ -466,7 +492,7 @@ public class ParticleHelper
         	Minecraft.getMinecraft().effectRenderer.addEffect(light3);
         	ParticleStickyLightning light4 = new ParticleStickyLightning(world, ent, (float)par1, (int)par2, (int)par3);
         	Minecraft.getMinecraft().effectRenderer.addEffect(light4);
-			break;
+		break;
 		case 5: 	//custom largesmoke: par1:wide, par2:length, par3:height, EntityLivingBase ONLY
 			//計算煙霧位置
 			degYaw = (((EntityLivingBase)ent).renderYawOffset % 360) * Values.N.DIV_PI_180;
@@ -487,7 +513,7 @@ public class ParticleHelper
 				world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, ent.posX+newPos1[1]+ran3, ent.posY+par3+ran1, ent.posZ+newPos1[0]+ran2, newPos3[1]*ran4, 0.05D*ran4, newPos3[0]*ran4, new int[0]);
 				world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, ent.posX+newPos2[1]+ran3, ent.posY+par3+ran2, ent.posZ+newPos2[0]+ran1, newPos3[1]*ran4, 0.05D*ran4, newPos3[0]*ran4, new int[0]);
 			}
-			break;
+		break;
 		case 6:		//lightning sphere + lightning radiation
 			//in
 			for (int i = 0; i < 4; i++)
@@ -501,7 +527,7 @@ public class ParticleHelper
 				ParticleStickyLightning light21 = new ParticleStickyLightning(world, ent, (float)par1, (int)par2, 3);
 	        	Minecraft.getMinecraft().effectRenderer.addEffect(light21);
 			}
-			break;
+		break;
 		case 7:		//vibrate cube
 			//host check
 			if (ent instanceof EntityLivingBase)
@@ -523,7 +549,7 @@ public class ParticleHelper
 				ParticleStickyLightning light21 = new ParticleStickyLightning(world, ent, (float)par1, 40, 3);
 	        	Minecraft.getMinecraft().effectRenderer.addEffect(light21);
 			}
-			break;
+		break;
 		case 8:		//守衛標示線: block類
 			//host check
 			if (ent instanceof EntityLivingBase)
@@ -537,20 +563,39 @@ public class ParticleHelper
 			
 			ParticleLaserNoTexture laser1 = new ParticleLaserNoTexture(world, host, par1, par2, par3, 0.1F, 3);
 			Minecraft.getMinecraft().effectRenderer.addEffect(laser1);
-			break;
+		break;
 		case 9:		//small sticky lightning
 			ParticleStickyLightning light5 = new ParticleStickyLightning(world, ent, (float)par1, (int)par2, (int)par3);
         	Minecraft.getMinecraft().effectRenderer.addEffect(light5);
         	ParticleStickyLightning light6 = new ParticleStickyLightning(world, ent, (float)par1, (int)par2, (int)par3);
         	Minecraft.getMinecraft().effectRenderer.addEffect(light6);
-			break;
+		break;
+		case 10: 	//double largesmoke for mounts: par1: cannon width, par2: cannon height, par3: cannon x pos
+			//煙霧出現位置: 依照身體旋轉
+			newPos1 = CalcHelper.rotateXZByAxis((float)par3, (float)par1, (float)(((EntityLivingBase)ent).renderYawOffset * Values.N.DIV_PI_180), 1F);
+			newPos2 = CalcHelper.rotateXZByAxis((float)par3, (float)-par1, (float)(((EntityLivingBase)ent).renderYawOffset * Values.N.DIV_PI_180), 1F);
+			//煙霧噴射方向: 依照頭部旋轉
+			newPos3 = CalcHelper.rotateXZByAxis(1.5F, 0F, (float)(((EntityLivingBase)ent).rotationYawHead * Values.N.DIV_PI_180), 1F);
+			
+			//實際煙霧位置: 身體旋轉xz位移(達到砲台底座位置)+頭部旋轉xz位移(達到砲管旋轉位置)
+			for (int i = 0; i < 20; i++)
+			{
+				ran1 = rand.nextFloat() - 0.5F;
+				ran2 = rand.nextFloat();
+				ran3 = rand.nextFloat();
+				world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, ent.posX-0.5D+0.05D*i+newPos1[1]+newPos3[1], ent.posY+par2+0.6D+ran1, ent.posZ-0.5D+0.05D*i+newPos1[0]+newPos3[0], newPos3[1]*0.5D*ran2, 0.05D*ran2, newPos3[0]*0.5D*ran2, new int[0]);
+				world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, ent.posX-0.5D+0.05D*i+newPos2[1]+newPos3[1], ent.posY+par2+0.6D+ran1, ent.posZ-0.5D+0.05D*i+newPos2[0]+newPos3[0], newPos3[1]*0.5D*ran3, 0.05D*ran3, newPos3[0]*0.5D*ran3, new int[0]);
+				world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, ent.posX-0.5D+0.05D*i+newPos1[1]+newPos3[1], ent.posY+par2+0.9D+ran1, ent.posZ-0.5D+0.05D*i+newPos1[0]+newPos3[0], newPos3[1]*0.5D*ran3, 0.05D*ran3, newPos3[0]*0.5D*ran3, new int[0]);
+				world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, ent.posX-0.5D+0.05D*i+newPos2[1]+newPos3[1], ent.posY+par2+0.9D+ran1, ent.posZ-0.5D+0.05D*i+newPos2[0]+newPos3[0], newPos3[1]*0.5D*ran2, 0.05D*ran2, newPos3[0]*0.5D*ran2, new int[0]);
+			}
+		break;
 		case 36:	//emotion
 			ParticleEmotion partEmo = new ParticleEmotion(world, ent,
 					ent.posX, ent.posY, ent.posZ, (float)par1, (int)par2, (int)par3);
 			Minecraft.getMinecraft().effectRenderer.addEffect(partEmo);
-			break;
+		break;
 		default:
-			break;
+		break;
 		}
 	}
 	

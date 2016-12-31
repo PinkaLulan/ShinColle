@@ -780,7 +780,7 @@ public class GuiDesk extends GuiContainer
             		break;
             		case 1:  //cake
             			this.shipModel.setShipOutfit(false);
-            			setShipMount();
+            			this.setShipMount();
             		break;
             		case 2:  //cake sneaking
             			this.shipModel.setShipOutfit(true);
@@ -2101,9 +2101,10 @@ public class GuiDesk extends GuiContainer
   	  			{
   	  				//summon mount entity
   	  				this.shipMount = this.shipModel.summonMountEntity();
-
+  	  				this.shipMount.initAttrs(this.shipModel);
+  	  				
   	  	  			//set riding entity
-  	  	  			this.shipModel.startRiding(this.shipMount);
+  	  	  			this.shipModel.startRiding(this.shipMount, true);
   	  			}
   	  		}
   	  		else
@@ -2173,7 +2174,7 @@ public class GuiDesk extends GuiContainer
             	{
             		this.shipMount.ticksExisted++;
             		
-//                	if (this.shipMount.attackTime > 0) this.shipMount.attackTime--; TODO
+                	if (this.shipMount.getAttackTick() > 0) this.shipMount.setAttackTick(this.shipMount.getAttackTick() - 1);
                 	
                 	//set mount moving motion
                 	if (this.shipMount.isSprinting())
@@ -2225,7 +2226,7 @@ public class GuiDesk extends GuiContainer
 				//ship必須先畫才畫mounts
 				GlStateManager.translate(0F, (float)(this.shipMount.getMountedYOffset()), 0F);
 				rm.doRenderEntity(this.shipModel, 0D, 0D, 0D, 0F, partialTick, false);
-				GL11.glTranslatef(0F, -(float)(this.shipMount.getMountedYOffset()), 0F);
+				GlStateManager.translate(0F, -(float)(this.shipMount.getMountedYOffset()), 0F);
 				rm.doRenderEntity(this.shipMount, 0D, 0D, 0D, 0F, partialTick, false);
 			}
 			else

@@ -3,14 +3,16 @@ package com.lulan.shincolle.command;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.lulan.shincolle.network.S2CInputPackets;
+import com.lulan.shincolle.proxy.CommonProxy;
+
+import net.minecraft.command.CommandBase;
+import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
-
-import com.lulan.shincolle.network.S2CInputPackets;
-import com.lulan.shincolle.proxy.CommonProxy;
 
 /** Command: /shipinfo
  * 
@@ -28,65 +30,62 @@ import com.lulan.shincolle.proxy.CommonProxy;
  *    2. check sender mouse over target is ship (client)
  *    3. show ship info
  */
-public class ShipCmdShipInfo extends BasicShipCommand {
+public class ShipCmdShipInfo extends CommandBase
+{
 
 	//command name list
-	private static final List Aliases = new ArrayList() {{
+	private static final ArrayList<String> Aliases = new ArrayList()
+	{{
 		add("shipinfo");
 	}};
 
 	
-    public ShipCmdShipInfo() {   
-    }
+    public ShipCmdShipInfo() {}
 
-    /** command name */
+	/** command name */
 	@Override
-	public String getCommandName() {
-		return "shipinfo";
+	public String getName()
+	{
+		return Aliases.get(0);
 	}
 	
 	/** command alias */
 	@Override
-	public List getCommandAliases() {
+	public List<String> getAliases()
+	{
 		return this.Aliases;
 	}
 
 	/** command guide text */
 	@Override
-	public String getCommandUsage(ICommandSender sender) {
+	public String getUsage(ICommandSender sender)
+	{
 		return "/shipinfo";
 	}
 
 	/** command authority */
 	@Override
-	public boolean canCommandSenderUseCommand(ICommandSender sender) {
-		if(sender instanceof EntityPlayer){
+	public boolean checkPermission(MinecraftServer server, ICommandSender sender)
+    {
+		if (sender instanceof EntityPlayer)
+		{
             return true;
-	    } 
+	    }
 
 		return false;
 	}
-	
-	/** parms auto input method */
-	@Override
-	public List addTabCompletionOptions(ICommandSender sender, String[] cmd) {
-		return null;
-	}
 
-	/** set command string[int] is player name */
-	@Override
-	public boolean isUsernameIndex(String[] cmd, int index) {
-		return false;
-	}
-	
 	/** command process, SERVER SIDE ONLY */
 	@Override
-	public void processCommand(ICommandSender sender, String[] cmd) {
+	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
+	{
 		World world = sender.getEntityWorld();
 		
-		if(!world.isRemote) {
+		if (!world.isRemote)
+		{
 			//check sender is player
-			if(sender instanceof EntityPlayer) {
+			if (sender instanceof EntityPlayer)
+			{
 				//send sender and owner eid to client
 				CommonProxy.channelG.sendTo(new S2CInputPackets(S2CInputPackets.PID.CmdShipInfo, ((EntityPlayer) sender).getEntityId()), (EntityPlayerMP) sender);
 			}//is player
@@ -95,4 +94,3 @@ public class ShipCmdShipInfo extends BasicShipCommand {
   
     
 }
-

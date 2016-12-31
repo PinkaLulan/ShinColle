@@ -46,10 +46,10 @@ public class ParticleTeam extends Particle
     {
         super(world, 0D, 0D, 0D);  
         this.setSize(0F, 0F);
-        this.setPosition(host.posX, host.posY, host.posZ);
         this.prevPosX = host.posX;
         this.prevPosY = host.posY;
         this.prevPosZ = host.posZ;
+        this.setPosition(host.posX, host.posY, host.posZ);
         this.host = host;
         this.height = host.height;
         this.motionX = 0D;
@@ -112,10 +112,10 @@ public class ParticleTeam extends Particle
         	this.particleMaxAge = 30;
         	this.particleAlphaA = 0F;
             this.particleAlphaC = 0.35F;
-            this.setPosition(host.posX, host.posY-0.04D, host.posZ);
             this.prevPosX = host.posX;
             this.prevPosY = host.posY-0.04D;
             this.prevPosZ = host.posZ;
+            this.setPosition(host.posX, host.posY-0.04D, host.posZ);
         break;
         }//end switch
     }

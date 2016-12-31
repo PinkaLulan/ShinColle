@@ -268,7 +268,6 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion
     	GlStateManager.enableBlend();
     	GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
     	GlStateManager.scale(0.5F, 0.5F, 0.5F);
-    	GlStateManager.translate(0F, 1.5F, 0F);
     	
     	//main body
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
@@ -326,7 +325,7 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion
     
     private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
     {
-    	GlStateManager.translate(0F, 1.95F, 0F);
+    	GlStateManager.translate(0F, 1.16F, 0F);
     	setFace(4);
     
     	//頭部
@@ -378,10 +377,12 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion
   		float addk1 = 0;
   		float addk2 = 0;
   		
+  		GlStateManager.translate(0F, 0.5F, 0F);
+  		
   		//水上漂浮
   		if (((Entity) ent).getPassengers().size() == 0 && ((IShipFloating) ent).getShipDepth() > 0)
   		{
-  			GlStateManager.translate(0F, angleX * 0.1F - 0.03F, 0F);
+  			GlStateManager.translate(0F, angleX * 0.05F + 0.025F, 0F);
     	}
   		
   		//leg move parm
@@ -462,6 +463,7 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion
 	    
 	    if (ent.isSneaking())
 	    {	//潛行, 蹲下動作
+	    	GlStateManager.translate(0F, 0.05F, 0F);
 	    	//leg move parm
 	    	addk1 -= 0.52F;
 		  	addk2 -= 1F;
@@ -483,7 +485,7 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion
 	    {  //騎乘動作
 	    	if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 	    	{
-	    		GlStateManager.translate(0F, 1.9F, 0F);
+	    		GlStateManager.translate(0F, 0.65F, 0F);
 		    	//leg move parm
 		    	addk1 = -0.087F;
 			  	addk2 = 0.174F;
@@ -509,7 +511,7 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion
 	    	}
 	    	else
 	    	{
-	    		GlStateManager.translate(0F, 1.5F, 0F);
+	    		GlStateManager.translate(0F, 0.51F, 0F);
 		    	//leg move parm
 		    	addk1 = -1.0472F;
 			  	addk2 = -1.3F;

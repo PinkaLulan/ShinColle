@@ -43,7 +43,7 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall implements ISh
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.DD]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.DD]);
-		this.ModelPos = new float[] {0F, 13F, 0F, 50F};
+		this.ModelPos = new float[] {0F, 25F, 0F, 50F};
 		
 		//set attack type
 		this.StateFlag[ID.F.HaveRingEffect] = true;
@@ -96,7 +96,9 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall implements ISh
   			if (this.ticksExisted % 32 == 0)
   			{
   				//check raiden gattai
+  				this.checkRiderType();
 				this.checkIsRaiden();
+  				this.checkRidingState();
 				
   				//add morale in raiden mode
   				if (this.riderType == 0 && this.isRaiden)

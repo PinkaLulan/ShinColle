@@ -11,8 +11,8 @@ import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
-import com.lulan.shincolle.proxy.ServerProxy.ShipCacheData;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.server.CacheDataShip;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.resources.I18n;
@@ -166,7 +166,7 @@ public class CommandHelper
 	 */
 	public static void processSendShipList(ByteBuf buf, int page)
 	{
-		HashMap<Integer, ShipCacheData> map = ServerProxy.getAllShipWorldData();
+		HashMap<Integer, CacheDataShip> map = ServerProxy.getAllShipWorldData();
 		
 		//force update once
 		ArrayList<BasicEntityShip> ships = new ArrayList<BasicEntityShip>();
@@ -223,7 +223,7 @@ public class CommandHelper
 		int div = 0;
 		page--;	//turn page 1~N to page 0~N-1
 		
-		for (Map.Entry<Integer, ShipCacheData> entry : map.entrySet())
+		for (Map.Entry<Integer, CacheDataShip> entry : map.entrySet())
 		{
 			div = index / numPerPage;
 			index++;
@@ -234,7 +234,7 @@ public class CommandHelper
 				int uid = entry.getKey();
 				int level = -1;
 				String ownerName = null;
-				ShipCacheData data = entry.getValue();
+				CacheDataShip data = entry.getValue();
 				Entity entity = EntityHelper.getEntityByID(data.entityID, data.worldID, false);
 				
 				if (data.entityNBT != null)

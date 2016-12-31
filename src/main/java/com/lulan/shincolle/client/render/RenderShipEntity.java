@@ -26,7 +26,6 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
@@ -35,7 +34,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 
-public class RenderShipEntity extends RenderLiving<EntityLiving>
+public class RenderShipEntity extends RenderBasic
 {
 
 	//textures
@@ -100,14 +99,10 @@ public class RenderShipEntity extends RenderLiving<EntityLiving>
 	//factory
 	public static final FactoryDefault FACTORY_DEFAULT = new FactoryDefault();
 	
-	//parm
-	protected int shipClass = 0;
-	protected boolean initModel = true;
-	
 	
     public RenderShipEntity(RenderManager rm)
     {
-        super(rm, null, 1F);
+        super(rm);
     }
 
     @Override
@@ -195,9 +190,7 @@ public class RenderShipEntity extends RenderLiving<EntityLiving>
 		}//end switch
     }
     
-    /**
-     * set mainModel, shadowSize, scale
-     */
+    @Override
     protected void setModel()
     {
 		switch (this.shipClass)
@@ -312,6 +305,7 @@ public class RenderShipEntity extends RenderLiving<EntityLiving>
     }
     
     /** set shadow size */
+    @Override
     protected void setShadowSize()
     {
 		switch (this.shipClass)
@@ -345,30 +339,6 @@ public class RenderShipEntity extends RenderLiving<EntityLiving>
 			this.shadowSize = 0.7F;
 		break;
 		}//end switch
-    }
-    
-    //get model on rendering
-    @Override
-    public void doRender(EntityLiving entity, double x, double y, double z, float yaw, float parTick)
-    {
-    	//model init
-    	if (this.initModel)
-    	{
-    		this.shipClass = ((IShipCustomTexture) entity).getTextureID();
-    		this.initModel = false;
-    		setModel();
-    	}
-    	
-    	//for invisible model
-    	if (this.mainModel == null) return;
-    	
-    	//set shadow size
-    	setShadowSize();
-    	
-    	//tweak shadow size
-    	if (!entity.isNonBoss()) this.shadowSize += 0.8F;
-    	
-    	super.doRender(entity, x, y, z, yaw, parTick);
     }
     
 	//get leash height
@@ -507,12 +477,6 @@ public class RenderShipEntity extends RenderLiving<EntityLiving>
         }
     }
 	
-	//interpolation
-	protected double interp(double start, double end, double pct)
-	{
-        return start + (end - start) * pct;
-    }
-
     public static class FactoryDefault implements IRenderFactory<EntityLiving>
     {
         @Override
@@ -521,6 +485,6 @@ public class RenderShipEntity extends RenderLiving<EntityLiving>
             return new RenderShipEntity(rm);
         }
     }
-    
+	
     
 }

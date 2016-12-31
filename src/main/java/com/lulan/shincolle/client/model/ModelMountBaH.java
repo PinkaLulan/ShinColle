@@ -420,6 +420,10 @@ public class ModelMountBaH extends ModelBase
     @Override
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
     {
+    	//FIX: head rotation bug while riding
+    	if (f3 <= -180F) { f3 += 360F; }
+    	else if (f3 >= 180F) { f3 -= 360F; }
+    	
     	GlStateManager.pushMatrix();
     	GlStateManager.enableBlend();
     	GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
@@ -462,13 +466,13 @@ public class ModelMountBaH extends ModelBase
   		float addk1 = 0F;
   		float addk2 = 0F;
   		
+  		GlStateManager.translate(0F, 0.2F, 0F);
+  		
   		//水上漂浮
   		if(((IShipFloating)ent).getShipDepth() > 0)
   		{
   			GlStateManager.translate(0F, angleX * 0.025F - 0.025F, 0F);
     	}
-  		
-  		GlStateManager.translate(0F, 0.5F, 0F);
   		
   		//leg move parm
   		addk1 = angleAdd1 - 1.6755F;
@@ -485,8 +489,8 @@ public class ModelMountBaH extends ModelBase
 	  	this.ArmLeft01.rotateAngleX = angleAdd2 * 1.2F - 0.7F;
 	    this.ArmRight01.rotateAngleX = angleAdd1 * 1.2F - 0.7F;
 	    //cannon
-	    float headX = f4 * 0.0174532925F;
-	    float headY = f3 * 0.008F;
+	    float headX = f4 * 0.017F;
+	    float headY = f3 * 0.017F;
 	    this.EquipCannon01.rotateAngleX = headX * 0.85F;
 	    this.EquipCannon02.rotateAngleX = headX * 0.95F;
 	    this.EquipCannon03.rotateAngleX = headX * 0.75F;

@@ -3,7 +3,6 @@ package com.lulan.shincolle.server;
 import java.util.HashMap;
 
 import com.lulan.shincolle.proxy.ServerProxy;
-import com.lulan.shincolle.proxy.ServerProxy.ShipCacheData;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.team.TeamData;
 import com.lulan.shincolle.utility.LogHelper;
@@ -34,7 +33,6 @@ public class ShinWorldData extends WorldSavedData
 	
 	//team data tag name
 	public static final String TAG_PUID = "pUID";
-	public static final String TAG_PDATA = "pData";
 	public static final String TAG_TUID = "tUID";
 	public static final String TAG_TNAME = "tName";
 	public static final String TAG_TLNAME = "tLName";
@@ -70,8 +68,9 @@ public class ShinWorldData extends WorldSavedData
 	@Override
 	public void readFromNBT(NBTTagCompound nbt)
 	{
+		LogHelper.info("INFO: load world data from disk.");
+		
 		nbtData = (NBTTagCompound) nbt.copy();
-		LogHelper.info("DEBUG : world data: load NBT: "+nbtData.toString());
 	}
 
 	/**write server save file
@@ -80,18 +79,19 @@ public class ShinWorldData extends WorldSavedData
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound nbt)
 	{
+		LogHelper.info("INFO: save world data to disk.");
+		
 		/** save common variable */
 		nbt.setInteger(TAG_NEXTPLAYERID, ServerProxy.getNextPlayerID());
 		nbt.setInteger(TAG_NEXTSHIPID, ServerProxy.getNextShipID());
-
 		
-		/** unattackable list */
+		/** save unattackable list */
 	    HashMap<Integer, String> map1 = ServerProxy.getUnattackableTargetClass();
 	    
 	    if (map1 != null)
 	    {
 	    	NBTTagList tagList = new NBTTagList();
-			LogHelper.info("DEBUG : save world data: save unattackable target list: size: "+map1.size());
+			LogHelper.info("INFO: save world data: save unattackable target list: size: "+map1.size());
 			
 			map1.forEach((key, str) ->
 			{
@@ -101,34 +101,27 @@ public class ShinWorldData extends WorldSavedData
 			nbt.setTag(ServerProxy.UNATK_TARGET_CLASS, tagList);
 	    }
 	    
-		/** save player data:  from playerMap to server save file */
+		/** save player custom target data */
 		final NBTTagList list2 = new NBTTagList();
-		HashMap<Integer, int[]> map2 = ServerProxy.getAllPlayerWorldData();
+		HashMap<Integer, HashMap<Integer, String>> map2 = ServerProxy.getAllPlayerTargetClassList();
 		
 		if (map2 != null)
 		{
 			map2.forEach((uid, data) ->
 			{
+			    LogHelper.info("INFO: save world data: save player custom target: uid: "+uid+" size: "+data.size());
 			    NBTTagCompound tag = new NBTTagCompound();
 			    tag.setInteger(TAG_PUID, uid);
-			    tag.setIntArray(TAG_PDATA, data);
-			    LogHelper.debug("DEBUG : save world data: save uid "+uid+" data: "+data[0]);
 			    
-			    //save target class list
-			    HashMap<Integer, String> strMap = ServerProxy.getPlayerTargetClass(uid);
-			    
-			    if (strMap != null)
+			    //save custom target class list
+				NBTTagList tagList = new NBTTagList();
+				
+				data.forEach((key, str) ->
 				{
-					NBTTagList tagList = new NBTTagList();
-					LogHelper.debug("DEBUG : save world data: save id "+uid+" target list size: "+strMap.size());
-					
-					strMap.forEach((key, str) ->
-					{
-						tagList.appendTag(new NBTTagString(str));
-					});
-					
-					tag.setTag(ServerProxy.CUSTOM_TARGET_CLASS, tagList);
-				}
+					tagList.appendTag(new NBTTagString(str));
+				});
+				
+				tag.setTag(ServerProxy.CUSTOM_TARGET_CLASS, tagList);
 				
 			    list2.appendTag(tag);	//將save加入到list中, 不檢查是否有重複的tag, 而是新增一個tag
 			});
@@ -144,6 +137,8 @@ public class ShinWorldData extends WorldSavedData
 		{
 			map3.forEach((uid, tdata) ->
 			{
+				LogHelper.info("INFO: save world data: save team: tid: "+uid);
+				
 			    NBTTagCompound tag = new NBTTagCompound();
 			    tag.setInteger(TAG_TUID, uid);
 			    tag.setString(TAG_TNAME, tdata.getTeamName());
@@ -160,12 +155,14 @@ public class ShinWorldData extends WorldSavedData
 		
 		/** save ship data */
 		final NBTTagList list4 = new NBTTagList();
-		HashMap<Integer, ShipCacheData> map4 = ServerProxy.getAllShipWorldData();
+		HashMap<Integer, CacheDataShip> map4 = ServerProxy.getAllShipWorldData();
 		
 		if (map4 != null)
 		{
 			map4.forEach((uid, sdata) ->
 			{
+				LogHelper.info("INFO: save world data: save ship: sid: "+uid+" cid: "+sdata.classID);
+				
 				NBTTagCompound tag = new NBTTagCompound();
 				tag.setInteger(TAG_ShipUID, uid);
 				tag.setInteger(TAG_ShipEID, sdata.entityID);

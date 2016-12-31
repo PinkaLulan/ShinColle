@@ -14,13 +14,12 @@ import com.lulan.shincolle.reference.Reference;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 
-public class RenderSummonEntity extends RenderLiving<EntityLiving>
+public class RenderSummonEntity extends RenderBasic
 {
 
 	//textures
@@ -42,21 +41,17 @@ public class RenderSummonEntity extends RenderLiving<EntityLiving>
 	//factory
 	public static final FactoryDefault FACTORY_DEFAULT = new FactoryDefault();
 	
-	//parm
-	private int mobID = 0;
-	private boolean hasNoModel = true;
-	
 	
     public RenderSummonEntity(RenderManager rm)
     {
-        super(rm, null, 1F);
+        super(rm);
     }
 
     @Override
     @Nonnull
     protected ResourceLocation getEntityTexture(@Nonnull EntityLiving entity)
     {
-		switch (((IShipCustomTexture) entity).getTextureID())
+		switch (this.shipClass)
 		{
 		case ID.ShipMisc.Airplane:
 			return TEX_Airplane;
@@ -80,65 +75,67 @@ public class RenderSummonEntity extends RenderLiving<EntityLiving>
     /**
      * set mainModel, shadowSize, scale
      */
-    private void setModel(int id)
+    @Override
+    protected void setModel()
     {
-		switch (id)
+		switch (this.shipClass)
 		{
 		case ID.ShipMisc.Airplane:
 			this.mainModel = MD_Airplane;
-			this.shadowSize = 0.5F;
 		break;
 		case ID.ShipMisc.AirplaneT:
 			this.mainModel = MD_AirplaneT;
-			this.shadowSize = 0.7F;
 		break;
 		case ID.ShipMisc.AirplaneTako:
 			this.mainModel = MD_AirplaneTako;
-			this.shadowSize = 0.7F;
 		break;
 		case ID.ShipMisc.AirplaneZero:
 			this.mainModel = MD_AirplaneZero;
-			this.shadowSize = 0.5F;
 		break;
 		case ID.ShipMisc.FloatingFort:
 			this.mainModel = MD_FloatingFort;
-			this.shadowSize = 0.5F;
 		break;
 		case ID.ShipMisc.Rensouhou:
 			this.mainModel = MD_Rensouhou;
-			this.shadowSize = 0.5F;
 		break;
 		case ID.ShipMisc.RensouhouS:
 			this.mainModel = MD_RensouhouS;
-			this.shadowSize = 0.7F;
 		break;
 		default:	//default model
 			this.mainModel = MD_AirplaneTako;
-			this.shadowSize = 0.7F;
 		break;
 		}//end switch
     }
     
-    //get model on rendering
+    /** set shadow size */
     @Override
-    public void doRender(EntityLiving entity, double x, double y, double z, float yaw, float parTick)
+    protected void setShadowSize()
     {
-    	//model init
-    	if (this.hasNoModel)
-    	{
-    		setModel(((IShipCustomTexture) entity).getTextureID());
-    		this.hasNoModel = false;
-    	}
-    	
-    	super.doRender(entity, x, y, z, yaw, parTick);
+		switch (this.shipClass)
+		{
+		case ID.ShipMisc.Airplane:
+		case ID.ShipMisc.AirplaneZero:
+		case ID.ShipMisc.FloatingFort:
+			this.shadowSize = 0.5F;
+		break;
+		case ID.ShipMisc.AirplaneT:
+		case ID.ShipMisc.AirplaneTako:
+		case ID.ShipMisc.Rensouhou:
+		case ID.ShipMisc.RensouhouS:
+			this.shadowSize = 0.7F;
+		break;
+		default:	//default model
+			this.shadowSize = 1F;
+		break;
+		}//end switch
     }
-
+    
     public static class FactoryDefault implements IRenderFactory<EntityLiving>
     {
         @Override
         public Render<? super EntityLiving> createRenderFor(RenderManager rm)
         {
-            return new RenderShipEntity(rm);
+            return new RenderSummonEntity(rm);
         }
     }
     
