@@ -15,6 +15,7 @@ import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.init.ModSounds;
+import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CInputPackets;
 import com.lulan.shincolle.network.S2CSpawnParticle;
@@ -28,6 +29,9 @@ import com.lulan.shincolle.utility.TargetHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAILookIdle;
+import net.minecraft.entity.ai.attributes.IAttribute;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.entity.ai.attributes.RangedAttribute;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -40,7 +44,6 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.BossInfo;
 import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
@@ -49,6 +52,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 {
 	
 	//attributes
+	protected static final IAttribute MAX_HP = (new RangedAttribute((IAttribute)null, "generic.maxHealth", 4D, 0D, 30000D)).setDescription("Max Health").setShouldWatch(true);
 	protected float atk;				//damage
 	protected float atkSpeed;			//attack speed
 	protected float atkRange;			//attack range
@@ -73,6 +77,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	
 	//AI
 	public boolean canDrop;				//drop item flag
+	public boolean initScale;
 	protected ShipPathNavigate shipNavigator;	//水空移動用navigator
 	protected ShipMoveHelper shipMoveHelper;
 	protected Entity atkTarget;
@@ -94,11 +99,24 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
         this.startEmotion = 0;
         this.startEmotion2 = 0;
         this.headTilt = false;
+        this.initScale = false;
         
 		//model display
         this.soundHurtDelay = 0;
         this.stateEmotion = new byte[] {ID.State.EQUIP00, 0, 0, 0, 0, 0, 0};
 	}
+	
+	@Override
+    protected void applyEntityAttributes()
+    {
+        this.getAttributeMap().registerAttribute(MAX_HP);
+        this.getAttributeMap().registerAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE);
+        this.getAttributeMap().registerAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
+        this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ARMOR);
+        this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS);
+        this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
+        this.getAttributeMap().registerAttribute(SharedMonsterAttributes.FOLLOW_RANGE);
+    }
 	
 	//display fire effect
 	@Override
@@ -163,6 +181,11 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		super.readFromNBT(nbt);
 		
         this.scaleLevel = nbt.getByte("scaleLV");
+        
+        //rescale at client side
+        float hp = this.getHealth();
+        this.initAttrs(this.scaleLevel);
+        this.setHealth(hp);
 	}
 	
 	@Override
@@ -204,6 +227,17 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		}
 	}
 	
+	@Override
+    public IAttributeInstance getEntityAttribute(IAttribute attribute)
+    {
+		if (attribute == SharedMonsterAttributes.MAX_HEALTH)
+		{
+			this.getAttributeMap().getAttributeInstance(MAX_HP); 
+		}
+		
+        return this.getAttributeMap().getAttributeInstance(attribute);
+    }
+	
 	//set attributes
 	protected void setAttrsWithScaleLevel()
 	{
@@ -240,10 +274,10 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
         this.movSpeed = (float) attrs[ID.MOV] * mods[4];
         this.atkRange = (float) attrs[ID.HIT] * mods[5];
         
-	    getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(attrs[ID.HP] * mods[0]);
-		getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(this.movSpeed);
-		getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(range);
-		getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(kb);
+        this.getEntityAttribute(MAX_HP).setBaseValue(attrs[ID.HP] * mods[0]);
+        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(this.movSpeed);
+        this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(range);
+        this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(kb);
 		
 		//renew health
 		if (this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
@@ -266,19 +300,28 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		//set size
 		this.setSizeWithScaleLevel();
 		
-		//set moving AI
-		this.shipNavigator = new ShipPathNavigate(this, world);
-		this.shipMoveHelper = new ShipMoveHelper(this, 60F);
-		
-		//set other AI
-		this.setAIList();
-		this.setAITargetList();
+		//set attrs
+		this.setAttrsWithScaleLevel();
 		
 		//set boss info
 		if (this.scaleLevel > 1)
 		{
 			this.setBossInfo();
 		}
+		
+		//for server side, set AI
+		if (!this.world.isRemote)
+		{
+			//set moving AI
+			this.shipNavigator = new ShipPathNavigate(this, world);
+			this.shipMoveHelper = new ShipMoveHelper(this, 60F);
+			
+			//set other AI
+			this.setAIList();
+			this.setAITargetList();
+		}
+		
+		this.initScale = true;
 	}
 	
 	//平常音效
@@ -713,6 +756,30 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		EntityHelper.moveEntityWithHeading(this, strafe, forward);
     }
 	
+	/** send sync packet:
+	 *  type: 0:sync scale
+	 *  send all: send packet to all around player
+	 */
+	public void sendSyncPacket(int type)
+	{
+		if (!world.isRemote)
+		{
+			byte pid = 0;
+			
+			switch (type)
+			{
+			case 0:
+				pid = S2CEntitySync.PID.SyncHostile_Scale;
+			break;
+			default:
+				return;
+			}
+			
+			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+			CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this, pid), point);
+		}
+	}
+	
 	@Override
 	public void onUpdate()
 	{
@@ -735,18 +802,36 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		if (this.attackTime > 0) this.attackTime--;
 		
 		//client side
-		if (this.world.isRemote && EntityHelper.checkEntityIsInLiquid(this))
+		if (this.world.isRemote)
 		{
-			//有移動時, 產生水花特效
-			//(注意此entity因為設為非高速更新, client端不會更新motionX等數值, 需自行計算)
-			double motX = this.posX - this.prevPosX;
-			double motZ = this.posZ - this.prevPosZ;
-			double parH = this.posY - (int)this.posY;
-			
-			if (motX != 0 || motZ != 0)
+			if (!this.initScale)
 			{
-				ParticleHelper.spawnAttackParticleAt(this.posX + motX*1.5D, this.posY, this.posZ + motZ*1.5D, 
-						-motX*0.5D, 0D, -motZ*0.5D, (byte)15);
+				//send scale init packet request
+				CommonProxy.channelG.sendToServer(new C2SInputPackets(C2SInputPackets.PID.RequestSync_Model, this.getEntityId(), this.world.provider.getDimension()));
+			}
+			
+			if (EntityHelper.checkEntityIsInLiquid(this))
+			{
+				//有移動時, 產生水花特效
+				//(注意此entity因為設為非高速更新, client端不會更新motionX等數值, 需自行計算)
+				double motX = this.posX - this.prevPosX;
+				double motZ = this.posZ - this.prevPosZ;
+				double parH = this.posY - (int)this.posY;
+				
+				if (motX != 0 || motZ != 0)
+				{
+					ParticleHelper.spawnAttackParticleAt(this.posX + motX*1.5D, this.posY, this.posZ + motZ*1.5D, 
+							-motX*0.5D, 0D, -motZ*0.5D, (byte)15);
+				}
+			}
+		}//end client side
+		//server side
+		else
+		{
+			//sync scale level on after entity construction
+			if (this.ticksExisted == 1)
+			{
+				this.sendSyncPacket(0);
 			}
 		}
 	}

@@ -1,4 +1,4 @@
-﻿F# Keys
+# Keys
 keys.shincolle.category=Shin Colle
 keys.shincolle.repair=修复
 
@@ -145,15 +145,15 @@ entity.shincolle.EntityAirplaneZero.name=零式舰战21型
 entity.shincolle.EntityAirplaneZeroMob.name=零式舰战21型
 entity.shincolle.EntityBattleshipHime.name=战列舰栖姬
 entity.shincolle.EntityBattleshipNGT.name=战列舰长门
-entity.shincolle.EntityBattleshipNGTBoss.name=战列舰长门
+entity.shincolle.EntityBattleshipNGTMob.name=战列舰长门
 entity.shincolle.EntityBattleshipRe.name=航空战列舰レ级
 entity.shincolle.EntityBattleshipTa.name=战列舰タ级
 entity.shincolle.EntityBattleshipYMT.name=战列舰大和
-entity.shincolle.EntityBattleshipYMTBoss.name=战列舰大和
+entity.shincolle.EntityBattleshipYMTMob.name=战列舰大和
 entity.shincolle.EntityCarrierAkagi.name=空母赤城
-entity.shincolle.EntityCarrierAkagiBoss.name=空母赤城
+entity.shincolle.EntityCarrierAkagiMob.name=空母赤城
 entity.shincolle.EntityCarrierKaga.name=空母加贺
-entity.shincolle.EntityCarrierKagaBoss.name=空母加贺
+entity.shincolle.EntityCarrierKagaMob.name=空母加贺
 entity.shincolle.EntityCarrierWD.name=空母水鬼
 entity.shincolle.EntityCarrierWo.name=空母ヲ级
 entity.shincolle.EntityDestroyerHa.name=驱逐ハ级
@@ -161,7 +161,7 @@ entity.shincolle.EntityDestroyerI.name=驱逐イ级
 entity.shincolle.EntityDestroyerNi.name=驱逐ニ级
 entity.shincolle.EntityDestroyerRo.name=驱逐ロ级
 entity.shincolle.EntityDestroyerShimakaze.name=驱逐舰岛风
-entity.shincolle.EntityDestroyerShimakazeBoss.name=驱逐舰岛风
+entity.shincolle.EntityDestroyerShimakazeMob.name=驱逐舰岛风
 entity.shincolle.EntityFloatingFort.name=浮游要塞
 entity.shincolle.EntityHarbourHime.name=港湾栖姬
 entity.shincolle.EntityHeavyCruiserNe.name=重巡ネ级
@@ -173,7 +173,7 @@ entity.shincolle.EntityMountHbH.name=港湾基地
 entity.shincolle.EntityMountSeat2.name=座位2
 entity.shincolle.EntityNorthernHime.name=北方栖姬
 entity.shincolle.EntityRensouhou.name=连装炮
-entity.shincolle.EntityRensouhouBoss.name=连装炮
+entity.shincolle.EntityRensouhouMob.name=连装炮
 entity.shincolle.EntityRensouhouS.name=深海连装炮
 entity.shincolle.EntitySubmRo500.name=潜水艇吕500
 entity.shincolle.EntitySubmRo500Mob.name=潜水艇吕500

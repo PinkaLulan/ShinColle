@@ -14,6 +14,7 @@ public class ShipModelRenderer extends ModelRenderer
 	public boolean tweakModel;
 	public float scale2x, scale2y, scale2z, trans2x, trans2y, trans2z, rotat2x, rotat2y, rotat2z;
 
+	
 	public ShipModelRenderer(ModelBase model)
 	{
 		super(model);

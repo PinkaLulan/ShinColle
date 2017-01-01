@@ -62,7 +62,6 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion
     public ModelRenderer GlowNeckCloth;
     public ModelRenderer GlowHead;
     
-    private int startEmo2 = 0;
 
     public ModelBattleshipTa()
     {

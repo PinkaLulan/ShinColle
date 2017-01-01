@@ -1,7 +1,5 @@
 package com.lulan.shincolle.client.model;
 
-import com.lulan.shincolle.utility.LogHelper;
-
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -31,6 +29,7 @@ public class ModelTakoyaki extends ModelBase
     public ModelRenderer Tongue;
     public ModelRenderer GlowBodyMain;
 
+    
     public ModelTakoyaki()
     {
         this.textureWidth = 128;

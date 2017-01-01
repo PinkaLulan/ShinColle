@@ -37,6 +37,7 @@ public class ModelRensouhouS extends ModelBase
     public ModelRenderer GlowTailJaw1;
     public ModelRenderer GlowTailHead2;
 
+    
     public ModelRensouhouS()
     {
         this.textureWidth = 64;

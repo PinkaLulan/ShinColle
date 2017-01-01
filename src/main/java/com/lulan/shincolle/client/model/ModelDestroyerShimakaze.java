@@ -1,13 +1,10 @@
 package com.lulan.shincolle.client.model;
 
-import java.util.Random;
-
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
-import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
@@ -69,11 +66,10 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion
     public ModelRenderer GlowNeckCloth;
     public ModelRenderer GlowHead;
     
-    private Random rand = new Random();
-    private int startEmo2 = 0;
     private float scale;
     private float offsetY;
 
+    
     public ModelDestroyerShimakaze()
     {
         this.textureWidth = 128;

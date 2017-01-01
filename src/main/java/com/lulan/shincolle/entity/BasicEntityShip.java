@@ -1660,6 +1660,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	 */
     public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, @Nullable ItemStack stack, EnumHand hand)
     {
+    	//禁用副手
     	if (hand == EnumHand.OFF_HAND) return EnumActionResult.FAIL;
     	
     	//server side
@@ -1750,6 +1751,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 					}
 					else
 					{
+						sendSyncPacket(S2CEntitySync.PID.SyncEntity_Rot, true);
 						this.setEntitySit(!this.isSitting());
 						this.setRiderAndMountSit();
 					}
@@ -2459,7 +2461,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	if (ticksExisted % 8 == 0)
         	{
         		//init riding rotation
-        		if (this.ticksExisted == 16)
+        		if (this.ticksExisted == 32 && this.getPassengers().size() > 0)
         		{
         			sendSyncPacket(S2CEntitySync.PID.SyncEntity_Rot, true);
         		}

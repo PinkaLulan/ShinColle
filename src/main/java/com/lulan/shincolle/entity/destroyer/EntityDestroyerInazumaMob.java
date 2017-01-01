@@ -47,18 +47,18 @@ public class EntityDestroyerInazumaMob extends BasicEntityShipHostile implements
 		{
 		case 3:
 			this.setSize(1.4F, 6F);
-			this.smokeX = -0.42F;
-			this.smokeY = 1.4F;
+			this.smokeX = -1.65F;
+			this.smokeY = 5.3F;
 		break;
 		case 2:
 			this.setSize(1.2F, 4F);
-			this.smokeX = -0.42F;
-			this.smokeY = 1.4F;
+			this.smokeX = -1.1F;
+			this.smokeY = 3.55F;
 		break;
 		case 1:
 			this.setSize(0.85F, 2.5F);
-			this.smokeX = -0.42F;
-			this.smokeY = 1.4F;
+			this.smokeX = -0.68F;
+			this.smokeY = 2.2F;
 		break;
 		default:
 			this.setSize(0.6F, 1.5F);

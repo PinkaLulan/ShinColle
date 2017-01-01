@@ -9,6 +9,7 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import net.minecraft.item.ItemStack;
@@ -47,18 +48,18 @@ public class EntityDestroyerAkatsukiMob extends BasicEntityShipHostile implement
 		{
 		case 3:
 			this.setSize(1.4F, 6F);
-			this.smokeX = -0.42F;
-			this.smokeY = 1.4F;
+			this.smokeX = -1.65F;
+			this.smokeY = 5.3F;
 		break;
 		case 2:
 			this.setSize(1.2F, 4F);
-			this.smokeX = -0.42F;
-			this.smokeY = 1.4F;
+			this.smokeX = -1.1F;
+			this.smokeY = 3.55F;
 		break;
 		case 1:
 			this.setSize(0.85F, 2.5F);
-			this.smokeX = -0.42F;
-			this.smokeY = 1.4F;
+			this.smokeX = -0.68F;
+			this.smokeY = 2.2F;
 		break;
 		default:
 			this.setSize(0.6F, 1.5F);
@@ -120,7 +121,7 @@ public class EntityDestroyerAkatsukiMob extends BasicEntityShipHostile implement
   		{
   			if (this.ticksExisted % 4 == 0)
   			{
-  				if (this.getStateEmotion(ID.S.State) > ID.State.EQUIP01)
+  				if (this.getStateEmotion(ID.S.State) >= ID.State.EQUIP01)
   				{
   					//計算煙霧位置, 生成裝備冒煙特效
   	  				float[] partPos = CalcHelper.rotateXZByAxis(this.smokeX, 0F, (this.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);

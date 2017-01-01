@@ -46,6 +46,7 @@ public class ModelDestroyerHa extends ModelBase implements IModelEmotion
     public ModelRenderer GlowNeckBack;
     public ModelRenderer GlowHead;
 
+    
     public ModelDestroyerHa()
     {
         this.textureWidth = 128;

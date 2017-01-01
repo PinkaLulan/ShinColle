@@ -1,7 +1,5 @@
 package com.lulan.shincolle.client.model;
 
-import java.util.Random;
-
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.reference.ID;
@@ -67,8 +65,6 @@ public class ModelMountAfH extends ModelBase
     public ModelRenderer GlowEquipBaseR;
     public ModelRenderer GlowEquipR01;
 
-    private Random rand = new Random();
-    private int startEmo2 = 0;
     
     public ModelMountAfH()
     {

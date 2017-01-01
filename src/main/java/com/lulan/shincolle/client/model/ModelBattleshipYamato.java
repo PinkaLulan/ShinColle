@@ -1,7 +1,5 @@
 package com.lulan.shincolle.client.model;
 
-import java.util.Random;
-
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.reference.ID;
@@ -202,8 +200,6 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion
     public ModelRenderer GlowNeck;
     public ModelRenderer GlowHead;
 
-    private Random rand = new Random();
-    private int startEmo2 = 0;
     private float scale;
     private float offsetY;
     

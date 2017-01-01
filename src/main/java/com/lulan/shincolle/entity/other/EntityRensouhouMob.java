@@ -27,7 +27,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
-public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack, IShipCustomTexture
+public class EntityRensouhouMob extends EntityMob implements IShipCannonAttack, IShipCustomTexture
 {
 	
 	protected IShipAttackBase host;  		//host target
@@ -57,7 +57,7 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack,
 	protected boolean headTilt;
 
 	
-    public EntityRensouhouBoss(World world)
+    public EntityRensouhouMob(World world)
     {
 		super(world);
 		this.setSize(0.9F, 1.7F);

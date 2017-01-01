@@ -103,7 +103,6 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion
     public ModelRenderer GlowTailHead1;
     public ModelRenderer GlowTailJaw1;
 
-    private int startEmo2 = 0;
     
     public ModelBattleshipRe()
     {

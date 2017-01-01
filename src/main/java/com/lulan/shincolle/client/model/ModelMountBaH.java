@@ -88,7 +88,7 @@ public class ModelMountBaH extends ModelBase
     public ModelRenderer GlowEquipR03;
 
     private Random rand = new Random();
-    private int startEmo2 = 0;
+    
     
     public ModelMountBaH()
     {

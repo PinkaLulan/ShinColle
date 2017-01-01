@@ -21,13 +21,13 @@ import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
-public class EntityBattleshipYMTBoss extends BasicEntityShipHostile
+public class EntityBattleshipYMTMob extends BasicEntityShipHostile
 {
 	
 	private float smokeX, smokeY;
 	
 
-	public EntityBattleshipYMTBoss(World world)
+	public EntityBattleshipYMTMob(World world)
 	{
 		super(world);
 		

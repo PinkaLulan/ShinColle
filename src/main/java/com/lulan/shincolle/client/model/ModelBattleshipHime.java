@@ -1,7 +1,5 @@
 package com.lulan.shincolle.client.model;
 
-import java.util.Random;
-
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.IShipFloating;
@@ -66,8 +64,6 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion
     public ModelRenderer GlowNeck;
     public ModelRenderer GlowHead;
     
-    private Random rand = new Random();
-    private int startEmo2 = 0;
 
     public ModelBattleshipHime()
     {

@@ -20,7 +20,8 @@ public class ModelSmallShipyard extends ModelBase
 	private ModelRenderer Shape9;
 	private ModelRenderer Shape10;
 	private ModelRenderer Shape11;
-  
+	
+	
 	public ModelSmallShipyard()
 	{
 		textureWidth = 64;

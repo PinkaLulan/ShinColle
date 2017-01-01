@@ -3,7 +3,7 @@ package com.lulan.shincolle.entity.destroyer;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
-import com.lulan.shincolle.entity.other.EntityRensouhouBoss;
+import com.lulan.shincolle.entity.other.EntityRensouhouMob;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.init.ModSounds;
@@ -19,13 +19,13 @@ import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
-public class EntityDestroyerShimakazeBoss extends BasicEntityShipHostile
+public class EntityDestroyerShimakazeMob extends BasicEntityShipHostile
 {
 
 	public int numRensouhou;
 	
 	
-	public EntityDestroyerShimakazeBoss(World world)
+	public EntityDestroyerShimakazeMob(World world)
 	{
 		super(world);
 		
@@ -122,7 +122,7 @@ public class EntityDestroyerShimakazeBoss extends BasicEntityShipHostile
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
   		
 		//spawn rensouhou
-    	EntityRensouhouBoss rensoho = new EntityRensouhouBoss(this.world);
+    	EntityRensouhouMob rensoho = new EntityRensouhouMob(this.world);
     	rensoho.initAttrs(this, target);
         this.world.spawnEntity(rensoho);
         

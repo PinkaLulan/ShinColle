@@ -1,10 +1,7 @@
 package com.lulan.shincolle.client.model;
 
-import java.util.Random;
-
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.IShipFloating;
-import com.lulan.shincolle.entity.IShipRiderType;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
@@ -123,9 +120,10 @@ public class ModelDestroyerAkatsuki extends ModelBase implements IModelEmotionAd
     public ModelRenderer GlowBodyMain;
     public ModelRenderer GlowHead;
     
-    private Random rand = new Random();
-    private int startEmo2 = 0;
+    private float scale;
+    private float offsetY;
 
+    
     public ModelDestroyerAkatsuki()
     {
         this.textureWidth = 128;
@@ -591,11 +589,31 @@ public class ModelDestroyerAkatsuki extends ModelBase implements IModelEmotionAd
     	if (f3 <= -180F) { f3 += 360F; }
     	else if (f3 >= 180F) { f3 -= 360F; }
     	
+    	switch (((IShipEmotion)entity).getScaleLevel())
+    	{
+    	case 3:
+    		scale = 1.6F;
+        	offsetY = -0.53F;
+		break;
+    	case 2:
+    		scale = 1.05F;
+        	offsetY = -0.05F;
+		break;
+    	case 1:
+    		scale = 0.65F;
+        	offsetY = 0.83F;
+		break;
+    	default:
+    		scale = 0.4F;
+        	offsetY = 2.25F;
+		break;
+    	}
+    	
     	GlStateManager.pushMatrix();
     	GlStateManager.enableBlend();
     	GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
-    	GlStateManager.scale(0.4F, 0.4F, 0.4F);
-    	GlStateManager.translate(0F, 2.25F, 0F);
+    	GlStateManager.scale(scale, scale, scale);
+    	GlStateManager.translate(0F, offsetY, 0F);
     	
     	//main body
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
@@ -832,6 +850,7 @@ public class ModelDestroyerAkatsuki extends ModelBase implements IModelEmotionAd
 	    
 	    if (ent.getIsSneaking())
 	    {	//潛行, 蹲下動作
+	    	GlStateManager.translate(0F, 0.05F, 0F);
 	    	//Body
 	    	this.Head.rotateAngleX -= 1.0472F;
 		  	this.BodyMain.rotateAngleX = 1.0472F;

@@ -1,7 +1,5 @@
 package com.lulan.shincolle.client.model;
 
-import java.util.Random;
-
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.utility.EmotionHelper;
 
@@ -39,11 +37,10 @@ public class ModelRensouhou extends ModelBase implements IModelEmotion
     public ModelRenderer CannonL02;
     public ModelRenderer CannonR02;
     
-    private int startEmo2 = 0;
-    private Random rand = new Random();
     private float scale;
     private float offsetY;
 
+    
     public ModelRensouhou()
     {
         this.textureWidth = 128;

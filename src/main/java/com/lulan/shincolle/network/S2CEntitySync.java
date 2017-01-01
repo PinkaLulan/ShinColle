@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.entity.other.EntityProjectileBeam;
@@ -48,7 +49,7 @@ public class S2CEntitySync implements IMessage
 		public static final byte SyncShip_Minor = 3;
 		public static final byte SyncEntity_Emo = 4;
 		public static final byte SyncShip_Riders = 5;
-		public static final byte NO_USE_0 = 6;
+		public static final byte SyncHostile_Scale = 6;
 		public static final byte NO_USE_1 = 7;
 		public static final byte SyncProjectile = 8;
 		public static final byte SyncEntity_PosRot = 9;
@@ -131,6 +132,9 @@ public class S2CEntitySync implements IMessage
 		break;
 		case PID.SyncShip_ID:
 			this.valueInt1 = PacketHelper.readIntArray(buf, 3);
+		break;
+		case PID.SyncHostile_Scale:
+			this.valueInt = buf.readInt();
 		break;
 		case PID.SyncShip_Unbuff:	//sync unbuff attr
 			this.valueFloat1 = PacketHelper.readFloatArray(buf, 9+7);
@@ -363,6 +367,13 @@ public class S2CEntitySync implements IMessage
 			buf.writeInt(entity.getStateMinor(ID.M.PlayerEID));
 		}
 		break;
+		case PID.SyncHostile_Scale:			//sync hostile ship level
+		{
+			BasicEntityShipHostile entity = (BasicEntityShipHostile) this.entity;
+			
+			buf.writeInt(entity.getScaleLevel());
+		}
+		break;
 		case PID.SyncShip_Unbuff:	//sync unbuff data
 		{
 			BasicEntityShip entity = (BasicEntityShip) this.entity;
@@ -508,6 +519,7 @@ public class S2CEntitySync implements IMessage
 		case PID.SyncShip_ID:
 		case PID.SyncShip_Unbuff:
 		case PID.SyncShip_Timer:
+		case PID.SyncHostile_Scale:
 		case PID.SyncEntity_Emo:
 			if (entity instanceof BasicEntityShip ||
 				entity instanceof IShipEmotion ||
@@ -764,6 +776,13 @@ public class S2CEntitySync implements IMessage
 				ship.setStateTimer(ID.T.CraneTime, msg.valueInt);
 			}
 			break;
+			case PID.SyncHostile_Scale:
+			{
+				BasicEntityShipHostile mob = (BasicEntityShipHostile) entity;
+				
+				mob.initAttrs((byte) msg.valueInt);
+			}
+			break;
 			case PID.SyncEntity_Emo: //IShipEmotion sync emtion
 			{
 				IShipEmotion entity2 = (IShipEmotion) entity;
@@ -858,6 +877,7 @@ public class S2CEntitySync implements IMessage
 					{
 						rider.rotationYaw = msg.valueFloat1[0];
 						rider.rotationPitch = msg.valueFloat1[2];
+						if (rider instanceof EntityLivingBase) ((EntityLivingBase) rider).rotationYawHead = msg.valueFloat1[0];
 					}
 				}
 			}
