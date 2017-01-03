@@ -1,8 +1,11 @@
 package com.lulan.shincolle.entity.other;
 
+import com.lulan.shincolle.ai.path.ShipMoveHelper;
+import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.entity.BasicEntityAirplane;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipAircraftAttack;
+import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
@@ -25,10 +28,11 @@ public class EntityAirplane extends BasicEntityAirplane
 	}
 	
 	@Override
-	public void initAttrs(IShipAircraftAttack host, Entity target, double launchPos)
+	public void initAttrs(IShipAttackBase host, Entity target, int scaleLevel, float...par2)
 	{
         this.host = host;
         this.atkTarget = target;
+        this.setScaleLevel(scaleLevel);
         
         if (host instanceof BasicEntityShip)
         {
@@ -39,33 +43,40 @@ public class EntityAirplane extends BasicEntityAirplane
     		
             //basic attr
             this.atk = ship.getAttackBaseDamage(3, target);
-            this.def = ship.getStateFinal(ID.DEF) * 0.5F;
             this.atkSpeed = ship.getStateFinal(ID.SPD);
+            this.atkRange = 6F;
+            this.defValue = ship.getStateFinal(ID.DEF) * 0.5F;
             this.movSpeed = ship.getStateFinal(ID.MOV) * 0.2F + 0.3F;
             
             //設定發射位置
+            float launchPos = (float) ship.posY;
+        	if (par2 != null) launchPos = par2[0];
+        	
             this.posX = ship.posX;
             this.posY = launchPos;
             this.posZ = ship.posZ;
+            this.prevPosX = this.posX;
+        	this.prevPosY = this.posY;
+        	this.prevPosZ = this.posZ;
             this.setPosition(this.posX, this.posY, this.posZ);
             
             double mhp = ship.getLevel() + ship.getStateFinal(ID.HP)*0.1D;
             
-    	    getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(mhp);
+    	    getEntityAttribute(MAX_HP).setBaseValue(mhp);
     		getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(this.movSpeed);
-    		getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64D);		//此為找目標, 路徑的範圍
+    		getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64D);
     		getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(1D);
     		if (this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
             
             //AI flag
             this.numAmmoLight = 9;
             this.numAmmoHeavy = 0;
-            this.useAmmoLight = true;
-            this.useAmmoHeavy = false;
             this.backHome = false;
             this.canFindTarget = true;
     				
     		//設定AI
+    		this.shipNavigator = new ShipPathNavigate(this);
+    		this.shipMoveHelper = new ShipMoveHelper(this, 36F);
     		this.setAIList();
         }
         //not ship
@@ -104,7 +115,7 @@ public class EntityAirplane extends BasicEntityAirplane
 		if (atk > this.getMaxHealth() * 0.5F && this.getRNG().nextInt(3) == 0)
 		{
 			//spawn miss particle
-			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
+			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
 			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 34, false), point);
 			return false;
 		}
@@ -122,6 +133,18 @@ public class EntityAirplane extends BasicEntityAirplane
 	public int getTextureID()
 	{
 		return ID.ShipMisc.Airplane;
+	}
+	
+	@Override
+	public boolean useAmmoLight()
+	{
+		return true;
+	}
+
+	@Override
+	public boolean useAmmoHeavy()
+	{
+		return false;
 	}
 	
 	

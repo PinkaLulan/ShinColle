@@ -2,6 +2,7 @@ package com.lulan.shincolle.client.model;
 
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.IShipFloating;
+import com.lulan.shincolle.handler.EventHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
@@ -1058,16 +1059,16 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion
     	switch (((IShipEmotion)entity).getScaleLevel())
     	{
     	case 3:
-    		scale = 1.8F;
-        	offsetY = -2.1F;
+    		scale = 1.8F + EventHandler.field2;
+        	offsetY = -2.1F + EventHandler.field1;
 		break;
     	case 2:
 		break;
     	case 1:
 		break;
     	default:
-    		scale = 0.5F;
-        	offsetY = 1.5F;
+    		scale = 0.5F + EventHandler.field2;
+        	offsetY = 1.5F + EventHandler.field1;
 		break;
     	}
     	
@@ -1678,6 +1679,23 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion
   		break;
   		}
   	}
+  	
+	@Override
+	public int getFieldCount()
+	{
+		return 0;
+	}
+
+	@Override
+	public void setField(int id, float value)
+	{
+	}
+
+	@Override
+	public float getField(int id)
+	{
+		return 0;
+	}
    
     
 }

@@ -1377,5 +1377,22 @@ public class ModelDestroyerAkatsuki extends ModelBase implements IModelEmotionAd
 	@Override
 	public void setFaceHappy(IShipEmotion ent) {}
   	
+	@Override
+	public int getFieldCount()
+	{
+		return 0;
+	}
+
+	@Override
+	public void setField(int id, float value)
+	{
+	}
+
+	@Override
+	public float getField(int id)
+	{
+		return 0;
+	}
+	
   	
 }

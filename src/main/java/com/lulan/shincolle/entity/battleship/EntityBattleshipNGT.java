@@ -16,7 +16,6 @@ import com.lulan.shincolle.utility.TargetHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -143,10 +142,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
   		setCombatTick(this.ticksExisted);
 		
 		//heavy ammo--
-        if (!decrAmmoNum(1, this.getAmmoConsumption()))
-        {
-        	return false;
-        }
+        if (!decrAmmoNum(1, this.getAmmoConsumption())) return false;
 	
 		//play cannon fire sound at attacker
 		int atkPhase = getStateEmotion(ID.S.Phase);
@@ -199,23 +195,17 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
         		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 11, false), point);
             }
             
-            //vs player = 25% dmg
-      		if (target instanceof EntityPlayer)
-      		{
-      			atk1 *= 0.25F;
-      			atk2 *= 0.25F;
-      			
-      			//check friendly fire
-        		if (!ConfigHandler.friendlyFire)
-        		{
-        			atk1 = 0F;
-        			atk2 = 0F;
-        		}
-        		else if (atk2 > 40F)
-        		{
-        			atk2 = 40F;		//TNT
-        		}
-      		}
+       		//若攻擊到玩家, 限制最大傷害
+        	if (target instanceof EntityPlayer)
+        	{
+        		atk1 *= 0.25F;
+        		atk2 *= 0.5F;
+        		if (atk1 > 59F) atk1 = 59F;	//same with TNT
+        		if (atk2 > 59F) atk2 = 59F;	//same with TNT
+        	}
+        	
+        	//check friendly fire
+    		if (!TeamHelper.doFriendlyFire(this, target)) atk1 = 0F;
       		
       		//對本體造成atk1傷害
       		isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this), atk1);
@@ -229,9 +219,9 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
   			this.setPosition(posX, posY, posZ);
       		
       		//對範圍造成atk2傷害
-            EntityLivingBase hitEntity = null;
+            Entity hitEntity = null;
             AxisAlignedBB impactBox = this.getEntityBoundingBox().expand(3.5D, 3.5D, 3.5D); 
-            List hitList = this.world.getEntitiesWithinAABB(EntityLivingBase.class, impactBox);
+            List<Entity> hitList = this.world.getEntitiesWithinAABB(Entity.class, impactBox);
             float atkTemp = atk2;
             
             //搜尋list, 找出第一個可以判定的目標, 即傳給onImpact
@@ -240,11 +230,17 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
                 for (int i = 0; i < hitList.size(); ++i)
                 {
                 	atkTemp = atk2;
-                	hitEntity = (EntityLivingBase) hitList.get(i);
+                	hitEntity = hitList.get(i);
                 	
                 	//目標不能是自己 or 主人
                 	if (hitEntity != this && !TargetHelper.checkUnattackTargetList(hitEntity) && hitEntity.canBeCollidedWith())
                 	{
+                		//若攻擊到同陣營entity (ex: owner), 則傷害設為0 (但是依然觸發擊飛特效)
+                		if (TeamHelper.checkSameOwner(this, hitEntity))
+                		{
+                			atkTemp = 0F;
+                    	}
+                		
                 		//calc miss and cri
                 		if (this.rand.nextFloat() < missChance)
                 		{	//MISS
@@ -255,33 +251,15 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
                     		atkTemp *= 1.5F;
                         }
                 		
-                		//若攻擊到同陣營entity (ex: owner), 則傷害設為0 (但是依然觸發擊飛特效)
-                		if (TeamHelper.checkSameOwner(this, hitEntity))
-                		{
-                			atkTemp = 0F;
-                    	}
-                		
                 		//若攻擊到玩家, 限制最大傷害
                     	if (hitEntity instanceof EntityPlayer)
                     	{
                     		atkTemp *= 0.25F;
-                    		
-                    		//check friendly fire
-                      		if (!ConfigHandler.friendlyFire)
-                      		{
-                      			atkTemp = 0F;
-                      		}
-                      		else if (atkTemp > 59F)
-                      		{
-                      			atkTemp = 59F;	//same with TNT
-                      		}
+                    		if (atkTemp > 59F) atkTemp = 59F;	//same with TNT
                     	}
                     	
                     	//check friendly fire
-                		if (!TeamHelper.doFriendlyFire(this, hitEntity))
-                		{
-                			atkTemp = 0F;
-                		}
+                		if (!TeamHelper.doFriendlyFire(this, hitEntity)) atkTemp = 0F;
 
                 		//attack
                 	    hitEntity.attackEntityFrom(DamageSource.causeMobDamage(this), atkTemp);
@@ -309,10 +287,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
         //show emotes
       	applyEmotesReaction(3);
       	
-      	if (ConfigHandler.canFlare)
-      	{
-			flareTarget(target);
-		}
+      	if (ConfigHandler.canFlare) this.flareTarget(target);
       	
         return isTargetHurt;
 	}

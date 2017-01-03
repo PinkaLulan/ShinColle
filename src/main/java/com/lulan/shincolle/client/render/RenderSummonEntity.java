@@ -39,7 +39,7 @@ public class RenderSummonEntity extends RenderBasic
 	private static ModelBase MD_RensouhouS = new ModelRensouhouS();
 
 	//factory
-	public static final FactoryDefault FACTORY_DEFAULT = new FactoryDefault();
+	public static final FactoryDefault FACTORY_SUMMON = new FactoryDefault();
 	
 	
     public RenderSummonEntity(RenderManager rm)

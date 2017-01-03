@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.lulan.shincolle.entity.IShipAttributes;
+import com.lulan.shincolle.entity.IShipEquipAttrs;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
@@ -157,7 +157,7 @@ public class CalcHelper
      *  dmg: attack damage
      *  type: 0:light 1:heavy 2:nagato 3:yamato
      */
-    public static float calcDamageBySpecialEffect(IShipAttributes host, Entity target, float dmg, int type)
+    public static float calcDamageBySpecialEffect(IShipEquipAttrs host, Entity target, float dmg, int type)
     {
     	float newDmg = dmg;
     	float modEffect = 1F;
@@ -181,11 +181,15 @@ public class CalcHelper
   		
   		if (targettype == 1)  //air mob
   		{
-  			newDmg = newDmg + host.getEffectEquip(ID.EF_AA) * modEffect;
+  			newDmg = (newDmg + host.getEffectEquip(ID.EF_AA)) * modEffect;
   		}
   		else if (targettype == 2)  //water mob
   		{
-  			newDmg = newDmg + host.getEffectEquip(ID.EF_ASM) * modEffect;
+  			newDmg = (newDmg + host.getEffectEquip(ID.EF_ASM)) * modEffect;
+  		}
+  		else
+  		{
+  			newDmg *= modEffect;
   		}
   		
   		return newDmg;

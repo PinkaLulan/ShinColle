@@ -853,6 +853,23 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion
   		break;
   		}
   	}
+  	
+	@Override
+	public int getFieldCount()
+	{
+		return 0;
+	}
+
+	@Override
+	public void setField(int id, float value)
+	{
+	}
+
+	@Override
+	public float getField(int id)
+	{
+		return 0;
+	}
 
     
 }

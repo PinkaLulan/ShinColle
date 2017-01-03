@@ -138,10 +138,7 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall
   		setCombatTick(this.ticksExisted);
 		
 		//heavy ammo--
-        if (!decrAmmoNum(1, this.getAmmoConsumption()))
-        {
-        	return false;
-        }
+        if (!decrAmmoNum(1, this.getAmmoConsumption())) return false;
 
         //play entity sound
         if (this.getRNG().nextInt(10) > 7)
@@ -182,10 +179,7 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall
         //show emotes
       	applyEmotesReaction(3);
         
-      	if (ConfigHandler.canFlare)
-      	{
-			flareTarget(target);
-		}
+      	if (ConfigHandler.canFlare) this.flareTarget(target);
       	
         return false;
 	}

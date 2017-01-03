@@ -15,7 +15,6 @@ import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.client.render.IShipCustomTexture;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
-import com.lulan.shincolle.entity.other.EntityRensouhou;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.init.ModSounds;
@@ -26,7 +25,6 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
@@ -34,6 +32,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.IAttribute;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.entity.ai.attributes.RangedAttribute;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
@@ -59,6 +60,8 @@ import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
  */
 abstract public class BasicEntityMount extends EntityCreature implements IShipMount, IShipCannonAttack, IShipGuardian, IShipCustomTexture
 {
+	
+	protected static final IAttribute MAX_HP = (new RangedAttribute((IAttribute)null, "generic.maxHealth", 4D, 0D, 30000D)).setDescription("Max Health").setShouldWatch(true);
 	
 	public BasicEntityShip host;  				//host
 	protected ShipPathNavigate shipNavigator;	//水空移動用navigator
@@ -186,89 +189,119 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	@Override
     public boolean attackEntityFrom(DamageSource attacker, float atk)
 	{
-		//disalbe inWall damage
-		if (attacker.getDamageType() == "inWall")
+		//null check
+		if (this.host == null)
 		{
+			this.setDead();
 			return false;
 		}
 		
-		if (attacker.getDamageType() == "fall")
+		//damage disabled
+		if (attacker == DamageSource.inWall || attacker == DamageSource.starve ||
+			attacker == DamageSource.cactus || attacker == DamageSource.fall)
 		{
 			return false;
 		}
-     
+		//damage ignore def value
+		else if (attacker == DamageSource.magic || attacker == DamageSource.wither ||
+				 attacker == DamageSource.dragonBreath)
+		{
+			return super.attackEntityFrom(attacker, atk);
+		}
+		//out of world
+		else if (attacker == DamageSource.outOfWorld)
+		{
+			this.setDead();
+			return false;
+		}
+		
+		//set hurt face
+    	if (this.getStateEmotion(ID.S.Emotion) != ID.Emotion.O_O)
+    	{
+    		this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
+    	}
+    	
+    	//change sensitive body
+  		if (this.rand.nextInt(10) == 0) this.host.randomSensitiveBody();
+        
+    	//若攻擊方為owner, 則直接回傳傷害, 不計def跟friendly fire
+		if (attacker.getEntity() instanceof EntityPlayer &&
+			TeamHelper.checkSameOwner(attacker.getEntity(), this))
+		{
+			this.host.setSitting(false);
+			return super.attackEntityFrom(attacker, atk);
+		}
+        
         //無敵的entity傷害無效
-  		if (this.isEntityInvulnerable(attacker))
-  		{	
-        	return false;
-        }
-		
-		//server side
-		if (!this.world.isRemote)
+		if (this.isEntityInvulnerable(attacker))
 		{
-			if (host == null)
+            return false;
+        }
+		//只對entity damage類有效
+		else if (attacker.getEntity() != null)
+		{
+			Entity entity = attacker.getEntity();
+			
+			//不會對自己造成傷害, 可免疫毒/掉落/窒息等傷害 (此為自己對自己造成傷害)
+			if (entity.equals(this))
 			{
-				this.setDead();
+				//取消坐下動作
+				this.host.setSitting(false);
 				return false;
 			}
-	        
-	        if (attacker.getEntity() != null)
-	        {
-	  			Entity entity = attacker.getEntity();
-	  			
-	  			//calc dodge
-				float dist = (float) this.getDistanceSqToEntity(entity);
-				if (EntityHelper.canDodge(this, dist))
+			
+			//若攻擊方為player, 則檢查friendly fire
+			if (entity instanceof EntityPlayer)
+			{
+				//若禁止friendlyFire, 則不造成傷害
+				if (!ConfigHandler.friendlyFire)
 				{
 					return false;
 				}
-	  			
-	  			//不會對自己造成傷害, 可免疫毒/掉落/窒息等傷害 (此為自己對自己造成傷害)
-	  			if (entity.equals(this))
-	  			{
-	  				return false;
-	  			}
-	  			
-	  			//若攻擊方為player, 則修正傷害
-	  			if (entity instanceof EntityPlayer)
-	  			{
-					//若禁止friendlyFire, 則傷害設為0
-					if (!ConfigHandler.friendlyFire)
-					{
-						return false;
-					}
-	  			}
-	  			
-	  			//進行def計算
-				float reduceAtk = atk * (1F - (this.getDefValue() - rand.nextInt(20) + 10F) * 0.01F);    
-				
-				//ship vs ship, config傷害調整
-				if (entity instanceof BasicEntityShip || entity instanceof BasicEntityAirplane || 
-					entity instanceof EntityRensouhou || entity instanceof BasicEntityMount)
-				{
-					reduceAtk = reduceAtk * (float)ConfigHandler.dmgSummon * 0.01F;
-				}
-				
-				//ship vs ship, damage type傷害調整
-				if (entity instanceof IShipAttackBase)
-				{
-					//get attack time for damage modifier setting (day, night or ...etc)
-					int modSet = this.world.provider.isDaytime() ? 0 : 1;
-					reduceAtk = CalcHelper.calcDamageByType(reduceAtk, ((IShipAttackBase) entity).getDamageType(), this.getDamageType(), modSet);
-				}
-				
-				//min damage設為1
-		        if (reduceAtk < 0) reduceAtk = 0;
-		        
-		        //取消host的坐下動作
-		        if (host != null)
-		        {
-		        	this.host.setSitting(false);
-		        }
-				
-		        return super.attackEntityFrom(attacker, reduceAtk);
+			}
+			
+			//進行dodge計算
+			float dist = (float) this.getDistanceSqToEntity(entity);
+			if (EntityHelper.canDodge(this, dist))
+			{
+				return false;
+			}
+			
+			//進行def計算
+			float reduceAtk = atk * (1F - (this.getDefValue() - rand.nextInt(20) + 10F) * 0.01F);    
+			
+			//ship vs ship, config傷害調整 (僅限友善船)
+			if (entity instanceof IShipOwner && ((IShipOwner)entity).getPlayerUID() > 0 &&
+				(entity instanceof BasicEntityShip ||
+				 entity instanceof BasicEntitySummon || 
+				 entity instanceof BasicEntityMount))
+			{
+				reduceAtk = reduceAtk * (float)ConfigHandler.dmgSvS * 0.01F;
+			}
+			
+			//ship vs ship, damage type傷害調整
+			if (entity instanceof IShipAttackBase)
+			{
+				//get attack time for damage modifier setting (day, night or ...etc)
+				int modSet = this.world.provider.isDaytime() ? 0 : 1;
+				reduceAtk = CalcHelper.calcDamageByType(reduceAtk, ((IShipAttackBase) entity).getDamageType(), this.getDamageType(), modSet);
+			}
+			
+			//tweak min damage
+	        if (reduceAtk < 1F && reduceAtk > 0F) reduceAtk = 1F;
+	        else if (reduceAtk <= 0F) reduceAtk = 0F;
+
+			//取消坐下動作
+			this.host.setSitting(false);
+			
+	  		//show emotes
+	  		if (this.rand.nextInt(5) == 0)
+	  		{
+				this.host.applyEmotesReaction(2);
 	  		}
-		}
+   
+            return super.attackEntityFrom(attacker, reduceAtk);
+        }
 		
 		return false;
 	}
@@ -1117,21 +1150,15 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
         	}
         }
         
-        //vs player = 25% dmg
+ 		//calc damage to player
   		if (target instanceof EntityPlayer)
   		{
   			atkLight *= 0.25F;
-  			
-  			//check friendly fire
-    		if (!ConfigHandler.friendlyFire)
-    		{
-    			atkLight = 0F;
-    		}
-    		else if (atkLight > 59F)
-    		{
-    			atkLight = 59F;	//same with TNT
-    		}
+  			if (atkLight > 59F) atkLight = 59F;	//same with TNT
   		}
+  		
+  		//check friendly fire
+		if (!TeamHelper.doFriendlyFire(this.host, target)) atkLight = 0F;
 
 	    //確認攻擊是否成功
 	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this).setProjectile(), atkLight);
@@ -1489,11 +1516,33 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	//update attribute
 	public void setupAttrs()
 	{
-		getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(this.host.getStateFinal(ID.HP) * 0.5D);
+		getEntityAttribute(MAX_HP).setBaseValue(this.host.getStateFinal(ID.HP) * 0.5D);
 		getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(this.getMoveSpeed());
 		getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64);
 		getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue((float) host.getLevel() * 0.005F);
 	}
+	
+	@Override
+    public IAttributeInstance getEntityAttribute(IAttribute attribute)
+    {
+		if (attribute == SharedMonsterAttributes.MAX_HEALTH)
+		{
+			this.getAttributeMap().getAttributeInstance(MAX_HP); 
+		}
+		
+        return this.getAttributeMap().getAttributeInstance(attribute);
+    }
+	
+	@Override
+    protected void applyEntityAttributes()
+    {
+        this.getAttributeMap().registerAttribute(MAX_HP);
+        this.getAttributeMap().registerAttribute(SharedMonsterAttributes.FOLLOW_RANGE);
+        this.getAttributeMap().registerAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE);
+        this.getAttributeMap().registerAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
+        this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ARMOR);
+        this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS);
+    }
 	
 	@Override
 	public void setEntitySit(boolean sit)
@@ -1719,6 +1768,9 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	{
 		return 0;
 	}
+	
+	@Override
+	public void setScaleLevel(int par1) {}
 	
 	
 }

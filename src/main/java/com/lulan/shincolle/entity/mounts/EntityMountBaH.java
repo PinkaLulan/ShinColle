@@ -23,7 +23,7 @@ public class EntityMountBaH extends BasicEntityMount
 		this.setSize(1.9F, 3.1F);
 		this.seatPos = new float[] {1.05F, 2.6F, 0F};
 		this.seatPos2 = new float[] {1.2F, 0.7F, -1.3F};
-        this.shipNavigator = new ShipPathNavigate(this, world);
+        this.shipNavigator = new ShipPathNavigate(this);
 		this.shipMoveHelper = new ShipMoveHelper(this, 30F);
 	}
     

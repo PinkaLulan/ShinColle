@@ -3,6 +3,8 @@ package com.lulan.shincolle.handler;
 import java.util.List;
 import java.util.Random;
 
+import org.lwjgl.input.Keyboard;
+
 import com.lulan.shincolle.capability.CapaInventory;
 import com.lulan.shincolle.capability.CapaShipInventory;
 import com.lulan.shincolle.capability.CapaTeitoku;
@@ -29,7 +31,6 @@ import com.lulan.shincolle.worldgen.ChestLootTable;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.GlStateManager.FogMode;
 import net.minecraft.client.settings.GameSettings;
@@ -83,16 +84,21 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class EventHandler
 {
 	
-	private GameSettings keySet;
+	private static GameSettings keySet;		//CLIENT SIDE ONLY, keyset
 	
 	//keys
-	public int rideKeys = 0;
-	public int openGUI = 0;
-	public int keyCooldown = 0;		//press key cooldown, count down in player tick
+	public static int rideKeys = 0;			//CLIENT SIDE ONLY
+	public static int openGUI = 0;			//CLIENT SIDE ONLY
+	public static int keyCooldown = 0;		//CLIENT SIDE ONLY, press key cooldown
 	
 	//render view change
-	private boolean isViewChanged = false;
-	private boolean isViewPlayer = false;
+	public static boolean isViewChanged = false;	//CLIENT SIDE ONLY
+	public static boolean isViewPlayer = false;	//CLIENT SIDE ONLY
+	
+	//for debug usage
+	public static int debugCooldown = 0;	//CLIENT SIDE ONLY
+	public static float field1 = 0F;		//CLIENT SIDE ONLY
+	public static float field2 = 0F;		//CLIENT SIDE ONLY
 	
 
 	//change vanilla mob drop (add grudge), this is SERVER event
@@ -646,7 +652,9 @@ public class EventHandler
 			/** CLIENT SIDE */
 			else if (event.player.world.isRemote)
 			{	
-				if (this.keyCooldown > 0) this.keyCooldown--;	//key cd--
+				//cd--
+				if (this.keyCooldown > 0) this.keyCooldown--;
+				if (this.debugCooldown > 0) this.debugCooldown--;
 				
 //				//DEBUG TODO
 //				this.keySet = ClientProxy.getGameSetting();
@@ -1022,7 +1030,58 @@ public class EventHandler
 	{
 		EntityPlayer player = ClientProxy.getClientPlayer();
 		this.keySet = ClientProxy.getGameSetting();
-
+		
+		//for debug usage
+		if (this.debugCooldown <= 0 && ConfigHandler.debugMode)
+		{
+			float ctrl = 0F;
+			
+			if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL))
+			{
+				ctrl = 0.1F;
+			}
+			
+			if (Keyboard.isKeyDown(Keyboard.KEY_DOWN))
+			{
+				this.field1 += 0.01F + ctrl;
+				this.debugCooldown = 2;
+				player.sendMessage(new TextComponentString
+				(
+					"OffsetY "+this.field1
+				));
+			}
+			
+			if (Keyboard.isKeyDown(Keyboard.KEY_UP))
+			{
+				this.field1 -= 0.01F + ctrl;
+				this.debugCooldown = 2;
+				player.sendMessage(new TextComponentString
+				(
+					"OffsetY "+this.field1
+				));
+			}
+			
+			if (Keyboard.isKeyDown(Keyboard.KEY_LEFT))
+			{
+				this.field2 -= 0.01F + ctrl;
+				this.debugCooldown = 2;
+				player.sendMessage(new TextComponentString
+				(
+					"Scale "+this.field2
+				));
+			}
+			
+			if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT))
+			{
+				this.field2 += 0.01F + ctrl;
+				this.debugCooldown = 2;
+				player.sendMessage(new TextComponentString
+				(
+					"Scale "+this.field2
+				));
+			}
+		}
+		
 		//pointer item control
 		ItemStack pointer = EntityHelper.getPointerInUse(player);
 		

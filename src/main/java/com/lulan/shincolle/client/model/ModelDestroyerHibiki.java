@@ -1405,5 +1405,22 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
 		
 	}
 	
+	@Override
+	public int getFieldCount()
+	{
+		return 0;
+	}
+
+	@Override
+	public void setField(int id, float value)
+	{
+	}
+
+	@Override
+	public float getField(int id)
+	{
+		return 0;
+	}
+	
 	
 }

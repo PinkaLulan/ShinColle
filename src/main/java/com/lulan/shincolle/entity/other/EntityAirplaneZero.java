@@ -1,5 +1,6 @@
 package com.lulan.shincolle.entity.other;
 
+import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.reference.ID;
 
 import net.minecraft.world.World;
@@ -20,17 +21,12 @@ public class EntityAirplaneZero extends EntityAirplane
 		
 		if(this.ticksExisted == 6)
 		{
-//			//TODO sound event
-//			playSound(Reference.MOD_ID+":ship-aircraft", 0.4F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+			this.playSound(ModSounds.SHIP_AIRCRAFT, 0.4F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
 		}
 	}
 	
 	@Override
-	protected void applyFlyParticle()
-	{
-//		ParticleHelper.spawnAttackParticleAt(this.posX-this.motionX*1.5D, this.posY+0.5D-this.motionY*1.5D, this.posZ-this.motionZ*1.5D, 
-//          		-this.motionX*0.5D, -this.motionY*0.5D, -this.motionZ*0.5D, (byte)17);
-	}
+	protected void applyFlyParticle() {}
 	
 	@Override
 	public int getTextureID()

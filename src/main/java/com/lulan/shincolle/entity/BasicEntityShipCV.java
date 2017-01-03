@@ -194,22 +194,22 @@ abstract public class BasicEntityShipCV extends BasicEntityShip implements IShip
         applySoundAtAttacker(3, target);
 	    applyParticleAtAttacker(3, target, new float[4]);
         
-    	double summonHeight = this.posY + launchHeight;
+    	float summonHeight = (float)(posY + launchHeight);
     	
     	//check the summon block
     	if (!BlockHelper.checkBlockSafe(world, (int)posX, (int)(posY+launchHeight), (int)(posZ)))
     	{
-    		summonHeight = posY + 1D;
+    		summonHeight = (float)posY + 1F;
     	}
     	
     	if (this.getRidingEntity() instanceof BasicEntityMount)
     	{
-    		summonHeight -= 1.5D;
+    		summonHeight -= 1.5F;
     	}
     	
     	//spawn airplane
     	BasicEntityAirplane plane = getAttackAirplane(true);
-        plane.initAttrs(this, target, summonHeight);
+        plane.initAttrs(this, target, 0, summonHeight);
     	this.world.spawnEntity(plane);
     	
     	//play target effect
@@ -250,22 +250,22 @@ abstract public class BasicEntityShipCV extends BasicEntityShip implements IShip
         applySoundAtAttacker(4, target);
 	    applyParticleAtAttacker(4, target, new float[4]);
         
-    	double summonHeight = this.posY + launchHeight;
+    	float summonHeight = (float)(posY + launchHeight);
     	
     	//check the summon block
     	if (!BlockHelper.checkBlockSafe(world, (int)posX, (int)(posY+launchHeight), (int)(posZ)))
     	{
-    		summonHeight = posY + 0.5D;
+    		summonHeight = (float)posY + 0.5F;
     	}
     	
     	if (this.getRidingEntity() instanceof BasicEntityMount)
     	{
-    		summonHeight -= 1.5D;
+    		summonHeight -= 1.5F;
     	}
     	
     	//spawn airplane
     	BasicEntityAirplane plane = getAttackAirplane(false);
-    	plane.initAttrs(this, target, summonHeight);
+    	plane.initAttrs(this, target, 0, summonHeight);
     	this.world.spawnEntity(plane);
     	
     	//play target effect

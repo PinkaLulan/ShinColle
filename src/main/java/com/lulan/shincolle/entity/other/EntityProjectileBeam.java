@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.lulan.shincolle.client.render.IShipCustomTexture;
 import com.lulan.shincolle.entity.IShipAttackBase;
-import com.lulan.shincolle.entity.IShipAttributes;
+import com.lulan.shincolle.entity.IShipEquipAttrs;
 import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModSounds;
@@ -13,6 +13,7 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 import com.lulan.shincolle.utility.TeamHelper;
@@ -21,7 +22,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -29,8 +29,13 @@ import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
  *  fly to target, create beam particle between host and target
  *  damage everything on the way
  *  setDead after X ticks
+ *  
+ *  未使用移動向量碰撞法, 因此速度必須設定為
+ *	(width一半 + onImpact範圍) * 2, 以盡量碰撞到路徑上所有物體
+ *
+ *	實際最大射程約為 lifeLength * acc (格)
  */
-public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAttributes, IShipCustomTexture
+public class EntityProjectileBeam extends Entity implements IShipOwner, IShipEquipAttrs, IShipCustomTexture
 {
 
 	//host data
@@ -66,17 +71,16 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAtt
 		
 		switch (type)
 		{
-		case 1:   //boss beam
-			this.setPosition(host2.posX + ax, host2.posY + host2.height * 0.5D, host2.posZ + az);
-			this.lifeLength = 31;
-			this.acc = 4F;
-		break;
 		default:  //normal beam
 			this.setPosition(host2.posX + ax, host2.posY + host2.height * 0.5D, host2.posZ + az);
 			this.lifeLength = 31;
 			this.acc = 4F;
 		break;
 		}
+		
+		this.prevPosX = this.posX;
+    	this.prevPosY = this.posY;
+    	this.prevPosZ = this.posZ;
 		
 		//beam data
 		this.accX = ax * acc;
@@ -175,18 +179,14 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAtt
         	
     		//判定bounding box內是否有可以觸發爆炸的entity
             List<Entity> hitList = this.world.getEntitiesWithinAABB(Entity.class,
-            											this.getEntityBoundingBox().expand(1.5D, 1.5D, 1.5D));
+            								this.getEntityBoundingBox().expand(1.5D, 1.5D, 1.5D));
             
-            //搜尋list, 找出第一個可以判定的目標, 即傳給onImpact
+            //搜尋list, 找出可碰撞目標執行onImpact
             for (Entity ent : hitList)
             { 
-            	/**不會對自己主人觸發爆炸
-        		 * isEntityEqual() is NOT working
-        		 * use entity id to check entity  */
-            	if (ent.canBeCollidedWith() && isNotHost(ent) && !TeamHelper.checkSameOwner(host2, ent))
+            	if (ent.canBeCollidedWith() && EntityHelper.isNotHost(this, ent))
             	{
-            		this.onImpact();
-            		return;
+            		this.onImpact(ent);
             	}
             }
         }
@@ -205,100 +205,57 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAtt
     }
     
 	//撞擊判定時呼叫此方法
-    protected void onImpact()
+    protected void onImpact(Entity target)
     {
     	//play sound
     	this.playSound(ModSounds.SHIP_EXPLODE, ConfigHandler.volumeFire * 1.5F, 0.7F / (this.rand.nextFloat() * 0.4F + 0.8F));
     	
-    	//server side
-    	if (!this.world.isRemote)
-    	{
-    		float beamAtk = atk;
+    	//set attack value
+    	float beamAtk = this.atk;
 
-            //計算範圍爆炸傷害: 判定bounding box內是否有可以吃傷害的entity
-            AxisAlignedBB impactBox;
-            
-            if (this.type == 1)
-            {	//boss beam
-            	impactBox = this.getEntityBoundingBox().expand(3D, 3D, 3D);
-            }
-            else {
-            	impactBox = this.getEntityBoundingBox().expand(1.5D, 1.5D, 1.5D);
-            }
-            
-            List<Entity> hitList = this.world.getEntitiesWithinAABB(Entity.class, impactBox);
-            TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-            
-            //對list中所有可攻擊entity做出傷害判定
-            for(Entity ent : hitList)
-            {
-            	beamAtk = this.atk;
-            	
-            	//check target attackable
-          		if (!TargetHelper.checkUnattackTargetList(ent))
-          		{
-          			//calc equip special dmg: AA, ASM
-                	beamAtk = CalcHelper.calcDamageBySpecialEffect(this, ent, beamAtk, 1);
-                	
-                	//目標不能是自己 or 主人, 且可以被碰撞
-                	if (ent.canBeCollidedWith() && isNotHost(ent))
-                	{
-                		//若owner相同, 則傷害設為0 (但是依然觸發擊飛特效)
-                		if (TeamHelper.checkSameOwner(host2, ent))
-                		{
-                			beamAtk = 0F;
-                    	}
-                		else
-                		{
-                			//calc critical
-                    		if (this.host != null && (this.rand.nextFloat() < this.host.getEffectEquip(ID.EF_CRI)))
-                    		{
-                    			beamAtk *= 3F;
-                        		//spawn critical particle
-                            	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(host2, 11, false), point);
-                        	}
-                    		
-                    		//若攻擊到玩家, 最大傷害固定為TNT傷害 (non-owner)
-                        	if (ent instanceof EntityPlayer)
-                        	{
-                        		beamAtk *= 0.25F;
-                        		
-                        		if (beamAtk > 59F)
-                        		{
-                        			beamAtk = 59F;	//same with TNT
-                        		}
-                        	}
-                        	
-                        	//check friendly fire
-                    		if (!TeamHelper.doFriendlyFire(this.host, ent))
-                    		{
-                    			beamAtk = 0F;
-                    		}
-                		}
-                		
-                		//if attack success
-                	    if (ent.attackEntityFrom(DamageSource.causeIndirectMagicDamage(this, host2).setExplosion(), beamAtk))
-                	    {
-                	        //send packet to client for display partical effect
-                            CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(ent, 9, false), point);
-                	    }
-                	}//end can be collided with
-          		}//end is attackable
-            }//end hit target list for loop
-    	}//end if server side
-    }
+	    //計算範圍爆炸傷害: 判定bounding box內是否有可以吃傷害的entity
+	    TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
     
-	//check entity is not host or launcher
-    private boolean isNotHost(Entity entity)
-    {
-    	//not self
-    	if (entity.equals(this)) return false;
-    	
-    	//not launcher
-		if (host2 != null && host2.getEntityId() == entity.getEntityId()) return false;
-
-		return true;
-	}
+    	//check target attackable
+  		if (!TargetHelper.checkUnattackTargetList(target))
+  		{
+  			//calc equip special dmg: AA, ASM
+        	beamAtk = CalcHelper.calcDamageBySpecialEffect(this, target, beamAtk, 1);
+        	
+    		//若owner相同, 則傷害設為0 (但是依然觸發擊飛特效)
+    		if (TeamHelper.checkSameOwner(host2, target))
+    		{
+    			beamAtk = 0F;
+        	}
+    		else
+    		{
+    			//calc critical
+        		if (this.host != null && (this.rand.nextFloat() < this.host.getEffectEquip(ID.EF_CRI)))
+        		{
+        			beamAtk *= 3F;
+            		//spawn critical particle
+                	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(host2, 11, false), point);
+            	}
+        		
+          		//calc damage to player
+          		if (target instanceof EntityPlayer)
+          		{
+          			beamAtk *= 0.25F;
+          			if (beamAtk > 59F) beamAtk = 59F;	//same with TNT
+          		}
+          		
+          		//check friendly fire
+        		if (!TeamHelper.doFriendlyFire(this.host, target)) beamAtk = 0F;
+    		}
+    		
+    		//if attack success
+    	    if (target.attackEntityFrom(DamageSource.causeIndirectMagicDamage(this, host2).setExplosion(), beamAtk))
+    	    {
+    	        //send packet to client for display partical effect
+                CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 9, false), point);
+    	    }
+  		}//end is attackable
+    }
 
 	@Override
 	public int getTextureID()

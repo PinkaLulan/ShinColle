@@ -1,7 +1,10 @@
 package com.lulan.shincolle.entity.other;
 
+import com.lulan.shincolle.ai.path.ShipMoveHelper;
+import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.IShipAircraftAttack;
+import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.utility.TargetHelper;
 
 import net.minecraft.entity.Entity;
@@ -18,10 +21,11 @@ public class EntityAirplaneZeroHostile extends EntityAirplaneZero
 	}
 	
 	@Override
-	public void initAttrs(IShipAircraftAttack host, Entity target, double launchPos)
+	public void initAttrs(IShipAttackBase host, Entity target, int scaleLevel, float...par2)
 	{
         this.host = host;
         this.atkTarget = target;
+        this.setScaleLevel(scaleLevel);
         
         //host is mob ship
         if (host instanceof BasicEntityShipHostile)
@@ -32,21 +36,28 @@ public class EntityAirplaneZeroHostile extends EntityAirplaneZero
     		this.targetSorter = new TargetHelper.Sorter(ship);
     		
             //basic attr
-            this.atk = ship.getAttackDamage();
-            this.def = ship.getDefValue() * 0.5F;
+    		this.atk = ship.getAttackDamage();
             this.atkSpeed = ship.getAttackSpeed();
+            this.atkRange = 6F;
+            this.defValue = ship.getDefValue() * 0.5F;
             this.movSpeed = ship.getMoveSpeed() * 0.2F + 0.3F;
             
             //設定發射位置
+            float launchPos = (float) ship.posY;
+        	if (par2 != null) launchPos = par2[0];
+        	
             this.posX = ship.posX;
             this.posY = launchPos;
             this.posZ = ship.posZ;
+            this.prevPosX = this.posX;
+        	this.prevPosY = this.posY;
+        	this.prevPosZ = this.posZ;
             this.setPosition(this.posX, this.posY, this.posZ);
             
             //設定基本屬性
             double mhp = ship.getMaxHealth() * 0.06F;
             
-    	    getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(mhp);
+    	    getEntityAttribute(MAX_HP).setBaseValue(mhp);
     		getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(this.movSpeed);
     		getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64D);
     		getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(1D);
@@ -55,12 +66,12 @@ public class EntityAirplaneZeroHostile extends EntityAirplaneZero
     		//AI flag
             this.numAmmoLight = 9;
             this.numAmmoHeavy = 0;
-            this.useAmmoLight = true;
-            this.useAmmoHeavy = false;
             this.backHome = false;
             this.canFindTarget = true;
     				
     		//設定AI
+    		this.shipNavigator = new ShipPathNavigate(this);
+    		this.shipMoveHelper = new ShipMoveHelper(this, 36F);
     		this.setAIList();
         }
         else
@@ -70,10 +81,22 @@ public class EntityAirplaneZeroHostile extends EntityAirplaneZero
 	}
 	
 	@Override
-    public boolean isNonBoss()
-    {
-        return false;
-    }
+	public int getPlayerUID()
+	{
+		return -100;	//-100 for hostile mob
+	}
+
+	@Override
+	protected void setSizeWithScaleLevel()
+	{
+		
+	}
+
+	@Override
+	protected void setAttrsWithScaleLevel()
+	{
+		
+	}
 	
 
 }

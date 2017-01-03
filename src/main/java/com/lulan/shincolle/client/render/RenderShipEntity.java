@@ -97,7 +97,7 @@ public class RenderShipEntity extends RenderBasic
 	private static final ResourceLocation TEX_SS_U511 = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntitySubmU511.png");
 	
 	//factory
-	public static final FactoryDefault FACTORY_DEFAULT = new FactoryDefault();
+	public static final FactoryDefault FACTORY_SHIP = new FactoryDefault();
 	
 	
     public RenderShipEntity(RenderManager rm)

@@ -25,6 +25,7 @@ import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TargetHelper;
+import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -293,15 +294,9 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	abstract protected void setBossInfo();
 	
 	/** init AI/attrs/...etc. after entity construction */
-	public void initAttrs(byte scaleLevel)
+	public void initAttrs(int scaleLevel)
 	{
-		this.scaleLevel = scaleLevel;
-		
-		//set size
-		this.setSizeWithScaleLevel();
-		
-		//set attrs
-		this.setAttrsWithScaleLevel();
+		this.setScaleLevel(scaleLevel);
 		
 		//set boss info
 		if (this.scaleLevel > 1)
@@ -313,13 +308,25 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		if (!this.world.isRemote)
 		{
 			//set moving AI
-			this.shipNavigator = new ShipPathNavigate(this, world);
+			this.shipNavigator = new ShipPathNavigate(this);
 			this.shipMoveHelper = new ShipMoveHelper(this, 60F);
 			
 			//set other AI
 			this.setAIList();
 			this.setAITargetList();
 		}
+	}
+	
+	@Override
+	public void setScaleLevel(int par1)
+	{
+		this.scaleLevel = (byte) par1;
+		
+		//set size
+		this.setSizeWithScaleLevel();
+		
+		//set attrs
+		this.setAttrsWithScaleLevel();
 		
 		this.initScale = true;
 	}
@@ -441,75 +448,85 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	}
 	
 	@Override
-    public boolean attackEntityFrom(DamageSource attacker, float atk)
+    public boolean attackEntityFrom(DamageSource source, float atk)
 	{
-		//disable 
-		if (attacker.getDamageType() == "inWall")
-		{
-			return false;
-		}
-		
-		if (attacker.getDamageType() == "outOfWorld")
-		{
-			this.setDead();
-			return true;
-		}
-				
 		//set hurt face
     	if (this.getStateEmotion(ID.S.Emotion) != ID.Emotion.O_O)
     	{
     		this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
     	}
-        
-        //無敵的entity傷害無效
-  		if (this.isEntityInvulnerable(attacker))
-  		{	
-        	return false;
-        }
-  		
-  		if (attacker.getSourceOfDamage() != null)
-  		{
-  			Entity entity = attacker.getSourceOfDamage();
-  			
-  			//不會對自己造成傷害
-  			if (entity.equals(this))
-  			{  
-  				return false;
-  			}
-  			
-  			//若掉到世界外, 則直接使該entity消失
-  	        if (attacker.getDamageType().equals("outOfWorld"))
-  	        {
-  	        	this.setDead();
-  	        	return false;
-  	        }
-  	        
-  	        //設置revenge target
-			this.setEntityRevengeTarget(entity);
-			this.setEntityRevengeTime();
-
-  	        //def calc
-  			float reduceAtk = atk;
-  			
-  			reduceAtk = atk * (1F - this.getDefValue() * 0.01F);
-  			
-  			//ship vs ship, damage type傷害調整
-  			if (entity instanceof IShipAttackBase)
-  			{
-  				//get attack time for damage modifier setting (day, night or ...etc)
-  				int modSet = this.world.provider.isDaytime() ? 0 : 1;
-  				reduceAtk = CalcHelper.calcDamageByType(reduceAtk, ((IShipAttackBase) entity).getDamageType(), this.getDamageType(), modSet);
-  			}
-  			
-  	        if (reduceAtk < 1) reduceAtk = 1;
-  	        
-  	        //show emotes
-			applyEmotesReaction(2);
-  	        
-  	        return super.attackEntityFrom(attacker, reduceAtk);
-  		}
     	
-    	return false;
+		//damage disabled
+		if (source == DamageSource.inWall || source == DamageSource.starve ||
+			source == DamageSource.cactus || source == DamageSource.fall)
+		{
+			return false;
+		}
+		//damage ignore def value
+		else if (source == DamageSource.magic || source == DamageSource.dragonBreath)
+		{
+			return super.attackEntityFrom(source, atk);
+		}
+		//out of world
+		else if (source == DamageSource.outOfWorld)
+		{
+			//取消坐下動作
+			this.setDead();
+        	return false;
+		}
+		
+        //無敵的entity傷害無效
+		if (this.isEntityInvulnerable(source))
+		{
+            return false;
+        }
+		/**
+		 * 這裡不抓原始attacker, 而是抓造成傷害的entity, ex: snow ball, arrow
+		 * 可避免用艦載機攻擊時直接跑去對航母攻擊
+		 */
+		else if (source.getSourceOfDamage() != null)
+		{
+			Entity attacker = source.getSourceOfDamage();
+			
+			//不會對自己造成傷害, 可免疫毒/掉落/窒息等傷害 (此為自己對自己造成傷害)
+			if (attacker.equals(this)) return false;
+			
+			//進行dodge計算
+			float dist = (float) this.getDistanceSqToEntity(attacker);
+			if (EntityHelper.canDodge(this, dist))
+			{
+				return false;
+			}
+			
+			//進行def計算
+			float reduceAtk = atk * (1F - (this.defValue - rand.nextInt(20) + 10F) * 0.01F);    
+			
+			//ship vs ship, damage type傷害調整
+			if (attacker instanceof IShipAttackBase)
+			{
+				//get attack time for damage modifier setting (day, night or ...etc)
+				int modSet = this.world.provider.isDaytime() ? 0 : 1;
+				reduceAtk = CalcHelper.calcDamageByType(reduceAtk, ((IShipAttackBase) attacker).getDamageType(), this.getDamageType(), modSet);
+			}
+			
+			//tweak min damage
+	        if (reduceAtk < 1F && reduceAtk > 0F) reduceAtk = 1F;
+	        else if (reduceAtk <= 0F) reduceAtk = 0F;
+
+			//設置revenge target
+			this.setEntityRevengeTarget(attacker);
+			this.setEntityRevengeTime();
+			
+	  		//show emotes
+	  		if (this.rand.nextInt(5) == 0)
+	  		{
+				applyEmotesReaction(2);
+	  		}
+   
+            return super.attackEntityFrom(source, reduceAtk);
+        }
+		
+		return false;
 	}
 
 	@Override
@@ -567,16 +584,15 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
         	}
         }
         
-        //vs player = 25% dmg
+ 		//calc damage to player
   		if (target instanceof EntityPlayer)
   		{
   			atk *= 0.25F;
-  			
-    		if (atk > 59F)
-    		{
-    			atk = 59F;
-    		}
+  			if (atk > 59F) atk = 59F;	//same with TNT
   		}
+  		
+  		//check friendly fire
+		if (!TeamHelper.doFriendlyFire(this, target)) atk = 0F;
   		
 	    //將atk跟attacker傳給目標的attackEntityFrom方法, 在目標class中計算傷害
 	    //並且回傳是否成功傷害到目標
@@ -769,7 +785,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 			switch (type)
 			{
 			case 0:
-				pid = S2CEntitySync.PID.SyncHostile_Scale;
+				pid = S2CEntitySync.PID.SyncShip_Scale;
 			break;
 			default:
 				return;
@@ -1019,7 +1035,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	@Override
 	public float getDefValue()
 	{
-		return defValue;
+		return this.defValue;
 	}
 
 	@Override

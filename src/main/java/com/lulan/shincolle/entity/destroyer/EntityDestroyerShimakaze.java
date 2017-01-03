@@ -144,23 +144,20 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
     	if (this.getStateEmotion(ID.S.State2) > ID.State.NORMAL_2)
     	{
     		EntityRensouhouS rensoho2 = new EntityRensouhouS(this.world);
-    		rensoho2.initAttrs(this, target);
+    		rensoho2.initAttrs(this, target, 0);
             this.world.spawnEntity(rensoho2);
     	}
     	else
     	{
     		EntityRensouhou rensoho1 = new EntityRensouhou(this.world);
-    		rensoho1.initAttrs(this, target);
+    		rensoho1.initAttrs(this, target, 0);
             this.world.spawnEntity(rensoho1);
     	}
     	
     	//show emotes
     	applyEmotesReaction(3);
     	
-    	if (ConfigHandler.canFlare)
-    	{
-			flareTarget(target);
-		}
+    	if (ConfigHandler.canFlare) this.flareTarget(target);
     	
         return true;
 	}

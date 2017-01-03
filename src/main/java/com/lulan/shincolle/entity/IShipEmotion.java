@@ -60,6 +60,7 @@ public interface IShipEmotion extends IShipFlags
 	
 	/** get model scale level for model rendering: 0:normal, 1~N:scale level */
 	public int getScaleLevel();
+	public void setScaleLevel(int par1);
 	
 	
 }

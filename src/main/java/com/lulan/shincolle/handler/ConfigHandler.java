@@ -79,7 +79,6 @@ public class ConfigHandler
 	public static int[] mobSpawn = new int[] {50,  10,   1,        1,     1};
 	
 	public static int dmgSvS = 100;		//ship vs ship damage modifier, 20 = dmg * 20%
-	public static int dmgSummon = 100;	//summons damage modifier, 20 = dmg * 20%
 	public static int expMod = 20;		//ship exp per level, ex: 20 => lv 15 exp req = 15*20+20
 	
 	public static boolean timeKeeping = true;
@@ -191,7 +190,6 @@ public class ConfigHandler
 		
 		//ship vs ship damage modifier
 		dmgSvS = config.getInt("DmgTaken_SvS", "ship setting", 100, 0, 10000, "Ship vs Ship damage modifier, 20 = damage * 20% ");
-		dmgSummon = config.getInt("DmgTaken_Summon", "ship setting", 100, 0, 10000, "summons (mounts, aircraft ...etc) damage modifier, 20 = damage * 20% ");
 		expMod = config.getInt("EXP_Modifier", "ship setting", 20, 1, 10000, "ship experience modifier, 20 = level 150: 150*20+20 = 3020");
 		
 		//WORLD GEN

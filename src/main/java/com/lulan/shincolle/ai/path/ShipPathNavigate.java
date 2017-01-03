@@ -56,11 +56,11 @@ public class ShipPathNavigate
     private BlockPos targetPos;
     
 
-    public ShipPathNavigate(EntityLiving entity, World world)
+    public ShipPathNavigate(EntityLiving entity)
     {
         this.host = entity;
         this.hostShip = (IShipNavigator) entity;
-        this.world = world;
+        this.world = entity.world;
         
         this.maxDistanceToWaypoint = (float) MathHelper.absMax(this.host.width * 0.75D, 0.75D);
         this.hostCeilWeight = MathHelper.ceil(this.host.width);

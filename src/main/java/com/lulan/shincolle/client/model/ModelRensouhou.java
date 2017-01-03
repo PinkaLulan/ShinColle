@@ -1,6 +1,7 @@
 package com.lulan.shincolle.client.model;
 
 import com.lulan.shincolle.entity.IShipEmotion;
+import com.lulan.shincolle.handler.EventHandler;
 import com.lulan.shincolle.utility.EmotionHelper;
 
 import net.minecraft.client.model.ModelBase;
@@ -144,21 +145,31 @@ public class ModelRensouhou extends ModelBase implements IModelEmotion
     	if (f3 <= -180F) { f3 += 360F; }
     	else if (f3 >= 180F) { f3 -= 360F; }
     	
-    	if (entity.isNonBoss())
+    	switch (((IShipEmotion)entity).getScaleLevel())
     	{
-    		scale = 0.3F;
-    		offsetY = 3F;
-    	}
-    	else
-    	{
-    		scale = 1F;
-        	offsetY = 0F;
+    	case 3:
+    		scale = 1F + EventHandler.field2;
+        	offsetY = 0F + EventHandler.field1;
+		break;
+    	case 2:
+    		scale = 0.3F + EventHandler.field2;
+    		offsetY = 3F + EventHandler.field1;
+		break;
+    	case 1:
+    		scale = 0.3F + EventHandler.field2;
+    		offsetY = 3F + EventHandler.field1;
+		break;
+    	default:
+    		scale = 0.3F + EventHandler.field2;
+    		offsetY = 3F + EventHandler.field1;
+		break;
     	}
     	
     	GlStateManager.pushMatrix();
     	GlStateManager.enableBlend();
     	GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
     	GlStateManager.scale(scale, scale, scale);
+    	GlStateManager.translate(0F, offsetY, 0F);
     	
     	//main body
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
@@ -261,6 +272,23 @@ public class ModelRensouhou extends ModelBase implements IModelEmotion
   		break;
   		}
   	}
+
+	@Override
+	public int getFieldCount()
+	{
+		return 0;
+	}
+
+	@Override
+	public void setField(int id, float value)
+	{
+	}
+
+	@Override
+	public float getField(int id)
+	{
+		return 0;
+	}
 
     
 }

@@ -4,6 +4,7 @@ import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
+import com.lulan.shincolle.entity.BasicEntitySummon;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
@@ -239,6 +240,10 @@ public class C2SInputPackets implements IMessage
 				else if (entity instanceof BasicEntityShipHostile)
 				{
 					((BasicEntityShipHostile) entity).sendSyncPacket(0);
+				}
+				else if (entity instanceof BasicEntitySummon)
+				{
+					((BasicEntitySummon) entity).sendSyncPacket(0);
 				}
 			break;
 			}//end switch

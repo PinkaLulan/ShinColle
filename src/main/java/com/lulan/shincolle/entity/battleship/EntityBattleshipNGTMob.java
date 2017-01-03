@@ -17,7 +17,6 @@ import com.lulan.shincolle.utility.TargetHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
@@ -54,7 +53,7 @@ public class EntityBattleshipNGTMob extends BasicEntityShipHostile
 		switch (this.getScaleLevel())
 		{
 		case 3:
-			this.setSize(1.7F, 7F);
+			this.setSize(1.7F, 7.5F);
 			this.smokeX = -1.8F;
 			this.smokeY = 5.5F;
 		break;
@@ -135,7 +134,7 @@ public class EntityBattleshipNGTMob extends BasicEntityShipHostile
   	{	
   		//get attack value
 		float atk1 = CalcHelper.calcDamageBySpecialEffect(this, target, this.atk * 3F, 2);
-		float atk2 = this.atk * 3F; //AE dmg without modifier
+		float atk2 = this.atk * 2F; //AE dmg without modifier
 		
 		boolean isTargetHurt = false;
 
@@ -185,8 +184,8 @@ public class EntityBattleshipNGTMob extends BasicEntityShipHostile
         	//calc miss chance, miss: atk1 = 0, atk2 = 50%
             if (this.rand.nextFloat() < this.getEffectEquip(ID.EF_MISS))
             {	//MISS
-            	atk1 *= 0.2F;
-            	atk2 *= 0.1F;
+            	atk1 = 0F;
+            	atk2 *= 0.5F;
             	//spawn miss particle
             	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
             }
@@ -198,19 +197,18 @@ public class EntityBattleshipNGTMob extends BasicEntityShipHostile
         		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 11, false), point);
             }
             
-            //vs player = 25% dmg
-      		if (target instanceof EntityPlayer)
-      		{
-      			atk1 *= 0.25F;
-      			atk2 *= 0.25F;
-      			
-        		if (atk1 > 150F)
-        		{
-        			atk1 = 150F;	//charge creeper
-        			atk2 = 50F;		//TNT
-        		}
-      		}
-      		
+       		//若攻擊到玩家, 限制最大傷害
+        	if (target instanceof EntityPlayer)
+        	{
+        		atk1 *= 0.25F;
+        		atk2 *= 0.5F;
+        		if (atk1 > 59F) atk1 = 59F;	//same with TNT
+        		if (atk2 > 59F) atk2 = 59F;	//same with TNT
+        	}
+        	
+        	//check friendly fire
+    		if (!TeamHelper.doFriendlyFire(this, target)) atk1 = 0F;
+    		
       		//對本體造成atk1傷害
       		isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this), atk1);
       		
@@ -223,9 +221,10 @@ public class EntityBattleshipNGTMob extends BasicEntityShipHostile
   			this.setPosition(posX, posY, posZ);
       		
       		//對範圍造成atk2傷害
-            EntityLivingBase hitEntity = null;
-            AxisAlignedBB impactBox = this.getEntityBoundingBox().expand(5D, 4D, 5D); 
-            List hitList = this.world.getEntitiesWithinAABB(EntityLivingBase.class, impactBox);
+  			Entity hitEntity = null;
+            double range = 3.5D + this.scaleLevel * 0.5D;
+            AxisAlignedBB impactBox = this.getEntityBoundingBox().expand(range, range, range); 
+            List<Entity> hitList = this.world.getEntitiesWithinAABB(Entity.class, impactBox);
             float atkTemp = atk2;
             
             //搜尋list, 找出第一個可以判定的目標, 即傳給onImpact
@@ -234,11 +233,17 @@ public class EntityBattleshipNGTMob extends BasicEntityShipHostile
                 for (int i = 0; i < hitList.size(); ++i)
                 {
                 	atkTemp = atk2;
-                	hitEntity = (EntityLivingBase) hitList.get(i);
+                	hitEntity = hitList.get(i);
                 	
                 	//目標不能是自己 or 主人
                 	if (hitEntity != this && !TargetHelper.checkUnattackTargetList(hitEntity) && hitEntity.canBeCollidedWith())
                 	{
+                		//若攻擊到同陣營entity (ex: owner), 則傷害設為0 (但是依然觸發擊飛特效)
+                		if (TeamHelper.checkSameOwner(this, hitEntity))
+                		{
+                			atkTemp = 0F;
+                    	}
+                		
                 		//calc miss and cri
                 		if (this.rand.nextFloat() < this.getEffectEquip(ID.EF_MISS))
                 		{	//MISS
@@ -249,22 +254,15 @@ public class EntityBattleshipNGTMob extends BasicEntityShipHostile
                     		atkTemp *= 1.5F;
                         }
                 		
-                		//若攻擊到同陣營entity (ex: owner), 則傷害設為0 (但是依然觸發擊飛特效)
-                		if (TeamHelper.checkSameOwner(this, hitEntity))
-                		{
-                			atkTemp = 0F;
-                    	}
-                		
                 		//若攻擊到玩家, 限制最大傷害
                     	if (hitEntity instanceof EntityPlayer)
                     	{
                     		atkTemp *= 0.25F;
-                    		
-                    		if (atkTemp > 50F)
-                    		{
-                    			atkTemp = 50F;
-                    		}
+                    		if (atkTemp > 59F) atkTemp = 59F;	//same with TNT
                     	}
+                    	
+                    	//check friendly fire
+                		if (!TeamHelper.doFriendlyFire(this, hitEntity)) atkTemp = 0F;
 
                 		//attack
                 	    hitEntity.attackEntityFrom(DamageSource.causeMobDamage(this), atkTemp);
@@ -274,11 +272,14 @@ public class EntityBattleshipNGTMob extends BasicEntityShipHostile
         	
         	this.setStateEmotion(ID.S.Phase, 0, true);
         }
-        else {
-        	if(atkPhase == 2) {
+        else
+        {
+        	if (atkPhase == 2)
+        	{
         		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 23, this.posX, this.posY, this.posZ, 3D, 0.3D, 0D, true), point);
         	}
-        	else {
+        	else
+        	{
         		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 22, this.posX, this.posY, this.posZ, 3D, 3D, 0D, true), point);
         	}
     		
@@ -315,4 +316,3 @@ public class EntityBattleshipNGTMob extends BasicEntityShipHostile
 	
 
 }
-

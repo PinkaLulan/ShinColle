@@ -247,15 +247,15 @@ public class ShipCalc
   		case ID.Ship.DestroyerShimakaze:
   			return "shincolle.EntityDestroyerShimakaze";
   		case ID.Ship.DestroyerShimakaze+2000:
-  			return "shincolle.EntityDestroyerShimakazeBoss";
+  			return "shincolle.EntityDestroyerShimakazeMob";
   		case ID.Ship.BattleshipNagato:
   			return "shincolle.EntityBattleshipNGT";
   		case ID.Ship.BattleshipNagato+2000:
-  			return "shincolle.EntityBattleshipNGTBoss";
+  			return "shincolle.EntityBattleshipNGTMob";
   		case ID.Ship.BattleshipYamato:
   			return "shincolle.EntityBattleshipYMT";
   		case ID.Ship.BattleshipYamato+2000:
-  			return "shincolle.EntityBattleshipYMTBoss";
+  			return "shincolle.EntityBattleshipYMTMob";
   		case ID.Ship.SubmarineU511:
   			return "shincolle.EntitySubmU511";
   		case ID.Ship.SubmarineU511+2000:
@@ -267,11 +267,11 @@ public class ShipCalc
   		case ID.Ship.CarrierKaga:
   			return "shincolle.EntityCarrierKaga";
   		case ID.Ship.CarrierKaga+2000:
-  			return "shincolle.EntityCarrierKagaBoss";
+  			return "shincolle.EntityCarrierKagaMob";
   		case ID.Ship.CarrierAkagi:
   			return "shincolle.EntityCarrierAkagi";
   		case ID.Ship.CarrierAkagi+2000:
-  			return "shincolle.EntityCarrierAkagiBoss";
+  			return "shincolle.EntityCarrierAkagiMob";
   		case ID.Ship.DestroyerAkatsuki:
   			return "shincolle.EntityDestroyerAkatsuki";
   		case ID.Ship.DestroyerAkatsuki+2000:

@@ -2,6 +2,7 @@ package com.lulan.shincolle.client.model;
 
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.IShipFloating;
+import com.lulan.shincolle.handler.EventHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
@@ -287,22 +288,31 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion
     	if (f3 <= -180F) { f3 += 360F; }
     	else if (f3 >= 180F) { f3 -= 360F; }
     	
-    	if (entity.isNonBoss())
+    	switch (((IShipEmotion)entity).getScaleLevel())
     	{
-    		scale = 0.4F;
-        	offsetY = 0F;
-    	}
-    	else
-    	{
-    		scale = 1.5F;
-        	offsetY = -2.7F;
+    	case 3:
+    		scale = 1.69F;
+        	offsetY = -0.6F;
+		break;
+    	case 2:
+    		scale = 1.14F;
+        	offsetY = -0.16F;
+		break;
+    	case 1:
+    		scale = 0.7F;
+        	offsetY = 0.65F;
+		break;
+    	default:
+    		scale = 0.42F;
+        	offsetY = 2.1F;
+		break;
     	}
     	
     	GlStateManager.pushMatrix();
     	GlStateManager.enableBlend();
     	GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
     	GlStateManager.scale(scale, scale, scale);
-    	GlStateManager.translate(0F, offsetY + 2.2F, 0F);
+    	GlStateManager.translate(0F, offsetY, 0F);
     	
     	//main body
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
@@ -593,7 +603,7 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion
 	    //攻擊動作    
 	    if (ent.getAttackTick() > 0)
 	    {
-	    	GlStateManager.translate(0F, 0.15F, 0F);
+	    	GlStateManager.translate(0F, 0.15F + scale * 0.1F, 0F);
 	    	//body
 	    	this.Head.rotateAngleX = -0.8727F;
 	    	this.Head.rotateAngleY = 1.0472F;
@@ -710,6 +720,23 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion
   		break;
   		}
   	}
+  	
+	@Override
+	public int getFieldCount()
+	{
+		return 0;
+	}
+
+	@Override
+	public void setField(int id, float value)
+	{
+	}
+
+	@Override
+	public float getField(int id)
+	{
+		return 0;
+	}
 
     
 }

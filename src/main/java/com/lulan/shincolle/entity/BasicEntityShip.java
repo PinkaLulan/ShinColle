@@ -30,7 +30,6 @@ import com.lulan.shincolle.client.render.IShipCustomTexture;
 import com.lulan.shincolle.crafting.EquipCalc;
 import com.lulan.shincolle.crafting.ShipCalc;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
-import com.lulan.shincolle.entity.other.EntityRensouhou;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
@@ -61,6 +60,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.IAttribute;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.entity.ai.attributes.RangedAttribute;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
@@ -96,6 +98,9 @@ import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
 public abstract class BasicEntityShip extends EntityTameable implements IShipCannonAttack, IShipGuardian, IShipFloating, IShipCustomTexture
 {
 
+	//basic attribute
+	protected static final IAttribute MAX_HP = (new RangedAttribute((IAttribute)null, "generic.maxHealth", 4D, 0D, 30000D)).setDescription("Max Health").setShouldWatch(true);
+	
 	protected CapaShipInventory itemHandler;
 	protected ShipPathNavigate shipNavigator;	//水空移動用navigator
 	protected ShipMoveHelper shipMoveHelper;
@@ -292,7 +297,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	/** init values, called in the end of constructor */
 	protected void postInit()
 	{
-		this.shipNavigator = new ShipPathNavigate(this, world);
+		this.shipNavigator = new ShipPathNavigate(this);
 		this.shipMoveHelper = new ShipMoveHelper(this, 60F);
 		this.initTypeModify();
 	}
@@ -1148,7 +1153,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		/**
 		 * DO NOT SET ATTACK DAMAGE to non-EntityMob!!!!!
 		 */
-		getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(StateFinal[ID.HP]);
+		getEntityAttribute(MAX_HP).setBaseValue(StateFinal[ID.HP]);
 		getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(StateFinal[ID.MOV]);
 		getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(40);
 		getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(resisKB);
@@ -1160,6 +1165,28 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			sendSyncPacketUnbuffValue();
 		}
 	}
+	
+	@Override
+    public IAttributeInstance getEntityAttribute(IAttribute attribute)
+    {
+		if (attribute == SharedMonsterAttributes.MAX_HEALTH)
+		{
+			this.getAttributeMap().getAttributeInstance(MAX_HP); 
+		}
+		
+        return this.getAttributeMap().getAttributeInstance(attribute);
+    }
+	
+	@Override
+    protected void applyEntityAttributes()
+    {
+        this.getAttributeMap().registerAttribute(MAX_HP);
+        this.getAttributeMap().registerAttribute(SharedMonsterAttributes.FOLLOW_RANGE);
+        this.getAttributeMap().registerAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE);
+        this.getAttributeMap().registerAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
+        this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ARMOR);
+        this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS);
+    }
 	
 	//set next exp value (for client load nbt data, gui display)
 	public void setExpNext()
@@ -2328,7 +2355,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			}
 			
 			//request model display sync after construction
-			if (this.ticksExisted == 40)
+			if (this.ticksExisted == 2)
 			{
 				CommonProxy.channelG.sendToServer(new C2SInputPackets(C2SInputPackets.PID.RequestSync_Model, this.getEntityId(), this.world.provider.getDimension()));
 			}
@@ -2775,18 +2802,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		if (target instanceof EntityPlayer)
   		{
   			atk *= 0.25F;
-    			
-  			//check friendly fire
-      		if (!ConfigHandler.friendlyFire)
-      		{
-      			atk = 0F;
-      		}
-      		else if (atk > 59F)
-      		{
-      			atk = 59F;	//same with TNT
-      		}
+  			if (atk > 59F) atk = 59F;	//same with TNT
   		}
-      		
+  		
+  		//check friendly fire
+		if (!TeamHelper.doFriendlyFire(this, target)) atk = 0F;
+		
   		//確認攻擊是否成功
 	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this).setProjectile(), atk);
 
@@ -2797,10 +2818,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	        applyParticleAtTarget(1, target, distVec);
 	        applyEmotesReaction(3);
 	        
-	        if (ConfigHandler.canFlare)
-	        {
-				flareTarget(target);
-			}
+	        if (ConfigHandler.canFlare) flareTarget(target);
         }
 
 	    return isTargetHurt;
@@ -2889,7 +2907,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	
 	//be attacked method, 包括其他entity攻擊, anvil攻擊, arrow攻擊, fall damage都使用此方法 
 	@Override
-    public boolean attackEntityFrom(DamageSource attacker, float atk)
+    public boolean attackEntityFrom(DamageSource source, float atk)
 	{
 		//set hurt face
     	if (this.getStateEmotion(ID.S.Emotion) != ID.Emotion.O_O)
@@ -2898,20 +2916,23 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     	}
     	
     	//change sensitive body
-  		if (this.rand.nextInt(20) == 0) randomSensitiveBody();
+  		if (this.rand.nextInt(10) == 0) randomSensitiveBody();
   		
-    	//若攻擊方為owner, 則直接回傳傷害, 不計def跟friendly fire
-		if (attacker.getEntity() instanceof EntityPlayer &&
-			TeamHelper.checkSameOwner(attacker.getEntity(), this))
+		//damage disabled
+		if (source == DamageSource.inWall || source == DamageSource.starve ||
+			source == DamageSource.cactus || source == DamageSource.fall)
 		{
-			this.setSitting(false);
-			return super.attackEntityFrom(attacker, atk);
+			return false;
 		}
-        
-        //若掉到世界外, 則傳送回y=4
-        if (attacker.getDamageType().equals("outOfWorld"))
-        {
-        	//取消坐下動作
+		//damage ignore def value
+		else if (source == DamageSource.magic || source == DamageSource.dragonBreath)
+		{
+			return super.attackEntityFrom(source, atk);
+		}
+		//out of world
+		else if (source == DamageSource.outOfWorld)
+		{
+			//取消坐下動作
 			this.setSitting(false);
 			this.dismountRidingEntity();
         	this.setPositionAndUpdate(this.posX, 4D, this.posZ);
@@ -2919,19 +2940,28 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	this.motionY = 1D;
         	this.motionZ = 0D;
         	return false;
-        }
+		}
+        
+    	//若攻擊方為owner, 則直接回傳傷害, 不計def跟friendly fire
+		if (source.getEntity() instanceof EntityPlayer &&
+			TeamHelper.checkSameOwner(source.getEntity(), this))
+		{
+			this.setSitting(false);
+			return super.attackEntityFrom(source, atk);
+		}
         
         //無敵的entity傷害無效
-		if (this.isEntityInvulnerable(attacker))
+		if (this.isEntityInvulnerable(source))
 		{
             return false;
         }
-		else if (attacker.getEntity() != null)
+		//只對entity damage類有效
+		else if (source.getEntity() != null)
 		{	//不為null才算傷害, 可免疫毒/掉落/窒息等傷害
-			Entity entity = attacker.getEntity();
+			Entity attacker = source.getEntity();
 			
 			//不會對自己造成傷害, 可免疫毒/掉落/窒息等傷害 (此為自己對自己造成傷害)
-			if (entity.equals(this))
+			if (attacker.equals(this))
 			{
 				//取消坐下動作
 				this.setSitting(false);
@@ -2939,7 +2969,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			}
 			
 			//若攻擊方為player, 則檢查friendly fire
-			if (entity instanceof EntityPlayer)
+			if (attacker instanceof EntityPlayer)
 			{
 				//若禁止friendlyFire, 則不造成傷害
 				if (!ConfigHandler.friendlyFire)
@@ -2949,40 +2979,42 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			}
 			
 			//進行dodge計算
-			float dist = (float) this.getDistanceSqToEntity(entity);
+			float dist = (float) this.getDistanceSqToEntity(attacker);
 			if (EntityHelper.canDodge(this, dist))
 			{
 				return false;
 			}
 			
 			//進行def計算
-			float reduceAtk = atk * (1F - (StateFinal[ID.DEF] - rand.nextInt(20) + 10F) / 100F);    
+			float reduceAtk = atk * (1F - (StateFinal[ID.DEF] - rand.nextInt(20) + 10F) * 0.01F);    
 			
-			//ship vs ship, config傷害調整
-			if (entity instanceof BasicEntityShip || entity instanceof BasicEntityAirplane || 
-				entity instanceof EntityRensouhou || entity instanceof BasicEntityMount)
+			//ship vs ship, config傷害調整 (僅限友善船)
+			if (attacker instanceof IShipOwner && ((IShipOwner)attacker).getPlayerUID() > 0 &&
+				(attacker instanceof BasicEntityShip ||
+				 attacker instanceof BasicEntitySummon || 
+				 attacker instanceof BasicEntityMount))
 			{
 				reduceAtk = reduceAtk * (float)ConfigHandler.dmgSvS * 0.01F;
 			}
 			
 			//ship vs ship, damage type傷害調整
-			if (entity instanceof IShipAttackBase)
+			if (attacker instanceof IShipAttackBase)
 			{
 				//get attack time for damage modifier setting (day, night or ...etc)
 				int modSet = this.world.provider.isDaytime() ? 0 : 1;
-				reduceAtk = CalcHelper.calcDamageByType(reduceAtk, ((IShipAttackBase) entity).getDamageType(), this.getDamageType(), modSet);
+				reduceAtk = CalcHelper.calcDamageByType(reduceAtk, ((IShipAttackBase) attacker).getDamageType(), this.getDamageType(), modSet);
 			}
 			
-			//min damage設為1
-	        if (reduceAtk < 1) reduceAtk = 1;
+			//tweak min damage
+	        if (reduceAtk < 1F && reduceAtk > 0F) reduceAtk = 1F;
+	        else if (reduceAtk <= 0F) reduceAtk = 0F;
 
 			//取消坐下動作
 			this.setSitting(false);
 			
 			//設置revenge target
-			this.setEntityRevengeTarget(entity);
+			this.setEntityRevengeTarget(attacker);
 			this.setEntityRevengeTime();
-//			LogHelper.info("DEBUG : set revenge target: "+entity+"  host: "+this);
 			
 			//若傷害力可能致死, 則尋找物品中有無repair goddess來取消掉此攻擊
 			if (reduceAtk >= (this.getHealth() - 1F))
@@ -3006,8 +3038,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	  		if (this.rand.nextInt(5) == 0)
 	  		{
 				//set hit position
-				this.setStateMinor(ID.M.HitHeight, CalcHelper.getEntityHitHeight(this, attacker.getSourceOfDamage()));
-				this.setStateMinor(ID.M.HitAngle, CalcHelper.getEntityHitSide(this, attacker.getSourceOfDamage()));
+				this.setStateMinor(ID.M.HitHeight, CalcHelper.getEntityHitHeight(this, source.getSourceOfDamage()));
+				this.setStateMinor(ID.M.HitAngle, CalcHelper.getEntityHitSide(this, source.getSourceOfDamage()));
 				
 				//apply emotes
 				applyEmotesReaction(2);
@@ -3015,7 +3047,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
    
             //執行父class的被攻擊判定, 包括重置love時間, 計算火毒抗性, 計算鐵砧/掉落傷害, 
             //hurtResistantTime(0.5sec無敵時間)計算, 
-            return super.attackEntityFrom(attacker, reduceAtk);
+            return super.attackEntityFrom(source, reduceAtk);
         }
 		
 		return false;
@@ -5913,6 +5945,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	{
 		return 0;
 	}
+	
+	@Override
+	public void setScaleLevel(int par1) {}
   	
 	
 }

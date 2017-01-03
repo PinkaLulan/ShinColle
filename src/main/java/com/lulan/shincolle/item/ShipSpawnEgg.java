@@ -453,7 +453,7 @@ public class ShipSpawnEgg extends BasicItem
                         
                     	if (ship != null)
                     	{
-                    		ship.initAttrs((byte) player.getRNG().nextInt(4));
+                    		ship.initAttrs(player.getRNG().nextInt(4));
                         	player.world.spawnEntity(ship);
                         	ship.playLivingSound();
                     	}

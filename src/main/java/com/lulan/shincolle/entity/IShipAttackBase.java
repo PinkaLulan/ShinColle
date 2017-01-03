@@ -5,7 +5,7 @@ import net.minecraft.entity.Entity;
 /**SHIP ATTACK BASE
  * include attacker states getter/setter
  */
-public interface IShipAttackBase extends IShipNavigator, IShipEmotion, IShipOwner, IShipAttributes
+public interface IShipAttackBase extends IShipNavigator, IShipEmotion, IShipOwner, IShipEquipAttrs
 {
 	
 	/** get attack target */

@@ -63,26 +63,23 @@ public class TeamHelper
 			//enable friendly fire
 			if (ConfigHandler.friendlyFire)
 			{
-				//attacker = normal ship
-				if (ida > 0)
+				//attacker is normal ship or hostile mob ship
+				if (ida > 0 || ida < -1)
 				{
 					//check is same owner
-					if (ida == idb)
-					{
-						return false;
-					}
+					if (ida == idb) return false;
 				}
 			}
 			//no friendly fire
 			else
 			{
 				//hostile vs hostile ship = no damage
-				if (ida < 0 && idb < 0)
+				if (ida < -1 && idb < -1 && ida == idb)
 				{
 					return false;
 				}
 				
-				//friendly ship can't hurt player
+				//normal ship can NOT hurt player
 				if (ida >= -1 && target instanceof EntityPlayer)
 				{
 					return false;

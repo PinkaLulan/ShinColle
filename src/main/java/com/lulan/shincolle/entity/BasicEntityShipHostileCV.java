@@ -66,16 +66,16 @@ abstract public class BasicEntityShipHostileCV extends BasicEntityShipHostile im
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
         
-    	double summonHeight = this.posY + launchHeight;
+    	float summonHeight = (float)(posY + launchHeight);
     	
     	//check the summon block
     	if (!BlockHelper.checkBlockSafe(world, (int)posX, (int)(posY+launchHeight), (int)(posZ)))
     	{
-    		summonHeight = posY + this.height * 0.75D;
+    		summonHeight = (float)posY + height * 0.75F;
     	}
     	
     	BasicEntityAirplane plane = new EntityAirplaneZeroHostile(this.world);
-        plane.initAttrs(this, target, summonHeight);
+        plane.initAttrs(this, target, this.scaleLevel, summonHeight);
     	this.world.spawnEntity(plane);
     	
         //show emotes
@@ -94,16 +94,16 @@ abstract public class BasicEntityShipHostileCV extends BasicEntityShipHostile im
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
         
-    	double summonHeight = this.posY + launchHeight;
+    	float summonHeight = (float) (posY + launchHeight);
     	
     	//check the summon block
     	if (!BlockHelper.checkBlockSafe(world, (int)posX, (int)(posY+launchHeight), (int)(posZ)))
     	{
-    		summonHeight = posY + this.height * 0.75D;
+    		summonHeight = (float)posY + height * 0.75F;
     	}
     	
     	BasicEntityAirplane plane = new EntityAirplaneTHostile(this.world);
-        plane.initAttrs(this, target, summonHeight);
+        plane.initAttrs(this, target, this.scaleLevel, summonHeight);
     	this.world.spawnEntity(plane);
     	
         //show emotes
@@ -114,5 +114,3 @@ abstract public class BasicEntityShipHostileCV extends BasicEntityShipHostile im
 	
 	
 }
-
-

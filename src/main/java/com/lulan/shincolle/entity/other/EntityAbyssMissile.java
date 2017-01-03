@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.lulan.shincolle.client.render.IShipCustomTexture;
 import com.lulan.shincolle.entity.IShipAttackBase;
-import com.lulan.shincolle.entity.IShipAttributes;
+import com.lulan.shincolle.entity.IShipEquipAttrs;
 import com.lulan.shincolle.entity.IShipFlyable;
 import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.handler.ConfigHandler;
@@ -55,7 +55,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  *   
  * 
  */
-public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttributes, IShipFlyable, IShipCustomTexture
+public class EntityAbyssMissile extends Entity implements IShipOwner, IShipEquipAttrs, IShipFlyable, IShipCustomTexture
 {
 	
     private IShipAttackBase host;	//main host type
@@ -106,6 +106,9 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
         this.posX = pX;
         this.posY = pY;
         this.posZ = pZ;
+        this.prevPosX = this.posX;
+    	this.prevPosY = this.posY;
+    	this.prevPosZ = this.posZ;
         this.isDirect = false;
         this.type = 4;
         this.acce = ACC;
@@ -137,6 +140,9 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
         this.posX = this.host2.posX;
         this.posZ = this.host2.posZ;
         this.posY = launchPos;
+        this.prevPosX = this.posX;
+    	this.prevPosY = this.posY;
+    	this.prevPosZ = this.posZ;
              
         //計算距離, 取得方向vector, 並且初始化速度, 使飛彈方向朝向目標
         float distX = (float) (tarX - this.posX);
@@ -323,7 +329,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
                 
                 if (raytrace.typeOfHit == RayTraceResult.Type.ENTITY)
                 {
-                	if (raytrace.entityHit.canBeCollidedWith() && isNotHost(raytrace.entityHit) && !TeamHelper.checkSameOwner(host2, raytrace.entityHit))
+                	if (raytrace.entityHit.canBeCollidedWith() && EntityHelper.isNotHost(this, raytrace.entityHit) && !TeamHelper.checkSameOwner(host2, raytrace.entityHit))
                 	{
                 		this.onImpact(raytrace.entityHit);
                 		return;
@@ -345,7 +351,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
             	/**不會對自己主人觸發爆炸
         		 * isEntityEqual() is NOT working
         		 * use entity id to check entity  */
-            	if (ent.canBeCollidedWith() && isNotHost(ent) && !TeamHelper.checkSameOwner(host2, ent))
+            	if (ent.canBeCollidedWith() && EntityHelper.isNotHost(this, ent) && !TeamHelper.checkSameOwner(host2, ent))
             	{
             		this.onImpact(ent);
             		return;
@@ -388,30 +394,6 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
     	}//end client side
     }
 
-    //check entity is not host or launcher
-    private boolean isNotHost(Entity entity)
-    {
-    	//not self
-    	if (entity.equals(this)) return false;
-    	
-		if (host2 != null)
-		{
-			//not launcher
-			if (host2.getEntityId() == entity.getEntityId()) return false;
-			
-			//not mounts
-			if (entity.equals(host2.getRidingEntity())) return false;
-			
-			//not riders
-			for (Entity rider : entity.getPassengers())
-			{
-				if (entity.equals(rider)) return false;
-			}
-		}
-		
-		return true;
-	}
-
 	//撞擊判定時呼叫此方法
     protected void onImpact(Entity target)
     {
@@ -442,7 +424,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
                 	missileAtk = CalcHelper.calcDamageBySpecialEffect(this, ent, missileAtk, 0);
                 	
                 	//目標不能是自己 or 主人, 且可以被碰撞
-                	if (ent.canBeCollidedWith() && isNotHost(ent))
+                	if (ent.canBeCollidedWith() && EntityHelper.isNotHost(this, ent))
                 	{
                 		//若owner相同, 則傷害設為0 (但是依然觸發擊飛特效)
                 		if (TeamHelper.checkSameOwner(host2, ent))
@@ -460,22 +442,15 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
                             	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(host2, 11, false), point);
                         	}
                     		
-                    		//若攻擊到玩家, 最大傷害固定為TNT傷害 (non-owner)
-                        	if (ent instanceof EntityPlayer)
-                        	{
-                        		missileAtk *= 0.25F;
-                        		
-                        		if (missileAtk > 59F)
-                        		{
-                        			missileAtk = 59F;	//same with TNT
-                        		}
-                        	}
-                        	
-                        	//check friendly fire
-                    		if (!TeamHelper.doFriendlyFire(this.host, ent))
-                    		{
-                    			missileAtk = 0F;
-                    		}
+                      		//calc damage to player
+                      		if (ent instanceof EntityPlayer)
+                      		{
+                      			missileAtk *= 0.25F;
+                      			if (missileAtk > 59F) missileAtk = 59F;	//same with TNT
+                      		}
+                      		
+                      		//check friendly fire
+                    		if (!TeamHelper.doFriendlyFire(this.host, ent)) missileAtk = 0F;
                 		}
                 		
                 		//attack

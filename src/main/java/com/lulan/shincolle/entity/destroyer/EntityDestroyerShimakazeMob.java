@@ -123,7 +123,7 @@ public class EntityDestroyerShimakazeMob extends BasicEntityShipHostile
   		
 		//spawn rensouhou
     	EntityRensouhouMob rensoho = new EntityRensouhouMob(this.world);
-    	rensoho.initAttrs(this, target);
+    	rensoho.initAttrs(this, target, this.scaleLevel);
         this.world.spawnEntity(rensoho);
         
         //show emotes
@@ -150,7 +150,7 @@ public class EntityDestroyerShimakazeMob extends BasicEntityShipHostile
 		float distY = tarY - (float)this.posY;
 		float distZ = tarZ - (float)this.posZ;
         float distSqrt = MathHelper.sqrt(distX*distX + distY*distY + distZ*distZ);
-        float launchPos = (float)posY + height * 0.5F;
+        float launchPos = (float)posY + height * 0.45F;
         
         //超過一定距離/水中 , 則採用拋物線,  在水中時發射高度較低
         if ((distX*distX+distY*distY+distZ*distZ) < 36F || this.getShipDepth() > 0D)

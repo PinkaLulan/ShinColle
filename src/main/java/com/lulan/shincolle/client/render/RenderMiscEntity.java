@@ -22,7 +22,7 @@ public class RenderMiscEntity extends Render<Entity>
 	private static final ModelBase MD_AM = new ModelAbyssMissile();
 	
 	//factory
-	public static final FactoryDefault FACTORY_DEFAULT = new FactoryDefault();
+	public static final FactoryDefault FACTORY_MISC = new FactoryDefault();
 	
 	//parm
 	protected int mobID = 0;

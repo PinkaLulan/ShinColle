@@ -17,7 +17,7 @@ import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.IShipAttackBase;
-import com.lulan.shincolle.entity.IShipAttributes;
+import com.lulan.shincolle.entity.IShipEquipAttrs;
 import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.entity.IShipGuardian;
 import com.lulan.shincolle.entity.IShipInvisible;
@@ -43,8 +43,10 @@ import net.minecraft.entity.EntityFlying;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityOwnable;
+import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.entity.boss.EntityWither;
 import net.minecraft.entity.monster.EntityBlaze;
+import net.minecraft.entity.monster.EntityGuardian;
 import net.minecraft.entity.passive.EntityBat;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.passive.EntityWaterMob;
@@ -104,12 +106,13 @@ public class EntityHelper
 				return 0;
 			}
 		}
-		else if (entity instanceof EntityWaterMob)
+		else if (entity instanceof EntityWaterMob || entity instanceof EntityGuardian)
 		{
 			return 2;
 		}
 		else if (entity instanceof EntityBlaze || entity instanceof EntityWither ||
-				 entity instanceof EntityBat || entity instanceof EntityFlying)
+				 entity instanceof EntityDragon || entity instanceof EntityBat ||
+				 entity instanceof EntityFlying)
 		{
 			return 1;
 		}
@@ -1100,7 +1103,7 @@ public class EntityHelper
 		}
 	}
 	
-	public static boolean canDodge(IShipAttributes ent, float dist)
+	public static boolean canDodge(IShipEquipAttrs ent, float dist)
 	{
 		if (ent != null && !((Entity)ent).world.isRemote)
 		{
@@ -1420,6 +1423,35 @@ public class EntityHelper
   		
   		return pointer;
   	}
+  	
+    //check entity is not host or launcher
+    public static boolean isNotHost(IShipOwner host, Entity target)
+    {
+    	//null check
+    	if (host == null || target == null) return false;
+    	
+    	//not self
+    	if (target.equals(host)) return false;
+    	
+		if (host.getHostEntity() != null)
+		{
+			Entity host2 = host.getHostEntity();
+			
+			//not launcher
+			if (target.equals(host2)) return false;
+			
+			//not host's mounts
+			if (target.equals(host2.getRidingEntity())) return false;
+			
+			//not riders
+			for (Entity rider : host2.getPassengers())
+			{
+				if (target.equals(rider)) return false;
+			}
+		}
+		
+		return true;
+	}
   	
   	
 }
