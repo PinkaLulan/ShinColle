@@ -31,7 +31,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
 	public EntityDestroyerShimakaze(World world)
 	{
 		super(world);
-		this.setSize(0.6F, 1.6F);	//碰撞大小 跟模型大小無關
+		this.setSize(0.5F, 1.6F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.DESTROYER);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.DestroyerShimakaze);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);

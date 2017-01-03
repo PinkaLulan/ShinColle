@@ -68,7 +68,7 @@ public class RenderSummonEntity extends RenderBasic
 		case ID.ShipMisc.RensouhouS:
 			return TEX_RensouhouS;
 		default:	//default texture
-			return TEX_AirplaneTako;
+			return TEX_Rensouhou;
 		}//end switch
     }
     
@@ -102,7 +102,7 @@ public class RenderSummonEntity extends RenderBasic
 			this.mainModel = MD_RensouhouS;
 		break;
 		default:	//default model
-			this.mainModel = MD_AirplaneTako;
+			this.mainModel = MD_Rensouhou;
 		break;
 		}//end switch
     }

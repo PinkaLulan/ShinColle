@@ -44,16 +44,16 @@ public class EntityDestroyerShimakazeMob extends BasicEntityShipHostile
 		switch (this.getScaleLevel())
 		{
 		case 3:
-			this.setSize(1.4F, 6.75F);
+			this.setSize(1.7F, 6.4F);
 		break;
 		case 2:
-			this.setSize(1.2F, 4.5F);
+			this.setSize(1.3F, 4.8F);
 		break;
 		case 1:
-			this.setSize(0.85F, 2.8F);
+			this.setSize(0.9F, 3.2F);
 		break;
 		default:
-			this.setSize(0.6F, 1.65F);
+			this.setSize(0.5F, 1.6F);
 		break;
 		}
 	}

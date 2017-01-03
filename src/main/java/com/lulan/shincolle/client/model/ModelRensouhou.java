@@ -1,7 +1,6 @@
 package com.lulan.shincolle.client.model;
 
 import com.lulan.shincolle.entity.IShipEmotion;
-import com.lulan.shincolle.handler.EventHandler;
 import com.lulan.shincolle.utility.EmotionHelper;
 
 import net.minecraft.client.model.ModelBase;
@@ -148,20 +147,20 @@ public class ModelRensouhou extends ModelBase implements IModelEmotion
     	switch (((IShipEmotion)entity).getScaleLevel())
     	{
     	case 3:
-    		scale = 1F + EventHandler.field2;
-        	offsetY = 0F + EventHandler.field1;
+    		scale = 1.08F;
+        	offsetY = -0.09F;
 		break;
     	case 2:
-    		scale = 0.3F + EventHandler.field2;
-    		offsetY = 3F + EventHandler.field1;
+    		scale = 0.81F;
+    		offsetY = 0.4F;
 		break;
     	case 1:
-    		scale = 0.3F + EventHandler.field2;
-    		offsetY = 3F + EventHandler.field1;
+    		scale = 0.54F;
+    		offsetY = 1.32F;
 		break;
     	default:
-    		scale = 0.3F + EventHandler.field2;
-    		offsetY = 3F + EventHandler.field1;
+    		scale = 0.27F;
+    		offsetY = 4.09F;
 		break;
     	}
     	
@@ -192,15 +191,13 @@ public class ModelRensouhou extends ModelBase implements IModelEmotion
 		motionHumanPos(f, f1, f2, f3, f4, ent);
     }
     
-  //雙腳移動計算
+	//雙腳移動計算
   	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
   	{   
   		float angleX = MathHelper.cos(f2 * 0.08F);
   		float angleRun = MathHelper.cos(f) * f1;
   		float addk1 = 0;
   		float addk2 = 0;
-  		
-  		GlStateManager.translate(0F, offsetY, 0F);
   		
   		//leg move parm
   		addk1 = MathHelper.cos(f * 0.7F) * f1 + 0.7F;

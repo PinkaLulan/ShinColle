@@ -2,7 +2,6 @@ package com.lulan.shincolle.client.model;
 
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.IShipFloating;
-import com.lulan.shincolle.handler.EventHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
@@ -291,20 +290,20 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion
     	switch (((IShipEmotion)entity).getScaleLevel())
     	{
     	case 3:
-    		scale = 1.69F;
-        	offsetY = -0.6F;
+    		scale = 1.64F;
+        	offsetY = -0.58F;
 		break;
     	case 2:
-    		scale = 1.14F;
-        	offsetY = -0.16F;
+    		scale = 1.23F;
+        	offsetY = -0.27F;
 		break;
     	case 1:
-    		scale = 0.7F;
-        	offsetY = 0.65F;
+    		scale = 0.82F;
+        	offsetY = 0.35F;
 		break;
     	default:
-    		scale = 0.42F;
-        	offsetY = 2.1F;
+    		scale = 0.41F;
+        	offsetY = 2.17F;
 		break;
     	}
     	
@@ -603,7 +602,7 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion
 	    //攻擊動作    
 	    if (ent.getAttackTick() > 0)
 	    {
-	    	GlStateManager.translate(0F, 0.15F + scale * 0.1F, 0F);
+	    	GlStateManager.translate(0F, scale * 0.6F - 0.55F, 0F);
 	    	//body
 	    	this.Head.rotateAngleX = -0.8727F;
 	    	this.Head.rotateAngleY = 1.0472F;

@@ -52,15 +52,7 @@ public class ParticleChi extends Particle
         	this.particleBlue = 1F;
         	this.particleAlpha = 1F;
         	this.particleMaxAge = 40;
-        	this.radChi = 1F;
-        break;
-        case 2:		//nagato boss
-        	this.particleRed = 1F;
-        	this.particleGreen = 1F;
-        	this.particleBlue = 1F;
-        	this.particleAlpha = 1F;
-        	this.particleMaxAge = 40;
-        	this.radChi = 4F;
+        	this.radChi = scale * 12F;
         break;
         }
     }

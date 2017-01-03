@@ -1059,16 +1059,20 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion
     	switch (((IShipEmotion)entity).getScaleLevel())
     	{
     	case 3:
-    		scale = 1.8F + EventHandler.field2;
-        	offsetY = -2.1F + EventHandler.field1;
+    		scale = 2F;
+        	offsetY = -0.73F;
 		break;
     	case 2:
+    		scale = 1.5F;
+        	offsetY = -0.48F;
 		break;
     	case 1:
+    		scale = 1F;
+        	offsetY = 0.02F;
 		break;
     	default:
-    		scale = 0.5F + EventHandler.field2;
-        	offsetY = 1.5F + EventHandler.field1;
+    		scale = 0.5F;
+        	offsetY = 1.53F;
 		break;
     	}
     	

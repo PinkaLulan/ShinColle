@@ -648,16 +648,16 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
         	offsetY = -0.53F;
 		break;
     	case 2:
-    		scale = 1.05F;
-        	offsetY = -0.05F;
+    		scale = 1.2F;
+        	offsetY = -0.23F;
 		break;
     	case 1:
-    		scale = 0.65F;
-        	offsetY = 0.83F;
+    		scale = 0.8F;
+        	offsetY = 0.41F;
 		break;
     	default:
     		scale = 0.4F;
-        	offsetY = 2.25F;
+        	offsetY = 2.28F;
 		break;
     	}
     	

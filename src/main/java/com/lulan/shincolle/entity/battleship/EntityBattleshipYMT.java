@@ -83,8 +83,8 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall
   				if (getStateEmotion(ID.S.State) >= ID.State.EQUIP01 && !isSitting() && !getStateFlag(ID.F.NoFuel))
   				{
   					//計算煙霧位置
-  	  				float[] partPos = CalcHelper.rotateXZByAxis(-0.55F, 0F, (this.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);
-  	  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], posY + 1.75D, posZ+partPos[0], 0D, 0D, 0D, (byte)20);
+  	  				float[] partPos = CalcHelper.rotateXZByAxis(-0.63F, 0F, (this.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);
+  	  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], posY + 1.65D, posZ+partPos[0], 0D, 0D, 0D, (byte)20);
   				}
   				
   				if (this.ticksExisted % 16 == 0)
@@ -92,7 +92,7 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall
   					//spawn beam charge lightning
   	  				if (getStateEmotion(ID.S.Phase) > 0)
   	  				{
-  	    	        	ParticleHelper.spawnAttackParticleAtEntity(this, 0.1D, 16, 1D, (byte)4);
+  	    	        	ParticleHelper.spawnAttackParticleAtEntity(this, 0.1D, 16D, 1D, (byte)4);
   	  				}
   	  			}//end 16 ticks
   			}//end 4 ticks
@@ -266,7 +266,7 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall
   		switch (type)
   		{
   		case 1:  //light cannon
-  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 5, 1D, 1D, 1.5D), point);
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 5, 0.9D, 1.3D, 1.2D), point);
   		break;
   		case 2:  //heavy cannon
   		case 3:  //light aircraft

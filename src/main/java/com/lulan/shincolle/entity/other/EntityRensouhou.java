@@ -30,7 +30,7 @@ public class EntityRensouhou extends BasicEntitySummon
     public EntityRensouhou(World world)
     {
 		super(world);
-		this.setSize(0.5F, 0.8F);
+		this.setSize(0.3F, 0.7F);
 	}
     
     //init attrs

@@ -107,7 +107,7 @@ public class ParticleSpray extends Particle
             this.particleAlpha = 0.5F;
             this.particleScale *= 1.5F;
             this.pScale = 15F;
-            this.particleMaxAge = 40;
+            this.particleMaxAge = 50;
             this.motionY = 0D;
         	break;
         case 7:   //light cyan
@@ -210,7 +210,7 @@ public class ParticleSpray extends Particle
             this.particleAlpha = 0.7F;
             this.particleScale *= 1.5F;
             this.pScale = 15F;
-            this.particleMaxAge = 30;
+            this.particleMaxAge = 40;
             this.motionY = 0D;
         	break;
         }

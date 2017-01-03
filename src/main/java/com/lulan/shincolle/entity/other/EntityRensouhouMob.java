@@ -29,6 +29,7 @@ public class EntityRensouhouMob extends BasicEntitySummon
     public EntityRensouhouMob(World world)
     {
 		super(world);
+		this.setSize(0.3F, 0.7F);
 	}
     
     public void initAttrs(IShipAttackBase host, Entity target, int scaleLevel, float... par2)
@@ -300,31 +301,22 @@ public class EntityRensouhouMob extends BasicEntitySummon
 		switch (this.getScaleLevel())
 		{
 		case 3:
-			this.setSize(0.9F, 1.7F);
+			this.setSize(1.5F, 2.8F);
 		break;
 		case 2:
-			
+			this.setSize(1.1F, 2.1F);
 		break;
 		case 1:
-			
+			this.setSize(0.7F, 1.4F);
 		break;
 		default:
-			this.setSize(0.5F, 0.8F);
+			this.setSize(0.3F, 0.7F);
 		break;
 		}
-		
-//		this.setSize(1.4F, 6.75F);
-//		this.setSize(1.2F, 4.5F);
-//		this.setSize(0.85F, 2.8F);
-//		this.setSize(0.6F, 1.65F);
 	}
 
 	@Override
-	protected void setAttrsWithScaleLevel()
-	{
-		// TODO Auto-generated method stub
-		
-	}
+	protected void setAttrsWithScaleLevel() {}
 
 	@Override
 	protected void returnSummonResource() {}

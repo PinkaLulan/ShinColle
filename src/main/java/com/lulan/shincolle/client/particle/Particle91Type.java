@@ -38,8 +38,12 @@ public class Particle91Type extends Particle
 	
     public Particle91Type(World world, double posX, double posY, double posZ, float scale)
     {
-        super(world, posX, posY, posZ);
+        super(world, 0F, 0F, 0F);
         this.setSize(0F, 0F);
+        this.setPosition(posX, posY + this.rand.nextDouble() * 4F, posZ);
+        this.prevPosX = this.posX;
+        this.prevPosY = this.posY;
+        this.prevPosZ = this.posZ;
         this.motionX = 0D;
         this.motionZ = 0D;
         this.motionY = 0D;
@@ -146,18 +150,10 @@ public class Particle91Type extends Particle
     @Override
 	public void onUpdate()
     {
-    	//this is both side particle
-//		this.prevPosX = this.posX;
-//        this.prevPosY = this.posY;
-//        this.prevPosZ = this.posZ;
-
         if (this.particleAge++ > this.particleMaxAge)
         {
             this.setExpired();
         }
-
-//        this.move(this.motionX, this.motionY, this.motionZ);
-//        this.motionY *= 0.9D;
     }
     
     

@@ -53,24 +53,24 @@ public class EntityBattleshipNGTMob extends BasicEntityShipHostile
 		switch (this.getScaleLevel())
 		{
 		case 3:
-			this.setSize(1.7F, 7.5F);
-			this.smokeX = -1.8F;
-			this.smokeY = 5.5F;
+			this.setSize(2.2F, 8F);
+			this.smokeX = -2.24F;
+			this.smokeY = 6F;
 		break;
 		case 2:
-			this.setSize(1.3F, 5F);
-			this.smokeX = -0.42F;
-			this.smokeY = 1.4F;
+			this.setSize(1.7F, 6F);
+			this.smokeX = -1.68F;
+			this.smokeY = 4.5F;
 		break;
 		case 1:
-			this.setSize(0.9F, 3F);
-			this.smokeX = -0.42F;
-			this.smokeY = 1.4F;
+			this.setSize(1.2F, 4F);
+			this.smokeX = -1.12F;
+			this.smokeY = 3F;
 		break;
 		default:
 			this.setSize(0.7F, 2F);
-			this.smokeX = -0.55F;
-			this.smokeY = 1.6F;
+			this.smokeX = -0.56F;
+			this.smokeY = 1.5F;
 		break;
 		}
 	}
@@ -111,9 +111,8 @@ public class EntityBattleshipNGTMob extends BasicEntityShipHostile
   				//生成裝備冒煙特效
   				if (getStateEmotion(ID.S.State) >= ID.State.EQUIP00)
   				{
-  					//計算煙霧位置, 生成裝備冒煙特效
   	  				float[] partPos = CalcHelper.rotateXZByAxis(this.smokeX, 0F, (this.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);
-  	  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], posY+this.smokeY, posZ+partPos[0], 1D+this.scaleLevel*0.3D, 0D, 0D, (byte)43);
+  	  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], posY+this.smokeY, posZ+partPos[0], 1D+this.scaleLevel*1D, 0D, 0D, (byte)43);
   				}
   				
   				if (this.ticksExisted % 8 == 0)
@@ -121,7 +120,7 @@ public class EntityBattleshipNGTMob extends BasicEntityShipHostile
   					//生成氣彈特效
   	  				if (getStateEmotion(ID.S.Phase) == 1 || getStateEmotion(ID.S.Phase) == 3)
   	  				{
-  	  	  				ParticleHelper.spawnAttackParticleAtEntity(this, 0.1D+0.1D*this.scaleLevel, 2D, 0D, (byte)1);
+  	  	  				ParticleHelper.spawnAttackParticleAtEntity(this, 0.12D+0.1D*this.scaleLevel, 1D, 0D, (byte)1);
   	  				}
   	  			}//end 8 ticks
   			}//end 4 ticks
@@ -276,16 +275,16 @@ public class EntityBattleshipNGTMob extends BasicEntityShipHostile
         {
         	if (atkPhase == 2)
         	{
-        		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 23, this.posX, this.posY, this.posZ, 3D, 0.3D, 0D, true), point);
+        		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 23, this.posX, this.posY, this.posZ, 0.35D, 0.3D, 0D, true), point);
         	}
         	else
         	{
-        		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 22, this.posX, this.posY, this.posZ, 3D, 3D, 0D, true), point);
+        		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 22, this.posX, this.posY, this.posZ, 2D*(this.scaleLevel+1), 1D*(this.scaleLevel+1), 0D, true), point);
         	}
     		
         	this.setStateEmotion(ID.S.Phase, atkPhase, true);
         }
-        
+        this.atkSpeed = 4F;//TODO
         //show emotes
 		applyEmotesReaction(3);
         
@@ -300,7 +299,7 @@ public class EntityBattleshipNGTMob extends BasicEntityShipHostile
   		switch (type)
   		{
   		case 1:  //light cannon
-  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 19, this.posX, this.posY+3.5D, this.posZ, vec[0], 2.8F, vec[2], true), point);
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 5, 0.9D*(this.scaleLevel+1), 1D*(this.scaleLevel+1), 1.1D*(this.scaleLevel+1)), point);
   		break;
 		default: //melee
 			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);

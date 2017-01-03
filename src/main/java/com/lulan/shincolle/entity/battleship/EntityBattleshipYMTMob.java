@@ -48,24 +48,24 @@ public class EntityBattleshipYMTMob extends BasicEntityShipHostile
 		switch (this.getScaleLevel())
 		{
 		case 3:
-			this.setSize(1.8F, 7.7F);
-			this.smokeX = -2.3F;
-			this.smokeY = 5.5F;
+			this.setSize(2.3F, 8.4F);
+			this.smokeX = -2.52F;
+			this.smokeY = 6.6F;
 		break;
 		case 2:
-			this.setSize(1.4F, 5.5F);
-			this.smokeX = -0.42F;
-			this.smokeY = 1.4F;
+			this.setSize(1.8F, 6.3F);
+			this.smokeX = -1.89F;
+			this.smokeY = 4.95F;
 		break;
 		case 1:
-			this.setSize(0.95F, 3.3F);
-			this.smokeX = -0.42F;
-			this.smokeY = 1.4F;
+			this.setSize(1.3F, 4.2F);
+			this.smokeX = -1.26F;
+			this.smokeY = 3.3F;
 		break;
 		default:
 			this.setSize(0.8F, 2.1F);
-			this.smokeX = -0.55F;
-			this.smokeY = 1.75F;
+			this.smokeX = -0.63F;
+			this.smokeY = 1.65F;
 		break;
 		}
 	}
@@ -105,14 +105,14 @@ public class EntityBattleshipYMTMob extends BasicEntityShipHostile
   			{
 				//計算煙霧位置, 生成裝備冒煙特效
   				float[] partPos = CalcHelper.rotateXZByAxis(this.smokeX, 0F, (this.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);
-  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], posY+this.smokeY, posZ+partPos[0], 1D+this.scaleLevel*0.3D, 0D, 0D, (byte)43);
+  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], posY+this.smokeY, posZ+partPos[0], 1D+this.scaleLevel*1D, 0D, 0D, (byte)43);
   			
   				if (this.ticksExisted % 16 == 0)
   				{
   					//spawn beam charge lightning
   	  				if (getStateEmotion(ID.S.Phase) > 0)
   	  				{
-  	    	        	ParticleHelper.spawnAttackParticleAtEntity(this, 1D, 16, 1D, (byte)4);
+  	    	        	ParticleHelper.spawnAttackParticleAtEntity(this, 0.1D+this.scaleLevel*1D, 16D, 1D, (byte)4);
   	  				}
   	  			}//end 16 ticks
   			}//end 4 ticks
@@ -131,7 +131,7 @@ public class EntityBattleshipYMTMob extends BasicEntityShipHostile
 		float tarY = (float)target.posY;
 		float tarZ = (float)target.posZ;
 		float distX = tarX - (float)this.posX;
-		float distY = tarY - (float)(this.posY + this.height * 0.5F);
+		float distY = tarY - (float)(this.posY + this.height * 0.5F) + this.scaleLevel*0.5F + 0.75F;
 		float distZ = tarZ - (float)this.posZ;
         float distSqrt = MathHelper.sqrt(distX*distX + distY*distY + distZ*distZ);
         if (distSqrt < 0.001F) distSqrt = 0.001F; //prevent large dXYZ
@@ -170,7 +170,7 @@ public class EntityBattleshipYMTMob extends BasicEntityShipHostile
         	this.playSound(ModSounds.SHIP_YAMATO_READY, ConfigHandler.volumeFire, 1F);
         	
 			//cannon charging particle
-        	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 7, 2D, 0, 0), point);
+        	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 7, 1D+this.scaleLevel*0.4D, 0, 0), point);
         	
         	this.setStateEmotion(ID.S.Phase, 1, true);
         }
@@ -190,9 +190,10 @@ public class EntityBattleshipYMTMob extends BasicEntityShipHostile
   		{
   		case 1:  //light cannon
   			//double smoke
-  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 5, 3.4D, 3.2D, 3D), point);
-  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 5, 3.4D, 3.2D, 3D), point);
-  		break;
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 5, 1D*(this.scaleLevel+1), 1.0D*(this.scaleLevel+1), 1.6D*(this.scaleLevel+1)), point);
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 5, 0.9D*(this.scaleLevel+1), 1.2D*(this.scaleLevel+1), 1.0D*(this.scaleLevel+1)), point);
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 5, 1.1D*(this.scaleLevel+1), 1.1D*(this.scaleLevel+1), 0.5D*(this.scaleLevel+1)), point);
+  	  	break;
 		default: //melee
 			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
 		break;

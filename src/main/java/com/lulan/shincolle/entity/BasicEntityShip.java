@@ -559,9 +559,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		
 		//idle AI
 		this.tasks.addTask(23, new EntityAIShipFloating(this));			//1000
-		this.tasks.addTask(24, new EntityAIShipWatchClosest(this, EntityPlayer.class, 4F, 0.06F));//0010
-		this.tasks.addTask(25, new EntityAIShipWander(this, 10, 5, 0.8D));//0111
-		this.tasks.addTask(25, new EntityAIShipLookIdle(this));			//0011
+		this.tasks.addTask(24, new EntityAIShipWander(this, 10, 5, 0.8D));//0111
+		this.tasks.addTask(25, new EntityAIShipWatchClosest(this, EntityPlayer.class, 4F, 0.06F));//0010
+		this.tasks.addTask(26, new EntityAIShipLookIdle(this));			//0011
 	}
 	
 	//setup target AI

@@ -46,22 +46,22 @@ public class EntityDestroyerIkazuchiMob extends BasicEntityShipHostile implement
 		switch (this.getScaleLevel())
 		{
 		case 3:
-			this.setSize(1.4F, 6F);
+			this.setSize(1.7F, 6F);
 			this.smokeX = -1.65F;
 			this.smokeY = 5.3F;
 		break;
 		case 2:
-			this.setSize(1.2F, 4F);
-			this.smokeX = -1.1F;
-			this.smokeY = 3.55F;
+			this.setSize(1.3F, 4.5F);
+			this.smokeX = -1.2F;
+			this.smokeY = 4.1F;
 		break;
 		case 1:
-			this.setSize(0.85F, 2.5F);
-			this.smokeX = -0.68F;
-			this.smokeY = 2.2F;
+			this.setSize(0.9F, 3F);
+			this.smokeX = -0.8F;
+			this.smokeY = 2.7F;
 		break;
 		default:
-			this.setSize(0.6F, 1.5F);
+			this.setSize(0.5F, 1.5F);
 			this.smokeX = -0.42F;
 			this.smokeY = 1.4F;
 		break;
@@ -121,7 +121,7 @@ public class EntityDestroyerIkazuchiMob extends BasicEntityShipHostile implement
   			{
   				//計算煙霧位置, 生成裝備冒煙特效
   				float[] partPos = CalcHelper.rotateXZByAxis(this.smokeX, 0F, (this.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);
-  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], posY+this.smokeY, posZ+partPos[0], 1D+this.scaleLevel*0.3D, 0D, 0D, (byte)43);
+  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], posY+this.smokeY, posZ+partPos[0], 1D+this.scaleLevel*0.8D, 0D, 0D, (byte)43);
   			}
   			
   			if (this.ticksExisted % 16 == 0)

@@ -163,9 +163,9 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		
 		//idle AI
 		this.tasks.addTask(21, new EntityAIShipOpenDoor(this, true));			//0000
-		this.tasks.addTask(22, new EntityAIShipFloating(this));					//0111
-		this.tasks.addTask(23, new EntityAIShipWatchClosest(this, EntityPlayer.class, 8F, 0.1F)); //0010
-		this.tasks.addTask(24, new EntityAIShipWander(this, 12, 1, 0.8D));		//0111
+		this.tasks.addTask(22, new EntityAIShipFloating(this));					//1000
+		this.tasks.addTask(23, new EntityAIShipWander(this, 12, 1, 0.8D));		//0111
+		this.tasks.addTask(24, new EntityAIShipWatchClosest(this, EntityPlayer.class, 8F, 0.1F)); //0010
 		this.tasks.addTask(25, new EntityAILookIdle(this));						//0011
 	}
 	
@@ -329,6 +329,9 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		this.setAttrsWithScaleLevel();
 		
 		this.initScale = true;
+		
+		//sync to client
+		if (!this.world.isRemote) this.sendSyncPacket(0);
 	}
 	
 	//平常音效
@@ -394,6 +397,8 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	{	//hostile mob: for attack and headTile check
 		switch (flag)
 		{
+		case ID.F.UseMelee:
+			return false;
 		case ID.F.HeadTilt:
 			return this.headTilt;
 		case ID.F.OnSightChase:

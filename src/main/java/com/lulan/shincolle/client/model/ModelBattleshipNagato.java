@@ -2,7 +2,7 @@ package com.lulan.shincolle.client.model;
 
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.IShipFloating;
-import com.lulan.shincolle.handler.EventHandler;
+import com.lulan.shincolle.entity.battleship.EntityBattleshipNGT;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
@@ -466,20 +466,20 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion
     	switch (((IShipEmotion)entity).getScaleLevel())
     	{
     	case 3:
-    		scale = 1.7F + EventHandler.field2;
-        	offsetY = -0.53F + EventHandler.field1;
+    		scale = 2F;
+        	offsetY = -0.73F;
 		break;
     	case 2:
-    		scale = 1.05F + EventHandler.field2;
-        	offsetY = -0.05F + EventHandler.field1;
+    		scale = 1.5F;
+        	offsetY = -0.48F;
 		break;
     	case 1:
-    		scale = 0.65F + EventHandler.field2;
-        	offsetY = 0.83F + EventHandler.field1;
+    		scale = 1F;
+        	offsetY = 0.02F;
 		break;
     	default:
-    		scale = 0.5F + EventHandler.field2;
-        	offsetY = 1.51F + EventHandler.field1;
+    		scale = 0.5F;
+        	offsetY = 1.51F;
 		break;
     	}
     	
@@ -805,13 +805,13 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion
   		}//end if sitting
 	    
 	    //攻擊動作    
-	    if (ent.getAttackTick() > 0)
+	    if (ent.getAttackTick() > 20)
 	    {
 	    	switch (ent.getStateEmotion(ID.S.Phase))
 	    	{
 	    	case 0:		//heavy atk phase 0
 	    	case 2:		//heavy atk phase 2
-	    		GlStateManager.translate(0F, 0.3F, 0F);
+	    		GlStateManager.translate(0F, scale * 0.35F + 0F, 0F);
 	    	    //Body
 	    	    this.Head.rotateAngleX -= 1.22F;
 	    	  	this.BodyMain.rotateAngleX = 1.75F;

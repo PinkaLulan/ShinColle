@@ -89,8 +89,8 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
   				if (getStateEmotion(ID.S.State) >= ID.State.EQUIP01 && !isSitting() && !getStateFlag(ID.F.NoFuel))
   				{
   					//計算煙霧位置
-  	  				float[] partPos = CalcHelper.rotateXZByAxis(-0.55F, 0F, (this.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);
-  	  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], posY + 1.6D, posZ+partPos[0], 0D, 0D, 0D, (byte)20);
+  	  				float[] partPos = CalcHelper.rotateXZByAxis(-0.56F, 0F, (this.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);
+  	  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], posY + 1.5D, posZ+partPos[0], 1D, 0D, 0D, (byte)43);
   				}
   				
   				if (this.ticksExisted % 8 == 0)
@@ -274,11 +274,11 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
         	//show attack particle
         	if (atkPhase == 2)
         	{
-        		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 23, this.posX, this.posY, this.posZ, 1D, 0D, 0D, true), point);
+        		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 23, this.posX, this.posY, this.posZ, 0.35D, 0.3D, 0D, true), point);
         	}
         	else
         	{
-        		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 22, this.posX, this.posY, this.posZ, 1D, 0D, 0D, true), point);
+        		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 22, this.posX, this.posY, this.posZ, 2D, 1D, 0D, true), point);
         	}
     		
         	this.setStateEmotion(ID.S.Phase, atkPhase, true);
@@ -353,7 +353,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
   		switch (type)
   		{
   		case 1:  //light cannon
-  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 19, this.posX, this.posY+0.3D, this.posZ, vec[0], 1F, vec[2], true), point);
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 5, 0.9D, 1D, 1.1D), point);
   		break;
 		default: //melee
 			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);

@@ -98,6 +98,9 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
 		this.setAttrsWithScaleLevel();
 		
 		this.initScale = true;
+		
+		//sync to client
+		if (!this.world.isRemote) this.sendSyncPacket(0);
 	}
 	
 	@Override

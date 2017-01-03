@@ -277,7 +277,7 @@ public class ParticleHelper
 				newPos1 = CalcHelper.rotateXZByAxis(1, 0, 6.28F / 20F * i, 1);
 				//motionY傳入4, 表示為特殊設定
 				ParticleSpray particleSpray5 = new ParticleSpray(world, 
-						lookX, lookY+0.3D, lookZ, newPos1[0]*0.4D, 0D, newPos1[1]*0.4D, 0);
+						lookX, lookY+0.3D, lookZ, newPos1[0]*0.35D, 0D, newPos1[1]*0.35D, 0);
 	        	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray5);
 			}
 			
@@ -292,7 +292,7 @@ public class ParticleHelper
 				newPos1 = CalcHelper.rotateXZByAxis((float)lookX, 0, 6.28F / 20F * i, 1);
 				//motionY傳入4, 表示為特殊設定
 				ParticleSpray particleSpray7 = new ParticleSpray(world, 
-						posX+newPos1[0]*1.8D, posY+1.2D+lookY, posZ+newPos1[1]*1.8D, -newPos1[0]*0.06D, 0D, -newPos1[1]*0.06D, 5);
+						posX+newPos1[0], posY+lookY, posZ+newPos1[1], -newPos1[0]*0.06D, 0D, -newPos1[1]*0.06D, 5);
 	        	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray7);
 			}
 		break;
@@ -302,7 +302,7 @@ public class ParticleHelper
 				newPos1 = CalcHelper.rotateXZByAxis((float)lookX, 0, 6.28F / 20F * i, 1);
 				//motionY傳入4, 表示為特殊設定
 				ParticleSpray particleSpray8 = new ParticleSpray(world, 
-						posX, posY+0.3D+lookY, posZ, newPos1[0]*0.15D, 0D, newPos1[1]*0.15D, 6);
+						posX, posY+lookY, posZ, newPos1[0], 0D, newPos1[1], 6);
 	        	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray8);
 			}
 		break;
@@ -500,7 +500,7 @@ public class ParticleHelper
 			newPos2 = CalcHelper.rotateXZByAxis((float)par2, (float)-par1, degYaw, 1F);
 			newPos3 = CalcHelper.rotateXZByAxis(0.25F, 0F, degYaw, 1F);
 			
-			for (int i = 0; i < 25; i++)
+			for (int i = 0; i < 24; i++)
 			{
 				ran1 = (rand.nextFloat() - 0.5F) * 2F;
 				ran2 = (rand.nextFloat() - 0.5F) * 2F;
