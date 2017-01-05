@@ -1,4 +1,4 @@
-# Keys
+﻿# Keys
 keys.shincolle.category=Shin Colle
 keys.shincolle.repair=Repair
 
@@ -224,8 +224,8 @@ entity.shincolle.EntityTransportWa.name=Transport Wa-Class
 
 # GUI: Book Text Chap 0
 gui.shincolle:book.chap0.title=Introduction
-gui.shincolle:book.chap0.text0d0=§cShinkeiseikan§0 is a group of lovely ship girls born from iron and grudge, they live freely in the ocean originally.<br><br>But someday, a fleet called §9Kanmusu§0 appeared with horrible weapons and began to attack §cShinkeiseikan§0's habitat without reason.
-gui.shincolle:book.chap0.text0d1=Because the vandalism, §cShinkeiseikan§0 is facing a serious crisis of survival.<br><br>Only one person can lead the ladies get out of despair, it is YOU... become an §4Abyssal Admiral§0 and save them from the crisis!
+gui.shincolle:book.chap0.text0d0=§cShinkeiseikan§0 is a group of lovely ship girls born from iron and grudge, they live freely in the ocean originally.<br><br>But one day, a fleet called §9Kanmusu§0 appeared with horrible weapons and began to attack §cShinkeiseikan§0's habitat without reason.
+gui.shincolle:book.chap0.text0d1=Because the vandalism, §cShinkeiseikan§0 is facing a serious crisis of survival.<br><br>Only one person can lead the ladies out of despair, it is YOU... become an §4Abyssal Admiral§0 and save them from the crisis!
 gui.shincolle:book.chap0.text1d0=Exploring the world and collecting four resources: §dGrudge§0, §dAbyssium§0, §dGrudgeful Ammo§0 and §dPolymetal§0 to construct §cShinkeiseikan§0.<br><br>§cShinkeiseikan§0 will protect the owner and attack any hostile mobs at a sufficient supply of resources.
 gui.shincolle:book.chap0.text1d1=Now go to collect these lovely ladies!
 
@@ -245,12 +245,12 @@ gui.shincolle:book.chap1.text3d0=<br><br><br><br><br><br><br><br><br>§cShinkeis
 gui.shincolle:book.chap1.text3d1=In addition to iron, you can also use copper, gold and diamond to make different quantity of ammo.<br><br>Replace §9Gunpowder§0 with §9Blazepowder§0 to make heavy ammo.
 gui.shincolle:book.chap1.title4=Repair Bucket
 gui.shincolle:book.chap1.text4d0=<br><br><br><br><br><br><br><br><br>§d§nRepair Bucket§r§0 is made from the most nutritious lava of the ocean and seasoned with grudge, it's the most popular §cShinkeiseikan§0 drinks.
-gui.shincolle:book.chap1.text4d1=Right click on ship to repair the ship.<br><br>Ship can automatically use the §d§nRepair Bucket§r§0 in the ship's inventory.
+gui.shincolle:book.chap1.text4d1=Right click on ship to repair the ship.<br><br>Ships can automatically use the §d§nRepair Bucket§r§0 in their inventory.
 gui.shincolle:book.chap1.title5=Seikan Wedding Ring
 gui.shincolle:book.chap1.text5d0=<br><br><br><br><br><br><br><br><br>§d§nShinkeiseikan Wedding Ring§r<br><br>With the classic minimalist style of prong mount and Nether Star Cut, it generously showcase the light of Nether Star.
 gui.shincolle:book.chap1.text5d1=It symbolizes the beauty of Nether and the owner's strength, and it's also the important sign of lasting love.<br><br>§9Sneaking+Right Click§0:<br>Marry the ship.<br>§9Right Click§0:<br>Activate the ring.<br><br>The number of married will activate different abilities: digging speed, vision, mobility in the water.
 gui.shincolle:book.chap1.title6=Seikan Ownership Paper
-gui.shincolle:book.chap1.text6d0=<br><br><br><br><br><br><br><br><br>The §d§nShinkeiseikan Ownership Paper§r§0 described the contents of the various items in detail with the transfer of ownership of the two sides should fulfill, just to take effect after signature of the parties.
+gui.shincolle:book.chap1.text6d0=<br><br><br><br><br><br><br><br><br>The §d§nShinkeiseikan Ownership Paper§r§0 describes the contents of the various items in detail with the transfer of ownership the two sides should fulfill, just to take effect after signature of the parties.
 gui.shincolle:book.chap1.text6d1=§9Right Click§0:<br>Sign the paper.<br><br>After the signature of the parties, the owner can right click the paper on the ship to transfer the ownership to other player.
 gui.shincolle:book.chap1.title7=Dismantle Hammer
 gui.shincolle:book.chap1.text7d0=<br><br><br><br><br><br><br><br><br>§d§nDismantle Hammer§r§0 can decompose the ship and recycle some of the material.
@@ -259,11 +259,11 @@ gui.shincolle:book.chap1.title8=Modernization Toolkit
 gui.shincolle:book.chap1.text8d0=<br><br><br><br><br><br><br><br><br>§d§nModernization Toolkit§r§0 contains a variety of the latest abyssal black technology, can be used to upgrade the ship's attributes.
 gui.shincolle:book.chap1.text8d1=§9Right Click§0 on ship to upgrade one of the ship's attributes randomly. The level of attributes is represented by color in ship's inventory GUI:<br><br>§fWHITE§0 (Lv1)<br>§eYELLOW§0 (Lv2)<br>§6ORANGE§0 (Lv3)<br>§4RED§0 (Lv4)<br><br>The maximum level is §4RED§0 (Lv4).
 gui.shincolle:book.chap1.title9=Instant Construction Material
-gui.shincolle:book.chap1.text9d0=<br><br><br><br><br><br><br><br><br>§d§nInstant Construction Material§r§0 contains some rare materials and the welding gun which provides the temperature higher than geocentric, it can improve the construction speed of abyssal ships and equipments.
+gui.shincolle:book.chap1.text9d0=<br><br><br><br><br><br><br><br><br>§d§nInstant Construction Material§r§0 contains some rare materials and the welding gun which provides a temperature higher than geocentric, it can improve the construction speed of abyssal ships and equipments.
 gui.shincolle:book.chap1.text9d1=Put the §d§nInstant Construction Material§r§0 in §9Abyssal Hydrothermal Vent§0 or §9Hadal Hydrothermal Vortex§0 to increase the construction progress.<br><br>§d§nInstant Construction Material§r§0 can only be crafted from NOT USED ship construction item.
 gui.shincolle:book.chap1.title10=The Grudge of Abyssal Goddess
-gui.shincolle:book.chap1.text10d0=<br><br><br><br><br><br><br><br><br>Offering the heaviest grudge and diamonds to pray for Abyssal Goddess's prontection, §d§nThe Grudge of Abyssal Goddess§r§0 will protect the §cShinkeiseikan§0 from fatal damage and give her the revenge will as deep as abyss.
-gui.shincolle:book.chap1.text10d1=Put §d§nThe Grudge of Abyssal Goddess§r§0 in ship's inventory, it will be consumed when ship get fatal damage. The ship will recovery to full HP and immune to damage for a while.
+gui.shincolle:book.chap1.text10d0=<br><br><br><br><br><br><br><br><br>Offering the heaviest grudge and diamonds to pray for Abyssal Goddess's protection, §d§nThe Grudge of Abyssal Goddess§r§0 will protect the §cShinkeiseikan§0 from fatal damage and give her the revenge will as deep as abyss.
+gui.shincolle:book.chap1.text10d1=Put §d§nThe Grudge of Abyssal Goddess§r§0 in ship's inventory, it will be consumed when the ship takes fatal damage. The ship will recover to full HP and be immune to damage for a while.
 gui.shincolle:book.chap1.title11=Wo-Class Command Scepter
 gui.shincolle:book.chap1.text11d0=<br><br><br><br><br><br><br><br><br>§d§nWo-Class Command Scepter§r§0 is the aircraft command equipment for magic girl Wo-Class. However the Abyssal Adrmiral cannot transform into magic girl, it can only be used to command ships for Abyssal Adrmiral.
 gui.shincolle:book.chap1.text11d1=There are 3 command modes, store up to 9 teams and each team 6 ships maximum.<br><br>§2Single Mode§0:<br>Only 1 §3Focus Target§0, command will ONLY apply to the §3Focus Target§0.<br><br>§4Group Mode§0:<br>0~6 §3Focus Target§0, command will ONLY apply to the §3Focus Target§0.<br><br>§6Formation Mode§0:<br>Ship move in specific formation and gain additional effect, command will apply to ALL ships.
@@ -280,14 +280,14 @@ gui.shincolle:book.chap1.title15=Abyssal Logbook
 gui.shincolle:book.chap1.text15d0=<br><br><br><br><br><br><br><br><br>The §d§nAbyssal Logbook§r§0 contains detailed information of the abyssal resources, §cShinkeiseikan§0 and §9Kanmusu§0 found so far.
 gui.shincolle:book.chap1.text15d1=
 gui.shincolle:book.chap1.title16=Abyssal Portable Radar
-gui.shincolle:book.chap1.text16d0=<br><br><br><br><br><br><br><br><br>The §d§nAbyssal Portable Radar§r§0 can detect nearby owned ships and further contact the ship or give orders.
+gui.shincolle:book.chap1.text16d0=<br><br><br><br><br><br><br><br><br>The §d§nAbyssal Portable Radar§r§0 can detect nearby owned ships and remotely contact them or give orders.
 gui.shincolle:book.chap1.text16d1=
 gui.shincolle:book.chap1.title17=Abyssal Adrmiral's Desk
 gui.shincolle:book.chap1.text17d0=<br><br><br><br><br><br><br><br><br>This stable and durable §d§nAbyssal Adrmiral's Desk§r§0 is made of obsidian. In addition to deal with the official business, it can also block the gunfire from angry secretary ship.<br>**Please ask the secretary ship before purchasing the furniture.
 gui.shincolle:book.chap1.text17d1=§9Radar§0:<br>Show a list of nearby owned ships, click ship on the list to carry out other action.<br><br>§9Abyssal Logbook§0:<br>Items, blocks and ships introduction.<br><br>§9Faction§0:<br>Create or add team with PVP mode.<br><br>§9Target List§0:<br>Browse attack target list.
 gui.shincolle:book.chap1.title18=Target Wrench
 gui.shincolle:book.chap1.text18d0=<br><br><br><br><br><br><br><br><br>§9Left Click:§0<br>§cADD/REMOVE§0 entity to §dUnattackable Target List§0. §4(OP ONLY!!)§0<br><br>§9Sneak + Left Click:§0<br>show §dUnattackable Target List§0.<br><br>§9Right Click:§0 Change Abyssal Waypoint stay time.
-gui.shincolle:book.chap1.text18d1=§9Sneak + Right Click:§0 pairing Abyssal Waypoint / Abyssal Crane and Chest.<br><br>§dUnattackable Target§0 will not be damaged by AoE attack, and can't be targeted. You can add entity like leash knot, item frame, airplane, mounts or boat.<br><br>This list apply to hostile mob ship too.<br>Ship and hostile ship can't be unattackable entity.
+gui.shincolle:book.chap1.text18d1=§9Sneak + Right Click:§0 pairing Abyssal Waypoint / Abyssal Crane and Chest.<br><br>§dUnattackable Target§0 will not be damaged by AoE attack, and can't be targeted. You can add entity like leash knot, item frame, airplane, mounts or boat.<br><br>This list applies to hostile mob ships too.<br>Ships and hostile ships can't be unattackable entities.
 gui.shincolle:book.chap1.title19=Abyssal Volcano Block
 gui.shincolle:book.chap1.text19d0=<br><br><br><br><br><br><br><br><br>When the lava is compressed by heavy grudge, it will become §d§nAbyssal Volcano Block§r§0.<br><br>Decorative block.
 gui.shincolle:book.chap1.text19d1=
@@ -298,16 +298,16 @@ gui.shincolle:book.chap1.title21=Abyssal Frame
 gui.shincolle:book.chap1.text21d0=<br><br><br><br><br><br><br><br><br>Twisted abyssal frame, decorative block.<br><br>It's a ladder block.
 gui.shincolle:book.chap1.text21d1=
 gui.shincolle:book.chap1.title22=Abyssal Waypoint
-gui.shincolle:book.chap1.text22d0=<br><br><br><br><br><br><br><br><br>Waypoint block, player can link waypoints by §dTarget Wrench§0.<br><br>If a ship move to a waypoint, the ship will continue move to next waypoint.
-gui.shincolle:book.chap1.text22d1=§9Right Click§0 with §dTarget Wrench§0 to show the waypoint info.<br>§9Sneak + Right Click§0 to link two waypoints.<br><br>A waypoint can save 1 NEXT and 1 LAST waypoint, and the max distance is 48 blocks.<br><br>If a waypoint link back to its last waypoint (next = last), when a ship move to the waypoint, the ship will begin to move backwards.
+gui.shincolle:book.chap1.text22d0=<br><br><br><br><br><br><br><br><br>Waypoint block, player can link waypoints by §dTarget Wrench§0.<br><br>If a ship moves to a waypoint, the ship will continue move to next waypoint.
+gui.shincolle:book.chap1.text22d1=§9Right Click§0 with §dTarget Wrench§0 to show the waypoint info.<br>§9Sneak + Right Click§0 to link two waypoints.<br><br>A waypoint can save 1 NEXT and 1 LAST waypoint, and the max distance is 48 blocks.<br><br>If a waypoint links back to it's last waypoint (next = last), when the ship moves to the waypoint, the ship will begin to move backwards.
 gui.shincolle:book.chap1.title23=Abyssal Crane
 gui.shincolle:book.chap1.text23d0=<br><br><br><br><br><br><br><br><br>The machine block for loading and unloading items to ship. Owner can link the §dAbyssal Crane§0 to §9any chest§0 or other §9Abyssal Waypoint§0 by §dTarget Wrench§0.  Ship will start to load/unload items when she gets to the crane and go to the next waypoint after the job done.
-gui.shincolle:book.chap1.text23d1=§9Top Left§0 button is §9Power Switch§0.<br><br>§9The Top Largest§0 button is §9Waiting Mode§0.<br><br>§9Middle§0 bbuttons with M/D/N are item matching condition.<br><br>§9Center 9x2 Slots§0 are loading/unloading target, left all empty menas §9ANY§0 item.<br><br>Loading/Unloading can disable separately, and ship will not attack and move while craning.
+gui.shincolle:book.chap1.text23d1=§9Top Left§0 button is §9Power Switch§0.<br><br>§9The Top Largest§0 button is §9Waiting Mode§0.<br><br>§9Middle§0 buttons with M/D/N are item matching condition.<br><br>§9Center 9x2 Slots§0 are loading/unloading target, left all empty means §9ANY§0 item.<br><br>Loading/Unloading can disable separately, and ship will not attack and move while craning.
 
 # GUI: Book Text Chap 2
 gui.shincolle:book.chap2.title=Construction
 gui.shincolle:book.chap2.title0=Primary Class Shinkeiseikan
-gui.shincolle:book.chap2.text0d0=<br><br><br><br><br><br><br><br><br><br><br>You can start building primary class §cShinkeiseikan§0 in §9Abyssal Hydrothermal Vent§0 if you have collected enough resources.
+gui.shincolle:book.chap2.text0d0=<br><br><br><br><br><br><br><br><br><br><br>You can start building primary class §cShinkeiseikan§0 in the §9Abyssal Hydrothermal Vent§0 if you have collected enough resources.
 gui.shincolle:book.chap2.text0d1=<br><br><br><br><br><br><br><br><br><br>You need §916~64§0 §4Grudge / Abyssium Ingot / Polymetallic Nodules / Grudgeful Ammo§0 and a large amount of lava as power.
 gui.shincolle:book.chap2.title1=
 gui.shincolle:book.chap2.text1d0=<br><br><br><br>After putting resources into the §9Abyssal Hydrothermal Vent§0, click the §4"Ship Spawn Egg"§0 icon on the right side to start building §cShinkeiseikan§0.<br><br>§9Double Click§0 the icon to enter a §cContinuously Build Mode§0, the amounts of four resources will be recorded and every construction will consume the recorded resources.
@@ -329,10 +329,10 @@ gui.shincolle:book.chap2.text5d1=The equip info is decribed in the item tooltip:
 gui.shincolle:book.chap3.title=Ship Maintenance Guide
 gui.shincolle:book.chap3.title0=How to Obtain Ships
 gui.shincolle:book.chap3.text0d0=§91.§0 By construction.<br><br>§92.§0 Found in dungeon chest.<br><br>§93.§0 Defeating the spawned hostile ship.<br><br><br>The easiest way is spending resources to build ship, and you can find some advanced class ship and equipment in dungeon chest.
-gui.shincolle:book.chap3.text0d1=If you have §dShinkeiseikan Wedding Ring§0 in inventory and in the §9Sea/Beach§0 biome, the hostile fleet may appear on the sea.<br><br>You can get ship spawn egg by defeating the spawned hostile ship.
+gui.shincolle:book.chap3.text0d1=If you have §dShinkeiseikan Wedding Ring§0 in inventory and in the §9Sea/Beach§0 biome, the hostile fleet may appear on the sea.<br><br>You can get a ship's spawn egg by defeating the spawned hostile ship.
 gui.shincolle:book.chap3.title1=Maintenance Cost
 gui.shincolle:book.chap3.text1d0=§91.§0 Ship consume §cGrudge§0 as fuel. Ship can not do anything if not enough §cGrudge§0.<br><br>§92.§0 Ship consume §98 §cGrudge§0 per day in idle mode.<br><br>§93.§0 Moving consume extra §cGrudge§0.<br><br>§94.§0 Attack consume §cGrudge§0 and §dAmmo§0.<br><br>§95.§0 Aircraft attack consume §cGrudge§0, §dAmmo§0 and an §3Airplane§0.
-gui.shincolle:book.chap3.text1d1=§96.§0 The amount of airplane recover over time.<br><br>§97.§0 Put consumable items into ship's inventory, ship will automatically use them.
+gui.shincolle:book.chap3.text1d1=§96.§0 The amount of airplanes recover over time.<br><br>§97.§0 Put consumable items into ship's inventory, ship will automatically use them.
 gui.shincolle:book.chap3.title2=Ship Control & Leveling
 gui.shincolle:book.chap3.text2d0=§91. Right Click§0: sit/stand.<br><br>§92. Sneaking + Right Click§0: Open ship's GUI.<br><br>§93.§0 You can set party/formation by §cWo-Class Command Scepter§0.
 gui.shincolle:book.chap3.text2d1=§91.§0 Ship gained exp on attacking, whether or not hit the target.<br><br>§92.§0 Ship level up when exp reaches the limit.<br><br>§93.§0 Max level is §9100§0 / §c150§0 for §dMarried§0 ship.
@@ -344,7 +344,7 @@ gui.shincolle:book.chap3.text4d0=§91. Critical§0: Deals §c150%%§0 damage. (�
 gui.shincolle:book.chap3.text4d1=§94. Miss§0: Deals §c0%%§0 damage and knockback only. §4Torpedo/Missile§0 attack deals §c100%%§0 damage but the trajectory will deviate from target.<br><br>§95. Anti-Air§0: Deal additional damage to §4Fly§0 target.<br><br>§96. Anti-SS§0: Deal additional damage to §4Submarine§0 target.<br><br>§97. Dodge§0: Ignore the damage and knockback effect.
 gui.shincolle:book.chap3.title5=Combat
 gui.shincolle:book.chap3.text5d0=§91.§0 Ship will attack mob automatically with sufficient §cGrudge§0 and §dAmmo§0.<br><br>§92.§0 Ship stop attacking when §4Sitting§0.<br><br>§93.§0 Ship can attack while §4Riding§0.<br><br>§94.§0 Owner can control attacking by §4Wo-Class Command Scepter§0.<br><br>§95.§0 Owner can adjust the attack AI in ship's GUI.
-gui.shincolle:book.chap3.text5d1=§96.§0 Ship will recovery HP over time.<br><br>§97.§0 Use §4Repair Bucket§0 to recovery HP immediately.<br><br>§98.§0 Ship will turn to §4Spawn Egg§0 and drop on the ground if §cHP < 0§0.<br><br>§99.§0 Ship's level §4decrease 1§0 if §cHP < 0§0.<br><br>§910.§0 Owner has to spend exp to use the ship spawn egg.
+gui.shincolle:book.chap3.text5d1=§96.§0 Ship will recover HP over time.<br><br>§97.§0 Use §4Repair Bucket§0 to recovery HP immediately.<br><br>§98.§0 Ship will turn to §4Spawn Egg§0 and drop on the ground if §cHP < 0§0.<br><br>§99.§0 Ship's level §4decrease 1§0 if §cHP < 0§0.<br><br>§910.§0 Owner has to spend exp to use the ship spawn egg.
 gui.shincolle:book.chap3.title6=
 gui.shincolle:book.chap3.text6d0=§911.§0 Put §4The Grudge of Abyssal Goddess§0 into ship's inventory to avoid death once.<br><br>§912.§0 Ship can use §4Repair Bucket§0 automatically in ship's inventory.<br><br>§913.§0 There are restraint relations between ships, check: §9https://goo.gl/jmR3Wd§0<br><br>§914.§0 In addition to the submarine, all damage will decrease in night.
 gui.shincolle:book.chap3.text6d1=
@@ -373,8 +373,8 @@ gui.shincolle:book.chap3.title14=Feeding
 gui.shincolle:book.chap3.text14d0=Generally the ship don't need to feed, but you can feed ship to increase morale and grudge value manually.<br><br>§9Right click§0 on ship with food or some items to feed the ship.<br><br>You can only feed a certain times in a period of time.
 gui.shincolle:book.chap3.text14d1=§9Grudge, Food:§0<br>Increase grudge, morale value.<br><br>§9Ammo:§0<br>Increase morale and ammo value a little more than automatically consumed by ship.<br><br>§9Abyssium, Polymetal:§0<br>Increase number of aircraft for CV.
 gui.shincolle:book.chap3.title15=Caress
-gui.shincolle:book.chap3.text15d0=The owner can caress ship to reward or simply harass her. A correct caress can §9improve the shop's morale§0 effectively.<br><br>To caress ship, held §dWo-Class Command Scepter§0 and press §9List Players (default: TAB)§0 to change to caress mode, and §9Right Click§0 on the ship.
-gui.shincolle:book.chap3.text15d1=Caress target is determined by the cross and the relative face angle between owner and ship.<br><br>The target are: top, head, face, neck, chest, belly, under belly, leg, arm, back.<br><br>Different individuals have different sensitive part, be careful the reaction when caressing.
+gui.shincolle:book.chap3.text15d0=The owner can caress ship to reward or simply harass her. A correct caress can §9improve the shop's morale§0 effectively.<br><br>To caress ship, hold §dWo-Class Command Scepter§0 and press §9List Players (default: TAB)§0 to change to caress mode, and §9Right Click§0 on the ship.
+gui.shincolle:book.chap3.text15d1=Caress target is determined by the cross and the relative face angle between owner and ship.<br><br>The target are: top, head, face, neck, chest, belly, under belly, leg, arm, back.<br><br>Different individuals have different sensitive part, be careful of the reaction when caressing.
 
 # GUI: Book Text Chap 4
 gui.shincolle:book.chap4.title=Ship List
@@ -431,10 +431,10 @@ gui.shincolle:book.chap4.text16d0=
 gui.shincolle:book.chap4.text16d1=§9Name:§0 Ka-Class<br><br>§9Class:§0 Submarine<br><br>§9Factory:§0 Abyssal Vent<br><br>§9Factor:§0 Ammo (140)<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 SS base dodge 20%%<br><br>She is very indoorsy although she looks to be a bad girl.
 gui.shincolle:book.chap4.title17=
 gui.shincolle:book.chap4.text17d0=
-gui.shincolle:book.chap4.text17d1=§9Name:§0 Yo-Class<br><br>§9Class:§0 Submarine<br><br>§9Factory:§0 Abyssal Vent<br><br>§9Factor:§0 Ammo (160)<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 SS base dodge 20%%<br><br>A shy shinkeiseikan, but be careful that it's difficult to break free once bited. 
+gui.shincolle:book.chap4.text17d1=§9Name:§0 Yo-Class<br><br>§9Class:§0 Submarine<br><br>§9Factory:§0 Abyssal Vent<br><br>§9Factor:§0 Ammo (160)<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 SS base dodge 20%%<br><br>A shy shinkeiseikan, but be careful, it's difficult to break free once bitten. 
 gui.shincolle:book.chap4.title18=
 gui.shincolle:book.chap4.text18d0=
-gui.shincolle:book.chap4.text18d1=§9Name:§0 So-Class<br><br>§9Class:§0 Submarine<br><br>§9Factory:§0 Abyssal Vent<br><br>§9Factor:§0 Ammo (180)<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 SS base dodge 25%%<br><br>Like swimming naked and hit enemy with large and bulky torpedo.
+gui.shincolle:book.chap4.text18d1=§9Name:§0 So-Class<br><br>§9Class:§0 Submarine<br><br>§9Factory:§0 Abyssal Vent<br><br>§9Factor:§0 Ammo (180)<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 SS base dodge 25%%<br><br>Likes swimming naked and hiting enemies with large and bulky torpedos.
 gui.shincolle:book.chap4.title19=
 gui.shincolle:book.chap4.text19d0=
 gui.shincolle:book.chap4.text19d1=§9Name:§0 Aircraft Carrier Princess<br><br>§9Class:§0 Princess Class CV<br><br>§9Factory:§0 Hadal Vortex<br><br>§9Factor:§0 Polymetal (3000)<br><br>§9AuraEffect§0 none<br><br>§9OtherEffect:§0 enhanced melee<br><br>Melee: Deal 100%% firepower AoE damage.
@@ -442,8 +442,8 @@ gui.shincolle:book.chap4.text19d1=§9Name:§0 Aircraft Carrier Princess<br><br>�
 # GUI: Book Text Chap 5
 gui.shincolle:book.chap5.title=Enemy List
 gui.shincolle:book.chap5.title0=Kanmusu
-gui.shincolle:book.chap5.text0d0=Kanmusu is an aggressive evil ship, they are the biggest enemy for Shinkeiseikan.<br><br>If owner stay in water biome with §dShinkeiseikan Wedding Ring§0, the fleet of Kanmusu may appear on the sea.
-gui.shincolle:book.chap5.text0d1=Defeat the fleet may obtain the spawn egg of Kanmusu. Register the Kanmusu by opening the ship inventory GUI.
+gui.shincolle:book.chap5.text0d0=Kanmusu is an aggressive evil ship, they are the biggest enemy for Shinkeiseikan.<br><br>If owner stays in a  water biome with §dShinkeiseikan Wedding Ring§0, the fleet of Kanmusu may appear on the sea.
+gui.shincolle:book.chap5.text0d1=Defeating a fleet may reward the spawn egg of Kanmusu. Register the Kanmusu by opening the ship inventory GUI.
 gui.shincolle:book.chap5.title1=
 gui.shincolle:book.chap5.text1d0=
 gui.shincolle:book.chap5.text1d1=§9Name:§0 Shimakaze<br><br>§9Class:§0 Shimakaze Class DD<br><br>§9AuraEffect:§0 Moving speed aura<br><br>§9OtherEffect:§0 Pick up items<br><br>Heavy attack: Quintuple Oxygen Torpedo Mount: deal 30%% torpedo damage each torpedo.<br>Sneaking+Right Click with cake to change summon type.
@@ -461,13 +461,13 @@ gui.shincolle:book.chap5.text5d0=
 gui.shincolle:book.chap5.text5d1=§9Name:§0 Yamato<br><br>§9Class:§0 Yamato Class BB<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 none<br><br>Heavy attack: Yamato Cannon: 2 round per attack, deal 150%% torpedo damage, beam longest range ~ 120 blocks.
 gui.shincolle:book.chap5.title6=
 gui.shincolle:book.chap5.text6d0=
-gui.shincolle:book.chap5.text6d1=§9Name:§0 Kaga<br><br>§9Class:§0 Kaga Class CV<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 none<br><br>The aircraft carrier with a lots aircraft to make you feel fretful. 
+gui.shincolle:book.chap5.text6d1=§9Name:§0 Kaga<br><br>§9Class:§0 Kaga Class CV<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 none<br><br>The aircraft carrier with a lot of aircraft to make you feel fretful. 
 gui.shincolle:book.chap5.title7=
 gui.shincolle:book.chap5.text7d0=
 gui.shincolle:book.chap5.text7d1=§9Name:§0 Akagi<br><br>§9Class:§0 Akagi Class CV<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 none<br><br>It's said that all Shinkeiseikan will be eaten if Akagi appear.
 gui.shincolle:book.chap5.title8=
 gui.shincolle:book.chap5.text8d0=
-gui.shincolle:book.chap5.text8d1=§9Name:§0 Akatsuki<br><br>§9Class:§0 Akatsuki Class DD<br><br>§9AuraEffect:§0 Digging speed aura, Searchlight<br><br>§9OtherEffect:§0 Pick up items<br><br>She is often seen in expedition with heavy drum canister.
+gui.shincolle:book.chap5.text8d1=§9Name:§0 Akatsuki<br><br>§9Class:§0 Akatsuki Class DD<br><br>§9AuraEffect:§0 Digging speed aura, Searchlight<br><br>§9OtherEffect:§0 Pick up items<br><br>She is often seen in expedition with a heavy drum canister.
 gui.shincolle:book.chap5.title9=
 gui.shincolle:book.chap5.text9d0=
 gui.shincolle:book.chap5.text9d1=§9Name:§0 Hibiki<br><br>§9Class:§0 Akatsuki Class DD<br><br>§9AuraEffect:§0 Jump power aura<br><br>§9OtherEffect:§0 Pick up items, Dodge+30%%<br><br>хорошо~
@@ -484,7 +484,7 @@ gui.shincolle:book.chap6.title0=
 gui.shincolle:book.chap6.text0d0=§9/shipinfo§c<br>§dAuthority:§0 All Player<br>§dPurpose:§0 show ship info
 gui.shincolle:book.chap6.text0d1=§9/shipchangeowner§c <Player Name><br>§dAuthority:§0 OP only<br>§dPurpose:§0 change ship's owner<br><br>OP, Ship and Player A must be online and in the same dimension (world).<br><br>The OP's mouseover ship's owner will be changed to the Player A.
 gui.shincolle:book.chap6.title1=
-gui.shincolle:book.chap6.text1d0=§9/shipupdateowneruid§3 [Player Name]<br>§dAuthority:§0 All Player<br>§dPurpose:§0 update ship's owner UID<br><br>If the ship does no response, try this command to fix the bug. OP can specify a player to update the UID.<br><br>This command only affect the ship in the loaded chunk and the player must be online.<br>If the command is not work, try /shipchangeowner to change ship's owner 1 by 1.
+gui.shincolle:book.chap6.text1d0=§9/shipupdateowneruid§3 [Player Name]<br>§dAuthority:§0 All Player<br>§dPurpose:§0 update ship's owner UID<br><br>If the ship does not respond, try this command to fix the bug. OP can specify a player to update the UID.<br><br>This command only affects the ship in the loaded chunk and the player must be online.<br>If the command does not work, try /shipchangeowner to change ship's owner 1 by 1.
 gui.shincolle:book.chap6.text1d1=§9/shipattrs <Ship LV> [<HP LV> <ATK LV> <DEF LV> <A.SPD LV> <M.SPD LV> <Range LV>]<br>§dAuthority:§0 OP only<br>§dPurpose:§0 change ship attributes<br><br>Change mouseover ship's level and six main attributes level. Valid value: Ship LV = 1~150, Attrs LV = 0~100.
 gui.shincolle:book.chap6.title2=
 gui.shincolle:book.chap6.text2d0=§9/shipcleardrop [range]<br>§dAuthority:§0 OP only<br>§dPurpose:§0 remove drop item (grudge entity)<br><br>Remove drop item entity within range, default range = 128 blocks.
