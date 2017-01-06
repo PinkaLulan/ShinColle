@@ -7,6 +7,7 @@ import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.item.EquipAirplane;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.BlockHelper;
+import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;

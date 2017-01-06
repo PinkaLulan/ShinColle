@@ -3,7 +3,6 @@ package com.lulan.shincolle.ai.path;
 import com.lulan.shincolle.entity.IShipNavigator;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -113,7 +112,7 @@ public class ShipMoveHelper
                 	}
                 }
                 //non-fly entity in water
-                else if (EntityHelper.checkEntityIsInLiquid(entity))
+                else if (EntityHelper.checkEntityIsInLiquid(this.entity))
                 {
                 	if (y1 > 1D)  //UP
             		{

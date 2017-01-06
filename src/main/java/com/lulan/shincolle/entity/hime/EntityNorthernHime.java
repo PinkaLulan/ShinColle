@@ -1,42 +1,46 @@
 package com.lulan.shincolle.entity.hime;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.MathHelper;
-import net.minecraft.world.World;
+import javax.annotation.Nullable;
 
 import com.lulan.shincolle.ai.EntityAIShipCarrierAttack;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipCV;
-import com.lulan.shincolle.entity.ExtendShipProps;
 import com.lulan.shincolle.entity.other.EntityFloatingFort;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.CalcHelper;
-import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
+import com.lulan.shincolle.utility.TeamHelper;
 
-import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
-public class EntityNorthernHime extends BasicEntityShipCV {
+public class EntityNorthernHime extends BasicEntityShipCV
+{
 	
 	private int goRidingTicks;		//騎乘目標尋找時間
 	private boolean goRiding;		//是否要找目標騎乘
 	private Entity goRideEntity;	//騎乘目標
 	
-	public EntityNorthernHime(World world) {
+	
+	public EntityNorthernHime(World world)
+	{
 		super(world);
 		this.setSize(0.6F, 1.2F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
@@ -45,31 +49,35 @@ public class EntityNorthernHime extends BasicEntityShipCV {
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BBV]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BBV]);
 		this.ModelPos = new float[] {-6F, 8F, 0F, 50F};
-		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
-		goRidingTicks = 0;
-		goRideEntity = null;
-		goRiding = false;
-		launchHeight = this.height;
+		this.goRidingTicks = 0;
+		this.goRideEntity = null;
+		this.goRiding = false;
+		this.launchHeight = this.height;
 		
 		//set attack type
 		this.StateFlag[ID.F.HaveRingEffect] = true;
+		
+		//misc
+		this.setFoodSaturationMax(16);
 		
 		this.postInit();
 	}
 	
 	@Override
-	public float getEyeHeight() {
-		return 1.0F;
-	}
-	
-	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc
-	@Override
-	public int getEquipType() {
+	public int getEquipType()
+	{
 		return 2;
 	}
 	
 	@Override
-	public void setAIList() {
+	public int getKaitaiType()
+	{
+		return 1;
+	}
+	
+	@Override
+	public void setAIList()
+	{
 		super.setAIList();
 		
 		//use range attack
@@ -82,7 +90,7 @@ public class EntityNorthernHime extends BasicEntityShipCV {
   	public void onLivingUpdate()
   	{
   		//server side
-  		if (!worldObj.isRemote)
+  		if (!this.world.isRemote)
   		{
   			//every 64 ticks
         	if (this.ticksExisted % 64 == 0)
@@ -105,41 +113,37 @@ public class EntityNorthernHime extends BasicEntityShipCV {
         		}
         		
         		//2: 結婚後, 周圍某一目標回血, 包括玩家, 回血目標依等級提昇
-				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) && !getStateFlag(ID.F.NoFuel))
+				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.M.NumGrudge) > 25)
 				{
 					//判定bounding box內是否有可以回血的目標
 					int healCount = this.getLevel() / 25 + 1;
-		            EntityLivingBase hitEntity = null;
-		            List hitList = null;
-		            hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, this.boundingBox.expand(8D, 8D, 8D));
+		            List<EntityLivingBase> hitList = this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox().expand(8D, 8D, 8D));
 		            TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
 		            
-		            for (int i = 0; i < hitList.size(); i++)
+		            for (EntityLivingBase target : hitList)
 		            {
 		            	boolean canHeal = false;
 		            	
 		            	//補血名額沒了, break
 		            	if (healCount <= 0) break;
 		            	
-		            	hitEntity = (EntityLivingBase) hitList.get(i);
-		            	
 		            	//抓可以補血的目標, 不包含自己
-		            	if (hitEntity != this && hitEntity.getHealth() / hitEntity.getMaxHealth() < 0.98F)
+		            	if (target != this && TeamHelper.checkIsAlly(this, target) && target.getHealth() / target.getMaxHealth() < 0.98F)
 		            	{
-	            			if (hitEntity instanceof EntityPlayer)
+	            			if (target instanceof EntityPlayer)
 	            			{
-	            				hitEntity.heal(1F + this.getLevel() * 0.02F);
+	            				target.heal(1F + this.getLevel() * 0.02F);
 	            				canHeal = true;
 		            		}
-		            		else if (hitEntity instanceof BasicEntityShip && EntityHelper.checkIsAlly(this, hitEntity))
+		            		else if (target instanceof BasicEntityShip)
 		            		{
-		            			hitEntity.heal(1F + hitEntity.getMaxHealth() * 0.02F + this.getLevel() * 0.1F);
+		            			target.heal(1F + target.getMaxHealth() * 0.02F + this.getLevel() * 0.1F);
 		            			canHeal = true;
-		            		}
+			            	}
 	            			
 	            			if (canHeal)
 	            			{
-	            				CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, hitEntity, 1D, 0D, 0D, 4, false), point);
+	            				CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, target, 1D, 0D, 0D, 4, false), point);
 	            				healCount--;
 		            			decrGrudgeNum(25);
 	            			}
@@ -150,9 +154,8 @@ public class EntityNorthernHime extends BasicEntityShipCV {
 				//every 256 ticks
 	        	if (this.ticksExisted % 256 == 0)
 	        	{
-	        		int roll = this.rand.nextInt(3);
 	        		//每一段時間檢查是否要騎乘其他entity
-	        		if (roll == 0)
+	        		if (this.rand.nextInt(3) == 0)
 	        		{
 	        			this.checkRiding();
 	        		}
@@ -160,30 +163,38 @@ public class EntityNorthernHime extends BasicEntityShipCV {
         	}//end 64 ticks
         	
         	//若要找騎乘目標
-        	if(this.goRiding) {
+        	if (this.goRiding)
+        	{
         		this.goRidingTicks++;
         		
         		//找太久, 放棄騎乘目標
-        		if(this.goRidingTicks > 200) {
+        		if (this.goRidingTicks > 200)
+        		{
         			this.cancelGoRiding();
         		}
         		
         		float distRiding = 0F;
-        		if(goRideEntity != null) {
+        		if (this.goRideEntity != null)
+        		{
         			distRiding = this.getDistanceToEntity(this.goRideEntity);
         		}
         		
         		//每32 tick找一次路徑
-        		if(this.ticksExisted % 32 == 0) {
-        			if(distRiding > 2F) {
+        		if (this.ticksExisted % 32 == 0)
+        		{
+        			if (distRiding > 2F)
+        			{
         				this.getShipNavigate().tryMoveToEntityLiving(this.goRideEntity, 1D);
         			}
         		}
         		
         		//距離2格內則騎乘目標
-        		if(distRiding <= 2F) {
-        			if(goRideEntity != null && !goRideEntity.isRiding() && this.riddenByEntity == null) {
-        				this.mountEntity(goRideEntity);
+        		if (distRiding <= 2F)
+        		{
+        			if (this.goRideEntity != null && !this.goRideEntity.isRiding() &&
+        				this.getPassengers().size() == 0 && this.goRideEntity.getPassengers().size() == 0)
+        			{
+        				this.startRiding(goRideEntity, true);
         				this.getShipNavigate().clearPathEntity();
         				this.cancelGoRiding();
         			}
@@ -191,32 +202,39 @@ public class EntityNorthernHime extends BasicEntityShipCV {
         	}
         	
         	//騎乘中
-        	if(this.isRiding()) { 	
+        	if (this.isRiding())
+        	{ 	
         		//若騎乘目標sneaking, 則取消期程目標
-    			if(this.ridingEntity.isSneaking()) {
-        			this.mountEntity(null);
+    			if (this.getRidingEntity().isSneaking())
+    			{
+        			this.dismountRidingEntity();
         		}
         	}
-         	
   		}//end server side
   		//client side
-  		else {
+  		else
+  		{
   			//drip water effect
-  			if(this.ticksExisted % 8 == 0) {
-  				if(getStateEmotion(ID.S.State2) == ID.State.EQUIP01_2 && !getStateFlag(ID.F.NoFuel)) {
-  					if(this.isSitting() || this.isRiding()) {
+  			if (this.ticksExisted % 8 == 0)
+  			{
+  				if (getStateEmotion(ID.S.State2) == ID.State.EQUIP01_2 && !getStateFlag(ID.F.NoFuel))
+  				{
+  					if (this.isSitting() || this.isRiding())
+  					{
   						ParticleHelper.spawnAttackParticleAt(this.posX, this.posY+0.9D, this.posZ, 0D, 0D, 0D, (byte)28);
   					}
-  					else {
+  					else
+  					{
   						ParticleHelper.spawnAttackParticleAt(this.posX, this.posY+1.1D, this.posZ, 0D, 0D, 0D, (byte)28);
   					}
   				}
   			}
   			
   			//同步騎乘方向
-  			if(this.isRiding() && this.ridingEntity instanceof EntityLivingBase) {
-  				this.renderYawOffset = ((EntityLivingBase)ridingEntity).renderYawOffset;
-  				this.rotationYaw = ridingEntity.rotationYaw;
+  			if (this.getRidingEntity() instanceof EntityLivingBase)
+  			{
+  				this.renderYawOffset = ((EntityLivingBase)this.getRidingEntity()).renderYawOffset;
+  				this.rotationYaw = this.getRidingEntity().rotationYaw;
   			}
   		}
   			
@@ -224,47 +242,43 @@ public class EntityNorthernHime extends BasicEntityShipCV {
   	}
   	
   	//cancel go riding entity
-  	private void cancelGoRiding() {
-  		goRidingTicks = 0;
-		goRideEntity = null;
-		goRiding = false;
+  	private void cancelGoRiding()
+  	{
+  		this.goRidingTicks = 0;
+  		this.goRideEntity = null;
+  		this.goRiding = false;
   	}
 	
   	//mount other entity
-	private void checkRiding() {
+	private void checkRiding()
+	{
+		//reset flag
 		this.cancelGoRiding();
-		if(this.isSitting() || this.getLeashed() || this.getStateFlag(ID.F.NoFuel)) {
+		
+		if (this.isSitting() || this.getLeashed() || this.getStateFlag(ID.F.NoFuel))
+		{
 			return;
 		}
 		
 		//已經在騎乘, 則機率下坐騎
-		if(this.isRiding()) {
-			this.mountEntity(null);
+		if (this.isRiding() && this.rand.nextInt(2) == 0)
+		{
+			this.dismountRidingEntity();
 		}
-		else {
-			EntityLivingBase getEnt = null;
-	        AxisAlignedBB impactBox = this.boundingBox.expand(6D, 4D, 6D); 
-	        List hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, impactBox);
-	        List<EntityLivingBase> canRideList = new ArrayList();
+		else
+		{
+	        List<EntityLivingBase> hitList = this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox().expand(6D, 4D, 6D));
 	        
-	        //搜尋list, 找出第一個可以騎乘的目標
-	        if(hitList != null && !hitList.isEmpty()) {
-	            for(int i = 0; i < hitList.size(); ++i) {
-	            	getEnt = (EntityLivingBase)hitList.get(i);
-	            	
-	            	//只騎乘同主人的棲艦或者主人
-	            	if(getEnt instanceof BasicEntityShip || getEnt instanceof EntityPlayer) {
-	            		if(getEnt != this && !getEnt.isRiding() && getEnt.riddenByEntity == null &&
-	            		   EntityHelper.checkSameOwner(this, getEnt)) {
-	            			canRideList.add(getEnt);
-	            		 }
-	            	}
-	            }
-	        }
-	        
+	        hitList.removeIf(target ->
+	        	!(target instanceof BasicEntityShip || target instanceof EntityPlayer) ||
+	        	this.equals(target) || target.isRiding() || target.getPassengers().size() > 0 ||
+	        	!TeamHelper.checkSameOwner(this, target)
+	        );
+
 	        //從可騎乘目標中挑出一個目標騎乘
-	        if(canRideList.size() > 0) {
-	        	this.goRideEntity = canRideList.get(rand.nextInt(canRideList.size()));
+	        if (hitList.size() > 0)
+	        {
+	        	this.goRideEntity = hitList.get(rand.nextInt(hitList.size()));
 	        	this.goRidingTicks = 0;
     			this.goRiding = true;
 	        }
@@ -272,48 +286,36 @@ public class EntityNorthernHime extends BasicEntityShipCV {
 	}
 
 	@Override
-  	public boolean interact(EntityPlayer player)
-	{	
-		ItemStack itemstack = player.inventory.getCurrentItem();  //get item in hand
-		
-		//use cake to change state
-		if (itemstack != null)
-		{
-			if (itemstack.getItem() == Items.cake)
-			{
-				this.setShipOutfit(player.isSneaking());
-				return true;
-			}
-		}
-		
+    public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, @Nullable ItemStack stack, EnumHand hand)
+    {
+    	//禁用副手
+    	if (hand == EnumHand.OFF_HAND) return EnumActionResult.FAIL;
+    		
 		//pick up northern for riding
-		if (!this.worldObj.isRemote)
+		if (!this.world.isRemote)
 		{
-			if (this.isSitting() && EntityHelper.checkSameOwner(this, player) &&
+			if (this.isSitting() && TeamHelper.checkSameOwner(this, player) &&
 				this.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 			{
-				this.setEntitySit();
-				this.mountEntity(player);
+				this.setEntitySit(false);
+				this.startRiding(player);
 				this.getShipNavigate().clearPathEntity();
 				this.cancelGoRiding();
 				
-				return true;
+				return EnumActionResult.SUCCESS;
 			}
 		}
 		
-		return super.interact(player);
+		return super.applyPlayerInteraction(player, vec, stack, hand);
   	}
 	
 	@Override
-	public int getKaitaiType() {
-		return 1;
-	}
-	
-	@Override
-    public boolean attackEntityFrom(DamageSource attacker, float atk) {
+    public boolean attackEntityFrom(DamageSource attacker, float atk)
+	{
 		//若騎乘別的ship, 則取消騎乘
-		if(this.isRiding() && (ridingEntity instanceof BasicEntityShip || ridingEntity instanceof EntityPlayer)) {
-			this.mountEntity(null);
+		if (this.getRidingEntity() instanceof BasicEntityShip || this.getRidingEntity() instanceof EntityPlayer)
+		{
+			this.dismountRidingEntity();
 		}
 		
 		return super.attackEntityFrom(attacker, atk);
@@ -321,7 +323,8 @@ public class EntityNorthernHime extends BasicEntityShipCV {
   	
   	//貓章魚燒攻擊
   	@Override
-  	public boolean attackEntityWithHeavyAmmo(Entity target) {
+  	public boolean attackEntityWithHeavyAmmo(Entity target)
+  	{
 		//計算目標距離
 		float tarX = (float)target.posX;	//for miss chance calc
 		float tarY = (float)target.posY;
@@ -332,11 +335,9 @@ public class EntityNorthernHime extends BasicEntityShipCV {
 		distVec[0] = tarX - (float)this.posX;
 		distVec[1] = tarY - (float)this.posY;
 		distVec[2] = tarZ - (float)this.posZ;
-		distVec[3] = MathHelper.sqrt_float(distVec[0]*distVec[0] + distVec[1]*distVec[1] + distVec[2]*distVec[2]);
+		distVec[3] = MathHelper.sqrt(distVec[0]*distVec[0] + distVec[1]*distVec[1] + distVec[2]*distVec[2]);
 
-        if(getShipDepth() > 0D) {
-        	launchPos += 0.2D;
-        }
+        if (getShipDepth() > 0D) launchPos += 0.2D;
 		
 		//experience++
 		addShipExp(ConfigHandler.expGain[2]);
@@ -353,103 +354,108 @@ public class EntityNorthernHime extends BasicEntityShipCV {
 	    applyParticleAtAttacker(2, target, distVec);
 
         //heavy ammo--
-        if(!decrAmmoNum(1, this.getAmmoConsumption())) {
-        	return false;
-        }
+        if (!decrAmmoNum(1, this.getAmmoConsumption())) return false;
         
         //spawn missile
-        EntityFloatingFort ffort = new EntityFloatingFort(this.worldObj);
-        ffort.setAttrs(this.worldObj, this, target, launchPos);
-        this.worldObj.spawnEntityInWorld(ffort);
+        EntityFloatingFort ffort = new EntityFloatingFort(this.world);
+        ffort.initAttrs(this, target, 0, launchPos);
+        this.world.spawnEntity(ffort);
         
         //play target effect
         applySoundAtTarget(2, target);
         applyParticleAtTarget(2, target, distVec);
       	applyEmotesReaction(3);
         
-      	if(ConfigHandler.canFlare) {
-			flareTarget(target);
-		}
+      	if (ConfigHandler.canFlare) flareTarget(target);
+      	
         return true;
   	}
   	
   	@Override
-	public double getMountedYOffset() {
-  		if(this.isSitting()) {
-			if(getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {
+	public double getMountedYOffset()
+  	{
+  		if (this.isSitting())
+  		{
+			if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
+			{
 				return (double)this.height * 0.0F;
   			}
-  			else {
+  			else
+  			{
   				return (double)this.height * 0.0F;
   			}
   		}
-  		else {
+  		else
+  		{
   			return (double)this.height * 0.3F;
   		}
 	}
 
 	@Override
-	public void setShipOutfit(boolean isSneaking) {
+	public void setShipOutfit(boolean isSneaking)
+	{
 		//切換裝備顯示
-		if(isSneaking) {
-			switch(getStateEmotion(ID.S.State2)) {
+		if (isSneaking)
+		{
+			switch (getStateEmotion(ID.S.State2))
+			{
 			case ID.State.EQUIP00_2:
 				setStateEmotion(ID.S.State2, ID.State.EQUIP01_2, true);
-				break;
+			break;
 			case ID.State.EQUIP01_2:
 				setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
-				break;
+			break;
 			default:
 				setStateEmotion(ID.S.State2, ID.State.EQUIP00_2, true);
-				break;
+			break;
 			}
 		}
-		else {
-			switch(getStateEmotion(ID.S.State)) {
+		else
+		{
+			switch (getStateEmotion(ID.S.State))
+			{
 			case ID.State.EQUIP00:
 				setStateEmotion(ID.S.State, ID.State.EQUIP01, true);
-				break;
+			break;
 			case ID.State.EQUIP01:
 				setStateEmotion(ID.S.State, ID.State.EQUIP02, true);
-				break;
+			break;
 			case ID.State.EQUIP02:
 				setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-				break;
+			break;
 			default:
 				setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
-				break;
+			break;
 			}
 		}
 	}
 	
 	@Override
-	public void applyParticleAtAttacker(int type, Entity target, float[] vec) {
+	public void applyParticleAtAttacker(int type, Entity target, float[] vec)
+	{
   		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
         
-  		switch(type) {
+  		switch (type)
+  		{
   		case 1:  //light cannon
   			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 31, this.posX, this.posY, this.posZ, vec[0], vec[1], vec[2], true), point);
-  			break;
+  		break;
   		case 2:  //heavy cannon
-  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
-  			break;
   		case 3:  //light aircraft
-  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
-  			break;
   		case 4:  //heavy aircraft
-  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
-  			break;
 		default: //melee
 			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
-			break;
+		break;
   		}
   	}
   	
 	@Override
-	public void applyParticleAtTarget(int type, Entity target, float[] vec) {
+	public void applyParticleAtTarget(int type, Entity target, float[] vec)
+	{
   		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
   		
-  		switch(type) {
+  		switch (type)
+  		{
   		case 1:  //light cannon
   			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 30, false), point);
   	        break;
@@ -466,43 +472,44 @@ public class EntityNorthernHime extends BasicEntityShipCV {
   	}
 	
 	@Override
-	public void applySoundAtAttacker(int type, Entity target) {
-  		switch(type) {
+	public void applySoundAtAttacker(int type, Entity target)
+	{
+  		switch (type)
+  		{
   		case 1:  //light cannon
-  			//fire sound
-  	      	playSound("random.bow", ConfigHandler.volumeFire * 1.3F, 0.4F / (rand.nextFloat() * 0.4F + 0.8F));
-  	        
-  			//entity sound
-  			if(this.rand.nextInt(10) > 7) {
-  	        	this.playSound(getSoundString(ID.Sound.Hit), ConfigHandler.volumeShip, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-  	        }
-  			break;
   		case 2:  //heavy cannon
-  			//fire sound
-  			playSound("random.bow", ConfigHandler.volumeFire * 1.3F, 0.4F / (rand.nextFloat() * 0.4F + 0.8F));
-  	        
+  			this.playSound(SoundEvents.ENTITY_ARROW_SHOOT, ConfigHandler.volumeFire * 1.3F, 0.4F / (rand.nextFloat() * 0.4F + 0.8F));
+  	  		
   	        //entity sound
-  	        if(this.getRNG().nextInt(10) > 7) {
-  	        	this.playSound(getSoundString(ID.Sound.Hit), ConfigHandler.volumeShip, 1F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+  	        if (this.getRNG().nextInt(10) > 7)
+  	        {
+  	        	this.playSound(this.getCustomSound(1, this), this.getSoundVolume(), this.getSoundPitch());
   	        }
-  			break;
+  		break;
   		case 3:  //light aircraft
-  	        playSound(Reference.MOD_ID+":ship-aircraft", ConfigHandler.volumeFire * 0.5F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-  			break;
   		case 4:  //heavy aircraft
-  	        playSound(Reference.MOD_ID+":ship-aircraft", ConfigHandler.volumeFire * 0.5F, 0.7F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-  			break;
+  			this.playSound(ModSounds.SHIP_AIRCRAFT, ConfigHandler.volumeFire * 0.5F, this.getSoundPitch() * 0.85F);
+  	  	  	
+  	        //entity sound
+  	        if (this.getRNG().nextInt(10) > 7)
+  	        {
+  	        	this.playSound(this.getCustomSound(1, this), this.getSoundVolume(), this.getSoundPitch());
+  	        }
+  		break;
 		default: //melee
-			if(this.getRNG().nextInt(10) > 6) {
-	        	this.playSound(getSoundString(ID.Sound.Hit), ConfigHandler.volumeShip, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+			if (this.getRNG().nextInt(2) == 0)
+			{
+				this.playSound(this.getCustomSound(1, this), this.getSoundVolume(), this.getSoundPitch());
 	        }
-			break;
+		break;
   		}
   	}
 	
 	@Override
-	public float getAttackBaseDamage(int type, Entity target) {
-  		switch(type) {
+	public float getAttackBaseDamage(int type, Entity target)
+	{
+  		switch (type)
+  		{
   		case 1:  //light cannon
   			return CalcHelper.calcDamageBySpecialEffect(this, target, StateFinal[ID.ATK], 0);
   		case 2:  //heavy cannon
@@ -518,7 +525,3 @@ public class EntityNorthernHime extends BasicEntityShipCV {
 
 
 }
-
-
-
-

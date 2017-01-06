@@ -2,7 +2,6 @@ package com.lulan.shincolle.client.model;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipEmotion;
-import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
@@ -379,7 +378,7 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion
   		GlStateManager.translate(0F, 0.5F, 0F);
   		
   		//水上漂浮
-  		if (((Entity) ent).getPassengers().size() == 0 && ((IShipFloating) ent).getShipDepth() > 0)
+  		if (ent.getShipDepth(0) > 0D)
   		{
   			GlStateManager.translate(0F, angleX * 0.05F + 0.025F, 0F);
     	}
@@ -389,8 +388,8 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion
 	  	addk2 = angleRun2  - 0.087F;
 
   	    //移動頭部使其看人
-	  	this.Head.rotateAngleX = f4 / 57.29578F; 	//上下角度
-	  	this.Head.rotateAngleY = f3 / 57.29578F;	//左右角度 角度轉成rad 即除以57.29578
+	  	this.Head.rotateAngleX = f4 * 0.014F; 	//上下角度
+	  	this.Head.rotateAngleY = f3 * 0.01F;	//左右角度
 	    
 	    //正常站立動作
 	    //胸部

@@ -40,7 +40,7 @@ public class ParticleLightning extends Particle
 	
     public ParticleLightning(World world, Entity entity, float scale, int type)
     {
-        super(world, entity.posX, entity.posY, entity.posZ);
+        super(world, 0D, 0D, 0D);
         this.setSize(0F, 0F);
         this.host = entity;
         this.motionX = 0D;
@@ -54,8 +54,8 @@ public class ParticleLightning extends Particle
         {
         default:
         	this.particleRed = 1F;
-            this.particleGreen = 0.3F;
-            this.particleBlue = 0.3F;
+            this.particleGreen = 0.4F + this.rand.nextFloat() * 0.3F;
+            this.particleBlue = 0.4F + this.rand.nextFloat() * 0.3F;
             this.particleAlpha = 1F;
             this.particleMaxAge = 20;
             this.numStem = 4;
@@ -66,7 +66,9 @@ public class ParticleLightning extends Particle
             //calc particle position for MountHbH
         	float randx = rand.nextFloat() + 0.1F;
         	float[] newPos = CalcHelper.rotateXZByAxis(0.8F+rand.nextFloat()*0.2F, randx, ((EntityLivingBase)host).renderYawOffset * -0.01745F, 1F);
-            if(this.host != null) {
+
+        	if (this.host != null)
+            {
             	this.posX = this.host.posX + newPos[0];
             	this.posY = this.host.posY + 1.53D + randx * 0.25D;
                 this.posZ = this.host.posZ + newPos[1];
@@ -74,6 +76,9 @@ public class ParticleLightning extends Particle
         break;
         }
         
+		this.prevPosX = this.posX;
+        this.prevPosY = this.posY;
+        this.prevPosZ = this.posZ;
         this.prevShape = new double[numStem][6];	//prev lightning shape
     }
 
@@ -158,7 +163,6 @@ public class ParticleLightning extends Particle
     @Override
 	public void onUpdate()
     {
-    	//this is both side particle
 		this.prevPosX = this.posX;
         this.prevPosY = this.posY;
         this.prevPosZ = this.posZ;
@@ -184,7 +188,7 @@ public class ParticleLightning extends Particle
             
             if (((IShipFloating)host).getShipDepth() > 0D)
             {
-            	this.posY += 0.18D;
+            	this.posY -= 0.08D;
             }
             
             if (((IShipEmotion)host).getIsSitting())

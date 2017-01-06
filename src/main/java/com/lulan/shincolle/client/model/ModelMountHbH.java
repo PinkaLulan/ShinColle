@@ -1,7 +1,6 @@
 package com.lulan.shincolle.client.model;
 
 import com.lulan.shincolle.entity.IShipEmotion;
-import com.lulan.shincolle.entity.IShipFloating;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
@@ -335,6 +334,7 @@ public class ModelMountHbH extends ModelBase
     	GlStateManager.enableBlend();
     	GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
     	GlStateManager.scale(0.8F, 0.8F, 0.8F);
+    	GlStateManager.translate(0F, 1.05F, 0F);
     	
     	//main body
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
@@ -368,20 +368,16 @@ public class ModelMountHbH extends ModelBase
   	{   
   		float angleX = MathHelper.cos(f2*0.08F);
   		
-  		if (((IShipFloating) ent).getShipDepth() > 0)
+  		if (ent.getShipDepth(0) > 0D)
   		{
   			GlStateManager.translate(0F, angleX * 0.025F + 0.025F, 0F);
     	}
   		
   		if (ent.getIsSitting())
   		{
-  			GlStateManager.translate(0F, 1.3F, 0F);
+  			GlStateManager.translate(0F, 0.12F, 0F);
     	}
-    	else
-    	{
-    		GlStateManager.translate(0F, 1.0F, 0F);
-    	}
-
+  		
 	    //正常站立動作
 	  	//嘴巴
 	  	this.Jaw.rotateAngleX = angleX * 0.1F + 0.7F;

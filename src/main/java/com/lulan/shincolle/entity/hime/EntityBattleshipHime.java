@@ -39,14 +39,7 @@ public class EntityBattleshipHime extends BasicEntityShipSmall
 		
 		this.postInit();
 	}
-	
-	@Override
-	public float getEyeHeight()
-	{
-		return 1.7375F;
-	}
-	
-	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc
+
 	@Override
 	public int getEquipType()
 	{

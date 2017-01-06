@@ -8,20 +8,17 @@ import com.lulan.shincolle.ai.EntityAIShipAircraftAttack;
 import com.lulan.shincolle.ai.EntityAIShipOpenDoor;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.entity.other.EntityAirplane;
-import com.lulan.shincolle.entity.other.EntityRensouhou;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.CalcHelper;
-import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
@@ -83,7 +80,8 @@ abstract public class BasicEntityAirplane extends BasicEntitySummon implements I
         return false;
     }
     
-    //enable next target AI
+    //enable target finding AI
+    @Override
     public boolean canFindTarget()
     {
     	return this.canFindTarget;
@@ -140,69 +138,57 @@ abstract public class BasicEntityAirplane extends BasicEntitySummon implements I
 			}
 			else
 			{
-				if (this.host instanceof EntityLivingBase)
+				Entity hostent = (Entity) this.host;
+				
+				//歸宅
+				if (this.backHome && this.isEntityAlive())
 				{
-					EntityLivingBase hostent = (EntityLivingBase) this.host;
+					float dist = this.getDistanceToEntity(hostent);
 					
-					//歸宅
-					if (this.backHome && this.isEntityAlive())
+					//get home path
+					if (dist > 2F + hostent.height)
 					{
-						float dist = this.getDistanceToEntity(hostent);
-						
-						//get home path
-						if (dist > 2.7F)
+						if (this.ticksExisted % 16 == 0)
 						{
-							if (this.ticksExisted % 16 == 0)
-							{
-								this.getShipNavigate().tryMoveToXYZ(hostent.posX, hostent.posY + 2.3D, hostent.posZ, 1D);
-							}
-						}
-						//get home
-						else
-						{	//歸還剩餘彈藥 (但是grudge不歸還)
-							this.returnSummonResource();
-							this.setDead();
+							this.getShipNavigate().tryMoveToXYZ(hostent.posX, hostent.posY + hostent.height + 1D, hostent.posZ, 1D);
 						}
 					}
-					
-					//前幾秒直線往目標移動
-					if (this.ticksExisted < 34 && this.getEntityTarget() != null)
-					{
-						double distX = this.getEntityTarget().posX - this.posX;
-						double distZ = this.getEntityTarget().posZ - this.posZ;
-						double distSqrt = MathHelper.sqrt(distX*distX + distZ*distZ);
-						
-						this.motionX = distX / distSqrt * 0.375D;
-						this.motionZ = distZ / distSqrt * 0.375D;
-						this.motionY = 0.1D;
+					//get home
+					else
+					{	//歸還剩餘彈藥 (但是grudge不歸還)
+						this.returnSummonResource();
+						this.setDead();
 					}
 				}
 				
-				//check every 16 ticks
-				if (this.ticksExisted % 16 == 0 && this.canFindTarget)
+				//前幾秒直線往目標移動
+				if (this.ticksExisted < 34 && this.getEntityTarget() != null)
 				{
-					//change backhome
-					if (this.ticksExisted < 900)
+					double distX = this.getEntityTarget().posX - this.posX;
+					double distZ = this.getEntityTarget().posZ - this.posZ;
+					double distSqrt = MathHelper.sqrt(distX*distX + distZ*distZ);
+					
+					this.motionX = distX / distSqrt * 0.375D;
+					this.motionZ = distZ / distSqrt * 0.375D;
+					this.motionY = 0.1D;
+				}
+				
+				//check every 16 ticks
+				if (this.ticksExisted % 16 == 0 && this.canFindTarget() && !this.backHome)
+				{
+					boolean findNewTarget = false;
+					
+					//check target alive
+					if (this.ticksExisted < 1200)
 					{
-						if (this.getEntityTarget() == null)
+						if (this.getEntityTarget() == null || !this.getEntityTarget().isEntityAlive())
 						{
-							this.backHome = true;
-						}
-						else
-						{
-							if (this.getEntityTarget().isEntityAlive())
-							{
-								this.backHome = false;
-							}
-							else
-							{
-								this.backHome = true;
-							}
+							findNewTarget = true;
 						}
 					}
 					
 					//攻擊目標消失, 找附近目標 or 設為host目前目標
-					if (this.ticksExisted >= 20)
+					if (this.ticksExisted >= 20 && findNewTarget)
 					{
 						Entity newTarget = null;
 						List list = null;
@@ -237,16 +223,21 @@ abstract public class BasicEntityAirplane extends BasicEntitySummon implements I
 				        if (newTarget != null)
 				        {
 				        	this.setEntityTarget(newTarget);
+				        	this.backHome = false;
 				        }
-					}
+				        else
+				        {
+				        	this.setEntityTarget(null);
+				        	this.backHome = true;
+				        }
+					}//end find new target
 				}//end can find target
 				
 				//達到40秒時歸宅
-				if (this.ticksExisted >= 800)
+				if (this.ticksExisted >= 1200)
 				{
-					this.backHome = true;
-					this.canFindTarget = false;
 					this.setEntityTarget(null);
+					this.backHome = true;
 				}
 			}	
 		}
@@ -516,6 +507,11 @@ abstract public class BasicEntityAirplane extends BasicEntitySummon implements I
 
 	@Override
 	protected void setAttrsWithScaleLevel() {}
+	
+  	protected int getLifeLength()
+  	{
+  		return 1800;
+  	}
 	
 	
 }

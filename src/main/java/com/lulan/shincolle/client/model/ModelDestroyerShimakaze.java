@@ -1,7 +1,6 @@
 package com.lulan.shincolle.client.model;
 
 import com.lulan.shincolle.entity.IShipEmotion;
-import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
@@ -422,7 +421,7 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion
   		float addk2 = 0;
   		
   		//水上漂浮
-  		if (((IShipFloating)ent).getShipDepth() > 0)
+  		if (ent.getShipDepth(0) > 0D)
   		{
   			GlStateManager.translate(0F, angleX * 0.05F + 0.025F, 0F);
     	}
@@ -432,8 +431,8 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion
 	  	addk2 = MathHelper.cos(f * 0.7F + 3.1415927F) * f1 - 0.11F;
 
   	    //移動頭部使其看人
-	  	this.Head.rotateAngleX = f4 * 0.01745F + 0.1F;
-	  	this.Head.rotateAngleY = f3 * 0.01745F;
+	  	this.Head.rotateAngleX = f4 * 0.014F + 0.1F;
+	  	this.Head.rotateAngleY = f3 * 0.01F;
   	    //ear
   	    this.EarL01.rotateAngleX = angleX * 0.1F + 0.4F;
   	    this.EarL01.rotateAngleY = -0.8F;

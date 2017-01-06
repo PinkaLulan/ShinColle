@@ -1,7 +1,6 @@
 package com.lulan.shincolle.client.model;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EmotionHelper;
 
@@ -216,7 +215,7 @@ public class ModelDestroyerNi extends ModelBase implements IModelEmotion
 		BasicEntityShip ent = (BasicEntityShip) entity;
 		
   		//水上漂浮
-  		if (((IShipFloating)ent).getShipDepth() > 0)
+  		if (ent.getShipDepth(0) > 0D)
   		{
   			GlStateManager.translate(0F, angleX * 0.05F + 0.025F, 0F);
     	}
@@ -362,10 +361,10 @@ public class ModelDestroyerNi extends ModelBase implements IModelEmotion
   		//移動頭部 使其看人, 不看人時持續擺動頭部
   	    if (f4 != 0)
   	    {
-  	    	NeckBack.rotateAngleX = f4 / 200F; 	//上下角度
-  		    NeckBack.rotateAngleY = f3 / 200F;	//左右角度 角度轉成rad 即除以57.29578
-  		    Head.rotateAngleX = f4 / 200F;
-  		    Head.rotateAngleY = f3 / 200F;
+  	    	NeckBack.rotateAngleX = f4 * 0.005F; 	//上下角度
+  		    NeckBack.rotateAngleY = f3 * 0.005F;	//左右角度 角度轉成rad 即除以57.29578
+  		    Head.rotateAngleX = f4 * 0.005F;
+  		    Head.rotateAngleY = f3 * 0.005F;
   	    }
   	}
     

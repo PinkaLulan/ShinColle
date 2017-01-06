@@ -10,13 +10,12 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.world.World;
 
-public class EntityAirplaneTHostile extends EntityAirplaneT
+public class EntityAirplaneTMob extends EntityAirplaneT
 {
 
-	public EntityAirplaneTHostile(World world)
+	public EntityAirplaneTMob(World world)
 	{
 		super(world);
-		this.setSize(1F, 1F);
 	}
 	
 	@Override
@@ -36,7 +35,7 @@ public class EntityAirplaneTHostile extends EntityAirplaneT
     		
             //basic attr
     		this.atk = ship.getAttackDamage() * 3F;
-            this.atkSpeed = ship.getAttackSpeed();
+            this.atkSpeed = ship.getAttackSpeed() * 2.5F;
             this.atkRange = 6F;
             this.defValue = ship.getDefValue() * 0.5F;
             this.movSpeed = ship.getMoveSpeed() * 0.1F + 0.23F;
@@ -65,8 +64,6 @@ public class EntityAirplaneTHostile extends EntityAirplaneT
     		//AI flag
             this.numAmmoLight = 0;
             this.numAmmoHeavy = 3;
-            this.backHome = false;
-            this.canFindTarget = true;
     				
     		//設定AI
     		this.shipNavigator = new ShipPathNavigate(this);
@@ -88,13 +85,26 @@ public class EntityAirplaneTHostile extends EntityAirplaneT
 	@Override
 	protected void setSizeWithScaleLevel()
 	{
-		
+		switch (this.getScaleLevel())
+		{
+		case 3:
+			this.setSize(2F, 2F);
+		break;
+		case 2:
+			this.setSize(1.5F, 1.5F);
+		break;
+		case 1:
+			this.setSize(1F, 1F);
+		break;
+		default:
+			this.setSize(0.5F, 0.5F);
+		break;
+		}
 	}
 
 	@Override
 	protected void setAttrsWithScaleLevel()
 	{
-		
 	}
 	
 	

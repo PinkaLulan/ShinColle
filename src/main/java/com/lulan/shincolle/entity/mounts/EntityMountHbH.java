@@ -1,13 +1,18 @@
 package com.lulan.shincolle.entity.mounts;
 
+import java.util.List;
+
 import com.lulan.shincolle.ai.EntityAIShipCarrierAttack;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
+import com.lulan.shincolle.ai.path.ShipMoveHelper;
+import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.entity.BasicEntityMountLarge;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.world.World;
 
 public class EntityMountHbH extends BasicEntityMountLarge
@@ -16,9 +21,11 @@ public class EntityMountHbH extends BasicEntityMountLarge
     public EntityMountHbH(World world)
     {
 		super(world);
-		this.setSize(1.9F, 1.3F);
-		this.seatPos = new float[] {-1.4F, 0.4F, 1.5F};
-		this.seatPos2 = new float[] {-1.4F, 0.4F, 1.5F};
+		this.setSize(1.9F, 1.6F);
+		this.seatPos = new float[] {0F, -0.29F, 0F};
+		this.seatPos2 = new float[] {-1.5F, 1.06F, 0.44F};
+        this.shipNavigator = new ShipPathNavigate(this);
+		this.shipMoveHelper = new ShipMoveHelper(this, 45F);
 	}
     
     @Override
@@ -30,21 +37,18 @@ public class EntityMountHbH extends BasicEntityMountLarge
         this.posX = host.posX;
         this.posY = host.posY;
         this.posZ = host.posZ;
+        this.prevPosX = this.posX;
+        this.prevPosY = this.posY;
+        this.prevPosZ = this.posZ;
         this.setPosition(this.posX, this.posY, this.posZ);
  
 	    //設定基本屬性
-        setupAttrs();
+        this.setupAttrs();
         
 		if (this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
 				
 		//設定AI
 		this.setAIList();
-	}
-    
-    @Override
-	public float getEyeHeight()
-    {
-		return 1.7F;
 	}
 
 	@Override
@@ -97,6 +101,28 @@ public class EntityMountHbH extends BasicEntityMountLarge
 	public int getTextureID()
 	{
 		return ID.ShipMisc.HarbourMount;
+	}
+	
+	@Override
+	protected void setRotationByRider()
+	{
+	  	//sync rotation
+		List<Entity> riders = this.getPassengers();
+		
+		for (Entity rider : riders)
+		{
+			if (rider instanceof BasicEntityShip)
+			{
+				rider.rotationYaw = ((BasicEntityShip) rider).renderYawOffset;
+				
+				this.prevRotationYawHead = ((EntityLivingBase) rider).prevRotationYawHead;
+				this.rotationYawHead = ((EntityLivingBase) rider).rotationYawHead;
+				this.prevRenderYawOffset = ((EntityLivingBase) rider).prevRenderYawOffset;
+				this.renderYawOffset = ((EntityLivingBase) rider).renderYawOffset;
+				this.prevRotationYaw = rider.prevRotationYaw;
+				this.rotationYaw = rider.rotationYaw;
+			}
+		}//end for sync rotation
 	}
 
 

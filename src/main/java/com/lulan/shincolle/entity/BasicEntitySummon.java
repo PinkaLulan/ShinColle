@@ -1,9 +1,10 @@
 package com.lulan.shincolle.entity;
 
+import java.util.Random;
+
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.client.render.IShipCustomTexture;
-import com.lulan.shincolle.entity.other.EntityRensouhou;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.network.C2SInputPackets;
@@ -203,19 +204,20 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
 			else
 			{
 				//超過60秒自動消失
-				if (this.ticksExisted > 1200)
+				if (this.ticksExisted > this.getLifeLength())
 				{
 					setdead = true;
 				}
 
 				//target is dead
-				if (this.getEntityTarget() == null || this.getEntityTarget().isDead)
+				if (!canFindTarget() && (this.getEntityTarget() == null || this.getEntityTarget().isDead))
 				{
-					//change target
+					//get target by host
 					if (this.host.getEntityTarget() != null && this.host.getEntityTarget().isEntityAlive())
 					{
 						this.atkTarget = this.host.getEntityTarget();
 					}
+					//no target, setDead
 					else
 					{
 						setdead = true;
@@ -422,7 +424,7 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
 	@Override
 	public boolean hasAmmoHeavy()
 	{
-		return false;
+		return this.numAmmoHeavy > 0;
 	}
 
 	@Override
@@ -458,7 +460,6 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
 	@Override
 	public boolean getIsSitting()
 	{
-		if (this.host != null) return this.host.getIsSitting();
 		return false;
 	}
 
@@ -639,6 +640,8 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
 	@Override
 	public boolean attackEntityFrom(DamageSource source, float atk)
 	{
+		if (this.world.isRemote) return false;
+		
 		//null check
 		if (this.host == null)
 		{
@@ -838,6 +841,30 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
 		break;
   		}
   	}
+  	
+  	//life time
+  	protected int getLifeLength()
+  	{
+  		return 1200;
+  	}
+  	
+    //enable target finding AI
+  	protected boolean canFindTarget()
+    {
+    	return false;
+    }
+  	
+	@Override
+	public Random getRand()
+	{
+		return this.rand;
+	}
+	
+	@Override
+	public double getShipDepth(int type)
+	{
+		return 0D;
+	}
 
 
 }

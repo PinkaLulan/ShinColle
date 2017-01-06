@@ -30,6 +30,7 @@ import com.lulan.shincolle.client.render.IShipCustomTexture;
 import com.lulan.shincolle.crafting.EquipCalc;
 import com.lulan.shincolle.crafting.ShipCalc;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
+import com.lulan.shincolle.entity.transport.EntityTransportWa;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
@@ -187,7 +188,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.ignoreFrustumCheck = true;  //即使不在視線內一樣render
 		this.maxHurtResistantTime = 2;   //受傷無敵時間降為2 ticks
 		this.ownerName = "";
-
+		
 		//init value
 		this.itemHandler = new CapaShipInventory(CapaShipInventory.SlotMax, this);
 		this.isImmuneToFire = true;	//set ship immune to lava
@@ -423,6 +424,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     {
         return ConfigHandler.volumeShip;
     }
+    
+    @Override
+    protected float getSoundPitch()
+    {
+        return (this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F + 1F;
+    }
 	
     @Override
     @Nullable
@@ -444,7 +451,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     {
         return getCustomSound(3, this);
     }
-	
+    
     /**
      * Plays living's sound at its position
      */
@@ -593,6 +600,33 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.setEntityTarget(null);
 		targetTasks.taskEntries.clear();
 	}
+	
+	/**
+	 * FIX: mounts and rider be pushed while saving and loading from disk
+	 */
+	@Override
+    public boolean writeToNBTOptional(NBTTagCompound nbt)
+    {
+		//is guarding and riding, check dist to guard pos
+        if (this.isRiding() && this.dimension == this.getGuardedPos(3) &&
+        	this.getGuardedPos(1) > 0)
+        {
+        	float dx = (float) (this.posX - this.getGuardedPos(0));
+        	float dy = (float) (this.posY - this.getGuardedPos(1));
+        	float dz = (float) (this.posZ - this.getGuardedPos(2));
+        	float dist = dx*dx+dy*dy+dz*dz;
+        	
+        	if (dist > 256F)
+        	{
+        		this.dismountRidingEntity();
+        		this.setPosition(this.getGuardedPos(0)+0.5D, this.getGuardedPos(1)+0.5D, this.getGuardedPos(2)+0.5D);
+        	
+        		if (!this.world.isRemote) this.sendSyncPacket(S2CEntitySync.PID.SyncEntity_PosRot, true);
+        	}
+        }
+        
+        return super.writeToNBTOptional(nbt);
+    }
 	
 	@Override
 	public void readFromNBT(NBTTagCompound nbt)
@@ -901,6 +935,27 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	}
 	
 	@Override
+	public double getShipDepth(int type)
+	{
+		switch (type)
+		{
+		case 1:
+			if (this.getRidingEntity() instanceof IShipEmotion)
+			{
+				return ((IShipEmotion)this.getRidingEntity()).getShipDepth(0);
+			}
+			else
+			{
+				return 0D;
+			}
+		case 2:
+			return 0D;
+		default:
+			return this.ShipDepth;
+		}
+	}
+	
+	@Override
 	public boolean getStateFlag(int flag)
 	{	//get flag (boolean)
 		return StateFlag[flag];
@@ -1120,7 +1175,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		StateFinal[ID.HIT] = (getStat[ID.ShipAttr.BaseHIT] + StateEquip[ID.HIT] + ((float)(BonusPoint[ID.HIT]+1F) * ((float)StateMinor[ID.M.ShipLevel])/10F) * 0.2F * TypeModify[ID.HIT]) * (float)ConfigHandler.scaleShip[ID.HIT];
 		//ATK = (base + equip + ((point + 1) * level / 3) * 0.5 * typeModify) * config scale
 		float atk = getStat[ID.ShipAttr.BaseATK] + ((float)(BonusPoint[ID.ATK]+1F) * ((float)StateMinor[ID.M.ShipLevel])/3F) * 0.4F * TypeModify[ID.ATK];
-		
+
 		//add equip
 		StateFinal[ID.ATK] = (atk + StateEquip[ID.ATK]) * (float)ConfigHandler.scaleShip[ID.ATK];
 		StateFinal[ID.ATK_H] = (atk * 3F + StateEquip[ID.ATK_H]) * (float)ConfigHandler.scaleShip[ID.ATK];
@@ -1703,7 +1758,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 					if (stack.hasDisplayName())
 					{
 						this.setNameTag(stack.getDisplayName());
-						return EnumActionResult.FAIL;  //TODO 回傳FAIL可避免tag被消耗掉?
+						return EnumActionResult.SUCCESS;
 		            } 
 				}
 				//use repair bucket
@@ -2360,104 +2415,100 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				CommonProxy.channelG.sendToServer(new C2SInputPackets(C2SInputPackets.PID.RequestSync_Model, this.getEntityId(), this.world.provider.getDimension()));
 			}
 			
-			//check every 2 ticks
-			if (this.ticksExisted % 2 == 0)
+			//faster body rotateYaw update (vanilla = 12~20 ticks?)
+			updateClientBodyRotate();
+		
+			//check every 8 ticks
+			if (this.ticksExisted % 8 == 0)
 			{
-				//faster body rotateYaw update (vanilla = 12~20 ticks?)
-				updateClientBodyRotate();
-			
-				//check every 8 ticks
-				if (this.ticksExisted % 8 == 0)
+        		//update searchlight, CLIENT SIDE ONLY, NO block light value sync!
+        		if (ConfigHandler.canSearchlight)
+        		{
+            		updateSearchlight();
+        		}
+        		
+        		//check every 16 ticks
+				if (this.ticksExisted % 16 == 0)
 				{
-	        		//update searchlight, CLIENT SIDE ONLY, NO block light value sync!
-	        		if (ConfigHandler.canSearchlight)
-	        		{
-	            		updateSearchlight();
-	        		}
-	        		
-	        		//check every 16 ticks
-					if (this.ticksExisted % 16 == 0)
+					//generate HP state effect, use parm:lookX to send width size
+					switch (getStateEmotion(ID.S.HPState))
 					{
-						//generate HP state effect, use parm:lookX to send width size
-						switch (getStateEmotion(ID.S.HPState))
+					case ID.HPState.MINOR:
+						ParticleHelper.spawnAttackParticleAt(this.posX, this.posY + 0.7D, this.posZ, 
+								this.width, 0.05D, 0D, (byte)4);
+						break;
+					case ID.HPState.MODERATE:
+						ParticleHelper.spawnAttackParticleAt(this.posX, this.posY + 0.7D, this.posZ, 
+								this.width, 0.05D, 0D, (byte)5);
+						break;
+					case ID.HPState.HEAVY:
+						ParticleHelper.spawnAttackParticleAt(this.posX, this.posY + 0.7D, this.posZ, 
+								this.width, 0.05D, 0D, (byte)7);
+						break;
+					default:
+						break;
+					}
+					
+					//check every 32 ticks
+					if (this.ticksExisted % 32 == 0)
+					{
+						//show guard position
+						if (!this.getStateFlag(ID.F.CanFollow))
 						{
-						case ID.HPState.MINOR:
-							ParticleHelper.spawnAttackParticleAt(this.posX, this.posY + 0.7D, this.posZ, 
-									this.width, 0.05D, 0D, (byte)4);
-							break;
-						case ID.HPState.MODERATE:
-							ParticleHelper.spawnAttackParticleAt(this.posX, this.posY + 0.7D, this.posZ, 
-									this.width, 0.05D, 0D, (byte)5);
-							break;
-						case ID.HPState.HEAVY:
-							ParticleHelper.spawnAttackParticleAt(this.posX, this.posY + 0.7D, this.posZ, 
-									this.width, 0.05D, 0D, (byte)7);
-							break;
-						default:
-							break;
-						}
-						
-						//check every 32 ticks
-						if (this.ticksExisted % 32 == 0)
-						{
-							//show guard position
-							if (!this.getStateFlag(ID.F.CanFollow))
+							//set guard entity
+							if (this.getStateMinor(ID.M.GuardID) > 0)
 							{
-								//set guard entity
-								if (this.getStateMinor(ID.M.GuardID) > 0)
-								{
-									Entity getEnt = EntityHelper.getEntityByID(this.getStateMinor(ID.M.GuardID), 0, true);
-									this.setGuardedEntity(getEnt);
-								}
-								else
-								{
-									//reset guard entity
-									this.setGuardedEntity(null);
-								}
-							}//end show pointer target effect
-							
-							//display circle particle, 只有owner才會接收到該ship同步的EID, 非owner讀取到的EID <= 0
-							//get owner entity
-							EntityPlayer player = null;
-							if (this.getStateMinor(ID.M.PlayerEID) > 0)
-							{
-								player = EntityHelper.getEntityPlayerByID(getStateMinor(ID.M.PlayerEID), 0, true);
-							}
-							
-							//show circle particle on ship and guard target
-							if (player != null && player.dimension == this.getGuardedPos(3))
-							{
-								ItemStack item = EntityHelper.getPointerInUse((EntityPlayer) player);
-								
-								if (item != null && item.getItemDamage() < 3 || ConfigHandler.alwaysShowTeamParticle)
-								{
-									//show friendly particle
-									ParticleHelper.spawnAttackParticleAtEntity(this, 0.3D, 7D, 0D, (byte)2);
-									
-									//show guard particle
-									//標記在entity上
-									if (this.getGuardedEntity() != null)
-									{
-										ParticleHelper.spawnAttackParticleAtEntity(this.getGuardedEntity(), 0.3D, 6D, 0D, (byte)2);
-										ParticleHelper.spawnAttackParticleAtEntity(this, this.getGuardedEntity(), 0D, 0D, 0D, (byte)3, false);
-									}
-									//標記在block上
-									else if (this.getGuardedPos(1) >= 0)
-									{
-										ParticleHelper.spawnAttackParticleAt(this.getGuardedPos(0)+0.5D, this.getGuardedPos(1), this.getGuardedPos(2)+0.5D, 0.3D, 6D, 0D, (byte)25);
-										ParticleHelper.spawnAttackParticleAtEntity(this, this.getGuardedPos(0)+0.5D, this.getGuardedPos(1)+0.2D, this.getGuardedPos(2)+0.5D, (byte)8);
-									}
-								}
+								Entity getEnt = EntityHelper.getEntityByID(this.getStateMinor(ID.M.GuardID), 0, true);
+								this.setGuardedEntity(getEnt);
 							}
 							else
 							{
-								this.setStateMinor(ID.M.PlayerEID, -1);
+								//reset guard entity
+								this.setGuardedEntity(null);
 							}
+						}//end show pointer target effect
+						
+						//display circle particle, 只有owner才會接收到該ship同步的EID, 非owner讀取到的EID <= 0
+						//get owner entity
+						EntityPlayer player = null;
+						if (this.getStateMinor(ID.M.PlayerEID) > 0)
+						{
+							player = EntityHelper.getEntityPlayerByID(getStateMinor(ID.M.PlayerEID), 0, true);
+						}
+						
+						//show circle particle on ship and guard target
+						if (player != null && player.dimension == this.getGuardedPos(3))
+						{
+							ItemStack item = EntityHelper.getPointerInUse((EntityPlayer) player);
 							
-						}//end every 32 ticks
-					}//end every 16 ticks
-				}//end  every 8 ticks
-			}//end every 2 ticks
+							if (item != null && item.getItemDamage() < 3 || ConfigHandler.alwaysShowTeamParticle)
+							{
+								//show friendly particle
+								ParticleHelper.spawnAttackParticleAtEntity(this, 0.3D, 7D, 0D, (byte)2);
+								
+								//show guard particle
+								//標記在entity上
+								if (this.getGuardedEntity() != null)
+								{
+									ParticleHelper.spawnAttackParticleAtEntity(this.getGuardedEntity(), 0.3D, 6D, 0D, (byte)2);
+									ParticleHelper.spawnAttackParticleAtEntity(this, this.getGuardedEntity(), 0D, 0D, 0D, (byte)3, false);
+								}
+								//標記在block上
+								else if (this.getGuardedPos(1) >= 0)
+								{
+									ParticleHelper.spawnAttackParticleAt(this.getGuardedPos(0)+0.5D, this.getGuardedPos(1), this.getGuardedPos(2)+0.5D, 0.3D, 6D, 0D, (byte)25);
+									ParticleHelper.spawnAttackParticleAtEntity(this, this.getGuardedPos(0)+0.5D, this.getGuardedPos(1)+0.2D, this.getGuardedPos(2)+0.5D, (byte)8);
+								}
+							}
+						}
+						else
+						{
+							this.setStateMinor(ID.M.PlayerEID, -1);
+						}
+						
+					}//end every 32 ticks
+				}//end every 16 ticks
+			}//end  every 8 ticks
 		}//end client side
 	}
 
@@ -2656,7 +2707,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	@Override
 	public boolean canPassengerSteer()
     {
-//		return super.canPassengerSteer();
 		return false;
     }
 	
@@ -2909,6 +2959,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	@Override
     public boolean attackEntityFrom(DamageSource source, float atk)
 	{
+		if (this.world.isRemote) return false;
+		
 		//set hurt face
     	if (this.getStateEmotion(ID.S.Emotion) != ID.Emotion.O_O)
     	{
@@ -3841,13 +3893,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     	//moving grudge cost per block
     	valueConsume *= ConfigHandler.consumeGrudgeAction[ID.ShipConsume.Move];
     	
-//    	//get exp if transport TODO
-//    	if(this instanceof EntityTransportWa && this.ticksExisted > 200)
-//    	{
-//    		//gain exp when moving
-//    		int moveExp = (int) (valueConsume * 0.2F);
-//    		addShipExp(moveExp);
-//    	}
+    	//get exp if transport
+    	if(this instanceof EntityTransportWa && this.ticksExisted > 200)
+    	{
+    		//gain exp when moving
+    		int moveExp = (int) (valueConsume * 0.2F);
+    		addShipExp(moveExp);
+    	}
     	
     	//add idle grudge cost
     	valueConsume += this.getGrudgeConsumption();
@@ -4144,10 +4196,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	/** update rotate */
   	protected void updateClientBodyRotate()
   	{
-  		if (MathHelper.abs((float) (posX - prevPosX)) > 0.01F || MathHelper.abs((float) (posZ - prevPosZ)) > 0.01F)
+  		if (!this.isRiding())
   		{
-  			float[] degree = CalcHelper.getLookDegree(posX - prevPosX, posY - prevPosY, posZ - prevPosZ, true);
-  			this.rotationYaw = degree[0];
+  			if (MathHelper.abs((float) (posX - prevPosX)) > 0.1F || MathHelper.abs((float) (posZ - prevPosZ)) > 0.1F)
+  	  		{
+  	  			float[] degree = CalcHelper.getLookDegree(posX - prevPosX, posY - prevPosY, posZ - prevPosZ, true);
+  	  			this.rotationYaw = degree[0];
+  	  		}
   		}
   	}
   	
@@ -5419,7 +5474,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		case 3:  //light aircraft
   		case 4:  //heavy aircraft
   			this.playSound(ModSounds.SHIP_AIRCRAFT, ConfigHandler.volumeFire * 0.5F, this.getSoundPitch() * 0.85F);
-  	  	break;
+  	  	
+  	        //entity sound
+  	        if (this.getRNG().nextInt(10) > 7)
+  	        {
+  	        	this.playSound(this.getCustomSound(1, this), this.getSoundVolume(), this.getSoundPitch());
+  	        }
+  		break;
 		default: //melee
 			if (this.getRNG().nextInt(2) == 0)
 			{
@@ -5949,5 +6010,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	@Override
 	public void setScaleLevel(int par1) {}
   	
+	@Override
+	public Random getRand()
+	{
+		return this.rand;
+	}
+	
 	
 }

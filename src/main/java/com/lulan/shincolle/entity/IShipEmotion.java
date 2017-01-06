@@ -1,7 +1,10 @@
 package com.lulan.shincolle.entity;
 
-/**SHIP EMOTION
- * include emtion time and state
+import java.util.Random;
+
+/**
+ * SHIP EMOTION
+ * include emtion time and state for model display
  */
 public interface IShipEmotion extends IShipFlags
 {
@@ -61,6 +64,12 @@ public interface IShipEmotion extends IShipFlags
 	/** get model scale level for model rendering: 0:normal, 1~N:scale level */
 	public int getScaleLevel();
 	public void setScaleLevel(int par1);
+	
+	/** get rand for model display */
+	public Random getRand();
+	
+	/** get depth: 0:self depth, 1:mounts depth, 2:host depth */
+	public double getShipDepth(int type);
 	
 	
 }

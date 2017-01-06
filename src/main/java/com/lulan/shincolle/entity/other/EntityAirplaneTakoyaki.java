@@ -6,6 +6,7 @@ import com.lulan.shincolle.entity.BasicEntityAirplane;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 
@@ -15,6 +16,7 @@ import net.minecraft.world.World;
 
 public class EntityAirplaneTakoyaki extends BasicEntityAirplane
 {
+	
 	
 	public EntityAirplaneTakoyaki(World world)
 	{
@@ -38,7 +40,7 @@ public class EntityAirplaneTakoyaki extends BasicEntityAirplane
     		
             //basic attr
             this.atk = ship.getAttackBaseDamage(4, target);
-            this.atkSpeed = ship.getStateFinal(ID.SPD);
+            this.atkSpeed = ship.getStateFinal(ID.SPD) * 2.5F;
             this.atkRange = 6F;
             this.defValue = ship.getStateFinal(ID.DEF) * 0.5F;
             this.movSpeed = ship.getStateFinal(ID.MOV) * 0.1F + 0.23F;
@@ -66,8 +68,6 @@ public class EntityAirplaneTakoyaki extends BasicEntityAirplane
             //AI flag
             this.numAmmoLight = 0;
             this.numAmmoHeavy = 3;
-            this.backHome = false;
-            this.canFindTarget = true;
     				
     		//設定AI
     		this.shipNavigator = new ShipPathNavigate(this);
@@ -98,7 +98,6 @@ public class EntityAirplaneTakoyaki extends BasicEntityAirplane
 			if (!this.hasAmmoHeavy())
 			{
 				this.backHome = true;
-				this.canFindTarget = false;
 				this.setEntityTarget(null);
 			}
 		}

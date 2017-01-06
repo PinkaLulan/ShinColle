@@ -1,7 +1,11 @@
 package com.lulan.shincolle.entity.mounts;
 
+import java.util.List;
+
 import com.lulan.shincolle.ai.EntityAIShipCarrierAttack;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
+import com.lulan.shincolle.ai.path.ShipMoveHelper;
+import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.entity.BasicEntityMountLarge;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.reference.ID;
@@ -9,6 +13,8 @@ import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.world.World;
 
 public class EntityMountAfH extends BasicEntityMountLarge
@@ -18,22 +24,27 @@ public class EntityMountAfH extends BasicEntityMountLarge
     {
 		super(world);
 		this.setSize(1.9F, 1.3F);
-		this.seatPos = new float[] {-1F, -1F, 1.5F};
-		this.seatPos2 = new float[] {-1F, -1F, 1.5F};
+		this.seatPos = new float[] {0.59F, -0.25F, 0F};
+		this.seatPos2 = new float[] {-0.85F, 1F, -1.12F};
+        this.shipNavigator = new ShipPathNavigate(this);
+		this.shipMoveHelper = new ShipMoveHelper(this, 45F);
 	}
     
     @Override
     public void initAttrs(BasicEntityShip host)
     {
         this.host = host;
-        
+		
         //設定位置
         this.posX = host.posX;
         this.posY = host.posY;
         this.posZ = host.posZ;
+        this.prevPosX = this.posX;
+        this.prevPosY = this.posY;
+        this.prevPosZ = this.posZ;
         this.setPosition(this.posX, this.posY, this.posZ);
  
-	    //設定基本屬性
+        //設定基本屬性
         this.setupAttrs();
         
 		if (this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
@@ -42,12 +53,6 @@ public class EntityMountAfH extends BasicEntityMountLarge
 		this.setAIList();
 	}
     
-    @Override
-	public float getEyeHeight()
-    {
-    	return 1.7F;
-	}
-
 	@Override
 	public void onUpdate()
 	{
@@ -85,5 +90,27 @@ public class EntityMountAfH extends BasicEntityMountLarge
 		return ID.ShipMisc.AirfieldMount;
 	}
 
+	@Override
+	protected void setRotationByRider()
+	{
+	  	//sync rotation
+		List<Entity> riders = this.getPassengers();
+		
+		for (Entity rider : riders)
+		{
+			if (rider instanceof BasicEntityShip)
+			{
+				rider.rotationYaw = ((BasicEntityShip) rider).renderYawOffset;
+				
+				this.prevRotationYawHead = ((EntityLivingBase) rider).prevRotationYawHead;
+				this.rotationYawHead = ((EntityLivingBase) rider).rotationYawHead;
+				this.prevRenderYawOffset = ((EntityLivingBase) rider).prevRenderYawOffset;
+				this.renderYawOffset = ((EntityLivingBase) rider).renderYawOffset;
+				this.prevRotationYaw = rider.prevRotationYaw;
+				this.rotationYaw = rider.rotationYaw;
+			}
+		}//end for sync rotation
+	}
 
+	
 }

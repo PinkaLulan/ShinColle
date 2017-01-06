@@ -1,6 +1,7 @@
 package com.lulan.shincolle.entity;
 
 import java.util.List;
+import java.util.Random;
 
 import javax.annotation.Nullable;
 
@@ -16,6 +17,7 @@ import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.client.render.IShipCustomTexture;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.handler.EventHandler;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.network.S2CEntitySync;
@@ -25,6 +27,7 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
@@ -189,6 +192,8 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	@Override
     public boolean attackEntityFrom(DamageSource attacker, float atk)
 	{
+		if (this.world.isRemote) return false;
+		
 		//null check
 		if (this.host == null)
 		{
@@ -422,6 +427,21 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
     	}
         return true;	//client端只回傳true
     }
+    
+    //special rotate by rider while no key typed (keyTick <= 0)
+    protected void setRotationByRider()
+    {
+	  	//sync rotation
+		List<Entity> riders = this.getPassengers();
+		
+		for (Entity rider : riders)
+		{
+			if (rider instanceof BasicEntityShip)
+			{
+				rider.rotationYaw = ((BasicEntityShip) rider).renderYawOffset;
+			}
+		}//end for sync rotation
+    }
 	
 	@Override
     public void onLivingUpdate()
@@ -429,88 +449,35 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		 /** server side */
     	if ((!world.isRemote))
     	{
-          	//sync rotation
-        	List<Entity> riders = this.getPassengers();
-        	
-        	for (Entity rider : riders)
-        	{
-        		if (this.keyTick <= 0 && rider instanceof BasicEntityShip)
-        		{
-        			if (this.getShipNavigate().noPath() && this.getEntityTarget() == null)
-        			{
-        				this.rotationYawHead = ((EntityLivingBase) rider).rotationYawHead;
-//    					this.renderYawOffset = ((EntityLivingBase) rider).renderYawOffset;
-    					this.prevRotationYaw = rider.prevRotationYaw;
-    					this.rotationYaw = rider.rotationYaw;
-        			}
-        			else
-        			{
-        				((EntityLivingBase) rider).rotationYawHead = this.rotationYawHead;
-//            	      	((EntityLivingBase) rider).renderYawOffset = this.renderYawOffset;
-            	      	rider.prevRotationYaw = this.prevRotationYaw;
-            	      	rider.rotationYaw = this.rotationYaw;
-        			}
-        		}
-        		else if (rider instanceof EntityPlayer)
-        		{
-        			//sync rotation for controller only
-        	      	if (this.keyPressed != 0 && rider.equals(this.getControllingPassenger()))
-        	      	{
-    					this.rotationYawHead = ((EntityLivingBase) rider).rotationYawHead;
-//    					this.renderYawOffset = ((EntityLivingBase) rider).renderYawOffset;
-    					this.prevRotationYaw = rider.prevRotationYaw;
-    					this.rotationYaw = rider.rotationYaw;
-        	      	}
-        		}
-        	}//end for sync rotation
-        	
-        	//update movement, NOTE: 1.9.4: must done before vanilla MoveHelper updating in super.onLivingUpdate()
-        	EntityHelper.updateShipNavigator(this);
-            super.onLivingUpdate();
-            
             //clear path if player controlling
-            if (this.keyPressed != 0)
+            if (this.keyTick > 0)
 	      	{
 				this.getShipNavigate().clearPathEntity();
 	      	}
+            
+        	//update movement, NOTE: 1.9.4: must done before vanilla MoveHelper updating in super.onLivingUpdate()
+        	EntityHelper.updateShipNavigator(this);
+        	
+            super.onLivingUpdate();
     	}//end server side
     	/** client side */
     	else
     	{
     		super.onLivingUpdate();
-    		
-    		if (this.ticksExisted % 2 == 0)
+			
+			//every 32 ticks
+    		if (this.ticksExisted % 32 == 0)
     		{
-    			//moving rotate
-    			if (this.keyTick <= 0)
+    			//check rider pos
+    			if (this.getPassengers().size() > 1)
     			{
-    				if (MathHelper.abs((float) (posX - prevPosX)) > 0.01F || MathHelper.abs((float) (posZ - prevPosZ)) > 0.01F)
-        	  		{
-        	  			float[] degree = CalcHelper.getLookDegree(posX - prevPosX, posY - prevPosY, posZ - prevPosZ, true);
-            			this.rotationYaw = degree[0];
-        			}
-        			//look rotate
-        			else if (this.getLookHelper().getIsLooking())
-        			{
-            			float[] degree = CalcHelper.getLookDegree(posX - this.getLookHelper().getLookPosX(), posY - this.getLookHelper().getLookPosY(), posZ - this.getLookHelper().getLookPosZ(), true);
-            			this.rotationYaw = degree[0];
-        			}
+    				setStateEmotion(ID.S.Emotion, 1, false);
     			}
-    			
-    			//every 32 ticks
-        		if (this.ticksExisted % 32 == 0)
-        		{
-        			//check rider pos
-        			if (this.getPassengers().size() > 1)
-        			{
-        				setStateEmotion(ID.S.Emotion, 1, false);
-        			}
-        			else
-        			{
-        				setStateEmotion(ID.S.Emotion, 0, false);
-        			}
-        		}//end 32 ticks
-    		}//end 2 ticks
+    			else
+    			{
+    				setStateEmotion(ID.S.Emotion, 0, false);
+    			}
+    		}//end 32 ticks
     	}//end client side
     }
 	
@@ -527,28 +494,9 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		//timer--
 		if (this.soundHurtDelay > 0) this.soundHurtDelay--;
 		
-		//apply movement by key pressed
-		if (this.keyTick > 0)
-		{
-			this.keyTick--;
-			
-			if (this.host != null && !this.host.getStateFlag(ID.F.NoFuel))
-			{
-				EntityPlayer rider2 = (EntityPlayer) this.getControllingPassenger();
-				
-				if (rider2 != null)
-				{
-					float yaw = rider2.rotationYawHead % 360F * Values.N.DIV_PI_180;
-					float pitch = rider2.rotationPitch % 360F * Values.N.DIV_PI_180;
-					this.applyMovement(pitch, yaw);
-					this.rotationYaw = rider2.rotationYaw;
-				}
-			}
-		}
-			
 		//check depth
 		EntityHelper.checkDepth(this);
-
+		
 		//client side
 		if (this.world.isRemote)
 		{
@@ -623,6 +571,56 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 				}//end every 8 ticks
 			}//end get host
 		}//end server side
+		
+		//apply movement by key pressed
+		if (this.keyTick > 0)
+		{
+			this.keyTick--;
+			
+			if (this.host != null && !this.host.getStateFlag(ID.F.NoFuel))
+			{
+				EntityPlayer rider2 = (EntityPlayer) this.getControllingPassenger();
+				
+				if (rider2 != null)
+				{
+					float yaw = rider2.rotationYawHead % 360F * Values.N.DIV_PI_180;
+					float pitch = rider2.rotationPitch % 360F * Values.N.DIV_PI_180;
+					this.applyMovement(pitch, yaw);
+					this.rotationYaw = rider2.rotationYaw;
+					this.renderYawOffset = rider2.renderYawOffset;
+				}
+			}
+		}
+		else
+		{
+			//moving rotate
+			if (MathHelper.abs((float) (posX - prevPosX)) > 0.1F || MathHelper.abs((float) (posZ - prevPosZ)) > 0.1F)
+	  		{
+	  			float[] degree = CalcHelper.getLookDegree(posX - prevPosX, posY - prevPosY, posZ - prevPosZ, true);
+    			this.rotationYaw = degree[0];
+    			
+    		  	//sync rotation
+    			List<Entity> riders = this.getPassengers();
+    			
+    			for (Entity rider : riders)
+    			{
+    				if (rider instanceof BasicEntityShip)
+    				{
+    					((EntityLivingBase) rider).prevRotationYawHead = this.prevRotationYawHead;
+    					((EntityLivingBase) rider).rotationYawHead = this.rotationYawHead;
+    					((EntityLivingBase) rider).prevRenderYawOffset = this.prevRenderYawOffset;
+    					((EntityLivingBase) rider).renderYawOffset = this.renderYawOffset;
+    					rider.prevRotationYaw = this.prevRenderYawOffset;
+    					rider.rotationYaw = this.renderYawOffset;
+    				}
+    			}//end for sync rotation
+			}
+			//no moving and no looking rotate
+			else
+			{
+				this.setRotationByRider();
+			}
+		}
 	}
 	
 	@Override
@@ -1436,6 +1434,27 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	}
 	
 	@Override
+	public double getShipDepth(int type)
+	{
+		switch (type)
+		{
+		case 1:
+			return 0D;
+		case 2:
+			if (this.host != null)
+			{
+				return this.host.getShipDepth();
+			}
+			else
+			{
+				return 0D;
+			}
+		default:
+			return this.shipDepth;
+		}
+	}
+	
+	@Override
 	public boolean shouldDismountInWater(Entity rider)
 	{
         return false;
@@ -1552,7 +1571,8 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	
 	/** sync packet
 	 *  0: sync all rider
-	 *
+	 *  1: sync rotation
+	 *  2: sync rotation and host rotation
 	 */
 	public void sendSyncPacket(int type)
 	{
@@ -1567,6 +1587,10 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 			break;
 			case 1:
 				CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this, S2CEntitySync.PID.SyncEntity_Rot), point);
+			break;
+			case 2:
+				CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this, 0, S2CEntitySync.PID.SyncEntity_PosRot), point);
+				CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this.host, 0, S2CEntitySync.PID.SyncEntity_PosRot), point);
 			break;
 			}
 		}
@@ -1656,21 +1680,29 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   		return this.height;
     }
   	
+	@Override
+	public boolean canPassengerSteer()
+    {
+		return false;
+    }
+  	
   	//對第一個rider設定座位位置以及旋轉角度使其跟座騎一致, 對第二個以後rider只設定位置
   	@Override
   	public void updatePassenger(Entity passenger)
   	{
-  		if (passenger != null && this.isPassenger(passenger))
+  		if (!this.isDead && passenger != null && this.isPassenger(passenger))
   		{
   			//set position for host seat
   			if (passenger instanceof BasicEntityShip)
   			{
+//  				this.seatPos = new float[] {EventHandler.field2, EventHandler.field1, 0F}; //TODO
   	        	float[] ridePos = CalcHelper.rotateXZByAxis(this.seatPos[0], this.seatPos[2], renderYawOffset * Values.N.DIV_PI_180, 1F);	
   	        	passenger.setPosition(this.posX + ridePos[1], this.posY + this.seatPos[1] + passenger.getYOffset(), this.posZ + ridePos[0]);
   			}
   			//set position for player seat
   			else if (passenger instanceof EntityPlayer)
   			{
+//  				this.seatPos2 = new float[] {EventHandler.field2, EventHandler.field1, 0F}; //TODO
   				float[] ridePos = CalcHelper.rotateXZByAxis(this.seatPos2[0], this.seatPos2[2], renderYawOffset * Values.N.DIV_PI_180, 1F);	
   	        	passenger.setPosition(this.posX + ridePos[1], this.posY + this.seatPos2[1] + passenger.getYOffset(), this.posZ + ridePos[0]);
   			}
@@ -1771,6 +1803,12 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	
 	@Override
 	public void setScaleLevel(int par1) {}
+	
+	@Override
+	public Random getRand()
+	{
+		return this.rand;
+	}
 	
 	
 }

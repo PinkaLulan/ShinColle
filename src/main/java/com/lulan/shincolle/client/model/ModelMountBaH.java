@@ -3,7 +3,6 @@ package com.lulan.shincolle.client.model;
 import java.util.Random;
 
 import com.lulan.shincolle.entity.IShipEmotion;
-import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.reference.ID;
 
 import net.minecraft.client.model.ModelBase;
@@ -469,9 +468,9 @@ public class ModelMountBaH extends ModelBase
   		GlStateManager.translate(0F, 0.2F, 0F);
   		
   		//水上漂浮
-  		if(((IShipFloating)ent).getShipDepth() > 0)
+  		if (ent.getShipDepth(0) > 0D)
   		{
-  			GlStateManager.translate(0F, angleX * 0.025F - 0.025F, 0F);
+  			GlStateManager.translate(0F, angleX * 0.025F + 0.025F, 0F);
     	}
   		
   		//leg move parm

@@ -56,8 +56,6 @@ public class EntityFloatingFort extends BasicEntityAirplane
             //AI flag
             this.numAmmoLight = 0;
             this.numAmmoHeavy = 1;
-            this.backHome = false;
-            this.canFindTarget = false;
             
             //設定發射位置
             float launchPos = (float) ship.posY;

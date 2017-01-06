@@ -5,7 +5,6 @@ import java.util.List;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -18,7 +17,6 @@ import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
@@ -39,7 +37,6 @@ public class EntityBattleshipNGTMob extends BasicEntityShipHostile
 		
 		//init values
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.BattleshipNagato);
-		this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, getStateMinor(ID.M.ShipClass)+2);
         this.smokeX = 0F;
         this.smokeY = 0F;
         
@@ -74,13 +71,7 @@ public class EntityBattleshipNGTMob extends BasicEntityShipHostile
 		break;
 		}
 	}
-	
-	@Override
-	protected float[] getAttrsMod()
-	{                     //HP    ATK   DEF   SPD   MOV   HIT
-		return new float[] {1F,   1F,   1F,   1F,   1F,   1F};
-	}
-	
+
 	@Override
 	protected void setBossInfo()
 	{

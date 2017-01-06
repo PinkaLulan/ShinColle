@@ -40,8 +40,7 @@ public class EntityAIShipWatchClosest extends EntityAIWatchClosest
     
     	if (host2 != null)
     	{
-    		if (host2.getStateFlag(ID.F.NoFuel) ||
-    			(host2.getIsRiding() && host.getRidingEntity() instanceof BasicEntityShip))
+    		if (host2.getStateFlag(ID.F.NoFuel) || host.getRidingEntity() instanceof BasicEntityShip)
     		{
     			return false;
     		}
@@ -62,17 +61,17 @@ public class EntityAIShipWatchClosest extends EntityAIWatchClosest
     {
     	super.updateTask();
     	
-    	//sync riding entity look position
-    	if (this.host != null)
-    	{
-    		if (this.host.getRidingEntity() instanceof BasicEntityMount)
-    		{
-    			if (((IShipNavigator)this.host.getRidingEntity()).getShipNavigate().noPath())
-    			{
-    				((EntityLiving)this.host.getRidingEntity()).getLookHelper().setLookPosition(this.closestEntity.posX, this.closestEntity.posY + (double)this.closestEntity.getEyeHeight(), this.closestEntity.posZ, 10.0F, 40F);
-    			}
-    		}
-		}
+//    	//sync riding entity look position
+//    	if (this.host != null)
+//    	{
+//    		if (this.host.getRidingEntity() instanceof BasicEntityMount)
+//    		{
+//    			if (((IShipNavigator)this.host.getRidingEntity()).getShipNavigate().noPath())
+//    			{
+//    				((EntityLiving)this.host.getRidingEntity()).getLookHelper().setLookPosition(this.closestEntity.posX, this.closestEntity.posY + (double)this.closestEntity.getEyeHeight(), this.closestEntity.posZ, 10.0F, 40F);
+//    			}
+//    		}
+//		}
     }
     
     

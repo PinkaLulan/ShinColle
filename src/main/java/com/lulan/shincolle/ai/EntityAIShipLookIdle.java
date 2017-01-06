@@ -1,11 +1,11 @@
 package com.lulan.shincolle.ai;
 
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.util.math.MathHelper;
-
+import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.utility.LogHelper;
+
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.ai.EntityAIBase;
 
 public class EntityAIShipLookIdle extends EntityAIBase
 {

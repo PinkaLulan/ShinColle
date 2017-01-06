@@ -1,25 +1,26 @@
 package com.lulan.shincolle.client.model;
 
-import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.MathHelper;
-
-import org.lwjgl.opengl.GL11;
-
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipEmotion;
-import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
+
+import net.minecraft.client.model.ModelBase;
+import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.GlStateManager.DestFactor;
+import net.minecraft.client.renderer.GlStateManager.SourceFactor;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.math.MathHelper;
 
 /**
  * EntityCarrierWO - PinkaLulan 2015/2/15
  * Created using Tabula 4.1.1
  */
-public class ModelCarrierWo extends ModelBase implements IModelEmotion {
+public class ModelCarrierWo extends ModelBase implements IModelEmotion
+{
     public ModelRenderer BodyMain;
     public ModelRenderer Butt;
     public ModelRenderer ArmLeft01;
@@ -91,9 +92,9 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
     public ModelRenderer Face3;
     public ModelRenderer Face4;
     
-    private int startEmo2 = 0;
 
-    public ModelCarrierWo() {
+    public ModelCarrierWo()
+    {
         this.textureWidth = 256;
         this.textureHeight = 128;
         
@@ -432,36 +433,46 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
     /**
      * This is a helper function from Tabula to set the rotation of model parts
      */
-    public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z) {
+    public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z)
+    {
         modelRenderer.rotateAngleX = x;
         modelRenderer.rotateAngleY = y;
         modelRenderer.rotateAngleZ = z;
     }
 
     @Override
-    public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {    
-        GL11.glPushMatrix();
-        
-    	GL11.glEnable(GL11.GL_BLEND);
-    	GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-    	GL11.glScalef(0.5F, 0.5F, 0.5F); 	
-    	GL11.glTranslatef(0F, 1.5F, 0F);
+    public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
+    {
+    	//FIX: head rotation bug while riding
+    	if (f3 <= -180F) { f3 += 360F; }
+    	else if (f3 >= 180F) { f3 -= 360F; }
     	
-    	setRotationAngles(f, f1, f2, f3, f4, f5, entity); 	
+    	GlStateManager.pushMatrix();
+    	GlStateManager.enableBlend();
+    	GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
+    	GlStateManager.scale(0.5F, 0.5F, 0.5F); 
+    	GlStateManager.translate(0F, 1.5F, 0F);
+    	
+    	//main body
+    	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
     	this.BodyMain.render(f5);
+    	GlStateManager.disableBlend();
     	
-    	GL11.glDisable(GL11.GL_LIGHTING);
+    	//light part
+    	GlStateManager.disableLighting();
+    	GlStateManager.enableCull();
     	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
-    	this.GlowBodyMain.render(f5); 	
-    	GL11.glEnable(GL11.GL_LIGHTING);
+    	this.GlowBodyMain.render(f5);
+    	GlStateManager.disableCull();
+    	GlStateManager.enableLighting();
     	
-    	GL11.glDisable(GL11.GL_BLEND);
-    	GL11.glPopMatrix();
+    	GlStateManager.popMatrix();
     }
     
     //for idle/run animation
     @Override
-	public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity) {
+	public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity)
+    {
     	super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
     	
     	BasicEntityShip ent = (BasicEntityShip)entity;
@@ -470,10 +481,12 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 
     	EmotionHelper.rollEmotion(this, ent);
 
-    	if(ent.getStateFlag(ID.F.NoFuel)) {
+    	if (ent.getStateFlag(ID.F.NoFuel))
+    	{
     		motionStopPos(f, f1, f2, f3, f4, ent);
 		}
-		else {
+		else
+		{
 			motionHumanPos(f, f1, f2, f3, f4, ent);
 		}
 
@@ -481,7 +494,8 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
     }
     
     //設定模型發光部份的rotation
-    private void setGlowRotation() {
+    private void setGlowRotation()
+    {
 		this.GlowBodyMain.rotateAngleX = this.BodyMain.rotateAngleX;
 		this.GlowBodyMain.rotateAngleY = this.BodyMain.rotateAngleY;
 		this.GlowBodyMain.rotateAngleZ = this.BodyMain.rotateAngleZ;
@@ -493,8 +507,9 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 		this.GlowHead.rotateAngleZ = this.Head.rotateAngleZ;
 	}
     
-    private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent) {
-    	GL11.glTranslatef(0F, 1.35F, 0F);
+    private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
+    {
+    	GlStateManager.translate(0F, 0.45F, 0F);
   		setFace(4);
   		
   		//頭部
@@ -549,7 +564,8 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 		this.Staff.offsetY = -1.5F;
 		this.Staff.offsetZ = -1.7F;
 		//觸手晃動 (equip only)
-		if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
+		if (ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00)
+		{
 			this.EquipLC01.rotateAngleX = this.Head.rotateAngleX;
 			this.EquipRC01.rotateAngleX = this.Head.rotateAngleX;
 			
@@ -584,23 +600,25 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
     }
 
 	//雙腳移動計算
-  	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, BasicEntityShip ent) {   
+  	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, BasicEntityShip ent)
+  	{   
   		float angleZ = MathHelper.cos(f2*0.08F);
   		float addk1 = 0;
   		float addk2 = 0;
   		
   		//水上漂浮
-  		if(((IShipFloating)ent).getShipDepth() > 0) {
-    		GL11.glTranslatef(0F, angleZ * 0.1F - 0.025F, 0F);
+  		if (ent.getShipDepth(0) > 0D)
+  		{
+  			GlStateManager.translate(0F, angleZ * 0.05F + 0.025F, 0F);
     	}
   		
   		//leg move parm
   		addk1 = MathHelper.cos(f * 0.4F) * 0.5F * f1;
 	  	addk2 = MathHelper.cos(f * 0.4F + 3.1415927F) * 0.5F * f1;
 
-  	    //移動頭部 使其看人, 不看人時持續擺動頭部
-	  	this.Head.rotateAngleY = f3 / 57.29578F;	//左右角度 角度轉成rad 即除以57.29578
-	    this.Head.rotateAngleX = (f4 / 57.29578F) * 0.7F; 	//上下角度
+  	    //移動頭部使其看人
+	  	this.Head.rotateAngleX = f4 * 0.012F; 	//上下角度
+	  	this.Head.rotateAngleY = f3 * 0.01F;	//左右角度
 	    //正常站立動作
 	    //胸部
   	    this.BoobL.rotateAngleX = -angleZ * 0.06F - 0.63F;
@@ -659,7 +677,8 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 		this.Staff.offsetY = -1.7F;
 		this.Staff.offsetZ = -1.4F;
 		//觸手晃動 (equip only)
-		if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
+		if (ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00)
+		{
 			this.EquipLC01.rotateAngleX = this.Head.rotateAngleX;
 			this.EquipRC01.rotateAngleX = this.Head.rotateAngleX;
 			
@@ -692,7 +711,8 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 			this.EquipTB03R.rotateAngleZ = -angleZ * 0.25F;
 		}
 
-	    if(ent.isSprinting() || f1 > 0.9F) {	//奔跑動作
+	    if (ent.isSprinting() || f1 > 0.9F)
+	    {	//奔跑動作
 			float angleZFast = MathHelper.cos(f2*0.3F);
 	  	    //手臂晃動 
 		  	this.ArmLeft01.rotateAngleX = -0.6981F;
@@ -722,7 +742,8 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 			this.Staff.offsetY = -1F;
 			this.Staff.offsetZ = -0.1F;
 			//觸手晃動 (equip only)
-			if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
+			if (ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00)
+			{
 				this.EquipT01L.rotateAngleX = angleZFast * 0.05F + 0.2618F;
 				this.EquipT01L.rotateAngleZ = -0.2618F;
 				this.EquipT02L.rotateAngleX = angleZFast * 0.15F + 0.2618F;
@@ -755,9 +776,9 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 
 	    //head tilt angle
 	    this.Head.rotateAngleZ = EmotionHelper.getHeadTiltAngle(ent, f2);
-
   		
-	    if(ent.isSneaking()) {		//潛行, 蹲下動作
+	    if (ent.isSneaking())
+	    {	//潛行, 蹲下動作
   			this.ArmLeft01.rotateAngleX = 0.7F;
   			this.ArmRight01.rotateAngleX = 0.7F;
   			this.BodyMain.rotateAngleX = 0.5F;
@@ -766,13 +787,16 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
   			addk1 -= 0.66F;
 			addk2 -= 0.66F;
   		}
-	    else {
+	    else
+	    {
 			this.Head.rotateAngleX += 0.2F;
 	    }
   		
-	    if(ent.isSitting() || ent.isRiding()) {  //騎乘動作
-	    	if(ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED) {
-		    	GL11.glTranslatef(0F, 1.35F, 0F);
+	    if (ent.isSitting() || ent.isRiding())
+	    {	//騎乘動作
+	    	if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
+	    	{
+	    		GlStateManager.translate(0F, 0.45F, 0F);
 		    	//身體角度
 				this.BodyMain.rotateAngleX = 0.2094F;
 				this.BodyMain.rotateAngleY = 0F;
@@ -815,7 +839,8 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 				this.Staff.offsetY = -1.5F;
 				this.Staff.offsetZ = -1.7F;
 				//觸手晃動 (equip only)
-				if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
+				if (ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00)
+				{
 					this.EquipT01L.rotateAngleX = angleZ * 0.01F - 0.2618F;
 					this.EquipT01L.rotateAngleZ = -0.2618F;
 					this.EquipT02L.rotateAngleX = angleZ * 0.03F - 0.3491F;
@@ -845,7 +870,8 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 					this.EquipTB03R.rotateAngleZ = -0.2618F;
 	  			}
 	    	}
-	    	else {
+	    	else
+	    	{
 	    		//手臂晃動 
 			  	this.ArmLeft01.rotateAngleX = 0.4F;
 			    this.ArmLeft01.rotateAngleY = 0F;
@@ -880,7 +906,8 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 				this.Staff.offsetY = -1.95F;
 				this.Staff.offsetZ = -1.4F;
 				//觸手晃動 (equip only)
-				if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
+				if (ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00)
+				{
 					this.EquipT01L.rotateAngleX = -angleZ * 0.05F + 0.2618F;
 					this.EquipT01L.rotateAngleZ = -0.2618F;
 					this.EquipT02L.rotateAngleX = -angleZ * 0.15F + 0.2618F;
@@ -929,7 +956,8 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 	    this.LegRight01.rotateAngleX = addk2;
 	    
 	    //攻擊時順便將左手指向對方	    
-	    if(ent.attackTime > 0) {
+	    if (ent.getAttackTick() > 0)
+	    {
 	    	this.ArmLeft01.rotateAngleX = f4 / 57.29578F - 1.5F;
 	    	this.ArmRight01.rotateAngleZ = 0.7F;
 	    	this.ArmRight01.rotateAngleX = 0.4F;
@@ -944,28 +972,32 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
 	    
 	    //swing arm
 	  	float f6 = ent.getSwingTime(f2 - (int)f2);
-	  	if(f6 != 0F) {
+	  	if (f6 != 0F)
+	  	{
 	  		float f7 = MathHelper.sin(f6 * f6 * (float)Math.PI);
-	        float f8 = MathHelper.sin(MathHelper.sqrt_float(f6) * (float)Math.PI);
+	        float f8 = MathHelper.sin(MathHelper.sqrt(f6) * (float)Math.PI);
 	        this.ArmRight01.rotateAngleX = -0.2F;
 	        this.ArmRight01.rotateAngleY = 0F;
 	        this.ArmRight01.rotateAngleZ = -0.1F;
-	        this.ArmRight01.rotateAngleX += -f8 * 80.0F * Values.N.RAD_MUL;
-	        this.ArmRight01.rotateAngleY += -f7 * 20.0F * Values.N.RAD_MUL + 0.2F;
-	        this.ArmRight01.rotateAngleZ += -f8 * 20.0F * Values.N.RAD_MUL;
+	        this.ArmRight01.rotateAngleX += -f8 * 80.0F * Values.N.DIV_PI_180;
+	        this.ArmRight01.rotateAngleY += -f7 * 20.0F * Values.N.DIV_PI_180 + 0.2F;
+	        this.ArmRight01.rotateAngleZ += -f8 * 20.0F * Values.N.DIV_PI_180;
 	        this.ArmRight02.rotateAngleX = 0F;
 	        this.ArmRight02.rotateAngleY = 0F;
 	        this.ArmRight02.rotateAngleZ = 0F;
 	  	}
 	}
     
-    private void showEquip(BasicEntityShip ent) {
-		if(ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00) {
+    private void showEquip(BasicEntityShip ent)
+    {
+		if (ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00)
+		{
 			this.EquipBase.isHidden = false;
 			this.EquipEye01.isHidden = false;
 			this.EquipEye02.isHidden = false;
 		}
-		else {
+		else
+		{
 			this.EquipBase.isHidden = true;
 			this.EquipEye01.isHidden = true;
 			this.EquipEye02.isHidden = true;
@@ -974,49 +1006,66 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion {
   	
     //設定顯示的臉型
   	@Override
-  	public void setFace(int emo) {
-  		switch(emo) {
+  	public void setFace(int emo)
+  	{
+  		switch (emo)
+  		{
   		case 0:
   			this.Face0.isHidden = false;
   			this.Face1.isHidden = true;
   			this.Face2.isHidden = true;
   			this.Face3.isHidden = true;
   			this.Face4.isHidden = true;
-  			break;
+  		break;
   		case 1:
   			this.Face0.isHidden = true;
   			this.Face1.isHidden = false;
   			this.Face2.isHidden = true;
   			this.Face3.isHidden = true;
   			this.Face4.isHidden = true;
-  			break;
+  		break;
   		case 2:
   			this.Face0.isHidden = true;
   			this.Face1.isHidden = true;
   			this.Face2.isHidden = false;
   			this.Face3.isHidden = true;
   			this.Face4.isHidden = true;
-  			break;
+  		break;
   		case 3:
   			this.Face0.isHidden = true;
   			this.Face1.isHidden = true;
   			this.Face2.isHidden = true;
   			this.Face3.isHidden = false;
   			this.Face4.isHidden = true;
-  			break;
+  		break;
   		case 4:
   			this.Face0.isHidden = true;
   			this.Face1.isHidden = true;
   			this.Face2.isHidden = true;
   			this.Face3.isHidden = true;
   			this.Face4.isHidden = false;
-  			break;
+  		break;
   		default:
-  			break;
+  		break;
   		}
   	}
-    
+
+	@Override
+	public int getFieldCount()
+	{
+		return 0;
+	}
+
+	@Override
+	public void setField(int id, float value)
+	{
+	}
+
+	@Override
+	public float getField(int id)
+	{
+		return 0;
+	}
     
     
 }
-

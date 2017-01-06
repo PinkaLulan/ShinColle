@@ -1,22 +1,19 @@
 package com.lulan.shincolle.client.model;
 
-import org.lwjgl.opengl.GL11;
-
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.IShipEmotion;
-import com.lulan.shincolle.entity.IShipFloating;
-import com.lulan.shincolle.entity.destroyer.EntityDestroyerIkazuchi;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
-import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.GlStateManager.DestFactor;
+import net.minecraft.client.renderer.GlStateManager.SourceFactor;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.MathHelper;
 
 /**
  * ModelCarrierHime - PinkaLulan
@@ -96,6 +93,7 @@ public class ModelCarrierHime extends ModelBase implements IModelEmotionAdv
     public ModelRenderer GlowArmRight01;
     public ModelRenderer GlowArmRight02;
 
+    
     public ModelCarrierHime()
     {
         this.textureWidth = 128;
@@ -453,31 +451,34 @@ public class ModelCarrierHime extends ModelBase implements IModelEmotionAdv
     
     @Override
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
-    { 
-    	GL11.glPushMatrix();       
-    	GL11.glEnable(GL11.GL_BLEND);
-    	GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-    	GL11.glScalef(0.47F, 0.47F, 0.47F);
-    	GL11.glTranslatef(0F, 1.75F, 0F);
+    {
+    	//FIX: head rotation bug while riding
+    	if (f3 <= -180F) { f3 += 360F; }
+    	else if (f3 >= 180F) { f3 -= 360F; }
     	
+    	GlStateManager.pushMatrix();
+    	GlStateManager.enableBlend();
+    	GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
+    	GlStateManager.scale(0.47F, 0.47F, 0.47F);
+    	GlStateManager.translate(0F, 1.7F, 0F);
+    	
+    	//main body
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
     	this.BodyMain.render(f5);
+    	GlStateManager.disableBlend();
     	
     	//light part
-    	GL11.glDisable(GL11.GL_LIGHTING);
-    	GL11.glEnable(GL11.GL_CULL_FACE);  //disable drawing back face
+    	GlStateManager.disableLighting();
+    	GlStateManager.enableCull();
     	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
     	this.GlowBodyMain.render(f5);
-    	GL11.glDisable(GL11.GL_CULL_FACE);
-    	
+    	GlStateManager.disableCull();
     	float light = 80F + MathHelper.cos(f2 * 0.075F) * 80F;
     	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, light, light);
     	this.GlowBodyMain2.render(f5);
-    	GL11.glEnable(GL11.GL_LIGHTING);
+    	GlStateManager.enableLighting();
     	
-    	
-    	GL11.glDisable(GL11.GL_BLEND);
-    	GL11.glPopMatrix();
+    	GlStateManager.popMatrix();
     }
     
 	//model animation
@@ -532,7 +533,7 @@ public class ModelCarrierHime extends ModelBase implements IModelEmotionAdv
     
     private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
     {
-    	GL11.glTranslatef(0F, 1.4F, 0F);
+    	GlStateManager.translate(0F, 0.49F, 0F);
   		setFace(4);
   		
   	    //head
@@ -634,9 +635,9 @@ public class ModelCarrierHime extends ModelBase implements IModelEmotionAdv
   		float headZ = 0F;
   		
   		//水上漂浮
-  		if(((IShipFloating)ent).getShipDepth() > 0)
+  		if (ent.getShipDepth(0) > 0D || ent.getShipDepth(1) > 0D)
   		{
-    		GL11.glTranslatef(0F, angleX * 0.1F - 0.025F, 0F);
+  			GlStateManager.translate(0F, angleX * 0.05F + 0.025F, 0F);
     	}
 
     	//leg move
@@ -644,8 +645,8 @@ public class ModelCarrierHime extends ModelBase implements IModelEmotionAdv
 	  	addk2 = angleAdd2 * 0.5F - 0.1745F;
     	
   	    //head
-	  	this.Head.rotateAngleX = f4 * 0.0174532925F;
-	  	this.Head.rotateAngleY = f3 * 0.013F;
+	  	this.Head.rotateAngleX = f4 * 0.014F;
+	  	this.Head.rotateAngleY = f3 * 0.01F;
 	  	//胸部
   	    this.BoobL.rotateAngleX = angleX * 0.06F - 0.75F;
   	    this.BoobR.rotateAngleX = angleX * 0.06F - 0.75F;
@@ -727,6 +728,7 @@ public class ModelCarrierHime extends ModelBase implements IModelEmotionAdv
 	  	//奔跑動作
 	    if(ent.getIsSprinting() || f1 > 0.95F)
 	    {
+	    	GlStateManager.translate(0F, 0.05F, 0F);
 	    	//body
 	 	    this.Head.rotateAngleX -= 0.4F;
 	 	    this.BodyMain.rotateAngleX = 0.7F;
@@ -750,6 +752,7 @@ public class ModelCarrierHime extends ModelBase implements IModelEmotionAdv
 	    //潛行, 蹲下動作
 	    if(ent.getIsSneaking())
 	    {
+	    	GlStateManager.translate(0F, 0.05F, 0F);
 	    	//Body
 	    	this.Head.rotateAngleX -= 1.0472F;
 		  	this.BodyMain.rotateAngleX = 1.0472F;
@@ -783,13 +786,13 @@ public class ModelCarrierHime extends ModelBase implements IModelEmotionAdv
   		}//end if sneaking
 	    
 	    //騎乘動作
-    	if (((Entity)ent).ridingEntity instanceof BasicEntityMount)
+    	if (((Entity)ent).getRidingEntity() instanceof BasicEntityMount)
     	{
     		if (ent.getIsSitting())
 			{
     			if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 		    	{
-		    		GL11.glTranslatef(0F, 2F, -1.0F);
+    				GlStateManager.translate(0F, 0.65F, -0.27F);
 			    	//Body
 			    	this.Head.rotateAngleX = -1.2217F;
 			    	this.Head.rotateAngleY = 0F;
@@ -823,7 +826,7 @@ public class ModelCarrierHime extends ModelBase implements IModelEmotionAdv
 		    	}
 		    	else
 		    	{
-		    		GL11.glTranslatef(0F, 1.5F, 0F);
+		    		GlStateManager.translate(0F, 0.51F, 0F);
 			    	//head
 			    	this.Head.rotateAngleY -= 0.4F;
 			    	this.Head.rotateAngleZ += 0.2F;
@@ -864,7 +867,7 @@ public class ModelCarrierHime extends ModelBase implements IModelEmotionAdv
 			}
     		else
     		{
-    			GL11.glTranslatef(0F, 1.7F, 0F);
+    			GlStateManager.translate(0F, 0.56F, 0F);
 		    	//body
 		    	this.BodyMain.rotateAngleX = -0.45F;
 		    	this.Butt.rotateAngleX = -0.2F;
@@ -908,7 +911,7 @@ public class ModelCarrierHime extends ModelBase implements IModelEmotionAdv
     	{
     		if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 	    	{
-	    		GL11.glTranslatef(0F, 2F, 0F);
+    			GlStateManager.translate(0F, 0.65F, 0F);
 		    	//Body
 		    	this.Head.rotateAngleX = -1.2217F;
 		    	this.Head.rotateAngleY = 0F;
@@ -942,7 +945,7 @@ public class ModelCarrierHime extends ModelBase implements IModelEmotionAdv
 	    	}
 	    	else
 	    	{
-	    		GL11.glTranslatef(0F, 1.5F, 0F);
+	    		GlStateManager.translate(0F, 0.51F, 0F);
 		    	//head
 		    	this.Head.rotateAngleY -= 0.4F;
 		    	this.Head.rotateAngleZ += 0.2F;
@@ -982,44 +985,44 @@ public class ModelCarrierHime extends ModelBase implements IModelEmotionAdv
 	    	}
     	}
 	    
-	    if (!(((Entity)ent).ridingEntity instanceof BasicEntityMount))
+	    if (!(((Entity)ent).getRidingEntity() instanceof BasicEntityMount))
     	{
 	    	//攻擊動作
-		    int atktime = ent.getAttackTime();
+		    int atktime = ent.getAttackTick();
 		    if (atktime > 41)
 		    {
 		    	setFaceAttack(ent);
 		    	//swing arm
-			    float ft = (50 - ent.getAttackTime()) + (f2 - (int)f2);
+			    float ft = (50 - ent.getAttackTick()) + (f2 - (int)f2);
 			    ft *= 0.125F;
 		  		float fa = MathHelper.cos(ft * ft * (float)Math.PI);
-		        float fb = MathHelper.cos(MathHelper.sqrt_float(ft) * (float)Math.PI);
-		        this.ArmLeft01.rotateAngleX += -fb * 120.0F * Values.N.RAD_MUL - 1.5F;
-		        this.ArmLeft01.rotateAngleY += fa * 20.0F * Values.N.RAD_MUL;
-		        this.ArmLeft01.rotateAngleZ += fb * 20.0F * Values.N.RAD_MUL + 0.26F;
+		        float fb = MathHelper.cos(MathHelper.sqrt(ft) * (float)Math.PI);
+		        this.ArmLeft01.rotateAngleX += -fb * 120.0F * Values.N.DIV_PI_180 - 1.5F;
+		        this.ArmLeft01.rotateAngleY += fa * 20.0F * Values.N.DIV_PI_180;
+		        this.ArmLeft01.rotateAngleZ += fb * 20.0F * Values.N.DIV_PI_180 + 0.26F;
 		    }
 		    if (atktime > 36 && atktime <  45)
 		    {
 		    	setFaceAttack(ent);
 		    	//swing arm
-			    float ft = (45 - ent.getAttackTime()) + (f2 - (int)f2);
+			    float ft = (45 - ent.getAttackTick()) + (f2 - (int)f2);
 			    ft *= 0.125F;
 		  		float fa = MathHelper.cos(ft * ft * (float)Math.PI);
-		        float fb = MathHelper.cos(MathHelper.sqrt_float(ft) * (float)Math.PI);
-		        this.ArmRight01.rotateAngleX += -fb * 120.0F * Values.N.RAD_MUL - 1.5F;
-		        this.ArmRight01.rotateAngleY += -fa * 20.0F * Values.N.RAD_MUL;
-		        this.ArmRight01.rotateAngleZ += -fb * 20.0F * Values.N.RAD_MUL - 0.26F;
+		        float fb = MathHelper.cos(MathHelper.sqrt(ft) * (float)Math.PI);
+		        this.ArmRight01.rotateAngleX += -fb * 120.0F * Values.N.DIV_PI_180 - 1.5F;
+		        this.ArmRight01.rotateAngleY += -fa * 20.0F * Values.N.DIV_PI_180;
+		        this.ArmRight01.rotateAngleZ += -fb * 20.0F * Values.N.DIV_PI_180 - 0.26F;
 		    }
 		    
 		    //swing arm
 		  	float f6 = ent.getSwingTime(f2 - (int)f2);
-		  	if(f6 != 0F)
+		  	if (f6 != 0F)
 		  	{
 		  		float f7 = MathHelper.sin(f6 * f6 * (float)Math.PI);
-		        float f8 = MathHelper.sin(MathHelper.sqrt_float(f6) * (float)Math.PI);
-		        this.ArmRight01.rotateAngleX += -f8 * 95.0F * Values.N.RAD_MUL;
-		        this.ArmRight01.rotateAngleY += -f7 * 20.0F * Values.N.RAD_MUL + 0.2F;
-		        this.ArmRight01.rotateAngleZ += -f8 * 20.0F * Values.N.RAD_MUL;
+		        float f8 = MathHelper.sin(MathHelper.sqrt(f6) * (float)Math.PI);
+		        this.ArmRight01.rotateAngleX += -f8 * 95.0F * Values.N.DIV_PI_180;
+		        this.ArmRight01.rotateAngleY += -f7 * 20.0F * Values.N.DIV_PI_180 + 0.2F;
+		        this.ArmRight01.rotateAngleZ += -f8 * 20.0F * Values.N.DIV_PI_180;
 		  	}
     	}
 	  	
@@ -1052,14 +1055,14 @@ public class ModelCarrierHime extends ModelBase implements IModelEmotionAdv
   	
   	private void showEquip(IShipEmotion ent)
   	{
-  		switch(ent.getStateEmotion(ID.S.State2))
+  		switch (ent.getStateEmotion(ID.S.State2))
   		{
   		case ID.State.EQUIP00_2:
   			this.GlowBodyMain2.isHidden = false;
-  			break;
+  		break;
   		default:  //normal
   			this.GlowBodyMain2.isHidden = true;
-  			break;
+  		break;
   		}
   	}
   	
@@ -1067,7 +1070,7 @@ public class ModelCarrierHime extends ModelBase implements IModelEmotionAdv
   	@Override
   	public void setFace(int emo)
   	{
-  		switch(emo)
+  		switch (emo)
   		{
   		case 0:
   			this.Face0.isHidden = false;
@@ -1076,7 +1079,7 @@ public class ModelCarrierHime extends ModelBase implements IModelEmotionAdv
   			this.Face2.isHidden = true;
   			this.Face3.isHidden = true;
   			this.Face4.isHidden = true;
-  			break;
+  		break;
   		case 1:
   			this.Face0.isHidden = true;
   			this.Face1.isHidden = false;
@@ -1084,7 +1087,7 @@ public class ModelCarrierHime extends ModelBase implements IModelEmotionAdv
   			this.Face2.isHidden = true;
   			this.Face3.isHidden = true;
   			this.Face4.isHidden = true;
-  			break;
+  		break;
   		case 2:
   			this.Face0.isHidden = true;
   			this.Face1.isHidden = true;
@@ -1092,7 +1095,7 @@ public class ModelCarrierHime extends ModelBase implements IModelEmotionAdv
   			this.Face2.rotateAngleY = 0F;
   			this.Face3.isHidden = true;
   			this.Face4.isHidden = true;
-  			break;
+  		break;
   		case 3:
   			this.Face0.isHidden = true;
   			this.Face1.isHidden = true;
@@ -1100,7 +1103,7 @@ public class ModelCarrierHime extends ModelBase implements IModelEmotionAdv
   			this.Face3.isHidden = false;
   			this.Face3.rotateAngleY = 0F;
   			this.Face4.isHidden = true;
-  			break;
+  		break;
   		case 4:
   			this.Face0.isHidden = true;
   			this.Face1.isHidden = true;
@@ -1108,7 +1111,7 @@ public class ModelCarrierHime extends ModelBase implements IModelEmotionAdv
   			this.Face3.isHidden = true;
   			this.Face4.isHidden = false;
   			this.Face4.rotateAngleY = 0F;
-  			break;
+  		break;
   		case 5:
   			this.Face0.isHidden = false;
   			this.Face0.rotateAngleY = 3.14159F;
@@ -1116,7 +1119,7 @@ public class ModelCarrierHime extends ModelBase implements IModelEmotionAdv
   			this.Face2.isHidden = true;
   			this.Face3.isHidden = true;
   			this.Face4.isHidden = true;
-  			break;
+  		break;
   		case 6:
   			this.Face0.isHidden = true;
   			this.Face1.isHidden = false;
@@ -1124,7 +1127,7 @@ public class ModelCarrierHime extends ModelBase implements IModelEmotionAdv
   			this.Face2.isHidden = true;
   			this.Face3.isHidden = true;
   			this.Face4.isHidden = true;
-  			break;
+  		break;
   		case 7:
   			this.Face0.isHidden = true;
   			this.Face1.isHidden = true;
@@ -1132,7 +1135,7 @@ public class ModelCarrierHime extends ModelBase implements IModelEmotionAdv
   			this.Face2.rotateAngleY = 3.14159F;
   			this.Face3.isHidden = true;
   			this.Face4.isHidden = true;
-  			break;
+  		break;
   		case 8:
   			this.Face0.isHidden = true;
   			this.Face1.isHidden = true;
@@ -1140,7 +1143,7 @@ public class ModelCarrierHime extends ModelBase implements IModelEmotionAdv
   			this.Face3.isHidden = false;
   			this.Face3.rotateAngleY = 3.14159F;
   			this.Face4.isHidden = true;
-  			break;
+  		break;
   		case 9:
   			this.Face0.isHidden = true;
   			this.Face1.isHidden = true;
@@ -1148,9 +1151,9 @@ public class ModelCarrierHime extends ModelBase implements IModelEmotionAdv
   			this.Face3.isHidden = true;
   			this.Face4.isHidden = false;
   			this.Face4.rotateAngleY = 3.14159F;
-  			break;
+  		break;
   		default:
-  			break;
+  		break;
   		}
   	}
 
@@ -1270,7 +1273,23 @@ public class ModelCarrierHime extends ModelBase implements IModelEmotionAdv
 	{
 		
 	}
+
+	@Override
+	public int getFieldCount()
+	{
+		return 0;
+	}
+
+	@Override
+	public void setField(int id, float value)
+	{
+	}
+
+	@Override
+	public float getField(int id)
+	{
+		return 0;
+	}
 	
 	
 }
-

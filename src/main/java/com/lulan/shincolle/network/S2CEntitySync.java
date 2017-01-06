@@ -153,7 +153,7 @@ public class S2CEntitySync implements IMessage
 		break;
 		case PID.SyncEntity_PosRot:	//entity position sync
 			this.valueDouble1 = PacketHelper.readDoubleArray(buf, 3);
-			this.valueFloat1 = PacketHelper.readFloatArray(buf, 2);
+			this.valueFloat1 = PacketHelper.readFloatArray(buf, 4);
 		break;
 		case PID.SyncEntity_Rot:	//entity rotation sync
 			this.valueFloat1 = PacketHelper.readFloatArray(buf, 3);
@@ -449,11 +449,26 @@ public class S2CEntitySync implements IMessage
 		break;
 		case PID.SyncEntity_PosRot:	//entity position sync
 		{
-			buf.writeDouble(this.entity.posX);
-			buf.writeDouble(this.entity.posY);
-			buf.writeDouble(this.entity.posZ);
-			buf.writeFloat(this.entity.rotationYaw);
-			buf.writeFloat(this.entity.rotationPitch);
+			if (this.entity instanceof EntityLivingBase)
+			{
+				buf.writeDouble(this.entity.posX);
+				buf.writeDouble(this.entity.posY);
+				buf.writeDouble(this.entity.posZ);
+				buf.writeFloat(this.entity.rotationYaw);
+				buf.writeFloat(this.entity.rotationPitch);
+				buf.writeFloat(((EntityLivingBase) this.entity).renderYawOffset);
+				buf.writeFloat(((EntityLivingBase) this.entity).rotationYawHead);
+			}
+			else
+			{
+				buf.writeDouble(this.entity.posX);
+				buf.writeDouble(this.entity.posY);
+				buf.writeDouble(this.entity.posZ);
+				buf.writeFloat(this.entity.rotationYaw);
+				buf.writeFloat(this.entity.rotationPitch);
+				buf.writeFloat(0F);
+				buf.writeFloat(0F);
+			}
 		}
 		break;
 		case PID.SyncEntity_Rot:	//entity rotation sync
@@ -842,8 +857,18 @@ public class S2CEntitySync implements IMessage
 			break;
 			case PID.SyncEntity_PosRot:	//entity position sync
 			{
-				entity.setPositionAndRotation(msg.valueDouble1[0], msg.valueDouble1[1],
-						msg.valueDouble1[2], msg.valueFloat1[0], msg.valueFloat1[1]);
+				if (entity instanceof EntityLivingBase)
+				{
+					entity.setPositionAndRotation(msg.valueDouble1[0], msg.valueDouble1[1],
+							msg.valueDouble1[2], msg.valueFloat1[0], msg.valueFloat1[1]);
+					((EntityLivingBase) entity).renderYawOffset = msg.valueFloat1[2];
+					((EntityLivingBase) entity).rotationYawHead = msg.valueFloat1[3];
+				}
+				else
+				{
+					entity.setPositionAndRotation(msg.valueDouble1[0], msg.valueDouble1[1],
+							msg.valueDouble1[2], msg.valueFloat1[0], msg.valueFloat1[1]);
+				}
 			}
 			break;
 			case PID.SyncEntity_Rot:	//entity rotation sync

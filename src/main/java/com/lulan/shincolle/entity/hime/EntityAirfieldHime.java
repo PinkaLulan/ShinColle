@@ -2,32 +2,30 @@ package com.lulan.shincolle.entity.hime;
 
 import java.util.List;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
-
 import com.lulan.shincolle.ai.EntityAIShipCarrierAttack;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipCV;
-import com.lulan.shincolle.entity.ExtendShipProps;
 import com.lulan.shincolle.entity.mounts.EntityMountAfH;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.CalcHelper;
-import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.TeamHelper;
 
-import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
-public class EntityAirfieldHime extends BasicEntityShipCV {
+public class EntityAirfieldHime extends BasicEntityShipCV
+{
 	
-	public EntityAirfieldHime(World world) {
+	public EntityAirfieldHime(World world)
+	{
 		super(world);
 		this.setSize(0.7F, 1.9F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
@@ -36,8 +34,7 @@ public class EntityAirfieldHime extends BasicEntityShipCV {
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BBV]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BBV]);
 		this.ModelPos = new float[] {-6F, 15F, 0F, 40F};
-		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
-		launchHeight = this.height * 0.7F;
+		this.launchHeight = this.height * 0.7F;
 		
 		//set attack type
 		this.StateFlag[ID.F.HaveRingEffect] = true;
@@ -47,20 +44,22 @@ public class EntityAirfieldHime extends BasicEntityShipCV {
 		
 		this.postInit();
 	}
-	
+
 	@Override
-	public float getEyeHeight() {
-		return 1.7375F;
-	}
-	
-	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc
-	@Override
-	public int getEquipType() {
+	public int getEquipType()
+	{
 		return 2;
 	}
 	
 	@Override
-	public void setAIList() {
+	public int getKaitaiType()
+	{
+		return 1;
+	}
+	
+	@Override
+	public void setAIList()
+	{
 		super.setAIList();
 		
 		//use range attack
@@ -73,7 +72,7 @@ public class EntityAirfieldHime extends BasicEntityShipCV {
   	public void onLivingUpdate()
   	{
   		//server side
-  		if (!worldObj.isRemote)
+  		if (!this.world.isRemote)
   		{
   			//飛行場特殊能力
         	if (this.ticksExisted % 128 == 0)
@@ -85,40 +84,37 @@ public class EntityAirfieldHime extends BasicEntityShipCV {
         		}
         		
         		//2: 結婚後, 周圍某一目標回血, 包括玩家, 回血目標依等級提昇
-				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.M.NumGrudge) > 0)
+				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.M.NumGrudge) > 50)
 				{
 					//判定bounding box內是否有可以回血的目標
 					int healCount = this.getLevel() / 15 + 2;
-		            EntityLivingBase hitEntity = null;
-		            List hitList = null;
-		            hitList = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, this.boundingBox.expand(12D, 12D, 12D));
+		            List<EntityLivingBase> hitList = this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox().expand(12D, 12D, 12D));
 		            TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-
-		            for (int i = 0; i < hitList.size(); i++)
+		            
+		            for (EntityLivingBase target : hitList)
 		            {
 		            	boolean canHeal = false;
 		            	
 		            	//補血名額沒了, break
 		            	if (healCount <= 0) break;
 		            	
-		            	hitEntity = (EntityLivingBase) hitList.get(i);
-		            	
 		            	//抓可以補血的目標, 不包含自己
-		            	if (hitEntity != this && hitEntity.getHealth() / hitEntity.getMaxHealth() < 0.96F)
+		            	if (target != this && TeamHelper.checkIsAlly(this, target) && target.getHealth() / target.getMaxHealth() < 0.96F)
 		            	{
-	            			if (hitEntity instanceof EntityPlayer)
+		            		if (target instanceof EntityPlayer)
 	            			{
-	            				hitEntity.heal(1F + this.getLevel() * 0.04F);
+	            				target.heal(1F + this.getLevel() * 0.04F);
 	            				canHeal = true;
 		            		}
-		            		else if (hitEntity instanceof BasicEntityShip && EntityHelper.checkIsAlly(this, hitEntity))
+		            		else if (target instanceof BasicEntityShip)
 		            		{
-		            			hitEntity.heal(1F + hitEntity.getMaxHealth() * 0.04F + this.getLevel() * 0.1F);
+		            			target.heal(1F + target.getMaxHealth() * 0.04F + this.getLevel() * 0.1F);
 		            			canHeal = true;
 			            	}
 	            			
 	            			if (canHeal)
 	            			{
+	            				CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, target, 1D, 0D, 0D, 4, false), point);
 	            				healCount--;
 		            			decrGrudgeNum(50);
 	            			}
@@ -130,50 +126,29 @@ public class EntityAirfieldHime extends BasicEntityShipCV {
   			
   		super.onLivingUpdate();
   	}
-	
-	@Override
-  	public boolean interact(EntityPlayer player) {	
-		ItemStack itemstack = player.inventory.getCurrentItem();  //get item in hand
-		
-		//use cake to change state
-		if(itemstack != null) {
-			if(itemstack.getItem() == Items.cake) {
-				this.setShipOutfit(player.isSneaking());
-				return true;
-			}
-		}
-		
-		return super.interact(player);
-  	}
-	
-	@Override
-	public int getKaitaiType() {
-		return 1;
-	}
-	
-	//避免跟rider2碰撞
-  	@Override
-	public boolean canBePushed() {
-        return this.ridingEntity == null;
-    }
   	
   	//true if use mounts
   	@Override
-  	public boolean canSummonMounts() {
+  	public boolean canSummonMounts()
+  	{
   		return true;
   	}
   	
   	@Override
-  	public BasicEntityMount summonMountEntity() {
-		return new EntityMountAfH(worldObj, this);
+  	public BasicEntityMount summonMountEntity()
+  	{
+		return new EntityMountAfH(this.world);
 	}
   	
   	@Override
-  	public float[] getModelPos() {
-  		if(this.isRiding()) {
+  	public float[] getModelPos()
+  	{
+  		if (this.isRiding())
+  		{
   			ModelPos[1] = -25F;
   		}
-  		else {
+  		else
+  		{
   			ModelPos[1] = 15F;
   		}
   		
@@ -181,57 +156,67 @@ public class EntityAirfieldHime extends BasicEntityShipCV {
 	}
   	
   	@Override
-	public double getMountedYOffset() {
-  		if(this.isSitting()) {
+	public double getMountedYOffset()
+  	{
+  		if (this.isSitting())
+  		{
   			return (double)this.height * 0.58F;
   		}
-  		else {
+  		else
+  		{
   			return (double)this.height * 0.73F;
   		}
 	}
 
 	@Override
-	public void setShipOutfit(boolean isSneaking) {
+	public void setShipOutfit(boolean isSneaking)
+	{
 		//切換裝備顯示
-		if(isSneaking) {
-			switch(getStateEmotion(ID.S.State2)) {
+		if (isSneaking)
+		{
+			switch(getStateEmotion(ID.S.State2))
+			{
 			case ID.State.NORMAL_2:
 				setStateEmotion(ID.S.State2, ID.State.EQUIP00_2, true);
-				break;
+			break;
 			case ID.State.EQUIP00_2:
 				setStateEmotion(ID.S.State2, ID.State.EQUIP01_2, true);
-				break;
+			break;
 			case ID.State.EQUIP01_2:
 				setStateEmotion(ID.S.State2, ID.State.EQUIP02_2, true);
-				break;
+			break;
 			case ID.State.EQUIP02_2:
 				setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
-				break;
+			break;
 			default:
 				setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
-				break;
+			break;
 			}
 		}
 		//切換是否騎乘座騎
-		else {
-			switch(getStateEmotion(ID.S.State)) {
+		else
+		{
+			switch (getStateEmotion(ID.S.State))
+			{
 			case ID.State.NORMAL:
 				setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
-				break;
+			break;
 			case ID.State.EQUIP00:
 				setStateEmotion(ID.S.State, ID.State.NORMAL, true);
 				this.setPositionAndUpdate(posX, posY + 2D, posZ);
-				break;
+			break;
 			default:
 				setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-				break;
+			break;
 			}
 		}
 	}
 	
 	@Override
-	public float getAttackBaseDamage(int type, Entity target) {
-  		switch(type) {
+	public float getAttackBaseDamage(int type, Entity target)
+	{
+  		switch (type)
+  		{
   		case 1:  //light cannon
   			return CalcHelper.calcDamageBySpecialEffect(this, target, StateFinal[ID.ATK], 0);
   		case 2:  //heavy cannon
@@ -247,6 +232,3 @@ public class EntityAirfieldHime extends BasicEntityShipCV {
 
 
 }
-
-
-

@@ -616,9 +616,9 @@ public class ParticleHelper
 		//set attack time, EntityLivingBase only
 		else
 		{
-			if (setAtkTime && target instanceof IShipEmotion)
+			if (setAtkTime && host instanceof IShipEmotion)
 			{
-				((IShipEmotion) target).setAttackTick(50);
+				((IShipEmotion) host).setAttackTick(50);
 			}
 		}
 		
@@ -644,10 +644,10 @@ public class ParticleHelper
 				return;
 			}
 			
-			ParticleLaserNoTexture laser1 = new ParticleLaserNoTexture(world, host2, target, 0.78F, par1, 0F, 0.05F, 0);
+			ParticleLaserNoTexture laser1 = new ParticleLaserNoTexture(world, host2, target, 0.9F, par1, 0F, 0.05F, 0);
 			Minecraft.getMinecraft().effectRenderer.addEffect(laser1);
 			
-			ParticleLaserNoTexture laser2 = new ParticleLaserNoTexture(world, host2, target, -0.78F, par1, 0F, 0.05F, 0);
+			ParticleLaserNoTexture laser2 = new ParticleLaserNoTexture(world, host2, target, -0.9F, par1, 0F, 0.05F, 0);
 			Minecraft.getMinecraft().effectRenderer.addEffect(laser2);
 			break;
 		case 1:		//yamato cannon beam

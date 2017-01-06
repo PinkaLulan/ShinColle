@@ -5,14 +5,12 @@ import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.entity.other.EntityRensouhouMob;
 import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BossInfo;
 import net.minecraft.world.BossInfoServer;
@@ -31,7 +29,6 @@ public class EntityDestroyerShimakazeMob extends BasicEntityShipHostile
 		
 		//init values
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.DestroyerShimakaze);
-		this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, getStateMinor(ID.M.ShipClass)+2);
 		this.numRensouhou = 10;
 		
 		//model display
@@ -57,13 +54,7 @@ public class EntityDestroyerShimakazeMob extends BasicEntityShipHostile
 		break;
 		}
 	}
-	
-	@Override
-	protected float[] getAttrsMod()
-	{                     //HP     ATK    DEF    SPD    MOV    HIT
-		return new float[] {0.75F, 0.75F, 0.75F, 1.2F, 0.75F, 0.75F};
-	}
-	
+
 	@Override
 	protected void setBossInfo()
 	{

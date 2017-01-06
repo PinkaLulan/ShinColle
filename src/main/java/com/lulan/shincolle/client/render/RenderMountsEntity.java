@@ -104,15 +104,15 @@ public class RenderMountsEntity extends RenderShipEntity
 		switch(this.shipClass)
 		{
 		case ID.ShipMisc.AirfieldMount:
-			return new float[] {0.1F, 0.5F, 0.5F, 0.5F, 0.5F};
+			return new float[] {0.37F, 0.5F, 0.5F, 0.5F, 0.5F};
 		case ID.ShipMisc.BattleshipMount:
 			return new float[] {0.4F, 0.5F, 0.5F, 0.5F, 0.5F};
 		case ID.ShipMisc.CarrierMount:
-			return new float[] {0.3F, 0.4F, 0.4F, 0.4F, 0.4F};
+			return new float[] {0.45F, 1.05F, 1.05F, 1.05F, 1.05F};
 		case ID.ShipMisc.CarrierWDMount:
-			return new float[] {0.3F, 0.4F, 0.4F, 0.4F, 0.4F};
+			return new float[] {0.45F, 1.05F, 1.05F, 1.05F, 1.05F};
 		case ID.ShipMisc.HarbourMount:
-			return new float[] {0F, 0.5F, 0.5F, 0.5F, 0.5F};
+			return new float[] {0F, 0.5F, 0.5F, 0.5F, 0.6F};
 		default:
 			return new float[] {0.8F, 0.8F, 0.8F, 0.8F, 0.8F};
 		}

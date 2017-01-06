@@ -1047,7 +1047,7 @@ public class EventHandler
 				this.debugCooldown = 2;
 				player.sendMessage(new TextComponentString
 				(
-					"OffsetY "+this.field1
+					"OffsetY "+String.format("%.2f", this.field1)
 				));
 			}
 			
@@ -1057,7 +1057,7 @@ public class EventHandler
 				this.debugCooldown = 2;
 				player.sendMessage(new TextComponentString
 				(
-					"OffsetY "+this.field1
+					"OffsetY "+String.format("%.2f", this.field1)
 				));
 			}
 			
@@ -1067,7 +1067,7 @@ public class EventHandler
 				this.debugCooldown = 2;
 				player.sendMessage(new TextComponentString
 				(
-					"Scale "+this.field2
+					"Scale "+String.format("%.2f", this.field2)
 				));
 			}
 			
@@ -1077,7 +1077,7 @@ public class EventHandler
 				this.debugCooldown = 2;
 				player.sendMessage(new TextComponentString
 				(
-					"Scale "+this.field2
+					"Scale "+String.format("%.2f", this.field2)
 				));
 			}
 		}

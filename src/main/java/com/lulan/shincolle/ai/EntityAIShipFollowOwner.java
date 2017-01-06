@@ -306,7 +306,14 @@ public class EntityAIShipFollowOwner extends EntityAIBase
     			EntityHelper.clearMountSeat((BasicEntityMount) host);
     			EntityHelper.clearMountSeat(hostHost);
     		}
+    		//teleport mounts
+    		else
+    		{
+    			((Entity)host).setLocationAndAngles(tpPos.xCoord, tpPos.yCoord, tpPos.zCoord, hostHost.rotationYaw, hostHost.rotationPitch);
+        		sendSyncPacket(((Entity)host));
+    		}
     		
+    		//teleport rider
     		host.getShipNavigate().clearPathEntity();
     		hostHost.setLocationAndAngles(tpPos.xCoord, tpPos.yCoord, tpPos.zCoord, hostHost.rotationYaw, hostHost.rotationPitch);
     		sendSyncPacket(hostHost);
@@ -320,7 +327,14 @@ public class EntityAIShipFollowOwner extends EntityAIBase
     		{
     			EntityHelper.clearMountSeat(host2);
     		}
+    		//teleport mounts
+    		else
+    		{
+    			((Entity)host).setLocationAndAngles(tpPos.xCoord, tpPos.yCoord, tpPos.zCoord, host2.rotationYaw, host2.rotationPitch);
+        		sendSyncPacket(((Entity)host));
+    		}
         	
+    		//teleport rider
     		host.getShipNavigate().clearPathEntity();
     		host2.setLocationAndAngles(tpPos.xCoord, tpPos.yCoord, tpPos.zCoord, host2.rotationYaw, host2.rotationPitch);
     		sendSyncPacket(host2);

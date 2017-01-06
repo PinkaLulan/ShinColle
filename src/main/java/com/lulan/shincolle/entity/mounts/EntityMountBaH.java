@@ -24,7 +24,7 @@ public class EntityMountBaH extends BasicEntityMount
 		this.seatPos = new float[] {1.05F, 2.6F, 0F};
 		this.seatPos2 = new float[] {1.2F, 0.7F, -1.3F};
         this.shipNavigator = new ShipPathNavigate(this);
-		this.shipMoveHelper = new ShipMoveHelper(this, 30F);
+		this.shipMoveHelper = new ShipMoveHelper(this, 45F);
 	}
     
     @Override
@@ -36,6 +36,9 @@ public class EntityMountBaH extends BasicEntityMount
         this.posX = host.posX;
         this.posY = host.posY;
         this.posZ = host.posZ;
+        this.prevPosX = this.posX;
+        this.prevPosY = this.posY;
+        this.prevPosZ = this.posZ;
         this.setPosition(this.posX, this.posY, this.posZ);
  
         //設定基本屬性
@@ -45,12 +48,6 @@ public class EntityMountBaH extends BasicEntityMount
 				
 		//設定AI
 		this.setAIList();
-	}
-    
-    @Override
-	public float getEyeHeight()
-    {
-    	return 1.7F;
 	}
     
     @Override

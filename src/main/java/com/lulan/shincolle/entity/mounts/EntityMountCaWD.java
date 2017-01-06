@@ -2,6 +2,8 @@ package com.lulan.shincolle.entity.mounts;
 
 import com.lulan.shincolle.ai.EntityAIShipCarrierAttack;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
+import com.lulan.shincolle.ai.path.ShipMoveHelper;
+import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.entity.BasicEntityMountLarge;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.reference.ID;
@@ -15,9 +17,11 @@ public class EntityMountCaWD extends BasicEntityMountLarge
     public EntityMountCaWD(World world)
     {
 		super(world);
-		this.setSize(1.9F, 1.8F);
-		this.seatPos = new float[] {0.0F, 0F, 0.5F};
-		this.seatPos2 = new float[] {0.0F, 0F, 0.5F};
+		this.setSize(1.9F, 2.1F);
+		this.seatPos = new float[] {0.25F, 1.1F, 0F};
+		this.seatPos2 = new float[] {0.14F, -0.39F, 0F};
+        this.shipNavigator = new ShipPathNavigate(this);
+		this.shipMoveHelper = new ShipMoveHelper(this, 45F);
 	}
     
     @Override
@@ -29,23 +33,20 @@ public class EntityMountCaWD extends BasicEntityMountLarge
         this.posX = host.posX;
         this.posY = host.posY;
         this.posZ = host.posZ;
+        this.prevPosX = this.posX;
+        this.prevPosY = this.posY;
+        this.prevPosZ = this.posZ;
         this.setPosition(this.posX, this.posY, this.posZ);
  
 	    //設定基本屬性
-        setupAttrs();
+        this.setupAttrs();
         
 		if (this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
 				
 		//設定AI
 		this.setAIList();
 	}
-    
-    @Override
-	public float getEyeHeight()
-    {
-		return 1.7F;
-	}
-	
+
 	//輕攻擊, 特效為雙光束砲
 	@Override
 	public boolean attackEntityWithAmmo(Entity target)

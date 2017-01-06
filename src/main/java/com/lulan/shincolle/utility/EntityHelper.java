@@ -574,7 +574,7 @@ public class EntityHelper
         	else
         	{
         		//用particle顯示path point
-    			if (ConfigHandler.debugMode && entity2.ticksExisted % 20 == 0)
+    			if (ConfigHandler.debugMode && entity2.ticksExisted % 16 == 0)
     			{
     				sendPathParticlePacket(entity.getShipNavigate().getPath(), new TargetPoint(entity2.dimension, entity2.posX, entity2.posY, entity2.posZ, 48D));
     			}
@@ -591,6 +591,12 @@ public class EntityHelper
         //若有vanilla path, 則用特效顯示出path
         if (!entity2.getNavigator().noPath())
         {
+        	//若entity處於水中, 則消去vanilla path
+        	if (checkEntityIsInLiquid(entity2))
+        	{
+        		entity2.getNavigator().clearPathEntity();
+        	}
+        	
 			//用particle顯示path point
         	if (ConfigHandler.debugMode && entity2.ticksExisted % 16 == 0)
         	{

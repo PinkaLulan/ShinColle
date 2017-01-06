@@ -89,7 +89,7 @@ public class EntityBattleshipRe extends BasicEntityShipCV
         	if (this.ticksExisted % 256 == 0)
         	{
         		if (this.getRNG().nextInt(5) == 0 && !this.isSitting() && !this.isRiding() &&
-        		   !this.getStateFlag(ID.F.NoFuel) && !this.getIsLeashed())
+        			!this.getStateFlag(ID.F.NoFuel) && !this.getIsLeashed())
         		{
         			//find target
         			this.findTargetPush();
@@ -135,6 +135,7 @@ public class EntityBattleshipRe extends BasicEntityShipCV
         		}
         	}//end push target
     	}
+    	
     	super.onLivingUpdate();
     }
     

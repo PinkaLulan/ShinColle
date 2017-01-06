@@ -1,5 +1,8 @@
 package com.lulan.shincolle.client.model;
 
+import com.lulan.shincolle.entity.IShipEmotion;
+import com.lulan.shincolle.handler.EventHandler;
+
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -96,15 +99,28 @@ public class ModelAirplaneT extends ModelBase
     @Override
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
     {
-    	if (entity.isNonBoss())
+    	//FIX: head rotation bug while riding
+    	if (f3 <= -180F) { f3 += 360F; }
+    	else if (f3 >= 180F) { f3 -= 360F; }
+    	
+    	switch (((IShipEmotion)entity).getScaleLevel())
     	{
-    		scale = 0.4F;
-        	offsetY = 0F;
-    	}
-    	else
-    	{
+    	case 3:
+    		scale = 1.6F;
+        	offsetY = 0.37F;
+		break;
+    	case 2:
+    		scale = 1.2F;
+        	offsetY = 0.68F;
+		break;
+    	case 1:
     		scale = 0.8F;
-        	offsetY = -2.1F;
+        	offsetY = 1.32F;
+		break;
+    	default:
+    		scale = 0.4F;
+        	offsetY = 3.22F;
+		break;
     	}
     	
         if (entity.ticksExisted > 6)
@@ -113,11 +129,11 @@ public class ModelAirplaneT extends ModelBase
         	GlStateManager.enableBlend();
         	GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
         	GlStateManager.scale(scale, scale, scale);
+        	GlStateManager.translate(0F, offsetY, 0F);
         	
         	//main body
         	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
         	this.BodyMain.render(f5);
-        	
         	GlStateManager.disableBlend();
         	
         	//light part
@@ -142,8 +158,6 @@ public class ModelAirplaneT extends ModelBase
     @Override
 	public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity)
     {  
-    	GlStateManager.translate(0F, offsetY + 3.3F, 0F);
-    	
     	this.BodyMain.rotateAngleY = f3 / 57F;	//左右角度
     	this.BodyMain.rotateAngleX = f4 / 57F; 	//上下角度
     	this.GlowBodyMain.rotateAngleY = this.BodyMain.rotateAngleY;

@@ -43,7 +43,7 @@ public class EntityAirplane extends BasicEntityAirplane
     		
             //basic attr
             this.atk = ship.getAttackBaseDamage(3, target);
-            this.atkSpeed = ship.getStateFinal(ID.SPD);
+            this.atkSpeed = ship.getStateFinal(ID.SPD) * 3F;
             this.atkRange = 6F;
             this.defValue = ship.getStateFinal(ID.DEF) * 0.5F;
             this.movSpeed = ship.getStateFinal(ID.MOV) * 0.2F + 0.3F;
@@ -71,8 +71,6 @@ public class EntityAirplane extends BasicEntityAirplane
             //AI flag
             this.numAmmoLight = 9;
             this.numAmmoHeavy = 0;
-            this.backHome = false;
-            this.canFindTarget = true;
     				
     		//設定AI
     		this.shipNavigator = new ShipPathNavigate(this);
@@ -102,7 +100,6 @@ public class EntityAirplane extends BasicEntityAirplane
 			if (!this.hasAmmoLight())
 			{
 				this.backHome = true;
-				this.canFindTarget = false;
 				this.setEntityTarget(null);
 			}
 		}
@@ -111,6 +108,8 @@ public class EntityAirplane extends BasicEntityAirplane
 	@Override
 	public boolean attackEntityFrom(DamageSource source, float atk)
 	{
+		if (this.world.isRemote) return false;
+		
 		//33% dodge heavy damage
 		if (atk > this.getMaxHealth() * 0.5F && this.getRNG().nextInt(3) == 0)
 		{

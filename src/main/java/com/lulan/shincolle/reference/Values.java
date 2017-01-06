@@ -108,6 +108,28 @@ public class Values
 		
 	}});
 	
+	/**HOSTILE SHIP ATTRIBUTES MAP
+	 * index by ID.ShipAttr
+	 */
+	public static final Map<Short, float[]> HostileShipAttrMap = Collections.unmodifiableMap(new HashMap<Short, float[]>()
+	{{
+		//destroyer                                  HP     ATK    DEF    SPD    MOV    HIT
+		put(ID.Ship.DestroyerAkatsuki,  new float[] {0.35F, 0.35F, 0.35F, 1F,    1.1F,  0.7F});
+		put(ID.Ship.DestroyerHibiki,    new float[] {0.35F, 0.35F, 0.35F, 1F,    1.1F,  0.7F});
+		put(ID.Ship.DestroyerIkazuchi,  new float[] {0.35F, 0.35F, 0.35F, 1F,    1.1F,  0.7F});
+		put(ID.Ship.DestroyerInazuma,   new float[] {0.35F, 0.35F, 0.35F, 1F,    1.1F,  0.7F});
+		put(ID.Ship.DestroyerShimakaze, new float[] {0.4F,  0.5F,  0.4F,  1.2F,  1.2F,  0.75F});
+		//battleship
+		put(ID.Ship.BattleshipNagato,   new float[] {1.1F,  1.1F,  1.1F,  1F,    0.8F,  1.05F});
+		put(ID.Ship.BattleshipYamato,   new float[] {1.2F,  1.2F,  1.2F,  1.2F,  0.8F,  1.1F});
+		//submarine
+		put(ID.Ship.SubmarineU511,      new float[] {0.25F, 0.8F,  0.25F, 0.75F, 0.4F,  0.4F});
+		put(ID.Ship.SubmarineRo500,     new float[] {0.25F, 0.8F,  0.25F, 0.75F, 0.4F,  0.4F});
+		//carrier
+		put(ID.Ship.CarrierKaga,        new float[] {0.8F,  0.8F,  0.8F,  0.75F, 0.8F,  1.2F});
+		put(ID.Ship.CarrierAkagi,       new float[] {0.8F,  0.8F,  0.8F,  0.75F, 0.8F,  1.2F});
+	}});
+	
 	/** SHIP LEASH HEIGHT
 	 * 
 	 *  map <ship id(short), data(float[])>

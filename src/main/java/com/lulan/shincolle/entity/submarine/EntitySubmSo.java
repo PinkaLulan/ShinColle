@@ -1,31 +1,20 @@
 package com.lulan.shincolle.entity.submarine;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.MathHelper;
-import net.minecraft.world.World;
-
 import com.lulan.shincolle.ai.EntityAIShipPickItem;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
-import com.lulan.shincolle.entity.ExtendShipProps;
 import com.lulan.shincolle.entity.IShipInvisible;
-import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.network.S2CSpawnParticle;
-import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.EntityHelper;
 
-import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.MobEffects;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.world.World;
 
-public class EntitySubmSo extends BasicEntityShipSmall implements IShipInvisible {
+public class EntitySubmSo extends BasicEntityShipSmall implements IShipInvisible
+{
 	
 	private static float ilevel = 25F;
 	
@@ -40,7 +29,6 @@ public class EntitySubmSo extends BasicEntityShipSmall implements IShipInvisible
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.SS]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.SS]);
 		this.ModelPos = new float[] {0F, 10F, 0F, 45F};
-		ExtProps = (ExtendShipProps) getExtendedProperties(ExtendShipProps.SHIP_EXTPROP_NAME);	
 		
 		//set attack type
 		this.StateFlag[ID.F.HaveRingEffect] = true;
@@ -51,18 +39,16 @@ public class EntitySubmSo extends BasicEntityShipSmall implements IShipInvisible
 		this.postInit();
 	}
 	
-	//for morph
-	@Override
-	public float getEyeHeight()
-	{
-		return 1.7F;
-	}
-	
-	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc
 	@Override
 	public int getEquipType()
 	{
 		return 1;
+	}
+	
+  	@Override
+	public int getKaitaiType()
+  	{
+		return 0;
 	}
 	
 	@Override
@@ -83,7 +69,7 @@ public class EntitySubmSo extends BasicEntityShipSmall implements IShipInvisible
   	{
   		super.onLivingUpdate();
   		
-  		if (!worldObj.isRemote)
+  		if (!this.world.isRemote)
   		{
   			//add aura to master every 128 ticks
   			if (this.ticksExisted % 128 == 0)
@@ -95,7 +81,7 @@ public class EntitySubmSo extends BasicEntityShipSmall implements IShipInvisible
   	  				if (getStateFlag(ID.F.IsMarried) && getStateMinor(ID.M.NumGrudge) > 0 && player != null && getDistanceSqToEntity(player) < 256D)
   	  				{
   	  					//potion effect: id, time, level
-  	  	  	  			player.addPotionEffect(new PotionEffect(Potion.invisibility.id, 100 + getLevel() * 2));
+  	  	  	  			player.addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, 100 + getLevel() * 2));
   	  				}
   				}
   				
@@ -104,37 +90,12 @@ public class EntitySubmSo extends BasicEntityShipSmall implements IShipInvisible
   	  				if (getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.M.NumGrudge) > 0)
   	  				{
   	  					//apply ability to ship
-  	  					this.addPotionEffect(new PotionEffect(Potion.invisibility.id, 46 + getLevel()));
+  	  					this.addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, 46 + getLevel()));
   	  				}
   	  			}//end 256 ticks
   			}//end 128 ticks
   		}    
   	}
-  	
-  	@Override
-  	public boolean interact(EntityPlayer player)
-  	{	
-		ItemStack itemstack = player.inventory.getCurrentItem();  //get item in hand
-		
-		//use cake to change state
-		if (itemstack != null)
-		{
-			if (itemstack.getItem() == Items.cake)
-			{
-				this.setShipOutfit(player.isSneaking());
-				return true;
-			}
-		}
-		
-		super.interact(player);
-		return false;
-  	}
-  	
-  	@Override
-	public int getKaitaiType()
-  	{
-		return 0;
-	}
   	
   	@Override
 	public double getMountedYOffset()
@@ -177,16 +138,16 @@ public class EntitySubmSo extends BasicEntityShipSmall implements IShipInvisible
 			{
 			case ID.State.NORMAL_2:
 				setStateEmotion(ID.S.State2, ID.State.EQUIP00_2, true);
-				break;
+			break;
 			case ID.State.EQUIP00_2:
 				setStateEmotion(ID.S.State2, ID.State.EQUIP01_2, true);
-				break;
+			break;
 			case ID.State.EQUIP01_2:
 				setStateEmotion(ID.S.State2, ID.State.EQUIP02_2, true);
-				break;
+			break;
 			default:
 				setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
-				break;
+			break;
 			}
 		}
 		else
@@ -195,21 +156,16 @@ public class EntitySubmSo extends BasicEntityShipSmall implements IShipInvisible
 			{
 			case ID.State.NORMAL:
 				setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
-				break;
+			break;
 			case ID.State.EQUIP00:
 				setStateEmotion(ID.S.State, ID.State.EQUIP01, true);
-				break;
+			break;
 			default:
 				setStateEmotion(ID.S.State, ID.State.NORMAL, true);
-				break;
+			break;
 			}
 		}
 	}
   	
 
 }
-
-
-
-
-

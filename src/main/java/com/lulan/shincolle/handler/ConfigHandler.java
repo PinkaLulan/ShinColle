@@ -59,11 +59,11 @@ public class ConfigHandler
 	public static double[] limitShipEffect = new double[] {-1D, -1D, -1D, -1D, -1D, -1D, 75D};
 	public static double[] scaleShip = new double[] {1D, 1D, 1D, 1D, 1D, 1D};
 	//													  HP, ATK, DEF, SPD, MOV, HIT
-	public static double[] scaleBossSmall = new double[] {1600D, 120D, 75D, 1.2D, 0.4D, 18D};
-	public static double[] scaleBossLarge = new double[] {3200D, 200D, 90D, 2D, 0.36D, 22D};
+	public static double[] scaleBossSmall = new double[] {1600D, 120D, 75D, 1.6D, 0.42D, 18D};
+	public static double[] scaleBossLarge = new double[] {3200D, 240D, 90D, 2D, 0.38D, 22D};
 	//	  												HP, ATK, DEF, SPD, MOV, HIT
-	public static double[] scaleMobSmall = new double[] {200D, 36D, 20D, 0.7D, 0.5D, 12D};
-	public static double[] scaleMobLarge = new double[] {600D, 70D, 40D, 0.9D, 0.5D, 15D};
+	public static double[] scaleMobSmall = new double[] {250D, 36D, 20D, 0.7D, 0.5D, 12D};
+	public static double[] scaleMobLarge = new double[] {500D, 72D, 35D, 0.9D, 0.46D, 15D};
 	//ammo consumption:                              DD CL CA CAV CLT CVL CV BB BBV SS AP 
 	public static int[] consumeAmmoShip = new int[] {1, 2, 2, 2,  2,  3,  3, 4, 4,  1, 1};
 	//grudge consumption:                              DD CL CA CAV CLT CVL CV BB BBV SS AP 
@@ -173,10 +173,10 @@ public class ConfigHandler
 		propShip = config.get("ship setting", "Attrs_Scale", scaleShip, "Ship attributes SCALE: HP, firepower, armor, attack speed, move speed, range");
 		propShipLimitBasic = config.get("ship setting", "Attrs_Limit_Basic", limitShipBasic, "Ship basic attributes LIMIT (-1 = no limit): HP, firepower, armor%, attack speed, move speed, range(blocks)");
 		propShipLimitEffect = config.get("ship setting", "Attrs_Limit_Effect", limitShipEffect, "Ship effect attributes LIMIT (-1 = no limit, 12 = limit 12%): critical%, double hit%, triple hit%, miss reduction%, anti-air, anti-ss, dodge%");
-		propBossSmall = config.get("ship setting", "Attrs_Hostile_SmallBoss", scaleBossSmall, "Small boss attribute values: HP, firepower, armor, attack speed, move speed, range");
-		propBossLarge = config.get("ship setting", "Attrs_Hostile_LargeBoss", scaleBossLarge, "Large boss attribute values: HP, firepower, armor, attack speed, move speed, range");
-		propMobSmall = config.get("ship setting", "Attrs_Hostile_SmallMob", scaleMobSmall, "Small mob ship like DD and SS attribute values: HP, firepower, armor, attack speed, move speed, range");
-		propMobLarge = config.get("ship setting", "Attrs_Hostile_LargeMob", scaleMobLarge, "Large mob ship like CL and CA attribute values: HP, firepower, armor, attack speed, move speed, range");
+		propBossSmall = config.get("ship setting", "Attrs_Hostile_SmallBoss", scaleBossSmall, "Small boss base attribute values: HP, firepower, armor, attack speed, move speed, range");
+		propBossLarge = config.get("ship setting", "Attrs_Hostile_LargeBoss", scaleBossLarge, "Large boss base attribute values: HP, firepower, armor, attack speed, move speed, range");
+		propMobSmall = config.get("ship setting", "Attrs_Hostile_SmallMob", scaleMobSmall, "Small mob ship like DD and SS base attribute values: HP, firepower, armor, attack speed, move speed, range");
+		propMobLarge = config.get("ship setting", "Attrs_Hostile_LargeMob", scaleMobLarge, "Large mob ship like CL and CA base attribute values: HP, firepower, armor, attack speed, move speed, range");
 		propAmmoShip = config.get("ship setting", "Consume_Ammo", consumeAmmoShip, "Ammo consumption for ship type: DD CL CA CAV CLT CVL CV BB BBV SS AP (MAX = 45)");
 		propGrudgeShip = config.get("ship setting", "Consume_Grudge_Idle", consumeGrudgeShip, "Grudge consumption for ship type: DD CL CA CAV CLT CVL CV BB BBV SS AP (MAX = 120)");
 		propGrudgeAction = config.get("ship setting", "Consume_Grudge_Action", consumeGrudgeAction, "Grudge consumption for ship action: Light attack, Heavy attack, Light aircraft, Heavy aircraft, Moving per block");

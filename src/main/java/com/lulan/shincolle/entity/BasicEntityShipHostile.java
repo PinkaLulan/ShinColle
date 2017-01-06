@@ -1,5 +1,7 @@
 package com.lulan.shincolle.entity;
 
+import java.util.Random;
+
 import javax.annotation.Nullable;
 
 import com.lulan.shincolle.ai.EntityAIShipFloating;
@@ -21,6 +23,7 @@ import com.lulan.shincolle.network.S2CInputPackets;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
@@ -36,6 +39,7 @@ import net.minecraft.entity.ai.attributes.RangedAttribute;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
@@ -242,7 +246,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	//set attributes
 	protected void setAttrsWithScaleLevel()
 	{
-		float[] mods = this.getAttrsMod();
+		float[] mods = Values.HostileShipAttrMap.get(this.getShipClass());
 		double[] attrs;
 		int range = 48;
 		double kb = 0.2D;
@@ -287,9 +291,6 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	/** set size with scale level */
 	abstract protected void setSizeWithScaleLevel();
 	
-	/** get attrs mod (6 floats) */
-	abstract protected float[] getAttrsMod();
-	
 	/** set boss info */
 	abstract protected void setBossInfo();
 	
@@ -314,6 +315,9 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 			//set other AI
 			this.setAIList();
 			this.setAITargetList();
+			
+			//set drop
+			this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, getStateMinor(ID.M.ShipClass)+2);
 		}
 	}
 	
@@ -343,6 +347,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
     	{
 			return ModSounds.SHIP_IDLE;
 		}
+    	
 		return null;
     }
     
@@ -455,6 +460,8 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	@Override
     public boolean attackEntityFrom(DamageSource source, float atk)
 	{
+		if (this.world.isRemote) return false;
+		
 		//set hurt face
     	if (this.getStateEmotion(ID.S.Emotion) != ID.Emotion.O_O)
     	{
@@ -768,7 +775,13 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	@Override
 	public double getShipDepth()
 	{
-		return ShipDepth;
+		return this.ShipDepth;
+	}
+	
+	@Override
+	public double getShipDepth(int type)
+	{
+		return this.ShipDepth;
 	}
 	
 	@Override
@@ -1412,7 +1425,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
   		break;
   		case 3:  //light aircraft
   		case 4:  //heavy aircraft
-  			this.playSound(ModSounds.SHIP_AIRCRAFT, ConfigHandler.volumeFire * 0.5F, this.getSoundPitch() * 0.85F);
+  			this.playSound(SoundEvents.ENTITY_ARROW_SHOOT, ConfigHandler.volumeFire + 0.2F, 1F / (this.rand.nextFloat() * 0.4F + 1.2F) + 0.5F);
   		break;
 		default: //melee
 			if (this.getRNG().nextInt(2) == 0)
@@ -1593,6 +1606,12 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
     {
   		if (this.bossInfo != null) this.bossInfo.setPercent(this.getHealth() / this.getMaxHealth());
     }
+  	
+	@Override
+	public Random getRand()
+	{
+		return this.rand;
+	}
 	
   	
 }

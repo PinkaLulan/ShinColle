@@ -2,6 +2,7 @@ package com.lulan.shincolle.entity.other;
 
 import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.world.World;
 

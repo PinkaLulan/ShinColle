@@ -403,9 +403,6 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipEquip
     	//server side
     	if (!this.world.isRemote)
     	{
-    		//set dead
-        	this.setDead();
-        	
     		float missileAtk = atk;
 
             //計算範圍爆炸傷害: 判定bounding box內是否有可以吃傷害的entity
@@ -462,7 +459,10 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipEquip
             //send packet to client for display partical effect
             TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
             CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 2, false), point);
-        }//end if server side
+        
+    		//set dead
+        	this.setDead();
+    	}//end if server side
     }
 
 	//儲存entity的nbt
@@ -489,8 +489,40 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipEquip
 
     //entity被攻擊到時呼叫此方法
     @Override
-	public boolean attackEntityFrom(DamageSource attacker, float atk)
+	public boolean attackEntityFrom(DamageSource source, float atk)
     {
+		if (this.world.isRemote) return false;
+		
+		//null check
+		if (this.host == null)
+		{
+			this.setDead();
+			return false;
+		}
+		
+		//damage disabled
+		if (source == DamageSource.inWall || source == DamageSource.starve ||
+			source == DamageSource.cactus || source == DamageSource.fall  ||
+			source == DamageSource.lava || source == DamageSource.inFire ||
+			source == DamageSource.hotFloor || source == DamageSource.anvil ||
+			source == DamageSource.fallingBlock || source == DamageSource.onFire)
+		{
+			return false;
+		}
+		//damage ignore def value
+		else if (source == DamageSource.magic || source == DamageSource.dragonBreath ||
+				 source == DamageSource.wither)
+		{
+        	this.onImpact(null);
+			return true;
+		}
+		//out of world
+		else if (source == DamageSource.outOfWorld)
+		{
+        	this.onImpact(null);
+        	return true;
+		}
+		
     	//進行dodge計算
 		if (EntityHelper.canDodge(this, 0F))
 		{
@@ -498,20 +530,19 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipEquip
 		}
     	
 		//無敵時回傳false
-        if (this.isEntityInvulnerable(attacker))
+        if (this.isEntityInvulnerable(source))
         {
             return false;
         }
         
         //攻擊到飛彈會導致立刻爆炸
-        if (this.isEntityAlive() && atk > 10F)
+        if (this.isEntityAlive() && atk > 8F)
         {
-        	this.setDead();
         	this.onImpact(null);
         	return true;
         }
         
-        return false;
+        return super.attackEntityFrom(source, atk);
     }
 
     //render用, entity亮度

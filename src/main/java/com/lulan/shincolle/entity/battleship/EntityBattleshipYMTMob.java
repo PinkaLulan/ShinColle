@@ -4,7 +4,6 @@ import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.other.EntityProjectileBeam;
 import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -14,7 +13,6 @@ import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BossInfo;
 import net.minecraft.world.BossInfoServer;
@@ -33,7 +31,6 @@ public class EntityBattleshipYMTMob extends BasicEntityShipHostile
 		
 		//init values
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.BattleshipYamato);
-		this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, getStateMinor(ID.M.ShipClass)+2);
         this.smokeX = 0F;
         this.smokeY = 0F;
         
@@ -69,13 +66,7 @@ public class EntityBattleshipYMTMob extends BasicEntityShipHostile
 		break;
 		}
 	}
-	
-	@Override
-	protected float[] getAttrsMod()
-	{                     //HP    ATK   DEF   SPD   MOV   HIT
-		return new float[] {1.2F, 1.2F, 1F,   1.2F, 0.8F, 1.2F};
-	}
-	
+
 	@Override
 	protected void setBossInfo()
 	{

@@ -364,15 +364,15 @@ public class ModelDestroyerHa extends ModelBase implements IModelEmotion
   		//移動頭部 使其看人, 不看人時持續擺動頭部
   	    if (f4 != 0)
   	    {
-  	    	NeckBack.rotateAngleX = f4 / 200F; 	//上下角度
-  		    NeckBack.rotateAngleY = f3 / 200F;	//左右角度 角度轉成rad 即除以57.29578
-  		    Head.rotateAngleX = f4 / 200F;
-  		    Head.rotateAngleY = f3 / 200F;
+  	    	NeckBack.rotateAngleX = f4 * 0.005F; 	//上下角度
+  		    NeckBack.rotateAngleY = f3 * 0.005F;	//左右角度
+  		    Head.rotateAngleX = f4 * 0.005F;
+  		    Head.rotateAngleY = f3 * 0.005F;
   		    HeadD01.rotateAngleX = angleX * 0.05F - 0.05F;
   		    TailBack.rotateAngleX = 0.15F;
-  		    TailBack.rotateAngleY = f3 / -200F;	//尾巴以反方向擺動
+  		    TailBack.rotateAngleY = f3 * -0.005F;	//尾巴以反方向擺動
   		    TailEnd1.rotateAngleX = 0.2F;
-		    TailEnd1.rotateAngleY = f3 / -200F;
+		    TailEnd1.rotateAngleY = f3 * -0.005F;
   	    }
   	    else
   	    {

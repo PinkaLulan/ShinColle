@@ -442,7 +442,7 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion
   		GlStateManager.translate(0F, 0.5F, 0F);
   		
   		//水上漂浮
-  		if (((Entity) ent).getPassengers().size() == 0 && ((IShipFloating) ent).getShipDepth() > 0)
+  		if (ent.getShipDepth(0) > 0D || ent.getShipDepth(1) > 0D)
   		{
   			GlStateManager.translate(0F, angleX * 0.05F + 0.025F, 0F);
     	}
@@ -452,8 +452,8 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion
 	  	addk2 = angleAdd2 - 0.174F;
 
   	    //移動頭部使其看人
-	  	this.Head.rotateAngleX = f4 * 0.013F + 0.05F; 	//上下角度
-	  	this.Head.rotateAngleY = f3 * 0.007F;
+	  	this.Head.rotateAngleX = f4 * 0.014F + 0.05F; 	//上下角度
+	  	this.Head.rotateAngleY = f3 * 0.01F;
 	    //正常站立動作
 	    //胸部
   	    this.BoobL.rotateAngleX = angleX * 0.06F - 0.7F;
@@ -544,7 +544,7 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion
 	    		GlStateManager.translate(0F, 0.65F, 0F);
 		    	//Body
 		    	this.Head.rotateAngleX = -1.2217F;
-		    	this.Head.rotateAngleY = this.Head.rotateAngleY / 2F;
+		    	this.Head.rotateAngleY = this.Head.rotateAngleY * 0.5F;
 			  	this.BodyMain.rotateAngleX = 1.2217F;
 			    //arm 
 			  	this.ArmLeft01.rotateAngleX = -1.9199F;

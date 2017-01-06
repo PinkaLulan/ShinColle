@@ -3,7 +3,6 @@ package com.lulan.shincolle.entity.other;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
-import com.lulan.shincolle.entity.IShipAircraftAttack;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.utility.TargetHelper;
 
@@ -11,13 +10,12 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.world.World;
 
-public class EntityAirplaneZeroHostile extends EntityAirplaneZero
+public class EntityAirplaneZeroMob extends EntityAirplaneZero
 {
 
-	public EntityAirplaneZeroHostile(World world)
+	public EntityAirplaneZeroMob(World world)
 	{
 		super(world);
-		this.setSize(1F, 1F);
 	}
 	
 	@Override
@@ -37,7 +35,7 @@ public class EntityAirplaneZeroHostile extends EntityAirplaneZero
     		
             //basic attr
     		this.atk = ship.getAttackDamage();
-            this.atkSpeed = ship.getAttackSpeed();
+            this.atkSpeed = ship.getAttackSpeed() * 3F;
             this.atkRange = 6F;
             this.defValue = ship.getDefValue() * 0.5F;
             this.movSpeed = ship.getMoveSpeed() * 0.2F + 0.3F;
@@ -66,8 +64,6 @@ public class EntityAirplaneZeroHostile extends EntityAirplaneZero
     		//AI flag
             this.numAmmoLight = 9;
             this.numAmmoHeavy = 0;
-            this.backHome = false;
-            this.canFindTarget = true;
     				
     		//設定AI
     		this.shipNavigator = new ShipPathNavigate(this);
@@ -89,13 +85,26 @@ public class EntityAirplaneZeroHostile extends EntityAirplaneZero
 	@Override
 	protected void setSizeWithScaleLevel()
 	{
-		
+		switch (this.getScaleLevel())
+		{
+		case 3:
+			this.setSize(2F, 2F);
+		break;
+		case 2:
+			this.setSize(1.5F, 1.5F);
+		break;
+		case 1:
+			this.setSize(1F, 1F);
+		break;
+		default:
+			this.setSize(0.5F, 0.5F);
+		break;
+		}
 	}
 
 	@Override
 	protected void setAttrsWithScaleLevel()
 	{
-		
 	}
 	
 

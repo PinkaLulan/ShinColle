@@ -95,7 +95,7 @@ public class EntityAIShipAircraftAttack extends EntityAIBase
         this.target = null;
         
         //keep moving, do not stop in air
-        randPos = BlockHelper.findRandomPosition(this.host, this.host, 4D, 2D, 2);
+        randPos = BlockHelper.findRandomPosition(this.host, this.host, 5D, 2D, 2);
         this.host.getShipNavigate().tryMoveToXYZ(randPos[0], randPos[1], randPos[2], 1D);
     }
 
@@ -117,7 +117,7 @@ public class EntityAIShipAircraftAttack extends EntityAIBase
 
         	if (this.host.ticksExisted % 16 == 0)
         	{
-	        	randPos = BlockHelper.findRandomPosition(this.host, this.target, 3D, 3D, 1);
+	        	randPos = BlockHelper.findRandomPosition(this.host, this.target, 5D, 2D, 0);
 //	        	LogHelper.info("DEBUG : rand pos: "+this.host+" "+randPos[0]+" "+randPos[1]+" "+randPos[2]);
 	        	//目標在射程外, 則100%速度前進
 	        	if (this.distSq > this.rangeSq)

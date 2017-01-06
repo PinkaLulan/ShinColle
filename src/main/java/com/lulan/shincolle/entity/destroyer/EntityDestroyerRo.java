@@ -35,14 +35,7 @@ public class EntityDestroyerRo extends BasicEntityShipSmall
 		
 		this.postInit();
 	}
-	
-	//for morph
-	@Override
-	public float getEyeHeight()
-	{
-		return 1.5F;
-	}
-	
+
 	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc
 	@Override
 	public int getEquipType()

@@ -207,7 +207,7 @@ public class BlockHelper
 			case 0:	 //隨機選擇目標周圍四個象限
 				//find side position
 				newPos[0] = rand.nextDouble() * randDist + minDist;	//ran = min + randN
-				newPos[1] = rand.nextDouble() * randDist + target.posY + 1D;
+				newPos[1] = rand.nextDouble() * randDist * 0.5D + target.posY + target.height * 0.75D;
 				newPos[2] = rand.nextDouble() * randDist + minDist;
 	
 				switch (rand.nextInt(4))
@@ -233,7 +233,7 @@ public class BlockHelper
 			case 1:  //繞背法, 隨機選擇背面兩個象限
 				//find side position
 				newPos[0] = rand.nextDouble() * randDist + minDist;	//ran = min + randN
-				newPos[1] = rand.nextDouble() * randDist + target.posY + 0.5D;
+				newPos[1] = rand.nextDouble() * randDist * 0.5D + target.posY + target.height * 0.75D;
 				newPos[2] = rand.nextDouble() * randDist + minDist;
 				
 				//get direction
@@ -261,7 +261,7 @@ public class BlockHelper
 			case 2:  //直線前進法, 依照移動方向繼續往前
 				//find side position
 				newPos[0] = rand.nextDouble() * randDist + minDist;	//ran = min + randN
-				newPos[1] = rand.nextDouble() * randDist + target.posY + 1D;
+				newPos[1] = rand.nextDouble() * randDist * 0.5D + target.posY + target.height * 0.75D;
 				newPos[2] = rand.nextDouble() * randDist + minDist;
 				
 				if (host.motionX < 0)

@@ -181,6 +181,8 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
   	@Override
     public boolean attackEntityFrom(DamageSource attacker, float atk)
   	{
+		if (this.world.isRemote) return false;
+		
 		boolean dd = super.attackEntityFrom(attacker, atk);
 		
 		if (dd)

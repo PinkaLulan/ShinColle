@@ -1,7 +1,6 @@
 package com.lulan.shincolle.client.model;
 
 import com.lulan.shincolle.entity.IShipEmotion;
-import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
@@ -565,7 +564,7 @@ public class ModelDestroyerInazuma extends ModelBase implements IModelEmotion
   		float headZ = 0F;
   		
   		//水上漂浮
-  		if (!ent.getIsRiding() && ((IShipFloating)ent).getShipDepth() > 0)
+  		if (ent.getShipDepth(0) > 0D || ent.getShipDepth(1) > 0D)
   		{
   			GlStateManager.translate(0F, angleX * 0.05F + 0.025F, 0F);
     	}
@@ -575,8 +574,8 @@ public class ModelDestroyerInazuma extends ModelBase implements IModelEmotion
 	  	addk2 = angleAdd2 * 0.5F - 0.0698F;  //LegRight01
     	
   	    //head
-	  	this.Head.rotateAngleX = f4 * 0.0174532925F + 0.11F;
-	  	this.Head.rotateAngleY = f3 * 0.013F;
+	  	this.Head.rotateAngleX = f4 * 0.014F + 0.11F;
+	  	this.Head.rotateAngleY = f3 * 0.01F;
 	  	//body
   	    this.Ahoke.rotateAngleY = angleX * 0.2F + 1.0472F;
 	  	this.BodyMain.rotateAngleX = -0.1047F;

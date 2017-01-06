@@ -203,7 +203,7 @@ public class ServerProxy extends CommonProxy
 					}
 				}
 				
-				LogHelper.info("INFO: init server proxy: get player data: UID "+uid+" target list size: "+strList.size());
+				LogHelper.debug("DEBUG: init server proxy: get player data: UID "+uid+" target list size: "+strList.size());
 				customTagetClass.put(uid, strList);
 			}
 			
@@ -232,7 +232,7 @@ public class ServerProxy extends CommonProxy
 				tData.setTeamBannedList(tList1);
 				tData.setTeamAllyList(tList2);
 				
-				LogHelper.info("INFO: init server proxy: get team data: UID "+tUID+" NAME "+tName);
+				LogHelper.debug("DEBUG: init server proxy: get team data: UID "+tUID+" NAME "+tName);
 				mapTeamID.put(tUID, tData);
 			}
 			
@@ -254,7 +254,7 @@ public class ServerProxy extends CommonProxy
 				NBTTagCompound sTag = getlist.getCompoundTag(ShinWorldData.TAG_ShipNBT);
 				CacheDataShip sData = new CacheDataShip(eid, wid, cid, isDead, (double)pos[0], (double)pos[1], (double)pos[2], sTag);
 			
-				LogHelper.info("INFO: init server proxy: get ship data: UID "+uid);
+				LogHelper.debug("DEBUG: init server proxy: get ship data: UID "+uid);
 				mapShipID.put(uid, sData);
 			}
 			

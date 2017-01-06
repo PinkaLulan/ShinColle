@@ -449,9 +449,18 @@ public class PointerItem extends BasicItem
 							//send GUI packet
 							CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.OpenShipGUI, ship.getEntityId()));
 						}
-						//右鍵: set sitting
+						//右鍵
 						else
 						{
+							//對座騎: 若4格內則上座騎(BasicEntityMount.class內判定)
+							if (hitObj.entityHit instanceof BasicEntityMount)
+							{
+								if (player.getDistanceSqToEntity(hitObj.entityHit) <= 16D)
+								{
+									return new ActionResult(EnumActionResult.SUCCESS, stack);
+								}
+							}
+							
 							//send sit packet
 							CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetSitting, meta, ship.getShipUID()));
 						}

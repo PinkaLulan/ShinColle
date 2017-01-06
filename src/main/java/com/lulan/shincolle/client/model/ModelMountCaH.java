@@ -1,7 +1,6 @@
 package com.lulan.shincolle.client.model;
 
 import com.lulan.shincolle.entity.IShipEmotion;
-import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.reference.ID;
 
 import net.minecraft.client.model.ModelBase;
@@ -382,6 +381,7 @@ public class ModelMountCaH extends ModelBase
     	GlStateManager.enableBlend();
     	GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
     	GlStateManager.scale(1.1F, 1.1F, 1.1F);
+    	GlStateManager.translate(0F, 0.12F, -0.1F);
     	
     	//main body
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
@@ -425,13 +425,11 @@ public class ModelMountCaH extends ModelBase
   		float addk2 = 0F;
   		
   		//水上漂浮
-  		if(((IShipFloating) ent).getShipDepth() > 0)
+  		if (ent.getShipDepth(0) > 0D)
   		{
   			GlStateManager.translate(0F, angleX * 0.025F + 0.025F, 0F);
     	}
   		
-  		GlStateManager.translate(0F, -0.25F, -0.1F);
-
 	    //正常站立動作
 	  	//嘴巴
 	  	this.Jaw01.rotateAngleX = angleX * 0.025F + 0.32F;
@@ -442,7 +440,7 @@ public class ModelMountCaH extends ModelBase
     	//seat2 有載人動作
 	    if (ent.getStateEmotion(ID.S.Emotion) > 0)
 	    {
-	    	this.Jaw01.rotateAngleX = 1.0F;
+	    	this.Jaw01.rotateAngleX = 0.7F;
 	    }
 	    
 	    //發光支架
