@@ -279,6 +279,13 @@ public class TileEntityVolCore extends BasicTileInventory implements ITickable
 		//client side
 		else
 		{
+			//valid tile
+			if (this.world.getBlockState(this.pos).getBlock() != ModBlocks.BlockVolCore)
+			{
+				this.invalidate();
+				return;
+			}
+			
 			//spawn bubble particle
 			if (this.isWorking() && this.syncTime % 32 == 0)
 			{

@@ -185,11 +185,18 @@ public class EntityCarrierWD extends BasicEntityShipCV
   	{
   		if (this.isSitting())
   		{
-  			return (double)this.height * 0.2F;
+			if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
+			{
+				return this.height * 0.29F;
+  			}
+  			else
+  			{
+  				return this.height * 0.33F;
+  			}
   		}
   		else
   		{
-  			return (double)this.height * 0.62F;
+  			return this.height * 0.75F;
   		}
 	}
 

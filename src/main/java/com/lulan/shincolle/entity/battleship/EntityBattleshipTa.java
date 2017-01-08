@@ -178,12 +178,12 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
   			}
   			else
   			{
-  				return (double)this.height * 0.0F;
+  				return this.height * 0.47F;
   			}
   		}
   		else
   		{
-  			return (double)this.height * 0.68F;
+  			return this.height * 0.76F;
   		}
 	}
 

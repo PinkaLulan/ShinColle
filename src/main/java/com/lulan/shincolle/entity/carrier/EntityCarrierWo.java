@@ -3,6 +3,7 @@ package com.lulan.shincolle.entity.carrier;
 import com.lulan.shincolle.ai.EntityAIShipCarrierAttack;
 import com.lulan.shincolle.entity.BasicEntityShipCV;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.handler.EventHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
@@ -134,16 +135,16 @@ public class EntityCarrierWo extends BasicEntityShipCV
     		{
       			if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
       			{
-					return (double)this.height * 0.9D;
+					return (double)this.height * 0.2F;
 	  			}
 	  			else
 	  			{
-	  				return (double)this.height * 1.3D;
+	  				return (double)this.height * 0.43F;
 	  			}
       		}
       		else
       		{
-      			return (double)this.height * 1.35D;
+      			return (double)this.height * 1.21F;
       		}
     	}
     	else

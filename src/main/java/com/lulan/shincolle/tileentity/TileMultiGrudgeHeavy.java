@@ -4,6 +4,7 @@ import com.lulan.shincolle.block.BlockGrudgeHeavy;
 import com.lulan.shincolle.capability.CapaInventory;
 import com.lulan.shincolle.crafting.LargeRecipes;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.reference.ID;
@@ -386,7 +387,16 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileLiquidF
 				//TODO force update
 			}
 		}//end server side
-		
+		//client side
+		else
+		{
+			//valid tile
+			if (this.world.getBlockState(this.pos).getBlock() != ModBlocks.BlockGrudgeHeavy)
+			{
+				this.invalidate();
+				return;
+			}
+		}
 	}
 	
 	//set materials for repeat build

@@ -8,6 +8,7 @@ import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.entity.other.EntityRensouhou;
 import com.lulan.shincolle.entity.other.EntityRensouhouS;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.handler.EventHandler;
 import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -281,16 +282,16 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
 		{
 			if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 			{
-				return 0F;
+				return this.height * -0.04F;
   			}
   			else
   			{
-  				return (double)this.height * 0.1F;
+  				return this.height * 0.16F;
   			}
   		}
   		else
   		{
-  			return (double)this.height * 0.45F;
+  			return this.height * 0.67F;
   		}
 	}
 

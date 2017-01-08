@@ -112,7 +112,7 @@ public class TeamData
 				if (!this.teamAllyID.contains(par1) && !this.teamBanID.contains(par1))
 				{
 					this.teamAllyID.add(par1);
-					LogHelper.info("DEBUG : team data: add ally: team "+this.teamName+" add "+par1);
+					LogHelper.debug("DEBUG: team data: add ally: team "+this.teamName+" add "+par1);
 				}
 			}
 		}
@@ -129,7 +129,7 @@ public class TeamData
 				if (this.teamAllyID.contains(par1))
 				{
 					this.teamAllyID.remove((Integer)par1);  //remove object, not index
-					LogHelper.info("DEBUG : team data: remove ally: team "+this.teamName+" remove "+par1);
+					LogHelper.debug("DEBUG : team data: remove ally: team "+this.teamName+" remove "+par1);
 				}
 			}
 		}
@@ -146,7 +146,7 @@ public class TeamData
 				if (!this.teamBanID.contains(par1) && !this.teamAllyID.contains(par1))
 				{
 					this.teamBanID.add(par1);
-					LogHelper.info("DEBUG : team data: add banned: team "+this.teamName+" add "+par1);
+					LogHelper.debug("DEBUG: team data: add banned: team "+this.teamName+" add "+par1);
 				}
 			}
 		}
@@ -163,7 +163,7 @@ public class TeamData
 				if (this.teamBanID.contains(par1))
 				{
 					this.teamBanID.remove((Integer)par1);  //remove object, not index
-					LogHelper.info("DEBUG : team data: remove banned: team "+this.teamName+" remove "+par1);
+					LogHelper.debug("DEBUG: team data: remove banned: team "+this.teamName+" remove "+par1);
 				}
 			}
 		}

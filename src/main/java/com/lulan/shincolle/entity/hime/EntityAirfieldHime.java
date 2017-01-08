@@ -160,11 +160,18 @@ public class EntityAirfieldHime extends BasicEntityShipCV
   	{
   		if (this.isSitting())
   		{
-  			return (double)this.height * 0.58F;
+			if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
+			{
+				return this.height * 0.65F;
+  			}
+  			else
+  			{
+  				return this.height * 0.56F;
+  			}
   		}
   		else
   		{
-  			return (double)this.height * 0.73F;
+  			return this.height * 0.75F;
   		}
 	}
 

@@ -150,6 +150,7 @@ public class CapaTeitoku implements ICapaTeitoku
 		catch (Exception e)
 		{
 			LogHelper.info("EXCEPTION: player name is empty string.");
+			e.printStackTrace();
 		}
 		
 		/**save team list by ship UID
@@ -159,7 +160,7 @@ public class CapaTeitoku implements ICapaTeitoku
 		//每次儲存sid前先更新過一次
 		if (this.initSID)
 		{	//update id AFTER sid is inited
-			LogHelper.info("DEBUG : save player ExtNBT: update ship UID from teamList");
+			LogHelper.debug("DEBUG: save player ExtNBT: update ship UID from teamList");
 			this.updateSID();
 		}
 		
@@ -208,18 +209,18 @@ public class CapaTeitoku implements ICapaTeitoku
 			//check player UID tag in 'nbt', not 'nbtExt'
 			if (!nbt.hasKey("PlayerUID"))
 			{
-				LogHelper.info("DEBUG : player loadNBTData: fail, data is null "+nbt+" "+nbtExt);
+				LogHelper.debug("DEBUG: player loadNBTData: fail, data is null "+nbt+" "+nbtExt);
 				return;
 			}
 			else
 			{
-				LogHelper.info("DEBUG : player loadNBTData: get data without tag name");
+				LogHelper.debug("DEBUG: player loadNBTData: get data without tag name");
 				nbtExt = nbt;
 			}
 		}
 		
 		//load data
-		LogHelper.info("DEBUG : player loadNBTData: get data "+nbt+" "+nbtExt);
+		LogHelper.debug("DEBUG: player loadNBTData: get data "+nbt+" "+nbtExt);
 		try
 		{
 			hasRing = nbtExt.getBoolean("hasRing");
@@ -259,10 +260,11 @@ public class CapaTeitoku implements ICapaTeitoku
 		}
 		catch (Exception e)
 		{
-			LogHelper.info("DEBUG : player loadNBTData: load fail: "+e);
+			LogHelper.info("EXCEPTION: player loadNBTData: load fail: "+e);
+			e.printStackTrace();
 		}
 		
-		LogHelper.info("DEBUG : load player ExtNBT data on: "+this.player);
+		LogHelper.debug("DEBUG: load player ExtNBT data on: "+this.player);
 	}
 	
 	//getter
@@ -346,7 +348,8 @@ public class CapaTeitoku implements ICapaTeitoku
 		}
 		catch (Exception e)
 		{
-			LogHelper.info("EXCEPTION : get ship entity from extProps fail: "+e);
+			LogHelper.info("EXCEPTION: get ship entity from extProps fail: "+e);
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -359,7 +362,8 @@ public class CapaTeitoku implements ICapaTeitoku
 		}
 		catch (Exception e)
 		{
-			LogHelper.info("EXCEPTION : get all ship entity from extProps fail: "+e);
+			LogHelper.info("EXCEPTION: get all ship entity from extProps fail: "+e);
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -372,7 +376,8 @@ public class CapaTeitoku implements ICapaTeitoku
 		}
 		catch (Exception e)
 		{
-			LogHelper.info("EXCEPTION : get all ship entity from extProps fail: "+e);
+			LogHelper.info("EXCEPTION: get all ship entity from extProps fail: "+e);
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -453,7 +458,8 @@ public class CapaTeitoku implements ICapaTeitoku
 		}
 		catch (Exception e)
 		{
-			LogHelper.info("EXCEPTION : get ship select state fail: "+e);
+			LogHelper.info("EXCEPTION: get ship select state fail: "+e);
+			e.printStackTrace();
 			return new boolean[6];
 		}
 	}
@@ -467,7 +473,8 @@ public class CapaTeitoku implements ICapaTeitoku
 		}
 		catch (Exception e)
 		{
-			LogHelper.info("EXCEPTION : get ship select state fail: "+e);
+			LogHelper.info("EXCEPTION: get ship select state fail: "+e);
+			e.printStackTrace();
 			return false;
 		}
 	}
@@ -487,7 +494,8 @@ public class CapaTeitoku implements ICapaTeitoku
 		}
 		catch (Exception e)
 		{
-			LogHelper.info("EXCEPTION : get ship ID fail: "+e);
+			LogHelper.info("EXCEPTION: get ship ID fail: "+e);
+			e.printStackTrace();
 			return -1;
 		}
 	}
@@ -630,7 +638,8 @@ public class CapaTeitoku implements ICapaTeitoku
 		}
 		catch (Exception e)
 		{
-			LogHelper.info("EXCEPTION : get formation id fail: "+e);
+			LogHelper.info("EXCEPTION: get formation id fail: "+e);
+			e.printStackTrace();
 			return 0;
 		}
 	}
@@ -699,13 +708,14 @@ public class CapaTeitoku implements ICapaTeitoku
 			
 			if (mov >= 10F)
 			{
-				LogHelper.info("DEBUG : get min move speed: no ship in team");
+				LogHelper.debug("DEBUG: get min move speed: no ship in team");
 				mov = 0F;  //get no ship in team, bug?
 			}
 		}
 		catch (Exception e)
 		{
-			LogHelper.info("EXCEPTION : get entity MOV from extProps fail: "+e);
+			LogHelper.info("EXCEPTION: get entity MOV from extProps fail: "+e);
+			e.printStackTrace();
 			return 0F;
 		}
 		
@@ -751,7 +761,8 @@ public class CapaTeitoku implements ICapaTeitoku
 		}
 		catch (Exception e)
 		{
-			LogHelper.info("EXCEPTION : set ship ID fail: "+e);
+			LogHelper.info("EXCEPTION: set ship ID fail: "+e);
+			e.printStackTrace();
 		}
 	}
 	
@@ -764,7 +775,8 @@ public class CapaTeitoku implements ICapaTeitoku
 		}
 		catch (Exception e)
 		{
-			LogHelper.info("EXCEPTION : set current team ship ID fail: "+e);
+			LogHelper.info("EXCEPTION: set current team ship ID fail: "+e);
+			e.printStackTrace();
 		}
 	}
 	
@@ -777,7 +789,8 @@ public class CapaTeitoku implements ICapaTeitoku
 		}
 		catch (Exception e)
 		{
-			LogHelper.info("EXCEPTION : set ship select state fail: "+e);
+			LogHelper.info("EXCEPTION: set ship select state fail: "+e);
+			e.printStackTrace();
 		}
 	}
 	
@@ -910,7 +923,8 @@ public class CapaTeitoku implements ICapaTeitoku
 		}
 		catch (Exception e)
 		{
-			LogHelper.info("EXCEPTION : set ship team formation id fail: "+e);
+			LogHelper.info("EXCEPTION: set ship team formation id fail: "+e);
+			e.printStackTrace();
 		}
 	}
 	
@@ -922,7 +936,8 @@ public class CapaTeitoku implements ICapaTeitoku
 		}
 		catch (Exception e)
 		{
-			LogHelper.info("EXCEPTION : set current team formation id fail: "+e);
+			LogHelper.info("EXCEPTION: set current team formation id fail: "+e);
+			e.printStackTrace();
 		}
 	}
 	
@@ -949,7 +964,8 @@ public class CapaTeitoku implements ICapaTeitoku
 		}
 		catch (Exception e)
 		{
-			LogHelper.info("EXCEPTION : set ship team entity fail: "+e);
+			LogHelper.info("EXCEPTION: set ship team entity fail: "+e);
+			e.printStackTrace();
 		}
 	}
 	
@@ -961,7 +977,8 @@ public class CapaTeitoku implements ICapaTeitoku
 		}
 		catch (Exception e)
 		{
-			LogHelper.info("EXCEPTION : set ship team select state fail: "+e);
+			LogHelper.info("EXCEPTION: set ship team select state fail: "+e);
+			e.printStackTrace();
 		}
 	}
 	
@@ -1180,7 +1197,8 @@ public class CapaTeitoku implements ICapaTeitoku
 		}
 		catch (Exception e)
 		{
-			LogHelper.info("EXCEPTION : check ship in team fail: "+e);
+			LogHelper.info("EXCEPTION: check ship in team fail: "+e);
+			e.printStackTrace();
 		}
 		
 		return val;
@@ -1451,7 +1469,7 @@ public class CapaTeitoku implements ICapaTeitoku
 			//disable fly if non-active
 			if (!capa.isRingActive && !player.capabilities.isCreativeMode && capa.isRingFlying)
 			{
-				LogHelper.info("DEBUG : cancel fly by right click");
+				LogHelper.debug("DEBUG: cancel fly by right click");
 				player.capabilities.isFlying = false;
 				capa.isRingFlying = false;
 			}

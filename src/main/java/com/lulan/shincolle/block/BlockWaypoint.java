@@ -1,18 +1,24 @@
 package com.lulan.shincolle.block;
 
 import java.util.List;
+import java.util.Random;
 
 import javax.annotation.Nullable;
 
 import com.lulan.shincolle.item.TargetWrench;
+import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.tileentity.TileEntityWaypoint;
 import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
@@ -32,6 +38,7 @@ public class BlockWaypoint extends BasicBlockContainer
 	public static final String TILENAME = "TileEntityWaypoint";
 	private static final AxisAlignedBB EMPTY_AABB = new AxisAlignedBB(0D, 0D, 0D, 0D, 0D, 0D);
 	
+	
 	public BlockWaypoint()
 	{
 	    super(Material.GLASS);
@@ -39,6 +46,7 @@ public class BlockWaypoint extends BasicBlockContainer
 		this.setRegistryName(NAME);
 		this.setHardness(0F);
 		this.setLightOpacity(0);
+		this.setHarvestLevel(null, -1);
 	    
         GameRegistry.register(this);
         GameRegistry.register(new ItemBlockWaypoint(this), this.getRegistryName());
@@ -164,6 +172,7 @@ public class BlockWaypoint extends BasicBlockContainer
         return false;
     }
 
+	//right click on block
 	@Override
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, @Nullable ItemStack item, EnumFacing side, float hitX, float hitY, float hitZ)
 	{
@@ -186,10 +195,55 @@ public class BlockWaypoint extends BasicBlockContainer
 				return true;
 			}
 		}
-				
+		
         return false;
+    }
+	
+	@Override
+    public void onBlockClicked(World world, BlockPos pos, EntityPlayer playerIn)
+    {
+		LogHelper.debug("AAAAAAAA "+world.isRemote);
+		GameSettings keySet = ClientProxy.getGameSetting();
+		
+		if (keySet.keyBindSprint.isKeyDown())
+		{
+			
+		}
+    }
+	
+	/**
+	 * disable normal drop, drop itemstack into player's inventory on block removed
+	 */
+	@Override
+    public int quantityDropped(Random random)
+    {
+        return 0;
+    }
+	
+	@Override
+    public void harvestBlock(World world, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, @Nullable ItemStack stack)
+    {
+		return;
+    }
+	
+	@Override
+    public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest)
+    {
+		//server side
+		if (!world.isRemote)
+		{
+			ItemStack stack = new ItemStack(Item.getItemFromBlock(this));
+			
+			//inventory is full, drop item onto ground
+			if (!player.inventory.addItemStackToInventory(stack))
+			{
+	            EntityItem entityitem = new EntityItem(world, player.posX, player.posY + 0.5D, player.posZ, stack);
+	            world.spawnEntity(entityitem);
+			}
+		}
+		
+        return world.setBlockState(pos, net.minecraft.init.Blocks.AIR.getDefaultState(), world.isRemote ? 11 : 3);
     }
 		
 		
 }
-

@@ -2,13 +2,17 @@ package com.lulan.shincolle.item;
 
 import java.util.List;
 
+import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.CalcHelper;
+
 import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-
-import com.lulan.shincolle.utility.CalcHelper;
 
 
 public class CombatRation extends BasicItem implements IShipCombatRation
@@ -90,62 +94,54 @@ public class CombatRation extends BasicItem implements IShipCombatRation
 		}
 	}
 	
-//	//TODO
-//	@Override
-//	public void onUpdate(ItemStack itemstack, World world, Entity entity, int slot, boolean inUse)
-//	{
-//		if (world != null && entity instanceof EntityPlayer)
-//		{
-//			EntityPlayer player = (EntityPlayer) entity;
-//			
-//			//server side
-//			if (!world.isRemote)
-//			{
-//				if (slot == player.inventory.currentItem)
-//				{
-//					//get nearby ship
-//		  			List<BasicEntityShip> slist = null;
-//		  			slist = world.getEntitiesWithinAABB(BasicEntityShip.class, player.boundingBox.expand(8D, 6D, 8D));
-//
-//		  			if (slist != null && !slist.isEmpty())
-//		  			{
-//		              	for (BasicEntityShip s : slist)
-//		              	{
-//		              		if (s != null && s.isEntityAlive() && !s.getStateFlag(ID.F.NoFuel) &&
-//		              			!s.isSitting() && !s.isRiding())
-//		              		{
-//		              			if (player.ticksExisted % 16 == 0)
-//		              			{
-//		              				if (player.getDistanceSqToEntity(s) > 4D)
-//			              			{
-//			              				s.getShipNavigate().tryMoveToEntityLiving(player, 0.75D);
-//			              				
-//			              				if (player.getRNG().nextInt(5) == 0)
-//				              			{
-//				              				switch (player.getRNG().nextInt(3))
-//				            				{
-//				            				case 1:
-//				            					s.applyParticleEmotion(9);  //hungry
-//				            					break;
-//				            				case 2:
-//				            					s.applyParticleEmotion(30); //pif
-//				            					break;
-//				            				default:
-//				            					s.applyParticleEmotion(1);  //heart
-//				            					break;
-//				            				}
-//				              			}
-//			              			}
-//		              			}
-//		              			
-//		              			s.getLookHelper().setLookPosition(player.posX, player.posY+2D, player.posZ, 50F, 50F);
-//		              		}
-//		              	}
-//		  			}//end get ship
-//				}
-//			}
-//		}
-//	}
+	@Override
+	public void onUpdate(ItemStack stack, World world, Entity entity, int slot, boolean inUse)
+    {
+		if (entity instanceof EntityPlayer)
+		{
+			EntityPlayer player = (EntityPlayer) entity;
+			
+			//server side
+			if (!world.isRemote)
+			{
+				if (inUse && player.ticksExisted % 16 == 0)
+				{
+					//get nearby ship
+		  			List<BasicEntityShip> slist = world.getEntitiesWithinAABB(BasicEntityShip.class, player.getEntityBoundingBox().expand(8D, 6D, 8D));
+
+	              	for (BasicEntityShip s : slist)
+	              	{
+	              		if (s != null && s.isEntityAlive() && !s.getStateFlag(ID.F.NoFuel) &&
+	              			!s.isSitting() && !s.isRiding())
+	              		{
+              				if (player.getDistanceSqToEntity(s) > 4D)
+	              			{
+	              				s.getShipNavigate().tryMoveToEntityLiving(player, 0.75D);
+	              				
+	              				if (player.getRNG().nextInt(5) == 0)
+		              			{
+		              				switch (player.getRNG().nextInt(3))
+		            				{
+		            				case 1:
+		            					s.applyParticleEmotion(9);  //hungry
+		            					break;
+		            				case 2:
+		            					s.applyParticleEmotion(30); //pif
+		            					break;
+		            				default:
+		            					s.applyParticleEmotion(1);  //heart
+		            					break;
+		            				}
+		              			}
+	              			}
+	              			
+	              			s.getLookHelper().setLookPosition(player.posX, player.posY+2D, player.posZ, 50F, 50F);
+	              		}
+		  			}//end for ship
+				}//end inUse
+			}//end server side
+		}
+	}
 	
 	//display equip information
     @Override

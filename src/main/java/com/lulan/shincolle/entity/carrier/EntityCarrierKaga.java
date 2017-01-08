@@ -76,16 +76,16 @@ public class EntityCarrierKaga extends BasicEntityShipCV
 		{
 			if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 			{
-				return (double)this.height * 0.16F;
+				return (double)this.height * 0.35F;
   			}
   			else
   			{
-  				return (double)this.height * 0.25F;
+  				return (double)this.height * 0.45F;
   			}
   		}
   		else
   		{
-  			return (double)this.height * 0.56F;
+  			return (double)this.height * 0.72F;
   		}
 	}
 

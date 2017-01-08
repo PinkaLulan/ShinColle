@@ -354,7 +354,8 @@ public class EntityHelper
 			}
 			catch (Exception e)
 			{
-				LogHelper.info("DEBUG : get EntityPlayer by name fail: "+e);
+				LogHelper.info("EXCEPTION: get EntityPlayer by name fail: "+e);
+				e.printStackTrace();
 			}
 		}
 		
@@ -390,7 +391,8 @@ public class EntityHelper
 			}
 			catch (Exception e)
 			{
-				LogHelper.info("DEBUG : get EntityPlayer by name fail: "+e);
+				LogHelper.info("EXCEPTION: get EntityPlayer by name fail: "+e);
+				e.printStackTrace();
 			}
 		}
 		
@@ -919,7 +921,7 @@ public class EntityHelper
   		//in guard block mode
   		if (!entity.getStateFlag(ID.F.CanFollow) && entity.getGuardedPos(1) > 0 && !entity.getIsSitting() && !entity.getIsLeashed() && !entity.getIsRiding())
   		{
-  			//check distance < 3 blocks
+  			//calc distance
   			float dx = (float) (entity.getGuardedPos(0) + 0.5D - ((Entity)entity).posX);
   			float dy = (float) (entity.getGuardedPos(1) - ((Entity)entity).posY);
 			float dz = (float) (entity.getGuardedPos(2) + 0.5D - ((Entity)entity).posZ);

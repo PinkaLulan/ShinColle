@@ -1,7 +1,3 @@
-﻿# Keys
-keys.shincolle.category=Shin Colle
-keys.shincolle.repair=Repair
-
 # Creative Tab
 itemGroup.shincolle=ShinColle
 
@@ -251,7 +247,7 @@ gui.shincolle:book.chap1.text5d0=<br><br><br><br><br><br><br><br><br>§d§nShink
 gui.shincolle:book.chap1.text5d1=It symbolizes the beauty of Nether and the owner's strength, and it's also the important sign of lasting love.<br><br>§9Sneaking+Right Click§0:<br>Marry the ship.<br>§9Right Click§0:<br>Activate the ring.<br><br>The number of married will activate different abilities: digging speed, vision, mobility in the water.
 gui.shincolle:book.chap1.title6=Seikan Ownership Paper
 gui.shincolle:book.chap1.text6d0=<br><br><br><br><br><br><br><br><br>The §d§nShinkeiseikan Ownership Paper§r§0 describes the contents of the various items in detail with the transfer of ownership the two sides should fulfill, just to take effect after signature of the parties.
-gui.shincolle:book.chap1.text6d1=§9Right Click§0:<br>Sign the paper.<br><br>After the signature of the parties, the owner can right click the paper on the ship to transfer the ownership to other player.
+gui.shincolle:book.chap1.text6d1=§9Right Click§0:<br>Sign the paper.<br><br>After the signature of the parties, the owner can sneaking + right click the paper on the ship to transfer the ownership to other player.
 gui.shincolle:book.chap1.title7=Dismantle Hammer
 gui.shincolle:book.chap1.text7d0=<br><br><br><br><br><br><br><br><br>§d§nDismantle Hammer§r§0 can decompose the ship and recycle some of the material.
 gui.shincolle:book.chap1.text7d1=§9Left Click§0:<br>One shot kill the ship. (OWNER/OP ONLY)<br><br>§9Sneaking + Right Click§0:<br>Decompose the ship. (OWNER/OP ONLY)
@@ -287,7 +283,7 @@ gui.shincolle:book.chap1.text17d0=<br><br><br><br><br><br><br><br><br>This stabl
 gui.shincolle:book.chap1.text17d1=§9Radar§0:<br>Show a list of nearby owned ships, click ship on the list to carry out other action.<br><br>§9Abyssal Logbook§0:<br>Items, blocks and ships introduction.<br><br>§9Faction§0:<br>Create or add team with PVP mode.<br><br>§9Target List§0:<br>Browse attack target list.
 gui.shincolle:book.chap1.title18=Target Wrench
 gui.shincolle:book.chap1.text18d0=<br><br><br><br><br><br><br><br><br>§9Left Click:§0<br>§cADD/REMOVE§0 entity to §dUnattackable Target List§0. §4(OP ONLY!!)§0<br><br>§9Sneak + Left Click:§0<br>show §dUnattackable Target List§0.<br><br>§9Right Click:§0 Change Abyssal Waypoint stay time.
-gui.shincolle:book.chap1.text18d1=§9Sneak + Right Click:§0 pairing Abyssal Waypoint / Abyssal Crane and Chest.<br><br>§dUnattackable Target§0 will not be damaged by AoE attack, and can't be targeted. You can add entity like leash knot, item frame, airplane, mounts or boat.<br><br>This list applies to hostile mob ships too.<br>Ships and hostile ships can't be unattackable entities.
+gui.shincolle:book.chap1.text18d1=§9Sneak + Right Click:§0 pairing Abyssal Waypoint / Abyssal Crane and Chest.<br><br>§dUnattackable Target§0 immune to all ship's attack, and can't be targeted. You can add entity like leash knot, item frame, cart or boat.<br><br>This list applies to hostile mob ships too.<br>Ship, hostile ship and ship's summons can't be unattackable target.
 gui.shincolle:book.chap1.title19=Abyssal Volcano Block
 gui.shincolle:book.chap1.text19d0=<br><br><br><br><br><br><br><br><br>When the lava is compressed by heavy grudge, it will become §d§nAbyssal Volcano Block§r§0.<br><br>Decorative block.
 gui.shincolle:book.chap1.text19d1=
@@ -650,13 +646,15 @@ chat.shincolle:bossspawn1=A Fleet Walks on the Water!
 chat.shincolle:bossspawn2=Detecte An Invasion Fleet!
 chat.shincolle:pointer.settargetclass=Set target type to attack list: %s
 chat.shincolle:pointer.changeformation=Change formation to
-chat.shincolle:wrench.paired=Pairing Abyssal Crane Success!
-chat.shincolle:wrench.toofar=Pairing Abyssal Crane fail, distance > 6 blocks.
-chat.shincolle:wrench.wrongtile=Unsupported TileEntity.
-chat.shincolle:wrench.setwp=Setting Abyssal Waypoint Success!
-chat.shincolle:wrench.wptoofar=Setting Abyssal Waypoint fail, distance > 48 blocks.
+chat.shincolle:wrench.paired=Succeed in Abyssal Crane pairing.
+chat.shincolle:wrench.toofar=Fail in Abyssal Crane pairing: distance > 6 blocks.
+chat.shincolle:wrench.wrongtile=Fail in TileEntity pairing, accept only: Chest & Crane, Waypoint & Waypoint or Crane.
+chat.shincolle:wrench.setwp=Succeed in Abyssal Waypoint pairing:
+chat.shincolle:wrench.wptoofar=Fail in Abyssal Waypoint pairing: distance > 48 blocks.
 chat.shincolle:wrench.wplast=Last waypoint: 
-chat.shincolle:wrench.wpnext=Next waypoint: 
+chat.shincolle:wrench.wpnext=Next waypoint:
+chat.shincolle:wrench.samepoint=Same waypoint, reset the record.
+chat.shincolle:wrench.unatkshow=Show unattackable entity list:
 
 # intermod: Forestry
 item.shincolle:ShinComb.name=Shin Comb

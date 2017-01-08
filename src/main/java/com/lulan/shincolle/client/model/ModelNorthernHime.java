@@ -1,6 +1,5 @@
 package com.lulan.shincolle.client.model;
 
-import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EmotionHelper;
@@ -12,7 +11,6 @@ import net.minecraft.client.renderer.GlStateManager.DestFactor;
 import net.minecraft.client.renderer.GlStateManager.SourceFactor;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -170,8 +168,8 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion
         this.setRotateAngle(TailJawT01, 0.17453292519943295F, 0.0F, 0.0F);
         this.LegLeft02 = new ModelRenderer(this, 0, 99);
         this.LegLeft02.mirror = true;
-        this.LegLeft02.setRotationPoint(0.0F, 9.0F, -2.5F);
-        this.LegLeft02.addBox(-2.5F, 0.0F, 0.0F, 5, 10, 5, 0.0F);
+        this.LegLeft02.setRotationPoint(0.0F, 8F, -2.5F);
+        this.LegLeft02.addBox(-2.5F, 0.0F, 0.0F, 5, 9, 5, 0.0F);
         this.EquipLT05 = new ModelRenderer(this, 0, 45);
         this.EquipLT05.setRotationPoint(6.0F, 0.0F, 0.0F);
         this.EquipLT05.addBox(0.0F, -2.5F, -2.5F, 6, 5, 5, 0.0F);
@@ -296,7 +294,7 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion
         this.setRotateAngle(ArmLeft06, -0.08726646259971647F, 0.08726646259971647F, 0.17453292519943295F);
         this.LegRight01 = new ModelRenderer(this, 0, 99);
         this.LegRight01.setRotationPoint(-3.2F, 5.5F, 2.4F);
-        this.LegRight01.addBox(-2.5F, 0.0F, -2.5F, 5, 9, 5, 0.0F);
+        this.LegRight01.addBox(-2.5F, 0.0F, -2.5F, 5, 8, 5, 0.0F);
         this.setRotateAngle(LegRight01, -0.17453292519943295F, 0.0F, 0.05235987755982988F);
         this.HeadBase = new ModelRenderer(this, 0, 0);
         this.HeadBase.setRotationPoint(-14.0F, -3.0F, 0.0F);
@@ -431,7 +429,7 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion
         this.LegLeft01 = new ModelRenderer(this, 0, 99);
         this.LegLeft01.mirror = true;
         this.LegLeft01.setRotationPoint(3.2F, 5.5F, 2.4F);
-        this.LegLeft01.addBox(-2.5F, 0.0F, -2.5F, 5, 9, 5, 0.0F);
+        this.LegLeft01.addBox(-2.5F, 0.0F, -2.5F, 5, 8, 5, 0.0F);
         this.setRotateAngle(LegLeft01, -0.17453292519943295F, 0.0F, -0.05235987755982988F);
         this.HeadHR3 = new ModelRenderer(this, 30, 90);
         this.HeadHR3.setRotationPoint(-1.0F, 0.0F, 0.0F);
@@ -447,8 +445,8 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion
         this.EquipRT02.addBox(-16.0F, -2.0F, -4.0F, 16, 4, 4, 0.0F);
         this.setRotateAngle(EquipRT02, 0.0F, -1.0471975511965976F, 0.0F);
         this.LegRight02 = new ModelRenderer(this, 0, 99);
-        this.LegRight02.setRotationPoint(0.0F, 9.0F, -2.5F);
-        this.LegRight02.addBox(-2.5F, 0.0F, 0.0F, 5, 10, 5, 0.0F);
+        this.LegRight02.setRotationPoint(0.0F, 8F, -2.5F);
+        this.LegRight02.addBox(-2.5F, 0.0F, 0.0F, 5, 9, 5, 0.0F);
         this.Face0 = new ModelRenderer(this, 98, 53);
         this.Face0.setRotationPoint(0.0F, 0.0F, -0.1F);
         this.Face0.addBox(-7.0F, -14.2F, -6.5F, 14, 14, 1, 0.0F);
@@ -651,7 +649,7 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion
     	GlStateManager.enableBlend();
     	GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
     	GlStateManager.scale(0.36F, 0.34F, 0.36F);
-    	GlStateManager.translate(0F, 2.7F, 0F);
+    	GlStateManager.translate(0F, 3.08F, 0F);
     	
     	//main body
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
@@ -711,7 +709,7 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion
     
     private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
     {
-    	GlStateManager.translate(0F, 1.1F, 0F);
+    	GlStateManager.translate(0F, 0.24F, 0F);
     	setFace(4);
     	
   	    //移動頭部使其看人
@@ -854,7 +852,7 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion
 	  	
 	    if (ent.getIsSneaking())
 	    {	//潛行, 蹲下動作
-	    	GlStateManager.translate(0F, -0.1F, 0F);
+	    	GlStateManager.translate(0F, 0.02F, 0F);
 	    	//body
 	    	this.Head.rotateAngleX -= 0.8727F;
 	    	this.BodyMain.rotateAngleX = 1.0472F;
@@ -876,9 +874,10 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion
   		
 	    if (ent.getIsSitting() && !ent.getIsRiding())
 	    {	//坐下動作
+	    	GlStateManager.translate(0F, 0.24F, 0F);
+	    	
 	    	if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 	    	{
-	    		GlStateManager.translate(0F, 1.0F, 0F);
 		    	//body
 		    	this.Head.rotateAngleX -= 0.15F;
 		    	this.BodyMain.rotateAngleX = -0.3142F;
@@ -901,7 +900,6 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion
 	    	}
 	    	else
 	    	{
-	    		GlStateManager.translate(0F, 1.0F, 0F);
 		    	//arm
 		    	this.ArmLeft01.rotateAngleZ -= 0.05F;
 		    	this.ArmRight01.rotateAngleZ += 0.05F;
@@ -914,18 +912,9 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion
 	    	}
   		}//end if sitting
 	    
-	    
 	    if (ent.getIsRiding())
 	    {	//騎乘動作
-	    	if (((Entity)ent).getRidingEntity() instanceof BasicEntityShip)
-	    	{
-	    		GlStateManager.translate(0F, 0F, 0.8F);
-	    	}
-	    	
-	    	if (((Entity)ent).getRidingEntity() instanceof EntityPlayer)
-	    	{
-	    		GlStateManager.translate(0F, 5.15F, 0.8F);
-	    	}
+	    	GlStateManager.translate(0F, 0.24F, 0.255F);
 	    	
 	    	if (ent.getIsSitting())
 	    	{
@@ -951,7 +940,7 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion
 	    	{
 	    		setFace(3);
 	    		//head
-	    		this.Head.rotateAngleX -= 0.4F;
+	    		this.Head.rotateAngleX -= 0.25F;
 	    		//arm
 		    	this.ArmLeft01.rotateAngleX = -1.2F;
 		    	this.ArmLeft01.rotateAngleY = -0.2F;

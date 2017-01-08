@@ -77,7 +77,7 @@ public class FormationHelper
 			}
 			else
 			{
-				LogHelper.info("DEBUG : reset formation ID");
+				LogHelper.debug("DEBUG: reset formation ID");
 				setFormationForShip(capa, teamID, 0);
 				capa.setFormatID(teamID, 0);
 			}
@@ -305,7 +305,7 @@ public class FormationHelper
 		{
 			//apply moving
 			applyShipGuard(ship, pos[0], pos[1], pos[2]);
-			LogHelper.info("DEBUG : apply formation move: safe: "+pos[0]+" "+pos[1]+" "+pos[2]);
+			LogHelper.debug("DEBUG: apply formation move: safe: "+pos[0]+" "+pos[1]+" "+pos[2]);
 			
 			//return next pos
 			switch (formatType)
@@ -363,13 +363,13 @@ public class FormationHelper
 		{
 			//apply moving
 			applyShipGuard(ship, pos[0], pos[1], pos[2]);
-			LogHelper.info("DEBUG : apply formation move: safe: "+pos[0]+" "+pos[1]+" "+pos[2]);
+			LogHelper.debug("DEBUG: apply formation move: safe: "+pos[0]+" "+pos[1]+" "+pos[2]);
 		}
 		else
 		{
 			//apply moving
 			applyShipGuard(ship, x, y, z);
-			LogHelper.info("DEBUG : apply formation move: not safe: "+x+" "+y+" "+z);
+			LogHelper.debug("DEBUG: apply formation move: not safe: "+x+" "+y+" "+z);
 		}
 	}
 	

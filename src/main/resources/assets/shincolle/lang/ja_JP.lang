@@ -1,9 +1,5 @@
 // 翻訳 HawkEye1015,上海ガニ
 // ※ わざとひらがなを使わずカタカナにし、カタカナが続く場合は スペースを空けるようにしてあります。
-# Keys
-keys.shincolle.category=Shin Colle
-keys.shincolle.repair=修復
-
 # Creative Tab
 itemGroup.shincolle=ShinColle
 

@@ -111,7 +111,7 @@ public class CapaShipSavedValues
 		
 		nbt.setTag(SHIP_EXTPROP_NAME, nbtExt);
 		
-		LogHelper.info("DEBUG : save entity ExtNBT data on id: " + ship.getEntityId());
+		LogHelper.debug("DEBUG: save entity ExtNBT data on id: " + ship.getEntityId());
 		return nbt;
 	}
 
@@ -213,7 +213,7 @@ public class CapaShipSavedValues
 		ship.setExpNext();	//for gui display
 		ship.calcEquipAndUpdateState();	//re-calc attributes and send sync packet
 		
-		LogHelper.info("DEBUG : load entity ExtNBT data on id: " + ship.getEntityId());
+		LogHelper.debug("DEBUG : load entity ExtNBT data on id: " + ship.getEntityId());
 	}
 	
 	

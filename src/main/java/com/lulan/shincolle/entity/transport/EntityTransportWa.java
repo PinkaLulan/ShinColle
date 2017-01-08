@@ -6,6 +6,7 @@ import com.lulan.shincolle.ai.EntityAIShipPickItem;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.handler.EventHandler;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
@@ -266,13 +267,27 @@ public class EntityTransportWa extends BasicEntityShipSmall
   	@Override
 	public double getMountedYOffset()
   	{
-  		if (this.isSitting())
+  		if (getStateEmotion(ID.S.State) > ID.State.EQUIP00)
   		{
-  			return (double)this.height * 0.37F;
+  			if (this.isSitting())
+  	  		{
+  				return this.height * 0.5F;
+  	  		}
+  	  		else
+  	  		{
+  	  			return this.height * 0.64F;
+  	  		}
   		}
   		else
   		{
-  			return (double)this.height * 0.5F;
+  			if (this.isSitting())
+  	  		{
+  	  			return 0F;
+  	  		}
+  	  		else
+  	  		{
+  	  			return this.height * 0.64F;
+  	  		}
   		}
 	}
 

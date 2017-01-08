@@ -103,12 +103,12 @@ public class GuiHandler implements IGuiHandler
 				//sync tile when gui opened
 				((TileEntityDesk) tile).sendSyncPacket();
 				
-				return new ContainerDesk(player.inventory, (TileEntityDesk) tile, 0);
+				return new ContainerDesk(player, (TileEntityDesk) tile, 0);
 			}
 			//open GUI with item
 			else
 			{
-				return new ContainerDesk(player.inventory, null, x);
+				return new ContainerDesk(player, null, x);
 			}
 		case ID.Gui.FORMATION:  		//GUI formation
 			//send sync packet
@@ -182,12 +182,12 @@ public class GuiHandler implements IGuiHandler
 			//open GUI with TileEntity
 			if (tile instanceof TileEntityDesk)
 			{
-				return new GuiDesk(player.inventory, (TileEntityDesk) tile, 0);
+				return new GuiDesk(player, (TileEntityDesk) tile, 0);
 			}
 			//open GUI with item
 			else
 			{
-				return new GuiDesk(player.inventory, null, x);
+				return new GuiDesk(player, null, x);
 			}
 		case ID.Gui.FORMATION:	//GUI formation
 			return new GuiFormation(player);

@@ -6,6 +6,7 @@ import com.lulan.shincolle.entity.BasicEntityShipCV;
 import com.lulan.shincolle.entity.other.EntityAirplaneT;
 import com.lulan.shincolle.entity.other.EntityAirplaneZero;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.handler.EventHandler;
 import com.lulan.shincolle.reference.ID;
 
 import net.minecraft.entity.Entity;
@@ -96,16 +97,16 @@ public class EntityCarrierAkagi extends BasicEntityShipCV
 		{
 			if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 			{
-				return (double)this.height * 0.16F;
+				return (double)this.height * 0.35F;
   			}
   			else
   			{
-  				return (double)this.height * 0.25F;
+  				return (double)this.height * 0.45F;
   			}
   		}
   		else
   		{
-  			return (double)this.height * 0.56F;
+  			return (double)this.height * 0.72F;
   		}
 	}
 

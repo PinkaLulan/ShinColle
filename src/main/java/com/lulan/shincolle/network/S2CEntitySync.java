@@ -146,7 +146,14 @@ public class S2CEntitySync implements IMessage
 		break;
 		case PID.SyncShip_Riders: //player mount sync
 			this.valueInt = buf.readInt();
-			if (this.valueInt > 0) this.valueInt1 = PacketHelper.readIntArray(buf, this.valueInt + 1);
+			if (this.valueInt > 0) 
+			{
+				this.valueInt1 = PacketHelper.readIntArray(buf, this.valueInt + 2);
+			}
+			else
+			{
+				this.valueInt1 = PacketHelper.readIntArray(buf, 2);
+			}
 		break;
 		case PID.SyncProjectile:	//missile type sync
 			this.valueInt = buf.readInt();
@@ -418,10 +425,10 @@ public class S2CEntitySync implements IMessage
 			List<Entity> list = this.entity.getPassengers();
 			int length = list.size();
 			
-			//send list length
+			//send rider list length
 			buf.writeInt(length);
 			
-			//send list
+			//send rider list
 			if (length > 0)
 			{
 				for (Entity ent : list)
@@ -438,6 +445,16 @@ public class S2CEntitySync implements IMessage
 			else
 			{
 				//send list length
+				buf.writeInt(0);
+			}
+			
+			//send mounts id
+			if (this.entity.getRidingEntity() != null)
+			{
+				buf.writeInt(this.entity.getRidingEntity().getEntityId());
+			}
+			else
+			{
 				buf.writeInt(0);
 			}
 		}
@@ -813,18 +830,18 @@ public class S2CEntitySync implements IMessage
 				//get rider to sync
 				if (msg.valueInt > 0)
 				{
-					//set mounts' riders
+					//set entity's riders
 					for (int i = 0; i < msg.valueInt; i++)
 					{
 						Entity ent = EntityHelper.getEntityByID(msg.valueInt1[i], 0, true);
 						if (ent != null) ent.startRiding(entity, true);
 					}
 					
-					//if mounts is BasicEntityMount, set host and pose
+					//if entity is BasicEntityMount, set host and pose
 					if (entity instanceof BasicEntityMount)
 					{
 						//set mounts' host entity
-						if (msg.valueInt1[msg.valueInt] > 0)
+						if (msg.valueInt1[msg.valueInt + 0] > 0)
 						{
 							Entity ent = EntityHelper.getEntityByID(msg.valueInt1[msg.valueInt], 0, true);
 						
@@ -840,6 +857,17 @@ public class S2CEntitySync implements IMessage
 							((BasicEntityMount) entity).setStateEmotion(ID.S.Emotion, 1, false);
 						}
 					}
+				}//end set entity's riders
+				
+				//set entity's mounts
+				if (msg.valueInt1[msg.valueInt + 1] > 0)
+				{
+					Entity ent = EntityHelper.getEntityByID(msg.valueInt1[msg.valueInt + 1], 0, true);
+					if (ent != null) entity.startRiding(ent ,true);
+				}
+				else
+				{
+					entity.dismountRidingEntity();
 				}
 			}
 			break;
@@ -914,7 +942,7 @@ public class S2CEntitySync implements IMessage
 		}//end can sync
 		else
 		{
-			LogHelper.info("DEBUG : packet handler: S2CEntitySync: entity is null, type: "+
+			LogHelper.debug("DEBUG: packet handler: S2CEntitySync: entity is null, type: "+
 							msg.packetType+" eid: "+msg.entityID);
 		}
 	}

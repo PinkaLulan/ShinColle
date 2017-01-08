@@ -4,6 +4,7 @@ import com.lulan.shincolle.ai.EntityAIShipPickItem;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.handler.EventHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
 
@@ -89,11 +90,11 @@ public class EntityDestroyerI extends BasicEntityShipSmall
   	{
   		if (this.isSitting())
   		{
-  			return (double)this.height * 0.5F;
+  			return (double)this.height * 0.51F;
   		}
   		else
   		{
-  			return (double)this.height * 0.7F;
+  			return (double)this.height * 0.6F;
   		}
 	}
 

@@ -2,10 +2,8 @@ package com.lulan.shincolle.client.gui.inventory;
 
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.tileentity.TileEntityDesk;
-import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IContainerListener;
 import net.minecraft.item.ItemStack;
@@ -19,8 +17,6 @@ public class ContainerDesk extends Container
 {
 	
 	private TileEntityDesk tile;
-	private InventoryPlayer playerInv;
-	private EntityPlayer player;
 	private CapaTeitoku capa;
 	private int lenTemp, type, allyCD;
 	private int[] valueTemp;
@@ -32,10 +28,8 @@ public class ContainerDesk extends Container
 	 * 1: open gui with radar item
 	 * 2: open gui with book item
 	 */
-	public ContainerDesk(InventoryPlayer invPlayer, TileEntityDesk te, int type)
+	public ContainerDesk(EntityPlayer player, TileEntityDesk te, int type)
 	{
-		this.playerInv = invPlayer;
-		this.player = invPlayer.player;
 		this.capa = CapaTeitoku.getTeitokuCapability(player);
 		this.type = type;
 		

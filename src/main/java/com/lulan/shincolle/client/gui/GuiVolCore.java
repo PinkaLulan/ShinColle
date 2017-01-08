@@ -32,6 +32,7 @@ public class GuiVolCore extends GuiContainer
 	public GuiVolCore(InventoryPlayer par1, TileEntityVolCore par2)
 	{
 		super(new ContainerVolCore(par1, par2));
+		
 		tile = par2;
 		xSize = 176;
 		ySize = 166;
@@ -40,6 +41,8 @@ public class GuiVolCore extends GuiContainer
 	@Override
 	public void initGui()
 	{
+		super.initGui();
+		
 		//string
 		conName = I18n.format("tile.shincolle:BlockVolCore.name");
 		
@@ -55,7 +58,6 @@ public class GuiVolCore extends GuiContainer
 		
 		xMouse = mouseX;
 		yMouse = mouseY;
-		
 	}
 	
 	//draw tooltip

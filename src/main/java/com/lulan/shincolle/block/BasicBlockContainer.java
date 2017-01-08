@@ -55,7 +55,7 @@ abstract public class BasicBlockContainer extends BasicBlock implements ITileEnt
 	//can send block change when on block break
 	public boolean canAlertBlockChange()
 	{
-		return false;
+		return true;
 	}
 	
 	//打掉方塊後, 掉落其內容物

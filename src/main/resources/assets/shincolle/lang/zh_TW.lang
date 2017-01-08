@@ -1,7 +1,3 @@
-# Keys
-keys.shincolle.category=Shin Colle
-keys.shincolle.repair=修復
-
 # Creative Tab
 itemGroup.shincolle=ShinColle
 
@@ -252,7 +248,7 @@ gui.shincolle:book.chap1.text5d0=<br><br><br><br><br><br><br><br><br>         §
 gui.shincolle:book.chap1.text5d1=這顆戒指象徵著地獄的美麗與擁有者的力量，同時也是你跟§c深海棲艦§0永恆的愛的重要證明。<br><br>§9蹲下+右鍵§0對棲艦使用即可跟棲艦結婚，§9右鍵§0使用戒指則能開啟特殊能力。<br><br>結婚棲艦的數量將會影響戒指能發揮的能力：水中挖掘加速、視野、移動能力。
 gui.shincolle:book.chap1.title6=深海棲艦所有權書
 gui.shincolle:book.chap1.text6d0=<br><br><br><br><br><br><br><br><br>這張§d§n深海棲艦所有權書§r§0詳細記載了所有權轉讓的雙方應履行的內容跟各種事項，只需雙方簽名後即可生效。
-gui.shincolle:book.chap1.text6d1=§9右鍵§0使用可以簽署該契約，交易雙方皆簽署後，棲艦所有權人對其棲艦§9右鍵§0使用即可轉讓該棲艦。
+gui.shincolle:book.chap1.text6d1=§9右鍵§0使用可以簽署該契約，交易雙方皆簽署後，棲艦所有權人對其棲艦§9蹲下+右鍵§0使用即可轉讓該棲艦。
 gui.shincolle:book.chap1.title7=解體槌
 gui.shincolle:book.chap1.text7d0=<br><br><br><br><br><br><br><br><br>§d§n解體槌§r§0可以將§c深海棲艦§0分解並回收一些材料。
 gui.shincolle:book.chap1.text7d1=§9左鍵§0使用可以一擊殺自己擁有的棲艦。<br><br>§9蹲下+右鍵§0使用則能分解該棲艦。<br><br>只有擁有者或是OP權限可以拆解該棲艦。
@@ -288,7 +284,7 @@ gui.shincolle:book.chap1.text17d0=<br><br><br><br><br><br><br><br><br>採用黑�
 gui.shincolle:book.chap1.text17d1=            使用指南<br><br>§9雷達§0：<br>顯示附近所屬船艦位置以及列表，在列表點選船艦後可進行聯繫等動作。<br><br>§9深海日誌§0：<br>各項物品介紹及紀錄已知船艦訊息。<br><br>§9陣營§0：<br>建立或加入艦隊以開啟PVP模式。<br><br>§9攻擊目標列表§0：<br>調整船艦的攻擊目標類型。
 gui.shincolle:book.chap1.title18=目標設定扳手
 gui.shincolle:book.chap1.text18d0=<br><br><br><br><br><br><br><br><br>§9左鍵:§0<br>§c新增/移除§0目標到§d不可攻擊清單§0。§4(僅限OP)§0<br><br>§9蹲下左鍵:§0<br>顯示§d不可攻擊目標清單§0<br><br>§9右鍵:§0<br>設定深海路徑點停留時間。<br><br>§9蹲下右鍵:§0<br>配對箱子跟深海起重機 / 配對深海路徑點。
-gui.shincolle:book.chap1.text18d1=§d不可攻擊目標§0不會被範圍攻擊傷害到，也不會被AI設為目標。你可以把繩子的頭、物品框、木船、飛機跟棲艦的坐騎設為不可攻擊目標。<br><br>野生的艦娘攻擊時也會檢查此清單，不過你不能把棲艦跟艦娘設為不可攻擊目標。
+gui.shincolle:book.chap1.text18d1=§d不可攻擊目標§0不會受到任何船艦造成的傷害。你可以把繩子的頭、物品框、礦車或木船設為不可攻擊目標。<br><br>野生的艦娘攻擊時也會檢查此清單，不過你不能把棲艦、艦娘跟召喚物設為不可攻擊目標。
 gui.shincolle:book.chap1.title19=深海火山方塊
 gui.shincolle:book.chap1.text19d0=<br><br><br><br><br><br><br><br><br>當岩漿被強烈的怨念團塊壓縮後，就會形成高溫高壓的§d§n深海火山方塊§r§0。<br><br>純裝飾用方塊。
 gui.shincolle:book.chap1.text19d1=
@@ -654,11 +650,13 @@ chat.shincolle:settargetclass=設定攻擊目標類型: %s
 chat.shincolle:pointer.changeformation=陣型變換為
 chat.shincolle:wrench.paired=深海起重機配對成功！
 chat.shincolle:wrench.toofar=深海起重機配對失敗，距離超過6格！
-chat.shincolle:wrench.wrongtile=不支援目標方塊。
-chat.shincolle:wrench.setwp=設定深海路徑點成功！
+chat.shincolle:wrench.wrongtile=不合適的方塊類型配對，箱子只能跟起重機配對，路徑點只能跟路徑點或起重機配對。
+chat.shincolle:wrench.setwp=設定深海路徑點成功：
 chat.shincolle:wrench.wptoofar=深海路徑設定失敗，距離超過48格！
 chat.shincolle:wrench.wplast=上一路徑點
 chat.shincolle:wrench.wpnext=下一路徑點
+chat.shincolle:wrench.samepoint=目標為相同路徑點，清空路徑點紀錄。
+chat.shincolle:wrench.unatkshow=不可攻擊的目標列表:
 
 # intermod: Forestry
 item.shincolle:ShinComb.name=深海蜂巢

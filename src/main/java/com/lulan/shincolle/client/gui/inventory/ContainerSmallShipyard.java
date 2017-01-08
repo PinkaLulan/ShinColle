@@ -1,16 +1,16 @@
 package com.lulan.shincolle.client.gui.inventory;
 
+import com.lulan.shincolle.crafting.SmallRecipes;
+import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
+
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IContainerListener;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import com.lulan.shincolle.crafting.SmallRecipes;
-import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 
 /**SLOT POSITION
  * S1:grudge(33,29) S2:abyssium(53,29) S3:ammo(73,29) S4:poly(93,29)
@@ -25,7 +25,7 @@ public class ContainerSmallShipyard extends Container
 	public int guiBuildType, guiConsumedPower, guiRemainedPower, guiGoalPower;
 	
 	
-	public ContainerSmallShipyard(InventoryPlayer player, TileEntitySmallShipyard tile)
+	public ContainerSmallShipyard(IInventory player, TileEntitySmallShipyard tile)
 	{
 		this.tile = tile;
 		

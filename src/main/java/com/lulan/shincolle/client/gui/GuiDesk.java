@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.client.gui.inventory.ContainerDesk;
@@ -43,7 +42,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
@@ -148,11 +146,12 @@ public class GuiDesk extends GuiContainer
 	}
 	
 	
-	public GuiDesk(InventoryPlayer par1, TileEntityDesk par2, int type)
+	public GuiDesk(EntityPlayer player, TileEntityDesk tile, int type)
 	{
-		super(new ContainerDesk(par1, par2, type));
+		super(new ContainerDesk(player, tile, type));
+		
 		this.type = type;
-		this.tile = par2;
+		this.tile = tile;
 		this.GuiScale = 1.25F;
 		this.GuiScaleInv = 1F / this.GuiScale;
 		this.xSize = (int) (256 * this.GuiScale);
@@ -667,7 +666,7 @@ public class GuiDesk extends GuiContainer
 	protected void mouseClicked(int posX, int posY, int mouseKey) throws IOException
 	{
         super.mouseClicked(posX, posY, mouseKey);
-        LogHelper.info("DEBUG : click mouse "+mouseKey);
+        LogHelper.debug("DEBUG: click mouse "+mouseKey);
         
         //set focus for textField, CHECK BEFORE GUI SCALE!!
         this.textField.mouseClicked(posX, posY, mouseKey);
@@ -677,7 +676,7 @@ public class GuiDesk extends GuiContainer
         posY = (int)(posY * this.GuiScaleInv);
         xClick = posX - this.guiLeft;
         yClick = posY - this.guiTop;
-        LogHelper.info("DEBUG : gui desk clicked: X "+posX+" "+guiLeft+" "+xClick+"  Y "+posY+" "+guiTop+" "+yClick);
+        LogHelper.debug("DEBUG: gui desk clicked: X "+posX+" "+guiLeft+" "+xClick+"  Y "+posY+" "+guiTop+" "+yClick);
         
         //match all pages
         if (this.type == 0)
@@ -736,7 +735,7 @@ public class GuiDesk extends GuiContainer
                 	if (this.book_pageNum < 0) this.book_pageNum = 0;
     	  	  		
                 	setShipModel(this.book_chapNum, this.book_pageNum);
-                	LogHelper.info("DEBUG : desk: book page: "+book_pageNum);
+                	LogHelper.debug("DEBUG: desk: book page: "+book_pageNum);
                 break;
                 case 1: //right
                 	if (mouseKey == 0)
@@ -754,7 +753,7 @@ public class GuiDesk extends GuiContainer
                 	}
     	  	  		
                 	setShipModel(this.book_chapNum, this.book_pageNum);
-                	LogHelper.info("DEBUG : desk: book page: "+book_pageNum);
+                	LogHelper.debug("DEBUG: desk: book page: "+book_pageNum);
                 break;
                 case 2: //chap 0
                 case 3: //chap 1
@@ -765,7 +764,7 @@ public class GuiDesk extends GuiContainer
                 case 8: //chap 6
                 	this.book_chapNum = getbtn - 2;
                 	this.book_pageNum = 0;
-                	LogHelper.info("DEBUG : desk: book chap: "+book_chapNum);
+                	LogHelper.debug("DEBUG: desk: book chap: "+book_chapNum);
                 break;
                 }
         	}
@@ -929,7 +928,7 @@ public class GuiDesk extends GuiContainer
             	if (clicked >= 0 && clicked < this.tarList.size())
             	{
             		String tarstr = this.tarList.get(clicked);
-                	LogHelper.info("DEBUG : desk: remove target class: "+tarstr);
+                	LogHelper.debug("DEBUG: desk: remove target class: "+tarstr);
                 	//remove clicked target
     				CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetTarClass, tarstr));
             	}
@@ -1007,7 +1006,7 @@ public class GuiDesk extends GuiContainer
 			if(this.guiFunc != button+1)
 			{
 	    		this.guiFunc = button+1;
-	    		LogHelper.info("DEBUG : GUI click: desk: click function button");
+	    		LogHelper.debug("DEBUG: GUI click: desk: click function button");
 	    	}
 	    	else
 	    	{
@@ -1893,7 +1892,7 @@ public class GuiDesk extends GuiContainer
 				
 				if (str != null && str.length() > 1)
 				{
-					LogHelper.info("DEBUG : desk: create team: "+str);
+					LogHelper.debug("DEBUG: desk: create team: "+str);
 					//change team id
 					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.Desk_Create, str));
 					//return to main state
@@ -1920,7 +1919,7 @@ public class GuiDesk extends GuiContainer
 				
 				if (str != null && str.length() > 1)
 				{
-					LogHelper.info("DEBUG : desk: rename team: "+str);
+					LogHelper.debug("DEBUG: desk: rename team: "+str);
 					//change team name
 					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.Desk_Rename, str));
 					//return to main state

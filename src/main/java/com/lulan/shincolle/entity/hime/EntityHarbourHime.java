@@ -252,18 +252,18 @@ public class EntityHarbourHime extends BasicEntityShipCV
   	{
   		if (this.isSitting())
   		{
-			if  (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
+			if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 			{
-				return (double)this.height * 0.0F;
+				return this.height * 0.2F;
   			}
   			else
   			{
-  				return (double)this.height * 0.5F;
+  				return this.height * 0.52F;
   			}
   		}
   		else
   		{
-  			return (double)this.height * 0.85F;
+  			return this.height * 0.76F;
   		}
 	}
 

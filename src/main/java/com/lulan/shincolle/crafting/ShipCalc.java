@@ -79,7 +79,7 @@ public class ShipCalc
 			matAmount[3] = itemstack.getTagCompound().getInteger("Polymetal");
 		}
 	
-		LogHelper.info("DEBUG : shipcalc get matAmount : "+matAmount[0]+" "+matAmount[1]+" "+matAmount[2]+" "+matAmount[3]);
+		LogHelper.debug("DEBUG: shipcalc get matAmount : "+matAmount[0]+" "+matAmount[1]+" "+matAmount[2]+" "+matAmount[3]);
 		return matAmount;
 	}
 
@@ -158,7 +158,7 @@ public class ShipCalc
 			prob = CalcHelper.getNormDist(meanDist);
 			//add to map
 			probList.put(i[0], prob);
-			LogHelper.info("DEBUG: roll ship type: prob list: ID "+i[0]+" MEAN(ORG) "+i[1]+" MEAN(NEW) "+meanNew+" MEAN(P) "+(meanNew/te)+" MD "+meanDist+" PR "+prob);
+			LogHelper.debug("DEBUG: roll ship type: prob list: ID "+i[0]+" MEAN(ORG) "+i[1]+" MEAN(NEW) "+meanNew+" MEAN(P) "+(meanNew/te)+" MD "+meanDist+" PR "+prob);
 		}
 		
 		float random = rand.nextFloat();
@@ -183,12 +183,12 @@ public class ShipCalc
 		{
 			Map.Entry entry = (Map.Entry)iter.next();
 			sumProb += (Float) entry.getValue();
-			LogHelper.info("DEBUG: roll ship type: random: "+random+" sum.pr "+sumProb+" total.pr "+totalProb);
+			LogHelper.debug("DEBUG: roll ship type: random: "+random+" sum.pr "+sumProb+" total.pr "+totalProb);
 			
 			if (sumProb > random)
 			{	//get item
 				rollresult = (Integer) entry.getKey();
-				LogHelper.info("DEBUG: roll ship type: get ship:"+rollresult);
+				LogHelper.debug("DEBUG: roll ship type: get ship:"+rollresult);
 				break;
 			}
 		}

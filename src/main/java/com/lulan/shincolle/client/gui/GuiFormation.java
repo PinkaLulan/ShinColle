@@ -67,6 +67,8 @@ public class GuiFormation extends GuiContainer
 	@Override
 	public void initGui()
 	{
+		super.initGui();
+		
 		this.tickGUI = 0;				//ticks in gui (not game tick)
 		this.tickTooltip = 0;			//tooltip display time
 		this.tickWaitSync = 0;			//wait time for sync packet
@@ -943,7 +945,7 @@ public class GuiFormation extends GuiContainer
 		}
 		catch (Exception e)
 		{
-			LogHelper.info("EXCEPTION : formation GUI get ship fail: "+e);
+			LogHelper.info("EXCEPTION: formation GUI get ship fail: "+e);
 			e.printStackTrace();
 		}
 	}

@@ -180,13 +180,13 @@ public class EntityHeavyCruiserNe extends BasicEntityShipSmall
     @Override
 	public double getMountedYOffset()
     {
-    	if (this.isSitting())
-    	{
-  			return (double)this.height * -0.15F;
+  		if (this.isSitting())
+  		{
+			return 0F;
   		}
   		else
   		{
-  			return (double)this.height * 0.15F;
+  			return this.height * 0.24F;
   		}
 	}
     

@@ -244,13 +244,20 @@ public class EntityBattleshipRe extends BasicEntityShipCV
 	@Override
 	public double getMountedYOffset()
 	{
-		if (this.isSitting())
-		{
-  			return (double)this.height * 0.0F;
+  		if (this.isSitting())
+  		{
+			if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
+			{
+				return this.height * 0.35F;
+  			}
+  			else
+  			{
+  				return 0F;
+  			}
   		}
   		else
   		{
-  			return (double)this.height * 0.4F;
+  			return this.height * 0.55F;
   		}
 	}
 	

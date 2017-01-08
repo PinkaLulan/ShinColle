@@ -194,12 +194,20 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall implements ISh
   	@Override
 	public double getMountedYOffset()
   	{
-  		if (this.isSitting())
-  		{
-  			return this.height * 0.15F;
+		if (this.isSitting())
+		{
+			if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
+			{
+				return this.height * 0.23F;
+  			}
+  			else
+  			{
+  				return this.height * 0.23F;
+  			}
   		}
-  		else {
-  			return this.height * 0.47F;
+  		else
+  		{
+  			return this.height * 0.64F;
   		}
 	}
 
@@ -294,13 +302,13 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall implements ISh
   	}
 	
   	/**
-  	 * state: 0:無騎乘, 1:六驅合體 or 雷電合體
+  	 * state: 0:無騎乘, 2:六驅合體 or 雷電合體
   	 */
   	public void checkRidingState()
   	{
   		if (this.riderType == 7 || this.isRaiden)
   		{
-  			this.ridingState = 1;
+  			this.ridingState = 2;
   		}
   		else
   		{

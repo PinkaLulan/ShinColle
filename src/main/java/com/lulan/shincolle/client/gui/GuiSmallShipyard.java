@@ -4,12 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.util.ResourceLocation;
-
 import com.lulan.shincolle.client.gui.inventory.ContainerSmallShipyard;
 import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -18,6 +12,12 @@ import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.utility.GuiHelper;
 import com.lulan.shincolle.utility.LogHelper;
+
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.util.ResourceLocation;
 
 public class GuiSmallShipyard extends GuiContainer
 {
@@ -32,6 +32,7 @@ public class GuiSmallShipyard extends GuiContainer
 	public GuiSmallShipyard(InventoryPlayer par1, TileEntitySmallShipyard par2)
 	{
 		super(new ContainerSmallShipyard(par1, par2));
+		
 		this.tile = par2;
 		this.xSize = 176;
 		this.ySize = 164;
@@ -40,6 +41,8 @@ public class GuiSmallShipyard extends GuiContainer
 	@Override
 	public void initGui()
 	{
+		super.initGui();
+		
 		this.tickGUI = 0F;
 		
 		//string
@@ -53,10 +56,10 @@ public class GuiSmallShipyard extends GuiContainer
 	public void drawScreen(int mouseX, int mouseY, float f)
 	{
 		super.drawScreen(mouseX, mouseY, f);
+		
 		xMouse = mouseX;
 		yMouse = mouseY;
 		tickGUI += 0.125F;
-		
 	}
 	
 	//draw tooltip
@@ -212,7 +215,7 @@ public class GuiSmallShipyard extends GuiContainer
         	}
         	
         	//send packet
-        	LogHelper.info("DEBUG : GUI click: build small ship: ship "+buttonValue);
+        	LogHelper.debug("DEBUG: GUI click: build small ship: ship "+buttonValue);
         	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, C2SGUIPackets.PID.TileBtn, ID.B.Shipyard_Type, buttonValue, 0));
         	break;
         case 1:
@@ -232,7 +235,7 @@ public class GuiSmallShipyard extends GuiContainer
         	}
         	
         	//send packet
-        	LogHelper.info("DEBUG : GUI click: build small ship: equip "+buttonValue);
+        	LogHelper.debug("DEBUG: GUI click: build small ship: equip "+buttonValue);
         	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, C2SGUIPackets.PID.TileBtn, ID.B.Shipyard_Type, buttonValue, 0));
         	break;
         }

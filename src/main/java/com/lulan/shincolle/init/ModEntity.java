@@ -187,7 +187,7 @@ public class ModEntity
 	//參數: 該生物class, 生物名稱, 生物id
 	public static void createEntity(Class entityClass, String entityName, int entityId)
 	{
-		LogHelper.info("DEBUG : register entity: "+entityId+" "+entityClass+" "+entityName);
+		LogHelper.debug("DEBUG: register entity: "+entityId+" "+entityClass+" "+entityName);
 		//登錄參數: 生物class, 生物名稱, 生物id, mod副本, 追蹤更新距離, 更新時間間隔, 是否發送同步封包(高速entity必須true才會顯示平順)
 		EntityRegistry.registerModEntity(entityClass, entityName, entityId, ShinColle.instance, 64, 1, true);
 	}

@@ -15,6 +15,7 @@ import com.lulan.shincolle.client.particle.ParticleSpray;
 import com.lulan.shincolle.client.particle.ParticleStickyLightning;
 import com.lulan.shincolle.client.particle.ParticleTeam;
 import com.lulan.shincolle.client.particle.ParticleTexts;
+import com.lulan.shincolle.client.particle.ParticleTextsCustom;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.reference.Values;
@@ -649,7 +650,7 @@ public class ParticleHelper
 			
 			ParticleLaserNoTexture laser2 = new ParticleLaserNoTexture(world, host2, target, -0.9F, par1, 0F, 0.05F, 0);
 			Minecraft.getMinecraft().effectRenderer.addEffect(laser2);
-			break;
+		break;
 		case 1:		//yamato cannon beam
 			//host check
 			if (host instanceof EntityLivingBase)
@@ -668,7 +669,7 @@ public class ParticleHelper
         	//beam body
 			ParticleLaserNoTexture laser3 = new ParticleLaserNoTexture(world, host2, target, par1, par2, par3, 2F, 1);
 			Minecraft.getMinecraft().effectRenderer.addEffect(laser3);
-			break;
+		break;
 		case 2:		//yamato cannon beam for boss
 			//host check
 			if (host instanceof EntityLivingBase)
@@ -687,7 +688,7 @@ public class ParticleHelper
         	//beam body
 			ParticleLaserNoTexture laser4 = new ParticleLaserNoTexture(world, host2, target, par1, par2, par3, 4F, 1);
 			Minecraft.getMinecraft().effectRenderer.addEffect(laser4);
-			break;
+		break;
 		case 3:		//守衛標示線: entity類
 			//host check
 			if (host instanceof EntityLivingBase)
@@ -701,7 +702,7 @@ public class ParticleHelper
 			
 			ParticleLaserNoTexture laser5 = new ParticleLaserNoTexture(world, host2, target, 0D, 0D, 0D, 0.1F, 2);
 			Minecraft.getMinecraft().effectRenderer.addEffect(laser5);
-			break;
+		break;
 		case 4:		//補給標示線
 			//host check
 			if (host instanceof EntityLivingBase)
@@ -715,9 +716,27 @@ public class ParticleHelper
 			
 			ParticleLaserNoTexture laser6 = new ParticleLaserNoTexture(world, host2, target, 0D, 0D, 0D, 0.1F, 4);
 			Minecraft.getMinecraft().effectRenderer.addEffect(laser6);
-			break;
+		break;
 		default:
-			break;
+		break;
+		}
+	}
+	
+	/** render text */
+	@SideOnly(Side.CLIENT)
+	public static void spawnAttackParticleAt(String text, double posX, double posY, double posZ, byte type, int...parms)
+	{
+		World w = ClientProxy.getClientWorld();
+		
+		//spawn particle
+		switch (type)
+		{
+		case 0:
+		{
+			ParticleTextsCustom p0 = new ParticleTextsCustom(w, posX, posY, posZ, 1F, 0, text, parms);
+			Minecraft.getMinecraft().effectRenderer.addEffect(p0);
+		}
+		break;
 		}
 	}
 

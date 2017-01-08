@@ -3,9 +3,9 @@ package com.lulan.shincolle.client.gui.inventory;
 import com.lulan.shincolle.tileentity.TileEntityVolCore;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IContainerListener;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
@@ -25,7 +25,7 @@ public class ContainerVolCore extends Container
 	public int guiRemainedPower;
 	
 	
-	public ContainerVolCore(InventoryPlayer invPlayer, TileEntityVolCore tile)
+	public ContainerVolCore(IInventory invPlayer, TileEntityVolCore tile)
 	{
 		this.tile = tile;
 

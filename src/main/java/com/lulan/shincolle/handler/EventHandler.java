@@ -1041,7 +1041,7 @@ public class EventHandler
 				ctrl = 0.1F;
 			}
 			
-			if (Keyboard.isKeyDown(Keyboard.KEY_DOWN))
+			if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD2))
 			{
 				this.field1 += 0.01F + ctrl;
 				this.debugCooldown = 2;
@@ -1051,7 +1051,7 @@ public class EventHandler
 				));
 			}
 			
-			if (Keyboard.isKeyDown(Keyboard.KEY_UP))
+			if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD8))
 			{
 				this.field1 -= 0.01F + ctrl;
 				this.debugCooldown = 2;
@@ -1061,7 +1061,7 @@ public class EventHandler
 				));
 			}
 			
-			if (Keyboard.isKeyDown(Keyboard.KEY_LEFT))
+			if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD4))
 			{
 				this.field2 -= 0.01F + ctrl;
 				this.debugCooldown = 2;
@@ -1071,7 +1071,7 @@ public class EventHandler
 				));
 			}
 			
-			if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT))
+			if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD6))
 			{
 				this.field2 += 0.01F + ctrl;
 				this.debugCooldown = 2;

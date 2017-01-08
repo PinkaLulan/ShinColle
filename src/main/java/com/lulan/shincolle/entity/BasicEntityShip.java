@@ -625,6 +625,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	}
         }
         
+        //is riding player, dismount while saving/loading
+        if (this.getRidingEntity() instanceof EntityPlayer)
+        {
+        	this.dismountRidingEntity();
+        	this.sendSyncPacketRiders();
+        }
+        
         return super.writeToNBTOptional(nbt);
     }
 	
@@ -1294,7 +1301,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		//update attributes
 		if (update)
 		{
-			LogHelper.info("DEBUG : set ship level with update");
+			LogHelper.debug("DEBUG: set ship level with update");
 			calcEquipAndUpdateState();
 			this.setHealth(this.getMaxHealth());
 		}
@@ -1767,7 +1774,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 					if (interactBucket(player, stack)) return EnumActionResult.SUCCESS;
 				}
 				//use owner paper, owner only
-				else if (stack.getItem() == ModItems.OwnerPaper && TeamHelper.checkSameOwner(this, player))
+				else if (stack.getItem() == ModItems.OwnerPaper && TeamHelper.checkSameOwner(this, player) && player.isSneaking())
 				{
 					if (interactOwnerPaper(player, stack)) return EnumActionResult.SUCCESS;
 				}
@@ -2119,8 +2126,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 					//5. change ship's owner UUID
 					this.setOwnerId(target.getUniqueID());
 					
-					LogHelper.info("DEBUG : change owner: from: pid "+this.getPlayerUID()+" uuid "+this.getOwner().getUniqueID());
-					LogHelper.info("DEBUG : change owner: to: pid "+idtarget+" uuid "+target.getUniqueID().toString());
+					//6. change ship's owner name
+					this.ownerName = target.getName();
+					
+					LogHelper.debug("DEBUG: change owner: from: pid "+this.getPlayerUID()+" uuid "+this.getOwner().getUniqueID());
+					LogHelper.debug("DEBUG: change owner: to: pid "+idtarget+" uuid "+target.getUniqueID().toString());
 					changeOwner = true;
 					
 					//send sync packet
@@ -2565,7 +2575,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         		//check every 16 ticks
             	if (ticksExisted % 16 == 0)
             	{
-            		//waypoint move TODO review updateWaypointMove
+            		//waypoint move
             		if (!(this.getRidingEntity() instanceof BasicEntityMount))
             		{
             			if (EntityHelper.updateWaypointMove(this))
@@ -3638,7 +3648,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		//register or update ship id and owner id
 		if (!this.isUpdated && ticksExisted % updateTime == 0 || forceUpdate)
 		{
-			LogHelper.info("DEBUG : update ship: initial SID, PID  cd: "+updateTime+" force: "+forceUpdate);
+			LogHelper.debug("DEBUG: update ship: initial SID, PID  cd: "+updateTime+" force: "+forceUpdate);
 			
 			//update owner uid
 			if (this.getPlayerUID() <= 0)
@@ -4485,7 +4495,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		int m = getStateMinor(ID.M.Morale);
   		int body = getHitBodyID();
   		int baseMorale = (int) ((float)ConfigHandler.baseCaressMorale * 2.5F);
-  		LogHelper.info("DEBUG : hit ship: Morale: "+m+" BodyID: "+body+" sensitiveBodyID: "+this.getSensitiveBody()); 		
+  		LogHelper.debug("DEBUG: hit ship: Morale: "+m+" BodyID: "+body+" sensitiveBodyID: "+this.getSensitiveBody()); 		
   		
   		//change emotion3 to caressed
   		isCaressed();
@@ -4833,7 +4843,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	protected void reactionStranger()
   	{
   		int body = getHitBodyID();
-  		LogHelper.info("DEBUG : hit ship: BodyID: "+body+" sensitiveBodyID: "+this.getSensitiveBody()); 		
+  		LogHelper.debug("DEBUG: hit ship: BodyID: "+body+" sensitiveBodyID: "+this.getSensitiveBody()); 		
 
 		//check sensitive body
   		if (body == getSensitiveBody())
@@ -5637,7 +5647,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			  		}
 			  		else
 			  		{
-			  			LogHelper.info("INFO : Ship get chunk loader ticket fail.");
+			  			LogHelper.debug("DEBUG: Ship get chunk loader ticket fail.");
 			  			clearChunkLoader();
 			  		}
   				}

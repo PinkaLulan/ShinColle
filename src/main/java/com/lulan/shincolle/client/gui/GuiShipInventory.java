@@ -8,6 +8,8 @@ import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipCV;
 import com.lulan.shincolle.entity.IShipInvisible;
+import com.lulan.shincolle.entity.destroyer.EntityDestroyerIkazuchi;
+import com.lulan.shincolle.entity.destroyer.EntityDestroyerInazuma;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -70,6 +72,7 @@ public class GuiShipInventory extends GuiContainer
 	public GuiShipInventory(InventoryPlayer invPlayer, BasicEntityShip entity)
 	{
 		super(new ContainerShipInventory(invPlayer, entity));
+		
 		this.entity = entity;
 		this.player = invPlayer;
 		this.xSize = 256;
@@ -98,26 +101,30 @@ public class GuiShipInventory extends GuiContainer
 			this.shipClass = this.entity.getShipClass();
 			this.shipRiding[0] = this.entity;
 			
-//			//special name icon TODO special icon for 6D
-//			if (this.entity.ridingEntity instanceof EntityDestroyerInazuma ||
-//				this.entity.riddenByEntity instanceof EntityDestroyerIkazuchi)
-//			{
-//				this.shipType = ID.ShipType.HEAVY_CRUISER;
-//				this.shipClass = ID.Ship.Raiden;
-//			}
-//			
-//			//get rider or mount
-//			if (entity.getRidingEntity() instanceof EntityDestroyerInazuma)
-//			{
-//				this.shipRiding[2] = (BasicEntityShip) entity.getRidingEntity();
-//			}
-//			else if (!entity.getPassengers().isEmpty())
-//			{
-//				if (entity.getPassengers().get(0) instanceof EntityDestroyerIkazuchi)
-//				{
-//					this.shipRiding[1] = (BasicEntityShip) entity.getPassengers().get(0);
-//				}
-//			}
+			/** special name icon */
+			//raiden gattai
+			if (this.entity instanceof EntityDestroyerInazuma ||
+				this.entity instanceof EntityDestroyerIkazuchi)
+			{
+				if (this.entity.getRidingState() > 1)
+				{
+					this.shipType = ID.ShipType.HEAVY_CRUISER;
+					this.shipClass = ID.Ship.Raiden;
+					
+					//get rider or mount
+					if (this.entity.getRidingEntity() instanceof EntityDestroyerInazuma)
+					{
+						this.shipRiding[2] = (BasicEntityShip) this.entity.getRidingEntity();
+					}
+					else if (!this.entity.getPassengers().isEmpty())
+					{
+						if (this.entity.getPassengers().get(0) instanceof EntityDestroyerIkazuchi)
+						{
+							this.shipRiding[1] = (BasicEntityShip) this.entity.getPassengers().get(0);
+						}
+					}
+				}
+			}
 			
 			this.iconXY = new int[2][3];
 			this.iconXY[0] = Values.ShipTypeIconMap.get((byte)this.shipType);
@@ -530,7 +537,6 @@ public class GuiShipInventory extends GuiContainer
         
         //draw entity model                                            guiLeft + 200 - xMouse  guiTop + 50 - yMouse
         drawEntityModel(guiLeft+218, guiTop+100, entity.getModelPos(), guiLeft+215-xMouse, guiTop+60-yMouse, this.shipRiding);
-        
 	}
 	
 	//draw ship morale
@@ -1065,7 +1071,7 @@ public class GuiShipInventory extends GuiContainer
 			//draw string
 			this.fontRendererObj.drawString(strWpStay, 174, 134, 0);
 			
-			//draw value TODO id to time string
+			//draw value
 			strWpStayValue = CalcHelper.tick2SecOrMin(entity.wpStayTime2Ticks(entity.getStateMinor(ID.M.WpStay)));
 			
 			if (this.mousePressBar == 3)

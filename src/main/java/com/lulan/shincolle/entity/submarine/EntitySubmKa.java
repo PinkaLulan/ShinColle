@@ -5,6 +5,7 @@ import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.entity.IShipInvisible;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.handler.EventHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
 
@@ -104,7 +105,7 @@ public class EntitySubmKa extends BasicEntityShipSmall implements IShipInvisible
   		{
 			if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 			{
-				return 0.65F;
+				return this.height * 0.25F;
   			}
   			else
   			{
@@ -113,7 +114,7 @@ public class EntitySubmKa extends BasicEntityShipSmall implements IShipInvisible
   		}
   		else
   		{
-  			return (double)this.height * 0.5F;
+  			return this.height * 0.69F;
   		}
 	}
 

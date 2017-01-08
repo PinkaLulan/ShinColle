@@ -4,9 +4,9 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.item.BasicEquip;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IContainerListener;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
@@ -28,7 +28,7 @@ public class ContainerShipInventory extends Container
 	private int[] valueTemp;
 	
 	
-	public ContainerShipInventory(InventoryPlayer invPlayer, BasicEntityShip entity)
+	public ContainerShipInventory(IInventory invPlayer, BasicEntityShip entity)
 	{
 		int i, j;
 		this.entity = entity;

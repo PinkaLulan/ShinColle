@@ -197,23 +197,23 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall
 		{
 			if (getStateEmotion(ID.S.State) > ID.State.NORMAL)
 			{
-				return (double)this.height * 0.4F;
+				return this.height * 0.5F;
 			}
 			else
 			{
 				if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 				{
-					return (double)this.height * -0.1F;
+					return this.height * 0.1F;
 	  			}
 	  			else
 	  			{
-	  				return (double)this.height * 0.3F;
+	  				return this.height * 0.4F;
 	  			}
 			}
   		}
   		else
   		{
-  			return (double)this.height * 0.8F;
+  			return this.height * 0.75F;
   		}
 	}
 

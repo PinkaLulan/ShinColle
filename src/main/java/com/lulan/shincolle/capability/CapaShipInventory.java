@@ -451,7 +451,7 @@ public class CapaShipInventory extends CapaInventory<BasicEntityShip> implements
                     return stack.stackSize < i;
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
             	LogHelper.info("EXCEPTION : add item to ship's inventory fail: "+e+" "+stack);
             	return false;

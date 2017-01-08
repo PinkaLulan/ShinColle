@@ -113,7 +113,7 @@ public abstract class BasicShipConfig
                 }//end read line
                 
                 //parse lines
-                LogHelper.info("INFO: load custom config lines: "+this.file+" "+tempList.size());
+                LogHelper.debug("DEBUG: load custom config lines: "+this.file+" "+tempList.size());
                 parse(tempList);
                 
             }//end can read

@@ -305,23 +305,23 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
 		{
 			if (getStateEmotion(ID.S.State) > ID.State.NORMAL)
 			{
-				return (double)this.height * 0.4F;
+				return this.height * 0.42F;
 			}
 			else
 			{
 				if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 				{
-					return (double)this.height * -0.1F;
+					return 0F;
 	  			}
 	  			else
 	  			{
-	  				return (double)this.height * 0.3F;
+	  				return this.height * 0.35F;
 	  			}
 			}
   		}
   		else
   		{
-  			return (double)this.height * 0.8F;
+  			return this.height * 0.75F;
   		}
 	}
 

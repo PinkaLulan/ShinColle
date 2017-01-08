@@ -199,18 +199,18 @@ public class EntityBattleshipHime extends BasicEntityShipSmall
   	{
   		if (this.isSitting())
   		{
-  			if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
-  			{
-  				return (double)this.height * 0.0F;
+			if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
+			{
+				return 0F;
   			}
   			else
   			{
-  				return (double)this.height * 0.28F;
+  				return this.height * 0.62F;
   			}
   		}
   		else
   		{
-  			return (double)this.height * 0.55F;
+  			return this.height * 0.76F;
   		}
 	}
 

@@ -195,7 +195,8 @@ public class ShipCmdUpdateOwnerUID extends CommandBase
 			}
 			catch (Exception e)
 			{
-				LogHelper.info("DEBUG : Command: ShipUpdateOwnerUID: change ship's owner fail: "+e);
+				LogHelper.info("EXCEPTION: Command: ShipUpdateOwnerUID: change ship's owner fail: "+e);
+				e.printStackTrace();
 			}
 		}
 	}

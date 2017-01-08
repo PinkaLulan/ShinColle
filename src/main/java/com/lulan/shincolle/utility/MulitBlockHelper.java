@@ -3,14 +3,14 @@ package com.lulan.shincolle.utility;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.lulan.shincolle.init.ModBlocks;
+import com.lulan.shincolle.tileentity.BasicTileMulti;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
-import com.lulan.shincolle.init.ModBlocks;
-import com.lulan.shincolle.tileentity.BasicTileMulti;
 
 public class MulitBlockHelper
 {
@@ -50,17 +50,17 @@ public class MulitBlockHelper
 	
 	public static void printPattern()
 	{
-		LogHelper.info("INFO : PATTERN len "+PATTERN.length+" "+PATTERN[0].length+" "+PATTERN[0][0].length+" "+PATTERN[0][0][0].length);
+		LogHelper.info("INFO: PATTERN len "+PATTERN.length+" "+PATTERN[0].length+" "+PATTERN[0][0].length+" "+PATTERN[0][0][0].length);
 		
 		for (int i = 0; i < PATTERN.length; i++)
 		{
-			LogHelper.info("INFO : PATTERN TYPE "+i);
+			LogHelper.info("INFO: PATTERN TYPE "+i);
 			for (int x = 0; x < PATTERN[i].length; x++)
 			{
-				LogHelper.info("INFO : PATTERN X = "+x);
+				LogHelper.info("INFO: PATTERN X = "+x);
 				for (int y = PATTERN[i][x].length - 1; y >= 0; y--)
 				{
-					LogHelper.info("INFO : PATTERN   "+PATTERN[i][x][y][2]+","+PATTERN[i][x][y][1]+","+PATTERN[i][x][y][0]);
+					LogHelper.info("INFO: PATTERN   "+PATTERN[i][x][y][2]+","+PATTERN[i][x][y][1]+","+PATTERN[i][x][y][0]);
 				}
 			}
 		}
@@ -113,7 +113,7 @@ public class MulitBlockHelper
 	    			{
 		    			if (block == ModBlocks.BlockPolymetal) blockType = 1;
 		    			if (block == ModBlocks.BlockGrudgeHeavy) blockType = 2;
-		    			LogHelper.info("INFO : multi block check: pos "+pos.getX()+" "+pos.getY()+" "+pos.getZ()+" "+block.getLocalizedName()+" "+blockType);
+		    			LogHelper.debug("DEBUG: multi block check: pos "+pos.getX()+" "+pos.getY()+" "+pos.getZ()+" "+block.getLocalizedName()+" "+blockType);
 	    			}
 	    			
 	    			//2. match pattern
@@ -127,7 +127,7 @@ public class MulitBlockHelper
 	    			}
 	    			patternMatch = (patternMatch & patternTemp);		//進行and運算, 刪去不符合的type
 	    			
-	    			LogHelper.info("INFO : check structure: type "+patternMatch+" "+patternTemp);
+	    			LogHelper.debug("DEBUG: check structure: type "+patternMatch+" "+patternTemp);
 	    			if (patternMatch == 0) return -1;	//全部pattern都被濾掉, 無符合, 結束檢查
 	    			
 	    			//3. check master block, 無主方塊才能加入, 有主方塊則結束檢查
@@ -144,7 +144,7 @@ public class MulitBlockHelper
 	        }//end y for
 	    }//end x for
 	    
-	    LogHelper.info("INFO : check structure: type "+patternMatch);
+	    LogHelper.debug("DEBUG: check structure: type "+patternMatch);
 	    return patternMatch;
 	}
 	
@@ -162,7 +162,7 @@ public class MulitBlockHelper
 		BasicTileMulti masterTile = null;  //master tile
 		BasicTileMulti tile2 = null;
 		TileEntity tile = null;
-		LogHelper.info("INFO : setup structure type: "+type);
+		LogHelper.debug("DEBUG: setup structure type: "+type);
 		
 		//get all tile and master tile
 		for (int x = xCoord - 1; x < xCoord + 2; x++)
@@ -218,7 +218,7 @@ public class MulitBlockHelper
 	//Reset tile multi, called from master block if struct broken
 	public static void resetStructure(World world, int xCoord, int yCoord, int zCoord)
 	{
-		LogHelper.info("INFO : reset struct: client? "+world.isRemote+" "+xCoord+" "+yCoord+" "+zCoord);
+		LogHelper.debug("DEBUG: reset struct: client? "+world.isRemote+" "+xCoord+" "+yCoord+" "+zCoord);
 		
 		for (int x = xCoord - 1; x < xCoord + 2; x++)
 		{

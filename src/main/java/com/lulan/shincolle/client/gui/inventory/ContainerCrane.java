@@ -3,10 +3,10 @@ package com.lulan.shincolle.client.gui.inventory;
 import com.lulan.shincolle.tileentity.TileEntityCrane;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IContainerListener;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
@@ -28,7 +28,7 @@ public class ContainerCrane extends Container
 	private int[] valueTemp;
 	
 	
-	public ContainerCrane(InventoryPlayer invPlayer, TileEntityCrane tile)
+	public ContainerCrane(IInventory invPlayer, TileEntityCrane tile)
 	{
 		int i, j;
 		this.tile = tile;

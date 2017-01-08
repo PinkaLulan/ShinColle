@@ -42,7 +42,7 @@ public class EntityNorthernHime extends BasicEntityShipCV
 	public EntityNorthernHime(World world)
 	{
 		super(world);
-		this.setSize(0.6F, 1.2F);
+		this.setSize(0.6F, 1F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.NorthernHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
@@ -201,14 +201,11 @@ public class EntityNorthernHime extends BasicEntityShipCV
         		}
         	}
         	
-        	//騎乘中
-        	if (this.isRiding())
+        	//dismount if mounts is sneaking, SERVER SIDE
+        	if (this.getRidingEntity() != null && this.getRidingEntity().isSneaking())
         	{ 	
-        		//若騎乘目標sneaking, 則取消期程目標
-    			if (this.getRidingEntity().isSneaking())
-    			{
-        			this.dismountRidingEntity();
-        		}
+        		this.dismountRidingEntity();
+        		this.sendSyncPacketRiders();
         	}
   		}//end server side
   		//client side
@@ -228,13 +225,6 @@ public class EntityNorthernHime extends BasicEntityShipCV
   						ParticleHelper.spawnAttackParticleAt(this.posX, this.posY+1.1D, this.posZ, 0D, 0D, 0D, (byte)28);
   					}
   				}
-  			}
-  			
-  			//同步騎乘方向
-  			if (this.getRidingEntity() instanceof EntityLivingBase)
-  			{
-  				this.renderYawOffset = ((EntityLivingBase)this.getRidingEntity()).renderYawOffset;
-  				this.rotationYaw = this.getRidingEntity().rotationYaw;
   			}
   		}
   			
@@ -298,7 +288,8 @@ public class EntityNorthernHime extends BasicEntityShipCV
 				this.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 			{
 				this.setEntitySit(false);
-				this.startRiding(player);
+				this.startRiding(player, true);
+				this.sendSyncPacketRiders();
 				this.getShipNavigate().clearPathEntity();
 				this.cancelGoRiding();
 				
@@ -372,22 +363,28 @@ public class EntityNorthernHime extends BasicEntityShipCV
   	}
   	
   	@Override
+    public double getYOffset()
+    {
+        return 0.25F;
+    }
+  	
+  	@Override
 	public double getMountedYOffset()
   	{
   		if (this.isSitting())
   		{
 			if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 			{
-				return (double)this.height * 0.0F;
+				return 0F;
   			}
   			else
   			{
-  				return (double)this.height * 0.0F;
+  				return this.height * 0.08F;
   			}
   		}
   		else
   		{
-  			return (double)this.height * 0.3F;
+  			return this.height * 0.48F;
   		}
 	}
 

@@ -9,6 +9,7 @@ import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.IShipRiderType;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.handler.EventHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.BlockHelper;
@@ -204,12 +205,19 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
 	public double getMountedYOffset()
   	{
 		if (this.isSitting())
-  		{
-			return this.height * 0.15F;
+		{
+			if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
+			{
+				return this.height * -0.07F;
+  			}
+  			else
+  			{
+  				return this.height * 0.26F;
+  			}
   		}
   		else
   		{
-  			return this.height * 0.47F;
+  			return this.height * 0.64F;
   		}
 	}
   	
@@ -218,10 +226,11 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
     {
         if (this.isPassenger(rider))
         {
-        	double yoffset = this.posY + this.getMountedYOffset() + rider.getYOffset();
+        	double yoffset = this.posY + rider.getYOffset();
         	
         	if (rider instanceof EntityDestroyerHibiki)
         	{
+        		yoffset += this.isSitting() ? 0.22F : 0.68F;
         		float[] partPos = CalcHelper.rotateXZByAxis(-0.2F, 0F, (this.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);
         		rider.setPosition(this.posX + partPos[1], yoffset - 0.45D, this.posZ + partPos[0]);
         	}
@@ -230,8 +239,7 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
         		//sync emotion
         		((EntityDestroyerInazuma) rider).setStateEmotion(ID.S.Emotion, this.getStateEmotion(ID.S.Emotion), false);
         		
-        		if (this.isSitting()) yoffset -= 0.3F;
-        		
+        		yoffset += this.isSitting() ? -0.08F : 0.68F;
         		float[] partPos = CalcHelper.rotateXZByAxis(-0.48F, 0F, (this.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);
         		rider.setPosition(this.posX + partPos[1], yoffset + 0.1D, this.posZ + partPos[0]);
         	}
@@ -243,11 +251,9 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
         		{
         			if (r instanceof EntityDestroyerInazuma)
         			{
+        				yoffset += this.isSitting() ? -0.08F : 0.68F;
         				//check Inazuma emotion state
-        				yoffset = ((EntityDestroyerInazuma) r).getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED ? yoffset + 0.42D : yoffset + 0.6D;
-        				
-        				if (this.isSitting()) yoffset -= 0.3F;
-        				
+        				yoffset += ((EntityDestroyerInazuma) r).getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED ? 0.5F : 0.6F;
         				float[] partPos = CalcHelper.rotateXZByAxis(-0.68F, 0F, (this.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);
                 		rider.setPosition(this.posX + partPos[1], yoffset, this.posZ + partPos[0]);
                 		break;
@@ -256,6 +262,7 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
         	}
         	else
         	{
+        		yoffset += this.getMountedYOffset();
         		rider.setPosition(this.posX, yoffset, this.posZ);
         	}
         }

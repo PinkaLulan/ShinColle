@@ -202,13 +202,20 @@ public class EntityDestroyerHibiki extends BasicEntityShipSmall implements IShip
   	@Override
 	public double getMountedYOffset()
   	{
-  		if (this.isSitting())
-  		{
-			return this.height * 0.15F;
+		if (this.isSitting())
+		{
+			if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
+			{
+				return this.height * -0.07F;
+  			}
+  			else
+  			{
+  				return this.height * 0.26F;
+  			}
   		}
   		else
   		{
-  			return this.height * 0.47F;
+  			return this.height * 0.64F;
   		}
 	}
 

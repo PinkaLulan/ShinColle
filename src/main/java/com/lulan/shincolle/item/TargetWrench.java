@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
+import com.lulan.shincolle.entity.BasicEntitySummon;
 import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
@@ -20,6 +21,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -42,7 +44,6 @@ public class TargetWrench extends BasicItem
 {
 	
 	private static final String NAME = "TargetWrench";
-	private BlockPos tileChest;  //tile position
 	private BlockPos[] tilePoint;
 	private int pointID;
 	
@@ -57,7 +58,6 @@ public class TargetWrench extends BasicItem
         
         GameRegistry.register(this);
 		
-		this.tileChest = BlockPos.ORIGIN;
 		this.tilePoint = new BlockPos[] {BlockPos.ORIGIN, BlockPos.ORIGIN};
 		this.pointID = 0;
 	}
@@ -99,10 +99,11 @@ public class TargetWrench extends BasicItem
 				{
 					//target != ship
 					if (!(hitObj.entityHit instanceof BasicEntityShip ||
-						  hitObj.entityHit instanceof BasicEntityShipHostile))
+						  hitObj.entityHit instanceof BasicEntityShipHostile ||
+						  hitObj.entityHit instanceof BasicEntitySummon))
 					{
 						String tarName = hitObj.entityHit.getClass().getSimpleName();
-						LogHelper.info("DEBUG : target wrench get class: "+tarName);
+						LogHelper.debug("DEBUG: target wrench get class: "+tarName);
 						
 						//send packet to server
 						CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetUnatkClass, tarName));
@@ -116,7 +117,9 @@ public class TargetWrench extends BasicItem
 				{
 					HashMap<Integer, String> tarlist = ServerProxy.getUnattackableTargetClass();
 					
-					player.sendMessage(new TextComponentString(TextFormatting.RED+"Show unattackable entity list:"));
+					TextComponentTranslation text = new TextComponentTranslation("chat.shincolle:wrench.unatkshow");
+					text.getStyle().setColor(TextFormatting.GOLD);
+					player.sendMessage(text);
 					
 					tarlist.forEach((k, v) ->
 					{
@@ -131,59 +134,57 @@ public class TargetWrench extends BasicItem
         return false;	//both side
     }
 	
-	/** right click on block
-	 *  sneaking: pair Chest and Crane
+	/**
+	 * right click on block
+	 * sneaking: pair Chest, Crane and Waypoint
 	 */
 	@Override
 	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-	{	//server side
-		if (!world.isRemote)
+	{
+		if (player != null)
 		{
-			if (player != null && player.isSneaking())
+			//server side
+			if (!world.isRemote)
 			{
-				TileEntity tile = world.getTileEntity(pos);
-				
-				if (tile instanceof TileEntityCrane)
+				//sneaking
+				if (player.isSneaking())
 				{
-					this.tilePoint[this.pointID] = pos;
-					this.switchPoint();
+					TileEntity tile = world.getTileEntity(pos);
 					
-					if (!pairCrane(world))
+					if (tile instanceof TileEntityCrane ||
+						tile instanceof IInventory ||
+						tile instanceof ITileWaypoint)
 					{
-						return setWaypoint(world) ? EnumActionResult.SUCCESS : EnumActionResult.FAIL;
+						this.tilePoint[this.pointID] = pos;
+						this.switchPoint();
+
+						return setPair(player) ? EnumActionResult.SUCCESS : EnumActionResult.FAIL;
 					}
-					
-					return EnumActionResult.SUCCESS;
+					else
+					{
+						//fail msg
+						TextComponentTranslation text = new TextComponentTranslation("chat.shincolle:wrench.wrongtile");
+						player.sendMessage(text);
+						
+						//clear data
+						resetPos();
+					}
 				}
-				else if (tile instanceof IInventory)
-				{
-					this.tileChest = pos;
-					
-					return pairCrane(world) ? EnumActionResult.SUCCESS : EnumActionResult.FAIL;
-				}
-				else if (tile instanceof ITileWaypoint)
-				{
-					this.tilePoint[this.pointID] = pos;
-					this.switchPoint();
-					
-					return setWaypoint(world) ? EnumActionResult.SUCCESS : EnumActionResult.FAIL;
-				}
-				else
-				{
-					//fail msg
-					TextComponentTranslation text = new TextComponentTranslation("chat.shincolle:wrench.wrongtile");
-					text.getStyle().setColor(TextFormatting.YELLOW);
-					ServerProxy.getServer().sendMessage(text);
-				}
-			}
-		}
+			}//end server side
+		}//end get player
 		
 		return EnumActionResult.PASS;
     }
 	
 	@Override
+    public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand)
+    {
+        return new ActionResult(EnumActionResult.PASS, itemStackIn);
+    }
+	
+	@Override
     public void addInformation(ItemStack itemstack, EntityPlayer player, List list, boolean par4)
-	{  		
+	{
     	list.add(TextFormatting.RED + I18n.format("gui.shincolle:wrench1"));
     	list.add(TextFormatting.AQUA + I18n.format("gui.shincolle:wrench2"));
     	list.add(TextFormatting.YELLOW + I18n.format("gui.shincolle:wrench3"));
@@ -197,168 +198,149 @@ public class TargetWrench extends BasicItem
 	
 	private void resetPos()
 	{
-		this.tileChest = BlockPos.ORIGIN;
 		this.tilePoint = new BlockPos[] {BlockPos.ORIGIN, BlockPos.ORIGIN};
 		this.pointID = 0;
 	}
-	
-	//waypoint setting
-	private boolean setWaypoint(World world)
+
+	//crane pairing, SERVER SIDE ONLY
+	private boolean setPair(EntityPlayer player)
 	{
-		try
+		//valid point position
+		if (tilePoint[0].getY() <= 0 || tilePoint[1].getY() <= 0) return false;
+		
+		//get tile
+		TileEntity[] tiles = new TileEntity[2];
+		tiles[0] = player.world.getTileEntity(tilePoint[0]);
+		tiles[1] = player.world.getTileEntity(tilePoint[1]);
+		
+		//calc distance
+		int dx = this.tilePoint[0].getX() - this.tilePoint[1].getX();
+		int dy = this.tilePoint[0].getY() - this.tilePoint[1].getY();
+		int dz = this.tilePoint[0].getZ() - this.tilePoint[1].getZ();
+		int dist = dx * dx + dy * dy + dz * dz;
+		
+		//is same point
+		if (dx == 0 && dy == 0 && dz == 0)
 		{
-			//if y position > 0
-			if (this.tilePoint != null && this.tilePoint[0].getY() > 0 && this.tilePoint[1].getY() > 0)
+			player.sendMessage(new TextComponentTranslation("chat.shincolle:wrench.samepoint"));
+			
+			//clear data
+			resetPos();
+			
+			return false;
+		}
+
+		//chest and crane pairing
+		if (tiles[0] instanceof IInventory && !(tiles[0] instanceof TileEntityCrane) && tiles[1] instanceof TileEntityCrane ||
+			tiles[1] instanceof IInventory && !(tiles[1] instanceof TileEntityCrane) && tiles[0] instanceof TileEntityCrane)
+		{
+			//check dist < ~6 blocks
+			if (dist <= 40)
 			{
-				//calc distance
-				int dx = this.tilePoint[0].getX() - this.tilePoint[1].getX();
-				int dy = this.tilePoint[0].getY() - this.tilePoint[1].getY();
-				int dz = this.tilePoint[0].getZ() - this.tilePoint[1].getZ();
-				dx = dx * dx;
-				dy = dy * dy;
-				dz = dz * dz;
-				
-				//is same point
-				if (dx == 0 && dy == 0 && dz == 0)
+				//set chest pair
+				if (tiles[0] instanceof TileEntityCrane)
 				{
-					//clear data
-					resetPos();
-					
-					return false;
+					((TileEntityCrane) tiles[0]).setPairedChest(tilePoint[1]);
+					((TileEntityCrane) tiles[0]).sendSyncPacket();
 				}
-				
-				//dist < 32 blocks
-				if (dx + dy + dz < 2304)
-				{
-					//get waypoint tile
-					TileEntity tile1 = world.getTileEntity(tilePoint[pointID]);
-					this.switchPoint();
-					TileEntity tile2 = world.getTileEntity(tilePoint[pointID]);
-					
-					if (tile1 instanceof ITileWaypoint && tile2 instanceof ITileWaypoint)
-					{
-						ITileWaypoint wpFrom = (ITileWaypoint) tile1;
-						ITileWaypoint wpTo = (ITileWaypoint) tile2;
-						
-						//get tile position
-						BlockPos posT = tilePoint[pointID];
-						this.switchPoint();
-						BlockPos posF = tilePoint[pointID];
-						BlockPos nextWpTo = wpTo.getNextWaypoint();
-						
-						//set waypoint
-						wpFrom.setNextWaypoint(posT);
-						
-						if (nextWpTo.getX() != posF.getX() || nextWpTo.getY() != posF.getY() || nextWpTo.getZ() != posF.getZ())
-						{
-							wpTo.setLastWaypoint(posF);
-						}
-						
-						//sync
-						((BasicTileEntity) wpFrom).sendSyncPacket();
-						((BasicTileEntity) wpTo).sendSyncPacket();
-						
-						//clear data
-						resetPos();
-						
-						ServerProxy.getServer().sendMessage(
-								new TextComponentTranslation("chat.shincolle:wrench.setwp")
-								.appendText(" " + TextFormatting.GREEN + posF.getX() + " " + posF.getY() + " " + posF.getZ() + 
-											TextFormatting.AQUA + " --> " + TextFormatting.GOLD +
-											posT.getX() + " " + posT.getY() + " " + posT.getZ()));
-						
-						return true;
-					}
-				}
-				//send too far away msg
 				else
 				{
-					TextComponentTranslation str = new TextComponentTranslation("chat.shincolle:wrench.wptoofar");
-					str.getStyle().setColor(TextFormatting.YELLOW);
-					ServerProxy.getServer().sendMessage(str);
+					((TileEntityCrane) tiles[1]).setPairedChest(tilePoint[0]);
+					((TileEntityCrane) tiles[1]).sendSyncPacket();
 				}
+				
+				//send msg
+				TextComponentTranslation text = new TextComponentTranslation("chat.shincolle:wrench.setwp");
+				text.getStyle().setColor(TextFormatting.AQUA);
+				player.sendMessage
+				(
+					text.appendText(" " + TextFormatting.GREEN +
+					tilePoint[0].getX() + " " + tilePoint[0].getY() + " " + tilePoint[0].getZ() +
+	            	TextFormatting.AQUA + " & " + TextFormatting.GOLD +
+	            	tilePoint[1].getX() + " " + tilePoint[1].getY() + " " + tilePoint[1].getZ())
+				);
+				
+            	//reset
+            	resetPos();
+				
+            	return true;
+			}
+			//send too far away msg
+			else
+			{
+				TextComponentTranslation str = new TextComponentTranslation("chat.shincolle:wrench.toofar");
+				str.getStyle().setColor(TextFormatting.YELLOW);
+				player.sendMessage(str);
+			}
+			
+			//clear data
+			resetPos();
+		}
+		//waypoint pairing
+		else if (tiles[0] instanceof ITileWaypoint && tiles[1] instanceof ITileWaypoint)
+		{
+			//dist < 48 blocks
+			if (dist < 2304)
+			{
+				//get waypoint order
+				ITileWaypoint wpFrom = (ITileWaypoint) tiles[this.pointID];
+				this.switchPoint();
+				ITileWaypoint wpTo = (ITileWaypoint) tiles[this.pointID];
+				
+				//get tile position
+				BlockPos posT = tilePoint[pointID];
+				this.switchPoint();
+				BlockPos posF = tilePoint[pointID];
+				BlockPos nextWpTo = wpTo.getNextWaypoint();
+				
+				//set waypoint
+				wpFrom.setNextWaypoint(posT);
+				
+				//若from wp的next的next wp不等於自己 (即wp沒有連回來形成cycle), 則將from wp設為to wp的last wp
+				if (nextWpTo.getX() != posF.getX() || nextWpTo.getY() != posF.getY() || nextWpTo.getZ() != posF.getZ())
+				{
+					wpTo.setLastWaypoint(posF);
+				}
+				
+				//sync
+				((BasicTileEntity) wpFrom).sendSyncPacket();
+				((BasicTileEntity) wpTo).sendSyncPacket();
+				
+				TextComponentTranslation text = new TextComponentTranslation("chat.shincolle:wrench.setwp");
+				text.getStyle().setColor(TextFormatting.YELLOW);
+				player.sendMessage
+				(
+					text.appendText(" " + TextFormatting.GREEN + posF.getX() + " " + posF.getY() + " " + posF.getZ() + 
+					TextFormatting.AQUA + " --> " + TextFormatting.GOLD +
+					posT.getX() + " " + posT.getY() + " " + posT.getZ())
+				);
 				
 				//clear data
 				resetPos();
+				
+				return true;
 			}
-		}
-		catch (Exception e)
-		{
-			LogHelper.info("EXCEPTION : TargetWrench: set waypoint fail: "+e);
-			return false;
-		}
-		
-		return false;
-	}
-	
-	//crane pairing
-	private boolean pairCrane(World world)
-	{
-		try
-		{
-			//no chest
-			if (tileChest.getY() <= 0) return false;
-			
-			TileEntity tile1 = world.getTileEntity(tileChest);
-			this.switchPoint();
-			TileEntity tile2 = world.getTileEntity(tilePoint[pointID]);
-			
-			//check is chest and crane
-			if (tile1 instanceof IInventory && tile2 instanceof TileEntityCrane)
+			//send too far away msg
+			else
 			{
-				//calc distance
-				int dx = tileChest.getX() - tile2.getPos().getX();
-				int dy = tileChest.getY() - tile2.getPos().getY();
-				int dz = tileChest.getZ() - tile2.getPos().getZ();
-				dx = dx * dx;
-				dy = dy * dy;
-				dz = dz * dz;
-				int dist = dx + dy + dz;
-				
-				//same tile, reset
-				if (dx == 0 && dy == 0 && dz == 0)
-				{
-	            	resetPos();
-	            	return false;
-				}
-				
-				//check dist < ~6 blocks
-				if (dist <= 40)
-				{
-					((TileEntityCrane) tile2).setPairedChest(tileChest);
-					
-					//success msg
-					TextComponentTranslation text = new TextComponentTranslation("chat.shincolle:wrench.setwp");
-					text.getStyle().setColor(TextFormatting.AQUA);
-					ServerProxy.getServer().sendMessage(
-							text.appendText(" " + TextFormatting.GREEN +
-							tileChest.getX() + " " + tileChest.getY() + " " + tileChest.getZ() +
-			            	TextFormatting.AQUA + " & " + TextFormatting.GOLD +
-			            	tile2.getPos().getX() + " " + tile2.getPos().getY() + " " + tile2.getPos().getZ()));
-					
-	            	//sync
-	            	((TileEntityCrane) tile2).sendSyncPacket();
-	            	
-	            	//reset
-	            	resetPos();
-					
-	            	return true;
-				}
-				else
-				{
-					//too far away msg
-					TextComponentTranslation text = new TextComponentTranslation("chat.shincolle:wrench.toofar");
-	            	text.getStyle().setColor(TextFormatting.YELLOW);
-	            	ServerProxy.getServer().sendMessage(text);
-				}
+				TextComponentTranslation str = new TextComponentTranslation("chat.shincolle:wrench.wptoofar");
+				str.getStyle().setColor(TextFormatting.YELLOW);
+				player.sendMessage(str);
 			}
+			
+			//clear data
+			resetPos();
 		}
-		catch (Exception e)
+		else
 		{
-			//...
-			return false;
+			TextComponentTranslation str = new TextComponentTranslation("chat.shincolle:wrench.wrongtile");
+			str.getStyle().setColor(TextFormatting.YELLOW);
+			player.sendMessage(str);
+			
+			//clear data
+			resetPos();
 		}
-		
+
 		return false;
 	}
 	

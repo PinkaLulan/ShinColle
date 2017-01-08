@@ -281,7 +281,7 @@ public class EntityAIShipGuarding extends EntityAIBase
         				this.checkTP_D = 0;
         				
         				if (host2 != null && owner != null)
-        				LogHelper.info("DEBUG : guard AI: distSQ > "+TP_DIST+" , teleport to target. dim: "+host2.dimension+" "+owner.dimension);
+        				LogHelper.debug("DEBUG: guard AI: distSQ > "+TP_DIST+" , teleport to target. dim: "+host2.dimension+" "+owner.dimension);
             			
         				EntityAIShipFollowOwner.applyTeleport(this.host, this.distSq, new Vec3d(pos[0], pos[1] + 0.75D, pos[2]));
             			return;
@@ -294,7 +294,7 @@ public class EntityAIShipGuarding extends EntityAIBase
         			this.checkTP_T = 0;
         			
         			if(host2 != null && owner != null)
-        			LogHelper.info("DEBUG : guard AI: teleport entity: dimension check: "+host2.dimension+" "+owner.dimension);
+        			LogHelper.debug("DEBUG: guard AI: teleport entity: dimension check: "+host2.dimension+" "+owner.dimension);
         			
         			EntityAIShipFollowOwner.applyTeleport(this.host, this.distSq, new Vec3d(pos[0], pos[1] + 0.75D, pos[2]));
         			return;

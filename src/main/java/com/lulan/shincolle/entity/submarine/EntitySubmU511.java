@@ -6,6 +6,7 @@ import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.entity.IShipInvisible;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.handler.EventHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
 
@@ -184,18 +185,11 @@ public class EntitySubmU511 extends BasicEntityShipSmall implements IShipInvisib
   	{
   		if (this.isSitting())
   		{
-			if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
-			{
-				return (double)this.height * 0.0F;
-  			}
-  			else
-  			{
-  				return (double)this.height * 0.0F;
-  			}
+			return 0F;
   		}
   		else
   		{
-  			return (double)this.height * 0.5F;
+  			return this.height * 0.58F;
   		}
 	}
   	

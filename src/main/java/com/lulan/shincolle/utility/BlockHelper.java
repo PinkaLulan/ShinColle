@@ -118,7 +118,7 @@ public class BlockHelper
 			}//end z
 		}//end x
 		
-		LogHelper.info("DEBUG : find block fail");
+		LogHelper.debug("DEBUG: find block fail");
 		return null;
 	}
 

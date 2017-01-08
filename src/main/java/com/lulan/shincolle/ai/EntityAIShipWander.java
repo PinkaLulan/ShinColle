@@ -1,13 +1,13 @@
 package com.lulan.shincolle.ai;
 
+import com.lulan.shincolle.entity.IShipAttackBase;
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.LogHelper;
+
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.util.math.Vec3d;
-
-import com.lulan.shincolle.entity.IShipAttackBase;
-import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.LogHelper;
 
 public class EntityAIShipWander extends EntityAIBase
 {
@@ -31,7 +31,7 @@ public class EntityAIShipWander extends EntityAIBase
     	}
     	else
     	{
-    		LogHelper.info("DEBUG: wander AI: host not ship error");
+    		LogHelper.debug("DEBUG: wander AI: host is not ship!");
     		this.host = null;
     		this.host2 = null;
     	}

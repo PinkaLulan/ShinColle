@@ -87,6 +87,7 @@ public class ModBlocks
 		{
 			//建立instance失敗, 此例外必須丟出以強制中止遊戲
 			LogHelper.info("EXCEPTION: block instancing fail: "+blockClass);
+			e.printStackTrace();
 			throw e;
 		}
 	}
@@ -105,6 +106,7 @@ public class ModBlocks
 			{
 				//抓model失敗, 此例外必須丟出以強制中止遊戲
 				LogHelper.info("EXCEPTION: block texture init fail: "+b);
+				e.printStackTrace();
 				throw e;
 			}
 		}

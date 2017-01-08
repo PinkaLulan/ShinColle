@@ -8,8 +8,10 @@ import com.lulan.shincolle.capability.CapaInventory;
 import com.lulan.shincolle.capability.CapaShipInventory;
 import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.item.PointerItem;
 import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.proxy.ClientProxy;
@@ -28,6 +30,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.oredict.OreDictionary;
 
 /**
@@ -153,7 +156,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
         }
         catch (Exception e)
         {
-        	LogHelper.info("EXCEPTION: TileEntityCrane load position fail: "+e);
+        	LogHelper.info("EXCEPTION: TileEntityCrane load position fail, reset to BlockPos.ORIGIN");
         	this.chestPos = BlockPos.ORIGIN;
         	this.lastPos = BlockPos.ORIGIN;
         	this.nextPos = BlockPos.ORIGIN;
@@ -419,9 +422,8 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 			  	  					this.ship.setStateMinor(ID.M.FollowMin, 2);
 			  	  				}
 			  	  				
-//			  	  				//TODO sound event
-//			  	  				//player sound
-//			  	  				this.ship.playSound(Reference.MOD_ID+":ship-bell", ConfigHandler.volumeShip * 1.5F, this.ship.getRNG().nextFloat() * 0.3F + 1F);
+			  	  				//player sound
+			  	  				this.ship.playSound(ModSounds.SHIP_BELL, ConfigHandler.volumeShip * 1.5F, this.ship.getRNG().nextFloat() * 0.3F + 1F);
 			  	  				
 			  	  				//clear ship
 			  	  				this.ship = null;
@@ -429,7 +431,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 						}
 						catch (Exception e)
 						{
-							LogHelper.info("EXCEPTION : ship loading/unloading fail: "+e);
+							LogHelper.info("EXCEPTION: ship loading/unloading fail: "+e);
 							e.printStackTrace();
 							return;
 						}
@@ -458,6 +460,13 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 		//client side
 		else
 		{
+			//valid tile
+			if (this.world.getBlockState(this.pos).getBlock() != ModBlocks.BlockCrane)
+			{
+				this.invalidate();
+				return;
+			}
+			
 			this.tick++;
 			if (this.partDelay > 0) this.partDelay--;
 			
@@ -510,6 +519,32 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 
 						ParticleHelper.spawnAttackParticleAt(pos.getX()+0.5D, pos.getY()+0.5D, pos.getZ()+0.5D,
 																						dx, dy, dz, (byte) 39);
+					}
+					
+					if (this.tick % 32 == 0)
+					{
+						//draw point text
+						if (this.lastPos.getY() > 0 || this.nextPos.getY() > 0)
+						{
+							String postext1 = "";
+							String postext2 = "";
+							String postext3 = "";
+							int len1 = 0;
+							int len2 = 0;
+							int len3 = 0;
+							
+							postext1 = "F: " + TextFormatting.LIGHT_PURPLE + this.lastPos.getX() + ", " + this.lastPos.getY() + ", " + this.lastPos.getZ();
+							len1 = ClientProxy.getMineraft().getRenderManager().getFontRenderer().getStringWidth(postext1);
+							postext2 = "T: " + TextFormatting.AQUA + this.nextPos.getX() + ", " + this.nextPos.getY() + ", " + this.nextPos.getZ();
+							len2 = ClientProxy.getMineraft().getRenderManager().getFontRenderer().getStringWidth(postext2);
+							if (len1 < len2) len1 = len2;
+							postext3 = "C: " + TextFormatting.YELLOW + this.chestPos.getX() + ", " + this.chestPos.getY() + ", " + this.chestPos.getZ();
+							len3 = ClientProxy.getMineraft().getRenderManager().getFontRenderer().getStringWidth(postext3);
+							if (len1 < len3) len1 = len3;
+							postext1 = postext1 + "\n" + TextFormatting.WHITE + postext2 + "\n" + TextFormatting.WHITE + postext3;
+							
+							ParticleHelper.spawnAttackParticleAt(postext1, this.pos.getX()+0.5D, this.pos.getY()+1.9D, this.pos.getZ()+0.5D, (byte) 0, 3, len1);
+						}
 					}
 				}//end holding item
 			}//end every 16 ticks
@@ -1154,8 +1189,11 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
         }
         else
         {
-        	this.ship = null;
-        	this.sendSyncPacket();
+        	if (this.ship != null)
+        	{
+        		this.ship = null;
+            	this.sendSyncPacket();
+        	}
         }
 	}
 	

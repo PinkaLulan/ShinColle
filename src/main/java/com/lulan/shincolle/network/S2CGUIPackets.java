@@ -806,22 +806,31 @@ public class S2CGUIPackets implements IMessage
 			//get entity
 			Entity entity = EntityHelper.getEntityByID(msg.valueInt1[12], 0, true);
 			
-			if (tile instanceof TileEntityCrane && entity instanceof BasicEntityShip)
+			if (tile instanceof TileEntityCrane)
 			{
 				TileEntityCrane tile2 = (TileEntityCrane) tile;
 				int[] data = new int[9];
+				
 				for (int i = 0; i < 9; i++)
 				{
 					data[i] = msg.valueInt1[i + 3];
 				}
 				
 				tile2.setSyncData(data);
-				tile2.setShip((BasicEntityShip) entity);
 				tile2.setField(2, msg.valueByte1[0]);
 				tile2.setField(3, msg.valueByte1[1]);
 				tile2.setField(4, msg.valueByte1[2]);
 				tile2.setField(8, msg.valueByte1[3]);
 				tile2.setField(5, msg.valueInt1[13]);
+				
+				if (entity instanceof BasicEntityShip)
+				{
+					tile2.setShip((BasicEntityShip) entity);
+				}
+				else
+				{
+					tile2.setShip(null);
+				}
 			}
 		}
 		break;
@@ -924,7 +933,7 @@ public class S2CGUIPackets implements IMessage
 				if (capa != null)
 				{
 					capa.clearAllTargetClass();
-					LogHelper.info("DEBUG : S2C gui sync: clear target class list ");
+					LogHelper.debug("DEBUG: S2C gui sync: clear target class list ");
 				}
 			}
 		}

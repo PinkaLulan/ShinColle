@@ -3,6 +3,7 @@ package com.lulan.shincolle.tileentity;
 import com.lulan.shincolle.block.BlockWaypoint;
 import com.lulan.shincolle.block.ItemBlockWaypoint;
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.PointerItem;
 import com.lulan.shincolle.network.S2CGUIPackets;
@@ -15,6 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextFormatting;
 
 public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint, ITickable
 {
@@ -70,7 +72,7 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
         }
         catch (Exception e)
         {
-        	LogHelper.info("EXCEPTION: TileEntityCrane load position fail: "+e);
+        	LogHelper.info("EXCEPTION: TileEntityCrane load position fail, reset to BlockPos.ORIGIN");
         	this.lastPos = BlockPos.ORIGIN;
         	this.nextPos = BlockPos.ORIGIN;
         }
@@ -104,10 +106,17 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
 	{
 		tick++;
 		
-		//show client particle
+		//client side
 		if (this.world.isRemote)
 		{
-			//player hold waypoint or target wrench
+			//valid tile
+			if (this.world.getBlockState(this.pos).getBlock() != ModBlocks.BlockWaypoint)
+			{
+				this.invalidate();
+				return;
+			}
+			
+			//show client particle: player hold waypoint or target wrench
 			EntityPlayer player = ClientProxy.getClientPlayer();
 			ItemStack item = player.inventory.getCurrentItem();
 			
@@ -116,11 +125,12 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
 			{
 				if (this.tick % 8 == 0)
 				{
+					//draw arrow mark
 					ParticleHelper.spawnAttackParticleAt(pos.getX()+0.5D, pos.getY()-0.25D, pos.getZ()+0.5D, 0.2D, 9D, 0D, (byte) 25);
 					
 					if (this.tick % 16 == 0)
 					{
-						//next point mark
+						//draw next point spray
 						if (this.nextPos.getY() > 0)
 						{
 							double dx = this.nextPos.getX() - this.pos.getX();
@@ -129,13 +139,31 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
 							dx *= 0.01D;
 							dy *= 0.01D;
 							dz *= 0.01D;
-									
-							ParticleHelper.spawnAttackParticleAt(pos.getX()+0.5D, pos.getY()+0.5D, pos.getZ()+0.5D, dx, dy, dz, (byte) 38);
+							
+							ParticleHelper.spawnAttackParticleAt(this.pos.getX()+0.5D, this.pos.getY()+0.5D, this.pos.getZ()+0.5D, dx, dy, dz, (byte) 38);
 						}
 						
 						if (this.tick % 32 == 0)
 						{
-							//circle mark
+							//draw point text
+							if (this.lastPos.getY() > 0 || this.nextPos.getY() > 0)
+							{
+								String postext1 = "";
+								String postext2 = "";
+								int len1 = 0;
+								int len2 = 0;
+								
+								postext1 = "F: " + TextFormatting.LIGHT_PURPLE + this.lastPos.getX() + ", " + this.lastPos.getY() + ", " + this.lastPos.getZ();
+								len1 = ClientProxy.getMineraft().getRenderManager().getFontRenderer().getStringWidth(postext1);
+								postext2 = "T: " + TextFormatting.AQUA + this.nextPos.getX() + ", " + this.nextPos.getY() + ", " + this.nextPos.getZ();
+								len2 = ClientProxy.getMineraft().getRenderManager().getFontRenderer().getStringWidth(postext2);
+								postext1 = postext1 + "\n" + TextFormatting.WHITE + postext2;
+								len1 = len1 > len2 ? len1 : len2;
+								
+								ParticleHelper.spawnAttackParticleAt(postext1, this.pos.getX()+0.5D, this.pos.getY()+1.7D, this.pos.getZ()+0.5D, (byte) 0, 2, len1);
+							}
+							
+							//draw circle mark
 							ParticleHelper.spawnAttackParticleAt(pos.getX()+0.5D, pos.getY()-0.25D, pos.getZ()+0.5D, 0.2D, 8D, 0D, (byte) 25);
 						}//end every 32 ticks
 					}//end every 16 ticks

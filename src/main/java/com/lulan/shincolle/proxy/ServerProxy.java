@@ -273,7 +273,7 @@ public class ServerProxy extends CommonProxy
 	//save server proxy variables
 	public static void saveServerProxy()
 	{
-		LogHelper.info("INFO: save server proxy: save .dat file");
+		LogHelper.debug("DEBUG: save server proxy: save .dat file");
 		
 		if (serverData != null) serverData.markDirty();
 		if (serverFile != null) serverFile.saveAllData();
@@ -500,7 +500,7 @@ public class ServerProxy extends CommonProxy
 			}
 			catch (Exception e)
 			{
-				LogHelper.info("EXCEPTION: clean team data fail: ");
+				LogHelper.info("EXCEPTION: clean team data fail: "+e);
 				e.printStackTrace();
 				return;
 			}
@@ -516,7 +516,7 @@ public class ServerProxy extends CommonProxy
 	{
 		if (serverData != null)
 		{
-			LogHelper.info("INFO: server proxy: set next player id "+par1);
+			LogHelper.debug("DEBUG: server proxy: set next player id "+par1);
 			nextPlayerID = par1;
 			serverData.markDirty();
 		}
@@ -531,7 +531,7 @@ public class ServerProxy extends CommonProxy
 	{
 		if (serverData != null)
 		{
-			LogHelper.info("INFO: server proxy: set next ship id "+par1);
+			LogHelper.debug("DEBUG: server proxy: set next ship id "+par1);
 			nextShipID = par1;
 			serverData.markDirty();
 		}
@@ -560,7 +560,7 @@ public class ServerProxy extends CommonProxy
 	/** update player id */
 	public static void updatePlayerID(EntityPlayer player)
 	{
-		LogHelper.info("INFO: update player: "+player.getDisplayNameString()+" "+player.getUniqueID()+" "+player.getEntityId());
+		LogHelper.debug("DEBUG: update player: "+player.getDisplayNameString()+" "+player.getUniqueID()+" "+player.getEntityId());
 		
 		CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(player);
 		
@@ -614,14 +614,14 @@ public class ServerProxy extends CommonProxy
 	/** update ship id */
 	public static void updateShipID(BasicEntityShip ship)
 	{
-		LogHelper.info("INFO: update ship: "+ship);
+		LogHelper.debug("DEBUG: update ship: "+ship);
 		
 		int uid = ship.getShipUID();
 		
 		//update ship data
 		if (uid > 0)
 		{
-			LogHelper.debug("DEBUG : update ship: update ship id "+uid+" eid: "+ship.getEntityId()+" world: "+ship.world.provider.getDimension());
+			LogHelper.debug("DEBUG: update ship: update ship id "+uid+" eid: "+ship.getEntityId()+" world: "+ship.world.provider.getDimension());
 			CacheDataShip sdata = new CacheDataShip(ship.getEntityId(), ship.world.provider.getDimension(),
 									ship.getShipClass(), ship.isDead, ship.posX, ship.posY, ship.posZ,
 									ship.writeToNBT(new NBTTagCompound()));
@@ -633,7 +633,7 @@ public class ServerProxy extends CommonProxy
 			 */
 			if (getNextShipID() <= 0 || getNextShipID() <= uid)
 			{
-				LogHelper.info("INFO: update ship: find next ship id error");
+				LogHelper.debug("DEBUG: update ship: find next ship id error");
 				int newNextID = uid + 100000;
 				setNextShipID(newNextID);
 			}
@@ -646,7 +646,7 @@ public class ServerProxy extends CommonProxy
 			//set init value
 			if (uid <= 0) uid = 100;	//ship id init value = 100
 			
-			LogHelper.debug("DEBUG : update ship: create sid: "+uid+" eid: "+ship.getEntityId()+" world: "+ship.world.provider.getDimension());
+			LogHelper.debug("DEBUG: update ship: create sid: "+uid+" eid: "+ship.getEntityId()+" world: "+ship.world.provider.getDimension());
 			ship.setShipUID(uid);
 			CacheDataShip sdata = new CacheDataShip(ship.getEntityId(), ship.world.provider.getDimension(),
 									ship.getShipClass(), ship.isDead, ship.posX, ship.posY, ship.posZ,
@@ -670,14 +670,14 @@ public class ServerProxy extends CommonProxy
 			if (capa != null)
 			{
 				int pid = capa.getPlayerUID();
-				LogHelper.info("INFO: update ship: set owner id: "+pid+" on "+ship);
+				LogHelper.debug("DEBUG: update ship: set owner id: "+pid+" on "+ship);
 				ship.setPlayerUID(pid);
 				ship.ownerName = ((EntityPlayer) owner).getName();
 			}
 		}
 		else
 		{
-			LogHelper.info("INFO: update ship: get owner id: fail, owner offline or no owner data: "+ship);
+			LogHelper.debug("DEBUG: update ship: get owner id: fail, owner offline or no owner data: "+ship);
 		}
 	}
 	
@@ -813,7 +813,7 @@ public class ServerProxy extends CommonProxy
 				tdata.setTeamID(pUID);
 				tdata.setTeamName(tname);
 				tdata.setTeamLeaderName(player.getDisplayNameString());
-				LogHelper.info("INFO: server proxy: create team: "+pUID+" "+tname);
+				LogHelper.debug("DEBUG: server proxy: create team: "+pUID+" "+tname);
 				
 				//remove the same owner team (for some bug, ex: UID changed)
 				cleanTeamData(tdata);
@@ -842,7 +842,7 @@ public class ServerProxy extends CommonProxy
 				//check team existed
 				if (getAllTeamWorldData() != null && getAllTeamWorldData().containsKey(pUID))
 				{
-					LogHelper.info("INFO: server proxy: remove team: "+pUID);
+					LogHelper.debug("DEBUG: server proxy: remove team: "+pUID);
 					
 					//save team data
 					removeTeamData(pUID);
@@ -863,7 +863,7 @@ public class ServerProxy extends CommonProxy
 			getAllTeamWorldData().containsKey(tid1) &&
 			getAllTeamWorldData().containsKey(tid2))
 		{
-			LogHelper.info("INFO: server proxy: add ally: "+tid1+" add "+tid2);
+			LogHelper.debug("DEBUG: server proxy: add ally: "+tid1+" add "+tid2);
 			TeamData tdata = getTeamData(tid1);
 			tdata.addTeamAlly(tid2);
 		}
@@ -877,7 +877,7 @@ public class ServerProxy extends CommonProxy
 			getAllTeamWorldData().containsKey(tid1) &&
 			getAllTeamWorldData().containsKey(tid2))
 		{
-			LogHelper.info("INFO: server proxy: remove ally: "+tid1+" and "+tid2);
+			LogHelper.debug("DEBUG: server proxy: remove ally: "+tid1+" and "+tid2);
 			TeamData tdata1 = getTeamData(tid1);
 			tdata1.removeTeamAlly(tid2);
 			TeamData tdata2 = getTeamData(tid2);
@@ -893,7 +893,7 @@ public class ServerProxy extends CommonProxy
 			getAllTeamWorldData().containsKey(tid1) &&
 			getAllTeamWorldData().containsKey(tid2))
 		{
-			LogHelper.info("INFO: server proxy: ban team: "+tid1+" ban "+tid2);
+			LogHelper.debug("DEBUG: server proxy: ban team: "+tid1+" ban "+tid2);
 			TeamData tdata1 = getTeamData(tid1);
 			tdata1.addTeamBanned(tid2);
 			TeamData tdata2 = getTeamData(tid2);
@@ -909,7 +909,7 @@ public class ServerProxy extends CommonProxy
 			getAllTeamWorldData().containsKey(tid1) &&
 			getAllTeamWorldData().containsKey(tid2))
 		{
-			LogHelper.info("INFO: server proxy: unban team: "+tid1+" unban "+tid2);
+			LogHelper.debug("DEBUG: server proxy: unban team: "+tid1+" unban "+tid2);
 			TeamData tdata1 = getTeamData(tid1);
 			tdata1.removeTeamBanned(tid2);
 		}

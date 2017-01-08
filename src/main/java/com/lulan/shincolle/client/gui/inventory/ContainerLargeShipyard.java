@@ -1,15 +1,15 @@
 package com.lulan.shincolle.client.gui.inventory;
 
+import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
+
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IContainerListener;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 
 /**SLOT POSITION
  * output(168,51) fuel bar(9,83 height=63) fuel color bar(208,64)
@@ -32,7 +32,7 @@ public class ContainerLargeShipyard extends Container
 	private static final int SLOT_ALL = 46;
 	
 	
-	public ContainerLargeShipyard(InventoryPlayer player, TileMultiGrudgeHeavy tile)
+	public ContainerLargeShipyard(IInventory player, TileMultiGrudgeHeavy tile)
 	{
 		this.tile = tile;
 		

@@ -208,6 +208,10 @@ public class ModelDestroyerNi extends ModelBase implements IModelEmotion
     @Override
 	public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity)
     {
+    	//FIX: head rotation bug while riding
+    	if (f3 <= -180F) { f3 += 360F; }
+    	else if (f3 >= 180F) { f3 -= 360F; }
+    	
 		super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
 		
 		float angleX = MathHelper.cos(f2*0.125F);

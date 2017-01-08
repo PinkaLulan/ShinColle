@@ -1,14 +1,14 @@
 package com.lulan.shincolle.ai;
 
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.ai.EntityAIBase;
-
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
+
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.ai.EntityAIBase;
 
 /**FLEE AI
  * if ship's HP is below fleeHP, ship will stop attack and try to flee
@@ -117,7 +117,7 @@ public class EntityAIShipFlee extends EntityAIBase
 				
 			if (!canMove)
 			{
-        		LogHelper.info("DEBUG : flee AI: moving fail, teleport entity "+this.host);
+        		LogHelper.debug("DEBUG: flee AI: moving fail, teleport entity "+this.host);
         		if (this.distSq > 200F)
         		{
         			//相同dim才傳送

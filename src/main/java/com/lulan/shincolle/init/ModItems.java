@@ -145,6 +145,7 @@ public class ModItems
 		{
 			//item建立instance失敗, 此例外必須丟出以強制中止遊戲
 			LogHelper.info("EXCEPTION: instancing fail: "+itemClass);
+			e.printStackTrace();
 			throw e;
 		}
 	}

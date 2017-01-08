@@ -68,7 +68,7 @@ public class ShinWorldData extends WorldSavedData
 	@Override
 	public void readFromNBT(NBTTagCompound nbt)
 	{
-		LogHelper.info("INFO: load world data from disk.");
+		LogHelper.debug("DEBUG: load world data from disk.");
 		
 		nbtData = (NBTTagCompound) nbt.copy();
 	}
@@ -79,7 +79,7 @@ public class ShinWorldData extends WorldSavedData
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound nbt)
 	{
-		LogHelper.info("INFO: save world data to disk.");
+		LogHelper.debug("DEBUG: save world data to disk.");
 		
 		/** save common variable */
 		nbt.setInteger(TAG_NEXTPLAYERID, ServerProxy.getNextPlayerID());
@@ -109,7 +109,7 @@ public class ShinWorldData extends WorldSavedData
 		{
 			map2.forEach((uid, data) ->
 			{
-			    LogHelper.info("INFO: save world data: save player custom target: uid: "+uid+" size: "+data.size());
+			    LogHelper.debug("DEBUG: save world data: save player custom target: uid: "+uid+" size: "+data.size());
 			    NBTTagCompound tag = new NBTTagCompound();
 			    tag.setInteger(TAG_PUID, uid);
 			    
@@ -137,7 +137,7 @@ public class ShinWorldData extends WorldSavedData
 		{
 			map3.forEach((uid, tdata) ->
 			{
-				LogHelper.info("INFO: save world data: save team: tid: "+uid);
+				LogHelper.debug("DEBUG: save world data: save team: tid: "+uid);
 				
 			    NBTTagCompound tag = new NBTTagCompound();
 			    tag.setInteger(TAG_TUID, uid);
@@ -161,7 +161,7 @@ public class ShinWorldData extends WorldSavedData
 		{
 			map4.forEach((uid, sdata) ->
 			{
-				LogHelper.info("INFO: save world data: save ship: sid: "+uid+" cid: "+sdata.classID);
+				LogHelper.debug("DEBUG: save world data: save ship: sid: "+uid+" cid: "+sdata.classID);
 				
 				NBTTagCompound tag = new NBTTagCompound();
 				tag.setInteger(TAG_ShipUID, uid);

@@ -26,7 +26,7 @@ public class NBTHelper
 		}
 		else
 		{
-			LogHelper.info("DEBUG : NBT helper: save nbt fail: tag is null ");
+			LogHelper.debug("DEBUG: NBT helper: save nbt fail: tag is null ");
 		}
 	}
 	

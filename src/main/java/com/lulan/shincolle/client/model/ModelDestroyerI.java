@@ -235,6 +235,10 @@ public class ModelDestroyerI extends ModelBase implements IModelEmotion
 	@Override
 	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
 	{
+    	//FIX: head rotation bug while riding
+    	if (f3 <= -180F) { f3 += 360F; }
+    	else if (f3 >= 180F) { f3 -= 360F; }
+    	
 		setRotationAngles(f, f1, f2, f3, f4, f5, entity);
 
     	GlStateManager.pushMatrix();
@@ -435,11 +439,11 @@ public class ModelDestroyerI extends ModelBase implements IModelEmotion
 		//移動頭部 使其看人, 不看人時持續擺動頭部
 	    if (f4 != 0)
 	    {
-		    PNeck.rotateAngleY = f3 * 0.008F;		//左右角度
-		    PNeck.rotateAngleZ = f4 * 0.008F; 	//上下角度
-		    PHead.rotateAngleY = f3 * 0.008F;
-		    PHead.rotateAngleZ = f4 * 0.008F;
-		    PTail.rotateAngleY = f3 * -0.008F;	//尾巴以反方向擺動
+		    PNeck.rotateAngleY = f3 * 0.006F;		//左右角度
+		    PNeck.rotateAngleZ = f4 * 0.006F; 	//上下角度
+		    PHead.rotateAngleY = f3 * 0.006F;
+		    PHead.rotateAngleZ = f4 * 0.006F;
+		    PTail.rotateAngleY = f3 * -0.006F;	//尾巴以反方向擺動
 	    }
 	    else
 	    {

@@ -39,6 +39,7 @@ public class GuiLargeShipyard extends GuiContainer
 	public GuiLargeShipyard(InventoryPlayer par1, TileMultiGrudgeHeavy par2)
 	{
 		super(new ContainerLargeShipyard(par1, par2));
+		
 		this.tile = par2;
 		this.xSize = 208;
 		this.ySize = 223;
@@ -47,6 +48,8 @@ public class GuiLargeShipyard extends GuiContainer
 	@Override
 	public void initGui()
 	{
+		super.initGui();
+		
 		this.tickGUI = 0F;
 		
 		//string
@@ -59,10 +62,10 @@ public class GuiLargeShipyard extends GuiContainer
 	public void drawScreen(int mouseX, int mouseY, float f)
 	{
 		super.drawScreen(mouseX, mouseY, f);
+		
 		xMouse = mouseX;
 		yMouse = mouseY;
 		tickGUI += 0.125F;
-		
 	}
 	
 	//GUI前景: 文字 
@@ -268,7 +271,7 @@ public class GuiLargeShipyard extends GuiContainer
         	}
         	
         	//send packet
-        	LogHelper.info("DEBUG : GUI click: build large ship: ship "+buildType);
+        	LogHelper.debug("DEBUG: GUI click: build large ship: ship "+buildType);
         	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, C2SGUIPackets.PID.TileBtn, ID.B.Shipyard_Type, buildType, 0));
         	break;
         case 1:	//build equip
@@ -288,7 +291,7 @@ public class GuiLargeShipyard extends GuiContainer
         	}
         	
         	//send packet
-        	LogHelper.info("DEBUG : GUI click: build large ship: equip "+buildType);
+        	LogHelper.debug("DEBUG: GUI click: build large ship: equip "+buildType);
         	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, C2SGUIPackets.PID.TileBtn, ID.B.Shipyard_Type, buildType, 0));
         	break;
         case 2:	//inventory mode
@@ -300,7 +303,7 @@ public class GuiLargeShipyard extends GuiContainer
         	{
         		invMode = 0;
         	}
-        	LogHelper.info("DEBUG : GUI click: build large ship: invMode "+invMode);
+        	LogHelper.debug("DEBUG: GUI click: build large ship: invMode "+invMode);
         	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, C2SGUIPackets.PID.TileBtn, ID.B.Shipyard_InvMode, invMode, 0));
         	break;
         case 3:	//select material grudge
@@ -308,7 +311,7 @@ public class GuiLargeShipyard extends GuiContainer
         case 5: //ammo
         case 6: //polymetal
         	selectMat = buttonClicked - 3;
-        	LogHelper.info("DEBUG : GUI click: build large ship: select mats "+selectMat);
+        	LogHelper.debug("DEBUG: GUI click: build large ship: select mats "+selectMat);
         	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, C2SGUIPackets.PID.TileBtn, ID.B.Shipyard_SelectMat, selectMat, 0));
         	break;
         case 7:	//select material grudge num
@@ -316,7 +319,7 @@ public class GuiLargeShipyard extends GuiContainer
         case 9: //ammo num
         case 10://polymetal num
         	selectMat = buttonClicked - 7;
-        	LogHelper.info("DEBUG : GUI click: build large ship: select mats (num) "+selectMat);
+        	LogHelper.debug("DEBUG: GUI click: build large ship: select mats (num) "+selectMat);
         	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, C2SGUIPackets.PID.TileBtn, ID.B.Shipyard_SelectMat, selectMat, 0));
         	break;
         }//end page 0 button switch
@@ -333,7 +336,7 @@ public class GuiLargeShipyard extends GuiContainer
         case 5:	//build mat -100
         case 6:	//build mat -10
         case 7:	//build mat -1
-        	LogHelper.info("DEBUG : GUI click: build large ship: inc/dec build materials "+(selectMat+1)+" "+buttonClicked);
+        	LogHelper.debug("DEBUG: GUI click: build large ship: inc/dec build materials "+(selectMat+1)+" "+buttonClicked);
         	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, C2SGUIPackets.PID.TileBtn, ID.B.Shipyard_INCDEC, selectMat, buttonClicked));
         	break;	
         }//end other page button switch

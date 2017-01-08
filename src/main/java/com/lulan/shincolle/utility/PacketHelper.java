@@ -295,7 +295,7 @@ public class PacketHelper
 		}
 		else
 		{
-			LogHelper.info("DEBUG : set entity by GUI fail, entity null");
+			LogHelper.debug("DEBUG: set entity by GUI fail, entity null");
 		}
 	}
 	
@@ -399,7 +399,7 @@ public class PacketHelper
 		}
 		else
 		{
-			LogHelper.info("DEBUG : set tile entity by GUI fail: tile: "+tile);
+			LogHelper.debug("DEBUG: set tile entity by GUI fail: tile: "+tile);
 		}	
 	}
 	

@@ -11,7 +11,6 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
@@ -214,18 +213,18 @@ public class EntityDestroyerInazuma extends BasicEntityShipSmall implements IShi
     {
         if (this.isPassenger(rider))
         {
-        	double yoffset = this.posY + this.getMountedYOffset() + rider.getYOffset();
+        	double yoffset = this.posY + rider.getYOffset();
         	
         	if (rider instanceof EntityDestroyerIkazuchi)
         	{
+        		yoffset += this.isSitting() ? 0.26F : 0.68F;
+        		yoffset += this.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED ? -0.6D : -0.45D;
         		float[] partPos = CalcHelper.rotateXZByAxis(-0.2F, 0F, (this.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);
-        		
-        		yoffset = this.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED ? yoffset - 0.63D : yoffset - 0.45D;
-        		
         		rider.setPosition(this.posX + partPos[1], yoffset, this.posZ + partPos[0]);
         	}
         	else
         	{
+        		yoffset += this.getMountedYOffset();
         		rider.setPosition(this.posX, yoffset, this.posZ);
         	}
         }
@@ -234,13 +233,20 @@ public class EntityDestroyerInazuma extends BasicEntityShipSmall implements IShi
   	@Override
 	public double getMountedYOffset()
   	{
-  		if (this.isSitting())
-  		{
-  			return this.height * 0.15F;
+		if (this.isSitting())
+		{
+			if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
+			{
+				return this.height * 0.23F;
+  			}
+  			else
+  			{
+  				return this.height * 0.44F;
+  			}
   		}
   		else
   		{
-  			return this.height * 0.47F;
+  			return this.height * 0.64F;
   		}
 	}
 

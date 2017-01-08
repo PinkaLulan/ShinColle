@@ -496,15 +496,8 @@ public class ShipPathFinder
             }//end for y
         }//end for x
         
-        //overall type checking TODO door?
-//        if (pathset.contains(EnumPathType.OPENABLE))
-//        {
-//            return EnumPathType.OPENABLE;
-//        }
-//        else
-//        {
-        	return pathInLiquid ? EnumPathType.FLUID : EnumPathType.OPEN;
-//        }
+        //overall type checking
+        return pathInLiquid ? EnumPathType.FLUID : EnumPathType.OPEN;
     }
 
     /**

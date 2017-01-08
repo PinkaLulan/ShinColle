@@ -81,7 +81,8 @@ public class S2CInputPackets implements IMessage
 			}
 			catch (Exception e)
 			{
-				LogHelper.info("EXCEPTION : S2C input packet: get data fail: "+e);
+				LogHelper.info("EXCEPTION: S2C input packet: get data fail: "+e);
+				e.printStackTrace();
 			}
 		}
 		break;

@@ -1400,7 +1400,7 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion
 	    	{
 	    		GlStateManager.translate(0F, 0.4F, 0F);
 		    	//Body
-			  	this.Head.rotateAngleX += 0.1047F;
+			  	this.Head.rotateAngleX -= 0.2F;
 		    	this.BodyMain.rotateAngleX = -0.1396F;
 			  	this.Butt.rotateAngleX = 0.1396F;
 				//arm 

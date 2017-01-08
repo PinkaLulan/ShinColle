@@ -6,6 +6,7 @@ import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.entity.IShipInvisible;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.handler.EventHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
@@ -153,16 +154,16 @@ public class EntitySubmYo extends BasicEntityShipSmall implements IShipInvisible
   	  		{
   				if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
   				{
-  					return 0.75F;
+  					return this.height * 0.55F;
   	  			}
   	  			else
   	  			{
-  	  				return 0.1F;
+  	  				return this.height * 0.42F;
   	  			}
   	  		}
   	  		else
   	  		{
-  	  			return (double)this.height * 0.25F;
+  	  			return this.height * 0.58F;
   	  		}
   		}
   		else
@@ -171,7 +172,7 @@ public class EntitySubmYo extends BasicEntityShipSmall implements IShipInvisible
   	  		{
   				if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
   				{
-  					return 0.65F;
+  					return height * 0.48F;
   	  			}
   	  			else
   	  			{
@@ -180,7 +181,7 @@ public class EntitySubmYo extends BasicEntityShipSmall implements IShipInvisible
   	  		}
   	  		else
   	  		{
-  	  			return 0.9F;
+  	  			return height * 0.69F;
   	  		}
   		}
 	}

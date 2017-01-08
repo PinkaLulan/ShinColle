@@ -4,6 +4,7 @@ import com.lulan.shincolle.block.BlockSmallShipyard;
 import com.lulan.shincolle.capability.CapaInventory;
 import com.lulan.shincolle.crafting.SmallRecipes;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.reference.ID;
@@ -426,7 +427,16 @@ public class TileEntitySmallShipyard extends BasicTileInventory implements ITile
 				//TODO force update
 			}
 		}//end server side
-
+		//client side
+		else
+		{
+			//valid tile
+			if (this.world.getBlockState(this.pos).getBlock() != ModBlocks.BlockSmallShipyard)
+			{
+				this.invalidate();
+				return;
+			}
+		}
 	}
 
 	//計算fuel存量條

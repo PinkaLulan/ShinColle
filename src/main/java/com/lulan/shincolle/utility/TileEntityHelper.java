@@ -51,7 +51,7 @@ public class TileEntityHelper
 						//not support for large container
 						if (fluid.amount > 1000)
 						{
-							LogHelper.info("DEBUG : fluid registry: lava amount > 1000 mb");
+							fuelx = 0;
 						}
 						else
 						{
@@ -63,12 +63,12 @@ public class TileEntityHelper
 				//calc fuel magnification
 				if (tile instanceof TileEntitySmallShipyard)
 				{
-					fuelx *= ((TileEntitySmallShipyard)tile).FUELMAGN;
+					fuelx *= ((TileEntitySmallShipyard) tile).FUELMAGN;
 				}
-//				else if (tile instanceof TileEntityGrudgeHeavy) TODO
-//				{
-//					
-//				}
+				else if (tile instanceof TileMultiGrudgeHeavy)
+				{
+					fuelx *= ((TileMultiGrudgeHeavy) tile).FUELMAGN;
+				}
 				
 				//check power storage and add disposable fuel (ex: coal, lava bucket, lava cell)
 				if (fuelx > 0 && fuelx + tile2.getPowerRemained() < tile2.getPowerMax())
@@ -97,7 +97,7 @@ public class TileEntityHelper
 					//is lava and stack size = 1
 					if (stack.stackSize > 1)
 					{
-						LogHelper.info("DEBUG : lava fluid container stackSize > 1, no drain");
+						fuelx = 0;
 					}
 					else if (checkLiquidIsLava1000(fluid))
 					{
@@ -107,12 +107,12 @@ public class TileEntityHelper
 						//check fuel magnification
 						if (tile instanceof TileEntitySmallShipyard)
 						{
-							fuelx *= ((TileEntitySmallShipyard)tile).FUELMAGN;
+							fuelx *= ((TileEntitySmallShipyard) tile).FUELMAGN;
 						}
-//						else if (tile instanceof TileEntityGrudgeHeavy) TODO
-//						{
-//							
-//						}
+						else if (tile instanceof TileMultiGrudgeHeavy)
+						{
+							fuelx *= ((TileMultiGrudgeHeavy) tile).FUELMAGN;
+						}
 						
 						if(fuelx > 0 && fuelx + tile2.getPowerRemained() < tile2.getPowerMax()) {
 							//drain lava, capacity is checked in checkLiquidIsLava(), no check again
@@ -168,7 +168,6 @@ public class TileEntityHelper
 				//not support for large container
 				if (fluid.amount > 1000)
 				{
-					LogHelper.info("DEBUG : fluid registry: lava amount > 1000 mb");
 					return 0;
 				}
 				else
@@ -186,7 +185,6 @@ public class TileEntityHelper
 			
 			if (fuel.stackSize > 1)
 			{
-				LogHelper.info("DEBUG : lava fluid container stackSize > 1, no drain");
 				return 0;
 			}
 			

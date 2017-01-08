@@ -191,7 +191,7 @@ public class EquipCalc
 			prob = CalcHelper.getNormDist(meanDist);
 			//add to map
 			probList.put(i[0], prob);
-			LogHelper.info("DEBUG: roll equip type: prob list: ID "+i[0]+" MEAN(ORG) "+i[1]+" MEAN(NEW) "+meanNew+" MEAN(P) "+(meanNew/te)+" MD "+meanDist+" PR "+prob);
+			LogHelper.debug("DEBUG: roll equip type: prob list: ID "+i[0]+" MEAN(ORG) "+i[1]+" MEAN(NEW) "+meanNew+" MEAN(P) "+(meanNew/te)+" MD "+meanDist+" PR "+prob);
 		}
 		
 		//roll equip type
@@ -217,11 +217,11 @@ public class EquipCalc
 		{
 			Map.Entry entry = (Map.Entry)iter.next();
 			sumProb += (Float) entry.getValue();
-			LogHelper.info("DEBUG: roll equip type: random: "+random+" sum.pr "+sumProb+" total.pr "+totalProb);
+			LogHelper.debug("DEBUG: roll equip type: random: "+random+" sum.pr "+sumProb+" total.pr "+totalProb);
 			if (sumProb > random)
 			{	//get item
 				rollresult = (Integer) entry.getKey();
-				LogHelper.info("DEBUG: roll item: get type:"+rollresult);
+				LogHelper.debug("DEBUG: roll item: get type:"+rollresult);
 				break;
 			}
 		}
@@ -275,7 +275,7 @@ public class EquipCalc
 				
 				//put into map
 				equipList.put(eid, prob);
-				LogHelper.info("DEBUG: calc equip: prob list: ID "+eid+" MEAN "+val[ID.E.RARE_MEAN]+" MEAN(P) "+(val[ID.E.RARE_MEAN]/te)+" MD "+meanDist+" PR "+prob);
+				LogHelper.debug("DEBUG: calc equip: prob list: ID "+eid+" MEAN "+val[ID.E.RARE_MEAN]+" MEAN(P) "+(val[ID.E.RARE_MEAN]/te)+" MD "+meanDist+" PR "+prob);
 			}
 		}		
 		
@@ -302,11 +302,11 @@ public class EquipCalc
 		{
 			Map.Entry entry = (Map.Entry)iter.next();
 			sumProb += (Float) entry.getValue();
-			LogHelper.info("DEBUG: roll equip: type: "+type+" random: "+random+" sum.pr "+sumProb+" total.pr "+totalProb);
+			LogHelper.debug("DEBUG: roll equip: type: "+type+" random: "+random+" sum.pr "+sumProb+" total.pr "+totalProb);
 			if (sumProb > random)
 			{	//get item
 				rollResult = (Integer) entry.getKey();
-				LogHelper.info("DEBUG: roll item: get item:"+rollResult);
+				LogHelper.debug("DEBUG: roll item: get item:"+rollResult);
 				break;
 			}
 		}
@@ -396,7 +396,7 @@ public class EquipCalc
 		//set item sub type
 		if (item != null) item.setItemDamage(itemSubType);
 		
-		LogHelper.info("DEBUG : equip calc: get itemstack: "+itemType+" "+itemSubType+" "+item);
+		LogHelper.debug("DEBUG: equip calc: get itemstack: "+itemType+" "+itemSubType+" "+item);
 		return item;
 	}
 	

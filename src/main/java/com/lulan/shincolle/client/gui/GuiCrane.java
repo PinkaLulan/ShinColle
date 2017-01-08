@@ -37,6 +37,7 @@ public class GuiCrane extends GuiContainer
 	public GuiCrane(InventoryPlayer par1, TileEntityCrane par2)
 	{
 		super(new ContainerCrane(par1, par2));
+		
 		tile = par2;
 		xSize = 176;
 		ySize = 193;
@@ -45,6 +46,8 @@ public class GuiCrane extends GuiContainer
 	@Override
     public void initGui()
     {
+		super.initGui();
+		
 		//string
 		strLoad = I18n.format("gui.shincolle:crane.toship");
 		strUnload = I18n.format("gui.shincolle:crane.tochest");
@@ -69,9 +72,9 @@ public class GuiCrane extends GuiContainer
 	public void drawScreen(int mouseX, int mouseY, float f)
 	{
 		super.drawScreen(mouseX, mouseY, f);
+		
 		xMouse = mouseX;
 		yMouse = mouseY;
-		
 	}
 	
 	//draw tooltip
@@ -163,7 +166,7 @@ public class GuiCrane extends GuiContainer
 		
 		//draw slot string
 		fontRendererObj.drawString(strLoad, 21, 46, Enums.EnumColors.RED_LIGHT.getValue());
-		fontRendererObj.drawString(strUnload, 21, 77, Enums.EnumColors.GRAY_LIGHT.getValue());
+		fontRendererObj.drawString(strUnload, 21, 77, Enums.EnumColors.BLACK.getValue());
 		
 		//draw ship info
 		if (tile.getShip() != null)
@@ -171,7 +174,7 @@ public class GuiCrane extends GuiContainer
 			//draw ship wait time
 			str = String.valueOf(CalcHelper.getTimeFormated((int) (tile.getShip().getStateTimer(ID.T.CraneTime) * 0.05F)));
 			len = (int) (fontRendererObj.getStringWidth(str) * 0.5F);
-			fontRendererObj.drawString(str, 133 - len, 10, Enums.EnumColors.GRAY_LIGHT.getValue());
+			fontRendererObj.drawString(str, 133 - len, 10, Enums.EnumColors.GRAY_DARK.getValue());
 			
 			//draw ship name
 			if (tile.getShip().getCustomNameTag() != null && tile.getShip().getCustomNameTag().length() > 0)
@@ -182,8 +185,8 @@ public class GuiCrane extends GuiContainer
 			{
 				str = I18n.format("entity.shincolle."+tile.getShip().getClass().getSimpleName()+".name");
 			}
-			len = fontRendererObj.getStringWidth(str);
-			fontRendererObj.drawStringWithShadow(str, 170 - len, 24, Enums.EnumColors.WHITE.getValue());
+			
+			fontRendererObj.drawStringWithShadow(str, 80, 24, Enums.EnumColors.WHITE.getValue());
 		}
 		
 		//畫出tooltip

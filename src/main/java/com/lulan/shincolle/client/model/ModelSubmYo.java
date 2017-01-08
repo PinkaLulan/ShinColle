@@ -983,7 +983,7 @@ public class ModelSubmYo extends ModelBase implements IModelEmotionAdv
 			  		this.ArmLeft01.rotateAngleX = ax + 0.1F;
 			    	this.ArmRight01.rotateAngleX = -ax + 0.1F;
 			    	//equip
-			    	this.EquipHeadBack00.rotateAngleX = -0.7F;
+			    	this.EquipHeadBack00.rotateAngleX = ax * 0.1F - 0.7F;
 		  		}
 	    	}
 	    	else

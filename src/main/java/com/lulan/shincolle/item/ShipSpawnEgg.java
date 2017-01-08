@@ -211,7 +211,7 @@ public class ShipSpawnEgg extends BasicItem
     		
     		//get ship type
     		String entityName = ShipCalc.getEntityToSpawnName(ShipCalc.rollShipType(item));
-            LogHelper.info("DEBUG : spawn entity: "+entityName);
+            LogHelper.debug("DEBUG: ShipSpawnEgg: spawn entity: "+entityName);
             
             if (EntityList.NAME_TO_CLASS.containsKey(entityName))
             {
@@ -222,7 +222,7 @@ public class ShipSpawnEgg extends BasicItem
             }
             else
             {
-                LogHelper.info("ShipSpawnEgg: entity not found: "+entityName);
+                LogHelper.debug("DEBUG: ShipSpawnEgg: entity not found: "+entityName);
             }
         }
         
@@ -235,7 +235,7 @@ public class ShipSpawnEgg extends BasicItem
 	 */
   	private void initEntityAttribute(ItemStack stack, EntityPlayer player, BasicEntityShip entity)
   	{
-  		LogHelper.info("DEBUG : init ship states");
+  		LogHelper.debug("DEBUG: init ship states");
   		//set init AI value and owner
   		entity.setTamed(true);
   		entity.setEntityTarget(null);
@@ -270,7 +270,7 @@ public class ShipSpawnEgg extends BasicItem
 				}
 				catch (Exception e)
 				{
-					LogHelper.info("EXCEPTION : init ship inventory fail: ");
+					LogHelper.info("EXCEPTION: init ship inventory fail: ");
 					e.printStackTrace();
 				}
 				
@@ -299,7 +299,7 @@ public class ShipSpawnEgg extends BasicItem
 				}
 				catch (Exception e)
 				{
-					LogHelper.info("EXCEPTION : init ship attrs fail: "+e);
+					LogHelper.info("EXCEPTION: init ship attrs fail: "+e);
 					e.printStackTrace();
 				}
 				
@@ -357,7 +357,7 @@ public class ShipSpawnEgg extends BasicItem
 		//非指定ship egg, 則隨機骰屬性
 		else
 		{
-			LogHelper.info("DEBUG : new spawn egg (random)");
+			LogHelper.debug("DEBUG: new spawn egg (random)");
 			
 			//set owner
 			EntityHelper.setPetPlayerUUID(player.getUniqueID(), entity);
@@ -448,7 +448,7 @@ public class ShipSpawnEgg extends BasicItem
                     //if boss egg
                     if (stack.getItemDamage() > 2000)
                     {
-                    	LogHelper.info("DEBUG : use boss egg");
+                    	LogHelper.debug("DEBUG: use boss egg");
                     	BasicEntityShipHostile ship = (BasicEntityShipHostile) getSpawnEntity(player, stack, hitPos.up(), false);
                         
                     	if (ship != null)
@@ -461,7 +461,7 @@ public class ShipSpawnEgg extends BasicItem
                     //normal egg
                     else
                     {
-                    	LogHelper.info("DEBUG : use normal egg");
+                    	LogHelper.debug("DEBUG: use normal egg");
                     	BasicEntityShip ship = (BasicEntityShip) getSpawnEntity(player, stack, hitPos.up(), true);
                         
                         if (ship != null)

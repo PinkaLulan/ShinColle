@@ -180,7 +180,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipEquip
         if (customAcc == -2F)
         {
         	this.type = 3;	//cluster main
-        	LogHelper.info("DEBUG : const type 3 missile ");
+        	LogHelper.debug("DEBUG : const type 3 missile ");
         }
         
         //直射彈道, no gravity

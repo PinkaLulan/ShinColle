@@ -1,14 +1,5 @@
 package com.lulan.shincolle.ai;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
-
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
@@ -22,6 +13,15 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.FormationHelper;
 import com.lulan.shincolle.utility.LogHelper;
+
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 /**SHIP FOLLOW OWNER AI
  * 距離超過max dist時觸發移動, 直到走進min dist距離時停止
  * 距離超過TP_DIST會直接teleport到owner旁邊
@@ -201,7 +201,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase
         			{
         				this.checkTP_D = 0;
         				
-        				LogHelper.info("DEBUG : follow AI: distSQ > "+TP_DIST+" , teleport to target. dim: "+host2.dimension+" "+owner.dimension);
+        				LogHelper.debug("DEBUG: follow AI: distSQ > "+TP_DIST+" , teleport to target. dim: "+host2.dimension+" "+owner.dimension);
         				applyTeleport(this.host, this.distSq, new Vec3d(this.owner.posX, this.owner.posY + 0.75D, this.owner.posZ));
                         return;
         			}
@@ -212,7 +212,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase
         		{
         			this.checkTP_T = 0;
         			
-        			LogHelper.info("DEBUG : follow AI: teleport entity: dimension check: "+host2.dimension+" "+owner.dimension);
+        			LogHelper.debug("DEBUG: follow AI: teleport entity: dimension check: "+host2.dimension+" "+owner.dimension);
         			applyTeleport(this.host, this.distSq, new Vec3d(this.owner.posX, this.owner.posY + 0.75D, this.owner.posZ));
                     return;
         		}

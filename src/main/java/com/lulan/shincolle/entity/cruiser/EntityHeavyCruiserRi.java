@@ -93,13 +93,20 @@ public class EntityHeavyCruiserRi extends BasicEntityShipSmall
     @Override
 	public double getMountedYOffset()
     {
-    	if (this.isSitting())
-    	{
-  			return (double)this.height * 0.2D;
+  		if (this.isSitting())
+  		{
+			if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
+			{
+				return this.height * 0.22F;
+  			}
+  			else
+  			{
+  				return this.height * 0.33F;
+  			}
   		}
   		else
   		{
-  			return (double)this.height * 0.6D;
+  			return this.height * 0.72F;
   		}
 	}
 

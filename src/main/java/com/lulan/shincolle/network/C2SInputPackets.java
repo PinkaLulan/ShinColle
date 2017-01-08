@@ -90,7 +90,7 @@ public class C2SInputPackets implements IMessage
 			}
 			catch (Exception e)
 			{
-				LogHelper.info("EXCEPTION: C2S input packet:");
+				LogHelper.info("EXCEPTION: C2S input packet: ");
 				e.printStackTrace();
 			}
 		break;
