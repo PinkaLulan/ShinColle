@@ -54,12 +54,6 @@ public class EntityHarbourHime extends BasicEntityShipCV
 	}
 	
 	@Override
-	public int getKaitaiType()
-	{
-		return 1;
-	}
-	
-	@Override
 	public void setAIList()
 	{
 		super.setAIList();
@@ -275,20 +269,20 @@ public class EntityHarbourHime extends BasicEntityShipCV
 		{
 			switch (getStateEmotion(ID.S.State2))
 			{
-			case ID.State.NORMAL_2:
-				setStateEmotion(ID.S.State2, ID.State.EQUIP00_2, true);
+			case ID.State.NORMALa:
+				setStateEmotion(ID.S.State2, ID.State.EQUIP00a, true);
 			break;
-			case ID.State.EQUIP00_2:
-				setStateEmotion(ID.S.State2, ID.State.EQUIP01_2, true);
+			case ID.State.EQUIP00a:
+				setStateEmotion(ID.S.State2, ID.State.EQUIP01a, true);
 			break;
-			case ID.State.EQUIP01_2:
-				setStateEmotion(ID.S.State2, ID.State.EQUIP02_2, true);
+			case ID.State.EQUIP01a:
+				setStateEmotion(ID.S.State2, ID.State.EQUIP02a, true);
 			break;
-			case ID.State.EQUIP02_2:
-				setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
+			case ID.State.EQUIP02a:
+				setStateEmotion(ID.S.State2, ID.State.NORMALa, true);
 			break;
 			default:
-				setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
+				setStateEmotion(ID.S.State2, ID.State.NORMALa, true);
 			break;
 			}
 		}

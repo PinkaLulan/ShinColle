@@ -571,6 +571,7 @@ public class ID {
 		public static final short Raiden = 55;
 		
 		public static final short LightCruiserTenryuu = 56;
+		public static final short LightCruiserTatsuta = 57;
 	}
 	
 	/** ship misc entity id for renderer */
@@ -677,17 +678,17 @@ public class ID {
 		public static final byte EQUIP08 = 9;
 		public static final byte EQUIP09 = 10;
 		/** for ID.S.State2 */
-		public static final byte NORMAL_2 = 0;
-		public static final byte EQUIP00_2 = 1;
-		public static final byte EQUIP01_2 = 2;
-		public static final byte EQUIP02_2 = 3;
-		public static final byte EQUIP03_2 = 4;
-		public static final byte EQUIP04_2 = 5;
-		public static final byte EQUIP05_2 = 6;
-		public static final byte EQUIP06_2 = 7;
-		public static final byte EQUIP07_2 = 8;
-		public static final byte EQUIP08_2 = 9;
-		public static final byte EQUIP09_2 = 10;
+		public static final byte NORMALa = 0;
+		public static final byte EQUIP00a = 1;
+		public static final byte EQUIP01a = 2;
+		public static final byte EQUIP02a = 3;
+		public static final byte EQUIP03a = 4;
+		public static final byte EQUIP04a = 5;
+		public static final byte EQUIP05a = 6;
+		public static final byte EQUIP06a = 7;
+		public static final byte EQUIP07a = 8;
+		public static final byte EQUIP08a = 9;
+		public static final byte EQUIP09a = 10;
 	}
 	
 	/** Timer Array */

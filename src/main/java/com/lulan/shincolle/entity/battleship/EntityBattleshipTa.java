@@ -128,7 +128,7 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
   		
 		//spawn airplane
-    	if (this.getStateEmotion(ID.S.State2) > ID.State.NORMAL_2)
+    	if (this.getStateEmotion(ID.S.State2) > ID.State.NORMALa)
     	{
     		EntityRensouhou rensoho1 = new EntityRensouhou(this.world);
     		rensoho1.initAttrs(this, target, 0);
@@ -147,12 +147,6 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
       	if (ConfigHandler.canFlare) this.flareTarget(target);
       	
         return true;
-	}
-	
-	@Override
-	public int getKaitaiType()
-	{
-		return 1;
 	}
 
 	@Override
@@ -194,14 +188,14 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
 		{
 			switch(getStateEmotion(ID.S.State2))
 			{
-			case ID.State.NORMAL_2:
-				setStateEmotion(ID.S.State2, ID.State.EQUIP00_2, true);
+			case ID.State.NORMALa:
+				setStateEmotion(ID.S.State2, ID.State.EQUIP00a, true);
 			break;
-			case ID.State.EQUIP00_2:
-				setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
+			case ID.State.EQUIP00a:
+				setStateEmotion(ID.S.State2, ID.State.NORMALa, true);
 			break;	
 			default:
-				setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
+				setStateEmotion(ID.S.State2, ID.State.NORMALa, true);
 			break;
 			}
 		}

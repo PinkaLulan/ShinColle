@@ -8,7 +8,6 @@ import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.entity.other.EntityRensouhou;
 import com.lulan.shincolle.entity.other.EntityRensouhouS;
 import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.handler.EventHandler;
 import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -142,7 +141,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
   		
 		//spawn rensouhou
-    	if (this.getStateEmotion(ID.S.State2) > ID.State.NORMAL_2)
+    	if (this.getStateEmotion(ID.S.State2) > ID.State.NORMALa)
     	{
     		EntityRensouhouS rensoho2 = new EntityRensouhouS(this.world);
     		rensoho2.initAttrs(this, target, 0);
@@ -258,12 +257,6 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
 	}
   	
   	@Override
-	public int getKaitaiType()
-  	{
-		return 2;
-	}
-  	
-  	@Override
 	public int getNumServant()
   	{
 		return this.numRensouhou;
@@ -302,14 +295,14 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
 		{
 			switch (getStateEmotion(ID.S.State2))
 			{
-			case ID.State.NORMAL_2:
-				setStateEmotion(ID.S.State2, ID.State.EQUIP00_2, true);
+			case ID.State.NORMALa:
+				setStateEmotion(ID.S.State2, ID.State.EQUIP00a, true);
 			break;
-			case ID.State.EQUIP00_2:
-				setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
+			case ID.State.EQUIP00a:
+				setStateEmotion(ID.S.State2, ID.State.NORMALa, true);
 			break;	
 			default:
-				setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
+				setStateEmotion(ID.S.State2, ID.State.NORMALa, true);
 			break;
 			}
 		}

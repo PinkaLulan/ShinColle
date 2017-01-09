@@ -6,7 +6,6 @@ import com.lulan.shincolle.entity.BasicEntityShipCV;
 import com.lulan.shincolle.entity.other.EntityAirplaneT;
 import com.lulan.shincolle.entity.other.EntityAirplaneZero;
 import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.handler.EventHandler;
 import com.lulan.shincolle.reference.ID;
 
 import net.minecraft.entity.Entity;
@@ -44,13 +43,7 @@ public class EntityCarrierAkagi extends BasicEntityShipCV
 	{
 		return 3;
 	}
-	
-	@Override
-	public int getKaitaiType()
-	{
-		return 3;
-	}
-	
+
 	//增加艦載機數量計算
   	@Override
   	public void calcShipAttributes()
@@ -116,7 +109,7 @@ public class EntityCarrierAkagi extends BasicEntityShipCV
 		if (isSneaking)
 		{
 			int i = getStateEmotion(ID.S.State2) + 1;
-			if (i > ID.State.EQUIP03_2) i = ID.State.NORMAL_2;
+			if (i > ID.State.EQUIP03a) i = ID.State.NORMALa;
 			setStateEmotion(ID.S.State2, i, true);
 		}
 		else

@@ -68,13 +68,7 @@ public class EntityNorthernHime extends BasicEntityShipCV
 	{
 		return 2;
 	}
-	
-	@Override
-	public int getKaitaiType()
-	{
-		return 1;
-	}
-	
+
 	@Override
 	public void setAIList()
 	{
@@ -214,7 +208,7 @@ public class EntityNorthernHime extends BasicEntityShipCV
   			//drip water effect
   			if (this.ticksExisted % 8 == 0)
   			{
-  				if (getStateEmotion(ID.S.State2) == ID.State.EQUIP01_2 && !getStateFlag(ID.F.NoFuel))
+  				if (getStateEmotion(ID.S.State2) == ID.State.EQUIP01a && !getStateFlag(ID.F.NoFuel))
   				{
   					if (this.isSitting() || this.isRiding())
   					{
@@ -396,14 +390,14 @@ public class EntityNorthernHime extends BasicEntityShipCV
 		{
 			switch (getStateEmotion(ID.S.State2))
 			{
-			case ID.State.EQUIP00_2:
-				setStateEmotion(ID.S.State2, ID.State.EQUIP01_2, true);
+			case ID.State.EQUIP00a:
+				setStateEmotion(ID.S.State2, ID.State.EQUIP01a, true);
 			break;
-			case ID.State.EQUIP01_2:
-				setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
+			case ID.State.EQUIP01a:
+				setStateEmotion(ID.S.State2, ID.State.NORMALa, true);
 			break;
 			default:
-				setStateEmotion(ID.S.State2, ID.State.EQUIP00_2, true);
+				setStateEmotion(ID.S.State2, ID.State.EQUIP00a, true);
 			break;
 			}
 		}

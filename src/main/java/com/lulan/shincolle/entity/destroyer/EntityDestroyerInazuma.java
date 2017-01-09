@@ -201,13 +201,7 @@ public class EntityDestroyerInazuma extends BasicEntityShipSmall implements IShi
   		
   		super.updateFuelState(nofuel);
 	}
-  	
-  	@Override
-	public int getKaitaiType()
-  	{
-		return 2;
-	}
-  	
+
   	@Override
     public void updatePassenger(Entity rider)
     {

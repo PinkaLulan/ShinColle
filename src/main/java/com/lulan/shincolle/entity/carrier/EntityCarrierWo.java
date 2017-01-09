@@ -3,7 +3,6 @@ package com.lulan.shincolle.entity.carrier;
 import com.lulan.shincolle.ai.EntityAIShipCarrierAttack;
 import com.lulan.shincolle.entity.BasicEntityShipCV;
 import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.handler.EventHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
@@ -41,13 +40,7 @@ public class EntityCarrierWo extends BasicEntityShipCV
 	{
 		return 3;
 	}
-	
-    @Override
-	public int getKaitaiType()
-    {
-		return 1;
-	}
-	
+
 	@Override
 	public void setAIList()
 	{

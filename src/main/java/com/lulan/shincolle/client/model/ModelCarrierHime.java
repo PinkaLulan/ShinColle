@@ -481,7 +481,6 @@ public class ModelCarrierHime extends ModelBase implements IModelEmotionAdv
     	GlStateManager.popMatrix();
     }
     
-	//model animation
     @Override
     public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity)
     {
@@ -764,7 +763,7 @@ public class ModelCarrierHime extends ModelBase implements IModelEmotionAdv
 		  	this.Hair02.rotateAngleX -= 0.3F;
 		  	this.Hair03.rotateAngleX -= 0.3F;
 		    //arm
-		  	if (ent.getStateEmotion(ID.S.State2) > ID.State.NORMAL_2)
+		  	if (ent.getStateEmotion(ID.S.State2) > ID.State.NORMALa)
 		  	{
 		  		this.ArmLeft01.rotateAngleX = angleAdd2 * 0.25F - 0.1F;
 		    	this.ArmLeft01.rotateAngleY = -0.7F;
@@ -1057,7 +1056,7 @@ public class ModelCarrierHime extends ModelBase implements IModelEmotionAdv
   	{
   		switch (ent.getStateEmotion(ID.S.State2))
   		{
-  		case ID.State.EQUIP00_2:
+  		case ID.State.EQUIP00a:
   			this.GlowBodyMain2.isHidden = false;
   		break;
   		default:  //normal

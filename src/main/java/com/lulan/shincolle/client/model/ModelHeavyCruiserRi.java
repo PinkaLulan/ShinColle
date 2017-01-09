@@ -579,7 +579,7 @@ public class ModelHeavyCruiserRi extends ModelBase implements IModelEmotion
     	}
     	
     	//hair display
-    	if (ent.getStateEmotion(ID.S.State2) > ID.State.NORMAL_2)
+    	if (ent.getStateEmotion(ID.S.State2) > ID.State.NORMALa)
     	{
     		this.HeadTail0.isHidden = false;
     	}

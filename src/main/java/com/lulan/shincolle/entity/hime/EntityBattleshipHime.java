@@ -55,12 +55,6 @@ public class EntityBattleshipHime extends BasicEntityShipSmall
 		this.tasks.addTask(12, new EntityAIShipRangeAttack(this));
 	}
 	
-	@Override
-	public int getKaitaiType()
-	{
-		return 1;
-	}
-	
 	//change light cannon particle
 	@Override
 	public void applyParticleAtAttacker(int type, Entity target, float[] vec)

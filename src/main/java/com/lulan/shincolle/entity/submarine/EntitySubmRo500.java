@@ -8,7 +8,6 @@ import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.entity.IShipInvisible;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.handler.EventHandler;
 import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
@@ -51,12 +50,6 @@ public class EntitySubmRo500 extends BasicEntityShipSmall implements IShipInvisi
 	public int getEquipType()
 	{
 		return 1;
-	}
-	
-  	@Override
-	public int getKaitaiType()
-  	{
-		return 2;
 	}
   	
 	//平常音效新增: garuru

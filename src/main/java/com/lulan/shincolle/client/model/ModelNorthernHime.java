@@ -813,7 +813,7 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion
         	this.EquipLHead02.rotateAngleZ = -angleX * 0.3F;
     	}
     	//umbrella
-    	if (ent.getStateEmotion(ID.S.State2) == ID.State.EQUIP01_2)
+    	if (ent.getStateEmotion(ID.S.State2) == ID.State.EQUIP01a)
     	{
     		this.ArmLeft01.rotateAngleX = 0F;
     		this.ArmLeft01.rotateAngleY = -0.26F;
@@ -832,7 +832,7 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion
 	    	this.ArmRight01.rotateAngleX = -2.53F;
 	    	this.ArmRight01.rotateAngleZ = -0.7F;
 	    	
-	    	if (ent.getStateEmotion(ID.S.State2) == ID.State.EQUIP01_2)
+	    	if (ent.getStateEmotion(ID.S.State2) == ID.State.EQUIP01a)
 	    	{
 	    		this.ArmLeft04.rotateAngleY = -1F;
 	    	}
@@ -864,7 +864,7 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion
 		  	//equip
 		  	this.EquipBase.rotateAngleX -= 0.8727F;
 		  	
-		  	if (ent.getStateEmotion(ID.S.State2) == ID.State.EQUIP01_2)
+		  	if (ent.getStateEmotion(ID.S.State2) == ID.State.EQUIP01a)
 		  	{
 		  		this.ArmLeft01.rotateAngleY = -1.05F;
 		  		this.ArmLeft02.rotateAngleX = -2.01F;
@@ -929,7 +929,7 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion
 		    	this.LegLeft01.rotateAngleY = -0.5F;
 		    	this.LegRight01.rotateAngleY = 0.5F;
 		    	
-		    	if (ent.getStateEmotion(ID.S.State2) == ID.State.EQUIP01_2)
+		    	if (ent.getStateEmotion(ID.S.State2) == ID.State.EQUIP01a)
 		    	{
 		    		this.ArmLeft02.offsetY = 0F;
 		    		this.ArmLeft02.rotateAngleX = -0.8F;
@@ -953,7 +953,7 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion
 		    	this.LegLeft01.rotateAngleY = -0.5F;
 		    	this.LegRight01.rotateAngleY = 0.5F;
 		    	
-		    	if (ent.getStateEmotion(ID.S.State2) == ID.State.EQUIP01_2)
+		    	if (ent.getStateEmotion(ID.S.State2) == ID.State.EQUIP01a)
 		    	{
 		    		this.ArmLeft02.offsetY = 0F;
 		    		this.ArmLeft02.rotateAngleX = -0.2F;
@@ -1031,12 +1031,12 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion
 			this.SantaHat01.isHidden = true;
 			this.EquipUmbre01a.isHidden = true;
 		break;
-		case ID.State.EQUIP00_2:
+		case ID.State.EQUIP00a:
 			this.SantaCloth01.isHidden = false;
 			this.SantaHat01.isHidden = false;
 			this.EquipUmbre01a.isHidden = true;
 		break;
-		case ID.State.EQUIP01_2:
+		case ID.State.EQUIP01a:
 			this.SantaCloth01.isHidden = true;
 			this.SantaHat01.isHidden = true;
 			this.EquipUmbre01a.isHidden = false;

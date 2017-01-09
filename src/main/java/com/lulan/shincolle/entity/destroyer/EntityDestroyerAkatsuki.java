@@ -9,7 +9,6 @@ import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.IShipRiderType;
 import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.handler.EventHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.BlockHelper;
@@ -194,13 +193,7 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
 		
 		return dd;
 	}
-  	
-  	@Override
-	public int getKaitaiType()
-  	{
-		return 2;
-	}
-  	
+
   	@Override
 	public double getMountedYOffset()
   	{

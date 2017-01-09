@@ -1171,12 +1171,12 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
   		
   		switch (ent.getStateEmotion(ID.S.State2))
   		{
-  		case ID.State.EQUIP00_2:
+  		case ID.State.EQUIP00a:
   			this.HatBase.isHidden = false;
   			this.Hair02f1.isHidden = false;
   			this.HatBase2.isHidden = true;
   		break;
-  		case ID.State.EQUIP01_2:
+  		case ID.State.EQUIP01a:
   			this.HatBase.isHidden = true;
   			this.Hair02f1.isHidden = true;
   			this.HatBase2.isHidden = false;
@@ -1184,7 +1184,7 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
   			this.HatBase2.offsetY = 0F;
   			this.HatBase2.offsetZ = 0F;
   		break;
-  		case ID.State.EQUIP02_2:
+  		case ID.State.EQUIP02a:
   			this.HatBase.isHidden = true;
   			this.Hair02f1.isHidden = true;
   			this.HatBase2.isHidden = false;

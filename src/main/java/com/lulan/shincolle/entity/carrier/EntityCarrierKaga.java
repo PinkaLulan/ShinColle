@@ -43,13 +43,7 @@ public class EntityCarrierKaga extends BasicEntityShipCV
 	{
 		return 3;
 	}
-	
-	@Override
-	public int getKaitaiType()
-	{
-		return 3;
-	}
-	
+
 	//增加艦載機數量計算
   	@Override
   	public void calcShipAttributes()
@@ -95,7 +89,7 @@ public class EntityCarrierKaga extends BasicEntityShipCV
 		if (isSneaking)
 		{
 			int i = getStateEmotion(ID.S.State2) + 1;
-			if (i > ID.State.EQUIP03_2) i = ID.State.NORMAL_2;
+			if (i > ID.State.EQUIP03a) i = ID.State.NORMALa;
 			setStateEmotion(ID.S.State2, i, true);
 		}
 		else

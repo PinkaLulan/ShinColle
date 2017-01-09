@@ -288,6 +288,14 @@ public class ShipCalc
   			return "shincolle.EntityDestroyerInazuma";
   		case ID.Ship.DestroyerInazuma+2000:
   			return "shincolle.EntityDestroyerInazumaMob";
+  		case ID.Ship.LightCruiserTenryuu:
+  			return "shincolle.EntityCruiserTenryuu";
+  		case ID.Ship.LightCruiserTenryuu+2000:
+  			return "shincolle.EntityCruiserTenryuuMob";
+  		case ID.Ship.LightCruiserTatsuta:
+  			return "shincolle.EntityCruiserTatsuta";
+  		case ID.Ship.LightCruiserTatsuta+2000:
+  			return "shincolle.EntityCruiserTatsutaMob";
   		default:
   			return "shincolle.EntityDestroyerI";
   		}	
@@ -422,6 +430,7 @@ public class ShipCalc
   			amount[3] = new ItemStack(ModItems.AbyssMetal, ConfigHandler.kaitaiAmountSmall + rand.nextInt((int)(ConfigHandler.kaitaiAmountSmall * 0.25F) + 1), 1);
   			break;
   		case ID.Ship.LightCruiserTenryuu:
+  		case ID.Ship.LightCruiserTatsuta:
   		case ID.Ship.DestroyerShimakaze:
   			amount[0] = new ItemStack(ModBlocks.BlockGrudge, ConfigHandler.kaitaiAmountLarge + rand.nextInt((int)(ConfigHandler.kaitaiAmountLarge * 0.25F) + 1));
   			amount[1] = new ItemStack(ModBlocks.BlockAbyssium, ConfigHandler.kaitaiAmountLarge + rand.nextInt((int)(ConfigHandler.kaitaiAmountLarge * 0.25F) + 1));

@@ -184,13 +184,7 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall implements ISh
   		
   		super.updateFuelState(nofuel);
 	}
-  	
-  	@Override
-	public int getKaitaiType()
-  	{
-		return 2;
-	}
-  	
+
   	@Override
 	public double getMountedYOffset()
   	{

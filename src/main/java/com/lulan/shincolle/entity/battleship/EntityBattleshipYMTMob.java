@@ -35,7 +35,7 @@ public class EntityBattleshipYMTMob extends BasicEntityShipHostile
         this.smokeY = 0F;
         
 		//model display
-		this.setStateEmotion(ID.S.State2, ID.State.EQUIP02_2, false);
+		this.setStateEmotion(ID.S.State2, ID.State.EQUIP02a, false);
 		this.setStateEmotion(ID.S.State, ID.State.EQUIP02, false);
 	}
 	

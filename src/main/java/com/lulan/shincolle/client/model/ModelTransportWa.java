@@ -689,7 +689,7 @@ public class ModelTransportWa extends ModelBase implements IModelEmotion
 	  	this.EquipTubeR01.rotateAngleX = -angleX * 0.08F - 0.35F;
 	    
 	    //fly mode
-	    if (ent.getStateEmotion(ID.S.State2) > ID.State.NORMAL_2)
+	    if (ent.getStateEmotion(ID.S.State2) > ID.State.NORMALa)
 	    {
 	    	//body
 	    	this.Cloth04.rotateAngleX += 0.23F;
@@ -746,7 +746,7 @@ public class ModelTransportWa extends ModelBase implements IModelEmotion
 	    	float ax = MathHelper.cos(f2 * 0.5F) * 0.5F;
 	    	
 	    	//fly mode
-		    if (ent.getStateEmotion(ID.S.State2) > ID.State.NORMAL_2)
+		    if (ent.getStateEmotion(ID.S.State2) > ID.State.NORMALa)
 		    {
 		    	if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 		    	{
@@ -917,7 +917,7 @@ public class ModelTransportWa extends ModelBase implements IModelEmotion
   		
   		switch (ent.getStateEmotion(ID.S.State2))
   		{
-  		case ID.State.EQUIP00_2:
+  		case ID.State.EQUIP00a:
   			this.EquipBase.isHidden = false;
   			this.GlowEquipBase.isHidden = false;
   			this.LegLeft01.isHidden = true;

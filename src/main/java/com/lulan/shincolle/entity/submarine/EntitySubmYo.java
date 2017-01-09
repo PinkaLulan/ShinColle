@@ -6,7 +6,6 @@ import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.entity.IShipInvisible;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.handler.EventHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
@@ -52,13 +51,7 @@ public class EntitySubmYo extends BasicEntityShipSmall implements IShipInvisible
 	{
 		return 1;
 	}
-	
-  	@Override
-	public int getKaitaiType()
-  	{
-		return 0;
-	}
-	
+
 	@Override
 	public void setAIList()
 	{
@@ -205,11 +198,11 @@ public class EntitySubmYo extends BasicEntityShipSmall implements IShipInvisible
 		{
 			switch (getStateEmotion(ID.S.State2))
 			{
-			case ID.State.NORMAL_2:
-				setStateEmotion(ID.S.State2, ID.State.EQUIP00_2, true);
+			case ID.State.NORMALa:
+				setStateEmotion(ID.S.State2, ID.State.EQUIP00a, true);
 			break;
 			default:
-				setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
+				setStateEmotion(ID.S.State2, ID.State.NORMALa, true);
 			break;
 			}
 		}

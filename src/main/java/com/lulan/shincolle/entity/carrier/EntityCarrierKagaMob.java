@@ -21,7 +21,7 @@ public class EntityCarrierKagaMob extends BasicEntityShipHostileCV
         this.launchHeight = this.height * 0.65F;
         
 		//model display
-		this.setStateEmotion(ID.S.State2, ID.State.EQUIP03_2, false);
+		this.setStateEmotion(ID.S.State2, ID.State.EQUIP03a, false);
 		
 		if (this.getRNG().nextInt(3) == 0)
 		{

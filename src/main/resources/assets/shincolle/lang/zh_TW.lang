@@ -156,6 +156,10 @@ item.shincolle:shipegg55.name=驅逐艦 雷
 item.shincolle:shipegg2055.name=驅逐艦 雷 (Mob)
 item.shincolle:shipegg56.name=驅逐艦 電
 item.shincolle:shipegg2056.name=驅逐艦 電 (Mob)
+item.shincolle:shipegg58.name=輕巡洋艦 天龍
+item.shincolle:shipegg2058.name=輕巡洋艦 天龍 (Mob)
+item.shincolle:shipegg59.name=輕巡洋艦 龍田
+item.shincolle:shipegg2059.name=輕巡洋艦 龍田 (Mob)
 
 # Entity
 entity.shincolle.EntityAirfieldHime.name=飛行場姬
@@ -179,6 +183,10 @@ entity.shincolle.EntityCarrierKagaMob.name=空母 加賀
 entity.shincolle.EntityCarrierHime.name=空母棲姬
 entity.shincolle.EntityCarrierWD.name=空母水鬼
 entity.shincolle.EntityCarrierWo.name=空母ヲ級
+entity.shincolle.EntityCruiserTenryuu.name=輕巡洋艦 天龍
+entity.shincolle.EntityCruiserTenryuuMob.name=輕巡洋艦 天龍
+entity.shincolle.EntityCruiserTatsuta.name=輕巡洋艦 龍田
+entity.shincolle.EntityCruiserTatsutaMob.name=輕巡洋艦 龍田
 entity.shincolle.EntityDestroyerHa.name=驅逐ハ級
 entity.shincolle.EntityDestroyerI.name=驅逐イ級
 entity.shincolle.EntityDestroyerNi.name=驅逐ニ級
@@ -475,6 +483,12 @@ gui.shincolle:book.chap5.text10d1=§9名稱：§0 雷<br><br>§9艦種：§0 曉
 gui.shincolle:book.chap5.title11=
 gui.shincolle:book.chap5.text11d0=
 gui.shincolle:book.chap5.text11d1=§9名稱：§0 電<br><br>§9艦種：§0 曉級 驅逐艦<br><br>§9特殊能力：§0 主人移動速度加成<br><br>§9其他能力：§0 拾取道具<br><br>因為電是天使，所以深海棲艦一靠近就被なのDEATH淨化也是理所當然的事情。
+gui.shincolle:book.chap5.title12=
+gui.shincolle:book.chap5.text12d0=
+gui.shincolle:book.chap5.text12d1=§9名稱：§0 天龍<br><br>§9艦種：§0 天龍級 輕巡洋艦<br><br>§9特殊能力：§0 無<br><br>§9其他能力：§0 夜晚時爆擊,閃避率+15%<br><br>
+gui.shincolle:book.chap5.title13=
+gui.shincolle:book.chap5.text13d0=
+gui.shincolle:book.chap5.text13d1=§9名稱：§0 龍田<br><br>§9艦種：§0 天龍級 輕巡洋艦<br><br>§9特殊能力：§0 無<br><br>§9其他能力：§0 夜晚時爆擊,閃避率+15%<br><br>
 
 # GUI: Book Text Chap 6
 gui.shincolle:book.chap6.title=指令說明

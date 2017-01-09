@@ -1097,7 +1097,7 @@ public class ModelSubmYo extends ModelBase implements IModelEmotionAdv
   		//outfit and torpedo
   		switch (ent.getStateEmotion(ID.S.State2))
   		{
-  		case ID.State.EQUIP00_2:
+  		case ID.State.EQUIP00a:
   			this.BodyMain1.isHidden = true;
   			this.Butt1.isHidden = true;
   			this.BoobL.isHidden = true;

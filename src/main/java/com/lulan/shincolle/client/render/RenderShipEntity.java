@@ -13,6 +13,7 @@ import com.lulan.shincolle.client.model.ModelCarrierHime;
 import com.lulan.shincolle.client.model.ModelCarrierKaga;
 import com.lulan.shincolle.client.model.ModelCarrierWDemon;
 import com.lulan.shincolle.client.model.ModelCarrierWo;
+import com.lulan.shincolle.client.model.ModelCruiserTenryuu;
 import com.lulan.shincolle.client.model.ModelDestroyerAkatsuki;
 import com.lulan.shincolle.client.model.ModelDestroyerHa;
 import com.lulan.shincolle.client.model.ModelDestroyerHibiki;
@@ -111,6 +112,9 @@ public class RenderShipEntity extends RenderBasic
 	private static final ModelBase MD_CV_Akagi = new ModelCarrierAkagi();
 	private static final ResourceLocation TEX_CV_Kaga = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityCarrierKaga.png");
 	private static final ModelBase MD_CV_Kaga = new ModelCarrierKaga();
+	//CL
+	private static final ResourceLocation TEX_CL_Tenryuu = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityCruiserTenryuu.png");
+	private static final ModelBase MD_CL_Tenryuu = new ModelCruiserTenryuu();
 	//DD
 	private static final ResourceLocation TEX_DD_Akatsuki = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityDestroyerAkatsuki.png");
 	private static final ModelBase MD_DD_Akatsuki = new ModelDestroyerAkatsuki();
@@ -200,7 +204,11 @@ public class RenderShipEntity extends RenderBasic
 		case ID.Ship.CarrierAkagi:
 			return TEX_CV_Akagi;
 		case ID.Ship.CarrierKaga:
-			return TEX_CV_Kaga;	
+			return TEX_CV_Kaga;
+		case ID.Ship.LightCruiserTenryuu:
+			return TEX_CL_Tenryuu;
+//		case ID.Ship.LightCruiserTatsuta:
+//			return TEX_CL_Tatsuta;
 		//DD
 		case ID.Ship.DestroyerAkatsuki:
 			return TEX_DD_Akatsuki;
@@ -307,6 +315,12 @@ public class RenderShipEntity extends RenderBasic
 		case ID.Ship.CarrierKaga:
 			this.mainModel = MD_CV_Kaga;
 		break;
+		case ID.Ship.LightCruiserTenryuu:
+			this.mainModel = MD_CL_Tenryuu;
+		break;
+//		case ID.Ship.LightCruiserTatsuta:
+//			this.mainModel = MD_CL_Tatsuta;
+//		break;
 		//DD
 		case ID.Ship.DestroyerAkatsuki:
 			this.mainModel = MD_DD_Akatsuki;
@@ -353,6 +367,8 @@ public class RenderShipEntity extends RenderBasic
 		case ID.Ship.DestroyerShimakaze:
 		case ID.Ship.SubmarineRo500:
 		case ID.Ship.SubmarineU511:
+		case ID.Ship.LightCruiserTenryuu:
+		case ID.Ship.LightCruiserTatsuta:
 			this.shadowSize = 0.5F;
 		break;
 		case ID.Ship.HarbourHime:

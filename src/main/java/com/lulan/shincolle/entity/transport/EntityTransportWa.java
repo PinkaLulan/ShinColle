@@ -6,7 +6,6 @@ import com.lulan.shincolle.ai.EntityAIShipPickItem;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.handler.EventHandler;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
@@ -40,12 +39,6 @@ public class EntityTransportWa extends BasicEntityShipSmall
 		this.StateFlag[ID.F.CanPickItem] = true;
 		
 		this.postInit();
-	}
-	
-  	@Override
-	public int getKaitaiType()
-  	{
-		return 0;
 	}
 
 	@Override
@@ -298,11 +291,11 @@ public class EntityTransportWa extends BasicEntityShipSmall
 		{
 			switch (getStateEmotion(ID.S.State2))
 			{
-			case ID.State.NORMAL_2:
-				setStateEmotion(ID.S.State2, ID.State.EQUIP00_2, true);
+			case ID.State.NORMALa:
+				setStateEmotion(ID.S.State2, ID.State.EQUIP00a, true);
 			break;
 			default:
-				setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
+				setStateEmotion(ID.S.State2, ID.State.NORMALa, true);
 			break;
 			}
 		}

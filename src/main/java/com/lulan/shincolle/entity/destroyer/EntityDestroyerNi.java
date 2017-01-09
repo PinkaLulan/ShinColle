@@ -4,7 +4,6 @@ import com.lulan.shincolle.ai.EntityAIShipPickItem;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.handler.EventHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
 
@@ -79,12 +78,6 @@ public class EntityDestroyerNi extends BasicEntityShipSmall
   			}
   		}
   	}
-  	
-  	@Override
-	public int getKaitaiType()
-  	{
-		return 0;
-	}
   	
   	@Override
 	public double getMountedYOffset()

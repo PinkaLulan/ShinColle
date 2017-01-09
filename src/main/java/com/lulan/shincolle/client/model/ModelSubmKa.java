@@ -670,7 +670,7 @@ public class ModelSubmKa extends ModelBase implements IModelEmotionAdv
   		//outfit and torpedo
   		switch (ent.getStateEmotion(ID.S.State2))
   		{
-  		case ID.State.EQUIP00_2:
+  		case ID.State.EQUIP00a:
   			this.EquipT01a.isHidden = false;
   			this.BodyMain1.isHidden = false;
   			this.Butt1.isHidden = false;
@@ -681,7 +681,7 @@ public class ModelSubmKa extends ModelBase implements IModelEmotionAdv
   			this.BoobL2.isHidden = true;
   			this.BoobR2.isHidden = true;
   		break;
-  		case ID.State.EQUIP01_2:
+  		case ID.State.EQUIP01a:
   			this.EquipT01a.isHidden = true;
   			this.BodyMain1.isHidden = true;
   			this.Butt1.isHidden = true;
@@ -692,7 +692,7 @@ public class ModelSubmKa extends ModelBase implements IModelEmotionAdv
   			this.BoobL2.isHidden = false;
   			this.BoobR2.isHidden = false;
   		break;
-  		case ID.State.EQUIP02_2:
+  		case ID.State.EQUIP02a:
   			this.EquipT01a.isHidden = false;
   			this.BodyMain1.isHidden = true;
   			this.Butt1.isHidden = true;

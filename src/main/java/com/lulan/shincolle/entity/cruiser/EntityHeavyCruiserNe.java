@@ -170,13 +170,7 @@ public class EntityHeavyCruiserNe extends BasicEntityShipSmall
 			this.isPushing = true;
         }
     }
-    
-    @Override
-	public int getKaitaiType()
-    {
-		return 0;
-	}
-	
+
     @Override
 	public double getMountedYOffset()
     {

@@ -9,7 +9,6 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -194,12 +193,6 @@ public class EntityDestroyerHibiki extends BasicEntityShipSmall implements IShip
   	}
   	
   	@Override
-	public int getKaitaiType()
-  	{
-		return 2;
-	}
-  	
-  	@Override
 	public double getMountedYOffset()
   	{
 		if (this.isSitting())
@@ -226,17 +219,17 @@ public class EntityDestroyerHibiki extends BasicEntityShipSmall implements IShip
 		{
 			switch (getStateEmotion(ID.S.State2))
 			{
-			case ID.State.NORMAL_2:
-				setStateEmotion(ID.S.State2, ID.State.EQUIP00_2, true);
+			case ID.State.NORMALa:
+				setStateEmotion(ID.S.State2, ID.State.EQUIP00a, true);
 				break;
-			case ID.State.EQUIP00_2:
-				setStateEmotion(ID.S.State2, ID.State.EQUIP01_2, true);
+			case ID.State.EQUIP00a:
+				setStateEmotion(ID.S.State2, ID.State.EQUIP01a, true);
 				break;
-			case ID.State.EQUIP01_2:
-				setStateEmotion(ID.S.State2, ID.State.EQUIP02_2, true);
+			case ID.State.EQUIP01a:
+				setStateEmotion(ID.S.State2, ID.State.EQUIP02a, true);
 				break;
 			default:
-				setStateEmotion(ID.S.State2, ID.State.NORMAL_2, true);
+				setStateEmotion(ID.S.State2, ID.State.NORMALa, true);
 				break;
 			}
 		}

@@ -157,6 +157,14 @@ public class ShipSpawnEgg extends BasicItem
   		shipList.add(ID.Ship.HarbourHime+2);
   		shipList.add(ID.Ship.NorthernHime+2);
   		shipList.add(ID.Ship.CarrierWD+2);
+  		shipList.add(ID.Ship.BattleshipNagato+2);
+  		shipList.add(ID.Ship.BattleshipNagato+2002);	//hostile entity
+  		shipList.add(ID.Ship.BattleshipYamato+2);
+  		shipList.add(ID.Ship.BattleshipYamato+2002);	//hostile entity
+  		shipList.add(ID.Ship.CarrierKaga+2);
+  		shipList.add(ID.Ship.CarrierKaga+2002);			//hostile entity
+  		shipList.add(ID.Ship.CarrierAkagi+2);
+  		shipList.add(ID.Ship.CarrierAkagi+2002);		//hostile entity
   		shipList.add(ID.Ship.DestroyerAkatsuki+2);
   		shipList.add(ID.Ship.DestroyerAkatsuki+2002);	//hostile entity
   		shipList.add(ID.Ship.DestroyerHibiki+2);
@@ -167,19 +175,14 @@ public class ShipSpawnEgg extends BasicItem
   		shipList.add(ID.Ship.DestroyerInazuma+2002);	//hostile entity
   		shipList.add(ID.Ship.DestroyerShimakaze+2);
   		shipList.add(ID.Ship.DestroyerShimakaze+2002);	//hostile entity
-  		shipList.add(ID.Ship.BattleshipNagato+2);
-  		shipList.add(ID.Ship.BattleshipNagato+2002);	//hostile entity
-  		shipList.add(ID.Ship.BattleshipYamato+2);
-  		shipList.add(ID.Ship.BattleshipYamato+2002);	//hostile entity
+  		shipList.add(ID.Ship.LightCruiserTenryuu+2);
+  		shipList.add(ID.Ship.LightCruiserTenryuu+2002);		//hostile entity
+  		shipList.add(ID.Ship.LightCruiserTatsuta+2);
+  		shipList.add(ID.Ship.LightCruiserTatsuta+2002);		//hostile entity
   		shipList.add(ID.Ship.SubmarineU511+2);
   		shipList.add(ID.Ship.SubmarineU511+2002);		//hostile entity
   		shipList.add(ID.Ship.SubmarineRo500+2);
   		shipList.add(ID.Ship.SubmarineRo500+2002);		//hostile entity
-  		shipList.add(ID.Ship.CarrierKaga+2);
-  		shipList.add(ID.Ship.CarrierKaga+2002);			//hostile entity
-  		shipList.add(ID.Ship.CarrierAkagi+2);
-  		shipList.add(ID.Ship.CarrierAkagi+2002);		//hostile entity
-  		
   	}
   	
   	//for list all same id items

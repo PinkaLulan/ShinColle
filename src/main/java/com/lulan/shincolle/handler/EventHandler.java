@@ -99,6 +99,7 @@ public class EventHandler
 	public static int debugCooldown = 0;	//CLIENT SIDE ONLY
 	public static float field1 = 0F;		//CLIENT SIDE ONLY
 	public static float field2 = 0F;		//CLIENT SIDE ONLY
+	public static float field3 = 0F;		//CLIENT SIDE ONLY
 	
 
 	//change vanilla mob drop (add grudge), this is SERVER event
@@ -1038,46 +1039,61 @@ public class EventHandler
 			
 			if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL))
 			{
-				ctrl = 0.1F;
+				ctrl = 0.09F;
 			}
 			
-			if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD2))
+			if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD4))
 			{
 				this.field1 += 0.01F + ctrl;
 				this.debugCooldown = 2;
 				player.sendMessage(new TextComponentString
 				(
-					"OffsetY "+String.format("%.2f", this.field1)
+					"f1 "+String.format("%.2f", this.field1)
 				));
 			}
-			
-			if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD8))
+			else if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD1))
 			{
 				this.field1 -= 0.01F + ctrl;
 				this.debugCooldown = 2;
 				player.sendMessage(new TextComponentString
 				(
-					"OffsetY "+String.format("%.2f", this.field1)
+					"f1 "+String.format("%.2f", this.field1)
 				));
 			}
-			
-			if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD4))
-			{
-				this.field2 -= 0.01F + ctrl;
-				this.debugCooldown = 2;
-				player.sendMessage(new TextComponentString
-				(
-					"Scale "+String.format("%.2f", this.field2)
-				));
-			}
-			
-			if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD6))
+			else if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD5))
 			{
 				this.field2 += 0.01F + ctrl;
 				this.debugCooldown = 2;
 				player.sendMessage(new TextComponentString
 				(
-					"Scale "+String.format("%.2f", this.field2)
+					"f2 "+String.format("%.2f", this.field2)
+				));
+			}
+			else if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD2))
+			{
+				this.field2 -= 0.01F + ctrl;
+				this.debugCooldown = 2;
+				player.sendMessage(new TextComponentString
+				(
+					"f2 "+String.format("%.2f", this.field2)
+				));
+			}
+			else if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD6))
+			{
+				this.field3 += 0.01F + ctrl;
+				this.debugCooldown = 2;
+				player.sendMessage(new TextComponentString
+				(
+					"f3 "+String.format("%.2f", this.field2)
+				));
+			}
+			else if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD3))
+			{
+				this.field3 -= 0.01F + ctrl;
+				this.debugCooldown = 2;
+				player.sendMessage(new TextComponentString
+				(
+					"f3 "+String.format("%.2f", this.field2)
 				));
 			}
 		}

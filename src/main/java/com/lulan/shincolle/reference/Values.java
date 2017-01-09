@@ -96,6 +96,9 @@ public class Values
 		put(ID.Ship.DestroyerIkazuchi,  new float[] {30F,  5F,  9F,  1.0F, 0.5F,  9F,  0.3f,  0.32F, 0.12F, 0.5F,  1F,    0.46F});
 		put(ID.Ship.DestroyerInazuma,   new float[] {30F,  5F,  9F,  1.0F, 0.5F,  9F,  0.3f,  0.32F, 0.12F, 0.5F,  1F,    0.46F});
 		put(ID.Ship.DestroyerShimakaze, new float[] {38F,  11F, 12F, 1.0F, 0.6F,  9F,  0.35F, 0.4F,  0.16F, 0.55F, 1.2F,  0.46F});
+		//cruiser
+		put(ID.Ship.LightCruiserTenryuu,new float[] {42F,  13F, 16F, 1.0F, 0.42F, 8F,  0.4F,  0.4F,  0.2F,  0.6F,  0.9F,  0.5F});
+		put(ID.Ship.LightCruiserTatsuta,new float[] {42F,  13F, 16F, 1.0F, 0.42F, 8F,  0.4F,  0.4F,  0.2F,  0.6F,  0.9F,  0.5F});
 		//battleship
 		put(ID.Ship.BattleshipNagato,   new float[] {135F, 40F, 26F, 1.0F, 0.32F, 14F, 0.85F, 0.8F,  0.25F, 0.63F, 0.64F, 0.6F});
 		put(ID.Ship.BattleshipYamato,   new float[] {150F, 55F, 36F, 1.0F, 0.3F,  20F, 1F,    1F,    0.3F,  0.7F,  0.6F,  0.7F});
@@ -119,6 +122,9 @@ public class Values
 		put(ID.Ship.DestroyerIkazuchi,  new float[] {0.35F, 0.35F, 0.35F, 1F,    1.1F,  0.7F});
 		put(ID.Ship.DestroyerInazuma,   new float[] {0.35F, 0.35F, 0.35F, 1F,    1.1F,  0.7F});
 		put(ID.Ship.DestroyerShimakaze, new float[] {0.4F,  0.5F,  0.4F,  1.2F,  1.2F,  0.75F});
+		//cruiser
+		put(ID.Ship.LightCruiserTenryuu,new float[] {0.5F,  0.6F,  0.5F,  1F,    0.9F,  0.8F});
+		put(ID.Ship.LightCruiserTatsuta,new float[] {0.5F,  0.6F,  0.5F,  1F,    0.9F,  0.8F});
 		//battleship
 		put(ID.Ship.BattleshipNagato,   new float[] {1.1F,  1.1F,  1.1F,  1F,    0.8F,  1.05F});
 		put(ID.Ship.BattleshipYamato,   new float[] {1.2F,  1.2F,  1.2F,  1.2F,  0.8F,  1.1F});
@@ -196,6 +202,9 @@ public class Values
 		put(ID.Ship.DestroyerIkazuchi,	new float[] {0.1F, 0.8F, 0.8F, 0.8F, 0.3F});
 		put(ID.Ship.DestroyerInazuma,	new float[] {0.1F, 0.8F, 0.8F, 0.8F, 0.3F});
 		put(ID.Ship.DestroyerShimakaze,	new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.4F});
+		//CL
+		put(ID.Ship.LightCruiserTenryuu,new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.4F});
+		put(ID.Ship.LightCruiserTatsuta,new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.4F});
 		//BB
 		put(ID.Ship.BattleshipNagato,	new float[] {0.1F, 0.95F, 0.95F, 0.95F, 0.1F});
 		put(ID.Ship.BattleshipYamato,	new float[] {0.1F, 0.85F, 0.85F, 0.9F, 0.15F});
@@ -286,7 +295,7 @@ public class Values
 		
 		put(ID.Ship.Raiden,				new int[] {0, 0,  180});
 		put(ID.Ship.LightCruiserTenryuu,new int[] {0, 11, 180});
-		
+		put(ID.Ship.LightCruiserTatsuta,new int[] {0, 22, 180});
 	}});
 	
 	/**SHIP LIST for guidebook
@@ -341,6 +350,9 @@ public class Values
 		add((int)ID.Ship.DestroyerHibiki);
 		add((int)ID.Ship.DestroyerIkazuchi);
 		add((int)ID.Ship.DestroyerInazuma);
+		
+		add((int)ID.Ship.LightCruiserTenryuu);
+		add((int)ID.Ship.LightCruiserTatsuta);
 	}});
 	
 	

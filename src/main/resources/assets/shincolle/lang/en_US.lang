@@ -156,6 +156,10 @@ item.shincolle:shipegg55.name=Destroyer Ikazuchi
 item.shincolle:shipegg2055.name=Destroyer Ikazuchi (Mob)
 item.shincolle:shipegg56.name=Destroyer Inazuma
 item.shincolle:shipegg2056.name=Destroyer Inazuma (Mob)
+item.shincolle:shipegg58.name=Light Cruiser Tenryuu
+item.shincolle:shipegg2058.name=Light Cruiser Tenryuu (Mob)
+item.shincolle:shipegg59.name=Light Cruiser Tatsuta
+item.shincolle:shipegg2059.name=Light Cruiser Tatsuta (Mob)
 
 # Entity
 entity.shincolle.EntityAirfieldHime.name=Airfield Princess
@@ -179,6 +183,10 @@ entity.shincolle.EntityCarrierKagaMob.name=Standard Carrier Kaga
 entity.shincolle.EntityCarrierHime.name=Aircraft Carrier Princess
 entity.shincolle.EntityCarrierWD.name=Aircraft Carrier Water Demon
 entity.shincolle.EntityCarrierWo.name=Standard Carrier Wo-Class
+entity.shincolle.EntityCruiserTenryuu.name=Light Cruiser Tenryuu
+entity.shincolle.EntityCruiserTenryuuMob.name=Light Cruiser Tenryuu
+entity.shincolle.EntityCruiserTatsuta.name=Light Cruiser Tatsuta
+entity.shincolle.EntityCruiserTatsutaMob.name=Light Cruiser Tatsuta
 entity.shincolle.EntityDestroyerHa.name=Destroyer Ha-Class
 entity.shincolle.EntityDestroyerI.name=Destroyer I-Class
 entity.shincolle.EntityDestroyerNi.name=Destroyer Ni-Class
@@ -473,6 +481,12 @@ gui.shincolle:book.chap5.text10d1=§9Name:§0 Ikazuchi<br><br>§9Class:§0 Akats
 gui.shincolle:book.chap5.title11=
 gui.shincolle:book.chap5.text11d0=
 gui.shincolle:book.chap5.text11d1=§9Name:§0 Inazuma<br><br>§9Class:§0 Akatsuki Class DD<br><br>§9AuraEffect:§0 Moving speed aura<br><br>§9OtherEffect:§0 Pick up items<br><br>Inazuma is the NANODEATH angel that can purify nearby shinkeiseikan, be careful!  
+gui.shincolle:book.chap5.title12=
+gui.shincolle:book.chap5.text12d0=
+gui.shincolle:book.chap5.text12d1=§9Name:§0 Tenryuu<br><br>§9Class:§0 Tenryuu Class CL<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 Cri,Dodge+15% at night<br><br>
+gui.shincolle:book.chap5.title13=
+gui.shincolle:book.chap5.text13d0=
+gui.shincolle:book.chap5.text13d1=§9Name:§0 Tatsuta<br><br>§9Class:§0 Tenryuu Class CL<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 Cri,Dodge+15% at night<br><br>
 
 # GUI: Book Text Chap 6
 gui.shincolle:book.chap6.title=Commands

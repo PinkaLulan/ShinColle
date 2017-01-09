@@ -293,12 +293,6 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
 	}
 
 	@Override
-	public int getKaitaiType()
-	{
-		return 3;
-	}
-	
-	@Override
 	public double getMountedYOffset()
 	{
 		if (this.isSitting())

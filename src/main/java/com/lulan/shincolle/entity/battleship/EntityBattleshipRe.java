@@ -234,13 +234,7 @@ public class EntityBattleshipRe extends BasicEntityShipCV
 		break;
   		}
   	}
-	
-	@Override
-	public int getKaitaiType()
-	{
-		return 1;
-	}
-	
+
 	@Override
 	public double getMountedYOffset()
 	{

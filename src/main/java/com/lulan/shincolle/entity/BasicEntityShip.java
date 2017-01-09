@@ -696,13 +696,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	
 	/** 1:cannon only, 2:both, 3:aircraft only */
 	abstract public int getEquipType();
-	
-	/** 0:small, 1:large, 2:mob small, 3:mob large*/
-	public int getKaitaiType()
-	{
-		return 0;
-	}
-	
+
 	@Override
 	public int getLevel()
 	{

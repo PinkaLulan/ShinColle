@@ -1119,25 +1119,25 @@ public class ModelCarrierKaga extends ModelBase implements IModelEmotion
   		
   		switch (ent.getStateEmotion(ID.S.State2))
   		{
-  		case ID.State.EQUIP00_2:
+  		case ID.State.EQUIP00a:
   			this.EquipABase.isHidden = true;//箭袋
   			this.EquipD01.isHidden = true;  //甲板
   			this.EquipE01.isHidden = false;  //弓
   			this.EquipGlove.isHidden = false;//手套
   		break;
-  		case ID.State.EQUIP01_2:
+  		case ID.State.EQUIP01a:
   			this.EquipABase.isHidden = false;//箭袋
   			this.EquipD01.isHidden = false;  //甲板
   			this.EquipE01.isHidden = true;  //弓
   			this.EquipGlove.isHidden = true;//手套
   		break;
-  		case ID.State.EQUIP02_2:
+  		case ID.State.EQUIP02a:
   			this.EquipABase.isHidden = false;//箭袋
   			this.EquipD01.isHidden = true;  //甲板
   			this.EquipE01.isHidden = false;  //弓
   			this.EquipGlove.isHidden = false;//手套
   		break;
-  		case ID.State.EQUIP03_2:
+  		case ID.State.EQUIP03a:
   			this.EquipABase.isHidden = false;//箭袋
   			this.EquipD01.isHidden = false;  //甲板
   			this.EquipE01.isHidden = false;  //弓

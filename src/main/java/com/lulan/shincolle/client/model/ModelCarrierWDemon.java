@@ -474,7 +474,7 @@ public class ModelCarrierWDemon extends ModelBase implements IModelEmotion
     private void showEquip(IShipEmotion ent)
     {
     	//equip display
-    	if (ent.getStateEmotion(ID.S.State2) > ID.State.NORMAL_2)
+    	if (ent.getStateEmotion(ID.S.State2) > ID.State.NORMALa)
     	{
     		this.EquipBase.isHidden = false;
     	}
