@@ -71,20 +71,7 @@ public class ParticleLaser extends Particle
 
     @Override
     public void renderParticle(VertexBuffer render, Entity entity, float ptick, float cosYaw, float cosPitch, float sinYaw, float sinYawsinPitch, float cosYawsinPitch)
-    {	
-    	Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE);
-    	
-    	GlStateManager.pushMatrix();
-    	GlStateManager.depthMask(true);
-    	GlStateManager.enableBlend();
-    	GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
-    	GlStateManager.disableLighting();
-    	
-		float minU = 0F;
-		float maxU = rand.nextInt(32)+32;
-		float minV = this.particleAge % 12 / 12F;
-		float maxV = minV + 0.08333333F;
-		
+    {
 		//particle是以玩家視野來render, 因此座標要扣掉interpPos轉換為玩家視野座標
 		double f11 = this.prevPosX + (this.posX - this.prevPosX) * (double)ptick - interpPosX;
         double f12 = this.prevPosY + (this.posY - this.prevPosY) * (double)ptick - interpPosY;
@@ -92,7 +79,20 @@ public class ParticleLaser extends Particle
         double f21 = this.tarX - interpPosX;
         double f22 = this.tarY - interpPosY;
         double f23 = this.tarZ - interpPosZ;
-      
+        
+		float minU = 0F;
+		float maxU = rand.nextInt(32)+32;
+		float minV = this.particleAge % 12 / 12F;
+		float maxV = minV + 0.08333333F;
+    	
+		Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE);
+
+    	GlStateManager.pushMatrix();
+    	GlStateManager.enableBlend();
+    	GlStateManager.depthMask(true);
+    	GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
+    	GlStateManager.disableLighting();
+    	
         //start tess
         render.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);

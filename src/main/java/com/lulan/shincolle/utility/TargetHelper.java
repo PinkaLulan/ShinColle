@@ -4,14 +4,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.IEntityOwnable;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.monster.EntitySlime;
-import net.minecraft.entity.player.EntityPlayer;
-
 import com.google.common.base.Predicate;
 import com.lulan.shincolle.entity.BasicEntityAirplane;
 import com.lulan.shincolle.entity.BasicEntityMount;
@@ -21,10 +13,16 @@ import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipInvisible;
 import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
-import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.team.TeamData;
+
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.IEntityOwnable;
+import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.monster.EntitySlime;
+import net.minecraft.entity.player.EntityPlayer;
 
 /** some targeting class/method
  * 
@@ -72,8 +70,12 @@ public class TargetHelper
     	public Selector(Entity host)
     	{
     		this.host = host;
-    		
-    		//PVP mode for ship
+    	}
+    	
+		@Override
+		public boolean apply(Entity target2)
+		{
+    		//update flag
     		if (host instanceof BasicEntityShip)
     		{
     			this.isPVP = ((BasicEntityShip) host).getStateFlag(ID.F.PVPFirst);
@@ -84,13 +86,9 @@ public class TargetHelper
     		{
     			this.isPVP = false;
     		}
-    	}
-    	
-		@Override
-		public boolean apply(Entity target2)
-		{
+    		
 			//null check
-			if (target2 == null || this.host == null || host.equals(target2))
+			if (target2 == null || !target2.isEntityAlive() || this.host == null || host.equals(target2))
 			{
 				return false;
 			}
@@ -152,57 +150,54 @@ public class TargetHelper
     			}
     		}
 			
-			if (target2.isEntityAlive())
+			//anti air target, no pvp checking
+			if (target2 instanceof BasicEntityAirplane || target2 instanceof EntityAbyssMissile)
 			{
-				//anti air target, no pvp checking
-				if (target2 instanceof BasicEntityAirplane || target2 instanceof EntityAbyssMissile)
+				if (isAA && TeamHelper.checkIsBanned(host, target2))
 				{
-					if (isAA && TeamHelper.checkIsBanned(host, target2))
-					{
-						return true;
-					}
-					else
-					{
-						return false;
-					}
+					return true;
 				}
-				
-				//anti SS target
-				if (target2 instanceof IShipInvisible)
+				else
 				{
-					if (isASM && TeamHelper.checkIsBanned(host, target2))
-					{
-						return true;
-					}
-					else
-					{
-						return false;
-					}
+					return false;
 				}
-				
-				//check pvp
-				if (this.isPVP && (target2 instanceof BasicEntityShip ||
-								   target2 instanceof BasicEntityMount))
-				{
-					//attack hostile team
-					if (TeamHelper.checkIsBanned(host, target2))
-					{
-						return true;
-					}
-				}
-				
-				//check mob
-	        	if(target2 instanceof EntityMob || target2 instanceof EntitySlime)
-	        	{
-	        		return true;
-	        	}
-	        	
-	        	//check custom target (including pet check)
-	        	if (checkAttackTargetList(host, target2))
-	        	{
-	        		return true;
-	        	}
 			}
+			
+			//anti SS target
+			if (target2 instanceof IShipInvisible)
+			{
+				if (isASM && TeamHelper.checkIsBanned(host, target2))
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+			
+			//check pvp
+			if (this.isPVP && (target2 instanceof BasicEntityShip ||
+							   target2 instanceof BasicEntityMount))
+			{
+				//attack hostile team
+				if (TeamHelper.checkIsBanned(host, target2))
+				{
+					return true;
+				}
+			}
+			
+			//check mob
+        	if(target2 instanceof EntityMob || target2 instanceof EntitySlime)
+        	{
+        		return true;
+        	}
+        	
+        	//check custom target (including pet check)
+        	if (checkAttackTargetList(host, target2))
+        	{
+        		return true;
+        	}
         	
         	return false;
         }
@@ -223,7 +218,7 @@ public class TargetHelper
 		public boolean apply(Entity target2)
 		{
 			//null check
-			if (target2 == null || this.host == null || host.equals(target2))
+			if (target2 == null || !target2.isEntityAlive() || this.host == null || host.equals(target2))
 			{
 				return false;
 			}
@@ -265,33 +260,30 @@ public class TargetHelper
     			}
     		}
     		
-    		if (target2.isEntityAlive())
-    		{
-    			//check ship target
-    			if (target2 instanceof BasicEntityShip || target2 instanceof BasicEntityAirplane ||
-    				target2 instanceof BasicEntityMount || target2 instanceof EntityAbyssMissile)
-    			{
-    				//do not attack ally
-    				if (TeamHelper.checkIsAlly(host, target2))
-    				{
-    					return false;
-    				}
-    				
-    				return true;
-    			}
-    			
-    			//check mob target
-            	if (target2 instanceof EntityMob || target2 instanceof EntitySlime)
-            	{
-            		return true;
-            	}
+			//check ship target
+			if (target2 instanceof BasicEntityShip || target2 instanceof BasicEntityAirplane ||
+				target2 instanceof BasicEntityMount || target2 instanceof EntityAbyssMissile)
+			{
+				//do not attack ally
+				if (TeamHelper.checkIsAlly(host, target2))
+				{
+					return false;
+				}
+				
+				return true;
+			}
+			
+			//check mob target
+        	if (target2 instanceof EntityMob || target2 instanceof EntitySlime)
+        	{
+        		return true;
+        	}
 
-            	//check faction
-        		if (!TeamHelper.checkSameOwner(host, target2))
-        		{
-    				return true;
-    			}
-    		}
+        	//check faction
+    		if (!TeamHelper.checkSameOwner(host, target2))
+    		{
+				return true;
+			}
         	
         	return false;
         }
@@ -313,7 +305,7 @@ public class TargetHelper
 		public boolean apply(Entity target2)
     	{
 			//null check
-			if (target2 == null || this.host == null || host.equals(target2))
+			if (target2 == null || !target2.isEntityAlive() || this.host == null || host.equals(target2))
 			{
 				return false;
 			}
@@ -327,7 +319,7 @@ public class TargetHelper
     		//check unattackable list
     		if (checkUnattackTargetList(target2)) return false;
 
-			if (target2.isEntityAlive() && !target2.isInvisible())
+			if (!target2.isInvisible())
 			{
 				//do not attack hostile ship
         		if (target2 instanceof BasicEntityShipHostile)

@@ -1226,8 +1226,27 @@ public class EntityHelper
 	{
         double d0;
         
+        //飛行狀態
+        if (host.canFly())
+        {
+            d0 = host.posY;
+            host.moveRelative(strafe, forward, host.getMoveSpeed() * 0.4F); //水中的速度計算(含漂移效果)
+            host.move(host.motionX, host.motionY, host.motionZ);
+            
+            //空中阻力
+            host.motionX *= 0.91D;
+            host.motionY *= 0.91D;
+            host.motionZ *= 0.91D;
+            
+            //水中撞到東西會上升
+            if (host.isCollidedHorizontally &&
+            	host.isOffsetPositionInLiquid(host.motionX, host.motionY + 0.6D - host.posY + d0, host.motionZ))
+            {
+                host.motionY = 0.3D;
+            }
+        }
         //液體中移動
-        if (EntityHelper.checkEntityIsInLiquid(host))
+        else if (EntityHelper.checkEntityIsInLiquid(host))
         {
             d0 = host.posY;
             host.moveRelative(strafe, forward, host.getMoveSpeed() * 0.4F); //水中的速度計算(含漂移效果)

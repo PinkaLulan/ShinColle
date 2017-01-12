@@ -683,6 +683,12 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	}
 	
 	@Override
+	public boolean updateSkillAttack(Entity target)
+	{
+		return false;
+	}
+	
+	@Override
 	public float getAttackSpeed()
 	{
 		return this.atkSpeed;

@@ -7,10 +7,14 @@ import com.lulan.shincolle.client.particle.ParticleChi;
 import com.lulan.shincolle.client.particle.ParticleCraning;
 import com.lulan.shincolle.client.particle.ParticleCube;
 import com.lulan.shincolle.client.particle.ParticleEmotion;
+import com.lulan.shincolle.client.particle.ParticleGradient;
 import com.lulan.shincolle.client.particle.ParticleLaser;
 import com.lulan.shincolle.client.particle.ParticleLaserNoTexture;
 import com.lulan.shincolle.client.particle.ParticleLightning;
+import com.lulan.shincolle.client.particle.ParticleLine;
 import com.lulan.shincolle.client.particle.ParticleSmoke;
+import com.lulan.shincolle.client.particle.ParticleSparkle;
+import com.lulan.shincolle.client.particle.ParticleSphereLight;
 import com.lulan.shincolle.client.particle.ParticleSpray;
 import com.lulan.shincolle.client.particle.ParticleStickyLightning;
 import com.lulan.shincolle.client.particle.ParticleTeam;
@@ -445,6 +449,20 @@ public class ParticleHelper
 			}
 		}
 		break;
+		case 44:	//high speed movement blur
+		{
+			//draw speed blur: H, Wfor, Wback, R, G, B, A, px, py, pz, mx, my, mz
+			ParticleLine line1 = new ParticleLine(world, 0, new float[] {2.5F, 8F, 22F, 0.2F, 1F, 1F, 0.7F,
+					(float)posX, (float)posY, (float)posZ, (float)lookX, (float)lookY, (float)lookZ});
+			ParticleLine line2 = new ParticleLine(world, 0, new float[] {1F, 8F, 20F, 0.5F, 1F, 1F, 0.8F,
+					(float)posX, (float)posY, (float)posZ, (float)lookX, (float)lookY, (float)lookZ});
+			ParticleLine line3 = new ParticleLine(world, 0, new float[] {0.8F, 7F, 18F, 1F, 1F, 1F, 1F,
+					(float)posX, (float)posY, (float)posZ, (float)lookX, (float)lookY, (float)lookZ});
+			Minecraft.getMinecraft().effectRenderer.addEffect(line1);
+			Minecraft.getMinecraft().effectRenderer.addEffect(line2);
+			Minecraft.getMinecraft().effectRenderer.addEffect(line3);
+		}
+		break;
 		default:
 		break;
 		}
@@ -473,18 +491,25 @@ public class ParticleHelper
 		switch (type)
 		{
 		case 1:		//氣彈特效 par1:scale par2:type
+		{
 			ParticleChi fxChi1 = new ParticleChi(world, ent, (float)par1, (int)par2);
         	Minecraft.getMinecraft().effectRenderer.addEffect(fxChi1);
+		}
 		break;
 		case 2:		//隊伍圈選特效 par1:scale par2:type
+		{
 			ParticleTeam fxTeam = new ParticleTeam(world, ent, (float)par1, (int)par2);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fxTeam);
+		}
 		break;
 		case 3:
+		{
 			ParticleLightning fxLightning = new ParticleLightning(world, ent, (float)par1, (int)par2);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fxLightning);
+		}
 		break;
 		case 4:		//sticky lightning
+		{
 			ParticleStickyLightning light1 = new ParticleStickyLightning(world, ent, (float)par1, (int)par2, (int)par3);
         	Minecraft.getMinecraft().effectRenderer.addEffect(light1);
         	ParticleStickyLightning light2 = new ParticleStickyLightning(world, ent, (float)par1, (int)par2, (int)par3);
@@ -493,8 +518,10 @@ public class ParticleHelper
         	Minecraft.getMinecraft().effectRenderer.addEffect(light3);
         	ParticleStickyLightning light4 = new ParticleStickyLightning(world, ent, (float)par1, (int)par2, (int)par3);
         	Minecraft.getMinecraft().effectRenderer.addEffect(light4);
+		}
 		break;
 		case 5: 	//custom largesmoke: par1:wide, par2:length, par3:height, EntityLivingBase ONLY
+		{
 			//計算煙霧位置
 			degYaw = (((EntityLivingBase)ent).renderYawOffset % 360) * Values.N.DIV_PI_180;
 			newPos1 = CalcHelper.rotateXZByAxis((float)par2, (float)par1, degYaw, 1F);
@@ -514,8 +541,10 @@ public class ParticleHelper
 				world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, ent.posX+newPos1[1]+ran3, ent.posY+par3+ran1, ent.posZ+newPos1[0]+ran2, newPos3[1]*ran4, 0.05D*ran4, newPos3[0]*ran4, new int[0]);
 				world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, ent.posX+newPos2[1]+ran3, ent.posY+par3+ran2, ent.posZ+newPos2[0]+ran1, newPos3[1]*ran4, 0.05D*ran4, newPos3[0]*ran4, new int[0]);
 			}
+		}
 		break;
 		case 6:		//lightning sphere + lightning radiation
+		{
 			//in
 			for (int i = 0; i < 4; i++)
 			{
@@ -528,8 +557,10 @@ public class ParticleHelper
 				ParticleStickyLightning light21 = new ParticleStickyLightning(world, ent, (float)par1, (int)par2, 3);
 	        	Minecraft.getMinecraft().effectRenderer.addEffect(light21);
 			}
+		}
 		break;
 		case 7:		//vibrate cube
+		{
 			//host check
 			if (ent instanceof EntityLivingBase)
 			{
@@ -550,8 +581,10 @@ public class ParticleHelper
 				ParticleStickyLightning light21 = new ParticleStickyLightning(world, ent, (float)par1, 40, 3);
 	        	Minecraft.getMinecraft().effectRenderer.addEffect(light21);
 			}
+		}
 		break;
 		case 8:		//守衛標示線: block類
+		{
 			//host check
 			if (ent instanceof EntityLivingBase)
 			{
@@ -564,14 +597,18 @@ public class ParticleHelper
 			
 			ParticleLaserNoTexture laser1 = new ParticleLaserNoTexture(world, host, par1, par2, par3, 0.1F, 3);
 			Minecraft.getMinecraft().effectRenderer.addEffect(laser1);
+		}
 		break;
 		case 9:		//small sticky lightning
+		{
 			ParticleStickyLightning light5 = new ParticleStickyLightning(world, ent, (float)par1, (int)par2, (int)par3);
         	Minecraft.getMinecraft().effectRenderer.addEffect(light5);
         	ParticleStickyLightning light6 = new ParticleStickyLightning(world, ent, (float)par1, (int)par2, (int)par3);
         	Minecraft.getMinecraft().effectRenderer.addEffect(light6);
+		}
 		break;
 		case 10: 	//double largesmoke for mounts: par1: cannon width, par2: cannon height, par3: cannon x pos
+		{
 			//煙霧出現位置: 依照身體旋轉
 			newPos1 = CalcHelper.rotateXZByAxis((float)par3, (float)par1, (float)(((EntityLivingBase)ent).renderYawOffset * Values.N.DIV_PI_180), 1F);
 			newPos2 = CalcHelper.rotateXZByAxis((float)par3, (float)-par1, (float)(((EntityLivingBase)ent).renderYawOffset * Values.N.DIV_PI_180), 1F);
@@ -589,11 +626,35 @@ public class ParticleHelper
 				world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, ent.posX-0.5D+0.05D*i+newPos1[1]+newPos3[1], ent.posY+par2+0.9D+ran1, ent.posZ-0.5D+0.05D*i+newPos1[0]+newPos3[0], newPos3[1]*0.5D*ran3, 0.05D*ran3, newPos3[0]*0.5D*ran3, new int[0]);
 				world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, ent.posX-0.5D+0.05D*i+newPos2[1]+newPos3[1], ent.posY+par2+0.9D+ran1, ent.posZ-0.5D+0.05D*i+newPos2[0]+newPos3[0], newPos3[1]*0.5D*ran2, 0.05D*ran2, newPos3[0]*0.5D*ran2, new int[0]);
 			}
+		}
+		break;
+		case 11:	//color beam INWARD
+		{
+			//													 ent, type, scale, radius, beam speed, beam thick, 4~7:RGBA, height
+			ParticleSphereLight light1 = new ParticleSphereLight(ent, 0, ent.width * 3F, ent.width * 1.5F, 0.8F, 0.03F, (float)par1, (float)par2, (float)par3, 1F, ent.height * 0.4F);
+			Minecraft.getMinecraft().effectRenderer.addEffect(light1);
+		}
+		break;
+		case 12:	//color gradient OUTWARD
+		{
+			//											  ent, type, scale, fade, speed, space, 4~7:RGBA, height
+			ParticleGradient grad1 = new ParticleGradient(ent, 1, ent.height * 0.75F, 0.85F, 0.08F, 8F, (float)par1, (float)par2, (float)par3, 0.7F, ent.height * 0.5F);
+			Minecraft.getMinecraft().effectRenderer.addEffect(grad1);
+		}
+		break;
+		case 13:	//speed line OUTWARD
+		{
+			//											 ent, type, scale, rad, NO_USE, NO_USE, 4~7:RGBA, height
+			ParticleSparkle spark1 = new ParticleSparkle(ent, 0, 0.15F, ent.width * 0.5F, 0F, 0F, (float)par1, (float)par2, (float)par3, 1F, ent.height * 0.5F);
+			Minecraft.getMinecraft().effectRenderer.addEffect(spark1);
+		}
 		break;
 		case 36:	//emotion
+		{
 			ParticleEmotion partEmo = new ParticleEmotion(world, ent,
 					ent.posX, ent.posY, ent.posZ, (float)par1, (int)par2, (int)par3);
 			Minecraft.getMinecraft().effectRenderer.addEffect(partEmo);
+		}
 		break;
 		default:
 		break;

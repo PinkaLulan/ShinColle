@@ -17,7 +17,6 @@ import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.client.render.IShipCustomTexture;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.handler.EventHandler;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.network.S2CEntitySync;
@@ -27,7 +26,6 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
@@ -1252,6 +1250,12 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
         if (ConfigHandler.canFlare) this.host.flareTarget(target);
         
         return true;
+	}
+	
+	@Override
+	public boolean updateSkillAttack(Entity target)
+	{
+		return false;
 	}
 	
 	/**修改移動方法, 使其water跟lava中移動時像是flying entity

@@ -483,10 +483,10 @@ gui.shincolle:book.chap5.text11d0=
 gui.shincolle:book.chap5.text11d1=§9Name:§0 Inazuma<br><br>§9Class:§0 Akatsuki Class DD<br><br>§9AuraEffect:§0 Moving speed aura<br><br>§9OtherEffect:§0 Pick up items<br><br>Inazuma is the NANODEATH angel that can purify nearby shinkeiseikan, be careful!  
 gui.shincolle:book.chap5.title12=
 gui.shincolle:book.chap5.text12d0=
-gui.shincolle:book.chap5.text12d1=§9Name:§0 Tenryuu<br><br>§9Class:§0 Tenryuu Class CL<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 Cri,Dodge+15% at night<br><br>
+gui.shincolle:book.chap5.text12d1=§9Name:§0 Tenryuu<br><br>§9Class:§0 Tenryuu Class CL<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 Cri,Dodge+15%% at night<br><br>
 gui.shincolle:book.chap5.title13=
 gui.shincolle:book.chap5.text13d0=
-gui.shincolle:book.chap5.text13d1=§9Name:§0 Tatsuta<br><br>§9Class:§0 Tenryuu Class CL<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 Cri,Dodge+15% at night<br><br>
+gui.shincolle:book.chap5.text13d1=§9Name:§0 Tatsuta<br><br>§9Class:§0 Tenryuu Class CL<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 Cri,Dodge+15%% at night<br><br>
 
 # GUI: Book Text Chap 6
 gui.shincolle:book.chap6.title=Commands

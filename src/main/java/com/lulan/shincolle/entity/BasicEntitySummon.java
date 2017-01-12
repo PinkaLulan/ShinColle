@@ -746,6 +746,12 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
 		return false;
     }
 	
+	@Override
+	public boolean updateSkillAttack(Entity target)
+	{
+		return false;
+	}
+	
   	public void applySoundAtAttacker(int type, Entity target)
   	{
   		switch (type)

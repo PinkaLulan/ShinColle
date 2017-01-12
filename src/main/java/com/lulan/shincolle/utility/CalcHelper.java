@@ -14,6 +14,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -209,6 +210,28 @@ public class CalcHelper
     	float s6 = (float)Math.exp(s4 / s5);
     	
     	return s2 * s6;
+    }
+    
+    /**
+     * 計算到達目標的單位向量
+     * FIX: 加入最小值限制以免DBZ error
+     */
+    public static Vec3d calcVecToTarget(Vec3d target, Vec3d host)
+    {
+		float[] mov = new float[4];
+		
+		mov[0] = (float) (target.xCoord - host.xCoord);
+		mov[1] = (float) (target.yCoord - host.yCoord);
+		mov[2] = (float) (target.zCoord - host.zCoord);
+		
+		mov[3] = MathHelper.sqrt(mov[0]*mov[0] + mov[1]*mov[1] + mov[2]*mov[2]);
+		if (mov[3] < 0.001F) mov[3] = 0.001F;
+		
+		mov[0] = mov[0] / mov[3];
+		mov[1] = mov[1] / mov[3];
+		mov[2] = mov[2] / mov[3];
+		
+		return new Vec3d(mov[0], mov[1], mov[2]);
     }
     
     /** calc normal distribution by table

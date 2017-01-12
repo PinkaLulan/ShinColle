@@ -495,7 +495,7 @@ public class ID {
 		public static final byte Emotion2 = 2;			//emotion 2, for head tilt
 		public static final byte HPState = 3;			//hp state
 		public static final byte State2 = 4;			//equip state 2
-		public static final byte Phase = 5;				//entity phase
+		public static final byte Phase = 5;				//skill phase
 		public static final byte Emotion3 = 6;			//emotion 3, for caress reaction
 	}
 	
@@ -708,6 +708,7 @@ public class ID {
 		public static final byte LastCombat = 11;		//SERVER: last combat time
 		public static final byte AttackTime = 12;		//CLIENT: attack time for model display
 		public static final byte AttackTime2 = 13;		//CLIENT: attack time 2 for model display
+		public static final byte AttackTime3 = 14;		//SERVER: attack time 3 for skill AI
 	}
 
 	/** StateEquip, StateFinal, BonusPoint, TypeModify */

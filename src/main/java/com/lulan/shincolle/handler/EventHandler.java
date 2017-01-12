@@ -1084,7 +1084,7 @@ public class EventHandler
 				this.debugCooldown = 2;
 				player.sendMessage(new TextComponentString
 				(
-					"f3 "+String.format("%.2f", this.field2)
+					"f3 "+String.format("%.2f", this.field3)
 				));
 			}
 			else if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD3))
@@ -1093,7 +1093,7 @@ public class EventHandler
 				this.debugCooldown = 2;
 				player.sendMessage(new TextComponentString
 				(
-					"f3 "+String.format("%.2f", this.field2)
+					"f3 "+String.format("%.2f", this.field3)
 				));
 			}
 		}

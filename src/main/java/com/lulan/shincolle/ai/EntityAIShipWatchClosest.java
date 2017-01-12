@@ -1,9 +1,7 @@
 package com.lulan.shincolle.ai;
 
-import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipEmotion;
-import com.lulan.shincolle.entity.IShipNavigator;
 import com.lulan.shincolle.reference.ID;
 
 import net.minecraft.entity.EntityLiving;
@@ -23,13 +21,8 @@ public class EntityAIShipWatchClosest extends EntityAIWatchClosest
         this.setMutexBits(8);
         
         this.host = entity;
+        this.host2 = (IShipEmotion) entity;
         this.range = range;
-        
-        if (host instanceof IShipEmotion)
-        {
-        	this.host2 = (IShipEmotion) entity;
-        }
-        
     }
     
     //stop watching if target is riding

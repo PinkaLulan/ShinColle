@@ -128,12 +128,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	 *  25:damageType 26:formationType 27:formationPos 28:grudgeConsumption 29:ammoConsumption
 	 *  30:morale 31:Saturation 32:MaxSaturation 33:hitHeight 34:HitAngle 35:SensBody 36:InvSize
 	 *  37:ChunkLoaderLV 38:FlareLV 39:SearchlightLV 40:LastX 41:LastY 42:LastZ 43:CraneState
-	 *  44:WpStayTime
+	 *  44:WpStayTime 45:SkillState
 	 */
 	protected int[] StateMinor;
 	/** timer array: 0:RevengeTime 1:CraneTime 2:ImmuneTime 3:CraneDelay 4:WpStayTime 5:Emotion3Time
 	 *               6:sound cd 7:FaceTick 8:HeadTilt 9:MoraleTime 10:EmoteDelay 11:LastCombatTime
-	 *               12:AttackTime 13:AttackTime2
+	 *               12:AttackTime 13:AttackTime2 14:AttackTime3
 	 */
 	protected int[] StateTimer;
 	/** equip effect: 0:critical 1:doubleHit 2:tripleHit 3:baseMiss 4:atk_AntiAir 5:atk_AntiSS 6:dodge*/
@@ -207,7 +207,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				                    };
 		this.StateTimer = new int[] {0, 0, 0, 0, 0,
 									 0, 0, 0, 0, 0,
-									 0, 0, 0, 0};
+									 0, 0, 0, 0, 0};
 		this.EffectEquip = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F};
 		this.EffectEquipBU = this.EffectEquip.clone();
 		this.EffectFormation = new float[] {0F, 0F, 0F, 0F, 0F,
@@ -2959,6 +2959,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         return true;
 	}
 	
+	@Override
+	public boolean updateSkillAttack(Entity target)
+	{
+		return false;
+	}
+	
 	//be attacked method, 包括其他entity攻擊, anvil攻擊, arrow攻擊, fall damage都使用此方法 
 	@Override
     public boolean attackEntityFrom(DamageSource source, float atk)
@@ -3815,7 +3821,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     		}
 			else
 			{
-				if (this.getRNG().nextInt(2) == 0) {	//50% for bored
+				if (this.getRNG().nextInt(2) == 0)
+				{	//50% for bored
 	    			if (this.getStateEmotion(ID.S.Emotion) != ID.Emotion.BORED)
 	    			{
 	    				this.setStateEmotion(ID.S.Emotion, ID.Emotion.BORED, false);

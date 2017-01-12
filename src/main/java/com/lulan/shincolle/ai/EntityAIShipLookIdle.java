@@ -1,8 +1,8 @@
 package com.lulan.shincolle.ai;
 
-import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.utility.LogHelper;
+import com.lulan.shincolle.entity.IShipEmotion;
+import com.lulan.shincolle.reference.ID;
 
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -11,6 +11,7 @@ public class EntityAIShipLookIdle extends EntityAIBase
 {
     /** The entity that is looking idle. */
     private EntityLiving host;
+    private IShipEmotion host2;
     /** X offset to look at */
     private double lookX;
     /** Z offset to look at */
@@ -22,12 +23,13 @@ public class EntityAIShipLookIdle extends EntityAIBase
     public EntityAIShipLookIdle(EntityLiving entity)
     {
         this.host = entity;
+        this.host2 = (IShipEmotion) entity;
         this.setMutexBits(3);
     }
 
     public boolean shouldExecute()
     {
-    	if (host.getRidingEntity() instanceof BasicEntityShip)
+    	if (host2.getStateFlag(ID.F.NoFuel) || host.getRidingEntity() instanceof BasicEntityShip)
     	{
     		return false;
     	}

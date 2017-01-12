@@ -40,5 +40,8 @@ public interface IShipAttackBase extends IShipNavigator, IShipEmotion, IShipOwne
 	
 	public int getLevel();					//get ship level
 	
+	/** skill attack method for skill attack AI */
+	public boolean updateSkillAttack(Entity target);
+	
 
 }
