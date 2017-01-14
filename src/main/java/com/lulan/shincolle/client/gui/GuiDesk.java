@@ -802,6 +802,7 @@ public class GuiDesk extends GuiContainer
             		break;
             		case 5:  //attack
             			this.shipModel.setAttackTick(50);
+            			this.shipModel.setStateEmotion(ID.S.Phase, this.shipModel.getRNG().nextInt(4), false);
             			if (this.shipMount != null) this.shipMount.setAttackTick(50);
             		break;
             		case 6:  //emotion

@@ -18,6 +18,7 @@ import com.lulan.shincolle.entity.carrier.EntityCarrierKaga;
 import com.lulan.shincolle.entity.carrier.EntityCarrierKagaMob;
 import com.lulan.shincolle.entity.carrier.EntityCarrierWo;
 import com.lulan.shincolle.entity.cruiser.EntityCruiserTenryuu;
+import com.lulan.shincolle.entity.cruiser.EntityCruiserTenryuuMob;
 import com.lulan.shincolle.entity.cruiser.EntityHeavyCruiserNe;
 import com.lulan.shincolle.entity.cruiser.EntityHeavyCruiserRi;
 import com.lulan.shincolle.entity.destroyer.EntityDestroyerAkatsuki;
@@ -140,7 +141,9 @@ public class ClientProxy extends CommonProxy
 		RenderingRegistry.registerEntityRenderingHandler(EntityCarrierWD.class, RenderShipEntity.FACTORY_SHIP);
 		RenderingRegistry.registerEntityRenderingHandler(EntityCarrierWo.class, RenderShipEntity.FACTORY_SHIP);
 		RenderingRegistry.registerEntityRenderingHandler(EntityCruiserTenryuu.class, RenderShipEntity.FACTORY_SHIP);
+		RenderingRegistry.registerEntityRenderingHandler(EntityCruiserTenryuuMob.class, RenderShipEntity.FACTORY_SHIP);
 //		RenderingRegistry.registerEntityRenderingHandler(EntityCruiserTatsuta.class, RenderShipEntity.FACTORY_SHIP);
+//		RenderingRegistry.registerEntityRenderingHandler(EntityCruiserTatsutaMob.class, RenderShipEntity.FACTORY_SHIP);
 		RenderingRegistry.registerEntityRenderingHandler(EntityDestroyerI.class, RenderShipEntity.FACTORY_SHIP);
 		RenderingRegistry.registerEntityRenderingHandler(EntityDestroyerRo.class, RenderShipEntity.FACTORY_SHIP);
 		RenderingRegistry.registerEntityRenderingHandler(EntityDestroyerHa.class, RenderShipEntity.FACTORY_SHIP);

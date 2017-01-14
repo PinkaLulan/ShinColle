@@ -22,7 +22,7 @@ public class EntityHeavyCruiserRi extends BasicEntityShipSmall
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CRUISER);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CA]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CA]);
-		this.ModelPos = new float[] {0F, 10F, 0F, 30F};
+		this.ModelPos = new float[] {0F, 20F, 0F, 40F};
 		
 		//set attack type
 		this.StateFlag[ID.F.HaveRingEffect] = true;

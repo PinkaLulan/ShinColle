@@ -2,9 +2,6 @@ package com.lulan.shincolle.client.particle;
 
 import org.lwjgl.opengl.GL11;
 
-import com.lulan.shincolle.proxy.ClientProxy;
-import com.lulan.shincolle.reference.Reference;
-
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.GlStateManager.DestFactor;
@@ -12,10 +9,8 @@ import net.minecraft.client.renderer.GlStateManager.SourceFactor;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
-import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 
 /**
@@ -24,13 +19,11 @@ import net.minecraft.util.math.Vec3d;
 public class ParticleSparkle extends Particle
 {
 	
-	private static final ResourceLocation TEXTURE1 = new ResourceLocation(Reference.TEXTURES_PARTICLE+"ParticleGradientLine.png");
 	private static int NumBeam = 30;
 	private int particleType, beamCurrent;
 	private Entity host;
 	private float[][] beamPos;					//beam position: 0~1: xy, 2~5:RGBA, 6:age
 	private float beamFad, beamSpd, beamThick, beamHeight;
-	private RenderManager rm;
 	
 	
     public ParticleSparkle(Entity entity, int type, float...parms)
@@ -44,7 +37,6 @@ public class ParticleSparkle extends Particle
         this.particleType = type;
         this.canCollide = false;
         this.beamCurrent = 0;					//new beam index
-        this.rm = ClientProxy.getMineraft().getRenderManager();
         
         switch (type)
         {
@@ -66,7 +58,7 @@ public class ParticleSparkle extends Particle
             this.particleBlue = parms[6];
             this.particleAlpha = parms[7];
             this.beamHeight = parms[8];
-            this.particleMaxAge = 80;
+            this.particleMaxAge = 50;
             this.NumBeam = 40;
             this.beamPos = new float[NumBeam][8];
             this.setPosition(entity.posX, entity.posY+this.beamHeight, entity.posZ);
@@ -82,8 +74,6 @@ public class ParticleSparkle extends Particle
     @Override
     public void renderParticle(VertexBuffer render, Entity entity, float ptick, float cosYaw, float cosPitch, float sinYaw, float sinYawsinPitch, float cosYawsinPitch)
     {
-//    	Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE1);
-    	
         float x = (float)(this.prevPosX + (this.posX - this.prevPosX) * ptick - interpPosX);
         float y = (float)(this.prevPosY + (this.posY - this.prevPosY) * ptick - interpPosY);
         float z = (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * ptick - interpPosZ);
@@ -177,9 +167,9 @@ public class ParticleSparkle extends Particle
             		(float) (this.host.posX - this.posX) + (this.rand.nextFloat() - 0.5F) * this.beamFad,
             		(float) (this.host.posY - this.posY) + this.beamHeight + (this.rand.nextFloat() - 0.5F) * this.beamFad,
             		(float) (this.host.posZ - this.posZ) + (this.rand.nextFloat() - 0.5F) * this.beamFad,
-            		this.particleRed + this.rand.nextFloat() * 0.7F,
+            		this.particleRed,
         			this.particleGreen,
-        			this.particleBlue,
+        			this.particleBlue + this.rand.nextFloat() * 0.7F,
         			this.particleAlpha, 0F
         		};
             	this.beamCurrent++;

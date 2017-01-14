@@ -41,7 +41,7 @@ public class GuiShipInventory extends GuiContainer
 
 	public BasicEntityShip entity;
 	public InventoryPlayer player;
-	private BasicEntityShip[] shipRiding = new BasicEntityShip[3];	//0: host, 1:rider, 2:mount
+	private BasicEntityShip[] shipRiding = new BasicEntityShip[3];	//0:host, 1:rider, 2:mount
 	
 	private static final ResourceLocation TEXTURE_BG = new ResourceLocation(Reference.TEXTURES_GUI+"GuiShipInventory.png");
 	private static final ResourceLocation TEXTURE_ICON = new ResourceLocation(Reference.TEXTURES_GUI+"GuiNameIcon.png");
@@ -763,8 +763,6 @@ public class GuiShipInventory extends GuiContainer
 			entity[2].rotationPitch = entity[0].rotationPitch;
 			entity[2].rotationYawHead = entity[0].rotationYawHead;
 			entity[2].prevRotationYawHead = entity[0].prevRotationYawHead;
-			
-			if (entity[2].isSitting()) entity[2].setSitting(false);
 		}
 		else if (entity[1] != null)
 		{
@@ -773,31 +771,59 @@ public class GuiShipInventory extends GuiContainer
 			entity[1].rotationPitch = entity[0].rotationPitch;
 			entity[1].rotationYawHead = entity[0].rotationYawHead;
 			entity[1].prevRotationYawHead = entity[0].prevRotationYawHead;
-			
-			if (entity[0].isSitting()) entity[0].setSitting(false);
 		}
 		
 		GlStateManager.translate(0.0F, entity[0].getYOffset(), 0.0F);
 		rendermanager.setPlayerViewY(180.0F);
 		rendermanager.setRenderShadow(false);
 		
-		//draw mount or rider
+		//draw rider ot mounts
 		if (entity[1] != null)
 		{
+			float specialOffset = 0F;
+			
+			//special case
+			if (entity[1].getShipClass() == ID.Ship.DestroyerIkazuchi)
+			{
+				if (entity[0].getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
+				{
+					specialOffset = entity[0].isSitting() ? -0.34F : -0.57F;
+				}
+				else
+				{
+					specialOffset = entity[0].isSitting() ? -0.55F : -0.45F;
+				}
+			}
+				
 			//ship必須先畫才畫mounts
 			float[] partPos = CalcHelper.rotateXZByAxis(-0.2F, 0F, (entity[0].renderYawOffset % 360) / 57.2957F, 1F);
-			GlStateManager.translate(partPos[1], (float)(entity[0].getMountedYOffset()), partPos[0]);
+			GlStateManager.translate(partPos[1], (float)entity[0].getMountedYOffset() + specialOffset, partPos[0]);
 			rendermanager.doRenderEntity((Entity) entity[1], 0D, 0D, 0D, 0F, 1F, false);
-			GlStateManager.translate(-partPos[1], -(float)(entity[0].getMountedYOffset()), -partPos[0]);
+			GlStateManager.translate(-partPos[1], -((float)entity[0].getMountedYOffset() + specialOffset), -partPos[0]);
 			rendermanager.doRenderEntity((Entity) entity[0], 0D, 0D, 0D, 0F, 1F, false);
 		}
 		else if (entity[2] != null)
 		{
+			float specialOffset = 0F;
+			
+			//special case
+			if (entity[2].getShipClass() == ID.Ship.DestroyerInazuma)
+			{
+				if (entity[2].getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
+				{
+					specialOffset = entity[2].isSitting() ? -0.34F : -0.57F;
+				}
+				else
+				{
+					specialOffset = entity[2].isSitting() ? -0.55F : -0.45F;
+				}
+			}
+			
 			//ship必須先畫才畫mounts
 			float[] partPos = CalcHelper.rotateXZByAxis(-0.2F, 0F, (entity[0].renderYawOffset % 360) / 57.2957F, 1F);
-			GlStateManager.translate(partPos[1], (float)(entity[2].getMountedYOffset()), partPos[0]);
+			GlStateManager.translate(partPos[1], (float)entity[2].getMountedYOffset() + specialOffset, partPos[0]);
 			rendermanager.doRenderEntity((Entity) entity[0], 0D, 0D, 0D, 0F, 1F, false);
-			GlStateManager.translate(-partPos[1], -(float)(entity[2].getMountedYOffset()), -partPos[0]);
+			GlStateManager.translate(-partPos[1], -((float)entity[2].getMountedYOffset() + specialOffset), -partPos[0]);
 			rendermanager.doRenderEntity((Entity) entity[2], 0D, 0D, 0D, 0F, 1F, false);
 		}
 		else

@@ -6,12 +6,11 @@ import com.google.common.base.Predicate;
 import com.lulan.shincolle.ai.EntityAIShipFollowOwner;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.ai.EntityAIShipSkillAttack;
-import com.lulan.shincolle.entity.BasicEntityShipSmall;
+import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModSounds;
-import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
@@ -30,10 +29,12 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.BossInfo;
+import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
-public class EntityCruiserTenryuu extends BasicEntityShipSmall
+public class EntityCruiserTenryuuMob extends BasicEntityShipHostile
 {
 	
 	private Predicate targetSelector;
@@ -42,37 +43,54 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
 	private ArrayList<Entity> damagedTarget;
 	
 	
-	public EntityCruiserTenryuu(World world)
+	public EntityCruiserTenryuuMob(World world)
 	{
 		super(world);
-		this.setSize(0.75F, 1.65F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipType.LIGHT_CRUISER);
+		
+		//init values
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.LightCruiserTenryuu);
-		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CRUISER);
-		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CL]);
-		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CL]);
-		this.ModelPos = new float[] {0F, 22F, 0F, 42F};
-		this.targetSelector = new TargetHelper.Selector(this);
+		this.targetSelector = new TargetHelper.SelectorForHostile(this);
 		this.remainAttack = 0;
 		this.skillMotion = Vec3d.ZERO;
 		this.damagedTarget = new ArrayList<Entity>();
 		
-		//set attack type
-		this.StateFlag[ID.F.AtkType_AirLight] = false;
-		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
-		
-		//misc
-		this.setFoodSaturationMax(12);
-		
-		this.postInit();
+		//model display
+		this.setStateEmotion(ID.S.State, this.rand.nextInt(4), false);
+		this.setStateEmotion(ID.S.State2, this.rand.nextInt(6), false);
 	}
 	
 	@Override
-	public int getEquipType()
+	protected void setSizeWithScaleLevel()
 	{
-		return 1;
+		switch (this.getScaleLevel())
+		{
+		case 3:
+			this.setSize(1.7F, 6.4F);
+		break;
+		case 2:
+			this.setSize(1.3F, 4.8F);
+		break;
+		case 1:
+			this.setSize(0.9F, 3.2F);
+		break;
+		default:
+			this.setSize(0.75F, 1.65F);
+		break;
+		}
+	}
+
+	@Override
+	protected void setBossInfo()
+	{
+		this.bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.PURPLE, BossInfo.Overlay.PROGRESS);
 	}
 	
+	@Override
+	public int getDamageType()
+	{
+		return ID.ShipDmgType.CRUISER;
+	}
+
 	@Override
     public boolean canBePushed()
     {
@@ -99,19 +117,6 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
 		this.tasks.addTask(11, new EntityAIShipRangeAttack(this));
 	}
 	
-	//晚上時額外增加屬性
-	@Override
-	public void calcShipAttributes()
-	{
-		if (!this.world.isDaytime())
-		{
-			EffectEquip[ID.EF_CRI] = EffectEquip[ID.EF_CRI] + 0.15F;
-			EffectEquip[ID.EF_DODGE] = EffectEquip[ID.EF_DODGE] + 0.15F;
-		}
-		
-		super.calcShipAttributes();	
-	}
-	
 	@Override
 	public void onLivingUpdate()
 	{
@@ -119,22 +124,16 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
 		if (this.world.isRemote)
 		{
 			//final attack phase
-			if (this.StateEmotion[ID.S.Phase] == 3)
+			if (this.stateEmotion[ID.S.Phase] == 3)
 			{
 				ParticleHelper.spawnAttackParticleAtEntity(this, 1D, 1D, 0.6D, (byte)14);
 			}
-			
-//			//TODO debug
-//			if ((this.ticksExisted & 31) == 0)
-//			{
-//				ParticleHelper.spawnAttackParticleAtEntity(this, 0.9D, 1D, 1D, (byte)15);
-//			}
 		}
 		//server side
 		else
 		{
 			//skill tick--
-			if (this.StateTimer[ID.T.AttackTime3] > 0) this.StateTimer[ID.T.AttackTime3]--;
+			if (this.attackTime3 > 0) this.attackTime3--;
 			
 			//apply skill effect
 			this.attackEntityWithSkill();
@@ -145,10 +144,10 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
 	
 	private void attackEntityWithSkill()
 	{
-		if (this.StateEmotion[ID.S.Phase] > 1)
+		if (this.stateEmotion[ID.S.Phase] > 1)
 		{
 			//clear attacked target list
-			if (this.StateTimer[ID.T.AttackTime3] == 5)
+			if (this.attackTime3 == 5)
 			{
 				this.damagedTarget.clear();
 				
@@ -160,18 +159,18 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
 				this.applyParticleAtAttacker(5, null, new float[0]);
 			}
 			//draw movement blur
-			else if (this.StateTimer[ID.T.AttackTime3] == 1)
+			else if (this.attackTime3 == 1)
 			{
 				this.applyParticleAtTarget(5, null, new float[] {(float) this.skillMotion.xCoord, (float) this.skillMotion.yCoord, (float) this.skillMotion.zCoord});
 			
 				//apply final attack sound
-				if (this.StateEmotion[ID.S.Phase] == 3)
+				if (this.stateEmotion[ID.S.Phase] == 3)
 				{
 					this.playSound(ModSounds.SHIP_AP_ATTACK, ConfigHandler.volumeFire * 1.1F, this.getSoundPitch() * 0.6F);
 				}
 			}
 			
-			if (this.StateTimer[ID.T.AttackTime3] < 5 && this.StateTimer[ID.T.AttackTime3] >= 0)
+			if (this.attackTime3 < 5 && this.attackTime3 >= 0)
 			{
 				//apply motion
 				this.motionX = this.skillMotion.xCoord * 2D;
@@ -190,16 +189,17 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
 			}
 			
 			//sync motion
-			this.sendSyncPacket(S2CEntitySync.PID.SyncEntity_Motion, true);
+			this.sendSyncPacket(1);
 		}
 	}
 	
 	private void damageNearbyEntity()
 	{
-		float rawatk = this.getAttackBaseDamage(this.StateEmotion[ID.S.Phase] == 2 ? 2 : 3, null);
+		float rawatk = this.getAttackBaseDamage(this.stateEmotion[ID.S.Phase] == 2 ? 2 : 3, null);
 		
+		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
 		ArrayList<Entity> list = EntityHelper.getEntitiesWithinAABB(this.world, Entity.class,
-				this.getEntityBoundingBox().expand(2D, 1.5D, 2D), this.targetSelector);
+				this.getEntityBoundingBox().expand(1.5D, 1.5D, 1.5D), this.targetSelector);
 
 		for (Entity target : list)
 		{
@@ -236,12 +236,8 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
             	}
         		else
         		{
-        			//calc miss chance, if not miss, calc cri/multi hit
-        	        float missChance = 0.2F - 0.001F * StateMinor[ID.M.ShipLevel] - EffectEquip[ID.EF_MISS];
-        	        if (missChance > 0.35F) missChance = 0.35F;	//max miss chance
-        	        
         	        //calc miss -> crit -> double -> tripple
-        	  		if (rand.nextFloat() < missChance)
+        	  		if (rand.nextFloat() < this.getEffectEquip(ID.EF_MISS))
         	  		{
         	          	atk = 0F;	//still attack, but no damage
         	          	applyParticleSpecialEffect(0);
@@ -291,8 +287,6 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
         		    	applyParticleAtTarget(1, target, new float[0]);
         		    	if (this.rand.nextInt(2) == 0) this.playSound(SoundEvents.ENTITY_GENERIC_EXPLODE, ConfigHandler.volumeFire, this.getSoundPitch());
         		    	
-        		        if (ConfigHandler.canFlare) flareTarget(target);
-        		        
         		        //push target
         		        if (target.canBePushed())
         		        {
@@ -308,7 +302,7 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
         		        	}
                  			
                  			//for other player, send ship state for display
-        		        	this.sendSyncPacket(S2CEntitySync.PID.SyncEntity_Motion, true);
+        		        	this.sendSyncPacket(1);
         		        }
         	        }
         		}//end not same owner
@@ -320,44 +314,29 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
 	@Override
 	public boolean attackEntityWithHeavyAmmo(Entity target)
 	{
-		//ammo--
-        if (!decrAmmoNum(1, this.getAmmoConsumption())) return false;
-        
-		//experience++
-		addShipExp(ConfigHandler.expGain[2]);
-		
-		//grudge--
-		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
-		
-  		//morale--
-		decrMorale(2);
-  		setCombatTick(this.ticksExisted);
-	
-		if (this.StateEmotion[ID.S.Phase] == 0)
+		if (this.stateEmotion[ID.S.Phase] == 0)
 		{
 			//play sound at attacker
 			this.playSound(ModSounds.SHIP_AP_P1, ConfigHandler.volumeFire, 1F);
 			
   			if (this.rand.nextInt(10) > 7)
   			{
-  				this.playSound(this.getCustomSound(1, this), this.getSoundVolume(), this.getSoundPitch());
+  				this.playSound(ModSounds.SHIP_HIT, this.getSoundVolume(), this.getSoundPitch());
   	        }
   			
   			applyParticleAtAttacker(2, target, new float[0]);
   			
   			//charging
-  			this.StateEmotion[ID.S.Phase] = -1;
+  			this.stateEmotion[ID.S.Phase] = -1;
 		}
-		else if (this.StateEmotion[ID.S.Phase] == -1)
+		else if (this.stateEmotion[ID.S.Phase] == -1)
 		{
   			//start skill attack
-  			this.StateEmotion[ID.S.Phase] = 1;
+  			this.stateEmotion[ID.S.Phase] = 1;
 			this.remainAttack = 6;
 		}
 		
         applyEmotesReaction(3);
-        
-        if (ConfigHandler.canFlare) flareTarget(target);
         
         return true;
 	}
@@ -373,7 +352,7 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
 		else
 		{
 			//if target dead or too far away, find new target
-			if (!target.isEntityAlive() || target.getDistanceSqToEntity(this) > (this.StateFinal[ID.HIT] * this.StateFinal[ID.HIT]))
+			if (!target.isEntityAlive() || target.getDistanceSqToEntity(this) > (this.getAttackRange() * this.getAttackRange()))
 			{
 				if (this.remainAttack > 0)
 				{
@@ -415,9 +394,9 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
 		
 		//update flag and sync
 		this.remainAttack--;
-		this.StateTimer[ID.T.AttackTime3] = 6;
+		this.attackTime3 = 6;
 		this.setStateEmotion(ID.S.Phase, 2, true);
-		this.sendSyncPacket(S2CEntitySync.PID.SyncEntity_Rot, true);
+		this.sendSyncPacket(3);
 	}
 	
 	private void updateSkillFinalAttack(Entity target)
@@ -440,9 +419,9 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
 		
 		//update flag and sync
 		this.remainAttack--;
-		this.StateTimer[ID.T.AttackTime3] = 10;
+		this.attackTime3 = 10;
 		this.setStateEmotion(ID.S.Phase, 3, true);
-		this.sendSyncPacket(S2CEntitySync.PID.SyncEntity_Rot, true);
+		this.sendSyncPacket(3);
 	}
 	
 	/**
@@ -469,12 +448,12 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
 		{
 			this.setStateEmotion(ID.S.Phase, 0, true);
 			this.remainAttack = 0;
-			this.StateTimer[ID.T.AttackTime3] = 0;
+			this.attackTime3 = 0;
 			return false;
 		}
 		
 		//find next teleport pos
-		if (this.StateEmotion[ID.S.Phase] == 1)
+		if (this.stateEmotion[ID.S.Phase] == 1)
 		{
 			//horizontal attack
 			if (this.remainAttack > 1)
@@ -489,58 +468,21 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
 		}
 		
 		//ticking
-		if (this.StateTimer[ID.T.AttackTime3] <= 0)
+		if (this.attackTime3 <= 0)
 		{
 			//in horizontal attack state
-			if (this.StateEmotion[ID.S.Phase] == 2)
+			if (this.stateEmotion[ID.S.Phase] == 2)
 			{
 				this.setStateEmotion(ID.S.Phase, 1, true);
 			}
 			//in final attack state
-			else if (this.StateEmotion[ID.S.Phase] == 3)
+			else if (this.stateEmotion[ID.S.Phase] == 3)
 			{
 				this.setStateEmotion(ID.S.Phase, 0, true);
 			}
 		}
 		
 		return false;
-	}
-	
-    @Override
-	public double getMountedYOffset()
-    {
-  		if (this.isSitting())
-  		{
-			if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
-			{
-				return this.height * 0.22F;
-  			}
-  			else
-  			{
-  				return this.height * 0.33F;
-  			}
-  		}
-  		else
-  		{
-  			return this.height * 0.72F;
-  		}
-	}
-
-	@Override
-	public void setShipOutfit(boolean isSneaking)
-	{
-		if (isSneaking)
-		{
-			int i = getStateEmotion(ID.S.State2) + 1;
-			if (i > ID.State.EQUIP04a) i = ID.State.NORMALa;
-			setStateEmotion(ID.S.State2, i, true);
-		}
-		else
-		{
-			int i = getStateEmotion(ID.S.State) + 1;
-			if (i > ID.State.EQUIP02) i = ID.State.NORMAL;
-			setStateEmotion(ID.S.State, i, true);
-		}
 	}
 	
 	@Override
@@ -577,13 +519,13 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
   			//entity sound
   			if (this.rand.nextInt(10) > 7)
   			{
-  				this.playSound(this.getCustomSound(1, this), this.getSoundVolume(), this.getSoundPitch());
+  				this.playSound(ModSounds.SHIP_HIT, this.getSoundVolume(), this.getSoundPitch());
   	        }
   		break;
 		default: //melee
 			if (this.getRNG().nextInt(2) == 0)
 			{
-				this.playSound(this.getCustomSound(1, this), this.getSoundVolume(), this.getSoundPitch());
+				this.playSound(ModSounds.SHIP_HIT, this.getSoundVolume(), this.getSoundPitch());
 	        }
 		break;
   		}//end switch
@@ -595,13 +537,13 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
   		switch (type)
   		{
   		case 1:  //light attack
-  			return CalcHelper.calcDamageBySpecialEffect(this, target, StateFinal[ID.ATK], 0);
+  			return CalcHelper.calcDamageBySpecialEffect(this, target, this.atk, 0);
   		case 2:  //heavy attack: horizontal
-  			return StateFinal[ID.ATK_H] * 0.4F;
+  			return this.atk * 3F * 0.4F;
   		case 3:  //heavy attack: final
-  			return StateFinal[ID.ATK_H];
+  			return this.atk * 3F;
 		default: //melee
-			return StateFinal[ID.ATK];
+			return this.atk;
   		}
   	}
 	

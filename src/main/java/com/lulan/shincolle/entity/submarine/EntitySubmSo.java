@@ -28,7 +28,7 @@ public class EntitySubmSo extends BasicEntityShipSmall implements IShipInvisible
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.SUBMARINE);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.SS]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.SS]);
-		this.ModelPos = new float[] {0F, 10F, 0F, 45F};
+		this.ModelPos = new float[] {0F, 25F, 0F, 45F};
 		
 		//set attack type
 		this.StateFlag[ID.F.HaveRingEffect] = true;

@@ -349,6 +349,23 @@
     "shincolle:idle5401",
     "shincolle:idle5402",
     "shincolle:idle5403"
+  ]},
+  
+  "ship-jet": { "sounds": [
+    "shincolle:accg1",
+    "shincolle:accg2",
+    "shincolle:accg3",
+    "shincolle:accg4"
+  ]},
+  
+  "ship-hitmetal": { "sounds": [
+    "shincolle:hitg1",
+    "shincolle:hitg2",
+    "shincolle:hitg3",
+    "shincolle:hitg4",
+    "shincolle:hitg5",
+    "shincolle:hitg6"
   ]}
+
   
 }

@@ -67,9 +67,9 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
     protected double ShipDepth;			//水深, 用於水中高度判定
     
     //model display
-    /**EntityState: 0:HP State 1:Emotion 2:Emotion2*/
-	protected byte[] stateEmotion;														//表情type
-	protected int startEmotion, startEmotion2, attackTime, attackTime2, emoteDelay;		//表情timer
+    /** emotion state: 0:State 1:Emotion 2:Emotion2 3:HPState 4:State2 5:AttackPhase 6:Emotion3 */
+    protected byte[] stateEmotion;
+	protected int startEmotion, startEmotion2, attackTime, attackTime2, attackTime3, emoteDelay;
 	protected boolean headTilt;
 	protected float[] rotateAngle;		//模型旋轉角度, 用於手持物品render
 	protected int soundHurtDelay;		//hurt sound ticks
@@ -797,8 +797,10 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
     }
 	
 	/** send sync packet:
-	 *  type: 0:sync scale
-	 *  send all: send packet to all around player
+	 *  type: 0: scale
+	 *        1: motion
+	 *        2: rotation & position
+	 *        3: rotation
 	 */
 	public void sendSyncPacket(int type)
 	{
@@ -810,6 +812,15 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 			{
 			case 0:
 				pid = S2CEntitySync.PID.SyncShip_Scale;
+			break;
+			case 1:
+				pid = S2CEntitySync.PID.SyncEntity_Motion;
+			break;
+			case 2:
+				pid = S2CEntitySync.PID.SyncEntity_PosRot;
+			break;
+			case 3:
+				pid = S2CEntitySync.PID.SyncEntity_Rot;
 			break;
 			default:
 				return;

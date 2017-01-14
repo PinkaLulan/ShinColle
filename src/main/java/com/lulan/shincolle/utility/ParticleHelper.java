@@ -17,6 +17,7 @@ import com.lulan.shincolle.client.particle.ParticleSparkle;
 import com.lulan.shincolle.client.particle.ParticleSphereLight;
 import com.lulan.shincolle.client.particle.ParticleSpray;
 import com.lulan.shincolle.client.particle.ParticleStickyLightning;
+import com.lulan.shincolle.client.particle.ParticleSweep;
 import com.lulan.shincolle.client.particle.ParticleTeam;
 import com.lulan.shincolle.client.particle.ParticleTexts;
 import com.lulan.shincolle.client.particle.ParticleTextsCustom;
@@ -452,9 +453,9 @@ public class ParticleHelper
 		case 44:	//high speed movement blur
 		{
 			//draw speed blur: H, Wfor, Wback, R, G, B, A, px, py, pz, mx, my, mz
-			ParticleLine line1 = new ParticleLine(world, 0, new float[] {2.5F, 8F, 22F, 0.2F, 1F, 1F, 0.7F,
+			ParticleLine line1 = new ParticleLine(world, 0, new float[] {2.5F, 8F, 22F, 1F, 1F, 0.4F, 0.8F,
 					(float)posX, (float)posY, (float)posZ, (float)lookX, (float)lookY, (float)lookZ});
-			ParticleLine line2 = new ParticleLine(world, 0, new float[] {1F, 8F, 20F, 0.5F, 1F, 1F, 0.8F,
+			ParticleLine line2 = new ParticleLine(world, 0, new float[] {1F, 8F, 20F, 1F, 1F, 0.7F, 0.9F,
 					(float)posX, (float)posY, (float)posZ, (float)lookX, (float)lookY, (float)lookZ});
 			ParticleLine line3 = new ParticleLine(world, 0, new float[] {0.8F, 7F, 18F, 1F, 1F, 1F, 1F,
 					(float)posX, (float)posY, (float)posZ, (float)lookX, (float)lookY, (float)lookZ});
@@ -631,22 +632,40 @@ public class ParticleHelper
 		case 11:	//color beam INWARD
 		{
 			//													 ent, type, scale, radius, beam speed, beam thick, 4~7:RGBA, height
-			ParticleSphereLight light1 = new ParticleSphereLight(ent, 0, ent.width * 3F, ent.width * 1.5F, 0.8F, 0.03F, (float)par1, (float)par2, (float)par3, 1F, ent.height * 0.4F);
+			ParticleSphereLight light1 = new ParticleSphereLight(ent, 0, ent.height * 1.2F, ent.height * 0.75F, 0.8F, 0.03F, (float)par1, (float)par2, (float)par3, 1F, ent.height * 0.4F);
 			Minecraft.getMinecraft().effectRenderer.addEffect(light1);
 		}
 		break;
 		case 12:	//color gradient OUTWARD
 		{
+			if (ent instanceof IShipEmotion) ((IShipEmotion) ent).setAttackTick(100);
 			//											  ent, type, scale, fade, speed, space, 4~7:RGBA, height
-			ParticleGradient grad1 = new ParticleGradient(ent, 1, ent.height * 0.75F, 0.85F, 0.08F, 8F, (float)par1, (float)par2, (float)par3, 0.7F, ent.height * 0.5F);
+			ParticleGradient grad1 = new ParticleGradient(ent, 1, ent.height * 1.2F, 0.85F, 0.08F, 8F, (float)par1, (float)par2, (float)par3, 0.7F);
 			Minecraft.getMinecraft().effectRenderer.addEffect(grad1);
 		}
 		break;
-		case 13:	//speed line OUTWARD
+		case 13:	//sparkle
 		{
 			//											 ent, type, scale, rad, NO_USE, NO_USE, 4~7:RGBA, height
-			ParticleSparkle spark1 = new ParticleSparkle(ent, 0, 0.15F, ent.width * 0.5F, 0F, 0F, (float)par1, (float)par2, (float)par3, 1F, ent.height * 0.5F);
+			ParticleSparkle spark1 = new ParticleSparkle(ent, 0, 0.1F, ent.width * 1.5F, 0F, 0F, (float)par1, (float)par2, (float)par3, 1F, ent.height * 0.5F);
 			Minecraft.getMinecraft().effectRenderer.addEffect(spark1);
+		}
+		break;
+		case 14:	//double color gradient OUTWARD
+		{
+			//											  ent, type, scale, fade, speed, space, 4~7:RGBA, height
+			ParticleGradient grad1 = new ParticleGradient(ent, 2, ent.height * 1.5F, 0.7F, 0.4F, 0F, (float)par1, (float)par2, (float)par3, 0.8F, 40F, 1.6F);
+			ParticleGradient grad2 = new ParticleGradient(ent, 2, ent.height * 1.3F, 0.7F, 0.3F, 0F, 1F, 1F, 1F, 1F, 40F, 1.5F);
+			Minecraft.getMinecraft().effectRenderer.addEffect(grad1);
+			Minecraft.getMinecraft().effectRenderer.addEffect(grad2);
+		}
+		break;
+		case 15:	//color sword sweep
+		{
+			if (ent instanceof IShipEmotion) ((IShipEmotion) ent).setAttackTick(50);
+			//									   ent, type, scale1, scale2, scale3, fade, age, RGBA
+			ParticleSweep swp1 = new ParticleSweep(ent, 0, ent.height, ent.height * 5.6F, ent.height * 2F, 0.95F, 4F, (float)par1, (float)par2, (float)par3, 1F);
+			Minecraft.getMinecraft().effectRenderer.addEffect(swp1);
 		}
 		break;
 		case 36:	//emotion

@@ -22,7 +22,7 @@ public class EntityCarrierWo extends BasicEntityShipCV
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CARRIER);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CV]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CV]);
-		this.ModelPos = new float[] {0F, 15F, 0F, 30F};
+		this.ModelPos = new float[] {0F, 20F, 0F, 30F};
 		this.launchHeight = this.height * 0.9F;
 		
 		//set attack type
@@ -63,7 +63,6 @@ public class EntityCarrierWo extends BasicEntityShipCV
     @Override
     public void onLivingUpdate()
     {
-    	
     	//check client side
     	if (this.world.isRemote)
     	{

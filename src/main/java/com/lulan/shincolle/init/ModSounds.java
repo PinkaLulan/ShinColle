@@ -71,6 +71,18 @@ public class ModSounds
 	public static SoundEvent SHIP_LEVEL;
 	public static SoundEvent SHIP_FEED;
 	public static SoundEvent SHIP_BELL;
+	public static SoundEvent SHIP_JET;
+	public static SoundEvent SHIP_HITMETAL;
+//	public static SoundEvent SHIP_TEST1;
+//	public static SoundEvent SHIP_TEST2;
+//	public static SoundEvent SHIP_TEST3;
+//	public static SoundEvent SHIP_TEST4;
+//	public static SoundEvent SHIP_TEST5;
+//	public static SoundEvent SHIP_TEST6;
+//	public static SoundEvent SHIP_TEST7;
+//	public static SoundEvent SHIP_TEST8;
+//	public static SoundEvent SHIP_TEST9;
+//	public static SoundEvent SHIP_TEST10;
 	
 	
 	public ModSounds() {}
@@ -133,6 +145,18 @@ public class ModSounds
 		SHIP_LEVEL = initSounds("ship-levelup");
 		SHIP_FEED = initSounds("ship-feed");
 		SHIP_BELL = initSounds("ship-bell");
+		SHIP_JET = initSounds("ship-jet");
+		SHIP_HITMETAL = initSounds("ship-hitmetal");
+//		SHIP_TEST1 = initSounds("ship-test1");
+//		SHIP_TEST2 = initSounds("ship-test2");
+//		SHIP_TEST3 = initSounds("ship-test3");
+//		SHIP_TEST4 = initSounds("ship-test4");
+//		SHIP_TEST5 = initSounds("ship-test5");
+//		SHIP_TEST6 = initSounds("ship-test6");
+//		SHIP_TEST7 = initSounds("ship-test7");
+//		SHIP_TEST8 = initSounds("ship-test8");
+//		SHIP_TEST9 = initSounds("ship-test9");
+//		SHIP_TEST10 = initSounds("ship-test10");
 		
 		//custom sound
 		ConfigHandler.configSound.SOUNDRATE.forEach((k, v) ->

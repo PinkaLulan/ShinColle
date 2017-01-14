@@ -547,13 +547,23 @@ public class CalcHelper
 		float sinPitch = MathHelper.sin(-pitch);
 		float[] newPos = new float[] {x, y, z};
 		
-		//計算pitch旋轉: z,y
-		newPos[2] = z * cosPitch - y * sinPitch;
-		newPos[1] = y * cosPitch + z * sinPitch;
+//		//計算pitch旋轉: z,y
+//		newPos[2] = z * cosPitch - y * sinPitch;
+//		newPos[1] = y * cosPitch + z * sinPitch;
+//		
+//		//計算yaw旋轉: x,z
+//		newPos[0] = x * cosYaw - newPos[2] * sinYaw;
+//		newPos[2] = newPos[2] * cosYaw + x * sinYaw;
 		
-		//計算yaw旋轉: x,z
-		newPos[0] = x * cosYaw - newPos[2] * sinYaw;
-		newPos[2] = newPos[2] * cosYaw + x * sinYaw;
+		//計算yaw
+		newPos[0] = x * cosYaw - z * sinYaw;
+		newPos[2] = z * cosYaw + x * sinYaw;
+		
+		//計算pitch
+		float y2 = newPos[1];
+		float z2 = newPos[2];
+		newPos[1] = y2 * cosPitch + z2 * sinPitch;
+		newPos[2] = z2 * cosPitch - y2 * sinPitch;
 		
 		//計算scale
 		newPos[0] *= scale;

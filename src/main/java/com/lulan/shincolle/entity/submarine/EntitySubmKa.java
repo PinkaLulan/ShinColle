@@ -5,6 +5,7 @@ import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.entity.IShipInvisible;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.handler.EventHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
 
@@ -28,7 +29,7 @@ public class EntitySubmKa extends BasicEntityShipSmall implements IShipInvisible
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.SUBMARINE);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.SS]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.SS]);
-		this.ModelPos = new float[] {0F, 10F, 0F, 45F};
+		this.ModelPos = new float[] {0F, 25F, 0F, 45F};
 		
 		//set attack type
 		this.StateFlag[ID.F.HaveRingEffect] = true;

@@ -13,6 +13,7 @@ import com.lulan.shincolle.entity.carrier.EntityCarrierKaga;
 import com.lulan.shincolle.entity.carrier.EntityCarrierKagaMob;
 import com.lulan.shincolle.entity.carrier.EntityCarrierWo;
 import com.lulan.shincolle.entity.cruiser.EntityCruiserTenryuu;
+import com.lulan.shincolle.entity.cruiser.EntityCruiserTenryuuMob;
 import com.lulan.shincolle.entity.cruiser.EntityHeavyCruiserNe;
 import com.lulan.shincolle.entity.cruiser.EntityHeavyCruiserRi;
 import com.lulan.shincolle.entity.destroyer.EntityDestroyerAkatsuki;
@@ -109,7 +110,9 @@ public class ModEntity
 		createEntity(EntityCarrierWD.class, "EntityCarrierWD", modEntityID++);
 		createEntity(EntityCarrierWo.class, "EntityCarrierWo", modEntityID++);
 		createEntity(EntityCruiserTenryuu.class, "EntityCruiserTenryuu", modEntityID++);
+		createEntity(EntityCruiserTenryuuMob.class, "EntityCruiserTenryuuMob", modEntityID++);
 //		createEntity(EntityCruiserTatsuta.class, "EntityCruiserTatsuta", modEntityID++);
+//		createEntity(EntityCruiserTatsutaMob.class, "EntityCruiserTatsutaMob", modEntityID++);
 		createEntity(EntityDestroyerI.class, "EntityDestroyerI", modEntityID++);
 		createEntity(EntityDestroyerRo.class, "EntityDestroyerRo", modEntityID++);
 		createEntity(EntityDestroyerHa.class, "EntityDestroyerHa", modEntityID++);

@@ -28,7 +28,7 @@ public class EntityTransportWa extends BasicEntityShipSmall
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.UNDEFINED);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.AP]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.AP]);
-		this.ModelPos = new float[] {-3F, 10F, 0F, 45F};
+		this.ModelPos = new float[] {-3F, 20F, 0F, 45F};
 		
 		//set attack type
 		this.StateFlag[ID.F.HaveRingEffect] = true;

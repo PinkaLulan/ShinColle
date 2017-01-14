@@ -4,6 +4,7 @@ import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
@@ -25,7 +26,7 @@ public class ParticleGradient extends Particle
 	private int particleType, gradCurrent, gradSpace;
 	private Entity host;
 	private float[][] gradPos;					//grad position: 0: rad, 1: prev rad, 2~5:RGBA, 6:age
-	private float gradRad, gradSpd;
+	private float gradRad, gradSpd, gradFad, gradHFad, gradSlope;
 	private RenderManager rm;
 	
 	
@@ -47,12 +48,30 @@ public class ParticleGradient extends Particle
         /**
          * type 0: gradient radiate IN
 	     * type 1: gradient radiate OUT
-	     * parms: 0:scale, 1:radius, 2:speed, 3:spacing, 4~7:RGBA
+	     * type 2: gradient radiate OUT and posY updated with host
          */
         case 0:
         case 1:
         	this.particleScale = parms[0];
-        	this.gradRad = parms[1];
+        	this.gradRad = 0F;
+        	this.gradFad = parms[1];
+        	this.gradSpd = parms[2];
+        	this.gradHFad = 20F;
+        	this.gradSlope = 1.5F;
+        	this.gradSpace = (int) parms[3];
+        	if (this.gradSpace <= 1) this.gradSpace = 1;
+        	this.particleRed = parms[4];
+            this.particleGreen = parms[5];
+            this.particleBlue = parms[6];
+            this.particleAlpha = parms[7];
+            this.particleMaxAge = 80;
+            this.gradPos = new float[20][7];
+            this.setPosition(entity.posX, entity.posY, entity.posZ);
+        break;
+        case 2:
+        	this.particleScale = parms[0];
+        	this.gradRad = 0F;
+        	this.gradFad = parms[1];
         	this.gradSpd = parms[2];
         	this.gradSpace = (int) parms[3];
         	if (this.gradSpace <= 1) this.gradSpace = 1;
@@ -60,6 +79,8 @@ public class ParticleGradient extends Particle
             this.particleGreen = parms[5];
             this.particleBlue = parms[6];
             this.particleAlpha = parms[7];
+            this.gradHFad = parms[8];
+            this.gradSlope = parms[9];
             this.particleMaxAge = 80;
             this.gradPos = new float[20][7];
             this.setPosition(entity.posX, entity.posY, entity.posZ);
@@ -90,39 +111,39 @@ public class ParticleGradient extends Particle
 		
         for (float[] grad : this.gradPos)
         {
-        	render.begin(GL11.GL_QUAD_STRIP, DefaultVertexFormats.POSITION_TEX_COLOR);
         	
         	//too far away, skip
-        	if (grad[0] > 6F && grad[0] <= 0F) continue;
+        	if (grad[0] > 6F && grad[0] <= 0F || grad[5] < 0.05F) continue;
         	
         	float rad = grad[1] + (grad[0] - grad[1]) * ptick;
-        	float slope = 1.5F;
-        	float h = (20F - grad[6]) * 0.05F;
+        	float h = (this.gradHFad - grad[6]) / this.gradHFad;
         	if (h < 0.1F) h = 0.1F;
+        	
+        	render.begin(GL11.GL_QUAD_STRIP, DefaultVertexFormats.POSITION_TEX_COLOR);
         	
         	//正面
 	        render.pos(x + rad, y, z + rad).tex(0D, 1D).color(grad[2], grad[3], grad[4], grad[5]).endVertex();
-	        render.pos(x + rad * slope, y + this.particleScale * h, z + rad * slope).tex(0D, 0D).color(grad[2], grad[3], grad[4], grad[5]).endVertex();
+	        render.pos(x + rad * this.gradSlope, y + this.particleScale * h, z + rad * this.gradSlope).tex(0D, 0D).color(grad[2], grad[3], grad[4], grad[5]).endVertex();
 	        render.pos(x - rad, y, z + rad).tex(1D, 1D).color(grad[2], grad[3], grad[4], grad[5]).endVertex();
-	        render.pos(x - rad * slope, y + this.particleScale * h, z + rad * slope).tex(1D, 0D).color(grad[2], grad[3], grad[4], grad[5]).endVertex();
+	        render.pos(x - rad * this.gradSlope, y + this.particleScale * h, z + rad * this.gradSlope).tex(1D, 0D).color(grad[2], grad[3], grad[4], grad[5]).endVertex();
 	        render.pos(x - rad, y, z - rad).tex(0D, 1D).color(grad[2], grad[3], grad[4], grad[5]).endVertex();
-	        render.pos(x - rad * slope, y + this.particleScale * h, z - rad * slope).tex(0D, 0D).color(grad[2], grad[3], grad[4], grad[5]).endVertex();
+	        render.pos(x - rad * this.gradSlope, y + this.particleScale * h, z - rad * this.gradSlope).tex(0D, 0D).color(grad[2], grad[3], grad[4], grad[5]).endVertex();
 	        render.pos(x + rad, y, z - rad).tex(1D, 1D).color(grad[2], grad[3], grad[4], grad[5]).endVertex();
-	        render.pos(x + rad * slope, y + this.particleScale * h, z - rad * slope).tex(1D, 0D).color(grad[2], grad[3], grad[4], grad[5]).endVertex();
+	        render.pos(x + rad * this.gradSlope, y + this.particleScale * h, z - rad * this.gradSlope).tex(1D, 0D).color(grad[2], grad[3], grad[4], grad[5]).endVertex();
 	        render.pos(x + rad, y, z + rad).tex(0D, 1D).color(grad[2], grad[3], grad[4], grad[5]).endVertex();
-	        render.pos(x + rad * slope, y + this.particleScale * h, z + rad * slope).tex(0D, 0D).color(grad[2], grad[3], grad[4], grad[5]).endVertex();
+	        render.pos(x + rad * this.gradSlope, y + this.particleScale * h, z + rad * this.gradSlope).tex(0D, 0D).color(grad[2], grad[3], grad[4], grad[5]).endVertex();
 	        
 	        //反面
 	        render.pos(x + rad, y, z + rad).tex(0D, 1D).color(grad[2], grad[3], grad[4], grad[5]).endVertex();
-	        render.pos(x + rad * slope, y + this.particleScale * h, z + rad * slope).tex(0D, 0D).color(grad[2], grad[3], grad[4], grad[5]).endVertex();
+	        render.pos(x + rad * this.gradSlope, y + this.particleScale * h, z + rad * this.gradSlope).tex(0D, 0D).color(grad[2], grad[3], grad[4], grad[5]).endVertex();
 	        render.pos(x + rad, y, z - rad).tex(1D, 1D).color(grad[2], grad[3], grad[4], grad[5]).endVertex();
-	        render.pos(x + rad * slope, y + this.particleScale * h, z - rad * slope).tex(1D, 0D).color(grad[2], grad[3], grad[4], grad[5]).endVertex();
+	        render.pos(x + rad * this.gradSlope, y + this.particleScale * h, z - rad * this.gradSlope).tex(1D, 0D).color(grad[2], grad[3], grad[4], grad[5]).endVertex();
 	        render.pos(x - rad, y, z - rad).tex(0D, 1D).color(grad[2], grad[3], grad[4], grad[5]).endVertex();
-	        render.pos(x - rad * slope, y + this.particleScale * h, z - rad * slope).tex(0D, 0D).color(grad[2], grad[3], grad[4], grad[5]).endVertex();
+	        render.pos(x - rad * this.gradSlope, y + this.particleScale * h, z - rad * this.gradSlope).tex(0D, 0D).color(grad[2], grad[3], grad[4], grad[5]).endVertex();
 	        render.pos(x - rad, y, z + rad).tex(1D, 1D).color(grad[2], grad[3], grad[4], grad[5]).endVertex();
-	        render.pos(x - rad * slope, y + this.particleScale * h, z + rad * slope).tex(1D, 0D).color(grad[2], grad[3], grad[4], grad[5]).endVertex();
+	        render.pos(x - rad * this.gradSlope, y + this.particleScale * h, z + rad * this.gradSlope).tex(1D, 0D).color(grad[2], grad[3], grad[4], grad[5]).endVertex();
 	        render.pos(x + rad, y, z + rad).tex(0D, 1D).color(grad[2], grad[3], grad[4], grad[5]).endVertex();
-	        render.pos(x + rad * slope, y + this.particleScale * h, z + rad * slope).tex(0D, 0D).color(grad[2], grad[3], grad[4], grad[5]).endVertex();
+	        render.pos(x + rad * this.gradSlope, y + this.particleScale * h, z + rad * this.gradSlope).tex(0D, 0D).color(grad[2], grad[3], grad[4], grad[5]).endVertex();
 	        
 	        Tessellator.getInstance().draw();
         }
@@ -158,11 +179,6 @@ public class ParticleGradient extends Particle
         this.prevPosY = this.posY;
         this.prevPosZ = this.posZ;
         
-        if (this.host != null)
-        {
-        	this.setPosition(this.host.posX, this.host.posY, this.host.posZ);
-        }
-        
         //update grad
         switch (this.particleType)
         {
@@ -170,6 +186,11 @@ public class ParticleGradient extends Particle
     	break;
         case 1:		//OUT
         {
+            if (this.host != null)
+            {
+            	this.setPosition(this.host.posX, this.host.posY, this.host.posZ);
+            }
+            
         	if (this.particleAge <= 40 && this.particleAge % this.gradSpace == 0)
         	{
             	this.gradPos[this.gradCurrent] = new float[] {0F, 0F, this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha, 0F};
@@ -188,8 +209,23 @@ public class ParticleGradient extends Particle
         		this.gradPos[i][6] += 1;
         		
         		//alpha--
-        		if (this.particleAge % 2 == 0) this.gradPos[i][5] *= this.gradRad;
+        		if (this.particleAge % 2 == 0) this.gradPos[i][5] *= this.gradFad;
         	}
+        }
+        break;
+        case 2:		//OUT and update posY
+        {
+        	if (this.particleAge == 1) this.gradPos[0] = new float[] {0F, 0F, this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha, 0F};
+        	
+    		//move
+    		this.gradPos[0][1] = this.gradPos[0][0];	//prev rad for interpolation
+    		this.gradPos[0][0] += this.gradSpd;
+    		
+    		//age++
+    		this.gradPos[0][6] += 1;
+    		
+    		//alpha--
+    		if ((this.particleAge & 1) == 0) this.gradPos[0][5] *= this.gradFad;
         }
         break;
         }

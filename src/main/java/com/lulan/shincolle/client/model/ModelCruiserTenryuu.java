@@ -517,20 +517,20 @@ public class ModelCruiserTenryuu extends ModelBase implements IModelEmotionAdv
     	switch (((IShipEmotion)entity).getScaleLevel())
     	{
     	case 3:
-    		scale = 1.56F;
-        	offsetY = -0.63F;
+    		scale = 1.64F;
+        	offsetY = -0.58F;
 		break;
     	case 2:
-    		scale = 1.17F;
-        	offsetY = -0.37F;
+    		scale = 1.23F;
+        	offsetY = -0.27F;
 		break;
     	case 1:
-    		scale = 0.78F;
-        	offsetY = 0.16F;
+    		scale = 0.82F;
+        	offsetY = 0.35F;
 		break;
     	default:
-    		scale = 0.39F;
-        	offsetY = 2.34F;
+    		scale = 0.41F;
+        	offsetY = 2.17F;
 		break;
     	}
     	
@@ -882,8 +882,9 @@ public class ModelCruiserTenryuu extends ModelBase implements IModelEmotionAdv
 		}
 
 	    if (ent.getIsSprinting() || f1 > 0.9F)
-	    {	//奔跑動作
-	    	GlStateManager.translate(0F, 0.05F, 0F);
+	    {
+	    	//奔跑動作
+	    	GlStateManager.translate(0F, this.scale * 0.1F, 0F);
 	    	//body
 	 	    this.Head.rotateAngleX -= 0.6F;
 	 	    this.BodyMain.rotateAngleX = 0.9F;
@@ -916,8 +917,9 @@ public class ModelCruiserTenryuu extends ModelBase implements IModelEmotionAdv
 	    this.Head.rotateAngleZ = EmotionHelper.getHeadTiltAngle(ent, f2);
 	    
 	    if (ent.getIsSneaking())
-	    {	//潛行, 蹲下動作
-	    	GlStateManager.translate(0F, 0.05F, 0F);
+	    {
+	    	//潛行, 蹲下動作
+	    	GlStateManager.translate(0F, this.scale * 0.06F, 0F);
 	    	//Body
 	    	this.Head.rotateAngleX -= 1.0472F;
 		  	this.BodyMain.rotateAngleX = 1.0472F;
@@ -1064,10 +1066,12 @@ public class ModelCruiserTenryuu extends ModelBase implements IModelEmotionAdv
 	    	}
   		}//end if sitting
 	    
-	    //攻擊動作
-	    if (ent.getAttackTick() > 20)
+	    //攻擊動作: 設為30~50會有揮刀動作, 設為100則沒有揮刀動作
+	    if (ent.getAttackTick() > 30)
 	    {
-	    	GlStateManager.translate(0F, 0.23F, 0F);
+	    	//reset attack tick
+	    	if (ent.getAttackTick() == 60) ent.setAttackTick(0);
+	    	GlStateManager.translate(0F, 0.22F + ent.getScaleLevel() * 0.12F, 0F);
 	    	//body
 	    	this.Head.rotateAngleX = -0.4363323129985824F;
 	    	this.Head.rotateAngleY = 0.0F;
@@ -1120,6 +1124,49 @@ public class ModelCruiserTenryuu extends ModelBase implements IModelEmotionAdv
 	    	this.EquipSL00.rotateAngleX = 1.593485607070823F;
 	    	this.EquipSL00.rotateAngleY = 0.18203784098300857F;
 	    	this.EquipSL00.rotateAngleZ = 1.5707963267948966F;
+	    	
+	    	//swing sword
+	    	if (ent.getAttackTick() < 51)
+	    	{
+		    	if (ent.getAttackTick() > 45)
+		    	{
+			    	int tick = 4 - (ent.getAttackTick() - 46);
+			    	float parTick = f2 - (int)f2 + tick;
+		    		//arm
+		    		this.ArmLeft01.rotateAngleX = -0.785F - 0.644F * parTick;
+		    		this.ArmLeft02.rotateAngleZ = 0.785F - 0.157F * parTick;
+			    	//equip
+			    	this.EquipSL00.rotateAngleY = 0.182F + 0.278F * parTick;
+		    	}
+		    	else
+		    	{
+		    		//arm
+		    		this.ArmLeft01.rotateAngleX = -4.1F;
+		    		this.ArmLeft02.rotateAngleZ = 0F;
+			    	//equip
+			    	this.EquipSL00.rotateAngleY = 1.57F;
+		    	}
+	    	}
+	    	
+	    	//final attack
+	    	if (ent.getStateEmotion(ID.S.Phase) == 3)
+	    	{
+	    		//body
+		    	this.BodyMain.rotateAngleX = 2.1F;
+		    	//arm
+		    	this.ArmLeft01.rotateAngleX = -1.92F;
+		    	this.ArmLeft01.rotateAngleY = 0.4F;
+		    	this.ArmLeft01.rotateAngleZ = 0.26F;
+		    	this.ArmLeft02.rotateAngleZ = 0F;
+		    	this.ArmRight01.rotateAngleX = -1.92F;
+		    	this.ArmRight01.rotateAngleY = -0.4F;
+		    	this.ArmRight01.rotateAngleZ = 0.26F;
+		    	this.ArmRight02.rotateAngleX = 0F;
+		    	//equip
+		    	this.EquipSL00.rotateAngleX = -1.4F;
+		    	this.EquipSL00.rotateAngleY = -0.14F;
+		    	this.EquipSL00.rotateAngleZ = 1.57F;
+	    	}
 	    }
 	    
 	    //swing arm

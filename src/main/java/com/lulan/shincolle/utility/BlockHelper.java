@@ -5,6 +5,7 @@ import java.util.Random;
 
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.proxy.ClientProxy;
+import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.tileentity.TileEntityLightBlock;
 
 import net.minecraft.block.Block;
@@ -190,7 +191,8 @@ public class BlockHelper
         return false;
 	}
 
-	/**find random position with block check
+	/**
+	 * find random position with block check for AIRPLANE
 	 * mode 0: 目標周圍四象限隨機
 	 * mode 1: 往目標背後兩個象限
 	 * mode 2: 直線前進
@@ -297,6 +299,69 @@ public class BlockHelper
 		newPos[2] = target.posZ;
 		
 		return newPos;
+	}
+	
+	/** find random safe pos by random angle on target for SHIP ATTACK */
+	public static BlockPos findRandomSafePos(Entity target)
+	{
+		//null check
+		if (target == null) return BlockPos.ORIGIN;
+		
+		BlockPos pos = new BlockPos(target);
+		BlockPos newpos;
+		
+		//get random pos
+		int loops = 20;
+		float[] posoffset;
+		
+		while (loops > 0)
+		{
+			loops--;
+			
+			posoffset = CalcHelper.rotateXZByAxis(6F, 0F, rand.nextFloat() * 360F * Values.N.DIV_PI_180, 1F);
+			newpos = pos.add((int)posoffset[1], 0, (int)posoffset[0]);
+			IBlockState state = target.world.getBlockState(newpos);
+			
+			if (checkBlockSafe(state))
+			{
+				//return new pos
+				return newpos;
+			}
+		}
+		
+		//fail, return entity pos
+		return pos;
+	}
+	
+	/** find random safe pos on target for SHIP ATTACK */
+	public static BlockPos findTopSafePos(Entity target)
+	{
+		//null check
+		if (target == null) return BlockPos.ORIGIN;
+		
+		BlockPos pos = new BlockPos(target);
+		BlockPos newpos;
+		
+		//get random pos
+		int loops = (int)target.height + 10;
+		float[] posoffset;
+		
+		while (loops > 0)
+		{
+			loops--;
+			
+			newpos = pos.add(0, loops, 0);
+			IBlockState state = target.world.getBlockState(newpos);
+			
+			if (checkBlockSafe(state))
+			{
+				//return new pos
+				return newpos;
+			}
+		}
+		
+		//fail, return entity pos
+		return pos;
 	}
 
 	/** ray trace for block, include liquid block
