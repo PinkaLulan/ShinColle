@@ -3,22 +3,20 @@ package com.lulan.shincolle.entity.cruiser;
 import java.util.ArrayList;
 
 import com.google.common.base.Predicate;
-import com.lulan.shincolle.ai.EntityAIShipFollowOwner;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.ai.EntityAIShipSkillAttack;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipEmotion;
+import com.lulan.shincolle.entity.other.EntityProjectileBeam;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
@@ -26,7 +24,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BossInfo;
@@ -123,11 +120,6 @@ public class EntityCruiserTatsutaMob extends BasicEntityShipHostile
 		//client side
 		if (this.world.isRemote)
 		{
-			//final attack phase
-			if (this.stateEmotion[ID.S.Phase] == 3)
-			{
-				ParticleHelper.spawnAttackParticleAtEntity(this, 1D, 1D, 0.6D, (byte)14);
-			}
 		}
 		//server side
 		else
@@ -136,58 +128,34 @@ public class EntityCruiserTatsutaMob extends BasicEntityShipHostile
 			if (this.attackTime3 > 0) this.attackTime3--;
 			
 			//apply skill effect
-			this.attackEntityWithSkill();
+			this.updateSkillEffect();
 		}
 		
 		super.onLivingUpdate();
 	}
 	
-	private void attackEntityWithSkill()
+	private void updateSkillEffect()
 	{
-		if (this.stateEmotion[ID.S.Phase] > 1)
+		if (this.stateEmotion[ID.S.Phase] == 1)
 		{
-			//clear attacked target list
-			if (this.attackTime3 == 5)
-			{
-				this.damagedTarget.clear();
-				
-				//apply sound
-				this.playSound(SoundEvents.ENTITY_ENDERDRAGON_GROWL, ConfigHandler.volumeFire, this.getSoundPitch());
-				this.playSound(ModSounds.SHIP_JET, ConfigHandler.volumeFire, this.getSoundPitch());
+			//apply motion
+			this.motionX = this.skillMotion.xCoord;
+			this.motionY = this.skillMotion.yCoord;
+			this.motionZ = this.skillMotion.zCoord;
 			
-				//apply attack time
-				this.applyParticleAtAttacker(5, null, new float[0]);
-			}
-			//draw movement blur
-			else if (this.attackTime3 == 1)
-			{
-				this.applyParticleAtTarget(5, null, new float[] {(float) this.skillMotion.xCoord, (float) this.skillMotion.yCoord, (float) this.skillMotion.zCoord});
+			//sync motion
+			this.sendSyncPacket(1);
+		}
+		else if (this.stateEmotion[ID.S.Phase] == 2)
+		{
+			//apply motion
+			this.motionX = this.skillMotion.xCoord;
+			this.motionY = this.skillMotion.yCoord;
+			this.motionZ = this.skillMotion.zCoord;
 			
-				//apply final attack sound
-				if (this.stateEmotion[ID.S.Phase] == 3)
-				{
-					this.playSound(ModSounds.SHIP_AP_ATTACK, ConfigHandler.volumeFire * 1.1F, this.getSoundPitch() * 0.6F);
-				}
-			}
-			
-			if (this.attackTime3 < 5 && this.attackTime3 >= 0)
-			{
-				//apply motion
-				this.motionX = this.skillMotion.xCoord * 2D;
-				this.motionY = this.skillMotion.yCoord * 2D;
-				this.motionZ = this.skillMotion.zCoord * 2D;
-				
-				//attack on colliding
-				this.damageNearbyEntity();
-			}
-			else
-			{
-				//apply motion
-				this.motionX = 0D;
-				this.motionY = 0D;
-				this.motionZ = 0D;
-			}
-			
+			//attack on colliding
+			this.damageNearbyEntity();
+
 			//sync motion
 			this.sendSyncPacket(1);
 		}
@@ -195,11 +163,11 @@ public class EntityCruiserTatsutaMob extends BasicEntityShipHostile
 	
 	private void damageNearbyEntity()
 	{
-		float rawatk = this.getAttackBaseDamage(this.stateEmotion[ID.S.Phase] == 2 ? 2 : 3, null);
+		float rawatk = this.getAttackBaseDamage(2, null);
 		
 		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
 		ArrayList<Entity> list = EntityHelper.getEntitiesWithinAABB(this.world, Entity.class,
-				this.getEntityBoundingBox().expand(1.5D, 1.5D, 1.5D), this.targetSelector);
+				this.getEntityBoundingBox().expand(4D, 3D, 4D), this.targetSelector);
 
 		for (Entity target : list)
 		{
@@ -332,8 +300,9 @@ public class EntityCruiserTatsutaMob extends BasicEntityShipHostile
 		else if (this.stateEmotion[ID.S.Phase] == -1)
 		{
   			//start skill attack
-  			this.stateEmotion[ID.S.Phase] = 1;
-			this.remainAttack = 6;
+  			this.setStateEmotion(ID.S.Phase, 1, true);
+			this.remainAttack = 4;
+  			this.attackTime3 = 7;
 		}
 		
         applyEmotesReaction(3);
@@ -357,7 +326,7 @@ public class EntityCruiserTatsutaMob extends BasicEntityShipHostile
 				if (this.remainAttack > 0)
 				{
 					ArrayList<Entity> list = EntityHelper.getEntitiesWithinAABB(this.world, Entity.class,
-							this.getEntityBoundingBox().expand(8D, 8D, 8D), this.targetSelector);
+							this.getEntityBoundingBox().expand(13D, 13D, 13D), this.targetSelector);
 			
 					if (list.size() > 0)
 					{
@@ -374,68 +343,119 @@ public class EntityCruiserTatsutaMob extends BasicEntityShipHostile
 		return target;
 	}
 
-	private void updateSkillHoriAttack(Entity target)
+	private void updateSkillCharge(Entity target)
 	{
-		//get random pos
-		BlockPos pos = BlockHelper.findRandomSafePos(target);
-		Vec3d vecpos = new Vec3d(pos.getX()+0.5D, pos.getY(), pos.getZ()+0.5D);
-		double dist = this.getDistanceSqToCenter(pos);
-		
-		//calc motion
-		this.skillMotion = CalcHelper.calcVecToTarget(new Vec3d(target.posX, target.posY, target.posZ), vecpos);
+		if (this.attackTime3 == 5)
+		{
+			Vec3d vecpos = new Vec3d((target.posX - this.posX) * 0.19D, (target.posY - this.posY) * 0.19D, (target.posZ - this.posZ) * 0.19D);
+			vecpos.normalize();
+			
+			//calc motion
+			this.skillMotion = vecpos;
+			
+			//calc rotation
+			float[] degree = CalcHelper.getLookDegree(this.skillMotion.xCoord, this.skillMotion.yCoord, this.skillMotion.zCoord, true);
+			this.rotationYaw = degree[0];
+			this.rotationYawHead = degree[0];
+			
+			//update flag and sync
+			this.sendSyncPacket(1);
+			this.sendSyncPacket(3);
+			
+			//set attack time
+			this.applyParticleAtAttacker(5, null, new float[0]);
+		}
+		else if (this.attackTime3 == 3)
+		{
+			//apply particle
+			this.applyParticleAtTarget(5, target, new float[] {(float)this.skillMotion.xCoord, (float)this.skillMotion.yCoord, (float)this.skillMotion.zCoord});
+		}
+	}
 
-		//calc rotation
-		float[] degree = CalcHelper.getLookDegree(this.skillMotion.xCoord, this.skillMotion.yCoord, this.skillMotion.zCoord, true);
-		this.rotationYaw = degree[0];
-		this.rotationYawHead = degree[0];
+	private void updateSkillWWAttack(Entity target)
+	{
+		if (this.attackTime3 <= 0)
+		{
+			//calc motion
+			this.skillMotion = new Vec3d(0D, 0.6D, 0D);
+			this.attackTime3 = 16;
+			
+			//set attack time
+			this.applyParticleAtAttacker(5, null, new float[0]);
+		}
 		
-		//apply teleport
-		EntityAIShipFollowOwner.applyTeleport(this, dist, vecpos);
-		
-		//update flag and sync
-		this.remainAttack--;
-		this.attackTime3 = 6;
-		this.setStateEmotion(ID.S.Phase, 2, true);
-		this.sendSyncPacket(3);
+		//every 2 ticks
+		if ((this.attackTime3 & 1) == 0)
+		{
+			//apply particle
+			this.applyParticleAtAttacker(6, null, new float[0]);
+			
+			//attack-- every 4 ticks
+			if ((this.attackTime3 & 3) == 0)
+			{
+				this.remainAttack--;
+				this.damagedTarget.clear();
+				
+				if (this.remainAttack == 1)
+				{
+					this.attackTime3 = 0;	//no remain attack, go to next phase
+				}
+				
+				//apply sound
+				this.playSound(SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, ConfigHandler.volumeFire, this.getSoundPitch() * 1.1F);
+				this.playSound(ModSounds.SHIP_JET, ConfigHandler.volumeFire, this.getSoundPitch());
+			}
+		}
 	}
 	
 	private void updateSkillFinalAttack(Entity target)
 	{
-		//get random pos
-		BlockPos pos = BlockHelper.findTopSafePos(target);
-		Vec3d vecpos = new Vec3d(pos.getX()+0.5D, pos.getY(), pos.getZ()+0.5D);
-		double dist = this.getDistanceSqToCenter(pos);
-		
-		//calc motion
-		this.skillMotion = CalcHelper.calcVecToTarget(new Vec3d(target.posX, target.posY, target.posZ), vecpos);
-		
-		//calc rotation
-		float[] degree = CalcHelper.getLookDegree(this.skillMotion.xCoord, this.skillMotion.yCoord, this.skillMotion.zCoord, true);
-		this.rotationYaw = degree[0];
-		this.rotationYawHead = degree[0];
-		
-		//apply teleport
-		EntityAIShipFollowOwner.applyTeleport(this, dist, vecpos);
-		
-		//update flag and sync
-		this.remainAttack--;
-		this.attackTime3 = 10;
-		this.setStateEmotion(ID.S.Phase, 3, true);
-		this.sendSyncPacket(3);
+		if (this.attackTime3 <= 0)
+		{
+			Vec3d vecpos = new Vec3d(target.posX - this.posX, target.posY - this.posY, target.posZ - this.posZ);
+			
+			//calc rotation
+			float[] degree = CalcHelper.getLookDegree(vecpos.xCoord, vecpos.yCoord, vecpos.zCoord, true);
+			this.rotationYaw = degree[0];
+			this.rotationYawHead = degree[0];
+			
+			//find gae bolg target
+			vecpos = new Vec3d(vecpos.xCoord * 10D, -20D - this.scaleLevel * 8D, vecpos.zCoord * 10D);
+			vecpos = vecpos.normalize();
+			this.skillMotion = vecpos;
+			
+			//update flag and sync
+			this.remainAttack = 0;
+			this.attackTime3 = 10;
+			this.sendSyncPacket(3);
+		}
+		else if (this.attackTime3 == 6)
+		{
+			//shot gae bolg
+			EntityProjectileBeam gaebolg = new EntityProjectileBeam(this.world);
+			gaebolg.initAttrs(this, 1, (float)this.skillMotion.xCoord, (float)this.skillMotion.yCoord, (float)this.skillMotion.zCoord, this.getAttackBaseDamage(3, target), 0.15F);
+			this.world.spawnEntity(gaebolg);
+		}
+		else if (this.attackTime3 == 4)
+		{
+			//apply sound and particle
+			this.playSound(ModSounds.SHIP_AP_ATTACK, ConfigHandler.volumeFire * 1.1F, this.getSoundPitch() * 0.6F);
+			this.applyParticleAtTarget(6, target, new float[] {(float)this.skillMotion.xCoord, (float)this.skillMotion.yCoord, (float)this.skillMotion.zCoord});
+		}
 	}
 	
 	/**
 	 * Skill Phase:
 	 * 
+	 * -1: skill ready to enter phase 1
 	 * 0: none
-	 * 1: skill ready, find new position and teleport
+	 * 1: charge to target
 	 * 2: horizontal attack
 	 * 3: final attack
 	 * 
 	 * Process:
 	 * 
-	 * 0 -> 1 -> 2 -> 1
-	 *        -> 3 -> 0
+	 * 0 -> -1 -> 1 -> 2 -> 3 -> 0
 	 */
 	@Override
 	public boolean updateSkillAttack(Entity target)
@@ -448,42 +468,45 @@ public class EntityCruiserTatsutaMob extends BasicEntityShipHostile
 		{
 			this.setStateEmotion(ID.S.Phase, 0, true);
 			this.remainAttack = 0;
+			this.skillMotion = Vec3d.ZERO;
 			this.attackTime3 = 0;
 			return false;
 		}
 		
-		//find next teleport pos
-		if (this.stateEmotion[ID.S.Phase] == 1)
+		//state changing
+		if (this.attackTime3 <= 0)
 		{
-			//horizontal attack
-			if (this.remainAttack > 1)
+			if (this.stateEmotion[ID.S.Phase] == 3)
 			{
-				this.updateSkillHoriAttack(target);
+				this.setStateEmotion(ID.S.Phase, 0, true);
+				this.remainAttack = 0;
+				this.skillMotion = Vec3d.ZERO;
+				this.attackTime3 = 0;
+				return false;
 			}
-			//final attack
 			else
 			{
-				this.updateSkillFinalAttack(target);
+				this.setStateEmotion(ID.S.Phase, this.getStateEmotion(ID.S.Phase) + 1, true);
 			}
 		}
 		
-		//ticking
-		if (this.attackTime3 <= 0)
+		//update state
+		switch (this.stateEmotion[ID.S.Phase])
 		{
-			//in horizontal attack state
-			if (this.stateEmotion[ID.S.Phase] == 2)
-			{
-				this.setStateEmotion(ID.S.Phase, 1, true);
-			}
-			//in final attack state
-			else if (this.stateEmotion[ID.S.Phase] == 3)
-			{
-				this.setStateEmotion(ID.S.Phase, 0, true);
-			}
+		case 1:		//charge to target
+			this.updateSkillCharge(target);
+		break;
+		case 2:		//WW attack
+			this.updateSkillWWAttack(target);
+		break;
+		case 3:		//final attack
+			this.updateSkillFinalAttack(target);
+		break;
 		}
 		
 		return false;
 	}
+	
 	
 	@Override
   	public void applyParticleAtAttacker(int type, Entity target, float[] vec)
@@ -493,17 +516,20 @@ public class EntityCruiserTatsutaMob extends BasicEntityShipHostile
   		switch (type)
   		{
   		case 1:  //light cannon
-  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 15, 1D, 1D, 0.9D), point);
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 16, 1D, 0.85D, 1D), point);
   		break;
   		case 2:  //heavy cannon
-			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 11, 1D, 1D, 0.7D), point);
-			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 12, 1D, 1D, 0.7D), point);
+			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 11, 1D, 0.8D, 1D), point);
+			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 12, 1D, 0.8D, 1D), point);
 		break;
   		case 5:  //for attack time setting
   			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
 		break;
+  		case 6:  //WW wave
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 14, 1D, 0.7D, 1D), point);
+		break;
 		default: //melee
-			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 15, 0.9D, 1D, 1D), point);
+			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 16, 1D, 0.95D, 1D), point);
 		break;
   		}
   	}
@@ -539,9 +565,9 @@ public class EntityCruiserTatsutaMob extends BasicEntityShipHostile
   		case 1:  //light attack
   			return CalcHelper.calcDamageBySpecialEffect(this, target, this.atk, 0);
   		case 2:  //heavy attack: horizontal
-  			return this.atk * 3F * 0.4F;
+  			return this.atk * 3F * 0.5F;
   		case 3:  //heavy attack: final
-  			return this.atk * 3F;
+  			return this.atk * 3F * 1.5F;
 		default: //melee
 			return this.atk;
   		}
@@ -561,8 +587,11 @@ public class EntityCruiserTatsutaMob extends BasicEntityShipHostile
   		case 3:  //light aircraft
   		case 4:  //heavy aircraft
   		break;
-  		case 5:  //high speed movement
-  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 44, posX, posY, posZ, vec[0], vec[1], vec[2], false), point);
+  		case 5:  //high speed blur
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 46, posX + vec[0] * 2D, posY + vec[1] * 2D + this.height * 0.7D, posZ + vec[2] * 2D, vec[0] * 0.6D, vec[1] * 0.6D, vec[2] * 0.6D, false), point);
+		break;
+  		case 6:  //gae bolg blur
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 45, posX + vec[0] * 10D, posY + vec[1] * 10D + this.height * 0.7D, posZ + vec[2] * 10D, vec[0] * 1.5D, vec[1] * 1.5D, vec[2] * 1.5D, true), point);
 		break;
 		default: //melee
     		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 1, false), point);

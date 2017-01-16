@@ -450,7 +450,7 @@ public class ParticleHelper
 			}
 		}
 		break;
-		case 44:	//high speed movement blur
+		case 44:	//high speed movement blur THICK YELLOW
 		{
 			//draw speed blur: H, Wfor, Wback, R, G, B, A, px, py, pz, mx, my, mz
 			ParticleLine line1 = new ParticleLine(world, 0, new float[] {2.5F, 8F, 22F, 1F, 1F, 0.4F, 0.8F,
@@ -458,6 +458,34 @@ public class ParticleHelper
 			ParticleLine line2 = new ParticleLine(world, 0, new float[] {1F, 8F, 20F, 1F, 1F, 0.7F, 0.9F,
 					(float)posX, (float)posY, (float)posZ, (float)lookX, (float)lookY, (float)lookZ});
 			ParticleLine line3 = new ParticleLine(world, 0, new float[] {0.8F, 7F, 18F, 1F, 1F, 1F, 1F,
+					(float)posX, (float)posY, (float)posZ, (float)lookX, (float)lookY, (float)lookZ});
+			Minecraft.getMinecraft().effectRenderer.addEffect(line1);
+			Minecraft.getMinecraft().effectRenderer.addEffect(line2);
+			Minecraft.getMinecraft().effectRenderer.addEffect(line3);
+		}
+		break;
+		case 45:	//high speed movement blur THIN + THICK Aura
+		{
+			//draw speed blur: H, Wfor, Wback, R, G, B, A, px, py, pz, mx, my, mz
+			ParticleLine line1 = new ParticleLine(world, 0, new float[] {2.4F, 8F, 22F, 1F, 0F, 0F, 0.4F,
+					(float)posX, (float)posY, (float)posZ, (float)lookX, (float)lookY, (float)lookZ});
+			ParticleLine line2 = new ParticleLine(world, 0, new float[] {0.24F, 8F, 20F, 1F, 0F, 1F, 0.85F,
+					(float)posX, (float)posY, (float)posZ, (float)lookX, (float)lookY, (float)lookZ});
+			ParticleLine line3 = new ParticleLine(world, 0, new float[] {0.2F, 7F, 18F, 1F, 1F, 1F, 1F,
+					(float)posX, (float)posY, (float)posZ, (float)lookX, (float)lookY, (float)lookZ});
+			Minecraft.getMinecraft().effectRenderer.addEffect(line1);
+			Minecraft.getMinecraft().effectRenderer.addEffect(line2);
+			Minecraft.getMinecraft().effectRenderer.addEffect(line3);
+		}
+		break;
+		case 46:	//high speed movement blur THICK PINK
+		{
+			//draw speed blur: H, Wfor, Wback, R, G, B, A, px, py, pz, mx, my, mz
+			ParticleLine line1 = new ParticleLine(world, 0, new float[] {0.6F, 7F, 7F, 1F, 0.6F, 1F, 0.3F,
+					(float)posX, (float)posY, (float)posZ, (float)lookX, (float)lookY, (float)lookZ});
+			ParticleLine line2 = new ParticleLine(world, 0, new float[] {0.3F, 4F, 4F, 1F, 0.8F, 1F, 0.8F,
+					(float)posX, (float)posY, (float)posZ, (float)lookX, (float)lookY, (float)lookZ});
+			ParticleLine line3 = new ParticleLine(world, 0, new float[] {0.2F, 3F, 3F, 1F, 1F, 1F, 1F,
 					(float)posX, (float)posY, (float)posZ, (float)lookX, (float)lookY, (float)lookZ});
 			Minecraft.getMinecraft().effectRenderer.addEffect(line1);
 			Minecraft.getMinecraft().effectRenderer.addEffect(line2);
@@ -647,7 +675,7 @@ public class ParticleHelper
 		case 13:	//sparkle
 		{
 			//											 ent, type, scale, rad, NO_USE, NO_USE, 4~7:RGBA, height
-			ParticleSparkle spark1 = new ParticleSparkle(ent, 0, 0.1F, ent.width * 1.5F, 0F, 0F, (float)par1, (float)par2, (float)par3, 1F, ent.height * 0.5F);
+			ParticleSparkle spark1 = new ParticleSparkle(ent, 0, 0.2F, ent.width * 1.5F, 0F, 0F, (float)par1, (float)par2, (float)par3, 1F, ent.height * 0.5F);
 			Minecraft.getMinecraft().effectRenderer.addEffect(spark1);
 		}
 		break;
@@ -660,11 +688,19 @@ public class ParticleHelper
 			Minecraft.getMinecraft().effectRenderer.addEffect(grad2);
 		}
 		break;
-		case 15:	//color sword sweep
+		case 15:	//color sword sweep vertical
 		{
 			if (ent instanceof IShipEmotion) ((IShipEmotion) ent).setAttackTick(50);
 			//									   ent, type, scale1, scale2, scale3, fade, age, RGBA
 			ParticleSweep swp1 = new ParticleSweep(ent, 0, ent.height, ent.height * 5.6F, ent.height * 2F, 0.95F, 4F, (float)par1, (float)par2, (float)par3, 1F);
+			Minecraft.getMinecraft().effectRenderer.addEffect(swp1);
+		}
+		break;
+		case 16:	//color sword sweep horizontal
+		{
+			if (ent instanceof IShipEmotion) ((IShipEmotion) ent).setAttackTick(50);
+			//									   ent, type, scale1, scale2, scale3, fade, age, RGBA
+			ParticleSweep swp1 = new ParticleSweep(ent, 0, ent.height * 0.1F, ent.height * 5.6F, ent.height * 6F, 0.95F, 4F, (float)par1, (float)par2, (float)par3, 1F);
 			Minecraft.getMinecraft().effectRenderer.addEffect(swp1);
 		}
 		break;

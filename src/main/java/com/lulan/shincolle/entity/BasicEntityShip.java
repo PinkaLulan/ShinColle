@@ -145,7 +145,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	protected float[] EffectFormation;
 	/** formation fixed effect: 0:MOV */
 	protected float[] EffectFormationFixed;
-	/** EntityState: 0:State 1:Emotion 2:Emotion2 3:HP State 4:State2 5:AttackPhase 6:Emotion3*/
+	/** EntityState: 0:State 1:Emotion 2:Emotion2 3:HP State 4:State2 5:AttackPhase 6:Emotion3
+	 *               7:Emotion4 */
 	protected byte[] StateEmotion;
 	/** EntityFlag: 0:canFloatUp 1:isMarried 2:noFuel 3:canMelee 4:canAmmoLight 5:canAmmoHeavy 
 	 *  6:canAirLight 7:canAirHeavy 8:headTilt(client only) 9:canRingEffect 10:canDrop 11:canFollow
@@ -214,7 +215,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 									        0F, 0F, 0F, 0F, 0F,
 									        0F, 0F, 0F};
 		this.EffectFormationFixed = new float[] {0F};
-		this.StateEmotion = new byte[] {0, 0, 0, 0, 0, 0, 0};
+		this.StateEmotion = new byte[] {0, 0, 0, 0, 0, 0, 0, 0};
 		this.StateFlag = new boolean[] {false, false, false, false, true,
 				                        true, true, true, false, true,
 								        true, false, true, true, true,
@@ -3821,6 +3822,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     		}
 			else
 			{
+				//roll bored emotion
 				if (this.getRNG().nextInt(2) == 0)
 				{	//50% for bored
 	    			if (this.getStateEmotion(ID.S.Emotion) != ID.Emotion.BORED)
@@ -3833,6 +3835,22 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	    			if (this.getStateEmotion(ID.S.Emotion) != ID.Emotion.NORMAL)
 	    			{
 	    				this.setStateEmotion(ID.S.Emotion, ID.Emotion.NORMAL, false);
+	    			}
+	    		}
+				
+				//the other emotion (independent of Emotion1~3)
+				if (this.getRNG().nextInt(2) == 0)
+				{	//50% for bored
+	    			if (this.getStateEmotion(ID.S.Emotion4) != ID.Emotion.BORED)
+	    			{
+	    				this.setStateEmotion(ID.S.Emotion4, ID.Emotion.BORED, false);
+	    			}
+	    		}
+	    		else
+	    		{	//back to normal face
+	    			if (this.getStateEmotion(ID.S.Emotion4) != ID.Emotion.NORMAL)
+	    			{
+	    				this.setStateEmotion(ID.S.Emotion4, ID.Emotion.NORMAL, false);
 	    			}
 	    		}
 			}

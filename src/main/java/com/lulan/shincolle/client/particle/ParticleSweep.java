@@ -64,7 +64,7 @@ public class ParticleSweep extends Particle
             this.particleGreen = parms[6];
             this.particleBlue = parms[7];
             this.particleAlpha = parms[8];
-            this.setPosition(entity.posX, entity.posY + entity.height * 0.5F, entity.posZ);
+            this.setPosition(entity.posX, entity.posY + entity.height * 0.6F, entity.posZ);
             
         	if (this.host instanceof EntityLivingBase)
         	{
@@ -173,7 +173,7 @@ public class ParticleSweep extends Particle
 		this.prevPosX = this.posX;
         this.prevPosY = this.posY;
         this.prevPosZ = this.posZ;
-        this.setPosition(this.host.posX, this.host.posY + this.host.height * 0.5F, this.host.posZ);
+        this.setPosition(this.host.posX, this.host.posY + this.host.height * 0.6F, this.host.posZ);
 
         //update beam
         switch (this.particleType)

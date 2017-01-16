@@ -175,31 +175,34 @@ public class EventHandler
     	//mob: drop grudge
     	else if (host instanceof IMob || host instanceof EntitySlime || host instanceof EntityGolem)
     	{
-    		//if config has drop rate setting
-    		int numGrudge = (int) ConfigHandler.dropGrudge;
-    		
-    		//若設定超過1, 則掉落多個 (ex: 5.5 = 5顆)
-    		if (numGrudge > 0)
+    		if (host.world.getGameRules().getBoolean("doMobLoot"))
     		{
-    			ItemStack drop = new ItemStack(ModItems.Grudge, numGrudge);
-		        event.getDrops().add(new EntityItem(host.world, host.posX, host.posY, host.posZ, drop));
-    		}
-    		//值不到1, 機率掉落1個
-    		else
-    		{
-    			if (host.world.rand.nextFloat() <= ConfigHandler.dropGrudge)
-    			{
+        		//if config has drop rate setting
+        		int numGrudge = (int) ConfigHandler.dropGrudge;
+        		
+        		//若設定超過1, 則掉落多個 (ex: 5.5 = 5顆)
+        		if (numGrudge > 0)
+        		{
+        			ItemStack drop = new ItemStack(ModItems.Grudge, numGrudge);
+    		        event.getDrops().add(new EntityItem(host.world, host.posX, host.posY, host.posZ, drop));
+        		}
+        		//值不到1, 機率掉落1個
+        		else
+        		{
+        			if (host.world.rand.nextFloat() <= ConfigHandler.dropGrudge)
+        			{
+        				ItemStack drop = new ItemStack(ModItems.Grudge, 1);
+    			        event.getDrops().add(new EntityItem(host.world, host.posX, host.posY, host.posZ, drop));
+        			}
+        		}
+        		
+        		//剩餘不到1的值, 改為機率掉落 (ex: 0.6 = 60%掉一顆)
+        		if (host.world.rand.nextFloat() < (ConfigHandler.dropGrudge - (float)numGrudge))
+        		{
     				ItemStack drop = new ItemStack(ModItems.Grudge, 1);
-			        event.getDrops().add(new EntityItem(host.world, host.posX, host.posY, host.posZ, drop));
+    		        event.getDrops().add(new EntityItem(host.world, host.posX, host.posY, host.posZ, drop));
     			}
     		}
-    		
-    		//剩餘不到1的值, 改為機率掉落 (ex: 0.6 = 60%掉一顆)
-    		if (host.world.rand.nextFloat() < (ConfigHandler.dropGrudge - (float)numGrudge))
-    		{
-				ItemStack drop = new ItemStack(ModItems.Grudge, 1);
-		        event.getDrops().add(new EntityItem(host.world, host.posX, host.posY, host.posZ, drop));
-			}
     	}
 		
 	}

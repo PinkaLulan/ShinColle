@@ -777,7 +777,7 @@ public class ModelCruiserTenryuu extends ModelBase implements IModelEmotionAdv
 		  		addk1 = angleAdd1 * 0.5F - 0.35F;  //LegLeft01
 			  	addk2 = angleAdd2 * 0.5F - 0.09F;  //LegRight01
 			  	
-			  	if (t2 > 300)
+			  	if (ent.getStateEmotion(ID.S.Emotion4) == ID.Emotion.BORED)
 			  	{
 					//arm
 					this.ArmLeft01.rotateAngleX = -1.4F;
@@ -906,7 +906,7 @@ public class ModelCruiserTenryuu extends ModelBase implements IModelEmotionAdv
 		    	this.Butt.rotateAngleX = -0.79F;
 		    	this.Head.rotateAngleX -= 1.2F;
 		    	//arm
-			  	if (!this.EquipSL00.isHidden && t2 > 300)
+			  	if (!this.EquipSL00.isHidden && ent.getStateEmotion(ID.S.Emotion4) == ID.Emotion.BORED)
 			  	{
 					//arm
 					this.ArmLeft01.rotateAngleX = -2.44F;

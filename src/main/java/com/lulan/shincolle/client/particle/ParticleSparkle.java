@@ -168,8 +168,8 @@ public class ParticleSparkle extends Particle
             		(float) (this.host.posY - this.posY) + this.beamHeight + (this.rand.nextFloat() - 0.5F) * this.beamFad,
             		(float) (this.host.posZ - this.posZ) + (this.rand.nextFloat() - 0.5F) * this.beamFad,
             		this.particleRed,
-        			this.particleGreen,
-        			this.particleBlue + this.rand.nextFloat() * 0.7F,
+        			this.particleGreen + this.rand.nextFloat() * 0.7F,
+        			this.particleBlue,
         			this.particleAlpha, 0F
         		};
             	this.beamCurrent++;

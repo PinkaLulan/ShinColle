@@ -1,5 +1,6 @@
 package com.lulan.shincolle.entity.other;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.lulan.shincolle.client.render.IShipCustomTexture;
@@ -37,7 +38,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
  */
 public class EntityProjectileBeam extends Entity implements IShipOwner, IShipEquipAttrs, IShipCustomTexture
 {
-
+	
 	//host data
 	private IShipAttackBase host;	//main host type
     private Entity host2;			//second host type: entity living
@@ -47,15 +48,17 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipEqu
 	private int type, lifeLength;
 	private float atk, kbValue;
 	private float acc, accX, accY, accZ;
+	private ArrayList<Entity> damagedTarget;
 	
 
 	public EntityProjectileBeam(World world)
 	{
 		super(world);
+		this.setSize(1F, 1F);
 		this.ignoreFrustumCheck = true;  //always render
 		this.noClip = true;				 //can't block
 		this.stepHeight = 0F;
-		this.setSize(1F, 1F);
+		this.damagedTarget = new ArrayList<Entity>();
 	}
 	
 	//init attrs
@@ -71,7 +74,12 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipEqu
 		
 		switch (type)
 		{
-		default:  //normal beam
+		case 1:		//gae bolg
+			this.setPosition(host2.posX, host2.posY + host2.height * 0.75D, host2.posZ);
+			this.lifeLength = 8;
+			this.acc = 3F;
+		break;
+		default:	//normal beam
 			this.setPosition(host2.posX + ax, host2.posY + host2.height * 0.5D, host2.posZ + az);
 			this.lifeLength = 31;
 			this.acc = 4F;
@@ -154,10 +162,14 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipEqu
     	this.motionZ = this.accZ;
     	
     	//set position
-    	this.setPosition(this.posX, this.posY, this.posZ);
+		this.prevPosX = this.posX;
+    	this.prevPosY = this.posY;
+    	this.prevPosZ = this.posZ;
 		this.posX += this.motionX;
 		this.posY += this.motionY;
         this.posZ += this.motionZ;
+        this.setPosition(this.posX, this.posY, this.posZ);
+        
         super.onUpdate();
         
         /*************** SERVER SIDE *****************/
@@ -186,6 +198,27 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipEqu
             { 
             	if (ent.canBeCollidedWith() && EntityHelper.isNotHost(this, ent))
             	{
+        			boolean attacked = false;
+        			
+        			//check target was not attacked before
+        			for (Entity ent2 : this.damagedTarget)
+        			{
+        				if (ent.equals(ent2))
+        				{
+        					attacked = true;
+        					break;
+        				}
+        			}
+        			
+        			if (attacked)
+    				{	//attacked, skip to next
+        				continue;
+    				}
+        			else
+        			{	//not attacked, add to attacked list
+        				this.damagedTarget.add(ent);
+        			}
+            		
             		this.onImpact(ent);
             	}
             }

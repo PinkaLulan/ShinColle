@@ -223,7 +223,7 @@ entity.shincolle.EntitySubmU511Mob.name=Submarine U-511
 entity.shincolle.EntityTransportWa.name=Transport Wa-Class
 
 # formatting codes:
-# new line: <br>, <BR>, <br/> or <BR/> can set next line manually. (String can wrap to next line automatically to fit gui width.)
+# new line: <br>, <BR>, <br/> or <BR/> can set next line manually. (String will wrap to next line automatically to fit gui width.)
 # other code: §0, §1 ...etc. check: http://minecraft.gamepedia.com/Formatting_codes
 
 # GUI: Book Text Chap 0
@@ -483,10 +483,10 @@ gui.shincolle:book.chap5.text11d0=
 gui.shincolle:book.chap5.text11d1=§9Name:§0 Inazuma<br><br>§9Class:§0 Akatsuki Class DD<br><br>§9AuraEffect:§0 Moving speed aura<br><br>§9OtherEffect:§0 Pick up items<br><br>Inazuma is the NANODEATH angel that can purify nearby shinkeiseikan, be careful!  
 gui.shincolle:book.chap5.title12=
 gui.shincolle:book.chap5.text12d0=
-gui.shincolle:book.chap5.text12d1=§9Name:§0 Tenryuu<br><br>§9Class:§0 Tenryuu Class CL<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 Cri,Dodge+15%% at night<br><br>Her blade was enchanted with the Trayastrmsa devas' power and the dragon king of terror was sealed in her left eye. That's why she can use TenryuuSlash.<br><br>Melee deal 100%% firepower damage, TenryuuSlash deal 40%%x5 + 100%% torpedo damage.   
+gui.shincolle:book.chap5.text12d1=§9Name:§0 Tenryuu<br><br>§9Class:§0 Tenryuu Class CL<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 Cri,Dodge+15%% at night<br><br>Her blade was enchanted with the Trayastrmsa devas' power and the dragon king of terror was sealed in her left eye. That's why she can use TenryuuSlash.<br><br>Melee deal 100%% firepower damage, TenryuuSlash deal 30%%x2~6 + 120%% torpedo damage(depend on level).   
 gui.shincolle:book.chap5.title13=
 gui.shincolle:book.chap5.text13d0=
-gui.shincolle:book.chap5.text13d1=§9Name:§0 Tatsuta<br><br>§9Class:§0 Tenryuu Class CL<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 Cri,Dodge+15%% at night<br><br>Lancer with Cup E. She will riddle anyone (including master) close to Tenryuu ...HOORAY♪<br><br>Melee deal 100%% firepower damage,  
+gui.shincolle:book.chap5.text13d1=§9Name:§0 Tatsuta<br><br>§9Class:§0 Tenryuu Class CL<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 Cri,Dodge+15%% at night<br><br>Lancer with Cup E. She will riddle anyone (including master) close to Tenryuu ...HOORAY♪<br><br>Melee deal 100%% firepower damage, TenryuuSlash deal 50%%x1~3 + 150%% torpedo damage(depend on level).
 
 # GUI: Book Text Chap 6
 gui.shincolle:book.chap6.title=Commands

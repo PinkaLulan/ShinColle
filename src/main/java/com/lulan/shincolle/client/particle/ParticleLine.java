@@ -49,7 +49,7 @@ public class ParticleLine extends Particle
         /**
          * parms: height, width forward, width backward, R, G, B, A, px, py, pz, mx, my, mz
          */
-        case 0:		//high speed blur cyan
+        case 0:		//high speed blur
         	this.particleMaxAge = 50;
         	this.particleRed = parms[3];
         	this.particleGreen = parms[4];

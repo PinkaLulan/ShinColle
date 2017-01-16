@@ -497,6 +497,7 @@ public class ID {
 		public static final byte State2 = 4;			//equip state 2
 		public static final byte Phase = 5;				//skill phase
 		public static final byte Emotion3 = 6;			//emotion 3, for caress reaction
+		public static final byte Emotion4 = 7;			//emotion 4, for the other pose emotion
 	}
 	
 	/** ship class id */

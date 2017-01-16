@@ -113,7 +113,7 @@ public class S2CEntitySync implements IMessage
 			this.valueBoolean1 = PacketHelper.readBooleanArray(buf, 17);
 		break;
 		case PID.SyncShip_Emo: //entity emotion only
-			this.valueByte1 = PacketHelper.readByteArray(buf, 7);
+			this.valueByte1 = PacketHelper.readByteArray(buf, 8);
 			this.valueBoolean1 = PacketHelper.readBooleanArray(buf, 1);
 		break;
 		case PID.SyncShip_Flag: //entity flag only
@@ -291,6 +291,7 @@ public class S2CEntitySync implements IMessage
 			buf.writeByte(entity.getStateEmotion(ID.S.HPState));
 			buf.writeByte(entity.getStateEmotion(ID.S.Phase));
 			buf.writeByte(entity.getStateEmotion(ID.S.Emotion3));
+			buf.writeByte(entity.getStateEmotion(ID.S.Emotion4));
 			
 			buf.writeBoolean(entity.getStateFlag(ID.F.NoFuel));
 		}
@@ -680,6 +681,7 @@ public class S2CEntitySync implements IMessage
 				ship.setStateEmotion(ID.S.HPState, msg.valueByte1[4], false);
 				ship.setStateEmotion(ID.S.Phase, msg.valueByte1[5], false);
 				ship.setStateEmotion(ID.S.Emotion3, msg.valueByte1[6], false);
+				ship.setStateEmotion(ID.S.Emotion4, msg.valueByte1[7], false);
 				
 				ship.setStateFlag(ID.F.NoFuel, msg.valueBoolean1[0]);
 			}

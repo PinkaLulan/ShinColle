@@ -137,13 +137,13 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
 			if (this.StateTimer[ID.T.AttackTime3] > 0) this.StateTimer[ID.T.AttackTime3]--;
 			
 			//apply skill effect
-			this.attackEntityWithSkill();
+			this.updateSkillEffect();
 		}
 		
 		super.onLivingUpdate();
 	}
 	
-	private void attackEntityWithSkill()
+	private void updateSkillEffect()
 	{
 		if (this.StateEmotion[ID.S.Phase] > 1)
 		{
@@ -352,7 +352,7 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
 		{
   			//start skill attack
   			this.StateEmotion[ID.S.Phase] = 1;
-			this.remainAttack = 6;
+			this.remainAttack = 3 + (int)(this.getLevel() * 0.03F);
 		}
 		
         applyEmotesReaction(3);
@@ -378,7 +378,7 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
 				if (this.remainAttack > 0)
 				{
 					ArrayList<Entity> list = EntityHelper.getEntitiesWithinAABB(this.world, Entity.class,
-							this.getEntityBoundingBox().expand(8D, 8D, 8D), this.targetSelector);
+							this.getEntityBoundingBox().expand(10D, 10D, 10D), this.targetSelector);
 			
 					if (list.size() > 0)
 					{
@@ -448,6 +448,7 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
 	/**
 	 * Skill Phase:
 	 * 
+	 * -1: skill ready to enter phase 1
 	 * 0: none
 	 * 1: skill ready, find new position and teleport
 	 * 2: horizontal attack
@@ -455,8 +456,8 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
 	 * 
 	 * Process:
 	 * 
-	 * 0 -> 1 -> 2 -> 1
-	 *        -> 3 -> 0
+	 * 0 -> -1 -> 1 -> 2 -> 1
+	 *              -> 3 -> 0
 	 */
 	@Override
 	public boolean updateSkillAttack(Entity target)
@@ -597,9 +598,9 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
   		case 1:  //light attack
   			return CalcHelper.calcDamageBySpecialEffect(this, target, StateFinal[ID.ATK], 0);
   		case 2:  //heavy attack: horizontal
-  			return StateFinal[ID.ATK_H] * 0.4F;
+  			return StateFinal[ID.ATK_H] * 0.3F;
   		case 3:  //heavy attack: final
-  			return StateFinal[ID.ATK_H];
+  			return StateFinal[ID.ATK_H] * 1.2F;
 		default: //melee
 			return StateFinal[ID.ATK];
   		}

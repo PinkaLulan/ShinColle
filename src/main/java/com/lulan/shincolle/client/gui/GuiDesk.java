@@ -787,13 +787,24 @@ public class GuiDesk extends GuiContainer
             		case 3:  //sit
             			this.shipModel.setSitting(!this.shipModel.isSitting());
             			
-            			if (this.tickGUI % 2 == 0)
+            			//roll Emotion
+            			if (this.shipModel.getRNG().nextInt(2) == 0)
             			{
             				this.shipModel.setStateEmotion(ID.S.Emotion, ID.Emotion.BORED, false);
             			}
             			else
             			{
             				this.shipModel.setStateEmotion(ID.S.Emotion, ID.Emotion.NORMAL, false);
+            			}
+            			
+            			//roll Emotion4
+            			if (this.shipModel.getRNG().nextInt(2) == 0)
+            			{
+            				this.shipModel.setStateEmotion(ID.S.Emotion4, ID.Emotion.BORED, false);
+            			}
+            			else
+            			{
+            				this.shipModel.setStateEmotion(ID.S.Emotion4, ID.Emotion.NORMAL, false);
             			}
             		break;
             		case 4:  //run
@@ -806,26 +817,30 @@ public class GuiDesk extends GuiContainer
             			if (this.shipMount != null) this.shipMount.setAttackTick(50);
             		break;
             		case 6:  //emotion
-            			switch (this.shipModel.getRNG().nextInt(11))
+            			//roll Emotion4
+            			if (this.shipModel.getRNG().nextInt(2) == 0)
             			{
-            			case 0:
-            			case 1:
-            				this.shipModel.setSneaking(false);
-            				this.shipModel.setStateFlag(ID.F.NoFuel, true);
-            			break;
-            			case 2:
-            			case 3:
-            				this.shipModel.setSneaking(true);
-            				this.shipModel.setStateFlag(ID.F.NoFuel, false);
-            			break;
-        				default:
-        					this.shipModel.setSneaking(false);
-        					this.shipModel.setStateFlag(ID.F.NoFuel, false);
-            				this.shipModel.setStateEmotion(ID.S.Emotion, this.shipModel.getRNG().nextInt(11), false);
-                			if (this.shipMount != null) this.shipMount.setStateEmotion(ID.S.Emotion, this.shipMount.getRNG().nextInt(11), false);
-        				break;
-            			}//end switch
+            				this.shipModel.setStateEmotion(ID.S.Emotion4, ID.Emotion.BORED, false);
+            			}
+            			else
+            			{
+            				this.shipModel.setStateEmotion(ID.S.Emotion4, ID.Emotion.NORMAL, false);
+            			}
             			
+            			//roll sneaking
+            			this.shipModel.setSneaking(this.shipModel.getRNG().nextInt(3) == 0);
+            			
+            			//roll Emotion/NoFuel
+            			if (this.shipModel.getRNG().nextInt(4) == 0)
+            			{
+            				this.shipModel.setStateFlag(ID.F.NoFuel, true);
+            			}
+            			else
+            			{
+            				this.shipModel.setStateFlag(ID.F.NoFuel, false);
+            				this.shipModel.setStateEmotion(ID.S.Emotion, this.shipModel.getRNG().nextInt(6), false);
+                			if (this.shipMount != null) this.shipMount.setStateEmotion(ID.S.Emotion, this.shipMount.getRNG().nextInt(6), false);
+            			}
             		break;
             		}//end switch
         		}//end get ship model
@@ -2193,12 +2208,12 @@ public class GuiDesk extends GuiContainer
         	
         	RenderManager rm = Minecraft.getMinecraft().getRenderManager();
 			int x = this.guiLeft + 72;
-			int y = this.guiTop + 136;
+			int y = this.guiTop + 110;
 			
 			//set basic position and rotation
 			GlStateManager.enableColorMaterial();
 			GlStateManager.pushMatrix();
-			GlStateManager.translate(x, y, 50F);
+			GlStateManager.translate(x, y + this.mScale * 1.1F, 50F);
 			GlStateManager.scale(-this.mScale, this.mScale, this.mScale);
 			GlStateManager.rotate(180F, 0F, 0F, 1F);
 			
