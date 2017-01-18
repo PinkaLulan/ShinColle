@@ -45,6 +45,7 @@ item.shincolle:PointerItem.name=ヲ級的指揮權杖
 item.shincolle:RepairGoddess.name=深海女神的怨念
 item.shincolle:TargetWrench.name=目標設定扳手
 item.shincolle:ToyAirplane.name=零式21型艦戰 (1/48)
+item.shincolle:TrainingBook.name=整備員訓練書
 
 # Equip
 item.shincolle:EquipCannon.name=5吋單裝砲
@@ -122,6 +123,7 @@ item.shincolle:shipegg5.name=驅逐ニ級
 item.shincolle:shipegg11.name=重巡リ級
 item.shincolle:shipegg12.name=重巡ネ級
 item.shincolle:shipegg14.name=空母ヲ級
+item.shincolle:shipegg15.name=戰艦ル級
 item.shincolle:shipegg16.name=戰艦タ級
 item.shincolle:shipegg17.name=航空戰艦レ級
 item.shincolle:shipegg18.name=輸送ワ級
@@ -173,6 +175,7 @@ entity.shincolle.EntityBattleshipHime.name=戰艦棲姬
 entity.shincolle.EntityBattleshipNGT.name=戰艦 長門
 entity.shincolle.EntityBattleshipNGTMob.name=戰艦 長門
 entity.shincolle.EntityBattleshipRe.name=航空戰艦レ級
+entity.shincolle.EntityBattleshipRu.name=戰艦ル級
 entity.shincolle.EntityBattleshipTa.name=戰艦タ級
 entity.shincolle.EntityBattleshipYMT.name=戰艦 大和
 entity.shincolle.EntityBattleshipYMTMob.name=戰艦 大和
@@ -208,7 +211,7 @@ entity.shincolle.EntityHeavyCruiserRi.name=重巡リ級
 entity.shincolle.EntityMountAfH.name=空軍基地
 entity.shincolle.EntityMountBaH.name=三連裝砲
 entity.shincolle.EntityMountCaH.name=深海航空母艦
-entity.shincolle.EntityMountCaWD.name=深海航空母艦
+entity.shincolle.EntityMountCaWD.name=深海航空母艦MKII
 entity.shincolle.EntityMountHbH.name=港灣基地
 entity.shincolle.EntityNorthernHime.name=北方棲姬
 entity.shincolle.EntityRensouhou.name=連裝砲
@@ -308,6 +311,9 @@ gui.shincolle:book.chap1.text22d1=以§d目標設定扳手§0右鍵點擊會顯�
 gui.shincolle:book.chap1.title23=深海起重機
 gui.shincolle:book.chap1.text23d0=<br><br><br><br><br><br><br><br><br>§c深海棲艦§0用來大量裝卸載貨物的機械。<br><br>跟路徑方塊一樣由§d目標設定扳手§0來連結其他路徑方塊或是其他起重機，最重要的是§9要跟箱子設定連結§0。<br><br>當棲艦走到起重機這個點時，就會依照設定的物品內容對設定的箱子裝卸貨物。裝卸完畢就會繼續往下個路徑點移動。
 gui.shincolle:book.chap1.text23d1=介面說明：<br><br>§9左上§0為起重機§9開關§0按鈕。<br><br>§9中上最大的按鈕§0為§9等待模式§0。<br><br>§9中間M/D/N三個按鈕§0可以設定物品額外的比對條件。<br><br>§9中間兩排物品欄§0可設定裝卸各九種物品，§C全部不設定則視為裝卸所有物品§0。裝貨或者卸貨功能可以分開開關。<br><br>要注意裝卸或者等待裝卸中的船艦不會移動也不會攻擊。
+gui.shincolle:book.chap1.title24=整備員訓練書
+gui.shincolle:book.chap1.text24d0=<br><br><br><br><br><br><br><br><br>§c深海棲艦§0整備員訓練書。
+gui.shincolle:book.chap1.text24d1=
  
 # GUI: Book Text Chap 2
 gui.shincolle:book.chap2.title=建造
@@ -443,7 +449,9 @@ gui.shincolle:book.chap4.text18d1=§9名稱：§0 ソ級<br><br>§9艦種：§0 
 gui.shincolle:book.chap4.title19=
 gui.shincolle:book.chap4.text19d0=
 gui.shincolle:book.chap4.text19d1=§9名稱：§0 空母棲姬<br><br>§9艦種：§0 姬級 航空母艦<br><br>§9建造所：§0 超深海熱漩<br><br>§9建造加成：§0 多金屬 (3000)<br><br>§9特殊能力：§0 無<br><br>§9其他能力：§0 近戰增強<br><br>深海正妻空母，得意技是用跑道切開敵人或是高麗菜。<br><br>近戰會造成範圍100%%砲擊傷害。
-
+gui.shincolle:book.chap4.title20=
+gui.shincolle:book.chap4.text20d0=
+gui.shincolle:book.chap4.text20d1=§9名稱：§0 ル級<br><br>§9艦種：§0 戰艦<br><br>§9建造所：§0 超深海熱漩<br><br>§9建造加成：§0 怨念彈 (800)<br><br>§9特殊能力：§0 無<br><br>§9其他能力：§0 二連/三連擊+15%%<br><br>因為看到黑色系深海棲艦胸部裝甲都不如白色系，而特意使用大型艦砲來進行闊胸運動的深海太太。
 
 # GUI: Book Text Chap 5
 gui.shincolle:book.chap5.title=敵艦列表
@@ -656,6 +664,7 @@ gui.shincolle:combatration2=方便攜帶的糧食配給，發動時請小心附�
 gui.shincolle:combatration3=經過怨念調味的飯糰，看起來紅到發亮還散發出某種詭異的氣息。
 gui.shincolle:combatration4=香醇綿密，冰涼滑順的冰淇淋，是消暑最佳聖品！
 gui.shincolle:combatration5=香醇綿密，冰涼滑順的冰淇淋，怨念含量低不用怕發胖！
+gui.shincolle:trainingbook=隨機提昇等級 5~10
 
 # Chat message
 chat.shincolle:bossspawn1=有艦娘出現在水面上!
@@ -670,7 +679,18 @@ chat.shincolle:wrench.wptoofar=深海路徑設定失敗，距離超過48格！
 chat.shincolle:wrench.wplast=上一路徑點
 chat.shincolle:wrench.wpnext=下一路徑點
 chat.shincolle:wrench.samepoint=目標為相同路徑點，清空路徑點紀錄。
-chat.shincolle:wrench.unatkshow=不可攻擊的目標列表:
+chat.shincolle:wrench.unatkshow=不可攻擊的目標列表：
+chat.shincolle:command.command=指令：
+chat.shincolle:command.notop=指令失敗： 需要OP權限！
+chat.shincolle:command.notship=指令失敗： 目標不是船艦！
+chat.shincolle:command.worldnull=指令失敗： 處在不同的世界！
+chat.shincolle:command.playernull=指令失敗： 沒有玩家參數或找不到該玩家：
+chat.shincolle:command.shipnull=指令失敗： 該船不存在：
+chat.shincolle:command.shiptoofar=指令失敗： 該船距離太遠！ (超過64格)
+chat.shincolle:command.wrongrange=指令失敗： 範圍錯誤：
+chat.shincolle:command.wrongcid=指令失敗： 艦種ID錯誤：
+chat.shincolle:command.wrongparanum=指令失敗： 參數個數錯誤：
+chat.shincolle:command.wrongpararange=指令失敗： 參數範圍錯誤：
 
 # intermod: Forestry
 item.shincolle:ShinComb.name=深海蜂巢

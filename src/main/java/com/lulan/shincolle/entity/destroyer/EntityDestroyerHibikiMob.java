@@ -65,7 +65,7 @@ public class EntityDestroyerHibikiMob extends BasicEntityShipHostile implements 
 	@Override
 	protected void setBossInfo()
 	{
-		this.bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.WHITE, BossInfo.Overlay.PROGRESS);
+		this.bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.WHITE, BossInfo.Overlay.NOTCHED_10);
 	}
 
 	//setup AI

@@ -82,7 +82,7 @@ public class EntityCruiserTenryuuMob extends BasicEntityShipHostile
 	@Override
 	protected void setBossInfo()
 	{
-		this.bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.PURPLE, BossInfo.Overlay.PROGRESS);
+		this.bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.PURPLE, BossInfo.Overlay.NOTCHED_10);
 	}
 	
 	@Override
@@ -333,7 +333,7 @@ public class EntityCruiserTenryuuMob extends BasicEntityShipHostile
 		{
   			//start skill attack
   			this.stateEmotion[ID.S.Phase] = 1;
-			this.remainAttack = 6;
+			this.remainAttack = 2 + this.scaleLevel * 2;
 		}
 		
         applyEmotesReaction(3);

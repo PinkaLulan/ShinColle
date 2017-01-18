@@ -14,6 +14,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
 /** Command: /shipstopai
@@ -97,7 +98,8 @@ public class ShipCmdStopAI extends CommandBase
 					BasicEntityShip.stopAI = !BasicEntityShip.stopAI;
 					BasicEntityShipHostile.stopAI = !BasicEntityShipHostile.stopAI;
 					BasicEntityMount.stopAI = !BasicEntityMount.stopAI;
-					sender.sendMessage(new TextComponentString("Command: ShipStopAI: "+BasicEntityShip.stopAI));
+					sender.sendMessage(new TextComponentTranslation("chat.shincolle:command.command")
+							.appendSibling(new TextComponentString(" shipstopai: "+BasicEntityShip.stopAI)));
 				}
 			}//is player
 		}//end server side

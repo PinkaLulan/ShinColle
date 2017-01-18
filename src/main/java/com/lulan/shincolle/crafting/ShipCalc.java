@@ -56,6 +56,7 @@ public class ShipCalc
 		//large build
 		EquipLarge.add(new int[] {ID.Ship.CarrierWO,       500,  3});
 		EquipLarge.add(new int[] {ID.Ship.BattleshipTA,    800,  2});
+		EquipLarge.add(new int[] {ID.Ship.BattleshipRU,    800,  2});
 		EquipLarge.add(new int[] {ID.Ship.NorthernHime,    2600, 1});
 		EquipLarge.add(new int[] {ID.Ship.HarbourHime,     2800, 1});
 		EquipLarge.add(new int[] {ID.Ship.AirfieldHime,    3000, 1});
@@ -220,6 +221,8 @@ public class ShipCalc
   			return "shincolle.EntityHeavyCruiserNe";
   		case ID.Ship.CarrierWO:
   			return "shincolle.EntityCarrierWo";
+  		case ID.Ship.BattleshipRU:
+  			return "shincolle.EntityBattleshipRu";
   		case ID.Ship.BattleshipTA:
   			return "shincolle.EntityBattleshipTa";
   		case ID.Ship.BattleshipRE:
@@ -301,47 +304,64 @@ public class ShipCalc
   		}	
   	}
   	
-  	/** input: 0:small mob, 1:large mob, 2:small boss, 3:large boss
+  	/**
+  	 * spawn ship mob name
+  	 * rare level is calculated here
+  	 * 
+  	 * double roll:
+  	 *   1. roll for ship rare level
+  	 *   2. roll for ship name
   	 */
-  	public static String getRandomMobToSpawnName(int type)
+  	public static String getRandomMobToSpawnName()
   	{
-  		switch(type)
+  		int ran1 = rand.nextInt(100);
+  		
+  		//25% for super rare level
+  		if (ran1 > 75)
   		{
-  		case 2:  //small boss
-  			switch(rand.nextInt(2))
-        	{
-        	default:
-        		return getEntityToSpawnName(ID.Ship.DestroyerShimakaze+2000);
-        	}
-  		case 3:  //large boss
-  			switch(rand.nextInt(4))
-        	{
-        	case 1:
-        		return getEntityToSpawnName(ID.Ship.CarrierKaga+2000);
-        	case 2:
-        		return getEntityToSpawnName(ID.Ship.CarrierAkagi+2000);
-        	case 3:
-        		return getEntityToSpawnName(ID.Ship.BattleshipYamato+2000);
-        	default:
-        		return getEntityToSpawnName(ID.Ship.BattleshipNagato+2000);
-        	}
-  		case 1:  //large mob
-  		default: //small mob
-  			switch(rand.nextInt(6))
-        	{
-        	case 1:
-        		return getEntityToSpawnName(ID.Ship.SubmarineRo500+2000);
-        	case 2:
-        		return getEntityToSpawnName(ID.Ship.DestroyerIkazuchi+2000);
-        	case 3:
-        		return getEntityToSpawnName(ID.Ship.DestroyerInazuma+2000);
-        	case 4:
-        		return getEntityToSpawnName(ID.Ship.DestroyerAkatsuki+2000);
-        	case 5:
-        		return getEntityToSpawnName(ID.Ship.DestroyerHibiki+2000);
-        	default:
-        		return getEntityToSpawnName(ID.Ship.SubmarineU511+2000);
-        	}
+  			switch (rand.nextInt(2))
+  			{
+  			case 1:
+  				return getEntityToSpawnName(ID.Ship.BattleshipYamato+2000);
+  			default:
+  				return getEntityToSpawnName(ID.Ship.BattleshipNagato+2000);
+  			}
+  		}
+  		//30% for rare level
+  		else if (ran1 > 45)
+  		{
+  			switch (rand.nextInt(4))
+  			{
+  			case 1:
+  				return getEntityToSpawnName(ID.Ship.CarrierKaga+2000);
+  			case 2:
+  				return getEntityToSpawnName(ID.Ship.LightCruiserTenryuu+2000);
+  			case 3:
+  				return getEntityToSpawnName(ID.Ship.LightCruiserTatsuta+2000);
+  			default:
+  				return getEntityToSpawnName(ID.Ship.CarrierAkagi+2000);
+  			}
+  		}
+  		//45% for common level
+  		else
+  		{
+  			switch (rand.nextInt(7))
+  			{
+  			case 1:
+  				return getEntityToSpawnName(ID.Ship.DestroyerHibiki+2000);
+  			case 2:
+  				return getEntityToSpawnName(ID.Ship.DestroyerIkazuchi+2000);
+  			case 3:
+  				return getEntityToSpawnName(ID.Ship.DestroyerInazuma+2000);
+  			case 4:
+  				return getEntityToSpawnName(ID.Ship.DestroyerShimakaze+2000);
+  			case 5:
+  				return getEntityToSpawnName(ID.Ship.SubmarineU511+2000);
+  			case 6:
+  				return getEntityToSpawnName(ID.Ship.SubmarineRo500+2000);
+  			default:
+  				return getEntityToSpawnName(ID.Ship.DestroyerAkatsuki+2000);
+  			}
   		}
   	}
   	

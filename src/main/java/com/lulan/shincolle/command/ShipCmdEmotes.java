@@ -253,9 +253,16 @@ public class ShipCmdEmotes extends CommandBase
 	/** string to emotes ID */
 	public static int nameToEmoID(String str)
 	{
-		if (str != null)
+		try
 		{
-			return EmoNameToID.get(str.hashCode());
+			if (str != null)
+			{
+				return EmoNameToID.get(str.hashCode());
+			}
+		}
+		catch (Exception e)
+		{
+			return 0;
 		}
 		
 		return 0;

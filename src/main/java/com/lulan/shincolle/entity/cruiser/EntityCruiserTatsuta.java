@@ -10,6 +10,7 @@ import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.other.EntityProjectileBeam;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.handler.EventHandler;
 import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;
@@ -525,16 +526,16 @@ public class EntityCruiserTatsuta extends BasicEntityShipSmall
   		{
 			if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 			{
-				return this.height * 0.22F;
+				return this.height * 0.2F;
   			}
   			else
   			{
-  				return this.height * 0.33F;
+  				return this.height * 0.27F;
   			}
   		}
   		else
   		{
-  			return this.height * 0.72F;
+  			return this.height * 0.7F;
   		}
 	}
 

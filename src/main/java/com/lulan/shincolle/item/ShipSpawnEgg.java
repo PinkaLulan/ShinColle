@@ -145,6 +145,7 @@ public class ShipSpawnEgg extends BasicItem
   		shipList.add(ID.Ship.HeavyCruiserRI+2);
   		shipList.add(ID.Ship.HeavyCruiserNE+2);
   		shipList.add(ID.Ship.CarrierWO+2);
+  		shipList.add(ID.Ship.BattleshipRU+2);
   		shipList.add(ID.Ship.BattleshipTA+2);
   		shipList.add(ID.Ship.BattleshipRE+2);
   		shipList.add(ID.Ship.TransportWA+2);

@@ -4,6 +4,7 @@ import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.entity.battleship.EntityBattleshipNGT;
 import com.lulan.shincolle.entity.battleship.EntityBattleshipNGTMob;
 import com.lulan.shincolle.entity.battleship.EntityBattleshipRe;
+import com.lulan.shincolle.entity.battleship.EntityBattleshipRu;
 import com.lulan.shincolle.entity.battleship.EntityBattleshipTa;
 import com.lulan.shincolle.entity.battleship.EntityBattleshipYMT;
 import com.lulan.shincolle.entity.battleship.EntityBattleshipYMTMob;
@@ -103,6 +104,7 @@ public class ModEntity
 		createEntity(EntityBattleshipYMT.class, "EntityBattleshipYMT", modEntityID++);
 		createEntity(EntityBattleshipYMTMob.class, "EntityBattleshipYMTMob", modEntityID++);
 		createEntity(EntityBattleshipRe.class, "EntityBattleshipRe", modEntityID++);
+		createEntity(EntityBattleshipRu.class, "EntityBattleshipRu", modEntityID++);
 		createEntity(EntityBattleshipTa.class, "EntityBattleshipTa", modEntityID++);
 		createEntity(EntityCarrierAkagi.class, "EntityCarrierAkagi", modEntityID++);
 		createEntity(EntityCarrierAkagiMob.class, "EntityCarrierAkagiMob", modEntityID++);

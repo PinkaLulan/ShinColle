@@ -1814,5 +1814,14 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		return this.rand;
 	}
 	
+	@Override
+	public double getShipFloatingDepth()
+	{
+		return 0.3D;
+	}
+
+	@Override
+	public void setShipFloatingDepth(double par1) {}
+	
 	
 }

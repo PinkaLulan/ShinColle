@@ -9,6 +9,7 @@ import com.lulan.shincolle.client.render.item.RenderTileEntityItem;
 import com.lulan.shincolle.entity.battleship.EntityBattleshipNGT;
 import com.lulan.shincolle.entity.battleship.EntityBattleshipNGTMob;
 import com.lulan.shincolle.entity.battleship.EntityBattleshipRe;
+import com.lulan.shincolle.entity.battleship.EntityBattleshipRu;
 import com.lulan.shincolle.entity.battleship.EntityBattleshipTa;
 import com.lulan.shincolle.entity.battleship.EntityBattleshipYMT;
 import com.lulan.shincolle.entity.battleship.EntityBattleshipYMTMob;
@@ -133,6 +134,7 @@ public class ClientProxy extends CommonProxy
 		RenderingRegistry.registerEntityRenderingHandler(EntityBattleshipNGTMob.class, RenderShipEntity.FACTORY_SHIP);
 		RenderingRegistry.registerEntityRenderingHandler(EntityBattleshipYMT.class, RenderShipEntity.FACTORY_SHIP);
 		RenderingRegistry.registerEntityRenderingHandler(EntityBattleshipYMTMob.class, RenderShipEntity.FACTORY_SHIP);
+		RenderingRegistry.registerEntityRenderingHandler(EntityBattleshipRu.class, RenderShipEntity.FACTORY_SHIP);
 		RenderingRegistry.registerEntityRenderingHandler(EntityBattleshipTa.class, RenderShipEntity.FACTORY_SHIP);
 		RenderingRegistry.registerEntityRenderingHandler(EntityBattleshipRe.class, RenderShipEntity.FACTORY_SHIP);
 		RenderingRegistry.registerEntityRenderingHandler(EntityCarrierAkagi.class, RenderShipEntity.FACTORY_SHIP);

@@ -58,7 +58,7 @@ public class EntityDestroyerShimakazeMob extends BasicEntityShipHostile
 	@Override
 	protected void setBossInfo()
 	{
-		this.bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.YELLOW, BossInfo.Overlay.PROGRESS);
+		this.bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.YELLOW, BossInfo.Overlay.NOTCHED_10);
 	}
 	
 	//setup AI

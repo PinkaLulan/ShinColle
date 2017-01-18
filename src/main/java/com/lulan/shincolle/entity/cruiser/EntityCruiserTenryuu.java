@@ -514,16 +514,16 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
   		{
 			if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 			{
-				return this.height * 0.22F;
+				return this.height * 0.2F;
   			}
   			else
   			{
-  				return this.height * 0.33F;
+  				return this.height * 0.3F;
   			}
   		}
   		else
   		{
-  			return this.height * 0.72F;
+  			return this.height * 0.7F;
   		}
 	}
 

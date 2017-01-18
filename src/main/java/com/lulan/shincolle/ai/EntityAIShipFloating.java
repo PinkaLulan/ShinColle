@@ -1,16 +1,15 @@
 package com.lulan.shincolle.ai;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.ai.EntityAIBase;
-
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.entity.IShipGuardian;
 import com.lulan.shincolle.entity.IShipInvisible;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.LogHelper;
+
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.ai.EntityAIBase;
 
 /**SHIP FLOATING ON WATER AI
  * 若在水中, 且水上一格為空氣, 則會嘗試上浮並站在水面上
@@ -56,12 +55,12 @@ public class EntityAIShipFloating extends EntityAIBase
     		}
     		
     		//其他情況
-    		return this.hostShip.getStateFlag(ID.F.CanFloatUp);
+    		return hostShip.getStateFlag(ID.F.CanFloatUp) && hostShip.getShipDepth() > hostShip.getShipFloatingDepth();
     	}
     	//mount類: 檢查mount水深 & host坐下
     	else if (hostMount != null && hostMount.getHostEntity() != null)
     	{
-			this.hostShip = (BasicEntityShip) hostMount.getHostEntity();
+			hostShip = (BasicEntityShip) hostMount.getHostEntity();
 			
 			//騎乘, 守衛, 移動, 坐下, 裝載中: 禁止上浮
     		if (hostShip.isSitting() || hostShip.getStateMinor(ID.M.CraneState) > 0 ||
@@ -76,12 +75,12 @@ public class EntityAIShipFloating extends EntityAIBase
     			return false;
     		}
 			
-			return hostMount.getShipDepth() > 0.35D;
+			return hostMount.getShipDepth() > hostMount.getShipFloatingDepth();
 		}
     	//其他類
     	else
     	{
-    		return host.getShipDepth() > 0.35D;
+    		return host.getShipDepth() > host.getShipFloatingDepth();
     	}
     }
 
@@ -136,7 +135,7 @@ public class EntityAIShipFloating extends EntityAIBase
         		return;
         	}
         	
-        	if (this.host.getShipDepth() > 0.25D)
+        	if (this.host.getShipDepth() > 0D)
         	{
         		this.hostLiving.motionY += 0.0012D;
         		return;

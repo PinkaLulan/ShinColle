@@ -18,6 +18,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
@@ -124,7 +125,8 @@ public class ShipCmdUpdateOwnerUID extends CommandBase
 				//type 1 command
 				if (args.length == 0)
 				{
-					sender.sendMessage(new TextComponentString("Command: ShipUpdateOwnerUID: get player "+TextFormatting.AQUA+player));
+					sender.sendMessage(new TextComponentTranslation("chat.shincolle:command.command")
+						.appendSibling(new TextComponentString(" shipupdateowneruid: get player: "+TextFormatting.AQUA+player)));
 					//check all loaded ship's owner uuid
 					updateShipOwner(player);
 				}
@@ -137,14 +139,15 @@ public class ShipCmdUpdateOwnerUID extends CommandBase
 						
 						if (player != null)
 						{
-							sender.sendMessage(new TextComponentString("Command: ShipUpdateOwnerUID: get player "+TextFormatting.AQUA+player));
+							sender.sendMessage(new TextComponentTranslation("chat.shincolle:command.command")
+								.appendSibling(new TextComponentString(" shipupdateiwneruid: get player "+TextFormatting.AQUA+player)));
 							//check all loaded ship's owner uuid
 							updateShipOwner(player);
 						}
 					}
 					else
 					{
-						sender.sendMessage(new TextComponentString("Command: ShipUpdateOwnerUID: this command is OP only!"));
+						sender.sendMessage(new TextComponentTranslation("chat.shincolle:command.notop"));
 						return;
 					}
 				}
@@ -159,7 +162,8 @@ public class ShipCmdUpdateOwnerUID extends CommandBase
 		String uuid = player.getUniqueID().toString();
 		String name = player.getName();
 		int pid = EntityHelper.getPlayerUID(player);
-		player.sendMessage(new TextComponentString("Command: ShipUpdateOwnerUID: owner: "+TextFormatting.AQUA+pid+" "+TextFormatting.LIGHT_PURPLE+uuid));
+		player.sendMessage(new TextComponentTranslation("chat.shincolle:command.command")
+				.appendSibling(new TextComponentString(" shipupdateowneruid: owner: "+TextFormatting.AQUA+pid+" "+TextFormatting.LIGHT_PURPLE+uuid)));
 		
 		if (uuid != null && uuid.length() > 3)
 		{

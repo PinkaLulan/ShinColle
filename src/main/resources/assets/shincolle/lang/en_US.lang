@@ -45,6 +45,7 @@ item.shincolle:PointerItem.name=Wo-Class Command Scepter
 item.shincolle:RepairGoddess.name=The Grudge of Abyssal Goddess
 item.shincolle:TargetWrench.name=Target Wrench
 item.shincolle:ToyAirplane.name=Model 21 Zero Fighter (1/48)
+item.shincolle:TrainingBook.name=Maintenance Personnel Training Book
 
 # Equip
 item.shincolle:EquipCannon.name=5-Inch Single Cannon
@@ -122,6 +123,7 @@ item.shincolle:shipegg5.name=Destroyer Ni-Class
 item.shincolle:shipegg11.name=Heavy Cruiser Ri-Class
 item.shincolle:shipegg12.name=Heavy Cruiser Ne-Class
 item.shincolle:shipegg14.name=Standard Carrier Wo-Class
+item.shincolle:shipegg15.name=Battleship Ru-Class
 item.shincolle:shipegg16.name=Battleship Ta-Class
 item.shincolle:shipegg17.name=Battleship Re-Class
 item.shincolle:shipegg18.name=Transport Wa-Class
@@ -173,6 +175,7 @@ entity.shincolle.EntityBattleshipHime.name=Battleship Princess
 entity.shincolle.EntityBattleshipNGT.name=Battleship Nagato
 entity.shincolle.EntityBattleshipNGTMob.name=Battleship Nagato
 entity.shincolle.EntityBattleshipRe.name=Battleship Re-Class
+entity.shincolle.EntityBattleshipRu.name=Battleship Ru-Class
 entity.shincolle.EntityBattleshipTa.name=Battleship Ta-Class
 entity.shincolle.EntityBattleshipYMT.name=Battleship Yamato
 entity.shincolle.EntityBattleshipYMTMob.name=Battleship Yamato
@@ -207,7 +210,8 @@ entity.shincolle.EntityHeavyCruiserNe.name=Heavy Cruiser Ne-Class
 entity.shincolle.EntityHeavyCruiserRi.name=Heavy Cruiser Ri-Class
 entity.shincolle.EntityMountAfH.name=Airbase
 entity.shincolle.EntityMountBaH.name=Sanrensouhou
-entity.shincolle.EntityMountCaWD.name=Abyssal Aircraft Carrier
+entity.shincolle.EntityMountCaH.name=Abyssal Aircraft Carrier
+entity.shincolle.EntityMountCaWD.name=Abyssal Aircraft Carrier MKII
 entity.shincolle.EntityMountHbH.name=Harbourbase
 entity.shincolle.EntityNorthernHime.name=Northern Princess
 entity.shincolle.EntityRensouhou.name=Rensouhou
@@ -307,6 +311,9 @@ gui.shincolle:book.chap1.text22d1=§9Right Click§0 with §dTarget Wrench§0 to 
 gui.shincolle:book.chap1.title23=Abyssal Crane
 gui.shincolle:book.chap1.text23d0=<br><br><br><br><br><br><br><br><br>The machine block for loading and unloading items to ship. Owner can link the §dAbyssal Crane§0 to §9any chest§0 or other §9Abyssal Waypoint§0 by §dTarget Wrench§0.  Ship will start to load/unload items when she gets to the crane and go to the next waypoint after the job done.
 gui.shincolle:book.chap1.text23d1=§9Top Left§0 button is §9Power Switch§0.<br><br>§9The Top Largest§0 button is §9Waiting Mode§0.<br><br>§9Middle§0 buttons with M/D/N are item matching condition.<br><br>§9Center 9x2 Slots§0 are loading/unloading target, left all empty means §9ANY§0 item.<br><br>Loading/Unloading can disable separately, and ship will not attack and move while craning.
+gui.shincolle:book.chap1.title24=Maintenance Personnel Training Book
+gui.shincolle:book.chap1.text24d0=<br><br><br><br><br><br><br><br><br>
+gui.shincolle:book.chap1.text24d1=
 
 # GUI: Book Text Chap 2
 gui.shincolle:book.chap2.title=Construction
@@ -442,6 +449,9 @@ gui.shincolle:book.chap4.text18d1=§9Name:§0 So-Class<br><br>§9Class:§0 Subma
 gui.shincolle:book.chap4.title19=
 gui.shincolle:book.chap4.text19d0=
 gui.shincolle:book.chap4.text19d1=§9Name:§0 Aircraft Carrier Princess<br><br>§9Class:§0 Princess Class CV<br><br>§9Factory:§0 Hadal Vortex<br><br>§9Factor:§0 Polymetal (3000)<br><br>§9AuraEffect§0 none<br><br>§9OtherEffect:§0 enhanced melee<br><br>Melee: Deal 100%% firepower AoE damage.
+gui.shincolle:book.chap4.title20=
+gui.shincolle:book.chap4.text20d0=
+gui.shincolle:book.chap4.text20d1=§9Name:§0 Ru-Class<br><br>§9Class:§0 BB<br><br>§9Factory:§0 Hadal Vortex<br><br>§9Factor:§0 Ammo (800)<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 Double/Triple Hit +15%%<br><br>
 
 # GUI: Book Text Chap 5
 gui.shincolle:book.chap5.title=Enemy List
@@ -654,6 +664,7 @@ gui.shincolle:combatration2=Easy to carry, be careful the nearby aircraft carrie
 gui.shincolle:combatration3=Grudge flavored rice ball, it looks red and shiny<br>and exudes a strange atmosphere.
 gui.shincolle:combatration4=It's mellow, dense, refreshing and smooth,<br>the best ice cream to beat the heat!
 gui.shincolle:combatration5=It's mellow, dense, refreshing and smooth,<br>don't afraid to get fat by having this<br>low-grudge ice cream!
+gui.shincolle:trainingbook=Level up 5~10
 
 # Chat message
 chat.shincolle:bossspawn1=A Fleet Walks on the Water!
@@ -669,6 +680,17 @@ chat.shincolle:wrench.wplast=Last waypoint:
 chat.shincolle:wrench.wpnext=Next waypoint:
 chat.shincolle:wrench.samepoint=Same waypoint, reset the record.
 chat.shincolle:wrench.unatkshow=Show unattackable entity list:
+chat.shincolle:command.command=Command:
+chat.shincolle:command.notop=Command FAIL: Required OP!
+chat.shincolle:command.notship=Command FAIL: Target is not SHIP!
+chat.shincolle:command.worldnull=Command FAIL: The world is different!
+chat.shincolle:command.playernull=Command FAIL: No player parameter or player not found:
+chat.shincolle:command.shipnull=Command FAIL: No such ship:
+chat.shincolle:command.shiptoofar=Command FAIL: Ship is too far away! ( > 64 blocks )
+chat.shincolle:command.wrongrange=Command FAIL: Wrong range:
+chat.shincolle:command.wrongcid=Command FAIL: Wrong ship class ID:
+chat.shincolle:command.wrongparanum=Command FAIL: Wrong number of parameters:
+chat.shincolle:command.wrongpararange=Command FAIL: Wrong range of parameters:
 
 # intermod: Forestry
 item.shincolle:ShinComb.name=Shin Comb

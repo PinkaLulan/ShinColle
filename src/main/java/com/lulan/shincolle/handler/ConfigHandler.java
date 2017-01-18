@@ -39,6 +39,7 @@ public class ConfigHandler
 	public static int baseCaressMorale = 15;
 	public static int spawnBossNum = 2;
 	public static int spawnMobNum = 4;
+	public static int shipNumPerPage = 5;
 	public static int chunkloaderMode = 2;
 	
 	//INTER-MOD
@@ -59,11 +60,11 @@ public class ConfigHandler
 	public static double[] limitShipEffect = new double[] {-1D, -1D, -1D, -1D, -1D, -1D, 75D};
 	public static double[] scaleShip = new double[] {1D, 1D, 1D, 1D, 1D, 1D};
 	//													  HP, ATK, DEF, SPD, MOV, HIT
-	public static double[] scaleBossSmall = new double[] {1600D, 120D, 75D, 1.6D, 0.42D, 18D};
-	public static double[] scaleBossLarge = new double[] {3200D, 240D, 90D, 2D, 0.38D, 22D};
+	public static double[] scaleBossSmall = new double[] {1600D, 120D, 50D, 1.6D, 0.38D, 18D};
+	public static double[] scaleBossLarge = new double[] {3200D, 240D, 75D, 2D, 0.35D, 22D};
 	//	  												HP, ATK, DEF, SPD, MOV, HIT
-	public static double[] scaleMobSmall = new double[] {250D, 36D, 20D, 0.7D, 0.5D, 12D};
-	public static double[] scaleMobLarge = new double[] {500D, 72D, 35D, 0.9D, 0.46D, 15D};
+	public static double[] scaleMobSmall = new double[] {250D, 25D, 15D, 0.7D, 0.45D, 12D};
+	public static double[] scaleMobLarge = new double[] {500D, 50D, 30D, 0.9D, 0.4D, 15D};
 	//ammo consumption:                              DD CL CA CAV CLT CVL CV BB BBV SS AP 
 	public static int[] consumeAmmoShip = new int[] {1, 2, 2, 2,  2,  3,  3, 4, 4,  1, 1};
 	//grudge consumption:                              DD CL CA CAV CLT CVL CV BB BBV SS AP 
@@ -146,6 +147,9 @@ public class ConfigHandler
 		
 		//是否顯示custom name tag
 		showTag = config.getBoolean("AlwaysShow_NameTag", "general", true, "Always show custom name tag");
+		
+		//ship列表顯示數量
+		shipNumPerPage = config.getInt("Command_ShipNum", "general", 4800, 20, 1728000, "#Ship per page for command: /ship list");
 		
 		//team改動cd (ticks)
 		teamCooldown = config.getInt("Cooldown_Team", "general", 6000, 20, 1728000, "Create/Disband Team Cooldown");

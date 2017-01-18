@@ -58,7 +58,7 @@ public class EntitySubmRo500Mob extends BasicEntityShipHostile implements IShipI
 	@Override
 	protected void setBossInfo()
 	{
-		this.bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.YELLOW, BossInfo.Overlay.PROGRESS);
+		this.bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.YELLOW, BossInfo.Overlay.NOTCHED_10);
 	}
 
 	//平常音效新增: garuru

@@ -36,7 +36,6 @@ import net.minecraft.client.renderer.GlStateManager.FogMode;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityGolem;
@@ -860,16 +859,15 @@ public class EventHandler
 							for (int i = 0; i < shipNum; i++)
 							{
 								//get random mob
-				            	String shipname = ShipCalc.getRandomMobToSpawnName(0);
-				            	EntityLiving entityToSpawn = (EntityLiving) EntityList.createEntityByName(shipname, w);
+				            	Entity mobToSpawn = EntityList.createEntityByName(ShipCalc.getRandomMobToSpawnName(), w);
 				            	
 				            	//spawn mob
-				            	if (entityToSpawn != null)
+				            	if (mobToSpawn instanceof BasicEntityShipHostile)
 				            	{
-									entityToSpawn.setPosition(spawnX + rng.nextDouble(), spawnY + 0.5D, spawnZ + rng.nextDouble());
-									w.spawnEntity(entityToSpawn);
+				            		((BasicEntityShipHostile) mobToSpawn).initAttrs(rng.nextInt(10) > 7 ? 1 : 0);
+				            		mobToSpawn.setPosition(spawnX + rng.nextDouble(), spawnY + 0.5D, spawnZ + rng.nextDouble());
+									w.spawnEntity(mobToSpawn);
 				            	}
-				            	LogHelper.debug("DEBUG: spawn mob ship: #total: "+(entNum++)+" group: "+groups+" #ship: "+i+" "+spawnY+" "+shipname);
 							}
 						}//end get water block
 						
@@ -970,32 +968,34 @@ public class EventHandler
 			            if (bossNum < 2)
 			            {
 			            	//roll生成mob
-			            	int maxShipNum = ConfigHandler.spawnBossNum + ConfigHandler.spawnMobNum;
-			            	String[] spawnName = new String[maxShipNum];
+			            	Entity mobToSpawn;
 			            	
 			            	//roll boss ship
-			            	for (i = 0; i < ConfigHandler.spawnBossNum; i++)
+			            	int j;
+			            	for (j = 0; j < ConfigHandler.spawnBossNum; j++)
 			            	{
-			            		spawnName[i] = ShipCalc.getRandomMobToSpawnName(rng.nextInt(2) + 2);
+			            		mobToSpawn = EntityList.createEntityByName(ShipCalc.getRandomMobToSpawnName(), w);
+			            		
+				            	//spawn mob
+				            	if (mobToSpawn instanceof BasicEntityShipHostile)
+				            	{
+				            		((BasicEntityShipHostile) mobToSpawn).initAttrs(rng.nextInt(100) > 65 ? 3 : 2);
+				            		mobToSpawn.setPosition(spawnX + rng.nextInt(3), spawnY + 0.5D, spawnZ + rng.nextInt(3));
+				            		w.spawnEntity(mobToSpawn);
+				            	}
 			            	}
 			            	
 			            	//roll small ship
-			            	for (i = ConfigHandler.spawnBossNum; i < maxShipNum; i++)
+			            	for (j = 0; j < ConfigHandler.spawnMobNum; j++)
 			            	{
-			            		spawnName[i] = ShipCalc.getRandomMobToSpawnName(rng.nextInt(2));
-			            	}
-			            	
-			            	//set mob position and spawn to the world
-			            	for (String name : spawnName)
-			            	{
-			            		//get mob entity
-				            	EntityLiving entityToSpawn = (EntityLiving) EntityList.createEntityByName(name, w);
-				            	
+			            		mobToSpawn = EntityList.createEntityByName(ShipCalc.getRandomMobToSpawnName(), w);
+			            		
 				            	//spawn mob
-				            	if (entityToSpawn != null)
+				            	if (mobToSpawn instanceof BasicEntityShipHostile)
 				            	{
-				            		entityToSpawn.setPosition(spawnX + rng.nextInt(3), spawnY + 0.5D, spawnZ + rng.nextInt(3));
-				            		w.spawnEntity(entityToSpawn);
+				            		((BasicEntityShipHostile) mobToSpawn).initAttrs(rng.nextInt(2));
+				            		mobToSpawn.setPosition(spawnX + rng.nextInt(3), spawnY + 0.5D, spawnZ + rng.nextInt(3));
+				            		w.spawnEntity(mobToSpawn);
 				            	}
 			            	}
 			            	

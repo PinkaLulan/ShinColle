@@ -53,9 +53,9 @@ public class Values
 //		put(ID.Ship.LightCarrierNU,     new float[] {65F,  20F, 20F, 0.7F, 0.32F, 14F, 0.52F, 0.45F, 0.22F, 0.5F,  0.64F, 0.6F});
 		put(ID.Ship.CarrierWO,          new float[] {85F,  25F, 21F, 1.0F, 0.36F, 16F, 0.65f, 0.6F,  0.23F, 0.6F,  0.72F, 0.6F});
 		//battleship
-//		put(ID.Ship.BattleshipRU,       new float[] {90F,  30F, 25F, 1.0F, 0.32F, 10F, 0.7F,  0.63F, 0.25F, 0.65F, 0.64F, 0.5F});
+		put(ID.Ship.BattleshipRU,       new float[] {95F,  30F, 30F, 1.0F, 0.32F, 12F, 0.85F, 0.65F, 0.27F, 0.63F, 0.66F, 0.5F});
 		put(ID.Ship.BattleshipTA,       new float[] {84F,  19F, 23F, 1.2F, 0.42F, 10F, 0.65F, 0.55F, 0.24F, 0.7F,  0.84F, 0.5F});
-		put(ID.Ship.BattleshipRE,       new float[] {120F, 27F, 25F, 1.1F, 0.36F, 12F, 0.8F,  0.6F,  0.25F, 0.63F, 0.72F, 0.5F});
+		put(ID.Ship.BattleshipRE,       new float[] {120F, 27F, 25F, 1.1F, 0.36F, 12F, 0.8F,  0.65F, 0.25F, 0.63F, 0.72F, 0.5F});
 		//transport
 		put(ID.Ship.TransportWA,        new float[] {90F,  3F,  10F, 1.0F, 0.3F,  8F,  0.7F,  0.25F, 0.16F, 0.35F, 0.6F,  0.3F});
 		//submarine
@@ -329,6 +329,8 @@ public class Values
 		add((int)ID.Ship.SubmarineSO);
 		
 		add((int)ID.Ship.CarrierHime);
+		
+		add((int)ID.Ship.BattleshipRU);
 	}});
 	
 	/**ENEMY LIST for guidebook
@@ -616,6 +618,7 @@ public class Values
 		put(ID.Icon.Waypoint,   new ItemStack(ModBlocks.BlockWaypoint));
 		put(ID.Icon.Crane,      new ItemStack(ModBlocks.BlockCrane));
 		put(ID.Icon.Piston,     new ItemStack(Blocks.PISTON));
+		put(ID.Icon.TrainBook,  new ItemStack(ModItems.TrainingBook));
 	}});
 	
 	
@@ -898,6 +901,10 @@ public class Values
 								new int[] {2, 0, 23, 37, ID.Icon.Piston},
 								new int[] {2, 0, 43, 37, ID.Icon.AbyssIG},
 								new int[] {2, 0, 81, 17, ID.Icon.Crane}));
+		//page 24: training book
+		put(1024, Arrays.asList(new int[] {0, 0, 0, 0},
+								new int[] {0, 1, 0, 0},
+								new int[] {2, 0, 23, 17, ID.Icon.TrainBook}));
 		//chap 2: construction
 		//page 0: vent
 		put(2000, Arrays.asList(new int[] {0, 0, 0, 0},

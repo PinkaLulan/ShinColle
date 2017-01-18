@@ -13,6 +13,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
 /** Command: /shipcleardrop
@@ -106,7 +107,8 @@ public class ShipCmdShipClearDrop extends CommandBase
 					AxisAlignedBB aabb = new AxisAlignedBB(op.posX - range, 0D, op.posZ - range, op.posX + range, 256D, op.posZ + range);
 					List<BasicEntityItem> hitent = op.world.getEntitiesWithinAABB(BasicEntityItem.class, aabb);
 					
-					sender.sendMessage(new TextComponentString("Command: ShipClearDrop: remove "+hitent.size()+" item entities."));
+					sender.sendMessage(new TextComponentTranslation("chat.shincolle:command.command")
+							.appendSibling(new TextComponentString(" shipcleardrop: remove "+hitent.size()+" item entities.")));
 					
 		            for (BasicEntityItem i : hitent)
 		            {

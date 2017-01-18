@@ -56,7 +56,7 @@ public class EntityCarrierKagaMob extends BasicEntityShipHostileCV
 	@Override
 	protected void setBossInfo()
 	{
-		this.bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.BLUE, BossInfo.Overlay.PROGRESS);
+		this.bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.BLUE, BossInfo.Overlay.NOTCHED_10);
 	}
 
 	//setup AI

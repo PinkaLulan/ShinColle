@@ -14,6 +14,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
 /** Command: /shipattrs
@@ -63,7 +64,7 @@ public class ShipCmdShipAttrs extends CommandBase
 	@Override
 	public String getUsage(ICommandSender sender)
 	{
-		return "/shipattrs <ship level> [<level: HP> <level: ATK> <level: DEF> <level: ATK Speed> <level: Move Speed> <level: Hit Range>]";
+		return "/shipattrs <ship level> [<Bonus:HP> <Bonus:ATK> <Bonus:DEF> <Bonus:ATK Speed> <Bonus:Move Speed> <Bonus:Hit Range>]";
 	}
 
 	/** command authority */
@@ -100,7 +101,7 @@ public class ShipCmdShipAttrs extends CommandBase
 				if (args.length != 7 && args.length != 1)
 				{
 					sender.sendMessage(new TextComponentString(getUsage(sender)));
-					sender.sendMessage(new TextComponentString("Command: ShipAttrs: invalid parameter! (required 1 or 7 parms)"));
+					sender.sendMessage(new TextComponentTranslation("chat.shincolle:command.wrongparanum").appendText(" (1 or 7)"));
 					return;
 				}
 				//has owner parm and sender is OP
@@ -115,7 +116,7 @@ public class ShipCmdShipAttrs extends CommandBase
 						if (level <= 0 || level > 150)
 						{
 							sender.sendMessage(new TextComponentString(getUsage(sender)));
-							sender.sendMessage(new TextComponentString("Command: ShipAttrs: invalid ship level! (1~150)"));
+							sender.sendMessage(new TextComponentTranslation("chat.shincolle:command.wrongpararange").appendText(" (LV =  1 ~ 150)"));
 							return;
 						}
 						
@@ -135,7 +136,7 @@ public class ShipCmdShipAttrs extends CommandBase
 						if (data[0] <= 0 || data[0] > 150)
 						{
 							sender.sendMessage(new TextComponentString(getUsage(sender)));
-							sender.sendMessage(new TextComponentString("Command: ShipAttrs: invalid ship level! (1~150)"));
+							sender.sendMessage(new TextComponentTranslation("chat.shincolle:command.wrongpararange").appendText(" (LV = 1 ~ 150)"));
 							return;
 						}
 						
@@ -143,7 +144,7 @@ public class ShipCmdShipAttrs extends CommandBase
 							data[1] > 100 || data[2] > 100 || data[3] > 100 || data[4] > 100 || data[5] > 100 || data[6] > 100)
 						{
 							sender.sendMessage(new TextComponentString(getUsage(sender)));
-							sender.sendMessage(new TextComponentString("Command: ShipAttrs: invalid bonus level! (0~100)"));
+							sender.sendMessage(new TextComponentTranslation("chat.shincolle:command.wrongpararange").appendText(" (Bonus = 1 ~ 100)"));
 							return;
 						}
 						
@@ -153,7 +154,7 @@ public class ShipCmdShipAttrs extends CommandBase
 				}//is OP
 				else
 				{
-					sender.sendMessage(new TextComponentString("Command: ShipAttrs: sender is not OP!"));
+					sender.sendMessage(new TextComponentTranslation("chat.shincolle:command.notop"));
 				}
 			}//is player
 		}//end server side

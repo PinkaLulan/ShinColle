@@ -7,6 +7,7 @@ import java.util.Map;
 import com.lulan.shincolle.capability.CapaShipSavedValues;
 import com.lulan.shincolle.crafting.ShipCalc;
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -21,6 +22,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -42,7 +44,6 @@ public class CommandHelper
 	 *    5. send ship eid to server (c to s)
 	 *    6. change ship's owner UUID and PlayerUID (server)
 	 */
-	//TODO use local lang string
 	@SideOnly(Side.CLIENT)
 	public static void processShipChangeOwner(int senderEID, int ownerEID)
 	{
@@ -57,18 +58,21 @@ public class CommandHelper
 			if (hitObj != null && hitObj.entityHit instanceof BasicEntityShip)
 			{
 				//send change owner packet to server
-				sender.sendMessage(new TextComponentString("Command: ShipChangeOwner: ship: "+TextFormatting.AQUA+hitObj.entityHit));
+				sender.sendMessage
+				(
+					new TextComponentTranslation("chat.shincolle:command.command")
+					.appendSibling(new TextComponentString(" shipchangeowner: ship: "+TextFormatting.AQUA+hitObj.entityHit))
+				);
 				CommonProxy.channelG.sendToServer(new C2SInputPackets(C2SInputPackets.PID.CmdChOwner, ownerEID, hitObj.entityHit.getEntityId(), hitObj.entityHit.world.provider.getDimension()));
 			}//end get target ship
 			else
 			{
-				sender.sendMessage(new TextComponentString("Command: ShipChangeOwner: entity is not ship!"));
+				sender.sendMessage(new TextComponentTranslation("chat.shincolle:command.notship"));
 			}
 		}
 	}
 	
 	/** command process: show ship info */
-	//TODO use local lang string
 	@SideOnly(Side.CLIENT)
 	public static void processShowShipInfo(int senderEID)
 	{
@@ -85,15 +89,19 @@ public class CommandHelper
 				BasicEntityShip ship = (BasicEntityShip) hitObj.entityHit;
 				
 				//show ship info
-				sender.sendMessage(new TextComponentString("Command: ShipInfo: User: "+TextFormatting.LIGHT_PURPLE+
-						sender.getDisplayName()+TextFormatting.RESET+
-						" UID: "+TextFormatting.AQUA+EntityHelper.getPlayerUID(sender)+TextFormatting.RESET+
-						" UUID: "+TextFormatting.GOLD+sender.getUniqueID()));
-				sender.sendMessage(new TextComponentString("Ship Name: "+TextFormatting.AQUA+ship.getCustomNameTag()));
-				sender.sendMessage(new TextComponentString("Ship EntityID: "+TextFormatting.GOLD+ship.getEntityId()));
-				sender.sendMessage(new TextComponentString("Ship UID: "+TextFormatting.GREEN+ship.getShipUID()));
-				sender.sendMessage(new TextComponentString("Ship Owner UID: "+TextFormatting.RED+ship.getPlayerUID()));
-				sender.sendMessage(new TextComponentString("Ship Owner UUID: "+TextFormatting.YELLOW+EntityHelper.getPetPlayerUUID(ship)));
+				sender.sendMessage
+				(
+					new TextComponentTranslation("chat.shincolle:command.command")
+					.appendSibling(new TextComponentString(" user: "+TextFormatting.LIGHT_PURPLE+
+					sender.getName()+TextFormatting.RESET+
+					" UID: "+TextFormatting.AQUA+EntityHelper.getPlayerUID(sender)+TextFormatting.RESET+
+					" UUID: "+TextFormatting.GOLD+sender.getUniqueID()))
+				);
+				sender.sendMessage(new TextComponentString("CustomName: "+TextFormatting.AQUA+ship.getCustomNameTag()));
+				sender.sendMessage(new TextComponentString("EntityID: "+TextFormatting.GOLD+ship.getEntityId()));
+				sender.sendMessage(new TextComponentString("UID: "+TextFormatting.GREEN+ship.getShipUID()));
+				sender.sendMessage(new TextComponentString("Owner UID: "+TextFormatting.RED+ship.getPlayerUID()));
+				sender.sendMessage(new TextComponentString("Owner UUID: "+TextFormatting.YELLOW+EntityHelper.getPetPlayerUUID(ship)));
 				sender.sendMessage(new TextComponentString("Morale: "+TextFormatting.YELLOW+ship.getStateMinor(ID.M.Morale)));
 			}
 		}
@@ -110,7 +118,6 @@ public class CommandHelper
 	 *    5. change ship's attributes (server)
 	 */
 	@SideOnly(Side.CLIENT)
-	//TODO use local lang string
 	public static void processSetShipAttrs(int[] cmdData)
 	{
 		//get sender entity
@@ -128,11 +135,15 @@ public class CommandHelper
 				if (cmdData.length == 8)
 				{
 					//show msg
-					sender.sendMessage(new TextComponentString("Command: ShipAttrs: Set ship value: LV: "+
-											TextFormatting.LIGHT_PURPLE+cmdData[1]+TextFormatting.RESET+" BonusValue: "+
-											TextFormatting.RED+cmdData[2]+" "+cmdData[3]+" "+cmdData[4]+" "+
-											cmdData[5]+" "+cmdData[6]+" "+cmdData[7]));
-					sender.sendMessage(new TextComponentString("Target Ship: "+TextFormatting.AQUA+ship));
+					sender.sendMessage
+					(
+						new TextComponentTranslation("chat.shincolle:command.command")
+						.appendSibling(new TextComponentString(
+						" shipattrs: LV: "+TextFormatting.LIGHT_PURPLE+cmdData[1]+TextFormatting.RESET+
+						" BonusValue: "+TextFormatting.RED+cmdData[2]+" "+cmdData[3]+" "+cmdData[4]+
+						" "+cmdData[5]+" "+cmdData[6]+" "+cmdData[7]))
+					);
+					sender.sendMessage(new TextComponentString(""+TextFormatting.AQUA+ship));
 					
 					//send packet to server: entity id, world id, level, bonus 1~6
 					CommonProxy.channelG.sendToServer(new C2SInputPackets(C2SInputPackets.PID.CmdShipAttr,
@@ -142,9 +153,9 @@ public class CommandHelper
 				else if (cmdData.length == 2)
 				{
 					//show msg
-					sender.sendMessage(new TextComponentString("Command: ShipAttrs: Set ship value: LV: "+
-											TextFormatting.LIGHT_PURPLE+cmdData[1]));
-					sender.sendMessage(new TextComponentString("Target Ship: "+TextFormatting.AQUA+ship));
+					sender.sendMessage(new TextComponentTranslation("chat.shincolle:command.command")
+							.appendSibling(new TextComponentString(" shipattrs: LV: "+TextFormatting.LIGHT_PURPLE+cmdData[1])));
+					sender.sendMessage(new TextComponentString(""+TextFormatting.AQUA+ship));
 					
 					//send packet to server: entity id, world id, level, bonus 1~6
 					CommonProxy.channelG.sendToServer(new C2SInputPackets(C2SInputPackets.PID.CmdShipAttr,
@@ -191,7 +202,7 @@ public class CommandHelper
 		
 		//start process packet
 		int size = map.size();
-		int numPerPage = 5;
+		int numPerPage = ConfigHandler.shipNumPerPage;
 		int maxPage = (size - 1) / numPerPage + 1;
 		
 		//write total #page
@@ -299,12 +310,14 @@ public class CommandHelper
 		EntityPlayer sender = ClientProxy.getClientPlayer();
 		
 		//display page text
-		sender.sendMessage(new TextComponentString
+		sender.sendMessage
 		(
-			TextFormatting.DARK_GREEN + "Command: Ship: show page ( " +
+			new TextComponentTranslation("chat.shincolle:command.command")
+			.appendSibling(new TextComponentString(
+			TextFormatting.DARK_GREEN + " ship: page ( " +
 			TextFormatting.AQUA + data1[1] + TextFormatting.DARK_GREEN + " / " +
 			data1[0] + " )"
-		));
+		)));
 		
 		//display ship data
 		if (data1[2] > 0)

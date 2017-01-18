@@ -26,6 +26,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
@@ -170,10 +171,7 @@ public class ShipCmdGetShip extends CommandBase
 				{
 					if (data.worldID != sender.getEntityWorld().provider.getDimension())
 					{
-						sender.sendMessage(new TextComponentString
-						(
-							TextFormatting.RED + "Command: Ship: Wrong world!"
-						));
+						sender.sendMessage(new TextComponentTranslation("chat.shincolle:command.worldnull"));
 						return;
 					}
 					
@@ -214,10 +212,11 @@ public class ShipCmdGetShip extends CommandBase
 							ship.updateShipCacheDataWithoutNewID();
 							ship.sendSyncPacketAllValue();
 							//send text
-							sender.sendMessage(new TextComponentString
+							sender.sendMessage
 							(
-								TextFormatting.GREEN + "Command: Ship: Get ship: " + uid
-							));
+								new TextComponentTranslation("chat.shincolle:command.command")
+								.appendSibling(new TextComponentString(" ship: "+TextFormatting.YELLOW+"get: "+uid
+							)));
 							return;
 						}
 						//entity not exist
@@ -251,10 +250,11 @@ public class ShipCmdGetShip extends CommandBase
 						                //update ship cache
 										ship.updateShipCacheDataWithoutNewID();
 						                //send text
-										sender.sendMessage(new TextComponentString
+										sender.sendMessage
 										(
-											TextFormatting.GREEN + "Command: Ship: Spawn ship: " + uid
-										));
+											new TextComponentTranslation("chat.shincolle:command.command")
+											.appendSibling(new TextComponentString(" ship: "+TextFormatting.GREEN+"spawn: "+uid
+										)));
 										return;
 									}
 					            }
@@ -264,10 +264,7 @@ public class ShipCmdGetShip extends CommandBase
 							}
 							catch (Exception e)
 							{
-				            	sender.sendMessage(new TextComponentString
-								(
-									TextFormatting.RED + "Command: Ship: Spawn ship fail: Unknown ship class ID."
-								));
+				            	sender.sendMessage(new TextComponentTranslation("chat.shincolle:command.shipnull").appendText(" "+uid));
 								return;
 							}
 						}
@@ -275,19 +272,13 @@ public class ShipCmdGetShip extends CommandBase
 					//too far away
 					else
 					{
-						sender.sendMessage(new TextComponentString
-						(
-							TextFormatting.RED + "Command: Ship: Ship is too far away! ( > 64 blocks )"
-						));
+						sender.sendMessage(new TextComponentTranslation("chat.shincolle:command.shiptoofar"));
 						return;
 					}
 				}
 				
 				//uid not exist
-				sender.sendMessage(new TextComponentString
-				(
-					TextFormatting.RED + "Command: Ship: UID does not exist!"
-				));
+				sender.sendMessage(new TextComponentTranslation("chat.shincolle:command.shipnull").appendText(" "+uid));
 			}
 			break;
 			case 2:	//del
@@ -304,18 +295,16 @@ public class ShipCmdGetShip extends CommandBase
 					//delete data
 					ServerProxy.getAllShipWorldData().remove(uid);
 					
-					sender.sendMessage(new TextComponentString
+					sender.sendMessage
 					(
-						TextFormatting.GREEN + "Command: Ship: Delete UID: " + uid
-					));
+						new TextComponentTranslation("chat.shincolle:command.command")
+						.appendSibling(new TextComponentString(" ship: "+TextFormatting.RED+"delete: "+uid
+					)));
 					return;
 				}
 				
 				//uid not exist
-				sender.sendMessage(new TextComponentString
-				(
-					TextFormatting.RED + "Command: Ship: UID does not exist!"
-				));
+				sender.sendMessage(new TextComponentTranslation("chat.shincolle:command.shipnull").appendText(" "+uid));
 			}
 			break;
 			}//end switch

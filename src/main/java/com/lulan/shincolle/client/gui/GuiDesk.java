@@ -666,7 +666,6 @@ public class GuiDesk extends GuiContainer
 	protected void mouseClicked(int posX, int posY, int mouseKey) throws IOException
 	{
         super.mouseClicked(posX, posY, mouseKey);
-        LogHelper.debug("DEBUG: click mouse "+mouseKey);
         
         //set focus for textField, CHECK BEFORE GUI SCALE!!
         this.textField.mouseClicked(posX, posY, mouseKey);
@@ -676,7 +675,6 @@ public class GuiDesk extends GuiContainer
         posY = (int)(posY * this.GuiScaleInv);
         xClick = posX - this.guiLeft;
         yClick = posY - this.guiTop;
-        LogHelper.debug("DEBUG: gui desk clicked: X "+posX+" "+guiLeft+" "+xClick+"  Y "+posY+" "+guiTop+" "+yClick);
         
         //match all pages
         if (this.type == 0)

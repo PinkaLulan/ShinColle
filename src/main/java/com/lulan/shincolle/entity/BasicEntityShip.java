@@ -6045,5 +6045,14 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		return this.rand;
 	}
 	
+	@Override
+	public double getShipFloatingDepth()
+	{
+		return 0.3D;
+	}
+
+	@Override
+	public void setShipFloatingDepth(double par1) {}
+	
 	
 }

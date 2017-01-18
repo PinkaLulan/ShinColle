@@ -18,6 +18,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
@@ -127,7 +128,7 @@ public class ShipCmdChangeShipOwner extends CommandBase
 				if (args.length < 1)
 				{
 					sender.sendMessage(new TextComponentString(getUsage(sender)));
-					sender.sendMessage(new TextComponentString("Command: ShipChangeOwner: player parameter is null!"));
+					sender.sendMessage(new TextComponentTranslation("chat.shincolle:command.playernull"));
 					return;
 				}
 				//has owner parm and sender is OP
@@ -143,23 +144,35 @@ public class ShipCmdChangeShipOwner extends CommandBase
 						
 						if (pid > 0)
 						{
-							sender.sendMessage(new TextComponentString("Command: ShipChangeOwner: owner: "+TextFormatting.AQUA+owner+" "+TextFormatting.LIGHT_PURPLE+owner.getUniqueID()));
+							sender.sendMessage
+							(
+								new TextComponentTranslation("chat.shincolle:command.command")
+								.appendSibling(new TextComponentString(" shipchangeowner: owner: "+TextFormatting.AQUA+owner+" "+TextFormatting.LIGHT_PURPLE+owner.getUniqueID()))
+							);
 							//send sender and owner eid to client
 							CommonProxy.channelG.sendTo(new S2CInputPackets(S2CInputPackets.PID.CmdChOwner, senderEID, ownerEID), (EntityPlayerMP) op);
 						}//owner pid is legal
 						else
 						{
-							sender.sendMessage(new TextComponentString("Command: ShipChangeOwner: player UID is illegal: "+TextFormatting.AQUA+pid));
+							sender.sendMessage
+							(
+								new TextComponentTranslation("chat.shincolle:command.playernull")
+								.appendSibling(new TextComponentString(" UID: "+TextFormatting.AQUA+pid))
+							);
 						}
 					}//get owner
 					else
 					{
-						sender.sendMessage(new TextComponentString("Command: ShipChangeOwner: player not found: "+TextFormatting.AQUA+args[0]));
+						sender.sendMessage
+						(
+							new TextComponentTranslation("chat.shincolle:command.playernull")
+							.appendSibling(new TextComponentString(" UID: "+TextFormatting.AQUA+args[0]))
+						);
 					}
 				}//is OP
 				else
 				{
-					sender.sendMessage(new TextComponentString("Command: ShipChangeOwner: sender is not OP!"));
+					sender.sendMessage(new TextComponentTranslation("chat.shincolle:command.notop"));
 				}
 			}//is player
 		}//end server side

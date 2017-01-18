@@ -6,6 +6,7 @@ import com.lulan.shincolle.client.model.ModelAirfieldHime;
 import com.lulan.shincolle.client.model.ModelBattleshipHime;
 import com.lulan.shincolle.client.model.ModelBattleshipNagato;
 import com.lulan.shincolle.client.model.ModelBattleshipRe;
+import com.lulan.shincolle.client.model.ModelBattleshipRu;
 import com.lulan.shincolle.client.model.ModelBattleshipTa;
 import com.lulan.shincolle.client.model.ModelBattleshipYamato;
 import com.lulan.shincolle.client.model.ModelCarrierAkagi;
@@ -62,6 +63,8 @@ public class RenderShipEntity extends RenderBasic
 	//BB
 	private static final ResourceLocation TEX_BB_Re = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityBattleshipRe.png");
 	private static final ModelBase MD_BB_Re = new ModelBattleshipRe();
+	private static final ResourceLocation TEX_BB_Ru = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityBattleshipRu.png");
+	private static final ModelBase MD_BB_Ru = new ModelBattleshipRu();
 	private static final ResourceLocation TEX_BB_Ta = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityBattleshipTa.png");
 	private static final ModelBase MD_BB_Ta = new ModelBattleshipTa();
 	//CA
@@ -154,6 +157,8 @@ public class RenderShipEntity extends RenderBasic
 		case ID.Ship.TransportWA:
 			return TEX_AP_Wa;
 		//BB
+		case ID.Ship.BattleshipRU:
+			return TEX_BB_Ru;
 		case ID.Ship.BattleshipTA:
 			return TEX_BB_Ta;
 		case ID.Ship.BattleshipRE:
@@ -243,6 +248,9 @@ public class RenderShipEntity extends RenderBasic
 			this.mainModel = MD_AP_Wa;
 		break;
 		//BB
+		case ID.Ship.BattleshipRU:
+			this.mainModel = MD_BB_Ru;
+		break;
 		case ID.Ship.BattleshipTA:
 			this.mainModel = MD_BB_Ta;
 		break;

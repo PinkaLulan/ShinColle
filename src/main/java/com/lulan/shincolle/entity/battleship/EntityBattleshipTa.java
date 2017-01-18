@@ -23,7 +23,7 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
 	public EntityBattleshipTa(World world)
 	{
 		super(world);
-		this.setSize(0.7F, 1.9F);
+		this.setSize(0.7F, 1.8F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.BattleshipTA);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
@@ -37,14 +37,7 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
 		
 		this.postInit();
 	}
-	
-	@Override
-	public float getEyeHeight()
-	{
-		return 1.7375F;
-	}
-	
-	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc
+
 	@Override
 	public int getEquipType()
 	{

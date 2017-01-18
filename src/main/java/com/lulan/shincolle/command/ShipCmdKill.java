@@ -14,6 +14,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
 /** Command: /shipkill [class id] [range]
@@ -112,24 +113,28 @@ public class ShipCmdKill extends CommandBase
 					//check range valid
 					if (range <= 0)
 					{
-						sender.sendMessage(new TextComponentString("Command: ShipKill: wrong kill range!"));
+						sender.sendMessage(new TextComponentTranslation("chat.shincolle:command.wrongrange").appendText(" ( > 0 )"));
 						return;
 					}
 					
 					//check id valid
 					if (id >= 2)
 					{
-						sender.sendMessage(new TextComponentString("Command: ShipKill: kill class: "+id+" "+ShipCalc.getEntityToSpawnName(id - 2)));
+						sender.sendMessage
+						(
+							new TextComponentTranslation("chat.shincolle:command.command")
+							.appendSibling(new TextComponentString(" shipkill: CID: "+id+" "+ShipCalc.getEntityToSpawnName(id - 2)
+						)));
 					}
 					else
 					{
-						sender.sendMessage(new TextComponentString("Command: ShipKill: wrong class id!"));
+						sender.sendMessage(new TextComponentTranslation("chat.shincolle:command.wrongcid").appendText(" "+id));
 						return;
 					}
 					
 					//kill ship
 					//set item entity dead
-					AxisAlignedBB aabb = new AxisAlignedBB(op.posX - range, 0D, op.posZ - range, op.posX + range, 256D, op.posZ + range);
+					AxisAlignedBB aabb = new AxisAlignedBB(op.posX - range, -256D, op.posZ - range, op.posX + range, 512D, op.posZ + range);
 					List<BasicEntityShip> hitent = op.world.getEntitiesWithinAABB(BasicEntityShip.class, aabb);
 					
 					id -= 2;

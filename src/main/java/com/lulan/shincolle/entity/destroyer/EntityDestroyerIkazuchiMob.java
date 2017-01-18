@@ -67,7 +67,7 @@ public class EntityDestroyerIkazuchiMob extends BasicEntityShipHostile implement
 	@Override
 	protected void setBossInfo()
 	{
-		this.bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.YELLOW, BossInfo.Overlay.PROGRESS);
+		this.bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.PINK, BossInfo.Overlay.NOTCHED_10);
 	}
 	
 	//setup AI

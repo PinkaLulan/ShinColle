@@ -79,7 +79,7 @@ public class EntityCruiserTatsutaMob extends BasicEntityShipHostile
 	@Override
 	protected void setBossInfo()
 	{
-		this.bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.PURPLE, BossInfo.Overlay.PROGRESS);
+		this.bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.PURPLE, BossInfo.Overlay.NOTCHED_10);
 	}
 	
 	@Override
@@ -301,7 +301,7 @@ public class EntityCruiserTatsutaMob extends BasicEntityShipHostile
 		{
   			//start skill attack
   			this.setStateEmotion(ID.S.Phase, 1, true);
-			this.remainAttack = 4;
+			this.remainAttack = 1 + this.scaleLevel;
   			this.attackTime3 = 7;
 		}
 		
