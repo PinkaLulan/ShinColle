@@ -829,7 +829,7 @@ public class GuiDesk extends GuiContainer
             			this.shipModel.setSneaking(this.shipModel.getRNG().nextInt(3) == 0);
             			
             			//roll Emotion/NoFuel
-            			if (this.shipModel.getRNG().nextInt(4) == 0)
+            			if (this.shipModel.getRNG().nextInt(7) == 0)
             			{
             				this.shipModel.setStateFlag(ID.F.NoFuel, true);
             			}

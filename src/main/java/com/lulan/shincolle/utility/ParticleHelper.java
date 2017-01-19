@@ -704,6 +704,13 @@ public class ParticleHelper
 			Minecraft.getMinecraft().effectRenderer.addEffect(swp1);
 		}
 		break;
+		case 17:	//eye sparkle
+		{
+			//											 ent, type, height, eye x, eye z, 4~7:RGBA, height
+			ParticleSparkle spark1 = new ParticleSparkle(ent, 1, (float)par1, (float)par2, (float)par3, 0F, 1F, 1F, 1F);
+			Minecraft.getMinecraft().effectRenderer.addEffect(spark1);
+		}
+		break;
 		case 36:	//emotion
 		{
 			ParticleEmotion partEmo = new ParticleEmotion(world, ent,

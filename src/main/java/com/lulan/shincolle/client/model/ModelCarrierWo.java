@@ -2,6 +2,7 @@ package com.lulan.shincolle.client.model;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipEmotion;
+import com.lulan.shincolle.handler.EventHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
@@ -21,6 +22,7 @@ import net.minecraft.util.math.MathHelper;
  */
 public class ModelCarrierWo extends ModelBase implements IModelEmotion
 {
+	
     public ModelRenderer BodyMain;
     public ModelRenderer Butt;
     public ModelRenderer ArmLeft01;
@@ -450,8 +452,8 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion
     	GlStateManager.pushMatrix();
     	GlStateManager.enableBlend();
     	GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
-    	GlStateManager.scale(0.5F, 0.5F, 0.5F); 
-    	GlStateManager.translate(0F, 1.5F, 0F);
+    	GlStateManager.scale(0.44F, 0.44F, 0.44F);
+    	GlStateManager.translate(0F, 1.9F, 0F);
     	
     	//main body
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
@@ -509,7 +511,7 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion
     
     private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
     {
-    	GlStateManager.translate(0F, 0.45F, 0F);
+    	GlStateManager.translate(0F, 0.41F, 0F);
   		setFace(4);
   		
   		//頭部
@@ -778,7 +780,9 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion
 	    this.Head.rotateAngleZ = EmotionHelper.getHeadTiltAngle(ent, f2);
   		
 	    if (ent.isSneaking())
-	    {	//潛行, 蹲下動作
+	    {
+	    	GlStateManager.translate(0F, 0.05F, 0F);
+	    	//潛行, 蹲下動作
   			this.ArmLeft01.rotateAngleX = 0.7F;
   			this.ArmRight01.rotateAngleX = 0.7F;
   			this.BodyMain.rotateAngleX = 0.5F;
@@ -796,7 +800,7 @@ public class ModelCarrierWo extends ModelBase implements IModelEmotion
 	    {	//騎乘動作
 	    	if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 	    	{
-	    		GlStateManager.translate(0F, 0.45F, 0F);
+	    		GlStateManager.translate(0F, 0.41F, 0F);
 		    	//身體角度
 				this.BodyMain.rotateAngleX = 0.2094F;
 				this.BodyMain.rotateAngleY = 0F;

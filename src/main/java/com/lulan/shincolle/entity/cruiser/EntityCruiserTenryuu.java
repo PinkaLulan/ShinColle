@@ -38,7 +38,7 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
 	
 	private Predicate targetSelector;
 	private int remainAttack;
-	private Vec3d skillMotion; 
+	private Vec3d skillMotion;
 	private ArrayList<Entity> damagedTarget;
 	
 	
@@ -123,12 +123,6 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
 			{
 				ParticleHelper.spawnAttackParticleAtEntity(this, 1D, 1D, 0.6D, (byte)14);
 			}
-			
-//			//TODO debug
-//			if ((this.ticksExisted & 31) == 0)
-//			{
-//				ParticleHelper.spawnAttackParticleAtEntity(this, 0.9D, 1D, 1D, (byte)15);
-//			}
 		}
 		//server side
 		else

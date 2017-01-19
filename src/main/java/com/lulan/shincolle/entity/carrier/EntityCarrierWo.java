@@ -16,7 +16,7 @@ public class EntityCarrierWo extends BasicEntityShipCV
 	public EntityCarrierWo(World world)
 	{
 		super(world);
-		this.setSize(0.7F, 2F);
+		this.setSize(0.7F, 1.9F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.STANDARD_CARRIER);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.CarrierWO);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CARRIER);
@@ -81,13 +81,13 @@ public class EntityCarrierWo extends BasicEntityShipCV
     				//坐下位置計算
     				if (this.isSitting())
     				{
-    					eyePosL = new float[] {-0.3F, 1.2F, -0.4F};
-        				eyePosR = new float[] {-0.7F, 1.0F, 0.6F};
+    					eyePosL = new float[] {-0.3F, 1F, -0.4F};
+        				eyePosR = new float[] {-0.7F, 0.8F, 0.6F};
     				}
     				else
     				{
-    					eyePosL = new float[] {0.55F, 1.2F, 0.2F};
-        				eyePosR = new float[] {-0.55F, 1.2F, 0.2F};
+    					eyePosL = new float[] {0.55F, 1F, 0.2F};
+        				eyePosR = new float[] {-0.55F, 1F, 0.2F};
     				}
     				
     				//側歪頭位置計算, 歪頭只會修改Y高度跟X位置

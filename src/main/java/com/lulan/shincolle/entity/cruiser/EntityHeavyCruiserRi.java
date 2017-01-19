@@ -16,7 +16,7 @@ public class EntityHeavyCruiserRi extends BasicEntityShipSmall
 	public EntityHeavyCruiserRi(World world)
 	{
 		super(world);
-		this.setSize(0.75F, 1.8F);
+		this.setSize(0.75F, 1.7F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HEAVY_CRUISER);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.HeavyCruiserRI);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CRUISER);

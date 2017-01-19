@@ -335,8 +335,8 @@ public class ModelHeavyCruiserRi extends ModelBase implements IModelEmotion
     	GlStateManager.pushMatrix();
     	GlStateManager.enableBlend();
     	GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
-    	GlStateManager.scale(0.45F, 0.45F, 0.45F);
-    	GlStateManager.translate(0F, 1.9F, 0F);
+    	GlStateManager.scale(0.41F, 0.41F, 0.41F);
+    	GlStateManager.translate(0F, 2.15F, 0F);
     	
     	//main body
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
@@ -486,7 +486,9 @@ public class ModelHeavyCruiserRi extends ModelBase implements IModelEmotion
 	    this.Head.rotateAngleZ = EmotionHelper.getHeadTiltAngle(ent, f2);
   		
 	    if (ent.isSneaking())
-	    {		//潛行動作
+	    {
+	    	GlStateManager.translate(0F, 0.05F, 0F);
+	    	//潛行動作
   			this.ArmLeft.rotateAngleX = 0.7F;
   			this.ArmRight.rotateAngleX = 0.7F;
   			this.BodyMain.rotateAngleX = 0.5F;

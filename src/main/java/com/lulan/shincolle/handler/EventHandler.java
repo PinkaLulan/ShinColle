@@ -3,6 +3,8 @@ package com.lulan.shincolle.handler;
 import java.util.List;
 import java.util.Random;
 
+import javax.annotation.Nullable;
+
 import org.lwjgl.input.Keyboard;
 
 import com.lulan.shincolle.capability.CapaInventory;
@@ -31,8 +33,10 @@ import com.lulan.shincolle.worldgen.ChestLootTable;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.GlStateManager.FogMode;
+import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
@@ -46,8 +50,11 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
@@ -55,6 +62,7 @@ import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
+import net.minecraftforge.client.event.RenderSpecificHandEvent;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.entity.EntityEvent;
@@ -1242,6 +1250,21 @@ public class EventHandler
 		}//end server side
 	}
 	
+	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+	public void onRenderHand(RenderSpecificHandEvent event)
+	{
+		if (event.getHand() == EnumHand.MAIN_HAND && event.getItemStack() != null &&
+			event.getItemStack().getItem() == ModItems.PointerItem && event.getItemStack().getMetadata() > 2)
+		{
+			event.setCanceled(true);
+			
+			//use custom hand renderer
+			renderItemInFirstPerson((AbstractClientPlayer) ClientProxy.getClientPlayer(), event.getPartialTicks(),
+					event.getInterpolatedPitch(), event.getHand(), event.getSwingProgress(),
+					event.getItemStack(), event.getEquipProgress());
+		}
+	}
+	
 	//change viewer entity when riding mounts, this is CLIENT ONLY event
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
     public void onRenderTick(TickEvent.RenderTickEvent event)
@@ -1307,6 +1330,71 @@ public class EventHandler
 			ServerProxy.updateServerTick();
 		}
 	}
+	
+	//custom main hand renderer
+    public static void renderItemInFirstPerson(AbstractClientPlayer player, float ptick, float pitch, EnumHand hand, float swing, @Nullable ItemStack stack, float equip)
+    {
+        EnumHandSide enumhandside = player.getPrimaryHand();
+        
+        if (!player.isInvisible())
+        {
+            boolean flag = enumhandside != EnumHandSide.LEFT;
+            float f = flag ? 1.0F : -1.0F;
+            
+            //get player skin
+            ClientProxy.getMineraft().getTextureManager().bindTexture(player.getLocationSkin());
+            
+            //draw hand
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(f * 0.64000005F, -0.6F, -0.71999997F);
+            GlStateManager.rotate(f * 45.0F, 0.0F, 1.0F, 0.0F);
+            GlStateManager.translate(f * -1.0F, 3.6F, 3.5F);
+            GlStateManager.rotate(f * 120.0F, 0.0F, 0.0F, 1.0F);
+            GlStateManager.rotate(200.0F, 1.0F, 0.0F, 0.0F);
+            GlStateManager.rotate(f * -135.0F, 0.0F, 1.0F, 0.0F);
+            GlStateManager.translate(f * 5.6F, 0.0F, 0.0F);
+            
+            if (ClientProxy.getGameSetting().keyBindUseItem.isKeyDown())
+            {
+            	switch (stack.getMetadata())
+            	{
+            	case 3:
+                	GlStateManager.translate(1.3F, 4F, 0.0F);
+                	GlStateManager.scale(3F, 3F, 3F);
+                	GlStateManager.rotate(MathHelper.cos((player.ticksExisted + ptick) * 0.125F) * -20F - 60F, 0F, 0F, 1F);
+        		break;
+	            case 4:
+	            	GlStateManager.rotate(70F, 0F, 1F, 0F);
+	            	GlStateManager.rotate(-20F, 0F, 0F, 1F);
+	            	GlStateManager.translate(-2F, 16F, 10F);
+					GlStateManager.scale(12F, 12F, 12F);
+					GlStateManager.rotate(MathHelper.cos((player.ticksExisted + ptick) * 0.1F) * -15F + 20F, 1F, 0F, 0F);
+        		break;
+        		default:
+        			GlStateManager.translate(13.5F, 12.5F, 2.5F);
+    				GlStateManager.scale(9F, 9F, 9F);
+    				GlStateManager.rotate(MathHelper.cos((player.ticksExisted + ptick) * 0.2F) * -15F - 20F, 1F, 1F, 0F);
+    			break;
+            	}
+            }
+            
+            RenderPlayer renderplayer = (RenderPlayer)ClientProxy.getMineraft().getRenderManager().getEntityRenderObject(player);
+            
+            GlStateManager.disableCull();
+
+            if (flag)
+            {
+                renderplayer.renderRightArm(player);
+            }
+            else
+            {
+                renderplayer.renderLeftArm(player);
+            }
+
+            GlStateManager.enableCull();
+            GlStateManager.popMatrix();
+        }
+    }
 
 	
 }

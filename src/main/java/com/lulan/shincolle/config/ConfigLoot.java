@@ -124,48 +124,64 @@ public class ConfigLoot extends BasicShipConfig
 		strs.add("# 'rolls' will be random from 1 ~ N/2+1, N = #entries per chestID"+NEW_LINE);
 		strs.add("# 'bonus_rolls' is fixed at 1"+NEW_LINE);
 		strs.add(""+NEW_LINE);
+		
 		strs.add("0,shincolle:Grudge,0,1,100,10,15"+NEW_LINE);
 		strs.add("0,shincolle:ShipSpawnEgg,2,2,100,1,1"+NEW_LINE);
 		strs.add("0,shincolle:Ammo,0,1,100,5,8"+NEW_LINE);
+		
 		strs.add("1,shincolle:Grudge,0,1,100,5,8"+NEW_LINE);
 		strs.add("1,shincolle:ShipSpawnEgg,0,1,100,1,1"+NEW_LINE);
 		strs.add("1,shincolle:Ammo,0,1,100,2,3"+NEW_LINE);
 		strs.add("1,shincolle:InstantConMat,0,1,100,3,5"+NEW_LINE);
+		
 		strs.add("2,shincolle:MarriageRing,0,4,70,1,1"+NEW_LINE);
+		strs.add("2,shincolle:TrainingBook,0,4,80,1,3"+NEW_LINE);
 		strs.add("2,shincolle:ShipSpawnEgg,0,3,100,1,1"+NEW_LINE);
 		strs.add("2,shincolle:ShipSpawnEgg,1,3,100,1,1"+NEW_LINE);
 		strs.add("2,shincolle:ShipSpawnEgg,17,1,80,1,1"+NEW_LINE);
 		strs.add("2,shincolle:ShipSpawnEgg,48,1,80,1,1"+NEW_LINE);
+		
 		strs.add("3,shincolle:InstantConMat,0,20,100,10,20"+NEW_LINE);
 		strs.add("3,shincolle:BlockAbyssium,0,10,100,5,10"+NEW_LINE);
 		strs.add("3,shincolle:BlockPolymetal,0,10,100,5,10"+NEW_LINE);
 		strs.add("3,shincolle:ShipSpawnEgg,0,5,100,1,1"+NEW_LINE);
+		
+		strs.add("4,shincolle:TrainingBook,0,6,80,1,3"+NEW_LINE);
 		strs.add("4,shincolle:MarriageRing,0,6,70,1,1"+NEW_LINE);
 		strs.add("4,shincolle:ShipSpawnEgg,0,3,100,1,1"+NEW_LINE);
 		strs.add("4,shincolle:ShipSpawnEgg,1,3,100,1,1"+NEW_LINE);
 		strs.add("4,shincolle:EquipCannon,-1,8,100,1,1"+NEW_LINE);
 		strs.add("4,shincolle:EquipAirplane,-1,8,100,1,1"+NEW_LINE);
 		strs.add("4,shincolle:Torpedo,-1,8,100,1,1"+NEW_LINE);
+		
+		strs.add("5,shincolle:TrainingBook,0,6,80,1,3"+NEW_LINE);
 		strs.add("5,shincolle:MarriageRing,0,6,70,1,1"+NEW_LINE);
 		strs.add("5,shincolle:ShipSpawnEgg,0,3,100,1,1"+NEW_LINE);
 		strs.add("5,shincolle:ShipSpawnEgg,1,3,100,1,1"+NEW_LINE);
 		strs.add("5,shincolle:EquipCannon,-1,8,100,1,1"+NEW_LINE);
 		strs.add("5,shincolle:EquipAirplane,-1,8,100,1,1"+NEW_LINE);
 		strs.add("5,shincolle:Torpedo,-1,8,100,1,1"+NEW_LINE);
+		
 		strs.add("6,shincolle:MarriageRing,0,4,70,1,1"+NEW_LINE);
 		strs.add("6,shincolle:ShipSpawnEgg,1,2,100,1,1"+NEW_LINE);
 		strs.add("6,shincolle:ShipSpawnEgg,17,1,80,1,1"+NEW_LINE);
 		strs.add("6,shincolle:ShipSpawnEgg,48,1,80,1,1"+NEW_LINE);
+		
+		strs.add("7,shincolle:TrainingBook,0,4,80,1,3"+NEW_LINE);
 		strs.add("7,shincolle:InstantConMat,0,4,100,10,12"+NEW_LINE);
 		strs.add("7,shincolle:MarriageRing,0,4,70,1,1"+NEW_LINE);
 		strs.add("7,shincolle:BlockAbyssium,0,4,100,5,15"+NEW_LINE);
 		strs.add("7,shincolle:BlockPolymetal,0,4,100,5,15"+NEW_LINE);
+		
+		strs.add("8,shincolle:TrainingBook,0,6,80,1,3"+NEW_LINE);
 		strs.add("8,shincolle:MarriageRing,0,6,70,1,1"+NEW_LINE);
 		strs.add("8,shincolle:ShipSpawnEgg,0,3,100,1,1"+NEW_LINE);
 		strs.add("8,shincolle:ShipSpawnEgg,1,3,100,1,1"+NEW_LINE);
 		strs.add("8,shincolle:EquipCannon,-1,8,100,1,1"+NEW_LINE);
 		strs.add("8,shincolle:EquipAirplane,-1,8,100,1,1"+NEW_LINE);
 		strs.add("8,shincolle:Torpedo,-1,8,100,1,1"+NEW_LINE);
+		
+		strs.add("9,shincolle:TrainingBook,0,6,80,1,3"+NEW_LINE);
 		strs.add("9,shincolle:MarriageRing,0,6,70,1,1"+NEW_LINE);
 		strs.add("9,shincolle:ShipSpawnEgg,0,3,100,1,1"+NEW_LINE);
 		strs.add("9,shincolle:ShipSpawnEgg,1,3,100,1,1"+NEW_LINE);

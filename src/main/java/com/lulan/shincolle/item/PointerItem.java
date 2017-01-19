@@ -395,7 +395,9 @@ public class PointerItem extends BasicItem
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(ItemStack stack, World world, EntityPlayer player, EnumHand hand)
 	{
-		int meta = stack.getItemDamage();
+		int meta = stack.getMetadata();
+		
+		if (meta > 2) return new ActionResult(EnumActionResult.SUCCESS, stack);
 		
 		//client side
 		if (world.isRemote)

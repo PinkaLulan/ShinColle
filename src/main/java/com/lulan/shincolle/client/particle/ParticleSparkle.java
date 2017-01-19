@@ -2,6 +2,11 @@ package com.lulan.shincolle.client.particle;
 
 import org.lwjgl.opengl.GL11;
 
+import com.lulan.shincolle.entity.IShipEmotion;
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Values;
+import com.lulan.shincolle.utility.CalcHelper;
+
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.GlStateManager.DestFactor;
@@ -11,6 +16,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.math.Vec3d;
 
 /**
@@ -45,10 +51,6 @@ public class ParticleSparkle extends Particle
 	     * parms: 0:scale, 1:radius, 2:beam speed, 3:beam thickness, 4~7:RGBA,  8:height
          */
         case 0:
-        case 1:
-        case 2:
-        case 3:
-        case 4:
         	this.particleScale = parms[0];
         	this.beamFad = parms[1];
         	this.beamSpd = parms[2];
@@ -61,6 +63,24 @@ public class ParticleSparkle extends Particle
             this.particleMaxAge = 50;
             this.NumBeam = 40;
             this.beamPos = new float[NumBeam][8];
+            this.setPosition(entity.posX, entity.posY+this.beamHeight, entity.posZ);
+        break;
+        /**
+	     * type 1: eye particle
+	     * parms: 0:height, 1:eye x, 2:eye z, 3~6:RGBA
+         */
+        case 1:
+        	this.particleScale = 0.018F;
+        	this.beamHeight = parms[0];
+        	this.beamFad = parms[1];
+        	this.beamSpd = parms[2];
+        	this.particleRed = parms[3];
+            this.particleGreen = parms[4];
+            this.particleBlue = parms[5];
+            this.particleAlpha = parms[6];
+            this.particleMaxAge = 50;
+            this.NumBeam = 30;
+            this.beamPos = new float[NumBeam][11];
             this.setPosition(entity.posX, entity.posY+this.beamHeight, entity.posZ);
         break;
         }
@@ -135,24 +155,16 @@ public class ParticleSparkle extends Particle
 	public void onUpdate()
     {
         //update age
-        if (this.particleAge++ > this.particleMaxAge)
+        if (this.particleAge++ > this.particleMaxAge || this.host == null)
         {
             this.setExpired();
+            return;
         }
         
     	//update movement
 		this.prevPosX = this.posX;
         this.prevPosY = this.posY;
         this.prevPosZ = this.posZ;
-        
-        switch (this.particleType)
-        {
-//        case 0:		//out from host's back
-//        	double acc = 0.1D;
-//        	this.setPosition(this.posX - this.host.motionX * acc, this.posY - this.host.motionY * acc, this.posZ - this.host.motionZ * acc);
-////        	this.setPosition(this.host.posX, this.host.posY + this.beamHeight, this.host.posZ);
-//    	break;
-        }
         
         //update beam
         switch (this.particleType)
@@ -184,6 +196,58 @@ public class ParticleSparkle extends Particle
         		
         		//alpha random
         		this.beamPos[i][6] = this.rand.nextFloat() + 0.1F;
+        		if (this.beamPos[i][6] > 1F) this.beamPos[i][6] = 1F;
+        	}
+        }
+        break;
+        case 1:		//out from host's back
+        {
+        	//update pos
+        	this.setPosition(this.host.posX, this.host.posY+this.beamHeight, this.host.posZ);
+        	
+        	float eyex = ((IShipEmotion) this.host).getStateFlag(ID.F.HeadTilt) ? this.beamFad - 0.05F : this.beamFad;
+        	float eyeh = ((IShipEmotion) this.host).getStateFlag(ID.F.HeadTilt) ? 0.02F : 0F;
+        	float[] headpos =  CalcHelper.rotateXYZByYawPitch(eyex, 0.19F + eyeh, this.beamSpd,
+        			this.host.getRotationYawHead() * Values.N.DIV_PI_180,
+        			this.host.rotationPitch * Values.N.DIV_PI_180, 1F);
+        	float[] headmov =  CalcHelper.rotateXZByAxis(1F, 1F,
+        			((EntityLivingBase)this.host).rotationYawHead * Values.N.DIV_PI_180, 0.025F);
+        	
+        	for (int i = 0; i < 3; i++)
+        	{
+            	//create new beam
+            	this.beamPos[this.beamCurrent] = new float[]
+            	{
+            		(float) headpos[0] + (this.rand.nextFloat() - 0.5F) * 0.1F,	//xyz pos
+            		(float) headpos[1] + (this.rand.nextFloat() - 0.5F) * 0.1F,
+            		(float) headpos[2] + (this.rand.nextFloat() - 0.5F) * 0.1F,
+            		this.particleRed + this.rand.nextFloat() + 0.4F,			//rgba
+        			this.particleGreen,
+        			this.particleBlue,
+        			this.particleAlpha,
+        			0F,															//age
+        			headmov[1], 0.01F, headmov[0]								//motion
+        		};
+            	this.beamCurrent++;
+            	if (this.beamCurrent >= this.beamPos.length) this.beamCurrent = 0;
+        	}
+        	
+        	//update beam pos: halve dist to (0,0,0)
+        	for (int i = 0; i < this.beamPos.length; i++)
+        	{
+        		//move
+        		this.beamPos[i][8] *=  0.99F;
+        		this.beamPos[i][9] *=  1.08F;
+        		this.beamPos[i][10] *=  0.99F;
+        		this.beamPos[i][0] += this.beamPos[i][8];
+        		this.beamPos[i][1] += this.beamPos[i][9];
+        		this.beamPos[i][2] += this.beamPos[i][10];
+        		
+        		//age++
+        		this.beamPos[i][7] += 1F;
+        		
+        		//alpha random
+        		this.beamPos[i][6] *= 0.92F;
         		if (this.beamPos[i][6] > 1F) this.beamPos[i][6] = 1F;
         	}
         }

@@ -312,7 +312,7 @@ gui.shincolle:book.chap1.title23=Abyssal Crane
 gui.shincolle:book.chap1.text23d0=<br><br><br><br><br><br><br><br><br>The machine block for loading and unloading items to ship. Owner can link the §dAbyssal Crane§0 to §9any chest§0 or other §9Abyssal Waypoint§0 by §dTarget Wrench§0.  Ship will start to load/unload items when she gets to the crane and go to the next waypoint after the job done.
 gui.shincolle:book.chap1.text23d1=§9Top Left§0 button is §9Power Switch§0.<br><br>§9The Top Largest§0 button is §9Waiting Mode§0.<br><br>§9Middle§0 buttons with M/D/N are item matching condition.<br><br>§9Center 9x2 Slots§0 are loading/unloading target, left all empty means §9ANY§0 item.<br><br>Loading/Unloading can disable separately, and ship will not attack and move while craning.
 gui.shincolle:book.chap1.title24=Maintenance Personnel Training Book
-gui.shincolle:book.chap1.text24d0=<br><br><br><br><br><br><br><br><br>
+gui.shincolle:book.chap1.text24d0=<br><br><br><br><br><br><br><br><br>Right click this book on ship can increase the ship level 5 ~ 10.<br><br>This book can only be found in dungeon chest.
 gui.shincolle:book.chap1.text24d1=
 
 # GUI: Book Text Chap 2
@@ -451,7 +451,7 @@ gui.shincolle:book.chap4.text19d0=
 gui.shincolle:book.chap4.text19d1=§9Name:§0 Aircraft Carrier Princess<br><br>§9Class:§0 Princess Class CV<br><br>§9Factory:§0 Hadal Vortex<br><br>§9Factor:§0 Polymetal (3000)<br><br>§9AuraEffect§0 none<br><br>§9OtherEffect:§0 enhanced melee<br><br>Melee: Deal 100%% firepower AoE damage.
 gui.shincolle:book.chap4.title20=
 gui.shincolle:book.chap4.text20d0=
-gui.shincolle:book.chap4.text20d1=§9Name:§0 Ru-Class<br><br>§9Class:§0 BB<br><br>§9Factory:§0 Hadal Vortex<br><br>§9Factor:§0 Ammo (800)<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 Double/Triple Hit +15%%<br><br>
+gui.shincolle:book.chap4.text20d1=§9Name:§0 Ru-Class<br><br>§9Class:§0 BB<br><br>§9Factory:§0 Hadal Vortex<br><br>§9Factor:§0 Ammo (800)<br><br>§9AuraEffect:§0 Enable FlagshipKai Particle<br><br>§9OtherEffect:§0 Double/Triple Hit +15%%<br><br>Melee: deal 200%% firepower damage; Heavy attack: deal 20%%x5~10 torpedo damage (depend on level).
 
 # GUI: Book Text Chap 5
 gui.shincolle:book.chap5.title=Enemy List
@@ -496,7 +496,7 @@ gui.shincolle:book.chap5.text12d0=
 gui.shincolle:book.chap5.text12d1=§9Name:§0 Tenryuu<br><br>§9Class:§0 Tenryuu Class CL<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 Cri,Dodge+15%% at night<br><br>Her blade was enchanted with the Trayastrmsa devas' power and the dragon king of terror was sealed in her left eye. That's why she can use TenryuuSlash.<br><br>Melee deal 100%% firepower damage, TenryuuSlash deal 30%%x2~6 + 120%% torpedo damage(depend on level).   
 gui.shincolle:book.chap5.title13=
 gui.shincolle:book.chap5.text13d0=
-gui.shincolle:book.chap5.text13d1=§9Name:§0 Tatsuta<br><br>§9Class:§0 Tenryuu Class CL<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 Cri,Dodge+15%% at night<br><br>Lancer with Cup E. She will riddle anyone (including master) close to Tenryuu ...HOORAY♪<br><br>Melee deal 100%% firepower damage, TenryuuSlash deal 50%%x1~3 + 150%% torpedo damage(depend on level).
+gui.shincolle:book.chap5.text13d1=§9Name:§0 Tatsuta<br><br>§9Class:§0 Tenryuu Class CL<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 Cri,Dodge+15%% at night<br><br>Lancer with Cup E. She will riddle anyone (including master) close to Tenryuu ...HOORAY♪<br><br>Melee deal 100%% firepower damage, TenryuuSlash deal 50%%x1~3 + 150%% torpedo damage (depend on level).
 
 # GUI: Book Text Chap 6
 gui.shincolle:book.chap6.title=Commands

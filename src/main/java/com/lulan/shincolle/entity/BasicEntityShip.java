@@ -1785,7 +1785,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 					return EnumActionResult.SUCCESS;
 				}
 				//use pointer item (caress head mode)
-				else if (stack.getItem() == ModItems.PointerItem)
+				else if (stack.getItem() == ModItems.PointerItem && stack.getMetadata() > 2)
 				{
 					interactPointer(player, stack);
 					return EnumActionResult.SUCCESS;
@@ -1802,6 +1802,29 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 						 player.isSneaking() && TeamHelper.checkSameOwner(this, player))
 				{
 					interactWeddingRing(player, stack);
+					return EnumActionResult.SUCCESS;
+				}
+				//use book
+				else if (stack.getItem() == ModItems.TrainingBook)
+				{
+					if (this.getLevel() < 150)
+					{
+						int lv = this.getLevel() + 5 + this.rand.nextInt(6);
+						if (lv > 150) lv = 150;
+						
+						this.setShipLevel(lv, true);
+						
+						//level up sound
+						this.playSound(ModSounds.SHIP_LEVEL, 0.75F, 1F);
+						this.world.playSound(null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_PLAYER_LEVELUP, this.getSoundCategory(), 0.75F, 1F);
+						
+						//item--
+						if (player != null && !player.capabilities.isCreativeMode)
+						{
+				            --stack.stackSize;
+						}
+					}
+					
 					return EnumActionResult.SUCCESS;
 				}
 				//use lead: clear path
@@ -2804,9 +2827,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         distVec[1] = (float) (target.posY - this.posY);
         distVec[2] = (float) (target.posZ - this.posZ);
         distVec[3] = MathHelper.sqrt(distVec[0]*distVec[0] + distVec[1]*distVec[1] + distVec[2]*distVec[2]);
-        distVec[0] = distVec[0] / distVec[3];
-        distVec[1] = distVec[1] / distVec[3];
-        distVec[2] = distVec[2] / distVec[3];
+        
+        if (distVec[3] > 1.0E-4D)
+        {
+            distVec[0] = distVec[0] / distVec[3];
+            distVec[1] = distVec[1] / distVec[3];
+            distVec[2] = distVec[2] / distVec[3];
+        }
         
         //play cannon fire sound at attacker
         applySoundAtAttacker(1, target);
@@ -2914,6 +2941,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         distVec[1] = tarY - (float) this.posY;
         distVec[2] = tarZ - (float) this.posZ;
 		distVec[3] = MathHelper.sqrt(distVec[0]*distVec[0] + distVec[1]*distVec[1] + distVec[2]*distVec[2]);
+        
+        if (distVec[3] > 1.0E-4D)
+        {
+            distVec[0] = distVec[0] / distVec[3];
+            distVec[1] = distVec[1] / distVec[3];
+            distVec[2] = distVec[2] / distVec[3];
+        }
         
         //超過一定距離/水中 , 則採用拋物線,  在水中時發射高度較低
         if (distVec[3] < 5F)
@@ -5602,7 +5636,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     }
 
   	
-  	/** release chunk loader ticket */ //TODO need review
+  	/** release chunk loader ticket */
   	public void clearChunkLoader()
   	{
   		//unforce chunk
@@ -5658,7 +5692,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   				if (player != null && this.chunkTicket == null)
   				{
 					//get ticket
-			  		this.chunkTicket = ForgeChunkManager.requestPlayerTicket(ShinColle.instance, player.getDisplayNameString(), world, ForgeChunkManager.Type.ENTITY);
+			  		this.chunkTicket = ForgeChunkManager.requestPlayerTicket(ShinColle.instance, player.getName(), world, ForgeChunkManager.Type.ENTITY);
   				
 			  		if (this.chunkTicket != null)
 			  		{

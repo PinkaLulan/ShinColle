@@ -312,7 +312,7 @@ gui.shincolle:book.chap1.title23=深海起重機
 gui.shincolle:book.chap1.text23d0=<br><br><br><br><br><br><br><br><br>§c深海棲艦§0用來大量裝卸載貨物的機械。<br><br>跟路徑方塊一樣由§d目標設定扳手§0來連結其他路徑方塊或是其他起重機，最重要的是§9要跟箱子設定連結§0。<br><br>當棲艦走到起重機這個點時，就會依照設定的物品內容對設定的箱子裝卸貨物。裝卸完畢就會繼續往下個路徑點移動。
 gui.shincolle:book.chap1.text23d1=介面說明：<br><br>§9左上§0為起重機§9開關§0按鈕。<br><br>§9中上最大的按鈕§0為§9等待模式§0。<br><br>§9中間M/D/N三個按鈕§0可以設定物品額外的比對條件。<br><br>§9中間兩排物品欄§0可設定裝卸各九種物品，§C全部不設定則視為裝卸所有物品§0。裝貨或者卸貨功能可以分開開關。<br><br>要注意裝卸或者等待裝卸中的船艦不會移動也不會攻擊。
 gui.shincolle:book.chap1.title24=整備員訓練書
-gui.shincolle:book.chap1.text24d0=<br><br><br><br><br><br><br><br><br>§c深海棲艦§0整備員訓練書。
+gui.shincolle:book.chap1.text24d0=<br><br><br><br><br><br><br><br><br>§c深海棲艦§0整備員訓練書，對船艦使用後可以提昇目標的等級5~10。<br><br>訓練書可以在地牢之中的寶箱中發現。
 gui.shincolle:book.chap1.text24d1=
  
 # GUI: Book Text Chap 2
@@ -451,7 +451,7 @@ gui.shincolle:book.chap4.text19d0=
 gui.shincolle:book.chap4.text19d1=§9名稱：§0 空母棲姬<br><br>§9艦種：§0 姬級 航空母艦<br><br>§9建造所：§0 超深海熱漩<br><br>§9建造加成：§0 多金屬 (3000)<br><br>§9特殊能力：§0 無<br><br>§9其他能力：§0 近戰增強<br><br>深海正妻空母，得意技是用跑道切開敵人或是高麗菜。<br><br>近戰會造成範圍100%%砲擊傷害。
 gui.shincolle:book.chap4.title20=
 gui.shincolle:book.chap4.text20d0=
-gui.shincolle:book.chap4.text20d1=§9名稱：§0 ル級<br><br>§9艦種：§0 戰艦<br><br>§9建造所：§0 超深海熱漩<br><br>§9建造加成：§0 怨念彈 (800)<br><br>§9特殊能力：§0 無<br><br>§9其他能力：§0 二連/三連擊+15%%<br><br>因為看到黑色系深海棲艦胸部裝甲都不如白色系，而特意使用大型艦砲來進行闊胸運動的深海太太。
+gui.shincolle:book.chap4.text20d1=§9名稱：§0 ル級<br><br>§9艦種：§0 戰艦<br><br>§9建造所：§0 超深海熱漩<br><br>§9建造加成：§0 怨念彈 (800)<br><br>§9特殊能力：§0 開啟旗艦改特效<br><br>§9其他能力：§0 二連/三連擊+15%%<br><br>因為看到黑色系深海棲艦胸部裝甲都不如白色系，而特意使用大型艦砲來進行闊胸運動的深海太太。<br><br>近戰可造成200%%砲擊傷害，重型攻擊可造成20%%x5~10的雷裝傷害(依等級決定)。
 
 # GUI: Book Text Chap 5
 gui.shincolle:book.chap5.title=敵艦列表

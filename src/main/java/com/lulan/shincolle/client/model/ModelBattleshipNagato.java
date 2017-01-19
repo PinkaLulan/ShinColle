@@ -670,8 +670,8 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion
 		  	this.HairMidL01.rotateAngleX += 0.3F;
 		  	this.HairMidL02.rotateAngleX += 0.3F;
 		    //arm 
-		  	this.ArmLeft01.rotateAngleX = angleAdd2 - 0.6F;
-		    this.ArmRight01.rotateAngleX = angleAdd1 - 0.6F;
+		  	this.ArmLeft01.rotateAngleX = angleAdd2 * 1.4F - 0.1F;
+		    this.ArmRight01.rotateAngleX = angleAdd1 * 1.4F - 0.1F;
 		    this.ArmLeft01.rotateAngleZ = angleX * 0.1F - 0.4F;
 			this.ArmRight01.rotateAngleZ = -angleX * 0.1F + 0.4F;
 			//leg

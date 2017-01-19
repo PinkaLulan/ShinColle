@@ -2,6 +2,7 @@ package com.lulan.shincolle.client.model;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipEmotion;
+import com.lulan.shincolle.handler.EventHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
@@ -265,7 +266,8 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion
     	GlStateManager.pushMatrix();
     	GlStateManager.enableBlend();
     	GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
-    	GlStateManager.scale(0.5F, 0.5F, 0.5F);
+    	GlStateManager.scale(0.46F, 0.46F, 0.46F);
+    	GlStateManager.translate(0F, 1.78F, 0F);
     	
     	//main body
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
@@ -323,7 +325,7 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion
     
     private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
     {
-    	GlStateManager.translate(0F, 1.16F, 0F);
+    	GlStateManager.translate(0F, 0.62F, 0F);
     	setFace(4);
     
     	//頭部
@@ -374,8 +376,6 @@ public class ModelBattleshipTa extends ModelBase implements IModelEmotion
   		float angleRun2 = MathHelper.cos(f * 0.7F + 3.1415927F) * f1 * 0.6F;
   		float addk1 = 0;
   		float addk2 = 0;
-  		
-  		GlStateManager.translate(0F, 0.5F, 0F);
   		
   		//水上漂浮
   		if (ent.getShipDepth(0) > 0D)

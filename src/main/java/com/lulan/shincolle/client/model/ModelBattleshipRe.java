@@ -761,10 +761,12 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion
 		}
 
 	    if (ent.isSprinting() || f1 > 0.9F)
-	    {	//奔跑動作
+	    {
+	    	//奔跑動作
 	    	setFace(3);
+	    	float t2 = ent.ticksExisted & 1023;
 			//change run type base on tickExisted
-			if (ent.ticksExisted % 900 > 600)
+			if (t2 > 700)
 			{	//run type 1
 				//高度
 				GlStateManager.translate(0F, 0.05F, 0F);
@@ -824,7 +826,7 @@ public class ModelBattleshipRe extends ModelBase implements IModelEmotion
 				this.TailHead1.rotateAngleX = 0.3F;
 				this.TailJaw1.rotateAngleX = angleX * 0.2F - 0.3F;
 			}
-			else if (ent.ticksExisted % 900 > 300)
+			else if (t2 > 400)
 			{	//run type 2
 				//高度
 				GlStateManager.translate(0F, 0.05F, 0F);
