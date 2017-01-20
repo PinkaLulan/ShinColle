@@ -66,7 +66,7 @@ abstract public class BasicEquip extends BasicItem implements IShipResourceItem
 	@Override
     public boolean isEnchantable(ItemStack stack)
     {
-        return stack.stackSize == 1;
+        return false;
     }
 	
 	@Override

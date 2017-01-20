@@ -335,6 +335,9 @@ gui.shincolle:book.chap2.text4d1=上下§4紅色箭頭§0可以選擇要§9取�
 gui.shincolle:book.chap2.title5=裝備開發
 gui.shincolle:book.chap2.text5d0=開發裝備跟建造船艦同樣在§9深海熱泉§0跟§9超深海熱漩§0中進行，投入足夠材料後點擊裝備圖示就能進行開發。
 gui.shincolle:book.chap2.text5d1=開發出來的裝備說明中，會顯示該裝備能力值以及建造條件：<br><br>開發加成材料：<br>表示最高機率的總材料量以及有影響的材料類型，可參考棲艦列表章節第一頁的範例說明。<br><br>裝備稀有度：<br>數值越高代表在該類型裝備中越稀有。
+gui.shincolle:book.chap2.title6=裝備附魔
+gui.shincolle:book.chap2.text6d0=船艦的裝備可以藉由附魔書在鐵砧中附魔來提升裝備既有數值，不管附魔種類固定消耗經驗值30等。<br>裝備會有三種附魔類型：§c武器§0、§9裝甲§0、§3其他類§0，部分附魔只在特定類型上有效。<br><br>§c有效附魔列表：§0<br><br>§9保護、抗火、防爆、防彈：§0<br>提昇耐久度。<br>§9鋒利、剋星、強力：§0<br>提昇傷害，§c限定武器類。§0<br>§9耐久：§0<br>提昇防禦力，§3限定裝甲類。§0<br>§9效率：§0<br>提昇填彈速度。<br>§9深海漫遊、水中挖掘、輕盈：§0<br>降低裝備重量。
+gui.shincolle:book.chap2.text6d1=§9擊退：§0<br>提昇射程。<br>§9冰霜行者：§0<br>提昇爆擊率。<br>§9火焰、燃燒：§0<br>提昇二連跟三連擊率。<br>§9魚餌：§0<br>提昇降低失誤率。<br>§9尖刺：§0<br>提昇對空值。<br>§9水中呼吸：§0<br>提昇對潛值。<br>§9掠奪、幸運、海洋祝福：§0<br>提昇經驗獲得，§c限定武器類。§0<br>§9絲綢之觸：§0<br>提昇怨念值獲得，§3限定非武器類。§0<br>§9無限：§0<br>提昇彈藥獲得，§c限定武器類。§0<br>§9經驗修補：§0<br>提昇耐久度回復量，§3限定非武器類。§0
 
 # GUI: Book Text Chap 3
 gui.shincolle:book.chap3.title=棲艦養成指南
@@ -512,6 +515,9 @@ gui.shincolle:book.chap6.text2d1=§9/shipemotes [表情]<br>§d權限:§0 全部
 gui.shincolle:book.chap6.title3=
 gui.shincolle:book.chap6.text3d0=§9/shipstopai<br>§d權限:§0 僅限OP<br>§d功能:§0 停止船艦AI<br><br>伺服器中所有船艦、敵對船艦、棲艦的坐騎的更新都會停止。<br><br>再次輸入指令會恢復AI運作，用於船艦出現大量複製BUG時緊急暫停用。
 gui.shincolle:book.chap6.text3d1=§9/shipkill <船艦ID> [範圍]<br>§d權限:§0 僅限OP<br>§d功能:§0 清除船艦<br><br>移除指定船艦，可指定清除範圍 (預設周圍64格)，船艦ID請參考船艦生怪蛋ID。<br><br>用於船艦出現大量複製BUG時緊急使用。
+gui.shincolle:book.chap6.title4=
+gui.shincolle:book.chap6.text4d0=§9/ship <list>|<get> <shipID>|<del> <shipID><br>§d權限:§0 <get>跟<del>僅限OP<br>§d功能:§0 列出或重生船艦<br><br>list功能可以列出所有伺服器中出現過的船艦資料備份，列表中的D/E表示死亡/船艦實體是否存在於世界。<br>get可以傳送或重生船艦到使用者旁邊，需要靠近到船艦最後紀錄的地點64格以內。<br>del可以刪除船艦資料備份，不會影響實際存在的船艦。<br><br>若有船艦莫名走失或者意外拆解掉，OP可以使用此指令重生目標船艦，普通使用者則僅能查詢船艦備份資料。
+gui.shincolle:book.chap6.text4d1=
 
 # GUI: General
 gui.shincolle:general.ok=確定

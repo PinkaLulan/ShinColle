@@ -335,6 +335,9 @@ gui.shincolle:book.chap2.text4d1=Click the §4Red Arrow§0 to change resources m
 gui.shincolle:book.chap2.title5=Equipment Develop
 gui.shincolle:book.chap2.text5d0=The equip development is same with ship construction, put some materials in the §9Abyssal Hydrothermal Vent§0 or §9Hadal Hydrothermal Vortex§0 and click the Equip button to develop equips. 
 gui.shincolle:book.chap2.text5d1=The equip info is decribed in the item tooltip:<br><br>Factor Mats:<br>The number represents the total amount of materials and the effective material.<br><br>Rare Level:<br>Higher the value means the more rare in that equip type.
+gui.shincolle:book.chap2.title6=Enchant Equips
+gui.shincolle:book.chap2.text6d0=Equips can be enchanted by enchanted book and anvil to increase the stats. Enchanting costs fixed 30 levels. There are 3 enchant types: §cWeapon§0, §9Armor§0 and §3Misc§0, some enchantment only works on specific type.<br><br>§9Protection:§0 +HP.<br>§9Sharpness, Smite, Bane, Power:§0 +damage, §cWEAPON§0 only.<br>§9Unbreaking:§0 +DEF, §3ARMOR§0 only.<br>§9Efficiency:§0 +reload speed.<br>§9Aqua Affinity, Feather Fall, Depth Strider:§0 +move speed.  
+gui.shincolle:book.chap2.text6d1=§9Knockback, Punch:§0 +range.<br>§9Frost Walker:§0 +critical.<br>§9Fire, Flame:§0 +double/triple hit.<br>§9Lure:§0 +miss reduction.<br>§9Thorns:§0 +AA.<br>§9Respiration:§0 +ASM.<br>§9Looting, Fortune, Luck:§0 +exp gain, §cWEAPON§0 only.<br>§9Silk Touch:§0 +grudge gain, §3NON-WEAPON§0 only.<br>§9Infinity:§0 +ammo gain, §cWEAPON§0 only.<br>§9Mending:§0 +HP recovery, §3NON-WEAPON§0 only. 
 
 # GUI: Book Text Chap 3
 gui.shincolle:book.chap3.title=Ship Maintenance Guide
@@ -512,6 +515,9 @@ gui.shincolle:book.chap6.text2d1=§9/shipemotes [emo]<br>§dAuthority:§0 All Pl
 gui.shincolle:book.chap6.title3=
 gui.shincolle:book.chap6.text3d0=§9/shipstopai<br>§dAuthority:§0 OP only<br>§dPurpose:§0 stop ship AI<br><br>Stop all ship, hostile ship, ship mounts AI and update methods for emergency like entity dupe bug. 
 gui.shincolle:book.chap6.text3d1=§9/shipkill <Ship ID> [range]<br>§dAuthority:§0 OP only<br>§dPurpose:§0 remove ship<br><br>Remove specific class ship within range (default range = 128 blocks) for emergency like entity dupe bug.<br><br>The ship ID is same with the metavalue of ship spawn egg.
+gui.shincolle:book.chap6.title4=
+gui.shincolle:book.chap6.text4d0=§9/ship <list> | <get> <Ship ID> | <del> <Ship ID><br>§dAuthority:§0 OP only: get, del<br>§dPurpose:§0 list or respawn ship<br><br>§9list:§0<br>list all ship cache data, D/E means Dead/Exist in the world.<br>§9get:§0<br>summon or respawn ship, the user have to get close to ship within 64 blocks.<br>§9del:§0<br>delete the specific ship cache.<br><br>OP can use this command to summon/respawn missing ship. Non-OP user can search ship cache only.
+gui.shincolle:book.chap6.text4d1=
 
 # GUI: General
 gui.shincolle:general.ok=OK
