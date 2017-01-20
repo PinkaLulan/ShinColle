@@ -14,6 +14,7 @@ import com.lulan.shincolle.init.ModOres;
 import com.lulan.shincolle.init.ModRecipes;
 import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.init.ModWorldGen;
+import com.lulan.shincolle.intermod.forestry.ShinBees;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.IProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
@@ -21,6 +22,7 @@ import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraftforge.common.ForgeChunkManager;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -107,30 +109,40 @@ public class ShinColle
 		//check config changed
         ConfigHandler.checkChange(ConfigHandler.config);
 		
-//		//add forestry bees
-//		if (Loader.isModLoaded(Reference.MOD_ID_Forestry) && ConfigHandler.enableForestry) TODO
-//		{
-//			ShinBees.init();
-//			
-////			Iterator iter = EntityList.classToStringMapping.entrySet().iterator();
-////			Iterator iter = AlleleManager.alleleRegistry.getSpeciesRoot("rootBees").getGenomeTemplates().entrySet().iterator();
-////			while (iter.hasNext())
-////			{
-////				Map.Entry entry = (Map.Entry)iter.next();
-////			    Object key = entry.getKey();
-////			    Object val = entry.getValue();
-////			    LogHelper.info("AAAAAA:  "+key+" , "+val);
-////			    
-////			    IAllele[] data = (IAllele[]) val;
-////			    
-////			    for (IAllele d : data)
-////			    {
-////			    	LogHelper.info("            BBBB:  "+d);
-////			    }
-////			}
-//		}
+		//add forestry bees
+		if (Loader.isModLoaded(Reference.MOD_ID_Forestry) && ConfigHandler.enableForestry)
+		{
+			LogHelper.info("INFO : Enable Forestry mod support.");
+			ShinBees.init();
+			
+//			AlleleManager.alleleRegistry.getRegisteredAlleles().forEach((k, v) ->
+//			{
+//				LogHelper.info("AAAAAAAA "+k);
+//			});
+//			Iterator iter = EntityList.classToStringMapping.entrySet().iterator();
+//			Iterator iter = AlleleManager.alleleRegistry.getSpeciesRoot("rootBees").getGenomeTemplates().entrySet().iterator();
+//			while (iter.hasNext())
+//			{
+//				Map.Entry entry = (Map.Entry)iter.next();
+//			    Object key = entry.getKey();
+//			    Object val = entry.getValue();
+//			    LogHelper.info("AAAAAA:  "+key+" , "+val);
+//			    
+//			    IAllele[] data = (IAllele[]) val;
+//			    
+//			    for (IAllele d : data)
+//			    {
+//			    	LogHelper.info("            BBBB:  "+d);
+//			    }
+//			}
+		}
 		
-		//for DEBUG
+		//DEBUG
+//      Map<String, ModContainer> modlist = Loader.instance().getIndexedModList();
+//      modlist.forEach((name, v) ->
+//      {
+//      	LogHelper.info("AAAAAAAA "+name);
+//      });
 //		LogHelper.info("DEBUG : biome spawn: "+this.worldObj.getBiomeGenForCoords((int)this.posX, (int)this.posZ).getSpawnableList(EnumCreatureType.waterCreature).get(1));
 //		for(String oreName : OreDictionary.getOreNames()) {	//list all oreDictionary  (DEBUG)
 //			LogHelper.info(oreName);

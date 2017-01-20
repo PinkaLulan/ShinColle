@@ -1,30 +1,31 @@
 package com.lulan.shincolle.intermod.forestry;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
-
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.reference.Reference;
 
 import forestry.api.apiculture.BeeManager;
 import forestry.api.apiculture.EnumBeeChromosome;
-import forestry.api.apiculture.IAlleleBeeSpeciesCustom;
+import forestry.api.apiculture.IAlleleBeeSpecies;
 import forestry.api.core.EnumHumidity;
 import forestry.api.genetics.AlleleManager;
 import forestry.api.genetics.IAllele;
 import forestry.api.genetics.IAlleleFlowers;
 import forestry.api.genetics.IClassification;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.item.ItemStack;
 
 /** bee template
  *  蜜蜂屬性設定
  */
 public class ShinBeeTemplate
 {
+	
 	public static IClassification beebranch;
 	public static IAlleleFlowers flower;
-	public static IAlleleBeeSpeciesCustom bee1;
-	public static IAlleleBeeSpeciesCustom bee2;
-	public static IAlleleBeeSpeciesCustom bee3;
+	public static IAlleleBeeSpecies bee1;
+	public static IAlleleBeeSpecies bee2;
+	public static IAlleleBeeSpecies bee3;
+	
 	
 	//init bees
 	public static void initBees()
@@ -37,32 +38,29 @@ public class ShinBeeTemplate
 		 *  bee1: demon
 		 *  bee2: princess
 		 *  bee3: water demon
-		 * 
 		 */
-		bee1 = (IAlleleBeeSpeciesCustom) BeeManager.beeFactory.createSpecies(Reference.MOD_ID + "abyssdemon",
+		bee1 = (IAlleleBeeSpecies) BeeManager.beeFactory.createSpecies(Reference.MOD_ID + ".abyssdemon",
 				true, "Abyssal Admiral", "inter.shincolle:bee1.name",
-				StatCollector.translateToLocal("inter.shincolle:bee1.desc"), beebranch,
+				I18n.format("inter.shincolle:bee1.desc"), beebranch,
 				"demonic", 0xFF0000, 0x7F0000)
 				.setJubilanceProvider(new ShinJubilance())
 				.addProduct(new ItemStack(ShinBees.ShinComb, 1), 0.2F)
 				.setNocturnal()
-//				.setTemperature(EnumTemperature.HELLISH)
 				.setHumidity(EnumHumidity.DAMP);
 		
-		bee2 = (IAlleleBeeSpeciesCustom) BeeManager.beeFactory.createSpecies(Reference.MOD_ID + "abyssprincess",
+		bee2 = (IAlleleBeeSpecies) BeeManager.beeFactory.createSpecies(Reference.MOD_ID + ".abyssprincess",
 				true, "Abyssal Admiral", "inter.shincolle:bee2.name",
-				StatCollector.translateToLocal("inter.shincolle:bee2.desc"), beebranch,
+				I18n.format("inter.shincolle:bee2.desc"), beebranch,
 				"princess", 0xFF0000, 0x7F0000)
 				.setJubilanceProvider(new ShinJubilance())
 				.addProduct(new ItemStack(ShinBees.ShinComb, 1), 0.2F)
 				.addProduct(new ItemStack(ModItems.Grudge, 1, 0), 0.1F)
 				.setNocturnal()
-//				.setTemperature(EnumTemperature.HELLISH)
 				.setHumidity(EnumHumidity.DAMP);
 		
-		bee3 = (IAlleleBeeSpeciesCustom) BeeManager.beeFactory.createSpecies(Reference.MOD_ID + "abysswaterdemon",
+		bee3 = (IAlleleBeeSpecies) BeeManager.beeFactory.createSpecies(Reference.MOD_ID + ".abysswaterdemon",
 				true, "Abyssal Admiral", "inter.shincolle:bee3.name",
-				StatCollector.translateToLocal("inter.shincolle:bee3.desc"), beebranch,
+				I18n.format("inter.shincolle:bee3.desc"), beebranch,
 				"waterdemonic", 0xFF0000, 0x7F0000)
 				.setJubilanceProvider(new ShinJubilance())
 				.addProduct(new ItemStack(ShinBees.ShinComb, 1), 0.2F)
@@ -70,7 +68,6 @@ public class ShinBeeTemplate
 				.addSpecialty(new ItemStack(ModItems.AbyssNugget, 1, 1), 0.05F)
 				.setNocturnal()
 				.setHumidity(EnumHumidity.DAMP)
-//				.setTemperature(EnumTemperature.HELLISH)
 				.setHasEffect();
 		
 		/** 註冊蜜蜂屬性樣板 */
@@ -89,14 +86,14 @@ public class ShinBeeTemplate
 		temp[EnumBeeChromosome.LIFESPAN.ordinal()] = AlleleManager.alleleRegistry.getAllele("forestry.lifespanLong");
 		temp[EnumBeeChromosome.HUMIDITY_TOLERANCE.ordinal()] = AlleleManager.alleleRegistry.getAllele("forestry.toleranceNone");
 		temp[EnumBeeChromosome.TEMPERATURE_TOLERANCE.ordinal()] = AlleleManager.alleleRegistry.getAllele("forestry.toleranceDown1");
-		temp[EnumBeeChromosome.TERRITORY.ordinal()] = AlleleManager.alleleRegistry.getAllele("forestry.territoryDefault");
+		temp[EnumBeeChromosome.TERRITORY.ordinal()] = AlleleManager.alleleRegistry.getAllele("forestry.territoryAverage");
 		temp[EnumBeeChromosome.EFFECT.ordinal()] = AlleleManager.alleleRegistry.getAllele("forestry.effectAggressive");
 		temp[EnumBeeChromosome.FERTILITY.ordinal()] = AlleleManager.alleleRegistry.getAllele("forestry.fertilityNormal");
 		temp[EnumBeeChromosome.FLOWER_PROVIDER.ordinal()] = flower;
 		temp[EnumBeeChromosome.FLOWERING.ordinal()] = AlleleManager.alleleRegistry.getAllele("forestry.floweringSlowest");
 		temp[EnumBeeChromosome.CAVE_DWELLING.ordinal()] = AlleleManager.alleleRegistry.getAllele("forestry.boolTrue");
-		temp[EnumBeeChromosome.NOCTURNAL.ordinal()] = AlleleManager.alleleRegistry.getAllele("forestry.boolTrue");
-		temp[EnumBeeChromosome.TOLERANT_FLYER.ordinal()] = AlleleManager.alleleRegistry.getAllele("forestry.boolTrue");
+		temp[EnumBeeChromosome.NEVER_SLEEPS.ordinal()] = AlleleManager.alleleRegistry.getAllele("forestry.boolTrue");
+		temp[EnumBeeChromosome.TOLERATES_RAIN.ordinal()] = AlleleManager.alleleRegistry.getAllele("forestry.boolTrue");
 
 		return temp;
 	}

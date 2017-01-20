@@ -3,24 +3,22 @@ package com.lulan.shincolle.intermod.forestry;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.oredict.OreDictionary;
-
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.BasicItem;
 import com.lulan.shincolle.reference.Reference;
 
-import cpw.mods.fml.common.Optional;
-import cpw.mods.fml.common.registry.GameRegistry;
 import forestry.api.apiculture.BeeManager;
 import forestry.api.apiculture.EnumBeeChromosome;
 import forestry.api.apiculture.FlowerManager;
 import forestry.api.apiculture.IAlleleBeeSpecies;
 import forestry.api.genetics.AlleleManager;
 import forestry.api.recipes.RecipeManagers;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.common.Optional;
+import net.minecraftforge.oredict.OreDictionary;
 
-/** add forestry bees
+/** add forestry bees  update: 2017/1/20 1.10.2
  *
  *
  *  species名稱取得方法:
@@ -82,10 +80,11 @@ import forestry.api.recipes.RecipeManagers;
 		forestry.speedFastest
 
 		forestry.lifespanShortest
-		forestry.lifespanShortened
 		forestry.lifespanShorter
 		forestry.lifespanShort
+		forestry.lifespanShortened
 		forestry.lifespanNormal
+		forestry.lifespanElongated
 		forestry.lifespanLong
 		forestry.lifespanLonger
 		forestry.lifespanLongest
@@ -95,13 +94,22 @@ import forestry.api.recipes.RecipeManagers;
 		forestry.fertilityHigh
 		forestry.fertilityMaximum
 
-		forestry.toleranceDown2
 		forestry.toleranceDown1
+		forestry.toleranceDown2
+		forestry.toleranceDown3
+		forestry.toleranceDown4
+		forestry.toleranceDown5
 		forestry.toleranceNone
 		forestry.toleranceUp1
 		forestry.toleranceUp2
+		forestry.toleranceUp3
+		forestry.toleranceUp4
+		forestry.toleranceUp5
 		forestry.toleranceBoth1
 		forestry.toleranceBoth2
+		forestry.toleranceBoth3
+		forestry.toleranceBoth4
+		forestry.toleranceBoth5
 
 		forestry.boolFalse
 		forestry.boolTrue
@@ -117,17 +125,74 @@ import forestry.api.recipes.RecipeManagers;
 		forestry.flowersNether
 
 		forestry.floweringSlowest
+		forestry.floweringSlower
+		forestry.floweringSlow
+		forestry.floweringAverage
 		forestry.floweringFast
 		forestry.floweringFaster
 		forestry.floweringFastest
+		forestry.floweringMaximum
 
-		forestry.territoryDefault
 		forestry.territoryAverage
 		forestry.territoryLarge
+		forestry.territoryLarger
 		forestry.territoryLargest
+		
+		forestry.heightSmallest
+		forestry.heightSmaller
+		forestry.heightSmall
+		forestry.heightAverage
+		forestry.heightLarge
+		forestry.heightLarger
+		forestry.heightLargest
+		forestry.heightGigantic
+		
+		forestry.saplingsLowest
+		forestry.saplingsLower
+		forestry.saplingsLow
+		forestry.saplingsAverage
+		forestry.saplingsHigh
+		forestry.saplingsHigher
+		forestry.saplingsHighest
+		
+		forestry.sappinessLowest
+		forestry.sappinessLower
+		forestry.sappinessLow
+		forestry.sappinessAverage
+		forestry.sappinessHigh
+		forestry.sappinessHigher
+		forestry.sappinessHighest
+		
+		forestry.sizeSmallest
+		forestry.sizeSmaller
+		forestry.sizeSmall
+		forestry.sizeAverage
+		forestry.sizeLarge
+		forestry.sizeLarger
+		forestry.sizeLargest
+		
+		forestry.yieldLowest
+		forestry.yieldLower
+		forestry.yieldLow
+		forestry.yieldAverage
+		forestry.yieldHigh
+		forestry.yieldHigher
+		forestry.yieldHighest
+		
+		forestry.fireproofTrue
+		forestry.fireproofFalse
+		
+		forestry.maturationSlowest
+		forestry.maturationSlower
+		forestry.maturationSlow
+		forestry.maturationAverage
+		forestry.maturationFast
+		forestry.maturationFaster
+		forestry.maturationFastest
 
  */
-public class ShinBees {
+public class ShinBees
+{
 
 	public static final BasicItem ShinComb = new ShinComb();
 	
@@ -137,7 +202,6 @@ public class ShinBees {
 	public static void init()
 	{
 		/** 註冊蜂巢 */
-		GameRegistry.registerItem(ShinComb, "ShinComb");
 		OreDictionary.registerOre("beeComb", new ItemStack(ShinComb, 1, OreDictionary.WILDCARD_VALUE));
 		
 		/** 註冊蜂巢分離機配方 */

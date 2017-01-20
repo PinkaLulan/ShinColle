@@ -20,7 +20,7 @@ public class Reference
 	public static final String SOUNDS = MOD_ID + ":sounds/";
 	
 	//inter mod
-	public static final String MOD_ID_Forestry = "Forestry";
+	public static final String MOD_ID_Forestry = "forestry";
 	
 	
 }
