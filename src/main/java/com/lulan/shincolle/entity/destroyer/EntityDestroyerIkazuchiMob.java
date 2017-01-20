@@ -90,8 +90,8 @@ public class EntityDestroyerIkazuchiMob extends BasicEntityShipHostile implement
 	public float getEffectEquip(int id)
   	{
 		switch(id) {
-		case ID.EF_AA:  //DD vs AA,ASM effect
-		case ID.EF_ASM:
+		case ID.EquipEffect.AA:  //DD vs AA,ASM effect
+		case ID.EquipEffect.ASM:
 			return this.atk * 0.5F;
 		default:
 			return 0F;

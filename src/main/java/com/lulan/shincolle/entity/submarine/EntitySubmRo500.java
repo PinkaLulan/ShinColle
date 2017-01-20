@@ -167,7 +167,7 @@ public class EntitySubmRo500 extends BasicEntityShipSmall implements IShipInvisi
 		
         //calc miss chance, miss: add random offset(0~6) to missile target 
         float missChance = 0.2F + 0.15F * (distVec[3] / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.M.ShipLevel];
-        missChance -= EffectEquip[ID.EF_MISS];	//equip miss reduce
+        missChance -= EffectEquip[ID.EquipEffect.MISS];	//equip miss reduce
         if (missChance > 0.35F) missChance = 0.35F;	//max miss chance = 30%
        
         if (this.rand.nextFloat() < missChance)

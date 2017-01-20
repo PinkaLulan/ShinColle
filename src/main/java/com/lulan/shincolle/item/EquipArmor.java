@@ -1,8 +1,9 @@
 package com.lulan.shincolle.item;
 
-import net.minecraftforge.fml.common.registry.GameRegistry;
-
 import com.lulan.shincolle.reference.ID;
+
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 /**meta:
  *    0: armor
@@ -43,6 +44,20 @@ public class EquipArmor extends BasicEquip
 			return 0;
 		}
 	}
+	
+	@Override
+    public int getItemEnchantability(ItemStack stack)
+    {
+		switch(this.getEquipTypeIDFromMeta(stack.getMetadata()))
+		{
+		case ID.EquipType.ARMOR_LO:
+			return 9;
+		case ID.EquipType.ARMOR_HI:
+			return 20;
+		default:
+			return 9;
+		}
+    }
 	
 	@Override
 	public int[] getResourceValue(int meta)

@@ -145,7 +145,7 @@ public class EntitySubmRo500Mob extends BasicEntityShipHostile implements IShipI
 	    applyParticleAtAttacker(2, target, distVec);
 		
         //calc miss chance, miss: add random offset(0~6) to missile target 
-        if (this.rand.nextFloat() < this.getEffectEquip(ID.EF_MISS))
+        if (this.rand.nextFloat() < this.getEffectEquip(ID.EquipEffect.MISS))
         {
         	tarX = tarX - 5F + this.rand.nextFloat() * 10F;
         	tarY = tarY + this.rand.nextFloat() * 5F;

@@ -103,7 +103,7 @@ public class EntityNorthernHime extends BasicEntityShipCV
         		//1: 增強被動回血
         		if (getStateMinor(ID.M.NumGrudge) > 0 && this.getHealth() < this.getMaxHealth())
         		{
-        			this.setHealth(this.getHealth() + this.getMaxHealth() * 0.015625F);
+        			this.heal(this.getMaxHealth() * 0.03F + 1F);
         		}
         		
         		//2: 結婚後, 周圍某一目標回血, 包括玩家, 回血目標依等級提昇

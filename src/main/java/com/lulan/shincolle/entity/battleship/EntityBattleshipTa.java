@@ -74,8 +74,8 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
 	@Override
 	public void calcShipAttributes()
 	{
-		EffectEquip[ID.EF_CRI] = EffectEquip[ID.EF_CRI] + 0.1F;
-		EffectEquip[ID.EF_MISS] = EffectEquip[ID.EF_MISS] + 0.1F;
+		EffectEquip[ID.EquipEffect.CRI] = EffectEquip[ID.EquipEffect.CRI] + 0.1F;
+		EffectEquip[ID.EquipEffect.MISS] = EffectEquip[ID.EquipEffect.MISS] + 0.1F;
 		
 		super.calcShipAttributes();	
 	}

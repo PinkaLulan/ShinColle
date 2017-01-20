@@ -182,11 +182,11 @@ public class CalcHelper
   		
   		if (targettype == 1)  //air mob
   		{
-  			newDmg = (newDmg + host.getEffectEquip(ID.EF_AA)) * modEffect;
+  			newDmg = (newDmg + host.getEffectEquip(ID.EquipEffect.AA)) * modEffect;
   		}
   		else if (targettype == 2)  //water mob
   		{
-  			newDmg = (newDmg + host.getEffectEquip(ID.EF_ASM)) * modEffect;
+  			newDmg = (newDmg + host.getEffectEquip(ID.EquipEffect.ASM)) * modEffect;
   		}
   		else
   		{

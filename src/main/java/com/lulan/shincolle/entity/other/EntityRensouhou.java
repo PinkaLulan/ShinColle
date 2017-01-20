@@ -177,7 +177,7 @@ public class EntityRensouhou extends BasicEntitySummon
 
         //calc miss chance, if not miss, calc cri/multi hit
         float missChance = 0.2F + 0.15F * (distVec[3] / this.host2.getStateFinal(ID.HIT)) - 0.001F * this.host2.getLevel();
-        missChance -= this.host2.getEffectEquip(ID.EF_MISS);		//equip miss reduce
+        missChance -= this.host2.getEffectEquip(ID.EquipEffect.MISS);		//equip miss reduce
         if (missChance > 0.35F) missChance = 0.35F;	//max miss chance
         
         //calc miss -> crit -> double -> tripple
@@ -190,7 +190,7 @@ public class EntityRensouhou extends BasicEntitySummon
   		{
   			//roll cri -> roll double hit -> roll triple hit (triple hit more rare)
   			//calc critical
-          	if (rand.nextFloat() < this.host2.getEffectEquip(ID.EF_CRI))
+          	if (rand.nextFloat() < this.host2.getEffectEquip(ID.EquipEffect.CRI))
           	{
           		atk *= 1.5F;
           		applyParticleSpecialEffect(1);
@@ -198,7 +198,7 @@ public class EntityRensouhou extends BasicEntitySummon
           	else
           	{
           		//calc double hit
-              	if (rand.nextFloat() < this.host2.getEffectEquip(ID.EF_DHIT))
+              	if (rand.nextFloat() < this.host2.getEffectEquip(ID.EquipEffect.DHIT))
               	{
               		atk *= 2F;
               		applyParticleSpecialEffect(2);
@@ -206,7 +206,7 @@ public class EntityRensouhou extends BasicEntitySummon
               	else
               	{
               		//calc triple hit
-                  	if (rand.nextFloat() < this.host2.getEffectEquip(ID.EF_THIT))
+                  	if (rand.nextFloat() < this.host2.getEffectEquip(ID.EquipEffect.THIT))
                   	{
                   		atk *= 3F;
                   		applyParticleSpecialEffect(3);

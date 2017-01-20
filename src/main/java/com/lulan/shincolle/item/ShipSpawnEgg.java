@@ -177,9 +177,9 @@ public class ShipSpawnEgg extends BasicItem
   		shipList.add(ID.Ship.DestroyerShimakaze+2);
   		shipList.add(ID.Ship.DestroyerShimakaze+2002);	//hostile entity
   		shipList.add(ID.Ship.LightCruiserTenryuu+2);
-  		shipList.add(ID.Ship.LightCruiserTenryuu+2002);		//hostile entity
+  		shipList.add(ID.Ship.LightCruiserTenryuu+2002);	//hostile entity
   		shipList.add(ID.Ship.LightCruiserTatsuta+2);
-  		shipList.add(ID.Ship.LightCruiserTatsuta+2002);		//hostile entity
+  		shipList.add(ID.Ship.LightCruiserTatsuta+2002);	//hostile entity
   		shipList.add(ID.Ship.SubmarineU511+2);
   		shipList.add(ID.Ship.SubmarineU511+2002);		//hostile entity
   		shipList.add(ID.Ship.SubmarineRo500+2);

@@ -69,7 +69,7 @@ public class EntityHeavyCruiserNe extends BasicEntityShipSmall
 	{
 		if (!this.world.isDaytime())
 		{
-			EffectEquip[ID.EF_CRI] = EffectEquip[ID.EF_CRI] + 0.3F;
+			EffectEquip[ID.EquipEffect.CRI] = EffectEquip[ID.EquipEffect.CRI] + 0.3F;
 		}
 		
 		super.calcShipAttributes();	

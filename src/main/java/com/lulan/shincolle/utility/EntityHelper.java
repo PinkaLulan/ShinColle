@@ -1115,7 +1115,7 @@ public class EntityHelper
 	{
 		if (ent != null && !((Entity)ent).world.isRemote)
 		{
-			int dodge = (int) ent.getEffectEquip(ID.EF_DODGE);
+			int dodge = (int) ent.getEffectEquip(ID.EquipEffect.DODGE);
 			Entity ent2 = (Entity) ent;
 			
 			if (ent instanceof IShipInvisible && dist > 36F)

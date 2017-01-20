@@ -172,7 +172,7 @@ public class EntityBattleshipNGTMob extends BasicEntityShipHostile
 	        CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 21, posX, posY, posZ, target.posX, target.posY, target.posZ, true), point);
         	
         	//calc miss chance, miss: atk1 = 0, atk2 = 50%
-            if (this.rand.nextFloat() < this.getEffectEquip(ID.EF_MISS))
+            if (this.rand.nextFloat() < this.getEffectEquip(ID.EquipEffect.MISS))
             {	//MISS
             	atk1 = 0F;
             	atk2 *= 0.5F;
@@ -235,11 +235,11 @@ public class EntityBattleshipNGTMob extends BasicEntityShipHostile
                     	}
                 		
                 		//calc miss and cri
-                		if (this.rand.nextFloat() < this.getEffectEquip(ID.EF_MISS))
+                		if (this.rand.nextFloat() < this.getEffectEquip(ID.EquipEffect.MISS))
                 		{	//MISS
                         	atkTemp *= 0.5F;
                         }
-                        else if (this.rand.nextFloat() < this.getEffectEquip(ID.EF_CRI))
+                        else if (this.rand.nextFloat() < this.getEffectEquip(ID.EquipEffect.CRI))
                         {	//CRI
                     		atkTemp *= 1.5F;
                         }

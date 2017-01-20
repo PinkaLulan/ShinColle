@@ -169,11 +169,11 @@ public class EntityTransportWa extends BasicEntityShipSmall
 			{	//find grudge
 				if (ConfigHandler.easyMode)
 				{
-					StateMinor[ID.M.NumGrudge] += Values.N.BaseGrudge * 10;
+					StateMinor[ID.M.NumGrudge] += Values.N.BaseGrudge * 10 * EffectEquip[ID.EquipEffect.GRUDGE];
 				}
 				else
 				{
-					StateMinor[ID.M.NumGrudge] += Values.N.BaseGrudge;
+					StateMinor[ID.M.NumGrudge] += Values.N.BaseGrudge * EffectEquip[ID.EquipEffect.GRUDGE];
 				}
 			}
 			else
@@ -182,11 +182,11 @@ public class EntityTransportWa extends BasicEntityShipSmall
 				{	//find grudge block
 					if (ConfigHandler.easyMode)
 					{
-						StateMinor[ID.M.NumGrudge] += Values.N.BaseGrudge * 90;
+						StateMinor[ID.M.NumGrudge] += Values.N.BaseGrudge * 90 * EffectEquip[ID.EquipEffect.GRUDGE];
 					}
 					else
 					{
-						StateMinor[ID.M.NumGrudge] += Values.N.BaseGrudge * 9;
+						StateMinor[ID.M.NumGrudge] += Values.N.BaseGrudge * 9 * EffectEquip[ID.EquipEffect.GRUDGE];
 					}
 				}
 			}
@@ -196,11 +196,11 @@ public class EntityTransportWa extends BasicEntityShipSmall
 			{
 				if (ConfigHandler.easyMode)
 				{
-					StateMinor[ID.M.NumAmmoLight] += Values.N.BaseLightAmmo * 10;
+					StateMinor[ID.M.NumAmmoLight] += Values.N.BaseLightAmmo * 10 * EffectEquip[ID.EquipEffect.AMMO];
 				}
 				else
 				{
-					StateMinor[ID.M.NumAmmoLight] += Values.N.BaseLightAmmo;
+					StateMinor[ID.M.NumAmmoLight] += Values.N.BaseLightAmmo * EffectEquip[ID.EquipEffect.AMMO];
 				}
 			}
 			else
@@ -209,11 +209,11 @@ public class EntityTransportWa extends BasicEntityShipSmall
 				{
 					if (ConfigHandler.easyMode)
 					{
-						StateMinor[ID.M.NumAmmoLight] += Values.N.BaseLightAmmo * 90;
+						StateMinor[ID.M.NumAmmoLight] += Values.N.BaseLightAmmo * 90 * EffectEquip[ID.EquipEffect.AMMO];
 					}
 					else
 					{
-						StateMinor[ID.M.NumAmmoLight] += Values.N.BaseLightAmmo * 9;
+						StateMinor[ID.M.NumAmmoLight] += Values.N.BaseLightAmmo * 9 * EffectEquip[ID.EquipEffect.AMMO];
 					}
 				}
 			}
@@ -223,11 +223,11 @@ public class EntityTransportWa extends BasicEntityShipSmall
 			{
 				if (ConfigHandler.easyMode)
 				{
-					StateMinor[ID.M.NumAmmoHeavy] += Values.N.BaseHeavyAmmo * 10;
+					StateMinor[ID.M.NumAmmoHeavy] += Values.N.BaseHeavyAmmo * 10 * EffectEquip[ID.EquipEffect.AMMO];
 				}
 				else
 				{
-					StateMinor[ID.M.NumAmmoHeavy] += Values.N.BaseHeavyAmmo;
+					StateMinor[ID.M.NumAmmoHeavy] += Values.N.BaseHeavyAmmo * EffectEquip[ID.EquipEffect.AMMO];
 				}
 			}
 			else
@@ -236,11 +236,11 @@ public class EntityTransportWa extends BasicEntityShipSmall
 				{
 					if (ConfigHandler.easyMode)
 					{
-						StateMinor[ID.M.NumAmmoHeavy] += Values.N.BaseHeavyAmmo * 90;
+						StateMinor[ID.M.NumAmmoHeavy] += Values.N.BaseHeavyAmmo * 90 * EffectEquip[ID.EquipEffect.AMMO];
 					}
 					else
 					{
-						StateMinor[ID.M.NumAmmoHeavy] += Values.N.BaseHeavyAmmo * 9;
+						StateMinor[ID.M.NumAmmoHeavy] += Values.N.BaseHeavyAmmo * 9 * EffectEquip[ID.EquipEffect.AMMO];
 					}
 				}
 			}

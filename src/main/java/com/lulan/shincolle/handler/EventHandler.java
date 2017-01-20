@@ -1,6 +1,7 @@
 package com.lulan.shincolle.handler;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import javax.annotation.Nullable;
@@ -17,6 +18,7 @@ import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.BasicEntityItem;
+import com.lulan.shincolle.item.BasicEquip;
 import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.network.S2CGUIPackets;
@@ -38,6 +40,8 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.GlStateManager.FogMode;
 import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.client.settings.GameSettings;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
@@ -47,6 +51,7 @@ import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
@@ -64,6 +69,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.event.RenderSpecificHandEvent;
 import net.minecraftforge.common.BiomeDictionary;
+import net.minecraftforge.event.AnvilUpdateEvent;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
@@ -1329,6 +1335,79 @@ public class EventHandler
 		{	//在server tick處理完全部事情後發動
 			ServerProxy.updateServerTick();
 		}
+	}
+	
+	/**
+	 * apply equip enchant in anvil
+	 * 
+	 * If the event is canceled, vanilla behavior will not run, and the output will be set to null.
+     * If the event is not canceled, but the output is not null, it will set the output and not run vanilla behavior.
+     * if the output is null, and the event is not canceled, vanilla behavior will execute.
+	 */
+	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+    public void onAnvilUpdate(AnvilUpdateEvent event)
+	{
+		ItemStack equip = event.getLeft().copy();
+		ItemStack book = event.getRight();
+		
+		if (equip != null && book != null &&
+			equip.getItem() instanceof BasicEquip &&
+			book.getItem() == Items.ENCHANTED_BOOK)
+		{
+			Map<Enchantment, Integer> equipench = EnchantmentHelper.getEnchantments(equip);
+			Map<Enchantment, Integer> bookench = EnchantmentHelper.getEnchantments(book);
+			int exp = equip.getRepairCost() + book.getRepairCost();
+			
+			//apply book enchantment to equip
+			for (Enchantment ench : bookench.keySet())
+            {
+                if (ench != null)
+                {
+                	//檢查equip跟book是否有相同附魔
+                    int lv1 = equipench.containsKey(ench) ? ((Integer)equipench.get(ench)).intValue() : 0;
+                    int lv2 = ((Integer)bookench.get(ench)).intValue();
+                    
+                    //相同等級 -> LV+1, 不同等級 -> 取較高級
+                    lv2 = lv1 == lv2 ? lv2 + 1 : Math.max(lv2, lv1);
+
+                    //enchant max level limit
+                    if (lv2 > ench.getMaxLevel())
+                    {
+                    	lv2 = ench.getMaxLevel();
+                    }
+
+                    //add enchant to ench map
+                    equipench.put(ench, Integer.valueOf(lv2));
+                    
+                    //calc exp level
+                    int rare = 0;
+
+                    switch (ench.getRarity())
+                    {
+                    case COMMON:
+                    	rare += 1;
+                    break;
+                    case UNCOMMON:
+                    	rare += 2;
+                    break;
+                    case RARE:
+                    	rare += 4;
+                    break;
+                    case VERY_RARE:
+                    	rare += 8;
+                	break;
+                    }
+                    
+                    exp += rare * lv2;
+                }
+            }//end for every book ench
+			
+			//setoutput
+			event.setCost(30);
+			EnchantmentHelper.setEnchantments(equipench, equip);
+			event.setOutput(equip);
+			
+		}//end get equip and book
 	}
 	
 	//custom main hand renderer

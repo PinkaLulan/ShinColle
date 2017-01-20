@@ -431,7 +431,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipEquip
                 		else
                 		{
                 			//calc critical, only for type:ship
-                    		if (this.host != null && (this.rand.nextFloat() < this.host.getEffectEquip(ID.EF_CRI)))
+                    		if (this.host != null && (this.rand.nextFloat() < this.host.getEffectEquip(ID.EquipEffect.CRI)))
                     		{
                         		missileAtk *= 3F;
                         		//spawn critical particle
@@ -587,7 +587,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipEquip
 	public float getEffectEquip(int id)
 	{
 		//dodge = 50%
-		if (id == ID.EF_DODGE) return 50F;
+		if (id == ID.EquipEffect.DODGE) return 50F;
 		
 		if (host != null) return host.getEffectEquip(id);
 		return 0F;

@@ -1,11 +1,9 @@
 package com.lulan.shincolle.item;
 
+import com.lulan.shincolle.reference.ID;
+
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
-import com.lulan.shincolle.reference.ID;
 
 /**meta:
  *    0:  Air Radar Mk.I
@@ -61,17 +59,17 @@ public class EquipRadar extends BasicEquip
 		}
 	}
 	
-	//item glow effect
 	@Override
-	@SideOnly(Side.CLIENT)
-    public boolean hasEffect(ItemStack item)
-	{
-		switch(this.getEquipTypeIDFromMeta(item.getItemDamage()))
+    public int getItemEnchantability(ItemStack stack)
+    {
+		switch(this.getEquipTypeIDFromMeta(stack.getMetadata()))
 		{
+		case ID.EquipType.RADAR_LO:
+			return 12;
 		case ID.EquipType.RADAR_HI:
-			return true;
+			return 15;
 		default:
-			return false;
+			return 9;
 		}
     }
 	

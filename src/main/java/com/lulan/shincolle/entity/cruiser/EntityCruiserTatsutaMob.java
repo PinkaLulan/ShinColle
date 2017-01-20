@@ -205,7 +205,7 @@ public class EntityCruiserTatsutaMob extends BasicEntityShipHostile
         		else
         		{
         	        //calc miss -> crit -> double -> tripple
-        	  		if (rand.nextFloat() < this.getEffectEquip(ID.EF_MISS))
+        	  		if (rand.nextFloat() < this.getEffectEquip(ID.EquipEffect.MISS))
         	  		{
         	          	atk = 0F;	//still attack, but no damage
         	          	applyParticleSpecialEffect(0);
@@ -214,7 +214,7 @@ public class EntityCruiserTatsutaMob extends BasicEntityShipHostile
         	  		{
         	  			//roll cri -> roll double hit -> roll triple hit (triple hit more rare)
         	  			//calc critical
-        	          	if (rand.nextFloat() < this.getEffectEquip(ID.EF_CRI))
+        	          	if (rand.nextFloat() < this.getEffectEquip(ID.EquipEffect.CRI))
         	          	{
         	          		atk *= 1.5F;
         	          		applyParticleSpecialEffect(1);
@@ -222,7 +222,7 @@ public class EntityCruiserTatsutaMob extends BasicEntityShipHostile
         	          	else
         	          	{
         	          		//calc double hit
-        	              	if (rand.nextFloat() < this.getEffectEquip(ID.EF_DHIT))
+        	              	if (rand.nextFloat() < this.getEffectEquip(ID.EquipEffect.DHIT))
         	              	{
         	              		atk *= 2F;
         	              		applyParticleSpecialEffect(2);
@@ -230,7 +230,7 @@ public class EntityCruiserTatsutaMob extends BasicEntityShipHostile
         	              	else
         	              	{
         	              		//calc triple hit
-        	                  	if (rand.nextFloat() < this.getEffectEquip(ID.EF_THIT))
+        	                  	if (rand.nextFloat() < this.getEffectEquip(ID.EquipEffect.THIT))
         	                  	{
         	                  		atk *= 3F;
         	                  		applyParticleSpecialEffect(3);

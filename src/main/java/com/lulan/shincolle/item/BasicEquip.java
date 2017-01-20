@@ -2,6 +2,12 @@ package com.lulan.shincolle.item;
 
 import java.util.List;
 
+import com.lulan.shincolle.crafting.EquipCalc;
+import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Values;
+import com.lulan.shincolle.utility.EnchantHelper;
+
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.resources.I18n;
@@ -11,9 +17,6 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.Values;
 
 abstract public class BasicEquip extends BasicItem implements IShipResourceItem
 {
@@ -60,6 +63,18 @@ abstract public class BasicEquip extends BasicItem implements IShipResourceItem
 		return -1;
 	}
 	
+	@Override
+    public boolean isEnchantable(ItemStack stack)
+    {
+        return stack.stackSize == 1;
+    }
+	
+	@Override
+    public int getItemEnchantability(ItemStack stack)
+    {
+        return 9;
+    }
+	
 	/** 依照getIconFromDamage設定對應的texture */
 	@SideOnly(Side.CLIENT)
 	@Override
@@ -97,45 +112,59 @@ abstract public class BasicEquip extends BasicItem implements IShipResourceItem
 	
 	//display equip information
     @Override
-    public void addInformation(ItemStack itemstack, EntityPlayer player, List<String> list, boolean par4)
+    public void addInformation(ItemStack stack, EntityPlayer player, List<String> list, boolean par4)
     {
-    	if (itemstack != null && itemstack.getItem() != null)
+    	if (stack != null && stack.getItem() != null)
     	{
-    		float[] itemStat = Values.EquipMap.get(((BasicEquip)itemstack.getItem()).getEquipID(itemstack.getItemDamage()));
-        	//TODO change tooltip value by config like: max limit, factor...etc
-        	if (itemStat != null)
+    		float[] itemRaw = Values.EquipMap.get(((BasicEquip)stack.getItem()).getEquipID(stack.getItemDamage()));
+    		
+    		if (itemRaw != null)
         	{
-        		if (itemStat[ID.E.HP] != 0F) list.add(TextFormatting.RED + String.valueOf(itemStat[ID.E.HP])+ " " + I18n.format("gui.shincolle:hp"));
-        		if (itemStat[ID.E.ATK_L] != 0F) list.add(TextFormatting.RED + String.valueOf(itemStat[ID.E.ATK_L])+ " " + I18n.format("gui.shincolle:firepower1"));
-        		if (itemStat[ID.E.ATK_H] != 0F) list.add(TextFormatting.GREEN + String.valueOf(itemStat[ID.E.ATK_H])+ " " + I18n.format("gui.shincolle:torpedo"));
-        		if (itemStat[ID.E.ATK_AL] != 0F) list.add(TextFormatting.RED + String.valueOf(itemStat[ID.E.ATK_AL])+ " " + I18n.format("gui.shincolle:airfirepower"));
-        		if (itemStat[ID.E.ATK_AH] != 0F) list.add(TextFormatting.GREEN + String.valueOf(itemStat[ID.E.ATK_AH])+ " " + I18n.format("gui.shincolle:airtorpedo"));
-        		if (itemStat[ID.E.DEF] != 0F) list.add(TextFormatting.WHITE + String.format("%.0f",itemStat[ID.E.DEF])+ "% " + I18n.format("gui.shincolle:armor"));
-        		if (itemStat[ID.E.SPD] != 0F) list.add(TextFormatting.WHITE + String.valueOf(itemStat[ID.E.SPD])+ " " + I18n.format("gui.shincolle:attackspeed"));
-        		if (itemStat[ID.E.MOV] != 0F) list.add(TextFormatting.GRAY + String.valueOf(itemStat[ID.E.MOV])+ " " + I18n.format("gui.shincolle:movespeed"));
-        		if (itemStat[ID.E.HIT] != 0F) list.add(TextFormatting.LIGHT_PURPLE + String.valueOf(itemStat[ID.E.HIT])+ " " + I18n.format("gui.shincolle:range"));
-        		if (itemStat[ID.E.CRI] != 0F) list.add(TextFormatting.AQUA + String.format("%.0f",itemStat[ID.E.CRI]*100F)+ "% " + I18n.format("gui.shincolle:critical"));
-        		if (itemStat[ID.E.DHIT] != 0F) list.add(TextFormatting.YELLOW + String.format("%.0f",itemStat[ID.E.DHIT]*100F)+ "% " + I18n.format("gui.shincolle:doublehit"));
-        		if (itemStat[ID.E.THIT] != 0F) list.add(TextFormatting.GOLD + String.format("%.0f",itemStat[ID.E.THIT]*100F)+ "% " + I18n.format("gui.shincolle:triplehit"));
-        		if (itemStat[ID.E.MISS] != 0F) list.add(TextFormatting.RED + String.format("%.0f",itemStat[ID.E.MISS]*100F)+ "% " + I18n.format("gui.shincolle:missreduce"));
-        		if (itemStat[ID.E.DODGE] != 0F) list.add(TextFormatting.GOLD + String.format("%.0f",itemStat[ID.E.DODGE])+ "% " + I18n.format("gui.shincolle:dodge"));
-        		if (itemStat[ID.E.AA] != 0F) list.add(TextFormatting.YELLOW + String.valueOf(itemStat[ID.E.AA])+ " " + I18n.format("gui.shincolle:antiair"));
-        		if (itemStat[ID.E.ASM] != 0F) list.add(TextFormatting.AQUA + String.valueOf(itemStat[ID.E.ASM])+ " " + I18n.format("gui.shincolle:antiss"));
+    			//apply enchant effect
+    			float[] itemEnch = EnchantHelper.calcEnchantEffect(stack);
+    			float[] itemNewStat = EquipCalc.calcEquipStatWithEnchant(itemRaw, itemEnch);
+    			
+    			//draw stat value
+        		if (itemNewStat[ID.EquipFinal.HP] != 0F) list.add(TextFormatting.RED + String.format("%.1f" ,itemNewStat[ID.EquipFinal.HP] * (float)ConfigHandler.scaleShip[ID.HP])+ " " + I18n.format("gui.shincolle:hp"));
+        		if (itemNewStat[ID.EquipFinal.ATK_L] != 0F) list.add(TextFormatting.RED + String.format("%.1f" ,itemNewStat[ID.EquipFinal.ATK_L] * (float)ConfigHandler.scaleShip[ID.ATK])+ " " + I18n.format("gui.shincolle:firepower1"));
+        		if (itemNewStat[ID.EquipFinal.ATK_H] != 0F) list.add(TextFormatting.GREEN + String.format("%.1f" ,itemNewStat[ID.EquipFinal.ATK_H] * (float)ConfigHandler.scaleShip[ID.ATK])+ " " + I18n.format("gui.shincolle:torpedo"));
+        		if (itemNewStat[ID.EquipFinal.ATK_AL] != 0F) list.add(TextFormatting.RED + String.format("%.1f" ,itemNewStat[ID.EquipFinal.ATK_AL] * (float)ConfigHandler.scaleShip[ID.ATK])+ " " + I18n.format("gui.shincolle:airfirepower"));
+        		if (itemNewStat[ID.EquipFinal.ATK_AH] != 0F) list.add(TextFormatting.GREEN + String.format("%.1f" ,itemNewStat[ID.EquipFinal.ATK_AH] * (float)ConfigHandler.scaleShip[ID.ATK])+ " " + I18n.format("gui.shincolle:airtorpedo"));
+        		if (itemNewStat[ID.EquipFinal.DEF] != 0F) list.add(TextFormatting.WHITE + String.format("%.1f" ,itemNewStat[ID.EquipFinal.DEF] * (float)ConfigHandler.scaleShip[ID.DEF])+ "% " + I18n.format("gui.shincolle:armor"));
+        		if (itemNewStat[ID.EquipFinal.SPD] != 0F) list.add(TextFormatting.WHITE + String.format("%.2f" ,itemNewStat[ID.EquipFinal.SPD] * (float)ConfigHandler.scaleShip[ID.SPD])+ " " + I18n.format("gui.shincolle:attackspeed"));
+        		if (itemNewStat[ID.EquipFinal.MOV] != 0F) list.add(TextFormatting.GRAY + String.format("%.2f" ,itemNewStat[ID.EquipFinal.MOV] * (float)ConfigHandler.scaleShip[ID.MOV])+ " " + I18n.format("gui.shincolle:movespeed"));
+        		if (itemNewStat[ID.EquipFinal.HIT] != 0F) list.add(TextFormatting.LIGHT_PURPLE + String.format("%.1f" ,itemNewStat[ID.EquipFinal.HIT] * (float)ConfigHandler.scaleShip[ID.HIT])+ " " + I18n.format("gui.shincolle:range"));
+        		if (itemNewStat[ID.EquipFinal.CRI] != 0F) list.add(TextFormatting.AQUA + String.format("%.0f" ,itemNewStat[ID.EquipFinal.CRI]*100F)+ "% " + I18n.format("gui.shincolle:critical"));
+        		if (itemNewStat[ID.EquipFinal.DHIT] != 0F) list.add(TextFormatting.YELLOW + String.format("%.0f" ,itemNewStat[ID.EquipFinal.DHIT]*100F)+ "% " + I18n.format("gui.shincolle:doublehit"));
+        		if (itemNewStat[ID.EquipFinal.THIT] != 0F) list.add(TextFormatting.GOLD + String.format("%.0f" ,itemNewStat[ID.EquipFinal.THIT]*100F)+ "% " + I18n.format("gui.shincolle:triplehit"));
+        		if (itemNewStat[ID.EquipFinal.MISS] != 0F) list.add(TextFormatting.RED + String.format("%.0f" ,itemNewStat[ID.EquipFinal.MISS]*100F)+ "% " + I18n.format("gui.shincolle:missreduce"));
+        		if (itemNewStat[ID.EquipFinal.DODGE] != 0F) list.add(TextFormatting.GOLD + String.format("%.0f" ,itemNewStat[ID.EquipFinal.DODGE])+ "% " + I18n.format("gui.shincolle:dodge"));
+        		if (itemNewStat[ID.EquipFinal.AA] != 0F) list.add(TextFormatting.YELLOW + String.format("%.1f" ,itemNewStat[ID.EquipFinal.AA])+ " " + I18n.format("gui.shincolle:antiair"));
+        		if (itemNewStat[ID.EquipFinal.ASM] != 0F) list.add(TextFormatting.AQUA + String.format("%.1f" ,itemNewStat[ID.EquipFinal.ASM])+ " " + I18n.format("gui.shincolle:antiss"));
         		
-        		if (itemStat[ID.E.LEVEL] == 1F)
-        		{
-        			list.add(TextFormatting.DARK_RED + I18n.format("gui.shincolle:notforcarrier"));
-        		}
+        		//draw special effect
+        		if (itemNewStat[ID.EquipFinal.XP] != 0F) list.add(TextFormatting.GREEN + I18n.format("gui.shincolle:equip.xp") + " " + String.format("%.0f" ,itemNewStat[ID.EquipFinal.XP]*100F) + "%");
+    			if (itemNewStat[ID.EquipFinal.GRUDGE] != 0F) list.add(TextFormatting.DARK_PURPLE + I18n.format("gui.shincolle:equip.grudge") + " " + String.format("%.0f" ,itemNewStat[ID.EquipFinal.GRUDGE]*100F) + "%");
+				if (itemNewStat[ID.EquipFinal.AMMO] != 0F) list.add(TextFormatting.DARK_AQUA + I18n.format("gui.shincolle:equip.ammo") + " " + String.format("%.0f" ,itemNewStat[ID.EquipFinal.AMMO]*100F) + "%");
+				if (itemNewStat[ID.EquipFinal.HPRES] != 0F) list.add(TextFormatting.DARK_GREEN + I18n.format("gui.shincolle:equip.hpres") + " " + String.format("%.0f" ,itemNewStat[ID.EquipFinal.HPRES]*100F) + "%");
         		
-        		if (itemStat[ID.E.LEVEL] == 3F)
-        		{
-        			list.add(TextFormatting.DARK_AQUA + I18n.format("gui.shincolle:carrieronly"));
-        		}
+        		//draw equip and enchant type
+				String drawstr = I18n.format("gui.shincolle:equip.enchtype") + " ";
+				drawstr += itemRaw[ID.EquipData.ENCH_TYPE] == 1F ?
+						TextFormatting.RED + I18n.format("gui.shincolle:equip.enchtype1") :
+						itemRaw[ID.EquipData.ENCH_TYPE] == 2F ?
+						TextFormatting.AQUA + I18n.format("gui.shincolle:equip.enchtype0") :
+						itemRaw[ID.EquipData.ENCH_TYPE] == 3F ?
+						TextFormatting.GRAY + I18n.format("gui.shincolle:equip.enchtype2") : "";
+				drawstr += itemRaw[ID.EquipData.EQUIP_TYPE] == 1F ?
+						"  " + TextFormatting.DARK_RED + I18n.format("gui.shincolle:notforcarrier") :
+						itemRaw[ID.EquipData.EQUIP_TYPE] == 3F ?
+						"  " + TextFormatting.DARK_AQUA + I18n.format("gui.shincolle:carrieronly") : "";
+
+				list.add(drawstr);
         		
-        		list.add(" ");
-        		
-        		//show construction info
-        		if (itemStat[ID.E.DEVELOP_NUM] > 400F)
+        		//draw construction info
+        		if (itemRaw[ID.EquipData.DEVELOP_NUM] > 400F)
         		{
         			list.add(TextFormatting.DARK_RED + I18n.format("tile.shincolle:BlockLargeShipyard.name"));
         		}
@@ -145,7 +174,7 @@ abstract public class BasicEquip extends BasicItem implements IShipResourceItem
         		}
         		
         		String matname = null;
-        		switch ((int)itemStat[ID.E.DEVELOP_MAT])
+        		switch ((int)itemRaw[ID.EquipData.DEVELOP_MAT])
         		{
         		case 1:
         			matname = I18n.format("item.shincolle:AbyssMetal.name");
@@ -161,8 +190,13 @@ abstract public class BasicEquip extends BasicItem implements IShipResourceItem
         			break;
         		}
         		
-        		list.add(TextFormatting.DARK_PURPLE + I18n.format("gui.shincolle:equip.matstype") + TextFormatting.GRAY + " (" + matname + ") " + String.format("%.0f",itemStat[ID.E.DEVELOP_NUM]));
-        		list.add(TextFormatting.DARK_PURPLE + I18n.format("gui.shincolle:equip.matsrarelevel") + TextFormatting.GRAY + " " + String.format("%.0f",itemStat[ID.E.RARE_MEAN]));
+        		drawstr = TextFormatting.DARK_PURPLE + I18n.format("gui.shincolle:equip.matstype") +
+        				  TextFormatting.GRAY + " (" + matname + ") " +
+        				  String.format("%.0f", itemRaw[ID.EquipData.DEVELOP_NUM]) + "  " +
+        				  TextFormatting.DARK_PURPLE + I18n.format("gui.shincolle:equip.matsrarelevel") +
+        				  TextFormatting.GRAY + " " + String.format("%.0f", itemRaw[ID.EquipData.RARE_MEAN]);
+        		
+        		list.add(drawstr);
         	}//end get item stat
     	}//end get item
     	

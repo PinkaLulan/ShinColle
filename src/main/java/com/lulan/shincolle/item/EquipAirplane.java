@@ -1,11 +1,9 @@
 package com.lulan.shincolle.item;
 
+import com.lulan.shincolle.reference.ID;
+
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
-import com.lulan.shincolle.reference.ID;
 
 /**meta:
  *    0:  Torpedo Bomber Mk.I
@@ -115,21 +113,24 @@ public class EquipAirplane extends BasicEquip
 		}
 	}
 	
-	//item glow effect
 	@Override
-	@SideOnly(Side.CLIENT)
-    public boolean hasEffect(ItemStack item)
-	{
-		switch(this.getEquipTypeIDFromMeta(item.getItemDamage()))
+    public int getItemEnchantability(ItemStack stack)
+    {
+		switch(this.getEquipTypeIDFromMeta(stack.getMetadata()))
 		{
+		case ID.EquipType.AIR_T_LO:
+		case ID.EquipType.AIR_F_LO:
+		case ID.EquipType.AIR_B_LO:
+		case ID.EquipType.AIR_R_LO:
+			return 18;
 		case ID.EquipType.AIR_T_HI:
 		case ID.EquipType.AIR_F_HI:
 		case ID.EquipType.AIR_B_HI:
 		case ID.EquipType.AIR_R_HI:
-			return true;
+			return 25;
+		default:
+			return 9;
 		}
-		
-        return false;
     }
 
 	@Override

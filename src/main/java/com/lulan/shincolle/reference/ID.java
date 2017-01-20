@@ -91,10 +91,28 @@ public class ID {
 		public static final byte EQUIP_LOOP = 4;
 	}
 	
-	/** Equip Attrs Map */
-	public static final class E
+	/** Emotion / Emotion4 */
+	public static final class Emotion
 	{
-		public static final byte LEVEL = 0;
+		public static final byte NORMAL = 0;			//no emotion
+		public static final byte BLINK = 1;				//blink eye
+		public static final byte T_T = 2;				//sad
+		public static final byte O_O = 3;				//...
+		public static final byte BORED = 4;				//sit phase 2
+		public static final byte HUNGRY = 5;			//no grudge
+	}
+	
+	/** Emotion3 */
+	public static final class Emotion3
+	{
+		public static final byte NORMAL = 0;			//no emotion
+		public static final byte CARESS = 1;			//caressed
+	}
+	
+	/** equip raw data array */
+	public static final class EquipData
+	{
+		public static final byte EQUIP_TYPE = 0;	//0:none, 1:cannon, 2:misc, 3:aircraft
 		public static final byte HP = 1;
 		public static final byte ATK_L = 2;
 		public static final byte ATK_H = 3;
@@ -115,23 +133,70 @@ public class ID {
 		public static final byte DODGE = 18;
 		public static final byte DEVELOP_NUM = 19;
 		public static final byte DEVELOP_MAT = 20;
+		public static final byte ENCH_TYPE = 21;	//0:none, 1:weapon, 2:armor, 3:misc
 	}
 	
-	/** Emotion */
-	public static final class Emotion{
-		public static final byte NORMAL = 0;			//no emotion
-		public static final byte BLINK = 1;				//blink eye
-		public static final byte T_T = 2;				//sad
-		public static final byte O_O = 3;				//...
-		public static final byte BORED = 4;				//sit phase 2
-		public static final byte HUNGRY = 5;			//no grudge
-	}
-	
-	/** Emotion3 */
-	public static final class Emotion3
+	/** EffectEquip */
+	public static final class EquipEffect
 	{
-		public static final byte NORMAL = 0;			//no emotion
-		public static final byte CARESS = 1;			//caressed
+		public static final byte CRI = 0;
+		public static final byte DHIT = 1;
+		public static final byte THIT = 2;
+		public static final byte MISS = 3;
+		public static final byte AA = 4;
+		public static final byte ASM = 5;
+		public static final byte DODGE = 6;
+		public static final byte XP = 7;
+		public static final byte GRUDGE = 8;
+		public static final byte AMMO = 9;
+		public static final byte HPRES = 10;
+	}
+	
+	/** equip enchant array */
+	public static final class EquipEnch
+	{
+		public static final byte HP = 0;
+		public static final byte ATK = 1;
+		public static final byte DEF = 2;
+		public static final byte SPD = 3;
+		public static final byte MOV = 4;
+		public static final byte HIT = 5;
+		public static final byte CRI = 6;
+		public static final byte DHIT = 7;
+		public static final byte THIT = 8;
+		public static final byte MISS = 9;
+		public static final byte AA = 10;
+		public static final byte ASM = 11;
+		public static final byte DODGE = 12;
+		public static final byte XP = 13;
+		public static final byte GRUDGE = 14;
+		public static final byte AMMO = 15;
+		public static final byte HPRES = 16;
+	}
+	
+	/** equip final stats array */
+	public static final class EquipFinal
+	{
+		public static final byte HP = 0;
+		public static final byte ATK_L = 1;
+		public static final byte ATK_H = 2;
+		public static final byte ATK_AL = 3;
+		public static final byte ATK_AH = 4;
+		public static final byte DEF = 5;
+		public static final byte SPD = 6;
+		public static final byte MOV = 7;
+		public static final byte HIT = 8;
+		public static final byte CRI = 9;
+		public static final byte DHIT = 10;
+		public static final byte THIT = 11;
+		public static final byte MISS = 12;
+		public static final byte AA = 13;
+		public static final byte ASM = 14;
+		public static final byte DODGE = 15;
+		public static final byte XP = 16;
+		public static final byte GRUDGE = 17;
+		public static final byte AMMO = 18;
+		public static final byte HPRES = 19;
 	}
 	
 	/** Equip type */
@@ -724,14 +789,5 @@ public class ID {
 	public static final byte ATK_AL = 7;
 	public static final byte ATK_AH = 8;
 	
-	/** Effect Equip */
-	public static final byte EF_CRI = 0;
-	public static final byte EF_DHIT = 1;
-	public static final byte EF_THIT = 2;
-	public static final byte EF_MISS = 3;
-	public static final byte EF_AA = 4;
-	public static final byte EF_ASM = 5;
-	public static final byte EF_DODGE = 6;
 	
-		
 }

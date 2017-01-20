@@ -1,11 +1,9 @@
 package com.lulan.shincolle.item;
 
+import com.lulan.shincolle.reference.ID;
+
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
-import com.lulan.shincolle.reference.ID;
 
 /**meta:
  *    0:  3-Inch Single High-Angle Gun Mount
@@ -57,18 +55,18 @@ public class EquipMachinegun extends BasicEquip
 		}
 	}
 	
-	//item glow effect
 	@Override
-	@SideOnly(Side.CLIENT)
-    public boolean hasEffect(ItemStack item)
-	{
-		switch(this.getEquipTypeIDFromMeta(item.getItemDamage()))
+    public int getItemEnchantability(ItemStack stack)
+    {
+		switch(this.getEquipTypeIDFromMeta(stack.getMetadata()))
 		{
+		case ID.EquipType.GUN_LO:
+			return 12;
 		case ID.EquipType.GUN_HI:
-			return true;
+			return 15;
+		default:
+			return 9;
 		}
-		
-        return false;
     }
 	
 	@Override

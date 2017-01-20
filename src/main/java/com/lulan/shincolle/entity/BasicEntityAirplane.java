@@ -284,7 +284,7 @@ abstract public class BasicEntityAirplane extends BasicEntitySummon implements I
 	    
 		//calc miss chance, if not miss, calc cri/multi hit
 		float missChance = 0.25F - 0.001F * this.host.getStateMinor(ID.M.ShipLevel);
-        missChance -= this.host.getEffectEquip(ID.EF_MISS);	//equip miss reduce
+        missChance -= this.host.getEffectEquip(ID.EquipEffect.MISS);	//equip miss reduce
         if (missChance > 0.35F) missChance = 0.35F;
   		
         //calc miss chance
@@ -297,7 +297,7 @@ abstract public class BasicEntityAirplane extends BasicEntitySummon implements I
         {
         	//roll cri -> roll double hit -> roll triple hit (triple hit more rare)
         	//calc critical
-        	if (this.rand.nextFloat() < this.host.getEffectEquip(ID.EF_CRI))
+        	if (this.rand.nextFloat() < this.host.getEffectEquip(ID.EquipEffect.CRI))
         	{
         		atkLight *= 1.5F;
         		applyParticleSpecialEffect(1);
@@ -305,7 +305,7 @@ abstract public class BasicEntityAirplane extends BasicEntitySummon implements I
         	else
         	{
         		//calc double hit
-            	if (this.rand.nextFloat() < this.host.getEffectEquip(ID.EF_DHIT))
+            	if (this.rand.nextFloat() < this.host.getEffectEquip(ID.EquipEffect.DHIT))
             	{
             		atkLight *= 2F;
             		applyParticleSpecialEffect(2);
@@ -313,7 +313,7 @@ abstract public class BasicEntityAirplane extends BasicEntitySummon implements I
             	else
             	{
             		//calc double hit
-                	if (this.rand.nextFloat() < this.host.getEffectEquip(ID.EF_THIT))
+                	if (this.rand.nextFloat() < this.host.getEffectEquip(ID.EquipEffect.THIT))
                 	{
                 		atkLight *= 3F;
                 		applyParticleSpecialEffect(3);
@@ -374,7 +374,7 @@ abstract public class BasicEntityAirplane extends BasicEntitySummon implements I
 		
         //calc miss chance
 	    float missChance = 0.25F - 0.001F * this.host.getStateMinor(ID.M.ShipLevel);
-        missChance -= this.host.getEffectEquip(ID.EF_MISS);	//equip miss reduce
+        missChance -= this.host.getEffectEquip(ID.EquipEffect.MISS);	//equip miss reduce
         if (missChance > 0.35F) missChance = 0.35F;
        
         if (this.rand.nextFloat() < missChance)

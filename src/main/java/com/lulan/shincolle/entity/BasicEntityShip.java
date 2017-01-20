@@ -136,9 +136,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	 *               12:AttackTime 13:AttackTime2 14:AttackTime3
 	 */
 	protected int[] StateTimer;
-	/** equip effect: 0:critical 1:doubleHit 2:tripleHit 3:baseMiss 4:atk_AntiAir 5:atk_AntiSS 6:dodge*/
+	/** equip effect: 0:critical 1:doubleHit 2:tripleHit 3:baseMiss 4:atk_AntiAir 5:atk_AntiSS
+	 *                6:dodge 7:xp gain 8:grudge gain 9:ammo gain 10:hp res delay
+	 */
 	protected float[] EffectEquip;
-	/** equip effect: 0:critical 1:doubleHit 2:tripleHit 3:baseMiss 4:atk_AntiAir 5:atk_AntiSS 6:dodge*/
 	protected float[] EffectEquipBU;
 	/** formation effect: 0:ATK_L 1:ATK_H 2:ATK_AL 3:ATK_AH 4:DEF 5:MOV 6:MISS 7:DODGE 8:CRI
 	 *                    9:DHIT 10:THIT 11:AA 12:ASM */
@@ -193,8 +194,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		//init value
 		this.itemHandler = new CapaShipInventory(CapaShipInventory.SlotMax, this);
 		this.isImmuneToFire = true;	//set ship immune to lava
-		this.StateEquip = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F};
-		this.StateFinal = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F};
+		this.StateEquip = new float[9];
+		this.StateFinal = new float[9];
 		this.StateFinalBU = this.StateFinal.clone();
 		this.StateMinor = new int[] {1,  0,  0,  40, 0,
 				                     0,  0,  0,  0,  0,
@@ -206,16 +207,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				                     -1, 0,  0,  0,  0,
 				                     -1, -1, -1, 0,  0
 				                    };
-		this.StateTimer = new int[] {0, 0, 0, 0, 0,
-									 0, 0, 0, 0, 0,
-									 0, 0, 0, 0, 0};
-		this.EffectEquip = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F};
-		this.EffectEquipBU = this.EffectEquip.clone();
-		this.EffectFormation = new float[] {0F, 0F, 0F, 0F, 0F,
-									        0F, 0F, 0F, 0F, 0F,
-									        0F, 0F, 0F};
-		this.EffectFormationFixed = new float[] {0F};
-		this.StateEmotion = new byte[] {0, 0, 0, 0, 0, 0, 0, 0};
+		this.StateTimer = new int[15];
+		this.EffectEquip = new float[11];
+		this.EffectEquipBU = new float[11];
+		this.EffectFormation = new float[13];
+		this.EffectFormationFixed = new float[1];
+		this.StateEmotion = new byte[8];
 		this.StateFlag = new boolean[] {false, false, false, false, true,
 				                        true, true, true, false, true,
 								        true, false, true, true, true,
@@ -223,24 +220,24 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 								        false, false, true, true, false
 								       };
 		this.UpdateFlag = new boolean[] {false};
-		this.BonusPoint = new byte[] {0, 0, 0, 0, 0, 0};
+		this.BonusPoint = new byte[6];
 		this.TypeModify = new float[] {1F, 1F, 1F, 1F, 1F, 1F};
 		this.ModelPos = new float[] {0F, 0F, 0F, 50F};
 		this.waypoints = new BlockPos[] {BlockPos.ORIGIN};
 		
 		//for AI
-		this.ShipDepth = 0D;			//water block above ship (within ship position)
-		this.ShipPrevX = posX;			//ship position 5 sec ago
+		this.ShipDepth = 0D;				//water block above ship (within ship position)
+		this.ShipPrevX = posX;				//ship position 5 sec ago
 		this.ShipPrevY = posY;
 		this.ShipPrevZ = posZ;
 		this.stepHeight = 1F;
 		
 		//for render
-		this.rotateAngle = new float[] {0F, 0F, 0F};		//model rotate angle (right hand)
+		this.rotateAngle = new float[3];	//model rotate angle (right hand)
 		
 		//for init
-		this.initAI = false;			//normal init
-		this.initWaitAI = false;		//slow init after player entity loaded
+		this.initAI = false;				//normal init
+		this.initWaitAI = false;			//slow init after player entity loaded
 		this.isUpdated = false;
 		
 		//chunk loader
@@ -249,7 +246,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		
 		//choice random sensitive body part
 		randomSensitiveBody();
-		
 	}
 	
 	@Override
@@ -1103,13 +1099,17 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		StateEquip[ID.ATK_AL] = 0F;
 		StateEquip[ID.ATK_AH] = 0F;
 		
-		EffectEquip[ID.EF_CRI] = 0F;
-		EffectEquip[ID.EF_DHIT] = 0F;
-		EffectEquip[ID.EF_THIT] = 0F;
-		EffectEquip[ID.EF_MISS] = 0F;
-		EffectEquip[ID.EF_AA] = 0F;
-		EffectEquip[ID.EF_ASM] = 0F;
-		EffectEquip[ID.EF_DODGE] = 0F;
+		EffectEquip[ID.EquipEffect.CRI] = 0F;
+		EffectEquip[ID.EquipEffect.DHIT] = 0F;
+		EffectEquip[ID.EquipEffect.THIT] = 0F;
+		EffectEquip[ID.EquipEffect.MISS] = 0F;
+		EffectEquip[ID.EquipEffect.AA] = 0F;
+		EffectEquip[ID.EquipEffect.ASM] = 0F;
+		EffectEquip[ID.EquipEffect.DODGE] = 0F;
+		EffectEquip[ID.EquipEffect.XP] = 1F;
+		EffectEquip[ID.EquipEffect.GRUDGE] = 1F;
+		EffectEquip[ID.EquipEffect.AMMO] = 1F;
+		EffectEquip[ID.EquipEffect.HPRES] = 1F;
 		
 		StateMinor[ID.M.InvSize] = 0;
 		StateMinor[ID.M.LevelChunkLoader] = 0;
@@ -1124,23 +1124,27 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			
 			if (equipStat != null)
 			{
-				StateEquip[ID.HP] += equipStat[ID.E.HP];
-				StateEquip[ID.DEF] += equipStat[ID.E.DEF];
-				StateEquip[ID.SPD] += equipStat[ID.E.SPD];
-				StateEquip[ID.MOV] += equipStat[ID.E.MOV];
-				StateEquip[ID.HIT] += equipStat[ID.E.HIT];
-				StateEquip[ID.ATK] += equipStat[ID.E.ATK_L];
-				StateEquip[ID.ATK_H] += equipStat[ID.E.ATK_H];
-				StateEquip[ID.ATK_AL] += equipStat[ID.E.ATK_AL];
-				StateEquip[ID.ATK_AH] += equipStat[ID.E.ATK_AH];
+				StateEquip[ID.HP] += equipStat[ID.EquipFinal.HP];
+				StateEquip[ID.ATK] += equipStat[ID.EquipFinal.ATK_L];
+				StateEquip[ID.ATK_H] += equipStat[ID.EquipFinal.ATK_H];
+				StateEquip[ID.ATK_AL] += equipStat[ID.EquipFinal.ATK_AL];
+				StateEquip[ID.ATK_AH] += equipStat[ID.EquipFinal.ATK_AH];
+				StateEquip[ID.DEF] += equipStat[ID.EquipFinal.DEF];
+				StateEquip[ID.SPD] += equipStat[ID.EquipFinal.SPD];
+				StateEquip[ID.MOV] += equipStat[ID.EquipFinal.MOV];
+				StateEquip[ID.HIT] += equipStat[ID.EquipFinal.HIT];
 				
-				EffectEquip[ID.EF_CRI] += equipStat[ID.E.CRI];
-				EffectEquip[ID.EF_DHIT] += equipStat[ID.E.DHIT];
-				EffectEquip[ID.EF_THIT] += equipStat[ID.E.THIT];
-				EffectEquip[ID.EF_MISS] += equipStat[ID.E.MISS];
-				EffectEquip[ID.EF_AA] += equipStat[ID.E.AA];
-				EffectEquip[ID.EF_ASM] += equipStat[ID.E.ASM];
-				EffectEquip[ID.EF_DODGE] += equipStat[ID.E.DODGE];
+				EffectEquip[ID.EquipEffect.CRI] += equipStat[ID.EquipFinal.CRI];
+				EffectEquip[ID.EquipEffect.DHIT] += equipStat[ID.EquipFinal.DHIT];
+				EffectEquip[ID.EquipEffect.THIT] += equipStat[ID.EquipFinal.THIT];
+				EffectEquip[ID.EquipEffect.MISS] += equipStat[ID.EquipFinal.MISS];
+				EffectEquip[ID.EquipEffect.AA] += equipStat[ID.EquipFinal.AA];
+				EffectEquip[ID.EquipEffect.ASM] += equipStat[ID.EquipFinal.ASM];
+				EffectEquip[ID.EquipEffect.DODGE] += equipStat[ID.EquipFinal.DODGE];
+				EffectEquip[ID.EquipEffect.XP] += equipStat[ID.EquipFinal.XP];
+				EffectEquip[ID.EquipEffect.GRUDGE] += equipStat[ID.EquipFinal.GRUDGE];
+				EffectEquip[ID.EquipEffect.AMMO] += equipStat[ID.EquipFinal.AMMO];
+				EffectEquip[ID.EquipEffect.HPRES] += equipStat[ID.EquipFinal.HPRES];
 			}
 			
 			//get special stats
@@ -1255,12 +1259,14 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	public void addShipExp(int exp)
 	{
 		int capLevel = getStateFlag(ID.F.IsMarried) ? 150 : 100;
+		exp = (int) (exp * EffectEquip[ID.EquipEffect.XP]);
 		
 		//level is not cap level
 		if (StateMinor[ID.M.ShipLevel] != capLevel && StateMinor[ID.M.ShipLevel] < 150)
 		{
 			StateMinor[ID.M.ExpCurrent] += exp;
-			if(StateMinor[ID.M.ExpCurrent] >= StateMinor[ID.M.ExpNext]) {
+			if (StateMinor[ID.M.ExpCurrent] >= StateMinor[ID.M.ExpNext])
+			{
 				
 				//level up sound
 				if (this.rand.nextInt(4) == 0)
@@ -2321,9 +2327,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			this.setFoodSaturation(this.getFoodSaturation() + 1 + addsatur);
 			
 			//misc++
-			StateMinor[ID.M.NumGrudge] += addgrudge;
-			StateMinor[ID.M.NumAmmoLight] += addammo;
-			StateMinor[ID.M.NumAmmoHeavy] += addammoh;
+			StateMinor[ID.M.NumGrudge] += addgrudge * EffectEquip[ID.EquipEffect.GRUDGE];
+			StateMinor[ID.M.NumAmmoLight] += addammo * EffectEquip[ID.EquipEffect.AMMO];
+			StateMinor[ID.M.NumAmmoHeavy] += addammoh * EffectEquip[ID.EquipEffect.AMMO];
 
 			//show eat emotion
 			if (this.getEmotesTick() <= 0)
@@ -2564,7 +2570,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	updateServerTimer();
         	
         	//check every 8 ticks
-        	if (ticksExisted % 8 == 0)
+        	if ((ticksExisted & 7) == 0)
         	{
         		//init riding rotation
         		if (this.ticksExisted == 32 && this.getPassengers().size() > 0)
@@ -2591,7 +2597,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         		}
         		
         		//check every 16 ticks
-            	if (ticksExisted % 16 == 0)
+            	if ((ticksExisted & 15) == 0)
             	{
             		//waypoint move
             		if (!(this.getRidingEntity() instanceof BasicEntityMount))
@@ -2616,14 +2622,14 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
             		}
             		
             		//check every 32 ticks
-                	if (this.ticksExisted % 32 == 0)
+                	if ((ticksExisted & 31) == 0)
                 	{
                 		//use bucket automatically
                 		if ((getMaxHealth() - getHealth()) > (getMaxHealth() * 0.1F + 5F))
                 		{
         	                if (decrSupplies(7))
         	                {
-        		                this.heal(this.getMaxHealth() * 0.08F + 15F);	//1 bucket = 5% hp for large ship
+        		                this.heal(this.getMaxHealth() * 0.08F + 15F);
         	                
         		                //airplane++
         		                if (this instanceof BasicEntityShipCV)
@@ -2636,13 +2642,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	            }
                 		
                 		//check every 64 ticks
-                		if (ticksExisted % 64 == 0)
+                		if ((ticksExisted & 63) == 0)
                 		{
                 			//sync model display
                 			sendSyncPacketEmotion();
 
                 			//check every 128 ticks
-                        	if (ticksExisted % 128 == 0)
+                        	if ((ticksExisted & 127) == 0)
                         	{
                         		//delayed init, waiting for player entity loaded
                         		if (!this.initWaitAI && ticksExisted >= 128)
@@ -2686,7 +2692,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                         		if (!getStateFlag(ID.F.NoFuel)) updateMorale();
                         		
                         		//check every 256 ticks
-                            	if (this.ticksExisted % 256 == 0)
+                            	if ((this.ticksExisted & 255) == 0)
                             	{
                             		//update buff (slow update)
                             		calcEquipAndUpdateState();
@@ -2697,7 +2703,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                             		//HP auto regen
                             		if (this.getHealth() < this.getMaxHealth())
                             		{
-                            			this.setHealth(this.getHealth() + this.getMaxHealth() * 0.015625F + 1);
+                            			this.heal(this.getMaxHealth() * 0.03F + 1F);
                             		}
                             		
                             		//food saturation--
@@ -2842,7 +2848,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         //calc miss chance, if not miss, calc cri/multi hit
         float missChance = 0.2F + 0.15F * (distVec[3] / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.M.ShipLevel];
         
-        missChance -= EffectEquip[ID.EF_MISS];		//equip miss reduce
+        missChance -= EffectEquip[ID.EquipEffect.MISS];		//equip miss reduce
         if (missChance > 0.35F) missChance = 0.35F;	//max miss chance
         
         //calc miss -> crit -> double -> tripple
@@ -2855,7 +2861,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		{
   			//roll cri -> roll double hit -> roll triple hit (triple hit more rare)
   			//calc critical
-          	if (rand.nextFloat() < this.getEffectEquip(ID.EF_CRI))
+          	if (rand.nextFloat() < this.getEffectEquip(ID.EquipEffect.CRI))
           	{
           		atk *= 1.5F;
           		applyParticleSpecialEffect(1);
@@ -2863,7 +2869,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
           	else
           	{
           		//calc double hit
-              	if (rand.nextFloat() < this.getEffectEquip(ID.EF_DHIT))
+              	if (rand.nextFloat() < this.getEffectEquip(ID.EquipEffect.DHIT))
               	{
               		atk *= 2F;
               		applyParticleSpecialEffect(2);
@@ -2871,7 +2877,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
               	else
               	{
               		//calc triple hit
-                  	if (rand.nextFloat() < this.getEffectEquip(ID.EF_THIT))
+                  	if (rand.nextFloat() < this.getEffectEquip(ID.EquipEffect.THIT))
                   	{
                   		atk *= 3F;
                   		applyParticleSpecialEffect(3);
@@ -2967,7 +2973,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		
         //calc miss chance, miss: add random offset(0~6) to missile target 
         float missChance = 0.2F + 0.15F * (distVec[3] / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.M.ShipLevel];
-        missChance -= EffectEquip[ID.EF_MISS];	//equip miss reduce
+        missChance -= EffectEquip[ID.EquipEffect.MISS];	//equip miss reduce
         if (missChance > 0.35F) missChance = 0.35F;	//max miss chance = 30%
        
         if (this.rand.nextFloat() < missChance)
@@ -3201,12 +3207,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			{
 				if (decrSupplies(0))
 				{  //use ammo item
-					addAmmo = Values.N.BaseLightAmmo;
+					addAmmo = (int) (Values.N.BaseLightAmmo * EffectEquip[ID.EquipEffect.AMMO]);
 					showEmo = true;
 				}
 				else if (decrSupplies(2))
 				{  //use ammo container item
-					addAmmo = Values.N.BaseLightAmmo * 9;
+					addAmmo = (int) (Values.N.BaseLightAmmo * 9 * EffectEquip[ID.EquipEffect.AMMO]);
 					showEmo = true;
 				}
 			}
@@ -3215,12 +3221,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			{
 				if (decrSupplies(1))
 				{  //use ammo item
-					addAmmo = Values.N.BaseHeavyAmmo;
+					addAmmo = (int) (Values.N.BaseHeavyAmmo * EffectEquip[ID.EquipEffect.AMMO]);
 					showEmo = true;
 				}
 				else if (decrSupplies(3))
 				{  //use ammo container item
-					addAmmo = Values.N.BaseHeavyAmmo * 9;
+					addAmmo = (int) (Values.N.BaseHeavyAmmo * 9 * EffectEquip[ID.EquipEffect.AMMO]);
 					showEmo = true;
 				}
 			}
@@ -3316,11 +3322,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			{		//find grudge
 				if (ConfigHandler.easyMode)
 				{
-					StateMinor[ID.M.NumGrudge] += Values.N.BaseGrudge * 10;
+					StateMinor[ID.M.NumGrudge] += Values.N.BaseGrudge * 10 * EffectEquip[ID.EquipEffect.GRUDGE];
 				}
 				else
 				{
-					StateMinor[ID.M.NumGrudge] += Values.N.BaseGrudge;
+					StateMinor[ID.M.NumGrudge] += Values.N.BaseGrudge * EffectEquip[ID.EquipEffect.GRUDGE];
 				}
 			}
 			else
@@ -3329,11 +3335,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				{
 					if (ConfigHandler.easyMode)
 					{
-						StateMinor[ID.M.NumGrudge] += Values.N.BaseGrudge * 90;
+						StateMinor[ID.M.NumGrudge] += Values.N.BaseGrudge * 90 * EffectEquip[ID.EquipEffect.GRUDGE];
 					}
 					else
 					{
-						StateMinor[ID.M.NumGrudge] += Values.N.BaseGrudge * 9;
+						StateMinor[ID.M.NumGrudge] += Values.N.BaseGrudge * 9 * EffectEquip[ID.EquipEffect.GRUDGE];
 					}
 				}
 			}
@@ -3784,9 +3790,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	protected float[] checkEffectEquipLimit(float[] par1)
   	{
   		//max cap
-  		for (int i = 0; i < 7; i++)
+  		for (int i = 0; i < par1.length; i++)
   		{
-  			if (i != ID.EF_AA && i != ID.EF_ASM && i != ID.EF_DODGE)
+  			if (i != ID.EquipEffect.AA && i != ID.EquipEffect.ASM && i != ID.EquipEffect.DODGE)
   			{
   				if (ConfigHandler.limitShipEffect[i] >= 0D && par1[i] > ConfigHandler.limitShipEffect[i] * 0.01F)
   				{
@@ -3803,7 +3809,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		}
   		
   		//min cap
-  		for (int i = 0; i < 7; i++)
+  		for (int i = 0; i < par1.length; i++)
   		{
 			if (par1[i] < 0F)
 			{
@@ -4044,13 +4050,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			StateFinal[ID.ATK_AH] = (EffectFormation[ID.Formation.ATK_AH] * 0.01F + 1F) * StateFinal[ID.ATK_AH];
 			StateFinal[ID.DEF] = (EffectFormation[ID.Formation.DEF] * 0.01F + 1F) * StateFinal[ID.DEF];
 			
-			EffectEquip[ID.EF_CRI] = (EffectFormation[ID.Formation.CRI] * 0.01F + 1F) * EffectEquip[ID.EF_CRI];
-			EffectEquip[ID.EF_DHIT] = (EffectFormation[ID.Formation.DHIT] * 0.01F + 1F) * EffectEquip[ID.EF_DHIT];
-			EffectEquip[ID.EF_THIT] = (EffectFormation[ID.Formation.THIT] * 0.01F + 1F) * EffectEquip[ID.EF_THIT];
-			EffectEquip[ID.EF_MISS] = (EffectFormation[ID.Formation.MISS] * 0.01F + 1F) * EffectEquip[ID.EF_MISS];
-			EffectEquip[ID.EF_AA] = (EffectFormation[ID.Formation.AA] * 0.01F + 1F) * EffectEquip[ID.EF_AA];
-			EffectEquip[ID.EF_ASM] = (EffectFormation[ID.Formation.ASM] * 0.01F + 1F) * EffectEquip[ID.EF_ASM];
-			EffectEquip[ID.EF_DODGE] = (EffectFormation[ID.Formation.DODGE] * 0.01F + 1F) * EffectEquip[ID.EF_DODGE];
+			EffectEquip[ID.EquipEffect.CRI] = (EffectFormation[ID.Formation.CRI] * 0.01F + 1F) * EffectEquip[ID.EquipEffect.CRI];
+			EffectEquip[ID.EquipEffect.DHIT] = (EffectFormation[ID.Formation.DHIT] * 0.01F + 1F) * EffectEquip[ID.EquipEffect.DHIT];
+			EffectEquip[ID.EquipEffect.THIT] = (EffectFormation[ID.Formation.THIT] * 0.01F + 1F) * EffectEquip[ID.EquipEffect.THIT];
+			EffectEquip[ID.EquipEffect.MISS] = (EffectFormation[ID.Formation.MISS] * 0.01F + 1F) * EffectEquip[ID.EquipEffect.MISS];
+			EffectEquip[ID.EquipEffect.AA] = (EffectFormation[ID.Formation.AA] * 0.01F + 1F) * EffectEquip[ID.EquipEffect.AA];
+			EffectEquip[ID.EquipEffect.ASM] = (EffectFormation[ID.Formation.ASM] * 0.01F + 1F) * EffectEquip[ID.EquipEffect.ASM];
+			EffectEquip[ID.EquipEffect.DODGE] = (EffectFormation[ID.Formation.DODGE] * 0.01F + 1F) * EffectEquip[ID.EquipEffect.DODGE];
 			
 			//fixed buff
 			StateFinal[ID.MOV] = getEffectFormationFixed(ID.FormationFixed.MOV);
@@ -4151,10 +4157,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   			StateFinal[ID.ATK_AL] *= 1.1F;
   			StateFinal[ID.ATK_AH] *= 1.1F;
   			StateFinal[ID.HIT] += 2F;
-  			EffectEquip[ID.EF_CRI] += 0.1F;
-  			EffectEquip[ID.EF_DHIT] += 0.1F;
-  			EffectEquip[ID.EF_THIT] += 0.1F;
-  			EffectEquip[ID.EF_DODGE] += 10F;
+  			EffectEquip[ID.EquipEffect.CRI] += 0.1F;
+  			EffectEquip[ID.EquipEffect.DHIT] += 0.1F;
+  			EffectEquip[ID.EquipEffect.THIT] += 0.1F;
+  			EffectEquip[ID.EquipEffect.DODGE] += 10F;
   			
   	  		if (m > 5100)
   	  		{
@@ -4165,7 +4171,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	  			StateFinal[ID.SPD] += 0.5F;
   	  			StateFinal[ID.MOV] += 0.1F;
   	  			StateFinal[ID.HIT] += 2F;
-  	  			EffectEquip[ID.EF_DODGE] += 15F;
+  	  			EffectEquip[ID.EquipEffect.DODGE] += 15F;
   	  		}
   		}
   		
@@ -4176,7 +4182,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   			StateFinal[ID.ATK_AL] *= 0.9F;
   			StateFinal[ID.ATK_AH] *= 0.9F;
   			StateFinal[ID.HIT] -= 2F;
-  			EffectEquip[ID.EF_DODGE] -= 10F;
+  			EffectEquip[ID.EquipEffect.DODGE] -= 10F;
   			
   	  		if (m < 901)
   	  		{
@@ -4187,7 +4193,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	  			StateFinal[ID.SPD] -= 0.5F;
   	  			StateFinal[ID.MOV] -= 0.1F;
   	  			StateFinal[ID.HIT] -= 2F;
-  	  			EffectEquip[ID.EF_DODGE] -= 15F;
+  	  			EffectEquip[ID.EquipEffect.DODGE] -= 15F;
   	  		}
   		}
   		
@@ -6087,6 +6093,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 
 	@Override
 	public void setShipFloatingDepth(double par1) {}
+	
+	//apply heal effect
+	@Override
+    public void heal(float healAmount)
+    {
+		super.heal(healAmount * this.EffectEquip[ID.EquipEffect.HPRES]);
+    }
 	
 	
 }

@@ -585,15 +585,15 @@ public class GuiShipInventory extends GuiContainer
 				mouseoverList.clear();
 				mouseoverList.add(strATK);
 				mouseoverList.add(strAATK);
-				overText = String.valueOf((int)(this.entity.getEffectEquip(ID.EF_CRI) * 100F)) + " %";
+				overText = String.valueOf((int)(this.entity.getEffectEquip(ID.EquipEffect.CRI) * 100F)) + " %";
 				mouseoverList.add(overText);
-				overText = String.valueOf((int)(this.entity.getEffectEquip(ID.EF_DHIT) * 100F)) + " %";
+				overText = String.valueOf((int)(this.entity.getEffectEquip(ID.EquipEffect.DHIT) * 100F)) + " %";
 				mouseoverList.add(overText);
-				overText = String.valueOf((int)(this.entity.getEffectEquip(ID.EF_THIT) * 100F)) + " %";
+				overText = String.valueOf((int)(this.entity.getEffectEquip(ID.EquipEffect.THIT) * 100F)) + " %";
 				mouseoverList.add(overText);
-				overText = String.valueOf((int)(this.entity.getEffectEquip(ID.EF_AA)));
+				overText = String.valueOf((int)(this.entity.getEffectEquip(ID.EquipEffect.AA)));
 				mouseoverList.add(overText);
-				overText = String.valueOf((int)(this.entity.getEffectEquip(ID.EF_ASM)));
+				overText = String.valueOf((int)(this.entity.getEffectEquip(ID.EquipEffect.ASM)));
 				mouseoverList.add(overText);
 				this.drawHoveringText(mouseoverList, 61 + this.widthHoveringText1, 143, this.fontRendererObj);
 			}
@@ -610,12 +610,12 @@ public class GuiShipInventory extends GuiContainer
 				mouseoverList.clear();
 				
 				//calc miss
-				temp = (int) ((0.2F - this.entity.getEffectEquip(ID.EF_MISS) - 0.001F * this.entity.getStateMinor(ID.M.ShipLevel)) * 100F);
+				temp = (int) ((0.2F - this.entity.getEffectEquip(ID.EquipEffect.MISS) - 0.001F * this.entity.getStateMinor(ID.M.ShipLevel)) * 100F);
 				if (temp < 0) temp = 0;
 				if (temp > 35) temp = 35;
 				str = String.valueOf(temp);
 				
-				temp = (int) ((0.35F - this.entity.getEffectEquip(ID.EF_MISS) - 0.001F * this.entity.getStateMinor(ID.M.ShipLevel)) * 100F);
+				temp = (int) ((0.35F - this.entity.getEffectEquip(ID.EquipEffect.MISS) - 0.001F * this.entity.getStateMinor(ID.M.ShipLevel)) * 100F);
 				if (temp < 0) temp = 0;
 				if (temp > 35) temp = 35;
 				str2 = String.valueOf(temp);
@@ -624,7 +624,7 @@ public class GuiShipInventory extends GuiContainer
 				mouseoverList.add(overText);
 				
 				//calc air miss
-				temp = (int) ((0.25F - this.entity.getEffectEquip(ID.EF_MISS) - 0.001F * this.entity.getStateMinor(ID.M.ShipLevel)) * 100F);
+				temp = (int) ((0.25F - this.entity.getEffectEquip(ID.EquipEffect.MISS) - 0.001F * this.entity.getStateMinor(ID.M.ShipLevel)) * 100F);
 				if (temp < 0) temp = 0;
 				if (temp > 35) temp = 35;
 				
@@ -634,14 +634,14 @@ public class GuiShipInventory extends GuiContainer
 				//calc dodge
 				if (this.entity instanceof IShipInvisible)
 				{
-					temp = (int) (this.entity.getEffectEquip(ID.EF_DODGE) +
+					temp = (int) (this.entity.getEffectEquip(ID.EquipEffect.DODGE) +
 									((IShipInvisible)this.entity).getInvisibleLevel());
 					if (temp > ConfigHandler.limitShipEffect[6]) temp = (int) ConfigHandler.limitShipEffect[6];
 					overText = String.valueOf(temp) + " %";
 				}
 				else
 				{
-					overText = String.valueOf((int)this.entity.getEffectEquip(ID.EF_DODGE)) + " %";
+					overText = String.valueOf((int)this.entity.getEffectEquip(ID.EquipEffect.DODGE)) + " %";
 				}
 				
 				mouseoverList.add(overText);

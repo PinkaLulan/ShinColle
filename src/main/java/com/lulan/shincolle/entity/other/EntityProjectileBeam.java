@@ -263,7 +263,7 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipEqu
     		else
     		{
     			//calc critical
-        		if (this.host != null && (this.rand.nextFloat() < this.host.getEffectEquip(ID.EF_CRI)))
+        		if (this.host != null && (this.rand.nextFloat() < this.host.getEffectEquip(ID.EquipEffect.CRI)))
         		{
         			beamAtk *= 3F;
             		//spawn critical particle

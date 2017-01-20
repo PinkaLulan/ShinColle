@@ -187,7 +187,7 @@ public class EntityDestroyerHibiki extends BasicEntityShipSmall implements IShip
   	@Override
   	public void calcShipAttributes()
   	{
-  		EffectEquip[ID.EF_DODGE] += 30F;
+  		EffectEquip[ID.EquipEffect.DODGE] += 30F;
   		
   		super.calcShipAttributes();	
   	}

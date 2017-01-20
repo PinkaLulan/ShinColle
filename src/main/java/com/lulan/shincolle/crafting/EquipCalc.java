@@ -13,6 +13,7 @@ import com.lulan.shincolle.item.BasicEquip;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.EnchantHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.item.ItemStack;
@@ -73,29 +74,37 @@ public class EquipCalc
 	}
 	
 	
-	//get equip stats TODO
-	public static float[] getEquipStat(BasicEntityShip entity, ItemStack item)
+	/** return array ref: ID.EquipFinal */
+	public static float[] getEquipStat(BasicEntityShip entity, ItemStack stack)
 	{
-		if (entity != null && item != null && item.getItem() instanceof BasicEquip)
+		if (entity != null && stack != null && stack.getItem() instanceof BasicEquip)
 		{
-			float[] itemStat = Values.EquipMap.get(((BasicEquip) item.getItem()).getEquipID(item.getItemDamage()));
+			float[] itemRawStat = Values.EquipMap.get(((BasicEquip) stack.getItem()).getEquipID(stack.getItemDamage()));
+			float[] itemEnch = EnchantHelper.calcEnchantEffect(stack);
 			
-			if (itemStat != null)
+			if (itemRawStat != null)
 			{
 				//cannot use this equip, return null
-				if (entity.getEquipType() != 2 && itemStat[0] != 2)
+				if (entity.getEquipType() != 2 && itemRawStat[ID.EquipData.EQUIP_TYPE] != 2)
 				{
-					if (entity.getEquipType() != itemStat[0]) return null;
+					if (entity.getEquipType() != itemRawStat[ID.EquipData.EQUIP_TYPE]) return null;
 				}
-	//			LogHelper.info("DEBUG : equip stat "+equipID+" "+getStat[0]+" "+getStat[1]+" "+getStat[2]+" "+getStat[3]+" "+getStat[4]+" "+getStat[5]+" "+getStat[6]+" "+getStat[7]+" "+getStat[8]);
-				return itemStat;
+				
+				//apply enchant effect
+				float[] itemNewStat = calcEquipStatWithEnchant(itemRawStat, itemEnch);
+				
+//				LogHelper.info("DEBUG : equip stat "+equipID+" "+getStat[0]+" "+getStat[1]+" "+getStat[2]+" "+getStat[3]+" "+getStat[4]+" "+getStat[5]+" "+getStat[6]+" "+getStat[7]+" "+getStat[8]);
+				return itemNewStat;
 			}	
 		}
+		
 		return null;
 	}
 	
-	/** get special equip stats
-	 *  return 0:inv page, 1:chunk loader, 2:flare, 3:searchlight
+	/**
+	 * get special equip stats
+	 * 
+	 * return 0:inv page, 1:chunk loader, 2:flare, 3:searchlight
 	 */
 	public static float[] getEquipStatMisc(BasicEntityShip entity, ItemStack item)
 	{
@@ -126,6 +135,68 @@ public class EquipCalc
 		}
 		
 		return null;
+	}
+	
+	/**
+	 * calc equip stats with enchantment effect
+	 * 
+	 * input:
+	 *   raw stats (21 floats, ref: ID.EquipData)
+	 *   enchant   (17 floats, ref: ID.EquipEnch)
+	 * 
+	 * output:
+	 *   new stats (20 floats = 16 main attrs + 4 special effects, ref: ID.EquipFinal)
+	 */
+	public static float[] calcEquipStatWithEnchant(float[] raw, float[] enchant)
+	{
+		float[] newstat = new float[20];
+		float modTemp = 1F;
+		
+		//hp
+		newstat[ID.EquipFinal.HP] = raw[ID.EquipData.HP] * (1F + enchant[ID.EquipEnch.HP]);
+		//atk (weapon only)
+		modTemp = raw[ID.EquipData.ENCH_TYPE] == 1F ? 1F + enchant[ID.EquipEnch.ATK] : 1F;
+		newstat[ID.EquipFinal.ATK_L] = raw[ID.EquipData.ATK_L] * modTemp;
+		newstat[ID.EquipFinal.ATK_H] = raw[ID.EquipData.ATK_H] * modTemp;
+		newstat[ID.EquipFinal.ATK_AL] = raw[ID.EquipData.ATK_AL] * modTemp;
+		newstat[ID.EquipFinal.ATK_AH] = raw[ID.EquipData.ATK_AH] * modTemp;
+		//def (armor only)
+		modTemp = raw[ID.EquipData.ENCH_TYPE] == 2F ? 1F + enchant[ID.EquipEnch.DEF] : 1F;
+		newstat[ID.EquipFinal.DEF] = raw[ID.EquipData.DEF] * modTemp;
+		//spd
+		newstat[ID.EquipFinal.SPD] = raw[ID.EquipData.SPD] * (1F + enchant[ID.EquipEnch.SPD]);
+		//mov: negative: reduce, positive: increase
+		if (enchant[ID.EquipEnch.MOV] > 1F) enchant[ID.EquipEnch.MOV] = 1F;
+		modTemp = raw[ID.EquipData.MOV] < 0F ? 1F - enchant[ID.EquipEnch.MOV] : 1F + enchant[ID.EquipEnch.MOV];
+		newstat[ID.EquipFinal.MOV] = raw[ID.EquipData.MOV] * modTemp;
+		//range
+		newstat[ID.EquipFinal.HIT] = raw[ID.EquipData.HIT] * (1F + enchant[ID.EquipEnch.HIT]);
+		//cri
+		newstat[ID.EquipFinal.CRI] = raw[ID.EquipData.CRI] * (1F + enchant[ID.EquipEnch.CRI]);
+		//dhit
+		newstat[ID.EquipFinal.DHIT] = raw[ID.EquipData.DHIT] * (1F + enchant[ID.EquipEnch.DHIT]);
+		//thit
+		newstat[ID.EquipFinal.THIT] = raw[ID.EquipData.THIT] * (1F + enchant[ID.EquipEnch.THIT]);
+		//miss
+		newstat[ID.EquipFinal.MISS] = raw[ID.EquipData.MISS] * (1F + enchant[ID.EquipEnch.MISS]);
+		//aa
+		newstat[ID.EquipFinal.AA] = raw[ID.EquipData.AA] * (1F + enchant[ID.EquipEnch.AA]);
+		//asm
+		newstat[ID.EquipFinal.ASM] = raw[ID.EquipData.ASM] * (1F + enchant[ID.EquipEnch.ASM]);
+		//dodge
+		if (enchant[ID.EquipEnch.DODGE] > 1F) enchant[ID.EquipEnch.DODGE] = 1F;
+		modTemp = raw[ID.EquipData.DODGE] < 0F ? 1F - enchant[ID.EquipEnch.DODGE] : 1F + enchant[ID.EquipEnch.DODGE];
+		newstat[ID.EquipFinal.DODGE] = raw[ID.EquipData.DODGE] * modTemp;
+		//xp gain (weapon only)
+		newstat[ID.EquipFinal.XP] = raw[ID.EquipData.ENCH_TYPE] == 1F ? enchant[ID.EquipEnch.XP] : 0F;
+		//grudge gain (non-weapon only)
+		newstat[ID.EquipFinal.GRUDGE] = raw[ID.EquipData.ENCH_TYPE] != 1F ? enchant[ID.EquipEnch.GRUDGE] : 0F;
+		//ammo gain (weapon only)
+		newstat[ID.EquipFinal.AMMO] = raw[ID.EquipData.ENCH_TYPE] == 1F ? enchant[ID.EquipEnch.AMMO] : 0F;
+		//hp restore (non-weapon only)
+		newstat[ID.EquipFinal.HPRES] = raw[ID.EquipData.ENCH_TYPE] != 1F ? enchant[ID.EquipEnch.HPRES] : 0F;
+		
+		return newstat;
 	}
 	
 	/**roll equip type by total amount of materials
@@ -253,7 +324,7 @@ public class EquipCalc
 			int eid = (Integer) entry.getKey();
 			float[] val = (float[]) entry.getValue();
 			
-			if (val[ID.E.RARE_TYPE] == type)
+			if (val[ID.EquipData.RARE_TYPE] == type)
 			{
 				float prob = 0F;
 				int totalMat = 0;
@@ -268,14 +339,14 @@ public class EquipCalc
 				}
 				
 				//get mean distance
-				meanDist = MathHelper.abs(totalMat - (int)val[ID.E.RARE_MEAN]);
+				meanDist = MathHelper.abs(totalMat - (int)val[ID.EquipData.RARE_MEAN]);
 				
 				//get prob by mean dist
 				prob = CalcHelper.getNormDist(meanDist);
 				
 				//put into map
 				equipList.put(eid, prob);
-				LogHelper.debug("DEBUG: calc equip: prob list: ID "+eid+" MEAN "+val[ID.E.RARE_MEAN]+" MEAN(P) "+(val[ID.E.RARE_MEAN]/te)+" MD "+meanDist+" PR "+prob);
+				LogHelper.debug("DEBUG: calc equip: prob list: ID "+eid+" MEAN "+val[ID.EquipData.RARE_MEAN]+" MEAN(P) "+(val[ID.EquipData.RARE_MEAN]/te)+" MD "+meanDist+" PR "+prob);
 			}
 		}		
 		

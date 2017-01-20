@@ -64,8 +64,8 @@ public class EntityBattleshipRe extends BasicEntityShipCV
 	@Override
 	public void calcShipAttributes()
 	{
-		EffectEquip[ID.EF_DHIT] = EffectEquip[ID.EF_DHIT] + 0.1F;
-		EffectEquip[ID.EF_THIT] = EffectEquip[ID.EF_THIT] + 0.1F;
+		EffectEquip[ID.EquipEffect.DHIT] = EffectEquip[ID.EquipEffect.DHIT] + 0.1F;
+		EffectEquip[ID.EquipEffect.THIT] = EffectEquip[ID.EquipEffect.THIT] + 0.1F;
 		
 		this.maxAircraftLight += this.getLevel() * 0.1F;
 		this.maxAircraftHeavy += this.getLevel() * 0.05F;

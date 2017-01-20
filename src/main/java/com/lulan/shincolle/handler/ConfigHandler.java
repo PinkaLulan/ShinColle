@@ -56,8 +56,8 @@ public class ConfigHandler
 	//SHIP SETTING
 	//                                                    HP, ATK, DEF, SPD, MOV, HIT
 	public static double[] limitShipBasic = new double[] {-1D, -1D, 75D, 4D, 0.6D, 64D};
-	//                                                    CRI, DHIT, THIT, MISS, AA, ASM, DODGE
-	public static double[] limitShipEffect = new double[] {-1D, -1D, -1D, -1D, -1D, -1D, 75D};
+	//                                                    CRI, DHIT, THIT, MISS, AA, ASM, DODGE, XP, GRUDGE, AMMO, HPRES
+	public static double[] limitShipEffect = new double[] {-1D, -1D, -1D, -1D, -1D, -1D, 75D, -1D, -1D, -1D, -1D};
 	public static double[] scaleShip = new double[] {1D, 1D, 1D, 1D, 1D, 1D};
 	//													  HP, ATK, DEF, SPD, MOV, HIT
 	public static double[] scaleBossSmall = new double[] {1600D, 120D, 50D, 1.6D, 0.38D, 18D};
@@ -176,7 +176,7 @@ public class ConfigHandler
 		
 		propShip = config.get("ship setting", "Attrs_Scale", scaleShip, "Ship attributes SCALE: HP, firepower, armor, attack speed, move speed, range");
 		propShipLimitBasic = config.get("ship setting", "Attrs_Limit_Basic", limitShipBasic, "Ship basic attributes LIMIT (-1 = no limit): HP, firepower, armor%, attack speed, move speed, range(blocks)");
-		propShipLimitEffect = config.get("ship setting", "Attrs_Limit_Effect", limitShipEffect, "Ship effect attributes LIMIT (-1 = no limit, 12 = limit 12%): critical%, double hit%, triple hit%, miss reduction%, anti-air, anti-ss, dodge%");
+		propShipLimitEffect = config.get("ship setting", "Attrs_Limit_Effect", limitShipEffect, "Ship effect attributes LIMIT (-1 = no limit, 12 = limit 12%): critical%, double hit%, triple hit%, miss reduction%, anti-air, anti-ss, dodge%, xp gain%, grudge gain%, ammo gain%, hp regen delay");
 		propBossSmall = config.get("ship setting", "Attrs_Hostile_SmallBoss", scaleBossSmall, "Small boss base attribute values: HP, firepower, armor, attack speed, move speed, range");
 		propBossLarge = config.get("ship setting", "Attrs_Hostile_LargeBoss", scaleBossLarge, "Large boss base attribute values: HP, firepower, armor, attack speed, move speed, range");
 		propMobSmall = config.get("ship setting", "Attrs_Hostile_SmallMob", scaleMobSmall, "Small mob ship like DD and SS base attribute values: HP, firepower, armor, attack speed, move speed, range");

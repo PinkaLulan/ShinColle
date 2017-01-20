@@ -563,7 +563,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	    applyParticleAtAttacker(1, target, distVec);
 	    
         //calc miss chance, if not miss, calc cri/multi hit   
-        if (this.rand.nextFloat() < this.getEffectEquip(ID.EF_MISS))
+        if (this.rand.nextFloat() < this.getEffectEquip(ID.EquipEffect.MISS))
         {
         	atk = 0;	//still attack, but no damage
         	applyParticleSpecialEffect(0);
@@ -572,7 +572,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
         {
         	//roll cri -> roll double hit -> roll triple hit (triple hit more rare)
         	//calc critical
-        	if (this.rand.nextFloat() < this.getEffectEquip(ID.EF_CRI))
+        	if (this.rand.nextFloat() < this.getEffectEquip(ID.EquipEffect.CRI))
         	{
         		atk *= 1.5F;
         		applyParticleSpecialEffect(1);
@@ -580,7 +580,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
         	else
         	{
         		//calc double hit
-            	if (this.rand.nextFloat() < this.getEffectEquip(ID.EF_DHIT))
+            	if (this.rand.nextFloat() < this.getEffectEquip(ID.EquipEffect.DHIT))
             	{
             		atk *= 2F;
             		applyParticleSpecialEffect(2);
@@ -588,7 +588,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
             	else
             	{
             		//calc double hit
-                	if (this.rand.nextFloat() < this.getEffectEquip(ID.EF_THIT))
+                	if (this.rand.nextFloat() < this.getEffectEquip(ID.EquipEffect.THIT))
                 	{
                 		atk *= 3F;
                 		applyParticleSpecialEffect(2);
@@ -1057,11 +1057,11 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	{	//cri rate
 		switch(id)
 		{
-		case ID.EF_MISS:	//miss rate, not miss reduction rate!
+		case ID.EquipEffect.MISS:	//miss rate, not miss reduction rate!
 			return 0.2F;
-		case ID.EF_CRI:
-		case ID.EF_DHIT:
-		case ID.EF_THIT:
+		case ID.EquipEffect.CRI:
+		case ID.EquipEffect.DHIT:
+		case ID.EquipEffect.THIT:
 			return 0.15F;
 		default:
 			return 0F;

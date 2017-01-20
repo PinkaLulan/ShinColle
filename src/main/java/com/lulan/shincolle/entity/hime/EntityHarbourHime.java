@@ -76,7 +76,7 @@ public class EntityHarbourHime extends BasicEntityShipCV
         		//1: 增強被動回血
         		if (getStateMinor(ID.M.NumGrudge) > 0 && this.getHealth() < this.getMaxHealth())
         		{
-        			this.setHealth(this.getHealth() + this.getMaxHealth() * 0.03125F);
+        			this.heal(this.getMaxHealth() * 0.06F + 1F);
         		}
         		
         		//2: 結婚後, 周圍某一目標回血, 包括玩家, 回血目標依等級提昇
@@ -186,7 +186,7 @@ public class EntityHarbourHime extends BasicEntityShipCV
 
   		//calc miss chance, miss: add random offset(0~6) to missile target 
   		float missChance = 0.2F + 0.15F * (distVec[3] / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.M.ShipLevel];
-  		missChance -= EffectEquip[ID.EF_MISS];	//equip miss reduce
+  		missChance -= EffectEquip[ID.EquipEffect.MISS];	//equip miss reduce
   		if (missChance > 0.35F) missChance = 0.35F;	//max miss chance = 30%
   		
   		if (this.rand.nextFloat() < missChance)

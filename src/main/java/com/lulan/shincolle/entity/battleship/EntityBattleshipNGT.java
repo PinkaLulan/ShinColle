@@ -177,7 +177,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
         	
         	//calc miss chance, miss: atk1 = 0, atk2 = 50%
             float missChance = 0.2F + 0.15F * (distSqrt / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.M.ShipLevel];
-            missChance -= EffectEquip[ID.EF_MISS];	//equip miss reduce
+            missChance -= EffectEquip[ID.EquipEffect.MISS];	//equip miss reduce
             if (missChance > 0.35F) missChance = 0.35F;	//max miss chance = 30%
            
             if (this.rand.nextFloat() < missChance)
@@ -187,7 +187,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
             	//spawn miss particle
             	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
             }
-            else if (this.rand.nextFloat() < EffectEquip[ID.EF_CRI])
+            else if (this.rand.nextFloat() < EffectEquip[ID.EquipEffect.CRI])
             {	//CRI
         		atk1 *= 1.5F;
         		atk2 *= 1.5F;
@@ -246,7 +246,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
                 		{	//MISS
                         	atkTemp *= 0.5F;
                         }
-                        else if(this.rand.nextFloat() < EffectEquip[ID.EF_CRI])
+                        else if(this.rand.nextFloat() < EffectEquip[ID.EquipEffect.CRI])
                         {	//CRI
                     		atkTemp *= 1.5F;
                         }

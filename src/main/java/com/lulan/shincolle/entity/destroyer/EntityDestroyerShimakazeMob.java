@@ -212,10 +212,10 @@ public class EntityDestroyerShimakazeMob extends BasicEntityShipHostile
   	{
 		switch (id)
 		{
-		case ID.EF_CRI:
+		case ID.EquipEffect.CRI:
 			return 0.15F;
-		case ID.EF_AA:  //DD vs AA,ASM effect
-		case ID.EF_ASM:
+		case ID.EquipEffect.AA:  //DD vs AA,ASM effect
+		case ID.EquipEffect.ASM:
 			return this.atk * 0.5F;
 		default:
 			return 0F;

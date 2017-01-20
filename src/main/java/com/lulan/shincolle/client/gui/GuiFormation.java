@@ -242,8 +242,8 @@ public class GuiFormation extends GuiContainer
 				floatFPH += this.shipList[i].getStateFinal(ID.ATK_H);
 				floatFPAL += this.shipList[i].getStateFinal(ID.ATK_AL);
 				floatFPAH += this.shipList[i].getStateFinal(ID.ATK_AH);
-				floatFPAA += this.shipList[i].getEffectEquip(ID.EF_AA);
-				floatFPASM += this.shipList[i].getEffectEquip(ID.EF_ASM);
+				floatFPAA += this.shipList[i].getEffectEquip(ID.EquipEffect.AA);
+				floatFPASM += this.shipList[i].getEffectEquip(ID.EquipEffect.ASM);
 			}
 		}
 		
@@ -290,17 +290,17 @@ public class GuiFormation extends GuiContainer
 				}
 				else if (my < 104)
 				{
-					str = getAttributeString(ID.Formation.CRI, ID.EF_CRI);
+					str = getAttributeString(ID.Formation.CRI, ID.EquipEffect.CRI);
 					mouseoverList.add(str);
 				}
 				else if (my < 119)
 				{
-					str = getAttributeString(ID.Formation.DHIT, ID.EF_DHIT);
+					str = getAttributeString(ID.Formation.DHIT, ID.EquipEffect.DHIT);
 					mouseoverList.add(str);
 				}
 				else if (my < 134)
 				{
-					str = getAttributeString(ID.Formation.AA, ID.EF_AA);
+					str = getAttributeString(ID.Formation.AA, ID.EquipEffect.AA);
 					mouseoverList.add(str);
 				}
 			}
@@ -319,22 +319,22 @@ public class GuiFormation extends GuiContainer
 				}
 				else if (my < 89)
 				{
-					str = getAttributeString(ID.Formation.MISS, ID.EF_MISS);
+					str = getAttributeString(ID.Formation.MISS, ID.EquipEffect.MISS);
 					mouseoverList.add(str);
 				}
 				else if (my < 104)
 				{
-					str = getAttributeString(ID.Formation.DODGE, ID.EF_DODGE);
+					str = getAttributeString(ID.Formation.DODGE, ID.EquipEffect.DODGE);
 					mouseoverList.add(str);
 				}
 				else if (my < 119)
 				{
-					str = getAttributeString(ID.Formation.THIT, ID.EF_THIT);
+					str = getAttributeString(ID.Formation.THIT, ID.EquipEffect.THIT);
 					mouseoverList.add(str);
 				}
 				else if (my < 134)
 				{
-					str = getAttributeString(ID.Formation.ASM, ID.EF_ASM);
+					str = getAttributeString(ID.Formation.ASM, ID.EquipEffect.ASM);
 					mouseoverList.add(str);
 				}
 			}

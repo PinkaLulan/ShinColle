@@ -1,0 +1,268 @@
+package com.lulan.shincolle.utility;
+
+import com.lulan.shincolle.reference.ID;
+
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagList;
+
+/**
+ * enchant helper for equip enchantment
+ * 
+ */
+public class EnchantHelper
+{
+
+	
+	public EnchantHelper() {}
+	
+	/**
+	 * equip enchant type: armor, weapon, misc
+	 * 
+	 * usable enchant:
+	 *   XXX_protection  (max 4, C~R) : +hp
+	 *     protection, fire_protection, blast_protection, projectile_protection
+	 *   damage          (max 5, C~UC): +atk (weapon only)
+	 *     sharpness, smite, bane_of_arthropods, power
+	 *   unbreaking      (max 3, UC)  : +def (armor only)
+	 *   efficiency      (max 5, C)   : +spd
+	 *   depth_strider   (max 3, R)   : -weight
+	 *   feather_falling (max 4, UC)  : -weight
+	 *   aqua_affinity   (max 1, R)   : -weight
+	 *   knockback       (max 2, UC)  : +ran
+	 *     knockback, punch
+	 *   frost_walker    (max 2, R)   : +cri
+	 *   fire_aspect     (max 2, R)   : +dhit, +thit
+	 *     fire_aspect, flame
+	 *   lure            (max 3, R)   : +miss
+	 *   thorns          (max 3, VR)  : +AA
+	 *   respiration     (max 3, R)   : +ASM
+	 *   looting         (max 3, R)   : +xp gain (weapon only)
+	 *     looting, fortune, luck_of_the_sea
+	 *   silk_touch      (max 1, VR)  : grudge gain (non-weapon only)
+	 *   infinity        (max 1, VR)  : ammo gain (weapon only)
+	 *   mending         (max 1, R)   : hp restore effect (non-weapon only)
+	 * 
+	 * return array: ref: ID.EquipEnch
+	 *   hp, atk, def, spd, mov, range, cri, dhit, thit, miss,
+	 *   aa, asm, dodge, xp gain, grudge gain, ammo gain, -hp delay
+	 */
+	public static float[] calcEnchantEffect(ItemStack stack)
+	{
+		float[] ench = new float[17];
+        NBTTagList nbttaglist = stack.getEnchantmentTagList();
+
+        if (nbttaglist != null)
+        {
+            for (int i = 0; i < nbttaglist.tagCount(); ++i)
+            {
+            	boolean nonVanilla = false;		//not vanilla enchantment
+                int id = nbttaglist.getCompoundTagAt(i).getShort("id");
+                int lv = nbttaglist.getCompoundTagAt(i).getShort("lvl");
+
+                //for vanilla enchant, check id only
+                switch (id)
+                {
+                //hp
+                case 3:		//R  4 blast_protection
+                	ench[ID.EquipEnch.HP] += 0.05F * lv;
+                case 1:		//UC 4 fire_protection
+                case 4:		//UC 4 projectile_protection
+                	ench[ID.EquipEnch.HP] += 0.05F * lv;
+                case 0:		//C  4 protection
+                	ench[ID.EquipEnch.HP] += 0.1F * lv;
+            	break;
+            	//atk
+                case 17:	//UC 5 smite
+                case 18:	//UC 5 bane_of_arthropods
+                	ench[ID.EquipEnch.ATK] += 0.08F * lv;
+                case 16:	//C  5 sharpness
+                case 48:	//C  5 power
+                	ench[ID.EquipEnch.ATK] += 0.08F * lv;
+                break;
+                //def
+                case 34:	//UC 3 unbreaking
+                	ench[ID.EquipEnch.DEF] += 0.2F * lv;
+            	break;
+            	//spd
+                case 32:	//C  5 efficiency
+                	ench[ID.EquipEnch.SPD] += 0.1F * lv;
+            	break;
+            	//mov
+                case 6:		//R  1 aqua_affinity
+                case 8:		//R  3 depth_strider
+                	ench[ID.EquipEnch.MOV] += 0.05F * lv;
+                	ench[ID.EquipEnch.DODGE] += 0.25F * lv;
+            	break;
+                case 2:		//UC 4 feather_falling
+                	ench[ID.EquipEnch.MOV] += 0.1F * lv;
+            	break;
+            	//range
+                case 49:	//R  2 punch
+                case 19:	//UC 2 knockback
+                	ench[ID.EquipEnch.HIT] += 0.15F * lv;
+            	break;
+            	//cri
+                case 9:		//R  2 frost_walker
+                	ench[ID.EquipEnch.CRI] += 0.25F * lv;
+            	break;
+            	//dhit, thit
+                case 20:	//R  2 fire_aspect
+                case 50:	//R  1 flame
+                	ench[ID.EquipEnch.DHIT] += 0.25F * lv;
+                	ench[ID.EquipEnch.THIT] += 0.25F * lv;
+            	break;
+            	//miss
+                case 62:	//R  3 lure
+                	ench[ID.EquipEnch.MISS] += 0.25F * lv;
+            	break;
+            	//aa
+                case 7:		//VR 3 thorns
+                	ench[ID.EquipEnch.AA] += 0.15F * lv;
+            	break;
+            	//asm
+                case 5:		//R  3 respiration
+                	ench[ID.EquipEnch.ASM] += 0.15F * lv;
+            	break;
+                //xp gain
+                case 21:	//R  3 looting
+                case 35:	//R  3 fortune
+                case 61:	//R  3 luck_of_the_sea
+                	ench[ID.EquipEnch.XP] += 0.15F * lv;
+            	break;
+            	//grudge gain
+                case 33:	//VR 1 silk_touch
+                	ench[ID.EquipEnch.GRUDGE] += 0.25F * lv;
+            	break;
+            	//ammo gain
+                case 51:	//VR 1 infinity
+                	ench[ID.EquipEnch.AMMO] += 0.25F * lv;
+            	break;
+            	//hp restore
+                case 70:	//R  1 mending
+                	ench[ID.EquipEnch.HPRES] += 0.5F * lv;
+            	break;
+            	default:
+            		nonVanilla = true;
+                break;
+                }
+                
+                //for non vanilla enchantment
+                if (nonVanilla && Enchantment.getEnchantmentByID(id) != null)
+                {
+                	//increase all effect by 1%
+                	for (int j = 0; j < ench.length; j++)
+                	{
+                		ench[j] += 0.01F * lv;
+                	}
+                }
+            }//end for all ench
+        }//end get ench list
+        
+        return ench;
+	}
+
+//	/** check enchant effect for HP */
+//	public static boolean isEnchantHP(Enchantment ench)
+//	{
+//		return false;
+//	}
+//	
+//	/** check enchant effect for ATK */
+//	public static boolean isEnchantATK(Enchantment ench)
+//	{
+//		return false;
+//	}
+//	
+//	/** check enchant effect for DEF */
+//	public static boolean isEnchantDEF(Enchantment ench)
+//	{
+//		return false;
+//	}
+//	
+//	/** check enchant effect for SPD */
+//	public static boolean isEnchantSPD(Enchantment ench)
+//	{
+//		return false;
+//	}
+//	
+//	/** check enchant effect for MOV */
+//	public static boolean isEnchantMOV(Enchantment ench)
+//	{
+//		return false;
+//	}
+//	
+//	/** check enchant effect for HIT */
+//	public static boolean isEnchantHIT(Enchantment ench)
+//	{
+//		return false;
+//	}
+//	
+//	/** check enchant effect for CRI */
+//	public static boolean isEnchantCRI(Enchantment ench)
+//	{
+//		return false;
+//	}
+//	
+//	/** check enchant effect for DHIT */
+//	public static boolean isEnchantDHIT(Enchantment ench)
+//	{
+//		return false;
+//	}
+//	
+//	/** check enchant effect for THIT */
+//	public static boolean isEnchantTHIT(Enchantment ench)
+//	{
+//		return false;
+//	}
+//	
+//	/** check enchant effect for MISS */
+//	public static boolean isEnchantMISS(Enchantment ench)
+//	{
+//		return false;
+//	}
+//	
+//	/** check enchant effect for AA */
+//	public static boolean isEnchantAA(Enchantment ench)
+//	{
+//		return false;
+//	}
+//	
+//	/** check enchant effect for ASM */
+//	public static boolean isEnchantASM(Enchantment ench)
+//	{
+//		return false;
+//	}
+//	
+//	/** check enchant effect for DODGE */
+//	public static boolean isEnchantDODGE(Enchantment ench)
+//	{
+//		return false;
+//	}
+//	
+//	/** check enchant effect for XP GAIN */
+//	public static boolean isEnchantXPGAIN(Enchantment ench)
+//	{
+//		return false;
+//	}
+//	
+//	/** check enchant effect for GRUDGE GAIN */
+//	public static boolean isEnchantGRUDGE(Enchantment ench)
+//	{
+//		return false;
+//	}
+//	
+//	/** check enchant effect for AMMO GAIN */
+//	public static boolean isEnchantAMMO(Enchantment ench)
+//	{
+//		return false;
+//	}
+//	
+//	/** check enchant effect for HP RESTORE */
+//	public static boolean isEnchantHPRES(Enchantment ench)
+//	{
+//		return false;
+//	}
+	
+	
+}

@@ -262,12 +262,12 @@ public class EntityRensouhouMob extends BasicEntitySummon
 	{
 		switch (id)
 		{
-		case ID.EF_CRI:
+		case ID.EquipEffect.CRI:
 			return 0.15F;
-		case ID.EF_ASM:  //destroyer AA,ASM++
-		case ID.EF_AA:
+		case ID.EquipEffect.ASM:  //destroyer AA,ASM++
+		case ID.EquipEffect.AA:
 			return this.atk * 0.5F;
-		case ID.EF_DODGE:
+		case ID.EquipEffect.DODGE:
 			return 20F;
 		default:
 			return 0F;

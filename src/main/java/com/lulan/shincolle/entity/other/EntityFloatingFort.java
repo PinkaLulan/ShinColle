@@ -186,7 +186,7 @@ public class EntityFloatingFort extends BasicEntityAirplane
             		}
             		
         			//calc critical, only for type:ship
-            		if (this.rand.nextFloat() < host2.getEffectEquip(ID.EF_CRI))
+            		if (this.rand.nextFloat() < host2.getEffectEquip(ID.EquipEffect.CRI))
             		{
             			atk *= 3F;
                 		//spawn critical particle at host position

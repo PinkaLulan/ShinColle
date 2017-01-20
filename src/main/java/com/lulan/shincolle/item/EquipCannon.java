@@ -1,11 +1,9 @@
 package com.lulan.shincolle.item;
 
+import com.lulan.shincolle.reference.ID;
+
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
-import com.lulan.shincolle.reference.ID;
 
 /**meta:
  *    0:  5-Inch Single Cannon
@@ -92,19 +90,20 @@ public class EquipCannon extends BasicEquip
 		}
 	}
 	
-	//item glow effect
 	@Override
-	@SideOnly(Side.CLIENT)
-    public boolean hasEffect(ItemStack item)
-	{
-		switch(this.getEquipTypeIDFromMeta(item.getItemDamage()))
+    public int getItemEnchantability(ItemStack stack)
+    {
+		switch(this.getEquipTypeIDFromMeta(stack.getMetadata()))
 		{
+		case ID.EquipType.CANNON_TW_LO:
+			return 12;
 		case ID.EquipType.CANNON_TW_HI:
+			return 18;
 		case ID.EquipType.CANNON_TR:
-			return true;
+			return 25;
+		default:
+			return 9;
 		}
-		
-        return false;
     }
 	
 	@Override

@@ -105,8 +105,8 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
 	{
 		if (!this.world.isDaytime())
 		{
-			EffectEquip[ID.EF_CRI] = EffectEquip[ID.EF_CRI] + 0.15F;
-			EffectEquip[ID.EF_DODGE] = EffectEquip[ID.EF_DODGE] + 0.15F;
+			EffectEquip[ID.EquipEffect.CRI] = EffectEquip[ID.EquipEffect.CRI] + 0.15F;
+			EffectEquip[ID.EquipEffect.DODGE] = EffectEquip[ID.EquipEffect.DODGE] + 0.15F;
 		}
 		
 		super.calcShipAttributes();	
@@ -231,7 +231,7 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
         		else
         		{
         			//calc miss chance, if not miss, calc cri/multi hit
-        	        float missChance = 0.2F - 0.001F * StateMinor[ID.M.ShipLevel] - EffectEquip[ID.EF_MISS];
+        	        float missChance = 0.2F - 0.001F * StateMinor[ID.M.ShipLevel] - EffectEquip[ID.EquipEffect.MISS];
         	        if (missChance > 0.35F) missChance = 0.35F;	//max miss chance
         	        
         	        //calc miss -> crit -> double -> tripple
@@ -244,7 +244,7 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
         	  		{
         	  			//roll cri -> roll double hit -> roll triple hit (triple hit more rare)
         	  			//calc critical
-        	          	if (rand.nextFloat() < this.getEffectEquip(ID.EF_CRI))
+        	          	if (rand.nextFloat() < this.getEffectEquip(ID.EquipEffect.CRI))
         	          	{
         	          		atk *= 1.5F;
         	          		applyParticleSpecialEffect(1);
@@ -252,7 +252,7 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
         	          	else
         	          	{
         	          		//calc double hit
-        	              	if (rand.nextFloat() < this.getEffectEquip(ID.EF_DHIT))
+        	              	if (rand.nextFloat() < this.getEffectEquip(ID.EquipEffect.DHIT))
         	              	{
         	              		atk *= 2F;
         	              		applyParticleSpecialEffect(2);
@@ -260,7 +260,7 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
         	              	else
         	              	{
         	              		//calc triple hit
-        	                  	if (rand.nextFloat() < this.getEffectEquip(ID.EF_THIT))
+        	                  	if (rand.nextFloat() < this.getEffectEquip(ID.EquipEffect.THIT))
         	                  	{
         	                  		atk *= 3F;
         	                  		applyParticleSpecialEffect(3);
