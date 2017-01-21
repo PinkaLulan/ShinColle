@@ -252,12 +252,15 @@ public class ID {
 		public static final byte CANNON_TRI_8 = 9;
 		public static final byte CANNON_TRI_16 = 10;
 		public static final byte CANNON_FG_15 = 11;
+		public static final byte CANNON_CG_5 = 12;
+		public static final byte CANNON_TWIN_8 = 13;
 		//torpedo
 		public static final byte TORPEDO_21MK1 = 0;
 		public static final byte TORPEDO_21MK2 = 1;
 		public static final byte TORPEDO_22MK1 = 2;
 		public static final byte TORPEDO_CUTTLEFISH = 3;
 		public static final byte TORPEDO_HIGHSPEED = 4;
+		public static final byte TORPEDO_HIGHSPEED2 = 5;
 		//aircraft
 		public static final byte AIRCRAFT_TMK1 = 0;
 		public static final byte AIRCRAFT_TMK2 = 1;
@@ -277,6 +280,10 @@ public class ID {
 		public static final byte AIRCRAFT_TAVENGERK = 15;
 		public static final byte AIRCRAFT_FHELLCATK = 16;
 		public static final byte AIRCRAFT_BHELLK = 17;
+		public static final byte AIRCRAFT_FHELLCATB = 18;
+		public static final byte AIRCRAFT_BLAND = 19;
+		public static final byte AIRCRAFT_BLANDA = 20;
+		public static final byte AIRCRAFT_FBC = 21;
 		//radar
 		public static final byte RADAR_AIRMK1 = 0;
 		public static final byte RADAR_AIRMK2 = 1;
@@ -291,9 +298,16 @@ public class ID {
 		public static final byte TURBINE = 0;
 		public static final byte TURBINE_IMP = 1;
 		public static final byte TURBINE_ENH = 2;
+		public static final byte TURBINE_GE = 3;
+		public static final byte TURBINE_GENEW = 4;
 		//armor
 		public static final byte ARMOR = 0;
 		public static final byte ARMOR_ENH = 1;
+		public static final byte ARMOR_ATBS = 2;
+		public static final byte ARMOR_ATBM = 3;
+		public static final byte ARMOR_ATBL = 4;
+		public static final byte ARMOR_ATBA = 5;
+		public static final byte ARMOR_APB = 6;
 		//machine gun
 		public static final byte GUN_HA_3 = 0;
 		public static final byte GUN_HA_5 = 1;

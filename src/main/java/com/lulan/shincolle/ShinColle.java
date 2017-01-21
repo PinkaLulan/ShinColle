@@ -14,7 +14,6 @@ import com.lulan.shincolle.init.ModOres;
 import com.lulan.shincolle.init.ModRecipes;
 import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.init.ModWorldGen;
-import com.lulan.shincolle.intermod.forestry.ShinBees;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.IProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
@@ -22,7 +21,6 @@ import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraftforge.common.ForgeChunkManager;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -110,11 +108,11 @@ public class ShinColle
         ConfigHandler.checkChange(ConfigHandler.config);
 		
 		//add forestry bees
-		if (Loader.isModLoaded(Reference.MOD_ID_Forestry) && ConfigHandler.enableForestry)
-		{
-			LogHelper.info("INFO : Enable Forestry mod support.");
-			ShinBees.init();
-			
+//		if (Loader.isModLoaded(Reference.MOD_ID_Forestry) && ConfigHandler.enableForestry)
+//		{
+//			LogHelper.info("INFO : Enable Forestry mod support.");
+//			ShinBees.init();
+//			
 //			AlleleManager.alleleRegistry.getRegisteredAlleles().forEach((k, v) ->
 //			{
 //				LogHelper.info("AAAAAAAA "+k);
@@ -135,7 +133,7 @@ public class ShinColle
 //			    	LogHelper.info("            BBBB:  "+d);
 //			    }
 //			}
-		}
+//		}
 		
 		//DEBUG
 //      Map<String, ModContainer> modlist = Loader.instance().getIndexedModList();

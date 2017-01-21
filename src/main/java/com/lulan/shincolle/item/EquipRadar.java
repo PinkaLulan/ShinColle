@@ -1,7 +1,11 @@
 package com.lulan.shincolle.item;
 
+import java.util.List;
+
 import com.lulan.shincolle.reference.ID;
 
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
@@ -30,6 +34,25 @@ public class EquipRadar extends BasicEquip
         this.setHasSubtypes(true);
         
         GameRegistry.register(this);
+	}
+	
+	/** rearrange item order in creative tab */
+	@Override
+	public void getSubItems(Item item, CreativeTabs tab, List list)
+	{
+		//AA radar
+		list.add(new ItemStack(item, 1, 0));
+		list.add(new ItemStack(item, 1, 1));
+		list.add(new ItemStack(item, 1, 5));
+		//Surface radar
+		list.add(new ItemStack(item, 1, 2));
+		list.add(new ItemStack(item, 1, 3));
+		list.add(new ItemStack(item, 1, 6));
+		//sonar
+		list.add(new ItemStack(item, 1, 4));
+		list.add(new ItemStack(item, 1, 7));
+		//other
+		list.add(new ItemStack(item, 1, 8));
 	}
 	
 	@Override

@@ -1,7 +1,11 @@
 package com.lulan.shincolle.item;
 
+import java.util.List;
+
 import com.lulan.shincolle.reference.ID;
 
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
@@ -24,7 +28,10 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
  *    15: Avenger Torpedo Bomber Kai
  *    16: Hellcat Fighter Kai
  *    17: Hell Diver Kai
- *
+ *    18: Abyssal Cat Fighter (Bombing)
+ *    19: Abyssal Liberation Land-based Dive Bomber
+ *    20: Abyssal Liberation Land-based Dive Bomber Ace
+ *    21: Abyssal Bearcat Fighter
  */
 public class EquipAirplane extends BasicEquip
 {
@@ -42,11 +49,43 @@ public class EquipAirplane extends BasicEquip
         GameRegistry.register(this);
 	}
 	
-	/** T=5, F=6, B=5, R=2 */
+	/** rearrange item order in creative tab */
+	@Override
+	public void getSubItems(Item item, CreativeTabs tab, List list)
+	{
+		//T
+		list.add(new ItemStack(item, 1, 0));
+		list.add(new ItemStack(item, 1, 1));
+		list.add(new ItemStack(item, 1, 2));
+		list.add(new ItemStack(item, 1, 3));
+		list.add(new ItemStack(item, 1, 15));
+		//F
+		list.add(new ItemStack(item, 1, 4));
+		list.add(new ItemStack(item, 1, 5));
+		list.add(new ItemStack(item, 1, 6));
+		list.add(new ItemStack(item, 1, 7));
+		list.add(new ItemStack(item, 1, 8));
+		list.add(new ItemStack(item, 1, 18));
+		list.add(new ItemStack(item, 1, 16));
+		list.add(new ItemStack(item, 1, 21));
+		//B
+		list.add(new ItemStack(item, 1, 9));
+		list.add(new ItemStack(item, 1, 10));
+		list.add(new ItemStack(item, 1, 11));
+		list.add(new ItemStack(item, 1, 12));
+		list.add(new ItemStack(item, 1, 17));
+		list.add(new ItemStack(item, 1, 19));
+		list.add(new ItemStack(item, 1, 20));
+		//R
+		list.add(new ItemStack(item, 1, 13));
+		list.add(new ItemStack(item, 1, 14));
+	}
+	
+	/** T=5, F=8, B=7, R=2 */
 	@Override
 	public int getTypes()
 	{
-		return 18;
+		return 22;
 	}
 	
 	@Override
@@ -74,6 +113,8 @@ public class EquipAirplane extends BasicEquip
 		case 7:
 		case 8:
 		case 16:
+		case 18:
+		case 21:
 			return ID.EquipType.AIR_F_HI;
 		case 9:
 		case 10:
@@ -81,6 +122,8 @@ public class EquipAirplane extends BasicEquip
 		case 11:
 		case 12:
 		case 17:
+		case 19:
+		case 20:
 			return ID.EquipType.AIR_B_HI;
 		case 13:
 			return ID.EquipType.AIR_R_LO;

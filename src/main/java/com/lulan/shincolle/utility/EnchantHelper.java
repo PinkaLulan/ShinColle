@@ -1,8 +1,13 @@
 package com.lulan.shincolle.utility;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Random;
+
 import com.lulan.shincolle.reference.ID;
 
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagList;
 
@@ -13,6 +18,19 @@ import net.minecraft.nbt.NBTTagList;
 public class EnchantHelper
 {
 
+	//enchant table
+	private static ArrayList<int[]> EnchantTable = new ArrayList<int[]>();
+	
+	//init roll table
+	static
+	{
+		/**
+		 * table: 0:for weapon, 1:armor, 2:misc
+		 */
+		EnchantTable.add(new int[] {5, 7, 9, 16, 17, 18, 19, 20, 21, 32, 35, 48, 49, 50, 51, 61});
+		EnchantTable.add(new int[] {0, 1, 3, 4, 33, 34, 70});
+		EnchantTable.add(new int[] {2, 6, 8, 33, 62, 70});
+	}
 	
 	public EnchantHelper() {}
 	
@@ -160,6 +178,64 @@ public class EnchantHelper
         }//end get ench list
         
         return ench;
+	}
+	
+	/**
+	 * apply random enchant to equip by lv and type
+	 * 
+	 * enchLv: 0:none, 1:40%=1 ench, 2:30%=1 30%=2, 3:30%=1 30%=2 20%=3  
+	 */
+	public static void applyRandomEnchantToEquip(ItemStack stack, int enchType, int enchLv)
+	{
+		if (stack == null || enchLv == 0) return;
+		
+		//roll #enchant
+		Random rand = new Random();
+		int enchNum = 0;
+		int ranNum = rand.nextInt(10);
+		
+		switch (enchLv)
+		{
+		case 1:
+			enchNum = ranNum > 5 ? 1 : 0;
+		break;
+		case 2:
+			enchNum = ranNum > 6 ? 2 : ranNum > 3 ? 1 : 0;
+		break;
+		case 3:
+			enchNum = ranNum > 7 ? 3 : ranNum > 4 ? 2 : ranNum > 1 ? 1 : 0;
+		break;
+		}
+		
+		if (enchNum <= 0) return;
+		
+		//roll enchant id
+		int[] enchs = EnchantTable.get(enchType);
+		Enchantment ench;
+		
+		HashMap<Enchantment, Integer> enchmap = new HashMap<Enchantment, Integer>();
+		
+		for (int i = 0; i < enchNum; i++)
+		{
+			ench = Enchantment.getEnchantmentByID(enchs[rand.nextInt(enchs.length)]);
+			
+			//if enchant already exist, lv++
+			if (enchmap.containsKey(ench))
+			{
+				//add level
+				int lv = enchmap.get(ench) + 1;
+				if (lv > ench.getMaxLevel()) lv = ench.getMaxLevel();
+				//save ench
+				enchmap.replace(ench, lv);
+			}
+			else
+			{
+				enchmap.put(ench, 1);
+			}
+		}
+		
+		//apply enchant
+		EnchantmentHelper.setEnchantments(enchmap, stack);
 	}
 
 //	/** check enchant effect for HP */

@@ -3,6 +3,7 @@ package com.lulan.shincolle.crafting;
 import java.util.Random;
 
 import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.TileEntityHelper;
 
 import net.minecraft.item.Item;
@@ -139,47 +140,45 @@ public class SmallRecipes
 	 */
 	public static ItemStack getBuildResultEquip(int[] matAmount)
 	{	
-//		//result item
-//		ItemStack buildResult = null;
-//		int totalMats = matAmount[0] + matAmount[1] + matAmount[2] + matAmount[3];
-//		int[] matsInt = new int[] {0,0,0,0};
-//		int rollType = -1;
-//		float equipRate = totalMats / 128F;		//if total mats < 128, could get ammo
-//		float randRate = rand.nextFloat();
-//		
-//		if (equipRate > 1F) equipRate = 1F;	//min 50%, max 100%	
-//		LogHelper.info("DEBUG : equip build roll: rate / random "+String.format("%.2f", equipRate)+" "+String.format("%.2f", randRate));	
-//		
-//		//first roll: roll equip or ammo
-//		if (randRate < equipRate)
-//		{
-//			//second roll: roll equip type
-//			matsInt[0] = matAmount[0];
-//			matsInt[1] = matAmount[1];
-//			matsInt[2] = matAmount[2];
-//			matsInt[3] = matAmount[3];
-//			rollType = EquipCalc.rollEquipType(0, matsInt);
-//			
-//			//third roll: roll equips of the type
-//			return EquipCalc.rollEquipsOfTheType(rollType, totalMats, 0);
-//		}
-//		else
-//		{
-//			//second roll: roll ammo type and quantity
-//			//50% for light or heavy ammo container
-//			if (rand.nextInt(2) == 0)
-//			{	
-//				buildResult = new ItemStack(ModItems.Ammo, 11+rand.nextInt(11), 1);
-//			}
-//			else
-//			{
-//				buildResult = new ItemStack(ModItems.Ammo, 2+rand.nextInt(2), 3);
-//			}
-//			
-//			return buildResult;	
-//		}
+		//result item
+		ItemStack buildResult = null;
+		int totalMats = matAmount[0] + matAmount[1] + matAmount[2] + matAmount[3];
+		int[] matsInt = new int[] {0,0,0,0};
+		int rollType = -1;
+		float equipRate = totalMats / 128F;		//if total mats < 128, could get ammo
+		float randRate = rand.nextFloat();
 		
-		return null;
+		if (equipRate > 1F) equipRate = 1F;	//min 50%, max 100%	
+		LogHelper.debug("DEBUG : equip build roll: rate / random "+String.format("%.2f", equipRate)+" "+String.format("%.2f", randRate));	
+		
+		//first roll: roll equip or ammo
+		if (randRate < equipRate)
+		{
+			//second roll: roll equip type
+			matsInt[0] = matAmount[0];
+			matsInt[1] = matAmount[1];
+			matsInt[2] = matAmount[2];
+			matsInt[3] = matAmount[3];
+			rollType = EquipCalc.rollEquipType(0, matsInt);
+			
+			//third roll: roll equips of the type
+			return EquipCalc.rollEquipsOfTheType(rollType, totalMats, 0);
+		}
+		else
+		{
+			//second roll: roll ammo type and quantity
+			//50% for light or heavy ammo container
+			if (rand.nextInt(2) == 0)
+			{	
+				buildResult = new ItemStack(ModItems.Ammo, 11+rand.nextInt(11), 1);
+			}
+			else
+			{
+				buildResult = new ItemStack(ModItems.Ammo, 2+rand.nextInt(2), 3);
+			}
+			
+			return buildResult;	
+		}
 	}
 	
 

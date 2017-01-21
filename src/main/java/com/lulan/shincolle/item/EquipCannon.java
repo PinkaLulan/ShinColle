@@ -1,7 +1,11 @@
 package com.lulan.shincolle.item;
 
+import java.util.List;
+
 import com.lulan.shincolle.reference.ID;
 
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
@@ -18,6 +22,8 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
  *    9:  8-Inch Triple Cannon
  *    10: 16-Inch Triple Cannon
  *    11: 15-Inch Fortress Gun
+ *    12: 5-inch Coastal Gun
+ *    13: 8-inch Long Range Twin Cannon
  */
 public class EquipCannon extends BasicEquip
 {
@@ -35,11 +41,34 @@ public class EquipCannon extends BasicEquip
         GameRegistry.register(this);
 	}
 	
-	/** S=2, Tw=7, Tri=3 */
+	/** rearrange item order in creative tab */
+	@Override
+	public void getSubItems(Item item, CreativeTabs tab, List list)
+	{
+		//S
+		list.add(new ItemStack(item, 1, 0));
+		list.add(new ItemStack(item, 1, 1));
+		list.add(new ItemStack(item, 1, 12));
+		//Tw
+		list.add(new ItemStack(item, 1, 2));
+		list.add(new ItemStack(item, 1, 3));
+		list.add(new ItemStack(item, 1, 4));
+		list.add(new ItemStack(item, 1, 13));
+		list.add(new ItemStack(item, 1, 5));
+		list.add(new ItemStack(item, 1, 6));
+		list.add(new ItemStack(item, 1, 7));
+		list.add(new ItemStack(item, 1, 8));
+		//Tr
+		list.add(new ItemStack(item, 1, 11));
+		list.add(new ItemStack(item, 1, 9));
+		list.add(new ItemStack(item, 1, 10));
+	}
+	
+	/** S=3, Tw=8, Tri=3 */
 	@Override
 	public int getTypes()
 	{
-		return 12;
+		return 14;
 	}
 	
 	@Override
@@ -54,11 +83,13 @@ public class EquipCannon extends BasicEquip
 		switch(meta) {
 		case 0:
 		case 1:
+		case 12:
 			return ID.EquipType.CANNON_SI;
 		case 2:
 		case 3:
 		case 4:
 		case 5:
+		case 13:
 			return ID.EquipType.CANNON_TW_LO;
 		case 6:
 		case 7:

@@ -6,9 +6,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 /**meta:
- *    0:  Abyssal Engine
+ *    0:  Abyssal Boiler
  *    1:  Improved Abyssal Turbine
- *    2:  Enhanced Abyssal Engine
+ *    2:  Enhanced Abyssal Boiler
+ *    3:  Abyssal Grudge Engine
+ *    4:  New Model Abyssal Grudge Engine
  */
 public class EquipTurbine extends BasicEquip
 {
@@ -29,7 +31,7 @@ public class EquipTurbine extends BasicEquip
 	@Override
 	public int getTypes()
 	{
-		return 3;
+		return 5;
 	}
 	
 	@Override
@@ -41,6 +43,8 @@ public class EquipTurbine extends BasicEquip
 		case 1:
 			return ID.EquipType.TURBINE_LO;
 		case 2:
+		case 3:
+		case 4:
 			return ID.EquipType.TURBINE_HI;
 		default:
 			return 0;

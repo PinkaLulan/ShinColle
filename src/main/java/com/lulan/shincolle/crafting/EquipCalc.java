@@ -308,7 +308,7 @@ public class EquipCalc
 	 *  1. add equips to roll list by equip type
 	 *  2. roll equips by roll list
 	 */
-	public static ItemStack rollEquipsOfTheType(int type, int totalMatParam, int buildType)
+	public static ItemStack rollEquipsOfTheType(int type, int totalMats, int buildType)
 	{
 		//null item
 		if (type == -1) return null;
@@ -334,7 +334,7 @@ public class EquipCalc
 				//if SMALL BUILD, tweak mean distance: change resolution from 256 to 4000
 				if (buildType == 0)
 				{	//for small build
-					totalMat = (int)(totalMatParam * 15.625F);	// = mats / 256 * 4000
+					totalMat = (int)(totalMats * 15.625F);	// = mats / 256 * 4000
 					te = 256F;  //small build base (for log only)
 				}
 				
@@ -382,16 +382,55 @@ public class EquipCalc
 			}
 		}
 		
-		return getItemStackFromId(rollResult);
+		//calc enchant level
+		int enchLv = 0;
+		
+		if (buildType == 0)	//small build: max mats = 256
+		{
+			if (totalMats > 220)
+			{
+				enchLv = 3;
+			}
+			else if (totalMats > 200)
+			{
+				enchLv = 2;
+			}
+			else if  (totalMats > 180)
+			{
+				enchLv = 1;
+			}
+		}
+		else				//large build: max mats = 4000
+		{
+			if (totalMats > 3500)
+			{
+				enchLv = 3;
+			}
+			else if (totalMats > 3000)
+			{
+				enchLv = 2;
+			}
+			else if  (totalMats > 2000)
+			{
+				enchLv = 1;
+			}
+		}
+		
+		return getItemStackFromId(rollResult, enchLv);
 	}
 	
-	//get equip itemstack from id
-	private static ItemStack getItemStackFromId(int itemID)
+	/**
+	 * get equip itemstack from id with enchant level
+	 * 
+	 * enchLv: 0:none, 1:common ench, 2:rare ench, 3:super rare ench
+	 */
+	private static ItemStack getItemStackFromId(int itemID, int enchLv)
 	{
 		//itemID = Equip Type ID + Equip Sub ID * 100
 		ItemStack item = null;
 		int itemType = itemID % 100;	 //item type value
 		int itemSubType = itemID / 100;  //item meta value
+		int enchType = 0;				 //enchant type: 0:weapon, 1:armor, 2:misc
 		
 		switch (itemType)
 		{
@@ -401,17 +440,20 @@ public class EquipCalc
 		case ID.EquipType.CANNON_TW_HI:
 		case ID.EquipType.CANNON_TR:
 			item = new ItemStack(ModItems.EquipCannon);
-			break;
+			enchType = 0;
+		break;
 		//machine gun
 		case ID.EquipType.GUN_LO:
 		case ID.EquipType.GUN_HI:
 			item = new ItemStack(ModItems.EquipMachinegun);
-			break;
+			enchType = 0;
+		break;
 		//torpedo
 		case ID.EquipType.TORPEDO_LO:
 		case ID.EquipType.TORPEDO_HI:
 			item = new ItemStack(ModItems.EquipTorpedo);
-			break;
+			enchType = 0;
+		break;
 		//aircraft
 		case ID.EquipType.AIR_T_LO:
 		case ID.EquipType.AIR_T_HI:
@@ -422,50 +464,65 @@ public class EquipCalc
 		case ID.EquipType.AIR_R_LO:
 		case ID.EquipType.AIR_R_HI:
 			item = new ItemStack(ModItems.EquipAirplane);
-			break;
+			enchType = 0;
+		break;
 		//radar
 		case ID.EquipType.RADAR_LO:
 		case ID.EquipType.RADAR_HI:
 			item = new ItemStack(ModItems.EquipRadar);
-			break;
+			enchType = 2;
+		break;
 		//turbine 
 		case ID.EquipType.TURBINE_LO:
 		case ID.EquipType.TURBINE_HI:
 			item = new ItemStack(ModItems.EquipTurbine);
-			break;
+			enchType = 2;
+		break;
 		//armor
 		case ID.EquipType.ARMOR_LO:
 		case ID.EquipType.ARMOR_HI:
 			item = new ItemStack(ModItems.EquipArmor);
-			break;
+			enchType = 1;
+		break;
 		//catapult
 		case ID.EquipType.CATAPULT_LO:
 		case ID.EquipType.CATAPULT_HI:
 			item = new ItemStack(ModItems.EquipCatapult);
-			break;
+			enchType = 2;
+		break;
 		//drum
 		case ID.EquipType.DRUM_LO:
 			item = new ItemStack(ModItems.EquipDrum);
-			break;
-		//drum
+			enchType = 2;
+		break;
+		//compass
 		case ID.EquipType.COMPASS_LO:
 			item = new ItemStack(ModItems.EquipCompass);
-			break;
-			//drum
+			enchType = 2;
+		break;
+		//flare
 		case ID.EquipType.FLARE_LO:
 			item = new ItemStack(ModItems.EquipFlare);
-			break;
-			//drum
+			enchType = 2;
+		break;
+		//searchlight
 		case ID.EquipType.SEARCHLIGHT_LO:
 			item = new ItemStack(ModItems.EquipSearchlight);
-			break;
+			enchType = 2;
+		break;
 		default:
 			item = null;
-			break;
+		break;
 		}
 		
 		//set item sub type
 		if (item != null) item.setItemDamage(itemSubType);
+		
+		//apply random enchant
+		if (enchLv > 0)
+		{
+			EnchantHelper.applyRandomEnchantToEquip(item, enchType, enchLv);
+		}
 		
 		LogHelper.debug("DEBUG: equip calc: get itemstack: "+itemType+" "+itemSubType+" "+item);
 		return item;

@@ -11,6 +11,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
  *    2:  22inch Torpedo Mk.II
  *    3:  Cuttlefish Torpedo
  *    4:  High-Speed Torpedo
+ *    5:  High-speed Abyssal Torpedo Mod.2
  */
 public class EquipTorpedo extends BasicEquip
 {
@@ -31,7 +32,7 @@ public class EquipTorpedo extends BasicEquip
 	@Override
 	public int getTypes()
 	{
-		return 5;
+		return 6;
 	}
 	
 	@Override
@@ -45,6 +46,7 @@ public class EquipTorpedo extends BasicEquip
 			return ID.EquipType.TORPEDO_LO;
 		case 3:
 		case 4:
+		case 5:
 			return ID.EquipType.TORPEDO_HI;
 		default:
 			return 0;
@@ -54,7 +56,7 @@ public class EquipTorpedo extends BasicEquip
 	@Override
     public int getItemEnchantability(ItemStack stack)
     {
-		switch(this.getEquipTypeIDFromMeta(stack.getMetadata()))
+		switch (this.getEquipTypeIDFromMeta(stack.getMetadata()))
 		{
 		case ID.EquipType.TORPEDO_LO:
 			return 16;

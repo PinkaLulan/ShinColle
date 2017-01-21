@@ -287,13 +287,13 @@ public class LargeRecipes
 		//result item
 		ItemStack buildResult = null;
 		int rollType = -1;
-		int totalMat = matAmount[0] + matAmount[1] + matAmount[2] + matAmount[3];
+		int totalMats = matAmount[0] + matAmount[1] + matAmount[2] + matAmount[3];
 		float randRate = rand.nextFloat();
 
 		//first roll: roll equip type
 		rollType = EquipCalc.rollEquipType(1, matAmount);
 		//second roll: roll equips of the type
-		return EquipCalc.rollEquipsOfTheType(rollType, totalMat, 1);
+		return EquipCalc.rollEquipsOfTheType(rollType, totalMats, 1);
 	}
 	
 
