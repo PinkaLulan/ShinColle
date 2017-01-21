@@ -5,8 +5,10 @@ import java.util.List;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipEmotion;
+import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.entity.other.EntityProjectileBeam;
+import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
@@ -16,6 +18,8 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -30,6 +34,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 public class S2CEntitySync implements IMessage
 {
 	
+	private Object host;
 	private Entity entity;
 	private byte packetType;
 	private int entityID, valueInt;
@@ -49,7 +54,7 @@ public class S2CEntitySync implements IMessage
 		public static final byte SyncEntity_Emo = 4;
 		public static final byte SyncShip_Riders = 5;
 		public static final byte SyncShip_Scale = 6;
-		public static final byte NO_USE_1 = 7;
+		public static final byte SyncEntity_PlayerUID = 7;
 		public static final byte SyncProjectile = 8;
 		public static final byte SyncEntity_PosRot = 9;
 		public static final byte SyncEntity_Rot = 10;
@@ -95,6 +100,21 @@ public class S2CEntitySync implements IMessage
         this.packetType = type;
         this.valueInt = value;
     }
+	
+	/**for entity sync
+	 * type 7:  entity player UID sync
+	 */
+	public S2CEntitySync(Object host, byte type)
+	{
+		this.host = null;
+		this.entity = null; 
+		this.packetType = type;
+		
+		if (host instanceof IShipOwner)
+		{
+			this.host = host;
+		}
+	}
 
 	//接收packet方法 (CLIENT SIDE)
 	@Override
@@ -168,6 +188,9 @@ public class S2CEntitySync implements IMessage
 		case PID.SyncEntity_Motion:	//entity motion sync
 			this.valueFloat1 = PacketHelper.readFloatArray(buf, 3);
 		break;
+		case PID.SyncEntity_PlayerUID:	//player uid sync
+			this.valueInt1 = PacketHelper.readIntArray(buf, 4);
+		break;
 		}//end switch
 		
 	}
@@ -178,7 +201,15 @@ public class S2CEntitySync implements IMessage
 	{
 		//send packet and entity id
 		buf.writeByte(this.packetType);
-		buf.writeInt(entity.getEntityId());
+		
+		if (entity == null)
+		{
+			buf.writeInt(-1);
+		}
+		else
+		{
+			buf.writeInt(entity.getEntityId());
+		}
 		
 		switch (this.packetType)
 		{
@@ -526,6 +557,41 @@ public class S2CEntitySync implements IMessage
 			buf.writeFloat((float) entity.motionZ);
 		}
 		break;
+		case PID.SyncEntity_PlayerUID:	//player UID sync
+		{
+			boolean sendFail = true;
+			
+			if (this.host instanceof IShipOwner)
+			{
+				if (this.host instanceof TileEntity)
+				{
+					sendFail = false;
+					
+					buf.writeInt(((TileEntity) this.host).getPos().getX());
+					buf.writeInt(((TileEntity) this.host).getPos().getY());
+					buf.writeInt(((TileEntity) this.host).getPos().getZ());
+					buf.writeInt(((IShipOwner) this.host).getPlayerUID());
+				}
+				else if (this.host instanceof Entity)
+				{
+					sendFail = false;
+					
+					buf.writeInt(((Entity) this.host).getEntityId());
+					buf.writeInt(-1);
+					buf.writeInt(-1);
+					buf.writeInt(((IShipOwner) this.host).getPlayerUID());
+				}
+			}
+			
+			if (sendFail)
+			{
+				buf.writeInt(0);
+				buf.writeInt(0);
+				buf.writeInt(0);
+				buf.writeInt(0);
+			}
+		}
+		break;
 		}
 	}
 	
@@ -535,8 +601,13 @@ public class S2CEntitySync implements IMessage
 		boolean getTarget = false;
 		
 		//get target entity
-		Entity entity = EntityHelper.getEntityByID(msg.entityID, 0, true);
-		BasicEntityShip ship;
+		Entity entity = null;
+		BasicEntityShip ship = null;
+		
+		if (msg.entityID > 0)
+		{
+			entity = EntityHelper.getEntityByID(msg.entityID, 0, true);
+		}
 		
 		switch(msg.packetType)
 		{
@@ -564,6 +635,9 @@ public class S2CEntitySync implements IMessage
 		case PID.SyncEntity_Rot:
 		case PID.SyncEntity_Motion:
 			if (entity != null) getTarget = true;
+		break;
+		case PID.SyncEntity_PlayerUID:	//player uid sync
+			getTarget = true;
 		break;
 		}
 
@@ -938,6 +1012,30 @@ public class S2CEntitySync implements IMessage
 			case PID.SyncEntity_Motion:	//entity motion sync
 			{
 				entity.setVelocity(msg.valueFloat1[0], msg.valueFloat1[1], msg.valueFloat1[2]);
+			}
+			break;
+			case PID.SyncEntity_PlayerUID:	//player uid sync
+			{
+				//host is entity
+				if (msg.valueInt1[2] == -1)
+				{
+					entity = EntityHelper.getEntityByID(msg.valueInt1[0], 0, true);
+					
+					if (entity instanceof IShipOwner)
+					{
+						((IShipOwner) entity).setPlayerUID(msg.valueInt1[3]);
+					}
+				}
+				//host is tile
+				else
+				{
+					TileEntity tile = ClientProxy.getClientWorld().getTileEntity(new BlockPos(msg.valueInt1[0], msg.valueInt1[1], msg.valueInt1[2]));
+					
+					if (tile instanceof IShipOwner)
+					{
+						((IShipOwner) tile).setPlayerUID(msg.valueInt1[3]);
+					}
+				}
 			}
 			break;
 			}//end switch

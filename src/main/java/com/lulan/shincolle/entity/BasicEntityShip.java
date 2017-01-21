@@ -658,7 +658,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                 	NBTTagCompound rider = list.getCompoundTagAt(i);
                 	NBTTagList pos = rider.getTagList("Pos", 6);
                 	pos.set(0, new NBTTagDouble(this.posX));
-                	pos.set(1, new NBTTagDouble(this.posY));
                 	pos.set(2, new NBTTagDouble(this.posZ));
                 }
             }
@@ -2446,7 +2445,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			//request model display sync after construction
 			if (this.ticksExisted == 2)
 			{
-				CommonProxy.channelG.sendToServer(new C2SInputPackets(C2SInputPackets.PID.RequestSync_Model, this.getEntityId(), this.world.provider.getDimension()));
+				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.RequestSync_Model, this.getEntityId(), this.world.provider.getDimension()));
 			}
 			
 			//faster body rotateYaw update (vanilla = 12~20 ticks?)
@@ -5623,7 +5622,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	  		{
   	  			BlockPos pos = new BlockPos(target);
 				TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-				CommonProxy.channelG.sendToAllAround(new S2CInputPackets(S2CInputPackets.PID.FlareEffect, pos.getX(), pos.getY(), pos.getZ()), point);
+				CommonProxy.channelI.sendToAllAround(new S2CInputPackets(S2CInputPackets.PID.FlareEffect, pos.getX(), pos.getY(), pos.getZ()), point);
   	  		}
   		}
   	}

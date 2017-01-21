@@ -8,9 +8,12 @@ import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.TileEntityHelper;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -164,6 +167,18 @@ public class TileEntitySmallShipyard extends BasicTileInventory implements ITile
 		{
 			return false;
 		}
+	}
+	
+	@Override
+	public boolean isUsableByPlayer(EntityPlayer player)
+	{
+		//check tile owner
+		if (BlockHelper.checkTileOwner(player, this))
+		{
+			return super.isUsableByPlayer(player);
+		}
+		
+		return false;
 	}
 
 	//使用管線/漏斗輸出時呼叫, 不適用於手動置入
@@ -590,6 +605,6 @@ public class TileEntitySmallShipyard extends BasicTileInventory implements ITile
 //		return this.tank.drain(amount, true); TODO
 		return null;
 	}
-	
+
 	
 }

@@ -670,7 +670,7 @@ public class PointerItem extends BasicItem
 					LogHelper.debug("DEBUG: change hotbar "+((EntityPlayer)player).inventory.currentItem+" to "+orgCurrentItem);
 					
 					((EntityPlayer)player).inventory.currentItem = orgCurrentItem;
-					CommonProxy.channelG.sendToServer(new C2SInputPackets(C2SInputPackets.PID.SyncHandheld, orgCurrentItem));
+					CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.SyncHandheld, orgCurrentItem));
 					item.getTagCompound().setBoolean("chgHB", false);
 				}
 			}

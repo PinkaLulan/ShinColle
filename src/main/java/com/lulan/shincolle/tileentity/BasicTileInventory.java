@@ -1,8 +1,11 @@
 package com.lulan.shincolle.tileentity;
 
 import com.lulan.shincolle.capability.CapaInventory;
+import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.PacketHelper;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
@@ -11,12 +14,12 @@ import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
 
-abstract public class BasicTileInventory extends BasicTileEntity implements ISidedInventory
+abstract public class BasicTileInventory extends BasicTileEntity implements ISidedInventory, IShipOwner
 {
 	
 	protected CapaInventory itemHandler;
 	protected int syncTime = 0;		//for sync (optional)
-
+	protected int playerUID = 0;
 	
 	public BasicTileInventory()
 	{
@@ -25,25 +28,29 @@ abstract public class BasicTileInventory extends BasicTileEntity implements ISid
 	
 	//load item data
     @Override
-    public void readFromNBT(NBTTagCompound compound)
+    public void readFromNBT(NBTTagCompound nbt)
     {
-        super.readFromNBT(compound);
+        super.readFromNBT(nbt);
         
-        if (compound.hasKey(CapaInventory.InvName))
+        this.playerUID = nbt.getInteger("pid");
+        
+        if (nbt.hasKey(CapaInventory.InvName))
         {
-        	itemHandler.deserializeNBT((NBTTagCompound) compound.getTag(CapaInventory.InvName));
+        	itemHandler.deserializeNBT((NBTTagCompound) nbt.getTag(CapaInventory.InvName));
         }
     }
 
     //save item data
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound)
+    public NBTTagCompound writeToNBT(NBTTagCompound nbt)
     {
-        super.writeToNBT(compound);
+        super.writeToNBT(nbt);
         
-        compound.setTag(CapaInventory.InvName, itemHandler.serializeNBT());
+        nbt.setInteger("pid", this.playerUID);
         
-        return compound;
+        nbt.setTag(CapaInventory.InvName, itemHandler.serializeNBT());
+        
+        return nbt;
     }
 
     //check capability
@@ -260,6 +267,30 @@ abstract public class BasicTileInventory extends BasicTileEntity implements ISid
 
 	@Override
 	public void clear() {}
+	
+	@Override
+	public int getPlayerUID()
+	{
+		return this.playerUID;
+	}
+
+	@Override
+	public void setPlayerUID(int uid)
+	{
+		this.playerUID = uid;
+		
+		//sync uid to all around
+		if (!this.world.isRemote)
+		{
+			PacketHelper.sendS2CEntitySync(0, this, this.world, this.pos, null);
+		}
+	}
+
+	@Override
+	public Entity getHostEntity()
+	{
+		return null;
+	}
 	
 
 }

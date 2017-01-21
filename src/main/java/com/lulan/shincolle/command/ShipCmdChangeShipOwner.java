@@ -150,7 +150,7 @@ public class ShipCmdChangeShipOwner extends CommandBase
 								.appendSibling(new TextComponentString(" shipchangeowner: owner: "+TextFormatting.AQUA+owner+" "+TextFormatting.LIGHT_PURPLE+owner.getUniqueID()))
 							);
 							//send sender and owner eid to client
-							CommonProxy.channelG.sendTo(new S2CInputPackets(S2CInputPackets.PID.CmdChOwner, senderEID, ownerEID), (EntityPlayerMP) op);
+							CommonProxy.channelI.sendTo(new S2CInputPackets(S2CInputPackets.PID.CmdChOwner, senderEID, ownerEID), (EntityPlayerMP) op);
 						}//owner pid is legal
 						else
 						{

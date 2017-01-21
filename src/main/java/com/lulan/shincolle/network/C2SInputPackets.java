@@ -5,7 +5,10 @@ import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.BasicEntitySummon;
+import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.tileentity.ITileWaypoint;
+import com.lulan.shincolle.tileentity.TileEntityCrane;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.PacketHelper;
@@ -15,6 +18,9 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
@@ -44,6 +50,7 @@ public class C2SInputPackets implements IMessage
 		public static final byte CmdChOwner = 3;
 		public static final byte CmdShipAttr = 4;
 		public static final byte RequestSync_Model = 5;
+		public static final byte Waypoint_Set = 6;
 	}
 	
 	
@@ -78,6 +85,7 @@ public class C2SInputPackets implements IMessage
 		case PID.CmdChOwner:    	//command: change owner
 		case PID.CmdShipAttr:   	//command: set ship attrs
 		case PID.RequestSync_Model:	//request model display sync
+		case PID.Waypoint_Set:		//waypoint pairing packet
 			try
 			{
 				this.value = buf.readInt();  //int array length
@@ -112,6 +120,7 @@ public class C2SInputPackets implements IMessage
 		case PID.CmdChOwner:    //command: change owner
 		case PID.CmdShipAttr:   //command: set ship attrs
 		case PID.RequestSync_Model:  //request model display sync
+		case PID.Waypoint_Set:		//waypoint pairing packet
 			//send int array
 			if (this.value3 != null)
 			{
@@ -245,6 +254,58 @@ public class C2SInputPackets implements IMessage
 				{
 					((BasicEntitySummon) entity).sendSyncPacket(0);
 				}
+			break;
+			case PID.Waypoint_Set:		//waypoint pairing packet
+			{
+				/**
+				 * waypoint pairing packet:
+				 * data: 0:type, 1: worldID, 2:playerUID, 3~5:host xyz, 6~8:target xyz
+				 * type: 0:set last, 1:set next, 2:set chest
+				 */
+				World w = ServerProxy.getServerWorld(msg.value3[1]);
+				
+				if (w != null)
+				{
+					BlockPos p1 = new BlockPos(msg.value3[3], msg.value3[4], msg.value3[5]);
+					BlockPos p2 = new BlockPos(msg.value3[6], msg.value3[7], msg.value3[8]);
+					TileEntity tile1 = w.getTileEntity(p1);
+					TileEntity tile2 = w.getTileEntity(p2);
+					
+					switch (msg.value3[0])
+					{
+					case 0:	//set last
+						if (tile1 instanceof ITileWaypoint && tile2 instanceof ITileWaypoint)
+						{
+							//check host tile is same owner
+							if (((ITileWaypoint)tile1).getPlayerUID() == msg.value3[2])
+							{
+								((ITileWaypoint)tile1).setLastWaypoint(p2);
+							}
+						}
+					break;
+					case 1:	//set next
+						if (tile1 instanceof ITileWaypoint && tile2 instanceof ITileWaypoint)
+						{
+							//check host tile is same owner
+							if (((ITileWaypoint)tile1).getPlayerUID() == msg.value3[2])
+							{
+								((ITileWaypoint)tile1).setNextWaypoint(p2);
+							}
+						}
+					break;
+					case 2:	//set chest
+						if (tile1 instanceof TileEntityCrane && tile2 instanceof IInventory)
+						{
+							//check host tile is same owner
+							if (((TileEntityCrane)tile1).getPlayerUID() == msg.value3[2])
+							{
+								((TileEntityCrane)tile1).setPairedChest(p2, false);
+							}
+						}
+					break;
+					}
+				}
+			}
 			break;
 			}//end switch
 		}

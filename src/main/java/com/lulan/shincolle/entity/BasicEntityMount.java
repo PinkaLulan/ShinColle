@@ -638,12 +638,23 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
                 	NBTTagCompound rider = list.getCompoundTagAt(i);
                 	NBTTagList pos = rider.getTagList("Pos", 6);
                 	pos.set(0, new NBTTagDouble(this.posX));
-                	pos.set(1, new NBTTagDouble(this.posY));
                 	pos.set(2, new NBTTagDouble(this.posZ));
                 }
             }
         }
 	}
+	
+	@Override
+    public boolean writeToNBTOptional(NBTTagCompound nbt)
+    {
+		//set rider position by mounts to prevent deleted on chunk loading
+		for (Entity rider : this.getPassengers())
+		{
+			rider.setPosition(this.posX, rider.posY, this.posZ);
+		}
+		
+		return super.writeToNBTOptional(nbt);
+    }
 	
 	//set movement by key pressed, pitch/yaw is RAD not DEGREE
 	private void applyMovement(float pitch, float yaw)
@@ -1699,14 +1710,14 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   			//set position for host seat
   			if (passenger instanceof BasicEntityShip)
   			{
-//  				this.seatPos = new float[] {EventHandler.field2, EventHandler.field1, 0F}; //TODO
+//  				this.seatPos = new float[] {EventHandler.field2, EventHandler.field1, 0F};	//debug
   	        	float[] ridePos = CalcHelper.rotateXZByAxis(this.seatPos[0], this.seatPos[2], renderYawOffset * Values.N.DIV_PI_180, 1F);	
   	        	passenger.setPosition(this.posX + ridePos[1], this.posY + this.seatPos[1] + passenger.getYOffset(), this.posZ + ridePos[0]);
   			}
   			//set position for player seat
   			else if (passenger instanceof EntityPlayer)
   			{
-//  				this.seatPos2 = new float[] {EventHandler.field2, EventHandler.field1, 0F}; //TODO
+//  				this.seatPos2 = new float[] {EventHandler.field2, EventHandler.field1, 0F}; //debug
   				float[] ridePos = CalcHelper.rotateXZByAxis(this.seatPos2[0], this.seatPos2[2], renderYawOffset * Values.N.DIV_PI_180, 1F);	
   	        	passenger.setPosition(this.posX + ridePos[1], this.posY + this.seatPos2[1] + passenger.getYOffset(), this.posZ + ridePos[0]);
   			}

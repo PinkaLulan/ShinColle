@@ -62,6 +62,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -206,12 +207,28 @@ public class EntityHelper
 		return false;
 	}
 	
-	/** check player is OP */
+	/** check player is OP or creative mode */
 	public static boolean checkOP(EntityPlayer player)
 	{
-		if (player != null && !player.world.isRemote)
+		if (player != null)
 		{
-			return player.world.getMinecraftServer().getPlayerList().canSendCommands(player.getGameProfile());
+			if (player.capabilities.isCreativeMode) return true;
+			
+			//server side
+			if (!player.world.isRemote)
+			{
+				return FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().canSendCommands(player.getGameProfile());
+			}
+			//is single player
+			else if (!CommonProxy.isMultiplayer)
+			{
+				return true;
+			}
+			//is multiplayer and client side, check permission level >= 2 (4 = OP, 2 = allow command block)
+			else
+			{
+				return player.canUseCommandBlock();
+			}
 		}
 		
 		return false;

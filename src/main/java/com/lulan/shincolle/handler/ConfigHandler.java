@@ -149,7 +149,7 @@ public class ConfigHandler
 		showTag = config.getBoolean("AlwaysShow_NameTag", "general", true, "Always show custom name tag");
 		
 		//ship列表顯示數量
-		shipNumPerPage = config.getInt("Command_ShipNum", "general", 4800, 20, 1728000, "#Ship per page for command: /ship list");
+		shipNumPerPage = config.getInt("Command_ShipNum", "general", 5, 1, 5000, "#Ship per page for command: /ship list");
 		
 		//team改動cd (ticks)
 		teamCooldown = config.getInt("Cooldown_Team", "general", 6000, 20, 1728000, "Create/Disband Team Cooldown");

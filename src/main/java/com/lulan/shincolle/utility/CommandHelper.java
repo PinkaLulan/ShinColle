@@ -63,7 +63,7 @@ public class CommandHelper
 					new TextComponentTranslation("chat.shincolle:command.command")
 					.appendSibling(new TextComponentString(" shipchangeowner: ship: "+TextFormatting.AQUA+hitObj.entityHit))
 				);
-				CommonProxy.channelG.sendToServer(new C2SInputPackets(C2SInputPackets.PID.CmdChOwner, ownerEID, hitObj.entityHit.getEntityId(), hitObj.entityHit.world.provider.getDimension()));
+				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.CmdChOwner, ownerEID, hitObj.entityHit.getEntityId(), hitObj.entityHit.world.provider.getDimension()));
 			}//end get target ship
 			else
 			{
@@ -146,7 +146,7 @@ public class CommandHelper
 					sender.sendMessage(new TextComponentString(""+TextFormatting.AQUA+ship));
 					
 					//send packet to server: entity id, world id, level, bonus 1~6
-					CommonProxy.channelG.sendToServer(new C2SInputPackets(C2SInputPackets.PID.CmdShipAttr,
+					CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.CmdShipAttr,
 							ship.getEntityId(), ship.world.provider.getDimension(), cmdData[1], cmdData[2],
 							cmdData[3], cmdData[4], cmdData[5], cmdData[6], cmdData[7]));
 				}
@@ -158,7 +158,7 @@ public class CommandHelper
 					sender.sendMessage(new TextComponentString(""+TextFormatting.AQUA+ship));
 					
 					//send packet to server: entity id, world id, level, bonus 1~6
-					CommonProxy.channelG.sendToServer(new C2SInputPackets(C2SInputPackets.PID.CmdShipAttr,
+					CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.CmdShipAttr,
 							ship.getEntityId(), ship.world.provider.getDimension(), cmdData[1]));
 				}
 				
@@ -204,6 +204,14 @@ public class CommandHelper
 		int size = map.size();
 		int numPerPage = ConfigHandler.shipNumPerPage;
 		int maxPage = (size - 1) / numPerPage + 1;
+		
+		//if show all ship
+		if (page <= 0)
+		{
+			numPerPage = 30000;
+			maxPage = (size - 1) / numPerPage + 1;
+			page = 1;
+		}
 		
 		//write total #page
 		buf.writeInt(maxPage);

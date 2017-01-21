@@ -21,6 +21,7 @@ import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -194,6 +195,18 @@ public class TileEntityVolCore extends BasicTileInventory implements ITickable
 	private boolean isWorking()
 	{
 		return this.canWork && this.btnActive;
+	}
+	
+	@Override
+	public boolean isUsableByPlayer(EntityPlayer player)
+	{
+		//check tile owner
+		if (BlockHelper.checkTileOwner(player, this))
+		{
+			return super.isUsableByPlayer(player);
+		}
+		
+		return false;
 	}
 
 	//方塊的流程進行方法: 方塊資料必須以markDirty標記block更新(更新meta值時), 以及讀寫NBT tag來保存

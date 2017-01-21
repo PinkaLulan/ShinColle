@@ -8,9 +8,11 @@ import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.TileEntityHelper;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -136,7 +138,6 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileLiquidF
         selectMat = compound.getInteger("selectMat");
         setMatBuild(compound.getIntArray("matsBuild"));
         setMatStock(compound.getIntArray("matsStock"));
-        
     }
 	
 	//將資料寫進nbt
@@ -144,7 +145,7 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileLiquidF
 	public NBTTagCompound writeToNBT(NBTTagCompound compound)
 	{
 		super.writeToNBT(compound);
-			
+		
 		compound.setInteger("powerConsumed", powerConsumed);
 		compound.setInteger("powerRemained", powerRemained);
 		compound.setInteger("powerGoal", powerGoal);
@@ -199,6 +200,18 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileLiquidF
 	public boolean isBuilding()
 	{
 		return hasPowerRemained() && canBuild();
+	}
+	
+	@Override
+	public boolean isUsableByPlayer(EntityPlayer player)
+	{
+		//check tile owner
+		if (BlockHelper.checkTileOwner(player, this))
+		{
+			return super.isUsableByPlayer(player);
+		}
+		
+		return false;
 	}
 	
 	//判定是否有燃料

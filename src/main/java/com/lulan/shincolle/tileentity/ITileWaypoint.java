@@ -1,26 +1,23 @@
 package com.lulan.shincolle.tileentity;
 
+import com.lulan.shincolle.entity.IShipOwner;
+
 import net.minecraft.util.math.BlockPos;
 
-public interface ITileWaypoint
+public interface ITileWaypoint extends IShipOwner
 {
 	
-	/** set last waypoint */
-	public void setLastWaypoint(BlockPos pos);
 	
-	/** get last waypoint */
+	/** last waypoint */
+	public void setLastWaypoint(BlockPos pos);
 	public BlockPos getLastWaypoint();
 
-	/** set next waypoint */
+	/** next waypoint */
 	public void setNextWaypoint(BlockPos pos);
-	
-	/** get next waypoint */
 	public BlockPos getNextWaypoint();
 	
-	/** set waypoint stay time */
+	/** waypoint stay time */
 	public void setWpStayTime(int time);
-	
-	/** get waypoint stay time */
 	public int getWpStayTime();
 	
 	

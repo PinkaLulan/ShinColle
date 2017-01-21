@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.network.S2CEntitySync;
+import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.TileEntityCrane;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
@@ -13,8 +15,13 @@ import com.lulan.shincolle.tileentity.TileEntityVolCore;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 
 import io.netty.buffer.ByteBuf;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
 public class PacketHelper
 {
@@ -401,6 +408,35 @@ public class PacketHelper
 		{
 			LogHelper.debug("DEBUG: set tile entity by GUI fail: tile: "+tile);
 		}	
+	}
+	
+	/**
+	 * send S2CEntitySync packet
+	 * 
+	 * type 0:  SyncEntity_PlayerUID
+	 * 
+	 */
+	public static void sendS2CEntitySync(int type, Object host, World world, BlockPos targetPos, EntityPlayer targetPlayer)
+	{
+		if (!world.isRemote)
+		{
+			TargetPoint point = null;
+			if (targetPos != null) point = new TargetPoint(world.provider.getDimension(), targetPos.getX(), targetPos.getY(), targetPos.getZ(), 64D);
+			
+			switch (type)
+			{
+			case 0:
+				if (point != null)
+				{
+					CommonProxy.channelE.sendToAllAround(new S2CEntitySync(host, S2CEntitySync.PID.SyncEntity_PlayerUID), point);
+				}
+				else if (targetPlayer != null)
+				{
+					CommonProxy.channelE.sendTo(new S2CEntitySync(host, S2CEntitySync.PID.SyncEntity_PlayerUID), (EntityPlayerMP) targetPlayer);
+				}
+			break;
+			}
+		}
 	}
 	
 	

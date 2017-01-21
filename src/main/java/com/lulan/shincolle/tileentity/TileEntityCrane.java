@@ -13,9 +13,12 @@ import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.item.PointerItem;
+import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.proxy.ClientProxy;
+import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
@@ -42,7 +45,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 {
 
 	//pos: lastXYZ, nextXYZ, chestXYZ
-	private int tick, playerUID, partDelay, itemMode, redMode, redTick, craneTime;
+	private int tick, partDelay, itemMode, redMode, redTick, craneTime;
 	private BlockPos lastPos, nextPos, chestPos;
 	
 	//crane
@@ -80,7 +83,6 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 		this.checkOredict = false;
 		this.checkNbt = false;
 		this.craneMode = 0;
-		this.playerUID = 0;
 		this.tick = 0;
 		this.partDelay = 0;
 		this.itemMode = 0;
@@ -213,7 +215,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 	}
 	
 	//set paired chest
-	public void setPairedChest(BlockPos pos)
+	public void setPairedChest(BlockPos pos, boolean sendPacket)
 	{
 		TileEntity tile = this.world.getTileEntity(pos);
 		
@@ -222,6 +224,15 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 			this.chestPos = pos;
 			this.isPaired = true;
 			this.chest = (IInventory) tile;
+			
+			//send chest paired packet
+			if (sendPacket && this.world.isRemote)
+			{
+				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.Waypoint_Set,
+						2, this.world.provider.getDimension(), this.playerUID,
+						this.pos.getX(), this.pos.getY(), this.pos.getZ(),
+						this.chestPos.getX(), this.chestPos.getY(), this.chestPos.getZ()));
+			}
 		}
 		else
 		{
@@ -271,7 +282,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 		{
 			this.lastPos = new BlockPos(data[0], data[1], data[2]);
 			this.nextPos = new BlockPos(data[3], data[4], data[5]);
-			setPairedChest(new BlockPos(data[6], data[7], data[8]));
+			setPairedChest(new BlockPos(data[6], data[7], data[8]), false);
 		}
 	}
 	
@@ -281,6 +292,14 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 		if (pos != null)
 		{
 			this.nextPos = pos;
+			
+			if (this.world.isRemote)
+			{
+				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.Waypoint_Set,
+						1, this.world.provider.getDimension(), this.playerUID,
+						this.pos.getX(), this.pos.getY(), this.pos.getZ(),
+						this.nextPos.getX(), this.nextPos.getY(), this.nextPos.getZ()));
+			}
 		}
 	}
 
@@ -296,6 +315,14 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 		if (pos != null)
 		{
 			this.lastPos = pos;
+			
+			if (this.world.isRemote)
+			{
+				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.Waypoint_Set,
+						0, this.world.provider.getDimension(), this.playerUID,
+						this.pos.getX(), this.pos.getY(), this.pos.getZ(),
+						this.lastPos.getX(), this.lastPos.getY(), this.lastPos.getZ()));
+			}
 		}
 	}
 
@@ -543,7 +570,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 							if (len1 < len3) len1 = len3;
 							postext1 = postext1 + "\n" + TextFormatting.WHITE + postext2 + "\n" + TextFormatting.WHITE + postext3;
 							
-							ParticleHelper.spawnAttackParticleAt(postext1, this.pos.getX()+0.5D, this.pos.getY()+1.9D, this.pos.getZ()+0.5D, (byte) 0, 3, len1);
+							ParticleHelper.spawnAttackParticleAt(postext1, this.pos.getX()+0.5D, this.pos.getY()+1.9D, this.pos.getZ()+0.5D, (byte) 0, 3, len1+1);
 						}
 					}
 				}//end holding item
@@ -1348,6 +1375,8 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 			return this.itemMode;
 		case 10:
 			return this.redMode;
+		case 11:
+			return this.playerUID;
 		default:
 			return 0;
 		}
@@ -1360,34 +1389,37 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 		{
 		case 0:
 		case 1:
-			break;
+		break;
 		case 2:
 			this.isActive = value == 0 ? false : true;
-			break;
+		break;
 		case 3:
 			this.checkMetadata = value == 0 ? false : true;
-			break;
+		break;
 		case 4:
 			this.checkOredict = value == 0 ? false : true;
-			break;
+		break;
 		case 5:
 			this.craneMode = value;
-			break;
+		break;
 		case 6:
 			this.enabLoad = value == 0 ? false : true;
-			break;
+		break;
 		case 7:
 			this.enabUnload = value == 0 ? false : true;
-			break;
+		break;
 		case 8:
 			this.checkNbt = value == 0 ? false : true;
-			break;
+		break;
 		case 9:
 			this.itemMode = value;
-			break;
+		break;
 		case 10:
 			this.redMode = value;
-			break;
+		break;
+		case 11:
+			this.playerUID = value;
+		break;
 		}
 	}
 
@@ -1397,5 +1429,17 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 		return 11;
 	}
 	
+	@Override
+	public boolean isUsableByPlayer(EntityPlayer player)
+	{
+		//check tile owner
+		if (BlockHelper.checkTileOwner(player, this))
+		{
+			return super.isUsableByPlayer(player);
+		}
+		
+		return false;
+	}
+
 	
 }

@@ -87,7 +87,7 @@ public class ShipCmdShipInfo extends CommandBase
 			if (sender instanceof EntityPlayer)
 			{
 				//send sender and owner eid to client
-				CommonProxy.channelG.sendTo(new S2CInputPackets(S2CInputPackets.PID.CmdShipInfo, ((EntityPlayer) sender).getEntityId()), (EntityPlayerMP) sender);
+				CommonProxy.channelI.sendTo(new S2CInputPackets(S2CInputPackets.PID.CmdShipInfo, ((EntityPlayer) sender).getEntityId()), (EntityPlayerMP) sender);
 			}//is player
 		}//end server side
 	}

@@ -7,6 +7,7 @@ import com.lulan.shincolle.proxy.ClientProxy;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -70,6 +71,7 @@ public class ParticleTextsCustom extends Particle
     	GlStateManager.pushMatrix();
         GlStateManager.translate(x, y, z);
         GlStateManager.glNormal3f(0F, 1F, 0F);
+        GlStateManager.color(1F, 1F, 1F, 1F);
         GlStateManager.rotate(-rm.playerViewY, 0F, 1F, 0F);
         GlStateManager.rotate(rm.playerViewX, 1F, 0F, 0F);
         GlStateManager.scale(-0.025F, -0.025F, 0.025F);
@@ -79,6 +81,7 @@ public class ParticleTextsCustom extends Particle
         GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         
         GlStateManager.disableTexture2D();
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
         render.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
         render.pos((double)(-this.textWidth - 1), -1D, 0D).color(0F, 0F, 0F, 0.25F).endVertex();
         render.pos((double)(-this.textWidth - 1), 8D + this.textHeight * 9D, 0D).color(0F, 0F, 0F, 0.25F).endVertex();

@@ -30,7 +30,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
@@ -338,7 +338,7 @@ public class ShipSpawnEgg extends BasicItem
 				String ownerid = nbt.getString("owner");
 				
 				//get owner
-				if (ownerid != null && ownerid.length() > 5)	//TODO check string to uuid working
+				if (ownerid != null && ownerid.length() > 5)
 				{
 					entity.setOwnerId(UUID.fromString(ownerid));
 				}
@@ -434,8 +434,7 @@ public class ShipSpawnEgg extends BasicItem
                         	
                         	if (player.experienceLevel < costLevel)
                         	{
-                        		//TODO use local lang string!
-                        		player.sendMessage(new TextComponentString("LEVEL is too LOW!"));
+                        		player.sendMessage(new TextComponentTranslation("chat.shincolle:levelfail"));
                         		return new ActionResult(EnumActionResult.FAIL, stack);
                         	}
                         	else

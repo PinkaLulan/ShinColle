@@ -669,7 +669,7 @@ gui.shincolle:antiss=Anti-SS
 gui.shincolle:dodge=Dodge
 gui.shincolle:oponly=OP ONLY
 gui.shincolle:wrench1=Left Click: ADD/REMOVE unattackable target (OP only)
-gui.shincolle:wrench2=Right Click: Show unattackable target list
+gui.shincolle:wrench2=Sneaking Left Click: Show unattackable target list
 gui.shincolle:wrench3=Sneaking Right Click: Pair crane and chest / Set Abyssal Waypoint
 gui.shincolle:compass=Ship get ChunkLoader to work away from owner
 gui.shincolle:drum=+1 Ship's Inventory Page
@@ -697,6 +697,8 @@ gui.shincolle:trainingbook=Level up 5~10
 # Chat message
 chat.shincolle:bossspawn1=A Fleet Walks on the Water!
 chat.shincolle:bossspawn2=Detecte An Invasion Fleet!
+chat.shincolle:levelfail=Level is too low!
+chat.shincolle:wrongowner=You do not have ownership:
 chat.shincolle:pointer.settargetclass=Set target type to attack list: %s
 chat.shincolle:pointer.changeformation=Change formation to
 chat.shincolle:wrench.paired=Succeed in Abyssal Crane pairing.

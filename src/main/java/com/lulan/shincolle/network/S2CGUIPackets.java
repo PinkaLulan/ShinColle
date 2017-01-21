@@ -175,22 +175,22 @@ public class S2CGUIPackets implements IMessage
 		switch (this.packetType)
 		{
 		case PID.TileSmallSY:	//sync small shipyard gui
-			this.valueInt1 = PacketHelper.readIntArray(buf, 6);
+			this.valueInt1 = PacketHelper.readIntArray(buf, 7);
 		break;
 		case PID.TileLargeSY:	//sync large shipyard gui
-			this.valueInt1 = PacketHelper.readIntArray(buf, 10);
+			this.valueInt1 = PacketHelper.readIntArray(buf, 11);
 		break;
 		case PID.TileDesk:		//sync tile desk
 			this.valueInt1 = PacketHelper.readIntArray(buf, 7);
 		break;
 		case PID.TileVolCore:	//sync tile volcano core
-			this.valueInt1 = PacketHelper.readIntArray(buf, 5);
+			this.valueInt1 = PacketHelper.readIntArray(buf, 6);
 		break;
 		case PID.TileWaypoint:	//sync tile waypoint
-			this.valueInt1 = PacketHelper.readIntArray(buf, 9);
+			this.valueInt1 = PacketHelper.readIntArray(buf, 10);
 		break;
 		case PID.TileCrane:		//sync tile crane
-			this.valueInt1 = PacketHelper.readIntArray(buf, 14);
+			this.valueInt1 = PacketHelper.readIntArray(buf, 15);
 			this.valueByte1 = PacketHelper.readByteArray(buf, 4);
 		break;
 		case PID.SyncShipInv:	//sync ship GUI
@@ -379,6 +379,7 @@ public class S2CGUIPackets implements IMessage
 			buf.writeInt(tile2.getPowerConsumed());
 			buf.writeInt(tile2.getPowerRemained());
 			buf.writeInt(tile2.getPowerGoal());
+			buf.writeInt(tile2.getPlayerUID());
 		}
 		break;
 		case PID.TileLargeSY: //sync large shipyard gui
@@ -395,6 +396,7 @@ public class S2CGUIPackets implements IMessage
 			buf.writeInt(tile2.getMatStock(1));
 			buf.writeInt(tile2.getMatStock(2));
 			buf.writeInt(tile2.getMatStock(3));
+			buf.writeInt(tile2.getPlayerUID());
 		}
 		break;
 		case PID.TileDesk:  //sync admiral desk
@@ -419,6 +421,7 @@ public class S2CGUIPackets implements IMessage
 			buf.writeInt(tile2.getPos().getZ());
 			buf.writeInt(tile2.getPowerRemained());
 			buf.writeInt(tile2.getField(0));
+			buf.writeInt(tile2.getPlayerUID());
 		}
 		break;
 		case PID.TileCrane: //sync tile crane
@@ -448,6 +451,7 @@ public class S2CGUIPackets implements IMessage
 			}
 			
 			buf.writeInt(tile2.getField(5));
+			buf.writeInt(tile2.getPlayerUID());
 			
 			buf.writeByte(tile2.getField(2));
 			buf.writeByte(tile2.getField(3));
@@ -468,6 +472,7 @@ public class S2CGUIPackets implements IMessage
 			buf.writeInt(tile2.getNextWaypoint().getX());
 			buf.writeInt(tile2.getNextWaypoint().getY());
 			buf.writeInt(tile2.getNextWaypoint().getZ());
+			buf.writeInt(tile2.getPlayerUID());
 		}
 		break;
 		case PID.SyncPlayerProp:	//sync player props
@@ -727,6 +732,7 @@ public class S2CGUIPackets implements IMessage
 				tile2.setPowerConsumed(msg.valueInt1[3]);
 				tile2.setPowerRemained(msg.valueInt1[4]);
 				tile2.setPowerGoal(msg.valueInt1[5]);
+				tile2.setPlayerUID(msg.valueInt1[6]);
 			}
 		}
 		break;
@@ -747,6 +753,7 @@ public class S2CGUIPackets implements IMessage
 				tile2.setMatStock(1, msg.valueInt1[7]);
 				tile2.setMatStock(2, msg.valueInt1[8]);
 				tile2.setMatStock(3, msg.valueInt1[9]);
+				tile2.setPlayerUID(msg.valueInt1[10]);
 			}
 		}
 		break;
@@ -777,6 +784,7 @@ public class S2CGUIPackets implements IMessage
 			{
 				((TileEntityVolCore) tile).setPowerRemained(msg.valueInt1[3]);
 				((TileEntityVolCore) tile).setField(0, msg.valueInt1[4]);
+				((TileEntityVolCore) tile).setPlayerUID(msg.valueInt1[5]);
 			}
 		}
 		break;
@@ -793,7 +801,9 @@ public class S2CGUIPackets implements IMessage
 				{
 					data[i] = msg.valueInt1[i + 3];
 				}
+				
 				((TileEntityWaypoint) tile).setSyncData(data);
+				((TileEntityWaypoint) tile).setPlayerUID(msg.valueInt1[9]);
 			}
 		}
 		break;
@@ -822,6 +832,7 @@ public class S2CGUIPackets implements IMessage
 				tile2.setField(4, msg.valueByte1[2]);
 				tile2.setField(8, msg.valueByte1[3]);
 				tile2.setField(5, msg.valueInt1[13]);
+				tile2.setField(11, msg.valueInt1[14]);
 				
 				if (entity instanceof BasicEntityShip)
 				{

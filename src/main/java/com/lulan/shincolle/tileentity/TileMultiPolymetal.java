@@ -1,14 +1,14 @@
 package com.lulan.shincolle.tileentity;
 
+import com.lulan.shincolle.block.BlockPolymetal;
+import com.lulan.shincolle.capability.CapaInventory;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
-
-import com.lulan.shincolle.block.BlockPolymetal;
-import com.lulan.shincolle.capability.CapaInventory;
 
 /**SERVANT BLOCK: POLYMETAL
  * servant block的所有方法都是跟master block呼叫
@@ -132,6 +132,7 @@ public class TileMultiPolymetal extends BasicTileMulti
 		{
 			return ((TileMultiGrudgeHeavy) tile).isUsableByPlayer(player);
 		}
+		
 		return false;
 	}
     

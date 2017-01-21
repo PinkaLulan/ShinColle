@@ -4,21 +4,30 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import javax.annotation.Nullable;
+
+import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.client.render.block.RenderLargeShipyard;
+import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.item.BasicEntityItem;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
+import com.lulan.shincolle.utility.BlockHelper;
+import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.PacketHelper;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.statemap.StateMap;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -51,6 +60,12 @@ public class BlockGrudgeHeavy extends BasicBlockMulti
         GameRegistry.registerTileEntity(TileMultiGrudgeHeavy.class, TILENAME);
 
 	}
+	
+	@Override
+    public boolean isBeaconBase(IBlockAccess worldObj, BlockPos pos, BlockPos beacon)
+    {
+		return true;
+    }
 
 	@Override
 	public TileEntity createNewTileEntity(World world, int meta)
@@ -102,10 +117,18 @@ public class BlockGrudgeHeavy extends BasicBlockMulti
 		
 		if (tile instanceof TileMultiGrudgeHeavy)
 		{
+			TileMultiGrudgeHeavy tile2 = (TileMultiGrudgeHeavy) tile;
+			
+			//set tile ownership
+			if (placer instanceof EntityPlayer)
+			{
+				CapaTeitoku capa = CapaTeitoku.getTeitokuCapability((EntityPlayer) placer);
+				if (capa != null) tile2.setPlayerUID(capa.getPlayerUID());
+			}
+			
 			//將mats資料存到matStock中
 			if (stack.hasTagCompound())
 			{
-				TileMultiGrudgeHeavy tile2 = (TileMultiGrudgeHeavy) tile;
 				NBTTagCompound nbt = stack.getTagCompound();
 				int[] mats = nbt.getIntArray("mats");
 				int fuel = nbt.getInteger("fuel");
@@ -182,6 +205,35 @@ public class BlockGrudgeHeavy extends BasicBlockMulti
 		
         return state.isOpaqueCube();
     }
+	
+	@Override
+    public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest)
+    {
+		//check owner
+		if (EntityHelper.checkOP(player) || BlockHelper.checkTileOwner(player, world.getTileEntity(pos)))
+		{
+			return super.removedByPlayer(state, world, pos, player, willHarvest);
+		}
+
+		return false;
+    }
+	
+	@Override
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, @Nullable ItemStack item, EnumFacing side, float hitX, float hitY, float hitZ)
+	{
+		//sync player UID while right click
+		if (!world.isRemote)
+		{
+			TileEntity tile = world.getTileEntity(pos);
+			
+			if (tile instanceof IShipOwner)
+			{
+				PacketHelper.sendS2CEntitySync(0, tile, tile.getWorld(), tile.getPos(), null);
+			}
+		}
+		
+		return super.onBlockActivated(world, pos, state, player, hand, item, side, hitX, hitY, hitZ);
+	}
 	
 	
 }

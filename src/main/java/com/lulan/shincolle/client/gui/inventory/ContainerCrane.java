@@ -66,7 +66,7 @@ public class ContainerCrane extends Container
 	@Override
 	public boolean canInteractWith(EntityPlayer player)
 	{
-		return true;
+		return tile.isUsableByPlayer(player);
 	}
 	
 	/** 禁用shift功能 */

@@ -3,13 +3,13 @@ package com.lulan.shincolle.item;
 import java.util.HashMap;
 import java.util.List;
 
+import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.BasicEntitySummon;
 import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
-import com.lulan.shincolle.tileentity.BasicTileEntity;
 import com.lulan.shincolle.tileentity.ITileWaypoint;
 import com.lulan.shincolle.tileentity.TileEntityCrane;
 import com.lulan.shincolle.utility.EntityHelper;
@@ -143,8 +143,8 @@ public class TargetWrench extends BasicItem
 	{
 		if (player != null)
 		{
-			//server side
-			if (!world.isRemote)
+			//client side
+			if (world.isRemote)
 			{
 				//sneaking
 				if (player.isSneaking())
@@ -157,14 +157,14 @@ public class TargetWrench extends BasicItem
 					{
 						this.tilePoint[this.pointID] = pos;
 						this.switchPoint();
-
-						return setPair(player) ? EnumActionResult.SUCCESS : EnumActionResult.FAIL;
+						this.setPair(player);
+						
+						return EnumActionResult.FAIL;	//return fail to prevent item swing
 					}
 					else
 					{
 						//fail msg
-						TextComponentTranslation text = new TextComponentTranslation("chat.shincolle:wrench.wrongtile");
-						player.sendMessage(text);
+						player.sendMessage(new TextComponentTranslation("chat.shincolle:wrench.wrongtile"));
 						
 						//clear data
 						resetPos();
@@ -202,11 +202,17 @@ public class TargetWrench extends BasicItem
 		this.pointID = 0;
 	}
 
-	//crane pairing, SERVER SIDE ONLY
+	//crane pairing, CLIENT SIDE ONLY
 	private boolean setPair(EntityPlayer player)
 	{
 		//valid point position
 		if (tilePoint[0].getY() <= 0 || tilePoint[1].getY() <= 0) return false;
+		
+		//get player UID
+		CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(player);
+		int uid = 0;
+		if (capa != null) uid = capa.getPlayerUID();
+		if (uid <= 0) return false;
 		
 		//get tile
 		TileEntity[] tiles = new TileEntity[2];
@@ -237,16 +243,36 @@ public class TargetWrench extends BasicItem
 			//check dist < ~6 blocks
 			if (dist <= 40)
 			{
+				TileEntityCrane crane = null;
+				BlockPos targetPos = null;
+				
 				//set chest pair
 				if (tiles[0] instanceof TileEntityCrane)
 				{
-					((TileEntityCrane) tiles[0]).setPairedChest(tilePoint[1]);
-					((TileEntityCrane) tiles[0]).sendSyncPacket();
+					crane = (TileEntityCrane) tiles[0];
+					targetPos = tilePoint[1];
 				}
 				else
 				{
-					((TileEntityCrane) tiles[1]).setPairedChest(tilePoint[0]);
-					((TileEntityCrane) tiles[1]).sendSyncPacket();
+					crane = (TileEntityCrane) tiles[1];
+					targetPos = tilePoint[0];
+				}
+				
+				//check same player UID
+				if (crane.getPlayerUID() == uid)
+				{
+					crane.setPairedChest(targetPos, true);
+				}
+				else
+				{
+					//not the owner, return
+					player.sendMessage(new TextComponentTranslation("chat.shincolle:wrongowner")
+							.appendText(" "+crane.getPlayerUID()));
+					
+					//clear data
+					resetPos();
+					
+					return false;
 				}
 				
 				//send msg
@@ -284,14 +310,24 @@ public class TargetWrench extends BasicItem
 			{
 				//get waypoint order
 				ITileWaypoint wpFrom = (ITileWaypoint) tiles[this.pointID];
+				BlockPos posF = tilePoint[this.pointID];
 				this.switchPoint();
 				ITileWaypoint wpTo = (ITileWaypoint) tiles[this.pointID];
-				
-				//get tile position
-				BlockPos posT = tilePoint[pointID];
-				this.switchPoint();
-				BlockPos posF = tilePoint[pointID];
+				BlockPos posT = tilePoint[this.pointID];
 				BlockPos nextWpTo = wpTo.getNextWaypoint();
+				
+				//check owner
+				if (wpFrom.getPlayerUID() != uid)
+				{
+					//not the owner, return
+					player.sendMessage(new TextComponentTranslation("chat.shincolle:wrongowner")
+							.appendText(" "+wpFrom.getPlayerUID()));
+					
+					//clear data
+					resetPos();
+					
+					return false;
+				}
 				
 				//set waypoint
 				wpFrom.setNextWaypoint(posT);
@@ -301,10 +337,6 @@ public class TargetWrench extends BasicItem
 				{
 					wpTo.setLastWaypoint(posF);
 				}
-				
-				//sync
-				((BasicTileEntity) wpFrom).sendSyncPacket();
-				((BasicTileEntity) wpTo).sendSyncPacket();
 				
 				TextComponentTranslation text = new TextComponentTranslation("chat.shincolle:wrench.setwp");
 				text.getStyle().setColor(TextFormatting.YELLOW);

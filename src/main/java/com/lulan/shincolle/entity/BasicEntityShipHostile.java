@@ -859,7 +859,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 			if (!this.initScale)
 			{
 				//send scale init packet request
-				CommonProxy.channelG.sendToServer(new C2SInputPackets(C2SInputPackets.PID.RequestSync_Model, this.getEntityId(), this.world.provider.getDimension()));
+				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.RequestSync_Model, this.getEntityId(), this.world.provider.getDimension()));
 			}
 			
 			if (EntityHelper.checkEntityIsInLiquid(this))
@@ -1565,7 +1565,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
   	  		{
   	  			BlockPos pos = new BlockPos(target);
 				TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-				CommonProxy.channelG.sendToAllAround(new S2CInputPackets(S2CInputPackets.PID.FlareEffect, pos.getX(), pos.getY(), pos.getZ()), point);
+				CommonProxy.channelI.sendToAllAround(new S2CInputPackets(S2CInputPackets.PID.FlareEffect, pos.getX(), pos.getY(), pos.getZ()), point);
   	  		}
   		}
   	}

@@ -3,6 +3,7 @@ package com.lulan.shincolle.utility;
 import java.util.HashSet;
 import java.util.Random;
 
+import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.reference.Values;
@@ -518,6 +519,27 @@ public class BlockHelper
 			if (block instanceof BlockDoor)
 			{
 				if (mat == Material.WOOD) return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * check tile owner: true = target is owner
+	 */
+	public static boolean checkTileOwner(Entity target, TileEntity tile)
+	{
+		if (tile != null && target != null)
+		{
+			int uid = EntityHelper.getPlayerUID(target);
+			int uidTile = -1;
+			
+			if (tile instanceof IShipOwner)
+			{
+				uidTile = ((IShipOwner) tile).getPlayerUID();
+				
+				return uid == uidTile;
 			}
 		}
 		

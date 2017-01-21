@@ -19,9 +19,10 @@ import net.minecraftforge.fml.relauncher.Side;
 public abstract class CommonProxy implements IProxy
 {
 	
-	public static final String channelNameE = "shinEntity";
-	public static final String channelNameG = "shinGUI";
-	public static final String channelNameP = "shinParticle";
+	public static final String chNameEnt = "scEnt";
+	public static final String chNameGui = "scGui";
+	public static final String chNamePar = "scPar";
+	public static final String chNameIn = "scIn";
 	
 	/**packet system
 	 * channelE: entity sync
@@ -31,6 +32,7 @@ public abstract class CommonProxy implements IProxy
 	public static SimpleNetworkWrapper channelE;
 	public static SimpleNetworkWrapper channelG;
 	public static SimpleNetworkWrapper channelP;
+	public static SimpleNetworkWrapper channelI;
 
 	public static boolean isMultiplayer = false;	//the world is MP or SP
 	
@@ -39,21 +41,22 @@ public abstract class CommonProxy implements IProxy
 	public void registerChannel()
 	{
 		//SimpleNetworkWrapper packets
-		channelE = NetworkRegistry.INSTANCE.newSimpleChannel(channelNameE);
-		channelG = NetworkRegistry.INSTANCE.newSimpleChannel(channelNameG);
-		channelP = NetworkRegistry.INSTANCE.newSimpleChannel(channelNameP);
+		channelE = NetworkRegistry.INSTANCE.newSimpleChannel(chNameEnt);
+		channelG = NetworkRegistry.INSTANCE.newSimpleChannel(chNameGui);
+		channelP = NetworkRegistry.INSTANCE.newSimpleChannel(chNamePar);
+		channelI = NetworkRegistry.INSTANCE.newSimpleChannel(chNameIn);
 		
 		//register packets
 		//entity sync packet
 		channelE.registerMessage(S2CEntitySync.Handler.class, S2CEntitySync.class, ID.Packets.S2C_EntitySync, Side.CLIENT);
 		//particle packet
 		channelP.registerMessage(S2CSpawnParticle.Handler.class, S2CSpawnParticle.class, ID.Packets.S2C_Particle, Side.CLIENT);
-		//GUI/Input packet
+		//GUI packet
 		channelG.registerMessage(S2CGUIPackets.Handler.class, S2CGUIPackets.class, ID.Packets.S2C_GUISync, Side.CLIENT);
 		channelG.registerMessage(C2SGUIPackets.Handler.class, C2SGUIPackets.class, ID.Packets.C2S_GUIInput, Side.SERVER);
-		channelG.registerMessage(S2CInputPackets.Handler.class, S2CInputPackets.class, ID.Packets.S2C_CmdSync, Side.CLIENT);
-		channelG.registerMessage(C2SInputPackets.Handler.class, C2SInputPackets.class, ID.Packets.C2S_CmdInput, Side.SERVER);
-		
+		//Input or server input reaction packet
+		channelI.registerMessage(S2CInputPackets.Handler.class, S2CInputPackets.class, ID.Packets.S2C_CmdSync, Side.CLIENT);
+		channelI.registerMessage(C2SInputPackets.Handler.class, C2SInputPackets.class, ID.Packets.C2S_CmdInput, Side.SERVER);
 	}
 	
 

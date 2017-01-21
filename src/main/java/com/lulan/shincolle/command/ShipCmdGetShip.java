@@ -127,9 +127,6 @@ public class ShipCmdGetShip extends CommandBase
 		{
 			EntityPlayer player = (EntityPlayer) sender;
 			
-			//check player is OP
-			if (!EntityHelper.checkOP(player)) return;
-			
 			//check command type
 			int cmdType = -1;
 			
@@ -148,7 +145,7 @@ public class ShipCmdGetShip extends CommandBase
 			case 0:	//list
 			{
 				//get page number
-				int showPage = 1;
+				int showPage = 0;
 				
 				if (args.length > 1)
 				{
@@ -156,11 +153,18 @@ public class ShipCmdGetShip extends CommandBase
 				}
 				
 				//show list by page number
-				CommonProxy.channelG.sendTo(new S2CInputPackets(S2CInputPackets.PID.CmdShipList, 0, showPage), (EntityPlayerMP) sender);
+				CommonProxy.channelI.sendTo(new S2CInputPackets(S2CInputPackets.PID.CmdShipList, 0, showPage), (EntityPlayerMP) sender);
 			}
 			break;
 			case 1:	//get
 			{
+				//check player is OP
+				if (!EntityHelper.checkOP(player))
+				{
+					sender.sendMessage(new TextComponentTranslation("chat.shincolle:command.notop"));
+					return;
+				}
+				
 				//get ship data
 				int uid = parseInt(args[1]);
 				if (uid <= 0) return;
@@ -283,6 +287,13 @@ public class ShipCmdGetShip extends CommandBase
 			break;
 			case 2:	//del
 			{
+				//check player is OP
+				if (!EntityHelper.checkOP(player))
+				{
+					sender.sendMessage(new TextComponentTranslation("chat.shincolle:command.notop"));
+					return;
+				}
+				
 				//get ship data
 				int uid = parseInt(args[1]);
 				if (uid <= 0) return;

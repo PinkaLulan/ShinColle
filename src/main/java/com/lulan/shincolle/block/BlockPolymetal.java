@@ -35,6 +35,12 @@ public class BlockPolymetal extends BasicBlockMulti
         GameRegistry.registerTileEntity(TileMultiPolymetal.class, TILENAME);
         
 	}
+	
+	@Override
+    public boolean isBeaconBase(IBlockAccess worldObj, BlockPos pos, BlockPos beacon)
+    {
+		return true;
+    }
 
 	@Override
 	public TileEntity createNewTileEntity(World world, int meta)

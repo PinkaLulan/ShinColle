@@ -669,7 +669,7 @@ gui.shincolle:antiss=反潛
 gui.shincolle:dodge=閃避
 gui.shincolle:oponly=僅限OP使用
 gui.shincolle:wrench1=左鍵: 新增/移除不可攻擊目標 (OP限定)
-gui.shincolle:wrench2=右鍵: 顯示不可攻擊目標清單
+gui.shincolle:wrench2=蹲下左鍵: 顯示不可攻擊目標清單
 gui.shincolle:wrench3=蹲下右鍵: 配對起重機跟箱子 / 設定深海路徑
 gui.shincolle:compass=獲得Chunk Loader功能，使其遠離玩家依然能正常運作
 gui.shincolle:drum=船艦物品欄擴充一頁
@@ -695,8 +695,10 @@ gui.shincolle:combatration5=香醇綿密，冰涼滑順的冰淇淋，怨念含�
 gui.shincolle:trainingbook=隨機提昇等級 5~10
 
 # Chat message
-chat.shincolle:bossspawn1=有艦娘出現在水面上!
-chat.shincolle:bossspawn2=偵測到艦娘入侵!
+chat.shincolle:bossspawn1=有艦娘出現在水面上！
+chat.shincolle:bossspawn2=偵測到艦娘入侵！
+chat.shincolle:levelfail=等級太低！
+chat.shincolle:wrongowner=你不是擁有者：
 chat.shincolle:settargetclass=設定攻擊目標類型: %s
 chat.shincolle:pointer.changeformation=陣型變換為
 chat.shincolle:wrench.paired=深海起重機配對成功！

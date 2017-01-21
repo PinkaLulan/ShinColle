@@ -250,7 +250,7 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
 			if (!this.initScale)
 			{
 				//send scale init packet request
-				CommonProxy.channelG.sendToServer(new C2SInputPackets(C2SInputPackets.PID.RequestSync_Model, this.getEntityId(), this.world.provider.getDimension()));
+				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.RequestSync_Model, this.getEntityId(), this.world.provider.getDimension()));
 			}
 		}
 	}

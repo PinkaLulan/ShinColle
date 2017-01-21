@@ -6,11 +6,15 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.PointerItem;
+import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.proxy.ClientProxy;
+import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.utility.LogHelper;
+import com.lulan.shincolle.utility.PacketHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -22,7 +26,7 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
 {
 
 	//waypoint
-	private int tick, wpstay;
+	private int tick, wpstay, playerUID;
 	private BlockPos lastPos, nextPos;
 	
 	
@@ -31,6 +35,7 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
 		super();
 		this.tick = 0;
 		this.wpstay = 0;
+		this.playerUID = 0;
 		this.lastPos = BlockPos.ORIGIN;
 		this.nextPos = BlockPos.ORIGIN;
 	}
@@ -60,7 +65,8 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
         super.readFromNBT(nbt);	//從nbt讀取方塊的xyz座標
         
         wpstay = nbt.getInteger("wpstay");
-
+        playerUID = nbt.getInteger("pid");
+        
         //load pos
         try
         {
@@ -85,6 +91,7 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
 		super.writeToNBT(nbt);
 		
 		nbt.setInteger("wpstay", wpstay);
+		nbt.setInteger("pid", playerUID);
 		
         //save pos
         if (this.lastPos != null && this.nextPos != null)
@@ -160,7 +167,7 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
 								postext1 = postext1 + "\n" + TextFormatting.WHITE + postext2;
 								len1 = len1 > len2 ? len1 : len2;
 								
-								ParticleHelper.spawnAttackParticleAt(postext1, this.pos.getX()+0.5D, this.pos.getY()+1.7D, this.pos.getZ()+0.5D, (byte) 0, 2, len1);
+								ParticleHelper.spawnAttackParticleAt(postext1, this.pos.getX()+0.5D, this.pos.getY()+1.7D, this.pos.getZ()+0.5D, (byte) 0, 2, len1+1);
 							}
 							
 							//draw circle mark
@@ -199,6 +206,14 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
 		if (pos != null)
 		{
 			this.nextPos = pos;
+			
+			if (this.world.isRemote)
+			{
+				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.Waypoint_Set,
+						1, this.world.provider.getDimension(), this.playerUID,
+						this.pos.getX(), this.pos.getY(), this.pos.getZ(),
+						this.nextPos.getX(), this.nextPos.getY(), this.nextPos.getZ()));
+			}
 		}
 	}
 
@@ -214,6 +229,14 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
 		if (pos != null)
 		{
 			this.lastPos = pos;
+			
+			if (this.world.isRemote)
+			{
+				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.Waypoint_Set,
+						0, this.world.provider.getDimension(), this.playerUID,
+						this.pos.getX(), this.pos.getY(), this.pos.getZ(),
+						this.lastPos.getX(), this.lastPos.getY(), this.lastPos.getZ()));
+			}
 		}
 	}
 
@@ -240,6 +263,30 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
 		this.wpstay++;
 		if (this.wpstay > 16) this.wpstay = 0;
 	}
-	
+
+	@Override
+	public void setPlayerUID(int uid)
+	{
+		this.playerUID = uid;
+		
+		//sync uid to all around
+		if (!this.world.isRemote)
+		{
+			PacketHelper.sendS2CEntitySync(0, this, this.world, this.pos, null);
+		}
+	}
+
+	@Override
+	public int getPlayerUID()
+	{
+		return this.playerUID;
+	}
+
+	@Override
+	public Entity getHostEntity()
+	{
+		return null;
+	}
+
 
 }

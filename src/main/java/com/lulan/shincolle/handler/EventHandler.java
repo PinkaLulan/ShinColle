@@ -1043,6 +1043,7 @@ public class EventHandler
 	 * NOTE: 持續偵測類必須使用isKeyDown, 只需要偵測一次的使用isKeyPressed
 	 * NOTE2: 該按鍵若設為滑鼠按鍵, 則只有isKeyDown會有反應!
 	 */
+	@SideOnly(Side.CLIENT)
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
 	public void onKeyInput(InputEvent event)
 	{
@@ -1188,7 +1189,7 @@ public class EventHandler
 			if (keySet.keyBindInventory.isPressed())
 			{
 				LogHelper.debug("DEBUG: key event: open ship GUI");
-				CommonProxy.channelG.sendToServer(new C2SInputPackets(C2SInputPackets.PID.MountGUI));
+				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.MountGUI));
 				return;
 			}
 			
@@ -1228,7 +1229,7 @@ public class EventHandler
 				
 				//send mounts move key packet
 				LogHelper.debug("DEBUG: key event: mounts move key: "+Integer.toBinaryString(newKeys));
-				CommonProxy.channelG.sendToServer(new C2SInputPackets(C2SInputPackets.PID.MountMove, this.rideKeys));
+				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.MountMove, this.rideKeys));
 			}
 		}//end is riding
 	}
@@ -1256,6 +1257,7 @@ public class EventHandler
 		}//end server side
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
 	public void onRenderHand(RenderSpecificHandEvent event)
 	{
@@ -1272,6 +1274,7 @@ public class EventHandler
 	}
 	
 	//change viewer entity when riding mounts, this is CLIENT ONLY event
+	@SideOnly(Side.CLIENT)
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
     public void onRenderTick(TickEvent.RenderTickEvent event)
 	{
@@ -1411,6 +1414,7 @@ public class EventHandler
 	}
 	
 	//custom main hand renderer
+	@SideOnly(Side.CLIENT)
     public static void renderItemInFirstPerson(AbstractClientPlayer player, float ptick, float pitch, EnumHand hand, float swing, @Nullable ItemStack stack, float equip)
     {
         EnumHandSide enumhandside = player.getPrimaryHand();

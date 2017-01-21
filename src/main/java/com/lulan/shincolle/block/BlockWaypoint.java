@@ -5,17 +5,20 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
+import com.lulan.shincolle.capability.CapaTeitoku;
+import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.item.TargetWrench;
-import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.tileentity.TileEntityWaypoint;
+import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.CalcHelper;
-import com.lulan.shincolle.utility.LogHelper;
+import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.PacketHelper;
 
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -27,6 +30,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -176,6 +180,17 @@ public class BlockWaypoint extends BasicBlockContainer
 	@Override
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, @Nullable ItemStack item, EnumFacing side, float hitX, float hitY, float hitZ)
 	{
+		//sync player UID while right click
+		if (!world.isRemote)
+		{
+			TileEntity tile = world.getTileEntity(pos);
+			
+			if (tile instanceof IShipOwner)
+			{
+				PacketHelper.sendS2CEntitySync(0, tile, tile.getWorld(), tile.getPos(), null);
+			}
+		}
+		
 		//server side
 		if (!world.isRemote && player != null && !player.isSneaking())
 		{
@@ -184,31 +199,22 @@ public class BlockWaypoint extends BasicBlockContainer
 			{
 				TileEntity tile = world.getTileEntity(pos);
 				
-				if (tile instanceof TileEntityWaypoint)
+				if (tile instanceof TileEntityWaypoint && BlockHelper.checkTileOwner(player, tile))
 				{
 					((TileEntityWaypoint) tile).nextWpStayTime();
 					
 					player.sendMessage(new TextComponentString("Change waypoint stay time to: "+
 							CalcHelper.tick2SecOrMin(((TileEntityWaypoint) tile).getWpStayTime())));
+					
+					return true;
 				}
 				
-				return true;
+				player.sendMessage(new TextComponentTranslation("chat.shincolle:wrongowner")
+						.appendText(" "+((TileEntityWaypoint) tile).getPlayerUID()));
 			}
 		}
 		
         return false;
-    }
-	
-	@Override
-    public void onBlockClicked(World world, BlockPos pos, EntityPlayer playerIn)
-    {
-		LogHelper.debug("AAAAAAAA "+world.isRemote);
-		GameSettings keySet = ClientProxy.getGameSetting();
-		
-		if (keySet.keyBindSprint.isKeyDown())
-		{
-			
-		}
     }
 	
 	/**
@@ -227,23 +233,62 @@ public class BlockWaypoint extends BasicBlockContainer
     }
 	
 	@Override
+    public boolean canEntityDestroy(IBlockState state, IBlockAccess world, BlockPos pos, Entity entity)
+    {
+    	if (world != null && entity instanceof EntityPlayer)
+    	{
+    		if (EntityHelper.checkOP((EntityPlayer) entity)) return true;
+    		
+    		return BlockHelper.checkTileOwner(entity, world.getTileEntity(pos));
+    	}
+    	
+    	return super.canEntityDestroy(state, world, pos, entity);
+    }
+	
+	@Override
     public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest)
     {
-		//server side
-		if (!world.isRemote)
+		//check owner
+		if (EntityHelper.checkOP(player) || BlockHelper.checkTileOwner(player, world.getTileEntity(pos)))
 		{
-			ItemStack stack = new ItemStack(Item.getItemFromBlock(this));
-			
-			//inventory is full, drop item onto ground
-			if (!player.inventory.addItemStackToInventory(stack))
+			//server side
+			if (!world.isRemote)
 			{
-	            EntityItem entityitem = new EntityItem(world, player.posX, player.posY + 0.5D, player.posZ, stack);
-	            world.spawnEntity(entityitem);
+				ItemStack stack = new ItemStack(Item.getItemFromBlock(this));
+				
+				//inventory is full, drop item onto ground
+				if (!player.inventory.addItemStackToInventory(stack))
+				{
+		            EntityItem entityitem = new EntityItem(world, player.posX, player.posY + 0.5D, player.posZ, stack);
+		            world.spawnEntity(entityitem);
+				}
+			}
+			
+			//both side
+	        return world.setBlockState(pos, net.minecraft.init.Blocks.AIR.getDefaultState(), world.isRemote ? 11 : 3);
+		}
+
+		return false;
+    }
+	
+	//set owner on placed
+	@Override
+	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack)
+	{
+		super.onBlockPlacedBy(world, pos, state, placer, stack);
+		
+		TileEntity tile = world.getTileEntity(pos);
+		
+		if (!world.isRemote && tile instanceof IShipOwner)
+		{
+			//set tile ownership
+			if (placer instanceof EntityPlayer)
+			{
+				CapaTeitoku capa = CapaTeitoku.getTeitokuCapability((EntityPlayer) placer);
+				if (capa != null) ((IShipOwner) tile).setPlayerUID(capa.getPlayerUID());
 			}
 		}
-		
-        return world.setBlockState(pos, net.minecraft.init.Blocks.AIR.getDefaultState(), world.isRemote ? 11 : 3);
-    }
+	}
 		
 		
 }

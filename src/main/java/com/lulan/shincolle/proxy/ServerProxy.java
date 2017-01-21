@@ -328,20 +328,17 @@ public class ServerProxy extends CommonProxy
 				if (s != null)
 				{
 					tarList.remove(str.hashCode());
-					setPlayerTargetClass(pid, tarList); //TODO 檢查是否有必要存回map, 應該不需要這行?
 					return false;
 				}
 				
 				//target not found, add target to list
 				tarList.put(str.hashCode(), str);
-				setPlayerTargetClass(pid, tarList); //TODO 檢查是否有必要存回map, 應該不需要這行?
 			}
 			//target list null, generate one for player uid
 			else
 			{
 				tarList = new HashMap<Integer, String>();
 				tarList.put(str.hashCode(), str);
-				setPlayerTargetClass(pid, tarList); //TODO 檢查是否有必要存回map, 應該不需要這行?
 			}
 		}
 		
@@ -626,6 +623,21 @@ public class ServerProxy extends CommonProxy
 									ship.getShipClass(), ship.isDead, ship.posX, ship.posY, ship.posZ,
 									ship.writeToNBT(new NBTTagCompound()));
 
+			//check cache exist
+			if (mapShipID.containsKey(uid))
+			{
+				CacheDataShip olddata = mapShipID.get(uid);
+				Entity ent = EntityHelper.getEntityByID(olddata.entityID, olddata.worldID, false);
+				
+				//if cache existed and entity is not the same ship, delete old entity
+				if (ent != null && !ent.equals(ship))
+				{
+					ent.setDead();
+					mapShipID.remove(uid);
+				}
+			}
+			
+			//update ship cache
 			setShipWorldData(uid, sdata);	//cache in server proxy
 			
 			/** server init wrong (lost all data or file deleted)
