@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import com.lulan.shincolle.ai.path.ShipPath;
 import com.lulan.shincolle.ai.path.ShipPathPoint;
 import com.lulan.shincolle.entity.IShipNavigator;
-import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoor;

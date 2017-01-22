@@ -23,7 +23,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
@@ -34,7 +33,6 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -253,32 +251,7 @@ public class ShipSpawnEgg extends BasicItem
 			{
 				CapaShipInventory capa = entity.getCapaShipInventory();
 				
-				//load inventory for 1.7.10
-				try
-				{
-					NBTTagList list = nbt.getTagList("ShipInv", Constants.NBT.TAG_COMPOUND);
-					
-					if (!list.hasNoTags())
-					{
-						for (int i = 0; i < list.tagCount(); i++)
-						{
-							NBTTagCompound item = list.getCompoundTagAt(i);
-							byte sid = item.getByte("Slot");
-
-							if (sid >= 0 && sid < capa.getSlots())
-							{
-								capa.setStackInSlot(sid, ItemStack.loadItemStackFromNBT(item));
-							}
-						}
-					}
-				}
-				catch (Exception e)
-				{
-					LogHelper.info("EXCEPTION: init ship inventory fail: ");
-					e.printStackTrace();
-				}
-				
-				//load inventory for 1.9.4+
+				//load inventory
 		        if (nbt.hasKey(CapaShipInventory.InvName))
 		        {
 		        	capa.deserializeNBT((NBTTagCompound) nbt.getTag(CapaShipInventory.InvName));

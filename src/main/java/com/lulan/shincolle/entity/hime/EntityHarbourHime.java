@@ -35,7 +35,7 @@ public class EntityHarbourHime extends BasicEntityShipCV
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BBV]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BBV]);
-		this.ModelPos = new float[] {-6F, 15F, 0F, 40F};
+		this.ModelPos = new float[] {-6F, 30F, 0F, 40F};
 		this.launchHeight = this.height * 0.7F;
 		
 		//set attack type
@@ -224,21 +224,6 @@ public class EntityHarbourHime extends BasicEntityShipCV
   	public BasicEntityMount summonMountEntity()
   	{
 		return new EntityMountHbH(this.world);
-	}
-  	
-  	@Override
-  	public float[] getModelPos()
-  	{
-  		if (this.isRiding())
-  		{
-  			ModelPos[1] = -25F;
-  		}
-  		else
-  		{
-  			ModelPos[1] = 15F;
-  		}
-  		
-		return ModelPos;
 	}
   	
   	@Override

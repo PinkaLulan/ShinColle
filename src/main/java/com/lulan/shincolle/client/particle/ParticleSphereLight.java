@@ -1,25 +1,21 @@
 package com.lulan.shincolle.client.particle;
 
-import java.util.Arrays;
-
 import org.lwjgl.opengl.GL11;
 
-import com.lulan.shincolle.handler.EventHandler;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
-import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.GlStateManager.DestFactor;
 import net.minecraft.client.renderer.GlStateManager.SourceFactor;
-import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
@@ -51,6 +47,9 @@ public class ParticleSphereLight extends Particle
         this.canCollide = false;
         this.beamCurrent = 0;					//new beam index
         this.rm = ClientProxy.getMineraft().getRenderManager();
+        
+		//particleSetting: 0:all, 1:decr, 2:min -> 3:all, 2:decr, 1:min
+        NumBeam = (3 - ClientProxy.getMineraft().gameSettings.particleSetting) * 25;
         
         switch (type)
         {
@@ -168,7 +167,7 @@ public class ParticleSphereLight extends Particle
         {
         	if (this.particleAge <= 30)
         	{
-        		for (int i = 0; i < 4; i++)
+        		for (int i = 0; i < (3 - ClientProxy.getMineraft().gameSettings.particleSetting) * 3; i++)
         		{
                 	//create new beam
                 	newpos = CalcHelper.rotateXZByAxis(

@@ -14,10 +14,12 @@ import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.network.S2CSpawnParticle;
+import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import net.minecraft.entity.EntityLivingBase;
@@ -227,14 +229,15 @@ public class TileEntityVolCore extends BasicTileInventory implements ITickable
 				//fuel足夠, 啟動方塊功能
 				if (this.remainedPower >= this.CONSUMEDSPEED)
 				{
-					//fuel--
-					this.remainedPower -= this.CONSUMEDSPEED;
 					this.canWork = true;
 				}
 				else
 				{
 					this.canWork = false;
 				}
+				
+				//fuel--
+				if (this.isWorking()) this.remainedPower -= this.CONSUMEDSPEED;
 				
 				//check every 32 ticks
 				if (this.syncTime % 32 == 0)
@@ -300,13 +303,16 @@ public class TileEntityVolCore extends BasicTileInventory implements ITickable
 			}
 			
 			//spawn bubble particle
-			if (this.isWorking() && this.syncTime % 32 == 0)
+			if ((this.syncTime & 15) == 0 && this.remainedPower > this.CONSUMEDSPEED && this.btnActive)
 			{
-				for (int i = 0; i < 20; i++)
+				//particleSetting: 0:all, 1:decr, 2:min
+				int maxpar = (3 - ClientProxy.getMineraft().gameSettings.particleSetting) * 25;
+				
+				for (int i = 0; i < maxpar; i++)
 				{
 					//random position
 					double dx = pos.getX() + 0.5D + rand.nextFloat() * 13F - 6.5F;
-					double dy = pos.getY() + 1.5D + rand.nextFloat() * 13F - 6.5F;
+					double dy = pos.getY() + 1.5D + rand.nextFloat() * 13F - 4.5F;
 					double dz = pos.getZ() + 0.5D + rand.nextFloat() * 13F - 6.5F;
 					
 					ParticleHelper.spawnAttackParticleAt(dx, dy, dz, 0D, 0.05D, 0D, (byte)37);
@@ -459,7 +465,7 @@ public class TileEntityVolCore extends BasicTileInventory implements ITickable
 		{
 		case 0:
 			this.btnActive = value == 0 ? false : true;
-			break;
+		break;
 		}
 	}
 

@@ -1,7 +1,8 @@
 package com.lulan.shincolle.reference;
 
 //for array ID
-public class ID {
+public class ID
+{
 
 	/**GUI Button ID*/
 	public static final class B

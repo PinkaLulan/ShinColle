@@ -33,7 +33,7 @@ abstract public class BasicBlockContainer extends BasicBlock implements ITileEnt
 	
 	public BasicBlockContainer(Material material)
 	{
-		this(Material.ROCK, Material.ROCK.getMaterialMapColor());
+		this(material, material.getMaterialMapColor());
 	}
 
 	public BasicBlockContainer(Material material, MapColor color)

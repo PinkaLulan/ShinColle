@@ -653,7 +653,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
         if (getShipDepth() > 0D)
         {
         	isDirect = true;
-        	launchPos = (float) posY;
+        	launchPos = (float) posY + height * 0.15F;
         }
 		
 		//play attack effect
@@ -672,7 +672,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
         
         //spawn missile
         EntityAbyssMissile missile = new EntityAbyssMissile(this.world, this, 
-        		tarX, tarY+target.height*0.2F, tarZ, launchPos, atk, kbValue, isDirect, -1F);
+        		tarX, tarY+target.height*0.1F, tarZ, launchPos, atk, kbValue, isDirect, -1F);
         this.world.spawnEntity(missile);
         
         //play target effect

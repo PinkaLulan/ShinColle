@@ -42,9 +42,6 @@ public class RenderLargeShipyard extends TileEntitySpecialRenderer<BasicTileEnti
 		int meta = tile.getRenderMetadata();
 		if (meta <= 0) return;
 		
-		ResourceLocation textures = meta > 1 ? VORTEX_ON : VORTEX_OFF;
-		Minecraft.getMinecraft().renderEngine.bindTexture(textures);
-		
 		EntityPlayer player  = Minecraft.getMinecraft().player;
 		BlockPos pos = tile.getPos();
 		double distX = pos.getX() + 0.5D - player.posX;
@@ -71,15 +68,6 @@ public class RenderLargeShipyard extends TileEntitySpecialRenderer<BasicTileEnti
         	pitch += Math.PI * 0.5F;
 //        }
 
-        //render vortex
-		GlStateManager.pushMatrix();
-		GlStateManager.translate((float) x + 0.5F, (float) y + 0.5F, (float) z + 0.5F);
-		GlStateManager.rotate(yaw * 57.2957F, 0F, 1F, 0F);
-		GlStateManager.rotate(pitch * 57.2957F, 1F, 0F, 0F);
-		GlStateManager.rotate(angle, 0F, 0F, 1F);
-		this.model_vortex.render(0.03125F);
-		GlStateManager.popMatrix();
-		
 		//render base
 		Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE_BASE);
 		GlStateManager.pushMatrix();
@@ -88,7 +76,19 @@ public class RenderLargeShipyard extends TileEntitySpecialRenderer<BasicTileEnti
 		GlStateManager.scale(1F, 1.2F, 1F);
 		this.model_base.render(0.0625F);
 		GlStateManager.popMatrix();
-
+		
+        //render vortex
+		Minecraft.getMinecraft().renderEngine.bindTexture(meta > 1 ? VORTEX_ON : VORTEX_OFF);
+		GlStateManager.pushMatrix();
+		GlStateManager.depthMask(false);
+		GlStateManager.translate((float) x + 0.5F, (float) y + 0.5F, (float) z + 0.5F);
+		GlStateManager.rotate(yaw * 57.2957F, 0F, 1F, 0F);
+		GlStateManager.rotate(pitch * 57.2957F, 1F, 0F, 0F);
+		GlStateManager.rotate(angle, 0F, 0F, 1F);
+		this.model_vortex.render(0.03125F);
+		GlStateManager.depthMask(true);
+		GlStateManager.popMatrix();
+		
 	}
 	
 	

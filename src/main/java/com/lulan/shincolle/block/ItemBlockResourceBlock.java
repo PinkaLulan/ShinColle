@@ -1,8 +1,8 @@
 package com.lulan.shincolle.block;
 
-import net.minecraft.block.Block;
-
 import com.lulan.shincolle.item.IShipResourceItem;
+
+import net.minecraft.block.Block;
 
 public class ItemBlockResourceBlock extends BasicItemBlock implements IShipResourceItem
 {
@@ -42,4 +42,3 @@ public class ItemBlockResourceBlock extends BasicItemBlock implements IShipResou
     
 
 }
-

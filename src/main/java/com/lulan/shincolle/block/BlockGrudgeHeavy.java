@@ -8,15 +8,21 @@ import javax.annotation.Nullable;
 
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.client.render.block.RenderLargeShipyard;
+import com.lulan.shincolle.client.render.block.RenderSmallShipyard;
 import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.item.BasicEntityItem;
+import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.PacketHelper;
 
+import net.minecraft.block.BlockLiquid;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.statemap.StateMap;
 import net.minecraft.entity.EntityLivingBase;
@@ -47,13 +53,15 @@ public class BlockGrudgeHeavy extends BasicBlockMulti
 	
 	public BlockGrudgeHeavy()
 	{
-		super(Material.SAND);
+		super(Material.WATER);
 		this.setUnlocalizedName(NAME);
 		this.setRegistryName(NAME);
 		this.setHarvestLevel("shovel", 0);
 	    this.setHardness(3F);
 	    this.setLightLevel(1F);
 	    this.setResistance(600F);
+	    this.setSoundType(SoundType.SAND);
+	    this.setDefaultState(this.blockState.getBaseState().withProperty(BlockLiquid.LEVEL, 15));
 	    
         GameRegistry.register(this);
         GameRegistry.register(new ItemBlockGrudgeHeavy(this), this.getRegistryName());
@@ -66,6 +74,27 @@ public class BlockGrudgeHeavy extends BasicBlockMulti
     {
 		return true;
     }
+	
+	//用於檢查是否跟草一樣可以被其他方塊蓋掉
+	@Override
+    public boolean isReplaceable(IBlockAccess worldIn, BlockPos pos)
+    {
+        return false;
+    }
+	
+	//樹木生成時是否會被樹葉擠掉
+	@Override
+    public boolean canBeReplacedByLeaves(IBlockState state, IBlockAccess world, BlockPos pos)
+    {
+    	return false;
+    }
+	
+	//用於pathing AI檢查是否卡到方塊
+	@Override
+    public boolean isPassable(IBlockAccess worldIn, BlockPos pos)
+    {
+        return false;
+    }
 
 	@Override
 	public TileEntity createNewTileEntity(World world, int meta)
@@ -73,13 +102,19 @@ public class BlockGrudgeHeavy extends BasicBlockMulti
 		return new TileMultiGrudgeHeavy();
 	}
 	
+    @Override
+    protected BlockStateContainer createBlockState()
+    {
+        return new BlockStateContainer(this, new IProperty[] { MBS, BlockLiquid.LEVEL });
+    }
+	
 	@SideOnly(Side.CLIENT)
     public void initModel()
 	{
 		super.initModel();
 		
 		//prevent property mapping to blockstate
-		ModelLoader.setCustomStateMapper(this, new StateMap.Builder().ignore(MBS).build());
+		ModelLoader.setCustomStateMapper(this, new StateMap.Builder().ignore(MBS, BlockLiquid.LEVEL).build());
 		
         //register tile entity render
         ClientRegistry.bindTileEntitySpecialRenderer(TileMultiGrudgeHeavy.class, new RenderLargeShipyard());

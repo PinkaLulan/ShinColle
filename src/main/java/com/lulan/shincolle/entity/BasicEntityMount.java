@@ -1834,5 +1834,15 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	@Override
 	public void setShipFloatingDepth(double par1) {}
 	
+	public float[] getSeatPos()
+	{
+		return this.seatPos;
+	}
+	
+	public float[] getSeatPos2()
+	{
+		return this.seatPos2;
+	}
+	
 	
 }

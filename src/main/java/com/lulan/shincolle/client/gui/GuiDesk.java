@@ -2236,10 +2236,11 @@ public class GuiDesk extends GuiContainer
 			
 			if (this.shipMount != null)
 			{
+				float[] seatPos = this.shipMount.getSeatPos();
 				//ship必須先畫才畫mounts
-				GlStateManager.translate(0F, (float)(this.shipMount.getMountedYOffset()), 0F);
+				GlStateManager.translate(seatPos[2], seatPos[1] + this.shipModel.getYOffset(), seatPos[0]);
 				rm.doRenderEntity(this.shipModel, 0D, 0D, 0D, 0F, partialTick, false);
-				GlStateManager.translate(0F, -(float)(this.shipMount.getMountedYOffset()), 0F);
+				GlStateManager.translate(-seatPos[2], -seatPos[1] - this.shipModel.getYOffset(), -seatPos[0]);
 				rm.doRenderEntity(this.shipMount, 0D, 0D, 0D, 0F, partialTick, false);
 			}
 			else

@@ -1337,29 +1337,31 @@ public class CapaTeitoku implements ICapaTeitoku
 			switch (type)
 			{
 			case 0:
+				//check all ship entity before sync
+				this.updateShipEntityBySID();
 				CommonProxy.channelG.sendTo(new S2CGUIPackets(this, S2CGUIPackets.PID.SyncPlayerProp), (EntityPlayerMP) player);
-				break;
+			break;
 			case 1:
 				CommonProxy.channelG.sendTo(new S2CGUIPackets(this, S2CGUIPackets.PID.SyncPlayerProp_Formation), (EntityPlayerMP) player);
-				break;
+			break;
 			case 2:
 				CommonProxy.channelG.sendTo(new S2CGUIPackets(this, S2CGUIPackets.PID.SyncPlayerProp_TargetClass), (EntityPlayerMP) player);
-				break;
+			break;
 			case 3:
 				CommonProxy.channelG.sendTo(new S2CGUIPackets(this, S2CGUIPackets.PID.SyncPlayerProp_TeamData), (EntityPlayerMP) player);
-				break;
+			break;
 			case 4:
 				CommonProxy.channelG.sendTo(new S2CGUIPackets(this, S2CGUIPackets.PID.SyncPlayerProp_ShipsAll), (EntityPlayerMP) player);
-				break;
+			break;
 			case 5:
 				CommonProxy.channelG.sendTo(new S2CGUIPackets(S2CGUIPackets.PID.SyncPlayerProp_ColledShip, this.getColleShipList()), (EntityPlayerMP) player);
-				break;
+			break;
 			case 6:
 				CommonProxy.channelG.sendTo(new S2CGUIPackets(S2CGUIPackets.PID.SyncPlayerProp_ColledEquip, this.getColleEquipList()), (EntityPlayerMP) player);
-				break;
+			break;
 			case 7:
 				CommonProxy.channelG.sendTo(new S2CGUIPackets(this, S2CGUIPackets.PID.SyncPlayerProp_Misc), (EntityPlayerMP) player);
-				break;
+			break;
 			}
 		}
 	}

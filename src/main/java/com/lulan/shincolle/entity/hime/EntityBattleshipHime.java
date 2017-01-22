@@ -28,7 +28,7 @@ public class EntityBattleshipHime extends BasicEntityShipSmall
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BB]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BB]);
-		this.ModelPos = new float[] {-6F, 15F, 0F, 40F};
+		this.ModelPos = new float[] {-6F, 30F, 0F, 40F};
 		
 		//set attack type
 		this.StateFlag[ID.F.AtkType_AirLight] = false;
@@ -171,21 +171,6 @@ public class EntityBattleshipHime extends BasicEntityShipSmall
   	{
   		EntityMountBaH mount = new EntityMountBaH(world);
 		return mount;
-	}
-  	
-  	@Override
-  	public float[] getModelPos()
-  	{
-  		if (this.isRiding())
-  		{
-  			ModelPos[1] = 0F;
-  		}
-  		else
-  		{
-  			ModelPos[1] = 15F;
-  		}
-  		
-		return ModelPos;
 	}
   	
   	@Override

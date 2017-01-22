@@ -177,6 +177,7 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
 				}//end every 8 ticks
 			}//end holding item
 		}//end client side
+		//server side
 		else
 		{
 			//sync waypoint
@@ -188,7 +189,7 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
 					this.sendSyncPacket();
 				}
 			}
-		}
+		}//end server side
 	}
 	
 	public void setSyncData(int[] data)

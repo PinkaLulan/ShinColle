@@ -102,9 +102,15 @@ public class EntityAIShipFloating extends EntityAIBase
         		return;
         	}
         	
-        	if (this.host.getShipDepth() > 1.2D)
+        	if (this.host.getShipDepth() > 1.3D)
         	{
         		this.hostLiving.motionY += 0.007D;
+        		return;
+        	}
+        	
+        	if (this.host.getShipDepth() > 1.1D)
+        	{
+        		this.hostLiving.motionY += 0.003D;
         		return;
         	}
     	}
@@ -135,7 +141,7 @@ public class EntityAIShipFloating extends EntityAIBase
         		return;
         	}
         	
-        	if (this.host.getShipDepth() > 0D)
+        	if (this.host.getShipDepth() > 0.15D)
         	{
         		this.hostLiving.motionY += 0.0012D;
         		return;

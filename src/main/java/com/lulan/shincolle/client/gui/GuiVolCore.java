@@ -96,7 +96,9 @@ public class GuiVolCore extends GuiContainer
 		//draw background
         Minecraft.getMinecraft().getTextureManager().bindTexture(guiTexture);
         drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
-       
+        
+        updateButton();
+        
         //draw button
         if (this.btnPower)
         {
@@ -128,7 +130,7 @@ public class GuiVolCore extends GuiContainer
         {
         case 0:  //power
         	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, C2SGUIPackets.PID.TileBtn, ID.B.VolCore_Power, btnPower ? 0 : 1, 0));
-        	break;
+        break;
         }
 	}
 	

@@ -619,10 +619,7 @@ public class ServerProxy extends CommonProxy
 		if (uid > 0)
 		{
 			LogHelper.debug("DEBUG: update ship: update ship id "+uid+" eid: "+ship.getEntityId()+" world: "+ship.world.provider.getDimension());
-			CacheDataShip sdata = new CacheDataShip(ship.getEntityId(), ship.world.provider.getDimension(),
-									ship.getShipClass(), ship.isDead, ship.posX, ship.posY, ship.posZ,
-									ship.writeToNBT(new NBTTagCompound()));
-
+			
 			//check cache exist
 			if (mapShipID.containsKey(uid))
 			{
@@ -630,13 +627,23 @@ public class ServerProxy extends CommonProxy
 				Entity ent = EntityHelper.getEntityByID(olddata.entityID, olddata.worldID, false);
 				
 				//if cache existed and entity is not the same ship, delete old entity
-				if (ent != null && !ent.equals(ship))
+				if (ent instanceof BasicEntityShip && !ent.equals(ship) &&
+					((BasicEntityShip)ent).getShipUID() == uid)
 				{
-					ent.setDead();
+//					LogHelper.info("INFO: ServerProxy: update ship UID: entity dupe bug found, remove old entity: uid: "+uid);
+					LogHelper.info("INFO: ServerProxy: update ship UID: entity dupe bug found: uid: "+uid);
+					LogHelper.info("      OLD ent: "+ent.getEntityId()+" "+ent);
+					LogHelper.info("      NEW ent: "+ship.getEntityId()+" "+ship);
+//					ent.setDead();
 					mapShipID.remove(uid);
 				}
 			}
 			
+			//create ship cache data
+			CacheDataShip sdata = new CacheDataShip(ship.getEntityId(), ship.world.provider.getDimension(),
+									ship.getShipClass(), ship.isDead, ship.posX, ship.posY, ship.posZ,
+									ship.writeToNBT(new NBTTagCompound()));
+
 			//update ship cache
 			setShipWorldData(uid, sdata);	//cache in server proxy
 			

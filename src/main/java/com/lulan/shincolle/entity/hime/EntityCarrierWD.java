@@ -28,7 +28,7 @@ public class EntityCarrierWD extends BasicEntityShipCV
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CARRIER);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CV]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CV]);
-		this.ModelPos = new float[] {-6F, 15F, 0F, 40F};
+		this.ModelPos = new float[] {-6F, 30F, 0F, 40F};
 		this.launchHeight = this.height * 1.2F;
 		
 		//set attack type
@@ -156,21 +156,6 @@ public class EntityCarrierWD extends BasicEntityShipCV
   	public BasicEntityMount summonMountEntity()
   	{
 		return new EntityMountCaWD(this.world);
-	}
-  	
-  	@Override
-  	public float[] getModelPos()
-  	{
-  		if (this.isRiding())
-  		{
-  			ModelPos[1] = -15F;
-  		}
-  		else
-  		{
-  			ModelPos[1] = 15F;
-  		}
-  		
-		return ModelPos;
 	}
   	
   	//被騎乘的高度

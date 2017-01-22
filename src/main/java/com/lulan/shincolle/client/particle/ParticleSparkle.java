@@ -3,6 +3,7 @@ package com.lulan.shincolle.client.particle;
 import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.entity.IShipEmotion;
+import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
@@ -47,10 +48,29 @@ public class ParticleSparkle extends Particle
         switch (type)
         {
         /**
-	     * type 0: light beam radiate out host's back
-	     * parms: 0:scale, 1:radius, 2:beam speed, 3:beam thickness, 4~7:RGBA,  8:height
+	     * light quad sparkle around point
+	     *   0: red random
+	     *   2: green random
+	     *   3: blue random
+	     *   4: RG random
+	     *   5: RB random
+	     *   6: GB random
+	     *   7: RGB random
+	     *   8: R only
+	     *   9: G only
+	     *   10: B only
+	     * parms: 0:scale, 1:radius, 2:beam speed, 3:beam thickness, 4~6:motionXYZ, 7:alpha, 8:height
          */
         case 0:
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+        case 7:
+        case 8:
+        case 9:
+        case 10:
         	this.particleScale = parms[0];
         	this.beamFad = parms[1];
         	this.beamSpd = parms[2];
@@ -60,13 +80,13 @@ public class ParticleSparkle extends Particle
             this.particleBlue = parms[6];
             this.particleAlpha = parms[7];
             this.beamHeight = parms[8];
-            this.particleMaxAge = 50;
-            this.NumBeam = 40;
+            this.particleMaxAge = 120;
+            this.NumBeam = (3 - ClientProxy.getMineraft().gameSettings.particleSetting) * 30;
             this.beamPos = new float[NumBeam][8];
             this.setPosition(entity.posX, entity.posY+this.beamHeight, entity.posZ);
         break;
         /**
-	     * type 1: eye particle
+	     * type 1: blue eye fire particle
 	     * parms: 0:height, 1:eye x, 2:eye z, 3~6:RGBA
          */
         case 1:
@@ -79,7 +99,7 @@ public class ParticleSparkle extends Particle
             this.particleBlue = parms[5];
             this.particleAlpha = parms[6];
             this.particleMaxAge = 50;
-            this.NumBeam = 30;
+            this.NumBeam = (3 - ClientProxy.getMineraft().gameSettings.particleSetting) * 15;
             this.beamPos = new float[NumBeam][11];
             this.setPosition(entity.posX, entity.posY+this.beamHeight, entity.posZ);
         break;
@@ -169,19 +189,91 @@ public class ParticleSparkle extends Particle
         //update beam
         switch (this.particleType)
         {
-        case 0:		//out from host's back
+        /**
+	     * light quad sparkle around point
+	     *   0: red random
+	     *   2: green random
+	     *   3: blue random
+	     *   4: RG random
+	     *   5: RB random
+	     *   6: GB random
+	     *   7: RGB random
+	     *   8: R only
+	     *   9: G only
+	     *   10: B only
+         */
+        case 0:		//light sparkle around point
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+        case 7:
+        case 8:
+        case 9:
+        case 10:
         {
-        	for (int i = 0; i < 3; i++)
+        	float red = 1F;
+        	float green = 1F;
+        	float blue = 1F;
+        	
+        	for (int i = 0; i < (4 - ClientProxy.getMineraft().gameSettings.particleSetting); i++)
         	{
+        		//random color
+        		switch (this.particleType)
+        		{
+                case 0:
+                	red += this.rand.nextFloat() * 1.2F - 0.5F;
+            	break;
+                case 2:
+                	green += this.rand.nextFloat() * 1.2F - 0.5F;
+            	break;
+                case 3:
+                	blue += this.rand.nextFloat() * 1.2F - 0.5F;
+            	break;
+                case 4:
+                	red += this.rand.nextFloat() * 1.2F - 0.5F;
+                	green += this.rand.nextFloat() * 1.2F - 0.5F;
+            	break;
+                case 5:
+                	red += this.rand.nextFloat() * 1.2F - 0.5F;
+                	blue += this.rand.nextFloat() * 1.2F - 0.5F;
+            	break;
+                case 6:
+                	green += this.rand.nextFloat() * 1.2F - 0.5F;
+                	blue += this.rand.nextFloat() * 1.2F - 0.5F;
+            	break;
+                case 7:
+                	red += this.rand.nextFloat() * 1.2F - 0.5F;
+                	green += this.rand.nextFloat() * 1.2F - 0.5F;
+                	blue += this.rand.nextFloat() * 1.2F - 0.5F;
+            	break;
+                case 8:
+                	red += this.rand.nextFloat() * 1.2F - 0.5F;
+                	green = 0.001F;
+                	blue = 0.001F;
+            	break;
+                case 9:
+                	red = 0.001F;
+                	green += this.rand.nextFloat() * 1.2F - 0.5F;
+                	blue = 0.001F;
+            	break;
+                case 10:
+                	red = 0.001F;
+                	green = 0.001F;
+                	blue += this.rand.nextFloat() * 1.2F - 0.5F;
+            	break;
+        		}
+        		
             	//create new beam
             	this.beamPos[this.beamCurrent] = new float[]
             	{
             		(float) (this.host.posX - this.posX) + (this.rand.nextFloat() - 0.5F) * this.beamFad,
             		(float) (this.host.posY - this.posY) + this.beamHeight + (this.rand.nextFloat() - 0.5F) * this.beamFad,
             		(float) (this.host.posZ - this.posZ) + (this.rand.nextFloat() - 0.5F) * this.beamFad,
-            		this.particleRed,
-        			this.particleGreen + this.rand.nextFloat() * 0.7F,
-        			this.particleBlue,
+            		red,
+        			green,
+        			blue,
         			this.particleAlpha, 0F
         		};
             	this.beamCurrent++;
@@ -191,6 +283,11 @@ public class ParticleSparkle extends Particle
         	//update beam pos: halve dist to (0,0,0)
         	for (int i = 0; i < this.beamPos.length; i++)
         	{
+        		//move
+        		this.beamPos[i][0] += this.particleRed;
+				this.beamPos[i][1] += this.particleGreen;
+				this.beamPos[i][2] += this.particleBlue;
+        		
         		//age++
         		this.beamPos[i][7] += 1F;
         		
@@ -200,7 +297,7 @@ public class ParticleSparkle extends Particle
         	}
         }
         break;
-        case 1:		//out from host's back
+        case 1:		//blue eye fire
         {
         	//update pos
         	this.setPosition(this.host.posX, this.host.posY+this.beamHeight, this.host.posZ);
@@ -213,7 +310,7 @@ public class ParticleSparkle extends Particle
         	float[] headmov =  CalcHelper.rotateXZByAxis(1F, 1F,
         			((EntityLivingBase)this.host).rotationYawHead * Values.N.DIV_PI_180, 0.025F);
         	
-        	for (int i = 0; i < 3; i++)
+        	for (int i = 0; i < (4 - ClientProxy.getMineraft().gameSettings.particleSetting); i++)
         	{
             	//create new beam
             	this.beamPos[this.beamCurrent] = new float[]

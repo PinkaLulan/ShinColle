@@ -1,7 +1,5 @@
 package com.lulan.shincolle;
 
-
-
 import com.lulan.shincolle.handler.ChunkLoaderHandler;
 import com.lulan.shincolle.handler.CommandHandler;
 import com.lulan.shincolle.handler.ConfigHandler;

@@ -1,13 +1,12 @@
 package com.lulan.shincolle.ai;
 
+import com.lulan.shincolle.entity.IShipAttackBase;
+import com.lulan.shincolle.handler.ConfigHandler;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.util.EnumHand;
-
-import com.lulan.shincolle.entity.IShipAttackBase;
-import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.utility.LogHelper;
 
 /**ATTACK ON COLLIDE SHIP VERSION
  * host必須實作IShipAttack跟IShipEmotion, 且extend EntityCreature

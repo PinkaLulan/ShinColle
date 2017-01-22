@@ -2963,7 +2963,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         if (getShipDepth() > 0D)
         {
         	isDirect = true;
-        	launchPos = (float) posY;
+        	launchPos = (float) posY + height * 0.3F;
         }
         
         //play sound and particle
@@ -2986,7 +2986,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         
         //spawn missile
         EntityAbyssMissile missile = new EntityAbyssMissile(this.world, this, 
-        		tarX, tarY+target.height*0.2F, tarZ, launchPos, atk, kbValue, isDirect, -1F);
+        		tarX, tarY+target.height*0.1F, tarZ, launchPos, atk, kbValue, isDirect, -1F);
         this.world.spawnEntity(missile);
         
         //play target effect
@@ -3124,9 +3124,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				if (this.decrSupplies(8))
 				{
 					this.setHealth(this.getMaxHealth());
-					this.StateTimer[ID.T.ImmuneTime] = 60;
+					this.StateTimer[ID.T.ImmuneTime] = 120;
 					
-					//TODO add repair goddess particle
+					//add repair goddess particle
+					TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+        			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 13, 0D, 0.03D, 0D), point);
 					
 					return false;
 				}
@@ -6087,7 +6089,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	@Override
 	public double getShipFloatingDepth()
 	{
-		return 0.3D;
+		return 0.32D;
 	}
 
 	@Override

@@ -22,7 +22,7 @@ public class ContainerVolCore extends Container
 	private static final int SLOT_ALL = 45;
 		
 	private TileEntityVolCore tile;
-	public int guiRemainedPower;
+	public int guiRemainedPower, btnActive;
 	
 	
 	public ContainerVolCore(IInventory invPlayer, TileEntityVolCore tile)
@@ -121,23 +121,33 @@ public class ContainerVolCore extends Container
 		//對所有開啟gui的人發送更新, 若數值有改變則發送更新封包
 		for (int i = 0; i < this.listeners.size(); ++i)
         {
-            IContainerListener tileListener = (IContainerListener) this.listeners.get(i);
+            IContainerListener listener = (IContainerListener) this.listeners.get(i);
 
             //用sendProgressBarUpdate當作update的flag, 但是實際值用自訂的封包來傳送
             if (this.guiRemainedPower != this.tile.getPowerRemained())
             {
             	this.tile.sendSyncPacket();
             }
+            
+            int temp = this.tile.getField(0);
+            if (this.btnActive != temp)
+            {
+            	listener.sendProgressBarUpdate(this, 0, temp);
+            }
         }//end all listener
 		
 		//更新container內的數值
     	this.guiRemainedPower = this.tile.getPowerRemained();
+    	this.btnActive = this.tile.getField(0);
     }
 
 	//client端container接收新值
 	@Override
 	@SideOnly(Side.CLIENT)
-    public void updateProgressBar(int valueType, int updatedValue) {}
+    public void updateProgressBar(int type, int value)
+	{
+		this.tile.setField(type, value);
+	}
 
 	
 }

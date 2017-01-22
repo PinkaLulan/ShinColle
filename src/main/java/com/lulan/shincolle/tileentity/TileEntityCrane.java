@@ -140,7 +140,6 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
         this.checkOredict = nbt.getBoolean("dict");
         this.checkNbt = nbt.getBoolean("nbt");
         this.craneMode = nbt.getInteger("mode");
-        this.playerUID = nbt.getInteger("uid");
         this.itemMode = nbt.getInteger("imode");
         this.redMode = nbt.getInteger("rmode");
         
@@ -158,7 +157,6 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
         }
         catch (Exception e)
         {
-        	LogHelper.info("EXCEPTION: TileEntityCrane load position fail, reset to BlockPos.ORIGIN");
         	this.chestPos = BlockPos.ORIGIN;
         	this.lastPos = BlockPos.ORIGIN;
         	this.nextPos = BlockPos.ORIGIN;
@@ -180,7 +178,6 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
         nbt.setBoolean("dict", this.checkOredict);
         nbt.setBoolean("nbt", this.checkNbt);
         nbt.setInteger("mode", this.craneMode);
-        nbt.setInteger("uid", this.playerUID);
         nbt.setInteger("imode", this.itemMode);
         nbt.setInteger("rmode", this.redMode);
 
@@ -467,10 +464,8 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 			}//is active
 			
 			//update checking
-			if (this.tick > 510)
+			if ((this.tick & 127) == 0)
 			{
-				this.tick = 0;
-				
 				//valid position
 				if (this.chestPos.getY() > 0 || this.lastPos.getY() > 0 || this.nextPos.getY() > 0)
 				{

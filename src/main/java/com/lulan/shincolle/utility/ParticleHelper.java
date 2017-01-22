@@ -128,7 +128,7 @@ public class ParticleHelper
 		break;
 		case 2:		//hugeexplosion
 			world.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, posX, posY+1, posZ, 0.0D, 0.0D, 0.0D, new int[0]);
-			for (int i = 0; i < 20; ++i)
+			for (int i = 0; i < 24; ++i)
 			{
 				ran1 = rand.nextFloat() * 6F - 3F;
 				ran2 = rand.nextFloat() * 6F - 3F;
@@ -164,7 +164,7 @@ public class ParticleHelper
 			}
 		break;
 		case 6: 	//largesmoke
-			for (int i = 0; i < 20; i++)
+			for (int i = 0; i < 24; i++)
 			{
 				ran1 = rand.nextFloat() - 0.5F;
 				ran2 = rand.nextFloat();
@@ -190,7 +190,7 @@ public class ParticleHelper
 		break;
 		case 9: 	//lava + largeexplode
 			world.spawnParticle(EnumParticleTypes.EXPLOSION_LARGE, posX, posY+1.5, posZ, 0.0D, 0.0D, 0.0D, new int[0]);
-			for (int i = 0; i < 12; i++)
+			for (int i = 0; i < 15; i++)
 			{
 				ran1 = rand.nextFloat() * 3F - 1.5F;
 				ran2 = rand.nextFloat() * 3F - 1.5F;
@@ -248,7 +248,7 @@ public class ParticleHelper
 			newPos1 = CalcHelper.rotateXZByAxis(0F, (float)lookY, degYaw, 1F);
 			newPos2 = CalcHelper.rotateXZByAxis(0F, (float)-lookY, degYaw, 1F);
 			
-			for (int i = 0; i < 12; i++)
+			for (int i = 0; i < 15; i++)
 			{
 				ran1 = rand.nextFloat() - 0.5F;
 				ran2 = rand.nextFloat();
@@ -343,7 +343,7 @@ public class ParticleHelper
         	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray9);
 		break;
 		case 30:	//snow hit
-			for (int i = 0; i < 12; i++)
+			for (int i = 0; i < 15; i++)
 			{
 				ran1 = rand.nextFloat() * 2F - 1F;
 				ran2 = rand.nextFloat() * 2F - 1F;
@@ -352,7 +352,7 @@ public class ParticleHelper
 			}
 		break;
 		case 31: 	//throw snow smoke
-			for (int i = 0; i < 20; i++)
+			for (int i = 0; i < 22; i++)
 			{
 				ran1 = rand.nextFloat() - 0.5F;
 				ran2 = rand.nextFloat();
@@ -382,7 +382,7 @@ public class ParticleHelper
 			newPos1 = CalcHelper.rotateXZByAxis(0F, (float)lookY, degYaw, 1F);
 			newPos2 = CalcHelper.rotateXZByAxis(0F, (float)-lookY, degYaw, 1F);
 			
-			for (int i = 0; i < 12; i++)
+			for (int i = 0; i < 15; i++)
 			{
 				ran1 = rand.nextFloat() - 0.5F;
 				ran2 = rand.nextFloat();
@@ -430,7 +430,7 @@ public class ParticleHelper
 			newPos1 = CalcHelper.rotateXZByAxis(0F, (float)lookY, (float)(lookX * Values.N.DIV_PI_180), 1F);
 			newPos2 = CalcHelper.rotateXZByAxis(0F, (float)-lookY, (float)(lookX * Values.N.DIV_PI_180), 1F);
 			
-			for (int i = 0; i < 12; i++)
+			for (int i = 0; i < 15; i++)
 			{
 				ran1 = rand.nextFloat() - 0.5F;
 				ran2 = rand.nextFloat();
@@ -645,7 +645,7 @@ public class ParticleHelper
 			newPos3 = CalcHelper.rotateXZByAxis(1.5F, 0F, (float)(((EntityLivingBase)ent).rotationYawHead * Values.N.DIV_PI_180), 1F);
 			
 			//實際煙霧位置: 身體旋轉xz位移(達到砲台底座位置)+頭部旋轉xz位移(達到砲管旋轉位置)
-			for (int i = 0; i < 20; i++)
+			for (int i = 0; i < 24; i++)
 			{
 				ran1 = rand.nextFloat() - 0.5F;
 				ran2 = rand.nextFloat();
@@ -672,10 +672,10 @@ public class ParticleHelper
 			Minecraft.getMinecraft().effectRenderer.addEffect(grad1);
 		}
 		break;
-		case 13:	//sparkle
+		case 13:	//abyssal goddess particle
 		{
 			//											 ent, type, scale, rad, NO_USE, NO_USE, 4~7:RGBA, height
-			ParticleSparkle spark1 = new ParticleSparkle(ent, 0, 0.2F, ent.width * 1.5F, 0F, 0F, (float)par1, (float)par2, (float)par3, 1F, ent.height * 0.5F);
+			ParticleSparkle spark1 = new ParticleSparkle(ent, 8, 0.1F, ent.width * 2F, 0F, 0F, (float)par1, (float)par2, (float)par3, 1F, ent.height * 0.4F);
 			Minecraft.getMinecraft().effectRenderer.addEffect(spark1);
 		}
 		break;

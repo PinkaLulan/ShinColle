@@ -914,7 +914,7 @@ public class ModelNorthernHime extends ModelBase implements IModelEmotion
 	    
 	    if (ent.getIsRiding())
 	    {	//騎乘動作
-	    	GlStateManager.translate(0F, 0.24F, 0.255F);
+	    	GlStateManager.translate(0F, 0.24F, 0.27F);
 	    	
 	    	if (ent.getIsSitting())
 	    	{

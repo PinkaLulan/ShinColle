@@ -111,7 +111,7 @@ public class EntitySubmU511Mob extends BasicEntityShipHostile implements IShipIn
 		distVec[3] = MathHelper.sqrt(distVec[0]*distVec[0] + distVec[1]*distVec[1] + distVec[2]*distVec[2]);
         
         //超過一定距離/水中 , 則採用拋物線,  在水中時發射高度較低
-        if (distVec[3] < 5F)
+        if (distVec[3] < 4F)
         {
         	isDirect = true;
         }
@@ -119,7 +119,7 @@ public class EntitySubmU511Mob extends BasicEntityShipHostile implements IShipIn
         if (getShipDepth() > 0D)
         {
         	isDirect = true;
-        	launchPos = (float) posY;
+        	launchPos = (float) posY + height * 0.2F;
         }
         
         //play sound and particle
@@ -138,7 +138,7 @@ public class EntitySubmU511Mob extends BasicEntityShipHostile implements IShipIn
         
         //spawn missile
         EntityAbyssMissile missile = new EntityAbyssMissile(this.world, this, 
-        		tarX, tarY+target.height*0.2F, tarZ, launchPos, atk, kbValue, isDirect, 0.08F);
+        		tarX, tarY, tarZ, launchPos, atk, kbValue, isDirect, 0.08F);
         this.world.spawnEntity(missile);
         
         //play target effect
@@ -165,6 +165,12 @@ public class EntitySubmU511Mob extends BasicEntityShipHostile implements IShipIn
 	public void setInvisibleLevel(float level)
 	{
 		this.ilevel = level;
+	}
+	
+	@Override
+	public double getShipFloatingDepth()
+	{
+		return 1.2D + this.scaleLevel * 0.3D;
 	}
   	
 
