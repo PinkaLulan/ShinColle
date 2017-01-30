@@ -3,7 +3,7 @@ package com.lulan.shincolle.command;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.lulan.shincolle.network.S2CInputPackets;
+import com.lulan.shincolle.network.S2CReactPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
 
 import net.minecraft.command.CommandBase;
@@ -87,7 +87,7 @@ public class ShipCmdShipInfo extends CommandBase
 			if (sender instanceof EntityPlayer)
 			{
 				//send sender and owner eid to client
-				CommonProxy.channelI.sendTo(new S2CInputPackets(S2CInputPackets.PID.CmdShipInfo, ((EntityPlayer) sender).getEntityId()), (EntityPlayerMP) sender);
+				CommonProxy.channelI.sendTo(new S2CReactPackets(S2CReactPackets.PID.CmdShipInfo, ((EntityPlayer) sender).getEntityId()), (EntityPlayerMP) sender);
 			}//is player
 		}//end server side
 	}

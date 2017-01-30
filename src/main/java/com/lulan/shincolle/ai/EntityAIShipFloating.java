@@ -6,6 +6,7 @@ import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.entity.IShipGuardian;
 import com.lulan.shincolle.entity.IShipInvisible;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -60,28 +61,28 @@ public class EntityAIShipFloating extends EntityAIBase
     	//mount類: 檢查mount水深 & host坐下
     	else if (hostMount != null && hostMount.getHostEntity() != null)
     	{
-			hostShip = (BasicEntityShip) hostMount.getHostEntity();
+    		BasicEntityShip host = (BasicEntityShip) hostMount.getHostEntity();
 			
 			//騎乘, 守衛, 移動, 坐下, 裝載中: 禁止上浮
-    		if (hostShip.isSitting() || hostShip.getStateMinor(ID.M.CraneState) > 0 ||
-    			!hostShip.getShipNavigate().noPath() || isInGuardPosition(hostShip))
+    		if (host.isSitting() || host.getStateMinor(ID.M.CraneState) > 0 ||
+    			!host.getShipNavigate().noPath() || isInGuardPosition(host))
     		{
     			return false;
     		}
 			
 			//騎乘中, 守衛中, 移動中: 禁止上浮
-			if (!hostShip.getShipNavigate().noPath() || isInGuardPosition(hostMount))
+			if (!hostMount.getShipNavigate().noPath() || isInGuardPosition(hostMount))
 			{
     			return false;
     		}
 			
 			return hostMount.getShipDepth() > hostMount.getShipFloatingDepth();
 		}
-    	//其他類
-    	else
-    	{
+//    	//其他類
+//    	else
+//    	{
     		return host.getShipDepth() > host.getShipFloatingDepth();
-    	}
+//    	}
     }
 
     @Override
@@ -143,7 +144,7 @@ public class EntityAIShipFloating extends EntityAIBase
         	
         	if (this.host.getShipDepth() > 0.15D)
         	{
-        		this.hostLiving.motionY += 0.0012D;
+        		this.hostLiving.motionY += 0.0015D;
         		return;
         	}
     	}

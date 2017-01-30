@@ -48,7 +48,7 @@ public class CapaTeitoku implements ICapaTeitoku
 	private boolean hasTeam;
 	private boolean isRingActive;
 	private boolean isRingFlying;
-	private int[] ringEffect;			//0:haste 1:speed 2:jump 3:damage
+	private int[] ringEffect;			//NO USE FOR NOW
 	private int marriageNum;
 	private int bossCooldown;			//spawn boss cooldown
 	private int teamCooldown;			//recreate team cooldown
@@ -304,11 +304,6 @@ public class CapaTeitoku implements ICapaTeitoku
 	public int getMarriageNum()
 	{
 		return marriageNum;
-	}
-	
-	public int getDigSpeedBoost()
-	{
-		return isRingActive ? marriageNum : 0;
 	}
 	
 	public int getBossCooldown()

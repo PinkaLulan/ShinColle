@@ -5,7 +5,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import com.lulan.shincolle.network.S2CInputPackets;
+import com.lulan.shincolle.network.S2CReactPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.utility.EntityHelper;
@@ -150,7 +150,7 @@ public class ShipCmdChangeShipOwner extends CommandBase
 								.appendSibling(new TextComponentString(" shipchangeowner: owner: "+TextFormatting.AQUA+owner+" "+TextFormatting.LIGHT_PURPLE+owner.getUniqueID()))
 							);
 							//send sender and owner eid to client
-							CommonProxy.channelI.sendTo(new S2CInputPackets(S2CInputPackets.PID.CmdChOwner, senderEID, ownerEID), (EntityPlayerMP) op);
+							CommonProxy.channelI.sendTo(new S2CReactPackets(S2CReactPackets.PID.CmdChOwner, senderEID, ownerEID), (EntityPlayerMP) op);
 						}//owner pid is legal
 						else
 						{

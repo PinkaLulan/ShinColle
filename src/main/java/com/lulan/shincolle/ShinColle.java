@@ -169,6 +169,7 @@ public class ShinColle
 	public void onServerStarting(FMLServerStartingEvent event)
 	{
 		LogHelper.info("INFO: Server starting event: is MP server? "+event.getSide().isServer());
+		
 		//register command
 		CommandHandler.init(event);
 	}

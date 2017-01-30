@@ -199,6 +199,8 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 			return false;
 		}
 		
+		boolean checkDEF = true;
+		
 		//damage disabled
 		if (attacker == DamageSource.inWall || attacker == DamageSource.starve ||
 			attacker == DamageSource.cactus || attacker == DamageSource.fall)
@@ -209,7 +211,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		else if (attacker == DamageSource.magic || attacker == DamageSource.wither ||
 				 attacker == DamageSource.dragonBreath)
 		{
-			return super.attackEntityFrom(attacker, atk);
+			checkDEF = false;
 		}
 		//out of world
 		else if (attacker == DamageSource.outOfWorld)
@@ -270,8 +272,13 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 				return false;
 			}
 			
+			float reducedAtk = atk;
+					
 			//進行def計算
-			float reduceAtk = atk * (1F - (this.getDefValue() - rand.nextInt(20) + 10F) * 0.01F);    
+			if (checkDEF)
+			{
+				reducedAtk = atk * (1F - (this.getDefValue() + rand.nextInt(50) - 25F) * 0.01F);
+			}
 			
 			//ship vs ship, config傷害調整 (僅限友善船)
 			if (entity instanceof IShipOwner && ((IShipOwner)entity).getPlayerUID() > 0 &&
@@ -279,7 +286,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 				 entity instanceof BasicEntitySummon || 
 				 entity instanceof BasicEntityMount))
 			{
-				reduceAtk = reduceAtk * (float)ConfigHandler.dmgSvS * 0.01F;
+				reducedAtk = reducedAtk * (float)ConfigHandler.dmgSvS * 0.01F;
 			}
 			
 			//ship vs ship, damage type傷害調整
@@ -287,12 +294,12 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 			{
 				//get attack time for damage modifier setting (day, night or ...etc)
 				int modSet = this.world.provider.isDaytime() ? 0 : 1;
-				reduceAtk = CalcHelper.calcDamageByType(reduceAtk, ((IShipAttackBase) entity).getDamageType(), this.getDamageType(), modSet);
+				reducedAtk = CalcHelper.calcDamageByType(reducedAtk, ((IShipAttackBase) entity).getDamageType(), this.getDamageType(), modSet);
 			}
 			
 			//tweak min damage
-	        if (reduceAtk < 1F && reduceAtk > 0F) reduceAtk = 1F;
-	        else if (reduceAtk <= 0F) reduceAtk = 0F;
+	        if (reducedAtk < 1F && reducedAtk > 0F) reducedAtk = 1F;
+	        else if (reducedAtk <= 0F) reducedAtk = 0F;
 
 			//取消坐下動作
 			this.host.setSitting(false);
@@ -303,7 +310,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 				this.host.applyEmotesReaction(2);
 	  		}
    
-            return super.attackEntityFrom(attacker, reduceAtk);
+            return super.attackEntityFrom(attacker, reducedAtk);
         }
 		
 		return false;
@@ -515,8 +522,8 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 				
 				if (motX != 0 || motZ != 0)
 				{
-					ParticleHelper.spawnAttackParticleAt(this.posX + motX*1.5D, this.posY, this.posZ + motZ*1.5D, 
-							-motX*0.5D, 0D, -motZ*0.5D, (byte)15);
+					ParticleHelper.spawnAttackParticleAt(this.posX + motX*3D, this.posY + 0.6D, this.posZ + motZ*3D, 
+							-motX, this.width, -motZ, (byte)47);
 				}
 			}
 		}//end client side
@@ -1834,14 +1841,28 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	@Override
 	public void setShipFloatingDepth(double par1) {}
 	
+	@Override
 	public float[] getSeatPos()
 	{
 		return this.seatPos;
 	}
 	
+	@Override
+	public void setSeatPos(float[] pos)
+	{
+		this.seatPos = pos;
+	}
+	
+	@Override
 	public float[] getSeatPos2()
 	{
 		return this.seatPos2;
+	}
+	
+	@Override
+	public void setSeatPos2(float[] pos)
+	{
+		this.seatPos2 = pos;
 	}
 	
 	

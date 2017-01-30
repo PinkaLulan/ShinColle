@@ -17,10 +17,10 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 /**
- * CLIENT TO SERVER: INPUT PACKETS (NO-GUI)
- * server端針對input packet的回應 (ex: key, command)
+ * CLIENT TO SERVER: REACT PACKETS
+ * server端針對client端input的回應 (ex: key, command)
  */
-public class S2CInputPackets implements IMessage
+public class S2CReactPackets implements IMessage
 {
 	
 	private World world;
@@ -41,7 +41,7 @@ public class S2CInputPackets implements IMessage
 	}
 	
 	
-	public S2CInputPackets() {}  //必須要有空參數constructor, forge才能使用此class
+	public S2CReactPackets() {}  //必須要有空參數constructor, forge才能使用此class
 
 	/**type 0: (2 parms) command: change owner: 0:sender eid, 1:owner eid
 	 * type 1: (1 parms) command: show ship info: 0:sender eid
@@ -49,7 +49,7 @@ public class S2CInputPackets implements IMessage
 	 * type 3: (2 parms) command: show/get/del ship list: 0:cmd type, 1:number
 	 * type 20:(8 parms) flare light effect: 0:x, 1:y, 2:z
 	 */
-	public S2CInputPackets(byte type, int...parms)
+	public S2CReactPackets(byte type, int...parms)
 	{
         this.packetType = type;
         this.valueInt = parms;
@@ -167,7 +167,7 @@ public class S2CInputPackets implements IMessage
 	}
 	
 	//packet handle method
-	private static void handle(S2CInputPackets msg, MessageContext ctx)
+	private static void handle(S2CReactPackets msg, MessageContext ctx)
 	{
 		switch (msg.packetType)
 		{
@@ -204,18 +204,18 @@ public class S2CInputPackets implements IMessage
 	}
 
 	//packet handler (inner class)
-	public static class Handler implements IMessageHandler<S2CInputPackets, IMessage>
+	public static class Handler implements IMessageHandler<S2CReactPackets, IMessage>
 	{
 		//收到封包時顯示debug訊息
 		@Override
-		public IMessage onMessage(S2CInputPackets message, MessageContext ctx)
+		public IMessage onMessage(S2CReactPackets message, MessageContext ctx)
 		{
 			/**
 			 * 1.8之後minecraft主程式分為minecraft server/clinet跟networking兩個thread執行
 			 * 因此handler這邊必須使用addScheduledTask將封包處理方法加入到並行控制佇列中處理
 			 * 以避免多執行緒下各種並行處理問題
 			 */
-			FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> S2CInputPackets.handle(message, ctx));
+			FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> S2CReactPackets.handle(message, ctx));
 			return null;
 		}
     }

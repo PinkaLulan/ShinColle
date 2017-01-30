@@ -134,6 +134,8 @@ public class ServerProxy extends CommonProxy
 	public static int updateRadarTicks = ConfigHandler.radarUpdate;
 
 	
+	public ServerProxy() {}
+	
 	//init server proxy variables, called when world loaded and initServerFile = false
 	public static void initServerProxy(World world)
 	{
@@ -319,7 +321,7 @@ public class ServerProxy extends CommonProxy
 		{
 			//get target class list
 			HashMap<Integer, String> tarList =  getPlayerTargetClass(pid);
-
+			
 			if (tarList != null)
 			{
 				String s = tarList.get(str.hashCode());
@@ -339,6 +341,8 @@ public class ServerProxy extends CommonProxy
 			{
 				tarList = new HashMap<Integer, String>();
 				tarList.put(str.hashCode(), str);
+				customTagetClass.put(pid, tarList);
+				serverData.markDirty();
 			}
 		}
 		

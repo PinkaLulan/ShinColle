@@ -649,6 +649,8 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
 			return false;
 		}
 		
+		boolean checkDEF = true;
+		
 		//damage disabled
 		if (source == DamageSource.inWall || source == DamageSource.starve ||
 			source == DamageSource.cactus || source == DamageSource.fall)
@@ -659,7 +661,7 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
 		else if (source == DamageSource.magic || source == DamageSource.wither ||
 				 source == DamageSource.dragonBreath)
 		{
-			return super.attackEntityFrom(source, atk);
+			checkDEF = false;
 		}
 		//out of world
 		else if (source == DamageSource.outOfWorld)
@@ -715,8 +717,13 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
 				return false;
 			}
 			
+			float reducedAtk = atk;
+			
 			//進行def計算
-			float reduceAtk = atk * (1F - (this.getDefValue() - rand.nextInt(20) + 10F) * 0.01F);    
+			if (checkDEF)
+			{
+				reducedAtk = atk * (1F - (this.getDefValue() + rand.nextInt(50) - 25F) * 0.01F);
+			}
 			
 			//ship vs ship, config傷害調整 (僅限友善船)
 			if (this.getPlayerUID() > 0 && attacker instanceof IShipOwner &&
@@ -725,7 +732,7 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
 				 attacker instanceof BasicEntitySummon ||
 				 attacker instanceof BasicEntityMount))
 			{
-				reduceAtk = reduceAtk * (float)ConfigHandler.dmgSvS * 0.01F;
+				reducedAtk = reducedAtk * (float)ConfigHandler.dmgSvS * 0.01F;
 			}
 			
 			//ship vs ship, damage type傷害調整
@@ -733,14 +740,14 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
 			{
 				//get attack time for damage modifier setting (day, night or ...etc)
 				int modSet = this.world.provider.isDaytime() ? 0 : 1;
-				reduceAtk = CalcHelper.calcDamageByType(reduceAtk, ((IShipAttackBase) attacker).getDamageType(), this.getDamageType(), modSet);
+				reducedAtk = CalcHelper.calcDamageByType(reducedAtk, ((IShipAttackBase) attacker).getDamageType(), this.getDamageType(), modSet);
 			}
 			
 			//tweak min damage
-	        if (reduceAtk < 1F && reduceAtk > 0F) reduceAtk = 1F;
-	        else if (reduceAtk <= 0F) reduceAtk = 0F;
+	        if (reducedAtk < 1F && reducedAtk > 0F) reducedAtk = 1F;
+	        else if (reducedAtk <= 0F) reducedAtk = 0F;
 
-            return super.attackEntityFrom(source, reduceAtk);
+            return super.attackEntityFrom(source, reducedAtk);
         }//end is entity damage source
 		
 		return false;

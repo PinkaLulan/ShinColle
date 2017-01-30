@@ -19,14 +19,13 @@ import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.network.S2CEntitySync;
-import com.lulan.shincolle.network.S2CInputPackets;
+import com.lulan.shincolle.network.S2CReactPackets;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 import com.lulan.shincolle.utility.TeamHelper;
@@ -469,6 +468,8 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
     		this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
     	}
     	
+    	boolean checkDEF = true;
+    	
 		//damage disabled
 		if (source == DamageSource.inWall || source == DamageSource.starve ||
 			source == DamageSource.cactus || source == DamageSource.fall)
@@ -478,7 +479,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		//damage ignore def value
 		else if (source == DamageSource.magic || source == DamageSource.dragonBreath)
 		{
-			return super.attackEntityFrom(source, atk);
+			checkDEF = false;
 		}
 		//out of world
 		else if (source == DamageSource.outOfWorld)
@@ -511,20 +512,25 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 				return false;
 			}
 			
+			float reducedAtk = atk;
+			
 			//進行def計算
-			float reduceAtk = atk * (1F - (this.defValue - rand.nextInt(20) + 10F) * 0.01F);    
+			if (checkDEF)
+			{
+				reducedAtk = atk * (1F - (this.defValue + rand.nextInt(50) - 25F) * 0.01F);
+			}
 			
 			//ship vs ship, damage type傷害調整
 			if (attacker instanceof IShipAttackBase)
 			{
 				//get attack time for damage modifier setting (day, night or ...etc)
 				int modSet = this.world.provider.isDaytime() ? 0 : 1;
-				reduceAtk = CalcHelper.calcDamageByType(reduceAtk, ((IShipAttackBase) attacker).getDamageType(), this.getDamageType(), modSet);
+				reducedAtk = CalcHelper.calcDamageByType(reducedAtk, ((IShipAttackBase) attacker).getDamageType(), this.getDamageType(), modSet);
 			}
 			
 			//tweak min damage
-	        if (reduceAtk < 1F && reduceAtk > 0F) reduceAtk = 1F;
-	        else if (reduceAtk <= 0F) reduceAtk = 0F;
+	        if (reducedAtk < 1F && reducedAtk > 0F) reducedAtk = 1F;
+	        else if (reducedAtk <= 0F) reducedAtk = 0F;
 
 			//設置revenge target
 			this.setEntityRevengeTarget(attacker);
@@ -536,7 +542,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 				applyEmotesReaction(2);
 	  		}
    
-            return super.attackEntityFrom(source, reduceAtk);
+            return super.attackEntityFrom(source, reducedAtk);
         }
 		
 		return false;
@@ -872,8 +878,8 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 				
 				if (motX != 0 || motZ != 0)
 				{
-					ParticleHelper.spawnAttackParticleAt(this.posX + motX*1.5D, this.posY, this.posZ + motZ*1.5D, 
-							-motX*0.5D, 0D, -motZ*0.5D, (byte)15);
+					ParticleHelper.spawnAttackParticleAt(this.posX + motX*3D, this.posY + 0.4D, this.posZ + motZ*3D, 
+							-motX, this.width, -motZ, (byte)47);
 				}
 			}
 		}//end client side
@@ -1565,7 +1571,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
   	  		{
   	  			BlockPos pos = new BlockPos(target);
 				TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-				CommonProxy.channelI.sendToAllAround(new S2CInputPackets(S2CInputPackets.PID.FlareEffect, pos.getX(), pos.getY(), pos.getZ()), point);
+				CommonProxy.channelI.sendToAllAround(new S2CReactPackets(S2CReactPackets.PID.FlareEffect, pos.getX(), pos.getY(), pos.getZ()), point);
   	  		}
   		}
   	}

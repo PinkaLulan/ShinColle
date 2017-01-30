@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 
 import com.lulan.shincolle.crafting.ShipCalc;
 import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.network.S2CInputPackets;
+import com.lulan.shincolle.network.S2CReactPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
@@ -153,7 +153,7 @@ public class ShipCmdGetShip extends CommandBase
 				}
 				
 				//show list by page number
-				CommonProxy.channelI.sendTo(new S2CInputPackets(S2CInputPackets.PID.CmdShipList, 0, showPage), (EntityPlayerMP) sender);
+				CommonProxy.channelI.sendTo(new S2CReactPackets(S2CReactPackets.PID.CmdShipList, 0, showPage), (EntityPlayerMP) sender);
 			}
 			break;
 			case 1:	//get

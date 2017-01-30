@@ -8,6 +8,7 @@ import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.entity.other.EntityProjectileBeam;
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
@@ -64,6 +65,7 @@ public class S2CEntitySync implements IMessage
 		public static final byte SyncShip_Timer = 14;
 		public static final byte SyncShip_Guard = 15;
 		public static final byte SyncShip_ID = 16;
+		public static final byte SyncSystem_Config = 17;
 	}
 
 	
@@ -81,6 +83,7 @@ public class S2CEntitySync implements IMessage
 	 * type 14:ship timer only
 	 * type 15:ship guard target only
 	 * type 16:ship UID only
+	 * type 17:server config sync
 	 */
 	public S2CEntitySync(Entity entity, byte type)
 	{
@@ -190,6 +193,9 @@ public class S2CEntitySync implements IMessage
 		break;
 		case PID.SyncEntity_PlayerUID:	//player uid sync
 			this.valueInt1 = PacketHelper.readIntArray(buf, 4);
+		break;
+		case PID.SyncSystem_Config:	//server config sync to client
+			this.valueInt1 = PacketHelper.readIntArray(buf, ConfigHandler.ringAbility.length);
 		break;
 		}//end switch
 		
@@ -592,6 +598,15 @@ public class S2CEntitySync implements IMessage
 			}
 		}
 		break;
+		case PID.SyncSystem_Config:	//server config sync to client
+		{
+			//sync ring ability setting
+			for (int value : ConfigHandler.ringAbility)
+			{
+				buf.writeInt(value);
+			}
+		}
+		break;
 		}
 	}
 	
@@ -637,6 +652,7 @@ public class S2CEntitySync implements IMessage
 			if (entity != null) getTarget = true;
 		break;
 		case PID.SyncEntity_PlayerUID:	//player uid sync
+		case PID.SyncSystem_Config:		//server config sync
 			getTarget = true;
 		break;
 		}
@@ -1037,6 +1053,12 @@ public class S2CEntitySync implements IMessage
 					}
 				}
 			}
+			break;
+			case PID.SyncSystem_Config:	//server config sync to client
+				for (int i = 0; i < ConfigHandler.ringAbility.length; i++)
+				{
+					ConfigHandler.ringAbility[i] = msg.valueInt1[i];
+				}
 			break;
 			}//end switch
 		}//end can sync

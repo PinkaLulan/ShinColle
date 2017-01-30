@@ -7,7 +7,7 @@ import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CGUIPackets;
-import com.lulan.shincolle.network.S2CInputPackets;
+import com.lulan.shincolle.network.S2CReactPackets;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.reference.ID;
 
@@ -37,6 +37,8 @@ public abstract class CommonProxy implements IProxy
 	public static boolean isMultiplayer = false;	//the world is MP or SP
 	
 	
+	public CommonProxy() {}
+	
 	@Override
 	public void registerChannel()
 	{
@@ -54,8 +56,8 @@ public abstract class CommonProxy implements IProxy
 		//GUI packet
 		channelG.registerMessage(S2CGUIPackets.Handler.class, S2CGUIPackets.class, ID.Packets.S2C_GUISync, Side.CLIENT);
 		channelG.registerMessage(C2SGUIPackets.Handler.class, C2SGUIPackets.class, ID.Packets.C2S_GUIInput, Side.SERVER);
-		//Input or server input reaction packet
-		channelI.registerMessage(S2CInputPackets.Handler.class, S2CInputPackets.class, ID.Packets.S2C_CmdSync, Side.CLIENT);
+		//Input or server reaction packet
+		channelI.registerMessage(S2CReactPackets.Handler.class, S2CReactPackets.class, ID.Packets.S2C_CmdReact, Side.CLIENT);
 		channelI.registerMessage(C2SInputPackets.Handler.class, C2SInputPackets.class, ID.Packets.C2S_CmdInput, Side.SERVER);
 	}
 	

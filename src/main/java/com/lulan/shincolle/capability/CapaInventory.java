@@ -1,11 +1,12 @@
 package com.lulan.shincolle.capability;
 
+import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.tileentity.BasicTileInventory;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.items.ItemStackHandler;
-
-import com.lulan.shincolle.entity.BasicEntityShip;
 
 /** inventory capability
  *  for tile / entity / itemstack
@@ -29,7 +30,7 @@ public class CapaInventory<T> extends ItemStackHandler
         
         //check host
         if (hostObj instanceof BasicEntityShip) { hostType = 0; }
-        else if (hostObj instanceof TileEntity) { hostType = 1; }
+        else if (hostObj instanceof BasicTileInventory) { hostType = 1; }
         else if (hostObj instanceof Entity) { hostType = 2; }
         else if (hostObj instanceof ItemStack) { hostType = 3; }
         else

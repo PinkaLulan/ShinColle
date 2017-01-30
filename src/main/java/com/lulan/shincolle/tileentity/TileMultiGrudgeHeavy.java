@@ -19,6 +19,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.IFluidContainerItem;
 
 /** Fuel Cost = BaseCost + CostPerMaterial * ( TotalMaterialAmount - minAmount * 4 )
  *  Total Build Time = FuelCost / buildSpeed
@@ -163,8 +164,9 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileLiquidF
 	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack itemstack)
 	{
-		if(slot == SLOTS_OUT)
-		{	//output slot
+		//output slot
+		if (slot == SLOTS_OUT)
+		{
 			return false;
 		}
 		
@@ -173,9 +175,15 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileLiquidF
 	
 	//使用管線/漏斗輸出時呼叫, 不適用於手動置入
 	@Override
-	public boolean canExtractItem(int slot, ItemStack item, EnumFacing face)
+	public boolean canExtractItem(int slot, ItemStack stack, EnumFacing face)
 	{
-		return true;
+		//only release mode or output slot can be extracted
+		if (slot == SLOTS_OUT || invMode == 1)
+		{
+			return true;
+		}
+		
+		return false;
 	}
 	
 	//建造ship方法

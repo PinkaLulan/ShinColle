@@ -3,11 +3,15 @@ package com.lulan.shincolle.item;
 import java.util.List;
 
 import com.lulan.shincolle.capability.CapaTeitoku;
+import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 
+import baubles.api.BaubleType;
+import baubles.api.IBauble;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -16,11 +20,13 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class MarriageRing extends BasicItem
+@Optional.Interface(iface = "baubles.api.IBauble", modid = Reference.MOD_ID_Baubles)
+public class MarriageRing extends BasicItem implements IBauble
 {
 	
 	private static final String NAME = "MarriageRing";
@@ -88,10 +94,14 @@ public class MarriageRing extends BasicItem
         return false;
     }
 	
-	//這裡有許多client端判定, 因此不能設為server only, 如此動作才會正確 (ex: change dig speed, fly mode...)
+	/**
+	 * ring ability:
+	 * ConfigHandler.ringAbility[]: 0:
+	 */
 	@Override
 	public void onUpdate(ItemStack item, World world, Entity entity, int slot, boolean inUse)
 	{
+		//BOTH SIDE
 		if(entity instanceof EntityPlayer)
 		{
 			EntityPlayer owner = (EntityPlayer) entity;
@@ -100,13 +110,22 @@ public class MarriageRing extends BasicItem
 			//ring effects
 			if (capa != null)
 			{
-				//fly mode: marriages > 5
-				if (capa.getMarriageNum() > 5)
+				//water breathing, passive
+				if (ConfigHandler.ringAbility[0] >= 0 && capa.getMarriageNum() >= ConfigHandler.ringAbility[0] && (owner.ticksExisted & 127) == 0)
+				{
+		            if (owner.getAir() < 300)
+		            {
+		            	owner.setAir(300);
+		            }
+				}
+				
+				//fly mode in water, active
+				if (ConfigHandler.ringAbility[1] >= 0 && capa.getMarriageNum() >= ConfigHandler.ringAbility[1])
 				{
 					if (EntityHelper.checkEntityIsInLiquid(owner))
 					{
 						//not flying and ring is active
-						if (!owner.capabilities.isFlying && capa.isRingActive())
+						if (!owner.capabilities.isFlying && capa.hasRing() && capa.isRingActive())
 						{
 							owner.capabilities.isFlying = true;
 							capa.setRingFlying(true);
@@ -121,17 +140,7 @@ public class MarriageRing extends BasicItem
 							capa.setRingFlying(false);
 						}
 					}
-				}	
-			
-				//water breathing: no requirement
-				if (owner.ticksExisted % 128 == 0)
-				{
-		            if (owner.getAir() < 300)
-		            {
-		            	owner.setAir(300);
-		            }
 				}
-
 			}//end extPros != null
 		}//end entity = player
 	}
@@ -146,6 +155,20 @@ public class MarriageRing extends BasicItem
 		{
     		list.add(TextFormatting.AQUA + I18n.format("gui.shincolle:ringText") + " " + capa.getMarriageNum());
     	}
+	}
+
+	@Override
+	@Optional.Method(modid = Reference.MOD_ID_Baubles)
+	public BaubleType getBaubleType(ItemStack arg0)
+	{
+		return BaubleType.RING;
+	}
+	
+	@Override
+	@Optional.Method(modid = Reference.MOD_ID_Baubles)
+	public void onWornTick(ItemStack stack, EntityLivingBase player)
+	{
+		this.onUpdate(stack, player.world, player, 0, true);
 	}
 	
 	

@@ -57,10 +57,15 @@ abstract public class BasicTileInventory extends BasicTileEntity implements ISid
     @Override
     public boolean hasCapability(Capability<?> capability, EnumFacing facing)
     {
+    	/**
+    	 * FIX: capability for other mod is temporarily disabled
+    	 *      to fix hopper extraction that ignored slot id.
+    	 */
     	//check capability: inventory
         if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
         {
-            return true;
+//            return true;
+        	return false;
         }
         
         //check other capability
@@ -71,10 +76,15 @@ abstract public class BasicTileInventory extends BasicTileEntity implements ISid
     @Override
     public <T> T getCapability(Capability<T> capability, EnumFacing facing)
     {
+    	/**
+    	 * FIX: capability for other mod is temporarily disabled
+    	 *      to fix hopper extraction that ignored slot id.
+    	 */
     	//get capability: inventory
         if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
         {
-            return (T) itemHandler;
+//            return (T) itemHandler;
+        	return null;
         }
         
         //get other capability

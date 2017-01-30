@@ -421,8 +421,8 @@ public class ShipCalc
   		case ID.Ship.DestroyerWD:
   		case ID.Ship.HeavyCruiserHime:
   		case ID.Ship.SupplyDepotHime:
-  			//easy mode
-  			if(ConfigHandler.easyMode)
+  			//easy mode: reduce amount to prevent resources dupe
+  			if (ConfigHandler.easyMode)
   			{
   				amount[0] = new ItemStack(ModBlocks.BlockGrudge, 1);
   				amount[1] = new ItemStack(ModBlocks.BlockAbyssium, 1);
@@ -430,7 +430,7 @@ public class ShipCalc
   				amount[3] = new ItemStack(ModBlocks.BlockPolymetal, 1);
         	}
         	else
-        	{						
+        	{
         		amount[0] = new ItemStack(ModBlocks.BlockGrudge, 10 + rand.nextInt(3));
         		amount[1] = new ItemStack(ModBlocks.BlockAbyssium, 10 + rand.nextInt(3));
         		amount[2] = new ItemStack(ModItems.Ammo, 10 + rand.nextInt(3), 1);
@@ -443,6 +443,7 @@ public class ShipCalc
   		case ID.Ship.DestroyerHibiki:
   		case ID.Ship.DestroyerIkazuchi:
   		case ID.Ship.DestroyerInazuma:
+  		case ID.Ship.DestroyerShimakaze:
   		case ID.Ship.Raiden:
   			amount[0] = new ItemStack(ModItems.Grudge, ConfigHandler.kaitaiAmountSmall + rand.nextInt((int)(ConfigHandler.kaitaiAmountSmall * 0.25F) + 1));
   			amount[1] = new ItemStack(ModItems.AbyssMetal, ConfigHandler.kaitaiAmountSmall + rand.nextInt((int)(ConfigHandler.kaitaiAmountSmall * 0.25F) + 1), 0);
@@ -451,7 +452,6 @@ public class ShipCalc
   			break;
   		case ID.Ship.LightCruiserTenryuu:
   		case ID.Ship.LightCruiserTatsuta:
-  		case ID.Ship.DestroyerShimakaze:
   			amount[0] = new ItemStack(ModBlocks.BlockGrudge, ConfigHandler.kaitaiAmountLarge + rand.nextInt((int)(ConfigHandler.kaitaiAmountLarge * 0.25F) + 1));
   			amount[1] = new ItemStack(ModBlocks.BlockAbyssium, ConfigHandler.kaitaiAmountLarge + rand.nextInt((int)(ConfigHandler.kaitaiAmountLarge * 0.25F) + 1));
   			amount[2] = new ItemStack(ModItems.Ammo, ConfigHandler.kaitaiAmountLarge + rand.nextInt((int)(ConfigHandler.kaitaiAmountLarge * 0.25F) + 1), 1);

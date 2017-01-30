@@ -31,6 +31,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -48,6 +49,7 @@ public class BlockWaypoint extends BasicBlockContainer
 	    super(Material.GLASS);
 		this.setUnlocalizedName(NAME);
 		this.setRegistryName(NAME);
+		this.setResistance(0F);
 		this.setHardness(0F);
 		this.setLightOpacity(0);
 		this.setHarvestLevel(null, -1);
@@ -242,7 +244,7 @@ public class BlockWaypoint extends BasicBlockContainer
     		return BlockHelper.checkTileOwner(entity, world.getTileEntity(pos));
     	}
     	
-    	return super.canEntityDestroy(state, world, pos, entity);
+    	return false;
     }
 	
 	@Override
@@ -289,6 +291,10 @@ public class BlockWaypoint extends BasicBlockContainer
 			}
 		}
 	}
+	
+	//immune to explode
+	@Override
+    public void onBlockExploded(World world, BlockPos pos, Explosion explosion) {}
 		
 		
 }

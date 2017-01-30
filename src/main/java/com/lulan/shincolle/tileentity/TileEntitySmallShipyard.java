@@ -72,7 +72,6 @@ public class TileEntitySmallShipyard extends BasicTileInventory implements ITile
 		BUILDSPEED = (int) ConfigHandler.shipyardSmall[1];
 		FUELMAGN = (float) ConfigHandler.shipyardSmall[2];
 		POWERINST = BUILDSPEED * 2400;
-		
 	}
 	
 	@Override
@@ -105,6 +104,14 @@ public class TileEntitySmallShipyard extends BasicTileInventory implements ITile
 	public int[] getSlotsForFace(EnumFacing side)
 	{
 		return ALLSLOTS;
+	}
+	
+	//使用管線/漏斗輸出時呼叫, 不適用於手動置入
+	@Override
+	public boolean canExtractItem(int slot, ItemStack item, EnumFacing face)
+	{
+		//只有output slot跟fuel slot的空bucket可以輸出, face ignore
+		return (slot == 5) || (slot == 4 && item != null && item.getItem() == Items.BUCKET);
 	}
 	
 	//load data
@@ -181,14 +188,6 @@ public class TileEntitySmallShipyard extends BasicTileInventory implements ITile
 		return false;
 	}
 
-	//使用管線/漏斗輸出時呼叫, 不適用於手動置入
-	@Override
-	public boolean canExtractItem(int slot, ItemStack item, EnumFacing face)
-	{
-		//只有output slot跟fuel slot的空bucket可以輸出, face ignore
-		return (slot == 5) || (slot == 0 && item.getItem() == Items.BUCKET);
-	}
-	
 	//建造ship方法
 	public void buildComplete()
 	{
@@ -334,13 +333,7 @@ public class TileEntitySmallShipyard extends BasicTileInventory implements ITile
 	public void update()
 	{
 		boolean sendUpdate = false;	//標紀要block update, 有要更新metadata時設為true
-
-//		//null check TODO
-//		if (this.buildRecord == null || this.buildRecord.length < 4)
-//		{
-//			this.buildRecord = new int[] {0, 0, 0, 0};
-//		}
-
+		
 		//server side
 		if (!world.isRemote)
 		{

@@ -41,7 +41,7 @@ import com.lulan.shincolle.item.OwnerPaper;
 import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CGUIPackets;
-import com.lulan.shincolle.network.S2CInputPackets;
+import com.lulan.shincolle.network.S2CReactPackets;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
@@ -2437,8 +2437,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				
 				if (motX != 0 || motZ != 0)
 				{
-					ParticleHelper.spawnAttackParticleAt(this.posX + motX*1.5D, this.posY + 0.4D, this.posZ + motZ*1.5D, 
-							-motX*0.5D, 0D, -motZ*0.5D, (byte)15);
+					ParticleHelper.spawnAttackParticleAt(this.posX + motX*3D, this.posY + 0.4D, this.posZ + motZ*3D, 
+							-motX, this.width, -motZ, (byte)47);
 				}
 			}
 			
@@ -3011,6 +3011,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	{
 		if (this.world.isRemote) return false;
 		
+		boolean checkDEF = true;
+		
 		//set hurt face
     	if (this.getStateEmotion(ID.S.Emotion) != ID.Emotion.O_O)
     	{
@@ -3029,7 +3031,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		//damage ignore def value
 		else if (source == DamageSource.magic || source == DamageSource.dragonBreath)
 		{
-			return super.attackEntityFrom(source, atk);
+			checkDEF = false;
 		}
 		//out of world
 		else if (source == DamageSource.outOfWorld)
@@ -3088,15 +3090,20 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			}
 			
 			//進行def計算
-			float reduceAtk = atk * (1F - (StateFinal[ID.DEF] - rand.nextInt(20) + 10F) * 0.01F);    
+			float reducedAtk = atk;
 			
-			//ship vs ship, config傷害調整 (僅限友善船)
-			if (attacker instanceof IShipOwner && ((IShipOwner)attacker).getPlayerUID() > 0 &&
-				(attacker instanceof BasicEntityShip ||
-				 attacker instanceof BasicEntitySummon || 
-				 attacker instanceof BasicEntityMount))
+			if (checkDEF)
 			{
-				reduceAtk = reduceAtk * (float)ConfigHandler.dmgSvS * 0.01F;
+				reducedAtk = atk * (1F - (StateFinal[ID.DEF] + rand.nextInt(50) - 25F) * 0.01F);    
+				
+				//ship vs ship, config傷害調整 (僅限友善船)
+				if (attacker instanceof IShipOwner && ((IShipOwner)attacker).getPlayerUID() > 0 &&
+					(attacker instanceof BasicEntityShip ||
+					 attacker instanceof BasicEntitySummon || 
+					 attacker instanceof BasicEntityMount))
+				{
+					reducedAtk = reducedAtk * (float)ConfigHandler.dmgSvS * 0.01F;
+				}
 			}
 			
 			//ship vs ship, damage type傷害調整
@@ -3104,12 +3111,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			{
 				//get attack time for damage modifier setting (day, night or ...etc)
 				int modSet = this.world.provider.isDaytime() ? 0 : 1;
-				reduceAtk = CalcHelper.calcDamageByType(reduceAtk, ((IShipAttackBase) attacker).getDamageType(), this.getDamageType(), modSet);
+				reducedAtk = CalcHelper.calcDamageByType(reducedAtk, ((IShipAttackBase) attacker).getDamageType(), this.getDamageType(), modSet);
 			}
 			
 			//tweak min damage
-	        if (reduceAtk < 1F && reduceAtk > 0F) reduceAtk = 1F;
-	        else if (reduceAtk <= 0F) reduceAtk = 0F;
+	        if (reducedAtk < 1F && reducedAtk > 0F) reducedAtk = 1F;
+	        else if (reducedAtk <= 0F) reducedAtk = 0F;
 
 			//取消坐下動作
 			this.setSitting(false);
@@ -3119,7 +3126,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			this.setEntityRevengeTime();
 			
 			//若傷害力可能致死, 則尋找物品中有無repair goddess來取消掉此攻擊
-			if (reduceAtk >= (this.getHealth() - 1F))
+			if (reducedAtk >= (this.getHealth() - 1F))
 			{
 				if (this.decrSupplies(8))
 				{
@@ -3151,7 +3158,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
    
             //執行父class的被攻擊判定, 包括重置love時間, 計算火毒抗性, 計算鐵砧/掉落傷害, 
             //hurtResistantTime(0.5sec無敵時間)計算, 
-            return super.attackEntityFrom(source, reduceAtk);
+            return super.attackEntityFrom(source, reducedAtk);
         }
 		
 		return false;
@@ -5624,7 +5631,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	  		{
   	  			BlockPos pos = new BlockPos(target);
 				TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-				CommonProxy.channelI.sendToAllAround(new S2CInputPackets(S2CInputPackets.PID.FlareEffect, pos.getX(), pos.getY(), pos.getZ()), point);
+				CommonProxy.channelI.sendToAllAround(new S2CReactPackets(S2CReactPackets.PID.FlareEffect, pos.getX(), pos.getY(), pos.getZ()), point);
   	  		}
   		}
   	}

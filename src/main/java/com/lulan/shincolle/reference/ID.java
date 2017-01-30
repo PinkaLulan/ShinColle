@@ -3,7 +3,8 @@ package com.lulan.shincolle.reference;
 //for array ID
 public class ID
 {
-
+	
+	
 	/**GUI Button ID*/
 	public static final class B
 	{
@@ -556,7 +557,7 @@ public class ID
 		public static final byte S2C_GUISync = 4;
 		public static final byte S2C_PlayerSync = 5;  //no use for now
 		public static final byte C2S_CmdInput = 6;
-		public static final byte S2C_CmdSync = 7;
+		public static final byte S2C_CmdReact = 7;
 	}
 	
 	/** ring effect, no used for now */

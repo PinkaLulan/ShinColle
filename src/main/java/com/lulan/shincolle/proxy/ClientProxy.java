@@ -83,6 +83,9 @@ import net.minecraftforge.fml.client.registry.RenderingRegistry;
 public class ClientProxy extends CommonProxy
 {
 
+	
+	public ClientProxy() {}
+	
 	//client world會隨玩家所在位置持續改變, 但是dim id永遠都是0不變, 無法反推dim id?
 	public static World getClientWorld()
 	{

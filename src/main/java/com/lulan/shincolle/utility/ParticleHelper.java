@@ -492,6 +492,16 @@ public class ParticleHelper
 			Minecraft.getMinecraft().effectRenderer.addEffect(line3);
 		}
 		break;
+		case 47:	//lots white spray
+		{
+			int maxpar = (int)((3 - ClientProxy.getMineraft().gameSettings.particleSetting) * 1.8F);
+			for (int i = 0; i < maxpar; i++)
+			{
+				ParticleSpray spray = new ParticleSpray(world, posX, posY, posZ, lookX, lookY, lookZ, 16);
+	        	Minecraft.getMinecraft().effectRenderer.addEffect(spray);
+			}
+		}
+		break;
 		default:
 		break;
 		}

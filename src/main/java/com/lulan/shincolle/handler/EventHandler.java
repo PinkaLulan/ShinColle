@@ -21,11 +21,13 @@ import com.lulan.shincolle.item.BasicEntityItem;
 import com.lulan.shincolle.item.BasicEquip;
 import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.network.C2SInputPackets;
+import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
@@ -33,6 +35,8 @@ import com.lulan.shincolle.utility.TargetHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 import com.lulan.shincolle.worldgen.ChestLootTable;
 
+import baubles.api.cap.BaublesCapabilities;
+import baubles.api.cap.IBaublesItemHandler;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.entity.AbstractClientPlayer;
@@ -66,24 +70,31 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import net.minecraftforge.client.event.EntityViewRenderEvent;
+import net.minecraftforge.client.event.EntityViewRenderEvent.FogDensity;
 import net.minecraftforge.client.event.RenderSpecificHandEvent;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.event.AnvilUpdateEvent;
 import net.minecraftforge.event.LootTableLoadEvent;
-import net.minecraftforge.event.entity.EntityEvent;
+import net.minecraftforge.event.entity.EntityEvent.EnteringChunk;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
+import net.minecraftforge.event.entity.player.PlayerEvent.Clone;
+import net.minecraftforge.event.world.WorldEvent.Load;
+import net.minecraftforge.event.world.WorldEvent.Unload;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -220,43 +231,61 @@ public class EventHandler
 		
 	}
 	
-	//apply ring effect: boost dig speed in water
+	/**
+	 * BREAK BLOCK SPEED EVENT: BOTH SIDE
+	 * apply ring effect: boost dig speed in water
+	 */
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
-	public void onGetBreakSpeed(PlayerEvent.BreakSpeed event)
+	public void onGetBreakSpeed(BreakSpeed event)
 	{
-		EntityPlayer player = event.getEntityPlayer();
-		CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(player);
-		
-		if (capa != null && EntityHelper.checkEntityIsInLiquid(player))
+		if (ConfigHandler.ringAbility[2] > 0)
 		{
-			int digBoost = capa.getDigSpeedBoost() + 1;
-			if (digBoost > 20) digBoost = 20;
+			EntityPlayer player = event.getEntityPlayer();
+			CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(player);
 			
-			event.setNewSpeed(event.getOriginalSpeed() * digBoost);
-		}		
+			if (capa != null && capa.hasRing() && capa.isRingActive() &&
+				EntityHelper.checkEntityIsInLiquid(player))
+			{
+				int num = capa.getMarriageNum();
+				if (num > ConfigHandler.ringAbility[2]) num = ConfigHandler.ringAbility[2];
+				float digBoost = num * 0.2F + 1F;
+				event.setNewSpeed(event.getOriginalSpeed() * 5F * digBoost);
+			}
+		}
 	}
 	
 	//apply ring effect: vision in the water
 	@SideOnly(Side.CLIENT)
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
-	public void onSetLiquidFog(EntityViewRenderEvent.FogDensity event)
+	public void onSetLiquidFog(FogDensity event)
 	{
-		EntityPlayer player = (event.getEntity() instanceof EntityPlayer ? (EntityPlayer) event.getEntity() : null);
-		
-		if (player != null &&
-			(player.isInsideOfMaterial(Material.LAVA) ||
-			 player.isInsideOfMaterial(Material.WATER)))
+		if (event.getEntity() != null && ConfigHandler.ringAbility[3] >= 0 &&
+			EntityHelper.checkEntityIsInLiquid(event.getEntity()))
 		{
-			CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(player);
+			CapaTeitoku capa = CapaTeitoku.getTeitokuCapabilityClientOnly();
 			
-			if (capa != null && capa.isRingActive())
+			if (capa != null && capa.hasRing() && capa.isRingActive())
 			{
-				float fogDen = 0.1F - capa.getMarriageNum() * 0.01F;
-				if (fogDen < 0.001F) fogDen = 0.001F;
+				float fogDen = event.getDensity();
 				
-				event.setCanceled(true);	//取消原本的fog render
-	            event.setDensity(fogDen);	//重設fog濃度
-	            GlStateManager.setFog(FogMode.EXP);
+				if (fogDen >= 0.0001F)
+				{
+					//0 = always no fog
+					if (ConfigHandler.ringAbility[3] == 0)
+					{
+						fogDen = 0.0001F;
+					}
+					//1~N = reduce fog by married number
+					else
+					{
+						fogDen *= (float)(ConfigHandler.ringAbility[3] - capa.getMarriageNum()) / (float)ConfigHandler.ringAbility[3];
+						if (fogDen < 0.0001F) fogDen = 0.0001F;
+					}
+					
+					event.setCanceled(true);	//取消原本的fog render
+		            event.setDensity(fogDen);	//重設fog濃度
+		            GlStateManager.setFog(FogMode.EXP);
+				}
 			}   
             
 //			float fogStart = 0F;	//for linear fog
@@ -328,7 +357,7 @@ public class EventHandler
 	 *  if cloned, save/load the player data
 	 */
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
-	public void onPlayerClone(PlayerEvent.Clone event)
+	public void onPlayerClone(Clone event)
 	{
         //restore data when player dead or back from End
         if (event.getEntityPlayer() != null && event.getOriginal() != null)
@@ -397,7 +426,7 @@ public class EventHandler
 	 * 若為perMapStorage, 則是不同world各有一份
 	 */
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
-	public void onWorldLoad(WorldEvent.Load event)
+	public void onWorldLoad(Load event)
 	{
 		if (ServerProxy.initServerFile && event.getWorld() != null)
 		{
@@ -410,7 +439,7 @@ public class EventHandler
 	 * 此時就將server world data標記要儲存回disk
 	 */
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
-	public void onWorldUnload(WorldEvent.Unload event)
+	public void onWorldUnload(Unload event)
 	{
 		if (ServerProxy.saveServerFile)
 		{
@@ -488,6 +517,17 @@ public class EventHandler
 					event.setCanceled(true);
 					return;
 				}
+				
+				//immune to fire
+				CapaTeitoku capa = CapaTeitoku.getTeitokuCapability((EntityPlayer) target);
+				if (capa.hasRing() && capa.isRingActive() && ConfigHandler.ringAbility[4] >= 0 &&
+					capa.getMarriageNum() >= ConfigHandler.ringAbility[4])
+				{
+					//disable fire damage
+					if (target.isBurning()) target.extinguish();
+					event.setCanceled(true);
+					return;
+				}
 			}
 			
 			//other damage
@@ -537,7 +577,7 @@ public class EventHandler
 	 *  apply chunk loader
 	 */
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
-	public void onEnteringChunk(EntityEvent.EnteringChunk event)
+	public void onEnteringChunk(EnteringChunk event)
 	{
 		//get ship
 		if (event.getEntity() instanceof BasicEntityShip)
@@ -585,7 +625,7 @@ public class EventHandler
 				boolean syncTeamList = false;
 				
 				//every 32 ticks
-				if (event.player.ticksExisted > 0 && event.player.ticksExisted % 32 == 0)
+				if (event.player.ticksExisted > 0 && (event.player.ticksExisted & 31) == 0)
 				{
 					//DEBUG TODO
 //					Item.REGISTRY.forEach((k) ->
@@ -626,13 +666,13 @@ public class EventHandler
 					}
 					
 					//every 128 ticks
-					if (event.player.ticksExisted % 128 == 0)
+					if ((event.player.ticksExisted & 127) == 0)
 					{
 						//spawn mob ship
 						spawnMobShip(event.player, capa);
 						
 						//every 256 ticks
-						if (event.player.ticksExisted % 256 == 0)
+						if ((event.player.ticksExisted & 255) == 0)
 						{
 							//update team list
 							updateTeamList(event.player, capa);
@@ -649,7 +689,7 @@ public class EventHandler
 				if (allycd > 0) capa.setPlayerTeamCooldown(--allycd);
 				
 				//init ship UID
-				if (!capa.initSID && event.player.ticksExisted % 16 == 0) 
+				if (!capa.initSID && (event.player.ticksExisted & 15) == 0) 
 				{
 					//update ship temaList
 					capa.updateShipEntityBySID();
@@ -685,8 +725,8 @@ public class EventHandler
 			}
 			
 			/** BOTH SIDE */
-			//check ring (check for first ring only) every 32 ticks
-			if (event.player.ticksExisted % 32 == 0)
+			//check ring (check for first ring only) every 16 ticks
+			if ((event.player.ticksExisted & 15) == 0)
 			{
 				boolean hasRing = false;
 				ItemStack itemRing = null;
@@ -701,6 +741,12 @@ public class EventHandler
 						itemRing = event.player.inventory.getStackInSlot(i);
 						break;
 					}
+				}
+				
+				//check ring with Baubles slots
+				if (!hasRing && Loader.isModLoaded(Reference.MOD_ID_Baubles))
+				{
+					hasRing = checkRingInBaubles(event.player);
 				}
 				
 				if (capa != null)
@@ -719,9 +765,26 @@ public class EventHandler
 						capa.setRingActive(itemRing.getTagCompound().getBoolean("isActive"));
 					}
 				}
-			}//end player per 32 ticks
+			}//end every 16 ticks
 		}//end player tick phase: START
 	}//end onPlayerTick
+	
+	@Optional.Method(modid = Reference.MOD_ID_Baubles)
+	private static boolean checkRingInBaubles(EntityPlayer player)
+	{
+		IBaublesItemHandler bb = (IBaublesItemHandler) player.getCapability(BaublesCapabilities.CAPABILITY_BAUBLES, null);
+	
+		if (bb != null)
+		{
+			for (int i = 0; i < bb.getSlots(); i++)
+			{
+				ItemStack stack = bb.getStackInSlot(i);
+				if (stack != null && stack.getItem() == ModItems.MarriageRing) return true;
+			}
+		}
+		
+		return false;
+	}
 	
 	/** update team list of pointer item */
 	private static void updateTeamList(EntityPlayer player, CapaTeitoku capa)
@@ -765,7 +828,7 @@ public class EventHandler
 	 * 
 	 *  ConfigHandler.mobSpawn[]
 	 *  0: Max number in the world
-	 *  1: Spawn prob every 256 ticks
+	 *  1: Spawn prob every X ticks
 	 *  2: #groups each spawn
 	 *  3: #min each group
 	 *  4: #max each group
@@ -820,7 +883,7 @@ public class EventHandler
 				{
 					//get spawn position
 					int groups = ConfigHandler.mobSpawn[2];
-					int loop = 30 + groups * 10;
+					int loop = 30 + groups * 30;
 					
 					while (groups > 0 && loop > 0)
 					{
@@ -1235,6 +1298,19 @@ public class EventHandler
 	}
 	
 	/**
+	 * PLAYER LOGIN EVENT: SERVER SIDE ONLY
+	 * sync server config to client when player login
+	 */
+	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+	public void onPlayerLogin(PlayerLoggedInEvent event)
+	{
+		if (event.player instanceof EntityPlayerMP)
+		{
+			CommonProxy.channelE.sendTo(new S2CEntitySync(null, S2CEntitySync.PID.SyncSystem_Config), (EntityPlayerMP) event.player);
+		}
+	}
+	
+	/**
 	 * player change dimension, need to update player data
 	 * 
 	 * NOTE: this event do not trigger when End(1) -> Overworld(0) (is EntityCloneEvent)
@@ -1276,7 +1352,7 @@ public class EventHandler
 	//change viewer entity when riding mounts, this is CLIENT ONLY event
 	@SideOnly(Side.CLIENT)
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
-    public void onRenderTick(TickEvent.RenderTickEvent event)
+    public void onRenderTick(RenderTickEvent event)
 	{
 		EntityPlayer player = ClientProxy.getClientPlayer();
 		
@@ -1332,7 +1408,7 @@ public class EventHandler
 	 * 
 	 */
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
-    public void onServerTick(TickEvent.ServerTickEvent event)
+    public void onServerTick(ServerTickEvent event)
 	{
 		if (event.phase == Phase.END)
 		{	//在server tick處理完全部事情後發動

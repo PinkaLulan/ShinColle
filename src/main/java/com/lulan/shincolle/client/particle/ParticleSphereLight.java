@@ -111,7 +111,7 @@ public class ParticleSphereLight extends Particle
         
         for (float[] beam : this.beamPos)
         {
-        	if (beam[0] <= 0F && beam[1] <= 0F) continue;
+        	if (beam[0] == 0F && beam[1] == 0F) continue;
         	float depth = this.rand.nextFloat() * 0.1F;
 	        
 	        render.pos(this.particleScale * beam[0] - beam[1] * this.beamThick, this.particleScale * beam[1] + beam[0] * this.beamThick, depth).tex(1D, 1D).color(beam[2], beam[3], beam[4], beam[5]).endVertex();
@@ -205,7 +205,7 @@ public class ParticleSphereLight extends Particle
                 	newpos = CalcHelper.rotateXZByAxis(
             								this.beamRad * (this.rand.nextFloat() + 1F),
     					        			this.beamRad * (this.rand.nextFloat() + 1F),
-    					        			this.rand.nextFloat() * 360F * Values.N.DIV_PI_180, 1F);
+    					        			this.rand.nextFloat() * 540F * Values.N.DIV_PI_180, 1F);
                 	this.beamPos[this.beamCurrent] = new float[] {newpos[0], newpos[1], this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha};
                 	this.beamCurrent++;
                 	if (this.beamCurrent >= this.beamPos.length) this.beamCurrent = 0;

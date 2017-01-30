@@ -3,6 +3,7 @@ package com.lulan.shincolle.reference;
 public class Enums
 {
 	
+	
 	/** color enum for gui
 	 */
 	public static enum EnumColors

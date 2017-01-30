@@ -1,5 +1,7 @@
 package com.lulan.shincolle.client.particle;
 
+import com.lulan.shincolle.utility.LogHelper;
+
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.VertexBuffer;
@@ -26,25 +28,13 @@ public class ParticleSpray extends Particle
     public ParticleSpray(World world, double posX, double posY, double posZ, double motionX, double motionY, double motionZ, int type)
     {
         super(world, posX, posY, posZ);
-        
-        if (type < 13 || type == 15)
-        {
-        	this.motionX *= 0.1D;
-            this.motionY *= 0.1D;
-            this.motionZ *= 0.1D;
-            this.motionX += motionX;
-            this.motionY += motionY;
-            this.motionZ += motionZ;
-        }
-        else
-        {
-        	this.motionX = motionX;
-            this.motionY = motionY;
-            this.motionZ = motionZ;
-        }
-        
+
         this.ptype = type;
-        
+        this.motionX = motionX;
+        this.motionY = motionY;
+        this.motionZ = motionZ;
+
+        //color, speed, life setting
         switch (this.ptype)
         {
         case 1:   //white
@@ -56,7 +46,7 @@ public class ParticleSpray extends Particle
             this.particleScale *= 1.5F;
             this.pScale = this.particleScale;
             this.particleMaxAge = 40;
-        	break;
+        break;
         case 2:   //cyan
         	this.speedLimit = 0.3D;
         	this.particleRed = 0.5F;
@@ -68,7 +58,7 @@ public class ParticleSpray extends Particle
             this.particleMaxAge = 40;
             this.motionX = 0D;
             this.motionZ = 0D;
-        	break;
+        break;
         case 3:   //green
         	this.speedLimit = 0.3D;
         	this.particleRed = 0.2F;
@@ -78,7 +68,7 @@ public class ParticleSpray extends Particle
             this.particleScale *= 1.5F;
             this.pScale = this.particleScale;
             this.particleMaxAge = 10;
-        	break;
+        break;
         case 4:   //0.8A red
         	this.speedLimit = 0.3D;
         	this.particleRed = 1F;
@@ -88,7 +78,7 @@ public class ParticleSpray extends Particle
             this.particleScale *= 1.5F;
             this.pScale = this.particleScale;
             this.particleMaxAge = 40;
-        	break;
+        break;
         case 5:   //0.5A white
         	this.speedLimit = 0.3D;
         	this.particleRed = 1F;
@@ -98,7 +88,7 @@ public class ParticleSpray extends Particle
             this.particleScale *= 1.5F;
             this.pScale = this.particleScale;
             this.particleMaxAge = 40;
-        	break;
+        break;
         case 6:   //0.5A LARGE white
         	this.speedLimit = 0.3D;
         	this.particleRed = 1F;
@@ -109,7 +99,7 @@ public class ParticleSpray extends Particle
             this.pScale = 15F;
             this.particleMaxAge = 50;
             this.motionY = 0D;
-        	break;
+        break;
         case 7:   //light cyan
         	this.speedLimit = 0.3D;
         	this.particleRed = 0.7F;
@@ -119,7 +109,7 @@ public class ParticleSpray extends Particle
             this.particleScale *= 1.5F;
             this.pScale = this.particleScale;
             this.particleMaxAge = 40;
-        	break;
+        break;
         case 8:   //yellow
         	this.speedLimit = 0.3D;
         	this.particleRed = 1F;
@@ -129,7 +119,7 @@ public class ParticleSpray extends Particle
             this.particleScale *= 3F;
             this.pScale = this.particleScale;
             this.particleMaxAge = 20;
-        	break;
+        break;
         case 9:   //orange
         	this.speedLimit = 0.3D;
         	this.particleRed = 1F;
@@ -139,7 +129,7 @@ public class ParticleSpray extends Particle
             this.particleScale *= 1.5F;
             this.pScale = this.particleScale;
             this.particleMaxAge = 40;
-        	break;
+        break;
         case 10:   //transparent cyan
         	this.speedLimit = 0.3D;
         	this.particleRed = 0.5F;
@@ -149,7 +139,7 @@ public class ParticleSpray extends Particle
             this.particleScale *= 1.5F;
             this.pScale = this.particleScale;
             this.particleMaxAge = 40;
-        	break;
+        break;
         case 11:   //transparent red
         	this.speedLimit = 0.3D;
         	this.particleRed = 1F;
@@ -159,7 +149,7 @@ public class ParticleSpray extends Particle
             this.particleScale *= 1.5F;
             this.pScale = this.particleScale;
             this.particleMaxAge = 40;
-        	break;
+        break;
         case 12:   //transparent white
         	this.speedLimit = 0.3D;
         	this.particleRed = 1F;
@@ -169,7 +159,7 @@ public class ParticleSpray extends Particle
             this.particleScale *= 0.75F;
             this.pScale = this.particleScale;
             this.particleMaxAge = 50;
-        	break;
+        break;
         case 13:   //next waypoint
         	this.speedLimit = 2D;
         	this.particleRed = 1F;
@@ -180,7 +170,7 @@ public class ParticleSpray extends Particle
             this.pScale = this.particleScale;
             this.particleMaxAge = 100;
             this.setSize(0F, 0F);
-        	break;
+        break;
         case 14:   //paired chest
         	this.speedLimit = 2D;
         	this.particleRed = 0.5F;
@@ -191,7 +181,7 @@ public class ParticleSpray extends Particle
             this.pScale = this.particleScale;
             this.particleMaxAge = 100;
             this.setSize(0F, 0F);
-        	break;
+        break;
         case 15:   //transparent cyan
         	this.speedLimit = 0.3D;
         	this.particleRed = 0.7F;
@@ -201,7 +191,23 @@ public class ParticleSpray extends Particle
             this.particleScale *= 1.5F;
             this.pScale = this.particleScale;
             this.particleMaxAge = 40;
-        	break;
+        break;
+        case 16:   //XZ moving white, motionY = scale
+        	this.motionY = 0D;
+        	this.speedLimit = 0.25D;
+        	this.particleRed = 1F;
+            this.particleGreen = 1F;
+            this.particleBlue = 1F;
+            this.particleAlpha = 1F;
+            this.particleScale = (float)motionY * 3F;
+            this.pScale = this.particleScale;
+            this.particleMaxAge = 40;
+            this.posX += (rand.nextDouble() - 0.5D) * motionY;
+            this.posY += (rand.nextDouble() - 0.5D) * motionY * 0.15D;
+            this.posZ += (rand.nextDouble() - 0.5D) * motionY;
+            this.motionX *= 1.5D;
+            this.motionZ *= 1.5D;
+        break;
         default:  //default = type 0 = 1A red
         	this.speedLimit = 0.3D;
         	this.particleRed = 1F;
@@ -212,7 +218,7 @@ public class ParticleSpray extends Particle
             this.pScale = 15F;
             this.particleMaxAge = 40;
             this.motionY = 0D;
-        	break;
+        break;
         }
         
         //speed limit
@@ -222,6 +228,12 @@ public class ParticleSpray extends Particle
         if (this.motionX < -this.speedLimit) this.motionX = -this.speedLimit;
         if (this.motionY < -this.speedLimit) this.motionY = -this.speedLimit;
         if (this.motionZ < -this.speedLimit) this.motionZ = -this.speedLimit;
+        
+    	//reset pos
+		this.prevPosX = this.posX;
+        this.prevPosY = this.posY;
+        this.prevPosZ = this.posZ;
+        this.setPosition(this.posX, this.posY, this.posZ);
     }
     
     @Override
@@ -234,6 +246,8 @@ public class ParticleSpray extends Particle
     @Override
     public void renderParticle(VertexBuffer render, Entity entity, float ptick, float rotX, float rotZ, float rotYZ, float rotXY, float rotXZ)
     {
+    	if (this.particleAge == 1) return;
+    	
         float f6 = (this.particleAge + ptick) / this.particleMaxAge * 32F;
 
         if (f6 < 0F) f6 = 0F;
@@ -259,6 +273,7 @@ public class ParticleSpray extends Particle
 		this.prevPosX = this.posX;
         this.prevPosY = this.posY;
         this.prevPosZ = this.posZ;
+        this.setPosition(this.posX, this.posY, this.posZ);
 
         //set dead if max age
         if (this.particleAge++ > this.particleMaxAge)
@@ -267,8 +282,10 @@ public class ParticleSpray extends Particle
             return;
         }
         
-        //waypoint indicator
-        if (this.ptype >= 13 && this.ptype != 15)
+        switch (this.ptype)
+        {
+        case 13:
+        case 14:
         {
         	this.setParticleTextureIndex(7 - this.particleAge * 4 / this.particleMaxAge);
         	
@@ -276,9 +293,9 @@ public class ParticleSpray extends Particle
         	this.posY += this.motionY;
         	this.posZ += this.motionZ;
         }
-        //other spray
-        else
-        {
+    	break;
+    	default:
+    	{
         	this.setParticleTextureIndex(7 - this.particleAge * 8 / this.particleMaxAge);
             this.motionX *= 0.96D;
             this.motionY *= 0.96D;
@@ -291,8 +308,10 @@ public class ParticleSpray extends Particle
             }
             
             this.move(this.motionX, this.motionY, this.motionZ);
+    	}
+		break;
         }
-
+        
     }
     
     

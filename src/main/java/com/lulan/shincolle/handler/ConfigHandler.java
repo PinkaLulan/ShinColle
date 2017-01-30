@@ -48,10 +48,12 @@ public class ConfigHandler
 	//DESK
 	public static int radarUpdate = 128;	//radar update interval (ticks)
 	
+	//array data
 	public static Property propShip, propShipLimitBasic, propShipLimitEffect, propMobSpawn,
 						   propBossSmall, propBossLarge, propMobSmall, propMobLarge, propGrudgeShip,
 						   propGrudgeAction, propAmmoShip, propAtkSpd, propAtkDly, propExp,
-						   propShipyardSmall, propShipyardLarge, propVolCore;
+						   propShipyardSmall, propShipyardLarge, propVolCore, propRingAbility,
+						   propPolyGravel;
 	
 	//SHIP SETTING
 	//                                                    HP, ATK, DEF, SPD, MOV, HIT
@@ -78,6 +80,8 @@ public class ConfigHandler
 	public static int[] expGain = new int[] {2,     4,    12,   8,    24,   1,      2};
 	//mob spawn                               Max, Prob, GroupNum, MinPS, MaxPS
 	public static int[] mobSpawn = new int[] {50,  10,   1,        1,     1};
+	//marriage ring ability                      breath, fly, dig, fog, immune fire
+	public static int[] ringAbility = new int[] {0,      6,   30,  20,  12};
 	
 	public static int dmgSvS = 100;		//ship vs ship damage modifier, 20 = dmg * 20%
 	public static int expMod = 20;		//ship exp per level, ex: 20 => lv 15 exp req = 15*20+20
@@ -99,7 +103,6 @@ public class ConfigHandler
 	public static int polyOreBaseRate = 7;
 	public static int polyGravelBaseRate = 4;
 	public static boolean[] polyGravelBaseBlock = new boolean[] {true, true, false, false};	//stone gravel sand dirt
-	public static Property propPolyGravel;
 	
 	
 	//config for BOTH SIDE
@@ -136,8 +139,8 @@ public class ConfigHandler
 		friendlyFire = config.getBoolean("Friendly_Fire", "general", true, "false: disable damage done by player (except owner)");
 			
 		//解體獲得材料量設定, mob drop類ship限定
-		kaitaiAmountSmall = config.getInt("Recycle_Small", "general", 20, 0, 1000, "Recycle amount by Dismantle Hammer (SMALL Mob Drop Ship)");
-		kaitaiAmountLarge = config.getInt("Recycle_Large", "general", 20, 0, 1000, "Recycle amount by Dismantle Hammer (LARGE Mob Drop Ship)");
+		kaitaiAmountSmall = config.getInt("Recycle_Small", "general", 20, 0, 1000, "Recycle amount by Dismantle Hammer for copmmon ship, ex: Ro500.");
+		kaitaiAmountLarge = config.getInt("Recycle_Large", "general", 20, 0, 1000, "Recycle amount by Dismantle Hammer for rare ship, ex: Yamato.");
 				
 		//是否把多金屬當成錳礦
 		polyAsMn = config.getBoolean("Polymetal_as_Mn", "general", true, "true: Polymetallic Nodules = Manganese Dust, Polymetallic Ore = Manganese Ore");
@@ -174,6 +177,7 @@ public class ConfigHandler
 		volumeFire = config.getFloat("Volume_Attack", "ship setting", 0.7F, 0F, 10F, "Attack sound volume");
 		baseCaressMorale = config.getInt("Caress_BaseMorale", "ship setting", 15, 1, 1000, "base morale value per CaressTick (4 ticks)");
 		
+		//array data
 		propShip = config.get("ship setting", "Attrs_Scale", scaleShip, "Ship attributes SCALE: HP, firepower, armor, attack speed, move speed, range");
 		propShipLimitBasic = config.get("ship setting", "Attrs_Limit_Basic", limitShipBasic, "Ship basic attributes LIMIT (-1 = no limit): HP, firepower, armor%, attack speed, move speed, range(blocks)");
 		propShipLimitEffect = config.get("ship setting", "Attrs_Limit_Effect", limitShipEffect, "Ship effect attributes LIMIT (-1 = no limit, 12 = limit 12%): critical%, double hit%, triple hit%, miss reduction%, anti-air, anti-ss, dodge%, xp gain%, grudge gain%, ammo gain%, hp regen delay");
@@ -188,9 +192,11 @@ public class ConfigHandler
 		propAtkDly = config.get("ship setting", "Attack_Fixed_Delay", fixedAttackDelay, "Fixed attack delay for: Melee, Light attack, Heavy attack, Carrier attack, Airplane attack, ex: base speed 160, fixed delay 30 means (160 / ship attack speed +30) ticks per attack");
 		propExp = config.get("ship setting", "Exp_Gain", expGain, "Exp gain for: Melee, Light Attack, Heavy Attack, Light Aircraft, Heavy Aircraft, Move per Block(AP only), Other Action(AP only)");
 		propMobSpawn = config.get("ship setting", "Limit_MobSpawnNumber", mobSpawn, "Mob ship spawn MAX number in the world, Spawn prob (roll once per player every 128 ticks), #groups each spawn, #min each group, #max each group");
-		propShipyardSmall = config.get("ship setting", "Tile_SmallShipyard", shipyardSmall, "Small shipyard: max fuel storage, build speed, fuel magnification");
-		propShipyardLarge = config.get("ship setting", "Tile_LargeShipyard", shipyardLarge, "Large shipyard: max fuel storage, build speed, fuel magnification");
+		
+		propShipyardSmall = config.get("general", "Tile_SmallShipyard", shipyardSmall, "Small shipyard: max fuel storage, build speed, fuel magnification");
+		propShipyardLarge = config.get("general", "Tile_LargeShipyard", shipyardLarge, "Large shipyard: max fuel storage, build speed, fuel magnification");
 		propVolCore = config.get("general", "Tile_VolCore", volCore, "Volcano Core: max fuel storage, fuel consume speed, fuel value per grudge item");
+		propRingAbility = config.get("general", "Ring_Ability", ringAbility, "Ring ability related married number, -1 = disable, 0~N = active or max limit number: water breath (active number), fly in water (active number), dig speed boost (max limit number), fog in liquid (max limit number), immune to fire (active number)");
 		
 		//ship vs ship damage modifier
 		dmgSvS = config.getInt("DmgTaken_SvS", "ship setting", 100, 0, 10000, "Ship vs Ship damage modifier, 20 = damage * 20% ");
@@ -220,6 +226,7 @@ public class ConfigHandler
 		shipyardSmall = getDoubleArrayFromConfig(shipyardSmall, propShipyardSmall);
 		shipyardLarge = getDoubleArrayFromConfig(shipyardLarge, propShipyardLarge);
 		volCore = getDoubleArrayFromConfig(volCore, propVolCore);
+		ringAbility = getIntArrayFromConfig(ringAbility, propRingAbility);
 		
 		checkChange(config);
 	}

@@ -3,7 +3,7 @@ package com.lulan.shincolle.command;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.lulan.shincolle.network.S2CInputPackets;
+import com.lulan.shincolle.network.S2CReactPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.utility.EntityHelper;
 
@@ -121,7 +121,7 @@ public class ShipCmdShipAttrs extends CommandBase
 						}
 						
 						//send data to client
-						CommonProxy.channelI.sendTo(new S2CInputPackets(S2CInputPackets.PID.CmdShipAttr, senderEID, level), (EntityPlayerMP) op);
+						CommonProxy.channelI.sendTo(new S2CReactPackets(S2CReactPackets.PID.CmdShipAttr, senderEID, level), (EntityPlayerMP) op);
 					}
 					else
 					{
@@ -149,7 +149,7 @@ public class ShipCmdShipAttrs extends CommandBase
 						}
 						
 						//send data to client
-						CommonProxy.channelI.sendTo(new S2CInputPackets(S2CInputPackets.PID.CmdShipAttr, senderEID, data[0], data[1], data[2], data[3], data[4], data[5], data[6]), (EntityPlayerMP) op);
+						CommonProxy.channelI.sendTo(new S2CReactPackets(S2CReactPackets.PID.CmdShipAttr, senderEID, data[0], data[1], data[2], data[3], data[4], data[5], data[6]), (EntityPlayerMP) op);
 					}
 				}//is OP
 				else
