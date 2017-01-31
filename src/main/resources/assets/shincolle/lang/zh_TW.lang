@@ -641,6 +641,7 @@ gui.shincolle:ai.asm=反潛模式
 gui.shincolle:ai.timekeeper=報時語音
 gui.shincolle:ai.pickitem=拾取物品
 gui.shincolle:ai.wpstay=路徑點停留時間
+gui.shincolle:modernlevel=近代化改修等級
 
 # GUI: Shipyard
 gui.shincolle:nomaterial=資材不足

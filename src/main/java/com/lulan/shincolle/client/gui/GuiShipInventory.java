@@ -52,7 +52,7 @@ public class GuiShipInventory extends GuiContainer
 	  strAttrWedTrue, strAttrWedFalse, strMiKills, strMiExp, strMiAirL, strMiAirH, strMiAmmoL,
 	  strMiAmmoH, strMiGrudge, canMelee, canLATK, canHATK, canALATK, canAHATK, auraEffect,
 	  followMin, followMax, fleeHP, tarAI, strOnSight, strPVP, strAA, strASM, strTimeKeep,
-	  strPick, strWpStay;
+	  strPick, strWpStay, strAttrModern;
 	private static String[] strMorale;
 	private static int widthHoveringText1, widthHoveringText2, widthHoveringText3;
 	
@@ -163,6 +163,7 @@ public class GuiShipInventory extends GuiContainer
 		strAttrWedding = I18n.format("gui.shincolle:marriage");
 		strAttrWedTrue = I18n.format("gui.shincolle:married");
 		strAttrWedFalse = I18n.format("gui.shincolle:unmarried");
+		strAttrModern = I18n.format("gui.shincolle:modernlevel");
 		
 		//minor string
 		strMiKills = I18n.format("gui.shincolle:kills");
@@ -207,12 +208,16 @@ public class GuiShipInventory extends GuiContainer
 		if (temp > this.widthHoveringText1) this.widthHoveringText1 = temp;
 		temp = this.fontRendererObj.getStringWidth(strAttrASM);
 		if (temp > this.widthHoveringText1) this.widthHoveringText1 = temp;
+		temp = this.fontRendererObj.getStringWidth(strAttrModern);
+		if (temp > this.widthHoveringText1) this.widthHoveringText1 = temp;
 		
 		temp = this.fontRendererObj.getStringWidth(strAttrMiss);
 		this.widthHoveringText2 = temp;
 		temp = this.fontRendererObj.getStringWidth(strAttrMissA);
 		if (temp > this.widthHoveringText2) this.widthHoveringText2 = temp;
 		temp = this.fontRendererObj.getStringWidth(strAttrDodge);
+		if (temp > this.widthHoveringText2) this.widthHoveringText2 = temp;
+		temp = this.fontRendererObj.getStringWidth(strAttrModern);
 		if (temp > this.widthHoveringText2) this.widthHoveringText2 = temp;
 		
 		temp = this.fontRendererObj.getStringWidth(strAttrFPos);
@@ -557,161 +562,191 @@ public class GuiShipInventory extends GuiContainer
 		//reset text
 		mouseoverList.clear();
 		
-		//draw morale string
-		if (xMouse > 238+guiLeft && xMouse < 251+guiLeft && yMouse > 17+guiTop && yMouse < 30+guiTop)
+		//Morale tooltip
+		if (xMouse >= 238+guiLeft && xMouse < 251+guiLeft && yMouse >= 17+guiTop && yMouse < 30+guiTop)
 		{
-			//add morale string
-			mouseoverList.clear();
 			mouseoverList.add(this.strMorale[this.entity.getMoraleLevel()]);
 			this.drawHoveringText(mouseoverList, 200, 45, this.fontRendererObj);
 		}
-		
-		//draw states value
-		if (xMouse > 73+guiLeft && xMouse < 134+guiLeft)
+		//HP tooltip
+		else if (xMouse >= 145+guiLeft && xMouse < 202+guiLeft && yMouse >= 4+guiTop && yMouse < 15+guiTop)
 		{
-			//show text at ATTACK
-			if (showPage == 2 && yMouse > 18+guiTop && yMouse < 40+guiTop)
-			{
-				//draw attack text
-				mouseoverList.add(TextFormatting.RED + strAttrAtk1);
-				mouseoverList.add(TextFormatting.RED + strAttrAtk2);
-				mouseoverList.add(TextFormatting.AQUA + strAttrCri);
-				mouseoverList.add(TextFormatting.YELLOW + strAttrDHIT);
-				mouseoverList.add(TextFormatting.GOLD + strAttrTHIT);
-				mouseoverList.add(TextFormatting.YELLOW + strAttrAA);
-				mouseoverList.add(TextFormatting.AQUA + strAttrASM);
-				this.drawHoveringText(mouseoverList, 55, 143, this.fontRendererObj);
-				
-				//draw attack value
-				mouseoverList.clear();
-				mouseoverList.add(strATK);
-				mouseoverList.add(strAATK);
-				overText = String.valueOf((int)(this.entity.getEffectEquip(ID.EquipEffect.CRI) * 100F)) + " %";
-				mouseoverList.add(overText);
-				overText = String.valueOf((int)(this.entity.getEffectEquip(ID.EquipEffect.DHIT) * 100F)) + " %";
-				mouseoverList.add(overText);
-				overText = String.valueOf((int)(this.entity.getEffectEquip(ID.EquipEffect.THIT) * 100F)) + " %";
-				mouseoverList.add(overText);
-				overText = String.valueOf((int)(this.entity.getEffectEquip(ID.EquipEffect.AA)));
-				mouseoverList.add(overText);
-				overText = String.valueOf((int)(this.entity.getEffectEquip(ID.EquipEffect.ASM)));
-				mouseoverList.add(overText);
-				this.drawHoveringText(mouseoverList, 61 + this.widthHoveringText1, 143, this.fontRendererObj);
-			}
-			//show text at RANGE
-			else if (showPage == 2 && yMouse > 104+guiTop && yMouse < 126+guiTop)
-			{
-				//draw text
-				mouseoverList.add(TextFormatting.RED + strAttrMiss);
-				mouseoverList.add(TextFormatting.AQUA + strAttrMissA);
-				mouseoverList.add(TextFormatting.GOLD + strAttrDodge);
-				this.drawHoveringText(mouseoverList, 55, 143, this.fontRendererObj);
-				
-				//draw value
-				mouseoverList.clear();
-				
-				//calc miss
-				temp = (int) ((0.2F - this.entity.getEffectEquip(ID.EquipEffect.MISS) - 0.001F * this.entity.getStateMinor(ID.M.ShipLevel)) * 100F);
-				if (temp < 0) temp = 0;
-				if (temp > 35) temp = 35;
-				str = String.valueOf(temp);
-				
-				temp = (int) ((0.35F - this.entity.getEffectEquip(ID.EquipEffect.MISS) - 0.001F * this.entity.getStateMinor(ID.M.ShipLevel)) * 100F);
-				if (temp < 0) temp = 0;
-				if (temp > 35) temp = 35;
-				str2 = String.valueOf(temp);
-				
-				overText = str + " ~ " + str2 + " %";
-				mouseoverList.add(overText);
-				
-				//calc air miss
-				temp = (int) ((0.25F - this.entity.getEffectEquip(ID.EquipEffect.MISS) - 0.001F * this.entity.getStateMinor(ID.M.ShipLevel)) * 100F);
-				if (temp < 0) temp = 0;
-				if (temp > 35) temp = 35;
-				
-				overText = String.valueOf(temp) + " %";
-				mouseoverList.add(overText);
-				
-				//calc dodge
-				if (this.entity instanceof IShipInvisible)
-				{
-					temp = (int) (this.entity.getEffectEquip(ID.EquipEffect.DODGE) +
-									((IShipInvisible)this.entity).getInvisibleLevel());
-					if (temp > ConfigHandler.limitShipEffect[6]) temp = (int) ConfigHandler.limitShipEffect[6];
-					overText = String.valueOf(temp) + " %";
-				}
-				else
-				{
-					overText = String.valueOf((int)this.entity.getEffectEquip(ID.EquipEffect.DODGE)) + " %";
-				}
-				
-				mouseoverList.add(overText);
-				this.drawHoveringText(mouseoverList, 61 + this.widthHoveringText2, 143, this.fontRendererObj);
-			}
-			//show text at FORMATION
-			else if (showPage == 3 && yMouse > 40+guiTop && yMouse < 62+guiTop && this.entity.getStateMinor(ID.M.FormatType) >= 1)
-			{
-				mouseoverList.add(TextFormatting.LIGHT_PURPLE + strAttrFPos);
-				mouseoverList.add(TextFormatting.RED + strAttrAtk1);
-				mouseoverList.add(TextFormatting.RED + strAttrAtk2);
-				mouseoverList.add(TextFormatting.WHITE + strAttrDEF);
-				mouseoverList.add(TextFormatting.GOLD + strAttrDodge);
-				mouseoverList.add(TextFormatting.RED + strAttrMissR);
-				mouseoverList.add(TextFormatting.AQUA + strAttrCri);
-				mouseoverList.add(TextFormatting.YELLOW + strAttrDHIT);
-				mouseoverList.add(TextFormatting.GOLD + strAttrTHIT);
-				mouseoverList.add(TextFormatting.YELLOW + strAttrAA);
-				mouseoverList.add(TextFormatting.AQUA + strAttrASM);
-				mouseoverList.add(TextFormatting.GRAY + strAttrMOV);
-				this.drawHoveringText(mouseoverList, 55, 78, this.fontRendererObj);
-				
-				//draw value
-				mouseoverList.clear();
-				
-				overText = String.valueOf(this.entity.getStateMinor(ID.M.FormatPos) + 1);
-				mouseoverList.add(overText);
-				
-				str = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.ATK_L) + 100);
-				str2 = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.ATK_H) + 100);
-				overText = str + " / " + str2 + " %";
-				mouseoverList.add(overText);
-				
-				str = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.ATK_AL) + 100);
-				str2 = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.ATK_AH) + 100);
-				overText = str + " / " + str2 + " %";
-				mouseoverList.add(overText);
-				
-				overText = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.DEF) + 100) + " %";
-				mouseoverList.add(overText);
-				
-				overText = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.DODGE) + 100) + " %";
-				mouseoverList.add(overText);
-				
-				overText = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.MISS) + 100) + " %";
-				mouseoverList.add(overText);
-				
-				overText = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.CRI) + 100) + " %";
-				mouseoverList.add(overText);
-				
-				overText = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.DHIT) + 100) + " %";
-				mouseoverList.add(overText);
-				
-				overText = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.THIT) + 100) + " %";
-				mouseoverList.add(overText);
-				
-				overText = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.AA) + 100) + " %";
-				mouseoverList.add(overText);
-				
-				overText = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.ASM) + 100) + " %";
-				mouseoverList.add(overText);
-				
-				overText = String.format("%.2f", this.entity.getEffectFormation(ID.Formation.MOV));
-				mouseoverList.add(overText);
-				
-				this.drawHoveringText(mouseoverList, 61 + this.widthHoveringText3, 78, this.fontRendererObj);
-			}
+			mouseoverList.add(strAttrModern+" "+entity.getBonusPoint(ID.HP));
+			this.drawHoveringText(mouseoverList, 145, 32, this.fontRendererObj);
 		}
-			
+		//Attrs tooltip
+		else if (xMouse >= 73+guiLeft && xMouse < 134+guiLeft)
+		{
+			if (showPage == 2)
+			{
+				//ATK tooltip
+				if (yMouse >= 18+guiTop && yMouse < 41+guiTop)
+				{
+					//draw attack text
+					mouseoverList.add(strAttrModern);
+					mouseoverList.add(TextFormatting.RED + strAttrAtk1);
+					mouseoverList.add(TextFormatting.RED + strAttrAtk2);
+					mouseoverList.add(TextFormatting.AQUA + strAttrCri);
+					mouseoverList.add(TextFormatting.YELLOW + strAttrDHIT);
+					mouseoverList.add(TextFormatting.GOLD + strAttrTHIT);
+					mouseoverList.add(TextFormatting.YELLOW + strAttrAA);
+					mouseoverList.add(TextFormatting.AQUA + strAttrASM);
+					this.drawHoveringText(mouseoverList, 55, 57, this.fontRendererObj);
+					
+					//draw attack value
+					mouseoverList.clear();
+					mouseoverList.add(String.valueOf(entity.getBonusPoint(ID.ATK)));
+					mouseoverList.add(strATK);
+					mouseoverList.add(strAATK);
+					overText = String.valueOf((int)(this.entity.getEffectEquip(ID.EquipEffect.CRI) * 100F)) + " %";
+					mouseoverList.add(overText);
+					overText = String.valueOf((int)(this.entity.getEffectEquip(ID.EquipEffect.DHIT) * 100F)) + " %";
+					mouseoverList.add(overText);
+					overText = String.valueOf((int)(this.entity.getEffectEquip(ID.EquipEffect.THIT) * 100F)) + " %";
+					mouseoverList.add(overText);
+					overText = String.valueOf((int)(this.entity.getEffectEquip(ID.EquipEffect.AA)));
+					mouseoverList.add(overText);
+					overText = String.valueOf((int)(this.entity.getEffectEquip(ID.EquipEffect.ASM)));
+					mouseoverList.add(overText);
+					this.drawHoveringText(mouseoverList, 61 + this.widthHoveringText1, 57, this.fontRendererObj);
+				}
+				//DEF tooltip
+				else if (yMouse >= 41+guiTop && yMouse < 62+guiTop)
+				{
+					mouseoverList.add(strAttrModern+" "+entity.getBonusPoint(ID.DEF));
+					this.drawHoveringText(mouseoverList, 55, 78, this.fontRendererObj);
+				}
+				//SPD tooltip
+				else if (yMouse >= 62+guiTop && yMouse < 83+guiTop)
+				{
+					mouseoverList.add(strAttrModern+" "+entity.getBonusPoint(ID.SPD));
+					this.drawHoveringText(mouseoverList, 55, 99, this.fontRendererObj);
+				}
+				//MOV tooltip
+				else if (yMouse >= 83+guiTop && yMouse < 104+guiTop)
+				{
+					mouseoverList.add(strAttrModern+" "+entity.getBonusPoint(ID.MOV));
+					this.drawHoveringText(mouseoverList, 55, 120, this.fontRendererObj);
+				}
+				//RANGE tooltip
+				else if (yMouse >= 104+guiTop && yMouse < 126+guiTop)
+				{
+					//draw text
+					mouseoverList.add(strAttrModern);
+					mouseoverList.add(TextFormatting.RED + strAttrMiss);
+					mouseoverList.add(TextFormatting.AQUA + strAttrMissA);
+					mouseoverList.add(TextFormatting.GOLD + strAttrDodge);
+					this.drawHoveringText(mouseoverList, 55, 142, this.fontRendererObj);
+					
+					//draw value
+					mouseoverList.clear();
+					mouseoverList.add(String.valueOf(entity.getBonusPoint(ID.HIT)));
+					
+					//calc miss
+					temp = (int) ((0.2F - this.entity.getEffectEquip(ID.EquipEffect.MISS) - 0.001F * this.entity.getStateMinor(ID.M.ShipLevel)) * 100F);
+					if (temp < 0) temp = 0;
+					if (temp > 35) temp = 35;
+					str = String.valueOf(temp);
+					
+					temp = (int) ((0.35F - this.entity.getEffectEquip(ID.EquipEffect.MISS) - 0.001F * this.entity.getStateMinor(ID.M.ShipLevel)) * 100F);
+					if (temp < 0) temp = 0;
+					if (temp > 35) temp = 35;
+					str2 = String.valueOf(temp);
+					
+					overText = str + " ~ " + str2 + " %";
+					mouseoverList.add(overText);
+					
+					//calc air miss
+					temp = (int) ((0.25F - this.entity.getEffectEquip(ID.EquipEffect.MISS) - 0.001F * this.entity.getStateMinor(ID.M.ShipLevel)) * 100F);
+					if (temp < 0) temp = 0;
+					if (temp > 35) temp = 35;
+					
+					overText = String.valueOf(temp) + " %";
+					mouseoverList.add(overText);
+					
+					//calc dodge
+					if (this.entity instanceof IShipInvisible)
+					{
+						temp = (int) (this.entity.getEffectEquip(ID.EquipEffect.DODGE) +
+										((IShipInvisible)this.entity).getInvisibleLevel());
+						if (temp > ConfigHandler.limitShipEffect[6]) temp = (int) ConfigHandler.limitShipEffect[6];
+						overText = String.valueOf(temp) + " %";
+					}
+					else
+					{
+						overText = String.valueOf((int)this.entity.getEffectEquip(ID.EquipEffect.DODGE)) + " %";
+					}
+					
+					mouseoverList.add(overText);
+					this.drawHoveringText(mouseoverList, 61 + this.widthHoveringText2, 142, this.fontRendererObj);
+				}
+			}//end page 2
+			else if (showPage == 3)
+			{
+				//show text at FORMATION
+				if (yMouse >= 40+guiTop && yMouse < 62+guiTop && this.entity.getStateMinor(ID.M.FormatType) >= 1)
+				{
+					mouseoverList.add(TextFormatting.LIGHT_PURPLE + strAttrFPos);
+					mouseoverList.add(TextFormatting.RED + strAttrAtk1);
+					mouseoverList.add(TextFormatting.RED + strAttrAtk2);
+					mouseoverList.add(TextFormatting.WHITE + strAttrDEF);
+					mouseoverList.add(TextFormatting.GOLD + strAttrDodge);
+					mouseoverList.add(TextFormatting.RED + strAttrMissR);
+					mouseoverList.add(TextFormatting.AQUA + strAttrCri);
+					mouseoverList.add(TextFormatting.YELLOW + strAttrDHIT);
+					mouseoverList.add(TextFormatting.GOLD + strAttrTHIT);
+					mouseoverList.add(TextFormatting.YELLOW + strAttrAA);
+					mouseoverList.add(TextFormatting.AQUA + strAttrASM);
+					mouseoverList.add(TextFormatting.GRAY + strAttrMOV);
+					this.drawHoveringText(mouseoverList, 55, 78, this.fontRendererObj);
+					
+					//draw value
+					mouseoverList.clear();
+					
+					overText = String.valueOf(this.entity.getStateMinor(ID.M.FormatPos) + 1);
+					mouseoverList.add(overText);
+					
+					str = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.ATK_L) + 100);
+					str2 = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.ATK_H) + 100);
+					overText = str + " / " + str2 + " %";
+					mouseoverList.add(overText);
+					
+					str = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.ATK_AL) + 100);
+					str2 = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.ATK_AH) + 100);
+					overText = str + " / " + str2 + " %";
+					mouseoverList.add(overText);
+					
+					overText = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.DEF) + 100) + " %";
+					mouseoverList.add(overText);
+					
+					overText = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.DODGE) + 100) + " %";
+					mouseoverList.add(overText);
+					
+					overText = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.MISS) + 100) + " %";
+					mouseoverList.add(overText);
+					
+					overText = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.CRI) + 100) + " %";
+					mouseoverList.add(overText);
+					
+					overText = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.DHIT) + 100) + " %";
+					mouseoverList.add(overText);
+					
+					overText = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.THIT) + 100) + " %";
+					mouseoverList.add(overText);
+					
+					overText = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.AA) + 100) + " %";
+					mouseoverList.add(overText);
+					
+					overText = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.ASM) + 100) + " %";
+					mouseoverList.add(overText);
+					
+					overText = String.format("%.2f", this.entity.getEffectFormation(ID.Formation.MOV));
+					mouseoverList.add(overText);
+					
+					this.drawHoveringText(mouseoverList, 61 + this.widthHoveringText3, 78, this.fontRendererObj);
+				}//end formation
+			}//end page 3
+		}
 	}
 	
 	//get new mouseX,Y and draw gui
@@ -866,7 +901,7 @@ public class GuiShipInventory extends GuiContainer
 		}
 		else
 		{
-			color = 16766720;  //gold	
+			color = 16766720;  //gold
 		}
 		this.fontRendererObj.drawStringWithShadow(shiplevel, xSize-6-this.fontRendererObj.getStringWidth(shiplevel), 6, color);
 
@@ -875,24 +910,7 @@ public class GuiShipInventory extends GuiContainer
 		this.fontRendererObj.drawStringWithShadow("/"+String.valueOf(hpMax), 148 + this.fontRendererObj.getStringWidth(String.valueOf(hpCurrent)), 6, color);
 		
 		//draw current hp, if currHP < maxHP, use darker color
-		if (hpCurrent < hpMax)
-		{
-			switch(entity.getBonusPoint(ID.HP))
-			{
-			case 0:
-				color = Enums.EnumColors.GRAY_DARK_HP.getValue();
-				break;
-			case 1:
-				color = Enums.EnumColors.YELLOW_DARK_HP.getValue();
-				break;
-			case 2:
-				color = Enums.EnumColors.ORANGE_DARK_HP.getValue();
-				break;
-			default:
-				color = Enums.EnumColors.RED_DARK_HP.getValue();
-				break;
-			}
-		}
+		if (hpCurrent < hpMax) color = GuiHelper.getDarkerColor(color, 0.8F);
 		this.fontRendererObj.drawStringWithShadow(String.valueOf(hpCurrent), 147, 6, color);	
 				
 		//draw string in different page

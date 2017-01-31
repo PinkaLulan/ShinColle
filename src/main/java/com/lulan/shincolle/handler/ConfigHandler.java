@@ -85,6 +85,7 @@ public class ConfigHandler
 	
 	public static int dmgSvS = 100;		//ship vs ship damage modifier, 20 = dmg * 20%
 	public static int expMod = 20;		//ship exp per level, ex: 20 => lv 15 exp req = 15*20+20
+	public static int modernLimit = 3;	//ship attrs upgrade level limit
 	
 	public static boolean timeKeeping = true;
 	public static boolean canFlare = true;
@@ -176,6 +177,7 @@ public class ConfigHandler
 		volumeShip = config.getFloat("Volume_Ship", "ship setting", 1.0F, 0F, 10F, "Other sound volume");
 		volumeFire = config.getFloat("Volume_Attack", "ship setting", 0.7F, 0F, 10F, "Attack sound volume");
 		baseCaressMorale = config.getInt("Caress_BaseMorale", "ship setting", 15, 1, 1000, "base morale value per CaressTick (4 ticks)");
+		modernLimit = config.getInt("Attrs_Limit_Modernization", "ship setting", 3, 3, 100, "Max upgrade level by Modernization Toolkit");
 		
 		//array data
 		propShip = config.get("ship setting", "Attrs_Scale", scaleShip, "Ship attributes SCALE: HP, firepower, armor, attack speed, move speed, range");

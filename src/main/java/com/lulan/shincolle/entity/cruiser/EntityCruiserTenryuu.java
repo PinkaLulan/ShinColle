@@ -127,9 +127,6 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
 		//server side
 		else
 		{
-			//skill tick--
-			if (this.StateTimer[ID.T.AttackTime3] > 0) this.StateTimer[ID.T.AttackTime3]--;
-			
 			//apply skill effect
 			this.updateSkillEffect();
 		}
@@ -142,7 +139,7 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
 		if (this.StateEmotion[ID.S.Phase] > 1)
 		{
 			//clear attacked target list
-			if (this.StateTimer[ID.T.AttackTime3] == 5)
+			if (this.StateTimer[ID.T.AttackTime3] == 7)
 			{
 				this.damagedTarget.clear();
 				
@@ -154,7 +151,7 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
 				this.applyParticleAtAttacker(5, null, new float[0]);
 			}
 			//draw movement blur
-			else if (this.StateTimer[ID.T.AttackTime3] == 1)
+			else if (this.StateTimer[ID.T.AttackTime3] == 3)
 			{
 				this.applyParticleAtTarget(5, null, new float[] {(float) this.skillMotion.xCoord, (float) this.skillMotion.yCoord, (float) this.skillMotion.zCoord});
 			
@@ -165,12 +162,12 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
 				}
 			}
 			
-			if (this.StateTimer[ID.T.AttackTime3] < 5 && this.StateTimer[ID.T.AttackTime3] >= 0)
+			if (this.StateTimer[ID.T.AttackTime3] <= 7 && this.StateTimer[ID.T.AttackTime3] >= 0)
 			{
 				//apply motion
-				this.motionX = this.skillMotion.xCoord * 2D;
-				this.motionY = this.skillMotion.yCoord * 2D;
-				this.motionZ = this.skillMotion.zCoord * 2D;
+				this.motionX = this.skillMotion.xCoord;
+				this.motionY = this.skillMotion.yCoord;
+				this.motionZ = this.skillMotion.zCoord;
 				
 				//attack on colliding
 				this.damageNearbyEntity();
@@ -398,7 +395,8 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
 		
 		//calc motion
 		this.skillMotion = CalcHelper.calcVecToTarget(new Vec3d(target.posX, target.posY, target.posZ), vecpos);
-
+		this.skillMotion.scale(dist * 0.15D);
+		
 		//calc rotation
 		float[] degree = CalcHelper.getLookDegree(this.skillMotion.xCoord, this.skillMotion.yCoord, this.skillMotion.zCoord, true);
 		this.rotationYaw = degree[0];
@@ -409,7 +407,7 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
 		
 		//update flag and sync
 		this.remainAttack--;
-		this.StateTimer[ID.T.AttackTime3] = 6;
+		this.StateTimer[ID.T.AttackTime3] = 9;
 		this.setStateEmotion(ID.S.Phase, 2, true);
 		this.sendSyncPacket(S2CEntitySync.PID.SyncEntity_Rot, true);
 	}
@@ -422,19 +420,14 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
 		double dist = this.getDistanceSqToCenter(pos);
 		
 		//calc motion
-		this.skillMotion = CalcHelper.calcVecToTarget(new Vec3d(target.posX, target.posY, target.posZ), vecpos);
-		
-		//calc rotation
-		float[] degree = CalcHelper.getLookDegree(this.skillMotion.xCoord, this.skillMotion.yCoord, this.skillMotion.zCoord, true);
-		this.rotationYaw = degree[0];
-		this.rotationYawHead = degree[0];
+		this.skillMotion = new Vec3d(0D, Math.abs(vecpos.yCoord - target.posY) * -0.14D, 0D);
 		
 		//apply teleport
 		EntityAIShipFollowOwner.applyTeleport(this, dist, vecpos);
 		
 		//update flag and sync
 		this.remainAttack--;
-		this.StateTimer[ID.T.AttackTime3] = 10;
+		this.StateTimer[ID.T.AttackTime3] = 12;
 		this.setStateEmotion(ID.S.Phase, 3, true);
 		this.sendSyncPacket(S2CEntitySync.PID.SyncEntity_Rot, true);
 	}
@@ -465,6 +458,7 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
 			this.setStateEmotion(ID.S.Phase, 0, true);
 			this.remainAttack = 0;
 			this.StateTimer[ID.T.AttackTime3] = 0;
+			this.skillMotion = Vec3d.ZERO;
 			return false;
 		}
 		
@@ -497,6 +491,9 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
 				this.setStateEmotion(ID.S.Phase, 0, true);
 			}
 		}
+		
+		//skill tick--
+		if (this.StateTimer[ID.T.AttackTime3] > 0) this.StateTimer[ID.T.AttackTime3]--;
 		
 		return false;
 	}
@@ -615,7 +612,7 @@ public class EntityCruiserTenryuu extends BasicEntityShipSmall
   		case 4:  //heavy aircraft
   		break;
   		case 5:  //high speed movement
-  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 44, posX, posY, posZ, vec[0], vec[1], vec[2], false), point);
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 44, posX+skillMotion.xCoord*2D, posY+height*0.4D+skillMotion.yCoord*2.5D, posZ+skillMotion.zCoord*2D, vec[0], vec[1], vec[2], false), point);
 		break;
 		default: //melee
     		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 1, false), point);

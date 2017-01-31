@@ -11,12 +11,14 @@ import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.other.EntityProjectileBeam;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModSounds;
+import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
@@ -124,9 +126,6 @@ public class EntityCruiserTatsutaMob extends BasicEntityShipHostile
 		//server side
 		else
 		{
-			//skill tick--
-			if (this.attackTime3 > 0) this.attackTime3--;
-			
 			//apply skill effect
 			this.updateSkillEffect();
 		}
@@ -156,6 +155,16 @@ public class EntityCruiserTatsutaMob extends BasicEntityShipHostile
 			//attack on colliding
 			this.damageNearbyEntity();
 
+			//sync motion
+			this.sendSyncPacket(1);
+		}
+		else if (this.stateEmotion[ID.S.Phase] == 3)
+		{
+			//apply motion
+			this.motionX = 0D;
+			this.motionY = 0.1D;
+			this.motionZ = 0D;
+			
 			//sync motion
 			this.sendSyncPacket(1);
 		}
@@ -302,7 +311,7 @@ public class EntityCruiserTatsutaMob extends BasicEntityShipHostile
   			//start skill attack
   			this.setStateEmotion(ID.S.Phase, 1, true);
 			this.remainAttack = 1 + this.scaleLevel;
-  			this.attackTime3 = 7;
+  			this.attackTime3 = 10;
 		}
 		
         applyEmotesReaction(3);
@@ -345,16 +354,16 @@ public class EntityCruiserTatsutaMob extends BasicEntityShipHostile
 
 	private void updateSkillCharge(Entity target)
 	{
-		if (this.attackTime3 == 5)
+		if (this.attackTime3 == 8)
 		{
-			Vec3d vecpos = new Vec3d((target.posX - this.posX) * 0.19D, (target.posY - this.posY) * 0.19D, (target.posZ - this.posZ) * 0.19D);
-			vecpos.normalize();
+			Vec3d vecpos = new Vec3d(target.posX - this.posX, target.posY - this.posY, target.posZ - this.posZ);
 			
 			//calc motion
-			this.skillMotion = vecpos;
+			this.skillMotion = vecpos.scale(0.14D);
+			vecpos.normalize();
 			
 			//calc rotation
-			float[] degree = CalcHelper.getLookDegree(this.skillMotion.xCoord, this.skillMotion.yCoord, this.skillMotion.zCoord, true);
+			float[] degree = CalcHelper.getLookDegree(vecpos.xCoord, vecpos.yCoord, vecpos.zCoord, true);
 			this.rotationYaw = degree[0];
 			this.rotationYawHead = degree[0];
 			
@@ -365,7 +374,7 @@ public class EntityCruiserTatsutaMob extends BasicEntityShipHostile
 			//set attack time
 			this.applyParticleAtAttacker(5, null, new float[0]);
 		}
-		else if (this.attackTime3 == 3)
+		else if (this.attackTime3 == 6)
 		{
 			//apply particle
 			this.applyParticleAtTarget(5, target, new float[] {(float)this.skillMotion.xCoord, (float)this.skillMotion.yCoord, (float)this.skillMotion.zCoord});
@@ -377,8 +386,8 @@ public class EntityCruiserTatsutaMob extends BasicEntityShipHostile
 		if (this.attackTime3 <= 0)
 		{
 			//calc motion
-			this.skillMotion = new Vec3d(0D, 0.6D, 0D);
-			this.attackTime3 = 16;
+			this.skillMotion = new Vec3d(0D, 0.3D+this.scaleLevel*0.1D, 0D);
+			this.attackTime3 = 25;
 			
 			//set attack time
 			this.applyParticleAtAttacker(5, null, new float[0]);
@@ -390,13 +399,13 @@ public class EntityCruiserTatsutaMob extends BasicEntityShipHostile
 			//apply particle
 			this.applyParticleAtAttacker(6, null, new float[0]);
 			
-			//attack-- every 4 ticks
-			if ((this.attackTime3 & 3) == 0)
+			//attack-- every 8 ticks
+			if ((this.attackTime3 & 7) == 0)
 			{
 				this.remainAttack--;
 				this.damagedTarget.clear();
 				
-				if (this.remainAttack == 1)
+				if (this.remainAttack <= 1)
 				{
 					this.attackTime3 = 0;	//no remain attack, go to next phase
 				}
@@ -412,22 +421,23 @@ public class EntityCruiserTatsutaMob extends BasicEntityShipHostile
 	{
 		if (this.attackTime3 <= 0)
 		{
-			Vec3d vecpos = new Vec3d(target.posX - this.posX, target.posY - this.posY, target.posZ - this.posZ);
+			Vec3d vecpos = new Vec3d(target.posX - this.posX, target.posY - this.posY - 1D, target.posZ - this.posZ);
 			
 			//calc rotation
 			float[] degree = CalcHelper.getLookDegree(vecpos.xCoord, vecpos.yCoord, vecpos.zCoord, true);
 			this.rotationYaw = degree[0];
 			this.rotationYawHead = degree[0];
 			
-			//find gae bolg target
-			vecpos = new Vec3d(vecpos.xCoord * 10D, -20D - this.scaleLevel * 8D, vecpos.zCoord * 10D);
-			vecpos = vecpos.normalize();
-			this.skillMotion = vecpos;
+			//calc gae bolg direction
+			this.skillMotion = vecpos.normalize();
 			
 			//update flag and sync
 			this.remainAttack = 0;
-			this.attackTime3 = 10;
+			this.attackTime3 = 15;
 			this.sendSyncPacket(3);
+			
+			//set attack time
+			this.applyParticleAtAttacker(5, null, new float[0]);
 		}
 		else if (this.attackTime3 == 6)
 		{
@@ -503,6 +513,9 @@ public class EntityCruiserTatsutaMob extends BasicEntityShipHostile
 			this.updateSkillFinalAttack(target);
 		break;
 		}
+		
+		//skill tick--
+		if (this.attackTime3 > 0) this.attackTime3--;
 		
 		return false;
 	}
@@ -588,7 +601,7 @@ public class EntityCruiserTatsutaMob extends BasicEntityShipHostile
   		case 4:  //heavy aircraft
   		break;
   		case 5:  //high speed blur
-  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 46, posX + vec[0] * 2D, posY + vec[1] * 2D + this.height * 0.7D, posZ + vec[2] * 2D, vec[0] * 0.6D, vec[1] * 0.6D, vec[2] * 0.6D, false), point);
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 46, posX + vec[0] * 2D, posY + vec[1] * 2D + this.height * 0.7D, posZ + vec[2] * 2D, vec[0] * (1.5D+this.scaleLevel * 0.8D), vec[1] * (1.5D+this.scaleLevel * 0.8D), vec[2] * (1.5D+this.scaleLevel * 0.8D), false), point);
 		break;
   		case 6:  //gae bolg blur
   			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 45, posX + vec[0] * 10D, posY + vec[1] * 10D + this.height * 0.7D, posZ + vec[2] * 10D, vec[0] * 1.5D, vec[1] * 1.5D, vec[2] * 1.5D, true), point);

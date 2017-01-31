@@ -2361,7 +2361,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		int bonusChoose = rand.nextInt(6);
 		
 		//bonus point +1 if bonus point < 3
-		if (BonusPoint[bonusChoose] < 3)
+		if (BonusPoint[bonusChoose] < ConfigHandler.modernLimit)
 		{
 			BonusPoint[bonusChoose] = (byte) (BonusPoint[bonusChoose] + 1);
 			return true;
@@ -2370,7 +2370,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		{	//select other bonus point
 			for (int i = 0; i < BonusPoint.length; ++i)
 			{
-				if (BonusPoint[i] < 3)
+				if (BonusPoint[i] < ConfigHandler.modernLimit)
 				{
 					BonusPoint[i] = (byte) (BonusPoint[i] + 1);
 					return true;

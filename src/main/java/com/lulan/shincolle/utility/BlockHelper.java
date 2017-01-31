@@ -344,7 +344,7 @@ public class BlockHelper
 		BlockPos newpos;
 		
 		//get random pos
-		int loops = (int)target.height + 10;
+		int loops = (int)target.height + 7;
 		float[] posoffset;
 		
 		while (loops > 0)

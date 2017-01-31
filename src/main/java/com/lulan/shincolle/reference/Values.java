@@ -97,8 +97,8 @@ public class Values
 		put(ID.Ship.DestroyerInazuma,   new float[] {30F,  5F,  9F,  1.0F, 0.5F,  9F,  0.3f,  0.32F, 0.12F, 0.5F,  1F,    0.46F});
 		put(ID.Ship.DestroyerShimakaze, new float[] {38F,  11F, 12F, 1.0F, 0.6F,  9F,  0.35F, 0.4F,  0.16F, 0.55F, 1.2F,  0.46F});
 		//cruiser
-		put(ID.Ship.LightCruiserTenryuu,new float[] {42F,  13F, 16F, 1.0F, 0.42F, 8F,  0.4F,  0.4F,  0.2F,  0.6F,  0.9F,  0.5F});
-		put(ID.Ship.LightCruiserTatsuta,new float[] {42F,  13F, 16F, 1.0F, 0.42F, 8F,  0.4F,  0.4F,  0.2F,  0.6F,  0.9F,  0.5F});
+		put(ID.Ship.LightCruiserTenryuu,new float[] {42F,  13F, 16F, 1.0F, 0.42F, 8F,  0.4F,  0.4F,  0.2F,  0.6F,  0.9F,  0.4F});
+		put(ID.Ship.LightCruiserTatsuta,new float[] {42F,  13F, 16F, 1.0F, 0.42F, 8F,  0.4F,  0.4F,  0.2F,  0.6F,  0.9F,  0.4F});
 		//battleship
 		put(ID.Ship.BattleshipNagato,   new float[] {135F, 40F, 26F, 1.0F, 0.32F, 14F, 0.85F, 0.8F,  0.25F, 0.63F, 0.64F, 0.6F});
 		put(ID.Ship.BattleshipYamato,   new float[] {150F, 55F, 36F, 1.0F, 0.3F,  20F, 1F,    1F,    0.3F,  0.7F,  0.6F,  0.7F});

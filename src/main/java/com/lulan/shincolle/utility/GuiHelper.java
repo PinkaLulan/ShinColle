@@ -1,6 +1,6 @@
 package com.lulan.shincolle.utility;
 
-import com.lulan.shincolle.reference.Enums;
+import com.lulan.shincolle.handler.ConfigHandler;
 
 public class GuiHelper
 {
@@ -151,25 +151,48 @@ public class GuiHelper
 	}
 	
 	//ship bonus point to text color: white -> yellow -> orange -> red
-	public static int getBonusPointColor(int par1)
+	public static int getBonusPointColor(int level)
 	{
-		if (par1 > 2)
+		/**
+		 * bonus color:
+		 *   white -> yellow -> red
+		 * = RGB255 -> RG255 -> R255
+		 * = 16711680 + 65280 + 255 -> 16711680 + 65280 -> 16711680
+		 * 
+		 * 0~50% = blue--
+		 * 51~100% = green--
+		 */
+		int max = ConfigHandler.modernLimit;
+		int color = 0;
+		float flv = (float)level / (float)max - 0.5F;
+		
+		if (flv >= 0.5F)
 		{
-			return Enums.EnumColors.RED_LIGHT.getValue();
+			return 16711680;
+		}
+		else if (flv >= 0F)
+		{
+			color = (int) (255F * (1F - flv * 2F)) * 256 + 16711680;
 		}
 		else
 		{
-			switch(par1)
-			{
-			case 1:
-				return Enums.EnumColors.YELLOW.getValue();
-			case 2:
-				return Enums.EnumColors.ORANGE.getValue();
-			default:
-				return Enums.EnumColors.WHITE.getValue();
-			}
+			flv += 0.5F;
+			color = (int) (255F * (1F - flv * 2F)) + 16776960;
 		}
 
+		return color;
+	}
+	
+	/** get darker color, ex: dark = 0.5F = RGB * 0.5F */
+	public static int getDarkerColor(int color, float dark)
+	{
+		float b = (color & 255) * dark;
+		color >>= 8;
+		float g = (color & 255) * dark;
+		color >>= 8;
+		float r = color * dark;
+		
+		return ((int)r << 16) + ((int)g << 8) + (int)b;
 	}
 	
 	
