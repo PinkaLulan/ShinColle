@@ -31,10 +31,12 @@ public interface IShipEmotion extends IShipFlags
 	public int getHeadTiltTick();
 	public int getAttackTick();		//game tick (20 FPS) = AttackTime (1.7.10-)
 	public int getAttackTick2();	//another attack timer for some animation
+	public int getDeathTick();
 	public void setFaceTick(int par1);
 	public void setHeadTiltTick(int par1);
 	public void setAttackTick(int par1);
 	public void setAttackTick2(int par1);
+	public void setDeathTick(int par1);
 	
 	/**用於手持物品render
 	 * par1: 0:X 1:Y 2:Z

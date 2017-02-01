@@ -878,6 +878,18 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
 	{
 		return 0D;
 	}
+	
+	@Override
+	public int getDeathTick()
+	{
+		return this.deathTime;
+	}
+
+	@Override
+	public void setDeathTick(int par1)
+	{
+		this.deathTime = par1;
+	}
 
 
 }

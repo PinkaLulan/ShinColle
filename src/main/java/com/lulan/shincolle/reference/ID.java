@@ -476,6 +476,7 @@ public class ID
 		public static final byte Crane = 63;
 		public static final byte Piston = 64;
 		public static final byte TrainBook = 65;
+		public static final byte MagmaB = 66;
 	}
 	
 	/**ship state2*/

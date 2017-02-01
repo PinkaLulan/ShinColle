@@ -381,7 +381,7 @@ public class ModelSubmRo500 extends ModelBase implements IModelEmotion
     
     private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
     {
-    	GlStateManager.translate(0F, 0.56F, 0F);
+    	GlStateManager.translate(0F, 0.55F + 0.29F * ent.getScaleLevel(), 0F);
     	setFace(4);
     	
   	    //頭部

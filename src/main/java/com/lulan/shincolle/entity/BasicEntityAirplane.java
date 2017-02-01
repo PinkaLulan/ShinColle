@@ -131,7 +131,7 @@ abstract public class BasicEntityAirplane extends BasicEntitySummon implements I
 		if (!this.world.isRemote)
 		{
 			//host check
-			if (this.getPlayerUID() == 0 || this.getPlayerUID() == -1)
+			if (this.host == null || this.getPlayerUID() == 0 || this.getPlayerUID() == -1 || !((Entity)this.host).isEntityAlive())
 			{
 				//no host, or host has no owner
 				this.setDead();
@@ -143,6 +143,10 @@ abstract public class BasicEntityAirplane extends BasicEntitySummon implements I
 				//歸宅
 				if (this.backHome && this.isEntityAlive())
 				{
+					//no host, set dead
+					if (this.host == null || !((Entity)this.host).isEntityAlive()) setDead();
+					
+					//get host, fly to host
 					float dist = this.getDistanceToEntity(hostent);
 					
 					//get home path
@@ -151,6 +155,13 @@ abstract public class BasicEntityAirplane extends BasicEntitySummon implements I
 						if (this.ticksExisted % 16 == 0)
 						{
 							this.getShipNavigate().tryMoveToXYZ(hostent.posX, hostent.posY + hostent.height + 1D, hostent.posZ, 1D);
+						
+							//host is too far away
+							if (this.getShipNavigate().noPath() && this.getDistanceSqToEntity((Entity) this.host) >= 4095F)
+							{
+								this.returnSummonResource();
+								this.setDead();
+							}
 						}
 					}
 					//get home

@@ -1137,7 +1137,7 @@ public class ModelBattleshipYamato extends ModelBase implements IModelEmotion
     
     private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
     {
-    	GlStateManager.translate(0F, 0.58F, 0F);
+    	GlStateManager.translate(0F, 0.58F + 0.22F * ent.getScaleLevel(), 0F);
     	setFace(4);
     
     	//頭部

@@ -536,6 +536,12 @@ public class RenderShipEntity extends RenderBasic
         }
     }
 	
+	@Override
+    protected float getDeathMaxRotation(EntityLiving entityLivingBaseIn)
+    {
+        return 0F;
+    }
+	
     public static class FactoryDefault implements IRenderFactory<EntityLiving>
     {
         @Override

@@ -633,6 +633,7 @@ public class Values
 		put(ID.Icon.Crane,      new ItemStack(ModBlocks.BlockCrane));
 		put(ID.Icon.Piston,     new ItemStack(Blocks.PISTON));
 		put(ID.Icon.TrainBook,  new ItemStack(ModItems.TrainingBook));
+		put(ID.Icon.MagmaB,     new ItemStack(Blocks.MAGMA));
 	}});
 	
 	
@@ -717,14 +718,10 @@ public class Values
 		put(1005, Arrays.asList(new int[] {0, 0, 0, 0},
 								new int[] {0, 1, 0, 0},
 								new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
-								new int[] {2, 0, 3,  -3, ID.Icon.AbyssIG},
 								new int[] {2, 0, 23, -3, ID.Icon.NStar},
-								new int[] {2, 0, 43, -3, ID.Icon.AbyssIG},
 								new int[] {2, 0, 3,  17, ID.Icon.AbyssIG},
 								new int[] {2, 0, 43, 17, ID.Icon.AbyssIG},
-								new int[] {2, 0, 3,  37, ID.Icon.AbyssIG},
 								new int[] {2, 0, 23, 37, ID.Icon.AbyssIG},
-								new int[] {2, 0, 43, 37, ID.Icon.AbyssIG},
 								new int[] {2, 0, 81, 17, ID.Icon.Ring}));
 		//page 6: ownership paper
 		put(1006, Arrays.asList(new int[] {0, 0, 0, 0},
@@ -861,13 +858,13 @@ public class Values
 								new int[] {0, 1, 0, 0},
 								new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
 								new int[] {2, 0, 3,  -3, ID.Icon.ObsidianB},
-								new int[] {2, 0, 23, -3, ID.Icon.GrudgeBH},
+								new int[] {2, 0, 23, -3, ID.Icon.MagmaB},
 								new int[] {2, 0, 43, -3, ID.Icon.ObsidianB},
-								new int[] {2, 0, 3,  17, ID.Icon.GrudgeBH},
-								new int[] {2, 0, 23, 17, ID.Icon.LaBucket},
-								new int[] {2, 0, 43, 17, ID.Icon.GrudgeBH},
+								new int[] {2, 0, 3,  17, ID.Icon.MagmaB},
+								new int[] {2, 0, 23, 17, ID.Icon.GrudgeB},
+								new int[] {2, 0, 43, 17, ID.Icon.MagmaB},
 								new int[] {2, 0, 3,  37, ID.Icon.ObsidianB},
-								new int[] {2, 0, 23, 37, ID.Icon.GrudgeBH},
+								new int[] {2, 0, 23, 37, ID.Icon.MagmaB},
 								new int[] {2, 0, 43, 37, ID.Icon.ObsidianB},
 								new int[] {2, 0, 81, 17, ID.Icon.VolBlock}));
 		//page 20: volcano core
@@ -878,7 +875,7 @@ public class Values
 								new int[] {2, 0, 23, -3, ID.Icon.VolBlock},
 								new int[] {2, 0, 43, -3, ID.Icon.ObsidianB},
 								new int[] {2, 0, 3,  17, ID.Icon.VolBlock},
-								new int[] {2, 0, 23, 17, ID.Icon.LaBucket},
+								new int[] {2, 0, 23, 17, ID.Icon.GrudgeBH},
 								new int[] {2, 0, 43, 17, ID.Icon.VolBlock},
 								new int[] {2, 0, 3,  37, ID.Icon.ObsidianB},
 								new int[] {2, 0, 23, 37, ID.Icon.VolBlock},

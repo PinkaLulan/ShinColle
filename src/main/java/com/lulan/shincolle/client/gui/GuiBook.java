@@ -15,6 +15,7 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.GlStateManager.DestFactor;
 import net.minecraft.client.renderer.GlStateManager.SourceFactor;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.I18n;
@@ -260,7 +261,9 @@ public class GuiBook
 	{
 		if (item != null)
 		{
-			itemRender.renderItemAndEffectIntoGUI(item, x, y);
+			RenderHelper.enableGUIStandardItemLighting();
+			itemRender.renderItemIntoGUI(item, x, y);
+			RenderHelper.disableStandardItemLighting();
 		}
 	}
 	

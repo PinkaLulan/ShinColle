@@ -27,7 +27,7 @@ public class ConfigHandler
 	public static boolean friendlyFire = true;
 	public static boolean useWakamoto = true;
 	public static boolean alwaysShowTeamParticle = false;
-	public static boolean polyAsMn = true;
+	public static boolean polyAsMn = false;
 	public static float dropGrudge = 1.0F;
 	public static int closeGUIDist = 64;
 	public static int bossCooldown = 4800;
@@ -41,6 +41,7 @@ public class ConfigHandler
 	public static int spawnMobNum = 4;
 	public static int shipNumPerPage = 5;
 	public static int chunkloaderMode = 2;
+	public static int deathTick = 400;
 	
 	//INTER-MOD
 	public static boolean enableForestry = true;
@@ -120,6 +121,9 @@ public class ConfigHandler
 		
 		//chuknk loader使用模式
 		chunkloaderMode = config.getInt("Mode_ChunkLoader", "general", 2, 0, 2, "Chunk loader mode: 0: disable, 1: only 1 chunk each ship, 2: 3x3 chunks each ship");
+		
+		//ship death動畫時間長度
+		deathTick = config.getInt("Death_Time", "general", 400, 0, 3600, "Ship death animation time");
 				
 		//是否開啟debug mode
 		debugMode = config.getBoolean("Mode_Debug", "general", false, "Enable debug message (SPAM WARNING)");
@@ -144,7 +148,7 @@ public class ConfigHandler
 		kaitaiAmountLarge = config.getInt("Recycle_Large", "general", 20, 0, 1000, "Recycle amount by Dismantle Hammer for rare ship, ex: Yamato.");
 				
 		//是否把多金屬當成錳礦
-		polyAsMn = config.getBoolean("Polymetal_as_Mn", "general", true, "true: Polymetallic Nodules = Manganese Dust, Polymetallic Ore = Manganese Ore");
+		polyAsMn = config.getBoolean("Polymetal_as_Mn", "general", false, "true: Polymetallic Nodules = Manganese Dust, Polymetallic Ore = Manganese Ore");
 		
 		//desk雷達更新間隔
 		radarUpdate = config.getInt("Radar_Update", "desk", 128, 20, 6000, "Radar update interval (ticks) in Admiral's Desk GUI");

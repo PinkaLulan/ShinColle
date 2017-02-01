@@ -43,6 +43,7 @@ import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.network.S2CReactPackets;
 import com.lulan.shincolle.network.S2CSpawnParticle;
+import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
@@ -65,6 +66,7 @@ import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.ai.attributes.RangedAttribute;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -80,6 +82,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -954,7 +957,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	
 	@Override
 	public boolean getStateFlag(int flag)
-	{	//get flag (boolean)
+	{
+		//treat death as no fuel
+		if (flag == ID.F.NoFuel && (this.isDead || this.deathTime > 0)) return true;
+		
 		return StateFlag[flag];
 	}
 	
@@ -1258,7 +1264,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	public void addShipExp(int exp)
 	{
 		int capLevel = getStateFlag(ID.F.IsMarried) ? 150 : 100;
-		exp = (int) (exp * EffectEquip[ID.EquipEffect.XP]);
+		
+		//apply equip effect
+		if (EffectEquip[ID.EquipEffect.XP] >= 0F)
+		{
+			exp = (int) (exp * EffectEquip[ID.EquipEffect.XP]);
+		}
 		
 		//level is not cap level
 		if (StateMinor[ID.M.ShipLevel] != capLevel && StateMinor[ID.M.ShipLevel] < 150)
@@ -1751,6 +1762,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     {
     	//禁用副手
     	if (hand == EnumHand.OFF_HAND) return EnumActionResult.FAIL;
+    	
+    	//死亡時不反應
+    	if (!this.isEntityAlive()) return EnumActionResult.FAIL;
     	
     	//server side
     	if (!this.world.isRemote)
@@ -3171,22 +3185,22 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		{
 		case 0:  //melee
 			setStateMinor(ID.M.Morale, getStateMinor(ID.M.Morale) - 2);
-			break;
+		break;
 		case 1:  //light
 			setStateMinor(ID.M.Morale, getStateMinor(ID.M.Morale) - 4);
-			break;
+		break;
 		case 2:  //heavy
 			setStateMinor(ID.M.Morale, getStateMinor(ID.M.Morale) - 6);
-			break;
+		break;
 		case 3:  //light air
 			setStateMinor(ID.M.Morale, getStateMinor(ID.M.Morale) - 6);
-			break;
+		break;
 		case 4:  //light heavy
 			setStateMinor(ID.M.Morale, getStateMinor(ID.M.Morale) - 8);
-			break;
+		break;
 		case 5:  //damaged
 			setStateMinor(ID.M.Morale, getStateMinor(ID.M.Morale) - 5);
-			break;
+		break;
 		}
 	}
 	
@@ -3911,7 +3925,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	//update hp state
   	protected void updateMountSummon()
   	{
-    	if (this.canSummonMounts())
+    	if (this.canSummonMounts() && this.isEntityAlive())
     	{
     		//summon mount if emotion state >= equip00
   	  		if (getStateEmotion(ID.S.State) >= ID.State.EQUIP00)
@@ -4169,6 +4183,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   			EffectEquip[ID.EquipEffect.DHIT] += 0.1F;
   			EffectEquip[ID.EquipEffect.THIT] += 0.1F;
   			EffectEquip[ID.EquipEffect.DODGE] += 10F;
+  			EffectEquip[ID.EquipEffect.XP] += 0.25F;
+  			EffectEquip[ID.EquipEffect.GRUDGE] += 0.25F;
+  			EffectEquip[ID.EquipEffect.AMMO] += 0.15F;
   			
   	  		if (m > 5100)
   	  		{
@@ -4180,6 +4197,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	  			StateFinal[ID.MOV] += 0.1F;
   	  			StateFinal[ID.HIT] += 2F;
   	  			EffectEquip[ID.EquipEffect.DODGE] += 15F;
+  	  			EffectEquip[ID.EquipEffect.XP] += 0.25F;
+  	  			EffectEquip[ID.EquipEffect.GRUDGE] += 0.25F;
+  	  			EffectEquip[ID.EquipEffect.AMMO] += 0.15F;
   	  		}
   		}
   		
@@ -4191,6 +4211,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   			StateFinal[ID.ATK_AH] *= 0.9F;
   			StateFinal[ID.HIT] -= 2F;
   			EffectEquip[ID.EquipEffect.DODGE] -= 10F;
+  			EffectEquip[ID.EquipEffect.XP] -= 0.15F;
+  			EffectEquip[ID.EquipEffect.GRUDGE] -= 0.15F;
+  			EffectEquip[ID.EquipEffect.AMMO] -= 0.1F;
   			
   	  		if (m < 901)
   	  		{
@@ -4202,6 +4225,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	  			StateFinal[ID.MOV] -= 0.1F;
   	  			StateFinal[ID.HIT] -= 2F;
   	  			EffectEquip[ID.EquipEffect.DODGE] -= 15F;
+  	  			EffectEquip[ID.EquipEffect.XP] -= 0.15F;
+  	  			EffectEquip[ID.EquipEffect.GRUDGE] -= 0.15F;
+  	  			EffectEquip[ID.EquipEffect.AMMO] -= 0.1F;
   	  		}
   		}
   		
@@ -6108,6 +6134,72 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     {
 		super.heal(healAmount * this.EffectEquip[ID.EquipEffect.HPRES]);
     }
+	
+	//death animation
+	@Override
+    protected void onDeathUpdate()
+    {
+        ++this.deathTime;
+        
+    	//spawn smoke
+    	if (this.world.isRemote)
+    	{
+        	if ((this.ticksExisted & 3) == 0)
+        	{
+        		int maxpar = (int)((3 - ClientProxy.getMineraft().gameSettings.particleSetting) * 1.8F);
+        		double range = this.width * 1.2D;
+        		for (int i = 0; i < maxpar; i++)
+        		ParticleHelper.spawnAttackParticleAt(posX-range+this.rand.nextDouble()*range*2D, posY+0.1D+this.rand.nextDouble()*0.3D, posZ-range+this.rand.nextDouble()*range*2D, 1.5D, 0D, 0D, (byte)43);
+        	}
+    	}
+    	
+        if (this.deathTime == ConfigHandler.deathTick)
+        {
+            if (!this.world.isRemote && (this.isPlayer() || this.recentlyHit > 0 && this.canDropLoot() && this.world.getGameRules().getBoolean("doMobLoot")))
+            {
+                int i = this.getExperiencePoints(this.attackingPlayer);
+                i = net.minecraftforge.event.ForgeEventFactory.getExperienceDrop(this, this.attackingPlayer, i);
+                while (i > 0)
+                {
+                    int j = EntityXPOrb.getXPSplit(i);
+                    i -= j;
+                    this.world.spawnEntity(new EntityXPOrb(this.world, this.posX, this.posY, this.posZ, j));
+                }
+            }
+
+            this.setDead();
+
+            for (int k = 0; k < 20; ++k)
+            {
+                double d2 = this.rand.nextGaussian() * 0.02D;
+                double d0 = this.rand.nextGaussian() * 0.02D;
+                double d1 = this.rand.nextGaussian() * 0.02D;
+                this.world.spawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, this.posY + (double)(this.rand.nextFloat() * this.height), this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, d2, d0, d1, new int[0]);
+            }
+        }
+        else if (this.deathTime > ConfigHandler.deathTick && !this.isDead)
+        {
+        	this.setDead();
+        }
+    }
+	
+	@Override
+    protected int getExperiencePoints(EntityPlayer player)
+    {
+    	return 0;
+    }
+	
+	@Override
+	public int getDeathTick()
+	{
+		return this.deathTime;
+	}
+
+	@Override
+	public void setDeathTick(int par1)
+	{
+		this.deathTime = par1;
+	}
 	
 	
 }

@@ -546,7 +546,7 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion
     private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
     {
     	setFace(4);
-    	GlStateManager.translate(0F, 0.72F, 0F);
+    	GlStateManager.translate(0F, 0.73F + 0.28F * ent.getScaleLevel(), 0F);
     	
     	//移動頭部使其看人
 	  	this.Head.rotateAngleX = 0F;

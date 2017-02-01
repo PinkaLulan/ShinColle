@@ -1865,5 +1865,17 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		this.seatPos2 = pos;
 	}
 	
+	@Override
+	public int getDeathTick()
+	{
+		return this.deathTime;
+	}
+
+	@Override
+	public void setDeathTick(int par1)
+	{
+		this.deathTime = par1;
+	}
+	
 	
 }

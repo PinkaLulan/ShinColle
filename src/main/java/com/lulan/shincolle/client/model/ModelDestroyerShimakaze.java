@@ -370,7 +370,7 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion
     
     private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
     {
-    	GlStateManager.translate(0F, 0.575F, 0F);
+    	GlStateManager.translate(0F, 0.55F + 0.26F * ent.getScaleLevel(), 0F);
     	setFace(4);
     	
   	    //ear
@@ -601,7 +601,7 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion
 	    //攻擊動作    
 	    if (ent.getAttackTick() > 0)
 	    {
-	    	GlStateManager.translate(0F, scale * 0.6F - 0.55F, 0F);
+	    	GlStateManager.translate(0F, 0.14F + ent.getScaleLevel() * 0.07F, 0F);
 	    	//body
 	    	this.Head.rotateAngleX = -0.8727F;
 	    	this.Head.rotateAngleY = 1.0472F;

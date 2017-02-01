@@ -21,6 +21,7 @@ import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CReactPackets;
 import com.lulan.shincolle.network.S2CSpawnParticle;
+import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
@@ -36,6 +37,7 @@ import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.ai.attributes.RangedAttribute;
+import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -45,6 +47,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -409,6 +412,8 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		case ID.F.OnSightChase:
 			return false;
 		case ID.F.NoFuel:
+			//treat death as no fuel
+			if (this.isDead || this.deathTime > 0) return true;
 			return false;
 		default:
 			return true;
@@ -1645,6 +1650,71 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 
 	@Override
 	public void setShipFloatingDepth(double par1) {}
+	
+	@Override
+    protected void onDeathUpdate()
+    {
+        ++this.deathTime;
+        
+    	//spawn smoke
+    	if (this.world.isRemote)
+    	{
+        	if ((this.ticksExisted & 3) == 0)
+        	{
+        		int maxpar = (int)((3 - ClientProxy.getMineraft().gameSettings.particleSetting) * 1.8F);
+        		double range = this.width * 1.2D;
+        		for (int i = 0; i < maxpar; i++)
+        		ParticleHelper.spawnAttackParticleAt(posX-range+this.rand.nextDouble()*range*2D, posY+0.3D+this.rand.nextDouble()*0.3D, posZ-range+this.rand.nextDouble()*range*2D, 1D+this.scaleLevel, 0.0D, 0D, (byte)43);
+        	}
+    	}
+        
+        if (this.deathTime == ConfigHandler.deathTick)
+        {
+            if (!this.world.isRemote && (this.isPlayer() || this.recentlyHit > 0 && this.canDropLoot() && this.world.getGameRules().getBoolean("doMobLoot")))
+            {
+                int i = this.getExperiencePoints(this.attackingPlayer);
+                i = net.minecraftforge.event.ForgeEventFactory.getExperienceDrop(this, this.attackingPlayer, i);
+                while (i > 0)
+                {
+                    int j = EntityXPOrb.getXPSplit(i);
+                    i -= j;
+                    this.world.spawnEntity(new EntityXPOrb(this.world, this.posX, this.posY, this.posZ, j));
+                }
+            }
+
+            this.setDead();
+
+            for (int k = 0; k < 20; ++k)
+            {
+                double d2 = this.rand.nextGaussian() * 0.02D;
+                double d0 = this.rand.nextGaussian() * 0.02D;
+                double d1 = this.rand.nextGaussian() * 0.02D;
+                this.world.spawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, this.posY + (double)(this.rand.nextFloat() * this.height), this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, d2, d0, d1, new int[0]);
+            }
+        }
+        else if (this.deathTime > ConfigHandler.deathTick && !this.isDead)
+        {
+        	this.setDead();
+        }
+    }
+	
+	@Override
+    protected int getExperiencePoints(EntityPlayer player)
+    {
+    	return 10 + this.scaleLevel * 30 + this.rand.nextInt(1 + this.scaleLevel * 30);
+    }
+	
+	@Override
+	public int getDeathTick()
+	{
+		return this.deathTime;
+	}
+
+	@Override
+	public void setDeathTick(int par1)
+	{
+		this.deathTime = par1;
+	}
 	
   	
 }

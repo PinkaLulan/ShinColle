@@ -19,7 +19,6 @@ import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.GuiHelper;
-import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -52,7 +51,7 @@ public class GuiShipInventory extends GuiContainer
 	  strAttrWedTrue, strAttrWedFalse, strMiKills, strMiExp, strMiAirL, strMiAirH, strMiAmmoL,
 	  strMiAmmoH, strMiGrudge, canMelee, canLATK, canHATK, canALATK, canAHATK, auraEffect,
 	  followMin, followMax, fleeHP, tarAI, strOnSight, strPVP, strAA, strASM, strTimeKeep,
-	  strPick, strWpStay, strAttrModern;
+	  strPick, strWpStay, strAttrModern, strAttrXP, strAttrGrudge, strAttrAmmo, strAttrHPRES;
 	private static String[] strMorale;
 	private static int widthHoveringText1, widthHoveringText2, widthHoveringText3;
 	
@@ -164,6 +163,10 @@ public class GuiShipInventory extends GuiContainer
 		strAttrWedTrue = I18n.format("gui.shincolle:married");
 		strAttrWedFalse = I18n.format("gui.shincolle:unmarried");
 		strAttrModern = I18n.format("gui.shincolle:modernlevel");
+		strAttrXP = I18n.format("gui.shincolle:equip.xp");
+		strAttrGrudge = I18n.format("gui.shincolle:equip.grudge");
+		strAttrAmmo = I18n.format("gui.shincolle:equip.ammo");
+		strAttrHPRES = I18n.format("gui.shincolle:equip.hpres");
 		
 		//minor string
 		strMiKills = I18n.format("gui.shincolle:kills");
@@ -209,6 +212,14 @@ public class GuiShipInventory extends GuiContainer
 		temp = this.fontRendererObj.getStringWidth(strAttrASM);
 		if (temp > this.widthHoveringText1) this.widthHoveringText1 = temp;
 		temp = this.fontRendererObj.getStringWidth(strAttrModern);
+		if (temp > this.widthHoveringText1) this.widthHoveringText1 = temp;
+		temp = this.fontRendererObj.getStringWidth(strAttrXP);
+		if (temp > this.widthHoveringText1) this.widthHoveringText1 = temp;
+		temp = this.fontRendererObj.getStringWidth(strAttrGrudge);
+		if (temp > this.widthHoveringText1) this.widthHoveringText1 = temp;
+		temp = this.fontRendererObj.getStringWidth(strAttrAmmo);
+		if (temp > this.widthHoveringText1) this.widthHoveringText1 = temp;
+		temp = this.fontRendererObj.getStringWidth(strAttrHPRES);
 		if (temp > this.widthHoveringText1) this.widthHoveringText1 = temp;
 		
 		temp = this.fontRendererObj.getStringWidth(strAttrMiss);
@@ -591,6 +602,10 @@ public class GuiShipInventory extends GuiContainer
 					mouseoverList.add(TextFormatting.GOLD + strAttrTHIT);
 					mouseoverList.add(TextFormatting.YELLOW + strAttrAA);
 					mouseoverList.add(TextFormatting.AQUA + strAttrASM);
+					mouseoverList.add(TextFormatting.GREEN + strAttrXP);
+					mouseoverList.add(TextFormatting.DARK_PURPLE + strAttrGrudge);
+					mouseoverList.add(TextFormatting.DARK_AQUA + strAttrAmmo);
+					mouseoverList.add(TextFormatting.DARK_GREEN + strAttrHPRES);
 					this.drawHoveringText(mouseoverList, 55, 57, this.fontRendererObj);
 					
 					//draw attack value
@@ -607,6 +622,14 @@ public class GuiShipInventory extends GuiContainer
 					overText = String.valueOf((int)(this.entity.getEffectEquip(ID.EquipEffect.AA)));
 					mouseoverList.add(overText);
 					overText = String.valueOf((int)(this.entity.getEffectEquip(ID.EquipEffect.ASM)));
+					mouseoverList.add(overText);
+					overText = String.valueOf((int)((this.entity.getEffectEquip(ID.EquipEffect.XP) - 1F) * 100F)) + " %";
+					mouseoverList.add(overText);
+					overText = String.valueOf((int)((this.entity.getEffectEquip(ID.EquipEffect.GRUDGE) - 1F) * 100F)) + " %";
+					mouseoverList.add(overText);
+					overText = String.valueOf((int)((this.entity.getEffectEquip(ID.EquipEffect.AMMO) - 1F) * 100F)) + " %";
+					mouseoverList.add(overText);
+					overText = String.valueOf((int)((this.entity.getEffectEquip(ID.EquipEffect.HPRES) - 1F) * 100F)) + " %";
 					mouseoverList.add(overText);
 					this.drawHoveringText(mouseoverList, 61 + this.widthHoveringText1, 57, this.fontRendererObj);
 				}

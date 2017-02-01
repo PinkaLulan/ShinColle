@@ -131,7 +131,7 @@ public class S2CEntitySync implements IMessage
 		{
 		case PID.SyncShip_All:	//sync all attr
 			this.valueInt1 = PacketHelper.readIntArray(buf, 1+28);
-			this.valueFloat1 = PacketHelper.readFloatArray(buf, 9+7+14);
+			this.valueFloat1 = PacketHelper.readFloatArray(buf, 9+11+14);
 			this.valueByte1 = PacketHelper.readByteArray(buf, 7+6);
 			this.valueBoolean1 = PacketHelper.readBooleanArray(buf, 17);
 		break;
@@ -159,7 +159,7 @@ public class S2CEntitySync implements IMessage
 			this.valueInt = buf.readInt();
 		break;
 		case PID.SyncShip_Unbuff:	//sync unbuff attr
-			this.valueFloat1 = PacketHelper.readFloatArray(buf, 9+7);
+			this.valueFloat1 = PacketHelper.readFloatArray(buf, 9+11);
 		break;
 		case PID.SyncShip_Timer: //ship timer only
 			this.valueInt = buf.readInt();
@@ -269,6 +269,10 @@ public class S2CEntitySync implements IMessage
 			buf.writeFloat(entity.getEffectEquip(ID.EquipEffect.AA));
 			buf.writeFloat(entity.getEffectEquip(ID.EquipEffect.ASM));
 			buf.writeFloat(entity.getEffectEquip(ID.EquipEffect.DODGE));
+			buf.writeFloat(entity.getEffectEquip(ID.EquipEffect.XP));
+			buf.writeFloat(entity.getEffectEquip(ID.EquipEffect.GRUDGE));
+			buf.writeFloat(entity.getEffectEquip(ID.EquipEffect.AMMO));
+			buf.writeFloat(entity.getEffectEquip(ID.EquipEffect.HPRES));
 			buf.writeFloat(entity.getEffectFormation(ID.Formation.ATK_L));
 			buf.writeFloat(entity.getEffectFormation(ID.Formation.ATK_H));
 			buf.writeFloat(entity.getEffectFormation(ID.Formation.ATK_AL));
@@ -437,6 +441,10 @@ public class S2CEntitySync implements IMessage
 			buf.writeFloat(entity.getEffectEquipBU(ID.EquipEffect.AA));
 			buf.writeFloat(entity.getEffectEquipBU(ID.EquipEffect.ASM));
 			buf.writeFloat(entity.getEffectEquipBU(ID.EquipEffect.DODGE));
+			buf.writeFloat(entity.getEffectEquipBU(ID.EquipEffect.XP));
+			buf.writeFloat(entity.getEffectEquipBU(ID.EquipEffect.GRUDGE));
+			buf.writeFloat(entity.getEffectEquipBU(ID.EquipEffect.AMMO));
+			buf.writeFloat(entity.getEffectEquipBU(ID.EquipEffect.HPRES));
 		}
 		break;
 		case PID.SyncEntity_Emo:	//IShipEmotion emotion only
@@ -712,20 +720,24 @@ public class S2CEntitySync implements IMessage
 				ship.setEffectEquip(ID.EquipEffect.AA, msg.valueFloat1[13]);
 				ship.setEffectEquip(ID.EquipEffect.ASM, msg.valueFloat1[14]);
 				ship.setEffectEquip(ID.EquipEffect.DODGE, msg.valueFloat1[15]);
-				ship.setEffectFormation(ID.Formation.ATK_L, msg.valueFloat1[16]);
-				ship.setEffectFormation(ID.Formation.ATK_H, msg.valueFloat1[17]);
-				ship.setEffectFormation(ID.Formation.ATK_AL, msg.valueFloat1[18]);
-				ship.setEffectFormation(ID.Formation.ATK_AH, msg.valueFloat1[19]);
-				ship.setEffectFormation(ID.Formation.DEF, msg.valueFloat1[20]);
-				ship.setEffectFormation(ID.Formation.MOV, msg.valueFloat1[21]);
-				ship.setEffectFormation(ID.Formation.MISS, msg.valueFloat1[22]);
-				ship.setEffectFormation(ID.Formation.DODGE, msg.valueFloat1[23]);
-				ship.setEffectFormation(ID.Formation.CRI, msg.valueFloat1[24]);
-				ship.setEffectFormation(ID.Formation.DHIT, msg.valueFloat1[25]);
-				ship.setEffectFormation(ID.Formation.THIT, msg.valueFloat1[26]);
-				ship.setEffectFormation(ID.Formation.AA, msg.valueFloat1[27]);
-				ship.setEffectFormation(ID.Formation.ASM, msg.valueFloat1[28]);
-				ship.setEffectFormationFixed(ID.FormationFixed.MOV, msg.valueFloat1[29]);
+				ship.setEffectEquip(ID.EquipEffect.XP, msg.valueFloat1[16]);
+				ship.setEffectEquip(ID.EquipEffect.GRUDGE, msg.valueFloat1[17]);
+				ship.setEffectEquip(ID.EquipEffect.AMMO, msg.valueFloat1[18]);
+				ship.setEffectEquip(ID.EquipEffect.HPRES, msg.valueFloat1[19]);
+				ship.setEffectFormation(ID.Formation.ATK_L, msg.valueFloat1[20]);
+				ship.setEffectFormation(ID.Formation.ATK_H, msg.valueFloat1[21]);
+				ship.setEffectFormation(ID.Formation.ATK_AL, msg.valueFloat1[22]);
+				ship.setEffectFormation(ID.Formation.ATK_AH, msg.valueFloat1[23]);
+				ship.setEffectFormation(ID.Formation.DEF, msg.valueFloat1[24]);
+				ship.setEffectFormation(ID.Formation.MOV, msg.valueFloat1[25]);
+				ship.setEffectFormation(ID.Formation.MISS, msg.valueFloat1[26]);
+				ship.setEffectFormation(ID.Formation.DODGE, msg.valueFloat1[27]);
+				ship.setEffectFormation(ID.Formation.CRI, msg.valueFloat1[28]);
+				ship.setEffectFormation(ID.Formation.DHIT, msg.valueFloat1[29]);
+				ship.setEffectFormation(ID.Formation.THIT, msg.valueFloat1[30]);
+				ship.setEffectFormation(ID.Formation.AA, msg.valueFloat1[31]);
+				ship.setEffectFormation(ID.Formation.ASM, msg.valueFloat1[32]);
+				ship.setEffectFormationFixed(ID.FormationFixed.MOV, msg.valueFloat1[33]);
 				
 				ship.setStateEmotion(ID.S.State, msg.valueByte1[0], false);
 				ship.setStateEmotion(ID.S.State2, msg.valueByte1[1], false);
@@ -888,6 +900,10 @@ public class S2CEntitySync implements IMessage
 				ship.setEffectEquipBU(ID.EquipEffect.AA, msg.valueFloat1[13]);
 				ship.setEffectEquipBU(ID.EquipEffect.ASM, msg.valueFloat1[14]);
 				ship.setEffectEquipBU(ID.EquipEffect.DODGE, msg.valueFloat1[15]);
+				ship.setEffectEquipBU(ID.EquipEffect.XP, msg.valueFloat1[16]);
+				ship.setEffectEquipBU(ID.EquipEffect.GRUDGE, msg.valueFloat1[17]);
+				ship.setEffectEquipBU(ID.EquipEffect.AMMO, msg.valueFloat1[18]);
+				ship.setEffectEquipBU(ID.EquipEffect.HPRES, msg.valueFloat1[19]);
 			}
 			break;
 			case PID.SyncShip_Timer: //ship timer only

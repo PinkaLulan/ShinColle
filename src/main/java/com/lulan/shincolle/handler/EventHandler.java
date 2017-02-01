@@ -632,6 +632,10 @@ public class EventHandler
 //					{
 //						Item i2 = Item.getByNameOrId(k.getRegistryName().toString());
 //					});
+//					for (String oreName : OreDictionary.getOreNames())
+//					{	//list all oreDictionary  (DEBUG)
+//						LogHelper.info(oreName);
+//					}
 					
 					/**
 					 * update player UID or generate UID for new player

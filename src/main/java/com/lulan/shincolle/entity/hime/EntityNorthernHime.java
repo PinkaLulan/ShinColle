@@ -274,6 +274,9 @@ public class EntityNorthernHime extends BasicEntityShipCV
     {
     	//禁用副手
     	if (hand == EnumHand.OFF_HAND) return EnumActionResult.FAIL;
+    	
+    	//死亡時不反應
+    	if (!this.isEntityAlive()) return EnumActionResult.FAIL;
     		
 		//pick up northern for riding
 		if (!this.world.isRemote)

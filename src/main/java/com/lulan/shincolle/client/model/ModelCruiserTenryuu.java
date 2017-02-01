@@ -592,7 +592,7 @@ public class ModelCruiserTenryuu extends ModelBase implements IModelEmotionAdv
     
     private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
     {
-    	GlStateManager.translate(0F, 0.52F, 0F);
+    	GlStateManager.translate(0F, 0.53F + 0.26F * ent.getScaleLevel(), 0F);
 		setFace(4);
 
 		//body
