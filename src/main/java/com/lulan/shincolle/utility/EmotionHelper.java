@@ -2,22 +2,15 @@ package com.lulan.shincolle.utility;
 
 import java.util.Random;
 
-import net.minecraft.util.math.MathHelper;
-
 import com.lulan.shincolle.client.model.IModelEmotion;
 import com.lulan.shincolle.client.model.IModelEmotionAdv;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.reference.ID;
 
-/** EMOTION HELPER
- *  
- *  face icon id:
- *  0: normal
- *  1: blink
- *  2: cry
- *  3: stare
- *  4: hungry
- *  
+import net.minecraft.util.math.MathHelper;
+
+/**
+ * EMOTION HELPER
  */
 public class EmotionHelper
 {
@@ -32,26 +25,24 @@ public class EmotionHelper
     { 
     	switch (ent.getStateEmotion(ID.S.Emotion))
     	{
-    	//for admiral desk function
-    	case 6:
-    	case 7:
-    	case 8:
-    	case 9:
-    	case 10:
-    		model.setFace(ent.getStateEmotion(ID.S.Emotion) - 6);
-			break;
+    	case 6:		//for admiral desk function
+    	case 7:		//for admiral desk function
+    	case 8:		//for admiral desk function
+    	case 9:		//for admiral desk function
+    		model.setFace(ent.getStateEmotion(ID.S.Emotion) - 5);
+		break;
     	case ID.Emotion.BLINK:	//blink
-    		EmotionBlink(model, ent);
-    		break;
+    		applyEmotionBlink(model, ent);
+    	break;
     	case ID.Emotion.T_T:	//cry
     		model.setFace(2);
-    		break;
+    	break;
     	case ID.Emotion.O_O:    //stare
-    		EmotionStaring(model, ent);
-			break;
+    		applyEmotion(model, ent, ID.Emotion.O_O, 45);
+		break;
     	case ID.Emotion.HUNGRY: //hungry
     		model.setFace(4);
-			break;
+		break;
     	case ID.Emotion.BORED:
     	default:				//roll blink
     		//reset face to 0 or blink if emotion time > 0
@@ -61,58 +52,57 @@ public class EmotionHelper
     		}
     		else
     		{
-    			EmotionBlink(model, ent);
+    			applyEmotionBlink(model, ent);
     		}
     		
-    		//roll emotion (3 times) every 6 sec
-    		//1 tick in entity = 3 tick in model class (20 vs 60 fps)
-    		if (ent.getTickExisted() % 120 == 0)
+    		//roll emotion (about 3 times) every 6 sec
+    		//1 tick in entity = ~3 tick in model class (20 vs 60 fps)
+    		if ((ent.getTickExisted() & 127) == 0)
     		{
         		int emotionRand = rand.nextInt(10);
         		
         		if (emotionRand > 7)
         		{
-        			EmotionBlink(model, ent);
+        			applyEmotionBlink(model, ent);
         		} 		
         	}
-    		break;
+    	break;
     	}	
     }
     
     /** roll emotion */
     public static void rollEmotionAdv(IModelEmotionAdv model, IShipEmotion ent)
-    { 
+    {
+//    	LogHelper.debug("AAAAAAAA "+ent.getStateEmotion(ID.S.Emotion)+" "+ent.getFaceTick());
     	switch (ent.getStateEmotion(ID.S.Emotion))
     	{
-    	//for admiral desk function
-    	case 6:
-    	case 7:
-    	case 8:
-    	case 9:
-    	case 10:
-    		model.setFace(ent.getStateEmotion(ID.S.Emotion) - 1);
-			break;
+    	case 9:					//for admiral desk function
+    		model.setFace(ent.getStateEmotion(ID.S.Emotion));
+		break;
     	case ID.Emotion.BLINK:	//blink
-    		EmotionBlinkAdv(model, ent);
-    		break;
+    		applyEmotionBlinkAdv(model, ent);
+    	break;
     	case ID.Emotion.T_T:	//cry
-    		model.setFaceCry(ent);
-    		break;
+    		applyEmotionAdv(model, ent, ID.Emotion.T_T, 80);
+    	break;
     	case ID.Emotion.O_O:    //stare
-    		if (ent.getTickExisted() % 2048 > 1024)
-    		{
-    			model.setFaceDamaged(ent);
-    		}
-    		else
-    		{
-    			EmotionStaringAdv(model, ent);
-    		}
-			break;
+    		applyEmotionAdv(model, ent, ID.Emotion.O_O, 45);
+		break;
     	case ID.Emotion.HUNGRY: //hungry
     		model.setFaceHungry(ent);
-			break;
+    		ent.setFaceTick(-1);
+		break;
+    	case ID.Emotion.ANGRY:	//angry
+    		applyEmotionAdv(model, ent, ID.Emotion.ANGRY, 40);
+		break;
+    	case ID.Emotion.SHY: 	//shy
+    		applyEmotionAdv(model, ent, ID.Emotion.SHY, 80);
+		break;
+    	case ID.Emotion.XD:		//happy
+    		applyEmotionAdv(model, ent, ID.Emotion.XD, 60);
+		break;
     	case ID.Emotion.BORED:
-    		model.setFaceBored(ent);  //do not break, continue for blink
+    		model.setFaceBored(ent);  //NO BREAK! continue for blink rolling
     	default:				//roll blink
     		//reset face to 0 or blink if emotion time > 0
     		if (ent.getFaceTick() <= 0)
@@ -121,20 +111,20 @@ public class EmotionHelper
     		}
     		else
     		{
-    			EmotionBlinkAdv(model, ent);
+    			applyEmotionBlinkAdv(model, ent);
     		}
-    		//roll emotion (3 times) every 6 sec
-    		//1 tick in entity = 3 tick in model class (20 vs 60 fps)
-    		if (ent.getTickExisted() % 128 == 0)
+    		//roll emotion (about 3 times) every 6 sec
+    		//1 tick in entity = ~3 tick in model class (20 vs 60 fps)
+    		if ((ent.getTickExisted() & 127) == 0)
     		{
         		int emotionRand = rand.nextInt(10);
         		
         		if (emotionRand > 7)
         		{
-        			EmotionBlinkAdv(model, ent);
+        			applyEmotionBlinkAdv(model, ent);
         		} 		
         	}
-    		break;
+    	break;
     	}	
     }
     
@@ -175,7 +165,6 @@ public class EmotionHelper
 	    	else
 	    	{
 	    		float f = MathHelper.sin(partTick * 0.1F * 1.5708F) * maxAngle;
-//	    		float f = partTick * 0.1F * maxAngle;
 
 	    		//已達最大角度
 	    		if (f - 0.03F < maxAngle || partTick > 10F)
@@ -199,7 +188,6 @@ public class EmotionHelper
 	    	else
 	    	{
 	    		float f = (1F - MathHelper.sin(partTick * 0.2F * 1.5708F)) * maxAngle;
-//	    		float f = (1F - partTick * 0.2F) * maxAngle;
 
 	    		//已達0度
 		    	if (f + 0.03F > 0F || partTick > 8F)
@@ -215,19 +203,21 @@ public class EmotionHelper
     }
     
     /** 眨眼動作, this emotion is CLIENT ONLY, no sync packet required */
-    public static void EmotionBlink(IModelEmotion model, IShipEmotion ent)
+    public static void applyEmotionBlink(IModelEmotion model, IShipEmotion ent)
     {
+    	//要在沒表情狀態才做表情
   		if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.NORMAL)
-  		{	//要在沒表情狀態才做表情
+  		{
   			ent.setFaceTick(ent.getTickExisted());						//表情開始時間
   			ent.setStateEmotion(ID.S.Emotion, ID.Emotion.BLINK, false);	//標記表情為blink
   			model.setFace(1);
   		}
   		
   		int EmoTime = ent.getTickExisted() - ent.getFaceTick();
-    	 		
+  		
+  		//reset face
     	if (EmoTime > 25)
-    	{	//reset face
+    	{
     		model.setFace(0);
     		if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BLINK)
     		{
@@ -235,96 +225,143 @@ public class EmotionHelper
     		}
 			ent.setFaceTick(-1);
     	}
+    	//20~25 -.-
     	else if (EmoTime > 20)
-    	{  //20~25 -.-
+    	{
     		model.setFace(1);
     	}
+    	//10~20 O_O
     	else if (EmoTime > 10)
-    	{  //10~20 O_O
+    	{
     		model.setFace(0);
     	}
+    	//0~10 -_-
     	else if (EmoTime > -1)
-    	{  //0~10 -_-
+    	{
     		model.setFace(1);
     	}		
   	}
     
     /** 眨眼動作, this emotion is CLIENT ONLY, no sync packet required */
-    public static void EmotionBlinkAdv(IModelEmotionAdv model, IShipEmotion ent)
+    public static void applyEmotionBlinkAdv(IModelEmotionAdv model, IShipEmotion ent)
     {
+    	//要在沒表情狀態才做表情
   		if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.NORMAL)
-  		{	//要在沒表情狀態才做表情		
+  		{
   			ent.setFaceTick(ent.getTickExisted());						//表情開始時間
   			ent.setStateEmotion(ID.S.Emotion, ID.Emotion.BLINK, false);	//標記表情為blink
-  			model.setFaceBlink1(null);
+  			model.setFaceBlink1(ent);
   		}
   		
-  		int EmoTime = ent.getTickExisted() - ent.getFaceTick();
-    	 		
-    	if (EmoTime > 25)
-    	{	//reset face
-    		model.setFaceBlink0(null);
+  		int emoTime = ent.getTickExisted() - ent.getFaceTick();
+  		
+  		//reset face
+    	if (emoTime > 25)
+    	{
+    		model.setFaceBlink0(ent);
     		if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BLINK)
     		{
     			ent.setStateEmotion(ID.S.Emotion, ID.Emotion.NORMAL, false);
     		}
 			ent.setFaceTick(-1);
     	}
-    	else if (EmoTime > 20)
-    	{  //20~25 -.-
-    		model.setFaceBlink1(null);
+    	//20~25 -.-
+    	else if (emoTime > 20)
+    	{
+    		model.setFaceBlink1(ent);
     	}
-    	else if (EmoTime > 10)
-    	{  //10~20 O_O
-    		model.setFaceBlink0(null);
+    	//10~20 O_O
+    	else if (emoTime > 10)
+    	{
+    		model.setFaceBlink0(ent);
     	}
-    	else if (EmoTime > -1)
-    	{  //0~10 -_-
-    		model.setFaceBlink1(null);
+    	//0~10 -_-
+    	else if (emoTime > -1)
+    	{
+    		model.setFaceBlink1(ent);
     	}		
   	}
   	
-  	/** 瞪人表情 */
-    public static void EmotionStaring(IModelEmotion model, IShipEmotion ent)
-    {	
-    	if (ent.getFaceTick() == -1)
+    /**
+     * apply emotion with time limit
+     *   parms: type: ID.Emotion
+     */
+    public static void applyEmotion(IModelEmotion model, IShipEmotion ent, int type, int maxTime)
+    {
+    	//表情開始時間
+    	if (ent.getFaceTick() <= 0)
     	{
-			ent.setFaceTick(ent.getTickExisted());	//表情開始時間
+			ent.setFaceTick(ent.getTickExisted());
 		}
     	
-    	int EmoTime = ent.getTickExisted() - ent.getFaceTick();
+    	int emoTime = ent.getTickExisted() - ent.getFaceTick();
     	
-    	if (EmoTime > 41)
-    	{	//reset face
+    	//reset face
+    	if (emoTime > maxTime)
+    	{
     		model.setFace(0);
 			ent.setStateEmotion(ID.S.Emotion, ID.Emotion.NORMAL, false);
 			ent.setFaceTick(-1);
     	}
-    	else if (EmoTime > 1)
+    	else
     	{
-    		model.setFace(3);
+    		switch (type)
+    		{
+    		case ID.Emotion.O_O:
+    			model.setFace(3);
+			break;
+    		}
     	}
 	}
     
-    /** 瞪人表情 */
-    public static void EmotionStaringAdv(IModelEmotionAdv model, IShipEmotion ent)
-    {	
-    	if (ent.getFaceTick() == -1)
+    /**
+     * apply emotion with time limit
+     *   parms: type: ID.Emotion
+     */
+    public static void applyEmotionAdv(IModelEmotionAdv model, IShipEmotion ent, int type, int maxTime)
+    {
+    	//表情開始時間
+    	if (ent.getFaceTick() <= 0)
     	{
-			ent.setFaceTick(ent.getTickExisted());	//表情開始時間
+			ent.setFaceTick(ent.getTickExisted());
 		}
     	
-    	int EmoTime = ent.getTickExisted() - ent.getFaceTick();
+    	int emoTime = ent.getTickExisted() - ent.getFaceTick();
     	
-    	if (EmoTime > 41)
-    	{	//reset face
+    	//reset face
+    	if (emoTime > maxTime)
+    	{
     		model.setFaceNormal(ent);
 			ent.setStateEmotion(ID.S.Emotion, ID.Emotion.NORMAL, false);
 			ent.setFaceTick(-1);
     	}
-    	else if (EmoTime > 1)
+    	else
     	{
-    		model.setFaceScorn(ent);
+    		switch (type)
+    		{
+    		case ID.Emotion.O_O:
+    			if ((ent.getTickExisted() & 2047) > 1024)
+    			{
+    				model.setFaceDamaged(ent);
+    			}
+    			else
+    			{
+    				model.setFaceScorn(ent);
+    			}
+			break;
+    		case ID.Emotion.T_T:
+    			model.setFaceCry(ent);
+			break;
+    		case ID.Emotion.ANGRY:
+    			model.setFaceAngry(ent);
+			break;
+    		case ID.Emotion.SHY:
+    			model.setFaceShy(ent);
+			break;
+    		case ID.Emotion.XD:
+    			model.setFaceHappy(ent);
+			break;
+    		}
     	}
 	}
     

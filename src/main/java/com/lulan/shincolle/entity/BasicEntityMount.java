@@ -803,12 +803,12 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		{
 		case ID.S.Emotion:
 			stateEmotion = (byte) value;
-			break;
+		break;
 		case ID.S.Emotion2:
 			stateEmotion2 = (byte) value;
-			break;
+		break;
 		default:
-			break;
+		break;
 		}
 		
 		if (sync && !world.isRemote)

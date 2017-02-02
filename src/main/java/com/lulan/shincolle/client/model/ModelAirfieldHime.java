@@ -6,7 +6,6 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
 
-import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.GlStateManager.DestFactor;
@@ -19,8 +18,9 @@ import net.minecraft.util.math.MathHelper;
  * ModelAirfieldHime - PinkaLulan 2015/5/16
  * Created using Tabula 4.1.1
  */
-public class ModelAirfieldHime extends ModelBase implements IModelEmotion
+public class ModelAirfieldHime extends ShipModelBaseAdv
 {
+	
     public ModelRenderer BodyMain;
     public ModelRenderer Neck;
     public ModelRenderer BoobR;
@@ -31,11 +31,6 @@ public class ModelAirfieldHime extends ModelBase implements IModelEmotion
     public ModelRenderer Head;
     public ModelRenderer Hair;
     public ModelRenderer HairMain;
-    public ModelRenderer Face1;
-    public ModelRenderer Face2;
-    public ModelRenderer Face3;
-    public ModelRenderer Face4;
-    public ModelRenderer Face0;
     public ModelRenderer HeadHL;
     public ModelRenderer HeadHR;
     public ModelRenderer Ahoke;
@@ -83,9 +78,6 @@ public class ModelAirfieldHime extends ModelBase implements IModelEmotion
         this.textureWidth = 128;
         this.textureHeight = 128;
         
-        this.Face2 = new ModelRenderer(this, 98, 83);
-        this.Face2.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face2.addBox(-7.0F, -14.2F, -6.5F, 14, 14, 1, 0.0F);
         this.HairR02 = new ModelRenderer(this, 25, 18);
         this.HairR02.mirror = true;
         this.HairR02.setRotationPoint(0.2F, 10.0F, 0.0F);
@@ -103,16 +95,10 @@ public class ModelAirfieldHime extends ModelBase implements IModelEmotion
         this.BoobR.setRotationPoint(-3.7F, -8.6F, -3.5F);
         this.BoobR.addBox(-3.5F, 0.0F, 0.0F, 7, 5, 5, 0.0F);
         this.setRotateAngle(BoobR, -0.6981317007977318F, -0.13962634015954636F, -0.08726646259971647F);
-        this.Face0 = new ModelRenderer(this, 98, 53);
-        this.Face0.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face0.addBox(-7.0F, -14.2F, -6.5F, 14, 14, 1, 0.0F);
         this.Ahoke = new ModelRenderer(this, 104, 29);
         this.Ahoke.setRotationPoint(0.0F, -10.5F, -5.0F);
         this.Ahoke.addBox(0.0F, -4.0F, -11.5F, 0, 12, 12, 0.0F);
         this.setRotateAngle(Ahoke, 0.0F, 0.5235987755982988F, 0.0F);
-        this.Face4 = new ModelRenderer(this, 98, 113);
-        this.Face4.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face4.addBox(-7.0F, -14.2F, -6.5F, 14, 14, 1, 0.0F);
         this.LegLeft01 = new ModelRenderer(this, 0, 84);
         this.LegLeft01.mirror = true;
         this.LegLeft01.setRotationPoint(4.7F, 9.5F, -2.6F);
@@ -148,9 +134,6 @@ public class ModelAirfieldHime extends ModelBase implements IModelEmotion
         this.HairL02.setRotationPoint(0.0F, 10.0F, 0.0F);
         this.HairL02.addBox(-1.0F, 0.0F, 0.0F, 2, 12, 5, 0.0F);
         this.setRotateAngle(HairL02, 0.2617993877991494F, 0.0F, 0.08726646259971647F);
-        this.Face3 = new ModelRenderer(this, 98, 98);
-        this.Face3.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face3.addBox(-7.0F, -14.2F, -6.5F, 14, 14, 1, 0.0F);
         this.HeadHR = new ModelRenderer(this, 39, 28);
         this.HeadHR.mirror = true;
         this.HeadHR.setRotationPoint(-6.4F, -10.6F, 0.8F);
@@ -187,9 +170,6 @@ public class ModelAirfieldHime extends ModelBase implements IModelEmotion
         this.HeadHL3 = new ModelRenderer(this, 43, 30);
         this.HeadHL3.setRotationPoint(1.0F, 0.0F, 0.0F);
         this.HeadHL3.addBox(0.0F, -1.5F, -1.5F, 1, 3, 3, 0.0F);
-        this.Face1 = new ModelRenderer(this, 98, 68);
-        this.Face1.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face1.addBox(-7.0F, -14.2F, -6.5F, 14, 14, 1, 0.0F);
         this.ShoesL = new ModelRenderer(this, 87, 0);
         this.ShoesL.mirror = true;
         this.ShoesL.setRotationPoint(0.0F, 7.0F, 3.0F);
@@ -206,7 +186,6 @@ public class ModelAirfieldHime extends ModelBase implements IModelEmotion
         this.Head = new ModelRenderer(this, 44, 101);
         this.Head.setRotationPoint(0.0F, -1.5F, 0.0F);
         this.Head.addBox(-7.0F, -14.5F, -6.5F, 14, 14, 13, 0.0F);
-        
         this.EquipRdL01 = new ModelRenderer(this, 0, 0);
         this.EquipRdL01.setRotationPoint(5.0F, 0.0F, 6.0F);
         this.EquipRdL01.addBox(-3.5F, 0.0F, -12.0F, 7, 1, 12, 0.0F);
@@ -255,7 +234,6 @@ public class ModelAirfieldHime extends ModelBase implements IModelEmotion
         this.EquipRdR06.setRotationPoint(0.0F, 0.0F, -11.0F);
         this.EquipRdR06.addBox(-3.5F, 0.0F, -12.0F, 7, 1, 12, 0.0F);
         this.setRotateAngle(EquipRdR06, -0.1745F, 0.0F, 0.0F);
-       
         this.EquipHand01 = new ModelRenderer(this, 0, 17);
         this.EquipHand01.setRotationPoint(-0.5F, 7.5F, 0.0F);
         this.EquipHand01.addBox(-3.0F, 0.0F, -3.0F, 6, 5, 6, 0.0F);
@@ -279,6 +257,37 @@ public class ModelAirfieldHime extends ModelBase implements IModelEmotion
         this.Hair = new ModelRenderer(this, 45, 77);
         this.Hair.setRotationPoint(0.0F, -7.5F, 0.0F);
         this.Hair.addBox(-8.0F, -8.0F, -7.2F, 16, 16, 8, 0.0F);
+        this.Face0 = new ModelRenderer(this, 98, 63);
+        this.Face0.setRotationPoint(0.0F, -12.2F, -6.1F);
+        this.Face0.addBox(-7.0F, 0.0F, -0.5F, 14, 12, 1, 0.0F);
+        this.Face1 = new ModelRenderer(this, 98, 76);
+        this.Face1.setRotationPoint(0.0F, -12.2F, -6.1F);
+        this.Face1.addBox(-7.0F, 0.0F, -0.5F, 14, 12, 1, 0.0F);
+        this.Face2 = new ModelRenderer(this, 98, 89);
+        this.Face2.setRotationPoint(0.0F, -12.2F, -6.1F);
+        this.Face2.addBox(-7.0F, 0.0F, -0.5F, 14, 12, 1, 0.0F);
+        this.Face3 = new ModelRenderer(this, 98, 102);
+        this.Face3.setRotationPoint(0.0F, -12.2F, -6.1F);
+        this.Face3.addBox(-7.0F, 0.0F, -0.5F, 14, 12, 1, 0.0F);
+        this.Face4 = new ModelRenderer(this, 98, 115);
+        this.Face4.setRotationPoint(0.0F, -12.2F, -6.1F);
+        this.Face4.addBox(-7.0F, 0.0F, -0.5F, 14, 12, 1, 0.0F);
+        this.Mouth0 = new ModelRenderer(this, 100, 53);
+        this.Mouth0.setRotationPoint(0.0F, -4.2F, -6.2F);
+        this.Mouth0.addBox(-3.0F, 0.0F, -0.5F, 6, 4, 1, 0.0F);
+        this.Mouth1 = new ModelRenderer(this, 100, 58);
+        this.Mouth1.setRotationPoint(0.0F, -4.2F, -6.2F);
+        this.Mouth1.addBox(-3.0F, 0.0F, -0.5F, 6, 4, 1, 0.0F);
+        this.Mouth2 = new ModelRenderer(this, 114, 53);
+        this.Mouth2.setRotationPoint(0.0F, -4.2F, -6.2F);
+        this.Mouth2.addBox(-3.0F, 0.0F, -0.5F, 6, 4, 1, 0.0F);
+        this.Flush0 = new ModelRenderer(this, 114, 58);
+        this.Flush0.setRotationPoint(-6F, -3.0F, -6.8F);
+        this.Flush0.addBox(-1.0F, 0.0F, -0.5F, 2, 1, 0, 0.0F);
+        this.Flush1 = new ModelRenderer(this, 114, 58);
+        this.Flush1.setRotationPoint(6F, -3.0F, -6.8F);
+        this.Flush1.addBox(-1.0F, 0.0F, -0.5F, 2, 1, 0, 0.0F);
+        
         this.HairR01.addChild(this.HairR02);
         this.Hair01.addChild(this.Hair02);
         this.BodyMain.addChild(this.BoobR);
@@ -326,7 +335,12 @@ public class ModelAirfieldHime extends ModelBase implements IModelEmotion
         this.GlowHead.addChild(this.Face1);
         this.GlowHead.addChild(this.Face2);
         this.GlowHead.addChild(this.Face3);
-        this.GlowHead.addChild(this.Face4); 
+        this.GlowHead.addChild(this.Face4);
+        this.GlowHead.addChild(this.Mouth0);
+        this.GlowHead.addChild(this.Mouth1);
+        this.GlowHead.addChild(this.Mouth2);
+        this.GlowHead.addChild(this.Flush0);
+        this.GlowHead.addChild(this.Flush1);
         this.GlowEquipBase.addChild(this.EquipRdL01);
         this.GlowEquipBase.addChild(this.EquipRdR01);
         this.EquipRdL01.addChild(this.EquipRdL02);
@@ -345,17 +359,8 @@ public class ModelAirfieldHime extends ModelBase implements IModelEmotion
         this.HeadHR.addChild(this.HeadHR2);
         this.HeadHL2.addChild(this.HeadHL3);
         this.HeadHR2.addChild(this.HeadHR3);
-        
-        
     }
     
-    public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z)
-    {
-        modelRenderer.rotateAngleX = x;
-        modelRenderer.rotateAngleY = y;
-        modelRenderer.rotateAngleZ = z;
-    }
-
     @Override
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
     {
@@ -370,9 +375,9 @@ public class ModelAirfieldHime extends ModelBase implements IModelEmotion
     	GlStateManager.translate(0F, 1.75F, 0F);
     	
     	//main body
-    	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
+    	this.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
     	this.BodyMain.render(f5);
-    	GlStateManager.disableBlend();
+    	
     	
     	//light part
     	GlStateManager.disableLighting();
@@ -382,36 +387,13 @@ public class ModelAirfieldHime extends ModelBase implements IModelEmotion
     	GlStateManager.disableCull();
     	GlStateManager.enableLighting();
     	
+    	GlStateManager.disableBlend();
     	GlStateManager.popMatrix();
     }
     
-    //for idle/run animation
-    @Override
-    public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity)
-    { 	
-    	super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
-
-		IShipEmotion ent = (IShipEmotion)entity;
-		
-		showEquip(ent);
-		
-		EmotionHelper.rollEmotion(this, ent);
-		
-		if (ent.getStateFlag(ID.F.NoFuel))
-		{
-			motionStopPos(f, f1, f2, f3, f4, ent);
-		}
-		else
-		{
-			motionHumanPos(f, f1, f2, f3, f4, ent);
-		}
-		
-		setGlowRotation();
-    }
-    
-    //裝備模型顯示
-    private void showEquip(IShipEmotion ent)
-    {
+	@Override
+	public void showEquip(IShipEmotion ent)
+	{
 		if (ent.getStateEmotion(ID.S.State2) == ID.State.EQUIP00a)
 		{
 			this.EquipHand01.isHidden = false;
@@ -422,12 +404,11 @@ public class ModelAirfieldHime extends ModelBase implements IModelEmotion
 			this.EquipHand01.isHidden = true;
 			this.EquipHand02.isHidden = true;
 		}
-  	}
-    
-    //設定模型發光部份的rotation
-    private void setGlowRotation()
-    {
-    	//頭部
+	}
+
+	@Override
+	public void syncRotationGlowPart()
+	{
 		this.GlowBodyMain.rotateAngleX = this.BodyMain.rotateAngleX;
 		this.GlowBodyMain.rotateAngleY = this.BodyMain.rotateAngleY;
 		this.GlowBodyMain.rotateAngleZ = this.BodyMain.rotateAngleZ;
@@ -437,10 +418,11 @@ public class ModelAirfieldHime extends ModelBase implements IModelEmotion
 		this.GlowHead.rotateAngleX = this.Head.rotateAngleX;
 		this.GlowHead.rotateAngleY = this.Head.rotateAngleY;
 		this.GlowHead.rotateAngleZ = this.Head.rotateAngleZ;
-    }
-    
-    private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
-    {
+	}
+
+	@Override
+	public void applyDeadPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
+	{
     	float addk1 = 0F;
   		float addk2 = 0F;
   		float headX = 0F;
@@ -521,10 +503,11 @@ public class ModelAirfieldHime extends ModelBase implements IModelEmotion
 	    //leg motion
 	    this.LegLeft01.rotateAngleX = addk1;
 	    this.LegRight01.rotateAngleX = addk2;
-    }
-    
-    private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
-    {
+	}
+
+	@Override
+	public void applyNormalPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
+	{
   		float angleX = MathHelper.cos(f2*0.08F);
   		float angleX1 = MathHelper.cos(f2*0.08F + 0.3F + f * 0.5F);
   		float angleX2 = MathHelper.cos(f2*0.08F + 0.6F + f * 0.5F);
@@ -916,8 +899,8 @@ public class ModelAirfieldHime extends ModelBase implements IModelEmotion
 	    //leg motion
 	    this.LegLeft01.rotateAngleX = addk1;
 	    this.LegRight01.rotateAngleX = addk2;
-  	}
-    
+	}
+	
     private void setRoad(int attackTime)
     {
 		switch (attackTime)
@@ -994,71 +977,8 @@ public class ModelAirfieldHime extends ModelBase implements IModelEmotion
 				this.EquipRdR06.isHidden = false;
 			}		
 		break;
-		}//end attack time > 0
-	}//end pose
-  	
-    //設定顯示的臉型
-    @Override
-  	public void setFace(int emo)
-    {
-  		switch (emo)
-  		{
-  		case 0:
-  			this.Face0.isHidden = false;
-  			this.Face1.isHidden = true;
-  			this.Face2.isHidden = true;
-  			this.Face3.isHidden = true;
-  			this.Face4.isHidden = true;
-  		break;
-  		case 1:
-  			this.Face0.isHidden = true;
-  			this.Face1.isHidden = false;
-  			this.Face2.isHidden = true;
-  			this.Face3.isHidden = true;
-  			this.Face4.isHidden = true;
-  		break;
-  		case 2:
-  			this.Face0.isHidden = true;
-  			this.Face1.isHidden = true;
-  			this.Face2.isHidden = false;
-  			this.Face3.isHidden = true;
-  			this.Face4.isHidden = true;
-  		break;
-  		case 3:
-  			this.Face0.isHidden = true;
-  			this.Face1.isHidden = true;
-  			this.Face2.isHidden = true;
-  			this.Face3.isHidden = false;
-  			this.Face4.isHidden = true;
-  		break;
-  		case 4:
-  			this.Face0.isHidden = true;
-  			this.Face1.isHidden = true;
-  			this.Face2.isHidden = true;
-  			this.Face3.isHidden = true;
-  			this.Face4.isHidden = false;
-  		break;
-  		default:
-  		break;
-  		}
-  	}
-
-	@Override
-	public int getFieldCount()
-	{
-		return 0;
+		}
 	}
-
-	@Override
-	public void setField(int id, float value)
-	{
-	}
-
-	@Override
-	public float getField(int id)
-	{
-		return 0;
-	}
-	
-	
+    
+    
 }

@@ -19,15 +19,12 @@ import com.lulan.shincolle.block.BlockVolBlock;
 import com.lulan.shincolle.block.BlockVolCore;
 import com.lulan.shincolle.block.BlockWaypoint;
 import com.lulan.shincolle.block.ICustomModels;
-import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.block.Block;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-@GameRegistry.ObjectHolder(Reference.MOD_ID)	//登錄object holder使mod的物件容易流通 其他人可以直接讀取該物件
 public class ModBlocks
 {
 

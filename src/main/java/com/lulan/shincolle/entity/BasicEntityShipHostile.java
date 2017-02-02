@@ -111,7 +111,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
         
 		//model display
         this.soundHurtDelay = 0;
-        this.stateEmotion = new byte[] {ID.State.EQUIP00, 0, 0, 0, 0, 0, 0};
+        this.stateEmotion = new byte[] {ID.State.EQUIP00, 0, 0, 0, 0, 0, 0, 0};
 	}
 	
 	@Override
@@ -908,10 +908,11 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
         {
         	//update movement, NOTE: 1.9.4: must done before vanilla MoveHelper updating in super.onLivingUpdate()
         	EntityHelper.updateShipNavigator(this);
+        	
             super.onLivingUpdate();
             
         	//check every 10 ticks
-        	if (ticksExisted % 16 == 0)
+        	if ((ticksExisted & 15) == 0)
         	{
         		//update target
             	TargetHelper.updateTarget(this);
@@ -923,13 +924,14 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
             	}
 
             	//check every 256 ticks
-            	if (this.ticksExisted % 256 == 0)
+            	if ((this.ticksExisted & 255) == 0)
             	{
             		//set air value
             		if (this.getAir() < 300)
             		{
                     	setAir(300);
                     }
+            		
             		applyEmotesReaction(4);
             	}//end every 256 ticks
         	}//end every 16 ticks	
@@ -939,7 +941,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
         {
         	super.onLivingUpdate();
         	
-        	if (this.ticksExisted % 16 == 0)
+        	if ((this.ticksExisted & 15) == 0)
         	{
     			//generate HP state effect
     			switch (getStateEmotion(ID.S.HPState))
@@ -960,31 +962,85 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
     				break;
     			}
     			
-    			if (this.ticksExisted % 128 == 0)
+    			//every 64 ticks
+    			if ((this.ticksExisted & 63) == 0)
     			{
-    	        	//check hp state
-    	    		float hpState = this.getHealth() / this.getMaxHealth();
-    	    		
-    	    		if (hpState > 0.75F)
-    	    		{	//normal
-    	    			this.setStateEmotion(ID.S.HPState, ID.HPState.NORMAL, false);
-    	    		}
-    	    		else if (hpState > 0.5F)
-    	    		{	//minor damage
-    	    			this.setStateEmotion(ID.S.HPState, ID.HPState.MINOR, false);
-    	    		}
-    				else if (hpState > 0.25F)
-    				{	//moderate damage
-    					this.setStateEmotion(ID.S.HPState, ID.HPState.MODERATE, false);   			
-    				}
-    				else
-    				{	//heavy damage
-    					this.setStateEmotion(ID.S.HPState, ID.HPState.HEAVY, false);
-    				}
-            	}//end every 128 ticks
-    		}//end every 16 ticks
+    				updateEmotionState();
+            	}//end 64 ticks
+    		}//end 16 ticks
         }//end client side
 	}
+	
+  	//update hp state, CLIENT SIDE ONLY!
+  	protected void updateEmotionState()
+  	{
+  		float hpState = this.getHealth() / this.getMaxHealth();
+		
+		//check hp state
+		if (hpState > 0.75F)
+		{	//normal
+			this.setStateEmotion(ID.S.HPState, ID.HPState.NORMAL, false);
+		}
+		else if (hpState > 0.5F)
+		{	//minor damage
+			this.setStateEmotion(ID.S.HPState, ID.HPState.MINOR, false);
+		}
+		else if (hpState > 0.25F)
+		{	//moderate damage
+			this.setStateEmotion(ID.S.HPState, ID.HPState.MODERATE, false);   			
+		}
+		else
+		{	//heavy damage
+			this.setStateEmotion(ID.S.HPState, ID.HPState.HEAVY, false);
+		}
+		
+		//roll emtion: hungry > T_T > bored
+		if (getStateFlag(ID.F.NoFuel))
+		{
+			if (this.getStateEmotion(ID.S.Emotion) != ID.Emotion.HUNGRY)
+			{
+				this.setStateEmotion(ID.S.Emotion, ID.Emotion.HUNGRY, false);
+			}
+		}
+		else
+		{
+			if (hpState < 0.35F)
+			{
+    			if (this.getStateEmotion(ID.S.Emotion) != ID.Emotion.T_T)
+    			{
+    				this.setStateEmotion(ID.S.Emotion, ID.Emotion.T_T, false);
+    			}			
+    		}
+			else
+			{
+				//random Emotion
+				switch (this.getStateEmotion(ID.S.Emotion))
+				{
+				case ID.Emotion.NORMAL:		//if normal, 25% to bored
+					if (this.getRNG().nextInt(4) == 0)
+						this.setStateEmotion(ID.S.Emotion, ID.Emotion.BORED, false);
+				break;
+				default:					//other, 50% return normal
+					if (this.getRNG().nextInt(2) == 0)
+						this.setStateEmotion(ID.S.Emotion, ID.Emotion.NORMAL, false);
+				break;
+				}
+				
+				//random Emotion4
+				switch (this.getStateEmotion(ID.S.Emotion4))
+				{
+				case ID.Emotion.NORMAL:		//if normal, 33% to bored
+					if (this.getRNG().nextInt(3) == 0)
+						this.setStateEmotion(ID.S.Emotion4, ID.Emotion.BORED, false);
+				break;
+				default:					//other, 50% return normal
+					if (this.getRNG().nextInt(2) == 0)
+						this.setStateEmotion(ID.S.Emotion4, ID.Emotion.NORMAL, false);
+				break;
+				}
+			}
+		}
+  	}
 	
 	@Override
 	public ShipPathNavigate getShipNavigate()

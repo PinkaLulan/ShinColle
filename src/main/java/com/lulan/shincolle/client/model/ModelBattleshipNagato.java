@@ -893,7 +893,7 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion
 	    this.LegRight.rotateAngleX = addk2;
   	}
   	
-  	private void showEquip(IShipEmotion ent)
+  	private void aashowEquip(IShipEmotion ent)
   	{
 		switch (ent.getStateEmotion(ID.S.State))
 		{
@@ -981,6 +981,34 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion
 	public float getField(int id)
 	{
 		return 0;
+	}
+
+	@Override
+	public void showEquip(IShipEmotion ent)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void syncRotationGlowPart()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void applyDeadPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void applyNormalPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
+	{
+		// TODO Auto-generated method stub
+		
 	}
     
     

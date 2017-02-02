@@ -35,14 +35,11 @@ import com.lulan.shincolle.item.ShipSpawnEgg;
 import com.lulan.shincolle.item.TargetWrench;
 import com.lulan.shincolle.item.ToyAirplane;
 import com.lulan.shincolle.item.TrainingBook;
-import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.LogHelper;
 
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-@GameRegistry.ObjectHolder(Reference.MOD_ID)	//登錄object holder使mod的物件容易流通 其他人可以直接讀取該物件
 public class ModItems
 {
 

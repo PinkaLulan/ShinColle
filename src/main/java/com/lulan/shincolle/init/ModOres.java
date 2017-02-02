@@ -1,13 +1,10 @@
 package com.lulan.shincolle.init;
 
 import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.reference.Reference;
 
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 
-@GameRegistry.ObjectHolder(Reference.MOD_ID)	//登錄object holder使mod的物件容易流通 其他人可以直接讀取該物件
 public class ModOres
 {
 

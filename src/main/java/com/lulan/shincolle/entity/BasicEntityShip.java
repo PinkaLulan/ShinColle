@@ -1538,7 +1538,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	{
 		StateEmotion[id] = (byte)value;
 		
-		if (sync)
+		if (sync && !this.world.isRemote)
 		{
 			this.sendSyncPacketEmotion();
 		}
@@ -1680,8 +1680,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		sendSyncPacket(S2CEntitySync.PID.SyncShip_Riders, true);
 	}
 	
-	/**  sync data for GUI display */
-	public void sendGUISyncPacket()
+	/** sync data for GUI display */
+	public void sendSyncPacketGUI()
 	{
 		if (!this.world.isRemote)
 		{
@@ -1747,6 +1747,23 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				{
 					CommonProxy.channelE.sendTo(new S2CEntitySync(this, type), player);
 				}
+			}
+		}
+	}
+	
+	/**
+	 * request server to send sync packet
+	 *   0: sync model display (StateEmotion)
+	 */
+	public void sendSyncRequest(int type)
+	{
+		if (this.world.isRemote)
+		{
+			switch (type)
+			{
+			case 0:		//model display
+				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.RequestSync_Model, this.getEntityId(), this.world.provider.getDimension()));
+			break;
 			}
 		}
 	}
@@ -2657,9 +2674,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                 		//check every 64 ticks
                 		if ((ticksExisted & 63) == 0)
                 		{
-                			//sync model display
-                			sendSyncPacketEmotion();
-
                 			//check every 128 ticks
                         	if ((ticksExisted & 127) == 0)
                         	{
@@ -2691,9 +2705,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                         		{
                         			useCombatRation();
                         		}
-                        		
-                        		//update hp state
-                        		updateEmotionState();
                         		
                         		//update mount
                         		updateMountSummon();
@@ -2746,6 +2757,20 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	
         	//update client side timer
         	updateClientTimer();
+        	
+        	//request sync packet
+        	if (this.ticksExisted == 20)
+        	{
+        		this.sendSyncRequest(0);
+        	}
+        	
+        	//every 64 ticks
+        	if ((this.ticksExisted & 63) == 0)
+        	{
+        		//update random emotion
+        		updateEmotionState();
+        	}//end 64 ticks
+        	
         }//end client side
         
         /** both side */
@@ -3472,7 +3497,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	{
 		if (nofuel)
 		{
-			setStateEmotion(ID.S.Emotion, ID.Emotion.HUNGRY, false);
 			setStateMinor(ID.M.Morale, 0);
 			clearAITasks();
 			clearAITargetTasks();
@@ -3516,7 +3540,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		}
 		else
 		{
-			setStateEmotion(ID.S.Emotion, ID.Emotion.NORMAL, false);
 			clearAITasks();
 			clearAITargetTasks();
 			setAIList();
@@ -3842,7 +3865,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		return par1;
   	}
 
-  	//update hp state
+  	//update emotion, CLIENT SIDE ONLY!
   	protected void updateEmotionState()
   	{
   		float hpState = this.getHealth() / this.getMaxHealth();
@@ -3865,7 +3888,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			this.setStateEmotion(ID.S.HPState, ID.HPState.HEAVY, false);
 		}
 		
-		//roll emtion: hungry > T_T > bored > O_O
+		//roll emtion: hungry > T_T > bored
 		if (getStateFlag(ID.F.NoFuel))
 		{
 			if (this.getStateEmotion(ID.S.Emotion) != ID.Emotion.HUNGRY)
@@ -3875,7 +3898,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		}
 		else
 		{
-			if (hpState < 0.5F)
+			if (hpState < 0.35F)
 			{
     			if (this.getStateEmotion(ID.S.Emotion) != ID.Emotion.T_T)
     			{
@@ -3884,42 +3907,33 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     		}
 			else
 			{
-				//roll bored emotion
-				if (this.getRNG().nextInt(2) == 0)
-				{	//50% for bored
-	    			if (this.getStateEmotion(ID.S.Emotion) != ID.Emotion.BORED)
-	    			{
-	    				this.setStateEmotion(ID.S.Emotion, ID.Emotion.BORED, false);
-	    			}
-	    		}
-	    		else
-	    		{	//back to normal face
-	    			if (this.getStateEmotion(ID.S.Emotion) != ID.Emotion.NORMAL)
-	    			{
-	    				this.setStateEmotion(ID.S.Emotion, ID.Emotion.NORMAL, false);
-	    			}
-	    		}
+				//random Emotion
+				switch (this.getStateEmotion(ID.S.Emotion))
+				{
+				case ID.Emotion.NORMAL:		//if normal, 25% to bored
+					if (this.getRNG().nextInt(4) == 0)
+						this.setStateEmotion(ID.S.Emotion, ID.Emotion.BORED, false);
+				break;
+				default:					//other, 50% return normal
+					if (this.getRNG().nextInt(2) == 0)
+						this.setStateEmotion(ID.S.Emotion, ID.Emotion.NORMAL, false);
+				break;
+				}
 				
-				//the other emotion (independent of Emotion1~3)
-				if (this.getRNG().nextInt(2) == 0)
-				{	//50% for bored
-	    			if (this.getStateEmotion(ID.S.Emotion4) != ID.Emotion.BORED)
-	    			{
-	    				this.setStateEmotion(ID.S.Emotion4, ID.Emotion.BORED, false);
-	    			}
-	    		}
-	    		else
-	    		{	//back to normal face
-	    			if (this.getStateEmotion(ID.S.Emotion4) != ID.Emotion.NORMAL)
-	    			{
-	    				this.setStateEmotion(ID.S.Emotion4, ID.Emotion.NORMAL, false);
-	    			}
-	    		}
+				//random Emotion4
+				switch (this.getStateEmotion(ID.S.Emotion4))
+				{
+				case ID.Emotion.NORMAL:		//if normal, 33% to bored
+					if (this.getRNG().nextInt(3) == 0)
+						this.setStateEmotion(ID.S.Emotion4, ID.Emotion.BORED, false);
+				break;
+				default:					//other, 50% return normal
+					if (this.getRNG().nextInt(2) == 0)
+						this.setStateEmotion(ID.S.Emotion4, ID.Emotion.NORMAL, false);
+				break;
+				}
 			}
 		}
-		
-		//sync emotion
-		this.sendSyncPacketEmotion();
   	}
   	
 	//update hp state

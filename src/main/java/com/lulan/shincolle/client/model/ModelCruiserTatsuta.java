@@ -1108,7 +1108,7 @@ public class ModelCruiserTatsuta extends ModelBase implements IModelEmotionAdv
 	    this.LegRight01.rotateAngleX = addk2;
   	}
   	
-  	private void showEquip(IShipEmotion ent)
+  	private void showEqaaauip(IShipEmotion ent)
   	{
   		switch (ent.getStateEmotion(ID.S.State))
   		{
@@ -1257,7 +1257,7 @@ public class ModelCruiserTatsuta extends ModelBase implements IModelEmotionAdv
 	@Override
 	public void setFaceCry(IShipEmotion ent)
 	{
-		if (ent.getTickExisted() % 256 > 128)
+		if ((ent.getTickExisted() & 255) < 128)
 		{
 			setFace(6);
 		}
@@ -1270,19 +1270,23 @@ public class ModelCruiserTatsuta extends ModelBase implements IModelEmotionAdv
 	@Override
 	public void setFaceAttack(IShipEmotion ent)
 	{
-		int t = ent.getTickExisted() % 512;
+		int t = ent.getTickExisted() & 511;
 		
-		if (t < 160)
+		if (t < 128)
+		{
+			setFace(1);
+		}
+		else if (t < 256)
 		{
 			setFace(2);
 		}
-		else if (t < 320)
+		else if (t < 384)
 		{
-			setFace(5);
+			setFace(3);
 		}
 		else
 		{
-			setFace(3);
+			setFace(8);
 		}
 	}
 
@@ -1368,6 +1372,48 @@ public class ModelCruiserTatsuta extends ModelBase implements IModelEmotionAdv
 	public float getField(int id)
 	{
 		return 0;
+	}
+
+	@Override
+	public void showEquip(IShipEmotion ent)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void syncRotationGlowPart()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void applyDeadPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void applyNormalPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setMouth(int par1)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setFlush(boolean par1)
+	{
+		// TODO Auto-generated method stub
+		
 	}
     
     

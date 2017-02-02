@@ -471,7 +471,7 @@ public class ModelCarrierWDemon extends ModelBase implements IModelEmotion
 		setGlowRotation();
     }
     
-    private void showEquip(IShipEmotion ent)
+    private void showEaaquip(IShipEmotion ent)
     {
     	//equip display
     	if (ent.getStateEmotion(ID.S.State2) > ID.State.NORMALa)
@@ -1200,6 +1200,34 @@ public class ModelCarrierWDemon extends ModelBase implements IModelEmotion
 	public float getField(int id)
 	{
 		return 0;
+	}
+
+	@Override
+	public void showEquip(IShipEmotion ent)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void syncRotationGlowPart()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void applyDeadPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void applyNormalPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
+	{
+		// TODO Auto-generated method stub
+		
 	}
     
    

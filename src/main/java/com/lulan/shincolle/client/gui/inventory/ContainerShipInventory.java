@@ -204,7 +204,7 @@ public class ContainerShipInventory extends Container
                 	case 25:
                 	case 26:
                 	case 27:	//發送自訂封包更新
-                		this.entity.sendGUISyncPacket();
+                		this.entity.sendSyncPacketGUI();
                 	break;
             		default:	//使用vanilla方法更新
                     	listener.sendProgressBarUpdate(this, j, temp);

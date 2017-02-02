@@ -70,7 +70,7 @@ public class CapaShipInventory extends CapaInventory<BasicEntityShip> implements
 			this.inventoryPage = 0;
 		}
 		
-		this.hostObj.sendGUISyncPacket();
+		this.hostObj.sendSyncPacketGUI();
 	}
 
 	@Override

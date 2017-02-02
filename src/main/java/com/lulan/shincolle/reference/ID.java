@@ -99,9 +99,12 @@ public class ID
 		public static final byte NORMAL = 0;			//no emotion
 		public static final byte BLINK = 1;				//blink eye
 		public static final byte T_T = 2;				//sad
-		public static final byte O_O = 3;				//...
-		public static final byte BORED = 4;				//sit phase 2
+		public static final byte O_O = 3;				//stare
+		public static final byte BORED = 4;				//bored
 		public static final byte HUNGRY = 5;			//no grudge
+		public static final byte ANGRY = 6;				//angry
+		public static final byte SHY = 7;				//shy
+		public static final byte XD = 8;				//happy
 	}
 	
 	/** Emotion3 */

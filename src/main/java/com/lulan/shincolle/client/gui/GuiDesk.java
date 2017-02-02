@@ -826,18 +826,18 @@ public class GuiDesk extends GuiContainer
             			}
             			
             			//roll sneaking
-            			this.shipModel.setSneaking(this.shipModel.getRNG().nextInt(3) == 0);
+            			this.shipModel.setSneaking(this.shipModel.getRNG().nextInt(5) == 0);
             			
             			//roll Emotion/NoFuel
-            			if (this.shipModel.getRNG().nextInt(7) == 0)
+            			if (this.shipModel.getRNG().nextInt(8) == 0)
             			{
             				this.shipModel.setStateFlag(ID.F.NoFuel, true);
             			}
             			else
             			{
             				this.shipModel.setStateFlag(ID.F.NoFuel, false);
-            				this.shipModel.setStateEmotion(ID.S.Emotion, this.shipModel.getRNG().nextInt(6), false);
-                			if (this.shipMount != null) this.shipMount.setStateEmotion(ID.S.Emotion, this.shipMount.getRNG().nextInt(6), false);
+            				this.shipModel.setStateEmotion(ID.S.Emotion, this.shipModel.getRNG().nextInt(10), false);
+                			if (this.shipMount != null) this.shipMount.setStateEmotion(ID.S.Emotion, this.shipMount.getRNG().nextInt(10), false);
             			}
             		break;
             		}//end switch

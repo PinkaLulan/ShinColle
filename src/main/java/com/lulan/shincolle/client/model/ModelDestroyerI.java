@@ -2,6 +2,7 @@ package com.lulan.shincolle.client.model;
 
 
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EmotionHelper;
 
@@ -461,7 +462,7 @@ public class ModelDestroyerI extends ModelBase implements IModelEmotion
     	switch (ent.getStateEmotion(ID.S.Emotion))
     	{
     	case ID.Emotion.BLINK:	//blink
-    		EmotionHelper.EmotionBlink(this, ent);
+    		EmotionHelper.applyEmotionBlink(this, ent);
     	break;
     	case ID.Emotion.T_T:	//cry
     	case ID.Emotion.O_O:
@@ -479,7 +480,7 @@ public class ModelDestroyerI extends ModelBase implements IModelEmotion
     		}
     		else
     		{
-    			EmotionHelper.EmotionBlink(this, ent);
+    			EmotionHelper.applyEmotionBlink(this, ent);
     		}
     		
     		//roll emotion (3 times) every 6 sec
@@ -489,7 +490,7 @@ public class ModelDestroyerI extends ModelBase implements IModelEmotion
         		int emotionRand = ent.getRNG().nextInt(10);   		
         		if (emotionRand > 7)
         		{
-        			EmotionHelper.EmotionBlink(this, ent);
+        			EmotionHelper.applyEmotionBlink(this, ent);
         		} 		
         	}
     	break;
@@ -546,6 +547,34 @@ public class ModelDestroyerI extends ModelBase implements IModelEmotion
 	public float getField(int id)
 	{
 		return 0;
+	}
+
+	@Override
+	public void showEquip(IShipEmotion ent)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void syncRotationGlowPart()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void applyDeadPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void applyNormalPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
+	{
+		// TODO Auto-generated method stub
+		
 	}
     
     
